@@ -10,9 +10,7 @@ Packer &operator<<(Packer &p, const BigReal &v) {
   } else if(isInt64(v)) {
     p << getInt64(v);
   } else {
-    BigRealStream stream;
-    stream << FullFormatBigReal(v);
-    p << BCDArray(stream);
+    p << BCDArray(toString((FullFormatBigReal&)v));
   }
   return p;
 }

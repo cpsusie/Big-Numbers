@@ -1254,7 +1254,6 @@
     <ClInclude Include="..\..\Include\Math\Statistic.h" />
     <ClInclude Include="..\..\Include\Math\Transformation.h" />
     <ClInclude Include="..\..\Include\Math\Triangle\Triangle.h" />
-    <ClInclude Include="IStreamUtil.h" />
     <ClInclude Include="MemoryPool.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="targetver.h" />

@@ -20,7 +20,7 @@ BigReal oldFraction(const BigReal &x) { // sign(x) * (|x| - floor(|x|))
 void quotRemainder(const BigReal &x,  const BigReal &y, BigInt *quotient, BigReal *remainder) {
   DEFINEMETHODNAME;
   if(y.isZero()) {
-    throwBigRealInvalidArgumentException(method, _T("Division by zero. (%s / 0)."), x.toString().cstr());
+    throwBigRealInvalidArgumentException(method, _T("Division by zero. (%s / 0)."), toString(x).cstr());
   }
   if(quotient == remainder) { // also takes care of the stupid situation where both are NULL
     throwBigRealInvalidArgumentException(method, _T("quotient is the same variable as remainder"));

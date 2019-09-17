@@ -1,68 +1,74 @@
 #include "pch.h"
 #include <limits.h>
+#include <StrStream.h>
 #include <Math/Rational.h>
 
 #define EATWHITE() { while(iswspace(*s)) s++; }
 
-template<class CharType> Rational _strtorat(const CharType *s, CharType **end, INT64 (*strtoi)(const CharType *, CharType **, int), int radix) {
-  DEFINEMETHODNAME;
+template<class INTTYPE, class CharType> Rational _strtorat(const CharType *s, CharType **end, INTTYPE (*strtointtype)(const CharType *, CharType **, int), int radix) {
   Rational result;
   EATWHITE();
-  INT64 numerator = 0, denominator = 1;
+  INTTYPE numerator = 0, denominator = 1;
   CharType *next = NULL;
-  numerator = strtoi(s, &next, radix);
+  numerator = strtointtype(s, &next, radix);
   if(next == NULL) {
-    return 0;
+    return Rational::zero;
   }
   s = next;
   if(end) *end = next;
-  EATWHITE();
   if(*s == '/') {
     s++;
-    EATWHITE();
     next = NULL;
-    denominator = strtoi(s, &next, radix);
+    denominator = strtointtype(s, &next, radix);
     if(next == NULL) {
-      return numerator;
+      return (INT64)numerator;
     }
     s = next;
   }
   if(end) *end = (CharType*)s;
-  return Rational(numerator, denominator);
+  return Rational((INT64)numerator, (INT64)denominator);
 }
 
 Rational strtorat(const char *s, char **end, int radix) {
-  return _strtorat<char>(s, end, strtoll, radix);
+  return (radix == 10) ? _strtorat<INT64, char>(s, end, strtoll, radix) : _strtorat<UINT64, char>(s, end, strtoull, radix);
 }
 
 Rational wcstorat(const wchar_t *s, wchar_t **end, int radix) {
-  return _strtorat<wchar_t>(s, end, wcstoll, radix);
+  return (radix == 10) ? _strtorat<INT64, wchar_t>(s, end, wcstoll, radix) : _strtorat<UINT64, wchar_t>(s, end, wcstoull, radix);
 }
 
 char *rattoa(char *dst, const Rational &r, int radix) {
   if(!isfinite(r)) {
-    return strCpy(dst,StrStream::formatUndefined(r).cstr());
+    TCHAR tmp[100];
+    return strCpy(dst,StrStream::formatUndefined(tmp, _fpclass(r)));
   }
-  _i64toa(r.getNumerator(), dst, radix);
-  if(r.getDenominator() != 1) {
-    __assume(radix);
+  if(radix==10) {
+    _i64toa(r.getNumerator(), dst, radix);
+  } else {
+    _ui64toa(r.getNumerator(), dst, radix);
+  }
+  if(!r.isInteger()) {
     strcat(dst, "/");
     char tmp[100];
-    strcat(dst, _i64toa(r.getDenominator(), tmp, radix));
+    strcat(dst, _ui64toa(r.getDenominator(), tmp, radix));
   }
   return dst;
 }
 
 wchar_t *rattow(wchar_t *dst, const Rational &r, int radix) {
   if(!isfinite(r)) {
-    return strCpy(dst, StrStream::formatUndefined(r).cstr());
+    TCHAR tmp[100];
+    return strCpy(dst, StrStream::formatUndefined(tmp, _fpclass(r)));
   }
-  _i64tow(r.getNumerator(), dst, radix);
-  if(r.getDenominator() != 1) {
-    __assume(radix);
+  if(radix==10) {
+    _i64tow(r.getNumerator(), dst, radix);
+  } else {
+    _ui64tow(r.getNumerator(), dst, radix);
+  }
+  if(!r.isInteger()) {
     wcscat(dst, L"/");
     wchar_t tmp[100];
-    wcscat(dst, _i64tow(r.getDenominator(), tmp, radix));
+    wcscat(dst, _ui64tow(r.getDenominator(), tmp, radix));
   }
   return dst;
 }

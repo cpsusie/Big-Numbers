@@ -77,7 +77,7 @@ public:
   ArrayEntry(const CacheEntry &e) : Pow2ArgumentKey(e.getKey()), m_v(e.getValue()) {
   }
   String toString() const {
-    return format(_T("%s:%s"), __super::toString().cstr(), FullFormatBigReal(*m_v).toString().cstr());
+    return format(_T("%s:%s"), __super::toString().cstr(), ::toString(*(FullFormatBigReal*)m_v).cstr());
   }
 };
 

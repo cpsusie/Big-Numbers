@@ -1,50 +1,34 @@
 #include "pch.h"
+#include <StrStream.h>
 #include <Math/Double80.h>
 #include <Math/FPU.h>
 
-template<class CharType> Double80 _strtod80(const CharType *s, CharType **end) {
-  errno=0;
-  bool     isNegative     = false;
-  bool     gotDigit       = false;
-  Double80 result         = 0;
-  while(iswspace(*s)) s++;
-  if(*s == '-') {
-    isNegative = true;
-    s++;
-  } else if(*s == '+') {
-    s++;
-  }
-
-  _se_translator_function prevTranslator = FPU::setExceptionTranslator(FPUexceptionTranslator);
-  FPU::clearExceptions();
-  FPUControlWord oldcw = FPU::getControlWord(), ctrlWord = oldcw;
-  FPU::setControlWord(ctrlWord.adjustExceptionMask(FPU_OVERFLOW_EXCEPTION, FPU_UNDERFLOW_EXCEPTION | FPU_DENORMALIZED_EXCEPTION)
-                              .setRoundMode(FPU_ROUNDCONTROL_ROUND));
-  try {
-    if(iswdigit(*s)) {
-      gotDigit = true;
+template<class CharType> const CharType *parseD80Decimal(const CharType *s, Double80 &result, bool &gotDigit) {
+  if(iswdigit(*s)) {
+    gotDigit = true;
 #define TCHARTODECIMAL(ch) ((int)((ch) - '0'))
-      result   = TCHARTODECIMAL(*(s++));
-      while(iswdigit(*s)) {
-        result *= 10;
-        result += TCHARTODECIMAL(*(s++));
-      }
+    result   = TCHARTODECIMAL(*(s++));
+    while(iswdigit(*s)) {
+      result *= 10;
+      result += TCHARTODECIMAL(*(s++));
     }
-    bool     hasFraction    = false;
-    Double80 fraction       = 0;
-    UINT     fractionLength = 0;
-    if(*s == '.' && iswdigit(s[1])) {
-      s++;
-      gotDigit = true;
-      fraction = TCHARTODECIMAL(*(s++));
-      for(fractionLength++; iswdigit(*s); fractionLength++) {
-        fraction *= 10;
-        fraction += TCHARTODECIMAL(*(s++));
-      }
-      if(fraction != 0) {
-        hasFraction = true;
-      }
+  }
+  bool     hasFraction    = false;
+  Double80 fraction       = 0;
+  UINT     fractionLength = 0;
+  if((*s == '.') && iswdigit(s[1])) {
+    s++;
+    gotDigit = true;
+    fraction = TCHARTODECIMAL(*(s++));
+    for(fractionLength++; iswdigit(*s); fractionLength++) {
+      fraction *= 10;
+      fraction += TCHARTODECIMAL(*(s++));
     }
+    if(fraction != 0) {
+      hasFraction = true;
+    }
+  }
+  if(gotDigit) {
     if((*s != 'e') && (*s != 'E')) {
       if(hasFraction) fraction /= Double80::pow10(fractionLength);
     } else {
@@ -87,10 +71,119 @@ template<class CharType> Double80 _strtod80(const CharType *s, CharType **end) {
         if(hasFraction) fraction /= Double80::pow10(exponent + fractionLength);
       }
     }
-    if(!gotDigit) {
-      return 0;
-    } else if(hasFraction) {
+    if(hasFraction) {
       result += fraction;
+    }
+  }
+  return s;
+}
+
+static UINT charToInt(wchar_t ch) {
+  switch (ch) {
+  case '0':
+  case '1':
+  case '2':
+  case '3':
+  case '4':
+  case '5':
+  case '6':
+  case '7':
+  case '8':
+  case '9': return ch - '0';
+  case 'a':
+  case 'b':
+  case 'c':
+  case 'd':
+  case 'e':
+  case 'f':  return ch - 'a' + 10;
+  case 'A':
+  case 'B':
+  case 'C':
+  case 'D':
+  case 'E':
+  case 'F':  return ch - 'A' + 10;
+  }
+  return 0;
+}
+
+template<class CharType> const CharType *parseD80Hex(const CharType *s, Double80 &result, bool &gotDigit) {
+  if(iswxdigit(*s)) {
+    gotDigit = true;
+    result   = charToInt(*(s++));
+    while(iswxdigit(*s)) {
+      result *= 16;
+      result += charToInt(*(s++));
+    }
+  }
+  if((*s == '.') && iswxdigit(s[1])) {
+    Double80 fraction = 0;
+    UINT     fractionLength = 0;
+    s++;
+    gotDigit = true;
+    fraction = charToInt(*(s++));
+    for(fractionLength++; iswxdigit(*s); fractionLength++) {
+      fraction *= 16;
+      fraction += charToInt(*(s++));
+    }
+    if(fraction != 0) {
+      result += fraction / Double80::pow2(fractionLength * 4);
+    }
+  }
+  if(gotDigit && ((*s == 'p') || (*s == 'P'))) {
+    const CharType *epos = s++;
+    bool expPositive = true;
+    int  exponent    = 0;
+    if(*s == '-') {
+      expPositive = false;
+      s++;
+    } else if(*s == '+') {
+      s++;
+    }
+    bool gotExpoDigits = false;
+    if(iswdigit(*s)) {
+      exponent = TCHARTODECIMAL(*(s++));
+      gotExpoDigits = true;
+      while(iswdigit(*s)) {
+        exponent *= 10;
+        exponent += TCHARTODECIMAL(*(s++));
+      }
+    }
+    if(!gotExpoDigits) {
+      s = epos;
+    } else if(exponent != 0) {
+      if(expPositive) {
+        result *= Double80::pow2(exponent);
+      } else { // exponent < 0
+        result /= Double80::pow2(exponent);
+      }
+    }
+  }
+  return s;
+}
+
+template<class CharType> Double80 _strtod80_locale(const CharType *s, CharType **end, _locale_t locale) {
+  errno=0;
+  bool     isNegative     = false;
+  bool     gotDigit       = false;
+  Double80 result         = 0;
+  while(iswspace(*s)) s++;
+  if(*s == '-') {
+    isNegative = true;
+    s++;
+  } else if(*s == '+') {
+    s++;
+  }
+
+  _se_translator_function prevTranslator = FPU::setExceptionTranslator(FPUexceptionTranslator);
+  FPU::clearExceptions();
+  FPUControlWord oldcw = FPU::getControlWord(), ctrlWord = oldcw;
+  FPU::setControlWord(ctrlWord.adjustExceptionMask(FPU_OVERFLOW_EXCEPTION, FPU_UNDERFLOW_EXCEPTION | FPU_DENORMALIZED_EXCEPTION)
+                              .setRoundMode(FPU_ROUNDCONTROL_ROUND));
+  try {
+    if((s[0] == '0') && ((s[1] == 'x') || (s[1] == 'X'))) {
+      s = parseD80Hex(s+2, result, gotDigit);
+    } else {
+      s = parseD80Decimal(s, result, gotDigit);
     }
     if(end) {
       *end = (CharType*)s;
@@ -118,12 +211,12 @@ template<class CharType> Double80 _strtod80(const CharType *s, CharType **end) {
   return isNegative ? -result : result;
 }
 
-Double80 strtod80(const char *s, char **end) {
-  return _strtod80<UCHAR>((UCHAR*)s, (UCHAR**)end);
+Double80 _strtod80_l(const char *s, char **end, _locale_t locale) {
+  return _strtod80_locale<UCHAR>((UCHAR*)s, (UCHAR**)end, locale);
 }
 
-Double80 wcstod80(const wchar_t *s, wchar_t **end) {
-  return _strtod80<wchar_t>(s, end);
+Double80 _wcstod80_l(const wchar_t *s, wchar_t **end, _locale_t locale) {
+  return _strtod80_locale<wchar_t>(s, end, locale);
 }
 
 #define ASM_OPTIMIZED
@@ -201,7 +294,8 @@ static void normalizeValue(Double80 &m, int &expo10) {
 
 template<class CharType> CharType *_d80tostr(CharType *dst, const Double80 &x) {
   if(!isfinite(x)) {
-    return strCpy(dst, StrStream::formatUndefined(x).cstr());
+    TCHAR tmp[100];
+    return strCpy(dst, StrStream::formatUndefined(tmp,_fpclass(x)));
   } else if(x.isZero()) {
     return strCpy(dst, "0.0000000000000000000e+000");
   }
@@ -274,9 +368,9 @@ template<class CharType> CharType *_d80tostr(CharType *dst, const Double80 &x) {
 }
 
 char *d80toa(char *dst, const Double80 &x) {
-  return _d80tostr<char>(dst, x);
+  return _d80tostr(dst, x);
 }
 
 wchar_t *d80tow(wchar_t *dst, const Double80 &x) {
-  return _d80tostr<wchar_t>(dst, x);
+  return _d80tostr(dst, x);
 }

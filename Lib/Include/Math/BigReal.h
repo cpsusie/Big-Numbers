@@ -5,7 +5,7 @@
 #include <CompactStack.h>
 #include <CompactHashMap.h>
 #include <SynchronizedQueue.h>
-#include <StrStream.h>
+#include <StreamParameters.h>
 #include <ByteStream.h>
 #include <Packer.h>
 #include <HashMap.h>
@@ -363,8 +363,6 @@ public:
 
 #define DEFAULT_DIGITPOOL DigitPool::s_defaultDigitPool
 
-class BigRealStream;
-
 #define _SETDIGITPOOL() m_digitPool(digitPool?*digitPool:DEFAULT_DIGITPOOL)
 
 #ifdef IS32BIT
@@ -390,7 +388,7 @@ private:
   static size_t             s_splitLength;
   // Terminate all calculation with an Exception ("Operation was cancelled")
   // if they enter shortProduct, or simply return whichever comes first
-  static bool               s_continueCalculation; 
+  static bool               s_continueCalculation;
 
   // Most significand  digit
   Digit                    *m_first;
@@ -415,6 +413,8 @@ private:
   friend class MultiplierThread;
   friend class BigRealTestClass;
   friend class BigInt;
+  friend class BigRealStream;
+
   friend int fpclassify(const BigReal &x);
   friend int _fpclass(  const BigReal &x);
   // Construction helperfunctions
@@ -635,9 +635,6 @@ private:
     return getDouble(getDouble80NoLimitCheck());
   }
   Double80 getDouble80NoLimitCheck() const;
-  void     formatFixed(        String &result, StreamSize precision, FormatFlags flags, bool removeTrailingZeroes) const;
-  void     formatScientific(   String &result, StreamSize precision, FormatFlags flags, BRExpoType expo10, bool removeTrailingZeroes) const;
-  void     formatWithSpaceChar(String &result, TCHAR spaceChar) const;
 
 protected:
   inline void releaseDigits() { // should only be called from destructor
@@ -1031,7 +1028,6 @@ public:
   // First k decimal digits. Assume k <= 38.
   _uint128 &getFirst128(_uint128 &dst, const UINT k, BRExpoType *scale = NULL) const;
 #endif
-  String toString() const;
   inline DigitPool *getDigitPool() const {
     return &m_digitPool;
   }
@@ -1040,16 +1036,11 @@ public:
   }
   ULONG hashCode() const;
 
-  void print(FILE *f = stdout, bool spacing = false) const;
-  void dump( FILE *f = stdout) const;
-
   void save(ByteOutputStream &s) const;
   void load(ByteInputStream  &s);
 
   friend Packer &operator<<(Packer &p, const BigReal &v);
   friend Packer &operator>>(Packer &p,       BigReal &v);
-
-  friend BigRealStream &operator<<(BigRealStream &stream, const BigReal &v);
 
   static UINT getMaxSplitLength();
 
@@ -1222,6 +1213,9 @@ public:
   static const ConstBigReal _C1third;
 };
 
+#undef REQUESTCONSTPOOL
+#undef RELEASECONSTPOOL
+
 #define APCsum( bias, x, y, pool) BigReal::apcSum( #@bias, x, y, pool)
 #define APCprod(bias, x, y, pool) BigReal::apcProd(#@bias, x, y, pool)
 #define APCquot(bias, x, y, pool) BigReal::apcQuot(#@bias, x, y, pool)
@@ -1272,30 +1266,6 @@ inline bool operator< (const BigReal &x, const BigReal &y) {
   return isunordered(x,y) ? false : (compare(x,y) <  0);
 }
 
-class BigRealStream : public StrStream { // Don't derive from standardclass strstream. Its slow!!! (at least in windows)
-private:
-  TCHAR m_spaceChar;
-public:
-  BigRealStream(StreamSize precision = 6, StreamSize width = 0, FormatFlags flags = 0) : StrStream(precision, width, flags) {
-    m_spaceChar = 0;
-  }
-  BigRealStream(const StreamParameters &param) : StrStream(param) {
-    m_spaceChar = 0;
-  }
-  BigRealStream(tostream &out) : StrStream(out) {
-    m_spaceChar = 0;
-  }
-  BigRealStream &operator<<(const StreamParameters &param) {
-    __super::operator<<(param);
-    return *this;
-  }
-
-  TCHAR setSpaceChar(TCHAR value);
-  TCHAR getSpaceChar() const {
-    return m_spaceChar;
-  }
-};
-
 class FullFormatBigReal : public BigReal {
 public:
   FullFormatBigReal(const BigReal &n, DigitPool *digitPool = NULL) : BigReal(n, digitPool) {
@@ -1306,49 +1276,7 @@ public:
     __super::operator=(x);
     return *this;
   }
-  void print(FILE *f = stdout, bool spacing = false) const;
-  String toString(bool spacing = false) const;
 };
-
-class BigInt : public BigReal {
-public:
-  BigInt(DigitPool *digitPool = NULL) : BigReal(digitPool) {
-  }
-
-  // Declared explicit to avoid accidently use of operator/ on BigReals
-  explicit BigInt(const BigReal &x, DigitPool *digitPool = NULL);
-
-  BigInt(int                    x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
-  }
-  BigInt(UINT                   x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
-  }
-  BigInt(long                   x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
-  }
-  BigInt(ULONG                  x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
-  }
-  BigInt(INT64                  x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
-  }
-  BigInt(UINT64                 x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
-  }
-  BigInt(const _int128         &x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
-  }
-  BigInt(const _uint128        &x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
-  }
-
-  explicit BigInt(const String  &s, DigitPool *digitPool = NULL);
-  explicit BigInt(const char    *s, DigitPool *digitPool = NULL);
-  explicit BigInt(const wchar_t *s, DigitPool *digitPool = NULL);
-  BigInt &operator=( const BigReal &x);
-  BigInt &operator/=(const BigInt  &x);
-
-  void print(FILE *f = stdout, bool spacing = false) const;
-
-  String toString() const;
-};
-
-BigInt operator+(const BigInt &x, const BigInt &y);
-BigInt operator-(const BigInt &x, const BigInt &y);
-BigInt operator*(const BigInt &x, const BigInt &y);
 
 #define BIGREAL_0     ConstDigitPool::getZero()
 #define BIGREAL_1     ConstDigitPool::getOne()
@@ -1368,111 +1296,28 @@ inline Real getReal(const BigReal &x) {
 }
 #endif // LONGDOUBLE
 
-class ConstBigInt : public BigInt {
-public:
-  explicit ConstBigInt(const BigReal &x) : BigInt(x, REQUESTCONSTPOOL) {
-    RELEASECONSTPOOL;
-  };
-  ConstBigInt(int                     x) : BigInt(x, REQUESTCONSTPOOL) {
-    RELEASECONSTPOOL;
-  }
-  ConstBigInt(UINT                    x) : BigInt(x, REQUESTCONSTPOOL) {
-    RELEASECONSTPOOL;
-  }
-  ConstBigInt(long                    x) : BigInt(x, REQUESTCONSTPOOL) {
-    RELEASECONSTPOOL;
-  }
-  ConstBigInt(ULONG                   x) : BigInt(x, REQUESTCONSTPOOL) {
-    RELEASECONSTPOOL;
-  }
-  ConstBigInt(INT64                   x) : BigInt(x, REQUESTCONSTPOOL) {
-    RELEASECONSTPOOL;
-  }
-  ConstBigInt(UINT64                  x) : BigInt(x, REQUESTCONSTPOOL) {
-    RELEASECONSTPOOL;
-  }
-  ConstBigInt(const _int128          &x) : BigInt(x, REQUESTCONSTPOOL) {
-    RELEASECONSTPOOL;
-  }
-  ConstBigInt(const _uint128         &x) : BigInt(x, REQUESTCONSTPOOL) {
-    RELEASECONSTPOOL;
-  }
-  explicit ConstBigInt(const String  &s) : BigInt(s, REQUESTCONSTPOOL) {
-    RELEASECONSTPOOL;
-  }
-  explicit ConstBigInt(const char    *s) : BigInt(s, REQUESTCONSTPOOL) {
-    RELEASECONSTPOOL;
-  }
-  explicit ConstBigInt(const wchar_t *s) : BigInt(s, REQUESTCONSTPOOL) {
-    RELEASECONSTPOOL;
-  }
 
-  ~ConstBigInt() {
-    REQUESTCONSTPOOL;
-    releaseDigits();
-    RELEASECONSTPOOL;
-  }
-};
+std::istream     &operator>>(std::istream  &in ,       BigReal           &x);
+std::ostream     &operator<<(std::ostream  &out, const BigReal           &x);
+std::ostream     &operator<<(std::ostream  &out, const FullFormatBigReal &x);
 
-#undef REQUESTCONSTPOOL
-#undef RELEASECONSTPOOL
+std::wistream    &operator>>(std::wistream &in,        BigReal           &x);
+std::wostream    &operator<<(std::wostream &out, const BigReal           &x);
+std::wostream    &operator<<(std::wostream &out, const FullFormatBigReal &x);
 
-class BigRational {
-private:
-  BigInt m_numerator, m_denominator;
-  static BigInt findGCD(const BigInt &a, const BigInt &b);
-  void init(const BigInt &numerator, const BigInt &denominator);
-  void init(const String &s);
-public:
-  BigRational(DigitPool *digitPool = NULL);
-  BigRational(const BigInt &numerator, const BigInt &denominator, DigitPool *digitPool = NULL);
-  BigRational(const BigInt &n, DigitPool *digitPool = NULL);
-  BigRational(int           n, DigitPool *digitPool = NULL);
-  explicit BigRational(const String  &s, DigitPool *digitPool = NULL);
-  explicit BigRational(const char    *s, DigitPool *digitPool = NULL);
-  explicit BigRational(const wchar_t *s, DigitPool *digitPool = NULL);
+String      toString(const BigReal           &x, StreamSize precision=20, StreamSize width = 0, FormatFlags flags = 0, TCHAR separatorChar = 0);
+String      toString(const FullFormatBigReal &x, StreamSize precision=-1, StreamSize width = 0, FormatFlags flags = 0, TCHAR separatorChar = 0);
 
-  friend BigRational operator+(const BigRational &l, const BigRational &r);
-  friend BigRational operator-(const BigRational &l, const BigRational &r);
-  friend BigRational operator-(const BigRational &r);
-  friend BigRational operator*(const BigRational &l, const BigRational &r);
-  friend BigRational operator/(const BigRational &l, const BigRational &r);
-
-  BigRational &operator+=(const BigRational &r);
-  BigRational &operator-=(const BigRational &r);
-  BigRational &operator*=(const BigRational &r);
-  BigRational &operator/=(const BigRational &r);
-
-  const BigInt &getNumerator() const;
-  const BigInt &getDenominator() const;
-
-  DigitPool *getDigitPool() const {
-    return m_denominator.getDigitPool();
-  }
-  String toString() const;
-};
-
-tistream     &operator>>(tistream     &in ,       BigReal     &x);
-tistream     &operator>>(tistream     &in ,       BigInt      &n);
-tistream     &operator>>(tistream     &in ,       BigRational &r);
-tostream     &operator<<(tostream     &out, const BigReal     &x);
-tostream     &operator<<(tostream     &out, const BigInt      &n);
-tostream     &operator<<(tostream     &out, const BigRational &r);
-tostream     &operator<<(tostream     &out, const FullFormatBigReal &x);
-
-BigRealStream &operator<<(BigRealStream &out, const FullFormatBigReal &n);
-BigRealStream &operator<<(BigRealStream &out, const BigInt &n);
-
-String      toString(const BigReal &n, StreamSize precision=20, StreamSize width=0, FormatFlags flags = 0);
 BigReal     inputBigReal( DigitPool &digitPool, _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
-BigInt      inputBigInt(  DigitPool &digitPool, _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
-BigRational inputRational(DigitPool &digitPool, _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
 
 class BigRealException : public Exception {
 public:
   BigRealException(const TCHAR *text) : Exception(text) {
   };
 };
+
+#include "BigInt.h"
+#include "BigRational.h"
 
 inline BigReal dsign(const BigReal &x) {
   DigitPool *pool = x.getDigitPool();

@@ -1,6 +1,5 @@
 #include "pch.h"
-#include <float.h>
-#include <ctype.h>
+#include <Math/BigInt.h>
 
 BigInt::BigInt(const BigReal &x, DigitPool *digitPool) : BigReal(digitPool ? digitPool : x.getDigitPool()) {
   digitPool = getDigitPool();
@@ -89,10 +88,4 @@ BigInt &BigInt::operator/=(const BigInt &x) {
 
 BigInt randBigInt(size_t length, Random *rnd, DigitPool *pool) {
   return BigInt(e(randBigReal(length, rnd, pool),length,pool),pool);
-}
-
-String BigInt::toString() const {
-  BigRealStream tmp;
-  tmp << *this;
-  return tmp;
 }

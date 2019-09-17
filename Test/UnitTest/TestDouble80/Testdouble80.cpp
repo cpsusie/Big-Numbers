@@ -17,10 +17,10 @@ namespace TestDouble80 {
 
 #include <UnitTestTraits.h>
 
-  class LOG : public StrStream {
+  class LOG : public wostringstream {
   public:
     ~LOG() {
-      OUTPUT(_T("%s"), cstr());
+      OUTPUT(_T("%s"), str().c_str());
     }
   };
 

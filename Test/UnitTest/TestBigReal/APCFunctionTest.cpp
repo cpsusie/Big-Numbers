@@ -210,7 +210,7 @@ void testAPCPow(TestStatistic &stat) {
 
           if(stat.isTimeToPrint()) {
             stat.printLoopMessage(_T("bias:'%c', length:%4d, y:%4s, xscale:%4d")
-                                 ,bias,length,y.toString().cstr(), xScale);
+                                 ,bias,length,toString(y).cstr(), xScale);
           }
 
           const BigReal exactResult = rPow(x, y, 20);

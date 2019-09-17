@@ -376,9 +376,6 @@
     <ClInclude Include="..\..\Include\Math\Int128Net.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="IStreamUtil.h">
-      <Filter>Source Files\Number Types</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="FPU.inc">

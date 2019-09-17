@@ -21,16 +21,10 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TestToString.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="StreamParametersIterator.h">
+    <ClInclude Include="TestDataArray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TestValueArray.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TestDataArray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -41,16 +35,10 @@
     <ClCompile Include="TestToString.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="StreamParametersIterator.cpp">
+    <ClCompile Include="TestDataArray.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TestValueArray.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TestDataArray.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -3,17 +3,39 @@
 
 using namespace std;
 
-String StreamParameters::flagsToString(FormatFlags flags) {
-  String result;
-  result =  (flags & ios::showpos   ) ? _T("+") : _T(" ");
-  result += (flags & ios::showpoint ) ? _T(".") : _T(" ");
-  result += (flags & ios::left      ) ? _T("l") : _T(" ");
-  result += (flags & ios::right     ) ? _T("r") : _T(" ");
-  result += (flags & ios::scientific) ? (flags & ios::uppercase) ? _T("E") : _T("e") : _T(" ");
-  result += (flags & ios::fixed     ) ? _T("f") : _T(" ");
-  return result;
+
+TCHAR *StreamParameters::flagsToStr(TCHAR *dst, FormatFlags flags) { // static
+#define BITCH(f,chset,chclr) (flags & ios::f) ? #@chset : chclr
+#define BIT(f)                BITCH(f,1,'0')
+#define BITCH1(f,ch)          BITCH(f,ch,' ')
+
+  _stprintf(dst, _T("%c%c,skw%c,uc%c,shb%c,adj(%c%c%c),b(%c%c%c),fl(%c%c),u%c,ba%c,std%c")
+               , BITCH1(showpos   ,+)
+               , BITCH1(showpoint ,.)
+               , BIT(skipws         )
+               , BIT(uppercase      )
+               , BIT(showbase       )
+               , BITCH1(left      ,l)
+               , BITCH1(right     ,r)
+               , BITCH1(internal  ,i)
+               , BITCH1(dec       ,d)
+               , BITCH1(hex       ,x)
+               , BITCH1(oct       ,o)
+               , BITCH1(scientific,e)
+               , BITCH1(fixed     ,f)
+               , BIT(   unitbuf     )
+               , BIT(   boolalpha   )
+               , BIT(   _Stdio      )
+           );
+  return dst;
+}
+
+String StreamParameters::flagsToString(FormatFlags flags) { // static
+  TCHAR result[200];
+  return flagsToStr(result, flags);
 }
 
 String StreamParameters::toString() const {
-  return format(_T("Flags:[%6s] %3lld.%-3lld"), flagsToString(getFlags()).cstr(), getWidth(), getPrecision());
+  TCHAR tmp[200];
+  return format(_T("Flags[%s] fill:'%c' %3lld.%-3lld"), flagsToStr(tmp, flags()), fill(), width(), precision());
 }

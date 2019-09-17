@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include <math.h>
 #include <Random.h>
+#include <CompactLineArray.h>
+#include <StrStream.h>
 #include <Math/MathLib.h>
 #include <Math/Rational.h>
 
@@ -26,26 +28,10 @@ namespace TestRational {
 
 #include <UnitTestTraits.h>
 
-  template<class OUTSTREAM> OUTSTREAM &setFormat(OUTSTREAM &os, ios::_Fmtflags baseFlag, unsigned int width, int showPos, int showBase, int uppercase, ios::_Fmtflags adjustFlag) {
-    os.setf(baseFlag  , ios::basefield);
-    os.setf(adjustFlag, ios::adjustfield);
-    os.width(width);
-    if(showBase) {
-      os.setf(ios::showbase);
-    }
-    if(showPos) {
-      os.setf(ios::showpos);
-    }
-    if(uppercase) {
-      os.setf(ios::uppercase);
-    }
-    return os;
-  }
-
-	TEST_CLASS(TestRational) {
+  TEST_CLASS(TestRational) {
     public:
 
-    TEST_METHOD(BasicOperations) {
+    TEST_METHOD(RationalTestBasicOperations) {
       randomize();
 
       //  double maxTotalError = 0;
@@ -102,111 +88,111 @@ namespace TestRational {
       }
     }
 
-    TEST_METHOD(RationalIO) {
-      try {
-        CompactArray<Rational> sa;
+    typedef CompactArray<Rational> CompactRationalArray;
 
-        for(INT64 d = 1; d >= 0; d = (d + 1) * 31) {
-          for(INT64 n = 0; n >= 0; n = (n + 1) * 29) {
-            sa.add(Rational(n,d));
-            sa.add(-sa.last());
+    static CompactRationalArray generateTestArray() {
+      CompactRationalArray result;
+      for(INT64 d = 1; d >= 0; d = (d + 1) * 31) {
+        for(INT64 n = 0; n >= 0; n = (n + 1) * 29) {
+          result.add(Rational(n, d));
+        }
+      }
+      const size_t n = result.size();
+      CompactRationalArray resultNeg(n);
+      for(size_t i = 0; i < n; i++) {
+        resultNeg.add(-result[i]);
+      }
+      result.addAll(resultNeg);
+      return result;
+    }
+
+    static void testRationalToFromStr(const Rational &r) {
+      for(UINT radix = 2; radix <= 36; radix++) {
+        TCHAR charBuf[300], *endp;
+
+        const String   str = _rattot(charBuf, r, radix);
+        const Rational r1  = _tcstorat(str.cstr(), &endp, radix);
+        verify((r1 == r) && (errno == 0));
+        verify(endp == str.cstr() + str.length());
+      }
+    }
+
+    TEST_METHOD(RationalTestToFromString) {
+
+      testRationalToFromStr( RAT_MIN);
+      testRationalToFromStr( RAT_MAX);
+      testRationalToFromStr(-RAT_MIN);
+      testRationalToFromStr(-RAT_MAX);
+
+      const CompactRationalArray a = generateTestArray();
+      for(size_t i = 0; i < a.size(); i++) {
+        const Rational &r = a[i];
+        testRationalToFromStr(r);
+      }
+    }
+
+    TEST_METHOD(RationalTestIO) {
+      try {
+        const CompactRationalArray a = generateTestArray();
+
+        StreamParametersIterator it               = StreamParameters::getIntParamIterator(20);
+        const UINT               totalFormatCount = (UINT)it.getMaxIterationCount();
+        UINT                     formatCounter    = 0;
+        while(it.hasNext()) {
+          const StreamParameters &param = it.next();
+          formatCounter++;
+          if(formatCounter % 50 == 0) {
+            OUTPUT(_T("%s progress:%.2lf%%"), __TFUNCTION__, PERCENT(formatCounter, totalFormatCount));
+          }
+          if((param.flags()&ios::adjustfield) == ios::internal) {
+            continue;
+          }
+          const UINT     radix = param.radix();
+
+          ostringstream  costr;
+          wostringstream wostr;
+
+//          OUTPUT(_T("formatCounter:%d format:%s"), formatCounter, param.toString().cstr());
+
+          for(size_t i = 0; i < a.size(); i++) { // write signed
+            const Rational &x = a[i];
+            setFormat(costr, param);
+            setFormat(wostr, param);
+            costr << x << "\n";
+            wostr << x << "\n";
+          }
+          const string  cstr  = costr.str();
+          const wstring wstr = wostr.str();
+          verify(String(cstr.c_str()) == String(wstr.c_str()));
+
+          CompactLineArray lineArray(wstr);
+          verify((StreamSize)lineArray.minLength() >= param.width());
+
+          istringstream  cistr(cstr);
+          wistringstream wistr(wstr);
+
+          StreamParameters ip(param);
+          ip.flags(param.flags() | ios::skipws);
+          for(size_t i = 0; i < a.size(); i++) {
+            const Rational &expected = a[i];
+
+            setFormat(cistr, ip);
+            setFormat(wistr, ip);
+            if(!iswspace(ip.fill())) {
+              skipspace(cistr);
+              skipfill(cistr);
+              skipspace(wistr);
+              skipfill(wistr);
+            }
+            Rational cx = RAT_NAN;
+            Rational wx = RAT_NAN;
+
+            cistr >> cx;
+            wistr >> wx;
+            verify(cx == expected);
+            verify(wx == expected);
           }
         }
-
-        const ios::_Fmtflags baseFlags[] = {
-          ios::dec
-         ,ios::hex
-         ,ios::oct
-        };
-        const ios::_Fmtflags adjustFlags[] = {
-          ios::left
-         ,ios::right
-        };
-
-        // try all(almost) combinations of output format flags
-        for(int b = 0; b < ARRAYSIZE(baseFlags); b++) {
-          const ios::_Fmtflags baseFlag   = baseFlags[b];
-          int maxShowPos, maxShowBase, maxUpper;
-          switch(baseFlag) {
-          case ios::dec: maxShowPos = 1; maxShowBase = 0; maxUpper = 0; break;
-          case ios::hex: maxShowPos = 0; maxShowBase = 1; maxUpper = 1; break;
-          case ios::oct: maxShowPos = 0; maxShowBase = 1; maxUpper = 0; break;
-          }
-          for(int showPos = 1; showPos <= maxShowPos; showPos++) {
-            for(int showBase = 0; showBase <= maxShowBase; showBase++) {
-              for(int uppercase = 0; uppercase <= maxUpper; uppercase++) {
-                for(int a = 0; a < ARRAYSIZE(adjustFlags); a++) {
-                  for(UINT width = 0; width < 20; width += 3) {
-                    ostringstream  ostr;
-                    wostringstream wostr;
-                    const ios::_Fmtflags adjustFlag = adjustFlags[a];
-
-                    for(size_t i = 0; i < sa.size(); i++) { // write signed
-                      setFormat<ostream>(ostr, baseFlag, width, showPos, showBase, uppercase, adjustFlag);
-                      setFormat<wostream>(wostr, baseFlag, width, showPos, showBase, uppercase, adjustFlag);
-                      ostr << sa[i] << "\n";
-                      wostr << sa[i] << "\n";
-                    }
-
-                    string  str  = ostr.str();
-                    wstring wstr = wostr.str();
-
-                    for(Tokenizer tok(wstr.c_str(), _T("\n")); tok.hasNext();) {
-                      const String s = tok.next();
-                      verify(s.length() >= width);
-                      const TCHAR *np;
-
-                      if(adjustFlag == ios::right) {
-                        for(np = s.cstr(); *np == _T(' '); np++);
-                        verify(s.last() != _T(' '));
-                      } else {
-                        np = s.cstr();
-                        verify(s[0] != _T(' '));
-                      }
-                      if(baseFlag == ios::dec) {
-                        if(showPos) {
-                          verify((np[0] == _T('-')) || (np[0] == _T('+')));
-                        }
-                      } else if (showBase) {
-                        verify(np[0] == _T('0'));
-                        if(baseFlag == ios::hex) {
-                          verify(np[1] == _T('x'));
-                        }
-                      }
-                      if(uppercase) {
-                        for(const TCHAR *cp = np; *cp; cp++) {
-                          verify(!_istlower(*cp));
-                        }
-                      } else {
-                        for(const TCHAR *cp = np; *cp; cp++) {
-                          verify(!_istupper(*cp));
-                        }
-                      }
-                    }
-
-                    istringstream  istr;
-                    wistringstream wistr;
-
-                    istr.str(str);
-                    wistr.str(wstr);
-
-                    for(size_t i = 0; i < sa.size(); i++) { // read signed
-                      Rational x;
-                      istr.setf(baseFlag, ios::basefield);
-                      istr >> x;
-                      verify(x == sa[i]);
-
-                      Rational wx;
-                      wistr.setf(baseFlag, ios::basefield);
-                      wistr >> wx;
-                      verify(wx == sa[i]);
-                    }
-                  } // for width=[0..20]
-                } // for all AdjustFlags
-              } // for lower/uppercase
-            } // for all showBase
-          } // for all showPos
-        } // for all baseFlags
       } catch(Exception e) {
         OUTPUT(_T("Exception:%s"), e.what());
         verify(false);

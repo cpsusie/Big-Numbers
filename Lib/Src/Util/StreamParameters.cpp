@@ -3,43 +3,6 @@
 
 using namespace std;
 
-StreamParameters::StreamParameters(StreamSize precision, StreamSize width, FormatFlags flags, TCHAR filler) {
-  m_precision = precision;
-  m_width     = width;
-  m_flags     = flags;
-  m_filler    = filler;
-}
-
-StreamParameters::StreamParameters(const ostream &stream) {
-  m_precision = stream.precision();
-  m_width     = stream.width();
-  m_flags     = stream.flags();
-  m_filler    = stream.fill();
-}
-
-StreamParameters::StreamParameters(const wostream &stream) {
-  m_precision = stream.precision();
-  m_width     = stream.width();
-  m_flags     = stream.flags();
-  m_filler    = stream.fill();
-}
-
-ostream &operator<<(ostream &out, const StreamParameters &p) {
-  out.precision(p.m_precision );
-  out.width(p.m_width         );
-  out.flags(p.m_flags         );
-  out.fill((char)p.getFiller());
-  return out;
-}
-
-wostream &operator<<(wostream &out, const StreamParameters &p) {
-  out.precision(p.m_precision);
-  out.width(    p.m_width    );
-  out.flags(    p.m_flags    );
-  out.fill(     p.getFiller());
-  return out;
-}
-
 TCHAR *StreamParameters::addModifier(TCHAR *dst) const {
   if(m_flags & ios::left) {
     *(dst++) = _T('-');
@@ -62,9 +25,9 @@ TCHAR *StreamParameters::addWidth(TCHAR *dst) const {
 }
 
 TCHAR *StreamParameters::addPrecision(TCHAR *dst) const {
-  if(m_precision != 0) {
+  if(precision() != 0) {
     *(dst++) = _T('.');
-    _i64tot(m_precision,dst,10);
+    _i64tot(precision(),dst,10);
     dst += _tcsclen(dst);
   }
   return dst;
@@ -98,10 +61,10 @@ TCHAR *StreamParameters::addIntSpecifier(TCHAR *dst, bool isSigned) const {
   return dst;
 }
 
-int StreamParameters::getRadix(FormatFlags flags) { // static
+int StreamParameters::radix(FormatFlags flags) { // static
   switch(flags & ios::basefield) {
-  case ios::dec:return 10;
   case ios::oct:return 8;
+  case ios::dec:return 10;
   case ios::hex:return 16;
   }
   return 10;

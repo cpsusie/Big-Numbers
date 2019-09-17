@@ -1,56 +1,33 @@
 #include "stdafx.h"
 #include <limits.h>
+#include <CompactLineArray.h>
+#include <StrStream.h>
 #include <Math/Int128.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 using namespace std;
 
-namespace TestInt128 {		
+namespace TestInt128 {
 
 #include <UnitTestTraits.h>
 
-  template<class STREAM> STREAM &setFormat(STREAM &s, ios::_Fmtflags baseFlag, UINT width, int showPos, int showBase, int uppercase, ios::_Fmtflags adjustFlag) {
-    s.setf(baseFlag  , ios::basefield  );
-    s.setf(adjustFlag, ios::adjustfield);
-    s.width(width);
-    if(showBase) {
-      s.setf(ios::showbase);
-    }
-    if(showPos) {
-      s.setf(ios::showpos);
-    }
-    if(uppercase) {
-      s.setf(ios::uppercase);
-    }
-    return s;
-  }
-
-  static char *getastr(char *dst, const String &str) {
-    USES_ACONVERSION;
-    return strcpy(dst, TSTR2ASTR(str.cstr()));
-  }
-  static wchar_t *getwstr(wchar_t *dst, const String &str) {
-    USES_WCONVERSION;
-    return wcscpy(dst, TSTR2WSTR(str.cstr()));
-  }
-
   TEST_CLASS(TesInt128) {
-    public:
+  public:
 
     TEST_METHOD(Int128Comparators) {
-      int              minI32    = _I32_MIN;
-      int              maxI32    = _I32_MAX;
-      UINT             maxUI32   = _UI32_MAX;
-      INT64            minI64    = _I64_MIN;
-      INT64            maxI64    = _I64_MAX;
-      UINT64           maxUI64   = _UI64_MAX;
-      _int128          minI128   = _I128_MIN;
-      _int128          maxI128   = _I128_MAX;
-      _uint128         maxUI128  = _UI128_MAX;
-      INT64            i64Zero   = 0;
-      UINT64           ui64Zero  = 0;
-      _int128          i128Zero  = 0;
+      int              minI32 = _I32_MIN;
+      int              maxI32 = _I32_MAX;
+      UINT             maxUI32 = _UI32_MAX;
+      INT64            minI64 = _I64_MIN;
+      INT64            maxI64 = _I64_MAX;
+      UINT64           maxUI64 = _UI64_MAX;
+      _int128          minI128 = _I128_MIN;
+      _int128          maxI128 = _I128_MAX;
+      _uint128         maxUI128 = _UI128_MAX;
+      INT64            i64Zero = 0;
+      UINT64           ui64Zero = 0;
+      _int128          i128Zero = 0;
       _uint128         ui128Zero = 0;
 
       _int128 i1 = minI32;
@@ -101,7 +78,7 @@ namespace TestInt128 {
       verify(i8 >= 0);
       verify(i8 <= 0);
       i8--;
-      verify(i8 <   0);
+      verify(i8 < 0);
       verify(i8 == -1);
       verify(i8 >= -1);
       verify(i8 <= -1);
@@ -111,7 +88,7 @@ namespace TestInt128 {
       verify(i8 <= 0);
 
       i8++;
-      verify(i8 >  0);
+      verify(i8 > 0);
       verify(i8 == 1);
       verify(i8 >= 1);
       verify(i8 <= 1);
@@ -119,7 +96,7 @@ namespace TestInt128 {
       _int128 i9 = maxI128;
       verify(i9 == maxI128);
       i9--;
-      verify(i9 <  maxI128);
+      verify(i9 < maxI128);
       verify(i9 <= maxI128);
       i9++;
       verify(i9 == maxI128);
@@ -134,7 +111,7 @@ namespace TestInt128 {
       _int128 i10 = minI128;
       verify(i10 == minI128);
       i10++;
-      verify(i10 >  minI128);
+      verify(i10 > minI128);
       verify(i10 >= minI128);
       i10--;
       verify(i10 == minI128);
@@ -149,7 +126,7 @@ namespace TestInt128 {
       _uint128 ui11 = maxUI128;
       verify(ui11 == maxUI128);
       ui11--;
-      verify(ui11 <  maxUI128);
+      verify(ui11 < maxUI128);
       verify(ui11 <= maxUI128);
       ui11++;
       verify(ui11 == maxUI128);
@@ -176,7 +153,7 @@ namespace TestInt128 {
 
       _int128 i15 = maxUI64;
       i15++;
-      _int128 ei15 = _strtoi128("0x10000000000000000",NULL,0);
+      _int128 ei15 = _strtoi128("0x10000000000000000", NULL, 0);
       verify(i15 == ei15);
       i15--;
       verify(i15 == maxUI64);
@@ -198,17 +175,17 @@ namespace TestInt128 {
       verify(z == expected2);
 
     }
-/*
-    TEST_METHOD(TestShortDivisor) {
-      _uint128 x(0);
-      for (int i = 1; i < 128; i++) {
-        int expo2;
-        unsigned int q = ShortDivisor::getFirst32(x, expo2);
-        x <<= 1;
-        x |= (i & 1);
-      }
-    }
-*/
+    /*
+        TEST_METHOD(TestShortDivisor) {
+          _uint128 x(0);
+          for (int i = 1; i < 128; i++) {
+            int expo2;
+            unsigned int q = ShortDivisor::getFirst32(x, expo2);
+            x <<= 1;
+            x |= (i & 1);
+          }
+        }
+    */
     TEST_METHOD(TestDivision1) {
       _uint128 x(0x00000000ffffffff);
       _uint128 y(0x12345);
@@ -235,12 +212,12 @@ namespace TestInt128 {
     }
 
     TEST_METHOD(TestDivision2a) {
-      for(int i = 0; i < 30; i++) {
-        int ystep = randInt(2,20);
-//        OUTPUT(_T("i:%d, ystep:%d"), i, ystep);
+      for (int i = 0; i < 30; i++) {
+        int ystep = randInt(2, 20);
+        //        OUTPUT(_T("i:%d, ystep:%d"), i, ystep);
         _uint128 x = _uint128(randInt64(), randInt64());
         _uint128 y = randInt(1, 5);
-        for(int j = 0; y < 0x8000; j++, y += ystep) {
+        for (int j = 0; y < 0x8000; j++, y += ystep) {
           _uint128 d = x / y;
           _uint128 r = x % y;
           verify(y * d + r == x);
@@ -262,10 +239,10 @@ namespace TestInt128 {
     }
 
     TEST_METHOD(TestDivison00a) {
-      const _uint128 x(         0xec9e5bd9b3970be,0x5d905a30d4d95138); //   19657503303515891713170780434776805688
-      const _uint128 y(                         0,0x5196e4fb4f1df03a); //                      5879138131594047546
-      const _uint128 expectedQ(                 0,0x2e66dd1f38416c4b); //                      3343602899526708299
-      const _uint128 expectedR(                 0,0x208573035701783a); //                      2343405639298021434
+      const _uint128 x(0xec9e5bd9b3970be, 0x5d905a30d4d95138); //   19657503303515891713170780434776805688
+      const _uint128 y(0, 0x5196e4fb4f1df03a); //                      5879138131594047546
+      const _uint128 expectedQ(0, 0x2e66dd1f38416c4b); //                      3343602899526708299
+      const _uint128 expectedR(0, 0x208573035701783a); //                      2343405639298021434
 
       const _uint128 Q = x / y;
       const _uint128 R = x % y;
@@ -274,10 +251,10 @@ namespace TestInt128 {
     }
 
     TEST_METHOD(TestDivison01a) {
-      const _uint128 x(         0xaa6e695c0b5f04b,0x4c7c5d1fc812a76d); //   14158878055212066840979520053222483821
-      const _uint128 y(                         0,0x314de1121cefe94d); //                      3552743148976335181
-      const _uint128 expectedQ(                 0,0x374ec2b71dd06a0a); //                      3985336812004469258
-      const _uint128 expectedR(                 0,0x157f42090889a86b); //                      1549029403404118123
+      const _uint128 x(0xaa6e695c0b5f04b, 0x4c7c5d1fc812a76d); //   14158878055212066840979520053222483821
+      const _uint128 y(0, 0x314de1121cefe94d); //                      3552743148976335181
+      const _uint128 expectedQ(0, 0x374ec2b71dd06a0a); //                      3985336812004469258
+      const _uint128 expectedR(0, 0x157f42090889a86b); //                      1549029403404118123
 
       const _uint128 Q = x / y;
       const _uint128 R = x % y;
@@ -286,10 +263,10 @@ namespace TestInt128 {
     }
 
     TEST_METHOD(TestDivison02a) {
-      const _uint128 x(         0x87ada792d0cd0f1,0x70890d8405e8b107); //   11271715348864155501847136111667228935
-      const _uint128 y(                         0,0x2331b107d01c9270); //                      2536002712300720752
-      const _uint128 expectedQ(                 0,0x3daeab0d114917f8); //                      4444677954874185720
-      const _uint128 expectedR(                 0,0x020d5cb0a722c487); //                       147876276561167495
+      const _uint128 x(0x87ada792d0cd0f1, 0x70890d8405e8b107); //   11271715348864155501847136111667228935
+      const _uint128 y(0, 0x2331b107d01c9270); //                      2536002712300720752
+      const _uint128 expectedQ(0, 0x3daeab0d114917f8); //                      4444677954874185720
+      const _uint128 expectedR(0, 0x020d5cb0a722c487); //                       147876276561167495
 
       const _uint128 Q = x / y;
       const _uint128 R = x % y;
@@ -298,10 +275,10 @@ namespace TestInt128 {
     }
 
     TEST_METHOD(TestDivison03a) {
-      const _uint128 x(         0x2f9778f805ae0b4,0x12c3d7ccb4865538); //    3953762885439023626648176384310400312
-      const _uint128 y(                         0,0x45fb9184025c8f5f); //                      5042784203932733279
-      const _uint128 expectedQ(                 0,0x0ae17b8977997151); //                       784043640486457681
-      const _uint128 expectedR(                 0,0x1906b92f412d0929); //                      1803332313416534313
+      const _uint128 x(0x2f9778f805ae0b4, 0x12c3d7ccb4865538); //    3953762885439023626648176384310400312
+      const _uint128 y(0, 0x45fb9184025c8f5f); //                      5042784203932733279
+      const _uint128 expectedQ(0, 0x0ae17b8977997151); //                       784043640486457681
+      const _uint128 expectedR(0, 0x1906b92f412d0929); //                      1803332313416534313
 
       const _uint128 Q = x / y;
       const _uint128 R = x % y;
@@ -310,10 +287,10 @@ namespace TestInt128 {
     }
 
     TEST_METHOD(TestDivison04) {
-      const _uint128 x(           0x4cbd249310e6c,0x0d5ff365c0bcf2e7); //      24903177149519783583261367323128551
-      const _uint128 y(                         0,0x3494f84d83d242ca); //                      3788926198333194954
-      const _uint128 expectedQ(                 0,0x001759c3a7a06908); //                         6572621330147592
-      const _uint128 expectedR(                 0,0x0ae8bf0ee0860297); //                       786088205593477783
+      const _uint128 x(0x4cbd249310e6c, 0x0d5ff365c0bcf2e7); //      24903177149519783583261367323128551
+      const _uint128 y(0, 0x3494f84d83d242ca); //                      3788926198333194954
+      const _uint128 expectedQ(0, 0x001759c3a7a06908); //                         6572621330147592
+      const _uint128 expectedR(0, 0x0ae8bf0ee0860297); //                       786088205593477783
 
       const _uint128 Q = x / y;
       const _uint128 R = x % y;
@@ -322,10 +299,10 @@ namespace TestInt128 {
     }
 
     TEST_METHOD(TestDivison05) {
-      const _uint128 x(         0xe5da54bde203044,0x7ed001013030232e); //   19095428157273938029225758709062312750
-      const _uint128 y(                         0,0x5f84d68efb1f38d6); //                      6882862040115787990
-      const _uint128 expectedQ(                 0,0x268073524176c0b6); //                      2774344167583039670
-      const _uint128 expectedR(                 0,0x1c4136a4b4b93b0a); //                      2035968587582749450
+      const _uint128 x(0xe5da54bde203044, 0x7ed001013030232e); //   19095428157273938029225758709062312750
+      const _uint128 y(0, 0x5f84d68efb1f38d6); //                      6882862040115787990
+      const _uint128 expectedQ(0, 0x268073524176c0b6); //                      2774344167583039670
+      const _uint128 expectedR(0, 0x1c4136a4b4b93b0a); //                      2035968587582749450
 
       const _uint128 Q = x / y;
       const _uint128 R = x % y;
@@ -334,10 +311,10 @@ namespace TestInt128 {
     }
 
     TEST_METHOD(TestDivison06) {
-      const _uint128 x(         0xb60c257e9871a3b,0x689d30d003474bdc); //   15123910204640001370786487648114920412
-      const _uint128 y(                         0,0x436ae31139cc619d); //                      4857944811196146077
-      const _uint128 expectedQ(                 0,0x2b346c309d8753dc); //                      3113232198476977116
-      const _uint128 expectedR(                 0,0x40371c30513281f0); //                      4627198135992746480
+      const _uint128 x(0xb60c257e9871a3b, 0x689d30d003474bdc); //   15123910204640001370786487648114920412
+      const _uint128 y(0, 0x436ae31139cc619d); //                      4857944811196146077
+      const _uint128 expectedQ(0, 0x2b346c309d8753dc); //                      3113232198476977116
+      const _uint128 expectedR(0, 0x40371c30513281f0); //                      4627198135992746480
 
       const _uint128 Q = x / y;
       const _uint128 R = x % y;
@@ -346,10 +323,10 @@ namespace TestInt128 {
     }
 
     TEST_METHOD(TestDivison07) {
-      const _uint128 x(         0xaa1c9e7af9d04a6,0x1124f0c90bcf01f3); //   14132334872458840783324386483684442611
-      const _uint128 y(                         0,0x7d41ec83ce8f1ba9); //                      9025755179077540777
-      const _uint128 expectedQ(                 0,0x15bac365cfed740e); //                      1565778662512227342
-      const _uint128 expectedR(                 0,0x5800b173a4fdeab5); //                      6341263385585117877
+      const _uint128 x(0xaa1c9e7af9d04a6, 0x1124f0c90bcf01f3); //   14132334872458840783324386483684442611
+      const _uint128 y(0, 0x7d41ec83ce8f1ba9); //                      9025755179077540777
+      const _uint128 expectedQ(0, 0x15bac365cfed740e); //                      1565778662512227342
+      const _uint128 expectedR(0, 0x5800b173a4fdeab5); //                      6341263385585117877
 
       const _uint128 Q = x / y;
       const _uint128 R = x % y;
@@ -358,10 +335,10 @@ namespace TestInt128 {
     }
 
     TEST_METHOD(TestDivison08) {
-      const _uint128 x(         0x2550bbbdbf242ac,0x5b8622e090743c2b); //    3100039214787414484882657158882409515
-      const _uint128 y(                         0,0x3b4233b646350e7d); //                      4270032254655598205
-      const _uint128 expectedQ(                 0,0x0a1344422aa5bfb3); //                       725999015910817715
-      const _uint128 expectedR(                 0,0x24d9173f0afad7c4); //                      2655179014846207940
+      const _uint128 x(0x2550bbbdbf242ac, 0x5b8622e090743c2b); //    3100039214787414484882657158882409515
+      const _uint128 y(0, 0x3b4233b646350e7d); //                      4270032254655598205
+      const _uint128 expectedQ(0, 0x0a1344422aa5bfb3); //                       725999015910817715
+      const _uint128 expectedR(0, 0x24d9173f0afad7c4); //                      2655179014846207940
 
       const _uint128 Q = x / y;
       const _uint128 R = x % y;
@@ -370,10 +347,10 @@ namespace TestInt128 {
     }
 
     TEST_METHOD(TestDivison09) {
-      const _uint128 x(         0xc9908a6d0e148c9,0x0926db51b083556e); //   16745332844571859754349129596536051054
-      const _uint128 y(                         0,0x2b5ccdda1b40d50c); //                      3124598578132079884
-      const _uint128 expectedQ(                 0,0x4a5faf64008d3c37); //                      5359194925635025975
-      const _uint128 expectedR(                 0,0x186c13ad4c0abfda); //                      1759803189421064154
+      const _uint128 x(0xc9908a6d0e148c9, 0x0926db51b083556e); //   16745332844571859754349129596536051054
+      const _uint128 y(0, 0x2b5ccdda1b40d50c); //                      3124598578132079884
+      const _uint128 expectedQ(0, 0x4a5faf64008d3c37); //                      5359194925635025975
+      const _uint128 expectedR(0, 0x186c13ad4c0abfda); //                      1759803189421064154
 
       const _uint128 Q = x / y;
       const _uint128 R = x % y;
@@ -382,10 +359,10 @@ namespace TestInt128 {
     }
 
     TEST_METHOD(TestDivison10) {
-      const _uint128 x(         0xed0c2cd88aa034b,0x7c5ba6d43e94df5a); //   19693140759095984500242704281181151066
-      const _uint128 y(               0xd4fb68066,0x4e690ec18b817840); //          1054636059310620277920032192576
-      const _uint128 expectedQ(                 0,0x00000000011ced1d); //                                 18672925
-      const _uint128 expectedR(       0x91a9fc490,0xf915091f2d97001a); //           721293220347162787151623946266
+      const _uint128 x(0xed0c2cd88aa034b, 0x7c5ba6d43e94df5a); //   19693140759095984500242704281181151066
+      const _uint128 y(0xd4fb68066, 0x4e690ec18b817840); //          1054636059310620277920032192576
+      const _uint128 expectedQ(0, 0x00000000011ced1d); //                                 18672925
+      const _uint128 expectedR(0x91a9fc490, 0xf915091f2d97001a); //           721293220347162787151623946266
 
       const _uint128 Q = x / y;
       const _uint128 R = x % y;
@@ -394,10 +371,10 @@ namespace TestInt128 {
     }
 
     TEST_METHOD(TestDivison11) {
-      const _uint128 x(         0xd5fd5e715317cd8,0x1bd958e5b41244c2); //   17777570608274845704678865690709607618
-      const _uint128 y(               0xcc0730ba6,0x013cfb246a2eb974); //          1010298153534406036701118904692
-      const _uint128 expectedQ(                 0,0x00000000010c7fc8); //                                 17596360
-      const _uint128 expectedR(       0x776bfbcb2,0xf97eeadb6c20d622); //           591348164696712765040943486498
+      const _uint128 x(0xd5fd5e715317cd8, 0x1bd958e5b41244c2); //   17777570608274845704678865690709607618
+      const _uint128 y(0xcc0730ba6, 0x013cfb246a2eb974); //          1010298153534406036701118904692
+      const _uint128 expectedQ(0, 0x00000000010c7fc8); //                                 17596360
+      const _uint128 expectedR(0x776bfbcb2, 0xf97eeadb6c20d622); //           591348164696712765040943486498
 
       const _uint128 Q = x / y;
       const _uint128 R = x % y;
@@ -406,10 +383,10 @@ namespace TestInt128 {
     }
 
     TEST_METHOD(TestDivison12) {
-      const _uint128 x(         0xb39577e309fd4e6,0x62ba620672bc3c2d); //   14919243442003059337704437148018293805
-      const _uint128 y(               0xfe52c49db,0x1b09c2d88c542cfa); //          1259348046473654632500451093754
-      const _uint128 expectedQ(                 0,0x0000000000b4c48f); //                                 11846799
-      const _uint128 expectedR(       0x35647cff1,0xced6146ffd7fb487); //           264387014111052725630984500359
+      const _uint128 x(0xb39577e309fd4e6, 0x62ba620672bc3c2d); //   14919243442003059337704437148018293805
+      const _uint128 y(0xfe52c49db, 0x1b09c2d88c542cfa); //          1259348046473654632500451093754
+      const _uint128 expectedQ(0, 0x0000000000b4c48f); //                                 11846799
+      const _uint128 expectedR(0x35647cff1, 0xced6146ffd7fb487); //           264387014111052725630984500359
 
       const _uint128 Q = x / y;
       const _uint128 R = x % y;
@@ -418,10 +395,10 @@ namespace TestInt128 {
     }
 
     TEST_METHOD(TestDivison13) {
-      const _uint128 x(         0x1d27f2b9e568642,0x7900adf4449d0a56); //    2422189657911114745977921620772981334
-      const _uint128 y(               0x2064c72eb,0x327543189c952497); //           160405656138147247925170087063
-      const _uint128 expectedQ(                 0,0x0000000000e669f0); //                                 15100400
-      const _uint128 expectedR(       0x11c38fcb6,0xca7000a96d1ecdc6); //            87962636043408683238086856134
+      const _uint128 x(0x1d27f2b9e568642, 0x7900adf4449d0a56); //    2422189657911114745977921620772981334
+      const _uint128 y(0x2064c72eb, 0x327543189c952497); //           160405656138147247925170087063
+      const _uint128 expectedQ(0, 0x0000000000e669f0); //                                 15100400
+      const _uint128 expectedR(0x11c38fcb6, 0xca7000a96d1ecdc6); //            87962636043408683238086856134
 
       const _uint128 Q = x / y;
       const _uint128 R = x % y;
@@ -430,10 +407,10 @@ namespace TestInt128 {
     }
 
     TEST_METHOD(TestDivison14) {
-      const _uint128 x(         0xf2a16dd50f8fd8a,0x649d09f36e1094aa); //   20156960152327208543716165404505183402
-      const _uint128 y(               0x224cc79ce,0x710990befa936a02); //           169844981463817388975056972290
-      const _uint128 expectedQ(                 0,0x000000000712e42d); //                                118678573
-      const _uint128 expectedR(       0x186f081f2,0x9abcdaf295992a50); //           120989909687570471339427441232
+      const _uint128 x(0xf2a16dd50f8fd8a, 0x649d09f36e1094aa); //   20156960152327208543716165404505183402
+      const _uint128 y(0x224cc79ce, 0x710990befa936a02); //           169844981463817388975056972290
+      const _uint128 expectedQ(0, 0x000000000712e42d); //                                118678573
+      const _uint128 expectedR(0x186f081f2, 0x9abcdaf295992a50); //           120989909687570471339427441232
 
       const _uint128 Q = x / y;
       const _uint128 R = x % y;
@@ -442,10 +419,10 @@ namespace TestInt128 {
     }
 
     TEST_METHOD(TestDivison15) {
-      const _uint128 x(         0xcb5b31367817fb3,0x7b25130730cc43cd); //   16894173769501446189350867837817471949
-      const _uint128 y(                0xa820db14,0x56b38a8a4982c968); //            52033201849655759040483084648
-      const _uint128 expectedQ(                 0,0x00000000135a3bc9); //                                324680649
-      const _uint128 expectedR(        0x4ba1fe59,0x0f2ce094ce212925); //            23407213917499202640782895397
+      const _uint128 x(0xcb5b31367817fb3, 0x7b25130730cc43cd); //   16894173769501446189350867837817471949
+      const _uint128 y(0xa820db14, 0x56b38a8a4982c968); //            52033201849655759040483084648
+      const _uint128 expectedQ(0, 0x00000000135a3bc9); //                                324680649
+      const _uint128 expectedR(0x4ba1fe59, 0x0f2ce094ce212925); //            23407213917499202640782895397
 
       const _uint128 Q = x / y;
       const _uint128 R = x % y;
@@ -454,10 +431,10 @@ namespace TestInt128 {
     }
 
     TEST_METHOD(TestDivison16) {
-      const _uint128 x(         0xb25b31c989c6083,0x3880ac385210b615); //   14817255754338236961086450364826301973
-      const _uint128 y(               0xe3681bb5c,0x6d29735978b36beb); //          1126063301948282343641517878251
-      const _uint128 expectedQ(                 0,0x0000000000c8c839); //                                 13158457
-      const _uint128 expectedR(       0x2bb242b44,0x6a41cad3f63616c2); //           216373747518420313949129283266
+      const _uint128 x(0xb25b31c989c6083, 0x3880ac385210b615); //   14817255754338236961086450364826301973
+      const _uint128 y(0xe3681bb5c, 0x6d29735978b36beb); //          1126063301948282343641517878251
+      const _uint128 expectedQ(0, 0x0000000000c8c839); //                                 13158457
+      const _uint128 expectedR(0x2bb242b44, 0x6a41cad3f63616c2); //           216373747518420313949129283266
 
       const _uint128 Q = x / y;
       const _uint128 R = x % y;
@@ -466,10 +443,10 @@ namespace TestInt128 {
     }
 
     TEST_METHOD(TestDivison17) {
-      const _uint128 x(         0xc11095e90c38917,0x7ef7fccd916f420d); //   16039195029950021097143121029368857101
-      const _uint128 y(               0xfc9a855de,0x2d32946de01d021e); //          1250832429725335737381729141278
-      const _uint128 expectedQ(                 0,0x0000000000c3a920); //                                 12822816
-      const _uint128 expectedR(       0xbd2ccb3f4,0x64f73005ca8f304d); //           936749110398472886488923058253
+      const _uint128 x(0xc11095e90c38917, 0x7ef7fccd916f420d); //   16039195029950021097143121029368857101
+      const _uint128 y(0xfc9a855de, 0x2d32946de01d021e); //          1250832429725335737381729141278
+      const _uint128 expectedQ(0, 0x0000000000c3a920); //                                 12822816
+      const _uint128 expectedR(0xbd2ccb3f4, 0x64f73005ca8f304d); //           936749110398472886488923058253
 
       const _uint128 Q = x / y;
       const _uint128 R = x % y;
@@ -478,10 +455,10 @@ namespace TestInt128 {
     }
 
     TEST_METHOD(TestDivison18) {
-      const _uint128 x(         0x3b9cb8c1cd44e5f,0x092af69180cd48f4); //    4952387336198226662535812934131337460
-      const _uint128 y(               0xafb5bbae2,0x3de8e7ab8234be8b); //           870073257390976964007346617995
-      const _uint128 expectedQ(                 0,0x000000000056da0f); //                                  5691919
-      const _uint128 expectedR(       0xa7d4ee627,0x3f9f98ebf2c1c0cf); //           831062634452540080579579855055
+      const _uint128 x(0x3b9cb8c1cd44e5f, 0x092af69180cd48f4); //    4952387336198226662535812934131337460
+      const _uint128 y(0xafb5bbae2, 0x3de8e7ab8234be8b); //           870073257390976964007346617995
+      const _uint128 expectedQ(0, 0x000000000056da0f); //                                  5691919
+      const _uint128 expectedR(0xa7d4ee627, 0x3f9f98ebf2c1c0cf); //           831062634452540080579579855055
 
       const _uint128 Q = x / y;
       const _uint128 R = x % y;
@@ -490,10 +467,10 @@ namespace TestInt128 {
     }
 
     TEST_METHOD(TestDivison19) {
-      const _uint128 x(         0x23b8aeeb819979d,0x7e9b6411d98f593b); //    2967619392027549836540352149672909115
-      const _uint128 y(               0x85666de47,0x402dc9d92398202d); //           660565371072053669455940034605
-      const _uint128 expectedQ(                 0,0x0000000000448d00); //                                  4492544
-      const _uint128 expectedR(       0x504bf4d1a,0xa8c1570e83e2903b); //           397610021556148085482848423995
+      const _uint128 x(0x23b8aeeb819979d, 0x7e9b6411d98f593b); //    2967619392027549836540352149672909115
+      const _uint128 y(0x85666de47, 0x402dc9d92398202d); //           660565371072053669455940034605
+      const _uint128 expectedQ(0, 0x0000000000448d00); //                                  4492544
+      const _uint128 expectedR(0x504bf4d1a, 0xa8c1570e83e2903b); //           397610021556148085482848423995
 
       const _uint128 Q = x / y;
       const _uint128 R = x % y;
@@ -502,28 +479,28 @@ namespace TestInt128 {
     }
 
     TEST_METHOD(Int128ArithmethicOperators) {
-      _uint128 x1 = _strtoui128("0xffffffffffffffffffffffffffffffff",NULL,0);
+      _uint128 x1 = _strtoui128("0xffffffffffffffffffffffffffffffff", NULL, 0);
       _uint128 res1 = x1 + 1;
       verify(res1 == 0);
 
-      _uint128 x2 = _strtoui128("12345678901234567890123456789012345",NULL,10);
-      _uint128 y2 = _strtoui128("23456789012345678901234567890123456",NULL,10);
+      _uint128 x2 = _strtoui128("12345678901234567890123456789012345", NULL, 10);
+      _uint128 y2 = _strtoui128("23456789012345678901234567890123456", NULL, 10);
       _uint128 z2 = x2 + y2;
-      _uint128 res2 = _strtoui128("35802467913580246791358024679135801",NULL,10);
+      _uint128 res2 = _strtoui128("35802467913580246791358024679135801", NULL, 10);
       verify(z2 == res2);
 
       _uint128 z3 = y2 - x2;
       const char *str3 = "11111110111111111011111111101111111";
-      _uint128 res3 = _strtoui128(str3,NULL,10);
+      _uint128 res3 = _strtoui128(str3, NULL, 10);
 
       verify(z3 == res3);
       char buf3[300];
       _ui128toa(z3, buf3, 10);
       verify(strcmp(str3, buf3) == 0);
 
-      _uint128 x4 = _strtoui128("340282366920938463463374607431768211455",NULL,10);
+      _uint128 x4 = _strtoui128("340282366920938463463374607431768211455", NULL, 10);
       verify(x4 == _UI128_MAX);
-      _uint128 y4 = _strtoui128("54678423345639783523445",NULL,10);
+      _uint128 y4 = _strtoui128("54678423345639783523445", NULL, 10);
       _uint128 q4 = x4 / y4;
       _uint128 r4 = x4 % y4;
       _uint128 z4 = q4 * y4 + r4;
@@ -533,14 +510,14 @@ namespace TestInt128 {
       verify((d4 < 0) && (-d4 < r4));
       verify(z4 == x4);
 
-// ---------------------------------------------------------------
+      // ---------------------------------------------------------------
 
-      _int128 x5p = _strtoi128("170141183460469231731687303715884105727" ,NULL,10);
-      _int128 x5n = _strtoi128("-170141183460469231731687303715884105728",NULL,10);
+      _int128 x5p = _strtoi128("170141183460469231731687303715884105727", NULL, 10);
+      _int128 x5n = _strtoi128("-170141183460469231731687303715884105728", NULL, 10);
       verify(x5p == _I128_MAX);
       verify(x5n == _I128_MIN);
-      _int128 y5p = _strtoi128("54678423345639783523445" ,NULL,10);
-      _int128 y5n = _strtoi128("-54678423345639783523445",NULL,10);
+      _int128 y5p = _strtoi128("54678423345639783523445", NULL, 10);
+      _int128 y5n = _strtoi128("-54678423345639783523445", NULL, 10);
 
       _int128 x5pcopy(x5p);
       _int128 y5pcopy(y5p);
@@ -576,7 +553,7 @@ namespace TestInt128 {
       d5pp += y5p;
       verify((d5pp == x5pcopy) && (y5p == y5pcopy));
 
-// ---------------------------------------------------------------
+      // ---------------------------------------------------------------
 
       _int128 q5pp = x5p / y5p;
       _int128 q5ppcopy(q5pp);
@@ -594,7 +571,7 @@ namespace TestInt128 {
       _int128 q5nncopy(q5nn);
       verify((x5n == x5ncopy) && (y5n == y5ncopy) && (q5nn >= 0));
 
-// ---------------------------------------------------------------
+      // ---------------------------------------------------------------
 
       _int128 r5pp = x5p % y5p;
       _int128 r5ppcopy(r5pp);
@@ -612,7 +589,7 @@ namespace TestInt128 {
       _int128 r5nncopy(r5nn);
       verify((x5n == x5ncopy) && (y5n == y5ncopy) && (r5nn <= 0) && (r5nn > y5n));
 
-// ---------------------------------------------------------------
+      // ---------------------------------------------------------------
 
       _int128 z5pp = q5pp * y5p + r5pp;
       verify((z5pp == x5pcopy) && (y5p == y5pcopy) && (q5pp == q5ppcopy) && (r5pp == r5ppcopy));
@@ -626,7 +603,7 @@ namespace TestInt128 {
       _int128 z5nn = q5nn * y5n + r5nn;
       verify((z5nn == x5ncopy) && (y5n == y5ncopy) && (q5nn == q5nncopy) && (r5nn == r5nncopy));
 
-// ---------------------------------------------------------------
+      // ---------------------------------------------------------------
 
       _int128 x5qp = x5p;
       _int128 x5qn = x5n;
@@ -658,7 +635,7 @@ namespace TestInt128 {
       x5qn *= y5n;
       verify((x5n - x5qn == r5nn) && (y5n == y5ncopy));
 
-// ---------------------------------------------------------------
+      // ---------------------------------------------------------------
 
       _int128 x5rp = x5p;
       _int128 x5rn = x5n;
@@ -678,19 +655,19 @@ namespace TestInt128 {
       x5rn %= y5n;
       verify((x5rn == r5nn) && (y5n == y5ncopy));
 
-// ---------------------------------------------------------------
+      // ---------------------------------------------------------------
 
-      _int128  x6  = _strtoi128( "-0x80000000000000000000000000000000",NULL,0);
-      _uint128 ux6 = _strtoui128("0x80000000000000000000000000000000",NULL,0);
-/*
-      TCHAR bx6[1200], bimin[200];
-      _i128tow(x6, bx6, 16);
-      _i128tow(_I128_MIN, bimin, 16);
-      OUTPUT(_T("x6:%s"), bx6);
-      OUTPUT(_T("Imin:%s"), bimin);
-*/
+      _int128  x6 = _strtoi128("-0x80000000000000000000000000000000", NULL, 0);
+      _uint128 ux6 = _strtoui128("0x80000000000000000000000000000000", NULL, 0);
+      /*
+            TCHAR bx6[1200], bimin[200];
+            _i128tow(x6, bx6, 16);
+            _i128tow(_I128_MIN, bimin, 16);
+            OUTPUT(_T("x6:%s"), bx6);
+            OUTPUT(_T("Imin:%s"), bimin);
+      */
       verify(x6 == _I128_MIN);
-      _int128 y6 = _strtoi128("-54678423345639783523445",NULL,0);
+      _int128 y6 = _strtoi128("-54678423345639783523445", NULL, 0);
     } // Int128ArithmethicOperators
 
     TEST_METHOD(Int128BitOperators) {
@@ -713,29 +690,29 @@ namespace TestInt128 {
       x2 = x2 | 7;
       verify(x2 == _UI128_MAX);
 
-      _int128 b1 = _strtoi128("0x123456789abcdef0123456789abcdef",NULL,0);
-      _int128 b2 = _strtoi128("0x7777777777777777777777777777777",NULL,0);
-      _int128 b3 = _strtoi128("0x46328ab5cdf43a89b3c819bf6483219",NULL,0);
-      _int128 ea = _strtoi128("0x1234567012345670123456701234567",NULL,0);
+      _int128 b1 = _strtoi128("0x123456789abcdef0123456789abcdef", NULL, 0);
+      _int128 b2 = _strtoi128("0x7777777777777777777777777777777", NULL, 0);
+      _int128 b3 = _strtoi128("0x46328ab5cdf43a89b3c819bf6483219", NULL, 0);
+      _int128 ea = _strtoi128("0x1234567012345670123456701234567", NULL, 0);
       verify((b1 & b2) == ea);
-      _int128 eo = _strtoi128("0x7777777ffffffff77777777ffffffff",NULL,0);
+      _int128 eo = _strtoi128("0x7777777ffffffff77777777ffffffff", NULL, 0);
       verify((b1 | b2) == eo);
 
-      _int128 x13      = b1 ^ b3;
-      _int128 b1mb3    = b1 & ~b3;
-      _int128 b3mb1    = b3 & ~b1;
+      _int128 x13 = b1 ^ b3;
+      _int128 b1mb3 = b1 & ~b3;
+      _int128 b3mb1 = b3 & ~b1;
       _int128 symDif13 = b1mb3 | b3mb1;
       verify(x13 == symDif13);
 
     } // Int128BitOperators
 
-    template<class I128Type> void testAllShifts(I128Type v0, I128Type (*op)(const I128Type&, int)) {
+    template<class I128Type> void testAllShifts(I128Type v0, I128Type(*op)(const I128Type&, int)) {
       CompactArray<I128Type> singleShiftValue(129);
       singleShiftValue.add(v0);
-      for(int i = 1; i <= 128; i++) {
+      for (int i = 1; i <= 128; i++) {
         singleShiftValue.add(op(singleShiftValue.last(), 1));
       }
-      for(int i = 0; i <= 128; i++) {
+      for (int i = 0; i <= 128; i++) {
         const I128Type shftValue = op(v0, i);
         verify(shftValue == singleShiftValue[i]);
       }
@@ -768,8 +745,9 @@ namespace TestInt128 {
 
 //#define USE_INT64_AS_INTTYPE
 #ifdef USE_INT64_AS_INTTYPE
-typedef INT64           _inttype;
-typedef UINT64          _uinttype;
+
+    typedef INT64           _inttype;
+    typedef UINT64          _uinttype;
 #define MINIVALUE       _I64_MIN
 #define MAXIVALUE       _I64_MAX
 #define MAXUIVALUE      _UI64_MAX
@@ -783,10 +761,11 @@ typedef UINT64          _uinttype;
 #define _wcstoitype     _wcstoi64
 #define _wcstouitype    _wcstoui64
 #define randuitype      getRandInt64
+
 #else // USE_INT64_AS_INTTYPE
 
-typedef _int128         _inttype;
-typedef _uint128        _uinttype;
+    typedef _int128         _inttype;
+    typedef _uint128        _uinttype;
 #define MINIVALUE       _I128_MIN
 #define MAXIVALUE       _I128_MAX
 #define MAXUIVALUE      _UI128_MAX
@@ -804,15 +783,19 @@ typedef _uint128        _uinttype;
 #endif // USE_INT64_AS_INTTYPE
 
 #ifdef _UNICODE
+
 #define _itypetot       _itypetow
 #define _uitypetot      _uitypetow
 #define _tcstoitype     _wcstoitype
 #define _tcstouitype    _wcstouitype
+
 #else
+
 #define _itypetot       _itypetoa
 #define _uitypetot      _uitypetoa
 #define _tcstoitype     _atoitype
 #define _tcstouitype    _atouitype
+
 #endif // _UNICODE
 
 #define MINRADIX 2
@@ -823,7 +806,7 @@ typedef _uint128        _uinttype;
     }
 
     static String uitypeToString(_uinttype v, int radix) {
-      if(v == 0) {
+      if (v == 0) {
         return _T("0");
       }
       String result;
@@ -831,28 +814,29 @@ typedef _uint128        _uinttype;
         const UINT c = v % radix;
         result += radixLetter(c);
         v /= radix;
-      } while(v != 0);
+      } while (v != 0);
       return rev(result);
     }
 
     static String itypeToString(_inttype v, int radix) {
-      if((radix != 10) || (v >= 0)) {
+      if ((radix != 10) || (v >= 0)) {
         return uitypeToString((_uinttype)v, radix);
-      } else {
+      }
+      else {
         return String(_T("-")) + uitypeToString((_uinttype)(-v), radix);
       }
     }
 
     static String incr(const String &num, UINT radix) {
       String result = num;
-      const TCHAR maxDigit = radixLetter(radix-1);
-      for(TCHAR *dp = result.cstr() + result.length() - 1;; dp--) {
-        if(*dp < maxDigit) {
+      const TCHAR maxDigit = radixLetter(radix - 1);
+      for (TCHAR *dp = result.cstr() + result.length() - 1;; dp--) {
+        if (*dp < maxDigit) {
           (*dp)++;
           break;
         }
         (*dp) = '0';
-        if(dp==result.cstr()) {
+        if (dp == result.cstr()) {
           result.insert(0, '1');
           break;
         }
@@ -860,13 +844,13 @@ typedef _uint128        _uinttype;
       return result;
     }
 
-  #pragma warning(disable : 4996)
+#pragma warning(disable : 4996)
 
     TEST_METHOD(Int128Test_ui128tot) {
-      for(int i = 0; i < 1000; i++) {
-        const int       bits = randInt(BITCOUNT)+1;
-        const _uinttype x    = randuitype(bits);
-        for(int radix = MINRADIX; radix <= MAXRADIX; radix++) {
+      for (int i = 0; i < 1000; i++) {
+        const int       bits = randInt(BITCOUNT) + 1;
+        const _uinttype x = randuitype(bits);
+        for (int radix = MINRADIX; radix <= MAXRADIX; radix++) {
           const String wanted = uitypeToString(x, radix);
           TCHAR str[200], *endp;
           const String numStr = _uitypetot(x, str, radix);
@@ -884,16 +868,16 @@ typedef _uint128        _uinttype;
           const _uinttype x2 = _tcstouitype(nstr.cstr(), &endp, radix);
           verify(errno == 0);
           verify(endp && (*endp == '!'));
-          verify(x2 == (~x)+1);
+          verify(x2 == (~x) + 1);
 
           String prefix;
           bool tryRadix0 = false;
-          switch(radix) {
+          switch (radix) {
           case  8: tryRadix0 = true; prefix = _T("0");  break;
           case 10: tryRadix0 = true;                    break;
           case 16: tryRadix0 = true; prefix = _T("0x"); break;
           }
-          if(tryRadix0) {
+          if (tryRadix0) {
             const String sp = prefix + numStr1;
             endp = NULL; errno = 0;
             const  _uinttype xp = _tcstouitype(sp.cstr(), &endp, 0);
@@ -903,29 +887,13 @@ typedef _uint128        _uinttype;
           }
         }
       }
-/*
-      {
-        const _uinttype x3 = randuitype(BITCOUNT - 10);
-        TCHAR str[200], *endp;
-        _tcscpy(str, EMPTYSTRING);
-        endp = NULL; errno = 0;
-        _uitypetot(x3, str, MAXRADIX+1);
-        verify((_tcslen(str) == 0) && (errno == EINVAL));
-        verify(endp == NULL);
-
-        endp = NULL; errno = 0;
-        const  _uinttype x4 = _tcstouitype(NULL, &endp, 0);
-        verify(errno == EINVAL);
-        verify(endp == NULL);
-      }
-*/
     }
 
     TEST_METHOD(Int128Test_i128tot) {
-      for(int i = 0; i < 1000; i++) {
-        const int      bits = randInt(BITCOUNT)+1;
-        const _inttype x    = randuitype(bits);
-        for(int radix = MINRADIX; radix <= MAXRADIX; radix++) {
+      for (int i = 0; i < 1000; i++) {
+        const int      bits = randInt(BITCOUNT) + 1;
+        const _inttype x = randuitype(bits);
+        for (int radix = MINRADIX; radix <= MAXRADIX; radix++) {
           const String wanted = itypeToString(x, radix);
           TCHAR str[200], *endp;
           const String numStr = _itypetot(x, str, radix);
@@ -934,39 +902,41 @@ typedef _uint128        _uinttype;
           const String numStr1 = numStr + _T("!");
           endp = NULL; errno = 0;
           const  _inttype x1 = _tcstoitype(numStr1.cstr(), &endp, radix);
-          if((radix != 10) && (x < 0)) {
+          if ((radix != 10) && (x < 0)) {
             verify(errno == ERANGE);
             verify(endp && (*endp == '!'));
             verify(x1 == MAXIVALUE);
-          } else {
+          }
+          else {
             verify(errno == 0);
             verify(endp && (*endp == '!'));
             verify(x1 == x);
           }
 
-          if(radix != 10) {
+          if (radix != 10) {
             const String nstr = _T("-") + wanted + _T("!");
             endp = NULL; errno = 0;
             const _inttype x2 = _tcstoitype(nstr.cstr(), &endp, radix);
-            if(x < 0) {
+            if (x < 0) {
               verify(errno == ERANGE);
               verify(endp && (*endp == '!'));
               verify(x2 == MINIVALUE);
-            } else {
+            }
+            else {
               verify(errno == 0);
               verify(endp && (*endp == '!'));
-              verify(x2 == (~x)+1);
+              verify(x2 == (~x) + 1);
             }
           }
 
           String prefix;
           bool tryRadix0 = false;
-          switch(radix) {
-          case  8: tryRadix0 = x>=0; prefix = _T("0");  break;
+          switch (radix) {
+          case  8: tryRadix0 = x >= 0; prefix = _T("0");  break;
           case 10: tryRadix0 = true;                    break;
-          case 16: tryRadix0 = x>=0; prefix = _T("0x"); break;
+          case 16: tryRadix0 = x >= 0; prefix = _T("0x"); break;
           }
-          if(tryRadix0) {
+          if (tryRadix0) {
             const String sp = prefix + numStr1;
             endp = NULL; errno = 0;
             const  _inttype xp = _tcstoitype(sp.cstr(), &endp, 0);
@@ -976,42 +946,25 @@ typedef _uint128        _uinttype;
           }
         }
       }
-/*
-      {
-        const _inttype x1 = randuitype(BITCOUNT - 10);
-        TCHAR str[200], *endp;
-        _tcscpy(str, EMPTYSTRING);
-        _itypetot(x1, str, MAXRADIX);
-        endp = NULL; errno = 0;
-        _inttype x2 = _tcstoitype(str, &endp, MAXRADIX+1);
-        verify(errno == EINVAL);
-        verify(endp == NULL);
-
-        endp = NULL; errno = 0;
-        x2 = _tcstoitype(NULL, &endp, 0);
-        verify(errno == EINVAL);
-        verify(endp == NULL);
-      }
-*/
     }
 
     TEST_METHOD(Int128TestOverflowUnsigned) {
       const _uinttype x = MAXUIVALUE;
 
-      for(int radix = MINRADIX; radix <= MAXRADIX; radix++) {
+      for (int radix = MINRADIX; radix <= MAXRADIX; radix++) {
         TCHAR str[200], *endp;
-        const String numStr  = _uitypetot(x, str, radix);
+        const String numStr = _uitypetot(x, str, radix);
 
         const String numStr1 = numStr + _T("!");
         endp = NULL; errno = 0;
-        const _uinttype x1      = _tcstouitype(numStr1.cstr(), &endp, radix);
+        const _uinttype x1 = _tcstouitype(numStr1.cstr(), &endp, radix);
         verify(errno == 0);
         verify(endp && (endp[0] == '!'));
         verify(x1 == x);
 
         endp = NULL; errno = 0;
         const String    numStr2 = incr(numStr, radix) + _T("!");
-        const _uinttype x2      = _tcstouitype(numStr2.cstr(), &endp, radix);
+        const _uinttype x2 = _tcstouitype(numStr2.cstr(), &endp, radix);
         verify(errno == ERANGE);
         verify(endp && (endp[0] == '!'));
         verify(x2 == x);
@@ -1023,14 +976,14 @@ typedef _uint128        _uinttype;
 #endif
 
     TEST_METHOD(Int128TestOverflowSigned) {
-      const _inttype x  = MAXIVALUE;
-      const _inttype nx =  x + 1;
+      const _inttype x = MAXIVALUE;
+      const _inttype nx = x + 1;
 
-      for(int radix = MINRADIX; radix <= MAXRADIX; radix++) {
-        TCHAR strx[200],strnx[200], *endp;
-        const String numStrx  = _itypetot(x , strx , radix);
+      for (int radix = MINRADIX; radix <= MAXRADIX; radix++) {
+        TCHAR strx[200], strnx[200], *endp;
+        const String numStrx = _itypetot(x, strx, radix);
         String       numStrnx = _itypetot(nx, strnx, radix);
-        if(radix != 10) {
+        if (radix != 10) {
           numStrnx = String(_T("-")) + numStrnx;
         }
         numStrnx += _T("!");
@@ -1043,296 +996,231 @@ typedef _uint128        _uinttype;
         verify(x1 == x);
 
         endp = NULL; errno = 0;
-        x1   = _tcstoitype(numStrnx.cstr(), &endp, radix);
+        x1 = _tcstoitype(numStrnx.cstr(), &endp, radix);
         verify(errno == 0);
         verify(endp && (endp[0] == '!'));
         verify(x1 == nx);
 
         endp = NULL; errno = 0;
         const String    numStr2 = incr(numStrx, radix) + _T("!");
-        const _inttype  x2      = _tcstoitype(numStr2.cstr(), &endp, radix);
+        const _inttype  x2 = _tcstoitype(numStr2.cstr(), &endp, radix);
         verify(errno == ERANGE);
         verify(endp && (endp[0] == '!'));
         verify(x2 == x);
       }
     }
 
-    TEST_METHOD(Int128StreamOperators) {
-      try {
+#ifdef USE_INT64_AS_INTTYPE
+#define OPENERRORLOG()                                                                                \
+  FILE *_errorLog = MKFOPEN(getTestFileName(__TFUNCTION__,_T("txt")),_T("w"));                        \
+  UINT _lastFormatCounterDumped = -1
 
-#define MINI_LOOPVALUE  (MINIVALUE / 4)
-#define MAXI_LOOPVALUE  (MAXIVALUE >>2)
-#define MAXUI_LOOPVALUE (MAXUIVALUE>>4)
+#define PRINTPARAM()                                                                                  \
+{ if(formatCounter != _lastFormatCounterDumped) {                                                     \
+    _lastFormatCounterDumped = formatCounter;                                                         \
+    _ftprintf(_errorLog, _T("formatCounter:%d format:%s\n"), formatCounter, param.toString().cstr()); \
+  }                                                                                                   \
+}
 
-        CompactArray<_inttype>  sa;
-        CompactArray<_uinttype> ua;
-        size_t signedValueCount;
-        for(_int128  x = 0; x <= MAXI_LOOPVALUE ; x = (x + 1) * 3 ) { // add some positive test-numbers
-          sa.add((_inttype)x);
-        }
-        sa.add(MAXIVALUE);
-        for(_int128  x = 0; x >= MINI_LOOPVALUE ; x = (x - 1) * 3 ) { // add some negative test-numbers
-          sa.add((_inttype)x);
-        }
-        sa.add(MINIVALUE);
-        signedValueCount = sa.size();
-        for(_uint128 x = 0; x <= MAXUI_LOOPVALUE; x = (x + 1) * 11) { // add unsigned test-numbers
-          ua.add((_uinttype)x);
-        }
-        ua.add(MAXUIVALUE);
-
-        const ios::_Fmtflags baseFlags[] = {
-          ios::dec
-         ,ios::hex
-         ,ios::oct
-        };
-        const ios::_Fmtflags adjustFlags[] = {
-          ios::left
-         ,ios::right
-         ,ios::internal
-        };
-#ifdef _DEBUG
-        const TCHAR *baseName[] = {
-          _T("dec")
-         ,_T("hex")
-         ,_T("oct")
-        };
-        const TCHAR *adjustName[] = {
-          _T("left  ")
-         ,_T("right ")
-         ,_T("intern")
-        };
-#endif
-        // try all(almost) combinations of output format flags
-        for(UINT b = 0, formatCounter=0; b < ARRAYSIZE(baseFlags); b++) {
-          const ios::_Fmtflags baseFlag = baseFlags[b];
-          int minShowPos = 0, maxShowPos = 1, minShowBase = 0, maxShowBase = 1, maxUpper = 1;
-          UINT radix;
-          switch(baseFlag) {
-          case ios::dec: radix = 10; break;
-          case ios::hex: radix = 16; break;
-          case ios::oct: radix =  8; break;
-          default      : NODEFAULT;
-          }
-          TCHAR tmptStr[200];
-          const String uiOverflowString = incr(_uitypetot(MAXUIVALUE, tmptStr, radix), radix);
-          const String iOverflowString  = incr(_itypetot( MAXIVALUE , tmptStr, radix), radix);
-
-          char    uioverflowastr[200], ioverflowastr[200];
-          getastr(uioverflowastr, uiOverflowString);
-          getastr( ioverflowastr,  iOverflowString);
-
-          wchar_t uioverflowwstr[200], ioverflowwstr[200];
-          getwstr(uioverflowwstr, uiOverflowString);
-          getwstr( ioverflowwstr,  iOverflowString);
-
-          for(int showPos = minShowPos; showPos <= maxShowPos; showPos++) {
-            for(int showBase = minShowBase; showBase <= maxShowBase; showBase++) {
-              for(int uppercase = 0; uppercase <= maxUpper; uppercase++) {
-                for(UINT a = 0; a < ARRAYSIZE(adjustFlags); a++) {
-                  for(UINT width = 0; width <= 30; width += 5) {
-#ifdef _DEBUG
-                    formatCounter++;
-                    String aaFormats = format(_T("%4d:Base:%s, ShowPos:%d, ShowBase:%d, Upper:%d, Adjust:%s, Width:%2d")
-                                             ,formatCounter
-                                             ,baseName[b]
-                                             ,showPos
-                                             ,showBase
-                                             ,uppercase
-                                             ,adjustName[a]
-                                             ,width
-                                             );
-                    debugLog(_T("%s\n"), aaFormats.cstr());
-#endif
-                    ostringstream  ostr;
-                    wostringstream wostr;
-                    const ios::_Fmtflags adjustFlag = adjustFlags[a];
-                    for(size_t i = 0; i < sa.size(); i++) { // write signed
-                      setFormat<ostream>( ostr , baseFlag, width, showPos, showBase, uppercase, adjustFlag);
-                      setFormat<wostream>(wostr, baseFlag, width, showPos, showBase, uppercase, adjustFlag);
-                      ostr  << sa[i] << "\n";
-                      wostr << sa[i] << L"\n";
-                    }
-                    for(size_t i = 0; i < ua.size(); i++) { // write unsigned
-                      setFormat<ostream>( ostr , baseFlag, width, showPos, showBase, uppercase, adjustFlag);
-                      setFormat<wostream>(wostr, baseFlag, width, showPos, showBase, uppercase, adjustFlag);
-                      ostr  << ua[i] << "\n";
-                      wostr << ua[i] << L"\n";
-                    }
-                    const size_t totalValidCounter =  sa.size() + ua.size();
-
-                    ostr  << uioverflowastr << "\n"  << ioverflowastr << "\n0\n";
-                    wostr << uioverflowwstr << L"\n" << ioverflowwstr << L"\n0\n";
-
-                    string  str  = ostr.str();
-                    wstring wstr = wostr.str();
-
-                    String  tmp(str.c_str());
-                    verify(wcscmp(wstr.c_str(),tmp.cstr()) == 0);
-#ifdef _DEBUG
-                    debugLog(_T("%s"), wstr.c_str());
-                    CompactArray<const TCHAR*> strArray;
-#endif
-                    size_t counter = 0;
-                    for(Tokenizer tok(wstr.c_str(), _T("\n")); tok.hasNext();) {
-#ifdef _DEBUG
-                      const StringIndex inx = tok.nextIndex();
-                      const String s = wstr.substr(inx.getStart(), inx.getLength()).c_str();
-                      strArray.add(wstr.c_str() + inx.getStart());
+#define PRINTERRORLOG(...) { PRINTPARAM();_ftprintf(_errorLog, __VA_ARGS__); }
+#define CLOSEERRORLOG()    fclose(_errorLog)
 #else
-                      const String s = tok.next();
+#define OPENERRORLOG() 
+#define PRINTERRORLOG(...)
+#define CLOSEERRORLOG()
 #endif
-                      counter++;
-                      if(counter > totalValidCounter) continue;
-                      verify(s.length() >= width);
-                      const TCHAR *np;
-                      if(adjustFlag == ios::right) {
-                        for(np = s.cstr(); *np == ' '; np++);
-                        verify(s.last() != ' ');
-                      } else if(adjustFlag == ios::left) {
-                        np = s.cstr();
-                        verify(s[0] != ' ');
-                      } else {
-                        verify(adjustFlag == ios::internal);
-                        for(np = s.cstr(); *np == ' '; np++);
-                      }
-                      if(baseFlag == ios::dec) {
-                        if(showPos) {
-                          if(counter <= signedValueCount) {
-                            verify((np[0] == _T('-')) || (np[0] == _T('+')));
-                          } else {
-                            verify(iswdigit(np[0]) != 0);
-                          }
-                        }
-                      } else if(showBase) {
-                        verify(np[0] == _T('0'));
-                        if(baseFlag == ios::hex) {
-                          if(np[1] != 0) {
-                            verify((np[1] == (uppercase?'X':'x')) || (np[1] == ' '));
-                          }
-                        }
-                      }
-                      if(uppercase) {
-                        for(const TCHAR *cp = np; *cp; cp++) {
-                          verify(!_istlower(*cp));
-                        }
-                      } else {
-                        for(const TCHAR *cp = np; *cp; cp++) {
-                          verify(!_istupper(*cp));
-                        }
-                      }
-                    }
 
-                    istringstream  istr;
-                    wistringstream wistr;
+    template<class INTTYPE> void testToFromStream(const CompactArray<INTTYPE> &a, INTTYPE maxValue) {
+      try {
+        OPENERRORLOG();
+        StreamParametersIterator it               = StreamParameters::getIntParamIterator(20);
+        const UINT               totalFormatCount = (UINT)it.getMaxIterationCount();
+        UINT                     formatCounter    = 0;
+        while(it.hasNext()) {
+          const StreamParameters &param = it.next();
+          formatCounter++;
+          if(formatCounter % 50 == 0) {
+            OUTPUT(_T("%s progress:%.2lf%%"), __TFUNCTION__, PERCENT(formatCounter, totalFormatCount));
+          }
+          if((param.flags()&ios::adjustfield) == ios::internal) {
+            continue;
+          }
+          const UINT     radix = param.radix();
+          ostringstream  costr;
+          wostringstream wostr;
 
-                    istr.str( str );
-                    wistr.str(wstr);
+//          OUTPUT(_T("formatCounter:%d format:%s"), formatCounter, param.toString().cstr());
 
-                    for(size_t i = 0; i < sa.size(); i++) { // read signed
-                      setFormat<istringstream>( istr , baseFlag, width, showPos, showBase, uppercase, adjustFlag);
-                      setFormat<wistringstream>(wistr, baseFlag, width, showPos, showBase, uppercase, adjustFlag);
-                      if(adjustFlag != ios::left) {
-                        istr.setf( 1,ios::skipws);
-                        wistr.setf(1,ios::skipws);
-                      }
-                      _inttype x, wx;
-                      if((baseFlag != ios::dec) && (sa[i] < 0)) {
-                        _uinttype ux, wux;
-                        istr  >> ux ; x  = ux;
-                        wistr >> wux; wx = wux;
-                      } else {
-                        istr  >> x;
-                        wistr >> wx;
-                      }
-                      if(istr.fail()) {
-                        verify(wistr.fail());
-                        verify(adjustFlag == ios::internal);
-                        istr.clear() ; istr.setf( 1,ios::skipws);
-                        wistr.clear(); wistr.setf( 1,ios::skipws);
-                        if(sa[i] < 0) {
-                          _uinttype ux, wux;
-                          istr  >> ux;  x  = ux;
-                          wistr >> wux; wx = wux;
-                        } else {
-                          istr  >> x;
-                          wistr >> wx;
-                        }
-                        verify(!istr.fail());
-                        verify(!wistr.fail());
-                        verify((x  == sa[i]) || (x == -sa[i]));
-                        verify((wx == sa[i]) || (wx == -sa[i]));
-                      } else {
-                        verify(!wistr.fail());
-                        verify(x  == sa[i]);
-                        verify(wx == sa[i]);
-                      }
-                    }
-                    for(size_t i = 0; i < ua.size(); i++) { // read unsigned
-                      setFormat<istringstream>( istr , baseFlag, width, showPos, showBase, uppercase, adjustFlag);
-                      setFormat<wistringstream>(wistr, baseFlag, width, showPos, showBase, uppercase, adjustFlag);
-                      if(adjustFlag == ios::right) {
-                        istr.setf( 1,ios::skipws);
-                        wistr.setf(1,ios::skipws);
-                      }
-                      _uinttype x, wx;
-                      istr  >> x;
-                      wistr >> wx;
-                      if(istr.fail()) {
-                        verify(wistr.fail());
-                        verify(adjustFlag == ios::internal);
-                        istr.clear() ; istr.setf( 1,ios::skipws);
-                        wistr.clear(); wistr.setf( 1,ios::skipws);
-                        istr  >> x;
-                        wistr >> wx;
-                        verify(!istr.fail());
-                        verify(!wistr.fail());
-                        verify(x  == ua[i]);
-                        verify(wx == ua[i]);
-                      } else {
-                        verify(!wistr.fail());
-                        verify(x  == ua[i]);
-                        verify(wx == ua[i]);
-                      }
-                    }
+          for(size_t i = 0; i < a.size(); i++) {
+            const INTTYPE &x = a[i];
+            setFormat(costr, param);
+            setFormat(wostr, param);
+            costr << x << "\n";
+            wostr << x << "\n";
+          }
 
-                    _uinttype ux, wux;
-                    _inttype  x , wx;
-                    istr.clear() ; istr.setf( 1,ios::skipws);
-                    wistr.clear(); wistr.setf(1,ios::skipws);
-                    ux = wux = 7;
-                    istr  >> ux;
-                    wistr >> wux;
-                    verify(istr.fail());
-                    verify(wistr.fail());
-                    verify(ux == 7 && wux == 7);
-                    istr.clear() ; istr.setf( 1,ios::skipws);
-                    wistr.clear(); wistr.setf(1,ios::skipws);
-                    x = wx = 7;
-                    istr  >> x;
-                    wistr >> wx;
-                    verify(istr.fail());
-                    verify(wistr.fail());
-                    verify(x == 7 && wx == 7);
+          const string  cstr = costr.str();
+          const wstring wstr = wostr.str();
+          verify(String(cstr.c_str()) == String(wstr.c_str()));
 
-                    istr.clear() ; istr.setf( 1,ios::skipws);
-                    wistr.clear(); wistr.setf(1,ios::skipws);
-                    istr  >> x;
-                    wistr >> wx;
-                    verify(!istr.fail());
-                    verify(!wistr.fail());
-                    verify(x  == 0);
-                    verify(wx == 0);
-                  } // for width=[0,5,10,15,20,25,30]
-                } // for all AdjustFlags
-              } // for lower/uppercase
-            } // for all showBase
-          } // for all showPos
-        } // for all baseFlags
+          CompactLineArray lineArray(cstr);
+          verify((StreamSize)lineArray.minLength() >= param.width());
+
+          istringstream    cistr(cstr);
+          wistringstream   wistr(wstr);
+          StreamParameters ip(param);
+          ip.flags(param.flags() | ios::skipws);
+          for(size_t i = 0; i < a.size(); i++) {
+            const INTTYPE &expected = a[i];
+
+            setFormat(cistr, ip);
+            setFormat(wistr, ip);
+            if(!iswspace(ip.fill())) {
+              skipspace(cistr);
+              skipfill( cistr);
+              skipspace(wistr);
+              skipfill( wistr);
+            }
+            INTTYPE cx = 0x1234567890abcdef;
+            INTTYPE wx = 0x1234567890abcdef;
+            cistr >> cx;
+            if(!cistr) {
+              const int err = errno;
+              PRINTERRORLOG(_T("input failed(state:[%s], errno=%3d). line[%3zu]:<%s> cx:%38s, expected:%s\n")
+                            ,streamStateToString(cistr).cstr(),err
+                            ,i, lineArray[i]
+                            ,toString(cx      ,0,0,param.flags()).cstr()
+                            ,toString(expected,0,0,param.flags()).cstr());
+
+              verify(err == ERANGE);
+              verify(cx == maxValue);
+              cistr.clear();
+
+              wistr >> wx;
+              verify(!wistr);
+              verify(errno == ERANGE);
+              verify(wx == maxValue);
+              wistr.clear();
+            } else {
+              wistr >> wx;
+              verify(wistr.good());
+              verify(cx == expected);
+              verify(wx == expected);
+            }
+          }
+        }
+
+        CLOSEERRORLOG();
+
       } catch (Exception e) {
         OUTPUT(_T("Exception:%s"), e.what());
         verify(false);
       }
+    }
+
+    TEST_METHOD(Int128Test_i128StreamIO) {
+      CompactArray<_inttype>  sa;
+      for(_inttype x = 0; x <= MAXIVALUE/4; x = (x + 1) * 3 ) { // add some positive test-numbers
+        sa.add(x);
+      }
+      sa.add(MAXIVALUE);
+      for(_inttype x = 0; x >= MINIVALUE/4; x = (x - 1) * 3 ) { // add some negative test-numbers
+        sa.add((_inttype)x);
+      }
+      sa.add(MINIVALUE);
+      testToFromStream(sa, MAXIVALUE);
+    }
+
+    TEST_METHOD(Int128Test_ui128StreamIO) {
+      CompactArray<_uinttype> ua;
+      for(_uinttype x = 0; x <= MAXUIVALUE/16; x = (x + 1) * 11) { // add unsigned test-numbers
+        ua.add(x);
+      }
+      ua.add(MAXUIVALUE);
+      testToFromStream(ua, MAXUIVALUE);
+    }
+
+    template<class INT64TYPE, class INT128TYPE> void testToStream(CompactArray<INT64TYPE> &a) {
+      try {
+        StreamParametersIterator it               = StreamParameters::getIntParamIterator(30);
+        const UINT               totalFormatCount = (UINT)it.getMaxIterationCount();
+        UINT                     formatCounter    = 0;
+        while(it.hasNext()) {
+          const StreamParameters &param = it.next();
+          formatCounter++;
+          if(formatCounter % 50 == 0) {
+            OUTPUT(_T("%s progress:%.2lf%%"), __TFUNCTION__, PERCENT(formatCounter, totalFormatCount));
+          }
+          const UINT     radix = param.radix();
+          ostringstream  ostr64, costr128;
+          wostringstream wostr128;
+
+          for(size_t i = 0; i < a.size(); i++) {
+            const INT64TYPE &x64  = a[i];
+            INT128TYPE       x128 = x64;
+
+            if((radix != 10) && (x64 < 0)) {
+              x128 &= 0xffffffffffffffffui64;
+            }
+            setFormat( ostr64 , param);
+            setFormat(costr128, param);
+            setFormat(wostr128, param);
+            ostr64   << x64 << endl;
+            costr128 << x128 << endl;
+            wostr128 << x128 << endl;
+          }
+
+          string  str64   =  ostr64.str();
+          string  cstr128 = costr128.str();
+
+          if(cstr128 != str64) {
+            const CompactLineArray tmp64(  str64  );
+            const CompactLineArray ctmp128(cstr128);
+            const size_t n64 = tmp64.size(), n218 = ctmp128.size();
+            for(size_t i = 0; i < n64; i++) {
+              if(_tcscmp(tmp64[i], ctmp128[i]) != 0) {
+                const size_t     errIndex = i;
+                const TCHAR     *s64      = tmp64[errIndex], *s128 = ctmp128[errIndex];
+                const INT64TYPE  x1       = a[errIndex];
+                const INT128TYPE x2       = x1;
+                ostringstream  o64, o128;
+                setFormat(o64 , param);
+                setFormat(o128, param);
+                o64 << x1 << endl;
+                o128 << x2 << endl;
+              }
+            }
+            verify(cstr128 == str64);
+          }
+          verify(String(wostr128.str().c_str()) == String(str64.c_str()));
+
+        } // for(iterator
+      } catch (Exception e) {
+        throwException(_T("Exception:%s"), e.what());
+      }
+    }
+
+
+    TEST_METHOD(Int128Test_i128StreamO) {
+      CompactArray<INT64> a;
+      for(INT64 x = 0; x <= _I64_MAX/16; x = (x + 1) * 11) { // add some positive test-numbers
+        a.add(x);
+      }
+      a.add(_I64_MAX);
+      for(INT64 x = 0; x >= _I64_MIN/16; x = (x - 1) * 11) { // add some negative test-numbers
+        a.add(x);
+      }
+      a.add(_I64_MIN);
+      testToStream<INT64, _int128>(a);
+    }
+
+    TEST_METHOD(Int128Test_ui128StreamO) {
+      CompactArray<UINT64> a;
+      for(UINT64 x = 0; x <= _UI64_MAX/16; x = (x + 1) * 11) { // add unsigned test-numbers
+        a.add(x);
+      }
+      a.add(_UI64_MAX);
+      testToStream<UINT64, _uint128>(a);
     }
   };
 }

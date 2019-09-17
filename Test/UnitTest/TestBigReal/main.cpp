@@ -23,13 +23,13 @@ static void testShortProd() {
     const FullFormatBigReal x = BigReal(spaceString(14700,'9')); // inputBigReal(pool, _T("Enter x:"));
     const FullFormatBigReal y = BigReal(spaceString(14700,'9')); // inputBigReal(pool, _T("Enter y:"));
 
-    _tprintf(_T("X:%s\nY:%s\n"), x.toString().cstr(), y.toString().cstr());
+    _tprintf(_T("X:%s\nY:%s\n"), toString(x).cstr(), toString(y).cstr());
 
     FullFormatBigReal p1(&pool), p2(&pool);
 
     p1 = BigReal::shortProd(x, y, BIGREAL_0, &pool);
 
-    _tprintf(_T("p1:%s\n"), p1.toString().cstr());
+    _tprintf(_T("p1:%s\n"), toString(p1).cstr());
 
     BigReal::setUseShortProdRefenceVersion(false);
 
@@ -37,7 +37,7 @@ static void testShortProd() {
 
     BigReal::setUseShortProdRefenceVersion(true);
 
-    _tprintf(_T("p2:%s\n"), p2.toString().cstr());
+    _tprintf(_T("p2:%s\n"), toString(p2).cstr());
 
     try {
       p1.assertIsValidBigReal();
@@ -140,11 +140,11 @@ static void testRandomBigReal() {
     const FullFormatBigReal low  = inputBigReal(pool, _T("Enter low :"));
     const FullFormatBigReal high = inputBigReal(pool, _T("Enter high:"));
 
-    String fileName = format(_T("c:\\temp\\random%s-%s-length=%d.dat"), low.toString().cstr(), high.toString().cstr(), length);
+    String fileName = format(_T("c:\\temp\\random%s-%s-length=%d.dat"), toString(low).cstr(), toString(high).cstr(), length);
     FILE *f = FOPEN(fileName, _T("w"));
     for(int i = 0; i < count; i++) {
       FullFormatBigReal x = randBigReal(low, high, length, &rnd, &pool);
-      _ftprintf(f, _T("%s\n"), x.toString().cstr());
+      _ftprintf(f, _T("%s\n"), toString(x).cstr());
     }
     fclose(f);
   }
@@ -159,8 +159,8 @@ static void testAPCSum() {
     char bias = getchar();
     FullFormatBigReal p = BigReal::apcSum(bias, x, y, &pool);
 
-    _tprintf(_T("x:%50s y:%50s\n"), x.toString().cstr(), y.toString().cstr());
-    _tprintf(_T("APCSum(>,x,y) = %s\n"), p.toString().cstr());
+    _tprintf(_T("x:%50s y:%50s\n"), toString(x).cstr(), toString(y).cstr());
+    _tprintf(_T("APCSum(>,x,y) = %s\n"), toString(p).cstr());
 
     try {
       p.assertIsValidBigReal();

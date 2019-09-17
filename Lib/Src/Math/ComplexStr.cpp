@@ -52,15 +52,9 @@ template<class CharType> Complex _strtoc(const CharType *s, CharType **end, Real
 }
 
 Complex strtoc(const char *s, char **end) {
-  return _strtoc<char>(s, end, strtor);
+  return _strtoc(s, end, strtor);
 }
 
 Complex wcstoc(const wchar_t *s, wchar_t **end) {
-  return _strtoc<wchar_t>(s, end, wcstor);
-}
-
-String toString(const Complex &c, StreamSize precision, StreamSize width, FormatFlags flags) {
-  StrStream stream(precision,width,flags);
-  stream << c;
-  return stream;
+  return _strtoc(s, end, wcstor);
 }

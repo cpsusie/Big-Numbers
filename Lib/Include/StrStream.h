@@ -4,6 +4,8 @@
 
 // Used instead of standardclass strstream, which is slow!!! (at least in windows)
 class StrStream : public StreamParameters, public String {
+private:
+  StrStream &appendFill(size_t count);
 public:
   static constexpr TCHAR s_decimalPointChar = _T('.');
   static const     TCHAR *s_infStr;
@@ -31,52 +33,47 @@ public:
   static inline void addDecimalPoint(String &s) {
     s += s_decimalPointChar;
   }
+  static inline TCHAR getExponentChar(FormatFlags flags) {
+    return ((flags & std::ios::floatfield) == std::ios::hexfloat)
+         ? ((flags & std::ios::uppercase)  ? _T('P') : _T('p'))
+         : ((flags & std::ios::uppercase)  ? _T('E') : _T('e'));
+    }
   static inline void addExponentChar(String &s, FormatFlags flags) {
-    s += ((flags & std::ios::uppercase) ? _T('E') : _T('e'));
+    s += getExponentChar(flags);
   }
-  static inline void addHexExponentChar(String &s, FormatFlags flags) {
-    s += ((flags & std::ios::uppercase) ? _T('P') : _T('p'));
+  static inline void addCharSeq(String &s, TCHAR ch, size_t count) {
+    s.insert(s.length(), count, ch);
   }
   static inline void addZeroes(String &s, size_t count) {
-    s.insert(s.length(), count, '0');
+    addCharSeq(s, _T('0'), count);
   }
   static void removeTralingZeroDigits(String &s) {
     while(s.last() == '0') s.removeLast();
     if(s.last() == s_decimalPointChar) s.removeLast();
   }
-
+  static inline TCHAR *getHexPrefix(FormatFlags flags) {
+    return (flags & std::ios::uppercase) ? _T("0X") : _T("0x");
+  }
   static inline void addHexPrefix(String &s, FormatFlags flags) {
-    s += ((flags & std::ios::uppercase) ? _T("0X") : _T("0x"));
+    s += getHexPrefix(flags);
   }
+  StrStream &formatFilledField(const String &prefix, const String &str, int flags = -1);
+  StrStream &formatFilledNumericField(const String &str, bool negative, int flags = -1);
 
-  // append str, left or right aligned, width spaces added/inserted if getWidth() > str.length()
+  // format str, left,right,internal aligned, width filler character/inserted if getWidth() > str.length()
+  // prefix containing sign and radix sequence (0x/X) is added
+  // if flags == -1 (default), then stream.flags() will be used
   // return *this
-  StrStream &appendFilledField(const String &str, FormatFlags flags);
+  StrStream &formatFilledFloatField(const String &str, bool negative, int flags=-1);
 
-  static void formatZero(String &result, StreamSize precision, FormatFlags flags, StreamSize maxPrecision = 0);
-  static void formatqnan(String &result, bool uppercase = false);
-  static void formatsnan(String &result, bool uppercase = false);
-  static void formatpinf(String &result, bool uppercase = false);
-  static void formatninf(String &result, bool uppercase = false);
+  static String &formatZero(String &result, StreamSize precision, FormatFlags flags, StreamSize maxPrecision = 0);
+  static TCHAR *formatqnan(TCHAR *dst, bool uppercase = false);
+  static TCHAR *formatsnan(TCHAR *dst, bool uppercase = false);
+  static TCHAR *formatpinf(TCHAR *dst, bool uppercase = false);
+  static TCHAR *formatninf(TCHAR *dst, bool uppercase = false);
 
-  // Assume !isfinite(x)
-  template<class T> static String formatUndefined(const T &x, bool uppercase=false) {
-    String result;
-    if(isnan(x)) {
-      if(_fpclass(x) == _FPCLASS_SNAN) {
-        formatsnan(result, uppercase);
-      } else {
-        formatqnan(result, uppercase);
-      }
-    } else if(isPInfinity(x)) {
-      formatpinf(result, uppercase);
-    } else if(isNInfinity(x)) {
-      formatninf(result, uppercase);
-    } else {
-      return format(_T("%s:x not nan,pinf or ninf"), __TFUNCTION__);
-    }
-    return result;
-  }
+  // fpclass is assumed to be one of _FPCLASS_PINF: _FPCLASS_NINF, _FPCLASS_SNAN : _FPCLASS_QNAN, return value from _fpclass(NumbeType)
+  static TCHAR *formatUndefined(TCHAR *dst, int fpclass, bool uppercase = false, bool formatNinfAsPinf = false);
 
   TCHAR unputc();
   inline StrStream &append(const String &str) { // append str to stream without using any format-specifiers
@@ -148,3 +145,169 @@ public:
     return *this;
   }
 };
+
+// ----------------------------------------------------------------------------------------------------
+
+template<class IStreamType, class CharType> class IStreamScanner {
+private:
+  IStreamType       &m_in;
+  const FormatFlags  m_flags;
+  const CharType     m_fill;
+  intptr_t           m_startIndex, m_fillStartIndex, m_fillLength;
+  String             m_buf;
+  mutable String     m_tmp;
+  CharType           m_ch;
+
+  CharType skipleadingwhite() {
+    if(iswspace(m_ch = m_in.peek())) {
+      do {
+        next();
+      } while(iswspace(m_ch));
+    }
+    return m_ch;
+  }
+  const String &getBufferExlusiveWhiteAndFill() const {
+    if(m_fillLength == 0) {
+      if(m_startIndex == 0) {
+        return m_buf;
+      } else {
+        return m_tmp = substr(m_buf, m_startIndex, m_buf.length() - m_startIndex);
+      }
+    }
+    const intptr_t headLength = m_fillStartIndex - m_startIndex;
+    if(headLength > 0) {
+      m_tmp = substr(m_buf, m_startIndex, headLength);
+    }
+    const size_t lastIndex = m_fillStartIndex + m_fillLength;
+    const size_t tailLength = m_buf.length() - lastIndex;
+    if(tailLength) {
+      m_tmp += substr(m_buf, lastIndex, tailLength);
+    }
+    return m_tmp;
+  }
+
+public:
+  IStreamScanner(IStreamType &in)
+    : m_in(in)
+    , m_flags(in.flags())
+    , m_fillStartIndex(0)
+    , m_fillLength(0)
+    , m_fill(m_in.fill())
+  {
+    m_in.setf(0, std::ios::skipws);
+    if(m_flags & std::ios::skipws) {
+      m_ch = skipleadingwhite();
+    } else {
+      m_ch = m_in.peek();
+    }
+    m_startIndex = m_buf.length();
+  }
+
+  void endScan(bool ok = true) {
+    if(ok) {
+      m_in.flags(m_flags);
+    } else {
+      if(!m_in.eof()) {
+        ungetAll();
+      }
+      m_in.flags(m_flags);
+      m_in.setstate(std::ios::failbit);
+    }
+  }
+
+  inline FormatFlags flags() const {
+    return m_flags;
+  }
+  inline int radix() const {
+    return StreamParameters::radix(flags());
+  }
+  void ungetAll() {
+    while(!m_buf.isEmpty()) {
+      m_in.unget();
+      m_ch = (CharType)m_buf.last();
+      m_buf.removeLast();
+    }
+  }
+
+  CharType next() {
+    m_buf += m_ch;
+    m_in >> m_ch;
+    if((m_ch = m_in.peek()) == EOF) {
+      m_in >> m_ch;
+    }
+    return m_ch;
+  }
+
+  CharType skipInternalFill() {
+    if(((m_flags & std::ios::adjustfield) == std::ios::internal) && !iswspace(m_fill) && (m_buf.length() > (size_t)m_startIndex)) {
+      m_fillStartIndex = m_buf.length();
+      while(m_ch == m_fill) next();
+      m_fillLength = m_buf.length() - m_fillStartIndex;
+    }
+    return m_ch;
+  }
+
+  CharType skipwhite() {
+    while(iswspace(m_ch)) {
+      next();
+    }
+    return m_ch;
+  }
+
+  inline CharType peek() const {
+    return m_ch;
+  }
+
+  const String &getBuffer() const {
+    return getBufferExlusiveWhiteAndFill();
+  }
+};
+
+template<class STREAM> STREAM &setFormat(STREAM &stream, const StreamParameters &param) {
+  stream.width(    param.width());
+  stream.precision(param.precision());
+  stream.flags(    param.flags());
+  stream.fill((char)param.fill());
+  return stream;
+}
+
+template<class STREAM> STREAM &skipfill(STREAM &in) {
+  const wchar_t fillchar = in.fill();
+  if (!iswspace(fillchar)) {
+    const FormatFlags flg = in.flags();
+    in.flags(flg | ios::skipws);
+    wchar_t ch;
+    while ((ch = in.peek()) == fillchar) {
+      in.get();
+    }
+    in.flags(flg);
+  }
+  return in;
+}
+
+template<class STREAM> STREAM &skipspace(STREAM &in) {
+  const FormatFlags flg = in.flags();
+  in.flags(flg | ios::skipws);
+  wchar_t ch;
+  while (iswspace(ch = in.peek())) {
+    in.get();
+  }
+  in.flags(flg);
+  return in;
+}
+
+template<class STREAM> String streamStateToString(STREAM &s) {
+  String result;
+  if(s) {
+    result = _T("ok ");
+  }
+  if(s.fail()) result += _T("fail ");
+  if(s.bad()) result += _T("bad ");
+  if(s.eof()) {
+    result += _T("eof ");
+  } else {
+    const wchar_t nextChar = s.peek();
+    result += format(_T("next:'%c'"), nextChar);
+  }
+  return result;
+}

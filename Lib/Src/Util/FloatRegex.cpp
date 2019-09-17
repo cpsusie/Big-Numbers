@@ -7,6 +7,6 @@ static const char *floatPatterns[] = {
  ,NULL
 };
 
-StringArray FloatingValueStreamScanner::getRegexLines() { // static
+StringArray FloatValueStreamScanner::getRegexLines() { // static
   return StringArray(floatPatterns);
 }

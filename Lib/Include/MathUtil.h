@@ -240,42 +240,80 @@ inline BYTE   getSign(       double x) {
   return (((BYTE  *)&x)[7]) & 0x80;
 }
 
-class UndefFloatingValueStreamScanner : public RegexIStream {
+class UndefFloatValueStreamScanner : public RegexIStream {
 private:
   static StringArray getRegexLines();
-  UndefFloatingValueStreamScanner() : RegexIStream(getRegexLines(), true) {
+  UndefFloatValueStreamScanner() : RegexIStream(getRegexLines(), true) {
   }
 public:
-  static const UndefFloatingValueStreamScanner &getInstance() {
-    static UndefFloatingValueStreamScanner s_instance;
+  static const RegexIStream &getInstance() {
+    static UndefFloatValueStreamScanner s_instance;
     return s_instance;
   }
 };
 
-class FloatingValueStreamScanner : public RegexIStream {
+class FloatValueStreamScanner : public RegexIStream {
 private:
   static StringArray getRegexLines();
-  FloatingValueStreamScanner() : RegexIStream(getRegexLines(), true) {
+  FloatValueStreamScanner() : RegexIStream(getRegexLines(), true) {
 }
 public:
-  static const FloatingValueStreamScanner &getInstance() {
-    static FloatingValueStreamScanner s_instance;
+  static const RegexIStream &getInstance() {
+    static FloatValueStreamScanner s_instance;
     return s_instance;
   }
 };
 
-class IntegerValueStreamScanner : public RegexIStream {
+class HexFloatValueStreamScanner : public RegexIStream {
 private:
   static StringArray getRegexLines();
-  IntegerValueStreamScanner() : RegexIStream(getRegexLines(), true) {
+  HexFloatValueStreamScanner() : RegexIStream(getRegexLines(), true) {
   }
 public:
-  static const IntegerValueStreamScanner &getInstance() {
-    static IntegerValueStreamScanner s_instance;
+  static const RegexIStream &getInstance() {
+    static HexFloatValueStreamScanner s_instance;
     return s_instance;
   }
 };
 
+class DecIntValueStreamScanner : public RegexIStream {
+private:
+  static StringArray getRegexLines();
+  DecIntValueStreamScanner() : RegexIStream(getRegexLines(), true) {
+  }
+public:
+  static const RegexIStream &getInstance() {
+    static DecIntValueStreamScanner s_instance;
+    return s_instance;
+  }
+};
+
+class HexIntValueStreamScanner : public RegexIStream {
+private:
+  static StringArray getRegexLines();
+  HexIntValueStreamScanner() : RegexIStream(getRegexLines(), true) {
+  }
+public:
+  static const RegexIStream &getInstance() {
+    static HexIntValueStreamScanner s_instance;
+    return s_instance;
+  }
+};
+
+class OctIntValueStreamScanner : public RegexIStream {
+private:
+  static StringArray getRegexLines();
+  OctIntValueStreamScanner() : RegexIStream(getRegexLines(), true) {
+  }
+public:
+  static const RegexIStream &getInstance() {
+    static OctIntValueStreamScanner s_instance;
+    return s_instance;
+  }
+};
+
+// radix must be 8,10, 16
+const RegexIStream &getIntegerStreamScanner(int radix);
 
 typedef enum {
    _UNDEFREG_PINF
@@ -288,7 +326,7 @@ template<class IStreamType, class CharType, class FloatType> class FloatIstreamT
 private:
   IStreamType &m_in;
   void parseOnFail(FloatType &x, bool neg) const {
-    const _UndefFloatValue index = (_UndefFloatValue)UndefFloatingValueStreamScanner::getInstance().match(m_in);
+    const _UndefFloatValue index = (_UndefFloatValue)UndefFloatValueStreamScanner::getInstance().match(m_in);
     switch(index) {
     case _UNDEFREG_PINF    :
       if(!neg) {
@@ -357,3 +395,4 @@ template<class FloatType> FloatManipT<std::wistream, wchar_t, FloatType> &operat
   dm.m_in = &in;
   return dm;
 }
+

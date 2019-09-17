@@ -161,9 +161,7 @@ void TestStatistic::printLoopMessage(_In_z_ _Printf_format_string_ TCHAR const *
 }
 
 String TestStatistic::toString(const BigReal &n, int digits) { // static
-  BigRealStream s(StreamParameters(digits,digits+9,ios::scientific | ios::showpos | ios::unitbuf));
-  s << n;
-  return s;
+  return ::toString(n, digits,digits+9,ios::scientific | ios::showpos | ios::unitbuf);
 }
 
 void TestStatistic::vsetEndMessage(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
@@ -359,7 +357,7 @@ String TestStatistic::getErrorHeader() const {
 }
 
 String TestStatistic::getParamStr(const String &name, const BigReal &x) const {
-  return format(_T("%s:%s"), name.cstr(),x.toString().cstr());
+  return format(_T("%s:%s"), name.cstr(),toString(x).cstr());
 }
 
 String TestStatistic::getDigitsStr(int digits) const {
@@ -367,13 +365,13 @@ String TestStatistic::getDigitsStr(int digits) const {
 }
 
 String TestStatistic::getToleranceStr(const BigReal &tolerance) const {
-  return format(_T("Tolerance:%s"), tolerance.toString().cstr());
+  return format(_T("Tolerance:%s"), toString(tolerance).cstr());
 }
 
 String TestStatistic::getErrorStr(const BigReal &exactResult, const BigReal &result, const BigReal &tolerance) const {
   return format(_T("%s\n%s\n%s")
                ,getToleranceStr(tolerance).cstr()
-               ,format(_T("Difference:%s"),m_error.toString().cstr()).cstr()
+               ,format(_T("Difference:%s"),toString(m_error).cstr()).cstr()
                ,getFunctionNameAndErrorStr(exactResult, result).cstr()
                );
 }
@@ -381,7 +379,7 @@ String TestStatistic::getErrorStr(const BigReal &exactResult, const BigReal &res
 String TestStatistic::getRelativeErrorStr(const BigReal &exactResult, const BigReal &result, const BigReal &tolerance) const {
   return format(_T("%s\n%s\n%s")
                ,getToleranceStr(tolerance).cstr()
-               ,format(_T("Relative error:%s"), m_error.toString().cstr()).cstr()
+               ,format(_T("Relative error:%s"), toString(m_error).cstr()).cstr()
                ,getFunctionNameAndErrorStr(exactResult, result).cstr()
                );
 }
@@ -390,27 +388,27 @@ String TestStatistic::getFunctionNameAndErrorStr(const BigReal &exactResult, con
   switch(m_signatur) {
   case XD:
     return format(_T("%s(x,%d)=%s\n%s(x,n)=%s")
-                 ,m_name.cstr(), m_maxDigits, exactResult.toString().cstr()
-                 ,m_name.cstr(), result.toString().cstr());
+                 ,m_name.cstr(), m_maxDigits, toString(exactResult).cstr()
+                 ,m_name.cstr(), toString(result).cstr());
   case XF:
     return format(_T("%s(x,%s)=%s\n%s(x,f)=%s")
-                 ,m_name.cstr(), m_maxTolerance.toString().cstr(), exactResult.toString().cstr()
-                 ,m_name.cstr(), result.toString().cstr());
+                 ,m_name.cstr(), toString(m_maxTolerance).cstr(), toString(exactResult).cstr()
+                 ,m_name.cstr(), toString(result).cstr());
     break;
   case XYD:
     return format(_T("%s(x,y,%d)=%s\n%s(x,y,n)=%s")
-                 ,m_name.cstr(), m_maxDigits, exactResult.toString().cstr()
-                 ,m_name.cstr(), result.toString().cstr());
+                 ,m_name.cstr(), m_maxDigits, toString(exactResult).cstr()
+                 ,m_name.cstr(), toString(result).cstr());
     break;
   case XYF:
     return format(_T("%s(x,y,%s)=%s\n%s(x,y,f)=%s")
-                 ,m_name.cstr(), m_maxTolerance.toString().cstr(), exactResult.toString().cstr()
-                 ,m_name.cstr(), result.toString().cstr());
+                 ,m_name.cstr(), toString(m_maxTolerance).cstr(), toString(exactResult).cstr()
+                 ,m_name.cstr(), toString(result).cstr());
     break;
   default:
     return format(_T("%s(unknown signatur). Exact:%s\n%s(unknown signatur). Result:%s")
-                 ,m_name.cstr(), exactResult.toString().cstr()
-                 ,m_name.cstr(), result.toString().cstr()
+                 ,m_name.cstr(), toString(exactResult).cstr()
+                 ,m_name.cstr(), toString(result).cstr()
                  );
   }
 }

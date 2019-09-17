@@ -773,6 +773,7 @@
     <ClInclude Include="..\..\Include\Collection.h" />
     <ClInclude Include="..\..\Include\CommonHashFunctions.h" />
     <ClInclude Include="..\..\Include\CompactArray.h" />
+    <ClInclude Include="..\..\Include\CompactLineArray.h" />
     <ClInclude Include="..\..\Include\Config.h" />
     <ClInclude Include="..\..\Include\DebugLog.h" />
     <ClInclude Include="..\..\Include\ExecutableByteArray.h" />
@@ -983,6 +984,7 @@
     <ClCompile Include="HashSetImpl.cpp" />
     <ClCompile Include="HashSetIterator.cpp" />
     <ClCompile Include="HexDump.cpp" />
+    <ClCompile Include="HexFloatRegex.cpp" />
     <ClCompile Include="IndentString.cpp" />
     <ClCompile Include="InputDouble.cpp" />
     <ClCompile Include="InputInt.cpp" />
@@ -1100,6 +1102,7 @@
     <ClCompile Include="stat64.cpp" />
     <ClCompile Include="straccent.cpp" />
     <ClCompile Include="StreamParameters.cpp" />
+    <ClCompile Include="StreamParametersIterator.cpp" />
     <ClCompile Include="StreamParametersStr.cpp" />
     <ClCompile Include="StrHash.cpp" />
     <ClCompile Include="StrIHash.cpp" />

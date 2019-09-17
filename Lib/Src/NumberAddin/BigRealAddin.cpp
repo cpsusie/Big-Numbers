@@ -156,27 +156,15 @@ public:
 
 template<class BigReal, class Digit> String BigRealAddIn<BigReal, Digit>::toString(BigReal &n, INT64 escExpo, int log10Base, size_t maxResult) const {
   const INT64 expo = n.m_expo;
-  String      result;
-
   if(expo == escExpo) {
+    String result;
+    TCHAR  tmp[100];
     switch(n.m_low) {
-    case BIGREAL_ZEROLOW:
-      StrStream::formatZero(result, 19, ios::fixed|ios::left, 21);
-      break;
-    case BIGREAL_NANLOW : 
-      StrStream::formatqnan(result);
-      break;
-    case BIGREAL_INFLOW :
-      if(n.m_negative) {
-        StrStream::formatninf(result);
-      } else {
-        StrStream::formatpinf(result);
-      }
-      break;
-    default:
-      result = format(_T("Invalid state:expo:%I64, low:%I64d"), expo, (INT64)n.m_low);
+    case BIGREAL_ZEROLOW: return StrStream::formatZero(result, 19, ios::fixed|ios::left, 21);
+    case BIGREAL_NANLOW : return StrStream::formatqnan(tmp);
+    case BIGREAL_INFLOW : return n.m_negative ? StrStream::formatninf(tmp) : StrStream::formatpinf(tmp);
+    default             : return format(_T("Invalid state:expo:%I64, low:%I64d"), expo, (INT64)n.m_low);
     }
-    return result;
   }
 
   Digit digit;
@@ -186,6 +174,7 @@ template<class BigReal, class Digit> String BigRealAddIn<BigReal, Digit>::toStri
   const int    scale           = firstDigitCount - 1;
   const UINT64 scaleE10        = pow10(scale);
   int          decimalsDone    = 0;
+  String       result;
 
   if(n.m_negative) {
     result = _T("-");
@@ -253,8 +242,7 @@ template<class BigReal, class Digit> String BigRealAddIn<BigReal, Digit>::toStri
     }
     result += _T("...");
   } else if(hasDecimalPoint) { // remove trailing zeros after decimalpoint
-    while(result.last() == '0') result.removeLast();
-    if(result.last() == _T('.')) result.removeLast();
+    StrStream::removeTralingZeroDigits(result);
   }
   result += expoStr;
   return result;

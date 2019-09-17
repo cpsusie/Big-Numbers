@@ -33,8 +33,8 @@ void plot(DigitPool *pool) {
     } else {
       D = quot(Y - BigReal(y),BigReal(y),F,pool);
     }
-    _tprintf(_T("%le "),x); D.print(); _tprintf(_T("\n"));
-    _ftprintf(ff, _T("%le "),x); D.print(ff,false); _ftprintf(ff, _T("\n"));
+    _tprintf(_T("%le %s\n"),x, toString(D).cstr());
+    _ftprintf(ff, _T("%le %s\n"),x, toString(D).cstr());
   }
 
   fclose(ff);

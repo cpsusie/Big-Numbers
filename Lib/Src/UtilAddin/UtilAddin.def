@@ -11,3 +11,4 @@ EXPORTS
     AddIn_Date
     AddIn_Time
     AddIn_Timestamp
+    AddIn_StreamParameters

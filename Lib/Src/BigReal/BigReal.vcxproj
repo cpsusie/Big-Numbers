@@ -669,11 +669,14 @@
     </Xdcmake>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Include\Math\BigInt.h" />
+    <ClInclude Include="..\..\Include\Math\BigRational.h" />
     <ClInclude Include="..\..\Include\Math\BigReal.h" />
     <ClInclude Include="..\..\Include\Math\BigRealInterval.h" />
     <ClInclude Include="..\..\Include\Math\BigRealMatrix.h" />
     <ClInclude Include="..\..\Include\Math\BigRealTransformation.h" />
     <ClInclude Include="BigRealInternal.h" />
+    <ClInclude Include="BigRealStream.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
@@ -684,8 +687,13 @@
     <ClCompile Include="Asin.cpp" />
     <ClCompile Include="Atan.cpp" />
     <ClCompile Include="BigInt.cpp" />
+    <ClCompile Include="BigIntIO.cpp" />
+    <ClCompile Include="BigIntStr.cpp" />
     <ClCompile Include="BigRational.cpp" />
+    <ClCompile Include="BigRationalIO.cpp" />
+    <ClCompile Include="BigRationalStr.cpp" />
     <ClCompile Include="BigReal.cpp" />
+    <ClCompile Include="BigRealByteStream.cpp" />
     <ClCompile Include="BigRealFloat32Bit.cpp" />
     <ClCompile Include="BigRealDouble64Bit.cpp" />
     <ClCompile Include="BigRealDouble80Bit.cpp" />
@@ -708,6 +716,8 @@
     <ClCompile Include="DigitPool.cpp" />
     <ClCompile Include="Exp.cpp" />
     <ClCompile Include="FindPrime.cpp" />
+    <ClCompile Include="FullFormatIO.cpp" />
+    <ClCompile Include="FullFormatStr.cpp" />
     <ClCompile Include="InputBigInt.cpp" />
     <ClCompile Include="InputBigRational.cpp" />
     <ClCompile Include="InputBigReal.cpp" />

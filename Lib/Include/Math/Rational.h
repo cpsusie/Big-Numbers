@@ -1,6 +1,5 @@
 #pragma once
 
-#include <StrStream.h>
 #include <CommonHashFunctions.h>
 #include "Double80.h"
 #include "Real.h"
@@ -262,5 +261,3 @@ std::wostream &operator<<(std::wostream &s, const Rational &r);
 
 Packer &operator<<(Packer &p, const Rational &r);
 Packer &operator>>(Packer &p,       Rational &r);
-
-StrStream &operator<<(StrStream &stream, const Rational &r);

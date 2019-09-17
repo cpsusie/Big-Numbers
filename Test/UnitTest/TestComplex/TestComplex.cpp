@@ -14,7 +14,7 @@ namespace TestComplex {
 	TEST_CLASS(TestComplex)	{
     public:
 
-    TEST_METHOD(ComplexTest) {
+    TEST_METHOD(BasicOperations) {
 //      FPU::init();
 #ifdef LONGDOUBLE
       FPU::setPrecisionMode(FPU_HIGH_PRECISION);
@@ -85,6 +85,12 @@ namespace TestComplex {
 
       verify(minus.re == -c1.re && minus.im == -c1.im);
 
+      Complex czero;
+      verify(czero == 0);
+    }
+
+    TEST_METHOD(ComplexFunctions) {
+      Complex c1, c2;
 #ifdef LONGDOUBLE
       const Real tolerance = 4e-17;
 #else
@@ -96,56 +102,18 @@ namespace TestComplex {
 
         const Complex root2 = sqrt(c1);
 
-        verifyAlmostEquals(c1, root2 * root2              , tolerance);
-        verifyAlmostEquals(exp(c1 + c2), exp(c1)*exp(c2)  , tolerance);
-        verifyAlmostEquals(log(c1*c2), log(c1) + log(c2)  , tolerance);
-        verifyAlmostEquals(log(exp(c1)), c1               , tolerance);
-        verifyAlmostEquals(pow(c1, c2), exp(log(c1) * c2) , tolerance);
+        verifyAlmostEquals(c1, root2 * root2, tolerance);
+        verifyAlmostEquals(exp(c1 + c2), exp(c1)*exp(c2), tolerance);
+        verifyAlmostEquals(log(c1*c2), log(c1) + log(c2), tolerance);
+        verifyAlmostEquals(log(exp(c1)), c1, tolerance);
+        verifyAlmostEquals(pow(c1, c2), exp(log(c1) * c2), tolerance);
         verifyAlmostEquals(root(c1, c2), exp(log(c1) / c2), tolerance);
         verifyAlmostEquals(Complex::one, sqr(sin(c1)) + sqr(cos(c1)), tolerance);
-        verifyAlmostEquals(c1, sin(asin(c1))              , tolerance);
-        verifyAlmostEquals(c1, cos(acos(c1))              , tolerance);
-        verifyAlmostEquals(tan(c1), sin(c1) / cos(c1)     , tolerance);
-        verifyAlmostEquals(c1, atan(tan(c1))              , tolerance);
+        verifyAlmostEquals(c1, sin(asin(c1)), tolerance);
+        verifyAlmostEquals(c1, cos(acos(c1)), tolerance);
+        verifyAlmostEquals(tan(c1), sin(c1) / cos(c1), tolerance);
+        verifyAlmostEquals(c1, atan(tan(c1)), tolerance);
       }
-
-      Complex czero;
-      verify(czero == 0);
-
-      String str = toString(Complex(0));
-      verify(str == "0");
-
-      str = toString(Complex(1, 1));
-      verify(str == "(1,1)");
-
-      str = toString(Complex(1));
-      verify(str == "1");
-
-      str = toString(Complex(1, 1));
-      verify(str == "(1,1)");
-
-      const char *fileName = "complex.tmp";
-
-      tofstream out(fileName);
-      out << Complex(1, 1) << _T(",") << Complex(1) << _T(",") << 1 << _T(",") << _T("(1,1") << endl;
-      out.close();
-
-      tifstream in(fileName);
-      TCHAR ch;
-      in >> c1 >> ch >> c2;
-
-      verify(c1 == Complex(1, 1));
-      verify(c2 == 1);
-
-      in >> ch >> c1;
-      verify(c1 == 1);
-
-      in >> ch >> c1;
-      verify(in.bad());
-
-      in.close();
-
-      UNLINK(fileName);
     }
 
     TEST_METHOD(TestIdiotRule) {
@@ -163,6 +131,43 @@ namespace TestComplex {
               );
       }
       verifyAlmostEquals(Complex::one, sqr(sin(c1)) + sqr(cos(c1)), 1e-13);
+    }
+
+    TEST_METHOD(ComplexIO) {
+      String str = toString(Complex(0));
+      verify(str == "0");
+
+      str = toString(Complex(1, 1));
+      verify(str == "(1,1)");
+
+      str = toString(Complex(1));
+      verify(str == "1");
+
+      str = toString(Complex(1, 1));
+      verify(str == "(1,1)");
+
+      const String fileName = getTestFileName(__TFUNCTION__, _T("txt"));
+
+      tofstream out(fileName.cstr());
+      out << Complex(1, 1) << _T(",") << Complex(1) << _T(",") << 1 << _T(",") << _T("(1,1") << endl;
+      out.close();
+
+      tifstream in(fileName.cstr());
+      Complex c1, c2;
+
+      TCHAR ch;
+      in >> c1 >> ch >> c2;
+
+      verify(c1 == Complex(1, 1));
+      verify(c2 == 1);
+
+      in >> ch >> c1;
+      verify(c1 == 1);
+
+      in >> ch >> c1;
+      verify(in.fail());
+
+      in.close();
     }
   };
 }

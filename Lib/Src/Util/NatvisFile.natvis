@@ -78,6 +78,9 @@
   <Type Name="Timestamp">
     <DisplayString LegacyAddin="C:\mytools2015\Lib\Win32\Release\UtilAddIn.dll" Export="AddIn_Timestamp"></DisplayString>
   </Type>
+  <Type Name="StreamParameters">
+    <DisplayString LegacyAddin="C:\mytools2015\Lib\Win32\Release\UtilAddIn.dll" Export="AddIn_StreamParameters"></DisplayString>
+  </Type>
   <Type Name="Register">
     <DisplayString>{m_debugStr.m_buf,su}</DisplayString>
   </Type>

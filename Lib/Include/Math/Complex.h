@@ -1,6 +1,5 @@
 #pragma once
 
-#include <StrStream.h>
 #include <MatrixTemplate.h>
 #include <MathUtil.h>
 #include "MathLib.h"
@@ -162,8 +161,6 @@ std::ostream &operator<<(std::ostream &out, const Complex &c);
 
 std::wistream &operator>>(std::wistream &in ,       Complex &c);
 std::wostream &operator<<(std::wostream &out, const Complex &c);
-
-StrStream &operator<<(StrStream &stream, const Complex &c);
 
 typedef FunctionTemplate<Complex,Complex>   ComplexFunction;
 typedef VectorTemplate<Complex>   ComplexVector;

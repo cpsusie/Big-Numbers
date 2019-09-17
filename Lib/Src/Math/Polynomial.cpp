@@ -1,5 +1,5 @@
 #include "pch.h"
-#include <strstream>
+#include <StrStream.h>
 #include <Math/MathException.h>
 #include <Math/Polynomial.h>
 
@@ -255,25 +255,25 @@ String Polynomial::toString() const {
   for(int i = g; i >= 0; i--) {
     const Complex &coef = getCoef(i);
     if(i == g) {
-      result << coef;
+      result += ::toString(coef);
       if(g > 0)
-        result += "*x";
+        result += _T("*x");
     } else {
       if(i < g-1) {
         result += rp;
-        result += "*x";
+        result += _T("*x");
       }
       if(coef.im == 0) {
         if(coef.re > 0) {
-          result += " + ";
+          result += _T(" + ");
           result << coef.re;
         } else if(coef.re < 0) {
-          result += " - ";
+          result += _T(" - ");
           result << -coef.re;
         }
       } else if(coef != Complex::zero) {
-        result += " + ";
-        result << coef;
+        result += _T(" + ");
+        result += ::toString(coef);
       }
     }
   }

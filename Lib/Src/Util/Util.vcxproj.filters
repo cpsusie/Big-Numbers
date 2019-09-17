@@ -911,6 +911,12 @@
     <ClCompile Include="StreamParametersStr.cpp">
       <Filter>Source Files\Stream</Filter>
     </ClCompile>
+    <ClCompile Include="HexFloatRegex.cpp">
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="StreamParametersIterator.cpp">
+      <Filter>Source Files\Stream</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -1296,6 +1302,9 @@
       <Filter>Header Files\Collection</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\PrimitiveToString.h">
+      <Filter>Header Files\String</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\CompactLineArray.h">
       <Filter>Header Files\String</Filter>
     </ClInclude>
   </ItemGroup>

@@ -4,7 +4,6 @@
 #include <limits>
 #include <ByteStream.h>
 #include <Packer.h>
-#include <StrStream.h>
 #include <Random.h>
 #include "PragmaLib.h"
 
@@ -3406,13 +3405,22 @@ wchar_t *d80tow(wchar_t *dst, const Double80 &x);
 
 String toString(const Double80 &x, StreamSize precision=6, StreamSize width=0, FormatFlags flags=0);
 
-Double80 strtod80(const char    *s, char    **end);
-Double80 wcstod80(const wchar_t *s, wchar_t **end);
+Double80 _strtod80_l(const char    *strSource, char    **endptr, _locale_t locale);
+Double80 _wcstod80_l(const wchar_t *strSource, wchar_t **endptr, _locale_t locale);
+
+inline Double80 strtod80(const char    *s, char    **end) {
+  return _strtod80_l(s, end, _get_current_locale());
+}
+inline Double80 wcstod80(const wchar_t *s, wchar_t **end) {
+  return _wcstod80_l(s, end, _get_current_locale());
+}
 
 #ifdef _UNICODE
-#define _tcstod80 wcstod80
+#define _tcstod80_l _wcstod80_l
+#define _tcstod80    wcstod80
 #else
-#define _tcstod80 strtod80
+#define _tcstod80_l _strtood80_l
+#define _tcstod80    strtod80
 #endif
 
 std::istream &operator>>(std::istream &s,       Double80 &x);
@@ -3421,11 +3429,8 @@ std::ostream &operator<<(std::ostream &s, const Double80 &x);
 std::wistream &operator>>(std::wistream &s,       Double80 &x);
 std::wostream &operator<<(std::wostream &s, const Double80 &x);
 
-StrStream &operator<<(StrStream &stream, const Double80 &x);
-
 Packer &operator<<(Packer &p, const Double80 &x);
 Packer &operator>>(Packer &p,       Double80 &x);
-
 
 // CLASS numeric_limits<Double80>
 template<> class std::numeric_limits<Double80>

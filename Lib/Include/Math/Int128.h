@@ -1,6 +1,6 @@
 #pragma once
 
-#include <StrStream.h>
+#include <limits>
 #include <CommonHashFunctions.h>
 #include "PragmaLib.h"
 
@@ -1954,10 +1954,23 @@ inline _uint128 &operator^=(_uint128 &lft, unsigned short rhs) {
   return lft ^= (_uint128)rhs;
 }
 
-_int128   _strtoi128( const char    *str, char    **end, int radix);
-_uint128  _strtoui128(const char    *str, char    **end, int radix);
-_int128   _wcstoi128( const wchar_t *str, wchar_t **end, int radix);
-_uint128  _wcstoui128(const wchar_t *str, wchar_t **end, int radix);
+_int128   _strtoi128_l( const char    *str, char    **end, int radix, _locale_t locale);
+_uint128  _strtoui128_l(const char    *str, char    **end, int radix, _locale_t locale);
+_int128   _wcstoi128_l( const wchar_t *str, wchar_t **end, int radix, _locale_t locale);
+_uint128  _wcstoui128_l(const wchar_t *str, wchar_t **end, int radix, _locale_t locale);
+
+inline _int128   _strtoi128( const char    *str, char    **end, int radix) {
+  return _strtoi128_l(str, end, radix, _get_current_locale());
+}
+inline _uint128  _strtoui128(const char    *str, char    **end, int radix) {
+  return _strtoui128_l(str, end, radix, _get_current_locale());
+}
+inline _int128   _wcstoi128(const wchar_t *str, wchar_t **end, int radix) {
+  return _wcstoi128_l(str, end, radix, _get_current_locale());
+}
+inline _uint128  _wcstoui128(const wchar_t *str, wchar_t **end, int radix) {
+  return _wcstoui128_l(str, end, radix, _get_current_locale());
+}
 
 char     *_i128toa(   _int128   value, char    *str , int radix);
 char     *_ui128toa(  _uint128  value, char    *str , int radix);
@@ -2030,9 +2043,6 @@ std::wostream &operator<<(std::wostream &s, const _int128  &n);
 std::wistream &operator>>(std::wistream &s,       _uint128 &n);
 std::wostream &operator<<(std::wostream &s, const _uint128 &n);
 
-StrStream &operator<<(StrStream &stream   , const _int128  &n);
-StrStream &operator<<(StrStream &stream   , const _uint128 &n);
-
 Packer &operator<<(Packer &p, const _int128  &n);
 Packer &operator>>(Packer &p,       _int128  &n);
 Packer &operator<<(Packer &p, const _uint128 &n);
@@ -2054,3 +2064,111 @@ inline bool   isInt64(  _int128  v) { return v == (INT64 )v;  }
 inline bool   isInt64(  _uint128 v) { return v == (INT64 )v;  }
 inline bool   isUint64( _int128  v) { return v == (UINT64)v;  }
 inline bool   isUint64( _uint128 v) { return v == (UINT64)v;  }
+
+template<> class std::numeric_limits<_int128>
+    : public _Num_int_base
+{	// limits for type _int128
+public:
+  _NODISCARD static _int128 (min)() noexcept
+  {	// return minimum value
+    return (_I128_MIN);
+  }
+  _NODISCARD static _int128 (max)() noexcept
+  {	// return maximum value
+    return (_I128_MAX);
+  }
+
+  _NODISCARD static _int128 lowest() noexcept
+  {	// return most negative value
+    return ((min)());
+  }
+
+  _NODISCARD static _int128 epsilon() noexcept
+  {	// return smallest effective increment from 1.0
+    return (0);
+  }
+
+  _NODISCARD static _int128 round_error() noexcept
+  {	// return largest rounding error
+    return (0);
+  }
+
+  _NODISCARD static _int128 denorm_min() noexcept
+  {	// return minimum denormalized value
+    return (0);
+  }
+
+  _NODISCARD static _int128 infinity() noexcept
+  {	// return positive infinity
+    return (0);
+  }
+
+  _NODISCARD static _int128 quiet_NaN() noexcept
+  {	// return non-signaling NaN
+    return (0);
+  }
+
+  _NODISCARD static _int128 signaling_NaN() noexcept
+  {	// return signaling NaN
+    return (0);
+  }
+
+  static constexpr bool is_signed = true;
+  static constexpr int digits = 127;
+  static constexpr int digits10 = 39;
+};
+
+// CLASS numeric_limits<unsigned long long>
+template<> class std::numeric_limits<_uint128>
+    : public _Num_int_base
+{	// limits for type _uint128
+public:
+  _NODISCARD static _uint128 (min)() noexcept
+  {	// return minimum value
+    return (0);
+  }
+
+  _NODISCARD static _uint128 (max)() noexcept
+  {	// return maximum value
+    return (_UI128_MAX);
+  }
+
+  _NODISCARD static _uint128 lowest() noexcept
+  {	// return most negative value
+    return ((min)());
+  }
+
+  _NODISCARD static _uint128 epsilon() noexcept
+  {	// return smallest effective increment from 1.0
+    return (0);
+  }
+
+  _NODISCARD static _uint128 round_error() noexcept
+  {	// return largest rounding error
+    return (0);
+  }
+
+  _NODISCARD static _uint128 denorm_min() noexcept
+  {	// return minimum denormalized value
+    return (0);
+  }
+
+  _NODISCARD static _uint128 infinity() noexcept
+  {	// return positive infinity
+    return (0);
+  }
+
+  _NODISCARD static _uint128 quiet_NaN() noexcept
+  {	// return non-signaling NaN
+    return (0);
+  }
+
+  _NODISCARD static _uint128 signaling_NaN() noexcept
+  {	// return signaling NaN
+    return (0);
+  }
+
+  static constexpr bool is_modulo = true;
+  static constexpr int digits = 128;
+  static constexpr int digits10 = 39;
+};

@@ -247,8 +247,8 @@ void BigRealTestClass::measureQuot() {
         if(expo10xi != expo10x0) {
           throwException(_T("expo10(x[%d]=%s)=%s != expo10(x[0]=%s)=%s\n")
                         ,(int)i
-                        ,xArray[i].toString().cstr(),format1000(expo10xi).cstr()
-                        ,xArray[0].toString().cstr(),format1000(expo10x0).cstr());
+                        ,toString(xArray[i]).cstr(),format1000(expo10xi).cstr()
+                        ,toString(xArray[0]).cstr(),format1000(expo10x0).cstr());
         }
       }
 
@@ -466,13 +466,13 @@ void BigRealTestClass::testQuotRemainder() {
 
       _ftprintf(f, _T("%s\nX:%s\nY:%s\nnew1-Q:%s\nold-Q:%s\nnew1-R:%s\nold-R:%s\n%s%s\n")
         , header.cstr()
-        , x.toString().cstr(), y.toString().cstr()
-        , quotient64.toString().cstr()
-        , quotient.toString().cstr()
-        , remainder64.toString().cstr()
-        , remainder.toString().cstr()
-        , (qerror64 ? format(_T("qdiff:%s\n"), qdiff64.toString().cstr()).cstr() : EMPTYSTRING)
-        , (rerror64 ? format(_T("rdiff:%s\n"), rdiff64.toString().cstr()).cstr() : EMPTYSTRING)
+        , toString(x).cstr(), toString(y).cstr()
+        , toString(quotient64).cstr()
+        , toString(quotient).cstr()
+        , toString(remainder64).cstr()
+        , toString(remainder).cstr()
+        , (qerror64 ? format(_T("qdiff:%s\n"), toString(qdiff64).cstr()).cstr() : EMPTYSTRING)
+        , (rerror64 ? format(_T("rdiff:%s\n"), toString(rdiff64).cstr()).cstr() : EMPTYSTRING)
       );
 
 #ifdef IS64BIT
@@ -495,13 +495,13 @@ void BigRealTestClass::testQuotRemainder() {
 
       _ftprintf(f, _T("%s\nX:%s\nY:%s\nnew2-Q:%s\nold-Q:%s\nnew2-R:%s\nold-R:%s\n%s%s\n")
         , header.cstr()
-        , x.toString().cstr(), y.toString().cstr()
-        , quotient128.toString().cstr()
-        , quotient.toString().cstr()
-        , remainder128.toString().cstr()
-        , remainder.toString().cstr()
-        , (qerror128 ? format(_T("qdiff:%s\n"), qdiff128.toString().cstr()).cstr() : EMPTYSTRING)
-        , (rerror128 ? format(_T("rdiff:%s\n"), rdiff128.toString().cstr()).cstr() : EMPTYSTRING)
+        , toString(x).cstr(), toString(y).cstr()
+        , toString(quotient128).cstr()
+        , toString(quotient).cstr()
+        , toString(remainder128).cstr()
+        , toString(remainder).cstr()
+        , (qerror128 ? format(_T("qdiff:%s\n"), toString(qdiff128).cstr()).cstr() : EMPTYSTRING)
+        , (rerror128 ? format(_T("rdiff:%s\n"), toString(rdiff128).cstr()).cstr() : EMPTYSTRING)
       );
 #endif // IS64BIT
     }
@@ -549,9 +549,9 @@ void BigRealTestClass::testMultiThreadedProduct() {
   _tprintf(_T("TimeUsage:%s\n"), timeUsage.toString(SEC).cstr());
 
   FILE *f = FOPEN(_T("c:\\temp\\multiProd.txt"), _T("w"));
-  _ftprintf(f, _T("x:")); x.print(f); _ftprintf(f, _T("\n"));
-  _ftprintf(f, _T("y:")); y.print(f); _ftprintf(f, _T("\n"));
-  _ftprintf(f, _T("z:")); z.print(f); _ftprintf(f, _T("\n"));
+  _ftprintf(f, _T("x:%s\n"), toString(x).cstr());
+  _ftprintf(f, _T("y:%s\n"), toString(y).cstr());
+  _ftprintf(f, _T("z:%s\n"), toString(z).cstr());
   fclose(f);
   _tprintf(_T("Max active Thread:%d\n"), BigRealResourcePool::getInstance().getMaxActiveThreads());
 }
@@ -602,15 +602,12 @@ void BigRealTestClass::testFullFormat() {
       tcout.width(2); tcout << j << _T("):");
       tcout << FullFormatBigReal(x) << _T(" expo:") << BigReal::getExpo10(x) << _T(" length:") << x.getLength() << _T("\n");
       tcout.flush();
-      BigRealStream s1;
-      s1 << FullFormatBigReal(x);
+      String s1 = toString((FullFormatBigReal&)x);
       BigReal y(s1.cstr());
       if(x != y) {
         tcout << _T("fullformat:") << FullFormatBigReal(x) << _T("\n");
         tcout.flush();
-        _tprintf(_T("Error:"));
-        x.print(); _tprintf(_T("<>"));  y.print();
-        _tprintf(_T("\n"));
+        _tprintf(_T("Error:%s<>%s\n"), toString(x).cstr(), toString(y).cstr());
         fflush(stdout);
         throwException(_T("Error in testFullFormat"));
       }
@@ -681,8 +678,8 @@ void BigRealTestClass::testCopyAllDigits() {
       continue;
     }
 
-    _tprintf(_T("x:%s\n"), x.toString().cstr());
-    _tprintf(_T("y:%s\n"), y.toString().cstr());
+    _tprintf(_T("x:%s\n"), toString(x).cstr());
+    _tprintf(_T("y:%s\n"), toString(y).cstr());
     if(x != y) {
       _tprintf(_T("x != y\n"));
     }
@@ -764,7 +761,7 @@ void BigRealTestClass::testTruncRound() {
           exceptionCount++;
           _tprintf(_T("%8d %6d %6d %40s Expt in %s:%s\n")
                   ,cutDigits, expo10, length
-                  ,FullFormatBigReal(x).toString().cstr()
+                  ,toString((FullFormatBigReal&)x).cstr()
                   ,RTXT, e.what()
                   );
           BigReal x3(x);
@@ -777,9 +774,9 @@ void BigRealTestClass::testTruncRound() {
           mismatchCount++;
           _tprintf(_T("%8d %6d %6d %40s %30s %30s\n")
                   ,cutDigits, expo10, length
-                  ,FullFormatBigReal(x).toString().cstr()
-                  ,FullFormatBigReal(X1).toString().cstr()
-                  ,FullFormatBigReal(x1).toString().cstr()
+                  ,toString((FullFormatBigReal&)x ).cstr()
+                  ,toString((FullFormatBigReal&)X1).cstr()
+                  ,toString((FullFormatBigReal&)x1).cstr()
                   );
           X1 = REFF(x, cutDigits - decDigits);
           BigReal x3(x);
@@ -857,7 +854,7 @@ void BigRealTestClass::testCopyrTrunc() {
           exceptionCount++;
           _tprintf(_T("%8d %6d %6d %40s Expt in x1:%s\n")
                   ,cutDigits, expo10, length
-                  ,x.toString().cstr()
+                  ,toString(x).cstr()
                   ,e.what()
                   );
           continue;
@@ -870,7 +867,7 @@ void BigRealTestClass::testCopyrTrunc() {
           exceptionCount++;
           _tprintf(_T("%8d %6d %6d %40s Expt in x2:%s\n")
                   ,cutDigits, expo10, length
-                  ,x.toString().cstr()
+                  ,toString(x).cstr()
                   ,e.what()
                   );
           continue;
@@ -883,7 +880,7 @@ void BigRealTestClass::testCopyrTrunc() {
           exceptionCount++;
           _tprintf(_T("%8d %6d %6d %40s Expt in xz:%s\n")
                   ,cutDigits, expo10, length
-                  ,x.toString().cstr()
+                  ,toString(x).cstr()
                   ,e.what()
                   );
           continue;
@@ -893,9 +890,9 @@ void BigRealTestClass::testCopyrTrunc() {
           mismatchCount++;
           _tprintf(_T("%8d %6d %6d %40s %30s %30s\n")
                   ,cutDigits, expo10, length
-                  ,x.toString().cstr()
-                  ,x1.toString().cstr()
-                  ,ref.toString().cstr()
+                  ,toString(x  ).cstr()
+                  ,toString(x1 ).cstr()
+                  ,toString(ref).cstr()
                   );
           continue;
         }
@@ -903,9 +900,9 @@ void BigRealTestClass::testCopyrTrunc() {
           mismatchCount++;
           _tprintf(_T("%8d %6d %6d %40s %30s %30s\n")
                   ,cutDigits, expo10, length
-                  ,x.toString().cstr()
-                  ,x2.toString().cstr()
-                  ,ref.toString().cstr()
+                  ,toString(x  ).cstr()
+                  ,toString(x2 ).cstr()
+                  ,toString(ref).cstr()
                   );
           continue;
         }
@@ -915,9 +912,9 @@ void BigRealTestClass::testCopyrTrunc() {
           mismatchCount++;
           _tprintf(_T("%8d %6d %6d %40s %30s %30s\n")
                   ,cutDigits, expo10, length
-                  ,x.toString().cstr()
-                  ,xz.toString().cstr()
-                  ,ref.toString().cstr()
+                  ,toString(x  ).cstr()
+                  ,toString(x2 ).cstr()
+                  ,toString(ref).cstr()
                   );
           continue;
         }
@@ -943,23 +940,23 @@ void BigRealTestClass::testFractionate() {
     BigReal  fraction;
     x.fractionate(&intPart, &fraction);
 
-    _tprintf(_T("intPart :%s\n"), intPart.toString().cstr());
-    _tprintf(_T("fracpart:%s\n"), fraction.toString().cstr());
+    _tprintf(_T("intPart :%s\n"), toString(intPart).cstr());
+    _tprintf(_T("fracpart:%s\n"), toString(fraction).cstr());
 
     x.fractionate(&intPart, NULL);
-    _tprintf(_T("intPart1:%s\n"), intPart.toString().cstr());
+    _tprintf(_T("intPart1:%s\n"), toString(intPart).cstr());
 
     x.fractionate(NULL, &fraction);
-    _tprintf(_T("fracpart1:%s\n"), fraction.toString().cstr());
+    _tprintf(_T("fracpart1:%s\n"), toString(fraction).cstr());
 
     intPart  = BigReal(_T("20202020202020202020202020202.20202020202"));
     fraction = BigReal(_T("10101010101010101010101010101.10101010101"));
 
     x.fractionate(&intPart, NULL);
-    _tprintf(_T("intPart2:%s\n"), intPart.toString().cstr());
+    _tprintf(_T("intPart2:%s\n"), toString(intPart).cstr());
 
     x.fractionate(NULL, &fraction);
-    _tprintf(_T("fracpart2:%s\n"), fraction.toString().cstr());
+    _tprintf(_T("fracpart2:%s\n"), toString(fraction).cstr());
   }
 }
 

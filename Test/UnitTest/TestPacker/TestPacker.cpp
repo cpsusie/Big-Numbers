@@ -505,7 +505,7 @@ namespace TestPacker {
           } else if(isnan(data)) {
             verify(isnan(expected));
           } else {
-            throwException(_T("Unknown BigReal-classification for a[%zu]:%s"),i,data.toString().cstr());
+            throwException(_T("Unknown BigReal-classification for a[%zu]:%s"),i,toString(data).cstr());
           }
         }
         a.clear();

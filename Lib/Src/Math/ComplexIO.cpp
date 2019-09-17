@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <StrStream.h>
 #include <Math/Complex.h>
 
 using namespace std;
@@ -16,69 +17,79 @@ StrStream &operator<<(StrStream &stream, const Complex &c) {
   return stream;
 }
 
-#include "IStreamUtil.h"
-
 /* inputformat for Complex;
     re
     (re)
     (re,im)
 */
-template <class IStreamType, class CharType> IStreamType &operator>>(IStreamType &in, Complex &c) {
-  SETUPISTREAM(in)
+template <class IStreamType, class CharType> IStreamType &getComplex(IStreamType &in, Complex &c) {
+  if(in.flags() & ios::skipws) skipspace(in);
+  CharType ch = in.peek();
   Real re, im;
   if(ch != '(') {
     in >> re;
     im = 0;
   } else {
-    nextchar(in);
-    skipSpace(in);
+    in.get();
+    skipspace(in);
     in >> re;
     if(!in) goto Fail;
-    skipLeadingspace(in);
+    skipspace(in);
+    ch = in.peek();
     if(ch == ',')  {
-      nextchar(in);
-      skipSpace(in);
+      in.get();
+      skipspace(in);
       in >> im;
       if(!in) goto Fail;
-      skipLeadingspace(in);
+      skipspace(in);
+      ch = in.peek();
     }
     if(ch == ')') {
-      nextchar(in);
+      in.get();
     } else {
       goto Fail;
     }
   }
   if(in) {
     c = Complex(re,im);
-    RESTOREISTREAM(in);
     return in;
   }
 Fail:
-  ungetbuf(in);
-  RESTOREISTREAM(in);
   in.setstate(ios::failbit);
   return in;
 }
 
-template <class OStreamType> OStreamType &operator<<(OStreamType &out, const Complex &c) {
+template <class OStreamType> OStreamType &putComplex(OStreamType &out, const Complex &c) {
   StrStream stream(out);
   stream << c;
-  out << stream.cstr();
+  out << (String&)stream;
+  if(out.flags() & ios::unitbuf) {
+    out.flush();
+  }
   return out;
 }
 
 istream &operator>>(istream &in, Complex &c) {
-  return ::operator>> <istream, char>(in, c);
+  return getComplex<istream, char>(in, c);
 }
 
 ostream &operator<<(ostream &out, const Complex &c) {
-  return ::operator<< <ostream>(out, c);
+  return putComplex(out, c);
 }
 
 wistream &operator>>(wistream &in, Complex &c) {
-  return ::operator>> <wistream, wchar_t>(in, c);
+  return getComplex<wistream, wchar_t>(in, c);
 }
 
 wostream &operator<<(wostream &out, const Complex &c) {
-  return ::operator<< <wostream>(out, c);
+  return putComplex(out, c);
+}
+
+String toString(const Complex &c, StreamSize precision, StreamSize width, FormatFlags flags) {
+  tostrstream stream;
+  stream.width(width);
+  stream.precision(precision);
+  stream.flags(flags);
+  stream << c;
+  return stream.str().c_str();
 }

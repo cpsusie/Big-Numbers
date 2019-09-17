@@ -190,7 +190,7 @@ static inline bool isRadixDigit(wchar_t ch, UINT radix, UINT &value) {
   return true;
 }
 
-template<class Int128Type, class Ctype, bool withSign> Int128Type strtoint128(const Ctype *s, Ctype **end, UINT radix) {
+template<class Int128Type, class Ctype, bool withSign> Int128Type strtoint128(const Ctype *s, Ctype **end, UINT radix, _locale_t locale) {
   if((s == NULL) || ((radix != 0) && ((radix < 2) || (radix > 36)))) {
     errno = EINVAL;
     return 0;
@@ -305,18 +305,18 @@ template<class Int128Type, class Ctype, bool withSign> Int128Type strtoint128(co
   return negative ? -result128 : result128;
 }
 
-_int128 _strtoi128(const char *str, char **end, int radix) {
-  return strtoint128<_int128 ,char   ,true >(str, end, radix);
+_int128 _strtoi128_l(const char *str, char **end, int radix, _locale_t locale) {
+  return strtoint128<_int128 ,char   ,true >(str, end, radix, locale);
 }
 
-_uint128 _strtoui128(const char *str, char **end, int radix) {
-  return strtoint128<_uint128,char   ,false>(str, end, radix);
+_uint128 _strtoui128_l(const char *str, char **end, int radix, _locale_t locale) {
+  return strtoint128<_uint128,char   ,false>(str, end, radix, locale);
 }
 
-_int128 _wcstoi128(const wchar_t *str, wchar_t **end, int radix) {
-  return strtoint128<_int128 ,wchar_t,true >(str, end, radix);
+_int128 _wcstoi128_l(const wchar_t *str, wchar_t **end, int radix, _locale_t locale) {
+  return strtoint128<_int128 ,wchar_t,true >(str, end, radix, locale);
 }
 
-_uint128 _wcstoui128(const wchar_t *str, wchar_t **end, int radix) {
-  return strtoint128<_uint128,wchar_t,false>(str, end, radix);
+_uint128 _wcstoui128_l(const wchar_t *str, wchar_t **end, int radix, _locale_t locale) {
+  return strtoint128<_uint128,wchar_t,false>(str, end, radix, locale);
 }

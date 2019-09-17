@@ -432,7 +432,7 @@ namespace TestExpression {
       exprArray.addAll(aOrbr ); aOrbr.clear();
       exprArray.addAll(aOrrb ); aOrrb.clear();
       exprArray.addAll(aOrrr ); aOrrr.clear();
-
+//#define GENERATE_LISTFILES
       try {
         const size_t n = exprArray.size();
         for(UINT i = 0; i < n; i++) {
@@ -440,19 +440,26 @@ namespace TestExpression {
           if(i % 100 == 0) {
             OUTPUT(_T("Test[%d]:%s"), i, expr.cstr());
           }
+#ifdef GENERATE_LISTFILES
           FILE      * listFile = openBoolListFile(       i);
           FILE      *RlistFile = openBoolReducedListFile(i);
           FILE      * dumpFile = openBoolDumpFile(       i);
           FILE      *RdumpFile = openBoolReducedDumpFile(i);
+#else
+          FILE      * listFile = NULL;
+          FILE      *RlistFile = NULL;
+#endif // GENERATE_LISTFILES
           Expression compiledExpr, interpreterExpr, reducedExpr;
           compiledExpr.compile(expr, true,false, listFile);
           reducedExpr.compile( expr, true,true ,RlistFile);
+#ifdef GENERATE_LISTFILES
           _ftprintf( dumpFile, _T("%s\n%s\n"), expr.cstr(),compiledExpr.treeToString().cstr());
           _ftprintf(RdumpFile, _T("%s\n%s\n"), expr.cstr(),reducedExpr.treeToString().cstr());
           fclose(RdumpFile);
           fclose( dumpFile);
           fclose(RlistFile);
           fclose( listFile);
+#endif  // GENERATE_LISTFILES
 
 //          debugLog(_T("Test %d %s\n%s\n"), i, expr.cstr(), compiledExpr.treeToString().cstr());
 

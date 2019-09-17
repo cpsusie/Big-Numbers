@@ -9,6 +9,6 @@ static const char *undefFloatPatterns[] = {
  ,NULL
 };
 
-StringArray UndefFloatingValueStreamScanner::getRegexLines() { // static
+StringArray UndefFloatValueStreamScanner::getRegexLines() { // static
   return StringArray(undefFloatPatterns);
 }

@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include <Math/Double80.h>
 #include "TestToString.h"
-#include "StreamParametersIterator.h"
 
 using namespace std;
 
@@ -28,26 +27,21 @@ static void usage() {
 }
 
 int main(int argc, char **argv) {
-  UINT flags           = TTS_ALL;
-  bool dumpFormatFlags = false;
+  UINT flags           = TTS_ALLTYPES;
   try {
     char *cp;
     for(argv++; *argv && (*(cp = *argv) == '-'); argv++) {
       for(cp++; *cp; cp++) {
         switch(*cp) {
-        case 'l': flags &= ~TTS_D80; continue;
-        case 'b': flags &= ~TTS_BR ; continue;
-        case 'f': dumpFormatFlags = true; continue;
+        case 'l': flags &= ~TTS_D80              ; continue;
+        case 'b': flags &= ~TTS_BR               ; continue;
+        case 'f': flags |= TTS_DUMPALLFORMATFLAGS; continue;
         default : usage();
         }
       }
     }
     if(flags == 0) {
       usage();
-    }
-    if(dumpFormatFlags) {
-      redirectDebugLog();
-      StreamParametersIterator::dumpAllformats();
     }
     const UINT64   ui64 = -1;
     const Double80 x    = ui64;

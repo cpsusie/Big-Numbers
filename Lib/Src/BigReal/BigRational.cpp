@@ -1,6 +1,5 @@
 #include "pch.h"
-#include <float.h>
-#include <ctype.h>
+#include <Math/BigRational.h>
 
 BigRational::BigRational(DigitPool *digitPool) : m_numerator(digitPool), m_denominator(digitPool) {
   init(digitPool->get0(), digitPool->get1());
@@ -67,6 +66,21 @@ void BigRational::init(const BigInt &numerator, const BigInt &denominator) {
       m_numerator   = -m_numerator;
       m_denominator = -m_denominator;
     }
+  }
+}
+
+int _fpclass(const BigRational &r) {
+  switch(fpclassify(r)) {
+  case FP_NORMAL:
+    return r.isNegative() ? _FPCLASS_NN : _FPCLASS_PN;
+  case FP_ZERO:
+    return r.isNegative() ? _FPCLASS_NZ : _FPCLASS_PZ;
+  case FP_INFINITE:
+    return r.isNegative() ? _FPCLASS_NINF : _FPCLASS_PINF;
+  case FP_NAN:
+    return _FPCLASS_QNAN;
+  default:
+    return _FPCLASS_SNAN;
   }
 }
 
@@ -142,13 +156,4 @@ BigInt BigRational::findGCD(const BigInt &a, const BigInt &b) { // static
     }
   }
   return g*v;
-}
-
-String BigRational::toString() const {
-  DigitPool *pool = getDigitPool();
-  if(m_denominator == pool->get1()) {
-    return m_numerator.toString();
-  } else {
-    return m_numerator.toString() + _T("/") + m_denominator.toString();
-  }
 }
