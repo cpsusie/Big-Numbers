@@ -110,7 +110,7 @@ public:
     const UINT bc = getBitCount(type);
     return bc / 4 + ((bc % 4) ? 1 : 0);
   }
-  static inline UINT   getByteCount(         IntegerType type) {
+  static inline UINT   getByteCount(        IntegerType type) {
     const UINT bc = getBitCount(type);
     return bc / 8 + ((bc % 8) ? 1 : 0);
   }

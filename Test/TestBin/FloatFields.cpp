@@ -2,6 +2,8 @@
 #include "FloatFields.h"
 #include <Random.h>
 
+using namespace std;
+
 void FloatFields::checkType(const TCHAR *method, FloatType expected) const {
   if(getType() != expected) {
     throwException(_T("%s:Wrong floatType:%s, expected:%s"), method, toString(getType()).cstr(), toString(expected).cstr());
@@ -86,36 +88,6 @@ FloatFields &FloatFields::setZero() {
   return *this;
 }
 
-FloatFields &FloatFields::setTrueMin() {
-  switch(getType()) {
-  case FT_FLOAT   : *this = std::numeric_limits<float   >::denorm_min();  break;
-  case FT_DOUBLE  : *this = std::numeric_limits<double  >::denorm_min();  break;
-  case FT_DOUBLE80: *this = std::numeric_limits<Double80>::denorm_min();  break;
-  DEFAULT_WRONGTYPE(getType());
-  }
-  return *this;
-}
-
-#undef min
-FloatFields &FloatFields::setMin() {
-  switch(getType()) {
-  case FT_FLOAT   : *this = std::numeric_limits<float   >::min();      break;
-  case FT_DOUBLE  : *this = std::numeric_limits<double  >::min();      break;
-  case FT_DOUBLE80: *this = std::numeric_limits<Double80>::min();      break;
-  DEFAULT_WRONGTYPE(getType());
-  }
-  return *this;
-}
-
-FloatFields &FloatFields::setEps() {
-  switch(getType()) {
-  case FT_FLOAT   : *this = std::numeric_limits<float   >::epsilon();  break;
-  case FT_DOUBLE  : *this = std::numeric_limits<double  >::epsilon();  break;
-  case FT_DOUBLE80: *this = std::numeric_limits<Double80>::epsilon();  break;
-  DEFAULT_WRONGTYPE(getType());
-  }
-  return *this;
-}
 
 FloatFields &FloatFields::setRnd() {
   switch(getType()) {
@@ -137,12 +109,43 @@ FloatFields &FloatFields::setOne() {
   return *this;
 }
 
+FloatFields &FloatFields::setTrueMin() {
+  switch(getType()) {
+  case FT_FLOAT   : *this = numeric_limits<float   >::denorm_min();    break;
+  case FT_DOUBLE  : *this = numeric_limits<double  >::denorm_min();    break;
+  case FT_DOUBLE80: *this = numeric_limits<Double80>::denorm_min();    break;
+  DEFAULT_WRONGTYPE(getType());
+  }
+  return *this;
+}
+
+FloatFields &FloatFields::setEps() {
+  switch(getType()) {
+  case FT_FLOAT   : *this = numeric_limits<float   >::epsilon();       break;
+  case FT_DOUBLE  : *this = numeric_limits<double  >::epsilon();       break;
+  case FT_DOUBLE80: *this = numeric_limits<Double80>::epsilon();       break;
+  DEFAULT_WRONGTYPE(getType());
+  }
+  return *this;
+}
+#undef min
+FloatFields &FloatFields::setMin() {
+  switch(getType()) {
+  case FT_FLOAT   : *this = numeric_limits<float   >::min();           break;
+  case FT_DOUBLE  : *this = numeric_limits<double  >::min();           break;
+  case FT_DOUBLE80: *this = numeric_limits<Double80>::min();           break;
+  DEFAULT_WRONGTYPE(getType());
+  }
+  return *this;
+}
+
+
 #undef max
 FloatFields &FloatFields::setMax() {
   switch(getType()) {
-  case FT_FLOAT   : *this = std::numeric_limits<float   >::max();      break;
-  case FT_DOUBLE  : *this = std::numeric_limits<double  >::max();      break;
-  case FT_DOUBLE80: *this = std::numeric_limits<Double80>::max();      break;
+  case FT_FLOAT   : *this = numeric_limits<float   >::max();           break;
+  case FT_DOUBLE  : *this = numeric_limits<double  >::max();           break;
+  case FT_DOUBLE80: *this = numeric_limits<Double80>::max();           break;
   DEFAULT_WRONGTYPE(getType());
   }
   return *this;
@@ -150,9 +153,9 @@ FloatFields &FloatFields::setMax() {
 
 FloatFields &FloatFields::setPInf() {
   switch(getType()) {
-  case FT_FLOAT   : *this = std::numeric_limits<float   >::infinity();       break;
-  case FT_DOUBLE  : *this = std::numeric_limits<double  >::infinity();       break;
-  case FT_DOUBLE80: *this = std::numeric_limits<Double80>::infinity();       break;
+  case FT_FLOAT   : *this = numeric_limits<float   >::infinity();      break;
+  case FT_DOUBLE  : *this = numeric_limits<double  >::infinity();      break;
+  case FT_DOUBLE80: *this = numeric_limits<Double80>::infinity();      break;
   DEFAULT_WRONGTYPE(getType());
   }
   return *this;
@@ -160,9 +163,9 @@ FloatFields &FloatFields::setPInf() {
 
 FloatFields &FloatFields::setQNaN() {
   switch(getType()) {
-  case FT_FLOAT   : *this = std::numeric_limits<float   >::quiet_NaN();     break;
-  case FT_DOUBLE  : *this = std::numeric_limits<double  >::quiet_NaN();     break;
-  case FT_DOUBLE80: *this = std::numeric_limits<Double80>::quiet_NaN();     break;
+  case FT_FLOAT   : *this = numeric_limits<float   >::quiet_NaN();     break;
+  case FT_DOUBLE  : *this = numeric_limits<double  >::quiet_NaN();     break;
+  case FT_DOUBLE80: *this = numeric_limits<Double80>::quiet_NaN();     break;
   DEFAULT_WRONGTYPE(getType());
   }
   return *this;
@@ -170,9 +173,9 @@ FloatFields &FloatFields::setQNaN() {
 
 FloatFields &FloatFields::setSNaN() {
   switch(getType()) {
-  case FT_FLOAT   : *this = std::numeric_limits<float   >::signaling_NaN(); break;
-  case FT_DOUBLE  : *this = std::numeric_limits<double  >::signaling_NaN(); break;
-  case FT_DOUBLE80: *this = std::numeric_limits<Double80>::signaling_NaN(); break;
+  case FT_FLOAT   : *this = numeric_limits<float   >::signaling_NaN(); break;
+  case FT_DOUBLE  : *this = numeric_limits<double  >::signaling_NaN(); break;
+  case FT_DOUBLE80: *this = numeric_limits<Double80>::signaling_NaN(); break;
   DEFAULT_WRONGTYPE(getType());
   }
   return *this;
@@ -252,9 +255,9 @@ UINT FloatFields::getExpoBitCount(FloatType type) { // static
 
 int FloatFields::getMaxDigits10(FloatType type) {
   switch(type) {
-  case FT_FLOAT   : return std::numeric_limits<float>::max_digits10;
-  case FT_DOUBLE  : return std::numeric_limits<double>::max_digits10;
-  case FT_DOUBLE80: return std::numeric_limits<Double80>::max_digits10;
+  case FT_FLOAT   : return numeric_limits<float   >::max_digits10;
+  case FT_DOUBLE  : return numeric_limits<double  >::max_digits10;
+  case FT_DOUBLE80: return numeric_limits<Double80>::max_digits10;
   DEFAULT_WRONGTYPE(type);
   }
   return 0;
@@ -295,7 +298,7 @@ String FloatFields::toBinString() const {
 }
 
 String FloatFields::getDisplayString() const {
-  const int         prec     = getMaxDigits10();
+  const int prec = getMaxDigits10();
   switch(getType()) {
   case FT_FLOAT   :
     { const float    v = getFloat();
@@ -363,26 +366,15 @@ FloatFields reciproc(const FloatFields &ff) {
 
 FloatFields sqrt(const FloatFields &ff) {
   switch(ff.getType()) {
-  case FT_FLOAT:
-    { const float f = ff.getFloat();
-      return FloatFields((float)sqrtf(f));
-    }
-  case FT_DOUBLE  :
-    { const double d = ff.getDouble();
-      return FloatFields(sqrt(d));
-    }
-  case FT_DOUBLE80:
-    { const Double80 d80 = ff.getDouble80();
-      return FloatFields(sqrt(d80));
-    }
+  case FT_FLOAT   : return FloatFields((float)sqrtf(ff.getFloat()));
+  case FT_DOUBLE  : return FloatFields(sqrt(ff.getDouble()));
+  case FT_DOUBLE80: return FloatFields(sqrt(ff.getDouble80()));
   DEFAULT_WRONGTYPE(ff.getType());
   }
   return ff;
 }
 
-using namespace std;
-
-wostream &operator<<(wostream &s, const FloatFields &ff) {
+template<class OSTREAMTYPE> OSTREAMTYPE &putff(OSTREAMTYPE &s, const FloatFields &ff) {
   switch(ff.getType()) {
   case FT_FLOAT   : s << ff.getFloat();    break;
   case FT_DOUBLE  : s << ff.getDouble();   break;
@@ -391,13 +383,54 @@ wostream &operator<<(wostream &s, const FloatFields &ff) {
   return s;
 }
 
-wistream &operator>>(wistream &s, FloatFields &ff) {
+template<class ISTREAMTYPE> ISTREAMTYPE &getff(ISTREAMTYPE&s, FloatFields &ff) {
   switch(ff.getType()) {
   case FT_FLOAT   : { float    v; s >> v; ff = v; break; }
   case FT_DOUBLE  : { double   v; s >> v; ff = v; break; }
   case FT_DOUBLE80: { Double80 v; s >> v; ff = v; break; }
   }
   return s;
+}
+
+ostream &operator<<(ostream &s, const FloatFields &ff) {
+  return putff(s, ff);
+}
+
+wostream &operator<<(wostream &s, const FloatFields &ff) {
+  return putff(s, ff);
+}
+
+istream &operator>>(istream &s, FloatFields &ff) {
+  return getff(s, ff);
+}
+
+wistream &operator>>(wistream &s, FloatFields &ff) {
+  return getff(s, ff);
+}
+
+istream &FloatFields::input(istream &in, bool manip) {
+  float    f;
+  double   d;
+  Double80 d80;
+  if(manip) {
+    switch(getType()) {
+    case FT_FLOAT   : in >> CharManip<float >   >> f  ; break;
+    case FT_DOUBLE  : in >> CharManip<double>   >> d  ; break;
+    case FT_DOUBLE80: in >> CharManip<Double80> >> d80; break;
+    }
+  } else {
+    switch(getType()) {
+    case FT_FLOAT   : in >> f  ; break;
+    case FT_DOUBLE  : in >> d  ; break;
+    case FT_DOUBLE80: in >> d80; break;
+    }
+  }
+  switch(getType()) {
+  case FT_FLOAT   : *this = f  ; break;
+  case FT_DOUBLE  : *this = d  ; break;
+  case FT_DOUBLE80: *this = d80; break;
+  }
+  return in;
 }
 
 wistream &FloatFields::input(wistream &in, bool manip) {

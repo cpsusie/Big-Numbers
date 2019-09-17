@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <StrStream.h>
 #include "TestBin.h"
 #include "TestFloatDlg.h"
 #include "HexEditOverwrite.h"
@@ -18,6 +19,7 @@ CTestFloatDlg::CTestFloatDlg(CWnd *pParent)
 , m_fillString(_T(" "))
 , m_streamState(_T(""))
 , m_manipStreamIn(FALSE)
+, m_widecharStream(FALSE)
 , m_autoUpdateStreamOut(FALSE)
 {
   m_showffActive     = false;
@@ -26,14 +28,15 @@ CTestFloatDlg::CTestFloatDlg(CWnd *pParent)
 
 void CTestFloatDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
-  DDX_Text(pDX, IDC_EDITSTREAMINVALUE, m_streamInString);
-  DDX_Text(pDX, IDC_EDITSTREAMOUTVALUE, m_streamOutString);
-  DDX_Text(pDX, IDC_EDITWIDTHVALUE, m_width);
-  DDX_Text(pDX, IDC_EDITPRECVALUE, m_precision);
-  DDX_Text(pDX, IDC_EDITFILLVALUE, m_fillString);
+  DDX_Text( pDX, IDC_EDITSTREAMINVALUE       , m_streamInString     );
+  DDX_Text( pDX, IDC_EDITSTREAMOUTVALUE      , m_streamOutString    );
+  DDX_Text( pDX, IDC_EDITWIDTHVALUE          , m_width              );
+  DDX_Text( pDX, IDC_EDITPRECVALUE           , m_precision          );
+  DDX_Text( pDX, IDC_EDITFILLVALUE           , m_fillString         );
   DDV_MaxChars(pDX, m_fillString, 1);
-  DDX_Text(pDX, IDC_STATICSTREAMSTATEVALUE, m_streamState);
-  DDX_Check(pDX, IDC_CHECKMANIPSTREAMIN, m_manipStreamIn);
+  DDX_Text( pDX, IDC_STATICSTREAMSTATEVALUE  , m_streamState        );
+  DDX_Check(pDX, IDC_CHECKMANIPSTREAMIN      , m_manipStreamIn      );
+  DDX_Check(pDX, IDC_CHECKWIDECHARSTREAM     , m_widecharStream     );
   DDX_Check(pDX, IDC_CHECKAUTOUPDATESTREAMOUT, m_autoUpdateStreamOut);
 }
 
@@ -43,10 +46,12 @@ BEGIN_MESSAGE_MAP(CTestFloatDlg, CDialog)
   ON_BN_CLICKED(          IDC_RADIOTYPEDOUBLE64        , OnBnClickedRadioTypeDouble64       )
   ON_BN_CLICKED(          IDC_RADIOTYPEDOUBLE80        , OnBnClickedRadioTypeDouble80       )
   ON_BN_CLICKED(          IDC_CHECKSIGNBIT             , OnClickedCheckSignBit              )
-  ON_EN_CHANGE(           IDC_EDITEXPOVALUE            , OnChangeEditExpoValue              )
-  ON_EN_CHANGE(           IDC_EDITSIGVALUE             , OnChangeEditSigValue               )
   ON_EN_SETFOCUS(         IDC_EDITEXPOVALUE            , OnEnSetFocusEditExpoValue          )
+  ON_EN_CHANGE(           IDC_EDITEXPOVALUE            , OnChangeEditExpoValue              )
+  ON_NOTIFY(UDN_DELTAPOS, IDC_SPINEXPOVALUE            , OnDeltaPosSpinExpoValue            )
   ON_EN_SETFOCUS(         IDC_EDITSIGVALUE             , OnEnSetFocusEditSigValue           )
+  ON_EN_CHANGE(           IDC_EDITSIGVALUE             , OnChangeEditSigValue               )
+  ON_NOTIFY(UDN_DELTAPOS, IDC_SPINSIGVALUE             , OnDeltaPosSpinSigValue             )
   ON_BN_CLICKED(          IDC_BUTTONSAVE               , OnBnClickedButtonSave              )
   ON_BN_CLICKED(          IDC_BUTTONLOAD               , OnBnClickedButtonLoad              )
   ON_BN_CLICKED(          IDC_BUTTONRESETMEM           , OnBnClickedButtonResetMem          )
@@ -69,11 +74,6 @@ BEGIN_MESSAGE_MAP(CTestFloatDlg, CDialog)
   ON_BN_CLICKED(          IDC_BUTTONRECIPROC           , OnBnClickedButtonReciproc          )
   ON_BN_CLICKED(          IDC_BUTTONSQR                , OnBnClickedButtonSqr               )
   ON_BN_CLICKED(          IDC_BUTTONSQRT               , OnBnClickedButtonSqrt              )
-  ON_NOTIFY(UDN_DELTAPOS, IDC_SPINEXPOVALUE            , OnDeltaPosSpinExpoValue            )
-  ON_NOTIFY(UDN_DELTAPOS, IDC_SPINSIGVALUE             , OnDeltaPosSpinSigValue             )
-  ON_NOTIFY(UDN_DELTAPOS, IDC_SPINPRECVALUE            , OnDeltaPosSpinPrecValue            )
-  ON_NOTIFY(UDN_DELTAPOS, IDC_SPINWIDTHVALUE           , OnDeltaPosSpinWidthValue           )
-  ON_BN_CLICKED(          IDC_CHECK_MAXPREC            , OnBnClickedCheckMaxPrec            )
   ON_BN_CLICKED(          IDC_CHECK_IOS_SKIPWS         , OnBnClickedCheckIosFlag            )
   ON_BN_CLICKED(          IDC_CHECK_IOS_UNITBUF        , OnBnClickedCheckIosFlag            )
   ON_BN_CLICKED(          IDC_CHECK_IOS_UPPERCASE      , OnBnClickedCheckIosFlag            )
@@ -96,11 +96,15 @@ BEGIN_MESSAGE_MAP(CTestFloatDlg, CDialog)
   ON_BN_CLICKED(          IDC_BUTTONSTREAMIN           , OnBnClickedButtonStreamIn          )
   ON_BN_CLICKED(          IDC_BUTTONSTREAMOUT          , OnBnClickedButtonStreamOut         )
   ON_BN_CLICKED(          IDC_BUTTONCOPYOUTTOIN        , OnBnClickedButtonCopyOutToIn       )
+  ON_BN_CLICKED(          IDC_CHECKWIDECHARSTREAM      , OnBnClickedCheckWideCharStream     )
   ON_BN_CLICKED(          IDC_CHECKAUTOUPDATESTREAMOUT , OnBnClickedCheckAutoUpdateStreamOut)
   ON_EN_CHANGE(           IDC_EDITWIDTHVALUE           , OnEnChangeEditWidthValue           )
-  ON_EN_CHANGE(           IDC_EDITPRECVALUE            , OnEnChangeEditPrecValue            )
   ON_EN_UPDATE(           IDC_EDITWIDTHVALUE           , OnEnUpdateEditWidthValue           )
+  ON_NOTIFY(UDN_DELTAPOS, IDC_SPINWIDTHVALUE           , OnDeltaPosSpinWidthValue           )
+  ON_EN_CHANGE(           IDC_EDITPRECVALUE            , OnEnChangeEditPrecValue            )
   ON_EN_UPDATE(           IDC_EDITPRECVALUE            , OnEnUpdateEditPrecValue            )
+  ON_NOTIFY(UDN_DELTAPOS, IDC_SPINPRECVALUE            , OnDeltaPosSpinPrecValue            )
+  ON_BN_CLICKED(          IDC_CHECK_MAXPREC            , OnBnClickedCheckMaxPrec            )
   ON_EN_CHANGE(           IDC_EDITFILLVALUE            , OnEnChangeEditFillValue            )
   ON_EN_SETFOCUS(         IDC_EDITFILLVALUE            , OnEnSetFocusEditFillValue          )
 END_MESSAGE_MAP()
@@ -119,6 +123,7 @@ BOOL CTestFloatDlg::OnInitDialog() {
   OnBnClickedCheckIosFlag();
   setStreamOpIsMem(false);
   GetDlgItem(IDC_EDITEXPOVALUE)->SetFocus();
+
   return FALSE;
 }
 
@@ -248,28 +253,50 @@ void CTestFloatDlg::OnDeltaPosSpinPrecValue(NMHDR *pNMHDR, LRESULT *pResult) {
 void CTestFloatDlg::OnBnClickedButtonStreamIn() {
   UpdateData();
 
-  wstring        str = (LPCTSTR)m_streamInString;
-  wstringstream stream(str);
-  FloatFields   tmp(m_accumulator);
-  tmp.input(paramWinToStream(stream), m_manipStreamIn == TRUE);
-  if (stream) {
-    showFloatFieldsValue(tmp, getStreamOpIsMem());
+  if(m_widecharStream) {
+    const wstring str = (LPCTSTR)m_streamInString;
+    wstringstream stream(str);
+    FloatFields   tmp(m_accumulator);
+    tmp.input(paramWinToStream(stream), m_manipStreamIn == TRUE);
+    if(stream) {
+      showFloatFieldsValue(tmp, getStreamOpIsMem());
+    }
+    m_streamState = streamStateToString(stream).cstr();
+  } else {
+    USES_CONVERSION;
+    const char  *instringascii = T2A((LPCTSTR)m_streamInString);
+    const string str           = instringascii;
+    stringstream stream(str);
+    FloatFields  tmp(m_accumulator);
+    tmp.input(paramWinToStream(stream), m_manipStreamIn == TRUE);
+    if(stream) {
+      showFloatFieldsValue(tmp, getStreamOpIsMem());
+    }
+    m_streamState = streamStateToString(stream).cstr();
   }
-  m_streamState = streamStateToString(stream);
-
   UpdateData(FALSE);
 }
 
 void CTestFloatDlg::OnBnClickedButtonStreamOut() {
   UpdateData();
 
-  wstringstream stream;
-  paramWinToStream(stream) << getSelectedStreamOp();
-
-  m_streamOutString = stream.str().c_str();
-  m_streamState     = streamStateToString(stream);
-
+  if(m_widecharStream) {
+    wstringstream stream;
+    paramWinToStream(stream) << getSelectedStreamOp();
+    m_streamOutString        =  stream.str().c_str();
+    m_streamState            =  streamStateToString(stream).cstr();
+  } else {
+    stringstream stream;
+    paramWinToStream(stream) << getSelectedStreamOp();
+    m_streamOutString        =  stream.str().c_str();
+    m_streamState            =  streamStateToString(stream).cstr();
+  }
   UpdateData(FALSE);
+}
+
+void CTestFloatDlg::OnBnClickedCheckWideCharStream() {
+  UpdateData();
+  autoClickStreamOut();
 }
 
 void CTestFloatDlg::OnBnClickedCheckAutoUpdateStreamOut() {
@@ -429,19 +456,23 @@ void CTestFloatDlg::setStreamOpIsMem(bool v) {
   autoClickStreamOut();
 }
 
-void CTestFloatDlg::paramStreamToWin(wstringstream &stream) {
-  setWidth(    (int)stream.width()    );
-  setPrecision((int)stream.precision());
-  formatFlagsToWin( stream.flags()    );
-  fillCharToWin(    stream.fill()     );
+StreamParameters CTestFloatDlg::winToStreamParameters() {
+  return StreamParameters(m_precision, m_width, winToFormatFlags(), winToFillChar());
+}
+
+void CTestFloatDlg::streamParametersToWin(const StreamParameters &param) {
+  setWidth(        (int)param.width()    );
+  setPrecision(    (int)param.precision());
+  formatFlagsToWin(     param.flags()    );
+  fillCharToWin(        param.fill()     );
 }
 
 wstringstream &CTestFloatDlg::paramWinToStream(wstringstream &stream) {
-  stream.width(m_width);
-  stream.precision(m_precision);
-  stream.flags(winToFormatFlags());
-  stream.fill(winToFillChar());
-  return stream;
+  return setFormat(stream, winToStreamParameters());
+}
+
+stringstream &CTestFloatDlg::paramWinToStream(stringstream  &stream) {
+  return setFormat(stream, winToStreamParameters());
 }
 
 struct ButtunIdFlag {
@@ -496,20 +527,4 @@ void CTestFloatDlg::fillCharToWin(wchar_t ch) {
 
 wchar_t CTestFloatDlg::winToFillChar() {
   return (m_fillString.GetLength() == 0) ? _T(' ') : m_fillString.GetAt(0);
-}
-
-CString CTestFloatDlg::streamStateToString(wstringstream &s) { // static
-  String result;
-  if(s) {
-    result = _T("ok ");
-  }
-  if(s.fail()) result += _T("fail ");
-  if(s.bad()) result  += _T("bad " );
-  if(s.eof()) {
-    result += _T("eof ");
-  } else {
-    const wchar_t next = s.peek();
-    result += format(_T("next:'%c'"), next);
-  }
-  return result.cstr();
 }

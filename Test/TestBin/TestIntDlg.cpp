@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <StrStream.h>
 #include "TestBin.h"
 #include "TestIntDlg.h"
 #include "HexEditOverwrite.h"
@@ -16,6 +17,7 @@ CTestIntDlg::CTestIntDlg(CWnd *pParent)
 , m_width(6)
 , m_fillString(_T(" "))
 , m_streamState(_T(""))
+, m_widecharStream(     FALSE)
 , m_autoUpdateStreamOut(FALSE)
 , m_radix(2)
 {
@@ -25,14 +27,15 @@ CTestIntDlg::CTestIntDlg(CWnd *pParent)
 
 void CTestIntDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
-  DDX_Text(      pDX, IDC_EDITSTREAMINVALUE       , m_streamInString);
-  DDX_Text(      pDX, IDC_EDITSTREAMOUTVALUE      , m_streamOutString);
-  DDX_Text(      pDX, IDC_EDITWIDTHVALUE          , m_width);
-  DDX_Text(      pDX, IDC_EDITFILLVALUE           , m_fillString);
+  DDX_Text(      pDX, IDC_EDITSTREAMINVALUE       , m_streamInString     );
+  DDX_Text(      pDX, IDC_EDITSTREAMOUTVALUE      , m_streamOutString    );
+  DDX_Text(      pDX, IDC_EDITWIDTHVALUE          , m_width              );
+  DDX_Text(      pDX, IDC_EDITFILLVALUE           , m_fillString         );
   DDV_MaxChars(  pDX, m_fillString, 1);
-  DDX_Text(      pDX, IDC_STATICSTREAMSTATEVALUE  , m_streamState);
+  DDX_Text(      pDX, IDC_STATICSTREAMSTATEVALUE  , m_streamState        );
+  DDX_Check(     pDX, IDC_CHECKWIDECHARSTREAM     , m_widecharStream     );
   DDX_Check(     pDX, IDC_CHECKAUTOUPDATESTREAMOUT, m_autoUpdateStreamOut);
-  DDX_Text(      pDX, IDC_EDITRADIXVALUE          , m_radix);
+  DDX_Text(      pDX, IDC_EDITRADIXVALUE          , m_radix              );
 }
 
 
@@ -44,9 +47,12 @@ BEGIN_MESSAGE_MAP(CTestIntDlg, CDialog)
   ON_BN_CLICKED(          IDC_RADIOTYPEU64             , OnBnClickedRadioTypeU64            )
   ON_BN_CLICKED(          IDC_RADIOTYPEI128            , OnBnClickedRadioTypeI128           )
   ON_BN_CLICKED(          IDC_RADIOTYPEU128            , OnBnClickedRadioTypeU128           )
-  ON_EN_CHANGE(           IDC_EDITINTVALUE             , OnChangeEditIntValue               )
   ON_EN_SETFOCUS(         IDC_EDITINTVALUE             , OnEnSetFocusEditIntValue           )
+  ON_EN_CHANGE(           IDC_EDITINTVALUE             , OnChangeEditIntValue               )
+  ON_NOTIFY(UDN_DELTAPOS, IDC_SPININTVALUE             , OnDeltaPosSpinIntValue             )
   ON_EN_CHANGE(           IDC_EDITRADIXVALUE           , OnEnChangeEditRadixValue           )
+  ON_EN_UPDATE(           IDC_EDITRADIXVALUE           , OnEnUpdateEditRadixValue           )
+  ON_NOTIFY(UDN_DELTAPOS, IDC_SPINRADIXVALUE           , OnDeltaposSpinRadixValue           )
   ON_BN_CLICKED(          IDC_BUTTONSAVE               , OnBnClickedButtonSave              )
   ON_BN_CLICKED(          IDC_BUTTONLOAD               , OnBnClickedButtonLoad              )
   ON_BN_CLICKED(          IDC_BUTTONRESETMEM           , OnBnClickedButtonResetMem          )
@@ -67,9 +73,6 @@ BEGIN_MESSAGE_MAP(CTestIntDlg, CDialog)
   ON_BN_CLICKED(          IDC_BUTTONXOR                , OnBnClickedButtonXor               )
   ON_BN_CLICKED(          IDC_BUTTONNEG                , OnBnClickedButtonNeg               )
   ON_BN_CLICKED(          IDC_BUTTONNOT                , OnBnClickedButtonNot               )
-  ON_NOTIFY(UDN_DELTAPOS, IDC_SPININTVALUE             , OnDeltaPosSpinIntValue             )
-  ON_NOTIFY(UDN_DELTAPOS, IDC_SPINRADIXVALUE           , OnDeltaposSpinRadixValue           )
-  ON_NOTIFY(UDN_DELTAPOS, IDC_SPINWIDTHVALUE           , OnDeltaPosSpinWidthValue           )
   ON_BN_CLICKED(          IDC_CHECK_IOS_SKIPWS         , OnBnClickedCheckIosFlag            )
   ON_BN_CLICKED(          IDC_CHECK_IOS_UNITBUF        , OnBnClickedCheckIosFlag            )
   ON_BN_CLICKED(          IDC_CHECK_IOS_UPPERCASE      , OnBnClickedCheckIosFlag            )
@@ -92,12 +95,13 @@ BEGIN_MESSAGE_MAP(CTestIntDlg, CDialog)
   ON_BN_CLICKED(          IDC_BUTTONSTREAMIN           , OnBnClickedButtonStreamIn          )
   ON_BN_CLICKED(          IDC_BUTTONSTREAMOUT          , OnBnClickedButtonStreamOut         )
   ON_BN_CLICKED(          IDC_BUTTONCOPYOUTTOIN        , OnBnClickedButtonCopyOutToIn       )
+  ON_BN_CLICKED(          IDC_CHECKWIDECHARSTREAM      , OnBnClickedCheckWideCharStream     )
   ON_BN_CLICKED(          IDC_CHECKAUTOUPDATESTREAMOUT , OnBnClickedCheckAutoUpdateStreamOut)
   ON_EN_CHANGE(           IDC_EDITWIDTHVALUE           , OnEnChangeEditWidthValue           )
   ON_EN_UPDATE(           IDC_EDITWIDTHVALUE           , OnEnUpdateEditWidthValue           )
+  ON_NOTIFY(UDN_DELTAPOS, IDC_SPINWIDTHVALUE           , OnDeltaPosSpinWidthValue           )
   ON_EN_CHANGE(           IDC_EDITFILLVALUE            , OnEnChangeEditFillValue            )
   ON_EN_SETFOCUS(         IDC_EDITFILLVALUE            , OnEnSetFocusEditFillValue          )
-  ON_EN_UPDATE(IDC_EDITRADIXVALUE, &CTestIntDlg::OnEnUpdateEditRadixValue)
 END_MESSAGE_MAP()
 
 BOOL CTestIntDlg::OnInitDialog() {
@@ -237,7 +241,6 @@ void CTestIntDlg::OnDeltaposSpinRadixValue(NMHDR *pNMHDR, LRESULT *pResult) {
   *pResult = 0;
 }
 
-
 void CTestIntDlg::OnDeltaPosSpinWidthValue(NMHDR *pNMHDR, LRESULT *pResult) {
   LPNMUPDOWN pNMUpDown = reinterpret_cast<LPNMUPDOWN>(pNMHDR);
   UpdateData();
@@ -248,29 +251,52 @@ void CTestIntDlg::OnDeltaPosSpinWidthValue(NMHDR *pNMHDR, LRESULT *pResult) {
 void CTestIntDlg::OnBnClickedButtonStreamIn() {
   UpdateData();
 
-  wstring       str = (LPCTSTR)m_streamInString;
-  wstringstream stream(str);
-  IntType       tmp(m_accumulator);
-  tmp.setZero();
-  paramWinToStream(stream) >> tmp;
-  if(stream) {
-    showIntTypeValue(tmp, getStreamOpIsMem());
+  if(m_widecharStream) {
+    wstring       str = (LPCTSTR)m_streamInString;
+    wstringstream stream(str);
+    IntType       tmp(m_accumulator);
+    tmp.setZero();
+    paramWinToStream(stream) >> tmp;
+    if(stream) {
+      showIntTypeValue(tmp, getStreamOpIsMem());
+    }
+    m_streamState = streamStateToString(stream).cstr();
+  } else {
+    USES_CONVERSION;
+    const char  *instringascii = T2A((LPCTSTR)m_streamInString);
+    const string str = instringascii;
+    stringstream stream(str);
+    IntType      tmp(m_accumulator);
+    tmp.setZero();
+    paramWinToStream(stream) >> tmp;
+    if(stream) {
+      showIntTypeValue(tmp, getStreamOpIsMem());
+    }
+    m_streamState = streamStateToString(stream).cstr();
   }
-  m_streamState = streamStateToString(stream);
-
   UpdateData(FALSE);
 }
 
 void CTestIntDlg::OnBnClickedButtonStreamOut() {
   UpdateData();
 
-  wstringstream stream;
-  paramWinToStream(stream) << getSelectedStreamOp();
-
-  m_streamOutString = stream.str().c_str();
-  m_streamState     = streamStateToString(stream);
-
+  if(m_widecharStream) {
+    wstringstream stream;
+    paramWinToStream(stream) << getSelectedStreamOp();
+    m_streamOutString = stream.str().c_str();
+    m_streamState     = streamStateToString(stream).cstr();
+  } else {
+    stringstream stream;
+    paramWinToStream(stream) << getSelectedStreamOp();
+    m_streamOutString = stream.str().c_str();
+    m_streamState     = streamStateToString(stream).cstr();
+  }
   UpdateData(FALSE);
+}
+
+void CTestIntDlg::OnBnClickedCheckWideCharStream() {
+  UpdateData();
+  autoClickStreamOut();
 }
 
 void CTestIntDlg::OnBnClickedCheckAutoUpdateStreamOut() {
@@ -387,17 +413,22 @@ void CTestIntDlg::setStreamOpIsMem(bool v) {
   autoClickStreamOut();
 }
 
-void CTestIntDlg::paramStreamToWin(wstringstream &stream) {
-  setWidth(    (int)stream.width()    );
-  formatFlagsToWin( stream.flags()    );
-  fillCharToWin(    stream.fill()     );
+StreamParameters CTestIntDlg::winToStreamParameters() {
+  return StreamParameters(0, m_width, winToFormatFlags(), winToFillChar());
+}
+
+void CTestIntDlg::streamParametersToWin(const StreamParameters &param) {
+  setWidth(        (int)param.width());
+  formatFlagsToWin(param.flags());
+  fillCharToWin(   param.fill());
 }
 
 wstringstream &CTestIntDlg::paramWinToStream(wstringstream &stream) {
-  stream.width(m_width);
-  stream.flags(winToFormatFlags());
-  stream.fill(winToFillChar());
-  return stream;
+  return setFormat(stream, winToStreamParameters());
+}
+
+stringstream &CTestIntDlg::paramWinToStream(stringstream  &stream) {
+  return setFormat(stream, winToStreamParameters());
 }
 
 struct ButtunIdFlag {
@@ -452,20 +483,4 @@ void CTestIntDlg::fillCharToWin(wchar_t ch) {
 
 wchar_t CTestIntDlg::winToFillChar() {
   return (m_fillString.GetLength() == 0) ? _T(' ') : m_fillString.GetAt(0);
-}
-
-CString CTestIntDlg::streamStateToString(wstringstream &s) { // static
-  String result;
-  if(s) {
-    result = _T("ok ");
-  }
-  if(s.fail()) result += _T("fail ");
-  if(s.bad()) result  += _T("bad " );
-  if(s.eof()) {
-    result += _T("eof ");
-  } else {
-    const wchar_t next = s.peek();
-    result += format(_T("next:'%c'"), next);
-  }
-  return result.cstr();
 }

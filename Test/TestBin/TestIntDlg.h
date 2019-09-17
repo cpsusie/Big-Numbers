@@ -16,6 +16,7 @@ private:
   int            m_width;
   CString        m_fillString;
   TCHAR          m_fill;
+  BOOL           m_widecharStream;
   BOOL           m_autoUpdateStreamOut;
   bool           m_showItActive, m_setAccTypeActive;
 
@@ -30,15 +31,23 @@ private:
   inline bool        getStreamOpIsMem() {
     return IsDlgButtonChecked(IDC_RADIOOPMEM) == BST_CHECKED;
   }
-  IntType           &getSelectedStreamOp() { return getStreamOpIsMem() ? m_memory : m_accumulator; }
-  void               setDefaultStreamParam() { paramStreamToWin(wstringstream()); }
-  void               paramStreamToWin(wstringstream &stream);
+  inline IntType    &getSelectedStreamOp() {
+    return getStreamOpIsMem() ? m_memory : m_accumulator;
+  }
+  inline void        setDefaultStreamParam() {
+    streamParamToWin(wstringstream());
+  }
+  inline void        streamParamToWin(wstringstream &stream) {
+    streamParametersToWin(StreamParameters(stream));
+  }
+  void               streamParametersToWin(const StreamParameters &param);
+  StreamParameters   winToStreamParameters();
   wstringstream     &paramWinToStream(wstringstream &stream);
+  stringstream      &paramWinToStream(stringstream  &stream);
   void               formatFlagsToWin(FormatFlags flags);
   FormatFlags        winToFormatFlags();
   void               fillCharToWin(wchar_t ch);
   wchar_t            winToFillChar();
-  static CString     streamStateToString(wstringstream &sream);
   void               updateAcc();
   void               updateAccRadix();
   void               setWidth(    int width);
@@ -94,12 +103,12 @@ protected:
   afx_msg void OnBnClickedButtonStreamOut();
   afx_msg void OnBnClickedButtonCopyOutToIn();
   afx_msg void OnBnClickedCheckAutoUpdateStreamOut();
+  afx_msg void OnBnClickedCheckWideCharStream();
   afx_msg void OnBnClickedCheckIosFlag();
+  afx_msg void OnEnUpdateEditRadixValue();
   afx_msg void OnEnChangeEditWidthValue();
   afx_msg void OnEnUpdateEditWidthValue();
   afx_msg void OnEnChangeEditFillValue();
   afx_msg void OnEnSetFocusEditFillValue();
   DECLARE_MESSAGE_MAP()
-public:
-  afx_msg void OnEnUpdateEditRadixValue();
 };
