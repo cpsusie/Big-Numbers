@@ -90,7 +90,7 @@ int main(int argc, char **argv) {
       }
     }
   }
-  cout << UndefFloatingValueStreamScanner::getInstance().toString();
+  cout << UndefFloatValueStreamScanner::getInstance().toString();
   try {
     switch(cmd) {
     case CMD_TESTINTERNETEXAMPLE :
