@@ -148,6 +148,23 @@ public:
 
 // ----------------------------------------------------------------------------------------------------
 
+template<class STREAM> String streamStateToString(STREAM &s) {
+  String result;
+  if(s) {
+    result = _T("ok ");
+  }
+  if(s.fail()) result += _T("fail ");
+  if(s.bad()) result += _T("bad ");
+  if(s.eof()) {
+    result += _T("eof ");
+  } else {
+    result += format(_T("next:'%c'"), s.peek());
+  }
+  return result;
+}
+
+//#define DEBUG_ISTREAMSCANNER
+
 template<class IStreamType, class CharType> class IStreamScanner {
 private:
   IStreamType       &m_in;
@@ -157,9 +174,28 @@ private:
   String             m_buf;
   mutable String     m_tmp;
   CharType           m_ch;
+#ifdef DEBUG_ISTREAMSCANNER
+  mutable String     m_stateString;
+  void updateStateString() const {
+    m_stateString = streamStateToString(m_in);
+  }
+#define UPDSTSTR() updateStateString();
+#else
+#define UPDSTSTR()
+#endif // DEBUG_ISTREAMSCANNER
+
+  // if m_in.eof(), return 0, else { int ch = m_in.peek(). return (CharType)ch); }
+  CharType peekInput() const {
+    if(m_in.eof()) {
+      return 0;
+    }
+    const int ch = m_in.peek();
+    UPDSTSTR()
+    return (CharType)ch;
+  }
 
   CharType skipleadingwhite() {
-    if(iswspace(m_ch = m_in.peek())) {
+    if(iswspace(m_ch = peekInput())) {
       do {
         next();
       } while(iswspace(m_ch));
@@ -185,6 +221,14 @@ private:
     }
     return m_tmp;
   }
+  void ungetAll() {
+    for(intptr_t count = m_buf.length(); count--;) {
+      m_in.unget();
+      UPDSTSTR()
+    }
+    m_buf = EMPTYSTRING;
+    m_ch = peekInput();
+  }
 
 public:
   IStreamScanner(IStreamType &in)
@@ -198,20 +242,24 @@ public:
     if(m_flags & std::ios::skipws) {
       m_ch = skipleadingwhite();
     } else {
-      m_ch = m_in.peek();
+      m_ch = peekInput();
     }
     m_startIndex = m_buf.length();
   }
 
+  // if(!ok) all characters read, is unget, and m_in.setstate(ios::failbit)
   void endScan(bool ok = true) {
+    UPDSTSTR()
     if(ok) {
       m_in.flags(m_flags);
     } else {
       if(!m_in.eof()) {
         ungetAll();
       }
+      UPDSTSTR()
       m_in.flags(m_flags);
       m_in.setstate(std::ios::failbit);
+      UPDSTSTR()
     }
   }
 
@@ -221,37 +269,31 @@ public:
   inline int radix() const {
     return StreamParameters::radix(flags());
   }
-  void ungetAll() {
-    while(!m_buf.isEmpty()) {
-      m_in.unget();
-      m_ch = (CharType)m_buf.last();
-      m_buf.removeLast();
-    }
-  }
 
+  // Add current character to buf, and set current character = peekInput()
   CharType next() {
     m_buf += m_ch;
-    m_in >> m_ch;
-    if((m_ch = m_in.peek()) == EOF) {
-      m_in >> m_ch;
-    }
-    return m_ch;
+    m_in.get();
+    UPDSTSTR()
+    return m_ch = peekInput();
   }
 
   CharType skipInternalFill() {
     if(((m_flags & std::ios::adjustfield) == std::ios::internal) && !iswspace(m_fill) && (m_buf.length() > (size_t)m_startIndex)) {
       m_fillStartIndex = m_buf.length();
-      while(m_ch == m_fill) next();
+      while(peek() == m_fill) {
+        next();
+      }
       m_fillLength = m_buf.length() - m_fillStartIndex;
     }
-    return m_ch;
+    return peek();
   }
 
   CharType skipwhite() {
-    while(iswspace(m_ch)) {
+    while(iswspace(peek())) {
       next();
     }
-    return m_ch;
+    return peek();
   }
 
   inline CharType peek() const {
@@ -273,11 +315,11 @@ template<class STREAM> STREAM &setFormat(STREAM &stream, const StreamParameters 
 
 template<class STREAM> STREAM &skipfill(STREAM &in) {
   const wchar_t fillchar = in.fill();
-  if (!iswspace(fillchar)) {
+  if(!iswspace(fillchar)) {
     const FormatFlags flg = in.flags();
     in.flags(flg | ios::skipws);
     wchar_t ch;
-    while ((ch = in.peek()) == fillchar) {
+    while((ch = in.peek()) == fillchar) {
       in.get();
     }
     in.flags(flg);
@@ -289,25 +331,9 @@ template<class STREAM> STREAM &skipspace(STREAM &in) {
   const FormatFlags flg = in.flags();
   in.flags(flg | ios::skipws);
   wchar_t ch;
-  while (iswspace(ch = in.peek())) {
+  while(iswspace(ch = in.peek())) {
     in.get();
   }
   in.flags(flg);
   return in;
-}
-
-template<class STREAM> String streamStateToString(STREAM &s) {
-  String result;
-  if(s) {
-    result = _T("ok ");
-  }
-  if(s.fail()) result += _T("fail ");
-  if(s.bad()) result += _T("bad ");
-  if(s.eof()) {
-    result += _T("eof ");
-  } else {
-    const wchar_t nextChar = s.peek();
-    result += format(_T("next:'%c'"), nextChar);
-  }
-  return result;
 }

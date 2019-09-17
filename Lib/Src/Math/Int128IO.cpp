@@ -72,11 +72,14 @@ template <class IStreamType, class CharType> IStreamType &getInt128(IStreamType 
   bool     gotDigits = false;
   _int128  result;
 
+  switch(ch) {
+  case '-':
+  case '+':
+    ch = scanner.next();
+  }
+
   switch(scanner.radix()) {
   case 10:
-    if((ch == '+') || (ch == '-')) {
-      ch = scanner.next();
-    }
     while(iswdigit(ch)) {
       ch = scanner.next();
       gotDigits = true;
@@ -101,9 +104,12 @@ template <class IStreamType, class CharType> IStreamType &getInt128(IStreamType 
       }
       if(gotDigits) {
         errno = 0;
-        const TCHAR *s = scanner.getBuffer().cstr();
-        if(_tcsnicmp(s, _T("0x"), 2) == 0) s += 2;
-        result = _tcstoi128(s, NULL, 16);
+        String s = scanner.getBuffer();
+        intptr_t index;
+        if(((index = s.find(_T("0x"))) >= 0) || ((index = s.find(_T("0X"))) >= 0)) {
+          s.remove(index, 2);
+        }
+        result = _tcstoi128(s.cstr(), NULL, 16);
       }
     }
     break;
@@ -137,9 +143,15 @@ template <class IStreamType, class CharType> IStreamType &getUint128(IStreamType
   CharType ch        = scanner.peek();
   bool     gotDigits = false;
   _uint128 result;
+
+  switch (ch) {
+  case '-':
+  case '+':
+    ch = scanner.next();
+  }
+
   switch(scanner.radix()) {
   case 10:
-    if(ch == '+') ch = scanner.next();
     while(iswdigit(ch)) {
       ch = scanner.next();
       gotDigits = true;
@@ -164,9 +176,12 @@ template <class IStreamType, class CharType> IStreamType &getUint128(IStreamType
       }
       if(gotDigits) {
         errno  = 0;
-        const TCHAR *s = scanner.getBuffer().cstr();
-        if(_tcsnicmp(s, _T("0x"), 2) == 0) s += 2;
-        result = _tcstoui128(s, NULL, 16);
+        String s = scanner.getBuffer();
+        intptr_t index;
+        if(((index = s.find(_T("0x"))) >= 0) || ((index = s.find(_T("0X"))) >= 0)) {
+          s.remove(index, 2);
+        }
+        result = _tcstoui128(s.cstr(), NULL, 16);
       }
     }
     break;
