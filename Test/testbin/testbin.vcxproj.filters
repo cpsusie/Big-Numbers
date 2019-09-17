@@ -27,13 +27,22 @@
     <ClCompile Include="FloatFields.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TestInt64Dlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="TestFloatDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="HexEditOverwrite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IntType.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TestIntDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CountInt64Dlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IntStreamTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -56,13 +65,22 @@
     <ClInclude Include="FloatFields.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TestInt64Dlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="TestFloatDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="HexEditOverwrite.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IntType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TestIntDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CountInt64Dlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IntStreamTest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

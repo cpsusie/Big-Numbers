@@ -275,6 +275,8 @@
   <ItemGroup>
     <ClCompile Include="FloatFields.cpp" />
     <ClCompile Include="HexEditOverwrite.cpp" />
+    <ClCompile Include="IntStreamTest.cpp" />
+    <ClCompile Include="IntType.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -287,7 +289,8 @@
     </ClCompile>
     <ClCompile Include="TestBin.cpp" />
     <ClCompile Include="TestFloatDlg.cpp" />
-    <ClCompile Include="TestInt64Dlg.cpp" />
+    <ClCompile Include="CountInt64Dlg.cpp" />
+    <ClCompile Include="TestIntDlg.cpp" />
     <ClCompile Include="TimerDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -296,12 +299,15 @@
   <ItemGroup>
     <ClInclude Include="FloatFields.h" />
     <ClInclude Include="HexEditOverwrite.h" />
+    <ClInclude Include="IntStreamTest.h" />
+    <ClInclude Include="IntType.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TestBin.h" />
     <ClInclude Include="TestFloatDlg.h" />
-    <ClInclude Include="TestInt64Dlg.h" />
+    <ClInclude Include="CountInt64Dlg.h" />
+    <ClInclude Include="TestIntDlg.h" />
     <ClInclude Include="TimerDlg.h" />
   </ItemGroup>
   <ItemGroup>

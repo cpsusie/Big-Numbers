@@ -8,6 +8,7 @@
 #define IDR_MAINFRAME                   128
 #define IDD_TESTFLOAT_DIALOG            129
 #define IDD_TIMER_DIALOG                130
+#define IDD_TESTINT_DIALOG              131
 #define IDC_STATICTEXT                  1000
 #define IDC_STARTBUTTON                 1001
 #define IDC_STOPBUTTON                  1002
@@ -17,15 +18,27 @@
 #define IDC_EDITHEX                     1006
 #define IDC_EDITTIMERINTERVAL           1010
 #define IDC_RADIOTYPEFLOAT              1020
+#define IDC_RADIOTYPEI32                1020
 #define IDC_RADIOTYPEDOUBLE64           1021
+#define IDC_RADIOTYPEU32                1021
 #define IDC_RADIOTYPEDOUBLE80           1022
+#define IDC_RADIOTYPEI64                1022
+#define IDC_RADIOTYPEU64                1023
+#define IDC_RADIOTYPEI128               1024
+#define IDC_RADIOTYPEU128               1025
 #define IDC_CHECKSIGNBIT                1030
 #define IDC_STATICEXPOLABEL             1031
 #define IDC_EDITEXPOVALUE               1032
 #define IDC_SPINEXPOVALUE               1033
+#define IDC_STATICEINTLABEL             1031
+#define IDC_EDITINTVALUE                1032
+#define IDC_SPININTVALUE                1033
 #define IDC_STATICSIGLABEL              1034
 #define IDC_EDITSIGVALUE                1035
 #define IDC_SPINSIGVALUE                1036
+#define IDC_STATICRADIXLABEL            1034
+#define IDC_EDITRADIXVALUE              1035
+#define IDC_SPINRADIXVALUE              1036
 #define IDC_STATICEXPO2LABEL            1037
 #define IDC_STATICEXPO2VALUE            1038
 #define IDC_STATICACCBIN                1050
@@ -47,10 +60,15 @@
 #define IDC_BUTTONDIV                   1073
 #define IDC_BUTTONFMOD                  1074
 #define IDC_BUTTONRECIPROC              1075
+#define IDC_BUTTONAND                   1075
 #define IDC_BUTTONSQR                   1076
 #define IDC_BUTTONSQRT                  1077
+#define IDC_BUTTONOR                    1077
+#define IDC_BUTTONXOR                   1078
+#define IDC_BUTTONNEG                   1079
 #define IDC_BUTTONSETZERO               1080
 #define IDC_BUTTONSETTRUEMIN            1081
+#define IDC_BUTTONNOT                   1081
 #define IDC_BUTTONSETMIN                1082
 #define IDC_BUTTONSETEPS                1083
 #define IDC_BUTTONSETRND                1084
@@ -103,14 +121,15 @@
 #define ID_FILE_EXIT                    32771
 #define ID_VIEW_TIMER                   32772
 #define ID_FILE_TESTFLOATS              32773
+#define ID_FILE_TESTINT                 32776
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        138
-#define _APS_NEXT_COMMAND_VALUE         32776
-#define _APS_NEXT_CONTROL_VALUE         1136
+#define _APS_NEXT_COMMAND_VALUE         32779
+#define _APS_NEXT_CONTROL_VALUE         1147
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

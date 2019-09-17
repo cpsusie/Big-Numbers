@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "TestBin.h"
-#include "TestInt64Dlg.h"
+#include "CountInt64Dlg.h"
+#include "IntStreamTest.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -18,16 +19,20 @@ CTestBinApp theApp;
 BOOL CTestBinApp::InitInstance() {
   AfxEnableControlContainer();
 
-  bool testFloat = false;
+  StartCommand command = CMD_COUNT;
   TCHAR **argv = __targv;
   argv++;
   if(*argv) {
-    String option = *argv;
+    const String option = *argv;
     if(option == _T("float")) {
-      testFloat = true;
+      command = CMD_TESTFLOAT;
+    } else if (option == _T("int")) {
+      command = CMD_TESTINT;
     }
   }
-  CTestInt64Dlg dlg(testFloat);
+//  testIntStream();
+
+  CCountInt64Dlg dlg(command);
   m_pMainWnd = &dlg;
   INT_PTR nResponse = dlg.DoModal();
   return FALSE;

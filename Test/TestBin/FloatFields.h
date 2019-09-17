@@ -163,7 +163,7 @@ public:
   int                  getFpClass()           const;
 
   String toBinString() const;
-  String toHexString() const;
+  String getDisplayString() const;
   inline String getTypeName() const {
     return toString(getType());
   }

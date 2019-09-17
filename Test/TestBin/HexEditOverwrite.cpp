@@ -18,6 +18,14 @@ void overWriteCurrentChar(CDialog *dlg, TCHAR ascii) {
   setCaretPos(e, pos + 1);
 }
 
+UINT64 getDecValueByOverwriteCurrent(CEdit *e, TCHAR ch, String *newString = NULL) {
+  String buf, *tmp = newString ? newString : &buf;
+  *tmp = createStringByOverwriteCurrent(e, ch);
+  UINT64 v = -1;
+  _stscanf(tmp->cstr(), _T("%I64d"), &v);
+  return v;
+}
+
 UINT64 getHexValueByOverwriteCurrent(CEdit *e, TCHAR ch, String *newString = NULL) {
   String buf, *tmp = newString ? newString : &buf;
   *tmp = createStringByOverwriteCurrent(e, ch);
@@ -26,6 +34,16 @@ UINT64 getHexValueByOverwriteCurrent(CEdit *e, TCHAR ch, String *newString = NUL
   return v;
 }
 
+void overWriteCurrentDecChar(CDialog *dlg, TCHAR ascii, UINT64 minValue, UINT64 maxValue) {
+  CEdit *e = (CEdit*)(dlg->GetFocus());
+  String newString;
+  const UINT64 v = getDecValueByOverwriteCurrent(e, ascii, &newString);
+  if ((minValue <= v) && (v <= maxValue)) {
+    const int pos = getCaretPos(e);
+    setWindowText(e, newString);
+    setCaretPos(e, pos + 1);
+  }
+}
 
 void overWriteCurrentHexChar(CDialog *dlg, TCHAR ascii, UINT64 minValue, UINT64 maxValue) {
   CEdit *e = (CEdit*)(dlg->GetFocus());
@@ -54,16 +72,39 @@ ValidNavigationKeySet::ValidNavigationKeySet() {
 
 static const ValidNavigationKeySet validNavigationKeySet;
 
+bool isOverwriteCurrentDecChar(CDialog *dlg, MSG *pMsg, UINT64 minValue, UINT64 maxValue) {
+  if ((pMsg->message != WM_KEYDOWN) || validNavigationKeySet.contains((UINT)pMsg->wParam)) {
+    return false;
+  }
+  const wchar_t ch = toAscii((UINT)pMsg->wParam);
+  if(isdigit(ch)) {
+    overWriteCurrentDecChar(dlg, ch, minValue, maxValue);
+  }
+  return true;
+
+}
+
 bool isOverwriteCurrentHexChar(CDialog *dlg, MSG *pMsg, UINT64 minValue, UINT64 maxValue) {
   if((pMsg->message != WM_KEYDOWN) || validNavigationKeySet.contains((UINT)pMsg->wParam)) {
     return false;
   }
   const wchar_t ch = toAscii((UINT)pMsg->wParam);
-  if(!isxdigit(ch)) {
-    return true;
+  if(isxdigit(ch)) {
+    overWriteCurrentHexChar(dlg, iswlower(ch) ? towupper(ch) : ch, minValue, maxValue);
   }
-  overWriteCurrentHexChar(dlg, iswlower(ch) ? towupper(ch) : ch, minValue, maxValue);
   return true;
+}
+
+bool isOverwriteCurrentHexChar(CDialog *dlg, MSG *pMsg) {
+  if((pMsg->message != WM_KEYDOWN) || validNavigationKeySet.contains((UINT)pMsg->wParam)) {
+    return false;
+  }
+  const wchar_t ch = toAscii((UINT)pMsg->wParam);
+  if(isxdigit(ch)) {
+    overWriteCurrentChar(dlg, iswlower(ch) ? towupper(ch) : ch);
+  }
+  return true;
+
 }
 
 bool isOverwriteCurrentChar(CDialog *dlg, MSG *pMsg, int maxLength) {

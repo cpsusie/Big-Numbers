@@ -26,11 +26,15 @@ private:
   inline FloatType getAccFloatType() const { return m_accumulator.getType(); }
   void             floatFieldsToEditFields(const FloatFields &ff);
   FloatFields      editFieldToFloatFields() {
-    return FloatFields(getWinFloatType(), getSignField(), getExpoField(), getSigField());
+    return FloatFields(getWinFloatType(), getSignBit(), getExpoField(), getSigField());
   }
   void             showFloatFieldsValue(const FloatFields &ff, bool mem);
-  void             setSignField(bool v);
-  bool             getSignField();
+  inline void      setSignBit(bool v) {
+    CheckDlgButton(IDC_CHECKSIGNBIT, v ? BST_CHECKED : BST_UNCHECKED);
+  }
+  inline bool      getSignBit() {
+    return IsDlgButtonChecked(IDC_CHECKSIGNBIT) == BST_CHECKED;
+  }
   void             setExpoField(UINT  v, FloatType type);
   inline void      setExpoField(UINT  v) { setExpoField(v, getWinFloatType()); }
   UINT             getExpoField();
@@ -38,15 +42,21 @@ private:
   inline void      setSigField(UINT64 v) { setSigField( v, getWinFloatType()); }
   UINT64           getSigField();
   void             setStreamOpIsMem(bool v);
-  bool             getStreamOpIsMem();
+  inline bool      getStreamOpIsMem() {
+    return IsDlgButtonChecked(IDC_RADIOOPMEM) == BST_CHECKED;
+  }
   FloatFields     &getSelectedStreamOp() { return getStreamOpIsMem() ? m_memory : m_accumulator; }
-  wstringstream   &setParameters(wstringstream &stream);
-  FormatFlags      getStreamFormatFlags();
-  wchar_t          getStreamFillChar();
+  void             setDefaultStreamParam() { paramStreamToWin(wstringstream()); }
+  void             paramStreamToWin(wstringstream &stream);
+  wstringstream   &paramWinToStream(wstringstream &stream);
+  void             formatFlagsToWin(FormatFlags flags);
+  FormatFlags      winToFormatFlags();
+  void             fillCharToWin(wchar_t ch);
+  wchar_t          winToFillChar();
   static CString   streamStateToString(wstringstream &sream);
   void             updateAcc();
-  void             setWidth(    int prec);
-  void             setPrecision(int width);
+  void             setWidth(    int width);
+  void             setPrecision(int prec );
   void             updatePrecision();
   void             autoClickStreamOut();
   void             expo2ToWin();
@@ -110,5 +120,6 @@ protected:
   afx_msg void OnEnUpdateEditWidthValue();
   afx_msg void OnEnUpdateEditPrecValue();
   afx_msg void OnEnChangeEditFillValue();
+  afx_msg void OnEnSetFocusEditFillValue();
   DECLARE_MESSAGE_MAP()
 };

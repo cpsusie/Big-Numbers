@@ -1,8 +1,9 @@
 #include "stdafx.h"
 #include "TestBin.h"
-#include "TestInt64Dlg.h"
+#include "CountInt64Dlg.h"
 #include "TimerDlg.h"
 #include "TestFloatDlg.h"
+#include "TestIntDlg.h"
 #include "HexEditOverwrite.h"
 
 #ifdef _DEBUG
@@ -23,27 +24,28 @@ protected:
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CTestInt64Dlg::CTestInt64Dlg(bool testFloat, CWnd *pParent)
-: m_testFloat(testFloat)
-, CDialog(CTestInt64Dlg::IDD, pParent)
+CCountInt64Dlg::CCountInt64Dlg(StartCommand command, CWnd *pParent)
+: m_command(command)
+, CDialog(CCountInt64Dlg::IDD, pParent)
 , m_hexString(EMPTYSTRING)
 {
   m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
 }
 
-void CTestInt64Dlg::DoDataExchange(CDataExchange *pDX) {
+void CCountInt64Dlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
   DDX_Text(    pDX, IDC_EDITHEX, m_hexString    );
   DDV_MaxChars(pDX             , m_hexString, 16);
 }
 
-BEGIN_MESSAGE_MAP(CTestInt64Dlg, CDialog)
+BEGIN_MESSAGE_MAP(CCountInt64Dlg, CDialog)
   ON_WM_SYSCOMMAND()
   ON_WM_PAINT()
   ON_WM_QUERYDRAGICON()
   ON_WM_TIMER()
   ON_WM_CLOSE()
   ON_COMMAND(      ID_FILE_TESTFLOATS    , OnFileTestFloats            )
+  ON_COMMAND(      ID_FILE_TESTINT       , OnFileTestInt               )
   ON_COMMAND(      ID_FILE_EXIT          , OnFileExit                  )
   ON_COMMAND(      ID_VIEW_TIMER         , OnViewTimer                 )
   ON_BN_CLICKED(   IDC_STARTBUTTON       , OnStartButton               )
@@ -53,7 +55,7 @@ BEGIN_MESSAGE_MAP(CTestInt64Dlg, CDialog)
   ON_BN_CLICKED(   IDC_EDITBUTTON        , OnEditButton                )
 END_MESSAGE_MAP()
 
-BOOL CTestInt64Dlg::OnInitDialog() {
+BOOL CCountInt64Dlg::OnInitDialog() {
   __super::OnInitDialog();
 
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
@@ -80,14 +82,20 @@ BOOL CTestInt64Dlg::OnInitDialog() {
   showCounter();
   ajourEnabling();
 
-  if(m_testFloat) {
+  switch(m_command) {
+  case CMD_TESTFLOAT:
     OnFileTestFloats();
     OnClose();
+    break;
+  case CMD_TESTINT:
+    OnFileTestInt();
+    OnClose();
+    break;
   }
   return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
-void CTestInt64Dlg::OnSysCommand(UINT nID, LPARAM lParam) {
+void CCountInt64Dlg::OnSysCommand(UINT nID, LPARAM lParam) {
   if((nID & 0xFFF0) == IDM_ABOUTBOX) {
     CAboutDlg().DoModal();
   } else {
@@ -95,7 +103,7 @@ void CTestInt64Dlg::OnSysCommand(UINT nID, LPARAM lParam) {
   }
 }
 
-void CTestInt64Dlg::OnPaint() {
+void CCountInt64Dlg::OnPaint() {
   if(IsIconic()) {
     CPaintDC dc(this);
 
@@ -116,29 +124,33 @@ void CTestInt64Dlg::OnPaint() {
   }
 }
 
-HCURSOR CTestInt64Dlg::OnQueryDragIcon() {
+HCURSOR CCountInt64Dlg::OnQueryDragIcon() {
   return (HCURSOR)m_hIcon;
 }
 
-void CTestInt64Dlg::OnFileTestFloats() {
+void CCountInt64Dlg::OnFileTestFloats() {
   CTestFloatDlg().DoModal();
 }
 
-void CTestInt64Dlg::OnFileExit() {
+void CCountInt64Dlg::OnFileTestInt() {
+  CTestIntDlg().DoModal();
+}
+
+void CCountInt64Dlg::OnFileExit() {
   EndDialog(IDOK);
 }
 
-void CTestInt64Dlg::OnOK() {
+void CCountInt64Dlg::OnOK() {
 }
 
-void CTestInt64Dlg::OnCancel() {
+void CCountInt64Dlg::OnCancel() {
 }
 
-void CTestInt64Dlg::OnClose() {
+void CCountInt64Dlg::OnClose() {
   OnFileExit();
 }
 
-BOOL CTestInt64Dlg::PreTranslateMessage(MSG *pMsg) {
+BOOL CCountInt64Dlg::PreTranslateMessage(MSG *pMsg) {
   if(m_editMode) {
     if(isOverwriteCurrentHexChar(this, pMsg)) {
       UpdateData();
@@ -157,13 +169,13 @@ BOOL CTestInt64Dlg::PreTranslateMessage(MSG *pMsg) {
   }
 }
 
-void CTestInt64Dlg::startTimer() {
+void CCountInt64Dlg::startTimer() {
   if(!m_timerIsRunning && SetTimer(1,m_timerInterval,NULL)) {
     m_timerIsRunning = true;
   }
 }
 
-void CTestInt64Dlg::stopTimer() {
+void CCountInt64Dlg::stopTimer() {
   if(m_timerIsRunning) {
     KillTimer(1);
     m_timerIsRunning = false;
@@ -186,7 +198,7 @@ UINT CounterThread::run() {
   return 0;
 }
 
-void CTestInt64Dlg::showCounter(UINT64 n) {
+void CCountInt64Dlg::showCounter(UINT64 n) {
   TCHAR tmp[100];
   if(m_editMode) {
     setWindowText(this, IDC_STATICTEXT, format(_T("%s:"), sprintbin(tmp, n)));
@@ -195,7 +207,7 @@ void CTestInt64Dlg::showCounter(UINT64 n) {
   }
 }
 
-void CTestInt64Dlg::ajourEnabling() {
+void CCountInt64Dlg::ajourEnabling() {
   if(m_editMode) {
     GetDlgItem(IDC_STARTBUTTON)->EnableWindow(FALSE);
     GetDlgItem(IDC_STOPBUTTON )->EnableWindow(FALSE);
@@ -217,14 +229,14 @@ void CTestInt64Dlg::ajourEnabling() {
   }
 }
 
-void CTestInt64Dlg::OnStartButton() {
+void CCountInt64Dlg::OnStartButton() {
   if(m_timerIsRunning) return;
   m_counterThread->resume();
   startTimer();
   ajourEnabling();
 }
 
-void CTestInt64Dlg::OnStopButton() {
+void CCountInt64Dlg::OnStopButton() {
   if(!m_timerIsRunning) return;
   m_counterThread->suspend();
   stopTimer();
@@ -232,7 +244,7 @@ void CTestInt64Dlg::OnStopButton() {
   ajourEnabling();
 }
 
-void CTestInt64Dlg::OnStepButton() {
+void CCountInt64Dlg::OnStepButton() {
   if(m_timerIsRunning) {
     OnStopButton();
   }
@@ -240,7 +252,7 @@ void CTestInt64Dlg::OnStepButton() {
   showCounter();
 }
 
-void CTestInt64Dlg::OnResetButton() {
+void CCountInt64Dlg::OnResetButton() {
   stopTimer();
   m_counterThread->suspend();
   m_counterThread->reset();
@@ -248,7 +260,7 @@ void CTestInt64Dlg::OnResetButton() {
   ajourEnabling();
 }
 
-void CTestInt64Dlg::OnEditButton() {
+void CCountInt64Dlg::OnEditButton() {
   if(m_timerIsRunning) return;
   if(m_editMode) {
     leaveEditMode();
@@ -259,7 +271,7 @@ void CTestInt64Dlg::OnEditButton() {
   ajourEnabling();
 }
 
-void CTestInt64Dlg::enterEditMode() {
+void CCountInt64Dlg::enterEditMode() {
   if(m_editMode) return;
   GetDlgItem(IDC_EDITHEX)->ShowWindow(SW_SHOW);
   UINT64 n = m_counterThread->getCounter();
@@ -275,7 +287,7 @@ void CTestInt64Dlg::enterEditMode() {
   m_editMode = true;
 }
 
-void CTestInt64Dlg::leaveEditMode() {
+void CCountInt64Dlg::leaveEditMode() {
   if(!m_editMode) return;
 
   UpdateData();
@@ -285,12 +297,12 @@ void CTestInt64Dlg::leaveEditMode() {
   m_editMode = false;
 }
 
-void CTestInt64Dlg::OnTimer(UINT_PTR nIDEvent) {
+void CCountInt64Dlg::OnTimer(UINT_PTR nIDEvent) {
   showCounter();
   __super::OnTimer(nIDEvent);
 }
 
-void CTestInt64Dlg::OnViewTimer() {
+void CCountInt64Dlg::OnViewTimer() {
   CTimerDlg dlg(m_timerInterval);
   if(dlg.DoModal() == IDOK) {
     m_timerInterval = dlg.m_timerInterval;

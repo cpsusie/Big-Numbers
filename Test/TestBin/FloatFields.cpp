@@ -260,20 +260,22 @@ int FloatFields::getMaxDigits10(FloatType type) {
   return 0;
 }
 
-static String sprintbin(UINT64 n, UINT count) {
+String dataToBinString(const void *data, size_t n) {
   String result;
-  for(int i = count; i--;) {
-    if((i % 4 == 3) && !result.isEmpty()) {
+  const BYTE *p0 = (BYTE*)data, *pp = p0 + (n - 1) / 8;
+  for(UINT i = (UINT)n; i--;) {
+    if(((i%4) == 3) && !result.isEmpty()) {
       result += ' ';
     }
-    result += ((n >> i) & 1) ? '1' : '0';
+    result += ((*pp >> (i%8)) & 1) ? '1' : '0';
+    if((i%8) == 0) pp--;
   }
   return result;
 }
 
-static String dataToHexString(const void *p, size_t n) {
+String dataToHexString(const void *data, size_t n) {
   String result;
-  BYTE *pp = ((BYTE*)p) + n - 1;
+  BYTE *pp = ((BYTE*)data) + n - 1;
   for(size_t i = 0; i < n; i++) {
     result += format(_T("%02X"), *(pp--));
   }
@@ -284,13 +286,15 @@ static String dataToHexString(const void *p, size_t n) {
 }
 
 String FloatFields::toBinString() const {
+  const UINT   expo = getExpoField();
+  const UINT64 sig  = getSig();
   return format(_T("Sign:%c   Expo:%-19s   Sig:%s")
                ,getSignBit() ? _T('1') : '0'
-               ,sprintbin(getExpoField(), getExpoBitCount()).cstr()
-               ,sprintbin(getSig(), getSigBitCount()).cstr());
+               ,dataToBinString(&expo, getExpoBitCount()).cstr()
+               ,dataToBinString(&sig , getSigBitCount()).cstr());
 }
 
-String FloatFields::toHexString() const {
+String FloatFields::getDisplayString() const {
   const int         prec     = getMaxDigits10();
   switch(getType()) {
   case FT_FLOAT   :

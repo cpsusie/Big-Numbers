@@ -102,6 +102,7 @@ BEGIN_MESSAGE_MAP(CTestFloatDlg, CDialog)
   ON_EN_UPDATE(           IDC_EDITWIDTHVALUE           , OnEnUpdateEditWidthValue           )
   ON_EN_UPDATE(           IDC_EDITPRECVALUE            , OnEnUpdateEditPrecValue            )
   ON_EN_CHANGE(           IDC_EDITFILLVALUE            , OnEnChangeEditFillValue            )
+  ON_EN_SETFOCUS(         IDC_EDITFILLVALUE            , OnEnSetFocusEditFillValue          )
 END_MESSAGE_MAP()
 
 BOOL CTestFloatDlg::OnInitDialog() {
@@ -113,7 +114,8 @@ BOOL CTestFloatDlg::OnInitDialog() {
   CPoint p = getWindowPosition(this, IDC_BUTTONCOPYOUTTOIN);
   oldButton->DestroyWindow();
   m_copyOutToInButton.Create(this, OBMIMAGE(UPARROW), p, IDC_BUTTONCOPYOUTTOIN);
-  
+
+  setDefaultStreamParam();
   OnBnClickedCheckIosFlag();
   setStreamOpIsMem(false);
   GetDlgItem(IDC_EDITEXPOVALUE)->SetFocus();
@@ -198,6 +200,7 @@ void CTestFloatDlg::OnEnChangeEditPrecValue()      { autoClickStreamOut();      
 void CTestFloatDlg::OnEnUpdateEditWidthValue()     { autoClickStreamOut();                                                 }
 void CTestFloatDlg::OnEnUpdateEditPrecValue()      { autoClickStreamOut();                                                 }
 void CTestFloatDlg::OnEnChangeEditFillValue()      { autoClickStreamOut();                                                 }
+void CTestFloatDlg::OnEnSetFocusEditFillValue()    { setCaretPos((CEdit*)GetDlgItem(IDC_EDITFILLVALUE), 0);                }
 
 void CTestFloatDlg::OnBnClickedButtonSwapAccMem() {
   const FloatFields mem = m_memory, acc = m_accumulator;
@@ -248,7 +251,7 @@ void CTestFloatDlg::OnBnClickedButtonStreamIn() {
   wstring        str = (LPCTSTR)m_streamInString;
   wstringstream stream(str);
   FloatFields   tmp(m_accumulator);
-  tmp.input(setParameters(stream), m_manipStreamIn == TRUE);
+  tmp.input(paramWinToStream(stream), m_manipStreamIn == TRUE);
   if (stream) {
     showFloatFieldsValue(tmp, getStreamOpIsMem());
   }
@@ -261,7 +264,7 @@ void CTestFloatDlg::OnBnClickedButtonStreamOut() {
   UpdateData();
 
   wstringstream stream;
-  setParameters(stream) << getSelectedStreamOp();
+  paramWinToStream(stream) << getSelectedStreamOp();
 
   m_streamOutString = stream.str().c_str();
   m_streamState     = streamStateToString(stream);
@@ -281,7 +284,7 @@ void CTestFloatDlg::OnBnClickedButtonCopyOutToIn() {
 }
 
 void CTestFloatDlg::OnBnClickedCheckIosFlag() {
-  const FormatFlags flags = getStreamFormatFlags();
+  const FormatFlags flags = winToFormatFlags();
   setWindowText(this, IDC_STATICSTREAMFLAGSVALUE, format(_T("%08X"), flags));
   updatePrecision();
   autoClickStreamOut();
@@ -310,7 +313,7 @@ void CTestFloatDlg::setWinFloatType(FloatType type) {
 void CTestFloatDlg::updatePrecision() {
   const bool maxIsChecked = IsDlgButtonChecked(IDC_CHECK_MAXPREC) == BST_CHECKED;
   if(maxIsChecked) {
-    const int maxPrecision = ((getStreamFormatFlags() & ios::floatfield) == ios::hexfloat)
+    const int maxPrecision = ((winToFormatFlags() & ios::floatfield) == ios::hexfloat)
                            ? FloatFields::getSigHexDigitCount(getWinFloatType())
                            : FloatFields::getMaxDigits10(getWinFloatType());
     setPrecision(maxPrecision);
@@ -341,7 +344,7 @@ void CTestFloatDlg::autoClickStreamOut() {
 }
 
 void CTestFloatDlg::floatFieldsToEditFields(const FloatFields &ff) {
-  setSignField(ff.getSignBit());
+  setSignBit(ff.getSignBit());
   setExpoField(ff.getExpoField(), ff.getType());
   setSigField( ff.getSig()      , ff.getType());
 }
@@ -349,15 +352,16 @@ void CTestFloatDlg::floatFieldsToEditFields(const FloatFields &ff) {
 void CTestFloatDlg::showFloatFieldsValue(const FloatFields &ff, bool mem) {
   if(m_showffActive) return;
   m_showffActive = true;
-  const int         fpclass  = ff.getFpClass();
-  String            valueStr = ff.toHexString();
-  int valueWinId, classWinId;
+
+  const String      displayStr = ff.getDisplayString();
+  const int         fpclass    = ff.getFpClass();
+  int displayWinId, classWinId;
   if(mem) {
-    valueWinId = IDC_STATICMEMVALUE;
-    classWinId = IDC_STATICMEMCLASSVALUE;
+    displayWinId = IDC_STATICMEMVALUE;
+    classWinId   = IDC_STATICMEMCLASSVALUE;
   } else {
-    valueWinId = IDC_STATICACCVALUE;
-    classWinId = IDC_STATICACCCLASSVALUE;
+    displayWinId = IDC_STATICACCVALUE;
+    classWinId   = IDC_STATICACCCLASSVALUE;
   }
   if(!mem) {
     m_accumulator = ff;
@@ -367,8 +371,8 @@ void CTestFloatDlg::showFloatFieldsValue(const FloatFields &ff, bool mem) {
   } else {
     m_memory = ff;
   }
-  setWindowText(this, valueWinId, valueStr);
-  setWindowText(this, classWinId, fpclassToString(fpclass));
+  setWindowText(this, displayWinId, displayStr);
+  setWindowText(this, classWinId  , fpclassToString(fpclass));
   if(mem && (ff.getType() != getWinFloatType())) {
     showWarning(_T("Memory-floatType=%s. .winFloatType=%s")
                ,toString(ff.getType()).cstr(), toString(getWinFloatType()).cstr());
@@ -380,12 +384,6 @@ void CTestFloatDlg::showFloatFieldsValue(const FloatFields &ff, bool mem) {
 }
 
 // ----------------------------------------- Edit fields:sign, exponent and significand ----------------------------
-void CTestFloatDlg::setSignField(bool v) {
-  CheckDlgButton(IDC_CHECKSIGNBIT, v ? BST_CHECKED : BST_UNCHECKED);
-}
-bool CTestFloatDlg::getSignField() {
-  return IsDlgButtonChecked(IDC_CHECKSIGNBIT) == BST_CHECKED;
-}
 
 void CTestFloatDlg::setExpoField(UINT v, FloatType type) {
   setWindowText(this, IDC_EDITEXPOVALUE, format(_T("%0*X"), FloatFields::getExpoHexDigitCount(type), v));
@@ -413,37 +411,36 @@ UINT64 CTestFloatDlg::getSigField() {
 }
 
 void CTestFloatDlg::markLabel(int id, bool marked) {
-  const DWORD change   = WS_BORDER | SS_SUNKEN;
-  const DWORD changeEx = WS_EX_CLIENTEDGE;
-  const DWORD flags    = SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_DRAWFRAME | SWP_SHOWWINDOW;
+  const DWORD change = WS_BORDER  | SS_SUNKEN;
+  const DWORD flags  = SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_DRAWFRAME | SWP_SHOWWINDOW;
   CStatic *st = (CStatic*)GetDlgItem(id);
-  BOOL ret;
   if(marked) {
-    ret = st->ModifyStyle(  0, change  , flags);
-//    ret = st->ModifyStyleEx(0, changeEx, flags);
+    st->ModifyStyle(  0, change  , flags);
   } else {
-    ret = st->ModifyStyle(  change  , 0, flags);
-//    ret = st->ModifyStyleEx(changeEx, 0, flags);
+    st->ModifyStyle(  change  , 0, flags);
   }
 }
 
-bool CTestFloatDlg::getStreamOpIsMem() {
-  return IsDlgButtonChecked(IDC_RADIOOPMEM) == BST_CHECKED;
-}
-
 void CTestFloatDlg::setStreamOpIsMem(bool v) {
-  const int ckeckedRadioButton = v ? IDC_RADIOOPMEM     : IDC_RADIOOPACC;
-  CheckRadioButton(IDC_RADIOOPACC, IDC_RADIOOPMEM, ckeckedRadioButton);
+  const int radiobuttons[] = { IDC_RADIOOPACC, IDC_RADIOOPMEM };
+  CheckRadioButton(radiobuttons[0], radiobuttons[1], radiobuttons[ordinal(v)]);
   markLabel(IDC_STATICMEMLABEL, v );
   markLabel(IDC_STATICACCLABEL, !v);
   autoClickStreamOut();
 }
 
-wstringstream &CTestFloatDlg::setParameters(wstringstream &stream) {
+void CTestFloatDlg::paramStreamToWin(wstringstream &stream) {
+  setWidth(    (int)stream.width()    );
+  setPrecision((int)stream.precision());
+  formatFlagsToWin( stream.flags()    );
+  fillCharToWin(    stream.fill()     );
+}
+
+wstringstream &CTestFloatDlg::paramWinToStream(wstringstream &stream) {
   stream.width(m_width);
   stream.precision(m_precision);
-  stream.flags(getStreamFormatFlags());
-  stream.fill(getStreamFillChar());
+  stream.flags(winToFormatFlags());
+  stream.fill(winToFillChar());
   return stream;
 }
 
@@ -472,7 +469,14 @@ static const ButtunIdFlag buttonFlagArray[] = {
  ,IDC_CHECK_IOS_STDIO     , ios::_Stdio
 };
 
-FormatFlags CTestFloatDlg::getStreamFormatFlags() {
+void CTestFloatDlg::formatFlagsToWin(FormatFlags flags) {
+  for(size_t i = 0; i < ARRAYSIZE(buttonFlagArray); i++) {
+    const ButtunIdFlag &idFlag = buttonFlagArray[i];
+    CheckDlgButton(idFlag.m_id, (flags & idFlag.m_flag) ? BST_CHECKED : BST_UNCHECKED);
+  }
+}
+
+FormatFlags CTestFloatDlg::winToFormatFlags() {
   FormatFlags result = 0;
   for(size_t i = 0; i < ARRAYSIZE(buttonFlagArray); i++) {
     const ButtunIdFlag &idFlag = buttonFlagArray[i];
@@ -483,7 +487,14 @@ FormatFlags CTestFloatDlg::getStreamFormatFlags() {
   return result;
 }
 
-wchar_t CTestFloatDlg::getStreamFillChar() {
+void CTestFloatDlg::fillCharToWin(wchar_t ch) {
+  if(m_fillString.GetLength() == 0) {
+    m_fillString = _T(" ");
+  }
+  m_fillString.SetAt(0, ch);
+}
+
+wchar_t CTestFloatDlg::winToFillChar() {
   return (m_fillString.GetLength() == 0) ? _T(' ') : m_fillString.GetAt(0);
 }
 
