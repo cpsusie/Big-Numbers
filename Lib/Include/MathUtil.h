@@ -395,4 +395,3 @@ template<class FloatType> FloatManipT<std::wistream, wchar_t, FloatType> &operat
   dm.m_in = &in;
   return dm;
 }
-
