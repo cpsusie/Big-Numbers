@@ -21,6 +21,7 @@ void DFATables::init() {
   m_stateCount       = 0;
   m_rowCount         = 0;
   m_columnCount      = 0;
+  m_charMapSize      = 0;
   m_charMap          = NULL;
   m_stateMap         = NULL;
   m_transitionMatrix = NULL;
@@ -30,24 +31,38 @@ void DFATables::init() {
 void DFATables::copy(const DFATables &src) {
   if(src.m_stateCount) {
     m_memoryUsage = src.m_memoryUsage;
-    allocate(      src.m_stateCount);
+    allocate(      src.m_stateCount, src.m_charMapSize);
     allocateMatrix(src.m_rowCount, src.m_columnCount);
-    memcpy(m_charMap         , src.m_charMap         , MAX_CHARS                     * sizeof(m_charMap[0])         );
+    memcpy(m_charMap         , src.m_charMap         , src.m_charMapSize             * sizeof(m_charMap[0])         );
     memcpy(m_stateMap        , src.m_stateMap        , m_stateCount                  * sizeof(m_stateMap[0])        );
     memcpy(m_transitionMatrix, src.m_transitionMatrix, m_rowCount * m_columnCount    * sizeof(m_transitionMatrix[0]));
     memcpy(m_acceptStates    , src.m_acceptStates    , m_stateCount                  * sizeof(m_acceptStates[0])    );
   }
 }
 
-void DFATables::allocate(size_t stateCount) {
+void DFATables::allocate(size_t stateCount, UINT charMapSize) {
   clear();
   m_stateCount   = stateCount;
-  m_charMap      = new short[MAX_CHARS  ]; TRACE_NEW(m_charMap     );
-  m_stateMap     = new short[stateCount ]; TRACE_NEW(m_stateMap    );
-  m_acceptStates = new short[stateCount ]; TRACE_NEW(m_acceptStates);
-  m_memoryUsage += MAX_CHARS * sizeof(m_charMap[0])
-                + stateCount * sizeof(m_stateMap[0])
-                + stateCount * sizeof(m_acceptStates[0]);
+  m_charMapSize  = charMapSize;
+  m_charMap      = new short[m_charMapSize]; TRACE_NEW(m_charMap     );
+  m_stateMap     = new short[stateCount   ]; TRACE_NEW(m_stateMap    );
+  m_acceptStates = new short[stateCount   ]; TRACE_NEW(m_acceptStates);
+  m_memoryUsage += m_charMapSize * sizeof(m_charMap[0])
+                 + stateCount    * sizeof(m_stateMap[0])
+                 + stateCount    * sizeof(m_acceptStates[0]);
+}
+
+void DFATables::setCharMapSize(UINT charMapSize) {
+  short *newCharMap = NULL;
+  const int deletedElementCount = m_charMapSize - charMapSize;
+  if(charMapSize) {
+    newCharMap = new short[charMapSize]; TRACE_NEW(newCharMap);
+    memcpy(newCharMap, m_charMap, charMapSize * sizeof(m_charMap[0]));
+  }
+  SAFEDELETEARRAY(m_charMap);
+  m_charMapSize = charMapSize;
+  m_charMap     = newCharMap;
+  m_memoryUsage -= deletedElementCount * sizeof(m_charMap[0]);
 }
 
 void DFATables::allocateMatrix(size_t rowCount, size_t columnCount) {
@@ -96,10 +111,10 @@ static CharacterFormater &getCharFormater() {
   return *CharacterFormater::hexEscapedExtendedAsciiFormater;
 }
 
-static String thinCharMapToString(const short *a) { // size = MAX_CHARS
+static String thinCharMapToString(const short *a, UINT size) {
   String result = _T("EOI = 0\n");
   CharacterFormater &charFormater = getCharFormater();
-  for(int ch = 0; ch < MAX_CHARS; ch++, a++) {
+  for(UINT ch = 0; ch < size; ch++, a++) {
     if(*a) {
       result += format(_T("'%s' = %d\n"), charFormater.toString(ch).cstr(), *a);
     }
@@ -136,10 +151,10 @@ String DFATables::toString() const {
     return EMPTYSTRING;
   }
   String result;
-  if(countNonZeroes(m_charMap, MAX_CHARS) <= 40) {
-    result = format(_T("Character map:\n%s\n"), indentString(thinCharMapToString(m_charMap),2).cstr());
+  if(countNonZeroes(m_charMap, m_charMapSize) <= 40) {
+    result = format(_T("Character map:\n%s\n"), indentString(thinCharMapToString(m_charMap, m_charMapSize),2).cstr());
   } else {
-    result = format(_T("Character map:\n%s\n"), indentString(arrayToString(m_charMap, MAX_CHARS, 40),2).cstr());
+    result = format(_T("Character map:\n%s\n"), indentString(arrayToString(m_charMap, m_charMapSize, 40),2).cstr());
   }
   result += format(_T("State map:\n%s\n"), indentString(arrayToString(m_stateMap, m_stateCount, 10),2).cstr());
   result += _T("TransitionMatrix:\n");

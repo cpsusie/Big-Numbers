@@ -9,7 +9,7 @@ void DFA::getDFATables(DFATables &tables) const {
   if(m_states.isEmpty()) {
     return;
   }
-  tables.allocate(m_states.size());
+  tables.allocate(m_states.size(), MAX_CHARS);
   BitSet  columnSave(MAX_CHARS);       // columns that will remain in table
   BitSet  rowSave(m_states.size());    // rows    that will remain in table
 
@@ -35,23 +35,33 @@ bool DFA::rowsEqual(size_t row1, size_t row2) const {
 }
 
 void DFA::reduce(DFATables &tables, BitSet &rowSave, BitSet &columnSave) const {
-  for(size_t i = 0; i < MAX_CHARS; i++) {
+  const UINT charMapSize = tables.m_charMapSize;
+  for(size_t i = 0; i < charMapSize; i++) {
     tables.m_charMap[i] = -1;
   }
   for(int r_ncols = 0;;r_ncols++) {
-    int i;
-    for(i = r_ncols; (i < MAX_CHARS) && (tables.m_charMap[i] != -1); i++);
-    if(i >= MAX_CHARS) {
+    UINT i;
+    for(i = r_ncols; (i < charMapSize) && (tables.m_charMap[i] != -1); i++);
+    if(i >= charMapSize) {
       break;
     }
     columnSave.add(i);
     tables.m_charMap[i] = r_ncols;
-
-    for(size_t j = i + 1; j < MAX_CHARS; j++) {
+    for(UINT j = i + 1; j < charMapSize; j++) {
       if(tables.m_charMap[j] == -1 && columnsEqual(i, j)) {
         tables.m_charMap[j] = r_ncols;
       }
     }
+  }
+  UINT maxUsedCharMapIndex = 0;
+  for(UINT i = 0; i < charMapSize; i++) {
+    if(tables.m_charMap[i]) {
+      maxUsedCharMapIndex = i;
+    }
+  }
+  const UINT newCharMapSize = maxUsedCharMapIndex + 1;
+  if(newCharMapSize < charMapSize) {
+    tables.setCharMapSize(newCharMapSize);
   }
   const size_t stateCount = m_states.size();
   for(size_t i = 0; i < stateCount; i++) {
