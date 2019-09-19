@@ -1180,7 +1180,7 @@
     <ClCompile Include="xstrdup.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Natvis Include="NatvisFile.natvis">
+    <Natvis Include="Util.natvis">
       <SubType>Designer</SubType>
     </Natvis>
   </ItemGroup>

@@ -243,9 +243,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Natvis Include="NatvisFile.natvis" />
-  </ItemGroup>
-  <ItemGroup>
     <Text Include="Triangle\ReadMe.txt">
       <Filter>Source Files\Triangle</Filter>
     </Text>
@@ -381,5 +378,8 @@
     <None Include="FPU.inc">
       <Filter>Source Files\Asm Files</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="Math.natvis" />
   </ItemGroup>
 </Project>

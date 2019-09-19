@@ -7,10 +7,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{FC55E43A-419C-4E04-B0E4-E7D58710DDFD}</ProjectGuid>
-    <RootNamespace>NumberAddin</RootNamespace>
+    <ProjectGuid>{0E763161-BDDB-48E1-A137-0740B5150D48}</ProjectGuid>
+    <RootNamespace>BigRealAddin</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
-    <ProjectName>NumberAddin</ProjectName>
+    <ProjectName>BigRealAddin</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -58,18 +58,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BigRealAddin.cpp" />
-    <ClCompile Include="Double80Addin.cpp" />
-    <ClCompile Include="Int128Addin.cpp" />
-    <ClCompile Include="NumberAddin.cpp" />
     <ClCompile Include="pch.cpp" />
-    <ClCompile Include="RationalAddin.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="NumberAddin.def" />
+    <None Include="BigRealAddin.def" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="D80ToDbgString.h" />
-    <ClInclude Include="NumberAddin.h" />
+    <ClInclude Include="BigRealAddin.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>

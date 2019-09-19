@@ -1213,7 +1213,9 @@
     <ClCompile Include="TrigonometricFunctionsR.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Natvis Include="NatvisFile.natvis" />
+    <Natvis Include="Math.natvis">
+      <SubType>Designer</SubType>
+    </Natvis>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Triangle\ReadMe.txt" />

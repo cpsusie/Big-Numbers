@@ -13,18 +13,18 @@
     <DisplayString>{re,g}{im,g}i</DisplayString>
   </Type>
   <Type Name="Double80">
-    <DisplayString LegacyAddin="C:\mytools2015\Lib\Win32\Release\NumberAddIn.dll" Export="AddIn_Double80"></DisplayString>
+    <DisplayString LegacyAddin="C:\mytools2015\Lib\Win32\Release\MathAddIn.dll" Export="AddIn_Double80"></DisplayString>
   </Type>
   <Type Name="Rational">
-    <DisplayString LegacyAddin="C:\mytools2015\Lib\Win32\Release\NumberAddIn.dll" Export="AddIn_Rational"></DisplayString>
+    <DisplayString LegacyAddin="C:\mytools2015\Lib\Win32\Release\MathAddIn.dll" Export="AddIn_Rational"></DisplayString>
   </Type>
   <Type Name="_int128">
-    <DisplayString LegacyAddin="C:\mytools2015\Lib\Win32\Release\NumberAddIn.dll" Export="AddIn__int128"></DisplayString>
+    <DisplayString LegacyAddin="C:\mytools2015\Lib\Win32\Release\MathAddIn.dll" Export="AddIn__int128"></DisplayString>
   </Type>
   <Type Name="_uint128">
-    <DisplayString LegacyAddin="C:\mytools2015\Lib\Win32\Release\NumberAddIn.dll" Export="AddIn__uint128"></DisplayString>
+    <DisplayString LegacyAddin="C:\mytools2015\Lib\Win32\Release\MathAddIn.dll" Export="AddIn__uint128"></DisplayString>
   </Type>
   <Type Name="Number">
-    <DisplayString LegacyAddin="C:\mytools2015\Lib\Win32\Release\NumberAddIn.dll" Export="AddIn_Number"></DisplayString>
+    <DisplayString LegacyAddin="C:\mytools2015\Lib\Win32\Release\MathAddIn.dll" Export="AddIn_Number"></DisplayString>
   </Type>
 </AutoVisualizer>

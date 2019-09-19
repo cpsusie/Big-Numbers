@@ -878,6 +878,6 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <Natvis Include="NatvisFile.natvis" />
+    <Natvis Include="Chess.natvis" />
   </ItemGroup>
 </Project>

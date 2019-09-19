@@ -762,11 +762,6 @@
     <ClCompile Include="Tan.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Natvis Include="NatvisFile.natvis">
-      <SubType>Designer</SubType>
-    </Natvis>
-  </ItemGroup>
-  <ItemGroup>
     <CustomBuild Include="BigRealShortProductx64.asm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">false</ExcludedFromBuild>
@@ -795,6 +790,9 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">$(IntDir)BigRealShortProductx64.obj</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Profiling|x64'">$(IntDir)BigRealShortProductx64.obj</Outputs>
     </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="BigReal.natvis" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

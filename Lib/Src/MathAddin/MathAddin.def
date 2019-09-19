@@ -3,7 +3,6 @@
 LIBRARY
 
 EXPORTS
-    AddIn_BigReal
     AddIn_Double80
     AddIn_Rational
     AddIn__int128

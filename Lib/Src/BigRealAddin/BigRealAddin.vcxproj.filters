@@ -21,18 +21,6 @@
     <ClCompile Include="BigRealAddin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Int128Addin.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Double80Addin.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="NumberAddin.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RationalAddin.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -41,15 +29,12 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="NumberAddin.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="D80ToDbgString.h">
+    <ClInclude Include="BigRealAddin.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="NumberAddin.def">
+    <None Include="BigRealAddin.def">
       <Filter>Source Files</Filter>
     </None>
   </ItemGroup>

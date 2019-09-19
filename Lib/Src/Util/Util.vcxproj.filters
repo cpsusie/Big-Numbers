@@ -1309,14 +1309,14 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Natvis Include="NatvisFile.natvis" />
-  </ItemGroup>
-  <ItemGroup>
     <CustomBuild Include="BitSetx64.asm">
       <Filter>Source Files\Asm Files</Filter>
     </CustomBuild>
     <CustomBuild Include="CPUInfox64.asm">
       <Filter>Source Files\Asm Files</Filter>
     </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="Util.natvis" />
   </ItemGroup>
 </Project>
