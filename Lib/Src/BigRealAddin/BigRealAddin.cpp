@@ -93,160 +93,245 @@ static inline UINT64 pow10(UINT n) {
 #define LOG10BASEx86  8
 #define ESCEXPOx86   -900000000
 
-class Digitx86 {
-public:
-  DWORD         n;
-  DWORD         next;
-  DWORD         prev;
-};
-
-class BigRealx86 {
-public:
-  DWORD         m_vfptr;               // pointer to vtable
-  DWORD         m_first;               // Most significand  digit
-  DWORD         m_last;                // Least significand digit
-  int           m_expo, m_low;         // if isZero() then (m_expo,m_low)=(BIGREAL_ZEROEXPO,0) else m_expo = m_low+getLength()-1
-  bool          m_negative;            // True for x < 0. else false
-  DWORD         m_digitPool;
-};
-
-// -------------------------------------------------------------------
-
 #define LOG10BASEx64  18
 #define ESCEXPOx64   -900000000000000000
-
-class Digitx64 {
-public:
-  QWORD          n;
-  QWORD          next;
-  QWORD          prev;
-};
-
-class BigRealx64 {
-public:
-  QWORD          m_vfptr;               // pointer to vtable
-  QWORD          m_first;               // Most significand  digit
-  QWORD          m_last;                // Least significand digit
-  INT64          m_expo, m_low;         // if isZero() then (m_expo,m_low)=(BIGREAL_ZEROEXPO,0) else m_expo = m_low+getLength()-1
-  bool           m_negative;            // True for x < 0. else false
-  QWORD          m_digitPool;
-};
 
 // Values for BigReal::m_low, if m_expo == BIGREAL_ESCEXPO
 #define BIGREAL_ZEROLOW    FP_ZERO
 #define BIGREAL_NANLOW     FP_NAN
 #define BIGREAL_INFLOW     FP_INFINITE // +/- infinite depending on m_negative
 
-template<class BigReal, class Digit> class BigRealAddIn {
+template<class VTYPE> class Digit {
+public:
+  VTYPE n;
+  VTYPE next;
+  VTYPE prev;
+  inline bool hasNext() const {
+    return next != 0;
+  }
+};
+
+template<class ETYPE, class VTYPE> class BigRealType {
+public:
+  VTYPE         m_vfptr;               // pointer to vtable
+  VTYPE         m_first;               // Most significand  digit
+  VTYPE         m_last;                // Least significand digit
+  ETYPE         m_expo, m_low;         // if isZero() then (m_expo,m_low)=(BIGREAL_ZEROEXPO,0) else m_expo = m_low+getLength()-1
+  bool          m_negative;            // True for x < 0. else false
+  VTYPE         m_digitPool;
+};
+
+typedef BigRealType<int  , DWORD> BigRealx86;
+typedef BigRealType<INT64, QWORD> BigRealx64;
+
+// -------------------------------------------------------------------
+
+template<class INTTYPE> TCHAR *digitToStr(TCHAR *dst, INTTYPE n, UINT width) {
+  TCHAR tmp[50], *d = width ? tmp : dst;
+  if(sizeof(n) == sizeof(QWORD)) {
+    _i64tot(n, d, 10);
+  } else {
+    _itot((DWORD)n, d, 10);
+  }
+  if(width) {
+    const int zeroCount = (int)width - (int)_tcslen(tmp);
+    if(zeroCount <= 0) {
+      _tcscpy(dst, d);
+    } else { // zeroCount > 0
+      TMEMSET(dst, _T('0'), zeroCount);
+      _tcscpy(dst + zeroCount, d);
+    }
+  }
+  return dst;
+}
+
+template<class BigReal, class ETYPE, class VTYPE, int log10Base, ETYPE escExpo> class BigRealAddIn {
 private:
   DEBUGHELPER *m_helper;
-  Digit &getDigit(Digit &d, QWORD addr) const {
-    if(sizeof(Digit) == sizeof(Digitx86)) {
-      return *(Digit*)m_helper->getObjectx86(&d, (DWORD)addr, sizeof(Digit));
+  bool         m_hasDecimalPoint;
+  String      &m_result;
+
+  void getDigit(Digit<VTYPE> &d, VTYPE addr) const {
+    if(sizeof(VTYPE) == sizeof(DWORD)) {
+      m_helper->getObjectx86(&d, (DWORD)addr, sizeof(Digit<VTYPE>));
     } else {
-      return *(Digit*)m_helper->getObjectx64(&d, addr, sizeof(Digit));
+      m_helper->getObjectx64(&d, addr, sizeof(Digit<VTYPE>));
+    }
+  }
+  inline bool nextDigit(Digit<VTYPE> &d) const {
+    if(!d.hasNext()) return false;
+    getDigit(d, d.next);
+    return true;
+  }
+  inline void addstr(const TCHAR *s) {
+    m_result += s;
+  }
+  inline void addstr(const String &s) {
+    m_result += s;
+  }
+  inline void addDigitStr(VTYPE n, UINT width = 0) {
+    TCHAR tmp[100];
+    addstr(digitToStr(tmp, n, width));
+  }
+  inline void addDecimalPoint() {
+    if(!m_hasDecimalPoint) {
+      addstr(_T("."));
+      m_hasDecimalPoint = true;
+    }
+  }
+  inline void addZeroes(int count) {
+    m_result.insert(m_result.length(), count, '0');
+  }
+  inline void removeTrailingZeroes() {
+    if(m_hasDecimalPoint) {
+      StrStream::removeTralingZeroDigits(m_result);
+    }
+  }
+  inline void removeLast(intptr_t n) {
+    if(n > 0) {
+      m_result.remove(m_result.length() - n, n);
+    }
+  }
+
+  void setEllipsisAtEnd() {
+    if(m_result.length() >= 3) {
+      _tcscpy(&m_result[m_result.length() - 3], _T("..."));
+    }
+  }
+  void formatNonNormal(const BigReal &n) {
+    TCHAR tmp[100];
+    switch(n.m_low) {
+    case BIGREAL_ZEROLOW:
+      StrStream::formatZero(m_result, 19, ios::fixed | ios::left, 21);
+      break;
+    case BIGREAL_NANLOW:
+      addstr(StrStream::formatqnan(tmp));
+      break;
+    case BIGREAL_INFLOW:
+      addstr(n.m_negative ? StrStream::formatninf(tmp) : StrStream::formatpinf(tmp));
+      break;
+    default:
+      addstr(format(_T("Invalid state:expo:%I64d, low:%I64d"), (INT64)n.m_expo, (INT64)n.m_low));
+      break;
     }
   }
 
 public:
-  BigRealAddIn(DEBUGHELPER *pHelper) : m_helper(pHelper) {
+  BigRealAddIn(DEBUGHELPER *pHelper, String &dst) : m_helper(pHelper), m_result(dst), m_hasDecimalPoint(false) {
   }
-  String toString(BigReal &n, INT64 zeroExpo, int log10Base, size_t maxResult) const;
+  void toString(BigReal &n, size_t maxResult) {
+    const ETYPE expo = n.m_expo;
+    if(expo == escExpo) {
+      formatNonNormal(n);
+      return;
+    }
+
+    Digit<VTYPE> digit;
+    getDigit(digit, n.m_first);
+
+    const int    firstDigitCount = getDecimalDigitCount(digit.n);
+    const int    firstExpo10     = firstDigitCount - 1;
+
+    int totalDecimalDigitCount;
+    if(expo == n.m_low) { // calculate total number of decimal digits in BigReal
+      totalDecimalDigitCount = firstDigitCount;
+    } else {
+      Digit<VTYPE> lastDigit;
+      getDigit(lastDigit, n.m_last);
+      int lastDigitCount;
+      if(lastDigit.n == 0) {
+        lastDigitCount = 0;
+      } else {
+        lastDigitCount = log10Base;
+        for(VTYPE last = lastDigit.n; last % 10 == 0; last /= 10) {
+          lastDigitCount--;
+        }
+      }
+      totalDecimalDigitCount = (int)((expo - n.m_low - 1) * log10Base + firstDigitCount + lastDigitCount);
+    }
+
+    if(n.m_negative) {
+      addstr(_T("-"));
+    }
+    const ETYPE expo10 = expo * log10Base + firstExpo10;
+
+    if((expo10 < -4) || (expo10 >= 18)) { // use scientific format
+      const String expoStr = format(_T("e%+03I64d"), (INT64)expo10);
+
+      const int    maxSignificandDigits = maxResult - m_result.length() - expoStr.length() - 1;   // sign, exponent, decimalpoint
+      const int    precision            = min(maxSignificandDigits, totalDecimalDigitCount) - 1;  // Number of decimal digits after decimalpoint
+      const VTYPE  firstScaleE10        = (VTYPE)pow10(firstExpo10);
+
+      addDigitStr(digit.n / firstScaleE10);
+      if(precision > 0) {
+        addDecimalPoint();
+
+        digit.n %= firstScaleE10;
+        int decimalsDone;
+
+        if(precision < firstExpo10) {
+          digit.n /= (VTYPE)pow10(firstExpo10 - precision);
+          decimalsDone = precision;   // 0 < precision < firstExpo10 < log10Base
+        } else {
+          decimalsDone = firstExpo10; // firstExpo10 < log10Base
+        }
+        if(decimalsDone > 0) {
+          addDigitStr(digit.n, decimalsDone);
+        }
+        for(int rest = precision - decimalsDone; (rest > 0) && nextDigit(digit); rest -= log10Base) {
+          addDigitStr(digit.n, log10Base);
+        }
+      }
+      const intptr_t expectedSize = m_result.length() + expoStr.length();
+      const intptr_t extraCount   = expectedSize - (intptr_t)maxResult;
+      if(digit.hasNext() || (extraCount > 0)) {
+        removeLast(extraCount);
+        setEllipsisAtEnd();
+      } else {
+        removeTrailingZeroes();
+      }
+      addstr(expoStr);
+    } else { // fixed format
+      int precision, decimalsDone = 0;
+      if(expo10 < 0) { // first handle integerpart
+        addstr(_T("0"));
+        addDecimalPoint();
+        precision = (int)maxResult - (int)m_result.length();
+        if(expo10 < -1) {
+          const ETYPE zeroCount = -expo10 - 1;
+          addZeroes((int)zeroCount);
+          decimalsDone += (int)zeroCount;
+        }
+        addDigitStr(digit.n);
+        decimalsDone += firstDigitCount;
+      } else {
+        addDigitStr(digit.n);
+        ETYPE d = expo10 - firstExpo10;
+        for(; (d > 0) && nextDigit(digit); d -= log10Base) {
+          addDigitStr(digit.n, log10Base);
+        }
+        if(d > 0) {
+          addZeroes((int)d);
+        } else {
+          addDecimalPoint();
+        }
+        precision = (int)maxResult - (int)m_result.length();
+      }
+
+      // now handle fraction if any
+      for(int rest = precision - decimalsDone; (rest > 0) && nextDigit(digit); rest -= log10Base) {
+        addDigitStr(digit.n, log10Base);
+      }
+      removeTrailingZeroes();
+
+      const intptr_t extraCount = m_result.length() - (intptr_t)maxResult;
+      if(digit.hasNext() || (extraCount > 0)) {
+        removeLast(extraCount);
+        setEllipsisAtEnd();
+      }
+    }
+  }
 };
-
-template<class BigReal, class Digit> String BigRealAddIn<BigReal, Digit>::toString(BigReal &n, INT64 escExpo, int log10Base, size_t maxResult) const {
-  const INT64 expo = n.m_expo;
-  if(expo == escExpo) {
-    String result;
-    TCHAR  tmp[100];
-    switch(n.m_low) {
-    case BIGREAL_ZEROLOW: return StrStream::formatZero(result, 19, ios::fixed|ios::left, 21);
-    case BIGREAL_NANLOW : return StrStream::formatqnan(tmp);
-    case BIGREAL_INFLOW : return n.m_negative ? StrStream::formatninf(tmp) : StrStream::formatpinf(tmp);
-    default             : return format(_T("Invalid state:expo:%I64, low:%I64d"), expo, (INT64)n.m_low);
-    }
-  }
-
-  Digit digit;
-  getDigit(digit, n.m_first);
-
-  const int    firstDigitCount = getDecimalDigitCount(digit.n);
-  const int    scale           = firstDigitCount - 1;
-  const UINT64 scaleE10        = pow10(scale);
-  int          decimalsDone    = 0;
-  String       result;
-
-  if(n.m_negative) {
-    result = _T("-");
-  }
-  const INT64 e = expo * log10Base + scale;
-  String expoStr;
-  if(e != 0) {
-    expoStr += format(_T("e%+03I64d"), e);
-  }
-  INT64 decimalDigits;
-  if(n.m_expo == n.m_low) { // calculate total number of decimal digits in BigReal
-    decimalDigits = firstDigitCount;
-  } else {
-    Digit lastDigit;
-    getDigit(lastDigit, n.m_last);
-    int lastDigitCount;
-    if(lastDigit.n == 0) {
-      lastDigitCount = 0;
-    } else {
-      lastDigitCount = log10Base;
-      for(UINT64 last = lastDigit.n; last % 10 == 0; last /= 10) {
-        lastDigitCount--;
-      }
-    }
-    decimalDigits = (expo - n.m_low - 1) * log10Base + firstDigitCount + lastDigitCount;
-  }
-  const int    maxSignificandDigits = maxResult - result.length() - expoStr.length() - 1;   // sign, exponent, decimalpoint
-  const int    precision            = (int)min(maxSignificandDigits-1, decimalDigits-1);    // number of digits after decimalpoint
-  const bool   numberTooLong        = precision < decimalDigits - 1;
-  const UINT64 firstDecimalDigit    = digit.n / scaleE10;
-
-  result += format(_T("%llu"), firstDecimalDigit);
-  bool hasDecimalPoint = false;
-
-  if(precision > 0) {
-    result += _T("."); hasDecimalPoint = true;
-
-    UINT64 fraction = digit.n % scaleE10;
-    if(precision < scale) {
-      fraction /= pow10(scale - precision);
-      decimalsDone = precision; // precision < scale < log10Base
-    } else {
-      decimalsDone = scale; // scale < log10Base
-    }
-    if(decimalsDone > 0) {
-      result += format(_T("%0*.*I64u"), decimalsDone, decimalsDone, fraction);
-    }
-    while(decimalsDone < precision) {
-      if(digit.next == 0) break;
-      getDigit(digit, digit.next);
-      UINT64 part       = digit.n;
-      int    partLength = log10Base;
-      int    rest       = precision - decimalsDone;
-      if(rest < log10Base) {
-        partLength = rest;
-        part /= pow10(log10Base - rest);
-      }
-      result += format(_T("%0*.*I64u"), partLength, partLength, part);
-      decimalsDone += partLength;
-    }
-  }
-  if(numberTooLong && (result.length() + expoStr.length() == maxResult)) {
-    for(int i = 0; (i < 3) && (result.length() > 0); i++) {
-      result.removeLast();
-    }
-    result += _T("...");
-  } else if(hasDecimalPoint) { // remove trailing zeros after decimalpoint
-    StrStream::removeTralingZeroDigits(result);
-  }
-  result += expoStr;
-  return result;
-}
 
 ADDIN_API HRESULT WINAPI AddIn_BigReal(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t maxResult, DWORD /*reserved*/) {
   try {
@@ -255,13 +340,13 @@ ADDIN_API HRESULT WINAPI AddIn_BigReal(DWORD dwAddress, DEBUGHELPER *pHelper, in
     case PRTYPE_X86:
       { BigRealx86 n;
         pHelper->getRealObject(&n, sizeof(n));
-        tmpStr = BigRealAddIn<BigRealx86, Digitx86>(pHelper).toString(n, ESCEXPOx86, LOG10BASEx86, maxResult - 1);
+        BigRealAddIn<BigRealx86, int, DWORD, LOG10BASEx86, ESCEXPOx86>(pHelper, tmpStr).toString(n, maxResult - 1);
       }
       break;
     case PRTYPE_X64:
       { BigRealx64 n;
         pHelper->getRealObject(&n, sizeof(n));
-        tmpStr = BigRealAddIn<BigRealx64, Digitx64>(pHelper).toString(n, ESCEXPOx64, LOG10BASEx64, maxResult - 1);
+        BigRealAddIn<BigRealx64, INT64, QWORD, LOG10BASEx64, ESCEXPOx64>(pHelper, tmpStr).toString(n, maxResult - 1);
       }
       break;
     }
