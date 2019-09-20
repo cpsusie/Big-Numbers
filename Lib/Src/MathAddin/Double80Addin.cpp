@@ -24,7 +24,7 @@ String D80ToDbgString(const Double80 &d80) {
     return StrStream::formatUndefined(tmp, _fpclass(d80));
   }
   const int expo10 = Double80::getExpo10(d80);
-  if(expo10 < -4 || (expo10 >= 18)) {
+  if((expo10 < -4) || (expo10 >= 18)) {
     TCHAR str[50];
     d80tot(str, d80);
     if(_fpclass(d80) & (_FPCLASS_PD | _FPCLASS_ND)) { // denormalized
