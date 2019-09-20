@@ -357,7 +357,7 @@ static _uint128 decToBin(const BigReal &x) {
       return getUint128(bi);
     }
   }
-  throwInvalidArgumentException(__TFUNCTION__,_T("x=%s"), x.toString().cstr());
+  throwInvalidArgumentException(__TFUNCTION__,_T("x=%s"), toString(x).cstr());
   return 0;
 }
 
@@ -467,9 +467,10 @@ String Calculator::printRadix(const BigReal &x) const {
     }
     break;
   case 10:
-    { BigRealStream stream(m_ndigits);
-      stream << round(x, m_ndigits - BigReal::getExpo10(x));
-      tmp = stream.replace('.', ',');
+    { std::wstringstream stream;
+      stream << (FullFormatBigReal&)round(x, m_ndigits - BigReal::getExpo10(x));
+      tmp = stream.str().c_str();
+      tmp.replace('.', ',');
     }
     break;
   }
@@ -478,7 +479,7 @@ String Calculator::printRadix(const BigReal &x) const {
 
 const BigReal &Calculator::getDisplay() const {
   if(m_displayDirty) {
-    String tmp = m_inExponent ? format(_T("%se%s"), m_mantissa, m_exponent) : m_mantissa;
+    const String tmp = m_inExponent ? format(_T("%se%s"), m_mantissa, m_exponent) : m_mantissa;
     BigReal x = scanRadix(tmp);
     m_display = x;
   }
