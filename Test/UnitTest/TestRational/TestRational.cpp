@@ -136,12 +136,11 @@ namespace TestRational {
         const CompactRationalArray a = generateTestArray();
 
         StreamParametersIterator it               = StreamParameters::getIntParamIterator(20);
-        const UINT               totalFormatCount = (UINT)it.getMaxIterationCount();
+        const UINT               totalFormatCount = (UINT)it.getMaxIterationCount(), quatil = totalFormatCount/4;
         UINT                     formatCounter    = 0;
         while(it.hasNext()) {
           const StreamParameters &param = it.next();
-          formatCounter++;
-          if(formatCounter % 50 == 0) {
+          if(++formatCounter % quatil == 0) {
             OUTPUT(_T("%s progress:%.2lf%%"), __TFUNCTION__, PERCENT(formatCounter, totalFormatCount));
           }
           if((param.flags()&ios::adjustfield) == ios::internal) {

@@ -1034,12 +1034,11 @@ namespace TestInt128 {
       try {
         OPENERRORLOG();
         StreamParametersIterator it               = StreamParameters::getIntParamIterator(20);
-        const UINT               totalFormatCount = (UINT)it.getMaxIterationCount();
+        const UINT               totalFormatCount = (UINT)it.getMaxIterationCount(), quatil = totalFormatCount/4;
         UINT                     formatCounter    = 0;
         while(it.hasNext()) {
           const StreamParameters &param = it.next();
-          formatCounter++;
-          if(formatCounter % 50 == 0) {
+          if(++formatCounter % quatil == 0) {
             OUTPUT(_T("%s progress:%.2lf%%"), __TFUNCTION__, PERCENT(formatCounter, totalFormatCount));
           }
           if((param.flags()&ios::adjustfield) == ios::internal) {
@@ -1143,12 +1142,11 @@ namespace TestInt128 {
     template<class INT64TYPE, class INT128TYPE> void testToStream(CompactArray<INT64TYPE> &a) {
       try {
         StreamParametersIterator it               = StreamParameters::getIntParamIterator(30);
-        const UINT               totalFormatCount = (UINT)it.getMaxIterationCount();
+        const UINT               totalFormatCount = (UINT)it.getMaxIterationCount(), quatil = totalFormatCount/4;
         UINT                     formatCounter    = 0;
         while(it.hasNext()) {
           const StreamParameters &param = it.next();
-          formatCounter++;
-          if(formatCounter % 50 == 0) {
+          if(++formatCounter % quatil == 0) {
             OUTPUT(_T("%s progress:%.2lf%%"), __TFUNCTION__, PERCENT(formatCounter, totalFormatCount));
           }
           const UINT     radix = param.radix();

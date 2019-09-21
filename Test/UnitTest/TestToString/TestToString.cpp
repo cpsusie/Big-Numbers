@@ -66,20 +66,18 @@ namespace TestToString {
 
   TEST_CLASS(TestToString) {
 
-    // return timeusage in sec
-    static void testToString(UINT flags
-                            ,const String &errorName, TestDataArray &a
-                            ,UINT acceptableErrors, UINT acceptableLengthErrors
-                            ) {
+    static void testToStringD80(UINT flags
+                               ,const String &errorName, TestDataArray &a
+                               ,UINT acceptableErrors, UINT acceptableLengthErrors
+                               ) {
       TestIterator it             = a.getIterator();
-      const UINT   totalTestCount = (UINT)it.getMaxIterationCount();
+      const UINT   totalItCount   = (UINT)it.getMaxIterationCount(), quatil = totalItCount/4;
+      UINT         itCounter      = 0;
+      UINT         testCounter    = 0, mismatch    = 0, lengthMismatch = 0;
       const int    openMode       = ofstream::out | ofstream::trunc;
-      UINT         loopCounter    = 0;
-      UINT         testCounterD80 = 0, mismatchD80    = 0, lengthMismatchD80 = 0;
-      UINT         testCounterBR  = 0, mismatchBR     = 0, lengthMismatchBR  = 0;
-      tofstream    errorLogD80, errorLogBR;
+      tofstream    errorLog;
 
-      OUTPUT(_T("Total format-tests:%s"), format1000(it.getMaxIterationCount()).cstr());
+      OUTPUT(_T("Total format-tests:%s"), format1000(totalItCount).cstr());
 
       if(flags & TTS_DUMPALLFORMATFLAGS) {
         redirectDebugLog();
@@ -88,84 +86,104 @@ namespace TestToString {
       FileNameSplitter spl(errorName);
       const String rawFileName = spl.getFileName();
 
-      if(flags & TTS_D80) {
-        errorLogD80.open(spl.setFileName(rawFileName + _T("D80")).getFullPath().cstr(), openMode);
-      }
-      if(flags & TTS_BR) {
-        errorLogBR.open(spl.setFileName(rawFileName + _T("BigReal")).getFullPath().cstr(), openMode);
-      }
+      errorLog.open(spl.setFileName(rawFileName + _T("D80")).getFullPath().cstr(), openMode);
 
-      tstring bufD64, bufD80, bufBR;
-      bool equalD80 = true, equalBR = true;
-
+      tstring      D64Str, testStr;
       const double startTime = getProcessTime();
 
       while(it.hasNext()) {
         TestElement element = it.next();
         tostrstream sD64;
-#ifdef _DEBUG
-        if(++loopCounter % 10000 == 0) {
-          OUTPUT(_T("Count:%9s/%-9s:%s %6.2lf%%\r")
-                ,format1000(loopCounter).cstr()
-                ,format1000(totalTestCount).cstr()
-                ,element.toString().cstr()
-                ,PERCENT(loopCounter, totalTestCount)
-          );
+        if(++itCounter % quatil == 0) {
+          OUTPUT(_T("%s progress:%.2lf%%"), __TFUNCTION__, PERCENT(itCounter, totalItCount));
         }
-#endif
 
         sD64 << element.m_param << element.m_values->getDouble();
-        bufD64 = sD64.str();
+        D64Str = sD64.str();
 
-        if(flags & TTS_D80) {
-          testCounterD80++;
-          tostrstream stream;
-          stream << element.m_param << element.m_values->getDouble80();
-          bufD80 = stream.str();
-          if(bufD80 != bufD64) {
-            errorLogD80 << element.toString() << _T("\tbufD64:<") << bufD64 << _T(">\tbuf80:<") << bufD80 << _T(">") << endl;
-            mismatchD80++;
-            if(bufD80.length() != bufD64.length()) {
-              lengthMismatchD80++;
-            }
-          }
-        }
-        if(flags & TTS_BR) {
-          if((element.m_param.flags() & ios::floatfield) != ios::hexfloat) { // hexfloat is not relevant for BigReal
-            testCounterBR++;
-            tostrstream stream;
-            stream << element.m_param << element.m_values->getBigReal();
-            bufBR = stream.str();
-            if(bufBR != bufD64) {
-              errorLogBR << element.toString() << _T("\tbufD64:<") << bufD64 << _T(">\tbufBr:<") << bufBR << _T(">") << endl;
-              mismatchBR++;
-              if(bufBR.length() != bufD64.length()) {
-                lengthMismatchBR++;
-              }
-            }
+        tostrstream stream;
+        stream << element.m_param << element.m_values->getDouble80();
+        testStr = stream.str();
+        testCounter++;
+        if(testStr != D64Str) {
+          errorLog << element.toString() << _T("\tD64Str:<") << D64Str << _T(">\ttestStr:<") << testStr << _T(">") << endl;
+          mismatch++;
+          if(testStr.length() != D64Str.length()) {
+            lengthMismatch++;
           }
         }
       }
 
       const double timeUsage = getProcessTime() - startTime;
 
-      if(flags & TTS_D80) {
-        if((mismatchD80 > acceptableErrors) || (lengthMismatchD80 > acceptableLengthErrors)) {
-          OUTPUT(_T("Number of tests for Double80:%s"          ), format1000(testCounterD80   ).cstr());
-          OUTPUT(_T("Format mismatch for Double80:%s - %.2lf%%"), format1000(mismatchD80      ).cstr(), PERCENT(mismatchD80      , testCounterD80));
-          OUTPUT(_T("Length mismatch for Double80:%s - %.2lf%%"), format1000(lengthMismatchD80).cstr(), PERCENT(lengthMismatchD80, testCounterD80));
-          verify(false);
-        }
-      }
-      if(flags & TTS_BR) {
-        if((mismatchBR > acceptableErrors) || (lengthMismatchBR > acceptableLengthErrors)) {
-          OUTPUT(_T("Number of tests for BigReal :%s"          ), format1000(testCounterBR    ).cstr());
-          OUTPUT(_T("Format mismatch for BigReal :%s - %.2lf%%"), format1000(mismatchBR       ).cstr(), PERCENT(mismatchBR      , testCounterBR));
-          OUTPUT(_T("Length mismatch for BigReal :%s - %.2lf%%"), format1000(lengthMismatchBR ).cstr(), PERCENT(lengthMismatchBR, testCounterBR));
-          verify(false);
-        }
+      if((mismatch > acceptableErrors) || (lengthMismatch > acceptableLengthErrors)) {
+        OUTPUT(_T("Number of tests for Double80:%s"          ), format1000(testCounter   ).cstr());
+        OUTPUT(_T("Format mismatch for Double80:%s - %.2lf%%"), format1000(mismatch      ).cstr(), PERCENT(mismatch      , testCounter));
+        OUTPUT(_T("Length mismatch for Double80:%s - %.2lf%%"), format1000(lengthMismatch).cstr(), PERCENT(lengthMismatch, testCounter));
       }
       OUTPUT(_T("Total time usage:%.3lf sec."), ((getProcessTime() - startTime) / 1e6));
+      verify((mismatch <= acceptableErrors) && (lengthMismatch <= acceptableLengthErrors));
+    }
+
+    static void testToStringBR(UINT flags
+                              ,const String &errorName, TestDataArray &a
+                              ,UINT acceptableErrors, UINT acceptableLengthErrors
+                              ) {
+      TestIterator it             = a.getIterator();
+      const UINT   totalItCount   = (UINT)it.getMaxIterationCount(), quatil = totalItCount/4;
+      UINT         itCounter      = 0;
+      UINT         testCounter    = 0, mismatch     = 0, lengthMismatch  = 0;
+      const int    openMode       = ofstream::out | ofstream::trunc;
+      tofstream    errorLog;
+
+      OUTPUT(_T("Total format-tests:%s"), format1000(totalItCount).cstr());
+
+      if(flags & TTS_DUMPALLFORMATFLAGS) {
+        redirectDebugLog();
+        it.dumpAllFormats();
+      }
+      FileNameSplitter spl(errorName);
+      const String rawFileName = spl.getFileName();
+
+      errorLog.open(spl.setFileName(rawFileName + _T("BigReal")).getFullPath().cstr(), openMode);
+
+      tstring D64Str, testStr;
+
+      const double startTime = getProcessTime();
+
+      while(it.hasNext()) {
+        TestElement element = it.next();
+        tostrstream sD64;
+        if(++itCounter % quatil == 0) {
+          OUTPUT(_T("%s progress:%.2lf%%"), __TFUNCTION__, PERCENT(itCounter, totalItCount));
+        }
+
+        sD64 << element.m_param << element.m_values->getDouble();
+        D64Str = sD64.str();
+
+        if((element.m_param.flags() & ios::floatfield) != ios::hexfloat) { // hexfloat is not relevant for BigReal
+          testCounter++;
+          tostrstream stream;
+          stream << element.m_param << element.m_values->getBigReal();
+          testStr = stream.str();
+          if(testStr != D64Str) {
+            errorLog << element.toString() << _T("\tD64Str:<") << D64Str << _T(">\ttestStr:<") << testStr << _T(">") << endl;
+            mismatch++;
+            if(testStr.length() != D64Str.length()) {
+              lengthMismatch++;
+            }
+          }
+        }
+      }
+      const double timeUsage = getProcessTime() - startTime;
+
+      if((mismatch > acceptableErrors) || (lengthMismatch > acceptableLengthErrors)) {
+        OUTPUT(_T("Number of tests for BigReal :%s"          ), format1000(testCounter    ).cstr());
+        OUTPUT(_T("Format mismatch for BigReal :%s - %.2lf%%"), format1000(mismatch       ).cstr(), PERCENT(mismatch      , testCounter));
+        OUTPUT(_T("Length mismatch for BigReal :%s - %.2lf%%"), format1000(lengthMismatch ).cstr(), PERCENT(lengthMismatch, testCounter));
+      }
+      OUTPUT(_T("Total time usage:%.3lf sec."), ((getProcessTime() - startTime) / 1e6));
+      verify((mismatch <= acceptableErrors) && (lengthMismatch <= acceptableLengthErrors));
     }
 
     static int doubleCompare(const double &d1, const double &d2) {
@@ -177,10 +195,10 @@ namespace TestToString {
         throwInvalidArgumentException(__TFUNCTION__, _T("flags = %08x"), flags);
       }
       String testingTypeStr = _T("double");
-      if (flags & TTS_D80) {
+      if(flags & TTS_D80) {
         testingTypeStr += _T("/Double80");
       }
-      if (flags & TTS_BR) {
+      if(flags & TTS_BR) {
         testingTypeStr += _T("/BigReal");
       }
       OUTPUT(_T("%s - Testing operator<<(ostream &stream, %s)"), method, testingTypeStr.cstr());
@@ -188,8 +206,8 @@ namespace TestToString {
 
     static const CompactDoubleArray &getRandomTestArray() {
       static CompactDoubleArray values;
-      if (values.isEmpty()) {
-        for (int i = 0; i < 32; i++) {
+      if(values.isEmpty()) {
+        for(int i = 0; i < 32; i++) {
           const double e = pow(10, randDouble(-200, 200));
           const double t = randDouble();
           values.add(t * e);
@@ -206,7 +224,7 @@ namespace TestToString {
       TestDataArray a1(defaultTestValues, ARRAYSIZE(defaultTestValues));
       const String fileName = getTestFileName(__TFUNCTION__, _T("log"));
 
-      testToString(flags, fileName, a1, 0, 0);
+      testToStringD80(flags, fileName, a1, 0, 0);
     }
 
     TEST_METHOD(TestD80ToString_RandomValues) {
@@ -215,7 +233,7 @@ namespace TestToString {
 
       TestDataArray a(getRandomTestArray());
       const String fileName = getTestFileName(__TFUNCTION__, _T("log"));
-      testToString(flags, fileName, a, 390400, 0);
+      testToStringD80(flags, fileName, a, 390400, 0);
     }
 
     TEST_METHOD(TestBigRealToString_StandardValues) {
@@ -225,7 +243,7 @@ namespace TestToString {
       TestDataArray a(defaultTestValues, ARRAYSIZE(defaultTestValues));
       const String fileName = getTestFileName(__TFUNCTION__, _T("log"));
 
-      testToString(flags, fileName, a, 0, 0);
+      testToStringBR(flags, fileName, a, 0, 0);
     }
 
     TEST_METHOD(TestBigRealToString_RandomValues) {
@@ -234,7 +252,7 @@ namespace TestToString {
 
       TestDataArray a(getRandomTestArray());
       const String fileName = getTestFileName(__TFUNCTION__, _T("log"));
-      testToString(flags, fileName, a, 414400,0);
+      testToStringBR(flags, fileName, a, 414400,0);
     }
   };
 }
