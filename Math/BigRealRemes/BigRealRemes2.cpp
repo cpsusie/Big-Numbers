@@ -5,6 +5,8 @@
 #include <Console.h>
 #include <fstream>
 
+using namespace std;
+
 #define EXTRHEADERLINE    1
 #define FIRSTEXTREMUMLINE ((EXTRHEADERLINE) + 2)
 #define MMQUOTLINE        ((FIRSTEXTREMUMLINE) + m_N + 3)
@@ -32,17 +34,17 @@ static BigReal DEFAULT_MMQUOT_EPS = e(BIGREAL_1,-22);
 
 class FormatBigReal : public String {
 public:
-  FormatBigReal(const BigReal &x, int prec = 20, int width = 30, int flags = DEFAULT_FLAGS          ) : String(::toString(x,prec,width,flags)) {}
-  FormatBigReal(const Real    &x,                int width = 18, int flags = DEFAULT_FLAGS          ) : String(::toString(x,16  ,width,flags)) {}
-  FormatBigReal(int            x,                int width =  2, int flags = ios::right | ios::fixed) : String(::toString(x,0   ,width,flags)) {}
+  FormatBigReal(const BigReal &x, int prec = 20, StreamSize width = 30, FormatFlags flags = DEFAULT_FLAGS          ) : String(::toString(x,prec,width,flags)) {}
+  FormatBigReal(const Real    &x,                StreamSize width = 18, FormatFlags flags = DEFAULT_FLAGS          ) : String(::toString(x,16  ,width,flags)) {}
+  FormatBigReal(int            x,                StreamSize width =  2, FormatFlags flags = ios::right | ios::fixed) : String(::toString(x,0   ,width,flags)) {}
 };
 
 static void checkRange(const BigReal &x, const BigReal &left, const BigReal &right) {
   if(x < left || x > right)
     throwException(_T("Remes:checkRange:Invalid argument. x=%s outside range=[%s..%s]")
-                   ,x.toString().cstr()
-                   ,left.toString().cstr()
-                   ,right.toString().cstr());
+                   , toString(x    ).cstr()
+                   , toString(left ).cstr()
+                   , toString(right).cstr());
 }
 
 static BigReal signedValue(int sign, const BigReal &x) {
@@ -58,7 +60,7 @@ Remes::Remes(RemesTargetFunction &targetFunction, const bool useRelativeError, c
 , m_verbose(verbose)
 {
   if(m_left > 0 || m_right < 0) {
-    throwException(_T("Interval [%s;%s] does not contain 0"),m_left.toString().cstr(),m_right.toString().cstr());
+    throwException(_T("Interval [%s;%s] does not contain 0"), toString(m_left).cstr(), toString(m_right).cstr());
   }
 
   m_mmQuotEps = DEFAULT_MMQUOT_EPS;
@@ -76,8 +78,8 @@ Remes::Remes(const Remes &src)
 }
 
 void Remes::setMMQuotEpsilon(const BigReal &mmQuotEps) {
-  if(mmQuotEps <= 0 || mmQuotEps > 0.5) {
-    throwException(_T("Remes::setMMQuotEpsilon:Invalid argument=%s. Must be = ]0;0.5]"),mmQuotEps.toString());
+  if((mmQuotEps <= 0) || (mmQuotEps > 0.5)) {
+    throwException(_T("Remes::setMMQuotEpsilon:Invalid argument=%s. Must be = ]0;0.5]"), toString(mmQuotEps).cstr());
   }
 
   m_mmQuotEps = mmQuotEps;
@@ -130,7 +132,7 @@ void Remes::solve(const int M, const int K) {
   for(it = 1; it <= MAXIT; it++) {
     try {
       if(m_verbose) {
-        verbose(0, format(_T("M:%d, K:%d. Iteration:%2d. Stop when MinMaxQuot < %s"),M,K,it,m_mmQuotEps.toString().cstr()));
+        verbose(0, format(_T("M:%d, K:%d. Iteration:%2d. Stop when MinMaxQuot < %s"),M,K,it, toString(m_mmQuotEps).cstr()));
       }
 
       findCoefficients(QEpsilon);
@@ -275,7 +277,7 @@ BigRealVector Remes::findFinalExtrema(const int M, const int K, const bool highP
     hasSolved = true;
   }
 
-  throwException(_T("Remes::getFinalExtrema(%d,%d):Cannot find extremaVector with MinMaxQuot < %s, though it should exist"), M, K, mmQuot.toString().cstr());
+  throwException(_T("Remes::getFinalExtrema(%d,%d):Cannot find extremaVector with MinMaxQuot < %s, though it should exist"), M, K, toString(mmQuot).cstr());
   return BigRealVector(1);
 }
 
@@ -404,7 +406,7 @@ void Remes::findCoefficients(const BigReal &QEpsilon) {
     }
   } else {
     // for m_K > 0 we have to iterate
-    String Qstr = QEpsilon.toString();
+    String Qstr = toString(QEpsilon);
     int it;
     for(it = 1; it <= MAXIT; it++) {
 

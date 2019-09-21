@@ -136,7 +136,7 @@ String Remes::getSearchEString() const {
     str += format(_T("Q=1-min(|Last E|, |New E|)/max(|Last E|, |New E|)\n"));
     str += format(_T("Q=%s. Stop when Q<%s")
                  ,FormatBigReal(m_Q,5,9).cstr()
-                 ,m_QEpsilon.toString().cstr());
+                 ,toString(m_QEpsilon).cstr());
     return str;
   }
 }

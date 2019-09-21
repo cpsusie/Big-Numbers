@@ -30,9 +30,9 @@ static void checkRange(const TCHAR *method, const BigReal &x, const BigReal &lef
   if((x < left) || (x > right))
     throwInvalidArgumentException(method
                                  ,_T("x=%s outside range=[%s..%s]")
-                                 ,x.toString().cstr()
-                                 ,left.toString().cstr()
-                                 ,right.toString().cstr());
+                                 , toString(x    ).cstr()
+                                 , toString(left ).cstr()
+                                 , toString(right).cstr());
 }
 
 static BigReal signedValue(int sign, const BigReal &x) {
@@ -77,7 +77,7 @@ void Remes::initCommon() {
 
 void Remes::checkInterval() {
   if(!m_domain.contains(BIGREAL_0)) {
-    throwException(_T("Interval [%s;%s] does not contain 0"), m_domain.getFrom().toString().cstr(), m_domain.getTo().toString().cstr());
+    throwException(_T("Interval [%s;%s] does not contain 0"), toString(m_domain.getFrom()).cstr(), toString(m_domain.getTo()).cstr());
   }
 }
 
@@ -85,7 +85,7 @@ void Remes::setMMQuotEpsilon(const BigReal &mmQuotEps) {
   if(mmQuotEps <= 0 || mmQuotEps > 0.5) {
     throwException(_T("%s:Invalid argument=%s. Must be = ]0;0.5]")
                   ,__TFUNCTION__
-                  , mmQuotEps.toString().cstr());
+                  ,toString(mmQuotEps).cstr());
   }
   m_MMQuotEps = mmQuotEps;
 }

@@ -6,15 +6,17 @@
 #include <Math/BigRealInterval.h>
 #include <PropertyContainer.h>
 
+using namespace std;
+
 #define MULTITHREADEDEXTREMAFINDER
 
 #define DEFAULT_FLAGS ios::left | ios::showpos | ios::scientific
 
 class FormatBigReal : public String {
 public:
-  FormatBigReal(const BigReal &x, int prec = 20, int width = 30, int flags = DEFAULT_FLAGS          ) : String(::toString(x,prec,width,flags)) {}
-  FormatBigReal(const Real    &x,                int width = 18, int flags = DEFAULT_FLAGS          ) : String(::toString(x,16  ,width,flags)) {}
-  FormatBigReal(int            x,                int width =  2, int flags = ios::right | ios::fixed) : String(::toString(x,0   ,width,flags)) {}
+  FormatBigReal(const BigReal &x, int prec = 20, StreamSize width = 30, FormatFlags flags = DEFAULT_FLAGS          ) : String(::toString(x,prec,width,flags)) {}
+  FormatBigReal(const Real    &x,                StreamSize width = 18, FormatFlags flags = DEFAULT_FLAGS          ) : String(::toString(x,16  ,width,flags)) {}
+  FormatBigReal(int            x,                StreamSize width =  2, FormatFlags flags = ios::right | ios::fixed) : String(::toString(x,0   ,width,flags)) {}
 };
 
 class ExtremaKey {

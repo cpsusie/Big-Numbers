@@ -42,7 +42,7 @@ BigRealVector Remes::findFinalExtrema(UINT M, UINT K, bool highPrecision) {
 
   throwException(_T("%s(%u,%u):Cannot find extremaVector with MinMaxQuot < %s, though it should exist")
                 ,__TFUNCTION__
-                , M, K, mmQuot.toString().cstr());
+                , M, K, toString(mmQuot).cstr());
   return BigRealVector(1);
 }
 
@@ -162,8 +162,8 @@ String Remes::getMapFileName() const {
   FileNameSplitter info(__FILE__);
   const String typeString   = m_useRelativeError ? _T("RelativeError") : _T("AbsoluteError");
   const String domainString = format(_T("[%s-%s]")
-                                    ,m_domain.getFrom().toString().cstr()
-                                    ,m_domain.getTo().toString().cstr()
+                                    , toString(m_domain.getFrom()).cstr()
+                                    , toString(m_domain.getTo()).cstr()
                                     );
   const String fileName = m_targetFunction.getName() + domainString + typeString;
   return info.setFileName(fileName).setExtension(_T("dat")).getAbsolutePath();

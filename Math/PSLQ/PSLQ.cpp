@@ -3,6 +3,8 @@
 #include <Console.h>
 #include <Math/BigRealMatrix.h>
 
+using namespace std;
+
 // Implementation of PSLQ algorithm described at the following site:
 // http://arminstraub.com/downloads/math/pslq.pdf
 
