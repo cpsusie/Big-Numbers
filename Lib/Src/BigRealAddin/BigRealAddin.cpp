@@ -1,5 +1,4 @@
 #include "pch.h"
-#include <StrStream.h>
 
 using namespace std;
 
@@ -23,6 +22,24 @@ using namespace std;
 #define TENE17 100000000000000000
 #define TENE18 1000000000000000000
 #define TENE19 10000000000000000000
+
+// Assume n = [1..1e8[
+static int getDecimalDigitCount(ULONG n) {
+  // Binary search
+  if(n < TENE4) {                           //        n < 1e4
+    if(n < TENE2) {                         //        n < 1e2
+      return (n < TENE1) ? 1 : 2;
+    } else {                                // 1e2 <= n < 1e4
+      return (n < TENE3) ? 3 : 4;
+    }
+  } else {                                  // 1e4 <= n < 1e9
+    if(n < TENE6) {                         // 1e4 <= n < 1e6
+      return (n < TENE5) ? 5 : 6;
+    } else {                                // 1e6 <= n < 1e9
+      return (n < TENE7) ? 7 : 8;
+    }
+  }
+}
 
 // Assume n = [0..1e19]
 static int getDecimalDigitCount(UINT64 n) {
@@ -126,20 +143,20 @@ typedef BigRealType<INT64, QWORD> BigRealx64;
 
 // -------------------------------------------------------------------
 
-template<class INTTYPE> TCHAR *digitToStr(TCHAR *dst, INTTYPE n, UINT width) {
-  TCHAR tmp[50], *d = width ? tmp : dst;
+template<class INTTYPE> char *digitToStr(char*dst, INTTYPE n, UINT width) {
+  char tmp[50], *d = width ? tmp : dst;
   if(sizeof(n) == sizeof(QWORD)) {
-    _i64tot(n, d, 10);
+    _i64toa(n, d, 10);
   } else {
-    _itot((DWORD)n, d, 10);
+    _itoa((DWORD)n, d, 10);
   }
   if(width) {
-    const int zeroCount = (int)width - (int)_tcslen(tmp);
+    const int zeroCount = (int)width - (int)strlen(tmp);
     if(zeroCount <= 0) {
-      _tcscpy(dst, d);
+      strcpy(dst, d);
     } else { // zeroCount > 0
-      TMEMSET(dst, _T('0'), zeroCount);
-      _tcscpy(dst + zeroCount, d);
+      memset(dst, '0', zeroCount);
+      strcpy(dst + zeroCount, d);
     }
   }
   return dst;
@@ -149,7 +166,7 @@ template<class BigReal, class ETYPE, class VTYPE, int log10Base, ETYPE escExpo> 
 private:
   DEBUGHELPER *m_helper;
   bool         m_hasDecimalPoint;
-  String      &m_result;
+  string      &m_result;
 
   void getDigit(Digit<VTYPE> &d, VTYPE addr) const {
     if(sizeof(VTYPE) == sizeof(DWORD)) {
@@ -163,19 +180,19 @@ private:
     getDigit(d, d.next);
     return true;
   }
-  inline void addstr(const TCHAR *s) {
+  inline void addstr(const char *s) {
     m_result += s;
   }
-  inline void addstr(const String &s) {
+  inline void addstr(const string &s) {
     m_result += s;
   }
   inline void addDigitStr(VTYPE n, UINT width = 0) {
-    TCHAR tmp[100];
+    char tmp[100];
     addstr(digitToStr(tmp, n, width));
   }
   inline void addDecimalPoint() {
     if(!m_hasDecimalPoint) {
-      addstr(_T("."));
+      addstr(".");
       m_hasDecimalPoint = true;
     }
   }
@@ -184,40 +201,49 @@ private:
   }
   inline void removeTrailingZeroes() {
     if(m_hasDecimalPoint) {
-      StrStream::removeTralingZeroDigits(m_result);
+      size_t last = m_result.length()-1, index = last;
+      while(m_result.at(index) == '0') index--;
+      if(m_result.at(index) == '.') index--;
+      removeLast(last - index);
     }
   }
   inline void removeLast(intptr_t n) {
     if(n > 0) {
-      m_result.remove(m_result.length() - n, n);
+      m_result.erase(m_result.length() - n, n);
     }
   }
 
   void setEllipsisAtEnd() {
     if(m_result.length() >= 3) {
-      _tcscpy(&m_result[m_result.length() - 3], _T("..."));
+      strcpy(&m_result.at(m_result.length() - 3), "...");
     }
   }
+  string makeExpoString(INT64 expo10) const {
+    char tmp[100];
+    sprintf(tmp, "e%+03I64d", expo10);
+    return tmp;
+  }
   void formatNonNormal(const BigReal &n) {
-    TCHAR tmp[100];
+    char tmp[100];
     switch(n.m_low) {
     case BIGREAL_ZEROLOW:
-      StrStream::formatZero(m_result, 19, ios::fixed | ios::left, 21);
+      addstr("0.0000000000000000000");
       break;
     case BIGREAL_NANLOW:
-      addstr(StrStream::formatqnan(tmp));
+      addstr("nan(ind)");
       break;
     case BIGREAL_INFLOW:
-      addstr(n.m_negative ? StrStream::formatninf(tmp) : StrStream::formatpinf(tmp));
+      addstr(n.m_negative ? "-inf" : "inf");
       break;
     default:
-      addstr(format(_T("Invalid state:expo:%I64d, low:%I64d"), (INT64)n.m_expo, (INT64)n.m_low));
+      sprintf(tmp, "Invalid state:expo:%I64d, low:%I64d", (INT64)n.m_expo, (INT64)n.m_low);
+      addstr(tmp);
       break;
     }
   }
 
 public:
-  BigRealAddIn(DEBUGHELPER *pHelper, String &dst) : m_helper(pHelper), m_result(dst), m_hasDecimalPoint(false) {
+  BigRealAddIn(DEBUGHELPER *pHelper, string &dst) : m_helper(pHelper), m_result(dst), m_hasDecimalPoint(false) {
   }
   void toString(BigReal &n, size_t maxResult) {
     const ETYPE expo = n.m_expo;
@@ -251,13 +277,12 @@ public:
     }
 
     if(n.m_negative) {
-      addstr(_T("-"));
+      addstr("-");
     }
     const ETYPE expo10 = expo * log10Base + firstExpo10;
 
     if((expo10 < -4) || (expo10 >= 18)) { // use scientific format
-      const String expoStr = format(_T("e%+03I64d"), (INT64)expo10);
-
+      const string expoStr              = makeExpoString(expo10);
       const int    maxSignificandDigits = maxResult - m_result.length() - expoStr.length() - 1;   // sign, exponent, decimalpoint
       const int    precision            = min(maxSignificandDigits, totalDecimalDigitCount) - 1;  // Number of decimal digits after decimalpoint
       const VTYPE  firstScaleE10        = (VTYPE)pow10(firstExpo10);
@@ -278,12 +303,13 @@ public:
         if(decimalsDone > 0) {
           addDigitStr(digit.n, decimalsDone);
         }
-        for(int rest = precision - decimalsDone; (rest > 0) && nextDigit(digit); rest -= log10Base) {
+        while((m_result.length() < maxResult) && nextDigit(digit)) {
           addDigitStr(digit.n, log10Base);
         }
       }
       const intptr_t expectedSize = m_result.length() + expoStr.length();
       const intptr_t extraCount   = expectedSize - (intptr_t)maxResult;
+
       if(digit.hasNext() || (extraCount > 0)) {
         removeLast(extraCount);
         setEllipsisAtEnd();
@@ -294,7 +320,7 @@ public:
     } else { // fixed format
       int precision, decimalsDone = 0;
       if(expo10 < 0) { // first handle integerpart
-        addstr(_T("0"));
+        addstr("0");
         addDecimalPoint();
         precision = (int)maxResult - (int)m_result.length();
         if(expo10 < -1) {
@@ -335,7 +361,7 @@ public:
 
 ADDIN_API HRESULT WINAPI AddIn_BigReal(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t maxResult, DWORD /*reserved*/) {
   try {
-    String tmpStr;
+    string tmpStr;
     switch(pHelper->getProcessorType()) {
     case PRTYPE_X86:
       { BigRealx86 n;
@@ -350,9 +376,7 @@ ADDIN_API HRESULT WINAPI AddIn_BigReal(DWORD dwAddress, DEBUGHELPER *pHelper, in
       }
       break;
     }
-    USES_CONVERSION;
-    const char *cp = T2A(tmpStr.cstr());
-    strncpy(pResult, cp, maxResult);
+    strncpy(pResult, tmpStr.c_str(), maxResult);
   } catch (...) {
     strncpy(pResult, "", maxResult);
   }
