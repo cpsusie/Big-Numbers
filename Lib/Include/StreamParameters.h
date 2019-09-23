@@ -14,12 +14,12 @@ private:
   StreamSize  m_width, m_prec;
   FormatFlags m_flags;
   TCHAR       m_fill;
-  TCHAR  *addModifier(      TCHAR *dst)                     const;
-  TCHAR  *addWidth(         TCHAR *dst)                     const;
-  TCHAR  *addPrecision(     TCHAR *dst)                     const;
-  TCHAR  *addPrefix(        TCHAR *dst, bool withPrecision) const;
-  TCHAR  *addIntSpecifier(  TCHAR *dst, bool isSigned)      const;
-  TCHAR  *addFloatSpecifier(TCHAR *dst)                     const;
+  TCHAR  *addModifier(      TCHAR *dst)                                                const;
+  TCHAR  *addWidth(         TCHAR *dst)                                                const;
+  TCHAR  *addPrecision(     TCHAR *dst, StreamSize maxPrecision)                       const;
+  TCHAR  *addPrefix(        TCHAR *dst, bool withPrecision, StreamSize maxPrecision=0) const;
+  TCHAR  *addIntSpecifier(  TCHAR *dst, bool isSigned)                                 const;
+  TCHAR  *addFloatSpecifier(TCHAR *dst)                                                const;
 public:
   StreamParameters(StreamSize precision=6, StreamSize width=0, FormatFlags flags = 0, TCHAR fill = _T(' '))
     : m_prec( precision)

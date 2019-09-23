@@ -24,21 +24,21 @@ TCHAR *StreamParameters::addWidth(TCHAR *dst) const {
   return dst;
 }
 
-TCHAR *StreamParameters::addPrecision(TCHAR *dst) const {
+TCHAR *StreamParameters::addPrecision(TCHAR *dst, StreamSize maxPrecision) const {
   if(precision() != 0) {
     *(dst++) = _T('.');
-    _i64tot(precision(),dst,10);
+    _i64tot((precision()<0)?maxPrecision:precision(),dst,10);
     dst += _tcsclen(dst);
   }
   return dst;
 }
 
-TCHAR *StreamParameters::addPrefix(TCHAR *dst, bool withPrecision) const {
+TCHAR *StreamParameters::addPrefix(TCHAR *dst, bool withPrecision, StreamSize maxPrecision) const {
   *(dst++) = _T('%');
   dst = addModifier(dst);
   dst = addWidth(dst);
   if(withPrecision) {
-    dst = addPrecision(dst);
+    dst = addPrecision(dst, maxPrecision);
   }
   return dst;
 }
@@ -71,12 +71,19 @@ int StreamParameters::radix(FormatFlags flags) { // static
 }
 
 TCHAR *StreamParameters::addFloatSpecifier(TCHAR *dst) const {
-  if(m_flags & ios::scientific) {
+  switch(m_flags & ios::floatfield) {
+  case ios::scientific:
     *(dst++) = (m_flags & ios::uppercase) ? _T('E') : _T('e');
-  } else if(m_flags & ios::fixed) {
+    break;
+  case ios::fixed:
     *(dst++) = _T('f');
-  } else {
+    break;
+  case ios::hexfloat:
+    *(dst++) = (m_flags & ios::uppercase) ? _T('A') : _T('a');
+    break;
+  default:
     *(dst++) = (m_flags & ios::uppercase) ? _T('G') : _T('g');
+    break;
   }
   return dst;
 }
@@ -179,7 +186,7 @@ String StreamParameters::getUInt64Format() const {
 
 String StreamParameters::getFloatFormat() const {
   TCHAR tmp[30],*cp;
-  cp = addPrefix(tmp,true);
+  cp = addPrefix(tmp,true, numeric_limits<float>::digits10);
   cp = addFloatSpecifier(cp);
   *cp = 0;
   return tmp;
@@ -187,7 +194,7 @@ String StreamParameters::getFloatFormat() const {
 
 String StreamParameters::getDoubleFormat() const {
   TCHAR tmp[30],*cp;
-  cp = addPrefix(tmp,true);
+  cp = addPrefix(tmp,true, numeric_limits<double>::digits10);
   *(cp++) = _T('l');
   cp = addFloatSpecifier(cp);
   *cp = 0;

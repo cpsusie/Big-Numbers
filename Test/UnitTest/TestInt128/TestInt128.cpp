@@ -1054,8 +1054,8 @@ namespace TestInt128 {
             const INTTYPE &x = a[i];
             setFormat(costr, param);
             setFormat(wostr, param);
-            costr << x << "\n";
-            wostr << x << "\n";
+            costr << x << endl;
+            wostr << x << endl;
           }
 
           const string  cstr = costr.str();

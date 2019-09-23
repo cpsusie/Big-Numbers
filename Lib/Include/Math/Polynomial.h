@@ -12,7 +12,7 @@ public:
   DataPoint();
   DataPoint(const Real &x, const Real &y, const Real &w = 1);
   DataPoint(const Point2D &p);
-  String toString() const;
+  String toString(StreamSize precision = -1) const;
 };
 
 class AbstractDataFit : public Function {
@@ -214,5 +214,5 @@ public:
   Complex findRoot(const Complex &start, bool verbose, const Real &rootCriterium = 1e-15) const;
   ComplexVector findRoots(bool verbose, const Real &rootCriterium = 1e-15) const;
   friend tostream& operator<<(tostream &out,const Polynomial &poly);
-  String toString() const;
+  String toString(StreamSize precision = -1) const;
 };

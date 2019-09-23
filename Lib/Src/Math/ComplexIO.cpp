@@ -4,19 +4,6 @@
 
 using namespace std;
 
-StrStream &operator<<(StrStream &stream, const Complex &c) {
-  if(c.im == 0) {
-    stream << c.re;
-  } else {
-    stream.append(_T("("));
-    stream << c.re;
-    stream.append(_T(","));
-    stream << c.im;
-    stream.append(_T(")"));
-  }
-  return stream;
-}
-
 /* inputformat for Complex;
     re
     (re)
@@ -59,10 +46,16 @@ Fail:
   return in;
 }
 
-template <class OStreamType> OStreamType &putComplex(OStreamType &out, const Complex &c) {
-  StrStream stream(out);
-  stream << c;
-  out << (String&)stream;
+template <class OStreamType, class SStreamType> OStreamType &putComplex(OStreamType &out, const Complex &c) {
+  if(c.im == 0) {
+    out << c.re;
+  } else {
+    StreamParameters param(out);
+    param.width(0);
+    SStreamType tmp;
+    tmp << param << "(" << c.re << "," << c.im << ")";
+    out << tmp.str();
+  }
   if(out.flags() & ios::unitbuf) {
     out.flush();
   }
@@ -74,7 +67,7 @@ istream &operator>>(istream &in, Complex &c) {
 }
 
 ostream &operator<<(ostream &out, const Complex &c) {
-  return putComplex(out, c);
+  return putComplex<ostream, stringstream>(out, c);
 }
 
 wistream &operator>>(wistream &in, Complex &c) {
@@ -82,14 +75,11 @@ wistream &operator>>(wistream &in, Complex &c) {
 }
 
 wostream &operator<<(wostream &out, const Complex &c) {
-  return putComplex(out, c);
+  return putComplex<wostream, wstringstream>(out, c);
 }
 
 String toString(const Complex &c, StreamSize precision, StreamSize width, FormatFlags flags) {
   tostrstream stream;
-  stream.width(width);
-  stream.precision(precision);
-  stream.flags(flags);
-  stream << c;
+  stream << StreamParameters(precision, width, flags) << c;
   return stream.str().c_str();
 }

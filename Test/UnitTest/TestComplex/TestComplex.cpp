@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include <CompactLineArray.h>
+#include <StrStream.h>
 #include <Math/MathLib.h>
 #include <Math/Double80.h>
 #include <Math/FPU.h>
@@ -168,6 +170,89 @@ namespace TestComplex {
       verify(in.fail());
 
       in.close();
+    }
+
+    typedef CompactArray<Complex> CompactComplexArray;
+
+    static CompactComplexArray generateTestArray() {
+      CompactComplexArray result;
+      result.add( 0);
+      result.add( 1);
+      result.add(-1);
+      result.add(Complex( 1, 1));
+      result.add(Complex(-1, 1));
+
+      for(size_t i = 0; i < 15; i++) {
+        Complex c;
+        setToRandom(c);
+        result.add(c);
+      }
+      return result;
+    }
+
+    TEST_METHOD(ComplexIOAllFormats) {
+      try {
+        const CompactComplexArray a = generateTestArray();
+
+        StreamParametersIterator it               = StreamParameters::getFloatParamIterator(30, NumberInterval<StreamSize>(1, 17));
+        const UINT               totalFormatCount = (UINT)it.getMaxIterationCount(), quatil = totalFormatCount/4;
+        UINT                     formatCounter    = 0;
+        Real maxQ = 0;
+        while(it.hasNext()) {
+          const StreamParameters &param = it.next();
+          if(++formatCounter % quatil == 0) {
+            OUTPUT(_T("%s progress:%.2lf%%"), __TFUNCTION__, PERCENT(formatCounter, totalFormatCount));
+          }
+          if((param.flags()&ios::adjustfield) == ios::internal) {
+            continue;
+          }
+
+          ostringstream  costr;
+          wostringstream wostr;
+
+//          OUTPUT(_T("formatCounter:%d format:%s"), formatCounter, param.toString().cstr());
+
+          for(size_t i = 0; i < a.size(); i++) {
+            const Complex &x = a[i];
+            costr << param << x << endl;
+            wostr << param << x << endl;
+          }
+          const string  cstr = costr.str();
+          const wstring wstr = wostr.str();
+          verify(String(cstr.c_str()) == String(wstr.c_str()));
+
+          CompactLineArray lineArray(wstr);
+          verify((StreamSize)lineArray.minLength() >= param.width());
+
+          istringstream  cistr(cstr);
+          wistringstream wistr(wstr);
+
+          const Real tolerance = sqrt(0.5) * pow(10.0, -param.precision());
+          StreamParameters ip(param);
+          ip.flags(param.flags() | ios::skipws);
+          for(size_t i = 0; i < a.size(); i++) {
+            const Complex &expected = a[i];
+
+            setFormat(cistr, ip);
+            setFormat(wistr, ip);
+            if(!iswspace(ip.fill())) {
+              skipspace(cistr);
+              skipfill(cistr);
+              skipspace(wistr);
+              skipfill(wistr);
+            }
+            Complex cx, wx;
+
+            cistr >> cx;
+            wistr >> wx;
+            verify(cx == wx);
+            verify(fabs(cx - expected) <= tolerance);
+          }
+        }
+      } catch(Exception e) {
+        OUTPUT(_T("Exception:%s"), e.what());
+        verify(false);
+      }
     }
   };
 }

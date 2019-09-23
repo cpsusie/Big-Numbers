@@ -1,5 +1,4 @@
 #include "pch.h"
-#include <StrStream.h>
 #include <Math/MathException.h>
 #include <Math/Polynomial.h>
 
@@ -21,11 +20,11 @@ DataPoint::DataPoint(const Point2D &p) {
   w = 1;
 }
 
-String DataPoint::toString() const {
+String DataPoint::toString(StreamSize precision) const {
   return format(_T("(%s,%s,%s)")
-               ,::toString(x).cstr()
-               ,::toString(y).cstr()
-               ,::toString(w).cstr()
+               ,::toString(x, precision).cstr()
+               ,::toString(y, precision).cstr()
+               ,::toString(w, precision).cstr()
                );
 }
 
@@ -228,7 +227,6 @@ ComplexVector Polynomial::findRoots(bool verbose, const Real &rootCriterium) con
       roots[i] = findRoot(roots[i], verbose, rootCriterium);
     }
   }
-
   return roots;
 }
 
@@ -245,39 +243,44 @@ ComplexVector roots(const Complex &c, int r) {
   return result;
 }
 
-String Polynomial::toString() const {
+String Polynomial::toString(StreamSize precision) const {
+  if(precision < 0) {
+    precision = numeric_limits<Real>::digits10;
+  }
   const int g = getDegree();
-  String rp = (g > 1) ? ")": "";
-  StrStream result;
+  String rp = (g > 1) ? _T(")"): EMPTYSTRING;
+  wstringstream result;
 
-  result.append(spaceString(g-1,'('));
+  result.precision(precision);
+  result << spaceString(g-1,'(').cstr();
 
   for(int i = g; i >= 0; i--) {
     const Complex &coef = getCoef(i);
     if(i == g) {
-      result += ::toString(coef);
-      if(g > 0)
-        result += _T("*x");
+      result << coef;
+      if(g > 0) {
+        result << _T("*x");
+      }
     } else {
       if(i < g-1) {
-        result += rp;
-        result += _T("*x");
+        result << rp;
+        result << _T("*x");
       }
       if(coef.im == 0) {
         if(coef.re > 0) {
-          result += _T(" + ");
+          result << _T(" + ");
           result << coef.re;
         } else if(coef.re < 0) {
-          result += _T(" - ");
+          result << _T(" - ");
           result << -coef.re;
         }
       } else if(coef != Complex::zero) {
-        result += _T(" + ");
-        result += ::toString(coef);
+        result << _T(" + ");
+        result << coef;
       }
     }
   }
-  return result;
+  return result.str().c_str();
 }
 
 tostream &operator<<(tostream &out, const Polynomial& poly) {

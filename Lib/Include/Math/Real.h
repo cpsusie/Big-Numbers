@@ -8,12 +8,12 @@
 #ifdef LONGDOUBLE
 
 #include "Double80.h"
-typedef Double80 Real;
+#define Real Double80
 
 #else
 
 #include "Double64.h"
-typedef double Real;
+#define Real double
 
 #endif
 

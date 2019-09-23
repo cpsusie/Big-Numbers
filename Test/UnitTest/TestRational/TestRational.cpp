@@ -157,8 +157,8 @@ namespace TestRational {
             const Rational &x = a[i];
             setFormat(costr, param);
             setFormat(wostr, param);
-            costr << x << "\n";
-            wostr << x << "\n";
+            costr << x << endl;
+            wostr << x << endl;
           }
           const string  cstr  = costr.str();
           const wstring wstr = wostr.str();

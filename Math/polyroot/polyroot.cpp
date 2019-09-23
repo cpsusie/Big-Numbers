@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include <Math/Polynomial.h>
 
+using namespace std;
+
 static void usage() {
   tcerr <<  _T("Usage: polyroot [options] -Cc0,c1...cn\n"
                "  Options:\n"
@@ -25,8 +27,8 @@ int main(int argc,char **argv) {
     for(cp++;*cp;cp++) {
       switch(*cp) {
       case 'e':
-        if(sscanf(cp+1,"%le",&eps) != 1)
-          usage();
+        eps = strtor(cp + 1, NULL);
+        if(errno != 0) usage();
         if(eps <= 0) {
           tcerr << _T("Eps must be > 0. (=") << eps << _T(").") << endl;
           exit(-1);
@@ -76,7 +78,7 @@ int main(int argc,char **argv) {
 
   try {
     if(displayCoefficients) {
-      tcout << *poly;
+      tcout << poly->toString() << endl;
     }
 
     ComplexVector roots = poly->findRoots(verbose, eps);
