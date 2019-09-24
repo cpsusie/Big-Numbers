@@ -58,6 +58,14 @@ template<class DstCharType, class SrcCharType> DstCharType *strCpy(DstCharType *
   return ret;
 }
 
+template<class CharType> CharType *strUpr(CharType *str) {
+  return (sizeof(CharType) == 1) ? (CharType*)_strupr((char*)((void*)str)) : (CharType*)_wcsupr((wchar_t*)((void*)str));
+}
+
+template<class CharType> size_t strLen(const CharType *str) {
+  return (sizeof(CharType) == 1) ? strlen((char*)((void*)str)) : wcslen((wchar_t*)((void*)str));
+}
+
 class String {
 private:
   size_t m_len, m_capacity;
