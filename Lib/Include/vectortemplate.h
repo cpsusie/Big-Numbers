@@ -287,21 +287,25 @@ public:
     return result;
   }
 
-  friend tostream &operator<<(tostream &out, const VectorTemplate<T> &v) {
-    StreamParameters p(out);
+  template<class OSTREAMTYPE> friend OSTREAMTYPE &operator<<(OSTREAMTYPE &out, const VectorTemplate<T> &v) {
+    const StreamSize w = out.width();
     for(size_t i = 0; i < v.m_dim; i++) {
       if(i > 0) {
-        out << _T(" ");
+        out << " ";
       }
-      out << p << v.m_e[i];
+      out.width(w);
+      out << v.m_e[i];
     }
     return out;
   }
 
-  friend tistream &operator>>(tistream &in, VectorTemplate<T> &v) {
+  template<class ISTREAMTYPE> friend ISTREAMTYPE &operator>>(ISTREAMTYPE &in, VectorTemplate<T> &v) {
+    const FormatFlags flg = in.flags();
+    in.flags(flg | std::ios::skipws);
     for(size_t i = 0; i < v.m_dim; i++) {
       in >> v[i];
     }
+    in.flags(flg);
     return in;
   }
 

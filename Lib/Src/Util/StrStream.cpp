@@ -58,49 +58,9 @@ String &StrStream::formatZero(String &result, StreamSize precision, FormatFlags 
   return result;
 }
 
-const TCHAR *StrStream::s_infStr  = _T("inf"      );
-const TCHAR *StrStream::s_qNaNStr = _T("nan(ind)" );
-const TCHAR *StrStream::s_sNaNStr = _T("nan(snan)");
-
-TCHAR *StrStream::formatpinf(TCHAR *dst, bool uppercase) { // static
-  _tcscpy(dst, s_infStr);
-  return uppercase ? _tcsupr(dst) : dst;
-}
-
-TCHAR *StrStream::formatninf(TCHAR *dst, bool uppercase) { // static
-  *dst = '-';
-  formatpinf(dst + 1, uppercase);
-  return dst;
-}
-
-TCHAR *StrStream::formatqnan(TCHAR *dst, bool uppercase) { // static
-  _tcscpy(dst, s_qNaNStr);
-  return uppercase ? _tcsupr(dst) : dst;
-}
-
-TCHAR *StrStream::formatsnan(TCHAR *dst, bool uppercase) { // static
-  _tcscpy(dst, s_sNaNStr);
-  return uppercase ? _tcsupr(dst) : dst;
-}
-
-TCHAR *StrStream::formatUndefined(TCHAR *dst, int fpclass, bool uppercase, bool formatNinfAsPinf) {
-  switch(fpclass) {
-  case _FPCLASS_SNAN  :  // signaling NaN
-    return formatsnan(dst, uppercase);
-  case _FPCLASS_QNAN  :  // quiet NaN
-    return formatqnan(dst, uppercase);
-  case _FPCLASS_NINF  :  // negative infinity
-    if(!formatNinfAsPinf) {
-      return formatninf(dst, uppercase);
-    } // else Continue case
-  case _FPCLASS_PINF  :  // positive infinity
-    return formatpinf(dst, uppercase);
-  default             :
-    throwInvalidArgumentException(__TFUNCTION__, _T("fpclass=%08X"), fpclass);
-    break;
-  }
-  return dst;
-}
+const char *StrStream::s_infStr  = "inf";
+const char *StrStream::s_qNaNStr = "nan(ind)";
+const char *StrStream::s_sNaNStr = "nan(snan)";
 
 StrStream &StrStream::appendFill(size_t count) {
   insert(length(), count, fill());

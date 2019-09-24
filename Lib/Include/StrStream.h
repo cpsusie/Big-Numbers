@@ -7,10 +7,10 @@ class StrStream : public StreamParameters, public String {
 private:
   StrStream &appendFill(size_t count);
 public:
-  static constexpr TCHAR s_decimalPointChar = _T('.');
-  static const     TCHAR *s_infStr;
-  static const     TCHAR *s_qNaNStr;
-  static const     TCHAR *s_sNaNStr;
+  static constexpr char  s_decimalPointChar = '.';
+  static const     char *s_infStr;
+  static const     char *s_qNaNStr;
+  static const     char *s_sNaNStr;
 
   inline StrStream(StreamSize precision = 6, StreamSize width = 0, FormatFlags flags = 0) : StreamParameters(precision, width, flags) {
   }
@@ -67,13 +67,43 @@ public:
   StrStream &formatFilledFloatField(const String &str, bool negative, int flags=-1);
 
   static String &formatZero(String &result, StreamSize precision, FormatFlags flags, StreamSize maxPrecision = 0);
-  static TCHAR *formatqnan(TCHAR *dst, bool uppercase = false);
-  static TCHAR *formatsnan(TCHAR *dst, bool uppercase = false);
-  static TCHAR *formatpinf(TCHAR *dst, bool uppercase = false);
-  static TCHAR *formatninf(TCHAR *dst, bool uppercase = false);
+  template<class CharType> static CharType *formatpinf(CharType *dst, bool uppercase) {
+    strCpy(dst, s_infStr);
+    return uppercase ? strUpr(dst) : dst;
+  }
+  template<class CharType> static CharType *formatninf(CharType *dst, bool uppercase) {
+    *dst = '-';
+    formatpinf(dst + 1, uppercase);
+    return dst;
+  }
+  template<class CharType> static CharType *formatqnan(CharType *dst, bool uppercase) {
+    strCpy(dst, s_qNaNStr);
+    return uppercase ? strUpr(dst) : dst;
+  }
+  template<class CharType> static CharType *formatsnan(CharType *dst, bool uppercase) {
+    strCpy(dst, s_sNaNStr);
+    return uppercase ? strUpr(dst) : dst;
+  }
 
   // fpclass is assumed to be one of _FPCLASS_PINF: _FPCLASS_NINF, _FPCLASS_SNAN : _FPCLASS_QNAN, return value from _fpclass(NumbeType)
-  static TCHAR *formatUndefined(TCHAR *dst, int fpclass, bool uppercase = false, bool formatNinfAsPinf = false);
+  template<class CharType> static CharType *formatUndefined(CharType *dst, int fpclass, bool uppercase=false, bool formatNinfAsPinf=false) {
+    switch(fpclass) {
+    case _FPCLASS_SNAN:  // signaling NaN
+      return formatsnan(dst, uppercase);
+    case _FPCLASS_QNAN:  // quiet NaN
+      return formatqnan(dst, uppercase);
+    case _FPCLASS_NINF:  // negative infinity
+      if (!formatNinfAsPinf) {
+        return formatninf(dst, uppercase);
+      } // else Continue case
+    case _FPCLASS_PINF:  // positive infinity
+      return formatpinf(dst, uppercase);
+    default:
+      throwInvalidArgumentException(__TFUNCTION__, _T("fpclass=%08X"), fpclass);
+      break;
+    }
+    return dst;
+  }
 
   TCHAR unputc();
   inline StrStream &append(const String &str) { // append str to stream without using any format-specifiers
@@ -145,6 +175,33 @@ public:
     return *this;
   }
 };
+
+class TostringStream : public std::stringstream {
+public:
+  inline TostringStream(StreamSize prec, StreamSize w, FormatFlags flg) {
+    precision(prec);
+    width(w);
+    flags(flg);
+  }
+  inline TostringStream(StreamSize w, FormatFlags flg) {
+    width(w);
+    flags(flg);
+  }
+};
+
+class TowstringStream : public std::wstringstream {
+public:
+  inline TowstringStream(StreamSize prec, StreamSize w, FormatFlags flg) {
+    precision(prec);
+    width(w);
+    flags(flg);
+  }
+  inline TowstringStream(StreamSize w, FormatFlags flg) {
+    width(w);
+    flags(flg);
+  }
+};
+
 
 // ----------------------------------------------------------------------------------------------------
 

@@ -37,10 +37,10 @@ Rational wcstorat(const wchar_t *s, wchar_t **end, int radix) {
   return (radix == 10) ? _strtorat<INT64, wchar_t>(s, end, wcstoll, radix) : _strtorat<UINT64, wchar_t>(s, end, wcstoull, radix);
 }
 
+
 char *rattoa(char *dst, const Rational &r, int radix) {
   if(!isfinite(r)) {
-    TCHAR tmp[100];
-    return strCpy(dst,StrStream::formatUndefined(tmp, _fpclass(r)));
+    return StrStream::formatUndefined(dst, _fpclass(r));
   }
   if(radix==10) {
     _i64toa(r.getNumerator(), dst, radix);
@@ -57,8 +57,7 @@ char *rattoa(char *dst, const Rational &r, int radix) {
 
 wchar_t *rattow(wchar_t *dst, const Rational &r, int radix) {
   if(!isfinite(r)) {
-    TCHAR tmp[100];
-    return strCpy(dst, StrStream::formatUndefined(tmp, _fpclass(r)));
+    return StrStream::formatUndefined(dst, _fpclass(r));
   }
   if(radix==10) {
     _i64tow(r.getNumerator(), dst, radix);

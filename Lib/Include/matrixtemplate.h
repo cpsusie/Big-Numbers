@@ -708,23 +708,27 @@ public:
     return result;
   }
 
-  friend tostream &operator<<(tostream &out, const MatrixTemplate<T> &a) {
-    StreamParameters p(out);
+  template<class OSTREAMTYPE> friend OSTREAMTYPE &operator<<(OSTREAMTYPE &out, const MatrixTemplate<T> &a) {
+    const StreamSize w = out.width();
     for(size_t r = 0; r < a.getRowCount(); r++) {
       for(size_t c = 0; c < a.getColumnCount(); c++) {
-        out << p << a(r,c) << _T(" ");
+        out.width(w);
+        out << a(r,c) << " ";
       }
-      out << _T("\n");
+      out << std::endl;
     }
     return out;
   }
 
-  friend tistream &operator>>(tistream &in, MatrixTemplate<T> &a) {
+  template<class ISTREAMTYPE> friend ISTREAMTYPE &operator>>(ISTREAMTYPE &in, MatrixTemplate<T> &a) {
+    const FormatFlags flg = in.flags();
+    in.flags(flg | std::ios::skipws);
     for(size_t r = 0; r < a.getRowCount(); r++) {
       for(size_t c = 0; c < a.getColumnCount(); c++) {
         in >> a(r,c);
       }
     }
+    in.flags(flg);
     return in;
   }
 

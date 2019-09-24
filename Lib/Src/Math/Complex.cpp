@@ -1,7 +1,4 @@
 #include "pch.h"
-#include <comdef.h>
-#include <atlconv.h>
-#include <StreamParameters.h>
 #include <Math/Complex.h>
 
 const Complex Complex::i    = Complex(0,1);

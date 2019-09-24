@@ -2,4 +2,6 @@
 
 #include <Math/Double80.h>
 
-String D80ToDbgString(const Double80 &d80);
+using namespace std;
+
+string D80ToDbgString(const Double80 &d80);

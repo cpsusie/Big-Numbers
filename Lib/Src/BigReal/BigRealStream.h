@@ -127,9 +127,8 @@ template <class OStreamType> OStreamType &putFullFormatBigReal(OStreamType &out,
 template <class OStreamType> OStreamType &putBigRational(OStreamType &out, const BigRational &x, TCHAR separatorChar = 0) {
   DigitPool *pool = x.getDigitPool();
   if(!isfinite(x)) {
-    TCHAR tmp[100];
-    const String result(StrStream::formatUndefined(tmp, _fpclass(x), (out.flags() & ios::uppercase) != 0));
-    out << result;
+    char tmp[100];
+    out << StrStream::formatUndefined(tmp, _fpclass(x), (out.flags() & ios::uppercase) != 0);
   } else if(x.getDenominator() == pool->get1()) {
     putBigInt(out, x.getNumerator(), separatorChar);
   } else {

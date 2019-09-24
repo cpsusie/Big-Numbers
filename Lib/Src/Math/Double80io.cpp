@@ -232,45 +232,45 @@ void D80StrStream::formatHex(String &dst, const Double80 &x, intptr_t precision,
 #define MAXPRECISION numeric_limits<Double80>::digits10
 
 D80StrStream &D80StrStream::operator<<(const Double80 &x) {
-  intptr_t    precision = (intptr_t)this->precision();
-  FormatFlags flags     = this->flags();
+  intptr_t    prec = (intptr_t)precision();
+  FormatFlags flg  = flags();
 
-  if(precision < 0) {
-    precision = MAXPRECISION;
+  if(prec < 0) {
+    prec = MAXPRECISION;
   }
 
   String result;
   if(!isfinite(x)) {
     TCHAR tmp[100];
-    result = formatUndefined(tmp, _fpclass(x), (flags & ios::uppercase), true);
-    flags &= ~ios::hexfloat;
+    result = formatUndefined(tmp, _fpclass(x), (flg & ios::uppercase), true);
+    flg &= ~ios::hexfloat;
   } else if(x.isZero()) {
-    formatZero(result, precision, flags, MAXPRECISION);
+    formatZero(result, prec, flg, MAXPRECISION);
   } else { // x defined && x != 0
     const int expo10 = Double80::getExpo10(x);
-    switch(flags & ios::floatfield) {
+    switch(flg & ios::floatfield) {
     case 0              : // No float-format is specified. Format depends on e10 and precision
-      if((expo10 < -4) || (expo10 > 14) || ((expo10 > 0) && (expo10 >= precision)) || (expo10 > precision)) {
-        precision = max(0,precision-1);
-        formatScientific(result, x, precision, flags, (flags & ios::showpoint) == 0);
+      if((expo10 < -4) || (expo10 > 14) || ((expo10 > 0) && (expo10 >= prec)) || (expo10 > prec)) {
+        prec = max(0,prec-1);
+        formatScientific(result, x, prec, flg, (flg & ios::showpoint) == 0);
       } else {
-        const intptr_t prec = (precision == 0) ? abs(expo10) : max(0,precision-expo10-1);
-        formatFixed(result, x, prec, flags, expo10, ((flags & ios::showpoint) == 0) || precision <= 1);
+        const intptr_t prec1 = (prec == 0) ? abs(expo10) : max(0,prec-expo10-1);
+        formatFixed(result, x, prec1, flg, expo10, ((flg & ios::showpoint) == 0) || prec <= 1);
       }
       break;
     case ios::scientific: // Use scientific format
-      if(precision == 0) precision = 6;
-      formatScientific(result, x, precision, flags, false);
+      if(prec == 0) prec = 6;
+      formatScientific(result, x, prec, flg, false);
       break;
     case ios::fixed     : // Use fixed format
-      formatFixed(result, x, precision, flags, expo10, false);
+      formatFixed(result, x, prec, flg, expo10, false);
       break;
     case ios::hexfloat  :
-      formatHex(result, x, precision, flags);
+      formatHex(result, x, prec, flg);
       break;
     }
   } // x defined && x != 0
-  formatFilledFloatField(result, x.isNegative(), flags);
+  formatFilledFloatField(result, x.isNegative(), flg);
   return *this;
 }
 
@@ -321,10 +321,5 @@ wostream &operator<<(wostream &out, const Double80 &x) {
 }
 
 String toString(const Double80 &x, StreamSize precision, StreamSize width, FormatFlags flags) {
-  tostrstream stream;
-  stream.width(width);
-  stream.precision(precision);
-  stream.flags(flags);
-  stream << x;
-  return stream.str().c_str();
+  return (TowstringStream(precision, width, flags) << x).str().c_str();
 }

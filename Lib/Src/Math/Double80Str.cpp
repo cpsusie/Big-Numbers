@@ -292,10 +292,10 @@ static void normalizeValue(Double80 &m, int &expo10) {
   }
 }
 
+
 template<class CharType> CharType *_d80tostr(CharType *dst, const Double80 &x) {
   if(!isfinite(x)) {
-    TCHAR tmp[100];
-    return strCpy(dst, StrStream::formatUndefined(tmp,_fpclass(x)));
+    return StrStream::formatUndefined(dst,_fpclass(x));
   } else if(x.isZero()) {
     return strCpy(dst, "0.0000000000000000000e+000");
   }
