@@ -194,10 +194,9 @@ namespace TestComplex {
       try {
         const CompactComplexArray a = generateTestArray();
 
-        StreamParametersIterator it               = StreamParameters::getFloatParamIterator(30, NumberInterval<StreamSize>(1, 17));
+        StreamParametersIterator it               = StreamParameters::getFloatParamIterator(30, NumberInterval<StreamSize>(1, 17),0, ITERATOR_FLOATFORMATMASK&~ios::internal);
         const UINT               totalFormatCount = (UINT)it.getMaxIterationCount(), quatil = totalFormatCount/4;
         UINT                     formatCounter    = 0;
-        Real maxQ = 0;
         while(it.hasNext()) {
           const StreamParameters &param = it.next();
           if(++formatCounter % quatil == 0) {
@@ -211,11 +210,15 @@ namespace TestComplex {
           wostringstream wostr;
 
 //          OUTPUT(_T("formatCounter:%d format:%s"), formatCounter, param.toString().cstr());
-
+          setFormat(costr, param);
+          setFormat(wostr, param);
+          const StreamSize w = param.width();
           for(size_t i = 0; i < a.size(); i++) {
             const Complex &x = a[i];
-            costr << param << x << endl;
-            wostr << param << x << endl;
+            costr.width(w);
+            wostr.width(w);
+            costr << x << endl;
+            wostr << x << endl;
           }
           const string  cstr = costr.str();
           const wstring wstr = wostr.str();
@@ -230,11 +233,11 @@ namespace TestComplex {
           const Real tolerance = sqrt(0.5) * pow(10.0, -param.precision());
           StreamParameters ip(param);
           ip.flags(param.flags() | ios::skipws);
+          setFormat(cistr, ip);
+          setFormat(wistr, ip);
           for(size_t i = 0; i < a.size(); i++) {
             const Complex &expected = a[i];
 
-            setFormat(cistr, ip);
-            setFormat(wistr, ip);
             if(!iswspace(ip.fill())) {
               skipspace(cistr);
               skipfill(cistr);

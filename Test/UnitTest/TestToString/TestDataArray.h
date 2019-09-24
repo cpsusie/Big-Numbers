@@ -16,7 +16,7 @@ class TestDataArray;
 
 class TestIterator : public Iterator<TestElement> {
 public:
-  TestIterator(TestDataArray *array, StreamSize maxWidth, StreamSize maxPrecision);
+  TestIterator(TestDataArray *array, StreamSize maxWidth, StreamSize maxPrecision, UINT multibitFieldsFilter);
   size_t getMaxIterationCount() const;
   void dumpAllFormats() const;
 };
@@ -30,7 +30,7 @@ public:
     : TestValueArray(testValues)
   {}
 
-  TestIterator getIterator(StreamSize maxWidth = 24, StreamSize maxPrecision = 14);
+  TestIterator getIterator(StreamSize maxWidth = 24, StreamSize maxPrecision = 14, UINT multibitFieldsFilter = ALLOWMANY_FLOATFIELDBITS);
 };
 
 class AbstractTestElementIterator : public AbstractIterator {
@@ -44,7 +44,7 @@ private:
   bool                             m_hasNext;
   void nextValue();
 public:
-  AbstractTestElementIterator(TestValueArray &a, StreamSize maxWidth, StreamSize maxPrecision);
+  AbstractTestElementIterator(TestValueArray &a, StreamSize maxWidth, StreamSize maxPrecision, UINT multibitFieldsFilter);
   AbstractIterator *clone() {
     return new AbstractTestElementIterator(*this);
   }

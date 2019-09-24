@@ -8,9 +8,9 @@ class D80StrStream : public StrStream {
 private:
   static TCHAR *findFirstDigit(TCHAR *str);
   static bool   round5DigitString(String &str, intptr_t lastDigitPos);
-  static void   formatFixed(      String &dst, const Double80 &x, intptr_t precision, FormatFlags flags, int expo10, bool removeTrailingZeroes);
-  static void   formatScientific( String &dst, const Double80 &x, intptr_t precision, FormatFlags flags, bool removeTrailingZeroes);
-  static void   formatHex(        String &dst, const Double80 &x, intptr_t precision, FormatFlags flags);
+  static void   formatFixed(      String &dst, const Double80 &x, StreamSize precision, FormatFlags flags, int expo10, bool removeTrailingZeroes);
+  static void   formatScientific( String &dst, const Double80 &x, StreamSize precision, FormatFlags flags, bool removeTrailingZeroes);
+  static void   formatHex(        String &dst, const Double80 &x, StreamSize precision, FormatFlags flags);
 public:
   D80StrStream(const ostream &s) : StrStream(s) {
   }
@@ -50,7 +50,7 @@ bool D80StrStream::round5DigitString(String &str, intptr_t lastDigitPos) {
 }
 
 // Assume x != 0 and finite. ignore sign of x
-void D80StrStream::formatFixed(String &dst, const Double80 &x, intptr_t precision, FormatFlags flags, int expo10, bool removeTrailingZeroes) {
+void D80StrStream::formatFixed(String &dst, const Double80 &x, StreamSize precision, FormatFlags flags, int expo10, bool removeTrailingZeroes) {
   TCHAR tmp[50];
 #ifdef _DEBUG
   memset(tmp, 0, sizeof(tmp));
@@ -70,15 +70,15 @@ void D80StrStream::formatFixed(String &dst, const Double80 &x, intptr_t precisio
     *(estr++) = 0;
     e10 = _ttoi(estr);
   }
-  String   ciphers  = mantissa;
-  intptr_t commaPos = ciphers.length();
+  String ciphers  = mantissa;
+  int    commaPos = (int)ciphers.length();
   if(decimals != NULL) {
     ciphers += decimals;
   }
   commaPos += e10;
-  intptr_t lastResultDigitPos = commaPos + precision - 1;
+  int lastResultDigitPos = commaPos + (int)precision - 1;
   if(commaPos <= 0) { // leading zeroes
-    const intptr_t zeroCount = 1-commaPos;
+    const int zeroCount = 1-commaPos;
     ciphers.insert(0, zeroCount, '0');
     commaPos           += zeroCount;
     lastResultDigitPos += zeroCount;
@@ -90,18 +90,18 @@ void D80StrStream::formatFixed(String &dst, const Double80 &x, intptr_t precisio
     if((flags & ios::showpoint) || (precision > 0)) {
       addDecimalPoint(dst);
       if(precision > 0) {
-        dst += substr(ciphers, commaPos, precision);
+        dst += substr(ciphers, commaPos, (intptr_t)precision);
       }
       if(removeTrailingZeroes) removeTralingZeroDigits(dst);
     }
-  } else if(commaPos > (intptr_t)ciphers.length()) {
-    const intptr_t zeroCount = commaPos - (intptr_t)ciphers.length();
+  } else if(commaPos > (int)ciphers.length()) {
+    const int zeroCount = commaPos - (int)ciphers.length();
     dst += ciphers;
     addZeroes(dst, zeroCount);
     if((flags & ios::showpoint) || (precision > 0)) {
       addDecimalPoint(dst);
       if(!removeTrailingZeroes && (precision > 0)) {
-        addZeroes(dst, precision);
+        addZeroes(dst, (size_t)precision);
       }
     }
   } else { // 0 < commaPos <= ciphers.length()
@@ -117,7 +117,7 @@ void D80StrStream::formatFixed(String &dst, const Double80 &x, intptr_t precisio
         if(removeTrailingZeroes) {
           removeTralingZeroDigits(dst);
         } else {
-          const intptr_t zeroCount = precision - ((intptr_t)ciphers.length() - commaPos);
+          const int zeroCount = (int)precision - ((int)ciphers.length() - commaPos);
           if(zeroCount > 0) {
             addZeroes(dst, zeroCount);
           }
@@ -128,7 +128,7 @@ void D80StrStream::formatFixed(String &dst, const Double80 &x, intptr_t precisio
 }
 
 // Assume x != 0 and finite. ignore sign of x
-void D80StrStream::formatScientific(String &dst, const Double80 &x, intptr_t precision, FormatFlags flags, bool removeTrailingZeroes) {
+void D80StrStream::formatScientific(String &dst, const Double80 &x, StreamSize precision, FormatFlags flags, bool removeTrailingZeroes) {
   TCHAR tmp[50];
 #ifdef _DEBUG
   memset(tmp, 0, sizeof(tmp));
@@ -150,7 +150,7 @@ void D80StrStream::formatScientific(String &dst, const Double80 &x, intptr_t pre
     *(comma++) = 0;
     decimals = comma;
     if(precision+1 < (intptr_t)decimals.length()) {
-      if(round5DigitString(decimals, precision-1)) {
+      if(round5DigitString(decimals, (intptr_t)precision-1)) {
         if(mantissa[0] < _T('9')) {
           mantissa[0]++;
         } else {
@@ -162,7 +162,7 @@ void D80StrStream::formatScientific(String &dst, const Double80 &x, intptr_t pre
     if(removeTrailingZeroes) {
       removeTralingZeroDigits(decimals);
     } else {
-      const intptr_t zeroCount = precision - decimals.length();
+      const int zeroCount = (int)precision - (int)decimals.length();
       if(zeroCount > 0) addZeroes(decimals, zeroCount);
     }
   }
@@ -179,7 +179,7 @@ void D80StrStream::formatScientific(String &dst, const Double80 &x, intptr_t pre
 }
 
 // Assume x != 0 and finite and precision >= 0. ignore sign of x
-void D80StrStream::formatHex(String &dst, const Double80 &x, intptr_t precision, FormatFlags flags) {
+void D80StrStream::formatHex(String &dst, const Double80 &x, StreamSize precision, FormatFlags flags) {
   if(precision == 0) {
     precision = 6;
   }
@@ -200,7 +200,7 @@ void D80StrStream::formatHex(String &dst, const Double80 &x, intptr_t precision,
   sig <<= 1; // to get the fraction part only
   if(precision >= 16) {
     _stprintf(fractionStr, _T("%016I64x"), sig);
-    zeroCount = precision - 16;
+    zeroCount = (size_t)precision - 16;
   } else { // 0 < precision < 16.    => do rounding
     const UINT shift = (UINT)(15 - precision) * 4;
     if(shift) sig >>= shift;
@@ -232,7 +232,7 @@ void D80StrStream::formatHex(String &dst, const Double80 &x, intptr_t precision,
 #define MAXPRECISION numeric_limits<Double80>::digits10
 
 D80StrStream &D80StrStream::operator<<(const Double80 &x) {
-  intptr_t    prec = (intptr_t)precision();
+  StreamSize  prec = precision();
   FormatFlags flg  = flags();
 
   if(prec < 0) {
@@ -254,7 +254,7 @@ D80StrStream &D80StrStream::operator<<(const Double80 &x) {
         prec = max(0,prec-1);
         formatScientific(result, x, prec, flg, (flg & ios::showpoint) == 0);
       } else {
-        const intptr_t prec1 = (prec == 0) ? abs(expo10) : max(0,prec-expo10-1);
+        const StreamSize prec1 = (prec == 0) ? abs(expo10) : max(0,prec-expo10-1);
         formatFixed(result, x, prec1, flg, expo10, ((flg & ios::showpoint) == 0) || prec <= 1);
       }
       break;

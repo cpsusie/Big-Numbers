@@ -57,7 +57,6 @@ template <class IStreamType> IStreamType &getRational(IStreamType &in, Rational 
         den = 1;
       } else {
         in.get();
-        in.flags(flg & ~ios::skipws);
         in >> den;
       }
       in.flags(flg);
@@ -71,7 +70,6 @@ template <class IStreamType> IStreamType &getRational(IStreamType &in, Rational 
         uden = 1;
       } else {
         in.get();
-        in.flags(flg & ~ios::skipws);
         in >> uden;
       }
       in.flags(flg);

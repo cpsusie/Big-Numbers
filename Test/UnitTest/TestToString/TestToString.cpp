@@ -129,7 +129,7 @@ namespace TestToString {
                               ,const String &errorName, TestDataArray &a
                               ,UINT acceptableErrors, UINT acceptableLengthErrors
                               ) {
-      TestIterator it             = a.getIterator();
+      TestIterator it             = a.getIterator(24, 14, 0);
       const UINT   totalItCount   = (UINT)it.getMaxIterationCount(), quatil = totalItCount/4;
       UINT         itCounter      = 0;
       UINT         testCounter    = 0, mismatch     = 0, lengthMismatch  = 0;
@@ -161,17 +161,15 @@ namespace TestToString {
         sD64 << element.m_param << element.m_values->getDouble();
         D64Str = sD64.str();
 
-        if((element.m_param.flags() & ios::floatfield) != ios::hexfloat) { // hexfloat is not relevant for BigReal
-          testCounter++;
-          tostrstream stream;
-          stream << element.m_param << element.m_values->getBigReal();
-          testStr = stream.str();
-          if(testStr != D64Str) {
-            errorLog << element.toString() << _T("\tD64Str:<") << D64Str << _T(">\ttestStr:<") << testStr << _T(">") << endl;
-            mismatch++;
-            if(testStr.length() != D64Str.length()) {
-              lengthMismatch++;
-            }
+        testCounter++;
+        tostrstream stream;
+        stream << element.m_param << element.m_values->getBigReal();
+        testStr = stream.str();
+        if(testStr != D64Str) {
+          errorLog << element.toString() << _T("\tD64Str:<") << D64Str << _T(">\ttestStr:<") << testStr << _T(">") << endl;
+          mismatch++;
+          if(testStr.length() != D64Str.length()) {
+            lengthMismatch++;
           }
         }
       }

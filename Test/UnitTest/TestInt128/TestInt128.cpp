@@ -906,8 +906,7 @@ namespace TestInt128 {
             verify(errno == ERANGE);
             verify(endp && (*endp == '!'));
             verify(x1 == MAXIVALUE);
-          }
-          else {
+          } else {
             verify(errno == 0);
             verify(endp && (*endp == '!'));
             verify(x1 == x);
@@ -1033,7 +1032,7 @@ namespace TestInt128 {
     template<class INTTYPE> void testToFromStream(const CompactArray<INTTYPE> &a, INTTYPE maxValue) {
       try {
         OPENERRORLOG();
-        StreamParametersIterator it               = StreamParameters::getIntParamIterator(20);
+        StreamParametersIterator it = StreamParameters::getIntParamIterator(20, 0, ITERATOR_INTFORMATMASK & ~ios::internal);
         const UINT               totalFormatCount = (UINT)it.getMaxIterationCount(), quatil = totalFormatCount/4;
         UINT                     formatCounter    = 0;
         while(it.hasNext()) {
@@ -1041,19 +1040,19 @@ namespace TestInt128 {
           if(++formatCounter % quatil == 0) {
             OUTPUT(_T("%s progress:%.2lf%%"), __TFUNCTION__, PERCENT(formatCounter, totalFormatCount));
           }
-          if((param.flags()&ios::adjustfield) == ios::internal) {
-            continue;
-          }
           const UINT     radix = param.radix();
           ostringstream  costr;
           wostringstream wostr;
 
 //          OUTPUT(_T("formatCounter:%d format:%s"), formatCounter, param.toString().cstr());
 
+          setFormat(costr, param);
+          setFormat(wostr, param);
+          const StreamSize w = param.width();
           for(size_t i = 0; i < a.size(); i++) {
             const INTTYPE &x = a[i];
-            setFormat(costr, param);
-            setFormat(wostr, param);
+            costr.width(w);
+            wostr.width(w);
             costr << x << endl;
             wostr << x << endl;
           }
@@ -1069,11 +1068,11 @@ namespace TestInt128 {
           wistringstream   wistr(wstr);
           StreamParameters ip(param);
           ip.flags(param.flags() | ios::skipws);
+          setFormat(cistr, ip);
+          setFormat(wistr, ip);
           for(size_t i = 0; i < a.size(); i++) {
             const INTTYPE &expected = a[i];
 
-            setFormat(cistr, ip);
-            setFormat(wistr, ip);
             if(!iswspace(ip.fill())) {
               skipspace(cistr);
               skipfill( cistr);

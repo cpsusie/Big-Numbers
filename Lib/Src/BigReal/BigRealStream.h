@@ -155,7 +155,6 @@ template <class IStreamType, class CharType> IStreamType &getBigRational(IStream
     in.flags(flg & ~ios::skipws);
     if(in.peek() == '/') {
       in.get();
-      in.flags(flg & ~ios::skipws);
       in >> den;
     }
     in.flags(flg);
