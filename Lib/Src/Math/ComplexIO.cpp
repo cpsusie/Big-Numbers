@@ -79,7 +79,5 @@ wostream &operator<<(wostream &out, const Complex &c) {
 }
 
 String toString(const Complex &c, StreamSize precision, StreamSize width, FormatFlags flags) {
-  tostrstream stream;
-  stream << StreamParameters(precision, width, flags) << c;
-  return stream.str().c_str();
+  return (TowstringStream(precision, width, flags) << c).str().c_str();
 }
