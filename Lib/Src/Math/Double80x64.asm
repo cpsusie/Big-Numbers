@@ -6,7 +6,6 @@ include fpu.inc
 
 .DATA
 
-WmaxI16P1       WORD                   8000h
 DWmaxI32P1      DWORD              80000000h
 QWmaxI64        QWORD      7fffffffffffffffh
 QWmaxI64P1      QWORD      8000000000000000h
@@ -14,9 +13,6 @@ DmaxI16P1       QWORD      40e0000000000000h   ;  maxI16P1 as double
 DmaxI32P1       QWORD      41e0000000000000h   ;  maxI32P1 as double
 TBmaxI64P1      TBYTE  403e8000000000000000h   ;  maxI64P1 as Double80
 TB2PiExp260     TBYTE  403dc90fdaa22168c235h   ; 2pi*exp2(60) (=7.244019458077122e+018)
-TB1e18          TBYTE  403ade0b6b3a76400000h   ; 1e18
-TB1e18M1        TBYTE  403ade0b6b3a763ffff0h   ; TB1e18 - 1
-TB10            TBYTE  4002a000000000000000h   ; 10
 
 .CODE
 
@@ -1134,63 +1130,5 @@ D80ceil PROC
     popRoundMode
     ret
 D80ceil ENDP
-
-; ------------------------------------------------ Double80 String functions -----------------------------------------
-
-;void D80ToBCD(BYTE bcd[10], const TenByteClass &src);
-D80ToBCD PROC
-    fld     TBYTE PTR[rdx]
-    fbstp   TBYTE PTR[rcx]
-    ret
-D80ToBCD ENDP
-
-;void D80ToBCDAutoScale(BYTE bcd[10], const Double80 &x, int &expo10);
-D80ToBCDAutoScale PROC
-    pushRoundMode ROUND                        ;
-    mov     eax, DWORD PTR[r8]                 ;
-    cmp     eax, 0                             ;
-    jne     ScaleX                             ;
-                                               ;
-    fld     TBYTE PTR[rdx]                     ;
-    jmp     Rescale                            ;
-                                               ;
-ScaleX:                                        ; Find m = x / 10^abs(expo10)
-    fild    DWORD PTR[r8]                      ;                                       st0=expo10
-    fldl2t                                     ;                                       st0=log2(10)       , st1=expo10
-    fmul                                       ;                                       st0=expo10*log2(10)
-    fld     st(0)                              ;                                       st0=expo10*log2(10), st1=st0
-    frndint                                    ;
-    fsub    st(1), st(0)                       ;
-    fxch    st(1)                              ;
-    f2xm1                                      ;
-    fld1                                       ;
-    fadd                                       ;
-    fscale                                     ;
-    fstp    st(1)                              ;                                       st0=10^expo10
-                                               ;
-    fld     TBYTE PTR[rdx]                     ;                                       st0=x          , st1=10^expo10
-    fdivr                                      ;                                       st0=x/10^expo10
-                                               ;
-Rescale:                                       ;                                       st0=m
-    fld     TB1e18                             ;                                       st0=1e18       , st1=m
-    fmul                                       ; m *= 1e18                             st0=m
-    mov     eax, DWORD PTR[r8]                 ;                                       eax=expo10
-    fld     TB1e18M1                           ;                                       st0=1e18-1     , st1=m
-WhileLoop:                                     ; while(|m| >= 1e18-1) {                st0=1e18-1     , st1=m
-    fld     st(1)                              ;                                       st0=m          , st1=1e18-1     , st2=m
-    fabs                                       ;                                       st0=|m|        , st1=1e18-1     , st2=m
-    fcomip  st, st(1)                          ;   compare |m| and 1e18-1 and pop |m|  st0=1e18-1     , st1=m
-    jb      ExitLoop                           ;   if(|m| < 1e18-1) break;             st0=1e18-1     , st1=m
-    fld     TB10                               ;                                       st0=10         , st1=1e18-1     , st2=m
-    fdivp   st(2), st(0)                       ;   m /= 10 and pop st0                 st0=1e18-1     , st1=m
-    inc     eax                                ;   expo10++
-    jmp     WhileLoop                          ; }
-ExitLoop:                                      ;
-    fstp    st(0)                              ; Pop st(0)                             st0=m
-    fbstp   TBYTE PTR[rcx]                     ; Pop m into bcd                        Assertion: 1 <= |st0| < 1e18-1 and x = st0 * 10^(eax-18)
-    mov     DWORD PTR[r8], eax                 ; Restore expo10
-    popRoundMode                               ; Restore control word
-    ret
-D80ToBCDAutoScale ENDP
 
 END

@@ -2,6 +2,14 @@
 #include <Limits.h>
 #include <Float.h>
 
+double cot(double x) {
+  return 1.0 / tan(x);
+}
+
+double acot(double x) {
+  return M_PI / 2 - atan(x);
+}
+
 int getExpo10(double x) {
   return (x == 0) ? 0 : (int)floor(log10(fabs(x)));
 }
