@@ -253,11 +253,11 @@ Rational wcstorat(const wchar_t *s, wchar_t **end, int radix);
 #define _tcstorat strtorat
 #endif // _UNICODE
 
-std::istream &operator>>(std::istream &s,       Rational &r);
-std::ostream &operator<<(std::ostream &s, const Rational &r);
+std::istream  &operator>>(std::istream  &in,        Rational &r);
+std::ostream  &operator<<(std::ostream  &out, const Rational &r);
 
-std::wistream &operator>>(std::wistream &s,       Rational &r);
-std::wostream &operator<<(std::wostream &s, const Rational &r);
+std::wistream &operator>>(std::wistream &in,        Rational &r);
+std::wostream &operator<<(std::wostream &out, const Rational &r);
 
 Packer &operator<<(Packer &p, const Rational &r);
 Packer &operator>>(Packer &p,       Rational &r);

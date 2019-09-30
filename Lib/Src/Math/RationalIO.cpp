@@ -115,11 +115,6 @@ wostream &operator<<(wostream &out, const Rational &r) {
   return putRational(out, r);
 }
 
-String toString(const Rational &x, StreamSize precision, StreamSize width, FormatFlags flags) {
-  tostrstream stream;
-  stream.width(width);
-  stream.precision(precision);
-  stream.flags(flags);
-  stream << x;
-  return stream.str().c_str();
+String toString(const Rational &r, StreamSize precision, StreamSize width, FormatFlags flags) {
+  return (TowstringStream(precision, width, flags) << r).str().c_str();
 }
