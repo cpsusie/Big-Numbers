@@ -118,9 +118,6 @@
     <ClCompile Include="Simplex.cpp">
       <Filter>Source Files\Matrix</Filter>
     </ClCompile>
-    <ClCompile Include="gammaR.cpp">
-      <Filter>Source Files\Functions</Filter>
-    </ClCompile>
     <ClCompile Include="GaussDistribution.cpp">
       <Filter>Source Files\Functions</Filter>
     </ClCompile>
@@ -131,9 +128,6 @@
       <Filter>Source Files\Functions</Filter>
     </ClCompile>
     <ClCompile Include="TrigonometricFunctionsG.cpp">
-      <Filter>Source Files\Functions</Filter>
-    </ClCompile>
-    <ClCompile Include="TrigonometricFunctionsR.cpp">
       <Filter>Source Files\Functions</Filter>
     </ClCompile>
     <ClCompile Include="MathException.cpp">
@@ -243,6 +237,12 @@
     </ClCompile>
     <ClCompile Include="Double80x86.cpp">
       <Filter>Source Files\Number Types</Filter>
+    </ClCompile>
+    <ClCompile Include="gammaD64.cpp">
+      <Filter>Source Files\Functions</Filter>
+    </ClCompile>
+    <ClCompile Include="GammaD80.cpp">
+      <Filter>Source Files\Functions</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

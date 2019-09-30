@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <Math/Polynomial.h>
 
 #define _norm_factor  0.3989422804014327 /* 1/sqrt(2*PI) */
 
@@ -8,12 +9,12 @@ Real gauss(const Real &x) {
 
 Real norm(const Real &x) {
   static const Real a[] = {
-    0,
-    0.31938153,
-   -0.356563782,
-    1.781477937,
-   -1.821255978,
-    1.330274429
+    0
+  , 0.31938153
+  ,-0.356563782
+  , 1.781477937
+  ,-1.821255978
+  , 1.330274429
   };
 
   bool neg = false;

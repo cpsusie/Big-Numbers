@@ -1149,7 +1149,8 @@
     <ClCompile Include="FPU.cpp" />
     <ClCompile Include="FPUString.cpp" />
     <ClCompile Include="FritschCarlsonSpline.cpp" />
-    <ClCompile Include="gammaR.cpp" />
+    <ClCompile Include="gammaD64.cpp" />
+    <ClCompile Include="GammaD80.cpp" />
     <ClCompile Include="GammaStirling.cpp" />
     <ClCompile Include="GaussDistribution.cpp" />
     <ClCompile Include="Gradient.cpp" />
@@ -1211,7 +1212,6 @@
     <ClCompile Include="TrigonometricFunctions.cpp" />
     <ClCompile Include="TrigonometricFunctionsD.cpp" />
     <ClCompile Include="TrigonometricFunctionsG.cpp" />
-    <ClCompile Include="TrigonometricFunctionsR.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="Math.natvis">

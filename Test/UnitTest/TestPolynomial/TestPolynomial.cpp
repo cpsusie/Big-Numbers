@@ -24,13 +24,12 @@ namespace TestPolynomial {
       const Real P1_1[] = { 3, 5 };
       const Real P1_2[] = { 3, 5, 7};
 
-      for (Real x = -10; x <= 10; x++) {
+      for(Real x = -10; x <= 10; x++) {
         verify(p1(x) == poly(x, 1, P_1));
         verify(p2(x) == poly(x, 2, P_2));
 
         verify(p1(x) == poly1(x, 1, P1_1));
         verify(p2(x) == poly1(x, 2, P1_2));
-
       }
     }
 

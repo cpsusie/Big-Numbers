@@ -1,6 +1,7 @@
 #include "pch.h"
+#include <Math/Double64.h>
 
-/* (6,4)-Minimax-approximation of gamma in [-5.000000e-001,5.000000e-001] with max error = 6.423750e-013 */
+/* (6,4)-Minimax-approximation of gamma(x+1.5) for x in [-0.5,0.5] with max error <= 6.423750e-013 */
 static const BYTE coefdata[] = {
    0x42,0xfa,0xb4,0x91,0xf8,0x5b,0xec,0x3f, /*  8.8622692545306614e-001 */
    0xa1,0xba,0x87,0xd9,0x8d,0xac,0xe2,0x3f, /*  5.8356373297086261e-001 */
@@ -26,71 +27,71 @@ static double approximation(double x) {
 }
 
 // assume 1 < x < 2
-static inline double gamma1_2R(double x) {
+static inline double D64gamma1_2(double x) {
   return approximation(x-1.5);
 }
 
-Real gamma(const Real &x) {
+double gamma(double x) {
   if(x == floor(x)) {
     if(x < 1) {
       return 1.0/(x-floor(x)); // undefined
     }
-    Real res = 1;
-    for(Real p = x-1; p > 1; p-=1) {
+    double res = 1;
+    for(double p = x; --p > 1;) {
       res *= p;
     }
     return res;
   }
 
   if(x > 2) {
-    Real res = 1, p = x-1;
-    for(; p > 2; p-=1) {
+    double res = 1, p = x;
+    while(--p > 2) {
       res *= p;
     }
-    return res * p * gamma1_2R(getDouble(p));
-  } else if(x < 1) {
-    Real res = 1, p = x;
-    for(; p < 1; p+=1) {
-      res /= p;
+    return res * p * D64gamma1_2(p);
+  } else if(x > 1) {
+    return D64gamma1_2(x);
+  } else { // p < 1
+    double res = 1, p = x;
+    while(p < 1) {
+      res *= p++;
     }
-    return res * gamma1_2R(getDouble(p));
-  } else {
-    return gamma1_2R(getDouble(x));
+    return D64gamma1_2(p) / res;
   }
 }
 
-Real lnGamma(const Real &x) {
+double lnGamma(double x) {
   if(x <= 0) {
     throwInvalidArgumentException(__TFUNCTION__
                                  ,_T("x=%s. Must be > 0")
                                  , toString(x).cstr()); // undefined
   }
   if(x == floor(x)) {
-    Real res = 0;
-    for(Real p = x-1; p > 1; p -= 1) {
+    double res = 0;
+    for(double p = x; --p > 1;) {
       res += log(p);
     }
     return res;
   }
 
   if(x > 2) {
-    Real res = 0, p = x - 1;
-    for(; p > 2; p -= 1) {
+    double res = 0, p = x;
+    while(--p > 2) {
       res += log(p);
     }
     // p = ]1; 2[
-    return res + log(p) + log(gamma1_2R(getDouble(p)));
+    return res + log(p) + log(D64gamma1_2(p));
   } else { // x = ]0; 2[
-    Real res = 0, p = x;
-    for(; p < 1; p += 1) {
-      res -= log(p);
+    double res = 0, p = x;
+    while(p < 1) {
+      res += log(p++);
     }
     // p = ]1; 2[
-    return res + log(gamma1_2R(getDouble(p)));
+    return log(D64gamma1_2(p)) - res;
   }
 }
 
-// Calculates x! = x*(x-1)*(x-2)*...*2*1, extended to real numbers by the gamma function x! = gamma(x+1)
-Real fac(const Real &x) {
+// Calculates x! = x*(x-1)*(x-2)*...*2*1, extended to double numbers by the gamma function x! = gamma(x+1)
+double fac(double x) {
   return gamma(x+1);
 }

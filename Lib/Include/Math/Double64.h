@@ -8,6 +8,11 @@ double mypow(             double x, double y);
 double root(              double x, double y);
 double cot(               double x);
 double acot(              double x);
+
+double gamma(             double x);
+double lnGamma(           double x);
+double fac(               double x);
+
 // calculate both cos and sin. c:inout c, s:out
 extern "C" {
   void   sincos(double &c, double &s);

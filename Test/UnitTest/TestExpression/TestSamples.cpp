@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <Math/Polynomial.h>
 #include "TestSamples.h"
 
 bool ExpressionTest::s_evaluateTestStarted = false;
@@ -614,7 +615,7 @@ public:
     return _T("binomial(x+7,5)");
   }
   Real fr(const Real &x) const {
-    return binomial(x + 7, 5);
+    return binomial(x + 7, (Real)5);
   }
 };
 

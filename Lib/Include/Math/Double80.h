@@ -3939,8 +3939,14 @@ inline Double80 acos(const Double80 &x) {
 inline Double80 acot(const Double80 &x) {
   return DBL80_PI_05 - atan(x);
 }
+
+Double80 gamma(  const Double80 &x);
+Double80 lnGamma(const Double80 &x);
+Double80 fac(    const Double80 &x);
+
 Double80 mypow(const Double80 &x, const Double80 &y);
 Double80 root( const Double80 &x, const Double80 &y);
+
 inline Double80 cosh(const Double80 &x) {
   const Double80 e1 = exp(x);
   return (e1 + 1.0/e1)/2;
@@ -3977,6 +3983,12 @@ inline int getExpo2(const Double80 &v) {
   return getExponent(v) - 0x3fff;
 }
 
+// returns one of
+// FP_INFINITE
+// FP_NAN
+// FP_NORMAL
+// FP_SUBNORMAL
+// FP_ZERO
 int fpclassify(const Double80 &v);
 
 inline bool isPInfinity(const Double80 &v) {

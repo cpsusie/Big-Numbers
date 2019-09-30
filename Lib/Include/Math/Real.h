@@ -29,10 +29,21 @@ typedef enum {
 String            toString(TrigonometricMode mode);
 TrigonometricMode getTrigonometricModeFromString(const String &str);
 
-Real csc(                 const Real &x);
-Real sec(                 const Real &x);
-Real acsc(                const Real &x);
-Real asec(                const Real &x);
+template<class T> T csc(T x) {
+  return 1.0 / sin(x);
+}
+
+template<class T> T sec(T x) {
+  return 1.0 / cos(x);
+}
+
+template<class T> T acsc(T x) {
+  return asin(1.0 / x);
+}
+
+template<class T> T asec(T x) {
+  return acos(1.0 / x);
+}
 
 Real sinDegrees(          const Real &x);
 Real cosDegrees(          const Real &x);
@@ -78,8 +89,6 @@ Real sec(                 const Real &x, TrigonometricMode mode);
 Real acsc(                const Real &x, TrigonometricMode mode);
 Real asec(                const Real &x, TrigonometricMode mode);
 
-Real gamma(               const Real &x);
-Real lnGamma(             const Real &x);
 Real gammaStirling(       const Real &x);
 Real lnGammaStirling(     const Real &x);
 Real gauss(               const Real &x);
@@ -87,14 +96,15 @@ Real norm(                const Real &x);
 Real probitFunction(      const Real &x);
 Real errorFunction(       const Real &x);
 Real inverseErrorFunction(const Real &x);
-Real fac(                 const Real &x);
 
 // Assume x >= 0
 Real lowerIncGamma(          const Real &a,  const Real &x);
 Real chiSquaredDensity(      const Real &df, const Real &x);
 Real chiSquaredDistribution( const Real &df, const Real &x);
 
-Real binomial(            const Real &x,      const Real &y    );
+template<class T> T binomial(T n, T k) {
+  return fac(n) / (fac(k)*fac(n - k));
+}
 
 // use _standardRandomGenerator declared in Random.h
 Real randReal();
@@ -103,11 +113,6 @@ Real randReal(            const Real &lower,  const Real &upper);
 Real randomGaussian(      const Real &mean,   const Real &s    );
 
 void setToRandom(Real &x);
-
-// poly(x)  = a[n]x^n + a[n-1]x^(n-1)+...+a[1]x + a[0]; n = degree
-Real poly( const Real &x, int degree, const Real *coef);
-// poly1(x) = a[0]x^n + a[1]x^(n-1)+...+a[n-1]x + a[n]; n = degree
-Real poly1(const Real &x, int degree, const Real *coef);
 
 inline Real getRealNaN() {
   return std::numeric_limits<Real>::quiet_NaN();
