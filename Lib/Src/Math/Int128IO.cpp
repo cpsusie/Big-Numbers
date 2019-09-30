@@ -220,35 +220,35 @@ template <class OStreamType, class I128Type> OStreamType &putI128(OStreamType &o
   return out;
 }
 
-istream  &operator>>(istream &s, _int128 &n) {
-  return getInt128<istream, char>(s, n);
+istream  &operator>>(istream &in, _int128 &n) {
+  return getInt128<istream, char>(in, n);
 }
 
-ostream  &operator<<(ostream &s, const _int128 &n) {
-  return putI128(s, n);
+ostream  &operator<<(ostream &out, const _int128 &n) {
+  return putI128(out, n);
 }
 
-wistream &operator>>(wistream &s, _int128 &n) {
-  return getInt128<wistream, wchar_t>(s, n);
+wistream &operator>>(wistream &in, _int128 &n) {
+  return getInt128<wistream, wchar_t>(in, n);
 }
 
-wostream &operator<<(wostream &s, const _int128 &n) {
-  return putI128(s, n);
+wostream &operator<<(wostream &out, const _int128 &n) {
+  return putI128(out, n);
 }
 
 
-istream  &operator>>(istream &s, _uint128 &n) {
-  return getUint128<istream, char>(s, n);
+istream  &operator>>(istream &in, _uint128 &n) {
+  return getUint128<istream, char>(in, n);
 }
 
-ostream  &operator<<(ostream &s, const _uint128 &n) {
-  return putI128(s, n);
+ostream  &operator<<(ostream &out, const _uint128 &n) {
+  return putI128(out, n);
 }
 
-wistream &operator>>(wistream &s, _uint128 &n) {
-  return getUint128<wistream, wchar_t>(s, n);
+wistream &operator>>(wistream &in, _uint128 &n) {
+  return getUint128<wistream, wchar_t>(in, n);
 }
 
-wostream &operator<<(wostream &s, const _uint128 &n) {
-  return putI128(s, n);
+wostream &operator<<(wostream &out, const _uint128 &n) {
+  return putI128(out, n);
 }

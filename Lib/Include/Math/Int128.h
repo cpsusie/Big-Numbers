@@ -2033,15 +2033,15 @@ inline int uint128HashCmp(const _uint128 &n1, const _uint128 &n2) {
   return uint128cmp(&n1, &n2);
 }
 
-std::istream  &operator>>(std::istream  &s,       _int128  &n);
-std::ostream  &operator<<(std::ostream  &s, const _int128  &n);
-std::istream  &operator>>(std::istream  &s,       _uint128 &n);
-std::ostream  &operator<<(std::ostream  &s, const _uint128 &n);
+std::istream  &operator>>(std::istream  &in ,       _int128  &n);
+std::ostream  &operator<<(std::ostream  &out, const _int128  &n);
+std::istream  &operator>>(std::istream  &in ,       _uint128 &n);
+std::ostream  &operator<<(std::ostream  &out, const _uint128 &n);
 
-std::wistream &operator>>(std::wistream &s,       _int128  &n);
-std::wostream &operator<<(std::wostream &s, const _int128  &n);
-std::wistream &operator>>(std::wistream &s,       _uint128 &n);
-std::wostream &operator<<(std::wostream &s, const _uint128 &n);
+std::wistream &operator>>(std::wistream &in ,       _int128  &n);
+std::wostream &operator<<(std::wostream &out, const _int128  &n);
+std::wistream &operator>>(std::wistream &in ,       _uint128 &n);
+std::wostream &operator<<(std::wostream &out, const _uint128 &n);
 
 Packer &operator<<(Packer &p, const _int128  &n);
 Packer &operator>>(Packer &p,       _int128  &n);
