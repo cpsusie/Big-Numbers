@@ -34,14 +34,17 @@ size_t StringArray::maxLength() const {
 }
 
 size_t StringArray::minLength() const {
-  if(size() == 0) {
+  const size_t n = size();
+  if(n == 0) {
     return 0;
   }
-  size_t result = (*this)[0].length();
-  for(size_t i = 1; i < size(); i++) {
+  size_t result = -1;
+  for(size_t i = 0; i < n; i++) {
     const size_t l = (*this)[i].length();
     if(l < result) {
-      result = l;
+      if((result = l) == 0) {
+        break;
+      }
     }
   }
   return result;
