@@ -8,4 +8,5 @@
 #include <Math/Rectangle2D.h>
 #include "IRemes.h"
 #include "BigRealRemes2.h"
+#include <afxwin.h>
 

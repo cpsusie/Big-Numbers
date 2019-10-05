@@ -1,5 +1,8 @@
 #include "stdafx.h"
+#include <ExternProcess.h>
 #include "IRemesDlg.h"
+#include "PrecisionDlg.h"
+#include "BRGamma1_2.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -10,21 +13,19 @@ public:
   CAboutDlg();
   enum { IDD = IDD_ABOUTBOX };
 protected:
-  virtual void DoDataExchange(CDataExchange *pDX);
   DECLARE_MESSAGE_MAP()
 };
 
 CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
-void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-  __super::DoDataExchange(pDX);
-}
-
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CIRemesDlg::CIRemesDlg(CWnd *pParent /*=NULL*/) : CDialog(CIRemesDlg::IDD, pParent), m_name(EMPTYSTRING), m_maxSearchEIterations(0)
+CIRemesDlg::CIRemesDlg(CWnd *pParent /*=NULL*/)
+  : CDialog(CIRemesDlg::IDD, pParent)
+  , m_name(EMPTYSTRING)
+  , m_maxSearchEIterations(0)
 {
   m_M                    = 1;
   m_K                    = 1;
@@ -50,10 +51,10 @@ CIRemesDlg::CIRemesDlg(CWnd *pParent /*=NULL*/) : CDialog(CIRemesDlg::IDD, pPare
 void CIRemesDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
   DDX_Text(pDX, IDC_EDITNAME, m_name);
-  DDX_Text(pDX, IDC_EDITM, m_M);
+  DDX_Text(pDX, IDC_EDITMFROM, m_M);
   DDV_MinMaxUInt(pDX, m_M, 1, 100);
   DDX_Text(pDX, IDC_EDITMTO, m_MTo);
-  DDX_Text(pDX, IDC_EDITK, m_K);
+  DDX_Text(pDX, IDC_EDITKFROM, m_K);
   DDV_MinMaxUInt(pDX, m_K, 0, 100);
   DDX_Text(pDX, IDC_EDITKTO, m_KTo);
   DDX_Text(pDX, IDC_EDITXFROM, m_xFrom);
@@ -73,41 +74,45 @@ BEGIN_MESSAGE_MAP(CIRemesDlg, CDialog)
   ON_WM_PAINT()
   ON_WM_SIZE()
   ON_WM_CLOSE()
-  ON_COMMAND(ID_FILE_SHOWMAXERRORS           , &CIRemesDlg::OnFileShowMaxErrors         )
-  ON_COMMAND(ID_FILE_EXIT                    , &CIRemesDlg::OnFileExit                  )
-  ON_COMMAND(ID_VIEW_GRID                    , &CIRemesDlg::OnViewGrid                  )
-  ON_COMMAND(ID_VIEW_SHOW_ERRORFUNCTION      , &CIRemesDlg::OnViewShowErrorFunction     )
-  ON_COMMAND(ID_VIEW_SHOW_SPLINE             , &CIRemesDlg::OnViewShowSpline            )
-  ON_COMMAND(ID_RUN_GO                       , &CIRemesDlg::OnRunGo                     )
-  ON_COMMAND(ID_RUN_F5                       , &CIRemesDlg::OnRunF5                     )
-  ON_COMMAND(ID_RUN_RESTART                  , &CIRemesDlg::OnRunRestart                )
-  ON_COMMAND(ID_RUN_STOP                     , &CIRemesDlg::OnRunStop                   )
-  ON_COMMAND(ID_RUN_BREAK                    , &CIRemesDlg::OnRunBreak                  )
-  ON_COMMAND(ID_RUN_SINGLEITERATION          , &CIRemesDlg::OnRunSingleIteration        )
-  ON_COMMAND(ID_RUN_SINGLESUBITERATION       , &CIRemesDlg::OnRunSingleSubIteration     )
-  ON_COMMAND(ID_RUN_REDUCETOINTERPOLATE      , &CIRemesDlg::OnRunReduceToInterpolate    )
-  ON_COMMAND(ID_GOTO_DOMAIN                  , &CIRemesDlg::OnGotoDomain                )
-  ON_COMMAND(ID_GOTO_M                       , &CIRemesDlg::OnGotoM                     )
-  ON_COMMAND(ID_GOTO_K                       , &CIRemesDlg::OnGotoK                     )
-  ON_COMMAND(ID_GOTO_DIGITS                  , &CIRemesDlg::OnGotoDigits                )
-  ON_COMMAND(ID_GOTO_MAXSEARCHEITERATIONS    , &CIRemesDlg::OnGotoMaxSearchEIterations  )
-  ON_COMMAND(ID_HELP_ABOUTIREMES             , &CIRemesDlg::OnHelpAboutIRemes           )
-  ON_MESSAGE(ID_MSG_THR_RUNSTATE_CHANGED     , &CIRemesDlg::OnMsgThrRunStateChanged     )
-  ON_MESSAGE(ID_MSG_THR_TERMINATED_CHANGED   , &CIRemesDlg::OnMsgThrTerminatedChanged   )
-  ON_MESSAGE(ID_MSG_THR_ERROR_CHANGED        , &CIRemesDlg::OnMsgThrErrorChanged        )
-  ON_MESSAGE(ID_MSG_STATE_CHANGED            , &CIRemesDlg::OnMsgStateChanged           )
-  ON_MESSAGE(ID_MSG_COEFFICIENTS_CHANGED     , &CIRemesDlg::OnMsgCoefficientsChanged    )
-  ON_MESSAGE(ID_MSG_SEARCHEITERATION_CHANGED , &CIRemesDlg::OnMsgSearchEIterationChanged)
-  ON_MESSAGE(ID_MSG_EXTREMACOUNT_CHANGED     , &CIRemesDlg::OnMsgExtremaCountChanged    )
-  ON_MESSAGE(ID_MSG_MAXERROR_CHANGED         , &CIRemesDlg::OnMsgMaxErrorChanged        )
-  ON_MESSAGE(IS_MSG_UPDATEINTERPOLATION      , &CIRemesDlg::OnMsgUpdateInterpolation    )
-  ON_MESSAGE(ID_MSG_WARNING_CHANGED          , &CIRemesDlg::OnMsgWarningChanged         )
-  ON_EN_KILLFOCUS(IDC_EDITM                  , &CIRemesDlg::OnEnKillfocusEditm          )
-  ON_EN_KILLFOCUS(IDC_EDITK                  , &CIRemesDlg::OnEnKillfocusEditk          )
-  ON_EN_KILLFOCUS(IDC_EDITMTO                , &CIRemesDlg::OnEnKillfocusEditmto        )
-  ON_EN_KILLFOCUS(IDC_EDITKTO                , &CIRemesDlg::OnEnKillfocusEditkto        )
-  ON_EN_UPDATE(IDC_EDITKTO                   , &CIRemesDlg::OnEnUpdateEditkto           )
-  ON_EN_UPDATE(IDC_EDITMTO                   , &CIRemesDlg::OnEnUpdateEditmto           )
+  ON_COMMAND(ID_FILE_SHOWMAXERRORS           , OnFileShowMaxErrors         )
+  ON_COMMAND(ID_FILE_EXIT                    , OnFileExit                  )
+  ON_COMMAND(ID_VIEW_GRID                    , OnViewGrid                  )
+  ON_COMMAND(ID_VIEW_SHOW_ERRORFUNCTION      , OnViewShowErrorFunction     )
+  ON_COMMAND(ID_VIEW_SHOW_SPLINE             , OnViewShowSpline            )
+  ON_COMMAND(ID_VIEW_DISPLAYEDPRECISION      , OnViewDisplayedPrecision    )
+  ON_COMMAND(ID_GENERATECODE_CCODED64        , OnGenerateCcodeD64          )
+  ON_COMMAND(ID_GENERATECODE_CCODED80        , OnGenerateCcodeD80          )
+  ON_COMMAND(ID_GENERATECODE_JAVAD64         , OnGenerateJavacodeD64       )
+  ON_COMMAND(ID_RUN_GO                       , OnRunGo                     )
+  ON_COMMAND(ID_RUN_F5                       , OnRunF5                     )
+  ON_COMMAND(ID_RUN_RESTART                  , OnRunRestart                )
+  ON_COMMAND(ID_RUN_STOP                     , OnRunStop                   )
+  ON_COMMAND(ID_RUN_BREAK                    , OnRunBreak                  )
+  ON_COMMAND(ID_RUN_SINGLEITERATION          , OnRunSingleIteration        )
+  ON_COMMAND(ID_RUN_SINGLESUBITERATION       , OnRunSingleSubIteration     )
+  ON_COMMAND(ID_RUN_REDUCETOINTERPOLATE      , OnRunReduceToInterpolate    )
+  ON_COMMAND(ID_HELP_ABOUTIREMES             , OnHelpAboutIRemes           )
+  ON_COMMAND(ID_GOTO_DOMAIN                  , OnGotoDomain                )
+  ON_COMMAND(ID_GOTO_M                       , OnGotoM                     )
+  ON_COMMAND(ID_GOTO_K                       , OnGotoK                     )
+  ON_COMMAND(ID_GOTO_DIGITS                  , OnGotoDigits                )
+  ON_COMMAND(ID_GOTO_MAXSEARCHEITERATIONS    , OnGotoMaxSearchEIterations  )
+  ON_MESSAGE(ID_MSG_THR_RUNSTATE_CHANGED     , OnMsgThrRunStateChanged     )
+  ON_MESSAGE(ID_MSG_THR_TERMINATED_CHANGED   , OnMsgThrTerminatedChanged   )
+  ON_MESSAGE(ID_MSG_THR_ERROR_CHANGED        , OnMsgThrErrorChanged        )
+  ON_MESSAGE(ID_MSG_STATE_CHANGED            , OnMsgStateChanged           )
+  ON_MESSAGE(ID_MSG_COEFFICIENTS_CHANGED     , OnMsgCoefficientsChanged    )
+  ON_MESSAGE(ID_MSG_SEARCHEITERATION_CHANGED , OnMsgSearchEIterationChanged)
+  ON_MESSAGE(ID_MSG_EXTREMACOUNT_CHANGED     , OnMsgExtremaCountChanged    )
+  ON_MESSAGE(ID_MSG_MAXERROR_CHANGED         , OnMsgMaxErrorChanged        )
+  ON_MESSAGE(IS_MSG_UPDATEINTERPOLATION      , OnMsgUpdateInterpolation    )
+  ON_MESSAGE(ID_MSG_WARNING_CHANGED          , OnMsgWarningChanged         )
+  ON_EN_KILLFOCUS(IDC_EDITMFROM              , OnEnKillfocusEditmFrom      )
+  ON_EN_KILLFOCUS(IDC_EDITKFROM              , OnEnKillfocusEditkFrom      )
+  ON_EN_KILLFOCUS(IDC_EDITMTO                , OnEnKillfocusEditmTo        )
+  ON_EN_KILLFOCUS(IDC_EDITKTO                , OnEnKillfocusEditkTo        )
+  ON_EN_UPDATE(IDC_EDITKTO                   , OnEnUpdateEditkTo           )
+  ON_EN_UPDATE(IDC_EDITMTO                   , OnEnUpdateEditmTo           )
 END_MESSAGE_MAP()
 
 void CIRemesDlg::OnSysCommand(UINT nID, LPARAM lParam) {
@@ -157,18 +162,18 @@ BOOL CIRemesDlg::OnInitDialog() {
   setCoorSystemSplineVisible(isMenuItemChecked(this, ID_VIEW_SHOW_SPLINE));
 
   m_layoutManager.OnInitDialog(this);
-  m_layoutManager.addControl(IDC_STATICTEMPORARY        ,                                                         PCT_RELATIVE_BOTTOM );
-  m_layoutManager.addControl(IDC_LISTCOEF               ,                                                         PCT_RELATIVE_BOTTOM );
-  m_layoutManager.addControl(IDC_LISTEXTRMA             ,                     RELATIVE_RIGHT |                    PCT_RELATIVE_BOTTOM );
-  m_layoutManager.addControl(IDC_FRAME_COORSYSTEM_ERROR , PCT_RELATIVE_RIGHT                 | PCT_RELATIVE_TOP | RELATIVE_BOTTOM     );
-  m_layoutManager.addControl(IDC_FRAME_COORSYSTEM_SPLINE, PCT_RELATIVE_LEFT | RELATIVE_RIGHT | PCT_RELATIVE_TOP | RELATIVE_BOTTOM     );
+  m_layoutManager.addControl(IDC_STATICTEMPORARY        ,                                                          PCT_RELATIVE_BOTTOM );
+  m_layoutManager.addControl(IDC_LISTCOEF               , PCT_RELATIVE_RIGHT                  |                    PCT_RELATIVE_BOTTOM );
+  m_layoutManager.addControl(IDC_LISTEXTRMA             , PCT_RELATIVE_LEFT  | RELATIVE_RIGHT |                    PCT_RELATIVE_BOTTOM );
+  m_layoutManager.addControl(IDC_FRAME_COORSYSTEM_ERROR , PCT_RELATIVE_RIGHT                  | PCT_RELATIVE_TOP | RELATIVE_BOTTOM     );
+  m_layoutManager.addControl(IDC_FRAME_COORSYSTEM_SPLINE, PCT_RELATIVE_LEFT  | RELATIVE_RIGHT | PCT_RELATIVE_TOP | RELATIVE_BOTTOM     );
 
   gotoEditBox(this, IDC_EDITNAME);
   return TRUE;
 }
 
 void CIRemesDlg::OnPaint() {
-  if (IsIconic())  {
+  if(IsIconic())  {
     CPaintDC dc(this); // device context for painting
 
     SendMessage(WM_ICONERASEBKGND, (WPARAM)dc.GetSafeHdc(), 0);
@@ -190,7 +195,7 @@ void CIRemesDlg::OnPaint() {
 
 void CIRemesDlg::setCoorSystemSplineVisible(bool visible) {
   CRect errorRect  = getWindowRect(this, IDC_FRAME_COORSYSTEM_ERROR);
-  if (visible) {
+  if(visible) {
     CRect splineRect = getWindowRect(this, IDC_FRAME_COORSYSTEM_SPLINE);
     errorRect.right  = splineRect.left-1;
     setWindowRect(this, IDC_FRAME_COORSYSTEM_ERROR, errorRect);
@@ -243,9 +248,9 @@ void CIRemesDlg::showExtremaStringArray() {
         lb->AddString(a.getString(i).cstr());
       }
     } else {
-      for (size_t i = 0; i < n; i++) {
+      for(size_t i = 0; i < n; i++) {
         const String ai = a.getString(i);
-        if (ai != m_extrStrArrayOld.getString(i)) {
+        if(ai != m_extrStrArrayOld.getString(i)) {
           lb->DeleteString((UINT)i);
           lb->InsertString((UINT)i, ai.cstr());
         }
@@ -279,7 +284,7 @@ bool CIRemesDlg::createErrorPlot(const Remes &r) {
 }
 
 void CIRemesDlg::showErrorPlot() {
-  if (m_coorSystemError.getObjectCount() == 0) {
+  if(m_coorSystemError.getObjectCount() == 0) {
     return;
   }
   m_coorSystemError.Invalidate(FALSE);
@@ -322,12 +327,11 @@ void CIRemesDlg::enableFieldList(const int *ids, int n, bool enabled) {
 
 #define ENABLEFIELDLIST(a,enabled) enableFieldList(a, ARRAYSIZE(a), enabled)
 
-
 void CIRemesDlg::ajourDialogItems() {
   static const int dialogFields[] = {
     IDC_EDITNAME
-   ,IDC_EDITM
-   ,IDC_EDITK
+   ,IDC_EDITMFROM
+   ,IDC_EDITKFROM
    ,IDC_EDITMTO
    ,IDC_EDITKTO
    ,IDC_EDITMAXMKSUM
@@ -430,8 +434,8 @@ void CIRemesDlg::setRunMenuState(RunMenuState menuState) {
   const int *menuItems = runMenuItems[menuState];
   if(menuItems == NULL) return;
   int count = 0;
-  for (const int *item = menuItems; *item >= 0; item++,count++) {
-    if (*item == ITEM_SEPARATOR) {
+  for(const int *item = menuItems; *item >= 0; item++,count++) {
+    if(*item == ITEM_SEPARATOR) {
       insertMenuSeparator(runMenu, count);
     } else {
       const MenuLabel &label = runMenuLables[*item];
@@ -450,12 +454,16 @@ void CIRemesDlg::OnClose() {
   OnFileExit();
 }
 
+void CIRemesDlg::OnFileExit() {
+  EndDialog(IDOK);
+}
+
 void CIRemesDlg::OnFileShowMaxErrors() {
   OnRunDebug();
   const ExtremaMap &map = m_remes->getExtremaMap();
   const String tmpFileName = _T("c:\\temp\\RemesErrors.txt");
   FILE *f = MKFOPEN(tmpFileName, _T("w"));
-  for (Iterator<ExtremaMapEntry> it = map.getIerator(); it.hasNext();) {
+  for(Iterator<ExtremaMapEntry> it = map.getIerator(); it.hasNext();) {
     ExtremaMapEntry &e = it.next();
     const ExtremaKey           &key = e.getKey();
     const Array<ExtremaVector> &v   = e.getValue();
@@ -466,10 +474,6 @@ void CIRemesDlg::OnFileShowMaxErrors() {
   }
   fclose(f);
 //  system("c:\\windows\\System32\\notepad %s")
-}
-
-void CIRemesDlg::OnFileExit() {
-  EndDialog(IDOK);
 }
 
 static void setGrid(CCoordinateSystem &s, bool on) {
@@ -493,6 +497,36 @@ void CIRemesDlg::OnViewShowErrorFunction() {
 
 void CIRemesDlg::OnViewShowSpline() {
   setCoorSystemSplineVisible(toggleMenuItem(this, ID_VIEW_SHOW_SPLINE));
+}
+
+void CIRemesDlg::OnViewDisplayedPrecision() {
+  CPrecisionDlg dlg(m_visiblePrecisions);
+  if(dlg.DoModal() == IDOK) {
+    m_visiblePrecisions = dlg.getVisiblePrecisions();
+    if(hasDebugThread()) {
+      m_remes->setVisiblePrecisions(m_visiblePrecisions);
+    }
+  }
+}
+
+static void showText(const String &str) {
+  const String fileName = _T("c:\\temp\\fisk.txt");
+  FILE *f = MKFOPEN(fileName, _T("w"));
+  _ftprintf(f, _T("%s"), str.cstr());
+  fclose(f);
+  ExternProcess::run(false, _T("c:\\windows\\system32\\notepad.exe"), fileName.cstr(), NULL);
+}
+
+void CIRemesDlg::OnGenerateCcodeD64() {
+  if(hasSolution()) showText(m_remes->getCFunctionString(false));
+}
+
+void CIRemesDlg::OnGenerateCcodeD80() {
+  if(hasSolution()) showText(m_remes->getCFunctionString(true));
+}
+
+void CIRemesDlg::OnGenerateJavacodeD64() {
+  if(hasSolution()) showText(m_remes->getJavaFunctionString());
 }
 
 void CIRemesDlg::OnRunGo() {
@@ -558,10 +592,10 @@ void CIRemesDlg::OnGotoDomain() {
 }
 
 void CIRemesDlg::OnGotoM() {
-  gotoEditBox(this, IDC_EDITM);
+  gotoEditBox(this, IDC_EDITMFROM);
 }
 void CIRemesDlg::OnGotoK() {
-  gotoEditBox(this, IDC_EDITK);
+  gotoEditBox(this, IDC_EDITKFROM);
 }
 void CIRemesDlg::OnGotoDigits() {
   gotoEditBox(this, IDC_EDITDIGITS);
@@ -570,64 +604,42 @@ void CIRemesDlg::OnGotoMaxSearchEIterations() {
   gotoEditBox(this, IDC_EDITMAXSEARCHEITERATIONS);
 }
 
-
-void CIRemesDlg::OnEnKillfocusEditm() {
-  String mStr   = getWindowText(this, IDC_EDITM);
-  String mToStr = getWindowText(this, IDC_EDITMTO);
-  UINT m, mto;
-  if(_stscanf(mStr.cstr(), _T("%u"), &m) != 1) {
+void CIRemesDlg::OnEnKillfocusEditmFrom() {
+  UINT mFrom, mTo;
+  if(!getValue(this, IDC_EDITMFROM, mFrom)) {
     return;
   }
-  if (_stscanf(mToStr.cstr(), _T("%u"), &mto) != 1) {
-    mto = 0;
+  if(!getValue(this, IDC_EDITMTO, mTo)) {
+    return;
   }
-  if (m > mto) {
-    setWindowText(this, IDC_EDITMTO, format(_T("%u"), m));
-  }
+  mTo = max(mFrom, mTo);
+  setWindowText(this, IDC_EDITMTO, format(_T("%u"), mTo));
   adjustMaxMKSum();
 }
 
-void CIRemesDlg::OnEnKillfocusEditk() {
-  String kStr   = getWindowText(this, IDC_EDITK);
-  String kToStr = getWindowText(this, IDC_EDITKTO);
-  UINT k, kto;
-  if(_stscanf(kStr.cstr(), _T("%u"), &k) != 1) {
+void CIRemesDlg::OnEnKillfocusEditkFrom() {
+  UINT kFrom, kTo;
+  if(!getValue(this,IDC_EDITKFROM, kFrom)) {
     return;
   }
-  if (_stscanf(kToStr.cstr(), _T("%u"), &kto) != 1) {
-    kto = 0;
+  if(!getValue(this,IDC_EDITKTO, kTo)) {
+    return;
   }
-  if (k > kto) {
-    setWindowText(this, IDC_EDITKTO, format(_T("%u"), k));
-  }
+  kTo = max(kFrom, kTo);
+  setWindowText(this, IDC_EDITKTO, format(_T("%u"), kTo));
   adjustMaxMKSum();
 }
-void CIRemesDlg::OnEnKillfocusEditmto() {
-  adjustMaxMKSum();
-}
-void CIRemesDlg::OnEnKillfocusEditkto() {
-  adjustMaxMKSum();
-}
-void CIRemesDlg::OnEnUpdateEditmto() {
-  adjustMaxMKSum();
-}
-void CIRemesDlg::OnEnUpdateEditkto() {
-  adjustMaxMKSum();
-}
+void CIRemesDlg::OnEnKillfocusEditmTo() {  adjustMaxMKSum(); }
+void CIRemesDlg::OnEnKillfocusEditkTo() {  adjustMaxMKSum(); }
+void CIRemesDlg::OnEnUpdateEditmTo()    {  adjustMaxMKSum(); }
+void CIRemesDlg::OnEnUpdateEditkTo()    {  adjustMaxMKSum(); }
 
 void CIRemesDlg::adjustMaxMKSum() {
   const UINT maxM = _ttoi(getWindowText(this, IDC_EDITMTO).cstr());
   const UINT maxK = _ttoi(getWindowText(this, IDC_EDITKTO).cstr());
   const UINT MKsum = maxM + maxK;
 
-  String maxMKSumStr   = getWindowText(this, IDC_EDITMAXMKSUM);
-  UINT maxMKSum;
-  if (_stscanf(maxMKSumStr.cstr(), _T("%u"), &maxMKSum) != 1) {
-    maxMKSum = 0;
-  }
-  if (maxMKSum < MKsum) {
-    setWindowText(this, IDC_EDITMAXMKSUM, format(_T("%u"), MKsum));
-  }
+  setWindowText(this, IDC_EDITMAXMKSUM, format(_T("%u"), MKsum));
 }
 
 void CIRemesDlg::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
@@ -658,7 +670,7 @@ void CIRemesDlg::handlePropertyChanged(const PropertyContainer *source, int id, 
 }
 
 void CIRemesDlg::handleRemesProperty(const Remes &r, int id, const void *oldValue, const void *newValue) {
-  if (m_reduceToInterpolate) {
+  if(m_reduceToInterpolate) {
     r.reduceToInterpolate();
     m_reduceToInterpolate = false;
   }
@@ -700,7 +712,7 @@ void CIRemesDlg::handleRemesProperty(const Remes &r, int id, const void *oldValu
   case MMQUOT             : // *BigReal
     break;
   case INTERPOLATIONSPLINE: // *dim, *Function
-    if (isMenuItemChecked(this, ID_VIEW_SHOW_SPLINE)) {
+    if(isMenuItemChecked(this, ID_VIEW_SHOW_SPLINE)) {
       const UINT           dim = *(UINT*)oldValue;
       Function            &f   = *(Function*)newValue;
       const DoubleInterval xRange(0, dim-1);
@@ -767,14 +779,14 @@ LRESULT CIRemesDlg::OnMsgStateChanged(WPARAM wp, LPARAM lp) {
 }
 
 void CIRemesDlg::setSubMK(int subM, int subK) {
-  if (subM != m_subM) {
+  if(subM != m_subM) {
     String str = ((subM>=0) && ((subM!=m_M) || (m_M!=m_MTo)))
                ? format(_T("%u"), subM)
                : EMPTYSTRING;
     setWindowText(this, IDC_STATICSUBM, str);
     m_subM = subM;
   }
-  if (subK != m_subK) {
+  if(subK != m_subK) {
     String str = ((subK>=0) && ((subK!=m_K) || (m_K!=m_KTo)))
                ? format(_T("%u"), subK)
                : EMPTYSTRING;
@@ -809,7 +821,7 @@ LRESULT CIRemesDlg::OnMsgExtremaCountChanged(WPARAM wp, LPARAM lp) {
 
 LRESULT CIRemesDlg::OnMsgUpdateInterpolation(WPARAM wp, LPARAM lp) {
   m_gate.wait();
-  if (m_coorSystemSpline.getObjectCount() == 0) {
+  if(m_coorSystemSpline.getObjectCount() == 0) {
     return 0;
   }
   m_coorSystemSpline.Invalidate(FALSE);
@@ -832,15 +844,14 @@ LRESULT CIRemesDlg::OnMsgWarningChanged(WPARAM wp, LPARAM lp) {
 }
 
 void CIRemesDlg::OnHelpAboutIRemes() {
-  CAboutDlg dlg;
-  dlg.DoModal();
+  CAboutDlg().DoModal();
 }
 
 void CIRemesDlg::startThread(bool singleStep) {
   if(!UpdateData()) {
     return;
   }
-  if (!validateInput()) {
+  if(!validateInput()) {
     return;
   }
   updateErrorPlotXRange();
@@ -874,22 +885,22 @@ bool CIRemesDlg::validateInput() {
     return false;
   }
   if(m_M < 1) {
-    gotoEditBox(this, IDC_EDITM);
+    gotoEditBox(this, IDC_EDITMFROM);
     showWarning(_T("M must be >= 1"));
     return false;
   }
   if(m_K < 0) {
-    gotoEditBox(this, IDC_EDITK);
+    gotoEditBox(this, IDC_EDITKFROM);
     showWarning(_T("K must be >= 0"));
     return false;
   }
   if(m_M > m_MTo) {
-    gotoEditBox(this, IDC_EDITM);
+    gotoEditBox(this, IDC_EDITMFROM);
     showWarning(_T("M start > M end"));
     return false;
   }
   if(m_K > m_KTo) {
-    gotoEditBox(this, IDC_EDITK);
+    gotoEditBox(this, IDC_EDITKFROM);
     showWarning(_T("K start > K end"));
     return false;
   }
@@ -904,6 +915,7 @@ void CIRemesDlg::createThread() {
   m_reduceToInterpolate = false;
   m_remes               = new Remes(m_targetFunction, m_relativeError?true:false); TRACE_NEW(m_remes);
   m_remes->setSearchEMaxIterations(m_maxSearchEIterations);
+  m_remes->setVisiblePrecisions(   m_visiblePrecisions   );
   const IntInterval mInterval(m_M, m_MTo);
   const IntInterval kInterval(m_K, m_KTo);
   m_debugThread         = new DebugThread(*m_remes, mInterval, kInterval, m_maxMKSum, m_skipExisting?true:false); TRACE_NEW(m_debugThread);
@@ -919,16 +931,27 @@ void CIRemesDlg::destroyThread() {
 }
 
 String CIRemesDlg::getThreadStateName() const {
-  if (!hasDebugThread()) {
+  if(!hasDebugThread()) {
     return _T("No Thread");
   } else {
     return m_debugThread->getStateName();
   }
 }
 
+/*
 BigReal DynamicTargetFunction::operator()(const BigReal &x) {
   return rLn(x + BIGREAL_1, m_digits);
 }
+*/
+
+#include "BRGamma1_2.h"
+
+static const ConstBigReal _3over2(1.5);
+
+BigReal DynamicTargetFunction::operator()(const BigReal &x) {
+  return rGamma1_2(x + _3over2, m_digits);
+}
+
 
 void DynamicTargetFunction::setDomain(double from, double to) {
   m_domain.setFrom(from).setTo(to);

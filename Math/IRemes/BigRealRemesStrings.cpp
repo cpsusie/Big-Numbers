@@ -102,7 +102,10 @@ String Remes::getJavaFunctionString() const {
 }
 
 String Remes::getExtremumString(UINT index) const {
-  return format(_T("Extr[%2u]:%s %s"), index, FormatBigReal(m_extrema[index]).cstr(), FormatBigReal(m_errorValue[index]).cstr());
+  return format(_T("Extr[%2u]:%s %s")
+               ,index
+               ,FormatBigReal(m_extrema[index]   , m_visiblePrecisions.m_extremaDigits).cstr()
+               ,FormatBigReal(m_errorValue[index], m_visiblePrecisions.m_errorDigits  ).cstr());
 }
 
 String Remes::getMMQuotString() const {

@@ -74,6 +74,19 @@ private:
   String                  m_searchEString;
   String                  m_stateString;
   String                  m_warning, m_error;
+  CString                 m_name;
+  UINT	                  m_M;
+  UINT	                  m_K;
+  UINT                    m_MTo;
+  UINT                    m_KTo;
+  UINT                    m_maxMKSum;
+  double                  m_xFrom;
+  double                  m_xTo;
+  UINT	                  m_digits;
+  VisiblePrecisions       m_visiblePrecisions;
+  UINT                    m_maxSearchEIterations;
+  BOOL	                  m_relativeError;
+  BOOL                    m_skipExisting;
 
   bool validateInput();
   void startThread(bool singleStep);
@@ -93,6 +106,9 @@ private:
   }
   inline bool isThreadTerminated() const {
     return hasDebugThread() && m_debugThread->isTerminated();
+  }
+  inline bool hasSolution() const {
+    return isThreadTerminated() && (m_remes->getState() == REMES_SUCCEEDED);
   }
   void ajourDialogItems();
   void setRunMenuState(RunMenuState menuState);
@@ -117,33 +133,28 @@ public:
   void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
   void handleRemesProperty(const Remes &r, int id, const void *oldValue, const void *newValue);
 
-  enum { IDD = IDD_IREMES_DIALOG };
+  enum { IDD = IDR_MAINFRAME };
 
 public:
-  virtual BOOL PreTranslateMessage(MSG *pMsg);
-protected:
-  virtual void DoDataExchange(CDataExchange *pDX);
-
-protected:
-  afx_msg void    OnSysCommand(UINT nID, LPARAM lParam);
-  afx_msg HCURSOR OnQueryDragIcon();
+  virtual BOOL    PreTranslateMessage(MSG *pMsg);
+  virtual void    DoDataExchange(CDataExchange *pDX);
   virtual BOOL    OnInitDialog();
-  afx_msg void    OnPaint();
-  afx_msg void    OnEnKillfocusEditm();
-  afx_msg void    OnEnKillfocusEditk();
-  afx_msg void    OnEnKillfocusEditmto();
-  afx_msg void    OnEnKillfocusEditkto();
-  afx_msg void    OnEnUpdateEditkto();
-  afx_msg void    OnEnUpdateEditmto();
-  afx_msg void    OnSize(UINT nType, int cx, int cy);
   virtual void    OnOK();
   virtual void    OnCancel();
+  afx_msg void    OnSysCommand(UINT nID, LPARAM lParam);
+  afx_msg HCURSOR OnQueryDragIcon();
+  afx_msg void    OnSize(UINT nType, int cx, int cy);
   afx_msg void    OnClose();
+  afx_msg void    OnPaint();
   afx_msg void    OnFileShowMaxErrors();
   afx_msg void    OnFileExit();
   afx_msg void    OnViewGrid();
   afx_msg void    OnViewShowErrorFunction();
   afx_msg void    OnViewShowSpline();
+  afx_msg void    OnViewDisplayedPrecision();
+  afx_msg void    OnGenerateCcodeD64();
+  afx_msg void    OnGenerateCcodeD80();
+  afx_msg void    OnGenerateJavacodeD64();
   afx_msg void    OnRunGo();
   afx_msg void    OnRunF5();
   afx_msg void    OnRunDebug();
@@ -160,6 +171,12 @@ protected:
   afx_msg void    OnGotoDigits();
   afx_msg void    OnGotoMaxSearchEIterations();
   afx_msg void    OnHelpAboutIRemes();
+  afx_msg void    OnEnKillfocusEditmFrom();
+  afx_msg void    OnEnKillfocusEditkFrom();
+  afx_msg void    OnEnKillfocusEditmTo();
+  afx_msg void    OnEnKillfocusEditkTo();
+  afx_msg void    OnEnUpdateEditkTo();
+  afx_msg void    OnEnUpdateEditmTo();
   afx_msg LRESULT OnMsgThrRunStateChanged(     WPARAM wp, LPARAM lp);
   afx_msg LRESULT OnMsgThrTerminatedChanged(   WPARAM wp, LPARAM lp);
   afx_msg LRESULT OnMsgThrErrorChanged(        WPARAM wp, LPARAM lp);
@@ -171,18 +188,4 @@ protected:
   afx_msg LRESULT OnMsgUpdateInterpolation(    WPARAM wp, LPARAM lp);
   afx_msg LRESULT OnMsgWarningChanged(         WPARAM wp, LPARAM lp);
   DECLARE_MESSAGE_MAP()
-
-private:
-  CString m_name;
-  UINT	  m_M;
-  UINT	  m_K;
-  UINT    m_MTo;
-  UINT    m_KTo;
-  UINT    m_maxMKSum;
-  double	m_xFrom;
-  double	m_xTo;
-  UINT	  m_digits;
-  UINT    m_maxSearchEIterations;
-  BOOL	  m_relativeError;
-  BOOL    m_skipExisting;
 };

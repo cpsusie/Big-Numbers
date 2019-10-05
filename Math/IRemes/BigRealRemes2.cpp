@@ -44,11 +44,11 @@ const ConstBigReal Remes::s_defaultMMQuotEps = e(BIGREAL_1,-22);
 #define DEFAULT_SEARCHEMAXIT 700
 
 Remes::Remes(RemesTargetFunction &targetFunction, const bool useRelativeError)
-: m_targetFunction(      targetFunction)
-, m_domain(              targetFunction.getDomain())
+: m_targetFunction(      targetFunction                )
+, m_domain(              targetFunction.getDomain()    )
 , m_digits(              targetFunction.getDigits() + 8)
-, m_useRelativeError(    useRelativeError)
-, m_searchEMaxIterations(DEFAULT_SEARCHEMAXIT)
+, m_useRelativeError(    useRelativeError              )
+, m_searchEMaxIterations(DEFAULT_SEARCHEMAXIT          )
 {
   initCommon();
   s_extremaMap.setName(getMapFileName());
@@ -56,11 +56,12 @@ Remes::Remes(RemesTargetFunction &targetFunction, const bool useRelativeError)
 
 Remes::Remes(const Remes &src)
 : PropertyContainer(src)
-, m_targetFunction(      src.m_targetFunction)
-, m_domain(              src.m_domain)
-, m_digits(              src.m_digits)
-, m_useRelativeError(    src.m_useRelativeError)
+, m_targetFunction(      src.m_targetFunction      )
+, m_domain(              src.m_domain              )
+, m_digits(              src.m_digits              )
+, m_useRelativeError(    src.m_useRelativeError    )
 , m_searchEMaxIterations(src.m_searchEMaxIterations)
+, m_visiblePrecisions(   src.m_visiblePrecisions   )
 {
   initCommon();
 }

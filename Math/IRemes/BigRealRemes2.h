@@ -10,13 +10,14 @@ using namespace std;
 
 #define MULTITHREADEDEXTREMAFINDER
 
+#define DEFAULT_DISPLAYPRECISION 20
 #define DEFAULT_FLAGS ios::left | ios::showpos | ios::scientific
 
 class FormatBigReal : public String {
 public:
-  FormatBigReal(const BigReal &x, int prec = 20, StreamSize width = 30, FormatFlags flags = DEFAULT_FLAGS          ) : String(::toString(x,prec,width,flags)) {}
-  FormatBigReal(const Real    &x,                StreamSize width = 18, FormatFlags flags = DEFAULT_FLAGS          ) : String(::toString(x,16  ,width,flags)) {}
-  FormatBigReal(int            x,                StreamSize width =  2, FormatFlags flags = ios::right | ios::fixed) : String(::toString(x,0   ,width,flags)) {}
+  FormatBigReal(const BigReal &x, int prec = DEFAULT_DISPLAYPRECISION, StreamSize width = 30, FormatFlags flags = DEFAULT_FLAGS          ) : String(::toString(x,prec,width,flags)) {}
+  FormatBigReal(const Real    &x,                                      StreamSize width = 18, FormatFlags flags = DEFAULT_FLAGS          ) : String(::toString(x,16  ,width,flags)) {}
+  FormatBigReal(int            x,                                      StreamSize width =  2, FormatFlags flags = ios::right | ios::fixed) : String(::toString(x,0   ,width,flags)) {}
 };
 
 class ExtremaKey {
@@ -37,7 +38,7 @@ public:
     return !operator==(k);
   }
 
-  inline unsigned long hashCode() const {
+  inline ULONG hashCode() const {
     return m_M * 31 + m_K;
   }
   inline UINT getM() const {
@@ -164,6 +165,24 @@ public:
   }
 };
 
+// precision used to generate extremastrings // default = 20
+class VisiblePrecisions {
+public:
+  UINT m_coefDigits;
+  UINT m_extremaDigits;
+  UINT m_errorDigits;
+  VisiblePrecisions()
+    : m_coefDigits(   DEFAULT_DISPLAYPRECISION)
+    , m_extremaDigits(DEFAULT_DISPLAYPRECISION)
+    , m_errorDigits(  DEFAULT_DISPLAYPRECISION)
+  {}
+  VisiblePrecisions(UINT coefDigits, UINT extremaDigits, UINT errorDigits)
+    : m_coefDigits(   coefDigits   )
+    , m_extremaDigits(extremaDigits)
+    , m_errorDigits(  errorDigits  )
+  {}
+};
+
 class Remes : public PropertyContainer {
 private:
   static const TCHAR          *s_stateName[];
@@ -173,7 +192,7 @@ private:
   RemesTargetFunction         &m_targetFunction;         // Function to be approximated
   const bool                   m_useRelativeError;
   UINT                         m_M, m_K, m_N;            // m_N = m_M + m_K
-  const UINT                   m_digits;
+  const UINT                   m_digits;                 // digits of precision in calculations
   RemesState                   m_state;
   BigRealVector                m_coefficientVector;      // Coefficient[0..N+1] = { a[0]..a[M], b[1]..b[K], E }. b[0] = 1. Dim=N+2
   bool                         m_hasCoefficients;        // set to true the first time m_coefficient vector is calculated
@@ -184,6 +203,7 @@ private:
   int                          m_minExtremumIndex, m_maxExtremumIndex, m_coefVectorIndex;
   BigRealVector                m_extrema;                // Extremum[0..N+1].                                              Dim=N+2
   StringArray                  m_extremaStringArray;
+  VisiblePrecisions            m_visiblePrecisions;      // precision used to generate extremastrings // default = 20
   BigRealVector                m_functionValue;          // Values targetFunction(x) for x = m_extr[0..N+1].               Dim=N+2
   BigRealVector                m_errorValue;             // Values of errorFunction(x) for x = m_extr[0..N+1].             Dim=N+2
   BigReal                      m_maxError;
@@ -295,6 +315,12 @@ public:
 
   String      getCFunctionString(bool useDouble80) const;
   String      getJavaFunctionString() const;
+  inline void setVisiblePrecisions(const VisiblePrecisions &values) {
+    m_visiblePrecisions = values;
+  }
+  inline const VisiblePrecisions &getVisiblePrecisions() const {
+    return m_visiblePrecisions;
+  }
   ExtremaStringArray getExtremaStringArray() const {
     return ExtremaStringArray(m_extremaStringArray, m_minExtremumIndex, m_maxExtremumIndex);
   }
