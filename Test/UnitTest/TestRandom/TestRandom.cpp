@@ -95,7 +95,7 @@ namespace TestRandom {
 
 #define SAMPLECOUNT 100000
 
-  void _TestNextInt32_INT_MIN_MAX(Random *rnd) {
+  void _TestNextInt32_INT_MIN_MAX(RandomGenerator *rnd) {
     rnd->randomize();
     OUTPUT(_T("%s gen:%s"), __TFUNCTION__,rnd->getName());
     CompactIntArray samples(SAMPLECOUNT);
@@ -106,7 +106,7 @@ namespace TestRandom {
     dumpAllPValues(__TFUNCTION__, rnd->getName(), false, checkIsUniformDist(samples, false, INT_MIN, INT_MAX));
   }
 
-  void _TestNextInt64_LLONG_MIN_MAX(Random *rnd) {
+  void _TestNextInt64_LLONG_MIN_MAX(RandomGenerator *rnd) {
     rnd->randomize();
     OUTPUT(_T("%s gen:%s"), __TFUNCTION__,rnd->getName());
     CompactInt64Array samples(SAMPLECOUNT);
@@ -117,7 +117,7 @@ namespace TestRandom {
     dumpAllPValues(__TFUNCTION__, rnd->getName(), true, checkIsUniformDist(samples, true, LLONG_MIN, LLONG_MAX));
   }
 
-  void _TestNextInt32_0_n(Random *rnd) {
+  void _TestNextInt32_0_n(RandomGenerator *rnd) {
     rnd->randomize();
     OUTPUT(_T("%s gen:%s"), __TFUNCTION__,rnd->getName());
     CompactDoubleArray allPValues;
@@ -133,7 +133,7 @@ namespace TestRandom {
     dumpAllPValues(__TFUNCTION__, rnd->getName(), false, allPValues);
   }
 
-  void _TestNextInt64_0_n(Random *rnd) {
+  void _TestNextInt64_0_n(RandomGenerator *rnd) {
     rnd->randomize();
     CompactDoubleArray allPValues;
     OUTPUT(_T("%s gen:%s"), __TFUNCTION__,rnd->getName());
@@ -153,7 +153,7 @@ namespace TestRandom {
   static MersenneTwister32 m32;
   static MersenneTwister64 m64;
 
-  static Random *randomGenerators[] = {
+  static RandomGenerator *randomGenerators[] = {
     &javaRnd
    ,&m32
    ,&m64
@@ -183,8 +183,8 @@ namespace TestRandom {
 
     TEST_METHOD(TestRandInt32_0_UINT_MAX) {
       for(int i = 0; i < ARRAYSIZE(randomGenerators); i++) {
-        Random *newRnd = randomGenerators[i];
-        Random *oldRnd = setStdRandomGenerator(newRnd);
+        RandomGenerator *newRnd = randomGenerators[i];
+        RandomGenerator *oldRnd = setStdRandomGenerator(newRnd);
         randomize();
         CompactUintArray samples(SAMPLECOUNT);
         for(int i = 0; i < SAMPLECOUNT; i++) {
@@ -198,8 +198,8 @@ namespace TestRandom {
 
     TEST_METHOD(TestRandInt64_0_UINT64_MAX) {
       for(int i = 0; i < ARRAYSIZE(randomGenerators); i++) {
-        Random *newRnd = randomGenerators[i];
-        Random *oldRnd = setStdRandomGenerator(newRnd);
+        RandomGenerator *newRnd = randomGenerators[i];
+        RandomGenerator *oldRnd = setStdRandomGenerator(newRnd);
         randomize();
         CompactUint64Array samples(SAMPLECOUNT);
         for(int i = 0; i < SAMPLECOUNT; i++) {
@@ -213,8 +213,8 @@ namespace TestRandom {
 
     TEST_METHOD(TestRandInt32_0_n) {
       for(int i = 0; i < ARRAYSIZE(randomGenerators); i++) {
-        Random *newRnd = randomGenerators[i];
-        Random *oldRnd = setStdRandomGenerator(newRnd);
+        RandomGenerator *newRnd = randomGenerators[i];
+        RandomGenerator *oldRnd = setStdRandomGenerator(newRnd);
         randomize();
         CompactDoubleArray allPValues;
         for(INT64 n = 10; n <= UINT_MAX; n = n * 3 + 1) {
@@ -232,8 +232,8 @@ namespace TestRandom {
 
     TEST_METHOD(TestRandInt64_0_n) {
       for(int i = 0; i < ARRAYSIZE(randomGenerators); i++) {
-        Random *newRnd = randomGenerators[i];
-        Random *oldRnd = setStdRandomGenerator(newRnd);
+        RandomGenerator *newRnd = randomGenerators[i];
+        RandomGenerator *oldRnd = setStdRandomGenerator(newRnd);
         randomize();
         CompactDoubleArray allPValues;
         for(UINT64 n = 10; n <= LLONG_MAX; n = n * 3 + 1) {
@@ -251,8 +251,8 @@ namespace TestRandom {
 
     TEST_METHOD(TestRandInt32_from_to) {
       for(int i = 0; i < ARRAYSIZE(randomGenerators); i++) {
-        Random *newRnd = randomGenerators[i];
-        Random *oldRnd = setStdRandomGenerator(newRnd);
+        RandomGenerator *newRnd = randomGenerators[i];
+        RandomGenerator *oldRnd = setStdRandomGenerator(newRnd);
         randomize();
         CompactDoubleArray allPValues;
         for(int from = 1; from < INT_MAX/3; from *= 3) {
@@ -273,8 +273,8 @@ namespace TestRandom {
 
     TEST_METHOD(TestRandInt64_from_to) {
       for(int i = 0; i < ARRAYSIZE(randomGenerators); i++) {
-        Random *newRnd = randomGenerators[i];
-        Random *oldRnd = setStdRandomGenerator(newRnd);
+        RandomGenerator *newRnd = randomGenerators[i];
+        RandomGenerator *oldRnd = setStdRandomGenerator(newRnd);
         randomize();
         CompactDoubleArray allPValues;
         for(INT64 from = 1; from < LLONG_MAX/3; from *= 3) {

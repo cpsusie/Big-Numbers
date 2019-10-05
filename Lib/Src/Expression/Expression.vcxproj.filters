@@ -84,6 +84,9 @@
     <ClInclude Include="ListFile.h">
       <Filter>Source Files\MachineCode</Filter>
     </ClInclude>
+    <ClInclude Include="ExpressionRandom.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -252,6 +255,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ExpressionNodeName.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ExpressionRandom.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

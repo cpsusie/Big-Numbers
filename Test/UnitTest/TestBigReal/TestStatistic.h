@@ -122,7 +122,7 @@ public:
   inline DigitPool *getDigitPool() {
     return m_digitPool;
   }
-  inline Random &getRandomGenerator() {
+  inline RandomGenerator &getRandomGenerator() {
     return m_rnd;
   }
   inline BigReal getRandomTolerance(int exponent) {

@@ -901,6 +901,7 @@
     <ClCompile Include="BitMatrix.cpp" />
     <ClCompile Include="BitOutputStream.cpp" />
     <ClCompile Include="BitSet.cpp" />
+    <ClCompile Include="Double64Str.cpp" />
     <ClCompile Include="FileBitSet.cpp" />
     <ClCompile Include="FileBitSetIndex.cpp" />
     <ClCompile Include="BitSetIndex.cpp" />
@@ -951,6 +952,7 @@
     <ClCompile Include="FileVersion.cpp" />
     <ClCompile Include="FindDataComp.cpp" />
     <ClCompile Include="FindDataCompCommon.cpp" />
+    <ClCompile Include="Float32Str.cpp" />
     <ClCompile Include="FloatRegex.cpp" />
     <ClCompile Include="fopen.cpp" />
     <ClCompile Include="format1000.cpp" />

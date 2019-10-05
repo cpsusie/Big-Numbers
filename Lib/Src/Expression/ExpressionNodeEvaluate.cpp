@@ -1,5 +1,6 @@
 #include "pch.h"
 #include <Math/Expression/Expression.h>
+#include "ExpressionRandom.h"
 
 namespace Expr {
 
@@ -40,7 +41,7 @@ Real ExpressionNode::evaluateReal() const {
   case HYPOT    : return hypot(                  left()->evaluateReal(),  right()->evaluateReal());
   case MAX      : return dmax(                   left()->evaluateReal(),  right()->evaluateReal());
   case MIN      : return dmin(                   left()->evaluateReal(),  right()->evaluateReal());
-  case RAND     : return randReal(               left()->evaluateReal(),  right()->evaluateReal());
+  case RAND     : return randomReal(             left()->evaluateReal(),  right()->evaluateReal());
   case NORMRAND : return randomGaussian(         left()->evaluateReal(),  right()->evaluateReal());
   case ABS      : return fabs(                   left()->evaluateReal());
   case ACOS     : return acos(                   left()->evaluateReal(),  getTrigonometricMode());

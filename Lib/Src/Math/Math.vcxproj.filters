@@ -208,9 +208,6 @@
     <ClCompile Include="DoubleFunctions.cpp">
       <Filter>Source Files\Functions</Filter>
     </ClCompile>
-    <ClCompile Include="RealFunctions.cpp">
-      <Filter>Source Files\Functions</Filter>
-    </ClCompile>
     <ClCompile Include="Double80IO.cpp">
       <Filter>Source Files\Number Types</Filter>
     </ClCompile>

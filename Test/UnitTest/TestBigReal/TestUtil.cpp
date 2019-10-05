@@ -3,7 +3,7 @@
 #include <Console.h>
 #include "TestUtil.h"
 
-BigReal getRandom(int length, int exponent, Random &rnd, DigitPool *pool, bool allowZero) {
+BigReal getRandom(int length, int exponent, RandomGenerator &rnd, DigitPool *pool, bool allowZero) {
   BigReal result(pool);
   do {
     result = randBigReal(length, &rnd, pool);

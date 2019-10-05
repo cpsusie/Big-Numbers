@@ -10,8 +10,8 @@
 
 class BigRealTestClass {
 private:
-  DigitPool  *m_digitPool;
-  Random     &m_rnd;
+  DigitPool      *m_digitPool;
+  RandomGenerator &m_rnd;
 
   DigitPool *getDigitPool();
   BigReal getRandomDividend(int length);
@@ -20,7 +20,7 @@ public:
     m_digitPool = NULL;
   }
   ~BigRealTestClass();
-  Random &getRandomGenerator() {
+  RandomGenerator &getRandomGenerator() {
     return m_rnd;
   }
   void measureProduct(bool measureSplitProd, bool measureSplitProdRealTime, bool measureShortProd, int splitLength = -1);

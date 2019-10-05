@@ -17,8 +17,8 @@ int getExpo10(double x) {
 double mypow(double x, double y) {
   if(x < 0) {
     if(y == floor(y)) {
-      const int d = getInt(y);
-      return (d & 1) ? -pow(-x,y) : pow(-x,y);
+      const INT64 d = getInt64(y);
+      return isOdd(d) ? -pow(-x, y) : pow(-x, y);
     }
   }
   return pow(x, y);
@@ -27,9 +27,9 @@ double mypow(double x, double y) {
 double root(double x, double y) {
   if(x < 0) {
     if(y == floor(y)) {
-      const int d = getInt(y);
-      if((d & 1)) {
-        return -pow(-x, 1.0/y);
+      const INT64 d = getInt64(y);
+      if(isOdd(d)) {
+        return -pow(-x, 1.0 / y);
       }
     }
   }

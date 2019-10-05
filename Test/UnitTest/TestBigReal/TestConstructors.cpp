@@ -164,7 +164,7 @@ void testConstructors(TestStatistic &stat) {
     const UINT ui32 = randInt();
     checkExact(__LINE__,ui32, pool);
   }
-  Random &rnd = stat.getRandomGenerator();
+  RandomGenerator &rnd = stat.getRandomGenerator();
   for(int i = 0; i < 100000; i++) {
     const INT64 i64 = rnd.nextInt64();
     checkExact(__LINE__,i64, pool);

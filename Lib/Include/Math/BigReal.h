@@ -1059,15 +1059,15 @@ public:
                                      // Throws an excpeption if not with a descripion of what is wrong. For debugging
 
   // Digits generated with rnd. if rnd == NULL, _standardRandomGenerator is used
-  friend BigInt  randBigInt( size_t digits, Random *rnd = NULL, DigitPool *digitPool = NULL);
+  friend BigInt  randBigInt( size_t digits, RandomGenerator *rnd = NULL, DigitPool *digitPool = NULL);
 
   // Return uniform distributed random number between 0 (incl) and 1 (excl)
   // with digits decimal digits. If digitPool == NULL, use DEFAULT_DIGITPOOL
-  friend BigReal randBigReal(size_t digits, Random *rnd = NULL, DigitPool *digitPool = NULL);
+  friend BigReal randBigReal(size_t digits, RandomGenerator *rnd = NULL, DigitPool *digitPool = NULL);
 
   // Return uniform distributed random number between low (incl) and high (excl)
   // with digits decimal digits. If digitPool == NULL, use low.getDigitPool()
-  friend BigReal  randBigReal(const BigReal &low, const BigReal &high, size_t digits, Random *rnd = NULL, DigitPool *digitPool = NULL);
+  friend BigReal  randBigReal(const BigReal &low, const BigReal &high, size_t digits, RandomGenerator *rnd = NULL, DigitPool *digitPool = NULL);
 };
 
 class ConstDigitPool : private DigitPool {

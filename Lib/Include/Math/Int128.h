@@ -2004,16 +2004,16 @@ extern const _int128  _I128_MIN, _I128_MAX;
 extern const _uint128 _UI128_MAX;
 
  // use _standardRandomGenerator if rnd == NULL
-inline _uint128 randInt128(Random *rnd = NULL) {
+inline _uint128 randInt128(RandomGenerator *rnd = NULL) {
   if (rnd == NULL) rnd = _standardRandomGenerator;
   return _uint128(rnd->nextInt64(), rnd->nextInt64());
 }
 
-inline _uint128 randInt128(const _uint128 &n, Random *rnd = NULL) {
+inline _uint128 randInt128(const _uint128 &n, RandomGenerator *rnd = NULL) {
   return randInt128(rnd) % n;
 }
 
-inline _int128 randInt128(const _int128 &from, const _int128 &to, Random *rnd = NULL) {
+inline _int128 randInt128(const _int128 &from, const _int128 &to, RandomGenerator *rnd = NULL) {
   return randInt128(to-from+1, rnd) + from;
 }
 

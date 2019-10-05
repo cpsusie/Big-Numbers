@@ -7,9 +7,9 @@
 #endif
 
 // 0 <= random < 1; with the specified number of decimal digits
-BigReal randBigReal(size_t length, Random *rnd, DigitPool *digitPool) {
-  Random    &r    = rnd       ? *rnd      : *_standardRandomGenerator;
-  DigitPool *pool = digitPool ? digitPool : &DEFAULT_DIGITPOOL;
+BigReal randBigReal(size_t length, RandomGenerator *rnd, DigitPool *digitPool) {
+  RandomGenerator &r    = rnd       ? *rnd      : *_standardRandomGenerator;
+  DigitPool       *pool = digitPool ? digitPool : &DEFAULT_DIGITPOOL;
   if(length == 0) {
     return pool->get0();
   }
@@ -36,7 +36,7 @@ BigReal randBigReal(size_t length, Random *rnd, DigitPool *digitPool) {
 
   // Return uniform distributed random number between low (incl) and high (excl)
   // with length decimal digits. If digitPool == NULL, use DEFAULT_DIGITPOOL
-BigReal randBigReal(const BigReal &low, const BigReal &high, size_t length, Random *rnd, DigitPool *digitPool) {
+BigReal randBigReal(const BigReal &low, const BigReal &high, size_t length, RandomGenerator *rnd, DigitPool *digitPool) {
   DEFINEMETHODNAME;
   if(low >= high) {
     throwBigRealInvalidArgumentException(method, _T("low >= high"));

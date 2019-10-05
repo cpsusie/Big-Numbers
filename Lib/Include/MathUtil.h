@@ -140,6 +140,24 @@ double trunc(   double v, int dec=0);
 double fraction(double v);
 float  fraction(float  v);
 
+// dst must point to memory with at least 26 free char
+char    *flttoa(char    *dst, float x);
+// dst must point to memory with at least 26 free wchar_t
+wchar_t *flttow(wchar_t *dst, float x);
+
+// dst must point to memory with at least 26 free char
+char    *dbltoa(char    *dst, double x);
+// dst must point to memory with at least 26 free wchar_t
+wchar_t *dbltow(wchar_t *dst, double x);
+
+#ifdef _UNICODE
+#define flttot flttow
+#define dbltot dbltow
+#else
+#define flttot flttoa
+#define dbltot dbltoa
+#endif
+
 // return (v > 0) ? +1 : (v < 0) ? -1 : 0
 inline int sign(int           v) { return v < 0 ? -1 : v > 0 ? 1 : 0; }
 // return (v > 0) ? +1 : (v < 0) ? -1 : 0

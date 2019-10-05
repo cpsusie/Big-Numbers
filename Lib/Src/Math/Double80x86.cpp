@@ -27,27 +27,27 @@ int Double80::getExpo10(const Double80 &x) { // static
     fstp st(0)                  // pop x
     mov result, 0               // x == 0 => result = 0
     jmp Exit
-    x_not_zero :
+x_not_zero :
     fabs
-      fldlg2
-      fxch st(1)
-      fyl2x
-      fnstcw cwSave
-      mov ax, cwSave
-      or ax, 0x400               // set bit 10
-      and ax, 0xf7ff              // clear bit 11
-      mov ctrlFlags, ax           // FPU.ctrlWorld.bit[10;11] = 1,0 = ROUND DOWN
-      fldcw ctrlFlags
-      fistp result
-      fldcw cwSave
-      Exit :
+    fldlg2
+    fxch st(1)
+    fyl2x
+    fnstcw cwSave
+    mov ax, cwSave
+    or ax, 0x400                // set bit 10
+    and ax, 0xf7ff              // clear bit 11
+    mov ctrlFlags, ax           // FPU.ctrlWorld.bit[10;11] = 1,0 = ROUND DOWN
+    fldcw ctrlFlags
+    fistp result
+    fldcw cwSave
+Exit :
   }
   return result;
 }
 
 UINT getUint(const Double80 &x) {
   UINT result;
-  if (x > _I32_MAX) {
+  if(x > _I32_MAX) {
     __asm {
       mov eax, x
       fld TBYTE PTR[eax]
@@ -55,8 +55,7 @@ UINT getUint(const Double80 &x) {
       fisttp result
     }
     result += (UINT)_I32_MAX + 1;
-  }
-  else if (x < -_I32_MAX) {
+  } else if(x < -_I32_MAX) {
     __asm {
       mov eax, x
       fld TBYTE PTR[eax]
@@ -66,8 +65,7 @@ UINT getUint(const Double80 &x) {
     }
     result = -(int)result;
     result -= (UINT)_I32_MAX + 1;
-  }
-  else {
+  } else {
     __asm {
       mov eax, x
       fld TBYTE PTR[eax]
@@ -79,7 +77,7 @@ UINT getUint(const Double80 &x) {
 
 UINT64 getUint64(const Double80 &x) {
   UINT64 result;
-  if (x > _D80maxi64) {
+  if(x > _D80maxi64) {
     __asm {
       mov eax, x
       fld TBYTE PTR[eax]
@@ -87,11 +85,10 @@ UINT64 getUint64(const Double80 &x) {
       fsub
       fisttp result;
     }
-    if (result <= (UINT64)_I64_MAX) {
+    if(result <= (UINT64)_I64_MAX) {
       result += (UINT64)_I64_MAX + 1;
     }
-  }
-  else {
+  } else {
     __asm {
       mov eax, x
       fld TBYTE PTR[eax]
@@ -105,40 +102,40 @@ Double80 fmod(const Double80 &x, const Double80 &y) {
   Double80 result;
   __asm {
     mov eax, DWORD PTR y
-    fld TBYTE PTR[eax]         //                                                    st0=y
+    fld TBYTE PTR[eax]          //                                                    st0=y
     fabs                        // y = abs(y)                                         st0=|y|
     mov eax, DWORD PTR x
-    fld TBYTE PTR[eax]         //                                                    st0=x,st1=|y|
+    fld TBYTE PTR[eax]          //                                                    st0=x,st1=|y|
     fldz                        //                                                    st0=0,st1=x,st2=|y|
     fcomip st, st(1)            // compare and pop zero                               st0=x,st1=|y|
     ja RepeatNegativeX          // if st(0) > st(1) (0 > x) goto repeat_negative_x
-    RepeatPositiveX :                // do {                                               st0=x,st1=|y|, x > 0
+RepeatPositiveX :               // do {                                               st0=x,st1=|y|, x > 0
     fprem                       //   st0 %= y
-      fstsw ax
-      sahf
-      jpe RepeatPositiveX         // } while(statusword.c2 != 0);
-      fldz                        //                                                    st0=0,st1=x,st2=|y|
-      fcomip st, st(1)            // compare and pop zero
-      jbe pop2                    // if(st(0) <= st(1) (0 <= remainder) goto pop2
-      fadd                        // remainder += y
-      fstp result                 // pop result
-      jmp Exit                    // goto end
-      RepeatNegativeX :                // do {                                               st0=x,st=|y|, x < 0
-    fprem                       //   st0 %= y
-      fstsw ax
-      sahf
-      jpe RepeatNegativeX         // } while(statusword.c2 != 0)
-      fldz
-      fcomip st, st(1)            // compare and pop zero
-      jae pop2                    // if(st(0) >= st(1) (0 >= remainder) goto pop2
-      fsubr                       // remainder -= y
-      fstp result                 // pop result
-      jmp Exit                    // goto end
-
-      pop2 :                           //                                                    st0=x%y,st1=y
+    fstsw ax
+    sahf
+    jpe RepeatPositiveX         // } while(statusword.c2 != 0);
+    fldz                        //                                                    st0=0,st1=x,st2=|y|
+    fcomip st, st(1)            // compare and pop zero
+    jbe pop2                    // if(st(0) <= st(1) (0 <= remainder) goto pop2
+    fadd                        // remainder += y
     fstp result                 // pop result
-      fstp st(0)                  // pop y
-      Exit :
+    jmp Exit                    // goto end
+RepeatNegativeX :               // do {                                               st0=x,st=|y|, x < 0
+    fprem                       //   st0 %= y
+    fstsw ax
+    sahf
+    jpe RepeatNegativeX         // } while(statusword.c2 != 0)
+    fldz
+    fcomip st, st(1)            // compare and pop zero
+    jae pop2                    // if(st(0) >= st(1) (0 >= remainder) goto pop2
+    fsubr                       // remainder -= y
+    fstp result                 // pop result
+    jmp Exit                    // goto end
+
+pop2 :                          //                                                    st0=x%y,st1=y
+    fstp result                 // pop result
+    fstp st(0)                  // pop y
+Exit :
   }
   return result;
 }
@@ -208,7 +205,7 @@ Double80 exp(const Double80 &x) {
 }
 
 Double80 exp10(const Double80 &x) {
-  if (x.isZero()) {
+  if(x.isZero()) {
     return Double80::_1;
   }
 
@@ -233,7 +230,7 @@ Double80 exp10(const Double80 &x) {
 }
 
 Double80 exp2(const Double80 &x) {
-  if (x.isZero()) {
+  if(x.isZero()) {
     return Double80::_1;
   }
   const FPUControlWord cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUNDDOWN);
@@ -257,10 +254,10 @@ Double80 exp2(const Double80 &x) {
 }
 
 Double80 pow(const Double80 &x, const Double80 &y) {
-  if (y.isZero()) {
+  if(y.isZero()) {
     return Double80::_1;
   }
-  if (x.isZero()) {
+  if(x.isZero()) {
     return y.isNegative() ? (Double80::_1 / Double80::_0) : Double80::_0;
   }
 

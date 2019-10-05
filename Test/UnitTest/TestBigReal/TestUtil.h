@@ -18,7 +18,7 @@ typedef BigReal   (* BigRealFunction2Pool )(const BigReal  &x, const BigReal &y,
 typedef BigReal   (*rBigRealFunction2     )(const BigReal  &x, const BigReal &y, size_t digits);
 typedef BigReal   (*rBigRealFunction2Pool )(const BigReal  &x, const BigReal &y, size_t digits, DigitPool *pool);
 
-BigReal getRandom(int length, int exponent, Random &rnd, DigitPool *pool, bool allowZero = true);
+BigReal getRandom(int length, int exponent, RandomGenerator &rnd, DigitPool *pool, bool allowZero = true);
 Array<BigReal> generateTestData(const BigReal &from, const BigReal &to, bool exponentialStep, int count = 23);
 
 float    getRelativeError32(float           x, DigitPool *pool , size_t *length = NULL);

@@ -132,10 +132,10 @@ Double80 asin(const Double80 &x) {
 }
 
 Double80 mypow(const Double80 &x, const Double80 &y) {
-  if(x < 0) {
+  if(x.isNegative()) {
     if(y == floor(y)) {
-      const int d = getInt(y);
-      return (d & 1) ? -pow(-x,y) : pow(-x,y);
+      const INT64 d = getInt64(y);
+      return isOdd(d) ? -pow(-x,y) : pow(-x,y);
     }
   }
   return pow(x, y);
@@ -144,13 +144,13 @@ Double80 mypow(const Double80 &x, const Double80 &y) {
 Double80 root(const Double80 &x, const Double80 &y) {
   if(x.isNegative()) {
     if(y == floor(y)) {
-      const int d = getInt(y);
-      if((d & 1)) {
-        return -pow(-x, 1.0/y);
+      const INT64 d = getInt64(y);
+      if(isOdd(d)) {
+        return -pow(-x, Double80::_1/y);
       }
     }
   }
-  return pow(x, 1.0/y);
+  return pow(x, Double80::_1/y);
 }
 
 Double80 fraction(const Double80 &x) {

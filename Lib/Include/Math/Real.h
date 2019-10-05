@@ -106,13 +106,17 @@ template<class T> T binomial(T n, T k) {
   return fac(n) / (fac(k)*fac(n - k));
 }
 
-// use _standardRandomGenerator declared in Random.h
-Real randReal();
-Real randReal(            const Real &lower,  const Real &upper);
-// mean and standardDeviation. use _standardRandomGenerator
-Real randomGaussian(      const Real &mean,   const Real &s    );
+#ifndef LONGDOUBLE
+#define randReal         randDouble
+#define randGaussianReal randGaussian
+#else
+#define randReal         randDouble80
+#define randGaussianReal randGaussianD80
+#endif
 
-void setToRandom(Real &x);
+inline void setToRandom(Real &x, RandomGenerator *rnd = NULL) {
+  x = randReal(rnd);
+}
 
 inline Real getRealNaN() {
   return std::numeric_limits<Real>::quiet_NaN();

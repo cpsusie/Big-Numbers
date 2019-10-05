@@ -219,8 +219,6 @@ Double80 _wcstod80_l(const wchar_t *s, wchar_t **end, _locale_t locale) {
   return _strtod80_locale<wchar_t>(s, end, locale);
 }
 
-#define ASM_OPTIMIZED
-
 #define declareBuffer(b,size)          CharType b[size];  int b##_length = 0
 #define declareAssignedBuffer(b,dst)   CharType *b = dst; int b##_length = 0
 #define addChar(b,ch)                  b[b##_length++] = ch

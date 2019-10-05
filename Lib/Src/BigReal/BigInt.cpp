@@ -86,6 +86,6 @@ BigInt &BigInt::operator/=(const BigInt &x) {
   return *this = *this / x;
 }
 
-BigInt randBigInt(size_t length, Random *rnd, DigitPool *pool) {
+BigInt randBigInt(size_t length, RandomGenerator *rnd, DigitPool *pool) {
   return BigInt(e(randBigReal(length, rnd, pool),length,pool),pool);
 }

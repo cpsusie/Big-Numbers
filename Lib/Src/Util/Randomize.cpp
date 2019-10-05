@@ -5,12 +5,12 @@
 #pragma comment(lib, "ole32.lib")
 
 void randomize() {
-  const INT64 seed = Random::getRandomSeed();
+  const INT64 seed = RandomGenerator::getRandomSeed();
   srand((UINT)seed);
   _standardRandomGenerator->setSeed(seed);
 }
 
-INT64 Random::getRandomSeed() { // static
+INT64 RandomGenerator::getRandomSeed() { // static
   GUID guid;
   CoCreateGuid(&guid);
   const short w4 = ((short)guid.Data4[0] << 8) | guid.Data4[1];

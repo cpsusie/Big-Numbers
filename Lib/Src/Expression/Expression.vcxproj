@@ -823,6 +823,7 @@
     <ClInclude Include="..\..\Include\Math\Expression\SNodeReduceDbgStack.h" />
     <ClInclude Include="CodeGeneration.h" />
     <ClInclude Include="ExpressionCompile.h" />
+    <ClInclude Include="ExpressionRandom.h" />
     <ClInclude Include="FPUEmulator.h" />
     <ClInclude Include="FunctionCall.h" />
     <ClInclude Include="ListFile.h" />
@@ -856,6 +857,7 @@
     <ClCompile Include="ExpressionNodeToRational.cpp" />
     <ClCompile Include="ExpressionNodeTree.cpp" />
     <ClCompile Include="ExpressionNodeName.cpp" />
+    <ClCompile Include="ExpressionRandom.cpp" />
     <ClCompile Include="ExpressionSymbolSet.cpp" />
     <ClCompile Include="ExpressionTables.cpp" />
     <ClCompile Include="FPUEmulator.cpp" />

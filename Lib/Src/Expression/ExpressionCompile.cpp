@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "ExpressionRandom.h"
 #include "ExpressionCompile.h"
 
 namespace Expr {
@@ -459,8 +460,8 @@ void CodeGenerator::genExpression(SNode n DCL_DSTPARAM) {
   case SIGN          :    GENCALL(     n, ::dsign<Real>           );
   case MAX           :    GENCALL(     n, ::dmax<Real>            );
   case MIN           :    GENCALL(     n, ::dmin<Real>            );
-  case RAND          :    GENCALL(     n, ::randReal              );
-  case NORMRAND      :    GENCALL(     n, ::randomGaussian        );
+  case RAND          :    GENCALL(     n, randomReal              );
+  case NORMRAND      :    GENCALL(     n, randomGaussian          );
   case POLY          :    GENPOLY(     n);
   case INDEXEDSUM    :
   case INDEXEDPRODUCT:

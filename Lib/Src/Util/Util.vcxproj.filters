@@ -917,6 +917,12 @@
     <ClCompile Include="StreamParametersIterator.cpp">
       <Filter>Source Files\Stream</Filter>
     </ClCompile>
+    <ClCompile Include="Double64Str.cpp">
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Float32Str.cpp">
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />

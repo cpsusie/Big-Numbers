@@ -1163,7 +1163,6 @@
     <ClCompile Include="LssdPolynomial.cpp" />
     <ClCompile Include="MathException.cpp" />
     <ClCompile Include="RationalPacker.cpp" />
-    <ClCompile Include="RealFunctions.cpp" />
     <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="MatrixSvd.cpp" />
     <ClCompile Include="Newton.cpp" />
