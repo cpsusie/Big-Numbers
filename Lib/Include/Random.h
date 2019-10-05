@@ -1,5 +1,7 @@
 #pragma once
 
+#include "BasicIncludes.h"
+
 class RandomGenerator {
 private:
 protected:
@@ -133,59 +135,51 @@ inline RandomGenerator *setStdRandomGenerator(RandomGenerator *rnd) {
   return old;
 }
 
-#define _SELECT_RANDOMGENERATOR(rnd) (*((rnd)?(rnd):(_standardRandomGenerator)))
-
 // return uniform distributed int value between [0; UINT32_MAX], both inclusive.
-// if rnd==NULL, use _standardRandomGenerator.
-inline UINT   randInt(RandomGenerator *rnd = NULL) {
-  return _SELECT_RANDOMGENERATOR(rnd).nextInt();
+inline UINT   randInt(RandomGenerator *rnd = _standardRandomGenerator) {
+  return rnd->nextInt();
 }
 // return random int in range [0..n-1]
-// if rnd==NULL, use _standardRandomGenerator.
-inline UINT   randInt(UINT n, RandomGenerator *rnd = NULL) {
+inline UINT   randInt(UINT n, RandomGenerator *rnd = _standardRandomGenerator) {
   return randInt(rnd) % n;
 }
 
 // return random int in range[from..to], both  inclusive.
-// if rnd==NULL, use _standardRandomGenerator.
-inline int    randInt(int from, int to, RandomGenerator *rnd = NULL) {
+inline int    randInt(int from, int to, RandomGenerator *rnd = _standardRandomGenerator) {
   return randInt(to-from+1, rnd) + from;
 }
 
 // return uniform distributed UINT64 value between [0;_UINT64_MAX], both inclusive.
-// if rnd==NULL, use _standardRandomGenerator.
-inline UINT64 randInt64(RandomGenerator *rnd = NULL) {
-  return _SELECT_RANDOMGENERATOR(rnd).nextInt64();
+inline UINT64 randInt64(RandomGenerator *rnd = _standardRandomGenerator) {
+  return rnd->nextInt64();
 }
 // return random UINT64 in range [0..n-1]
-// if rnd==NULL, use _standardRandomGenerator.
-inline UINT64 randInt64(UINT64 n, RandomGenerator *rnd = NULL) {
+inline UINT64 randInt64(UINT64 n, RandomGenerator *rnd = _standardRandomGenerator) {
   return randInt64(rnd) % n;
 }
 // return random INT46 in range[from..to], both  inclusive.
-// if rnd==NULL, use _standardRandomGenerator.
-inline INT64  randInt64(INT64 from, INT64 to, RandomGenerator *rnd = NULL) {
+inline INT64  randInt64(INT64 from, INT64 to, RandomGenerator *rnd = _standardRandomGenerator) {
   return randInt64(to-from+1, rnd) + from;
 }
 // return uniform distributed random float  between 0 (inclusive) and 1 (exclusive)
-inline float randFloat(RandomGenerator *rnd = NULL) {
-  return _SELECT_RANDOMGENERATOR(rnd).nextFloat();
+inline float randFloat(RandomGenerator *rnd = _standardRandomGenerator) {
+  return rnd->nextFloat();
 }
 // return uniform distributed random float  between low (inclusive) and high (exlucisve)
-inline float randFloat(float from, float to, RandomGenerator *rnd = NULL) {
-  return _SELECT_RANDOMGENERATOR(rnd).nextFloat(from, to);
+inline float randFloat(float from, float to, RandomGenerator *rnd = _standardRandomGenerator) {
+  return rnd->nextFloat(from, to);
 }
 // return uniform distributed random double between 0 (inclusive) and 1 (exclusive)
-inline double randDouble(RandomGenerator *rnd = NULL) {
-  return _SELECT_RANDOMGENERATOR(rnd).nextDouble();
+inline double randDouble(RandomGenerator *rnd = _standardRandomGenerator) {
+  return rnd->nextDouble();
 }
 // return uniform distributed random double between low (inclusive) and high (exlucisve)
-inline double randDouble(double from, double to, RandomGenerator *rnd = NULL) {
-  return _SELECT_RANDOMGENERATOR(rnd).nextDouble(from, to);
+inline double randDouble(double from, double to, RandomGenerator *rnd = _standardRandomGenerator) {
+  return rnd->nextDouble(from, to);
 }
 // return normal distributed(mean, s) random number with average = mean, and std. deviation = s
-inline double randGaussian(double mean, double s, RandomGenerator *rnd = NULL) {
-  return _SELECT_RANDOMGENERATOR(rnd).nextGaussian(mean, s);
+inline double randGaussian(double mean, double s, RandomGenerator *rnd = _standardRandomGenerator) {
+  return rnd->nextGaussian(mean, s);
 }
 
 #ifdef IS64BIT

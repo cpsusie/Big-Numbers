@@ -44,6 +44,10 @@ public:
   inline bool isNegative() const {
     return getNumerator().isNegative();
   }
+  inline bool isInteger() const {
+    return m_denominator == BIGREAL_1;
+  }
+
 };
 
 inline int fpclassify(const BigRational &r) {

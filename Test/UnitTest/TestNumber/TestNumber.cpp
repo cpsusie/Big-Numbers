@@ -86,7 +86,7 @@ namespace TestNumber {
   #include <UnitTestTraits.h>
 
   // return random rational in range [0;1[
-  Rational randRational(RandomGenerator *rnd = NULL) {
+  Rational randRational(RandomGenerator *rnd = _standardRandomGenerator) {
     const INT64 num = randInt64(0, INT16_MAX-1, rnd);
     if(num == 0) {
       return 0;
@@ -95,22 +95,22 @@ namespace TestNumber {
   }
 
 #define RANDOM_NUMBERTYPE ((NumberType)-1)
-  Number randNumber(NumberType type = RANDOM_NUMBERTYPE, RandomGenerator *rnd = NULL) {
+  Number randNumber(NumberType type = RANDOM_NUMBERTYPE, RandomGenerator *rnd = _standardRandomGenerator) {
     if(type == RANDOM_NUMBERTYPE) {
       type = numberTypes[randInt(ARRAYSIZE(numberTypes), rnd)];
     }
     switch(type) {
-    case NUMBERTYPE_FLOAT   : return Number(randFloat(   rnd));
-    case NUMBERTYPE_DOUBLE  : return Number(randDouble(  rnd));
-    case NUMBERTYPE_DOUBLE80: return Number(randDouble80(rnd));
-    case NUMBERTYPE_RATIONAL: return Number(randRational(rnd));
-    default                 : return Number(randFloat(   rnd));
+    case NUMBERTYPE_FLOAT   : return randFloat(   rnd);
+    case NUMBERTYPE_DOUBLE  : return randDouble(  rnd);
+    case NUMBERTYPE_DOUBLE80: return randDouble80(rnd);
+    case NUMBERTYPE_RATIONAL: return randRational(rnd);
+    default                 : return randFloat(   rnd);
     }
   }
 
   typedef Array<Number> NumberArray;
 
-  static NumberArray generateTestArray(size_t count = 1000, NumberType type = (NumberType)-1, RandomGenerator *rnd = NULL) {
+  static NumberArray generateTestArray(size_t count = 1000, NumberType type = RANDOM_NUMBERTYPE, RandomGenerator *rnd = _standardRandomGenerator) {
     NumberArray result;
     for(size_t i = 0; i < count; i++) {
       result.add(randNumber(type, rnd));
