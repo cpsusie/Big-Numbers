@@ -10,6 +10,7 @@
 
 #include "pch.h"
 #include <Random.h>
+#include <Date.h>
 #include <DebugLog.h>
 #include <TinyBitSet.h>
 #include <MFCUtil/ColorSpace.h>
@@ -74,12 +75,6 @@ void IsoSurfacePolygonizer::polygonize(const Point3D &start
 
   m_statistics.clear();
   resetTables();
-
-#ifdef _DEBUG
-  _standardRandomGenerator->setSeed(87);
-#else
-  randomize();
-#endif // _DEBUG
 
   m_start = start;
   for(int i = 0; i < 10; i++) {
@@ -547,14 +542,15 @@ Point3D IsoSurfacePolygonizer::findStartPoint(const Point3D &start) {
 // findStartPoint: search for point with value of sign specified by positive-parameter
 IsoSurfaceTest IsoSurfacePolygonizer::findStartPoint(bool positive, const Point3D &p) {
   IsoSurfaceTest result(p);
+  JavaRandom rnd(Timestamp().toString(ddMMyyyyhhmmssSSS).hashCode());
 #define STEPCOUNT 200000
   const double step  = root(1000,STEPCOUNT); // multiply range by this STEPCOUNT times
                                               // range will end up with value 10000*cellSize
   double       range = m_cellSize;
   for(int i = 0; i < STEPCOUNT; i++) {
-    result.x = p.x + randDouble(-range, range);
-    result.y = p.y + randDouble(-range, range);
-    result.z = p.z + randDouble(-range, range);
+    result.x = p.x + randDouble(-range, range, &rnd);
+    result.y = p.y + randDouble(-range, range, &rnd);
+    result.z = p.z + randDouble(-range, range, &rnd);
     result.setValue(evaluate(result));
     if(result.m_positive == positive) {
       return result;
