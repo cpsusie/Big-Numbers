@@ -35,7 +35,7 @@ bool ExpressionNodeNumber::traverseNode(ExpressionNodeHandler &handler) {
 }
 
 void ExpressionNodeNumber::dumpNode(String &s, int level) const {
-  addLeftMargin(s, level) += format(_T("NUMBER:%s V.Index:%2d\n"), getNumber().toString().cstr(), getValueIndex());
+  addLeftMargin(s, level) += format(_T("NUMBER:%s V.Index:%2d\n"), ::toString(getNumber()).cstr(), getValueIndex());
 }
 
 }; // namespace Expr

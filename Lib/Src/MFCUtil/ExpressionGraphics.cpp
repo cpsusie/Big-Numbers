@@ -1140,10 +1140,9 @@ AlignedImage *ExpressionPainter::stackImages(ExpressionRectangle &rect, bool cen
 }
 
 AlignedImage *ExpressionPainter::concatImages(const ImageArray &imageList, ExpressionRectangle &rect) {
-  DEFINEMETHODNAME;
   if(imageList.size() != rect.getChildCount()) {
-    throwInvalidArgumentException(method, _T("imageLIst.size()=%zu != rect.children.size()=%d")
-                                        ,imageList.size(), rect.getChildCount());
+    throwInvalidArgumentException(__TFUNCTION__, _T("imageLIst.size()=%zu != rect.children.size()=%d")
+                                 ,imageList.size(), rect.getChildCount());
   }
 
   int maxAlignment   = 0;
@@ -1194,14 +1193,13 @@ AlignedImage *ExpressionPainter::concatImages(const ImageArray &imageList, Expre
 }
 
 AlignedImage *ExpressionPainter::stackImages(bool center, const ImageArray &imageList, ExpressionRectangle &rect) {
-  DEFINEMETHODNAME;
   if(imageList.size() != rect.getChildCount()) {
-    throwInvalidArgumentException(method, _T("imageLIst.size()=%zu != rect.children.size()=%d")
-                                       ,imageList.size(), rect.getChildCount());
+    throwInvalidArgumentException(__TFUNCTION__, _T("imageLIst.size()=%zu != rect.children.size()=%d")
+                                 ,imageList.size(), rect.getChildCount());
   }
   CSize size(0,0);
-  const int listSize = (int)imageList.size();
-  for(int i = 0; i < listSize; i++) {
+  const size_t listSize = imageList.size();
+  for(size_t i = 0; i < listSize; i++) {
     const CSize sz = imageList[i]->getSize();
     size.cx =  max(size.cx,sz.cx);
     size.cy += sz.cy;
@@ -1210,7 +1208,7 @@ AlignedImage *ExpressionPainter::stackImages(bool center, const ImageArray &imag
   rect.setSize(size);
 
   int y = 0;
-  for(int i = 0; i < listSize; i++) {
+  for(size_t i = 0; i < listSize; i++) {
     ExpressionRectangle &childRect = rect.child(i);
     const AlignedImage *img = imageList[i];
     const CSize         sz  = img->getSize();
@@ -1225,7 +1223,7 @@ AlignedImage *ExpressionPainter::stackImages(bool center, const ImageArray &imag
 AlignedImage *ExpressionPainter::getNumberImage(SNode n, int fontSize, ExpressionRectangle &rect) {
   const Number &num = n.getNumber();
   if(m_getNumberActive || !mustConvertNumber(num)) {
-    return getTextImage(num.toString(), true, fontSize, rect);
+    return getTextImage(toString(num), true, fontSize, rect);
   } else {
     m_getNumberActive = true; // to prevent infinte recursion
     Real significand;

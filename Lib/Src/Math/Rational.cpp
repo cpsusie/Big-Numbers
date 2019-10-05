@@ -424,20 +424,19 @@ if(!isfinite(f)) {                         \
   return true;                             \
 }
 
+#define RETURNTRUE(v) { if(r!=NULL) *r = (v); return true; }
 bool Rational::isRational(float x, Rational *r) { // static
   CHECKISFINITE1(x);
   if(x == floor(x)) {
     if(fabs(x) > LLONG_MAX) {
       return false;
     }
-    if(r) *r = getInt64(x);
-    return true;
+    RETURNTRUE(getInt64(x));
   }
   try {
     const Rational tmp(x);
     if(tmp.getDenominator() <= 400) { // This is not good enough, but how should it be done ?
-      if(r) *r = tmp;
-      return true;
+      RETURNTRUE(tmp);
     } else {
       return false;
     }
@@ -452,14 +451,12 @@ bool Rational::isRational(double x, Rational *r) { // static
     if(fabs(x) > LLONG_MAX) {
       return false;
     }
-    if(r) *r = getInt64(x);
-    return true;
+    RETURNTRUE(getInt64(x));
   }
   try {
     const Rational tmp(x);
     if(tmp.getDenominator() <= 400) { // This is not good enough, but how should it be done ?
-      if(r) *r = tmp;
-      return true;
+      RETURNTRUE(tmp);
     } else {
       return false;
     }
@@ -474,14 +471,12 @@ bool Rational::isRational(const Double80 &x, Rational *r) { // static
     if(fabs(x) > LLONG_MAX) {
       return false;
     }
-    if(r) *r = getInt64(x);
-    return true;
+    RETURNTRUE(getInt64(x));
   }
   try {
     const Rational tmp(x);
     if(tmp.getDenominator() <= 400) { // This is not good enough, but how should it be done ?
-      if(r) *r = tmp;
-      return true;
+      RETURNTRUE(tmp);
     } else {
       return false;
     }
@@ -491,49 +486,60 @@ bool Rational::isRational(const Double80 &x, Rational *r) { // static
 }
 
 bool Rational::isRationalPow(const Rational &base, const Rational &e, Rational *r) {
-  if(isInt(e)) {
-    if(r) *r = ::pow(base, getInt(e));
-    return true;
-  } else {
-    const __int64 &bn = base.getNumerator();
-    const __int64 &bd = base.getDenominator();
-    const __int64 &en = e.getNumerator();
-    const __int64 &ed = e.getDenominator();
-
-    if(!isInt(ed) || !isInt(en) || ((bn < 0) && ::isEven(ed))) {
-      return false;
-    }
-    PrimeFactorArray bnFactors(bn);
-    PrimeFactorArray bdFactors(bd);
-
-    const UINT ed32 = (UINT)ed;
-    if(bnFactors.hasFactorsWithNonDividableMultiplicity(ed32)
-    || bdFactors.hasFactorsWithNonDividableMultiplicity(ed32)) {
-      return false;
-    }
-
-    if(r != NULL) {
-      for(size_t i = 0; i < bnFactors.size(); i++) {
-        bnFactors[i].m_multiplicity /= ed32;
+  try {
+    if(base.isZero()) {
+      if(!e.isPositive()) {
+        if(r) RETURNTRUE(RAT_NAN);
+        return false;
+      } else {
+        RETURNTRUE(0);
       }
-      for(size_t i = 0; i < bdFactors.size(); i++) {
-        bdFactors[i].m_multiplicity /= ed32;
+    }
+    if(isInt(e)) {
+      RETURNTRUE(::pow(base, getInt(e)));
+    } else {
+      const __int64 &bn = base.getNumerator();
+      const __int64 &bd = base.getDenominator();
+      const __int64 &en = e.getNumerator();
+      const __int64 &ed = e.getDenominator();
+
+      if(!isInt(ed) || !isInt(en) || ((bn < 0) && ::isEven(ed))) {
+        return false;
+      }
+      PrimeFactorArray bnFactors(bn);
+      PrimeFactorArray bdFactors(bd);
+
+      const UINT ed32 = (UINT)ed;
+      if(bnFactors.hasFactorsWithNonDividableMultiplicity(ed32)
+      || bdFactors.hasFactorsWithNonDividableMultiplicity(ed32)) {
+        return false;
       }
 
-      const UINT enU32 = abs((int)en);
-      if(enU32 != 1) {
+      if(r != NULL) {
         for(size_t i = 0; i < bnFactors.size(); i++) {
-          bnFactors[i].m_multiplicity *= enU32;
+          bnFactors[i].m_multiplicity /= ed32;
         }
         for(size_t i = 0; i < bdFactors.size(); i++) {
-          bdFactors[i].m_multiplicity *= enU32;
+          bdFactors[i].m_multiplicity /= ed32;
         }
+
+        const UINT enU32 = abs((int)en);
+        if(enU32 != 1) {
+          for(size_t i = 0; i < bnFactors.size(); i++) {
+            bnFactors[i].m_multiplicity *= enU32;
+          }
+          for(size_t i = 0; i < bdFactors.size(); i++) {
+            bdFactors[i].m_multiplicity *= enU32;
+          }
+        }
+        if(::isEven(en)) bnFactors.setPositive();
+        const __int64 Rn = bnFactors.getProduct();
+        const __int64 Rd = bdFactors.getProduct();
+        RETURNTRUE( (en < 0) ? Rational(Rd,Rn) : Rational(Rn,Rd));
       }
-      if(::isEven(en)) bnFactors.setPositive();
-      const __int64 Rn = bnFactors.getProduct();
-      const __int64 Rd = bdFactors.getProduct();
-      *r = (en < 0) ? Rational(Rd,Rn) : Rational(Rn,Rd);
+      return true;
     }
-    return true;
+  } catch(Exception) {
+    return false;
   }
 }

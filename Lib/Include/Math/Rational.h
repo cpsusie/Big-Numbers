@@ -35,8 +35,8 @@ public:
   }
   inline Rational(UINT n) : m_numerator(n), m_denominator(1) {
   }
-  explicit Rational(float           f  , UINT   maxND = _I16_MIN);
-  explicit Rational(double          d  , UINT   maxND = _I32_MIN);
+  explicit Rational(float           f  , UINT   maxND = _I16_MAX);
+  explicit Rational(double          d  , UINT   maxND = _I32_MAX);
   explicit Rational(const Double80 &d80, UINT64 maxND = _I64_MAX);
 
   static INT64 safeProd(const INT64 &a, const INT64 &b, int line);
@@ -110,9 +110,21 @@ public:
   static bool isRational(float           x, Rational *r);
   static bool isRational(double          x, Rational *r);
   static bool isRational(const Double80 &x, Rational *r);
-  // Return true if base^e is a rational
+  // Return true if base^e is rational
   // if(r != NULL), *r will contain the calculated value
   static bool isRationalPow(const Rational &base, const Rational &e, Rational *r);
+
+  template<class T> static T pow(T b, const Rational &e) {
+    if(!isfinite(b) || !isfinite(e) || (e.isZero() && (b <= 0))) {
+      return numeric_limits<T>::quiet_NaN();
+    }
+    const INT64 den = e.getDenominator();
+    if(isEven(den) && (b < 0)) {
+      return numeric_limits<T>::quiet_NaN();
+    }
+    const T result = (den == 1) ? b : root(b, den);
+    return (e.getNumerator() == 1) ? result : mypow(result, e.getNumerator());
+  }
 
   inline ULONG hashCode() const {
     return int64Hash(m_numerator) + 100999 * int64Hash(m_denominator);

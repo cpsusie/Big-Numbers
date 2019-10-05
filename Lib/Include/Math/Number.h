@@ -5,8 +5,7 @@
 #include "Rational.h"
 
 typedef enum {
-  NUMBERTYPE_UNDEFINED
- ,NUMBERTYPE_FLOAT
+  NUMBERTYPE_FLOAT
  ,NUMBERTYPE_DOUBLE
  ,NUMBERTYPE_DOUBLE80
  ,NUMBERTYPE_RATIONAL
@@ -26,16 +25,44 @@ private:
     double    *m_d64;
     Double80  *m_d80;
     Rational  *m_rational;
+    void      *m_datap;
   };
 
   // Must be private
-  void setType(NumberType type);
+  void setType(NumberType type, bool init = false);
+  inline void initType(NumberType type) {
+    setType(type, true);
+  }
+  // fpclass must be one of:
+  // _FPCLASS_SNAN  0x0001   signaling NaN
+  // _FPCLASS_QNAN  0x0002   quiet NaN
+  // _FPCLASS_NINF  0x0004   negative infinity
+  // _FPCLASS_PINF  0x0200   positive infinity
+  void setToNaN(int fpclass = _FPCLASS_QNAN, bool init = false);
+  inline void initToNaN(int fpclass = _FPCLASS_QNAN) {
+    setToNaN(fpclass, true);
+  }
   void cleanup();
-  static void throwTypeIsUndefinedException(const TCHAR *method);
-  static void throwUnknownTypeException(    const TCHAR *method, NumberType type);
-         void throwUnknownTypeException(    const TCHAR *method) const;
+
+  template<class T> bool handleInfAndRationalValue(T v, bool init = false) {
+    if(!::isfinite(v)) {
+      setToNaN(_fpclass(v), init);
+      return true;
+    } else {
+      Rational tmp;
+      if(Rational::isRational(v, &tmp)) {
+        setType(NUMBERTYPE_RATIONAL, init);
+        *m_rational = tmp;
+        return true;
+      }
+    }
+    return false;
+  }
+
 public:
-  Number();
+  inline Number() {
+    initToNaN();
+  }
   Number(const Number   &v);
   Number(int             v);
   Number(UINT            v);
@@ -44,7 +71,9 @@ public:
   Number(const Double80 &v);
   Number(const Rational &v);
 
-  virtual ~Number();
+  virtual ~Number() {
+    cleanup();
+  }
 
   Number &operator=(const Number   &v);
   Number &operator=(int             v);
@@ -60,10 +89,6 @@ public:
   static String getTypeName(NumberType nt);
   String getTypeName() const {
     return getTypeName(getType());
-  }
-
-  inline bool isUndefined() const {
-    return m_type == NUMBERTYPE_UNDEFINED;
   }
 
   inline bool isInteger() const {
@@ -88,7 +113,28 @@ public:
   friend inline bool isOdd(const Number &n) {
     return n.isRational() && isOdd(*n.m_rational);
   }
+  // returns one of
+  // _FPCLASS_SNAN  0x0001   signaling NaN
+  // _FPCLASS_QNAN  0x0002   quiet NaN
+  // _FPCLASS_NINF  0x0004   negative infinity
+  // _FPCLASS_NN    0x0008   negative normal
+  // _FPCLASS_ND    0x0010   negative denormal
+  // _FPCLASS_NZ    0x0020   -0
+  // _FPCLASS_PZ    0x0040   +0
+  // _FPCLASS_PD    0x0080   positive denormal
+  // _FPCLASS_PN    0x0100   positive normal
+  // _FPCLASS_PINF  0x0200   positive infinity
+  friend int _fpclass(const Number &n);
 
+  inline bool isPositive() const {
+    return (_fpclass(*this) & (_FPCLASS_PN | _FPCLASS_PD | _FPCLASS_PINF)) != 0;
+  }
+  inline bool isNegative() const {
+    return (_fpclass(*this) & (_FPCLASS_NN | _FPCLASS_ND | _FPCLASS_NINF)) != 0;
+  }
+  inline bool isZero() const {
+    return (_fpclass(*this) & (_FPCLASS_PZ | _FPCLASS_NZ)) != 0;
+  }
   friend int      getInt(     const Number &n);
   friend float    getFloat(   const Number &n);
   friend double   getDouble(  const Number &n);
@@ -105,16 +151,8 @@ public:
 
   friend int numberCmp(const Number &n1, const Number &n2);
 
-  inline bool operator< (const Number &n) const { return numberCmp(*this, n) <  0; }
-  inline bool operator> (const Number &n) const { return numberCmp(*this, n) >  0; }
-  inline bool operator<=(const Number &n) const { return numberCmp(*this, n) <= 0; }
-  inline bool operator>=(const Number &n) const { return numberCmp(*this, n) >= 0; }
-  bool operator==(const Number &n) const;
-  inline bool operator!=(const Number &n) const {
-    return !(*this == n);
-  }
-
-  String toString() const;
+  static void throwUnknownTypeException(const TCHAR *method, NumberType type);
+  void        throwUnknownTypeException(const TCHAR *method) const;
 };
 
 inline Real getReal( const Number &n) {
@@ -125,11 +163,91 @@ inline Real getReal( const Number &n) {
 #endif
 }
 
-Number strton(const char    *s, char    **end);
-Number wcston(const wchar_t *s, wchar_t **end);
+inline Number fabs(const Number &n) {
+  return n.isNegative() ? -n : n;
+}
+
+// returns one of
+// FP_INFINITE
+// FP_NAN
+// FP_NORMAL
+// FP_SUBNORMAL
+// FP_ZERO
+int fpclassify(const Number &n);
+
+inline bool isfinite(const Number &n) {
+  return fpclassify(n) <= 0;
+}
+inline bool isinf(const Number &n) {
+  return fpclassify(n) == FP_INFINITE;
+}
+inline bool isnan(const Number &n) {
+  return fpclassify(n) == FP_NAN;
+}
+inline bool isnormal(const Number &n) {
+  return fpclassify(n) == FP_NORMAL;
+}
+inline bool isunordered(const Number &x, const Number &y) {
+  return isnan(x) || isnan(y);
+}
+inline bool isPInfinity(const Number &n) {
+  return isinf(n) && n.isPositive();
+}
+inline bool isNInfinity(const Number &n) {
+  return isinf(n) && n.isNegative();
+}
+
+inline bool operator< (const Number &x, const Number &y) {
+  return !isunordered(x, y) && (numberCmp(x, y) < 0);
+}
+inline bool operator> (const Number &x, const Number &y) {
+  return !isunordered(x, y) && (numberCmp(x, y) > 0);
+}
+inline bool operator<=(const Number &x, const Number &y) {
+  return !isunordered(x, y) && (numberCmp(x, y) <= 0);
+}
+inline bool operator>=(const Number &x, const Number &y) {
+  return !isunordered(x, y) && (numberCmp(x, y) >= 0);
+}
+inline bool operator==(const Number &x, const Number &y) {
+  return !isunordered(x, y) && (numberCmp(x, y) == 0);
+}
+inline bool operator!=(const Number &x, const Number &y) {
+  return !isunordered(x, y) && (numberCmp(x, y) != 0);
+}
+
+char    *numtoa(char    *dst, const Number &n);
+wchar_t *numtow(wchar_t *dst, const Number &n);
 
 #ifdef _UNICODE
-#define _tcston wcston
+#define numtot numtow
 #else
-#define _tcston strton
+#define numtot numtoa
+#endif
+
+String toString(const Number &n, StreamSize precision = 6, StreamSize width = 0, FormatFlags flags = 0);
+
+Number _strtonum_l(const char    *s, char    **end, _locale_t locale);
+Number _wcstonum_l(const wchar_t *s, wchar_t **end, _locale_t locale);
+
+inline Number strtonum(const char    *s, char    **end) {
+  return _strtonum_l(s, end, _get_current_locale());
+}
+inline Number wcstonum(const wchar_t *s, wchar_t **end) {
+  return _wcstonum_l(s, end, _get_current_locale());
+}
+
+#ifdef _UNICODE
+#define _tcstonum_l _wcstonum_l
+#define _tcstonum    wcstonum
+#else
+#define _tcstonum_l _strtonum_l
+#define _tcstonum    strtonum
 #endif // _UNICODE
+
+// input/output always in decimal. if hexfloat, use scientific
+std::istream  &operator>>(std::istream  &in,        Number &n);
+std::ostream  &operator<<(std::ostream  &out, const Number &n);
+
+std::wistream &operator>>(std::wistream &in,        Number &n);
+std::wostream &operator<<(std::wostream &out, const Number &n);

@@ -336,7 +336,7 @@ public:
   bool                 isConstant(Number *v = NULL)        const;
   bool                 traverseNode(ExpressionNodeHandler &handler);
   void                 dumpNode(String &s, int level)      const;
-  String               toString()                          const { return m_number.toString();      }
+  String               toString()                          const { return ::toString(m_number);     }
 };
 
 class ExpressionNodeBoolConst : public ExpressionNode {

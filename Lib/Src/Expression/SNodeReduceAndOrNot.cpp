@@ -143,7 +143,7 @@ SNode SNode::reduceConstCompareSameExprAnd(const Number &c1, const Number &c2, E
   }
   throwInvalidArgumentException(__TFUNCTION__
                                ,_T("c1=%s,c2=%s,rel1=%s,rel2=%s")
-                               ,c1.toString().cstr()      ,c2.toString().cstr()
+                               ,::toString(c1).cstr()     ,::toString(c2).cstr()
                                ,getSymbolName(rel1).cstr(),getSymbolName(rel2).cstr()
                                );
   SNULL;
@@ -212,7 +212,7 @@ SNode SNode::reduceConstCompareSameExprOr(const Number &c1, const Number &c2, Ex
   }
   throwInvalidArgumentException(__TFUNCTION__
                                ,_T("c1=%s,c2=%s,rel1=%s,rel2=%s")
-                               ,c1.toString().cstr()      ,c2.toString().cstr()
+                               ,::toString(c1).cstr()     ,::toString(c2).cstr()
                                ,getSymbolName(rel1).cstr(),getSymbolName(rel2).cstr()
                                );
   SNULL;
