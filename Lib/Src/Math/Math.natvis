@@ -25,6 +25,9 @@
     <DisplayString LegacyAddin="C:\mytools2015\Lib\Win32\Release\MathAddIn.dll" Export="AddIn__uint128"></DisplayString>
   </Type>
   <Type Name="Number">
-    <DisplayString LegacyAddin="C:\mytools2015\Lib\Win32\Release\MathAddIn.dll" Export="AddIn_Number"></DisplayString>
+    <DisplayString Condition="m_type == 0">{*m_flt}</DisplayString>
+    <DisplayString Condition="m_type == 1">{*m_d64}</DisplayString>
+    <DisplayString Condition="m_type == 2">{*m_d80}</DisplayString>
+    <DisplayString Condition="m_type == 3">{*m_rational}</DisplayString>
   </Type>
 </AutoVisualizer>

@@ -1,49 +1,48 @@
 #include "pch.h"
+#include <StrStream.h>
 #include <Math/Number.h>
 #include "D80ToDbgString.h"
 
-class Numberx86 {
+template<class PTYPE> class NumberT {
 public:
-  DWORD        m_vfptr;               // pointer to vtable
+  PTYPE        m_vfptr;               // pointer to vtable
   NumberType   m_type;
-  DWORD        m_datap;
+  PTYPE        m_datap;
+  inline NumberType getType() const {
+    return m_type;
+  }
 };
 
-class Numberx64 {
-public:
-  QWORD        m_vfptr;               // pointer to vtable
-  NumberType   m_type;
-  QWORD        m_datap;
-};
-
-template<class Number> char *toDbgString(char *dst, Number &n, DEBUGHELPER *helper) {
-  switch(n.m_type) {
-  case NUMBERTYPE_UNDEFINED:
-    return strcpy(dst, "Undefined");
+template<class PTYPE> char *toDbgString(char *dst, NumberT<PTYPE> &n, DEBUGHELPER *helper) {
+  switch(n.getType()) {
   case NUMBERTYPE_FLOAT    :
     { float v;
       helper->getObjectx64(&v, n.m_datap, sizeof(v));
+      if(!isfinite(v)) return StrStream::formatUndefined(dst, _fpclass(v));
       sprintf(dst, "%g", v);
       return dst;
     }
   case NUMBERTYPE_DOUBLE   :
     { double v;
       helper->getObjectx64(&v, n.m_datap, sizeof(v));
+      if(!isfinite(v)) return StrStream::formatUndefined(dst, _fpclass(v));
       sprintf(dst, "%lg", v);
       return dst;
     }
   case NUMBERTYPE_DOUBLE80 :
     { Double80 v;
       helper->getObjectx64(&v, n.m_datap, sizeof(v));
+      if(!isfinite(v)) return StrStream::formatUndefined(dst, _fpclass(v));
       return strcpy(dst, D80ToDbgString(v).c_str());
     }
   case NUMBERTYPE_RATIONAL :
     { Rational v;
+      if(!isfinite(v)) return StrStream::formatUndefined(dst, _fpclass(v));
       helper->getObjectx64(&v, n.m_datap, sizeof(v));
       return rattoa(dst, v, 10);
     }
   default:
-    sprintf(dst, "unknown type:%d", n.m_type);
+    sprintf(dst, "Unknown type:%d", n.getType());
     return dst;
   }
 }
@@ -53,13 +52,13 @@ ADDIN_API HRESULT WINAPI AddIn_Number(DWORD dwAddress, DEBUGHELPER *pHelper, int
   try {
     switch(pHelper->getProcessorType()) {
     case PRTYPE_X86:
-      { Numberx86 n;
+      { NumberT<DWORD> n;
         pHelper->getRealObject(&n, sizeof(n));
         toDbgString(tmpstr, n, pHelper);
       }
       break;
     case PRTYPE_X64:
-      { Numberx64 n;
+      { NumberT<QWORD> n;
         pHelper->getRealObject(&n, sizeof(n));
         toDbgString(tmpstr, n, pHelper);
       }
