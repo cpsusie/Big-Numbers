@@ -3,6 +3,12 @@
 #include "DFA.h"
 #include "DFARegex.h"
 
+#define DUMP_TABLES
+
+#ifdef  DUMP_TABLES
+#include <DebugLog.h>
+#endif
+
 DFARegex::DFARegex(const StringArray &pattern, bool ignoreCase)
 : m_ignoreCase(ignoreCase)
 {
@@ -21,6 +27,11 @@ void DFARegex::compilePattern(const StringArray &pattern) {
     }
     nfa.clear();
     statePool.releaseAll();
+
+#ifdef DUMP_TABLES
+    debugLog(_T("%s\nPattern:\n%s\n:Tables:\n%s\n"), __TFUNCTION__, pattern.toString(_T("\n")).cstr(), m_tables.toString().cstr());
+#endif //  DUMP_TABLES
+
   } catch(...) {
     nfa.clear();
     statePool.releaseAll();
