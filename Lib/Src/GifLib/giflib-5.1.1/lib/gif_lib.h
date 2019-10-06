@@ -9,7 +9,7 @@ gif_lib.h - service library for decoding and encoding GIF images
 
 #ifdef _MSC_VER // [
 
-#include <PragmaLib.h>
+#include <Config.h>
 
 #ifdef GIVE_LINK_MESSAGE
 #pragma message("link with " LIB_VERSION)

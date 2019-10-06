@@ -1,6 +1,6 @@
 #pragma once
 
-#include <PragmaLib.h>
+#include <Config.h>
 
 #ifdef LONGDOUBLE
 #pragma comment(lib,TM_LIB_VERSION "LDMath.lib")
