@@ -3,7 +3,7 @@
 #include "DFA.h"
 #include "DFARegex.h"
 
-#define DUMP_TABLES
+//#define DUMP_TABLES
 
 #ifdef  DUMP_TABLES
 #include <DebugLog.h>
@@ -29,7 +29,7 @@ void DFARegex::compilePattern(const StringArray &pattern) {
     statePool.releaseAll();
 
 #ifdef DUMP_TABLES
-    debugLog(_T("%s\nPattern:\n%s\n:Tables:\n%s\n"), __TFUNCTION__, pattern.toString(_T("\n")).cstr(), m_tables.toString().cstr());
+    debugLog(_T("%s\nPattern:\n%s\nTables:\n%s\n"), __TFUNCTION__, pattern.toString(_T("\n")).cstr(), m_tables.toString().cstr());
 #endif //  DUMP_TABLES
 
   } catch(...) {
