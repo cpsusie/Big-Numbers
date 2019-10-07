@@ -29,6 +29,7 @@ CIsoSurfaceDlg::CIsoSurfaceDlg(const IsoSurfaceParameters &param, CWnd *pParent 
 : SaveLoadExprDialog<IsoSurfaceParameters>(IDD, pParent, param, _T("implicit surface"), _T("imp"))
 , m_createListFile(FALSE)
 {
+  m_debugPolygonizer = false;
 }
 
 void CIsoSurfaceDlg::DoDataExchange(CDataExchange *pDX) {
@@ -118,6 +119,9 @@ BOOL CIsoSurfaceDlg::OnInitDialog() {
   m_layoutManager.addControl(IDC_EDIT_FRAMECOUNT       , RELATIVE_Y_POS         );
   m_layoutManager.addControl(IDOK                      , RELATIVE_POSITION      );
   m_layoutManager.addControl(IDCANCEL                  , RELATIVE_POSITION      );
+
+  enableTimeFields();
+
   gotoEditBox(this, IDC_EDIT_EXPR);
   return FALSE;
 }
@@ -175,27 +179,16 @@ void CIsoSurfaceDlg::enableTimeFields() {
   GetDlgItem(IDC_EDIT_FRAMECOUNT    )->EnableWindow(enable);
   setWindowText(this, IDC_STATIC_FUNCTION, enable ? _T("&S(t,x,y,z) =") : _T("&S(x,y,z) ="));
 #ifndef DEBUG_POLYGONIZER
-  GetDlgItem(IDC_CHECK_DEBUGPOLYGONIZER)->EnableWindow(FALSE);
+  const bool enableDebugPolygonizer = false;
 #else
-  GetDlgItem(IDC_CHECK_DEBUGPOLYGONIZER)->EnableWindow(!enable);
-  if(enable) {
-    if(m_debugPolygonizer) {
-      m_debugPolygonizer = false;
-      CheckDlgButton(IDC_CHECK_DEBUGPOLYGONIZER,BST_UNCHECKED);
-    }
-  }
+  const bool enableDebugPolygonizer = !enable;
 #endif // DEBUG_POLYGONIZER
-}
 
-void CIsoSurfaceDlg::OnEditFindMatchingParentesis() {
-  gotoMatchingParentesis();
-}
-
-void CIsoSurfaceDlg::OnCheckDoubleSided() {
-  enableCheckBoxOrigin();
-}
-void CIsoSurfaceDlg::OnCheckTetrahedral() {
-  enableCheckBoxTetraOptimize4();
+  GetDlgItem(IDC_CHECK_DEBUGPOLYGONIZER)->EnableWindow(enableDebugPolygonizer);
+  if(!enableDebugPolygonizer) {
+    m_debugPolygonizer = false;
+    CheckDlgButton(IDC_CHECK_DEBUGPOLYGONIZER, BST_UNCHECKED);
+  }
 }
 
 void CIsoSurfaceDlg::enableCheckBoxOrigin() {
@@ -205,31 +198,17 @@ void CIsoSurfaceDlg::enableCheckBoxTetraOptimize4() {
   GetDlgItem(IDC_CHECK_TETRAOPTIMIZE4)->EnableWindow(IsDlgButtonChecked(IDC_CHECK_TETRAHEDRAL));
 }
 
-void CIsoSurfaceDlg::OnGotoExpr() {
-  gotoExpr(IDC_EDIT_EXPR);
-}
-void CIsoSurfaceDlg::OnGotoCellSize() {
-  gotoEditBox(this, IDC_EDIT_CELLSIZE);
-}
-void CIsoSurfaceDlg::OnGotoXInterval() {
-  gotoEditBox(this, IDC_EDIT_XFROM);
-}
-void CIsoSurfaceDlg::OnGotoYInterval() {
-  gotoEditBox(this, IDC_EDIT_YFROM);
-}
-void CIsoSurfaceDlg::OnGotoZInterval() {
-  gotoEditBox(this, IDC_EDIT_ZFROM);
-}
-void CIsoSurfaceDlg::OnGotoTimeInterval() {
-  gotoEditBox(this, IDC_EDIT_TIMEFROM);
-}
-void CIsoSurfaceDlg::OnGotoFrameCount() {
-  gotoEditBox(this, IDC_EDIT_FRAMECOUNT);
-}
-
-void CIsoSurfaceDlg::OnButtonHelp() {
-  handleExprHelpButtonClick(IDC_BUTTON_HELP);
-}
+void CIsoSurfaceDlg::OnCheckDoubleSided()           { enableCheckBoxOrigin();                      }
+void CIsoSurfaceDlg::OnCheckTetrahedral()           { enableCheckBoxTetraOptimize4();              }
+void CIsoSurfaceDlg::OnEditFindMatchingParentesis() { gotoMatchingParentesis();                    }
+void CIsoSurfaceDlg::OnGotoExpr()                   { gotoExpr(IDC_EDIT_EXPR);                     }
+void CIsoSurfaceDlg::OnGotoCellSize()               { gotoEditBox(this, IDC_EDIT_CELLSIZE);        }
+void CIsoSurfaceDlg::OnGotoXInterval()              { gotoEditBox(this, IDC_EDIT_XFROM);           }
+void CIsoSurfaceDlg::OnGotoYInterval()              { gotoEditBox(this, IDC_EDIT_YFROM);           }
+void CIsoSurfaceDlg::OnGotoZInterval()              { gotoEditBox(this, IDC_EDIT_ZFROM);           }
+void CIsoSurfaceDlg::OnGotoTimeInterval()           { gotoEditBox(this, IDC_EDIT_TIMEFROM);        }
+void CIsoSurfaceDlg::OnGotoFrameCount()             { gotoEditBox(this, IDC_EDIT_FRAMECOUNT);      }
+void CIsoSurfaceDlg::OnButtonHelp()                 { handleExprHelpButtonClick(IDC_BUTTON_HELP);  }
 
 void CIsoSurfaceDlg::paramToWin(const IsoSurfaceParameters &param) {
   m_expr             = param.m_expr.cstr();

@@ -12,7 +12,7 @@
 
 class CAboutDlg : public CDialog {
 public:
-  CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
+  CAboutDlg() : CDialog(CAboutDlg::IDD) {
   }
 
   enum { IDD = IDD_ABOUTBOX };
@@ -61,8 +61,8 @@ BEGIN_MESSAGE_MAP(CD3FunctionPlotterDlg, CDialog)
   ON_COMMAND(ID_OBJECT_EDITFUNCTION           , OnObjectEditFunction           )
   ON_COMMAND(ID_ADDBOXOBJECT                  , OnAddBoxObject                 )
   ON_MESSAGE(ID_MSG_RENDER                    , OnMsgRender                    )
-  ON_MESSAGE(ID_MSG_THREADRUNNING             , OnMsgThreadRunning             )
-  ON_MESSAGE(ID_MSG_KILLTHREAD                , OnMsgKillThread                )
+  ON_MESSAGE(ID_MSG_DEBUGTHREADRUNNING        , OnMsgDebugThreadRunning        )
+  ON_MESSAGE(ID_MSG_KILLDEBUGTHREAD           , OnMsgKillDebugThread           )
 END_MESSAGE_MAP()
 
 #define REPAINT() Invalidate(FALSE)
@@ -90,6 +90,12 @@ BOOL CD3FunctionPlotterDlg::OnInitDialog() {
   m_layoutManager.OnInitDialog(this);
   m_layoutManager.addControl(IDC_STATIC_3DPANEL  , RELATIVE_SIZE                  );
   m_layoutManager.addControl(IDC_STATIC_INFOPANEL, RELATIVE_Y_POS | RELATIVE_WIDTH);
+
+#ifdef DEBUG_POLYGONIZER
+  enableSubMenuContainingId(this, ID_DEBUG_GO, true);
+#else
+  enableSubMenuContainingId(this, ID_DEBUG_GO, false);
+#endif // DEBUG_POLYGONIZER
 
   m_scene.init(*get3DWindow());
   m_editor.init(this);
@@ -360,22 +366,22 @@ void CD3FunctionPlotterDlg::OnDebugGo() {}
 void CD3FunctionPlotterDlg::OnDebugSinglestep() {}
 void CD3FunctionPlotterDlg::OnDebugStepCube() {}
 void CD3FunctionPlotterDlg::OnDebugBreakOnNextLevel() {}
-LRESULT CD3FunctionPlotterDlg::OnMsgKillThread(   WPARAM wp, LPARAM lp) { return 0; }
-LRESULT CD3FunctionPlotterDlg::OnMsgThreadRunning(WPARAM wp, LPARAM lp) { return 0; }
+LRESULT CD3FunctionPlotterDlg::OnMsgKillDebugThread(   WPARAM wp, LPARAM lp) { return 0; }
+LRESULT CD3FunctionPlotterDlg::OnMsgDebugThreadRunning(WPARAM wp, LPARAM lp) { return 0; }
 #else // DEBUG_POLYGONIZER
 
 void CD3FunctionPlotterDlg::startDebugging() {
   setCalculatedObject(NULL);
-  startThread(true);
+  startDebugThread(true);
 }
 
 void CD3FunctionPlotterDlg::stopDebugging() {
-  killThread(false);
+  killDebugThread(false);
 }
 
-void CD3FunctionPlotterDlg::startThread(bool singleStep) {
+void CD3FunctionPlotterDlg::startDebugThread(bool singleStep) {
   try {
-    killThread(false);
+    killDebugThread(false);
     m_debugThread = new DebugThread(this);
     m_debugThread->addPropertyChangeListener(this);
     if(singleStep) {
@@ -388,12 +394,12 @@ void CD3FunctionPlotterDlg::startThread(bool singleStep) {
   }
 }
 
-void CD3FunctionPlotterDlg::asyncKillThread() {
-  PostMessage(ID_MSG_KILLTHREAD);
+void CD3FunctionPlotterDlg::asyncKillDebugThread() {
+  PostMessage(ID_MSG_KILLDEBUGTHREAD);
 }
 
-void CD3FunctionPlotterDlg::killThread(bool showCreateSurface) {
-  if(hasThread()) {
+void CD3FunctionPlotterDlg::killDebugThread(bool showCreateSurface) {
+  if(hasDebugThread()) {
     m_editor.setCurrentSceneObject(NULL);
     m_scene.removeAllSceneObjects();
     m_debugThread->removePropertyChangeListener(this);
@@ -414,7 +420,7 @@ void CD3FunctionPlotterDlg::handlePropertyChanged(const PropertyContainer *sourc
     { const bool oldRunning = *(bool*)oldValue;
       const bool newRunning = *(bool*)newValue;
       m_editor.setEnabled(!newRunning);
-      SendMessage(ID_MSG_THREADRUNNING, oldRunning, newRunning);
+      SendMessage(ID_MSG_DEBUGTHREADRUNNING, oldRunning, newRunning);
     }
     break;
   default:
@@ -425,11 +431,12 @@ void CD3FunctionPlotterDlg::handlePropertyChanged(const PropertyContainer *sourc
 
 void CD3FunctionPlotterDlg::ajourDebugMenuItems() {
   bool enable;
-  if(hasThread()) {
-    enable = isThreadStopped();
+  if(hasDebugThread()) {
+    enable = isDebugThreadStopped();
   } else {
     enable = false;
   }
+
   enableMenuItem(this,ID_DEBUG_GO              , enable);
   enableMenuItem(this,ID_DEBUG_SINGLESTEP      , enable);
   enableMenuItem(this,ID_DEBUG_STEPCUBE        , enable);
@@ -437,26 +444,26 @@ void CD3FunctionPlotterDlg::ajourDebugMenuItems() {
 }
 
 void CD3FunctionPlotterDlg::OnDebugGo() {
-  if(isThreadStopped()) {
+  if(isDebugThreadStopped()) {
     m_debugThread->go();
   }
 }
 
 void CD3FunctionPlotterDlg::OnDebugSinglestep() {
-  if(isThreadStopped()) {
+  if(isDebugThreadStopped()) {
     m_debugThread->singleStep();
   }
 }
 
 void CD3FunctionPlotterDlg::OnDebugStepCube() {
-  if(hasThread()) {
+  if(hasDebugThread()) {
     m_debugThread->goUntilNextCube();
   }
 }
 
 void CD3FunctionPlotterDlg::OnDebugBreakOnNextLevel() {
   const bool breakOnLevel = toggleMenuItem(this, ID_DEBUG_BREAKONNEXTLEVEL);
-  if(hasThread()) {
+  if(hasDebugThread()) {
     m_debugThread->breakOnNextLevel(breakOnLevel);
   }
 }
@@ -465,11 +472,11 @@ bool CD3FunctionPlotterDlg::isBreakOnNextLevelChecked() const {
   return isMenuItemChecked(this, ID_DEBUG_BREAKONNEXTLEVEL);
 }
 
-LRESULT CD3FunctionPlotterDlg::OnMsgKillThread(WPARAM wp, LPARAM lp) {
-  killThread(true);
+LRESULT CD3FunctionPlotterDlg::OnMsgKillDebugThread(WPARAM wp, LPARAM lp) {
+  killDebugThread(true);
   return 0;
 }
-LRESULT CD3FunctionPlotterDlg::OnMsgThreadRunning(WPARAM wp, LPARAM lp) {
+LRESULT CD3FunctionPlotterDlg::OnMsgDebugThreadRunning(WPARAM wp, LPARAM lp) {
   try {
     const bool newRunning = (lp != 0);
     if(newRunning) {
@@ -478,12 +485,12 @@ LRESULT CD3FunctionPlotterDlg::OnMsgThreadRunning(WPARAM wp, LPARAM lp) {
         m_editor.setCurrentSceneObject(NULL);
         m_scene.removeSceneObject(obj);
       }
-    } else if(isThreadStopped()) {
+    } else if(isDebugThreadStopped()) {
       D3SceneObject *obj = m_debugThread->getSceneObject();
       m_scene.addSceneObject(obj);
       m_editor.setCurrentSceneObject(obj);
-    } else if(isThreadFinished()) {
-      asyncKillThread();
+    } else if(isDebugThreadFinished()) {
+      asyncKillDebugThread();
     }
     ajourDebugMenuItems();
   } catch(Exception e) {
@@ -549,12 +556,17 @@ void CD3FunctionPlotterDlg::OnFileIsoSurface() {
       return;
     }
     m_isoSurfaceParam = dlg.getData();
+#ifndef DEBUG_POLYGONIZER
+    setCalculatedObject(m_isoSurfaceParam);
+    REPAINT();
+#else
     if(dlg.getDebugPolygonizer()) {
       startDebugging();
     } else {
       setCalculatedObject(m_isoSurfaceParam);
       REPAINT();
     }
+#endif // DEBUG_POLYGONIZER
   } catch(Exception e) {
     showException(e);
   }

@@ -142,8 +142,8 @@
 #define ID_FILE_READOBJ                 33257
 #define ID_FILE_READOBJFILE             33258
 #define ID_MSG_RENDER                   33300
-#define ID_MSG_THREADRUNNING            33301
-#define ID_MSG_KILLTHREAD               33302
+#define ID_MSG_DEBUGTHREADRUNNING       33301
+#define ID_MSG_KILLDEBUGTHREAD          33302
 
 // Next default values for new objects
 // 

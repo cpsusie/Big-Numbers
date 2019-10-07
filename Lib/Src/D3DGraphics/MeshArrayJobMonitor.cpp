@@ -165,12 +165,12 @@ UINT MeshArrayCreator::run() {
     m_jobMonitor.addJob(t);
   }
 #ifdef _DEBUG
-  const int processorCount = 1;
+  const int processorCount = getDebuggerPresent() ? 1 : getProcessorCount();
 #else
   const int processorCount = getProcessorCount();
 #endif
   RunnableArray workerArray;
-  for (int i = 0; i < processorCount; i++) {
+  for(int i = 0; i < processorCount; i++) {
     Runnable *r = new MeshBuilderWorker(this); TRACE_NEW(r);
     workerArray.add(r);
   }

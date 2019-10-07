@@ -799,6 +799,8 @@ typedef enum {
 class D3AnimatedSurface : public D3SceneObject {
 private:
   friend class MeshAnimationThread;
+  D3DFILLMODE  m_fillMode;
+  D3DSHADEMODE m_shadeMode;
   MeshArray            m_meshArray;
   int                  m_nextMeshIndex, m_lastRenderedIndex;
   MeshAnimationThread *m_animator;
@@ -814,6 +816,24 @@ public:
   double getFramePerSec() const;
   LPD3DXMESH getMesh() const;
   void draw();
+  bool hasFillMode() const {
+    return true;
+  }
+  void setFillMode(D3DFILLMODE fillMode) {
+    m_fillMode = fillMode;
+  }
+  D3DFILLMODE getFillMode() const {
+    return m_fillMode;
+  }
+  bool hasShadeMode() const {
+    return true;
+  }
+  void setShadeMode(D3DSHADEMODE shadeMode) {
+    m_shadeMode = shadeMode;
+  }
+  D3DSHADEMODE getShadeMode() const {
+    return m_shadeMode;
+  }
   SceneObjectType getType() const {
     return SOTYPE_ANIMATEDOBJECT;
   }

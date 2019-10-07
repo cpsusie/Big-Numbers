@@ -145,7 +145,11 @@ void MeshAnimationThread::nextIndex() { //  invariant:m_nextMeshIndex = [0..m_fr
   }
 }
 
-D3AnimatedSurface::D3AnimatedSurface(D3Scene &scene, const MeshArray &meshArray) : D3SceneObject(scene) {
+D3AnimatedSurface::D3AnimatedSurface(D3Scene &scene, const MeshArray &meshArray)
+: D3SceneObject(scene)
+, m_fillMode(D3DFILL_SOLID)
+, m_shadeMode(D3DSHADE_GOURAUD)
+{
   m_meshArray         = meshArray;
   m_nextMeshIndex     = 0;
   m_lastRenderedIndex = -1;
@@ -182,6 +186,7 @@ double D3AnimatedSurface::getFramePerSec() const {
 }
 
 void D3AnimatedSurface::draw() {
+  setFillAndShadeMode();
   setSceneMaterial();
   V(m_meshArray[m_lastRenderedIndex = m_nextMeshIndex]->DrawSubset(0));
 }

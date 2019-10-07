@@ -61,21 +61,21 @@ private:
   void stopDebugging();
 
 #ifdef DEBUG_POLYGONIZER
-  void startThread(bool singleStep=false);
-  void killThread(bool showCreateSurface);
-  void asyncKillThread();
+  void startDebugThread(bool singleStep=false);
+  void killDebugThread(bool showCreateSurface);
+  void asyncKillDebugThread();
   void ajourDebugMenuItems();
-  inline bool hasThread() const {
+  inline bool hasDebugThread() const {
     return m_debugThread != NULL;
   }
-  inline bool isThreadRunning() const {
-    return hasThread() && m_debugThread->isRunning();
+  inline bool isDebugThreadRunning() const {
+    return hasDebugThread() && m_debugThread->isRunning();
   }
-  inline bool isThreadStopped() const {
-    return hasThread() && !m_debugThread->isRunning() && !m_debugThread->isFinished();
+  inline bool isDebugThreadStopped() const {
+    return hasDebugThread() && !m_debugThread->isRunning() && !m_debugThread->isFinished();
   }
-  inline bool isThreadFinished() const {
-    return hasThread() && !m_debugThread->isRunning() && m_debugThread->isFinished();
+  inline bool isDebugThreadFinished() const {
+    return hasDebugThread() && !m_debugThread->isRunning() && m_debugThread->isFinished();
   }
   void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
 
@@ -93,7 +93,7 @@ public:
       return GetDlgItem(IDC_STATIC_3DPANEL);
     }
     void render(BYTE renderFlags) {
-      PostMessage(ID_MSG_RENDER, renderFlags, 0);
+      SendMessage(ID_MSG_RENDER, renderFlags, 0);
     }
     void modifyContextMenu(CMenu &menu) {
       appendMenuItem(menu, _T("Add box"), ID_ADDBOXOBJECT);
@@ -139,8 +139,8 @@ protected:
     afx_msg void OnObjectEditFunction();
     afx_msg void OnAddBoxObject();
     afx_msg LRESULT OnMsgRender(WPARAM wp, LPARAM lp);
-    afx_msg LRESULT OnMsgThreadRunning(WPARAM wp, LPARAM lp);
-    afx_msg LRESULT OnMsgKillThread(WPARAM wp, LPARAM lp);
+    afx_msg LRESULT OnMsgDebugThreadRunning(WPARAM wp, LPARAM lp);
+    afx_msg LRESULT OnMsgKillDebugThread(WPARAM wp, LPARAM lp);
 
     DECLARE_MESSAGE_MAP()
 };
