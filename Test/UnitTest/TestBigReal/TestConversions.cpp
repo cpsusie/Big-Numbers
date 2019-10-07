@@ -74,7 +74,7 @@ template<class T> static void testUndefined(const T fld, DigitPool *pool) {
   verify(cls    == cls1   );
 }
 
-static void testFloatConversion(TestStatistic &stat, int sign) {
+static void testFloat32Conversion(TestStatistic &stat, int sign) {
   DigitPool     *pool       = stat.getDigitPool();
   const float    loopStart  = sign * FLT_MIN;
   const float    loopEnd    = sign * FLT_MAX / 2;
@@ -105,7 +105,7 @@ static void testFloatConversion(TestStatistic &stat, int sign) {
   testUndefined( fltpinf,pool);
 }
 
-static void testDoubleConversion(TestStatistic &stat, int sign) {
+static void testDouble64Conversion(TestStatistic &stat, int sign) {
   DigitPool     *pool       = stat.getDigitPool();
   const double   loopStart  = sign * DBL_MIN;
   const double   loopEnd    = sign * DBL_MAX / 2;
@@ -167,20 +167,20 @@ static void testDouble80Conversion(TestStatistic &stat, int sign) {
 
 }
 
-void testPositiveFloatConversion(TestStatistic &stat) {
-  testFloatConversion(stat, 1);
+void testPositiveFloat32Conversion(TestStatistic &stat) {
+  testFloat32Conversion(stat, 1);
 }
 
-void testNegativeFloatConversion(TestStatistic &stat) {
-  testFloatConversion(stat, -1);
+void testNegativeFloat32Conversion(TestStatistic &stat) {
+  testFloat32Conversion(stat, -1);
 }
 
-void testPositiveDoubleConversion(TestStatistic &stat) {
-  testDoubleConversion(stat, 1);
+void testPositiveDouble64Conversion(TestStatistic &stat) {
+  testDouble64Conversion(stat, 1);
 }
 
-void testNegativeDoubleConversion(TestStatistic &stat) {
-  testDoubleConversion(stat, -1);
+void testNegativeDouble64Conversion(TestStatistic &stat) {
+  testDouble64Conversion(stat, -1);
 }
 
 void testPositiveDouble80Conversion(TestStatistic &stat) {

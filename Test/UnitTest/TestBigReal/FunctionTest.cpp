@@ -3,11 +3,8 @@
 #include "FunctionTest.h"
 
 void FunctionTest1ArgND64D80::runTest(int threadId, DigitPool *pool) {
-  const BigReal     from(m_xfrom, pool);
-  const BigReal     to(  m_xto  , pool);
-
-  FullFormatBigReal maxTolerance   = e(pool->get1(),-MAXDIGITS-6);
-  Array<BigReal>    testData       = generateTestData(from,to, m_xexponentialStep);
+  FullFormatBigReal maxTolerance = e(pool->get1(),-MAXDIGITS-6);
+  Array<BigReal>    testData     = generateTestData(m_xInterval, pool);
   TestStatistic     stat(threadId, m_functionName, pool, XF, testData.size() * MAXDIGITS / DIGITSTEP, maxTolerance);
 
   for(size_t i = 0; i < testData.size(); i++) {
@@ -34,14 +31,9 @@ void FunctionTest1ArgND64D80::runTest(int threadId, DigitPool *pool) {
 }
 
 void FunctionTest2ArgND64D80::runTest(int threadId, DigitPool *pool) {
-  const BigReal           xfrom(m_xfrom, pool);
-  const BigReal           xto(  m_xto  , pool);
-  const BigReal           yfrom(m_yfrom, pool);
-  const BigReal           yto(  m_yto  , pool);
-
   const FullFormatBigReal maxTolerance   = e(pool->get1(),-MAXDIGITS-6);
-  const Array<BigReal>    xTestData      = generateTestData(xfrom,xto, m_xexponentialStep,10);
-  const Array<BigReal>    yTestData      = generateTestData(yfrom,yto, m_yexponentialStep,10);
+  const Array<BigReal>    xTestData      = generateTestData(m_xInterval, pool, 10);
+  const Array<BigReal>    yTestData      = generateTestData(m_yInterval, pool, 10);
   TestStatistic          stat(threadId, m_functionName, pool, XYF, xTestData.size() * yTestData.size() * MAXDIGITS / DIGITSTEP, maxTolerance);
 
   for(size_t i = 0; i < xTestData.size(); i++) {
@@ -180,11 +172,8 @@ void OperatorTest2ArgND64D80Pool::runTest(int threadId, DigitPool *pool) {
 }
 
 void FunctionTest1ArgRelative::runTest(int threadId, DigitPool *pool) {
-  const BigReal        from(m_xfrom, pool);
-  const BigReal        to(  m_xto  , pool);
-
-  const Array<BigReal> testData = generateTestData(from,to, m_xexponentialStep);
-  TestStatistic       stat(threadId, m_functionName, pool, XD, testData.size() * MAXDIGITS / DIGITSTEP, MAXDIGITS);
+  const Array<BigReal> testData = generateTestData(m_xInterval, pool);
+  TestStatistic        stat(threadId, m_functionName, pool, XD, testData.size() * MAXDIGITS / DIGITSTEP, MAXDIGITS);
 
   for(size_t i = 0; i < testData.size(); i++) {
     const BigReal &x           = testData[i];
@@ -202,14 +191,9 @@ void FunctionTest1ArgRelative::runTest(int threadId, DigitPool *pool) {
 }
 
 void FunctionTest2ArgRelative::runTest(int threadId, DigitPool *pool) {
-  const BigReal        xfrom(m_xfrom, pool);
-  const BigReal        xto(  m_xto  , pool);
-  const BigReal        yfrom(m_yfrom, pool);
-  const BigReal        yto(  m_yto  , pool);
-
-  const Array<BigReal> xTestData      = generateTestData(xfrom,xto, m_xexponentialStep,10);
-  const Array<BigReal> yTestData      = generateTestData(yfrom,yto, m_yexponentialStep,10);
-  TestStatistic       stat(threadId, m_functionName, pool, XYD, xTestData.size() * yTestData.size() * MAXDIGITS / DIGITSTEP, MAXDIGITS);
+  const Array<BigReal> xTestData      = generateTestData(m_xInterval, pool, 10);
+  const Array<BigReal> yTestData      = generateTestData(m_yInterval, pool, 10);
+  TestStatistic        stat(threadId, m_functionName, pool, XYD, xTestData.size() * yTestData.size() * MAXDIGITS / DIGITSTEP, MAXDIGITS);
 
   for(size_t i = 0; i < xTestData.size(); i++) {
     const BigReal &x = xTestData[i];

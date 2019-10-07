@@ -539,6 +539,7 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TestBigReal.h" />
+    <ClInclude Include="TestInterval.h" />
     <ClInclude Include="TestStatistic.h" />
     <ClInclude Include="TestUtil.h" />
   </ItemGroup>

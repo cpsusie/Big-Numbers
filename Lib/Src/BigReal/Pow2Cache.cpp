@@ -108,6 +108,10 @@ void Pow2Cache::dump() const {
     debugLog(_T("%s\n"), it.next().toString().cstr());
   }
   a.clear();
+  CompactIntArray lengthArray = getLength();
+  debugLog(_T("size:%zu, capacity:%zu\nLength:%s\n")
+          ,size(), getCapacity(), lengthArray.toStringBasicType().cstr());
+
   m_gate.signal();
 }
 
@@ -124,11 +128,11 @@ void Pow2Cache::clear() {
 }
 
 bool Pow2Cache::put(const Pow2ArgumentKey &key, BigReal * const &v) {
-  DEFINEMETHODNAME;
   bool ret;
   if(m_state & (CACHE_LOADED|CACHE_LOADING|CACHE_SAVING)) {
     if(m_state & (CACHE_LOADED | CACHE_SAVING)) {
-      throwException(_T("%s:Not allowed when cache is loaded from file or saving to file"), method);
+      throwException(_T("%s(key:%s, v:%s):Not allowed when cache is loaded from file or saving to file")
+                    ,__TFUNCTION__, key.toString().cstr(), toString((FullFormatBigReal&)*v).cstr());
     }
     if(ret = __super::put(key, v)) {
       CLRSTATEFLAG(CACHE_EMPTY);
@@ -196,7 +200,9 @@ void Pow2Cache::load(ByteInputStream &s) {
   Packer p;
   p.read(s);
   p >> capacity >> n;
-
+  if(n > capacity) {
+    capacity = 65993;
+  }
   LOGPOW2CACHE(_T("Loading Pow2Cache. size:%lu, capacity:%lu...\n"), n, capacity);
   setCapacity(capacity);
   SETSTATEFLAG(CACHE_LOADING);
@@ -226,13 +232,13 @@ const BigReal &BigReal::pow2(int n, size_t digits) { // static
       s_pow2Cache.put(key, new ConstBigReal(::cut(**result, digits)));
     } else if(n == 0) {
       s_pow2Cache.put(key, new ConstBigReal(BIGREAL_1)); // 2^0 == 1
-    } else if((n & 1) == 0) {                           // n even
+    } else if(isEven(n)) {                               // n even
       ConstBigReal t = pow2(n/2,digits);
-      s_pow2Cache.put(key, new ConstBigReal((digits == 0) ? (t*t) : rProd(t,t,digits)));           // 2^n = pow2(n/2)^2
-    } else if(n < 0) {                                  // n odd && < 0
-      s_pow2Cache.put(key, new ConstBigReal((digits == 0) ? pow2(n+1,digits) * BIGREAL_HALF: rProd(pow2(n+1,digits),BIGREAL_HALF, digits)));
-    } else {                                            // n odd && > 0
-      s_pow2Cache.put(key, new ConstBigReal((digits == 0) ? pow2(n-1,digits) * BIGREAL_2   : rProd(pow2(n-1,digits),BIGREAL_2   , digits)));
+      s_pow2Cache.put(key, new ConstBigReal((digits == 0) ? (t*t) : rProd(t,t,digits).rRound(digits))); // 2^n = pow2(n/2)^2
+    } else if(n < 0) {                                   // n odd && (n < 0)
+      s_pow2Cache.put(key, new ConstBigReal((digits == 0) ? pow2(n+1,digits) * BIGREAL_HALF: rProd(pow2(n+1,digits),BIGREAL_HALF, digits).rRound(digits)));
+    } else {                                             // n odd && (n > 0)
+      s_pow2Cache.put(key, new ConstBigReal((digits == 0) ? pow2(n-1,digits) * BIGREAL_2   : rProd(pow2(n-1,digits),BIGREAL_2   , digits).rRound(digits)));
     }
     result = s_pow2Cache.get(key);
   }

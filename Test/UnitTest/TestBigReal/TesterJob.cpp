@@ -68,14 +68,20 @@ unsigned int TesterJob::run() {
   return 0;
 }
 
-void TesterJob::startAll(int count) { // static
-  if(count == 1) {
+void TesterJob::runAll(UINT threadCount) { // static
+  startAll(threadCount);
+  waitUntilAllDone();
+  releaseAll();
+}
+
+void TesterJob::startAll(UINT threadCount) { // static
+  if(threadCount == 1) {
     FPU::setPrecisionMode(FPU_HIGH_PRECISION);
     TesterJob job(0);
     job.run();
   } else {
     s_gate.wait();
-    for(int i = 0; i < count; i++) {
+    for(UINT i = 0; i < threadCount; i++) {
       Runnable *job = new TesterJob(i); TRACE_NEW(job);
       s_testerJobs.add(job);
     }

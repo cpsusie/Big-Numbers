@@ -256,16 +256,23 @@ static void usage() {
                        "   -s: Run special test. Default is standard numbertest.\n"
                        "   -p: Set all threads priority to ABOVE_NORMAL.\n"
                        "   -tThreadcount: run testnumber with the specified number of threads. Default is the number of cores in the CPU\n."
+                       "   -g: Generate and save/dump hashtable. implies Threadcount = 1\n"
                        "   -d: Dump pow2Cache, either at load time, or at end, after all tests have filled the cache.\n")
            );
   exit(-1);
 }
 
+typedef enum {
+  CMD_STDTEST
+ ,CMD_SPECIALTEST
+ ,CMD_GENERATEPOW2CACHE
+} Command;
+
 int _tmain(int argc, TCHAR **argv) {
   try {
-    bool   highPriority  = false;
-    bool   specialTest   = false;
-    bool   dumpPow2Cache = false;
+    Command command       = CMD_STDTEST;
+    bool    highPriority  = false;
+    bool    dumpPow2Cache = false;
 
 #ifdef _DEBUG
     int    threadCount  = getDebuggerPresent() ? 1 : 0;
@@ -278,7 +285,9 @@ int _tmain(int argc, TCHAR **argv) {
         switch(*cp) {
         case 'p': highPriority  = true;
                   continue;
-        case 's': specialTest   = true;
+        case 's': command = CMD_SPECIALTEST;
+                  continue;
+        case 'g': command = CMD_GENERATEPOW2CACHE;
                   continue;
         case 'd': dumpPow2Cache = true;
                   continue;
@@ -306,24 +315,36 @@ int _tmain(int argc, TCHAR **argv) {
         throwLastErrorOnSysCallException(_T("SetThreadPriorityBoost"));
       }
     }
-    if(BigReal::pow2CacheHasFile()) {
-      BigReal::pow2CacheLoad();
-      if(dumpPow2Cache) {
-        BigReal::pow2CacheDump();
-        dumpPow2Cache = false; // dont dump at end
+    switch(command) {
+    case CMD_STDTEST          :
+    case CMD_SPECIALTEST      :
+      if(BigReal::pow2CacheHasFile()) {
+        BigReal::pow2CacheLoad();
+        if(dumpPow2Cache) {
+          BigReal::pow2CacheDump();
+          dumpPow2Cache = false; // dont dump at end
+        }
       }
-    }
-    if(specialTest) {
-      SpecialTestClass stc;
-      stc.runTest();
-    } else {
-      testBigReal(threadCount);
-    }
-    if(BigReal::pow2CacheChanged()) {
-      BigReal::pow2CacheSave();
-      if(dumpPow2Cache) {
+      if(command == CMD_SPECIALTEST) {
+        SpecialTestClass stc;
+        stc.runTest();
+      } else {
+        testBigReal(threadCount);
+      }
+      if(BigReal::pow2CacheChanged()) {
+        BigReal::pow2CacheSave();
+        if(dumpPow2Cache) {
+          BigReal::pow2CacheDump();
+        }
+      }
+      break;
+    case CMD_GENERATEPOW2CACHE:
+      testDouble80Conversions();
+      if(BigReal::pow2CacheChanged()) {
+        BigReal::pow2CacheSave();
         BigReal::pow2CacheDump();
       }
+      break;
     }
   } catch(Exception e) {
     tcout << _T("\nException:") << e.what() << _T("\n");

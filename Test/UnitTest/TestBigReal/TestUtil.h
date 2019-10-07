@@ -4,7 +4,7 @@
 #include <Float.h>
 #include <Math/Double64.h>
 #include <Math/Double80.h>
-#include <Math/BigReal.h>
+#include "TestInterval.h"
 
 typedef double    (* DoubleFunction1      )(double x);
 typedef double    (* DoubleFunction2      )(double x, double y);
@@ -19,7 +19,7 @@ typedef BigReal   (*rBigRealFunction2     )(const BigReal  &x, const BigReal &y,
 typedef BigReal   (*rBigRealFunction2Pool )(const BigReal  &x, const BigReal &y, size_t digits, DigitPool *pool);
 
 BigReal getRandom(int length, int exponent, RandomGenerator &rnd, DigitPool *pool, bool allowZero = true);
-Array<BigReal> generateTestData(const BigReal &from, const BigReal &to, bool exponentialStep, int count = 23);
+Array<BigReal> generateTestData(const TestInterval &interval, DigitPool *pool, int count = 23);
 
 float    getRelativeError32(float           x, DigitPool *pool , size_t *length = NULL);
 double   getRelativeError64(double          x, DigitPool *pool , size_t *length = NULL);

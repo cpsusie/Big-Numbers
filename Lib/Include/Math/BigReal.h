@@ -173,7 +173,7 @@ typedef INT64          BRDigitDiffType;
 
 #define APC_DIGITS         6
 
-#define CONVERSION_POW2DIGITCOUNT 23
+#define CONVERSION_POW2DIGITCOUNT 24
 
 // The definition of Digit should NOT be changed!!! Se asm-code in ShortProduct*.cpp
 class Digit {

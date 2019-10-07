@@ -1,6 +1,7 @@
 #pragma once
 
 #include "TestStatistic.h"
+#include "TestInterval.h"
 
 class AbstractFunctionTest {
 protected:
@@ -18,18 +19,17 @@ public:
 
 class FunctionTest1ArgND64D80 : public AbstractFunctionTest {
 private:
-  const bool            m_xexponentialStep;
-  const BigReal         m_xfrom, m_xto;
+  const TestInterval    m_xInterval;
   BigRealFunction1      m_f1;
   DoubleFunction1       m_f1_64;
   Double80Function1     m_f1_80;
 public:
   FunctionTest1ArgND64D80(const String        &functionName
-                         ,bool                 exponentialStep, const BigReal &from, const BigReal &to
+                         ,const TestInterval  &xInterval
                          ,BigRealFunction1     f
                          ,DoubleFunction1      f64
                          ,Double80Function1    f80) : AbstractFunctionTest(functionName)
-                                                    , m_xexponentialStep(exponentialStep), m_xfrom(from), m_xto(to)
+                                                    , m_xInterval(xInterval)
                                                     , m_f1(f), m_f1_64(f64), m_f1_80(f80)
   {
   }
@@ -38,22 +38,20 @@ public:
 
 class FunctionTest2ArgND64D80 : public AbstractFunctionTest {
 private:
-  const bool            m_xexponentialStep;
-  const BigReal         m_xfrom, m_xto;
-  const bool            m_yexponentialStep;
-  const BigReal         m_yfrom, m_yto;
+  const TestInterval    m_xInterval;
+  const TestInterval    m_yInterval;
   BigRealFunction2      m_f2;
   DoubleFunction2       m_f2_64;
   Double80Function2     m_f2_80;
 public:
   FunctionTest2ArgND64D80(const String        &functionName
-                         ,bool                 xexponentialStep, const BigReal &xfrom, const BigReal &xto
-                         ,bool                 yexponentialStep, const BigReal &yfrom, const BigReal &yto
+                         ,const TestInterval  &xInterval
+                         ,const TestInterval  &yInterval
                          ,BigRealFunction2     f
                          ,DoubleFunction2      f64
                          ,Double80Function2    f80) : AbstractFunctionTest(functionName)
-                                                    , m_xexponentialStep(xexponentialStep), m_xfrom(xfrom), m_xto(xto)
-                                                    , m_yexponentialStep(yexponentialStep), m_yfrom(yfrom), m_yto(yto)
+                                                    , m_xInterval(xInterval)
+                                                    , m_yInterval(yInterval)
                                                     , m_f2(f), m_f2_64(f64), m_f2_80(f80)
   {
   }
@@ -63,14 +61,13 @@ public:
 
 class FunctionTest1ArgRelative : public AbstractFunctionTest {
 private:
-  const bool            m_xexponentialStep;
-  const BigReal         m_xfrom, m_xto;
+  const TestInterval    m_xInterval;
   rBigRealFunction1     m_rf1;
 public:
   FunctionTest1ArgRelative(const String        &functionName
-                          ,bool                 exponentialStep, const BigReal &from, const BigReal &to
+                          ,const TestInterval  &xInterval
                           ,rBigRealFunction1    f) : AbstractFunctionTest(functionName)
-                                                   , m_xexponentialStep(exponentialStep), m_xfrom(from), m_xto(to)
+                                                   , m_xInterval(xInterval)
                                                    , m_rf1(f)
   {
   }
@@ -79,18 +76,16 @@ public:
 
 class FunctionTest2ArgRelative : public AbstractFunctionTest {
 private:
-  const bool            m_xexponentialStep;
-  const BigReal         m_xfrom, m_xto;
-  const bool            m_yexponentialStep;
-  const BigReal         m_yfrom, m_yto;
+  const TestInterval    m_xInterval;
+  const TestInterval    m_yInterval;
   rBigRealFunction2     m_rf2;
 public:
   FunctionTest2ArgRelative(const String        &functionName
-                          ,bool                 xexponentialStep, const BigReal &xfrom, const BigReal &xto
-                          ,bool                 yexponentialStep, const BigReal &yfrom, const BigReal &yto
+                          ,const TestInterval  &xInterval
+                          ,const TestInterval  &yInterval
                           ,rBigRealFunction2    f) : AbstractFunctionTest(functionName)
-                                                   , m_xexponentialStep(xexponentialStep), m_xfrom(xfrom), m_xto(xto)
-                                                   , m_yexponentialStep(yexponentialStep), m_yfrom(yfrom), m_yto(yto)
+                                                   , m_xInterval(xInterval)
+                                                   , m_yInterval(yInterval)
                                                    , m_rf2(f)
   {
   }
@@ -159,10 +154,10 @@ public:
 };
 
 // Raw functions. all taking TestStatistic & as parameter
-void testPositiveFloatConversion(   TestStatistic &stat);
-void testNegativeFloatConversion(   TestStatistic &stat);
-void testPositiveDoubleConversion(  TestStatistic &stat);
-void testNegativeDoubleConversion(  TestStatistic &stat);
+void testPositiveFloat32Conversion( TestStatistic &stat);
+void testNegativeFloat32Conversion( TestStatistic &stat);
+void testPositiveDouble64Conversion(TestStatistic &stat);
+void testNegativeDouble64Conversion(TestStatistic &stat);
 void testPositiveDouble80Conversion(TestStatistic &stat);
 void testNegativeDouble80Conversion(TestStatistic &stat);
 void testConstructors(              TestStatistic &stat);
@@ -210,6 +205,11 @@ private:
   static TestQueue s_testQueue, s_doneQueue;
 
   static BigRealJobArray s_testerJobs;
+  static void startAll(UINT threadCount);
+  static void releaseAll();
+  static void waitUntilAllDone() {
+    s_allDone.wait();
+  }
 
 public:
   TesterJob(int id) : m_id(id) {
@@ -218,9 +218,6 @@ public:
   static int getRunningCount() {
     return s_runningCount;
   }
-  static void waitUntilAllDone() {
-    s_allDone.wait();
-  }
   static inline void addFunctionTest(AbstractFunctionTest *test) {
     TRACE_NEW(test);
     s_testQueue.put(test);
@@ -228,38 +225,34 @@ public:
   static bool allOk() {
     return s_allOk;
   }
-  static void startAll(int count);
-  static void releaseAll();
+  static void runAll(UINT threadCount);
   static void shuffleTestOrder();
   static double getTotalThreadTime() {
     return s_totalThreadTime;
   }
 };
 
-inline void testFunction(const String     &functionName
-                        ,bool              exponentialStep, const BigReal &from, const BigReal &to
-                        ,BigRealFunction1  f
-                        ,DoubleFunction1   f64 = NULL
-                        ,Double80Function1 f80 = NULL) {
-  TesterJob::addFunctionTest(new FunctionTest1ArgND64D80(functionName, exponentialStep, from, to, f, f64, f80));
+inline void testFunction(const String       &functionName
+                        ,const TestInterval &xInterval
+                        ,BigRealFunction1    f
+                        ,DoubleFunction1     f64 = NULL
+                        ,Double80Function1   f80 = NULL) {
+  TesterJob::addFunctionTest(new FunctionTest1ArgND64D80(functionName, xInterval, f, f64, f80));
 }
 
-inline void testFunction(const String     &functionName
-                        ,bool              exponentialStep, const BigReal &from, const BigReal &to
-                        ,rBigRealFunction1 f) {
-  TesterJob::addFunctionTest(new FunctionTest1ArgRelative(functionName, exponentialStep, from, to, f));
+inline void testFunction(const String       &functionName
+                        ,const TestInterval &interval
+                        ,rBigRealFunction1   f) {
+  TesterJob::addFunctionTest(new FunctionTest1ArgRelative(functionName, interval, f));
 }
 
-inline void testFunction(const String     &functionName
-                        ,bool              xExponentialStep, const BigReal &xFrom, const BigReal &xTo
-                        ,bool              yExponentialStep, const BigReal &yFrom, const BigReal &yTo
-                        ,BigRealFunction2  f
-                        ,DoubleFunction2   f64 = NULL
-                        ,Double80Function2 f80 = NULL) {
-  TesterJob::addFunctionTest(new FunctionTest2ArgND64D80(functionName
-                                                        ,xExponentialStep, xFrom, xTo,yExponentialStep, yFrom, yTo
-                                                        ,f, f64, f80
-                                                        ));
+inline void testFunction(const String       &functionName
+                        ,const TestInterval &xInterval
+                        ,const TestInterval &yInterval
+                        ,BigRealFunction2    f
+                        ,DoubleFunction2     f64 = NULL
+                        ,Double80Function2   f80 = NULL) {
+  TesterJob::addFunctionTest(new FunctionTest2ArgND64D80(functionName, xInterval, yInterval, f, f64, f80));
 }
 
 inline void testExactBinaryOperator(const String               &functionName
@@ -280,13 +273,10 @@ static void testOperator(const String &functionName, rBigRealFunction2Pool op) {
 }
 
 inline void testFunction(const String &functionName
-                        ,bool xExponentialStep, const BigReal &xFrom, const BigReal &xTo
-                        ,bool yExponentialStep, const BigReal &yFrom, const BigReal &yTo
+                        ,const TestInterval &xInterval
+                        ,const TestInterval &yInterval
                         ,rBigRealFunction2 f) {
-  TesterJob::addFunctionTest(new FunctionTest2ArgRelative(functionName
-                                                         ,xExponentialStep, xFrom, xTo,yExponentialStep, yFrom, yTo
-                                                         ,f
-                                                          ));
+  TesterJob::addFunctionTest(new FunctionTest2ArgRelative(functionName, xInterval, yInterval, f ));
 }
 
 class DigitMonitorThread : public Thread {

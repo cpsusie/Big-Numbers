@@ -11,23 +11,25 @@ BigReal getRandom(int length, int exponent, RandomGenerator &rnd, DigitPool *poo
   return (exponent == 0) ? result : e(result, exponent);
 }
 
-static Array<BigReal> &generateTestDataExponentialStep(Array<BigReal> &a, const BigReal &from, const BigReal &to, int count) {
-  DigitPool    *pool       = from.getDigitPool();
+static Array<BigReal> &generateTestDataExponentialStep(Array<BigReal> &a, const BigRealInterval &interval, DigitPool *pool, UINT count) {
   const BigReal &_1         = pool->get1();
   BigReal        t          = _1;
-  const BigReal  fromM1     = from - _1;
+  const BigReal  fromM1(interval.getFrom() - _1, pool);
+  const BigReal  to(    interval.getTo()       , pool);
+
   const BigReal  stepFactor = rRoot(to-fromM1,dmax(_1,BigReal(count, pool)-_1),20);
 
-  for(int i = 0; i < count; i++, t *= stepFactor) {
+  for(UINT i = 0; i < count; i++, t *= stepFactor) {
     a.add(fromM1 + t);
   }
   return a;
 }
 
-static Array<BigReal> &generateTestDataLinearStep(Array<BigReal> &a, const BigReal &from, const BigReal &to, int count) {
-  DigitPool    *pool = from.getDigitPool();
-  const BigReal  step = rQuot(to - from, BigReal(count, pool), 20, pool);
-  int           i    = 1;
+static Array<BigReal> &generateTestDataLinearStep(Array<BigReal> &a, const BigRealInterval &interval, DigitPool *pool, UINT count) {
+  const BigReal from(interval.getFrom(), pool);
+  const BigReal to(  interval.getTo()  , pool);
+  const BigReal step = rQuot(to - from, BigReal(count, pool), 20, pool);
+  UINT          i    = 1;
 
   for(BigReal x = from; i < count; x += step, i++) {
     a.add(x);
@@ -36,9 +38,9 @@ static Array<BigReal> &generateTestDataLinearStep(Array<BigReal> &a, const BigRe
   return a;
 }
 
-Array<BigReal> generateTestData(const BigReal &from, const BigReal &to, bool exponentialStep, int count) {
+Array<BigReal> generateTestData(const TestInterval &interval, DigitPool *pool, int count) {
   Array<BigReal> result;
-  return exponentialStep ? generateTestDataExponentialStep(result, from,to,count) : generateTestDataLinearStep(result, from,to,count);
+  return interval.isExponentialStep() ? generateTestDataExponentialStep(result, interval, pool,count) : generateTestDataLinearStep(result, interval, pool, count);
 }
 
 float getRelativeError32(float x, DigitPool *pool, size_t *length) {
