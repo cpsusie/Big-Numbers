@@ -7,6 +7,8 @@
 #include <BitSet.h>
 #include <Date.h>
 
+using namespace std;
+
 double _poly(int degree, double *p, double x) {
   double res = p[degree];
   for(int i = degree - 1; i >= 0; i--)
@@ -55,7 +57,7 @@ MRHandler::MRHandler(int n, int threadCount, int winHeight) {
 
 String shortString(const BigInt &n) {
   const size_t maxLength = 60;
-  String       s         = n.toString();
+  String       s         = toString(n);
   const size_t len = s.length();
   if(len < maxLength) {
     return s;
