@@ -2,8 +2,6 @@
 #include <ctype.h>
 
 void BigReal::init(const Double80 &x) {
-  DEFINEMETHODNAME;
-
   init();
 
   if(!isnormal(x)) {
