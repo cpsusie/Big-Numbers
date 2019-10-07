@@ -38,6 +38,8 @@ void throwLastErrorOnSysCallNameException(const String &name);
 void throwLastErrorOnSysCallException(const TCHAR *method);
 void throwMethodLastErrorOnSysCallException(const TCHAR *className, const TCHAR *method);
 
+bool getDebuggerPresent();
+
 #ifdef IS32BIT
 #define CHECKUINT64ISVALIDSIZET(size64)                         \
 if (size64 > UINT_MAX) {                                        \

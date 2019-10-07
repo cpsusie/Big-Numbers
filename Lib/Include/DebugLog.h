@@ -15,7 +15,6 @@ String getMessageName(int msg);
 #define DEBUGTRACE debugLogLine(__TFILE__, __LINE__)
 #define ENTERFUNC  debugLog(_T("Enter %s\n"), __TFUNCTION__)
 #define LEAVEFUNC  debugLog(_T("Leave %s\n"), __TFUNCTION__)
-bool getDebuggerPresent();
 
 String hexdumpString(const void *data, size_t size);
 // if f == NULL, use debugLog as output
