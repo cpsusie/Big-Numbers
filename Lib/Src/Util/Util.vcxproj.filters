@@ -451,12 +451,6 @@
     <ClCompile Include="format1000.cpp">
       <Filter>Source Files\String</Filter>
     </ClCompile>
-    <ClCompile Include="RandInt.cpp">
-      <Filter>Source Files\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="Random.cpp">
-      <Filter>Source Files\Math</Filter>
-    </ClCompile>
     <ClCompile Include="Randomize.cpp">
       <Filter>Source Files\Math</Filter>
     </ClCompile>
@@ -921,6 +915,12 @@
       <Filter>Source Files\Math</Filter>
     </ClCompile>
     <ClCompile Include="Float32Str.cpp">
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="RandomGenerator.cpp">
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="StandardRandomGenerator.cpp">
       <Filter>Source Files\Math</Filter>
     </ClCompile>
   </ItemGroup>

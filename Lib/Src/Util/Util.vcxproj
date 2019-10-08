@@ -1083,8 +1083,8 @@
     <ClCompile Include="ProgressBar.cpp" />
     <ClCompile Include="PropertyContainer.cpp" />
     <ClCompile Include="QuickSort.cpp" />
-    <ClCompile Include="RandInt.cpp" />
-    <ClCompile Include="Random.cpp" />
+    <ClCompile Include="StandardRandomGenerator.cpp" />
+    <ClCompile Include="RandomGenerator.cpp" />
     <ClCompile Include="Randomize.cpp" />
     <ClCompile Include="ReadLine.cpp" />
     <ClCompile Include="ReadTextFile.cpp" />
