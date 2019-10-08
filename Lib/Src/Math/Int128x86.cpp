@@ -303,7 +303,7 @@ _32_63 :                                      ; 32 <= cl < 64
     mov         eax, dword ptr[esi+12]        ; eax = s4[3]
     shrd        dword ptr[esi+4], eax, cl     ; shift s4[1] new bits from eax (old s4[3])
     shr         eax, cl
-    mov         dword ptr[esi+8], eax         ; s4[2] = eax << cl
+    mov         dword ptr[esi+8], eax         ; s4[2] = eax >> cl
     xor         eax, eax
     mov         dword ptr[esi+12], eax        ; s4[3] = 0
     jmp         End
