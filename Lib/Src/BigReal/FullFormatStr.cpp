@@ -5,9 +5,7 @@ String toString(const FullFormatBigReal &x, StreamSize precision, StreamSize wid
   if(precision > 0) {
     return ::toString((BigReal&)x, precision, width, flags, separatorChar);
   } else {
-    tostrstream stream;
-    stream.width(width);
-    stream.flags(flags);
+    TowstringStream stream(width, flags);
     return putFullFormatBigReal(stream, x, separatorChar).str().c_str();
   }
 }
