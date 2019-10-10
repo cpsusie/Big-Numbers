@@ -4,43 +4,61 @@
 #include <Math/Rational.h>
 #include <Math/PrimeFactors.h>
 
-const Rational Rational::zero(0,1);      // = 0
-const Rational Rational::one(1,1);       // = 1
-const Rational RAT_MIN(  1,_I64_MAX);    // Min positive value (=1/_I64_MAX)
-const Rational RAT_MAX(_I16_MAX    );    // Max value          (=_I64_MAX)
-const Rational RAT_NAN(  0,0       );    // nan (undefined)    ( 0/0)
-const Rational RAT_PINF( 1,0       );    // +infinity;         ( 1/0)
-const Rational RAT_NINF(-1,0       );    // -infinity;         (-1/0)
+const Rational Rational::_0(0,1);                   // = 0
+const Rational Rational::_05(1, 2);                 // = 1/2
+const Rational Rational::_1(1,1);                   // = 1
+const Rational Rational::_RAT_MIN(  1,_I64_MAX);    // Min positive value (=1/_I64_MAX)
+const Rational Rational::_RAT_MAX(_I16_MAX    );    // Max value          (=_I64_MAX)
+const Rational Rational::_RAT_NAN(  0,0       );    // nan (undefined)    ( 0/0)
+const Rational Rational::_RAT_PINF( 1,0       );    // +infinity;         ( 1/0)
+const Rational Rational::_RAT_NINF(-1,0       );    // -infinity;         (-1/0)
 
 #define SAFEPROD(a,b) Rational::safeProd(a,b,__LINE__)
 
-int _fpclass(const Rational &r) {
-  switch (fpclassify(r)) {
-  case FP_NORMAL:
-    return r.isNegative() ? _FPCLASS_NN : _FPCLASS_PN;
-  case FP_ZERO:
-    return r.isNegative() ? _FPCLASS_NZ : _FPCLASS_PZ;
-  case FP_INFINITE:
-    return r.isNegative() ? _FPCLASS_NINF : _FPCLASS_PINF;
-  case FP_NAN:
-    return _FPCLASS_QNAN;
-  default:
-    return _FPCLASS_SNAN;
+int fpclassify(const Rational &r) {
+  switch(_fpclass(r)) {
+  case _FPCLASS_PN  :
+  case _FPCLASS_NN  : return FP_NORMAL;
+  case _FPCLASS_PD  :
+  case _FPCLASS_ND  : return FP_SUBNORMAL;
+  case _FPCLASS_PZ  :
+  case _FPCLASS_NZ  : return FP_ZERO;
+  case _FPCLASS_NINF:
+  case _FPCLASS_PINF: return FP_INFINITE;
+  default           : return FP_NAN;
   }
 }
 
+int _fpclass(const Rational &r) {
+  switch(sign(r.getDenominator())) {
+  case 0:
+    switch(sign(r.getNumerator())) {
+    case  1: return _FPCLASS_PINF;
+    case -1: return _FPCLASS_NINF;
+    case  0: return _FPCLASS_QNAN;
+    }
+    break;
+  case 1:
+    switch(sign(r.getNumerator())) {
+    case  1: return _FPCLASS_PN;
+    case -1: return _FPCLASS_NN;
+    case  0: return _FPCLASS_PZ;
+    }
+    break;
+  }
+  return _FPCLASS_SNAN; // denominator MUST be >= 0
+}
 
-#define CHECKISNORMAL(f)                    \
-if(!isnormal(f)) {                          \
-  if(isfinite(f))         *this = zero;     \
-  else if(isPInfinity(f)) *this = RAT_PINF; \
-  else if(isNInfinity(f)) *this = RAT_NINF; \
-  else                    *this = RAT_NAN;  \
-  return;                                   \
+#define CHECKISNORMAL(f)                     \
+if(!isnormal(f)) {                           \
+  if(isfinite(f))         *this = _0;        \
+  else if(isPInfinity(f)) *this = _RAT_PINF; \
+  else if(isNInfinity(f)) *this = _RAT_NINF; \
+  else                    *this = _RAT_NAN;  \
+  return;                                    \
 }
 
 Rational::Rational(float f, UINT maxND) {
-  DEFINEMETHODNAME;
   static const TCHAR *invalidFloatMsg = _T("Value %e cannot be contained in a Rational with maxND=%lu");
   CHECKISNORMAL(f)
   bool   positive;
@@ -78,7 +96,7 @@ Rational::Rational(float f, UINT maxND) {
   }
 
   if((fa > maxND) || (fa < 1.0f / maxND)) { // hard upper and lower bounds for ratio
-    throwInvalidArgumentException(method, invalidFloatMsg, f, maxND);
+    throwInvalidArgumentException(__TFUNCTION__, invalidFloatMsg, f, maxND);
   }
 
   assert(((float)p1 / q1 <= maxND) && ((float)q1 / p1 <= maxND));
@@ -93,7 +111,6 @@ Rational::Rational(float f, UINT maxND) {
 // See also http://www.virtualdub.org/blog/pivot/entry.php?id=81
 // for a discussion of calculating continued fractions by convergeants.
 Rational::Rational(double d, UINT maxND) {
-  DEFINEMETHODNAME;
   static const TCHAR *invalidDoubleMsg = _T("Value %le cannot be contained in a Rational with maxND=%lu");
 
   CHECKISNORMAL(d)
@@ -132,7 +149,7 @@ Rational::Rational(double d, UINT maxND) {
   }
 
   if((da > maxND) || (da < 1.0 / maxND)) { // hard upper and lower bounds for ratio
-    throwInvalidArgumentException(method, invalidDoubleMsg, d, maxND);
+    throwInvalidArgumentException(__TFUNCTION__, invalidDoubleMsg, d, maxND);
   }
 
   assert(((double)p1 / q1 <= maxND) && ((double)q1 / p1 <= maxND));
@@ -143,7 +160,6 @@ Rational::Rational(double d, UINT maxND) {
 }
 
 Rational::Rational(const Double80 &d80, UINT64 maxND) {
-  DEFINEMETHODNAME;
   static const TCHAR *invalidDoubleMsg = _T("Value %s cannot be contained in a Rational with maxND=%I64u");
 
   CHECKISNORMAL(d80)
@@ -182,7 +198,7 @@ Rational::Rational(const Double80 &d80, UINT64 maxND) {
   }
 
   if((da > maxND) || (da < Double80::_1 / maxND)) { // hard upper and lower bounds for ratio
-    throwInvalidArgumentException(method, invalidDoubleMsg, toString(d80).cstr(), maxND);
+    throwInvalidArgumentException(__TFUNCTION__, invalidDoubleMsg, toString(d80).cstr(), maxND);
   }
 
   assert(((Double80)p1 / q1 <= maxND) && ((Double80)q1 / p1 <= maxND));
@@ -256,8 +272,21 @@ Rational operator-(const Rational &l, const Rational &r) {
 }
 
 Rational operator-(const Rational &r) {
-  if(!isfinite(r)) return RAT_NAN;
-  return Rational(-r.m_numerator, r.m_denominator);
+  switch(_fpclass(r)) {
+  case _FPCLASS_SNAN  :
+  case _FPCLASS_QNAN  : return r;
+  case _FPCLASS_NZ    :
+  case _FPCLASS_PZ    : return Rational::_0;
+  case _FPCLASS_NINF  :
+  case _FPCLASS_NN    :
+  case _FPCLASS_ND    :
+  case _FPCLASS_PD    :
+  case _FPCLASS_PN    :
+  case _FPCLASS_PINF  :
+    return Rational(-r.m_numerator, r.m_denominator);
+  default             :
+    return r;
+  }
 }
 
 Rational operator*(const Rational &l, const Rational &r) {
@@ -270,13 +299,22 @@ void Rational::throwDivisionByZeroException(const TCHAR *method) { // static
 }
 
 Rational operator/(const Rational &l, const Rational &r) {
-  if(!isfinite(l) || !isfinite(r)) return RAT_NAN;
-  if(r.isZero()) {
-    if(l.isZero()    ) return RAT_NAN;
-    if(l.isNegative()) return RAT_NINF;
-    return RAT_PINF;
+  const int lclass = _fpclass(l);
+  if((lclass & (_FPCLASS_NN | _FPCLASS_PN | _FPCLASS_NZ | _FPCLASS_PZ)) == 0) {
+    return Rational::_RAT_NAN;
   }
-  return Rational(SAFEPROD(l.m_numerator,r.m_denominator), SAFEPROD(l.m_denominator,r.m_numerator));
+  switch(fpclassify(r)) {
+  case FP_NORMAL:
+    return Rational(SAFEPROD(l.m_numerator, r.m_denominator), SAFEPROD(l.m_denominator, r.m_numerator));
+  case FP_ZERO:
+    switch(lclass) {
+    case _FPCLASS_PN: return Rational::_RAT_PINF;   // +finite/0 -> +inf
+    case _FPCLASS_NN: return Rational::_RAT_NINF;   // -finite/0 -> -inf
+    case _FPCLASS_NZ:
+    case _FPCLASS_PZ: return Rational::_RAT_NAN;   // 0/0       ->  nan
+    }
+  }
+  return Rational::_RAT_NAN;
 }
 
 Rational operator%(const Rational &l, const Rational &r) {
@@ -291,27 +329,8 @@ Rational operator%(const Rational &l, const Rational &r) {
   return l - r * n;
 }
 
-Rational &Rational::operator*=(const Rational &r) {
-  if(!isfinite(*this) || !isfinite(r)) return *this = RAT_NAN;
-  return *this = Rational(SAFEPROD(m_numerator,r.m_numerator), SAFEPROD(m_denominator, r.m_denominator));
-}
-
-Rational &Rational::operator/=(const Rational &r) {
-  if(!isfinite(*this) || !isfinite(r)) return *this = RAT_NAN;
-  if(r.isZero()) {
-    if(isZero()    ) return *this = RAT_NAN;
-    if(isNegative()) return *this = RAT_NINF;
-    return *this = RAT_PINF;
-  }
-  return *this = Rational(SAFEPROD(m_numerator,r.m_denominator), SAFEPROD(m_denominator, r.m_numerator));
-}
-
-Rational &Rational::operator%=(const Rational &r) {
-  return *this = *this % r;
-}
-
 Rational fabs(const Rational &r) {
-  if(!isfinite(r)) return RAT_NAN;
+  if(isnan(r)) return RAT_NAN;
   Rational result;
   result.m_numerator   = abs(r.m_numerator);
   result.m_denominator = r.m_denominator;
@@ -335,10 +354,10 @@ INT64 Rational::pow(INT64 n, UINT y) {
 Rational pow(const Rational &r, int e) {
   if(!isfinite(r)) return RAT_NAN;
   if(e == 0) {
-    return Rational::one;
+    return Rational::_1;
   } else if(e < 0) {
     if(r.isZero()) {
-      throwInvalidArgumentException(__TFUNCTION__, _T("r == 0, e=%d"), e);
+      return RAT_PINF;
     }
     return Rational(Rational::pow(r.m_denominator,-e), Rational::pow(r.m_numerator,-e));
   } else {
@@ -347,14 +366,13 @@ Rational pow(const Rational &r, int e) {
 }
 
 Rational reciprocal(const Rational &r) {
-  DEFINEMETHODNAME;
   switch(fpclassify(r)) {
   case FP_NORMAL   : return Rational(r.m_denominator, r.m_numerator);
-  case FP_ZERO     : Rational::throwDivisionByZeroException(method);
-  case FP_INFINITE : return Rational::zero;
+  case FP_ZERO     : return Rational::_RAT_PINF;
+  case FP_INFINITE : return Rational::_RAT_NAN;
   case FP_NAN      : return r;
-  default          : throwException(_T("%s:Unknown value return from fpclassify:%d"), method, fpclassify(r));
-                     return Rational::zero;
+  default          : throwException(_T("%s:Unknown value return from fpclassify:%d"), __TFUNCTION__, fpclassify(r));
+                     return Rational::_0;
   }
 }
 
@@ -417,9 +435,9 @@ UINT64 Rational::findGCD(const UINT64 &a, const UINT64 &b) { // static
 #define CHECKISFINITE1(f)                  \
 if(!isfinite(f)) {                         \
   if(r) {                                  \
-    if(isPInfinity(f))      *r = RAT_PINF; \
-    else if(isNInfinity(f)) *r = RAT_NINF; \
-    else                    *r = RAT_NAN;  \
+    if(isPInfinity(f))      *r = _RAT_PINF; \
+    else if(isNInfinity(f)) *r = _RAT_NINF; \
+    else                    *r = _RAT_NAN;  \
   }                                        \
   return true;                             \
 }
@@ -489,7 +507,7 @@ bool Rational::isRationalPow(const Rational &base, const Rational &e, Rational *
   try {
     if(base.isZero()) {
       if(!e.isPositive()) {
-        if(r) RETURNTRUE(RAT_NAN);
+        if(r) RETURNTRUE(_RAT_NAN);
         return false;
       } else {
         RETURNTRUE(0);

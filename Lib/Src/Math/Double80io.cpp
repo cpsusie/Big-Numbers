@@ -288,7 +288,7 @@ template <class IStreamType, class CharType> IStreamType &getDouble80(IStreamTyp
   IStreamScanner<IStreamType, CharType> scanner(in);
 
   const bool          hex   = ((in.flags() & ios::floatfield) == ios::hexfloat);
-  const RegexIStream &regex = hex ? HexFloatValueStreamScanner::getInstance() : FloatValueStreamScanner::getInstance();
+  const RegexIStream &regex = hex ? HexFloatValueStreamScanner::getInstance() : DecFloatValueStreamScanner::getInstance();
   String buf;
   if(regex.match(in, &buf) < 0) {
     scanner.endScan(false);

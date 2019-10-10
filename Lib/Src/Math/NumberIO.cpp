@@ -17,9 +17,9 @@ public:
 };
 
 static const char *numberPatterns[] = {
-  "[+\\-]?[0-9]*\\(\\.[0-9]+\\)\\(e[+\\-]?[0-9]+\\)?"    // float
- ,"[+\\-]?[0-9]+\\(\\.[0-9]*\\)?\\(e[+\\-]?[0-9]+\\)?"   // float
- ,"[+\\-]?[0-9]+\\(/[0-9]+\\)?"                          // rational
+  "[+/-]?[0-9]*/(/.[0-9]+/)/(e[+/-]?[0-9]+/)?"    // float
+ ,"[+/-]?[0-9]+/(/.[0-9]*/)?/(e[+/-]?[0-9]+/)?"   // float
+ ,"[+/-]?[0-9]+/(//[0-9]+/)?"                     // rational
  ,NULL
 };
 
@@ -38,8 +38,7 @@ template <class IStreamType, class CharType> IStreamType &getNumber(IStreamType 
   }
   try {
     n = _tcstonum(buf.cstr(), NULL);
-  }
-  catch (...) {
+  } catch (...) {
     scanner.endScan(false);
     throw;
   }

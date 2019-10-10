@@ -866,9 +866,6 @@
     <ClCompile Include="FloatRegex.cpp">
       <Filter>Source Files\Math</Filter>
     </ClCompile>
-    <ClCompile Include="UndefFloatRegex.cpp">
-      <Filter>Source Files\Math</Filter>
-    </ClCompile>
     <ClCompile Include="IntegerRegex.cpp">
       <Filter>Source Files\Math</Filter>
     </ClCompile>
@@ -921,6 +918,12 @@
       <Filter>Source Files\Math</Filter>
     </ClCompile>
     <ClCompile Include="StandardRandomGenerator.cpp">
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="RationalRegex.cpp">
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="UndefNumericRegex.cpp">
       <Filter>Source Files\Math</Filter>
     </ClCompile>
   </ItemGroup>

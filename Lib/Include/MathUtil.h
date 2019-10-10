@@ -258,26 +258,26 @@ inline BYTE   getSign(       double x) {
   return (((BYTE  *)&x)[7]) & 0x80;
 }
 
-class UndefFloatValueStreamScanner : public RegexIStream {
+class UndefNumericStreamScanner : public RegexIStream {
 private:
   static StringArray getRegexLines();
-  UndefFloatValueStreamScanner() : RegexIStream(getRegexLines(), true) {
+  UndefNumericStreamScanner() : RegexIStream(getRegexLines(), true) {
   }
 public:
   static const RegexIStream &getInstance() {
-    static UndefFloatValueStreamScanner s_instance;
+    static UndefNumericStreamScanner s_instance;
     return s_instance;
   }
 };
 
-class FloatValueStreamScanner : public RegexIStream {
+class DecFloatValueStreamScanner : public RegexIStream {
 private:
   static StringArray getRegexLines();
-  FloatValueStreamScanner() : RegexIStream(getRegexLines(), true) {
+  DecFloatValueStreamScanner() : RegexIStream(getRegexLines(), true) {
 }
 public:
   static const RegexIStream &getInstance() {
-    static FloatValueStreamScanner s_instance;
+    static DecFloatValueStreamScanner s_instance;
     return s_instance;
   }
 };
@@ -330,6 +330,18 @@ public:
   }
 };
 
+class DecRationalValueStreamScanner : public RegexIStream {
+private:
+  static StringArray getRegexLines();
+  DecRationalValueStreamScanner() : RegexIStream(getRegexLines(), true) {
+  }
+public:
+  static const RegexIStream &getInstance() {
+    static DecRationalValueStreamScanner s_instance;
+    return s_instance;
+  }
+};
+
 // radix must be 8,10, 16
 const RegexIStream &getIntegerStreamScanner(int radix);
 
@@ -338,28 +350,28 @@ typedef enum {
   ,_UNDEFREG_NINF
   ,_UNDEFREG_SNAN
   ,_UNDEFREG_QNAN
-} _UndefFloatValue;
+} _UndefNumericValue;
 
-template<class IStreamType, class CharType, class FloatType> class FloatIstreamT {
+template<class IStreamType, class CharType, class NumericType> class NumericStreamAcceptUndef {
 private:
   IStreamType &m_in;
-  void parseOnFail(FloatType &x, bool neg) const {
-    const _UndefFloatValue index = (_UndefFloatValue)UndefFloatValueStreamScanner::getInstance().match(m_in);
+  void parseOnFail(NumericType &x, bool neg) const {
+    const _UndefNumericValue index = (_UndefNumericValue)UndefNumericStreamScanner::getInstance().match(m_in);
     switch(index) {
     case _UNDEFREG_PINF    :
       if(!neg) {
-        x = numeric_limits<FloatType>::infinity();
+        x = numeric_limits<NumericType>::infinity();
         break;
       }
       // NB continue case
     case _UNDEFREG_NINF    :
-      x = -numeric_limits<FloatType>::infinity();
+      x = -numeric_limits<NumericType>::infinity();
       break;
     case _UNDEFREG_SNAN    :
-      x =  numeric_limits<FloatType>::signaling_NaN();
+      x =  numeric_limits<NumericType>::signaling_NaN();
       break;
     case _UNDEFREG_QNAN    :
-      x =  numeric_limits<FloatType>::quiet_NaN();
+      x =  numeric_limits<NumericType>::quiet_NaN();
       break;
     default                :
       m_in.setstate(ios_base::failbit);
@@ -368,9 +380,9 @@ private:
   }
 
 public:
-  inline FloatIstreamT(IStreamType &in) : m_in(in) {
+  inline NumericStreamAcceptUndef(IStreamType &in) : m_in(in) {
   }
-  FloatIstreamT &operator>>(FloatType &x) {
+  NumericStreamAcceptUndef &operator>>(NumericType &x) {
     if(m_in.good()) {
       CharType c = 0;
       while(iswspace(c = m_in.peek())) {
@@ -387,29 +399,30 @@ public:
 };
 
 
-template<class IStreamType, class CharType, class FloatType> class FloatManipT {
+template<class IStreamType, class CharType, class NumericType> class NumericManipulatorStream {
 public:
   mutable IStreamType *m_in;
-  inline const FloatManipT &operator>>(FloatType &x) const {
-    FloatIstreamT<IStreamType, CharType, FloatType>(*m_in) >> x;
+  inline const NumericManipulatorStream &operator>>(NumericType &x) const {
+    NumericStreamAcceptUndef<IStreamType, CharType, NumericType>(*m_in) >> x;
     return *this;
   }
-  inline IStreamType &operator>>(const FloatManipT &) const {
+  inline IStreamType &operator>>(const NumericManipulatorStream &) const {
     return *m_in;
   }
 };
 
-template<class FloatType> FloatManipT<std::istream, char, FloatType> CharManip {
-};
-template<class FloatType> FloatManipT<std::wistream, wchar_t, FloatType> WcharManip {
+template<class NumericType> NumericManipulatorStream<std::istream, char, NumericType> CharManip {
 };
 
-template<class FloatType> FloatManipT<std::istream,char,FloatType> &operator>>(std::istream &in, FloatManipT<std::istream, char, FloatType> &dm) {
+template<class NumericType> NumericManipulatorStream<std::wistream, wchar_t, NumericType> WcharManip {
+};
+
+template<class NumericType> NumericManipulatorStream<std::istream,char,NumericType> &operator>>(std::istream &in, NumericManipulatorStream<std::istream, char, NumericType> &dm) {
   dm.m_in = &in;
   return dm;
 }
 
-template<class FloatType> FloatManipT<std::wistream, wchar_t, FloatType> &operator>>(std::wistream &in, FloatManipT<std::wistream, wchar_t, FloatType> &dm) {
+template<class NumericType> NumericManipulatorStream<std::wistream, wchar_t, NumericType> &operator>>(std::wistream &in, NumericManipulatorStream<std::wistream, wchar_t, NumericType> &dm) {
   dm.m_in = &in;
   return dm;
 }

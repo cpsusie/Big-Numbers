@@ -12,7 +12,7 @@ template<class INTTYPE, class CharType> Rational _strtorat(const CharType *s, Ch
   CharType *next = NULL;
   numerator = strtointtype(s, &next, radix);
   if(next == NULL) {
-    return Rational::zero;
+    return Rational::_0;
   }
   s = next;
   if(end) *end = next;

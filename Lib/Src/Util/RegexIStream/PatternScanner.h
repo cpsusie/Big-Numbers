@@ -31,7 +31,7 @@ private:
   UINT                 m_currentLineIndex;
   const _TUCHAR       *m_source, *m_end, *m_current, *m_lastStart, *m_currentStart;
   const bool           m_ignoreCase;
-  bool                 m_inSideCharClass;
+  bool                 m_insideCharClass;
   _TUCHAR              m_theCharacter;
   void   initPointers();
   void   setupPointers();
@@ -51,16 +51,21 @@ public:
   inline UINT getCurrentLineIndex() const {
     return m_currentLineIndex;
   }
+  // return true if getCurrentLineIndex() < m_lineCount - 1
   inline bool hasNextLine() const {
     return getCurrentLineIndex() < m_lineCount - 1;
   }
-  void nextLine(); // throw if(!hasNextLine())
+  // throw if(!hasMoreLines())
+  void nextLine();
+  // return true if end-of-line
   inline bool eol() const {
     return m_current == m_end;
   }
-  inline bool eos() const { // end-of-source, ie no more characters on current line, and no more lines
+  // return true if end-of-source, ie eol() == true and hasNextLine() == false
+  inline bool eos() const {
     return eol() && !hasNextLine();
   }
+  // return line-position (index of first character) in current lexeme (token)
   inline intptr_t getIndex() const {
     return m_currentStart - m_source;
   }

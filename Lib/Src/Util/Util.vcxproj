@@ -1083,6 +1083,7 @@
     <ClCompile Include="ProgressBar.cpp" />
     <ClCompile Include="PropertyContainer.cpp" />
     <ClCompile Include="QuickSort.cpp" />
+    <ClCompile Include="RationalRegex.cpp" />
     <ClCompile Include="StandardRandomGenerator.cpp" />
     <ClCompile Include="RandomGenerator.cpp" />
     <ClCompile Include="Randomize.cpp" />
@@ -1191,7 +1192,7 @@
     <ClCompile Include="TreeMapImpl.cpp" />
     <ClCompile Include="TreeSetImpl.cpp" />
     <ClCompile Include="TreeSetIterator.cpp" />
-    <ClCompile Include="UndefFloatRegex.cpp" />
+    <ClCompile Include="UndefNumericRegex.cpp" />
     <ClCompile Include="Unlink.cpp" />
     <ClCompile Include="WildCardRegex.cpp" />
     <ClCompile Include="xfree.cpp" />

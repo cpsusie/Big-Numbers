@@ -12,8 +12,6 @@ private:
   static void throwDivisionByZeroException(const TCHAR *method);
   static INT64 pow(INT64 n, UINT y);
 public:
-  static const Rational zero;          // = 0
-  static const Rational one;           // = 1
 
   inline Rational() : m_numerator(0), m_denominator(1) {
   }
@@ -51,20 +49,23 @@ public:
   inline Rational &operator+=(const Rational &r) {
     return *this = *this + r;
   }
-
   inline Rational &operator-=(const Rational &r) {
     return *this = *this - r;
   }
-
-  Rational &operator*=(const Rational &r);
-  Rational &operator/=(const Rational &r);
-  Rational &operator%=(const Rational &r);
-
+  inline Rational &operator*=(const Rational &r) {
+    return *this = *this * r;
+  }
+  inline Rational &operator/=(const Rational &r) {
+    return *this = *this / r;
+  }
+  inline Rational &operator%=(const Rational &r) {
+    return *this = *this % r;
+  }
   inline Rational &operator++() {   // prefix-form
-    return *this += one;
+    return *this += _1;
   }
   inline Rational &operator--() {   // prefix-form
-    return *this -= one;
+    return *this -= _1;
   }
   inline Rational operator++(int) { // postfix-form
     const Rational result(*this);
@@ -136,13 +137,16 @@ public:
   inline void load(ByteInputStream  &s) {
     s.getBytesForced((BYTE*)this, sizeof(Rational));
   }
-};
 
-extern const Rational RAT_MIN;     // Min positive value (=1/_I64_MAX)
-extern const Rational RAT_MAX;     // Max value          (=_I64_MAX)
-extern const Rational RAT_NAN;     // nan (undefined)    ( 0/0)
-extern const Rational RAT_PINF;    // +infinity;         ( 1/0)
-extern const Rational RAT_NINF;    // -infinity;         (-1/0)
+  static const Rational _0;           // = 0
+  static const Rational _05;          // 0.5
+  static const Rational _1;           // = 1
+  static const Rational _RAT_MIN;     // Min positive value (=1/_I64_MAX)
+  static const Rational _RAT_MAX;     // Max value          (=_I64_MAX)
+  static const Rational _RAT_NAN;     // nan (undefined)    ( 0/0)
+  static const Rational _RAT_PINF;    // +infinity;         ( 1/0)
+  static const Rational _RAT_NINF;    // -infinity;         (-1/0)
+};
 
 // Return true, if denominator == 1
 inline bool     isInteger(  const Rational &r) {  return r.getDenominator() == 1;                             }
@@ -196,11 +200,24 @@ inline bool rationalExponentsMultiply(const Rational &r1, const Rational &r2) {
   return isAsymmetricExponent(r1) || isAsymmetricExponent(r2);
 }
 
-inline int fpclassify(const Rational &r) {
-  if(r.getDenominator()) return r.getNumerator() ? FP_NORMAL : FP_ZERO;
-  return r.getNumerator() ? FP_INFINITE : FP_NAN;
-}
+// returns one of
+//  FP_NORMAL
+//  FP_ZERO
+//  FP_INFINITE
+//  FP_NAN
+int fpclassify(const Rational &r);
 
+// returns one of
+// _FPCLASS_SNAN  0x0001   signaling NaN
+// _FPCLASS_QNAN  0x0002   quiet NaN
+// _FPCLASS_NINF  0x0004   negative infinity
+// _FPCLASS_NN    0x0008   negative normal
+// _FPCLASS_ND    0x0010   negative denormal
+// _FPCLASS_NZ    0x0020   -0
+// _FPCLASS_PZ    0x0040   +0
+// _FPCLASS_PD    0x0080   positive denormal
+// _FPCLASS_PN    0x0100   positive normal
+// _FPCLASS_PINF  0x0200   positive infinity
 int _fpclass(const Rational &r);
 
 inline bool isfinite(const Rational &r) {
@@ -273,3 +290,75 @@ std::wostream &operator<<(std::wostream &out, const Rational &r);
 
 Packer &operator<<(Packer &p, const Rational &r);
 Packer &operator>>(Packer &p,       Rational &r);
+
+// STRUCT _Num_int_base
+struct _Num_Rational_base
+  : std::_Num_base
+{	// base for Rational types
+  static constexpr bool is_bounded     = true;
+  static constexpr bool is_exact       = true;
+  static constexpr bool is_integer     = false;
+  static constexpr bool has_infinity   = true;
+  static constexpr bool has_quiet_NaN  = true;
+  static constexpr bool is_modulo      = false;
+  static constexpr bool is_signed      = true;
+  static constexpr bool is_specialized = true;
+  static constexpr int  radix          = 2;
+};
+
+// CLASS numeric_limits<Double80>
+template<> class std::numeric_limits<Rational>
+    : public _Num_Rational_base
+{	// limits for type Rational
+public:
+  _NODISCARD static Rational (min)() noexcept
+  {	// return minimum value
+    return Rational::_RAT_MIN;
+  }
+
+  _NODISCARD static Rational (max)() noexcept
+  {	// return maximum value
+    return Rational::_RAT_MAX;
+  }
+
+  _NODISCARD static Rational lowest() noexcept
+  {	// return most negative value
+    return (-(max)());
+  }
+
+  _NODISCARD static Rational epsilon() noexcept
+  {	// return smallest effective increment from 1.0
+    return Rational::_RAT_MIN;
+  }
+
+  _NODISCARD static Rational round_error() noexcept
+  {	// return largest rounding error
+    return Rational::_0;
+  }
+
+  _NODISCARD static Rational denorm_min() noexcept
+  {	// return minimum denormalized value
+    return Rational::_RAT_MIN;
+  }
+
+  _NODISCARD static Rational infinity() noexcept
+  {	// return positive infinity
+    return Rational::_RAT_PINF;
+  }
+
+  _NODISCARD static Rational quiet_NaN() noexcept
+  {	// return non-signaling NaN
+    return Rational::_RAT_NAN;
+  }
+
+  _NODISCARD static Rational signaling_NaN() noexcept
+  {	// return signaling NaN
+    return Rational::_RAT_NAN;
+  }
+};
+
+#define RAT_MIN  Rational::_RAT_MIN                     // Min positive value (=1/_I64_MAX)
+#define RAT_MAX  Rational::_RAT_MAX                     // Max value          (=_I64_MAX)
+#define RAT_NAN  Rational::_RAT_NAN                     // nan (undefined)    ( 0/0)
+#define RAT_PINF Rational::_RAT_PINF                    // +infinity;         ( 1/0)
+#define RAT_NINF Rational::_RAT_NINF

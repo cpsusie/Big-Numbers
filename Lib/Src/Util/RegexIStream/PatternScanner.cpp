@@ -19,7 +19,7 @@ void PatternScanner::initPointers() {
   m_end             = NULL;
   m_current         = NULL;
   m_lastStart       = NULL;
-  m_inSideCharClass = false;
+  m_insideCharClass = false;
 }
 
 void PatternScanner::setupPointers() {
@@ -28,10 +28,10 @@ void PatternScanner::setupPointers() {
   m_end             = m_source + line.length();
   m_current         = m_source;
   m_lastStart       = m_currentStart = m_current;
-  m_inSideCharClass = false;
+  m_insideCharClass = false;
 }
 
-void PatternScanner::nextLine() { // throw if(!hasMoreLines())
+void PatternScanner::nextLine() {
   if(!hasNextLine()) {
     throwException(_T("%s:No next line. current line=%u, linecount=%u"), __TFUNCTION__, getCurrentLineIndex(), m_lineCount);
   }
@@ -39,7 +39,7 @@ void PatternScanner::nextLine() { // throw if(!hasMoreLines())
   setupPointers();
 }
 
-PatternToken PatternScanner::setNormalChar(_TUCHAR ch) { // ch = 0 use *m_current
+PatternToken PatternScanner::setNormalChar(_TUCHAR ch) {
   if(ch == 0) {
     m_theCharacter = *m_current;
     advance();
@@ -56,25 +56,26 @@ PatternToken PatternScanner::nextToken() {
   m_lastStart    = m_currentStart;
   m_currentStart = m_current;
 
-  if(m_inSideCharClass) {
+  if(m_insideCharClass) {
     switch(*m_current) {
     case _T(']' ) :
-      advance(); m_inSideCharClass = false;
+      advance();
+      m_insideCharClass = false;
       return RB;
     case _T('-' ) :
       advance();
       return DASH;
-    case _T('\\') :
+    case _T('/') :
       advance();
       switch(*m_current) {
       case _T('-' ) :
       case _T(']' ) :
-      case _T('\\') :
+      case _T('/') :
         return setNormalChar();
       case 0        :
         unexpectedEndOfPattern();
       default       :
-        return setNormalChar(_T('\\'));
+        return setNormalChar(_T('/'));
       }
       break;
     case 0        :
@@ -88,8 +89,11 @@ PatternToken PatternScanner::nextToken() {
     case _T('?' ) : advance(); return QUEST;
     case _T('+' ) : advance(); return PLUS;
     case _T('*' ) : advance(); return STAR;
-    case _T('[' ) : advance(); m_inSideCharClass = true;  return LB;
-    case _T('\\') :
+    case _T('[' ) :
+      advance();
+      m_insideCharClass = true;
+      return LB;
+    case _T('/') :
       advance();
       switch(*m_current) {
       case _T('(' ) : advance(); return LPAR;
@@ -103,13 +107,14 @@ PatternToken PatternScanner::nextToken() {
       case _T('*' ) :
       case _T('[' ) :
       case _T(']' ) :
-      case _T('\\') :
+      case _T('/') :
         setNormalChar(*m_current);
         advance();
         return NORMALCHAR;
-      case 0        : unexpectedEndOfPattern();
+      case 0        :
+        unexpectedEndOfPattern();
       default       :
-        return setNormalChar(_T('\\'));
+        return setNormalChar(_T('/'));
       }
     default:
       return setNormalChar();
@@ -141,7 +146,11 @@ BitSet PatternScanner::translate(const BitSet &set) const {
 }
 
 void PatternScanner::unexpectedEndOfPattern() {
-  error(_T("Unexpected end of regular expression"));
+  if(m_insideCharClass) {
+    error(_T("Unmatched '[' defining charclass"));
+  } else {
+    error(_T("Unexpected end of regular expression"));
+  }
 }
 
 void PatternScanner::unexpectedInput() {

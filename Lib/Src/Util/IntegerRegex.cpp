@@ -2,7 +2,7 @@
 #include <MathUtil.h>
 
 static const char *decIntPatterns[] = {
-  "[+\\-]?[0-9]+"
+  "[+/-]?[0-9]+"
  ,NULL
 };
 
@@ -11,7 +11,7 @@ StringArray DecIntValueStreamScanner::getRegexLines() { // static
 }
 
 static const char *hexIntPatterns[] = {
-  "[+\\-]?\\(0x\\)?[0-9a-f]+"
+  "[+/-]?/(0x/)?[0-9a-f]+"
  ,NULL
 };
 
@@ -20,7 +20,7 @@ StringArray HexIntValueStreamScanner::getRegexLines() { // static
 }
 
 static const char *octIntPatterns[] = {
-  "[+\\-]?0?[0-7]+"
+  "[+/-]?0?[0-7]+"
  ,NULL
 };
 

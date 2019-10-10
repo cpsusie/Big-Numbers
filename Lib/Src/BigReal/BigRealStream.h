@@ -46,7 +46,7 @@ public:
 template <class IStreamType, class CharType> IStreamType &getBigReal(IStreamType &in, BigReal &x) {
   IStreamScanner<IStreamType, CharType> scanner(in);
   String buf;
-  if(FloatValueStreamScanner::getInstance().match(in, &buf) < 0) {
+  if(DecFloatValueStreamScanner::getInstance().match(in, &buf) < 0) {
     scanner.endScan(false);
     return in;
   }

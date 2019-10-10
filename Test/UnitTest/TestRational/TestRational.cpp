@@ -28,6 +28,15 @@ namespace TestRational {
 
 #include <UnitTestTraits.h>
 
+  // return random rational in range [0;1[
+  Rational randRational(RandomGenerator *rnd = _standardRandomGenerator) {
+    const INT64 num = randInt64(0, INT16_MAX - 1, rnd);
+    if(num == 0) {
+      return Rational::_0;
+    }
+    return Rational(num, randInt64(num + 1, INT16_MAX, rnd));
+  }
+
   TEST_CLASS(TestRational) {
     public:
 
@@ -70,7 +79,7 @@ namespace TestRational {
         VERIFYOP(-, 1e-13)
         VERIFYOP(*, 1e-14)
 
-        if (!r2.isZero()) {
+        if(!r2.isZero()) {
           VERIFYOP(/ , 3e-9)
         }
 
@@ -266,6 +275,87 @@ namespace TestRational {
         OUTPUT(_T("Exception:%s"), e.what());
         verify(false);
       }
+    }
+
+    static Rational getRelativeError(const Rational &r, const Rational &expected) {
+      const Rational relativeError = fabs(r - expected);
+      return (expected.isZero()) ? relativeError : (relativeError / expected);
+    }
+
+#undef min
+#undef max
+
+    static Rational unitRandRational() {
+      return randRational();
+    }
+
+#undef endl
+
+    template<class DType> void _testReadWrite(DType(*unitRand)()
+                                             ,const DType &maxTolerance
+                                             ,const TCHAR *dtypeName
+    ) {
+      const String fileName = getTestFileName(String(__TFUNCTION__) + String(dtypeName));
+
+      //      debugLog(_T("%s\n%s\n"), __TFUNCTION__, FPU::getState().toString().cstr());
+
+      const size_t count = 500;
+      CompactArray<DType> list(count);
+
+      list.add(numeric_limits<DType>::lowest());
+      list.add(numeric_limits<DType>::max());
+      list.add(numeric_limits<DType>::epsilon());
+      list.add(-numeric_limits<DType>::infinity());
+      list.add(numeric_limits<DType>::infinity());
+      list.add(numeric_limits<DType>::quiet_NaN());
+      list.add(numeric_limits<DType>::signaling_NaN());
+
+      for(size_t i = 0; i < count; i++) {
+        const DType x = unitRand();
+        list.add(x);
+      }
+      ofstream out(fileName.cstr());
+      for(size_t i = 0; i < list.size(); i++) {
+        out << list[i] << endl;
+      }
+      out.close();
+
+      DType detectedMaxRelError = 0;
+      ifstream in(fileName.cstr());
+      for(size_t i = 0; i < list.size(); i++) {
+        const DType &expected = list[i];
+        DType data;
+        in >> CharManip<DType> >> data;
+        if(in.bad() || in.fail()) {
+          OUTPUT(_T("Read %s line %zu failed"), __TFUNCTION__, i);
+          verify(false);
+        }
+        if(isfinite(data)) {
+          const DType relError = getRelativeError(data, expected);
+          if(relError > detectedMaxRelError) {
+            detectedMaxRelError = relError;
+          }
+          if(relError > maxTolerance) {
+            OUTPUT(_T("%s:Read %s at line %d = %s != expected (=%s"), __TFUNCTION__, dtypeName, i, toString(data, 18).cstr(), toString(expected, 18).cstr());
+            OUTPUT(_T("Relative error:%s"), toString(relError).cstr());
+            verify(false);
+          }
+        } else if(isPInfinity(data)) {
+          verify(isPInfinity(expected));
+        } else if(isNInfinity(data)) {
+          verify(isNInfinity(expected));
+        } else if(isnan(data)) {
+          verify(isnan(expected));
+        } else {
+          throwException(_T("%s:Unknown classification for a[%zu]:%s"), __TFUNCTION__, i, toString(data).cstr());
+        }
+      }
+      in.close();
+      OUTPUT(_T("%s:Detected max. relative error:%s"), __TFUNCTION__, toString(detectedMaxRelError).cstr());
+    }
+
+    TEST_METHOD(TestReadWrite) {
+      _testReadWrite<Rational>(unitRandRational, 0, _T("Rational"));
     }
 
     TEST_METHOD(RationalPowers) {
