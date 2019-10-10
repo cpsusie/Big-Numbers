@@ -7,4 +7,3 @@ EXPORTS
     AddIn_Rational
     AddIn__int128
     AddIn__uint128
-    AddIn_Number

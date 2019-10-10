@@ -7,10 +7,10 @@
     <DisplayString>{{x={x} y={y} z={z}}}</DisplayString>
   </Type>
   <Type Name="Complex">
-    <DisplayString Condition="im == 0">{re,g}</DisplayString>
-    <DisplayString Condition="re == 0">{im,g}i</DisplayString>
-    <DisplayString Condition="im > 0">{re,g}+{im,g}i</DisplayString>
-    <DisplayString>{re,g}{im,g}i</DisplayString>
+    <DisplayString Condition="im == 0">{re}</DisplayString>
+    <DisplayString Condition="re == 0">{im}i</DisplayString>
+    <DisplayString Condition="im > 0">{re}+{im}i</DisplayString>
+    <DisplayString>{re}{im}i</DisplayString>
   </Type>
   <Type Name="Double80">
     <DisplayString LegacyAddin="C:\mytools2015\Lib\Win32\Release\MathAddIn.dll" Export="AddIn_Double80"></DisplayString>
@@ -25,9 +25,9 @@
     <DisplayString LegacyAddin="C:\mytools2015\Lib\Win32\Release\MathAddIn.dll" Export="AddIn__uint128"></DisplayString>
   </Type>
   <Type Name="Number">
-    <DisplayString Condition="m_type == 0">{*m_flt}</DisplayString>
-    <DisplayString Condition="m_type == 1">{*m_d64}</DisplayString>
-    <DisplayString Condition="m_type == 2">{*m_d80}</DisplayString>
-    <DisplayString Condition="m_type == 3">{*m_rational}</DisplayString>
+    <DisplayString Condition="m_type == 0">f32:{*m_flt}</DisplayString>
+    <DisplayString Condition="m_type == 1">d64:{*m_d64}</DisplayString>
+    <DisplayString Condition="m_type == 2">d80:{*m_d80}</DisplayString>
+    <DisplayString Condition="m_type == 3">rat:{*m_rational}</DisplayString>
   </Type>
 </AutoVisualizer>
