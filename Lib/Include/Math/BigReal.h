@@ -998,9 +998,9 @@ public:
 
   // x/y with |error| < f. Newton-rapthon iteration
   static BigReal quotNewton(   const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *digitPool);
-  // x/y with |error| < f. School method. using build-in 32-bit division
+  // x/y with |error| < f. School method. using built-in 32-bit division
   static BigReal quotLinear32( const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *digitPool);
-  // x/y with |error| < f. School method. using build-in 64-bit division
+  // x/y with |error| < f. School method. using built-in 64-bit division
   static BigReal quotLinear64( const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *digitPool);
 #ifdef IS64BIT
   // x/y with |error| < f. School method. using class _int128 for division

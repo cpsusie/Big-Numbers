@@ -381,6 +381,7 @@ inline _uint128 operator/(const _uint128 &lft, const _uint128 &rhs) {
 }
 
 // 4 basic combination of operator% - signed % only if both are signed
+// sign(lft % rhs) = sign(lft), equivalent to built-in % operator
 inline _int128 operator%(const _int128 &lft, const _int128 &rhs) {
   _int128 result(lft), tmp(rhs);
   int128rem(&result, &tmp);
