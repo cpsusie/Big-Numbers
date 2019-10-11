@@ -161,18 +161,18 @@ wchar_t *dbltow(wchar_t *dst, double x);
 // return (v > 0) ? +1 : (v < 0) ? -1 : 0
 inline int sign(int           v) { return v < 0 ? -1 : v > 0 ? 1 : 0; }
 // return (v > 0) ? +1 : (v < 0) ? -1 : 0
-inline int sign(const INT64  &v) { return v < 0 ? -1 : v > 0 ? 1 : 0; }
+inline int sign(INT64         v) { return v < 0 ? -1 : v > 0 ? 1 : 0; }
 // return (v > 0) ? +1 : (v < 0) ? -1 : 0
 inline int sign(float         v) { return v < 0 ? -1 : v > 0 ? 1 : 0; }
 // return (v > 0) ? +1 : (v < 0) ? -1 : 0
-inline int sign(const double &v) { return v < 0 ? -1 : v > 0 ? 1 : 0; }
+inline int sign(double        v) { return v < 0 ? -1 : v > 0 ? 1 : 0; }
 
 // return v*v
 inline UINT  sqr( int           v) { return v * v; }
 // return v*v
 inline float sqr( float         v) { return v * v; }
 // return v*v
-inline double sqr(const double &v) { return v * v; }
+inline double sqr(double        v) { return v * v; }
 
 extern const double M_PI;
 extern const double M_E;
