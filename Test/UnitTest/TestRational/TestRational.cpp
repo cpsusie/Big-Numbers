@@ -24,24 +24,27 @@ using namespace std;
   }                                                                                                  \
 }
 
+
 namespace TestRational {		
 
 #include <UnitTestTraits.h>
 
-  // return random rational in range [0;1[
-  Rational randRational(RandomGenerator *rnd = _standardRandomGenerator) {
-    const INT64 num = randInt64(0, INT16_MAX - 1, rnd);
-    if(num == 0) {
-      return Rational::_0;
-    }
-    return Rational(num, randInt64(num + 1, INT16_MAX, rnd));
-  }
-
   TEST_CLASS(TestRational) {
     public:
 
+    static Double80 getRelativeError(const Double80 &x, const Double80 &expected) {
+      const Double80 error = fabs(x - expected);
+      return (expected.isZero()) ? error : (error / expected);
+    }
+
+    static Rational getRelativeError(const Rational &r, const Rational &expected) {
+      const Rational error = fabs(r - expected);
+      return (expected.isZero()) ? error : (error / expected);
+    }
+
     TEST_METHOD(RationalTestBasicOperations) {
-      randomize();
+      JavaRandom rnd;
+      rnd.randomize();
 
       //  double maxTotalError = 0;
       for(int i = 0; i < 100000; i++) {
@@ -50,10 +53,10 @@ namespace TestRational {
         printf("i:%10d. maxTotalError:%le\r", i, maxTotalError);
         }
         */
-        const int nm1 = randInt(-1000, 1000);
-        const int dn1 = randInt(1, 1000000);
-        const int nm2 = randInt(-1000, 1000);
-        const int dn2 = randInt(1, 1000000);
+        const int nm1 = randInt(-1000, 1000   , &rnd);
+        const int dn1 = randInt(    1, 1000000, &rnd);
+        const int nm2 = randInt(-1000, 1000   , &rnd);
+        const int dn2 = randInt(    1, 1000000, &rnd);
 
         const Rational r1(nm1, dn1);
         const Rational r2(nm2, dn2);
@@ -83,11 +86,11 @@ namespace TestRational {
           VERIFYOP(/ , 3e-9)
         }
 
-        const int      expo = r1.isZero() ? randInt(0, 4) : randInt(-3, 3);
+        const int      expo = r1.isZero() ? randInt(0, 4,&rnd) : randInt(-3, 3, &rnd);
         const Rational r1Pe = pow(r1, expo);
         const Real     d1Pe = mypow(d1, expo);
         Real           error = fabs(getReal(r1Pe) - d1Pe);
-        if (d1Pe != 0) error /= d1Pe;
+        if(d1Pe != 0) error /= d1Pe;
         verify(error < 1e-15);
 
         const Rational rfd(d1);
@@ -96,6 +99,46 @@ namespace TestRational {
         verify(error < 1e-13);
       }
     }
+
+    TEST_METHOD(TestModulus) {
+      JavaRandom rnd(17);
+      Double80 detectedMaxRelError = 0;
+
+      for(int i = 0; i < 30; i++) {
+        Rational low  = randRational(10000, &rnd) * randInt(1, 300, &rnd);
+        Rational high = randRational(10000, &rnd) * randInt(1, 300, &rnd);
+        if(rnd.nextBool()) low  = -low;
+        if(rnd.nextBool()) high = -high;
+        if(high < low) {
+          swap(high, low);
+        }
+
+        for(int j = 0; j < 500; j++) {
+          try {
+            const Rational x     = randRational(low, high, &rnd);
+            const Rational y     = randRational(low, high, &rnd);
+            const Double80 x80   = getDouble80(x);
+            const Double80 y80   = getDouble80(y);
+            const Double80 mod80 = fmod(x80, y80);
+            const INT64    q     = getInt64(x / y);
+            const Rational rem   = x % y;
+            const Double80 rem80 = getDouble80(rem);
+
+            const Double80 relError = getRelativeError(rem80, mod80);
+            if(relError > detectedMaxRelError) {
+              detectedMaxRelError = relError;
+            }
+            verify(y * q + rem == x);
+            verify(fabs(rem) < fabs(y));
+            verify(rem.isZero() || (sign(rem) == sign(x)));
+          } catch (Exception e) {
+            OUTPUT(_T("Exception:%s"), e.what());
+          }
+        }
+      }
+      OUTPUT(_T("Detected max.relative Error:%s\n"), toString(detectedMaxRelError).cstr());
+    }
+
 
     typedef CompactArray<Rational> CompactRationalArray;
 
@@ -277,16 +320,41 @@ namespace TestRational {
       }
     }
 
-    static Rational getRelativeError(const Rational &r, const Rational &expected) {
-      const Rational relativeError = fabs(r - expected);
-      return (expected.isZero()) ? relativeError : (relativeError / expected);
+    TEST_METHOD(TestRationalRandom0To1) {
+      JavaRandom rnd(45);
+      redirectDebugLog();
+      for(UINT64 maxden = 2; maxden <= _I64_MAX; maxden*=3) {
+        for(int i = 0; i < 1000; i++) {
+          Rational r = randRational(maxden, &rnd);
+          verify((r >= 0) && (r < 1));
+          debugLog(_T("%23.15le\n"), getDouble(r));
+        }
+      }
+    }
+
+    TEST_METHOD(TestRationalRandomLowToHigh) {
+      JavaRandom rnd(45);
+      redirectDebugLog();
+      for(UINT64 maxden = 30; maxden <= _I32_MAX/100; maxden *= 3) {
+        Rational low  = randRational(maxden,&rnd) * randInt(-30, 30, &rnd);
+        Rational high = randRational(maxden,&rnd) * randInt(-30, 30, &rnd);
+        if(high < low) {
+          swap(low, high);
+        }
+        for(int i = 0; i < 1000; i++) {
+          Rational r = randRational(low, high, &rnd);
+          verify((r >= low) && (r <= high));
+          debugLog(_T("%23.15le\n"), getDouble(r));
+        }
+      }
     }
 
 #undef min
 #undef max
 
     static Rational unitRandRational() {
-      return randRational();
+      static JavaRandom rnd(RandomGenerator::getRandomSeed());
+      return randRational(&rnd);
     }
 
 #undef endl

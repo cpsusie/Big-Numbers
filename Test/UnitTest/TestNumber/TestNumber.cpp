@@ -85,15 +85,6 @@ namespace TestNumber {
 
   #include <UnitTestTraits.h>
 
-  // return random rational in range [0;1[
-  Rational randRational(RandomGenerator *rnd = _standardRandomGenerator) {
-    const INT64 num = randInt64(0, INT16_MAX-1, rnd);
-    if(num == 0) {
-      return 0;
-    }
-    return Rational(num, randInt64(num + 1, INT16_MAX, rnd));
-  }
-
 #define RANDOM_NUMBERTYPE ((NumberType)-1)
   Number randNumber(NumberType type = RANDOM_NUMBERTYPE, RandomGenerator *rnd = _standardRandomGenerator) {
     if(type == RANDOM_NUMBERTYPE) {

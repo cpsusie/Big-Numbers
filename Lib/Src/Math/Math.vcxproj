@@ -1211,6 +1211,7 @@
     <ClCompile Include="QRMatrix.cpp" />
     <ClCompile Include="Rational.cpp" />
     <ClCompile Include="RationalIO.cpp" />
+    <ClCompile Include="RationalRandom.cpp" />
     <ClCompile Include="RationalStr.cpp" />
     <ClCompile Include="Rungekutta.cpp" />
     <ClCompile Include="RungekuttaFehlberg.cpp" />

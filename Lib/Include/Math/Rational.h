@@ -9,7 +9,6 @@ private:
   INT64 m_numerator, m_denominator;
 
   void init(const INT64 &numerator, const INT64 &denominator);
-  static void throwDivisionByZeroException(const TCHAR *method);
   static INT64 pow(INT64 n, UINT y);
 public:
 
@@ -37,13 +36,16 @@ public:
   explicit Rational(double          d  , UINT   maxND = _I32_MAX);
   explicit Rational(const Double80 &d80, UINT64 maxND = _I64_MAX);
 
-  static INT64 safeProd(const INT64 &a, const INT64 &b, int line);
+  static INT64 safeSum( const TCHAR *method, int line, const INT64 &a, const INT64 &b);
+  static INT64 safeDif( const TCHAR *method, int line, const INT64 &a, const INT64 &b);
+  static INT64 safeProd(const TCHAR *method, int line, const INT64 &a, const INT64 &b);
 
   friend Rational operator+(const Rational &l, const Rational &r);
   friend Rational operator-(const Rational &l, const Rational &r);
   friend Rational operator-(const Rational &r);
   friend Rational operator*(const Rational &l, const Rational &r);
   friend Rational operator/(const Rational &l, const Rational &r);
+  // sign(l % r) = sign(l), equivalent to built-in % operator
   friend Rational operator%(const Rational &l, const Rational &r);
 
   inline Rational &operator+=(const Rational &r) {
@@ -97,7 +99,7 @@ public:
   inline bool isInteger() const {
     return m_denominator == 1;
   }
-  static UINT64 findGCD(const UINT64 &a, const UINT64 &b);
+  static UINT64 findGCD(UINT64 a, UINT64 b);
 
   inline const INT64 &getNumerator() const {
     return m_numerator;
@@ -148,6 +150,23 @@ public:
   static const Rational _RAT_NINF;    // -infinity;         (-1/0)
 };
 
+// Return uniform distributed random rational in range [0;1[ using rnd to generate numerator and denominator
+// The denominator (den) will be uniform distributed in the range [2; maxDenominator]
+// The numerator will be uniform distributed in range [0; den[
+// The valid range for maxDenominator is [2;INT64_MAX]. Default:INT64_MAX
+Rational randRational(UINT64 maxDenominator = INT64_MAX        , RandomGenerator *rnd = _standardRandomGenerator);
+// Return uniform distributed random rational in range [0;1[ using rnd to generate numerator and denominator
+// The denominator (den) will be uniform distributed in the range [2; INT_MAX]
+// The numerator will be uniform distributed in range [0; den[
+inline Rational randRational(RandomGenerator *rnd = _standardRandomGenerator) {
+  return randRational(INT64_MAX, rnd);
+}
+// Return uniform distributed random rational in range [low;high] (both inclusive)
+// Assume the 3 products: low.num * high.den, high.num * low.den, low.den * high.den are all <= _I64_MAX
+// if this is not the case, an exception is thrown
+// To avoid overflow in calculation, keep the involved factors < _I32_MAX
+Rational randRational(const Rational &low, const Rational &high, RandomGenerator *rnd = _standardRandomGenerator);
+
 // Return true, if denominator == 1
 inline bool     isInteger(  const Rational &r) {  return r.getDenominator() == 1;                             }
 // Return true, if isInteger() && isShort(numerator)
@@ -180,6 +199,10 @@ inline Real     getReal(    const Rational &r) {
 #else
   return getDouble(r);
 #endif
+}
+
+inline int sign(const Rational &r) {
+  return ::sign(r.getNumerator());
 }
 
 inline bool isEven(const Rational &r) {

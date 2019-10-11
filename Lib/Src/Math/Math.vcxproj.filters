@@ -241,6 +241,9 @@
     <ClCompile Include="GammaD80.cpp">
       <Filter>Source Files\Functions</Filter>
     </ClCompile>
+    <ClCompile Include="RationalRandom.cpp">
+      <Filter>Source Files\Number Types</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Triangle\ReadMe.txt">

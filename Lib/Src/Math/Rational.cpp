@@ -13,7 +13,9 @@ const Rational Rational::_RAT_NAN(  0,0       );    // nan (undefined)    ( 0/0)
 const Rational Rational::_RAT_PINF( 1,0       );    // +infinity;         ( 1/0)
 const Rational Rational::_RAT_NINF(-1,0       );    // -infinity;         (-1/0)
 
-#define SAFEPROD(a,b) Rational::safeProd(a,b,__LINE__)
+#define SAFESUM( a,b) Rational::safeSum( __TFUNCTION__,__LINE__,a,b)
+#define SAFEDIF( a,b) Rational::safeDif( __TFUNCTION__,__LINE__,a,b)
+#define SAFEPROD(a,b) Rational::safeProd(__TFUNCTION__,__LINE__,a,b)
 
 int fpclassify(const Rational &r) {
   switch(_fpclass(r)) {
@@ -232,9 +234,14 @@ void Rational::init(const INT64 &numerator, const INT64 &denominator) {
     m_denominator = 1;
   } else {
     const INT64 gcd = findGCD(UINT64(abs(numerator)),UINT64(abs(denominator)));
-    m_numerator   = numerator   / gcd;
-    m_denominator = denominator / gcd;
-    if(denominator < 0) { // Negative numbers are represented with negative numerator and positive denominator
+    if(gcd == 1) {
+      m_numerator   = numerator;
+      m_denominator = denominator;
+    } else {
+      m_numerator   = numerator   / gcd;
+      m_denominator = denominator / gcd;
+    }
+    if(m_denominator < 0) { // Negative numbers are represented with negative numerator and positive denominator
       m_numerator   = -m_numerator;
       m_denominator = -m_denominator;
     }
@@ -244,30 +251,30 @@ void Rational::init(const INT64 &numerator, const INT64 &denominator) {
 Rational operator+(const Rational &l, const Rational &r) {
   if(!isfinite(l) || !isfinite(r)) return RAT_NAN;
   if(l.m_denominator == r.m_denominator) {                                                     // l.d == r.d. just add l.n and r.n
-    return Rational(l.m_numerator + r.m_numerator, l.m_denominator);
+    return Rational(SAFESUM(l.m_numerator,r.m_numerator), l.m_denominator);
   } else if((l.m_denominator > r.m_denominator) && (l.m_denominator % r.m_denominator == 0)) { // l.d = n * r.d. extend r with n and use l.d as denominator
     const INT64 n = l.m_denominator / r.m_denominator;
-    return Rational(l.m_numerator + SAFEPROD(n,r.m_numerator), l.m_denominator);
+    return Rational(SAFESUM(l.m_numerator,SAFEPROD(n,r.m_numerator)), l.m_denominator);
   } else if((l.m_denominator < r.m_denominator) && (r.m_denominator % l.m_denominator == 0)) { // r.d = n * l.d. extend l with n and use r.d as denominator
     const INT64 n = r.m_denominator / l.m_denominator;
-    return Rational(SAFEPROD(n,l.m_numerator) + r.m_numerator, r.m_denominator);
+    return Rational(SAFESUM(SAFEPROD(n,l.m_numerator),r.m_numerator), r.m_denominator);
   } else {                                                                                     // Extend both and use l.d * r.d as denominator
-    return Rational(SAFEPROD(l.m_numerator,r.m_denominator) + SAFEPROD(r.m_numerator,l.m_denominator), SAFEPROD(l.m_denominator,r.m_denominator));
+    return Rational(SAFESUM(SAFEPROD(l.m_numerator,r.m_denominator),SAFEPROD(r.m_numerator,l.m_denominator)), SAFEPROD(l.m_denominator,r.m_denominator));
   }
 }
 
 Rational operator-(const Rational &l, const Rational &r) {
   if(!isfinite(l) || !isfinite(r)) return RAT_NAN;
   if(l.m_denominator == r.m_denominator) {                                                     // l.d == r.d. just subtract r.n from l.n
-    return Rational(l.m_numerator - r.m_numerator, l.m_denominator);
+    return Rational(SAFEDIF(l.m_numerator,r.m_numerator), l.m_denominator);
   } else if((l.m_denominator > r.m_denominator) && (l.m_denominator % r.m_denominator == 0)) { // l.d = n * r.d. extend r with n and use l.d as denominator
     const INT64 n = l.m_denominator / r.m_denominator;
-    return Rational(l.m_numerator - SAFEPROD(n,r.m_numerator), l.m_denominator);
+    return Rational(SAFEDIF(l.m_numerator,SAFEPROD(n,r.m_numerator)), l.m_denominator);
   } else if((l.m_denominator < r.m_denominator) && (r.m_denominator % l.m_denominator == 0)) { // r.d = n * l.d. extend l with n and use r.d as denominator
     const INT64 n = r.m_denominator / l.m_denominator;
-    return Rational(SAFEPROD(n,l.m_numerator) - r.m_numerator, r.m_denominator);
+    return Rational(SAFEDIF(SAFEPROD(n,l.m_numerator),r.m_numerator), r.m_denominator);
   } else {                                                                                     // Extend both and use l.d * r.d as denominator
-    return Rational(SAFEPROD(l.m_numerator,r.m_denominator) - SAFEPROD(r.m_numerator,l.m_denominator), SAFEPROD(l.m_denominator,r.m_denominator));
+    return Rational(SAFEDIF(SAFEPROD(l.m_numerator,r.m_denominator),SAFEPROD(r.m_numerator,l.m_denominator)), SAFEPROD(l.m_denominator,r.m_denominator));
   }
 }
 
@@ -294,10 +301,6 @@ Rational operator*(const Rational &l, const Rational &r) {
   return Rational(SAFEPROD(l.m_numerator,r.m_numerator), SAFEPROD(l.m_denominator,r.m_denominator));
 }
 
-void Rational::throwDivisionByZeroException(const TCHAR *method) { // static
-  throwInvalidArgumentException(method, _T("Division by zero"));
-}
-
 Rational operator/(const Rational &l, const Rational &r) {
   const int lclass = _fpclass(l);
   if((lclass & (_FPCLASS_NN | _FPCLASS_PN | _FPCLASS_NZ | _FPCLASS_PZ)) == 0) {
@@ -311,22 +314,31 @@ Rational operator/(const Rational &l, const Rational &r) {
     case _FPCLASS_PN: return Rational::_RAT_PINF;   // +finite/0 -> +inf
     case _FPCLASS_NN: return Rational::_RAT_NINF;   // -finite/0 -> -inf
     case _FPCLASS_NZ:
-    case _FPCLASS_PZ: return Rational::_RAT_NAN;   // 0/0       ->  nan
+    case _FPCLASS_PZ: return Rational::_RAT_NAN;    // 0/0       ->  nan
     }
   }
   return Rational::_RAT_NAN;
 }
 
 Rational operator%(const Rational &l, const Rational &r) {
-  if(!isfinite(l) || !isfinite(r)) return RAT_NAN;
-  if(r.isZero()) {
-    if(l.isZero()    ) return RAT_NAN;
-    if(l.isNegative()) return RAT_NINF;
-    return RAT_PINF;
+  const int lclass = _fpclass(l);
+  if((lclass & (_FPCLASS_NN | _FPCLASS_PN | _FPCLASS_NZ | _FPCLASS_PZ)) == 0) {
+    return Rational::_RAT_NAN;
   }
-  const Rational q = l / r;
-  const INT64    n = getInt64(q);
-  return l - r * n;
+  switch(fpclassify(r)) {
+  case FP_NORMAL:
+    { const INT64 n = SAFEPROD(l.getNumerator(), r.getDenominator()) / SAFEPROD(l.getDenominator(), r.getNumerator());
+      return (n == 0) ? l : (l - r * n);
+    }
+  case FP_ZERO:
+    switch (lclass) {
+    case _FPCLASS_PN: return Rational::_RAT_PINF;   // +finite%0 -> +inf
+    case _FPCLASS_NN: return Rational::_RAT_NINF;   // -finite%0 -> -inf
+    case _FPCLASS_NZ:
+    case _FPCLASS_PZ: return Rational::_RAT_NAN;    // 0%0       ->  nan
+    }
+  }
+  return Rational::_RAT_NAN;
 }
 
 Rational fabs(const Rational &r) {
@@ -378,32 +390,85 @@ Rational reciprocal(const Rational &r) {
 
 int rationalCmp(const Rational &r1, const Rational &r2) {
   assert(isfinite(r1) && isfinite(r2));
-  const int sign1 = sign(r1.m_numerator);
-  const int c     = sign1 - sign(r2.m_numerator);
+  const int sign1 = sign(r1);
+  int       c     = sign1 - sign(r2);
   if(c != 0) return c;
-  if(abs(r1.m_numerator)      > (UINT)UINT_MAX
-  || abs(r2.m_numerator)      > (UINT)UINT_MAX
-  || (UINT64)r1.m_denominator > (UINT)UINT_MAX
-  || (UINT64)r2.m_denominator > (UINT)UINT_MAX) {
-    return sign(getDouble(r1) - getDouble(r2));
-  } else {
-    const UINT64 p1 = (UINT64)abs(r1.m_numerator) * r2.m_denominator;
-    const UINT64 p2 = (UINT64)abs(r2.m_numerator) * r1.m_denominator;
-    return (p1 > p2) ? sign1 : (p1 < p2) ? -sign1 : 0;
-  }
+  _uint128 p1(abs(r1.m_numerator)); p1 *= r2.m_denominator;
+  _uint128 p2(abs(r2.m_numerator)); p2 *= r1.m_denominator;
+  return uint128HashCmp(p1, p2) * sign1;
 }
 
-INT64 Rational::safeProd(const INT64 &a, const INT64 &b, int line) { // static
-  if((a|b) == 0) return 0;
+#define CHECKVALIDRANGE(n128)                                                       \
+if(!isInt64(n128)) {                                                                \
+  throwInvalidArgumentException(__TFUNCTION__                                       \
+                               ,_T("%s,line %d: result overflow. a=%I64d, b=%I64d") \
+                               ,method, line,a, b);                                 \
+}
+
+INT64 Rational::safeSum(const TCHAR *method, int line, const INT64 &a, const INT64 &b) { // static
+  if(a == 0) return b; else if(b == 0) return a;
   _int128 result(a);
-  result *= b;
-  if(result > _I64_MAX || result < _I64_MIN) {
-    throwInvalidArgumentException(__TFUNCTION__,_T("%s line %d: Product overflow. a=%I64d, b=%I64d"), __TFILE__, line, a, b);
-  }
+  result += b;
+  CHECKVALIDRANGE(result)
   return result;
 }
 
-UINT64 Rational::findGCD(const UINT64 &a, const UINT64 &b) { // static
+INT64 Rational::safeDif(const TCHAR *method, int line, const INT64 &a, const INT64 &b) { // static
+  if(a == 0) return -b; else if(b == 0) return a;
+  _int128 result(a);
+  result -= b;
+  CHECKVALIDRANGE(result)
+  return result;
+}
+
+INT64 Rational::safeProd(const TCHAR *method, int line, const INT64 &a, const INT64 &b) { // static
+  if((a|b) == 0) return 0;
+  _int128 result(a);
+  result *= b;
+  CHECKVALIDRANGE(result)
+  return result;
+}
+
+#define NEWGCD
+
+#ifdef NEWGCD
+UINT64 Rational::findGCD(UINT64 a, UINT64 b) { // static
+  if((a|b) == 0) {
+    throwInvalidArgumentException(__TFUNCTION__, _T("a=%I64u, b=%I64u"), a, b);
+  }
+  BYTE shift = 0;
+  while(((a|b)&1)==0) { // while a, b both even
+    a >>= 1;
+    b >>= 1;
+    shift++;
+  }
+
+  // Now a or b (or both) are odd
+  while((a&1)==0) a >>= 1;
+  while((b&1)==0) b >>= 1;
+  for(;;) { // a is odd and b is odd
+    switch(sign((INT64)b-(INT64)a)) {
+    case  1: // a < b
+      b -= a;
+      do { // b even and > 0
+        b >>= 1;
+      } while((b & 1) == 0);
+      continue;
+    case -1: // a > b
+      a -= b;
+      do { // a even and > 0
+        a >>= 1;
+      } while((a & 1) == 0);
+      continue;
+    default:
+      return b<<shift;
+    }
+  }
+}
+
+#else
+
+UINT64 Rational::findGCD(UINT64 a, UINT64 b) { // static
   if(a == 0 || b == 0) {
     throwInvalidArgumentException(__TFUNCTION__, _T("a=%I64u, b=%I64u"), a, b);
   }
@@ -429,8 +494,20 @@ UINT64 Rational::findGCD(const UINT64 &a, const UINT64 &b) { // static
       u = (u-v)/2;
     }
   }
+/*
+  const UINT64 result = g * v;
+  if(result > 30) {
+    int fisk = 1;
+  }
+  const UINT64 newalgResult = findGCD1(a, b);
+  if(result != newalgResult) {
+    int fisk = 1;
+    const UINT64 newalgResult1 = findGCD1(a, b);
+  }
+*/
   return g*v;
 }
+#endif // NEWGCD
 
 #define CHECKISFINITE1(f)                  \
 if(!isfinite(f)) {                         \
