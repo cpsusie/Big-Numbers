@@ -157,7 +157,7 @@ inline UINT64 randInt64(RandomGenerator *rnd = _standardRandomGenerator) {
 inline UINT64 randInt64(UINT64 n, RandomGenerator *rnd = _standardRandomGenerator) {
   return randInt64(rnd) % n;
 }
-// return random INT46 in range[from..to], both  inclusive.
+// return random INT64 in range[from..to], both  inclusive.
 inline INT64  randInt64(INT64 from, INT64 to, RandomGenerator *rnd = _standardRandomGenerator) {
   return randInt64(to-from+1, rnd) + from;
 }
