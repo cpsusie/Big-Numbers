@@ -117,7 +117,7 @@ namespace TestPackedArray {
   }
 
   void TestClass::addZeroes(UINT index, UINT count) {
-#ifdef _DEBUG
+#ifdef _DEBUG_PACKEDARRAY
     if(PackedArray::trace) {
       OUTPUT(_T("addZeroes(index=%d,count=%d)"), index, count);
     }
@@ -209,7 +209,7 @@ namespace TestPackedArray {
     return true;
   }
 
-#ifdef _DEBUG
+#ifdef _DEBUG_PACKEDARRAY
   void TestClass::dump(_In_z_ _Printf_format_string_ TCHAR const * const formatStr, ...) const {
     va_list argptr;
     va_start(argptr, formatStr);
@@ -297,7 +297,7 @@ namespace TestPackedArray {
 
     cl.addZeroes(pos, count);
     if(!cl.checkEqual()) {
-#ifdef _DEBUG
+#ifdef _DEBUG_PACKEDARRAY
       cl = clCopy;
       cl.dump(_T("Before insert: "));
       cl.addZeroes(pos, count);
@@ -331,7 +331,7 @@ namespace TestPackedArray {
 
     cl.remove(pos, count);
     if(!cl.checkEqual()) {
-#ifdef _DEBUG
+#ifdef _DEBUG_PACKEDARRAY
       cl = clCopy;
       cl.dump(_T("Before remove: "));
       cl.remove(pos, count);

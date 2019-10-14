@@ -15,13 +15,25 @@ int getExpo10(double x) {
 }
 
 double mypow(double x, double y) {
-  if(x < 0) {
-    if(y == floor(y)) {
-      const INT64 d = getInt64(y);
-      return isOdd(d) ? -pow(-x, y) : pow(-x, y);
+  switch(sign(y)) {
+  case 0: // y == 0
+    return x == 0
+         ? std::numeric_limits<double>::quiet_NaN()
+         : 1;
+  case -1: // y < 0
+    if(x == 0) { // 0^negative = +inf
+      return std::numeric_limits<double>::infinity();
     }
+    // continue case
+  default:
+    if(x < 0) {
+      if(y == floor(y)) {
+        const INT64 d = getInt64(y);
+        return isOdd(d) ? -pow(-x, y) : pow(-x, y);
+      }
+    }
+    return pow(x, y);
   }
-  return pow(x, y);
 }
 
 double root(double x, double y) {

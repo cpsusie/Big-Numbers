@@ -125,7 +125,7 @@ void ElementaryReflector::init(const Vector &V) {
 }
 
 Matrix ElementaryReflector::getMatrix() const {
-  Matrix result(Matrix::one(3));
+  Matrix result(Matrix::_1(3));
   for(int i = 0; i < 3; i++) {
     for(int j = 0; j < 3; j++) {
       result(i,j) -= v[i]*w[j];
@@ -370,7 +370,7 @@ void QRMatrix::resetToHessenberg() {
 
 void QRMatrix::findEigenValues() {
   Complex l1, l2;
-  m_Q = Matrix::one(getRowCount());
+  m_Q = Matrix::_1(getRowCount());
 
   trace();
   int iteration = 0; // Number of iterations since last deflation
@@ -456,7 +456,7 @@ Vector QRMatrix::getUk(int k) const {
 void QRMatrix::createUMatrix() {
   const int n = (int)getRowCount();
 
-  m_U = Matrix::one(n);
+  m_U = Matrix::_1(n);
 
 //  cout << "QR:\n" << Precision(7) << a << endl;
   for(int k = 0; k < n-2; k++) {
@@ -466,10 +466,10 @@ void QRMatrix::createUMatrix() {
     if(pi == 0) {
       continue;
     }
-    Matrix Rk = Matrix::one(n-k-1) - u*transpose(u)/pi;
+    Matrix Rk = Matrix::_1(n-k-1) - u*transpose(u)/pi;
 //    cout << "R[" << k << "]:\n" << Precision(7) << Rk << endl;
 
-    Matrix Uk = Matrix::one(n).setSubMatrix(k+1,k+1,Rk);
+    Matrix Uk = Matrix::_1(n).setSubMatrix(k+1,k+1,Rk);
 //    cout << "U[" << k << "]:\n" << Precision(7) << Uk << endl;
 
     m_U = m_U * Uk;

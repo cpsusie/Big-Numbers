@@ -104,8 +104,8 @@ Rational::Rational(float f, UINT maxND) {
   assert(((float)p1 / q1 <= maxND) && ((float)q1 / p1 <= maxND));
   assert(findGCD(p1,q1) == 1);
 
-  m_numerator   = positive ? p1 : -p1;
-  m_denominator = q1;
+  m_num   = positive ? p1 : -p1;
+  m_den = q1;
 }
 // This algorithm is borrowed from gimpzoommodel.c in LIBGIMP:
 // http://svn.gnome.org/viewcvs/gimp/trunk/libgimpwidgets/gimpzoommodel.c
@@ -157,8 +157,8 @@ Rational::Rational(double d, UINT maxND) {
   assert(((double)p1 / q1 <= maxND) && ((double)q1 / p1 <= maxND));
   assert(findGCD(p1,q1) == 1);
 
-  m_numerator   = positive ? p1 : -p1;
-  m_denominator = q1;
+  m_num = positive ? p1 : -p1;
+  m_den = q1;
 }
 
 Rational::Rational(const Double80 &d80, UINT64 maxND) {
@@ -206,19 +206,19 @@ Rational::Rational(const Double80 &d80, UINT64 maxND) {
   assert(((Double80)p1 / q1 <= maxND) && ((Double80)q1 / p1 <= maxND));
   assert(findGCD(p1,q1) == 1);
 
-  m_numerator   = positive ? p1 : -(INT64)p1;
-  m_denominator = q1;
+  m_num = positive ? p1 : -(INT64)p1;
+  m_den = q1;
 }
 
-void Rational::init(const INT64 &numerator, const INT64 &denominator) {
+void Rational::init(INT64 numerator, INT64 denominator) {
   DEFINEMETHODNAME;
   if(denominator == 0) {
     switch(numerator) {
     case -1: // -Infinity
     case  0: // NaN
     case  1: // +Infinity
-      m_denominator = denominator;
-      m_numerator   = numerator;
+      m_den = denominator;
+      m_num = numerator;
       return;
     default:
       throwInvalidArgumentException(method, _T("Denominator is zero"));
@@ -229,52 +229,52 @@ void Rational::init(const INT64 &numerator, const INT64 &denominator) {
     throwInvalidArgumentException(method, _T("Denominator(=%I64d) out of range [%I64d..%I64d]"), denominator, -_I64_MAX, _I64_MAX);
   }
 
-  if(numerator == 0) { // zero always 0/1
-    m_numerator   = 0;
-    m_denominator = 1;
+  if(numerator == 0) {    // zero always 0/1
+    m_num = 0;
+    m_den = 1;
   } else {
-    const INT64 gcd = findGCD(UINT64(abs(numerator)),UINT64(abs(denominator)));
-    if(gcd == 1) {
-      m_numerator   = numerator;
-      m_denominator = denominator;
-    } else {
-      m_numerator   = numerator   / gcd;
-      m_denominator = denominator / gcd;
+    if(denominator < 0) { // Negative numbers are represented with negative numerator and positive denominator
+      numerator   = -numerator;
+      denominator = -denominator;
     }
-    if(m_denominator < 0) { // Negative numbers are represented with negative numerator and positive denominator
-      m_numerator   = -m_numerator;
-      m_denominator = -m_denominator;
+    const INT64 gcd = findGCD(UINT64(abs(numerator)),denominator);
+    if(gcd == 1) {
+      m_num = numerator;
+      m_den = denominator;
+    } else {
+      m_num = numerator   / gcd;
+      m_den = denominator / gcd;
     }
   }
 }
 
 Rational operator+(const Rational &l, const Rational &r) {
   if(!isfinite(l) || !isfinite(r)) return RAT_NAN;
-  if(l.m_denominator == r.m_denominator) {                                                     // l.d == r.d. just add l.n and r.n
-    return Rational(SAFESUM(l.m_numerator,r.m_numerator), l.m_denominator);
-  } else if((l.m_denominator > r.m_denominator) && (l.m_denominator % r.m_denominator == 0)) { // l.d = n * r.d. extend r with n and use l.d as denominator
-    const INT64 n = l.m_denominator / r.m_denominator;
-    return Rational(SAFESUM(l.m_numerator,SAFEPROD(n,r.m_numerator)), l.m_denominator);
-  } else if((l.m_denominator < r.m_denominator) && (r.m_denominator % l.m_denominator == 0)) { // r.d = n * l.d. extend l with n and use r.d as denominator
-    const INT64 n = r.m_denominator / l.m_denominator;
-    return Rational(SAFESUM(SAFEPROD(n,l.m_numerator),r.m_numerator), r.m_denominator);
-  } else {                                                                                     // Extend both and use l.d * r.d as denominator
-    return Rational(SAFESUM(SAFEPROD(l.m_numerator,r.m_denominator),SAFEPROD(r.m_numerator,l.m_denominator)), SAFEPROD(l.m_denominator,r.m_denominator));
+  if(l.m_den == r.m_den) {                                     // l.d == r.d. just add l.n and r.n
+    return Rational(SAFESUM(l.m_num,r.m_num), l.m_den);
+  } else if((l.m_den > r.m_den) && (l.m_den % r.m_den == 0)) { // l.d = n * r.d. extend r with n and use l.d as denominator
+    const INT64 n = l.m_den / r.m_den;
+    return Rational(SAFESUM(l.m_num,SAFEPROD(n,r.m_num)), l.m_den);
+  } else if((l.m_den < r.m_den) && (r.m_den % l.m_den == 0)) { // r.d = n * l.d. extend l with n and use r.d as denominator
+    const INT64 n = r.m_den / l.m_den;
+    return Rational(SAFESUM(SAFEPROD(n,l.m_num),r.m_num), r.m_den);
+  } else {                                                     // Extend both and use l.d * r.d as denominator
+    return Rational(SAFESUM(SAFEPROD(l.m_num,r.m_den),SAFEPROD(r.m_num,l.m_den)), SAFEPROD(l.m_den,r.m_den));
   }
 }
 
 Rational operator-(const Rational &l, const Rational &r) {
   if(!isfinite(l) || !isfinite(r)) return RAT_NAN;
-  if(l.m_denominator == r.m_denominator) {                                                     // l.d == r.d. just subtract r.n from l.n
-    return Rational(SAFEDIF(l.m_numerator,r.m_numerator), l.m_denominator);
-  } else if((l.m_denominator > r.m_denominator) && (l.m_denominator % r.m_denominator == 0)) { // l.d = n * r.d. extend r with n and use l.d as denominator
-    const INT64 n = l.m_denominator / r.m_denominator;
-    return Rational(SAFEDIF(l.m_numerator,SAFEPROD(n,r.m_numerator)), l.m_denominator);
-  } else if((l.m_denominator < r.m_denominator) && (r.m_denominator % l.m_denominator == 0)) { // r.d = n * l.d. extend l with n and use r.d as denominator
-    const INT64 n = r.m_denominator / l.m_denominator;
-    return Rational(SAFEDIF(SAFEPROD(n,l.m_numerator),r.m_numerator), r.m_denominator);
-  } else {                                                                                     // Extend both and use l.d * r.d as denominator
-    return Rational(SAFEDIF(SAFEPROD(l.m_numerator,r.m_denominator),SAFEPROD(r.m_numerator,l.m_denominator)), SAFEPROD(l.m_denominator,r.m_denominator));
+  if(l.m_den == r.m_den) {                                     // l.d == r.d. just subtract r.n from l.n
+    return Rational(SAFEDIF(l.m_num,r.m_num), l.m_den);
+  } else if((l.m_den > r.m_den) && (l.m_den % r.m_den == 0)) { // l.d = n * r.d. extend r with n and use l.d as denominator
+    const INT64 n = l.m_den / r.m_den;
+    return Rational(SAFEDIF(l.m_num,SAFEPROD(n,r.m_num)), l.m_den);
+  } else if((l.m_den < r.m_den) && (r.m_den % l.m_den == 0)) { // r.d = n * l.d. extend l with n and use r.d as denominator
+    const INT64 n = r.m_den / l.m_den;
+    return Rational(SAFEDIF(SAFEPROD(n,l.m_num),r.m_num), r.m_den);
+  } else {                                                     // Extend both and use l.d * r.d as denominator
+    return Rational(SAFEDIF(SAFEPROD(l.m_num,r.m_den),SAFEPROD(r.m_num,l.m_den)), SAFEPROD(l.m_den,r.m_den));
   }
 }
 
@@ -290,7 +290,7 @@ Rational operator-(const Rational &r) {
   case _FPCLASS_PD    :
   case _FPCLASS_PN    :
   case _FPCLASS_PINF  :
-    return Rational(-r.m_numerator, r.m_denominator);
+    return Rational(-r.m_num, r.m_den);
   default             :
     return r;
   }
@@ -298,7 +298,7 @@ Rational operator-(const Rational &r) {
 
 Rational operator*(const Rational &l, const Rational &r) {
   if(!isfinite(l) || !isfinite(r)) return RAT_NAN;
-  return Rational(SAFEPROD(l.m_numerator,r.m_numerator), SAFEPROD(l.m_denominator,r.m_denominator));
+  return Rational(SAFEPROD(l.m_num,r.m_num), SAFEPROD(l.m_den,r.m_den));
 }
 
 Rational operator/(const Rational &l, const Rational &r) {
@@ -308,7 +308,7 @@ Rational operator/(const Rational &l, const Rational &r) {
   }
   switch(fpclassify(r)) {
   case FP_NORMAL:
-    return Rational(SAFEPROD(l.m_numerator, r.m_denominator), SAFEPROD(l.m_denominator, r.m_numerator));
+    return Rational(SAFEPROD(l.m_num, r.m_den), SAFEPROD(l.m_den, r.m_num));
   case FP_ZERO:
     switch(lclass) {
     case _FPCLASS_PN: return Rational::_RAT_PINF;   // +finite/0 -> +inf
@@ -344,42 +344,47 @@ Rational operator%(const Rational &l, const Rational &r) {
 Rational fabs(const Rational &r) {
   if(isnan(r)) return RAT_NAN;
   Rational result;
-  result.m_numerator   = abs(r.m_numerator);
-  result.m_denominator = r.m_denominator;
+  result.m_num = abs(r.m_num);
+  result.m_den = r.m_den;
   return result;
 }
 
-INT64 Rational::pow(INT64 n, UINT y) {
+INT64 Rational::pow(INT64 base, UINT e) {
   INT64 p = 1;
-  while(y > 0) {
-    if(::isEven(y)) {
-      n = SAFEPROD(n,n);
-      y /= 2;
+  while(e > 0) {
+    if(::isEven(e)) {
+      base = SAFEPROD(base,base);
+      e /= 2;
     } else {
-      p = SAFEPROD(p,n);
-      y--;
+      p = SAFEPROD(p,base);
+      e--;
     }
   }
   return p;
 }
 
-Rational pow(const Rational &r, int e) {
-  if(!isfinite(r)) return RAT_NAN;
-  if(e == 0) {
-    return Rational::_1;
-  } else if(e < 0) {
-    if(r.isZero()) {
-      return RAT_PINF;
-    }
-    return Rational(Rational::pow(r.m_denominator,-e), Rational::pow(r.m_numerator,-e));
-  } else {
-    return Rational(Rational::pow(r.m_numerator,e), Rational::pow(r.m_denominator,e));
+// return NaN if !isfinite(base)
+// if(e==0) return NaN for base == 0, else 1
+// if(e< 0) return +inf for base == 0
+Rational pow(const Rational &base, int e) {
+  if(!isfinite(base)) return RAT_NAN;
+  switch(sign(e)) {
+  case 0: // e == 0
+    return base.isZero()
+         ? RAT_NAN
+         : Rational::_1;
+  case -1: // e < 0
+    return base.isZero()
+         ? RAT_PINF
+         : Rational(Rational::pow(base.m_den,-e), Rational::pow(base.m_num,-e));
+  default: // e > 0
+    return Rational(Rational::pow(base.m_num,e), Rational::pow(base.m_den,e));
   }
 }
 
 Rational reciprocal(const Rational &r) {
   switch(fpclassify(r)) {
-  case FP_NORMAL   : return Rational(r.m_denominator, r.m_numerator);
+  case FP_NORMAL   : return Rational(r.m_den, r.m_num);
   case FP_ZERO     : return Rational::_RAT_PINF;
   case FP_INFINITE : return Rational::_RAT_NAN;
   case FP_NAN      : return r;
@@ -393,8 +398,8 @@ int rationalCmp(const Rational &r1, const Rational &r2) {
   const int sign1 = sign(r1);
   int       c     = sign1 - sign(r2);
   if(c != 0) return c;
-  _uint128 p1(abs(r1.m_numerator)); p1 *= r2.m_denominator;
-  _uint128 p2(abs(r2.m_numerator)); p2 *= r1.m_denominator;
+  _uint128 p1(abs(r1.m_num)); p1 *= r2.m_den;
+  _uint128 p2(abs(r2.m_num)); p2 *= r1.m_den;
   return uint128HashCmp(p1, p2) * sign1;
 }
 

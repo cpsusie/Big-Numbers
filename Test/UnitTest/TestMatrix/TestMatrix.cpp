@@ -40,79 +40,79 @@ namespace TestMatrix {
 	TEST_CLASS(TestMatrix) {
     public:
 
-      static Vector randomVector(int dimension) {
+      static Vector randomVector(size_t dimension, RandomGenerator *rnd = _standardRandomGenerator) {
         Vector result(dimension);
-        setToRandom(result);
+        setToRandom(result,rnd);
         return result;
       }
 
-      static Vector randomIntVector(int dimension) {
+      static Vector randomIntVector(size_t dimension, RandomGenerator *rnd = _standardRandomGenerator) {
         Vector result(dimension);
-        for (int i = 0; i < dimension; i++) {
-          result[i] = rand() % 21 - 11;
+        for(size_t i = 0; i < dimension; i++) {
+          result[i] = randInt(-11,11,rnd);
         }
         return result;
       }
 
-      static Matrix randomMatrix(int rows, int columns) {
+      static Matrix randomMatrix(size_t rows, size_t columns, RandomGenerator *rnd = _standardRandomGenerator) {
         Matrix result(rows, columns);
-        setToRandom(result);
+        setToRandom(result, rnd);
         return result;
       }
 
-      static Matrix randomIntMatrix(int rows, int columns) {
+      static Matrix randomIntMatrix(size_t rows, size_t columns, RandomGenerator *rnd = _standardRandomGenerator) {
         Matrix result(rows, columns);
-        for (int r = 0; r < rows; r++) {
-          result.setRow(r, randomIntVector(columns));
+        for(size_t r = 0; r < rows; r++) {
+          result.setRow(r, randomIntVector(columns, rnd));
         }
         return result;
       }
 
-      static Matrix genNoConvergenceMatrix(int dim) {
-        Matrix a = Matrix::zero(dim, dim);
-        for (int i = 1; i < dim; i++) {
+      static Matrix genNoConvergenceMatrix(size_t dim) {
+        Matrix a = Matrix::_0(dim, dim);
+        for(size_t i = 1; i < dim; i++) {
           a(i, i - 1) = 1;
         }
         a(0, dim - 1) = 1;
         return a;
       }
 
-      static Matrix randomSymmetricMatrix(int dimension) {
+      static Matrix randomSymmetricMatrix(size_t dimension, RandomGenerator *rnd = _standardRandomGenerator) {
         Matrix result(dimension, dimension);
-        for (int r = 0; r < dimension; r++) {
-          result.setSubMatrix(r, r, randomMatrix(1, dimension - r));
-          if (r < dimension - 1) {
+        for(size_t r = 0; r < dimension; r++) {
+          result.setSubMatrix(r, r, randomMatrix(1, dimension - r, rnd));
+          if(r < dimension - 1) {
             result.setSubMatrix(r + 1, r, transpose(result.getSubMatrix(r, r + 1, 1, dimension - r - 1)));
           }
         }
         return result;
       }
 
-      static ComplexVector randomComplexVector(int dimension) {
+      static ComplexVector randomComplexVector(size_t dimension, RandomGenerator *rnd = _standardRandomGenerator) {
         ComplexVector result(dimension);
-        setToRandom(result);
+        setToRandom(result, rnd);
         return result;
       }
 
-      static ComplexMatrix randomComplexMatrix(int rows, int columns) {
+      static ComplexMatrix randomComplexMatrix(size_t rows, size_t columns, RandomGenerator *rnd = _standardRandomGenerator) {
         ComplexMatrix result(rows, columns);
-        setToRandom(result);
+        setToRandom(result, rnd);
         return result;
       }
 
       static Matrix exp(const Matrix &A) {
-        if (!A.isSquare()) {
+        if(!A.isSquare()) {
           throwException(_T("exp(Matrix):Matrix not square. A.%s"), A.getDimensionString().cstr());
         }
-        const int dim = (int)A.getRowCount();
-        Matrix    p = Matrix::one(dim);
-        Matrix    sum(dim, dim);
-        Matrix    last(dim, dim);
+        const size_t dim = A.getRowCount();
+        Matrix       p   = Matrix::_1(dim);
+        Matrix       sum( dim, dim);
+        Matrix       last(dim, dim);
 
-        for (Real k = 1;; k++) {
+        for(Real k = 1;; k++) {
           last = sum;
           sum += p;
-          if (normf(sum - last) == 0) {
+          if(normf(sum - last) == 0) {
             break;
           }
           p = p * A;
@@ -122,12 +122,12 @@ namespace TestMatrix {
       }
 
       static Matrix cos(const Matrix &A) {
-        if (!A.isSquare()) {
+        if(!A.isSquare()) {
           throwException(_T("cos(Matrix):Matrix not square. A.%s"), A.getDimensionString().cstr());
         }
         const int    dim = (int)A.getRowCount();
         const Matrix A2 = -A * A;
-        Matrix       p = Matrix::one(dim);
+        Matrix       p = Matrix::_1(dim);
         Matrix       sum(dim, dim);
         Matrix       last(dim, dim);
 
@@ -189,7 +189,7 @@ namespace TestMatrix {
 
       Matrix C(4, 3);
       verify(C.getRowCount() == 4 && C.getColumnCount() == 3);
-      verify(C == Matrix::zero(4, 3));
+      verify(C == Matrix::_0(4, 3));
       Vector v(4);
       for (int i = 0; i < 4; i++) {
         v[i] = i;
@@ -227,7 +227,7 @@ namespace TestMatrix {
 
       ComplexMatrix C(4, 3);
       verify(C.getRowCount() == 4 && C.getColumnCount() == 3);
-      verify(C == ComplexMatrix::zero(4, 3));
+      verify(C == ComplexMatrix::_0(4, 3));
       ComplexVector v(4);
       for (int i = 0; i < 4; i++) {
         v[i] = i;
@@ -257,14 +257,14 @@ namespace TestMatrix {
       Matrix Dr(vr);
       ComplexMatrix C1(Dr);
       verify(C1.getRealPart() == Dr);
-      verify(C1.getImaginaryPart() == Matrix::zero(4, 4));
+      verify(C1.getImaginaryPart() == Matrix::_0(4, 4));
       ComplexMatrix C2;
       C2 = Dr;
       verify(C2.getRealPart() == Dr);
-      verify(C2.getImaginaryPart() == Matrix::zero(4, 4));
+      verify(C2.getImaginaryPart() == Matrix::_0(4, 4));
       ComplexMatrix C3(vr);
       verify(C3.getRealPart() == Dr);
-      verify(C3.getImaginaryPart() == Matrix::zero(4, 4));
+      verify(C3.getImaginaryPart() == Matrix::_0(4, 4));
 
       verify(fabs(C3) == sqrt(Real(14)));
     }
@@ -299,7 +299,7 @@ namespace TestMatrix {
         verify(diff1 < 1e-12);
 
         //  log << _T("length(b-Ax)           :") << diff1 << endl;
-        const Real diff2 = normf(aInverse * A - Matrix::one(dimension));
+        const Real diff2 = normf(aInverse * A - Matrix::_1(dimension));
         verify(diff2 < 1e-12);
         //  log << _T("normf(A*inverse(A) - I):") << diff2 << endl;
         //  log.flush();
@@ -363,7 +363,7 @@ namespace TestMatrix {
         verify(diff1 < 1e-12);
         //  log << _T("length(b-Ax)           :") << diff1 << endl;
 
-        const Real diff2 = fabs(aInverse * A - ComplexMatrix(Matrix::one(dimension)));
+        const Real diff2 = fabs(aInverse * A - ComplexMatrix(Matrix::_1(dimension)));
         verify(diff2 < 1e-12);
         //  log << _T("normf(A*inverse(A) - I):") << diff2 << endl;
         //  log.flush();
@@ -398,8 +398,8 @@ namespace TestMatrix {
       //  log << _T("transpose(U)*U:\n")   << param1 << UtU << endl;
       //  log << _T("transpose(V)*V:\n")   << param1 << VtV << endl;
 
-      verify(normf(UtU - Matrix::one(dim)) < 1e-14);
-      verify(normf(VtV - Matrix::one(dim)) < 1e-14);
+      verify(normf(UtU - Matrix::_1(dim)) < 1e-14);
+      verify(normf(VtV - Matrix::_1(dim)) < 1e-14);
 
       Vector epsVector(rows);
       epsVector[0] = 0.1;
@@ -458,7 +458,7 @@ namespace TestMatrix {
           continue;
         }
 
-        const Matrix S = A - v.re*Matrix::one(n);
+        const Matrix S = A - v.re*Matrix::_1(n);
 
         const SVDDecomposition svd(S);
 
@@ -562,7 +562,7 @@ namespace TestMatrix {
       OUTPUT(_T("  End test QRMatrix on no convergence matrix"));
 
       OUTPUT(_T("  Begin test QRMatrix on Zero matrix"));
-      testQRMatrix(Matrix::zero(6, 6));
+      testQRMatrix(Matrix::_0(6, 6));
       OUTPUT(_T("  End test QRMatrix on Zero matrix"));
     }
 
@@ -577,7 +577,7 @@ namespace TestMatrix {
         const Matrix        exp1A = exp(A);
 
         const int           dim   = (int)A.getRowCount();
-        ComplexMatrix       expD  = ComplexMatrix::one(dim);
+        ComplexMatrix       expD  = ComplexMatrix::_1(dim);
         for (int k = 0; k < dim; k++) {
           expD(k, k) = ::exp(D(k, k));
         }
@@ -611,8 +611,8 @@ namespace TestMatrix {
         const Matrix        sin1A = sin(A);
 
         const int           dim   = (int)A.getRowCount();
-        ComplexMatrix       cosD  = ComplexMatrix::one(dim);
-        ComplexMatrix       sinD  = ComplexMatrix::one(dim);
+        ComplexMatrix       cosD  = ComplexMatrix::_1(dim);
+        ComplexMatrix       sinD  = ComplexMatrix::_1(dim);
 
         for (int k = 0; k < dim; k++) {
           cosD(k, k) = ::cos(D(k, k));
@@ -655,7 +655,7 @@ namespace TestMatrix {
         const Matrix C2      = cos1A * cos1A;
         const Matrix S2      = sin1A * sin1A;
         const Matrix sumC2S2 = C2 + S2;
-        const Real   diff    = normf(sumC2S2 - Matrix::one(dim));
+        const Real   diff    = normf(sumC2S2 - Matrix::_1(dim));
         if (diff > 1e-14) {
           LOG log;
           log << _T("A:\n"             ) << param1 << A;

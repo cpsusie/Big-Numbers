@@ -107,9 +107,11 @@ template<class T> T binomial(T n, T k) {
 }
 
 #ifndef LONGDOUBLE
+#define REAL_PI          M_PI
 #define randReal         randDouble
 #define randGaussianReal randGaussian
 #else
+#define REAL_PI          DBL80_PI
 #define randReal         randDouble80
 #define randGaussianReal randGaussianD80
 #endif

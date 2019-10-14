@@ -132,13 +132,25 @@ Double80 asin(const Double80 &x) {
 }
 
 Double80 mypow(const Double80 &x, const Double80 &y) {
-  if(x.isNegative()) {
-    if(y == floor(y)) {
-      const INT64 d = getInt64(y);
-      return isOdd(d) ? -pow(-x,y) : pow(-x,y);
+  switch(sign(y)) {
+  case 0: // y == 0
+    return x.isZero()
+         ? std::numeric_limits<Double80>::quiet_NaN()
+         : Double80::_1;
+  case -1: // y < 0
+    if(x.isZero()) { // 0^negative = +inf
+      return std::numeric_limits<Double80>::infinity();
     }
+    // continue case
+  default:
+    if(x.isNegative()) {
+      if(y == floor(y)) {
+        const INT64 d = getInt64(y);
+        return isOdd(d) ? -pow(-x,y) : pow(-x,y);
+      }
+    }
+    return pow(x, y);
   }
-  return pow(x, y);
 }
 
 Double80 root(const Double80 &x, const Double80 &y) {

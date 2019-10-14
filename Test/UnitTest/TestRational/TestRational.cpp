@@ -86,7 +86,25 @@ namespace TestRational {
           VERIFYOP(/ , 3e-9)
         }
 
-        const int      expo = r1.isZero() ? randInt(0, 4,&rnd) : randInt(-3, 3, &rnd);
+        Rational zP0 = pow(Rational::_0, 0);
+        verify(isnan(zP0));
+        Rational zPn = pow(Rational::_0, -1);
+        verify(isinf(zPn));
+        Rational zP2 = pow(Rational::_0, 2);
+        verify(zP2 == 0);
+        Rational nzP0 = pow(Rational(2,5), 0);
+        verify(nzP0 == 1);
+
+        double dzP0 = Rational::pow(0.0, Rational::_0);
+        verify(isnan(dzP0));
+        double dzPn = Rational::pow(0.0, -Rational::_1);
+        verify(isinf(dzPn));
+        double dzP2 = Rational::pow(0.0, Rational(2));
+        verify(dzP2 == 0);
+        double dnzP0 = Rational::pow(0.4, Rational::_0);
+        verify(dnzP0 == 1);
+
+        const int      expo = r1.isZero() ? randInt(1, 4,&rnd) : randInt(-3, 3, &rnd);
         const Rational r1Pe = pow(r1, expo);
         const Real     d1Pe = mypow(d1, expo);
         Real           error = fabs(getReal(r1Pe) - d1Pe);
@@ -105,8 +123,8 @@ namespace TestRational {
       Double80 detectedMaxRelError = 0;
 
       for(int i = 0; i < 30; i++) {
-        Rational low  = randRational(10000, &rnd) * randInt(1, 300, &rnd);
-        Rational high = randRational(10000, &rnd) * randInt(1, 300, &rnd);
+        Rational low  = randRational(512, &rnd) * randInt(1, 256, &rnd);
+        Rational high = randRational(512, &rnd) * randInt(1, 256, &rnd);
         if(rnd.nextBool()) low  = -low;
         if(rnd.nextBool()) high = -high;
         if(high < low) {
@@ -115,8 +133,8 @@ namespace TestRational {
 
         for(int j = 0; j < 500; j++) {
           try {
-            const Rational x     = randRational(low, high, &rnd);
-            const Rational y     = randRational(low, high, &rnd);
+            const Rational x     = randRational(low, high, 128, &rnd);
+            const Rational y     = randRational(low, high, 128, &rnd);
             const Double80 x80   = getDouble80(x);
             const Double80 y80   = getDouble80(y);
             const Double80 mod80 = fmod(x80, y80);

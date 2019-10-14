@@ -74,10 +74,10 @@ Complex       det(    const ComplexMatrix &a);
 ComplexVector operator*(const Matrix  &lts, const ComplexVector &rhs);
 ComplexMatrix operator*(const Complex &lts, const Matrix        &rhs);
 
-void setToRandom(Vector        &v);
-void setToRandom(Matrix        &a);
-void setToRandom(ComplexVector &v);
-void setToRandom(ComplexMatrix &a);
+void setToRandom(Vector        &v, RandomGenerator *rnd = _standardRandomGenerator);
+void setToRandom(Matrix        &a, RandomGenerator *rnd = _standardRandomGenerator);
+void setToRandom(ComplexVector &v, RandomGenerator *rnd = _standardRandomGenerator);
+void setToRandom(ComplexMatrix &a, RandomGenerator *rnd = _standardRandomGenerator);
 
 // superdiag = (c0=a(0,1),c1=a(1,2),c2=a(2,3)...,0)
 // subdiag   = (0,c1=a(1,0),c2=a(2,1),c3=a(3,2)...)
@@ -109,9 +109,10 @@ private:
   void createUMatrix();
   void trace();
 
-  QRMatrix(const QRMatrix &src);            // Not defined. Class not cloneable
-  QRMatrix &operator=(const QRMatrix &src); // Not defined. Class not cloneable
-  void setDimension(int rows, int columns); // Not defined
+  QRMatrix(const QRMatrix &src);                  // Not defined. Class not cloneable
+  QRMatrix &operator=(const QRMatrix &src);       // Not defined. Class not cloneable
+  void setDimension(size_t rows, size_t columns); // Not defined
+  void setDimension(size_t dim);                  // Not defined
 public:
   QRMatrix(QRTracer *tracer = NULL);
   QRMatrix(const Matrix &a, QRTracer *tracer = NULL);

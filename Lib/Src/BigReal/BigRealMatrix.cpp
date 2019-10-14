@@ -37,16 +37,16 @@ UINT BigRealMatrix::setPrecision(UINT digits) {
   return oldDigits;
 }
 
-BigRealMatrix BigRealMatrix::one(size_t dim, UINT digits) {
+BigRealMatrix BigRealMatrix::_0(size_t rows, size_t columns, UINT digits) { // static
+  return BigRealMatrix(rows, columns, digits);
+}
+
+BigRealMatrix BigRealMatrix::_1(size_t dim, UINT digits) { // static
   BigRealMatrix result(dim,dim,digits);
   for(size_t i = 0; i < dim; i++) {
     result(i,i) = BIGREAL_1;
   }
   return result;
-}
-
-BigRealMatrix BigRealMatrix::zero(size_t rows, size_t columns, UINT digits) {
-  return BigRealMatrix(rows,columns,digits);
 }
 
 BigRealVector BigRealMatrix::getRow(size_t row) const {

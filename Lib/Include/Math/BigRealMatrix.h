@@ -54,8 +54,8 @@ public:
   inline UINT getPrecision() const {
     return m_digits;
   }
-  static BigRealMatrix one( size_t dim , UINT digits = 16);
-  static BigRealMatrix zero(size_t rows, size_t columns, UINT digits = 16);
+  static BigRealMatrix _0(size_t rows, size_t columns, UINT digits = 16);
+  static BigRealMatrix _1(size_t dim, UINT digits = 16);
   BigRealVector getRow(     size_t row   ) const;
   BigRealVector getColumn(  size_t column) const;
   BigRealMatrix &operator+=(const BigRealMatrix &rhs);
@@ -97,6 +97,7 @@ private:
   BigRealLUMatrix(const BigRealLUMatrix &a);                 /* not defined */
   BigRealLUMatrix &operator=(const BigRealLUMatrix &a);      /* not defined */
   BigRealLUMatrix &setDimension(size_t rows, size_t cols);   /* not defined */
+  BigRealLUMatrix &setDimension(size_t rows);                /* not defined */
 
 public:
   BigRealLUMatrix();

@@ -230,19 +230,6 @@ ComplexVector Polynomial::findRoots(bool verbose, const Real &rootCriterium) con
   return roots;
 }
 
-ComplexVector roots(const Complex &c, int r) {
-  ComplexVector result(r);
-  Polar p(c);
-  p.theta /= r;
-  p.r = root(p.r, r);
-  Real k = 0;
-  const Real step = 2*M_PI/r;
-  for(int i = 0; i < r; i++, k+=step) {
-    result[i] = Complex(p.r*cos(p.theta+k), p.r*sin(p.theta+k));
-  }
-  return result;
-}
-
 String Polynomial::toString(StreamSize precision) const {
   if(precision < 0) {
     precision = numeric_limits<Real>::digits10;
@@ -274,7 +261,7 @@ String Polynomial::toString(StreamSize precision) const {
           result << _T(" - ");
           result << -coef.re;
         }
-      } else if(coef != Complex::zero) {
+      } else if(coef != Complex::_0) {
         result << _T(" + ");
         result << coef;
       }

@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <Random.h>
+#include <MathUtil.h>
 #include <BitSet.h>
 #include <BitMatrix.h>
 #include <CompactHashSet.h>

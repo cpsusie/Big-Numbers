@@ -1,11 +1,10 @@
 #include "pch.h"
 #include <Math/Complex.h>
 
-const Complex Complex::i    = Complex(0,1);
-const Complex Complex::zero = Complex(0,0);
-const Complex Complex::one  = Complex(1,0);
-
-#define EATWHITE() while(_istspace(*s)) s++
+const Complex Complex::_0  = Complex(0  ,0);
+const Complex Complex::_05 = Complex(0.5,0); // 0.5
+const Complex Complex::_1  = Complex(1  ,0);
+const Complex Complex::i   = Complex(0  ,1);
 
 Complex exp(const Complex &c) {
   Complex result;
@@ -23,6 +22,36 @@ Complex sqrt(const Complex &c) {
   sincos(result.re,result.im);
   p.r = sqrt(p.r);
   result.re *= p.r; result.im *= p.r;
+  return result;
+}
+
+static const Complex c_PIi(0, REAL_PI);
+
+Complex pow(const Complex &c, const Complex &p) {
+  if((c.im == 0) && (c.re < 0)) {
+    return exp((log(-c.re) + c_PIi) * p);
+  } else {
+    return exp(log(c) * p);
+  }
+}
+
+Complex root(const Complex &c, const Complex &r) {
+  if((c.im == 0) && (c.re < 0)) {
+    return exp((log(-c.re) + c_PIi) / r);
+  } else {
+    return exp(log(c) / r);
+  }
+}
+
+ComplexVector roots(const Complex &c, UINT r) {
+  ComplexVector result(r);
+  Polar p(c);
+  p.theta /= r;
+  p.r      = root(p.r, r);
+  const Real step = 2 * REAL_PI / r;
+  for(int i = 0; i < (int)r; i++) {
+    result[i] = Complex(p.r*cos(p.theta + i*step), p.r*sin(p.theta + i*step));
+  }
   return result;
 }
 
@@ -101,7 +130,7 @@ Complex atan(const Complex &c) {
          );
 }
 
-void setToRandom(Complex &c) {
-  setToRandom(c.re);
-  setToRandom(c.im);
+void setToRandom(Complex &c, RandomGenerator *rnd) {
+  setToRandom(c.re, rnd);
+  setToRandom(c.im, rnd);
 }

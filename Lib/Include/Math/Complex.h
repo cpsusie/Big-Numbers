@@ -36,9 +36,10 @@ public:
     return p >> c.re >> c.im;
   }
 
-  static const Complex i;
-  static const Complex one;
-  static const Complex zero;
+  static const Complex _0;
+  static const Complex _05; // 0.5
+  static const Complex _1;
+  static const Complex  i;
 };
 
 class Polar {
@@ -130,12 +131,8 @@ inline Complex log(const Complex &c) {
   const Polar p(c);
   return Complex(log(p.r), p.theta);
 }
-inline Complex pow(const Complex &c, const Complex &p) {
-  return exp(log(c) * p);
-}
-inline Complex root(const Complex &c, const Complex &r) {
-  return exp(log(c) / r);
-}
+Complex pow( const Complex &c, const Complex &p);
+Complex root(const Complex &c, const Complex &r);
 Complex sin( const Complex &c);
 Complex cos( const Complex &c);
 Complex tan( const Complex &c);
@@ -143,7 +140,7 @@ Complex asin(const Complex &c);
 Complex acos(const Complex &c);
 Complex atan(const Complex &c);
 
-void setToRandom(Complex &c);
+void setToRandom(Complex &c, RandomGenerator *rnd = _standardRandomGenerator);
 
 String toString(const Complex &c, StreamSize precision=6, StreamSize width=0, FormatFlags flags=0);
 
@@ -165,4 +162,5 @@ std::wostream &operator<<(std::wostream &out, const Complex &c);
 typedef FunctionTemplate<Complex,Complex>   ComplexFunction;
 typedef VectorTemplate<Complex>   ComplexVector;
 
-ComplexVector roots(const Complex &c, int r);
+// assume r >= 1
+ComplexVector roots(const Complex &c, UINT r);

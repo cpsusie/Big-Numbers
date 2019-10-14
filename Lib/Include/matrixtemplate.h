@@ -449,7 +449,7 @@ public:
   }
 
   // Return dst
-  static MatrixTemplate<T> one(size_t dim) {
+  static MatrixTemplate<T> _1(size_t dim) {
     MatrixTemplate<T> result(dim, dim);
     for(size_t  i = 0; i < dim; i++) {
       result.m_a[result.index(i,i)] = 1;
@@ -457,7 +457,7 @@ public:
     return result;
   }
 
-  static MatrixTemplate<T> zero(size_t rows, size_t columns) {
+  static MatrixTemplate<T> _0(size_t rows, size_t columns) {
     return MatrixTemplate<T>(rows, columns);
   }
 
@@ -639,16 +639,6 @@ public:
     return *this;
   }
 
-  friend MatrixTemplate<T> transpose(const MatrixTemplate<T> &m) {
-    MatrixTemplate<T> result(m.getColumnCount(), m.getRowCount());
-    for(size_t r = 0; r < m.getRowCount(); r++) {
-      for(size_t c = 0; c < m.getColumnCount(); c++) {
-        result(c,r) = m(r,c);
-      }
-    }
-    return result;
-  }
-
   friend MatrixTemplate<T> kroneckerSum(const MatrixTemplate<T> &A, const MatrixTemplate<T> &B) {
     if(!A.isSquare()) {
       throwMatrixException(_T("kroneckerSum:Matrix A not square. %s."), A.getDimensionString().cstr());
@@ -659,7 +649,7 @@ public:
 
     const size_t a = A.getRowCount();
     const size_t b = B.getRowCount();
-    return kroneckerProduct(A, one(b)) + kroneckerProduct(one(a), B);
+    return kroneckerProduct(A, _1(b)) + kroneckerProduct(_1(a), B);
   }
 
   friend MatrixTemplate<T> kroneckerProduct(const MatrixTemplate<T> &A, const MatrixTemplate<T> &B) {
@@ -736,3 +726,15 @@ public:
     return format(_T("Dimension=%s"), m_dim.toString().cstr());
   }
 };
+
+// assume m is type derived from MatrixTemplate
+template<class MatrixType> MatrixType transpose(const MatrixType &m) {
+  const size_t rc = m.getRowCount(), cc = m.getColumnCount();
+  MatrixType result(cc, rc);
+  for(size_t r = 0; r < rc; r++) {
+    for(size_t c = 0; c < cc; c++) {
+      result(c, r) = m(r, c);
+    }
+  }
+  return result;
+}

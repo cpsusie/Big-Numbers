@@ -6,31 +6,33 @@
 
 class Rational {
 private:
-  INT64 m_numerator, m_denominator;
+  INT64 m_num; // numerator
+  INT64 m_den; // denominator
 
-  void init(const INT64 &numerator, const INT64 &denominator);
-  static INT64 pow(INT64 n, UINT y);
+  void init(INT64 numerator, INT64 denominator);
+  // Assume e >= 0, return base^e. pow(0,0) == 1
+  static INT64 pow(INT64 base, UINT e);
 public:
 
-  inline Rational() : m_numerator(0), m_denominator(1) {
+  inline Rational() : m_num(0), m_den(1) {
   }
-  inline Rational(const INT64 &numerator, const INT64 &denominator) {
+  inline Rational(INT64 numerator, INT64 denominator) {
     init(numerator, denominator);
   }
-  inline Rational(const INT64 &numerator, int denominator) {
+  inline Rational(INT64 numerator, int denominator) {
     init(numerator, denominator);
   }
   inline Rational(int numerator, int denominator) {
     init(numerator, denominator);
   }
-  inline Rational(int numerator, const INT64 &denominator) {
+  inline Rational(int numerator, INT64 denominator) {
     init(numerator, denominator);
   }
-  inline Rational(const INT64 &n) : m_numerator(n), m_denominator(1) {
+  inline Rational(INT64 n) : m_num(n), m_den(1) {
   }
-  inline Rational(int n) : m_numerator(n), m_denominator(1) {
+  inline Rational(int n) : m_num(n), m_den(1) {
   }
-  inline Rational(UINT n) : m_numerator(n), m_denominator(1) {
+  inline Rational(UINT n) : m_num(n), m_den(1) {
   }
   explicit Rational(float           f  , UINT   maxND = _I16_MAX);
   explicit Rational(double          d  , UINT   maxND = _I32_MAX);
@@ -84,29 +86,32 @@ public:
   friend int rationalCmp(const Rational &r1, const Rational &r2);
 
   friend Rational fabs(const Rational &r);
-  friend Rational pow( const Rational &r, int e);
+  // return NaN if !isfinite(base)
+  // if(e==0) return NaN for base == 0, else 1
+  // if(e< 0) return +inf for base == 0
+  friend Rational pow( const Rational &base, int e);
   friend Rational reciprocal(const Rational &r);
 
   inline bool isZero() const {
-    return (m_numerator == 0) && (m_denominator == 1);
+    return (m_num == 0) && (m_den == 1);
   }
   inline bool isNegative() const {
-    return m_numerator < 0;
+    return m_num < 0;
   }
   inline bool isPositive() const {
-    return m_numerator > 0;
+    return m_num > 0;
   }
   inline bool isInteger() const {
-    return m_denominator == 1;
+    return m_den == 1;
   }
   static UINT64 findGCD(UINT64 a, UINT64 b);
 
-  inline const INT64 &getNumerator() const {
-    return m_numerator;
+  inline INT64 getNumerator() const {
+    return m_num;
   }
 
-  inline const INT64 &getDenominator() const {
-    return m_denominator;
+  inline INT64 getDenominator() const {
+    return m_den;
   }
   // Return true if x is a rational with denominator<=400.
   // if(r != NULL), *r will contain converted Rational
@@ -117,20 +122,36 @@ public:
   // if(r != NULL), *r will contain the calculated value
   static bool isRationalPow(const Rational &base, const Rational &e, Rational *r);
 
-  template<class T> static T pow(T b, const Rational &e) {
-    if(!isfinite(b) || !isfinite(e) || (e.isZero() && (b <= 0))) {
+  // return NaN if (!isfinite(base) || !isfinite(e))
+  // if(e==0) return NaN for base == 0, else 1
+  // if(e< 0) return +inf for base == 0
+  template<class T> static T pow(T base, const Rational &e) {
+    if(!isfinite(base) || !isfinite(e)) {
       return numeric_limits<T>::quiet_NaN();
     }
-    const INT64 den = e.getDenominator();
-    if(isEven(den) && (b < 0)) {
-      return numeric_limits<T>::quiet_NaN();
+    switch(sign(e)) {
+    case 0: // e == 0
+      return (base == 0)
+           ? numeric_limits<T>::quiet_NaN()
+           : 1;
+    case -1: // e < 0
+      if(base == 0) {
+        return numeric_limits<T>::infinity();
+      }
+      // continue case
+    default:
+      { const INT64 eDen = e.getDenominator();
+        if(isEven(eDen) && (base < 0)) {
+          return numeric_limits<T>::quiet_NaN();
+        }
+        const T result = (eDen == 1) ? base : root(base, (T)eDen);
+        return (e.getNumerator() == 1) ? result : mypow(result, (T)e.getNumerator());
+      }
     }
-    const T result = (den == 1) ? b : root(b, den);
-    return (e.getNumerator() == 1) ? result : mypow(result, e.getNumerator());
   }
 
   inline ULONG hashCode() const {
-    return int64Hash(m_numerator) + 100999 * int64Hash(m_denominator);
+    return int64Hash(m_num) + 100999 * int64Hash(m_den);
   }
 
   inline void save(ByteOutputStream &s) const {
@@ -162,10 +183,21 @@ inline Rational randRational(RandomGenerator *rnd = _standardRandomGenerator) {
   return randRational(INT64_MAX, rnd);
 }
 // Return uniform distributed random rational in range [low;high] (both inclusive)
+// Assume the 3 products:
+// n1 = low.num*high.den, n2 = high.num*low.den, d = low.den*high.den are all <= _I64_MAX
+// if this is not the case, an exception is thrown
+// The return rational will have the value rn/(d*f), where rn is a random int in the range [n1*f..n2*f],
+// where f is a random int in range [1..min(maxScaleFactor, _I64_MAX/max(n1,n2,d))]
+// If maxScaleFactor <= 1, no scaling is done
+// To avoid overflow in calculation, keep the involved factors < _I32_MAX
+Rational randRational(const Rational &low, const Rational &high, UINT64 maxScaleFactor=INT64_MAX, RandomGenerator *rnd = _standardRandomGenerator);
+// Return uniform distributed random rational in range [low;high] (both inclusive)
 // Assume the 3 products: low.num * high.den, high.num * low.den, low.den * high.den are all <= _I64_MAX
 // if this is not the case, an exception is thrown
 // To avoid overflow in calculation, keep the involved factors < _I32_MAX
-Rational randRational(const Rational &low, const Rational &high, RandomGenerator *rnd = _standardRandomGenerator);
+inline Rational randRational(const Rational &low, const Rational &high, RandomGenerator *rnd = _standardRandomGenerator) {
+  return randRational(low, high, INT64_MAX, rnd);
+}
 
 // Return true, if denominator == 1
 inline bool     isInteger(  const Rational &r) {  return r.getDenominator() == 1;                             }
@@ -247,10 +279,10 @@ inline bool isfinite(const Rational &r) {
   return fpclassify(r) <= 0;
 }
 inline bool isinf(const Rational &r) {
-  return fpclassify(r) == FP_INFINITE;
+  return (_fpclass(r) & (_FPCLASS_NINF | _FPCLASS_PINF)) != 0;
 }
 inline bool isnan(const Rational &r) {
-  return fpclassify(r) == FP_NAN;
+  return (_fpclass(r) & (_FPCLASS_SNAN | _FPCLASS_QNAN)) != 0;
 }
 inline bool isnormal(const Rational &r) {
   return fpclassify(r) == FP_NORMAL;
@@ -259,10 +291,10 @@ inline bool isunordered(const Rational &x, const Rational &y) {
   return isnan(x) || isnan(y);
 }
 inline bool isPInfinity(const Rational &r) {
-  return isinf(r) && r.isPositive();
+  return _fpclass(r) == _FPCLASS_PINF;
 }
 inline bool isNInfinity(const Rational &r) {
-  return isinf(r) && r.isNegative();
+  return _fpclass(r) == _FPCLASS_NINF;
 }
 
 inline bool operator< (const Rational &x, const Rational &y) {

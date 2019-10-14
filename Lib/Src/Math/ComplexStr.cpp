@@ -43,7 +43,7 @@ template<class CharType> Complex _strtoc(const CharType *s, CharType **end, Real
     }
   }
   if(!ok) {
-    return Complex::zero;
+    return Complex::_0;
   }
   if(end) {
     *end = (CharType*)s;

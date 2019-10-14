@@ -10,8 +10,11 @@ private:
   size_t *m_permut;
   int     m_detsign;
 
-  void allocPermut() {
-    m_permut = new size_t[getRowCount()];
+  inline void allocPermut() {
+    m_permut = new size_t[getRowCount()]; TRACE_NEW(m_permut);
+  }
+  inline void deallocPermut() {
+    SAFEDELETEARRAY(m_permut);
   }
 
   void initPermut() {
@@ -38,10 +41,10 @@ private:
   }
 
   void pivot(const VectorTemplate<T> &d, size_t k) {
-    LUMatrixTemplate<T> &a = *this;
-    const size_t         n = getRowCount();
-    size_t current;
-    T max = 0;
+    LUMatrixTemplate<T> &a   = *this;
+    const size_t         n   = getRowCount();
+    T                    max = 0;
+    size_t               current;
     for(size_t i = k; i < n; i++) {
       T tmp = a(m_permut[i],k)/d[m_permut[i]];
       if(fabs(tmp) > fabs(max)) {
@@ -93,8 +96,9 @@ private:
   LUMatrixTemplate(const LUMatrixTemplate<T> &src);               // Not defined. Class not cloneable
   LUMatrixTemplate<T> &operator=(const LUMatrixTemplate<T> &src); // Not defined. Class not cloneable
   void setDimension(size_t rows, size_t columns);                 // Not defined
+  void setDimension(size_t dim);                                  // Not defined
 public:
-  LUMatrixTemplate() : MatrixTemplate<T>(one(1)) {
+  LUMatrixTemplate() : MatrixTemplate<T>(_1(1)) {
     allocPermut();
     initPermut();
   };
@@ -108,7 +112,7 @@ public:
   }
 
   ~LUMatrixTemplate() {
-    delete[] m_permut;
+    deallocPermut();
   }
 
   LUMatrixTemplate<T> &operator=(const MatrixTemplate<T> &a) {
@@ -119,8 +123,8 @@ public:
       throwMathException(_T("LUMatrixTemplate::operator=:Matrix not square. %s"), a.getDimensionString().cstr());
     }
 
-    delete[] m_permut;
-    MatrixTemplate<T>::operator=(a);
+    deallocPermut();
+    __super::operator=(a);
     allocPermut();
     lowerUpper();
     return *this;
