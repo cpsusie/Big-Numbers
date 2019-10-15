@@ -27,3 +27,6 @@ public:
 };
 
 static DebugLogRedirector _redirector;
+
+#define verifyEqualsInt(   expected, value)            verify(value == expected)
+#define verifyAlmostEquals(expected, value,tolerance)  verify(fabs((expected)-(value)) <= (tolerance))
