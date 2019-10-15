@@ -131,7 +131,7 @@ public:
   // Return number of elements between from and to. both included.
   size_t   getCount(size_t from, size_t to) const;
   // Returns a random element from non empty set. throws Exception if set is empty
-  size_t   select() const;
+  size_t   select(RandomGenerator *rnd = _standardRandomGenerator) const;
   // Remove all elements from set
   inline BitSet &clear() {
     memset(m_p, 0, getAtomCount() * sizeof(Atom));

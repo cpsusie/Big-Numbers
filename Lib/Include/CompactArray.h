@@ -108,17 +108,17 @@ public:
     return m_array[index];
   }
 
-  inline const T &select() const {
+  inline const T &select(RandomGenerator *rnd = _standardRandomGenerator) const {
     if(m_size == 0) selectError(__TFUNCTION__);
-    return m_array[randSizet() % m_size];
+    return m_array[randSizet(rnd) % m_size];
   }
 
-  inline T &select() {
+  inline T &select(RandomGenerator *rnd = _standardRandomGenerator) {
     if(m_size == 0) selectError(__TFUNCTION__);
-    return m_array[randSizet() % m_size];
+    return m_array[randSizet(rnd) % m_size];
   }
 
-  CompactArray<T> getRandomSample(size_t k) const {
+  CompactArray<T> getRandomSample(size_t k, RandomGenerator *rnd = _standardRandomGenerator) const {
     if(k > m_size) {
       throwInvalidArgumentException(__TFUNCTION__, _T("k(=%s) > size(=%s)")
                                    ,format1000(k).cstr()
@@ -130,7 +130,7 @@ public:
     }
     if(k > 0) {
       for(size_t i = k; i < m_size; i++) {
-        const size_t j = randSizet(i+1);
+        const size_t j = randSizet(i+1, rnd);
         if(j < k) {
           result[j] = m_array[i];
         }

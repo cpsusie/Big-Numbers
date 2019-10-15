@@ -208,11 +208,11 @@ public:
     return m_a[index(r,c)];
   }
 
-  inline T &select() {
-    return m_a[randSizet(m_dim.getElementCount())];
+  inline T &select(RandomGenerator *rnd = _standardRandomGenerator) {
+    return m_a[randSizet(m_dim.getElementCount(), rnd)];
   }
-  inline const T &select() const {
-    return m_a[randSizet(m_dim.getElementCount())];
+  inline const T &select(RandomGenerator *rnd = _standardRandomGenerator) const {
+    return m_a[randSizet(m_dim.getElementCount(), rnd)];
   }
   // row must be [1..getRowCount()-1]
   T &subDiagonal(size_t row) {

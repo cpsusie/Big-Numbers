@@ -108,9 +108,9 @@ const void *HashMapImpl::get(const void *key) const {
   return (n != NULL) ? ((HashMapNode*)n)->value() : NULL;
 }
 
-AbstractEntry *HashMapImpl::selectEntry() const {
+AbstractEntry *HashMapImpl::selectEntry(RandomGenerator *rnd) const {
   if(size() == 0) throwSelectFromEmptyCollectionException(__TFUNCTION__);
-  return (HashMapNode*)findNode(select());
+  return (HashMapNode*)findNode(select(rnd));
 }
 
 const AbstractEntry *HashMapImpl::getMinEntry() const {

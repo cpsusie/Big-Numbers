@@ -36,7 +36,7 @@ public:
   bool remove(const void *key);
   void *get(const void *key);
   const void *get(const void *key) const;
-  AbstractEntry *selectEntry() const;
+  AbstractEntry *selectEntry(RandomGenerator *rnd) const;
   const AbstractEntry *getMinEntry() const;
   const AbstractEntry *getMaxEntry() const;
   size_t size() const {

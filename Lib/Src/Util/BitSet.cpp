@@ -161,8 +161,8 @@ BitSet &BitSet::add(size_t a, size_t b) {
   return *this;
 }
 
-size_t BitSet::select() const {
-  const size_t i = randSizet(m_capacity);
+size_t BitSet::select(RandomGenerator *rnd) const {
+  const size_t i = randSizet(m_capacity, rnd);
   for(Iterator<size_t> it = ((BitSet*)this)->getIterator(i); it.hasNext();) {
     return it.next();
   }

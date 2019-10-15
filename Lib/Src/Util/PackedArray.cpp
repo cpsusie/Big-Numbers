@@ -51,9 +51,9 @@ UINT PackedArray::get(UINT64 index) const {
   return v;
 }
 
-UINT PackedArray::select() const {
+UINT PackedArray::select(RandomGenerator *rnd) const {
   if(isEmpty()) selectError(__TFUNCTION__);
-  return get(randInt() % size());
+  return get(rnd->nextInt64(size()));
 }
 
 void PackedArray::set(UINT64 index, UINT v) {

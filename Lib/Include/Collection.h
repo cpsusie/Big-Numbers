@@ -9,8 +9,8 @@ public:
   virtual bool add(const void *e) = 0;
   virtual bool remove(const void *e) = 0;
   virtual bool contains(const void *e) const = 0;
-  virtual const void *select() const = 0;
-  virtual void *select() = 0;
+  virtual const void *select(RandomGenerator *rnd) const = 0;
+  virtual void *select(RandomGenerator *rnd) = 0;
   virtual size_t size() const = 0;
   virtual void clear() = 0;
   virtual AbstractCollection *clone(bool cloneData) const = 0;
@@ -55,15 +55,15 @@ public:
     return m_collection->contains(&e);
   }
 
-  const T &select() const {
-    return *(const T*)m_collection->select();
+  const T &select(RandomGenerator *rnd = _standardRandomGenerator) const {
+    return *(const T*)m_collection->select(rnd);
   }
 
-  T &select() {
-    return *(T*)m_collection->select();
+  T &select(RandomGenerator *rnd = _standardRandomGenerator) {
+    return *(T*)m_collection->select(rnd);
   }
 
-  Collection<T> getRandomSample(size_t k) const {
+  Collection<T> getRandomSample(size_t k, RandomGenerator *rnd = _standardRandomGenerator) const {
     if(k > size()) {
       throwInvalidArgumentException(__TFUNCTION__, _T("k(=%s) > size(=%s)")
                                    ,format1000(k).cstr(), format1000(size()).cstr());
@@ -76,7 +76,7 @@ public:
     }
     if(k > 0) {
       for(size_t i = k+1; it.hasNext(); i++) {
-        const size_t j = randSizet(i);
+        const size_t j = randSizet(i, rnd);
         const T     &e = it.next();
         if(j < k) {
           tmp[j] = &e;

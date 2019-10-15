@@ -40,8 +40,8 @@ public:
   void removeFirst();
   void removeLast();
   bool contains(const void *e) const; // unsupported
-  const void *select() const ;
-  void *select();
+  const void *select(RandomGenerator *rnd) const ;
+  void *select(RandomGenerator *rnd);
   void clear();
   size_t size() const {
     return m_size;
@@ -98,8 +98,8 @@ public:
     return *(T*)(((ListImpl*)m_collection)->last());
   }
 
-  inline T &select() {
-    return *(T*)m_collection->select();
+  inline T &select(RandomGenerator *rnd = _standardRandomGenerator) {
+    return *(T*)m_collection->select(rnd);
   }
 
   bool operator==(const LinkedList<T> &rhs) const { // NB not virtual in Collection, because of ==

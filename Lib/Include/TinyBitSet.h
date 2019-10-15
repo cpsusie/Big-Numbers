@@ -85,7 +85,7 @@ public:
   inline UINT size() const {
     return getSize(m_bits);
   }
-  UINT select() const {                     // Returns a random element from non empty set. throws Exception if set is empty
+  UINT select(RandomGenerator *rnd = _standardRandomGenerator) const {                     // Returns a random element from non empty set. throws Exception if set is empty
     if(isEmpty()) throwSelectFromEmptyCollectionException(__TFUNCTION__);
     CompactArray<BYTE> members(64);
     T bits = m_bits;
@@ -94,7 +94,7 @@ public:
         members.add(i);
       }
     }
-    return members.select();
+    return members.select(rnd);
   }
   inline bool isEmpty() const {
     return m_bits == 0;

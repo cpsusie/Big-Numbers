@@ -242,11 +242,11 @@ public:
     return m_e[n];
   }
 
-  inline T &select() {
-    return m_e[randSizet(m_dim)];
+  inline T &select(RandomGenerator *rnd = _standardRandomGenerator) {
+    return m_e[randSizet(m_dim, rnd)];
   }
-  inline const T &select() const {
-    return m_e[randSizet(m_dim)];
+  inline const T &select(RandomGenerator *rnd = _standardRandomGenerator) const {
+    return m_e[randSizet(m_dim, rnd)];
   }
 
   T length() const {

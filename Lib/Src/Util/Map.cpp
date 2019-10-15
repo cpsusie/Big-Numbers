@@ -21,8 +21,12 @@ public:
   bool contains(const void *e) const {
     return m_map->get(((AbstractEntry*)e)->key()) != NULL;
   }
-  const void *select() const;
-  void *select();
+  const void *select(RandomGenerator *rnd) const {
+    return m_map->selectEntry(rnd);
+  }
+  void *select(RandomGenerator *rnd) {
+    return m_map->selectEntry(rnd);
+  }
   size_t size() const {
     return m_map->size();
   }
@@ -35,8 +39,12 @@ public:
   AbstractComparator *getComparator() {
     return m_map->getComparator();
   }
-  const void *getMin() const;
-  const void *getMax() const;
+  const void *getMin() const {
+    return m_map->getMinEntry();
+  }
+  const void *getMax() const {
+    return m_map->getMaxEntry();
+  }
 
   AbstractCollection *clone(bool cloneData) const {
     return new EntrySet(m_map->cloneMap(cloneData),true);
@@ -50,22 +58,6 @@ public:
     }
   }
 };
-
-const void *EntrySet::select() const {
-  return m_map->selectEntry();
-}
-
-void *EntrySet::select() {
-  return m_map->selectEntry();
-}
-
-const void *EntrySet::getMin() const {
-  return m_map->getMinEntry();
-}
-
-const void *EntrySet::getMax() const {
-  return m_map->getMaxEntry();
-}
 
 // ------------------------------------KeySet-------------------------------------
 
@@ -88,8 +80,12 @@ public:
     return m_map->get(e) != NULL;
   }
 
-  const void *select() const;
-  void *select();
+  const void *select(RandomGenerator *rnd) const {
+    return m_map->selectEntry(rnd)->key();
+  }
+  void *select(RandomGenerator *rnd) {
+    return (void*)m_map->selectEntry(rnd)->key();
+  }
 
   size_t size() const {
     return m_map->size();
@@ -103,8 +99,12 @@ public:
   AbstractComparator *getComparator() {
     return m_map->getComparator();
   }
-  const void *getMin() const;
-  const void *getMax() const;
+  const void *getMin() const {
+    return m_map->getMinEntry()->key();
+  }
+  const void *getMax() const {
+    return m_map->getMaxEntry()->key();
+  }
   AbstractCollection *clone(bool cloneData) const {
     return new KeySet(m_map->cloneMap(cloneData),true);
   }
@@ -118,21 +118,6 @@ public:
   }
 };
 
-const void *KeySet::select() const {
-  return m_map->selectEntry()->key();
-}
-
-void *KeySet::select() {
-  return (void*)m_map->selectEntry()->key();
-}
-
-const void *KeySet::getMin() const {
-  return m_map->getMinEntry()->key();
-}
-
-const void *KeySet::getMax() const {
-  return m_map->getMaxEntry()->key();
-}
 // ------------------------------------ValueCollection-------------------------------------
 
 class ValueCollection : public AbstractCollection {
@@ -155,8 +140,8 @@ public:
     return false;
   }
   bool contains(const void *e) const;
-  const void *select() const;
-  void *select();
+  const void *select(RandomGenerator *rnd) const;
+  void *select(RandomGenerator *rnd);
 
   size_t size() const {
     return m_map->size();
@@ -192,18 +177,18 @@ bool ValueCollection::contains(const void *e) const {
   return result;
 }
 
-const void *ValueCollection::select() const {
+const void *ValueCollection::select(RandomGenerator *rnd) const {
   if(size() == 0) {
     selectError(__TFUNCTION__);
   }
-  return m_map->selectEntry()->value();
+  return m_map->selectEntry(rnd)->value();
 }
 
-void *ValueCollection::select() {
+void *ValueCollection::select(RandomGenerator *rnd) {
   if(size() == 0) {
     selectError(__TFUNCTION__);
   }
-  return m_map->selectEntry()->value();
+  return m_map->selectEntry(rnd)->value();
 }
 
 void ValueCollection::selectError(const TCHAR *method) const {
