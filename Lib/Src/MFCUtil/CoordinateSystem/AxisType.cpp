@@ -8,7 +8,7 @@ IntervalScale getScale(AxisType type) {
   case AXIS_NORMAL_DISTRIBUTION: return NORMAL_DISTRIBUTION;
   case AXIS_LOGARITHMIC        : return LOGARITHMIC;
   case AXIS_DATE               : return LINEAR;
-  default                      : throwInvalidArgumentException(__TFUNCTION__,_T("type=%d"),type);
+  default                      : throwInvalidArgumentException(__TFUNCTION__, _T("type=%d"),type);
                                  return LINEAR;
   }
 }

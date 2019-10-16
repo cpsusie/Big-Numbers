@@ -380,6 +380,6 @@ int InstructionOperand::insOpCmp(const InstructionOperand &op1, const Instructio
     if(c = regSizeCmp(op1.getSize(), op2.getSize())) return c;
     return sign(op1.getImmInt64() - op2.getImmInt64());
   }
-  throwInvalidArgumentException(__TFUNCTION__,_T("op1.getType()=%s"), ::toString(op1.getType()).cstr());
+  throwInvalidArgumentException(__TFUNCTION__, _T("op1.getType()=%s"), ::toString(op1.getType()).cstr());
   return 0;
 }

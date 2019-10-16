@@ -105,7 +105,7 @@ void ParserTree::setTreeForm(ParserTreeForm form) {
     case TREEFORM_CANONICAL: setRoot(toCanonicalForm(getRoot()).node()); break;
     case TREEFORM_NUMERIC  : setRoot(toNumericForm(  getRoot()).node()); break;
     default                :
-      throwInvalidArgumentException(__TFUNCTION__,_T("form=%d"), form);
+      throwInvalidArgumentException(__TFUNCTION__, _T("form=%d"), form);
     }
     pruneUnusedNodes();
     buildSymbolTable(&oldVariables);

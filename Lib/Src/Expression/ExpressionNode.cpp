@@ -338,7 +338,7 @@ ExpressionInputSymbol ExpressionNode::reverseComparator(ExpressionInputSymbol sy
   case GE : return LE;
   case GT : return LT;
   }
-  throwInvalidArgumentException(__TFUNCTION__,_T("symbol=%d"), symbol);
+  throwInvalidArgumentException(__TFUNCTION__, _T("symbol=%d"), symbol);
   return EQ;
 }
 
@@ -351,7 +351,7 @@ ExpressionInputSymbol ExpressionNode::negateComparator(ExpressionInputSymbol sym
   case GE : return LT;
   case GT : return LE;
   }
-  throwInvalidArgumentException(__TFUNCTION__,_T("symbol=%d"), symbol);
+  throwInvalidArgumentException(__TFUNCTION__, _T("symbol=%d"), symbol);
   return EQ;
 }
 

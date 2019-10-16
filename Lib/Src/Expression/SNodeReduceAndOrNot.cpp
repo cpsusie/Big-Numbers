@@ -36,7 +36,7 @@ int CompareOpPairMap::getIndex(ExpressionInputSymbol op) { // static
   case GT: return 4;
   case GE: return 5;
   default:
-    throwInvalidArgumentException(__TFUNCTION__,_T("op=%s"),SNode::getSymbolName(op).cstr());
+    throwInvalidArgumentException(__TFUNCTION__, _T("op=%s"),SNode::getSymbolName(op).cstr());
     return 0;
   }
 }

@@ -9,7 +9,7 @@ ExpressionNodePoly::ExpressionNodePoly(ParserTree *tree, const CoefArray &coefAr
   , m_arg(arg)
 {
   if(coefArray.size() < 1) {
-    throwInvalidArgumentException(__TFUNCTION__,_T("coefArray.size()==%zu"), coefArray.size());
+    throwInvalidArgumentException(__TFUNCTION__, _T("coefArray.size()==%zu"), coefArray.size());
   }
   m_firstCoefIndex   = -1;
   SETDEBUGSTRING();

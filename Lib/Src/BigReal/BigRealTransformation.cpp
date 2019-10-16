@@ -91,7 +91,7 @@ DEFINECLASSNAME(BigRealRectangleTransformation);
 BigRealIntervalTransformation *BigRealRectangleTransformation::allocateTransformation(const BigRealInterval &from, const BigRealInterval &to, IntervalScale scale) const {
   switch(scale) {
   case LINEAR             : return new BigRealLinearTransformation(from, to, AUTOPRECISION, getDigitPool());
-  default                 : throwInvalidArgumentException(__TFUNCTION__,_T("scale=%d"), scale);
+  default                 : throwInvalidArgumentException(__TFUNCTION__, _T("scale=%d"), scale);
                             return NULL;
   }
 }

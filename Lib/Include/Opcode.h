@@ -545,7 +545,7 @@ protected:
   bool validateIsShiftAmountOperand(     const InstructionOperand &op  , BYTE  index                   , bool throwOnError) const;
   void validateOperandIndex(                                             BYTE  index) const {
     if((index < 1) || (index > getMaxOpCount())) {
-      throwInvalidArgumentException(__TFUNCTION__,_T("index=%u. Valid range=[1..%u]"),index,getMaxOpCount());
+      throwInvalidArgumentException(__TFUNCTION__, _T("index=%u. Valid range=[1..%u]"),index,getMaxOpCount());
     }
   }
 #ifdef IS32BIT

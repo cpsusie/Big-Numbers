@@ -176,7 +176,7 @@ InstructionBuilder &InstructionBuilder::setRegisterOperand(const Register &reg) 
     or(regIndex);
     break;
   default:
-    throwInvalidArgumentException(__TFUNCTION__,_T("reg=%s"), reg.getName().cstr());
+    throwInvalidArgumentException(__TFUNCTION__, _T("reg=%s"), reg.getName().cstr());
   }
   return *this;
 }
@@ -227,7 +227,7 @@ InstructionBuilder &InstructionBuilder::setMemOrRegOperand(const InstructionOper
   switch(op.getType()) {
   case REGISTER     : return setRegisterOperand(op.getRegister());
   case MEMORYOPERAND: return setMemoryOperand((MemoryOperand&)op);
-  default           : throwInvalidArgumentException(__TFUNCTION__,_T("op=%s"),op.toString().cstr());
+  default           : throwInvalidArgumentException(__TFUNCTION__, _T("op=%s"),op.toString().cstr());
   }
   return *this;
 }

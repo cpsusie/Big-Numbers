@@ -110,7 +110,7 @@ static DWORD getPreviousStatebufferSize(HANDLE token, BOOL disableAllPrivileges,
   if(AdjustTokenPrivileges(token, disableAllPrivileges, &newState, 1, &previousState, &dwSize) == 0) {
     return dwSize;
   }
-  throwInvalidArgumentException(__TFUNCTION__,_T("token=%p"), token);
+  throwInvalidArgumentException(__TFUNCTION__, _T("token=%p"), token);
   return 0;
 }
 

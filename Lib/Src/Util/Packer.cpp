@@ -54,7 +54,7 @@ Packer &Packer::getElement(ElementType et, void *e, size_t size) {
   const ElementType t = (ElementType)(m_buffer[m_first++]);
   if(t != et) {
     m_first--;
-    throwInvalidArgumentException(__TFUNCTION__,_T("Received invalid datetype:%d. Expected %d"), t, et);
+    throwInvalidArgumentException(__TFUNCTION__, _T("Received invalid datetype:%d. Expected %d"), t, et);
   }
   assert(m_buffer.size() >= m_first + size);
   memcpy(e, m_buffer.getData() + m_first, size);

@@ -729,8 +729,7 @@ Point3D IsoSurfacePolygonizer::getNormal(const Point3D &point) {
 Point3D IsoSurfacePolygonizer::converge(const Point3DWithValue &p1, const Point3DWithValue &p2, int itCount) {
 #ifdef _DEBUG
   if(p1.m_positive == p2.m_positive) {
-    throwInvalidArgumentException(__TFUNCTION__,_T("%s has same sign as %s")
-                                 ,p1.toString().cstr(), p2.toString().cstr());
+    throwInvalidArgumentException(__TFUNCTION__, _T("%s has same sign as %s"), p1.toString().cstr(), p2.toString().cstr());
   }
 #endif // _DEBUG
   Point3DWithValue x1, x2;

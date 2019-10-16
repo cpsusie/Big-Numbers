@@ -74,7 +74,7 @@ BCDArray::BCDArray(const String &numstr) {
     BCDBUF_ADD(bcd,C_END);
   }
   if(!gotDigit) {
-    throwInvalidArgumentException(__TFUNCTION__,_T("numstr=%s"), numstr.cstr());
+    throwInvalidArgumentException(__TFUNCTION__, _T("numstr=%s"), numstr.cstr());
   }
 }
 

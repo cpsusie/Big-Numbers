@@ -1077,7 +1077,7 @@ AlignedImage *ExpressionPainter::getBinaryOpImage(SNode n, int fontSize, Express
 AlignedImage *ExpressionPainter::getOpImage(ExpressionInputSymbol symbol, int fontSize, ExpressionRectangle &rect) {
   const SymbolString *ss = s_stringMap.get(symbol);
   if(ss == NULL) {
-    throwInvalidArgumentException(__TFUNCTION__,_T("symbol=%d"), symbol);
+    throwInvalidArgumentException(__TFUNCTION__, _T("symbol=%d (=%s)"), symbol, ExpressionNode::getSymbolName(symbol).cstr());
   }
   return getTextImage(ss->m_text, ss->m_textFont, fontSize, rect);
 }

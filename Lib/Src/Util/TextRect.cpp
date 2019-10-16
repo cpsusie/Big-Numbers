@@ -251,7 +251,7 @@ void ConsoleBufferOp::putRect(const CHAR_INFO *src, int op, int l, int t, int w,
 
 TextRect::TextRect(int w, int h) {
   if((w < 0) || (h < 0)) {
-    throwInvalidArgumentException(__TFUNCTION__,_T("(w,h)=(%d,%d)"), w, h);
+    throwInvalidArgumentException(__TFUNCTION__, _T("(w,h)=(%d,%d)"), w, h);
   }
   m_bufferOp   = new MemoryBufferOp(w,h);
   m_tempBuffer = NULL;

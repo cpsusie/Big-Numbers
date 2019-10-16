@@ -131,7 +131,7 @@ AbstractAxisPainter *SystemPainter::createAxisPainter(AxisIndex axis, AxisType t
   case AXIS_LOGARITHMIC        : result = new LogarithmicAxisPainter(       *this, axis); break;
   case AXIS_NORMAL_DISTRIBUTION: result = new NormalDistributionAxisPainter(*this, axis); break;
   case AXIS_DATE               : result = new DateAxisPainter(              *this, axis); break;
-  default                      : throwInvalidArgumentException(__TFUNCTION__,_T("type (=%d)"),type);
+  default                      : throwInvalidArgumentException(__TFUNCTION__, _T("type (=%d)"),type);
                                  return NULL;
   }
   TRACE_NEW(result);

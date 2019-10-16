@@ -51,7 +51,7 @@ BYTE regSizeToByteCount(RegSize regSize) {
   case REGSIZE_TBYTE   : return 10;
   case REGSIZE_MMWORD  : return  8;
   case REGSIZE_XMMWORD : return 16;
-  default              : throwInvalidArgumentException(__TFUNCTION__,_T("Unknown register size:%d"), regSize);
+  default              : throwInvalidArgumentException(__TFUNCTION__, _T("Unknown register size:%d"), regSize);
   }
   return 0;
 }
@@ -94,7 +94,7 @@ String GPRegister::getName() const {
     case 13:
     case 14:
     case 15:
-      return format(_T("r%db"),getIndex());
+      return format(_T("r%ub"),getIndex());
 #endif // IS64BIT
     }
     break;
@@ -117,7 +117,7 @@ String GPRegister::getName() const {
     case 13:
     case 14:
     case 15:
-      return format(_T("r%dw"),getIndex());
+      return format(_T("r%uw"),getIndex());
 #endif // IS64BIT
     }
     break;
@@ -163,7 +163,7 @@ String GPRegister::getName() const {
     case 13:
     case 14:
     case 15:
-      return format(_T("r%d"),getIndex());
+      return format(_T("r%u"),getIndex());
     }
     break;
 #endif // IS64BIT
@@ -172,12 +172,12 @@ String GPRegister::getName() const {
 }
 
 String FPURegister::getName() const {
-  return (getIndex() <= 7) ? format(_T("st(%d)"), getIndex())
+  return (getIndex() <= 7) ? format(_T("st(%u)"), getIndex())
                            : __super::getName();
 }
 
 String XMMRegister::getName() const {
-  return (getIndex() <= MAX_XMMREGISTER_INDEX) ? format(_T("xmm%d"), getIndex())
+  return (getIndex() <= MAX_XMMREGISTER_INDEX) ? format(_T("xmm%u"), getIndex())
                                                : __super::getName();
 }
 
@@ -322,7 +322,7 @@ const FPURegister &ST(BYTE index) {
   case 5 : return ST5;
   case 6 : return ST6;
   case 7 : return ST7;
-  default: throwInvalidArgumentException(__TFUNCTION__,_T("index=%d"), index);
+  default: throwInvalidArgumentException(__TFUNCTION__, _T("index=%u"), index);
   }
   return ST0;
 }

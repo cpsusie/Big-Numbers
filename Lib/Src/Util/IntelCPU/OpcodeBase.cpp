@@ -189,7 +189,7 @@ bool OpcodeBase::isMemoryOperandSizeAllowed(OperandSize size) const {
   case REGSIZE_MMWORD : return (getFlags() & MMWORDPTR_ALLOWED ) != 0;
   case REGSIZE_XMMWORD: return (getFlags() & XMMWORDPTR_ALLOWED) != 0;
   case REGSIZE_VOID   : return (getFlags() & VOIDPTR_ALLOWED   ) != 0;
-  default             : throwInvalidArgumentException(__TFUNCTION__,_T("size=%d"), size);
+  default             : throwInvalidArgumentException(__TFUNCTION__, _T("size=%d"), size);
   }
   return false;
 }

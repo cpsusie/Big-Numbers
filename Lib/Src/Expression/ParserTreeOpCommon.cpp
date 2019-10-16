@@ -116,7 +116,7 @@ ExpressionNode *ParserTree::indexedExpr(  ExpressionInputSymbol symbol, SNode as
   switch(symbol) {
   case INDEXEDSUM    : return indexedSum(    assign,endExpr,expr);
   case INDEXEDPRODUCT: return indexedProduct(assign,endExpr,expr);
-  default            : throwInvalidArgumentException(__TFUNCTION__,_T("symbol=%s"), ExpressionNode::getSymbolName(symbol).cstr());
+  default            : throwInvalidArgumentException(__TFUNCTION__, _T("symbol=%s"), ExpressionNode::getSymbolName(symbol).cstr());
                        return NULL;
   }
 }

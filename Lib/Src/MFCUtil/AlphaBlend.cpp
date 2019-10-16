@@ -21,7 +21,7 @@ void preMultiplyAlpha(HBITMAP bm) {
   getBitmapBits(bm, bits, bmInfo);
 
   if(bmInfo.bmiHeader.biBitCount != 32) {
-    throwInvalidArgumentException(__TFUNCTION__,_T("bitmap has %d bits/pixel. Must be 32")
+    throwInvalidArgumentException(__TFUNCTION__, _T("bitmap has %d bits/pixel. Must be 32")
                                  ,bmInfo.bmiHeader.biBitCount);
   }
 #define PM(c, alpha, channel) (int)ARGB_GET##channel(c)*(alpha)/255

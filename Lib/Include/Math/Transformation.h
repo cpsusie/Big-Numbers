@@ -149,7 +149,7 @@ template<class T> class LogarithmicTransformationTemplate : public IntervalTrans
 protected:
   T translate(const T &x) const {
     if(x <= 0) {
-      throwInvalidArgumentException(__TFUNCTION__,_T("x=%s"), ::toString(x).cstr());
+      throwInvalidArgumentException(__TFUNCTION__, _T("x=%s"), ::toString(x).cstr());
     }
     return log(x);
   }
@@ -181,7 +181,7 @@ template<class T> class NormalDistributionTransformationTemplate : public Interv
 protected:
   T translate(const T &x) const {
     if(x <= 0 || x >= 1) {
-      throwInvalidArgumentException(__TFUNCTION__,_T("x=%s) outside valid interval ]0;1["),::toString(x).cstr());
+      throwInvalidArgumentException(__TFUNCTION__, _T("x=%s outside valid interval ]0;1["),::toString(x).cstr());
     }
     return probitFunction(x);
   }
@@ -230,7 +230,7 @@ private:
     case LINEAR             : return new LinearTransformationTemplate<T>(            from, to);
     case LOGARITHMIC        : return new LogarithmicTransformationTemplate<T>(       from, to);
     case NORMAL_DISTRIBUTION: return new NormalDistributionTransformationTemplate<T>(from, to);
-    default                 : throwInvalidArgumentException(__TFUNCTION__,_T("scale=%d"), scale);
+    default                 : throwInvalidArgumentException(__TFUNCTION__, _T("scale=%d"), scale);
                               return NULL;
     }
   }

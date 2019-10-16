@@ -215,7 +215,7 @@ ExpressionVariable *ParserTreeSymbolTable::allocateSymbol(ExpressionNode *n, boo
 
 ExpressionVariable *ParserTreeSymbolTable::allocateName(const String &name, const Real &value, bool constant, bool leftSide, bool loopVar) {
   if(m_nameTable.get(name.cstr()) != NULL) {
-    throwInvalidArgumentException(__TFUNCTION__,_T("Name <%s> already exist"), name.cstr());
+    throwInvalidArgumentException(__TFUNCTION__, _T("Name \"%s\" already exist"), name.cstr());
   }
   const int varIndex   = (int)m_variableTable.size();
   m_variableTable.add(ExpressionVariable(name, constant, leftSide, loopVar));
