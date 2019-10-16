@@ -60,18 +60,28 @@ namespace TestExpression {
     }
   }
 
-  FILE *openEvalListFile(       int testCase) { return MKFOPEN(makeFileName(testCase, _T("eval")                     ), _T("w")); }
-  FILE *openEvalReducedListFile(int testCase) { return MKFOPEN(makeFileName(testCase, _T("eval"), _T("reduced"      )), _T("w")); }
-  FILE *openEvalDumpFile(       int testCase) { return MKFOPEN(makeFileName(testCase, _T("eval"), _T("dump"         )), _T("w")); }
-  FILE *openEvalReducedDumpFile(int testCase) { return MKFOPEN(makeFileName(testCase, _T("eval"), _T("reduced\\dump")), _T("w")); }
+#ifdef GENERATE_LISTFILES
+#define COND_MKFOPEN(...) MKFOPEN(__VA_ARGS__)
+#define FPRINTF(...) _ftprintf(__VA_ARGS__)
+#else
+#define COND_MKFOPEN(...) NULL
+#define FPRINTF(...)
+#endif // GENERATE_LISTFILES
 
-  FILE *openBoolListFile(       int testCase) { return MKFOPEN(makeFileName(testCase, _T("bool")                     ), _T("w")); }
-  FILE *openBoolReducedListFile(int testCase) { return MKFOPEN(makeFileName(testCase, _T("bool"), _T("reduced"      )), _T("w")); }
-  FILE *openBoolDumpFile(       int testCase) { return MKFOPEN(makeFileName(testCase, _T("bool"), _T("dump"         )), _T("w")); }
-  FILE *openBoolReducedDumpFile(int testCase) { return MKFOPEN(makeFileName(testCase, _T("bool"), _T("reduced\\dump")), _T("w")); }
+  FILE *openEvalListFile(       int testCase) { return COND_MKFOPEN(makeFileName(testCase, _T("eval")                     ), _T("w")); }
+  FILE *openEvalReducedListFile(int testCase) { return COND_MKFOPEN(makeFileName(testCase, _T("eval"), _T("reduced"      )), _T("w")); }
+  FILE *openEvalDumpFile(       int testCase) { return COND_MKFOPEN(makeFileName(testCase, _T("eval"), _T("dump"         )), _T("w")); }
+  FILE *openEvalReducedDumpFile(int testCase) { return COND_MKFOPEN(makeFileName(testCase, _T("eval"), _T("reduced\\dump")), _T("w")); }
 
-  FILE *openPowListFile(        int testCase) { return MKFOPEN(makeFileName(testCase, _T("pow" )                     ), _T("w")); }
-  FILE *openRootListFile(       int testCase) { return MKFOPEN(makeFileName(testCase, _T("root")                     ), _T("w")); }
+  FILE *openBoolListFile(       int testCase) { return COND_MKFOPEN(makeFileName(testCase, _T("bool")                     ), _T("w")); }
+  FILE *openBoolReducedListFile(int testCase) { return COND_MKFOPEN(makeFileName(testCase, _T("bool"), _T("reduced"      )), _T("w")); }
+  FILE *openBoolDumpFile(       int testCase) { return COND_MKFOPEN(makeFileName(testCase, _T("bool"), _T("dump"         )), _T("w")); }
+  FILE *openBoolReducedDumpFile(int testCase) { return COND_MKFOPEN(makeFileName(testCase, _T("bool"), _T("reduced\\dump")), _T("w")); }
+
+  FILE *openPowListFile(        int testCase) { return COND_MKFOPEN(makeFileName(testCase, _T("pow" )                     ), _T("w")); }
+  FILE *openRootListFile(       int testCase) { return COND_MKFOPEN(makeFileName(testCase, _T("root")                     ), _T("w")); }
+
+#define FCLOSE(f) { if(f) { fclose(f); f=NULL; } }
 
   typedef enum {
     CMP_EQUAL
@@ -164,21 +174,23 @@ namespace TestExpression {
           debugLog(_T("testcase %3d:<%-50s>\n"),i,expr.cstr());
 #endif
           INFO(_T("Test[%d]:%s"), i, expr.cstr());
-          FILE      * listFile   = openEvalListFile(       i);
-          FILE      *RlistFile   = openEvalReducedListFile(i);
-          FILE      * dumpFile   = openEvalDumpFile(       i);
-          FILE      *RdumpFile   = openEvalReducedDumpFile(i);
+
+          FILE * listFile   = openEvalListFile(       i);
+          FILE *RlistFile   = openEvalReducedListFile(i);
+          FILE * dumpFile   = openEvalDumpFile(       i);
+          FILE *RdumpFile   = openEvalReducedDumpFile(i);
+
           Expression compiledExpr, interpreterExpr, reducedExpr;
           compiledExpr.compile(expr, true,false, listFile);
           reducedExpr.compile( expr, true,true ,RlistFile);
 
-          _ftprintf( dumpFile, _T("%s\n%s\n"), expr.cstr(),compiledExpr.treeToString().cstr());
-          _ftprintf(RdumpFile, _T("%s\n%s\n"), expr.cstr(),reducedExpr.treeToString().cstr());
+          FPRINTF( dumpFile, _T("%s\n%s\n"), expr.cstr(),compiledExpr.treeToString().cstr());
+          FPRINTF(RdumpFile, _T("%s\n%s\n"), expr.cstr(),reducedExpr.treeToString().cstr());
 
-          fclose(RdumpFile);
-          fclose( dumpFile);
-          fclose(RlistFile);
-          fclose( listFile);
+          FCLOSE(RdumpFile);
+          FCLOSE( dumpFile);
+          FCLOSE(RlistFile);
+          FCLOSE( listFile);
 
 //          debugLog(_T("Test %d %s\n%s\n"), i, expr.cstr(), compiledExpr.treeToString().cstr());
 
@@ -221,11 +233,11 @@ namespace TestExpression {
       << "Difference(comp-C++ ):" << toString(compiledResult - cppResult  ) << "." << endl; \
 }
 
-                  if((compiledDefined    != cppDefined) || (compiledDefined && fabs(compiledResult - cppResult) > 3e-15)) {
+                  if((compiledDefined != cppDefined) || (compiledDefined && fabs(compiledResult - cppResult) > 3e-15)) {
                     LOGERROR();
                     verify(false);
                   }
-                  if((reducedDefined     != cppDefined) || (reducedDefined  && fabs(reducedResult  - cppResult) > 3e-15)) {
+                  if((reducedDefined != cppDefined) || (reducedDefined  && fabs(reducedResult  - cppResult) > 3e-15)) {
                     LOGERROR();
                     verify(false);
                   }
@@ -240,9 +252,7 @@ namespace TestExpression {
                   const bool compiledResult    = compiledExpr.evaluateBool();
                   const bool reducedResult     = reducedExpr.evaluateBool();
                   const bool interpreterResult = interpreterExpr.evaluateBool();
-                  if((compiledResult    != cppResult)
-                  || (reducedResult     != cppResult)
-                  || (interpreterResult != cppResult)) {
+                  if((compiledResult != cppResult) || (reducedResult != cppResult) || (interpreterResult != cppResult)) {
                     LOG log;
                     log << "TestCase[" << i << "]:<" << expr << ">(x=" << toString(x) << ") failed." << endl
                         << "Result(C++          ):" << toString(cppResult        ) << "." << endl
@@ -276,9 +286,10 @@ namespace TestExpression {
         for(Real p = -70; p <= 70; p += 0.5) {
           str = format(_T("(1+x)^%s"),toString(p).cstr());
           Expression compPowExpr, interpretPowExpr;
+
           FILE *powListFile = openPowListFile(listFileCounter);
           compPowExpr.compile(   str, true, false, powListFile);
-          fclose(powListFile);
+          FCLOSE(powListFile);
 
           interpretPowExpr.compile(str, false);
           verifyExprOk(compPowExpr     );
@@ -288,7 +299,7 @@ namespace TestExpression {
           Expression compRootExpr, interpretRootExpr;
           FILE *rootListFile = openRootListFile(listFileCounter++);
           compRootExpr.compile(   str, true, false, rootListFile);
-          fclose(rootListFile);
+          FCLOSE(rootListFile);
 
           interpretRootExpr.compile(str, false);
           verifyExprOk(compRootExpr     ,p!=0);
@@ -325,7 +336,7 @@ namespace TestExpression {
             Expression compPowExpr, interpretPowExpr;
             FILE *listPowFile = openPowListFile(listFileCounter);
             compPowExpr.compile(   str, true, false, listPowFile);
-            fclose(listPowFile);
+            FCLOSE(listPowFile);
             interpretPowExpr.compile(str, false);
             verifyExprOk(compPowExpr     );
             verifyExprOk(interpretPowExpr);
@@ -334,7 +345,7 @@ namespace TestExpression {
             Expression compRootExpr, interpretRootExpr;
             FILE *listRootFile = openRootListFile(listFileCounter++);
             compRootExpr.compile(   str, true, false, listRootFile);
-            fclose(listRootFile);
+            FCLOSE(listRootFile);
             interpretRootExpr.compile(str, false);
             verifyExprOk(compRootExpr     );
             verifyExprOk(interpretRootExpr);
@@ -432,7 +443,7 @@ namespace TestExpression {
       exprArray.addAll(aOrbr ); aOrbr.clear();
       exprArray.addAll(aOrrb ); aOrrb.clear();
       exprArray.addAll(aOrrr ); aOrrr.clear();
-//#define GENERATE_LISTFILES
+
       try {
         const size_t n = exprArray.size();
         for(UINT i = 0; i < n; i++) {
@@ -440,26 +451,21 @@ namespace TestExpression {
           if(i % 100 == 0) {
             INFO(_T("Test[%d]:%s"), i, expr.cstr());
           }
-#ifdef GENERATE_LISTFILES
           FILE      * listFile = openBoolListFile(       i);
           FILE      *RlistFile = openBoolReducedListFile(i);
           FILE      * dumpFile = openBoolDumpFile(       i);
           FILE      *RdumpFile = openBoolReducedDumpFile(i);
-#else
-          FILE      * listFile = NULL;
-          FILE      *RlistFile = NULL;
-#endif // GENERATE_LISTFILES
+
           Expression compiledExpr, interpreterExpr, reducedExpr;
           compiledExpr.compile(expr, true,false, listFile);
           reducedExpr.compile( expr, true,true ,RlistFile);
-#ifdef GENERATE_LISTFILES
-          _ftprintf( dumpFile, _T("%s\n%s\n"), expr.cstr(),compiledExpr.treeToString().cstr());
-          _ftprintf(RdumpFile, _T("%s\n%s\n"), expr.cstr(),reducedExpr.treeToString().cstr());
-          fclose(RdumpFile);
-          fclose( dumpFile);
-          fclose(RlistFile);
-          fclose( listFile);
-#endif  // GENERATE_LISTFILES
+
+          FPRINTF( dumpFile, _T("%s\n%s\n"), expr.cstr(),compiledExpr.treeToString().cstr());
+          FPRINTF(RdumpFile, _T("%s\n%s\n"), expr.cstr(),reducedExpr.treeToString().cstr());
+          FCLOSE(RdumpFile);
+          FCLOSE( dumpFile);
+          FCLOSE(RlistFile);
+          FCLOSE( listFile);
 
 //          debugLog(_T("Test %d %s\n%s\n"), i, expr.cstr(), compiledExpr.treeToString().cstr());
 
@@ -484,9 +490,7 @@ namespace TestExpression {
               const bool compiledResult    = compiledExpr.evaluateBool();
               const bool reducedResult     = reducedExpr.evaluateBool();
               const bool interpreterResult = interpreterExpr.evaluateBool();
-              if((compiledResult    != interpreterResult)
-              || (reducedResult     != interpreterResult)
-              ) {
+              if((compiledResult != interpreterResult) || (reducedResult != interpreterResult)) {
                 LOG log;
                 log << "TestCase[" << i << "]:<" << expr << ">(x=" << toString(x) << ") failed." << endl
                     << "Result(Compiled     ):" << toString(compiledResult   ) << "." << endl
