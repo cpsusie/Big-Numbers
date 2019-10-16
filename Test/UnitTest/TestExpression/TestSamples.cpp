@@ -514,7 +514,7 @@ public:
     return _T("fac(x+1)");
   }
   Real fr(const Real &x) const {
-    return fac(x + 1);
+    return factorial(x + 1);
   }
 };
 
@@ -1020,7 +1020,7 @@ public:
   Real fr(const Real &x) const {
     Real sum = 0;
     for(int i = 0; i <= 10; i++)
-      sum += mypow(x, i) / fac(i);
+      sum += mypow(x, i) / factorial((Real)i);
     return sum;
   }
 };

@@ -62,7 +62,7 @@ Real ExpressionNode::evaluateReal() const {
   case EXP      : return ::exp(                  left()->evaluateReal());
   case EXP10    : return ::exp10(                left()->evaluateReal());
   case EXP2     : return ::exp2(                 left()->evaluateReal());
-  case FAC      : return fac(                    left()->evaluateReal());
+  case FAC      : return factorial(              left()->evaluateReal());
   case FLOOR    : return floor(                  left()->evaluateReal());
   case GAMMA    : return gamma(                  left()->evaluateReal());
   case GAUSS    : return ::gauss(                left()->evaluateReal());

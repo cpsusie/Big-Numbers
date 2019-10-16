@@ -53,7 +53,7 @@ private:
       }
     }
     if(fabs(max) == 0) {
-      throwMathException(_T("LUMatrixTemplate::pivot:The matrix is singular"));
+      throwMathException(_T("%s:The matrix is singular"), __TFUNCTION__);
     }
     if(current != k) {
       size_t itmp       = m_permut[current];
@@ -104,9 +104,7 @@ public:
   };
 
   LUMatrixTemplate(const MatrixTemplate<T> &a) : MatrixTemplate<T>(a) {
-    if(!a.isSquare()) {
-      throwMathException(_T("LUMatrixTemplate::LUMatrixTemplate:Matrix not square. %s"), a.getDimensionString().cstr());
-    }
+    _VALIDATEISSQUAREMATRIX(a);
     allocPermut();
     lowerUpper();
   }
@@ -119,10 +117,7 @@ public:
     if(this == &a) {
       return *this;
     }
-    if(!a.isSquare()) {
-      throwMathException(_T("LUMatrixTemplate::operator=:Matrix not square. %s"), a.getDimensionString().cstr());
-    }
-
+    _VALIDATEISSQUAREMATRIX(a);
     deallocPermut();
     __super::operator=(a);
     allocPermut();
@@ -136,7 +131,7 @@ public:
     const intptr_t             n = getRowCount();
 
     if(y.getDimension() != n) {
-      throwMathException(_T("LUMatrixTemplate::solveLU:Invalid dimension. y.dimension=%s, LU.%s"), format1000(y.getDimension()).cstr(), getDimensionString().cstr());
+      throwInvalidArgumentException(__TFUNCTION__, _T("y.%s, LU.%s"), y.getDimensionString().cstr(), getDimensionString().cstr());
     }
 
     VectorTemplate<T> z(n);

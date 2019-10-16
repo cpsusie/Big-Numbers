@@ -46,55 +46,56 @@ public:
 
 class BTreePage {
 private:
-  int m_itemCount;
-  virtual int getItemSize() const = 0;
+  UINT m_itemCount;
+  virtual UINT getItemSize() const = 0;
 protected:
   BTreePage *m_child0;
+  void throwIndexError(const TCHAR *method, UINT i) const;
 public:
-  virtual void setItem(int i, const BTreePageItem &v) = 0;
-  virtual const BTreePageItem &getItem(int i) const = 0;
-  virtual BTreePageItem &getItem(int i) = 0;
+  virtual void setItem(UINT i, const BTreePageItem &v) = 0;
+  virtual const BTreePageItem &getItem(UINT i) const = 0;
+  virtual BTreePageItem &getItem(UINT i) = 0;
   const BTreePageItem &getLastItem() const {
     return getItem(m_itemCount);
   }
-  void copyItems(int from, int to, const BTreePage *src, int start);
-  int getItemCount() const {
+  void copyItems(UINT from, UINT to, const BTreePage *src, UINT start);
+  UINT getItemCount() const {
     return m_itemCount;
   }
-  void *getKey(int i) const {
+  void *getKey(UINT i) const {
     return getItem(i).m_key;
   }
-  void setItemCount(int value);
+  void setItemCount(UINT value);
   void incrItemCount();
   void decrItemCount();
-  void insertItem(int i, const BTreePageItem &t);
-  void removeItem(int i);
-  BTreePage *getChild(int i) const;
-  void setChild(int i, BTreePage *v);
+  void insertItem(UINT i, const BTreePageItem &t);
+  void removeItem(UINT i);
+  BTreePage *getChild(UINT i) const;
+  void setChild(UINT i, BTreePage *v);
 };
 
 class BTreeSetPageImpl : public BTreePage {
 private:
   BTreePageItem m_item[MAXITEMCOUNT];
-  int getItemSize() const {
+  UINT getItemSize() const {
     return sizeof(BTreePageItem);
   }
 public:
-  void setItem(int i, const BTreePageItem &v);
-  const BTreePageItem &getItem(int i) const;
-  BTreePageItem &getItem(int i);
+  void setItem(UINT i, const BTreePageItem &v);
+  const BTreePageItem &getItem(UINT i) const;
+  BTreePageItem &getItem(UINT i);
 };
 
 class BTreeMapPageImpl : public BTreePage {
 private:
   BTreeMapPageItem m_item[MAXITEMCOUNT];
-  int getItemSize() const {
+  UINT getItemSize() const {
     return sizeof(BTreeMapPageItem);
   }
 public:
-  void setItem(int i, const BTreePageItem &v);
-  const BTreePageItem &getItem(int i) const;
-  BTreePageItem &getItem(int i);
+  void setItem(UINT i, const BTreePageItem &v);
+  const BTreePageItem &getItem(UINT ki) const;
+  BTreePageItem &getItem(UINT i);
 };
 
 class BTreeSetImpl : public AbstractSet {
@@ -113,7 +114,7 @@ private:
   void pageDel(             BTreePage *p, BTreePage *a, int r, bool &h);
   void showPage(  const     BTreePage *p, int level, AbstractFormatter &formatter) const;
   void checkPage( const     BTreePage *p, int level, int height) const;
-  int  getHeight() const;
+  UINT getHeight() const;
   void deletePage(BTreePage *a);
   void traverse(const BTreePage *p, PageWalker &pw) const;
 protected:
@@ -145,8 +146,8 @@ public:
   bool add(      const void *key);
   bool remove(   const void *key);
   bool contains( const void *key) const;
-  const void *select() const; // returns key*
-  void *select();
+  const void *select(RandomGenerator *rnd) const; // returns key*
+  void *select(RandomGenerator *rnd);
   size_t size() const {
     return m_size;
   }
@@ -192,7 +193,7 @@ public:
   bool remove(const void *key);
         void *get(const void *key);
   const void *get(const void *key) const;
-  AbstractEntry *selectEntry() const;
+  AbstractEntry *selectEntry(RandomGenerator *rnd) const;
   const AbstractEntry *getMinEntry() const;
   const AbstractEntry *getMaxEntry() const;
   size_t size() const {

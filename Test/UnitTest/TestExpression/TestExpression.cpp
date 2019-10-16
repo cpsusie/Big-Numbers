@@ -163,7 +163,7 @@ namespace TestExpression {
 #ifdef TRACE_MEMORY
           debugLog(_T("testcase %3d:<%-50s>\n"),i,expr.cstr());
 #endif
-          OUTPUT(_T("Test[%d]:%s"), i, expr.cstr());
+          INFO(_T("Test[%d]:%s"), i, expr.cstr());
           FILE      * listFile   = openEvalListFile(       i);
           FILE      *RlistFile   = openEvalReducedListFile(i);
           FILE      * dumpFile   = openEvalDumpFile(       i);
@@ -438,7 +438,7 @@ namespace TestExpression {
         for(UINT i = 0; i < n; i++) {
           const String  expr = exprArray[i];
           if(i % 100 == 0) {
-            OUTPUT(_T("Test[%d]:%s"), i, expr.cstr());
+            INFO(_T("Test[%d]:%s"), i, expr.cstr());
           }
 #ifdef GENERATE_LISTFILES
           FILE      * listFile = openBoolListFile(       i);

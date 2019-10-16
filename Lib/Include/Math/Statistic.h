@@ -30,3 +30,22 @@ public:
   String toString(int prec = 6);
 };
 
+// Chisquare Goodness of Fit test. return p-value for null-hypothesis v == expected.
+// p close to 1 is good for the3 null-hypothesis, close to 0 is bad. (close to 0 usualy < 0.05 (significance level)
+// Assume v.size == expected.size, and both are >= 2. and all elements of expected > 0
+template<class ValueArray> static Real chiSquareGoodnessOfFitTest(const ValueArray &v, const ValueArray &expected) {
+  if (v.size() != expected.size()) {
+    throwInvalidArgumentException(__TFUNCTION__, _T("v.size=%zu, expected.size=%zu")
+      , v.size(), expected.size());
+  }
+  if (v.size() < 2) {
+    throwInvalidArgumentException(__TFUNCTION__, _T("v.size=%zu. must be >= 2")
+      , v.size());
+  }
+  Real q = 0;
+  const size_t n = v.size();
+  for (size_t i = 0; i < n; i++) {
+    q += sqr(v[i] - expected[i]) / expected[i];
+  }
+  return 1.0 - chiSquaredDistribution((Real)n - 1, q);
+}

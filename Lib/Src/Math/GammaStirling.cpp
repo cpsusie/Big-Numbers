@@ -8,7 +8,7 @@ Real gammaStirling(const Real &x) {
 
 Real lnGammaStirling(const Real &x) {
   if(x <= 0) {
-    throwInvalidArgumentException(__TFUNCTION__,_T("x=%s. must be > 0"), toString(x).cstr()); // undefined
+    throwInvalidArgumentException(__TFUNCTION__, _T("x=%s. must be > 0"), toString(x).cstr()); // undefined
   }
   return log(2.0*REAL_PI/x)/2.0 + x * (log(x + 1.0/(12.0*x - 1.0/(10.0*x))) - 1.0);
 }

@@ -51,17 +51,17 @@ BigReal gamma(const BigReal &x, int ndigits) {
     for(result = BIGREAL_1, p = x - BIGREAL_1; p > BIGREAL_2; --p) {
       result = rProd(result,p,ndigits);
     }
-    return rProd(rProd(result,p, ndigits),gamma1_2(p,ndigits), ndigits);
+    return rProd(gamma1_2(p, ndigits), rProd(result,p, ndigits), ndigits);
   } else if(x < BIGREAL_1) {
     for(result = BIGREAL_1, p = x; p < x; ++p) {
-      result = rQuot(result,p,ndigits);
+      result = rProd(result,p,ndigits);
     }
-    return rProd(result,gamma1_2(p,ndigits), ndigits);
+    return rQuot(gamma1_2(p,ndigits), result, ndigits);
   } else {
     return gamma1_2(x,ndigits);
   }
 }
 
-BigReal fac(const BigReal &x, int ndigits) {
+BigReal factorial(const BigReal &x, int ndigits) {
   return gamma(x+BIGREAL_1,ndigits);
 }

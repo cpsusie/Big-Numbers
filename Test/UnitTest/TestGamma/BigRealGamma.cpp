@@ -69,7 +69,7 @@ BigReal gamma(const BigReal &x, int ndigits) {
   }
 }
 
-BigReal fac(const BigReal &x, int ndigits) {
+BigReal factorial(const BigReal &x, int ndigits) {
   DigitPool *pool = x.getDigitPool();
   return gamma(x+_1,ndigits);
 }

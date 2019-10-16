@@ -63,10 +63,7 @@ Real norm00(const Matrix &a) {
 }
 
 Matrix inverse(const Matrix &a) {
-  if(!a.isSquare()) {
-    throwMathException(_T("inverse(Matrix):Matrix not square. %s"), a.getDimensionString().cstr());
-  }
-
+  _VALIDATEISSQUAREMATRIX(a);
   LUMatrix lu(a);
   return lu.getInverse();
 }

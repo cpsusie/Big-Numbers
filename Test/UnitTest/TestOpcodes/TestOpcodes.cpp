@@ -7,12 +7,11 @@ namespace TestOpcodes {
 #include <UnitTestTraits.h>
 
   static void vprint(const TCHAR *format, va_list argptr) {
-    OUTPUT(_T("%s"),vformat(format,argptr).cstr());
+    INFO(_T("%s"),vformat(format,argptr).cstr());
   }
 
   TEST_CLASS(TestMachineCode) {
-	public:
-		
+  public:
 
     TEST_METHOD(GenerateTestSequence) {
       try {
@@ -24,7 +23,5 @@ namespace TestOpcodes {
     TEST_METHOD(CallAssemblerCode) {
       callAssemblerCode();
     }
-
-
-	};
+  };
 }

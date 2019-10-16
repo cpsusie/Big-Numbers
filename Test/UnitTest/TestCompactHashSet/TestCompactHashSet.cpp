@@ -8,12 +8,14 @@ namespace TestCompactHashSet {
 #include <UnitTestTraits.h>
 
   template<class KeyType> void testIterator(KeyType maxKey) {
-    OUTPUT(_T("Testing Iterator"));
+    JavaRandom rnd;
+    rnd.randomize();
+    INFO(_T("Testing Iterator"));
     CompactHashSet<KeyType> testSet;
     CompactArray<  KeyType> list;
 
     for(int k = 0; k < 1000; k++) {
-      testSet.add(randInt(maxKey));
+      testSet.add(rnd.nextInt(maxKey));
     }
 
     for(Iterator<KeyType> it = testSet.getIterator(); it.hasNext(); ) {
@@ -24,12 +26,12 @@ namespace TestCompactHashSet {
 
     while (testSet.size() > 10) {
       int i = 0;
-      OUTPUT(_T("TestSet.size():%6d"), testSet.size());
-      for (Iterator<KeyType> it1 = testSet.getIterator(); it1.hasNext();) {
+      INFO(_T("TestSet.size():%6d"), testSet.size());
+      for(Iterator<KeyType> it1 = testSet.getIterator(); it1.hasNext();) {
         KeyType &setKey = it1.next();
         KeyType &listKey = list[i];
         verify(setKey == listKey);
-        if (randInt() % 5 == 0) {
+        if(rnd.nextInt(5) == 0) {
           it1.remove();
           list.remove(i);
         } else {
@@ -40,7 +42,7 @@ namespace TestCompactHashSet {
   }
 
   template<class KeyType> void testCollectionStream(const CompactHashSet<KeyType> &set) {
-    OUTPUT(_T("Testing save/load"));
+    INFO(_T("Testing save/load"));
     const String fileName = getTestFileName(__TFUNCTION__);
     set.save(ByteOutputFile(fileName));
     CompactHashSet<KeyType> tmp;;
@@ -50,14 +52,14 @@ namespace TestCompactHashSet {
 
   template<class KeyType> void compareSetList(CompactHashSet<KeyType> &set, CompactArray<KeyType> &list) {
     verify(set.size() == list.size());
-    for (size_t i = 0; i < list.size(); i++) {
+    for(size_t i = 0; i < list.size(); i++) {
       const KeyType &key = list[i];
       verify(set.contains(key));
     }
   }
 
   template<class KeyType> void setTestSuite(const TCHAR *name, KeyType minKey, KeyType maxKey) {
-    OUTPUT(_T("Testing %s"), name);
+    INFO(_T("Testing %s"), name);
 
     const double startTime = getProcessTime();
 
@@ -67,19 +69,20 @@ namespace TestCompactHashSet {
     CompactHashSet<KeyType> bigset(set);
     CompactArray<KeyType>   list;
     int count;
-
-    for (int k = 0; k < 10; k++) {
-      OUTPUT(_T("  Iteration %d/10"), k);
-      for (int i = 0; i < 31500; i++) {
-        const KeyType key = randInt(minKey,maxKey);
-        if (set.add(key)) {
+    JavaRandom rnd;
+    rnd.randomize();
+    for(int k = 0; k < 10; k++) {
+      INFO(_T("  Iteration %d/10"), k);
+      for(int i = 0; i < 31500; i++) {
+        const KeyType key = randInt(minKey,maxKey, &rnd);
+        if(set.add(key)) {
           list.add(key);
         }
       }
       testCollectionStream(set);
       compareSetList(set, list);
       for(int i = 0; i < 250 && list.size() > 5; i++) {
-        const size_t index = randSizet(list.size());
+        const size_t index = randSizet(list.size(), &rnd);
         KeyType &key = list[index];
         verify(set.remove(key));
         list.remove(index);
@@ -92,17 +95,17 @@ namespace TestCompactHashSet {
     for(size_t i = 0; i < a.size(); i++) {
       line += format(_T("Count(%zu):%d "), i, a[i]);
     }
-    OUTPUT(_T("%s"), line.cstr());
+    INFO(_T("%s"), line.cstr());
 
-    OUTPUT(_T("Testing set.contains"));
-    for (size_t i = 0; i < list.size(); i++) {
+    INFO(_T("Testing set.contains"));
+    for(size_t i = 0; i < list.size(); i++) {
       const KeyType &key = list[i];
       verify(set.contains(key));
     }
 
     bigset.addAll(set);
     count = 0;
-    OUTPUT(_T("Testing set.iterator1"));
+    INFO(_T("Testing set.iterator1"));
     for(Iterator<KeyType> it1 = set.getIterator(); it1.hasNext();) {
       const KeyType &k = it1.next();
       count++;
@@ -111,14 +114,14 @@ namespace TestCompactHashSet {
 
     verify(count == set.size());
 
-    OUTPUT(_T("Testing set.iterator2"));
+    INFO(_T("Testing set.iterator2"));
     for(Iterator<KeyType> it2 = bigset.getIterator(); it2.hasNext();) {
       const KeyType &k = it2.next();
       verify(set.contains(k));
     }
 
-    OUTPUT(_T("Testing set.iterator3"));
-    for (Iterator<KeyType> it3 = set.getIterator(); it3.hasNext();) {
+    INFO(_T("Testing set.iterator3"));
+    for(Iterator<KeyType> it3 = set.getIterator(); it3.hasNext();) {
       const KeyType &k = it3.next();
       verify(!bigset.add(k));
     }
@@ -133,7 +136,7 @@ namespace TestCompactHashSet {
     verify(!(set      <  bigset      ));
     verify(!(set      >  bigset      ));
 
-    for (size_t i = 0; i < list.size() / 2; i++) {
+    for(size_t i = 0; i < list.size() / 2; i++) {
       set.remove(list[i]);
     }
 
@@ -146,16 +149,16 @@ namespace TestCompactHashSet {
 
     set = bigset;
 
-    OUTPUT(_T("Testing set.removeAll"));
+    INFO(_T("Testing set.removeAll"));
     set.removeAll(bigset);
     verify(set.size() == 0);
 
-    OUTPUT(_T("Testing set.clear"));
+    INFO(_T("Testing set.clear"));
     bigset.clear();
     verify(bigset.size() == 0);
 
     set.clear();
-    OUTPUT(_T("Testing set.copyConstructor"));
+    INFO(_T("Testing set.copyConstructor"));
     CompactHashSet<KeyType> set1(set);
     set.add(1);
     set.add(2);
@@ -164,29 +167,29 @@ namespace TestCompactHashSet {
     set1.add(4);
 
 
-    OUTPUT(_T("Testing set.intersection"));
+    INFO(_T("Testing set.intersection"));
     CompactHashSet<KeyType> intersectionSet = set * set1;
-    //  OUTPUT(_T("intersect:%s\n"),intersectionSet.toString().cstr());
+    INFO(_T("intersect:%s\n"),intersectionSet.toString().cstr());
     verify(intersectionSet.size() == 1);
 
-    OUTPUT(_T("Testing set.union"));
+    INFO(_T("Testing set.union"));
     CompactHashSet<KeyType> unionSet = set + set1;
-    //  OUTPUT(_T("union:%s\n"),unionSet.toString().cstr());
+    INFO(_T("union:%s\n"),unionSet.toString().cstr());
     verify(unionSet.size() == 3);
 
-    OUTPUT(_T("Testing set.difference"));
+    INFO(_T("Testing set.difference"));
     CompactHashSet<KeyType> diffSet1 = set - set1;
-    //  OUTPUT(_T("diff1:%s\n"),diffSet1.toString().cstr());
+    INFO(_T("diff1:%s\n"),diffSet1.toString().cstr());
     verify(diffSet1.size() == 1);
 
     CompactHashSet<KeyType> diffSet2 = set1 - set;
-    //  OUTPUT(_T("diff2:%s\n"),diffSet2.toString().cstr());
+    INFO(_T("diff2:%s\n"),diffSet2.toString().cstr());
     verify(diffSet2.size() == 1);
 
-    OUTPUT(_T("Testing set.copyConstructor"));
+    INFO(_T("Testing set.copyConstructor"));
     CompactHashSet<KeyType> set2(set);
 
-    OUTPUT(_T("Testing set.retainAll"));
+    INFO(_T("Testing set.retainAll"));
     set2 = set;
     set2.retainAll(set1);
     verify(set2.size() == intersectionSet.size());

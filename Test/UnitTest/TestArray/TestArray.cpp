@@ -102,12 +102,14 @@ namespace TestArray {
 
   bool PrintIntArray::handlePermutation(const IntArray &a) {
     m_counter++;
+#ifdef _DEBUG
     String line;
     line += format(_T("%2d:"), m_counter);
     for(size_t i = 0; i < a.size(); i++) {
       line += format(_T("%d "), a[i]);
     }
-    OUTPUT(_T("%s"), line.cstr());
+    INFO(_T("%s"), line.cstr());
+#endif
     return true;
   }
 
@@ -226,17 +228,19 @@ namespace TestArray {
     }
 
     TEST_METHOD(ArrayStream) {
-      OUTPUT(_T("Testing Array save/load"));
+      JavaRandom rnd;
+      rnd.randomize();
+      INFO(_T("Testing Array save/load"));
       ArrayType a;
       for(int i = 0; i < 10000; i++) {
-        a.add(randInt(1000000));
+        a.add(rnd.nextInt(1000000));
       }
       const String fileName = getTestFileName(__TFUNCTION__);
       a.save(CompressFilter(ByteOutputFile(fileName)));
       ArrayType tmp;
       tmp.load(DecompressFilter(ByteInputFile(fileName)));
       verify(tmp == a);
-      OUTPUT(_T("Testing Array Packer"));
+      INFO(_T("Testing Array Packer"));
       Packer psrc, pdst;
       psrc << a;
       sendReceive(pdst, psrc);
@@ -245,12 +249,15 @@ namespace TestArray {
     }
 
     TEST_METHOD(ArraySort) {
+      JavaRandom rnd;
+      rnd.randomize();
+
       const int size = 70000;
 
       ArrayType a, b;
       double start;
       for(int i = 0; i < size; i++) {
-        a.add(randInt(10 * size));
+        a.add(rnd.nextInt(10 * size));
       }
 
       verify(a.size() == size);
@@ -270,13 +277,13 @@ namespace TestArray {
 
       start = getProcessTime();
       a.sort(comparator);
-      OUTPUT(_T("  sort(comparator):%.3lf"), (getProcessTime() - start) / 1000000);
+      INFO(_T("  sort(comparator):%.3lf"), (getProcessTime() - start) / 1000000);
       start = getProcessTime();
       b.sort(compare1);
-      OUTPUT(_T("  sort(compare1)  :%.3lf"), (getProcessTime() - start) / 1000000);
+      INFO(_T("  sort(compare1)  :%.3lf"), (getProcessTime() - start) / 1000000);
       start = getProcessTime();
       c.sort(compare2);
-      OUTPUT(_T("  sort(compare2)  :%.3lf"), (getProcessTime() - start) / 1000000);
+      INFO(_T("  sort(compare2)  :%.3lf"), (getProcessTime() - start) / 1000000);
 
       for(size_t i = 1; i < a.size(); i++) {
         verify(comparator.compare(a[i - 1], a[i]) <= 0);
@@ -305,14 +312,14 @@ namespace TestArray {
 
       ArrayElement *ca = new ArrayElement[size];
       for(int i = 0; i < size; i++) {
-        ca[i] = randInt(2 * size);
+        ca[i] = rnd.nextInt(2 * size);
       }
 
       start = getProcessTime();
 
       quickSort(ca, size, sizeof(ca[0]), (int(__cdecl *)(const void*, const void*))compare3);
 
-      OUTPUT(_T("  quickSort(compare3):%.3lf"), (getProcessTime() - start) / 1000000);
+      INFO(_T("  quickSort(compare3):%.3lf"), (getProcessTime() - start) / 1000000);
 
       for(int i = 1; i < size; i++) {
         verify(compare3(&ca[i - 1], &ca[i]) <= 0);
@@ -326,15 +333,18 @@ namespace TestArray {
         a.add(i);
       }
       PrintIntArray permArray;
-      OUTPUT(_T("Array permutations (%d elements):"), a.size());
+      INFO(_T("Array permutations (%d elements):"), a.size());
       a.generateAllPermuations(permArray);
       verify(permArray.getPermutationCount() == 24);
     }
 
     TEST_METHOD(ArrayReverse) {
+      JavaRandom rnd;
+      rnd.randomize();
+
       IntArray a;
       for(int i = 0; i < 100; i++) {
-        a.add(randInt());
+        a.add(rnd.nextInt());
       }
       IntArray b = a;
       b.reverse();

@@ -96,8 +96,3 @@ Double80 lnGamma(const Double80 &x) {
     return log(D80gamma1_2(p)) - res;
   }
 }
-
-// Calculates x! = x*(x-1)*(x-2)*...*2*1, extended to real numbers by the gamma function x! = gamma(x+1)
-Double80 fac(const Double80 &x) {
-  return gamma(x+1);
-}

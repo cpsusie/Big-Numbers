@@ -98,10 +98,7 @@ Real normf(const ComplexMatrix &a) {
 }
 
 ComplexMatrix inverse(const ComplexMatrix &a) {
-  if(!a.isSquare()) {
-    throwMathException(_T("inverse(ComplexMatrix):Matrix not square. %s"), a.getDimensionString().cstr());
-  }
-
+  _VALIDATEISSQUAREMATRIX(a);
   ComplexLUMatrix lu(a);
   return lu.getInverse();
 }

@@ -11,12 +11,14 @@ namespace TestMatrix {
   class LOG : public tostrstream {
   public:
     ~LOG() {
-      OUTPUT(_T("%s"), str().c_str());
+      if(str().length() > 0) {
+        OUTPUT(_T("%s"), str().c_str());
+      }
     }
   };
 
-  static StreamParameters param1(10, 14, ios::fixed);
-  static StreamParameters param2(10, 0, ios::scientific);
+  static StreamParameters param1(10, 14, ios::fixed     );
+  static StreamParameters param2(10, 0 , ios::scientific);
 
   class DistanceFromPlan : public VectorToRFunction {
   private:
@@ -131,10 +133,10 @@ namespace TestMatrix {
         Matrix       sum(dim, dim);
         Matrix       last(dim, dim);
 
-        for (Real k = 0;; k += 2) {
+        for(Real k = 0;; k += 2) {
           last = sum;
           sum += p;
-          if (normf(sum - last) == 0) {
+          if(normf(sum - last) == 0) {
             break;
           }
           p = p * A2;
@@ -144,7 +146,7 @@ namespace TestMatrix {
       }
 
       static Matrix sin(const Matrix &A) {
-        if (!A.isSquare()) {
+        if(!A.isSquare()) {
           throwException(_T("sin(Matrix):Matrix not square. A.%s"), A.getDimensionString().cstr());
         }
         const int    dim = (int)A.getRowCount();
@@ -153,10 +155,10 @@ namespace TestMatrix {
         Matrix       sum(dim, dim);
         Matrix       last(dim, dim);
 
-        for (Real k = 1;; k += 2) {
+        for(Real k = 1;; k += 2) {
           last = sum;
           sum += p;
-          if (normf(sum - last) == 0) {
+          if(normf(sum - last) == 0) {
             break;
           }
           p = p * A2;
@@ -171,7 +173,7 @@ namespace TestMatrix {
         const ComplexMatrix P1 = inverse(P);
         ComplexVector       D  = QR.getEigenValues();
 
-        for (size_t i = 0; i < D.getDimension(); i++) {
+        for(size_t i = 0; i < D.getDimension(); i++) {
           D[i] = root(D[i], 3);
         }
         return P * ComplexMatrix(D) * P1;
@@ -191,7 +193,7 @@ namespace TestMatrix {
       verify(C.getRowCount() == 4 && C.getColumnCount() == 3);
       verify(C == Matrix::_0(4, 3));
       Vector v(4);
-      for (int i = 0; i < 4; i++) {
+      for(int i = 0; i < 4; i++) {
         v[i] = i;
       }
       verify(v.getDimension() == 4);
@@ -202,9 +204,9 @@ namespace TestMatrix {
       verify(v2 == v);
       Matrix D(v);
       verify(D.getDiagonal() == v);
-      for (size_t i = 0; i < D.getRowCount(); i++) {
-        for (size_t j = 0; j < D.getColumnCount(); j++) {
-          if (i == j) {
+      for(size_t i = 0; i < D.getRowCount(); i++) {
+        for(size_t j = 0; j < D.getColumnCount(); j++) {
+          if(i == j) {
             verify(D(i, j) == i);
           }
           else {
@@ -229,7 +231,7 @@ namespace TestMatrix {
       verify(C.getRowCount() == 4 && C.getColumnCount() == 3);
       verify(C == ComplexMatrix::_0(4, 3));
       ComplexVector v(4);
-      for (int i = 0; i < 4; i++) {
+      for(int i = 0; i < 4; i++) {
         v[i] = i;
       }
       verify(v.getDimension() == 4);
@@ -240,9 +242,9 @@ namespace TestMatrix {
       verify(v2 == v);
       ComplexMatrix D(v);
       verify(D.getDiagonal() == v);
-      for (size_t i = 0; i < D.getRowCount(); i++) {
-        for (size_t j = 0; j < D.getColumnCount(); j++) {
-          if (i == j) {
+      for(size_t i = 0; i < D.getRowCount(); i++) {
+        for(size_t j = 0; j < D.getColumnCount(); j++) {
+          if(i == j) {
             verify(D(i, j) == (int)i);
           }
           else {
@@ -251,7 +253,7 @@ namespace TestMatrix {
         }
       }
       Vector vr(4);
-      for (int i = 0; i < 4; i++) {
+      for(int i = 0; i < 4; i++) {
         vr[i] = i;
       }
       Matrix Dr(vr);
@@ -270,11 +272,12 @@ namespace TestMatrix {
     }
 
     TEST_METHOD(MatrixRealEquationsTest) {
+      JavaRandom rnd(13144);
       const int dimension = 5;
 
-      for (int i = 0; i < 100; i++) {
-        const Matrix   A = randomMatrix(dimension, dimension);
-        const Vector   b = randomVector(dimension);
+      for(int i = 0; i < 100; i++) {
+        const Matrix   A = randomMatrix(dimension, dimension, &rnd);
+        const Vector   b = randomVector(dimension, &rnd);
 
         const LUMatrix lu(A);
         const Vector   x = lu.solve(b);
@@ -313,7 +316,7 @@ namespace TestMatrix {
         ComplexMatrix E(4, 3);
         ComplexMatrix Ei = inverse(E);
         verify(false);
-      } catch (MathException e) {
+      } catch(Exception e) {
         verify(true);
       }
 
@@ -322,22 +325,22 @@ namespace TestMatrix {
         ComplexVector v(4);
         ComplexVector r = E*v;
         verify(false);
-      } catch (Exception e) {
+      } catch(Exception e) {
         verify(true);
       }
-
-      const Matrix        T = randomIntMatrix(4, 5);
+      JavaRandom rnd(345);
+      const Matrix        T = randomIntMatrix(4, 5, &rnd);
       const Complex       factor(1, 1);
       const ComplexMatrix Tc = factor * T;
-      for (size_t i = 0; i < Tc.getRowCount(); i++) {
-        for (size_t j = 0; j < Tc.getColumnCount(); j++) {
+      for(size_t i = 0; i < Tc.getRowCount(); i++) {
+        for(size_t j = 0; j < Tc.getColumnCount(); j++) {
           verify(Tc(i, j) == factor * T(i, j));
         }
       }
 
-      for (int it = 0; it < 100; it++) {
-        const ComplexMatrix A = randomComplexMatrix(dimension, dimension);
-        const ComplexVector b = randomComplexVector(dimension);
+      for(int it = 0; it < 100; it++) {
+        const ComplexMatrix A = randomComplexMatrix(dimension, dimension, &rnd);
+        const ComplexVector b = randomComplexVector(dimension, &rnd);
 
         const ComplexLUMatrix lu(A);
         const ComplexVector   x = lu.solve(b);
@@ -372,57 +375,75 @@ namespace TestMatrix {
     }
 
     TEST_METHOD(MatrixSVDTest) {
-      int dim = 4;
-      int rows = dim + 2;
-      int columns = dim;
+      JavaRandom rnd;
+      rnd.randomize();
 
-      const Matrix A = randomMatrix(rows, columns);
+      Real maxDetectedLength = 0;
+      for(int i = 0; i < 100; i++) {
+        int dim = 4;
+        int rows = dim + 2;
+        int columns = dim;
 
-      //  a.setRow(ROWS-1,a.getRow(0) - a.getRow(1));
+        const Matrix A = randomMatrix(rows, columns, &rnd);
 
-      const SVDDecomposition svd(A);
+        //  a.setRow(ROWS-1,a.getRow(0) - a.getRow(1));
 
-      //  log << _T("A:\n") << param1 << A     << endl;
-      //  log << _T("U:\n") << param1 << svd.u << endl;
-      //  log << _T("D:")   << param1 << svd.d << endl;
-      //  log << _T("V:\n") << param1 << svd.v << endl;
+        const SVDDecomposition svd(A);
 
-      const Matrix A1 = svd.m_u * Matrix(svd.m_d) * transpose(svd.m_v);
+        //  log << _T("A:\n") << param1 << A     << endl;
+        //  log << _T("U:\n") << param1 << svd.u << endl;
+        //  log << _T("D:")   << param1 << svd.d << endl;
+        //  log << _T("V:\n") << param1 << svd.v << endl;
 
-      //  log << _T("U*D*transpose(V):\n") << param1 << A1                     << endl;
-      verify(normf(A - A1) < 1e-14);
+        const Matrix A1 = svd.m_u * Matrix(svd.m_d) * transpose(svd.m_v);
 
-      const Matrix UtU = transpose(svd.m_u)*svd.m_u;
-      const Matrix VtV = transpose(svd.m_v)*svd.m_v;
+        //  log << _T("U*D*transpose(V):\n") << param1 << A1                     << endl;
+        verify(normf(A - A1) < 1e-14);
 
-      //  log << _T("transpose(U)*U:\n")   << param1 << UtU << endl;
-      //  log << _T("transpose(V)*V:\n")   << param1 << VtV << endl;
+        const Matrix UtU = transpose(svd.m_u)*svd.m_u;
+        const Matrix VtV = transpose(svd.m_v)*svd.m_v;
 
-      verify(normf(UtU - Matrix::_1(dim)) < 1e-14);
-      verify(normf(VtV - Matrix::_1(dim)) < 1e-14);
+        //  log << _T("transpose(U)*U:\n")   << param1 << UtU << endl;
+        //  log << _T("transpose(V)*V:\n")   << param1 << VtV << endl;
 
-      Vector epsVector(rows);
-      epsVector[0] = 0.1;
-      const Vector b = 2 * A.getColumn(0) + 3 * A.getColumn(1) + epsVector;
-      const Vector x = svd.solve(b);
+        verify(normf(UtU - Matrix::_1(dim)) < 1e-14);
+        verify(normf(VtV - Matrix::_1(dim)) < 1e-14);
 
-      DistanceFromPlan diff(A, b);
-      const Vector     d = A*x - b;
-      const Real       distance = diff(x);
-      const Vector     gr = getGradient1(diff, x);
-      LOG log;
+        Vector epsVector(rows);
+        epsVector[0] = 0.1;
+        const Vector b = 2 * A.getColumn(0) + 3 * A.getColumn(1) + epsVector;
+        const Vector x = svd.solve(b);
 
-      log << _T("b       :") << param1 << b << endl;
-      log << _T("x       :") << param1 << x << endl;
-      log << _T("A*x     :") << param1 << A*x << endl;
-      log << _T("A*x-b   :") << param1 << d << endl;
-      log << _T("Gradient:") << param1 << gr << endl;
-      log << _T("Distance:") << distance << endl;
+        DistanceFromPlan diff(A, b);
+        const Vector     d = A*x - b;
+        const Real       distance = diff(x);
+        const Vector     gr = getGradient1(diff, x);
+        const Real       grl = gr.length();
+        if(grl > maxDetectedLength) {
+          maxDetectedLength = grl;
+        }
+#define F15(x) toString((x),15,23,ios::scientific).cstr()
+        INFO(_T("grl:%s, distance:%s, epsLength:%s"), F15(grl), F15(distance), F15(epsVector.length()));
+        if(distance > epsVector.length()) {
+          LOG log;
+          log << _T("b         :") << param1 << b   << endl;
+          log << _T("x         :") << param1 << x   << endl;
+          log << _T("A*x       :") << param1 << A*x << endl;
+          log << _T("A*x-b     :") << param1 << d   << endl;
+          log << _T("Gradient  :") << param1 << gr  << endl;
+          log << _T("|Gradient|:") << param1 << grl << endl;
+          log << _T("Distance  :") << distance      << endl;
+          verify(false);
+        }
+      }
+      INFO(_T("maxDetectedLength:%s"), toString(maxDetectedLength, 10, 20, ios::scientific).cstr());
     }
 
     TEST_METHOD(MatrixCubicRoot) {
-      for (int i = 0; i < 100; i++) {
-        const Matrix        A = randomMatrix(5, 5);
+      JavaRandom rnd(2346);
+
+      for(int i = 0; i < 100; i++) {
+        const Matrix        A = randomMatrix(5, 5, &rnd);
         const ComplexMatrix r3 = cubicRoot(A);
         const ComplexMatrix A1 = r3 * r3 * r3;
 
@@ -433,7 +454,7 @@ namespace TestMatrix {
         const Real diffRe = normf(A - A1.getRealPart());
         const Real diffIm = normf(A1.getImaginaryPart());
         const Real diff   = diffRe + diffIm;
-        if (diff > 1e-11) {
+        if(diff > 1e-11) {
           LOG log;
           log << _T("Cubic root failed") << endl;
           log << _T("A:\n") << A;
@@ -452,9 +473,9 @@ namespace TestMatrix {
 
       verify(n == (int)eigenValues.getDimension());
 
-      for (int i = 0; i < n; i++) {
+      for(int i = 0; i < n; i++) {
         const Complex v = eigenValues[i];
-        if (v.im != 0) {
+        if(v.im != 0) {
           continue;
         }
 
@@ -463,14 +484,14 @@ namespace TestMatrix {
         const SVDDecomposition svd(S);
 
         bool zeroFound = false;
-        for (unsigned int k = 0; k < svd.m_d.getDimension(); k++) {
+        for(UINT k = 0; k < svd.m_d.getDimension(); k++) {
           Real sv = svd.m_d[k];
-          if (fabs(sv) < 1e-12) {
+          if(fabs(sv) < 1e-12) {
             zeroFound = true;
             break;
           }
         }
-        if (!zeroFound) {
+        if(!zeroFound) {
           LOG log;
           log << _T("Matrix not singular.") << endl;
 
@@ -492,7 +513,7 @@ namespace TestMatrix {
         const String inverseName   = format(_T("inverse(%s)"), name.cstr());
         const String transposeName = format(_T("transpose(%s)"), name.cstr());
         const Real   diff = fabs(difference);
-        if (diff > 1e-13) {
+        if(diff > 1e-13) {
           LOG log;
           log << name << _T(" not unitary\n");
           log << name << _T(":\n") << param1 << A;
@@ -502,7 +523,7 @@ namespace TestMatrix {
           log << _T("normf(") << inverseName << _T("-") << transposeName << _T("):") << diff << endl;
           throwException(_T("%s not unitary"), name.cstr());
         }
-      } catch (Exception e) {
+      } catch(Exception e) {
         LOG log;
         log << e.what() << endl;
         log << name << ":\n" << param1 << A;
@@ -517,17 +538,17 @@ namespace TestMatrix {
       const Matrix   Q  = QR.getQMatrix();
       checkIsUnitary("Q", Q);
 
-      const int n = (int)A.getRowCount();
+      const size_t n = A.getRowCount();
       const ComplexVector &EValues = QR.getEigenValues();
       checkIsSingular(A, EValues);
-      for (int i = 0; i < n; i++) {
+      for(size_t i = 0; i < n; i++) {
         const Complex      &lambda     = EValues[i];
         const ComplexVector EVector    = QR.getEigenVectors().getColumn(i);
         const ComplexVector Av         = A * EVector;
         const ComplexVector lambdaV    = lambda * EVector;
         const ComplexVector difference = lambdaV - Av;
         const Real          diff       = fabs(difference);
-        if (diff > 1e-12) {
+        if(diff > 1e-12) {
           const Matrix A0 = transpose(U)* A  * U;
           const Matrix AV = transpose(Q)* A0 * Q;
           LOG log;
@@ -550,25 +571,27 @@ namespace TestMatrix {
     }
 
     TEST_METHOD(MatrixEigenValues) {
-      OUTPUT(_T("  Begin test QRMatrix on 100 random matrices"));
+      INFO(_T("  Begin test QRMatrix on 100 random matrices"));
+      JavaRandom rnd(2346);
 
-      for (int i = 0; i < 100; i++) {
-        testQRMatrix(randomMatrix(6, 6));
+      for(int i = 0; i < 100; i++) {
+        testQRMatrix(randomMatrix(6, 6, &rnd));
       }
-      OUTPUT(_T("  End test QRMatrix on random matrices"));
+      INFO(_T("  End test QRMatrix on random matrices"));
 
-      OUTPUT(_T("  Begin test QRMatrix on no convergence matrix"));
+      INFO(_T("  Begin test QRMatrix on no convergence matrix"));
       testQRMatrix(genNoConvergenceMatrix(6));
-      OUTPUT(_T("  End test QRMatrix on no convergence matrix"));
+      INFO(_T("  End test QRMatrix on no convergence matrix"));
 
-      OUTPUT(_T("  Begin test QRMatrix on Zero matrix"));
+      INFO(_T("  Begin test QRMatrix on Zero matrix"));
       testQRMatrix(Matrix::_0(6, 6));
-      OUTPUT(_T("  End test QRMatrix on Zero matrix"));
+      INFO(_T("  End test QRMatrix on Zero matrix"));
     }
 
     TEST_METHOD(MatrixExp) {
-      for (int i = 0; i < 100; i++) {
-        const Matrix        A     = randomMatrix(6, 6); // randomMatrix(6,6);
+      JavaRandom rnd(13123);
+      for(int i = 0; i < 100; i++) {
+        const Matrix        A     = randomMatrix(6, 6, &rnd); // randomMatrix(6,6);
         const QRMatrix      QR    = A;
         const ComplexMatrix P     = QR.getEigenVectors();
         const ComplexMatrix P1    = inverse(P);
@@ -578,14 +601,14 @@ namespace TestMatrix {
 
         const int           dim   = (int)A.getRowCount();
         ComplexMatrix       expD  = ComplexMatrix::_1(dim);
-        for (int k = 0; k < dim; k++) {
+        for(int k = 0; k < dim; k++) {
           expD(k, k) = ::exp(D(k, k));
         }
 
         const ComplexMatrix exp2A = P * expD * P1;
 
         const Real diff = normf(exp1A - exp2A.getRealPart()) + normf(exp2A.getImaginaryPart());
-        if (diff > 1e-12) {
+        if(diff > 1e-12) {
           LOG log;
           log << _T("A:\n")              << param1 << A;
           log << _T("exp(A) (taylor)\n") << exp1A;
@@ -600,8 +623,9 @@ namespace TestMatrix {
     }
 
     TEST_METHOD(MatrixCosSin) {
-      for (int i = 0; i < 100; i++) {
-        const Matrix        A     = randomMatrix(6, 6); // randomMatrix(6,6);
+      JavaRandom rnd(13123);
+      for(int i = 0; i < 100; i++) {
+        const Matrix        A     = randomMatrix(6, 6, &rnd); // randomMatrix(6,6);
         const QRMatrix      QR    = A;
         const ComplexMatrix P     = QR.getEigenVectors();
         const ComplexMatrix P1    = inverse(P);
@@ -614,7 +638,7 @@ namespace TestMatrix {
         ComplexMatrix       cosD  = ComplexMatrix::_1(dim);
         ComplexMatrix       sinD  = ComplexMatrix::_1(dim);
 
-        for (int k = 0; k < dim; k++) {
+        for(int k = 0; k < dim; k++) {
           cosD(k, k) = ::cos(D(k, k));
           sinD(k, k) = ::sin(D(k, k));
         }
@@ -624,7 +648,7 @@ namespace TestMatrix {
 
         const Real cosDiff = normf(cos1A - cos2A.getRealPart()) + normf(cos2A.getImaginaryPart());
 
-        if (cosDiff > 1e-12) {
+        if(cosDiff > 1e-12) {
           LOG log;
           log << _T("A:\n") << param1 << A;
           log << _T("cos(A) (taylor)\n") << cos1A;
@@ -639,7 +663,7 @@ namespace TestMatrix {
 
         const Real sinDiff = normf(sin1A - sin2A.getRealPart()) + normf(sin2A.getImaginaryPart());
 
-        if (sinDiff > 1e-12) {
+        if(sinDiff > 1e-12) {
           LOG log;
           log << _T("A:\n") << param1 << A;
           log << _T("sin(A) (taylor)\n") << sin1A;
@@ -656,7 +680,7 @@ namespace TestMatrix {
         const Matrix S2      = sin1A * sin1A;
         const Matrix sumC2S2 = C2 + S2;
         const Real   diff    = normf(sumC2S2 - Matrix::_1(dim));
-        if (diff > 1e-14) {
+        if(diff > 1e-14) {
           LOG log;
           log << _T("A:\n"             ) << param1 << A;
           log << _T("cos(A) (taylor)\n") << cos1A;
@@ -671,8 +695,9 @@ namespace TestMatrix {
     }
 
     TEST_METHOD(MatrixKroneckerProduct) {
-      const Matrix A = randomMatrix(3, 3);
-      const Matrix B = randomMatrix(4, 4);
+      JavaRandom rnd(13123);
+      const Matrix A = randomMatrix(3, 3, &rnd);
+      const Matrix B = randomMatrix(4, 4, &rnd);
 
       const Matrix AplusB    = kroneckerSum(A, B);
       const Matrix expAplusB = exp(AplusB);

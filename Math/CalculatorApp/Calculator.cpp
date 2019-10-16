@@ -26,7 +26,7 @@ BigReal Rfac(const BigReal &x, int ndigits) {
     }
     return result;
   } else {
-    return fac(x, ndigits);
+    return factorial(x, ndigits);
   }
 }
 

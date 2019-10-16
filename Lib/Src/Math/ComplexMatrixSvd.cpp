@@ -40,7 +40,7 @@ static void svdDecompose(Matrix &a, ComplexVector &d, Matrix &v) {
   Complex c, z;
 
   if (m < n)
-    throwMathException("svdDecompose:Matrix a must be augmented with extra zero rows. Dimension = (%d,%d).", m, n);
+    throwInvalidArgumentException(__TFUNCTION__, _T("a must be augmented with extra zero rows. %s"), a.getDimensionString().cstr());
 
   Vector rv1(n);
 

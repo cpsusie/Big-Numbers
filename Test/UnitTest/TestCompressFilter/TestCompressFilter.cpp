@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include <ByteFile.h>
 #include <CompressFilter.h>
+#include <MathUtil.h>
 #include <Random.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
@@ -51,7 +52,7 @@ namespace TestCompressFilter {
       bool ok = true;
       const String fileName = getTestFileName(__TFUNCTION__);
       try {
-        for (int i = 0; i < 10; i++) {
+        for(int i = 0; i < 10; i++) {
           ByteArray a = niceByteArray(100000) + randomByteArray(100000);
           a.save(CompressFilter(ByteOutputFile(fileName)));
           const long fileSize = STAT(fileName).st_size;
@@ -59,14 +60,16 @@ namespace TestCompressFilter {
           ByteArray b;
           b.load(DecompressFilter(ByteInputFile(fileName)));
           verify(a == b);
-          OUTPUT(_T("Raw size:%8ld. Compressed size:%8ld CompressionRate:%8.2lf%%"), a.size(), fileSize, (double)fileSize / a.size() * 100.0);
+          const double compressedPct = PERCENT(fileSize, a.size());
+          verify(compressedPct < 51);
+          INFO(_T("Raw size:%8ld. Compressed size:%8ld CompressionRate:%8.2lf%%"), a.size(), fileSize, compressedPct);
         }
         unlink(fileName);
-      }  catch (Exception e) {
+      } catch (Exception e) {
         OUTPUT(_T("Exception:%s"), e.what());
         verify(false);
       }
-      OUTPUT(_T("CompressFilter  Timeusage:%.3lf sec"), (getProcessTime() - startTime) / 1000000);
+      INFO(_T("CompressFilter  Timeusage:%.3lf sec"), (getProcessTime() - startTime) / 1000000);
     }
   };
 }

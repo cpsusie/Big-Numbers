@@ -452,7 +452,7 @@ void CodeGenerator::genExpression(SNode n DCL_DSTPARAM) {
   case BINOMIAL      :    GENCALL(     n, ::binomial              );
   case GAMMA         :    GENCALL(     n, ::gamma                 );
   case GAUSS         :    GENCALL(     n, ::gauss                 );
-  case FAC           :    GENCALL(     n, ::fac                   );
+  case FAC           :    GENCALL(     n, ::factorial             );
   case NORM          :    GENCALL(     n, ::norm                  );
   case PROBIT        :    GENCALL(     n, ::probitFunction        );
   case ERF           :    GENCALL(     n, ::errorFunction         );

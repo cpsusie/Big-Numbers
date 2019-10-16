@@ -19,6 +19,12 @@ void OUTPUT(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   Logger::WriteMessage(msg.cstr());
 }
 
+#ifdef _DEBUG
+#define INFO(...) OUTPUT(__VA_ARGS__)
+#else
+#define INFO(...)
+#endif
+
 class DebugLogRedirector {
 public:
   inline DebugLogRedirector() {

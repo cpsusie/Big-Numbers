@@ -36,6 +36,9 @@ private:
     }
   }
 
+#define _VALIDATEISSQUAREMATRIX(m) \
+{ if(!(m).isSquare()) (m).throwNotSquareMatrixException(__TFUNCTION__, _T(#m)); }
+
   inline size_t index(size_t r, size_t c) const {
     return m_dim.columnCount * r + c;
   }
@@ -69,7 +72,6 @@ protected:
     m_a   = allocate(rows, columns, initialize);
     m_dim = MatrixDimension(rows, columns);
   }
-
 public:
   inline MatrixTemplate() {
     init(1, 1, true);
@@ -216,18 +218,14 @@ public:
   }
   // row must be [1..getRowCount()-1]
   T &subDiagonal(size_t row) {
-    if(!isSquare()) {
-      throwIndexException(_T("subDiagonal:Matrix not square"));
-    }
+    _VALIDATEISSQUAREMATRIX(*this);
     checkIndex(row, row-1);
     return m_a[index(row,row-1)];
   }
 
   // row must be [1..getRowCount()-1]
   const T &subDiagonal(size_t row) const {
-    if(!isSquare()) {
-      throwIndexException(_T("subDiagonal:Matrix not square"));
-    }
+    _VALIDATEISSQUAREMATRIX(*this);
     checkIndex(row, row-1);
     return m_a[index(row,row-1)];
   }
@@ -367,9 +365,7 @@ public:
   }
 
   VectorTemplate<T> getDiagonal() const {
-    if(!isSquare()) {
-      throwIndexException(_T("getDiagonal:Matrix not square"));
-    }
+    _VALIDATEISSQUAREMATRIX(*this);
     const size_t cn = getColumnCount();
     VectorTemplate<T> result(cn);
     for(size_t r = 0; r < cn; r++) {
@@ -640,13 +636,8 @@ public:
   }
 
   friend MatrixTemplate<T> kroneckerSum(const MatrixTemplate<T> &A, const MatrixTemplate<T> &B) {
-    if(!A.isSquare()) {
-      throwMatrixException(_T("kroneckerSum:Matrix A not square. %s."), A.getDimensionString().cstr());
-    }
-    if(!B.isSquare()) {
-      throwMatrixException(_T("kroneckerSum:Matrix B not square. %s."), B.getDimensionString().cstr());
-    }
-
+    _VALIDATEISSQUAREMATRIX(A);
+    _VALIDATEISSQUAREMATRIX(B);
     const size_t a = A.getRowCount();
     const size_t b = B.getRowCount();
     return kroneckerProduct(A, _1(b)) + kroneckerProduct(_1(a), B);
@@ -725,6 +716,11 @@ public:
   String getDimensionString() const {
     return format(_T("Dimension=%s"), m_dim.toString().cstr());
   }
+
+  void throwNotSquareMatrixException(const TCHAR *method, const TCHAR *name) const {
+    throwInvalidArgumentException(method, _T("Matrix %s not square. %s"), name, getDimensionString().cstr());
+  }
+
 };
 
 // assume m is type derived from MatrixTemplate

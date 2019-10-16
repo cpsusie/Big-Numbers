@@ -238,10 +238,7 @@ QRMatrix::QRMatrix(const Matrix &src, QRTracer *tracer)
   , m_eigenValues(src.getRowCount())
   , m_eigenVectors(src.getRowCount(),src.getColumnCount())
  {
-  if(!src.isSquare()) {
-    throwMathException(_T("QRMatrix::QRMatrix:Matrix not square. Dimension = (%zu,%zu)."), src.getRowCount(), src.getColumnCount());
-  }
-
+  _VALIDATEISSQUAREMATRIX(src);
   m_tracer       = tracer;
   m_deflatedSize = (int)getRowCount();
   solve();
@@ -251,11 +248,7 @@ QRMatrix &QRMatrix::operator=(const Matrix &src) {
   if(this == &src) {
     return *this;
   }
-
-  if(!src.isSquare()) {
-    throwMathException(_T("QRMatrix::operator=:Matrix not square. Dimension = (%zu,%zu)."), src.getRowCount(), src.getColumnCount());
-  }
-
+  _VALIDATEISSQUAREMATRIX(src);
   ((Matrix&)(*this)) = src;
   const int n = (int)getRowCount();
   m_pi.setDimension(n);
@@ -370,6 +363,9 @@ void QRMatrix::resetToHessenberg() {
 
 void QRMatrix::findEigenValues() {
   Complex l1, l2;
+  JavaRandom rnd;
+  rnd.randomize();
+
   m_Q = Matrix::_1(getRowCount());
 
   trace();
@@ -386,7 +382,7 @@ void QRMatrix::findEigenValues() {
       // Found 2 eigenvalues of 2x2 submatrix(m_deflatedSize-2,m_deflatedSize-2) (conjugated if complex). Deflate Matrix by 2
       getEigenValues2x2(l1,l2);
       if(l1.im == 0) { // if not complex, do singleQRSteps until subdiagonal(deflatedSize-1) < EPS and deflate only by 1
-        Real shift = fabs(l1.re) > fabs(l2.re) ? l1.re : l2.re;
+        const Real shift = fabs(l1.re) > fabs(l2.re) ? l1.re : l2.re;
         while(fabs(subDiagonal(m_deflatedSize-1)) >= EPS) {
           singleQRStep(iteration, shift);
           iteration++;
@@ -405,7 +401,7 @@ void QRMatrix::findEigenValues() {
       doubleQRStep(iteration);
       iteration++;
       if(iteration > 10) { // If no convergence for doubleQRStep, Make af singleQRStep with a random shift
-        singleQRStep(iteration, randReal(-10,10));
+        singleQRStep(iteration, randReal(-10,10, &rnd));
         iteration = 0;
       }
       trace();
@@ -614,10 +610,10 @@ if(traceQR) {
 
 void QRMatrix::createComplexMatrix(ComplexMatrix &M) const {
   const QRMatrix &a = *this;
-  const int       n = (int)getRowCount();
+  const size_t    n = getRowCount();
   M.setDimension(n,n);
-  for(int r = 0; r < n; r++) {
-    for(int c = 0; c < n; c++) {
+  for(size_t r = 0; r < n; r++) {
+    for(size_t c = 0; c < n; c++) {
       M(r,c) = a(r,c);
     }
   }
@@ -625,8 +621,8 @@ void QRMatrix::createComplexMatrix(ComplexMatrix &M) const {
 
 void QRMatrix::setDiagonalElements(ComplexMatrix &M, const Complex &lambda) const {
   const QRMatrix &a = *this;
-  const int       n = (int)getRowCount();
-  for(int i = 0; i < n; i++) {
+  const size_t    n = getRowCount();
+  for(size_t i = 0; i < n; i++) {
     M(i,i) = a(i,i) - lambda;
   }
 }

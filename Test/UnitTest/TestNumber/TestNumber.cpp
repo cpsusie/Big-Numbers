@@ -273,16 +273,16 @@ namespace TestNumber {
           OUTPUT(_T("%s"), MmaxErrorDiv.toString().cstr()); verify(false);
         }
 
-  /*
-        OUTPUT(_T("%s"), MmaxErrorAdd.toString().cstr());
-        OUTPUT(_T("%s"), MmaxErrorSub.toString().cstr());
-        OUTPUT(_T("%s"), MmaxErrorMul.toString().cstr());
-        OUTPUT(_T("%s"), MmaxErrorDiv.toString().cstr());
-        OUTPUT(_T("%s"), combiCountAdd.toString().cstr());
-        OUTPUT(_T("%s"), combiCountSub.toString().cstr());
-        OUTPUT(_T("%s"), combiCountMul.toString().cstr());
-        OUTPUT(_T("%s"), combiCountDiv.toString().cstr());
-  */
+
+        INFO(_T("%s"), MmaxErrorAdd.toString().cstr());
+        INFO(_T("%s"), MmaxErrorSub.toString().cstr());
+        INFO(_T("%s"), MmaxErrorMul.toString().cstr());
+        INFO(_T("%s"), MmaxErrorDiv.toString().cstr());
+        INFO(_T("%s"), combiCountAdd.toString().cstr());
+        INFO(_T("%s"), combiCountSub.toString().cstr());
+        INFO(_T("%s"), combiCountMul.toString().cstr());
+        INFO(_T("%s"), combiCountDiv.toString().cstr());
+
         } catch(Exception e) {
           OUTPUT(_T("%s"), e.what());
           verify(false);
@@ -330,9 +330,9 @@ namespace TestNumber {
             verify(false);
           }
         }
-        OUTPUT(_T("%s(%s):Detected max relative error:%s")
-              , __TFUNCTION__, Number::getTypeName(type).cstr()
-              , toString(detectedMaxRelError).cstr());
+        INFO(_T("%s(%s):Detected max relative error:%s")
+            , __TFUNCTION__, Number::getTypeName(type).cstr()
+            , toString(detectedMaxRelError).cstr());
       }
     }
 
@@ -390,9 +390,9 @@ namespace TestNumber {
           throwException(_T("%s:Unknown classification for a[%zu]:%s"), __TFUNCTION__, i, toString(data).cstr());
         }
       }
-      OUTPUT(_T("%s(%s):Detected max relative error:%s")
-            ,__TFUNCTION__,Number::getTypeName(type).cstr()
-            , toString(detectedMaxRelError).cstr());
+      INFO(_T("%s(%s):Detected max relative error:%s")
+          ,__TFUNCTION__,Number::getTypeName(type).cstr()
+          , toString(detectedMaxRelError).cstr());
     }
 
     TEST_METHOD(TestReadWrite) {
@@ -567,9 +567,10 @@ namespace TestNumber {
             }
           }
         }
-        OUTPUT(_T("%s:Detected max relative error:%s")
-              ,__TFUNCTION__
-              ,toString(detectedMaxRelError).cstr());
+        INFO(_T("%s:Detected max relative error:%s")
+            ,__TFUNCTION__
+            ,toString(detectedMaxRelError).cstr());
+
       } catch(Exception e) {
         OUTPUT(_T("Exception:%s"), e.what());
         verify(false);

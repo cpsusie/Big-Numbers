@@ -132,7 +132,7 @@ namespace TestComplex {
         verifyRelError(tan(c1)     , sin(c1) / cos(c1)          , 0      );
         verifyRelError(c1          , atan(tan(c1))              , 4.9e-15);
       }
-//      OUTPUT(_T("detected max.relError=%s"), toString(detectedMaxRelError, 17).cstr());
+      INFO(_T("%s:detected max.relError=%s"), __TFUNCTION__,toString(detectedMaxRelError, 17).cstr());
     }
 
     TEST_METHOD(TestRoots) {
@@ -156,7 +156,7 @@ namespace TestComplex {
             verifyRelError(c, pi, tolerance);
           }
         }
-//        OUTPUT(_T("detected max.relError=%s"), toString(detectedMaxRelError, 17).cstr());
+        INFO(_T("%s:detected max.relError=%s"), __TFUNCTION__,toString(detectedMaxRelError, 17).cstr());
       }
     }
 
@@ -180,7 +180,7 @@ namespace TestComplex {
       const Complex cosc1 = cos(c1);
       const Complex id = sqr(sinc1) + sqr(cosc1);
       const Complex diff = Complex::_1 - id;
-      if (fabs(diff) > 1e-13) {
+      if(fabs(diff) > 1e-13) {
         OUTPUT(_T("c1:%s, sin(c1):%s, cos(c1)%s, s:%s, diff:%s")
               ,toString(c1,19).cstr()
               ,toString(sinc1,19).cstr(),toString(cosc1,19).cstr()

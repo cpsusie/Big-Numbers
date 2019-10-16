@@ -2,6 +2,7 @@
 #include <ByteMemoryStream.h>
 #include <HashMap.h>
 #include <TreeMap.h>
+#include <Math/Statistic.h>
 #include "MemBtree.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
@@ -250,32 +251,31 @@ namespace TestBitSet {
     }
   }
 
-  static void testIterator(const KeySet &set) {
-    OUTPUT(_T("Testing Iterator"));
+  static void testIterator(const KeySet &set, RandomGenerator &rnd) {
+    INFO(_T("Testing Iterator"));
     size_t size = set.size();
     KeySet testSet(set);
     KeyArray list;
 
     testSet.clear();
-
     verify(set.size() == size);
 
     for(int k = 0; k < 1000; k++) {
-      testSet.add(randInt() % 100000000);
+      testSet.add(rnd.nextInt(100000000));
     }
 
     for(Iterator<Key> it = testSet.getIterator(); it.hasNext(); ) {
       list.add(it.next());
     }
 
-    while (testSet.size() > 10) {
+    while(testSet.size() > 10) {
       int i = 0;
-      OUTPUT(_T("TestSet.size():%6d"), testSet.size());
+      INFO(_T("TestSet.size():%6d"), testSet.size());
       for(Iterator<Key> it1 = testSet.getIterator(); it1.hasNext();) {
         Key &setKey = it1.next();
         Key &listKey = list[i];
         verify(setKey == listKey);
-        if(rand() % 5 == 0) {
+        if(rnd.nextInt(5) == 0) {
           it1.remove();
           list.removeIndex(i);
         } else {
@@ -285,37 +285,46 @@ namespace TestBitSet {
     }
   }
 
-  static void testRandomSample(const Collection<Key> &c) {
-    OUTPUT(_T("Testing getRandomSample"));
+
+  template<class ValueArray> static Real sum(const ValueArray &a) {
+    Real result = 0;
+    for(size_t i = 0; i < a.size();) result += a[i++];
+    return result;
+  }
+
+  static void testRandomSample(const Collection<Key> &c, RandomGenerator &rnd) {
+    INFO(_T("Testing getRandomSample"));
     Collection<Key> S(c);
-    IntArray counters;
-    randomize();
+    CompactRealArray counters, expected;
 
 #define SAMPLE_COUNT  20000
 #define SOURCE_SIZE   20
 #define SAMPLE_SIZE   5
 
     S.clear();
+    counters.clear();
+    expected.clear();
     for(int i = 0; i < SOURCE_SIZE; i++) {
       S.add(i);
       counters.add(0);
+      expected.add((Real)SAMPLE_SIZE / SOURCE_SIZE * SAMPLE_COUNT);
     }
-    for(int e = 0; e < SAMPLE_COUNT; e++) {
-      Collection<Key> sample = S.getRandomSample(SAMPLE_SIZE);
+    for(size_t e = 0; e < SAMPLE_COUNT; e++) {
+      Collection<Key> sample = S.getRandomSample(SAMPLE_SIZE, &rnd); // sample = 5 elements in range [0..19]
       for(Iterator<Key> it = sample.getIterator(); it.hasNext(); ) {
         counters[it.next().getValue()]++;
       }
     }
-    String line;
-    for(int i = 0; i < SOURCE_SIZE; i++) {
-      line += format(_T("%sc[%2d] = %.5lf"), ((i % 5) == 0) ? _T("      ") : _T(", "), i, (double)counters[i] / SAMPLE_COUNT);
-      if((i % 5) == 4) {
-        OUTPUT(_T("%s"), line.cstr());
-        line = EMPTYSTRING;
-      }
-    }
-    if(line.length() > 0) {
-      OUTPUT(_T("%s"), line.cstr());
+//      double sum1 = sum(counters);
+//      for(int i = 0; i < SOURCE_SIZE; i++) {
+//        counters[i] += (Real)(i - ((Real)SOURCE_SIZE-1)/2.0) * 10;
+//      }
+//      double sum2 = sum(counters);
+    const Real pvalue = chiSquareGoodnessOfFitTest(counters, expected);
+    if(pvalue < 0.1) {
+      OUTPUT(_T("Randomsample differs from expected with pvalue = %s"), toString(pvalue).cstr());
+      OUTPUT(_T("Counters:%s"), counters.toStringBasicType().cstr());
+      OUTPUT(_T("Expected:%s"), expected.toStringBasicType().cstr());
     }
   }
 
@@ -326,14 +335,14 @@ namespace TestBitSet {
   }
 
   static void testCollectionStream(const Collection<Key> &c) {
-    OUTPUT(_T("Testing Collection save/load"));
+    INFO(_T("Testing Collection save/load"));
     const String fileName = getTestFileName(__TFUNCTION__);
     c.save(ByteOutputFile(fileName));
     Collection<Key> tmp(c);
     tmp.load(ByteInputFile(fileName));
     verify(tmp == c);
 
-    OUTPUT(_T("Testing Collection Packer"));
+    INFO(_T("Testing Collection Packer"));
     Packer psrc, pdst;
     psrc << c;
     sendReceive(pdst, psrc);
@@ -342,19 +351,22 @@ namespace TestBitSet {
   }
 
   static void setTestSuite(const TCHAR *name, KeySet &set) {
-    OUTPUT(_T("Testing %s"), name);
+    INFO(_T("Testing %s"), name);
+
+    JavaRandom rnd;
+    rnd.randomize();
 
     const double startTime = getProcessTime();
 
-    testIterator(set);
-    testRandomSample(set);
+    testIterator(    set, rnd);
+    testRandomSample(set, rnd);
 
     KeySet bigset(set);
     KeyArray list;
     int count;
 
     for(int k = 0; k < 10; k++) {
-      OUTPUT(_T("  Iteration %d/10"), k);
+      INFO(_T("  Iteration %d/10"), k);
       for(int i = 0; i < 1500; i++) {
         const int key = randInt() % 100000000;
         if(set.add(key)) {
@@ -372,7 +384,7 @@ namespace TestBitSet {
     }
 
     if(set.hasOrder()) {
-      OUTPUT(_T("Testing order"));
+      INFO(_T("Testing order"));
       int counter = 0;
       Iterator<Key> it = set.getIterator();
       Comparator<Key> &comparator = set.getComparator();
@@ -383,8 +395,7 @@ namespace TestBitSet {
         Key &key = it.next();
         if(last != NULL) {
           verify(comparator.compare(*last, key) < 0);
-        }
-        else {
+        } else {
           verify(comparator.compare(firstKey, key) == 0);
         }
         last = &key;
@@ -399,7 +410,7 @@ namespace TestBitSet {
       for(size_t i = 0; i < a.size(); i++) {
         line += format(_T("Count(%zu):%d "), i, a[i]);
       }
-      OUTPUT(_T("%s"), line.cstr());
+      INFO(_T("%s"), line.cstr());
       try {
         const Key key = set.getMin();
         verify(false);
@@ -414,7 +425,7 @@ namespace TestBitSet {
       }
     }
 
-    OUTPUT(_T("Testing set.contains"));
+    INFO(_T("Testing set.contains"));
     for(size_t i = 0; i < list.size(); i++) {
       const Key &key = list[i];
       verify(set.contains(key));
@@ -422,38 +433,37 @@ namespace TestBitSet {
 
     bigset.addAll(set);
     count = 0;
-    OUTPUT(_T("Testing set.iterator1"));
+    INFO(_T("Testing set.iterator1"));
     for(Iterator<Key> it1 = set.getIterator(); it1.hasNext();) {
       const Key &k = it1.next();
       count++;
       verify(bigset.contains(k));
     }
-
     verify(count == set.size());
 
-    OUTPUT(_T("Testing set.iterator2"));
+    INFO(_T("Testing set.iterator2"));
     for(Iterator<Key> it2 = bigset.getIterator(); it2.hasNext();) {
       const Key &k = it2.next();
       verify(set.contains(k));
     }
 
-    OUTPUT(_T("Testing set.iterator3"));
+    INFO(_T("Testing set.iterator3"));
     for(Iterator<Key> it3 = set.getIterator(); it3.hasNext();) {
       const Key &k = it3.next();
       verify(!bigset.add(k));
     }
 
-    OUTPUT(_T("Testing select"));
+    INFO(_T("Testing select"));
     for(intptr_t i = list.size() - 1; i >= 0; i--) {
       const Key &key = list[i];
       verify(set.remove(key));
       verify(set.size() == i);
       if(set.size() != 0) {
-        const Key &e = set.select();
+        const Key &e = set.select(&rnd);
         verify(set.contains(e));
       } else {
         try {
-          const Key &e = set.select();
+          const Key &e = set.select(&rnd);
           verify(false);
         } catch (Exception e) {
           // ok
@@ -480,24 +490,24 @@ namespace TestBitSet {
     }
 
     verify(!(set == bigset));
-    verify(set != bigset);
-    verify(set <= bigset);
+    verify(  set != bigset);
+    verify(  set <= bigset);
     verify(!(set >= bigset));
-    verify(set < bigset);
-    verify(!(set > bigset));
+    verify(  set <  bigset);
+    verify(!(set >  bigset));
 
     set = bigset;
 
-    OUTPUT(_T("Testing set.removeAll"));
+    INFO(_T("Testing set.removeAll"));
     set.removeAll(bigset);
     verify(set.size() == 0);
 
-    OUTPUT(_T("Testing set.clear"));
+    INFO(_T("Testing set.clear"));
     bigset.clear();
     verify(bigset.size() == 0);
 
     set.clear();
-    OUTPUT(_T("Testing set.copyConstructor"));
+    INFO(_T("Testing set.copyConstructor"));
     KeySet set1(set);
     set.add(1);
     set.add(2);
@@ -505,33 +515,33 @@ namespace TestBitSet {
     set1.add(1);
     set1.add(4);
 
-    OUTPUT(_T("Testing set.intersection"));
+    INFO(_T("Testing set.intersection"));
     KeySet intersectionSet = set * set1;
-    //  OUTPUT(_T("intersect:%s\n"),intersectionSet.toString().cstr());
+    INFO(_T("intersect:%s\n"),intersectionSet.toString().cstr());
     verify(intersectionSet.size() == 1);
 
-    OUTPUT(_T("Testing set.union"));
+    INFO(_T("Testing set.union"));
     KeySet unionSet = set + set1;
-    //  OUTPUT(_T("union:%s\n"),unionSet.toString().cstr());
+    INFO(_T("union:%s\n"),unionSet.toString().cstr());
     verify(unionSet.size() == 3);
 
-    OUTPUT(_T("Testing set.difference"));
+    INFO(_T("Testing set.difference"));
     KeySet diffSet1 = set - set1;
-    //  OUTPUT(_T("diff1:%s\n"),diffSet1.toString().cstr());
+    INFO(_T("diff1:%s\n"),diffSet1.toString().cstr());
     verify(diffSet1.size() == 1);
 
     KeySet diffSet2 = set1 - set;
-    //  OUTPUT(_T("diff2:%s\n"),diffSet2.toString().cstr());
+    INFO(_T("diff2:%s\n"),diffSet2.toString().cstr());
     verify(diffSet2.size() == 1);
 
     KeySet xorSet = set ^ set1;
     verify(xorSet.size() == diffSet1.size() + diffSet2.size());
     verify(xorSet == diffSet1 + diffSet2);
 
-    OUTPUT(_T("Testing set.copyConstructor"));
+    INFO(_T("Testing set.copyConstructor"));
     KeySet set2(set);
 
-    OUTPUT(_T("Testing set.retainAll"));
+    INFO(_T("Testing set.retainAll"));
     set2 = set;
     set2.retainAll(set1);
     verify(set2.size() == intersectionSet.size());
@@ -545,7 +555,7 @@ namespace TestBitSet {
     verify(set2.size() == diffSet1.size());
 
     Collection<Key> &col = set;
-    OUTPUT(_T("Time(%s):%.2lf sec."), name, (getProcessTime() - startTime) / 1000000);
+    INFO(_T("Time(%s):%.2lf sec."), name, (getProcessTime() - startTime) / 1000000);
   }
 
   typedef Map<Key, Element> KeyElementMap;
@@ -570,24 +580,23 @@ namespace TestBitSet {
   }
 
   static void testMapStream(const KeyElementMap &m) {
-    OUTPUT(_T("Testing Map save/load"));
+    INFO(_T("Testing Map save/load"));
     const String fileName = getTestFileName(__TFUNCTION__);
     m.save(ByteOutputFile(fileName));
     KeyElementMap tmp(m);
     tmp.load(ByteInputFile(fileName));
     verify(tmp == m);
 
-    OUTPUT(_T("Testing Map Packer"));
+    INFO(_T("Testing Map Packer"));
     Packer psrc, pdst;
     psrc << m;
     sendReceive(pdst, psrc);
     pdst >> tmp;
     verify(tmp == m);
-
   }
 
   static void mapTestSuite(const TCHAR *name, KeyElementMap &map) {
-    OUTPUT(_T("Testing %s"), name);
+    INFO(_T("Testing %s"), name);
 
     const double startTime = getProcessTime();
 
@@ -596,7 +605,7 @@ namespace TestBitSet {
     int count;
 
     for(int k = 0; k < 10; k++) {
-      OUTPUT(_T("Iteration %d/10"), k);
+      INFO(_T("Iteration %d/10"), k);
       for(int i = 0; i < 1500; i++) {
         const int key = randInt() % 100000000;
         const int elem = rand() % 10000;
@@ -617,15 +626,14 @@ namespace TestBitSet {
       compareMapList(map, list);
     }
 
-    OUTPUT(_T("Testing entrySet.Iterator"));
+    INFO(_T("Testing entrySet.Iterator"));
     for(Iterator<Entry<Key, Element> > entryIterator = map.entrySet().getIterator(); entryIterator.hasNext();) {
       Entry<Key, Element> &entry = entryIterator.next();
       String dd = format(_T("(%s,%s)\n"), entry.getKey().toString().cstr(), entry.getValue().toString().cstr());
     }
 
     if(map.hasOrder()) {
-      OUTPUT(_T("Testing map order"));
-
+      INFO(_T("Testing map order"));
       testMapStream(map);
       int counter = 0;
       Iterator<Entry<Key, Element> > it = map.entrySet().getIterator();
@@ -636,12 +644,11 @@ namespace TestBitSet {
       const Key lastKey2 = map.entrySet().getMax().getKey();
 
       const Key *last = NULL;
-      while (it.hasNext()) {
+      while(it.hasNext()) {
         Entry<Key, Element> *e = &it.next();
         if(last != NULL) {
           verify(comparator.compare(*last, e->getKey()) < 0);
-        }
-        else {
+        } else {
           verify(comparator.compare(firstKey1, e->getKey()) == 0);
           verify(comparator.compare(firstKey2, e->getKey()) == 0);
         }
@@ -652,7 +659,7 @@ namespace TestBitSet {
       verify(comparator.compare(lastKey2, *last) == 0);
       Iterator<Entry<Key, Element> > it1 = it;
       verify(counter == list.size());
-    }  else {
+    } else {
       try {
         const Key firstKey = map.keySet().getMin();
         verify(false);
@@ -684,13 +691,13 @@ namespace TestBitSet {
       verify(map.get(e.m_key) != NULL);
     }
 
-    OUTPUT(_T("Testing map.addAll"));
+    INFO(_T("Testing map.addAll"));
     bigmap.addAll(map);
     count = 0;
 
-    OUTPUT(_T("Testing map.iterator1"));
+    INFO(_T("Testing map.iterator1"));
     Iterator<Entry<Key, Element> > it1 = map.entrySet().getIterator();
-    while (it1.hasNext()) {
+    while(it1.hasNext()) {
       const Key &k = it1.next().getKey();
       count++;
       verify(bigmap.get(k) != NULL);
@@ -700,12 +707,12 @@ namespace TestBitSet {
     Iterator<Entry<Key, Element> > itcopy = it1;
     verify(!itcopy.hasNext());
 
-    OUTPUT(_T("Testing map.iterator2"));
+    INFO(_T("Testing map.iterator2"));
     for(Iterator<Entry<Key, Element> > it2 = bigmap.entrySet().getIterator(); it2.hasNext();) {
       const Key &k = it2.next().getKey();
       verify(map.get(k) != NULL);
     }
-    OUTPUT(_T("Testing map.remove"));
+    INFO(_T("Testing map.remove"));
     for(intptr_t i = list.size() - 1; i >= 0; i--) {
       const KeyElement &e = list[i];
       verify(map.remove(e.m_key));
@@ -715,12 +722,12 @@ namespace TestBitSet {
     const KeyElement &e = list[0];
     verify(!map.remove(e.m_key));
 
-    OUTPUT(_T("Testing map.assignment"));
+    INFO(_T("Testing map.assignment"));
     map = bigmap;
 
     verify(map.size() == bigmap.size());
 
-    OUTPUT(_T("Testing map.removeAll"));
+    INFO(_T("Testing map.removeAll"));
     map.removeAll(bigmap.keySet());
     verify(map.size() == 0);
 
@@ -735,29 +742,29 @@ namespace TestBitSet {
     map1.put(1, -1);
     map1.put(4, -4);
 
-    OUTPUT(_T("Testing map.intersection"));
+    INFO(_T("Testing map.intersection"));
     KeyElementMap Intersect = map * map1;
-    //  OUTPUT(_T("intersect:%s\n"),Intersect.toString().cstr());
+    INFO(_T("intersect:%s\n"),Intersect.toString().cstr());
     verify(Intersect.size() == 1);
 
-    OUTPUT(_T("Testing map.union"));
+    INFO(_T("Testing map.union"));
     KeyElementMap Union = map + map1;
-    //  OUTPUT(_T("union:%s\n"),Union.toString().cstr());
+    INFO(_T("union:%s\n"),Union.toString().cstr());
     verify(Union.size() == 3);
 
-    OUTPUT(_T("Testing map.difference"));
+    INFO(_T("Testing map.difference"));
     KeyElementMap Diff1 = map - map1;
-    //  OUTPUT(_T("diff1:%s\n"),Diff1.toString().cstr());
+    INFO(_T("diff1:%s\n"),Diff1.toString().cstr());
     verify(Diff1.size() == 1);
 
     KeyElementMap Diff2 = map1 - map;
-    //  OUTPUT(_T("diff2:%s\n"),Diff2.toString().cstr());
+    INFO(_T("diff2:%s\n"),Diff2.toString().cstr());
     verify(Diff2.size() == 1);
 
-    OUTPUT(_T("Testing map.copyConstructor"));
+    INFO(_T("Testing map.copyConstructor"));
     KeyElementMap map2(map);
 
-    OUTPUT(_T("Testing map.assignment"));
+    INFO(_T("Testing map.assignment"));
     map2 = map;
     map2.addAll(map1);
     verify(map2.size() == Union.size());
@@ -769,11 +776,11 @@ namespace TestBitSet {
     const Element             &SEE = selectedEntry.getValue();
     const Element             &selectedElement = map.values().select();
 
-    OUTPUT(_T("Testing map.removeAll"));
+    INFO(_T("Testing map.removeAll"));
     map2.removeAll(map1.keySet());
     verify(map2.size() == Diff1.size());
 
-    OUTPUT(_T("Testing map.valueSet"));
+    INFO(_T("Testing map.valueSet"));
     Collection<Element> mapValues = map.values();
 
     verify(mapValues.contains(-1));
@@ -797,15 +804,17 @@ namespace TestBitSet {
       }
     }
     verify(map.size() == 0);
-    OUTPUT(_T("Time(%s):%.2lf sec."), name, (getProcessTime() - startTime) / 1000000);
+    INFO(_T("Time(%s):%.2lf sec."), name, (getProcessTime() - startTime) / 1000000);
   }
 
 	TEST_CLASS(TestCollection) {
     public:
 
       TEST_METHOD(CollectionArray) {
+        JavaRandom rnd;
+        rnd.randomize();
         Array<Key> keyArray;
-        testRandomSample(keyArray);
+        testRandomSample(keyArray, rnd);
       }
 
       TEST_METHOD(CollectionHashSet) {

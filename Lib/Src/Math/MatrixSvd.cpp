@@ -37,7 +37,7 @@ static void svdDecompose(Matrix &a, Vector &d, Matrix &v) {
   Real c, f, h, s, z;
 
   if(m < n) {
-    throwMathException(_T("%s:Matrix a must be augmented with extra zero rows. Dimension=(%d,%d)."), method, m, n);
+    throwInvalidArgumentException(method, _T("a must be augmented with extra zero rows. %s"), method, a.getDimensionString().cstr());
   }
 
   Vector rv1(n);

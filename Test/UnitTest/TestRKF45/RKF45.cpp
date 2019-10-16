@@ -44,23 +44,24 @@ namespace TestRKF45 {
   };
 
   void ValueHandler::handleData(const RungeKuttaFehlberg &data) {
-    OUTPUT(_T("%s"), data.getvalue().toString().cstr());
+    INFO(_T("%s"), data.getvalue().toString().cstr());
   }
 
-	TEST_CLASS(RKF45)	{
-	public:
+  TEST_CLASS(RKF45)	{
+  public:
 
-		TEST_METHOD(RKF45_1) {
+    TEST_METHOD(RKF45_1) {
       Vector start(2);
 
       start[0] = 0;
       start[1] = 1;
 
-      const Vector end = RungeKuttaFehlberg(Expdiff(), ValueHandler()).calculate(start, 1.0, 0.01);
+      ValueHandler handler;
+      const Vector end = RungeKuttaFehlberg(Expdiff(), &handler).calculate(start, 1.0, 0.01);
       Vector expectedEnd(2);
       expectedEnd[0] = 1;
       expectedEnd[1] = M_E;
       verify((end - expectedEnd).length() < 1e-4);
-		}
-	};
+    }
+  };
 }

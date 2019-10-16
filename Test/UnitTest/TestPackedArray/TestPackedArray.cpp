@@ -366,7 +366,7 @@ namespace TestPackedArray {
         int count = randInt() % 300 + 1;
 
         if(i % 30 == 0) {
-          OUTPUT(_T("%s %5.0lf%% BitsPerItem=%2d"), verboseStr.cstr(), (double)(i + 1)*100.0 / testCount, bitsPerItem);
+          INFO(_T("%s %5.0lf%% BitsPerItem=%2d"), verboseStr.cstr(), (double)(i + 1)*100.0 / testCount, bitsPerItem);
         }
 
         verify(testAddAndSet(bitsPerItem));

@@ -51,14 +51,14 @@ static int binomialKeyCmp(const BinomialKey &key1, const BinomialKey &key2) {
   return key1 == key2 ? 0 : 1;
 }
 
-const BigInt &fac(UINT n) {
+const BigInt &factorial(UINT n) {
   static IntHashMap<BigInt> map;
   const BigInt *result = map.get(n);
   if(result == NULL) {
     if(n <= 1) {
       map.put(n,1);
     } else {
-      map.put(n,n*fac(n-1));
+      map.put(n,n*factorial(n-1));
     }
     result = map.get(n);
   }
@@ -71,7 +71,7 @@ const BigInt &binomial(UINT n, UINT k) {
   const BinomialKey key(n,k);
   const BigInt *result = map.get(key);
   if(result == NULL) {
-    map.put(key,fac(n)/(fac(k)*fac(n-k)));
+    map.put(key, factorial(n)/(factorial(k)*factorial(n-k)));
     result = map.get(key);
   }
   return *result;

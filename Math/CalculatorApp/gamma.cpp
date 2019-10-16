@@ -63,6 +63,6 @@ BigReal gamma(const BigReal &x, int ndigits) {
   }
 }
 
-BigReal fac(const BigReal &x, int ndigits) {
+BigReal factorial(const BigReal &x, int ndigits) {
   return gamma(x+BIGREAL_1,ndigits);
 }

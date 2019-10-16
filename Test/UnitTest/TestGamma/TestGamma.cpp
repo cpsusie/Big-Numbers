@@ -16,9 +16,9 @@ namespace TestGamma {
     TEST_METHOD(GammaD64Positive) {
       double maxError = 0;
       for(double x = 0; x <= 4; x += 0.125) {
-        const double  y    = fac(x);
+        const double  y    = factorial(x);
         const BigReal X    = x;
-        const BigReal Y    = fac(X, 20);
+        const BigReal Y    = factorial(X, 20);
         const double  refy = getDouble(Y);
         const double  e    = fabs(y - refy);
 #ifdef LIST_DATA
@@ -35,9 +35,9 @@ namespace TestGamma {
       double maxError = 0;
       for(double x = 0; x > -4; x -= 0.125) {
         if(x == floor(x)) continue;
-        const double  y    = fac(x);
+        const double  y    = factorial(x);
         const BigReal X    = x;
-        const BigReal Y    = fac(X, 20);
+        const BigReal Y    = factorial(X, 20);
         const double  refy = getDouble(Y);
         const double  e    = fabs(y - refy);
 #ifdef LIST_DATA
@@ -73,9 +73,9 @@ namespace TestGamma {
     TEST_METHOD(GammaD80Positive) {
       Double80 maxError = 0;
       for(Double80 x = 0; x <= 4; x += 0.125) {
-        const Double80 y    = fac(x);
+        const Double80 y    = factorial(x);
         const BigReal  X    = x;
-        const BigReal  Y    = fac(X, 26);
+        const BigReal  Y    = factorial(X, 26);
         const Double80 refy = getDouble80(Y);
         const Double80 e    = fabs(y - refy);
 #ifdef LIST_DATA
@@ -92,9 +92,9 @@ namespace TestGamma {
       Double80 maxError = 0;
       for(Double80 x = 0; x > -4; x -= 0.125) {
         if(x == floor(x)) continue;
-        const Double80 y    = fac(x);
+        const Double80 y    = factorial(x);
         const BigReal  X    = x;
-        const BigReal  Y    = fac(X, 26);
+        const BigReal  Y    = factorial(X, 26);
         const Double80 refy = getDouble80(Y);
         const Double80 e    = fabs(y - refy);
 #ifdef LIST_DATA
@@ -123,5 +123,23 @@ namespace TestGamma {
         verify(e < 1.09e-19);
       }
     }
+
+    TEST_METHOD(Gamma05EqualPi) {
+      const double   g05D64 = gamma(0.5);
+      const Double80 g05D80 = gamma(Double80::_05   );
+      const BigReal  g05BR  = gamma(BIGREAL_HALF, 30);
+
+      const double   eD64   = fabs(g05D64 - sqrt(M_PI    ));
+      const Double80 eD80   = fabs(g05D80 - sqrt(DBL80_PI));
+      const BigReal  eBR    = fabs(g05BR  - rSqrt(pi(e(BIGREAL_1,-30)), 30));
+
+      verify(eD64 < 7e-13);
+      verify(eD80 == 0);
+      verify(eBR <= e(BIGREAL_1, -36));
+      INFO(_T("eD64:%23.15le"), eD64);
+      INFO(_T("eD80:%s"), toString(eD80, 22,0,ios::scientific).cstr());
+      INFO(_T("eBR :%s"), toString(eBR , 30,0,ios::scientific).cstr());
+    }
+
   };
 }

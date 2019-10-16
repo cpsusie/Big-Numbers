@@ -9,6 +9,8 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
+#pragma warning(disable:4101) // unreferenced local variable
+
 using namespace std;
 
 static const double EPS = 3e-14;
@@ -70,7 +72,7 @@ namespace TestDouble80 {
         maxRelativeError = relativeError;
       }
     }
-    OUTPUT(_T("%-10s:Max relative error:%.16le"), name.cstr(), maxRelativeError);
+    INFO(_T("%-10s:Max relative error:%.16le"), name.cstr(), maxRelativeError);
   }
   
   static void checkResult(double x64, Double80 x80, TCHAR *op, double tolerance = EPS) {
@@ -258,7 +260,7 @@ static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, d
 
       }
     }
-    OUTPUT(_T("%-10s:Max relative error:%.16le"), name.cstr(), maxRelativeError);
+    INFO(_T("%-10s:Max relative error:%.16le"), name.cstr(), maxRelativeError);
   }
 
   static D641RefFunc _F64_1Arg;
@@ -472,9 +474,10 @@ static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, d
         }
       }
       TCHAR maxstr[50];
-      OUTPUT(_T("Max relative Error:%s"), d80tot(maxstr, maxRelError));
+      INFO(_T("%s:Max relative Error:%s"), __TFUNCTION__, d80tot(maxstr, maxRelError));
       const UINT totalCompares = zeroErrorCount + nonZeroErrorCount;
-      OUTPUT(_T("Total cconversions:%s, Non-zero errors:%.02lf%%")
+      INFO(_T("%s:Total cconversions:%s, Non-zero errors:%.02lf%%")
+            , __TFUNCTION__
             ,format1000(totalCompares).cstr()
             ,PERCENT(nonZeroErrorCount, totalCompares));
     }
@@ -506,7 +509,7 @@ static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, d
       }
       const double timeUsage = (getProcessTime() - startTime) / 1e3 / count;
 
-      OUTPUT(_T("TimeMeasure on Double80::getExpo10(): count = %d, Time = %.3le msec"), count, timeUsage);
+      INFO(_T("TimeMeasure on Double80::getExpo10(): count = %d, Time = %.3le msec"), count, timeUsage);
     }
 
     TEST_METHOD(Double80TestPow2) {
@@ -522,7 +525,7 @@ static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, d
       }
       const double timeUsage = (getProcessTime() - startTime) / 1e3 / count;
 
-      OUTPUT(_T("TimeMeasure on Double80::pow2(): count = %d, Time = %.3le msec"), count, timeUsage);
+      INFO(_T("TimeMeasure on Double80::pow2(): count = %d, Time = %.3le msec"), count, timeUsage);
     }
 
     void testAllCast(double d64) {
@@ -610,7 +613,7 @@ static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, d
       }
       const double timeUsage = (getProcessTime() - startTime) / 1e3 / count;
 
-      OUTPUT(_T("TimeMeasure on Double80::toString(): count = %d, Time = %.3le msec"), count, timeUsage);
+      INFO(_T("TimeMeasure on Double80::toString(): count = %d, Time = %.3le msec"), count, timeUsage);
     }
 
     TEST_METHOD(Double80TestRound) {
@@ -635,7 +638,7 @@ static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, d
           }
         }
       }
-      OUTPUT(_T(" Max relative error:%.16le"), maxRelativeError);
+      INFO(_T("%s:Max relative error:%.16le"), __TFUNCTION__, maxRelativeError);
     }
 
     Double80 makeDouble80(UINT64 significand, short exponent, bool positive) {
@@ -675,7 +678,7 @@ static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, d
       int          testExponent     = getExpo2(eps);
       bool         epsPositive      = eps.isPositive();
       TCHAR        tmpStr[50];
-      OUTPUT(_T("Eps:%s"), d80tot(tmpStr, eps));
+      INFO(_T("Eps:%s"), d80tot(tmpStr, eps));
 
       const Double80 sum = Double80::_1 + eps;
       verify(sum == epsP1);
@@ -698,20 +701,21 @@ static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, d
 #undef min
 #undef max
 
-    static double unitRand64() {
-      return randDouble(-1, 1);
+    static double unitRand64(RandomGenerator &rnd) {
+      return randDouble(-1, 1, &rnd);
     }
-    static Double80 unitRand80() {
-      return randDouble80(-1, 1);
+    static Double80 unitRand80(RandomGenerator &rnd) {
+      return randDouble80(-1, 1, &rnd);
     }
 
 #undef endl
 
-    template<class DType> void _testReadWrite(DType      (*unitRand)()
+    template<class DType> DType _testReadWrite(DType      (*unitRand)(RandomGenerator &rnd)
                                              ,const DType &maxTolerance
                                              ,const TCHAR *dtypeName
                                              ) {
       const String fileName = getTestFileName(String(__TFUNCTION__) + String(dtypeName));
+      JavaRandom rnd(1234);
 
 //      debugLog(_T("%s\n%s\n"), __TFUNCTION__, FPU::getState().toString().cstr());
 
@@ -735,7 +739,7 @@ static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, d
       list.add( numeric_limits<DType>::signaling_NaN());
 
       for(size_t i = 0; i < count; i++) {
-        const DType x = unitRand();
+        const DType x = unitRand(rnd);
         list.add(x);
       }
       ofstream out(fileName.cstr());
@@ -775,12 +779,13 @@ static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, d
         }
       }
       in.close();
-      OUTPUT(_T("%s:Detected max. relative error:%s"), __TFUNCTION__, toString(detectedMaxRelError).cstr());
+      INFO(_T("%s:Detected max. relative error:%s"), __TFUNCTION__, toString(detectedMaxRelError).cstr());
+      return detectedMaxRelError;
     }
 
     TEST_METHOD(TestReadWrite) {
-      _testReadWrite<Double80>( unitRand80, 2e-19, _T("Double80"));
-      _testReadWrite<double  >( unitRand64, 0    , _T("double")  );
+      verify(_testReadWrite<Double80>( unitRand80, 2e-19, _T("Double80")) < 1.3e-19);
+      verify(_testReadWrite<double  >( unitRand64, 0    , _T("double")  ) ==      0);
     }
 
     TEST_METHOD(Double80TestSinCos) {

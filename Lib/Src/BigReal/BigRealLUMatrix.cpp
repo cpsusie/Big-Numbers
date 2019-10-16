@@ -17,9 +17,7 @@ BigRealLUMatrix::BigRealLUMatrix() {
 }
 
 BigRealLUMatrix::BigRealLUMatrix(const BigRealMatrix &src) : BigRealMatrix(src) {
-  if(!src.isSquare()) {
-    throwBigRealException(_T("%s:Matrix not square. %s"), __TFUNCTION__, src.getDimensionString().cstr());
-  }
+  _VALIDATEISSQUAREMATRIX(src);
   initPermut();
   lowerUpper();
 }
@@ -28,10 +26,7 @@ BigRealLUMatrix& BigRealLUMatrix::operator=(const BigRealMatrix& src) { // assig
   if(this == &src) {
     return *this;
   }
-  if(!src.isSquare()) {
-    throwBigRealException(_T("%s:Matrix not square. %s"), __TFUNCTION__, src.getDimensionString().cstr());
-  }
-
+  _VALIDATEISSQUAREMATRIX(src);
   BigRealMatrix::operator=(src);
   initPermut();
   lowerUpper();

@@ -8,7 +8,7 @@ public:
   }
 };
 
-RungeKuttaFehlberg::RungeKuttaFehlberg(VectorFunction &diff,  RungeKuttaFehlbergHandler &handler)
+RungeKuttaFehlberg::RungeKuttaFehlberg(VectorFunction &diff,  RungeKuttaFehlbergHandler *handler)
 : m_diff(diff)
 , m_handler(handler)
 {
@@ -16,7 +16,7 @@ RungeKuttaFehlberg::RungeKuttaFehlberg(VectorFunction &diff,  RungeKuttaFehlberg
 
 void RungeKuttaFehlberg::setValue(const Vector &v) {
   m_y = v;
-  m_handler.handleData(*this);
+  if(m_handler) m_handler->handleData(*this);
 }
 
 // rungekuttafehlberg method of order 4 and 5

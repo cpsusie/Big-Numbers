@@ -102,8 +102,13 @@ Real lowerIncGamma(          const Real &a,  const Real &x);
 Real chiSquaredDensity(      const Real &df, const Real &x);
 Real chiSquaredDistribution( const Real &df, const Real &x);
 
+// Calculates x! = x*(x-1)*(x-2)*...*2*1, extended to double numbers by the gamma function x! = gamma(x+1)
+template<class T> T  factorial(T x) {
+  return gamma(x + 1);
+}
+
 template<class T> T binomial(T n, T k) {
-  return fac(n) / (fac(k)*fac(n - k));
+  return  factorial(n) / (factorial(k)* factorial(n - k));
 }
 
 #ifndef LONGDOUBLE

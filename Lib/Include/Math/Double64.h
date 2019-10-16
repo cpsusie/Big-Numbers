@@ -11,7 +11,6 @@ double acot(              double x);
 
 double gamma(             double x);
 double lnGamma(           double x);
-double fac(               double x);
 
 // calculate both cos and sin. c:inout c, s:out
 extern "C" {

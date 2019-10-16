@@ -4,86 +4,71 @@
 
 // ------------------------------------BTreePage----------------------------------------------------
 
-void BTreePage::setItemCount(int value) {
-  if(value < 0 || value > MAXITEMCOUNT) {
-    throwException(_T("BTreePage::setItemCount(%d):Invalid argument. MAXITEMCOUNT=%d"), value, MAXITEMCOUNT);
-  }
+void BTreePage::throwIndexError(const TCHAR *method, UINT i) const {
+  throwInvalidArgumentException(method, _T("Indexerror. i=%u, m_itemCount=%u"), i, getItemCount());
+}
 
+void BTreePage::setItemCount(UINT value) {
+  if(value > MAXITEMCOUNT) {
+    throwInvalidArgumentException(__TFUNCTION__, _T("value=%u. MAXITEMCOUNT=%u"), value, MAXITEMCOUNT);
+  }
   m_itemCount = value;
 }
 
-void BTreePage::copyItems(int from, int to, const BTreePage *src, int start) {
-  int amount = to - from + 1;
+void BTreePage::copyItems(UINT from, UINT to, const BTreePage *src, UINT start) {
+  const int amount = (int)to - (int)from + 1;
   if(amount == 0) {
     return;
   }
-  if(amount < 0 || (start + amount - 1 > src->getItemCount())) {
-    throwException(_T("BTreePage::copyItems:Invalid argument(%d,%d,%d,%d)"), from, to, start, src->getItemCount());
+  if((amount < 0) || ((int)start + (int)amount - 1 > (int)src->getItemCount())) {
+    throwInvalidArgumentException(__TFUNCTION__,_T("from=%u,to=%u,%start=%u,itemcount=%u)"), from, to, start, src->getItemCount());
   }
 
   memmove((void*)&getItem(from),&src->getItem(start),amount * getItemSize());
 }
 
 void BTreePage::incrItemCount() {
-  if(m_itemCount >= MAXITEMCOUNT) {
-    throwException(_T("BTreePage::incrItemCount. m_itemCount=%d. MAXITEMCOUNT=%d"), m_itemCount, MAXITEMCOUNT);
-  }
-
   m_itemCount++;
 }
 
 void BTreePage::decrItemCount() {
   if(m_itemCount <= 0) {
-    throwException(_T("BTreePage::decrItemCount:m_itemCount=%d"), m_itemCount);
+    throwException(_T("%s:Page is empty"), __TFUNCTION__, m_itemCount);
   }
-
   m_itemCount--;
 }
 
-void BTreePage::insertItem(int i, const BTreePageItem &t) {
+void BTreePage::insertItem(UINT i, const BTreePageItem &t) {
   if(getItemCount() >= MAXITEMCOUNT) {
-    throwException(_T("BTreePage::insertItem:Page is full"));
+    throwException(_T("%s:Page is full"), __TFUNCTION__);
   }
-  if(i < 1 || i > getItemCount()+1) {
-    throwException(_T("BTreePage::insertItem(%d):Invalid argument. m_itemCount=%d"), i, getItemCount());
-  }
-
+  if(i < 1 || i > getItemCount()+1) throwIndexError(__TFUNCTION__, i);
   incrItemCount();
 
   if(i < getItemCount()) {
     memmove((void*)&getItem(i+1), &getItem(i), getItemSize()*(getItemCount()-i));
   }
-
   setItem(i,t);
 }
 
-void BTreePage::removeItem(int i) {
+void BTreePage::removeItem(UINT i) {
   if(getItemCount() == 0) {
-    throwException(_T("BTreePage::removeItem(%d):Page is empty."),i);
+    throwException(_T("%s:Page is empty."),__TFUNCTION__);
   }
-  if(i < 1 || i > getItemCount()) {
-    throwException(_T("BTreePage::removeItem(%d):Invalid argument. m_itemCount=%d"),i,getItemCount());
-  }
-
+  if((i < 1) || (i > getItemCount())) throwIndexError(__TFUNCTION__, i);
   if(i < getItemCount()) {
     memmove((void*)&getItem(i), &getItem(i+1), getItemSize()*(getItemCount()-i));
   }
-
   decrItemCount();
 }
 
-BTreePage *BTreePage::getChild(int i) const {
-  if(i < 0 || i > m_itemCount) {
-    throwException(_T("BTreePage::getChild(%d):Invalid argument. m_itemCount=%d"), i, m_itemCount);
-  }
-
+BTreePage *BTreePage::getChild(UINT i) const {
+  if(i > m_itemCount) throwIndexError(__TFUNCTION__, i);
   return (i == 0) ? m_child0 : getItem(i).m_child;
 }
 
-void BTreePage::setChild(int i, BTreePage *v) {
-  if(i < 0 || i > MAXITEMCOUNT) {
-    throwException(_T("BTreePage::setChild(%d):Invalid argument. m_itemCount=%d"), i, getItemCount());
-  }
+void BTreePage::setChild(UINT i, BTreePage *v) {
+  if(i > MAXITEMCOUNT) throwIndexError(__TFUNCTION__, i);
   if(i == 0) {
     m_child0 = v;
   } else {
@@ -94,47 +79,35 @@ void BTreePage::setChild(int i, BTreePage *v) {
 // ------------------------------------BTreeSetPageImpl---------------------------------------------
 
 
-const BTreePageItem &BTreeSetPageImpl::getItem(int i) const {
-  if(i < 1 || i > getItemCount()) {
-    throwException(_T("BTreeSetPageImpl::getItem(%d):Invalid argument. m_itemCount=%d"), i, getItemCount());
-  }
+const BTreePageItem &BTreeSetPageImpl::getItem(UINT i) const {
+  if((i < 1) || (i > getItemCount())) throwIndexError(__TFUNCTION__, i);
   return m_item[i-1];
 }
 
-BTreePageItem &BTreeSetPageImpl::getItem(int i) {
-  if(i < 1 || i > getItemCount()) {
-    throwException(_T("BTreeSetPageImpl::getItem(%d):Invalid argument. m_itemCount=%d"), i, getItemCount());
-  }
+BTreePageItem &BTreeSetPageImpl::getItem(UINT i) {
+  if((i < 1) || (i > getItemCount())) throwIndexError(__TFUNCTION__, i);
   return m_item[i-1];
 }
 
-void BTreeSetPageImpl::setItem(int i, const BTreePageItem &v) {
-  if(i < 1 || i > getItemCount()) {
-    throwException(_T("BTreeSetPageImpl::setItem(%d):Invalid argument. m_itemCount=%d"), i, getItemCount());
-  }
+void BTreeSetPageImpl::setItem(UINT i, const BTreePageItem &v) {
+  if((i < 1) || (i > getItemCount())) throwIndexError(__TFUNCTION__, i);
   m_item[i-1] = v;
 }
 
 // ------------------------------------BTreeMapPageImpl---------------------------------------------
 
-const BTreePageItem &BTreeMapPageImpl::getItem(int i) const {
-  if(i < 1 || i > getItemCount()) {
-    throwException(_T("BTreeMapPageImpl::getItem(%d):Invalid argument. m_itemCount=%d"), i, getItemCount());
-  }
+const BTreePageItem &BTreeMapPageImpl::getItem(UINT i) const {
+  if((i < 1) || (i > getItemCount())) throwIndexError(__TFUNCTION__, i);
   return m_item[i-1];
 }
 
-BTreePageItem &BTreeMapPageImpl::getItem(int i) {
-  if(i < 1 || i > getItemCount()) {
-    throwException(_T("BTreeMapPageImpl::getItem(%d):Invalid argument. m_itemCount=%d"), i, getItemCount());
-  }
+BTreePageItem &BTreeMapPageImpl::getItem(UINT i) {
+  if((i < 1) || (i > getItemCount())) throwIndexError(__TFUNCTION__, i);
   return m_item[i-1];
 }
 
-void BTreeMapPageImpl::setItem(int i, const BTreePageItem &v) {
-  if(i < 1 || i > getItemCount()) {
-    throwException(_T("BTreeMapPageImpl::setItem(%d):Invalid argument. m_itemCount=%d"), i, getItemCount());
-  }
+void BTreeMapPageImpl::setItem(UINT i, const BTreePageItem &v) {
+  if((i < 1) || (i > getItemCount())) throwIndexError(__TFUNCTION__, i);
   m_item[i-1] = (BTreeMapPageItem&)v;
 }
 
@@ -322,10 +295,10 @@ bool BTreeSetImpl::pageRemove(BTreePage *a, const void *key, bool &h) {
     return false;
   }
 
-  int l = 1;
-  int r = a->getItemCount() + 1; // binary search
+  UINT l = 1;
+  UINT r = a->getItemCount() + 1; // binary search
   while(l<r) {
-    int m = (l + r) / 2;
+    const UINT m = (l + r) / 2;
     if(m_comparator->cmp(a->getKey(m),key) < 0) {
       l = m + 1;
     } else {
@@ -359,10 +332,10 @@ bool BTreeSetImpl::pageRemove(BTreePage *a, const void *key, bool &h) {
 
 BTreePageItem *BTreeSetImpl::pageSearch(const void *key) const {
   for(BTreePage *p = m_root; p != NULL;) {
-    int l = 1;
-    int r = p->getItemCount() + 1;
+    UINT l = 1;
+    UINT r = p->getItemCount() + 1;
     while(l < r) {
-      int m = (l + r) / 2;
+      const UINT m = (l + r) / 2;
       if(m_comparator->cmp(p->getKey(m),key) <= 0) {
         l = m + 1;
       } else {
@@ -440,17 +413,13 @@ bool BTreeSetImpl::contains(const void *key) const {
   return findNode(key) != NULL;
 }
 
-const void *BTreeSetImpl::select() const {
-  if(size() == 0) {
-    throwException(_T("BTreeSet::select:Set is empty"));
-  }
+const void *BTreeSetImpl::select(RandomGenerator *rnd) const {
+  if(size() == 0) throwSelectFromEmptyCollectionException(__TFUNCTION__);
   return m_root->getItem(1).key();
 }
 
-void *BTreeSetImpl::select() {
-  if(size() == 0) {
-    throwException(_T("BTreeSet::select:Set is empty"));
-  }
+void *BTreeSetImpl::select(RandomGenerator *rnd = _standardRandomGenerator) {
+  if(size() == 0) throwSelectFromEmptyCollectionException(__TFUNCTION__);
   return (void*)m_root->getItem(1).key();
 }
 
@@ -458,7 +427,7 @@ const BTreePageItem *BTreeSetImpl::getMinNode() const {
   const BTreePage *result = NULL;
   for(const BTreePage *p = m_root; p; result = p, p = p->getChild(0));
   if(result == NULL) {
-    throwException(_T("BTreeSet::getMinNode:Set is empty"));
+    throwException(_T("%s:Set is empty"), __TFUNCTION__);
   }
   return &result->getItem(1);
 }
@@ -467,7 +436,7 @@ const BTreePageItem *BTreeSetImpl::getMaxNode() const {
   const BTreePage *result = NULL;
   for(const BTreePage *p = m_root; p; result = p, p = p->getLastItem().m_child);
   if(result == NULL) {
-    throwException(_T("BTreeSet::getMinNode:Set is empty"));
+    throwException(_T("%s:Set is empty"), __TFUNCTION__);
   }
   return &result->getLastItem();
 }
@@ -483,7 +452,7 @@ const void *BTreeSetImpl::getMax() const {
 void BTreeSetImpl::traverse(const BTreePage *p, PageWalker &pw) const {
   if(p) {
     pw.handlePage(*p);
-    for(int i = 0; i <= p->getItemCount(); i++) {
+    for(UINT i = 0; i <= p->getItemCount(); i++) {
       traverse(p->getChild(i),pw);
     }
   }
@@ -628,7 +597,7 @@ const BTreePageItem *BTreeSetIterator::findNext() {
     if(sp->m_childDone) {
       // page.item[index-1].child.item[0..count].key < page.item[index].key < page.item[index].child[0..count].key
       sp->m_index++;
-      if(sp->m_index > page->getItemCount()) {
+      if(sp->m_index > (int)page->getItemCount()) {
         pop();
       } else {
         sp->m_childDone = false;
@@ -694,8 +663,8 @@ AbstractIterator *BTreeSetImpl::getIterator() {
   return new BTreeSetIterator(*this);
 }
 
-int BTreeSetImpl::getHeight() const {
-  int h = 0;
+UINT BTreeSetImpl::getHeight() const {
+  UINT h = 0;
   for(BTreePage *p = m_root; p; p = p->getChild(0)) {
     h++;
   }
@@ -716,18 +685,18 @@ void BTreeSetImpl::checkPage(const BTreePage *p, int level, int height) const {
       throwException(_T("%s::Invariant %d <= itemcount <= %d not satisfied. Itemcount=%d")
                     ,method, HALFSIZE,MAXITEMCOUNT, p->getItemCount());
     }
-    for(int i = 0; i < p->getItemCount(); i++) {
+    for(UINT i = 0; i < p->getItemCount(); i++) {
       checkPage(p->getChild(i),level+1,height);
     }
   }
 }
 
 void BTreeSetImpl::checkTree() {
-  int height = getHeight();
+  UINT height = getHeight();
   if(height == 0) {
     return;
   }
-  for(int i = 0; i <= m_root->getItemCount(); i++) {
+  for(UINT i = 0; i <= m_root->getItemCount(); i++) {
     checkPage(m_root->getChild(i),1,height);
   }
 
@@ -748,12 +717,12 @@ void BTreeSetImpl::showPage(const BTreePage *p, int level, AbstractFormatter &fo
   if(p) {
     _tprintf(_T("%*.*slevel:%2d itemcount:%d "),  level,level,_T(" "),level,p->getItemCount());
     _tprintf(_T("["));
-    for(int i = 1; i <= p->getItemCount(); i++) {
+    for(UINT i = 1; i <= p->getItemCount(); i++) {
       if(i > 1) _tprintf(_T(", "));
       _tprintf(_T("%s"),formatter.toString(p->getKey(i)).cstr() );
     }
     _tprintf(_T("]\n"));
-    for(int i = 0; i <= p->getItemCount();i++)
+    for(UINT i = 0; i <= p->getItemCount();i++)
       showPage(p->getChild(i),level+1,formatter);
   }
 }
@@ -885,24 +854,24 @@ bool BTreeMapImpl::remove(const void *key) {
   return BTreeSetImpl::remove(key);
 }
 
-AbstractEntry *BTreeMapImpl::selectEntry() const {
+AbstractEntry *BTreeMapImpl::selectEntry(RandomGenerator *rnd) const {
   if(size() == 0) {
     throwSelectFromEmptyCollectionException(__TFUNCTION__);
   }
-  return (AbstractEntry*)(BTreeMapPageItem*)findNode(select());
+  return (AbstractEntry*)(BTreeMapPageItem*)findNode(select(rnd));
 }
 
 void BTreeMapImpl::showPage(const BTreePage *p, int level, AbstractFormatter &keyFormatter, AbstractFormatter &dataFormatter) const {
   if(p) {
     _tprintf(_T("%*.*slevel:%2d itemcount:%d "), level,level,_T(" "), level, p->getItemCount());
     _tprintf(_T("["));
-    for(int i = 1; i <= p->getItemCount(); i++) {
+    for(UINT i = 1; i <= p->getItemCount(); i++) {
       const BTreeMapPageItem &item = (const BTreeMapPageItem&)p->getItem(i);
       if(i > 1) _tprintf(_T(","));
       _tprintf(_T("(%s,%s)"), keyFormatter.toString(item.m_key).cstr(), dataFormatter.toString(item.m_value).cstr());
     }
     _tprintf(_T("]\n"));
-    for(int i = 0; i <= p->getItemCount();i++) {
+    for(UINT i = 0; i <= p->getItemCount();i++) {
       showPage(p->getChild(i), level+1, keyFormatter, dataFormatter);
     }
   }

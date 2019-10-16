@@ -96,7 +96,7 @@ public:
   bool          getDigitGrouping()      const { return m_digitGrouping;     }
 };
 
-BigReal fac(const BigReal &x, int ndigits);
+BigReal factorial(const BigReal &x, int ndigits);
 BigReal dms(const BigReal &x, const BigReal &f);
 BigReal inversdms(const BigReal &x, const BigReal &f);
 

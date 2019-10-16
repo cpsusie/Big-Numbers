@@ -3942,7 +3942,6 @@ inline Double80 acot(const Double80 &x) {
 
 Double80 gamma(  const Double80 &x);
 Double80 lnGamma(const Double80 &x);
-Double80 fac(    const Double80 &x);
 
 Double80 mypow(const Double80 &x, const Double80 &y);
 Double80 root( const Double80 &x, const Double80 &y);

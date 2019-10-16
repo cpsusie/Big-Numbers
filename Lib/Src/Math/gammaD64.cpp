@@ -90,8 +90,3 @@ double lnGamma(double x) {
     return log(D64gamma1_2(p)) - res;
   }
 }
-
-// Calculates x! = x*(x-1)*(x-2)*...*2*1, extended to double numbers by the gamma function x! = gamma(x+1)
-double fac(double x) {
-  return gamma(x+1);
-}

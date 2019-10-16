@@ -151,10 +151,11 @@ namespace TestRational {
             verify(rem.isZero() || (sign(rem) == sign(x)));
           } catch (Exception e) {
             OUTPUT(_T("Exception:%s"), e.what());
+            verify(false);
           }
         }
       }
-      OUTPUT(_T("Detected max.relative Error:%s\n"), toString(detectedMaxRelError).cstr());
+      INFO(_T("%s:Detected max.relative Error:%s\n"), __TFUNCTION__, toString(detectedMaxRelError).cstr());
     }
 
 
@@ -433,11 +434,12 @@ namespace TestRational {
         } else if(isnan(data)) {
           verify(isnan(expected));
         } else {
-          throwException(_T("%s:Unknown classification for a[%zu]:%s"), __TFUNCTION__, i, toString(data).cstr());
+          OUTPUT(_T("%s:Unknown classification for a[%zu]:%s"), __TFUNCTION__, i, toString(data).cstr());
+          verify(false);
         }
       }
       in.close();
-      OUTPUT(_T("%s:Detected max. relative error:%s"), __TFUNCTION__, toString(detectedMaxRelError).cstr());
+      INFO(_T("%s:Detected max. relative error:%s"), __TFUNCTION__, toString(detectedMaxRelError).cstr());
     }
 
     TEST_METHOD(TestReadWrite) {
