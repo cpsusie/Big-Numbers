@@ -14,28 +14,28 @@ namespace TestBitSet {
 
 #include <UnitTestTraits.h>
 
-  BitSet &genRandomSet(BitSet &dst, size_t capacity, intptr_t size) {
+  BitSet &genRandomSet(BitSet &dst, RandomGenerator &rnd, size_t capacity, intptr_t size) {
     dst.clear();
     dst.setCapacity(capacity);
-    if (size == -1) {
-      for (size_t i = capacity / 2; i--;) {
-        dst.add(randSizet(capacity));
+    if(size == -1) {
+      for(size_t i = capacity / 2; i--;) {
+        dst.add(randSizet(capacity, &rnd));
       }
-    } else if ((size_t)size >= capacity) {
+    } else if((size_t)size >= capacity) {
       dst.invert();
-    } else if ((size_t)size > capacity / 2) {
+    } else if((size_t)size > capacity / 2) {
       dst.invert();
-      for (size_t t = capacity - size; t;) {
-        const size_t e = randSizet(capacity);
-        if (dst.contains(e)) {
+      for(size_t t = capacity - size; t;) {
+        const size_t e = randSizet(capacity, &rnd);
+        if(dst.contains(e)) {
           dst.remove(e);
           t--;
         }
       }
     } else {
-      for (size_t t = size; t;) {
-        const size_t e = randSizet(capacity);
-        if (!dst.contains(e)) {
+      for(size_t t = size; t;) {
+        const size_t e = randSizet(capacity, &rnd);
+        if(!dst.contains(e)) {
           dst.add(e);
           t--;
         }
@@ -44,38 +44,38 @@ namespace TestBitSet {
     return dst;
   }
 
-  BitSet genRandomSet(size_t capacity, intptr_t size = -1) {
+  BitSet genRandomSet(RandomGenerator &rnd, size_t capacity, intptr_t size = -1) {
     BitSet result(10);
-    return genRandomSet(result, capacity, size);
+    return genRandomSet(result, rnd, capacity, size);
   }
 
-  MatrixIndex getRandomIndex(const MatrixDimension &dim) {
-    return MatrixIndex(randSizet(dim.rowCount), randSizet(dim.columnCount));
+  MatrixIndex getRandomIndex(const MatrixDimension &dim, RandomGenerator &rnd) {
+    return MatrixIndex(randSizet(dim.rowCount, &rnd), randSizet(dim.columnCount, &rnd));
   }
 
-  BitMatrix &genRandomMatrix(BitMatrix &dst, const MatrixDimension &dim, intptr_t size) {
+  BitMatrix &genRandomMatrix(BitMatrix &dst, RandomGenerator &rnd, const MatrixDimension &dim, intptr_t size) {
     dst.clear();
     dst.setDimension(dim);
     const size_t capacity = dim.getElementCount();
-    if (size == -1) {
-      for (size_t i = capacity / 2; i--;) {
-        dst.set(randSizet(dim.rowCount), randSizet(dim.columnCount),true);
+    if(size == -1) {
+      for(size_t i = capacity / 2; i--;) {
+        dst.set(randSizet(dim.rowCount, &rnd), randSizet(dim.columnCount, &rnd),true);
       }
-    } else if ((size_t)size >= capacity) {
+    } else if((size_t)size >= capacity) {
       dst.invert();
-    } else if ((size_t)size > capacity / 2) {
+    } else if((size_t)size > capacity / 2) {
       dst.invert();
-      for (size_t t = capacity - size; t;) {
-        const MatrixIndex i = getRandomIndex(dim);
-        if (dst.get(i)) {
+      for(size_t t = capacity - size; t;) {
+        const MatrixIndex i = getRandomIndex(dim, rnd);
+        if(dst.get(i)) {
           dst.set(i, false);
           t--;
         }
       }
     } else {
-      for (size_t t = size; t;) {
-        const MatrixIndex i = getRandomIndex(dim);
-        if (!dst.get(i)) {
+      for(size_t t = size; t;) {
+        const MatrixIndex i = getRandomIndex(dim, rnd);
+        if(!dst.get(i)) {
           dst.set(i, true);
           t--;
         }
@@ -84,23 +84,25 @@ namespace TestBitSet {
     return dst;
   }
 
-  BitMatrix genRandomMatrix(const MatrixDimension &dim, intptr_t size = -1) {
+  BitMatrix genRandomMatrix(RandomGenerator &rnd, const MatrixDimension &dim, intptr_t size = -1) {
     BitMatrix result(dim);
-    return genRandomMatrix(result, dim, size);
+    return genRandomMatrix(result, rnd, dim, size);
   }
 
   class BitSetIteratorTimeTester : public MeasurableFunction {
   private:
-    BitSet m_a;
+    BitSet     m_a;
+    JavaRandom m_rnd;
   public:
     BitSetIteratorTimeTester();
     void f() {
-      for (Iterator<size_t> it = m_a.getIterator(); it.hasNext(); it.next());
+      for(Iterator<size_t> it = m_a.getIterator(); it.hasNext(); it.next());
     }
   };
 
   BitSetIteratorTimeTester::BitSetIteratorTimeTester() : m_a(2000) {
-    m_a = genRandomSet(10000, 5000);
+    m_rnd.randomize();
+    m_a = genRandomSet(m_rnd, 10000, 5000);
   }
 
 #ifdef __MEASURETIMES__
@@ -140,7 +142,7 @@ namespace TestBitSet {
     size_t m_result[100];
   public:
     BitSetGetIndexTimeTester(const BitSet &a) : m_a(a) {
-      for (Iterator<size_t> it = ((BitSet&)m_a).getReverseIterator(); it.hasNext();) {
+      for(Iterator<size_t> it = ((BitSet&)m_a).getReverseIterator(); it.hasNext();) {
          m_values.add(it.next());
          if(m_values.size() >= ARRAYSIZE(m_result)) break;
       }
@@ -162,7 +164,7 @@ namespace TestBitSet {
     size_t m_result[100];
   public:
     BitSetOldGetIndexTimeTester(const BitSet &a) : m_a(a) {
-      for (Iterator<size_t> it = ((BitSet&)m_a).getReverseIterator(); it.hasNext();) {
+      for(Iterator<size_t> it = ((BitSet&)m_a).getReverseIterator(); it.hasNext();) {
          m_values.add(it.next());
          if(m_values.size() >= ARRAYSIZE(m_result)) break;
       }
@@ -201,7 +203,7 @@ namespace TestBitSet {
     }
     void verifyConsistent() const {
       verify(m_bs.size() == m_hs.size());
-      if (m_memberCheckEnabled) {
+      if(m_memberCheckEnabled) {
         verifyMembers();
       }
     }
@@ -400,16 +402,18 @@ namespace TestBitSet {
     TEST_METHOD(BitSetTestIterator)
     {
 #define ANTALITERATIONER 20
+      JavaRandom rnd;
+      rnd.randomize();
       int s;
       try {
         for(size_t cap = 20; cap < 80; cap++) {
-          for (s = 0; s < ANTALITERATIONER; s++) {
-            BitSet a(genRandomSet(cap));
+          for(s = 0; s < ANTALITERATIONER; s++) {
+            BitSet a(genRandomSet(rnd, cap));
             BitSet copy(a);
             copy.clear();
             unsigned int count = 0;
-            for (Iterator<size_t> it = a.getIterator(); it.hasNext();) {
-              if (!copy.isEmpty()) {
+            for(Iterator<size_t> it = a.getIterator(); it.hasNext();) {
+              if(!copy.isEmpty()) {
                 verify(copy.contains(copy.select()));
               } else {
                 try {
@@ -426,23 +430,23 @@ namespace TestBitSet {
             verify(copy == a);
             copy.clear();
             count = 0;
-            for (Iterator<size_t> it = a.getReverseIterator(); it.hasNext();) {
+            for(Iterator<size_t> it = a.getReverseIterator(); it.hasNext();) {
               copy.add(it.next());
               count++;
             }
             verify(count == copy.size());
             verify(copy == a);
-            for (size_t start = 0; start < cap+2; start++) {
-              for (size_t end = 0; end < cap; end++) {
+            for(size_t start = 0; start < cap+2; start++) {
+              for(size_t end = 0; end < cap; end++) {
                 BitSet am(a), tmp(a.getCapacity());
                 am.remove(start, end);
-                for (Iterator<size_t> it = a.getIterator(start, end); it.hasNext();) {
+                for(Iterator<size_t> it = a.getIterator(start, end); it.hasNext();) {
                   tmp.add(it.next());
                 }
                 verify(a - am == tmp);
 
                 tmp.clear();
-                for (Iterator<size_t> it = a.getReverseIterator(end, start); it.hasNext();) {
+                for(Iterator<size_t> it = a.getReverseIterator(end, start); it.hasNext();) {
                   tmp.add(it.next());
                 }
                 verify(a - am == tmp);
@@ -461,11 +465,11 @@ namespace TestBitSet {
 
       double msec = measureTime(bstt);
 
-      OUTPUT(_T("BitSetIterator time:%.3le msec"), msec * 1000);
+      INFO(_T("BitSetIterator time:%.3le msec"), msec * 1000);
     }
 #ifdef __NEVER__
     TEST_METHOD(BitSetTestSize) {
-      for (int test = 0; test < 40; test++) {
+      for(int test = 0; test < 40; test++) {
         const BitSet s(genRandomSet(test + 300));
         const size_t oldSize = s.oldSize();
         const size_t size    = s.size();
@@ -482,10 +486,10 @@ namespace TestBitSet {
         const BitSet m_a = genRandomSet(capacity, 3*capacity/4);
         BitSetSizeTimeTester bstt1(m_a);
         double msec = measureTime(bstt1);
-        OUTPUT(_T("BitSetSize time(cap=%zd):%.3le msec"), capacity, msec * 1000);
+        INFO(_T("BitSetSize time(cap=%zd):%.3le msec"), capacity, msec * 1000);
         BitSetOldSizeTimeTester bstt2(m_a);
         msec = measureTime(bstt2);
-        OUTPUT(_T("BitSet.oldSize time(cap=%zd):%.3le msec"), capacity, msec * 1000);
+        INFO(_T("BitSet.oldSize time(cap=%zd):%.3le msec"), capacity, msec * 1000);
       }
     }
     TEST_METHOD(BitSetMeasureGetIndex) {
@@ -495,20 +499,20 @@ namespace TestBitSet {
         const BitSet m_a = genRandomSet(capacity, 3*capacity/4);
         BitSetGetIndexTimeTester bstt1(m_a);
         double msec = measureTime(bstt1);
-        OUTPUT(_T("BitSet.getIndex() time(cap=%zd %.3le msec"), capacity, msec * 1000);
+        INFO(_T("BitSet.getIndex() time(cap=%zd %.3le msec"), capacity, msec * 1000);
         BitSetOldGetIndexTimeTester bstt2(m_a);
         msec = measureTime(bstt2);
-        OUTPUT(_T("BitSet.oldGetIndex() time(cap=%zd %.3le msec"), capacity, msec * 1000);
+        INFO(_T("BitSet.oldGetIndex() time(cap=%zd %.3le msec"), capacity, msec * 1000);
       }
     }
 #endif
     static intptr_t getIntIndex(const BitSet &s, size_t e) {
-      if (!s.contains(e)) {
+      if(!s.contains(e)) {
         return -1;
       }
       size_t count = 0;
-      for (Iterator<size_t> it = ((BitSet&)s).getIterator(); it.hasNext(); count++) {
-        if (it.next() == e) {
+      for(Iterator<size_t> it = ((BitSet&)s).getIterator(); it.hasNext(); count++) {
+        if(it.next() == e) {
           return count;
         }
       }
@@ -516,14 +520,16 @@ namespace TestBitSet {
     }
 
     TEST_METHOD(BitSetGetIndex) {
-      for (int i = 0; i < 40; i++) {
-        BitSet s(genRandomSet(200));
-        //    OUTPUT(_T("set:%s"), s.toString().cstr());
-        for (Iterator<size_t> it = s.getIterator(); it.hasNext();) {
+      JavaRandom rnd;
+      rnd.randomize();
+      for(int i = 0; i < 40; i++) {
+        BitSet s(genRandomSet(rnd, 200));
+        INFO(_T("set:%s"), s.toString().cstr());
+        for(Iterator<size_t> it = s.getIterator(); it.hasNext();) {
           const size_t e = it.next();
           const intptr_t index1 = getIntIndex(s, e);
           const intptr_t index2 = s.getIndex(e);
-//            OUTPUT(_T("e:%3d. index1:%3d, index2:%3d"), e, index1, index2);
+          INFO(_T("e:%3d. index1:%3d, index2:%3d"), e, index1, index2);
           verify(index1 == index2);
         }
       }
@@ -531,8 +537,8 @@ namespace TestBitSet {
 
     static size_t getCount1(const BitSet &s, size_t from, size_t to) {
       size_t count = 0;
-      for (size_t i = from; i <= to; i++) {
-        if (s.contains(i)) {
+      for(size_t i = from; i <= to; i++) {
+        if(s.contains(i)) {
           count++;
         }
       }
@@ -548,11 +554,13 @@ namespace TestBitSet {
     }
 
     TEST_METHOD(BitSetGetCount) {
-      for (int test = 0; test < 30; test++) {
-        const BitSet s(genRandomSet(200));
-        //    OUTPUT(_T("set:%s"), s.toString().cstr());
-        for (size_t from = 0; from < 300; from++) {
-          for (size_t to = from; to < 300; to++) {
+      JavaRandom rnd;
+      rnd.randomize();
+      for(int test = 0; test < 30; test++) {
+        const BitSet s(genRandomSet(rnd, 200));
+        INFO(_T("set:%s"), s.toString().cstr());
+        for(size_t from = 0; from < 300; from++) {
+          for(size_t to = from; to < 300; to++) {
             const size_t expected1 = getCount1(s, from, to);
             const size_t expected2 = getCount2(s, from, to);
             const size_t count     = s.getCount(from, to);
@@ -574,38 +582,40 @@ namespace TestBitSet {
     }
 
     TEST_METHOD(TestFileBitSet) {
+      JavaRandom rnd;
+      rnd.randomize();
       const size_t capacity = 20000;
-      const BitSet s(genRandomSet(capacity));
+      const BitSet s(genRandomSet(rnd, capacity));
       const String fileName = getTestFileName(__TFUNCTION__);
       s.save(ByteOutputFile(fileName));
       FileBitSet fs(fileName, 0);
-      for (size_t i = 0; i < capacity; i++) {
+      for(size_t i = 0; i < capacity; i++) {
         verify(s.contains(i) == fs.contains(i));
       }
     }
 
-    void testAllBitSetIndices(size_t capacity) {
+    void testAllBitSetIndices(size_t capacity, RandomGenerator &rnd) {
       BitSet s(10);
-      genRandomSet(s, capacity, capacity/3);
+      genRandomSet(s, rnd, capacity, capacity/3);
 
       double startTime = getThreadTime();
 
       BitSetIndex bi(s);
       double usedTime = (getThreadTime() - startTime) / 1000000;
 
-      OUTPUT(_T("Capacity:%s size:%11s creation-time:%7.3lf"), format1000(capacity).cstr(), format1000(s.size()).cstr(), usedTime);
+      INFO(_T("Capacity:%s size:%11s creation-time:%7.3lf"), format1000(capacity).cstr(), format1000(s.size()).cstr(), usedTime);
 
       startTime = getThreadTime();
       intptr_t expectedIndex = 0;
-      for (Iterator<size_t> it = s.getIterator(); it.hasNext(); expectedIndex++) {
+      for(Iterator<size_t> it = s.getIterator(); it.hasNext(); expectedIndex++) {
         const size_t e     = it.next();
         intptr_t     index = bi.getIndex(e);
-//        if (expectedIndex % 50000 == 0) {
+//        if(expectedIndex % 50000 == 0) {
 //          OUTPUT(_T("e:%s. index %s\r"), format1000(e).cstr(), format1000(index).cstr());
 //        }
         verify(index == expectedIndex);
 /*
-        if (index != expectedIndex) {
+        if(index != expectedIndex) {
           OUTPUT(_T("e:%s. Expected:%s, got %s")
                 ,format1000(e).cstr()
                 ,format1000(expectedIndex).cstr()
@@ -616,17 +626,18 @@ namespace TestBitSet {
 */
       }
       usedTime = (getThreadTime() - startTime) / 1000000;
-      OUTPUT(_T("Iteration-time:%7.3lf"), usedTime);
+      INFO(_T("Iteration-time:%7.3lf"), usedTime);
     }
 
     TEST_METHOD(TestBitSetIndex) {
-      randomize();
-      testAllBitSetIndices(6600000);
+      JavaRandom rnd;
+      rnd.randomize();
+      testAllBitSetIndices(6600000, rnd);
     }
 
-    void testAllFileBitSetIndices(size_t capacity) {
+    void testAllFileBitSetIndices(size_t capacity, RandomGenerator &rnd) {
       BitSet s(10);
-      genRandomSet(s, capacity, capacity / 3);
+      genRandomSet(s, rnd, capacity, capacity / 3);
 
       double startTime = getThreadTime();
       const String fileName = getTestFileName(__TFUNCTION__);
@@ -645,7 +656,7 @@ namespace TestBitSet {
 
       double usedTime = (getThreadTime() - startTime) / 1000000;
 
-      OUTPUT(_T("Capacity:%s size:%11s creation-time:%7.3lf"), format1000(capacity).cstr(), format1000(s.size()).cstr(), usedTime);
+      INFO(_T("Capacity:%s size:%11s creation-time:%7.3lf"), format1000(capacity).cstr(), format1000(s.size()).cstr(), usedTime);
 
       startTime = getThreadTime();
       intptr_t expectedIndex = 0;
@@ -655,7 +666,7 @@ namespace TestBitSet {
         //      continue;
         //    }
         const intptr_t index = loaded.getIndex(e);
-//        if (expectedIndex % 50000 == 0) {
+//        if(expectedIndex % 50000 == 0) {
 //          OUTPUT(_T("e:%s. index %s\r"), format1000(e).cstr(), format1000(index).cstr());
 //        }
         verify(index == expectedIndex);
@@ -670,36 +681,39 @@ namespace TestBitSet {
 */
       }
       usedTime = (getThreadTime() - startTime) / 1000000;
-      OUTPUT(_T("Iteration-time:%7.3lf"), usedTime);
+      INFO(_T("Iteration-time:%7.3lf"), usedTime);
     }
 
     TEST_METHOD(FileBitSetIndexTest) {
+      JavaRandom rnd;
+      rnd.randomize();
+
       {
         for(double capacity = 10; capacity < 650000; capacity *= 1.4) {
-          OUTPUT(_T("testAllFileBitSetIndices(%.0lf"), capacity);
-          testAllFileBitSetIndices((UINT)capacity);
+          INFO(_T("testAllFileBitSetIndices(%.0lf"), capacity);
+          testAllFileBitSetIndices((UINT)capacity, rnd);
         }
         return;
       }
       /*
       for(;;) {
-      const unsigned int capacity = inputInt(_T("Enter capacity:"));
-      testAllBitSetIndices(capacity);
+      const UINT capacity = inputInt(_T("Enter capacity:"));
+      testAllBitSetIndices(capacity, rnd);
       }
       */
-      randomize();
-      testAllFileBitSetIndices(6600000);
+      testAllFileBitSetIndices(6600000, rnd);
     }
 
     TEST_METHOD(BitSetIndexTimes) {
+      JavaRandom rnd;
+      rnd.randomize();
       const size_t capacity = 3000000;
-      randomize();
       BitSet s(10);
-      genRandomSet(s, capacity, capacity / 2);
+      genRandomSet(s, rnd, capacity, capacity / 2);
       BitSetIndex bi(s);
-      OUTPUT(_T("  Testing time for BitSetIndex.getIndex()"));
+      INFO(_T("  Testing time for BitSetIndex.getIndex()"));
       double startTime = getThreadTime();
-      for (size_t e = 0; e < capacity;) {
+      for(size_t e = 0; e < capacity;) {
         bi.getIndex(e++);
 #ifdef _DEBUG
         if((e & 0x3ffff) == 0) {
@@ -708,11 +722,11 @@ namespace TestBitSet {
 #endif
       }
       double biTime = getThreadTime() - startTime;
-      OUTPUT(_T("BitSetIndexTime:%.3lf sec"), biTime / 1000000);
+      INFO(_T("BitSetIndexTime:%.3lf sec"), biTime / 1000000);
 
-      OUTPUT(_T("  Testing time for BitSet.getIndex()"));
+      INFO(_T("  Testing time for BitSet.getIndex()"));
       startTime = getThreadTime();
-      for (size_t e = 0; e < capacity; e++) {
+      for(size_t e = 0; e < capacity; e++) {
         const intptr_t index = s.getIndex(e);
 #ifdef _DEBUG
         if((e & 0x3ffff) == 0) {
@@ -721,7 +735,7 @@ namespace TestBitSet {
 #endif
       }
       double bitSetTime = getThreadTime() - startTime;
-      OUTPUT(_T("BitSetTime     :%.3lf sec"), bitSetTime / 1000000);
+      INFO(_T("BitSetTime     :%.3lf sec"), bitSetTime / 1000000);
     }
 
     static void sendReceive(Packer &dst, const Packer &src) {
@@ -731,10 +745,11 @@ namespace TestBitSet {
     }
 
     TEST_METHOD(BitSetPacker) {
+      JavaRandom rnd;
+      rnd.randomize();
       const size_t capacity = 3000000;
-      randomize();
       BitSet set1(10);
-      genRandomSet(set1, capacity, capacity / 2);
+      genRandomSet(set1, rnd, capacity, capacity / 2);
       Packer s,d;
       d << set1;
       sendReceive(d,s);
@@ -744,10 +759,13 @@ namespace TestBitSet {
     }
 
     TEST_METHOD(BitSetMatrix) {
+      JavaRandom rnd;
+      rnd.randomize();
+
       MatrixDimension dim;
-      for (dim.rowCount = 1; dim.rowCount < 35; dim.rowCount++) {
-        for (dim.columnCount = 1; dim.columnCount < 35; dim.columnCount++) {
-          const BitMatrix m = genRandomMatrix(dim, -1);
+      for(dim.rowCount = 1; dim.rowCount < 35; dim.rowCount++) {
+        for(dim.columnCount = 1; dim.columnCount < 35; dim.columnCount++) {
+          const BitMatrix m = genRandomMatrix(rnd, dim, -1);
 
           verify(m.getDimension() == dim);
 
@@ -764,7 +782,7 @@ namespace TestBitSet {
           copy.setDimension(dim1);
           verify(copy.getDimension() == dim1);
           verify(copy.size() == m.size());
-          for (Iterator<MatrixIndex> it = ((BitMatrix&)m).getIterator(); it.hasNext();) {
+          for(Iterator<MatrixIndex> it = ((BitMatrix&)m).getIterator(); it.hasNext();) {
             const MatrixIndex i = it.next();
             verify(copy.get(i));
           }
