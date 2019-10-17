@@ -926,6 +926,9 @@
     <ClCompile Include="UndefNumericRegex.cpp">
       <Filter>Source Files\Math</Filter>
     </ClCompile>
+    <ClCompile Include="HexDumpStr.cpp">
+      <Filter>Source Files\Debugging and Exceptions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />

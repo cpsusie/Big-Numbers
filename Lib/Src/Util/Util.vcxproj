@@ -1005,6 +1005,7 @@
     <ClCompile Include="HashSetImpl.cpp" />
     <ClCompile Include="HashSetIterator.cpp" />
     <ClCompile Include="HexDump.cpp" />
+    <ClCompile Include="HexDumpStr.cpp" />
     <ClCompile Include="HexFloatRegex.cpp" />
     <ClCompile Include="IndentString.cpp" />
     <ClCompile Include="InputDouble.cpp" />
