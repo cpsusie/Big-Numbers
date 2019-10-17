@@ -12,7 +12,7 @@ namespace TestInt128 {
 
 #include <UnitTestTraits.h>
 
-  TEST_CLASS(TesInt128) {
+  TEST_CLASS(TestInt128) {
   public:
 
     TEST_METHOD(Int128Comparators) {
@@ -1038,7 +1038,7 @@ namespace TestInt128 {
         while(it.hasNext()) {
           const StreamParameters &param = it.next();
           if(++formatCounter % quatil == 0) {
-            OUTPUT(_T("%s progress:%.2lf%%"), __TFUNCTION__, PERCENT(formatCounter, totalFormatCount));
+            INFO(_T("%s progress:%.2lf%%"), __TFUNCTION__, PERCENT(formatCounter, totalFormatCount));
           }
           const UINT     radix = param.radix();
           ostringstream  costr;
@@ -1146,7 +1146,7 @@ namespace TestInt128 {
         while(it.hasNext()) {
           const StreamParameters &param = it.next();
           if(++formatCounter % quatil == 0) {
-            OUTPUT(_T("%s progress:%.2lf%%"), __TFUNCTION__, PERCENT(formatCounter, totalFormatCount));
+            INFO(_T("%s progress:%.2lf%%"), __TFUNCTION__, PERCENT(formatCounter, totalFormatCount));
           }
           const UINT     radix = param.radix();
           ostringstream  ostr64, costr128;
