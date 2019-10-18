@@ -133,12 +133,13 @@ namespace TestGamma {
       const Double80 eD80   = fabs(g05D80 - sqrt(DBL80_PI));
       const BigReal  eBR    = fabs(g05BR  - rSqrt(pi(e(BIGREAL_1,-30)), 30));
 
+      INFO(_T("eD64:%23.15le"), eD64);
+      INFO(_T("eD80:%s"), toString(eD80, 22, 0, ios::scientific).cstr());
+      INFO(_T("eBR :%s"), toString(eBR, 30, 0, ios::scientific).cstr());
+
       verify(eD64 < 7e-13);
       verify(eD80 == 0);
-      verify(eBR <= e(BIGREAL_1, -36));
-      INFO(_T("eD64:%23.15le"), eD64);
-      INFO(_T("eD80:%s"), toString(eD80, 22,0,ios::scientific).cstr());
-      INFO(_T("eBR :%s"), toString(eBR , 30,0,ios::scientific).cstr());
+      verify(eBR <= e(BIGREAL_1, -32));
     }
 
   };
