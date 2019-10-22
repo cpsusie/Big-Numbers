@@ -3,7 +3,7 @@
 #include "FunctionTest.h"
 
 void FunctionTest1ArgND64D80::runTest(int threadId, DigitPool *pool) {
-  FullFormatBigReal maxTolerance = e(pool->get1(),-MAXDIGITS-6);
+  FullFormatBigReal maxTolerance = e(pool->_1(),-MAXDIGITS-6);
   Array<BigReal>    testData     = generateTestData(m_xInterval, pool);
   TestStatistic     stat(threadId, m_functionName, pool, XF, testData.size() * MAXDIGITS / DIGITSTEP, maxTolerance);
 
@@ -31,7 +31,7 @@ void FunctionTest1ArgND64D80::runTest(int threadId, DigitPool *pool) {
 }
 
 void FunctionTest2ArgND64D80::runTest(int threadId, DigitPool *pool) {
-  const FullFormatBigReal maxTolerance   = e(pool->get1(),-MAXDIGITS-6);
+  const FullFormatBigReal maxTolerance   = e(pool->_1(),-MAXDIGITS-6);
   const Array<BigReal>    xTestData      = generateTestData(m_xInterval, pool, 10);
   const Array<BigReal>    yTestData      = generateTestData(m_yInterval, pool, 10);
   TestStatistic          stat(threadId, m_functionName, pool, XYF, xTestData.size() * yTestData.size() * MAXDIGITS / DIGITSTEP, maxTolerance);
@@ -114,7 +114,7 @@ void OperatorTest2ArgND64D80Pool::specialTest(int threadId, DigitPool *pool) {
   bool xeq = x1_64 == x64;
   bool yeq = y1_64 == y64;
 
-  const FullFormatBigReal maxTolerance   = e(pool->get1(),-MAXDIGITS-6);
+  const FullFormatBigReal maxTolerance   = e(pool->_1(),-MAXDIGITS-6);
   TestStatistic           stat(threadId, m_functionName, pool, XYF, MAXDIGITS, maxTolerance);
 
   const BigReal exactResult = m_f2Pool(x, y, maxTolerance, pool);
@@ -139,7 +139,7 @@ void OperatorTest2ArgND64D80Pool::runTest(int threadId, DigitPool *pool) {
 //  return;
 
   const int               length         = 30;
-  const FullFormatBigReal maxTolerance   = e(pool->get1(),-MAXDIGITS-6);
+  const FullFormatBigReal maxTolerance   = e(pool->_1(),-MAXDIGITS-6);
   TestStatistic           stat(threadId, m_functionName, pool, XYF, (sqr((MAXSCALE - MINSCALE + 1)) * MAXDIGITS) / (sqr(SCALESTEP)*DIGITSTEP), maxTolerance);
 
   for(int xScale = MINSCALE; xScale <= MAXSCALE; xScale += SCALESTEP) {
@@ -257,7 +257,7 @@ void testQuot3(TestStatistic &stat) {
 
         const BigReal x         = stat.getRandom(length, xScale, false);
         const BigReal y         = stat.getRandom(length, yScale, false);
-        const BigReal tolerance = e(BIGREAL_1, -digits, pool);
+        const BigReal tolerance = e(pool->_1(), -digits, pool);
         const BigReal qn        = BigReal::quotNewton(  x, y, tolerance, pool);
         const BigReal ql32      = BigReal::quotLinear32(x, y, tolerance, pool);
         const BigReal ql64      = BigReal::quotLinear64(x, y, tolerance, pool);
@@ -309,7 +309,7 @@ void testPi(TestStatistic &stat) {
   stat.setTotalTestCount((maxDecimals - minDecimals) / step);
 
   for(int digits = minDecimals; digits < maxDecimals; digits += step) {
-    const BigReal tolerance = e(BIGREAL_1, -digits, pool);
+    const BigReal tolerance = e(pool->_1(), -digits, pool);
     const BigReal result    = pi(tolerance, pool);
 
     if(stat.isTimeToPrint()) {
@@ -393,8 +393,8 @@ void testIntegerDivision(TestStatistic &stat) { // tester BigInt-division
 void testAssignOperators(TestStatistic &stat) {
   DigitPool *pool = stat.getDigitPool();
 
-  const BigReal &_1 = pool->get1();
-  const BigReal &_2 = pool->get2();
+  const BigReal &_1 = pool->_1();
+  const BigReal &_2 = pool->_2();
 
   for(int i = 0; i < 100; i++) {
     if(stat.isTimeToPrint()) {

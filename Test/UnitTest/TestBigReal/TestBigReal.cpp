@@ -32,6 +32,8 @@ static void testConversions(BYTE flags = CONV_ALL) {
 
 static void testGetFirst()             { TesterJob::addFunctionTest(new RawFunctionTest(_T("getFirst"            ), testGetFirst));             }
 static void testGetDecimalDigitCount() { TesterJob::addFunctionTest(new RawFunctionTest(_T("getDecimalDigitCount"), testGetDecimalDigitCount)); }
+static void testPow10()                { TesterJob::addFunctionTest(new RawFunctionTest(_T("pow10"               ), testPow10));                }
+static void testIsPow10()              { TesterJob::addFunctionTest(new RawFunctionTest(_T("isPow10"             ), testIsPow10));              }
 static void testGetExpo10()            { TesterJob::addFunctionTest(new RawFunctionTest(_T("getExpo10"           ), testGetExpo10));            }
 static void testGetExpo2()             { TesterJob::addFunctionTest(new RawFunctionTest(_T("getexpo2"            ), testGetExpo2));             }
 static void testMultPow10()            { TesterJob::addFunctionTest(new RawFunctionTest(_T("multPow10"           ), testMultPow10));            }
@@ -81,11 +83,11 @@ static void testAssignOperators() { TesterJob::addFunctionTest(new RawFunctionTe
 static void testIntegerDivision() { TesterJob::addFunctionTest(new RawFunctionTest(_T("Integer division"    ), testIntegerDivision)); }
 
 static bool checkPlus(const BigReal &x, const BigReal &y, const BigReal &result) {
-  return dif(result,y,BIGREAL_0) == x;
+  return dif(result,y,BigReal::_0) == x;
 }
 
 static bool checkMinus(const BigReal &x, const BigReal &y, const BigReal &result) {
-  return sum(result,y,BIGREAL_0) == x;
+  return sum(result,y,BigReal::_0) == x;
 }
 
 static void testOperatorPlus() {
@@ -175,8 +177,8 @@ static void testSin() {
 
 static void testCosPiThird(TestStatistic &stat) {
   DigitPool *pool = stat.getDigitPool();
-  const BigReal tolerance = e(pool->get1(), -1000);
-  const FullFormatBigReal cosPiThird = cos(quot(pi(tolerance), BigReal(3,pool), tolerance), tolerance) - pool->getHalf();
+  const BigReal tolerance = e(pool->_1(), -1000);
+  const FullFormatBigReal cosPiThird = cos(quot(pi(tolerance), BigReal(3,pool), tolerance), tolerance) - pool->_05();
   verify(compareAbs(cosPiThird,  tolerance) < 1);
   stat.setEndMessageToOk();
 }
@@ -249,14 +251,10 @@ static void initConsole() {
   Console::clear();
 }
 
-void testBigReal(int threadCount) {
+void testBigReal(int threadCount, bool stopOnError) {
   initConsole();
   tcout << _T("Testing BigReal.") << endl;
   log(_T("Begin test %s"), getCompileArchitectureSignatureString().cstr());
-
-#ifndef _DEBUG
-  randomize();
-#endif
 
   AllTime startTime;
 
@@ -265,15 +263,15 @@ void testBigReal(int threadCount) {
   }
 
 //StartAll:
+  testGetDecimalDigitCount();
+  testPow10();
+  testIsPow10();
+  testGetExpo10();
 
   testConstructors();
-
   testConversions();
-  testGetFirst();
-
-  testGetDecimalDigitCount();
-  testGetExpo10();
   testMultPow10();
+  testGetFirst();
 
 //  testGetExpo2();
 
@@ -320,7 +318,7 @@ void testBigReal(int threadCount) {
     threadCount = getProcessorCount();
   }
 
-  TesterJob::runAll(threadCount);
+  TesterJob::runAll(threadCount, stopOnError);
 
 //  if(TesterJob::allOk()) goto StartAll;
 
@@ -348,5 +346,5 @@ void testDouble80Conversions() {
   tcout << _T("Testing BigReal.") << endl;
 
   testConversions(CONV_DBL80P);
-  TesterJob::runAll(1);
+  TesterJob::runAll(1, false);
 }

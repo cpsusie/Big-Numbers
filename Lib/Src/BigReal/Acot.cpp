@@ -9,7 +9,7 @@ public:
   ACotConstants()
     :c1( 0.2)
     ,c2( 0.9)
-    ,c3(BIGREAL_HALF)
+    ,c3(BigReal::_05)
   {
   }
 };
@@ -21,5 +21,5 @@ BigReal acot(const BigReal &x, const BigReal &f) {
 
   DigitPool *pool = x.getDigitPool();
 
-  return dif(pi(APCprod(<,ACOTC.c1,f,pool), pool)*ACOTC.c3, atan(x,APCprod(<,ACOTC.c2,f,pool)),BIGREAL_0, pool);
+  return dif(pi(APCprod(<,ACOTC.c1,f,pool), pool)*ACOTC.c3, atan(x,APCprod(<,ACOTC.c2,f,pool)),BigReal::_0, pool);
 }

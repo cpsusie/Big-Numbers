@@ -38,8 +38,7 @@ void BigReal::load(ByteInputStream &s) {
       setToNan();
       break;
     case FP_INFINITE:
-      setToInf();
-      m_negative = (b & NEGATIVE_FLAG) ? true : false;
+      if(b & NEGATIVE_FLAG) setToNInf(); else setToPInf();
       break;
     }
   } else {

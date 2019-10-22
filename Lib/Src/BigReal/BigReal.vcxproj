@@ -728,6 +728,7 @@
     <ClCompile Include="BigRealThread.cpp" />
     <ClCompile Include="BigRealResourcePool.cpp" />
     <ClCompile Include="BigRealTransformation.cpp" />
+    <ClCompile Include="BigRealValidate.cpp" />
     <ClCompile Include="BigRealVector.cpp" />
     <ClCompile Include="Cos.cpp" />
     <ClCompile Include="Cot.cpp" />

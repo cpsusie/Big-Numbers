@@ -39,7 +39,7 @@ public:
     ,c12( 0.002)
     ,c13( 0.02)
     ,c15( 0.01)
-    ,c16( BIGREAL_HALF)
+    ,c16( BigReal::_05)
     ,c17( 0.25)
   {
   }
@@ -64,10 +64,10 @@ BigReal pi(const BigReal &f, DigitPool *digitPool) {
         const BigInt l = floor(APCsum(>,APCprod(>,ln(-BigReal::getExpo10N(APCprod(<,f,PIC.c4,PIP)),PIC.c5),PIC.c3,PIP),PIC.c6,PIP));
         const int li = getInt(l);
         BigReal w = APCprod(<,APCprod(<,PIC.c7,f,PIP),cut(BigReal::pow2(-li),APC_DIGITS, PIP),PIP); // APCpow(<,c16,l));
-        BigReal z = APCprod(<,PIC.c8,APCquot(<,f,l+PIP->get1(),PIP),PIP);
+        BigReal z = APCprod(<,PIC.c8,APCquot(<,f,l+PIP->_1(),PIP),PIP);
         BigReal u = APCprod(<,PIC.c9,APCprod(<,z,APCpow(<,PIC.c10,l,PIP),PIP),PIP);
         BigReal v = APCprod(<,PIC.c11,u,PIP);
-        BigReal a = PIP->get1();
+        BigReal a = PIP->_1();
         BigReal b = sqrt(BigReal(PIC.c16,PIP),u);
         BigReal t = BigReal(PIC.c17,PIP);
         BigReal s(PIP), d(PIP);

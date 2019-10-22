@@ -21,8 +21,10 @@ public:
 
 static const QuotL32Constants Q32C;
 
-// Linear quot. Assume x != 0 and y != 0 and f != 0
+// Assume x and y are both normal (finite and != 0) and f>0.
+// x/y with |error| < f. School method. using built-in 32-bit division
 BigReal BigReal::quotLinear32(const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *pool) { // static
+  assert(x._isnormal() && y._isnormal() && f.isPositive());
   const bool yNegative = y.isNegative();
   ((BigReal&)y).setPositive(); // cheating. We set it back agin
 
@@ -141,4 +143,35 @@ unsigned long BigReal::getFirst32(const UINT k, BRExpoType *scale) const {
     *scale = m_expo * LOG10_BIGREALBASE + firstDigits - 1 + tmpScale - k;
   }
   return (unsigned long)result;
+}
+
+void BigReal::validateQuotRemainderArguments(const TCHAR *method, const BigReal &x, const BigReal &y, const BigReal *quotient, const BigReal *remainder) { // static
+  if(quotient == remainder) { // also takes care of the stupid situation where both are NULL
+    throwBigRealInvalidArgumentException(method, _T("Quotient is the same variable as remainder"));
+  }
+  if((quotient == &x) || (quotient == &y)) {
+    throwBigRealInvalidArgumentException(method, _T("Quotient cannot be the same variable as x or y"));
+  }
+  if((remainder == &x) || (remainder == &y)) {
+    throwBigRealInvalidArgumentException(method, _T("Remainder cannot be the same variable as x or y"));
+  }
+}
+
+// Assume !x._isnormal() || !y._isnormal() return _FPCLASS_PZ, _FPCLASS_PINF, _FPCLASS_NINF, _FPCLASS_QNAN
+int BigReal::getNonNormalQuotientFpClass(const BigReal &x, const BigReal &y) { // static
+  assert(!x._isnormal() || !y._isnormal());
+  if(!x._isfinite() || !y._isfinite()) {
+    return _FPCLASS_QNAN;
+  }
+  if(y.isZero()) {
+    switch(_fpclass(x)) {
+    case _FPCLASS_PN: return _FPCLASS_PINF;
+    case _FPCLASS_NN: return _FPCLASS_NINF;
+    default         : return _FPCLASS_QNAN;
+    }
+  }
+  if(x.isZero()) return _FPCLASS_PZ;
+  // should never come here
+  throwException(_T("%s:_fpclass(x):%d, _fpclass(y):%d"), __TFUNCTION__, _fpclass(x), _fpclass(y));
+  return _FPCLASS_QNAN;
 }

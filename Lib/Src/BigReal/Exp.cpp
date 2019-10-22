@@ -31,7 +31,7 @@ public:
 //  ,c5  ( _T("0.36787944117144232159552377016146")) // e^-1
     ,c5  ( _T("0.3678794411714423215955237701614608674458111310317678345078368016974614957448998"))
     ,c6  ( _T("3.4")) // >= log2(10)
-    ,c7  ( BIGREAL_2)
+    ,c7  ( BigReal::_2)
     ,c8  ( 1.1 )
     ,c9  ( 0.2 )
     ,c10 ( 3   )
@@ -41,8 +41,8 @@ public:
     ,c14 ( 0.2 )
     ,c15 ( 0.76)
     ,c16 ( 0.4 )
-    ,c17 ( BIGREAL_1)
-    ,c18 ( BIGREAL_HALF)
+    ,c17 ( BigReal::_1)
+    ,c18 ( BigReal::_05)
     ,c19 ( -1  )
     ,c20 ( 10  )
   {
@@ -55,7 +55,7 @@ BigReal exp( const BigReal &x, const BigReal &f) {
   VALIDATETOLERANCE(f)
 
   DigitPool *pool = x.getDigitPool();
-#define _1 pool->get1()
+#define _1 pool->_1()
 
   if(x.isNegative()) {
     BigReal r = APCpow(<,EXPC.c1,BigInt(EXPC.c19,pool) - floor(x),pool);
@@ -72,7 +72,7 @@ BigReal exp( const BigReal &x, const BigReal &f) {
     } else {
       BigReal kn = APCprod(>,EXPC.c6,BigReal::getExpo10N(x),pool) + EXPC.c7;
       BigReal jn = APCprod(>,EXPC.c8, sqrt(-BigReal::getExpo10N(g),EXPC.c9),pool) + kn + EXPC.c10;
-      jn = (jn < _1) ? pool->get0() : floor(jn);
+      jn = (jn < _1) ? pool->_0() : floor(jn);
       kn = (kn < _1) ? _1  : (kn > jn) ? (jn + _1) : floor(kn);
       int j = getInt(jn),k = getInt(kn);
       BigReal h(pool);

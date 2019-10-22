@@ -4,13 +4,13 @@
 BigInt::BigInt(const BigReal &x, DigitPool *digitPool) : BigReal(digitPool ? digitPool : x.getDigitPool()) {
   digitPool = getDigitPool();
 
-  if(!isnormal(x)) {
-    copyFields(x);
+  if(!x._isnormal()) {
+    setToNonNormal(x.m_low, x.m_negative);
   } else if(x.m_expo < 0) { // |x| < 1
-    *this = x.isNegative() ? -digitPool->get1() : digitPool->get0();
+    *this = x.isNegative() ? -digitPool->_1() : digitPool->_0();
   } else if(x.getLow() >= 0) { // x is an integer
-    copyDigits(x, x.getLength());
-    copyFields(x);
+    copyAllDigits(x);
+    copyNonPointerFields(x);
   } else { // |x| > 1 and x is not an integer
     copyDigits(x, (m_expo = x.m_expo)+1);
     m_low      = 0;
@@ -40,11 +40,11 @@ BigInt &BigInt::operator=(const BigReal &x) {
 }
 
 BigInt operator+(const BigInt &x, const BigInt &y) {
-  return (BigInt)sum(x,y,x.getDigitPool()->get0());
+  return (BigInt)sum(x,y,x.getDigitPool()->_0());
 }
 
 BigInt operator-(const BigInt &x, const BigInt &y) {
-  return (BigInt)dif(x,y,x.getDigitPool()->get0());
+  return (BigInt)dif(x,y,x.getDigitPool()->_0());
 }
 
 BigInt operator-(const BigInt &x) {
@@ -57,7 +57,7 @@ BigInt operator-(const BigInt &x) {
 }
 
 BigInt operator*(const BigInt &x, const BigInt &y) {
-  return (BigInt)prod(x,y,x.getDigitPool()->get0());
+  return (BigInt)prod(x,y,x.getDigitPool()->_0());
 }
 
 BigInt operator%(const BigInt &x, const BigInt &y) {
@@ -67,7 +67,7 @@ BigInt operator%(const BigInt &x, const BigInt &y) {
   return (BigInt)result;
 }
 
-static const ConstBigReal divisionC1 = e(BIGREAL_1,-1);
+static const ConstBigReal divisionC1 = e(BigReal::_1,-1);
 
 BigInt operator/(const BigInt &x, const BigInt &y) { // BigInt division
   BigInt tmpX(x);

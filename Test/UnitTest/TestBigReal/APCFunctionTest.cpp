@@ -7,7 +7,7 @@ static const int  biasCount   = ARRAYSIZE(legalBias);
 void testAPCSum(TestStatistic &stat) {
   DigitPool          *pool           = stat.getDigitPool();
   const unsigned int  totalTestCount = (unsigned int)(((double)biasCount * sqr(MAXSCALE - MINSCALE) * (MAXLENGTH-1) * 10) / sqr(SCALESTEP));
-  const BigReal       delta          = e(pool->get1(), -APC_DIGITS, pool);
+  const BigReal       delta          = e(pool->_1(), -APC_DIGITS, pool);
   size_t              maxLength      = 0;
   size_t              sumLength      = 0;
 
@@ -66,8 +66,8 @@ void testAPCSum(TestStatistic &stat) {
   stat.addEndMessage(_T("avgLen:%5.3lf maxLen:%3d"), (double)sumLength / stat.getTestCount(), maxLength);
 }
 
-static const ConstBigReal minTolerance = BIGREAL_1 - e(BIGREAL_1, -APC_DIGITS);
-static const ConstBigReal maxTolerance = BIGREAL_1 + e(BIGREAL_1, -APC_DIGITS);
+static const ConstBigReal minTolerance = BigReal::_1 - e(BigReal::_1, -APC_DIGITS);
+static const ConstBigReal maxTolerance = BigReal::_1 + e(BigReal::_1, -APC_DIGITS);
 
 static bool checkBiasedExpr(const BigReal &APCresult, const BigReal &x0, const char bias, BigReal &quotient) {
   if(x0.isZero()) {
@@ -77,14 +77,14 @@ static bool checkBiasedExpr(const BigReal &APCresult, const BigReal &x0, const c
   switch(bias) {
   case '>':
     quotient = fabs(rQuot(APCresult, x0, 15));
-    return (BIGREAL_1 <= quotient) && (quotient <= maxTolerance);
+    return (BigReal::_1 <= quotient) && (quotient <= maxTolerance);
   case '#':
     quotient = fabs(rQuot(APCresult, x0, 15));
     return (minTolerance <= quotient) && (quotient <= maxTolerance);
     break;
   case '<':
     quotient = fabs(rQuot(x0, APCresult, 15));
-    return (BIGREAL_1 <= quotient) && (quotient <= maxTolerance);
+    return (BigReal::_1 <= quotient) && (quotient <= maxTolerance);
   default:
     tcout << _T("Invalid bias:'") << bias << _T("'") << endl;
     throwException(_T("Invalid bias: =%c"), bias);
@@ -131,7 +131,7 @@ void testAPCProd(TestStatistic &stat) {
                      << _T("Quotient:")                      << FullFormatBigReal(quotient)    << endl;
               throwException(_T("Error in APCprod"));
             } else {
-              stat.update(fabs(quotient-BIGREAL_1));
+              stat.update(fabs(quotient-BigReal::_1));
             }
           }
         }
@@ -180,7 +180,7 @@ void testAPCQuot(TestStatistic &stat) {
                      << _T("Quotient:")                      << FullFormatBigReal(quotient)    << endl;
               throwException(_T("Error in APCquot"));
             } else {
-              stat.update(fabs(quotient-BIGREAL_1));
+              stat.update(fabs(quotient-BigReal::_1));
             }
           }
         }
@@ -229,7 +229,7 @@ void testAPCPow(TestStatistic &stat) {
                    << _T("Quotient:")                     << FullFormatBigReal(quotient)    << endl;
             throwException(_T("Error in APCpow"));
           } else {
-            stat.update(fabs(quotient-BIGREAL_1));
+            stat.update(fabs(quotient-BigReal::_1));
           }
         }
       }

@@ -470,15 +470,15 @@ namespace TestPacker {
         Packer s,d;
         Array<BigReal> a;
         BigReal i(pool);
-        a.add(pool->getnan());
-        a.add(pool->getpinf());
-        a.add(pool->getninf());
+        a.add(pool->nan());
+        a.add(pool->pinf());
+        a.add(pool->ninf());
         for(i = SHRT_MIN; i <= SHRT_MAX; i++) {
           a.add(i);
           a.add(-i);
           if(!i.isZero()) {
-            a.add(rQuot(pool->get1(),i,50));
-            a.add(-rQuot(pool->get1(),i,100));
+            a.add(rQuot(pool->_1(),i,50));
+            a.add(-rQuot(pool->_1(),i,100));
           }
         }
         const BigReal factor(3.1,pool);

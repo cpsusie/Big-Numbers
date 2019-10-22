@@ -3,7 +3,7 @@
 #include <ctype.h>
 
 void BigReal::init(int n) {
-  init();
+  initToZero();
   if(n) {
     BRDigitType un;
     if(n < 0) {
@@ -23,7 +23,7 @@ void BigReal::init(int n) {
 }
 
 void BigReal::init(UINT n) {
-  init();
+  initToZero();
   if(n) {
     m_expo = -1;
     BRDigitType d = n;
@@ -37,7 +37,7 @@ void BigReal::init(UINT n) {
 }
 
 void BigReal::init(INT64 n) {
-  init();
+  initToZero();
   if(n) {
     UINT64 un;
     if(n < 0) {
@@ -57,7 +57,7 @@ void BigReal::init(INT64 n) {
 }
 
 void BigReal::init(UINT64 n) {
-  init();
+  initToZero();
   if(n) {
     m_expo = -1;
     do {
@@ -70,7 +70,7 @@ void BigReal::init(UINT64 n) {
 }
 
 void BigReal::init(const _int128 &n) {
-  init();
+  initToZero();
   if(n) {
     _uint128 un;
     if(n < 0) {
@@ -90,7 +90,7 @@ void BigReal::init(const _int128 &n) {
 }
 
 void BigReal::init(_uint128 n) {
-  init();
+  initToZero();
   if(n) {
     m_expo = -1;
     do {
@@ -103,21 +103,20 @@ void BigReal::init(_uint128 n) {
 }
 
 BigReal::BigReal(const BigReal &x, DigitPool *digitPool) : m_digitPool(digitPool?*digitPool:x.m_digitPool) {
-  init();
+  initToZero();
   if(x._isnormal()) copyAllDigits(x);
-  copyFields(x);
+  copyNonPointerFields(x);
 }
 
 BigReal &BigReal::operator=(const BigReal &x) {
   if(&x == this) {
     return *this;
   } else if(!x._isnormal()) {
-    clearDigits();
-    copyFields(x);
-    return *this;
-  } else if(isZero()) {      // x != 0
+    return setToNonNormal(x.m_low, x.m_negative);
+  }
+  if(!_isnormal()) {  // x is normal
     copyAllDigits(x);
-  } else {                   // x != 0 && *this != 0
+  } else {                   // both x and this are normal (have digits)
     const intptr_t missing = x.getLength() - getLength();
     if(missing >= 0) {       // First copy all the digits, then append the rest if x.length > this.length
       Digit *sd, *dd;
@@ -144,7 +143,7 @@ BigReal &BigReal::operator=(const BigReal &x) {
       m_digitPool.deleteDigits(dd, saveLast);
     }
   }
-  copyFields(x);
+  copyNonPointerFields(x);
   return *this;
 }
 
@@ -156,7 +155,7 @@ void BigReal::init(const String &s, bool allowDecimalPoint) {
   TCHAR *lastNonZero  = NULL;
   bool negative       = false;
 
-  init();
+  initToZero();
   while(_istspace(*cp)) {
     cp++;
   }

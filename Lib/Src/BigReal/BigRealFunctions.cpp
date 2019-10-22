@@ -18,7 +18,7 @@ BRExpoType getExpo2(const BigReal &x) {
                                                    // so expo10(x) * log2_10 is approximately ln(x)/ln(10) * ln(10)/ln(2)
                                                    // = ln(x)/ln(2) = ln2(x) approximately  expo2(x)
   assert(x._isfinite());
-  if(x.isZero()) {
+  if(!x._isnormal()) {
     return 0;
   }
   const BRExpoType expo10 = BigReal::getExpo10(x);
@@ -79,7 +79,7 @@ BigInt ceil(const BigReal &x) { // smallest integer >= x
   if(!isnormal(x)) return BigInt(x);
   DigitPool *pool = x.getDigitPool();
   if(x.m_expo < 0) { // |x| < 1
-    return x.isNegative() ? pool->get0() : pool->get1();
+    return x.isNegative() ? pool->_0() : pool->_1();
   } else if(isInteger(x)) { // x is a BigInt
     return (BigInt)x;
   } else {  // Copy the integerpart of x.
@@ -105,7 +105,7 @@ BigReal fraction(const BigReal &x) { // sign(x) * (|x| - floor(|x|))
     return x;
   }
   if(isInteger(x)) {
-    return x.getDigitPool()->get0();
+    return x.getDigitPool()->_0();
   }
   if(x.isNegative()) {
     const BigReal xp(fabs(x));
@@ -133,10 +133,10 @@ BigReal round(const BigReal &x, intptr_t prec) { // sign(x) * ent(abs(x)*10^prec
   DigitPool *pool = x.getDigitPool();
   BigReal result(pool);
   if(prec == 0) {
-    result = (x.isNegative()) ? -floor(pool->getHalf() - x) : floor(x + pool->getHalf());
+    result = (x.isNegative()) ? -floor(pool->_05() - x) : floor(x + pool->_05());
   } else {
     BigReal tmp(x);
-    result = (x.isNegative()) ? -floor(pool->getHalf() - tmp.multPow10(prec)).multPow10(-prec) : floor(tmp.multPow10(prec) + pool->getHalf()).multPow10(-prec);
+    result = (x.isNegative()) ? -floor(pool->_05() - tmp.multPow10(prec)).multPow10(-prec) : floor(tmp.multPow10(prec) + pool->_05()).multPow10(-prec);
   }
   return result;
 }
@@ -241,7 +241,7 @@ BigReal cut(const BigReal &x, size_t digits, DigitPool *digitPool) { // x trunca
   if(!isfinite(x)) return x;
   if(digitPool == NULL) digitPool = x.getDigitPool();
   if(x.isZero() || (digits == 0)) {
-    return digitPool->get0();
+    return digitPool->_0();
   }
   BigReal result(digitPool);
   int k = BigReal::getDecimalDigitCount(x.m_first->n);

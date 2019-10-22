@@ -182,39 +182,39 @@ void BigRealStream::formatSeparateDigits(String &dst, const BigReal &x, TCHAR se
 
 BigRealStream &BigRealStream::operator<<(const BigReal &x) {
   intptr_t    precision     = (intptr_t)this->precision();
-  FormatFlags flags         = this->flags();
+  FormatFlags flg           = flags();
   const TCHAR separatorChar = separator();
 
   String result;
   if(!isfinite(x)) {
     TCHAR tmp[100];
-    result = formatUndefined(tmp, _fpclass(x), (flags & ios::uppercase), true);
-    flags &= ~ios::hexfloat;
+    result = formatUndefined(tmp, _fpclass(x), (flg & ios::uppercase), true);
+    flg &= ~ios::hexfloat;
   } else if(separatorChar != 0) {
     formatSeparateDigits(result, x, separatorChar);
   } else if(x.isZero()) {
-    formatZero(result, precision, flags);
+    formatZero(result, precision, flg);
   } else { // x defined && x != 0
-    switch(flags & ios::floatfield) {
+    switch(flg & ios::floatfield) {
     case ios::fixed : // Use fixed format
-      formatFixed(result, x, precision, flags, false);
+      formatFixed(result, x, precision, flg, false);
       break;
     case ios::scientific:  // Use scientific format
-      formatScientific(result, x, precision, flags, BigReal::getExpo10(x), false);
+      formatScientific(result, x, precision, flg, BigReal::getExpo10(x), false);
       break;
     default:  // neither scientific nor fixed format (or both) are specified
       { BRExpoType expo10 = BigReal::getExpo10(x);
         if((expo10 < -4) || (expo10 > 14) || ((expo10 > 0) && (expo10 >= precision)) || (expo10 > precision)) {
           precision = max(0, precision - 1);
-          formatScientific(result, x, precision, flags, expo10, (flags & ios::showpoint) == 0);
+          formatScientific(result, x, precision, flg, expo10, (flg & ios::showpoint) == 0);
         } else {
           const intptr_t prec = (precision == 0) ? abs(expo10) : max(0, precision - expo10 - 1);
-          formatFixed(result, x, prec, flags, ((flags & ios::showpoint) == 0) || precision <= 1);
+          formatFixed(result, x, prec, flg, ((flg & ios::showpoint) == 0) || precision <= 1);
         }
       }
       break;
     } // switch
   } // x defined && x != 0
-  formatFilledFloatField(result, x.isNegative(), flags);
+  formatFilledFloatField(result, x.isNegative(), flg);
   return *this;
 }

@@ -1,5 +1,4 @@
 #include "pch.h"
-#include <Math/BigRational.h>
 #include "BigRealStream.h"
 
 String toString(const BigRational &x, StreamSize width, FormatFlags flags, TCHAR separatorChar) {

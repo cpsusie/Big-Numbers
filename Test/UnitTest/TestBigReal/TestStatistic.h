@@ -28,6 +28,11 @@ void checkBigRealDouble64(const String &functionName, DoubleFunction2   f64, con
 void checkBigRealDouble80(const String &functionName, Double80Function1 f80, const BigReal &x,                   const BigReal &exactResult);
 void checkBigRealDouble80(const String &functionName, Double80Function2 f80, const BigReal &x, const BigReal &y, const BigReal &exactResult);
 
+class StopException : public Exception {
+public:
+  StopException() : Exception("Stopped") {
+  }
+};
 class TestStatistic {
 private:
   const String           m_name;
@@ -40,13 +45,14 @@ private:
   String                 m_endMessage;
   bool                   m_endMessageAdded;
   DigitPool             *m_digitPool;
-  MersenneTwister64      m_rnd;
+  JavaRandom             m_rnd;
   BigReal                m_maxTolerance;
   BigReal                m_error;
   BigReal                m_minQ, m_maxQ;
   int                    m_maxDigits;
 //  IntTreeMap<int>        m_count;
   AllTime                m_startTime;
+  static bool            s_stopNow;
   static Semaphore       s_gate;
   static int             s_logypos;
   static tostream       *s_errorLogStream;
@@ -118,7 +124,9 @@ public:
   void        setEndMessageToOk() {
     setEndMessage(_T("Ok"));
   }
-
+  static void stopNow() {
+    s_stopNow = true;
+  }
   inline DigitPool *getDigitPool() {
     return m_digitPool;
   }

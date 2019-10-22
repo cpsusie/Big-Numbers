@@ -20,7 +20,7 @@ public:
   const BigReal      &c16;
 
   TanConstants()
-    :c1 ( BIGREAL_1)
+    :c1 ( BigReal::_1)
     ,c2 ( 0.1  )
     ,c3 ( c2   )
     ,c4 ( c2   )
@@ -33,9 +33,9 @@ public:
     ,c11( 0.11 )
     ,c12( 0.21 )
     ,c13( c11  )
-    ,c14( BIGREAL_2)
+    ,c14( BigReal::_2)
     ,c15( 0.13 )
-    ,c16( BIGREAL_HALF)
+    ,c16( BigReal::_05)
   {
   }
 };

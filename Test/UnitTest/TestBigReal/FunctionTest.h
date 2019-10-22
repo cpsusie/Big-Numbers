@@ -164,6 +164,8 @@ void testConstructors(              TestStatistic &stat);
 
 void testGetFirst(                  TestStatistic &stat);
 void testGetDecimalDigitCount(      TestStatistic &stat);
+void testPow10(                     TestStatistic &stat);
+void testIsPow10(                   TestStatistic &stat);
 void testGetExpo10(                 TestStatistic &stat);
 void testMultPow10(                 TestStatistic &stat);
 void testGetExpo2(                  TestStatistic &stat);
@@ -196,6 +198,7 @@ private:
   static Semaphore s_gate, s_allDone;
   static int       s_runningCount;
   static bool      s_allOk;
+  static bool      s_stopOnError;
   static double    s_totalThreadTime;
   const int        m_id;
   static void incrRunning();
@@ -225,7 +228,7 @@ public:
   static bool allOk() {
     return s_allOk;
   }
-  static void runAll(UINT threadCount);
+  static void runAll(UINT threadCount, bool stopOnError);
   static void shuffleTestOrder();
   static double getTotalThreadTime() {
     return s_totalThreadTime;

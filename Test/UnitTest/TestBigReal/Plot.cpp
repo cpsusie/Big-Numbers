@@ -4,7 +4,7 @@ void plot(DigitPool *pool) {
   FILE *ff = fopen("fisk","w");
   double x,y;
   BigReal Y(pool),F(pool),D(pool);
-  F = e(BIGREAL_1,-40,pool);
+  F = e(pool->_1(),-40,pool);
   BigReal tmp("132487615234.1234",pool);
   BigInt itmp(tmp,pool);
   tcout << "itmp:" << itmp << _T("\n"); tcout.flush();

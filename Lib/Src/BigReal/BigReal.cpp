@@ -115,9 +115,8 @@ void BigReal::trimTail() {
   (m_last = p)->next = NULL;
 }
 
-// Assume src._isnormal() && length <= src.getLength() && m_first == m_last == NULL
 void BigReal::copyDigits(const BigReal &src, size_t length) {
-  assert(src._isnormal());
+  assert(src._isnormal() && (m_first == NULL) && (m_last == NULL) && length <= src.getLength());
   if(length--) {
     const Digit *sd = src.m_first;
     (m_first = newDigit())->prev = NULL;
@@ -128,17 +127,14 @@ void BigReal::copyDigits(const BigReal &src, size_t length) {
       (dd = newDigit())->prev = p;
       dd->n   = sd->n;
       p->next = dd;
-      ;
     }
     (m_last = p)->next = NULL;
-  } else {
-    m_first = m_last = NULL;
   }
 }
 
-// Assume src._isnormal() && m_first == m_last == NULL
+// Assume !_inormal() && src._isnormal()
 void BigReal::copyAllDigits(const BigReal &src) {
-  assert(src._isnormal());
+  assert(!_isnormal() && src._isnormal());
   const Digit *sd = src.m_first;
   Digit       *dd, *p;
   (m_first = p = newDigit())->prev = NULL;
@@ -152,8 +148,7 @@ void BigReal::copyAllDigits(const BigReal &src) {
 }
 
 BigReal &BigReal::multPow10(BRExpoType exp) {
-  DEFINEMETHODNAME;
-  if(!_isnormal()) {
+  if((exp == 0) || !_isnormal()) {
     return *this;
   }
   int m = exp % LOG10_BIGREALBASE;
@@ -162,7 +157,7 @@ BigReal &BigReal::multPow10(BRExpoType exp) {
     m_expo += n;
     m_low  += n;
     if(m_expo > BIGREAL_MAXEXPO || m_expo < BIGREAL_MINEXPO) {
-      throwBigRealInvalidArgumentException(method, _T("Invalid m_expo:%s"), format1000(m_expo).cstr());
+      throwBigRealInvalidArgumentException(__TFUNCTION__, _T("Invalid m_expo:%s"), format1000(m_expo).cstr());
     }
   } else {
     if(m < 0) {
@@ -202,7 +197,6 @@ BigReal &BigReal::multPow10(BRExpoType exp) {
   return *this;
 }
 
-
 BigReal &copy(BigReal &to, const BigReal &from, const BigReal &f) {
   assert(f._isfinite());
   if(!f.isPositive() || !from._isnormal()) {
@@ -210,7 +204,7 @@ BigReal &copy(BigReal &to, const BigReal &from, const BigReal &f) {
   } else if(f.m_expo < from.m_low) {
     to = from;
   } else if(f.m_expo > from.m_expo) {
-    to = to.getDigitPool()->get0();
+    to = to.getDigitPool()->_0();
   } else { // from.m_low <= f.m_expo <= from.m_expo
     to.clearDigits();
     to.m_expo     = from.m_expo;
@@ -224,8 +218,7 @@ BigReal &copy(BigReal &to, const BigReal &from, const BigReal &f) {
 
 BigReal &copy(BigReal &to, const BigReal &from, size_t length) {
   if(!from._isnormal()) {
-    to.clearDigits();
-    to.copyFields(from);
+    to.setToNonNormal(from.m_low, from.m_negative);
   } else {
     length = minMax(length, (size_t)1, from.getLength());
     to.m_low = (to.m_expo = from.m_expo) - length + 1;
@@ -242,38 +235,35 @@ int compare(const BigReal &x, const BigReal &y) {
   if(&x == &y) {
     return 0;
   }
-  if(x.isZero()) {
-    return y.isZero() ? 0 : y.m_negative ? 1 : -1;
-  }
-
-  // x != 0
-  if(y.isZero()) {
-    return x.m_negative ? -1 : 1;
-  }
-
-  // x != 0 && y != 0
-  if(x.m_negative != y.m_negative) {
-    return x.m_negative ? -1 : 1;
-  }
-
-  // sign(x) == sign(y)
-  if(x.m_expo > y.m_expo) { // abs(x) > abs(y)
-    return x.m_negative ? -1 : 1;
-  }
-  if(x.m_expo < y.m_expo) { // abs(x) < abs(y)
-    return x.m_negative ? 1 : -1;
-  }
-
-  // Compare digits
-  const int s = x.m_negative ? -1 : 1;
-  const Digit *xp, *yp;
-  for(xp = x.m_first, yp = y.m_first; xp && yp; xp = xp->next, yp = yp->next) {
-    const BRDigitDiffType d = (BRDigitDiffType)xp->n - (BRDigitDiffType)yp->n;
-    if(d) {
-      return sign(d) * s;
+  const BRExpoType ce = x.m_expo - y.m_expo;
+  if(ce) {
+    if(!x._isnormal()) return y.isNegative() ?  1:-1;  // x==0, y is normal and not zero
+    if(!y._isnormal()) return x.isNegative() ? -1: 1;  // y==0, x is normal and not zero
+    switch((ordinal(x.m_negative)<<1) | ordinal(y.m_negative)) {
+    case 0 : return sign(ce);  // x>0, y>0
+    case 1 : return 1;         // x>0, y<0
+    case 2 : return -1;        // x<0, y>0
+    case 3 : return -sign(ce); // x<0, y<0
+    default: NODEFAULT;
     }
   }
-  return xp ? s : yp ? -s : 0;
+  // same expo
+  if(!x._isnormal()) { // x==0,y==0
+    return 0;
+  }
+
+  const int cs = ordinal(y.m_negative) - ordinal(x.m_negative);
+  if(cs) return cs; // different sign
+  // same sign, same expo. Compare digits
+  const Digit *xp, *yp;
+  BRDigitDiffType ddiff;
+  for(xp = x.m_first, yp = y.m_first; xp && yp; xp = xp->next, yp = yp->next) {
+    if((ddiff = (BRDigitDiffType)xp->n - (BRDigitDiffType)yp->n) != 0) {
+      return x.m_negative ? -sign(ddiff) : sign(ddiff);
+    }
+  }
+  // same sign, same expo. same head. Compare length
+  return xp ? (x.m_negative?-1:1) : yp ? (x.m_negative?1:-1) : 0;
 }
 
 int compareAbs(const BigReal &x, const BigReal &y) {
@@ -281,21 +271,15 @@ int compareAbs(const BigReal &x, const BigReal &y) {
   if(&x == &y) {
     return 0;
   }
-  if(x.isZero()) {
-    return y.isZero() ? 0 : -1;
+  const BRExpoType c = x.m_expo - y.m_expo;
+  if(c) {
+    if(!x._isnormal()) return -1;  // y is normal and not zero => x < y
+    if(!y._isnormal()) return  1;  // x is normal and not zero => x > y;
+    return sign(c); // both are normal and not zero, but different expo
   }
-
-  // x != 0
-  if(y.isZero()) {
-    return 1;
-  }
-
-  // x != 0 && y != 0
-  if(x.m_expo > y.m_expo) { // abs(x) > abs(y)
-    return 1;
-  }
-  if(x.m_expo < y.m_expo) { // abs(x) < abs(y)
-    return -1;
+  // x.m_expo == y.m_expo
+  if(!x._isnormal()) { // both are zero
+    return 0;
   }
 
   // Compare digits
@@ -309,19 +293,37 @@ int compareAbs(const BigReal &x, const BigReal &y) {
   return xp ? 1 : yp ? -1 : 0;
 }
 
+// returns one of
+// _FPCLASS_QNAN  0x0002   quiet NaN
+// _FPCLASS_NINF  0x0004   negative infinity
+// _FPCLASS_NN    0x0008   negative normal
+// _FPCLASS_PZ    0x0040   +0
+// _FPCLASS_PN    0x0100   positive normal
+// _FPCLASS_PINF  0x0200   positive infinity
 int _fpclass(const BigReal &x) {
-  switch(fpclassify(x)) {
-  case FP_NORMAL:
-    return x.isNegative() ? _FPCLASS_NN : _FPCLASS_PN;
-  case FP_ZERO:
-    return x.isNegative() ? _FPCLASS_NZ : _FPCLASS_PZ;
-  case FP_INFINITE:
-    return x.isNegative() ? _FPCLASS_NINF : _FPCLASS_PINF;
-  case FP_NAN:
-    return _FPCLASS_QNAN;
-  default:
-    return _FPCLASS_SNAN;
+  if(x.m_expo == BIGREAL_NONNORMAL) {
+    switch(x.m_low) {
+    case BIGREAL_ZEROLOW : return _FPCLASS_PZ;
+    case BIGREAL_INFLOW  : return x.m_negative ? _FPCLASS_NINF : _FPCLASS_PINF;
+    case BIGREAL_QNANLOW : return _FPCLASS_QNAN;
+    default              : NODEFAULT;
+    }
+  } else {
+    return x.m_negative ? _FPCLASS_NN : _FPCLASS_PN;
   }
+}
+
+BigReal &BigReal::setToNonNormalFpClass(int fpclass) {
+  switch(fpclass) {
+  case _FPCLASS_NZ    :
+  case _FPCLASS_PZ    : return setToZero();
+  case _FPCLASS_SNAN  :
+  case _FPCLASS_QNAN  : return setToNan();
+  case _FPCLASS_PINF  : return setToPInf();
+  case _FPCLASS_NINF  : return setToNInf();
+  default             : throwInvalidArgumentException(__TFUNCTION__, _T("fpclass=%04x"), fpclass);
+  }
+  return *this;
 }
 
 #define CHECKISNORMAL(x)                                      \
@@ -334,32 +336,32 @@ if(!x._isnormal()) {                                          \
 }
 
 int  isInt(const BigReal &v) {
-  return isInteger(v) && (v >= ConstBigReal::_long_min) && (v <= ConstBigReal::_long_max);
+  return isInteger(v) && (v >= BigReal::_i32_min) && (v <= BigReal::_i32_max);
 }
 UINT isUint(const BigReal &v) {
-  return isInteger(v) && !v.isNegative() && (v <= ConstBigReal::_ulong_max);
+  return isInteger(v) && !v.isNegative() && (v <= BigReal::_ui32_max);
 }
 bool isInt64(const BigReal &v) {
-  return isInteger(v) && (v >= ConstBigReal::_i64_min) && (v <= ConstBigReal::_i64_max);
+  return isInteger(v) && (v >= BigReal::_i64_min) && (v <= BigReal::_i64_max);
 }
 bool isUint64(const BigReal &v) {
-  return isInteger(v) && !v.isNegative() && (v <= ConstBigReal::_ui64_max);
+  return isInteger(v) && !v.isNegative() && (v <= BigReal::_ui64_max);
 }
 bool isInt128(const BigReal &v) {
-  return isInteger(v) && (v >= ConstBigReal::_i128_min) && (v <= ConstBigReal::_i128_max);
+  return isInteger(v) && (v >= BigReal::_i128_min) && (v <= BigReal::_i128_max);
 }
 bool isUint128(const BigReal &v) {
-  return isInteger(v) && !v.isNegative() && (v <= ConstBigReal::_ui128_max);
+  return isInteger(v) && !v.isNegative() && (v <= BigReal::_ui128_max);
 }
 
 long getLong(const BigReal &v) {
   DEFINEMETHODNAME;
   CHECKISNORMAL(v)
-  if(v > ConstBigReal::_long_max) {
-    throwBigRealGetIntegralTypeOverflowException(method, v, toString(ConstBigReal::_long_max));
+  if(v > BigReal::_i32_max) {
+    throwBigRealGetIntegralTypeOverflowException(method, v, toString(BigReal::_i32_max));
   }
-  if(v < ConstBigReal::_long_min) {
-    throwBigRealGetIntegralTypeUnderflowException(method, v, toString(ConstBigReal::_long_min));
+  if(v < BigReal::_i32_min) {
+    throwBigRealGetIntegralTypeUnderflowException(method, v, toString(BigReal::_i32_min));
   }
 
   intptr_t   result = 0;
@@ -378,8 +380,8 @@ ULONG getUlong(const BigReal &v) {
   if(v.isNegative()) {
     throwBigRealGetIntegralTypeUnderflowException(method, v, _T("0"));
   }
-  if(v > ConstBigReal::_ulong_max) {
-    throwBigRealGetIntegralTypeOverflowException(method, v, toString(ConstBigReal::_ulong_max));
+  if(v > BigReal::_ui32_max) {
+    throwBigRealGetIntegralTypeOverflowException(method, v, toString(BigReal::_ui32_max));
   }
 
   size_t     result = 0;
@@ -395,11 +397,11 @@ ULONG getUlong(const BigReal &v) {
 INT64 getInt64(const BigReal &v) {
   DEFINEMETHODNAME;
   CHECKISNORMAL(v)
-  if(v > ConstBigReal::_i64_max) {
-    throwBigRealGetIntegralTypeOverflowException(method, v, toString(ConstBigReal::_i64_max));
+  if(v > BigReal::_i64_max) {
+    throwBigRealGetIntegralTypeOverflowException(method, v, toString(BigReal::_i64_max));
   }
-  if(v < ConstBigReal::_i64_min) {
-    throwBigRealGetIntegralTypeUnderflowException(method, v, toString(ConstBigReal::_i64_min));
+  if(v < BigReal::_i64_min) {
+    throwBigRealGetIntegralTypeUnderflowException(method, v, toString(BigReal::_i64_min));
   }
 
   INT64      result = 0;
@@ -417,8 +419,8 @@ UINT64 getUint64(const BigReal &v) {
   if(v.isNegative()) {
     throwBigRealGetIntegralTypeUnderflowException(method, v, _T("0"));
   }
-  if(v > ConstBigReal::_ui64_max) {
-    throwBigRealGetIntegralTypeOverflowException(method, v, toString(ConstBigReal::_ui64_max));
+  if(v > BigReal::_ui64_max) {
+    throwBigRealGetIntegralTypeOverflowException(method, v, toString(BigReal::_ui64_max));
   }
 
   UINT64     result = 0;
@@ -433,11 +435,11 @@ UINT64 getUint64(const BigReal &v) {
 _int128 getInt128(const BigReal &v) {
   DEFINEMETHODNAME;
   CHECKISNORMAL(v)
-  if(v > ConstBigReal::_i128_max) {
-    throwBigRealGetIntegralTypeOverflowException(method, v, toString(ConstBigReal::_i128_max));
+  if(v > BigReal::_i128_max) {
+    throwBigRealGetIntegralTypeOverflowException(method, v, toString(BigReal::_i128_max));
   }
-  if(v < ConstBigReal::_i128_min) {
-    throwBigRealGetIntegralTypeUnderflowException(method, v, toString(ConstBigReal::_i128_min));
+  if(v < BigReal::_i128_min) {
+    throwBigRealGetIntegralTypeUnderflowException(method, v, toString(BigReal::_i128_min));
   }
 
   _int128    result = 0;
@@ -455,8 +457,8 @@ _uint128 getUint128(const BigReal &v) {
   if(v.isNegative()) {
     throwBigRealGetIntegralTypeUnderflowException(method, v, _T("0"));
   }
-  if(v > ConstBigReal::_ui128_max) {
-    throwBigRealGetIntegralTypeOverflowException(method, v, toString(ConstBigReal::_ui128_max));
+  if(v > BigReal::_ui128_max) {
+    throwBigRealGetIntegralTypeOverflowException(method, v, toString(BigReal::_ui128_max));
   }
 
   _uint128   result = 0;
@@ -470,10 +472,10 @@ _uint128 getUint128(const BigReal &v) {
 
 ULONG BigReal::hashCode() const {
   if(!_isnormal()) {
-    switch(m_low) {
-    case BIGREAL_ZEROLOW: return 0;
-    case BIGREAL_NANLOW : return 0xffffffff;
-    case BIGREAL_INFLOW : return m_negative ? 0xfffffffe : 0xfffffffd;
+    switch(classifyNonNormal()) {
+    case FP_ZERO    : return 0;
+    case FP_NAN     : return 0xffffffff;
+    case FP_INFINITE: return m_negative ? 0xfffffffe : 0xfffffffd;
     }
   }
   size_t s = m_expo;
@@ -482,65 +484,4 @@ ULONG BigReal::hashCode() const {
     s = s * 17 + p->n;
   }
   return sizetHash(s);
-}
-
-static void throwAssertionException(_In_z_ _Printf_format_string_ const TCHAR *format, ...) {
-  va_list argptr;
-  va_start(argptr, format);
-  const String msg = vformat(format,argptr);
-  va_end(argptr);
-  throwBigRealException(_T("assertIsValidBigReal:%s"), msg.cstr());
-}
-
-void BigReal ::assertIsValidBigReal() const {
-  if(m_expo == BIGREAL_ESCEXPO) {
-    if(m_first != NULL) {
-      throwAssertionException(_T("m_expo == BIGREAL_ESCEXPO, but m_first != NULL"));
-    }
-    if(m_last != NULL) {
-      throwAssertionException(_T("m_expo == BIGREAL_ESCEXPO, but m_last != NULL"));
-    }
-    switch(m_low) {
-    case BIGREAL_ZEROLOW:
-    case BIGREAL_NANLOW :
-    case BIGREAL_INFLOW :
-      break;
-    default             :
-      throwAssertionException(_T("m_expo == BIGREAL_ESCEXPO, m_low=%zd, valid value for m_low={%d,%d,%d}")
-                             ,m_low
-                             ,BIGREAL_ZEROLOW,BIGREAL_NANLOW,BIGREAL_INFLOW);
-
-    }
-    return;
-  }
-  size_t digitCount = 0;
-  for(const Digit *p = m_first; p; p = p->next) {
-    if(p->n >= BIGREALBASE) {
-      throwAssertionException(_T("Digit(%s) (=%s) >= BIGREALBASE (=%s)")
-                             ,format1000(digitCount).cstr()
-                             ,format1000(p->n).cstr()
-                             ,format1000(BIGREALBASE).cstr());
-    }
-    digitCount++;
-  }
-  if(digitCount == 0) {
-    throwAssertionException(_T("#digits in chain = 0. x != 0"));
-  }
-  if(digitCount != getLength()) {
-    throwAssertionException(_T("#digits in chain (=%s) != getLength() (=%s)")
-                           ,format1000(digitCount).cstr()
-                           ,format1000(getLength()).cstr());
-  }
-  if(m_first->n == 0) {
-    throwAssertionException(_T("m_first->n = 0"));
-  }
-  if(m_last->n == 0) {
-    throwAssertionException(_T("m_last->n = 0"));
-  }
-  if(m_expo > BIGREAL_MAXEXPO) {
-    throwAssertionException(_T("m_expo > BIGREAL_MAXEXPO (=%s)"), format1000(m_expo).cstr());
-  }
-  if(m_expo < BIGREAL_MINEXPO) {
-    throwAssertionException(_T("m_expo < BIGREAL_MINEXPO (=%s)"), format1000(m_expo).cstr());
-  }
 }

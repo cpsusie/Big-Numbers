@@ -17,17 +17,14 @@ BigReal &BigReal::operator%=(const BigReal &x) {
 
 BigReal quot(const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *digitPool) {
   VALIDATETOLERANCE(f)
-  if(y.isZero()) {
-    throwBigRealInvalidArgumentException(method, _T("Division by zero"));
-  }
   if(digitPool == NULL) digitPool = x.getDigitPool();
-
-  if(x.isZero()) {
-    return digitPool->get0();
+  BigReal result(digitPool);
+  if(!BigReal::checkIsNormalQuotient(x, y, &result, NULL)) {
+    return result;
   }
 
   if(BigReal::isPow10(y)) {
-    BigReal result(x, digitPool);
+    result = x;
     if(y.isNegative()) {
       result.changeSign();
     }

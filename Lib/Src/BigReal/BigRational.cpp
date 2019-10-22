@@ -1,33 +1,49 @@
 #include "pch.h"
-#include <Math/BigRational.h>
 
-BigRational::BigRational(DigitPool *digitPool) : m_numerator(digitPool), m_denominator(digitPool) {
-  init(digitPool->get0(), digitPool->get1());
+BigRational::BigRational(DigitPool *digitPool)
+: m_numerator(digitPool)
+, m_denominator(digitPool)
+{
+  init(digitPool->_0(), digitPool->_1());
 }
 
 BigRational::BigRational(const BigInt &numerator, const BigInt &denominator, DigitPool *digitPool)
 : m_numerator(  digitPool?digitPool:denominator.getDigitPool())
-, m_denominator(digitPool?digitPool:denominator.getDigitPool()) {
+, m_denominator(digitPool?digitPool:denominator.getDigitPool())
+{
   init(numerator, denominator);
 }
 
 BigRational::BigRational(const BigInt &n, DigitPool *digitPool)
-: m_numerator(  n,        digitPool)
-, m_denominator(BIGREAL_1, digitPool?digitPool:n.getDigitPool()) {
+: m_numerator(  n          , digitPool)
+, m_denominator(BigReal::_1, digitPool?digitPool:n.getDigitPool())
+{
 }
 
-BigRational::BigRational(int            n, DigitPool *digitPool) : m_numerator(n, digitPool), m_denominator(BIGREAL_1,digitPool) {
+BigRational::BigRational(int            n, DigitPool *digitPool)
+: m_numerator(n, digitPool)
+, m_denominator(BigReal::_1,digitPool)
+{
 }
 
-BigRational::BigRational(const String  &s, DigitPool *digitPool) : m_numerator(digitPool), m_denominator(digitPool) {
+BigRational::BigRational(const String  &s, DigitPool *digitPool)
+: m_numerator(digitPool)
+, m_denominator(digitPool)
+{
   init(s);
 }
 
-BigRational::BigRational(const char    *s, DigitPool *digitPool) : m_numerator(digitPool), m_denominator(digitPool) {
+BigRational::BigRational(const char    *s, DigitPool *digitPool)
+: m_numerator(digitPool)
+, m_denominator(digitPool)
+{
   init(s);
 }
 
-BigRational::BigRational(const wchar_t *s, DigitPool *digitPool) : m_numerator(digitPool), m_denominator(digitPool) {
+BigRational::BigRational(const wchar_t *s, DigitPool *digitPool)
+ : m_numerator(digitPool)
+ , m_denominator(digitPool)
+{
   init(s);
 }
 
@@ -40,7 +56,7 @@ void BigRational::init(const String &s) {
   }
   DigitPool *pool = getDigitPool();
   if(slash < 0) {
-    init(BigInt(s,pool),pool->get1());
+    init(BigInt(s,pool),pool->_1());
   } else {
     BigInt n(substr(tmp, 0, slash), pool);
     BigInt d(substr(tmp,slash+1, tmp.length()), pool);
@@ -56,8 +72,8 @@ void BigRational::init(const BigInt &numerator, const BigInt &denominator) {
 
   DigitPool *pool = getDigitPool();
   if(numerator.isZero()) { // zero always 0/1
-    m_numerator   = pool->get0();
-    m_denominator = pool->get1();
+    m_numerator   = pool->_0();
+    m_denominator = pool->_1();
   } else {
     const BigInt gcd = findGCD(BigInt(fabs(numerator)),BigInt(fabs(denominator)));
     m_numerator   = numerator / gcd;
@@ -70,18 +86,22 @@ void BigRational::init(const BigInt &numerator, const BigInt &denominator) {
 }
 
 int _fpclass(const BigRational &r) {
-  switch(fpclassify(r)) {
-  case FP_NORMAL:
-    return r.isNegative() ? _FPCLASS_NN : _FPCLASS_PN;
-  case FP_ZERO:
-    return r.isNegative() ? _FPCLASS_NZ : _FPCLASS_PZ;
-  case FP_INFINITE:
-    return r.isNegative() ? _FPCLASS_NINF : _FPCLASS_PINF;
-  case FP_NAN:
-    return _FPCLASS_QNAN;
-  default:
-    return _FPCLASS_SNAN;
+  switch(::_fpclass(r.getDenominator())) {
+  case _FPCLASS_PZ:
+    switch (::_fpclass(r.getNumerator())) {
+    case _FPCLASS_PZ: return _FPCLASS_QNAN;
+    case _FPCLASS_PN: return _FPCLASS_PINF;
+    case _FPCLASS_NN: return _FPCLASS_NINF;
+    }
+    break;
+  case _FPCLASS_PN:
+    switch(::_fpclass(r.getNumerator())) {
+    case _FPCLASS_PZ: return _FPCLASS_PZ;
+    case _FPCLASS_PN: return _FPCLASS_PN;
+    case _FPCLASS_NN: return _FPCLASS_NN;
+    }
   }
+  return _FPCLASS_QNAN;
 }
 
 BigRational operator+(const BigRational &l, const BigRational &r) {
@@ -131,28 +151,28 @@ const BigInt &BigRational::getDenominator() const {
 BigInt BigRational::findGCD(const BigInt &a, const BigInt &b) { // static
   DigitPool *pool = b.getDigitPool();
 
-  BigInt g = pool->get1();
+  BigInt g = pool->_1();
   BigInt u(pool);
+  const BigInt &_2 = BigReal::_2;
   u = a;
   BigInt v(b);
-  static const ConstBigInt two = 2;
 
   while(even(u) && even(v)) {
-    u /= two;
-    v /= two;
-    g *= two;
+    u /= _2;
+    v /= _2;
+    g *= _2;
   }
 
   // Now u or v (or both) are odd
   while(u.isPositive()) {
     if(even(u)) {
-      u /= two;
+      u /= _2;
     } else if(even(v)) {
-      v /= two;
+      v /= _2;
     } else if(u < v) {
-      v = (v-u)/two;
+      v = (v-u)/_2;
     } else {
-      u = (u-v)/two;
+      u = (u-v)/_2;
     }
   }
   return g*v;

@@ -128,7 +128,7 @@ UINT PrimeSearcher::run() {
   try {
     BigInt n = randomOddInteger(m_digitCount, m_rnd, m_pool);
     const Sieve sv(n);
-    for(int i = 1;;n += BIGREAL_2, i++) {
+    for(int i = 1;;n += BigReal::_2, i++) {
       if(m_deletePending) {
         break;
       }

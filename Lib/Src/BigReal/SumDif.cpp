@@ -1,6 +1,6 @@
 #include "pch.h"
 
-// Assume *this != 0.
+// Assume this->_isnormal()
 // Return Digit corresponding to BIGREALBASE^exponent.
 // Return NULL if exponent is outside interval [m_low;m_expo]
 Digit *BigReal::findDigit(const BRExpoType exponent) const {
@@ -17,7 +17,7 @@ Digit *BigReal::findDigit(const BRExpoType exponent) const {
   return p;
 }
 
-// Assume *this != 0.
+// Assume this->_isnormal()
 // Return last digit with precision f. Used in add
 // Return NULL if abs(this) < precisionen (=f)
 // low is set to the max(fexpo,m_low), where fexpo = f.expo - [f.first == 1]
@@ -52,7 +52,7 @@ Digit *BigReal::findDigitAdd(const BigReal &f, BRExpoType &low) const {
   }
 }
 
-// Assume *this != 0.
+// Assume this->_isnormal()
 // Return last digit with precision f. Used in subtract
 // Return NULL if |this| < precisionen (=f)
 Digit *BigReal::findDigitSubtract(const BigReal &f) const {
@@ -75,7 +75,7 @@ Digit *BigReal::findDigitSubtract(const BigReal &f) const {
   }
 }
 
-// Assume &x != this && &y != this && *this == 0, x != 0 && y != 0
+// Assume &x != this && &y != this && *this == 0, x._isnormal() && y._isnormal()
 // Return *this = |x| + |y| with maximal error = f
 BigReal &BigReal::addAbs(const BigReal &x, const BigReal &y, const BigReal &f) {
   BRExpoType xLow, yLow;
@@ -140,7 +140,7 @@ BigReal &BigReal::addAbs(const BigReal &x, const BigReal &y, const BigReal &f) {
   return trimZeroes();
 }
 
-// Assume &x != this && *this != 0 && x != 0
+// Assume &x != this && this->_isnormal() && x._isnormal()
 // Adds |x| to |this|.
 // Return *this
 BigReal &BigReal::addAbs(const BigReal &x) {
@@ -204,7 +204,7 @@ BigReal &BigReal::addAbs(const BigReal &x) {
   return trimZeroes();
 }
 
-// Assume &x != this && *this != 0 && x != 0 && |this| > |x|
+// Assume &x != this && this->_isnormal() && x._isnormal() && |this| > |x|
 // Subtract |x| from |this| with maximal error = f
 BigReal &BigReal::subAbs(const BigReal &x, const BigReal &f) {
   const Digit *xp = x.findDigitSubtract(f);
@@ -252,12 +252,13 @@ BigReal &BigReal::subAbs(const BigReal &x, const BigReal &f) {
   return trimZeroes();
 }
 
-BigReal sum(const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *digitPool) {
-  DigitPool *pool = digitPool ? digitPool : x.getDigitPool();
+BigReal sum(const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *pool) {
+  if(pool == NULL) pool = x.getDigitPool();
+  if(!x._isfinite() || !y._isfinite()) return pool->nan();
   if(x.isZero()) {
     return BigReal(y, pool);
   } else if(y.isZero()) {
-    return digitPool ? BigReal(x, digitPool) : x;
+    return BigReal(x, pool);
   }
 
   // x != 0 && y != 0
@@ -277,7 +278,7 @@ BigReal sum(const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *dig
       result.subAbs(x, f);
       return result;
     } else {                         // x == -y => x + y = 0
-      return pool->get0();
+      return pool->_0();
     }
   } else {                           // f != 0
     BigReal tmpX(pool), tmpY(pool);
@@ -291,15 +292,16 @@ BigReal sum(const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *dig
       tmpY.subAbs(tmpX, f);
       return tmpY;
     } else {                         // tmpX == -tmpY => tmpX + tmpY == 0
-      return pool->get0();
+      return pool->_0();
     }
   }
 }
 
-BigReal dif(const BigReal &x, const BigReal &y, const BigReal &f,  DigitPool *digitPool) {
-  DigitPool *pool = digitPool ? digitPool : x.getDigitPool();
+BigReal dif(const BigReal &x, const BigReal &y, const BigReal &f,  DigitPool *pool) {
+  if(pool == NULL) pool = x.getDigitPool();
+  if(!x._isfinite() || !y._isfinite()) return pool->nan();
   if(y.isZero()) {
-    return digitPool ? BigReal(x, digitPool) : x;
+    return BigReal(x, pool);
   } else if(x.isZero()) {
     return -BigReal(y, pool);
   }
@@ -322,7 +324,7 @@ BigReal dif(const BigReal &x, const BigReal &y, const BigReal &f,  DigitPool *di
       result.changeSign();
       return result;
     } else {                         // x == y => x - y = 0;
-      return pool->get0();
+      return pool->_0();
     }
   } else {                           // f != 0
     BigReal tmpX(pool), tmpY(pool);
@@ -337,13 +339,13 @@ BigReal dif(const BigReal &x, const BigReal &y, const BigReal &f,  DigitPool *di
       tmpY.changeSign();
       return tmpY;
     } else {                         // tmpX == tmpY => tmpX - tmpY == 0;
-      return pool->get0();
+      return pool->_0();
     }
   }
 }
 
 BigReal operator+(const BigReal &x, const BigReal &y) {
-  return sum(x, y, x.getDigitPool()->get0());
+  return sum(x, y, BigReal::_0);
 }
 
 BigReal operator-(const BigReal &x) {
@@ -356,44 +358,46 @@ BigReal operator-(const BigReal &x) {
 }
 
 BigReal operator-(const BigReal &x, const BigReal &y) {
-  return dif(x, y, x.getDigitPool()->get0());
+  return dif(x, y, BigReal::_0);
 }
 
 BigReal &BigReal::operator+=(const BigReal &x) {
   if(&x == this) {
-    if(isZero()) {
+    if(!_isnormal()) {
       return *this;
     } else {
       const BigReal tmp(x, getDigitPool());
       return *this += tmp;
     }
   }
+  if(!_isfinite() || !x._isfinite()) return setToNan();
   if(isZero()) {
     return *this = x;
   } else if(x.isZero()) {
     return *this;
   }
 
-  // *this != 0 && x != 0
+  // this->_isnormal() && x._isnormal()
   if(x.m_negative == m_negative) {   // sign(this) == sign(x). Calculate (sign(this) * (|this| + |x|)
     addAbs(x);
   } else {                           // sign(this) != sign(x)
     const int c = compareAbs(*this, x);
     if(c > 0) {                      // |this| > |x|. Calculate sign(this) * (|this| - |x|)
-      subAbs(x, BIGREAL_0);
+      subAbs(x, BigReal::_0);
     } else if(c < 0) {               // |this| < |x|. Calculate sign(x) * (|x| - |this|)
       BigReal tmp(x,getDigitPool());
-      *this = tmp.subAbs(*this, BIGREAL_0);
+      *this = tmp.subAbs(*this, BigReal::_0);
     } else {                         // |this| == |x| => *this = 0
-      *this = BIGREAL_0;
+      *this = BigReal::_0;
     }
   }
   return *this;
 }
 
 BigReal &BigReal::operator-=(const BigReal &x) {
+  if(!_isfinite() || !x._isfinite()) return setToNan();
   if(&x == this) {
-    return *this = BIGREAL_0;
+    return *this = BigReal::_0;
   } else if(isZero()) {
     *this = x;
     changeSign();
@@ -402,42 +406,42 @@ BigReal &BigReal::operator-=(const BigReal &x) {
     return *this;
   }
 
-  // *this != 0 && x != 0
+  // this->_isnormal() && x._isnormal()
   if(x.m_negative != m_negative) {   // sign(this) != sign(x)
     addAbs(x);
   } else {                           // sign(this) == sign(x)
     const int c = compareAbs(*this, x);
     if(c > 0) {                      // |this| > |x|. Calculcate sign(this) * (|this| - |x|)
-      subAbs(x, BIGREAL_0);
+      subAbs(x, BigReal::_0);
     } else if(c < 0) {               // |this| < |x|. Calculate -sign(x) * (|x| - |this|)
       BigReal tmp(x);
-      *this = tmp.subAbs(*this, BIGREAL_0);
+      *this = tmp.subAbs(*this, BigReal::_0);
       changeSign();
     } else {                         // |this| == |x| => *this = 0
-      *this = BIGREAL_0;
+      *this = BigReal::_0;
     }
   }
   return *this;
 }
 
 BigReal &BigReal::operator++() {         // prefix-form
-  *this += BIGREAL_1;
+  *this += BigReal::_1;
   return *this;
 }
 
 BigReal &BigReal::operator--() {         // prefix-form
-  *this -= BIGREAL_1;
+  *this -= BigReal::_1;
   return *this;
 }
 
 BigReal BigReal::operator++(int dummy) { // postfix-form
   BigReal result(*this);
-  *this += BIGREAL_1;
+  *this += BigReal::_1;
   return result;
 }
 
 BigReal BigReal::operator--(int dummy) { // postfix-form
   BigReal result(*this);
-  *this -= BIGREAL_1;
+  *this -= BigReal::_1;
   return result;
 }

@@ -4,16 +4,9 @@
 #define SIGNIFICANT_EXPO10 15
 
 void BigReal::init(double x) {
-  init();
+  initToZero();
   if(!isnormal(x)) {
-    if(isnan(x)) {
-      setToNan();
-    } else if(isinf(x)) {
-      setToInf();
-      if(getSign(x) != 0) {
-        changeSign();
-      }
-    }
+    setToNonNormalFpClass(_fpclass(x));
     return;
   }
 
@@ -42,7 +35,7 @@ bool isDouble(const BigReal &v, double *dbl /*=NULL*/) {
     }
     return true;
   }
-  if((compareAbs(v, ConstBigReal::_dbl_max) > 0) || (compareAbs(v, ConstBigReal::_dbl_min) < 0) || (v.getDecimalDigits() > DBL_DIG)) {
+  if((compareAbs(v, BigReal::_dbl_max) > 0) || (compareAbs(v, BigReal::_dbl_min) < 0) || (v.getDecimalDigits() > DBL_DIG)) {
     return false;
   }
   const double d   = v.getDoubleNoLimitCheck();
@@ -59,21 +52,13 @@ bool isDouble(const BigReal &v, double *dbl /*=NULL*/) {
 double getDouble(const BigReal &x) {
   DEFINEMETHODNAME;
   if(!isnormal(x)) {
-    if(x.isZero()) {
-      return 0;
-    } else if(isnan(x)) {
-      return DBL_NAN;
-    } else if(isPInfinity(x)) {
-      return DBL_PINF;
-    } else {
-      return DBL_NINF;
-    }
+    return getNonNormalValue(_fpclass(x), 0.0);
   }
-  if(compareAbs(x,ConstBigReal::_dbl_max) > 0) {
-    throwBigRealGetIntegralTypeOverflowException(method, x, toString(ConstBigReal::_dbl_max));
+  if(compareAbs(x,BigReal::_dbl_max) > 0) {
+    throwBigRealGetIntegralTypeOverflowException(method, x, toString(BigReal::_dbl_max));
   }
-  if(compareAbs(x,ConstBigReal::_dbl_min) < 0) {
-    throwBigRealGetIntegralTypeUnderflowException(method, x, toString(ConstBigReal::_dbl_min));
+  if(compareAbs(x,BigReal::_dbl_min) < 0) {
+    throwBigRealGetIntegralTypeUnderflowException(method, x, toString(BigReal::_dbl_min));
   }
   return x.getDoubleNoLimitCheck();
 }

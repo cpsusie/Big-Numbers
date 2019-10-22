@@ -2,17 +2,9 @@
 #include <ctype.h>
 
 void BigReal::init(const Double80 &x) {
-  init();
-
+  initToZero();
   if(!isnormal(x)) {
-    if(isnan(x)) {
-      setToNan();
-    } else if(isinf(x)) {
-      setToInf();
-      if(x.isNegative()) {
-        changeSign();
-      }
-    }
+    setToNonNormalFpClass(_fpclass(x));
     return;
   }
   // x is normal and != 0
@@ -40,11 +32,11 @@ bool isDouble80(const BigReal &v, Double80 *d80 /*=NULL*/) {
     }
     return true;
   }
-  if((compareAbs(v, ConstBigReal::_dbl80_max) > 0) || (compareAbs(v, ConstBigReal::_dbl80_min) < 0) || (v.getDecimalDigits() > DBL80_DIG)) {
+  if((compareAbs(v, BigReal::_dbl80_max) > 0) || (compareAbs(v, BigReal::_dbl80_min) < 0) || (v.getDecimalDigits() > DBL80_DIG)) {
     return false;
   }
   const Double80 d   = v.getDouble80NoLimitCheck();
-  const bool     ret = v.isConst() ? (ConstBigReal(d) == v) : (BigReal(d, v.getDigitPool()) == v);
+  const bool     ret = v.isConst() ? (BigReal(d) == v) : (BigReal(d, v.getDigitPool()) == v);
   if(ret) {
     if(d80) {
       *d80 = d;
@@ -56,23 +48,14 @@ bool isDouble80(const BigReal &v, Double80 *d80 /*=NULL*/) {
 
 Double80 getDouble80(const BigReal &x) {
   DEFINEMETHODNAME;
-
   if(!isnormal(x)) {
-    if(x.isZero()) {
-      return Double80::_0;
-    } else if(isnan(x)) {
-      return DBL80_NAN;
-    } else if(isPInfinity(x)) {
-      return DBL80_PINF;
-    } else {
-      return DBL80_NINF;
-    }
+    return getNonNormalValue(_fpclass(x), Double80::_0);
   }
-  if(compareAbs(x,ConstBigReal::_dbl80_max) > 0) {
-    throwBigRealGetIntegralTypeOverflowException(method, x, toString(ConstBigReal::_dbl80_max));
+  if(compareAbs(x,BigReal::_dbl80_max) > 0) {
+    throwBigRealGetIntegralTypeOverflowException(method, x, toString(BigReal::_dbl80_max));
   }
-  if(compareAbs(x,ConstBigReal::_dbl80_min) < 0) {
-    throwBigRealGetIntegralTypeUnderflowException(method, x, toString(ConstBigReal::_dbl80_min));
+  if(compareAbs(x,BigReal::_dbl80_min) < 0) {
+    throwBigRealGetIntegralTypeUnderflowException(method, x, toString(BigReal::_dbl80_min));
   }
   return x.getDouble80NoLimitCheck();
 }
@@ -90,12 +73,12 @@ Double80 BigReal::getDouble80NoLimitCheck() const {
   if(expo2 <= minExpo2) {
     e2 = Double80::pow2(minExpo2);
     e2Overflow = false;
-    xi.shortProduct(::cut(*this,21), pow2(minExpo2, CONVERSION_POW2DIGITCOUNT), BIGREAL_ESCEXPO);  // BigReal multiplication
+    xi.shortProduct(::cut(*this,21), pow2(minExpo2, CONVERSION_POW2DIGITCOUNT), BIGREAL_NONNORMAL);  // BigReal multiplication
   } else if(expo2 >= maxExpo2) {
     e2  = Double80::pow2(maxExpo2);
     e2x = Double80::pow2((int)expo2 - maxExpo2);
     e2Overflow = true;
-    xi.shortProduct(::cut(*this,21), pow2((int)expo2, CONVERSION_POW2DIGITCOUNT), BIGREAL_ESCEXPO);  // BigReal multiplication
+    xi.shortProduct(::cut(*this,21), pow2((int)expo2, CONVERSION_POW2DIGITCOUNT), BIGREAL_NONNORMAL);  // BigReal multiplication
   } else {
     e2 = Double80::pow2((int)expo2);
     e2Overflow = false;

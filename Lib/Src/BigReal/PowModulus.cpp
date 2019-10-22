@@ -6,7 +6,7 @@ using namespace std;
 BigInt powmod(const BigInt &a, const BigInt &r, const BigInt &n, bool verbose) {
   DigitPool *pool = a.getDigitPool();
 
-  BigInt p = pool->get1();
+  BigInt p = pool->_1();
   BigInt tmpa(a);
   BigInt tmpr(BigReal(r, pool));
 
@@ -25,7 +25,7 @@ BigInt powmod(const BigInt &a, const BigInt &r, const BigInt &n, bool verbose) {
       --tmpr;
     } else {
       tmpa = (tmpa * tmpa) % n;
-      tmpr *= pool->getHalf();
+      tmpr *= BigReal::_05;
     }
   }
   if(verbose) {

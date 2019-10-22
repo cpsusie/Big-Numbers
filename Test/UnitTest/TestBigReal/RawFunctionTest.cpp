@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "FunctionTest.h"
 
-static int myGetDecimalDigitCount(BRDigitType x) {
+static int myGetDecimalDigitCount(UINT64 x) {
   int count;
   for(count = 0; x > 0; count++) {
     x /= 10;
@@ -10,7 +10,6 @@ static int myGetDecimalDigitCount(BRDigitType x) {
 }
 
 void testGetDecimalDigitCount(TestStatistic &stat) {
-  BRDigitType i;
 
 #ifdef TESTTIME
   double startTime = getProcessTime();
@@ -28,14 +27,65 @@ void testGetDecimalDigitCount(TestStatistic &stat) {
   _tprintf(_T("oldTime:%lf. newTime:%lf\n"),oldTime,newTime);
 #endif
 
-  for(i = 1; i < BIGREALBASE; i = (i+1) * 2) {
-    int ddc1 = myGetDecimalDigitCount(i);
-    int ddc2 = BigReal::getDecimalDigitCount(i);
-    if(ddc1 != ddc2) {
-      ERRLOG << _T("Error in getDecimalDigitCount")                                                            << endl
-             << _T("Failed for i = ") << iparam(12) << i << _T(", ddc1 = ") << ddc1 << _T(", ddc2 = ") << ddc2 << endl;
-      throwException(_T("Error in getDecimalDigitCount"));
+#define ENDRANGEx86 100000000            // 1e8
+#define ENDRANGEx64 10000000000000000000 // 1e19
+
+  for(BRDigitTypex86 i = 1;; i *= 10) {
+    int ddc1, ddc2;
+    if(i>1) {
+      const BRDigitTypex86 im1 = i - 1;
+      ddc1 = myGetDecimalDigitCount(       im1);
+      ddc2 = BigReal::getDecimalDigitCount(im1);
+      verify(ddc1 == ddc2);
     }
+
+    if(i == ENDRANGEx86) break;
+
+    ddc1 = myGetDecimalDigitCount(       i);
+    ddc2 = BigReal::getDecimalDigitCount(i);
+    verify(ddc1 == ddc2);
+  }
+
+  for(BRDigitTypex64 i = 1;;i *= 10) {
+    int ddc1, ddc2;
+    if(i>1) {
+      const BRDigitTypex64 im1 = i - 1;
+      ddc1 = myGetDecimalDigitCount(       im1);
+      ddc2 = BigReal::getDecimalDigitCount(im1);
+      verify(ddc1 == ddc2);
+    }
+
+    if(i == ENDRANGEx64) break;
+
+    ddc1 = myGetDecimalDigitCount(       i);
+    ddc2 = BigReal::getDecimalDigitCount(i);
+    verify(ddc1 == ddc2);
+  }
+
+  stat.setEndMessageToOk();
+}
+
+void testPow10(TestStatistic &stat) {
+  for(UINT i = 0, p=1; i <= 9; i++, p*=10) {
+    verify(BigReal::pow10x86(i) == p);
+  }
+  UINT64 p64 = 1;
+  for(UINT i = 0; i <= 19; i++, p64 *= 10) {
+    verify(BigReal::pow10x64(i) == p64);
+  }
+  stat.setEndMessageToOk();
+}
+
+void testIsPow10(TestStatistic &stat) {
+  for(BRDigitTypex86 i = 0, p = 1; i <= 9; i++, p *= 10) {
+    verify(BigReal::isPow10(p) == i   );
+    verify(BigReal::isPow10(p + 1) < 0);
+    verify(BigReal::isPow10(p - 1) < 0);
+  }
+  for(BRDigitTypex64 i = 0, p = 1; i <= 19; i++, p *= 10) {
+    verify(BigReal::isPow10(p) == i   );
+    verify(BigReal::isPow10(p + 1) < 0);
+    verify(BigReal::isPow10(p - 1) < 0);
   }
   stat.setEndMessageToOk();
 }
@@ -66,12 +116,12 @@ void testMultPow10(TestStatistic &stat) {
   DigitPool *pool = stat.getDigitPool();
   const BigReal _10(10, pool);
 
-  for(FullFormatBigReal x = e(BigReal(123456789,pool),-20); x < e(pool->get1(),20);  x *= _10) {
+  for(FullFormatBigReal x = e(BigReal(123456789,pool),-20); x < e(pool->_1(),20);  x *= _10) {
     for(int i = -20; i < 20; i++) {
       FullFormatBigReal y = x;
       y.multPow10(i);
 //      x.print(); _tprintf(_T(" %3d "),i); y.print(); _tprintf(_T("\n"));
-      FullFormatBigReal z = x*e(pool->get1(),i);
+      FullFormatBigReal z = x*e(pool->_1(),i);
       if(y != z) {
         ERRLOG << _T("Error in multPow10")    << endl
                << _T("x:") << x               << endl

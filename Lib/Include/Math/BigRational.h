@@ -45,16 +45,33 @@ public:
     return getNumerator().isNegative();
   }
   inline bool isInteger() const {
-    return m_denominator == BIGREAL_1;
+    return m_denominator == BigReal::_1;
   }
 
 };
 
+// returns one of
+// FP_INFINITE
+// FP_NAN
+// FP_NORMAL
+// FP_SUBNORMAL .... NOT used
+// FP_ZERO
 inline int fpclassify(const BigRational &r) {
   if(!r.getDenominator().isZero()) return r.getNumerator().isZero() ? FP_ZERO : FP_NORMAL;
   return r.getNumerator().isZero() ? FP_NAN : FP_INFINITE;
 }
 
+// returns one of
+// _FPCLASS_SNAN  0x0001   signaling NaN     .... NOT used
+// _FPCLASS_QNAN  0x0002   quiet NaN
+// _FPCLASS_NINF  0x0004   negative infinity
+// _FPCLASS_NN    0x0008   negative normal
+// _FPCLASS_ND    0x0010   negative denormal .... NOT used
+// _FPCLASS_NZ    0x0020   -0                .... NOT used
+// _FPCLASS_PZ    0x0040   +0
+// _FPCLASS_PD    0x0080   positive denormal .... NOT used
+// _FPCLASS_PN    0x0100   positive normal
+// _FPCLASS_PINF  0x0200   positive infinity
 int _fpclass(const BigRational &r);
 
 inline bool isfinite(const BigRational &r) {

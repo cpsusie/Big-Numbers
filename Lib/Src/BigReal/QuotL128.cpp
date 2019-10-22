@@ -23,8 +23,10 @@ public:
 
 static const QuotL128Constants Q128C;
 
-// Linear quot. Assume x != 0 and y != 0 and f != 0
+// Assume x and y are both normal (finite and != 0) and f>0.
+// x/y with |error| < f. School method. using class _int128 for division
 BigReal BigReal::quotLinear128(const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *pool) { // static
+  assert(x._isnormal() && y._isnormal() && f.isPositive());
   const bool yNegative = y.isNegative();
   ((BigReal&)y).setPositive(); // cheating. We set it back agin
 
@@ -145,25 +147,8 @@ _uint128 &BigReal::getFirst128(_uint128 &dst, const UINT k, BRExpoType *scale) c
 //#define TRACE_QUOTREMAINDER
 
 void quotRemainder128(const BigReal &x, const BigReal &y, BigInt *quotient, BigReal *remainder) {
-  DEFINEMETHODNAME;
-  if(y.isZero()) {
-    throwBigRealInvalidArgumentException(method, _T("Division by zero"));
-  }
-  if(quotient == remainder) { // also takes care of the stupid situation where both are NULL
-    throwBigRealInvalidArgumentException(method, _T("quotient is the same variable as remainder"));
-  }
-  if(quotient == &x || quotient == &y) {
-    throwBigRealInvalidArgumentException(method, _T("quotient cannot be the same variable as x or y"));
-  }
-  if(remainder == &x || remainder == &y) {
-    throwBigRealInvalidArgumentException(method, _T("remainder cannot be the same variable as x or y"));
-  }
-
-  if(x.isZero()) {
-    if(quotient ) quotient->setToZero();
-    if(remainder) remainder->setToZero();
-    return;
-  }
+  BigReal::validateQuotRemainderArguments(__TFUNCTION__, x, y, quotient, remainder);
+  if(!BigReal::checkIsNormalQuotient(x, y, quotient, remainder)) return;
 
   const int cmpAbs = compareAbs(x, y);
   if(cmpAbs < 0) {
@@ -173,7 +158,7 @@ void quotRemainder128(const BigReal &x, const BigReal &y, BigInt *quotient, BigR
   } else if(cmpAbs == 0) {
     if(remainder) remainder->setToZero();
     if(quotient) {
-      *quotient = quotient->getDigitPool()->get1();
+      *quotient = quotient->getDigitPool()->_1();
     }
     return;
   }
@@ -205,13 +190,13 @@ void quotRemainder128(const BigReal &x, const BigReal &y, BigInt *quotient, BigR
   BRExpoType             scale;
   _uint128               yFirst;
   y.getFirst128(yFirst, MAXDIGITS_DIVISOR128, &scale);
-  const int              yDigits      = BigReal::getDecimalDigitCount64(yFirst);
+  const int              yDigits      = BigReal::getDecimalDigitCount((UINT64)yFirst);
 
   BigReal q(pool), t(pool), tmp(pool);
   while(compareAbs(z, y) >= 0) {
     t.approxQuot128Abs(z, yFirst, scale).m_negative = z.m_negative;
     q += t;
-    z -= BigReal::product(tmp, t, y, pool->get0(),0);
+    z -= BigReal::product(tmp, t, y, pool->_0(),0);
   }
 
   if(!z.isNegative()) {

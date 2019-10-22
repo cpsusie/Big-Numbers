@@ -1,5 +1,7 @@
 #include "pch.h"
 
+#define _0 pool->_0()
+
 BigReal &BigReal::productMT(BigReal &result, const BigReal &x, const BigReal &y, const BigReal &f, intptr_t w, int level) { // static
   const size_t XLength = x.getLength();
   const size_t YLength = y.getLength();
@@ -14,14 +16,14 @@ BigReal &BigReal::productMT(BigReal &result, const BigReal &x, const BigReal &y,
   }
 
 
-  const BigReal g = APCprod(#, ConstBigReal::_C1third,f,pool);
+  const BigReal g = APCprod(#, BigReal::_C1third,f,pool);
   BigReal gpm10(g);
   gpm10.multPow10(-10);
   const intptr_t n = min((intptr_t)XLength, w)/2;
 
   BigReal a(pool), b(pool);
   level++;
-  x.split(a, b, n, g.isZero() ? pool->get0() : APCprod(#, gpm10, reciprocal(y, pool),pool));   // a + b = x   (=O(n))
+  x.split(a, b, n, g.isZero() ? _0 : APCprod(#, gpm10, reciprocal(y, pool),pool));   // a + b = x   (=O(n))
 
 
   MThreadArray threads;
@@ -31,9 +33,9 @@ BigReal &BigReal::productMT(BigReal &result, const BigReal &x, const BigReal &y,
     MultiplierThread &thread = threads.get(0);
 
     BigReal p1(thread.getDigitPool());
-    thread.multiply(p1, a,y,pool->get0(), level);
+    thread.multiply(p1, a,y,_0, level);
 
-    result = pool->get0();
+    result = _0;
     product(result, b, y, g, level);
 
     threads.waitForAllResults();
@@ -45,7 +47,7 @@ BigReal &BigReal::productMT(BigReal &result, const BigReal &x, const BigReal &y,
   }
 
   BigReal c(pool), d(pool);
-  y.split(c, d, n, g.isZero() ? pool->get0() : APCprod(#, gpm10, reciprocal(x, pool),pool));               // c + d = y   O(n)
+  y.split(c, d, n, g.isZero() ? _0 : APCprod(#, gpm10, reciprocal(x, pool),pool));               // c + d = y   O(n)
 
   const BRExpoType logBK = LOG10_BIGREALBASE * n;
 
@@ -68,9 +70,9 @@ BigReal &BigReal::productMT(BigReal &result, const BigReal &x, const BigReal &y,
   BigReal tmpCD(c, threadS.getDigitPool());
   tmpCD += d;
 
-  threadR.multiply(r, a    , c    , pool->get0(), level);
-  threadS.multiply(s, tmpAB, tmpCD, Kg          , level);
-  product(         t, b    , d    , Kg          , level);
+  threadR.multiply(r, a    , c    , _0, level);
+  threadS.multiply(s, tmpAB, tmpCD, Kg, level);
+  product(         t, b    , d    , Kg, level);
 
   threads.waitForAllResults();
 

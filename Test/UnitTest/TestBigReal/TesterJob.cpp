@@ -7,6 +7,7 @@ Semaphore       TesterJob::s_gate;
 Semaphore       TesterJob::s_allDone(0);
 int             TesterJob::s_runningCount    = 0;
 bool            TesterJob::s_allOk           = true;
+bool            TesterJob::s_stopOnError     = false;
 double          TesterJob::s_totalThreadTime = 0;
 TestQueue       TesterJob::s_testQueue;
 TestQueue       TesterJob::s_doneQueue;
@@ -48,16 +49,26 @@ unsigned int TesterJob::run() {
       break;
     }
 
+    if(!s_allOk && s_stopOnError) {
+      s_doneQueue.put(test);
+      continue;
+    }
+
     Console::clearLine(ypos);
     Console::printf(0 , ypos, _T("Thread %d Pool %d"), thrId, pool->getId());
     try {
       test->runTest(m_id, pool);
+    } catch(StopException) {
+      // ignore
     } catch(Exception e) {
       log(_T("Exception in thread %d testing %s:%s"), thrId, test->getFunctionName().cstr(), e.what());
       ERRLOG << e.what() << endl;
       TestStatistic::screenlog(_T("%s"), e.what());
       tcout.flush();
       s_allOk = false;
+      if(s_stopOnError) {
+        TestStatistic::stopNow();
+      }
     }
     s_doneQueue.put(test);
   }
@@ -68,7 +79,8 @@ unsigned int TesterJob::run() {
   return 0;
 }
 
-void TesterJob::runAll(UINT threadCount) { // static
+void TesterJob::runAll(UINT threadCount, bool stopOnError) { // static
+  s_stopOnError = stopOnError;
   startAll(threadCount);
   waitUntilAllDone();
   releaseAll();

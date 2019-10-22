@@ -9,7 +9,7 @@ public:
   ACosConstants()
     :c1( 0.2)
     ,c2( 0.9)
-    ,c3(BIGREAL_HALF)
+    ,c3(BigReal::_05)
   {
   }
 };
@@ -21,8 +21,8 @@ BigReal acos(const BigReal &x, const BigReal &f) {
 
   DigitPool *pool = x.getDigitPool();
 
-  if(x == pool->get1()) {
-    return pool->get0();
+  if(x == pool->_1()) {
+    return pool->_0();
   }
 
   return pi(APCprod(<,f,ACOSC.c1,pool), pool)*ACOSC.c3 - asin(x,APCprod(<,f,ACOSC.c2,pool));

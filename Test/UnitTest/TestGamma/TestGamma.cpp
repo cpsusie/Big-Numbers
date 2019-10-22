@@ -127,11 +127,11 @@ namespace TestGamma {
     TEST_METHOD(Gamma05EqualPi) {
       const double   g05D64 = gamma(0.5);
       const Double80 g05D80 = gamma(Double80::_05   );
-      const BigReal  g05BR  = gamma(BIGREAL_HALF, 30);
+      const BigReal  g05BR  = gamma(BigReal::_05, 30);
 
       const double   eD64   = fabs(g05D64 - sqrt(M_PI    ));
       const Double80 eD80   = fabs(g05D80 - sqrt(DBL80_PI));
-      const BigReal  eBR    = fabs(g05BR  - rSqrt(pi(e(BIGREAL_1,-30)), 30));
+      const BigReal  eBR    = fabs(g05BR  - rSqrt(rPi(35), 34));
 
       INFO(_T("eD64:%23.15le"), eD64);
       INFO(_T("eD80:%s"), toString(eD80, 22, 0, ios::scientific).cstr());
@@ -139,7 +139,7 @@ namespace TestGamma {
 
       verify(eD64 < 7e-13);
       verify(eD80 == 0);
-      verify(eBR <= e(BIGREAL_1, -32));
+      verify(eBR <= e(BigReal::_1, -32));
     }
 
   };

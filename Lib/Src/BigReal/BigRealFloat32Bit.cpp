@@ -2,16 +2,9 @@
 #include <ctype.h>
 
 void BigReal::init(float x) {
-  init();
+  initToZero();
   if(!isnormal(x)) {
-    if(isnan(x)) {
-      setToNan();
-    } else if(isinf(x)) {
-      setToInf();
-      if(getSign(x) != 0) {
-        changeSign();
-      }
-    }
+    setToNonNormalFpClass(_fpclass(x));
     return;
   }
 
@@ -40,7 +33,7 @@ bool isFloat(const BigReal &v, float *flt /*=NULL*/) {
     }
     return true;
   }
-  if((compareAbs(v, ConstBigReal::_flt_max) > 0) || (compareAbs(v, ConstBigReal::_flt_min) < 0) || (v.getDecimalDigits() > FLT_DIG)) {
+  if((compareAbs(v, BigReal::_flt_max) > 0) || (compareAbs(v, BigReal::_flt_min) < 0) || (v.getDecimalDigits() > FLT_DIG)) {
     return false;
   }
   const float f   = v.getFloatNoLimitCheck();
@@ -56,22 +49,15 @@ bool isFloat(const BigReal &v, float *flt /*=NULL*/) {
 
 float getFloat(const BigReal &x) {
   DEFINEMETHODNAME;
+
   if(!isnormal(x)) {
-    if(x.isZero()) {
-      return 0;
-    } else if(isnan(x)) {
-      return FLT_NAN;
-    } else if(isPInfinity(x)) {
-      return FLT_PINF;
-    } else {
-      return FLT_NINF;
-    }
+    return getNonNormalValue(_fpclass(x), 0.0f);
   }
-  if(compareAbs(x,ConstBigReal::_flt_max) > 0) {
-    throwBigRealGetIntegralTypeOverflowException(method, x, toString(ConstBigReal::_flt_max));
+  if(compareAbs(x,BigReal::_flt_max) > 0) {
+    throwBigRealGetIntegralTypeOverflowException(method, x, toString(BigReal::_flt_max));
   }
-  if(compareAbs(x,ConstBigReal::_flt_min) < 0) {
-    throwBigRealGetIntegralTypeUnderflowException(method, x, toString(ConstBigReal::_flt_min));
+  if(compareAbs(x,BigReal::_flt_min) < 0) {
+    throwBigRealGetIntegralTypeUnderflowException(method, x, toString(BigReal::_flt_min));
   }
   return x.getFloatNoLimitCheck();
 }

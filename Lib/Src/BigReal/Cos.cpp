@@ -47,8 +47,8 @@ public:
     ,c18 ( 0.02 )
     ,c19 ( 0.05 )
     ,c20 ( 5    )
-    ,c21 ( BIGREAL_2)
-    ,c22 ( BIGREAL_HALF)
+    ,c21 ( BigReal::_2)
+    ,c22 ( BigReal::_05)
     ,c23 ( 0.2)
   {
   }
@@ -60,7 +60,7 @@ BigReal cos(const BigReal &x, const BigReal &f) {
   VALIDATETOLERANCE(f)
 
   DigitPool *pool = x.getDigitPool();
-#define _1 pool->get1()
+#define _1 pool->_1()
 
   if(f < _1) {
     const BigReal z = fabs(x);
@@ -109,5 +109,5 @@ BigReal cos(const BigReal &x, const BigReal &f) {
     }
     return s;
   }
-  return pool->get0();
+  return pool->_0();
 }

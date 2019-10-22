@@ -231,14 +231,14 @@ const BigReal &BigReal::pow2(int n, size_t digits) { // static
     if(result != NULL) {
       s_pow2Cache.put(key, new ConstBigReal(::cut(**result, digits)));
     } else if(n == 0) {
-      s_pow2Cache.put(key, new ConstBigReal(BIGREAL_1)); // 2^0 == 1
+      s_pow2Cache.put(key, new ConstBigReal(BigReal::_1)); // 2^0 == 1
     } else if(isEven(n)) {                               // n even
       ConstBigReal t = pow2(n/2,digits);
       s_pow2Cache.put(key, new ConstBigReal((digits == 0) ? (t*t) : rProd(t,t,digits).rRound(digits))); // 2^n = pow2(n/2)^2
     } else if(n < 0) {                                   // n odd && (n < 0)
-      s_pow2Cache.put(key, new ConstBigReal((digits == 0) ? pow2(n+1,digits) * BIGREAL_HALF: rProd(pow2(n+1,digits),BIGREAL_HALF, digits).rRound(digits)));
+      s_pow2Cache.put(key, new ConstBigReal((digits == 0) ? pow2(n+1,digits) * BigReal::_05: rProd(pow2(n+1,digits),BigReal::_05, digits).rRound(digits)));
     } else {                                             // n odd && (n > 0)
-      s_pow2Cache.put(key, new ConstBigReal((digits == 0) ? pow2(n-1,digits) * BIGREAL_2   : rProd(pow2(n-1,digits),BIGREAL_2   , digits).rRound(digits)));
+      s_pow2Cache.put(key, new ConstBigReal((digits == 0) ? pow2(n-1,digits) * BigReal::_2   : rProd(pow2(n-1,digits),BigReal::_2   , digits).rRound(digits)));
     }
     result = s_pow2Cache.get(key);
   }

@@ -44,7 +44,7 @@ BigRealMatrix BigRealMatrix::_0(size_t rows, size_t columns, UINT digits) { // s
 BigRealMatrix BigRealMatrix::_1(size_t dim, UINT digits) { // static
   BigRealMatrix result(dim,dim,digits);
   for(size_t i = 0; i < dim; i++) {
-    result(i,i) = BIGREAL_1;
+    result(i,i) = BigReal::_1;
   }
   return result;
 }

@@ -106,7 +106,7 @@ public:
   }
   inline BigReal backwardTransform(const BigReal &x) const {
     DigitPool *dp = getDigitPool();
-    return m_a.isZero() ? BigReal(getFromInterval().getFrom(),dp) : inverseTranslate(rQuot(dif(x,m_b,dp->get0(),dp),m_a,m_digits,dp));
+    return m_a.isZero() ? BigReal(getFromInterval().getFrom(),dp) : inverseTranslate(rQuot(dif(x,m_b,dp->_0(),dp),m_a,m_digits,dp));
   }
   inline BigRealInterval forwardTransform(const BigRealInterval &interval) const {
     return BigRealInterval(forwardTransform(interval.getFrom()),forwardTransform(interval.getTo()));

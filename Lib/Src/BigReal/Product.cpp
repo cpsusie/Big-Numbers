@@ -57,6 +57,16 @@ void logProductRecursion(UINT level, const TCHAR *method, _In_z_ _Printf_format_
 }
 #endif // TRACEPRODUCTRECURSION
 
+// Return _FP_ZERO, _FPCLASS_QNAN
+// Assume !x._isnormal() || !y._isnormal() which will result in non-normal product (0 or nan)
+int BigReal::getNonNormalProductFpClass(const BigReal &x, const BigReal &y) { // static
+  assert(!x._isnormal() || !y._isnormal());
+  if(!x._isfinite() || !y._isfinite()) {
+    return _FPCLASS_QNAN;
+  }
+  return _FPCLASS_PZ;
+}
+
 BigReal BigReal::shortProd(const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *pool) { // static
   BigReal result(pool);
   return result.shortProduct(x,y,f.m_expo);
@@ -66,9 +76,7 @@ BigReal BigReal::shortProd(const BigReal &x, const BigReal &y, const BigReal &f,
 // multiply by LOG10_BIGREALBASE !!!
 BigReal &BigReal::shortProduct(const BigReal &x, const BigReal &y, BRExpoType fexpo) {
   if(!s_continueCalculation) throwBigRealException(_T("Operation was cancelled"));
-
-  if(x.isZero() || y.isZero()) {
-    setToZero();
+  if(checkIsNormalProduct(x, y)) {
     return *this;
   }
   const BRExpoType fm        = fexpo - 2;
@@ -76,8 +84,7 @@ BigReal &BigReal::shortProduct(const BigReal &x, const BigReal &y, BRExpoType fe
   const BRExpoType loopCount = (x.m_expo + y.m_expo) - max(fm, lm) + 2;
 
   if(loopCount <= 0) { // result is zero
-    setToZero();
-    return *this;
+    return setToZero();
   }
 
 #ifdef USE_X32SERVERCHECK
@@ -90,7 +97,7 @@ BigReal &BigReal::shortProduct(const BigReal &x, const BigReal &y, BRExpoType fe
   }
   DigitPool *pool = getDigitPool();
   BigReal ff(pool), serverResult(pool), error(pool);
-  ff = (fexpo == BIGREAL_ZEROEXPO) ? BIGREAL_0 : (e(BIGREAL_1, fexpo * LOG10_BIGREALBASE, pool));
+  ff = (fexpo == BIGREAL_ZEROEXPO) ? BigReal::_0 : (e(BigReal::_1, fexpo * LOG10_BIGREALBASE, pool));
   s_multiplyServer.mult(serverResult, x, y, ff);
 
   shortProductNoZeroCheck(x, y, loopCount);
@@ -164,12 +171,12 @@ BigReal &BigReal::product(BigReal &result, const BigReal &x, const BigReal &y, c
     return productMT(result, X, Y, f, w, level+1);
   }
 
-  const BigReal g = APCprod(#, ConstBigReal::_C1third, f, pool);
+  const BigReal g = APCprod(#, BigReal::_C1third, f, pool);
   BigReal gpm10(g);
   gpm10.multPow10(-10);
   const intptr_t n = min((intptr_t)XLength, w)/2;
   BigReal a(pool), b(pool);
-  const BigReal &zero = pool->get0();
+  const BigReal &zero = pool->_0();
   level++;
   X.split(a, b, n, g.isZero() ? zero : APCprod(#,gpm10,reciprocal(Y,pool),pool));             // a + b = X   O(n)
   if((intptr_t)YLength < n) {                                                                 //
@@ -210,7 +217,7 @@ BigReal prod(const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *di
 BigReal operator*(const BigReal &x, const BigReal &y) {
   DigitPool *pool = x.getDigitPool();
   BigReal result(pool);
-  BigReal::product(result, x, y, pool->get0(), 0);
+  BigReal::product(result, x, y, pool->_0(), 0);
   return result;
 }
 

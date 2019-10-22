@@ -24,6 +24,7 @@ void TestStatistic::flushOutput() {
 }
 
 Semaphore TestStatistic::s_gate;
+bool      TestStatistic::s_stopNow        = false;
 static const int logyStartPos = getProcessorCount() + 1;
 int       TestStatistic::s_logypos = logyStartPos;
 tostream *TestStatistic::s_errorLogStream = NULL;
@@ -152,6 +153,7 @@ void TestStatistic::printNameAndSignatur() {
 }
 
 void TestStatistic::printLoopMessage(_In_z_ _Printf_format_string_ TCHAR const * const format,...) {
+  if(s_stopNow) throw StopException();
   va_list argptr;
   va_start(argptr,format);
   const String str = vformat(format, argptr);
@@ -239,7 +241,7 @@ void TestStatistic::checkError( BigRealFunction2Pool f, const BigReal &x, const 
 
 void TestStatistic::checkError(rBigRealFunction1 f, const BigReal &x, int digits, const BigReal &exactResult) {
   const BigReal result    = f(x, digits);
-  const BigReal tolerance = e(m_digitPool->get1(), -digits);
+  const BigReal tolerance = e(m_digitPool->_1(), -digits);
 
   m_error = getRelativeError(result, exactResult);
 
@@ -252,7 +254,7 @@ void TestStatistic::checkError(rBigRealFunction1 f, const BigReal &x, int digits
 
 void TestStatistic::checkError(rBigRealFunction2 f, const BigReal &x, const BigReal &y, int digits, const BigReal &exactResult) {
   const BigReal result    = f(x, y, digits);
-  const BigReal tolerance = e(m_digitPool->get1(), -digits);
+  const BigReal tolerance = e(m_digitPool->_1(), -digits);
 
   m_error = getRelativeError(result, exactResult);
 
@@ -265,7 +267,7 @@ void TestStatistic::checkError(rBigRealFunction2 f, const BigReal &x, const BigR
 
 void TestStatistic::checkError(rBigRealFunction2Pool f, const BigReal &x, const BigReal &y, int digits, const BigReal &exactResult) {
   const BigReal result    = f(x, y, digits, m_digitPool);
-  const BigReal tolerance = e(m_digitPool->get1(), -digits);
+  const BigReal tolerance = e(m_digitPool->_1(), -digits);
 
   m_error = getRelativeError(result, exactResult);
 

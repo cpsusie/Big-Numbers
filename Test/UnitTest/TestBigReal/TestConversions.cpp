@@ -46,15 +46,16 @@ String ConversionTest::toString() const {
                );
 }
 
-template<class T> static void testUndefined(const T fld, DigitPool *pool) {
+template<class T> static void testClassification(const T fld, DigitPool *pool) {
   const bool nan     = isnan(      fld);
   const bool pinf    = isPInfinity(fld);
   const bool ninf    = isNInfinity(fld);
   const bool inf     = isinf(      fld);
   const bool finite  = isfinite(   fld);
   const bool isnorm  = isnormal(   fld);
+  const bool iszero  = finite && (fld == 0); // TODO. in x86-mode, neccesary to check finite Double80 == 0 returns TRUE for NAN-value here
   const int  cls     = fpclassify( fld);
-
+  const int  fpcls   = _fpclass(   fld);
   BigReal br(fld, pool);
 
   const bool nan1    = isnan(      br );
@@ -63,7 +64,9 @@ template<class T> static void testUndefined(const T fld, DigitPool *pool) {
   const bool inf1    = isinf(      br );
   const bool finite1 = isfinite(   br );
   const bool isnorm1 = isnormal(   br );
+  const bool iszero1 = br.isZero();
   const int  cls1    = fpclassify( br );
+  const int  fpcls1  = _fpclass(   br );
 
   verify(nan    == nan1   );
   verify(pinf   == pinf1  );
@@ -71,7 +74,9 @@ template<class T> static void testUndefined(const T fld, DigitPool *pool) {
   verify(inf    == inf1   );
   verify(finite == finite1);
   verify(isnorm == isnorm1);
+  verify(iszero == iszero1);
   verify(cls    == cls1   );
+  verify(fpcls  == fpcls1 );
 }
 
 static void testFloat32Conversion(TestStatistic &stat, int sign) {
@@ -100,9 +105,12 @@ static void testFloat32Conversion(TestStatistic &stat, int sign) {
       if(stat.isTimeToPrint()) stat.printLoopMessage(_T("%5.1lf%%"), stat.getPercentDone());
     }
   }
-  testUndefined( fltnan ,pool);
-  testUndefined( fltpinf,pool);
-  testUndefined( fltpinf,pool);
+  testClassification( 0.0f         , pool);
+  testClassification( stepFactor   , pool);
+  testClassification( -stepFactor  , pool);
+  testClassification( fltnan       , pool);
+  testClassification( fltpinf      , pool);
+  testClassification( fltpinf      , pool);
 }
 
 static void testDouble64Conversion(TestStatistic &stat, int sign) {
@@ -131,9 +139,12 @@ static void testDouble64Conversion(TestStatistic &stat, int sign) {
       if(stat.isTimeToPrint()) stat.printLoopMessage(_T("%5.1lf%%"), stat.getPercentDone());
     }
   }
-  testUndefined( dblnan ,pool);
-  testUndefined( dblpinf,pool);
-  testUndefined( dblpinf,pool);
+  testClassification( 0.0         , pool);
+  testClassification( stepFactor  , pool);
+  testClassification( -stepFactor , pool);
+  testClassification( dblnan      ,pool );
+  testClassification( dblpinf     ,pool );
+  testClassification( dblpinf     ,pool );
 }
 
 static void testDouble80Conversion(TestStatistic &stat, int sign) {
@@ -161,9 +172,12 @@ static void testDouble80Conversion(TestStatistic &stat, int sign) {
       if(stat.isTimeToPrint()) stat.printLoopMessage(_T("%5.1lf%%"), stat.getPercentDone());
     }
   }
-  testUndefined( dblnan ,pool);
-  testUndefined( dblpinf,pool);
-  testUndefined( dblpinf,pool);
+  testClassification( Double80::_0, pool);
+  testClassification( stepFactor  , pool);
+  testClassification( -stepFactor , pool);
+  testClassification( dblnan      , pool);
+  testClassification( dblpinf     , pool);
+  testClassification( dblpinf     , pool);
 
 }
 

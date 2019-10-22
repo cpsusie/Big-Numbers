@@ -18,7 +18,7 @@ public:
   const ConstBigReal  c14;
 
   ASinConstants()
-    :c1  ( e(BIGREAL_1,-10))
+    :c1  ( e(BigReal::_1,-10))
     ,c2  ( 10  )
     ,c3  ( 0.14)
     ,c4  ( 0.1 )
@@ -27,10 +27,10 @@ public:
     ,c7  ( 0.7 )
     ,c8  ( 1.5 )
     ,c9  ( c1  )
-    ,c10 ( BIGREAL_2)
+    ,c10 ( BigReal::_2)
     ,c11 ( .01 )
     ,c12 ( .98 )
-    ,c13 ( BIGREAL_HALF)
+    ,c13 ( BigReal::_05)
     ,c14 ( -1  )
   {
   }
@@ -42,16 +42,14 @@ BigReal asin(const BigReal &x, const BigReal &f) {
   VALIDATETOLERANCE(f)
 
   DigitPool *pool = x.getDigitPool();
-#define _1 pool->get1()
+#define _1 pool->_1()
 
   if(x.isZero()) {
-    return pool->get0();
+    return pool->_0();
   }
 
   if(x.isPositive()) {
-
     BigReal g(pool),q(pool),t(pool),y(pool),z(pool);
-
     if(x > _1) {
       throwBigRealInvalidArgumentException(method, _T("x>1"));
     }

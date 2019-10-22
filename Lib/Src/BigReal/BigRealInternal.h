@@ -20,7 +20,7 @@
 inline BigReal binop_inf(const BigReal &x, const BigReal &y, DigitPool *pool) {
   if(x._isfinite()) return BigReal(y,pool);
   if(y._isfinite()) return BigReal(x,pool);
-  return isunordered(x,y) ? pool->getnan() : x;
+  return isunordered(x,y) ? pool->nan() : x;
 }
 
 #define HANDLE_INFBINARYOP(x, y, pool)      \

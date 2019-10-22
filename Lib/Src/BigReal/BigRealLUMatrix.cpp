@@ -142,9 +142,9 @@ BigRealMatrix BigRealLUMatrix::getInverse() const {
   BigRealMatrix result(n, n, getPrecision());
   BigRealVector e(n);
   for(size_t i = 0; i < n; i++) {
-    e[i] = BIGREAL_1;
+    e[i] = BigReal::_1;
     result.setColumn(i, solve(e));
-    e[i] = BIGREAL_0;
+    e[i] = BigReal::_0;
   }
   return result;
 }

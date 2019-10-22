@@ -12,7 +12,7 @@ BigReal getRandom(int length, int exponent, RandomGenerator &rnd, DigitPool *poo
 }
 
 static Array<BigReal> &generateTestDataExponentialStep(Array<BigReal> &a, const BigRealInterval &interval, DigitPool *pool, UINT count) {
-  const BigReal &_1         = pool->get1();
+  const BigReal &_1         = pool->_1();
   BigReal        t          = _1;
   const BigReal  fromM1(interval.getFrom() - _1, pool);
   const BigReal  to(    interval.getTo()       , pool);

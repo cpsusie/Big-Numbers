@@ -227,7 +227,7 @@ void BigRealTestClass::measureQuot() {
 
   const BigReal yStep1 = e(BigReal(165),-2);
   const BigReal yStep2 = BigReal(3);
-  const BigReal yEnd   = e(BIGREAL_1,30);
+  const BigReal yEnd   = e(BigReal::_1,30);
 
   for(BigInt y = 2; y < yEnd; y = (y.getLength() == 1) ? (y * yStep1) : (y * yStep2)) {
     for(unsigned int p = 24; p < 1000000; p = (p < 60) ? (p + 3) : (p *= 3)) {
@@ -338,8 +338,8 @@ void BigRealTestClass::measureQuotRemainder() {
 
   const BigReal yStep1 = e(BigReal(_T("165")),-2);
   const BigReal yStep2 = BigReal(_T("2.1234567891"));
-  const BigReal yStart = e(BIGREAL_1,-50);
-  const BigReal yEnd   = e(BIGREAL_1, 50);
+  const BigReal yStart = e(BigReal::_1,-50);
+  const BigReal yEnd   = e(BigReal::_1, 50);
 
   for(BigReal y = yStart; y < yEnd; y = (y.getLength() == 1) ? (y * yStep1) : (y * yStep2)) {
     Array<BigReal> xArray, yArray;
@@ -414,10 +414,10 @@ void BigRealTestClass::testQuotRemainder() {
   const BigReal xStep2(_T("2.12234191"));
   const BigReal yStep1(_T("1.621"     ));
   const BigReal yStep2(_T("2.567891"  ));
-  const BigReal xStart = e(BIGREAL_1,-50, pool);
-  const BigReal xEnd   = e(BIGREAL_1, 50, pool);
-  const BigReal yStart = e(BIGREAL_1,-50, pool);
-  const BigReal yEnd   = e(BIGREAL_1, 50, pool);
+  const BigReal xStart = e(pool->_1(),-50);
+  const BigReal xEnd   = e(pool->_1(), 50);
+  const BigReal yStart = e(pool->_1(),-50);
+  const BigReal yEnd   = e(pool->_1(), 50);
 
   for(FullFormatBigReal x(xStart, pool); x < xEnd; x *= ((x.getLength() < 4) ? xStep1 : yStep2)) {
     for (FullFormatBigReal y(yStart, pool); y < yEnd; y *= ((y.getLength() < 4) ? yStep1 : yStep2)) {
@@ -969,7 +969,7 @@ void BigRealTestClass::testGetDecimalDigitCount64() {
     if(_stscanf(line,_T("%I64u"), &n) != 1) {
       _tprintf(_T("ikke et tal"));
     }
-    const int dc = BigReal::getDecimalDigitCount64(n);
+    const int dc = BigReal::getDecimalDigitCount(n);
     _tprintf(_T("%I64u indeholder %d cifre\n"), n, dc);
   }
 }

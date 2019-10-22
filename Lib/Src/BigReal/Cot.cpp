@@ -27,7 +27,7 @@ public:
     ,c9 ( 0.36 )
     ,c10( 11   )
     ,c11( 0.1  )
-    ,c12( BIGREAL_HALF)
+    ,c12( BigReal::_05)
   {
   }
 };

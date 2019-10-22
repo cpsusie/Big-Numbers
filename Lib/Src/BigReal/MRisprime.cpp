@@ -5,13 +5,13 @@ bool MRisprime(int threadId, const BigInt &n, MillerRabinHandler *handler) { // 
   static const ConstBigReal BIGREAL_3(3);
 
   DigitPool *pool = n.getDigitPool();
-  if(n == BIGREAL_2) {
+  if(n == BigReal::_2) {
     return true;
   }
   if(n == BIGREAL_3) {
     return true;
   }
-  if(n <  BIGREAL_2) {
+  if(n <  BigReal::_2) {
     return false;
   }
   if(even(n)) {
@@ -28,7 +28,7 @@ bool MRisprime(int threadId, const BigInt &n, MillerRabinHandler *handler) { // 
   BigInt r(nm1);
   int s = 0;
   while(even(r)) {
-    r *= pool->getHalf();
+    r *= BigReal::_05;
     s++;
   }
 
@@ -42,12 +42,12 @@ bool MRisprime(int threadId, const BigInt &n, MillerRabinHandler *handler) { // 
     BigInt a(pool);
     do {
       a = e(randBigReal(BigReal::getExpo10(nm1)+1, &rnd, pool), BigReal::getExpo10(nm1)+1, pool) % nm1;
-    } while(a < BIGREAL_2);
+    } while(a < BigReal::_2);
     BigInt y = powmod(a,r,n);
-    if((y != BIGREAL_1) && (y != nm1)) {
+    if((y != BigReal::_1) && (y != nm1)) {
       for(int j = 1; j < s && y != nm1; j++) {
         y = (y * y) % n;
-        if(y == pool->get1()) {
+        if(y == pool->_1()) {
           return false;
         }
       }

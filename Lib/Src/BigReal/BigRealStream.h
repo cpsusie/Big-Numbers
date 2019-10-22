@@ -147,7 +147,7 @@ template <class OStreamType> OStreamType &putBigRational(OStreamType &out, const
 template <class IStreamType, class CharType> IStreamType &getBigRational(IStreamType &in, BigRational &x) {
   DigitPool        *pool = x.getDigitPool();
   const FormatFlags flg  = in.flags();
-  BigInt            num(pool->get0()), den(pool->get1());
+  BigInt            num(pool->_0()), den(pool->_1());
   in >> num;
   if(in) {
     in.flags(flg & ~ios::skipws);

@@ -25,23 +25,32 @@ ConstDigitPool ConstDigitPool::s_instance;
 
 Pow2Cache     BigReal::s_pow2Cache;
 
-const ConstBigReal ConstBigReal::_long_min(LONG_MIN   );
-const ConstBigReal ConstBigReal::_long_max(LONG_MAX   );
-const ConstBigReal ConstBigReal::_ulong_max(ULONG_MAX );
-const ConstBigReal ConstBigReal::_i64_min(_I64_MIN    );
-const ConstBigReal ConstBigReal::_i64_max(_I64_MAX    );
-const ConstBigReal ConstBigReal::_ui64_max(_UI64_MAX  );
-const ConstBigReal ConstBigReal::_i128_min(_I128_MIN  );
-const ConstBigReal ConstBigReal::_i128_max(_I128_MAX  );
-const ConstBigReal ConstBigReal::_ui128_max(_UI128_MAX);
+const ConstBigInt  BigReal::_0(        0         );
+const ConstBigInt  BigReal::_1(        1         );
+const ConstBigInt  BigReal::_2(        2         );
+const ConstBigInt  BigReal::_i32_min(  _I32_MIN  );
+const ConstBigInt  BigReal::_i32_max(  _I32_MAX  );
+const ConstBigInt  BigReal::_ui32_max( _UI32_MAX );
+const ConstBigInt  BigReal::_i64_min(  _I64_MIN  );
+const ConstBigInt  BigReal::_i64_max(  _I64_MAX  );
+const ConstBigInt  BigReal::_ui64_max( _UI64_MAX );
+const ConstBigInt  BigReal::_i128_min( _I128_MIN );
+const ConstBigInt  BigReal::_i128_max( _I128_MAX );
+const ConstBigInt  BigReal::_ui128_max(_UI128_MAX);
 
-const ConstBigReal ConstBigReal::_flt_min(FLT_MIN     );
-const ConstBigReal ConstBigReal::_flt_max(FLT_MAX     );
-const ConstBigReal ConstBigReal::_dbl_min(DBL_MIN     );
-const ConstBigReal ConstBigReal::_dbl_max(DBL_MAX     );
-const ConstBigReal ConstBigReal::_dbl80_min(DBL80_MIN);
-const ConstBigReal ConstBigReal::_dbl80_max(DBL80_MAX);
-const ConstBigReal ConstBigReal::_C1third(0.33333333333);
+const ConstBigReal BigReal::_05(e(BigReal(5), -1));  // _05 and 2 must be initialize FIRST!!! and DONT use 0.5 here!!!
+const ConstBigReal BigReal::_flt_min(  FLT_MIN   );
+const ConstBigReal BigReal::_flt_max(  FLT_MAX   );
+const ConstBigReal BigReal::_dbl_min(  DBL_MIN   );
+const ConstBigReal BigReal::_dbl_max(  DBL_MAX   );
+const ConstBigReal BigReal::_dbl80_min(DBL80_MIN );
+const ConstBigReal BigReal::_dbl80_max(DBL80_MAX );
+const ConstBigReal BigReal::_C1third(0.33333333333);
+
+// no need for signalling NaN
+const ConstBigReal BigReal::_BR_QNAN( std::numeric_limits<double>::quiet_NaN());   // non-signaling NaN (quiet NaN)
+const ConstBigReal BigReal::_BR_PINF( std::numeric_limits<double>::infinity());    // +infinity;
+const ConstBigReal BigReal::_BR_NINF(-std::numeric_limits<double>::infinity());    // -infinity;
 
 DigitPool::DigitPool(int id, size_t intialDigitCount) : BigRealResource(id) {
   m_firstPage  = NULL;
@@ -53,13 +62,13 @@ DigitPool::DigitPool(int id, size_t intialDigitCount) : BigRealResource(id) {
     allocatePage();
   }
 
-  m_zero = new BigInt(0, this);                    TRACE_NEW(m_zero);
-  m_one  = new BigInt(1, this);                    TRACE_NEW(m_one );
-  m_two  = new BigInt(2, this);                    TRACE_NEW(m_two );
-  m_half = new BigReal(e(BigReal(5, this), -1));   TRACE_NEW(m_half);
-  m_nan  = new BigReal(this); m_nan->setToNan();   TRACE_NEW(m_nan );
-  m_pinf = new BigReal(this); m_pinf->setToInf();  TRACE_NEW(m_pinf );
-  m_ninf = new BigReal(this); m_ninf->setToInf(); m_ninf->changeSign(); TRACE_NEW(m_ninf );
+  m_0    = new BigInt(0, this);                    TRACE_NEW(m_0    );
+  m_1    = new BigInt(1, this);                    TRACE_NEW(m_1    );
+  m_2    = new BigInt(2, this);                    TRACE_NEW(m_2    );
+  m_05   = new BigReal(e(BigReal(5, this), -1));   TRACE_NEW(m_05   ); // Don't use 0.5 here!!!
+  m_nan  = new BigReal(this); m_nan->setToNan();   TRACE_NEW(m_nan  );
+  m_pinf = new BigReal(this); m_pinf->setToPInf(); TRACE_NEW(m_pinf );
+  m_ninf = new BigReal(this); m_ninf->setToNInf(); TRACE_NEW(m_ninf );
 }
 
 DigitPool::~DigitPool() {
@@ -67,10 +76,10 @@ DigitPool::~DigitPool() {
   SAFEDELETE(m_ninf);
   SAFEDELETE(m_pinf);
   SAFEDELETE(m_nan );
-  SAFEDELETE(m_half);
-  SAFEDELETE(m_two );
-  SAFEDELETE(m_one );
-  SAFEDELETE(m_zero);
+  SAFEDELETE(m_05  );
+  SAFEDELETE(m_2   );
+  SAFEDELETE(m_1   );
+  SAFEDELETE(m_0   );
 
   int pageCount = 0;
   for(DigitPage *p = m_firstPage, *q = NULL; p; p = q) {

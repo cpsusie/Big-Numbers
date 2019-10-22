@@ -1,13 +1,13 @@
 #include "pch.h"
 
-static const ConstBigReal modulusC1 = e(BIGREAL_1,-1);
+static const ConstBigReal modulusC1 = e(BigReal::_1,-1);
 
 BigReal oldFraction(const BigReal &x) { // sign(x) * (|x| - floor(|x|))
   if(x.isZero()) {
     return x;
   }
   if(isInteger(x)) {
-    return x.getDigitPool()->get0();
+    return x.getDigitPool()->_0();
   }
   if(x.isNegative()) {
     const BigReal xp(fabs(x));
@@ -18,25 +18,8 @@ BigReal oldFraction(const BigReal &x) { // sign(x) * (|x| - floor(|x|))
 }
 
 void quotRemainder(const BigReal &x,  const BigReal &y, BigInt *quotient, BigReal *remainder) {
-  DEFINEMETHODNAME;
-  if(y.isZero()) {
-    throwBigRealInvalidArgumentException(method, _T("Division by zero. (%s / 0)."), toString(x).cstr());
-  }
-  if(quotient == remainder) { // also takes care of the stupid situation where both are NULL
-    throwBigRealInvalidArgumentException(method, _T("quotient is the same variable as remainder"));
-  }
-  if(quotient == &x || quotient == &y) {
-    throwBigRealInvalidArgumentException(method, _T("quotient cannot be the same variable as x or y"));
-  }
-  if(remainder == &x || remainder == &y) {
-    throwBigRealInvalidArgumentException(method, _T("remainder cannot be the same variable as x or y"));
-  }
-
-  if(x.isZero()) {
-    if(quotient ) quotient->setToZero();
-    if(remainder) remainder->setToZero();
-    return;
-  }
+  BigReal::validateQuotRemainderArguments(__TFUNCTION__, x, y, quotient, remainder);
+  if(!BigReal::checkIsNormalQuotient(x, y, quotient, remainder)) return;
 
   DigitPool *pool = x.getDigitPool();
   const int cmpAbs = compareAbs(x, y);
@@ -47,7 +30,7 @@ void quotRemainder(const BigReal &x,  const BigReal &y, BigInt *quotient, BigRea
   } else if(cmpAbs == 0) {
     if(remainder) remainder->setToZero();
     if(quotient) {
-      *quotient = quotient->getDigitPool()->get1();
+      *quotient = quotient->getDigitPool()->_1();
     }
     return;
   }

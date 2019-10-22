@@ -20,20 +20,20 @@ static void testShortProd() {
 //    float maxError32FPU = getRelativeError32(FLT_MIN,&pool);
 //    BigReal::setUseShortProdRefenceVersion(true);
 
-    const FullFormatBigReal x = BigReal(spaceString(14700,'9')); // inputBigReal(pool, _T("Enter x:"));
-    const FullFormatBigReal y = BigReal(spaceString(14700,'9')); // inputBigReal(pool, _T("Enter y:"));
+    const FullFormatBigReal x = BigReal(spaceString(14700,'9'),&pool); // inputBigReal(pool, _T("Enter x:"));
+    const FullFormatBigReal y = BigReal(spaceString(14700,'9'),&pool); // inputBigReal(pool, _T("Enter y:"));
 
     _tprintf(_T("X:%s\nY:%s\n"), toString(x).cstr(), toString(y).cstr());
 
     FullFormatBigReal p1(&pool), p2(&pool);
 
-    p1 = BigReal::shortProd(x, y, BIGREAL_0, &pool);
+    p1 = BigReal::shortProd(x, y, pool._0(), &pool);
 
     _tprintf(_T("p1:%s\n"), toString(p1).cstr());
 
     BigReal::setUseShortProdRefenceVersion(false);
 
-    p2 = BigReal::shortProd(x, y, BIGREAL_0, &pool);
+    p2 = BigReal::shortProd(x, y, pool._0(), &pool);
 
     BigReal::setUseShortProdRefenceVersion(true);
 
@@ -253,11 +253,12 @@ void SpecialTestClass::runTest() {
 
 static void usage() {
   _ftprintf(stderr, _T("Usage:TestBigReal [-s] [-p] [-tThreadCount] [-d]\n"
-                       "   -s: Run special test. Default is standard numbertest.\n"
-                       "   -p: Set all threads priority to ABOVE_NORMAL.\n"
-                       "   -tThreadcount: run testnumber with the specified number of threads. Default is the number of cores in the CPU\n."
+                       "   -p: Set all threads priority to ABOVE_NORMAL\n"
+                       "   -s: Run special test. Default is standard numbertest\n"
                        "   -g: Generate and save/dump hashtable. implies Threadcount = 1\n"
-                       "   -d: Dump pow2Cache, either at load time, or at end, after all tests have filled the cache.\n")
+                       "   -d: Dump pow2Cache, either at load time, or at end, after all tests have filled the cache\n"
+                       "   -h: Halt all threads on first error detected\n"
+                       "   -tThreadcount: run testnumber with the specified number of threads. Default is the number of cores in the CPU\n")
            );
   exit(-1);
 }
@@ -273,7 +274,7 @@ int _tmain(int argc, TCHAR **argv) {
     Command command       = CMD_STDTEST;
     bool    highPriority  = false;
     bool    dumpPow2Cache = false;
-
+    bool    stopOnError   = false;
 #ifdef _DEBUG
     int    threadCount  = getDebuggerPresent() ? 1 : 0;
 #else
@@ -291,10 +292,13 @@ int _tmain(int argc, TCHAR **argv) {
                   continue;
         case 'd': dumpPow2Cache = true;
                   continue;
+        case 'h': stopOnError = true;
+                  continue;
         case 't': if((_stscanf(cp+1, _T("%lu"), &threadCount) != 1) || (threadCount == 0)) {
                     usage();
                   }
                   break;
+
         default : usage();
         }
         break;
@@ -329,7 +333,7 @@ int _tmain(int argc, TCHAR **argv) {
         SpecialTestClass stc;
         stc.runTest();
       } else {
-        testBigReal(threadCount);
+        testBigReal(threadCount, stopOnError);
       }
       if(BigReal::pow2CacheChanged()) {
         BigReal::pow2CacheSave();

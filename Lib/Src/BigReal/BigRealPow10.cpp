@@ -1,6 +1,6 @@
 #include "pch.h"
 
-// These Functions should be isolated to this file, så we'll no link DigitPool and a lot
+// These Functions should be isolated to this file, så we'll not link DigitPool and a lot
 // more unessecary datastructures/threads on NumberAddIn which only call (some) of these functions
 
 #define TENE0  1
@@ -25,7 +25,7 @@
 #define TENE19 10000000000000000000
 
 // Assume n = [1..1e8[
-int BigReal::getDecimalDigitCount32(ULONG n) { // static
+int BigReal::getDecimalDigitCount(BRDigitTypex86 n) { // static
   assert(n && (n < TENE8));
   // Binary search
   if(n < TENE4) {                           //        n < 1e4
@@ -34,18 +34,18 @@ int BigReal::getDecimalDigitCount32(ULONG n) { // static
     } else {                                // 1e2 <= n < 1e4
       return (n < TENE3) ? 3 : 4;
     }
-  } else {                                  // 1e4 <= n < 1e9
+  } else {                                  // 1e4 <= n < 1e8
     if(n < TENE6) {                         // 1e4 <= n < 1e6
       return (n < TENE5) ? 5 : 6;
-    } else {                                // 1e6 <= n < 1e9
+    } else {                                // 1e6 <= n < 1e8
       return (n < TENE7) ? 7 : 8;
     }
   }
 }
 
 // Assume n = [1..1e19[
-int BigReal::getDecimalDigitCount64(UINT64 n) { // static
-//  assert(n && (n < TENE19));
+int BigReal::getDecimalDigitCount(BRDigitTypex64 n) { // static
+  assert(n && (n < TENE19));
   // Binary search
   if(n < TENE10) {                          //        n < 1e10
     if(n < TENE5) {                         //        n < 1e5
@@ -83,7 +83,7 @@ int BigReal::getDecimalDigitCount64(UINT64 n) { // static
     } else {                                // 1e15 <= n < 1e19
       if(n < TENE17) {                      // 1e15 <= n < 1e17
         return (n < TENE16) ? 16 : 17;
-      } else {                              // 1e17 <= n <= 1e19
+      } else {                              // 1e17 <= n < 1e19
         return (n < TENE18) ? 18 : 19;
       }
     }
@@ -91,19 +91,13 @@ int BigReal::getDecimalDigitCount64(UINT64 n) { // static
 }
 
 #ifdef HAS_LOOP_DIGITCOUNT
-// Assume n = ]0..1eMAXDIGITS_INT64[
-int BigReal::getDecimalDigitCount64Loop(UINT64 n) { // static
-  static const UINT64 pow10Table[] = {
-     TENE0    ,TENE1    ,TENE2    ,TENE3
-    ,TENE4    ,TENE5    ,TENE6    ,TENE7
-    ,TENE8    ,TENE9    ,TENE10   ,TENE11
-    ,TENE12   ,TENE13   ,TENE14   ,TENE15
-    ,TENE16   ,TENE17   ,TENE18   ,TENE19
-  };
-  int l = 0, r = ARRAYSIZE(pow10Table);
+// Assume n = [1..1e19[
+int BigReal::getDecimalDigitCountLoop(BRDigitTypex64 n) { // static
+  assert(n && (n < TENE19));
+  int l = 0, r = ARRAYSIZE(s_power10Tablex64);
   while(l < r) {
-    const int     m = (l+r)/2;
-    const UINT64 &p10 = pow10Table[m];
+    const int              m = (l + r) / 2;
+    const BRDigitTypex64  &p10 = pow10Table[m];
     if(p10 <= n) {
       l = m + 1;
     } else {
@@ -114,23 +108,37 @@ int BigReal::getDecimalDigitCount64Loop(UINT64 n) { // static
 }
 #endif // HAS_LOOP_DIGITCOUNT
 
-const BRDigitType BigReal::s_power10Table[POWER10TABLESIZE] = {
-  TENE0    ,TENE1
- ,TENE2    ,TENE3
- ,TENE4    ,TENE5
- ,TENE6    ,TENE7
- ,TENE8    ,TENE9
-#ifdef IS64BIT
- ,TENE10   ,TENE11
- ,TENE12   ,TENE13
- ,TENE14   ,TENE15
- ,TENE16   ,TENE17
- ,TENE18   ,TENE19
-#endif // IS64BIT
+const BRDigitTypex86 BigReal::s_power10Tablex86[BIGREAL_POW10TABLESIZEx86] = {
+  TENE0 , TENE1 , TENE2 , TENE3 , TENE4
+ ,TENE5 , TENE6 , TENE7 , TENE8 , TENE9
+};
+
+const BRDigitTypex64 BigReal::s_power10Tablex64[BIGREAL_POW10TABLESIZEx64] = {
+  TENE0 , TENE1 , TENE2 , TENE3 , TENE4
+ ,TENE5 , TENE6 , TENE7 , TENE8 , TENE9
+ ,TENE10, TENE11, TENE12, TENE13, TENE14
+ ,TENE15, TENE16, TENE17, TENE18, TENE19
 };
 
 // Return p if n = 10^p for p = [0..9]. else return -1.
-int BigReal::isPow10(size_t n) { // static
+int BigReal::isPow10(BRDigitTypex86 n) { // static
+  switch(n) {
+  case TENE0: return  0;
+  case TENE1: return  1;
+  case TENE2: return  2;
+  case TENE3: return  3;
+  case TENE4: return  4;
+  case TENE5: return  5;
+  case TENE6: return  6;
+  case TENE7: return  7;
+  case TENE8: return  8;
+  case TENE9: return  9;
+  default   : return -1;
+  }
+}
+
+// Return p if n = 10^p for p = [0..19]. else return -1.
+int BigReal::isPow10(BRDigitTypex64 n) { // static
   switch(n) {
   case TENE0:  return  0;
   case TENE1:  return  1;
@@ -142,7 +150,6 @@ int BigReal::isPow10(size_t n) { // static
   case TENE7:  return  7;
   case TENE8:  return  8;
   case TENE9:  return  9;
-#ifdef IS64BIT
   case TENE10: return  10;
   case TENE11: return  11;
   case TENE12: return  12;
@@ -153,8 +160,7 @@ int BigReal::isPow10(size_t n) { // static
   case TENE17: return  17;
   case TENE18: return  18;
   case TENE19: return  19;
-#endif // IS64BIT
-  default        : return -1;
+  default    : return -1;
   }
 }
 

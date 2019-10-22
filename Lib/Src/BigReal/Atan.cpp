@@ -31,7 +31,7 @@ public:
   ATanConstants()
     :c1  ( 0.001)
     ,c3  ( 1.58 )
-    ,c4  ( BIGREAL_HALF)
+    ,c4  ( BigReal::_05)
     ,c5  ( 0.27 )
     ,c6  ( 0.07 )
     ,c7  ( 0.07 )
@@ -41,19 +41,19 @@ public:
     ,c11 ( 0.3  )
     ,c12 ( 3.3  )
     ,c13 ( -5   )
-    ,c14 ( BIGREAL_HALF)
+    ,c14 ( BigReal::_05)
     ,c15 ( 0.2  )
     ,c16 ( 0.22 )
     ,c17 ( 1.16 )
     ,c18 ( 2.5  )
     ,c19 ( -0.06)
     ,c20 ( -0.6 )
-    ,c21 ( BIGREAL_HALF)
-    ,c22 ( BIGREAL_1)
-    ,c23 ( BIGREAL_HALF)
+    ,c21 ( BigReal::_05)
+    ,c22 ( BigReal::_1)
+    ,c23 ( BigReal::_05)
     ,c24 ( 0.47 )
     ,c25 ( 0.08 )
-    ,c26 ( BIGREAL_2)
+    ,c26 ( BigReal::_2)
   {
   }
 };
@@ -64,7 +64,7 @@ BigReal atan(const BigReal &x, const BigReal &f) {
   VALIDATETOLERANCE(f)
 
   DigitPool *pool = x.getDigitPool();
-#define _1 pool->get1()
+#define _1 pool->_1()
 
   BigReal y = x.isNegative() ? -x : x;
 
@@ -118,5 +118,5 @@ BigReal atan(const BigReal &x, const BigReal &f) {
       return  prod(y,h * BigReal::pow2(j),APCprod(<,ATANC.c25,f,pool),pool);
     }
   }
-  return pool->get0();
+  return pool->_0();
 }

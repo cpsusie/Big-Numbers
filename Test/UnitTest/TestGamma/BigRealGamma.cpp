@@ -1,8 +1,9 @@
 #include "stdafx.h"
 #include "BigRealGamma.h"
 
-#define _1 pool->get1()
-#define _2 pool->get2()
+#define _0 pool->_0()
+#define _1 pool->_1()
+#define _2 pool->_2()
 
 // returns x so that integrale(t*exp(-t))dt from x to #inf < k
 static int findLimit(const BigReal &k) {
@@ -29,7 +30,7 @@ static BigReal gamma1_2(const BigReal &x, int ndigits) {
   BigReal    p      = _1;
 //  cout << "TR:" << TR << "\n"; cout.flush();
   BigReal    currentSum(pool), lastSum(pool);
-  for(BigReal i(pool->get0());;) {
+  for(BigReal i(_0);;) {
     lastSum = currentSum;
     const BigReal term = quot(quot(p,factor,c1),x+i,c1);
 //    cout << "term("<<i<<"):" << FullFormatBigReal(term) << "\n"; cout.flush();

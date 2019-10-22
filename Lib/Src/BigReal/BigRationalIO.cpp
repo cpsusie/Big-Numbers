@@ -1,5 +1,4 @@
 #include "pch.h"
-#include <Math/BigRational.h>
 #include "BigRealStream.h"
 
 istream  &operator>>(istream  &in, BigRational &x) {

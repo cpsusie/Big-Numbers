@@ -15,7 +15,7 @@ public:
     ,c6( 0.01  )
     ,c7( 0.28  )
     ,c8( 10    )
-    ,c9( BIGREAL_HALF)
+    ,c9( BigReal::_05)
   {
   }
 };
@@ -30,7 +30,7 @@ BigReal sqrt(const BigReal &x, const BigReal &f) {
 
   DigitPool *pool = x.getDigitPool();
   if(x.isZero()) {
-    return pool->get0();
+    return pool->_0();
   }
 
   BRExpoType m = BigReal::getExpo10(x);
