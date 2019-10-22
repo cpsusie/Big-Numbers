@@ -10,20 +10,20 @@ int findLimit(const BigReal &k) {
   BigReal f;
   do { // newtonraphson iteration
     BigReal e = rExp(-x,8);
-    f = (x+BIGREAL_1)*e-k;
+    f = (x+BigReal::_1)*e-k;
     BigReal df(-x*e);
     x -= rQuot(f,df,8);
 //    cout << "x:" << x << " f:" << f << "\n";
-  } while(compareAbs(rQuot(f,k,8),e(BIGREAL_1,-3)) > 0);
+  } while(compareAbs(rQuot(f,k,8),e(BigReal::_1,-3)) > 0);
   return (int)getInt64(x) + 1;
 }
 
 // assumes 1 < x < 2
 static BigReal gamma1_2(const BigReal &x, int ndigits) {
-  BigReal factor = BIGREAL_1;
-  BigReal c1     = e(BIGREAL_1,-ndigits-8);
-  BigReal TR     = findLimit(e(BIGREAL_1,-ndigits-8));
-  BigReal p      = BIGREAL_1;
+  BigReal factor = BigReal::_1;
+  BigReal c1     = e(BigReal::_1,-ndigits-8);
+  BigReal TR     = findLimit(e(BigReal::_1,-ndigits-8));
+  BigReal p      = BigReal::_1;
 //  cout << "TR:" << TR << "\n"; cout.flush();
   BigReal currentSum, lastSum;
   for(int i = 0;;i++) {
@@ -43,26 +43,26 @@ static BigReal gamma1_2(const BigReal &x, int ndigits) {
 BigReal gamma(const BigReal &x, int ndigits) {
   BigReal result, p;
   if(isInteger(x)) {
-    if(x < BIGREAL_1) throwBigRealException(_T("Gamma not defined for integers < 1"));
-    for(result = p = BIGREAL_1; p < x; ++p) {
-      result = rProd(result,p,ndigits);
+    if(x < BigReal::_1) return BigReal::_BR_PINF;
+    for(result = p = BigReal::_1; p < x; ++p) {
+      result = rProd(p, result,ndigits);
     }
     return result;
-  } else if(x > BIGREAL_2) {
-    for(result = BIGREAL_1, p = x - BIGREAL_1; p > BIGREAL_2; --p) {
-      result = rProd(result,p,ndigits);
+  } else if(x > BigReal::_2) {
+    for(result = BigReal::_1, p = x - BigReal::_1; p > BigReal::_2; --p) {
+      result = rProd(p, result, ndigits);
     }
-    return rProd(rProd(result,p, ndigits),gamma1_2(p,ndigits), ndigits);
-  } else if(x < BIGREAL_1) {
-    for(result = BIGREAL_1, p = x; p < x; ++p) {
-      result = rQuot(result,p,ndigits);
+    return rProd(gamma1_2(p,ndigits), rProd(p, result, ndigits), ndigits);
+  } else if(x < BigReal::_1) {
+    for(result = BigReal::_1, p = x; p < x; ++p) {
+      result = rProd(p,result,ndigits);
     }
-    return rProd(result,gamma1_2(p,ndigits), ndigits);
+    return rQuot(gamma1_2(p,ndigits), result, ndigits);
   } else {
     return gamma1_2(x,ndigits);
   }
 }
 
 BigReal factorial(const BigReal &x, int ndigits) {
-  return gamma(x+BIGREAL_1,ndigits);
+  return gamma(x+BigReal::_1,ndigits);
 }

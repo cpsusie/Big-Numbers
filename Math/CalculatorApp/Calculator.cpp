@@ -10,15 +10,15 @@ static void throwInvalidInput() {
 #define assertion(expr) if(!(expr)) throwInvalidInput()
 
 BigReal Rdms(const BigReal &x, int ndigits) {
-  return dms(x, e(BIGREAL_1, -ndigits));
+  return dms(x, e(BigReal::_1, -ndigits));
 }
 
 BigReal Rinversdms(const BigReal &x, int ndigits) {
-  return inversdms(x, e(BIGREAL_1, -ndigits));
+  return inversdms(x, e(BigReal::_1, -ndigits));
 }
 
 BigReal Rfac(const BigReal &x, int ndigits) {
-  BigReal result = BIGREAL_1;
+  BigReal result = BigReal::_1;
   if(isInteger(x)) {
     assertion(x >= 0);
     for(BigReal n = x; n > 0; --n) {
@@ -46,7 +46,7 @@ BigReal Calculator::toRadians(const BigReal &x) const {
         fpe = -xe - abs(tmp.getLow()) * LOG10_BIGREALBASE;
       }
 
-      const BigReal fp(e(BIGREAL_1, fpe - m_ndigits - 8));
+      const BigReal fp(e(BigReal::_1, fpe - m_ndigits - 8));
       const BigReal Pi = pi(fp);
       return Pi * quot(tmp, base, fp);
     }
@@ -57,7 +57,7 @@ BigReal Calculator::toRadians(const BigReal &x) const {
 BigReal Calculator::fromRadians(const BigReal &x) const {
   const BRExpoType xe = BigReal::getExpo10(x);
   const BRExpoType fe = __min(0,xe);
-  const BigReal f = e(BIGREAL_1, fe - m_ndigits - 3);
+  const BigReal f = e(BigReal::_1, fe - m_ndigits - 3);
   switch(m_trigonometricBase) {
   case TRIGO_RADIANS: return x;
   case TRIGO_DEGREES: return 180 * rQuot(x, pi(f), m_ndigits+3);
@@ -71,7 +71,7 @@ static BigReal rSqr(const BigReal &x, int ndigits) {
 }
 
 static BigReal rCubicRoot(const BigReal &x, int ndigits) {
-  BigReal ex3 = rQuot(BIGREAL_1, 3, 2*ndigits);
+  BigReal ex3 = rQuot(BigReal::_1, 3, 2*ndigits);
   if(x > 0) {
     return rPow(x, ex3, ndigits);
   } else {
@@ -84,11 +84,11 @@ static BigReal rPow3(const BigReal &x, int ndigits) {
 }
 
 static BigReal rSinh(const BigReal &x, int ndigits) {
-  return BIGREAL_HALF * rDif(rExp(x, ndigits), rExp(-x, ndigits), ndigits);
+  return BigReal::_05 * rDif(rExp(x, ndigits), rExp(-x, ndigits), ndigits);
 }
 
 static BigReal rCosh(const BigReal &x, int ndigits) {
-  return BIGREAL_HALF * rSum(rExp(x, ndigits), rExp(-x, ndigits), ndigits);
+  return BigReal::_05 * rSum(rExp(x, ndigits), rExp(-x, ndigits), ndigits);
 }
 
 static BigReal rTanh(const BigReal &x, int ndigits) {
@@ -98,15 +98,15 @@ static BigReal rTanh(const BigReal &x, int ndigits) {
 }
 
 static BigReal rAcosh(const BigReal &x, int ndigits) {
-  return rLn(x + rSqrt(x*x - BIGREAL_1, ndigits), ndigits);
+  return rLn(x + rSqrt(x*x - BigReal::_1, ndigits), ndigits);
 }
 
 static BigReal rAsinh(const BigReal &x, int ndigits) {
-  return rLn(x + rSqrt(x*x + BIGREAL_1, ndigits), ndigits);
+  return rLn(x + rSqrt(x*x + BigReal::_1, ndigits), ndigits);
 }
 
 static BigReal rAtanh(const BigReal &x, int ndigits) {
-  return rLn(rSqrt(rQuot((BIGREAL_1 + x), (BIGREAL_1 - x), ndigits), ndigits), ndigits);
+  return rLn(rSqrt(rQuot((BigReal::_1 + x), (BigReal::_1 - x), ndigits), ndigits), ndigits);
 }
 
 void Calculator::initDisplay() {
@@ -457,6 +457,13 @@ String Calculator::groupDigits(const String &str) const {
 }
 
 String Calculator::printRadix(const BigReal &x) const {
+  if(!isfinite(x)) {
+    switch (_fpclass(x)) {
+    case _FPCLASS_PINF: return _T("Infinity" );
+    case _FPCLASS_NINF: return _T("-Infinity");
+    default           : return _T("Undefined");
+    }
+  }
   String tmp;
   switch(m_radix) {
   case 2 :
@@ -489,7 +496,7 @@ const BigReal &Calculator::getDisplay() const {
 
 void Calculator::setDisplay(const BigReal &x) {
   m_displayText = printRadix(x);
-  if(m_radix == 10) {
+  if((m_radix == 10) || !isfinite(x)) {
     m_display = x;
   } else {
     m_display = binToDec(cutWord(decToBin(x)));
@@ -699,11 +706,11 @@ void Calculator::handleTrigo(int button) {
         setDisplay(rAsinh(getDisplay(), m_ndigits));
         break;
       case IDC_BUTTONCOS:
-        assertion(getDisplay() >= BIGREAL_1);
+        assertion(getDisplay() >= BigReal::_1);
         setDisplay(rAcosh(getDisplay(), m_ndigits));
         break;
       case IDC_BUTTONTAN:
-        assertion(getDisplay() > m_minusOne && getDisplay() < BIGREAL_1);
+        assertion(getDisplay() > m_minusOne && getDisplay() < BigReal::_1);
         setDisplay(rAtanh(getDisplay(), m_ndigits));
         break;
       }
@@ -724,11 +731,11 @@ void Calculator::handleTrigo(int button) {
     if(m_inverse) {
       switch(button) {
       case IDC_BUTTONSIN:
-        assertion(getDisplay() >= m_minusOne && getDisplay() <= BIGREAL_1);
+        assertion(getDisplay() >= m_minusOne && getDisplay() <= BigReal::_1);
         setDisplay(fromRadians(rAsin(getDisplay(), m_ndigits)));
         break;
       case IDC_BUTTONCOS:
-        assertion(getDisplay() >= m_minusOne && getDisplay() <= BIGREAL_1);
+        assertion(getDisplay() >= m_minusOne && getDisplay() <= BigReal::_1);
         setDisplay(fromRadians(rAcos(getDisplay(), m_ndigits)));
         break;
       case IDC_BUTTONTAN:
@@ -946,7 +953,7 @@ void Calculator::enterButton(int button) {
     break;
   case IDC_BUTTONPI          :
     if(m_radix == 10) {
-      setDisplay(pi(e(BIGREAL_1, -m_ndigits)));
+      setDisplay(rPi(m_ndigits));
     }
     break;
   case IDC_BUTTONINT         :
@@ -987,10 +994,7 @@ void Calculator::enterButton(int button) {
     m_inverse = false;
     break;
   case IDC_BUTTONRECIPROC    :
-    if(getDisplay().isZero()) {
-      throwBigRealException(_T("Cannot divide by zero"));
-    }
-    setDisplay(rQuot(BIGREAL_1,getDisplay(), m_ndigits));
+    setDisplay(rQuot(BigReal::_1,getDisplay(), m_ndigits));
     break;
   case IDC_BUTTONSQUARE      :
     if(m_inverse) {

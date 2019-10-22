@@ -122,6 +122,7 @@ BEGIN_MESSAGE_MAP(CCalculatorDlg, CDialog)
     ON_WM_QUERYDRAGICON()
     ON_WM_ACTIVATE()
     ON_WM_CREATE()
+    ON_WM_DESTROY()
     ON_WM_TIMER()
     ON_WM_CONTEXTMENU()
     ON_WM_CLOSE()
@@ -210,7 +211,6 @@ BEGIN_MESSAGE_MAP(CCalculatorDlg, CDialog)
     ON_COMMAND(     ID_RPAR              , OnRpar              )
     ON_COMMAND(     ID_SHOWINFO          , OnShowinfo          )
     ON_NOTIFY_EX_RANGE(TTN_NEEDTEXT, 0, 0xFFFF, OnToolTipNotify)
-  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 void CCalculatorDlg::OnHelpAbout() {
@@ -349,7 +349,7 @@ BOOL CCalculatorDlg::OnInitDialog() {
                         );
 
   for(int i = 0; i < ARRAYSIZE(allButtons); i++) {
-    MyButton *myButton = new MyButton();
+    MyButton *myButton = new MyButton(); TRACE_NEW(myButton);
     m_buttons.add(myButton);
     ButtonAttribute &attr = allButtons[i];
     CButton *buttonTemplate = (CButton*)GetDlgItem(attr.m_id);
@@ -372,6 +372,16 @@ BOOL CCalculatorDlg::OnInitDialog() {
   showStatus();
 
   return FALSE;  // return TRUE  unless you set the focus to a control
+}
+
+
+void CCalculatorDlg::OnDestroy() {
+  __super::OnDestroy();
+
+  for(int i = 0; i < ARRAYSIZE(allButtons); i++) {
+    MyButton *button = m_buttons[i];
+    SAFEDELETE(button);
+  }
 }
 
 void CCalculatorDlg::OnSysCommand(UINT nID, LPARAM lParam) {
