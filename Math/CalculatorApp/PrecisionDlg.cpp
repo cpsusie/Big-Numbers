@@ -43,9 +43,7 @@ void PrecisionDlg::OnOK() {
 }
 
 void PrecisionDlg::OnGotoPrecision() {
-  CEdit *e = (CEdit*)GetDlgItem(IDC_EDITPRECISION);
-  e->SetSel(0, 20);
-  e->SetFocus();
+  gotoEditBox(this, IDC_EDITPRECISION);
 }
 
 BOOL PrecisionDlg::PreTranslateMessage(MSG *pMsg) {
