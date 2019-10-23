@@ -57,8 +57,7 @@ DigitPool::DigitPool(int id, size_t intialDigitCount) : BigRealResource(id) {
   m_freeDigits = NULL;
   m_digitCount = 0;
 
-  const size_t wantedTotalDigitCount = m_digitCount + intialDigitCount;
-  while(m_digitCount < wantedTotalDigitCount) {
+  while(m_digitCount < intialDigitCount) {
     allocatePage();
   }
 
@@ -88,14 +87,14 @@ DigitPool::~DigitPool() {
     pageCount++;
   }
   if(pageCount) {
-    addToCount(-pageCount * DIGITPAGESIZE);
+    updateTotalDigitCount(-pageCount * DIGITPAGESIZE);
   }
   if(s_dumpCountWhenDestroyed) {
     debugLog(_T("DigitPool(%3d): pageCount:%3d, digitCount:%10s\n"), getId(), pageCount, format1000(digitCount).cstr());
   }
 }
 
-void DigitPool::addToCount(intptr_t n) { //static
+void DigitPool::updateTotalDigitCount(intptr_t n) { //static
   static Semaphore gate;
   gate.wait();
   s_totalDigitCount += n;
@@ -107,7 +106,7 @@ void DigitPool::allocatePage() {
   m_freeDigits = m_firstPage->m_page;
   m_digitCount += DIGITPAGESIZE;
 
-  addToCount(DIGITPAGESIZE);
+  updateTotalDigitCount(DIGITPAGESIZE);
 }
 
 size_t DigitPool::getFreeDigitCount() const {
@@ -133,8 +132,8 @@ size_t DigitPool::getPageCount() const {
 DigitPage::DigitPage(DigitPage *nextPage, Digit *nextDigit) {
   memset(this, 0, sizeof(DigitPage));
   m_next = nextPage;
-  // then link digit together
-  for(Digit *p = &LASTVALUE(m_page), *q = nextDigit; p >= m_page; q = p, p--) {
-    p->next = q;
-  }
+  // then link digits together
+  Digit *p = &LASTVALUE(m_page);
+  p->next = nextDigit;
+  while(p-- > m_page) p->next = p+1;
 }

@@ -306,7 +306,7 @@ private:
   BigReal              *m_05;
   BigReal              *m_nan, *m_pinf, *m_ninf; // (quiet)nan, +infinity, -infinity
 
-  static void addToCount(intptr_t n);
+  static void updateTotalDigitCount(intptr_t n);
   DigitPool(           const DigitPool &src); // not implemented
   DigitPool &operator=(const DigitPool &src); // not implemented
   void allocatePage();
