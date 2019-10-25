@@ -428,11 +428,9 @@ inline Double80 log2(const Double80 &x) {
   _D80log2(tmp);
   return tmp;
 }
-inline Double80 pow(const Double80 &x, const Double80 &y) {
-  Double80 tmp(x);
-  _D80pow(tmp, y);
-  return tmp;
-}
+Double80 pow(  const Double80 &x, const Double80 &y); // pow(0,0) = 1! as pow for double
+Double80 mypow(const Double80 &x, const Double80 &y); // pow == mypow, except mypow(0,0) = nan
+Double80 root( const Double80 &x, const Double80 &y);
 inline Double80 floor(const Double80 &x) {
   Double80 tmp(x);
   _D80floor(tmp);
@@ -457,9 +455,6 @@ inline Double80 acot(const Double80 &x) {
 
 Double80 gamma(  const Double80 &x);
 Double80 lnGamma(const Double80 &x);
-
-Double80 mypow(const Double80 &x, const Double80 &y);
-Double80 root( const Double80 &x, const Double80 &y);
 
 inline Double80 cosh(const Double80 &x) {
   const Double80 e1 = exp(x);

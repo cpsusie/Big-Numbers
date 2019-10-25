@@ -125,13 +125,31 @@ double getDouble(const Double80 &x) {
   }
 }
 
-Double80 asin(const Double80 &x) {
-  if(x == 1) {
-    return DBL80_PI_05;
-  } else if(x == -1) {
-    return -DBL80_PI_05;
-  } else {
-    return atan2(x,sqrt(1.0-x*x));
+Double80 pow(const Double80 &x, const Double80 &y) {
+  switch(sign(y)) {
+  case  0: return Double80::_1;
+  case -1: // y < 0
+    if(x.isZero()) { // 0^negative = +inf
+      return std::numeric_limits<Double80>::infinity();
+    }
+    // continue case
+  default: // (y > 0) || (x != 0)
+    Double80 tmp(x);
+    switch(sign(x)) {
+    case  0: return Double80::_0; // 0^positive = 0
+    case -1:
+      if(y == floor(y)) { // y is integer
+        tmp = -tmp; // tmp > 0
+        _D80pow(tmp, y); // tmp = |x|^y
+        const INT64 d = getInt64(y);
+        return isEven(d) ? tmp : -tmp; // sign of result depends on parity of y, neg for odd y, pos for even y
+      }
+      return std::numeric_limits<Double80>::quiet_NaN(); // negative^(non-integer) = nan
+    case 1:
+      _D80pow(tmp, y);
+      return tmp;
+    default: NODEFAULT;
+    }
   }
 }
 
@@ -146,14 +164,24 @@ Double80 mypow(const Double80 &x, const Double80 &y) {
       return std::numeric_limits<Double80>::infinity();
     }
     // continue case
-  default:
-    if(x.isNegative()) {
-      if(y == floor(y)) {
+  default: // (y > 0) || (x != 0)
+    Double80 tmp(x);
+    switch(sign(x)) {
+    case  0:
+      return Double80::_0; // 0^positive = 0
+    case -1:
+      if(y == floor(y)) { // y is integer
+        tmp = -tmp; // tmp > 0
+        _D80pow(tmp, y); // tmp = |x|^y
         const INT64 d = getInt64(y);
-        return isOdd(d) ? -pow(-x,y) : pow(-x,y);
+        return isEven(d) ? tmp : -tmp; // sign of result depends on parity of y, neg for odd y, pos for even y
       }
+      return std::numeric_limits<Double80>::quiet_NaN(); // negative^(non-integer) = nan
+    case 1:
+      _D80pow(tmp, y);
+      return tmp;
+    default: NODEFAULT;
     }
-    return pow(x, y);
   }
 }
 
@@ -167,6 +195,16 @@ Double80 root(const Double80 &x, const Double80 &y) {
     }
   }
   return pow(x, Double80::_1/y);
+}
+
+Double80 asin(const Double80 &x) {
+  if(x == 1) {
+    return DBL80_PI_05;
+  } else if(x == -1) {
+    return -DBL80_PI_05;
+  } else {
+    return atan2(x,sqrt(1.0-x*x));
+  }
 }
 
 Double80 fraction(const Double80 &x) {

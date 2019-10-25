@@ -447,17 +447,8 @@ void _D80exp2(Double80 &x) {
   FPU::restoreControlWord(cwSave);
 }
 
-// x = pow(x,y)
+// x = pow(x, y) - no check for valid arguments.ie 0 ^ -3 will return nan, -3 ^ 2 = nan, etc...
 void _D80pow(Double80 &x, const Double80 &y) {
-  if(y.isZero()) {
-    x = Double80::_1;
-    return;
-  }
-  if(x.isZero()) {
-    x = y.isNegative() ? (Double80::_1 / Double80::_0) : Double80::_0;
-    return;
-  }
-
   __asm {
     mov eax, DWORD PTR y
     fld TBYTE PTR[eax]

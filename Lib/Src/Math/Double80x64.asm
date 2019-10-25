@@ -1039,20 +1039,11 @@ ZeroExponent:                                    ; st0 = x
     fstp       TBYTE PTR[rcx]                    ; pop to x
     ret
  _D80log2 ENDP
-; x = pow(x,y)
+; x = pow(x,y) - no check for valid arguments. ie 0^-3 will return nan, -3^2 = nan, etc...
 ;void _D80pow(Double80 &x, const Double80 &y);
  _D80pow PROC
     fld        TBYTE PTR[rdx]                    ; st0 = y
-    fldz
-    fcomip     st, st(1)
-    je         ZeroExponent                      ; if(y == 0) goto ZeroExponent;
-
     fld        TBYTE PTR[rcx]                    ; st0 = x                    , st1 = y
-    fldz
-    fcomip     st, st(1)
-    je         ZeroBase                          ; if(x == 0) goto ZeroExponent;
-
-                                                 ; st0 = x (!= 0)             , st1 = y (!= 0)
     fyl2x                                        ; st0 = st1*log2(st0) = y*log2(x)
     fld        st(0)                             ;
     frndint                                      ; st0 = floor(  y*log2(x ))  , st1 = y*log2(x )
@@ -1064,25 +1055,6 @@ ZeroExponent:                                    ; st0 = x
     fscale                                       ; st0 = 2^(frac(y*log2(x ))+floor(y*log2(x )))=x ^y, st1 = floor(y*log2(x))
     fstp       st(1)                             ; pop st1
     fstp       TBYTE PTR[rcx]                    ; pop to x
-    ret
-ZeroExponent:                                    ; st0 = y
-    fstp       st(0)                             ; pop st0
-    fld1                                         ; st0 = 1
-    fstp       TBYTE PTR[rcx]                    ; pop to x
-    ret
-ZeroBase:                                        ; st0 = x, st1 = y. x = 0. so st0 = 0
-    fcomip     st, st(1)
-    ja         ZeroBaseNegativeExponent    
-    fstp       st(0)                             ; pop st0
-    fldz                                         ; st0 = 0
-    fstp       TBYTE PTR[rcx]                    ; pop to x
-    ret
-ZeroBaseNegativeExponent:                        ; st0 = y
-    fstp       st(0)                             ; pop st0
-    fld1                                         ; st0 = 1
-    fldz                                         ; st0 = 0, st1 = 1
-    fdiv                                         ; st0 = 1/0
-    fstp       TBYTE PTR[rcx]                    ; pop to x - error
     ret
  _D80pow ENDP
 ; dst = 2^p
