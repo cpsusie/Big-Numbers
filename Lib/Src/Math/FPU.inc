@@ -32,13 +32,13 @@ popRoundMode MACRO
     add		rsp, 8
 ENDM
 
-fildUI16 MACRO reg
+FILDUINT16 MACRO reg
   cmp     reg, 07fffh
   jbe     _LoadSmallUI16
   and     reg, 07fffh
   mov     QWORD ptr[rsp-8], reg
   fild    WORD PTR[rsp-8]
-  fadd    Dmaxi16P1
+  fadd    _Dmaxi16P1
   jmp     _Done
 _LoadSmallUI16:
   mov     QWORD ptr[rsp-8], reg
@@ -46,13 +46,13 @@ _LoadSmallUI16:
 _Done:
 ENDM
 
-fildUI32 MACRO reg
+FILDUINT32 MACRO reg
   cmp     reg, 07fffffffh
   jbe     _LoadSmallUI32
   and     reg, 07fffffffh
   mov     QWORD ptr[rsp-8], reg
   fild    DWORD PTR[rsp-8]
-  fadd    Dmaxi32P1
+  fadd    _DmaxI32P1
   jmp     _Done
 _LoadSmallUI32:
   mov     QWORD ptr[rsp-8], reg
@@ -60,13 +60,13 @@ _LoadSmallUI32:
 _Done:
 ENDM
 
-fildUI64 MACRO reg
-  cmp     reg, QWmaxI64
+FILDUINT64 MACRO reg
+  cmp     reg, _QWmaxI64
   jbe     _LoadSmallUI64
-  and     reg, QWmaxI64
+  and     reg, _QWmaxI64
   mov     QWORD ptr[rsp-8], reg
   fild    QWORD PTR[rsp-8]
-  fld     TBmaxI64P1
+  fld     _D80maxI64P1
   fadd
   jmp     _Done
 _LoadSmallUI64:

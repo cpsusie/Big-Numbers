@@ -46,8 +46,6 @@ namespace TestDouble80 {
   typedef Double80(*D801RefFunc)(const Double80 &);
   typedef Double80(*D802RefFunc)(const Double80 &, const Double80 &);
 
-#define endl _T("\n")
-
   static void testFunction(const String &name, D801ValFunc f80, D641ValFunc f64, double low, double high) {
     double maxRelativeError = 0;
     const double step = (high - low) / 10;
@@ -1110,5 +1108,115 @@ static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, d
 
       FPU::restoreControlWord(ctrlSave);
     }
-  };
+
+    template<class T> class Pair {
+    private:
+      static inline String toString(bool b) {
+        return boolToStr(b);
+      }
+      const String m_fltTypeName, m_op2TypeName;
+      const String m_operatorName, m_fltValue, m_d80Value, m_op2Value;
+      const T      m_fltResult, m_d80Result;
+
+    public:
+
+      Pair(const String &fltTypeName
+          ,const String &op2TypeName
+          ,const String &operatorName
+          ,const String &fltv, const String &d80v, const String &op2Value
+          ,T fltResult, T d80Result)
+        : m_fltTypeName( fltTypeName)
+        , m_op2TypeName( op2TypeName)
+        , m_operatorName(operatorName)
+        , m_fltValue(fltv), m_d80Value(d80v), m_op2Value(op2Value)
+        , m_fltResult(fltResult), m_d80Result(d80Result)
+      {
+      }
+      inline bool isValid() const {
+        return m_fltResult == m_d80Result;
+      }
+      String toString() const {
+        return format(_T("(%-6s)%-6s %-2s (%-6s)%-20s:%-6s   (%s)%-9s %-2s (%-6s)%-20s:%-6s")
+                     ,m_fltTypeName.cstr(),m_fltValue.cstr(), m_operatorName.cstr(), m_op2TypeName.cstr(), m_op2Value.cstr(), toString(m_fltResult).cstr()
+                     ,_T("Double80")      ,m_d80Value.cstr(), m_operatorName.cstr(), m_op2TypeName.cstr(), m_op2Value.cstr(), toString(m_d80Result).cstr()
+                     );
+      }
+    };
+#define BoolPair Pair<bool>
+#define IntPair  Pair<int>
+
+    template<class FLTTYPE, class OP2TYPE> void testCompare(FLTTYPE flt, OP2TYPE op2, const String &fltTypeName, const String &op2TypeName) {
+      const Double80 d80 = flt;
+
+#define CompareOp2(name, op, operand) BoolPair name(fltTypeName, op2TypeName, #op              \
+                                              ,toString(flt), toString(d80), toString(operand) \
+                                              ,flt op operand, d80 op operand)
+#define CompareOpI(name, op) CompareOp2(name, op,        op2)
+#define CompareOpZ(name, op) CompareOp2(name, op, (OP2TYPE)0)
+
+#define verifyPair(name)  if(!name.isValid()) OUTPUT(_T("%s"), name.toString().cstr())
+
+//      IntPair classify(fpclassify(flt), fpclassify(d80));
+      CompareOpI(eq  , == );
+      CompareOpI(neq , != );
+      CompareOpI(ge  , >= );
+      CompareOpI(le  , <= );
+      CompareOpI(gt  , >  );
+      CompareOpI(lt  , >  );
+      CompareOpZ(zero, == );
+      CompareOpZ(pos , >  );
+      CompareOpZ(neg , <  );
+
+//      verifyPair(classify);
+      verifyPair(eq      );
+      verifyPair(neq     );
+      verifyPair(ge      );
+      verifyPair(le      );
+      verifyPair(gt      );
+      verifyPair(lt      );
+      verifyPair(zero    );
+      verifyPair(pos     );
+      verifyPair(neg     );
+    }
+
+    template<class FLTTYPE, class OP2TYPE> void testCompareAllUndef(OP2TYPE op2, const String &fltTypeName, const String &op2TypeName) {
+      testCompare( numeric_limits<FLTTYPE>::infinity()     , op2, fltTypeName, op2TypeName);
+      testCompare(-numeric_limits<FLTTYPE>::infinity()     , op2, fltTypeName, op2TypeName);
+      testCompare( numeric_limits<FLTTYPE>::signaling_NaN(), op2, fltTypeName, op2TypeName);
+    }
+
+    template<class OP2TYPE> void testAllFloatTypes(OP2TYPE op2, const String &op2TypeName) {
+      testCompareAllUndef<float,  OP2TYPE>(op2, "float" , op2TypeName);
+      testCompareAllUndef<double, OP2TYPE>(op2, "double", op2TypeName);
+    }
+
+    template<class OP2TYPE> void testValues(const String &op2TypeName) {
+      testAllFloatTypes((OP2TYPE) 0, op2TypeName);
+      testAllFloatTypes((OP2TYPE) 1, op2TypeName);
+      testAllFloatTypes((OP2TYPE)-1, op2TypeName);
+      testAllFloatTypes(numeric_limits<OP2TYPE>::min(), op2TypeName);
+      testAllFloatTypes(numeric_limits<OP2TYPE>::max(), op2TypeName);
+      if(numeric_limits<OP2TYPE>::has_infinity) {
+        testAllFloatTypes(numeric_limits<OP2TYPE>::infinity() , op2TypeName);
+        testAllFloatTypes(-(OP2TYPE)numeric_limits<OP2TYPE>::infinity(), op2TypeName);
+      }
+      if(numeric_limits<OP2TYPE>::has_quiet_NaN) {
+        testAllFloatTypes(numeric_limits<OP2TYPE>::quiet_NaN(), op2TypeName);
+      }
+      if(numeric_limits<OP2TYPE>::has_signaling_NaN) {
+        testAllFloatTypes(numeric_limits<OP2TYPE>::signaling_NaN(), op2TypeName);
+      }
+    }
+
+    TEST_METHOD(Double80CompareUndef) {
+      testValues<SHORT >("SHORT" );
+      testValues<USHORT>("USHORT");
+      testValues<INT   >("INT"   );
+      testValues<UINT  >("UINT"  );
+      testValues<INT64 >("INT64" );
+      testValues<UINT64>("UINT64");
+      testValues<float>( "float" );
+      testValues<double>("double");
+    }
+ };
 }

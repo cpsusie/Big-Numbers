@@ -1246,6 +1246,8 @@
     <ClInclude Include="..\..\Include\Math\Complex.h" />
     <ClInclude Include="..\..\Include\Math\Double64.h" />
     <ClInclude Include="..\..\Include\Math\Double80.h" />
+    <ClInclude Include="..\..\Include\Math\Double80Asmx64.h" />
+    <ClInclude Include="..\..\Include\Math\Double80Asmx86.h" />
     <ClInclude Include="..\..\Include\Math\fft.h" />
     <ClInclude Include="..\..\Include\Math\FPU.h" />
     <ClInclude Include="..\..\Include\Math\Int128.h" />

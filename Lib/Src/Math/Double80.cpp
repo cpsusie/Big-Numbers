@@ -69,55 +69,59 @@ int fpclassify(const Double80 &v) {
   }
 }
 
-static const Double80     tenE18(  1e18    );
-static const Double80     tenE18M1(tenE18-1);
-
-
 Double80::Double80(float x) {
   switch(_fpclass(x)) {
+  case _FPCLASS_PZ:
+  case _FPCLASS_NZ:
+    *this = _0;
+    return;
   case _FPCLASS_QNAN:
     *this = std::numeric_limits<Double80>::quiet_NaN();
-    break;
+    return;
   case _FPCLASS_SNAN:
     *this = std::numeric_limits<Double80>::signaling_NaN();
-    break;
+    return;
   default:
     D80FromFlt(*this, x);
+    return;
   }
 }
 
 Double80::Double80(double x) {
   switch(_fpclass(x)) {
+  case _FPCLASS_PZ:
+  case _FPCLASS_NZ:
+    *this = _0;
+    return;
   case _FPCLASS_QNAN:
     *this = std::numeric_limits<Double80>::quiet_NaN();
-    break;
+    return;
   case _FPCLASS_SNAN:
     *this = std::numeric_limits<Double80>::signaling_NaN();
-    break;
+    return;
   default:
     D80FromDbl(*this, x);
+    return;
   }
 }
 
 float  getFloat(const Double80 &x) {
   switch(_fpclass(x)) {
-  case _FPCLASS_QNAN:
-    return std::numeric_limits<float>::quiet_NaN();
-  case _FPCLASS_SNAN:
-    return std::numeric_limits<float>::signaling_NaN();
-  default:
-    return D80ToFlt(x);
+  case _FPCLASS_PZ  :
+  case _FPCLASS_NZ  : return 0.0f;
+  case _FPCLASS_QNAN: return std::numeric_limits<float>::quiet_NaN();
+  case _FPCLASS_SNAN: return std::numeric_limits<float>::signaling_NaN();
+  default           : return D80ToFlt(x);
   }
 }
 
 double getDouble(const Double80 &x) {
   switch(_fpclass(x)) {
-  case _FPCLASS_QNAN:
-    return std::numeric_limits<double>::quiet_NaN();
-  case _FPCLASS_SNAN:
-    return std::numeric_limits<double>::signaling_NaN();
-  default:
-    return D80ToDbl(x);
+  case _FPCLASS_PZ  :
+  case _FPCLASS_NZ  : return 0.0;
+  case _FPCLASS_QNAN: return std::numeric_limits<double>::quiet_NaN();
+  case _FPCLASS_SNAN: return std::numeric_limits<double>::signaling_NaN();
+  default           : return D80ToDbl(x);
   }
 }
 
