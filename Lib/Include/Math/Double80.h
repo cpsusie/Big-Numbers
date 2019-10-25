@@ -39,49 +39,49 @@ public:
     memcpy(&m_value, bytes, sizeof(m_value));
   }
 
-  inline Double80(short  x) { D80FromI16( *this, x); }
-  inline Double80(USHORT x) { D80FromUI16(*this, x); }
-  inline Double80(int    x) { D80FromI32( *this, x); }
-  inline Double80(UINT   x) { D80FromUI32(*this, x); }
-  inline Double80(INT64  x) { D80FromI64( *this, x); }
-  inline Double80(UINT64 x) { D80FromUI64(*this, x); }
-  inline Double80(long   x) { D80FromI32( *this, x); }
-  inline Double80(ULONG  x) { D80FromUI32(*this, x); }
+  inline Double80(short  x) { _D80FromI16( *this, x); }
+  inline Double80(USHORT x) { _D80FromUI16(*this, x); }
+  inline Double80(int    x) { _D80FromI32( *this, x); }
+  inline Double80(UINT   x) { _D80FromUI32(*this, x); }
+  inline Double80(INT64  x) { _D80FromI64( *this, x); }
+  inline Double80(UINT64 x) { _D80FromUI64(*this, x); }
+  inline Double80(long   x) { _D80FromI32( *this, x); }
+  inline Double80(ULONG  x) { _D80FromUI32(*this, x); }
   Double80(float  x);
   Double80(double x);
 
   // x == 0 ? 0 : floor(log10(|x|))
   static inline int getExpo10(const Double80 &x) {
-    return D80getExpo10(x);
+    return _D80getExpo10(x);
   }
 
   inline bool isZero() const      {
-    return D80isZero(*this) ? true : false;
+    return _D80isZero(*this) ? true : false;
   }
   static inline Double80 pow2(int p) {
     Double80 result;
-    D80pow2(result,p);
+    _D80pow2(result,p);
     return result;
   }
 
   // prefix-form
   inline Double80 &operator++()   {
-    D80inc(*this);
+    _D80inc(*this);
     return *this;
   }
   inline Double80 &operator--()   {
-    D80dec(*this);
+    _D80dec(*this);
     return *this;
   }
   // postfix-form
   inline Double80 operator++(int) {
     Double80 result(*this);
-    D80inc(*this);
+    _D80inc(*this);
     return result;
   }
   inline Double80 operator--(int) {
     Double80 result(*this);
-    D80dec(*this);
+    _D80dec(*this);
     return result;
   }
 
@@ -154,80 +154,80 @@ public:
 extern const Double80 DBL80_PI;                        // = 3.1415926535897932384626433
 extern const Double80 DBL80_PI_05;                     // pi/2
 
-inline Double80 operator+(const Double80 &x, const short    &y) { Double80 t(x); D80addI16(    t, y); return t;}
-inline Double80 operator-(const Double80 &x, const short    &y) { Double80 t(x); D80subI16(    t, y); return t;}
-inline Double80 operator*(const Double80 &x, const short    &y) { Double80 t(x); D80mulI16(    t, y); return t;}
-inline Double80 operator/(const Double80 &x, const short    &y) { Double80 t(x); D80divI16(    t, y); return t;}
-inline Double80 operator+(const Double80 &x, USHORT          y) { Double80 t(x); D80addUI16(   t, y); return t;}
-inline Double80 operator-(const Double80 &x, USHORT          y) { Double80 t(x); D80subUI16(   t, y); return t;}
-inline Double80 operator*(const Double80 &x, USHORT          y) { Double80 t(x); D80mulUI16(   t, y); return t;}
-inline Double80 operator/(const Double80 &x, USHORT          y) { Double80 t(x); D80divUI16(   t, y); return t;}
-inline Double80 operator+(const Double80 &x, const int      &y) { Double80 t(x); D80addI32(    t, y); return t;}
-inline Double80 operator-(const Double80 &x, const int      &y) { Double80 t(x); D80subI32(    t, y); return t;}
-inline Double80 operator*(const Double80 &x, const int      &y) { Double80 t(x); D80mulI32(    t, y); return t;}
-inline Double80 operator/(const Double80 &x, const int      &y) { Double80 t(x); D80divI32(    t, y); return t;}
-inline Double80 operator+(const Double80 &x, UINT            y) { Double80 t(x); D80addUI32(   t, y); return t;}
-inline Double80 operator-(const Double80 &x, UINT            y) { Double80 t(x); D80subUI32(   t, y); return t;}
-inline Double80 operator*(const Double80 &x, UINT            y) { Double80 t(x); D80mulUI32(   t, y); return t;}
-inline Double80 operator/(const Double80 &x, UINT            y) { Double80 t(x); D80divUI32(   t, y); return t;}
-inline Double80 operator+(const Double80 &x, const INT64    &y) { Double80 t(x); D80addI64(    t, y); return t;}
-inline Double80 operator-(const Double80 &x, const INT64    &y) { Double80 t(x); D80subI64(    t, y); return t;}
-inline Double80 operator*(const Double80 &x, const INT64    &y) { Double80 t(x); D80mulI64(    t, y); return t;}
-inline Double80 operator/(const Double80 &x, const INT64    &y) { Double80 t(x); D80divI64(    t, y); return t;}
-inline Double80 operator+(const Double80 &x, UINT64          y) { Double80 t(x); D80addUI64(   t, y); return t;}
-inline Double80 operator-(const Double80 &x, UINT64          y) { Double80 t(x); D80subUI64(   t, y); return t;}
-inline Double80 operator*(const Double80 &x, UINT64          y) { Double80 t(x); D80mulUI64(   t, y); return t;}
-inline Double80 operator/(const Double80 &x, UINT64          y) { Double80 t(x); D80divUI64(   t, y); return t;}
-inline Double80 operator+(const Double80 &x, const float    &y) { Double80 t(x); D80addFlt(    t, y); return t;}
-inline Double80 operator-(const Double80 &x, const float    &y) { Double80 t(x); D80subFlt(    t, y); return t;}
-inline Double80 operator*(const Double80 &x, const float    &y) { Double80 t(x); D80mulFlt(    t, y); return t;}
-inline Double80 operator/(const Double80 &x, const float    &y) { Double80 t(x); D80divFlt(    t, y); return t;}
-inline Double80 operator+(const Double80 &x, const double   &y) { Double80 t(x); D80addDbl(    t, y); return t;}
-inline Double80 operator-(const Double80 &x, const double   &y) { Double80 t(x); D80subDbl(    t, y); return t;}
-inline Double80 operator*(const Double80 &x, const double   &y) { Double80 t(x); D80mulDbl(    t, y); return t;}
-inline Double80 operator/(const Double80 &x, const double   &y) { Double80 t(x); D80divDbl(    t, y); return t;}
-inline Double80 operator+(const Double80 &x, const Double80 &y) { Double80 t(x); D80addD80(    t, y); return t;}
-inline Double80 operator-(const Double80 &x, const Double80 &y) { Double80 t(x); D80subD80(    t, y); return t;}
-inline Double80 operator-(const Double80 &x)                    { Double80 t(x); D80neg(       t   ); return t;}
-inline Double80 operator*(const Double80 &x, const Double80 &y) { Double80 t(x); D80mulD80(    t, y); return t;}
-inline Double80 operator/(const Double80 &x, const Double80 &y) { Double80 t(x); D80divD80(    t, y); return t;}
+inline Double80 operator+(const Double80 &x, const short    &y) { Double80 t(x); _D80addI16(    t, y); return t;}
+inline Double80 operator-(const Double80 &x, const short    &y) { Double80 t(x); _D80subI16(    t, y); return t;}
+inline Double80 operator*(const Double80 &x, const short    &y) { Double80 t(x); _D80mulI16(    t, y); return t;}
+inline Double80 operator/(const Double80 &x, const short    &y) { Double80 t(x); _D80divI16(    t, y); return t;}
+inline Double80 operator+(const Double80 &x, USHORT          y) { Double80 t(x); _D80addUI16(   t, y); return t;}
+inline Double80 operator-(const Double80 &x, USHORT          y) { Double80 t(x); _D80subUI16(   t, y); return t;}
+inline Double80 operator*(const Double80 &x, USHORT          y) { Double80 t(x); _D80mulUI16(   t, y); return t;}
+inline Double80 operator/(const Double80 &x, USHORT          y) { Double80 t(x); _D80divUI16(   t, y); return t;}
+inline Double80 operator+(const Double80 &x, const int      &y) { Double80 t(x); _D80addI32(    t, y); return t;}
+inline Double80 operator-(const Double80 &x, const int      &y) { Double80 t(x); _D80subI32(    t, y); return t;}
+inline Double80 operator*(const Double80 &x, const int      &y) { Double80 t(x); _D80mulI32(    t, y); return t;}
+inline Double80 operator/(const Double80 &x, const int      &y) { Double80 t(x); _D80divI32(    t, y); return t;}
+inline Double80 operator+(const Double80 &x, UINT            y) { Double80 t(x); _D80addUI32(   t, y); return t;}
+inline Double80 operator-(const Double80 &x, UINT            y) { Double80 t(x); _D80subUI32(   t, y); return t;}
+inline Double80 operator*(const Double80 &x, UINT            y) { Double80 t(x); _D80mulUI32(   t, y); return t;}
+inline Double80 operator/(const Double80 &x, UINT            y) { Double80 t(x); _D80divUI32(   t, y); return t;}
+inline Double80 operator+(const Double80 &x, const INT64    &y) { Double80 t(x); _D80addI64(    t, y); return t;}
+inline Double80 operator-(const Double80 &x, const INT64    &y) { Double80 t(x); _D80subI64(    t, y); return t;}
+inline Double80 operator*(const Double80 &x, const INT64    &y) { Double80 t(x); _D80mulI64(    t, y); return t;}
+inline Double80 operator/(const Double80 &x, const INT64    &y) { Double80 t(x); _D80divI64(    t, y); return t;}
+inline Double80 operator+(const Double80 &x, UINT64          y) { Double80 t(x); _D80addUI64(   t, y); return t;}
+inline Double80 operator-(const Double80 &x, UINT64          y) { Double80 t(x); _D80subUI64(   t, y); return t;}
+inline Double80 operator*(const Double80 &x, UINT64          y) { Double80 t(x); _D80mulUI64(   t, y); return t;}
+inline Double80 operator/(const Double80 &x, UINT64          y) { Double80 t(x); _D80divUI64(   t, y); return t;}
+inline Double80 operator+(const Double80 &x, const float    &y) { Double80 t(x); _D80addFlt(    t, y); return t;}
+inline Double80 operator-(const Double80 &x, const float    &y) { Double80 t(x); _D80subFlt(    t, y); return t;}
+inline Double80 operator*(const Double80 &x, const float    &y) { Double80 t(x); _D80mulFlt(    t, y); return t;}
+inline Double80 operator/(const Double80 &x, const float    &y) { Double80 t(x); _D80divFlt(    t, y); return t;}
+inline Double80 operator+(const Double80 &x, const double   &y) { Double80 t(x); _D80addDbl(    t, y); return t;}
+inline Double80 operator-(const Double80 &x, const double   &y) { Double80 t(x); _D80subDbl(    t, y); return t;}
+inline Double80 operator*(const Double80 &x, const double   &y) { Double80 t(x); _D80mulDbl(    t, y); return t;}
+inline Double80 operator/(const Double80 &x, const double   &y) { Double80 t(x); _D80divDbl(    t, y); return t;}
+inline Double80 operator+(const Double80 &x, const Double80 &y) { Double80 t(x); _D80addD80(    t, y); return t;}
+inline Double80 operator-(const Double80 &x, const Double80 &y) { Double80 t(x); _D80subD80(    t, y); return t;}
+inline Double80 operator-(const Double80 &x)                    { Double80 t(x); _D80neg(       t   ); return t;}
+inline Double80 operator*(const Double80 &x, const Double80 &y) { Double80 t(x); _D80mulD80(    t, y); return t;}
+inline Double80 operator/(const Double80 &x, const Double80 &y) { Double80 t(x); _D80divD80(    t, y); return t;}
 
-inline Double80 &operator+=( Double80 &x, const short    &y) { D80addI16(   x, y); return x; }
-inline Double80 &operator-=( Double80 &x, const short    &y) { D80subI16(   x, y); return x; }
-inline Double80 &operator*=( Double80 &x, const short    &y) { D80mulI16(   x, y); return x; }
-inline Double80 &operator/=( Double80 &x, const short    &y) { D80divI16(   x, y); return x; }
-inline Double80 &operator+=( Double80 &x, USHORT          y) { D80addUI16(  x, y); return x; }
-inline Double80 &operator-=( Double80 &x, USHORT          y) { D80subUI16(  x, y); return x; }
-inline Double80 &operator*=( Double80 &x, USHORT          y) { D80mulUI16(  x, y); return x; }
-inline Double80 &operator/=( Double80 &x, USHORT          y) { D80divUI16(  x, y); return x; }
-inline Double80 &operator+=( Double80 &x, const int      &y) { D80addI32(   x, y); return x; }
-inline Double80 &operator-=( Double80 &x, const int      &y) { D80subI32(   x, y); return x; }
-inline Double80 &operator*=( Double80 &x, const int      &y) { D80mulI32(   x, y); return x; }
-inline Double80 &operator/=( Double80 &x, const int      &y) { D80divI32(   x, y); return x; }
-inline Double80 &operator+=( Double80 &x, UINT            y) { D80addUI32(  x, y); return x; }
-inline Double80 &operator-=( Double80 &x, UINT            y) { D80subUI32(  x, y); return x; }
-inline Double80 &operator*=( Double80 &x, UINT            y) { D80mulUI32(  x, y); return x; }
-inline Double80 &operator/=( Double80 &x, UINT            y) { D80divUI32(  x, y); return x; }
-inline Double80 &operator+=( Double80 &x, const INT64    &y) { D80addI64(   x, y); return x; }
-inline Double80 &operator-=( Double80 &x, const INT64    &y) { D80subI64(   x, y); return x; }
-inline Double80 &operator*=( Double80 &x, const INT64    &y) { D80mulI64(   x, y); return x; }
-inline Double80 &operator/=( Double80 &x, const INT64    &y) { D80divI64(   x, y); return x; }
-inline Double80 &operator+=( Double80 &x, UINT64          y) { D80addUI64(  x, y); return x; }
-inline Double80 &operator-=( Double80 &x, UINT64          y) { D80subUI64(  x, y); return x; }
-inline Double80 &operator*=( Double80 &x, UINT64          y) { D80mulUI64(  x, y); return x; }
-inline Double80 &operator/=( Double80 &x, UINT64          y) { D80divUI64(  x, y); return x; }
-inline Double80 &operator+=( Double80 &x, const float    &y) { D80addFlt(   x, y); return x; }
-inline Double80 &operator-=( Double80 &x, const float    &y) { D80subFlt(   x, y); return x; }
-inline Double80 &operator*=( Double80 &x, const float    &y) { D80mulFlt(   x, y); return x; }
-inline Double80 &operator/=( Double80 &x, const float    &y) { D80divFlt(   x, y); return x; }
-inline Double80 &operator+=( Double80 &x, const double   &y) { D80addDbl(   x, y); return x; }
-inline Double80 &operator-=( Double80 &x, const double   &y) { D80subDbl(   x, y); return x; }
-inline Double80 &operator*=( Double80 &x, const double   &y) { D80mulDbl(   x, y); return x; }
-inline Double80 &operator/=( Double80 &x, const double   &y) { D80divDbl(   x, y); return x; }
-inline Double80 &operator+=( Double80 &x, const Double80 &y) { D80addD80(   x, y); return x; }
-inline Double80 &operator-=( Double80 &x, const Double80 &y) { D80subD80(   x, y); return x; }
-inline Double80 &operator*=( Double80 &x, const Double80 &y) { D80mulD80(   x, y); return x; }
-inline Double80 &operator/=( Double80 &x, const Double80 &y) { D80divD80(   x, y); return x; }
+inline Double80 &operator+=( Double80 &x, const short    &y) { _D80addI16(   x, y); return x; }
+inline Double80 &operator-=( Double80 &x, const short    &y) { _D80subI16(   x, y); return x; }
+inline Double80 &operator*=( Double80 &x, const short    &y) { _D80mulI16(   x, y); return x; }
+inline Double80 &operator/=( Double80 &x, const short    &y) { _D80divI16(   x, y); return x; }
+inline Double80 &operator+=( Double80 &x, USHORT          y) { _D80addUI16(  x, y); return x; }
+inline Double80 &operator-=( Double80 &x, USHORT          y) { _D80subUI16(  x, y); return x; }
+inline Double80 &operator*=( Double80 &x, USHORT          y) { _D80mulUI16(  x, y); return x; }
+inline Double80 &operator/=( Double80 &x, USHORT          y) { _D80divUI16(  x, y); return x; }
+inline Double80 &operator+=( Double80 &x, const int      &y) { _D80addI32(   x, y); return x; }
+inline Double80 &operator-=( Double80 &x, const int      &y) { _D80subI32(   x, y); return x; }
+inline Double80 &operator*=( Double80 &x, const int      &y) { _D80mulI32(   x, y); return x; }
+inline Double80 &operator/=( Double80 &x, const int      &y) { _D80divI32(   x, y); return x; }
+inline Double80 &operator+=( Double80 &x, UINT            y) { _D80addUI32(  x, y); return x; }
+inline Double80 &operator-=( Double80 &x, UINT            y) { _D80subUI32(  x, y); return x; }
+inline Double80 &operator*=( Double80 &x, UINT            y) { _D80mulUI32(  x, y); return x; }
+inline Double80 &operator/=( Double80 &x, UINT            y) { _D80divUI32(  x, y); return x; }
+inline Double80 &operator+=( Double80 &x, const INT64    &y) { _D80addI64(   x, y); return x; }
+inline Double80 &operator-=( Double80 &x, const INT64    &y) { _D80subI64(   x, y); return x; }
+inline Double80 &operator*=( Double80 &x, const INT64    &y) { _D80mulI64(   x, y); return x; }
+inline Double80 &operator/=( Double80 &x, const INT64    &y) { _D80divI64(   x, y); return x; }
+inline Double80 &operator+=( Double80 &x, UINT64          y) { _D80addUI64(  x, y); return x; }
+inline Double80 &operator-=( Double80 &x, UINT64          y) { _D80subUI64(  x, y); return x; }
+inline Double80 &operator*=( Double80 &x, UINT64          y) { _D80mulUI64(  x, y); return x; }
+inline Double80 &operator/=( Double80 &x, UINT64          y) { _D80divUI64(  x, y); return x; }
+inline Double80 &operator+=( Double80 &x, const float    &y) { _D80addFlt(   x, y); return x; }
+inline Double80 &operator-=( Double80 &x, const float    &y) { _D80subFlt(   x, y); return x; }
+inline Double80 &operator*=( Double80 &x, const float    &y) { _D80mulFlt(   x, y); return x; }
+inline Double80 &operator/=( Double80 &x, const float    &y) { _D80divFlt(   x, y); return x; }
+inline Double80 &operator+=( Double80 &x, const double   &y) { _D80addDbl(   x, y); return x; }
+inline Double80 &operator-=( Double80 &x, const double   &y) { _D80subDbl(   x, y); return x; }
+inline Double80 &operator*=( Double80 &x, const double   &y) { _D80mulDbl(   x, y); return x; }
+inline Double80 &operator/=( Double80 &x, const double   &y) { _D80divDbl(   x, y); return x; }
+inline Double80 &operator+=( Double80 &x, const Double80 &y) { _D80addD80(   x, y); return x; }
+inline Double80 &operator-=( Double80 &x, const Double80 &y) { _D80subD80(   x, y); return x; }
+inline Double80 &operator*=( Double80 &x, const Double80 &y) { _D80mulD80(   x, y); return x; }
+inline Double80 &operator/=( Double80 &x, const Double80 &y) { _D80divD80(   x, y); return x; }
 
 inline Double80 operator+(short           x, const Double80 &y) { return y + x; }
 inline Double80 operator*(short           x, const Double80 &y) { return y * x; }
@@ -245,22 +245,22 @@ inline Double80 operator+(float           x, const Double80 &y) { return y + x; 
 inline Double80 operator*(float           x, const Double80 &y) { return y * x; }
 inline Double80 operator+(double          x, const Double80 &y) { return y + x; }
 inline Double80 operator*(double          x, const Double80 &y) { return y * x; }
-inline Double80 operator-(short           x, const Double80 &y) { Double80 t(y); D80subrI16( t, x); return t; }
-inline Double80 operator/(short           x, const Double80 &y) { Double80 t(y); D80divrI16( t, x); return t; }
-inline Double80 operator-(USHORT          x, const Double80 &y) { Double80 t(y); D80subrUI16(t, x); return t; }
-inline Double80 operator/(USHORT          x, const Double80 &y) { Double80 t(y); D80divrUI16(t, x); return t; }
-inline Double80 operator-(int             x, const Double80 &y) { Double80 t(y); D80subrI32( t, x); return t; }
-inline Double80 operator/(int             x, const Double80 &y) { Double80 t(y); D80divrI32( t, x); return t; }
-inline Double80 operator-(UINT            x, const Double80 &y) { Double80 t(y); D80subrUI32(t, x); return t; }
-inline Double80 operator/(UINT            x, const Double80 &y) { Double80 t(y); D80divrUI32(t, x); return t; }
-inline Double80 operator-(INT64           x, const Double80 &y) { Double80 t(y); D80subrI64( t, x); return t; }
-inline Double80 operator/(INT64           x, const Double80 &y) { Double80 t(y); D80divrI64( t, x); return t; }
-inline Double80 operator-(UINT64          x, const Double80 &y) { Double80 t(y); D80subrUI64(t, x); return t; }
-inline Double80 operator/(UINT64          x, const Double80 &y) { Double80 t(y); D80divrUI64(t, x); return t; }
-inline Double80 operator-(const float     x, const Double80 &y) { Double80 t(y); D80subrFlt( t, x); return t; }
-inline Double80 operator/(const float     x, const Double80 &y) { Double80 t(y); D80divrFlt( t, x); return t; }
-inline Double80 operator-(const double    x, const Double80 &y) { Double80 t(y); D80subrDbl( t, x); return t; }
-inline Double80 operator/(const double    x, const Double80 &y) { Double80 t(y); D80divrDbl( t, x); return t; }
+inline Double80 operator-(short           x, const Double80 &y) { Double80 t(y); _D80subrI16( t, x); return t; }
+inline Double80 operator/(short           x, const Double80 &y) { Double80 t(y); _D80divrI16( t, x); return t; }
+inline Double80 operator-(USHORT          x, const Double80 &y) { Double80 t(y); _D80subrUI16(t, x); return t; }
+inline Double80 operator/(USHORT          x, const Double80 &y) { Double80 t(y); _D80divrUI16(t, x); return t; }
+inline Double80 operator-(int             x, const Double80 &y) { Double80 t(y); _D80subrI32( t, x); return t; }
+inline Double80 operator/(int             x, const Double80 &y) { Double80 t(y); _D80divrI32( t, x); return t; }
+inline Double80 operator-(UINT            x, const Double80 &y) { Double80 t(y); _D80subrUI32(t, x); return t; }
+inline Double80 operator/(UINT            x, const Double80 &y) { Double80 t(y); _D80divrUI32(t, x); return t; }
+inline Double80 operator-(INT64           x, const Double80 &y) { Double80 t(y); _D80subrI64( t, x); return t; }
+inline Double80 operator/(INT64           x, const Double80 &y) { Double80 t(y); _D80divrI64( t, x); return t; }
+inline Double80 operator-(UINT64          x, const Double80 &y) { Double80 t(y); _D80subrUI64(t, x); return t; }
+inline Double80 operator/(UINT64          x, const Double80 &y) { Double80 t(y); _D80divrUI64(t, x); return t; }
+inline Double80 operator-(const float     x, const Double80 &y) { Double80 t(y); _D80subrFlt( t, x); return t; }
+inline Double80 operator/(const float     x, const Double80 &y) { Double80 t(y); _D80divrFlt( t, x); return t; }
+inline Double80 operator-(const double    x, const Double80 &y) { Double80 t(y); _D80subrDbl( t, x); return t; }
+inline Double80 operator/(const double    x, const Double80 &y) { Double80 t(y); _D80divrDbl( t, x); return t; }
 
 // operators for long/ulong same as int/UINT
 inline Double80 operator+(const Double80 &x, long            y) { return x + (int )y; }
@@ -305,17 +305,17 @@ inline bool operator>=(const Double80 &x, type y) { _D80GE(cmp); } \
 inline bool operator< (const Double80 &x, type y) { _D80LT(cmp); } \
 inline bool operator> (const Double80 &x, type y) { _D80GT(cmp); }
 
-_D80DEFINE_COMPAREOPERATORS(short   , D80cmpI16 )
-_D80DEFINE_COMPAREOPERATORS(USHORT  , D80cmpUI16)
-_D80DEFINE_COMPAREOPERATORS(INT     , D80cmpI32 )
-_D80DEFINE_COMPAREOPERATORS(UINT    , D80cmpUI32)
-_D80DEFINE_COMPAREOPERATORS(LONG    , D80cmpI32 )
-_D80DEFINE_COMPAREOPERATORS(ULONG   , D80cmpUI32)
-_D80DEFINE_COMPAREOPERATORS(INT64   , D80cmpI64 )
-_D80DEFINE_COMPAREOPERATORS(UINT64  , D80cmpUI64)
-_D80DEFINE_COMPAREOPERATORS(float   , D80cmpFlt )
-_D80DEFINE_COMPAREOPERATORS(double  , D80cmpDbl )
-_D80DEFINE_COMPAREOPERATORS(Double80, D80cmpD80 )
+_D80DEFINE_COMPAREOPERATORS(short   , _D80cmpI16 )
+_D80DEFINE_COMPAREOPERATORS(USHORT  , _D80cmpUI16)
+_D80DEFINE_COMPAREOPERATORS(INT     , _D80cmpI32 )
+_D80DEFINE_COMPAREOPERATORS(UINT    , _D80cmpUI32)
+_D80DEFINE_COMPAREOPERATORS(LONG    , _D80cmpI32 )
+_D80DEFINE_COMPAREOPERATORS(ULONG   , _D80cmpUI32)
+_D80DEFINE_COMPAREOPERATORS(INT64   , _D80cmpI64 )
+_D80DEFINE_COMPAREOPERATORS(UINT64  , _D80cmpUI64)
+_D80DEFINE_COMPAREOPERATORS(float   , _D80cmpFlt )
+_D80DEFINE_COMPAREOPERATORS(double  , _D80cmpDbl )
+_D80DEFINE_COMPAREOPERATORS(Double80, _D80cmpD80 )
 
 #define _D80DEFINE_REVERSECOMPAREOPERATORS(type)                     \
 inline bool operator==(type x, const Double80 &y) { return y == x; } \
@@ -336,111 +336,111 @@ _D80DEFINE_REVERSECOMPAREOPERATORS(UINT64)
 _D80DEFINE_REVERSECOMPAREOPERATORS(float )
 _D80DEFINE_REVERSECOMPAREOPERATORS(double)
 
-inline char   getChar(  const Double80 &x) { return (char)D80ToI32(   x); }
-inline UCHAR  getUchar( const Double80 &x) { return (UCHAR)D80ToUI32( x); }
-inline short  getShort( const Double80 &x) { return (short)D80ToI32(  x); }
-inline USHORT getUshort(const Double80 &x) { return (USHORT)D80ToI32( x); }
-inline int    getInt(   const Double80 &x) { return D80ToI32(         x); }
-inline UINT   getUint(  const Double80 &x) { return D80ToUI32(        x); }
-inline long   getLong(  const Double80 &x) { return D80ToI32(         x); }
-inline ULONG  getUlong( const Double80 &x) { return D80ToUI32(        x); }
-inline INT64  getInt64( const Double80 &x) { return D80ToI64(         x); }
-inline UINT64 getUint64(const Double80 &x) { return D80ToUI64(        x); }
+inline char   getChar(  const Double80 &x) { return (char)_D80ToI32(   x); }
+inline UCHAR  getUchar( const Double80 &x) { return (UCHAR)_D80ToUI32( x); }
+inline short  getShort( const Double80 &x) { return (short)_D80ToI32(  x); }
+inline USHORT getUshort(const Double80 &x) { return (USHORT)_D80ToI32( x); }
+inline int    getInt(   const Double80 &x) { return _D80ToI32(         x); }
+inline UINT   getUint(  const Double80 &x) { return _D80ToUI32(        x); }
+inline long   getLong(  const Double80 &x) { return _D80ToI32(         x); }
+inline ULONG  getUlong( const Double80 &x) { return _D80ToUI32(        x); }
+inline INT64  getInt64( const Double80 &x) { return _D80ToI64(         x); }
+inline UINT64 getUint64(const Double80 &x) { return _D80ToUI64(        x); }
 float         getFloat( const Double80 &x);
 double        getDouble(const Double80 &x);
 
 inline Double80 fabs(const Double80 &x) {
   Double80 tmp(x);
-  D80fabs(tmp);
+  _D80fabs(tmp);
   return tmp;
 }
 inline Double80 fmod(const Double80 &x, const Double80 &y) {
   Double80 tmp(x);
-  D80rem(tmp, y);
+  _D80rem(tmp, y);
   return tmp;
 }
 inline Double80 sqr(const Double80 &x) {
   Double80 tmp(x);
-  D80sqr(tmp);
+  _D80sqr(tmp);
   return tmp;
 }
 inline Double80 sqrt(const Double80 &x) {
   Double80 tmp(x);
-  D80sqrt(tmp);
+  _D80sqrt(tmp);
   return tmp;
 }
 inline Double80 sin(const Double80 &x) {
   Double80 tmp(x);
-  D80sin(tmp);
+  _D80sin(tmp);
   return tmp;
 }
 inline Double80 cos(const Double80 &x) {
   Double80 tmp(x);
-  D80cos(tmp);
+  _D80cos(tmp);
   return tmp;
 }
 inline Double80 tan(const Double80 &x) {
   Double80 tmp(x);
-  D80tan(tmp);
+  _D80tan(tmp);
   return tmp;
 }
 inline Double80 atan(const Double80 &x) {
   Double80 tmp(x);
-  D80atan(tmp);
+  _D80atan(tmp);
   return tmp;
 }
 inline Double80 atan2(const Double80 &y, const Double80 &x) {
   Double80 tmp(y);
-  D80atan2(tmp, x);
+  _D80atan2(tmp, x);
   return tmp;
 }
 // calculate both cos and sin. c:inout c, s:out
 inline void sincos(Double80 &c, Double80 &s) {
-  D80sincos(c, s);
+  _D80sincos(c, s);
 }
 inline Double80 exp(const Double80 &x) {
   Double80 tmp(x);
-  D80exp(tmp);
+  _D80exp(tmp);
   return tmp;
 }
 inline Double80 exp10(const Double80 &x) {
   Double80 tmp(x);
-  D80exp10(tmp);
+  _D80exp10(tmp);
   return tmp;
 }
 inline Double80 exp2(const Double80 &x) {
   Double80 tmp(x);
-  D80exp2(tmp);
+  _D80exp2(tmp);
   return tmp;
 }
 inline Double80 log(const Double80 &x) {
   Double80 tmp(x);
-  D80log(tmp);
+  _D80log(tmp);
   return tmp;
 }
 inline Double80 log10(const Double80 &x) {
   Double80 tmp(x);
-  D80log10(tmp);
+  _D80log10(tmp);
   return tmp;
 }
 inline Double80 log2(const Double80 &x) {
   Double80 tmp(x);
-  D80log2(tmp);
+  _D80log2(tmp);
   return tmp;
 }
 inline Double80 pow(const Double80 &x, const Double80 &y) {
   Double80 tmp(x);
-  D80pow(tmp, y);
+  _D80pow(tmp, y);
   return tmp;
 }
 inline Double80 floor(const Double80 &x) {
   Double80 tmp(x);
-  D80floor(tmp);
+  _D80floor(tmp);
   return tmp;
 }
 inline Double80 ceil(const Double80 &x) {
   Double80 tmp(x);
-  D80ceil(tmp);
+  _D80ceil(tmp);
   return tmp;
 }
 

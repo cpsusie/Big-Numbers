@@ -15,7 +15,7 @@ const Double80        _D80maxi64(   (BYTE*)"\xfe\xff\xff\xff\xff\xff\xff\xff\x3d
 const Double80        _D80maxi64P1( (BYTE*)"\x00\x00\x00\x00\x00\x00\x00\x80\x3e\x40"); // (Double80)_I64_MAX + 1
 static const Double80 _D802PiExp260((BYTE*)"\x35\xc2\x68\x21\xa2\xda\x0f\xc9\x3d\x40"); // (Double80)2pi*exp2(60) (=7.244019458077122e+018)
 
-UINT D80ToUI32(const Double80 &x) {
+UINT _D80ToUI32(const Double80 &x) {
   UINT result;
   if(x > _I32_MAX) {
     __asm {
@@ -45,7 +45,7 @@ UINT D80ToUI32(const Double80 &x) {
   return result;
 }
 
-UINT64 D80ToUI64(const Double80 &x) {
+UINT64 _D80ToUI64(const Double80 &x) {
   UINT64 result;
   if(x > _D80maxi64) {
     __asm {
@@ -68,7 +68,7 @@ UINT64 D80ToUI64(const Double80 &x) {
   return result;
 }
 
-char D80cmpI16(const Double80 &x, short y) {
+char _D80cmpI16(const Double80 &x, short y) {
   char result;
   __asm {
     mov     eax, x
@@ -90,7 +90,7 @@ Done    :
   return result;
 }
 
-char D80cmpUI16(const Double80 &x, USHORT y) {
+char _D80cmpUI16(const Double80 &x, USHORT y) {
   char result;
   FILDUINT16(y)
   __asm {
@@ -112,7 +112,7 @@ Done:
   return result;
 }
 
-char D80cmpI32(const Double80 &x, INT y) {
+char _D80cmpI32(const Double80 &x, INT y) {
   char result;
   __asm {
     mov     eax, x
@@ -134,7 +134,7 @@ Done    :
   return result;
 }
 
-char D80cmpUI32(const Double80 &x, UINT y) {
+char _D80cmpUI32(const Double80 &x, UINT y) {
   char result;
   FILDUINT32(y)
   __asm {
@@ -156,7 +156,7 @@ Done:
   return result;
 }
 
-char D80cmpI64(const Double80 &x, INT64 y) {
+char _D80cmpI64(const Double80 &x, INT64 y) {
   char result;
   __asm {
     fild    y
@@ -178,7 +178,7 @@ Done:
   return result;
 }
 
-char D80cmpUI64(const Double80 &x, UINT64 y) {
+char _D80cmpUI64(const Double80 &x, UINT64 y) {
   char result;
   FILDUINT64(y)
   __asm {
@@ -200,7 +200,7 @@ Done:
   return result;
 }
 
-char D80cmpFlt(const Double80 &x, float y) {
+char _D80cmpFlt(const Double80 &x, float y) {
   char result;
   __asm {
     fld     y
@@ -222,7 +222,7 @@ Done:
   return result;
 }
 
-char D80cmpDbl(const Double80 &x, double y) {
+char _D80cmpDbl(const Double80 &x, double y) {
   char result;
   __asm {
     fld     y
@@ -244,7 +244,7 @@ Done:
   return result;
 }
 
-char D80cmpD80(const Double80 &x, const Double80 &y) {
+char _D80cmpD80(const Double80 &x, const Double80 &y) {
   char result;
   __asm {
     mov     eax, y
@@ -267,7 +267,7 @@ Done:
   return result;
 }
 
-void D80rem(Double80 &dst, const Double80 &x) {
+void _D80rem(Double80 &dst, const Double80 &x) {
   __asm {
     mov ecx, DWORD PTR x        // don't use eax as addr of dst,,,fstw ax will kill it!
     fld TBYTE PTR[ecx]          //                                                    st0=x
@@ -307,7 +307,7 @@ Exit :
   }
 }
 
-int D80getExpo10(const Double80 &x) {
+int _D80getExpo10(const Double80 &x) {
   USHORT cwSave, ctrlFlags;
   int result;
   __asm {
@@ -337,8 +337,8 @@ Exit :
   return result;
 }
 
-void D80sin(Double80 &x) {
-  D80rem(x, _D802PiExp260);
+void _D80sin(Double80 &x) {
+  _D80rem(x, _D802PiExp260);
   __asm {
     mov eax, x
     fld TBYTE PTR[eax]
@@ -347,8 +347,8 @@ void D80sin(Double80 &x) {
   }
 }
 
-void D80cos(Double80 &x) {
-  D80rem(x, _D802PiExp260);
+void _D80cos(Double80 &x) {
+  _D80rem(x, _D802PiExp260);
   __asm {
     mov eax, x
     fld TBYTE PTR[eax]
@@ -356,8 +356,8 @@ void D80cos(Double80 &x) {
     fstp TBYTE PTR[eax]
   }
 }
-void D80tan(Double80 &x) {
-  D80rem(x, _D802PiExp260);
+void _D80tan(Double80 &x) {
+  _D80rem(x, _D802PiExp260);
   __asm {
     mov eax, x
     fld TBYTE PTR[eax]
@@ -368,8 +368,8 @@ void D80tan(Double80 &x) {
 }
 
 // inout is c, out s
-void D80sincos(Double80 &c, Double80 &s) {
-  D80rem(c, _D802PiExp260);
+void _D80sincos(Double80 &c, Double80 &s) {
+  _D80rem(c, _D802PiExp260);
   __asm {
     mov eax, c
     fld TBYTE PTR[eax]
@@ -380,7 +380,7 @@ void D80sincos(Double80 &c, Double80 &s) {
   }
 }
 
-void D80exp(Double80 &x) {
+void _D80exp(Double80 &x) {
   __asm {
     mov eax, DWORD PTR x
     fld TBYTE PTR[eax]
@@ -399,7 +399,7 @@ void D80exp(Double80 &x) {
   }
 }
 
-void D80exp10(Double80 &x) {
+void _D80exp10(Double80 &x) {
   if(x.isZero()) {
     x = Double80::_1;
     return;
@@ -423,7 +423,7 @@ void D80exp10(Double80 &x) {
   }
 }
 
-void D80exp2(Double80 &x) {
+void _D80exp2(Double80 &x) {
   if(x.isZero()) {
     x = Double80::_1;
     return;
@@ -448,7 +448,7 @@ void D80exp2(Double80 &x) {
 }
 
 // x = pow(x,y)
-void D80pow(Double80 &x, const Double80 &y) {
+void _D80pow(Double80 &x, const Double80 &y) {
   if(y.isZero()) {
     x = Double80::_1;
     return;
@@ -477,7 +477,7 @@ void D80pow(Double80 &x, const Double80 &y) {
   }
 }
 
-void D80floor(Double80 &x) {
+void _D80floor(Double80 &x) {
   const FPUControlWord cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUNDDOWN);
   __asm {
     mov eax, DWORD PTR x
@@ -488,7 +488,7 @@ void D80floor(Double80 &x) {
   FPU::restoreControlWord(cwSave);
 }
 
-void D80ceil(Double80 &x) {
+void _D80ceil(Double80 &x) {
   const FPUControlWord cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUNDUP);
   __asm {
     mov eax, DWORD PTR x
