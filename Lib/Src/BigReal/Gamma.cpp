@@ -1,5 +1,6 @@
 #include "pch.h"
 
+#define _0 pool->_0()
 #define _1 pool->_1()
 #define _2 pool->_2()
 
@@ -28,7 +29,7 @@ static BigReal gamma1_2(const BigReal &x, size_t digits) {
   BigReal       p      = _1;
 //  cout << "TR:" << TR << "\n"; cout.flush();
   BigReal currentSum(pool), lastSum(pool);
-  for(int i = 0;;i++) {
+  for(BigReal i = _0;;) {
     lastSum = currentSum;
     const BigReal term = quot(quot(p,factor,c1),x+i,c1);
 //    cout << "term("<<i<<"):" << FullFormatBigReal(term) << "\n"; cout.flush();
@@ -37,7 +38,8 @@ static BigReal gamma1_2(const BigReal &x, size_t digits) {
       break;
     }
     p *= TR;
-    factor = -factor * (i+1);
+    ++i;
+    factor = -factor * i;
   }
   return currentSum * rPow(TR,x,digits);
 }
