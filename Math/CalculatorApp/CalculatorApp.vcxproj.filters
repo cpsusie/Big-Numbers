@@ -27,9 +27,6 @@
     <ClCompile Include="dms.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gamma.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="PrecisionDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

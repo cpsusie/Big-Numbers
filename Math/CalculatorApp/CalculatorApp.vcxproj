@@ -300,7 +300,6 @@
     <ClCompile Include="CalculatorApp.cpp" />
     <ClCompile Include="CalculatorDlg.cpp" />
     <ClCompile Include="dms.cpp" />
-    <ClCompile Include="gamma.cpp" />
     <ClCompile Include="PrecisionDlg.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
