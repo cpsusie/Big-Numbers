@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "BigRealGamma.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace std;
@@ -18,7 +17,7 @@ namespace TestGamma {
       for(double x = 0; x <= 4; x += 0.125) {
         const double  y    = factorial(x);
         const BigReal X    = x;
-        const BigReal Y    = factorial(X, 20);
+        const BigReal Y    = rFactorial(X, 20);
         const double  refy = getDouble(Y);
         const double  e    = fabs(y - refy);
 #ifdef LIST_DATA
@@ -37,7 +36,7 @@ namespace TestGamma {
         if(x == floor(x)) continue;
         const double  y    = factorial(x);
         const BigReal X    = x;
-        const BigReal Y    = factorial(X, 20);
+        const BigReal Y    = rFactorial(X, 20);
         const double  refy = getDouble(Y);
         const double  e    = fabs(y - refy);
 #ifdef LIST_DATA
@@ -75,7 +74,7 @@ namespace TestGamma {
       for(Double80 x = 0; x <= 4; x += 0.125) {
         const Double80 y    = factorial(x);
         const BigReal  X    = x;
-        const BigReal  Y    = factorial(X, 26);
+        const BigReal  Y    = rFactorial(X, 26);
         const Double80 refy = getDouble80(Y);
         const Double80 e    = fabs(y - refy);
 #ifdef LIST_DATA
@@ -94,7 +93,7 @@ namespace TestGamma {
         if(x == floor(x)) continue;
         const Double80 y    = factorial(x);
         const BigReal  X    = x;
-        const BigReal  Y    = factorial(X, 26);
+        const BigReal  Y    = rFactorial(X, 26);
         const Double80 refy = getDouble80(Y);
         const Double80 e    = fabs(y - refy);
 #ifdef LIST_DATA
@@ -127,7 +126,7 @@ namespace TestGamma {
     TEST_METHOD(Gamma05EqualPi) {
       const double   g05D64 = gamma(0.5);
       const Double80 g05D80 = gamma(Double80::_05   );
-      const BigReal  g05BR  = gamma(BigReal::_05, 30);
+      const BigReal  g05BR  = rGamma(BigReal::_05, 30);
 
       const double   eD64   = fabs(g05D64 - sqrt(M_PI    ));
       const Double80 eD80   = fabs(g05D80 - sqrt(DBL80_PI));
