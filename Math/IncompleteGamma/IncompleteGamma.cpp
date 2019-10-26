@@ -13,11 +13,16 @@ Real dfdx(Real x, Function &f) {
   return (y2-y1)/(x2-x1);
 }
 
-static BigReal lowerIncGammaTaylor(const BigReal &a, const BigReal &x, int digits) {
+#define _0 pool->_0()
+#define _1 pool->_1()
+#define _05 pool->_05()
+
+static BigReal lowerIncGammaTaylor(const BigReal &a, const BigReal &x, size_t digits) {
   if(x.isNegative()) {
     throwInvalidArgumentException(__TFUNCTION__, _T("x=%s. Valid range:[0; inf["), toString(x).cstr());
   }
-  BigReal sum = 0, ai = a, p = rQuot(BIGREAL_1,ai,digits);
+  DigitPool *pool = a.getDigitPool();
+  BigReal sum = _0, ai = a, p = rQuot(_1,ai,digits);
   ++ai;
 
   for(;;) {
@@ -32,14 +37,17 @@ static BigReal lowerIncGammaTaylor(const BigReal &a, const BigReal &x, int digit
   return rProd(rProd(rExp(-x, digits), rPow(x, a, digits), digits), sum, digits);
 }
 
-BigReal BRchiSquaredDistribution(UINT df, const BigReal &x, int digits) {
-  const BigReal df2  = BigReal(df) * BIGREAL_HALF;
-  const BigReal incG = lowerIncGammaTaylor(df2, x * BIGREAL_HALF, digits);
-  const BigReal G    = gamma(df2, digits);
+BigReal BRchiSquaredDistribution(UINT df, const BigReal &x, size_t digits) {
+  DigitPool *pool = x.getDigitPool();
+  const BigReal df2  = _05 * BigReal(df,pool);
+  const BigReal incG = lowerIncGammaTaylor(df2, x * _05, digits);
+  const BigReal G    = rGamma(df2, digits);
   return rQuot(incG, G, digits);
 }
 
 typedef FunctionTemplate<BigReal,BigReal> BigRealFunction;
+
+#undef _1
 
 class ChiHelpFunction : public BigRealFunction {
 private:
@@ -48,7 +56,7 @@ private:
 public:
 #define DIGITS 40
 
-  ChiHelpFunction(UINT df) : m_df(df), m_targetY(BIGREAL_1 - BigReal(DBL_EPSILON)) {
+  ChiHelpFunction(UINT df, DigitPool *pool = NULL) : m_df(df), m_targetY(BigReal::_1 - BigReal(DBL_EPSILON)) {
   }
   BigReal operator()(const BigReal &x) {
     return rDif(BRchiSquaredDistribution(m_df,x, DIGITS), m_targetY, DIGITS);
