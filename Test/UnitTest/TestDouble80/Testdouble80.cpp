@@ -391,14 +391,18 @@ static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, d
       s80 = toString(d80, 0, 0, ios::fixed);
       verify(substr(s64, 0, 17) == substr(s80, 0, 17));
 
-      for(int i = 1; i >= -1; i -= 2) {
-        for(double d64 = 1e-100*i; fabs(d64) < 1e100; d64 *= 1.1) {
-          s64 = toString(d64, 13, 21, ios::scientific);
-          d80 = d64;
-          s80 = toString(d80, 13, 21, ios::scientific);
-          if(s64 != s80) {
-            OUTPUT(_T("d64:%23.15le -> \"%s\""), d64, s64.cstr());
-            OUTPUT(_T("s80:\"%s\" toString(d80,18):\"%s\"\n"), s80.cstr(), toString(d80, 18, 0, ios::scientific).cstr());
+      const FormatFlags dformats[] = { ios::scientific, ios::hexfloat };
+      for (size_t f = 0; f < ARRAYSIZE(dformats); f++) {
+        const FormatFlags ff = dformats[f];
+        for(int i = 1; i >= -1; i -= 2) {
+          for(double d64 = 1e-100*i; fabs(d64) < 1e100; d64 *= 1.1) {
+            s64 = toString(d64, 13, 21, ff);
+            d80 = d64;
+            s80 = toString(d80, 13, 21, ff);
+            if(s64 != s80) {
+              OUTPUT(_T("d64:%23.15le -> \"%s\""), d64, s64.cstr());
+              OUTPUT(_T("s80:%s -> \"%s\"\n"), toString(d80, 15, 23, ios::scientific).cstr(), s80.cstr());
+            }
           }
         }
       }
@@ -1198,6 +1202,7 @@ static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, d
       testAllFloatTypes(numeric_limits<OP2TYPE>::max(), op2TypeName);
       if(numeric_limits<OP2TYPE>::has_infinity) {
         testAllFloatTypes(numeric_limits<OP2TYPE>::infinity() , op2TypeName);
+#pragma warning(disable:4146) // unary minus operator applied to unsigned type.....not importatnt here...coz unsigned long has no infinity
         testAllFloatTypes(-(OP2TYPE)numeric_limits<OP2TYPE>::infinity(), op2TypeName);
       }
       if(numeric_limits<OP2TYPE>::has_quiet_NaN) {
