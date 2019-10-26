@@ -45,9 +45,6 @@
     <ClCompile Include="ListBoxDiffMarks.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="BRGamma1_2.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="PrecisionDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -75,9 +72,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ListBoxDiffMarks.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BRGamma1_2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PrecisionDlg.h">

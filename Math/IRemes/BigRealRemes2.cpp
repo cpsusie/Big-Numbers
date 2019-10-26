@@ -40,7 +40,7 @@ static BigReal signedValue(int sign, const BigReal &x) {
 }
 
 ExtremaMap Remes::s_extremaMap;
-const ConstBigReal Remes::s_defaultMMQuotEps = e(BIGREAL_1,-22);
+const ConstBigReal Remes::s_defaultMMQuotEps = e(BigReal::_1,-22);
 #define DEFAULT_SEARCHEMAXIT 700
 
 Remes::Remes(RemesTargetFunction &targetFunction, const bool useRelativeError)
@@ -77,7 +77,7 @@ void Remes::initCommon() {
 }
 
 void Remes::checkInterval() {
-  if(!m_domain.contains(BIGREAL_0)) {
+  if(!m_domain.contains(BigReal::_0)) {
     throwException(_T("Interval [%s;%s] does not contain 0"), toString(m_domain.getFrom()).cstr(), toString(m_domain.getTo()).cstr());
   }
 }
@@ -126,8 +126,8 @@ void Remes::solve(const UINT M, const UINT K) {
 
 RestartMainIteration:
   m_coefVectorIndex = 0;
-  m_lastMMQuot      = BIGREAL_1;
-  m_QEpsilon        = e(BIGREAL_1,-2);
+  m_lastMMQuot      = BigReal::_1;
+  m_QEpsilon        = e(BigReal::_1,-2);
 
   for(setProperty(MAINITERATION, m_mainIteration, 1); m_mainIteration <= MAXIT; setProperty(MAINITERATION, m_mainIteration, m_mainIteration+1)) {
     try {
@@ -146,7 +146,7 @@ RestartMainIteration:
         break;
       }
 
-      setProperty(MMQUOT, m_MMQuot, BIGREAL_1 - rQuot(minExtr, maxExtr, m_digits)); // minExtr <= maxExtr => m_MMQuot >= 0
+      setProperty(MMQUOT, m_MMQuot, BigReal::_1 - rQuot(minExtr, maxExtr, m_digits)); // minExtr <= maxExtr => m_MMQuot >= 0
 
       if(m_MMQuot < m_MMQuotEps) {
         saveExtremaToMap(m_E, m_MMQuot);
@@ -165,7 +165,7 @@ RestartMainIteration:
         }
       }
 
-      m_QEpsilon   = e(BIGREAL_1,BigReal::getExpo10(m_MMQuot) - 25);
+      m_QEpsilon   = e(BigReal::_1,BigReal::getExpo10(m_MMQuot) - 25);
       m_lastMMQuot = m_MMQuot;
 
     } catch(NoConvergenceException e) {
@@ -173,7 +173,7 @@ RestartMainIteration:
       if(hasNextSolveState()) {
         nextSolveState();
         setExtrema(findInitialExtremaByInterpolation(M,K));
-        setProperty(E, m_E, (BigReal&)BIGREAL_0);
+        setProperty(E, m_E, (BigReal&)BigReal::_0);
         goto RestartMainIteration;
       } else {
         throw;
@@ -194,7 +194,7 @@ void Remes::initCoefficientVector(size_t dimension) {
 
   m_hasCoefficients = false;
   for(UINT i = 0; i <= m_N + 1; i++) v[i] = 0;
-  setProperty(E                , m_E                , (BigReal&)BIGREAL_0);
+  setProperty(E                , m_E                , (BigReal&)BigReal::_0);
   setProperty(COEFFICIENTVECTOR, m_coefficientVector, v);
 }
 
@@ -231,7 +231,7 @@ bool Remes::hasNextSolveState() const {
 
 void Remes::findCoefficients() {
   DEFINEMETHODNAME;
-  static const BigReal c1 = BIGREAL_HALF;
+  static const BigReal c1 = BigReal::_05;
 
   setProperty(REMES_STATE, m_state, REMES_SEARCH_COEFFICIENTS);
 
@@ -283,7 +283,7 @@ void Remes::findCoefficients() {
       m_coefVectorIndex++;
       if(m_nextE.isZero()) break;
 
-      setProperty(Q, m_Q, fabs(BIGREAL_1 - rQuot(dmin(fabs(m_E), fabs(m_nextE)), dmax(fabs(m_E), fabs(m_nextE)), m_digits)));
+      setProperty(Q, m_Q, fabs(BigReal::_1 - rQuot(dmin(fabs(m_E), fabs(m_nextE)), dmax(fabs(m_E), fabs(m_nextE)), m_digits)));
       if(m_Q < m_QEpsilon) {
         break;
       }
@@ -349,7 +349,7 @@ static BigReal sqr(const BigReal &x, UINT digits) {
 
 static BigReal inverseInterpolate(const Point &p1, const Point &p2, const Point &p3, UINT digits) {
   DigitPool *pool = p1.m_x.getDigitPool();
-  const BigReal &c1 = pool->getHalf();
+  const BigReal &c1 = pool->_05();
 
   BigReal sqx1 = sqr(p1.m_x,digits);
   BigReal sqx2 = sqr(p2.m_x,digits);
@@ -502,7 +502,7 @@ BigReal Remes::approximation(const BigReal &x) const {
     for(UINT j = m_N; --j > m_M;) {
       sum2 = sum2 * x + m_coefficientVector[j];
     }
-    return rQuot(sum1, sum2 * x + pool->get1(), m_digits, pool);
+    return rQuot(sum1, sum2 * x + pool->_1(), m_digits, pool);
   } else {
     BigReal sum(pool);
     sum = m_coefficientVector[m_M];
@@ -515,18 +515,18 @@ BigReal Remes::approximation(const BigReal &x) const {
 
 BigReal Remes::errorFunction(const BigReal &x) const {
   DigitPool *pool = x.getDigitPool();
-  return m_useRelativeError ? (pool->get1() - sFunction(x) * approximation(x))
+  return m_useRelativeError ? (pool->_1() - sFunction(x) * approximation(x))
                             : (m_targetFunction(x) - approximation(x) /* * sFunction(x)==1 */ )
                             ;
 }
 
 BigReal Remes::sFunction(const BigReal &x) const {
   DigitPool *pool = x.getDigitPool();
-  return m_useRelativeError ? rQuot(pool->get1(), m_targetFunction(x), m_digits) : pool->get1();
+  return m_useRelativeError ? rQuot(pool->_1(), m_targetFunction(x), m_digits) : pool->_1();
 }
 
 BigReal Remes::targetFunction(const BigReal &x) const {
-  return m_useRelativeError ? x.getDigitPool()->get1() : m_targetFunction(x);
+  return m_useRelativeError ? x.getDigitPool()->_1() : m_targetFunction(x);
 }
 
 void Remes::getErrorPlot(UINT n, Point2DArray &pa) const {

@@ -2,7 +2,6 @@
 #include <ExternProcess.h>
 #include "IRemesDlg.h"
 #include "PrecisionDlg.h"
-#include "BRGamma1_2.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -944,12 +943,10 @@ BigReal DynamicTargetFunction::operator()(const BigReal &x) {
 }
 */
 
-#include "BRGamma1_2.h"
-
 static const ConstBigReal _3over2(1.5);
 
 BigReal DynamicTargetFunction::operator()(const BigReal &x) {
-  return rGamma1_2(x + _3over2, m_digits);
+  return rGamma(x + _3over2, m_digits);
 }
 
 

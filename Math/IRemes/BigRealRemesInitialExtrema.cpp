@@ -18,7 +18,7 @@ BigRealVector Remes::getDefaultInitialExtrema(UINT M, UINT K) const {
 }
 
 BigRealVector Remes::findFinalExtrema(UINT M, UINT K, bool highPrecision) {
-  const BigReal mmQuot = highPrecision ? s_defaultMMQuotEps : e(BIGREAL_1,-7);
+  const BigReal mmQuot = highPrecision ? s_defaultMMQuotEps : e(BigReal::_1,-7);
 
   for(bool hasSolved = false;;) {
     const Array<ExtremaVector> *a = s_extremaMap.get(M, K);

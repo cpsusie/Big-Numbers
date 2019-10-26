@@ -20,30 +20,32 @@ String Remes::getHeaderString() const {
 }
 
 String Remes::getCFunctionString(bool useDouble80) const {
-  const String header = getHeaderString();
-
-  const TCHAR *typeStr = useDouble80 ? _T("Double80") : _T("double");
-  int typeSize = useDouble80 ? 10 : sizeof(double);
+  const String     header   = getHeaderString();
+  const StreamSize prec     = useDouble80 ? std::numeric_limits<Double80>::max_digits10 : std::numeric_limits<double>::max_digits10;
+  const TCHAR     *typeStr  = useDouble80 ? _T("Double80") : _T("double");
+  const int        typeSize = useDouble80 ? sizeof(Double80) : sizeof(double);
 
   String str;
   if(useDouble80) {
     str = format(_T("#include <Double80.h>\n\n"));
   }
 
-  str += format(_T("static const %s coef[%d] = {\n"), typeStr, m_N+1);
+  str += format(_T("static const BYTE coefdata[] = {\n"));
+  const TCHAR *delimStr = _T(" ");
   for(UINT i = 0; i <= m_N; i++) {
-    Double80 d80 = getDouble80(m_coefficientVector[i]);
-    double   d64 = getDouble(  m_coefficientVector[i]);
-    BYTE *byte = useDouble80 ? (BYTE*)&d80 : (BYTE*)&d64;
-    str += format(useDouble80 ? _T("  Double80::bytesToDouble80((unsigned char*)\"") : _T("  *((double*)\""));
-    for(int j = 0; j < typeSize; j++) {
-      str += format(_T("\\x%02x"), *(byte++));
+    const Double80 d80  = getDouble80(m_coefficientVector[i]);
+    const double   d64  = getDouble(  m_coefficientVector[i]);
+    const BYTE    *byte = useDouble80 ? (BYTE*)&d80 : (BYTE*)&d64;
+    str += _T(" ");
+    for(int j = 0; j < typeSize; j++, delimStr = _T(",")) {
+      str += format(_T("%sx%02x"), delimStr,*(byte++));
     }
-    str += format(_T("%s // %s\n"), (i==m_N)?_T("\") "):_T("\"),"), toString(d80,17,24,ios::scientific).cstr());
+    str += format(_T(" // %s\n"), toString(d80,prec,27,ios::scientific).cstr());
   }
   str += _T("};\n\n");
 
-  str += format(_T("double approximation%02d%02d(%s x) {\n"), m_M, m_K, typeStr);
+  str += format(_T("static const %s *coef = (const %s*)coefdata;\n"), typeStr, typeStr);
+  str += format(_T("%s approximation%02d%02d(%s x) {\n"), typeStr, m_M, m_K, typeStr);
 
   if(m_K) {
     str += format(_T("  %s sum1 = coef[%d];\n"), typeStr, m_M);
@@ -55,13 +57,13 @@ String Remes::getCFunctionString(bool useDouble80) const {
     if(m_N - 1 > m_M) {
       str += format(_T("  for(i = %d; i > %d; i--) sum2 = sum2 * x + coef[i];\n"), m_N - 1, m_M);
     }
-    str += format(_T("  return %s;\n"), useDouble80 ? _T("getDouble(sum1 / (sum2 * x + 1.0))") : _T("sum1 / (sum2 * x + 1.0)"));
+    str += _T("  return sum1 / (sum2 * x + 1.0)\n");
   } else {
     str += format(_T("  %s sum = coef[%d];\n"), typeStr, m_N);
     if(m_N - 1 >= 0) {
       str += format(_T("  for(int i = %d; i >= 0; i--) sum = sum * x + coef[i];\n"), m_N - 1);
     }
-    str += format(_T("  return %s;\n"), useDouble80 ? _T("getDouble(sum)") : _T("sum"));
+    str += _T("  return sum\n");
   }
   str += _T("}\n");
   return header + str;
@@ -109,7 +111,7 @@ String Remes::getExtremumString(UINT index) const {
 }
 
 String Remes::getMMQuotString() const {
-  const BigReal mmQuot = BIGREAL_1 - fabs(rQuot(getMinAbsExtremumValue(),getMaxAbsExtremumValue(), m_digits)); // minExtr -> maxExtr => mmQuot -> 0
+  const BigReal mmQuot = BigReal::_1 - fabs(rQuot(getMinAbsExtremumValue(),getMaxAbsExtremumValue(), m_digits)); // minExtr -> maxExtr => mmQuot -> 0
   return format(_T("MinMaxQuot = 1-|MinExtr/MaxExtr|:%s"), FormatBigReal(mmQuot).cstr());
 }
 
