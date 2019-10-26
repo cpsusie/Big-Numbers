@@ -1499,7 +1499,9 @@ BigReal rAsin( const BigReal &x,    size_t digits);
 BigReal rAcos( const BigReal &x,    size_t digits);
 BigReal rAtan( const BigReal &x,    size_t digits);
 BigReal rAcot( const BigReal &x,    size_t digits);
-BigReal rPi(                        size_t digits, DigitPool *digitPool = NULL);
+BigReal rPi(                         size_t digits, DigitPool *digitPool = NULL);
+BigReal rGamma(    const BigReal &x, size_t digits);
+BigReal rFactorial(const BigReal &x, size_t digits);
 
 class SynchronizedStringQueue : public SynchronizedQueue<TCHAR*>, public BigRealResource {
 private:
