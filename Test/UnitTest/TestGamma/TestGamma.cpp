@@ -12,10 +12,22 @@ namespace TestGamma {
   TEST_CLASS(TestGamma) {
   public:
 
+    static UINT myFactorial(UINT n) {
+      UINT p = 1;
+      for(UINT i = n; i > 1; i--) {
+        p *= i;
+      }
+      return p;
+    }
+
     TEST_METHOD(GammaD64Positive) {
       double maxError = 0;
       for(double x = 0; x <= 4; x += 0.125) {
         const double  y    = factorial(x);
+        if(isInt(x)) {
+          const UINT refValue = myFactorial((UINT)x);
+          verify(y == refValue);
+        }
         const BigReal X    = x;
         const BigReal Y    = rFactorial(X, 20);
         const double  refy = getDouble(Y);
