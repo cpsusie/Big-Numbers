@@ -453,10 +453,10 @@ ExpressionNode *ParserTree::vFetchNode(const SourcePosition &pos, ExpressionInpu
     }
     break;
   case POW     :
-    n = new ExpressionNodePowerWithPos(       this, pos,         argptr);
+    n = new ExpressionNodePowerWithPos(    this, pos,         argptr);
     break;
   default      :
-    n = new ExpressionNodeTreeWithPos(    this, pos, symbol, argptr);
+    n = new ExpressionNodeTreeWithPos(     this, pos, symbol, argptr);
     break;
   }
   TRACE_NEW(n);
@@ -484,8 +484,9 @@ ExpressionNode *ParserTree::constExpr(const String &name) {
 
 String ParserTree::treeToString() const {
   unmarkAll();
-  String result = format(_T("Mode:%-10s, State:%-14s, Reduceiteration:%3u\n")
+  String result = format(_T("Mode:%-10s, Trigonometic:%-8s, State:%-14s, Reduceiteration:%3u\n")
                         ,getTreeFormName().cstr()
+                        ,toString(getTrigonometricMode()).cstr()
                         ,getStateName().cstr()
                         ,getReduceIteration());
 
