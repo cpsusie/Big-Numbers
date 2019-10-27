@@ -41,6 +41,9 @@ public:
   virtual ExpressionReturnType getReturnType() const = 0;
   virtual Real fr(const Real &x) const = 0;
   virtual bool fb(const Real &x) const = 0;
+  virtual TrigonometricMode getTrigonometricMode() const {
+    return RADIANS;
+  }
   static void startEvaluateTest(printfFunction prf) {
     s_evaluateTestStarted = true;
     s_printf = prf;

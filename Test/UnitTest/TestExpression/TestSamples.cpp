@@ -1191,6 +1191,290 @@ public:
   }
 };
 
+
+
+
+
+class TrigoDegreesTest : public RealExpressionTest {
+public:
+  TrigonometricMode getTrigonometricMode() const {
+    return DEGREES;
+  }
+};
+
+
+class Test110 : public TrigoDegreesTest {
+public:
+  String getExpr() const {
+    return _T("sin(x+1)");
+  }
+  Real fr(const Real &x) const {
+    return sinDegrees(x + 1);
+  }
+};
+
+class Test111 : public TrigoDegreesTest {
+public:
+  String getExpr() const {
+    return _T("cos(x+1)");
+  }
+  Real fr(const Real &x) const {
+    return cosDegrees(x + 1);
+  }
+};
+
+class Test112 : public TrigoDegreesTest {
+public:
+  String getExpr() const {
+    return _T("tan(x+1)");
+  }
+  Real fr(const Real &x) const {
+    return tanDegrees(x + 1);
+  }
+};
+
+class Test113 : public TrigoDegreesTest {
+public:
+  String getExpr() const {
+    return _T("cot(x+1)");
+  }
+  Real fr(const Real &x) const {
+    return cotDegrees(x + 1);
+  }
+};
+
+class Test114 : public TrigoDegreesTest {
+public:
+  String getExpr() const {
+    return _T("csc(x+1)");
+  }
+  Real fr(const Real &x) const {
+    return cscDegrees(x + 1);
+  }
+};
+
+class Test115 : public TrigoDegreesTest {
+public:
+  String getExpr() const {
+    return _T("sec(x+1)");
+  }
+  Real fr(const Real &x) const {
+    return secDegrees(x + 1);
+  }
+};
+
+class Test116 : public TrigoDegreesTest {
+public:
+  String getExpr() const {
+    return _T("asin(x/3)");
+  }
+  Real fr(const Real &x) const {
+    return asinDegrees(x / 3);
+  }
+};
+
+class Test117 : public TrigoDegreesTest {
+public:
+  String getExpr() const {
+    return _T("acos(x/3)");
+  }
+  Real fr(const Real &x) const {
+    return acosDegrees(x / 3);
+  }
+};
+
+class Test118 : public TrigoDegreesTest {
+public:
+  String getExpr() const {
+    return _T("atan(x+1)");
+  }
+  Real fr(const Real &x) const {
+    return atanDegrees(x + 1);
+  }
+};
+
+class Test119 : public TrigoDegreesTest {
+public:
+  String getExpr() const {
+    return _T("atan2(x+7,5)");
+  }
+  Real fr(const Real &x) const {
+    return atan2Degrees(x + 7, 5);
+  }
+};
+
+class Test120 : public TrigoDegreesTest {
+public:
+  String getExpr() const {
+    return _T("acot(x+1)");
+  }
+  Real fr(const Real &x) const {
+    return acotDegrees(x + 1);
+  }
+};
+
+class Test121 : public TrigoDegreesTest {
+public:
+  String getExpr() const {
+    return _T("acsc(x+4)");
+  }
+  Real fr(const Real &x) const {
+    return acscDegrees(x + 4);
+  }
+};
+
+class Test122 : public TrigoDegreesTest {
+public:
+  String getExpr() const {
+    return _T("asec(x+4)");
+  }
+  Real fr(const Real &x) const {
+    return asecDegrees(x + 4);
+  }
+};
+
+
+
+class TrigoGradsTest : public RealExpressionTest {
+public:
+  TrigonometricMode getTrigonometricMode() const {
+    return GRADS;
+  }
+};
+
+
+class Test123 : public TrigoGradsTest {
+public:
+  String getExpr() const {
+    return _T("sin(x+1)");
+  }
+  Real fr(const Real &x) const {
+    return sinGrads(x + 1);
+  }
+};
+
+class Test124 : public TrigoGradsTest {
+public:
+  String getExpr() const {
+    return _T("cos(x+1)");
+  }
+  Real fr(const Real &x) const {
+    return cosGrads(x + 1);
+  }
+};
+
+class Test125 : public TrigoGradsTest {
+public:
+  String getExpr() const {
+    return _T("tan(x+1)");
+  }
+  Real fr(const Real &x) const {
+    return tanGrads(x + 1);
+  }
+};
+
+class Test126 : public TrigoGradsTest {
+public:
+  String getExpr() const {
+    return _T("cot(x+1)");
+  }
+  Real fr(const Real &x) const {
+    return cotGrads(x + 1);
+  }
+};
+
+class Test127 : public TrigoGradsTest {
+public:
+  String getExpr() const {
+    return _T("csc(x+1)");
+  }
+  Real fr(const Real &x) const {
+    return cscGrads(x + 1);
+  }
+};
+
+class Test128 : public TrigoGradsTest {
+public:
+  String getExpr() const {
+    return _T("sec(x+1)");
+  }
+  Real fr(const Real &x) const {
+    return secGrads(x + 1);
+  }
+};
+
+class Test129: public TrigoGradsTest {
+public:
+  String getExpr() const {
+    return _T("asin(x/3)");
+  }
+  Real fr(const Real &x) const {
+    return asinGrads(x / 3);
+  }
+};
+
+class Test130 : public TrigoGradsTest {
+public:
+  String getExpr() const {
+    return _T("acos(x/3)");
+  }
+  Real fr(const Real &x) const {
+    return acosGrads(x / 3);
+  }
+};
+
+class Test131 : public TrigoGradsTest {
+public:
+  String getExpr() const {
+    return _T("atan(x+1)");
+  }
+  Real fr(const Real &x) const {
+    return atanGrads(x + 1);
+  }
+};
+
+class Test132 : public TrigoGradsTest {
+public:
+  String getExpr() const {
+    return _T("atan2(x+7,5)");
+  }
+  Real fr(const Real &x) const {
+    return atan2Grads(x + 7, 5);
+  }
+};
+
+class Test133 : public TrigoGradsTest {
+public:
+  String getExpr() const {
+    return _T("acot(x+1)");
+  }
+  Real fr(const Real &x) const {
+    return acotGrads(x + 1);
+  }
+};
+
+class Test134 : public TrigoGradsTest {
+public:
+  String getExpr() const {
+    return _T("acsc(x+4)");
+  }
+  Real fr(const Real &x) const {
+    return acscGrads(x + 4);
+  }
+};
+
+class Test135 : public TrigoGradsTest {
+public:
+  String getExpr() const {
+    return _T("asec(x+4)");
+  }
+  Real fr(const Real &x) const {
+    return asecGrads(x + 4);
+  }
+};
+
+
+
 static Test00  test00;
 static Test01  test01;
 static Test02  test02;
@@ -1301,6 +1585,32 @@ static Test106 test106;
 static Test107 test107;
 static Test108 test108;
 static Test109 test109;
+static Test110 test110;
+static Test111 test111;
+static Test112 test112;
+static Test113 test113;
+static Test114 test114;
+static Test115 test115;
+static Test116 test116;
+static Test117 test117;
+static Test118 test118;
+static Test119 test119;
+static Test120 test120;
+static Test121 test121;
+static Test122 test122;
+static Test123 test123;
+static Test124 test124;
+static Test125 test125;
+static Test126 test126;
+static Test127 test127;
+static Test128 test128;
+static Test129 test129;
+static Test130 test130;
+static Test131 test131;
+static Test132 test132;
+static Test133 test133;
+static Test134 test134;
+static Test135 test135;
 
 static ExpressionTest *testCases[] = {
    (ExpressionTest*)&test00
@@ -1413,6 +1723,32 @@ static ExpressionTest *testCases[] = {
   ,(ExpressionTest*)&test107
   ,(ExpressionTest*)&test108
   ,(ExpressionTest*)&test109
+  ,(ExpressionTest*)&test110
+  ,(ExpressionTest*)&test111
+  ,(ExpressionTest*)&test112
+  ,(ExpressionTest*)&test113
+  ,(ExpressionTest*)&test114
+  ,(ExpressionTest*)&test115
+  ,(ExpressionTest*)&test116
+  ,(ExpressionTest*)&test117
+  ,(ExpressionTest*)&test118
+  ,(ExpressionTest*)&test119
+  ,(ExpressionTest*)&test120
+  ,(ExpressionTest*)&test121
+  ,(ExpressionTest*)&test122
+  ,(ExpressionTest*)&test123
+  ,(ExpressionTest*)&test124
+  ,(ExpressionTest*)&test125
+  ,(ExpressionTest*)&test126
+  ,(ExpressionTest*)&test127
+  ,(ExpressionTest*)&test128
+  ,(ExpressionTest*)&test129
+  ,(ExpressionTest*)&test130
+  ,(ExpressionTest*)&test131
+  ,(ExpressionTest*)&test132
+  ,(ExpressionTest*)&test133
+  ,(ExpressionTest*)&test134
+  ,(ExpressionTest*)&test135
 };
 
 class ExpressionTestArray : public CompactArray<ExpressionTest*> {

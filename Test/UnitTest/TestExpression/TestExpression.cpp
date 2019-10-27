@@ -22,7 +22,7 @@ namespace TestExpression {
     ~LOG() {
       OUTPUT(_T("%s"), str().c_str());
     }
-    std::wostringstream &operator<<(const char *s) {
+    LOG &operator<<(const char *s) {
       USES_ACONVERSION;
       const wchar_t *wstr = A2W(s);
       __super::operator<<( wstr );
@@ -59,6 +59,8 @@ namespace TestExpression {
       verify(!e.isOk());
     }
   }
+
+//#define GENERATE_LISTFILES
 
 #ifdef GENERATE_LISTFILES
 #define COND_MKFOPEN(...) MKFOPEN(__VA_ARGS__)
@@ -170,6 +172,9 @@ namespace TestExpression {
         for(UINT i = 0; i < n; i++) {
           ExpressionTest &test = *testArray[i];
           const String    expr = test.getExpr();
+          if (i == 119) {
+            int fisk = 1;
+          }
 #ifdef TRACE_MEMORY
           debugLog(_T("testcase %3d:<%-50s>\n"),i,expr.cstr());
 #endif
@@ -180,7 +185,9 @@ namespace TestExpression {
           FILE * dumpFile   = openEvalDumpFile(       i);
           FILE *RdumpFile   = openEvalReducedDumpFile(i);
 
-          Expression compiledExpr, interpreterExpr, reducedExpr;
+          Expression compiledExpr(   test.getTrigonometricMode());
+          Expression interpreterExpr(test.getTrigonometricMode());
+          Expression reducedExpr(    test.getTrigonometricMode());
           compiledExpr.compile(expr, true,false, listFile);
           reducedExpr.compile( expr, true,true ,RlistFile);
 
@@ -223,28 +230,32 @@ namespace TestExpression {
                   const bool reducedDefined     = !isnan(reducedResult    );
                   const bool interpreterDefined = !isnan(interpreterResult);
 
-#define LOGERROR()                                                                          \
-{ LOG log;                                                                                  \
-  log << "TestCase[" << i << "]:<" << expr << ">(x=" << toString(x) << ") failed." << endl \
-      << "Result(C++          ):" << toString(cppResult                   ) << "." << endl  \
-      << "Result(Compiled     ):" << toString(compiledResult              ) << "." << endl  \
-      << "Result(Reduced      ):" << toString(reducedResult               ) << "." << endl  \
-      << "Result(Interpreter  ):" << toString(interpreterResult           ) << "." << endl  \
-      << "Difference(comp-C++ ):" << toString(compiledResult - cppResult  ) << "." << endl; \
+
+
+#define RESULT(v) format(_T("%-10s defined:%-5s, v=%s.")                          \
+                        ,_T(#v), boolToStr(v##Defined)                            \
+                        , toString(v##Result,20,28,std::ios::scientific).cstr())
+
+
+#define LOGERROR(v)                                                                                  \
+{ LOG log;                                                                                           \
+  log << _T("TestCase[" << i << "]:<") << expr << ">(x=" << toString(x) << ") failed."      << endl  \
+      << RESULT(cpp                   )                                                     << endl  \
+      << RESULT(v                     )                                                     << endl  \
+      << "Diff(" << #v << "Result - cppResult:" << toString(v##Result - cppResult  ) << "." << endl; \
 }
 
-                  if((compiledDefined != cppDefined) || (compiledDefined && fabs(compiledResult - cppResult) > 3e-15)) {
-                    LOGERROR();
-                    verify(false);
-                  }
-                  if((reducedDefined != cppDefined) || (reducedDefined  && fabs(reducedResult  - cppResult) > 3e-15)) {
-                    LOGERROR();
-                    verify(false);
-                  }
-                  if((interpreterDefined != cppDefined) || (interpreterDefined && fabs(interpreterResult - cppResult) > 3e-15)) {
-                    LOGERROR();
-                    verify(false);
-                  }
+#define CHECKDEFANDVALUE(v)                                                               \
+{ if((v##Defined != cppDefined) || (v##Defined && fabs(v##Result - cppResult) > 3e-13)) { \
+    LOGERROR(v);                                                                          \
+    verify(false);                                                                        \
+  }                                                                                       \
+}
+
+
+                  CHECKDEFANDVALUE(compiled   )
+                  CHECKDEFANDVALUE(reduced    )
+                  CHECKDEFANDVALUE(interpreter)
                 }
                 break;
               case EXPR_RETURN_BOOL:
