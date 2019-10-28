@@ -6,9 +6,9 @@ static void TestInternetExample() {
   stringstream iss("1.0 -NaN inf Inf nan -inf NaN 1.2 inf");
   double u, v, w, x, y, z, a, b, fail_double;
   string fail_string;
-  iss >> charDoubleManip()
+  iss >> CharManip<double>
       >> u >> v >> w >> x >> y >> z >> a >> b
-      >> charDoubleManip()
+      >> CharManip<double>
       >> fail_double;
    cout << u << " " << v << " " << w << " "
              << x << " " << y << " " << z << " " << a << " " << b << endl;
@@ -52,7 +52,7 @@ static void TestMyExample() {
   wstringstream iss(input.str());
   for(size_t index = 0; !iss.eof(); index++) {
     double x;
-    iss >> wcharDoubleManip() >> x;
+    iss >> WcharManip<double> >> x;
     if(index >= testData.size()) {
       cout << "Too many data read. expected only " << testData.size() << " elements" << endl;
       break;
@@ -90,7 +90,7 @@ int main(int argc, char **argv) {
       }
     }
   }
-  cout << UndefFloatValueStreamScanner::getInstance().toString();
+  cout << UndefNumericStreamScanner::getInstance().toString();
   try {
     switch(cmd) {
     case CMD_TESTINTERNETEXAMPLE :
