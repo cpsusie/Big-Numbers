@@ -1141,6 +1141,8 @@
   <ItemGroup>
     <ClCompile Include="AkimaSpline.cpp" />
     <ClCompile Include="ChiSquaredDistribution.cpp" />
+    <ClCompile Include="ChiSquareGOFTest.cpp" />
+    <ClCompile Include="ChiSquareIndependentTest.cpp" />
     <ClCompile Include="CommonSpline.cpp" />
     <ClCompile Include="Complex.cpp" />
     <ClCompile Include="ComplexIO.cpp" />
@@ -1218,7 +1220,7 @@
     <ClCompile Include="SigmoidIterator.cpp" />
     <ClCompile Include="Simplex.cpp" />
     <ClCompile Include="SolveTriDiag.cpp" />
-    <ClCompile Include="Statistic.cpp" />
+    <ClCompile Include="DescStatistic.cpp" />
     <ClCompile Include="Triangle.cpp" />
     <ClCompile Include="TriangleInfo.cpp" />
     <ClCompile Include="TriangleIO.cpp" />

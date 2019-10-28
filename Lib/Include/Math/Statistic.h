@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Matrix.h"
 #include "Real.h"
 
 class DescriptiveStatistics {
@@ -30,22 +31,15 @@ public:
   String toString(int prec = 6);
 };
 
-// Chisquare Goodness of Fit test. return p-value for null-hypothesis v == expected.
-// p close to 1 is good for the3 null-hypothesis, close to 0 is bad. (close to 0 usualy < 0.05 (significance level)
+// Chisquare Independency test. return p-value for null-hypothesis: ross in m are indenpent (of row-number)
+// p close to 1 is good for the null-hypothesis, close to 0 is bad. (close to 0 usually < 0.05 (significance level)
 // Assume v.size == expected.size, and both are >= 2. and all elements of expected > 0
-template<class ValueArray> static Real chiSquareGoodnessOfFitTest(const ValueArray &v, const ValueArray &expected) {
-  if (v.size() != expected.size()) {
-    throwInvalidArgumentException(__TFUNCTION__, _T("v.size=%zu, expected.size=%zu")
-      , v.size(), expected.size());
-  }
-  if (v.size() < 2) {
-    throwInvalidArgumentException(__TFUNCTION__, _T("v.size=%zu. must be >= 2")
-      , v.size());
-  }
-  Real q = 0;
-  const size_t n = v.size();
-  for (size_t i = 0; i < n; i++) {
-    q += sqr(v[i] - expected[i]) / expected[i];
-  }
-  return 1.0 - chiSquaredDistribution((Real)n - 1, q);
-}
+double chiSquareIndependencyTest(const Matrix &m);
+
+// Chisquare Goodness of Fit test. return p-value for null-hypothesis observed == expected.
+// p close to 1 is good for the null-hypothesis, close to 0 is bad. (close to 0 usually < 0.05 (significance level)
+// Assume observed.size == expected.size, observed.size >= 2.
+// If expectedAsFrequency = true, expected is interpreted as frequencies, and sum(expected) == 1
+// In this case the expected values are calculated as ex[i] = exepected[i] * sum(observed)
+// else expected are used as given, and sum(expected) must equal sum(observed)
+double chiSquareGoodnessOfFitTest(const CompactDoubleArray &observed, const CompactDoubleArray &expected, bool expectedAsFrequency=true);

@@ -4,6 +4,7 @@
 #include <Math/MathLib.h>
 #include <Math/Int128.h>
 #include <Math/PrimeFactors.h>
+#include <Math/Statistic.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -16,22 +17,28 @@ namespace TestRandom {
   }
 
   static void dumpAllPValues(const TCHAR *method, const TCHAR *generatorName, bool is64Bit, const CompactDoubleArray &a) {
-    if(a.size() == 0) return;
+    if(a.size() <= 1) return;
+    CompactDoubleArray b(a);
+    b.sort(doubleHashCmp);
+
     StringArray names(Tokenizer(method, _T(":")));
     const String fileName = format(_T("%s\\AllPValues_%s%s.txt")
                                   ,getDirName(is64Bit).cstr()
                                   ,generatorName
                                   ,names.last().cstr());
-    FILE *f = MKFOPEN(fileName, _T("w"));
-    for (size_t i = 0; i < a.size(); i++) {
-      _ftprintf(f, _T("%le\n"), a[i]);
+    FILE        *f    = MKFOPEN(fileName, _T("w"));
+    const size_t n    = a.size();
+    const double step = 1.0 / (n-1);
+    double       x    = 0;
+    for(const double *yp = &b.first(), *endp = &b.last(); yp<=endp; x += step) {
+      fprintf(f, "%.6lf %10.6le\n", x, *(yp++));
     }
     fclose(f);
   }
 
   static CompactUintArray filterFactors(const CompactInt64Array &a) {
     CompactUintArray result;
-    for (size_t i = 0; i < a.size(); i++) {
+    for(size_t i = 0; i < a.size(); i++) {
       const INT64 f = a[i];
       if((f == 1) || (f > 256)) continue;
       result.add((int)f);
@@ -39,55 +46,45 @@ namespace TestRandom {
     return result;
   }
 
-  template<class T> CompactDoubleArray checkIsUniformDist(const T &a, bool is64Bit, INT64 from, INT64 to) {
+  template<class T> CompactDoubleArray checkIsUniformDist(const CompactArray<T> &a, bool is64Bit, T from, T to) {
+    const size_t n = a.size();
+    CompactArray<_int128> b(n);
+    for(size_t i = 0; i < n; i++) {
+      const T x = a[i];
+      verify((from <= x) && (x <= to));
+      b.add(x);
+      b.last() -= from;
+    }
     const _int128           length = (_int128)to - from + 1;
     const CompactUintArray  allFactors = filterFactors(PrimeFactorArray((length > ULLONG_MAX)?((INT64)256):((INT64)length),227).getAllFactors().sort(int64HashCmp));
     CompactDoubleArray      allPValues;
     for(size_t i = 0; i < allFactors.size(); i++) {
       const UINT bucketCount = allFactors[i];
-      CompactIntArray observed(bucketCount);
-      observed.add(0, (int)0, bucketCount);
-      for(size_t i = 0; i < a.size(); i++) {
-        const INT64 x = a[i];
-        verify((from <= x) && (x <= to));
-        _int128 t128 = (_int128)x-from;
+      CompactDoubleArray observed(bucketCount);
+      observed.add(0, 0.0, bucketCount);
+      for(size_t i = 0; i < n; i++) {
+        _int128 t128 = b[i];
         t128 *= bucketCount;
         t128 /= length;
-        UINT index = t128;
+        const UINT index = t128;
         observed[index]++;
       }
-      const double e = (double)a.size() / bucketCount;
+      const double e = (double)n / bucketCount;
       CompactDoubleArray expected(bucketCount);
       expected.add(0,e,bucketCount);
 
-      double Q = 0;
-      for(UINT b = 0; b < bucketCount; b++) {
-        Q += sqr(expected[b] - observed[b]) / e;
-      }
-      const double P = 1.0 - getDouble(chiSquaredDistribution(bucketCount-1,Q));
-      if(P < 1e-12) {
-#ifdef _DEBUG
-        Real P1 = 1.0 - chiSquaredDistribution(bucketCount-1,Q);
-#endif
-        const String fileName = format(_T("%s\\LowPvalue-%I64d-%I64d-%03d.dat")
-                                      ,getDirName(is64Bit).cstr()
-                                      ,from,to,bucketCount);
-        FILE *f = MKFOPEN(fileName,_T("w"));
-        for (size_t i = 0; i < observed.size(); i++) {
-          _ftprintf(f,_T("%d\n"), observed[i]);
+      const double pvalue = chiSquareGoodnessOfFitTest(observed, expected,false);
+      allPValues.add(pvalue);
+      if(pvalue < 1e-9) {
+        debugLog(_T("%10.17le %10s-%10s  bucketCount:%5u\n"), pvalue, toString(from).cstr(), toString(to).cstr(), bucketCount);
+        CompactDoubleArray c(n);
+        for(size_t i = 0; i < n; i++) {
+          c.add((double)a[i]);
         }
-        TCHAR tmpstr[100];
-        _ftprintf(f,_T("Length:%s, allFactors:%s\n"), _i128tot(length,tmpstr,10), allFactors.toStringBasicType().cstr());
-        _ftprintf(f,_T("Expected:%le, Q:%le, P:%le\n"),e,Q,P);
-        fclose(f);
-      }
-      allPValues.add(P);
-      if(P <= 0.05) {
-        TCHAR tmpstr[100];
-        OUTPUT(_T("P=%11.5le, Q=%.3le, Interval[%+20lld,%+20lld], length:%19s, buckets:%3lu, factors:%s")
-              ,P, Q, from,to,_i128tot(length,tmpstr,10),bucketCount
-              ,allFactors.toStringBasicType().cstr()
-              );
+        c.sort(doubleHashCmp);
+        for(size_t i = 0; i < n; i++) {
+          debugLog(_T("%le\n"), c[i]);
+        }
       }
     }
     return allPValues;
@@ -97,7 +94,7 @@ namespace TestRandom {
 
   void _TestNextInt32_INT_MIN_MAX(RandomGenerator *rnd) {
     rnd->randomize();
-    OUTPUT(_T("%s gen:%s"), __TFUNCTION__,rnd->getName());
+    INFO(_T("%s gen:%s"), __TFUNCTION__,rnd->getName());
     CompactIntArray samples(SAMPLECOUNT);
     for(int i = 0; i < SAMPLECOUNT; i++) {
       const int x = rnd->nextInt();
@@ -108,7 +105,7 @@ namespace TestRandom {
 
   void _TestNextInt64_LLONG_MIN_MAX(RandomGenerator *rnd) {
     rnd->randomize();
-    OUTPUT(_T("%s gen:%s"), __TFUNCTION__,rnd->getName());
+    INFO(_T("%s gen:%s"), __TFUNCTION__,rnd->getName());
     CompactInt64Array samples(SAMPLECOUNT);
     for(int i = 0; i < SAMPLECOUNT; i++) {
       const INT64 x = rnd->nextInt64();
@@ -119,7 +116,7 @@ namespace TestRandom {
 
   void _TestNextInt32_0_n(RandomGenerator *rnd) {
     rnd->randomize();
-    OUTPUT(_T("%s gen:%s"), __TFUNCTION__,rnd->getName());
+    INFO(_T("%s gen:%s"), __TFUNCTION__,rnd->getName());
     CompactDoubleArray allPValues;
     for(int n = 10; n > 0; n *= 3) {
       CompactIntArray samples(SAMPLECOUNT);
@@ -136,7 +133,7 @@ namespace TestRandom {
   void _TestNextInt64_0_n(RandomGenerator *rnd) {
     rnd->randomize();
     CompactDoubleArray allPValues;
-    OUTPUT(_T("%s gen:%s"), __TFUNCTION__,rnd->getName());
+    INFO(_T("%s gen:%s"), __TFUNCTION__,rnd->getName());
     for(INT64 n = 10; n > 0; n *= 3) {
       CompactInt64Array samples(SAMPLECOUNT);
       for(int i = 0; i < SAMPLECOUNT; i++) {
@@ -144,7 +141,7 @@ namespace TestRandom {
         verify((0 <= x) && (x < n));
         samples.add(x);
       }
-      allPValues.addAll(checkIsUniformDist(samples, true, 0, n-1));
+      allPValues.addAll(checkIsUniformDist(samples, true, (INT64)0, n-1));
     }
     dumpAllPValues(__TFUNCTION__, rnd->getName(), true, allPValues);
   }
@@ -191,7 +188,7 @@ namespace TestRandom {
           const UINT x = randInt();
           samples.add(x);
         }
-        dumpAllPValues(__TFUNCTION__, newRnd->getName(), false, checkIsUniformDist(samples, false, 0, UINT_MAX));
+        dumpAllPValues(__TFUNCTION__, newRnd->getName(), false, checkIsUniformDist(samples, false, (UINT)0, UINT_MAX));
         setStdRandomGenerator(oldRnd);
       }
     }
@@ -206,7 +203,7 @@ namespace TestRandom {
           const UINT64 x = randInt64();
           samples.add(x);
         }
-        dumpAllPValues(__TFUNCTION__, newRnd->getName(), true, checkIsUniformDist(samples, true, 0, ULLONG_MAX));
+        dumpAllPValues(__TFUNCTION__, newRnd->getName(), true, checkIsUniformDist(samples, true, (UINT64)0, ULLONG_MAX));
         setStdRandomGenerator(oldRnd);
       }
     }
@@ -223,7 +220,7 @@ namespace TestRandom {
             const UINT x = randInt((UINT)n);
             samples.add(x);
           }
-          allPValues.addAll(checkIsUniformDist(samples, false, 0, n-1));
+          allPValues.addAll(checkIsUniformDist(samples, false, (UINT)0, (UINT)n-1));
         }
         dumpAllPValues(__TFUNCTION__, newRnd->getName(), false, allPValues);
         setStdRandomGenerator(oldRnd);
@@ -242,7 +239,7 @@ namespace TestRandom {
             const UINT64 x = randInt64(n);
             samples.add(x);
           }
-          allPValues.addAll(checkIsUniformDist(samples, true, 0, n-1));
+          allPValues.addAll(checkIsUniformDist(samples, true, (UINT64)0, n-1));
         }
         dumpAllPValues(__TFUNCTION__, newRnd->getName(), true, allPValues);
         setStdRandomGenerator(oldRnd);

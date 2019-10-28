@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include <CompactArray.h>
+#include <Math/Matrix.h>
 #include <Math/Statistic.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
@@ -24,7 +26,7 @@ static double testData[] = {
   TEST_CLASS(TestStatistic) {
   public:
 
-    TEST_METHOD(Statistic) {
+    TEST_METHOD(DescriptiveStatistic) {
       CompactRealArray data;
 
       for(int i = 0; i < ARRAYSIZE(testData); i++) {
@@ -48,5 +50,26 @@ static double testData[] = {
       checkValue(result.m_sum              ,76.25              );
       checkValue(result.m_count            ,41                 );
     }
+
+    TEST_METHOD(TestGodnessOfFit) {
+      const double obsData[]  = { 50, 30, 32, 67, 78, 34, 1, 9, 3 };
+      const double freqData[] = { 0.16, 0.10, 0.12, 0.22, 0.24, 0.11, 0.01, 0.03, 0.01 };
+
+      CompactDoubleArray obs, freq;
+      obs.add(0, obsData, ARRAYSIZE(obsData));
+      freq.add(0, freqData, ARRAYSIZE(freqData));
+      const double pValue = chiSquareGoodnessOfFitTest(obs, freq);
+      verify(fabs(pValue - 0.96950428) < 1e-7);
+    }
+
+    TEST_METHOD(TestIndependency) {
+      Matrix m(3, 4);
+      m(0, 0) = 2; m(0, 1) = 4; m(0, 2) = 6; m(0, 3) = 8;
+      m(1, 0) = 1; m(1, 1) = 3; m(1, 2) = 5; m(1, 3) = 7;
+      m(2, 0) = 3; m(2, 1) = 5; m(2, 2) = 5; m(2, 3) = 6;
+      const double pValue = chiSquareIndependencyTest(m);
+      verify(fabs(pValue - 0.96148437) < 1e-7);
+    }
+
   };
 }

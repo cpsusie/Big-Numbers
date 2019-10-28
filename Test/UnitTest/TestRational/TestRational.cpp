@@ -45,76 +45,80 @@ namespace TestRational {
     TEST_METHOD(RationalTestBasicOperations) {
       JavaRandom rnd;
       rnd.randomize();
+      try {
+        //  double maxTotalError = 0;
+        for(int i = 0; i < 100000; i++) {
+          /*
+          if(i % 100 == 99) {
+          printf("i:%10d. maxTotalError:%le\r", i, maxTotalError);
+          }
+          */
+          const int nm1 = randInt(-1000, 1000   , &rnd);
+          const int dn1 = randInt(    1, 1000000, &rnd);
+          const int nm2 = randInt(-1000, 1000   , &rnd);
+          const int dn2 = randInt(    1, 1000000, &rnd);
 
-      //  double maxTotalError = 0;
-      for(int i = 0; i < 100000; i++) {
-        /*
-        if(i % 100 == 99) {
-        printf("i:%10d. maxTotalError:%le\r", i, maxTotalError);
-        }
-        */
-        const int nm1 = randInt(-1000, 1000   , &rnd);
-        const int dn1 = randInt(    1, 1000000, &rnd);
-        const int nm2 = randInt(-1000, 1000   , &rnd);
-        const int dn2 = randInt(    1, 1000000, &rnd);
+          const Rational r1(nm1, dn1);
+          const Rational r2(nm2, dn2);
 
-        const Rational r1(nm1, dn1);
-        const Rational r2(nm2, dn2);
+          const double d1 = getDouble(r1);
+          const double d2 = getDouble(r2);
 
-        const double d1 = getDouble(r1);
-        const double d2 = getDouble(r2);
+          const bool rgt = r1 >  r2, dgt = d1 >  d2;
+          const bool rge = r1 >= r2, dge = d1 >= d2;
+          const bool rlt = r1 <  r2, dlt = d1 <  d2;
+          const bool rle = r1 <= r2, dle = d1 <= d2;
+          const bool req = r1 == r2, deq = d1 == d2;
+          const bool rne = r1 != r2, dne = d1 != d2;
 
-        const bool rgt = r1 >  r2, dgt = d1 >  d2;
-        const bool rge = r1 >= r2, dge = d1 >= d2;
-        const bool rlt = r1 <  r2, dlt = d1 <  d2;
-        const bool rle = r1 <= r2, dle = d1 <= d2;
-        const bool req = r1 == r2, deq = d1 == d2;
-        const bool rne = r1 != r2, dne = d1 != d2;
+          verify(rgt == dgt);
+          verify(rge == dge);
+          verify(rlt == dlt);
+          verify(rle == dle);
+          verify(req == deq);
+          verify(rne == dne);
 
-        verify(rgt == dgt);
-        verify(rge == dge);
-        verify(rlt == dlt);
-        verify(rle == dle);
-        verify(req == deq);
-        verify(rne == dne);
+          VERIFYOP(+, 1e-13)
+          VERIFYOP(-, 1e-13)
+          VERIFYOP(*, 1e-14)
 
-        VERIFYOP(+, 1e-13)
-        VERIFYOP(-, 1e-13)
-        VERIFYOP(*, 1e-14)
+          if(!r2.isZero()) {
+            VERIFYOP(/ , 3e-9)
+          }
 
-        if(!r2.isZero()) {
-          VERIFYOP(/ , 3e-9)
-        }
+          Rational zP0 = pow(Rational::_0, 0);
+          verify(isnan(zP0));
+          Rational zPn = pow(Rational::_0, -1);
+          verify(isinf(zPn));
+          Rational zP2 = pow(Rational::_0, 2);
+          verify(zP2 == 0);
+          Rational nzP0 = pow(Rational(2,5), 0);
+          verify(nzP0 == 1);
 
-        Rational zP0 = pow(Rational::_0, 0);
-        verify(isnan(zP0));
-        Rational zPn = pow(Rational::_0, -1);
-        verify(isinf(zPn));
-        Rational zP2 = pow(Rational::_0, 2);
-        verify(zP2 == 0);
-        Rational nzP0 = pow(Rational(2,5), 0);
-        verify(nzP0 == 1);
+          double dzP0 = Rational::pow(0.0, Rational::_0);
+          verify(isnan(dzP0));
+          double dzPn = Rational::pow(0.0, -Rational::_1);
+          verify(isinf(dzPn));
+          double dzP2 = Rational::pow(0.0, Rational(2));
+          verify(dzP2 == 0);
+          double dnzP0 = Rational::pow(0.4, Rational::_0);
+          verify(dnzP0 == 1);
 
-        double dzP0 = Rational::pow(0.0, Rational::_0);
-        verify(isnan(dzP0));
-        double dzPn = Rational::pow(0.0, -Rational::_1);
-        verify(isinf(dzPn));
-        double dzP2 = Rational::pow(0.0, Rational(2));
-        verify(dzP2 == 0);
-        double dnzP0 = Rational::pow(0.4, Rational::_0);
-        verify(dnzP0 == 1);
+          const int      expo = r1.isZero() ? randInt(1, 4,&rnd) : randInt(-3, 3, &rnd);
+          const Rational r1Pe = pow(r1, expo);
+          const Real     d1Pe = mypow(d1, expo);
+          Real           error = fabs(getReal(r1Pe) - d1Pe);
+          if(d1Pe != 0) error /= d1Pe;
+          verify(error < 1e-15);
 
-        const int      expo = r1.isZero() ? randInt(1, 4,&rnd) : randInt(-3, 3, &rnd);
-        const Rational r1Pe = pow(r1, expo);
-        const Real     d1Pe = mypow(d1, expo);
-        Real           error = fabs(getReal(r1Pe) - d1Pe);
-        if(d1Pe != 0) error /= d1Pe;
-        verify(error < 1e-15);
-
-        const Rational rfd(d1);
-        const double   dfr = getDouble(rfd);
-        error = fabs(dfr - d1);
-        verify(error < 1e-13);
+          const Rational rfd(d1);
+          const double   dfr = getDouble(rfd);
+          error = fabs(dfr - d1);
+          verify(error < 1e-13);
+        } // for(...)
+      } catch (Exception e) {
+        OUTPUT(_T("Exception:%s"), e.what());
+        verify(false);
       }
     }
 

@@ -144,32 +144,29 @@ namespace TestCompactArray {
     TEST_METHOD(CompactArrayRandomSample) {
       JavaRandom rnd;
       rnd.randomize();
-      CompactIntArray S;
-      CompactRealArray counters, expected;
 
 #define SAMPLE_COUNT  20000
 #define SOURCE_SIZE   20
 #define SAMPLE_SIZE   5
 
-      S.clear();
-      counters.clear();
-      expected.clear();
+      CompactIntArray S(SOURCE_SIZE); // each element in range [0..SOURCE_SIZE-1]
+      CompactDoubleArray counters(SOURCE_SIZE), frequencies(SOURCE_SIZE);
       for(int i = 0; i < SOURCE_SIZE; i++) {
         S.add(i);
-        counters.add(0);
-        expected.add((Real)SAMPLE_SIZE / SOURCE_SIZE * SAMPLE_COUNT);
       }
+      counters.add(0,0.0, SOURCE_SIZE);
       for(int e = 0; e < SAMPLE_COUNT; e++) {
-        CompactIntArray sample = S.getRandomSample(SAMPLE_SIZE, &rnd);
-        for(size_t j = 0; j < sample.size(); j++) {
-          counters[sample[j]]++;
+        const CompactIntArray sample = S.getRandomSample(SAMPLE_SIZE, &rnd);
+        for(const int *ep = &sample.first(), *endp = &sample.last(); ep <= endp;) {
+          counters[*(ep++)]++;
         }
       }
-      const Real pvalue = chiSquareGoodnessOfFitTest(counters, expected);
-      if (pvalue < 0.1) {
-        OUTPUT(_T("Randomsample differs from expected with pvalue = %s"), toString(pvalue).cstr());
-        OUTPUT(_T("Counters:%s"), counters.toStringBasicType().cstr());
-        OUTPUT(_T("Expected:%s"), expected.toStringBasicType().cstr());
+      frequencies.add(0, 1.0 / SOURCE_SIZE, SOURCE_SIZE);
+      const double pvalue = chiSquareGoodnessOfFitTest(counters, frequencies);
+      if(pvalue < 0.1) {
+        OUTPUT(_T("Randomsample differs from expected with pvalue = %.6lf"), pvalue);
+        OUTPUT(_T("Counters   :%s"), counters.toStringBasicType().cstr());
+        OUTPUT(_T("Frequencies:%s"), frequencies.toStringBasicType().cstr());
       }
       INFO(_T("Random samples"));
       for(int i = 0; i < SOURCE_SIZE; i++) {

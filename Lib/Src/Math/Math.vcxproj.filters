@@ -38,6 +38,9 @@
     <Filter Include="Source Files\Triangle">
       <UniqueIdentifier>{2de3b9ba-c913-496e-9b21-7c91010b72c6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Statistic">
+      <UniqueIdentifier>{9718c338-1f37-45cd-afed-f8140daf355e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ComplexMatrix.cpp">
@@ -137,9 +140,6 @@
       <Filter>Source Files\Misc</Filter>
     </ClCompile>
     <ClCompile Include="SigmoidIterator.cpp">
-      <Filter>Source Files\Misc</Filter>
-    </ClCompile>
-    <ClCompile Include="Statistic.cpp">
       <Filter>Source Files\Misc</Filter>
     </ClCompile>
     <ClCompile Include="Int128IO.cpp">
@@ -243,6 +243,15 @@
     </ClCompile>
     <ClCompile Include="RationalRandom.cpp">
       <Filter>Source Files\Number Types</Filter>
+    </ClCompile>
+    <ClCompile Include="ChiSquareGOFTest.cpp">
+      <Filter>Source Files\Statistic</Filter>
+    </ClCompile>
+    <ClCompile Include="ChiSquareIndependentTest.cpp">
+      <Filter>Source Files\Statistic</Filter>
+    </ClCompile>
+    <ClCompile Include="DescStatistic.cpp">
+      <Filter>Source Files\Statistic</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

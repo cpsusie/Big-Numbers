@@ -294,37 +294,36 @@ namespace TestBitSet {
 
   static void testRandomSample(const Collection<Key> &c, RandomGenerator &rnd) {
     INFO(_T("Testing getRandomSample"));
-    Collection<Key> S(c);
-    CompactRealArray counters, expected;
 
 #define SAMPLE_COUNT  20000
 #define SOURCE_SIZE   20
 #define SAMPLE_SIZE   5
 
+    Collection<Key> S(c); // each element in range [0..SOURCE_SIZE-1]
+    CompactDoubleArray counters(SOURCE_SIZE), frequencies(SOURCE_SIZE);
+
     S.clear();
-    counters.clear();
-    expected.clear();
     for(int i = 0; i < SOURCE_SIZE; i++) {
       S.add(i);
-      counters.add(0);
-      expected.add((Real)SAMPLE_SIZE / SOURCE_SIZE * SAMPLE_COUNT);
     }
+    counters.add(0,0.0,SOURCE_SIZE);
     for(size_t e = 0; e < SAMPLE_COUNT; e++) {
-      Collection<Key> sample = S.getRandomSample(SAMPLE_SIZE, &rnd); // sample = 5 elements in range [0..19]
+      Collection<Key> sample = S.getRandomSample(SAMPLE_SIZE, &rnd); // sample = SAMPLE_SIZE elements in range [0..SOURCE_SIZE-1]
       for(Iterator<Key> it = sample.getIterator(); it.hasNext(); ) {
         counters[it.next().getValue()]++;
       }
     }
+    frequencies.add(0, 1.0 / SOURCE_SIZE, SOURCE_SIZE);
 //      double sum1 = sum(counters);
 //      for(int i = 0; i < SOURCE_SIZE; i++) {
 //        counters[i] += (Real)(i - ((Real)SOURCE_SIZE-1)/2.0) * 10;
 //      }
 //      double sum2 = sum(counters);
-    const Real pvalue = chiSquareGoodnessOfFitTest(counters, expected);
+    const double pvalue = chiSquareGoodnessOfFitTest(counters, frequencies);
     if(pvalue < 0.1) {
-      OUTPUT(_T("Randomsample differs from expected with pvalue = %s"), toString(pvalue).cstr());
-      OUTPUT(_T("Counters:%s"), counters.toStringBasicType().cstr());
-      OUTPUT(_T("Expected:%s"), expected.toStringBasicType().cstr());
+      OUTPUT(_T("Randomsample differs from expected with pvalue = %.6lf"), pvalue);
+      OUTPUT(_T("Counters   :%s"), counters.toStringBasicType().cstr());
+      OUTPUT(_T("Frequencies:%s"), frequencies.toStringBasicType().cstr());
     }
   }
 
