@@ -225,11 +225,10 @@ void BigRealTestClass::measureQuot() {
   tcout     << header << endl;
   dataFile  << header << endl;
 
-  const BigReal yStep1 = e(BigReal(165),-2);
-  const BigReal yStep2 = BigReal(3);
+  const BigInt  yStep2 = 3;
   const BigReal yEnd   = e(BigReal::_1,30);
 
-  for(BigInt y = 2; y < yEnd; y = (y.getLength() == 1) ? (y * yStep1) : (y * yStep2)) {
+  for(BigInt y = 2; y < yEnd; y = (y.getLength() == 1) ? (y * BigReal::_2) : (y * yStep2)) {
     for(unsigned int p = 24; p < 1000000; p = (p < 60) ? (p + 3) : (p *= 3)) {
       Array<BigReal> xArray,yArray;
       int xLength = rand() % 1000 + 20;
@@ -949,7 +948,7 @@ void BigRealTestClass::testFractionate() {
     x.fractionate(NULL, &fraction);
     _tprintf(_T("fracpart1:%s\n"), toString(fraction).cstr());
 
-    intPart  = BigReal(_T("20202020202020202020202020202.20202020202"));
+    intPart  = BigInt(_T("20202020202020202020202020202"));
     fraction = BigReal(_T("10101010101010101010101010101.10101010101"));
 
     x.fractionate(&intPart, NULL);

@@ -890,12 +890,6 @@ public:
   // Return *this
   BigReal &multPow10(BRExpoType exp);
 
-  // Result.digitPool = x.digitPool
-  friend BigInt operator/ (        const BigInt  &x, const BigInt &y);
-  // Result.digitPool = x.digitPool
-  friend BigInt operator% (        const BigInt  &x, const BigInt &y);
-  // Result.digitPool = x.digitPool
-  friend BigInt operator- (        const BigInt  &x);
   // x+y with |error| <= f. Result.digitPool = x.digitPool
   friend BigReal  sum(             const BigReal &x, const BigReal &y, const BigReal  &f, DigitPool *digitPool = NULL);
   // x-y with |error| <= f. Result.digitPool = x.digitPool
@@ -904,6 +898,8 @@ public:
   friend BigReal  prod(            const BigReal &x, const BigReal &y, const BigReal  &f, DigitPool *digitPool = NULL);
   // x/y with |error| <= f. Result.digitPool = x.digitPool
   friend BigReal  quot(            const BigReal &x, const BigReal &y, const BigReal  &f, DigitPool *digitPool = NULL);
+  // integer division
+  friend BigInt   quot(             const BigInt &x, const BigInt &y                    , DigitPool *digitPool = NULL);
   // Calculates only quotient and/or remainder if specified
   friend void     quotRemainder(   const BigReal &x, const BigReal &y, BigInt *quotient, BigReal *remainder);
   // Calculates only quotient and/or remainder if specified
@@ -1174,16 +1170,16 @@ public:
   void assertIsValidBigReal() const; // checks that this is a consistent number with all the various invariants satisfied.
                                      // Throws an excpeption if not with a descripion of what is wrong. For debugging
 
-  // Digits generated with rnd.
-  friend BigInt  randBigInt( size_t digits, RandomGenerator *rnd = _standardRandomGenerator, DigitPool *digitPool = NULL);
-
-  // Return uniform distributed random BigReal between 0 (incl) and 1 (excl) with digits decimal digits.
+  // Return uniform distributed random BigReal between 0 (incl) and 1 (excl) with at most maxDigits decimal digits.
+  // If maxDigits == 0, 0 will be returned
+  // Digits generated with rnd
   // If digitPool == NULL, use DEFAULT_DIGITPOOL
-  friend BigReal randBigReal(size_t digits, RandomGenerator *rnd = _standardRandomGenerator, DigitPool *digitPool = NULL);
+  friend BigReal randBigReal(size_t maxDigits, RandomGenerator *rnd = _standardRandomGenerator, DigitPool *digitPool = NULL);
 
-  // Return uniform distributed random BigReal between low (incl) and high (excl) with digits decimal digits.
-  // If digitPool == NULL, use low.getDigitPool()
-  friend BigReal  randBigReal(const BigReal &low, const BigReal &high, size_t digits, RandomGenerator *rnd = _standardRandomGenerator, DigitPool *digitPool = NULL);
+  // Return uniform distributed random BigReal in [from;to] with at most maxDigits decimal digits.
+  // Digits generated with rnd
+  // If digitPool == NULL, use from.getDigitPool()
+  friend BigReal  randBigReal(const BigReal &from, const BigReal &to, size_t maxDigits, RandomGenerator *rnd = _standardRandomGenerator, DigitPool *digitPool = NULL);
 
   // Comnon used constants allocated with ConstDigitPool (see below)
   static const ConstBigInt  _0;          // 0

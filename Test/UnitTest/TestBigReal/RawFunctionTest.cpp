@@ -128,7 +128,7 @@ void testMultPow10(TestStatistic &stat) {
                << _T("i:") << iparam(12) << i << endl
                << _T("y:") << y               << endl
                << _T("z:") << z               << endl;
-        throwException(_T("Error in testMultPow10"));
+        THROWTESTERROR();
       }
     }
   }

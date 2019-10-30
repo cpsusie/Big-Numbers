@@ -153,3 +153,4 @@ public:
 
 #define ERRLOG TestStatistic::getErrorLog()
 #define TRACELOG TestStatistic::getErrorLog(false)
+#define THROWTESTERROR() throwException(_T("Error in %s, line %d"), __TFUNCTION__,__LINE__)

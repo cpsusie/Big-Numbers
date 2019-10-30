@@ -1,23 +1,26 @@
 #include "pch.h"
 #include <Math/MRIsPrime.h>
 
+#define _1 BigReal::_1
+#define _2 BigReal::_2
+
 bool MRisprime(int threadId, const BigInt &n, MillerRabinHandler *handler) { // Miller-Rabin probabilistic primality test
-  static const ConstBigReal BIGREAL_3(3);
+  static const ConstBigReal _3(3);
 
   DigitPool *pool = n.getDigitPool();
-  if(n == BigReal::_2) {
+  if(n == _2) {
     return true;
   }
-  if(n == BIGREAL_3) {
+  if(n == _3) {
     return true;
   }
-  if(n <  BigReal::_2) {
+  if(n <  _2) {
     return false;
   }
   if(even(n)) {
     return false;
   }
-  if((n % BIGREAL_3).isZero()) {
+  if((n % _3).isZero()) {
     return false;
   }
   if((n.getLastDigit() % 5) == 0) {
@@ -28,7 +31,7 @@ bool MRisprime(int threadId, const BigInt &n, MillerRabinHandler *handler) { // 
   BigInt r(nm1);
   int s = 0;
   while(even(r)) {
-    r *= BigReal::_05;
+    r /= _2;
     s++;
   }
 
@@ -41,13 +44,13 @@ bool MRisprime(int threadId, const BigInt &n, MillerRabinHandler *handler) { // 
 
     BigInt a(pool);
     do {
-      a = e(randBigReal(BigReal::getExpo10(nm1)+1, &rnd, pool), BigReal::getExpo10(nm1)+1, pool) % nm1;
-    } while(a < BigReal::_2);
+      a = randBigInt(nm1, &rnd); // e(randBigReal(BigReal::getExpo10(nm1) + 1, &rnd, pool), BigReal::getExpo10(nm1) + 1, pool) % nm1;
+    } while(a < _2);
     BigInt y = powmod(a,r,n);
-    if((y != BigReal::_1) && (y != nm1)) {
+    if((y != _1) && (y != nm1)) {
       for(int j = 1; j < s && y != nm1; j++) {
         y = (y * y) % n;
-        if(y == pool->_1()) {
+        if(y == _1) {
           return false;
         }
       }

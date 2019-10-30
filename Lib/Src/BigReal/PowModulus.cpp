@@ -2,13 +2,16 @@
 
 using namespace std;
 
+#define _1 pool->_1()
+#define _2 pool->_2()
+
 // Calculates a^r mod n
 BigInt powmod(const BigInt &a, const BigInt &r, const BigInt &n, bool verbose) {
   DigitPool *pool = a.getDigitPool();
 
-  BigInt p = pool->_1();
+  BigInt p = _1;
   BigInt tmpa(a);
-  BigInt tmpr(BigReal(r, pool));
+  BigInt tmpr(r, pool);
 
   int i = 1;
   StreamParameters param(20);
@@ -25,7 +28,7 @@ BigInt powmod(const BigInt &a, const BigInt &r, const BigInt &n, bool verbose) {
       --tmpr;
     } else {
       tmpa = (tmpa * tmpa) % n;
-      tmpr *= BigReal::_05;
+      tmpr /= _2;
     }
   }
   if(verbose) {

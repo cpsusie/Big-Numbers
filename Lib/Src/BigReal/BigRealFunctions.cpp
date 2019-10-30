@@ -152,7 +152,7 @@ void BigReal::fractionate(BigInt *integerPart, BigReal *fractionPart) const {
     return;
   }
   if(isInteger(*this)) {
-    if(integerPart ) *integerPart = *this;
+    if(integerPart ) *integerPart = (BigInt&)*this;
     if(fractionPart) fractionPart->setToZero();
     return;
   }

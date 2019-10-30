@@ -201,7 +201,7 @@ void quotRemainder128(const BigReal &x, const BigReal &y, BigInt *quotient, BigR
 
   if(!z.isNegative()) {
     if(isInteger(q)) {
-      if(quotient)  *quotient  = q;
+      if(quotient)  *quotient  = (BigInt&)q;
       if(remainder) *remainder = z;
     } else {
       q.fractionate(quotient, &t);
@@ -216,7 +216,7 @@ void quotRemainder128(const BigReal &x, const BigReal &y, BigInt *quotient, BigR
   } else { // z < 0
     if(isInteger(q)) {
       if(quotient)  {
-        *quotient = q;
+        *quotient = (BigInt&)q;
         --(*quotient);
       }
       if(remainder) {

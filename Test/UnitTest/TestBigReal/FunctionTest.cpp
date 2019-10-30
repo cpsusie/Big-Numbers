@@ -263,7 +263,7 @@ void testQuot3(TestStatistic &stat) {
         const BigReal ql64      = BigReal::quotLinear64(x, y, tolerance, pool);
 
         if(fabs(qn - ql32) > tolerance || fabs(qn - ql64) > tolerance || fabs(ql32 - ql64) > tolerance) {
-          ERRLOG << _T("Error in ") << quot                                                              << endl
+          ERRLOG << _T("Error in testQuot3")                                                             << endl
                  << _T("x        :")                                   << FullFormatBigReal(x)           << endl
                  << _T("y        :")                                   << FullFormatBigReal(y)           << endl
                  << _T("Tolerance:")                                   << tolerance                      << endl
@@ -273,7 +273,7 @@ void testQuot3(TestStatistic &stat) {
                  << _T("quotNewton - quotLinear32  :")                 << FullFormatBigReal(qn - ql32)   << endl
                  << _T("quotNewton - quotLinear64  :")                 << FullFormatBigReal(qn - ql64)   << endl
                  << _T("quotLinear32 - quotLinear64:")                 << FullFormatBigReal(ql32 - ql64) << endl;
-          throwException(_T("Error in testQuot3"));
+          THROWTESTERROR();
         }
       }
     }
@@ -323,7 +323,7 @@ void testPi(TestStatistic &stat) {
              << _T("Tolerance    :") << tolerance                                 << endl
              << _T("pi(tolerance):") << FullFormatBigReal(result)                 << endl
              << _T("Difference = fabs(pi(tolerance)-pi2000):") << nparam << error << endl;
-      throwException(_T("Error in pi"));
+      THROWTESTERROR();
     } else {
       stat.update(error, tolerance);
     }
@@ -353,7 +353,7 @@ void testModulus(TestStatistic &stat) {
                << _T("Y      :") << Y    << endl
                << _T("Z = X%Y:") << Z    << endl
                << _T("x64%y64:") << z64  << endl;
-        throwException(_T("Error in testModulus"));
+        THROWTESTERROR();
       }
     }
   }
@@ -383,7 +383,7 @@ void testIntegerDivision(TestStatistic &stat) { // tester BigInt-division
                << _T("Y      :") << Y             << endl
                << _T("Z = X/Y:") << Z             << endl
                << _T("x64/y64:") << z64           << endl;
-        throwException(_T("Error in APCpow"));
+        THROWTESTERROR();
       }
     }
   }
@@ -483,7 +483,7 @@ void testGetFirst(TestStatistic &stat) {
         if(result != expected) {
           ERRLOG << _T("getFirst(") << X << _T(",") << k << _T(")=") << result << endl
                  << _T("Expected:") << expected                                << endl;
-          throwException(_T("Error in getFirst32"));
+          THROWTESTERROR();
         }
       }
     }
@@ -523,19 +523,19 @@ void testReadWriteBigReal(TestStatistic &stat) {
     in >> data;
     if(in.bad()) {
       stat.out() << _T("Read number line ") << i << _T(" failed") << endl;
-      throwException(_T("Error in testReadWriteBigReal"));
+      THROWTESTERROR();
     }
-    if(isnormal(data) || data.isZero()) {
+    if(data._isfinite()) {
       if(data != expected) {
         ERRLOG << _T("Read BigReal at line ") << i << _T("(=") << FullFormatBigReal(data) << _T(") != exptected (=") << FullFormatBigReal(expected) << _T(")") << endl;
-        throwException(_T("Error in testReadWriteBigReal"));
+        THROWTESTERROR();
         verify(data == expected);
       }
-    } else if (isPInfinity(data)) {
+    } else if(isPInfinity(data)) {
       verify(isPInfinity(expected));
     } else if (isNInfinity(data)) {
       verify(isNInfinity(expected));
-    } else if (isnan(data)) {
+    } else if(isnan(data)) {
       verify(isnan(expected));
     } else {
       throwException(_T("Unknown BigReal-classification for a[%zu]:%s"), i, toString(data).cstr());
@@ -571,11 +571,11 @@ void testReadWriteInteger(TestStatistic &stat) {
     in >> x;
     if(in.bad()) {
       stat.out() << _T("Read integer line ") << i << _T(" failed") << endl;
-      throwException(_T("Error in testReadWriteInteger"));
+      THROWTESTERROR();
     }
     if(x != expected) {
       ERRLOG << _T("Read BigReal at line ") << i << _T("(=") << FullFormatBigReal(x) << _T(") != exptected (=") << FullFormatBigReal(expected) << _T(")") << endl;
-      throwException(_T("Error in testReadWriteInteger"));
+      THROWTESTERROR();
     }
   }
   in.close();

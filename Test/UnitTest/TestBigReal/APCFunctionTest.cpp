@@ -53,8 +53,7 @@ void testAPCSum(TestStatistic &stat) {
                      << _T("Result = APCsum(bias,x,y):")              << FullFormatBigReal(APCResult)   << endl
                      << _T("Difference=fabs(APCResult-exactResult):") << FullFormatBigReal(error)       << endl
                      << _T("Tolerance:")                              << tolerance                      << endl;
-
-              throwException(_T("Error in APCSum"));
+              THROWTESTERROR();
             } else {
               stat.update(error, tolerance);
             }
@@ -129,7 +128,7 @@ void testAPCProd(TestStatistic &stat) {
                      << _T("Bias:'") << bias << _T("'")                                        << endl
                      << _T("APCResult = APCprod(bias,x,y):") << FullFormatBigReal(APCResult)   << endl
                      << _T("Quotient:")                      << FullFormatBigReal(quotient)    << endl;
-              throwException(_T("Error in APCprod"));
+              THROWTESTERROR();
             } else {
               stat.update(fabs(quotient-BigReal::_1));
             }
@@ -178,7 +177,7 @@ void testAPCQuot(TestStatistic &stat) {
                      << _T("Bias:'") << bias << _T("'")                                        << endl
                      << _T("APCResult = APCquot(bias,x,y):") << FullFormatBigReal(APCResult)   << endl
                      << _T("Quotient:")                      << FullFormatBigReal(quotient)    << endl;
-              throwException(_T("Error in APCquot"));
+              THROWTESTERROR();
             } else {
               stat.update(fabs(quotient-BigReal::_1));
             }
@@ -227,7 +226,7 @@ void testAPCPow(TestStatistic &stat) {
                    << _T("Bias:'") << bias << _T("'")                                       << endl
                    << _T("APCResult = APCpow(bias,x,y):") << FullFormatBigReal(APCResult)   << endl
                    << _T("Quotient:")                     << FullFormatBigReal(quotient)    << endl;
-            throwException(_T("Error in APCpow"));
+            THROWTESTERROR();
           } else {
             stat.update(fabs(quotient-BigReal::_1));
           }
