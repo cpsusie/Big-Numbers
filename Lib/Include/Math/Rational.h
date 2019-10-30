@@ -177,26 +177,26 @@ public:
 // The valid range for maxDenominator is [2;INT64_MAX]. Default:INT64_MAX
 Rational randRational(UINT64 maxDenominator = INT64_MAX        , RandomGenerator *rnd = _standardRandomGenerator);
 // Return uniform distributed random rational in range [0;1[ using rnd to generate numerator and denominator
-// The denominator (den) will be uniform distributed in the range [2; INT_MAX]
+// The denominator (den) will be uniform distributed in the range [2; INT64_MAX]
 // The numerator will be uniform distributed in range [0; den[
 inline Rational randRational(RandomGenerator *rnd = _standardRandomGenerator) {
   return randRational(INT64_MAX, rnd);
 }
-// Return uniform distributed random rational in range [low;high] (both inclusive)
+// Return uniform distributed random rational in range [from;to] (both inclusive)
 // Assume the 3 products:
-// n1 = low.num*high.den, n2 = high.num*low.den, d = low.den*high.den are all <= _I64_MAX
+// n1 = from.num*to.den, n2 = to.num*from.den, d = from.den*to.den are all <= _I64_MAX
 // if this is not the case, an exception is thrown
 // The return rational will have the value rn/(d*f), where rn is a random int in the range [n1*f..n2*f],
 // where f is a random int in range [1..min(maxScaleFactor, _I64_MAX/max(n1,n2,d))]
 // If maxScaleFactor <= 1, no scaling is done
 // To avoid overflow in calculation, keep the involved factors < _I32_MAX
-Rational randRational(const Rational &low, const Rational &high, UINT64 maxScaleFactor=INT64_MAX, RandomGenerator *rnd = _standardRandomGenerator);
-// Return uniform distributed random rational in range [low;high] (both inclusive)
-// Assume the 3 products: low.num * high.den, high.num * low.den, low.den * high.den are all <= _I64_MAX
+Rational randRational(const Rational &from, const Rational &to, UINT64 maxScaleFactor=INT64_MAX, RandomGenerator *rnd = _standardRandomGenerator);
+// Return uniform distributed random rational in range [from;to] (both inclusive)
+// Assume the 3 products: from.num * to.den, to.num * from.den, from.den * to.den are all <= _I64_MAX
 // if this is not the case, an exception is thrown
 // To avoid overflow in calculation, keep the involved factors < _I32_MAX
-inline Rational randRational(const Rational &low, const Rational &high, RandomGenerator *rnd = _standardRandomGenerator) {
-  return randRational(low, high, INT64_MAX, rnd);
+inline Rational randRational(const Rational &from, const Rational &to, RandomGenerator *rnd = _standardRandomGenerator) {
+  return randRational(from, to, INT64_MAX, rnd);
 }
 
 // Return true, if denominator == 1
