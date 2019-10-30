@@ -27,6 +27,7 @@ static void usage() {
   _ftprintf(stderr,_T("Usage:millerrabin [-v] [-c[BigReal] | -nCount[,digits]] [-tThreadCount]\n"
                       "                  -c[BigReal]: Check if the specified number is prime or composite.\n"
                       "                    If number not specified, it will be read from stdin.\n"
+                      "                  -p:Calculate a^n mod n\n."
                       "                  -v:Verbose. Show whats going on.\n"
                       "                  -nCount[,digits]: Generate count random primes with the specified number of decimal digits.\n"
                       "                    Default number of digits is 100.\n"
@@ -168,9 +169,9 @@ int main(int argc, char **argv) {
       }
       break;
     case CMD_POWMOD:
-      { tcout << _T("Will calculate a^r mod n.");
+      { tcout << _T("Calculate a^r mod n.");
         for(;;) {
-          tcout << _T("Enter a,r,n:");
+          tcout << _T("Enter a,r,n (separated with whitespace):");
           BigInt a,r,n;
           tcin >> a >> r >> n;
           BigInt p = powmod(a, r, n, verbose);
