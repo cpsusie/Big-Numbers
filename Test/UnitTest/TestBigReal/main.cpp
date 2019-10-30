@@ -143,7 +143,7 @@ static void testRandomBigReal() {
     String fileName = format(_T("c:\\temp\\random%s-%s-length=%d.dat"), toString(low).cstr(), toString(high).cstr(), length);
     FILE *f = FOPEN(fileName, _T("w"));
     for(int i = 0; i < count; i++) {
-      FullFormatBigReal x = randBigReal(low, high, length, &rnd, &pool);
+      FullFormatBigReal x = randBigReal(low, high, length, rnd, &pool);
       _ftprintf(f, _T("%s\n"), toString(x).cstr());
     }
     fclose(f);

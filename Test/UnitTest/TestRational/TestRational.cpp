@@ -53,10 +53,10 @@ namespace TestRational {
           printf("i:%10d. maxTotalError:%le\r", i, maxTotalError);
           }
           */
-          const int nm1 = randInt(-1000, 1000   , &rnd);
-          const int dn1 = randInt(    1, 1000000, &rnd);
-          const int nm2 = randInt(-1000, 1000   , &rnd);
-          const int dn2 = randInt(    1, 1000000, &rnd);
+          const int nm1 = randInt(-1000, 1000   , rnd);
+          const int dn1 = randInt(    1, 1000000, rnd);
+          const int nm2 = randInt(-1000, 1000   , rnd);
+          const int dn2 = randInt(    1, 1000000, rnd);
 
           const Rational r1(nm1, dn1);
           const Rational r2(nm2, dn2);
@@ -104,7 +104,7 @@ namespace TestRational {
           double dnzP0 = Rational::pow(0.4, Rational::_0);
           verify(dnzP0 == 1);
 
-          const int      expo = r1.isZero() ? randInt(1, 4,&rnd) : randInt(-3, 3, &rnd);
+          const int      expo = r1.isZero() ? randInt(1, 4, rnd) : randInt(-3, 3, rnd);
           const Rational r1Pe = pow(r1, expo);
           const Real     d1Pe = mypow(d1, expo);
           Real           error = fabs(getReal(r1Pe) - d1Pe);
@@ -127,8 +127,8 @@ namespace TestRational {
       Double80 detectedMaxRelError = 0;
 
       for(int i = 0; i < 30; i++) {
-        Rational low  = randRational(512, &rnd) * randInt(1, 256, &rnd);
-        Rational high = randRational(512, &rnd) * randInt(1, 256, &rnd);
+        Rational low  = randRational(512, rnd) * randInt(1, 256, rnd);
+        Rational high = randRational(512, rnd) * randInt(1, 256, rnd);
         if(rnd.nextBool()) low  = -low;
         if(rnd.nextBool()) high = -high;
         if(high < low) {
@@ -137,8 +137,8 @@ namespace TestRational {
 
         for(int j = 0; j < 500; j++) {
           try {
-            const Rational x     = randRational(low, high, 128, &rnd);
-            const Rational y     = randRational(low, high, 128, &rnd);
+            const Rational x     = randRational(low, high, 128, rnd);
+            const Rational y     = randRational(low, high, 128, rnd);
             const Double80 x80   = getDouble80(x);
             const Double80 y80   = getDouble80(y);
             const Double80 mod80 = fmod(x80, y80);
@@ -348,7 +348,7 @@ namespace TestRational {
       redirectDebugLog();
       for(UINT64 maxden = 2; maxden <= _I64_MAX; maxden*=3) {
         for(int i = 0; i < 1000; i++) {
-          Rational r = randRational(maxden, &rnd);
+          Rational r = randRational(maxden, rnd);
           verify((r >= 0) && (r < 1));
           debugLog(_T("%23.15le\n"), getDouble(r));
         }
@@ -359,13 +359,13 @@ namespace TestRational {
       JavaRandom rnd(45);
       redirectDebugLog();
       for(UINT64 maxden = 30; maxden <= _I32_MAX/100; maxden *= 3) {
-        Rational low  = randRational(maxden,&rnd) * randInt(-30, 30, &rnd);
-        Rational high = randRational(maxden,&rnd) * randInt(-30, 30, &rnd);
+        Rational low  = randRational(maxden,rnd) * randInt(-30, 30, rnd);
+        Rational high = randRational(maxden,rnd) * randInt(-30, 30, rnd);
         if(high < low) {
           swap(low, high);
         }
         for(int i = 0; i < 1000; i++) {
-          Rational r = randRational(low, high, &rnd);
+          Rational r = randRational(low, high, rnd);
           verify((r >= low) && (r <= high));
           debugLog(_T("%23.15le\n"), getDouble(r));
         }
@@ -377,7 +377,7 @@ namespace TestRational {
 
     static Rational unitRandRational() {
       static JavaRandom rnd(RandomGenerator::getRandomSeed());
-      return randRational(&rnd);
+      return randRational(rnd);
     }
 
 #undef endl

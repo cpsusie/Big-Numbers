@@ -134,7 +134,7 @@ namespace TestCompactArray {
       verify(cfArray.size() == loaded.size());
 
       for(int i = 0; i < 1000; i++) {
-        const size_t index = randSizet(cfArray.size(),&rnd);
+        const size_t index = randSizet(cfArray.size(),rnd);
         const CompactArrayElement &cfElement = cfArray[index];
         const CompactArrayElement &element = loaded[index];
         verify(cfElement == element);
@@ -156,7 +156,7 @@ namespace TestCompactArray {
       }
       counters.add(0,0.0, SOURCE_SIZE);
       for(int e = 0; e < SAMPLE_COUNT; e++) {
-        const CompactIntArray sample = S.getRandomSample(SAMPLE_SIZE, &rnd);
+        const CompactIntArray sample = S.getRandomSample(SAMPLE_SIZE, rnd);
         for(const int *ep = &sample.first(), *endp = &sample.last(); ep <= endp;) {
           counters[*(ep++)]++;
         }

@@ -108,17 +108,17 @@ public:
     return m_array[index];
   }
 
-  inline const T &select(RandomGenerator *rnd = _standardRandomGenerator) const {
+  inline const T &select(RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) const {
     if(m_size == 0) selectError(__TFUNCTION__);
     return m_array[randSizet(rnd) % m_size];
   }
 
-  inline T &select(RandomGenerator *rnd = _standardRandomGenerator) {
+  inline T &select(RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) {
     if(m_size == 0) selectError(__TFUNCTION__);
     return m_array[randSizet(rnd) % m_size];
   }
 
-  CompactArray<T> getRandomSample(size_t k, RandomGenerator *rnd = _standardRandomGenerator) const {
+  CompactArray<T> getRandomSample(size_t k, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) const {
     if(k > m_size) {
       throwInvalidArgumentException(__TFUNCTION__, _T("k(=%s) > size(=%s)")
                                    ,format1000(k).cstr()

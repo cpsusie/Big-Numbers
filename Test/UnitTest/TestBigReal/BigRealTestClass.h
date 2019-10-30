@@ -16,7 +16,7 @@ private:
   DigitPool *getDigitPool();
   BigReal getRandomDividend(int length);
 public:
-  BigRealTestClass() : m_rnd(*_standardRandomGenerator) {
+  BigRealTestClass() : m_rnd(*RandomGenerator::s_stdGenerator) {
     m_digitPool = NULL;
   }
   ~BigRealTestClass();

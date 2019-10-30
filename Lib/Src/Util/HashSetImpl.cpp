@@ -58,20 +58,20 @@ void HashSetTable::remove(HashSetNode *n) {
   m_updateCount++;
 }
 
-const AbstractKey *HashSetTable::select(RandomGenerator *rnd) const {
+const AbstractKey *HashSetTable::select(RandomGenerator &rnd) const {
   if(m_size == 0) {
     throwSelectFromEmptyCollectionException(__TFUNCTION__);
   }
 
-  if(rnd->nextBool()) {
+  if(rnd.nextBool()) {
     for(const HashSetNode *p = m_firstLink;; p = p->m_nextLink) {
-      if((p->m_nextLink == NULL) || (rnd->nextInt(3) == 0)) {
+      if((p->m_nextLink == NULL) || (rnd.nextInt(3) == 0)) {
         return p;
       }
     }
   } else {
     for(const HashSetNode *p = m_lastLink;; p = p->m_prevLink) {
-      if((p->m_prevLink == NULL) || (rnd->nextInt(3) == 0)) {
+      if((p->m_prevLink == NULL) || (rnd.nextInt(3) == 0)) {
         return p;
       }
     }
@@ -255,11 +255,11 @@ bool HashSetImpl::contains(const void *key) const {
   return findNode(key) != NULL;
 }
 
-const void *HashSetImpl::select(RandomGenerator *rnd) const {
+const void *HashSetImpl::select(RandomGenerator &rnd) const {
   return m_table->select(rnd)->key();
 }
 
-void *HashSetImpl::select(RandomGenerator *rnd) {
+void *HashSetImpl::select(RandomGenerator &rnd) {
   const void *key = m_table->select(rnd)->key();
   return (void*)key;
 }

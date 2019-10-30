@@ -61,13 +61,13 @@ Matrix ComplexMatrix::getImaginaryPart() const {
   return result;
 }
 
-void setToRandom(ComplexVector &v, RandomGenerator *rnd) {
+void setToRandom(ComplexVector &v, RandomGenerator &rnd) {
   for(size_t i = 0; i < v.getDimension(); i++) {
     setToRandom(v[i], rnd);
   }
 }
 
-void setToRandom(ComplexMatrix &a, RandomGenerator *rnd) {
+void setToRandom(ComplexMatrix &a, RandomGenerator &rnd) {
   for(size_t r = 0; r < a.getRowCount(); r++) {
     for(size_t c = 0; c < a.getColumnCount(); c++) {
       setToRandom(a(r,c), rnd);

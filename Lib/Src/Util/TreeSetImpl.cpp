@@ -376,7 +376,7 @@ bool TreeSetImpl::contains(const void *key) const {
   return findNode(key) != NULL;
 }
 
-const void *TreeSetImpl::getRandom(RandomGenerator *rnd) const {
+const void *TreeSetImpl::getRandom(RandomGenerator &rnd) const {
   if(size() == 0) {
     throwEmptySetException(__TFUNCTION__);
   }
@@ -384,7 +384,7 @@ const void *TreeSetImpl::getRandom(RandomGenerator *rnd) const {
   const TreeSetNode *p = m_root;
 
   for(;;) {
-    bool cont = (p->m_left != NULL || p->m_right != NULL) && rnd->nextBool();
+    bool cont = (p->m_left != NULL || p->m_right != NULL) && rnd.nextBool();
     if(!cont) {
       return p->m_key;
     } else if(p->m_left == NULL) {
@@ -392,16 +392,16 @@ const void *TreeSetImpl::getRandom(RandomGenerator *rnd) const {
     } else if(p->m_right == NULL) {
       p = p->m_left;
     } else {
-      p = rnd->nextBool() ? p->m_left : p->m_right;
+      p = rnd.nextBool() ? p->m_left : p->m_right;
     }
   }
 }
 
-const void *TreeSetImpl::select(RandomGenerator *rnd) const {
+const void *TreeSetImpl::select(RandomGenerator &rnd) const {
   return getRandom(rnd);
 }
 
-void *TreeSetImpl::select(RandomGenerator *rnd) {
+void *TreeSetImpl::select(RandomGenerator &rnd) {
   return (void*)getRandom(rnd);
 }
 

@@ -199,14 +199,14 @@ bool ListImpl::contains(const void *e) const {
   return false;
 }
 
-const void *ListImpl::select(RandomGenerator *rnd) const {
+const void *ListImpl::select(RandomGenerator &rnd) const {
   if(size() == 0) {
     throwException(getElementeErrorText, __TFUNCTION__);
   }
   return findNode(randSizet(size(), rnd))->m_data;
 }
 
-void *ListImpl::select(RandomGenerator *rnd) {
+void *ListImpl::select(RandomGenerator &rnd) {
   if(size() == 0) {
     throwException(getElementeErrorText, __TFUNCTION__);
   }

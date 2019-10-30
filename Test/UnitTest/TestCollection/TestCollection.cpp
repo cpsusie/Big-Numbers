@@ -308,7 +308,7 @@ namespace TestBitSet {
     }
     counters.add(0,0.0,SOURCE_SIZE);
     for(size_t e = 0; e < SAMPLE_COUNT; e++) {
-      Collection<Key> sample = S.getRandomSample(SAMPLE_SIZE, &rnd); // sample = SAMPLE_SIZE elements in range [0..SOURCE_SIZE-1]
+      Collection<Key> sample = S.getRandomSample(SAMPLE_SIZE, rnd); // sample = SAMPLE_SIZE elements in range [0..SOURCE_SIZE-1]
       for(Iterator<Key> it = sample.getIterator(); it.hasNext(); ) {
         counters[it.next().getValue()]++;
       }
@@ -458,11 +458,11 @@ namespace TestBitSet {
       verify(set.remove(key));
       verify(set.size() == i);
       if(set.size() != 0) {
-        const Key &e = set.select(&rnd);
+        const Key &e = set.select(rnd);
         verify(set.contains(e));
       } else {
         try {
-          const Key &e = set.select(&rnd);
+          const Key &e = set.select(rnd);
           verify(false);
         } catch (Exception e) {
           // ok

@@ -40,7 +40,7 @@ BigRealMatrix &operator*=(BigRealMatrix &Q, const RotationMatrix &P) {
     q1 = r1;
     q2 = r2;
   }
-  Q(P.m_row,P.m_row+1) = BIGREAL_0;
+  Q(P.m_row,P.m_row+1) = BigReal::_0;
   return Q;
 }
 
@@ -221,14 +221,14 @@ BigRealMatrix PSLQ::createHermiteReducingMatrix0(const BigRealMatrix &H) const {
 
 // Returns NxN matrix D so D*H is "as diagonal as possible while preserving the diagonal"
 BigRealMatrix PSLQ::createHermiteReducingMatrix(const BigRealMatrix &H) const {
-  BigRealMatrix D = BigRealMatrix::one(m_n,m_digits);
+  BigRealMatrix D = BigRealMatrix::_1(m_n,m_digits);
   for(int i = 0; i < m_n; i++) {
     for(int j = i-1; j >= 0; j--) {
       BigReal sum;
       for(int k = j+1; k <= i; k++) {
         sum -= D(i,k) * H(k,j);
       }
-      D(i,j) = floor(quot(sum,H(j,j),e(BIGREAL_1,-10)) + BIGREAL_HALF);
+      D(i,j) = floor(quot(sum,H(j,j),e(BigReal::_1,-10)) + BigReal::_05);
     }
   }
   return D;
@@ -308,7 +308,7 @@ bool PSLQ::solve(UINT maxDigits) {
         << _T("Max bound                       :") << dparam(5) << maxNorm   << endl;
 
   for(;;) {
-    m_minBound = rQuot(BIGREAL_1, getMaxDiagElement(AHQ), 10);
+    m_minBound = rQuot(BigReal::_1, getMaxDiagElement(AHQ), 10);
     if(m_minBound > maxNorm) {
       return false; // we are out of digits
     }
@@ -379,7 +379,7 @@ static void findIntegerPolynomial(const BigReal &r, int digits, int verbose) {
   bool solutionFound = false;
   for(int degree = 2; !solutionFound && (degree <= 30); degree++) {
     BigRealVector x(degree+1);
-    x[0] = BIGREAL_1;
+    x[0] = BigReal::_1;
     for(int i = 1; i <= degree; i++) {
       x[i] = rProd(r,x[i-1],xdigits);
     }

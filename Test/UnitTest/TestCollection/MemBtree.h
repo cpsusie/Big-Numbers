@@ -146,8 +146,8 @@ public:
   bool add(      const void *key);
   bool remove(   const void *key);
   bool contains( const void *key) const;
-  const void *select(RandomGenerator *rnd) const; // returns key*
-  void *select(RandomGenerator *rnd);
+  const void *select(RandomGenerator &rnd) const; // returns key*
+  void *select(RandomGenerator &rnd);
   size_t size() const {
     return m_size;
   }
@@ -193,7 +193,7 @@ public:
   bool remove(const void *key);
         void *get(const void *key);
   const void *get(const void *key) const;
-  AbstractEntry *selectEntry(RandomGenerator *rnd) const;
+  AbstractEntry *selectEntry(RandomGenerator &rnd) const;
   const AbstractEntry *getMinEntry() const;
   const AbstractEntry *getMaxEntry() const;
   size_t size() const {

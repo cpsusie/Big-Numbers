@@ -7,7 +7,7 @@
 void randomize() {
   const INT64 seed = RandomGenerator::getRandomSeed();
   srand((UINT)seed);
-  _standardRandomGenerator->setSeed(seed);
+  RandomGenerator::s_stdGenerator->setSeed(seed);
 }
 
 INT64 RandomGenerator::getRandomSeed() { // static

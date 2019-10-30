@@ -1,13 +1,13 @@
 #include "pch.h"
 #include <Math/Matrix.h>
 
-void setToRandom(Vector &v, RandomGenerator *rnd) {
+void setToRandom(Vector &v, RandomGenerator &rnd) {
   for(size_t i = 0; i < v.getDimension(); i++) {
     setToRandom(v[i], rnd);
   }
 }
 
-void setToRandom(Matrix &a, RandomGenerator *rnd) {
+void setToRandom(Matrix &a, RandomGenerator &rnd) {
   for(size_t r = 0; r < a.getRowCount(); r++) {
     for(size_t c = 0; c < a.getColumnCount(); c++) {
       setToRandom(a(r,c), rnd);

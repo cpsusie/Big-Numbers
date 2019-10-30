@@ -86,7 +86,7 @@ namespace TestNumber {
   #include <UnitTestTraits.h>
 
 #define RANDOM_NUMBERTYPE ((NumberType)-1)
-  Number randNumber(NumberType type = RANDOM_NUMBERTYPE, RandomGenerator *rnd = _standardRandomGenerator) {
+  Number randNumber(NumberType type = RANDOM_NUMBERTYPE, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) {
     if(type == RANDOM_NUMBERTYPE) {
       type = numberTypes[randInt(ARRAYSIZE(numberTypes), rnd)];
     }
@@ -101,7 +101,7 @@ namespace TestNumber {
 
   typedef Array<Number> NumberArray;
 
-  static NumberArray generateTestArray(size_t count = 1000, NumberType type = RANDOM_NUMBERTYPE, RandomGenerator *rnd = _standardRandomGenerator) {
+  static NumberArray generateTestArray(size_t count = 1000, NumberType type = RANDOM_NUMBERTYPE, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) {
     NumberArray result;
     for(size_t i = 0; i < count; i++) {
       result.add(randNumber(type, rnd));
@@ -195,7 +195,7 @@ namespace TestNumber {
           printf("i:%10d. maxTotalError:%le\r", i, maxTotalError);
           }
           */
-          Number n1(randNumber(RANDOM_NUMBERTYPE, &rnd)), n2(randNumber(RANDOM_NUMBERTYPE, &rnd));
+          Number n1(randNumber(RANDOM_NUMBERTYPE, rnd)), n2(randNumber(RANDOM_NUMBERTYPE, rnd));
   /*
           OperandResultTypeCount &opCountAdd = combiCountAdd(n1.getType(), n2.getType());
           OperandResultTypeCount &opCountSub = combiCountSub(n1.getType(), n2.getType());
@@ -337,7 +337,7 @@ namespace TestNumber {
     }
 
 
-    void testReadWrite(NumberType type, const Number &maxTolerance, int precision, RandomGenerator *rnd) {
+    void testReadWrite(NumberType type, const Number &maxTolerance, int precision, RandomGenerator &rnd) {
       const size_t count = 10000;
       StreamParameters param(precision);
       const NumberArray list = generateTestArray(count, type, rnd);
@@ -397,10 +397,10 @@ namespace TestNumber {
 
     TEST_METHOD(TestReadWrite) {
       JavaRandom rnd(56);
-      testReadWrite(NUMBERTYPE_FLOAT   , 5e-9 , numeric_limits<float   >::max_digits10, &rnd);
-      testReadWrite(NUMBERTYPE_DOUBLE  , 5e-17, numeric_limits<double  >::max_digits10, &rnd);
-      testReadWrite(NUMBERTYPE_DOUBLE80, 2e-19, numeric_limits<Double80>::max_digits10, &rnd);
-      testReadWrite(NUMBERTYPE_RATIONAL, 0    , 0                                     , &rnd);
+      testReadWrite(NUMBERTYPE_FLOAT   , 5e-9 , numeric_limits<float   >::max_digits10, rnd);
+      testReadWrite(NUMBERTYPE_DOUBLE  , 5e-17, numeric_limits<double  >::max_digits10, rnd);
+      testReadWrite(NUMBERTYPE_DOUBLE80, 2e-19, numeric_limits<Double80>::max_digits10, rnd);
+      testReadWrite(NUMBERTYPE_RATIONAL, 0    , 0                                     , rnd);
     }
 
     template<class T> void verifyNumberNanTypes(const T &f) {

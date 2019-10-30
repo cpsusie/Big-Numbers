@@ -6,7 +6,7 @@
 #include <Math/MRisprime.h>
 
 static BigInt randomOddInteger(int digits, RandomGenerator &rnd, DigitPool *pool) {
-  BigInt n = randBigInt(digits, &rnd, pool);
+  BigInt n = randBigInt(digits, rnd, pool);
   if(even(n)) ++n;
   return n;
 }

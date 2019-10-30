@@ -548,9 +548,9 @@ IsoSurfaceTest IsoSurfacePolygonizer::findStartPoint(bool positive, const Point3
                                               // range will end up with value 10000*cellSize
   double       range = m_cellSize;
   for(int i = 0; i < STEPCOUNT; i++) {
-    result.x = p.x + randDouble(-range, range, &rnd);
-    result.y = p.y + randDouble(-range, range, &rnd);
-    result.z = p.z + randDouble(-range, range, &rnd);
+    result.x = p.x + randDouble(-range, range, rnd);
+    result.y = p.y + randDouble(-range, range, rnd);
+    result.z = p.z + randDouble(-range, range, rnd);
     result.setValue(evaluate(result));
     if(result.m_positive == positive) {
       return result;

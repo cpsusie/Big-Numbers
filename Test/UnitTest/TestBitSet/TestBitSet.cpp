@@ -19,14 +19,14 @@ namespace TestBitSet {
     dst.setCapacity(capacity);
     if(size == -1) {
       for(size_t i = capacity / 2; i--;) {
-        dst.add(randSizet(capacity, &rnd));
+        dst.add(randSizet(capacity, rnd));
       }
     } else if((size_t)size >= capacity) {
       dst.invert();
     } else if((size_t)size > capacity / 2) {
       dst.invert();
       for(size_t t = capacity - size; t;) {
-        const size_t e = randSizet(capacity, &rnd);
+        const size_t e = randSizet(capacity, rnd);
         if(dst.contains(e)) {
           dst.remove(e);
           t--;
@@ -34,7 +34,7 @@ namespace TestBitSet {
       }
     } else {
       for(size_t t = size; t;) {
-        const size_t e = randSizet(capacity, &rnd);
+        const size_t e = randSizet(capacity, rnd);
         if(!dst.contains(e)) {
           dst.add(e);
           t--;
@@ -50,7 +50,7 @@ namespace TestBitSet {
   }
 
   MatrixIndex getRandomIndex(const MatrixDimension &dim, RandomGenerator &rnd) {
-    return MatrixIndex(randSizet(dim.rowCount, &rnd), randSizet(dim.columnCount, &rnd));
+    return MatrixIndex(randSizet(dim.rowCount, rnd), randSizet(dim.columnCount, rnd));
   }
 
   BitMatrix &genRandomMatrix(BitMatrix &dst, RandomGenerator &rnd, const MatrixDimension &dim, intptr_t size) {
@@ -59,7 +59,7 @@ namespace TestBitSet {
     const size_t capacity = dim.getElementCount();
     if(size == -1) {
       for(size_t i = capacity / 2; i--;) {
-        dst.set(randSizet(dim.rowCount, &rnd), randSizet(dim.columnCount, &rnd),true);
+        dst.set(randSizet(dim.rowCount, rnd), randSizet(dim.columnCount, rnd),true);
       }
     } else if((size_t)size >= capacity) {
       dst.invert();

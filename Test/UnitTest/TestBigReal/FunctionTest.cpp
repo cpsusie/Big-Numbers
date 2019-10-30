@@ -553,7 +553,7 @@ void testReadWriteInteger(TestStatistic &stat) {
 
   for(size_t i = 0; i < count; i++) {
     int xlen = rand() % 6000 + 500;
-    BigInt x(randBigInt(xlen, &stat.getRandomGenerator(), pool));
+    BigInt x(randBigInt(xlen, stat.getRandomGenerator(), pool));
     list.add(x);
   }
 

@@ -28,7 +28,7 @@ static void throwNoConvergenceException(const TCHAR *form, ...) {
   throw NoConvergenceException(msg.cstr());
 }
 
-static BigReal DEFAULT_MMQUOT_EPS = e(BIGREAL_1,-22);
+static BigReal DEFAULT_MMQUOT_EPS = e(BigReal::_1,-22);
 
 #define DEFAULT_FLAGS ios::left | ios::showpos | ios::scientific
 
@@ -126,8 +126,8 @@ void Remes::solve(const int M, const int K) {
     setExtrema(getDefaultInitialExtrema(M,K));
   }
 
-  BigReal lastMmQuot = BIGREAL_1;
-  BigReal QEpsilon   = e(BIGREAL_1,-2);
+  BigReal lastMmQuot = BigReal::_1;
+  BigReal QEpsilon   = e(BigReal::_1,-2);
   int it;
   for(it = 1; it <= MAXIT; it++) {
     try {
@@ -153,7 +153,7 @@ void Remes::solve(const int M, const int K) {
         break;
       }
 
-      const BigReal mmQuot = BIGREAL_1 - fabs(rQuot(minExtr,maxExtr,m_digits)); // minExtr -> maxExtr => mmQuot -> 0
+      const BigReal mmQuot = BigReal::_1 - fabs(rQuot(minExtr,maxExtr,m_digits)); // minExtr -> maxExtr => mmQuot -> 0
 
       if(m_verbose) {
         verbose(MMQUOTLINE, format(_T("MinMaxQuot = 1-|MinExtr/MaxExtr|:%s"),FormatBigReal(mmQuot).cstr()));
@@ -173,7 +173,7 @@ void Remes::solve(const int M, const int K) {
         }
       }
 
-      QEpsilon = e(BIGREAL_1,BigReal::getExpo10(mmQuot) - 20);
+      QEpsilon = e(BigReal::_1,BigReal::getExpo10(mmQuot) - 20);
       lastMmQuot = mmQuot;
 
     } catch(NoConvergenceException e) {
@@ -255,7 +255,7 @@ BigRealVector Remes::getDefaultInitialExtrema(const int M, const int K) {
 }
 
 BigRealVector Remes::findFinalExtrema(const int M, const int K, const bool highPrecision) {
-  const BigReal mmQuot = highPrecision ? DEFAULT_MMQUOT_EPS : e(BIGREAL_1,-7);
+  const BigReal mmQuot = highPrecision ? DEFAULT_MMQUOT_EPS : e(BigReal::_1,-7);
 
   for(bool hasSolved = false;;) {
     Array<ExtremaVector> *a = extremaMap.get(ExtremaKey(M,K));
@@ -434,7 +434,7 @@ void Remes::findCoefficients(const BigReal &QEpsilon) {
         break;
       }
 
-      BigReal Q = fabs(BIGREAL_1 - rQuot(dmin(fabs(m_E),fabs(newE)), dmax(fabs(m_E),fabs(newE)), m_digits));
+      BigReal Q = fabs(BigReal::_1 - rQuot(dmin(fabs(m_E),fabs(newE)), dmax(fabs(m_E),fabs(newE)), m_digits));
 
       if(m_verbose) {
         verbose(ELINE+3,format(_T("Q=1-min(|Last E|, |New E|)/max(|Last E|, |New E|):%s"), FormatBigReal(Q).cstr()));
@@ -629,7 +629,7 @@ BigReal Remes::approximation(const BigReal &x) {
     for(i = m_N - 1; i >  m_M; i--) {
       sum2 = sum2 * x + m_coefficient[i];
     }
-    return rQuot(sum1, sum2 * x + BIGREAL_1, m_digits);
+    return rQuot(sum1, sum2 * x + BigReal::_1, m_digits);
   } else {
     BigReal sum = m_coefficient[m_M];
     for(int i = m_M - 1; i >= 0; i--) {
@@ -640,17 +640,17 @@ BigReal Remes::approximation(const BigReal &x) {
 }
 
 BigReal Remes::errorFunction(const BigReal &x) {
-  return m_useRelativeError ? (BIGREAL_1 - sFunction(x) * approximation(x))
+  return m_useRelativeError ? (BigReal::_1 - sFunction(x) * approximation(x))
                             : (m_targetFunction(x) - approximation(x) /* * sFunction(x)==1 */ )
                             ;
 }
 
 BigReal Remes::sFunction(const BigReal &x) {
-  return m_useRelativeError ? rQuot(BIGREAL_1,m_targetFunction(x),m_digits) : BIGREAL_1;
+  return m_useRelativeError ? rQuot(BigReal::_1,m_targetFunction(x),m_digits) : BigReal::_1;
 }
 
 BigReal Remes::targetFunction(const BigReal &x) {
-  return m_useRelativeError ? BIGREAL_1 : m_targetFunction(x);
+  return m_useRelativeError ? BigReal::_1 : m_targetFunction(x);
 }
 
 void Remes::plotError(int i) {

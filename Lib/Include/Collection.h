@@ -9,8 +9,8 @@ public:
   virtual bool add(const void *e) = 0;
   virtual bool remove(const void *e) = 0;
   virtual bool contains(const void *e) const = 0;
-  virtual const void *select(RandomGenerator *rnd) const = 0;
-  virtual void *select(RandomGenerator *rnd) = 0;
+  virtual const void *select(RandomGenerator &rnd) const = 0;
+  virtual void *select(RandomGenerator &rnd) = 0;
   virtual size_t size() const = 0;
   virtual void clear() = 0;
   virtual AbstractCollection *clone(bool cloneData) const = 0;
@@ -55,15 +55,15 @@ public:
     return m_collection->contains(&e);
   }
 
-  const T &select(RandomGenerator *rnd = _standardRandomGenerator) const {
+  const T &select(RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) const {
     return *(const T*)m_collection->select(rnd);
   }
 
-  T &select(RandomGenerator *rnd = _standardRandomGenerator) {
+  T &select(RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) {
     return *(T*)m_collection->select(rnd);
   }
 
-  Collection<T> getRandomSample(size_t k, RandomGenerator *rnd = _standardRandomGenerator) const {
+  Collection<T> getRandomSample(size_t k, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) const {
     if(k > size()) {
       throwInvalidArgumentException(__TFUNCTION__, _T("k(=%s) > size(=%s)")
                                    ,format1000(k).cstr(), format1000(size()).cstr());

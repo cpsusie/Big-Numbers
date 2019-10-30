@@ -413,12 +413,12 @@ bool BTreeSetImpl::contains(const void *key) const {
   return findNode(key) != NULL;
 }
 
-const void *BTreeSetImpl::select(RandomGenerator *rnd) const {
+const void *BTreeSetImpl::select(RandomGenerator &rnd) const {
   if(size() == 0) throwSelectFromEmptyCollectionException(__TFUNCTION__);
   return m_root->getItem(1).key();
 }
 
-void *BTreeSetImpl::select(RandomGenerator *rnd = _standardRandomGenerator) {
+void *BTreeSetImpl::select(RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) {
   if(size() == 0) throwSelectFromEmptyCollectionException(__TFUNCTION__);
   return (void*)m_root->getItem(1).key();
 }
@@ -854,7 +854,7 @@ bool BTreeMapImpl::remove(const void *key) {
   return BTreeSetImpl::remove(key);
 }
 
-AbstractEntry *BTreeMapImpl::selectEntry(RandomGenerator *rnd) const {
+AbstractEntry *BTreeMapImpl::selectEntry(RandomGenerator &rnd) const {
   if(size() == 0) {
     throwSelectFromEmptyCollectionException(__TFUNCTION__);
   }

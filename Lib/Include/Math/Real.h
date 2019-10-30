@@ -121,7 +121,7 @@ template<class T> T binomial(T n, T k) {
 #define randGaussianReal randGaussianD80
 #endif
 
-inline void setToRandom(Real &x, RandomGenerator *rnd = _standardRandomGenerator) {
+inline void setToRandom(Real &x, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) {
   x = randReal(rnd);
 }
 

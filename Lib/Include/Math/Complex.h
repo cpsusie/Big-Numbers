@@ -140,7 +140,7 @@ Complex asin(const Complex &c);
 Complex acos(const Complex &c);
 Complex atan(const Complex &c);
 
-void setToRandom(Complex &c, RandomGenerator *rnd = _standardRandomGenerator);
+void setToRandom(Complex &c, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator);
 
 String toString(const Complex &c, StreamSize precision=6, StreamSize width=0, FormatFlags flags=0);
 

@@ -74,10 +74,10 @@ Complex       det(    const ComplexMatrix &a);
 ComplexVector operator*(const Matrix  &lts, const ComplexVector &rhs);
 ComplexMatrix operator*(const Complex &lts, const Matrix        &rhs);
 
-void setToRandom(Vector        &v, RandomGenerator *rnd = _standardRandomGenerator);
-void setToRandom(Matrix        &a, RandomGenerator *rnd = _standardRandomGenerator);
-void setToRandom(ComplexVector &v, RandomGenerator *rnd = _standardRandomGenerator);
-void setToRandom(ComplexMatrix &a, RandomGenerator *rnd = _standardRandomGenerator);
+void setToRandom(Vector        &v, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator);
+void setToRandom(Matrix        &a, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator);
+void setToRandom(ComplexVector &v, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator);
+void setToRandom(ComplexMatrix &a, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator);
 
 // superdiag = (c0=a(0,1),c1=a(1,2),c2=a(2,3)...,0)
 // subdiag   = (0,c1=a(1,0),c2=a(2,1),c3=a(3,2)...)

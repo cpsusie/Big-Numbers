@@ -401,7 +401,7 @@ void QRMatrix::findEigenValues() {
       doubleQRStep(iteration);
       iteration++;
       if(iteration > 10) { // If no convergence for doubleQRStep, Make af singleQRStep with a random shift
-        singleQRStep(iteration, randReal(-10,10, &rnd));
+        singleQRStep(iteration, randReal(-10,10, rnd));
         iteration = 0;
       }
       trace();

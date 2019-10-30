@@ -745,7 +745,7 @@ void BigRealTestClass::testTruncRound() {
       for(int expo10 = -10; expo10 < 20; expo10++) {
         BigReal x(pool);
         do {
-          x = e(randBigReal(length, &rnd, pool), expo10);
+          x = e(randBigReal(length, rnd, pool), expo10);
         } while(x.isZero());
 
         const BRExpoType decDigits = BigReal::getExpo10(x) + 1;
@@ -835,7 +835,7 @@ void BigRealTestClass::testCopyrTrunc() {
       for(int expo10 = -10; expo10 < 20; expo10++) {
         FullFormatBigReal x(pool);
         do {
-          x = e(randBigReal(length, &rnd, pool), expo10);
+          x = e(randBigReal(length, rnd, pool), expo10);
         } while(x.isZero());
 
         const BRExpoType decDigits = BigReal::getExpo10(x) + 1;

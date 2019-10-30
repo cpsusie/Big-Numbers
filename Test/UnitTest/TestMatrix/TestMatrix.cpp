@@ -45,13 +45,13 @@ namespace TestMatrix {
 	TEST_CLASS(TestMatrix) {
     public:
 
-      static Vector randomVector(size_t dimension, RandomGenerator *rnd = _standardRandomGenerator) {
+      static Vector randomVector(size_t dimension, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) {
         Vector result(dimension);
         setToRandom(result,rnd);
         return result;
       }
 
-      static Vector randomIntVector(size_t dimension, RandomGenerator *rnd = _standardRandomGenerator) {
+      static Vector randomIntVector(size_t dimension, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) {
         Vector result(dimension);
         for(size_t i = 0; i < dimension; i++) {
           result[i] = randInt(-11,11,rnd);
@@ -59,13 +59,13 @@ namespace TestMatrix {
         return result;
       }
 
-      static Matrix randomMatrix(size_t rows, size_t columns, RandomGenerator *rnd = _standardRandomGenerator) {
+      static Matrix randomMatrix(size_t rows, size_t columns, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) {
         Matrix result(rows, columns);
         setToRandom(result, rnd);
         return result;
       }
 
-      static Matrix randomIntMatrix(size_t rows, size_t columns, RandomGenerator *rnd = _standardRandomGenerator) {
+      static Matrix randomIntMatrix(size_t rows, size_t columns, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) {
         Matrix result(rows, columns);
         for(size_t r = 0; r < rows; r++) {
           result.setRow(r, randomIntVector(columns, rnd));
@@ -82,7 +82,7 @@ namespace TestMatrix {
         return a;
       }
 
-      static Matrix randomSymmetricMatrix(size_t dimension, RandomGenerator *rnd = _standardRandomGenerator) {
+      static Matrix randomSymmetricMatrix(size_t dimension, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) {
         Matrix result(dimension, dimension);
         for(size_t r = 0; r < dimension; r++) {
           result.setSubMatrix(r, r, randomMatrix(1, dimension - r, rnd));
@@ -93,13 +93,13 @@ namespace TestMatrix {
         return result;
       }
 
-      static ComplexVector randomComplexVector(size_t dimension, RandomGenerator *rnd = _standardRandomGenerator) {
+      static ComplexVector randomComplexVector(size_t dimension, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) {
         ComplexVector result(dimension);
         setToRandom(result, rnd);
         return result;
       }
 
-      static ComplexMatrix randomComplexMatrix(size_t rows, size_t columns, RandomGenerator *rnd = _standardRandomGenerator) {
+      static ComplexMatrix randomComplexMatrix(size_t rows, size_t columns, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) {
         ComplexMatrix result(rows, columns);
         setToRandom(result, rnd);
         return result;
@@ -279,8 +279,8 @@ namespace TestMatrix {
       const int dimension = 5;
 
       for(int i = 0; i < 100; i++) {
-        const Matrix   A = randomMatrix(dimension, dimension, &rnd);
-        const Vector   b = randomVector(dimension, &rnd);
+        const Matrix   A = randomMatrix(dimension, dimension, rnd);
+        const Vector   b = randomVector(dimension, rnd);
 
         const LUMatrix lu(A);
         const Vector   x = lu.solve(b);
@@ -332,7 +332,7 @@ namespace TestMatrix {
         verify(true);
       }
       JavaRandom rnd(345);
-      const Matrix        T = randomIntMatrix(4, 5, &rnd);
+      const Matrix        T = randomIntMatrix(4, 5, rnd);
       const Complex       factor(1, 1);
       const ComplexMatrix Tc = factor * T;
       for(size_t i = 0; i < Tc.getRowCount(); i++) {
@@ -342,8 +342,8 @@ namespace TestMatrix {
       }
 
       for(int it = 0; it < 100; it++) {
-        const ComplexMatrix A = randomComplexMatrix(dimension, dimension, &rnd);
-        const ComplexVector b = randomComplexVector(dimension, &rnd);
+        const ComplexMatrix A = randomComplexMatrix(dimension, dimension, rnd);
+        const ComplexVector b = randomComplexVector(dimension, rnd);
 
         const ComplexLUMatrix lu(A);
         const ComplexVector   x = lu.solve(b);
@@ -387,7 +387,7 @@ namespace TestMatrix {
         int rows = dim + 2;
         int columns = dim;
 
-        const Matrix A = randomMatrix(rows, columns, &rnd);
+        const Matrix A = randomMatrix(rows, columns, rnd);
 
         //  a.setRow(ROWS-1,a.getRow(0) - a.getRow(1));
 
@@ -446,7 +446,7 @@ namespace TestMatrix {
       JavaRandom rnd(2346);
 
       for(int i = 0; i < 100; i++) {
-        const Matrix        A = randomMatrix(5, 5, &rnd);
+        const Matrix        A = randomMatrix(5, 5, rnd);
         const ComplexMatrix r3 = cubicRoot(A);
         const ComplexMatrix A1 = r3 * r3 * r3;
 
@@ -583,9 +583,9 @@ namespace TestMatrix {
           if (i == 35) {
             int fisk = 1;
           }
-          const size_t dim = randInt(2, 16, &rnd);
+          const size_t dim = randInt(2, 16, rnd);
           INFO(_T("i:%d, dim:%zu"), i, dim);
-          testQRMatrix(randomMatrix(dim, dim, &rnd));
+          testQRMatrix(randomMatrix(dim, dim, rnd));
         }
       INFO(_T("  End test QRMatrix on random matrices"));
     }
@@ -609,7 +609,7 @@ namespace TestMatrix {
     TEST_METHOD(MatrixExp) {
       JavaRandom rnd(13123);
       for(int i = 0; i < 100; i++) {
-        const Matrix        A     = randomMatrix(6, 6, &rnd); // randomMatrix(6,6);
+        const Matrix        A     = randomMatrix(6, 6, rnd); // randomMatrix(6,6);
         const QRMatrix      QR    = A;
         const ComplexMatrix P     = QR.getEigenVectors();
         const ComplexMatrix P1    = inverse(P);
@@ -643,7 +643,7 @@ namespace TestMatrix {
     TEST_METHOD(MatrixCosSin) {
       JavaRandom rnd(13123);
       for(int i = 0; i < 100; i++) {
-        const Matrix        A     = randomMatrix(6, 6, &rnd); // randomMatrix(6,6);
+        const Matrix        A     = randomMatrix(6, 6, rnd); // randomMatrix(6,6);
         const QRMatrix      QR    = A;
         const ComplexMatrix P     = QR.getEigenVectors();
         const ComplexMatrix P1    = inverse(P);
@@ -714,8 +714,8 @@ namespace TestMatrix {
 
     TEST_METHOD(MatrixKroneckerProduct) {
       JavaRandom rnd(13123);
-      const Matrix A = randomMatrix(3, 3, &rnd);
-      const Matrix B = randomMatrix(4, 4, &rnd);
+      const Matrix A = randomMatrix(3, 3, rnd);
+      const Matrix B = randomMatrix(4, 4, rnd);
 
       const Matrix AplusB    = kroneckerSum(A, B);
       const Matrix expAplusB = exp(AplusB);

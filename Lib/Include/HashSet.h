@@ -38,7 +38,7 @@ public:
   void insert(size_t index, HashSetNode *n);
   void remove(HashSetNode *n);
   void clear();
-  const AbstractKey *select(RandomGenerator *rnd) const;
+  const AbstractKey *select(RandomGenerator &rnd) const;
   inline size_t getCapacity() const {
     return m_capacity;
   }
@@ -61,8 +61,8 @@ protected:
   virtual HashSetNode *cloneNode(HashSetNode *n) const;
   virtual void deleteNode(HashSetNode *n) const;
   virtual bool insertNode(HashSetNode *n);
-  const void  *select(RandomGenerator *rnd) const; // return key*
-  void *select(RandomGenerator *rnd);
+  const void  *select(RandomGenerator &rnd) const; // return key*
+  void *select(RandomGenerator &rnd);
   void resize(size_t newCapacity);
 
   HashSetNode *findNode(const void *key);

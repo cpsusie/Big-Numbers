@@ -35,8 +35,8 @@ public:
   void removeIndex(size_t i, size_t count);
   bool remove(const void *e);
   bool contains(const void *e) const; // unsuppoerted
-  const void *select(RandomGenerator *rnd) const ;
-  void *select(RandomGenerator *rnd);
+  const void *select(RandomGenerator &rnd) const ;
+  void *select(RandomGenerator &rnd);
   inline size_t getCapacity() const {
     return m_capacity;
   }

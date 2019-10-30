@@ -2,4 +2,4 @@
 #include <Random.h>
 
 static JavaRandom stdRandomGenerator;
-RandomGenerator *_standardRandomGenerator = &stdRandomGenerator;
+RandomGenerator *RandomGenerator::s_stdGenerator = &stdRandomGenerator;

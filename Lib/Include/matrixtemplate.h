@@ -210,10 +210,10 @@ public:
     return m_a[index(r,c)];
   }
 
-  inline T &select(RandomGenerator *rnd = _standardRandomGenerator) {
+  inline T &select(RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) {
     return m_a[randSizet(m_dim.getElementCount(), rnd)];
   }
-  inline const T &select(RandomGenerator *rnd = _standardRandomGenerator) const {
+  inline const T &select(RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) const {
     return m_a[randSizet(m_dim.getElementCount(), rnd)];
   }
   // row must be [1..getRowCount()-1]

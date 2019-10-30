@@ -175,11 +175,11 @@ public:
 // The denominator (den) will be uniform distributed in the range [2; maxDenominator]
 // The numerator will be uniform distributed in range [0; den[
 // The valid range for maxDenominator is [2;INT64_MAX]. Default:INT64_MAX
-Rational randRational(UINT64 maxDenominator = INT64_MAX        , RandomGenerator *rnd = _standardRandomGenerator);
+Rational randRational(UINT64 maxDenominator = INT64_MAX        , RandomGenerator &rnd = *RandomGenerator::s_stdGenerator);
 // Return uniform distributed random rational in range [0;1[ using rnd to generate numerator and denominator
 // The denominator (den) will be uniform distributed in the range [2; INT64_MAX]
 // The numerator will be uniform distributed in range [0; den[
-inline Rational randRational(RandomGenerator *rnd = _standardRandomGenerator) {
+inline Rational randRational(RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) {
   return randRational(INT64_MAX, rnd);
 }
 // Return uniform distributed random rational in range [from;to] (both inclusive)
@@ -190,12 +190,12 @@ inline Rational randRational(RandomGenerator *rnd = _standardRandomGenerator) {
 // where f is a random int in range [1..min(maxScaleFactor, _I64_MAX/max(n1,n2,d))]
 // If maxScaleFactor <= 1, no scaling is done
 // To avoid overflow in calculation, keep the involved factors < _I32_MAX
-Rational randRational(const Rational &from, const Rational &to, UINT64 maxScaleFactor=INT64_MAX, RandomGenerator *rnd = _standardRandomGenerator);
+Rational randRational(const Rational &from, const Rational &to, UINT64 maxScaleFactor=INT64_MAX, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator);
 // Return uniform distributed random rational in range [from;to] (both inclusive)
 // Assume the 3 products: from.num * to.den, to.num * from.den, from.den * to.den are all <= _I64_MAX
 // if this is not the case, an exception is thrown
 // To avoid overflow in calculation, keep the involved factors < _I32_MAX
-inline Rational randRational(const Rational &from, const Rational &to, RandomGenerator *rnd = _standardRandomGenerator) {
+inline Rational randRational(const Rational &from, const Rational &to, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) {
   return randRational(from, to, INT64_MAX, rnd);
 }
 

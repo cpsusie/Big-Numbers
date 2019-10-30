@@ -99,7 +99,7 @@ BigReal RatioanalFunction1::operator()(const BigReal &x) {
   BigReal x2 = rProd(x,x,m_digits);
   BigReal x3 = rProd(x,x2,m_digits);
   BigReal p  = c1*x3 - x2 - x + c3;
-  BigReal q  = c1*x3 + x2 - c2*x + BIGREAL_1;
+  BigReal q  = c1*x3 + x2 - c2*x + BigReal::_1;
   BigReal result = rQuot(p, rSqrt(q,m_digits), m_digits);
 
   return result;

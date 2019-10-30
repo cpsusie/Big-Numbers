@@ -34,7 +34,7 @@ public:
     clear();
   }
   UINT get(      UINT64 index) const;
-  UINT select(RandomGenerator *rnd = _standardRandomGenerator) const;
+  UINT select(RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) const;
   void set(      UINT64 index, UINT v);
   void or(       UINT64 index, UINT v);
   void and(      UINT64 index, UINT v);
@@ -110,9 +110,9 @@ private:
 public:
   PackedFileArray(const String &fileName, UINT64 startOffset);
   UINT get(UINT64 index) const;
-  inline UINT select(RandomGenerator *rnd = _standardRandomGenerator) const {
+  inline UINT select(RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) const {
     if(isEmpty()) selectError(__TFUNCTION__);
-    return get(rnd->nextInt64(size()));
+    return get(rnd.nextInt64(size()));
   }
   inline bool isEmpty() const {
     return size() == 0;

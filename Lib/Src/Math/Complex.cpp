@@ -130,7 +130,7 @@ Complex atan(const Complex &c) {
          );
 }
 
-void setToRandom(Complex &c, RandomGenerator *rnd) {
+void setToRandom(Complex &c, RandomGenerator &rnd) {
   setToRandom(c.re, rnd);
   setToRandom(c.im, rnd);
 }

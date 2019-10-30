@@ -40,8 +40,8 @@ public:
   void removeFirst();
   void removeLast();
   bool contains(const void *e) const; // unsupported
-  const void *select(RandomGenerator *rnd) const ;
-  void *select(RandomGenerator *rnd);
+  const void *select(RandomGenerator &rnd) const ;
+  void *select(RandomGenerator &rnd);
   void clear();
   size_t size() const {
     return m_size;
@@ -98,7 +98,7 @@ public:
     return *(T*)(((ListImpl*)m_collection)->last());
   }
 
-  inline T &select(RandomGenerator *rnd = _standardRandomGenerator) {
+  inline T &select(RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) {
     return *(T*)m_collection->select(rnd);
   }
 

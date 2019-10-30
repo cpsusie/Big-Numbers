@@ -39,7 +39,7 @@ public:
   virtual const void *get(const void *key) const = 0;
   virtual       void *get(const void *key) = 0;
   virtual size_t size() const = 0;
-  virtual AbstractEntry *selectEntry(RandomGenerator *rnd) const = 0;
+  virtual AbstractEntry *selectEntry(RandomGenerator &rnd) const = 0;
   virtual const AbstractEntry *getMinEntry() const = 0;
   virtual const AbstractEntry *getMaxEntry() const = 0;
   virtual void clear() = 0;

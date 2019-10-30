@@ -118,15 +118,15 @@ public:
 // Return uniform distributed random BigInt in [0..e(1,maxDigits)-1], digits generated with rnd.
 // If digitPool == NULL, use DEFAULT_DIGITPOOL
 // ex:maxDigits = 3:returned values in interval [0..999]
-BigInt randBigInt(size_t maxDigits, RandomGenerator *rnd = _standardRandomGenerator, DigitPool *digitPool = NULL);
+BigInt randBigInt(size_t maxDigits, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator, DigitPool *digitPool = NULL);
 
 // Return uniform distributed random BigInt in [0..n-1], digits generated with rnd.
 // If digitPool == NULL, use n.getDigitPool()
-BigInt randBigInt(const BigInt &n, RandomGenerator *rnd = _standardRandomGenerator, DigitPool *digitPool = NULL);
+BigInt randBigInt(const BigInt &n, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator, DigitPool *digitPool = NULL);
 
 // Return uniform distributed random BigInt in [from;to], digits generated with rnd.
 // If digitPool == NULL, use from.getDigitPool()
-BigInt randBigInt(const BigInt &from, const BigInt &to, RandomGenerator *rnd = _standardRandomGenerator, DigitPool *digitPool = NULL);
+BigInt randBigInt(const BigInt &from, const BigInt &to, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator, DigitPool *digitPool = NULL);
 
 #define REQUESTCONSTPOOL ConstDigitPool::requestInstance()
 #define RELEASECONSTPOOL ConstDigitPool::releaseInstance()

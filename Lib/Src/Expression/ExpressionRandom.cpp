@@ -3,7 +3,7 @@
 
 namespace Expr {
 
-  // use _standardRandomGenerator declared in Random.h
+  // use RandomGenerator::s_stdGenerator declared in Random.h
   Real randomReal() {
     return randReal();
   }
@@ -12,7 +12,7 @@ namespace Expr {
     return randReal(from, to);
   }
 
-  // mean and standardDeviation. use _standardRandomGenerator
+  // mean and standardDeviation. use RandomGenerator::s_stdGenerator
   Real randomGaussian(const Real &mean, const Real &s) {
     return randGaussianReal(mean, s);
   }

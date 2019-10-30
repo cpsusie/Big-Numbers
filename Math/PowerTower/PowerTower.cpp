@@ -111,7 +111,7 @@ BigReal findZero(const BigReal &left, const BigReal &right, BigRealFunction &f, 
 //    BigReal x1 = x0 - rQuot(y0 * (x2 - x0), y2 - y0, digits);
 
 //    if((x1 < x0) || (x1 > x2)) {
-      BigReal x1 = (x0 + x2) * BIGREAL_HALF;
+      BigReal x1 = (x0 + x2) * BigReal::_05;
 //    }
     const BigReal y1 = f(x1);
     if(compareAbs(y1, tolerance) <= 0) {
@@ -149,18 +149,38 @@ BigReal PowerTowrFunction::operator()(const BigReal &x) {
     }
     return rDif(y,_8, digits);
   } catch (...) {
-    return e(BIGREAL_1, 100);
+    return e(BigReal::_1, 100);
   }
 }
 
+
 int main(int argc, char **argv) {
+  JavaRandom rnd;
+  for(;;) {
+    for(size_t count = 0;;count++) {
+      const INT v   = rnd.nextInt(); // [_INT32_MIN;_INT32_MAX]
+      if (v == _I32_MIN) {
+        _tprintf(_T("count:%zu\n"), count);
+        break;
+    }
+    INT    i32_0_9       = rnd.nextInt(10);
+    UINT   ui32_0_max    = randInt(rnd);
+    UINT   ui32_0_9      = randInt(10, rnd);
+    UINT   ui32_mm10_mm1 = randInt(_I32_MAX - 10, _I32_MAX, rnd);
+
+    INT64  i64_min_max   = rnd.nextInt64();
+    INT64  i64_0_9       = rnd.nextInt64(10);
+    UINT64 ui64_0_max    = randInt64(rnd);
+    UINT64 ui64_0_9      = randInt64(10, rnd);
+    UINT64 ui64_mm10_mm1 = randInt64(_I64_MAX - 10, _I64_MAX, rnd);
+  }
   mainD80();
 
   try {
     BigReal lower0(1);
     BigReal lower(1);
     BigReal upper(3);
-    BigReal tolerance(e(BIGREAL_1, -2 * (intptr_t)digits / 3));
+    BigReal tolerance(e(BigReal::_1, -2 * (intptr_t)digits / 3));
     double fheight = 1;
     INT64  height  = (INT64)fheight;
     PowerTowrFunction f;
@@ -176,7 +196,7 @@ int main(int argc, char **argv) {
       }
       f.setHeight(height);
       upper = x;
-      for(BigReal y = f(x), step = (x-lower0)*e(BIGREAL_1,-2), xn = x - step; xn >= lower0; xn -= step) {
+      for(BigReal y = f(x), step = (x-lower0)*e(BigReal::_1,-2), xn = x - step; xn >= lower0; xn -= step) {
         const BigReal yn = f(xn);
         if(sign(yn) != sign(y)) {
           lower = xn;

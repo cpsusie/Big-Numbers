@@ -704,10 +704,10 @@ static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, d
 #undef max
 
     static double unitRand64(RandomGenerator &rnd) {
-      return randDouble(-1, 1, &rnd);
+      return randDouble(-1, 1, rnd);
     }
     static Double80 unitRand80(RandomGenerator &rnd) {
-      return randDouble80(-1, 1, &rnd);
+      return randDouble80(-1, 1, rnd);
     }
 
 #undef endl

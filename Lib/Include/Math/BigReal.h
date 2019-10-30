@@ -1174,12 +1174,12 @@ public:
   // If maxDigits == 0, 0 will be returned
   // Digits generated with rnd
   // If digitPool == NULL, use DEFAULT_DIGITPOOL
-  friend BigReal randBigReal(size_t maxDigits, RandomGenerator *rnd = _standardRandomGenerator, DigitPool *digitPool = NULL);
+  friend BigReal randBigReal(size_t maxDigits, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator, DigitPool *digitPool = NULL);
 
   // Return uniform distributed random BigReal in [from;to] with at most maxDigits decimal digits.
   // Digits generated with rnd
   // If digitPool == NULL, use from.getDigitPool()
-  friend BigReal  randBigReal(const BigReal &from, const BigReal &to, size_t maxDigits, RandomGenerator *rnd = _standardRandomGenerator, DigitPool *digitPool = NULL);
+  friend BigReal  randBigReal(const BigReal &from, const BigReal &to, size_t maxDigits, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator, DigitPool *digitPool = NULL);
 
   // Comnon used constants allocated with ConstDigitPool (see below)
   static const ConstBigInt  _0;          // 0

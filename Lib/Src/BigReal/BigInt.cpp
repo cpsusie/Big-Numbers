@@ -61,13 +61,13 @@ BigInt rem(const BigInt &x, const BigInt &y, DigitPool *digitPool) {
 // Return uniform distributed random BigInt in [0..e(1,maxDigits)-1], digits generated with rnd.
 // If digitPool == NULL, use DEFAULT_DIGITPOOL
 // ex:maxDigits = 3:returned values in interval [0..999]
-BigInt randBigInt(size_t maxDigits, RandomGenerator *rnd, DigitPool *digitPool) {
+BigInt randBigInt(size_t maxDigits, RandomGenerator &rnd, DigitPool *digitPool) {
   return BigInt(e(randBigReal(maxDigits, rnd, digitPool),maxDigits));
 }
 
 // Return uniform distributed random BigInt in [0..n-1], digits generated with rnd.
 // If digitPool == NULL, use n.getDigitPool()
-BigInt randBigInt(const BigInt &n, RandomGenerator *rnd, DigitPool *digitPool) {
+BigInt randBigInt(const BigInt &n, RandomGenerator &rnd, DigitPool *digitPool) {
   if(digitPool == NULL) digitPool = n.getDigitPool();
   if(!n._isnormal()) return BigInt(digitPool->nan());
   return randBigInt(BigReal::getExpo10(n), rnd, digitPool) % n;
@@ -75,7 +75,7 @@ BigInt randBigInt(const BigInt &n, RandomGenerator *rnd, DigitPool *digitPool) {
 
 // Return uniform distributed random BigInt in [from;to], digits generated with rnd.
 // If digitPool == NULL, use from.getDigitPool()
-inline BigInt randBigInt(const BigInt &from, const BigInt &to, RandomGenerator *rnd, DigitPool *digitPool) {
+inline BigInt randBigInt(const BigInt &from, const BigInt &to, RandomGenerator &rnd, DigitPool *digitPool) {
   if(from >= to) {
     throwBigRealInvalidArgumentException(__TFUNCTION__, _T("from >= to"));
   }

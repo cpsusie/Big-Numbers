@@ -51,8 +51,8 @@ namespace TestComplex {
       for(int i = 0; i < 100; i++) {
         Complex c1, c2;
 
-        setToRandom(c1, &rnd);
-        setToRandom(c2, &rnd);
+        setToRandom(c1, rnd);
+        setToRandom(c2, rnd);
 
         const Complex sum = c1 + c2;
         verify(sum.re == c1.re + c2.re && sum.im == c1.im + c2.im);
@@ -116,8 +116,8 @@ namespace TestComplex {
       JavaRandom rnd(20);
       Real detectedMaxRelError = 0;
       for(int i = 0; i < 100; i++) {
-        setToRandom(c1, &rnd);
-        setToRandom(c2, &rnd);
+        setToRandom(c1, rnd);
+        setToRandom(c2, rnd);
 
         const Complex root2 = sqrt(c1);
         verifyRelError(c1          , root2   * root2            , 3.8e-16);
@@ -147,7 +147,7 @@ namespace TestComplex {
         Real detectedMaxRelError = 0;
         for(int i = 0; i < 10; i++) {
           Complex c;
-          setToRandom(c, &rnd);
+          setToRandom(c, rnd);
           const ComplexVector rootVector = roots(c, r);
           verify(rootVector.getDimension() == r);
           for(int j = 0; j < r; j++) {
@@ -229,7 +229,7 @@ namespace TestComplex {
 
     typedef CompactArray<Complex> CompactComplexArray;
 
-    static CompactComplexArray generateTestArray(RandomGenerator *rnd = _standardRandomGenerator) {
+    static CompactComplexArray generateTestArray(RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) {
       CompactComplexArray result;
       result.add( 0);
       result.add( 1);
@@ -248,7 +248,7 @@ namespace TestComplex {
     TEST_METHOD(ComplexIOAllFormats) {
       try {
         JavaRandom                rnd(31234);
-        const CompactComplexArray a                = generateTestArray(&rnd);
+        const CompactComplexArray a                = generateTestArray(rnd);
         StreamParametersIterator  it               = StreamParameters::getFloatParamIterator(30, NumberInterval<StreamSize>(1, 17),0, ITERATOR_FLOATFORMATMASK&~ios::internal);
         const UINT                totalFormatCount = (UINT)it.getMaxIterationCount(), quatil = totalFormatCount/4;
         UINT                      formatCounter    = 0;

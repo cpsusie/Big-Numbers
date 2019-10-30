@@ -74,7 +74,7 @@ namespace TestCompactHashSet {
     for(int k = 0; k < 10; k++) {
       INFO(_T("  Iteration %d/10"), k);
       for(int i = 0; i < 31500; i++) {
-        const KeyType key = randInt(minKey,maxKey, &rnd);
+        const KeyType key = randInt(minKey,maxKey, rnd);
         if(set.add(key)) {
           list.add(key);
         }
@@ -82,7 +82,7 @@ namespace TestCompactHashSet {
       testCollectionStream(set);
       compareSetList(set, list);
       for(int i = 0; i < 250 && list.size() > 5; i++) {
-        const size_t index = randSizet(list.size(), &rnd);
+        const size_t index = randSizet(list.size(), rnd);
         KeyType &key = list[index];
         verify(set.remove(key));
         list.remove(index);

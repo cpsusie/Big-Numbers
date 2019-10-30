@@ -2005,17 +2005,17 @@ extern const _int128  _I128_MIN, _I128_MAX;
 extern const _uint128 _UI128_MAX;
 
 // return uniform distributed int value between [0; _UINT128_MAX], both inclusive.
-inline _uint128 randInt128(RandomGenerator *rnd = _standardRandomGenerator) {
-  return _uint128(rnd->nextInt64(), rnd->nextInt64());
+inline _uint128 randInt128(RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) {
+  return _uint128(rnd.nextInt64(), rnd.nextInt64());
 }
 
 // return uniform distributed int value between [0; n-1].
-inline _uint128 randInt128(const _uint128 &n, RandomGenerator *rnd = _standardRandomGenerator) {
+inline _uint128 randInt128(const _uint128 &n, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) {
   return randInt128(rnd) % n;
 }
 
 // return uniform distributed int value between [from; to].
-inline _int128 randInt128(const _int128 &from, const _int128 &to, RandomGenerator *rnd = _standardRandomGenerator) {
+inline _int128 randInt128(const _int128 &from, const _int128 &to, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) {
   return randInt128(to-from+1, rnd) + from;
 }
 

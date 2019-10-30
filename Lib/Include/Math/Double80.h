@@ -518,9 +518,9 @@ inline bool   isUint64( const Double80 &v) {  return isfinite( v) && (v == getUi
 inline bool   isFloat(  const Double80 &v) {  return !isnormal(v) || (v == getFloat( v)); }
 inline bool   isDouble( const Double80 &v) {  return !isnormal(v) || (v == getDouble(v)); }
 
-Double80 randDouble80(   RandomGenerator *rnd = _standardRandomGenerator);
-Double80 randDouble80(   const Double80 &low, const Double80  &high, RandomGenerator *rnd = _standardRandomGenerator);
-Double80 randGaussianD80(const Double80 &mean, const Double80 &s   , RandomGenerator *rnd = _standardRandomGenerator);
+Double80 randDouble80(                                               RandomGenerator &rnd = *RandomGenerator::s_stdGenerator);
+Double80 randDouble80(   const Double80 &low , const Double80 &high, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator);
+Double80 randGaussianD80(const Double80 &mean, const Double80 &s   , RandomGenerator &rnd = *RandomGenerator::s_stdGenerator);
 
 // dst must point to memory with at least 26 free char
 char    *d80toa(char    *dst, const Double80 &x);

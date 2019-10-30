@@ -92,58 +92,58 @@ namespace TestRandom {
 
 #define SAMPLECOUNT 100000
 
-  void _TestNextInt32_INT_MIN_MAX(RandomGenerator *rnd) {
-    rnd->randomize();
-    INFO(_T("%s gen:%s"), __TFUNCTION__,rnd->getName());
+  void _TestNextInt32_INT_MIN_MAX(RandomGenerator &rnd) {
+    rnd.randomize();
+    INFO(_T("%s gen:%s"), __TFUNCTION__,rnd.getName());
     CompactIntArray samples(SAMPLECOUNT);
     for(int i = 0; i < SAMPLECOUNT; i++) {
-      const int x = rnd->nextInt();
+      const int x = rnd.nextInt();
       samples.add(x);
     }
-    dumpAllPValues(__TFUNCTION__, rnd->getName(), false, checkIsUniformDist(samples, false, INT_MIN, INT_MAX));
+    dumpAllPValues(__TFUNCTION__, rnd.getName(), false, checkIsUniformDist(samples, false, INT_MIN, INT_MAX));
   }
 
-  void _TestNextInt64_LLONG_MIN_MAX(RandomGenerator *rnd) {
-    rnd->randomize();
-    INFO(_T("%s gen:%s"), __TFUNCTION__,rnd->getName());
+  void _TestNextInt64_LLONG_MIN_MAX(RandomGenerator &rnd) {
+    rnd.randomize();
+    INFO(_T("%s gen:%s"), __TFUNCTION__,rnd.getName());
     CompactInt64Array samples(SAMPLECOUNT);
     for(int i = 0; i < SAMPLECOUNT; i++) {
-      const INT64 x = rnd->nextInt64();
+      const INT64 x = rnd.nextInt64();
       samples.add(x);
     }
-    dumpAllPValues(__TFUNCTION__, rnd->getName(), true, checkIsUniformDist(samples, true, LLONG_MIN, LLONG_MAX));
+    dumpAllPValues(__TFUNCTION__, rnd.getName(), true, checkIsUniformDist(samples, true, LLONG_MIN, LLONG_MAX));
   }
 
-  void _TestNextInt32_0_n(RandomGenerator *rnd) {
-    rnd->randomize();
-    INFO(_T("%s gen:%s"), __TFUNCTION__,rnd->getName());
+  void _TestNextInt32_0_n(RandomGenerator &rnd) {
+    rnd.randomize();
+    INFO(_T("%s gen:%s"), __TFUNCTION__,rnd.getName());
     CompactDoubleArray allPValues;
     for(int n = 10; n > 0; n *= 3) {
       CompactIntArray samples(SAMPLECOUNT);
       for(int i = 0; i < SAMPLECOUNT; i++) {
-        const int x = rnd->nextInt(n);
+        const int x = rnd.nextInt(n);
         verify((0 <= x) && (x < n));
         samples.add(x);
       }
       allPValues.addAll(checkIsUniformDist(samples, false, 0, n-1));
     }
-    dumpAllPValues(__TFUNCTION__, rnd->getName(), false, allPValues);
+    dumpAllPValues(__TFUNCTION__, rnd.getName(), false, allPValues);
   }
 
-  void _TestNextInt64_0_n(RandomGenerator *rnd) {
-    rnd->randomize();
+  void _TestNextInt64_0_n(RandomGenerator &rnd) {
+    rnd.randomize();
     CompactDoubleArray allPValues;
-    INFO(_T("%s gen:%s"), __TFUNCTION__,rnd->getName());
+    INFO(_T("%s gen:%s"), __TFUNCTION__,rnd.getName());
     for(INT64 n = 10; n > 0; n *= 3) {
       CompactInt64Array samples(SAMPLECOUNT);
       for(int i = 0; i < SAMPLECOUNT; i++) {
-        const INT64 x = rnd->nextInt64(n);
+        const INT64 x = rnd.nextInt64(n);
         verify((0 <= x) && (x < n));
         samples.add(x);
       }
       allPValues.addAll(checkIsUniformDist(samples, true, (INT64)0, n-1));
     }
-    dumpAllPValues(__TFUNCTION__, rnd->getName(), true, allPValues);
+    dumpAllPValues(__TFUNCTION__, rnd.getName(), true, allPValues);
   }
 
   static JavaRandom        javaRnd;
@@ -160,58 +160,58 @@ namespace TestRandom {
   public:
     TEST_METHOD(TestNextInt32_INT_MIN_MAX) {
       for(int i = 0; i < ARRAYSIZE(randomGenerators); i++)
-        _TestNextInt32_INT_MIN_MAX(randomGenerators[i]);
+        _TestNextInt32_INT_MIN_MAX(*randomGenerators[i]);
     }
 
     TEST_METHOD(TestNextInt64_LLONG_MIN_MAX) {
       for(int i = 0; i < ARRAYSIZE(randomGenerators); i++)
-        _TestNextInt64_LLONG_MIN_MAX(randomGenerators[i]);
+        _TestNextInt64_LLONG_MIN_MAX(*randomGenerators[i]);
     }
 
     TEST_METHOD(TestNextInt32_0_n) {
       for(int i = 0; i < ARRAYSIZE(randomGenerators); i++)
-        _TestNextInt32_0_n(randomGenerators[i]);
+        _TestNextInt32_0_n(*randomGenerators[i]);
     }
 
     TEST_METHOD(TestNextInt64_0_n) {
       for(int i = 0; i < ARRAYSIZE(randomGenerators); i++)
-        _TestNextInt64_0_n(randomGenerators[i]);
+        _TestNextInt64_0_n(*randomGenerators[i]);
     }
 
     TEST_METHOD(TestRandInt32_0_UINT_MAX) {
       for(int i = 0; i < ARRAYSIZE(randomGenerators); i++) {
-        RandomGenerator *newRnd = randomGenerators[i];
-        RandomGenerator *oldRnd = setStdRandomGenerator(newRnd);
+        RandomGenerator &newRnd = *randomGenerators[i];
+        RandomGenerator &oldRnd = RandomGenerator::setStdGenerator(newRnd);
         randomize();
         CompactUintArray samples(SAMPLECOUNT);
         for(int i = 0; i < SAMPLECOUNT; i++) {
           const UINT x = randInt();
           samples.add(x);
         }
-        dumpAllPValues(__TFUNCTION__, newRnd->getName(), false, checkIsUniformDist(samples, false, (UINT)0, UINT_MAX));
-        setStdRandomGenerator(oldRnd);
+        dumpAllPValues(__TFUNCTION__, newRnd.getName(), false, checkIsUniformDist(samples, false, (UINT)0, UINT_MAX));
+        RandomGenerator::setStdGenerator(oldRnd);
       }
     }
 
     TEST_METHOD(TestRandInt64_0_UINT64_MAX) {
       for(int i = 0; i < ARRAYSIZE(randomGenerators); i++) {
-        RandomGenerator *newRnd = randomGenerators[i];
-        RandomGenerator *oldRnd = setStdRandomGenerator(newRnd);
+        RandomGenerator &newRnd = *randomGenerators[i];
+        RandomGenerator &oldRnd = RandomGenerator::setStdGenerator(newRnd);
         randomize();
         CompactUint64Array samples(SAMPLECOUNT);
         for(int i = 0; i < SAMPLECOUNT; i++) {
           const UINT64 x = randInt64();
           samples.add(x);
         }
-        dumpAllPValues(__TFUNCTION__, newRnd->getName(), true, checkIsUniformDist(samples, true, (UINT64)0, ULLONG_MAX));
-        setStdRandomGenerator(oldRnd);
+        dumpAllPValues(__TFUNCTION__, newRnd.getName(), true, checkIsUniformDist(samples, true, (UINT64)0, ULLONG_MAX));
+        RandomGenerator::setStdGenerator(oldRnd);
       }
     }
 
     TEST_METHOD(TestRandInt32_0_n) {
       for(int i = 0; i < ARRAYSIZE(randomGenerators); i++) {
-        RandomGenerator *newRnd = randomGenerators[i];
-        RandomGenerator *oldRnd = setStdRandomGenerator(newRnd);
+        RandomGenerator &newRnd = *randomGenerators[i];
+        RandomGenerator &oldRnd = RandomGenerator::setStdGenerator(newRnd);
         randomize();
         CompactDoubleArray allPValues;
         for(INT64 n = 10; n <= UINT_MAX; n = n * 3 + 1) {
@@ -222,15 +222,15 @@ namespace TestRandom {
           }
           allPValues.addAll(checkIsUniformDist(samples, false, (UINT)0, (UINT)n-1));
         }
-        dumpAllPValues(__TFUNCTION__, newRnd->getName(), false, allPValues);
-        setStdRandomGenerator(oldRnd);
+        dumpAllPValues(__TFUNCTION__, newRnd.getName(), false, allPValues);
+        RandomGenerator::setStdGenerator(oldRnd);
       }
     }
 
     TEST_METHOD(TestRandInt64_0_n) {
       for(int i = 0; i < ARRAYSIZE(randomGenerators); i++) {
-        RandomGenerator *newRnd = randomGenerators[i];
-        RandomGenerator *oldRnd = setStdRandomGenerator(newRnd);
+        RandomGenerator &newRnd = *randomGenerators[i];
+        RandomGenerator &oldRnd = RandomGenerator::setStdGenerator(newRnd);
         randomize();
         CompactDoubleArray allPValues;
         for(UINT64 n = 10; n <= LLONG_MAX; n = n * 3 + 1) {
@@ -241,15 +241,15 @@ namespace TestRandom {
           }
           allPValues.addAll(checkIsUniformDist(samples, true, (UINT64)0, n-1));
         }
-        dumpAllPValues(__TFUNCTION__, newRnd->getName(), true, allPValues);
-        setStdRandomGenerator(oldRnd);
+        dumpAllPValues(__TFUNCTION__, newRnd.getName(), true, allPValues);
+        RandomGenerator::setStdGenerator(oldRnd);
       }
     }
 
     TEST_METHOD(TestRandInt32_from_to) {
       for(int i = 0; i < ARRAYSIZE(randomGenerators); i++) {
-        RandomGenerator *newRnd = randomGenerators[i];
-        RandomGenerator *oldRnd = setStdRandomGenerator(newRnd);
+        RandomGenerator &newRnd = *randomGenerators[i];
+        RandomGenerator &oldRnd = RandomGenerator::setStdGenerator(newRnd);
         randomize();
         CompactDoubleArray allPValues;
         for(int from = 1; from < INT_MAX/3; from *= 3) {
@@ -263,15 +263,15 @@ namespace TestRandom {
             allPValues.addAll(checkIsUniformDist(samples, false, from, to));
           }
         }
-        dumpAllPValues(__TFUNCTION__, newRnd->getName(), false, allPValues);
-        setStdRandomGenerator(oldRnd);
+        dumpAllPValues(__TFUNCTION__, newRnd.getName(), false, allPValues);
+        RandomGenerator::setStdGenerator(oldRnd);
       }
     }
 
     TEST_METHOD(TestRandInt64_from_to) {
       for(int i = 0; i < ARRAYSIZE(randomGenerators); i++) {
-        RandomGenerator *newRnd = randomGenerators[i];
-        RandomGenerator *oldRnd = setStdRandomGenerator(newRnd);
+        RandomGenerator &newRnd = *randomGenerators[i];
+        RandomGenerator &oldRnd = RandomGenerator::setStdGenerator(newRnd);
         randomize();
         CompactDoubleArray allPValues;
         for(INT64 from = 1; from < LLONG_MAX/3; from *= 3) {
@@ -285,8 +285,8 @@ namespace TestRandom {
             allPValues.addAll(checkIsUniformDist(samples, true, from, to));
           }
         }
-        dumpAllPValues(__TFUNCTION__, newRnd->getName(), true, allPValues);
-        setStdRandomGenerator(oldRnd);
+        dumpAllPValues(__TFUNCTION__, newRnd.getName(), true, allPValues);
+        RandomGenerator::setStdGenerator(oldRnd);
       }
     }
   };

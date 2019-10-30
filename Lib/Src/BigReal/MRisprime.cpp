@@ -44,7 +44,7 @@ bool MRisprime(int threadId, const BigInt &n, MillerRabinHandler *handler) { // 
 
     BigInt a(pool);
     do {
-      a = randBigInt(nm1, &rnd); // e(randBigReal(BigReal::getExpo10(nm1) + 1, &rnd, pool), BigReal::getExpo10(nm1) + 1, pool) % nm1;
+      a = randBigInt(nm1, rnd); // e(randBigReal(BigReal::getExpo10(nm1) + 1, &rnd, pool), BigReal::getExpo10(nm1) + 1, pool) % nm1;
     } while(a < _2);
     BigInt y = powmod(a,r,n);
     if((y != _1) && (y != nm1)) {

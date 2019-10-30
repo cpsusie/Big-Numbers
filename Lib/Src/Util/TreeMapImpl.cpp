@@ -106,7 +106,7 @@ const void *TreeMapImpl::get(const void *key) const {
   return (n != NULL) ? ((TreeMapNode*)n)->value() : NULL;
 }
 
-AbstractEntry *TreeMapImpl::selectEntry(RandomGenerator *rnd) const {
+AbstractEntry *TreeMapImpl::selectEntry(RandomGenerator &rnd) const {
   if(size() == 0) throwSelectFromEmptyCollectionException(__TFUNCTION__);
   return (TreeMapNode*)findNode(select(rnd));
 }

@@ -21,10 +21,10 @@ public:
   bool contains(const void *e) const {
     return m_map->get(((AbstractEntry*)e)->key()) != NULL;
   }
-  const void *select(RandomGenerator *rnd) const {
+  const void *select(RandomGenerator &rnd) const {
     return m_map->selectEntry(rnd);
   }
-  void *select(RandomGenerator *rnd) {
+  void *select(RandomGenerator &rnd) {
     return m_map->selectEntry(rnd);
   }
   size_t size() const {
@@ -80,10 +80,10 @@ public:
     return m_map->get(e) != NULL;
   }
 
-  const void *select(RandomGenerator *rnd) const {
+  const void *select(RandomGenerator &rnd) const {
     return m_map->selectEntry(rnd)->key();
   }
-  void *select(RandomGenerator *rnd) {
+  void *select(RandomGenerator &rnd) {
     return (void*)m_map->selectEntry(rnd)->key();
   }
 
@@ -140,8 +140,8 @@ public:
     return false;
   }
   bool contains(const void *e) const;
-  const void *select(RandomGenerator *rnd) const;
-  void *select(RandomGenerator *rnd);
+  const void *select(RandomGenerator &rnd) const;
+  void *select(RandomGenerator &rnd);
 
   size_t size() const {
     return m_map->size();
@@ -177,14 +177,14 @@ bool ValueCollection::contains(const void *e) const {
   return result;
 }
 
-const void *ValueCollection::select(RandomGenerator *rnd) const {
+const void *ValueCollection::select(RandomGenerator &rnd) const {
   if(size() == 0) {
     selectError(__TFUNCTION__);
   }
   return m_map->selectEntry(rnd)->value();
 }
 
-void *ValueCollection::select(RandomGenerator *rnd) {
+void *ValueCollection::select(RandomGenerator &rnd) {
   if(size() == 0) {
     selectError(__TFUNCTION__);
   }
