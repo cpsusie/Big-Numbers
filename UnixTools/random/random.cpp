@@ -87,7 +87,7 @@ public:
   double     m_p1, m_p2;
 
   RandomParameters(RandomType type, double p1, double p2);
-  double getRandom(Random &rnd);
+  double getRandom(RandomGenerator &rnd);
 };
 
 RandomParameters::RandomParameters(RandomType type, double p1, double p2) {
@@ -96,7 +96,7 @@ RandomParameters::RandomParameters(RandomType type, double p1, double p2) {
   m_p2   = p2;
 }
 
-double RandomParameters::getRandom(Random &rnd) {
+double RandomParameters::getRandom(RandomGenerator &rnd) {
   switch(m_type) {
   case UNIFORM: return rnd.nextDouble(m_p1,m_p2);
   case INTEGER: return floor(rnd.nextDouble(m_p1,m_p2+1));
@@ -106,7 +106,7 @@ double RandomParameters::getRandom(Random &rnd) {
   }
 }
 
-static void printRandom(Random &rnd, bool integer,double low, double high) {
+static void printRandom(RandomGenerator &rnd, bool integer,double low, double high) {
   if(integer) {
     _tprintf(_T("%.0lf"), floor(rnd.nextDouble(low,high+1)));
   } else {
@@ -114,7 +114,7 @@ static void printRandom(Random &rnd, bool integer,double low, double high) {
   }
 }
 
-static void printRandomLine(Random &rnd, Array<RandomParameters> &param) {
+static void printRandomLine(RandomGenerator &rnd, Array<RandomParameters> &param) {
   size_t dim   = param.size();
   TCHAR *delim = EMPTYSTRING;
   for(size_t i = 0; i < dim; i++, delim = _T(" ")) {
@@ -133,7 +133,7 @@ int main(int argc, char **argv) {
   int                     n       = 1;
   bool                    setseed = false;
   UINT64                  seed    = 1;
-  Random                 *rnd     = _standardRandomGenerator;
+  RandomGenerator        *rnd     = RandomGenerator::s_stdGenerator;
   RandomParameters        u(UNIFORM, 0, 1);
   Array<RandomParameters> param;
   int                     dim, i;
@@ -164,7 +164,7 @@ int main(int argc, char **argv) {
         }
       case 's':
         if(sscanf(cp+1,"%I64u", &seed) != 1) {
-          seed = Random::getRandomSeed();
+          seed = RandomGenerator::getRandomSeed();
         }
         break;
       case 'i':
