@@ -3,6 +3,9 @@
   <Type Name="BigReal">
     <DisplayString LegacyAddin="c:\mytools2015\lib\Win32\Release\BigRealAddIn.dll" Export="AddIn_BigReal"></DisplayString>
   </Type>
+  <Type Name="BigInt">
+    <DisplayString LegacyAddin="c:\mytools2015\lib\Win32\Release\BigRealAddIn.dll" Export="AddIn_BigInt"></DisplayString>
+  </Type>
   <Type Name="DigitPool">
     <DisplayString>{m_id,d}</DisplayString>
   </Type>
