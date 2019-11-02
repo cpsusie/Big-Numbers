@@ -2,14 +2,11 @@
 
 using namespace std;
 
-#define _1 pool->_1()
-#define _2 pool->_2()
-
 // Calculates a^r mod n
 BigInt powmod(const BigInt &a, const BigInt &r, const BigInt &n, bool verbose) {
   DigitPool *pool = a.getDigitPool();
 
-  BigInt p = _1;
+  BigInt p = pool->_1();
   BigInt tmpa(a);
   BigInt tmpr(r, pool);
 
@@ -23,12 +20,12 @@ BigInt powmod(const BigInt &a, const BigInt &r, const BigInt &n, bool verbose) {
       tcout << param << tmpa << " " << param << tmpr << " " << param << p << endl;
     }
 
-    if(odd(tmpr)) {
+    if(isOdd(tmpr)) {
       p = (p * tmpa) % n;
       --tmpr;
     } else {
       tmpa = (tmpa * tmpa) % n;
-      tmpr /= _2;
+      tmpr.divide2();
     }
   }
   if(verbose) {

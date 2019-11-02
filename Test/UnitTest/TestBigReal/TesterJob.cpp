@@ -55,7 +55,7 @@ unsigned int TesterJob::run() {
     }
 
     Console::clearLine(ypos);
-    Console::printf(0 , ypos, _T("Thread %d Pool %d"), thrId, pool->getId());
+    Console::printf(0 , ypos, _T("Thread %5d Pool %d"), thrId, pool->getId());
     try {
       test->runTest(m_id, pool);
     } catch(StopException) {

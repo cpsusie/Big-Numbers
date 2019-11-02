@@ -5,7 +5,7 @@
 #define _2 BigReal::_2
 
 bool MRisprime(int threadId, const BigInt &n, MillerRabinHandler *handler) { // Miller-Rabin probabilistic primality test
-  static const ConstBigReal _3(3);
+  static const ConstBigInt _3(3);
 
   DigitPool *pool = n.getDigitPool();
   if(n == _2) {
@@ -17,7 +17,7 @@ bool MRisprime(int threadId, const BigInt &n, MillerRabinHandler *handler) { // 
   if(n <  _2) {
     return false;
   }
-  if(even(n)) {
+  if(isEven(n)) {
     return false;
   }
   if((n % _3).isZero()) {
@@ -30,8 +30,8 @@ bool MRisprime(int threadId, const BigInt &n, MillerRabinHandler *handler) { // 
   --nm1; // nm1 is even
   BigInt r(nm1);
   int s = 0;
-  while(even(r)) {
-    r /= _2;
+  while(isEven(r)) {
+    r.divide2();
     s++;
   }
 

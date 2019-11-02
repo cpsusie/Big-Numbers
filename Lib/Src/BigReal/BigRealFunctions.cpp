@@ -25,27 +25,20 @@ BRExpoType getExpo2(const BigReal &x) {
   return (expo10 > -4890) ? ((BRExpoType)(log2_10 * expo10)) : ((BRExpoType)(log2(x.getFirst32(9))) + (BRExpoType)(log2_10 * (expo10-9)));
 }
 
+
 // Return number of decimal digits. 0 has length 1. undefined (nan,+inf,-inf) has length 0
 size_t BigReal::getDecimalDigits() const {
   if(!_isnormal()) {
     return isZero() ? 1 : 0;
   }
-  int lastDigitCount = LOG10_BIGREALBASE;
-  for(BRDigitType last = m_last->n; last % 10 == 0;) {
-    lastDigitCount--;
-    last /= 10;
-  }
-  const BRExpoType len = m_expo - m_low;
-  return len
-       ? (len - 1) * LOG10_BIGREALBASE + getDecimalDigitCount(m_first->n) + lastDigitCount
-       : lastDigitCount;
+  return (m_expo - m_low) * LOG10_BIGREALBASE + getDecimalDigitCount(m_first->n) - getTrailingZeroCount(m_last->n);
 }
 
 BigReal e( const BigReal &x, BRExpoType n, DigitPool *pool) { // x * pow(10,n)
   return BigReal(x,pool).multPow10(n);
 }
 
-bool even(const BigReal &x) {
+bool isEven(const BigReal &x) {
   if(!isInteger(x)) {
     return false;
   }
@@ -58,7 +51,7 @@ bool even(const BigReal &x) {
   return (x.m_last->n & 1) == 0;
 }
 
-bool odd(const BigReal &x) {
+bool isOdd(const BigReal &x) {
   if(!isInteger(x)) {
     return false;
   }

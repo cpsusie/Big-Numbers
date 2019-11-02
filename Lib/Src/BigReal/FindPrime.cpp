@@ -7,7 +7,7 @@
 
 static BigInt randomOddInteger(int digits, RandomGenerator &rnd, DigitPool *pool) {
   BigInt n = randBigInt(digits, rnd, pool);
-  if(even(n)) ++n;
+  if(isEven(n)) ++n;
   return n;
 }
 

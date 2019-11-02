@@ -1,5 +1,13 @@
 #include "pch.h"
 
+const BigRational BigRational::_0( BigReal::_0, BigReal::_1);  // 0
+const BigRational BigRational::_05(BigReal::_1, BigReal::_2);  // 1/2
+const BigRational BigRational::_1( BigReal::_1, BigReal::_1);   // 1
+const BigRational BigRational::_2( BigReal::_2, BigReal::_1);   // 2
+const BigRational BigRational::_BRAT_QNAN( BigReal::_0, BigReal::_0);  // non-signaling NaN (quiet NaN)
+const BigRational BigRational::_BRAT_PINF( BigReal::_1, BigReal::_0);  // +infinity;
+const BigRational BigRational::_BRAT_NINF(-BigReal::_1, BigReal::_0);  // -infinity;
+
 BigRational::BigRational(DigitPool *digitPool)
 : m_numerator(digitPool)
 , m_denominator(digitPool)
@@ -66,8 +74,16 @@ void BigRational::init(const String &s) {
 
 void BigRational::init(const BigInt &numerator, const BigInt &denominator) {
   DEFINEMETHODNAME;
+  if (!isfinite(numerator) || !isfinite(denominator)) {
+    throwBigRealInvalidArgumentException(method, _T("numerator and denominator must both be finite"));
+  }
   if(denominator.isZero()) {
-    throwInvalidArgumentException(method, _T("Denominator is zero"));
+    if(compareAbs(numerator, BigReal::_1) <= 0) { // num = {-1,0,1} (=-inf,nan,+inf}
+      m_numerator   = numerator;
+      m_denominator = denominator;
+      return;
+    }
+    throwInvalidArgumentException(method, _T("Denominator is zero (and numerator is not in {-1,0,1}"));
   }
 
   DigitPool *pool = getDigitPool();
@@ -76,11 +92,16 @@ void BigRational::init(const BigInt &numerator, const BigInt &denominator) {
     m_denominator = pool->_1();
   } else {
     const BigInt gcd = findGCD(BigInt(fabs(numerator)),BigInt(fabs(denominator)));
-    m_numerator   = numerator / gcd;
-    m_denominator = denominator / gcd;
+    if(gcd == pool->_1()) {
+      m_numerator   = numerator;
+      m_denominator = denominator;
+    } else {
+      m_numerator   = numerator / gcd;
+      m_denominator = denominator / gcd;
+    }
     if(denominator.isNegative()) { // Negative numbers are represented with negative numerator and positive denominator
-      m_numerator   = -m_numerator;
-      m_denominator = -m_denominator;
+      m_numerator.changeSign();
+      m_denominator.changeSign();
     }
   }
 }
@@ -140,6 +161,24 @@ BigRational &BigRational::operator/=(const BigRational &r) {
   return *this = BigRational(m_numerator * r.m_denominator ,m_denominator * r.m_numerator);
 }
 
+int sign(const BigRational &r) {
+  return ::sign(r.getNumerator());
+}
+
+int bigRationalCmp(const BigRational &r1, const BigRational &r2) {
+  assert(isfinite(r1) && isfinite(r2));
+  const int sign1 = sign(r1);
+  int       c = sign1 - sign(r2);
+  if(c != 0) return c;
+  if(r1.getDenominator() == r2.getDenominator()) {
+    return compareAbs(r1.getNumerator(), r2.getNumerator()) * sign1;
+  } else {
+    BigInt p1(r1.getNumerator()); p1 *= r2.getDenominator();
+    BigInt p2(r2.getNumerator()); p2 *= r1.getDenominator();
+    return compareAbs(p1,p2) * sign1;
+  }
+}
+
 const BigInt &BigRational::getNumerator() const {
   return m_numerator;
 }
@@ -153,27 +192,35 @@ BigInt BigRational::findGCD(const BigInt &a, const BigInt &b) { // static
 
   BigInt g = pool->_1();
   BigInt u(pool);
-  const BigInt &_2 = BigReal::_2;
   u = a;
   BigInt v(b);
 
-  while(even(u) && even(v)) {
-    u /= _2;
-    v /= _2;
-    g *= _2;
+  while(isEven(u) && isEven(v)) {
+    u.divide2();
+    v.divide2();
+    g.multiply2();
   }
 
   // Now u or v (or both) are odd
-  while(u.isPositive()) {
-    if(even(u)) {
-      u /= _2;
-    } else if(even(v)) {
-      v /= _2;
-    } else if(u < v) {
-      v = (v-u)/_2;
-    } else {
-      u = (u-v)/_2;
+  while(isEven(u)) u.divide2();
+  while(isEven(v)) v.divide2();
+  // both u and v are odd
+  for(;;) {
+    switch(compareAbs(u,v)) {
+    case  1: // u > v
+      u -= v;
+      do { // u even and > 0
+        u.divide2();
+      } while(isEven(u));
+      continue;
+    case -1: // u < v
+      v -= u;
+      do { // v even and > 0
+        v.divide2();
+      } while(isEven(v));
+      continue;
+    default:
+      return g * v;
     }
   }
-  return g*v;
 }

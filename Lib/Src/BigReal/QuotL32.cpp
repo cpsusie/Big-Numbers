@@ -86,12 +86,7 @@ BigReal BigReal::reciprocal(const BigReal &x, DigitPool *digitPool) { // static
 // if scale != NULL, result = n/10^scale, where scale = max(s|(n/10^s) % 10 != 0) and n = first k decimal digits of this
 // if scale == NULL, result = first k decimal digits of this, which can contain trailing zeroes
 unsigned long BigReal::getFirst32(const UINT k, BRExpoType *scale) const {
-#ifdef _DEBUG
-  DEFINEMETHODNAME;
-  if(k > MAXDIGITS_INT32) {
-    throwBigRealInvalidArgumentException(method, _T("k=%d. Legal interval is [0..%d]"), k, MAXDIGITS_INT32);
-  }
-#endif
+  assert(k <= MAXDIGITS_INT32);
 
   const Digit *p = m_first;
   if(p == NULL) {

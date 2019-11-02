@@ -122,15 +122,13 @@ BigReal rPow(const BigReal &x, const BigReal &y, size_t digits) { // x^y
     return rExp(rProd(y,rLn(x,digits+8),digits+8,pool),digits+8);
   }
 
-  if(even(y)) {
+  if(isEven(y)) {
     return rPow(-x,y,digits);
   }
-  if(odd(y)) {
+  if(isOdd(y)) {
     return -rPow(-x,y,digits);
   }
-
-  throwBigRealInvalidArgumentException(method, _T("x < 0 and y not integer"));
-  return _0;
+  return pool->nan();
 }
 
 BigReal rRoot(const BigReal &x, const BigReal &y, size_t digits) {
@@ -139,12 +137,10 @@ BigReal rRoot(const BigReal &x, const BigReal &y, size_t digits) {
   if(!x.isNegative()) {
     return rPow(x,rQuot(_1,y,digits),digits);
   }
-  if(odd(y)) {
+  if(isOdd(y)) {
     return -rPow(-x,rQuot(_1,y,digits),digits);
   }
-
-  throwBigRealInvalidArgumentException(method, _T("x < 0 and y not odd"));
-  return _0;
+  return pool->nan();
 }
 
 BigReal rSin(const BigReal &x, size_t digits) {

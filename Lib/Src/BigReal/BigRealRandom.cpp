@@ -36,13 +36,13 @@ BigReal randBigReal(size_t maxDigits, RandomGenerator &rnd, DigitPool *digitPool
 // Return uniform distributed random BigReal in [from;to] with at most maxDigits decimal digits.
 // If digitPool == NULL, use from.digitPool
 BigReal randBigReal(const BigReal &from, const BigReal &to, size_t maxDigits, RandomGenerator &rnd, DigitPool *digitPool) {
-  if(from >= to) {
-    throwBigRealInvalidArgumentException(__TFUNCTION__, _T("from >= to"));
+  if(from > to) {
+    throwBigRealInvalidArgumentException(__TFUNCTION__, _T("from > to"));
   }
   if(digitPool == NULL) digitPool = from.getDigitPool();
   if(!from._isfinite() || !to._isfinite()) return digitPool->nan();
 
   BigReal r = randBigReal(maxDigits, rnd, digitPool);
-  r = rSum(rProd(r, rSum(rDif(to,from,maxDigits, digitPool), BigReal::_1,maxDigits),maxDigits), from, maxDigits);
+  r = rSum(rProd(r, rDif(to,from,maxDigits, digitPool),maxDigits), from, maxDigits);
   return (r.isZero() || (r.getDecimalDigits() <= maxDigits) || (maxDigits == 0)) ? r : r.rTrunc(maxDigits);
 }

@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <Console.h>
+#include <MathUtil.h>
 #include "FunctionTest.h"
 
 void FunctionTest1ArgND64D80::runTest(int threadId, DigitPool *pool) {
@@ -63,7 +64,7 @@ void FunctionTest2ArgND64D80::runTest(int threadId, DigitPool *pool) {
   }
 }
 
-void ExactBinaryOperatorTest::runTest(int threadId, DigitPool *pool) {
+void BigRealExactBinaryOperatorTest::runTest(int threadId, DigitPool *pool) {
   const int              length         = 30;
   TestStatistic          stat(threadId, m_functionName, pool, XY, 4 * sqr((MAXSCALE - MINSCALE + 1)) / (sqr(SCALESTEP)*DIGITSTEP));
 
@@ -237,6 +238,87 @@ void OperatorTest2ArgRelative::runTest(int threadId, DigitPool *pool) {
   }
 }
 
+void testRandBigReal(TestStatistic &stat) {
+  DigitPool         *pool = stat.getDigitPool();
+  RandomGenerator   &rnd  = stat.getRandomGenerator();
+  const size_t       n    = 1000;
+
+  for(size_t digits = 1; digits < n; digits++) {
+    if(stat.isTimeToPrint()) stat.printLoopMessage(_T("Progress:%.2lf%%"), PERCENT(digits, n));
+    BigReal from = randBigReal(digits, rnd, pool);
+    verify(BigReal::_0 <= from);
+    verify(from < BigReal::_1);
+    const size_t fdd = from.getDecimalDigits();
+    verify(fdd <= digits);
+    BigReal to(from); to.multPow10(2);
+    if(rnd.nextBool()) from = -from;
+    for(int i = 0; i < 50; i++) {
+      const size_t  rdigits = digits + rnd.nextInt(20);
+      const BigReal r       = randBigReal(from, to, rdigits, rnd, pool);
+      verify(from <= r);
+      verify(r <= to);
+      const size_t rdd = r.getDecimalDigits();
+      verify(rdd <= rdigits);
+    }
+  }
+  stat.setEndMessageToOk();
+}
+
+void testRandBigInt(TestStatistic &stat) {
+  DigitPool         *pool = stat.getDigitPool();
+  RandomGenerator   &rnd = stat.getRandomGenerator();
+  const size_t       n   = 1000;
+
+  for(size_t digits = 1; digits < n; digits++) {
+    if(stat.isTimeToPrint()) stat.printLoopMessage(_T("Progress:%.2lf%%"), PERCENT(digits, n));
+    const BigInt r = randBigInt(digits, rnd, pool);
+    verify(r.getDecimalDigits() <= digits);
+    verify(r >= BigReal::_0);
+    for(int i = 0; i < 10; i++) {
+      const BigInt r1 = randBigInt(r, rnd, pool);
+      if(!r._isnormal()) {
+        verify(isnan(r1));
+        break;
+      } else {
+        verify(r1 >= BigReal::_0);
+        verify(r1 < r);
+      }
+    }
+  }
+  stat.setEndMessageToOk();
+}
+
+void testRandBigRational(TestStatistic &stat) {
+  DigitPool         *pool = stat.getDigitPool();
+  RandomGenerator   &rnd = stat.getRandomGenerator();
+  UINT               loop = 0, maxLoopCount = 123;
+
+  for(BigInt maxden(30,pool); maxden <= BigReal::_i128_max; maxden.multiply2()) {
+    if(stat.isTimeToPrint()) stat.printLoopMessage(_T("Progress:%.2lf%%"), PERCENT(loop, maxLoopCount));
+    BigRational low = randBigRational(maxden, rnd);
+    verify(BigRational::_0       <= low           );
+    verify(low                   < BigRational::_1);
+    verify(low.getDenominator()  <= maxden        );
+
+    BigRational high = randBigRational(maxden, rnd);
+    verify(BigRational::_0           <= high      );
+    verify( high                 < BigRational::_1);
+    verify(high.getDenominator() <= maxden        );
+
+    low  *= BigInt(randInt(-30, 30, rnd), pool);
+    high *= BigInt(randInt(-30, 30, rnd), pool);
+    if(high < low) {
+      swap(low, high);
+    }
+    for(int i = 0; i < 100; i++) {
+      const BigInt      maxScale = randBigInt(10, rnd, pool);
+      const BigRational r        = randBigRational(low, high, maxScale, rnd);
+      verify((low <= r) && (r <= high));
+    }
+  }
+  stat.setEndMessageToOk();
+}
+
 void testQuot3(TestStatistic &stat) {
   DigitPool         *pool           = stat.getDigitPool();
   const int          length         = 50;
@@ -330,61 +412,148 @@ void testPi(TestStatistic &stat) {
   }
 }
 
-void testModulus(TestStatistic &stat) {
-  DigitPool *pool = stat.getDigitPool();
-  stat.setTotalTestCount(820);
-
-  for(double x = 1; x < _I64_MAX; x *= 1.1) {
-    for(double y = 1; y <= x; y *= 1.1) {
-
-      if(stat.isTimeToPrint()) {
-        stat.printLoopMessage(_T("x:%10.2le y:%10.2le"), x, y);
-      }
-
-      __int64 x64 =  (__int64)x;
-      __int64 y64 = -(__int64)y;
-      __int64 z64 = x64 % y64;
-      BigInt X(x64,pool),Y(y64,pool);
-      BigInt Z = X % Y;
-      __int64 Z64 = getInt64(Z);
-      if(Z64 != z64) {
-        ERRLOG << _T("Error in modulus") << endl
-               << _T("X      :") << X    << endl
-               << _T("Y      :") << Y    << endl
-               << _T("Z = X%Y:") << Z    << endl
-               << _T("x64%y64:") << z64  << endl;
-        THROWTESTERROR();
-      }
+void testIntSum(TestStatistic &stat) { // tester BigInt sum
+  DigitPool       *pool = stat.getDigitPool();
+  RandomGenerator &rnd  = stat.getRandomGenerator();
+  const ULONG      n    = 1000;
+  stat.setTotalTestCount(n);
+  for(ULONG i = 0; i < n; i++) {
+    const __int64  x64  = rnd.nextInt64();
+    const __int64  y64  = rnd.nextInt64();
+    const  _int128 z128 = (_int128)x64 + y64;
+    if(stat.isTimeToPrint()) {
+      stat.printLoopMessage(_T("i:%10u"), i);
+    }
+    const BigInt  X(x64, pool), Y(y64, pool), Za = X + Y, Zb = sum(X,Y);
+    const _int128 Z128a = getInt128(Za);
+    const _int128 Z128b = getInt128(Zb);
+    if((Z128a != z128) || (Z128b != z128)) {
+      ERRLOG << _T("Error in int sum")       << endl
+             << _T("X            :") << X    << endl
+             << _T("Y            :") << Y    << endl
+             << _T("Za = X+Y     :") << Za   << endl
+             << _T("Zb = sum(X,Y):") << Zb   << endl
+             << _T("x64+y64      :") << z128 << endl;
+      THROWTESTERROR();
     }
   }
   stat.setEndMessageToOk();
 }
 
-void testIntegerDivision(TestStatistic &stat) { // tester BigInt-division
-  DigitPool *pool = stat.getDigitPool();
-  stat.setTotalTestCount(820);
+void testIntDif(TestStatistic &stat) { // tester BigInt dif
+  DigitPool       *pool = stat.getDigitPool();
+  RandomGenerator &rnd  = stat.getRandomGenerator();
+  const ULONG      n    = 1000;
+  stat.setTotalTestCount(n);
+  for(ULONG i = 0; i < n; i++) {
+    const __int64  x64  = rnd.nextInt64();
+    const __int64  y64  = rnd.nextInt64();
+    const  _int128 z128 = (_int128)x64 - y64;
+    if(stat.isTimeToPrint()) {
+      stat.printLoopMessage(_T("i:%10u"), i);
+    }
+    const BigInt  X(x64, pool), Y(y64, pool), Za = X - Y, Zb = dif(X,Y);
+    const _int128 Z128a = getInt128(Za);
+    const _int128 Z128b = getInt128(Zb);
+    if((Z128a != z128) || (Z128b != z128)) {
+      ERRLOG << _T("Error in int dif")       << endl
+             << _T("X            :") << X    << endl
+             << _T("Y            :") << Y    << endl
+             << _T("Za = X-Y     :") << Za   << endl
+             << _T("Zb = dif(X,Y):") << Zb   << endl
+             << _T("x64-y64      :") << z128 << endl;
+      THROWTESTERROR();
+    }
+  }
+  stat.setEndMessageToOk();
+}
 
-  for(double x = 1; x < _I64_MAX; x *= 1.1) {
-    for(double y = 1; y <= x; y *= 1.1) {
+void testIntProd(TestStatistic &stat) { // tester BigInt prod
+  DigitPool       *pool = stat.getDigitPool();
+  RandomGenerator &rnd  = stat.getRandomGenerator();
+  const ULONG      n    = 1000;
+  stat.setTotalTestCount(n);
+  for(ULONG i = 0; i < n; i++) {
+    __int64  x64  = rnd.nextInt64(_I64_MAX/4);
+    __int64  y64  = rnd.nextInt64(_I64_MAX/4);
+    if(rnd.nextBool()) x64 = -x64;
+    if(rnd.nextBool()) y64 = -y64;
+    const  _int128 z128 = (_int128)x64 * y64;
+    if(stat.isTimeToPrint()) {
+      stat.printLoopMessage(_T("i:%10u"), i);
+    }
 
-      if(stat.isTimeToPrint()) {
-        stat.printLoopMessage(_T("x:%10.2le y:%10.2le"), x, y);
-      }
+    const BigInt  X(x64, pool), Y(y64, pool), Za = X * Y, Zb = prod(X,Y);
+    const _int128 Z128a = getInt128(Za);
+    const _int128 Z128b = getInt128(Zb);
+    if((Z128a != z128) || (Z128b != z128)) {
+      ERRLOG << _T("Error in int prod")       << endl
+             << _T("X             :") << X    << endl
+             << _T("Y             :") << Y    << endl
+             << _T("Za = X*Y      :") << Za   << endl
+             << _T("Zb = prod(X,Y):") << Zb   << endl
+             << _T("x64*y64       :") << z128 << endl;
+      THROWTESTERROR();
+    }
+  }
+  stat.setEndMessageToOk();
+}
 
-      __int64 x64 =  (__int64)x;
-      __int64 y64 = -(__int64)y;
-      __int64 z64 = x64 / y64;
-      BigInt X(x64,pool),Y(y64,pool);
-      BigInt Z = X / Y;
-      __int64 Z64 = getInt64(Z);
-      if(Z64 != z64) {
-        ERRLOG << _T("Error in integer division") << endl
-               << _T("X      :") << X             << endl
-               << _T("Y      :") << Y             << endl
-               << _T("Z = X/Y:") << Z             << endl
-               << _T("x64/y64:") << z64           << endl;
-        THROWTESTERROR();
-      }
+void testIntQuot(TestStatistic &stat) { // tester BigInt quot
+  DigitPool       *pool = stat.getDigitPool();
+  RandomGenerator &rnd  = stat.getRandomGenerator();
+  const ULONG      n    = 1000;
+  stat.setTotalTestCount(n);
+  for(ULONG i = 0; i < n; i++) {
+    const __int64  x64  = rnd.nextInt64();
+    __int64  y64;
+    do { y64 = rnd.nextInt64(); } while(y64 == 0);
+    const __int64  z64  = x64 / y64;
+    if(stat.isTimeToPrint()) {
+      stat.printLoopMessage(_T("i:%10u"), i);
+    }
+
+    const BigInt  X(x64, pool), Y(y64, pool), Za = X / Y, Zb = quot(X,Y);
+    const __int64 Z64a = getInt64(Za);
+    const __int64 Z64b = getInt64(Zb);
+    if((Z64a != z64) || (Z64b != z64)) {
+      ERRLOG << _T("Error in int prod")       << endl
+             << _T("X             :") << X    << endl
+             << _T("Y             :") << Y    << endl
+             << _T("Za = X/Y      :") << Za   << endl
+             << _T("Zb = quot(X,Y):") << Zb   << endl
+             << _T("x64/y64       :") << z64  << endl;
+      THROWTESTERROR();
+    }
+  }
+  stat.setEndMessageToOk();
+}
+
+void testIntRem(TestStatistic &stat) { // tester BigInt rem
+  DigitPool       *pool = stat.getDigitPool();
+  RandomGenerator &rnd  = stat.getRandomGenerator();
+  const ULONG      n    = 1000;
+  stat.setTotalTestCount(n);
+  for(ULONG i = 0; i < n; i++) {
+    const __int64  x64  = rnd.nextInt64();
+    __int64  y64;
+    do { y64 = rnd.nextInt64(); } while(y64 == 0);
+    const __int64  z64  = x64 % y64;
+    if(stat.isTimeToPrint()) {
+      stat.printLoopMessage(_T("i:%10u"), i);
+    }
+
+    const BigInt  X(x64, pool), Y(y64, pool), Za = X % Y, Zb = rem(X,Y);
+    const __int64 Z64a = getInt64(Za);
+    const __int64 Z64b = getInt64(Zb);
+    if((Z64a != z64) || (Z64b != z64)) {
+      ERRLOG << _T("Error in int rem")       << endl
+             << _T("X            :") << X    << endl
+             << _T("Y            :") << Y    << endl
+             << _T("Za = X%Y     :") << Za   << endl
+             << _T("Zb = rem(X,Y):") << Zb   << endl
+             << _T("x64%y64      :") << z64  << endl;
+      THROWTESTERROR();
     }
   }
   stat.setEndMessageToOk();
@@ -444,7 +613,7 @@ void testAssignOperators(TestStatistic &stat) {
   stat.setEndMessageToOk();
 }
 
-void testGetFirst(TestStatistic &stat) {
+void testGetFirst32(TestStatistic &stat) {
   DigitPool *pool = stat.getDigitPool();
 
   static const TCHAR *list[] = {
@@ -455,9 +624,10 @@ void testGetFirst(TestStatistic &stat) {
    ,_T("1"                   )
   };
 
-  const int minExponent = -10;
-  const int maxExponent =  10;
-  const int totalTestCount = ARRAYSIZE(list) * (maxExponent - minExponent) * 9;
+  const int minExponent    = -10;
+  const int maxExponent    =  10;
+  const int maxK           = 9;
+  const int totalTestCount = ARRAYSIZE(list) * (maxExponent - minExponent) * maxK;
 
   stat.setTotalTestCount(totalTestCount);
 
@@ -466,13 +636,14 @@ void testGetFirst(TestStatistic &stat) {
     BigReal x(str, pool);
     for(int exponent = minExponent; exponent < maxExponent; exponent++) {
       FullFormatBigReal X(e(x,exponent));
-      for(int k = 1; k <= 9; k++) {
+      for(int k = 1; k <= maxK; k++) {
 
         if(stat.isTimeToPrint()) {
-          stat.printLoopMessage(_T("i:%d[0..%d], exponent:%3d[%d..%d], k:%d[0..9]")
+          stat.printLoopMessage(_T("i:%d[0..%d], exponent:%3d[%d..%d], k:%d[0..%d]")
                                ,i, ARRAYSIZE(list)-1
                                ,exponent, minExponent, maxExponent-1
                                ,k
+                               ,maxK
                                );
         }
 
@@ -481,8 +652,8 @@ void testGetFirst(TestStatistic &stat) {
         const int missing = k - len;
         String expected = substr(str + spaceString(missing,_T('0')),0,k);
         if(result != expected) {
-          ERRLOG << _T("getFirst(") << X << _T(",") << k << _T(")=") << result << endl
-                 << _T("Expected:") << expected                                << endl;
+          ERRLOG << _T("getFirst32(") << X << _T(",") << k << _T(")=") << result << endl
+                 << _T("Expected:")   << expected                                << endl;
           THROWTESTERROR();
         }
       }
@@ -490,6 +661,110 @@ void testGetFirst(TestStatistic &stat) {
   }
   stat.setEndMessageToOk();
 }
+
+void testGetFirst64(TestStatistic &stat) {
+  DigitPool *pool = stat.getDigitPool();
+
+  static const TCHAR *list[] = {
+    _T("1234567890123456")
+   ,_T("9876543210987654321098765432109876543210")
+   ,_T("0")
+   ,_T("12")
+   ,_T("1")
+  };
+
+  const int minExponent    = -10;
+  const int maxExponent    = 10;
+  const int maxK           = 19;
+  const int totalTestCount = ARRAYSIZE(list) * (maxExponent - minExponent) * maxK;
+
+  stat.setTotalTestCount(totalTestCount);
+
+  for(int i = 0; i < ARRAYSIZE(list); i++) {
+    const TCHAR *str = list[i];
+    BigReal x(str, pool);
+    for(int exponent = minExponent; exponent < maxExponent; exponent++) {
+      FullFormatBigReal X(e(x, exponent));
+      for(int k = 1; k <= maxK; k++) {
+
+        if(stat.isTimeToPrint()) {
+          stat.printLoopMessage(_T("i:%d[0..%d], exponent:%3d[%d..%d], k:%d[0..%d]")
+            , i, ARRAYSIZE(list) - 1
+            , exponent, minExponent, maxExponent - 1
+            , k
+            , maxK
+          );
+        }
+
+        String result = format(_T("%0*I64u"), k, X.getFirst64(k));
+        const int len = (int)_tcslen(str);
+        const int missing = k - len;
+        String expected = substr(str + spaceString(missing, _T('0')), 0, k);
+        if (result != expected) {
+          ERRLOG << _T("getFirst64(") << X << _T(",") << k << _T(")=") << result << endl
+                 << _T("Expected:") << expected << endl;
+          THROWTESTERROR();
+        }
+      }
+    }
+  }
+  stat.setEndMessageToOk();
+}
+
+#ifdef IS64BIT
+void testGetFirst128(TestStatistic &stat) {
+  DigitPool *pool = stat.getDigitPool();
+
+  static const TCHAR *list[] = {
+    _T("1234567890123456")
+   ,_T("987654321098765432109876543210987654321098765432109876543210")
+   ,_T("0")
+   ,_T("12")
+   ,_T("1")
+  };
+
+  const int minExponent    = -10;
+  const int maxExponent    = 10;
+  const int maxK           = 38;
+  const int totalTestCount = ARRAYSIZE(list) * (maxExponent - minExponent) * maxK;
+
+  stat.setTotalTestCount(totalTestCount);
+
+  for(int i = 0; i < ARRAYSIZE(list); i++) {
+    const TCHAR *str = list[i];
+    BigReal x(str, pool);
+    for(int exponent = minExponent; exponent < maxExponent; exponent++) {
+      FullFormatBigReal X(e(x, exponent));
+      for(int k = 1; k <= maxK; k++) {
+
+        if(stat.isTimeToPrint()) {
+          stat.printLoopMessage(_T("i:%d[0..%d], exponent:%3d[%d..%d], k:%d[0..%d]")
+            , i, ARRAYSIZE(list) - 1
+            , exponent, minExponent, maxExponent - 1
+            , k
+            , maxK
+          );
+        }
+        _uint128 ui128;
+        String result = toString(X.getFirst128(ui128, k));
+        int missing = k - (int)result.length();
+        if(missing > 0) {
+          result.insert(0, missing, '0');
+        }
+        const int len = (int)_tcslen(str);
+        missing = k - len;
+        String expected = substr(str + spaceString(missing, _T('0')), 0, k);
+        if (result != expected) {
+          ERRLOG << _T("getFirst128(") << X << _T(",") << k << _T(")=") << result << endl
+                 << _T("Expected:") << expected << endl;
+          THROWTESTERROR();
+        }
+      }
+    }
+  }
+  stat.setEndMessageToOk();
+}
+#endif // IS64BIT
 
 void testReadWriteBigReal(TestStatistic &stat) {
   const String   fileName = getTestFileName(__TFUNCTION__);
@@ -545,7 +820,7 @@ void testReadWriteBigReal(TestStatistic &stat) {
   stat.setEndMessageToOk();
 }
 
-void testReadWriteInteger(TestStatistic &stat) {
+void testReadWriteBigInt(TestStatistic &stat) {
   const String   fileName = getTestFileName(__TFUNCTION__);
   const size_t   count    = 500;
   DigitPool     *pool     = stat.getDigitPool();
@@ -575,6 +850,48 @@ void testReadWriteInteger(TestStatistic &stat) {
     }
     if(x != expected) {
       ERRLOG << _T("Read BigReal at line ") << i << _T("(=") << FullFormatBigReal(x) << _T(") != exptected (=") << FullFormatBigReal(expected) << _T(")") << endl;
+      THROWTESTERROR();
+    }
+  }
+  in.close();
+  stat.setEndMessageToOk();
+}
+
+void testReadWriteBigRational(TestStatistic &stat) {
+  const String       fileName = getTestFileName(__TFUNCTION__);
+  const size_t       count    = 500;
+  RandomGenerator   &rnd      = stat.getRandomGenerator();
+  DigitPool         *pool     = stat.getDigitPool();
+  Array<BigRational> list;
+
+  BigInt maxDen(e(pool->_1(), 30));
+  BigRational from(randBigRational(maxDen, rnd)), to(randBigRational(maxDen, rnd));
+  if(from > to) {
+    BigRational tmp = from; from = to; to = tmp;
+  }
+  for(size_t i = 0; i < count; i++) {
+    BigRational x(randBigRational(from, to, pool->_1(), rnd));
+    list.add(x);
+  }
+
+  tofstream out(fileName.cstr());
+  for(size_t i = 0; i < list.size(); i++) {
+    const BigRational &x = list[i];
+    out << x << endl;
+  }
+  out.close();
+
+  tifstream in(fileName.cstr());
+  for(size_t i = 0; i < list.size(); i++) {
+    const BigRational &expected = list[i];
+    BigRational x(pool);
+    in >> x;
+    if(in.bad()) {
+      stat.out() << _T("Read Rational line ") << i << _T(" failed") << endl;
+      THROWTESTERROR();
+    }
+    if(x != expected) {
+      ERRLOG << _T("Read BigRational at line ") << i << _T("(=") << x << _T(") != exptected (=") << expected << _T(")") << endl;
       THROWTESTERROR();
     }
   }

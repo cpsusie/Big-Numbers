@@ -33,13 +33,13 @@ BigReal pow(const BigReal &x, const BigReal &y, const BigReal &f) { // x^y
     return y.isNegative() ? pool->pinf() : _0;
   }
   if(x.isNegative()) {
-    if(even(y)) {
+    if(isEven(y)) {
       return pow(-x,y,f);
     }
-    if(odd(y)) {
+    if(isOdd(y)) {
       return -pow(-x,y,f);
     }
-    throwBigRealInvalidArgumentException(method, _T("x < 0 and y not integer"));
+    return pool->nan();
   }
 
   BigReal a = (x > _1) ? APCpow(>,x, floor(y)+_1,pool) : APCpow(>,x,floor(y),pool);

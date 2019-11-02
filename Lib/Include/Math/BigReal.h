@@ -1056,6 +1056,14 @@ public:
   // Assume n = [1..1e19[
   static int     getDecimalDigitCount(BRDigitTypex64 n);
 
+  // Return 0 if n == 0, else max(p)|n % (10^p) = 0, p=[0..LOG10BASEx86/x64]
+  template<class INTTYPE> static int getTrailingZeroCount(INTTYPE n) {
+    if(n == 0) return 0;
+    int result = 0;
+    for(;n % 10 == 0; n /= 10) result++;
+    return result;
+  }
+
 #ifdef HAS_LOOP_DIGITCOUNT
   static int     getDecimalDigitCountLoopx64(BRDigitTypex64 n);
 #endif
@@ -1093,9 +1101,9 @@ public:
   }
 
   // Return true if x._isfinite() && isInteger(x) && x % 2 == 0
-  friend bool    even(     const BigReal &x);
+  friend bool    isEven(     const BigReal &x);
   //  Return true if x._isfinite() && isInteger(x) && x % 2 == 1
-  friend bool    odd(      const BigReal &x);
+  friend bool    isOdd(      const BigReal &x);
   // Return true if x._isfinite() && (fraction(x) == 0)
   friend inline bool isInteger(const BigReal &x) {
     return x._isfinite() && x.getLow() >= 0;

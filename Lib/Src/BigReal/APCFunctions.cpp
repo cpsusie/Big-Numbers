@@ -1,7 +1,6 @@
 #include "pch.h"
 
 BigReal BigReal::apcSum(const char bias, const BigReal &x, const BigReal &y, DigitPool *digitPool) {
-  DEFINEMETHODNAME;
   if(digitPool == NULL) digitPool = x.getDigitPool();
 
   HANDLE_INFBINARYOP(x,y,digitPool);
@@ -14,7 +13,7 @@ BigReal BigReal::apcSum(const char bias, const BigReal &x, const BigReal &y, Dig
 
   const BRExpoType xe = getExpo10(x);
   const BRExpoType ye = getExpo10(y);
-  return sum(x, y, e(digitPool->_1(), max(xe, ye) - APC_DIGITS - 2), digitPool).rRound(APC_DIGITS+2).adjustAPCResult(bias, method);
+  return sum(x, y, e(digitPool->_1(), max(xe, ye) - APC_DIGITS - 2), digitPool).rRound(APC_DIGITS+2).adjustAPCResult(bias, __TFUNCTION__);
 }
 
 BigReal BigReal::apcProd(const char bias, const BigReal &x, const BigReal &y, DigitPool *digitPool) { // static
@@ -32,7 +31,6 @@ BigReal BigReal::apcProd(const char bias, const BigReal &x, const BigReal &y, Di
 #define MAXDIGITS_DIVISOR64 ((MAXDIGITS_INT64+1)/2)
 
 BigReal BigReal::apcQuot(const char bias, const BigReal &x, const BigReal &y, DigitPool *digitPool) {
-  DEFINEMETHODNAME;
   if(digitPool == NULL) digitPool = x.getDigitPool();
 
   BigReal result(digitPool);
@@ -58,7 +56,7 @@ BigReal BigReal::apcQuot(const char bias, const BigReal &x, const BigReal &y, Di
   }
 
   ((BigReal&)y).m_negative = yNegative;
-  return result.rTrunc(APC_DIGITS+2).setSignByProductRule(x,y).adjustAPCResult(bias, method);
+  return result.rTrunc(APC_DIGITS+2).setSignByProductRule(x,y).adjustAPCResult(bias, __TFUNCTION__);
 }
 
 BigReal BigReal::apcPow(const char bias, const BigReal &x, const BigInt &y, DigitPool *digitPool) {
@@ -100,13 +98,13 @@ BigReal BigReal::apcPow(const char bias, const BigReal &x, const BigInt &y, Digi
         }
       }
     } else {                                                // use BigInt all the way down. guess this will almost never happen
-      BigReal tmpY(y, digitPool);
+      BigInt tmpY(y, digitPool);
       if(yNegative) tmpY.changeSign();
       while(!tmpY.isZero()) {
-        if(odd(tmpY)) {
+        if(isOdd(tmpY)) {
           result = SHORTPROD(result, tmpX); --tmpY;
         } else {
-          tmpX   = SHORTPROD(tmpX  , tmpX); tmpY *= c1;
+          tmpX   = SHORTPROD(tmpX, tmpX); tmpY.divide2();
         }
       }
     }

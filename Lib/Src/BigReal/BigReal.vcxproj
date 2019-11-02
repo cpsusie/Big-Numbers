@@ -706,9 +706,11 @@
     <ClCompile Include="Atan.cpp" />
     <ClCompile Include="BigInt.cpp" />
     <ClCompile Include="BigIntIO.cpp" />
+    <ClCompile Include="BigIntRandom.cpp" />
     <ClCompile Include="BigIntStr.cpp" />
     <ClCompile Include="BigRational.cpp" />
     <ClCompile Include="BigRationalIO.cpp" />
+    <ClCompile Include="BigRationalRandom.cpp" />
     <ClCompile Include="BigRationalStr.cpp" />
     <ClCompile Include="BigReal.cpp" />
     <ClCompile Include="BigRealByteStream.cpp" />
@@ -768,7 +770,7 @@
     <ClCompile Include="QuotL64.cpp" />
     <ClCompile Include="QuotNewton.cpp" />
     <ClCompile Include="QuotRemainder.cpp" />
-    <ClCompile Include="RandomBigReal.cpp" />
+    <ClCompile Include="BigRealRandom.cpp" />
     <ClCompile Include="RelativeFunctions.cpp" />
     <ClCompile Include="ShortProductOptFPU.cpp" />
     <ClCompile Include="ShortProductOptFPU2.cpp" />

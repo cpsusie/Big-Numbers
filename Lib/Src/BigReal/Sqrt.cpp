@@ -24,11 +24,11 @@ static const SqrtConstants SQRTC;
 
 BigReal sqrt(const BigReal &x, const BigReal &f) {
   VALIDATETOLERANCE(f)
+  DigitPool *pool = x.getDigitPool();
   if(x.isNegative()) {
-    throwBigRealInvalidArgumentException(method, _T("x<0"));
+    pool->nan();
   }
 
-  DigitPool *pool = x.getDigitPool();
   if(x.isZero()) {
     return pool->_0();
   }

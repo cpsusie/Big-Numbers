@@ -58,29 +58,41 @@ BigInt rem(const BigInt &x, const BigInt &y, DigitPool *digitPool) {
   return result;
 }
 
-// Return uniform distributed random BigInt in [0..e(1,maxDigits)-1], digits generated with rnd.
-// If digitPool == NULL, use DEFAULT_DIGITPOOL
-// ex:maxDigits = 3:returned values in interval [0..999]
-BigInt randBigInt(size_t maxDigits, RandomGenerator &rnd, DigitPool *digitPool) {
-  return BigInt(e(randBigReal(maxDigits, rnd, digitPool),maxDigits));
-}
-
-// Return uniform distributed random BigInt in [0..n-1], digits generated with rnd.
-// If digitPool == NULL, use n.getDigitPool()
-BigInt randBigInt(const BigInt &n, RandomGenerator &rnd, DigitPool *digitPool) {
-  if(digitPool == NULL) digitPool = n.getDigitPool();
-  if(!n._isnormal()) return BigInt(digitPool->nan());
-  return randBigInt(BigReal::getExpo10(n), rnd, digitPool) % n;
-}
-
-// Return uniform distributed random BigInt in [from;to], digits generated with rnd.
-// If digitPool == NULL, use from.getDigitPool()
-inline BigInt randBigInt(const BigInt &from, const BigInt &to, RandomGenerator &rnd, DigitPool *digitPool) {
-  if(from >= to) {
-    throwBigRealInvalidArgumentException(__TFUNCTION__, _T("from >= to"));
+#define _BR2 (BIGREALBASE / 2)
+// fast version of *this /= 2
+BigInt &BigInt::divide2() {
+  bool borrow = false;
+  if(_isnormal()) {
+    for(Digit *d = m_first; d; d = d->next) {
+      const bool nb = (d->n & 1) != 0;
+      d->n /= 2;
+      if(borrow) d->n += _BR2;
+      borrow = nb;
+    }
+    if(borrow && (m_low > 0)) {
+      appendDigit(_BR2);
+    } else {
+      trimZeroes();
+    }
   }
-  if(digitPool == NULL) digitPool = from.getDigitPool();
-  if(!from._isfinite() || !to._isfinite()) return BigInt(digitPool->nan());
-  const BigInt result = randBigInt(sum(dif(to, from, digitPool), BigReal::_1), rnd); // r in [0..to-from]
-  return result + from;
+  return *this;
+}
+
+BigInt &BigInt::multiply2() {
+  bool carry = false;
+  if(_isnormal()) {
+    for(Digit *d = m_last; d; d = d->prev) {
+      d->n *= 2;
+      if(carry) d->n++;
+      if(carry = (d->n >= BIGREALBASE)) {
+        d->n -= BIGREALBASE;
+      }
+    }
+    if(carry) {
+      insertDigit(1);
+      m_expo++;
+    }
+    trimZeroes();
+  }
+  return *this;
 }

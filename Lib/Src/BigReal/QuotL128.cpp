@@ -91,13 +91,7 @@ BigReal &BigReal::approxQuot128Abs(const BigReal &x, const _uint128 &y, BRExpoTy
 
 // Same as getFirst32, but k = [0..MAXDIGITS_INT128] = [0..38]
 _uint128 &BigReal::getFirst128(_uint128 &dst, const UINT k, BRExpoType *scale) const {
-#ifdef _DEBUG
-  DEFINEMETHODNAME;
-  if(k > MAXDIGITS_INT128) {
-    throwBigRealInvalidArgumentException(method, _T("k=%d. Legal interval is [0..%d]"),k,MAXDIGITS_INT128);
-  }
-#endif
-
+  assert(k <= MAXDIGITS_INT128);
   const Digit *p = m_first;
   if(p == NULL) {
     if(scale) *scale = 0;

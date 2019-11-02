@@ -10,35 +10,35 @@ private:
   BigInt &operator=(const Double80 &x); // not implemented
 
 public:
-  BigInt(DigitPool *digitPool = NULL) : BigReal(digitPool) {
+  inline BigInt(DigitPool *digitPool = NULL) : BigReal(digitPool) {
   }
 
   // Declared explicit to avoid accidently use of operator/ on BigReals
   explicit BigInt(const BigReal &x, DigitPool *digitPool = NULL);
 
   BigInt(         const BigInt &x, DigitPool *digitPool = NULL);
-  BigInt(int                    x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
+  inline BigInt(int                    x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
   }
-  BigInt(UINT                   x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
+  inline BigInt(UINT                   x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
   }
-  BigInt(long                   x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
+  inline BigInt(long                   x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
   }
-  BigInt(ULONG                  x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
+  inline BigInt(ULONG                  x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
   }
-  BigInt(INT64                  x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
+  inline BigInt(INT64                  x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
   }
-  BigInt(UINT64                 x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
+  inline BigInt(UINT64                 x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
   }
-  BigInt(const _int128         &x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
+  inline BigInt(const _int128         &x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
   }
-  BigInt(const _uint128        &x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
+  inline BigInt(const _uint128        &x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
   }
 
   explicit BigInt(const String  &s, DigitPool *digitPool = NULL);
   explicit BigInt(const char    *s, DigitPool *digitPool = NULL);
   explicit BigInt(const wchar_t *s, DigitPool *digitPool = NULL);
 
-  BigInt &operator=(const BigInt &x) {
+  inline BigInt &operator=(const BigInt &x) {
     __super::operator=(x);
     return *this;
   }
@@ -62,19 +62,19 @@ public:
   friend BigInt rem(const BigInt  &x, const BigInt &y, DigitPool *digitPool = NULL);
 
   inline BigInt operator+(const BigInt &y) const {
-    return sum(*this, y);
+    return sum(*this, y, getDigitPool());
   }
   inline BigInt operator-(const BigInt &y) const {
-    return dif(*this, y);
+    return dif(*this, y, getDigitPool());
   }
   inline BigInt operator*(const BigInt &y) const {
-    return prod(*this, y);
+    return prod(*this, y, getDigitPool());
   }
   inline BigInt operator/(const BigInt &y) const {
     return quot(*this, y);
   }
   inline BigInt operator%(const BigInt &y) const {
-    return rem(*this, y);
+    return rem(*this, y, getDigitPool());
   }
 
   inline BigInt &operator+=(const BigInt  &y) {
@@ -104,16 +104,24 @@ public:
     return (BigInt&)__super::operator--();
   }
   inline BigInt operator++(int) {                                            // postfix-form
-    BigInt result(*this);
+    const BigInt result(*this);
     __super::operator++();
     return result;
   }
   inline BigInt operator--(int) {                                            // postfix-form
-    BigInt result(*this);
+    const BigInt result(*this);
     __super::operator--();
     return result;
   }
+  // fast version of *this /= 2
+  BigInt &divide2();
+  // fast version of *this *= 2
+  BigInt &multiply2();
 };
+
+inline int sign(const BigInt &n) {
+  return sign((BigReal&)n);
+}
 
 // Return uniform distributed random BigInt in [0..e(1,maxDigits)-1], digits generated with rnd.
 // If digitPool == NULL, use DEFAULT_DIGITPOOL
@@ -136,28 +144,28 @@ public:
   explicit ConstBigInt(const BigReal &x) : BigInt(x, REQUESTCONSTPOOL) {
     RELEASECONSTPOOL;
   };
-  ConstBigInt(int                     x) : BigInt(x, REQUESTCONSTPOOL) {
+  inline ConstBigInt(int                     x) : BigInt(x, REQUESTCONSTPOOL) {
     RELEASECONSTPOOL;
   }
-  ConstBigInt(UINT                    x) : BigInt(x, REQUESTCONSTPOOL) {
+  inline ConstBigInt(UINT                    x) : BigInt(x, REQUESTCONSTPOOL) {
     RELEASECONSTPOOL;
   }
-  ConstBigInt(long                    x) : BigInt(x, REQUESTCONSTPOOL) {
+  inline ConstBigInt(long                    x) : BigInt(x, REQUESTCONSTPOOL) {
     RELEASECONSTPOOL;
   }
-  ConstBigInt(ULONG                   x) : BigInt(x, REQUESTCONSTPOOL) {
+  inline ConstBigInt(ULONG                   x) : BigInt(x, REQUESTCONSTPOOL) {
     RELEASECONSTPOOL;
   }
-  ConstBigInt(INT64                   x) : BigInt(x, REQUESTCONSTPOOL) {
+  inline ConstBigInt(INT64                   x) : BigInt(x, REQUESTCONSTPOOL) {
     RELEASECONSTPOOL;
   }
-  ConstBigInt(UINT64                  x) : BigInt(x, REQUESTCONSTPOOL) {
+  inline ConstBigInt(UINT64                  x) : BigInt(x, REQUESTCONSTPOOL) {
     RELEASECONSTPOOL;
   }
-  ConstBigInt(const _int128          &x) : BigInt(x, REQUESTCONSTPOOL) {
+  inline ConstBigInt(const _int128          &x) : BigInt(x, REQUESTCONSTPOOL) {
     RELEASECONSTPOOL;
   }
-  ConstBigInt(const _uint128         &x) : BigInt(x, REQUESTCONSTPOOL) {
+  inline ConstBigInt(const _uint128         &x) : BigInt(x, REQUESTCONSTPOOL) {
     RELEASECONSTPOOL;
   }
   explicit ConstBigInt(const String  &s) : BigInt(s, REQUESTCONSTPOOL) {

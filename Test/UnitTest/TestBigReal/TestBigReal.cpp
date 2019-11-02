@@ -30,7 +30,11 @@ static void testConversions(BYTE flags = CONV_ALL) {
   if(flags&CONV_DBL80N) TesterJob::addFunctionTest(new RawFunctionTest(_T("conv.Dbl80-"), testNegativeDouble80Conversion));
 }
 
-static void testGetFirst()             { TesterJob::addFunctionTest(new RawFunctionTest(_T("getFirst"            ), testGetFirst));             }
+static void testGetFirst32()           { TesterJob::addFunctionTest(new RawFunctionTest(_T("getFirst32"          ), testGetFirst32));           }
+static void testGetFirst64()           { TesterJob::addFunctionTest(new RawFunctionTest(_T("getFirst64"          ), testGetFirst64));           }
+#ifdef IS64BIT
+static void testGetFirst128()          { TesterJob::addFunctionTest(new RawFunctionTest(_T("getFirst128"         ), testGetFirst128));          }
+#endif
 static void testGetDecimalDigitCount() { TesterJob::addFunctionTest(new RawFunctionTest(_T("getDecimalDigitCount"), testGetDecimalDigitCount)); }
 static void testPow10()                { TesterJob::addFunctionTest(new RawFunctionTest(_T("pow10"               ), testPow10));                }
 static void testIsPow10()              { TesterJob::addFunctionTest(new RawFunctionTest(_T("isPow10"             ), testIsPow10));              }
@@ -55,6 +59,14 @@ static inline Double80 quot(const Double80 &x, const Double80 &y) { return x / y
 
 #pragma check_stack()
 
+void testGetFirst() {
+  testGetFirst32();
+  testGetFirst64();
+#ifdef IS64BIT
+  testGetFirst128();
+#endif
+}
+
 static void testSum() {
   testOperator(_T("sum" ), sum, sum, sum);
   testOperator(_T("rSum"), rSum);
@@ -75,32 +87,37 @@ static void testQuot() {
   testOperator(_T("rQuot"), rQuot);
 }
 
+static void testRandBigReal()     { TesterJob::addFunctionTest(new RawFunctionTest(_T("randBigReal")         , testRandBigReal    )); }
+static void testRandBigInt()      { TesterJob::addFunctionTest(new RawFunctionTest(_T("randBigInt" )         , testRandBigInt     )); }
+static void testRandBigRational() { TesterJob::addFunctionTest(new RawFunctionTest(_T("randBigRational")     , testRandBigRational)); }
 static void testQuot3()           { TesterJob::addFunctionTest(new RawFunctionTest(_T("quot(Newton-L32-L64)"), testQuot3          )); }
 static void testQuotLinear32()    { testOperator(_T("quotLinear32"), BigReal::quotLinear32); }
 static void testQuotLinear64()    { testOperator(_T("quotLinear64"), BigReal::quotLinear64); }
 
-static void testAssignOperators() { TesterJob::addFunctionTest(new RawFunctionTest(_T("assignop"            ), testAssignOperators)); }
-static void testIntegerDivision() { TesterJob::addFunctionTest(new RawFunctionTest(_T("Integer division"    ), testIntegerDivision)); }
+static void testAssignOperators() { TesterJob::addFunctionTest(new RawFunctionTest(_T("assignop"    ), testAssignOperators)); }
+static void testIntSum()          { TesterJob::addFunctionTest(new RawFunctionTest(_T("Int sum"     ), testIntSum )); }
+static void testIntDif()          { TesterJob::addFunctionTest(new RawFunctionTest(_T("Int dif"     ), testIntDif )); }
+static void testIntProd()         { TesterJob::addFunctionTest(new RawFunctionTest(_T("Int prod"    ), testIntProd)); }
+static void testIntQuot()         { TesterJob::addFunctionTest(new RawFunctionTest(_T("Int quot"    ), testIntQuot)); }
+static void testIntRem()          { TesterJob::addFunctionTest(new RawFunctionTest(_T("Int rem"     ), testIntRem )); }
 
-static bool checkPlus(const BigReal &x, const BigReal &y, const BigReal &result) {
+static bool checkBigRealPlus(const BigReal &x, const BigReal &y, const BigReal &result) {
   return dif(result,y,BigReal::_0) == x;
 }
 
-static bool checkMinus(const BigReal &x, const BigReal &y, const BigReal &result) {
+static bool checkBigRealMinus(const BigReal &x, const BigReal &y, const BigReal &result) {
   return sum(result,y,BigReal::_0) == x;
 }
 
 static void testOperatorPlus() {
-  testExactBinaryOperator( _T("operatorPlus"),operator+,checkPlus);
+  testExactBinaryOperator( _T("operatorPlus"),operator+,checkBigRealPlus);
 }
 
 static void testOperatorMinus() {
-  testExactBinaryOperator( _T("operatorMinus"),operator-,checkMinus);
+  testExactBinaryOperator( _T("operatorMinus"),operator-,checkBigRealMinus);
 }
 
-static void testModulus() {  TesterJob::addFunctionTest(new RawFunctionTest(_T("modulus"), testModulus)); }
-
-static bool checkModulus(const BigReal &x, const BigReal &y, const BigReal &result) {
+static bool checkBigRealMod(const BigReal &x, const BigReal &y, const BigReal &result) {
   DigitPool *pool = x.getDigitPool();
   BigInt n(pool);
   BigReal rem(pool);
@@ -113,15 +130,18 @@ static bool checkModulus(const BigReal &x, const BigReal &y, const BigReal &resu
 }
 
 static void testOperatorModulus() {
-  testExactBinaryOperator( _T("operatorMod"),operator%,checkModulus);
+  testExactBinaryOperator( _T("operatorMod"),operator%,checkBigRealMod);
 }
 
 static void testExactBinaryOperators() {
   testOperatorPlus();
   testOperatorMinus();
   testOperatorModulus();
-  testModulus();
-  testIntegerDivision();
+  testIntSum();
+  testIntDif();
+  testIntProd();
+  testIntQuot();
+  testIntRem();
 }
 
 static void testSqrt() {
@@ -226,8 +246,9 @@ static void testAcot() {
   testFunction(_T("rAcot"), xInterval, rAcot);
 }
 
-static void testReadWriteBigReal() { TesterJob::addFunctionTest(new RawFunctionTest(_T("read-write number" ), testReadWriteBigReal)); }
-static void testReadWriteInteger() { TesterJob::addFunctionTest(new RawFunctionTest(_T("read-write integer"), testReadWriteInteger)); }
+static void testReadWriteBigReal()     { TesterJob::addFunctionTest(new RawFunctionTest(_T("read-write BigReal"    ), testReadWriteBigReal    )); }
+static void testReadWriteBigInt()      { TesterJob::addFunctionTest(new RawFunctionTest(_T("read-write BigInt"     ), testReadWriteBigInt     )); }
+static void testReadWriteBigRational() { TesterJob::addFunctionTest(new RawFunctionTest(_T("read-write BigRational"), testReadWriteBigRational)); }
 
 static double getPiTimeEstimate(int decimals) {
   return ((7.98881e-7 * decimals - 0.00109247) * decimals + 64.2134) * decimals - 70058.7;
@@ -263,28 +284,34 @@ void testBigReal(int threadCount, bool stopOnError) {
   }
 
 //StartAll:
+
   testGetDecimalDigitCount();
   testPow10();
   testIsPow10();
   testGetExpo10();
+  testMultPow10();
+  testGetFirst();
 
   testConstructors();
   testConversions();
-  testMultPow10();
-  testGetFirst();
 
 //  testGetExpo2();
 
   testAPCsum();
   testAPCprod();
   testAPCquot();
-
   testAPCpow();
+
   testSum();
   testDif();
   testProd();
   testQuot();
   testQuot3();
+
+  testRandBigReal();
+  testRandBigInt();
+  testRandBigRational();
+
   testAssignOperators();
   testQuotLinear32();
   testQuotLinear64();
@@ -310,7 +337,8 @@ void testBigReal(int threadCount, bool stopOnError) {
   testAcot();
 
   testReadWriteBigReal();
-  testReadWriteInteger();
+  testReadWriteBigInt();
+  testReadWriteBigRational();
 
 //  TesterJob::shuffleTestOrder();
 

@@ -92,18 +92,18 @@ public:
   void runTest(int threadId, DigitPool *pool);
 };
 
-typedef bool (*BinaryOperatorCheckFunction)(const BigReal &x, const BigReal &y, const BigReal &result);
+typedef bool (*BigRealBinaryOperatorCheckFunction)(const BigReal &x, const BigReal &y, const BigReal &result);
 
-class ExactBinaryOperatorTest : public AbstractFunctionTest {
+class BigRealExactBinaryOperatorTest : public AbstractFunctionTest {
 private:
-  BigRealBinaryOperator       m_op2;
-  BinaryOperatorCheckFunction m_check;
+  BigRealBinaryOperator              m_op2;
+  BigRealBinaryOperatorCheckFunction m_check;
 public:
-  ExactBinaryOperatorTest(const String                &functionName
-                         ,BigRealBinaryOperator        op
-                         ,BinaryOperatorCheckFunction  check) : AbstractFunctionTest(functionName)
-                                                              , m_op2(op)
-                                                              , m_check(check)
+  BigRealExactBinaryOperatorTest(const String                      &functionName
+                                ,BigRealBinaryOperator              op
+                                ,BigRealBinaryOperatorCheckFunction check) : AbstractFunctionTest(functionName)
+                                                                           , m_op2(op)
+                                                                           , m_check(check)
   {
   }
   void runTest(int threadId, DigitPool *pool);
@@ -162,7 +162,11 @@ void testPositiveDouble80Conversion(TestStatistic &stat);
 void testNegativeDouble80Conversion(TestStatistic &stat);
 void testConstructors(              TestStatistic &stat);
 
-void testGetFirst(                  TestStatistic &stat);
+void testGetFirst32(                TestStatistic &stat);
+void testGetFirst64(                TestStatistic &stat);
+#ifdef IS64BIT
+void testGetFirst128(               TestStatistic &stat);
+#endif
 void testGetDecimalDigitCount(      TestStatistic &stat);
 void testPow10(                     TestStatistic &stat);
 void testIsPow10(                   TestStatistic &stat);
@@ -176,13 +180,25 @@ void testAPCProd(                   TestStatistic &stat);
 void testAPCQuot(                   TestStatistic &stat);
 void testAPCPow(                    TestStatistic &stat);
 
+void testRandBigReal(               TestStatistic &stat);
+void testRandBigInt(                TestStatistic &stat);
+void testRandBigRational(           TestStatistic &stat);
 void testQuot3(                     TestStatistic &stat);
 void testAssignOperators(           TestStatistic &stat);
-void testIntegerDivision(           TestStatistic &stat);
-void testModulus(                   TestStatistic &stat);
+void testIntSum(                    TestStatistic &stat);
+void testIntDif(                    TestStatistic &stat);
+void testIntProd(                   TestStatistic &stat);
+void testIntQuot(                   TestStatistic &stat);
+void testIntRem(                    TestStatistic &stat);
+void testRatSum(                    TestStatistic &stat);
+void testRatDif(                    TestStatistic &stat);
+void testRatProd(                   TestStatistic &stat);
+void testRatQuot(                   TestStatistic &stat);
+void testRatMod(                    TestStatistic &stat);
 void testPi(                        TestStatistic &stat);
 void testReadWriteBigReal(          TestStatistic &stat);
-void testReadWriteInteger(          TestStatistic &stat);
+void testReadWriteBigInt(           TestStatistic &stat);
+void testReadWriteBigRational(      TestStatistic &stat);
 
 #define MAXDIGITS       400
 #define DIGITSTEP         3
@@ -258,10 +274,10 @@ inline void testFunction(const String       &functionName
   TesterJob::addFunctionTest(new FunctionTest2ArgND64D80(functionName, xInterval, yInterval, f, f64, f80));
 }
 
-inline void testExactBinaryOperator(const String               &functionName
-                                   ,BigRealBinaryOperator       op
-                                   ,BinaryOperatorCheckFunction check) {
-  TesterJob::addFunctionTest(new ExactBinaryOperatorTest(functionName, op, check));
+inline void testExactBinaryOperator(const String                      &functionName
+                                   ,BigRealBinaryOperator              op
+                                   ,BigRealBinaryOperatorCheckFunction check) {
+  TesterJob::addFunctionTest(new BigRealExactBinaryOperatorTest(functionName, op, check));
 }
 
 inline void testOperator(const String        &functionName

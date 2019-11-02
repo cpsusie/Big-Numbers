@@ -136,9 +136,6 @@
     <ClCompile Include="QuotRemainder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RandomBigReal.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="RelativeFunctions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -222,6 +219,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Gamma.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BigRationalRandom.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BigIntRandom.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BigRealRandom.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
