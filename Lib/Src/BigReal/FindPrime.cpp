@@ -139,7 +139,7 @@ UINT PrimeSearcher::run() {
         }
         continue;
       }
-      if(MRisprime(m_id, n, m_handler)) {
+      if(MRisprime(n, m_id, m_handler)) {
         m_queue.put(n);
         break;
       }

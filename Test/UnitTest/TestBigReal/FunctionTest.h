@@ -190,6 +190,7 @@ void testIntDif(                    TestStatistic &stat);
 void testIntProd(                   TestStatistic &stat);
 void testIntQuot(                   TestStatistic &stat);
 void testIntRem(                    TestStatistic &stat);
+void testMRIsPrime(                 TestStatistic &stat);
 void testRatSum(                    TestStatistic &stat);
 void testRatDif(                    TestStatistic &stat);
 void testRatProd(                   TestStatistic &stat);

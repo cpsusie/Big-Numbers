@@ -1,31 +1,24 @@
 #include "pch.h"
 #include <Math/MRIsPrime.h>
 
-#define _1 BigReal::_1
-#define _2 BigReal::_2
+#define _1 pool->_1()
+#define _2 pool->_2()
 
-bool MRisprime(int threadId, const BigInt &n, MillerRabinHandler *handler) { // Miller-Rabin probabilistic primality test
-  static const ConstBigInt _3(3);
-
+bool MRisprime(const BigInt &n, int threadId, MillerRabinHandler *handler) { // Miller-Rabin probabilistic primality test
+  if(threadId < 0) {
+    threadId = GetCurrentThreadId();
+  }
   DigitPool *pool = n.getDigitPool();
-  if(n == _2) {
+  const BigInt _3(3,pool);
+
+  if(n <= _1) {
+    return false;
+  } else if(n <= _3) {
     return true;
-  }
-  if(n == _3) {
-    return true;
-  }
-  if(n <  _2) {
+  } if(isEven(n) || ((n.getLastDigit() % 5) == 0) || (n % _3).isZero()) {
     return false;
   }
-  if(isEven(n)) {
-    return false;
-  }
-  if((n % _3).isZero()) {
-    return false;
-  }
-  if((n.getLastDigit() % 5) == 0) {
-    return false;
-  }
+
   BigInt nm1(n);
   --nm1; // nm1 is even
   BigInt r(nm1);
@@ -48,7 +41,7 @@ bool MRisprime(int threadId, const BigInt &n, MillerRabinHandler *handler) { // 
     } while(a < _2);
     BigInt y = powmod(a,r,n);
     if((y != _1) && (y != nm1)) {
-      for(int j = 1; j < s && y != nm1; j++) {
+      for(int j = 1; (j < s) && (y != nm1); j++) {
         y = (y * y) % n;
         if(y == _1) {
           return false;

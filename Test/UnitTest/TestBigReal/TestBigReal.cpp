@@ -87,19 +87,20 @@ static void testQuot() {
   testOperator(_T("rQuot"), rQuot);
 }
 
-static void testRandBigReal()     { TesterJob::addFunctionTest(new RawFunctionTest(_T("randBigReal")         , testRandBigReal    )); }
-static void testRandBigInt()      { TesterJob::addFunctionTest(new RawFunctionTest(_T("randBigInt" )         , testRandBigInt     )); }
-static void testRandBigRational() { TesterJob::addFunctionTest(new RawFunctionTest(_T("randBigRational")     , testRandBigRational)); }
+static void testRandBigReal()     { TesterJob::addFunctionTest(new RawFunctionTest(_T("randBigReal"         ), testRandBigReal    )); }
+static void testRandBigInt()      { TesterJob::addFunctionTest(new RawFunctionTest(_T("randBigInt"          ), testRandBigInt     )); }
+static void testRandBigRational() { TesterJob::addFunctionTest(new RawFunctionTest(_T("randBigRational"     ), testRandBigRational)); }
 static void testQuot3()           { TesterJob::addFunctionTest(new RawFunctionTest(_T("quot(Newton-L32-L64)"), testQuot3          )); }
 static void testQuotLinear32()    { testOperator(_T("quotLinear32"), BigReal::quotLinear32); }
 static void testQuotLinear64()    { testOperator(_T("quotLinear64"), BigReal::quotLinear64); }
 
-static void testAssignOperators() { TesterJob::addFunctionTest(new RawFunctionTest(_T("assignop"    ), testAssignOperators)); }
-static void testIntSum()          { TesterJob::addFunctionTest(new RawFunctionTest(_T("Int sum"     ), testIntSum )); }
-static void testIntDif()          { TesterJob::addFunctionTest(new RawFunctionTest(_T("Int dif"     ), testIntDif )); }
-static void testIntProd()         { TesterJob::addFunctionTest(new RawFunctionTest(_T("Int prod"    ), testIntProd)); }
-static void testIntQuot()         { TesterJob::addFunctionTest(new RawFunctionTest(_T("Int quot"    ), testIntQuot)); }
-static void testIntRem()          { TesterJob::addFunctionTest(new RawFunctionTest(_T("Int rem"     ), testIntRem )); }
+static void testAssignOperators() { TesterJob::addFunctionTest(new RawFunctionTest(_T("assignop"            ), testAssignOperators)); }
+static void testIntSum()          { TesterJob::addFunctionTest(new RawFunctionTest(_T("Int sum"             ), testIntSum         )); }
+static void testIntDif()          { TesterJob::addFunctionTest(new RawFunctionTest(_T("Int dif"             ), testIntDif         )); }
+static void testIntProd()         { TesterJob::addFunctionTest(new RawFunctionTest(_T("Int prod"            ), testIntProd        )); }
+static void testIntQuot()         { TesterJob::addFunctionTest(new RawFunctionTest(_T("Int quot"            ), testIntQuot        )); }
+static void testIntRem()          { TesterJob::addFunctionTest(new RawFunctionTest(_T("Int rem"             ), testIntRem         )); }
+static void testMRIsPrime()       { TesterJob::addFunctionTest(new RawFunctionTest(_T("MRisprime"           ), testMRIsPrime      )); }
 
 static bool checkBigRealPlus(const BigReal &x, const BigReal &y, const BigReal &result) {
   return dif(result,y,BigReal::_0) == x;
@@ -317,6 +318,7 @@ void testBigReal(int threadCount, bool stopOnError) {
   testQuotLinear64();
 
   testExactBinaryOperators();
+  testMRIsPrime();
 
   testSqrt();
   testExp();
