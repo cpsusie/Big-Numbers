@@ -193,7 +193,7 @@ inline Rational randRational(RandomGenerator &rnd = *RandomGenerator::s_stdGener
 Rational randRational(const Rational &from, const Rational &to, UINT64 maxScaleFactor=INT64_MAX, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator);
 // Return uniform distributed random rational in range [from;to] (both inclusive)
 // Assume the 3 products: from.num * to.den, to.num * from.den, from.den * to.den are all <= _I64_MAX
-// if this is not the case, an exception is thrown
+// If this is not the case, an exception is thrown
 // To avoid overflow in calculation, keep the involved factors < _I32_MAX
 inline Rational randRational(const Rational &from, const Rational &to, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) {
   return randRational(from, to, INT64_MAX, rnd);

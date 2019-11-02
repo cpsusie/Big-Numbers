@@ -158,6 +158,9 @@ inline UINT64 randInt64(UINT64 n, RandomGenerator &rnd = *RandomGenerator::s_std
 }
 // return random INT64 in range[from..to], both  inclusive.
 inline INT64  randInt64(INT64 from, INT64 to, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) {
+  if(from > to) {
+    throwInvalidArgumentException(__TFUNCTION__, _T("from > to"));
+  }
   return randInt64(to-from+1, rnd) + from;
 }
 // return uniform distributed random float  between 0 (inclusive) and 1 (exclusive)
