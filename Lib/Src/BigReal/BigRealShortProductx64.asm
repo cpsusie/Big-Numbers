@@ -5,11 +5,16 @@ MaxSum    qword 0DE0B6B3A763FFFFh               ; max highorder QWORD = (0xfffff
 
 .CODE
 
-; int BigRealMultiplyColumn(const Digit *yk, const Digit *xk, Digit *dst, _uint128 &bigSum);
+; class SubProductSum {
+; public:
+;   Digit        *m_cd;     // pointer to current digit
+;   BR2DigitType  m_bigSum; // result stored here if too big for simple division.
+; };
+
+; char BigRealMultiplyColumn(const Digit *yk, const Digit *xk, SubProductSum *sps);
 ; rcx yk
 ; rdx xk
-; r8  dst (=current digit to copy to)
-; r9  &bigsum
+; r8  sps address of SubProductSum
 BigRealMultiplyColumn PROC
       push        rbx
       push        rsi
@@ -22,7 +27,7 @@ MultiplyLoop:                                     ; do { ; we know that the firs
       mov         rax, QWORD PTR[rbx]             ;   rax        = xp->n
       mul         QWORD PTR [rcx]                 ;   [rdx:rax] *= yp->n
       add         rdi, rax                        ;
-      adc         rsi, rdx                        ;
+      adc         rsi, rdx                        ;   [rsi:rdi] += [rdx:rax]        sum += xp->n*yp->n
       mov         rcx, QWORD PTR[rcx+16]          ;   yp = yp->prev
       jrcxz       AddSubProduct                   ;   if(yp == NULL) exit loop to AddSubProduct
       mov         rbx, QWORD PTR[rbx+8]           ;   xp = xp->next
@@ -39,9 +44,10 @@ AddSubProduct:
       div         rbx                             ; rax = sum / BASE, rdx = sum % BASE
       mov         rdi, rax                        ; rdi = sum / BASE
                                                   ; No need to set carry = currentDigit->n (it's just been added => currentDigit->n == 0)
+      mov         r8, QWORD PTR[r8]               ; r8 = address of sps->m_cd = currentDigit
       mov         QWORD PTR[r8], rdx              ; currentDigit->n = carry % BASE = sum % BASE = rdx
       or          rdi, rdi                        ;
-      je          NextDigit                       ; if (sum == 0) we're done. Carry is always 0 at this point
+      je          NextDigit                       ; if(sum == 0) we're done. Carry is always 0 at this point
                                                   ;
 AddIntNoCarry:                                    ; Assume 0 < sum in rdi <= maxui64), r8 is addr of last updated digit, Carry = 0
       mov         r8, QWORD PTR[r8+16]            ; currentDigit = currentDigit->prev
@@ -84,13 +90,13 @@ FinalizeCarryLoop:                                ; do { // Assume r8 is addr of
       je          NextDigit                       ;
       jmp         FinalizeCarryLoop               ; } while(carry != 0)
 SumTooBig:                                        ;
-      mov         QWORD PTR[r9]  , rdi            ; low order  QWORD to bigSum.lo
-      mov         QWORD PTR[r9+8], rsi            ; high order QWORD to bigSum.hi
-      xor         rax, rax                        ; return 0
+      mov         QWORD PTR[r8+8 ], rdi           ; low order  QWORD to bigSum.lo
+      mov         QWORD PTR[r8+16], rsi           ; high order QWORD to bigSum.hi
+      xor         al, al                          ; return 0
       jmp         Epilog                          ;
 NextDigit:                                        ;
-      mov         rax, 1                          ; return 1
-Epilog:                                           ; restore used registers and stack pointer
+      mov         al, 1                           ; return 1
+Epilog:                                           ; restore used registers
       pop         rdi
       pop         rsi
       pop         rbx
@@ -103,7 +109,7 @@ BigRealMultiplyColumn ENDP
 ;   BR2DigitType  m_bigSum; // result stored here if too big for simple division.
 ; };
 
-; int BigRealSquareColumn(  const Digit *yp, const Digit *xp, SubProductSum *sps, int sumLength);
+; char BigRealSquareColumn(  const Digit *yp, const Digit *xp, SubProductSum *sps, int sumLength);
 ; rcx yp
 ; rdx xp
 ; r8  sps address of SubProductSum
@@ -153,6 +159,7 @@ EvenLengthLoop:                                   ; for(;;) {
 EndEvenLengthLoop:                                ;
       shld        rsi, rdi, 1                     ;
       shl         rdi, 1                          ; [rsi:rdi] *= 2             sum *= 2
+
 AddSubProduct:                                    ;
       cmp         rsi, MaxSum                     ; if(sum >= maxui64 * BASE) goto SumTooBig (or we will have a division by zero exception)
       jae         SumTooBig                       ; Use jae for unsigned compare, jge is for signed !
@@ -212,11 +219,11 @@ FinalizeCarryLoop:                                ; do { // Assume r8 is addr of
 SumTooBig:
       mov         QWORD PTR[r8+8] , rdi           ; low order  QWORD to bigSum.lo
       mov         QWORD PTR[r8+16], rsi           ; high order QWORD to bigSum.hi
-      xor         rax, rax                        ; return 0
+      xor         al, al                          ; return 0
       jmp         Epilog                          ;
 NextDigit:                                        ;
-      mov         rax, 1                          ; return 1
-Epilog:                                           ; restore used registers and stack pointer
+      mov         al, 1                           ; return 1
+Epilog:                                           ; restore used registers
       pop         rdi
       pop         rsi
       pop         rbx

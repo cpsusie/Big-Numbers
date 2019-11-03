@@ -20,24 +20,21 @@ public:
   }
 };
 
-#define ASM_OPTIMIZED
-// return 1 if sum of products has been added. 0 if we need to do it in C-code. if so, the sum is returned in bigsum
-extern "C" int BigRealMultiplyColumn(const Digit *yk, const Digit *xk, Digit *dst, BR2DigitType &bigSum);
-
+//#define ASM_OPTIMIZED
 #ifdef ASM_OPTIMIZED
-extern "C" int BigRealSquareColumn(  const Digit *yp, const Digit *xp, SubProductSum *sps, int sumLength);
+
+// return 1 if sum of products has been added. 0 if we need to do it in C-code. if so, the sum is returned in bigsum
+extern "C" char BigRealMultiplyColumn(const Digit *yk, const Digit *xk, SubProductSum *sps);
+extern "C" char BigRealSquareColumn(  const Digit *yp, const Digit *xp, SubProductSum *sps, int sumLength);
 
 #else
-#ifdef __NEVER__
-static int BigRealMultiplyColumn(const Digit *yp, const Digit *xp, Digit *dst, BR2DigitType &bigSum) {
-  bigSum = 0;
-  for(; xp && yp; xp = xp->next, yp = yp->prev) {
-    bigSum += (BR2DigitType)xp->n * yp->n;
+static char BigRealMultiplyColumn(const Digit *yp, const Digit *xp, SubProductSum *sps) {
+  for(sps->m_bigSum = 0; xp && yp; xp = xp->next, yp = yp->prev) {
+    sps->m_bigSum += (BR2DigitType)xp->n * yp->n;
   }
-  return false;
+  return 0;
 }
-#endif
-int BigRealSquareColumn(const Digit *yp, const Digit *xp, SubProductSum *sps, int sumLength) {
+char BigRealSquareColumn(const Digit *yp, const Digit *xp, SubProductSum *sps, int sumLength) {
   sps->m_bigSum = 0;
   if(isOdd(sumLength)) {
     for(;xp != yp; xp = xp->next, yp = yp->prev) {
@@ -52,7 +49,7 @@ int BigRealSquareColumn(const Digit *yp, const Digit *xp, SubProductSum *sps, in
     }
     sps->m_bigSum <<= 1;
   }
-  return false;
+  return 0;
 }
 #endif
 
@@ -110,7 +107,7 @@ BigReal &BigReal::shortProductNoZeroCheck(const BigReal &x, const BigReal &y, UI
     for(const Digit *xk = x.m_first, *yk = y.m_first;;) { // loopcondition at the end
       sps.m_cd = fastAppendDigit(sps.m_cd);
       COUNTCALL(shortProdLoopTotal);
-      if(!BigRealMultiplyColumn(yk, xk, sps.m_cd, sps.m_bigSum)) {
+      if(!BigRealMultiplyColumn(yk, xk, &sps)) {
         COUNTCALL(shortProdSumTooBig);
         BRDigitType carry = 0;
         Digit      *d     = sps.m_cd;
