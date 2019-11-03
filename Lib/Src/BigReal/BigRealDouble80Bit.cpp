@@ -61,6 +61,7 @@ Double80 getDouble80(const BigReal &x) {
 }
 
 Double80 BigReal::getDouble80NoLimitCheck() const {
+  assert(_isnormal());
   static const int minExpo2 = 64-16382;
   static const int maxExpo2 = 0x3fff;
 
@@ -73,16 +74,16 @@ Double80 BigReal::getDouble80NoLimitCheck() const {
   if(expo2 <= minExpo2) {
     e2 = Double80::pow2(minExpo2);
     e2Overflow = false;
-    xi.shortProduct(::cut(*this,21), pow2(minExpo2, CONVERSION_POW2DIGITCOUNT), BIGREAL_NONNORMAL);  // BigReal multiplication
+    xi.shortProductNoNormalCheck(::cut(*this,21), pow2(minExpo2, CONVERSION_POW2DIGITCOUNT), BIGREAL_NONNORMAL);  // BigReal multiplication
   } else if(expo2 >= maxExpo2) {
     e2  = Double80::pow2(maxExpo2);
     e2x = Double80::pow2((int)expo2 - maxExpo2);
     e2Overflow = true;
-    xi.shortProduct(::cut(*this,21), pow2((int)expo2, CONVERSION_POW2DIGITCOUNT), BIGREAL_NONNORMAL);  // BigReal multiplication
+    xi.shortProductNoNormalCheck(::cut(*this,21), pow2((int)expo2, CONVERSION_POW2DIGITCOUNT), BIGREAL_NONNORMAL);  // BigReal multiplication
   } else {
     e2 = Double80::pow2((int)expo2);
     e2Overflow = false;
-    xi = round(xi.shortProduct(::cut(*this,22), pow2((int)expo2, CONVERSION_POW2DIGITCOUNT), -1));  // BigReal multiplication
+    xi = round(xi.shortProductNoNormalCheck(::cut(*this,22), pow2((int)expo2, CONVERSION_POW2DIGITCOUNT), -1));  // BigReal multiplication
   }
   const Digit *p = xi.m_first;
   if(p == NULL) {

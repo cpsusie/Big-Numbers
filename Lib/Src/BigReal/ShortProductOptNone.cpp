@@ -69,10 +69,11 @@ BigReal &BigReal::baseB(const BigReal &x) {
 }
 
 #ifdef _DEBUG
-BigReal &BigReal::shortProductNoZeroCheckDebug(const BigReal &x, const BigReal &y, size_t loopCount) { // return *this
+BigReal &BigReal::shortProductNoZeroCheckDebug(const BigReal &x, const BigReal &y, UINT loopCount) { // return *this
 #else
-BigReal &BigReal::shortProductNoZeroCheck(     const BigReal &x, const BigReal &y, size_t loopCount) { // return *this
+BigReal &BigReal::shortProductNoZeroCheck(     const BigReal &x, const BigReal &y, UINT loopCount) { // return *this
 #endif
+  assert(x._isnormal() && y._isnormal() && (loopCount > 0));
   // loopCount assumes we multiply NUMBERDIGITS. Here we multiply only SQRT_NUMBERDIGITS (half size)
   // in each iteration, so we have to do twice as many iterations
 
@@ -97,7 +98,7 @@ BigReal &BigReal::shortProductNoZeroCheck(     const BigReal &x, const BigReal &
   total.m_expo = xb.m_expo + yb.m_expo;
   total.m_low = total.m_expo + 1;
 
-  intptr_t loopCounter = loopCount;
+  int loopCounter = loopCount;
   for(Digit *xk = xb.m_first, *yk = yb.m_first;;) {
 
 #ifndef ASM_OPTIMIZED

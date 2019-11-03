@@ -9,11 +9,11 @@
 #endif
 
 #ifdef _DEBUG
-BigReal &BigReal::shortProductNoZeroCheckDebug(const BigReal &x, const BigReal &y, size_t loopCount) { // return *this
+BigReal &BigReal::shortProductNoZeroCheckDebug(const BigReal &x, const BigReal &y, UINT loopCount) { // return *this
 #else
-BigReal &BigReal::shortProductNoZeroCheck(     const BigReal &x, const BigReal &y, size_t loopCount) { // return *this
+BigReal &BigReal::shortProductNoZeroCheck(     const BigReal &x, const BigReal &y, UINT loopCount) { // return *this
 #endif
-
+  assert(x._isnormal() && y._isnormal() && (loopCount > 0));
   m_low = (m_expo = x.m_expo + y.m_expo) + 1;
   clearDigits();
 
@@ -25,7 +25,7 @@ BigReal &BigReal::shortProductNoZeroCheck(     const BigReal &x, const BigReal &
     mov    ctrlWord, ax
     fldcw  ctrlWord
   }
-  intptr_t loopCounter = loopCount;
+  int loopCounter = loopCount;
   for(Digit *xk = x.m_first, *yk = y.m_first;;) {
 
 #ifndef ASM_OPTIMIZED

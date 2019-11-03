@@ -640,18 +640,28 @@ private:
   // Return true if x*y is normal (finite and != 0). in this case, *this will not be changed
   // return false, if x*y is not normal, and *this will be set to the corresponding result (0 or nan)
   inline bool checkIsNormalProduct(const BigReal &x, const BigReal &y) {
-    if(isNormalProduct(x, y)) return false;
+    if(isNormalProduct(x, y)) return true;
     setToNonNormalFpClass(getNonNormalProductFpClass(x, y));
     return false;
   }
-  // Don't call shortProductNoZeroCheck with numbers longer than getMaxSplitLength(), or you'll get a wrong result
-  BigReal &shortProduct(                     const BigReal &x, const BigReal &y, BRExpoType fexpo    );  // return this
-  // Assume x and y are both normal
-  BigReal &shortProductNoZeroCheck(          const BigReal &x, const BigReal &y, size_t     loopCount);  // return this
-  static BigReal &product(  BigReal &result, const BigReal &x, const BigReal &y, const BigReal &f,              int level);
-  static BigReal &productMT(BigReal &result, const BigReal &x, const BigReal &y, const BigReal &f, intptr_t  w, int level);
 
-  // Assume a == b == 0 && _isfinite() && f._isfinite(). Dont care about sign of f
+  // Return *this
+  // NOTE: fexpo is NOT decimal exponent, but Digit-exponent. To get Decimal exponent,
+  // multiply by LOG10_BIGREALBASE !!!
+  // Don't call shortProductNoZeroCheck with numbers longer than getMaxSplitLength(), or you'll get a wrong result
+  inline BigReal &shortProduct(              const BigReal &x, const BigReal &y, BRExpoType fexpo    ) {
+    if(!checkIsNormalProduct(x, y)) return *this;
+    return shortProductNoNormalCheck(x, y, fexpo);
+  }
+  // Return *this. Assume x._isnormal() && y._isnormal()
+  BigReal &shortProductNoNormalCheck(        const BigReal &x, const BigReal &y, BRExpoType fexpo);
+  // Return *this. Assume x._isnormal() && y._isnormal() && (loopCount > 0)
+  BigReal &shortProductNoZeroCheck(          const BigReal &x, const BigReal &y, UINT loopCount);
+  // Return &result. Assume x._isnormal() && y._isnormal() && f._isfinite()
+  static BigReal &product(  BigReal &result, const BigReal &x, const BigReal &y, const BigReal &f,              int level);
+  // Return &result. Assume x._isnormal() && y._isnormal() && f._isfinite()
+  static BigReal &productMT(BigReal &result, const BigReal &x, const BigReal &y, const BigReal &f, intptr_t  w, int level);
+  // Assume this->_isnormal() && a.isZero() && b.isZero() && f._isfinite(). Dont care about sign(f)
   void    split(BigReal &a, BigReal &b, size_t n, const BigReal &f) const;
   // Assume src._isnormal() && length <= src.getLength() && m_first == m_last == NULL
   // Modify only m_first and m_last of this
@@ -732,6 +742,7 @@ private:
   inline double getDoubleNoLimitCheck() const {
     return getDouble(getDouble80NoLimitCheck());
   }
+  // Assume this->_isnormal()
   Double80 getDouble80NoLimitCheck() const;
 
 protected:
@@ -1346,7 +1357,6 @@ template<class NumberType> NumberType getNonNormalValue(int fpclass, const Numbe
 // FP_INFINITE
 // FP_NAN
 // FP_NORMAL
-// FP_SUBNORMAL ---- NOT used
 // FP_ZERO
 inline int fpclassify(const BigReal &x) {
   return x._isnormal() ? FP_NORMAL : x.classifyNonNormal();

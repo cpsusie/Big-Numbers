@@ -1,20 +1,19 @@
 #include "pch.h"
 
-#define _0 pool->_0()
-
 BigReal &BigReal::productMT(BigReal &result, const BigReal &x, const BigReal &y, const BigReal &f, intptr_t w, int level) { // static
+  assert(x._isnormal() && y._isnormal() && f._isfinite());
   const size_t XLength = x.getLength();
   const size_t YLength = y.getLength();
   DigitPool    *pool   = result.getDigitPool();
+  const BigInt &_0     = pool->_0();
 
   LOGPRODUCTRECURSION(_T("result.pool:%2d, x.len,y.len,w:(%4s,%4s,%4s)")
                      ,pool->getId(), format1000(XLength).cstr(),format1000(YLength).cstr(), format1000(w).cstr());
 
   if(YLength <= s_splitLength || w <= (intptr_t)s_splitLength) {
 //    _tprintf(_T("shortProd x.length:%3d y.length:%3d w:%d\n"),y.length(),w);
-    return result.shortProduct(x, y, f.m_expo);
+    return result.shortProductNoNormalCheck(x, y, f.m_expo);
   }
-
 
   const BigReal g = APCprod(#, BigReal::_C1third,f,pool);
   BigReal gpm10(g);
@@ -25,7 +24,6 @@ BigReal &BigReal::productMT(BigReal &result, const BigReal &x, const BigReal &y,
   level++;
   x.split(a, b, n, g.isZero() ? _0 : APCprod(#, gpm10, reciprocal(y, pool),pool));   // a + b = x   (=O(n))
 
-
   MThreadArray threads;
   if((intptr_t)YLength < n) {
     BigRealResourcePool::fetchMTThreadArray(threads, 1);
@@ -35,7 +33,7 @@ BigReal &BigReal::productMT(BigReal &result, const BigReal &x, const BigReal &y,
     BigReal p1(thread.getDigitPool());
     thread.multiply(p1, a,y,_0, level);
 
-    result = _0;
+    result.setToZero();;
     product(result, b, y, g, level);
 
     threads.waitForAllResults();

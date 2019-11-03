@@ -11,12 +11,13 @@
 #endif
 
 #ifdef _DEBUG
-BigReal &BigReal::shortProductNoZeroCheckDebug(const BigReal &x, const BigReal &y, size_t loopCount) { // return *this
+BigReal &BigReal::shortProductNoZeroCheckDebug(const BigReal &x, const BigReal &y, UINT loopCount) { // return *this
 #else
-BigReal &BigReal::shortProductNoZeroCheck(     const BigReal &x, const BigReal &y, size_t loopCount) { // return *this
+BigReal &BigReal::shortProductNoZeroCheck(     const BigReal &x, const BigReal &y, UINT loopCount) { // return *this
 #endif
+  assert(x._isnormal() && y._isnormal() && (loopCount > 0));
 
-  intptr_t         loopCounter = loopCount;
+  int              loopCounter = loopCount;
   Digit           *cd          = clearDigits1();
   const UINT       BASE        = BIGREALBASE;
   m_expo = m_low = x.m_expo + y.m_expo;

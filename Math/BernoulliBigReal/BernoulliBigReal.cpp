@@ -10,7 +10,7 @@ BigRational bernoulliDirect(UINT n) {
   BigRational *A = new BigRational[n+1];
 
   for(UINT m = 0; m <= n; m++) {
-    A[m] = BigRational(BIGREAL_1,m+1);
+    A[m] = BigRational(BigReal::_1,m+1);
     for(int j = m; j >= 1; j--) {
       A[j-1] = j * (A[j-1] - A[j]);
     }
@@ -22,32 +22,23 @@ BigRational bernoulliDirect(UINT n) {
 
 class BinomialKey {
 private:
-  int n,k;
+  int m_n,m_k;
 public:
-  BinomialKey(int n, int k);
-  ULONG hashCode() const;
-  bool operator==(const BinomialKey &key) const;
+  inline BinomialKey(int n, int k) : m_n(n), m_k(k) {
+  }
+  inline ULONG hashCode() const {
+    return m_n * 100 + m_k;
+  }
+  inline bool operator==(const BinomialKey &key) const {
+    return (m_n == key.m_n) && (m_k == key.m_k);
+  }
 };
 
-BinomialKey::BinomialKey(int n, int k) {
-  this->n = n;
-  this->k = k;
-}
-
-ULONG BinomialKey::hashCode() const {
-  return n * 100 + k;
-}
-
-bool BinomialKey::operator==(const BinomialKey &key) const {
-  return n == key.n && k == key.k;
-}
-
-
-static ULONG binomialKeyHashCode(const BinomialKey &key) {
+static inline ULONG binomialKeyHashCode(const BinomialKey &key) {
   return key.hashCode();
 }
 
-static int binomialKeyCmp(const BinomialKey &key1, const BinomialKey &key2) {
+static inline int binomialKeyCmp(const BinomialKey &key1, const BinomialKey &key2) {
   return key1 == key2 ? 0 : 1;
 }
 
@@ -58,7 +49,7 @@ const BigInt &factorial(UINT n) {
     if(n <= 1) {
       map.put(n,1);
     } else {
-      map.put(n,n*factorial(n-1));
+      map.put(n,factorial(n-1)*n);
     }
     result = map.get(n);
   }
@@ -124,16 +115,16 @@ const BigRational &bernoulli1(UINT m) {
 int main(int argc, char **argv) {
   try {
     for(int i = 1; i < 200; i+= (i<2)?1:2) {
-      _tprintf(_T("%d %-s\n"), i, bernoulli0(i).toString().cstr());
+      _tprintf(_T("%d %-s\n"), i, toString(bernoulli0(i)).cstr());
     }
     return 0;
 
     for(;;) {
       int n = inputInt(_T("Enter n:"));
-      _tprintf(_T("bernoulli(%d)=%s\n"),n,bernoulli1(n).toString().cstr());
+      _tprintf(_T("bernoulli(%d)=%s\n"),n, toString(bernoulli1(n)).cstr());
     }
   } catch(Exception e) {
-    _tprintf(_T("Exception:%s\n"),e.what());
+    _tprintf(_T("Exception:%s\n"), e.what());
     return -1;
   }
   return 0;

@@ -17,14 +17,10 @@ BigReal BigReal::apcSum(const char bias, const BigReal &x, const BigReal &y, Dig
 }
 
 BigReal BigReal::apcProd(const char bias, const BigReal &x, const BigReal &y, DigitPool *digitPool) { // static
-  if(digitPool == NULL) digitPool = x.getDigitPool();
-
-  BigReal result(digitPool);
-  result.shortProduct(x, y, x.m_expo + y.m_expo);
-  if(result._isnormal()) {
-    result.rTrunc(APC_DIGITS + 2).adjustAPCResult(bias, __TFUNCTION__);
-  }
-  return result;
+  BigReal result(digitPool ? digitPool : x.getDigitPool());
+  return result.checkIsNormalProduct(x, y)
+       ? result.shortProductNoNormalCheck(x, y, x.m_expo + y.m_expo).rTrunc(APC_DIGITS + 2).adjustAPCResult(bias, __TFUNCTION__)
+       : result;
 }
 
 #define MAXDIGITS_INT64     19

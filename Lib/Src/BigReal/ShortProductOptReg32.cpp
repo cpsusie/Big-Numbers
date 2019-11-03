@@ -16,13 +16,14 @@ DECLARE_CALLCOUNTER(shortProdSumTooBig);
 
 // assume x != 0 and y != 0. and loopCount > 0
 #ifdef _DEBUG
-BigReal &BigReal::shortProductNoZeroCheckDebug(const BigReal &x, const BigReal &y, size_t loopCount) { // return *this
+BigReal &BigReal::shortProductNoZeroCheckDebug(const BigReal &x, const BigReal &y, UINT loopCount) { // return *this
 #else
-BigReal &BigReal::shortProductNoZeroCheck(     const BigReal &x, const BigReal &y, size_t loopCount) { // return *this
+BigReal &BigReal::shortProductNoZeroCheck(     const BigReal &x, const BigReal &y, UINT loopCount) { // return *this
 #endif
+  assert(x._isnormal() && y._isnormal() && (loopCount > 0));
   COUNTCALL(shortProdCallTotal);
 
-  intptr_t         loopCounter = loopCount;
+  int              loopCounter = loopCount;
   Digit           *cd          = clearDigits1();
   BR2DigitType     bigSum;
   m_expo = m_low = x.m_expo + y.m_expo;
@@ -132,7 +133,7 @@ NextDigit:
     }
   }
 
-  intptr_t digitsAdded = loopCount - loopCounter;
+  int digitsAdded = loopCount - loopCounter;
   if(cd->n == 0) { // Fixup both ends of digit chain, to reestablish invariant (See comments in assertIsValidBigReal)
     m_last = cd;
     for(digitsAdded--, cd = m_last->prev; cd->n == 0; cd = cd->prev, digitsAdded--);
