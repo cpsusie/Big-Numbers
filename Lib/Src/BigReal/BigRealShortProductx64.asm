@@ -11,16 +11,16 @@ MaxSum    qword 0DE0B6B3A763FFFFh               ; max highorder QWORD = (0xfffff
 ;   BR2DigitType  m_bigSum; // result stored here if too big for simple division.
 ; };
 
-; char BigRealMultiplyColumn(const Digit *yk, const Digit *xk, SubProductSum *sps);
-; rcx yk
-; rdx xk
+; char BigRealMultiplyColumn(const Digit *yp, const Digit *xp, SubProductSum *sps);
+; rcx yp
+; rdx xp
 ; r8  sps address of SubProductSum
 BigRealMultiplyColumn PROC
       push        rbx
       push        rsi
       push        rdi
 
-      mov         rbx, rdx                        ; xp = xk
+      mov         rbx, rdx                        ; rbx = xp; need rdx for multiplication
       xor         rsi, rsi                        ;
       xor         rdi, rdi                        ; rsi:rdi accumulates sum. Init to 0
 MultiplyLoop:                                     ; do { ; we know that the first time both xp and yp are not NULL.
@@ -34,7 +34,7 @@ MultiplyLoop:                                     ; do { ; we know that the firs
       or          rbx, rbx                        ;
       jne         MultiplyLoop                    ; } while(xp);
 
-AddSubProduct:
+AddSubProduct:                                    ;
       cmp         rsi, MaxSum                     ; if(sum >= maxui64 * BASE) goto SumTooBig (or we will have a division by zero exception)
       jae         SumTooBig                       ; Use jae for unsigned compare, jge is for signed !
                                                   ;
@@ -89,6 +89,7 @@ FinalizeCarryLoop:                                ; do { // Assume r8 is addr of
       or          rax, rax                        ;
       je          NextDigit                       ;
       jmp         FinalizeCarryLoop               ; } while(carry != 0)
+                                                  ;
 SumTooBig:                                        ;
       mov         QWORD PTR[r8+8 ], rdi           ; low order  QWORD to bigSum.lo
       mov         QWORD PTR[r8+16], rsi           ; high order QWORD to bigSum.hi
@@ -119,9 +120,9 @@ BigRealSquareColumn PROC
       push        rsi
       push        rdi
 
+      mov         rbx, rdx                        ; rbx = xp; need rdx for multiplication
       xor         rsi, rsi                        ;
       xor         rdi, rdi                        ; rsi:rdi accumulates sum. Init to 0
-      mov         rbx, rdx                        ; rbx = xp; need rdx for multiplication
       mov         eax, r9d                        ; eax = sumLength
       and         eax, 1                          ;
       jz          EvenSumLength                   ; if(isEven(sumLength)) goto EvenSumLength
@@ -152,7 +153,7 @@ EvenLengthLoop:                                   ; for(;;) {
       add         rdi, rax                        ;
       adc         rsi, rdx                        ;   rsi:rdi += [rdx:rax]     sum += xp->n * yp->n;
       sub         r9d, 1                          ;
-      jz          EndEvenLengthLoop               ;   if(!--numLength) break;
+      jz          EndEvenLengthLoop               ;   if(!--sumLength) break;
       mov         rcx, QWORD PTR[rcx+16]          ;   yp = yp->prev
       mov         rbx, QWORD PTR[rbx+8]           ;   xp = xp->next
       jmp         EvenLengthLoop                  ; }
@@ -163,7 +164,7 @@ EndEvenLengthLoop:                                ;
 AddSubProduct:                                    ;
       cmp         rsi, MaxSum                     ; if(sum >= maxui64 * BASE) goto SumTooBig (or we will have a division by zero exception)
       jae         SumTooBig                       ; Use jae for unsigned compare, jge is for signed !
-
+                                                  ;
       mov         rbx, BASE                       ; rbx remains constant BASE
       mov         rdx, rsi                        ;
       mov         rax, rdi                        ; [rdx:rax] = sum
@@ -215,8 +216,8 @@ FinalizeCarryLoop:                                ; do { // Assume r8 is addr of
       or          rax, rax                        ;
       je          NextDigit                       ;
       jmp         FinalizeCarryLoop               ; } while(carry != 0)
-
-SumTooBig:
+                                                  ;
+SumTooBig:                                        ;
       mov         QWORD PTR[r8+8] , rdi           ; low order  QWORD to bigSum.lo
       mov         QWORD PTR[r8+16], rsi           ; high order QWORD to bigSum.hi
       xor         al, al                          ; return 0
