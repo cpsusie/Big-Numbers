@@ -1,21 +1,22 @@
 #include "pch.h"
 
 BigReal &BigReal::productMT(BigReal &result, const BigReal &x, const BigReal &y, const BigReal &f, intptr_t w, int level) { // static
-  assert(x._isnormal() && y._isnormal() && f._isfinite());
+  assert(x._isnormal() && y._isnormal() && f._isfinite() && (x.getLength() >= y.getLength()));
+  const bool   sameXY  = &x == &y;
   const size_t XLength = x.getLength();
-  const size_t YLength = y.getLength();
+  const size_t YLength = sameXY ? XLength : y.getLength();
   DigitPool    *pool   = result.getDigitPool();
-  const BigInt &_0     = pool->_0();
 
   LOGPRODUCTRECURSION(_T("result.pool:%2d, x.len,y.len,w:(%4s,%4s,%4s)")
                      ,pool->getId(), format1000(XLength).cstr(),format1000(YLength).cstr(), format1000(w).cstr());
 
-  if(YLength <= s_splitLength || w <= (intptr_t)s_splitLength) {
+  if((YLength <= s_splitLength) || (w <= (intptr_t)s_splitLength)) {
 //    _tprintf(_T("shortProd x.length:%3d y.length:%3d w:%d\n"),y.length(),w);
     return result.shortProductNoNormalCheck(x, y, f.m_expo);
   }
 
-  const BigReal g = APCprod(#, BigReal::_C1third,f,pool);
+  const BigInt &_0 = pool->_0();
+  const BigReal  g = f.isZero() ? _0 : APCprod(#, BigReal::_C1third,f,pool);
   BigReal gpm10(g);
   gpm10.multPow10(-10);
   const intptr_t n = min((intptr_t)XLength, w)/2;
@@ -25,7 +26,8 @@ BigReal &BigReal::productMT(BigReal &result, const BigReal &x, const BigReal &y,
   x.split(a, b, n, g.isZero() ? _0 : APCprod(#, gpm10, reciprocal(y, pool),pool));   // a + b = x   (=O(n))
 
   MThreadArray threads;
-  if((intptr_t)YLength < n) {
+
+  if(!sameXY && ((intptr_t)YLength < n)) {
     BigRealResourcePool::fetchMTThreadArray(threads, 1);
 
     MultiplierThread &thread = threads.get(0);
@@ -33,7 +35,7 @@ BigReal &BigReal::productMT(BigReal &result, const BigReal &x, const BigReal &y,
     BigReal p1(thread.getDigitPool());
     thread.multiply(p1, a,y,_0, level);
 
-    result.setToZero();;
+    result.setToZero();
     product(result, b, y, g, level);
 
     threads.waitForAllResults();
@@ -44,38 +46,49 @@ BigReal &BigReal::productMT(BigReal &result, const BigReal &x, const BigReal &y,
     return result;
   }
 
-  BigReal c(pool), d(pool);
-  y.split(c, d, n, g.isZero() ? _0 : APCprod(#, gpm10, reciprocal(x, pool),pool));               // c + d = y   O(n)
-
   const BRExpoType logBK = LOG10_BIGREALBASE * n;
-
-  b.multPow10(logBK);
-  d.multPow10(logBK);
-  BigReal Kg(g);
-  Kg.multPow10(logBK);
-
   BigRealResourcePool::fetchMTThreadArray(threads, 2);
+  MultiplierThread &threadR = threads.get(0), &threadS = threads.get(1);
+  BigReal r(threadR.getDigitPool()), s(threadS.getDigitPool()), t(pool);
 
-  MultiplierThread &threadR = threads.get(0);
-  MultiplierThread &threadS = threads.get(1);
+  if(sameXY) {
+    const BigReal &c = a, &d = b;
+    b.multPow10(logBK);
+//    d.multPow10(logBK); Done in last statement
+    BigReal Kg(g);
+    Kg.multPow10(logBK);
 
-  BigReal r(threadR.getDigitPool());
-  BigReal s(threadS.getDigitPool());
-  BigReal t(pool);
+    threadR.multiply(r, a    , c    , _0, level);
+    BigReal tmpAB = sum(a, b, _0, threadS.getDigitPool());
+    BigReal &tmpCD = tmpAB;                               // c=a,d=b =>c+d=a+b
+    threadS.multiply(s, tmpAB, tmpCD, Kg, level);
+    product(         t, b    , d    , Kg, level);
 
-  BigReal tmpAB(a, threadS.getDigitPool());
-  tmpAB += b;
-  BigReal tmpCD(c, threadS.getDigitPool());
-  tmpCD += d;
+    threads.waitForAllResults();
 
-  threadR.multiply(r, a    , c    , _0, level);
-  threadS.multiply(s, tmpAB, tmpCD, Kg, level);
-  product(         t, b    , d    , Kg, level);
+    tmpAB.setToZero();
+    tmpCD.setToZero(); // just did
 
-  threads.waitForAllResults();
+  } else {
+    BigReal c(pool), d(pool);
+    y.split(c, d, n, g.isZero() ? _0 : APCprod(#, gpm10, reciprocal(x, pool),pool));               // c + d = y   O(n)
 
-  tmpAB.setToZero();
-  tmpCD.setToZero();
+    b.multPow10(logBK);
+    d.multPow10(logBK);
+    BigReal Kg(g);
+    Kg.multPow10(logBK);
+
+    threadR.multiply(r, a    , c    , _0, level);
+    BigReal tmpAB = sum(a, b, _0, threadS.getDigitPool());
+    BigReal tmpCD = sum(c, d, _0, threadS.getDigitPool());
+    threadS.multiply(s, tmpAB, tmpCD, Kg, level);
+    product(         t, b    , d    , Kg, level);
+
+    threads.waitForAllResults();
+
+    tmpAB.setToZero();
+    tmpCD.setToZero();
+  }
 
   s -= r;
   s -= t;
@@ -86,6 +99,5 @@ BigReal &BigReal::productMT(BigReal &result, const BigReal &x, const BigReal &y,
 
   r.setToZero();
   s.setToZero();
-
   return result;
 }

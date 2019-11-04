@@ -20,7 +20,7 @@ public:
   }
 };
 
-//#define ASM_OPTIMIZED
+#define ASM_OPTIMIZED
 #ifdef ASM_OPTIMIZED
 
 // return 1 if sum of products has been added. 0 if we need to do it in C-code. if so, the sum is returned in bigsum
@@ -53,8 +53,6 @@ char BigRealSquareColumn(const Digit *yp, const Digit *xp, SubProductSum *sps, i
 }
 #endif
 
-static const BR2DigitType BIGREALBASE128(BIGREALBASE);
-
 DECLARE_CALLCOUNTER(shortProdCallTotal  );
 DECLARE_CALLCOUNTER(shortProdLoopTotal  );
 DECLARE_CALLCOUNTER(shortProdSumTooBig  );
@@ -80,14 +78,14 @@ BigReal &BigReal::shortProductNoZeroCheck(const BigReal &x, const BigReal &y, UI
         COUNTCALL(shorSquareSumTooBig);
         BRDigitType carry = 0;
         Digit      *d     = sps.m_cd;
-        d->n = sps.m_bigSum % BIGREALBASE;
-        sps.m_bigSum /= BIGREALBASE;
+        d->n = sps.m_bigSum % s_BIGREALBASEBR2;
+        sps.m_bigSum /= s_BIGREALBASEBR2;
         do {
           d = d->prev;
-          carry  += d->n + (BRDigitType)(sps.m_bigSum % BIGREALBASE);
+          carry  += d->n + (BRDigitType)(sps.m_bigSum % s_BIGREALBASEBR2);
           d->n   = carry % BIGREALBASE;
           carry  /= BIGREALBASE;
-          sps.m_bigSum /= BIGREALBASE;
+          sps.m_bigSum /= s_BIGREALBASEBR2;
         } while(sps.m_bigSum || carry);
         // dont call trimZeroes() !!;
       }
@@ -111,14 +109,14 @@ BigReal &BigReal::shortProductNoZeroCheck(const BigReal &x, const BigReal &y, UI
         COUNTCALL(shortProdSumTooBig);
         BRDigitType carry = 0;
         Digit      *d     = sps.m_cd;
-        d->n = sps.m_bigSum % BIGREALBASE128;
-        sps.m_bigSum /= BIGREALBASE128;
+        d->n = sps.m_bigSum % s_BIGREALBASEBR2;
+        sps.m_bigSum /= s_BIGREALBASEBR2;
         do {
           d = d->prev;
-          carry  += d->n + (BRDigitType)(sps.m_bigSum % BIGREALBASE128);
+          carry  += d->n + (BRDigitType)(sps.m_bigSum % s_BIGREALBASEBR2);
           d->n   = carry % BIGREALBASE;
           carry  /= BIGREALBASE;
-          sps.m_bigSum /= BIGREALBASE;
+          sps.m_bigSum /= s_BIGREALBASEBR2;
         } while(sps.m_bigSum || carry);
         // dont call trimZeroes() !!;
       }

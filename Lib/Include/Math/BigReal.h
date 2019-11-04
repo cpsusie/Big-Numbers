@@ -659,7 +659,7 @@ private:
   BigReal &shortProductNoZeroCheck(          const BigReal &x, const BigReal &y, UINT loopCount);
   // Return &result. Assume x._isnormal() && y._isnormal() && f._isfinite()
   static BigReal &product(  BigReal &result, const BigReal &x, const BigReal &y, const BigReal &f,              int level);
-  // Return &result. Assume x._isnormal() && y._isnormal() && f._isfinite()
+  // Return &result. Assume x._isnormal() && y._isnormal() && f._isfinite() && (x.getLength() >= y.getLength())
   static BigReal &productMT(BigReal &result, const BigReal &x, const BigReal &y, const BigReal &f, intptr_t  w, int level);
   // Assume this->_isnormal() && a.isZero() && b.isZero() && f._isfinite(). Dont care about sign(f)
   void    split(BigReal &a, BigReal &b, size_t n, const BigReal &f) const;
@@ -1140,8 +1140,9 @@ public:
   static BigReal quotLinear128(const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *digitPool);
 #endif // IS64BIT
   // x*y with |error| < f. Used to multiply short numbers. Used by prod.
-  static BigReal shortProd(    const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *digitPool);
-
+  static inline BigReal shortProd(const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *digitPool) {
+    return BigReal(digitPool).shortProduct(x, y, f.m_expo);
+  }
   // Return _isnormal() ? first BASE-digit : 0.
   inline BRDigitType getFirstDigit() const {
     return _isnormal() ? m_first->n : 0;
@@ -1222,7 +1223,7 @@ public:
   static const ConstBigReal _dbl80_min;  // DBL80_MIN
   static const ConstBigReal _dbl80_max;  // DBL80_MAX
   static const ConstBigReal _C1third;    // approx 1/3
-
+  static const BR2DigitType s_BIGREALBASEBR2; // BIGREALBASE as BR2DigitType (__UINT64 or _uint128)
   static const ConstBigReal _BR_QNAN;    // non-signaling NaN (quiet NaN)
   static const ConstBigReal _BR_PINF;    // +infinity;
   static const ConstBigReal _BR_NINF;    // -infinity;

@@ -17,6 +17,8 @@ public:
 
 static InitBigReal initBigReal;
 
+const BR2DigitType BigReal::s_BIGREALBASEBR2(BIGREALBASE);
+
 size_t        DigitPool::s_totalDigitCount        = 0;
 bool          DigitPool::s_dumpCountWhenDestroyed = false;
 DigitPool     DigitPool::s_defaultDigitPool(DEFAULT_DIGITPOOL_ID, 510000);
