@@ -43,6 +43,40 @@ public:
     return *this;
   }
 
+  inline BigInt &operator=(int              n) {
+    __super::operator=(n);
+    return *this;
+  }
+  inline BigInt &operator=(UINT             n) {
+    __super::operator=(n);
+    return *this;
+  }
+  inline BigInt &operator=(long             n) {
+    __super::operator=(n);
+    return *this;
+  }
+  inline BigInt &operator=(ULONG            n) {
+    __super::operator=(n);
+    return *this;
+  }
+  inline BigInt &operator=(INT64            n) {
+    __super::operator=(n);
+    return *this;
+  }
+  inline BigInt &operator=(UINT64           n) {
+    __super::operator=(n);
+    return *this;
+  }
+
+  inline BigInt &operator=(const _int128   &n) {
+    __super::operator=(n);
+    return *this;
+  }
+  inline BigInt &operator=(const _uint128  &n) {
+    __super::operator=(n);
+    return *this;
+  }
+
   friend inline void quotRemainder(const BigInt &x, const BigInt &y, BigInt *quotient, BigInt *remainder) {
 #ifdef IS32BIT
     quotRemainder64((BigReal&)x, (BigReal&)y, quotient, remainder);
