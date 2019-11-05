@@ -28,12 +28,10 @@ bool MRisprime(const BigInt &n, int threadId, MillerRabinHandler *handler) { // 
     s++;
   }
 
-  MersenneTwister64 rnd;
+  JavaRandom rnd;
   rnd.randomize();
   for(int i = 1; i < 30; i++) {
-    if(handler != NULL) {
-      handler->handleData(MillerRabinCheck(threadId, n, 0, format(_T("MRTest %-2d"), i)));
-    }
+    if(handler) handler->handleData(MillerRabinCheck(threadId, n, format(_T("MRTest %-2d"), i),false));
 
     BigInt a(pool);
     do {
@@ -52,5 +50,6 @@ bool MRisprime(const BigInt &n, int threadId, MillerRabinHandler *handler) { // 
       }
     }
   }
+  if(handler) handler->handleData(MillerRabinCheck(threadId, n, format(_T("Is prime")), true));
   return true;
 }

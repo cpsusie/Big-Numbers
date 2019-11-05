@@ -1,10 +1,7 @@
 #include "stdafx.h"
 #include <CPUInfo.h>
 #include <Console.h>
-#include <Math/BigReal.h>
 #include <Math/MRisprime.h>
-#include <Random.h>
-#include <BitSet.h>
 #include <Date.h>
 
 using namespace std;
@@ -42,16 +39,16 @@ static void usage() {
 class MRHandler : public MillerRabinHandler {
 private:
   Semaphore m_gate;
-  int       m_n;
+  int       m_primesFound;
   int       m_threadCount;
   int       m_winHeight;
 public:
   void handleData(const MillerRabinCheck &data);
-  MRHandler(int n, int threadCount, int winHeight);
+  MRHandler(int threadCount, int winHeight);
 };
 
-MRHandler::MRHandler(int n, int threadCount, int winHeight) {
-  m_n           = n;
+MRHandler::MRHandler(int threadCount, int winHeight) {
+  m_primesFound = 0;
   m_threadCount = threadCount;
   m_winHeight   = winHeight;
 }
@@ -72,9 +69,10 @@ String shortString(const BigInt &n) {
 void MRHandler::handleData(const MillerRabinCheck &data) {
   m_gate.wait();
   int y = data.m_threadId*(m_winHeight-7)/m_threadCount;
-  Console::printf(0, y++, _T("Searching prime %3d"), m_n);
+  Console::printf(0, y++, _T("Searching prime %3d"), m_primesFound+1);
   Console::printf(0, y++, _T("%-50s"), data.m_msg.cstr());
   Console::printf(0, y++, _T("%s"), shortString(data.m_number).cstr());
+  if(data.m_isPrime) m_primesFound++;
   m_gate.signal();
 }
 
@@ -146,15 +144,14 @@ int main(int argc, char **argv) {
         tcout << _T("Enter BigReal:");
         tcin >> numberToCheck;
       }
-      if(MRisprime(0, numberToCheck)) {
+      if(MRisprime(numberToCheck)) {
         tcout << numberToCheck << _T(" is prime\n");
       } else {
         tcout << numberToCheck << _T(" is composite\n");
       }
       break;
     case CMD_FINDPRIME:
-      { randomize();
-        int winW, winH;
+      { int winW, winH;
         if(verbose) {
           Console::getLargestConsoleWindowSize(winW, winH);
           winW -= 10;
@@ -162,9 +159,11 @@ int main(int argc, char **argv) {
           Console::setWindowAndBufferSize(0,0,winW, winH);
           Console::clear();
         }
-        for(UINT i = 1; i <= count; i++) {
-          BigInt n = findRandomPrime(digits, threadCount, NULL, verbose?&MRHandler(i,threadCount, winH):NULL);
-          tcout << n << endl;
+        MRHandler handler(threadCount, winH);
+        const Array<BigInt> primeArray = findRandomPrimes(count, digits, threadCount, NULL, verbose?&handler:NULL);
+        Console::clear();
+        for(size_t i = 0; i < primeArray.size(); i++) {
+          tcout << primeArray[i] << endl;
         }
       }
       break;
