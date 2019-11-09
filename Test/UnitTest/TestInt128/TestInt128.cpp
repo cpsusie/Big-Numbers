@@ -1024,7 +1024,7 @@ namespace TestInt128 {
 #define PRINTERRORLOG(...) { PRINTPARAM();_ftprintf(_errorLog, __VA_ARGS__); }
 #define CLOSEERRORLOG()    fclose(_errorLog)
 #else
-#define OPENERRORLOG() 
+#define OPENERRORLOG()
 #define PRINTERRORLOG(...)
 #define CLOSEERRORLOG()
 #endif

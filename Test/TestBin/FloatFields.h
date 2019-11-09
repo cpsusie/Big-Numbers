@@ -26,7 +26,7 @@ private:
 public:
   FloatFields() : m_type(FT_FLOAT), m_sign(false), m_expoField(0), m_sig(0) {
   }
-  FloatFields(FloatType type, bool sign, int expoField, UINT64 sig) 
+  FloatFields(FloatType type, bool sign, int expoField, UINT64 sig)
     : m_type(type)
     , m_sign(sign)
     , m_expoField(expoField & getExpoMask(type))

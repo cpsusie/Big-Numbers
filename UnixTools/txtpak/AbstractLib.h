@@ -54,7 +54,7 @@ public:
   // list can be NULL. return number of elements in lib, matching argv
   virtual size_t         getInfoList(Array<FileInfo> *list) const                                  = 0;
   virtual LibType        getType() const                                                           = 0;
-  
+
   size_t                 pack(  const StringArray &names, bool verbose);
   size_t                 update(const StringArray &names, bool verbose);
   void                   list(  const TCHAR     **argv  , bool sorting);

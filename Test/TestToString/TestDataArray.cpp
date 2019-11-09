@@ -20,7 +20,7 @@ TestIterator TestDataArray::getIterator(StreamSize maxWidth, StreamSize maxPreci
   return TestIterator(this, maxWidth, maxPrecision);
 }
 
-AbstractTestElementIterator::AbstractTestElementIterator(TestValueArray &a, StreamSize maxWidth, StreamSize maxPrecision) 
+AbstractTestElementIterator::AbstractTestElementIterator(TestValueArray &a, StreamSize maxWidth, StreamSize maxPrecision)
   : m_valueArray(a)
   , m_maxWidth(maxWidth)
   , m_maxPrecision(maxPrecision)

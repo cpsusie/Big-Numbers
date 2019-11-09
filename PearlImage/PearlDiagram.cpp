@@ -73,8 +73,8 @@ String PearlDiagram::toString() const {
   hRulerStr += _T("\n");
 
   for(UINT r = 0; r < dim.rowCount; r++) {
-    const String vRulerStr = (r%10==0) 
-                           ? format(_T("%*d0") , vRulerW1,r/10) 
+    const String vRulerStr = (r%10==0)
+                           ? format(_T("%*d0") , vRulerW1,r/10)
                            : format(_T("%*s%d"), vRulerW1,_T(" "),r%10);
     mstr += vRulerStr;
     for(UINT c = 0; c < dim.columnCount; c++) {

@@ -15,7 +15,7 @@ using namespace std;
 
 static const double EPS = 3e-14;
 
-namespace TestDouble80 {		
+namespace TestDouble80 {
 
 #include <UnitTestTraits.h>
 
@@ -72,7 +72,7 @@ namespace TestDouble80 {
     }
     INFO(_T("%-10s:Max relative error:%.16le"), name.cstr(), maxRelativeError);
   }
-  
+
   static void checkResult(double x64, Double80 x80, TCHAR *op, double tolerance = EPS) {
     const double relativeError = getRelativeError(x64, x80);
     if(relativeError > tolerance) {

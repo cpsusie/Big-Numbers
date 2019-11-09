@@ -16,7 +16,7 @@ static void TestInternetExample() {
      iss.clear();
      iss >> fail_string;
      cout << fail_string << endl;
-     
+
   } else {
     cout << "TEST FAILED" << endl;
   }
@@ -64,7 +64,7 @@ static void TestMyExample() {
 static void usage() {
   _ftprintf(stderr, _T("Usage:TestRegexStream [-i|m]\n"
                        "         -i: Test internet example\n"
-                       "         -m: Test my example. (Default)\n"  
+                       "         -m: Test my example. (Default)\n"
                      )
            );
   exit(-1);

@@ -294,7 +294,7 @@ IntType &IntType::operator^=(const IntType &rhs) {
 }
 IntType IntType::operator~() const {
   switch(getType()) {
-  case IT_I32  : return IntType((I32) ~getI32() ); 
+  case IT_I32  : return IntType((I32) ~getI32() );
   case IT_U32  : return IntType((U32) ~getU32() );
   case IT_I64  : return IntType((I64) ~getI64() );
   case IT_U64  : return IntType((U64) ~getU64() );
@@ -349,8 +349,8 @@ bool IntType::isNegative() const {
   case IT_I32  : return m_i32  < 0;
   case IT_I64  : return m_i64  < 0;
   case IT_I128 : return m_i128 < 0;
-  case IT_U32  : 
-  case IT_U64  : 
+  case IT_U32  :
+  case IT_U64  :
   case IT_U128 : return false;
   DEFAULT_WRONGTYPE(getType());
   }

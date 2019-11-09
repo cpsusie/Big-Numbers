@@ -28,7 +28,7 @@ private:
   inline bool canAddKey() const {
     return m_game.getKey() != getLastKey();
   }
-  // 0 <= i < m_history.size(). return 
+  // 0 <= i < m_history.size(). return
   inline const GameKey &getKey(size_t i) const {
     return m_history[i];
   }

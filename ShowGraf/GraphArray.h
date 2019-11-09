@@ -81,7 +81,7 @@ public:
     return getCurrentSelection().hasSelection();
   }
   const GraphItem *getSelectedGraphItem() const {
-    return (getCurrentSelection().getType() == GRAPHSELECTED) 
+    return (getCurrentSelection().getType() == GRAPHSELECTED)
          ? &(*this)[getCurrentSelection().getIndex()]
          : NULL;
   }

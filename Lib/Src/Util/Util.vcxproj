@@ -796,6 +796,7 @@
     <ClInclude Include="..\..\Include\Config.h" />
     <ClInclude Include="..\..\Include\DebugLog.h" />
     <ClInclude Include="..\..\Include\ExecutableByteArray.h" />
+    <ClInclude Include="..\..\Include\FastSemaphore.h" />
     <ClInclude Include="..\..\Include\HeapObjectPool.h" />
     <ClInclude Include="..\..\Include\CompactHashMap.h" />
     <ClInclude Include="..\..\Include\CompactHashSet.h" />

@@ -146,7 +146,7 @@ void CIncrementalDelaunayTriangulationDlg::paintAll(CDC &dc) {
       break;
     default:
       paintEdges(dc);
-      break;    
+      break;
     }
   }
 }

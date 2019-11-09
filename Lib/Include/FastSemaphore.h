@@ -29,26 +29,26 @@ public:
   }
 };
 
-class FSemaphore {
+class FastSemaphore {
 private:
   std::atomic<int> m_count;
-  SlowSemaphore    m_ssemaphore;
+  SlowSemaphore    m_slowSemaphore;
 public:
-  FSemaphore(int count = 1) noexcept : m_count(count), m_ssemaphore(0) {
+  FastSemaphore(int count = 1) noexcept : m_count(count), m_slowSemaphore(0) {
   }
 
   void signal() {
     std::atomic_thread_fence(std::memory_order_release);
     int count = m_count.fetch_add(1, std::memory_order_relaxed);
     if(count < 0) {
-      m_ssemaphore.signal();
+      m_slowSemaphore.signal();
     }
   }
 
   void wait() {
     int count = m_count.fetch_sub(1, std::memory_order_relaxed);
     if(count < 1) {
-      m_ssemaphore.wait();
+      m_slowSemaphore.wait();
     }
     std::atomic_thread_fence(std::memory_order_acquire);
   }

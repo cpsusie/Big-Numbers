@@ -41,7 +41,7 @@ public:
   inline UINT64 getLineCount() const {
     return m_lineCount;
   }
-  static void setDrive(TCHAR d) { 
+  static void setDrive(TCHAR d) {
     s_drive = d;
   }
 };

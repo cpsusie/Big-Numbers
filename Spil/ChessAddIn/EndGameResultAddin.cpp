@@ -15,7 +15,7 @@ ADDIN_API HRESULT WINAPI AddIn_EndGameResult(DWORD dwAddress, DEBUGHELPER *pHelp
       const UINT                  pliesToEnd = egr.getPliesToEnd();
       switch(status) {
       case EG_UNDEFINED:
-        str = _T("Status=UNDEFINED"); 
+        str = _T("Status=UNDEFINED");
         break;
       case EG_DRAW     :
         str = format(_T("Status=DRAW, pliesToEnd=%3u"), pliesToEnd);

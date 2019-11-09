@@ -55,7 +55,7 @@ private:
   }
   CPoint       viewToDoc(const CPoint &viewPoint) const;
   CPoint       docToView(const CPoint &docPoint)  const;
-  // coordinates of upper-left corner of visible part image in 
+  // coordinates of upper-left corner of visible part image in
   inline CPoint getViewTopLeft() const {
     return GetScrollPosition();
   }

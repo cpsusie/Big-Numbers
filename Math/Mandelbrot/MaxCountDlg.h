@@ -6,7 +6,7 @@ private:
   HACCEL  m_accelTable;
   UINT    m_maxCount;
 public:
-  CMaxCountDlg(UINT maxCount, CWnd* pParent = nullptr); 
+  CMaxCountDlg(UINT maxCount, CWnd* pParent = nullptr);
   virtual ~CMaxCountDlg();
 
   inline UINT getMaxCount() const {

@@ -29,7 +29,7 @@ RationalStrStream &RationalStrStream::operator<<(const Rational &r) {
     numStr.flags(flg & ~(ios::showpos | ios::showbase));
     denStr.flags(flg & ~ios::showpos);
     numStr << ((negative && (base == 10)) ? -r.getNumerator() : r.getNumerator());
-    if(base != 10) { 
+    if(base != 10) {
       negative = false;
       flg &= ~ios::showpos;
     }

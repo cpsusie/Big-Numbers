@@ -1319,6 +1319,9 @@
     <ClInclude Include="..\..\Include\CompactLineArray.h">
       <Filter>Header Files\String</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Include\FastSemaphore.h">
+      <Filter>Header Files\Process</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="BitSetx64.asm">

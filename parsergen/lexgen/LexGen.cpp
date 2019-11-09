@@ -204,7 +204,7 @@ int _tmain(int argc, TCHAR **argv) {
         } // switch(..
         break;
       } // for(cp...)
-    } // for(argv++; 
+    } // for(argv++;
 
     String skeletonFileName = EMPTYSTRING;
     String wizardTemplate   = EMPTYSTRING;

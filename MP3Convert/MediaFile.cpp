@@ -59,7 +59,7 @@ static EncodedString getStringFieldText(const ID3_Field &field) {
   return EncodedString(ID3TE_NONE, NULL, 0);
 }
 
-StringField::StringField(const ID3_Field *field) 
+StringField::StringField(const ID3_Field *field)
 : m_encoding(field->GetEncoding())
 {
   const size_t nItems = field->GetNumTextItems();

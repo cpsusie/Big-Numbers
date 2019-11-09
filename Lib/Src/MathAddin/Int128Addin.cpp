@@ -8,7 +8,7 @@ static char *i128ToHexDbgString(char *dst, _int128 x, size_t maxResult) {
   str.width(32);
   str.precision(0);
   str.fill('0');
-  str.flags(ios::right|ios::hex); // we want prefix 0x for all values. ios::showpos doesn't show 0x for 0!! so we add it manually here 
+  str.flags(ios::right|ios::hex); // we want prefix 0x for all values. ios::showpos doesn't show 0x for 0!! so we add it manually here
   str << x;
   return strncat(strcpy(dst, "0x"), str.str().c_str(), maxResult);
 }

@@ -87,7 +87,7 @@ public:
   // Iterator will generate all possible combinations (set-product) width,precision,flags and filler, where width is contained in widthInterval,
   // precision is contained in precisionInterval, and (((flags|lowMask)&highMask) == flags) (assuming (BitSet)lowMask is a subset of (BitSet)highMask)
   // multibitFieldsFilter can be any combination of constants ALLOWMANY_* combined with |.
-  // If a constant is present, the corresponding bit-field, f.ex. adjustfield will contain any combinations of 0 and 1-bits in this field 
+  // If a constant is present, the corresponding bit-field, f.ex. adjustfield will contain any combinations of 0 and 1-bits in this field
   // (if it passes the low/highMask-filter as well).
   // If not present, then at most 1 bit in this field is set in a flag-combination, which will reduce the number combinations
   static StreamParametersIterator getIterator(          const StreamSizeInterval &widthInterval, const StreamSizeInterval &precisionInterval, FormatFlags lowMask, FormatFlags highMask, UINT multibitFieldsFilter, const TCHAR *fillers);

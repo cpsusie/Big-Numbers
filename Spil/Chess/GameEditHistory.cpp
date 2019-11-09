@@ -136,7 +136,7 @@ void GameEditHistory::printState(const TCHAR *method) const {
                     ,boolToStr(canUndo())
                     ,boolToStr(canRedo())
    );
-   
+
    const size_t n = m_history.size();
    for(size_t i = 0; i < n; i++) {
      verbose(_T("his[%2zu] :%s%s"), i, m_history[i].toFENString().cstr()

@@ -193,7 +193,7 @@ namespace TestBitSet {
       }
     }
   public:
-    TesterSet(UINT capacity) 
+    TesterSet(UINT capacity)
       : m_bs(capacity)
       , m_memberCheckEnabled(true)
     {

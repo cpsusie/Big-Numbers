@@ -6,7 +6,7 @@ class MoveablePointArray : public CompactArray<MoveablePoint*> {
 public:
   MoveablePointArray() {
   }
-  explicit MoveablePointArray(size_t capacity) 
+  explicit MoveablePointArray(size_t capacity)
     : CompactArray<MoveablePoint*>(capacity)
   {
   }

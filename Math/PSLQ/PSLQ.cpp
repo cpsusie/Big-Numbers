@@ -238,7 +238,7 @@ int PSLQ::findPivotRow(const BigRealMatrix &m) const {
   BigReal   currentMax = -1;
   int       r          = 0;
   const int n          = min((int)m.getRowCount(), (int)m.getColumnCount());
-  double    gpowj      = m_gamma; 
+  double    gpowj      = m_gamma;
   for(int j = 0; j < n; j++, gpowj *= m_gamma) {
     const BigReal v = gpowj * fabs(m(j,j));
     if(v > currentMax) {
@@ -268,7 +268,7 @@ int PSLQ::getZeroComponent(const BigRealVector &y) const {
   const BigReal q = rQuot(minimum,maximum,10);
 
   if(m_verbose&VERBOSE_DATA) {
-    tcout << _T("min:")         << dparam(8) << minimum 
+    tcout << _T("min:")         << dparam(8) << minimum
           << _T("  |min/max|:") << dparam(8) << q
           << _T("  Min Bound:") << dparam(8) << getMinBound()
           << endl;

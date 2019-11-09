@@ -563,7 +563,7 @@ typedef enum {
 void CRegexDemoDlg::ajourDialogItems() {
   BitSet16 flags;
 
-  if(isThreadStopped() 
+  if(isThreadStopped()
     && ((m_debugThread->getCommand() == COMMAND_COMPILE)
      || (!m_patternDirty && m_patternOk && !m_targetDirty))) {
     flags.add(MENU_DEBUG);

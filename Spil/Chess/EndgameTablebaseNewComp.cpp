@@ -35,7 +35,7 @@ private:
   }
   EndGameResult lookupGamePosition(EndGameKey *egkp = NULL) const;
 public:
-  GameResultMap(const EndGameTablebase *tb, Game &game) 
+  GameResultMap(const EndGameTablebase *tb, Game &game)
     : m_tb(*tb)
     , m_positionIndex(tb->m_positionIndex)
     , m_game(game)

@@ -211,7 +211,7 @@ namespace TestRegistry {
         item.setValue(regValue);
         item.setValue(multiStringValue);
       }
-      
+
       BitSet usedIndexSet(30);
       for(Iterator<String> it = key.getSubKeyIterator(); it.hasNext();) {
         const String name = it.next();

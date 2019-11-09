@@ -196,7 +196,7 @@ void CTestBlendDlg::setPickMode(PickMode mode) {
   case PICK_IDLE      :
     setCursors(OCR_NORMAL,OCR_NORMAL);
     ClipCursor(NULL);
-    break;    
+    break;
   case PICK_CENTER    :
     { CRect r = getWindowRect(this, IDC_STATICKINGIMAGE);
       ClientToScreen(&r);
