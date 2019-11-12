@@ -16,7 +16,7 @@ public:
     assert(count > -1);
   }
 
-  void signal() noexcept {
+  void notify() noexcept {
     std::unique_lock<std::mutex> lock(m_mutex);
     ++m_count;
     m_cv.notify_one();
@@ -37,16 +37,16 @@ public:
   FastSemaphore(int count = 1) noexcept : m_count(count), m_slowSemaphore(0) {
   }
 
-  void signal() {
+  void notify() {
     std::atomic_thread_fence(std::memory_order_release);
-    int count = m_count.fetch_add(1, std::memory_order_relaxed);
+    const int count = m_count.fetch_add(1, std::memory_order_relaxed);
     if(count < 0) {
-      m_slowSemaphore.signal();
+      m_slowSemaphore.notify();
     }
   }
 
   void wait() {
-    int count = m_count.fetch_sub(1, std::memory_order_relaxed);
+    const int count = m_count.fetch_sub(1, std::memory_order_relaxed);
     if(count < 1) {
       m_slowSemaphore.wait();
     }
