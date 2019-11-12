@@ -139,14 +139,14 @@ public:
   static const Double80 _0;                               // = 0
   static const Double80 _05;                              // 0.5
   static const Double80 _1;                               // = 1
-  static const Double80 _DBL80_EPSILON;                   // Smallest such that 1.0+DBL80_EPSILON != 1.0 (=1.08420217248550443e-019)
-  static const Double80 _DBL80_MIN;                       // Min positive value (=3.36210314311209209e-4932)
-  static const Double80 _DBL80_MAX;                       // Max value          (=1.18973149535723227e+4932)
-  static const Double80 _DBL80_QNAN;                      // non-signaling NaN (quiet NaN)
-  static const Double80 _DBL80_SNAN;                      // signaling NaN
-  static const Double80 _DBL80_PINF;                      // +infinity;
-  static const Double80 _DBL80_NINF;                      // -infinity;
-  static const Double80 _DBL80_TRUE_MIN;                  // min positive value (3.64519953188247460325e-4951)
+  static const Double80 &_DBL80_EPSILON;                  // Smallest such that 1.0+DBL80_EPSILON != 1.0 (=1.08420217248550443e-019)
+  static const Double80 &_DBL80_MIN;                      // Min positive value (=3.36210314311209209e-4932)
+  static const Double80 &_DBL80_MAX;                      // Max value          (=1.18973149535723227e+4932)
+  static const Double80 &_DBL80_QNAN;                     // non-signaling NaN (quiet NaN)
+  static const Double80 &_DBL80_SNAN;                     // signaling NaN
+  static const Double80 &_DBL80_PINF;                     // +infinity;
+  static const Double80 &_DBL80_NINF;                     // -infinity;
+  static const Double80 &_DBL80_TRUE_MIN;                 // min positive value (3.64519953188247460325e-4951)
 
   static void initClass();
 };

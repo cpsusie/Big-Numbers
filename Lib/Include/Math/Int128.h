@@ -2001,8 +2001,8 @@ inline bool iswodigit(wchar_t ch) {
   return ('0' <= ch) && (ch < '8');
 }
 
-extern const _int128  _I128_MIN, _I128_MAX;
-extern const _uint128 _UI128_MAX;
+extern const _int128  &_I128_MIN, &_I128_MAX;
+extern const _uint128 &_UI128_MAX;
 
 // return uniform distributed int value between [0; _UINT128_MAX], both inclusive.
 inline _uint128 randInt128(RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) {

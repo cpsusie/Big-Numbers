@@ -5,9 +5,9 @@
 #pragma warning(disable : 4073)
 #pragma init_seg(lib)
 
-const _int128  _I128_MIN( 0x8000000000000000, 0x0000000000000000);
-const _int128  _I128_MAX( 0x7fffffffffffffff, 0xffffffffffffffff);
-const _uint128 _UI128_MAX(0xffffffffffffffff, 0xffffffffffffffff);
+const _int128  &_I128_MIN  = *(_int128* )(void*)"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x80";
+const _int128  &_I128_MAX  = *(_int128* )(void*)"\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x7f";
+const _uint128 &_UI128_MAX = *(_uint128*)(void*)"\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff";
 
 // Conversion from _int128/_uint128 to string
 

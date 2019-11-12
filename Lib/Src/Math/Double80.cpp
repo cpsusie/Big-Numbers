@@ -24,18 +24,18 @@ void Double80::initClass() {
 
 static InitDouble80 initDouble80;
 
-const Double80 Double80::_0( 0  );
-const Double80 Double80::_05(0.5);
-const Double80 Double80::_1(1);
-const Double80 Double80::_DBL80_EPSILON ((BYTE*)"\x00\x00\x00\x00\x00\x00\x00\x80\xc0\x3f"); // 1.08420217248550443e-019;
-const Double80 Double80::_DBL80_MIN     ((BYTE*)"\x00\x00\x00\x00\x00\x00\x00\x80\x01\x00"); // 3.36210314311209209e-4932;
-const Double80 Double80::_DBL80_MAX     ((BYTE*)"\xff\xff\xff\xff\xff\xff\xff\xff\xfe\x7f"); // 1.18973149535723227e+4932
-const Double80 Double80::_DBL80_QNAN    ((BYTE*)"\x00\x00\x00\x00\x00\x00\x00\xc0\xff\xff"); // quiet NaN
-const Double80 Double80::_DBL80_SNAN    ((BYTE*)"\x00\x08\x00\x00\x00\x00\x00\x80\xff\xff"); // signaling NaN
-const Double80 Double80::_DBL80_PINF    ((BYTE*)"\x00\x00\x00\x00\x00\x00\x00\x80\xff\x7f"); // +infinity;
-const Double80 Double80::_DBL80_TRUE_MIN((BYTE*)"\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00"); // denormalized minimal positive value
-const Double80            DBL80_PI(      (BYTE*)"\x35\xc2\x68\x21\xa2\xda\x0f\xc9\x00\x40"); // pi
-const Double80            DBL80_PI_05(   (BYTE*)"\x35\xc2\x68\x21\xa2\xda\x0f\xc9\xff\x3f"); // pi/2
+const Double80  Double80::_0( 0  );
+const Double80  Double80::_05(0.5);
+const Double80  Double80::_1(1);
+const Double80 &Double80::_DBL80_EPSILON  = *(Double80*)(void*)"\x00\x00\x00\x00\x00\x00\x00\x80\xc0\x3f"; // 1.08420217248550443e-019;
+const Double80 &Double80::_DBL80_MIN      = *(Double80*)(void*)"\x00\x00\x00\x00\x00\x00\x00\x80\x01\x00"; // 3.36210314311209209e-4932;
+const Double80 &Double80::_DBL80_MAX      = *(Double80*)(void*)"\xff\xff\xff\xff\xff\xff\xff\xff\xfe\x7f"; // 1.18973149535723227e+4932
+const Double80 &Double80::_DBL80_QNAN     = *(Double80*)(void*)"\x00\x00\x00\x00\x00\x00\x00\xc0\xff\xff"; // quiet NaN
+const Double80 &Double80::_DBL80_SNAN     = *(Double80*)(void*)"\x00\x08\x00\x00\x00\x00\x00\x80\xff\xff"; // signaling NaN
+const Double80 &Double80::_DBL80_PINF     = *(Double80*)(void*)"\x00\x00\x00\x00\x00\x00\x00\x80\xff\x7f"; // +infinity;
+const Double80 &Double80::_DBL80_TRUE_MIN = *(Double80*)(void*)"\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00"; // denormalized minimal positive value
+const Double80             DBL80_PI(         (BYTE*)"\x35\xc2\x68\x21\xa2\xda\x0f\xc9\x00\x40"); // pi
+const Double80             DBL80_PI_05(      (BYTE*)"\x35\xc2\x68\x21\xa2\xda\x0f\xc9\xff\x3f"); // pi/2
 
 int _fpclass(const Double80 &x) {
   switch(getExponent(x)) {
