@@ -1,8 +1,8 @@
 #include "pch.h"
 #include <Math/FPU.h>
 
-BigRealThread::BigRealThread(int id)
-: Thread(format(_T("NT%03d"), id))
+BigRealThread::BigRealThread(int id, const String &name)
+: Thread(name)
 , BigRealResource(id)
 , m_resultQueue(NULL)
 , m_execute(0)

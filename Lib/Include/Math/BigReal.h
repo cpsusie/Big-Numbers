@@ -1,8 +1,8 @@
 #pragma once
 
 #include <MyUtil.h>
-#include <MyAssert.h>
 #include <Thread.h>
+#include <FastSemaphore.h>
 #include <CompactStack.h>
 #include <CompactHashMap.h>
 #include <SynchronizedQueue.h>
@@ -14,6 +14,7 @@
 #include "Double80.h"
 #include "Real.h"
 #include "Int128.h"
+#include <MyAssert.h>
 
 // Define this to have 2 different version of getDecimalDigitCount64(UINT64 n).
 // Measures of time show that getDecimalDigitCount64 is 5 times faster than getDecimalDigitCount64Loop
@@ -25,16 +26,8 @@
 // Can be repeated as long as you want
 // #define USE_X32SERVERCHECK
 
-// If this is not defined, all digit-allocations/deallocations will be done with new/delete,
-// which will slow down the program (testBigReal) by a factor 20!!
-#define USE_DIGITPOOL_FREELIST
-
 // If this is defined, releaseDigitPool will check, that all used digits in the pool are released
 //#define CHECKALLDIGITS_RELEASED
-
-// If this is defined, it will be checked, that the same thread that called ConstDigitPool::requestInstance() is the same
-// thread that calls releaseInstance
-//#define CHECKCONSTPOOLTHREAD
 
 // If this is defined, product wil trace recursive calls for when multiplying long BigReals
 // which will slow down the program (testBigReal) by a factor 20!!
@@ -48,8 +41,7 @@
 // and written to debugLog when program exit
 //#define TRACEPOW2CACHEHIT
 
-// TODO Rename to BIGREAL_LOG10BASEx86 + alle de andre
-#define LOG10_BIGREALBASEx86                        8
+#define BIGREAL_LOG10BASEx86                        8
 #define BIGREAL_POW10TABLESIZEx86                  10
 #define BIGREAL_NONNORMALx86               -900000000
 #define BIGREAL_MAXEXPOx86                   99999999
@@ -61,7 +53,7 @@ typedef long           BRExpoTypex86;
 typedef long           BRDigitDiffTypex86;
 
 
-#define LOG10_BIGREALBASEx64                       18
+#define BIGREAL_LOG10BASEx64                       18
 #define BIGREAL_POW10TABLESIZEx64                  20
 #define BIGREAL_NONNORMALx64      -900000000000000000
 #define BIGREAL_MAXEXPOx64          99999999999999999
@@ -75,7 +67,7 @@ typedef INT64          BRDigitDiffTypex64;
 // Basic definitions depends on registersize. 32- og 64-bit
 #ifdef IS32BIT
 
-#define LOG10_BIGREALBASE  LOG10_BIGREALBASEx86
+#define BIGREAL_LOG10BASE  BIGREAL_LOG10BASEx86
 
 #define BIGREAL_NONNORMAL  BIGREAL_NONNORMALx86
 #define BIGREAL_MAXEXPO    BIGREAL_MAXEXPOx86
@@ -88,7 +80,7 @@ typedef INT64          BRDigitDiffTypex64;
 
 #else // IS64BIT
 
-#define LOG10_BIGREALBASE  LOG10_BIGREALBASEx64
+#define BIGREAL_LOG10BASE  BIGREAL_LOG10BASEx64
 
 #define BIGREAL_NONNORMAL  BIGREAL_NONNORMALx64
 #define BIGREAL_MAXEXPO    BIGREAL_MAXEXPOx64
@@ -103,7 +95,7 @@ typedef INT64          BRDigitDiffTypex64;
 
 // Values for BigReal::m_low, if m_expo == BIGREAL_NONNORMAL (_isnormal() is false)
 #define BIGREAL_ZEROLOW  0 // isZero() is true
-#define BIGREAL_INFLOW   1 // _isinf() is true, +/- infinite depending on m_negative
+#define BIGREAL_INFLOW   1 // _isinf() is true, +/- infinite depending on BR_NEG bit in m_flags
 #define BIGREAL_QNANLOW  2 // _isnan() is true
 
 #define SP_OPT_NONE      0
@@ -112,7 +104,7 @@ typedef INT64          BRDigitDiffTypex64;
 #define SP_OPT_BY_REG32  3
 #define SP_OPT_BY_REG64  4
 
-// Define SP_OPT_METHOD to one of these, to select the desired optmization of shortProduct.
+// Define SP_OPT_METHOD to one of these, to select the desired optimisation of shortProduct.
 // Best performance in x86 is SP_OPT_BY_REG32. Best (and only) in x64-mode is SP_OPT_BY_REG64
 
 #ifdef IS32BIT
@@ -136,60 +128,60 @@ typedef INT64          BRDigitDiffTypex64;
 
 #if(SP_OPT_METHOD == SP_OPT_NONE)
 
-#if   LOG10_BIGREALBASE == 2
+#if   BIGREAL_LOG10BASE == 2
 #define SQRT_BIGREALBASE 10
-#elif LOG10_BIGREALBASE == 4
+#elif BIGREAL_LOG10BASE == 4
 #define SQRT_BIGREALBASE 100
-#elif LOG10_BIGREALBASE == 6
+#elif BIGREAL_LOG10BASE == 6
 #define SQRT_BIGREALBASE 1000
-#elif LOG10_BIGREALBASE == 8
+#elif BIGREAL_LOG10BASE == 8
 #define SQRT_BIGREALBASE 10000
-#else // LOG10_BIGREALBASE
-#error Illegal LOG10_BIGREALBASE. Must be in the set {2,4,6 or 8}
-#endif // LOG10_BIGREALBASE
+#else // BIGREAL_LOG10BASE
+#error Illegal BIGREAL_LOG10BASE. Must be in the set {2,4,6 or 8}
+#endif // BIGREAL_LOG10BASE
 #define BIGREALBASE (SQRT_BIGREALBASE*SQRT_BIGREALBASE)
 
 #elif(SP_OPT_METHOD == SP_OPT_BY_FPU)
 
-#if   LOG10_BIGREALBASE == 1
+#if   BIGREAL_LOG10BASE == 1
 #define BIGREALBASE 10
-#elif LOG10_BIGREALBASE == 2
+#elif BIGREAL_LOG10BASE == 2
 #define BIGREALBASE 100
-#elif LOG10_BIGREALBASE == 3
+#elif BIGREAL_LOG10BASE == 3
 #define BIGREALBASE 1000
-#elif LOG10_BIGREALBASE == 4
+#elif BIGREAL_LOG10BASE == 4
 #define BIGREALBASE 10000
-#elif LOG10_BIGREALBASE == 5
+#elif BIGREAL_LOG10BASE == 5
 #define BIGREALBASE 100000
-#elif LOG10_BIGREALBASE == 6
+#elif BIGREAL_LOG10BASE == 6
 #define BIGREALBASE 1000000
-#elif LOG10_BIGREALBASE == 7
+#elif BIGREAL_LOG10BASE == 7
 #define BIGREALBASE 10000000
-#elif LOG10_BIGREALBASE == 8
+#elif BIGREAL_LOG10BASE == 8
 #define BIGREALBASE 100000000
 #else
-#error Illegal LOG10_BIGREALBASE. Must be in the interval [1-8]
-#endif // LOG10_BIGREALBASE
+#error Illegal BIGREAL_LOG10BASE. Must be in the interval [1-8]
+#endif // BIGREAL_LOG10BASE
 // Cannot use 1e9 because of overflow in function shortProductNoZeroCheck, when accumulating more than 18 products, which will
 // occur when splitLength > 18. And a splitlength of 18 is far to small to give product a boost
 
 #elif(SP_OPT_METHOD == SP_OPT_BY_REG32 || SP_OPT_METHOD == SP_OPT_BY_FPU2)
 
-#if LOG10_BIGREALBASE == 8
+#if BIGREAL_LOG10BASE == 8
 // this is the only valid BIGREALBASE for these optimizations
 #define BIGREALBASE 100000000
 #else
-#error Illegal LOG10_BIGREALBASE. Must be 8.
-#endif // LOG10_BIGREALBASE == 8
+#error Illegal BIGREAL_LOG10BASE. Must be 8.
+#endif // BIGREAL_LOG10BASE == 8
 
 #elif (SP_OPT_METHOD == SP_OPT_BY_REG64)
 
-#if LOG10_BIGREALBASE == 18
+#if BIGREAL_LOG10BASE == 18
 // this is the only valid BIGREALBASE for SP_OPT_BY_REG64
 #define BIGREALBASE 1000000000000000000
 #else
-#error Illegal LOG10_BIGREALBASE. Must be 18.
-#endif // LOG10_BIGREALBASE == 18
+#error Illegal BIGREAL_LOG10BASE. Must be 18.
+#endif // BIGREAL_LOG10BASE == 18
 
 #endif // if(SP_OPT_METHOD == ...)
 
@@ -207,6 +199,7 @@ public:
 
 #define DIGITPAGESIZE 30000
 class DigitPage {
+private:
   Digit      m_page[DIGITPAGESIZE];
   DigitPage *m_next;
   friend class DigitPool;
@@ -221,79 +214,31 @@ class BigReal;
 class ConstBigInt;
 class ConstBigReal;
 
-class Pow2ArgumentKey {
-public:
-  int    m_n;
-  size_t m_digits;
-  Pow2ArgumentKey() {
-  }
-  inline Pow2ArgumentKey(int n, size_t digits) : m_n(n), m_digits(digits) {
-  }
-  inline ULONG hashCode() const {
-    return m_n * 23 + sizetHash(m_digits);
-  }
-  inline bool operator==(const Pow2ArgumentKey &k) const {
-    return (m_n == k.m_n) && (m_digits == k.m_digits);
-  }
-  String toString() const {
-    return format(_T("(%6d,%3zu)"), m_n, m_digits);
-  }
-};
-
-#define CACHE_LOADING 0x1
-#define CACHE_LOADED  0x2
-#define CACHE_SAVING  0x4
-#define CACHE_EMPTY   0x8
-
-class Pow2Cache : public CompactHashMap<Pow2ArgumentKey, BigReal*> {
-private:
-  mutable Semaphore m_gate;
-  BYTE              m_state;
-  size_t            m_updateCount, m_savedCount;
-
-  void save(const String &fileName) const;
-  void load(const String &fileName);
-  void save(ByteOutputStream &s) const;
-  void load(ByteInputStream  &s);
-  void clear();
-  inline bool isLoaded() const {
-    return (m_state & CACHE_LOADED) ? true : false;
-  }
-  inline bool isLoading() const {
-    return (m_state & CACHE_LOADING) ? true : false;
-  }
-public:
-  Pow2Cache();
-  ~Pow2Cache();
-  bool put(const Pow2ArgumentKey &key, BigReal * const &v);
-  BigReal **get(const Pow2ArgumentKey &key) const;
-  inline bool isChanged() const {
-    return m_updateCount != m_savedCount;
-  }
-  bool hasCacheFile() const;
-  void load();
-  void save();
-  void dump() const;
-};
-
 class BigRealResource : public IdentifiedResource {
 public:
   BigRealResource(int id) : IdentifiedResource(id) {
   }
 };
 
-#define DEFAULT_DIGITPOOL_ID -1
-#define CONST_DIGITPOOL_ID   -2
-#define PI_DIGITPOOL_ID      -3
-#define LN_DIGITPOOL_ID      -4
-
 class DigitPool : public BigRealResource {
 private:
-  static size_t         s_totalDigitCount;
-  static bool           s_dumpCountWhenDestroyed;
-  size_t                m_digitCount;
-  DigitPage            *m_firstPage;
-  Digit                *m_freeDigits;
+  // Holds the total number of allocated DigitPages in all digitpools
+  static std::atomic<UINT>   s_totalAllocatedPageCount;
+  static bool                s_dumpCountWhenDestroyed;
+  String                     m_name;
+  // Holds the number of allocated pages in this digitPool, (number of allocated digits = m_allocatedPageCount*DIGITPAGESIZE
+  size_t                     m_allocatedPageCount;
+  // Pointer to the first page in a linked list of pages
+  DigitPage                 *m_firstPage;
+  // Pointer to first free digit. see newDigit/deleteDigits
+  Digit                     *m_freeDigits;
+  // If m_continueCalculation is false, when a thread enters shortProductNoNormalCheck, it will call throwBigRealException("Operation was cancelled")
+  bool                       m_continueCalculation;
+  // All Bigreals using this digitPool, will have the m_flags-member initialized to this value
+  BYTE                       m_initFlags;
+  // How many BigReal is using this digitpool (including members allocated below)
+  std::atomic<UINT>          m_refCount;
+  UINT                       m_refCountOnFetch;
 
   // Some frequently used constants. exist in every pool
   // = 0
@@ -304,52 +249,45 @@ private:
   BigInt               *m_2;
   // = 0.5
   BigReal              *m_05;
-  BigReal              *m_nan, *m_pinf, *m_ninf; // (quiet)nan, +infinity, -infinity
+  BigReal              *m_nan, *m_pinf, *m_ninf; // (quiet)nan, +/-infinity
 
-  static void updateTotalDigitCount(intptr_t n);
-  DigitPool(           const DigitPool &src); // not implemented
-  DigitPool &operator=(const DigitPool &src); // not implemented
   void allocatePage();
+  DigitPool(const DigitPool &src);            // not implemented
+  DigitPool &operator=(const DigitPool &src); // not implemented
 public:
-  static DigitPool s_defaultDigitPool;
 
-  // initialDigitcount in BIGREALBASE-digits
-  DigitPool(int id, size_t intialDigitcount = 0);
+  // InitialDigitcount in BIGREALBASE-digits
+  DigitPool(int id, const String &name, size_t intialDigitcount = 0);
   virtual ~DigitPool();
 
+  // Set name. Return old name
+  String setName(const String &name) {
+    const String old = m_name;
+    m_name = name;
+    return old;
+  }
+  const String &getName() const {
+    return m_name;
+  }
+  void setInitFlags(BYTE flags) {
+    m_initFlags = flags;
+  }
+  inline BYTE getInitFlags() const {
+    return m_initFlags;
+  }
   static void setDumpWhenDestroyed(bool dump) {
     s_dumpCountWhenDestroyed = dump;
   }
-  inline Digit *newDigit() {
-#ifdef USE_DIGITPOOL_FREELIST
-/*
-    if((getId() == DEFAULT_DIGITPOOL_ID) || (getId() == CONST_DIGITPOOL_ID)) {
-      int BREAKPOINT_HERE = 1; // to catch unwanted allocations from Default/const digitpools
-    }
-*/
-    if(m_freeDigits == NULL) allocatePage();
-    Digit *p     = m_freeDigits;
-    m_freeDigits = p->next;
-    return p;
-#else
-    Digit *d = new Digit; TRACE_NEW(d);
-    return d;
-#endif // USE_DIGITPOOL_FREELIST
-  }
-
-  inline void deleteDigits(Digit *first, Digit *last) {
-#ifdef USE_DIGITPOOL_FREELIST
-    last->next = m_freeDigits;
-    m_freeDigits = first;
-#else
-    const Digit *end = last->next;
-    for(;;) {
-      Digit *p = first->next;
-      SAFEDELETE(first);
-      if(p == end) break;
-      first = p;
-    }
-#endif // USE_DIGITPOOL_FREELIST
+  // Default implementation does NOT guarantee exclusive access to freelist , and will, if shared between threads,
+  // cause data-race...sooner or later
+  // Overwritten in DigitPoolWithLock, which solves this problem
+  virtual Digit *fetchDigit();
+  // See comment for newDigit
+  virtual Digit *fetchDigitList(size_t count);
+  // See comment for newDigit
+  virtual void deleteDigits(Digit *first, Digit *last);
+  virtual bool isWithLock() const {
+    return false;
   }
   inline const BigInt &_0() const {
     return *m_0;
@@ -374,19 +312,77 @@ public:
   }
 
   static inline size_t getTotalAllocatedDigitCount() {
-    return s_totalDigitCount;
+    return s_totalAllocatedPageCount * DIGITPAGESIZE;
   }
+  inline size_t getPageCount() const {
+    return m_allocatedPageCount;
+  }
+  // Returns the numer of digits allocated in this digitpool
   inline size_t getAllocatedDigitCount() const {
-    return m_digitCount;
+    return getPageCount() * DIGITPAGESIZE;
   }
   size_t getFreeDigitCount() const;
   size_t getUsedDigitCount() const;
-  size_t getPageCount()      const;
+
+  // Call this will cause the thread, using this digitPool to throw an exception ("Operaton was cancelled") when it enters
+  // shortProductNoNormalCheck
+  inline void terminatePoolCalculation() {
+    m_continueCalculation = false;
+  }
+  inline bool continueCalculation() const {
+    return m_continueCalculation;
+  }
+  // This will be called automatic when a digitpool is released.
+  inline void resetPoolCalculation() {
+    m_continueCalculation = true;
+  }
+  inline void incRefCount() {
+    m_refCount++;
+  }
+  inline void decRefCount() {
+    m_refCount--;
+  }
+  // Return number of instances of BigReals, referencing this, including own (const) members
+  inline UINT getRefCount() const {
+    return m_refCount;
+  }
+  inline UINT getRefCountOnFetch() const {
+    return m_refCountOnFetch;
+  }
+  inline void saveRefCount() {
+    m_refCountOnFetch = m_refCount;
+  }
 };
 
-#define DEFAULT_DIGITPOOL DigitPool::s_defaultDigitPool
+class DigitPoolWithLock : public DigitPool {
+private:
+  FastSemaphore m_lock;
+public:
+  DigitPoolWithLock(int id, const String &name) : DigitPool(id, name) {
+  }
 
-#define _SETDIGITPOOL() m_digitPool(digitPool?*digitPool:DEFAULT_DIGITPOOL)
+  Digit *fetchDigit() {
+    m_lock.wait();
+    Digit *d = __super::fetchDigit();
+    m_lock.notify();
+    return d;
+  }
+  // Return head of double linked list with count digits. prev-pointer of head points to last digit in list
+  Digit *fetchDigitList(size_t count) {
+    m_lock.wait();
+    Digit *d = __super::fetchDigitList(count);
+    m_lock.notify();
+    return d;
+  }
+  void deleteDigits(Digit *first, Digit *last) {
+    m_lock.wait();
+    __super::deleteDigits(first, last);
+    m_lock.notify();
+  }
+  bool isWithLock() const {
+    return true;
+  }
+};
 
 #ifdef IS32BIT
 #ifdef _DEBUG
@@ -401,24 +397,29 @@ void throwBigRealInvalidArgumentException(         TCHAR const * const function,
 void throwBigRealGetIntegralTypeOverflowException( TCHAR const * const function, const BigReal &x, const String &maxStr);
 void throwBigRealGetIntegralTypeUnderflowException(TCHAR const * const function, const BigReal &x, const String &minStr);
 void throwBigRealGetIntegralTypeUndefinedException(TCHAR const * const function, const BigReal &x);
+void throwNotMutableException(                     TCHAR const * const function, const DigitPool *pool, BYTE flags);
+void throwMutableBigRealUseConstDigitPoolException(const BigReal &x);
+void throwNotValidException(                       TCHAR const * const function, _In_z_ _Printf_format_string_ const TCHAR *format, ...);
+
 void throwBigRealException(_In_z_ _Printf_format_string_ TCHAR const * const format,...);
+
+#define BR_NEG       0x01
+#define BR_INITDONE  0x02
+#define BR_MUTABLE   0x04
+
+#define CHECKISMUTABLE(x) { if(((x).getFlags() & (BR_INITDONE|BR_MUTABLE)) == BR_INITDONE) throwNotMutableException(__TFUNCTION__,(x).getDigitPool(), (x).getFlags()); }
 
 class BigReal {
 private:
-  static Pow2Cache            s_pow2Cache;
   static const BRDigitTypex86 s_power10Tablex86[BIGREAL_POW10TABLESIZEx86];
   static const BRDigitTypex64 s_power10Tablex64[BIGREAL_POW10TABLESIZEx64];
   // Defined in shortProduct.cpp. Split factors when length > s_splitLength
   static size_t               s_splitLength;
-  // Terminate all calculation with an Exception ("Operation was cancelled")
-  // if they enter shortProduct, or simply return whichever comes first
-  static bool                 s_continueCalculation;
 
   // Most significand  digit
   Digit                    *m_first;
   // Least significand digit
   Digit                    *m_last;
-
   // if(m_expo == BIGREAL_NONNORMAL) { => _isnormal() is false
   //   switch(m_low) {
   //   case BIGREAL_ZEROLOW    : isZero() is true
@@ -429,43 +430,73 @@ private:
   //   m_expo = m_low+getLength()-1
   // }
   BRExpoType                m_expo, m_low;
-  // True for x < 0. else false
-  bool                      m_negative;
   DigitPool                &m_digitPool;
+  BYTE                      m_flags;
 
   // Multiplication helperfunctions
   friend class MultiplierThread;
+  friend class Pow2Cache;
   friend class BigRealTestClass;
   friend class BigInt;
+  friend class BigRational;
   friend class BigRealStream;
+  friend class DigitPool;
 
+  inline void modifyFlags(BYTE add, BYTE remove) {
+    m_flags &= ~remove; // first remove
+    m_flags |= add;     // then add. order is important, because add and remove may have overlapping bits
+  }
+  inline void startInit() {
+//    if((&m_digitPool == BigReal::s_constDigitPool) && !allowConstDigitPool()) {
+//      throwMutableBigRealUseConstDigitPoolException(*this);
+//    }
+    m_digitPool.incRefCount();
+    m_flags = m_digitPool.getInitFlags() & ~BR_INITDONE;
+  }
+  inline void endInit() {
+    setInitDone();
+  }
+  inline BigReal &clrInitDone() {
+    modifyFlags(0, BR_INITDONE);
+    return *this;
+  }
+  inline BigReal &setInitDone() {
+    modifyFlags(BR_INITDONE,0);
+    return *this;
+  }
+  inline BYTE getFlags() const {
+    return m_flags;
+  }
   // Construction helperfunctions
+  // copy m_expo, m_low and sign-bit
   inline void copyNonPointerFields(const BigReal &src) {
     m_expo     = src.m_expo;
     m_low      = src.m_low;
-    m_negative = src.m_negative;
+    setNegative(src.isNegative());
   }
-  // Can be called from constructor.
-  // Set both m_first = m_last = NULL.
+  // Set both m_first = m_last = NULL WITHOUT call to deleteDigits
+  // Dont check statusbits of BR_INITDONE or BR_MUTABLE
   inline void initToNonNormal(int low = BIGREAL_ZEROLOW, bool negative=false) {
     m_first    = m_last = NULL;
     m_expo     = BIGREAL_NONNORMAL;
     m_low      = low;
-    m_negative = negative;
+    setNegative(negative);
   }
+  // Dont check statusbits of BR_INITDONE or BR_MUTABLE
   inline void initToZero() {
     initToNonNormal();
   }
-  // Should NOT be called from constructor.
-  // Assume pointers have been initialized
+  // Assume pointers have been initialized, call clearDigits.
+  // call CHECKISMUTABLE(this)
   // return *this
   inline BigReal &setToNonNormal(int low = BIGREAL_ZEROLOW, bool negative=false) {
+    CHECKISMUTABLE(*this);
     clearDigits();
     m_expo = BIGREAL_NONNORMAL;
-    m_low = low;
-    m_negative = negative;
-    return *this;
+    m_low  = low;
+    return setNegative(negative);
   }
+
   void init(int               n);
   void init(UINT              n);
   void init(INT64             n);
@@ -477,9 +508,10 @@ private:
   void init(const Double80   &x);
   void init(const String     &s, bool allowDecimalPoint);
 
-  // Assume x.m_expo == BIGREAL_NONNORMAL
-  // return one of FP_ZERO, FP_INFINITE, FP_NAN
+  // Assume this->_isnormal() == false
+  // Return one of FP_ZERO, FP_INFINITE, FP_NAN
   inline int classifyNonNormal() const {
+    assert(!_isnormal());
     switch(m_low) {
     case BIGREAL_ZEROLOW: return FP_ZERO;
     case BIGREAL_INFLOW : return FP_INFINITE;
@@ -494,10 +526,10 @@ private:
   BigReal &setToNonNormalFpClass(int fpclass);
 
   // Basic digit manipulation
-  inline Digit *newDigit() {
-    return m_digitPool.newDigit();
+  inline Digit *newDigit() const {
+    return m_digitPool.fetchDigit();
   }
-  inline void deleteDigits(Digit *first, Digit *last) {
+  inline void deleteDigits(Digit *first, Digit *last) const {
     m_digitPool.deleteDigits(first, last);
   }
 
@@ -534,11 +566,12 @@ private:
   void    insertBorrowDigitsAfter(Digit *p, size_t count);
   // Releases all digits in digit-list to this.m_digitPool.
   // Dont modify m_expo,m_low
-  inline void clearDigits() {
+  inline BigReal &clearDigits() {
     if(m_first) {
       m_digitPool.deleteDigits(m_first, m_last);
       m_first = m_last = NULL;
     }
+    return *this;
   }
 
 
@@ -572,6 +605,8 @@ private:
   // Addition and subtraction helperfunctions
   BigReal &addAbs(const BigReal &x, const BigReal &y, const BigReal &f);                          // return this
   BigReal &addAbs(const BigReal &x);                                                              // return this
+  // Assume &x != this && this->_isnormal() && x._isnormal() && |x| < |*this|
+  // Subtract |x| from |this| with maximal error = f
   BigReal &subAbs(const BigReal &x, const BigReal &f);                                            // return this
 
 #if(  SP_OPT_METHOD == SP_OPT_NONE)
@@ -586,7 +621,7 @@ private:
   void    addFPUReg0();
   void    addSubProduct(BR2DigitType n);
 
-#elif((SP_OPT_METHOD == SP_OPT_BY_REG32) || (SP_OPT_METHOD == SP_OPT_BY_REG64) || (SP_OPT_METHOD == SP_OPT_BY_FPU2))
+#endif
 
 // Set digitChain to contain 1 digit (=0).
 // Should only be called from shortProductNoZeroCheck. m_last will not be touched
@@ -594,9 +629,9 @@ private:
 // when we clean up the chain head and end
   inline Digit *clearDigits1() {
     if(m_first == NULL) {
-      m_first = m_digitPool.newDigit();
+      m_first = newDigit();
     } else if(m_first->next) {
-      m_digitPool.deleteDigits(m_first->next, m_last);
+      deleteDigits(m_first->next, m_last);
     }
     m_first->n = 0;
     return m_first;
@@ -606,27 +641,10 @@ private:
 // so invariant will be broken for af while, and reestablished at the end of shortProductNoZeroCheck,
 // when we clean up the chain head and end
   inline Digit *fastAppendDigit(Digit *last) {
-    Digit *p = last->next = m_digitPool.newDigit();
+    Digit *p = last->next = m_digitPool.fetchDigit();
     p->prev  = last;
     return p;
   }
-
-#endif
-
-#ifdef _DEBUG
-  // One that works, and used for testing other versions of this important function
-  BigReal &shortProductNoZeroCheckReference(const BigReal &x, const BigReal &y, int loopCount);   // return this
-  friend void insertDigitAndIncrExpo(BigReal &v, BRDigitType n);
-  void    addSubProductReference1(UINT64 &n);
-  void    addSubProductReference2(UINT64 &n);
-  static  bool s_useShortProdReferenceVersion;
-  BigReal &shortProductNoZeroCheckDebug(    const BigReal &x, const BigReal &y, size_t loopCount);   // return this
-public:
-  static bool setUseShortProdRefenceVersion(bool useReferenceVersion) {
-    bool oldValue = s_useShortProdReferenceVersion; s_useShortProdReferenceVersion = useReferenceVersion; return oldValue;
-  }
-private:
-#endif
 
   // return true if x*y is normal (finite and != 0, (false if x*y is 0, +/-inf or nan)
   static inline bool isNormalProduct(const BigReal &x, const BigReal &y) {
@@ -637,56 +655,64 @@ private:
   // Assume !x._isnormal() || !y._isnormal() which will result in non-normal product (0 or nan)
   static int getNonNormalProductFpClass(const BigReal &x, const BigReal &y);
 
-  // Return true if x*y is normal (finite and != 0). in this case, *this will not be changed
-  // return false, if x*y is not normal, and *this will be set to the corresponding result (0 or nan)
+  // Return true if x*y is normal (finite and != 0). In this case, *this will not be changed
+  // Return false, if x*y is not normal, and *this will be set to the corresponding result (0 or nan)
   inline bool checkIsNormalProduct(const BigReal &x, const BigReal &y) {
     if(isNormalProduct(x, y)) return true;
     setToNonNormalFpClass(getNonNormalProductFpClass(x, y));
     return false;
   }
 
+  // Set *this = x*y, with |error| <= BIGREALBASE^fexpo. If x or y is 0 or infinite, a proper value is assigned to *this
   // Return *this
-  // NOTE: fexpo is NOT decimal exponent, but Digit-exponent. To get Decimal exponent,
-  // multiply by LOG10_BIGREALBASE !!!
+  // NOTE: fexpo is NOT decimal exponent, but Digit-exponent. To get decimal exponent multiply by BIGREAL_LOG10BASE !!!
   // Don't call shortProductNoZeroCheck with numbers longer than getMaxSplitLength(), or you'll get a wrong result
-  inline BigReal &shortProduct(              const BigReal &x, const BigReal &y, BRExpoType fexpo    ) {
+  inline BigReal &shortProduct(              const BigReal &x, const BigReal &y, BRExpoType fexpo) {
     if(!checkIsNormalProduct(x, y)) return *this;
     return shortProductNoNormalCheck(x, y, fexpo);
   }
+  // Set *this = x*y, with |error| <= BIGREALBASE^fexpo
   // Return *this. Assume x._isnormal() && y._isnormal()
   BigReal &shortProductNoNormalCheck(        const BigReal &x, const BigReal &y, BRExpoType fexpo);
+  // Set *this = x*y, with the specified number of loops, each loop, i, calculates
+  // sum(y[j]*x[i-j]), j=[0..i], i=[0..loopCount], digits indexed [0..length-1], from head
   // Return *this. Assume x._isnormal() && y._isnormal() && (loopCount > 0)
   BigReal &shortProductNoZeroCheck(          const BigReal &x, const BigReal &y, UINT loopCount);
+  // Set result = x*y, with |error| <= |f|
   // Return &result. Assume x._isnormal() && y._isnormal() && f._isfinite()
   static BigReal &product(  BigReal &result, const BigReal &x, const BigReal &y, const BigReal &f,              int level);
+  // Set result = x*y, with |error| <= |f|
   // Return &result. Assume x._isnormal() && y._isnormal() && f._isfinite() && (x.getLength() >= y.getLength())
   static BigReal &productMT(BigReal &result, const BigReal &x, const BigReal &y, const BigReal &f, intptr_t  w, int level);
   // Assume this->_isnormal() && a.isZero() && b.isZero() && f._isfinite(). Dont care about sign(f)
   void    split(BigReal &a, BigReal &b, size_t n, const BigReal &f) const;
   // Assume src._isnormal() && length <= src.getLength() && m_first == m_last == NULL
   // Modify only m_first and m_last of this
-  void    copyDigits(   const BigReal &src, size_t length);
+  // Return *this
+  BigReal &copyDigits(   const BigReal &src, size_t length);
   // Assume !_isnormal() && src._isnormal()
-  void    copyAllDigits(const BigReal &src);
+  // Return *this
+  BigReal &copyAllDigits(const BigReal &src);
   // Copy specified number of decimal digits, truncating result. return *this
   BigReal &copyrTrunc(  const BigReal &src, size_t digits);
   inline BigReal &setSignByProductRule(const BigReal &x, const BigReal &y) {
-    m_negative = x.m_negative != y.m_negative;
-    return *this;
+    return setNegative(x.isNegative() != y.isNegative());
   }
 
-  // cut of a number (!= 0) to the specified number of significant decimal digits, truncation toward zero
-  // Assume _isnormal() && digits > 0 (digits is decimal digits). return *this
+  // Cut *this (assumed != 0) to the specified number of significant decimal digits, truncation toward zero
+  // Assume _isnormal() && digits > 0 (digits is decimal digits).
+  // Return *this
   BigReal &rTrunc(size_t digits);
-  // cut of a number (!= 0) to the specified number of significant decimal digits, rounding
-  // Assume isnormal() && digits > 0 (digits is decimal digits). return *this
+  // Cut *this (assumed != 0) to the specified number of significant decimal digits, rounding
+  // Assume isnormal() && digits > 0 (digits is decimal digits).
+  // Return *this
   BigReal &rRound(size_t digits);
 
   // Division helperfunctions.
 
   static void validateQuotRemainderArguments(const TCHAR *method, const BigReal &x, const BigReal &y, const BigReal *quotient, const BigReal *remainder);
 
-  // return true if x/y is normal (finite and != 0, (false if x/y is 0, +/-inf or nan)
+  // Return true if x/y is normal (finite and != 0, (false if x/y is 0, +/-inf or nan)
   static bool inline isNormalQuotient(const BigReal &x, const BigReal &y) {
     return y._isnormal() && x._isnormal();
   }
@@ -696,7 +722,7 @@ private:
   static int getNonNormalQuotientFpClass(const BigReal &x, const BigReal &y);
 
   // Return true if x/y is normal (finite and != 0), (false if x/y is 0, +/-inf or nan)
-  // if x/y is not normal, quotient and remainder will recieve the non-normal value (if not null)
+  // If x/y is not normal, quotient and remainder will recieve the non-normal value (if not null)
   static bool inline checkIsNormalQuotient(const BigReal &x, const BigReal &y, BigReal *quotient, BigReal *remainder) {
     if(isNormalQuotient(x, y)) {
       return true;
@@ -709,16 +735,21 @@ private:
 
   // Approximately 1/x. Result.digitPool = x.digitPool
   static BigReal  reciprocal(const BigReal &x, DigitPool *digitPool = NULL);
-  // Assume y._isnormal(). *this = approximately x/y.          Return *this
+  // Assume y._isnormal(). *this = approximately x/y
+  // Return *this
   BigReal &approxQuot32(     const BigReal &x, const BigReal           &y);
-  // Assume y._isnormal(). *this = approximately x/y.          Return *this
+  // Assume y._isnormal(). *this = approximately x/y
+  // Return *this
   BigReal &approxQuot64(     const BigReal &x, const BigReal           &y);
-  // Assume y != 0.        *this = approximately x/e(y,scale). Return *this
+  // Assume y != 0.        *this = approximately x/e(y,scale)
+  // Return *this
   BigReal &approxQuot32Abs(  const BigReal &x, ULONG                    y, BRExpoType scale);
-  // Assume y != 0.        *this = approximately x/e(y,scale). Return *this
+  // Assume y != 0.        *this = approximately x/e(y,scale)
+  // Return *this
   BigReal &approxQuot64Abs(  const BigReal &x, const UINT64            &y, BRExpoType scale);
 #ifdef IS64BIT
-  // Assume y._isnormal(). *this = approximately x/y.          Return *this
+  // Assume y._isnormal(). *this = approximately x/y
+  // Return *this
   BigReal &approxQuot128(    const BigReal &x, const BigReal           &y);
   // Assume y != 0.        *this = approximately x/e(y,scale). Return *this
   BigReal &approxQuot128Abs( const BigReal &x, const _uint128          &y, BRExpoType scale);
@@ -748,113 +779,170 @@ private:
 protected:
   inline void releaseDigits() { // should only be called from destructor
     if(m_first) {
-      m_digitPool.deleteDigits(m_first, m_last);
+      deleteDigits(m_first, m_last);
       m_first = NULL;
     }
   }
 
+#define DEFAULT_DIGITPOOL BigReal::s_defaultDigitPool
+#define CONST_DIGITPOOL   BigReal::s_constDigitPool
+
+#define _SETDIGITPOOL(usePoolIfNull) m_digitPool(digitPool?(*digitPool):(usePoolIfNull))
+#define _SETTODEFAULTIFNULL() _SETDIGITPOOL(*DEFAULT_DIGITPOOL)
+
+  // Only ConstBigReal and ConstBigInt may be attached to s_constDigitPool
+  virtual bool allowConstDigitPool() const {
+    return false;
+  }
 public:
-  inline BigReal(                  DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
+
+  static DigitPool *s_defaultDigitPool;
+  static DigitPool *s_constDigitPool;
+
+  inline BigReal(                  DigitPool *digitPool = NULL) : _SETTODEFAULTIFNULL() {
+    startInit();
     initToZero();
+    endInit();
   }
-  inline BigReal(int      x      , DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
+  inline BigReal(int      x      , DigitPool *digitPool = NULL) : _SETTODEFAULTIFNULL() {
+    startInit();
     init(x);
+    endInit();
   }
-  inline BigReal(UINT     x      , DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
+  inline BigReal(UINT     x      , DigitPool *digitPool = NULL) : _SETTODEFAULTIFNULL() {
+    startInit();
     init(x);
+    endInit();
   }
-  inline BigReal(long     x      , DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
+  inline BigReal(long     x      , DigitPool *digitPool = NULL) : _SETTODEFAULTIFNULL() {
+    startInit();
     init((int)x);
+    endInit();
   }
-  inline BigReal(ULONG    x      , DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
+  inline BigReal(ULONG    x      , DigitPool *digitPool = NULL) : _SETTODEFAULTIFNULL() {
+    startInit();
     init((UINT)x);
+    endInit();
   }
-  inline BigReal(INT64    x      , DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
+  inline BigReal(INT64    x      , DigitPool *digitPool = NULL) : _SETTODEFAULTIFNULL() {
+    startInit();
     init(x);
+    endInit();
   }
-  inline BigReal(UINT64   x      , DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
+  inline BigReal(UINT64   x      , DigitPool *digitPool = NULL) : _SETTODEFAULTIFNULL() {
+    startInit();
     init(x);
+    endInit();
+  }
+  inline BigReal(_int128  x      , DigitPool *digitPool = NULL) : _SETTODEFAULTIFNULL() {
+    startInit();
+    init(x);
+    endInit();
+  }
+  inline BigReal(_uint128 x      , DigitPool *digitPool = NULL) : _SETTODEFAULTIFNULL() {
+    startInit();
+    init(x);
+    endInit();
   }
 
-  inline BigReal(_int128  x      , DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
+  BigReal(float           x      , DigitPool *digitPool = NULL) : _SETTODEFAULTIFNULL() {
+    startInit();
     init(x);
+    endInit();
   }
-  inline BigReal(_uint128 x      , DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
+  BigReal(double          x      , DigitPool *digitPool = NULL) : _SETTODEFAULTIFNULL() {
+    startInit();
     init(x);
+    endInit();
   }
-
-  BigReal(float           x      , DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
+  BigReal(const Double80  &x      , DigitPool *digitPool = NULL) : _SETTODEFAULTIFNULL() {
+    startInit();
     init(x);
-  }
-  BigReal(double          x      , DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
-    init(x);
-  }
-  BigReal(const Double80  &x      , DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
-    init(x);
+    endInit();
   }
   BigReal(const BigReal   &x      , DigitPool *digitPool = NULL);
 
-  explicit inline BigReal(const String  &s, DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
+  explicit inline BigReal(const String  &s, DigitPool *digitPool = NULL) : _SETTODEFAULTIFNULL() {
+    startInit();
     init(s, true);
+    endInit();
   }
-  explicit inline BigReal(const char    *s, DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
+  explicit inline BigReal(const char    *s, DigitPool *digitPool = NULL) : _SETTODEFAULTIFNULL() {
+    startInit();
     init(s, true);
+    endInit();
   }
-  explicit inline BigReal(const wchar_t *s, DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
+  explicit inline BigReal(const wchar_t *s, DigitPool *digitPool = NULL) : _SETTODEFAULTIFNULL() {
+    startInit();
     init(s, true);
+    endInit();
   }
-  explicit inline BigReal(ByteInputStream &s, DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
+  explicit inline BigReal(ByteInputStream &s, DigitPool *digitPool = NULL) : _SETTODEFAULTIFNULL() {
+    startInit();
     initToZero();
     load(s);
+    endInit();
   }
 
   virtual ~BigReal() {
     releaseDigits();
+    m_digitPool.decRefCount();
   }
 
   inline BigReal &operator=(int              n) {
+    CHECKISMUTABLE(*this);
     clearDigits(); init(n);
     return *this;
   }
   inline BigReal &operator=(UINT             n) {
+    CHECKISMUTABLE(*this);
     clearDigits(); init(n);
     return *this;
   }
   inline BigReal &operator=(long             n) {
+    CHECKISMUTABLE(*this);
     clearDigits(); init(n);
     return *this;
   }
   inline BigReal &operator=(ULONG            n) {
+    CHECKISMUTABLE(*this);
     clearDigits(); init((UINT)n);
     return *this;
   }
   inline BigReal &operator=(INT64            n) {
+    CHECKISMUTABLE(*this);
     clearDigits(); init(n);
     return *this;
   }
   inline BigReal &operator=(UINT64           n) {
+    CHECKISMUTABLE(*this);
     clearDigits(); init(n);
     return *this;
   }
 
   inline BigReal &operator=(const _int128   &n) {
+    CHECKISMUTABLE(*this);
     clearDigits(); init(n);
     return *this;
   }
   inline BigReal &operator=(const _uint128  &n) {
+    CHECKISMUTABLE(*this);
     clearDigits(); init(n);
     return *this;
   }
 
   inline BigReal &operator=(float            x) {
+    CHECKISMUTABLE(*this);
     clearDigits(); init(x);
     return *this;
   }
   inline BigReal &operator=(double           x) {
+    CHECKISMUTABLE(*this);
     clearDigits(); init(x);
     return *this;
   }
   inline BigReal &operator=(const Double80  &x) {
+    CHECKISMUTABLE(*this);
     clearDigits(); init(x);
     return *this;
   }
@@ -898,18 +986,23 @@ public:
   BigReal  operator++(int);                                                   // postfix-form
   BigReal  operator--(int);                                                   // postfix-form
   // Do *this *= pow(10,exp). (Fast) Check for overflow/underflow. Trim leading and trailling zeroes if necessessary
+  // If force is true, there will be no call to CHECKISMUTABLE
   // Return *this
-  BigReal &multPow10(BRExpoType exp);
+  BigReal &multPow10(BRExpoType exp, bool force=false);
+  // Fast version of *this *= 2
+  BigReal &multiply2();
+  // Fast version of *this /= 2
+  BigReal &divide2();
 
-  // x+y with |error| <= f. Result.digitPool = x.digitPool
+  // x+y with |error| <= f. Result.digitPool = x.digitPool, or digitPool if specified
   friend BigReal  sum(             const BigReal &x, const BigReal &y, const BigReal  &f, DigitPool *digitPool = NULL);
-  // x-y with |error| <= f. Result.digitPool = x.digitPool
+  // x-y with |error| <= f. Result.digitPool = x.digitPool, or digitPool if specified
   friend BigReal  dif(             const BigReal &x, const BigReal &y, const BigReal  &f, DigitPool *digitPool = NULL);
-  // x*y with |error| <= f. Result.digitPool = x.digitPool
+  // x*y with |error| <= f. Result.digitPool = x.digitPool, or digitPool if specified
   friend BigReal  prod(            const BigReal &x, const BigReal &y, const BigReal  &f, DigitPool *digitPool = NULL);
-  // x/y with |error| <= f. Result.digitPool = x.digitPool
+  // x/y with |error| <= f. Result.digitPool = x.digitPool, or digitPool if specified
   friend BigReal  quot(            const BigReal &x, const BigReal &y, const BigReal  &f, DigitPool *digitPool = NULL);
-  // integer division
+  // Integer division, Result.digitPool = x.digitPool, or digitPool if specified
   friend BigInt   quot(             const BigInt &x, const BigInt &y                    , DigitPool *digitPool = NULL);
   // Calculates only quotient and/or remainder if specified
   friend void     quotRemainder(   const BigReal &x, const BigReal &y, BigInt *quotient, BigReal *remainder);
@@ -919,13 +1012,13 @@ public:
   // Calculates only quotient and/or remainder if specified
   friend void     quotRemainder128(const BigReal &x,  const BigReal &y, BigInt *quotient, BigReal *remainder);
 #endif
-  // bias = '<','#' or '>'. Result.digitPool = x.digitPool
+  // bias = '<','#' or '>'. Result.digitPool = x.digitPool, or digitPool if specified
   static BigReal  apcSum(       const char bias,  const BigReal &x, const BigReal  &y, DigitPool *digitPool = NULL);
-  // bias = '<','#' or '>'. Result.digitPool = x.digitPool
+  // bias = '<','#' or '>'. Result.digitPool = x.digitPool, or digitPool if specified
   static BigReal  apcProd(      const char bias,  const BigReal &x, const BigReal  &y, DigitPool *digitPool = NULL);
-  // bias = '<','#' or '>'. Result.digitPool = x.digitPool
+  // bias = '<','#' or '>'. Result.digitPool = x.digitPool, or digitPool if specified
   static BigReal  apcQuot(      const char bias,  const BigReal &x, const BigReal  &y, DigitPool *digitPool = NULL);
-  // bias = '<','#' or '>'. Result.digitPool = x.digitPool
+  // bias = '<','#' or '>'. Result.digitPool = x.digitPool, or digitPool if specified
   static BigReal  apcPow(       const char bias,  const BigReal &x, const BigInt   &y, DigitPool *digitPool = NULL);
 
   void           fractionate(BigInt *integerPart, BigReal *fractionPart) const;
@@ -933,7 +1026,7 @@ public:
   static BigReal ln10(         const BigReal &f);
   // Approximatly ln(x). Assume 1 <= x <= 10. result.digitPool = f.defaultDigitPool
   static BigReal lnEstimate(   const BigReal &x);
-  // 2^n, with the specified number of digits. if digits = 0, then full precision. Results are cached
+  // 2^n, with the specified number of digits. if digits = 0, then full precision. Results are cached, so dont modify
   static const BigReal &pow2(int n, size_t digits = 0);
 
   static void pow2CacheLoad();
@@ -942,12 +1035,12 @@ public:
   static bool pow2CacheChanged();
   static void pow2CacheDump();
 
-  // Assume x._isfinite() && y._isfinite(). Return sign(x-y)
-  friend int compare(         const BigReal &x,  const BigReal &y);
-  // Assume x._isfinite() && y._isfinite(). compare(|x|,|y|). (Faster than compare(fabs(x),fabs(y)))
-  friend int compareAbs(      const BigReal &x,  const BigReal &y);
+  // Assume x._isfinite() && y._isfinite(). Return sign(x-y) (=+/-1,0=
+  static int compare(         const BigReal &x,  const BigReal &y);
+  // Assume x._isfinite() && y._isfinite(). Return compare(|x|,|y|). (Faster than compare(fabs(x),fabs(y)))
+  static int compareAbs(      const BigReal &x,  const BigReal &y);
 
-  // returns one of
+  // Returns one of
   // FP_INFINITE
   // FP_NAN
   // FP_NORMAL
@@ -983,9 +1076,6 @@ public:
   inline bool _isnan() const {
     return !_isnormal() && (m_low == BIGREAL_QNANLOW);
   }
-  inline bool isConst() const {
-    return getPoolId() == CONST_DIGITPOOL_ID;
-  }
   inline BigReal &setToZero() {
     return setToNonNormal();
   }
@@ -999,19 +1089,28 @@ public:
     return setToNonNormal(BIGREAL_QNANLOW);
   }
   inline BigReal &changeSign() {
-    if(_isnormal() || _isinf()) { m_negative = !m_negative; }
+    CHECKISMUTABLE(*this);
+    if(_isnormal() || _isinf()) { m_flags ^= BR_NEG; }
+    return *this;
+  }
+  inline BigReal &setNegative(bool negative) {
+    if(negative) {
+      m_flags |= BR_NEG;
+    } else {
+      m_flags &= ~BR_NEG;
+    }
     return *this;
   }
   inline void setPositive() {
-    m_negative = false;
+    setNegative(false);
   }
-  // Return !isZero() && !m_negative
+  // Return !isZero() && !isNegative();
   inline  bool isPositive() const {
-    return !isZero() && !m_negative;
+    return !isZero() && !isNegative();
   }
-  // Return m_negative
+  // Return (m_flags & BR_NEG) != 0
   inline bool isNegative() const {
-    return m_negative;
+    return (m_flags & BR_NEG);
   }
   // Return number of BASE digits. 0 has length 1, undefined (nan,+inf,-inf) has length 0
   inline size_t getLength() const {
@@ -1025,10 +1124,14 @@ public:
     assert(_isfinite());
     return isZero() ? 0 : m_low;
   }
+  static String flagsToString(BYTE flags);
+  String flagsToString() const {
+    return flagsToString(m_flags);
+  }
 
   // Return x._isnormal() ? floor(log10(|x|)) : 0
   static inline BRExpoType getExpo10(const BigReal  &x) {
-    return x._isnormal() ? (x.m_expo * LOG10_BIGREALBASE + getDecimalDigitCount(x.m_first->n) - 1) : 0;
+    return x._isnormal() ? (x.m_expo * BIGREAL_LOG10BASE + getDecimalDigitCount(x.m_first->n) - 1) : 0;
   }
 
   // Return x._isnormal() ? getExpo10(x) as BigReal : x
@@ -1078,7 +1181,7 @@ public:
 #ifdef HAS_LOOP_DIGITCOUNT
   static int     getDecimalDigitCountLoopx64(BRDigitTypex64 n);
 #endif
-  // (int)(log10(x) / LOG10_BIGREALBASE)
+  // (int)(log10(x) / BIGREAL_LOG10BASE)
   static int     logBASE(double x);
   // Return p if n = 10^p for p = [0..9]. else return -1.
   static int     isPow10(BRDigitTypex86 n);
@@ -1108,7 +1211,7 @@ public:
   // Assume x._isfinite(). Return x < 0 ? -1 : x > 0 ? 1 : 0
   friend inline int sign(  const BigReal &x) {
     assert(x._isfinite());
-    return x._isnormal() ? x.m_negative ? -1 : 1 : 0;
+    return x._isnormal() ? x.isNegative() ? -1 : 1 : 0;
   }
 
   // Return true if x._isfinite() && isInteger(x) && x % 2 == 0
@@ -1152,12 +1255,12 @@ public:
     return _isnormal() ? m_last->n : 0;
   }
 
-  // First k decimal digits. Assume k <= 9.
+  // Return first k decimal digits of |*this|. Assume k <= 9.
   ULONG  getFirst32(const UINT k, BRExpoType *scale = NULL) const;
-  // First k decimal digits. Assume k <= 19.
+  // Return first k decimal digits of |*this|. Assume k <= 19.
   UINT64 getFirst64(const UINT k, BRExpoType *scale = NULL) const;
 #ifdef IS64BIT
-  // First k decimal digits. Assume k <= 38.
+  // Return first k decimal digits of |*this|. Assume k <= 38.
   _uint128 &getFirst128(_uint128 &dst, const UINT k, BRExpoType *scale = NULL) const;
 #endif
   inline DigitPool *getDigitPool() const {
@@ -1176,19 +1279,9 @@ public:
 
   static UINT getMaxSplitLength();
 
-  // Call this when terminateCalculation has been called and you want to start a new calculation
-  static void resumeCalculation() {
-    s_continueCalculation = true;
-  }
-
-  // Call this to make the calculation stop as soon as possible. In current version it will
-  // terminate all Threads started from BigRealThreadPool
-  static void terminateCalculation() {
-    s_continueCalculation = false;
-  }
-
-  void assertIsValidBigReal() const; // checks that this is a consistent number with all the various invariants satisfied.
-                                     // Throws an excpeption if not with a descripion of what is wrong. For debugging
+  // Checks that this is a consistent BigReal with all the various invariants satisfied.
+  // Throws an excpeption if not with a descripion of what is wrong. For debugging
+  virtual void assertIsValid() const;
 
   // Return uniform distributed random BigReal between 0 (incl) and 1 (excl) with at most maxDigits decimal digits.
   // If maxDigits == 0, 0 will be returned
@@ -1229,112 +1322,47 @@ public:
   static const ConstBigReal _BR_NINF;    // -infinity;
 };
 
-class ConstDigitPool : private DigitPool {
-private:
-  Semaphore  m_gate;
-  int        m_requestCount;
-#ifdef CHECKCONSTPOOLTHREAD
-  int        m_ownerThreadId;
-#endif // CHECKCONSTPOOLTHREAD
-
-  static ConstDigitPool s_instance;
-
-public:
-  ConstDigitPool() : DigitPool(CONST_DIGITPOOL_ID), m_requestCount(0) {
-#ifdef CHECKCONSTPOOLTHREAD
-    m_ownerThreadId = -1;
-#endif // CHECKCONSTPOOLTHREAD
-  }
-
-  static inline DigitPool *requestInstance() {
-#ifdef CHECKCONSTPOOLTHREAD
-    const DWORD thrId = GetCurrentThreadId();
-#endif // CHECKCONSTPOOLTHREAD
-    s_instance.m_gate.wait();
-    s_instance.m_requestCount++;
-#ifdef CHECKCONSTPOOLTHREAD
-    s_instance.m_ownerThreadId = thrId;
-#endif // CHECKCONSTPOOLTHREAD
-    return &s_instance;
-  }
-
-  static inline void releaseInstance() {
-#ifdef CHECKCONSTPOOLTHREAD
-    const DWORD thrId = GetCurrentThreadId();
-    if(thrId != s_instance.m_ownerThreadId) {
-      throwException(_T("%s: Calling thread =%d, is not the ownerthread (=%d)")
-                    ,__TFUNCTION__, thrId, s_instance.m_ownerThreadId);
-    }
-    s_instance.m_ownerThreadId = -1;
-#endif // CHECKCONSTPOOLTHREAD
-    s_instance.m_gate.signal();
-  }
-};
-
-#define REQUESTCONSTPOOL ConstDigitPool::requestInstance()
-#define RELEASECONSTPOOL ConstDigitPool::releaseInstance()
-
 class ConstBigReal : public BigReal {
+protected:
+  bool allowConstDigitPool() const {
+    return true;
+  }
+
 public:
-  inline ConstBigReal(int              x) : BigReal(x, REQUESTCONSTPOOL) {
-    RELEASECONSTPOOL;
+  inline ConstBigReal(int              x) : BigReal(x, CONST_DIGITPOOL) {
   }
-  inline ConstBigReal(UINT             x) : BigReal(x, REQUESTCONSTPOOL) {
-    RELEASECONSTPOOL;
+  inline ConstBigReal(UINT             x) : BigReal(x, CONST_DIGITPOOL) {
   }
-  inline ConstBigReal(long             x) : BigReal(x, REQUESTCONSTPOOL) {
-    RELEASECONSTPOOL;
+  inline ConstBigReal(long             x) : BigReal(x, CONST_DIGITPOOL) {
   }
-  inline ConstBigReal(ULONG            x) : BigReal(x, REQUESTCONSTPOOL) {
-    RELEASECONSTPOOL;
+  inline ConstBigReal(ULONG            x) : BigReal(x, CONST_DIGITPOOL) {
   }
-  inline ConstBigReal(INT64            x) : BigReal(x, REQUESTCONSTPOOL) {
-    RELEASECONSTPOOL;
+  inline ConstBigReal(INT64            x) : BigReal(x, CONST_DIGITPOOL) {
   }
-  inline ConstBigReal(UINT64           x) : BigReal(x, REQUESTCONSTPOOL) {
-    RELEASECONSTPOOL;
+  inline ConstBigReal(UINT64           x) : BigReal(x, CONST_DIGITPOOL) {
   }
-  inline ConstBigReal(const _int128   &x) : BigReal(x, REQUESTCONSTPOOL) {
-    RELEASECONSTPOOL;
+  inline ConstBigReal(const _int128   &x) : BigReal(x, CONST_DIGITPOOL) {
   }
-  inline ConstBigReal(const _uint128  &x) : BigReal(x, REQUESTCONSTPOOL) {
-    RELEASECONSTPOOL;
+  inline ConstBigReal(const _uint128  &x) : BigReal(x, CONST_DIGITPOOL) {
   }
 
-  ConstBigReal(float                   x) : BigReal(x, REQUESTCONSTPOOL) {
-    RELEASECONSTPOOL;
+  ConstBigReal(float                   x) : BigReal(x, CONST_DIGITPOOL) {
   }
-  ConstBigReal(double                  x) : BigReal(x, REQUESTCONSTPOOL) {
-    RELEASECONSTPOOL;
+  ConstBigReal(double                  x) : BigReal(x, CONST_DIGITPOOL) {
   }
-  ConstBigReal(const Double80         &x) : BigReal(x, REQUESTCONSTPOOL) {
-    RELEASECONSTPOOL;
+  ConstBigReal(const Double80         &x) : BigReal(x, CONST_DIGITPOOL) {
   }
-  ConstBigReal(const BigReal          &x) : BigReal(x, REQUESTCONSTPOOL) {
-    RELEASECONSTPOOL;
+  ConstBigReal(const BigReal          &x) : BigReal(x, CONST_DIGITPOOL) {
   }
-  explicit inline ConstBigReal(const String  &s) : BigReal(s, REQUESTCONSTPOOL) {
-    RELEASECONSTPOOL;
+  explicit inline ConstBigReal(const String  &s) : BigReal(s, CONST_DIGITPOOL) {
   }
-  explicit inline ConstBigReal(const char    *s) : BigReal(s, REQUESTCONSTPOOL) {
-    RELEASECONSTPOOL;
+  explicit inline ConstBigReal(const char    *s) : BigReal(s, CONST_DIGITPOOL) {
   }
-  explicit inline ConstBigReal(const wchar_t *s) : BigReal(s, REQUESTCONSTPOOL) {
-    RELEASECONSTPOOL;
+  explicit inline ConstBigReal(const wchar_t *s) : BigReal(s, CONST_DIGITPOOL) {
   }
-  explicit inline ConstBigReal(ByteInputStream &s) : BigReal(s, REQUESTCONSTPOOL) {
-    RELEASECONSTPOOL;
-  }
-
-  ~ConstBigReal() {
-    REQUESTCONSTPOOL;
-    releaseDigits();
-    RELEASECONSTPOOL;
+  explicit inline ConstBigReal(ByteInputStream &s) : BigReal(s, CONST_DIGITPOOL) {
   }
 };
-
-#undef REQUESTCONSTPOOL
-#undef RELEASECONSTPOOL
 
 #define APCsum( bias, x, y, pool) BigReal::apcSum( #@bias, x, y, pool)
 #define APCprod(bias, x, y, pool) BigReal::apcProd(#@bias, x, y, pool)
@@ -1354,7 +1382,7 @@ template<class NumberType> NumberType getNonNormalValue(int fpclass, const Numbe
   }
 }
 
-// returns one of
+// Returns one of
 // FP_INFINITE
 // FP_NAN
 // FP_NORMAL
@@ -1386,22 +1414,22 @@ inline bool isNInfinity(const BigReal &x) {
 }
 
 inline bool operator==(const BigReal &x, const BigReal &y) {
-  return isunordered(x,y) ? false : (compare(x,y) == 0);
+  return isunordered(x,y) ? false : (BigReal::compare(x,y) == 0);
 }
 inline bool operator!=(const BigReal &x, const BigReal &y) {
-  return isunordered(x,y) ? false : (compare(x,y) != 0);
+  return isunordered(x,y) ? false : (BigReal::compare(x,y) != 0);
 }
 inline bool operator>=(const BigReal &x, const BigReal &y) {
-  return isunordered(x,y) ? false : (compare(x,y) >= 0);
+  return isunordered(x,y) ? false : (BigReal::compare(x,y) >= 0);
 }
 inline bool operator<=(const BigReal &x, const BigReal &y) {
-  return isunordered(x,y) ? false : (compare(x,y) <= 0);
+  return isunordered(x,y) ? false : (BigReal::compare(x,y) <= 0);
 }
 inline bool operator> (const BigReal &x, const BigReal &y) {
-  return isunordered(x,y) ? false : (compare(x,y) >  0);
+  return isunordered(x,y) ? false : (BigReal::compare(x,y) >  0);
 }
 inline bool operator< (const BigReal &x, const BigReal &y) {
-  return isunordered(x,y) ? false : (compare(x,y) <  0);
+  return isunordered(x,y) ? false : (BigReal::compare(x,y) <  0);
 }
 
 class FullFormatBigReal : public BigReal {
@@ -1454,10 +1482,10 @@ inline BigReal dsign(const BigReal &x) {
   return x.isNegative() ? -pool->_1() : x.isPositive() ? pool->_1() : pool->_0();
 }
 inline BigReal  dmax(const BigReal &x, const BigReal &y) {
-  return (compare(x, y) >= 0) ? x : y;
+  return (x>=y) ? x : y;
 }
 inline BigReal  dmin(const BigReal &x, const BigReal &y) {
-  return (compare(x, y) <= 0) ? x : y;
+  return (x<=y) ? x : y;
 }
 
 int  isInt(     const BigReal &v);
@@ -1523,7 +1551,7 @@ private:
   SynchronizedStringQueue(           const SynchronizedStringQueue &src); // not implemented
   SynchronizedStringQueue &operator=(const SynchronizedStringQueue &src); // not implemented
 public:
-  SynchronizedStringQueue(int id) : BigRealResource(id) {
+  SynchronizedStringQueue(int id, const String &name) : BigRealResource(id) { // name not used
   }
   void waitForResults(int expectedResultCount);
 };
@@ -1535,7 +1563,7 @@ private:
   Semaphore                 m_execute;
   int                       m_requestCount;
 public:
-  BigRealThread(int id);
+  BigRealThread(int id, const String &name);
   UINT run();
   void execute(Runnable &job, SynchronizedStringQueue &resultQueue);
 };
@@ -1551,7 +1579,7 @@ private:
   int                       m_level;
   friend class BigRealResourcePool;
 public:
-  MultiplierThread(int id);
+  MultiplierThread(int id, const String &name);
   UINT run();
 
   void multiply(BigReal &result, const BigReal &x, const BigReal &y, const BigReal &f, int level);
@@ -1563,19 +1591,54 @@ public:
   }
 };
 
+template<class T> class AbstractFilteredIterator : public AbstractIterator {
+private:
+  CompactArray<T>  &m_a;
+  BitSet            m_activeSet;
+  Iterator<size_t>  m_it;
+public:
+  AbstractFilteredIterator(const CompactArray<T> &a, const BitSet &set)
+    : m_a((CompactArray<T>&)a)
+    , m_activeSet(set)
+  {
+    m_it = m_activeSet.getIterator();
+  }
+  AbstractIterator *clone() {
+    return new AbstractFilteredIterator(m_a, m_activeSet);
+  }
+
+  inline bool hasNext() const {
+    return m_it.hasNext();
+  }
+
+  void *next() {
+    if(m_it.hasNext()) {
+      noNextElementError(__TFUNCTION__);
+    }
+    return &m_a[m_it.next()];
+  }
+
+  void remove() {
+    throwUnsupportedOperationException(__TFUNCTION__);
+  }
+};
+
 template <class T> class ResourcePool : public CompactArray<T*> {
 private:
+  const String      m_typeName;
   CompactStack<int> m_freeId;
 protected:
   virtual void allocateNewResources(size_t count) {
     int id = (int)size();
     for(size_t i = 0; i < count; i++, id++) {
       m_freeId.push(id);
-      T *r = new T(id); TRACE_NEW(r);
+      T *r = new T(id, format(_T("Resource %s(%d)"),m_typeName.cstr(), id)); TRACE_NEW(r);
       add(r);
     }
   }
 public:
+  ResourcePool(const String &typeName) : m_typeName(typeName) {
+  }
   virtual ~ResourcePool() {
     deleteAll();
   }
@@ -1618,6 +1681,18 @@ public:
       return result;
     }
   }
+  BitSet getActiveIdSet() const {
+    return getAllocatedIdSet() - getFreeIdSet();
+  }
+
+  Iterator<T*> getAllIterator() const {
+    return __super::getIterator();
+
+  }
+  Iterator<T*> getActiveIterator() const {
+    return Iterator<T*>(new AbstractFilteredIterator<T*>(*this, getActiveIdSet()));
+  }
+
   String toString() const {
     const BitSet allocatedIdSet = getAllocatedIdSet();
     const BitSet freeIdSet      = getFreeIdSet();
@@ -1670,7 +1745,7 @@ protected:
     }
   }
 public:
-  BigRealThreadPool() {
+  BigRealThreadPool() : ResourcePool(_T("ThreadPool")) {
     m_threadPriority       = THREAD_PRIORITY_NORMAL;
     m_disablePriorityBoost = false;
   }
@@ -1701,21 +1776,23 @@ private:
   BigRealThreadPool<MultiplierThread>   m_MTThreadPool;
   ResourcePool<SynchronizedStringQueue> m_queuePool;
   ResourcePool<MTDigitPoolType>         m_digitPool;
-  mutable Semaphore                     m_gate;
+  ResourcePool<DigitPoolWithLock>       m_lockedDigitPool;
+  mutable FastSemaphore                 m_gate;
   int                                   m_processorCount;
   int                                   m_activeThreads, m_maxActiveThreads;
 
-  BigRealResourcePool();
   BigRealResourcePool(const BigRealResourcePool &src);            // not implemented
   BigRealResourcePool &operator=(const BigRealResourcePool &src); // not implemented
-  friend class BigRealResourcePoolCreator;
 public:
+  BigRealResourcePool();
   ~BigRealResourcePool();
   static MThreadArray &fetchMTThreadArray(  MThreadArray &threads, int count);
   static void          releaseMTThreadArray(MThreadArray &threads);
 
-  static DigitPool    *fetchDigitPool();
+  static DigitPool    *fetchDigitPool(bool withLock=false, BYTE initFlags = BR_MUTABLE);
   static void          releaseDigitPool(DigitPool *pool);
+  // call terminatePoolCalculation() for all DigitPools in use
+  static void          terminateAllPoolCalculations();
 
   // Blocks until all jobs are done. If any of the jobs throws an exception,
   // the rest of the jobs will be terminated and an exception with the same

@@ -3,7 +3,7 @@
 
 static void checkZero(DigitPool *pool) {
   BigReal n(0, pool);
-  n.assertIsValidBigReal();
+  n.assertIsValid();
   verify(n.isZero());
   verify(getInt(n)      == 0);
   verify(getUint(n)     == 0);
@@ -26,7 +26,7 @@ static String getFileName() {
 
 static void checkExact(int line, int x, DigitPool *pool) {
   BigReal n(x, pool);
-  n.assertIsValidBigReal();
+  n.assertIsValid();
   const int x1 = getInt(n);
 
   if(x1 != x) {
@@ -39,7 +39,7 @@ static void checkExact(int line, int x, DigitPool *pool) {
 
 static void checkExact(int line, UINT x, DigitPool *pool) {
   BigReal n(x, pool);
-  n.assertIsValidBigReal();
+  n.assertIsValid();
   const UINT x1 = getUint(n);
 
   if(x1 != x) {
@@ -52,7 +52,7 @@ static void checkExact(int line, UINT x, DigitPool *pool) {
 
 static void checkExact(int line, INT64 x, DigitPool *pool) {
   BigReal n(x, pool);
-  n.assertIsValidBigReal();
+  n.assertIsValid();
   const INT64 x1 = getInt64(n);
 
   if(x1 != x) {
@@ -65,7 +65,7 @@ static void checkExact(int line, INT64 x, DigitPool *pool) {
 
 static void checkExact(int line, UINT64 x, DigitPool *pool) {
   BigReal n(x, pool);
-  n.assertIsValidBigReal();
+  n.assertIsValid();
   const UINT64 x1 = getUint64(n);
 
   if(x1 != x) {
@@ -78,7 +78,7 @@ static void checkExact(int line, UINT64 x, DigitPool *pool) {
 
 static void checkExact(int line, _int128 x, DigitPool *pool) {
   BigReal n(x, pool);
-  n.assertIsValidBigReal();
+  n.assertIsValid();
   const _int128 x1 = getInt128(n);
 
   if(x1 != x) {
@@ -91,7 +91,7 @@ static void checkExact(int line, _int128 x, DigitPool *pool) {
 
 static void checkExact(int line, _uint128 x, DigitPool *pool) {
   BigReal n(x, pool);
-  n.assertIsValidBigReal();
+  n.assertIsValid();
   const _uint128 x1 = getUint128(n);
 
   if(x1 != x) {

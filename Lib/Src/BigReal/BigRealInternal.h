@@ -27,3 +27,16 @@ inline BigReal binop_inf(const BigReal &x, const BigReal &y, DigitPool *pool) {
   if(!x._isfinite() || !y._isfinite()) {    \
     return binop_inf(x, y, pool);           \
   }
+
+
+#define COPYSIGN(dst,src) (dst).setNegative((src).isNegative())
+
+#ifdef assert
+#undef assert
+#endif
+
+#ifdef _DEBUG
+#define assert(exp) (void)( (exp) || (xassert(__TFILE__, __LINE__, _T(#exp)), 0) )
+#else
+#define assert(exp)
+#endif

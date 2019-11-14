@@ -7,7 +7,7 @@ void BigReal::init(int n) {
   if(n) {
     BRDigitType un;
     if(n < 0) {
-      m_negative = true;
+      setNegative(true);
       un = -n;
     } else {
       un = n;
@@ -41,7 +41,7 @@ void BigReal::init(INT64 n) {
   if(n) {
     UINT64 un;
     if(n < 0) {
-      m_negative = true;
+      setNegative(true);
       un = -n;
     } else {
       un = n;
@@ -74,7 +74,7 @@ void BigReal::init(const _int128 &n) {
   if(n) {
     _uint128 un;
     if(n < 0) {
-      m_negative = true;
+      setNegative(true);
       un = -n;
     } else {
       un = n;
@@ -103,16 +103,19 @@ void BigReal::init(_uint128 n) {
 }
 
 BigReal::BigReal(const BigReal &x, DigitPool *digitPool) : m_digitPool(digitPool?*digitPool:x.m_digitPool) {
+  startInit();
   initToZero();
   if(x._isnormal()) copyAllDigits(x);
   copyNonPointerFields(x);
+  endInit();
 }
 
 BigReal &BigReal::operator=(const BigReal &x) {
+  CHECKISMUTABLE(*this);
   if(&x == this) {
     return *this;
   } else if(!x._isnormal()) {
-    return setToNonNormal(x.m_low, x.m_negative);
+    return setToNonNormal(x.m_low, x.isNegative());
   }
   if(!_isnormal()) {  // x is normal
     copyAllDigits(x);
@@ -140,7 +143,7 @@ BigReal &BigReal::operator=(const BigReal &x) {
       Digit *saveLast = m_last;
       m_last = dd->prev;
       m_last->next = NULL;
-      m_digitPool.deleteDigits(dd, saveLast);
+      deleteDigits(dd, saveLast);
     }
   }
   copyNonPointerFields(x);
@@ -196,13 +199,13 @@ void BigReal::init(const String &s, bool allowDecimalPoint) {
   if(firstNonZero != NULL) { // value != 0
     BigReal integerPart(   &m_digitPool);
     BigReal fractionalPart(&m_digitPool);
-
     TCHAR *exponentPos = t;
     if(commaPos == NULL) { // No decimalpoint. Assumed to be at the end.
       commaPos = t;
     }
 
     if(firstNonZero < commaPos) { // We got something before decimalpoint
+      integerPart.clrInitDone();
       BRDigitType n      = 0;
       BRDigitType factor = 1;
       for(t = commaPos - 1; t >= firstNonZero; t--) {
@@ -219,10 +222,11 @@ void BigReal::init(const String &s, bool allowDecimalPoint) {
         integerPart.insertDigit(n);
         integerPart.incrExpo();
       }
-      integerPart.trimZeroes();
+      integerPart.trimZeroes().setInitDone();
     }
 
     if(lastNonZero > commaPos) { // We got something after the decimalpoint
+      fractionalPart.clrInitDone();
       fractionalPart.m_expo = -1;
       fractionalPart.m_low  = 0;
       BRDigitType n = 0;
@@ -231,7 +235,7 @@ void BigReal::init(const String &s, bool allowDecimalPoint) {
         for(t = commaPos + 1; _istdigit(*t); t++) {
           n = 10 * n + (*t - _T('0'));
           count++;
-          if(count == LOG10_BIGREALBASE) {
+          if(count == BIGREAL_LOG10BASE) {
             fractionalPart.appendDigit(n);
             fractionalPart.m_low--;
             n     = 0;
@@ -239,14 +243,14 @@ void BigReal::init(const String &s, bool allowDecimalPoint) {
           }
         }
         if(n) { // Remember the last digit
-          if(count < LOG10_BIGREALBASE) { // Make it a whole Digit
-            n *= pow10(LOG10_BIGREALBASE - count);
+          if(count < BIGREAL_LOG10BASE) { // Make it a whole Digit
+            n *= pow10(BIGREAL_LOG10BASE - count);
           }
           fractionalPart.appendDigit(n);
           fractionalPart.m_low--;
         }
       }
-      fractionalPart.trimZeroes();
+      fractionalPart.trimZeroes().setInitDone();
     }
 
     if(allowDecimalPoint && !fractionalPart.isZero()) {
@@ -256,7 +260,7 @@ void BigReal::init(const String &s, bool allowDecimalPoint) {
     }
 
     if(negative) {
-      m_negative = true;
+      setNegative(true);
     }
 
     if(*exponentPos == _T('e') || *exponentPos == _T('E')) {
@@ -271,8 +275,8 @@ void BigReal::init(const String &s, bool allowDecimalPoint) {
       BRExpoType exponent;
       for(exponent = 0; _istdigit(*t); t++) {
         exponent = 10 * exponent + (*t - '0');
-        if(exponent > LOG10_BIGREALBASE*BIGREAL_MAXEXPO || exponent < 0) { // max. exponent in base 10
-          throwBigRealException(_T("Exponent too big. Max:%s"),format1000(LOG10_BIGREALBASE*BIGREAL_MAXEXPO).cstr());
+        if(exponent > BIGREAL_LOG10BASE*BIGREAL_MAXEXPO || exponent < 0) { // max. exponent in base 10
+          throwBigRealException(_T("Exponent too big. Max:%s"),format1000(BIGREAL_LOG10BASE*BIGREAL_MAXEXPO).cstr());
         }
       }
       exponent *= exponentSign;

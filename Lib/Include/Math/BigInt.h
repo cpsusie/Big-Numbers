@@ -128,7 +128,7 @@ public:
   }
   inline BigInt operator-() const { // unary minus
     BigInt result(*this);
-    result.changeSign();
+    result.clrInitDone().changeSign().setInitDone();
     return result;
   }
   inline BigInt &operator++() {                                              // prefix-form
@@ -147,10 +147,17 @@ public:
     __super::operator--();
     return result;
   }
-  // fast version of *this /= 2
+  // Fast version of *this *= 2
+  inline BigInt &multiply2() {
+    __super::multiply2();
+    return *this;
+  }
+  // Fast version of *this /= 2
   BigInt &divide2();
-  // fast version of *this *= 2
-  BigInt &multiply2();
+
+  // Checks that this is a consistent BigReal with all the various invariants satisfied.
+  // Throws an excpeption if not with a descripion of what is wrong. For debugging
+  virtual void assertIsValid() const;
 };
 
 inline int sign(const BigInt &n) {
@@ -170,57 +177,54 @@ BigInt randBigInt(const BigInt &n, RandomGenerator &rnd = *RandomGenerator::s_st
 // If digitPool == NULL, use from.getDigitPool()
 BigInt randBigInt(const BigInt &from, const BigInt &to, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator, DigitPool *digitPool = NULL);
 
-#define REQUESTCONSTPOOL ConstDigitPool::requestInstance()
-#define RELEASECONSTPOOL ConstDigitPool::releaseInstance()
-
 class ConstBigInt : public BigInt {
-public:
-  explicit ConstBigInt(const BigReal &x) : BigInt(x, REQUESTCONSTPOOL) {
-    RELEASECONSTPOOL;
-  };
-  inline ConstBigInt(int                     x) : BigInt(x, REQUESTCONSTPOOL) {
-    RELEASECONSTPOOL;
-  }
-  inline ConstBigInt(UINT                    x) : BigInt(x, REQUESTCONSTPOOL) {
-    RELEASECONSTPOOL;
-  }
-  inline ConstBigInt(long                    x) : BigInt(x, REQUESTCONSTPOOL) {
-    RELEASECONSTPOOL;
-  }
-  inline ConstBigInt(ULONG                   x) : BigInt(x, REQUESTCONSTPOOL) {
-    RELEASECONSTPOOL;
-  }
-  inline ConstBigInt(INT64                   x) : BigInt(x, REQUESTCONSTPOOL) {
-    RELEASECONSTPOOL;
-  }
-  inline ConstBigInt(UINT64                  x) : BigInt(x, REQUESTCONSTPOOL) {
-    RELEASECONSTPOOL;
-  }
-  inline ConstBigInt(const _int128          &x) : BigInt(x, REQUESTCONSTPOOL) {
-    RELEASECONSTPOOL;
-  }
-  inline ConstBigInt(const _uint128         &x) : BigInt(x, REQUESTCONSTPOOL) {
-    RELEASECONSTPOOL;
-  }
-  explicit ConstBigInt(const String  &s) : BigInt(s, REQUESTCONSTPOOL) {
-    RELEASECONSTPOOL;
-  }
-  explicit ConstBigInt(const char    *s) : BigInt(s, REQUESTCONSTPOOL) {
-    RELEASECONSTPOOL;
-  }
-  explicit ConstBigInt(const wchar_t *s) : BigInt(s, REQUESTCONSTPOOL) {
-    RELEASECONSTPOOL;
+protected:
+  bool allowConstDigitPool() const {
+    return true;
   }
 
-  ~ConstBigInt() {
-    REQUESTCONSTPOOL;
-    releaseDigits();
-    RELEASECONSTPOOL;
+public:
+  explicit ConstBigInt(const BigReal        &x) : BigInt(x, CONST_DIGITPOOL) {
+  };
+  inline ConstBigInt(int                     x) : BigInt(x, CONST_DIGITPOOL) {
+  }
+  inline ConstBigInt(UINT                    x) : BigInt(x, CONST_DIGITPOOL) {
+  }
+  inline ConstBigInt(long                    x) : BigInt(x, CONST_DIGITPOOL) {
+  }
+  inline ConstBigInt(ULONG                   x) : BigInt(x, CONST_DIGITPOOL) {
+  }
+  inline ConstBigInt(INT64                   x) : BigInt(x, CONST_DIGITPOOL) {
+  }
+  inline ConstBigInt(UINT64                  x) : BigInt(x, CONST_DIGITPOOL) {
+  }
+  inline ConstBigInt(const _int128          &x) : BigInt(x, CONST_DIGITPOOL) {
+  }
+  inline ConstBigInt(const _uint128         &x) : BigInt(x, CONST_DIGITPOOL) {
+  }
+  explicit ConstBigInt(const String         &s) : BigInt(s, CONST_DIGITPOOL) {
+  }
+  explicit ConstBigInt(const char           *s) : BigInt(s, CONST_DIGITPOOL) {
+  }
+  explicit ConstBigInt(const wchar_t        *s) : BigInt(s, CONST_DIGITPOOL) {
   }
 };
 
-#undef REQUESTCONSTPOOL
-#undef RELEASECONSTPOOL
+inline bool isfinite(const BigInt &x) {
+  return fpclassify(x) <= 0;
+}
+inline bool isinf(const BigInt &x) {
+  return x._isinf();
+}
+inline bool isnan(const BigInt &x) {
+  return x._isnan();
+}
+inline bool isnormal(const BigInt &x) {
+  return x._isnormal();
+}
+inline bool isunordered(const BigInt &x, const BigInt &y) {
+  return x._isnan() || y._isnan();
+}
 
 std::istream     &operator>>(std::istream  &in ,       BigInt            &x);
 std::ostream     &operator<<(std::ostream  &out, const BigInt            &x);

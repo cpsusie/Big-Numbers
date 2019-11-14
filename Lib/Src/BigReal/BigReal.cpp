@@ -115,7 +115,7 @@ void BigReal::trimTail() {
   (m_last = p)->next = NULL;
 }
 
-void BigReal::copyDigits(const BigReal &src, size_t length) {
+BigReal &BigReal::copyDigits(const BigReal &src, size_t length) {
   assert(src._isnormal() && (m_first == NULL) && (m_last == NULL) && length <= src.getLength());
   if(length--) {
     const Digit *sd = src.m_first;
@@ -130,10 +130,11 @@ void BigReal::copyDigits(const BigReal &src, size_t length) {
     }
     (m_last = p)->next = NULL;
   }
+  return *this;
 }
 
 // Assume !_inormal() && src._isnormal()
-void BigReal::copyAllDigits(const BigReal &src) {
+BigReal &BigReal::copyAllDigits(const BigReal &src) {
   assert(!_isnormal() && src._isnormal());
   const Digit *sd = src.m_first;
   Digit       *dd, *p;
@@ -145,14 +146,16 @@ void BigReal::copyAllDigits(const BigReal &src) {
     p->next = dd;
   }
   (m_last = p)->next = NULL;
+  return *this;
 }
 
-BigReal &BigReal::multPow10(BRExpoType exp) {
+BigReal &BigReal::multPow10(BRExpoType exp, bool force) {
+  if(!force) CHECKISMUTABLE(*this);
   if((exp == 0) || !_isnormal()) {
     return *this;
   }
-  int m = exp % LOG10_BIGREALBASE;
-  BRExpoType   n = exp / LOG10_BIGREALBASE;
+  int        m = exp % BIGREAL_LOG10BASE;
+  BRExpoType n = exp / BIGREAL_LOG10BASE;
   if(m == 0) {
     m_expo += n;
     m_low  += n;
@@ -199,6 +202,8 @@ BigReal &BigReal::multPow10(BRExpoType exp) {
 
 BigReal &copy(BigReal &to, const BigReal &from, const BigReal &f) {
   assert(f._isfinite());
+  CHECKISMUTABLE(to);
+  if(&to == &from) return to;
   if(!f.isPositive() || !from._isnormal()) {
     to = from;
   } else if(f.m_expo < from.m_low) {
@@ -209,28 +214,25 @@ BigReal &copy(BigReal &to, const BigReal &from, const BigReal &f) {
     to.clearDigits();
     to.m_expo     = from.m_expo;
     to.m_low      = max(from.m_low, f.m_expo);
-    to.m_negative = from.m_negative;
-    to.copyDigits(from, to.m_expo - to.m_low + 1);
-    to.trimZeroes();
+    COPYSIGN(to, from).copyDigits(from, to.m_expo - to.m_low + 1).trimZeroes();
   }
   return to;
 }
 
 BigReal &copy(BigReal &to, const BigReal &from, size_t length) {
+  CHECKISMUTABLE(to);
+  if(&to == &from) return to;
   if(!from._isnormal()) {
-    to.setToNonNormal(from.m_low, from.m_negative);
+    to.setToNonNormal(from.m_low, from.isNegative());
   } else {
     length = minMax(length, (size_t)1, from.getLength());
     to.m_low = (to.m_expo = from.m_expo) - length + 1;
-    to.m_negative = from.m_negative;
-    to.clearDigits();
-    to.copyDigits(from, length);
-    to.trimZeroes();
+    COPYSIGN(to, from).clearDigits().copyDigits(from, length).trimZeroes();
   }
   return to;
 }
 
-int compare(const BigReal &x, const BigReal &y) {
+int BigReal::compare(const BigReal &x, const BigReal &y) { // static
   assert(x._isfinite() && y._isfinite());
   if(&x == &y) {
     return 0;
@@ -239,7 +241,7 @@ int compare(const BigReal &x, const BigReal &y) {
   if(ce) {
     if(!x._isnormal()) return y.isNegative() ?  1:-1;  // x==0, y is normal and not zero
     if(!y._isnormal()) return x.isNegative() ? -1: 1;  // y==0, x is normal and not zero
-    switch((ordinal(x.m_negative)<<1) | ordinal(y.m_negative)) {
+    switch((ordinal(x.isNegative())<<1) | ordinal(y.isNegative())) {
     case 0 : return sign(ce);  // x>0, y>0
     case 1 : return 1;         // x>0, y<0
     case 2 : return -1;        // x<0, y>0
@@ -252,21 +254,21 @@ int compare(const BigReal &x, const BigReal &y) {
     return 0;
   }
 
-  const int cs = ordinal(y.m_negative) - ordinal(x.m_negative);
+  const int cs = ordinal(y.isNegative()) - ordinal(x.isNegative());
   if(cs) return cs; // different sign
   // same sign, same expo. Compare digits
   const Digit *xp, *yp;
   BRDigitDiffType ddiff;
   for(xp = x.m_first, yp = y.m_first; xp && yp; xp = xp->next, yp = yp->next) {
     if((ddiff = (BRDigitDiffType)xp->n - (BRDigitDiffType)yp->n) != 0) {
-      return x.m_negative ? -sign(ddiff) : sign(ddiff);
+      return x.isNegative() ? -sign(ddiff) : sign(ddiff);
     }
   }
   // same sign, same expo. same head. Compare length
-  return xp ? (x.m_negative?-1:1) : yp ? (x.m_negative?1:-1) : 0;
+  return xp ? (x.isNegative()?-1:1) : yp ? (x.isNegative()?1:-1) : 0;
 }
 
-int compareAbs(const BigReal &x, const BigReal &y) {
+int BigReal::compareAbs(const BigReal &x, const BigReal &y) { // static
   assert(x._isfinite() && y._isfinite());
   if(&x == &y) {
     return 0;
@@ -291,39 +293,6 @@ int compareAbs(const BigReal &x, const BigReal &y) {
     }
   }
   return xp ? 1 : yp ? -1 : 0;
-}
-
-// returns one of
-// _FPCLASS_QNAN  0x0002   quiet NaN
-// _FPCLASS_NINF  0x0004   negative infinity
-// _FPCLASS_NN    0x0008   negative normal
-// _FPCLASS_PZ    0x0040   +0
-// _FPCLASS_PN    0x0100   positive normal
-// _FPCLASS_PINF  0x0200   positive infinity
-int _fpclass(const BigReal &x) {
-  if(x.m_expo == BIGREAL_NONNORMAL) {
-    switch(x.m_low) {
-    case BIGREAL_ZEROLOW : return _FPCLASS_PZ;
-    case BIGREAL_INFLOW  : return x.m_negative ? _FPCLASS_NINF : _FPCLASS_PINF;
-    case BIGREAL_QNANLOW : return _FPCLASS_QNAN;
-    default              : NODEFAULT;
-    }
-  } else {
-    return x.m_negative ? _FPCLASS_NN : _FPCLASS_PN;
-  }
-}
-
-BigReal &BigReal::setToNonNormalFpClass(int fpclass) {
-  switch(fpclass) {
-  case _FPCLASS_NZ    :
-  case _FPCLASS_PZ    : return setToZero();
-  case _FPCLASS_SNAN  :
-  case _FPCLASS_QNAN  : return setToNan();
-  case _FPCLASS_PINF  : return setToPInf();
-  case _FPCLASS_NINF  : return setToNInf();
-  default             : throwInvalidArgumentException(__TFUNCTION__, _T("fpclass=%04x"), fpclass);
-  }
-  return *this;
 }
 
 #define CHECKISNORMAL(x)                                      \
@@ -471,17 +440,58 @@ _uint128 getUint128(const BigReal &v) {
 }
 
 ULONG BigReal::hashCode() const {
-  if(!_isnormal()) {
-    switch(classifyNonNormal()) {
-    case FP_ZERO    : return 0;
-    case FP_NAN     : return 0xffffffff;
-    case FP_INFINITE: return m_negative ? 0xfffffffe : 0xfffffffd;
-    }
+  size_t s;
+  switch(_fpclass(*this)) {
+  case _FPCLASS_QNAN  : return 0xffffffff;
+  case _FPCLASS_NINF  : return 0xfffffffe;
+  case _FPCLASS_PZ    : return 0;
+  case _FPCLASS_PINF  : return 0xfffffffd;
+  case _FPCLASS_NN    : s = ~m_expo; break;
+  case _FPCLASS_PN    : s = m_expo ; break;
   }
-  size_t s = m_expo;
-  if(m_negative) s = ~s;
+
   for(const Digit *p = m_first; p; p = p->next) {
     s = s * 17 + p->n;
   }
   return sizetHash(s);
+}
+
+BigReal &BigReal::multiply2() {
+  CHECKISMUTABLE(*this);
+  bool carry = false;
+  if(_isnormal()) {
+    for(Digit *d = m_last; d; d = d->prev) {
+      d->n *= 2;
+      if(carry) d->n++;
+      if(carry = (d->n >= BIGREALBASE)) {
+        d->n -= BIGREALBASE;
+      }
+    }
+    if(carry) {
+      insertDigit(1);
+      m_expo++;
+    }
+    trimZeroes();
+  }
+  return *this;
+}
+
+#define _BR2 (BIGREALBASE / 2)
+BigReal &BigReal::divide2() {
+  CHECKISMUTABLE(*this);
+  bool borrow = false;
+  if(_isnormal()) {
+    for(Digit *d = m_first; d; d = d->next) {
+      const bool nb = (d->n & 1) != 0;
+      d->n /= 2;
+      if(borrow) d->n += _BR2;
+      borrow = nb;
+    }
+    if(borrow) {
+      appendDigit(_BR2);
+    } else {
+      trimZeroes();
+    }
+  }
+  return *this;
 }

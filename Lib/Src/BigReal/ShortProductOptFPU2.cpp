@@ -128,7 +128,7 @@ NextDigit:
   }
 
   intptr_t digitsAdded = loopCount - loopCounter;
-  if(cd->n == 0) {                        // Fixup both ends of digit chain, to reestablish invariant (See comments in assertIsValidBigReal)
+  if(cd->n == 0) {                        // Fixup both ends of digit chain, to reestablish invariant (See comments in assertIsValil)
     m_last = cd;
     for(digitsAdded--, cd = m_last->prev; cd->n == 0; cd = cd->prev, digitsAdded--);
     deleteDigits(cd->next, m_last);

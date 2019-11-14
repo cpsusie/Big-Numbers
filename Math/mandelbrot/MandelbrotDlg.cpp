@@ -28,7 +28,7 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CMandelbrotDlg::CMandelbrotDlg(DigitPool *digitPool, CWnd *pParent) 
+CMandelbrotDlg::CMandelbrotDlg(DigitPool *digitPool, CWnd *pParent)
 : CDialog(CMandelbrotDlg::IDD, pParent)
 , m_digitPool(digitPool)
 , m_rect0(    digitPool)
@@ -749,7 +749,7 @@ static String zoomToStr(double z) {
 
 void CMandelbrotDlg::paintZoomFactor(CDC &dc) {
   const Size2D &zoom    = getZoomFactor();
-  String        zoomStr = (zoom.cx == zoom.cy) 
+  String        zoomStr = (zoom.cx == zoom.cy)
                         ? zoomToStr(zoom.cx)
                         : format(_T("(%s,%s)"), zoomToStr(zoom.cx).cstr(), zoomToStr(zoom.cy).cstr());
   const CSize   sz      = getWindowSize();

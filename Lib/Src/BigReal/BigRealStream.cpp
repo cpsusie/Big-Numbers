@@ -41,8 +41,8 @@ void BigRealStream::formatFixed(String &dst, const BigReal &x, StreamSize precis
   } else {
     dst += digitToStr(digStr, digit->n);
     d -= BigReal::getDecimalDigitCount(digit->n);
-    for(digit = digit->next; digit != NULL && (d >= 0); d -= LOG10_BIGREALBASE, digit = digit->next) {
-      dst += digitToStr(digStr, digit->n, LOG10_BIGREALBASE);
+    for(digit = digit->next; digit != NULL && (d >= 0); d -= BIGREAL_LOG10BASE, digit = digit->next) {
+      dst += digitToStr(digStr, digit->n, BIGREAL_LOG10BASE);
     }
     addZeroes(dst,d + 1);
     d = -1;
@@ -53,10 +53,10 @@ void BigRealStream::formatFixed(String &dst, const BigReal &x, StreamSize precis
     addDecimalPoint(dst);
 
     if(precision > 0) {
-      for(int i = 0; (i - LOG10_BIGREALBASE > d) && (decimalsDone < precision); i -= LOG10_BIGREALBASE) {
-        int      partLength = LOG10_BIGREALBASE;
+      for(int i = 0; (i - BIGREAL_LOG10BASE > d) && (decimalsDone < precision); i -= BIGREAL_LOG10BASE) {
+        int      partLength = BIGREAL_LOG10BASE;
         intptr_t rest       = (intptr_t)(precision - decimalsDone);
-        if(rest < LOG10_BIGREALBASE) {
+        if(rest < BIGREAL_LOG10BASE) {
           partLength = (int)rest;
         }
         dst += digitToStr(digStr, 0, partLength);
@@ -64,11 +64,11 @@ void BigRealStream::formatFixed(String &dst, const BigReal &x, StreamSize precis
       }
       for(; digit && (decimalsDone < precision); digit = digit->next) {
         BRDigitType part       = digit->n;
-        int         partLength = LOG10_BIGREALBASE;
+        int         partLength = BIGREAL_LOG10BASE;
         intptr_t    rest       = (intptr_t)(precision - decimalsDone);
-        if(rest < LOG10_BIGREALBASE) {
+        if(rest < BIGREAL_LOG10BASE) {
           partLength = (int)rest;
-          part /= BigReal::pow10(LOG10_BIGREALBASE - (int)rest);
+          part /= BigReal::pow10(BIGREAL_LOG10BASE - (int)rest);
         }
         dst += digitToStr(digStr, part, partLength);
         decimalsDone += partLength;
@@ -102,20 +102,20 @@ void BigRealStream::formatScientific(String &dst, const BigReal &x, StreamSize p
       BRDigitType fraction = digit->n % scaleE10;
       if(precision < scale) {
         fraction /= BigReal::pow10((int)(scale - precision));
-        decimalsDone = (int)precision; // precision < scale < LOG10_BIGREALBASE
+        decimalsDone = (int)precision; // precision < scale < BIGREAL_LOG10BASE
       } else {
-        decimalsDone = (int)scale;     // scale < LOG10_BIGREALBASE
+        decimalsDone = (int)scale;     // scale < BIGREAL_LOG10BASE
       }
-      if(decimalsDone > 0) {           // decimalsDone < LOG10_BIGREALBASE
+      if(decimalsDone > 0) {           // decimalsDone < BIGREAL_LOG10BASE
         dst += digitToStr(digStr, fraction, decimalsDone);
       }
       for(digit = digit->next; digit != NULL && decimalsDone < precision; digit = digit->next) { // now handle tail
         BRDigitType part = digit->n;
-        int         partLength = LOG10_BIGREALBASE;
+        int         partLength = BIGREAL_LOG10BASE;
         intptr_t    rest = (intptr_t)(precision - decimalsDone);
-        if(rest < LOG10_BIGREALBASE) {
+        if(rest < BIGREAL_LOG10BASE) {
           partLength = (int)rest;
-          part /= BigReal::pow10(LOG10_BIGREALBASE - (int)rest);
+          part /= BigReal::pow10(BIGREAL_LOG10BASE - (int)rest);
         }
         dst += digitToStr(digStr, part, partLength);
         decimalsDone += partLength;
@@ -146,13 +146,13 @@ void BigRealStream::formatSeparateDigits(String &dst, const BigReal &x, TCHAR se
     if(d < 0) {
       dst += _T('0');
       addDecimalPoint(dst);
-      digitToStr(digStr, 0, LOG10_BIGREALBASE);
+      digitToStr(digStr, 0, BIGREAL_LOG10BASE);
       for(int i = -1; i > d; i--) {
         dst += digStr;
         dst += separatorChar;
       }
       for(const Digit *digit = x.m_first; digit; digit = digit->next) {
-        dst += digitToStr(digStr, digit->n, LOG10_BIGREALBASE);
+        dst += digitToStr(digStr, digit->n, BIGREAL_LOG10BASE);
         dst += separatorChar;
       }
     } else {
@@ -162,13 +162,13 @@ void BigRealStream::formatSeparateDigits(String &dst, const BigReal &x, TCHAR se
         addDecimalPoint(dst);
       }
       for(Digit *digit = x.m_first->next; digit; digit = digit->next) {
-        dst += digitToStr(digStr, digit->n, LOG10_BIGREALBASE);
+        dst += digitToStr(digStr, digit->n, BIGREAL_LOG10BASE);
         dst += separatorChar;
         if(d-- == 0 && digit->next) {
           addDecimalPoint(dst);
         }
       }
-      digitToStr(digStr, 0, LOG10_BIGREALBASE);
+      digitToStr(digStr, 0, BIGREAL_LOG10BASE);
       for(; d >= 0; d--) {
         dst += digStr;
         dst += separatorChar;

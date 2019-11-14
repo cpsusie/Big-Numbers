@@ -118,6 +118,7 @@ public:
   }
   inline void setStopPending() {
     modifyFlags(PSST_STOPPENDING, 0);
+    m_pool->terminatePoolCalculation();
   }
   inline bool isRunning() const {
     return (m_flags & PSST_RUNNING) != 0;
@@ -242,7 +243,6 @@ void PRMonitor::startJobs() {
 void PRMonitor::terminateJobs() {
   if(getRunningCount() > 0) {
     m_gate.wait();
-    BigReal::terminateCalculation();
     for(size_t i = 0; i < m_jobs.size(); i++) {
       m_jobs[i]->setStopPending();
     }
@@ -250,7 +250,6 @@ void PRMonitor::terminateJobs() {
     while(getRunningCount() > 0) {
       Sleep(500);
     }
-    BigReal::resumeCalculation();
   }
 }
 
@@ -278,7 +277,7 @@ Array<BigInt> PRMonitor::getResult() const {
 
 Array<BigInt> findRandomPrimes(int count, int digitCount, int threadCount, DigitPool *pool, MillerRabinHandler *handler) {
   redirectDebugLog();
-  if(pool == NULL) pool = &DEFAULT_DIGITPOOL;
+  if(pool == NULL) pool = DEFAULT_DIGITPOOL;
   PRMonitor m(digitCount, threadCount, pool, handler);
   m.startJobs();
   while(m.getPrimesFound() < count) {

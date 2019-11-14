@@ -21,15 +21,15 @@ void quotRemainder(const BigReal &x,  const BigReal &y, BigInt *quotient, BigRea
   BigReal::validateQuotRemainderArguments(__TFUNCTION__, x, y, quotient, remainder);
   if(!BigReal::checkIsNormalQuotient(x, y, quotient, remainder)) return;
 
-  DigitPool *pool = x.getDigitPool();
-  const int cmpAbs = compareAbs(x, y);
+  DigitPool *pool   = x.getDigitPool();
+  const int  cmpAbs = BigReal::compareAbs(x, y);
   if(cmpAbs < 0) {
     if(remainder) *remainder = x;
-    if(quotient)  quotient->setToZero();
+    if(quotient )  quotient->setToZero();
     return;
   } else if(cmpAbs == 0) {
     if(remainder) remainder->setToZero();
-    if(quotient) {
+    if(quotient ) {
       *quotient = quotient->getDigitPool()->_1();
     }
     return;
@@ -39,7 +39,7 @@ void quotRemainder(const BigReal &x,  const BigReal &y, BigInt *quotient, BigRea
   tmpX.setPositive();
   BigReal tmpY(y);
   tmpY.setPositive();
-  BigInt q   = floor(quot(tmpX, tmpY, modulusC1));
+  BigInt  q   = floor(quot(tmpX, tmpY, modulusC1));
   BigReal mod = tmpX - q * tmpY;
 
   if(mod.isNegative()) {
@@ -67,7 +67,7 @@ void quotRemainder(const BigReal &x,  const BigReal &y, BigInt *quotient, BigRea
     }
   }
 
-  if(remainder && (remainder->m_negative != x.m_negative)) {
-    remainder->m_negative = x.m_negative; // sign(x % y) = sign(x), equivalent to built-in % operator
+  if(remainder) {
+    COPYSIGN(*remainder, x); // sign(x % y) = sign(x), equivalent to built-in % operator
   }
 }

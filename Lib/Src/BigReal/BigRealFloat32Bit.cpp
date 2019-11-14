@@ -15,14 +15,11 @@ void BigReal::init(float x) {
   } else {
     DigitPool *pool = getDigitPool();
     const BigReal significand(getSignificand(x), pool);
-    const bool isConstPool = pool->getId() == CONST_DIGITPOOL_ID;
-    if(isConstPool) ConstDigitPool::releaseInstance(); // unlock it or we will get a deadlock
     const BigReal &p2 = pow2(expo2, CONVERSION_POW2DIGITCOUNT);
-    if(isConstPool) ConstDigitPool::requestInstance();
     shortProductNoZeroCheck(significand, p2, 2).rRound(9);
   }
   if(x < 0) {
-    m_negative = true;
+    setNegative(true);
   }
 }
 
@@ -33,18 +30,15 @@ bool isFloat(const BigReal &v, float *flt /*=NULL*/) {
     }
     return true;
   }
-  if((compareAbs(v, BigReal::_flt_max) > 0) || (compareAbs(v, BigReal::_flt_min) < 0) || (v.getDecimalDigits() > FLT_DIG)) {
+  if((BigReal::compareAbs(v, BigReal::_flt_max) > 0) || (BigReal::compareAbs(v, BigReal::_flt_min) < 0) || (v.getDecimalDigits() > FLT_DIG)) {
     return false;
   }
   const float f   = v.getFloatNoLimitCheck();
-  const bool  ret = v.isConst() ? (ConstBigReal(f) == v) : (BigReal(f, v.getDigitPool()) == v);
-  if(ret) {
-    if(flt) {
-      *flt = f;
-    }
-    return true;
+  const bool  ret = v == ConstBigReal(f);
+  if(ret && flt) {
+    *flt = f;
   }
-  return false;
+  return ret;
 }
 
 float getFloat(const BigReal &x) {
@@ -53,10 +47,10 @@ float getFloat(const BigReal &x) {
   if(!isnormal(x)) {
     return getNonNormalValue(_fpclass(x), 0.0f);
   }
-  if(compareAbs(x,BigReal::_flt_max) > 0) {
+  if(BigReal::compareAbs(x,BigReal::_flt_max) > 0) {
     throwBigRealGetIntegralTypeOverflowException(method, x, toString(BigReal::_flt_max));
   }
-  if(compareAbs(x,BigReal::_flt_min) < 0) {
+  if(BigReal::compareAbs(x,BigReal::_flt_min) < 0) {
     throwBigRealGetIntegralTypeUnderflowException(method, x, toString(BigReal::_flt_min));
   }
   return x.getFloatNoLimitCheck();

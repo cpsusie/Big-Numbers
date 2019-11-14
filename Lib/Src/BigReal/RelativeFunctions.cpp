@@ -62,7 +62,7 @@ BigReal rExp(const BigReal &x, size_t digits) {
   DigitPool *pool = x.getDigitPool();
   const BigReal c = x.isNegative() ? -rProd(REXPC.c1,fabs(x),20, pool) : rProd(REXPC.c2,x,20,pool);
   double cd;
-  if(compareAbs(x, pool->_05()) < 0) { // prevent underflow in getDouble
+  if(BigReal::compareAbs(x, pool->_05()) < 0) { // prevent underflow in getDouble
     cd = 0;
   } else {
     cd = getDouble(c);

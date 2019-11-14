@@ -34,7 +34,7 @@ BigReal BigReal::apcQuot(const char bias, const BigReal &x, const BigReal &y, Di
     return result;
   }
   const bool yNegative = y.isNegative();
-  ((BigReal&)y).setPositive(); // cheating. We set it back agin
+  ((BigReal&)y).setPositive(); // cheating. We set it back again TODO....REMOVE THIS!!
 
   BigReal z(digitPool);
   z.copyrTrunc(x, MAXDIGITS_INT64).setPositive();
@@ -44,14 +44,16 @@ BigReal BigReal::apcQuot(const char bias, const BigReal &x, const BigReal &y, Di
 
   BigReal tmp(digitPool), t(digitPool);
   for(int i = 0;; i++) {
-    t.approxQuot64Abs(z, yFirst, scale).m_negative = z.m_negative;
+    t.approxQuot64Abs(z, yFirst, scale).setNegative(z.isNegative());
     result += t;
     if(i == 1) break;
     z -= tmp.shortProductNoZeroCheck(t, y, 4);
     if(z.isZero()) break;
   }
 
-  ((BigReal&)y).m_negative = yNegative;
+  if(yNegative) {
+    ((BigReal&)y).setNegative(true);
+  }
   return result.rTrunc(APC_DIGITS+2).setSignByProductRule(x,y).adjustAPCResult(bias, __TFUNCTION__);
 }
 
@@ -121,7 +123,7 @@ BigReal &BigReal::adjustAPCResult(const char bias, const TCHAR *function) {
     return *this;
   } else {
     BigReal f(m_digitPool._1());
-    f.multPow10(getExpo10(*this) - APC_DIGITS - 1);
+    f.multPow10(getExpo10(*this) - APC_DIGITS - 1, true);
     switch(bias) {
     case '<': *this -= f; break;
     case '>': *this += f; break;

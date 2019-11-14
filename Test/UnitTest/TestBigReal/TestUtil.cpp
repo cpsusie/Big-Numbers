@@ -45,7 +45,7 @@ Array<BigReal> generateTestData(const TestInterval &interval, DigitPool *pool, i
 
 float getRelativeError32(float x, DigitPool *pool, size_t *length) {
   BigReal n(x, pool);
-  n.assertIsValidBigReal();
+  n.assertIsValid();
   if(length) *length = n.getLength();
   const float f32 = getFloat(n);
   return fabs((f32-x)/x);
@@ -53,7 +53,7 @@ float getRelativeError32(float x, DigitPool *pool, size_t *length) {
 
 double getRelativeError64(double x, DigitPool *pool, size_t *length) {
   BigReal n(x, pool);
-  n.assertIsValidBigReal();
+  n.assertIsValid();
   if(length)  *length = n.getLength();
   const double d64    = getDouble(n);
   return fabs((d64-x)/x);
@@ -61,7 +61,7 @@ double getRelativeError64(double x, DigitPool *pool, size_t *length) {
 
 double getRelativeError80(const Double80 &x, DigitPool *pool, size_t *length) {
   BigReal n(x, pool);
-  n.assertIsValidBigReal();
+  n.assertIsValid();
   if(length)    *length = n.getLength();
   const Double80 d80    = getDouble80(n);
   const double   error  = getDouble(fabs((d80-x)/x));

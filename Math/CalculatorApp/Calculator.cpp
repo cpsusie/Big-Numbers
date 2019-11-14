@@ -43,7 +43,7 @@ BigReal Calculator::toRadians(const BigReal &x) const {
       if(xe < 0) {
         fpe = xe;
       } else { // expo(tmp) >= 0
-        fpe = -xe - abs(tmp.getLow()) * LOG10_BIGREALBASE;
+        fpe = -xe - abs(tmp.getLow()) * BIGREAL_LOG10BASE;
       }
 
       const BigReal fp(e(BigReal::_1, fpe - m_ndigits - 8));
@@ -838,7 +838,6 @@ void Calculator::setPrecision(int ndigits) {
 }
 
 void Calculator::enterButton(int button) {
-  BigReal::resumeCalculation();
   if(m_gotError && (button != IDC_BUTTONCLEAR) && (button != IDC_BUTTONCE)) {
     return;
   }
@@ -1119,5 +1118,5 @@ void CalculatorThread::enter(int button) {
 }
 
 void CalculatorThread::terminateCalculation() {
-  BigReal::terminateCalculation();
+  BigRealResourcePool::terminateAllPoolCalculations();
 }

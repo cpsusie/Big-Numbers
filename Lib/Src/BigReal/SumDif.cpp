@@ -204,9 +204,10 @@ BigReal &BigReal::addAbs(const BigReal &x) {
   return trimZeroes();
 }
 
-// Assume &x != this && this->_isnormal() && x._isnormal() && |this| > |x|
+// Assume &x != this && this->_isnormal() && x._isnormal() && |x| < |*this|
 // Subtract |x| from |this| with maximal error = f
 BigReal &BigReal::subAbs(const BigReal &x, const BigReal &f) {
+  assert((&x != this) && _isnormal() && x._isnormal() && (compareAbs(x, *this) < 0));
   const Digit *xp = x.findDigitSubtract(f);
 
   if(xp == NULL) {
@@ -262,13 +263,13 @@ BigReal sum(const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *poo
   }
 
   // x != 0 && y != 0
-  if(x.m_negative == y.m_negative) { // sign(x) == sign(y). Calculate sign(x) * (|x| + |y|)
+  if(x.isNegative() == y.isNegative()) { // sign(x) == sign(y). Calculate sign(x) * (|x| + |y|)
     BigReal result(pool);
     result.addAbs(x, y, f);
-    result.m_negative = x.m_negative;
+    COPYSIGN(result, x);
     return result;
   } else if(f.isZero()) {            // sign(x) != sign(y)
-    const int c = compareAbs(x, y);
+    const int c = BigReal::compareAbs(x, y);
     if(c > 0) {                      // |x| > |y|. Calculate sign(x) * (|x| - |y|)
       BigReal result(x, pool);
       result.subAbs(y, f);
@@ -282,9 +283,11 @@ BigReal sum(const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *poo
     }
   } else {                           // f != 0
     BigReal tmpX(pool), tmpY(pool);
+    tmpX.clrInitDone();
+    tmpY.clrInitDone();
     copy(tmpX, x, f);
     copy(tmpY, y, f);
-    const int c = compareAbs(tmpX, tmpY);
+    const int c = BigReal::compareAbs(tmpX, tmpY);
     if(c > 0) {                      // abs(tmpX) > abs(tmpY)
       tmpX.subAbs(tmpY, f);
       return tmpX;
@@ -307,13 +310,13 @@ BigReal dif(const BigReal &x, const BigReal &y, const BigReal &f,  DigitPool *po
   }
 
   // x != 0 && y != 0
-  if(x.m_negative != y.m_negative) { // sign(x) != sign(y). Calculate sign(x) * (|x| + |y|)
+  if(x.isNegative() != y.isNegative()) { // sign(x) != sign(y). Calculate sign(x) * (|x| + |y|)
     BigReal result(pool);
     result.addAbs(x, y, f);
-    result.m_negative = x.m_negative;
+    COPYSIGN(result, x);
     return result;
   } else if(f.isZero()) {            // sign(x) == sign(y)
-    const int c = compareAbs(x, y);
+    const int c = BigReal::compareAbs(x, y);
     if(c > 0) {                      // |x| > |y|. Calculate sign(x) * (|x| - |y|)
       BigReal result(x, pool);
       result.subAbs(y, f);
@@ -328,9 +331,11 @@ BigReal dif(const BigReal &x, const BigReal &y, const BigReal &f,  DigitPool *po
     }
   } else {                           // f != 0
     BigReal tmpX(pool), tmpY(pool);
+    tmpX.clrInitDone();
+    tmpY.clrInitDone();
     copy(tmpX, x, f);
     copy(tmpY, y, f);
-    const int c = compareAbs(tmpX, tmpY);
+    const int c = BigReal::compareAbs(tmpX, tmpY);
     if(c > 0) {                      // abs(tmpX) > abs(tmpY). Calculate sign(x) * (abs(tmpX) - abs(tmpY))
       tmpX.subAbs(tmpY, f);
       return tmpX;
@@ -352,9 +357,7 @@ BigReal operator-(const BigReal &x) {
   if(x.isZero()) {
     return x;
   }
-  BigReal result(x);
-  result.changeSign();
-  return result;
+  return BigReal(x).clrInitDone().changeSign().setInitDone();
 }
 
 BigReal operator-(const BigReal &x, const BigReal &y) {
@@ -362,6 +365,7 @@ BigReal operator-(const BigReal &x, const BigReal &y) {
 }
 
 BigReal &BigReal::operator+=(const BigReal &x) {
+  CHECKISMUTABLE(*this);
   if(&x == this) {
     if(!_isnormal()) {
       return *this;
@@ -378,16 +382,16 @@ BigReal &BigReal::operator+=(const BigReal &x) {
   }
 
   // this->_isnormal() && x._isnormal()
-  if(x.m_negative == m_negative) {   // sign(this) == sign(x). Calculate (sign(this) * (|this| + |x|)
+  if(x.isNegative() == isNegative()) {  // sign(this) == sign(x). Calculate (sign(this) * (|this| + |x|)
     addAbs(x);
-  } else {                           // sign(this) != sign(x)
+  } else {                              // sign(this) != sign(x)
     const int c = compareAbs(*this, x);
-    if(c > 0) {                      // |this| > |x|. Calculate sign(this) * (|this| - |x|)
+    if(c > 0) {                         // |this| > |x|. Calculate sign(this) * (|this| - |x|)
       subAbs(x, BigReal::_0);
-    } else if(c < 0) {               // |this| < |x|. Calculate sign(x) * (|x| - |this|)
+    } else if(c < 0) {                  // |this| < |x|. Calculate sign(x) * (|x| - |this|)
       BigReal tmp(x,getDigitPool());
       *this = tmp.subAbs(*this, BigReal::_0);
-    } else {                         // |this| == |x| => *this = 0
+    } else {                            // |this| == |x| => *this = 0
       *this = BigReal::_0;
     }
   }
@@ -395,6 +399,7 @@ BigReal &BigReal::operator+=(const BigReal &x) {
 }
 
 BigReal &BigReal::operator-=(const BigReal &x) {
+  CHECKISMUTABLE(*this);
   if(!_isfinite() || !x._isfinite()) return setToNan();
   if(&x == this) {
     return *this = BigReal::_0;
@@ -407,17 +412,17 @@ BigReal &BigReal::operator-=(const BigReal &x) {
   }
 
   // this->_isnormal() && x._isnormal()
-  if(x.m_negative != m_negative) {   // sign(this) != sign(x)
+  if(x.isNegative() != isNegative()) {   // sign(this) != sign(x)
     addAbs(x);
-  } else {                           // sign(this) == sign(x)
+  } else {                               // sign(this) == sign(x)
     const int c = compareAbs(*this, x);
-    if(c > 0) {                      // |this| > |x|. Calculcate sign(this) * (|this| - |x|)
+    if(c > 0) {                          // |this| > |x|. Calculcate sign(this) * (|this| - |x|)
       subAbs(x, BigReal::_0);
-    } else if(c < 0) {               // |this| < |x|. Calculate -sign(x) * (|x| - |this|)
+    } else if(c < 0) {                   // |this| < |x|. Calculate -sign(x) * (|x| - |this|)
       BigReal tmp(x);
       *this = tmp.subAbs(*this, BigReal::_0);
       changeSign();
-    } else {                         // |this| == |x| => *this = 0
+    } else {                             // |this| == |x| => *this = 0
       *this = BigReal::_0;
     }
   }

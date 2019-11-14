@@ -1,10 +1,6 @@
 #include "pch.h"
 
-#ifdef IS32BIT
-
-#ifdef _DEBUG
-
-bool BigReal::s_useShortProdReferenceVersion = false;
+#ifdef __NEVER__
 
 BigReal &BigReal::shortProductNoZeroCheck(const BigReal &x, const BigReal &y, size_t loopCount) { // version 1
   return (s_useShortProdReferenceVersion) ? shortProductNoZeroCheckReference(x, y,loopCount) : shortProductNoZeroCheckDebug(x, y, loopCount);
@@ -173,8 +169,6 @@ inline void insertDigitAndIncrExpo(BigReal &v, const BRDigitType n) {
   v.insertDigit(n);
   v.m_expo++; // we know m_expo != ZERO_EXPO
 }
-
-#ifdef __NEVER__
 
 BigReal &BigReal::shortProductNoZeroCheckReference(const BigReal &x, const BigReal &y, int loopCount) { // return *this
   m_low = (m_expo = x.m_expo + y.m_expo) + 1;
@@ -364,8 +358,4 @@ void BigReal::addSubProductReference2(unsigned __int64 &n) {
   }
 }
 
-#endif // __NVER__
-
-#endif // _DEBUG
-
-#endif // IS32BIT
+#endif // __NEVER__

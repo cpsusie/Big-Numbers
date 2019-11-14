@@ -3,7 +3,7 @@
 #include "TestBigReal.h"
 #include "BigRealTestClass.h"
 
-#ifdef _DEBUG
+#ifdef __NEVER__
 
 #define INTERACTIVE_SHORTPROD
 
@@ -40,12 +40,12 @@ static void testShortProd() {
     _tprintf(_T("p2:%s\n"), toString(p2).cstr());
 
     try {
-      p1.assertIsValidBigReal();
+      p1.assertIsValid();
     } catch(Exception e) {
       _tprintf(_T("p1 failed:%s\n"), e.what());
     }
     try {
-      p2.assertIsValidBigReal();
+      p2.assertIsValid();
     } catch(Exception e) {
       _tprintf(_T("p2 failed:%s\n"), e.what());
     }
@@ -56,7 +56,7 @@ static void testShortProd() {
 
 static void testShortProd() {
   DigitPool pool(-5);
-  Random rnd;
+  JavaRandom rnd;
 
   for(int i = 0; i < 500000;) {
     if((i++)%10000 == 9999) _tprintf(_T("i:%d\r"), i);
@@ -78,7 +78,7 @@ static void testShortProd() {
     p1 = BigReal::shortProd(x, y, F, &pool);
 
     try {
-      p1.assertIsValidBigReal();
+      p1.assertIsValid();
     } catch(Exception e) {
       printf(_T("p1 failed:%s\n"), e.what());
       continue;
@@ -88,7 +88,7 @@ static void testShortProd() {
     p2 = BigReal::shortProd(x, y, F, &pool);
 
     try {
-      p2.assertIsValidBigReal();
+      p2.assertIsValid();
     } catch(Exception e) {
       printf(_T("p2 failed:%s\n"), e.what());
       continue;
@@ -114,12 +114,12 @@ static void testShortProd() {
     printf(_T("x*y (2) = %s\n"), p2.toString().cstr());
 
     try {
-      p1.assertIsValidBigReal();
+      p1.assertIsValid();
     } catch(Exception e) {
       printf(_T("p1 failed:%s\n"), e.what());
     }
     try {
-      p2.assertIsValidBigReal();
+      p2.assertIsValid();
     } catch(Exception e) {
       printf(_T("p2 failed:%s\n"), e.what());
     }
@@ -132,42 +132,44 @@ static void testShortProd() {
 
 
 static void testRandomBigReal() {
-  DigitPool pool(-5);
+  DigitPool *pool = BigRealResourcePool::fetchDigitPool();
   MersenneTwister64 rnd;
   for(;;) {
     int count  = inputInt(_T("Enter number of random numbers:"));
     int length = inputInt(_T("Enter length (decimal digits):"));
-    const FullFormatBigReal low  = inputBigReal(pool, _T("Enter low :"));
-    const FullFormatBigReal high = inputBigReal(pool, _T("Enter high:"));
+    const FullFormatBigReal low  = inputBigReal(*pool, _T("Enter low :"));
+    const FullFormatBigReal high = inputBigReal(*pool, _T("Enter high:"));
 
     String fileName = format(_T("c:\\temp\\random%s-%s-length=%d.dat"), toString(low).cstr(), toString(high).cstr(), length);
     FILE *f = FOPEN(fileName, _T("w"));
     for(int i = 0; i < count; i++) {
-      FullFormatBigReal x = randBigReal(low, high, length, rnd, &pool);
+      FullFormatBigReal x = randBigReal(low, high, length, rnd, pool);
       _ftprintf(f, _T("%s\n"), toString(x).cstr());
     }
     fclose(f);
   }
+  BigRealResourcePool::releaseDigitPool(pool);
 }
 
 static void testAPCSum() {
-  DigitPool pool(-5);
+  DigitPool *pool = BigRealResourcePool::fetchDigitPool();
   for(;;) {
-    const FullFormatBigReal x = inputBigReal(pool, _T("Enter x:"));
-    const FullFormatBigReal y = inputBigReal(pool, _T("Enter y:"));
+    const FullFormatBigReal x = inputBigReal(*pool, _T("Enter x:"));
+    const FullFormatBigReal y = inputBigReal(*pool, _T("Enter y:"));
     _tprintf(_T("Enter bias ('<','>','#'):"));
     char bias = getchar();
-    FullFormatBigReal p = BigReal::apcSum(bias, x, y, &pool);
+    FullFormatBigReal p = BigReal::apcSum(bias, x, y, pool);
 
     _tprintf(_T("x:%50s y:%50s\n"), toString(x).cstr(), toString(y).cstr());
     _tprintf(_T("APCSum(>,x,y) = %s\n"), toString(p).cstr());
 
     try {
-      p.assertIsValidBigReal();
+      p.assertIsValid();
     } catch(Exception e) {
       _tprintf(_T("%s\n"), e.what());
     }
   }
+  BigRealResourcePool::releaseDigitPool(pool);
 }
 
 class SpecialTestClass : public BigRealTestClass {

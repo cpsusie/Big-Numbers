@@ -1,6 +1,6 @@
 #include "pch.h"
 
-// These Functions should be isolated to this file, så we'll not link DigitPool and a lot
+// These Functions should be isolated to this file, so we'll not link DigitPool and a lot
 // more unessecary datastructures/threads on NumberAddIn which only call (some) of these functions
 
 #define TENE0  1

@@ -218,7 +218,7 @@ private:
 
 public:
   inline BigRealRectangleTransformation(IntervalScale xScale = LINEAR, IntervalScale yScale = LINEAR, DigitPool *digitPool=NULL)
-    : m_digitPool(digitPool?digitPool:&DEFAULT_DIGITPOOL)
+    : m_digitPool(digitPool?digitPool:DEFAULT_DIGITPOOL)
   {
     m_xtransform = m_ytransform = NULL;
     computeTransformation(getDefaultFromRectangle(xScale,yScale,getDigitPool()), getDefaultToRectangle(getDigitPool()), xScale, yScale);
@@ -294,7 +294,7 @@ public:
   bool adjustAspectRatio();
 
   static inline BigRealRectangleTransformation getId(DigitPool *digitPool=NULL) {
-    if(digitPool == NULL) digitPool = &DEFAULT_DIGITPOOL;
+    if(digitPool == NULL) digitPool = DEFAULT_DIGITPOOL;
     return BigRealRectangleTransformation(BigRealRectangle2D(0,0,1,1,digitPool)
                                          ,BigRealRectangle2D(0,0,1,1,digitPool));
   }

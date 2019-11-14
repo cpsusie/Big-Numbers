@@ -14,14 +14,11 @@ void BigReal::init(const Double80 &x) {
   } else {
     DigitPool *pool = getDigitPool();
     const BigReal significand(getSignificand(x), pool);
-    const bool isConstPool = pool->getId() == CONST_DIGITPOOL_ID;
-    if(isConstPool) ConstDigitPool::releaseInstance(); // unlock it or we will get a deadlock
-    const BigReal &p2 = pow2(expo2, CONVERSION_POW2DIGITCOUNT);
-    if(isConstPool) ConstDigitPool::requestInstance();
+    const ConstBigReal &p2 = pow2(expo2, CONVERSION_POW2DIGITCOUNT);
     shortProductNoZeroCheck(significand, p2, 5).rRound(22);
   }
   if(x.isNegative()) {
-    m_negative = true;
+    setNegative(true);
   }
 }
 
@@ -32,18 +29,15 @@ bool isDouble80(const BigReal &v, Double80 *d80 /*=NULL*/) {
     }
     return true;
   }
-  if((compareAbs(v, BigReal::_dbl80_max) > 0) || (compareAbs(v, BigReal::_dbl80_min) < 0) || (v.getDecimalDigits() > DBL80_DIG)) {
+  if((BigReal::compareAbs(v, BigReal::_dbl80_max) > 0) || (BigReal::compareAbs(v, BigReal::_dbl80_min) < 0) || (v.getDecimalDigits() > DBL80_DIG)) {
     return false;
   }
   const Double80 d   = v.getDouble80NoLimitCheck();
-  const bool     ret = v.isConst() ? (BigReal(d) == v) : (BigReal(d, v.getDigitPool()) == v);
-  if(ret) {
-    if(d80) {
-      *d80 = d;
-    }
-    return true;
+  const bool     ret = v == ConstBigReal(d);
+  if(ret && d80) {
+    *d80 = d;
   }
-  return false;
+  return ret;
 }
 
 Double80 getDouble80(const BigReal &x) {
@@ -51,10 +45,10 @@ Double80 getDouble80(const BigReal &x) {
   if(!isnormal(x)) {
     return getNonNormalValue(_fpclass(x), Double80::_0);
   }
-  if(compareAbs(x,BigReal::_dbl80_max) > 0) {
+  if(BigReal::compareAbs(x,BigReal::_dbl80_max) > 0) {
     throwBigRealGetIntegralTypeOverflowException(method, x, toString(BigReal::_dbl80_max));
   }
-  if(compareAbs(x,BigReal::_dbl80_min) < 0) {
+  if(BigReal::compareAbs(x,BigReal::_dbl80_min) < 0) {
     throwBigRealGetIntegralTypeUnderflowException(method, x, toString(BigReal::_dbl80_min));
   }
   return x.getDouble80NoLimitCheck();
@@ -71,31 +65,33 @@ Double80 BigReal::getDouble80NoLimitCheck() const {
   bool             e2Overflow;
   Double80         e2, e2x;
   BigReal          xi(pool);
+  xi.clrInitDone();
   if(expo2 <= minExpo2) {
     e2 = Double80::pow2(minExpo2);
     e2Overflow = false;
-    xi.shortProductNoNormalCheck(::cut(*this,21), pow2(minExpo2, CONVERSION_POW2DIGITCOUNT), BIGREAL_NONNORMAL);  // BigReal multiplication
+    xi.shortProductNoZeroCheck(::cut(*this,21), pow2(minExpo2, CONVERSION_POW2DIGITCOUNT), 10);  // BigReal multiplication
   } else if(expo2 >= maxExpo2) {
     e2  = Double80::pow2(maxExpo2);
     e2x = Double80::pow2((int)expo2 - maxExpo2);
     e2Overflow = true;
-    xi.shortProductNoNormalCheck(::cut(*this,21), pow2((int)expo2, CONVERSION_POW2DIGITCOUNT), BIGREAL_NONNORMAL);  // BigReal multiplication
+    xi.shortProductNoZeroCheck(::cut(*this,21), pow2((int)expo2, CONVERSION_POW2DIGITCOUNT), 10);  // BigReal multiplication
   } else {
     e2 = Double80::pow2((int)expo2);
     e2Overflow = false;
     xi = round(xi.shortProductNoNormalCheck(::cut(*this,22), pow2((int)expo2, CONVERSION_POW2DIGITCOUNT), -1));  // BigReal multiplication
   }
+  xi.setInitDone();
   const Digit *p = xi.m_first;
   if(p == NULL) {
     return Double80::_0;
   }
   Double80 result     = (INT64)p->n;
-  int      digitCount = LOG10_BIGREALBASE;
-  for(p = p->next; p && (digitCount < 24); p = p->next, digitCount += LOG10_BIGREALBASE) {
+  int      digitCount = BIGREAL_LOG10BASE;
+  for(p = p->next; p && (digitCount < 24); p = p->next, digitCount += BIGREAL_LOG10BASE) {
     result *= BIGREALBASE;
     result += (INT64)p->n;
   }
-  const BRExpoType e = xi.m_expo * LOG10_BIGREALBASE - digitCount + LOG10_BIGREALBASE;
+  const BRExpoType e = xi.m_expo * BIGREAL_LOG10BASE - digitCount + BIGREAL_LOG10BASE;
   if(e > 0) {
     result *= Double80::pow10((int)e);
   } else if(e < 0) {

@@ -695,6 +695,7 @@
     <ClInclude Include="..\..\Include\Math\BigRealTransformation.h" />
     <ClInclude Include="BigRealInternal.h" />
     <ClInclude Include="BigRealStream.h" />
+    <ClInclude Include="Factory.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
@@ -708,12 +709,16 @@
     <ClCompile Include="BigIntIO.cpp" />
     <ClCompile Include="BigIntRandom.cpp" />
     <ClCompile Include="BigIntStr.cpp" />
+    <ClCompile Include="BigIntValidate.cpp" />
     <ClCompile Include="BigRational.cpp" />
     <ClCompile Include="BigRationalIO.cpp" />
     <ClCompile Include="BigRationalRandom.cpp" />
     <ClCompile Include="BigRationalStr.cpp" />
+    <ClCompile Include="BigRationalValidate.cpp" />
     <ClCompile Include="BigReal.cpp" />
     <ClCompile Include="BigRealByteStream.cpp" />
+    <ClCompile Include="BigRealClassify.cpp" />
+    <ClCompile Include="BigRealFlagsToString.cpp" />
     <ClCompile Include="BigRealFloat32Bit.cpp" />
     <ClCompile Include="BigRealDouble64Bit.cpp" />
     <ClCompile Include="BigRealDouble80Bit.cpp" />

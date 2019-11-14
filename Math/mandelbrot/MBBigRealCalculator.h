@@ -38,7 +38,7 @@ private:
     return m_digitPool;
   }
 public:
-  MBBigRealCalculator(CalculatorPool *pool, int id) 
+  MBBigRealCalculator(CalculatorPool *pool, int id)
     : MBCalculator(pool, id)
     , _4(4,BigRealResourcePool::getInstance().fetchDigitPool())
   {

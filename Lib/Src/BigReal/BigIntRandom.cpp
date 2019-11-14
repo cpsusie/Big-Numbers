@@ -5,7 +5,7 @@
 // If digitPool == NULL, use DEFAULT_DIGITPOOL
 // ex:maxDigits = 3:returned values in interval [0..999]
 BigInt randBigInt(size_t maxDigits, RandomGenerator &rnd, DigitPool *digitPool) {
-  return (BigInt&)randBigReal(maxDigits, rnd, digitPool).multPow10(maxDigits);
+  return (BigInt&)randBigReal(maxDigits, rnd, digitPool).multPow10(maxDigits, true);
 }
 
 // Return uniform distributed random BigInt in [0..n-1], digits generated with rnd.

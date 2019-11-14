@@ -129,7 +129,7 @@ BigReal &BigReal::shortProductNoZeroCheck(const BigReal &x, const BigReal &y, UI
     }
     digitsAdded = loopCount - loopCounter;
   }
-  if(sps.m_cd->n == 0) { // Fixup both ends of digit chain, to reestablish invariant (See comments in assertIsValidBigReal)
+  if(sps.m_cd->n == 0) { // Fixup both ends of digit chain, to reestablish invariant (See comments in assertIsValid)
     m_last = sps.m_cd;
     for(digitsAdded--, sps.m_cd = m_last->prev; sps.m_cd->n == 0; sps.m_cd = sps.m_cd->prev, digitsAdded--);
     deleteDigits(sps.m_cd->next, m_last);

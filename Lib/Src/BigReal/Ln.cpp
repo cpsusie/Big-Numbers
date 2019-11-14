@@ -1,12 +1,11 @@
 #include "pch.h"
 
-static Semaphore ln_gate;
-static DigitPool ln_pool(LN_DIGITPOOL_ID);
-
-#define LNPOOL (&ln_pool)
+static FastSemaphore lnLock;
 
 class Ln10Constants {
 public:
+  DigitPool *m_digitPool;
+
   const ConstBigReal  c4;
   const ConstBigReal  c6;
   const ConstBigReal  c7;
@@ -29,6 +28,8 @@ public:
     ,c14 ( 0.01 )
     ,c15 ( 10   )
   {
+    m_digitPool = BigRealResourcePool::fetchDigitPool();
+    m_digitPool->setName(_T("LN"));
   }
 };
 
@@ -37,15 +38,18 @@ static const Ln10Constants LN10C;
 #define _1 pool->_1()
 
 BigReal BigReal::ln10(const BigReal &f) { // static
-  ln_gate.wait();
+  VALIDATETOLERANCE(f)
+  BigReal result(f.getDigitPool());
 
+  lnLock.wait();
   try {
+
+    DigitPool *LNPOOL = LN10C.m_digitPool;
 
     static BigReal ln10Error(LNPOOL); // cache
     static BigReal ln10Value(LNPOOL); // cache
 
-    VALIDATETOLERANCE(f)
-    if(ln10Error.isZero() || f < ln10Error) {
+    if(ln10Error.isZero() || (f < ln10Error)) {
       if(f >= LN10C.c6) {
         ln10Value = LN10C.c7;
       } else {
@@ -66,18 +70,17 @@ BigReal BigReal::ln10(const BigReal &f) { // static
         ln10Value = z + quot(dif(LN10C.c15,r,BigReal::_0,LNPOOL),r,f*LN10C.c12);
       }
       ln10Error = f;
-      ln_gate.signal();
-      return ln10Value;
+      result = ln10Value;
+      goto End;
     }
-    BigReal tmp(f.getDigitPool());
-    copy(tmp,ln10Value,f*LN10C.c14);
-    ln_gate.signal();
-
-    return tmp;
+    copy(result,ln10Value,f*LN10C.c14);
   } catch(...) {
-    ln_gate.signal();
+    lnLock.notify();
     throw;
   }
+End:
+  lnLock.notify();
+  return result;
 }
 
 /*
@@ -329,7 +332,7 @@ BigReal ln1(const BigReal &x, const BigReal &f) {
       BigReal t = s;
       const BigReal z = -s;
       BigReal n = _1;
-      while(compareAbs(t,v) > 0) {
+      while(BigReal::compareAbs(t,v) > 0) {
         ++n;
         t = prod(t,z,w,pool);
         s += quot(t,n,u,pool);

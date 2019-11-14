@@ -22,8 +22,11 @@ public:
   VTYPE         m_first;               // Most significand  digit
   VTYPE         m_last;                // Least significand digit
   ETYPE         m_expo, m_low;         // if isZero() then (m_expo,m_low)=(BIGREAL_ZEROEXPO,0) else m_expo = m_low+getLength()-1
-  bool          m_negative;            // True for x < 0. else false
   VTYPE         m_digitPool;
+  BYTE          m_flags;
+  inline bool isNegative() const {
+    return m_flags & BR_NEG;
+  }
 };
 
 typedef BigRealType<BRExpoTypex86, BRDigitTypex86> BigRealx86;
@@ -54,6 +57,7 @@ template<class BRType, class ETYPE, class VTYPE, int log10Base, ETYPE nonNormalE
 private:
   DEBUGHELPER *m_helper;
   bool         m_hasDecimalPoint;
+  bool         m_showFlags;
   string      &m_result;
 
   void getDigit(DigitType<VTYPE> &d, VTYPE addr) const {
@@ -172,7 +176,7 @@ private:
       addstr(showDecimals ? "0.0000000000000000000" : "0");
       break;
     case BIGREAL_INFLOW:
-      addstr(n.m_negative ? "-inf" : "inf");
+      addstr(n.isNegative() ? "-inf" : "inf");
       break;
     case BIGREAL_QNANLOW:
       addstr("nan(ind)");
@@ -184,11 +188,25 @@ private:
     }
   }
 
+  string makeFlagsString(BYTE flags) const {
+    const String s = BigReal::flagsToString(flags);
+    char tmp[200], result[200];
+    strCpy(tmp, s.cstr());
+    sprintf(result, "{%s}:", tmp);
+    return result;
+  }
 public:
-  BigRealAddIn(DEBUGHELPER *pHelper, string &dst) : m_helper(pHelper), m_result(dst), m_hasDecimalPoint(false) {
+  BigRealAddIn(DEBUGHELPER *pHelper, string &dst, bool showFlags)
+    : m_helper(pHelper)
+    , m_result(dst)
+    , m_showFlags(showFlags)
+    , m_hasDecimalPoint(false) {
   }
   void toRealString(BRType &n, size_t maxResult) {
     const ETYPE expo = n.m_expo;
+    if(m_showFlags) {
+      addstr(makeFlagsString(n.m_flags));
+    }
     if(expo == nonNormalExpo) {
       formatNonNormal(n, true);
       return;
@@ -218,7 +236,7 @@ public:
       totalDecimalDigitCount = (int)((expo - n.m_low - 1) * log10Base + firstDigitCount + lastDigitCount);
     }
 
-    if(n.m_negative) {
+    if(n.isNegative()) {
       addstr("-");
     }
     const ETYPE expo10 = expo * log10Base + firstExpo10;
@@ -302,6 +320,9 @@ public:
 
   void toIntString(BRType &n, size_t maxResult) {
     const ETYPE expo = n.m_expo;
+    if(m_showFlags) {
+      addstr(makeFlagsString(n.m_flags));
+    }
     if(expo == nonNormalExpo) {
       formatNonNormal(n, false);
       return;
@@ -315,7 +336,7 @@ public:
 
     int totalDecimalDigitCount = (int)((expo - n.m_low) * log10Base + firstDigitCount);
 
-    if(n.m_negative) {
+    if(n.isNegative()) {
       addstr("-");
     }
     const ETYPE expo10      = expo * log10Base + firstExpo10;
@@ -345,9 +366,10 @@ public:
   }
 };
 
-typedef BigRealAddIn<BigRealx86, BRExpoTypex86, BRDigitTypex86, LOG10_BIGREALBASEx86, BIGREAL_NONNORMALx86> BigRealAddInx86;
-typedef BigRealAddIn<BigRealx64, BRExpoTypex64, BRDigitTypex64, LOG10_BIGREALBASEx64, BIGREAL_NONNORMALx64> BigRealAddInx64;
+typedef BigRealAddIn<BigRealx86, BRExpoTypex86, BRDigitTypex86, BIGREAL_LOG10BASEx86, BIGREAL_NONNORMALx86> BigRealAddInx86;
+typedef BigRealAddIn<BigRealx64, BRExpoTypex64, BRDigitTypex64, BIGREAL_LOG10BASEx64, BIGREAL_NONNORMALx64> BigRealAddInx64;
 
+#define SHOWFLAGS (nBase != 10)
 ADDIN_API HRESULT WINAPI AddIn_BigReal(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t maxResult, DWORD /*reserved*/) {
   try {
     string tmpStr;
@@ -355,13 +377,13 @@ ADDIN_API HRESULT WINAPI AddIn_BigReal(DWORD dwAddress, DEBUGHELPER *pHelper, in
     case PRTYPE_X86:
       { BigRealx86 n;
         pHelper->getRealObject(&n, sizeof(n));
-        BigRealAddInx86(pHelper, tmpStr).toRealString(n, maxResult - 1);
+        BigRealAddInx86(pHelper, tmpStr, SHOWFLAGS).toRealString(n, maxResult - 1);
       }
       break;
     case PRTYPE_X64:
       { BigRealx64 n;
         pHelper->getRealObject(&n, sizeof(n));
-        BigRealAddInx64(pHelper, tmpStr).toRealString(n, maxResult - 1);
+        BigRealAddInx64(pHelper, tmpStr, SHOWFLAGS).toRealString(n, maxResult - 1);
       }
       break;
     }
@@ -379,13 +401,13 @@ ADDIN_API HRESULT WINAPI AddIn_BigInt(DWORD dwAddress, DEBUGHELPER *pHelper, int
     case PRTYPE_X86:
       { BigRealx86 n;
         pHelper->getRealObject(&n, sizeof(n));
-        BigRealAddInx86(pHelper, tmpStr).toIntString(n, maxResult - 1);
+        BigRealAddInx86(pHelper, tmpStr, SHOWFLAGS).toIntString(n, maxResult - 1);
        }
       break;
     case PRTYPE_X64:
       { BigRealx64 n;
         pHelper->getRealObject(&n, sizeof(n));
-        BigRealAddInx64(pHelper, tmpStr).toIntString(n, maxResult - 1);
+        BigRealAddInx64(pHelper, tmpStr, SHOWFLAGS).toIntString(n, maxResult - 1);
       }
       break;
     }

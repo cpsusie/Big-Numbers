@@ -31,7 +31,7 @@ void testAPCSum(TestStatistic &stat) {
             const BigReal    exactResult = x + y;
             const BigReal    APCResult   = BigReal::apcSum(bias, x, y, pool);
             const BigReal    error       = fabs(APCResult - exactResult);
-            const int        d           = compare(APCResult, exactResult);
+            const int        d           = BigReal::compare(APCResult, exactResult);
             bool             ok;
             const size_t     len         = APCResult.getLength();
             sumLength += len;

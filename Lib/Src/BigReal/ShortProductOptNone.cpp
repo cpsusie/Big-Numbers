@@ -89,8 +89,8 @@ BigReal &BigReal::shortProductNoZeroCheck(     const BigReal &x, const BigReal &
     yb.baseb(y, min(loopCount, yl));
   }
 
-  xb.assertIsValidBigReal();
-  yb.assertIsValidBigReal();
+  xb.assertIsValid();
+  yb.assertIsValid();
   loopCount *= 2; // assume loopCount > 0
   loopCount--;
 

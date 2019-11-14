@@ -8,20 +8,20 @@
 
 // 0 <= random < 1; with at most maxDigits, decimal digits
 BigReal randBigReal(size_t maxDigits, RandomGenerator &rnd, DigitPool *digitPool) {
-  if(digitPool == NULL) digitPool = &DEFAULT_DIGITPOOL;
+  if(digitPool == NULL) digitPool = DEFAULT_DIGITPOOL;
   if(maxDigits == 0) {
     return digitPool->_0();
   }
   BigReal        result(digitPool);
-  const intptr_t wholeDigits = maxDigits/LOG10_BIGREALBASE;
+  const intptr_t wholeDigits = maxDigits/BIGREAL_LOG10BASE;
   intptr_t       i;
 
   for(i = 0; i < wholeDigits; i++) {
     result.appendDigit(rnd.nextDigit(BIGREALBASE));
   }
 
-  if(maxDigits % LOG10_BIGREALBASE) {
-    const BRDigitType s = BigReal::pow10(maxDigits % LOG10_BIGREALBASE);
+  if(maxDigits % BIGREAL_LOG10BASE) {
+    const BRDigitType s = BigReal::pow10(maxDigits % BIGREAL_LOG10BASE);
     result.appendDigit(rnd.nextDigit(s) * (BIGREALBASE / s));
     i++;
   }
@@ -29,8 +29,7 @@ BigReal randBigReal(size_t maxDigits, RandomGenerator &rnd, DigitPool *digitPool
   result.m_expo     = -1;
   result.m_low      = -i;
   result.setPositive();
-  result.trimZeroes();
-  return result;
+  return result.trimZeroes();
 }
 
 // Return uniform distributed random BigReal in [from;to] with at most maxDigits decimal digits.
@@ -43,6 +42,7 @@ BigReal randBigReal(const BigReal &from, const BigReal &to, size_t maxDigits, Ra
   if(!from._isfinite() || !to._isfinite()) return digitPool->nan();
 
   BigReal r = randBigReal(maxDigits, rnd, digitPool);
+  r.clrInitDone();
   r = rSum(rProd(r, rDif(to,from,maxDigits, digitPool),maxDigits), from, maxDigits);
-  return (r.isZero() || (r.getDecimalDigits() <= maxDigits) || (maxDigits == 0)) ? r : r.rTrunc(maxDigits);
+  return (r.isZero() || (r.getDecimalDigits() <= maxDigits) || (maxDigits == 0)) ? r : r.rTrunc(maxDigits).setInitDone();
 }

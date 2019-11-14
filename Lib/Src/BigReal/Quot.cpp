@@ -31,7 +31,7 @@ BigReal quot(const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *di
     return result.multPow10(-BigReal::getExpo10(y));
   }
 
-  if(compareAbs(x,y) == 0) {
+  if(BigReal::compareAbs(x,y) == 0) {
     return BigReal(sign(x) * sign(y), digitPool);
   }
 #ifdef IS32BIT

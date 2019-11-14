@@ -7,7 +7,10 @@
     <DisplayString LegacyAddin="c:\mytools2015\lib\Win32\Release\BigRealAddIn.dll" Export="AddIn_BigInt"></DisplayString>
   </Type>
   <Type Name="DigitPool">
-    <DisplayString>{m_id,d}</DisplayString>
+    <DisplayString>{m_name.m_buf,su}</DisplayString>
+  </Type>
+  <Type Name="*DigitPool">
+    <DisplayString>{m_name.m_buf,su}</DisplayString>
   </Type>
 
 </AutoVisualizer>

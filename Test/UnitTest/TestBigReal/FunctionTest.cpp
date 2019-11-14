@@ -302,7 +302,7 @@ void testRandBigRational(TestStatistic &stat) {
     verify(low.getDenominator()  <= maxden        );
 
     BigRational high = randBigRational(maxden, rnd);
-    verify(BigRational::_0           <= high      );
+    verify(BigRational::_0       <= high          );
     verify( high                 < BigRational::_1);
     verify(high.getDenominator() <= maxden        );
 

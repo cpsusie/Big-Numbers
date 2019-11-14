@@ -16,7 +16,7 @@ static int findLimit(const BigReal &k) {
     BigReal df(-x*e);
     x -= rQuot(f,df,8);
 //    cout << "x:" << x << " f:" << f << "\n";
-  } while(compareAbs(rQuot(f,k,8),e(_1,-3)) > 0);
+  } while(BigReal::compareAbs(rQuot(f,k,8),e(_1,-3)) > 0);
   return (int)getInt64(x) + 1;
 }
 

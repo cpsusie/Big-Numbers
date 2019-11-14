@@ -10,7 +10,7 @@ BigReal fabs(const BigReal &x) { // Absolute value of x (=|x|)
 }
 
 int BigReal::logBASE(double x) { // static
-  return (int)(log10(x) / LOG10_BIGREALBASE);
+  return (int)(log10(x) / BIGREAL_LOG10BASE);
 }
 
 BRExpoType getExpo2(const BigReal &x) {
@@ -31,11 +31,11 @@ size_t BigReal::getDecimalDigits() const {
   if(!_isnormal()) {
     return isZero() ? 1 : 0;
   }
-  return (m_expo - m_low) * LOG10_BIGREALBASE + getDecimalDigitCount(m_first->n) - getTrailingZeroCount(m_last->n);
+  return (m_expo - m_low) * BIGREAL_LOG10BASE + getDecimalDigitCount(m_first->n) - getTrailingZeroCount(m_last->n);
 }
 
-BigReal e( const BigReal &x, BRExpoType n, DigitPool *pool) { // x * pow(10,n)
-  return BigReal(x,pool).multPow10(n);
+BigReal e(const BigReal &x, BRExpoType n, DigitPool *pool) { // x * pow(10,n)
+  return BigReal(x,pool).multPow10(n, true);
 }
 
 bool isEven(const BigReal &x) {
@@ -79,9 +79,7 @@ BigInt ceil(const BigReal &x) { // smallest integer >= x
     BigInt result(pool);
     result.copyDigits(x, (result.m_expo = x.m_expo)+1);
     result.m_low      = 0;
-    result.m_negative = x.m_negative;
-    result.trimZeroes();
-    if(!result.m_negative) {
+    if(!COPYSIGN(result, x).trimZeroes().isNegative()) {
       ++result;
     }
     return result;
@@ -90,9 +88,10 @@ BigInt ceil(const BigReal &x) { // smallest integer >= x
 
 BigReal fraction(const BigReal &x) { // sign(x) * (|x| - floor(|x|))
   if(!isfinite(x)) return x;
-  BigReal result;
+  BigReal result(x.getDigitPool());
+  result.clrInitDone();
   x.fractionate(NULL, &result);
-  return result;
+  return result.setInitDone();
 /*
   if(x.isZero()) {
     return x;
@@ -112,26 +111,32 @@ BigReal fraction(const BigReal &x) { // sign(x) * (|x| - floor(|x|))
 BigReal trunc(const BigReal &x, intptr_t prec) {  // sign(x) * ent(abs(x)*10^prec)*10^-prec
   if(!isnormal(x)) return x;
   BigReal result(x.getDigitPool());
+  result.clrInitDone();
   if(prec == 0) {
     result = (x.isNegative()) ? -floor(-x) : floor(x);
   } else {
     BigReal tmp(x);
-    result = (x.isNegative()) ? -floor(-tmp.multPow10(prec)).multPow10(-prec) : floor(tmp.multPow10(prec)).multPow10(-prec);
+    result = (x.isNegative())
+           ? -floor(-tmp.multPow10(prec,true)).multPow10(-prec,true)
+           :  floor(tmp.multPow10(prec,true)).multPow10(-prec,true);
   }
-  return result;
+  return result.setInitDone();
 }
 
 BigReal round(const BigReal &x, intptr_t prec) { // sign(x) * ent(abs(x)*10^prec+0.5)*10^-prec
   if(!isnormal(x)) return x;
   DigitPool *pool = x.getDigitPool();
   BigReal result(pool);
+  result.clrInitDone();
   if(prec == 0) {
     result = (x.isNegative()) ? -floor(pool->_05() - x) : floor(x + pool->_05());
   } else {
     BigReal tmp(x);
-    result = (x.isNegative()) ? -floor(pool->_05() - tmp.multPow10(prec)).multPow10(-prec) : floor(tmp.multPow10(prec) + pool->_05()).multPow10(-prec);
+    result = (x.isNegative())
+           ? -floor(pool->_05() - tmp.multPow10(prec,true)).multPow10(-prec,true)
+           :  floor(tmp.multPow10(prec,true) + pool->_05()).multPow10(-prec,true);
   }
-  return result;
+  return result.setInitDone();
 }
 
 void BigReal::fractionate(BigInt *integerPart, BigReal *fractionPart) const {
@@ -158,7 +163,7 @@ void BigReal::fractionate(BigInt *integerPart, BigReal *fractionPart) const {
   const Digit *sd = m_first;
   if(integerPart) {
     BigReal &intPart = *integerPart;
-    intPart.m_negative = m_negative;
+    COPYSIGN(intPart, *this);
     intPart.m_expo     = m_expo;
     intPart.m_low      = 0;
 
@@ -171,7 +176,7 @@ void BigReal::fractionate(BigInt *integerPart, BigReal *fractionPart) const {
       Digit *saveLast = intPart.m_last;
       intPart.m_last = dd->prev;
       intPart.m_last->next = NULL;
-      intPart.m_digitPool.deleteDigits(dd, saveLast);
+      intPart.deleteDigits(dd, saveLast);
     } else {
       for(;expo-- >= 0; sd = sd->next) { // still some digits to append to integerpart
         intPart.appendDigit(sd->n);
@@ -188,7 +193,7 @@ void BigReal::fractionate(BigInt *integerPart, BigReal *fractionPart) const {
   }
   // Assume sd points to the first fraction digit
   if(fractionPart) {
-    fractionPart->m_negative = m_negative;
+    COPYSIGN(*fractionPart, *this);
     fractionPart->m_expo     = -1;
     fractionPart->m_low      = m_low;
     Digit *dd;
@@ -199,7 +204,7 @@ void BigReal::fractionate(BigInt *integerPart, BigReal *fractionPart) const {
       Digit *saveLast = fractionPart->m_last;
       fractionPart->m_last = dd->prev;
       fractionPart->m_last->next = NULL;
-      fractionPart->m_digitPool.deleteDigits(dd, saveLast);
+      fractionPart->deleteDigits(dd, saveLast);
     } else {
       for(; sd; sd = sd->next) {
         fractionPart->appendDigit(sd->n);
@@ -237,6 +242,7 @@ BigReal cut(const BigReal &x, size_t digits, DigitPool *digitPool) { // x trunca
     return digitPool->_0();
   }
   BigReal result(digitPool);
+  result.clrInitDone();
   int k = BigReal::getDecimalDigitCount(x.m_first->n);
   if(digits < (UINT)k) {
     result.appendDigit(truncInt(x.m_first->n, (int)digits - k));
@@ -246,21 +252,17 @@ BigReal cut(const BigReal &x, size_t digits, DigitPool *digitPool) { // x trunca
     result.appendDigit(x.m_first->n);
     digits -= k;
     const Digit *p;
-    for(p = x.m_first->next; p && (digits >= LOG10_BIGREALBASE); p = p->next, digits -= LOG10_BIGREALBASE) {
+    for(p = x.m_first->next; p && (digits >= BIGREAL_LOG10BASE); p = p->next, digits -= BIGREAL_LOG10BASE) {
       result.appendDigit(p->n);
       result.m_low--;
     }
-    // invariant: if(p) then digits < LOG10_BIGREALBASE
-    if(p && digits) { // if(p) then digits < LOG10_BIGREALBASE
-      result.appendDigit(truncInt(p->n, (int)digits-LOG10_BIGREALBASE));
+    // invariant: if(p) then digits < BIGREAL_LOG10BASE
+    if(p && digits) { // if(p) then digits < BIGREAL_LOG10BASE
+      result.appendDigit(truncInt(p->n, (int)digits-BIGREAL_LOG10BASE));
       result.m_low--;
     }
   }
-  if(x.isNegative()) {
-    result.m_negative = true;
-  }
-  result.trimZeroes();
-  return result;
+  return COPYSIGN(result, x).trimZeroes().setInitDone();
 }
 
 BigReal &BigReal::copyrTrunc(const BigReal &src, size_t digits) { // decimal digits
@@ -268,8 +270,9 @@ BigReal &BigReal::copyrTrunc(const BigReal &src, size_t digits) { // decimal dig
     *this = src;
     return *this;
   }
-  const Digit   *sp = src.m_first;
-  const int      k  = BigReal::getDecimalDigitCount(sp->n);
+  CHECKISMUTABLE(*this);
+  const Digit *sp = src.m_first;
+  const int    k  = BigReal::getDecimalDigitCount(sp->n);
   if(digits <= (UINT)k) {
     const BRDigitType d = truncInt(sp->n, (int)digits - k);
     if(m_first) {
@@ -283,18 +286,18 @@ BigReal &BigReal::copyrTrunc(const BigReal &src, size_t digits) { // decimal dig
       appendDigit(d);
     }
     m_low = m_expo = src.m_expo;
-    m_negative = src.m_negative;
+    COPYSIGN(*this, src);
   } else {
-    const intptr_t srcDecimals = (src.getLength() - 1) * LOG10_BIGREALBASE + k;
+    const intptr_t srcDecimals = (src.getLength() - 1) * BIGREAL_LOG10BASE + k;
     if((intptr_t)digits >= srcDecimals) {
       return  *this = src;
     }
     Digit *dp;
-    const intptr_t newLength   = (digits-k+LOG10_BIGREALBASE-1) / LOG10_BIGREALBASE + 1;
+    const intptr_t newLength   = (digits-k+BIGREAL_LOG10BASE-1) / BIGREAL_LOG10BASE + 1;
     if(isZero()) {
       appendDigit(sp->n);
       digits -= k;
-      for(sp = sp->next; digits >= LOG10_BIGREALBASE; sp = sp->next, digits -= LOG10_BIGREALBASE) {
+      for(sp = sp->next; digits >= BIGREAL_LOG10BASE; sp = sp->next, digits -= BIGREAL_LOG10BASE) {
         appendDigit(sp->n);
       }
       dp = NULL;
@@ -302,15 +305,15 @@ BigReal &BigReal::copyrTrunc(const BigReal &src, size_t digits) { // decimal dig
       dp    = m_first;
       dp->n = sp->n;
       digits -= k;
-      for(dp = dp->next, sp = sp->next; dp && (digits >= LOG10_BIGREALBASE); sp = sp->next, dp = dp->next, digits -= LOG10_BIGREALBASE) {
+      for(dp = dp->next, sp = sp->next; dp && (digits >= BIGREAL_LOG10BASE); sp = sp->next, dp = dp->next, digits -= BIGREAL_LOG10BASE) {
         dp->n = sp->n;
       }
-      for(;digits >= LOG10_BIGREALBASE; sp = sp->next, digits -= LOG10_BIGREALBASE) {
+      for(;digits >= BIGREAL_LOG10BASE; sp = sp->next, digits -= BIGREAL_LOG10BASE) {
         appendDigit(sp->n);
       }
     }
-    if(digits) { // invariant: digits < LOG10_BIGREALBASE
-      const BRDigitType last = truncInt(sp->n, (int)digits - LOG10_BIGREALBASE);
+    if(digits) { // invariant: digits < BIGREAL_LOG10BASE
+      const BRDigitType last = truncInt(sp->n, (int)digits - BIGREAL_LOG10BASE);
       if(dp) {
         dp->n = last;
         if(dp->next) {
@@ -331,10 +334,10 @@ BigReal &BigReal::copyrTrunc(const BigReal &src, size_t digits) { // decimal dig
   return *this;
 }
 
-
 // assume _isnormal() and digits > 0
 BigReal &BigReal::rTrunc(size_t digits) {
   assert(_isnormal());
+  CHECKISMUTABLE(*this);
   Digit    *first = m_first;
   const int k     = BigReal::getDecimalDigitCount(first->n);
 
@@ -343,30 +346,30 @@ BigReal &BigReal::rTrunc(size_t digits) {
     if(first->next) {
       Digit *saveLast = m_last;
       m_last      = first;
-      m_digitPool.deleteDigits(m_last->next, saveLast);
+      deleteDigits(m_last->next, saveLast);
       first->next = NULL;
       m_low       = m_expo;
     }
   } else { // digits >= k
-    intptr_t decLength = (getLength() - 1) * LOG10_BIGREALBASE + k;
+    intptr_t decLength = (getLength() - 1) * BIGREAL_LOG10BASE + k;
     if((intptr_t)digits >= decLength) return *this; // nothing to cut
 
-    const intptr_t newLength = (digits-k+LOG10_BIGREALBASE-1) / LOG10_BIGREALBASE + 1;
+    const intptr_t newLength = (digits-k+BIGREAL_LOG10BASE-1) / BIGREAL_LOG10BASE + 1;
     Digit *p;
 
     if((intptr_t)digits <= decLength / 2) { // count from beginning
-      for(p = first->next, digits -= k; digits > LOG10_BIGREALBASE; p = p->next, digits -= LOG10_BIGREALBASE);
+      for(p = first->next, digits -= k; digits > BIGREAL_LOG10BASE; p = p->next, digits -= BIGREAL_LOG10BASE);
     } else {                      // count from end
-      for(p = m_last, decLength -= LOG10_BIGREALBASE; decLength > (intptr_t)digits; p = p->prev, decLength -= LOG10_BIGREALBASE);
-      digits = digits - decLength; // invariant: decLength <= digits && digits - decLength <= LOG10_BIGREALBASE
+      for(p = m_last, decLength -= BIGREAL_LOG10BASE; decLength > (intptr_t)digits; p = p->prev, decLength -= BIGREAL_LOG10BASE);
+      digits = digits - decLength; // invariant: decLength <= digits && digits - decLength <= BIGREAL_LOG10BASE
     }
 
-    if(p) { // invariant: digits <= LOG10_BIGREALBASE
-      p->n = truncInt(p->n, (int)digits-LOG10_BIGREALBASE);
+    if(p) { // invariant: digits <= BIGREAL_LOG10BASE
+      p->n = truncInt(p->n, (int)digits-BIGREAL_LOG10BASE);
       if(p->next) {
         Digit *saveLast = m_last;
         m_last = p;
-        m_digitPool.deleteDigits(p->next, saveLast);
+        deleteDigits(p->next, saveLast);
         p->next = NULL;
         m_low = m_expo - newLength + 1;
       }
@@ -379,6 +382,7 @@ BigReal &BigReal::rTrunc(size_t digits) {
 // Assume *this != 0 and digits > 0
 BigReal &BigReal::rRound(size_t digits) {
   assert(_isnormal());
+  CHECKISMUTABLE(*this);
   Digit    *first = m_first;
   const int k     = BigReal::getDecimalDigitCount(first->n);
   if(digits < (UINT)k) {
@@ -390,25 +394,25 @@ BigReal &BigReal::rRound(size_t digits) {
     if(first->next) {
       Digit *saveLast = m_last;
       m_last      = first;
-      m_digitPool.deleteDigits(m_last->next, saveLast);
+      deleteDigits(m_last->next, saveLast);
       first->next = NULL;
       m_low       = m_expo;
     }
   } else { // digits >= k
-    intptr_t decLength = (getLength() - 1) * LOG10_BIGREALBASE + k;
+    intptr_t decLength = (getLength() - 1) * BIGREAL_LOG10BASE + k;
     if((intptr_t)digits >= decLength) return *this; // nothing to cut
 
-    intptr_t       newLength    = (digits-k+LOG10_BIGREALBASE-1) / LOG10_BIGREALBASE + 1;
+    intptr_t       newLength    = (digits-k+BIGREAL_LOG10BASE-1) / BIGREAL_LOG10BASE + 1;
     const intptr_t wantedDigits = digits;
     Digit    *p;
     if((intptr_t)digits <= decLength / 2) { // count from beginning
-      for(p = first->next, digits -= k; digits >= LOG10_BIGREALBASE; p = p->next, digits -= LOG10_BIGREALBASE);
+      for(p = first->next, digits -= k; digits >= BIGREAL_LOG10BASE; p = p->next, digits -= BIGREAL_LOG10BASE);
     } else {                      // count from end
-      for(p = m_last, decLength -= LOG10_BIGREALBASE; decLength > (intptr_t)digits; p = p->prev, decLength -= LOG10_BIGREALBASE);
+      for(p = m_last, decLength -= BIGREAL_LOG10BASE; decLength > (intptr_t)digits; p = p->prev, decLength -= BIGREAL_LOG10BASE);
       digits = digits - decLength;
     }
 
-    if((p->n = roundInt(p->n, (int)digits-LOG10_BIGREALBASE)) == BIGREALBASE) {
+    if((p->n = roundInt(p->n, (int)digits-BIGREAL_LOG10BASE)) == BIGREALBASE) {
       for(p = p->prev; p; p = p->prev, newLength--) {
         if(++(p->n) < BIGREALBASE) { // add carry
           break;
@@ -417,13 +421,13 @@ BigReal &BigReal::rRound(size_t digits) {
       if(p) {
         Digit *saveLast = m_last;
         m_last = p;
-        m_digitPool.deleteDigits(p->next, saveLast);
+        deleteDigits(p->next, saveLast);
         p->next = NULL;
-        m_low = m_expo - newLength + ((digits && ((wantedDigits-k)%LOG10_BIGREALBASE == digits)) ? 2 : 1); // !!
+        m_low = m_expo - newLength + ((digits && ((wantedDigits-k)%BIGREAL_LOG10BASE == digits)) ? 2 : 1); // !!
 //        trimZeroes(); Not needed. p->n will always be at least 1
       } else { // carry propagated all the way up in front of m_first. set first to 1 and increment m_expo
         first->n = 1;
-        m_digitPool.deleteDigits(first->next, m_last);
+        deleteDigits(first->next, m_last);
         first->next = NULL;
         m_last      = first;
         m_expo++;
@@ -432,14 +436,14 @@ BigReal &BigReal::rRound(size_t digits) {
     } else if(p->n == 0) {
       Digit *saveLast = m_last;
       m_last = p->prev;
-      m_digitPool.deleteDigits(p, saveLast);
+      deleteDigits(p, saveLast);
       m_last->next = NULL;
-      m_low = m_expo - newLength + ((digits && ((wantedDigits-k)%LOG10_BIGREALBASE == digits)) ? 2 : 1); // !!
+      m_low = m_expo - newLength + ((digits && ((wantedDigits-k)%BIGREAL_LOG10BASE == digits)) ? 2 : 1); // !!
       if(m_last->n == 0) trimTail();
     } else if(p->next) {
       Digit *saveLast = m_last;
       m_last = p;
-      m_digitPool.deleteDigits(p->next, saveLast);
+      deleteDigits(p->next, saveLast);
       p->next = NULL;
       m_low = m_expo - newLength + 1;
 //      trimZeroes(); Not needed. p->n != 0

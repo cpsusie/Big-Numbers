@@ -102,14 +102,14 @@ template <class OStreamType> OStreamType &putFullFormatBigReal(OStreamType &out,
     BRExpoType e = BigReal::getExpo10(x);
     intptr_t   autoprec;
     if(e < 0) {
-      autoprec = x.getLength() * LOG10_BIGREALBASE;
-      if(e % LOG10_BIGREALBASE == 0) {
-        autoprec -= LOG10_BIGREALBASE;
+      autoprec = x.getLength() * BIGREAL_LOG10BASE;
+      if(e % BIGREAL_LOG10BASE == 0) {
+        autoprec -= BIGREAL_LOG10BASE;
       } else {
-        autoprec -= -e % LOG10_BIGREALBASE;
+        autoprec -= -e % BIGREAL_LOG10BASE;
       }
     } else {
-      autoprec = (x.getLength() - 1) * LOG10_BIGREALBASE + (e % LOG10_BIGREALBASE);
+      autoprec = (x.getLength() - 1) * BIGREAL_LOG10BASE + (e % BIGREAL_LOG10BASE);
     }
 
     if(x.getLength() > 1) {

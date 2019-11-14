@@ -11,10 +11,10 @@ public:
   const ConstBigReal c4;
 
   QuotL64Constants()
-    :c1(e(ConstBigReal(24),-2))
-    ,c2(e(ConstBigReal( 4),-2))
-    ,c3(e(ConstBigReal( 8),-2))
-    ,c4(e(ConstBigReal(11),-1))
+    :c1(e(BigReal(24),-2))
+    ,c2(e(BigReal( 4),-2))
+    ,c3(e(BigReal( 8),-2))
+    ,c4(e(BigReal(11),-1))
   {
   }
 };
@@ -26,7 +26,7 @@ static const QuotL64Constants Q64C;
 BigReal BigReal::quotLinear64(const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *pool) { // static
   assert(x._isnormal() && y._isnormal() && f.isPositive());
   const bool yNegative = y.isNegative();
-  ((BigReal&)y).setPositive(); // cheating. We set it back agin
+  ((BigReal&)y).setPositive(); // cheating. We set it back again....TODO... remove this
 
   const BigReal v = APCprod(<, APCprod(<, f, Q64C.c1, pool), y, pool); // v > 0
 
@@ -40,17 +40,20 @@ BigReal BigReal::quotLinear64(const BigReal &x, const BigReal &y, const BigReal 
   u.approxQuot32(v, getExpo10N(u)*Q64C.c3 + Q64C.c4);
 
   BRExpoType scale;
-  const unsigned __int64 yFirst = y.getFirst64(MAXDIGITS_DIVISOR64,&scale);
+  const UINT64 yFirst = y.getFirst64(MAXDIGITS_DIVISOR64,&scale);
 
   BigReal result(pool), t(pool), tmp(pool);
   bool loopDone = false;
   for(; compareAbs(z,v) > 0; loopDone = true) {
-    t.approxQuot64Abs(z, yFirst, scale).m_negative = z.m_negative;
+    t.approxQuot64Abs(z, yFirst, scale);
+    COPYSIGN(t, z);
     result += t;
     z -= product(tmp, t, y, u, 0);
   }
 
-  ((BigReal&)y).m_negative = yNegative;
+  if(yNegative) {
+    ((BigReal&)y).setNegative(true);
+  }
 
   if(loopDone) {
     return result.setSignByProductRule(x,y);
@@ -86,7 +89,7 @@ UINT64 BigReal::getFirst64(const UINT k, BRExpoType *scale) const {
   UINT64 result   = p->n;
   UINT   digits   = getDecimalDigitCount(p->n), firstDigits = digits;
   if(digits >= k) {
-    result /= pow10(digits-k); // digits-k <= LOG10_BIGREALBASE, so pow10 will not fail
+    result /= pow10(digits-k); // digits-k <= BIGREAL_LOG10BASE, so pow10 will not fail
     if(scale) {
       while(result % 10 == 0) {
         result /= 10;
@@ -95,9 +98,9 @@ UINT64 BigReal::getFirst64(const UINT k, BRExpoType *scale) const {
     }
   } else { // digits < k
     if(scale) {
-      for(p = p->next; digits < k; digits += LOG10_BIGREALBASE) {
+      for(p = p->next; digits < k; digits += BIGREAL_LOG10BASE) {
         if(p) {
-          const BRDigitType p10 = pow10(min(LOG10_BIGREALBASE,k-digits));
+          const BRDigitType p10 = pow10(min(BIGREAL_LOG10BASE,k-digits));
           result = result * p10 + p->n / (BIGREALBASE/p10);
           p = p->next;
         } else {
@@ -110,8 +113,8 @@ UINT64 BigReal::getFirst64(const UINT k, BRExpoType *scale) const {
         tmpScale++;
       }
     } else { // scale == NULL
-      for(p = p->next; digits < k; digits += LOG10_BIGREALBASE) {
-        const BRDigitType p10 = pow10(min(LOG10_BIGREALBASE,k-digits));
+      for(p = p->next; digits < k; digits += BIGREAL_LOG10BASE) {
+        const BRDigitType p10 = pow10(min(BIGREAL_LOG10BASE,k-digits));
         result *= p10;
         if(p) {
           result += p->n / (BIGREALBASE/p10);
@@ -122,7 +125,7 @@ UINT64 BigReal::getFirst64(const UINT k, BRExpoType *scale) const {
   }
 
   if(scale) {
-    *scale  = m_expo * LOG10_BIGREALBASE + firstDigits - 1 + tmpScale - k;
+    *scale  = m_expo * BIGREAL_LOG10BASE + firstDigits - 1 + tmpScale - k;
   }
   return result;
 }
@@ -133,7 +136,7 @@ void quotRemainder64(const BigReal &x, const BigReal &y, BigInt *quotient, BigRe
   BigReal::validateQuotRemainderArguments(__TFUNCTION__, x, y, quotient, remainder);
   if(!BigReal::checkIsNormalQuotient(x, y, quotient, remainder)) return;
 
-  const int cmpAbs = compareAbs(x, y);
+  const int cmpAbs = BigReal::compareAbs(x, y);
   if(cmpAbs < 0) {
     if(remainder) *remainder = x;
     if(quotient)  quotient->setToZero();
@@ -163,7 +166,7 @@ void quotRemainder64(const BigReal &x, const BigReal &y, BigInt *quotient, BigRe
   }
 
   const bool yNegative = y.isNegative();
-  ((BigReal&)y).setPositive(); // cheating. We set it back agin
+  ((BigReal&)y).setPositive(); // cheating. We set it back again.... TODO....remove this
 
   DigitPool *pool = x.getDigitPool();
 
@@ -175,8 +178,9 @@ void quotRemainder64(const BigReal &x, const BigReal &y, BigInt *quotient, BigRe
   const int    yDigits      = BigReal::getDecimalDigitCount(yFirst);
 
   BigReal q(pool), t(pool), tmp(pool);
-  while(compareAbs(z, y) >= 0) {
-    t.approxQuot64Abs(z, yFirst, scale).m_negative = z.m_negative;
+  while(BigReal::compareAbs(z, y) >= 0) {
+    t.approxQuot64Abs(z, yFirst, scale);
+    COPYSIGN(t, z);
     q += t;
     z -= BigReal::product(tmp, t, y, pool->_0(),0);
   }
@@ -188,7 +192,7 @@ void quotRemainder64(const BigReal &x, const BigReal &y, BigInt *quotient, BigRe
     } else {
       q.fractionate(quotient, &t);
       z += t * y;
-      if(compareAbs(z, y) >= 0) {
+      if(BigReal::compareAbs(z, y) >= 0) {
         if(quotient)  ++(*quotient);
         if(remainder) *remainder = z - y;
       } else {
@@ -225,9 +229,11 @@ void quotRemainder64(const BigReal &x, const BigReal &y, BigInt *quotient, BigRe
   }
 
   if(remainder) {
-    remainder->m_negative = x.m_negative;
+    COPYSIGN(*remainder, x); // sign(x % y) = sign(x), equivalent to built-in % operator
   }
-  ((BigReal&)y).m_negative = yNegative;
+  if(yNegative) {
+    ((BigReal&)y).setNegative(true);
+  }
 }
 
 BigReal modulusOperator64(const BigReal &x, const BigReal &y) {

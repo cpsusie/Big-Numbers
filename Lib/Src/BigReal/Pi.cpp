@@ -1,12 +1,11 @@
 #include "pch.h"
 
-static Semaphore pi_gate;
-static DigitPool pi_pool(PI_DIGITPOOL_ID);
-
-#define PIP (&pi_pool)
+static FastSemaphore piLock;
 
 class PiConstants {
 public:
+  DigitPool *m_digitPool;
+
   const ConstBigReal  c1  ;
   const ConstBigReal  c2  ;
   const ConstBigReal  c3  ;
@@ -42,6 +41,8 @@ public:
     ,c16( BigReal::_05)
     ,c17( 0.25)
   {
+    m_digitPool = BigRealResourcePool::fetchDigitPool();
+    m_digitPool->setName(_T("PI"));
   }
 };
 
@@ -50,14 +51,17 @@ static const PiConstants PIC;
 BigReal pi(const BigReal &f, DigitPool *digitPool) {
   VALIDATETOLERANCE(f)
   if(digitPool == NULL) digitPool = f.getDigitPool();
-  pi_gate.wait();
 
+  BigReal result(digitPool);
+
+  piLock.wait();
   try {
+    DigitPool *PIP = PIC.m_digitPool;
 
     static BigReal piValue(PIP); // cache
     static BigReal piError(PIP); // cache
 
-    if(piError.isZero() || f < piError) {
+    if(piError.isZero() || (f < piError)) {
       if(f >= PIC.c1) {
         piValue = PIC.c2;
       } else {
@@ -82,19 +86,15 @@ BigReal pi(const BigReal &f, DigitPool *digitPool) {
         piValue = quot(prod(a,a,APCprod(<,PIC.c12,f,PIP)),t,APCprod(<,PIC.c13,f,PIP),PIP);
       }
       piError = f; // rettet fra APCprod(c14,f,1);
-
-      pi_gate.signal();
-
-      return BigReal(piValue, digitPool);
+      result = piValue;;
+      goto End;
     }
-    BigReal tmp(digitPool);
-    copy(tmp, piValue,APCprod(<,PIC.c15, f,PIP));
-
-    pi_gate.signal();
-    return tmp;
-
+    copy(result, piValue,APCprod(<,PIC.c15, f,PIP));
   } catch(...) {
-    pi_gate.signal();
+    piLock.notify();
     throw;
   }
+End:
+  piLock.notify();
+  return result;
 }

@@ -23,22 +23,20 @@ void MultiplyServer::startup() {
 BigReal &MultiplyServer::mult(BigReal &dst, const BigReal &x, const BigReal &y, const BigReal &f) {
   DigitPool *pool = dst.getDigitPool();
   FullFormatBigReal xf(x, pool), yf(y, pool), ff(f, pool);
-  BigRealStream xs, ys, fs;
+  std::wstringstream xs, ys, fs;
   xs << xf;
   ys << yf;
   fs << ff;
 
   m_gate.wait();
   try {
-    send(_T("%s %s %s\n"), xs.cstr(), ys.cstr(), fs.cstr());
+    send(_T("%s %s %s\n"), xs.str().c_str(), ys.str().c_str(), fs.str().c_str());
     const String line = receive();
     dst = BigReal(line, pool);
-  }
-  catch (Exception e) {
+  } catch (Exception e) {
     _tprintf(_T("Exception:%s\n"), e.what());
     dst = 0;
-  }
-  catch (...) {
+  } catch (...) {
     _tprintf(_T("Unknown exception\n"));
     dst = 0;
   }
@@ -69,7 +67,7 @@ int BigReal::getNonNormalProductFpClass(const BigReal &x, const BigReal &y) { //
 
 BigReal &BigReal::shortProductNoNormalCheck(const BigReal &x, const BigReal &y, BRExpoType fexpo) {
   assert(x._isnormal() && y._isnormal());
-  if(!s_continueCalculation) throwBigRealException(_T("Operation was cancelled"));
+  if(!m_digitPool.continueCalculation()) throwBigRealException(_T("Operation was cancelled"));
   const BRExpoType fm = fexpo - 2;
   const BRExpoType lm = x.m_low + y.m_low;
   const BRExpoType loopCount = (x.m_expo + y.m_expo) - max(fm, lm) + 2;
@@ -88,12 +86,12 @@ BigReal &BigReal::shortProductNoNormalCheck(const BigReal &x, const BigReal &y, 
   }
   DigitPool *pool = getDigitPool();
   BigReal ff(pool), serverResult(pool), error(pool);
-  ff = (fexpo == BIGREAL_ZEROEXPO) ? BigReal::_0 : (e(BigReal::_1, fexpo * LOG10_BIGREALBASE, pool));
+  ff = (fexpo == BIGREAL_NONNORMAL) ? BigReal::_0 : (e(BigReal::_1, fexpo * BIGREAL_LOG10BASE, pool));
   s_multiplyServer.mult(serverResult, x, y, ff);
 
   shortProductNoZeroCheck(x, y, (UINT)loopCount);
   error = serverResult - *this;
-  if (compareAbs(error, ff) > 0) {
+  if(compareAbs(error, ff) > 0) {
     shortProductNoZeroCheck(x, y, (UINT)loopCount);
   }
   return *this;
@@ -111,7 +109,7 @@ void BigReal::split(BigReal &a, BigReal &b, size_t n, const BigReal &f) const {
     a.appendDigit(p->n);
   }
   a.m_expo     = m_expo;
-  a.m_negative = m_negative;
+  COPYSIGN(a, *this);
   a.m_low      = a.m_expo - (n-i-2);
   if(p && ((i = (a.m_low - f.m_expo)) > 0)) {
     for(; i-- && p; p = p->next) {
@@ -121,7 +119,7 @@ void BigReal::split(BigReal &a, BigReal &b, size_t n, const BigReal &f) const {
     // i = a.low - f.expo - (#digits in b = loopCount)-1
 
     b.m_expo     = a.m_low - 1;
-    b.m_negative = m_negative;
+    COPYSIGN(b, *this);
     b.m_low      = f.m_expo + i + 1; // NB:This works for any f (even 0).
                                      // f.expo + i + 1 = f.expo + (a.low-f.expo-loopCount-1) + 1
                                      // = a.low-loopCount.
@@ -131,8 +129,6 @@ void BigReal::split(BigReal &a, BigReal &b, size_t n, const BigReal &f) const {
   }
   a.trimZeroes();                  // dont trim zeroes from a before b has been generated!
 }
-
-bool BigReal::s_continueCalculation = true;
 
 BigReal &BigReal::product(BigReal &result, const BigReal &x, const BigReal &y, const BigReal &f, int level) { // static
   assert(x._isnormal() && y._isnormal() && f._isfinite());
@@ -165,7 +161,7 @@ BigReal &BigReal::product(BigReal &result, const BigReal &x, const BigReal &y, c
   const BigInt &_0 = pool->_0();
   const BigReal  g = f.isZero() ? _0 : APCprod(#, BigReal::_C1third, f, pool);
   BigReal gpm10(g);
-  gpm10.multPow10(-10);
+  gpm10.multPow10(-10,true);
   const intptr_t n = min((intptr_t)XLength, w)/2;
   BigReal a(pool), b(pool);
   level++;
@@ -176,15 +172,15 @@ BigReal &BigReal::product(BigReal &result, const BigReal &x, const BigReal &y, c
     return result = product(p1, a, Y, _0, level) + product(p2, b, Y, g, level);                 // a*Y+b*Y     O(2*n/2*n+n/2)
   }
 
-  const BRExpoType logBK = LOG10_BIGREALBASE * n;
+  const BRExpoType logBK = BIGREAL_LOG10BASE * n;
   BigReal r(pool), s(pool), t(pool);                                   //                                      O(1)
 
   if(sameXY) {
     const BigReal &c = a, &d = b;                                      // => a+b == c+d
-    b.multPow10(logBK);                                                //                                      O(1)
+    b.multPow10(logBK, true);                                          //                                      O(1)
 //  d.multPow10(logBK); Done in last statement
     BigReal Kg(g);                                                     //                                      O(1)
-    Kg.multPow10(logBK);                                               //                                      O(1)
+    Kg.multPow10(logBK, true);                                         //                                      O(1)
 
     product(r, a  , c  , _0, level);                                   // &a=&c. r = a * a                     O((n/2)^2)      = O((n^2)/4)
     const BigReal AplusB = a + b;
@@ -195,10 +191,10 @@ BigReal &BigReal::product(BigReal &result, const BigReal &x, const BigReal &y, c
     BigReal c(pool), d(pool);
     Y.split(c, d, n, g.isZero() ? _0 : APCprod(#,gpm10,reciprocal(X, pool),pool));              // c + d = Y   O(n)
                                                                        //
-    b.multPow10(logBK);                                                //                                      O(1)
-    d.multPow10(logBK);                                                //                                      O(1)
+    b.multPow10(logBK, true);                                          //                                      O(1)
+    d.multPow10(logBK, true);                                          //                                      O(1)
     BigReal Kg(g);                                                     //                                      O(1)
-    Kg.multPow10(logBK);                                               //                                      O(1)
+    Kg.multPow10(logBK, true);                                         //                                      O(1)
     BigReal r(pool), s(pool), t(pool);                                 //                                      O(1)
                                                                        //
     product(r, a  , c  , _0, level);                                   // r = a * c                            O((n/2)^2)      = O((n^2)/4)
@@ -208,26 +204,30 @@ BigReal &BigReal::product(BigReal &result, const BigReal &x, const BigReal &y, c
                                                                        //
   s -= r;                                                              //                                      O(n)
   s -= t;                                                              // s = (a+Kb) * (c+Kd) - (a*c + b*d)    O(n)
-  s.multPow10(-logBK);                                                 // s /= K                               O(1)
+  s.multPow10(-logBK,true);                                            // s /= K                               O(1)
   r += s;                                                              //                                      O(n)
-  t.multPow10(-2*logBK);                                               // t /= K^2                             O(1)
+  t.multPow10(-2*logBK, true);                                         // t /= K^2                             O(1)
   return result = sum(r, t, g);                                        // return sum(r+(s-(r+t))/K,t/(K*K),g)  O(n)
                                                                        //                              Total:  O(3/4(n^2) + 6n + k)
 }
 
 BigReal prod(const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *digitPool) {
   BigReal result(digitPool ? digitPool : x.getDigitPool());
-  if(!result.checkIsNormalProduct(x, y)) return result;
-  BigReal::product(result,x,y,f,0);
-  return result;
+  result.clrInitDone();
+  if(result.checkIsNormalProduct(x, y)) {
+    BigReal::product(result, x, y, f, 0);
+  }
+  return result.setInitDone();
 }
 
 BigReal operator*(const BigReal &x, const BigReal &y) {
   DigitPool *pool = x.getDigitPool();
   BigReal result(pool);
-  if(!result.checkIsNormalProduct(x, y)) return result;
-  BigReal::product(result, x, y, pool->_0(), 0);
-  return result;
+  result.clrInitDone();
+  if(result.checkIsNormalProduct(x, y)) {
+    BigReal::product(result, x, y, pool->_0(), 0);
+  }
+  return result.setInitDone();
 }
 
 BigReal &BigReal::operator*=(const BigReal &x) {

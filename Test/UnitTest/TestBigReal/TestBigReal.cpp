@@ -126,7 +126,7 @@ static bool checkBigRealMod(const BigReal &x, const BigReal &y, const BigReal &r
   return (rem == result)
       && (sign(result) == sign(x))
       && (!n.isNegative())
-      && (compareAbs(result,y) < 0)
+      && (BigReal::compareAbs(result,y) < 0)
       && (x.isPositive() ? (fabs(y) * n + result == x) : (-fabs(y) * n + result == x));
 }
 
@@ -200,7 +200,7 @@ static void testCosPiThird(TestStatistic &stat) {
   DigitPool *pool = stat.getDigitPool();
   const BigReal tolerance = e(pool->_1(), -1000);
   const FullFormatBigReal cosPiThird = cos(quot(pi(tolerance), BigReal(3,pool), tolerance), tolerance) - pool->_05();
-  verify(compareAbs(cosPiThird,  tolerance) < 1);
+  verify(BigReal::compareAbs(cosPiThird,  tolerance) < 1);
   stat.setEndMessageToOk();
 }
 

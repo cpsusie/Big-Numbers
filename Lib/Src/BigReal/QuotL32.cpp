@@ -11,10 +11,10 @@ public:
   const ConstBigReal c4;
 
   QuotL32Constants()
-    :c1(e(ConstBigReal(24),-2))
-    ,c2(e(ConstBigReal( 4),-2))
-    ,c3(e(ConstBigReal( 8),-2))
-    ,c4(e(ConstBigReal(11),-1))
+    :c1(e(BigReal(24),-2))
+    ,c2(e(BigReal( 4),-2))
+    ,c3(e(BigReal( 8),-2))
+    ,c4(e(BigReal(11),-1))
   {
   }
 };
@@ -26,7 +26,7 @@ static const QuotL32Constants Q32C;
 BigReal BigReal::quotLinear32(const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *pool) { // static
   assert(x._isnormal() && y._isnormal() && f.isPositive());
   const bool yNegative = y.isNegative();
-  ((BigReal&)y).setPositive(); // cheating. We set it back agin
+  ((BigReal&)y).setPositive(); // cheating. We set it back again.....TODO ... remove this
 
   const BigReal v = APCprod(<, APCprod(<, f, Q32C.c1, pool), y, pool); // v >= 0
 
@@ -45,12 +45,15 @@ BigReal BigReal::quotLinear32(const BigReal &x, const BigReal &y, const BigReal 
   BigReal result(pool), t(pool), tmp(pool);
   bool loopDone = false;
   for(; compareAbs(z,v) > 0; loopDone = true) {
-    t.approxQuot32Abs(z, yFirst, scale).m_negative = z.m_negative;
+    t.approxQuot32Abs(z, yFirst, scale);
+    COPYSIGN(t, z);
     result += t;
     z -= product(tmp, t, y, u, 0);
   }
 
-  ((BigReal&)y).m_negative = yNegative;
+  if(yNegative) {
+    ((BigReal&)y).setNegative(true);
+  }
 
   if(loopDone) {
     return result.setSignByProductRule(x,y);
@@ -75,9 +78,9 @@ BigReal &BigReal::approxQuot32Abs(const BigReal &x, unsigned long y, BRExpoType 
 
 BigReal BigReal::reciprocal(const BigReal &x, DigitPool *digitPool) { // static
   static const int k = MAXDIGITS_DIVISOR32;
-  BigReal result(pow10(MAXDIGITS_INT32)/x.getFirst32(k), digitPool);
+  BigReal result(pow10(MAXDIGITS_INT32)/x.getFirst32(k), digitPool?digitPool:x.getDigitPool());
   result.multPow10(k - 1 - MAXDIGITS_INT32 - getExpo10(x));
-  result.m_negative = x.m_negative;
+  COPYSIGN(result, x);
   return result;
 }
 
@@ -99,7 +102,7 @@ unsigned long BigReal::getFirst32(const UINT k, BRExpoType *scale) const {
 
   int           digits   = getDecimalDigitCount(result), firstDigits = digits;
   if((UINT)digits >= k) {
-    result /= pow10(digits-k); // digits-k <= LOG10_BIGREALBASE, so pow10 will not fail
+    result /= pow10(digits-k); // digits-k <= BIGREAL_LOG10BASE, so pow10 will not fail
     if(scale) {
       while(result % 10 == 0) {
         result /= 10;
@@ -108,9 +111,9 @@ unsigned long BigReal::getFirst32(const UINT k, BRExpoType *scale) const {
     }
   } else { // digits < k
     if(scale) {
-      for(p = p->next; (UINT)digits < k; digits += LOG10_BIGREALBASE) {
+      for(p = p->next; (UINT)digits < k; digits += BIGREAL_LOG10BASE) {
         if(p) {
-          const BRDigitType p10 = pow10(min(LOG10_BIGREALBASE,k-digits));
+          const BRDigitType p10 = pow10(min(BIGREAL_LOG10BASE,k-digits));
           result = result * p10 + p->n / (BIGREALBASE/p10);
           p = p->next;
         } else {
@@ -123,8 +126,8 @@ unsigned long BigReal::getFirst32(const UINT k, BRExpoType *scale) const {
         tmpScale++;
       }
     } else { // scale == NULL
-      for(p = p->next; (UINT)digits < k; digits += LOG10_BIGREALBASE) {
-        const BRDigitType p10 = pow10(min(LOG10_BIGREALBASE,k-digits));
+      for(p = p->next; (UINT)digits < k; digits += BIGREAL_LOG10BASE) {
+        const BRDigitType p10 = pow10(min(BIGREAL_LOG10BASE,k-digits));
         result *= p10;
         if(p) {
           result += p->n / (BIGREALBASE/p10);
@@ -135,7 +138,7 @@ unsigned long BigReal::getFirst32(const UINT k, BRExpoType *scale) const {
   }
 
   if(scale) {
-    *scale = m_expo * LOG10_BIGREALBASE + firstDigits - 1 + tmpScale - k;
+    *scale = m_expo * BIGREAL_LOG10BASE + firstDigits - 1 + tmpScale - k;
   }
   return (unsigned long)result;
 }

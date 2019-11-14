@@ -46,17 +46,17 @@ BigReal &BigReal::productMT(BigReal &result, const BigReal &x, const BigReal &y,
     return result;
   }
 
-  const BRExpoType logBK = LOG10_BIGREALBASE * n;
+  const BRExpoType logBK = BIGREAL_LOG10BASE * n;
   BigRealResourcePool::fetchMTThreadArray(threads, 2);
   MultiplierThread &threadR = threads.get(0), &threadS = threads.get(1);
   BigReal r(threadR.getDigitPool()), s(threadS.getDigitPool()), t(pool);
 
   if(sameXY) {
     const BigReal &c = a, &d = b;
-    b.multPow10(logBK);
+    b.multPow10(logBK,true);
 //    d.multPow10(logBK); Done in last statement
     BigReal Kg(g);
-    Kg.multPow10(logBK);
+    Kg.multPow10(logBK,true);
 
     threadR.multiply(r, a    , c    , _0, level);
     BigReal tmpAB = sum(a, b, _0, threadS.getDigitPool());
@@ -67,16 +67,16 @@ BigReal &BigReal::productMT(BigReal &result, const BigReal &x, const BigReal &y,
     threads.waitForAllResults();
 
     tmpAB.setToZero();
-    tmpCD.setToZero(); // just did
+//    tmpCD.setToZero(); // just did
 
   } else {
     BigReal c(pool), d(pool);
     y.split(c, d, n, g.isZero() ? _0 : APCprod(#, gpm10, reciprocal(x, pool),pool));               // c + d = y   O(n)
 
-    b.multPow10(logBK);
-    d.multPow10(logBK);
+    b.multPow10(logBK,true);
+    d.multPow10(logBK,true);
     BigReal Kg(g);
-    Kg.multPow10(logBK);
+    Kg.multPow10(logBK,true);
 
     threadR.multiply(r, a    , c    , _0, level);
     BigReal tmpAB = sum(a, b, _0, threadS.getDigitPool());
@@ -92,9 +92,9 @@ BigReal &BigReal::productMT(BigReal &result, const BigReal &x, const BigReal &y,
 
   s -= r;
   s -= t;
-  s.multPow10(-logBK);
+  s.multPow10(-logBK,true);
   r += s;
-  t.multPow10(-2*logBK);
+  t.multPow10(-2*logBK,true);
   result = sum(r, t, g);
 
   r.setToZero();

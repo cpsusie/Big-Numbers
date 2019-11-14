@@ -23,6 +23,7 @@ void BigReal::save(ByteOutputStream &s) const {
 }
 
 void BigReal::load(ByteInputStream &s) {
+  CHECKISMUTABLE(*this);
   const int b = s.getByte();
   if(b == EOF) {
     throwBigRealException(_T("Unexpected enf of stream"));
@@ -43,7 +44,7 @@ void BigReal::load(ByteInputStream &s) {
     }
   } else {
     clearDigits();
-    m_negative = (b & NEGATIVE_FLAG) ? true : false;
+    setNegative((b & NEGATIVE_FLAG) != 0);
     s.getBytesForced((BYTE*)&m_expo, sizeof(m_expo));
     CompactArray<BRDigitType> a;
     a.load(s);

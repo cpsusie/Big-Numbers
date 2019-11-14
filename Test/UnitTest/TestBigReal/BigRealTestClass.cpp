@@ -651,7 +651,7 @@ void BigRealTestClass::testCopy() {
     FullFormatBigReal src = e(randBigReal(10+4*length),length*2);
     FullFormatBigReal dst;
     copy(dst,src, length);
-    dst.assertIsValidBigReal();
+    dst.assertIsValid();
     _tprintf(_T("length:%d, src:%-50s, dst:%-50s\n"),length, src.toString(true).cstr(), dst.toString(true).cstr());
   }
 }
@@ -669,9 +669,9 @@ void BigRealTestClass::testCopyAllDigits() {
     y.copyAllDigits(x);
     y.m_expo     = x.m_expo;
     y.m_low      = x.m_low;
-    y.m_negative = x.m_negative;
+    y.setNegative(x.isNegative());
     try {
-      y.assertIsValidBigReal();
+      y.assertIsValid();
     } catch(Exception e) {
       _tprintf(_T("%s\n"), e.what());
       continue;
@@ -718,7 +718,7 @@ void BigRealTestClass::testTruncRound() {
     try {
       x1.RF(digits);
       xRef = REFF(x, digits - decDigits);
-      x1.assertIsValidBigReal();
+      x1.assertIsValid();
       if(x1 != xRef) {
         _tprintf(_T("x.%s(%d) gives another result than %s(x,%d)\nx.%s(%d) = %s\n%s(x,%d)=%s\n")
               ,RTXT,digits
@@ -755,7 +755,7 @@ void BigRealTestClass::testTruncRound() {
         try {
           x1.RF(cutDigits);
           testCount++;
-          x1.assertIsValidBigReal();
+          x1.assertIsValid();
         } catch(Exception e) {
           exceptionCount++;
           _tprintf(_T("%8d %6d %6d %40s Expt in %s:%s\n")
@@ -806,9 +806,9 @@ void BigRealTestClass::testCopyrTrunc() {
     FullFormatBigReal x1(1, pool), xRef(x, pool);
     try {
       xRef.rTrunc(digits);
-      xRef.assertIsValidBigReal();
+      xRef.assertIsValid();
       x1.copyrTrunc(x, digits);
-      x1.assertIsValidBigReal();
+      x1.assertIsValid();
       if(x1 != xRef) {
         _tprintf(_T("x1.copyrTrunc(x,%d) gives another result than xRef.rTrunc(%d)\nx = %s\n, x1.copyrTunc(x,%d) = %s\nxRef.rTrunc(%d) = %s\n")
                  ,digits
@@ -848,7 +848,7 @@ void BigRealTestClass::testCopyrTrunc() {
         testCount++;
         try {
           x1.copyrTrunc(x, cutDigits);
-          x1.assertIsValidBigReal();
+          x1.assertIsValid();
         } catch(Exception e) {
           exceptionCount++;
           _tprintf(_T("%8d %6d %6d %40s Expt in x1:%s\n")
@@ -861,7 +861,7 @@ void BigRealTestClass::testCopyrTrunc() {
 
         try {
           x2.copyrTrunc(x, cutDigits);
-          x2.assertIsValidBigReal();
+          x2.assertIsValid();
         } catch(Exception e) {
           exceptionCount++;
           _tprintf(_T("%8d %6d %6d %40s Expt in x2:%s\n")
@@ -874,7 +874,7 @@ void BigRealTestClass::testCopyrTrunc() {
 
         try {
           xz.copyrTrunc(x, cutDigits);
-          xz.assertIsValidBigReal();
+          xz.assertIsValid();
         } catch(Exception e) {
           exceptionCount++;
           _tprintf(_T("%8d %6d %6d %40s Expt in xz:%s\n")
@@ -1019,14 +1019,12 @@ MeasureBinaryOperator::MeasureBinaryOperator(BinaryOperator op, const Array<BigR
 , m_y(y)
 , m_f(f)
 {
-  BigRealResourcePool &poolCreator = BigRealResourcePool::getInstance();
-  m_pool = poolCreator.fetchDigitPool();
+  m_pool = BigRealResourcePool::fetchDigitPool();
   i = j = 0;
 }
 
 MeasureBinaryOperator::~MeasureBinaryOperator() {
-  BigRealResourcePool &poolCreator = BigRealResourcePool::getInstance();
-  poolCreator.releaseDigitPool(m_pool);
+  BigRealResourcePool::releaseDigitPool(m_pool);
 }
 
 void MeasureBinaryOperator::f() {
