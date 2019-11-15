@@ -24,6 +24,9 @@ static const SinConstants SINC;
 BigReal sin(const BigReal &x, const BigReal &f, DigitPool *digitPool) {
   VALIDATETOLERANCE(f)
   _SELECTDIGITPOOL(x);
+  if(!x._isfinite()) {
+    return pool->nan();
+  }
   if(x.isZero()) {
     return _0;
   }

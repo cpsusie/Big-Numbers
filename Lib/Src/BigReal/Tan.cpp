@@ -45,9 +45,11 @@ static const TanConstants TANC;
 BigReal tan(const BigReal &x, const BigReal &f, DigitPool *digitPool) {
   VALIDATETOLERANCE(f)
   _SELECTDIGITPOOL(x);
+  if(!x._isfinite()) {
+    return pool->nan();
+  }
 
   BigReal z = fabs(x, pool);
-
 
   if(z > TANC.c1) {
     BigReal m = floor(quot(x,pi(APCquot(<,TANC.c2,z,pool),pool),TANC.c3,pool),pool)+TANC.c16;

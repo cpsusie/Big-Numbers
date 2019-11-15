@@ -51,12 +51,15 @@ public:
 
 static const ExpConstants EXPC;
 
+#define _0 pool->_0()
+#define _1 pool->_1()
+
 BigReal exp( const BigReal &x, const BigReal &f, DigitPool *digitPool) {
   VALIDATETOLERANCE(f)
   _SELECTDIGITPOOL(x);
-
-#define _0 pool->_0()
-#define _1 pool->_1()
+  if(!x._isfinite()) {
+    return pool->nan();
+  }
 
   if(x.isNegative()) {
     BigReal r = APCpow(<,EXPC.c1,BigInt(EXPC.c19,pool) - floor(x,pool),pool);

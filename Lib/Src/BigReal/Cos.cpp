@@ -56,12 +56,15 @@ public:
 
 static const CosConstants COSC;
 
+#define _0 pool->_0()
+#define _1 pool->_1()
+
 BigReal cos(const BigReal &x, const BigReal &f, DigitPool *digitPool) {
   VALIDATETOLERANCE(f)
   _SELECTDIGITPOOL(x);
-
-#define _0 pool->_0()
-#define _1 pool->_1()
+  if(!x._isfinite()) {
+    return pool->nan();
+  }
 
   if(f < _1) {
     const BigReal z = fabs(x,pool);

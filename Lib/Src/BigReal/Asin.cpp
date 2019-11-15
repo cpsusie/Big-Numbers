@@ -44,16 +44,15 @@ static const ASinConstants ASINC;
 BigReal asin(const BigReal &x, const BigReal &f, DigitPool *digitPool) {
   VALIDATETOLERANCE(f)
   _SELECTDIGITPOOL(x);
-
+  if(!x._isfinite() || (BigReal::compareAbs(x, _1) > 0)) {
+    return pool->nan();
+  }
   if(x.isZero()) {
     return _0;
   }
 
   if(x.isPositive()) {
     BigReal g(pool),q(pool),t(pool),y(pool),z(pool);
-    if(x > _1) {
-      throwBigRealInvalidArgumentException(method, _T("x>1"));
-    }
     if(x == _1) {
       return pi(f,pool)*ASINC.c13;
     }
@@ -71,9 +70,6 @@ BigReal asin(const BigReal &x, const BigReal &f, DigitPool *digitPool) {
       return pi(APCprod(<,f,ASINC.c8,pool), pool) * ASINC.c13;
     }
   } else { // x < 0
-    if(x < ASINC.c14) {
-      throwBigRealInvalidArgumentException(method, _T("x<-1"));
-    }
     return -asin(-x,f,pool);
   }
 }

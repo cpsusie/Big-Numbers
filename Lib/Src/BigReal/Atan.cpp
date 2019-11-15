@@ -60,12 +60,15 @@ public:
 
 static const ATanConstants ATANC;
 
+#define _0 pool->_0()
+#define _1 pool->_1()
+
 BigReal atan(const BigReal &x, const BigReal &f, DigitPool *digitPool) {
   VALIDATETOLERANCE(f)
   _SELECTDIGITPOOL(x);
-
-#define _0 pool->_0()
-#define _1 pool->_1()
+  if(!x._isfinite()) {
+    return pool->nan();
+  }
 
   BigReal y(pool);
   y = x.isNegative() ? -x : x;

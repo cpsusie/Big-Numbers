@@ -16,13 +16,15 @@ public:
 
 static const PowConstants POWC;
 
-BigReal pow(const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *digitPool) { // x^y
-  VALIDATETOLERANCE(f)
-  _SELECTDIGITPOOL(x);
-
 #define _0 pool->_0()
 #define _1 pool->_1()
 
+BigReal pow(const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *digitPool) { // x^y
+  VALIDATETOLERANCE(f)
+  _SELECTDIGITPOOL(x);
+  if(!x._isfinite() || !y._isfinite()) {
+    return pool->nan();
+  }
   if(y.isZero()) {
     return x.isZero() ? pool->nan() : _1;
   }

@@ -23,6 +23,9 @@ BigReal acos(const BigReal &x, const BigReal &f, DigitPool *digitPool) {
   VALIDATETOLERANCE(f)
   _SELECTDIGITPOOL(x);
 
+  if(!x._isfinite() || (BigReal::compareAbs(x, _1) > 0)) {
+    return pool->nan();
+  }
   if(x == _1) {
     return _0;
   }

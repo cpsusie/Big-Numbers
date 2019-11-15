@@ -28,12 +28,11 @@ static const SqrtConstants SQRTC;
 BigReal sqrt(const BigReal &x, const BigReal &f, DigitPool *digitPool) {
   VALIDATETOLERANCE(f)
   _SELECTDIGITPOOL(x);
+  if(!x._isnormal()) {
+    return BigReal(x, pool);
+  }
   if(x.isNegative()) {
     pool->nan();
-  }
-
-  if(x.isZero()) {
-    return _0;
   }
 
   BRExpoType m = BigReal::getExpo10(x);

@@ -37,6 +37,9 @@ static const CotConstants COTC;
 BigReal cot(const BigReal &x, const BigReal &f, DigitPool *digitPool) {
   VALIDATETOLERANCE(f)
   _SELECTDIGITPOOL(x);
+  if(!x._isfinite()) {
+    return pool->nan();
+  }
 
   BigReal z = fabs(x,pool);
   if(z > COTC.c1) {

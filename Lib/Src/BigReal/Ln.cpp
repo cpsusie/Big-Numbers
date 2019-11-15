@@ -285,11 +285,17 @@ static const Ln1Constants LN1C;
 
 BigReal ln1(const BigReal &x, const BigReal &f, DigitPool *digitPool) {
   VALIDATETOLERANCE(f)
-  if(!x.isPositive()) {
-    throwBigRealInvalidArgumentException(method, _T("x<=0"));
+  _SELECTDIGITPOOL(x);
+  if(!x._isfinite()) {
+    return pool->nan();
+  }
+  if(x.isZero()) {
+    return pool->ninf();
   }
 
-  _SELECTDIGITPOOL(x);
+  if(!x.isPositive()) {
+    return pool->nan();
+  }
 
   if(x == _1) {
     return _0;
@@ -391,15 +397,17 @@ static const LogConstants LOGC;
 BigReal log(const BigReal &base, const BigReal &x, const BigReal &f, DigitPool *digitPool) { // log(x) base base
   VALIDATETOLERANCE(f)
   _SELECTDIGITPOOL(x);
-
+  if(!base._isfinite() || !x._isfinite()) {
+    return pool->nan();
+  }
   if(base == _1) {
-    throwBigRealInvalidArgumentException(method, _T("base=1"));
+    return pool->pinf();
   }
-  if(!base.isPositive()) {
-    throwBigRealInvalidArgumentException(method, _T("base<=0"));
+  if(!base.isPositive() || x.isNegative()) {
+    return pool->nan();
   }
-  if(!x.isPositive()) {
-    throwBigRealInvalidArgumentException(method, _T("x<=0"));
+  if(x.isZero()) {
+    return pool->ninf();
   }
 
   BigReal r(pool);
@@ -445,11 +453,16 @@ static const Log10Constants L10C;
 
 BigReal log10(const BigReal &x, const BigReal &f, DigitPool *digitPool) {
   VALIDATETOLERANCE(f)
-  if(!x.isPositive()) {
-    throwBigRealInvalidArgumentException(method, _T("x<=0"));
-  }
-
   _SELECTDIGITPOOL(x);
+  if(!x._isfinite()) {
+    return pool->nan();
+  }
+  if(x.isZero()) {
+    return pool->ninf();
+  }
+  if(!x.isPositive()) {
+    return pool->nan();
+  }
 
   const BigReal &r = L10C.c5;
   const BigReal  d = APCprod(<,f, APCprod(<,L10C.c6,r,pool),pool);
