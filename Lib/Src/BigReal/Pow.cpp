@@ -16,10 +16,10 @@ public:
 
 static const PowConstants POWC;
 
-BigReal pow(const BigReal &x, const BigReal &y, const BigReal &f) { // x^y
+BigReal pow(const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *digitPool) { // x^y
   VALIDATETOLERANCE(f)
+  _SELECTDIGITPOOL(x);
 
-  DigitPool *pool = x.getDigitPool();
 #define _0 pool->_0()
 #define _1 pool->_1()
 
@@ -34,19 +34,19 @@ BigReal pow(const BigReal &x, const BigReal &y, const BigReal &f) { // x^y
   }
   if(x.isNegative()) {
     if(isEven(y)) {
-      return pow(-x,y,f);
+      return pow(-x,y,f,pool);
     }
     if(isOdd(y)) {
-      return -pow(-x,y,f);
+      return -pow(-x,y,f,pool);
     }
     return pool->nan();
   }
 
-  BigReal a = (x > _1) ? APCpow(>,x, floor(y)+_1,pool) : APCpow(>,x,floor(y),pool);
+  BigReal a = (x > _1) ? APCpow(>,x, floor(y,pool)+_1,pool) : APCpow(>,x,floor(y,pool),pool);
 
   if(a > f) {
     const BigReal u = APCquot(<,f,a,pool);
-    return exp(prod(y,ln(x, APCquot(<,APCprod(<,POWC.c1,u,pool),fabs(y),pool)),APCprod(<,POWC.c2,u,pool),pool),APCprod(<,POWC.c3,f,pool));
+    return exp(prod(y,ln(x, APCquot(<,APCprod(<,POWC.c1,u,pool),fabs(y,pool),pool),pool),APCprod(<,POWC.c2,u,pool),pool),APCprod(<,POWC.c3,f,pool),pool);
   } else {
     return _0;
   }

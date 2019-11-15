@@ -109,7 +109,7 @@ void BigReal::split(BigReal &a, BigReal &b, size_t n, const BigReal &f) const {
     a.appendDigit(p->n);
   }
   a.m_expo     = m_expo;
-  COPYSIGN(a, *this);
+  a.copySign(*this);
   a.m_low      = a.m_expo - (n-i-2);
   if(p && ((i = (a.m_low - f.m_expo)) > 0)) {
     for(; i-- && p; p = p->next) {
@@ -119,7 +119,7 @@ void BigReal::split(BigReal &a, BigReal &b, size_t n, const BigReal &f) const {
     // i = a.low - f.expo - (#digits in b = loopCount)-1
 
     b.m_expo     = a.m_low - 1;
-    COPYSIGN(b, *this);
+    b.copySign(*this);
     b.m_low      = f.m_expo + i + 1; // NB:This works for any f (even 0).
                                      // f.expo + i + 1 = f.expo + (a.low-f.expo-loopCount-1) + 1
                                      // = a.low-loopCount.

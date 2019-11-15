@@ -16,10 +16,11 @@ public:
 
 static const ACotConstants ACOTC;
 
-BigReal acot(const BigReal &x, const BigReal &f) {
+#define _0 pool->_0()
+
+BigReal acot(const BigReal &x, const BigReal &f, DigitPool *digitPool) {
   VALIDATETOLERANCE(f)
+  _SELECTDIGITPOOL(x);
 
-  DigitPool *pool = x.getDigitPool();
-
-  return dif(pi(APCprod(<,ACOTC.c1,f,pool), pool)*ACOTC.c3, atan(x,APCprod(<,ACOTC.c2,f,pool)),BigReal::_0, pool);
+  return dif(pi(APCprod(<,ACOTC.c1,f,pool), pool)*ACOTC.c3, atan(x,APCprod(<,ACOTC.c2,f,pool),pool),_0, pool);
 }

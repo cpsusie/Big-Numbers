@@ -16,14 +16,16 @@ public:
 
 static const ACosConstants ACOSC;
 
-BigReal acos(const BigReal &x, const BigReal &f) {
+#define _0 pool->_0()
+#define _1 pool->_1()
+
+BigReal acos(const BigReal &x, const BigReal &f, DigitPool *digitPool) {
   VALIDATETOLERANCE(f)
+  _SELECTDIGITPOOL(x);
 
-  DigitPool *pool = x.getDigitPool();
-
-  if(x == pool->_1()) {
-    return pool->_0();
+  if(x == _1) {
+    return _0;
   }
 
-  return pi(APCprod(<,f,ACOSC.c1,pool), pool)*ACOSC.c3 - asin(x,APCprod(<,f,ACOSC.c2,pool));
+  return pi(APCprod(<,f,ACOSC.c1,pool), pool)*ACOSC.c3 - asin(x,APCprod(<,f,ACOSC.c2,pool),pool);
 }

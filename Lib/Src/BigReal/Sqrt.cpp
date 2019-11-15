@@ -22,15 +22,18 @@ public:
 
 static const SqrtConstants SQRTC;
 
-BigReal sqrt(const BigReal &x, const BigReal &f) {
+#define _0 pool->_0()
+#define _1 pool->_1()
+
+BigReal sqrt(const BigReal &x, const BigReal &f, DigitPool *digitPool) {
   VALIDATETOLERANCE(f)
-  DigitPool *pool = x.getDigitPool();
+  _SELECTDIGITPOOL(x);
   if(x.isNegative()) {
     pool->nan();
   }
 
   if(x.isZero()) {
-    return pool->_0();
+    return _0;
   }
 
   BRExpoType m = BigReal::getExpo10(x);

@@ -16,7 +16,7 @@ public:
   // Declared explicit to avoid accidently use of operator/ on BigReals
   explicit BigInt(const BigReal &x, DigitPool *digitPool = NULL);
 
-  BigInt(         const BigInt &x, DigitPool *digitPool = NULL);
+  BigInt(       const BigInt          &x, DigitPool *digitPool = NULL);
   inline BigInt(int                    x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
   }
   inline BigInt(UINT                   x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
@@ -93,8 +93,6 @@ public:
   friend inline BigInt prod(const BigInt &x, const BigInt &y, DigitPool *digitPool = NULL) {
     return (BigInt&)prod((const BigReal&)x, (const BigReal&)y, (const BigReal&)BigReal::_0, digitPool);
   }
-  friend BigInt rem(const BigInt  &x, const BigInt &y, DigitPool *digitPool = NULL);
-
   inline BigInt operator+(const BigInt &y) const {
     return sum(*this, y, getDigitPool());
   }
@@ -164,6 +162,9 @@ inline int sign(const BigInt &n) {
   return sign((BigReal&)n);
 }
 
+// pow(a,r) mod n
+BigInt  powmod(const BigInt &a, const BigInt &r, const BigInt  &n, bool verbose = false, DigitPool *digitPool = NULL);
+
 // Return uniform distributed random BigInt in [0..e(1,maxDigits)-1], digits generated with rnd.
 // If digitPool == NULL, use DEFAULT_DIGITPOOL
 // ex:maxDigits = 3:returned values in interval [0..999]
@@ -225,6 +226,7 @@ inline bool isnormal(const BigInt &x) {
 inline bool isunordered(const BigInt &x, const BigInt &y) {
   return x._isnan() || y._isnan();
 }
+
 
 std::istream     &operator>>(std::istream  &in ,       BigInt            &x);
 std::ostream     &operator<<(std::ostream  &out, const BigInt            &x);

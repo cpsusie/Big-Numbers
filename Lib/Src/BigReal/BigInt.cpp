@@ -3,7 +3,7 @@
 
 BigInt::BigInt(const BigReal &x, DigitPool *digitPool) : BigReal(digitPool ? digitPool : x.getDigitPool()) {
   digitPool = getDigitPool();
-
+  clrInitDone();
   if(!x._isnormal()) {
     setToNonNormal(x.m_low, x.isNegative());
   } else if(x.m_expo < 0) { // |x| < 1
@@ -14,45 +14,57 @@ BigInt::BigInt(const BigReal &x, DigitPool *digitPool) : BigReal(digitPool ? dig
   } else { // |x| > 1 and x is not an integer
     copyDigits(x, (m_expo = x.m_expo)+1);
     m_low      = 0;
-    if(COPYSIGN(*this, x).trimZeroes().isNegative()) {
+    if(copySign(x).trimZeroes().isNegative()) {
       --(*this);
     }
   }
+  setInitDone();
 }
 
 BigInt::BigInt(const BigInt &x, DigitPool *digitPool) : BigReal(digitPool ? digitPool : x.getDigitPool()) {
+  clrInitDone();
   if(!x._isnormal()) {
     setToNonNormal(x.m_low, x.isNegative());
   } else {
     copyAllDigits(x);
     copyNonPointerFields(x);
   }
+  setInitDone();
 }
 
 BigInt::BigInt(const String &s, DigitPool *digitPool) : BigReal(digitPool) {
+  clrInitDone();
   init(s, false);
+  setInitDone();
 }
 
 BigInt::BigInt(const char *s, DigitPool *digitPool) : BigReal(digitPool) {
+  clrInitDone();
   init(s, false);
+  setInitDone();
 }
 
 BigInt::BigInt(const wchar_t *s, DigitPool *digitPool) : BigReal(digitPool) {
+  clrInitDone();
   init(s, false);
+  setInitDone();
 }
 
 BigInt quot(const BigInt &x, const BigInt &y, DigitPool *digitPool) {
-  if(digitPool == NULL) digitPool = x.getDigitPool();
-  BigInt result(digitPool);
+  _SELECTDIGITPOOL(x);
+  BigInt result(pool);
+  result.clrInitDone();
   quotRemainder(x, y, &result, NULL);
-  result.setSignByProductRule(x, y);
+  result.setSignByProductRule(x, y).setInitDone();
   return result;
 }
 
 BigInt rem(const BigInt &x, const BigInt &y, DigitPool *digitPool) {
-  if(digitPool == NULL) digitPool = x.getDigitPool();
-  BigInt result(digitPool);
+  _SELECTDIGITPOOL(x);
+  BigInt result(pool);
+  result.clrInitDone();
   quotRemainder(x, y, NULL, &result);
+  result.setInitDone();
   return result;
 }
 

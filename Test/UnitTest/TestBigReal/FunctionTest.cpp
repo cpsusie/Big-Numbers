@@ -11,7 +11,7 @@ void FunctionTest1ArgND64D80::runTest(int threadId, DigitPool *pool) {
 
   for(size_t i = 0; i < testData.size(); i++) {
     const BigReal &x           = testData[i];
-    const BigReal  exactResult = m_f1(x, maxTolerance);
+    const BigReal  exactResult = m_f1 ? m_f1(x, maxTolerance) : m_f1pool(x, maxTolerance, pool);
 
     if(m_f1_64 != NULL) {
       checkBigRealDouble64(m_functionName, m_f1_64, x, exactResult);
@@ -27,7 +27,11 @@ void FunctionTest1ArgND64D80::runTest(int threadId, DigitPool *pool) {
                              ,i, testData.size()-1
                              ,p, MAXDIGITS);
       }
-      stat.checkError(m_f1, x, stat.getRandomTolerance(-p), exactResult);
+      if(m_f1) {
+        stat.checkError(m_f1    , x, stat.getRandomTolerance(-p), exactResult);
+      } else {
+        stat.checkError(m_f1pool, x, stat.getRandomTolerance(-p), exactResult);
+      }
     }
   }
 }
@@ -42,7 +46,7 @@ void FunctionTest2ArgND64D80::runTest(int threadId, DigitPool *pool) {
     const BigReal &x = xTestData[i];
     for(size_t j = 0; j < yTestData.size(); j++) {
       const BigReal &y           = yTestData[j];
-      const BigReal  exactResult = m_f2( x, y, maxTolerance);
+      const BigReal  exactResult = m_f2 ? m_f2( x, y, maxTolerance) : m_f2pool(x, y, maxTolerance, pool);
 
       if(m_f2_64 != NULL) {
         checkBigRealDouble64(m_functionName, m_f2_64, x, y, exactResult);
@@ -59,7 +63,11 @@ void FunctionTest2ArgND64D80::runTest(int threadId, DigitPool *pool) {
                                ,j, yTestData.size()-1
                                ,p, MAXDIGITS);
         }
-        stat.checkError(m_f2, x, y, stat.getRandomTolerance(-p), exactResult);
+        if(m_f2) {
+          stat.checkError(m_f2, x, y, stat.getRandomTolerance(-p), exactResult);
+        } else {
+          stat.checkError(m_f2pool, x, y, stat.getRandomTolerance(-p), exactResult);
+        }
       }
     }
   }
@@ -179,7 +187,7 @@ void FunctionTest1ArgRelative::runTest(int threadId, DigitPool *pool) {
 
   for(size_t i = 0; i < testData.size(); i++) {
     const BigReal &x           = testData[i];
-    const BigReal  exactResult = m_rf1(x, MAXDIGITS);
+    const BigReal  exactResult = m_rf1 ? m_rf1(x, MAXDIGITS) : m_rf1pool(x, MAXDIGITS, pool);
 
     for(int digits = 1; digits <= MAXDIGITS; digits += DIGITSTEP) {
       if(stat.isTimeToPrint()) {
@@ -187,7 +195,11 @@ void FunctionTest1ArgRelative::runTest(int threadId, DigitPool *pool) {
                              ,i, testData.size()-1
                              ,digits, MAXDIGITS);
       }
-      stat.checkError(m_rf1, x, digits, exactResult);
+      if(m_rf1) {
+        stat.checkError(m_rf1, x, digits, exactResult);
+      } else {
+        stat.checkError(m_rf1pool, x, digits, exactResult);
+      }
     }
   }
 }
@@ -201,7 +213,7 @@ void FunctionTest2ArgRelative::runTest(int threadId, DigitPool *pool) {
     const BigReal &x = xTestData[i];
     for(size_t j = 0; j < yTestData.size(); j++) {
       const BigReal &y           = yTestData[j];
-      const BigReal  exactResult = m_rf2(x, y, MAXDIGITS);
+      const BigReal  exactResult = m_rf2 ? m_rf2(x, y, MAXDIGITS) : m_rf2pool(x, y, MAXDIGITS, pool);
 
       for(int digits = 0; digits <= MAXDIGITS; digits += DIGITSTEP) {
         if(stat.isTimeToPrint()) {
@@ -210,7 +222,11 @@ void FunctionTest2ArgRelative::runTest(int threadId, DigitPool *pool) {
                                ,j, yTestData.size()-1
                                ,digits, MAXDIGITS);
         }
-        stat.checkError(m_rf2, x, y, digits, exactResult);
+        if(m_rf2) {
+          stat.checkError(m_rf2, x, y, digits, exactResult);
+        } else {
+          stat.checkError(m_rf2pool, x, y, digits, exactResult);
+        }
       }
     }
   }

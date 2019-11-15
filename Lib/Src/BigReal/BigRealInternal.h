@@ -29,8 +29,6 @@ inline BigReal binop_inf(const BigReal &x, const BigReal &y, DigitPool *pool) {
   }
 
 
-#define COPYSIGN(dst,src) (dst).setNegative((src).isNegative())
-
 #ifdef assert
 #undef assert
 #endif

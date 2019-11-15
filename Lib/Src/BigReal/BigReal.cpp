@@ -214,7 +214,7 @@ BigReal &copy(BigReal &to, const BigReal &from, const BigReal &f) {
     to.clearDigits();
     to.m_expo     = from.m_expo;
     to.m_low      = max(from.m_low, f.m_expo);
-    COPYSIGN(to, from).copyDigits(from, to.m_expo - to.m_low + 1).trimZeroes();
+    to.copyDigits(from, to.m_expo - to.m_low + 1).copySign(from).trimZeroes();
   }
   return to;
 }
@@ -227,7 +227,7 @@ BigReal &copy(BigReal &to, const BigReal &from, size_t length) {
   } else {
     length = minMax(length, (size_t)1, from.getLength());
     to.m_low = (to.m_expo = from.m_expo) - length + 1;
-    COPYSIGN(to, from).clearDigits().copyDigits(from, length).trimZeroes();
+    to.clearDigits().copyDigits(from, length).copySign(from).trimZeroes();
   }
   return to;
 }

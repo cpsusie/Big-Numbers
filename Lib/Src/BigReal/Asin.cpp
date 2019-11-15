@@ -38,14 +38,15 @@ public:
 
 static const ASinConstants ASINC;
 
-BigReal asin(const BigReal &x, const BigReal &f) {
-  VALIDATETOLERANCE(f)
-
-  DigitPool *pool = x.getDigitPool();
+#define _0 pool->_0()
 #define _1 pool->_1()
 
+BigReal asin(const BigReal &x, const BigReal &f, DigitPool *digitPool) {
+  VALIDATETOLERANCE(f)
+  _SELECTDIGITPOOL(x);
+
   if(x.isZero()) {
-    return pool->_0();
+    return _0;
   }
 
   if(x.isPositive()) {
@@ -57,15 +58,15 @@ BigReal asin(const BigReal &x, const BigReal &f) {
       return pi(f,pool)*ASINC.c13;
     }
     q = ASINC.c1;
-    z = dif(_1,x,q);
+    z = dif(_1,x,q,pool);
     while(z < APCprod(>,ASINC.c2,q,pool)) {
       q = APCprod(<,q,q,pool);
       z = dif(_1,x,q,pool);
     }
     g = APCquot(<,APCprod(<,ASINC.c3,f,pool),x,pool);
-    t = sqrt(_1 - prod(x,x,APCprod(<,f,APCquot(<,e(ASINC.c5,BigReal::getExpo10(z)/2,pool),x,pool),pool),pool),dmin(g,BigReal(ASINC.c4,pool)));
+    t = sqrt(_1 - prod(x,x,APCprod(<,f,APCquot(<,e(ASINC.c5,BigReal::getExpo10(z)/2,pool),x,pool),pool),pool),dmin(g,BigReal(ASINC.c4,pool)),pool);
     if(t.isPositive()) {
-      return atan(quot(x,t,APCquot(<,APCprod(<,ASINC.c6,f,pool),APCprod(>,t,t,pool),pool),pool),APCprod(<,ASINC.c7,f,pool));
+      return atan(quot(x,t,APCquot(<,APCprod(<,ASINC.c6,f,pool),APCprod(>,t,t,pool),pool),pool),APCprod(<,ASINC.c7,f,pool),pool);
     } else {
       return pi(APCprod(<,f,ASINC.c8,pool), pool) * ASINC.c13;
     }
@@ -73,6 +74,6 @@ BigReal asin(const BigReal &x, const BigReal &f) {
     if(x < ASINC.c14) {
       throwBigRealInvalidArgumentException(method, _T("x<-1"));
     }
-    return -asin(-x,f);
+    return -asin(-x,f,pool);
   }
 }

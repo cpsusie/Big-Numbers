@@ -219,6 +219,16 @@ void TestStatistic::checkError(BigRealFunction1 f, const BigReal &x, const BigRe
   }
 }
 
+void TestStatistic::checkError(BigRealFunction1Pool f, const BigReal &x, const BigReal &tolerance, const BigReal &exactResult) {
+  const BigReal result = f(x, tolerance,m_digitPool);
+  m_error = fabs(exactResult-result);
+  if(m_error <= tolerance) {
+    updateZ(tolerance);
+  } else {
+    markError(x, tolerance, exactResult, result);
+  }
+}
+
 void TestStatistic::checkError(BigRealFunction2 f, const BigReal &x, const BigReal &y, const BigReal &tolerance, const BigReal &exactResult) {
   const BigReal result = f(x, y, tolerance);
   m_error  = fabs(exactResult-result);
@@ -241,6 +251,19 @@ void TestStatistic::checkError( BigRealFunction2Pool f, const BigReal &x, const 
 
 void TestStatistic::checkError(rBigRealFunction1 f, const BigReal &x, int digits, const BigReal &exactResult) {
   const BigReal result    = f(x, digits);
+  const BigReal tolerance = e(m_digitPool->_1(), -digits);
+
+  m_error = getRelativeError(result, exactResult);
+
+  if(m_error <= tolerance) {
+    updateZ(tolerance);
+  } else {
+    markError(x,digits,tolerance,exactResult, result);
+  }
+}
+
+void TestStatistic::checkError(rBigRealFunction1Pool f, const BigReal &x, int digits, const BigReal &exactResult) {
+  const BigReal result    = f(x, digits, m_digitPool);
   const BigReal tolerance = e(m_digitPool->_1(), -digits);
 
   m_error = getRelativeError(result, exactResult);

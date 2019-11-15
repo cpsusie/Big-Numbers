@@ -68,6 +68,6 @@ void quotRemainder(const BigReal &x,  const BigReal &y, BigInt *quotient, BigRea
   }
 
   if(remainder) {
-    COPYSIGN(*remainder, x); // sign(x % y) = sign(x), equivalent to built-in % operator
+    remainder->copySign(x); // sign(x % y) = sign(x), equivalent to built-in % operator
   }
 }

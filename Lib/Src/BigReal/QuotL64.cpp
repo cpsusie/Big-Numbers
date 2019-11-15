@@ -45,8 +45,7 @@ BigReal BigReal::quotLinear64(const BigReal &x, const BigReal &y, const BigReal 
   BigReal result(pool), t(pool), tmp(pool);
   bool loopDone = false;
   for(; compareAbs(z,v) > 0; loopDone = true) {
-    t.approxQuot64Abs(z, yFirst, scale);
-    COPYSIGN(t, z);
+    t.approxQuot64Abs(z, yFirst, scale).copySign(z);
     result += t;
     z -= product(tmp, t, y, u, 0);
   }
@@ -179,8 +178,7 @@ void quotRemainder64(const BigReal &x, const BigReal &y, BigInt *quotient, BigRe
 
   BigReal q(pool), t(pool), tmp(pool);
   while(BigReal::compareAbs(z, y) >= 0) {
-    t.approxQuot64Abs(z, yFirst, scale);
-    COPYSIGN(t, z);
+    t.approxQuot64Abs(z, yFirst, scale).copySign(z);
     q += t;
     z -= BigReal::product(tmp, t, y, pool->_0(),0);
   }
@@ -229,7 +227,7 @@ void quotRemainder64(const BigReal &x, const BigReal &y, BigInt *quotient, BigRe
   }
 
   if(remainder) {
-    COPYSIGN(*remainder, x); // sign(x % y) = sign(x), equivalent to built-in % operator
+    remainder->copySign(x); // sign(x % y) = sign(x), equivalent to built-in % operator
   }
   if(yNegative) {
     ((BigReal&)y).setNegative(true);

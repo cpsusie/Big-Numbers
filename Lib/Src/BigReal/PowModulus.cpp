@@ -2,12 +2,14 @@
 
 using namespace std;
 
-// Calculates a^r mod n
-BigInt powmod(const BigInt &a, const BigInt &r, const BigInt &n, bool verbose) {
-  DigitPool *pool = a.getDigitPool();
+#define _1 pool->_1()
 
-  BigInt p = pool->_1();
-  BigInt tmpa(a);
+// Calculates a^r mod n
+BigInt powmod(const BigInt &a, const BigInt &r, const BigInt &n, bool verbose, DigitPool *digitPool) {
+  _SELECTDIGITPOOL(a);
+
+  BigInt p = _1;
+  BigInt tmpa(a, pool);
   BigInt tmpr(r, pool);
 
   int i = 1;

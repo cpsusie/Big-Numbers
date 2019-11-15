@@ -42,33 +42,35 @@ public:
 
 static const TanConstants TANC;
 
-BigReal tan(const BigReal &x, const BigReal &f) {
+BigReal tan(const BigReal &x, const BigReal &f, DigitPool *digitPool) {
   VALIDATETOLERANCE(f)
+  _SELECTDIGITPOOL(x);
 
-  BigReal z = fabs(x);
+  BigReal z = fabs(x, pool);
 
-  DigitPool *pool = x.getDigitPool();
 
   if(z > TANC.c1) {
-    BigReal m = floor(quot(x,pi(APCquot(<,TANC.c2,z,pool),pool),TANC.c3,pool))+TANC.c16;
-    BigReal r = APCquot(<,TANC.c4,fabs(m),pool);
+    BigReal m = floor(quot(x,pi(APCquot(<,TANC.c2,z,pool),pool),TANC.c3,pool),pool)+TANC.c16;
+    BigReal r = APCquot(<,TANC.c4,fabs(m,pool),pool);
     BigReal q(TANC.c5,pool);
-    z = fabs(dif(x, prod(pi(APCprod(<,r,q,pool),pool),m, APCprod(<,TANC.c6,q,pool),pool),APCprod(<,TANC.c7,q,pool),pool));
+    z = fabs(dif(x, prod(pi(APCprod(<,r,q,pool),pool),m, APCprod(<,TANC.c6,q,pool),pool),APCprod(<,TANC.c7,q,pool),pool),pool);
     while(z < q) {
       q = APCprod(<,q,q,pool);
-      z = fabs(dif(x, prod(pi(APCprod(<,q,r,pool),pool),m, APCprod(<,TANC.c6,q,pool),pool),APCprod(<,TANC.c7,q,pool),pool));
+      z = fabs(dif(x, prod(pi(APCprod(<,q,r,pool),pool),m, APCprod(<,TANC.c6,q,pool),pool),APCprod(<,TANC.c7,q,pool),pool),pool);
     }
     BigReal d = APCprod(<,z,APCprod(<,TANC.c8,f,pool),pool);
-    BigReal a = sin(x, d);
-    return quot(a,
-                cos(x, APCquot(<,APCprod(<,APCprod(<,d,TANC.c9,pool),z,pool),fabs(a)+APCprod(<,d,TANC.c10,pool),pool)),
-                APCprod(<,TANC.c11,f,pool)
+    BigReal a = sin(x, d, pool);
+    return quot(a
+               ,cos(x, APCquot(<,APCprod(<,APCprod(<,d,TANC.c9,pool),z,pool),fabs(a)+APCprod(<,d,TANC.c10,pool),pool),pool)
+               ,APCprod(<,TANC.c11,f,pool)
+               ,pool
                );
   } else {
-    BigReal a = sin(x, APCprod(<,TANC.c12,f,pool));
-    return quot(a,
-                cos(x, APCquot(<,APCprod(<,TANC.c13,f,pool),fabs(a)+APCprod(<,TANC.c14,f,pool),pool)),
-                APCprod(<,TANC.c15,f,pool)
+    BigReal a = sin(x, APCprod(<,TANC.c12,f,pool),pool);
+    return quot(a
+               ,cos(x, APCquot(<,APCprod(<,TANC.c13,f,pool),fabs(a,pool)+APCprod(<,TANC.c14,f,pool),pool),pool)
+               ,APCprod(<,TANC.c15,f,pool)
+               ,pool
                );
   }
 }

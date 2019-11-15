@@ -18,13 +18,14 @@ public:
 
 static const SinConstants SINC;
 
-BigReal sin(const BigReal &x, const BigReal &f) {
+#define _0 pool->_0()
+#define _1 pool->_1()
+
+BigReal sin(const BigReal &x, const BigReal &f, DigitPool *digitPool) {
   VALIDATETOLERANCE(f)
-
-  DigitPool *pool = x.getDigitPool();
+  _SELECTDIGITPOOL(x);
   if(x.isZero()) {
-    return pool->_0();
+    return _0;
   }
-
-  return cos(dif(pi(APCprod(<,SINC.c1,f,pool),pool)*SINC.c4,x,APCprod(<,SINC.c2,f,pool),pool),APCprod(<,SINC.c3,f,pool));
+  return cos(dif(pi(APCprod(<,SINC.c1,f,pool),pool)*SINC.c4,x,APCprod(<,SINC.c2,f,pool),pool),APCprod(<,SINC.c3,f,pool),pool);
 }

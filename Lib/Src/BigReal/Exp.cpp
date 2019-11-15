@@ -51,37 +51,38 @@ public:
 
 static const ExpConstants EXPC;
 
-BigReal exp( const BigReal &x, const BigReal &f) {
+BigReal exp( const BigReal &x, const BigReal &f, DigitPool *digitPool) {
   VALIDATETOLERANCE(f)
+  _SELECTDIGITPOOL(x);
 
-  DigitPool *pool = x.getDigitPool();
+#define _0 pool->_0()
 #define _1 pool->_1()
 
   if(x.isNegative()) {
-    BigReal r = APCpow(<,EXPC.c1,BigInt(EXPC.c19,pool) - floor(x),pool);
+    BigReal r = APCpow(<,EXPC.c1,BigInt(EXPC.c19,pool) - floor(x,pool),pool);
     BigReal g = APCprod(<,f,r,pool);
     if(g < EXPC.c20) {
-      return quot(_1,exp(-x,APCprod(<,r,APCprod(<,EXPC.c3,g,pool),pool)), f*EXPC.c4);
+      return quot(_1,exp(-x,APCprod(<,r,APCprod(<,EXPC.c3,g,pool),pool),pool), prod(f,EXPC.c4,_0,pool),pool);
     } else {
       return APCquot(#,EXPC.c1,r,pool);
     }
   } else {
-    BigReal g = APCprod(<,f,APCpow(<,EXPC.c5,floor(x)+_1,pool),pool);
+    BigReal g = APCprod(<,f,APCpow(<,EXPC.c5,floor(x,pool)+_1,pool),pool);
     if(g >= _1) {
       return g;
     } else {
-      BigReal kn = APCprod(>,EXPC.c6,BigReal::getExpo10N(x),pool) + EXPC.c7;
-      BigReal jn = APCprod(>,EXPC.c8, sqrt(-BigReal::getExpo10N(g),EXPC.c9),pool) + kn + EXPC.c10;
-      jn = (jn < _1) ? pool->_0() : floor(jn);
-      kn = (kn < _1) ? _1  : (kn > jn) ? (jn + _1) : floor(kn);
+      BigReal kn = APCprod(>,EXPC.c6,BigReal::getExpo10N(x,pool),pool) + EXPC.c7;
+      BigReal jn = APCprod(>,EXPC.c8, sqrt(-BigReal::getExpo10N(g,pool),EXPC.c9,pool),pool) + kn + EXPC.c10;
+      jn = (jn < _1) ? _0 : floor(jn,pool);
+      kn = (kn < _1) ? _1  : (kn > jn) ? (jn + _1) : floor(kn,pool);
       int j = getInt(jn),k = getInt(kn);
-      BigReal h(pool);
+      BigReal h(pool),y(pool),d(pool),q(pool),l(pool);
       h = BigReal::pow2(-j);
       g = APCprod(<,g,APCprod(<,EXPC.c11,h,pool),pool);
-      BigReal y = prod(x,h,g*EXPC.c12);
-      BigReal d = APCprod(>,EXPC.c13,y,pool);
-      BigReal q = BigReal(EXPC.c18, pool);
-      BigReal l = _1;
+      y = prod(x,h,g*EXPC.c12);
+      d = APCprod(>,EXPC.c13,y,pool);
+      q = BigReal(EXPC.c18, pool);
+      l = _1;
       while(g < d) {
         l = l + l; // i.e l *= 2
         q = APCprod(>,q,q,pool);

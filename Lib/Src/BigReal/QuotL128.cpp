@@ -48,8 +48,7 @@ BigReal BigReal::quotLinear128(const BigReal &x, const BigReal &y, const BigReal
   BigReal result(pool), t(pool), tmp(pool);
   bool loopDone = false;
   for(; compareAbs(z,v) > 0; loopDone = true) {
-    t.approxQuot128Abs(z, yFirst, scale);
-    COPYSIGN(t, z);
+    t.approxQuot128Abs(z, yFirst, scale).copySign(z);
     result += t;
     z -= product(tmp, t, y, u, 0);
   }
@@ -191,8 +190,7 @@ void quotRemainder128(const BigReal &x, const BigReal &y, BigInt *quotient, BigR
 
   BigReal q(pool), t(pool), tmp(pool);
   while(BigReal::compareAbs(z, y) >= 0) {
-    t.approxQuot128Abs(z, yFirst, scale);
-    COPYSIGN(t, z);
+    t.approxQuot128Abs(z, yFirst, scale).copySign(z);
     q += t;
     z -= BigReal::product(tmp, t, y, pool->_0(),0);
   }
@@ -241,7 +239,7 @@ void quotRemainder128(const BigReal &x, const BigReal &y, BigInt *quotient, BigR
   }
 
   if(remainder) {
-    COPYSIGN(*remainder, x);
+    remainder->copySign(x);
   }
   if(yNegative) {
     ((BigReal&)y).setNegative(true);

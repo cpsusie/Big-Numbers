@@ -34,26 +34,25 @@ public:
 
 static const CotConstants COTC;
 
-BigReal cot(const BigReal &x, const BigReal &f) {
+BigReal cot(const BigReal &x, const BigReal &f, DigitPool *digitPool) {
   VALIDATETOLERANCE(f)
+  _SELECTDIGITPOOL(x);
 
-  DigitPool *pool = x.getDigitPool();
-
-  BigReal z = fabs(x);
+  BigReal z = fabs(x,pool);
   if(z > COTC.c1) {
-    BigReal m = floor(quot(x,pi(APCquot(<,COTC.c2,z,pool),pool),COTC.c3,pool)+COTC.c12);
-    BigReal r = APCquot(<,COTC.c4,fabs(m),pool);
+    BigReal m = floor(quot(x,pi(APCquot(<,COTC.c2,z,pool),pool),COTC.c3,pool)+COTC.c12,pool);
+    BigReal r = APCquot(<,COTC.c4,fabs(m,pool),pool);
     BigReal q(COTC.c5,pool);
-    z = fabs(dif(x,prod(m, pi(APCprod(<,q,r,pool),pool),APCprod(<,COTC.c6,q,pool),pool),APCprod(<,COTC.c7,q,pool),pool));
+    z = fabs(dif(x,prod(m, pi(APCprod(<,q,r,pool),pool),APCprod(<,COTC.c6,q,pool),pool),APCprod(<,COTC.c7,q,pool),pool),pool);
     while(z < q) {
       q = APCprod(<,q,q,pool);
-      z = fabs(dif(x, prod(m, pi(APCprod(<,q,r,pool),pool),APCprod(<,COTC.c6,q,pool)),APCprod(<,COTC.c7,q,pool),pool));
+      z = fabs(dif(x, prod(m, pi(APCprod(<,q,r,pool),pool),APCprod(<,COTC.c6,q,pool),pool),APCprod(<,COTC.c7,q,pool),pool),pool);
     }
   }
   BigReal d = APCprod(<,APCprod(<,COTC.c8,f,pool),z,pool);
-  BigReal a = cos(x, d);
+  BigReal a = cos(x, d, pool);
   return quot(a
-             ,sin(x,APCquot(<,APCprod(<,APCprod(<,COTC.c9,d,pool),z,pool),fabs(a)+APCprod(<,COTC.c10,d,pool),pool))
+             ,sin(x,APCquot(<,APCprod(<,APCprod(<,COTC.c9,d,pool),z,pool),fabs(a,pool)+APCprod(<,COTC.c10,d,pool),pool),pool)
              ,APCprod(<,COTC.c11,f,pool)
              ,pool
              );

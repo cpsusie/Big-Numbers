@@ -45,8 +45,7 @@ BigReal BigReal::quotLinear32(const BigReal &x, const BigReal &y, const BigReal 
   BigReal result(pool), t(pool), tmp(pool);
   bool loopDone = false;
   for(; compareAbs(z,v) > 0; loopDone = true) {
-    t.approxQuot32Abs(z, yFirst, scale);
-    COPYSIGN(t, z);
+    t.approxQuot32Abs(z, yFirst, scale).copySign(z);
     result += t;
     z -= product(tmp, t, y, u, 0);
   }
@@ -79,9 +78,7 @@ BigReal &BigReal::approxQuot32Abs(const BigReal &x, unsigned long y, BRExpoType 
 BigReal BigReal::reciprocal(const BigReal &x, DigitPool *digitPool) { // static
   static const int k = MAXDIGITS_DIVISOR32;
   BigReal result(pow10(MAXDIGITS_INT32)/x.getFirst32(k), digitPool?digitPool:x.getDigitPool());
-  result.multPow10(k - 1 - MAXDIGITS_INT32 - getExpo10(x));
-  COPYSIGN(result, x);
-  return result;
+  return result.multPow10(k - 1 - MAXDIGITS_INT32 - getExpo10(x)).copySign(x);
 }
 
 // Assume k <= MAXDIGITS_INT32 (=9). scale can be NULL.

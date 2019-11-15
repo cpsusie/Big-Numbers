@@ -60,51 +60,55 @@ public:
 
 static const ATanConstants ATANC;
 
-BigReal atan(const BigReal &x, const BigReal &f) {
+BigReal atan(const BigReal &x, const BigReal &f, DigitPool *digitPool) {
   VALIDATETOLERANCE(f)
+  _SELECTDIGITPOOL(x);
 
-  DigitPool *pool = x.getDigitPool();
+#define _0 pool->_0()
 #define _1 pool->_1()
 
-  BigReal y = x.isNegative() ? -x : x;
+  BigReal y(pool);
+  y = x.isNegative() ? -x : x;
 
-  if(f < y && f < ATANC.c3) {
-    BigReal h = _1;
-    BigReal g = f;
+  if((f < y) && (f < ATANC.c3)) {
+    BigReal h(pool), g(pool), a(pool), jn(pool);
+    h = _1;
+    g =  f;
     while(y > ATANC.c4) {
-      BigReal a = APCprod(<,g,y,pool);
-      y = quot(sqrt(_1 + prod(y,y,APCprod(<,APCprod(<,ATANC.c5,y,pool),a,pool),pool),APCprod(<,ATANC.c6,a,pool)) - _1
+      a = APCprod(<,g,y,pool);
+      y = quot(sqrt(_1 + prod(y,y,APCprod(<,APCprod(<,ATANC.c5,y,pool),a,pool),pool),APCprod(<,ATANC.c6,a,pool),pool) - _1
               ,y
               ,APCprod(<,ATANC.c7,g,pool)
+              ,pool
               );
       h = h + h;
       g = APCprod(<,ATANC.c8,g,pool);
     }
-    g = APCprod(<,ATANC.c9,g,pool);
-    BigReal jn = APCsum(<,APCsum(<,APCprod(<,sqrt(-BigReal::getExpo10N(g),ATANC.c11),ATANC.c10,pool)
-                                  ,APCprod(<,ATANC.c12,BigReal::getExpo10N(y),pool)
+    g  = APCprod(<,ATANC.c9,g,pool);
+    jn = APCsum(<,APCsum(<,APCprod(<,sqrt(-BigReal::getExpo10N(g,pool),ATANC.c11,pool),ATANC.c10,pool)
+                                  ,APCprod(<,ATANC.c12,BigReal::getExpo10N(y,pool),pool)
                                   ,pool
                                  )
                          ,ATANC.c13
                          ,pool
                        );
-    int j = (jn < _1) ? 0 : getInt(floor(jn));
+    int j = (jn < _1) ? 0 : getInt(floor(jn,pool));
 
     for(int i = 1; i <= j; i++) {
-      BigReal a = APCquot(<,g,y,pool);
+      a = APCquot(<,g,y,pool);
       y = quot(y,sqrt(_1+prod(y,y,APCprod(<,ATANC.c14,a,pool)),a)+_1,APCprod(<,g,ATANC.c15,pool));
       g = APCprod(<,ATANC.c16,g,pool);
     }
-    const BigReal v = APCprod(<,ATANC.c17,BigReal::getExpo10N(APCprod(<,ATANC.c18,g,pool)),pool);
+    const BigReal v = APCprod(<,ATANC.c17,BigReal::getExpo10N(APCprod(<,ATANC.c18,g,pool),pool),pool);
     const BigReal p = BigReal(BigReal::getExpo10(y) + 1,pool);
     const BigReal r = p.isZero() ? APCquot(<,ATANC.c19,v,pool) : APCprod(<,APCquot(<,ATANC.c20,v,pool),APCprod(<,p,p,pool),pool);
-    const BigReal l = quot(v,APCsum(>,ln(y,r),r,pool),ATANC.c21,pool);
+    const BigReal l = quot(v,APCsum(>,ln(y,r,pool),r,pool),ATANC.c21,pool);
     if(l > _1) {
       const BigReal u = APCquot(<,APCprod(<,ATANC.c22,g,pool),l,pool);
       const BigReal w = APCprod(<,ATANC.c23,u,pool);
-      BigReal n = _1;
-      BigReal s = y;
-      const BigReal t   = -prod(y,y,APCprod(<,ATANC.c24,u,pool));
+      BigReal       n = _1;
+      BigReal       s =  y;
+      const BigReal t = -prod(y,y,APCprod(<,ATANC.c24,u,pool),pool);
       const UINT    l32 = getUint(l);
       for(UINT i = 1; i <= l32; i++) {
         n += ATANC.c26;
@@ -118,5 +122,5 @@ BigReal atan(const BigReal &x, const BigReal &f) {
       return  prod(y,h * BigReal::pow2(j),APCprod(<,ATANC.c25,f,pool),pool);
     }
   }
-  return pool->_0();
+  return _0;
 }

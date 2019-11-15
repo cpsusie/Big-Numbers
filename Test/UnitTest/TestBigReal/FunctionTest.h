@@ -21,6 +21,7 @@ class FunctionTest1ArgND64D80 : public AbstractFunctionTest {
 private:
   const TestInterval    m_xInterval;
   BigRealFunction1      m_f1;
+  BigRealFunction1Pool  m_f1pool;
   DoubleFunction1       m_f1_64;
   Double80Function1     m_f1_80;
 public:
@@ -30,7 +31,16 @@ public:
                          ,DoubleFunction1      f64
                          ,Double80Function1    f80) : AbstractFunctionTest(functionName)
                                                     , m_xInterval(xInterval)
-                                                    , m_f1(f), m_f1_64(f64), m_f1_80(f80)
+                                                    , m_f1(f), m_f1pool(NULL), m_f1_64(f64), m_f1_80(f80)
+  {
+  }
+  FunctionTest1ArgND64D80(const String        &functionName
+                         ,const TestInterval  &xInterval
+                         ,BigRealFunction1Pool f
+                         ,DoubleFunction1      f64
+                         ,Double80Function1    f80) : AbstractFunctionTest(functionName)
+                                                    , m_xInterval(xInterval)
+                                                    , m_f1(NULL), m_f1pool(f), m_f1_64(f64), m_f1_80(f80)
   {
   }
   void runTest(int threadId, DigitPool *pool);
@@ -41,6 +51,7 @@ private:
   const TestInterval    m_xInterval;
   const TestInterval    m_yInterval;
   BigRealFunction2      m_f2;
+  BigRealFunction2Pool  m_f2pool;
   DoubleFunction2       m_f2_64;
   Double80Function2     m_f2_80;
 public:
@@ -52,23 +63,41 @@ public:
                          ,Double80Function2    f80) : AbstractFunctionTest(functionName)
                                                     , m_xInterval(xInterval)
                                                     , m_yInterval(yInterval)
-                                                    , m_f2(f), m_f2_64(f64), m_f2_80(f80)
+                                                    , m_f2(f), m_f2pool(NULL), m_f2_64(f64), m_f2_80(f80)
+  {
+  }
+  FunctionTest2ArgND64D80(const String        &functionName
+                         ,const TestInterval  &xInterval
+                         ,const TestInterval  &yInterval
+                         ,BigRealFunction2Pool f
+                         ,DoubleFunction2      f64
+                         ,Double80Function2    f80) : AbstractFunctionTest(functionName)
+                                                    , m_xInterval(xInterval)
+                                                    , m_yInterval(yInterval)
+                                                    , m_f2(NULL), m_f2pool(f), m_f2_64(f64), m_f2_80(f80)
   {
   }
   void runTest(int threadId, DigitPool *pool);
 };
 
-
 class FunctionTest1ArgRelative : public AbstractFunctionTest {
 private:
   const TestInterval    m_xInterval;
   rBigRealFunction1     m_rf1;
+  rBigRealFunction1Pool m_rf1pool;
 public:
-  FunctionTest1ArgRelative(const String        &functionName
-                          ,const TestInterval  &xInterval
-                          ,rBigRealFunction1    f) : AbstractFunctionTest(functionName)
-                                                   , m_xInterval(xInterval)
-                                                   , m_rf1(f)
+  FunctionTest1ArgRelative(const String         &functionName
+                          ,const TestInterval   &xInterval
+                          ,rBigRealFunction1     f) : AbstractFunctionTest(functionName)
+                                                    , m_xInterval(xInterval)
+                                                    , m_rf1(f), m_rf1pool(NULL)
+  {
+  }
+  FunctionTest1ArgRelative(const String         &functionName
+                          ,const TestInterval   &xInterval
+                          ,rBigRealFunction1Pool f) : AbstractFunctionTest(functionName)
+                                                    , m_xInterval(xInterval)
+                                                    , m_rf1(NULL), m_rf1pool(f)
   {
   }
   void runTest(int threadId, DigitPool *pool);
@@ -79,14 +108,24 @@ private:
   const TestInterval    m_xInterval;
   const TestInterval    m_yInterval;
   rBigRealFunction2     m_rf2;
+  rBigRealFunction2Pool m_rf2pool;
 public:
-  FunctionTest2ArgRelative(const String        &functionName
-                          ,const TestInterval  &xInterval
-                          ,const TestInterval  &yInterval
-                          ,rBigRealFunction2    f) : AbstractFunctionTest(functionName)
-                                                   , m_xInterval(xInterval)
-                                                   , m_yInterval(yInterval)
-                                                   , m_rf2(f)
+  FunctionTest2ArgRelative(const String         &functionName
+                          ,const TestInterval   &xInterval
+                          ,const TestInterval   &yInterval
+                          ,rBigRealFunction2     f) : AbstractFunctionTest(functionName)
+                                                    , m_xInterval(xInterval)
+                                                    , m_yInterval(yInterval)
+                                                    , m_rf2(f), m_rf2pool(NULL)
+  {
+  }
+  FunctionTest2ArgRelative(const String         &functionName
+                          ,const TestInterval   &xInterval
+                          ,const TestInterval   &yInterval
+                          ,rBigRealFunction2Pool f) : AbstractFunctionTest(functionName)
+                                                    , m_xInterval(xInterval)
+                                                    , m_yInterval(yInterval)
+                                                    , m_rf2(NULL), m_rf2pool(f)
   {
   }
   void runTest(int threadId, DigitPool *pool);
@@ -260,10 +299,32 @@ inline void testFunction(const String       &functionName
   TesterJob::addFunctionTest(new FunctionTest1ArgND64D80(functionName, xInterval, f, f64, f80));
 }
 
+inline void testFunction(const String        &functionName
+                        ,const TestInterval  &xInterval
+                        ,BigRealFunction1Pool f
+                        ,DoubleFunction1      f64 = NULL
+                        ,Double80Function1    f80 = NULL) {
+  TesterJob::addFunctionTest(new FunctionTest1ArgND64D80(functionName, xInterval, f, f64, f80));
+}
+
+
 inline void testFunction(const String       &functionName
                         ,const TestInterval &interval
                         ,rBigRealFunction1   f) {
   TesterJob::addFunctionTest(new FunctionTest1ArgRelative(functionName, interval, f));
+}
+
+inline void testFunction(const String         &functionName
+                        ,const TestInterval   &interval
+                        ,rBigRealFunction1Pool f) {
+  TesterJob::addFunctionTest(new FunctionTest1ArgRelative(functionName, interval, f));
+}
+
+inline void testFunction(const String         &functionName
+                        ,const TestInterval   &xInterval
+                        ,const TestInterval   &yInterval
+                        ,rBigRealFunction2Pool f) {
+  TesterJob::addFunctionTest(new FunctionTest2ArgRelative(functionName, xInterval, yInterval, f));
 }
 
 inline void testFunction(const String       &functionName
@@ -272,6 +333,15 @@ inline void testFunction(const String       &functionName
                         ,BigRealFunction2    f
                         ,DoubleFunction2     f64 = NULL
                         ,Double80Function2   f80 = NULL) {
+  TesterJob::addFunctionTest(new FunctionTest2ArgND64D80(functionName, xInterval, yInterval, f, f64, f80));
+}
+
+inline void testFunction(const String        &functionName
+                        ,const TestInterval  &xInterval
+                        ,const TestInterval  &yInterval
+                        ,BigRealFunction2Pool f
+                        ,DoubleFunction2      f64 = NULL
+                        ,Double80Function2    f80 = NULL) {
   TesterJob::addFunctionTest(new FunctionTest2ArgND64D80(functionName, xInterval, yInterval, f, f64, f80));
 }
 

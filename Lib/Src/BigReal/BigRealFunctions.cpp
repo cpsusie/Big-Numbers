@@ -1,12 +1,11 @@
 #include "pch.h"
 
-BigReal fabs(const BigReal &x) { // Absolute value of x (=|x|)
-  if(!x.isNegative()) {
-    return x;
+BigReal fabs(const BigReal &x, DigitPool *digitPool) { // Absolute value of x (=|x|)
+  _SELECTDIGITPOOL(x);
+  if(!x.isNegative()) { // works for Nan too
+    return BigReal(x,pool);
   }
-  BigReal result(x);
-  result.setPositive();
-  return result;
+  return BigReal(x, pool).clrFlags(BR_NEG);
 }
 
 int BigReal::logBASE(double x) { // static
@@ -64,58 +63,48 @@ bool isOdd(const BigReal &x) {
   return (x.m_last->n & 1) != 0;
 }
 
-BigInt floor(const BigReal &x) { // biggest integer <= x
-  return BigInt(x);
+BigInt floor(const BigReal &x, DigitPool *digitPool) { // biggest integer <= x
+  return BigInt(x, digitPool);
 }
 
-BigInt ceil(const BigReal &x) { // smallest integer >= x
-  if(!isnormal(x)) return BigInt(x);
-  DigitPool *pool = x.getDigitPool();
+BigInt ceil(const BigReal &x, DigitPool *digitPool) { // smallest integer >= x
+  _SELECTDIGITPOOL(x);
+  if(!isnormal(x)) return BigInt(x,pool);
   if(x.m_expo < 0) { // |x| < 1
     return x.isNegative() ? pool->_0() : pool->_1();
   } else if(isInteger(x)) { // x is a BigInt
-    return (BigInt)x;
+    return BigInt(x,pool);
   } else {  // Copy the integerpart of x.
     BigInt result(pool);
     result.copyDigits(x, (result.m_expo = x.m_expo)+1);
     result.m_low      = 0;
-    if(!COPYSIGN(result, x).trimZeroes().isNegative()) {
+    if(!result.copySign(x).trimZeroes().isNegative()) {
+      result.clrInitDone();
       ++result;
+      result.setInitDone();
     }
     return result;
   }
 }
 
-BigReal fraction(const BigReal &x) { // sign(x) * (|x| - floor(|x|))
-  if(!isfinite(x)) return x;
-  BigReal result(x.getDigitPool());
+BigReal fraction(const BigReal &x, DigitPool *digitPool) { // sign(x) * (|x| - floor(|x|))
+  _SELECTDIGITPOOL(x);
+  if(!isfinite(x)) return BigReal(x, pool);
+  BigReal result(pool);
   result.clrInitDone();
   x.fractionate(NULL, &result);
   return result.setInitDone();
-/*
-  if(x.isZero()) {
-    return x;
-  }
-  if(isInteger(x)) {
-    return x.getDigitPool()->_0();
-  }
-  if(x.isNegative()) {
-    const BigReal xp(fabs(x));
-    return floor(xp) - xp;
-  } else {
-    return x - floor(x);
-  }
-*/
 }
 
-BigReal trunc(const BigReal &x, intptr_t prec) {  // sign(x) * ent(abs(x)*10^prec)*10^-prec
-  if(!isnormal(x)) return x;
-  BigReal result(x.getDigitPool());
+BigReal trunc(const BigReal &x, intptr_t prec, DigitPool *digitPool) {  // sign(x) * ent(abs(x)*10^prec)*10^-prec
+  _SELECTDIGITPOOL(x);
+  if(!isnormal(x)) return BigReal(x,pool);
+  BigReal result(pool);
   result.clrInitDone();
   if(prec == 0) {
-    result = (x.isNegative()) ? -floor(-x) : floor(x);
+    result = (x.isNegative()) ? -floor(-x,pool) : floor(x,pool);
   } else {
-    BigReal tmp(x);
+    BigReal tmp(x,pool);
     result = (x.isNegative())
            ? -floor(-tmp.multPow10(prec,true)).multPow10(-prec,true)
            :  floor(tmp.multPow10(prec,true)).multPow10(-prec,true);
@@ -123,18 +112,20 @@ BigReal trunc(const BigReal &x, intptr_t prec) {  // sign(x) * ent(abs(x)*10^pre
   return result.setInitDone();
 }
 
-BigReal round(const BigReal &x, intptr_t prec) { // sign(x) * ent(abs(x)*10^prec+0.5)*10^-prec
-  if(!isnormal(x)) return x;
-  DigitPool *pool = x.getDigitPool();
+BigReal round(const BigReal &x, intptr_t prec, DigitPool *digitPool) { // sign(x) * ent(abs(x)*10^prec+0.5)*10^-prec
+  _SELECTDIGITPOOL(x);
+  if(!isnormal(x)) return BigReal(x,pool);
   BigReal result(pool);
   result.clrInitDone();
   if(prec == 0) {
-    result = (x.isNegative()) ? -floor(pool->_05() - x) : floor(x + pool->_05());
+    result = (x.isNegative()) 
+           ? -floor(pool->_05() - x)
+           :  floor(pool->_05() + x);
   } else {
-    BigReal tmp(x);
+    BigReal tmp(x, pool);
     result = (x.isNegative())
            ? -floor(pool->_05() - tmp.multPow10(prec,true)).multPow10(-prec,true)
-           :  floor(tmp.multPow10(prec,true) + pool->_05()).multPow10(-prec,true);
+           :  floor(pool->_05() + tmp.multPow10(prec,true)).multPow10(-prec,true);
   }
   return result.setInitDone();
 }
@@ -144,11 +135,19 @@ void BigReal::fractionate(BigInt *integerPart, BigReal *fractionPart) const {
   if(integerPart == fractionPart) {
     throwBigRealInvalidArgumentException(method, _T("integerPart is the same variable as fractionPart"));
   }
+  if(integerPart ) CHECKISMUTABLE(*integerPart );
+  if(fractionPart) CHECKISMUTABLE(*fractionPart);
   if(isZero()) {
     if(integerPart ) integerPart->setToZero();
     if(fractionPart) fractionPart->setToZero();
     return;
   }
+  if(!_isnormal()) {
+    if(integerPart ) integerPart->setToNan();
+    if(fractionPart) fractionPart->setToNan();
+    return;
+  }
+
   if(isInteger(*this)) {
     if(integerPart ) *integerPart = (BigInt&)*this;
     if(fractionPart) fractionPart->setToZero();
@@ -163,7 +162,7 @@ void BigReal::fractionate(BigInt *integerPart, BigReal *fractionPart) const {
   const Digit *sd = m_first;
   if(integerPart) {
     BigReal &intPart = *integerPart;
-    COPYSIGN(intPart, *this);
+    intPart.copySign(*this);
     intPart.m_expo     = m_expo;
     intPart.m_low      = 0;
 
@@ -193,7 +192,7 @@ void BigReal::fractionate(BigInt *integerPart, BigReal *fractionPart) const {
   }
   // Assume sd points to the first fraction digit
   if(fractionPart) {
-    COPYSIGN(*fractionPart, *this);
+    fractionPart->copySign(*this);
     fractionPart->m_expo     = -1;
     fractionPart->m_low      = m_low;
     Digit *dd;
@@ -236,12 +235,12 @@ static BRDigitType roundInt(BRDigitType n, int prec) { // assume prec <= 0
 }
 
 BigReal cut(const BigReal &x, size_t digits, DigitPool *digitPool) { // x truncated to the specified number of significant decimal digits
-  if(!isfinite(x)) return x;
-  if(digitPool == NULL) digitPool = x.getDigitPool();
+  _SELECTDIGITPOOL(x);
+  if(!isfinite(x)) return BigReal(x,pool);
   if(x.isZero() || (digits == 0)) {
-    return digitPool->_0();
+    return pool->_0();
   }
-  BigReal result(digitPool);
+  BigReal result(pool);
   result.clrInitDone();
   int k = BigReal::getDecimalDigitCount(x.m_first->n);
   if(digits < (UINT)k) {
@@ -262,7 +261,7 @@ BigReal cut(const BigReal &x, size_t digits, DigitPool *digitPool) { // x trunca
       result.m_low--;
     }
   }
-  return COPYSIGN(result, x).trimZeroes().setInitDone();
+  return result.copySign(x).trimZeroes().setInitDone();
 }
 
 BigReal &BigReal::copyrTrunc(const BigReal &src, size_t digits) { // decimal digits
@@ -272,7 +271,7 @@ BigReal &BigReal::copyrTrunc(const BigReal &src, size_t digits) { // decimal dig
   }
   CHECKISMUTABLE(*this);
   const Digit *sp = src.m_first;
-  const int    k  = BigReal::getDecimalDigitCount(sp->n);
+  const int    k  = getDecimalDigitCount(sp->n);
   if(digits <= (UINT)k) {
     const BRDigitType d = truncInt(sp->n, (int)digits - k);
     if(m_first) {
@@ -286,7 +285,7 @@ BigReal &BigReal::copyrTrunc(const BigReal &src, size_t digits) { // decimal dig
       appendDigit(d);
     }
     m_low = m_expo = src.m_expo;
-    COPYSIGN(*this, src);
+    copySign(src);
   } else {
     const intptr_t srcDecimals = (src.getLength() - 1) * BIGREAL_LOG10BASE + k;
     if((intptr_t)digits >= srcDecimals) {
@@ -384,7 +383,7 @@ BigReal &BigReal::rRound(size_t digits) {
   assert(_isnormal());
   CHECKISMUTABLE(*this);
   Digit    *first = m_first;
-  const int k     = BigReal::getDecimalDigitCount(first->n);
+  const int k     = getDecimalDigitCount(first->n);
   if(digits < (UINT)k) {
     if((first->n = roundInt(first->n, (int)digits - k)) == BIGREALBASE) {
       first->n = 1;

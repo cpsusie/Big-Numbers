@@ -86,9 +86,11 @@ public:
   void updateZ(const BigReal &tolerance);
   void update( const BigReal &Q);
   void checkError( BigRealFunction1     f, const BigReal &x,                   const BigReal &tolerance, const BigReal &exactResult);
+  void checkError( BigRealFunction1Pool f, const BigReal &x,                   const BigReal &tolerance, const BigReal &exactResult);
   void checkError( BigRealFunction2     f, const BigReal &x, const BigReal &y, const BigReal &tolerance, const BigReal &exactResult);
   void checkError( BigRealFunction2Pool f, const BigReal &x, const BigReal &y, const BigReal &tolerance, const BigReal &exactResult);
   void checkError(rBigRealFunction1     f, const BigReal &x,                   int            digits   , const BigReal &exactResult);
+  void checkError(rBigRealFunction1Pool f, const BigReal &x,                   int            digits   , const BigReal &exactResult);
   void checkError(rBigRealFunction2     f, const BigReal &x, const BigReal &y, int            digits   , const BigReal &exactResult);
   void checkError(rBigRealFunction2Pool f, const BigReal &x, const BigReal &y, int            digits   , const BigReal &exactResult);
   static String toString(const BigReal &n, int digits = 6);

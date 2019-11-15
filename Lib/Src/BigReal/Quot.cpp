@@ -1,14 +1,18 @@
 #include "pch.h"
 
-BigReal operator%(const BigReal &x, const BigReal &y) {
-  DigitPool *pool = x.getDigitPool();
+BigReal fmod(const BigReal &x, const BigReal &y, DigitPool *digitPool) {
+  _SELECTDIGITPOOL(x);
   BigReal remainder(pool);
 #ifdef IS32BIT
-  quotRemainder(x,y,NULL, &remainder);
+  quotRemainder(x, y, NULL, &remainder);
 #else
-  quotRemainder128(x,y,NULL, &remainder);
+  quotRemainder128(x, y, NULL, &remainder);
 #endif
   return remainder;
+}
+
+BigReal operator%(const BigReal &x, const BigReal &y) {
+  return fmod(x, y, x.getDigitPool());
 }
 
 BigReal &BigReal::operator%=(const BigReal &x) {
@@ -17,8 +21,8 @@ BigReal &BigReal::operator%=(const BigReal &x) {
 
 BigReal quot(const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *digitPool) {
   VALIDATETOLERANCE(f)
-  if(digitPool == NULL) digitPool = x.getDigitPool();
-  BigReal result(digitPool);
+  _SELECTDIGITPOOL(x);
+  BigReal result(pool);
   if(!BigReal::checkIsNormalQuotient(x, y, &result, NULL)) {
     return result;
   }
@@ -32,16 +36,16 @@ BigReal quot(const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *di
   }
 
   if(BigReal::compareAbs(x,y) == 0) {
-    return BigReal(sign(x) * sign(y), digitPool);
+    return BigReal(sign(x) * sign(y), pool);
   }
 #ifdef IS32BIT
-  return BigReal::quotLinear64(x,y,f, digitPool);
+  return BigReal::quotLinear64(x,y,f, pool);
 #else
-  return BigReal::quotLinear128(x,y,f, digitPool);
+  return BigReal::quotLinear128(x,y,f, pool);
 #endif
 
-//  return BigReal::quotNewton(x,y,f, digitPool);
-//  return BigReal::chooseQuotNewton(x,y,f,digitPool) ? BigReal::quotNewton(x,y,f,digitPool) : BigReal::quotLinear32(x,y,f,digitPool);
+//  return BigReal::quotNewton(x,y,f, pool);
+//  return BigReal::chooseQuotNewton(x,y,f,pool) ? BigReal::quotNewton(x,y,f,pool) : BigReal::quotLinear32(x,y,f,pool);
 }
 
 

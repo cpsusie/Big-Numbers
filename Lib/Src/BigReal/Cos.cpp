@@ -56,25 +56,26 @@ public:
 
 static const CosConstants COSC;
 
-BigReal cos(const BigReal &x, const BigReal &f) {
+BigReal cos(const BigReal &x, const BigReal &f, DigitPool *digitPool) {
   VALIDATETOLERANCE(f)
+  _SELECTDIGITPOOL(x);
 
-  DigitPool *pool = x.getDigitPool();
+#define _0 pool->_0()
 #define _1 pool->_1()
 
   if(f < _1) {
-    const BigReal z = fabs(x);
+    const BigReal z = fabs(x,pool);
     BigReal y(pool);
     if(z > COSC.c1) {
       const BigReal p = pi(APCquot(<,APCprod(<,COSC.c2,f,pool),z,pool),pool) * COSC.c21;
-      y = dif(x,prod(p,floor(quot(x,p,COSC.c3,pool)+COSC.c22),f*COSC.c4,pool),f * COSC.c5,pool);
+      y = dif(x,prod(p,floor(quot(x,p,COSC.c3,pool)+COSC.c22,pool),prod(f,COSC.c4,_0,pool),pool),prod(f,COSC.c5,_0,pool),pool);
     } else {
       copy(y,x,f*COSC.c6);
     }
+    BigReal jn(pool);
+    jn = APCsum(>,COSC.c10,APCsum(>,APCprod(>,COSC.c7,sqrt(-BigReal::getExpo10N(f,pool),COSC.c8,pool),pool),APCprod(>,y,BigReal::getExpo10N(COSC.c9,pool),pool),pool),pool);
 
-    BigReal jn = APCsum(>,COSC.c10,APCsum(>,APCprod(>,COSC.c7,sqrt(-BigReal::getExpo10N(f),COSC.c8),pool),APCprod(>,y,BigReal::getExpo10N(COSC.c9),pool),pool),pool);
-
-    int j = (jn < _1) ? 0 : getInt(floor(jn));
+    int j = (jn < _1) ? 0 : getInt(floor(jn,pool));
 
     const BigReal h(BigReal::pow2(-j),pool);
     y = fabs(prod(y,h,h*COSC.c11*f,pool));
@@ -109,5 +110,5 @@ BigReal cos(const BigReal &x, const BigReal &f) {
     }
     return s;
   }
-  return pool->_0();
+  return _0;
 }

@@ -36,10 +36,13 @@ public:
 static const Ln10Constants LN10C;
 
 #define _1 pool->_1()
+#define _0 pool->_0()
 
-BigReal BigReal::ln10(const BigReal &f) { // static
+BigReal BigReal::ln10(const BigReal &f, DigitPool *digitPool) { // static
   VALIDATETOLERANCE(f)
-  BigReal result(f.getDigitPool());
+  _SELECTDIGITPOOL(f);
+
+  BigReal result(pool);
 
   lnLock.wait();
   try {
@@ -63,17 +66,17 @@ BigReal BigReal::ln10(const BigReal &f) { // static
         }
         BigReal r(LNPOOL);
         for(int i = n-1; i >= 0; i--) {
-          r = exp(z,e(BigReal(LN10C.c9,LNPOOL),a[i]));
-          z += quot(dif(LN10C.c15,r,BigReal::_0,LNPOOL),r,e(LN10C.c10,a[i],LNPOOL), LNPOOL);
+          r = exp(z,e(BigReal(LN10C.c9,LNPOOL),a[i]),LNPOOL);
+          z += quot(dif(LN10C.c15,r,_0,LNPOOL),r,e(LN10C.c10,a[i],LNPOOL), LNPOOL);
         }
-        r = exp(z,APCprod(<,LN10C.c11,f,LNPOOL));
-        ln10Value = z + quot(dif(LN10C.c15,r,BigReal::_0,LNPOOL),r,f*LN10C.c12);
+        r = exp(z,APCprod(<,LN10C.c11,f,LNPOOL),LNPOOL);
+        ln10Value = z + quot(dif(LN10C.c15,r,_0,LNPOOL),r,prod(f,LN10C.c12,_0,LNPOOL),LNPOOL);
       }
       ln10Error = f;
       result = ln10Value;
       goto End;
     }
-    copy(result,ln10Value,f*LN10C.c14);
+    copy(result,ln10Value,prod(f,LN10C.c14,_0,LNPOOL));
   } catch(...) {
     lnLock.notify();
     throw;
@@ -128,14 +131,16 @@ static const double coef[] = {
 };
 
 // Assume 1 <= x <= 10
-BigReal BigReal::lnEstimate(const BigReal &x) { // static
+BigReal BigReal::lnEstimate(const BigReal &x, DigitPool *digitPool) { // static
+  _SELECTDIGITPOOL(x);
+  assert((_1 <= x) && (x <= LN10C.c15));
   const double t = getDouble(x) - 2;
   double sum1 = coef[2];
   double sum2 = coef[4];
   int i;
   for( i = 1; i >= 0; i-- ) sum1 = sum1 * t + coef[i];
   for( i = 3; i > 2; i-- ) sum2 = sum2 * t + coef[i];
-  return BigReal(sum1 / (sum2 * t + 1.0), x.getDigitPool());
+  return BigReal(sum1 / (sum2 * t + 1.0), pool);
 }
 
 class LnConstants {
@@ -168,15 +173,15 @@ public:
 
 static LnConstants LNC;
 
-BigReal ln(const BigReal &x, const BigReal &f) {
+BigReal ln(const BigReal &x, const BigReal &f, DigitPool *digitPool) {
   VALIDATETOLERANCE(f)
   if(!x.isPositive()) {
     throwBigRealInvalidArgumentException(method, _T("x<=0"));
   }
 
-  DigitPool *pool = x.getDigitPool();
+  _SELECTDIGITPOOL(x);
   if(x == _1) {
-    return pool->_0();
+    return _0;
   }
 
   const BigReal g(APCprod(<,f, LNC.c1, pool));
@@ -188,7 +193,7 @@ BigReal ln(const BigReal &x, const BigReal &f) {
 
   const BRExpoType m = BigReal::getExpo10(y);
   y = e(y,-m,pool);
-  BigReal z = BigReal::lnEstimate(y);
+  BigReal z = BigReal::lnEstimate(y,pool);
 
   BRExpoType a[100];
   int n = 0;
@@ -206,16 +211,16 @@ BigReal ln(const BigReal &x, const BigReal &f) {
   }
 //  cout << _T("ln loop done!\n"); cout.flush();
   if(g < LNC.c22) {
-    r = exp(z,APCprod(<,u,g,pool));
+    r = exp(z,APCprod(<,u,g,pool),pool);
   } else {
-    r = exp(z,APCprod(<,u,LNC.c22,pool));
+    r = exp(z,APCprod(<,u,LNC.c22,pool),pool);
   }
   if(m == 0) {
     return z + quot(dif(y,r,v*g,pool),r,g*LNC.c23,pool);
   } else {
     return z
          + quot(dif(y,r,v*g,pool),r,g*LNC.c21,pool)
-         + prod(BigReal(m,pool),BigReal::ln10(APCquot(<,APCprod(<,LNC.c24,f,pool),BigReal(abs(m),pool),pool)),prod(f,LNC.c25,BigReal::_0,pool),pool);
+         + prod(BigReal(m,pool),BigReal::ln10(APCquot(<,APCprod(<,LNC.c24,f,pool),BigReal(abs(m),pool),pool),pool),prod(f,LNC.c25,_0,pool),pool);
   }
 }
 
@@ -278,16 +283,16 @@ public:
 
 static const Ln1Constants LN1C;
 
-BigReal ln1(const BigReal &x, const BigReal &f) {
+BigReal ln1(const BigReal &x, const BigReal &f, DigitPool *digitPool) {
   VALIDATETOLERANCE(f)
   if(!x.isPositive()) {
     throwBigRealInvalidArgumentException(method, _T("x<=0"));
   }
 
-  DigitPool *pool = x.getDigitPool();
+  _SELECTDIGITPOOL(x);
 
   if(x == _1) {
-    return pool->_0();
+    return _0;
   }
 
   BigReal y(pool);
@@ -299,8 +304,8 @@ BigReal ln1(const BigReal &x, const BigReal &f) {
   }
   BigReal g = APCprod(<,LN1C.c3,f,pool);
   BigReal h = _1;
-  while(y > LN1C.c4 && g > LN1C.c5) {
-    y = sqrt(y,e(LN1C.c6,BigReal::getExpo10(y)/2,pool));
+  while((y > LN1C.c4) && (g > LN1C.c5)) {
+    y = sqrt(y,e(LN1C.c6,BigReal::getExpo10(y)/2,pool),pool);
     g = APCprod(<,LN1C.c7,g,pool);
     h = h + h;
   }
@@ -312,7 +317,7 @@ BigReal ln1(const BigReal &x, const BigReal &f) {
   BigReal s = y - _1;
   if(s > APCprod(>,LN1C.c9,g,pool)) {
     g = APCprod(<,LN1C.c10,g,pool);
-    BigReal jn = APCsum(<,LN1C.c14,APCsum(<,APCprod(<,LN1C.c11,sqrt(-BigReal::getExpo10N(g),LN1C.c12),pool),APCprod(<,LN1C.c13,BigReal::getExpo10N(s),pool),pool),pool);
+    BigReal jn = APCsum(<,LN1C.c14,APCsum(<,APCprod(<,LN1C.c11,sqrt(-BigReal::getExpo10N(g,pool),LN1C.c12),pool),APCprod(<,LN1C.c13,BigReal::getExpo10N(s,pool),pool),pool),pool);
     int j = (jn < _1) ? 0 : getInt(floor(jn));
     for(int i = 1; i <= j; i++) {
       y = sqrt(y,g);
@@ -339,13 +344,13 @@ BigReal ln1(const BigReal &x, const BigReal &f) {
       }
     }
     if(x < _1) {
-      return -prod(h*BigReal::pow2(j),s,f*LN1C.c22,pool);
+      return -prod(h*BigReal::pow2(j),s,prod(f,LN1C.c22,_0,pool),pool);
     } else {
-      return  prod(h*BigReal::pow2(j),s,f*LN1C.c23,pool);
+      return  prod(h*BigReal::pow2(j),s,prod(f,LN1C.c23,_0,pool),pool);
     }
   } else {
     throwBigRealException(_T("cond. 1"));
-    return pool->_0();
+    return _0;
   }
 }
 
@@ -383,10 +388,9 @@ static const LogConstants LOGC;
 
 #define _1 pool->_1()
 
-BigReal log(const BigReal &base, const BigReal &x, const BigReal &f) { // log(x) base base
+BigReal log(const BigReal &base, const BigReal &x, const BigReal &f, DigitPool *digitPool) { // log(x) base base
   VALIDATETOLERANCE(f)
-
-  DigitPool *pool = x.getDigitPool();
+  _SELECTDIGITPOOL(x);
 
   if(base == _1) {
     throwBigRealInvalidArgumentException(method, _T("base=1"));
@@ -402,7 +406,7 @@ BigReal log(const BigReal &base, const BigReal &x, const BigReal &f) { // log(x)
 
   if(base < LOGC.c10) {
     if(base < LOGC.c9) {
-      r = APCprod(<,APCsum(>,BigReal::getExpo10N(base),_1,pool),LOGC.c1,pool);
+      r = APCprod(<,APCsum(>,BigReal::getExpo10N(base,pool),_1,pool),LOGC.c1,pool);
     } else {
       BigReal q = (LOGC.c2,pool);
       BigReal z = fabs(dif(base,_1,q,pool));
@@ -413,12 +417,12 @@ BigReal log(const BigReal &base, const BigReal &x, const BigReal &f) { // log(x)
       r = APCprod(<,LOGC.c2,z,pool);
     }
   } else {
-    r = APCprod(<,LOGC.c5, BigReal::getExpo10N(base), pool);
+    r = APCprod(<,LOGC.c5, BigReal::getExpo10N(base,pool), pool);
   }
 
   const BigReal d = APCprod(<,APCprod(<,LOGC.c6,r,pool),f,pool);
-  const BigReal a = ln(x, d);
-  return quot(a,ln(base,APCquot(<,APCprod(<,d,r,pool),APCsum(>,fabs(a),APCprod(<,LOGC.c7,d,pool),pool),pool)),APCprod(<,f,LOGC.c8,pool),pool);
+  const BigReal a = ln(x, d, pool);
+  return quot(a,ln(base,APCquot(<,APCprod(<,d,r,pool),APCsum(>,fabs(a,pool),APCprod(<,LOGC.c7,d,pool),pool),pool),pool),APCprod(<,f,LOGC.c8,pool),pool);
 }
 
 class Log10Constants {
@@ -439,16 +443,16 @@ public:
 
 static const Log10Constants L10C;
 
-BigReal log10(const BigReal &x, const BigReal &f) {
+BigReal log10(const BigReal &x, const BigReal &f, DigitPool *digitPool) {
   VALIDATETOLERANCE(f)
   if(!x.isPositive()) {
     throwBigRealInvalidArgumentException(method, _T("x<=0"));
   }
 
-  DigitPool *pool = x.getDigitPool();
+  _SELECTDIGITPOOL(x);
 
   const BigReal &r = L10C.c5;
   const BigReal  d = APCprod(<,f, APCprod(<,L10C.c6,r,pool),pool);
-  const BigReal  a = ln(x, d);
+  const BigReal  a = ln(x, d, pool);
   return quot(a,BigReal::ln10(APCquot(<,APCprod(<,d,r,pool),APCsum(>,fabs(a),APCprod(<,L10C.c7,d,pool),pool),pool)),APCprod(<,L10C.c8,f,pool),pool);
 }

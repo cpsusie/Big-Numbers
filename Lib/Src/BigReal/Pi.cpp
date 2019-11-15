@@ -50,13 +50,16 @@ static const PiConstants PIC;
 
 BigReal pi(const BigReal &f, DigitPool *digitPool) {
   VALIDATETOLERANCE(f)
-  if(digitPool == NULL) digitPool = f.getDigitPool();
+  _SELECTDIGITPOOL(f);
 
-  BigReal result(digitPool);
+  BigReal result(pool);
 
   piLock.wait();
   try {
     DigitPool *PIP = PIC.m_digitPool;
+
+#define _0 PIP->_0()
+#define _1 PIP->_1()
 
     static BigReal piValue(PIP); // cache
     static BigReal piError(PIP); // cache
@@ -65,25 +68,25 @@ BigReal pi(const BigReal &f, DigitPool *digitPool) {
       if(f >= PIC.c1) {
         piValue = PIC.c2;
       } else {
-        const BigInt l = floor(APCsum(>,APCprod(>,ln(-BigReal::getExpo10N(APCprod(<,f,PIC.c4,PIP)),PIC.c5),PIC.c3,PIP),PIC.c6,PIP));
+        const BigInt l = floor(APCsum(>,APCprod(>,ln(-BigReal::getExpo10N(APCprod(<,f,PIC.c4,PIP),PIP),PIC.c5,PIP),PIC.c3,PIP),PIC.c6,PIP),PIP);
         const int li = getInt(l);
         BigReal w = APCprod(<,APCprod(<,PIC.c7,f,PIP),cut(BigReal::pow2(-li),APC_DIGITS, PIP),PIP); // APCpow(<,c16,l));
-        BigReal z = APCprod(<,PIC.c8,APCquot(<,f,l+PIP->_1(),PIP),PIP);
+        BigReal z = APCprod(<,PIC.c8,APCquot(<,f,l+_1,PIP),PIP);
         BigReal u = APCprod(<,PIC.c9,APCprod(<,z,APCpow(<,PIC.c10,l,PIP),PIP),PIP);
         BigReal v = APCprod(<,PIC.c11,u,PIP);
-        BigReal a = PIP->_1();
-        BigReal b = sqrt(BigReal(PIC.c16,PIP),u);
+        BigReal a = _1;
+        BigReal b = sqrt(BigReal(PIC.c16,PIP),u,PIP);
         BigReal t = BigReal(PIC.c17,PIP);
         BigReal s(PIP), d(PIP);
 
         for(int i = 0; i <= li; i++) {
           s = a;
           a = prod(a+b,PIC.c16,u,PIP);
-          b = sqrt(prod(b,s,v,PIP),u);
+          b = sqrt(prod(b,s,v,PIP),u,PIP);
           d = s - a;
           t -= prod(BigReal::pow2(i),prod(d,d,w,PIP),z,PIP);
         }
-        piValue = quot(prod(a,a,APCprod(<,PIC.c12,f,PIP)),t,APCprod(<,PIC.c13,f,PIP),PIP);
+        piValue = quot(prod(a,a,APCprod(<,PIC.c12,f,PIP),PIP),t,APCprod(<,PIC.c13,f,PIP),PIP);
       }
       piError = f; // rettet fra APCprod(c14,f,1);
       result = piValue;;
