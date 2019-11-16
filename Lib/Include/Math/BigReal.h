@@ -211,6 +211,7 @@ public:
 
 class BigInt;
 class BigReal;
+class BigRational;
 class ConstBigInt;
 class ConstBigReal;
 
@@ -397,17 +398,30 @@ void throwBigRealInvalidArgumentException(         TCHAR const * const function,
 void throwBigRealGetIntegralTypeOverflowException( TCHAR const * const function, const BigReal &x, const String &maxStr);
 void throwBigRealGetIntegralTypeUnderflowException(TCHAR const * const function, const BigReal &x, const String &minStr);
 void throwBigRealGetIntegralTypeUndefinedException(TCHAR const * const function, const BigReal &x);
-void throwNotMutableException(                     TCHAR const * const function, const DigitPool *pool, BYTE flags);
-void throwMutableBigRealUseConstDigitPoolException(const BigReal &x);
 void throwNotValidException(                       TCHAR const * const function, _In_z_ _Printf_format_string_ const TCHAR *format, ...);
-
 void throwBigRealException(_In_z_ _Printf_format_string_ TCHAR const * const format,...);
+
+#ifdef _DEBUG
+void throwNotMutableException(TCHAR const * const file, int line, TCHAR const * const function, const BigReal     &x, TCHAR const * const name);
+void throwNotMutableException(TCHAR const * const file, int line, TCHAR const * const function, const BigRational &x, TCHAR const * const name);
+#define CHECKISMUTABLE(x)                                                 \
+{ if(((x).getFlags() & (BR_INITDONE|BR_MUTABLE)) == BR_INITDONE) {        \
+    throwNotMutableException(__TFILE__,__LINE__,__TFUNCTION__,x,_T(#x));  \
+  }                                                                       \
+}
+#else
+void throwNotMutableException(TCHAR const * const function, const BigReal     &x);
+void throwNotMutableException(TCHAR const * const function, const BigRational &x);
+#define CHECKISMUTABLE(x)                                                 \
+{ if(((x).getFlags() & (BR_INITDONE|BR_MUTABLE)) == BR_INITDONE) {        \
+    throwNotMutableException(__TFUNCTION__,x);                            \
+  }                                                                       \
+}
+#endif // _DEBUG
 
 #define BR_NEG       0x01
 #define BR_INITDONE  0x02
 #define BR_MUTABLE   0x04
-
-#define CHECKISMUTABLE(x) { if(((x).getFlags() & (BR_INITDONE|BR_MUTABLE)) == BR_INITDONE) throwNotMutableException(__TFUNCTION__,(x).getDigitPool(), (x).getFlags()); }
 
 class BigReal {
 private:
@@ -442,9 +456,11 @@ private:
   friend class BigRealStream;
   friend class DigitPool;
 
+  // First remove bits specified in remove
+  // Then add. Order is important, because add and remove may have overlapping bits
   inline void modifyFlags(BYTE add, BYTE remove) {
-    m_flags &= ~remove; // first remove
-    m_flags |= add;     // then add. order is important, because add and remove may have overlapping bits
+    m_flags &= ~remove;
+    m_flags |= add;
   }
   inline BigReal &clrFlags(BYTE mask) {
     m_flags &= ~mask;
@@ -454,18 +470,13 @@ private:
     m_flags |= mask;
     return *this;
   }
-
   inline void startInit() {
-//    if((&m_digitPool == BigReal::s_constDigitPool) && !allowConstDigitPool()) {
-//      throwMutableBigRealUseConstDigitPoolException(*this);
-//    }
     m_digitPool.incRefCount();
     m_flags = m_digitPool.getInitFlags() & ~BR_INITDONE;
   }
   inline void endInit() {
     setInitDone();
   }
-
   inline BigReal &clrInitDone() {
     return clrFlags(BR_INITDONE);
   }
@@ -477,9 +488,6 @@ private:
   inline BigReal &copySign(const BigReal &x) {
     modifyFlags(x.m_flags&BR_NEG, BR_NEG);
     return *this;
-  }
-  inline BYTE getFlags() const {
-    return m_flags;
   }
   // Construction helperfunctions
   // copy m_expo, m_low and sign-bit
@@ -509,7 +517,7 @@ private:
     clearDigits();
     m_expo = BIGREAL_NONNORMAL;
     m_low  = low;
-    return setNegative(negative);
+    return negative ? setFlags(BR_NEG) : clrFlags(BR_NEG);
   }
 
   void init(int               n);
@@ -564,25 +572,25 @@ private:
     appendDigit(0);
   }
   // Insert one digit=n at head of this.
-  // Dont modify m_expo,m_low
+  // Dont modify m_expo,m_low,m_flags
   void    insertDigit(                      BRDigitType n);
   // Insert count zero-digits at head of this
   // Assume *this != zero. ie m_first != NULL (and m_last != NULL)
   void    insertZeroDigits(                 size_t count);
   // Insert one digit=n after digit p.
   // Assume p is a digit in digit-list of this
-  // Dont modify m_expo,m_low
+  // Dont modify m_expo,m_low,m_flags
   void    insertAfter(            Digit *p, BRDigitType n);
   // Insert count zero-digits after digit p.
   // Assume p is a digit in digit-list of this.
-  // Dont modify m_expo,m_low
+  // Dont modify m_expo,m_low,m_flags
   void    insertZeroDigitsAfter(  Digit *p, size_t count);
   // Insert count digits=BIGREALBASE-1 after digit p.
   // Assume p is a digit in digit-list of this.
-  // Dont modify m_expo,m_low
+  // Dont modify m_expo,m_low,m_flags
   void    insertBorrowDigitsAfter(Digit *p, size_t count);
   // Releases all digits in digit-list to this.m_digitPool.
-  // Dont modify m_expo,m_low
+  // Dont modify m_expo,m_low,m_flags
   inline BigReal &clearDigits() {
     if(m_first) {
       m_digitPool.deleteDigits(m_first, m_last);
@@ -618,8 +626,12 @@ private:
   Digit  *findDigitSubtract(const BigReal &f) const;
   Digit  *findDigitAdd(const BigReal &f, BRExpoType &low) const;
 
-  // Addition and subtraction helperfunctions
+  // Assume &x != this && &y != this && *this == 0, x._isnormal() && y._isnormal()
+  // Return *this = |x| + |y| with maximal error = f. Do care about sign(f)
   BigReal &addAbs(const BigReal &x, const BigReal &y, const BigReal &f);                          // return this
+  // Assume &x != this && this->_isnormal() && x._isnormal()
+  // Adds |x| to |this|.
+  // Return *this
   BigReal &addAbs(const BigReal &x);                                                              // return this
   // Assume &x != this && this->_isnormal() && x._isnormal() && |x| < |*this|
   // Subtract |x| from |this| with maximal error = f
@@ -1046,6 +1058,9 @@ public:
   // Assume x._isfinite() && y._isfinite(). Return compare(|x|,|y|). (Faster than compare(fabs(x),fabs(y)))
   static int compareAbs(      const BigReal &x,  const BigReal &y);
 
+  inline BYTE getFlags() const {
+    return m_flags;
+  }
   // Returns one of
   // FP_INFINITE
   // FP_NAN

@@ -11,9 +11,6 @@ private:
     m_numerator.modifyFlags(  add, remove);
     m_denominator.modifyFlags(add, remove);
   }
-  inline BYTE getFlags() const {
-    return m_numerator.getFlags();
-  }
 protected:
   BigInt m_numerator, m_denominator;
   // Assume a._normal() && b._isnormal() && a > 0 && b > 0
@@ -66,7 +63,7 @@ public:
   BigRational &operator*=(const BigRational &r);
   BigRational &operator/=(const BigRational &r);
 
-  // Assume isfinite(r1) && isfinite(r2)
+  // Assume r1._isfinite() && r2._isfinite()
   static int compare(const BigRational &r1, const BigRational &r2);
 
   inline const BigInt &getNumerator() const {
@@ -79,6 +76,9 @@ public:
 
   inline DigitPool *getDigitPool() const {
     return m_denominator.getDigitPool();
+  }
+  inline BYTE getFlags() const {
+    return m_numerator.getFlags();
   }
   inline bool _isnormal() const {
     return m_numerator._isnormal() && m_denominator._isnormal();
@@ -124,6 +124,9 @@ public:
   static const ConstBigRational _BRAT_NINF;  // -infinity;
 
   void assertIsValid() const;
+  inline String flagsToString() const {
+    return BigReal::flagsToString(getFlags());
+  }
 };
 
 class ConstBigRational : public BigRational {

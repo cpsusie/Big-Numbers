@@ -7,7 +7,7 @@ Digit *BigReal::findDigit(const BRExpoType exponent) const {
   BRExpoType fwd = m_expo - exponent;
   BRExpoType bwd = exponent - m_low;
   Digit *p;
-  if(bwd < 0 || fwd < 0) {
+  if((bwd < 0) || (fwd < 0)) {
     return NULL;
   } else if(bwd < fwd) { // count backward
     for(p = m_last;  bwd--; p = p->prev);

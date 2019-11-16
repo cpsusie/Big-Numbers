@@ -16,18 +16,35 @@ void throwBigRealGetIntegralTypeUndefinedException(TCHAR const * const function,
   throwBigRealInvalidArgumentException(function,_T("x=%s"), toString(x).cstr());
 }
 
-void throwNotMutableException(TCHAR const * const function, const DigitPool *pool, BYTE flags) {
-  throwBigRealException(_T("%s:BigReal not mutable. (digitPool=%s). flags={%s}")
-                       ,function
-                       ,pool->getName().cstr()
-                       ,BigReal::flagsToString(flags).cstr());
-}
-
-void throwMutableBigRealUseConstDigitPoolException(const BigReal &x) {
-  throwBigRealException(_T("BigReal uses CONST_DIGITPOOL, which is reserved for ConstBigReal/ConstBigInt")
+#ifdef _DEBUG
+void throwNotMutableException(TCHAR const * const file, int line, TCHAR const * const function, const BigReal &x, TCHAR const * const name) {
+  throwBigRealException(_T("%s(%d):%s:%s not mutable. digitPool=%s, flags={%s}")
+                       ,file, line,function
+                       ,name
                        ,x.getDigitPool()->getName().cstr()
                        ,x.flagsToString().cstr());
 }
+void throwNotMutableException(TCHAR const * const file, int line, TCHAR const * const function, const BigRational &x, TCHAR const * const name) {
+  throwBigRealException(_T("%s(%d):%s:%s not mutable. digitPool=%s, flags={%s}")
+                       , file, line, function
+                       , name
+                       , x.getDigitPool()->getName().cstr()
+                       , x.flagsToString().cstr());
+}
+#else 
+void throwNotMutableException(TCHAR const * const function, const BigReal &x) {
+  throwBigRealException(_T("%s:BigReal mutable. digitPool=%s, flags={%s}")
+                       , function
+                       , x.getDigitPool()->getName().cstr()
+                       , x.flagsToString().cstr());
+}
+void throwNotMutableException(TCHAR const * const function, const BigRational &x) {
+  throwBigRealException(_T("%s:BigRational not mutable. digitPool=%s, flags={%s}")
+                       , function
+                       , x.getDigitPool()->getName().cstr()
+                       , x.flagsToString().cstr());
+}
+#endif // _DEBUG
 
 void throwBigRealInvalidArgumentException(const TCHAR *function, _In_z_ _Printf_format_string_ TCHAR const * const Format,...) {
   va_list argptr;
