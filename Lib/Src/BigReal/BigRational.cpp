@@ -1,13 +1,5 @@
 #include "pch.h"
 
-const ConstBigRational BigRational::_0(         BigReal::_0, BigReal::_1);  // 0
-const ConstBigRational BigRational::_05(        BigReal::_1, BigReal::_2);  // 1/2
-const ConstBigRational BigRational::_1(         BigReal::_1, BigReal::_1);   // 1
-const ConstBigRational BigRational::_2(         BigReal::_2, BigReal::_1);   // 2
-const ConstBigRational BigRational::_BRAT_QNAN( BigReal::_0, BigReal::_0);  // non-signaling NaN (quiet NaN)
-const ConstBigRational BigRational::_BRAT_PINF( BigReal::_1, BigReal::_0);  // +infinity;
-const ConstBigRational BigRational::_BRAT_NINF(-BigReal::_1, BigReal::_0);  // -infinity;
-
 BigRational::BigRational(DigitPool *digitPool)
 : m_numerator(  0, digitPool)
 , m_denominator(1, digitPool)
@@ -147,14 +139,13 @@ void BigRational::init(const BigInt &numerator, const BigInt &denominator) {
         m_denominator.changeSign();
       }
       const bool neg = m_numerator.isNegative();
-      if(neg) m_numerator.changeSign();
-      // 
+      if(neg) m_numerator.flipSign();;
       const BigInt gcd = findGCD(m_numerator,m_denominator,gcdPool);
       if(gcd > pool->_1()) {
         m_numerator   /= gcd;
         m_denominator /= gcd;
       }
-      if(neg) m_numerator.changeSign();
+      if(neg) m_numerator.flipSign();
     }
     BigRealResourcePool::releaseDigitPool(gcdPool);
   }
@@ -176,7 +167,7 @@ BigRational &BigRational::setToPInf() {
 }
 BigRational &BigRational::setToNInf() {
   setToPInf();
-  m_numerator.changeSign();
+  m_numerator.flipSign();
   return *this;
 
 }
@@ -271,7 +262,6 @@ int BigRational::compare(const BigRational &r1, const BigRational &r2) { // stat
 
 BigInt BigRational::findGCD(const BigInt &a, const BigInt &b, DigitPool *pool) { // static
   assert(a._isnormal() && b._isnormal() && a.isPositive() && b.isPositive());
-
   BigInt g = pool->_1();
   BigInt u(a,pool);
   BigInt v(b,pool);

@@ -21,19 +21,15 @@ public:
 
 static const QuotL32Constants Q32C;
 
-// Assume x and y are both normal (finite and != 0) and f>0.
+// Assume isNormalQuotient(x, y) and f>0.
 // x/y with |error| < f. School method. using built-in 32-bit division
 BigReal BigReal::quotLinear32(const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *pool) { // static
-  assert(x._isnormal() && y._isnormal() && f.isPositive());
-  const bool yNegative = y.isNegative();
-  ((BigReal&)y).setPositive(); // cheating. We set it back again.....TODO ... remove this
+  assert(isNormalQuotient(x, y) && f.isPositive());
 
-  const BigReal v = APCprod(<, APCprod(<, f, Q32C.c1, pool), y, pool); // v >= 0
+  const BigReal v = APCprod(<, APCprod(<, f, Q32C.c1, pool), APCabs(#,y,pool), pool); // v >= 0
 
   BigReal z(pool);
-  copy(z, x, v*Q32C.c2);
-
-  z.setPositive();
+  copy(z, x, v*Q32C.c2).clrFlags(BR_NEG);
 
   BigReal u(pool);
   u.approxQuot32(z, v);
@@ -47,11 +43,7 @@ BigReal BigReal::quotLinear32(const BigReal &x, const BigReal &y, const BigReal 
   for(; compareAbs(z,v) > 0; loopDone = true) {
     t.approxQuot32Abs(z, yFirst, scale).copySign(z);
     result += t;
-    z -= product(tmp, t, y, u, 0);
-  }
-
-  if(yNegative) {
-    ((BigReal&)y).setNegative(true);
+    z -= product(tmp, t, y, u, 0).copySign(t);
   }
 
   if(loopDone) {
@@ -138,35 +130,4 @@ unsigned long BigReal::getFirst32(const UINT k, BRExpoType *scale) const {
     *scale = m_expo * BIGREAL_LOG10BASE + firstDigits - 1 + tmpScale - k;
   }
   return (unsigned long)result;
-}
-
-void BigReal::validateQuotRemainderArguments(const TCHAR *method, const BigReal &x, const BigReal &y, const BigReal *quotient, const BigReal *remainder) { // static
-  if(quotient == remainder) { // also takes care of the stupid situation where both are NULL
-    throwBigRealInvalidArgumentException(method, _T("Quotient is the same variable as remainder"));
-  }
-  if((quotient == &x) || (quotient == &y)) {
-    throwBigRealInvalidArgumentException(method, _T("Quotient cannot be the same variable as x or y"));
-  }
-  if((remainder == &x) || (remainder == &y)) {
-    throwBigRealInvalidArgumentException(method, _T("Remainder cannot be the same variable as x or y"));
-  }
-}
-
-// Assume !x._isnormal() || !y._isnormal() return _FPCLASS_PZ, _FPCLASS_PINF, _FPCLASS_NINF, _FPCLASS_QNAN
-int BigReal::getNonNormalQuotientFpClass(const BigReal &x, const BigReal &y) { // static
-  assert(!x._isnormal() || !y._isnormal());
-  if(!x._isfinite() || !y._isfinite()) {
-    return _FPCLASS_QNAN;
-  }
-  if(y.isZero()) {
-    switch(_fpclass(x)) {
-    case _FPCLASS_PN: return _FPCLASS_PINF;
-    case _FPCLASS_NN: return _FPCLASS_NINF;
-    default         : return _FPCLASS_QNAN;
-    }
-  }
-  if(x.isZero()) return _FPCLASS_PZ;
-  // should never come here
-  throwException(_T("%s:_fpclass(x):%d, _fpclass(y):%d"), __TFUNCTION__, _fpclass(x), _fpclass(y));
-  return _FPCLASS_QNAN;
 }

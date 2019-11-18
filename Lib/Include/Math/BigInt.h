@@ -155,7 +155,7 @@ public:
 
   // Checks that this is a consistent BigReal with all the various invariants satisfied.
   // Throws an excpeption if not with a descripion of what is wrong. For debugging
-  virtual void assertIsValid() const;
+  virtual void assertIsValid(const TCHAR *file, int line, const TCHAR *name) const;
 };
 
 inline int sign(const BigInt &n) {
@@ -164,11 +164,6 @@ inline int sign(const BigInt &n) {
 
 // pow(a,r) mod n
 BigInt  powmod(const BigInt &a, const BigInt &r, const BigInt  &n, bool verbose = false, DigitPool *digitPool = NULL);
-
-// Return uniform distributed random BigInt in [0..e(1,maxDigits)-1], digits generated with rnd.
-// If digitPool == NULL, use DEFAULT_DIGITPOOL
-// ex:maxDigits = 3:returned values in interval [0..999]
-BigInt randBigInt(size_t maxDigits, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator, DigitPool *digitPool = NULL);
 
 // Return uniform distributed random BigInt in [0..n-1], digits generated with rnd.
 // If digitPool == NULL, use n.getDigitPool()

@@ -44,7 +44,6 @@ void BigReal::load(ByteInputStream &s) {
     }
   } else {
     clearDigits();
-    setNegative((b & NEGATIVE_FLAG) != 0);
     s.getBytesForced((BYTE*)&m_expo, sizeof(m_expo));
     CompactArray<BRDigitType> a;
     a.load(s);
@@ -53,5 +52,6 @@ void BigReal::load(ByteInputStream &s) {
       appendDigit(a[i]);
     }
     m_low = m_expo - length + 1;
+    setNegative((b & NEGATIVE_FLAG) != 0);
   }
 }

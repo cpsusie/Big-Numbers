@@ -18,7 +18,7 @@ void BigReal::init(const Double80 &x) {
     shortProductNoZeroCheck(significand, p2, 5).rRound(22);
   }
   if(x.isNegative()) {
-    setNegative(true);
+    flipSign();
   }
 }
 

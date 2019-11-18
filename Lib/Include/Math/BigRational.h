@@ -123,7 +123,7 @@ public:
   static const ConstBigRational _BRAT_PINF;  // +infinity;
   static const ConstBigRational _BRAT_NINF;  // -infinity;
 
-  void assertIsValid() const;
+  void assertIsValid(const TCHAR *file, int line, const TCHAR *name) const;
   inline String flagsToString() const {
     return BigReal::flagsToString(getFlags());
   }

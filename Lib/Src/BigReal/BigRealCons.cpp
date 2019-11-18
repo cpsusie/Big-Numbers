@@ -7,7 +7,7 @@ void BigReal::init(int n) {
   if(n) {
     BRDigitType un;
     if(n < 0) {
-      setNegative(true);
+      flipSign();
       un = -n;
     } else {
       un = n;
@@ -41,7 +41,7 @@ void BigReal::init(INT64 n) {
   if(n) {
     UINT64 un;
     if(n < 0) {
-      setNegative(true);
+      flipSign();
       un = -n;
     } else {
       un = n;
@@ -74,7 +74,7 @@ void BigReal::init(const _int128 &n) {
   if(n) {
     _uint128 un;
     if(n < 0) {
-      setNegative(true);
+      flipSign();
       un = -n;
     } else {
       un = n;
@@ -260,7 +260,7 @@ void BigReal::init(const String &s, bool allowDecimalPoint) {
     }
 
     if(negative) {
-      setNegative(true);
+      flipSign();
     }
 
     if(*exponentPos == _T('e') || *exponentPos == _T('E')) {

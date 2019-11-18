@@ -209,7 +209,7 @@ BigReal &copy(BigReal &to, const BigReal &from, const BigReal &f) {
   } else if(f.m_expo < from.m_low) {
     to = from;
   } else if(f.m_expo > from.m_expo) {
-    to = to.getDigitPool()->_0();
+    to.setToZero();
   } else { // from.m_low <= f.m_expo <= from.m_expo
     to.clearDigits();
     to.m_expo     = from.m_expo;

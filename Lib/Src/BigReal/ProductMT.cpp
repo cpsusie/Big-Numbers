@@ -1,7 +1,7 @@
 #include "pch.h"
 
 BigReal &BigReal::productMT(BigReal &result, const BigReal &x, const BigReal &y, const BigReal &f, intptr_t w, int level) { // static
-  assert(x._isnormal() && y._isnormal() && f._isfinite() && (x.getLength() >= y.getLength()));
+  assert(isNormalProduct(x, y) && f._isfinite() && (x.getLength() >= y.getLength()));
   const bool   sameXY  = &x == &y;
   const size_t XLength = x.getLength();
   const size_t YLength = sameXY ? XLength : y.getLength();

@@ -13,7 +13,7 @@ BigReal &BigReal::shortProductNoZeroCheckDebug(const BigReal &x, const BigReal &
 #else
 BigReal &BigReal::shortProductNoZeroCheck(     const BigReal &x, const BigReal &y, UINT loopCount) { // return *this
 #endif
-  assert(x._isnormal() && y._isnormal() && (loopCount > 0));
+  assert(isNormalProduct(x, y) && (loopCount > 0));
   m_low = (m_expo = x.m_expo + y.m_expo) + 1;
   clearDigits();
 

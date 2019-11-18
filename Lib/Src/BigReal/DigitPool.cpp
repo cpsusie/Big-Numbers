@@ -59,6 +59,15 @@ const ConstBigReal BigReal::_BR_QNAN( std::numeric_limits<double>::quiet_NaN());
 const ConstBigReal BigReal::_BR_PINF( std::numeric_limits<double>::infinity());    // +infinity;
 const ConstBigReal BigReal::_BR_NINF(-std::numeric_limits<double>::infinity());    // -infinity;
 
+const ConstBigRational BigRational::_0(         BigReal::_0, BigReal::_1);  // 0
+const ConstBigRational BigRational::_05(        BigReal::_1, BigReal::_2);  // 1/2
+const ConstBigRational BigRational::_1(         BigReal::_1, BigReal::_1);  // 1
+const ConstBigRational BigRational::_2(         BigReal::_2, BigReal::_1);  // 2
+const ConstBigRational BigRational::_BRAT_QNAN( BigReal::_0, BigReal::_0);  // non-signaling NaN (quiet NaN)
+const ConstBigRational BigRational::_BRAT_PINF( BigReal::_1, BigReal::_0);  // +infinity;
+const ConstBigRational BigRational::_BRAT_NINF(-BigReal::_1, BigReal::_0);  // -infinity;
+
+
 DigitPool::DigitPool(int id, const String &name, size_t intialDigitCount)
 : BigRealResource(id)
 , m_name(name)

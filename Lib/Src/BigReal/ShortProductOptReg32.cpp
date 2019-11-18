@@ -16,7 +16,7 @@ DECLARE_CALLCOUNTER(shortProdSumTooBig);
 
 // Return *this. Assume x._isnormal() && y._isnormal() && (loopCount > 0)
 BigReal &BigReal::shortProductNoZeroCheck(     const BigReal &x, const BigReal &y, UINT loopCount) { // return *this
-  assert(x._isnormal() && y._isnormal() && (loopCount > 0));
+  assert(isNormalProduct(x, y) && (loopCount > 0));
   COUNTCALL(shortProdCallTotal);
 
   int              loopCounter = loopCount;

@@ -15,7 +15,7 @@ BigReal &BigReal::shortProductNoZeroCheckDebug(const BigReal &x, const BigReal &
 #else
 BigReal &BigReal::shortProductNoZeroCheck(     const BigReal &x, const BigReal &y, UINT loopCount) { // return *this
 #endif
-  assert(x._isnormal() && y._isnormal() && (loopCount > 0));
+  assert(isNormalProduct(x, y) && (loopCount > 0));
 
   int              loopCounter = loopCount;
   Digit           *cd          = clearDigits1();

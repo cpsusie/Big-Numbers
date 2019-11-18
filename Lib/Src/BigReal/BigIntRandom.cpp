@@ -1,6 +1,9 @@
 #include "pch.h"
 #include <Math/BigInt.h>
 
+#define _0 pool->_0()
+#define _1 pool->_1()
+
 // Return uniform distributed random BigInt in [0..e(1,maxDigits)-1], digits generated with rnd.
 // If digitPool == NULL, use DEFAULT_DIGITPOOL
 // ex:maxDigits = 3:returned values in interval [0..999]
@@ -12,9 +15,9 @@ BigInt randBigInt(size_t maxDigits, RandomGenerator &rnd, DigitPool *digitPool) 
 // If(!n._isnormal()) (ie, n== 0 of nan,+/-inf), nan will be returned
 // If digitPool == NULL, use n.getDigitPool()
 BigInt randBigInt(const BigInt &n, RandomGenerator &rnd, DigitPool *digitPool) {
-  if(digitPool == NULL) digitPool = n.getDigitPool();
-  if(!n._isnormal()) return BigInt(digitPool->nan());
-  return randBigInt(BigReal::getExpo10(n)+1, rnd, digitPool) % n;
+  _SELECTDIGITPOOL(n);
+  if(!n._isnormal()) return BigInt(pool->nan());
+  return randBigInt(BigReal::getExpo10(n)+1, rnd, pool) % n;
 }
 
 // Return uniform distributed random BigInt in [from;to], digits generated with rnd.
@@ -23,9 +26,8 @@ BigInt randBigInt(const BigInt &from, const BigInt &to, RandomGenerator &rnd, Di
   if(from > to) {
     throwBigRealInvalidArgumentException(__TFUNCTION__, _T("from > to"));
   }
-  if(digitPool == NULL) digitPool = from.getDigitPool();
-  if(!from._isfinite() || !to._isfinite()) return BigInt(digitPool->nan());
-  const BigInt result = randBigInt(sum(dif(to, from, digitPool), BigReal::_1), rnd); // r in [0..to-from]
+  _SELECTDIGITPOOL(from);
+  if(!from._isfinite() || !to._isfinite()) return BigInt(pool->nan());
+  const BigInt result = randBigInt(sum(dif(to, from, pool), _1), rnd,pool); // r in [0..to-from]
   return result + from;
 }
-

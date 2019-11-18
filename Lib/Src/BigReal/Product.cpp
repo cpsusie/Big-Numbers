@@ -55,18 +55,8 @@ void logProductRecursion(UINT level, const TCHAR *method, _In_z_ _Printf_format_
 }
 #endif // TRACEPRODUCTRECURSION
 
-// Return _FP_ZERO, _FPCLASS_QNAN
-// Assume !x._isnormal() || !y._isnormal() which will result in non-normal product (0 or nan)
-int BigReal::getNonNormalProductFpClass(const BigReal &x, const BigReal &y) { // static
-  assert(!x._isnormal() || !y._isnormal());
-  if(!x._isfinite() || !y._isfinite()) {
-    return _FPCLASS_QNAN;
-  }
-  return _FPCLASS_PZ;
-}
-
 BigReal &BigReal::shortProductNoNormalCheck(const BigReal &x, const BigReal &y, BRExpoType fexpo) {
-  assert(x._isnormal() && y._isnormal());
+  assert(isNormalProduct(x, y));
   if(!m_digitPool.continueCalculation()) throwBigRealException(_T("Operation was cancelled"));
   const BRExpoType fm = fexpo - 2;
   const BRExpoType lm = x.m_low + y.m_low;
@@ -131,7 +121,7 @@ void BigReal::split(BigReal &a, BigReal &b, size_t n, const BigReal &f) const {
 }
 
 BigReal &BigReal::product(BigReal &result, const BigReal &x, const BigReal &y, const BigReal &f, int level) { // static
-  assert(x._isnormal() && y._isnormal() && f._isfinite());
+  assert(isNormalProduct(x,y) && f._isfinite());
   //  _tprintf(_T("length(X):%5d length(Y):%5d\n"),length(x),length(y));
   const bool      sameXY  = &x == &y;
   const bool      swapXY  = !sameXY && (x.getLength() < y.getLength());

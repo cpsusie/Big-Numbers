@@ -30,7 +30,7 @@ BigReal quot(const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *di
   if(BigReal::isPow10(y)) {
     result = x;
     if(y.isNegative()) {
-      result.changeSign();
+      result.flipSign();
     }
     return result.multPow10(-BigReal::getExpo10(y));
   }

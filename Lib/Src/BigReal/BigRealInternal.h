@@ -17,18 +17,6 @@
     throwInvalidToleranceException(method); \
   }
 
-inline BigReal binop_inf(const BigReal &x, const BigReal &y, DigitPool *pool) {
-  if(x._isfinite()) return BigReal(y,pool);
-  if(y._isfinite()) return BigReal(x,pool);
-  return isunordered(x,y) ? pool->nan() : x;
-}
-
-#define HANDLE_INFBINARYOP(x, y, pool)      \
-  if(!x._isfinite() || !y._isfinite()) {    \
-    return binop_inf(x, y, pool);           \
-  }
-
-
 #ifdef assert
 #undef assert
 #endif

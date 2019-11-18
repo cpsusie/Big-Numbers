@@ -398,7 +398,7 @@ void throwBigRealInvalidArgumentException(         TCHAR const * const function,
 void throwBigRealGetIntegralTypeOverflowException( TCHAR const * const function, const BigReal &x, const String &maxStr);
 void throwBigRealGetIntegralTypeUnderflowException(TCHAR const * const function, const BigReal &x, const String &minStr);
 void throwBigRealGetIntegralTypeUndefinedException(TCHAR const * const function, const BigReal &x);
-void throwNotValidException(                       TCHAR const * const function, _In_z_ _Printf_format_string_ const TCHAR *format, ...);
+void throwNotValidException(                       TCHAR const * const file, int line, TCHAR const * const name, _In_z_ _Printf_format_string_ const TCHAR *format, ...);
 void throwBigRealException(_In_z_ _Printf_format_string_ TCHAR const * const format,...);
 
 #ifdef _DEBUG
@@ -489,6 +489,18 @@ private:
     modifyFlags(x.m_flags&BR_NEG, BR_NEG);
     return *this;
   }
+  // Switch sign-bit
+  // Does NOT call CHECKISMUTABLE
+  // return *this;
+  inline BigReal &flipSign() {
+    m_flags ^= BR_NEG;
+    return *this;
+  }
+  // Does NOT call CHECKISMUTABLE
+  friend inline bool hasSameSign(const BigReal &x, const BigReal &y) {
+    return ((x.m_flags ^ y.m_flags) & BR_NEG) == 0;
+  }
+
   // Construction helperfunctions
   // copy m_expo, m_low and sign-bit
   // Does NOT call CHECKISMUTABLE
@@ -550,6 +562,46 @@ private:
   // throws exception if fpclass is not in the list above
   BigReal &setToNonNormalFpClass(int fpclass);
 
+  // return true if x*y is normal (finite and != 0, (false if x*y is 0, +/-inf or nan)
+  static inline bool isNormalProduct(const BigReal &x, const BigReal &y) {
+    return x._isnormal() && y._isnormal();
+  }
+  // Return true if x/y is normal (finite and != 0, (false if x/y is 0, +/-inf or nan)
+  static bool inline isNormalQuotient(const BigReal &x, const BigReal &y) {
+    return y._isnormal() && x._isnormal();
+  }
+  // Return _FPCLASS_PZ, _FPCLASS_QNAN
+  // Assume !x._isnormal() || !y._isnormal() which will result in non-normal product (0 or nan)
+  static int getNonNormalProductFpClass(const BigReal &x, const BigReal &y);
+  // Return _FPCLASS_PZ, _FPCLASS_PINF, _FPCLASS_NINF, _FPCLASS_QNAN
+  // Assume !x._isnormal() || !y._isnormal() which will result in non-normal quotient (0,+/-inf or nan)
+  static int getNonNormalQuotientFpClass(const BigReal &x, const BigReal &y);
+  // Return _FPCLASS_PN,_FPCLASS_NN,_FPCLASS_PZ, _FPCLASS_PINF, _FPCLASS_QNAN
+  static int getPowFpClass(const BigReal &x, const BigReal &y);
+
+  // Return true if x*y is normal (finite and != 0). In this case, *this will not be changed
+  // Return false, if x*y is not normal, and *this will be set to the corresponding result (0 or nan)
+  inline bool checkIsNormalProduct(const BigReal &x, const BigReal &y) {
+    if(isNormalProduct(x, y)) return true;
+    setToNonNormalFpClass(getNonNormalProductFpClass(x, y));
+    return false;
+  }
+  // Return true if x/y is normal (finite and != 0), (false if x/y is 0, +/-inf or nan)
+  // If x/y is not normal, quotient and remainder will recieve the non-normal value (if not null)
+  static bool inline checkIsNormalQuotient(const BigReal &x, const BigReal &y, BigReal *quotient, BigReal *remainder) {
+    if(isNormalQuotient(x, y)) return true;
+    const int qclass = getNonNormalQuotientFpClass(x, y);
+    if(quotient ) quotient->setToNonNormalFpClass(qclass);
+    if(remainder) remainder->setToNonNormalFpClass(qclass);
+    return false;
+  }
+
+  // Return true if x^y is normal (finite and != 0), (false if x^y is 0, +/-inf or nan)
+  // Return false if x^y is not normal OR = 1 (x^0 for x>!=0), and *this will be set to the corresponding result (1,0,+/-inf or nan)
+  bool checkIsNormalPow(const BigReal &x, const BigReal &y);
+
+  static void validateQuotRemainderArguments(const TCHAR *method, const BigReal &x, const BigReal &y, const BigReal *quotient, const BigReal *remainder);
+
   // Basic digit manipulation
   inline Digit *newDigit() const {
     return m_digitPool.fetchDigit();
@@ -599,8 +651,12 @@ private:
     return *this;
   }
 
+  // Assume _isfinite()
+  // Does NOT call CHECKISMUTABLE
+  // is _isnormal() m_expo++; else m_expo = m_low = 0
   inline void incrExpo() {
-    if(isZero()) m_expo = m_low = 0; else m_expo++;
+    assert(_isfinite());
+    if(_isnormal()) m_expo++; else m_expo = m_low = 0;
   }
 
   // Remove all zero-digits at both ends of digit-list, and check for overflow/underflow.
@@ -626,16 +682,28 @@ private:
   Digit  *findDigitSubtract(const BigReal &f) const;
   Digit  *findDigitAdd(const BigReal &f, BRExpoType &low) const;
 
+  // *this = |x| + |y| with maximal error <= f. If f<=0, then full precision
   // Assume &x != this && &y != this && *this == 0, x._isnormal() && y._isnormal()
-  // Return *this = |x| + |y| with maximal error = f. Do care about sign(f)
-  BigReal &addAbs(const BigReal &x, const BigReal &y, const BigReal &f);                          // return this
+  // Does NOT call CHECKISMUTABLE
+  // Return *this;
+  BigReal &addAbs(const BigReal &x, const BigReal &y, const BigReal &f);
+  // Add |x| to |this|.
   // Assume &x != this && this->_isnormal() && x._isnormal()
-  // Adds |x| to |this|.
+  // Does NOT call CHECKISMUTABLE
   // Return *this
-  BigReal &addAbs(const BigReal &x);                                                              // return this
+  BigReal &addAbs(const BigReal &x);
+  // Subtract |x| from |this| with maximal error = f. If f<=0, then full precision
   // Assume &x != this && this->_isnormal() && x._isnormal() && |x| < |*this|
-  // Subtract |x| from |this| with maximal error = f
-  BigReal &subAbs(const BigReal &x, const BigReal &f);                                            // return this
+  // Does NOT call CHECKISMUTABLE
+  // Return *this
+  BigReal &subAbs(const BigReal &x, const BigReal &f);
+  // Subtract |x| from |this|
+  // Assume &x != this && this->_isnormal() && x._isnormal() && |x| < |*this|
+  // Does NOT call CHECKISMUTABLE
+  // Return *this
+  inline BigReal &subAbs(const BigReal &x) {                                                      // return this
+    return subAbs(x, (BigReal&)m_digitPool._0());
+  }
 
 #if(  SP_OPT_METHOD == SP_OPT_NONE)
 
@@ -674,23 +742,6 @@ private:
     return p;
   }
 
-  // return true if x*y is normal (finite and != 0, (false if x*y is 0, +/-inf or nan)
-  static inline bool isNormalProduct(const BigReal &x, const BigReal &y) {
-    return x._isnormal() && y._isnormal();
-  }
-
-  // Return _FP_ZERO, _FPCLASS_QNAN
-  // Assume !x._isnormal() || !y._isnormal() which will result in non-normal product (0 or nan)
-  static int getNonNormalProductFpClass(const BigReal &x, const BigReal &y);
-
-  // Return true if x*y is normal (finite and != 0). In this case, *this will not be changed
-  // Return false, if x*y is not normal, and *this will be set to the corresponding result (0 or nan)
-  inline bool checkIsNormalProduct(const BigReal &x, const BigReal &y) {
-    if(isNormalProduct(x, y)) return true;
-    setToNonNormalFpClass(getNonNormalProductFpClass(x, y));
-    return false;
-  }
-
   // Set *this = x*y, with |error| <= BIGREALBASE^fexpo. If x or y is 0 or infinite, a proper value is assigned to *this
   // Return *this
   // NOTE: fexpo is NOT decimal exponent, but Digit-exponent. To get decimal exponent multiply by BIGREAL_LOG10BASE !!!
@@ -700,86 +751,83 @@ private:
     return shortProductNoNormalCheck(x, y, fexpo);
   }
   // Set *this = x*y, with |error| <= BIGREALBASE^fexpo
-  // Return *this. Assume x._isnormal() && y._isnormal()
+  // Assume isNormalProduct(x,y)
+  // Return *this
   BigReal &shortProductNoNormalCheck(        const BigReal &x, const BigReal &y, BRExpoType fexpo);
   // Set *this = x*y, with the specified number of loops, each loop, i, calculates
   // sum(y[j]*x[i-j]), j=[0..i], i=[0..loopCount], digits indexed [0..length-1], from head
-  // Return *this. Assume x._isnormal() && y._isnormal() && (loopCount > 0)
+  // Assume isNormalProduct(x,y) && (loopCount > 0)
+  // Return *this.
   BigReal &shortProductNoZeroCheck(          const BigReal &x, const BigReal &y, UINT loopCount);
   // Set result = x*y, with |error| <= |f|
-  // Return &result. Assume x._isnormal() && y._isnormal() && f._isfinite()
+  // Assume isNormalProduct(x, y) && f._isfinite())
+  // Return &result.
   static BigReal &product(  BigReal &result, const BigReal &x, const BigReal &y, const BigReal &f,              int level);
   // Set result = x*y, with |error| <= |f|
-  // Return &result. Assume x._isnormal() && y._isnormal() && f._isfinite() && (x.getLength() >= y.getLength())
+  // Assume isNormalProduct(x, y) && f._isfinite() && (x.getLength() >= y.getLength())
+  // Return &result.
   static BigReal &productMT(BigReal &result, const BigReal &x, const BigReal &y, const BigReal &f, intptr_t  w, int level);
   // Assume this->_isnormal() && a.isZero() && b.isZero() && f._isfinite(). Dont care about sign(f)
   void    split(BigReal &a, BigReal &b, size_t n, const BigReal &f) const;
   // Assume src._isnormal() && length <= src.getLength() && m_first == m_last == NULL
   // Modify only m_first and m_last of this
+  // Does NOT call CHECKISMUTABLE
   // Return *this
   BigReal &copyDigits(   const BigReal &src, size_t length);
   // Assume !_isnormal() && src._isnormal()
+  // Does NOT call CHECKISMUTABLE
   // Return *this
   BigReal &copyAllDigits(const BigReal &src);
-  // Copy specified number of decimal digits, truncating result. return *this
+  // Copy specified number of decimal digits, truncating result
+  // call CHECKISMUTABLE
+  // Return *this
   BigReal &copyrTrunc(  const BigReal &src, size_t digits);
+  // Set sign-bit according to sign-rules for multiplication (and division)
+  // Does NOT call CHECKISMUTABLE
+  // return *this
   inline BigReal &setSignByProductRule(const BigReal &x, const BigReal &y) {
-    return setNegative(x.isNegative() != y.isNegative());
+    return hasSameSign(x,y) ? clrFlags(BR_NEG) : setFlags(BR_NEG);
   }
 
   // Cut *this (assumed != 0) to the specified number of significant decimal digits, truncation toward zero
   // Assume _isnormal() && digits > 0 (digits is decimal digits).
+  // call CHECKISMUTABLE
   // Return *this
   BigReal &rTrunc(size_t digits);
   // Cut *this (assumed != 0) to the specified number of significant decimal digits, rounding
   // Assume isnormal() && digits > 0 (digits is decimal digits).
+  // call CHECKISMUTABLE
   // Return *this
   BigReal &rRound(size_t digits);
 
   // Division helperfunctions.
-
-  static void validateQuotRemainderArguments(const TCHAR *method, const BigReal &x, const BigReal &y, const BigReal *quotient, const BigReal *remainder);
-
-  // Return true if x/y is normal (finite and != 0, (false if x/y is 0, +/-inf or nan)
-  static bool inline isNormalQuotient(const BigReal &x, const BigReal &y) {
-    return y._isnormal() && x._isnormal();
-  }
-
-  // Return _FP_ZERO, _FPCLASS_PINF, _FPCLASS_NINF, _FPCLASS_QNAN
-  // Assume !x._isnormal() || !y._isnormal() which will result in non-normal quotient (0,+/-inf or nan)
-  static int getNonNormalQuotientFpClass(const BigReal &x, const BigReal &y);
-
-  // Return true if x/y is normal (finite and != 0), (false if x/y is 0, +/-inf or nan)
-  // If x/y is not normal, quotient and remainder will recieve the non-normal value (if not null)
-  static bool inline checkIsNormalQuotient(const BigReal &x, const BigReal &y, BigReal *quotient, BigReal *remainder) {
-    if(isNormalQuotient(x, y)) {
-      return true;
-    }
-    const int qclass = getNonNormalQuotientFpClass(x, y);
-    if(quotient ) quotient->setToNonNormalFpClass( qclass);
-    if(remainder) remainder->setToNonNormalFpClass(qclass);
-    return false;
-  }
-
-  // Approximately 1/x. Result.digitPool = x.digitPool
+  // Result.digitPool = x.digitPool or digitPool if specified
+  // Return Approximately 1/x.
   static BigReal  reciprocal(const BigReal &x, DigitPool *digitPool = NULL);
-  // Assume y._isnormal(). *this = approximately x/y
+  // *this = approximately x / y
+  // Assume y._isnormal().
   // Return *this
   BigReal &approxQuot32(     const BigReal &x, const BigReal           &y);
-  // Assume y._isnormal(). *this = approximately x/y
+  // *this = approximately x / y
+  // Assume y._isnormal().
   // Return *this
   BigReal &approxQuot64(     const BigReal &x, const BigReal           &y);
-  // Assume y != 0.        *this = approximately x/e(y,scale)
+  // *this = approximately x / e(y, scale)
+  // Assume y != 0
   // Return *this
   BigReal &approxQuot32Abs(  const BigReal &x, ULONG                    y, BRExpoType scale);
-  // Assume y != 0.        *this = approximately x/e(y,scale)
+  // *this = approximately x / e(y, scale)
+  // Assume y != 0
   // Return *this
   BigReal &approxQuot64Abs(  const BigReal &x, const UINT64            &y, BRExpoType scale);
 #ifdef IS64BIT
-  // Assume y._isnormal(). *this = approximately x/y
+  // *this = approximately |x/y|
+  // Assume y._isnormal()
   // Return *this
   BigReal &approxQuot128(    const BigReal &x, const BigReal           &y);
-  // Assume y != 0.        *this = approximately x/e(y,scale). Return *this
+  // *this = approximately |x/e(y,scale)|
+  // Assume y != 0.        
+  // Return *this
   BigReal &approxQuot128Abs( const BigReal &x, const _uint128          &y, BRExpoType scale);
 #endif // IS64BIT
   static double  estimateQuotNewtonTime(const BigReal &x, const BigReal &y, const BigReal &f);
@@ -789,7 +837,11 @@ private:
   // Misc
   // return *this
   // Assume bias is {<,>,#}
+#ifdef _DEBUG
   BigReal  &adjustAPCResult(const char bias, const TCHAR *function);
+#else 
+  BigReal  &adjustAPCResult(const char bias);
+#endif // _DEBUG
 
   friend bool isFloat(   const BigReal &v, float    *flt = NULL);
   friend bool isDouble(  const BigReal &v, double   *dbl = NULL);
@@ -805,6 +857,11 @@ private:
   Double80 getDouble80NoLimitCheck() const;
 
 protected:
+  // *this *= pow(10,exp). (Fast version) Check for overflow/underflow. Trim leading and trailling zeroes if necessary
+  // Call CHECKISMUTABLE if force == false, else this here will be no check. The public version calls this function with force=false
+  // Return *this
+  BigReal &multPow10(BRExpoType exp, bool force);
+
   inline void releaseDigits() { // should only be called from destructor
     if(m_first) {
       deleteDigits(m_first, m_last);
@@ -873,7 +930,6 @@ public:
     init(x);
     endInit();
   }
-
   BigReal(float           x                 , DigitPool *digitPool = NULL) : _INITPOOLTODEFAULTIFNULL() {
     startInit();
     init(x);
@@ -948,7 +1004,6 @@ public:
     clearDigits(); init(n);
     return *this;
   }
-
   inline BigReal &operator=(const _int128   &n) {
     CHECKISMUTABLE(*this);
     clearDigits(); init(n);
@@ -959,7 +1014,6 @@ public:
     clearDigits(); init(n);
     return *this;
   }
-
   inline BigReal &operator=(float            x) {
     CHECKISMUTABLE(*this);
     clearDigits(); init(x);
@@ -998,28 +1052,54 @@ public:
   BigReal &operator--();                                                      // prefix-form
   BigReal  operator++(int);                                                   // postfix-form
   BigReal  operator--(int);                                                   // postfix-form
-  // Do *this *= pow(10,exp). (Fast) Check for overflow/underflow. Trim leading and trailling zeroes if necessessary
-  // If force is true, there will be no call to CHECKISMUTABLE
+  // *this *= pow(10,exp). (Fast version) Check for overflow/underflow. Trim leading and trailling zeroes if necessessary
+  // call CHECKISMUTABLE
   // Return *this
-  BigReal &multPow10(BRExpoType exp, bool force=false);
+  inline BigReal &multPow10(BRExpoType exp) {
+    return multPow10(exp, false);
+  }
   // Fast version of *this *= 2
+  // Call CHECKISMUTABLE
+  // return *this
   BigReal &multiply2();
   // Fast version of *this /= 2
+  // Call CHECKISMUTABLE
+  // return *this
   BigReal &divide2();
 
-  // x+y with |error| <= f. Result.digitPool = x.digitPool, or digitPool if specified
+  // Return x+y with |error| <= f.
+  // If f <= 0, full precision is used
+  // If any of the operands is not finite, nan is returned
+  // Result.digitPool = x.digitPool, or digitPool if specified
   friend BigReal  sum(             const BigReal &x, const BigReal &y, const BigReal  &f, DigitPool *digitPool = NULL);
-  // x-y with |error| <= f. Result.digitPool = x.digitPool, or digitPool if specified
+  // Return x-y with |error| <= f
+  // If f <= 0, full precision is used
+  // If any of the operands is not finite, nan is returned
+  // Result.digitPool = x.digitPool, or digitPool if specified
   friend BigReal  dif(             const BigReal &x, const BigReal &y, const BigReal  &f, DigitPool *digitPool = NULL);
-  // x*y with |error| <= f. Result.digitPool = x.digitPool, or digitPool if specified
+  // Return x*y with |error| <= f
+  // If f <= 0, full precision is used
+  // If any of the operands is not finite, nan is returned
+  // Result.digitPool = x.digitPool, or digitPool if specified
   friend BigReal  prod(            const BigReal &x, const BigReal &y, const BigReal  &f, DigitPool *digitPool = NULL);
-  // x/y with |error| <= f. Result.digitPool = x.digitPool, or digitPool if specified
+  // x/y with |error| <= f. if f<= 0, an invalid argument exception is thrown
+  // If any of the operands is not finite, nan is returned
+  // If y==0, nan, +/-inf is returned, depending on value of x
+  // Result.digitPool = x.digitPool, or digitPool if specified
   friend BigReal  quot(            const BigReal &x, const BigReal &y, const BigReal  &f, DigitPool *digitPool = NULL);
-  // x/y with |error| <= f. Result.digitPool = x.digitPool, or digitPool if specified
+  // Return fmod(x,y)
+  // If any of the operands is not finite, nan is returned
+  // Result.digitPool = x.digitPool, or digitPool if specified
   friend BigReal  fmod(            const BigReal &x, const BigReal &y                   , DigitPool *digitPool = NULL);
-  // Integer division, Result.digitPool = x.digitPool, or digitPool if specified
+  // Return x / y (Integer division)
+  // If any of the operands is not finite, nan is returned.
+  // If y==0, nan, +/-inf is returned, depending on value of x
+  // Result.digitPool = x.digitPool, or digitPool if specified
   friend BigInt   quot(            const BigInt  &x, const BigInt  &y                   , DigitPool *digitPool = NULL);
-  // Integer remainder, Result.digitPool = x.digitPool, or digitPool if specified
+  // Return x % y (Integer remainder)
+  // If any of the operands is not finite, nan is returned
+  // If y==0, nan, +/-inf is returned, depending on value of x
+  // Result.digitPool = x.digitPool, or digitPool if specified
   friend BigInt   rem(             const BigInt  &x, const BigInt  &y                   , DigitPool *digitPool = NULL);
   // Calculates only quotient and/or remainder if specified
   friend void     quotRemainder(   const BigReal &x, const BigReal &y, BigInt *quotient , BigReal *remainder);
@@ -1037,7 +1117,10 @@ public:
   static BigReal  apcQuot(      const char bias,  const BigReal &x, const BigReal  &y   , DigitPool *digitPool = NULL);
   // bias = '<','#' or '>'. Result.digitPool = x.digitPool, or digitPool if specified
   static BigReal  apcPow(       const char bias,  const BigReal &x, const BigInt   &y   , DigitPool *digitPool = NULL);
+  // bias = '<','#' or '>'. Result.digitPool = x.digitPool, or digitPool if specified
+  static BigReal  apcAbs(       const char bias,  const BigReal &x                      , DigitPool *digitPool = NULL);
 
+  // If specified, both integerPart and fractionPart, will have same sign as *this (if != 0)
   void           fractionate(BigInt *integerPart, BigReal *fractionPart) const;
   // ln(10) with |error| < f. result.digitPool = f.digitPool or digitPool if specified
   static BigReal ln10(         const BigReal &f, DigitPool *digitPool = NULL);
@@ -1053,9 +1136,11 @@ public:
   static bool pow2CacheChanged();
   static void pow2CacheDump();
 
-  // Assume x._isfinite() && y._isfinite(). Return sign(x-y) (=+/-1,0=
+  // Assume x._isfinite() && y._isfinite().
+  // Return sign(x-y) (+/-1,0)
   static int compare(         const BigReal &x,  const BigReal &y);
-  // Assume x._isfinite() && y._isfinite(). Return compare(|x|,|y|). (Faster than compare(fabs(x),fabs(y)))
+  // Assume x._isfinite() && y._isfinite().
+  // Return compare(|x|,|y|). (Faster than compare(fabs(x),fabs(y)))
   static int compareAbs(      const BigReal &x,  const BigReal &y);
 
   inline BYTE getFlags() const {
@@ -1084,6 +1169,11 @@ public:
   inline bool isZero() const {
     return !_isnormal() && (m_low == BIGREAL_ZEROLOW);
   }
+  // Return true, if _isnormal() || _isinf()
+  inline bool _hasSign() const {
+    return _isnormal() || (m_low == BIGREAL_INFLOW);
+  }
+
   // Return true, if *this is +/-INFINITE
   inline bool _isinf() const {
     return !_isnormal() && (m_low == BIGREAL_INFLOW);
@@ -1115,18 +1205,12 @@ public:
   // call CHECKISMUTABLE(this)
   inline BigReal &changeSign() {
     CHECKISMUTABLE(*this);
-    if(_isnormal() || _isinf()) { m_flags ^= BR_NEG; }
-    return *this;
+    return _hasSign() ? flipSign() : *this;
   }
   // call CHECKISMUTABLE(this)
   inline BigReal &setNegative(bool negative) {
     CHECKISMUTABLE(*this);
-    if(negative) {
-      m_flags |= BR_NEG;
-    } else {
-      m_flags &= ~BR_NEG;
-    }
-    return *this;
+    return negative ? setFlags(BR_NEG) : clrFlags(BR_NEG);
   }
   // call CHECKISMUTABLE(this)
   inline void setPositive() {
@@ -1139,6 +1223,10 @@ public:
   // Return (m_flags & BR_NEG) != 0
   inline bool isNegative() const {
     return (m_flags & BR_NEG);
+  }
+  // Return true if _isfinite() && (m_low >= 0)
+  inline bool _isinteger() const {
+    return _isfinite() && (getLow() >= 0);
   }
   // Return number of BASE digits. 0 has length 1, undefined (nan,+inf,-inf) has length 0
   inline size_t getLength() const {
@@ -1190,16 +1278,17 @@ public:
     return pow10x64(n);
 #endif // IS64BIT
   }
-  // Assume x._isfinite(). Return (x == 0) ? 0 : approximately floor(log2(|x|))
+  // Assume x._isfinite().
+  // Return (x == 0) ? 0 : approximately floor(log2(|x|))
   friend BRExpoType getExpo2(   const BigReal  &x);
-  // return floor(log10(n))+1
   // Assume n = [1..1e8[
+  // Return floor(log10(n))+1
   static int     getDecimalDigitCount(BRDigitTypex86 n);
-  // return floor(log10(n))+1
   // Assume n = [1..1e19[
+  // Return floor(log10(n))+1
   static int     getDecimalDigitCount(BRDigitTypex64 n);
 
-  // Return 0 if n == 0, else max(p)|n % (10^p) = 0, p=[0..LOG10BASEx86/x64]
+  // Return (n == 0) ? 0 : max(p)|n % (10^p) == 0, p=[0..LOG10BASEx86/x64]
   template<class INTTYPE> static int getTrailingZeroCount(INTTYPE n) {
     if(n == 0) return 0;
     int result = 0;
@@ -1212,23 +1301,26 @@ public:
 #endif
   // (int)(log10(x) / BIGREAL_LOG10BASE)
   static int     logBASE(double x);
-  // Return p if n = 10^p for p = [0..9]. else return -1.
+  // Return p if n == 10^p for p = [0..9]. else Return -1.
   static int     isPow10(BRDigitTypex86 n);
-  // Return p if n = 10^p for p = [0..19]. else return -1.
+  // Return p if n == 10^p for p = [0..19]. else Return -1.
   static int     isPow10(BRDigitTypex64 n);
   // true if |x| = 10^p for p = [BIGREAL_MINEXPO..BIGREAL_MAXEXPO]
   static bool    isPow10(const BigReal &x);
 
-  // Absolute value of x (=|x|)
-  // Result.digitPool = x.digitPool
+  // Return Absolute value of x (=|x|)
+  // Result.digitPool = x.digitPool or digitPool, if specified
   friend BigReal fabs(     const BigReal &x                   , DigitPool *digitPool = NULL);
-  // biggest integer <= x
+  // Return biggest integer <= x
+  // Result.digitPool = x.digitPool or digitPool, if specified
   friend BigInt  floor(    const BigReal &x                   , DigitPool *digitPool = NULL);
-  // smallest integer >= x
+  // Return smallest integer >= x
+  // Result.digitPool = x.digitPool or digitPool, if specified
   friend BigInt  ceil(     const BigReal &x                   , DigitPool *digitPool = NULL);
-  // sign(x) * (|x| - floor(|x|))
+  // Return sign(x) * (|x| - floor(|x|))
+  // Result.digitPool = x.digitPool or digitPool, if specified
   friend BigReal fraction( const BigReal &x                   , DigitPool *digitPool = NULL);
-  // sign(x) * floor(|x|*10^prec+0.5)/10^prec
+  // Return sign(x) * floor(|x|*10^prec+0.5)/10^prec
   friend BigReal round(    const BigReal &x, intptr_t prec = 0, DigitPool *digitPool = NULL);
   // sign(x) * floor(|x|*10^prec)/10^prec
   friend BigReal trunc(    const BigReal &x, intptr_t prec = 0, DigitPool *digitPool = NULL);
@@ -1249,25 +1341,30 @@ public:
   friend bool    isOdd(      const BigReal &x);
   // Return true if x._isfinite() && (fraction(x) == 0)
   friend inline bool isInteger(const BigReal &x) {
-    return x._isfinite() && x.getLow() >= 0;
+    return x._isinteger();
   }
 
-  // Assume f._isfinite(). Set to = from so |to-from| <= f. Return to
+  // Set to = from so |to - from| <= f. If f <= 0, then full precision
+  // Assume f._isfinite().
+  // call CHECKISMUTABLE
+  // Return to
   friend BigReal &copy(BigReal &to, const BigReal &from, const BigReal &f);
-  // Set to = from so to.getlength() = min(length,from.getlength(). Return to
+  // Set to = from so to.getlength() = min(length,from.getlength().
+  // call CHECKISMUTABLE
+  // Return to
   friend BigReal &copy(BigReal &to, const BigReal &from, size_t length);
 
   // Assume x and y are both normal (finite and != 0) and f>0.
   // x/y with |error| < f. Newton-rapthon iteration
   static BigReal quotNewton(   const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *digitPool);
-  // Assume x and y are both normal (finite and != 0) and f>0.
+  // Assume isNormalQuotient(x, y) and f>0.
   // x/y with |error| < f. School method. using built-in 32-bit division
   static BigReal quotLinear32( const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *digitPool);
-  // Assume x and y are both normal (finite and != 0) and f>0.
+  // Assume isNormalQuotient(x, y) and f>0.
   // x/y with |error| < f. School method. using built-in 64-bit division
   static BigReal quotLinear64( const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *digitPool);
 #ifdef IS64BIT
-  // Assume x and y are both normal (finite and != 0) and f>0.
+  // Assume isNormalQuotient(x, y) and f>0.
   // x/y with |error| < f. School method. using class _int128 for division
   static BigReal quotLinear128(const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *digitPool);
 #endif // IS64BIT
@@ -1310,7 +1407,9 @@ public:
 
   // Checks that this is a consistent BigReal with all the various invariants satisfied.
   // Throws an excpeption if not with a descripion of what is wrong. For debugging
-  virtual void assertIsValid() const;
+#define VALIDATEBIG(x) { (x).assertIsValid(__TFILE__,__LINE__, _T(#x)); }
+  virtual void assertIsValid(const TCHAR *file, int line, const TCHAR *name) const;
+  void throwNotValidException(TCHAR const * const file, int line, TCHAR const * const name, _In_z_ _Printf_format_string_ const TCHAR *format, ...) const;
 
   // Return uniform distributed random BigReal between 0 (incl) and 1 (excl) with at most maxDigits decimal digits.
   // If maxDigits == 0, 0 will be returned
@@ -1319,9 +1418,17 @@ public:
   friend BigReal randBigReal(size_t maxDigits, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator, DigitPool *digitPool = NULL);
 
   // Return uniform distributed random BigReal in [from;to] with at most maxDigits decimal digits.
+  // If from > 0, an invalid argument exception is thrown
   // Digits generated with rnd
   // If digitPool == NULL, use from.getDigitPool()
   friend BigReal  randBigReal(const BigReal &from, const BigReal &to, size_t maxDigits, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator, DigitPool *digitPool = NULL);
+
+  // Return uniform distributed random BigInt in [0..e(1,maxDigits)-1]
+  // If maxDigits == 0, 0 will be returned
+  // Digits generated with rnd.
+  // If digitPool == NULL, use DEFAULT_DIGITPOOL
+  // ex:maxDigits = 3:returned value in interval [0..999]
+  friend BigInt   randBigInt(size_t maxDigits, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator, DigitPool *digitPool = NULL);
 
   // ------------------------------------------------------------------------------------------
 
@@ -1415,6 +1522,7 @@ public:
 #define APCprod(bias, x, y, digitPool) BigReal::apcProd(#@bias, x, y, digitPool)
 #define APCquot(bias, x, y, digitPool) BigReal::apcQuot(#@bias, x, y, digitPool)
 #define APCpow( bias, x, y, digitPool) BigReal::apcPow( #@bias, x, y, digitPool)
+#define APCabs( bias, x   , digitPool) BigReal::apcAbs( #@bias, x   , digitPool)
 
 // Assume fpclass in {_FPCLASS_PZ,_FPCLASS_NZ, _FPCLASS_PINF, _FPCLASS_NINF, _FPCLASS_QNAN, _FPCLASS_SNAN }
 template<class NumberType> NumberType getNonNormalValue(int fpclass, const NumberType &zero) {

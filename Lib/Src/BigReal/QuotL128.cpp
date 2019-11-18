@@ -26,16 +26,12 @@ static const QuotL128Constants Q128C;
 // Assume x and y are both normal (finite and != 0) and f>0.
 // x/y with |error| < f. School method. using class _int128 for division
 BigReal BigReal::quotLinear128(const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *pool) { // static
-  assert(x._isnormal() && y._isnormal() && f.isPositive());
-  const bool yNegative = y.isNegative();
-  ((BigReal&)y).setPositive(); // cheating. We set it back again....TODO....remove this
+  assert(isNormalQuotient(x, y) && f.isPositive());
 
-  const BigReal v = APCprod(<, APCprod(<, f, Q128C.c1, pool), y, pool); // v > 0
+  const BigReal v = APCprod(<, APCprod(<, f, Q128C.c1, pool), APCabs(#,y,pool), pool); // v > 0
 
   BigReal z(pool);
-  copy(z, x, v*Q128C.c2);
-
-  z.setPositive();
+  copy(z, x, v*Q128C.c2).clrFlags(BR_NEG);
 
   BigReal u(pool);
   u.approxQuot32(z, v);
@@ -50,11 +46,7 @@ BigReal BigReal::quotLinear128(const BigReal &x, const BigReal &y, const BigReal
   for(; compareAbs(z,v) > 0; loopDone = true) {
     t.approxQuot128Abs(z, yFirst, scale).copySign(z);
     result += t;
-    z -= product(tmp, t, y, u, 0);
-  }
-
-  if(yNegative) {
-    ((BigReal&)y).setNegative(true);
+    z -= product(tmp, t, y, u, 0).copySign(t);
   }
 
   if(loopDone) {
@@ -69,7 +61,7 @@ BigReal &BigReal::approxQuot128(const BigReal &x, const BigReal &y) {
   BRExpoType scale;
   _uint128 yFirst;
   y.getFirst128(yFirst, MAXDIGITS_DIVISOR128, &scale);
-  return approxQuot128Abs(x, yFirst, scale).setSignByProductRule(x,y);
+  return approxQuot128Abs(x, yFirst, scale);
 }
 
 BigReal &BigReal::approxQuot128Abs(const BigReal &x, const _uint128 &y, BRExpoType scale) {
@@ -91,7 +83,6 @@ BigReal &BigReal::approxQuot128Abs(const BigReal &x, const _uint128 &y, BRExpoTy
   }                                                 \
 }
 
-// Same as getFirst32, but k = [0..MAXDIGITS_INT128] = [0..38]
 _uint128 &BigReal::getFirst128(_uint128 &dst, const UINT k, BRExpoType *scale) const {
   assert(k <= MAXDIGITS_INT128);
   const Digit *p = m_first;
@@ -140,48 +131,36 @@ _uint128 &BigReal::getFirst128(_uint128 &dst, const UINT k, BRExpoType *scale) c
   return dst;
 }
 
-//#define TRACE_QUOTREMAINDER
-
 void quotRemainder128(const BigReal &x, const BigReal &y, BigInt *quotient, BigReal *remainder) {
   BigReal::validateQuotRemainderArguments(__TFUNCTION__, x, y, quotient, remainder);
   if(!BigReal::checkIsNormalQuotient(x, y, quotient, remainder)) return;
 
-  const int cmpAbs = BigReal::compareAbs(x, y);
-  if(cmpAbs < 0) {
+  switch(BigReal::compareAbs(x, y)) {
+  case -1:
     if(remainder) *remainder = x;
     if(quotient )  quotient->setToZero();
     return;
-  } else if(cmpAbs == 0) {
+  case 0:
     if(remainder) remainder->setToZero();
-    if(quotient) {
-      *quotient = quotient->getDigitPool()->_1();
-    }
+    if(quotient)  *quotient = quotient->getDigitPool()->_1();
     return;
   }
 
   // x != 0 && y != 0 && |x| > |y|
-
   if(BigReal::isPow10(y)) {
     BigReal tmp(x);
     const BRExpoType yp10 = BigReal::getExpo10(y);
     tmp.multPow10(-yp10);
     tmp.fractionate(quotient, remainder);
-    if(remainder) {
-      remainder->multPow10(yp10);
-    }
-    if(quotient) {
-      quotient->setPositive();
-    }
+    if(remainder) remainder->multPow10(yp10);
+    if(quotient ) quotient->setPositive();
     return;
   }
-
-  const bool yNegative = y.isNegative();
-  ((BigReal&)y).setPositive(); // cheating. We set it back again....TODO remove this
 
   DigitPool *pool = x.getDigitPool();
 
   BigReal z(x, pool);
-  z.setPositive();
+  z.clrFlags(BR_NEG);
 
   BRExpoType             scale;
   _uint128               yFirst;
@@ -192,21 +171,21 @@ void quotRemainder128(const BigReal &x, const BigReal &y, BigInt *quotient, BigR
   while(BigReal::compareAbs(z, y) >= 0) {
     t.approxQuot128Abs(z, yFirst, scale).copySign(z);
     q += t;
-    z -= BigReal::product(tmp, t, y, pool->_0(),0);
+    z -= BigReal::product(tmp, t, y, pool->_0(),0).copySign(t);
   }
-
+  const bool yNeg = y.isNegative();
   if(!z.isNegative()) {
     if(isInteger(q)) {
       if(quotient)  *quotient  = (BigInt&)q;
       if(remainder) *remainder = z;
     } else {
       q.fractionate(quotient, &t);
-      z += t * y;
+      z += (t * y).copySign(z);
       if(BigReal::compareAbs(z, y) >= 0) {
-        if(quotient)  ++(*quotient);
-        if(remainder) *remainder = z - y;
+        if (quotient) { ++(*quotient); }
+        if(remainder) { *remainder = yNeg ? (z + y) : (z - y); }
       } else {
-        if(remainder) *remainder = z;
+        if(remainder) { *remainder = z; }
       }
     }
   } else { // z < 0
@@ -216,20 +195,18 @@ void quotRemainder128(const BigReal &x, const BigReal &y, BigInt *quotient, BigR
         --(*quotient);
       }
       if(remainder) {
-        *remainder = z + y;
+        *remainder = yNeg ? z - y : z + y;
       }
     } else {
-      if(!remainder) { // quotient != NULL
-        q.fractionate(quotient, &t);
-        z += t * y;
-        if(z.isNegative()) {
+      q.fractionate(quotient, &t);
+      if(remainder == NULL) { // quotient != NULL
+        if(BigReal::compareAbs(z, t * y) > 0) {
           --(*quotient);
         }
       } else { // remainder != NULL. quotient might be NULL
-        q.fractionate(quotient, &t);
-        *remainder = z + t * y;
+        *remainder = z + (t * y).copySign(t);
         if(remainder->isNegative()) {
-          *remainder += y;
+          if(yNeg) *remainder -= y; else *remainder += y;
           if(quotient) {
             --(*quotient);
           }
@@ -238,11 +215,8 @@ void quotRemainder128(const BigReal &x, const BigReal &y, BigInt *quotient, BigR
     }
   }
 
-  if(remainder) {
+  if(remainder && remainder->_isnormal()) {
     remainder->copySign(x);
-  }
-  if(yNegative) {
-    ((BigReal&)y).setNegative(true);
   }
 }
 

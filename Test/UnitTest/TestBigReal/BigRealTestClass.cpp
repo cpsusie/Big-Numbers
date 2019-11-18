@@ -671,7 +671,7 @@ void BigRealTestClass::testCopyAllDigits() {
     y.m_low      = x.m_low;
     y.setNegative(x.isNegative());
     try {
-      y.assertIsValid();
+      VALIDATEBIG(y);
     } catch(Exception e) {
       _tprintf(_T("%s\n"), e.what());
       continue;
@@ -755,7 +755,7 @@ void BigRealTestClass::testTruncRound() {
         try {
           x1.RF(cutDigits);
           testCount++;
-          x1.assertIsValid();
+          VALIDATEBIG(x1);
         } catch(Exception e) {
           exceptionCount++;
           _tprintf(_T("%8d %6d %6d %40s Expt in %s:%s\n")
@@ -848,7 +848,7 @@ void BigRealTestClass::testCopyrTrunc() {
         testCount++;
         try {
           x1.copyrTrunc(x, cutDigits);
-          x1.assertIsValid();
+          VALIDATEBIG(x1);
         } catch(Exception e) {
           exceptionCount++;
           _tprintf(_T("%8d %6d %6d %40s Expt in x1:%s\n")
@@ -861,7 +861,7 @@ void BigRealTestClass::testCopyrTrunc() {
 
         try {
           x2.copyrTrunc(x, cutDigits);
-          x2.assertIsValid();
+          VALIDATEBIG(x2);
         } catch(Exception e) {
           exceptionCount++;
           _tprintf(_T("%8d %6d %6d %40s Expt in x2:%s\n")
@@ -874,7 +874,7 @@ void BigRealTestClass::testCopyrTrunc() {
 
         try {
           xz.copyrTrunc(x, cutDigits);
-          xz.assertIsValid();
+          VALIDATEBIG(xz);
         } catch(Exception e) {
           exceptionCount++;
           _tprintf(_T("%8d %6d %6d %40s Expt in xz:%s\n")

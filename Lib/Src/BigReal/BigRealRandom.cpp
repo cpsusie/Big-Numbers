@@ -28,7 +28,6 @@ BigReal randBigReal(size_t maxDigits, RandomGenerator &rnd, DigitPool *digitPool
 
   result.m_expo     = -1;
   result.m_low      = -i;
-  result.setPositive();
   return result.trimZeroes();
 }
 
@@ -38,11 +37,11 @@ BigReal randBigReal(const BigReal &from, const BigReal &to, size_t maxDigits, Ra
   if(from > to) {
     throwBigRealInvalidArgumentException(__TFUNCTION__, _T("from > to"));
   }
-  if(digitPool == NULL) digitPool = from.getDigitPool();
-  if(!from._isfinite() || !to._isfinite()) return digitPool->nan();
+  _SELECTDIGITPOOL(from);
+  if(!from._isfinite() || !to._isfinite()) return pool->nan();
 
-  BigReal r = randBigReal(maxDigits, rnd, digitPool);
+  BigReal r = randBigReal(maxDigits, rnd, pool);
   r.clrInitDone();
-  r = rSum(rProd(r, rDif(to,from,maxDigits, digitPool),maxDigits), from, maxDigits);
-  return (r.isZero() || (r.getDecimalDigits() <= maxDigits) || (maxDigits == 0)) ? r : r.rTrunc(maxDigits).setInitDone();
+  r = rSum(rProd(r, rDif(to,from,maxDigits, pool),maxDigits,pool), from, maxDigits, pool);
+  return (r.isZero() || (r.getDecimalDigits() <= maxDigits) || (maxDigits == 0)) ? r.setInitDone() : r.rTrunc(maxDigits).setInitDone();
 }

@@ -19,7 +19,7 @@ void BigReal::init(float x) {
     shortProductNoZeroCheck(significand, p2, 2).rRound(9);
   }
   if(x < 0) {
-    setNegative(true);
+    flipSign();
   }
 }
 

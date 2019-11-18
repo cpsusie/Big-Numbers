@@ -17,7 +17,7 @@ BigReal oldFraction(const BigReal &x) { // sign(x) * (|x| - floor(|x|))
   }
 }
 
-void quotRemainder(const BigReal &x,  const BigReal &y, BigInt *quotient, BigReal *remainder) {
+void quotRemainder(const BigReal &x, const BigReal &y, BigInt *quotient, BigReal *remainder) {
   BigReal::validateQuotRemainderArguments(__TFUNCTION__, x, y, quotient, remainder);
   if(!BigReal::checkIsNormalQuotient(x, y, quotient, remainder)) return;
 

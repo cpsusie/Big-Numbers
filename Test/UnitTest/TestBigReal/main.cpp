@@ -164,7 +164,7 @@ static void testAPCSum() {
     _tprintf(_T("APCSum(>,x,y) = %s\n"), toString(p).cstr());
 
     try {
-      p.assertIsValid();
+      VALIDATEBIG(p);
     } catch(Exception e) {
       _tprintf(_T("%s\n"), e.what());
     }

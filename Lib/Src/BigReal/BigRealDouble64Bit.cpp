@@ -21,7 +21,7 @@ void BigReal::init(double x) {
     shortProductNoZeroCheck(significand, p2, 4).rRound(17);
   }
   if(x < 0) {
-    setNegative(true);
+    flipSign();
   }
 }
 

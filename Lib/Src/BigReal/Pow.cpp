@@ -29,7 +29,7 @@ BigReal pow(const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *dig
     return x.isZero() ? pool->nan() : _1;
   }
   if(y == _1) {
-    return x;
+    return BigReal(x,pool);
   }
   if(x.isZero()) {
     return y.isNegative() ? pool->pinf() : _0;

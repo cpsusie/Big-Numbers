@@ -62,7 +62,7 @@ DECLARE_CALLCOUNTER(shortSquareSumTooBig);
 
 // Return *this. Assume x._isnormal() && y._isnormal() && loopCount > 0
 BigReal &BigReal::shortProductNoZeroCheck(const BigReal &x, const BigReal &y, UINT loopCount) {
-  assert(x._isnormal() && y._isnormal() && (loopCount > 0));
+  assert(isNormalProduct(x, y) && (loopCount > 0));
   SubProductSum   sps(clearDigits1());
   int             digitsAdded;
   m_expo = m_low = x.m_expo + y.m_expo;

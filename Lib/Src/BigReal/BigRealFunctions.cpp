@@ -107,7 +107,7 @@ BigReal trunc(const BigReal &x, intptr_t prec, DigitPool *digitPool) {  // sign(
     BigReal tmp(x,pool);
     result = (x.isNegative())
            ? -floor(-tmp.multPow10(prec,true)).multPow10(-prec,true)
-           :  floor(tmp.multPow10(prec,true)).multPow10(-prec,true);
+           :  floor( tmp.multPow10(prec,true)).multPow10(-prec,true);
   }
   return result.setInitDone();
 }
@@ -171,7 +171,7 @@ void BigReal::fractionate(BigInt *integerPart, BigReal *fractionPart) const {
     for(; dd && (expo-- >= 0); sd = sd->next, dd = dd->next) {
       dd->n = sd->n;
     }
-    if(dd) {                        // remove axcess digits from integerPart
+    if(dd) {                             // remove excess digits from integerPart
       Digit *saveLast = intPart.m_last;
       intPart.m_last = dd->prev;
       intPart.m_last->next = NULL;

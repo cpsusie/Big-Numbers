@@ -73,7 +73,7 @@ BigReal &BigReal::shortProductNoZeroCheckDebug(const BigReal &x, const BigReal &
 #else
 BigReal &BigReal::shortProductNoZeroCheck(     const BigReal &x, const BigReal &y, UINT loopCount) { // return *this
 #endif
-  assert(x._isnormal() && y._isnormal() && (loopCount > 0));
+  assert(isNormalProduct(x, y) && (loopCount > 0));
   // loopCount assumes we multiply NUMBERDIGITS. Here we multiply only SQRT_NUMBERDIGITS (half size)
   // in each iteration, so we have to do twice as many iterations
 
