@@ -74,6 +74,10 @@ private:
   void             ajourDisplay();
   void             setDisplay(const BigReal &x);
   const BigReal    &getDisplay() const;
+  DigitPool        *getDigitPool() const {
+    return m_display.getDigitPool();
+  }
+
   void             pushDisplay();
   BigReal          toRadians(  const BigReal &x) const;
   BigReal          fromRadians(const BigReal &x) const;
