@@ -1518,11 +1518,11 @@ public:
   }
 };
 
-#define APCsum( bias, x, y, digitPool) BigReal::apcSum( #@bias, x, y, digitPool)
-#define APCprod(bias, x, y, digitPool) BigReal::apcProd(#@bias, x, y, digitPool)
-#define APCquot(bias, x, y, digitPool) BigReal::apcQuot(#@bias, x, y, digitPool)
-#define APCpow( bias, x, y, digitPool) BigReal::apcPow( #@bias, x, y, digitPool)
-#define APCabs( bias, x   , digitPool) BigReal::apcAbs( #@bias, x   , digitPool)
+#define APCsum( bias, ...) BigReal::apcSum( #@bias, __VA_ARGS__)
+#define APCprod(bias, ...) BigReal::apcProd(#@bias, __VA_ARGS__)
+#define APCquot(bias, ...) BigReal::apcQuot(#@bias, __VA_ARGS__)
+#define APCpow( bias, ...) BigReal::apcPow( #@bias, __VA_ARGS__)
+#define APCabs( bias, ...) BigReal::apcAbs( #@bias, __VA_ARGS__)
 
 // Assume fpclass in {_FPCLASS_PZ,_FPCLASS_NZ, _FPCLASS_PINF, _FPCLASS_NINF, _FPCLASS_QNAN, _FPCLASS_SNAN }
 template<class NumberType> NumberType getNonNormalValue(int fpclass, const NumberType &zero) {

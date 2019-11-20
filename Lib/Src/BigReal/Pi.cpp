@@ -68,6 +68,7 @@ BigReal pi(const BigReal &f, DigitPool *digitPool) {
       if(f >= PIC.c1) {
         piValue = PIC.c2;
       } else {
+
         const BigInt l = floor(APCsum(>,APCprod(>,ln(-BigReal::getExpo10N(APCprod(<,f,PIC.c4,PIP),PIP),PIC.c5,PIP),PIC.c3,PIP),PIC.c6,PIP),PIP);
         const int li = getInt(l);
         BigReal w = APCprod(<,APCprod(<,PIC.c7,f,PIP),cut(BigReal::pow2(-li),APC_DIGITS, PIP),PIP); // APCpow(<,c16,l));
@@ -89,7 +90,7 @@ BigReal pi(const BigReal &f, DigitPool *digitPool) {
         piValue = quot(prod(a,a,APCprod(<,PIC.c12,f,PIP),PIP),t,APCprod(<,PIC.c13,f,PIP),PIP);
       }
       piError = f; // rettet fra APCprod(c14,f,1);
-      result = piValue;;
+      result = piValue;
       goto End;
     }
     copy(result, piValue,APCprod(<,PIC.c15, f,PIP));
