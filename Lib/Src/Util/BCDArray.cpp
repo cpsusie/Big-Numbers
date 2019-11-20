@@ -4,6 +4,8 @@
 #define C_MINUS 10
 #define C_COMMA 11
 #define C_EXP   12
+#define C_SLASH 13
+#define C_RESERVED // Escape-sequence for 14
 #define C_END   15
 #define ENDEND ((C_END<<4)|C_END)
 
@@ -34,6 +36,8 @@
 BCDArray::BCDArray(const String &numstr) {
   const _TUCHAR *cp       = numstr.cstr();
   bool           gotDigit = false;
+  bool           gotComma = false;
+  bool           gotExpo  = false;
 
   while(iswspace(*cp)) cp++;
 
@@ -50,6 +54,7 @@ BCDArray::BCDArray(const String &numstr) {
   }
   if(*cp == '.') {
     BCDBUF_ADD(bcd,C_COMMA);
+    gotComma = true;
     cp++;
     while(iswdigit(*cp)) {
       const BYTE d = *(cp++) - '0';
@@ -59,6 +64,7 @@ BCDArray::BCDArray(const String &numstr) {
   }
   if((*cp == 'e') || (*cp == 'E')) {
     BCDBUF_ADD(bcd,C_EXP);
+    gotExpo = true;
     cp++;
     if(*cp == '+') cp++;
     else if(*cp == '-') {
@@ -68,6 +74,16 @@ BCDArray::BCDArray(const String &numstr) {
     while(iswdigit(*cp)) {
       const BYTE d = *(cp++) - '0';
       BCDBUF_ADD(bcd,d);
+    }
+  }
+  if(gotDigit && !gotComma && !gotExpo) {
+    if((*cp == '/') && iswdigit(cp[1])) {
+      BCDBUF_ADD(bcd, C_SLASH);
+      cp++;
+      while(iswdigit(*cp)) {
+        const BYTE d = *(cp++) - '0';
+        BCDBUF_ADD(bcd, d);
+      }
     }
   }
   if(!BCDBUF_ISEMPTY(bcd)) {
@@ -92,6 +108,7 @@ String BCDArray::toString() const {
       case C_MINUS : ch = '-'; break;
       case C_COMMA : ch = '.'; break;
       case C_EXP   : ch = 'e'; break;
+      case C_SLASH : ch = '/'; break;
       case C_END   : return result;
       default      :
         throwException(_T("Unknown BCD-byte:%d. current result:%s"), b, result.cstr());
@@ -108,4 +125,3 @@ Packer &operator<<(Packer &p, const BCDArray &a) {
 Packer &operator>>(Packer &p, BCDArray &a) {
   return p.getElement(Packer::E_ARRAY,NULL,0) >> (ByteArray&)a;
 }
-
