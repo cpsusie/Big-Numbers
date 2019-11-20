@@ -119,7 +119,6 @@ void BigReal::split(BigReal &a, BigReal &b, size_t n, const BigReal &f) const {
   }
   a.trimZeroes();                  // dont trim zeroes from a before b has been generated!
 }
-
 BigReal &BigReal::product(BigReal &result, const BigReal &x, const BigReal &y, const BigReal &f, int level) { // static
   assert(isNormalProduct(x,y) && f._isfinite());
   //  _tprintf(_T("length(X):%5d length(Y):%5d\n"),length(x),length(y));
@@ -163,33 +162,25 @@ BigReal &BigReal::product(BigReal &result, const BigReal &x, const BigReal &y, c
   }
 
   const BRExpoType logBK = BIGREAL_LOG10BASE * n;
+  BigReal Kg(g);                                                       //                                      O(1)
+  Kg.multPow10(logBK, true);                                           //                                      O(1)
   BigReal r(pool), s(pool), t(pool);                                   //                                      O(1)
 
+  b.multPow10(logBK, true);                                            //                                      O(1)
   if(sameXY) {
-    const BigReal &c = a, &d = b;                                      // => a+b == c+d
-    b.multPow10(logBK, true);                                          //                                      O(1)
-//  d.multPow10(logBK); Done in last statement
-    BigReal Kg(g);                                                     //                                      O(1)
-    Kg.multPow10(logBK, true);                                         //                                      O(1)
-
-    product(r, a  , c  , _0, level);                                   // &a=&c. r = a * a                     O((n/2)^2)      = O((n^2)/4)
-    const BigReal AplusB = a + b;
-    product(s, AplusB, AplusB, Kg, level);                             // s = (a+Kb) * (c+Kd)                  O((n/2)^2+2n/2) = O((n^2)/4+n)
-    product(t, b  , d  , Kg, level);                                   // &b==&d. t = Kb * Kd                  O((n/2)^2)      = O((n^2)/4)
+    product(r, a    , a    , _0, level);                               // actually r = a  * c                  O((n/2)^2)      = O((n^2)/4)
+    product(t, b    , b    , Kg, level);                               // actually t = Kb * Kd                 O((n/2)^2)      = O((n^2)/4)
+    const BigReal sumAB(a+b);
+    product(s, sumAB, sumAB, Kg, level);                               // actually s = (a+Kb) * (c+Kd)         O((n/2)^2+2n/2) = O((n^2)/4+n)
 
   } else {
     BigReal c(pool), d(pool);
     Y.split(c, d, n, g.isZero() ? _0 : APCprod(#,gpm10,reciprocal(X, pool),pool));              // c + d = Y   O(n)
-                                                                       //
-    b.multPow10(logBK, true);                                          //                                      O(1)
     d.multPow10(logBK, true);                                          //                                      O(1)
-    BigReal Kg(g);                                                     //                                      O(1)
-    Kg.multPow10(logBK, true);                                         //                                      O(1)
-    BigReal r(pool), s(pool), t(pool);                                 //                                      O(1)
                                                                        //
     product(r, a  , c  , _0, level);                                   // r = a * c                            O((n/2)^2)      = O((n^2)/4)
-    product(s, a+b, c+d, Kg, level);                                   // s = (a+Kb) * (c+Kd)                  O((n/2)^2+2n/2) = O((n^2)/4+n)
     product(t, b  , d  , Kg, level);                                   // t = Kb * Kd                          O((n/2)^2)      = O((n^2)/4)
+    product(s, a+b, c+d, Kg, level);                                   // s = (a+Kb) * (c+Kd)                  O((n/2)^2+2n/2) = O((n^2)/4+n)
   }
                                                                        //
   s -= r;                                                              //                                      O(n)
