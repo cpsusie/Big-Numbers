@@ -64,13 +64,13 @@ BigReal &BigReal::approxQuot32Abs(const BigReal &x, unsigned long y, BRExpoType 
   assert(y != 0);
   const unsigned long q = x.getFirst32(MAXDIGITS_INT32)/y;
   *this = q;
-  return multPow10(getExpo10(x) - scale - MAXDIGITS_INT32);
+  return multPow10(getExpo10(x) - scale - MAXDIGITS_INT32, true);
 }
 
 BigReal BigReal::reciprocal(const BigReal &x, DigitPool *digitPool) { // static
   static const int k = MAXDIGITS_DIVISOR32;
   BigReal result(pow10(MAXDIGITS_INT32)/x.getFirst32(k), digitPool?digitPool:x.getDigitPool());
-  return result.multPow10(k - 1 - MAXDIGITS_INT32 - getExpo10(x)).copySign(x);
+  return result.multPow10(k - 1 - MAXDIGITS_INT32 - getExpo10(x),true).copySign(x);
 }
 
 // Assume k <= MAXDIGITS_INT32 (=9). scale can be NULL.

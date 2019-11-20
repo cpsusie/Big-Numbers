@@ -64,7 +64,7 @@ BigReal &BigReal::approxQuot64Abs(const BigReal &x, const unsigned __int64 &y, B
   assert(x._isfinite() && (y != 0));
   const unsigned __int64 q = x.getFirst64(MAXDIGITS_INT64)/y;
   *this = q;
-  return multPow10(getExpo10(x) - scale - MAXDIGITS_INT64);
+  return multPow10(getExpo10(x) - scale - MAXDIGITS_INT64,true);
 }
 
 UINT64 BigReal::getFirst64(const UINT k, BRExpoType *scale) const {
@@ -141,9 +141,9 @@ void quotRemainder64(const BigReal &x, const BigReal &y, BigInt *quotient, BigRe
   if(BigReal::isPow10(y)) {
     BigReal tmp(x);
     const BRExpoType yp10 = BigReal::getExpo10(y);
-    tmp.multPow10(-yp10);
+    tmp.multPow10(-yp10,true);
     tmp.fractionate(quotient, remainder);
-    if(remainder) remainder->multPow10(yp10);
+    if(remainder) remainder->multPow10(yp10,true);
     if(quotient)  quotient->setPositive();
     return;
   }

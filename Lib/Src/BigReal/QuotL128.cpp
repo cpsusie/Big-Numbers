@@ -68,7 +68,7 @@ BigReal &BigReal::approxQuot128Abs(const BigReal &x, const _uint128 &y, BRExpoTy
   assert(y != 0);
   _uint128 xFirst;
   *this = x.getFirst128(xFirst, MAXDIGITS_INT128)/y;
-  return multPow10(getExpo10(x) - scale - MAXDIGITS_INT128);
+  return multPow10(getExpo10(x) - scale - MAXDIGITS_INT128,true);
 }
 
 #define ADJUSTSCALEMOD10(i128)                      \
@@ -150,9 +150,9 @@ void quotRemainder128(const BigReal &x, const BigReal &y, BigInt *quotient, BigR
   if(BigReal::isPow10(y)) {
     BigReal tmp(x);
     const BRExpoType yp10 = BigReal::getExpo10(y);
-    tmp.multPow10(-yp10);
+    tmp.multPow10(-yp10,true);
     tmp.fractionate(quotient, remainder);
-    if(remainder) remainder->multPow10(yp10);
+    if(remainder) remainder->multPow10(yp10,true);
     if(quotient ) quotient->setPositive();
     return;
   }

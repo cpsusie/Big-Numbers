@@ -32,7 +32,7 @@ BigReal quot(const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *di
     if(y.isNegative()) {
       result.flipSign();
     }
-    return result.multPow10(-BigReal::getExpo10(y));
+    return result.multPow10(-BigReal::getExpo10(y),true);
   }
 
   if(BigReal::compareAbs(x,y) == 0) {
