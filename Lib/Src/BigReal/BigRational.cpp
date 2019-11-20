@@ -22,6 +22,9 @@ BigRational::BigRational(const BigInt &n, DigitPool *digitPool)
 : m_numerator(  n          , digitPool)
 , m_denominator(BigReal::_1, digitPool?digitPool:n.getDigitPool())
 {
+  if(!n._isfinite()) {
+    setToNonNormalFpClass(_fpclass(n));
+  }
 }
 BigRational::BigRational(int            n, DigitPool *digitPool)
 : m_numerator(  n          ,digitPool)
@@ -72,6 +75,9 @@ BigRational::BigRational(const Rational &r, DigitPool *digitPool)
 : m_numerator(  r.getNumerator()  , digitPool)
 , m_denominator(r.getDenominator(), digitPool)
 {
+  if(!isnormal(r)) {
+    setToNonNormalFpClass(_fpclass(r));
+  }
 }
 
 BigRational::BigRational(const String  &s, DigitPool *digitPool)
@@ -93,6 +99,25 @@ BigRational::BigRational(const wchar_t *s, DigitPool *digitPool)
 , m_denominator(digitPool)
 {
   init(s);
+}
+
+BigRational &BigRational::operator=(const BigInt &n) {
+  CHECKISMUTABLE(*this);
+  if(!isnormal(n)) {
+    return setToNonNormalFpClass(_fpclass(n));
+  }
+  m_denominator = getDigitPool()->_1();
+  m_numerator   = n;
+  return *this;
+}
+BigRational &BigRational::operator=(const Rational &r) {
+  CHECKISMUTABLE(*this);
+  if(!isnormal(r)) {
+    return setToNonNormalFpClass(_fpclass(r));
+  }
+  m_numerator   = r.getNumerator();
+  m_denominator = r.getDenominator();
+  return *this;
 }
 
 void BigRational::init(const String &s) {
@@ -293,5 +318,39 @@ BigInt BigRational::findGCD(const BigInt &a, const BigInt &b, DigitPool *pool) {
     default:
       return g * v;
     }
+  }
+}
+
+bool isInt(const BigRational &v, int      *n) {
+  return v._isinteger() && isInt(v.getNumerator(), n);
+}
+bool isUint(const BigRational &v, UINT     *n) {
+  return v._isinteger() && isUint(v.getNumerator(), n);
+}
+bool isInt64(const BigRational &v, INT64    *n) {
+  return v._isinteger() && isInt64(v.getNumerator(), n);
+}
+bool isUint64(const BigRational &v, UINT64   *n) {
+  return v._isinteger() && isUint64(v.getNumerator(), n);
+}
+bool isInt128(const BigRational &v, _int128  *n) {
+  return v._isinteger() && isInt128(v.getNumerator(), n);
+}
+bool isUint128(const BigRational &v, _uint128 *n) {
+  return v._isinteger() && isUint128(v.getNumerator(), n);
+}
+bool isRational(const BigRational &v, Rational *r) {
+  if(!v._isnormal()) {
+    if(r) *r = getNonNormalValue(_fpclass(v), Rational::_0);
+    return true;
+  } else if(r == NULL) {
+    return isInt64(v.getNumerator()) && isInt64(v.getDenominator());
+  } else { // r != NULL
+    INT64 n, d;
+    if(isInt64(v.getNumerator(), &n) && isInt64(v.getDenominator(), &d)) {
+      *r = Rational(n,d);
+      return true;
+    }
+    return false;
   }
 }

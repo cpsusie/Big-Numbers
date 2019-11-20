@@ -962,13 +962,6 @@ public:
     init(s, true);
     endInit();
   }
-  explicit inline BigReal(ByteInputStream &s, DigitPool *digitPool = NULL) : _INITPOOLTODEFAULTIFNULL() {
-    startInit();
-    initToZero();
-    load(s);
-    endInit();
-  }
-
   virtual ~BigReal() {
     releaseDigits();
     m_digitPool.decRefCount();
@@ -1397,10 +1390,9 @@ public:
   }
   ULONG hashCode() const;
 
-  void save(ByteOutputStream &s) const;
-  void load(ByteInputStream  &s);
-
+  // save/load BigReal in binary format. Packer can be streamed to ByteOutputStream and read from ByteInputStream
   friend Packer &operator<<(Packer &p, const BigReal &v);
+  // Call CHECKISMUTABLE
   friend Packer &operator>>(Packer &p,       BigReal &v);
 
   static UINT getMaxSplitLength();
@@ -1432,21 +1424,21 @@ public:
 
   // ------------------------------------------------------------------------------------------
 
-  friend long        getLong(    const BigReal &v);
-  friend ULONG       getUlong(   const BigReal &v);
-  friend inline int  getInt(     const BigReal &v) {
-    return (int)getLong(v);
+  friend long        getLong(    const BigReal &v, bool validate = true);
+  friend ULONG       getUlong(   const BigReal &v, bool validate = true);
+  friend inline int  getInt(     const BigReal &v, bool validate = true) {
+    return (int)getLong(v, validate);
   }
-  friend inline UINT getUint(    const BigReal &v) {
-    return (UINT)getUlong(v);
+  friend inline UINT getUint(    const BigReal &v, bool validate = true) {
+    return (UINT)getUlong(v, validate);
   }
-  friend INT64       getInt64(   const BigReal &v);
-  friend UINT64      getUint64(  const BigReal &v);
-  friend _int128     getInt128(  const BigReal &v);
-  friend _uint128    getUint128( const BigReal &v);
-  friend float       getFloat(   const BigReal &v);
-  friend double      getDouble(  const BigReal &v);
-  friend Double80    getDouble80(const BigReal &v);
+  friend INT64       getInt64(   const BigReal &v, bool validate = true);
+  friend UINT64      getUint64(  const BigReal &v, bool validate = true);
+  friend _int128     getInt128(  const BigReal &v, bool validate = true);
+  friend _uint128    getUint128( const BigReal &v, bool validate = true);
+  friend float       getFloat(   const BigReal &v, bool validate = true);
+  friend double      getDouble(  const BigReal &v, bool validate = true);
+  friend Double80    getDouble80(const BigReal &v, bool validate = true);
 
   // Comnon used constants allocated with ConstDigitPool (see below)
   static const ConstBigInt  _0;          // 0
@@ -1513,8 +1505,6 @@ public:
   explicit inline ConstBigReal(const char      *s) : BigReal(s, CONST_DIGITPOOL) {
   }
   explicit inline ConstBigReal(const wchar_t   *s) : BigReal(s, CONST_DIGITPOOL) {
-  }
-  explicit inline ConstBigReal(ByteInputStream &s) : BigReal(s, CONST_DIGITPOOL) {
   }
 };
 
@@ -1643,12 +1633,12 @@ inline BigReal  dmin(const BigReal &x, const BigReal &y) {
   return (x<=y) ? x : y;
 }
 
-int  isInt(    const BigReal &v);
-UINT isUint(   const BigReal &v);
-bool isInt64(  const BigReal &v);
-bool isUint64( const BigReal &v);
-bool isInt128( const BigReal &v);
-bool isUint128(const BigReal &v);
+bool isInt(    const BigReal &v, int      *n = NULL);
+bool isUint(   const BigReal &v, UINT     *n = NULL);
+bool isInt64(  const BigReal &v, INT64    *n = NULL);
+bool isUint64( const BigReal &v, UINT64   *n = NULL);
+bool isInt128( const BigReal &v, _int128  *n = NULL);
+bool isUint128(const BigReal &v, _uint128 *n = NULL);
 
 BigReal sqrt(      const BigReal &x,                   const BigReal &f, DigitPool *digitPool = NULL);
 BigReal exp(       const BigReal &x,                   const BigReal &f, DigitPool *digitPool = NULL);

@@ -5,7 +5,7 @@
 // in Pow2Cache::load/save and will cause deadlock if used
 Packer &operator<<(Packer &p, const BigReal &v) {
   if(!isnormal(v)) {
-    const float f = getFloat(v);
+    const float f = getFloat(v); // only non-normal floats can be used here (easy way of handling 0, nan, +/-inf)
     p << f;
   } else if(isInt64(v)) {
     p << getInt64(v);
@@ -16,6 +16,7 @@ Packer &operator<<(Packer &p, const BigReal &v) {
 }
 
 Packer &operator>>(Packer &p, BigReal &v) {
+  CHECKISMUTABLE(v);
   switch(p.peekType()) {
   case Packer::E_CHAR     :
   case Packer::E_SHORT    :
@@ -29,7 +30,10 @@ Packer &operator>>(Packer &p, BigReal &v) {
     break;
   case Packer::E_FLOAT    :
     { float f;
-      p >> f; // isnormal(f) == false
+      p >> f; 
+      if(isnormal(f)) {
+        throwException(_T("%s:E_FLOAT is normal (=%.8le), when reading BigReal"), __TFUNCTION__, f);
+      }
       v = f;
     }
     break;

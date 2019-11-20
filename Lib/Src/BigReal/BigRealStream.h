@@ -129,7 +129,7 @@ template <class OStreamType> OStreamType &putBigRational(OStreamType &out, const
   if(!isfinite(x)) {
     char tmp[100];
     out << StrStream::formatUndefined(tmp, _fpclass(x), (out.flags() & ios::uppercase) != 0);
-  } else if(x.isInteger()) {
+  } else if(x._isinteger()) {
     putBigInt(out, x.getNumerator(), separatorChar);
   } else {
     stringstream tmpstream;

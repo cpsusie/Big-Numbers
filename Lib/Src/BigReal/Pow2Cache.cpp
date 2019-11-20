@@ -1,9 +1,8 @@
 #include "pch.h"
-#include "Factory.h"
 #include <DebugLog.h>
 #include <ByteFile.h>
-
 #include <CompressFilter.h>
+#include "Factory.h"
 
 class Pow2ArgumentKey {
 public:

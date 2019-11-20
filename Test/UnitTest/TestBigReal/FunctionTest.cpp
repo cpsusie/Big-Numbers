@@ -1,5 +1,8 @@
 #include "stdafx.h"
+#include "resource.h"
 #include <Console.h>
+#include <ByteMemoryStream.h>
+#include <CompressFilter.h>
 #include <MathUtil.h>
 #include <Math/MRisprime.h>
 #include "FunctionTest.h"
@@ -380,6 +383,14 @@ void testQuot3(TestStatistic &stat) {
   stat.setEndMessageToOk();
 }
 
+static BigReal loadBigReal(int resId, DigitPool *pool) {
+  Packer p;
+  p.read(DecompressFilter(ByteMemoryInputStream(ByteArray().loadFromResource(resId, _T("BIGREAL")))));
+  BigReal result(pool);
+  p >> result;
+  return result;
+}
+
 void testPi(TestStatistic &stat) {
   DigitPool    *pool        = stat.getDigitPool();
 
@@ -426,6 +437,19 @@ void testPi(TestStatistic &stat) {
       THROWTESTERROR();
     } else {
       stat.update(error, tolerance);
+    }
+  }
+
+  { const BigReal           pi100K    = loadBigReal(IDR_BIGREAL_PI100K, pool);
+    const BigReal           tolerance = e(pool->_1(), -100000); // TODO
+    const BigReal           piTest    = pi(tolerance);
+    const FullFormatBigReal error     = fabs(piTest - pi100K);
+    if(error > tolerance) {
+      Console::setCursorPos(1, 5);
+      ERRLOG << _T("Error in pi100K") << endl
+             << _T("Tolerance    :") << tolerance << endl
+             << _T("Difference = fabs(pi(tolerance)-pi100K):") << nparam << error << endl;
+      THROWTESTERROR();
     }
   }
 }

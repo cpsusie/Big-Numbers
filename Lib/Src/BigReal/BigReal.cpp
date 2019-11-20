@@ -297,44 +297,71 @@ int BigReal::compareAbs(const BigReal &x, const BigReal &y) { // static
 
 #define CHECKISNORMAL(x)                                      \
 if(!x._isnormal()) {                                          \
-  if(x.isZero()) {                                            \
+  if(x.isZero() || !validate) {                               \
     return 0;                                                 \
   } else {                                                    \
     throwBigRealGetIntegralTypeUndefinedException(method, x); \
   }                                                           \
 }
 
-int  isInt(const BigReal &v) {
-  return isInteger(v) && (v >= BigReal::_i32_min) && (v <= BigReal::_i32_max);
+bool isInt(const BigReal &v, int *n) {
+  if(isInteger(v) && (v >= BigReal::_i32_min) && (v <= BigReal::_i32_max)) {
+    if(n) *n = getInt(v, false);
+    return true;
+  }
+  return false;
 }
-UINT isUint(const BigReal &v) {
-  return isInteger(v) && !v.isNegative() && (v <= BigReal::_ui32_max);
+bool isUint(const BigReal &v, UINT *n) {
+  if(isInteger(v) && !v.isNegative() && (v <= BigReal::_ui32_max)) {
+    if(n) *n = getUint(v, false);
+    return true;
+  }
+  return false;
 }
-bool isInt64(const BigReal &v) {
-  return isInteger(v) && (v >= BigReal::_i64_min) && (v <= BigReal::_i64_max);
+bool isInt64(const BigReal &v, INT64 *n) {
+  if(isInteger(v) && (v >= BigReal::_i64_min) && (v <= BigReal::_i64_max)) {
+    if(n) *n = getInt64(v, false);
+    return true;
+  }
+  return false;
 }
-bool isUint64(const BigReal &v) {
-  return isInteger(v) && !v.isNegative() && (v <= BigReal::_ui64_max);
+bool isUint64(const BigReal &v, UINT64 *n) {
+  if(isInteger(v) && !v.isNegative() && (v <= BigReal::_ui64_max)) {
+    if(n) *n = getUint64(v, false);
+    return true;
+  }
+  return false;
 }
-bool isInt128(const BigReal &v) {
-  return isInteger(v) && (v >= BigReal::_i128_min) && (v <= BigReal::_i128_max);
+bool isInt128(const BigReal &v, _int128 *n) {
+  if(isInteger(v) && (v >= BigReal::_i128_min) && (v <= BigReal::_i128_max)) {
+    if(n) *n = getInt128(v, false);
+    return true;
+  }
+  return false;
 }
-bool isUint128(const BigReal &v) {
-  return isInteger(v) && !v.isNegative() && (v <= BigReal::_ui128_max);
+bool isUint128(const BigReal &v, _uint128 *n) {
+  if(isInteger(v) && !v.isNegative() && (v <= BigReal::_ui128_max)) {
+    if(n) *n = getUint128(v, false);
+    return true;
+  }
+  return false;
 }
 
-long getLong(const BigReal &v) {
+#define MAXINT2MAXEXPO(imax) ((BRExpoType)((imax)/(BIGREALBASE-1) + 1))
+
+long getLong(const BigReal &v, bool validate) {
   DEFINEMETHODNAME;
   CHECKISNORMAL(v)
-  if(v > BigReal::_i32_max) {
-    throwBigRealGetIntegralTypeOverflowException(method, v, toString(BigReal::_i32_max));
+  if(validate) {
+    if(v > BigReal::_i32_max) {
+      throwBigRealGetIntegralTypeOverflowException(method, v, toString(BigReal::_i32_max));
+    }
+    if(v < BigReal::_i32_min) {
+      throwBigRealGetIntegralTypeUnderflowException(method, v, toString(BigReal::_i32_min));
+    }
   }
-  if(v < BigReal::_i32_min) {
-    throwBigRealGetIntegralTypeUnderflowException(method, v, toString(BigReal::_i32_min));
-  }
-
   intptr_t   result = 0;
-  BRExpoType i      = v.m_expo;
+  BRExpoType i      = min(v.m_expo, MAXINT2MAXEXPO(_I32_MAX));
   for(const Digit *p = v.m_first; p && (i-- >= 0); p = p->next) {
     result = result * BIGREALBASE + p->n;
   }
@@ -343,18 +370,19 @@ long getLong(const BigReal &v) {
   return (long)(v.isNegative() ? -result : result);
 }
 
-ULONG getUlong(const BigReal &v) {
+ULONG getUlong(const BigReal &v, bool validate) {
   DEFINEMETHODNAME;
   CHECKISNORMAL(v)
-  if(v.isNegative()) {
-    throwBigRealGetIntegralTypeUnderflowException(method, v, _T("0"));
+  if(validate) {
+    if(v.isNegative()) {
+      throwBigRealGetIntegralTypeUnderflowException(method, v, _T("0"));
+    }
+    if(v > BigReal::_ui32_max) {
+      throwBigRealGetIntegralTypeOverflowException(method, v, toString(BigReal::_ui32_max));
+    }
   }
-  if(v > BigReal::_ui32_max) {
-    throwBigRealGetIntegralTypeOverflowException(method, v, toString(BigReal::_ui32_max));
-  }
-
   size_t     result = 0;
-  BRExpoType i      = v.m_expo;
+  BRExpoType i      = min(v.m_expo, MAXINT2MAXEXPO(_UI32_MAX));
   for(const Digit *p = v.m_first; p && (i-- >= 0); p = p->next) {
     result = result * BIGREALBASE + p->n;
   }
@@ -363,18 +391,19 @@ ULONG getUlong(const BigReal &v) {
   return (ULONG)result;
 }
 
-INT64 getInt64(const BigReal &v) {
+INT64 getInt64(const BigReal &v, bool validate) {
   DEFINEMETHODNAME;
   CHECKISNORMAL(v)
-  if(v > BigReal::_i64_max) {
-    throwBigRealGetIntegralTypeOverflowException(method, v, toString(BigReal::_i64_max));
+  if(validate) {
+    if(v > BigReal::_i64_max) {
+      throwBigRealGetIntegralTypeOverflowException(method, v, toString(BigReal::_i64_max));
+    }
+    if(v < BigReal::_i64_min) {
+      throwBigRealGetIntegralTypeUnderflowException(method, v, toString(BigReal::_i64_min));
+    }
   }
-  if(v < BigReal::_i64_min) {
-    throwBigRealGetIntegralTypeUnderflowException(method, v, toString(BigReal::_i64_min));
-  }
-
   INT64      result = 0;
-  BRExpoType i      = v.m_expo;
+  BRExpoType i      = min(v.m_expo, MAXINT2MAXEXPO(_I64_MAX));
   for(const Digit *p = v.m_first; p && (i-- >= 0); p = p->next) {
     result = result * BIGREALBASE + p->n;
   }
@@ -382,18 +411,19 @@ INT64 getInt64(const BigReal &v) {
   return v.isNegative() ? -result : result;
 }
 
-UINT64 getUint64(const BigReal &v) {
+UINT64 getUint64(const BigReal &v, bool validate) {
   DEFINEMETHODNAME;
   CHECKISNORMAL(v)
-  if(v.isNegative()) {
-    throwBigRealGetIntegralTypeUnderflowException(method, v, _T("0"));
+  if(validate) {
+    if(v.isNegative()) {
+      throwBigRealGetIntegralTypeUnderflowException(method, v, _T("0"));
+    }
+    if(v > BigReal::_ui64_max) {
+      throwBigRealGetIntegralTypeOverflowException(method, v, toString(BigReal::_ui64_max));
+    }
   }
-  if(v > BigReal::_ui64_max) {
-    throwBigRealGetIntegralTypeOverflowException(method, v, toString(BigReal::_ui64_max));
-  }
-
   UINT64     result = 0;
-  BRExpoType i      = v.m_expo;
+  BRExpoType i      = min(v.m_expo, MAXINT2MAXEXPO(_UI64_MAX));
   for(const Digit *p = v.m_first; p && (i-- >= 0); p = p->next) {
     result = result * BIGREALBASE + p->n;
   }
@@ -401,18 +431,19 @@ UINT64 getUint64(const BigReal &v) {
   return result;
 }
 
-_int128 getInt128(const BigReal &v) {
+_int128 getInt128(const BigReal &v, bool validate) {
   DEFINEMETHODNAME;
   CHECKISNORMAL(v)
-  if(v > BigReal::_i128_max) {
-    throwBigRealGetIntegralTypeOverflowException(method, v, toString(BigReal::_i128_max));
+  if(validate) {
+    if(v > BigReal::_i128_max) {
+      throwBigRealGetIntegralTypeOverflowException(method, v, toString(BigReal::_i128_max));
+    }
+    if(v < BigReal::_i128_min) {
+      throwBigRealGetIntegralTypeUnderflowException(method, v, toString(BigReal::_i128_min));
+    }
   }
-  if(v < BigReal::_i128_min) {
-    throwBigRealGetIntegralTypeUnderflowException(method, v, toString(BigReal::_i128_min));
-  }
-
   _int128    result = 0;
-  BRExpoType i      = v.m_expo;
+  BRExpoType i      = min(v.m_expo, MAXINT2MAXEXPO(_I128_MAX));
   for(const Digit *p = v.m_first; p && (i-- >= 0); p = p->next) {
     result = result * BIGREALBASE + p->n;
   }
@@ -420,18 +451,19 @@ _int128 getInt128(const BigReal &v) {
   return v.isNegative() ? -result : result;
 }
 
-_uint128 getUint128(const BigReal &v) {
+_uint128 getUint128(const BigReal &v, bool validate) {
   DEFINEMETHODNAME;
   CHECKISNORMAL(v)
-  if(v.isNegative()) {
-    throwBigRealGetIntegralTypeUnderflowException(method, v, _T("0"));
+  if(validate) {
+    if(v.isNegative()) {
+      throwBigRealGetIntegralTypeUnderflowException(method, v, _T("0"));
+    }
+    if(v > BigReal::_ui128_max) {
+      throwBigRealGetIntegralTypeOverflowException(method, v, toString(BigReal::_ui128_max));
+    }
   }
-  if(v > BigReal::_ui128_max) {
-    throwBigRealGetIntegralTypeOverflowException(method, v, toString(BigReal::_ui128_max));
-  }
-
   _uint128   result = 0;
-  BRExpoType i      = v.m_expo;
+  BRExpoType i      = min(v.m_expo, MAXINT2MAXEXPO(_UI128_MAX));
   for(const Digit *p = v.m_first; p && (i-- >= 0); p = p->next) {
     result = result * BIGREALBASE + p->n;
   }

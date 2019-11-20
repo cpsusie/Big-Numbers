@@ -43,16 +43,18 @@ bool isDouble(const BigReal &v, double *dbl /*=NULL*/) {
   return ret;
 }
 
-double getDouble(const BigReal &x) {
+double getDouble(const BigReal &x, bool validate) {
   DEFINEMETHODNAME;
   if(!isnormal(x)) {
     return getNonNormalValue(_fpclass(x), 0.0);
   }
-  if(BigReal::compareAbs(x,BigReal::_dbl_max) > 0) {
-    throwBigRealGetIntegralTypeOverflowException(method, x, toString(BigReal::_dbl_max));
-  }
-  if(BigReal::compareAbs(x,BigReal::_dbl_min) < 0) {
-    throwBigRealGetIntegralTypeUnderflowException(method, x, toString(BigReal::_dbl_min));
+  if(validate) {
+    if(BigReal::compareAbs(x,BigReal::_dbl_max) > 0) {
+      throwBigRealGetIntegralTypeOverflowException(method, x, toString(BigReal::_dbl_max));
+    }
+    if(BigReal::compareAbs(x,BigReal::_dbl_min) < 0) {
+      throwBigRealGetIntegralTypeUnderflowException(method, x, toString(BigReal::_dbl_min));
+    }
   }
   return x.getDoubleNoLimitCheck();
 }

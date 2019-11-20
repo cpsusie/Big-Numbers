@@ -41,17 +41,19 @@ bool isFloat(const BigReal &v, float *flt /*=NULL*/) {
   return ret;
 }
 
-float getFloat(const BigReal &x) {
+float getFloat(const BigReal &x, bool validate) {
   DEFINEMETHODNAME;
 
   if(!isnormal(x)) {
     return getNonNormalValue(_fpclass(x), 0.0f);
   }
-  if(BigReal::compareAbs(x,BigReal::_flt_max) > 0) {
-    throwBigRealGetIntegralTypeOverflowException(method, x, toString(BigReal::_flt_max));
-  }
-  if(BigReal::compareAbs(x,BigReal::_flt_min) < 0) {
-    throwBigRealGetIntegralTypeUnderflowException(method, x, toString(BigReal::_flt_min));
+  if(validate) {
+    if(BigReal::compareAbs(x,BigReal::_flt_max) > 0) {
+      throwBigRealGetIntegralTypeOverflowException(method, x, toString(BigReal::_flt_max));
+    }
+    if(BigReal::compareAbs(x,BigReal::_flt_min) < 0) {
+      throwBigRealGetIntegralTypeUnderflowException(method, x, toString(BigReal::_flt_min));
+    }
   }
   return x.getFloatNoLimitCheck();
 }

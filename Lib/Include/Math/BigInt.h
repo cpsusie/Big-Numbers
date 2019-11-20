@@ -222,6 +222,11 @@ inline bool isunordered(const BigInt &x, const BigInt &y) {
   return x._isnan() || y._isnan();
 }
 
+// save/load BigInt in binary format. Packer can be streamed to ByteOutputStream and read from ByteInputStream
+Packer &operator<<(Packer &p, const BigInt &v);
+// Call CHECKISMUTABLE
+Packer &operator>>(Packer &p, BigInt &v);
+
 
 std::istream     &operator>>(std::istream  &in ,       BigInt            &x);
 std::ostream     &operator<<(std::ostream  &out, const BigInt            &x);

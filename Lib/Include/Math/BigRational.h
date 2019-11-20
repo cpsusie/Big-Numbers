@@ -52,6 +52,9 @@ public:
   explicit BigRational(const char    *s                                   , DigitPool *digitPool = NULL);
   explicit BigRational(const wchar_t *s                                   , DigitPool *digitPool = NULL);
 
+  inline BigRational &operator=(const BigInt   &n);
+  inline BigRational &operator=(const Rational &r);
+
   friend BigRational operator+(const BigRational &l, const BigRational &r);
   friend BigRational operator-(const BigRational &l, const BigRational &r);
   friend BigRational operator-(const BigRational &r);
@@ -107,7 +110,7 @@ public:
   inline bool isNegative() const {
     return m_numerator.isNegative();
   }
-  inline bool isInteger() const {
+  inline bool _isinteger() const {
     return m_denominator == BigReal::_1;
   }
   BigRational &setToZero();
@@ -248,6 +251,19 @@ inline bool operator==(const BigRational &x, const BigRational &y) {
 inline bool operator!=(const BigRational &x, const BigRational &y) {
   return !isunordered(x, y) && ((x.getNumerator() != y.getNumerator()) || (x.getDenominator() != y.getDenominator()));
 }
+
+bool isInt(     const BigRational &v, int      *n = NULL);
+bool isUint(    const BigRational &v, UINT     *n = NULL);
+bool isInt64(   const BigRational &v, INT64    *n = NULL);
+bool isUint64(  const BigRational &v, UINT64   *n = NULL);
+bool isInt128(  const BigRational &v, _int128  *n = NULL);
+bool isUint128( const BigRational &v, _uint128 *n = NULL);
+bool isRational(const BigRational &v, Rational *r = NULL);
+
+// save/load BigRational in binary format. Packer can be streamed to ByteOutputStream and read from ByteInputStream
+Packer &operator<<(Packer &p, const BigRational &r);
+// Call CHECKISMUTABLE
+Packer &operator>>(Packer &p, BigRational &r);
 
 std::istream     &operator>>(std::istream  &in ,       BigRational       &r);
 std::ostream     &operator<<(std::ostream  &out, const BigRational       &r);
