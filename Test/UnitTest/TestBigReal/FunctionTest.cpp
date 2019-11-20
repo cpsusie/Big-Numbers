@@ -441,7 +441,7 @@ void testPi(TestStatistic &stat) {
   }
 
   { const BigReal           pi100K    = loadBigReal(IDR_BIGREAL_PI100K, pool);
-    const BigReal           tolerance = e(pool->_1(), -100000); // TODO
+    const BigReal           tolerance = e(pool->_1(), -100000);
     const BigReal           piTest    = pi(tolerance);
     const FullFormatBigReal error     = fabs(piTest - pi100K);
     if(error > tolerance) {

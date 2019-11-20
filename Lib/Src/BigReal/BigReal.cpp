@@ -347,7 +347,18 @@ bool isUint128(const BigReal &v, _uint128 *n) {
   return false;
 }
 
-#define MAXINT2MAXEXPO(imax) ((BRExpoType)((imax)/(BIGREALBASE-1) + 1))
+#define ITYPE2EXPO(type,s) max((((int)sizeof(type)*8-(s))*301/1000+1) / (BIGREAL_LOG10BASE),2)
+
+// s=0 if unsigned type, 1 for signed
+// Calculate max(ceil(log10(type_max))/log10(base)),2)
+// log10(type_max) = log2(type_max)*log10(2)
+// LOG10BASE        2   4   6   8  18
+// int      (s=1):  5   2   2   2   2
+// UINT     (s=0):  5   2   2   2   2
+// INT64    (s=1):  9   4   3   2   2
+// UINT64   (s=0): 10   5   3   2   2
+// _int128  (s=1): 19   9   6   4   2
+// _uint128 (s=0): 19   9   6   4   2
 
 long getLong(const BigReal &v, bool validate) {
   DEFINEMETHODNAME;
@@ -361,7 +372,7 @@ long getLong(const BigReal &v, bool validate) {
     }
   }
   intptr_t   result = 0;
-  BRExpoType i      = min(v.m_expo, MAXINT2MAXEXPO(_I32_MAX));
+  BRExpoType i      = min(v.m_expo, ITYPE2EXPO(long,1));
   for(const Digit *p = v.m_first; p && (i-- >= 0); p = p->next) {
     result = result * BIGREALBASE + p->n;
   }
@@ -382,7 +393,7 @@ ULONG getUlong(const BigReal &v, bool validate) {
     }
   }
   size_t     result = 0;
-  BRExpoType i      = min(v.m_expo, MAXINT2MAXEXPO(_UI32_MAX));
+  BRExpoType i      = min(v.m_expo, ITYPE2EXPO(long,0));
   for(const Digit *p = v.m_first; p && (i-- >= 0); p = p->next) {
     result = result * BIGREALBASE + p->n;
   }
@@ -403,7 +414,7 @@ INT64 getInt64(const BigReal &v, bool validate) {
     }
   }
   INT64      result = 0;
-  BRExpoType i      = min(v.m_expo, MAXINT2MAXEXPO(_I64_MAX));
+  BRExpoType i      = min(v.m_expo, ITYPE2EXPO(INT64,1));
   for(const Digit *p = v.m_first; p && (i-- >= 0); p = p->next) {
     result = result * BIGREALBASE + p->n;
   }
@@ -423,7 +434,7 @@ UINT64 getUint64(const BigReal &v, bool validate) {
     }
   }
   UINT64     result = 0;
-  BRExpoType i      = min(v.m_expo, MAXINT2MAXEXPO(_UI64_MAX));
+  BRExpoType i      = min(v.m_expo, ITYPE2EXPO(INT64, 0));
   for(const Digit *p = v.m_first; p && (i-- >= 0); p = p->next) {
     result = result * BIGREALBASE + p->n;
   }
@@ -443,7 +454,7 @@ _int128 getInt128(const BigReal &v, bool validate) {
     }
   }
   _int128    result = 0;
-  BRExpoType i      = min(v.m_expo, MAXINT2MAXEXPO(_I128_MAX));
+  BRExpoType i      = min(v.m_expo, ITYPE2EXPO(_int128, 1));
   for(const Digit *p = v.m_first; p && (i-- >= 0); p = p->next) {
     result = result * BIGREALBASE + p->n;
   }
@@ -463,7 +474,7 @@ _uint128 getUint128(const BigReal &v, bool validate) {
     }
   }
   _uint128   result = 0;
-  BRExpoType i      = min(v.m_expo, MAXINT2MAXEXPO(_UI128_MAX));
+  BRExpoType i      = min(v.m_expo, ITYPE2EXPO(_int128, 0));
   for(const Digit *p = v.m_first; p && (i-- >= 0); p = p->next) {
     result = result * BIGREALBASE + p->n;
   }
