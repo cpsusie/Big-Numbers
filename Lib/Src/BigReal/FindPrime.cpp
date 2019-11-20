@@ -276,7 +276,6 @@ Array<BigInt> PRMonitor::getResult() const {
 }
 
 Array<BigInt> findRandomPrimes(int count, int digitCount, int threadCount, DigitPool *pool, MillerRabinHandler *handler) {
-  redirectDebugLog();
   if(pool == NULL) pool = DEFAULT_DIGITPOOL;
   PRMonitor m(digitCount, threadCount, pool, handler);
   m.startJobs();
