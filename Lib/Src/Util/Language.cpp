@@ -48,9 +48,9 @@ const Array<Language> &Language::getSystemLanguages() { // static
 
       EnumSystemLocales(enumLocalsCallback,LCID_INSTALLED);
     }
-    gate.signal();
+    gate.notify();
   } catch(...) {
-    gate.signal();
+    gate.notify();
     throw;
   }
 
@@ -74,9 +74,9 @@ const Array<Language> &Language::getSupportedLanguages() { // static
         result.add(language);
       }
     }
-    gate.signal();
+    gate.notify();
   } catch(...) {
-    gate.signal();
+    gate.notify();
     throw;
   }
   return result;

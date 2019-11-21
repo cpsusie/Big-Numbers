@@ -32,5 +32,5 @@ UINT BigRealThread::run() {
 void BigRealThread::execute(Runnable &job, SynchronizedStringQueue &resultQueue) {
   m_job         = &job;
   m_resultQueue = &resultQueue;
-  m_execute.signal();
+  m_execute.notify();
 }

@@ -168,7 +168,7 @@ public:
     releaseOrbitPoints();
   }
   void wakeUp() {
-    m_wakeup.signal();
+    m_wakeup.notify();
   }
   // return number of pixels done by this thread
   inline size_t getDoneCount() const {

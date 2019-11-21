@@ -12,9 +12,9 @@ public:
   Semaphore(int initialCount=1, int maxWait=1000000);
   ~Semaphore();
   bool wait(int milliseconds=INFINITE); // return false on timeout, true if signaled, throws Exception on error
-  void signal();
+  void notify();
   void wait(  const TCHAR *name, const TCHAR *file, int line);
-  void signal(const TCHAR *name, const TCHAR *file, int line);
+  void notify(const TCHAR *name, const TCHAR *file, int line);
   HANDLE getHandle() const {
     return m_sem;
   }
@@ -23,11 +23,11 @@ public:
 #ifdef TRACESEMAPHORE
 
 #define WAIT(  sem) sem.wait(  _T(#sem), __TFILE__, __LINE__)
-#define SIGNAL(sem) sem.signal(_T(#sem), __TFILE__, __LINE__)
+#define NOTIFY(sem) sem.NOTIFY(_T(#sem), __TFILE__, __LINE__)
 
 #else
 
 #define WAIT(  sem) sem.wait()
-#define SIGNAL(sem) sem.signal()
+#define NOTIFY(sem) sem.notify()
 
 #endif // TRACESEMAPHORE

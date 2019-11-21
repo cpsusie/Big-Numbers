@@ -9,7 +9,7 @@ ThreadPool::ThreadPool() {
   m_processorCount = getProcessorCount();
   m_activeThreads  = m_maxActiveThreads = 1;
 
-  m_gate.signal();
+  m_gate.notify();
 }
 
 ThreadPool::~ThreadPool() {
@@ -17,7 +17,7 @@ ThreadPool::~ThreadPool() {
 
   m_queuePool.deleteAll();
 
-  m_gate.signal();
+  m_gate.notify();
 }
 
 void ThreadPool::setPriority(int priority) { // static
@@ -28,10 +28,10 @@ void ThreadPool::setPriority(int priority) { // static
       instance.m_threadPool.setPriority(priority);
     }
   } catch(...) {
-    instance.m_gate.signal();
+    instance.m_gate.notify();
     throw;
   }
-  instance.m_gate.signal();
+  instance.m_gate.notify();
 }
 
 void ThreadPool::setPriorityBoost(bool disablePriorityBoost) { // static
@@ -42,17 +42,17 @@ void ThreadPool::setPriorityBoost(bool disablePriorityBoost) { // static
       instance.m_threadPool.setPriorityBoost(disablePriorityBoost);
     }
   } catch(...) {
-    instance.m_gate.signal();
+    instance.m_gate.notify();
     throw;
   }
-  instance.m_gate.signal();
+  instance.m_gate.notify();
 }
 
 void ThreadPool::executeNoWait(Runnable &job) {
   ThreadPool &instance = getInstance();
   instance.m_gate.wait();  // get exclusive access to ThreadPool
   instance.m_threadPool.fetchResource()->execute(job, NULL);
-  instance.m_gate.signal(); // open gate for other threads
+  instance.m_gate.notify(); // open gate for other threads
 }
 
  // execute all jobs without blocking. Uncaught exceptions are lost.
@@ -62,7 +62,7 @@ void ThreadPool::executeInParallelNoWait(RunnableArray &jobs) { // static
   for(size_t i = 0; i < jobs.size(); i++) {
     instance.m_threadPool.fetchResource()->execute(*jobs[i], NULL);
   }
-  instance.m_gate.signal(); // open gate for other threads
+  instance.m_gate.notify(); // open gate for other threads
 }
 
 // Blocks until all jobs are done. If any of the jobs throws an exception
@@ -83,17 +83,17 @@ void ThreadPool::executeInParallel(RunnableArray &jobs) { // static
   for(size_t i = 0; i < jobs.size(); i++) {
     threadArray[i]->execute(*jobs[i], queue);
   }
-  instance.m_gate.signal(); // open gate for other threads
+  instance.m_gate.notify(); // open gate for other threads
 
   try {
     queue->waitForResults(jobs.size());
     instance.m_gate.wait();
     instance.m_queuePool.releaseResource(queue);
-    instance.m_gate.signal();
+    instance.m_gate.notify();
   } catch(...) {
     instance.m_gate.wait();
     instance.m_queuePool.releaseResource(queue);
-    instance.m_gate.signal();
+    instance.m_gate.notify();
     throw;
   }
 }
@@ -102,7 +102,7 @@ void ThreadPool::releaseThread(ThreadPoolThread *thread) { // static
   ThreadPool &instance = getInstance();
   instance.m_gate.wait();
   instance.m_threadPool.releaseResource(thread);
-  instance.m_gate.signal();
+  instance.m_gate.notify();
 }
 
 String ThreadPool::toString() { // static
@@ -114,7 +114,7 @@ String ThreadPool::toString() { // static
                  ,instance.m_threadPool.toString().cstr()
                  ,instance.m_queuePool.toString().cstr()
                  );
-  instance.m_gate.signal();
+  instance.m_gate.notify();
   return result;
 }
 
@@ -143,7 +143,7 @@ PoolLoggingThread::PoolLoggingThread() : m_start(0) {
 void PoolLoggingThread::startLogging() {
   if(m_stopped) {
     m_stopped = false;
-    m_start.signal();
+    m_start.notify();
   }
 }
 

@@ -241,7 +241,7 @@ private:
       inCriticalSection = true;
       mesh = amf.allocateMesh(VertexType::FVF_Flags, faceCount, vertexCount, getMeshFlags());
       inCriticalSection = false;
-      meshCreatorGate.signal();
+      meshCreatorGate.notify();
       VertexType *vertices;
       IndexType  *indexArray;
       V(mesh->LockVertexBuffer( 0, (void**)&vertices  ));
@@ -296,7 +296,7 @@ private:
         SAFERELEASE(mesh);
       }
       if(inCriticalSection) {
-        meshCreatorGate.signal();
+        meshCreatorGate.notify();
       }
       throw;
     }
@@ -320,7 +320,7 @@ private:
       inCriticalSection = true;
       mesh = amf.allocateMesh(VertexType::FVF_Flags, (DWORD)faceCount, (DWORD)vertexCount, getMeshFlags());
       inCriticalSection = false;
-      meshCreatorGate.signal();
+      meshCreatorGate.notify();
 
       VertexType *vertices;
       IndexType  *indexArray;
@@ -376,7 +376,7 @@ private:
         SAFERELEASE(mesh);
       }
       if(inCriticalSection) {
-        meshCreatorGate.signal();
+        meshCreatorGate.notify();
       }
       throw;
     }

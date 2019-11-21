@@ -259,7 +259,7 @@ PoolLoggingThread::PoolLoggingThread() : m_start(0) {
 void PoolLoggingThread::startLogging() {
   if(m_stopped) {
     m_stopped = false;
-    m_start.signal();
+    m_start.notify();
   }
 }
 

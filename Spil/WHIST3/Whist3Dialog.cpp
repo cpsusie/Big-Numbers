@@ -440,7 +440,7 @@ void CWhist3Dialog::OnAskPlayAgain() {
   if(MessageBox( _T("Vil du spille igen"),EMPTYSTRING, MB_YESNO + MB_ICONQUESTION) != IDYES) {
     exit(0);
   }
-  m_sync.signal();
+  m_sync.notify();
 }
 
 void CWhist3Dialog::initTablePos(int myId) {
@@ -473,17 +473,17 @@ void CWhist3Dialog::OnDecideGame() {
   DecideGameDialog dlg(m_player->getPlayerId(), m_player->getPlayerList(), m_player->getGameHistory());
   dlg.DoModal();
   m_tmpDescription = dlg.getGameDescription();
-  m_sync.signal();
+  m_sync.notify();
 }
 
 void CWhist3Dialog::OnSubstituteOk() {
   switch(m_player->getState()) {
   case STATE_SELECT_CARDS:
     m_tmpCardSet = m_player->getMarkedCards();
-    m_sync.signal();
+    m_sync.notify();
     break;
   case STATE_ACCEPT_CARDS:
-    m_sync.signal();
+    m_sync.notify();
     break;
   }
 }
@@ -516,7 +516,7 @@ void CWhist3Dialog::playCard(const CPoint &point) {
   if(!m_player->validatePlayedCard(m_tmpCardIndex,msg)) {
     myMessage(_T("%s"),msg.cstr());
   } else {
-    m_sync.signal();
+    m_sync.notify();
   }
 }
 
@@ -530,7 +530,7 @@ void CWhist3Dialog::saveScore() {
 
 void CWhist3Dialog::OnEndGame() {
   OnGameSummary();
-  m_sync.signal();
+  m_sync.notify();
 }
 
 void CWhist3Dialog::OnGameSummary() {

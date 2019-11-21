@@ -91,7 +91,7 @@ bool SortPanelWnd::setThreadState(SortThreadState newState) {
   switch(m_threadState) {
   case STATE_PAUSED :
     if(newState == STATE_RUNNING) {
-      m_resume.signal();
+      m_resume.notify();
     }
     break;
   }

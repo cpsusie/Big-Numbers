@@ -38,7 +38,7 @@ BOOL CGameAnalyzeThread::InitInstance() {
   m_pMainWnd    = &dlg;
   m_pActiveWnd  = &dlg;
 
-  m_gotParameters.signal();
+  m_gotParameters.notify();
   dlg.DoModal();
   return TRUE;
 }

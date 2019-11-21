@@ -49,10 +49,10 @@ private:
   BitSet8             m_stateFlags;
 
   void         setFlag(DIALOGFLAG flag) {
-    m_gate.wait(); m_stateFlags.add(flag); m_gate.signal();
+    m_gate.wait(); m_stateFlags.add(flag); m_gate.notify();
   }
   void         clrFlag(DIALOGFLAG flag) {
-    m_gate.wait(); m_stateFlags.remove(flag); m_gate.signal();
+    m_gate.wait(); m_stateFlags.remove(flag); m_gate.notify();
   }
   void         setFlag(DIALOGFLAG flag, bool value) {
     if(value) setFlag(flag); else clrFlag(flag);

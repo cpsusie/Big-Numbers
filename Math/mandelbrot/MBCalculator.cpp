@@ -46,7 +46,7 @@ void MBCalculator::allocateOrbitPoints() {
 void MBCalculator::releaseOrbitPoints() {
   m_gate.wait();
   SAFEDELETEARRAY(m_orbitPoints);
-  m_gate.signal();
+  m_gate.notify();
 }
 
 CellCountAccessor *MBCalculator::handlePending() {
@@ -74,7 +74,7 @@ bool MBCalculator::enterFollowBlackEdge(const CPoint &p, CellCountAccessor *cca)
   s_followBlackEdgeGate.wait();
   m_pool.setState(m_id, CALC_RUNNING  );
   if(!cca->isEmptyCell(p)) {
-    s_followBlackEdgeGate.signal();
+    s_followBlackEdgeGate.notify();
     return false;
   }
   PUSHPHASE("FOLLOWEDGE");
@@ -83,7 +83,7 @@ bool MBCalculator::enterFollowBlackEdge(const CPoint &p, CellCountAccessor *cca)
 
 void MBCalculator::leaveFollowBlackEdge() {
   POPPHASE();
-  s_followBlackEdgeGate.signal();
+  s_followBlackEdgeGate.notify();
 }
 
 #ifdef SAVE_CALCULATORINFO

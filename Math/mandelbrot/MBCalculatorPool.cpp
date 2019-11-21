@@ -23,7 +23,7 @@ CalculatorPool::CalculatorPool(MBContainer &mbc) : m_mbc(mbc) {
 CalculatorPool::~CalculatorPool() {
   m_gate.wait();
   killAllInternal();
-  m_gate.signal();
+  m_gate.notify();
 }
 
 void CalculatorPool::startCalculators(UINT count) {
@@ -57,13 +57,13 @@ void CalculatorPool::startCalculators(UINT count) {
       (*this)[i]->start();
     }
   }
-  m_gate.signal();
+  m_gate.notify();
 }
 
 void CalculatorPool::killAll() {
   m_gate.wait();
   killAllInternal();
-  m_gate.signal();
+  m_gate.notify();
 }
 
 void CalculatorPool::killAllInternal() {
@@ -99,7 +99,7 @@ void CalculatorPool::killAllInternal() {
 void CalculatorPool::waitUntilNoRunning() {
   m_gate.wait();
   waitUntilNoRunningInternal();
-  m_gate.signal();
+  m_gate.notify();
 }
 
 void CalculatorPool::waitUntilNoRunningInternal() {
@@ -108,7 +108,7 @@ void CalculatorPool::waitUntilNoRunningInternal() {
     if(m_calculatorsInState[CALC_RUNNING].isEmpty()) {
       break;
     }
-    m_gate.signal();
+    m_gate.notify();
     Sleep(20);
     m_gate.wait();
   }
@@ -117,7 +117,7 @@ void CalculatorPool::waitUntilNoRunningInternal() {
 void CalculatorPool::waitUntilAllTerminated() {
   m_gate.wait();
   waitUntilAllTerminatedInternal();
-  m_gate.signal();
+  m_gate.notify();
 }
 
 void CalculatorPool::waitUntilAllTerminatedInternal() {
@@ -126,7 +126,7 @@ void CalculatorPool::waitUntilAllTerminatedInternal() {
     if(m_calculatorsInState[CALC_TERMINATED] == m_existing) {
       break;
     }
-    m_gate.signal();
+    m_gate.notify();
     Sleep(20);
     m_gate.wait();
   }
@@ -165,7 +165,7 @@ size_t CalculatorPool::getDoneCount() const {
   for(UINT i = 0; i < size(); i++) {
     sum += (*this)[i]->getDoneCount();
   }
-  m_gate.signal();
+  m_gate.notify();
   return sum;
 }
 
@@ -175,34 +175,34 @@ double CalculatorPool::getTimeUsed() const {
   for(UINT i = 0; i < size(); i++) {
     sum += (*this)[i]->getTimeUsed();
   }
-  m_gate.signal();
+  m_gate.notify();
   return sum;
 }
 
 void CalculatorPool::suspendCalculation() {
   m_gate.wait();
   m_pendingFlags |= m_suspendAllPendingFlags;
-  m_gate.signal();
+  m_gate.notify();
 }
 
 void CalculatorPool::resumeCalculation() {
   m_gate.wait();
   m_pendingFlags &= ~m_suspendAllPendingFlags;
   wakeAllInternal();
-  m_gate.signal();
+  m_gate.notify();
 }
 
 CalculatorState CalculatorPool::getState(UINT id) {
   m_gate.wait();
   const CalculatorState state = getStateInternal(id);
-  m_gate.signal();
+  m_gate.notify();
   return state;
 }
 
 void CalculatorPool::setState(UINT id, CalculatorState state) {
   m_gate.wait();
   setStateInternal(id, state);
-  m_gate.signal();
+  m_gate.notify();
 }
 
 CalculatorState CalculatorPool::getStateInternal(UINT id) const {
@@ -286,7 +286,7 @@ String CalculatorPool::getStatesString() const {
   for(UINT i = 0; i < size(); i++) {
     result += format(_T("(%u):%s "), i, getStateName(getStateInternal(i)));
   }
-  m_gate.signal();
+  m_gate.notify();
   return result;
 }
 
@@ -294,7 +294,7 @@ String CalculatorPool::getStatesString() const {
 void CalculatorPool::addCalculatorInfo(const CalculatorInfo &info) {
   m_gate.wait();
   m_infoArray.add(info);
-  m_gate.signal();
+  m_gate.notify();
 }
 
 const CalculatorInfo *CalculatorPool::findInfo(const CPoint &p) const {
@@ -306,7 +306,7 @@ const CalculatorInfo *CalculatorPool::findInfo(const CPoint &p) const {
       break;
     }
   }
-  m_gate.signal();
+  m_gate.notify();
   return result;
 }
 

@@ -41,7 +41,7 @@ CompareJob::~CompareJob() {
 String CompareJob::getProgressMessage(UINT index) {
   m_gate.wait();
   String result = m_progressMessage;
-  m_gate.signal();
+  m_gate.notify();
   return result;
 }
 
@@ -56,7 +56,7 @@ void CompareJob::updateProgressMessage() {
   m_progressMessage = format(_T("%s"), m_stepArray[m_currentStep].m_msg);
 #endif
 
-  m_gate.signal();
+  m_gate.notify();
 }
 
 void CompareJob::incrProgress() {
@@ -89,17 +89,17 @@ void CompareJob::handleInterruptOrSuspend() {
     if(m_exe2) {
       m_exe2->setBothInterrupted();
     } else {
-      m_gate.signal();
+      m_gate.notify();
       die(_T("Interrupted by user"));
     }
   } else if(isSuspended()) {
     if(m_exe2) m_exe2->setBothSuspended();
-    m_gate.signal();
+    m_gate.notify();
     suspend();
     m_gate.wait();
     if(m_exe2) m_exe2->resumeBoth();
   }
-  m_gate.signal();
+  m_gate.notify();
 }
 
 void CompareJob::addStep(double estimatedTimeUnits, const TCHAR *msg) {
@@ -129,7 +129,7 @@ UINT CompareJob::run() {
 void CompareJob::setExecute2(Execute2 *exe2) {
   m_gate.wait();
   m_exe2 = exe2;
-  m_gate.signal();
+  m_gate.notify();
 }
 
 void Execute2::run(CompareSubJob &job1, CompareSubJob &job2) {

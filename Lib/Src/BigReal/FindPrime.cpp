@@ -107,7 +107,7 @@ private:
     m_gate.wait();
     m_flags |= add;
     m_flags &= ~remove;
-    m_gate.signal();
+    m_gate.notify();
   }
 public:
   PrimeSearcher(int id, int digitCount, PrimeQueue &queue, MillerRabinHandler *handler);
@@ -216,7 +216,7 @@ PRMonitor::PRMonitor(int digitCount, int threadCount, DigitPool *digitPool, Mill
     PrimeSearcher *ps = new PrimeSearcher(i, digitCount, m_resultQueue, handler); TRACE_NEW(ps);
     m_jobs.add(ps);
   }
-  m_gate.signal();
+  m_gate.notify();
 }
 
 PRMonitor::~PRMonitor() {
@@ -229,7 +229,7 @@ PRMonitor::~PRMonitor() {
     SAFEDELETE(m_jobs[i]);
   }
   m_jobs.clear();
-  m_gate.signal();
+  m_gate.notify();
 }
 
 void PRMonitor::startJobs() {
@@ -237,7 +237,7 @@ void PRMonitor::startJobs() {
   for(size_t i = 0; i < m_jobs.size(); i++) {
     m_jobs[i]->start();
   }
-  m_gate.signal();
+  m_gate.notify();
 }
 
 void PRMonitor::terminateJobs() {
@@ -246,7 +246,7 @@ void PRMonitor::terminateJobs() {
     for(size_t i = 0; i < m_jobs.size(); i++) {
       m_jobs[i]->setStopPending();
     }
-    m_gate.signal();
+    m_gate.notify();
     while(getRunningCount() > 0) {
       Sleep(500);
     }
@@ -261,7 +261,7 @@ int PRMonitor::getRunningCount() const {
       count++;
     }
   }
-  m_gate.signal();
+  m_gate.notify();
   return count;
 }
 
@@ -271,7 +271,7 @@ Array<BigInt> PRMonitor::getResult() const {
   while(!m_resultQueue.isEmpty()) {
     result.add(BigInt(m_resultQueue.get(), m_digitPool));
   }
-  m_gate.signal();
+  m_gate.notify();
   return result;
 }
 

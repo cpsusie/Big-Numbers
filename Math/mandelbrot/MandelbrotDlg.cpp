@@ -385,7 +385,7 @@ void CMandelbrotDlg::startColorMapEditor() {
     m_colorMapEditThread = CEditColorMapDlgThread::startThread(this, m_colorMap.getColorMapData());
     remoteUpdateWindowState();
   }
-  m_gate.signal();
+  m_gate.notify();
 }
 
 void CMandelbrotDlg::stopColorMapEditor() {
@@ -394,7 +394,7 @@ void CMandelbrotDlg::stopColorMapEditor() {
     m_colorMapEditThread = NULL;
     remoteUpdateWindowState();
   }
-  m_gate.signal();
+  m_gate.notify();
 }
 
 
@@ -740,7 +740,7 @@ void CMandelbrotDlg::flushCCM() {
     deletePixRect(pr);
     showException(e);
   }
-  m_gate.signal();
+  m_gate.notify();
 }
 
 static String zoomToStr(double z) {
@@ -1010,7 +1010,7 @@ int CMandelbrotDlg::setMaxCount(UINT maxCount) {
     }
     ret = MAXCOUNT_CHANGED;
   }
-  m_gate.signal();
+  m_gate.notify();
   return ret;
 }
 
@@ -1021,7 +1021,7 @@ int CMandelbrotDlg::setColorMapData(const ColorMapData &cdm) {
     m_colorMap.setColorMapData(cdm);
     ret = COLORDATA_CHANGED;
   }
-  m_gate.signal();
+  m_gate.notify();
   return ret;
 }
 
@@ -1346,7 +1346,7 @@ bool CMandelbrotDlg::getJobToDo(CRect &rect) {
     rect = m_jobQueue.get();
   }
 
-  m_gate.signal();
+  m_gate.notify();
 
   return result;
 }
@@ -1373,7 +1373,7 @@ void CMandelbrotDlg::startCalculation() {
   m_gate.wait();
 
   if(isCalculationActive(false)) {
-    m_gate.signal();
+    m_gate.notify();
     return;
   }
 
@@ -1391,7 +1391,7 @@ void CMandelbrotDlg::startCalculation() {
 
   startTimer(TIMER_CALCULATION, 500);
   m_calculatorPool->startCalculators(getCPUCountToUse());
-  m_gate.signal();
+  m_gate.notify();
 }
 
 size_t CMandelbrotDlg::setUncalculatedRectsToEmpty() {
@@ -1417,7 +1417,7 @@ void CMandelbrotDlg::setRectanglesToCalculate(const CompactArray<CRect> &rectang
   for(size_t i = 0; i < n; i++) {
     setRectangleToCalculate(rectangles[i], i == n-1);
   }
-  m_gate.signal();
+  m_gate.notify();
 }
 
 void CMandelbrotDlg::setRectangleToCalculate(const CRect &rectangle, bool splitLast) {

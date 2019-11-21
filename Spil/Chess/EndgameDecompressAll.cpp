@@ -58,7 +58,7 @@ private:
   inline void setCurrentMessage(const String &msg) {
     m_gate.wait();
     m_currentMsg = msg;
-    m_gate.signal();
+    m_gate.notify();
   }
 public:
   Decompressor(DecompressJobQueue &jobQueue);
@@ -69,7 +69,7 @@ public:
   String getCurrentMessage() const {
     m_gate.wait();
     const String result = m_currentMsg;
-    m_gate.signal();
+    m_gate.notify();
     return result;
   }
   void incrCount(UINT64 n) {

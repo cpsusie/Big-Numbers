@@ -105,7 +105,7 @@ void MediaDatabase::wait() {
 }
 
 void MediaDatabase::notify() {
-  m_gate.signal();
+  m_gate.notify();
 }
 
 static MediaDatabase mediaDatabase;

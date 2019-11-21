@@ -358,13 +358,13 @@ void TrainigThread::updateMessage(_In_z_ _Printf_format_string_ TCHAR const * co
   va_end(argptr);
   m_sem.wait();
   m_msg = tmp;
-  m_sem.signal();
+  m_sem.notify();
 }
 
 String TrainigThread::getMessage() {
   m_sem.wait();
   const String res = m_msg;
-  m_sem.signal();
+  m_sem.notify();
   return res;
 }
 

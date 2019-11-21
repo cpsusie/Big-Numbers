@@ -14,8 +14,8 @@ public:
   void put(const T &v) {
     m_gate.wait();
     __super::put(v);
-    m_emptySem.signal(); // tell any thread, waiting in get that we are not empty anymore
-    m_gate.signal(); // open gate
+    m_emptySem.notify(); // tell any thread, waiting in get that we are not empty anymore
+    m_gate.notify(); // open gate
   }
 
   T get() {
@@ -24,31 +24,31 @@ public:
       if(!isEmpty()) {
         break;
       }
-      m_gate.signal(); // open gate
+      m_gate.notify(); // open gate
       m_emptySem.wait();
     }
     T result = __super::get();
-    m_gate.signal(); // open gate
+    m_gate.notify(); // open gate
     return result;
   }
 
   void clear() {
     m_gate.wait();
     __super::clear();
-    m_gate.signal();
+    m_gate.notify();
   }
 
   bool addAll(const Collection<T> &c) {
     m_gate.wait();
     const bool result = __super::addAll(c);
-    m_gate.signal();
+    m_gate.notify();
     return result;
   }
 
   bool addAll(const CompactArray<T> &a) {
     m_gate.wait();
     const bool result = __super::addAll(a);
-    m_gate.signal();
+    m_gate.notify();
     return result;
   }
 
@@ -63,7 +63,7 @@ public:
   T operator[](size_t index) const {
     m_gate.wait();
     T result = QueueList<T>::operator[](index);
-    m_gate.signal();
+    m_gate.notify();
     return result;
   }
 };

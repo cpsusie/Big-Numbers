@@ -653,7 +653,7 @@ void CIRemesDlg::handlePropertyChanged(const PropertyContainer *source, int id, 
     case THREAD_ERROR:
       m_gate.wait();
       m_error = *(const String*)newValue;
-      m_gate.signal();
+      m_gate.notify();
       PostMessage(ID_MSG_THR_ERROR_CHANGED, 0, 0);
       break;
     case REMES_PROPERTY:
@@ -686,21 +686,21 @@ void CIRemesDlg::handleRemesProperty(const Remes &r, int id, const void *oldValu
         m_searchEString = r.getSearchEString();
         PostMessage(ID_MSG_COEFFICIENTS_CHANGED, 0, 0);
       }
-      m_gate.signal();
+      m_gate.notify();
     }
     break;
 
   case SEARCHEITERATION   : // *int
     m_gate.wait();
     m_searchEString = r.getSearchEString();
-    m_gate.signal();
+    m_gate.notify();
     PostMessage(ID_MSG_SEARCHEITERATION_CHANGED, 0, 0);
     break;
 
   case EXTREMACOUNT       : // *int
     m_gate.wait();
     m_extrStrArray = r.getExtremaStringArray();
-    m_gate.signal();
+    m_gate.notify();
     PostMessage(ID_MSG_EXTREMACOUNT_CHANGED, 0, 0);
     break;
 
@@ -720,7 +720,7 @@ void CIRemesDlg::handleRemesProperty(const Remes &r, int id, const void *oldValu
       m_gate.wait();
       m_coorSystemSpline.deleteAllObjects();
       m_coorSystemSpline.addFunctionObject(f, &xRange);
-      m_gate.signal();
+      m_gate.notify();
       PostMessage(IS_MSG_UPDATEINTERPOLATION, 0, 0);
     }
     break;
@@ -728,7 +728,7 @@ void CIRemesDlg::handleRemesProperty(const Remes &r, int id, const void *oldValu
     if(r.hasErrorPlot()) {
       m_gate.wait();
       const bool paint = createErrorPlot(r);
-      m_gate.signal();
+      m_gate.notify();
       if(paint) {
         PostMessage(ID_MSG_MAXERROR_CHANGED, 0, 0);
       }
@@ -737,7 +737,7 @@ void CIRemesDlg::handleRemesProperty(const Remes &r, int id, const void *oldValu
   case WARNING            : // *String
     m_gate.wait();
     m_warning = *(String*)newValue;
-    m_gate.signal();
+    m_gate.notify();
     PostMessage(ID_MSG_WARNING_CHANGED, 0, 0);
     break;
   default:
@@ -762,7 +762,7 @@ LRESULT CIRemesDlg::OnMsgThrTerminatedChanged(WPARAM wp, LPARAM lp) {
 LRESULT CIRemesDlg::OnMsgThrErrorChanged(WPARAM wp, LPARAM lp) {
   m_gate.wait();
   const String error = m_error;
-  m_gate.signal();
+  m_gate.notify();
   showWarning(error);
   return 0;
 }
@@ -772,7 +772,7 @@ LRESULT CIRemesDlg::OnMsgStateChanged(WPARAM wp, LPARAM lp) {
   const UINT M = (UINT)wp, K = (UINT)lp;
   setSubMK(M, K);
   const String str = m_stateString;
-  m_gate.signal();
+  m_gate.notify();
   showState(str);
   return 0;
 }
@@ -798,7 +798,7 @@ LRESULT CIRemesDlg::OnMsgCoefficientsChanged(WPARAM wp, LPARAM lp) {
   m_gate.wait();
   const String str = m_searchEString;
   showCoefWindowData(m_coefWinData);
-  m_gate.signal();
+  m_gate.notify();
   showSearchE(str);
   return 0;
 }
@@ -806,7 +806,7 @@ LRESULT CIRemesDlg::OnMsgCoefficientsChanged(WPARAM wp, LPARAM lp) {
 LRESULT CIRemesDlg::OnMsgSearchEIterationChanged(WPARAM wp, LPARAM lp) {
   m_gate.wait();
   const String str = m_searchEString;
-  m_gate.signal();
+  m_gate.notify();
   showSearchE(str);
   return 0;
 }
@@ -814,7 +814,7 @@ LRESULT CIRemesDlg::OnMsgSearchEIterationChanged(WPARAM wp, LPARAM lp) {
 LRESULT CIRemesDlg::OnMsgExtremaCountChanged(WPARAM wp, LPARAM lp) {
   m_gate.wait();
   showExtremaStringArray();
-  m_gate.signal();
+  m_gate.notify();
   return 0;
 }
 
@@ -824,21 +824,21 @@ LRESULT CIRemesDlg::OnMsgUpdateInterpolation(WPARAM wp, LPARAM lp) {
     return 0;
   }
   m_coorSystemSpline.Invalidate(FALSE);
-  m_gate.signal();
+  m_gate.notify();
   return 0;
 }
 
 LRESULT CIRemesDlg::OnMsgMaxErrorChanged(WPARAM wp, LPARAM lp) {
   m_gate.wait();
   showErrorPlot();
-  m_gate.signal();
+  m_gate.notify();
   return 0;
 }
 
 LRESULT CIRemesDlg::OnMsgWarningChanged(WPARAM wp, LPARAM lp) {
   m_gate.wait();
   showWarning(m_warning);
-  m_gate.signal();
+  m_gate.notify();
   return 0;
 }
 

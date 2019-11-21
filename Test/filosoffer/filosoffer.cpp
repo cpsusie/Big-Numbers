@@ -163,7 +163,7 @@ DinnerTable::DinnerTable(const ScreenPoint &center, int count) {
   for(i = 0; i < count; i++)
     m_PhilosofArray.add(new Philosof(*this,i));
 
-  m_gate.signal();
+  m_gate.notify();
 }
 
 bool DinnerTable::fetchSpoon(int filosofid, int spoonIndex) {
@@ -175,20 +175,20 @@ bool DinnerTable::fetchSpoon(int filosofid, int spoonIndex) {
     m_spoonArray[spoonIndex].useby(*m_PhilosofArray[filosofid]);
     ret = true;
   }
-  m_gate.signal();
+  m_gate.notify();
   return ret;
 }
 
 void DinnerTable::releaseSpoon(int spoonIndex) {
   m_gate.wait();
   m_spoonArray[spoonIndex].release();
-  m_gate.signal();
+  m_gate.notify();
 }
 
 int DinnerTable::rand(int max) {
   m_gate.wait();
   int res = ::randInt() % max;
-  m_gate.signal();
+  m_gate.notify();
   return res;
 }
 

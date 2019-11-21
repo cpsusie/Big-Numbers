@@ -55,7 +55,7 @@ TimerThread::~TimerThread() {
 void TimerThread::kill() {
   setFlag(KILLED);
   if(!ISHANDLERACTIVE()) {
-    m_timeout.signal();
+    m_timeout.notify();
   }
 }
 
@@ -70,21 +70,21 @@ void TimerThread::setTimeout(int msec, bool repeatTimeout) {
   m_msec = msec;
   if(!ISHANDLERACTIVE()) {
     m_state |= SETTIMEOUT_PENDING;
-    m_timeout.signal();
+    m_timeout.notify();
   }
-  m_stateSem.signal();
+  m_stateSem.notify();
 }
 
 void TimerThread::setFlag(BYTE flags) {
   m_stateSem.wait();
   m_state |=  flags;
-  m_stateSem.signal();
+  m_stateSem.notify();
 }
 
 void TimerThread::clrFlag(BYTE flags) {
   m_stateSem.wait();
   m_state &= ~flags;
-  m_stateSem.signal();
+  m_stateSem.notify();
 }
 
 UINT TimerThread::run() {
@@ -124,7 +124,7 @@ void Timer::startTimer(int msec, TimeoutHandler &handler, bool repeatTimeout) {
     SAFEDELETE(m_thread);
     m_thread = new TimerThread(this, msec, handler, repeatTimeout); TRACE_NEW(m_thread);
   }
-  m_gate.signal();
+  m_gate.notify();
 }
 
 void Timer::stopTimer() {
@@ -132,20 +132,20 @@ void Timer::stopTimer() {
   if(m_thread) {
     m_thread->kill();
   }
-  m_gate.signal();
+  m_gate.notify();
 }
 
 bool Timer::isRunning() const {
   m_gate.wait();
   const bool result = m_thread && !m_thread->isKilled();
-  m_gate.signal();
+  m_gate.notify();
   return result;
 }
 
 int Timer::getTimeout() const {
   m_gate.wait();
   const int result = m_thread ? m_thread->getTimeout() : 0;
-  m_gate.signal();
+  m_gate.notify();
   return result;
 }
 
@@ -154,5 +154,5 @@ void Timer::setTimeout(int msec, bool repeatTimeout) {
   if(m_thread && !m_thread->isKilled()) {
     m_thread->setTimeout(msec, repeatTimeout);
   }
-  m_gate.signal();
+  m_gate.notify();
 }

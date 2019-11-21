@@ -61,7 +61,7 @@ void MeshAnimationThread::go(AnimationType type) {
   }
 
   m_running = true;
-  m_timeout.signal();
+  m_timeout.notify();
 }
 
 void MeshAnimationThread::stop() {

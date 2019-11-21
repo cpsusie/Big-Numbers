@@ -117,7 +117,7 @@ BOOL CSpectrumDlg::PreTranslateMessage(MSG *pMsg) {
   }
   if(m_handlingEvent) {
     m_sampleDone.wait();
-    m_sampleDone.signal();
+    m_sampleDone.notify();
   }
   debugLog(_T("Msg:%s\n"), getMessageName(pMsg->message).cstr());
   BOOL ret = __super::PreTranslateMessage(pMsg);
@@ -226,7 +226,7 @@ static double *fftConvert(double *result, const unsigned char *data, int n) {
 LRESULT CSpectrumDlg::captureWaveStreamCallback(MMCapture &capture, WAVEHDR *audioHeader) {
   m_sampleDone.wait();
   if(m_handlingEvent) {
-    m_sampleDone.signal();
+    m_sampleDone.notify();
   }
   int sampleCount = audioHeader->dwBufferLength;
   assert(sampleCount == SAMPLECOUNT);
@@ -280,7 +280,7 @@ LRESULT CSpectrumDlg::captureWaveStreamCallback(MMCapture &capture, WAVEHDR *aud
   }
   vp->setClipping(false);
   vp->setDC(oldDC);
-  m_sampleDone.signal();
+  m_sampleDone.notify();
   return 0;
 }
 

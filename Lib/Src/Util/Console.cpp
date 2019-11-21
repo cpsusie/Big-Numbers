@@ -174,9 +174,9 @@ void Console::setWindowAndBufferSize(int left, int top, int right, int bottom, i
       setBufferSize(newWidth,newHeight, fileNo);
       setWindowRect(left, top, newRight, newBottom, fileNo);
     }
-    s_gate.signal();
+    s_gate.notify();
   } catch(...) {
-    s_gate.signal();
+    s_gate.notify();
     throw;
   }
 }
@@ -244,7 +244,7 @@ void Console::clearRect(int left, int top, int right, int bottom, WORD attr, int
     CHECK(FillConsoleOutputCharacter( h,  ' ' , width, coord, &res));
     CHECK(WriteConsoleOutputAttribute(h, attrs, width, coord, &res));
   }
-  s_gate.signal();
+  s_gate.notify();
 }
 
 void Console::vprintf(int x, int y, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
@@ -259,7 +259,7 @@ void Console::vprintf(int x, int y, _In_z_ _Printf_format_string_ TCHAR const * 
   DWORD res;
   CHECK(WriteConsoleOutputCharacter(s_hStdOut, tmp.cstr(), (int)tmp.length(), coord, &res));
 
-  s_gate.signal();
+  s_gate.notify();
 }
 
 void Console::vprintf(int x, int y, WORD color, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
@@ -282,7 +282,7 @@ void Console::vprintf(int x, int y, WORD color, _In_z_ _Printf_format_string_ TC
   CHECK(WriteConsoleOutputCharacter(s_hStdOut, tmp.cstr(), (int)tmp.length(), coord, &res));
   CHECK(WriteConsoleOutputAttribute(s_hStdOut, attr, length, coord, &res));
 
-  s_gate.signal();
+  s_gate.notify();
 
   delete[] attr;
 }
@@ -363,7 +363,7 @@ void Console::setColor(int left, int top, int right, int bottom, WORD color, int
     DWORD res;
     CHECK(WriteConsoleOutputAttribute(getHandle(fileNo), attrs, width, coord, &res));
   }
-  s_gate.signal();
+  s_gate.notify();
 }
 
 void Console::setCursorPos(int x, int y, int fileNo) {

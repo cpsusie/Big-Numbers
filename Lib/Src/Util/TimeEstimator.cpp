@@ -14,7 +14,7 @@ TimeEstimator::TimeEstimator(const ProgressProvider &progressProvider)
 TimeEstimator::~TimeEstimator() {
   m_gate.wait();
   m_timer.stopTimer();
-  m_gate.signal();
+  m_gate.notify();
 }
 
 void TimeEstimator::logTimeAndPct() {
@@ -32,7 +32,7 @@ void TimeEstimator::logTimeAndPct() {
     }
     appendLogPoint(diff(m_time0, now, TMILLISECOND), pctDone);
   }
-  m_gate.signal();
+  m_gate.notify();
   switch(++m_timeoutCount) {
   case 10  : m_timer.setTimeout(1000, true); break;
   case 100 : m_timer.setTimeout(2000, true); break;
@@ -119,6 +119,6 @@ double TimeEstimator::getMilliSecondsRemaining() const {
     calculateRegressionLine();
   }
   const double result = hasRegressionLine() ? getTimeEstimate() : 60000;
-  m_gate.signal();
+  m_gate.notify();
   return result;
 }

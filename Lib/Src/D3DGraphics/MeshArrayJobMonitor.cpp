@@ -44,26 +44,26 @@ public:
 void MeshArrayJobMonitor::addResult(double t, LPD3DXMESH mesh) {
   m_gate.wait();
   m_resultArray.add(MeshResult(t, mesh));
-  m_gate.signal();
+  m_gate.notify();
 }
 
 void MeshArrayJobMonitor::addError(const String &msg) {
   m_gate.wait();
   m_errors.add(msg);
-  m_gate.signal();
+  m_gate.notify();
 }
 
 void MeshArrayJobMonitor::clearJobQueue() {
   m_gate.wait();
   m_jobStack.clear();
-  m_gate.signal();
+  m_gate.notify();
 }
 
 void MeshArrayJobMonitor::addJob(double t) {
   m_gate.wait();
   m_jobStack.push(t);
   m_jobCount++;
-  m_gate.signal();
+  m_gate.notify();
 }
 
 bool MeshArrayJobMonitor::fetchJob(double &t) {
@@ -75,14 +75,14 @@ bool MeshArrayJobMonitor::fetchJob(double &t) {
     t = m_jobStack.pop();
     result = true;
   }
-  m_gate.signal();
+  m_gate.notify();
   return result;
 }
 
 int MeshArrayJobMonitor::getJobsDone() const {
   m_gate.wait();
   const int n = (int)(m_resultArray.size() + m_errors.size());
-  m_gate.signal();
+  m_gate.notify();
   return n;
 }
 
@@ -108,7 +108,7 @@ MeshArray MeshArrayJobMonitor::getResult() {
   }
   tmp.clear();
   clearResultQueue();
-  m_gate.signal();
+  m_gate.notify();
   return result;
 }
 

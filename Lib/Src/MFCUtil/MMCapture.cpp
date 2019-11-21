@@ -320,7 +320,7 @@ bool MMCapture::saveVideoFrame(VIDEOHDR *videoHeader) {
     result = true;
   }
 
-  m_gate.signal();
+  m_gate.notify();
   return result;
 }
 
@@ -335,7 +335,7 @@ void MMCapture::paintLastFrame(HDC hdc, const CRect &rect) {
     PixRect::bitBlt(hdc,rect.left,rect.top,rect.Width(),rect.Height(),SRCCOPY,m_imagePr,0,0);
   }
 
-  m_gate.signal();
+  m_gate.notify();
 }
 
 void MMCapture::saveAudioFrame(const WAVEHDR *audioHeader) {
@@ -371,7 +371,7 @@ void checkMMResult(TCHAR *fileName, int line, MMRESULT mmResult) {
 static void CALLBACK captureWaveOutCallback(HWAVEOUT hWaveOut, UINT uMsg, DWORD_PTR dwInstance, DWORD_PTR dwParam1, DWORD_PTR dwParam2) {
   MMCapture *capture = (MMCapture*)dwInstance;
   if(uMsg == WOM_DONE) { // tell AudioPlayerThread that the buffer send by waveOutWrite is done, so the next can be sent
-    capture->m_soundDone.signal();
+    capture->m_soundDone.notify();
   }
 }
 

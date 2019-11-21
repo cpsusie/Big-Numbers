@@ -273,7 +273,7 @@ UINT TrainerThread::run() {
     m_errorSum = errorSum;
   }
   m_bpn.save();
-  m_sync.signal();
+  m_sync.notify();
   return 0;
 }
 

@@ -27,7 +27,7 @@ bool Semaphore::wait(int milliseconds) {
   }
 }
 
-void Semaphore::signal() {
+void Semaphore::notify() {
   if (!ReleaseSemaphore(m_sem, 1, NULL)) {
     throwLastErrorOnSysCallException(_T("ReleaseSemaphore"));
   }
@@ -44,7 +44,7 @@ static void addDebugLine(_In_z_ _Printf_format_string_ TCHAR const * const forma
   _vftprintf(f, format, argptr);
   va_end(argptr);
   fclose(f);
-  gate.signal();
+  gate.notify();
 }
 
 void Semaphore::wait(const TCHAR *name, const TCHAR *file, int line) {
@@ -53,9 +53,9 @@ void Semaphore::wait(const TCHAR *name, const TCHAR *file, int line) {
   wait();
 }
 
-void Semaphore::signal(const TCHAR *name, const TCHAR *file, int line) {
-  addDebugLine(_T("Thread %08d %s(%p).signal() in %s line %d\n")
+void Semaphore::notify(const TCHAR *name, const TCHAR *file, int line) {
+  addDebugLine(_T("Thread %08d %s(%p).notify() in %s line %d\n")
                ,GetCurrentThreadId(), name, m_sem, file, line);
-  signal();
+  notify();
 }
 

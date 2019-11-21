@@ -30,7 +30,7 @@ public:
     m_gate.wait();
 //    debugLog(_T("Options.dirty:%s\n"), boolToStr(m_options.isDirty()));
     if(m_options.isDirty()) m_options.save();
-    m_gate.signal();
+    m_gate.notify();
   }
 };
 

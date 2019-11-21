@@ -106,10 +106,10 @@ template <class T> void MTQuicksortClass<T>::setActive(int id, bool active) {
   } else {
     m_activeThreads.remove(id);
     if (m_activeThreads.isEmpty()) {
-      m_done.signal();
+      m_done.notify();
     }
   }
-  m_gate.signal();
+  m_gate.notify();
 }
 
 template <class T> void MTQuicksortClass<T>::killAll() {
@@ -121,7 +121,7 @@ template <class T> void MTQuicksortClass<T>::killAll() {
       addJob(NULL,0);
     }
   }
-  m_gate.signal();
+  m_gate.notify();
 }
 
 template <class T> PartitionJob<T> &MTQuicksortClass<T>::getJob(int id, PartitionJob<T> &job) {
@@ -259,11 +259,11 @@ int SynchronizedComparator::cmp(const void *e1, const void *e2) {
   m_gate.wait();
   try {
     const int result = m_cmp.cmp(e1, e2);
-    m_gate.signal();
+    m_gate.notify();
     return result;
   }
   catch (...) {
-    m_gate.signal();
+    m_gate.notify();
     throw;
   }
 }

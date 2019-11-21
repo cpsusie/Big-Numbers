@@ -35,7 +35,7 @@ static const String timeFormats[] = {
 bool isDebugLogRedirected() {
   gate.wait();
   const bool result = traceFlags.contains(FLAG_REDIDRECT) || (traceFile != stdout);
-  gate.signal();
+  gate.notify();
   return result;
 }
 
@@ -46,7 +46,7 @@ void unredirectDebugLog() {
     traceFile = stdout;
   }
   traceFlags.remove(FLAG_REDIDRECT);
-  gate.signal();
+  gate.notify();
 }
 
 static void setRedirectFileName(const String &fileName) {
@@ -86,7 +86,7 @@ void redirectDebugLog(bool append, const TCHAR *fileName) {
   } else {
     traceFlags.remove(FLAG_APPEND);
   }
-  gate.signal();
+  gate.notify();
 }
 
 void debugLogSetTimePrefix(bool prefixWithDate, bool prefixWithTime) {
@@ -100,7 +100,7 @@ static bool stdoutAtty() {
       traceFlags.add(FLAG_STDOUTATTY);
     }
     traceFlags.add(FLAG_STDOUTISCHECKED);
-    gate.signal();
+    gate.notify();
   }
   return traceFlags.contains(FLAG_STDOUTATTY);
 }
@@ -111,7 +111,7 @@ static inline bool isEnvironRedirection() {
     TCHAR *v = _tgetenv(_T("DEBUGLOG")); // could parse v, if it contains info about append, timeformat,etc.
     if(v != NULL) traceFlags.add(FLAG_ENVIRONSET);
     traceFlags.add(FLAG_ENVIRONCHECKED);
-    gate.signal();
+    gate.notify();
   }
   return traceFlags.contains(FLAG_ENVIRONSET);
 }
@@ -139,7 +139,7 @@ void vdebugLog(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list
     traceFile = MKFOPEN(redirectFileName, traceFlags.contains(FLAG_APPEND) ? _T("a") : _T("w"));
 //    setvbuf(traceFile, NULL, _IONBF, 100);
     traceFlags.remove(FLAG_REDIDRECT);
-    gate.signal();
+    gate.notify();
   }
 
   if(timeFormatCode) {

@@ -50,5 +50,5 @@ void MultiplierThread::multiply(BigReal &result, const BigReal &x, const BigReal
   m_y           = &y;
   m_f           = &f;
   m_level       = level;
-  m_execute.signal();
+  m_execute.notify();
 }

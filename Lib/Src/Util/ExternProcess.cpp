@@ -198,7 +198,7 @@ void ExternProcess::start(bool silent, const ArgArray &argv) {
 
     oldStdFiles.restoreStdFilesAndClose();
 
-    critiacalSection.signal();
+    critiacalSection.notify();
 
   } catch(...) {
     oldStdFiles.restoreStdFilesAndClose();
@@ -208,7 +208,7 @@ void ExternProcess::start(bool silent, const ArgArray &argv) {
 
     CHDIR(oldWorkDir);
 
-    critiacalSection.signal();
+    critiacalSection.notify();
     LEAVEFUNC;
     throw;
   }

@@ -59,7 +59,7 @@
   m_gate.wait()
 
 #define UNLOCK_LEAVE()      \
-  m_gate.signal();          \
+  m_gate.notify();          \
   LEAVEFUNC()
 
 #define UNLOCK_RETURN(expr) \
@@ -86,7 +86,7 @@ catch(TcpException e) {                                                         
 
 #define CATCH_UNLOCK_RETHROW() \
 catch (...) {                  \
-  m_gate.signal();             \
+  m_gate.notify();             \
   LEAVEFUNC();                 \
   throw;                       \
 }
@@ -134,7 +134,7 @@ void ChessPlayer::startSearch(const Game &game, const TimeLimit &timeLimit, bool
     m_gate.wait();
     m_searchResult.m_move.setNoMove();
     putRequest(ChessPlayerRequest(game, timeLimit, hint, talking)); // REQUEST_FINDMOVE
-    m_gate.signal();
+    m_gate.notify();
   }
   LEAVEFUNC();
 }
@@ -242,7 +242,7 @@ void ChessPlayer::handlePropertyChanged(const PropertyContainer *source, int id,
       const bool verbose = *(const bool*)newValue;
       m_moveFinder->setVerbose(verbose);
     }
-    m_gate.signal();
+    m_gate.notify();
   }
   LEAVEFUNC();
 }
@@ -329,7 +329,7 @@ void ChessPlayer::dohandleRequestFindMove(const RequestParamFindMove &param) {
   try {
     CHECKSTATE(CPS_IDLE,CPS_MOVEREADY);
     setState(CPS_PREPARESEARCH);
-    m_gate.signal();
+    m_gate.notify();
   } CATCH_UNLOCK_RETHROW();
 
   if(getOptions().isOpeningLibraryEnabled() && !isRemote()) {

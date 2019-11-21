@@ -421,7 +421,7 @@ UINT ExternEngine::run() {
     return 0;
   }
   setStateFlags(EXE_THREADRUNNING);
-  m_threadIsStarted.signal();
+  m_threadIsStarted.notify();
   const EngineVerboseFields &evf = getOptions().getengineVerboseFields();
   try {
     EngineInfoLine infoLine;

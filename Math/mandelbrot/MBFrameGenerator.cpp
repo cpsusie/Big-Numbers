@@ -34,7 +34,7 @@ MBFrameGenerator::MBFrameGenerator(CMandelbrotDlg *dlg, const String &dirName)
 MBFrameGenerator::~MBFrameGenerator() {
   DLOG(_T("enter ~MBFrameGenerator\n"));
   m_frameIndex = m_totalFrameCount + 10;
-  m_frameReady.signal();
+  m_frameReady.notify();
   while(m_imageListThread->stillActive()) {
     Sleep(50);
   }

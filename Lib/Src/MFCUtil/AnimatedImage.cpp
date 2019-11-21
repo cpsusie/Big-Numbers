@@ -446,7 +446,7 @@ void AnimationThread::kill() {
 void AnimationThread::stopLoop() {
   if(isRunning()) {
     m_stopSignal = true;
-    m_delaySem.signal();
+    m_delaySem.notify();
     while(isRunning()) {
       Sleep(30);
     }

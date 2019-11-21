@@ -22,7 +22,7 @@ InputThread::~InputThread() {
 }
 
 void InputThread::kill() {
-  m_killed.signal();
+  m_killed.notify();
   for (int i = 0; i < 10; i++) {
     if (!stillActive()) {
       return;

@@ -16,22 +16,22 @@ BigRealJobArray TesterJob::s_testerJobs;
 void TesterJob::incrRunning() {
   s_gate.wait();
   s_runningCount++;
-  s_gate.signal();
+  s_gate.notify();
 }
 
 void TesterJob::decrRunning() {
   s_gate.wait();
   s_runningCount--;
   if(s_runningCount == 0 && s_testQueue.isEmpty()) {
-    s_allDone.signal();
+    s_allDone.notify();
   }
-  s_gate.signal();
+  s_gate.notify();
 }
 
 void TesterJob::addTimeUsage(double threadTime) { // static
   s_gate.wait();
   s_totalThreadTime += threadTime;
-  s_gate.signal();
+  s_gate.notify();
 }
 
 unsigned int TesterJob::run() {
@@ -97,7 +97,7 @@ void TesterJob::startAll(UINT threadCount) { // static
       Runnable *job = new TesterJob(i); TRACE_NEW(job);
       s_testerJobs.add(job);
     }
-    s_gate.signal();
+    s_gate.notify();
     BigRealResourcePool::executeInParallel(s_testerJobs);
   }
 }
@@ -112,7 +112,7 @@ void TesterJob::releaseAll() { // static
     SAFEDELETE(s_testerJobs[i]);
   }
   s_testerJobs.clear();
-  s_gate.signal();
+  s_gate.notify();
 }
 
 void TesterJob::shuffleTestOrder() { // static
@@ -126,5 +126,5 @@ void TesterJob::shuffleTestOrder() { // static
     s_testQueue.put(testArray[i]);
   }
   testArray.clear();
-  s_gate.signal();
+  s_gate.notify();
 }

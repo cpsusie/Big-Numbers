@@ -73,7 +73,7 @@ void MRHandler::handleData(const MillerRabinCheck &data) {
   Console::printf(0, y++, _T("%-50s"), data.m_msg.cstr());
   Console::printf(0, y++, _T("%s"), shortString(data.m_number).cstr());
   if(data.m_isPrime) m_primesFound++;
-  m_gate.signal();
+  m_gate.notify();
 }
 
 typedef enum {

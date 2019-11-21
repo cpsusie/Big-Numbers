@@ -14,13 +14,13 @@ public:
 void TestStatistic::setAllPrinting() {
   s_gate.wait();
   s_timeToPrint.addAll();
-  s_gate.signal();
+  s_gate.notify();
 }
 
 void TestStatistic::flushOutput() {
   s_gate.wait();
   s_timeToPrint.remove(m_threadId);
-  s_gate.signal();
+  s_gate.notify();
 }
 
 Semaphore TestStatistic::s_gate;
@@ -86,7 +86,7 @@ void TestStatistic::init() {
     s_timer.startTimer(2000, timerEventHandler, true);
     s_timerIsStarted = true;
   }
-  s_gate.signal();
+  s_gate.notify();
 
   printNameAndSignatur();
   m_startTime = AllTime();
@@ -126,7 +126,7 @@ tostream &TestStatistic::getErrorLog(bool logTime) { // static
   if(logTime) {
     *s_errorLogStream << Timestamp().toString() << endl;
   }
-  s_gate.signal();
+  s_gate.notify();
   return *s_errorLogStream;
 }
 
@@ -136,7 +136,7 @@ void TestStatistic::flushAndCloseErorLog() { // static
     s_errorLogStream->flush();
     SAFEDELETE(s_errorLogStream);
   }
-  s_gate.signal();
+  s_gate.notify();
 }
 
 class ErrorLogCloser {
@@ -322,7 +322,7 @@ void TestStatistic::screenlog(_In_z_ _Printf_format_string_ TCHAR const * const 
   if(s_logypos >= getScreenHeight()) {
     s_logypos = logyStartPos;
   }
-  s_gate.signal();
+  s_gate.notify();
 }
 
 void TestStatistic::markError(const BigReal &x, const BigReal &tolerance, const BigReal &exactResult, const BigReal &result) {

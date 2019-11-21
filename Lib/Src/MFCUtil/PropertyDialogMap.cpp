@@ -5,12 +5,12 @@ void PropertyDialogMap::addDialog(PropertyDialog *dlg) {
   m_gate.wait();
   const int id = dlg->getPropertyId();
   if(get(id)) {
-    m_gate.signal();
+    m_gate.notify();
     throwInvalidArgumentException(__TFUNCTION__, _T("PropertyDialog with id=%d already added"), id);
   }
   put(id, CPropertyDlgThread::startThread(dlg));
   m_containerSet.add((*get(id))->getPropertyContainer());
-  m_gate.signal();
+  m_gate.notify();
 }
 
 void PropertyDialogMap::removeDialog(int id) {
@@ -24,7 +24,7 @@ void PropertyDialogMap::removeDialog(int id) {
     (*thr)->kill();
     remove(id);
   }
-  m_gate.signal();
+  m_gate.notify();
 }
 
 void PropertyDialogMap::clear() {
@@ -36,27 +36,27 @@ void PropertyDialogMap::clear() {
   }
   m_containerSet.clear();
   __super::clear();
-  m_gate.signal();
+  m_gate.notify();
 }
 
 bool PropertyDialogMap::isDialogVisible() const {
   m_gate.wait();
   const bool result = m_visibleDlgThread != NULL;
-  m_gate.signal();
+  m_gate.notify();
   return result;
 }
 
 int PropertyDialogMap::getVisibleDialogId() const {
   m_gate.wait();
   const int result = m_visibleDlgThread ? m_visibleDlgThread->getPropertyId() : -1;
-  m_gate.signal();
+  m_gate.notify();
   return result;
 }
 
 void PropertyDialogMap::hideDialog() const {
   m_gate.wait();
   hideCurrentVisibleDialog();
-  m_gate.signal();
+  m_gate.notify();
 }
 
 void PropertyDialogMap::showDialog(int id, const void *data) const {
@@ -72,7 +72,7 @@ void PropertyDialogMap::showDialog(int id, const void *data) const {
   if(data && m_visibleDlgThread) {
     m_visibleDlgThread->setCurrentDialogProperty(data);
   }
-  m_gate.signal();
+  m_gate.notify();
 }
 
 void PropertyDialogMap::hideCurrentVisibleDialog() const {
@@ -93,6 +93,6 @@ const void *PropertyDialogMap::getProperty(int id) const {
   if(thr) {
     result = (*thr)->getCurrentDialogProperty();
   }
-  m_gate.signal();
+  m_gate.notify();
   return result;
 }

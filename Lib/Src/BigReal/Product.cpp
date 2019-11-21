@@ -17,7 +17,7 @@ void MultiplyServer::startup() {
     start(false, _T("c:\\bin\\multiplicationServer.exe"), NULL);
 //    setVerbose(true);
   }
-  m_gate.signal();
+  m_gate.notify();
 }
 
 BigReal &MultiplyServer::mult(BigReal &dst, const BigReal &x, const BigReal &y, const BigReal &f) {
@@ -40,7 +40,7 @@ BigReal &MultiplyServer::mult(BigReal &dst, const BigReal &x, const BigReal &y, 
     _tprintf(_T("Unknown exception\n"));
     dst = 0;
   }
-  m_gate.signal();
+  m_gate.notify();
   return dst;
 }
 

@@ -416,7 +416,7 @@ void DFARegex::paint(CWnd *wnd, CDC &dc, bool animate) const {
     }
     break;
   }
-  m_gate.signal();
+  m_gate.notify();
 }
 
 void DFARegex::unmarkAll(CWnd *wnd, CDC &dc) {
@@ -432,13 +432,13 @@ void DFARegex::unmarkAll(CWnd *wnd, CDC &dc) {
     DFA(m_tables, NFA()).paint(wnd, dc);
     break;
   }
-  m_gate.signal();
+  m_gate.notify();
 }
 
 void DFARegex::setBlinkersVisible(bool visible) {
   m_gate.wait();
   DFAPainter::setBlinkersVisible(visible);
-  m_gate.signal();
+  m_gate.notify();
 }
 
 int DFARegex::getAllocatedNFAStates() { // static

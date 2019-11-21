@@ -34,7 +34,7 @@ EndGameTablebase::~EndGameTablebase() {
 #ifndef TABLEBASE_BUILDER
 Semaphore EndGameTablebase::s_loadGate;
 #define BEGIN_LOADUNLOAD_CRITICAL_SECTION s_loadGate.wait()
-#define END_LOADUNLOAD_CRITICAL_SECTION   s_loadGate.signal()
+#define END_LOADUNLOAD_CRITICAL_SECTION   s_loadGate.notify()
 #else
 #define BEGIN_LOADUNLOAD_CRITICAL_SECTION
 #define END_LOADUNLOAD_CRITICAL_SECTION

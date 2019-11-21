@@ -1134,7 +1134,7 @@ void CalculatorThread::enter(int button) {
   }
   m_buttonPressed = button;
   m_busy          = true;
-  m_sem.signal();
+  m_sem.notify();
 }
 
 void CalculatorThread::terminateCalculation() {

@@ -34,7 +34,7 @@ UINT ThreadPoolThread::run() {
 void ThreadPoolThread::execute(Runnable &job, ThreadPoolResultQueue *resultQueue) {
   m_job         = &job;
   m_resultQueue = resultQueue;
-  m_execute.signal();
+  m_execute.notify();
 }
 
 void ThreadPoolResultQueue::waitForResults(size_t expectedResultCount) {

@@ -189,7 +189,7 @@ public:
     m_lock.wait();
   }
   void notify() const {
-    m_lock.signal();
+    m_lock.notify();
   }
   void clear();
   double getDuration() const;

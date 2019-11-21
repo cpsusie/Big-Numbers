@@ -94,7 +94,7 @@ void LogFile::begin() {
     m_inTMF = true;
   } catch(...) {
     m_threadId = 0;
-    m_sem.signal();
+    m_sem.notify();
     throw;
   }
 }
@@ -108,7 +108,7 @@ void LogFile::commit() {
   setCount(0,sizeof(LogFileHeader));
   m_inTMF    = false;
   m_threadId = 0;
-  m_sem.signal();
+  m_sem.notify();
 }
 
 void LogFile::abort() {
@@ -164,7 +164,7 @@ void LogFile::abort() {
   }
   delete[] buffer;
   m_threadId = 0;
-  m_sem.signal();
+  m_sem.notify();
   if (errorMsg.length() > 0) {
     throwSqlError(SQL_FATAL_ERROR, _T("%s"), errorMsg.cstr());
   }
@@ -383,7 +383,7 @@ void DbFile::write(UINT64 offset, const void *buffer, UINT size) const {
   } catch(...) {
     errorMsg = _T("Unknown exception");
   }
-  s_filesem.signal();
+  s_filesem.notify();
   if (errorMsg.length() > 0) {
     throwSqlError(SQL_FATAL_ERROR, _T("%s"), errorMsg.cstr());
   }
@@ -404,7 +404,7 @@ void DbFile::read(UINT64 offset, void *buffer, UINT size) const {
   } catch(...) {
     errorMsg = _T("Unknown exception");
   }
-  s_filesem.signal();
+  s_filesem.notify();
   if (errorMsg.length() > 0) {
     throwSqlError(SQL_FATAL_ERROR, _T("%s"), errorMsg.cstr());
   }
@@ -439,7 +439,7 @@ void DbFile::destroy(const String &fileName) {
   } catch (Exception e) {
     errorMsg = e.what();
   }
-  s_filesem.signal();
+  s_filesem.notify();
   if(errorMsg.length() > 0) {
     throwSqlError(SQL_FILE_DELETE_ERROR,_T("%s"),errorMsg.cstr());
   }
@@ -459,7 +459,7 @@ void DbFile::rename(const String &from, const String &to) {
   } catch(Exception e) {
     errorMsg = e.what();
   }
-  s_filesem.signal();
+  s_filesem.notify();
 
   if(errorMsg.length() > 0) {
     throwSqlError(SQL_FILE_RENAME_ERROR,_T("%s"),errorMsg.cstr());

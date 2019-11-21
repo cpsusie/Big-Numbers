@@ -140,19 +140,19 @@ private:
   inline void setStateFlags(BYTE flags) {
     m_gate.wait();
     m_stateFlags |= flags;
-    m_gate.signal();
+    m_gate.notify();
   }
 
   inline void clrStateFlags(BYTE flags) {
     m_gate.wait();
     m_stateFlags &= ~flags;
-    m_gate.signal();
+    m_gate.notify();
   }
 
   inline void clrAllStateFlags() {
     m_gate.wait();
     m_stateFlags = 0;
-    m_gate.signal();
+    m_gate.notify();
   }
 
   // timeout in milliseconds. If INFINTE, thread is blocked until input arrives

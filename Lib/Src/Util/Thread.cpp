@@ -27,12 +27,12 @@ public:
   void addThread(const Thread *thread) {
     m_gate.wait();
     add(thread);
-    m_gate.signal();
+    m_gate.notify();
   }
   void removeThread(const Thread *thread) {
     m_gate.wait();
     remove(thread);
-    m_gate.signal();
+    m_gate.notify();
   }
   void killDeamonThreads();
   inline bool isEmpty() const {
@@ -49,7 +49,7 @@ void ThreadSet::killDeamonThreads() {
       it.remove();
     }
   }
-  m_gate.signal();
+  m_gate.notify();
 }
 
 static ThreadSet *runningThreadSet = NULL;
@@ -62,14 +62,14 @@ static UINT threadStartup(Thread *thread) {
   try {
     result = thread->run();
     runningThreadSet->removeThread(thread);
-    thread->m_gate.signal();
+    thread->m_gate.notify();
   } catch(Exception e) {
     runningThreadSet->removeThread(thread);
-    thread->m_gate.signal();
+    thread->m_gate.notify();
     thread->handleUncaughtException(e);
   } catch(...) {
     runningThreadSet->removeThread(thread);
-    thread->m_gate.signal();
+    thread->m_gate.notify();
     thread->handleUncaughtException(Exception(_T("Unknown Exception")));
   }
   return result;

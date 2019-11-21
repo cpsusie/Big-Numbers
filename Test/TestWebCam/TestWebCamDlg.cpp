@@ -151,7 +151,7 @@ LRESULT CTestWebCamDlg::captureVideoStreamCallback(MMCapture &capture, PixRect *
   if (m_edgeDetectionOn) {
     m_lastImage->rop(CPoint(1,1), r.Size(), SRCINVERT, image, ORIGIN);
   }
-  m_gate.signal();
+  m_gate.notify();
   PostMessage(WM_PAINT);
   return S_OK;
 }
@@ -238,7 +238,7 @@ void CTestWebCamDlg::OnPaint() {
         videoWin->GetClientRect(&cr);
         PixRect::bitBlt(dc, cr, SRCCOPY, m_lastImage, ORIGIN);
       }
-      m_gate.signal();
+      m_gate.notify();
     }
     __super::OnPaint();
   }

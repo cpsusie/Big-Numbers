@@ -87,7 +87,7 @@ public:
   }
   void notifyFrameReady() {
     DLOG(_T("notify FrameReady\n"));
-    m_frameReady.signal();
+    m_frameReady.notify();
   }
   inline int getTotalFrameCount() const {
     return m_totalFrameCount;

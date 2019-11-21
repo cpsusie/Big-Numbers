@@ -35,7 +35,7 @@ void CharacterMarker::setMark(size_t index) {
   if(index >= m_markSet.getCapacity()) {
     m_gate.wait();
     m_markSet.setCapacity(index + 10);
-    m_gate.signal();
+    m_gate.notify();
   }
   if(!m_markSet.contains(index)) {
     if(!m_multiMarksAllowed) {
@@ -43,7 +43,7 @@ void CharacterMarker::setMark(size_t index) {
     }
     m_gate.wait();
     m_markSet.add(index);
-    m_gate.signal();
+    m_gate.notify();
 
     saveCtrlRect();
     saveTextLength();
@@ -75,7 +75,7 @@ void CharacterMarker::setMarksVisible(bool visible) {
   if(!m_markSet.isEmpty()) {
     paintAllMarkPositions(m_marksVisible);
   }
-  m_gate.signal();
+  m_gate.notify();
 }
 
 void CharacterMarker::unmarkAll() {
@@ -85,7 +85,7 @@ void CharacterMarker::unmarkAll() {
   m_gate.wait();
   paintAllMarkPositions(false);
   m_markSet.clear();
-  m_gate.signal();
+  m_gate.notify();
 }
 
 void CharacterMarker::setMarks(const BitSet &s) {
@@ -96,7 +96,7 @@ void CharacterMarker::setMarks(const BitSet &s) {
     m_gate.wait();
     m_markSet = s;
     paintAllMarkPositions(true);
-    m_gate.signal();
+    m_gate.notify();
   }
 }
 
@@ -143,7 +143,7 @@ void CharacterMarkerArray::add(CharacterMarker *m) {
   m_gate.wait();
   TRACE_NEW(m);
   __super::add(m);
-  m_gate.signal();
+  m_gate.notify();
 }
 
 void CharacterMarkerArray::clear() {
@@ -152,7 +152,7 @@ void CharacterMarkerArray::clear() {
     SAFEDELETE((*this)[i]);
   }
   __super::clear();
-  m_gate.signal();
+  m_gate.notify();
 }
 
 void CharacterMarkerArray::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
@@ -164,5 +164,5 @@ void CharacterMarkerArray::handlePropertyChanged(const PropertyContainer *source
       cm->setMarksVisible(blinkersVisible);
     }
   }
-  m_gate.signal();
+  m_gate.notify();
 }
