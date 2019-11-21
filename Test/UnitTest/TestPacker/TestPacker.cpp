@@ -465,8 +465,8 @@ namespace TestPacker {
     }
 
     TEST_METHOD(PackerBigReal) {
+      DigitPool *pool = BigRealResourcePool::fetchDigitPool();
       try {
-        DigitPool *pool = BigRealResourcePool::fetchDigitPool();
         Packer s,d;
         Array<BigReal> a;
         BigReal i(pool);
@@ -510,11 +510,12 @@ namespace TestPacker {
         }
         a.clear();
         i.setToZero();
-        BigRealResourcePool::releaseDigitPool(pool);
       } catch (Exception e) {
+        BigRealResourcePool::releaseDigitPool(pool);
         OUTPUT(_T("Exception:%s"), e.what());
         verify(false);
       }
+      BigRealResourcePool::releaseDigitPool(pool);
     }
   };
 }

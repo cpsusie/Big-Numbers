@@ -136,22 +136,29 @@ namespace TestGamma {
     }
 
     TEST_METHOD(Gamma05EqualPi) {
-      const double   g05D64 = gamma(0.5);
-      const Double80 g05D80 = gamma(Double80::_05   );
-      const BigReal  g05BR  = rGamma(BigReal::_05, 30);
+      DigitPool *pool = BigRealResourcePool::fetchDigitPool();
+      try {
+        const double   g05D64 = gamma(0.5);
+        const Double80 g05D80 = gamma(Double80::_05   );
+        const BigReal  g05BR  = rGamma(pool->_05(), 30);
 
-      const double   eD64   = fabs(g05D64 - sqrt(M_PI    ));
-      const Double80 eD80   = fabs(g05D80 - sqrt(DBL80_PI));
-      const BigReal  eBR    = fabs(g05BR  - rSqrt(rPi(35), 34));
+        const double   eD64   = fabs(g05D64 - sqrt(M_PI    ));
+        const Double80 eD80   = fabs(g05D80 - sqrt(DBL80_PI));
+        const BigReal  eBR    = fabs(g05BR  - rSqrt(rPi(35), 34));
 
-      INFO(_T("eD64:%23.15le"), eD64);
-      INFO(_T("eD80:%s"), toString(eD80, 22, 0, ios::scientific).cstr());
-      INFO(_T("eBR :%s"), toString(eBR, 30, 0, ios::scientific).cstr());
+        INFO(_T("eD64:%23.15le"), eD64);
+        INFO(_T("eD80:%s"), toString(eD80, 22, 0, ios::scientific).cstr());
+        INFO(_T("eBR :%s"), toString(eBR, 30, 0, ios::scientific).cstr());
 
-      verify(eD64 < 7e-13);
-      verify(eD80 == 0);
-      verify(eBR <= e(BigReal::_1, -32));
+        verify(eD64 < 7e-13);
+        verify(eD80 == 0);
+        verify(eBR <= e(BigReal::_1, -32));
+      } catch (Exception e) {
+        BigRealResourcePool::releaseDigitPool(pool);
+        OUTPUT(_T("Exception:%s"), e.what());
+        verify(false);
+      }
+      BigRealResourcePool::releaseDigitPool(pool);
     }
-
   };
 }
