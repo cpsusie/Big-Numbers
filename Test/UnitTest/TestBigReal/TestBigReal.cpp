@@ -309,15 +309,12 @@ void testBigReal(int threadCount, bool stopOnError) {
   testQuot();
   testQuot3();
 
-  testRandBigReal();
-  testRandBigInt();
-  testRandBigRational();
-
   testAssignOperators();
   testQuotLinear32();
   testQuotLinear64();
 
   testExactBinaryOperators();
+  testPi();
   testMRIsPrime();
 
   testSqrt();
@@ -327,7 +324,9 @@ void testBigReal(int threadCount, bool stopOnError) {
   testLog();
   testPow();
 
-  testPi();
+  testRandBigReal();
+  testRandBigInt();
+  testRandBigRational();
 
   testSin();
   testCos();

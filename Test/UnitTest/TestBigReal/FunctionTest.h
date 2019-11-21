@@ -251,12 +251,12 @@ typedef SynchronizedQueue<AbstractFunctionTest*> TestQueue;
 
 class TesterJob : public Runnable {
 private:
-  static Semaphore s_gate, s_allDone;
-  static int       s_runningCount;
-  static bool      s_allOk;
-  static bool      s_stopOnError;
-  static double    s_totalThreadTime;
-  const int        m_id;
+  static FastSemaphore s_gate, s_allDone;
+  static int           s_runningCount;
+  static bool          s_allOk;
+  static bool          s_stopOnError;
+  static double        s_totalThreadTime;
+  const int            m_id;
   static void incrRunning();
   static void decrRunning();
 

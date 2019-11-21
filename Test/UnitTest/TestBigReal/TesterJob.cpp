@@ -3,8 +3,8 @@
 #include <Math/FPU.h>
 #include "FunctionTest.h"
 
-Semaphore       TesterJob::s_gate;
-Semaphore       TesterJob::s_allDone(0);
+FastSemaphore   TesterJob::s_gate;
+FastSemaphore   TesterJob::s_allDone(0);
 int             TesterJob::s_runningCount    = 0;
 bool            TesterJob::s_allOk           = true;
 bool            TesterJob::s_stopOnError     = false;
