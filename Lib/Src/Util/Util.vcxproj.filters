@@ -1322,6 +1322,9 @@
     <ClInclude Include="..\..\Include\FastSemaphore.h">
       <Filter>Header Files\Process</Filter>
     </ClInclude>
+    <ClInclude Include="InputTemplate.h">
+      <Filter>Source Files\Misc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="BitSetx64.asm">
