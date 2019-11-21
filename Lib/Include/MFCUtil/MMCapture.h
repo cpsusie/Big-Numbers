@@ -2,7 +2,7 @@
 
 #include "PixRect.h"
 #include <Thread.h>
-#include <Semaphore.h>
+#include <FastSemaphore.h>
 #include <SynchronizedQueue.h>
 
 class MMCaptureDevice {
@@ -84,7 +84,7 @@ private:
   HWAVEOUT                             m_hWaveOut;
   SynchronizedQueue<AudioQueueElement> m_audioQueue;
   SynchronizedQueue<CaptureMessage>    m_messageQueue;
-  Semaphore                            m_gate, m_soundDone;
+  FastSemaphore                        m_gate, m_soundDone;
   bool                                 m_webCamConnected;
   bool                                 m_capturing;
   bool                                 m_stopPending;

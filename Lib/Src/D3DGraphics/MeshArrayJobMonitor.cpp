@@ -1,5 +1,6 @@
 #include "pch.h"
 #include <SynchronizedQueue.h>
+#include <FastSemaphore.h>
 #include <MFCUtil/ProgressWindow.h>
 #include <CPUInfo.h>
 #include <D3DGraphics/MeshArrayJobMonitor.h>
@@ -19,7 +20,7 @@ private:
   CompactStack<double>              m_jobStack;
   CompactArray<MeshResult>          m_resultArray;
   int                               m_jobCount;
-  mutable Semaphore                 m_gate;
+  mutable FastSemaphore             m_gate;
   StringArray                       m_errors;
   void clearResultQueue();
 public:
@@ -32,12 +33,12 @@ public:
   ~MeshArrayJobMonitor() {
     clearResultQueue();
   }
-  void addJob(  double t);
-  bool fetchJob(double &t);
-  void clearJobQueue();
-  void addResult(double t, LPD3DXMESH mesh);
-  void addError(const String &msg);
-  int  getJobsDone() const;
+  void      addJob(  double t);
+  bool      fetchJob(double &t);
+  void      clearJobQueue();
+  void      addResult(double t, LPD3DXMESH mesh);
+  void      addError(const String &msg);
+  int       getJobsDone() const;
   MeshArray getResult();
 };
 

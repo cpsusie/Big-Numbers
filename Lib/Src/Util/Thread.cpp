@@ -4,6 +4,7 @@
 #include <io.h>
 #include <MyUtil.h>
 #include <Thread.h>
+#include <FastSemaphore.h>
 #include <HashSet.h>
 #include <eh.h>
 
@@ -19,7 +20,7 @@ static int threadCmp(const Thread * const &t1, const Thread * const &t2) {
 
 class ThreadSet : private HashSet<const Thread*> {
 private:
-  Semaphore m_gate;
+  FastSemaphore m_gate;
 public:
   ThreadSet() : HashSet<const Thread*>(threadHash, threadCmp) {
   }

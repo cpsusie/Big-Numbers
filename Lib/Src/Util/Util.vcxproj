@@ -892,6 +892,7 @@
     <ClInclude Include="..\..\Include\WildCardRegex.h" />
     <ClInclude Include="..\..\Include\XmlDoc.h" />
     <ClInclude Include="..\..\Include\XMLUtil.h" />
+    <ClInclude Include="InputTemplate.h" />
     <ClInclude Include="IntelCPU\InstructionBuilder.h" />
     <ClInclude Include="IntelCPU\pch.h" />
     <ClInclude Include="IntelCPU\RexByte.h" />

@@ -3,6 +3,7 @@
 #include "BitSet.h"
 #include "Runnable.h"
 #include "SynchronizedQueue.h"
+#include "FastSemaphore.h"
 #include "CompactStack.h"
 
 class Thread;
@@ -47,7 +48,7 @@ private:
   String                    m_name;
   DWORD                     m_threadId;
   HANDLE                    m_threadHandle;
-  Semaphore                 m_gate;
+  FastSemaphore             m_gate;
   Runnable                 *m_target;
   UncaughtExceptionHandler *m_uncaughtExceptionHandler;
   bool                      m_isDeamon;
@@ -260,7 +261,7 @@ class ThreadPool {
 private:
   PoolThreadPoolThreads                          m_threadPool;
   PoolIdentifiedResources<ThreadPoolResultQueue> m_queuePool;
-  mutable Semaphore                              m_gate;
+  mutable FastSemaphore                          m_gate;
   int                                            m_processorCount;
   int                                            m_activeThreads, m_maxActiveThreads;
   static ThreadPool                              s_instance;

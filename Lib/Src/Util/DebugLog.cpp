@@ -3,7 +3,7 @@
 #include <FileNameSplitter.h>
 #include <TinyBitSet.h>
 #include <Date.h>
-#include <Semaphore.h>
+#include <FastSemaphore.h>
 #include <DebugLog.h>
 
 typedef enum {
@@ -22,8 +22,8 @@ static FILE     *traceFile        = stdout;
 static BitSet8   traceFlags;
 static TCHAR    *redirectFileName = NULL; // has to be a pointer, so it will not be deallocated before any
                                           // destructors of static variables do som logging
-static Semaphore gate;
-static BYTE      timeFormatCode   = 0;
+static FastSemaphore gate;
+static BYTE          timeFormatCode   = 0;
 
 static const String timeFormats[] = {
   EMPTYSTRING

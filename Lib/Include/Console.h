@@ -5,7 +5,7 @@
 #include "TextRect.h"
 #include "TextWin.h"
 #include "QueueList.h"
-#include "Semaphore.h"
+#include "FastSemaphore.h"
 
 #define FOREGROUNDCOLOR(c) ((c) & 0xf)
 #define BACKGROUNDCOLOR(c) ((c) & 0xf0)
@@ -25,10 +25,10 @@
 
 class Console {
 private:
-  static HANDLE    s_hStdIn;             // Handle for stdin
-  static HANDLE    s_hStdOut;            // Handle for stdout
-  static HANDLE    s_hStdErr;            // Handle for stderr
-  static Semaphore s_gate;
+  static HANDLE        s_hStdIn;             // Handle for stdin
+  static HANDLE        s_hStdOut;            // Handle for stdout
+  static HANDLE        s_hStdErr;            // Handle for stderr
+  static FastSemaphore s_gate;
   static void checkSysCall(DWORD c, int line);
   static void checkSysCall(BOOL  c, int line);
 

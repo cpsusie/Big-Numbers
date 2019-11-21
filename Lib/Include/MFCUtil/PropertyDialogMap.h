@@ -1,14 +1,14 @@
 #pragma once
 
 #include <HashMap.h>
-#include <Semaphore.h>
+#include <FastSemaphore.h>
 #include "PropertyDlgThread.h"
 
 class PropertyDialogMap : private IntHashMap<CPropertyDlgThread*> {
 private:
   PointerHashSet<const PropertyContainer*> m_containerSet;
   mutable CPropertyDlgThread              *m_visibleDlgThread;
-  mutable Semaphore                        m_gate;
+  mutable FastSemaphore                    m_gate;
   void hideCurrentVisibleDialog() const;
 public:
   PropertyDialogMap() : m_visibleDlgThread(NULL) {

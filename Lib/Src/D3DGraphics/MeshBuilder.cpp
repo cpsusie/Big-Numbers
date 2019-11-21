@@ -1,5 +1,5 @@
 #include "pch.h"
-#include <Semaphore.h>
+#include <FastSemaphore.h>
 #include <comdef.h>
 #include <atlconv.h>
 #include <CompactHashMap.h>
@@ -211,7 +211,7 @@ D3DXCube3 MeshBuilder::getBoundingBox() const {
   return D3DXCube3(pmin,pmax);
 }
 
-static Semaphore   meshCreatorGate;
+static FastSemaphore   meshCreatorGate;
 
 template<class VertexType, class IndexType> class MeshCreator {
 private:
