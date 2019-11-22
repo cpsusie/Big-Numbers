@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include <RefCountedObject.h>
 #include "SocketChannel.h"
+#include <DebugLog.h>
 
 class SocketConnecter : public Thread {
 private:

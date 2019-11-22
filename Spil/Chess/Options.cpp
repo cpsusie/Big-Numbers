@@ -1024,10 +1024,10 @@ EngineOptionValueArray Options::getEngineOptionValues(Player player, const Strin
   RegistryKey key = getEngineOptionsSubKey(player, engineName);
   for(Iterator<RegistryValue> it = key.getValueIterator(); it.hasNext();) {
     RegistryValue value = it.next();
-    if(value.getType() == REG_SZ) {
-      result.setValue(value.getName(), (String)value);
+    if(value.type() == REG_SZ) {
+      result.setValue(value.name(), (String)value);
     } else {
-      result.setValue(value.getName(), (int)((ULONG)value));
+      result.setValue(value.name(), (int)((ULONG)value));
     }
   }
   return result;

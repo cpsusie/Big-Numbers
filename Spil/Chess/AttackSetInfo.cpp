@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <DebugLog.h>
 
 static void setBits(FieldSet &set, PositionArray p) {
   if(p == NULL) return;
