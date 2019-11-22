@@ -389,6 +389,9 @@ void RegValueTypeSet::checkIsValidType(const TCHAR *method, UINT type, const Str
 
 // --------------------------------------------getValue---------------------------------------------
 
+#pragma warning(disable : 4073)
+#pragma init_seg(lib)
+
 // { REG_DWORD, REG_DWORD_BIG_ENDIAN }
 static const RegValueTypeSet regDWORDTypeSet(REG_DWORD , REG_DWORD_BIG_ENDIAN, -1);
 // { REG_QWORD }
