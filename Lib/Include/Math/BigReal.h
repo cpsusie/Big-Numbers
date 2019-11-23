@@ -1446,6 +1446,9 @@ public:
   static const ConstBigInt  _2;          // 2
   static const ConstBigReal _05;         // 0.5
 
+  static const ConstBigInt  _i16_min;    // _I16_MIN
+  static const ConstBigInt  _i16_max;    // _I16_MAX
+  static const ConstBigInt  _ui16_max;   // _UI16_MAX
   static const ConstBigInt  _i32_min;    // _I32_MIN
   static const ConstBigInt  _i32_max;    // _I32_MAX
   static const ConstBigInt  _ui32_max;   // _UI32_MAX

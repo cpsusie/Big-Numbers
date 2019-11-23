@@ -52,8 +52,8 @@ public:
   explicit BigRational(const char    *s                                   , DigitPool *digitPool = NULL);
   explicit BigRational(const wchar_t *s                                   , DigitPool *digitPool = NULL);
 
-  inline BigRational &operator=(const BigInt   &n);
-  inline BigRational &operator=(const Rational &r);
+  BigRational &operator=(const BigInt   &n);
+  BigRational &operator=(const Rational &r);
 
   friend BigRational operator+(const BigRational &l, const BigRational &r);
   friend BigRational operator-(const BigRational &l, const BigRational &r);

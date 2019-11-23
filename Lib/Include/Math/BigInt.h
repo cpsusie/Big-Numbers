@@ -153,6 +153,10 @@ public:
   // Fast version of *this /= 2
   BigInt &divide2();
 
+  static const ConstBigInt _BINT_QNAN;  // non-signaling NaN (quiet NaN)
+  static const ConstBigInt _BINT_PINF;  // +infinity;
+  static const ConstBigInt _BINT_NINF;  // -infinity;
+
   // Checks that this is a consistent BigReal with all the various invariants satisfied.
   // Throws an excpeption if not with a descripion of what is wrong. For debugging
   virtual void assertIsValid(const TCHAR *file, int line, const TCHAR *name) const;

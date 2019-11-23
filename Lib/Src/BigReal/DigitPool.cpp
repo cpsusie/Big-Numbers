@@ -35,6 +35,9 @@ static InitBigReal initBigReal;
 const ConstBigInt  BigReal::_0(        0         );
 const ConstBigInt  BigReal::_1(        1         );
 const ConstBigInt  BigReal::_2(        2         );
+const ConstBigInt  BigReal::_i16_min(  _I16_MIN  );
+const ConstBigInt  BigReal::_i16_max(  _I16_MAX  );
+const ConstBigInt  BigReal::_ui16_max( _UI16_MAX );
 const ConstBigInt  BigReal::_i32_min(  _I32_MIN  );
 const ConstBigInt  BigReal::_i32_max(  _I32_MAX  );
 const ConstBigInt  BigReal::_ui32_max( _UI32_MAX );
@@ -55,9 +58,13 @@ const ConstBigReal BigReal::_dbl80_max(DBL80_MAX );
 const ConstBigReal BigReal::_C1third(0.333333f   );
 
 // no need for signalling NaN
-const ConstBigReal BigReal::_BR_QNAN( std::numeric_limits<double>::quiet_NaN());   // non-signaling NaN (quiet NaN)
-const ConstBigReal BigReal::_BR_PINF( std::numeric_limits<double>::infinity());    // +infinity;
-const ConstBigReal BigReal::_BR_NINF(-std::numeric_limits<double>::infinity());    // -infinity;
+const ConstBigReal     BigReal::_BR_QNAN( std::numeric_limits<double>::quiet_NaN());   // non-signaling NaN (quiet NaN)
+const ConstBigReal     BigReal::_BR_PINF( std::numeric_limits<double>::infinity());    // +infinity;
+const ConstBigReal     BigReal::_BR_NINF(-std::numeric_limits<double>::infinity());    // -infinity;
+
+const ConstBigInt      BigInt::_BINT_QNAN(quot( BigReal::_0, BigReal::_0));  // non-signaling NaN (quiet NaN)
+const ConstBigInt      BigInt::_BINT_PINF(quot( BigReal::_1, BigReal::_0));  // +infinity;
+const ConstBigInt      BigInt::_BINT_NINF(quot(-BigReal::_1, BigReal::_0));  // -infinity;
 
 const ConstBigRational BigRational::_0(         BigReal::_0, BigReal::_1);  // 0
 const ConstBigRational BigRational::_05(        BigReal::_1, BigReal::_2);  // 1/2
