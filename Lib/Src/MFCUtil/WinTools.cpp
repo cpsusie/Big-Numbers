@@ -28,13 +28,6 @@ CRect getClientRect(const CWnd *wnd) {
   return r;
 }
 
-CRect getClientRect(HWND wnd) {
-  if(wnd == NULL) return CRect(0,0,0,0);
-  CRect r;
-  GetClientRect(wnd, &r);
-  return r;
-}
-
 CRect getRelativeWindowRect(const CWnd *wnd, int id) {
   return getWindowRect(wnd->GetDlgItem(id));
 }
@@ -48,13 +41,6 @@ CRect getWindowRect(const CWnd *wnd) {
   WINDOWPLACEMENT wp;
   wnd->GetWindowPlacement(&wp);
   return wp.rcNormalPosition;
-}
-
-CRect getWindowRect(HWND wnd) {
-  if(wnd == NULL) return CRect(0,0,0,0);
-  CRect rect;
-  ::GetWindowRect(wnd, &rect);
-  return rect;
 }
 
 CRect getWindowRect(const CWnd *wnd, int id) {
@@ -115,11 +101,6 @@ CSize getWindowSize(const CWnd *wnd, int id) {
 
 CSize getWindowSize(const CWnd *wnd) {
   return getWindowRect(wnd).Size();
-}
-
-CSize getWindowSize(HWND hwnd) {
-  if(hwnd == NULL) return CSize(0,0);
-  return getWindowRect(hwnd).Size();
 }
 
 CRect getTaskBarRect() {
@@ -328,10 +309,10 @@ CSize pixelsToMillimeters(HDC hdc, const CSize &size) { // convert size in pixel
 
 CRect makePositiveRect(const CRect &r) {
   CRect result = r;
-  if (result.Width() < 0) {
+  if(result.Width() < 0) {
     std::swap(result.left, result.right);
   }
-  if (result.Height() < 0) {
+  if(result.Height() < 0) {
     std::swap(result.top, result.bottom);
   }
   return result;

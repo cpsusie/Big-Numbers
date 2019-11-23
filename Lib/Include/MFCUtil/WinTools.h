@@ -83,16 +83,31 @@ String setMenuItemText(          const CWnd  *wnd,  UINT          id, const Stri
 bool   toggleMenuItem(           const CWnd  *wnd,  UINT          id        );
 
 
+// Throws exception on fail
+WINDOWPLACEMENT getWindowPlacement(HWND hwnd);
+// Throws exception on fail
+void            setWindowPlacement(HWND hwnd, const WINDOWPLACEMENT &wpl);
+// Throws exception on fail
+CRect           getWindowRect(     HWND hwnd);
+// Throws exception on fail
+CPoint          getWindowPosition( HWND hwnd);
+// Throws exception on fail
+void            setWindowPosition( HWND hwnd, const CPoint &pos);
+// Throws exception on fail
+CSize           getWindowSize(     HWND hwnd);
+// Throws exception on fail
+void            setWindowSize(     HWND hwnd, const CSize &size);
+// Throws exception on fail
+CRect           getClientRect(     HWND hwnd);
+
 CRect  getRelativeClientRect(const CWnd *wnd, int id);
 CRect  getRelativeWindowRect(const CWnd *wnd, int id);
 bool   setRelativeWindowRect(      CWnd *wnd, int id, const CRect &rect);
 bool   setClientRectSize(          CWnd *wnd,         const CSize &size);
 bool   setClientRectSize(          CWnd *wnd, int id, const CSize &size);
 CRect  getClientRect(        const CWnd *wnd);
-CRect  getClientRect(              HWND  wnd);
 CRect  getClientRect(        const CWnd *wnd, int id);
 CRect  getWindowRect(        const CWnd *wnd);
-CRect  getWindowRect(              HWND  wnd);
 
 CRect  getWindowRect(        const CWnd *wnd, int id);
 bool   setWindowRect(              CWnd *wnd,         const CRect &rect);
@@ -100,7 +115,6 @@ bool   setWindowRect(              CWnd *wnd, int id, const CRect &rect);
 bool   centerWindow(               CWnd *wnd);
 void   putWindowBesideWindow(      CWnd *wnd, CWnd *otherWindow);
 CSize  getWindowSize(        const CWnd *wnd);
-CSize  getWindowSize(              HWND  wnd);
 CSize  getWindowSize(        const CWnd *wnd, int id);
 bool   setWindowSize(              CWnd *wnd,         const CSize &size);
 bool   setWindowSize(              CWnd *wnd, int id, const CSize &size);
