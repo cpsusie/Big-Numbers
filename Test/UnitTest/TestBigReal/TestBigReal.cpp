@@ -247,9 +247,13 @@ static void testAcot() {
   testFunction(_T("rAcot"), xInterval, rAcot);
 }
 
-static void testReadWriteBigReal()     { TesterJob::addFunctionTest(new RawFunctionTest(_T("read-write BigReal"    ), testReadWriteBigReal    )); }
-static void testReadWriteBigInt()      { TesterJob::addFunctionTest(new RawFunctionTest(_T("read-write BigInt"     ), testReadWriteBigInt     )); }
-static void testReadWriteBigRational() { TesterJob::addFunctionTest(new RawFunctionTest(_T("read-write BigRational"), testReadWriteBigRational)); }
+static void testReadWriteBigReal()           { TesterJob::addFunctionTest(new RawFunctionTest(_T("read-write BigReal"    ), testReadWriteBigReal          )); }
+static void testReadWriteBigInt()            { TesterJob::addFunctionTest(new RawFunctionTest(_T("read-write BigInt"     ), testReadWriteBigInt           )); }
+static void testReadWriteBigRational()       { TesterJob::addFunctionTest(new RawFunctionTest(_T("read-write BigRational"), testReadWriteBigRational      )); }
+
+static void testReadWritePackerBigReal()     { TesterJob::addFunctionTest(new RawFunctionTest(_T("Packer BigReal"        ), testReadWritePackerBigReal    )); }
+static void testReadWritePackerBigInt()      { TesterJob::addFunctionTest(new RawFunctionTest(_T("Packer BigInt"         ), testReadWritePackerBigInt     )); }
+static void testReadWritePackerBigRational() { TesterJob::addFunctionTest(new RawFunctionTest(_T("Packer BigRational"    ), testReadWritePackerBigRational)); }
 
 static double getPiTimeEstimate(int decimals) {
   return ((7.98881e-7 * decimals - 0.00109247) * decimals + 64.2134) * decimals - 70058.7;
@@ -337,9 +341,14 @@ void testBigReal(int threadCount, bool stopOnError) {
   testAtan();
   testAcot();
 
+
   testReadWriteBigReal();
   testReadWriteBigInt();
   testReadWriteBigRational();
+
+  testReadWritePackerBigReal();
+  testReadWritePackerBigInt();
+  testReadWritePackerBigRational();
 
 //  TesterJob::shuffleTestOrder();
 

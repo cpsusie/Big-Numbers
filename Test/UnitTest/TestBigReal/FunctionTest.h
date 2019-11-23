@@ -239,6 +239,9 @@ void testPi(                        TestStatistic &stat);
 void testReadWriteBigReal(          TestStatistic &stat);
 void testReadWriteBigInt(           TestStatistic &stat);
 void testReadWriteBigRational(      TestStatistic &stat);
+void testReadWritePackerBigReal(    TestStatistic &stat);
+void testReadWritePackerBigInt(     TestStatistic &stat);
+void testReadWritePackerBigRational(TestStatistic &stat);
 
 #define MAXDIGITS       400
 #define DIGITSTEP         3

@@ -2,6 +2,7 @@
 #include <math.h>
 #include <Random.h>
 #include <CompactLineArray.h>
+#include <ByteMemoryStream.h>
 #include <StrStream.h>
 #include <Math/MathLib.h>
 #include <Math/Rational.h>
@@ -28,6 +29,12 @@ using namespace std;
 namespace TestRational {		
 
 #include <UnitTestTraits.h>
+
+  static void sendReceive(Packer &dst, const Packer &src) {
+    ByteArray a;
+    src.write(ByteMemoryOutputStream(a));
+    dst.read(ByteMemoryInputStream(a));
+  }
 
   TEST_CLASS(TestRational) {
     public:
@@ -382,6 +389,27 @@ namespace TestRational {
 
 #undef endl
 
+    template<class NumType> Array<NumType> generateNumArray(size_t count, NumType(*unitRand)()) {
+      Array<NumType> list(2*count);
+
+      list.add(numeric_limits<NumType>::lowest());
+      list.add(numeric_limits<NumType>::max());
+      list.add(numeric_limits<NumType>::epsilon());
+      list.add(-numeric_limits<NumType>::infinity());
+      list.add(numeric_limits<NumType>::infinity());
+      list.add(numeric_limits<NumType>::quiet_NaN());
+      list.add(numeric_limits<NumType>::signaling_NaN());
+      list.add(NumType::_0);
+
+      for (size_t i = 0; i < count; i++) {
+        const NumType x = unitRand();
+        list.add(x);
+        list.add(-x);
+      }
+      return list;
+    }
+
+
     template<class DType> void _testReadWrite(DType(*unitRand)()
                                              ,const DType &maxTolerance
                                              ,const TCHAR *dtypeName
@@ -391,20 +419,8 @@ namespace TestRational {
       //      debugLog(_T("%s\n%s\n"), __TFUNCTION__, FPU::getState().toString().cstr());
 
       const size_t count = 500;
-      CompactArray<DType> list(count);
+      Array<DType> list = generateNumArray<DType>(count, unitRandRational);
 
-      list.add(numeric_limits<DType>::lowest());
-      list.add(numeric_limits<DType>::max());
-      list.add(numeric_limits<DType>::epsilon());
-      list.add(-numeric_limits<DType>::infinity());
-      list.add(numeric_limits<DType>::infinity());
-      list.add(numeric_limits<DType>::quiet_NaN());
-      list.add(numeric_limits<DType>::signaling_NaN());
-
-      for(size_t i = 0; i < count; i++) {
-        const DType x = unitRand();
-        list.add(x);
-      }
       ofstream out(fileName.cstr());
       for(size_t i = 0; i < list.size(); i++) {
         out << list[i] << endl;
@@ -448,6 +464,55 @@ namespace TestRational {
 
     TEST_METHOD(TestReadWrite) {
       _testReadWrite<Rational>(unitRandRational, 0, _T("Rational"));
+    }
+
+    TEST_METHOD(TestPackerRational) {
+      try {
+        Packer s,d;
+        Array<Rational> a = generateNumArray<Rational>(500, unitRandRational);
+        Rational i;
+        for(i = SHRT_MIN; i <= SHRT_MAX; i++) {
+          a.add(i);
+          a.add(-i);
+          if(!i.isZero()) {
+            a.add(reciprocal(i));
+            a.add(-reciprocal(i));
+          }
+        }
+        const Rational maxRat = RAT_MAX / 3;
+        const Rational step(3,2);
+
+        while(i < maxRat) {
+          a.add(i);
+          a.add(-i);
+          i *= step;
+        }
+
+        for(size_t i = 0; i < a.size(); i++) {
+          s << a[i];
+        }
+        sendReceive(d,s);
+        for(size_t i = 0; i < a.size(); i++) {
+          const Rational &expected = a[i];
+          Rational data;
+          d >> data;
+          if(isnormal(data) || (data == 0)) {
+            verify(data == a[i]);
+          } else if(isPInfinity(data)) {
+            verify(isPInfinity(expected));
+          } else if(isNInfinity(data)) {
+            verify(isNInfinity(expected));
+          } else if(isnan(data)) {
+            verify(isnan(expected));
+          } else {
+            TCHAR tmpstr[100];
+            throwException(_T("Unknown Rational-classification for a[%zu]:%s"),i,_rattot(tmpstr,data,10));
+          }
+        }
+      } catch (Exception e) {
+        OUTPUT(_T("Exception:%s"), e.what());
+        verify(false);
+      }
     }
 
     TEST_METHOD(RationalPowers) {

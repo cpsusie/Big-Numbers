@@ -1,8 +1,7 @@
 #include "stdafx.h"
 #include <Math/Int128.h>
 #include <Math/Double80.h>
-#include <Math/BigReal.h>
-#include <Math/Rational.h>
+#include <Math/Double64.h>
 #include <ByteMemoryStream.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
@@ -410,112 +409,6 @@ namespace TestPacker {
         OUTPUT(_T("Exception:%s"), e.what());
         verify(false);
       }
-    }
-
-    TEST_METHOD(PackerRational) {
-      try {
-        Packer s,d;
-        CompactArray<Rational> a;
-        Rational i;
-        a.add(RAT_NAN);
-        a.add(RAT_PINF);
-        a.add(RAT_NINF);
-        for(i = SHRT_MIN; i <= SHRT_MAX; i++) {
-          a.add(i);
-          a.add(-i);
-          if(!i.isZero()) {
-            a.add(reciprocal(i));
-            a.add(-reciprocal(i));
-          }
-        }
-        const Rational maxRat = RAT_MAX / 3;
-        const Rational step(3,2);
-
-        while(i < maxRat) {
-          a.add(i);
-          a.add(-i);
-          i *= step;
-        }
-
-        for(size_t i = 0; i < a.size(); i++) {
-          s << a[i];
-        }
-        sendReceive(d,s);
-        for(size_t i = 0; i < a.size(); i++) {
-          const Rational &expected = a[i];
-          Rational data;
-          d >> data;
-          if(isnormal(data) || (data == 0)) {
-            verify(data == a[i]);
-          } else if(isPInfinity(data)) {
-            verify(isPInfinity(expected));
-          } else if(isNInfinity(data)) {
-            verify(isNInfinity(expected));
-          } else if(isnan(data)) {
-            verify(isnan(expected));
-          } else {
-            TCHAR tmpstr[100];
-            throwException(_T("Unknown Rational-classification for a[%zu]:%s"),i,_rattot(tmpstr,data,10));
-          }
-        }
-      } catch (Exception e) {
-        OUTPUT(_T("Exception:%s"), e.what());
-        verify(false);
-      }
-    }
-
-    TEST_METHOD(PackerBigReal) {
-      DigitPool *pool = BigRealResourcePool::fetchDigitPool();
-      try {
-        Packer s,d;
-        Array<BigReal> a;
-        BigReal i(pool);
-        a.add(pool->nan());
-        a.add(pool->pinf());
-        a.add(pool->ninf());
-        for(i = SHRT_MIN; i <= SHRT_MAX; i++) {
-          a.add(i);
-          a.add(-i);
-          if(!i.isZero()) {
-            a.add(rQuot(pool->_1(),i,50));
-            a.add(-rQuot(pool->_1(),i,100));
-          }
-        }
-        const BigReal factor(3.1,pool);
-        for(int count = 0; count < 100; count++) {
-          a.add(i);
-          a.add(-i);
-          i *= factor;
-        }
-
-        for(size_t i = 0; i < a.size(); i++) {
-          s << a[i];
-        }
-        sendReceive(d,s);
-        for(size_t i = 0; i < a.size(); i++) {
-          BigReal data(pool);
-          const BigReal &expected = a[i];
-          d >> data;
-          if(isnormal(data) || data.isZero()) {
-            verify(data == expected);
-          } else if(isPInfinity(data)) {
-            verify(isPInfinity(expected));
-          } else if(isNInfinity(data)) {
-            verify(isNInfinity(expected));
-          } else if(isnan(data)) {
-            verify(isnan(expected));
-          } else {
-            throwException(_T("Unknown BigReal-classification for a[%zu]:%s"),i,toString(data).cstr());
-          }
-        }
-        a.clear();
-        i.setToZero();
-      } catch (Exception e) {
-        BigRealResourcePool::releaseDigitPool(pool);
-        OUTPUT(_T("Exception:%s"), e.what());
-        verify(false);
-      }
-      BigRealResourcePool::releaseDigitPool(pool);
     }
   };
 }

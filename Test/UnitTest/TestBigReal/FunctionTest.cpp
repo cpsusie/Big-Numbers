@@ -863,12 +863,12 @@ void testReadWriteBigReal(TestStatistic &stat) {
     BigReal data(pool);
     in >> data;
     if(in.bad()) {
-      stat.out() << _T("Read number line ") << i << _T(" failed") << endl;
+      stat.out() << "Read BigReal line " << i << " failed" << endl;
       THROWTESTERROR();
     }
     if(data._isfinite()) {
       if(data != expected) {
-        ERRLOG << _T("Read BigReal at line ") << i << _T("(=") << FullFormatBigReal(data) << _T(") != exptected (=") << FullFormatBigReal(expected) << _T(")") << endl;
+        ERRLOG << "Read BigReal at line " << i << "(=" << FullFormatBigReal(data) << ") != exptected (=" << FullFormatBigReal(expected) << ")" << endl;
         THROWTESTERROR();
         verify(data == expected);
       }
@@ -911,11 +911,11 @@ void testReadWriteBigInt(TestStatistic &stat) {
     BigInt x(pool);
     in >> x;
     if(in.bad()) {
-      stat.out() << _T("Read integer line ") << i << _T(" failed") << endl;
+      stat.out() << "Read BigInt line " << i << " failed" << endl;
       THROWTESTERROR();
     }
     if(x != expected) {
-      ERRLOG << _T("Read BigReal at line ") << i << _T("(=") << FullFormatBigReal(x) << _T(") != exptected (=") << FullFormatBigReal(expected) << _T(")") << endl;
+      ERRLOG << "Read BigInt at line " << i << "(=" << x << ") != exptected (=" << expected << ")" << endl;
       THROWTESTERROR();
     }
   }
@@ -953,15 +953,170 @@ void testReadWriteBigRational(TestStatistic &stat) {
     BigRational x(pool);
     in >> x;
     if(in.bad()) {
-      stat.out() << _T("Read Rational line ") << i << _T(" failed") << endl;
+      stat.out() << "Read BigRational line " << i << " failed" << endl;
       THROWTESTERROR();
     }
     if(x != expected) {
-      ERRLOG << _T("Read BigRational at line ") << i << _T("(=") << x << _T(") != exptected (=") << expected << _T(")") << endl;
+      ERRLOG << "Read BigRational at line " << i << "(=" << x << ") != exptected (=" << expected << ")" << endl;
       THROWTESTERROR();
     }
   }
   in.close();
+  stat.setEndMessageToOk();
+}
+
+static void sendReceive(Packer &dst, const Packer &src) {
+  ByteArray a;
+  src.write(ByteMemoryOutputStream(a));
+  dst.read(ByteMemoryInputStream(a));
+}
+
+void testReadWritePackerBigReal(TestStatistic &stat) {
+  DigitPool *pool = stat.getDigitPool();
+  Packer s,d;
+  Array<BigReal> a;
+  BigReal i(pool);
+  a.add(pool->nan());
+  a.add(pool->pinf());
+  a.add(pool->ninf());
+  a.add(pool->_0());
+  for(i = BigReal::_i16_min; i <= BigReal::_i16_max; ++i) {
+    a.add(i);
+    a.add(-i);
+    if(!i.isZero()) {
+      a.add( rQuot(pool->_1(),i,50));
+      a.add(-rQuot(pool->_1(),i,100));
+    }
+  }
+  const BigReal factor(3.1,pool);
+  for(int count = 0; count < 100; count++) {
+    a.add( i);
+    a.add(-i);
+    i *= factor;
+  }
+
+  for(size_t i = 0; i < a.size(); i++) {
+    s << a[i];
+  }
+  sendReceive(d,s);
+  BigReal data(pool);
+  for(size_t i = 0; i < a.size(); i++) {
+    const BigReal &expected = a[i];
+    d >> data;
+    if(data._isfinite()) {
+      if(data != expected) {
+        ERRLOG << "BigReal[" << i << "] =" << FullFormatBigReal(data) << " != exptected (=" << FullFormatBigReal(expected) << ")" << endl;
+        THROWTESTERROR();
+        verify(data == expected);
+      }
+    } else if(isPInfinity(data)) {
+      verify(isPInfinity(expected));
+    } else if (isNInfinity(data)) {
+      verify(isNInfinity(expected));
+    } else if(isnan(data)) {
+      verify(isnan(expected));
+    } else {
+      throwException(_T("Unknown BigReal-classification for a[%zu]:%s"), i, toString(data).cstr());
+    }
+  }
+  a.clear();
+  stat.setEndMessageToOk();
+}
+
+void testReadWritePackerBigInt(TestStatistic &stat) {
+  DigitPool *pool = stat.getDigitPool();
+  Packer s,d;
+  Array<BigInt> a;
+  BigInt i(pool);
+  a.add(i = BigInt::_BINT_QNAN);
+  a.add(i = BigInt::_BINT_PINF);
+  a.add(i = BigInt::_BINT_NINF);
+  a.add(i = BigInt::_0        );
+  for(i = BigReal::_i16_min; i <= BigReal::_i16_max; ++i) {
+    a.add(i);
+    a.add(-i);
+  }
+  const BigInt factor(37,pool);
+  for(int count = 0; count < 100; count++) {
+    a.add( i);
+    a.add(-i);
+    i *= factor;
+  }
+
+  for(size_t i = 0; i < a.size(); i++) {
+    s << a[i];
+  }
+  sendReceive(d,s);
+  BigInt data(pool);
+  for(size_t i = 0; i < a.size(); i++) {
+    const BigInt &expected = a[i];
+    d >> data;
+    if(data._isfinite()) {
+      if(data != expected) {
+        ERRLOG << "BigInt[" << i << "] =" << data << " != exptected (=" << expected << ")" << endl;
+        THROWTESTERROR();
+        verify(data == expected);
+      }
+    } else if(isPInfinity(data)) {
+      verify(isPInfinity(expected));
+    } else if (isNInfinity(data)) {
+      verify(isNInfinity(expected));
+    } else if(isnan(data)) {
+      verify(isnan(expected));
+    } else {
+      throwException(_T("Unknown BigInt-classification for a[%zu]:%s"), i, toString(data).cstr());
+    }
+  }
+  a.clear();
+  stat.setEndMessageToOk();
+}
+
+void testReadWritePackerBigRational(TestStatistic &stat) {
+  DigitPool *pool = stat.getDigitPool();
+  Packer s,d;
+  Array<BigRational> a;
+  BigRational i(pool);
+  a.add(BigRational::_BRAT_QNAN);
+  a.add(BigRational::_BRAT_PINF);
+  a.add(BigRational::_BRAT_NINF);
+  a.add(BigRational::_0);
+
+  for (i = BigReal::_i16_min; i <= BigReal::_i16_max; i += BigReal::_1) {
+    a.add(i);
+    a.add(-i);
+  }
+  const BigRational factor(3,2,pool);
+  for(int count = 0; count < 100; count++) {
+    a.add( i);
+    a.add(-i);
+    i *= factor;
+  }
+
+  for(size_t i = 0; i < a.size(); i++) {
+    s << a[i];
+  }
+  sendReceive(d,s);
+  BigRational data(pool);
+  for(size_t i = 0; i < a.size(); i++) {
+    const BigRational &expected = a[i];
+    d >> data;
+    if(data._isfinite()) {
+      if(data != expected) {
+        ERRLOG << "BigRational[" << i << _T("] =") << data << _T(" != exptected (=") << expected << _T(")") << endl;
+        THROWTESTERROR();
+        verify(data == expected);
+      }
+    } else if(isPInfinity(data)) {
+      verify(isPInfinity(expected));
+    } else if (isNInfinity(data)) {
+      verify(isNInfinity(expected));
+    } else if(isnan(data)) {
+      verify(isnan(expected));
+    } else {
+      throwException(_T("Unknown BigRational-classification for a[%zu]:%s"), i, toString(data).cstr());
+    }
+  }
+  a.clear();
   stat.setEndMessageToOk();
 }
 
