@@ -275,6 +275,8 @@ static void initConsole() {
   winH--;
   Console::setWindowAndBufferSize(0, 0, winW, winH);
   Console::clear();
+  HWND hwnd = Console::getWindow();
+  setWindowPosition(hwnd, CPoint(10, 10));
 }
 
 void testBigReal(int threadCount, bool stopOnError) {
