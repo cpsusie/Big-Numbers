@@ -14,9 +14,9 @@ class TimerThread;
 
 class Timer {
 private:
-  const int         m_id;
-  TimerThread      *m_thread;
-  mutable Semaphore m_gate;
+  const int             m_id;
+  TimerThread          *m_thread;
+  mutable FastSemaphore m_gate;
 public:
   Timer(int id);
   virtual ~Timer();

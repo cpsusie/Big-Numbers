@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Thread.h>
+#include <Semaphore.h>
 #include <ByteStream.h>
 #include "Wintools.h"
 #include "PixRect.h"

@@ -862,6 +862,7 @@
     <ClInclude Include="..\..\Include\Semaphore.h" />
     <ClInclude Include="..\..\Include\Set.h" />
     <ClInclude Include="..\..\Include\SHA256.h" />
+    <ClInclude Include="..\..\Include\SingletonFactory.h" />
     <ClInclude Include="..\..\Include\SocketStream.h" />
     <ClInclude Include="..\..\Include\SourcePosition.h" />
     <ClInclude Include="..\..\Include\Stack.h" />
@@ -879,6 +880,7 @@
     <ClInclude Include="..\..\Include\TextRect.h" />
     <ClInclude Include="..\..\Include\TextWin.h" />
     <ClInclude Include="..\..\Include\Thread.h" />
+    <ClInclude Include="..\..\Include\ThreadPool.h" />
     <ClInclude Include="..\..\Include\TimeEstimator.h" />
     <ClInclude Include="..\..\Include\TimeMeasure.h" />
     <ClInclude Include="..\..\Include\Timer.h" />
@@ -908,6 +910,7 @@
     <ClInclude Include="RegexIStream\PatternScanner.h" />
     <ClInclude Include="RegexIStream\pch.h" />
     <ClInclude Include="RegexIStream\SubNFA.h" />
+    <ClInclude Include="ThreadPoolInternal.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AbstractIterator.cpp" />

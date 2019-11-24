@@ -1325,6 +1325,15 @@
     <ClInclude Include="InputTemplate.h">
       <Filter>Source Files\Misc</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Include\SingletonFactory.h">
+      <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\ThreadPool.h">
+      <Filter>Header Files\Process</Filter>
+    </ClInclude>
+    <ClInclude Include="ThreadPoolInternal.h">
+      <Filter>Source Files\Process</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="BitSetx64.asm">

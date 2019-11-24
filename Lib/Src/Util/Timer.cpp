@@ -1,5 +1,6 @@
 #include "pch.h"
 #include <Timer.h>
+#include <Semaphore.h>
 
 #define KILLED                 0x01
 #define REPEAT_TIMEOUT         0x02
@@ -14,7 +15,8 @@
 class TimerThread : private Thread {
 private:
   Timer          &m_timer;
-  Semaphore       m_timeout, m_stateSem;
+  FastSemaphore   m_stateSem;
+  Semaphore       m_timeout;
   BYTE            m_state;
   int             m_msec; // msec
   TimeoutHandler &m_handler;

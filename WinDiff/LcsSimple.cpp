@@ -10,6 +10,10 @@
 #include <Math.h>
 #include "LcsSimple.h"
 
+// #define DUMPMATCHLIST
+// #define DUMPTRESHLINKS
+// #define DUMPELEMENTPAIRS
+
 LcsSimple::LcsSimple(const LineArray &a, const LineArray &b, UINT *docSize, LcsComparator &cmp, CompareJob *job)
 : Lcs(cmp, job)
 {
@@ -99,9 +103,9 @@ BEGIN_TIMEMEASURE(5, _T("Comparing"));
     }
   }
 
-#ifdef _DEBUG
+#ifdef DUMPTRESHLINKS
 //  dumpThreshLinks();
-#endif // _DEBUG
+#endif // DUMPTRESHLINKS
   intptr_t k;
   for(k = m_n; k >= 0; k--) {
     if(m_tresh[k] < mnp1) {
@@ -135,10 +139,10 @@ BEGIN_TIMEMEASURE(6, _T("Building pairs"));
       result.add(ElementPair(pairs[k]->m_i-1,pairs[k]->m_j-1));
     }
   }
-#ifdef _DEBUG
+#ifdef DUMPELEMENTPAIRS
   redirectDebugLog();
   debugLog(_T("ElementPairArray:\n%s"), result.toString(_T("\n")).cstr());
-#endif // _DEBUG
+#endif // DUMPELEMENTPAIRS
 
 END_TIMEMEASURE(  6, m_docSize[0]);
 }
@@ -242,13 +246,13 @@ BEGIN_TIMEMEASURE(4, _T("Finding matching lines"));
 
 END_TIMEMEASURE(  4, m_docSize[0] + m_docSize[1]);
 
-#ifdef _DEBUG
+#ifdef DUMPMATCHLIST
 dumpMatchList();
-#endif // _DEBUG
+#endif // DUMPMATCHLIST
   return result;
 }
 
-#ifdef _DEBUG
+#ifdef DUMPMATCHLIST
 void LcsSimple::dumpMatchList() const {
   redirectDebugLog();
   debugLog(_T("MatchList:\n"));
@@ -258,4 +262,4 @@ void LcsSimple::dumpMatchList() const {
     debugLog(_T("%6zu:%s\n"), i, m.toStringBasicType().cstr());
   }
 }
-#endif // _DEBUG
+#endif // DUMPMATCHLIST

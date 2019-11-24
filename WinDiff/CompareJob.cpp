@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <ThreadPool.h>
 #include "CompareJob.h"
 #include "WinDiffDoc.h"
 

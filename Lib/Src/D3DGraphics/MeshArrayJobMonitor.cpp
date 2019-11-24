@@ -1,8 +1,8 @@
 #include "pch.h"
-#include <SynchronizedQueue.h>
-#include <FastSemaphore.h>
-#include <MFCUtil/ProgressWindow.h>
+#include <CompactStack.h>
 #include <CPUInfo.h>
+#include <ThreadPool.h>
+#include <MFCUtil/ProgressWindow.h>
 #include <D3DGraphics/MeshArrayJobMonitor.h>
 
 class MeshResult {

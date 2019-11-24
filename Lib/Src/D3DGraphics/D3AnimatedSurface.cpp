@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <Semaphore.h>
 #include <D3DGraphics/D3Scene.h>
 
 DECLARE_THISFILE;
