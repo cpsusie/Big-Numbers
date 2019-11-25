@@ -12,6 +12,10 @@ private:
   void init(INT64 numerator, INT64 denominator);
   // Assume e >= 0, return base^e. pow(0,0) == 1
   static INT64 pow(INT64 base, UINT e);
+  static Rational sum128( const Rational &l, const Rational &r);
+  static Rational dif128( const Rational &l, const Rational &r);
+  static Rational prod128(const Rational &l, const Rational &r);
+  static Rational mod128( const Rational &l, const Rational &r);
 public:
 
   inline Rational() : m_num(0), m_den(1) {

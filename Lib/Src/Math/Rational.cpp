@@ -250,31 +250,39 @@ void Rational::init(INT64 numerator, INT64 denominator) {
 
 Rational operator+(const Rational &l, const Rational &r) {
   if(!isfinite(l) || !isfinite(r)) return RAT_NAN;
-  if(l.m_den == r.m_den) {                                     // l.d == r.d. just add l.n and r.n
-    return Rational(SAFESUM(l.m_num,r.m_num), l.m_den);
-  } else if((l.m_den > r.m_den) && (l.m_den % r.m_den == 0)) { // l.d = n * r.d. extend r with n and use l.d as denominator
-    const INT64 n = l.m_den / r.m_den;
-    return Rational(SAFESUM(l.m_num,SAFEPROD(n,r.m_num)), l.m_den);
-  } else if((l.m_den < r.m_den) && (r.m_den % l.m_den == 0)) { // r.d = n * l.d. extend l with n and use r.d as denominator
-    const INT64 n = r.m_den / l.m_den;
-    return Rational(SAFESUM(SAFEPROD(n,l.m_num),r.m_num), r.m_den);
-  } else {                                                     // Extend both and use l.d * r.d as denominator
-    return Rational(SAFESUM(SAFEPROD(l.m_num,r.m_den),SAFEPROD(r.m_num,l.m_den)), SAFEPROD(l.m_den,r.m_den));
+  try {
+    if(l.m_den == r.m_den) {                                     // l.d == r.d. just add l.n and r.n
+      return Rational(SAFESUM(l.m_num,r.m_num), l.m_den);
+    } else if((l.m_den > r.m_den) && (l.m_den % r.m_den == 0)) { // l.d = n * r.d. extend r with n and use l.d as denominator
+      const INT64 n = l.m_den / r.m_den;
+      return Rational(SAFESUM(l.m_num,SAFEPROD(n,r.m_num)), l.m_den);
+    } else if((l.m_den < r.m_den) && (r.m_den % l.m_den == 0)) { // r.d = n * l.d. extend l with n and use r.d as denominator
+      const INT64 n = r.m_den / l.m_den;
+      return Rational(SAFESUM(SAFEPROD(n,l.m_num),r.m_num), r.m_den);
+    } else {                                                     // Extend both and use l.d * r.d as denominator
+      return Rational(SAFESUM(SAFEPROD(l.m_num,r.m_den),SAFEPROD(r.m_num,l.m_den)), SAFEPROD(l.m_den,r.m_den));
+    }
+  } catch(Exception e) {
+    return Rational::sum128(l, r);
   }
 }
 
 Rational operator-(const Rational &l, const Rational &r) {
   if(!isfinite(l) || !isfinite(r)) return RAT_NAN;
-  if(l.m_den == r.m_den) {                                     // l.d == r.d. just subtract r.n from l.n
-    return Rational(SAFEDIF(l.m_num,r.m_num), l.m_den);
-  } else if((l.m_den > r.m_den) && (l.m_den % r.m_den == 0)) { // l.d = n * r.d. extend r with n and use l.d as denominator
-    const INT64 n = l.m_den / r.m_den;
-    return Rational(SAFEDIF(l.m_num,SAFEPROD(n,r.m_num)), l.m_den);
-  } else if((l.m_den < r.m_den) && (r.m_den % l.m_den == 0)) { // r.d = n * l.d. extend l with n and use r.d as denominator
-    const INT64 n = r.m_den / l.m_den;
-    return Rational(SAFEDIF(SAFEPROD(n,l.m_num),r.m_num), r.m_den);
-  } else {                                                     // Extend both and use l.d * r.d as denominator
-    return Rational(SAFEDIF(SAFEPROD(l.m_num,r.m_den),SAFEPROD(r.m_num,l.m_den)), SAFEPROD(l.m_den,r.m_den));
+  try {
+    if(l.m_den == r.m_den) {                                     // l.d == r.d. just subtract r.n from l.n
+      return Rational(SAFEDIF(l.m_num,r.m_num), l.m_den);
+    } else if((l.m_den > r.m_den) && (l.m_den % r.m_den == 0)) { // l.d = n * r.d. extend r with n and use l.d as denominator
+      const INT64 n = l.m_den / r.m_den;
+      return Rational(SAFEDIF(l.m_num,SAFEPROD(n,r.m_num)), l.m_den);
+    } else if((l.m_den < r.m_den) && (r.m_den % l.m_den == 0)) { // r.d = n * l.d. extend l with n and use r.d as denominator
+      const INT64 n = r.m_den / l.m_den;
+      return Rational(SAFEDIF(SAFEPROD(n,l.m_num),r.m_num), r.m_den);
+    } else {                                                     // Extend both and use l.d * r.d as denominator
+      return Rational(SAFEDIF(SAFEPROD(l.m_num,r.m_den),SAFEPROD(r.m_num,l.m_den)), SAFEPROD(l.m_den,r.m_den));
+    }
+  } catch(Exception e) {
+    return Rational::dif128(l, r);
   }
 }
 
@@ -298,7 +306,11 @@ Rational operator-(const Rational &r) {
 
 Rational operator*(const Rational &l, const Rational &r) {
   if(!isfinite(l) || !isfinite(r)) return RAT_NAN;
-  return Rational(SAFEPROD(l.m_num,r.m_num), SAFEPROD(l.m_den,r.m_den));
+  try {
+    return Rational(SAFEPROD(l.m_num,r.m_num), SAFEPROD(l.m_den,r.m_den));
+  } catch(Exception e) {
+    return Rational::prod128(l, r);
+  }
 }
 
 Rational operator/(const Rational &l, const Rational &r) {
@@ -308,7 +320,11 @@ Rational operator/(const Rational &l, const Rational &r) {
   }
   switch(fpclassify(r)) {
   case FP_NORMAL:
-    return Rational(SAFEPROD(l.m_num, r.m_den), SAFEPROD(l.m_den, r.m_num));
+    try {
+      return Rational(SAFEPROD(l.m_num, r.m_den), SAFEPROD(l.m_den, r.m_num));
+    } catch (Exception) {
+      return Rational::prod128(l, reciprocal(r));
+    }
   case FP_ZERO:
     switch(lclass) {
     case _FPCLASS_PN: return Rational::_RAT_PINF;   // +finite/0 -> +inf
@@ -327,8 +343,11 @@ Rational operator%(const Rational &l, const Rational &r) {
   }
   switch(fpclassify(r)) {
   case FP_NORMAL:
-    { const INT64 n = SAFEPROD(l.getNumerator(), r.getDenominator()) / SAFEPROD(l.getDenominator(), r.getNumerator());
+    try {
+      const INT64 n = SAFEPROD(l.getNumerator(), r.getDenominator()) / SAFEPROD(l.getDenominator(), r.getNumerator());
       return (n == 0) ? l : (l - r * n);
+    } catch(Exception) {
+      return Rational::mod128(l, r);
     }
   case FP_ZERO:
     switch (lclass) {
@@ -434,14 +453,11 @@ INT64 Rational::safeProd(const TCHAR *method, int line, const INT64 &a, const IN
   return result;
 }
 
-#define NEWGCD
-
-#ifdef NEWGCD
-UINT64 Rational::findGCD(UINT64 a, UINT64 b) { // static
+template<class T, class signedT> T findGCDTemplate(T a, T b) {
   if((a|b) == 0) {
-    throwInvalidArgumentException(__TFUNCTION__, _T("a=%I64u, b=%I64u"), a, b);
+    throwInvalidArgumentException(__TFUNCTION__, _T("a=b=0"));
   }
-  BYTE shift = 0;
+  int shift = 0;
   while(((a|b)&1)==0) { // while a, b both even
     a >>= 1;
     b >>= 1;
@@ -452,7 +468,7 @@ UINT64 Rational::findGCD(UINT64 a, UINT64 b) { // static
   while((a&1)==0) a >>= 1;
   while((b&1)==0) b >>= 1;
   for(;;) { // a is odd and b is odd
-    switch(sign((INT64)b-(INT64)a)) {
+    switch(sign((signedT&)b-(signedT&)a)) {
     case  1: // a < b
       b -= a;
       do { // b even and > 0
@@ -471,57 +487,74 @@ UINT64 Rational::findGCD(UINT64 a, UINT64 b) { // static
   }
 }
 
-#else
-
 UINT64 Rational::findGCD(UINT64 a, UINT64 b) { // static
-  if(a == 0 || b == 0) {
-    throwInvalidArgumentException(__TFUNCTION__, _T("a=%I64u, b=%I64u"), a, b);
-  }
-  UINT64 g = 1;
-  UINT64 u = a;
-  UINT64 v(b);
-
-  while(::isEven(u) && ::isEven(v)) {
-    u /= 2;
-    v /= 2;
-    g *= 2;
-  }
-
-  // Now u or v (or both) are odd
-  while(u > 0) {
-    if(::isEven(u)) {
-      u /= 2;
-    } else if(::isEven(v)) {
-      v /= 2;
-    } else if(u < v) {
-      v = (v-u)/2;
-    } else {
-      u = (u-v)/2;
-    }
-  }
-/*
-  const UINT64 result = g * v;
-  if(result > 30) {
-    int fisk = 1;
-  }
-  const UINT64 newalgResult = findGCD1(a, b);
-  if(result != newalgResult) {
-    int fisk = 1;
-    const UINT64 newalgResult1 = findGCD1(a, b);
-  }
-*/
-  return g*v;
+  return findGCDTemplate<UINT64, INT64>(a, b);
 }
-#endif // NEWGCD
 
-#define CHECKISFINITE1(f)                  \
-if(!isfinite(f)) {                         \
-  if(r) {                                  \
+inline _uint128 findGCD128(const _uint128 &a, const _uint128 &b) {
+  return findGCDTemplate<_uint128, _int128>(a, b);
+}
+
+static Rational makeRationalFromI128(const TCHAR *method, int line, const _int128 &n, const _uint128 &d) {
+  if(n == 0) {
+    return Rational::_0;
+  }
+  _uint128 un, ud=d;
+  bool neg = false;
+  if(n < 0) {
+    neg = true;
+    un = -n;
+  } else {
+    un = n;
+  }
+  _int128 gcd = findGCD128(un, ud);
+  if(gcd > 1) {
+    un /= gcd;
+    ud /= gcd;
+  }
+  _int128 nn = un;
+  if(neg) nn = -nn;
+  if(!isInt64(nn) || !isInt64(ud)) {
+    throwInvalidArgumentException(__TFUNCTION__
+                                 ,_T("%s,line %d: result overflow. n=%s, d=%s")
+                                 ,method, line
+                                 ,toString(n).cstr(), toString(d).cstr());
+  }
+  return Rational((INT64)nn, (INT64)ud);
+}
+
+Rational Rational::sum128(const Rational &l, const Rational &r) { // static
+  const _int128  n1 = (_int128 )l.getNumerator()   * r.getDenominator();
+  const _int128  n2 = (_int128 )r.getNumerator()   * l.getDenominator();
+  const _uint128 d  = (_uint128)l.getDenominator() * r.getDenominator();
+  return makeRationalFromI128(__TFUNCTION__,__LINE__,n1 + n2, d);
+}
+Rational Rational::dif128(const Rational &l, const Rational &r) { // static
+  const _int128  n1 = (_int128 )l.getNumerator()   * r.getDenominator();
+  const _int128  n2 = (_int128 )r.getNumerator()   * l.getDenominator();
+  const _uint128 d  = (_uint128)l.getDenominator() * r.getDenominator();
+  return makeRationalFromI128(__TFUNCTION__, __LINE__, n1 - n2, d);
+}
+
+Rational Rational::prod128(const Rational &l, const Rational &r) { // static
+  const _int128  n = (_int128 )l.getNumerator()    * r.getNumerator();
+  const _uint128 d = (_uint128)l.getDenominator()  * r.getDenominator();
+  return makeRationalFromI128(__TFUNCTION__, __LINE__, n, d);
+}
+Rational Rational::mod128(const Rational &l, const Rational &r) {  // static
+  const _int128 q = ((_int128)l.getNumerator()*r.getDenominator()) / ((_int128)l.getDenominator()*r.getNumerator());
+  if(q == 0) return l;
+  return dif128(l, makeRationalFromI128(__TFUNCTION__, __LINE__, q*r.getNumerator(), r.getDenominator()));
+}
+
+#define CHECKISFINITE1(f)                   \
+if(!isfinite(f)) {                          \
+  if(r) {                                   \
     if(isPInfinity(f))      *r = _RAT_PINF; \
     else if(isNInfinity(f)) *r = _RAT_NINF; \
     else                    *r = _RAT_NAN;  \
-  }                                        \
-  return true;                             \
+  }                                         \
+  return true;                              \
 }
 
 #define RETURNTRUE(v) { if(r!=NULL) *r = (v); return true; }

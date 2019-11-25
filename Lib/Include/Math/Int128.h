@@ -2067,6 +2067,11 @@ inline bool   isInt64(  _uint128 v) { return v == (INT64 )v;  }
 inline bool   isUint64( _int128  v) { return v == (UINT64)v;  }
 inline bool   isUint64( _uint128 v) { return v == (UINT64)v;  }
 
+// return (v > 0) ? +1 : (v < 0) ? -1 : 0
+inline int sign(const _int128 &v) {
+  return v.isNegative() ? -1 : v.isZero() ? 0 : 1;
+}
+
 template<> class std::numeric_limits<_int128>
     : public _Num_int_base
 {	// limits for type _int128
