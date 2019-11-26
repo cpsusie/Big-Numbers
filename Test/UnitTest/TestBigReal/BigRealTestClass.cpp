@@ -2,6 +2,7 @@
 #include <Date.h>
 #include <Console.h>
 #include <CPUInfo.h>
+#include <ThreadPool.h>
 #include "BigRealTestClass.h"
 
 BigRealTestClass::~BigRealTestClass() {
@@ -552,7 +553,7 @@ void BigRealTestClass::testMultiThreadedProduct() {
   _ftprintf(f, _T("y:%s\n"), toString(y).cstr());
   _ftprintf(f, _T("z:%s\n"), toString(z).cstr());
   fclose(f);
-  _tprintf(_T("Max active Thread:%d\n"), BigRealResourcePool::getInstance().getMaxActiveThreads());
+  _tprintf(_T("Max active Thread:%d\n"), ThreadPool::getInstance().getMaxActiveThreads());
 }
 
 

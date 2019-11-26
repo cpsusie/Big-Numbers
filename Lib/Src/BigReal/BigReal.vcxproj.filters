@@ -64,9 +64,6 @@
     <ClCompile Include="BigRealStream.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="BigRealThread.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="BigRealVector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -98,9 +95,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MRisprime.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MultiplierThread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Pi.cpp">
@@ -245,6 +239,9 @@
     <ClCompile Include="BigRationalPacker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SubProdRunnable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\Math\BigReal.h">
@@ -273,7 +270,7 @@
     <ClInclude Include="..\..\Include\Math\BigInt.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Factory.h">
+    <ClInclude Include="BigRealResourcePool.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

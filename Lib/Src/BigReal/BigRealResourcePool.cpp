@@ -1,289 +1,189 @@
 #include "pch.h"
-#include "Factory.h"
+#include <SingletonFactory.h>
+#include "BigRealResourcePool.h"
 #include <DebugLog.h>
-#include <CPUInfo.h>
 
-BigRealResourcePool::BigRealResourcePool()
-: m_queuePool(_T("Queue"))
-, m_digitPool(_T("DigitPool"))
-, m_lockedDigitPool(_T("LockedDigitPool"))
-{
-  m_gate.wait();
+BigRealResourcePool &BigRealResourcePool::getInstance() {
+  static SingletonFactoryTemplate<BigRealResourcePool> factory;
+  return factory.getInstance();
+}
 
-  m_processorCount = getProcessorCount();
-  CompactArray<DigitPool*> poolArray;
-  for(UINT i = 0; i < 8               ; i++) poolArray.add(m_digitPool.fetchResource());
-  for(UINT i = 0; i < poolArray.size(); i++) m_digitPool.releaseResource(poolArray[i]);
-  poolArray.clear(-1);
-  for (UINT i = 0; i < 3              ; i++) poolArray.add(m_lockedDigitPool.fetchResource());
-  for (UINT i = 0; i < poolArray.size(); i++) m_lockedDigitPool.releaseResource(poolArray[i]);
-  poolArray.clear(-1);
+BigRealResourcePool::BigRealResourcePool() {
+  wait();
 
-  m_activeThreads  = m_maxActiveThreads = 1;
-  m_gate.notify();
+  m_subProdPool         = new SubProdRunnablePool; TRACE_NEW(m_subProdPool        );
+  m_digitPoolPool       = new DigitPoolPool;       TRACE_NEW(m_digitPoolPool      );
+  m_lockedDigitPoolPool = new LockedDigitPoolPool; TRACE_NEW(m_lockedDigitPoolPool);
+
+  DigitPoolArray a;
+  for(UINT i = 0; i < 8       ; i++) a.add(m_digitPoolPool->fetchResource());
+  for(UINT i = 0; i < a.size(); i++) m_digitPoolPool->releaseResource(a[i]);
+  a.clear(-1);
+  for(UINT i = 0; i < 1       ; i++) a.add(m_lockedDigitPoolPool->fetchResource());
+  for(UINT i = 0; i < a.size(); i++) m_lockedDigitPoolPool->releaseResource(a[i]);
+  a.clear(-1);
+
+  notify();
 }
 
 BigRealResourcePool::~BigRealResourcePool() {
-  m_gate.wait();
-
-  m_MTThreadPool.deleteAll();
-  m_queuePool.deleteAll();
-  m_digitPool.deleteAll();
-  m_lockedDigitPool.deleteAll();
-
-  m_gate.notify();
+  wait();
+  SAFEDELETE(m_subProdPool       );
+  SAFEDELETE(m_digitPoolPool     );
+  SAFEDELETE(m_lockedDigitPoolPool);
+  notify();
 }
 
-void MThreadArray::waitForAllResults() {
-  if(size() == 0) {
-    return;
-  } else {
-    (*this)[0]->getQueue().waitForResults((int)size());
-  }
-}
-
-MThreadArray::~MThreadArray() {
-  BigRealResourcePool::releaseMTThreadArray(*this);
-}
-
-MThreadArray &BigRealResourcePool::fetchMTThreadArray(MThreadArray &threads, int count) { // static
+void BigRealResourcePool::fetchSubProdRunnableArray(SubProdRunnableArray &a, UINT runnableCount, UINT digitPoolCount) { // static
   BigRealResourcePool &instance = getInstance();
-  instance.m_gate.wait();
-  threads.clear(count);
-  if(count > 0) {
-    SynchronizedStringQueue *queue = instance.m_queuePool.fetchResource();
-
-    for(int i = 0; i < count; i++) {
-      MultiplierThread *thread = instance.m_MTThreadPool.fetchResource();
-      thread->m_digitPool      = instance.m_digitPool.fetchResource();
-      thread->m_resultQueue    = queue;
-      threads.add(thread);
-    }
-
-    instance.m_activeThreads += count;
-    if(instance.m_activeThreads > instance.m_maxActiveThreads) {
-      instance.m_maxActiveThreads = instance.m_activeThreads;
-    }
-  }
-  instance.m_gate.notify();
-
-  return threads;
-}
-
-void BigRealResourcePool::releaseMTThreadArray(MThreadArray &threads) { // static
-  BigRealResourcePool &instance = getInstance();
-
-  instance.m_gate.wait();
-  if(threads.size() > 0) {
-    instance.m_queuePool.releaseResource(threads[0]->m_resultQueue);
-    for(size_t i = 0; i < threads.size(); i++) {
-      MultiplierThread *thread = threads[i];
-      instance.m_digitPool.releaseResource(thread->m_digitPool);
-      thread->m_digitPool   = NULL;
-      thread->m_resultQueue = NULL;
-
-      instance.m_MTThreadPool.releaseResource(thread);
-    }
-    instance.m_activeThreads -= (int)threads.size();
-    threads.clear();
-  }
-  instance.m_gate.notify();
-}
-
-void BigRealResourcePool::setPriority(int priority) { // static
-  BigRealResourcePool &instance = getInstance();
-
-  instance.m_gate.wait();
+  instance.wait();
   try {
-    if(priority != instance.m_threadPool.getPriority()) {
-      instance.m_threadPool.setPriority(priority);
+    a.clear(runnableCount, digitPoolCount);
+    for(UINT i = 0; i < runnableCount; i++) {
+      a.add(instance.m_subProdPool->fetchResource());
     }
-    if(priority != instance.m_MTThreadPool.getPriority()) {
-      instance.m_MTThreadPool.setPriority(priority);
+    for(UINT i = 0; i < digitPoolCount; i++) {
+      a.m_digitPoolArray.add(instance.fetchDPool(false, BR_MUTABLE));
     }
-  } catch(...) {
-    instance.m_gate.notify();
+    instance.notify();
+  } catch (...) {
+    instance.notify();
     throw;
   }
-  instance.m_gate.notify();
 }
 
-void BigRealResourcePool::setPriorityBoost(bool disablePriorityBoost) { // static
+void BigRealResourcePool::releaseSubProdRunnableArray(SubProdRunnableArray &a) {
   BigRealResourcePool &instance = getInstance();
-
-  instance.m_gate.wait();
+  instance.wait();
   try {
-    if(disablePriorityBoost != instance.m_threadPool.getPriorityBoost()) {
-      instance.m_threadPool.setPriorityBoost(disablePriorityBoost);
+    const UINT runnableCount = a.getRunnableCount();
+    for(UINT i = 0; i < runnableCount; i++) {
+      SubProdRunnable *sp = &a.getRunnable(i);
+      sp->clear();
+      instance.m_subProdPool->releaseResource(sp);
     }
-    if(disablePriorityBoost != instance.m_MTThreadPool.getPriorityBoost()) {
-      instance.m_MTThreadPool.setPriorityBoost(disablePriorityBoost);
+    const UINT digitPoolCount = a.getDigitPoolCount();
+    for(UINT i = 0; i < digitPoolCount; i++) {
+      instance.releaseDPool(a.getDigitPool(i));
     }
-  } catch(...) {
-    instance.m_gate.notify();
+    a.reset();
+    instance.notify();
+  } catch (...) {
+    instance.notify();
     throw;
   }
-  instance.m_gate.notify();
 }
 
 DigitPool *BigRealResourcePool::fetchDigitPool(bool withLock, BYTE initFlags) { // static
   BigRealResourcePool &instance = getInstance();
-  instance.m_gate.wait();
-
-  MTDigitPoolType *pool = withLock
-                        ? instance.m_lockedDigitPool.fetchResource()
-                        : instance.m_digitPool.fetchResource();
-
-  assert(pool->continueCalculation());
-#ifdef CHECKALLDIGITS_RELEASED
-  pool->m_usedDigits = pool->getUsedDigitCount();
-#endif
-  pool->setInitFlags(initFlags);
-  pool->saveRefCount();
-  instance.m_gate.notify();
-  return pool;
+  instance.wait();
+  try {
+    DigitPool *pool = instance.fetchDPool(withLock, initFlags);
+    instance.notify();
+    return pool;
+  } catch (...) {
+    instance.notify();
+    throw;
+  }
 }
 
 void BigRealResourcePool::releaseDigitPool(DigitPool *pool) { // static
   BigRealResourcePool &instance = getInstance();
-#ifdef CHECKALLDIGITS_RELEASED
-  MTDigitPoolType *tmp     = (MTDigitPoolType*)pool;
-  const UINT       newUsed = tmp->getUsedDigitCount();
-  if(tmp->m_usedDigits != newUsed) {
-    throwBigRealException(_T("releaseDigitPool(%d).Used digits(fetch):%lu, Used digits(release):%lu"), pool->getId(), tmp->m_usedDigits, newUsed);
-  }
-#endif
-  instance.m_gate.wait();
+  instance.wait();
   try {
-    const UINT refCount = pool->getRefCount();
-    if(refCount != pool->getRefCountOnFetch()) {
-      throwException(_T("%s:DigitPool \"%s\" has refCount=%u on release, refCount=%u on fetch")
-                    ,__TFUNCTION__
-                    ,pool->getName().cstr()
-                    ,refCount
-                    ,pool->getRefCountOnFetch());
-    }
-    pool->resetPoolCalculation();
-
-    if(pool->isWithLock()) {
-      instance.m_lockedDigitPool.releaseResource(pool);
-    } else {
-      instance.m_digitPool.releaseResource(pool);
-    }
-    instance.m_gate.notify();
+    instance.releaseDPool(pool);
+    instance.notify();
   } catch(...) {
-    instance.m_gate.notify();
+    instance.notify();
     throw;
+  }
+}
+
+void BigRealResourcePool::fetchDigitPoolArray(DigitPoolArray &a, UINT count, bool withLock, BYTE initFlags) { // static
+  a.clear(count);
+  if(count == 0) return;
+  BigRealResourcePool &instance = getInstance();
+
+  instance.wait();
+  try {
+    for(UINT i = 0; i < count; i++) {
+      a.add(instance.fetchDPool(withLock, initFlags));
+    }
+    instance.notify();
+  } catch (...) {
+    instance.notify();
+    throw;
+  }
+}
+
+void BigRealResourcePool::releaseDigitPoolArray(DigitPoolArray &a) {  // static
+  const UINT count = (UINT)a.size();
+  if(count == 0) return;
+  BigRealResourcePool &instance = getInstance();
+
+  instance.wait();
+  try {
+    for(UINT i = 0; i < count; i++) {
+      instance.releaseDPool(a[i]);
+    }
+    a.clear();
+    instance.notify();
+  } catch (...) {
+    instance.notify();
+    throw;
+  }
+}
+
+DigitPool *BigRealResourcePool::fetchDPool(bool withLock, BYTE initFlags) {
+  DigitPool *pool = withLock
+                  ? m_lockedDigitPoolPool->fetchResource()
+                  : m_digitPoolPool->fetchResource();
+
+  assert(pool->continueCalculation());
+  pool->setInitFlags(initFlags);
+  pool->saveRefCount();
+  return pool;
+}
+
+void BigRealResourcePool::releaseDPool(DigitPool *pool) {
+  const UINT refCount = pool->getRefCount();
+  if(refCount != pool->getRefCountOnFetch()) {
+    throwException(_T("%s:DigitPool \"%s\" has refCount=%u on release, refCount=%u on fetch")
+                  ,__TFUNCTION__
+                  ,pool->getName().cstr()
+                  ,refCount
+                  ,pool->getRefCountOnFetch());
+  }
+  pool->resetPoolCalculation();
+
+  if(pool->isWithLock()) {
+    m_lockedDigitPoolPool->releaseResource(pool);
+  } else {
+    m_digitPoolPool->releaseResource(pool);
   }
 }
 
 void BigRealResourcePool::terminateAllPoolCalculations() { // // static
   BigRealResourcePool &instance = getInstance();
-  instance.m_gate.wait();
+  instance.wait();
 
-  Iterator<MTDigitPoolType*> it = instance.m_digitPool.getActiveIterator();
+  Iterator<DigitPool*> it = instance.m_digitPoolPool->getActiveIterator();
   while(it.hasNext()) {
     it.next()->terminatePoolCalculation();
   }
-  instance.m_gate.notify();
-}
-
-  // Blocks until all jobs are done. If any of the jobs throws an exception
-  // the rest of the jobs will be terminated and an exception with the same
-  // message will be thrown to the caller
-void BigRealResourcePool::executeInParallel(CompactArray<Runnable*> &jobs) { // static
-  if(jobs.size() == 0) return;
-  BigRealResourcePool &instance = getInstance();
-  instance.m_gate.wait();  // get exclusive access to BigRealResourcePool
-  CompactArray<BigRealThread*> threads(jobs.size());
-  for(size_t i = 0; i < jobs.size(); i++) {
-    threads.add(instance.m_threadPool.fetchResource());
-  }
-  SynchronizedStringQueue *queue = instance.m_queuePool.fetchResource();
-  for(size_t i = 0; i < jobs.size(); i++) {
-    threads[i]->execute(*jobs[i], *queue);
-  }
-  instance.m_gate.notify(); // open gate for other threads
-
-  try {
-    queue->waitForResults((int)jobs.size());
-    instance.m_gate.wait();
-      for(size_t i = 0; i < threads.size(); i++) instance.m_threadPool.releaseResource(threads[i]);
-      instance.m_queuePool.releaseResource(queue);
-    instance.m_gate.notify();
-  } catch(...) {
-    instance.m_gate.wait();
-      for(size_t i = 0; i < threads.size(); i++) instance.m_threadPool.releaseResource(threads[i]);
-      instance.m_queuePool.releaseResource(queue);
-    instance.m_gate.notify();
-    throw;
-  }
+  instance.notify();
 }
 
 String BigRealResourcePool::toString() { // static
   BigRealResourcePool &instance = getInstance();
   String result;
-  instance.m_gate.wait();
+  instance.wait();
 
-  result = format(_T("Threads:%s MTThreads:%s DigitPools:%s Queues:%s")
-                 ,instance.m_threadPool.toString().cstr()
-                 ,instance.m_MTThreadPool.toString().cstr()
-                 ,instance.m_digitPool.toString().cstr()
-                 ,instance.m_queuePool.toString().cstr()
+  result = format(_T("SubProds:%s DigitPools:%s LockedDigitPools:%s")
+                 ,instance.m_subProdPool->toString().cstr()
+                 ,instance.m_digitPoolPool->toString().cstr()
+                 ,instance.m_lockedDigitPoolPool->toString().cstr()
                  );
-  instance.m_gate.notify();
+  instance.notify();
   return result;
-}
-
-BigRealResourcePool &BigRealResourcePool::getInstance() {
-  static FactoryTemplate<BigRealResourcePool> factory;
-  return factory.getInstance();
-}
-
-class PoolLoggingThread : public Thread {
-  bool      m_stopped;
-  Semaphore m_start;
-public:
-  PoolLoggingThread();
-  void startLogging();
-  void stopLogging();
-  UINT run();
-};
-
-PoolLoggingThread::PoolLoggingThread() : m_start(0) {
-  setDeamon(true);
-  m_stopped = true;
-  start();
-}
-
-void PoolLoggingThread::startLogging() {
-  if(m_stopped) {
-    m_stopped = false;
-    m_start.notify();
-  }
-}
-
-void PoolLoggingThread::stopLogging() {
-  m_stopped = true;
-}
-
-UINT PoolLoggingThread::run() {
-  for(;;) {
-    const int timeout = m_stopped ? INFINITE : 2000;
-    m_start.wait(timeout);
-    if(m_stopped) {
-      continue;
-    }
-    debugLog(_T("%s\n"), BigRealResourcePool::getInstance().toString().cstr());
-  }
-}
-
-static PoolLoggingThread loggingThread;
-
-void BigRealResourcePool::startLogging() {
-  loggingThread.startLogging();
-}
-
-void BigRealResourcePool::stopLogging() {
-  loggingThread.stopLogging();
 }

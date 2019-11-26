@@ -1,5 +1,6 @@
 #pragma once
 
+
 #include "TestStatistic.h"
 #include "TestInterval.h"
 
@@ -229,12 +230,15 @@ void testIntDif(                    TestStatistic &stat);
 void testIntProd(                   TestStatistic &stat);
 void testIntQuot(                   TestStatistic &stat);
 void testIntRem(                    TestStatistic &stat);
-void testMRIsPrime(                 TestStatistic &stat);
 void testRatSum(                    TestStatistic &stat);
 void testRatDif(                    TestStatistic &stat);
 void testRatProd(                   TestStatistic &stat);
 void testRatQuot(                   TestStatistic &stat);
 void testRatMod(                    TestStatistic &stat);
+void testMultiply2(                 TestStatistic &stat);
+void testDivide2(                   TestStatistic &stat);
+void testIntDivide2(                TestStatistic &stat);
+void testMRIsPrime(                 TestStatistic &stat);
 void testPi(                        TestStatistic &stat);
 void testReadWriteBigReal(          TestStatistic &stat);
 void testReadWriteBigInt(           TestStatistic &stat);
@@ -254,32 +258,27 @@ typedef SynchronizedQueue<AbstractFunctionTest*> TestQueue;
 
 class TesterJob : public Runnable {
 private:
-  static FastSemaphore s_gate, s_allDone;
-  static int           s_runningCount;
+  static FastSemaphore s_gate;
   static bool          s_allOk;
   static bool          s_stopOnError;
   static double        s_totalThreadTime;
   const int            m_id;
-  static void incrRunning();
-  static void decrRunning();
 
+  DigitPool           *m_pool;
   static void addTimeUsage(double threadTime);
   static TestQueue s_testQueue, s_doneQueue;
 
-  static BigRealJobArray s_testerJobs;
   static void startAll(UINT threadCount);
   static void releaseAll();
-  static void waitUntilAllDone() {
-    s_allDone.wait();
-  }
 
 public:
   TesterJob(int id) : m_id(id) {
+    m_pool = BigRealResourcePool::fetchDigitPool();
+  }
+  ~TesterJob() {
+    BigRealResourcePool::releaseDigitPool(m_pool);
   }
   UINT run();
-  static int getRunningCount() {
-    return s_runningCount;
-  }
   static inline void addFunctionTest(AbstractFunctionTest *test) {
     TRACE_NEW(test);
     s_testQueue.put(test);

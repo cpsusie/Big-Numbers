@@ -1,4 +1,6 @@
 #include "pch.h"
+#include <ThreadPool.h>
+#include "BigRealResourcePool.h"
 
 BigReal &BigReal::productMT(BigReal &result, const BigReal &x, const BigReal &y, const BigReal &f, intptr_t w, int level) { // static
   assert(isNormalProduct(x, y) && f._isfinite() && (x.getLength() >= y.getLength()));
@@ -25,53 +27,40 @@ BigReal &BigReal::productMT(BigReal &result, const BigReal &x, const BigReal &y,
   level++;
   x.split(a, b, n, g.isZero() ? _0 : APCprod(#, gpm10, reciprocal(y, pool),pool));   // a + b = x   (=O(n))
 
-  MThreadArray threads;
+  SubProdRunnableArray spa;
 
   if(!sameXY && ((intptr_t)YLength < n)) {
-    BigRealResourcePool::fetchMTThreadArray(threads, 1);
-
-    MultiplierThread &thread = threads.get(0);
-
-    BigReal p1(thread.getDigitPool());
-    thread.multiply(p1, a,y,_0, level);
-
-    result.setToZero();
-    product(result, b, y, g, level);
-
-    threads.waitForAllResults();
-
+    BigRealResourcePool::fetchSubProdRunnableArray(spa, 2,1);
+    BigReal p1(spa.getDigitPool(0));
+    spa.getRunnable(0).setInOut(p1    , a, y, _0, level);
+    spa.getRunnable(1).setInOut(result, b, y,  g, level);
+    ThreadPool::executeInParallel(spa);
     result += p1;
-    p1.setToZero();
-
     return result;
   }
 
   const BRExpoType logBK = BIGREAL_LOG10BASE * n;
   BigReal Kg(g);
   Kg.multPow10(logBK, true);
-  BigRealResourcePool::fetchMTThreadArray(threads, 2);
-  MultiplierThread &threadR = threads.get(0), &threadT = threads.get(1);
-  BigReal r(threadR.getDigitPool()), s(pool), t(threadT.getDigitPool());
-
+  BigRealResourcePool::fetchSubProdRunnableArray(spa, 3, 2);
+  BigReal r(spa.getDigitPool(0)), s(pool), t(spa.getDigitPool(1));
   b.multPow10(logBK, true);
   if(sameXY) {
-    threadR.multiply(r, a    , a    , _0, level);
-    threadT.multiply(t, b    , b    , Kg, level);
+    spa.getRunnable(0).setInOut(r, a    , a    , _0, level);
+    spa.getRunnable(1).setInOut(t, b    , b    , Kg, level);
     const BigReal sumAB(a + b);
-    product(         s, sumAB, sumAB, Kg, level);
-
-    threads.waitForAllResults();
-
+    spa.getRunnable(2).setInOut(s, sumAB, sumAB, Kg, level);
+    ThreadPool::executeInParallel(spa);
   } else {
     BigReal c(pool), d(pool);
     y.split(c, d, n, g.isZero() ? _0 : APCprod(#, gpm10, reciprocal(x, pool),pool));               // c + d = y   O(n)
     d.multPow10(logBK,true);
 
-    threadR.multiply(r, a    , c    , _0, level);
-    threadT.multiply(t, b    , d    , Kg, level);
-    product(         s, a + b, c + d, Kg, level);
-
-    threads.waitForAllResults();
+    spa.getRunnable(0).setInOut(r, a    , c    , _0, level);
+    spa.getRunnable(1).setInOut(t, b    , d    , Kg, level);
+    const BigReal sumAB(a + b), sumCD(c + d);
+    spa.getRunnable(2).setInOut(s, sumAB, sumCD, Kg, level);
+    ThreadPool::executeInParallel(spa);
   }
 
   s -= r;
@@ -81,8 +70,5 @@ BigReal &BigReal::productMT(BigReal &result, const BigReal &x, const BigReal &y,
   t.multPow10(-2*logBK,true);
   result = sum(r, t, g);
 
-  r.setToZero();
-  s.setToZero();
-  t.setToZero();
   return result;
 }

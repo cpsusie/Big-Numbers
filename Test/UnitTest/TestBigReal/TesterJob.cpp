@@ -1,32 +1,15 @@
 #include "stdafx.h"
 #include <Console.h>
 #include <Math/FPU.h>
+#include <ThreadPool.h>
 #include "FunctionTest.h"
 
 FastSemaphore   TesterJob::s_gate;
-FastSemaphore   TesterJob::s_allDone(0);
-int             TesterJob::s_runningCount    = 0;
 bool            TesterJob::s_allOk           = true;
 bool            TesterJob::s_stopOnError     = false;
 double          TesterJob::s_totalThreadTime = 0;
 TestQueue       TesterJob::s_testQueue;
 TestQueue       TesterJob::s_doneQueue;
-BigRealJobArray TesterJob::s_testerJobs;
-
-void TesterJob::incrRunning() {
-  s_gate.wait();
-  s_runningCount++;
-  s_gate.notify();
-}
-
-void TesterJob::decrRunning() {
-  s_gate.wait();
-  s_runningCount--;
-  if(s_runningCount == 0 && s_testQueue.isEmpty()) {
-    s_allDone.notify();
-  }
-  s_gate.notify();
-}
 
 void TesterJob::addTimeUsage(double threadTime) { // static
   s_gate.wait();
@@ -34,11 +17,9 @@ void TesterJob::addTimeUsage(double threadTime) { // static
   s_gate.notify();
 }
 
-unsigned int TesterJob::run() {
-  incrRunning();
+UINT TesterJob::run() {
+  FPU::setPrecisionMode(FPU_HIGH_PRECISION);
   const int ypos = THREADYPOS(m_id);
-
-  DigitPool *pool = BigRealResourcePool::fetchDigitPool();
   const int thrId = GetCurrentThreadId();
 
   while(!s_testQueue.isEmpty()) {
@@ -55,9 +36,9 @@ unsigned int TesterJob::run() {
     }
 
     Console::clearLine(ypos);
-    Console::printf(0 , ypos, _T("Thread %5d Pool %d"), thrId, pool->getId());
+    Console::printf(0 , ypos, _T("Thread %5d Pool %d"), thrId, m_pool->getId());
     try {
-      test->runTest(m_id, pool);
+      test->runTest(m_id, m_pool);
     } catch(StopException) {
       // ignore
     } catch(Exception e) {
@@ -73,32 +54,31 @@ unsigned int TesterJob::run() {
     s_doneQueue.put(test);
   }
   addTimeUsage(getThreadTime());
-  BigRealResourcePool::releaseDigitPool(pool);
   Console::clearLine(ypos);
-  decrRunning();
   return 0;
 }
 
 void TesterJob::runAll(UINT threadCount, bool stopOnError) { // static
   s_stopOnError = stopOnError;
   startAll(threadCount);
-  waitUntilAllDone();
   releaseAll();
 }
 
 void TesterJob::startAll(UINT threadCount) { // static
   if(threadCount == 1) {
-    FPU::setPrecisionMode(FPU_HIGH_PRECISION);
-    TesterJob job(0);
-    job.run();
+    TesterJob(0).run();
   } else {
-    s_gate.wait();
+    RunnableArray jobs(threadCount);
     for(UINT i = 0; i < threadCount; i++) {
       Runnable *job = new TesterJob(i); TRACE_NEW(job);
-      s_testerJobs.add(job);
+      jobs.add(job);
     }
-    s_gate.notify();
-    BigRealResourcePool::executeInParallel(s_testerJobs);
+    ThreadPool::executeInParallel(jobs);
+    for(UINT i = 0; i < jobs.size(); i++) {
+      Runnable *job = jobs[i];
+      SAFEDELETE(job);
+    }
+    jobs.clear();
   }
 }
 
@@ -108,10 +88,6 @@ void TesterJob::releaseAll() { // static
     AbstractFunctionTest *test = s_doneQueue.get();
     SAFEDELETE(test);
   }
-  for(size_t i = 0; i < s_testerJobs.size(); i++) {
-    SAFEDELETE(s_testerJobs[i]);
-  }
-  s_testerJobs.clear();
   s_gate.notify();
 }
 

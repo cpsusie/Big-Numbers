@@ -601,14 +601,234 @@ void testIntRem(TestStatistic &stat) { // tester BigInt rem
   stat.setEndMessageToOk();
 }
 
+void testMultiply2(TestStatistic &stat) {
+  DigitPool       *pool = stat.getDigitPool();
+  const ULONG      n    = 127;
+  _uint128         x128 = 1;
+  BigReal          X    = pool->_1();
+  stat.setTotalTestCount(n);
+  for(ULONG i = 0; i < n; i++) {
+    x128 *= 2;
+    X.multiply2();
+    VALIDATEBIG(X);
+    if(stat.isTimeToPrint()) {
+      stat.printLoopMessage(_T("i:%10u"), i);
+    }
+    verify(x128 == getUint128(X));
+  }
+  stat.setEndMessageToOk();
+}
+
+void testDivide2(TestStatistic &stat) {
+  DigitPool       *pool = stat.getDigitPool();
+  const ULONG      n    = 1000;
+  BigReal          xp   = pool->_1();
+  BigReal          x    = pool->_1();
+  stat.setTotalTestCount(n);
+  for(ULONG i = 0; i < n; i++) {
+    xp *= pool->_05();
+    x.divide2();
+    VALIDATEBIG(x);
+
+    if(stat.isTimeToPrint()) {
+      stat.printLoopMessage(_T("i:%10u"), i);
+    }
+    verify(xp == x);
+  }
+  stat.setEndMessageToOk();
+}
+
+void testIntDivide2(TestStatistic &stat) {
+  DigitPool       *pool = stat.getDigitPool();
+  const ULONG      n    = 1000;
+  BigReal          xp   = pool->_1();
+  BigInt           x    = pool->_1();
+  stat.setTotalTestCount(2*n);
+  for(ULONG i = 0; i < n; i++) {
+    xp *= pool->_2();
+    x.multiply2();
+    VALIDATEBIG(x);
+    if(stat.isTimeToPrint()) {
+      stat.printLoopMessage(_T("i:%10u"), i);
+    }
+    verify(xp == x);
+  }
+  for(ULONG i = 0; i < n; i++) {
+    xp *= pool->_05();
+    x.divide2();
+    VALIDATEBIG(x);
+    if(stat.isTimeToPrint()) {
+      stat.printLoopMessage(_T("i:%10u"), n+i);
+    }
+    verify(xp == x);
+  }
+  stat.setEndMessageToOk();
+}
+
+void testRatSum(TestStatistic &stat) {
+  DigitPool       *pool = stat.getDigitPool();
+  RandomGenerator &rnd  = stat.getRandomGenerator();
+  const ULONG      n    = 1000;
+  stat.setTotalTestCount(n);
+  Rational    from(-1234867767, 23);
+  Rational    to(   1278012678, 79);
+  BigRational FROM(from, pool), TO(to, pool);
+  BigInt      scaleFactor(pool->_1());
+  bool        updateScaleFactor = true;
+  for(ULONG i = 0; i < n; i++) {
+    BigRational R1 = randBigRational(FROM, TO, scaleFactor, rnd);
+    BigRational R2 = randBigRational(FROM, TO, scaleFactor, rnd);
+    if(stat.isTimeToPrint()) {
+      stat.printLoopMessage(_T("i:%10u"), i);
+    }
+
+    BigRational SUM = R1 + R2;
+    Rational r1,r2,sum;
+    if(isRational(SUM, &sum) && isRational(R1,&r1) && isRational(R2,&r2)) {
+      verify(r1 + r2 == sum);
+      if(updateScaleFactor) scaleFactor.multiply2();
+    } else {
+      if(updateScaleFactor) {
+        scaleFactor.divide2();
+        updateScaleFactor = false;
+      }
+    }
+  }
+  stat.setEndMessageToOk();
+}
+void testRatDif(TestStatistic &stat) {
+  DigitPool       *pool = stat.getDigitPool();
+  RandomGenerator &rnd  = stat.getRandomGenerator();
+  const ULONG      n    = 1000;
+  stat.setTotalTestCount(n);
+  Rational    from(-1234867767, 23);
+  Rational    to(   1278012678, 79);
+  BigRational FROM(from, pool), TO(to, pool);
+  BigInt      scaleFactor(pool->_1());
+  bool        updateScaleFactor = true;
+  for(ULONG i = 0; i < n; i++) {
+    BigRational R1 = randBigRational(FROM, TO, scaleFactor, rnd);
+    BigRational R2 = randBigRational(FROM, TO, scaleFactor, rnd);
+    if(stat.isTimeToPrint()) {
+      stat.printLoopMessage(_T("i:%10u"), i);
+    }
+
+    BigRational DIF = R1 - R2;
+    Rational r1,r2,dif;
+    if(isRational(DIF, &dif) && isRational(R1,&r1) && isRational(R2,&r2)) {
+      verify(r1 - r2 == dif);
+      if(updateScaleFactor) scaleFactor.multiply2();
+    } else {
+      if(updateScaleFactor) {
+        scaleFactor.divide2();
+        updateScaleFactor = false;
+      }
+    }
+  }
+  stat.setEndMessageToOk();
+}
+void testRatProd(TestStatistic &stat) {
+  DigitPool       *pool = stat.getDigitPool();
+  RandomGenerator &rnd  = stat.getRandomGenerator();
+  const ULONG      n    = 1000;
+  stat.setTotalTestCount(n);
+  Rational    from(-23767, 23);
+  Rational    to(   27268, 79);
+  BigRational FROM(from, pool), TO(to, pool);
+  BigInt      scaleFactor(pool->_1());
+  bool        updateScaleFactor = true;
+  for(ULONG i = 0; i < n; i++) {
+    BigRational R1 = randBigRational(FROM, TO, scaleFactor, rnd);
+    BigRational R2 = randBigRational(FROM, TO, scaleFactor, rnd);
+    if(stat.isTimeToPrint()) {
+      stat.printLoopMessage(_T("i:%10u"), i);
+    }
+
+    BigRational PRD = R1 * R2;
+    Rational r1,r2,prd;
+    if(isRational(PRD, &prd) && isRational(R1,&r1) && isRational(R2,&r2)) {
+      verify(r1 * r2 == prd);
+      if(updateScaleFactor) scaleFactor.multiply2();
+    } else {
+      if(updateScaleFactor) {
+        scaleFactor.divide2().divide2().divide2().divide2();
+        updateScaleFactor = false;
+      }
+    }
+  }
+  stat.setEndMessageToOk();
+}
+void testRatQuot(TestStatistic &stat) {
+  DigitPool       *pool = stat.getDigitPool();
+  RandomGenerator &rnd  = stat.getRandomGenerator();
+  const ULONG      n    = 1000;
+  stat.setTotalTestCount(n);
+  Rational    from(-23767, 23);
+  Rational    to(   27268, 79);
+  BigRational FROM(from, pool), TO(to, pool);
+  BigInt      scaleFactor(pool->_1());
+  bool        updateScaleFactor = true;
+  for(ULONG i = 0; i < n; i++) {
+    BigRational R1 = randBigRational(FROM, TO, scaleFactor, rnd);
+    BigRational R2 = randBigRational(FROM, TO, scaleFactor, rnd);
+    if(stat.isTimeToPrint()) {
+      stat.printLoopMessage(_T("i:%10u"), i);
+    }
+
+    BigRational Q = R1 / R2;
+    Rational r1, r2, q;
+    if(isRational(Q, &q) && isRational(R1, &r1) && isRational(R2, &r2)) {
+      verify(r1 / r2 == q);
+      if(updateScaleFactor) scaleFactor.multiply2();
+    } else {
+      if(updateScaleFactor) {
+        scaleFactor.divide2().divide2().divide2().divide2();
+        updateScaleFactor = false;
+      }
+    }
+  }
+  stat.setEndMessageToOk();
+}
+void testRatMod(TestStatistic &stat) {
+  DigitPool       *pool = stat.getDigitPool();
+  RandomGenerator &rnd  = stat.getRandomGenerator();
+  const ULONG      n    = 1000;
+  stat.setTotalTestCount(n);
+  Rational    from(-23767, 23);
+  Rational    to(   27268, 79);
+  BigRational FROM(from, pool), TO(to, pool);
+  BigInt      scaleFactor(pool->_1());
+  bool        updateScaleFactor = true;
+  for(ULONG i = 0; i < n; i++) {
+    BigRational R1 = randBigRational(FROM, TO, scaleFactor, rnd);
+    BigRational R2 = randBigRational(FROM, TO, scaleFactor, rnd);
+    if(stat.isTimeToPrint()) {
+      stat.printLoopMessage(_T("i:%10u"), i);
+    }
+
+    BigRational REM = R1 % R2;
+    Rational r1, r2, rem;
+    if(isRational(REM, &rem) && isRational(R1, &r1) && isRational(R2, &r2)) {
+      verify(r1 % r2 == rem);
+      if(updateScaleFactor) scaleFactor.multiply2();
+    } else {
+      if(updateScaleFactor) {
+        scaleFactor.divide2().divide2().divide2();
+        updateScaleFactor = false;
+      }
+    }
+  }
+  stat.setEndMessageToOk();
+}
+
 void testMRIsPrime(TestStatistic &stat) {
   DigitPool *pool = stat.getDigitPool();
 
-  static const char* prime200Str =
+  static const char *prime200Str =
     "4104099511239423131236035542227957882673760571961180554513588534654406519875042180382666886167073837"
     "2825768788129141391284994375566860314332611644420154854421622536166703154271507101363910202679308323";
 
-  static const char* prime500Str =
+  static const char *prime500Str =
     "4374709331433953729233961995412554480983501654731356826759253785967425120827653060611283885837481757"
     "8554666168101918497598032204821863150402162873856795238062599114529795896259139388835236217689847856"
     "1690086706589184957333316073484416502305710002718746709379014065862697104973504193532839634923198684"

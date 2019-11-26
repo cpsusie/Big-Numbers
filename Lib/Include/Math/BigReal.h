@@ -20,15 +20,6 @@
 // Measures of time show that getDecimalDigitCount64 is 5 times faster than getDecimalDigitCount64Loop
 //#define HAS_LOOP_DIGITCOUNT
 
-// use, if you want to have backup-check for correct multiplication, running in separate
-// process built with x86 code, Serverprocess is called "MultiplicationServer", and protocol to this is quit simple:
-// write 3 BigReals, x y f as text. Serverprogram will return x*y (as text) with an error no greater than |f|
-// Can be repeated as long as you want
-// #define USE_X32SERVERCHECK
-
-// If this is defined, releaseDigitPool will check, that all used digits in the pool are released
-//#define CHECKALLDIGITS_RELEASED
-
 // If this is defined, product wil trace recursive calls for when multiplying long BigReals
 // which will slow down the program (testBigReal) by a factor 20!!
 //#define TRACEPRODUCTRECURSION
@@ -448,7 +439,7 @@ private:
   BYTE                      m_flags;
 
   // Multiplication helperfunctions
-  friend class MultiplierThread;
+  friend class SubProdRunnable;
   friend class Pow2Cache;
   friend class BigRealTestClass;
   friend class BigInt;
@@ -1691,272 +1682,49 @@ BigReal rPi(                                          size_t digits,    DigitPoo
 BigReal rGamma(    const BigReal &x,                  size_t digits,    DigitPool *digitPool = NULL);
 BigReal rFactorial(const BigReal &x,                  size_t digits,    DigitPool *digitPool = NULL);
 
-class SynchronizedStringQueue : public SynchronizedQueue<TCHAR*>, public BigRealResource {
-private:
-  SynchronizedStringQueue(           const SynchronizedStringQueue &src); // not implemented
-  SynchronizedStringQueue &operator=(const SynchronizedStringQueue &src); // not implemented
-public:
-  SynchronizedStringQueue(int id, const String &name) : BigRealResource(id) { // name not used
-  }
-  void waitForResults(int expectedResultCount);
-};
 
-class BigRealThread : public Thread, public BigRealResource {
-private:
-  Runnable                 *m_job;
-  SynchronizedStringQueue  *m_resultQueue;
-  Semaphore                 m_execute;
-  int                       m_requestCount;
-public:
-  BigRealThread(int id, const String &name);
-  UINT run();
-  void execute(Runnable &job, SynchronizedStringQueue &resultQueue);
-};
-
-class MultiplierThread : public Thread, public BigRealResource {
-private:
-  DigitPool                *m_digitPool;
-  SynchronizedStringQueue  *m_resultQueue;
-  Semaphore                 m_execute;
-  const BigReal            *m_x, *m_y, *m_f;
-  BigReal                  *m_result;
-  int                       m_requestCount;
-  int                       m_level;
-  friend class BigRealResourcePool;
-public:
-  MultiplierThread(int id, const String &name);
-  UINT run();
-
-  void multiply(BigReal &result, const BigReal &x, const BigReal &y, const BigReal &f, int level);
-  DigitPool *getDigitPool() const {
-    return m_digitPool;
-  }
-  SynchronizedStringQueue &getQueue() {
-    return *m_resultQueue;
-  }
-};
-
-template<class T> class AbstractFilteredIterator : public AbstractIterator {
-private:
-  CompactArray<T>  &m_a;
-  BitSet            m_activeSet;
-  Iterator<size_t>  m_it;
-public:
-  AbstractFilteredIterator(const CompactArray<T> &a, const BitSet &set)
-    : m_a((CompactArray<T>&)a)
-    , m_activeSet(set)
-  {
-    m_it = m_activeSet.getIterator();
-  }
-  AbstractIterator *clone() {
-    return new AbstractFilteredIterator(m_a, m_activeSet);
-  }
-
-  inline bool hasNext() const {
-    return m_it.hasNext();
-  }
-
-  void *next() {
-    if(m_it.hasNext()) {
-      noNextElementError(__TFUNCTION__);
-    }
-    return &m_a[m_it.next()];
-  }
-
-  void remove() {
-    throwUnsupportedOperationException(__TFUNCTION__);
-  }
-};
-
-template <class T> class ResourcePool : public CompactArray<T*> {
-private:
-  const String      m_typeName;
-  CompactStack<int> m_freeId;
-protected:
-  virtual void allocateNewResources(size_t count) {
-    int id = (int)size();
-    for(size_t i = 0; i < count; i++, id++) {
-      m_freeId.push(id);
-      T *r = new T(id, format(_T("Resource %s(%d)"),m_typeName.cstr(), id)); TRACE_NEW(r);
-      add(r);
-    }
-  }
-public:
-  ResourcePool(const String &typeName) : m_typeName(typeName) {
-  }
-  virtual ~ResourcePool() {
-    deleteAll();
-  }
-  T *fetchResource() {
-    if(m_freeId.isEmpty()) {
-      allocateNewResources(5);
-    }
-    const int index = m_freeId.pop();
-    return (*this)[index];
-  }
-
-  void releaseResource(const BigRealResource *resource) {
-    m_freeId.push(resource->getId());
-  }
-
-  void deleteAll() {
-    for(size_t i = 0; i < size(); i++) {
-      SAFEDELETE((*this)[i]);
-    }
-    clear();
-    m_freeId.clear();
-  }
-  BitSet getAllocatedIdSet() const {
-    if(size() == 0) {
-      return BitSet(8);
-    } else {
-      BitSet result(size());
-      return result.invert();
-    }
-  }
-  BitSet getFreeIdSet() const {
-    const int n = m_freeId.getHeight();
-    if(n == 0) {
-      return BitSet(8);
-    } else {
-      BitSet result(size());
-      for(int i = 0; i < n; i++) {
-        result.add(m_freeId.top(i));
-      }
-      return result;
-    }
-  }
-  BitSet getActiveIdSet() const {
-    return getAllocatedIdSet() - getFreeIdSet();
-  }
-
-  Iterator<T*> getAllIterator() const {
-    return __super::getIterator();
-
-  }
-  Iterator<T*> getActiveIterator() const {
-    return Iterator<T*>(new AbstractFilteredIterator<T*>(*this, getActiveIdSet()));
-  }
-
-  String toString() const {
-    const BitSet allocatedIdSet = getAllocatedIdSet();
-    const BitSet freeIdSet      = getFreeIdSet();
-    return format(_T("Free:%s. In use:%s")
-                 ,freeIdSet.toString().cstr()
-                 ,(allocatedIdSet - freeIdSet).toString().cstr()
-                 );
-  }
-};
-
-class MThreadArray : private CompactArray<MultiplierThread*> {
-  friend class BigRealResourcePool;
-public:
-  void waitForAllResults();
-  ~MThreadArray();
-  MultiplierThread &get(UINT i) {
-    return *(*this)[i];
-  }
-};
-
-#ifdef CHECKALLDIGITS_RELEASED
-class DigitPoolWithCheck : public DigitPool {
-public:
-  UINT m_usedDigits;
-  DigitPoolWithCheck(int id, UINT intialDigitcount = 0) : DigitPool(id, intialDigitcount) {
-  }
-};
-typedef DigitPoolWithCheck MTDigitPoolType;
-#else
-typedef DigitPool MTDigitPoolType;
-#endif // CHECKALLDIGITS_RELEASED
-
-template <class T> class BigRealThreadPool : public ResourcePool<T> {
-private:
-  int  m_threadPriority;
-  bool m_disablePriorityBoost;
-
-  Thread &get(UINT index) {
-    return *((Thread*)((*this)[index]));
-  }
-
-protected:
-  void allocateNewResources(size_t count) {
-    const int oldSize = (int)size();
-    __super::allocateNewResources(count);
-    for(int i = oldSize; i < (int)size(); i++) {
-      Thread &thr = get(i);
-      thr.setPriority(m_threadPriority);
-      thr.setPriorityBoost(m_disablePriorityBoost);
-    }
-  }
-public:
-  BigRealThreadPool() : ResourcePool(_T("ThreadPool")) {
-    m_threadPriority       = THREAD_PRIORITY_NORMAL;
-    m_disablePriorityBoost = false;
-  }
-  void setPriority(int priority) {
-    if(priority == m_threadPriority) return;
-    m_threadPriority = priority;
-    for(int i = 0; i < (int)size(); i++) get(i).setPriority(priority);
-  }
-  int getPriority() const {
-    return m_threadPriority;
-  }
-  void setPriorityBoost(bool disablePriorityBoost) {
-    if(disablePriorityBoost == m_disablePriorityBoost) return;
-    m_disablePriorityBoost = disablePriorityBoost;
-    for(int i = 0; i < (int)size(); i++) get(i).setPriorityBoost(disablePriorityBoost);
-  }
-
-  bool getPriorityBoost() const {
-    return m_disablePriorityBoost;
-  }
-};
-
-typedef CompactArray<Runnable*> BigRealJobArray;
+class SubProdRunnableArray;
+class DigitPoolArray;
+class DigitPoolPool;
+class LockedDigitPoolPool;
+class SubProdRunnablePool;
 
 class BigRealResourcePool {
 private:
-  BigRealThreadPool<BigRealThread>      m_threadPool;
-  BigRealThreadPool<MultiplierThread>   m_MTThreadPool;
-  ResourcePool<SynchronizedStringQueue> m_queuePool;
-  ResourcePool<MTDigitPoolType>         m_digitPool;
-  ResourcePool<DigitPoolWithLock>       m_lockedDigitPool;
-  mutable FastSemaphore                 m_gate;
-  int                                   m_processorCount;
-  int                                   m_activeThreads, m_maxActiveThreads;
+  DigitPoolPool        *m_digitPoolPool;
+  LockedDigitPoolPool  *m_lockedDigitPoolPool;
+  SubProdRunnablePool  *m_subProdPool;
+  mutable FastSemaphore m_gate;
 
+  inline void wait() {
+    m_gate.wait();
+  }
+  inline void notify() {
+    m_gate.notify();
+  }
+  // Do the real fetch...no wait/notify
+  DigitPool *fetchDPool(bool withLock, BYTE initFlags);
+  // Do the real release...no wait/notify
+  void releaseDPool(DigitPool *pool);
   BigRealResourcePool(const BigRealResourcePool &src);            // not implemented
   BigRealResourcePool &operator=(const BigRealResourcePool &src); // not implemented
 public:
   BigRealResourcePool();
   ~BigRealResourcePool();
-  static MThreadArray &fetchMTThreadArray(  MThreadArray &threads, int count);
-  static void          releaseMTThreadArray(MThreadArray &threads);
 
-  static DigitPool    *fetchDigitPool(bool withLock=false, BYTE initFlags = BR_MUTABLE);
-  static void          releaseDigitPool(DigitPool *pool);
+  static void                  fetchSubProdRunnableArray(  SubProdRunnableArray &a, UINT runnableCount, UINT digitPoolCount);
+  static void                  releaseSubProdRunnableArray(SubProdRunnableArray &a);
+  static DigitPool            *fetchDigitPool(             bool withLock = false, BYTE initFlags = BR_MUTABLE);
+  static void                  releaseDigitPool(           DigitPool      *pool);
+  static void                  fetchDigitPoolArray(        DigitPoolArray &a, UINT count, bool withLock = false, BYTE initFlags = BR_MUTABLE);
+  static void                  releaseDigitPoolArray(      DigitPoolArray &a);
   // call terminatePoolCalculation() for all DigitPools in use
-  static void          terminateAllPoolCalculations();
-
-  // Blocks until all jobs are done. If any of the jobs throws an exception,
-  // the rest of the jobs will be terminated and an exception with the same
-  // message will be thrown to the caller
-  static void executeInParallel(BigRealJobArray &jobs);
-
-  static inline int getMaxActiveThreads() {
-    return getInstance().m_maxActiveThreads;
-  }
+  static void                  terminateAllPoolCalculations();
 
   static String toString(); // for debug
-  static void startLogging();
-  static void stopLogging();
   // Sets the priority for all running and future running threads
   // Default is THREAD_PRIORITY_BELOW_NORMAL
   // THREAD_PRIORITY_IDLE,-PRIORITY_LOWEST,-PRIORITY_BELOW_NORMAL,-PRIORITY_NORMAL,-PRIORITY_ABOVE_NORMAL
-  static void setPriority(int priority);
-
-  static void setPriorityBoost(bool disablePriorityBoost);
   static BigRealResourcePool &getInstance();
 };
 

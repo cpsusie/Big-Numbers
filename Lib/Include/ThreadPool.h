@@ -8,8 +8,6 @@
 class IdentifiedResultQueuePool;
 class IdentifiedThreadPool;
 
-typedef CompactArray<Runnable*> RunnableArray;
-
 class ThreadPool {
   friend class IdentifiedThread;
 private:
@@ -36,8 +34,8 @@ private:
 public:
   ThreadPool(); // use ThreadPool::getInstance(); this class is a singleton
   ~ThreadPool();
-  static void executeNoWait(          Runnable &job);       // Execute job without blocking. Uncaught exceptions are lost.
-  static void executeInParallelNoWait(RunnableArray &jobs); // execute all jobs without blocking. Uncaught exceptions are lost.
+  static void executeNoWait(          Runnable      &job);  // Execute job without blocking. Uncaught exceptions are lost.
+  static void executeInParallelNoWait(RunnableArray &jobs); // Execute all jobs without blocking. Uncaught exceptions are lost.
   static void executeInParallel(      RunnableArray &jobs); // Blocks until all jobs are done. If any of the jobs throws an exception
                                                             // the rest of the jobs will be terminated and an exception with the same
                                                             // message will be thrown to the caller.

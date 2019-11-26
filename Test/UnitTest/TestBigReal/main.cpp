@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <ProcessTools.h>
+#include <ThreadPool.h>
 #include "TestBigReal.h"
 #include "BigRealTestClass.h"
 
@@ -308,8 +309,8 @@ int _tmain(int argc, TCHAR **argv) {
     }
 
     if(highPriority) {
-      BigRealResourcePool::setPriority(THREAD_PRIORITY_ABOVE_NORMAL);
-      BigRealResourcePool::setPriorityBoost(true);
+      ThreadPool::setPriority(THREAD_PRIORITY_ABOVE_NORMAL);
+      ThreadPool::setPriorityBoost(true);
 
       if(!SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL)) {
         throwLastErrorOnSysCallException(_T("SetThreadPriority"));

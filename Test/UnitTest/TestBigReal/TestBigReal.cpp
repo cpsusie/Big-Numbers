@@ -100,6 +100,14 @@ static void testIntDif()          { TesterJob::addFunctionTest(new RawFunctionTe
 static void testIntProd()         { TesterJob::addFunctionTest(new RawFunctionTest(_T("Int prod"            ), testIntProd        )); }
 static void testIntQuot()         { TesterJob::addFunctionTest(new RawFunctionTest(_T("Int quot"            ), testIntQuot        )); }
 static void testIntRem()          { TesterJob::addFunctionTest(new RawFunctionTest(_T("Int rem"             ), testIntRem         )); }
+static void testRatSum()          { TesterJob::addFunctionTest(new RawFunctionTest(_T("Rat sum"             ), testRatSum         )); }
+static void testRatDif()          { TesterJob::addFunctionTest(new RawFunctionTest(_T("Rat dif"             ), testRatDif         )); }
+static void testRatProd()         { TesterJob::addFunctionTest(new RawFunctionTest(_T("Rat prod"            ), testRatProd        )); }
+static void testRatQuot()         { TesterJob::addFunctionTest(new RawFunctionTest(_T("Rat quot"            ), testRatQuot        )); }
+static void testRatMod()          { TesterJob::addFunctionTest(new RawFunctionTest(_T("Rat mod"             ), testRatMod         )); }
+static void testMultiply2()       { TesterJob::addFunctionTest(new RawFunctionTest(_T("Multiply2"           ), testMultiply2      )); }
+static void testDivide2()         { TesterJob::addFunctionTest(new RawFunctionTest(_T("Divide2"             ), testDivide2        )); }
+static void testIntDivide2()      { TesterJob::addFunctionTest(new RawFunctionTest(_T("IntDivide2"          ), testIntDivide2     )); }
 static void testMRIsPrime()       { TesterJob::addFunctionTest(new RawFunctionTest(_T("MRisprime"           ), testMRIsPrime      )); }
 
 static bool checkBigRealPlus(const BigReal &x, const BigReal &y, const BigReal &result) {
@@ -143,6 +151,20 @@ static void testExactBinaryOperators() {
   testIntProd();
   testIntQuot();
   testIntRem();
+}
+
+static void testRationalBinaryOperators() {
+  testRatSum();
+  testRatDif();
+  testRatProd();
+  testRatQuot();
+  testRatMod();
+}
+
+static void testMultDivBy2() {
+  testMultiply2();
+  testDivide2();
+  testIntDivide2();
 }
 
 static void testSqrt() {
@@ -298,6 +320,7 @@ void testBigReal(int threadCount, bool stopOnError) {
   testGetExpo10();
   testMultPow10();
   testGetFirst();
+  testMultDivBy2();
 
   testConstructors();
   testConversions();
@@ -318,10 +341,11 @@ void testBigReal(int threadCount, bool stopOnError) {
   testAssignOperators();
   testQuotLinear32();
   testQuotLinear64();
-
   testExactBinaryOperators();
   testPi();
   testMRIsPrime();
+
+  testRationalBinaryOperators();
 
   testSqrt();
   testExp();
@@ -342,7 +366,6 @@ void testBigReal(int threadCount, bool stopOnError) {
   testAcos();
   testAtan();
   testAcot();
-
 
   testReadWriteBigReal();
   testReadWriteBigInt();

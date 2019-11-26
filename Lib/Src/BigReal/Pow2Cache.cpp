@@ -2,7 +2,7 @@
 #include <DebugLog.h>
 #include <ByteFile.h>
 #include <CompressFilter.h>
-#include "Factory.h"
+#include <SingletonFactory.h>
 
 class Pow2ArgumentKey {
 public:
@@ -236,7 +236,7 @@ void Pow2Cache::load(ByteInputStream &s) {
 }
 
 Pow2Cache &Pow2Cache::getInstance() { // static
-  static FactoryTemplate<Pow2Cache> factory;
+  static SingletonFactoryTemplate<Pow2Cache> factory;
   Pow2Cache &cache = factory.getInstance();
   cache.wait();
   return cache;
@@ -258,26 +258,24 @@ const BigReal &Pow2Cache::calculatePow2(int n, size_t digits, DigitPool *workPoo
       put(key, new BigReal(::cut(**result, digits,workPool),m_digitPool));
     } else if(n == 0) {
       put(key, new BigReal(m_digitPool->_1()));              // 2^0 == 1
-    } else if(isEven(n)) {                                   // n even
-      const BigReal &t = calculatePow2(n/2,digits,workPool);
+    } else {
       BigReal tmp(workPool);
-      if(digits == 0) {
-        tmp = prod(t, t, workPool->_0(),workPool);
-      } else {
-        tmp = rProd(t, t, digits, workPool).rRound(digits); // 2^n = pow2(n/2)^2
+      if(isEven(n)) {                                   // n even
+        const BigReal &t = calculatePow2(n/2,digits,workPool);
+        if(digits == 0) {
+          tmp = prod(t, t, workPool->_0(),workPool);
+        } else {
+          tmp = rProd(t, t, digits, workPool).rRound(digits); // 2^n = pow2(n/2)^2
+        }
+      } else if(n < 0) {                                      // n odd && (n < 0)
+        tmp = calculatePow2(n + 1, digits, workPool);
+        tmp.divide2();
+        if(digits) tmp.rRound(digits);
+      } else {                                                 // n odd && (n > 0)
+        tmp = calculatePow2(n - 1, digits, workPool);
+        tmp.multiply2();
+        if(digits) tmp.rRound(digits);
       }
-      put(key, new BigReal(tmp, m_digitPool));
-    } else if(n < 0) {                                      // n odd && (n < 0)
-      BigReal tmp(workPool);
-      tmp = (digits == 0)
-          ? workPool->_05() * calculatePow2(n + 1, 0, workPool)
-          : rProd(workPool->_05(), calculatePow2(n + 1, digits, workPool), digits,workPool).rRound(digits);
-      put(key, new BigReal(tmp, m_digitPool));
-    } else {                                                 // n odd && (n > 0)
-      BigReal tmp(workPool);
-      tmp = (digits == 0)
-          ? workPool->_2() * calculatePow2(n - 1, 0, workPool)
-          : rProd(workPool->_2(), calculatePow2(n - 1, digits, workPool), digits,workPool).rRound(digits);
       put(key, new BigReal(tmp, m_digitPool));
     }
     result = get(key);

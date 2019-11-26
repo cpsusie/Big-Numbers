@@ -8,11 +8,11 @@ class ConstBigRational;
 class BigRational {
 private:
   inline void modifyFlags(BYTE add, BYTE remove) {
-    m_numerator.modifyFlags(  add, remove);
-    m_denominator.modifyFlags(add, remove);
+    m_num.modifyFlags(  add, remove);
+    m_den.modifyFlags(add, remove);
   }
 protected:
-  BigInt m_numerator, m_denominator;
+  BigInt m_num, m_den;
   // Assume a._normal() && b._isnormal() && a > 0 && b > 0
   static BigInt findGCD(const BigInt &a, const BigInt &b, DigitPool *pool);
   void init(const BigInt &numerator, const BigInt &denominator);
@@ -55,63 +55,83 @@ public:
   BigRational &operator=(const BigInt   &n);
   BigRational &operator=(const Rational &r);
 
-  friend BigRational operator+(const BigRational &l, const BigRational &r);
-  friend BigRational operator-(const BigRational &l, const BigRational &r);
-  friend BigRational operator-(const BigRational &r);
-  friend BigRational operator*(const BigRational &l, const BigRational &r);
-  friend BigRational operator/(const BigRational &l, const BigRational &r);
+  friend BigRational sum( const BigRational &x, const BigRational &y, DigitPool *digitPool = NULL);
+  friend BigRational dif( const BigRational &x, const BigRational &y, DigitPool *digitPool = NULL);
+  friend BigRational prod(const BigRational &x, const BigRational &y, DigitPool *digitPool = NULL);
+  friend BigRational quot(const BigRational &x, const BigRational &y, DigitPool *digitPool = NULL);
+  friend BigRational rem( const BigRational &x, const BigRational &y, DigitPool *digitPool = NULL);
 
-  BigRational &operator+=(const BigRational &r);
-  BigRational &operator-=(const BigRational &r);
-  BigRational &operator*=(const BigRational &r);
-  BigRational &operator/=(const BigRational &r);
+  inline BigRational operator+(const BigRational &r) const {
+    return sum(*this, r, getDigitPool());
+  }
+  inline BigRational operator-(const BigRational &r) const {
+    return dif(*this, r, getDigitPool());
+  }
+  BigRational operator-() const;
+  inline BigRational operator*(const BigRational &r) const {
+    return prod(*this, r, getDigitPool());
+  }
+  inline BigRational operator/(const BigRational &r) const {
+    return quot(*this, r, getDigitPool());
+  }
+  inline BigRational operator%(const BigRational &r) const {
+    return rem(*this, r, getDigitPool());
+  }
+
+  inline BigRational &operator+=(const BigRational &r) { return *this = *this + r; }
+  inline BigRational &operator-=(const BigRational &r) { return *this = *this - r; }
+  inline BigRational &operator*=(const BigRational &r) { return *this = *this * r; }
+  inline BigRational &operator/=(const BigRational &r) { return *this = *this / r; }
+  inline BigRational &operator%=(const BigRational &r) { return *this = *this % r; }
 
   // Assume r1._isfinite() && r2._isfinite()
   static int compare(const BigRational &r1, const BigRational &r2);
 
+  friend BigRational fabs(const BigRational &r, DigitPool *digitPool = NULL);
+
   inline const BigInt &getNumerator() const {
-    return m_numerator;
+    return m_num;
   }
 
   inline const BigInt &getDenominator() const {
-    return m_denominator;
+    return m_den;
   }
 
   inline DigitPool *getDigitPool() const {
-    return m_denominator.getDigitPool();
+    return m_den.getDigitPool();
   }
   inline BYTE getFlags() const {
-    return m_numerator.getFlags();
+    return m_num.getFlags();
   }
   inline bool _isnormal() const {
-    return m_numerator._isnormal() && m_denominator._isnormal();
+    return m_num._isnormal() && m_den._isnormal();
   }
   // Return true if *this == 0 (0/1)
   inline  bool isZero() const {
-    return m_numerator.isZero() && (m_denominator == BigReal::_1);
+    return m_num.isZero() && (m_den == BigReal::_1);
   }
   // Return true, if *this is +/-INFINITE...+inf=(1/0), -inf=(-1/0)
   inline bool _isinf() const {
-    return m_denominator.isZero() && m_numerator._isnormal();
+    return m_den.isZero() && m_num._isnormal();
   }
   // Return true, if _isnormal() || isZero() <=> denominator._isnormal()
   inline bool _isfinite() const {
-    return m_denominator._isnormal();
+    return m_den._isnormal();
   }
   // Return true, if *this is NaN (=(0/0))
   inline bool _isnan() const {
-    return m_denominator.isZero() && m_numerator.isZero();
+    return m_den.isZero() && m_num.isZero();
   }
   // Return getNumerator().isPositive()
   inline  bool isPositive() const {
-    return m_numerator.isPositive();
+    return m_num.isPositive();
   }
   // Return getNumerator().isNegative()
   inline bool isNegative() const {
-    return m_numerator.isNegative();
+    return m_num.isNegative();
   }
   inline bool _isinteger() const {
-    return m_denominator == BigReal::_1;
+    return m_den == BigReal::_1;
   }
   BigRational &setToZero();
   BigRational &setToPInf();

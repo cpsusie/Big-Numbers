@@ -532,9 +532,9 @@ BigReal &BigReal::divide2() {
     }
     if(borrow) {
       appendDigit(_BR2);
-    } else {
-      trimZeroes();
+      m_low--;
     }
+    trimZeroes();
   }
   return *this;
 }

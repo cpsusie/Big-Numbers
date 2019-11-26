@@ -1,51 +1,5 @@
 #include "pch.h"
 
-#ifdef USE_X32SERVERCHECK
-#include <ExternProcess.h>
-
-class MultiplyServer : public ExternProcess {
-private:
-  Semaphore m_gate;
-public:
-  BigReal &mult(BigReal &dst, const BigReal &x, const BigReal &y, const BigReal &f);
-  void startup();
-};
-
-void MultiplyServer::startup() {
-  m_gate.wait();
-  if (!isStarted()) {
-    start(false, _T("c:\\bin\\multiplicationServer.exe"), NULL);
-//    setVerbose(true);
-  }
-  m_gate.notify();
-}
-
-BigReal &MultiplyServer::mult(BigReal &dst, const BigReal &x, const BigReal &y, const BigReal &f) {
-  DigitPool *pool = dst.getDigitPool();
-  FullFormatBigReal xf(x, pool), yf(y, pool), ff(f, pool);
-  std::wstringstream xs, ys, fs;
-  xs << xf;
-  ys << yf;
-  fs << ff;
-
-  m_gate.wait();
-  try {
-    send(_T("%s %s %s\n"), xs.str().c_str(), ys.str().c_str(), fs.str().c_str());
-    const String line = receive();
-    dst = BigReal(line, pool);
-  } catch (Exception e) {
-    _tprintf(_T("Exception:%s\n"), e.what());
-    dst = 0;
-  } catch (...) {
-    _tprintf(_T("Unknown exception\n"));
-    dst = 0;
-  }
-  m_gate.notify();
-  return dst;
-}
-
-#endif // USE_X32SERVERCHECK
-
 #ifdef TRACEPRODUCTRECURSION
 void logProductRecursion(UINT level, const TCHAR *method, _In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   va_list argptr;
@@ -65,29 +19,7 @@ BigReal &BigReal::shortProductNoNormalCheck(const BigReal &x, const BigReal &y, 
   if(loopCount <= 0) { // result is zero
     return setToZero();
   }
-
-#ifdef USE_X32SERVERCHECK
-  static bool firstTime = true;
-  static MultiplyServer s_multiplyServer;
-
-  if (firstTime) {
-    firstTime = false;
-    s_multiplyServer.startup();
-  }
-  DigitPool *pool = getDigitPool();
-  BigReal ff(pool), serverResult(pool), error(pool);
-  ff = (fexpo == BIGREAL_NONNORMAL) ? BigReal::_0 : (e(BigReal::_1, fexpo * BIGREAL_LOG10BASE, pool));
-  s_multiplyServer.mult(serverResult, x, y, ff);
-
-  shortProductNoZeroCheck(x, y, (UINT)loopCount);
-  error = serverResult - *this;
-  if(compareAbs(error, ff) > 0) {
-    shortProductNoZeroCheck(x, y, (UINT)loopCount);
-  }
-  return *this;
-#else
   return shortProductNoZeroCheck(x, y, (UINT)loopCount);
-#endif
 }
 
 // Assume (a.isZero() && b.isZero() && _isnormal() && f._isfinite());

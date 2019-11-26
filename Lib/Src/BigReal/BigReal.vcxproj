@@ -694,8 +694,8 @@
     <ClInclude Include="..\..\Include\Math\BigRealMatrix.h" />
     <ClInclude Include="..\..\Include\Math\BigRealTransformation.h" />
     <ClInclude Include="BigRealInternal.h" />
+    <ClInclude Include="BigRealResourcePool.h" />
     <ClInclude Include="BigRealStream.h" />
-    <ClInclude Include="Factory.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
@@ -733,7 +733,6 @@
     <ClCompile Include="BigRealPow10.cpp" />
     <ClCompile Include="BigRealToString.cpp" />
     <ClCompile Include="BigRealStream.cpp" />
-    <ClCompile Include="BigRealThread.cpp" />
     <ClCompile Include="BigRealResourcePool.cpp" />
     <ClCompile Include="BigRealTransformation.cpp" />
     <ClCompile Include="BigRealValidate.cpp" />
@@ -751,7 +750,7 @@
     <ClCompile Include="InputBigReal.cpp" />
     <ClCompile Include="Ln.cpp" />
     <ClCompile Include="MRisprime.cpp" />
-    <ClCompile Include="MultiplierThread.cpp" />
+    <ClCompile Include="SubProdRunnable.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|Win32'">Create</PrecompiledHeader>
