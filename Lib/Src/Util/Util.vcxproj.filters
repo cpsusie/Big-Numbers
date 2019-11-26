@@ -502,15 +502,6 @@
     <ClCompile Include="TimeMeasure.cpp">
       <Filter>Source Files\Process</Filter>
     </ClCompile>
-    <ClCompile Include="InputInt.cpp">
-      <Filter>Source Files\Misc</Filter>
-    </ClCompile>
-    <ClCompile Include="InputInt64.cpp">
-      <Filter>Source Files\Misc</Filter>
-    </ClCompile>
-    <ClCompile Include="InputPassword.cpp">
-      <Filter>Source Files\Misc</Filter>
-    </ClCompile>
     <ClCompile Include="PropertyContainer.cpp">
       <Filter>Source Files\Misc</Filter>
     </ClCompile>
@@ -588,9 +579,6 @@
     </ClCompile>
     <ClCompile Include="searchenv.cpp">
       <Filter>Source Files\System</Filter>
-    </ClCompile>
-    <ClCompile Include="InputDouble.cpp">
-      <Filter>Source Files\Misc</Filter>
     </ClCompile>
     <ClCompile Include="KeepAlive.cpp">
       <Filter>Source Files\Process</Filter>
@@ -704,9 +692,6 @@
     <ClCompile Include="SocketStream.cpp">
       <Filter>Source Files\Stream</Filter>
     </ClCompile>
-    <ClCompile Include="InputString.cpp">
-      <Filter>Source Files\Misc</Filter>
-    </ClCompile>
     <ClCompile Include="ReadTextFile.cpp">
       <Filter>Source Files\Misc</Filter>
     </ClCompile>
@@ -733,12 +718,6 @@
     </ClCompile>
     <ClCompile Include="PersistentData.cpp">
       <Filter>Source Files\String</Filter>
-    </ClCompile>
-    <ClCompile Include="InputUint.cpp">
-      <Filter>Source Files\Misc</Filter>
-    </ClCompile>
-    <ClCompile Include="InputUint64.cpp">
-      <Filter>Source Files\Misc</Filter>
     </ClCompile>
     <ClCompile Include="ReadLine.cpp">
       <Filter>Source Files\Misc</Filter>
@@ -928,6 +907,27 @@
     </ClCompile>
     <ClCompile Include="HexDumpStr.cpp">
       <Filter>Source Files\Debugging and Exceptions</Filter>
+    </ClCompile>
+    <ClCompile Include="InputDouble.cpp">
+      <Filter>Source Files\Console</Filter>
+    </ClCompile>
+    <ClCompile Include="InputInt.cpp">
+      <Filter>Source Files\Console</Filter>
+    </ClCompile>
+    <ClCompile Include="InputInt64.cpp">
+      <Filter>Source Files\Console</Filter>
+    </ClCompile>
+    <ClCompile Include="InputPassword.cpp">
+      <Filter>Source Files\Console</Filter>
+    </ClCompile>
+    <ClCompile Include="InputString.cpp">
+      <Filter>Source Files\Console</Filter>
+    </ClCompile>
+    <ClCompile Include="InputUint.cpp">
+      <Filter>Source Files\Console</Filter>
+    </ClCompile>
+    <ClCompile Include="InputUint64.cpp">
+      <Filter>Source Files\Console</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1307,9 +1307,6 @@
     <ClInclude Include="..\..\Include\BuiltInArrayUtil.h">
       <Filter>Header Files\Misc</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\targetver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\BitMatrix.h">
       <Filter>Header Files\Collection</Filter>
     </ClInclude>
@@ -1322,9 +1319,6 @@
     <ClInclude Include="..\..\Include\FastSemaphore.h">
       <Filter>Header Files\Process</Filter>
     </ClInclude>
-    <ClInclude Include="InputTemplate.h">
-      <Filter>Source Files\Misc</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\SingletonFactory.h">
       <Filter>Header Files\Misc</Filter>
     </ClInclude>
@@ -1333,6 +1327,10 @@
     </ClInclude>
     <ClInclude Include="ThreadPoolInternal.h">
       <Filter>Source Files\Process</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\targetver.h" />
+    <ClInclude Include="InputTemplate.h">
+      <Filter>Source Files\Console</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

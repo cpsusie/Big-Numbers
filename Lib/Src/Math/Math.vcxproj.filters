@@ -166,9 +166,6 @@
     <ClCompile Include="RungekuttaFehlberg.cpp">
       <Filter>Source Files\Misc</Filter>
     </ClCompile>
-    <ClCompile Include="pch.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ChiSquaredDistribution.cpp">
       <Filter>Source Files\Functions</Filter>
     </ClCompile>
@@ -253,6 +250,7 @@
     <ClCompile Include="DescStatistic.cpp">
       <Filter>Source Files\Statistic</Filter>
     </ClCompile>
+    <ClCompile Include="pch.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Triangle\ReadMe.txt">
@@ -328,9 +326,6 @@
     <ClInclude Include="..\..\Include\Math\Transformation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="pch.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\Math\Point2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -339,9 +334,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\Math\Rectangle2D.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="targetver.h">
-      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\Math\Point2DTransformations.h">
       <Filter>Header Files</Filter>
@@ -397,6 +389,8 @@
     <ClInclude Include="..\..\Include\Math\Double80Asmx86.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="FPU.inc">
