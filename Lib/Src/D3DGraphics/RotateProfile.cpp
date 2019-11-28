@@ -206,7 +206,7 @@ void FaceMaker::line(const Point2D &from, const Point2D &to) {
   face.addVertex(from.x, from.y, m_width);
 }
 
-LPD3DXMESH createMesh(LPDIRECT3DDEVICE9EX device, const Profile &profile, double width) {
+LPD3DXMESH createMesh(LPDIRECT3DDEVICE device, const Profile &profile, double width) {
   MeshBuilder meshBuilder
   apply(FaceMaker(meshBuilder, width));
   return meshBuilder.createMesh(device);
