@@ -40,16 +40,14 @@ void checkResult(const TCHAR *fileName, int line, ULONG hResult) {
 }
 
 void checkResult(const TCHAR *fileName, int line, HRESULT hResult) {
-  if(hResult == 0) {
+  if(SUCCEEDED(hResult)) {
     return;
   }
   throwException(_T("%s.\n%s"), fileLineText(fileName, line).cstr(), getErrorText(hResult).cstr());
 }
 
 void checkResult(const TCHAR *fileName, int line, BOOL ok) {
-  if(ok == TRUE) {
-    return;
-  }
+  if(ok) return;
   throwException(_T("%s.\nCall returned FALSE"), fileLineText(fileName, line).cstr());
 }
 
