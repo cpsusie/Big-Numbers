@@ -1,8 +1,18 @@
 #include "pch.h"
 #include <MyUtil.h>
 #include <Semaphore.h>
+#ifdef TRACESEMAPHORE
+#include <Thread.h>
+#include <DebugLog.h>
+#endif  // TRACESEMAPHORE
 
-Semaphore::Semaphore(int initialCount, int maxWait) {
+Semaphore::Semaphore(const String &name, UINT initialCount, UINT maxWait) {
+  if((m_sem = CreateSemaphore(NULL, initialCount, maxWait, name.cstr())) == NULL) {
+    throwLastErrorOnSysCallException(_T("CreateSemaphore"));
+  }
+}
+
+Semaphore::Semaphore(UINT initialCount, UINT maxWait) {
   if((m_sem = CreateSemaphore(NULL,initialCount,maxWait,NULL)) == NULL) {
     throwLastErrorOnSysCallException(_T("CreateSemaphore"));
   }
@@ -12,8 +22,8 @@ Semaphore::~Semaphore() {
   CloseHandle(m_sem);
 }
 
-bool Semaphore::wait(int milliseconds) {
-  const int ret = WaitForSingleObject(m_sem, milliseconds);
+bool Semaphore::wait(UINT timeout) {
+  const int ret = WaitForSingleObject(m_sem, timeout);
   switch(ret) {
   case WAIT_OBJECT_0:
     return true;
@@ -28,34 +38,33 @@ bool Semaphore::wait(int milliseconds) {
 }
 
 void Semaphore::notify() {
-  if (!ReleaseSemaphore(m_sem, 1, NULL)) {
+  if(!ReleaseSemaphore(m_sem, 1, NULL)) {
     throwLastErrorOnSysCallException(_T("ReleaseSemaphore"));
   }
 }
 
-static void addDebugLine(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
-  static Semaphore gate;
-  static TCHAR *mode = _T("w");
-  gate.wait();
-  FILE *f = FOPEN(_T("c:\\temp\\semaphore.log"),mode);
-  mode = _T("a");
-  va_list argptr;
-  va_start(argptr,format);
-  _vftprintf(f, format, argptr);
-  va_end(argptr);
-  fclose(f);
-  gate.notify();
+#ifdef TRACESEMAPHORE
+
+static String getCurrentThreadIdentification() {
+  try {
+    return getThreadDescription(GetCurrentThread());
+  } catch (...) {
+    return format(_T("%08d"), GetCurrentThreadId());
+  }
 }
 
-void Semaphore::wait(const TCHAR *name, const TCHAR *file, int line) {
-  addDebugLine(_T("Thread %08d %s(%p).wait()   in %s line %d\n")
-               ,GetCurrentThreadId(), name, m_sem, file, line);
-  wait();
+bool Semaphore::wait(const TCHAR *name, const TCHAR *file, int line, const TCHAR *function, UINT timeout) {
+  debugLog(_T("%s:Thread %s:%s(%p).wait(%s) in %s(%d)\n")
+          ,function, getCurrentThreadIdentification().cstr(), name, m_sem
+          ,(timeout==INFINITE)?_T(""):format(_T("%u msec"),timeout).cstr()
+          ,file, line);
+  return wait(timeout);
 }
 
-void Semaphore::notify(const TCHAR *name, const TCHAR *file, int line) {
-  addDebugLine(_T("Thread %08d %s(%p).notify() in %s line %d\n")
-               ,GetCurrentThreadId(), name, m_sem, file, line);
+void Semaphore::notify(const TCHAR *name, const TCHAR *file, int line, const TCHAR *function) {
+  debugLog(_T("%s:Thread %s:%s(%p).notify() in %s(%d)\n")
+          ,function, getCurrentThreadIdentification().cstr(), name, m_sem
+          ,file, line);
   notify();
 }
-
+#endif  // TRACESEMAPHORE
