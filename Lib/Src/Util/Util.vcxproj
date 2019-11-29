@@ -1004,6 +1004,7 @@
     <ClCompile Include="gets.cpp" />
     <ClCompile Include="GetSize.cpp" />
     <ClCompile Include="GetTestFileName.cpp" />
+    <ClCompile Include="GetThreadDescription.cpp" />
     <ClCompile Include="GetUserName.cpp" />
     <ClCompile Include="guid.cpp" />
     <ClCompile Include="HashMapImpl.cpp" />
