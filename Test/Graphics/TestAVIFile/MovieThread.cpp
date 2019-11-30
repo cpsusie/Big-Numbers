@@ -3,7 +3,7 @@
 #include "MovieThread.h"
 
 MovieThread::MovieThread(FrameGenerator *frameGenerator) : m_frameGenerator(*frameGenerator) {
-  setDeamon(true);
+  setDemon(true);
 }
 
 unsigned int MovieThread::run() {

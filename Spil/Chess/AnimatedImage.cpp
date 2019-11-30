@@ -16,7 +16,7 @@ AnimatedImage::AnimatedImage(int resId, UINT imageCount) {
     m_imageArray.add(frame);
   }
   setSecondsPerCycle(0.25 * imageCount);
-  setDeamon(true);
+  setDemon(true);
   m_wnd        = NULL;
   m_background = NULL;
 }

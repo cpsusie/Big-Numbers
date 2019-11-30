@@ -113,7 +113,7 @@ void DebugThread::handlePropertyChanged(const PropertyContainer *source, int id,
 }
 
 unsigned int DebugThread::run() {
-  setDeamon(true);
+  setDemon(true);
   try {
     setProperty(THREAD_RUNNING, m_running, true);
     m_expr.reduce();

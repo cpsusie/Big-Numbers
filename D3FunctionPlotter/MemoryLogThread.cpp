@@ -5,7 +5,7 @@
 #include "MemoryLogThread.h"
 
 UINT MemoryLogThread::run() {
-  setDeamon(true);
+  setDemon(true);
   for(;;) {
     const PROCESS_MEMORY_COUNTERS mem = getProcessMemoryUsage();
     const ResourceCounters        res = getProcessResources();

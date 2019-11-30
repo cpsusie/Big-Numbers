@@ -105,11 +105,11 @@ BigReal inversdms(const BigReal &x, const BigReal &f);
 
 class CalculatorThread : public Thread,  public Calculator {
 private:
-  Semaphore m_sem;
-  int       m_buttonPressed;
-  bool      m_busy;
-  bool      m_killed;
-  unsigned int run();
+  FastSemaphore m_hasInput, m_terminated;
+  int           m_buttonPressed;
+  bool          m_busy;
+  bool          m_killed;
+  UINT          run();
 public:
   CalculatorThread();
  ~CalculatorThread();

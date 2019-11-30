@@ -290,7 +290,7 @@ static void readCycleCount(int &cycleCount, int &errorCount) { // find the last 
 }
 
 TrainigThread::TrainigThread(const WordBpn &n) : m_trainingNetwork(n) {
-  setDeamon(true);
+  setDemon(true);
   m_done      = false;
   m_terminate = false;
 }

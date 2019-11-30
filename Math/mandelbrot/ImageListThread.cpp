@@ -3,7 +3,7 @@
 #include "ImageListThread.h"
 
 ImageListThread::ImageListThread(FrameGenerator *frameGenerator) : m_frameGenerator(*frameGenerator) {
-  setDeamon(true);
+  setDemon(true);
 }
 
 UINT ImageListThread::run() {

@@ -101,7 +101,7 @@ OpeningLibrary ChessPlayer::s_openingLibrary;
 
 // public
 ChessPlayer::ChessPlayer(Player player) : m_player(player) {
-  setDeamon(true);
+  setDemon(true);
   m_state      = CPS_IDLE;
   m_callLevel  = 0;
   m_moveFinder = NULL;

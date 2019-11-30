@@ -23,7 +23,7 @@ private:
   void doAnimatedSort();
 public:
   SortThread(SortPanelWnd *wnd) : m_wnd(*wnd), Thread(_T("SortThread")) {
-    setDeamon(true);
+    setDemon(true);
   }
   unsigned int run();
 };

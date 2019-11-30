@@ -22,7 +22,7 @@ class DebugLogThread : public Thread {
 private:
   SynchronizedQueue<DebugThreadQueueElement> m_cmdQueue;
   DebugLogThread() {
-    setDeamon(true);
+    setDemon(true);
     start();
   }
 public:

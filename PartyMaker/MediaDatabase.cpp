@@ -427,7 +427,7 @@ AttributeArray MediaArray::getAttributes(int flags) const {
 }
 
 ScannerThread::ScannerThread() {
-  setDeamon(true);
+  setDemon(true);
 }
 
 void ScannerThread::startScan(const String &dir, bool recurse, bool &busy, LoadableMediaArray *mediaArray) {

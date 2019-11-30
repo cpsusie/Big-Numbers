@@ -5,7 +5,7 @@
 #define BUFFERSIZE (1024*1024)
 
 CPUHeaterThread::CPUHeaterThread() {
-  setDeamon(true);
+  setDemon(true);
   m_wantedCPULoad = 0;
   m_lastCPULoad   = 1;
   m_infoWnd       = NULL;

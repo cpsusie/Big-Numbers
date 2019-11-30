@@ -13,7 +13,7 @@ MBCalculator::MBCalculator(CalculatorPool *pool, UINT id)
 , m_startTime(0)
 , m_threadTime(0)
 {
-  setDeamon(true);
+  setDemon(true);
   setWithOrbit();
 #ifdef SAVE_CALCULATORINFO
   m_info = NULL;

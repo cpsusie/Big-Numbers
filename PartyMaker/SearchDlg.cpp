@@ -263,7 +263,7 @@ BOOL SearchDlg::PreTranslateMessage(MSG *pMsg) {
 }
 
 SearchThread::SearchThread(SearchDlg &searchDlg) : m_searchDlg(searchDlg) {
-  setDeamon(true);
+  setDemon(true);
   m_state = 0;
 }
 

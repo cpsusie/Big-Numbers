@@ -142,7 +142,7 @@ template <class T> PartitioningThread<T>::PartitioningThread(MTQuicksortClass<T>
 , m_comparator(m_qc.getComparator())
 {
   m_id = id;
-  setDeamon(true);
+  setDemon(true);
 }
 
 #define MINMTSPLITSIZE 20

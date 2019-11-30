@@ -1099,8 +1099,7 @@ void Calculator::enter(int button) {
 
 // ------------------------------------------------------------------
 
-CalculatorThread::CalculatorThread() : m_sem(0) {
-  setDeamon(true);
+CalculatorThread::CalculatorThread() : Thread("CalculatorThread"), m_hasInput(0), m_terminated(0) {
   m_busy   = false;
   m_killed = false;
   resume();
@@ -1113,18 +1112,17 @@ CalculatorThread::~CalculatorThread() {
   } else {
     enter(0);
   }
-  while(stillActive()) {
-    Sleep(100);
-  }
+  m_terminated.wait();
 }
 
-unsigned int CalculatorThread::run() {
+UINT CalculatorThread::run() {
   while(!m_killed) {
-    m_sem.wait();
+    m_hasInput.wait();
     if(m_killed) break;
     Calculator::enter(m_buttonPressed);
     m_busy = false;
   }
+  m_terminated.notify();
   return 0;
 }
 
@@ -1134,7 +1132,7 @@ void CalculatorThread::enter(int button) {
   }
   m_buttonPressed = button;
   m_busy          = true;
-  m_sem.notify();
+  m_hasInput.notify();
 }
 
 void CalculatorThread::terminateCalculation() {

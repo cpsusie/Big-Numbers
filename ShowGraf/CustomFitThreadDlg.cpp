@@ -286,7 +286,7 @@ void CCustomFitThreadDlg::OnGotoXInterval() {
 }
 
 FitThread::FitThread(CCustomFitThreadDlg *dlg, FunctionFitter &functionFitter) : m_dlg(*dlg), m_functionFitter(functionFitter) {
-  setDeamon(true);
+  setDemon(true);
   m_killed = false;
 }
 

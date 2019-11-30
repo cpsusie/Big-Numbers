@@ -184,7 +184,7 @@ int MediaDuplicateComparator::compare(const MediaFile &f1, const MediaFile &f2) 
 
 FindDuplicatesThread::FindDuplicatesThread(CShowDuplicatesDlg &dlg) : m_dlg(dlg) {
   m_stop = false;
-  setDeamon(true);
+  setDemon(true);
 }
 
 void FindDuplicatesThread::showMessage(_In_z_ _Printf_format_string_ TCHAR const * const format,...) {

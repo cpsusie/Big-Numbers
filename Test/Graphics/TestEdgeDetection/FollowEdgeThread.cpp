@@ -6,7 +6,7 @@ FollowEdgeThread::FollowEdgeThread(CTestEdgeDetectionDlg *dlg, const CPoint &sta
 , m_currentRect(CPoint(0,0), dlg->getWindowSize())
 , m_startPoint(startPoint)
 {
-  setDeamon(true);
+  setDemon(true);
 }
 
 unsigned int FollowEdgeThread::run() {

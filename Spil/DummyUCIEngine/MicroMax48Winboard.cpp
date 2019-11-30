@@ -126,7 +126,7 @@ public:
 };
 
 MoveFinder::MoveFinder(InputThread &input) : m_input(input), m_timer(1) {
-  setDeamon(true);
+  setDemon(true);
   m_busy = false;
 #ifndef _DEBUG
   const String fileName = format(_T("c:\\temp\\MicroMax%s.txt"), getFileVersion().cstr());
