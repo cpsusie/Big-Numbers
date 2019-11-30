@@ -19,15 +19,16 @@ private:
   int  getSleepTime() const;
 public:
   MeshAnimationThread(D3AnimatedSurface &surface)
-    : m_surface(surface)
+    : Thread(_T("Mesh Animation Thread"))
+    , m_surface(surface)
     , m_nextMeshIndex(m_surface.m_nextMeshIndex)
     , m_frameCount((UINT)m_surface.m_meshArray.size())
     , m_timeout(0)
+    , m_killed(false)
+    , m_running(false)
+    , m_type(ANIMATE_FORWARD)
+    , m_forward(true)
   {
-    m_killed    = false;
-    m_running   = false;
-    m_type      = ANIMATE_FORWARD;
-    m_forward   = true;
     m_sleepTime = 50;
     resume();
   }
@@ -79,7 +80,7 @@ void MeshAnimationThread::kill() {
     Sleep(20);
   }
   if(stillActive()) {
-    showWarning(_T("Cannot not stop animationThread"));
+    showWarning(_T("Cannot stop animationThread"));
   }
 }
 

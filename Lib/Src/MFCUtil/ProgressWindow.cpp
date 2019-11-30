@@ -8,7 +8,7 @@
 #include <MFCUtil/ProgressDlg.h>
 
 ProgressWindow::ProgressWindow(CWnd *parent, InteractiveRunnable &jobToDo, UINT delay, UINT updateRate) {
-  Thread jobExecutor(jobToDo);
+  Thread jobExecutor(_T("Progress Windows Executor"), jobToDo);
 
   jobToDo.setStartTime();
   jobExecutor.start();

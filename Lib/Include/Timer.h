@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Thread.h"
+#include "PropertyContainer.h"
 
 class Timer;
 
@@ -10,13 +11,17 @@ public:
   virtual ~TimeoutHandler() {}
 };
 
-class TimerThread;
-
-class Timer {
+class Timer : private PropertyChangeListener {
+  friend class TimerThread;
 private:
   const int             m_id;
   TimerThread          *m_thread;
   mutable FastSemaphore m_gate;
+  bool                  m_blockStart;
+  void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
+  void createThread(int msec, TimeoutHandler &handler, bool repeatTimeout);
+  void destroyThread();
+
 public:
   Timer(int id);
   virtual ~Timer();

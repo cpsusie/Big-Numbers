@@ -403,8 +403,8 @@ void AnimatedImage::hide() {
   m_lastPaintedFrame = NULL;
 }
 
-AnimationThread::AnimationThread() : m_delaySem(0) {
-  setDeamon(true);
+AnimationThread::AnimationThread() : Thread(_T("AnimationThread")), m_delaySem(0) {
+  setDemon(true);
   m_owner      = NULL;
   m_point      = CPoint(-1,-1);
   m_running    = false;

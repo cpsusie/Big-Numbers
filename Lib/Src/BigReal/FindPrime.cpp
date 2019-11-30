@@ -126,7 +126,8 @@ public:
 };
 
 PrimeSearcher::PrimeSearcher(int id, int digitCount, PrimeQueue &queue, MillerRabinHandler *handler)
-: m_id(        id        )
+: Thread(format(_T("PrimeSearcher %d"), id))
+, m_id(        id        )
 , m_digitCount(digitCount)
 , m_queue(     queue     )
 , m_handler(   handler   )
@@ -134,7 +135,7 @@ PrimeSearcher::PrimeSearcher(int id, int digitCount, PrimeQueue &queue, MillerRa
 , m_flags(PSST_ALLOCATED   )
 {
   m_rnd.randomize();
-  setDeamon(true);
+  setDemon(true);
 }
 
 PrimeSearcher::~PrimeSearcher() {

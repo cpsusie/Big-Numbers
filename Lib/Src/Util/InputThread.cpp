@@ -6,11 +6,12 @@
 DEFINECLASSNAME(InputThread);
 
 InputThread::InputThread(FILE *input, bool verbose)
-: m_input(input)
+: Thread(format(_T("InputThread fileno=%d"), _fileno(input)))
+, m_input(input)
 , m_verbose(verbose)
 , m_killed(0)
 {
-  setDeamon(true);
+  setDemon(true);
   m_eoi = false;
   resume();
 }

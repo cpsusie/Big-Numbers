@@ -4,6 +4,7 @@
 #include "resource.h"
 #include "InteractiveRunnable.h"
 #include "ProgressWithPctCtrl.h"
+#include <Thread.h>
 
 class CProgressDlg : public CDialog {
 private:

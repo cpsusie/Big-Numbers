@@ -3,22 +3,27 @@
 #include "BitSet.h"
 #include "Runnable.h"
 #include "FastSemaphore.h"
+#include <PropertyContainer.h>
 #include "CompactStack.h"
 
 class IdentifiedResultQueuePool;
 class IdentifiedThreadPool;
+class PoolLogger;
 
-class ThreadPool {
+class ThreadPool : public PropertyChangeListener {
   friend class IdentifiedThread;
+  friend class ThreadPoolFactory;
 private:
   IdentifiedThreadPool       *m_threadPool;
   IdentifiedResultQueuePool  *m_queuePool;
-  Runnable                   *m_logger;
+  PoolLogger                 *m_logger;
   mutable FastSemaphore       m_gate;
   int                         m_processorCount;
   int                         m_activeThreads, m_maxActiveThreads;
   static ThreadPool           s_instance;
   
+  ThreadPool();
+  ~ThreadPool();
   ThreadPool(const ThreadPool &src);            // not implemented
   ThreadPool &operator=(const ThreadPool &src); // not implemented
   static void releaseThread(IdentifiedThread *thr);
@@ -28,12 +33,10 @@ private:
   inline IdentifiedResultQueuePool &getQPool() const {
     return *m_queuePool;
   }
-  static void killLogging();
   inline void wait()   const { m_gate.wait();   }
   inline void notify() const { m_gate.notify(); }
+  static void *poolRequest(int request);
 public:
-  ThreadPool(); // use ThreadPool::getInstance(); this class is a singleton
-  ~ThreadPool();
   static void executeNoWait(          Runnable      &job);  // Execute job without blocking. Uncaught exceptions are lost.
   static void executeInParallelNoWait(RunnableArray &jobs); // Execute all jobs without blocking. Uncaught exceptions are lost.
   static void executeInParallel(      RunnableArray &jobs); // Blocks until all jobs are done. If any of the jobs throws an exception
@@ -53,4 +56,5 @@ public:
 
   static void setPriorityBoost(bool disablePriorityBoost);
   static ThreadPool &getInstance();
+  void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
 };

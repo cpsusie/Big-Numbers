@@ -1690,6 +1690,7 @@ class LockedDigitPoolPool;
 class SubProdRunnablePool;
 
 class BigRealResourcePool {
+  friend class BigRealResourcePoolFactory;
 private:
   DigitPoolPool        *m_digitPoolPool;
   LockedDigitPoolPool  *m_lockedDigitPoolPool;
@@ -1706,12 +1707,11 @@ private:
   DigitPool *fetchDPool(bool withLock, BYTE initFlags);
   // Do the real release...no wait/notify
   void releaseDPool(DigitPool *pool);
+  BigRealResourcePool();
+  ~BigRealResourcePool();
   BigRealResourcePool(const BigRealResourcePool &src);            // not implemented
   BigRealResourcePool &operator=(const BigRealResourcePool &src); // not implemented
 public:
-  BigRealResourcePool();
-  ~BigRealResourcePool();
-
   static void                  fetchSubProdRunnableArray(  SubProdRunnableArray &a, UINT runnableCount, UINT digitPoolCount);
   static void                  releaseSubProdRunnableArray(SubProdRunnableArray &a);
   static DigitPool            *fetchDigitPool(             bool withLock = false, BYTE initFlags = BR_MUTABLE);

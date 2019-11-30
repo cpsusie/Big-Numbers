@@ -14,8 +14,8 @@ public:
   UINT run();
 };
 
-KeepAliveThread::KeepAliveThread() {
-  setDeamon(true);
+KeepAliveThread::KeepAliveThread() : Thread(_T("KeepAlive")) {
+  setDemon(true);
   m_flags = ES_CONTINUOUS | ES_SYSTEM_REQUIRED;
 }
 

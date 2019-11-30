@@ -24,6 +24,7 @@ public:
 };
 
 class Pow2Cache : public CompactHashMap<Pow2ArgumentKey, const BigReal*> {
+  friend class Pow2CacheFactory;
 private:
   // All values, saved in cache, uses this digitpool
   FastSemaphore         m_lock;
@@ -35,9 +36,11 @@ private:
   void save(ByteOutputStream &s) const;
   void load(ByteInputStream  &s);
   void clear();
-public:
   Pow2Cache();
   ~Pow2Cache();
+  Pow2Cache(const Pow2Cache &src);            // not implemented
+  Pow2Cache &operator=(const Pow2Cache &src); // not implemented
+public:
   bool put(const Pow2ArgumentKey &key, BigReal * const &v);
   inline bool isChanged() const {
     return m_updateCount != m_savedCount;
@@ -235,8 +238,10 @@ void Pow2Cache::load(ByteInputStream &s) {
   BigRealResourcePool::releaseDigitPool(workPool);
 }
 
+DEFINESINGLETONFACTORY(Pow2Cache);
+
 Pow2Cache &Pow2Cache::getInstance() { // static
-  static SingletonFactoryTemplate<Pow2Cache> factory;
+  static Pow2CacheFactory factory;
   Pow2Cache &cache = factory.getInstance();
   cache.wait();
   return cache;

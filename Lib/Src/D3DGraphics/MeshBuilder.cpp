@@ -65,22 +65,6 @@ void MeshBuilder::adjustNegativeTextureIndex(int &t) {
   assert(t >= 0);
 }
 
-class UInt {
-private:
-  UINT m_v;
-public:
-  inline UInt() {
-  }
-  inline UInt(UINT v) : m_v(v) {
-  }
-  inline UINT hashCode() const {
-    return m_v;
-  }
-  inline bool operator==(const UInt u) const {
-    return m_v == u.m_v;
-  }
-};
-
 void MeshBuilder::check1NormalPerVertex() const {
   m_vertexNormalChecked = true;
   m_1NormalPerVertex    = false;
@@ -88,7 +72,7 @@ void MeshBuilder::check1NormalPerVertex() const {
     return;
   }
   const size_t faceCount = m_faceArray.size();
-  CompactHashMap<UInt, UINT> vnMap(2*m_vertices.size() + 241);
+  CompactUIntHashMap<UINT> vnMap(2*m_vertices.size() + 241);
 
   for(size_t i = 0; i < faceCount; i++) {
     const VNTIArray &vna = m_faceArray[i].getIndices();
@@ -173,10 +157,9 @@ bool MeshBuilder::use32BitIndices(bool doubleSided) const {
 D3DXCube3 MeshBuilder::getBoundingBox() const {
   D3DXVECTOR3  pmin,pmax;
   const size_t faceCount = m_faceArray.size();
-  size_t       i;
   bool         firstTime = true;
   const int    maxVertexIndex  = (int)m_vertices.size() - 1;
-  for(i = 0; i < faceCount; i++) {
+  for(size_t i = 0; i < faceCount; i++) {
     const Face &f = m_faceArray[i];
     if(f.isEmpty()) continue;
     const size_t     n = f.getIndexCount();

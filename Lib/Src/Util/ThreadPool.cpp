@@ -4,9 +4,77 @@
 #include "ThreadPoolInternal.h"
 #include <DebugLog.h>
 
-ThreadPool &ThreadPool::getInstance() {
-  static SingletonFactoryTemplate<ThreadPool> factory;
-  return factory.getInstance();
+typedef enum {
+  REQUEST_GETINSTANCE
+ ,REQUEST_RELEASEALL
+} POOLREQUEST;
+
+DEFINESINGLETONFACTORY(ThreadPool);
+
+void *ThreadPool::poolRequest(int request) {
+  static ThreadPoolFactory factory;
+  switch(request) {
+  case REQUEST_GETINSTANCE:
+    return &factory.getInstance();
+  case REQUEST_RELEASEALL:
+    factory.releaseInstance();
+    break;
+  }
+  return NULL;
+}
+
+ThreadPool &ThreadPool::getInstance() { // static
+  return *((ThreadPool*)poolRequest(REQUEST_GETINSTANCE));
+}
+
+void ThreadPool::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
+  if(Thread::isPropertyContainer(source)) {
+    switch(id) {
+    case THR_SHUTTINGDDOWN:
+      poolRequest(REQUEST_RELEASEALL);
+      break;
+    }
+  }
+}
+
+class PoolLogger : public Runnable {
+  bool          m_stopped, m_killed;
+  Semaphore     m_start;
+  FastSemaphore m_terminated;
+public:
+  PoolLogger() : m_start(0), m_stopped(true), m_killed(false), m_terminated(0) {
+  }
+  void startLogging() {
+    if(m_stopped) {
+      m_stopped = false;
+      m_start.notify();
+    }
+  }
+  inline void stopLogging() {
+    m_stopped = true;
+  }
+  inline void killLogging() {
+    m_killed = true;
+    startLogging();
+    m_terminated.wait();
+  }
+  UINT run();
+};
+
+
+UINT PoolLogger::run() {
+  for(;;) {
+    const int timeout = m_stopped ? INFINITE : 2000;
+    m_start.wait(timeout);
+    if(m_killed) break;
+    if(m_stopped) {
+      continue;
+    }
+    debugLog(_T("%s\n"), ThreadPool::getInstance().toString().cstr());
+    if(m_killed) break;
+  }
+  m_terminated.notify();
+  return 0;
 }
 
 ThreadPool::ThreadPool() {
@@ -14,15 +82,17 @@ ThreadPool::ThreadPool() {
   m_activeThreads  = m_maxActiveThreads = 1;
   m_threadPool = new IdentifiedThreadPool;      TRACE_NEW(m_threadPool);
   m_queuePool  = new IdentifiedResultQueuePool; TRACE_NEW(m_queuePool);
+  Thread::addPropertyChangeListener(this);
+//  debugLog(_T("ThreadPool allocated\n"));
 }
 
 ThreadPool::~ThreadPool() {
-  killLogging();
   wait();
-  m_queuePool->deleteAll();
-  SAFEDELETE(m_queuePool );
+  if(m_logger) m_logger->killLogging();
   SAFEDELETE(m_threadPool);
+  SAFEDELETE(m_queuePool);
   SAFEDELETE(m_logger    );
+//  debugLog(_T("ThreadPool deallocated\n"));
   notify();
 }
 
@@ -129,51 +199,6 @@ String ThreadPool::toString() { // static
   return result;
 }
 
-class PoolLogger : public Runnable {
-  bool      m_stopped, m_killed, m_terminated;
-  Semaphore m_start;
-public:
-  PoolLogger();
-  void startLogging();
-  void stopLogging();
-  void killLogging();
-  UINT run();
-};
-
-PoolLogger::PoolLogger() : m_start(0), m_stopped(true), m_killed(false), m_terminated(false) {
-}
-
-void PoolLogger::startLogging() {
-  if(m_stopped) {
-    m_stopped = false;
-    m_start.notify();
-  }
-}
-
-void PoolLogger::stopLogging() {
-  m_stopped = true;
-}
-
-void PoolLogger::killLogging() {
-  m_killed = true;
-  startLogging();
-}
-
-UINT PoolLogger::run() {
-  for(;;) {
-    const int timeout = m_stopped ? INFINITE : 2000;
-    m_start.wait(timeout);
-    if(m_killed) break;
-    if(m_stopped) {
-      continue;
-    }
-    debugLog(_T("%s\n"), ThreadPool::getInstance().toString().cstr());
-    if(m_killed) break;
-  }
-  m_terminated = true;
-  return 0;
-}
-
 void ThreadPool::startLogging() { // static
   ThreadPool &instance = getInstance();
   instance.wait();
@@ -189,16 +214,7 @@ void ThreadPool::stopLogging() {  // static
   ThreadPool &instance = getInstance();
   instance.wait();
   if(instance.m_logger != NULL) {
-    ((PoolLogger*)instance.m_logger)->stopLogging();
-  }
-  instance.notify();
-}
-
-void ThreadPool::killLogging() { // static
-  ThreadPool &instance = getInstance();
-  instance.wait();
-  if(instance.m_logger != NULL) {
-    ((PoolLogger*)instance.m_logger)->killLogging();
+    instance.m_logger->stopLogging();
   }
   instance.notify();
 }

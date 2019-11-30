@@ -1,6 +1,7 @@
 #include "pch.h"
 #include <Timer.h>
 #include <Semaphore.h>
+#include <PropertyContainer.h>
 
 #define KILLED                 0x01
 #define REPEAT_TIMEOUT         0x02
@@ -15,7 +16,7 @@
 class TimerThread : private Thread {
 private:
   Timer          &m_timer;
-  FastSemaphore   m_stateSem;
+  FastSemaphore   m_stateSem, m_terminated;
   Semaphore       m_timeout;
   BYTE            m_state;
   int             m_msec; // msec
@@ -37,21 +38,20 @@ public:
 };
 
 TimerThread::TimerThread(Timer *timer, int msec, TimeoutHandler &handler, bool repeatTimeout)
-: m_timer(*timer)
+: Thread(format(_T("Timerthread %d"), timer->getId()))
+, m_timer(*timer)
 , m_msec(msec)
 , m_handler(handler)
 , m_timeout(0)
+, m_terminated(0)
 {
-  setDeamon(true);
   m_state = repeatTimeout ? REPEAT_TIMEOUT : 0;
   resume();
 }
 
 TimerThread::~TimerThread() {
   kill();
-  while(stillActive()) {
-    Sleep(10);
-  }
+  m_terminated.wait();
 }
 
 void TimerThread::kill() {
@@ -108,23 +108,38 @@ UINT TimerThread::run() {
       setFlag(KILLED);
     }
   }
+  m_terminated.notify();
   return 0;
 }
 
-Timer::Timer(int id) : m_id(id) {
+Timer::Timer(int id) : m_id(id), m_blockStart(false) {
   m_thread = NULL;
 }
 
 Timer::~Timer() {
   stopTimer();
-  SAFEDELETE(m_thread);
+  destroyThread();
+}
+
+void Timer::createThread(int msec, TimeoutHandler &handler, bool repeatTimeout) {
+  m_thread = new TimerThread(this, msec, handler, repeatTimeout); TRACE_NEW(m_thread);
+  Thread::addPropertyChangeListener(this);
+}
+
+void Timer::destroyThread() {
+  if(m_thread) {
+    SAFEDELETE(m_thread);
+    Thread::removePropertyChangeListener(this);
+  }
 }
 
 void Timer::startTimer(int msec, TimeoutHandler &handler, bool repeatTimeout) {
   m_gate.wait();
-  if(m_thread == NULL || m_thread->isKilled()) {
-    SAFEDELETE(m_thread);
-    m_thread = new TimerThread(this, msec, handler, repeatTimeout); TRACE_NEW(m_thread);
+  if(!m_blockStart) {
+    if(m_thread == NULL || m_thread->isKilled()) {
+      destroyThread();
+      createThread(msec, handler, repeatTimeout);
+    }
   }
   m_gate.notify();
 }
@@ -157,4 +172,12 @@ void Timer::setTimeout(int msec, bool repeatTimeout) {
     m_thread->setTimeout(msec, repeatTimeout);
   }
   m_gate.notify();
+}
+
+void Timer::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
+  if(Thread::isPropertyContainer(source) && (id == THR_SHUTTINGDDOWN)) {
+    m_blockStart = true;
+    stopTimer();
+    destroyThread();
+  }
 }

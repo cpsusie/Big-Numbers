@@ -3,8 +3,10 @@
 #include "BigRealResourcePool.h"
 #include <DebugLog.h>
 
+DEFINESINGLETONFACTORY(BigRealResourcePool);
+
 BigRealResourcePool &BigRealResourcePool::getInstance() {
-  static SingletonFactoryTemplate<BigRealResourcePool> factory;
+  static BigRealResourcePoolFactory factory;
   return factory.getInstance();
 }
 

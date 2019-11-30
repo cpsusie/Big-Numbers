@@ -100,7 +100,8 @@ static LRESULT CALLBACK captureErrorCallback(HWND captureWindow, int id, TCHAR *
 // ******************************************** class MMCapture ********************************************
 
 MMCapture::MMCapture(BYTE captureWhat, CaptureReceiver &receiver, UINT framesPerSecond, bool playAudio, UINT audioBufferSize)
-: m_captureWhat(captureWhat)
+: Thread(_T("MMCapture"))
+, m_captureWhat(captureWhat)
 , m_receiver(receiver)
 , m_playAudio(playAudio)
 {
@@ -385,7 +386,7 @@ AudioQueueElement::AudioQueueElement(const WAVEHDR *waveHeader) {
   m_waveHeader = *waveHeader;
 }
 
-AudioPlayerThread::AudioPlayerThread(MMCapture &capture) : m_capture(capture) {
+AudioPlayerThread::AudioPlayerThread(MMCapture &capture) : Thread(_T("AudioPlayerThread")), m_capture(capture) {
   WAVEFORMATEX audioFormat = m_capture.getAudioFormat();
   V(waveOutOpen(&m_capture.m_hWaveOut,WAVE_MAPPER,&audioFormat,(DWORD_PTR)captureWaveOutCallback,(DWORD_PTR)&m_capture,CALLBACK_FUNCTION | WAVE_FORMAT_DIRECT));
 }
