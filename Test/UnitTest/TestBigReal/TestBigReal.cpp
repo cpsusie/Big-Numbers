@@ -269,13 +269,13 @@ static void testAcot() {
   testFunction(_T("rAcot"), xInterval, rAcot);
 }
 
-static void testReadWriteBigReal()           { TesterJob::addFunctionTest(new RawFunctionTest(_T("read-write BigReal"    ), testReadWriteBigReal          )); }
-static void testReadWriteBigInt()            { TesterJob::addFunctionTest(new RawFunctionTest(_T("read-write BigInt"     ), testReadWriteBigInt           )); }
-static void testReadWriteBigRational()       { TesterJob::addFunctionTest(new RawFunctionTest(_T("read-write BigRational"), testReadWriteBigRational      )); }
+static void testReadWriteBigReal()           { TesterJob::addFunctionTest(new RawFunctionTest(_T("BigReal IO"        ), testReadWriteBigReal          )); }
+static void testReadWriteBigInt()            { TesterJob::addFunctionTest(new RawFunctionTest(_T("BigInt IO"         ), testReadWriteBigInt           )); }
+static void testReadWriteBigRational()       { TesterJob::addFunctionTest(new RawFunctionTest(_T("BigRational IO"    ), testReadWriteBigRational      )); }
 
-static void testReadWritePackerBigReal()     { TesterJob::addFunctionTest(new RawFunctionTest(_T("Packer BigReal"        ), testReadWritePackerBigReal    )); }
-static void testReadWritePackerBigInt()      { TesterJob::addFunctionTest(new RawFunctionTest(_T("Packer BigInt"         ), testReadWritePackerBigInt     )); }
-static void testReadWritePackerBigRational() { TesterJob::addFunctionTest(new RawFunctionTest(_T("Packer BigRational"    ), testReadWritePackerBigRational)); }
+static void testReadWritePackerBigReal()     { TesterJob::addFunctionTest(new RawFunctionTest(_T("BigReal Packer"    ), testReadWritePackerBigReal    )); }
+static void testReadWritePackerBigInt()      { TesterJob::addFunctionTest(new RawFunctionTest(_T("BigInt Packer"     ), testReadWritePackerBigInt     )); }
+static void testReadWritePackerBigRational() { TesterJob::addFunctionTest(new RawFunctionTest(_T("BigRational Packer"), testReadWritePackerBigRational)); }
 
 static double getPiTimeEstimate(int decimals) {
   return ((7.98881e-7 * decimals - 0.00109247) * decimals + 64.2134) * decimals - 70058.7;
@@ -370,7 +370,6 @@ void testBigReal(int threadCount, bool stopOnError) {
   testReadWriteBigReal();
   testReadWriteBigInt();
   testReadWriteBigRational();
-
   testReadWritePackerBigReal();
   testReadWritePackerBigInt();
   testReadWritePackerBigRational();
@@ -395,7 +394,7 @@ void testBigReal(int threadCount, bool stopOnError) {
                           ,timeUsage.toString(MMSS).cstr()
                           ,format1000(DigitPool::getTotalAllocatedDigitCount()).cstr()
                           );
-  TestStatistic::screenlog(TesterJob::allOk() ? _T("BigReal ok.") : _T("BigReal failed."));
+  TestStatistic::screenlog(TesterJob::allOk() ? _T("BigReal ok") : _T("BigReal failed"));
 
   log(_T("Total time usage:%s Total allocated Digits:%s")
      ,timeUsage.toString(MMSS).cstr()

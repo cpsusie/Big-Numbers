@@ -373,8 +373,8 @@ inline void testFunction(const String &functionName
 
 class DigitMonitorThread : public Thread {
 public:
-  DigitMonitorThread() {
-    setDeamon(true);
+  DigitMonitorThread() : Thread(_T("DigitMonitor")) {
+    setDemon(true);
     start();
   }
   UINT run();

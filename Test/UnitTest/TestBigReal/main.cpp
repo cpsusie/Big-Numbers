@@ -354,8 +354,9 @@ int _tmain(int argc, TCHAR **argv) {
       break;
     }
   } catch(Exception e) {
-    tcout << _T("\nException:") << e.what() << _T("\n");
+    tcout << endl << "Exception:" << e.what() << endl;
     return -1;
   }
+  tcout << endl << "All done" << endl;
   return 0;
 }

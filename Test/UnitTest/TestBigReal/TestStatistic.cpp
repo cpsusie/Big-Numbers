@@ -23,15 +23,15 @@ void TestStatistic::flushOutput() {
   s_gate.notify();
 }
 
-Semaphore TestStatistic::s_gate;
-bool      TestStatistic::s_stopNow        = false;
+FastSemaphore TestStatistic::s_gate;
+bool          TestStatistic::s_stopNow        = false;
 static const int logyStartPos = getProcessorCount() + 1;
-int       TestStatistic::s_logypos = logyStartPos;
-tostream *TestStatistic::s_errorLogStream = NULL;
-bool      TestStatistic::s_timerIsStarted = false;
-Timer     TestStatistic::s_timer(1);
-BitSet32  TestStatistic::s_timeToPrint;
-static    SetTimeToPrint timerEventHandler;
+int           TestStatistic::s_logypos = logyStartPos;
+tostream     *TestStatistic::s_errorLogStream = NULL;
+bool          TestStatistic::s_timerIsStarted = false;
+Timer         TestStatistic::s_timer(1);
+BitSet32      TestStatistic::s_timeToPrint;
+static        SetTimeToPrint timerEventHandler;
 
 const String TestStatistic::s_signaturString[] = {
   EMPTYSTRING
@@ -301,12 +301,12 @@ void TestStatistic::checkError(rBigRealFunction2Pool f, const BigReal &x, const 
   }
 }
 
-static int getScreenHeight() {
-  static int h = 0;
-  if(h == 0) {
-    h = Console::getWindowSize().Y;
+static const COORD &getConsoleSize() {
+  static COORD sz = { 0, 0 };
+  if(sz.X == 0) {
+    sz = Console::getWindowSize();
   }
-  return h;
+  return sz;
 }
 
 void TestStatistic::screenlog(_In_z_ _Printf_format_string_ TCHAR const * const format,...) {
@@ -316,10 +316,17 @@ void TestStatistic::screenlog(_In_z_ _Printf_format_string_ TCHAR const * const 
   va_end(argptr);
   StringArray lines(Tokenizer(str,_T("\n")));
   s_gate.wait();
+  const COORD &wsz = getConsoleSize();
   for(size_t i = 0; i < lines.size(); i++) {
-    Console::printf(0,s_logypos++, _T("%s"), lines[i].cstr());
+    const String &line = lines[i];
+    const int filler = wsz.X - (int)line.length();
+    if(filler > 0) {
+      Console::printf(0, s_logypos++, _T("%s%*.*s"), lines[i].cstr(), filler,filler,_T(" "));
+    } else {
+      Console::printf(0,s_logypos++, _T("%s"), lines[i].cstr());
+    }
   }
-  if(s_logypos >= getScreenHeight()) {
+  if(s_logypos >= wsz.Y) {
     s_logypos = logyStartPos;
   }
   s_gate.notify();
