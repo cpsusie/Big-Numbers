@@ -1593,7 +1593,6 @@ inline Real getReal(const BigReal &x) {
 }
 #endif // LONGDOUBLE
 
-
 std::istream     &operator>>(std::istream  &in ,       BigReal           &x);
 std::ostream     &operator<<(std::ostream  &out, const BigReal           &x);
 std::ostream     &operator<<(std::ostream  &out, const FullFormatBigReal &x);
