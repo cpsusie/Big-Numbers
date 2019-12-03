@@ -261,7 +261,8 @@ static void usage() {
                        "   -g: Generate and save/dump hashtable. implies Threadcount = 1\n"
                        "   -d: Dump pow2Cache, either at load time, or at end, after all tests have filled the cache\n"
                        "   -h: Halt all threads on first error detected\n"
-                       "   -tThreadcount: run testnumber with the specified number of threads. Default is the number of cores in the CPU\n")
+                       "   -tThreadcount: run testnumber with the specified number of threads. Default is the number of cores in the CPU\n"
+                       "   -m: Start digit monitor. will write every 3 seconds the total number of allocated digits\n")
            );
   exit(-1);
 }
@@ -274,15 +275,17 @@ typedef enum {
 
 int _tmain(int argc, TCHAR **argv) {
   try {
-    Command command       = CMD_STDTEST;
-    bool    highPriority  = false;
-    bool    dumpPow2Cache = false;
-    bool    stopOnError   = false;
+    Command command           = CMD_STDTEST;
+    bool    highPriority      = false;
+    bool    dumpPow2Cache     = false;
+    bool    stopOnError       = false;
+    bool    startDigitMonitor = false;
 #ifdef _DEBUG
-    int    threadCount  = getDebuggerPresent() ? 1 : 0;
+    int     threadCount       = getDebuggerPresent() ? 1 : 0;
 #else
-    int    threadCount  = 0;
+    int     threadCount       = 0;
 #endif _DEBUG
+
     TCHAR *cp;
     for(argv++; *argv && *(cp = *argv) == '-'; argv++) {
       for(cp++; *cp; cp++) {
@@ -301,12 +304,15 @@ int _tmain(int argc, TCHAR **argv) {
                     usage();
                   }
                   break;
-
+        case 'm': startDigitMonitor = true;
+                  continue;
         default : usage();
         }
         break;
       }
     }
+
+     DigitMonitor digitMonitor;
 
     if(highPriority) {
       ThreadPool::setPriority(THREAD_PRIORITY_ABOVE_NORMAL);
@@ -321,6 +327,9 @@ int _tmain(int argc, TCHAR **argv) {
       if(!SetThreadPriorityBoost(GetCurrentThread(), TRUE)) {
         throwLastErrorOnSysCallException(_T("SetThreadPriorityBoost"));
       }
+    }
+    if (startDigitMonitor) {
+      digitMonitor.start();
     }
     switch(command) {
     case CMD_STDTEST          :

@@ -53,11 +53,11 @@ private:
 //  IntTreeMap<int>        m_count;
   AllTime                m_startTime;
   static bool            s_stopNow;
-  static FastSemaphore   s_gate;
+  static FastSemaphore   s_lock;
   static int             s_logypos;
   static tostream       *s_errorLogStream;
   static bool            s_timerIsStarted;
-  static Timer           s_timer;
+  static Timer           s_updateScreenTimer;
   static BitSet32        s_timeToPrint;
   static const String    s_signaturString[];
 
@@ -94,6 +94,9 @@ public:
   void checkError(rBigRealFunction2     f, const BigReal &x, const BigReal &y, int            digits   , const BigReal &exactResult);
   void checkError(rBigRealFunction2Pool f, const BigReal &x, const BigReal &y, int            digits   , const BigReal &exactResult);
   static String toString(const BigReal &n, int digits = 6);
+  static void startUpdateScreenTimer();
+  static void stopUpdateScreenTimer();
+
   inline bool isTimeToPrint() {
     m_testCounter++;
     return s_timeToPrint.contains(m_threadId);

@@ -10,7 +10,11 @@ class IdentifiedResultQueuePool;
 class IdentifiedThreadPool;
 class PoolLogger;
 
-class ThreadPool : public PropertyChangeListener {
+typedef enum {
+  THREADPOOL_SHUTTINGDDOWN
+} ThreadPoolProperty;
+
+class ThreadPool : public PropertyChangeListener, PropertyContainer {
   friend class IdentifiedThread;
   friend class ThreadPoolFactory;
 private:
@@ -20,8 +24,10 @@ private:
   mutable FastSemaphore       m_gate;
   int                         m_processorCount;
   int                         m_activeThreads, m_maxActiveThreads;
-  static ThreadPool           s_instance;
-  
+  bool                        m_blockExecute;
+  static PropertyContainer   *s_propertySource;
+  void prepareDelete();
+  void killLogger();
   ThreadPool();
   ~ThreadPool();
   ThreadPool(const ThreadPool &src);            // not implemented
@@ -56,5 +62,14 @@ public:
 
   static void setPriorityBoost(bool disablePriorityBoost);
   static ThreadPool &getInstance();
+
+  // This pointer will be source (PropertyContainer*) int PropertyChangeListener::handlePropertyChanged
+  static inline bool isPropertyContainer(const PropertyContainer *source) {
+    return source == s_propertySource;
+  }
+
   void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
+  static void addListener(   PropertyChangeListener *listener);
+  static void removeListener(PropertyChangeListener *listener);
+
 };

@@ -12,26 +12,26 @@ public:
 };
 
 void TestStatistic::setAllPrinting() {
-  s_gate.wait();
+  s_lock.wait();
   s_timeToPrint.addAll();
-  s_gate.notify();
+  s_lock.notify();
 }
 
 void TestStatistic::flushOutput() {
-  s_gate.wait();
+  s_lock.wait();
   s_timeToPrint.remove(m_threadId);
-  s_gate.notify();
+  s_lock.notify();
 }
 
-FastSemaphore TestStatistic::s_gate;
+FastSemaphore TestStatistic::s_lock;
 bool          TestStatistic::s_stopNow        = false;
 static const int logyStartPos = getProcessorCount() + 1;
 int           TestStatistic::s_logypos = logyStartPos;
 tostream     *TestStatistic::s_errorLogStream = NULL;
 bool          TestStatistic::s_timerIsStarted = false;
-Timer         TestStatistic::s_timer(1);
-BitSet32      TestStatistic::s_timeToPrint;
 static        SetTimeToPrint timerEventHandler;
+Timer         TestStatistic::s_updateScreenTimer(1, "ScreenUpdate");
+BitSet32      TestStatistic::s_timeToPrint;
 
 const String TestStatistic::s_signaturString[] = {
   EMPTYSTRING
@@ -81,15 +81,26 @@ void TestStatistic::init() {
   m_rnd.randomize();
 #endif
 
-  s_gate.wait();
-  if(!s_timerIsStarted) {
-    s_timer.startTimer(2000, timerEventHandler, true);
-    s_timerIsStarted = true;
-  }
-  s_gate.notify();
-
   printNameAndSignatur();
   m_startTime = AllTime();
+}
+
+void TestStatistic::startUpdateScreenTimer() { // static
+  s_lock.wait();
+  if (!s_timerIsStarted) {
+    s_updateScreenTimer.startTimer(2000, timerEventHandler, true);
+    s_timerIsStarted = true;
+  }
+  s_lock.notify();
+}
+
+void TestStatistic::stopUpdateScreenTimer() { // static
+  s_lock.wait();
+  if(s_timerIsStarted) {
+    s_updateScreenTimer.stopTimer();
+    s_timerIsStarted = false;
+  }
+  s_lock.notify();
 }
 
 #define NAMELENGTH 20
@@ -115,7 +126,7 @@ TestStatistic::~TestStatistic() {
 }
 
 tostream &TestStatistic::getErrorLog(bool logTime) { // static
-  s_gate.wait();
+  s_lock.wait();
   if(s_errorLogStream == NULL) {
     FileNameSplitter finfo(getModuleFileName());
     finfo.setDir(getSourceDir()).setFileName(finfo.getFileName() + _T("Errors")).setExtension(_T("log"));
@@ -126,17 +137,17 @@ tostream &TestStatistic::getErrorLog(bool logTime) { // static
   if(logTime) {
     *s_errorLogStream << Timestamp().toString() << endl;
   }
-  s_gate.notify();
+  s_lock.notify();
   return *s_errorLogStream;
 }
 
 void TestStatistic::flushAndCloseErorLog() { // static
-  s_gate.wait();
+  s_lock.wait();
   if(s_errorLogStream != NULL) {
     s_errorLogStream->flush();
     SAFEDELETE(s_errorLogStream);
   }
-  s_gate.notify();
+  s_lock.notify();
 }
 
 class ErrorLogCloser {
@@ -315,7 +326,7 @@ void TestStatistic::screenlog(_In_z_ _Printf_format_string_ TCHAR const * const 
   const String str = vformat(format, argptr);
   va_end(argptr);
   StringArray lines(Tokenizer(str,_T("\n")));
-  s_gate.wait();
+  s_lock.wait();
   const COORD &wsz = getConsoleSize();
   for(size_t i = 0; i < lines.size(); i++) {
     const String &line = lines[i];
@@ -329,7 +340,7 @@ void TestStatistic::screenlog(_In_z_ _Printf_format_string_ TCHAR const * const 
   if(s_logypos >= wsz.Y) {
     s_logypos = logyStartPos;
   }
-  s_gate.notify();
+  s_lock.notify();
 }
 
 void TestStatistic::markError(const BigReal &x, const BigReal &tolerance, const BigReal &exactResult, const BigReal &result) {

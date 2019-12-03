@@ -10,6 +10,12 @@
 
 DEFINECLASSNAME(Thread);
 
+#ifdef TRACE_THREAD
+#define TRACE(...) debugLog(__VA_ARGS__)
+#else
+#define TRACE(...)
+#endif
+
 class DefaultExceptionHandler : public UncaughtExceptionHandler {
 public:
   void uncaughtException(Thread &thread, Exception &e);
@@ -30,14 +36,20 @@ class ThreadMap : private CompactUIntHashMap<Thread*>, private PropertyContainer
   friend class ThreadMapFactory;
 
 private:
-  mutable FastSemaphore m_lock, m_listenerLock, m_propertyLock, m_activeCountLock, m_activeIsZero;
-  UINT                  m_activeCount;
+  mutable FastSemaphore m_lock;
+  mutable FastSemaphore m_activeCountLock, m_activeIsZero; // need separate locks to prevent deadlock
+                                                           // blockNewThreads calls m_lock.wait()....causing threads to terminate
+                                                           // that is, returning to threadStartup, where they will call updateActiveCount(-1)
+                                                           // If this function uses m_lock, no thread will ever terminate, but wait forever
+                                                           // until m_lock.notify() is called, which will not happen until m_activeCount = 0
   bool                  m_blockNewThreads; // set to true, when destructor is called, so no more threads wil be started
+  bool                  m_threadsRunning;
   void killDemonThreads();
   inline void blockNewThreads() {
-    m_propertyLock.wait();
+    m_lock.wait();
+    TRACE(_T("%s:send notification THR_SHUTTINGDDOWN\n"), __TFUNCTION__);
     setProperty(THR_SHUTTINGDDOWN, m_blockNewThreads, true);
-    m_propertyLock.notify();
+    m_lock.notify();
   }
 
   ThreadMap();
@@ -51,43 +63,59 @@ public:
   bool    addThread(   Thread *thread);
   bool    removeThread(Thread *thread);
   Thread *findThread(DWORD threadId) const;
-  inline void updateActiveCount(int n) {
-    m_activeCountLock.wait();
-    const bool was0 = m_activeCount == 0;
-    m_activeCount += n;
-    const bool is0 = m_activeCount == 0;
-    if(was0 != is0) {
-      if(n > 0) m_activeIsZero.wait(); else m_activeIsZero.notify();
-    }
-    m_activeCountLock.notify();
-  }
+  void incrActiveCount();
+  void decrActiveCount();
   void addListener(PropertyChangeListener *listener) {
-    m_listenerLock.wait();
+    m_lock.wait();
     addPropertyChangeListener(listener);
-    m_listenerLock.notify();
+    m_lock.notify();
   }
   void removeListener(PropertyChangeListener *listener) {
-    m_listenerLock.wait();
+    m_lock.wait();
     removePropertyChangeListener(listener);
-    m_listenerLock.notify();
+    m_lock.notify();
   }
   bool isEmpty() const;
-  UINT getActiveCount() const;
 };
 
 typedef Entry<CompactUIntKeyType, Thread*> ThreadMapEntry;
 
-ThreadMap::ThreadMap() : m_blockNewThreads(false), m_activeCount(0) {
+ThreadMap::ThreadMap() : m_blockNewThreads(false) {
   Thread::s_propertySource = this;
   Thread::s_defaultUncaughtExceptionHandler = new DefaultExceptionHandler; TRACE_NEW(Thread::s_defaultUncaughtExceptionHandler);
+  TRACE(_T("ThreadMap created\n"));
 }
 
 ThreadMap::~ThreadMap() { // declared virtual in Collection
+  TRACE(_T("%s called\n"),__TFUNCTION__);
   blockNewThreads();
   killDemonThreads();
+  TRACE(_T("%s:waiting for activeisZero\n"), __TFUNCTION__);
   m_activeIsZero.wait();
+  TRACE(_T("%s:activeisZero passed\n"), __TFUNCTION__);
   SAFEDELETE(Thread::s_defaultUncaughtExceptionHandler);
   Thread::s_propertySource = NULL;
+  TRACE(_T("ThreadMap deleted\n"));
+}
+
+void ThreadMap::incrActiveCount() {
+  m_activeCountLock.wait();
+  if(Thread::s_activeCount++ == 0) {
+    m_activeIsZero.wait();
+    TRACE(_T("%s:send notification THR_THREADSRUNNING=true\n"), __TFUNCTION__);
+    setProperty(THR_THREADSRUNNING, m_threadsRunning, true);
+  }
+  m_activeCountLock.notify();
+}
+
+void ThreadMap::decrActiveCount() {
+  m_activeCountLock.wait();
+  if(--Thread::s_activeCount == 0) {
+    TRACE(_T("%s:send notification THR_THREADSRUNNING=false\n"),__TFUNCTION__);
+    setProperty(THR_THREADSRUNNING, m_threadsRunning, false);
+    m_activeIsZero.notify();
+  }
+  m_activeCountLock.notify();
 }
 
 bool ThreadMap::addThread(Thread *thread) {
@@ -98,6 +126,7 @@ bool ThreadMap::addThread(Thread *thread) {
   }
   size_t count = size();
   const bool result = put(thread->m_threadId, thread);
+  TRACE(_T("%s(%d)(res=%s). size=%zu\n"), __TFUNCTION__, thread->m_threadId, boolToStr(result), size());
   m_lock.notify();
   return result;
 }
@@ -106,6 +135,7 @@ bool ThreadMap::removeThread(Thread *thread) {
   m_lock.wait();
   size_t count = size();
   const bool result = remove(thread->getId());
+  TRACE(_T("%s(%d)(res=%s). size=%zu\n"), __TFUNCTION__, thread->m_threadId, boolToStr(result), size());
   m_lock.notify();
   return result;
 }
@@ -137,31 +167,16 @@ void ThreadMap::killDemonThreads() {
   const size_t n = demonArray.size();
   for(size_t i = 0; i < n; i++) {
     Thread *t = demonArray[i];
+    TRACE(_T("%s:Terminating demonthread(%d)\n"), __TFUNCTION__,t->getId());
     if(TerminateThread(t->m_threadHandle, 0)) {
-      updateActiveCount(-1);
+      decrActiveCount();
       terminateCount++;
     }
   }
   if(terminateCount != n) {
-    debugLog(_T("Cannot terminate all demon threads\n"));
+    TRACE(_T("Cannot terminate all demon threads\n"));
   }
   m_lock.notify();
-}
-
-UINT ThreadMap::getActiveCount() const {
-  m_lock.wait();
-  UINT count = 0;
-  for(Iterator<ThreadMapEntry> it = getEntryIterator(); it.hasNext();) {
-    Thread *t = it.next().getValue();
-    if(t->stillActive()) {
-      count++;
-    }
-  }
-  if(count != m_activeCount) {
-    int fisk = 1;
-  }
-  m_lock.notify();
-  return count;
 }
 
 // ----------------------------------------------------------------------------------------------------------
@@ -171,10 +186,10 @@ static UINT threadStartup(Thread *thread) {
   try {
     _set_se_translator(exceptionTranslator);
     try {
-      Thread::getMap().updateActiveCount(1);
+      Thread::getMap().incrActiveCount();
       result = thread->run();
-      Thread::getMap().updateActiveCount(-1);
       thread->m_terminated.notify();
+      Thread::getMap().decrActiveCount();
     } catch(Exception e) {
       thread->handleUncaughtException(e);
       throw;
@@ -183,8 +198,8 @@ static UINT threadStartup(Thread *thread) {
       throw;
     }
   } catch(...) {
-    Thread::getMap().updateActiveCount(-1);
     thread->m_terminated.notify();
+    Thread::getMap().decrActiveCount();
     throw;
   }
   return result;
@@ -192,6 +207,7 @@ static UINT threadStartup(Thread *thread) {
 
 PropertyContainer        *Thread::s_propertySource                  = NULL;
 UncaughtExceptionHandler *Thread::s_defaultUncaughtExceptionHandler = NULL;
+UINT                      Thread::s_activeCount                     = 0;
 
 typedef enum {
   REQUEST_GETINSTANCE
@@ -199,6 +215,7 @@ typedef enum {
 } POOLREQUEST;
 
 DEFINESINGLETONFACTORY(ThreadMap);
+
 
 ThreadMap *Thread::threadMapRequest(int request) {
   static ThreadMapFactory factory;
@@ -230,15 +247,14 @@ Thread::Thread(const String &description, size_t stackSize) : m_terminated(0) {
 
 void Thread::init(const String &description, Runnable *target, size_t stackSize) {
   m_target                   = target;
-  m_isDemon                 = false;
+  m_isDemon                  = false;
   m_uncaughtExceptionHandler = NULL;
   m_threadHandle             = CreateThread(NULL, stackSize,(LPTHREAD_START_ROUTINE)threadStartup, this, CREATE_SUSPENDED, &m_threadId);
   if(m_threadHandle == NULL) {
     throwMethodLastErrorOnSysCallException(s_className, _T("CreateThread"));
   }
-  HRESULT hr = SetThreadDescription(m_threadHandle, description.cstr());
-  CHECKRESULT(hr);
-
+  setDescription(description);
+  TRACE(_T("Thread(%u) desc=%s, created\n"), m_threadId, description.cstr());
   getMap().addThread(this);
 }
 
@@ -248,6 +264,7 @@ Thread::~Thread() {
   }
   getMap().removeThread(this);
   CloseHandle(m_threadHandle);
+  TRACE(_T("Thread(%u) deleted\n"), m_threadId);
 }
 
 void Thread::handleUncaughtException(Exception &e) {
@@ -258,12 +275,12 @@ void Thread::handleUncaughtException(Exception &e) {
   }
 }
 
-void Thread::setDesription(const String &description) {
-  ::setThreadDescription(m_threadHandle, description);
+void Thread::setDescription(const String &description) {
+  setThreadDescription(description, m_threadHandle);
 }
 
 String Thread::getDescription() const {
-  return ::getThreadDescription(m_threadHandle);
+  return getThreadDescription(m_threadHandle);
 }
 
 void Thread::suspend() {
@@ -278,11 +295,11 @@ UINT Thread::run() {
   return m_target ? m_target->run() : 0;
 }
 
-void Thread::addPropertyChangeListener(PropertyChangeListener *listener) { // static 
+void Thread::addListener(PropertyChangeListener *listener) { // static 
   getMap().addListener(listener);
 }
 
-void Thread::removePropertyChangeListener(PropertyChangeListener *listener) { // static 
+void Thread::removeListener(PropertyChangeListener *listener) { // static 
   getMap().removeListener(listener);
 }
 

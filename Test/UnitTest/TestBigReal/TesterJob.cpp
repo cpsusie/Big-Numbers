@@ -4,7 +4,7 @@
 #include <ThreadPool.h>
 #include "FunctionTest.h"
 
-FastSemaphore   TesterJob::s_gate;
+FastSemaphore   TesterJob::s_lock;
 bool            TesterJob::s_allOk           = true;
 bool            TesterJob::s_stopOnError     = false;
 double          TesterJob::s_totalThreadTime = 0;
@@ -12,9 +12,9 @@ TestQueue       TesterJob::s_testQueue;
 TestQueue       TesterJob::s_doneQueue;
 
 void TesterJob::addTimeUsage(double threadTime) { // static
-  s_gate.wait();
+  s_lock.wait();
   s_totalThreadTime += threadTime;
-  s_gate.notify();
+  s_lock.notify();
 }
 
 UINT TesterJob::run() {
@@ -29,7 +29,9 @@ UINT TesterJob::run() {
     } catch(TimeoutException) {
       break;
     }
-
+#ifdef _DEBUG
+    setThreadDescription(format(_T("pool:%d, %s"), m_pool->getId(), test->getFunctionName().cstr()));
+#endif
     if(!s_allOk && s_stopOnError) {
       s_doneQueue.put(test);
       continue;
@@ -65,34 +67,42 @@ void TesterJob::runAll(UINT threadCount, bool stopOnError) { // static
 }
 
 void TesterJob::startAll(UINT threadCount) { // static
-  if(threadCount == 1) {
-    TesterJob(0).run();
-  } else {
-    RunnableArray jobs(threadCount);
-    for(UINT i = 0; i < threadCount; i++) {
-      Runnable *job = new TesterJob(i); TRACE_NEW(job);
-      jobs.add(job);
+  try {
+    if(threadCount == 1) {
+      TestStatistic::startUpdateScreenTimer();
+      TesterJob(0).run();
+    } else {
+      RunnableArray jobs(threadCount);
+      for(UINT i = 0; i < threadCount; i++) {
+        Runnable *job = new TesterJob(i); TRACE_NEW(job);
+        jobs.add(job);
+      }
+      TestStatistic::startUpdateScreenTimer();
+      ThreadPool::executeInParallel(jobs);
+      for(UINT i = 0; i < jobs.size(); i++) {
+        Runnable *job = jobs[i];
+        SAFEDELETE(job);
+      }
+      jobs.clear();
     }
-    ThreadPool::executeInParallel(jobs);
-    for(UINT i = 0; i < jobs.size(); i++) {
-      Runnable *job = jobs[i];
-      SAFEDELETE(job);
-    }
-    jobs.clear();
+    TestStatistic::stopUpdateScreenTimer();
+  } catch(...) {
+    TestStatistic::stopUpdateScreenTimer();
+    throw;
   }
 }
 
 void TesterJob::releaseAll() { // static
-  s_gate.wait();
+  s_lock.wait();
   while(!s_doneQueue.isEmpty()) {
     AbstractFunctionTest *test = s_doneQueue.get();
     SAFEDELETE(test);
   }
-  s_gate.notify();
+  s_lock.notify();
 }
 
 void TesterJob::shuffleTestOrder() { // static
-  s_gate.wait();
+  s_lock.wait();
   CompactArray<AbstractFunctionTest*> testArray;
   while(!s_testQueue.isEmpty()) {
     testArray.add(s_testQueue.get());
@@ -102,5 +112,5 @@ void TesterJob::shuffleTestOrder() { // static
     s_testQueue.put(testArray[i]);
   }
   testArray.clear();
-  s_gate.notify();
+  s_lock.notify();
 }

@@ -281,8 +281,6 @@ static double getPiTimeEstimate(int decimals) {
   return ((7.98881e-7 * decimals - 0.00109247) * decimals + 64.2134) * decimals - 70058.7;
 }
 
-//static DigitMonitorThread digitMonitor;
-
 static void initConsole() {
 #ifdef _DEBUG
   tcout << _T("debuggerPresent:") << getDebuggerPresent() << endl;
@@ -300,6 +298,8 @@ static void initConsole() {
   HWND hwnd = Console::getWindow();
   setWindowPosition(hwnd, CPoint(10, 10));
 }
+
+#define TEST_ALL
 
 void testBigReal(int threadCount, bool stopOnError) {
   initConsole();
@@ -322,6 +322,7 @@ void testBigReal(int threadCount, bool stopOnError) {
   testGetFirst();
   testMultDivBy2();
 
+#ifdef TEST_ALL
   testConstructors();
   testConversions();
 
@@ -331,6 +332,7 @@ void testBigReal(int threadCount, bool stopOnError) {
   testAPCprod();
   testAPCquot();
   testAPCpow();
+#endif // TEST_ALL
 
   testSum();
   testDif();
@@ -338,13 +340,13 @@ void testBigReal(int threadCount, bool stopOnError) {
   testQuot();
   testQuot3();
 
+#ifdef TEST_ALL
   testAssignOperators();
   testQuotLinear32();
   testQuotLinear64();
   testExactBinaryOperators();
   testPi();
   testMRIsPrime();
-
   testRationalBinaryOperators();
 
   testSqrt();
@@ -373,6 +375,7 @@ void testBigReal(int threadCount, bool stopOnError) {
   testReadWritePackerBigReal();
   testReadWritePackerBigInt();
   testReadWritePackerBigRational();
+#endif // TEST_ALL
 
 //  TesterJob::shuffleTestOrder();
 

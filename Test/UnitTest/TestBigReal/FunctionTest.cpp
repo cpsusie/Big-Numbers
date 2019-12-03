@@ -1340,11 +1340,14 @@ void testReadWritePackerBigRational(TestStatistic &stat) {
   stat.setEndMessageToOk();
 }
 
-UINT DigitMonitorThread::run() {
-  for(;;) {
-    Sleep(3000);
-    _tprintf(_T("Total digits allocated:%s\n")
-            ,format1000(DigitPool::getTotalAllocatedDigitCount()).cstr()
-            );
-  }
+void DigitMonitor::handleTimeout(Timer &timer) {
+  debugLog(_T("Total digits allocated:%s\n"), format1000(DigitPool::getTotalAllocatedDigitCount()).cstr());
+}
+
+void DigitMonitor::start() {
+  m_timer.startTimer(3000, *this, true);
+}
+
+DigitMonitor::~DigitMonitor() {
+  m_timer.stopTimer();
 }

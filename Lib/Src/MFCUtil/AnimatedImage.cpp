@@ -2,10 +2,150 @@
 #include <Math.h>
 #include <ByteFile.h>
 #include <ByteMemoryStream.h>
-#include "MFCUtil/AnimatedImage.h"
+#include <ThreadPool.h>
+#include <Thread.h>
+#include <Semaphore.h>
+#include <MFCUtil/AnimatedImage.h>
 #include <..\..\GifLib\giflib-5.1.1\lib\gif_lib.h>
 
 #pragma warning(disable : 4244)
+
+
+class Animator : public Runnable {
+private:
+  AnimatedImage *m_owner;
+  Thread        *m_thread;
+  String         m_description;
+  CPoint         m_point;
+  int            m_frameIndex;
+  Semaphore      m_delaySem;
+  FastSemaphore  m_lock, m_terminated;
+  bool           m_running    : 1;
+  bool           m_killed     : 1;
+  bool           m_stopSignal : 1;
+  // no wait/notify
+  void stopLoop();
+  // no wait/notify
+  void resume();
+  // no wait/notify
+  void suspend();
+  bool hasThread() const {
+    return m_thread != NULL;
+  }
+  void setThread(Thread *t);
+public:
+  Animator(AnimatedImage *owner, const String &description = "Animator");
+  ~Animator();
+  void startAnimation(const CPoint &p);
+  void stopAnimation();
+  void kill();
+  UINT run();
+  inline bool isRunning() const {
+    return m_running;
+  }
+};
+
+Animator::Animator(AnimatedImage *owner, const String &description) : m_delaySem(0), m_thread(NULL) {
+  m_owner       = owner;
+  m_description = description;
+  m_point       = CPoint(-1,-1);
+  m_running     = false;
+  m_killed      = false;
+  m_stopSignal  = false;
+  m_frameIndex  = 0;
+}
+
+Animator::~Animator() {
+  kill();
+}
+
+void Animator::resume() {
+  if(!hasThread()) {
+    ThreadPool::executeNoWait(*this);
+  } else {
+    m_thread->resume();
+  }
+}
+
+void Animator::suspend() {
+  m_thread->suspend();
+}
+
+void Animator::setThread(Thread *t) {
+  m_lock.wait();
+  m_thread = t;
+  if(t) m_terminated.wait();
+  else  m_terminated.notify();
+  m_lock.notify();
+}
+
+void Animator::startAnimation(const CPoint &p) {
+  m_lock.wait();
+  if(!isRunning()) {
+    m_point   = p;
+    m_running = true;
+    resume();
+  }
+  m_lock.notify();
+}
+
+void Animator::stopAnimation() {
+  m_lock.wait();
+  if(isRunning()) {
+    stopLoop();
+  }
+  m_lock.notify();
+}
+
+void Animator::kill() {
+  m_lock.wait();
+  bool waitForTermination = false;
+  if(!m_killed && hasThread()) {
+    waitForTermination = true;
+    m_killed = true;
+    if(isRunning()) {
+      stopLoop();
+    } else {
+      resume();
+    }
+  }
+  m_lock.notify();
+  if(waitForTermination) {
+    m_terminated.wait();
+  }
+}
+
+void Animator::stopLoop() {
+  if(isRunning()) {
+    m_stopSignal = true;
+    m_delaySem.notify();
+    while(isRunning()) {
+      Sleep(30);
+    }
+  }
+}
+
+UINT Animator::run() {
+  setThread(Thread::getCurrentThread());
+#ifdef _DEBUG
+  m_thread->setDescription(m_description);
+#endif
+  while(!m_killed) {
+    const int imageCount = m_owner->getFrameCount();
+    for(m_stopSignal = false, m_frameIndex = 0; !m_stopSignal; m_frameIndex = (m_frameIndex + 1) % imageCount) {
+      const GifFrame &frame = m_owner->getFrame(m_frameIndex);
+      frame.paint();
+      m_owner->flushWork(m_point);
+      m_delaySem.wait(frame.m_delayTime);
+      frame.dispose();
+    }
+    m_running = false;
+    if(m_killed) break;
+    suspend();
+  }
+  setThread(NULL);
+  return 0;
+}
 
 void checkGifErrorCode(int errorCode, const TCHAR *fileName, int line);
 #define THROWGIFERROR(code) throwGifErrorCode(code, __TFILE__, __LINE__)
@@ -32,11 +172,25 @@ AnimatedImage::AnimatedImage() {
   m_workPr            = NULL;
   m_background        = NULL;
   m_lastPaintedFrame  = NULL;
+  m_animator          = new Animator(this); TRACE_NEW(m_animator);
+  ThreadPool::addListener(this);
 }
 
 AnimatedImage::~AnimatedImage() {
+  ThreadPool::removeListener(this);
+  m_animator->kill();
   unload();
-  m_animator.kill();
+  SAFEDELETE(m_animator);
+}
+
+void AnimatedImage::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
+  if(ThreadPool::isPropertyContainer(source)) {
+    switch(id) {
+    case THREADPOOL_SHUTTINGDDOWN:
+      m_animator->kill();
+      break;
+    }
+  }
 }
 
 void AnimatedImage::load(CWnd *parent, const String &fileName) {
@@ -390,84 +544,21 @@ void AnimatedImage::startAnimation(const CPoint &p) {
   }
   hide();
   saveBackground(p);
-  m_animator.startAnimation(this, p);
+  m_animator->startAnimation(p);
 }
 
 void AnimatedImage::stopAnimation() {
-  m_animator.stopAnimation();
+  m_animator->stopAnimation();
+}
+
+bool AnimatedImage::isPlaying() const {
+  return m_animator->isRunning();
 }
 
 void AnimatedImage::hide() {
   stopAnimation();
   restoreBackground();
   m_lastPaintedFrame = NULL;
-}
-
-AnimationThread::AnimationThread() : Thread(_T("AnimationThread")), m_delaySem(0) {
-  setDemon(true);
-  m_owner      = NULL;
-  m_point      = CPoint(-1,-1);
-  m_running    = false;
-  m_killed     = false;
-  m_stopSignal = false;
-  m_frameIndex = 0;
-}
-
-void AnimationThread::startAnimation(AnimatedImage *image, const CPoint &p) {
-  if(!isRunning()) {
-    m_owner   = image;
-    m_point   = p;
-    m_running = true;
-    resume();
-  }
-}
-
-void AnimationThread::stopAnimation() {
-  if(isRunning()) {
-    stopLoop();
-  }
-}
-
-void AnimationThread::kill() {
-  m_killed = true;
-  if(isRunning()) {
-    stopLoop();
-  } else {
-    resume();
-  }
-  for(int i = 0; i < 10 && stillActive(); i++) {
-    Sleep(10);
-  }
-  if(stillActive()) {
-    showWarning(_T("Cannot stop animationThread!"));
-  }
-}
-
-void AnimationThread::stopLoop() {
-  if(isRunning()) {
-    m_stopSignal = true;
-    m_delaySem.notify();
-    while(isRunning()) {
-      Sleep(30);
-    }
-  }
-}
-
-UINT AnimationThread::run() {
-  while(!m_killed) {
-    const int imageCount = m_owner->getFrameCount();
-    for(m_stopSignal = false, m_frameIndex = 0; !m_stopSignal; m_frameIndex = (m_frameIndex + 1) % imageCount) {
-      const GifFrame &frame = m_owner->getFrame(m_frameIndex);
-      frame.paint();
-      m_owner->flushWork(m_point);
-      m_delaySem.wait(frame.m_delayTime);
-      frame.dispose();
-    }
-    m_running = false;
-    if(m_killed) break;
-    suspend();
-  }
-  return 0;
 }
 
 void GifFrame::paint() const {

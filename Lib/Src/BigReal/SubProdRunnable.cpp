@@ -1,6 +1,10 @@
 #include "pch.h"
 #include "BigRealResourcePool.h"
 
+#ifdef _DEBUG
+#include <Thread.h>
+#endif
+
 void SubProdRunnable::clear() {
   m_x         = NULL;
   m_y         = NULL;
@@ -9,6 +13,10 @@ void SubProdRunnable::clear() {
 }
 
 UINT SubProdRunnable::run() {
+#ifdef _DEBUG
+  setThreadDescription(format(_T("Multiplier(level %d"), m_level));
+#endif // _DEBUG
+
 //  const int id = BigRealResource::getId();
 //  const int ypos = id + 20;
 //  Console::printf(100,ypos, _T("Thread[%d]:request:%4d lvl:%2d"), id, m_requestCount, m_level);

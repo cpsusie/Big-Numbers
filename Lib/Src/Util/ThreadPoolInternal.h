@@ -4,6 +4,13 @@
 #include <Thread.h>
 #include <SynchronizedQueue.h>
 
+#ifdef TRACE_THREADPOOL
+#include <DebugLog.h>
+#define TRACE(...) debugLog(__VA_ARGS__)
+#else
+#define TRACE(...)
+#endif
+
 template <class T> class IdentifiedResourcePool : public CompactArray<T*> {
 private:
   CompactStack<int> m_freeId;
@@ -108,16 +115,12 @@ private:
   IdentifiedResultQueue  *m_resultQueue;
   FastSemaphore           m_execute;
   int                     m_requestCount;
-  bool                    m_requestTerminate;
-  bool                    m_busy;
+  std::atomic<BYTE>       m_flags;
 public:
   IdentifiedThread(IdentifiedThreadPool *pool, int id);
   ~IdentifiedThread();
   UINT run();
   void executeJob(Runnable &job, IdentifiedResultQueue *resultQueue);
-  inline bool isBusy() const {
-    return m_busy;
-  }
   void requestTerminate();
 };
 
@@ -126,18 +129,22 @@ class IdentifiedThreadPool : public IdentifiedResourcePool<IdentifiedThread> {
 private:
   int               m_threadPriority;
   bool              m_disablePriorityBoost;
-  FastSemaphore     m_allTerminated;
-  std::atomic<UINT> m_terminatedThreads;
-
+  FastSemaphore     m_lock, m_activeIs0;
+  int               m_activeCount;
   Thread &get(size_t index) {
     return *((Thread*)((*this)[index]));
   }
-  void incrTerminatedThreads() {
-    m_terminatedThreads++;
-    if(m_terminatedThreads == size()) {
-      m_allTerminated.notify();
-    }
+  inline void incrActiveCount() {
+    m_lock.wait();
+    if (m_activeCount++ == 0) m_activeIs0.wait();
+    m_lock.notify();
   }
+  inline void decrActiveCount() {
+    m_lock.wait();
+    if (--m_activeCount == 0) m_activeIs0.notify();
+    m_lock.notify();
+  }
+
 protected:
   IdentifiedThread *newResource(UINT id) {
     IdentifiedThread *t = new IdentifiedThread(this, id); TRACE_NEW(t);
@@ -154,29 +161,30 @@ protected:
     }
   }
 public:
-  IdentifiedThreadPool() : m_allTerminated(0) {
+  IdentifiedThreadPool() : m_activeCount(0) {
     m_threadPriority       = THREAD_PRIORITY_NORMAL;
     m_disablePriorityBoost = false;
   }
   ~IdentifiedThreadPool() {
-    if(size()) {
-      requestTerminateAll();
-      m_allTerminated.wait();
-    }
+    TRACE(_T("%s called. activeCount=%d wait until 0\n"), __TFUNCTION__, m_activeCount);
+    m_activeIs0.wait();
+    TRACE(_T("%s passed zero check. activeCount=%d. Now deleting threads\n"), __TFUNCTION__, m_activeCount);
+    deleteAll();
+    TRACE(_T("%s done\n"), __TFUNCTION__);
   }
   void requestTerminateAll() {
+    TRACE(_T("%s called\n"), __TFUNCTION__);
     for(size_t i = 0; i < size(); i++) {
       (*this)[i]->requestTerminate();
     }
-  }
-  void deleteAll() {
+    TRACE(_T("%s done\n"), __TFUNCTION__);
   }
   void setPriority(int priority) {
     if(priority == m_threadPriority) {
       return;
     }
     m_threadPriority = priority;
-    for (size_t i = 0; i < size(); i++) {
+    for(size_t i = 0; i < size(); i++) {
       get(i).setPriority(priority);
     }
   }

@@ -258,7 +258,7 @@ typedef SynchronizedQueue<AbstractFunctionTest*> TestQueue;
 
 class TesterJob : public Runnable {
 private:
-  static FastSemaphore s_gate;
+  static FastSemaphore s_lock;
   static bool          s_allOk;
   static bool          s_stopOnError;
   static double        s_totalThreadTime;
@@ -371,11 +371,13 @@ inline void testFunction(const String &functionName
   TesterJob::addFunctionTest(new FunctionTest2ArgRelative(functionName, xInterval, yInterval, f ));
 }
 
-class DigitMonitorThread : public Thread {
+class DigitMonitor : public TimeoutHandler {
+private:
+  Timer m_timer;
 public:
-  DigitMonitorThread() : Thread(_T("DigitMonitor")) {
-    setDemon(true);
-    start();
+  DigitMonitor() : m_timer(2, "Digitmonitor") {
   }
-  UINT run();
+  ~DigitMonitor();
+  void start();
+  void handleTimeout(Timer &timer);
 };

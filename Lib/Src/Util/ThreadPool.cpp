@@ -2,7 +2,6 @@
 #include <CPUInfo.h>
 #include <SingletonFactory.h>
 #include "ThreadPoolInternal.h"
-#include <DebugLog.h>
 
 typedef enum {
   REQUEST_GETINSTANCE
@@ -31,10 +30,47 @@ void ThreadPool::handlePropertyChanged(const PropertyContainer *source, int id, 
   if(Thread::isPropertyContainer(source)) {
     switch(id) {
     case THR_SHUTTINGDDOWN:
-      poolRequest(REQUEST_RELEASEALL);
+      TRACE(_T("%s:received THR_SHUTTINGDDOWN\n"), __TFUNCTION__);
+      prepareDelete();
       break;
+
+    case THR_THREADSRUNNING:
+      { bool threadsRunning = *(bool*)newValue;
+        TRACE(_T("%s:received THR_THREADSRUNNING=%s\n"), __TFUNCTION__, boolToStr(threadsRunning));
+        if(!threadsRunning) {
+          poolRequest(REQUEST_RELEASEALL);
+        }
+      }
     }
   }
+}
+
+void ThreadPool::prepareDelete() {
+  wait();
+  TRACE(_T("%s enter. m_blockExecute=%s\n"), __TFUNCTION__, boolToStr(m_blockExecute));
+  if(!m_blockExecute) {
+    TRACE(_T("%s:now prepare delete\n"), __TFUNCTION__);
+    setProperty(THREADPOOL_SHUTTINGDDOWN, m_blockExecute, true);
+    killLogger();
+    m_threadPool->requestTerminateAll();
+    TRACE(_T("%s:prepare delete done\n"), __TFUNCTION__);
+  }
+  TRACE(_T("%s leave\n"), __TFUNCTION__);
+  notify();
+}
+
+void ThreadPool::addListener(PropertyChangeListener *listener) { // static
+  ThreadPool &instance = getInstance();
+  instance.wait();  // get exclusive access to ThreadPool
+  instance.addPropertyChangeListener(listener);
+  instance.notify(); // open gate for other threads
+}
+
+void ThreadPool::removeListener(PropertyChangeListener *listener) { // static
+  ThreadPool &instance = getInstance();
+  instance.wait();  // get exclusive access to ThreadPool
+  instance.removePropertyChangeListener(listener);
+  instance.notify(); // open gate for other threads
 }
 
 class PoolLogger : public Runnable {
@@ -70,30 +106,40 @@ UINT PoolLogger::run() {
     if(m_stopped) {
       continue;
     }
-    debugLog(_T("%s\n"), ThreadPool::getInstance().toString().cstr());
+    TRACE(_T("%s\n"), ThreadPool::getInstance().toString().cstr());
     if(m_killed) break;
   }
   m_terminated.notify();
   return 0;
 }
 
+PropertyContainer *ThreadPool::s_propertySource = NULL;
+
 ThreadPool::ThreadPool() {
+  TRACE(_T("%s called\n"),__TFUNCTION__);
   m_processorCount = getProcessorCount();
   m_activeThreads  = m_maxActiveThreads = 1;
+  m_blockExecute   = false;
+  s_propertySource = this;
   m_threadPool = new IdentifiedThreadPool;      TRACE_NEW(m_threadPool);
   m_queuePool  = new IdentifiedResultQueuePool; TRACE_NEW(m_queuePool);
-  Thread::addPropertyChangeListener(this);
-//  debugLog(_T("ThreadPool allocated\n"));
+  Thread::addListener(this);
+  TRACE(_T("ThreadPool attached to Thread::propertyChangeListener\n"));
+  TRACE(_T("%s done\n"), __TFUNCTION__);
 }
 
 ThreadPool::~ThreadPool() {
+  TRACE(_T("%s called\n"), __TFUNCTION__);
+  prepareDelete();
   wait();
-  if(m_logger) m_logger->killLogging();
+  Thread::removeListener(this);
+  TRACE(_T("ThreadPool detached from Thread::propertyChangeListener\n"));
   SAFEDELETE(m_threadPool);
   SAFEDELETE(m_queuePool);
   SAFEDELETE(m_logger    );
-//  debugLog(_T("ThreadPool deallocated\n"));
+  s_propertySource = NULL;
   notify();
+  TRACE(_T("ThreadPool deleted\n"));
 }
 
 void ThreadPool::setPriority(int priority) { // static
@@ -129,8 +175,10 @@ void ThreadPool::setPriorityBoost(bool disablePriorityBoost) { // static
 void ThreadPool::executeNoWait(Runnable &job) {
   ThreadPool &instance = getInstance();
   instance.wait();  // get exclusive access to ThreadPool
-  IdentifiedThreadPool &pool = instance.getTPool();
-  pool.fetchResource()->executeJob(job, NULL);
+  if(!instance.m_blockExecute) {
+    IdentifiedThreadPool &pool = instance.getTPool();
+    pool.fetchResource()->executeJob(job, NULL);
+  }
   instance.notify(); // open gate for other threads
 }
 
@@ -138,9 +186,11 @@ void ThreadPool::executeNoWait(Runnable &job) {
 void ThreadPool::executeInParallelNoWait(RunnableArray &jobs) { // static
   ThreadPool &instance = getInstance();
   instance.wait();  // get exclusive access to ThreadPool
-  IdentifiedThreadPool &pool = instance.getTPool();
-  for(size_t i = 0; i < jobs.size(); i++) {
-    pool.fetchResource()->executeJob(*jobs[i], NULL);
+  if(!instance.m_blockExecute) {
+    IdentifiedThreadPool &pool = instance.getTPool();
+    for(size_t i = 0; i < jobs.size(); i++) {
+      pool.fetchResource()->executeJob(*jobs[i], NULL);
+    }
   }
   instance.notify(); // open gate for other threads
 }
@@ -154,6 +204,11 @@ void ThreadPool::executeInParallel(RunnableArray &jobs) { // static
   }
   ThreadPool &instance = getInstance();
   instance.wait();  // get exclusive access to ThreadPool
+  if(instance.m_blockExecute) {
+    instance.notify();
+    throwException("ThreadPool is shutting down");
+    return;
+  }
   IdentifiedThreadPool &Tpool = instance.getTPool();
 
   CompactArray<IdentifiedThread*> threadArray(jobs.size());
@@ -217,4 +272,10 @@ void ThreadPool::stopLogging() {  // static
     instance.m_logger->stopLogging();
   }
   instance.notify();
+}
+
+void ThreadPool::killLogger() { // not static. no wait/notify.....we are called from propertyCahngeListener which has a lock on this
+  if(m_logger) {
+    m_logger->killLogging();
+  }
 }

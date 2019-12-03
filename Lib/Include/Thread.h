@@ -11,8 +11,10 @@ HANDLE getCurrentThreadHandle(); // call DuplicateHandle(GetCurrentThread())
                                  // returned Handle should be closed with CloseHandle()
                                  // after use. Throw Exception on failure
 
-void   setThreadDescription(HANDLE hThread, const String &description);
-String getThreadDescription(HANDLE hThread);
+// if hThread is not specified, currentThreadHandle is used
+void   setThreadDescription(const String &description, HANDLE hThread = INVALID_HANDLE_VALUE);
+// if hThread is not specified, currentThreadHandle is used
+String getThreadDescription(HANDLE hThread = INVALID_HANDLE_VALUE);
 
 class UncaughtExceptionHandler {
 public:
@@ -31,8 +33,9 @@ public:
 };
 
 typedef enum {
-  THR_SHUTTINGDDOWN
-} ThreadSetProperty;
+  THR_SHUTTINGDDOWN  // bool
+ ,THR_THREADSRUNNING // bool
+} ThreadMapProperty;
 
 /* Threadpriorities defined in winbase.h
  *  THREAD_PRIORITY_IDLE
@@ -50,6 +53,7 @@ private:
   friend class         ThreadMap;
   static PropertyContainer        *s_propertySource;
   static UncaughtExceptionHandler *s_defaultUncaughtExceptionHandler;
+  static UINT                      s_activeCount;
   DWORD                            m_threadId;
   HANDLE                           m_threadHandle;
   FastSemaphore                    m_terminated;
@@ -77,7 +81,7 @@ public:
   inline DWORD getThreadId() const {
     return m_threadId;
   }
-  void   setDesription(const String &description);
+  void   setDescription(const String &description);
   String getDescription() const;
   double getThreadTime(); // microseconds
   void   setAffinityMask(DWORD mask);
@@ -116,13 +120,15 @@ public:
   UncaughtExceptionHandler &getUncaughtExceptionHandler() {
     return *m_uncaughtExceptionHandler;
   }
-
+  static UINT getActiveThreadCount() {
+    return s_activeCount;
+  }
   // This pointer will be source (PropertyContainer*) int PropertyChangeListener::handlePropertyChanged
   static inline bool isPropertyContainer(const PropertyContainer *source) {
     return source == s_propertySource;
   }
-  static void addPropertyChangeListener(   PropertyChangeListener *listener);
-  static void removePropertyChangeListener(PropertyChangeListener *listener);
+  static void addListener(   PropertyChangeListener *listener);
+  static void removeListener(PropertyChangeListener *listener);
 
   static EXECUTION_STATE setExecutionState(EXECUTION_STATE newState);
 

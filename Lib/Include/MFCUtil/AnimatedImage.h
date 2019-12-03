@@ -1,9 +1,7 @@
 #pragma once
 
-#include <Thread.h>
-#include <Semaphore.h>
+#include <PropertyContainer.h>
 #include <ByteStream.h>
-#include "Wintools.h"
 #include "PixRect.h"
 
 class AnimatedImage;
@@ -27,32 +25,13 @@ public:
   }
 };
 
-class AnimationThread : public Thread {
-private:
-  AnimatedImage *m_owner;
-  CPoint         m_point;
-  int            m_frameIndex;
-  Semaphore      m_delaySem;
-  bool           m_running    : 1;
-  bool           m_killed     : 1;
-  bool           m_stopSignal : 1;
-  void stopLoop();
-public:
-  UINT run();
-  AnimationThread();
-  void startAnimation(AnimatedImage *image, const CPoint &p);
-  void stopAnimation();
-  void kill();
-  inline bool isRunning() const {
-    return m_running;
-  }
-};
-
 struct GifFileType;
-
-class AnimatedImage {
+class Animator;
+class AnimatedImage : private PropertyChangeListener {
+  friend class Animator;
+  friend class GifFrame;
 private:
-  AnimationThread        m_animator;
+  Animator              *m_animator;
   CSize                  m_size;
   D3DCOLOR               m_backgroundColor;
   CompactArray<GifFrame> m_frameTable;
@@ -81,9 +60,7 @@ private:
   inline bool isDisposeTableFull() const {
     return m_disposeTable.size() == getFrameCount();
   }
-  friend class AnimationThread;
-  friend class GifFrame;
-
+  void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
 public:
   AnimatedImage();
   virtual ~AnimatedImage();
@@ -111,10 +88,8 @@ public:
   inline bool isLoaded() const {
     return !m_frameTable.isEmpty();
   }
-  const String &getComment() const {
+  inline const String &getComment() const {
     return m_comment;
   }
-  inline bool isPlaying() const {
-    return m_animator.isRunning();
-  }
+  bool isPlaying() const;
 };
