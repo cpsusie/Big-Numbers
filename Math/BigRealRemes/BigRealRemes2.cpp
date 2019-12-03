@@ -486,9 +486,9 @@ void Remes::findExtrema(BigReal &minExtr, BigReal &maxExtr) {
   int minIndex = 0;
   int maxIndex = 0;
   for(int i = 1; i <= m_N+1; i++) {
-    if(compareAbs(m_errorValue[i], m_errorValue[minIndex]) < 0) {
+    if(BigReal::compareAbs(m_errorValue[i], m_errorValue[minIndex]) < 0) {
       minIndex   = i;
-    } else if(compareAbs(m_errorValue[i], m_errorValue[maxIndex]) > 0) {
+    } else if(BigReal::compareAbs(m_errorValue[i], m_errorValue[maxIndex]) > 0) {
       maxIndex   = i;
     }
   }
@@ -516,7 +516,7 @@ Point::Point(const BigReal &x, const BigReal &y) {
 }
 
 static int pointCompareY(const Point &p1, const Point &p2) {
-  return compare(p2.m_y,p1.m_y);
+  return BigReal::compare(p2.m_y,p1.m_y);
 }
 
 static BigReal sqr(const BigReal &x, unsigned int digits) {
