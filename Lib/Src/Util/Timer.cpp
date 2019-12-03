@@ -90,9 +90,9 @@ void TimerJob::clrFlag(BYTE flags) {
 }
 
 UINT TimerJob::run() {
-//#ifdef _DEBUG
+#ifdef _DEBUG
   setThreadDescription(m_timer.getName());
-//#endif // _DEBUG
+#endif // _DEBUG
 
   while(!ISKILLED()) {
     m_timeout.wait(m_msec);
