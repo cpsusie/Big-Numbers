@@ -768,7 +768,6 @@
     <ClCompile Include="TextOutTransparentBackground.cpp" />
     <ClCompile Include="TreeCtrlWalker.cpp" />
     <ClCompile Include="Viewport2D.cpp" />
-    <ClCompile Include="WinDouble.cpp" />
     <ClCompile Include="WinText.cpp" />
     <ClCompile Include="WinTools.cpp" />
   </ItemGroup>

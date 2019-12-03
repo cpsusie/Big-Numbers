@@ -139,7 +139,22 @@ void   moveCaret(                  CEdit     *edit, int amount=1);
 void   gotoMatchingParanthes(      CComboBox *cb);
 
 // assume id is CEdit
-bool   getWindowDouble(            CWnd *wnd, int id, double &d);
+template<class T> bool getEditValue(CWnd *wnd, int id, T &v) {
+  const String str = getWindowText(wnd, id);
+  std::wstringstream stream(str.cstr());
+  stream >> v;
+  if(!stream) {
+    gotoEditBox(wnd, id);
+    showWarning(_T("Invalid input"));
+    return false;
+  }
+  return true;
+}
+template<class T> void setEditValue(CWnd *wnd, int id, const T &v) {
+  std::wstringstream stream;
+  stream << v;
+  setWindowText(wnd, id, stream.str().c_str());
+}
 
 CompactIntArray getTabOrder(CWnd *wnd);
 void            setTabOrder(CWnd *wnd, const CompactIntArray &tabOrderArray);

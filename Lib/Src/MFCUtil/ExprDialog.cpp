@@ -69,8 +69,8 @@ bool CExprDialog::validateExpr(int id) {
 
 bool CExprDialog::validateInterval(int fromId, int toId) {
   double from,to;
-  if(!getWindowDouble(this, fromId, from)) return false;
-  if(!getWindowDouble(this, toId  , to  )) return false;
+  if(!getEditValue(this, fromId, from)) return false;
+  if(!getEditValue(this, toId  , to  )) return false;
   if(from >= to) {
     gotoEditBox(this, fromId);
     showWarning(_T("Invalid interval"));
@@ -81,7 +81,7 @@ bool CExprDialog::validateInterval(int fromId, int toId) {
 
 bool CExprDialog::validateMinMax(int id, double min, double max) {
   double value;
-  if(!getWindowDouble(this, id, value)) return false;
+  if(!getEditValue(this, id, value)) return false;
   if((value < min) || (value > max)) {
     gotoEditBox(this, id);
     showWarning(_T("Value must be in range [%lg..%lg]"), min, max);
