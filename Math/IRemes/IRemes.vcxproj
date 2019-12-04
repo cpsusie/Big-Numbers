@@ -304,6 +304,7 @@
     <ClCompile Include="IRemesDlg.cpp" />
     <ClCompile Include="ListBoxDiffMarks.cpp" />
     <ClCompile Include="MultiExtremaFinder.cpp" />
+    <ClCompile Include="RationalFunction.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -326,6 +327,7 @@
     <ClInclude Include="IRemesDlg.h" />
     <ClInclude Include="ListBoxDiffMarks.h" />
     <ClInclude Include="MultiExtremaFinder.h" />
+    <ClInclude Include="RationalFunction.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="StdAfx.h" />
   </ItemGroup>

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Thread.h>
+#include <Runnable.h>
 #include <PropertyContainer.h>
 #include <TinyBitSet.h>
 #include "BigRealRemes2.h"
@@ -26,29 +26,34 @@ public:
   {}
 };
 
-class DebugThread : public Thread, public PropertyContainer, public PropertyChangeListener {
+class Debugger : public Runnable, public PropertyContainer, public PropertyChangeListener {
 private:
   DECLARECLASSNAME;
-  Remes              &m_r;
-  IntInterval         m_mInterval, m_kInterval;
-  int                 m_maxMKSum;
-  bool                m_skipExisting;
-  bool                m_running, m_killed, m_terminated;
-  String              m_errorMsg;
-  BitSet8             m_breakPoints;
+  Remes         &m_r;
+  IntInterval    m_mInterval, m_kInterval;
+  int            m_maxMKSum;
+  bool           m_skipExisting;
+  bool           m_running, m_killed, m_terminated;
+  Semaphore      m_runFinished;
+  String         m_errorMsg;
+  BitSet8        m_breakPoints;
+  Thread        *m_thread;
 
   void throwInvalidStateException(const TCHAR *method, RemesState state) const;
   void stop();
+  void suspend();
+  void resume();
 public:
-  DebugThread(Remes &r, const IntInterval &mInterval, const IntInterval &kInterval, int maxMKSum, bool skipExisting);
-  ~DebugThread();
+  Debugger(Remes &r, const IntInterval &mInterval, const IntInterval &kInterval, int maxMKSum, bool skipExisting);
+  ~Debugger() {
+  }
   void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
   void singleStep();
   void singleSubStep();
   void stopASAP();
   void kill();
   void go();
-  unsigned int run();
+  UINT run();
   inline const String &getErrorMsg() const {
     return m_errorMsg;
   }

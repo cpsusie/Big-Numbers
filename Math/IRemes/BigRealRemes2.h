@@ -1,9 +1,6 @@
 #pragma once
 
-#include <HashMap.h>
-#include <Math/MathLib.h>
-#include <Math/BigRealMatrix.h>
-#include <Math/BigRealInterval.h>
+#include "RationalFunction.h"
 #include <PropertyContainer.h>
 
 using namespace std;
@@ -11,7 +8,7 @@ using namespace std;
 #define MULTITHREADEDEXTREMAFINDER
 
 #define DEFAULT_DISPLAYPRECISION 20
-#define DEFAULT_FLAGS ios::left | ios::showpos | ios::scientific
+#define DEFAULT_FLAGS (ios::left | ios::showpos | ios::scientific)
 
 class FormatBigReal : public String {
 public:
@@ -98,7 +95,7 @@ public:
   }
 };
 
-class RemesTargetFunction : public FunctionTemplate<BigReal, BigReal> {
+class RemesTargetFunction : public BigRealFunction {
 public:
   virtual String getName() const = 0;
   virtual const BigRealInterval &getDomain() const = 0;
@@ -111,6 +108,7 @@ typedef enum {
  ,SEARCHEITERATION     // *int
  ,EXTREMACOUNT         // *int
  ,COEFFICIENTVECTOR    // *BigRealVector
+ ,CURRENTAPPROX        // *RationalFunction
  ,MMQUOT               // *BigReal
  ,Q                    // *BigReal
  ,E                    // *BigReal
@@ -184,18 +182,31 @@ public:
 };
 
 class Remes : public PropertyContainer {
+#ifdef MULTITHREADEDEXTREMAFINDER
+  friend class MultiExtremaFinder;
+  friend class ExtremumFinder;
+  friend class ExtremumNotifier;
+#endif // MULTITHREADEDEXTREMAFINDER
 private:
   static const TCHAR          *s_stateName[];
   static ExtremaMap            s_extremaMap;
   static const ConstBigReal    s_defaultMMQuotEps;
-  const BigRealInterval        m_domain;
-  RemesTargetFunction         &m_targetFunction;         // Function to be approximated
+  DigitPool                   *m_pool;
+  ConstBigRealInterval         m_domain;
+  // Function to be approximated
+  RemesTargetFunction         &m_targetFunction;
   const bool                   m_useRelativeError;
-  UINT                         m_M, m_K, m_N;            // m_N = m_M + m_K
-  const UINT                   m_digits;                 // digits of precision in calculations
+  // m_N = m_M + m_K
+  UINT                         m_M, m_K, m_N;
+  // digits of precision in calculations
+  const UINT                   m_digits;
   RemesState                   m_state;
-  BigRealVector                m_coefficientVector;      // Coefficient[0..N+1] = { a[0]..a[M], b[1]..b[K], E }. b[0] = 1. Dim=N+2
-  bool                         m_hasCoefficients;        // set to true the first time m_coefficient vector is calculated
+  // Coefficient[0..N+1] = { a[0]..a[M], b[1]..b[K], E }. b[0] = 1. Dim=N+2
+  BigRealVector                m_coefficientVector;
+  // set to true the first time m_coefficient vector is calculated
+  bool                         m_hasCoefficients;
+  FastSemaphore                m_lock;
+  RationalFunction             m_currentApprox;
   bool                         m_extremaCountChangedNotificationEnabled;
   mutable bool                 m_reduceToInterpolate;
   BigReal                      m_E, m_nextE, m_Q, m_QEpsilon;
@@ -240,19 +251,22 @@ private:
   BigReal              findExtremum(    const BigReal &l, const BigReal &m, const BigReal &r, DigitPool *pool);
   void                 findExtrema();
   BigRealVector        findFinalExtrema(UINT M, UINT K, bool highPrecision);
-  int                  setExtremum(     UINT index, const BigReal &x); // return sign of errorfunction at extremum
+  // return sign of errorfunction at extremum
+  int                  setExtremum(     UINT index, const BigReal &x);
   String               getExtremumString(UINT index) const;
   void                 resetExtremaCount();
-  void                 setMMQuotEpsilon(const BigReal &MMQuotEps);  // set stop criterium.
-  BigReal              approximation(   const BigReal &x) const; // Pm(x) / Pk(x)
-  BigReal              errorFunction(   const BigReal &x) const; // m_useRelativeError ? (1 - sFunction(x) * approximation(x)) : (m_targetFunction(x)-approximation(x))
-  BigReal              sFunction(       const BigReal &x) const; // m_useRelativeError ? (1/m_targetFunction(x)) : 1
-  BigReal              targetFunction(  const BigReal &x) const; // m_useRelativeError ?  1 : m_targetFunction(x)
+  // set stop criterium.
+  void                 setMMQuotEpsilon(const BigReal &MMQuotEps);
+  void                 setCurrentApprox();
+  void                 clearCurrentApprox();
+  BigReal              currentErrorFunction(const BigReal &x);
+  // m_useRelativeError ? (1 - sFunction(x) * approx(x)) : (m_targetFunction(x)-approx(x))
+  BigReal              errorFunction(   BigRealFunction &approx, const BigReal &x) const;
+  // m_useRelativeError ? (1/m_targetFunction(x)) : 1
+  BigReal              sFunction(       const BigReal &x) const;
+  // m_useRelativeError ?  1 : m_targetFunction(x)
+  BigReal              targetFunction(  const BigReal &x) const;
   String               getHeaderString() const;
-#ifdef MULTITHREADEDEXTREMAFINDER
-  friend class ExtremaSearchJob;
-  friend class MultiExtremaFinder;
-#endif
 public:
   Remes(RemesTargetFunction &targetFunction, const bool useRelativeError);
   Remes(const Remes &src);
@@ -303,7 +317,7 @@ public:
     return m_coefVectorIndex;
   }
   inline bool  hasErrorPlot() const {
-    return m_hasCoefficients;
+    return !m_currentApprox.isEmpty();
   }
   inline bool solutionExist(UINT M, UINT K) const {
     return hasSavedExtrema(M, K);
@@ -311,7 +325,9 @@ public:
   inline const ExtremaMap &getExtremaMap() const {
     return s_extremaMap;
   }
-  void        getErrorPlot(UINT n, Point2DArray &pa) const;
+  void        getCurrentApproximation(RationalFunction &approx) const;
+  // Returns true on success. if stopSignal becomes true at some point during calculation, the function terminates asap and return false
+  bool        getErrorPlot(UINT n, RationalFunction &approx, Point2DArray &pa, bool &stopSignal) const;
 
   String      getCFunctionString(bool useDouble80) const;
   String      getJavaFunctionString() const;

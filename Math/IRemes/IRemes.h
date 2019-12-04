@@ -16,13 +16,3 @@ public:
 };
 
 extern CIRemesApp theApp;
-
-template<class T> bool getValue(CDialog *dlg, int id, T &v) {
-  String str = getWindowText(dlg, id);
-  std::wstringstream stream(str.cstr());
-  stream >> v;
-  if(!stream) {
-    return false;
-  }
-  return true;
-}

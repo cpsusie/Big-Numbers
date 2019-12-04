@@ -1,46 +1,68 @@
 #include "stdafx.h"
+#include <ThreadPool.h>
 #include "DebugThread.h"
 
-DEFINECLASSNAME(DebugThread);
+DEFINECLASSNAME(Debugger);
 
-DebugThread::DebugThread(Remes &r, const IntInterval &mInterval, const IntInterval &kInterval, int maxMKSum, bool skipExisting)
+Debugger::Debugger(Remes &r, const IntInterval &mInterval, const IntInterval &kInterval, int maxMKSum, bool skipExisting)
 : m_r(r)
 , m_mInterval(   mInterval   )
 , m_kInterval(   kInterval   )
 , m_maxMKSum(    maxMKSum    )
 , m_skipExisting(skipExisting)
+, m_running(     false       )
+, m_killed(      false       )
+, m_terminated(  false       )
+, m_thread(      NULL        )
+, m_runFinished(0)
 {
-  m_running = m_killed = m_terminated = false;
 }
 
-DebugThread::~DebugThread() {
+void Debugger::suspend() {
+  if(m_terminated) return;
+  m_thread->suspend();
 }
 
-unsigned int DebugThread::run() {
-  setDeamon(true);
-  m_r.addPropertyChangeListener(this);
+void Debugger::resume() {
+  if(m_terminated) return;
+  if(m_thread == NULL) {
+    ThreadPool::executeNoWait(*this);
+  } else {
+    m_thread->resume();
+  }
+}
+
+UINT Debugger::run() {
+  m_thread = Thread::getCurrentThread();
+  m_thread->setDescription("DEBUGGER");
   try {
-    setProperty(THREAD_RUNNING, m_running, true);
-    for (int M = m_mInterval.getFrom(); M <= m_mInterval.getTo(); M++) {
-      for (int K = m_kInterval.getFrom(); K <= m_kInterval.getTo(); K++) {
-        if(M + K <= m_maxMKSum) {
-          if (m_skipExisting && m_r.solutionExist(M, K)) {
-            continue;
+    m_r.addPropertyChangeListener(this);
+    try {
+      setProperty(THREAD_RUNNING, m_running, true);
+      for(int M = m_mInterval.getFrom(); M <= m_mInterval.getTo(); M++) {
+        for(int K = m_kInterval.getFrom(); K <= m_kInterval.getTo(); K++) {
+          if(M + K <= m_maxMKSum) {
+            if(m_skipExisting && m_r.solutionExist(M, K)) {
+              continue;
+            }
+            m_r.solve(M, K);
           }
-          m_r.solve(M, K);
         }
       }
+    } catch(Exception e) {
+      setProperty(THREAD_ERROR, m_errorMsg, e.what());
+    } catch(bool) {
+      // ignore. thrown after resume, when killed
+    } catch (...) {
+      setProperty(THREAD_ERROR, m_errorMsg, _T("Unknown exception"));
     }
-  } catch(Exception e) {
-    setProperty(THREAD_ERROR, m_errorMsg, e.what());
-  } catch(bool) {
-    // ignore. thrown after resume, when killed
-  } catch (...) {
-    setProperty(THREAD_ERROR, m_errorMsg, _T("Unknown exception"));
+    m_r.removePropertyChangeListener(this);
+    setProperty(THREAD_TERMINATED, m_terminated, true );
+    setProperty(THREAD_RUNNING   , m_running   , false);
+  } catch(...) {
   }
-  m_r.removePropertyChangeListener(this);
-  setProperty(THREAD_TERMINATED, m_terminated, true );
-  setProperty(THREAD_RUNNING   , m_running   , false);
+  m_thread = NULL;
+  m_runFinished.notify();
   return 0;
 }
 
@@ -50,18 +72,18 @@ typedef enum {
  ,BREAKASAP
 } BreakPointType;
 
-void DebugThread::throwInvalidStateException(const TCHAR *method, RemesState state) const {
+void Debugger::throwInvalidStateException(const TCHAR *method, RemesState state) const {
   throwInvalidArgumentException(method, _T("State=%d"), state);
 }
 
-void DebugThread::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
+void Debugger::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
   DEFINEMETHODNAME;
   if(m_killed) throw true;
 
   RemesPropertyData prop(*(const Remes*)source, id, oldValue, newValue);
   notifyPropertyChanged(REMES_PROPERTY, NULL, &prop);
   if(!m_breakPoints.isEmpty()) {
-    if (m_breakPoints.contains(BREAKASAP)) {
+    if(m_breakPoints.contains(BREAKASAP)) {
       stop();
       return;
     }
@@ -73,7 +95,7 @@ void DebugThread::handlePropertyChanged(const PropertyContainer *source, int id,
         case REMES_SOLVE_STARTED      :
         case REMES_SEARCH_COEFFICIENTS:
         case REMES_SEARCH_EXTREMA     :
-        case REMES_SUCCEEDED:
+        case REMES_SUCCEEDED          :
           if(m_breakPoints.contains(BREAKSTEP) || m_breakPoints.contains(BREAKSUBSTEP)) {
             stop();
           }
@@ -96,39 +118,33 @@ void DebugThread::handlePropertyChanged(const PropertyContainer *source, int id,
   }
 }
 
-void DebugThread::stop() {
+void Debugger::stop() {
   setProperty(THREAD_RUNNING, m_running, false);
   suspend();
   if(m_killed) throw true;
   setProperty(THREAD_RUNNING, m_running, true);
 }
 
-const TCHAR *DebugThread::getStateName() const {
+const TCHAR *Debugger::getStateName() const {
   if(m_running)    return _T("Running");
   if(m_terminated) return _T("Terminated");
   if(m_killed)     return _T("Killed");
   return _T("Suspended");
 }
 
-void DebugThread::kill() {
+void Debugger::kill() {
   if(m_terminated || m_killed) return;
   m_killed = true;
   if(!m_running) {
     resume();
   }
-  for(int i = 0; i < 50; i++) {
-    if(stillActive()) {
-      Sleep(100);
-    } else {
-      break;
-    }
-  }
-  if(stillActive()) {
-    throwException(_T("Cannot kill debugThread"));
+  m_runFinished.wait(4000);
+  if(m_thread) {
+    throwException(_T("Cannot kill Debugger"));
   }
 }
 
-void DebugThread::singleStep() {
+void Debugger::singleStep() {
   if(m_running) return;
   m_breakPoints.add(   BREAKSTEP   );
   m_breakPoints.remove(BREAKSUBSTEP);
@@ -136,7 +152,7 @@ void DebugThread::singleStep() {
   resume();
 }
 
-void DebugThread::singleSubStep() {
+void Debugger::singleSubStep() {
   if(m_running) return;
   m_breakPoints.add(   BREAKSTEP   );
   m_breakPoints.add(   BREAKSUBSTEP);
@@ -144,7 +160,7 @@ void DebugThread::singleSubStep() {
   resume();
 }
 
-void DebugThread::go() {
+void Debugger::go() {
   if(m_running) return;
   m_breakPoints.remove(BREAKSTEP   );
   m_breakPoints.remove(BREAKSUBSTEP);
@@ -152,7 +168,7 @@ void DebugThread::go() {
   resume();
 }
 
-void DebugThread::stopASAP() {
+void Debugger::stopASAP() {
   if(!m_running) return;
   m_breakPoints.add(   BREAKASAP   );
 }

@@ -53,7 +53,7 @@ private:
   static CompactArray<DataPoint> getInterpolationPoints(const BigRealVector &initialExtr, const BigRealVector &finalExtr);
 public:
   InterpolationFunction(const BigRealVector &initialExtr, const BigRealVector &initialExtr1, const BigRealVector &finalExtr1);
-  Real InterpolationFunction::operator()(const Real &x);
+  Real operator()(const Real &x);
 };
 
 InterpolationFunction::InterpolationFunction(const BigRealVector &initialExtr, const BigRealVector &initialExtr1, const BigRealVector &finalExtr1)
@@ -87,7 +87,7 @@ Real InterpolationFunction::operator()(const Real &x) {
                                  ,_T("x=%s. x must be in the interval [0..%d]")
                                  ,toString(x).cstr(), maxX);
   }
-  Real result1 = getReal(m_initialExtr[getInt(x)]) + CubicSpline::operator()(x/maxX);
+  Real result1 = getReal(m_initialExtr[getInt(x)]) + __super::operator()(x/maxX);
   const Real fracX = fraction(x);
   if (fracX == 0) {
     return result1;
@@ -146,7 +146,9 @@ BigRealVector Remes::findInitialExtremaByInterpolation(UINT M, UINT K) {
 BigRealVector Remes::getInterpolatedExtrema(const BigRealVector &defaultExtrema, const BigRealVector &defaultSubExtrema, const BigRealVector &finalSubExtrema) const {
   InterpolationFunction interpolFunction(defaultExtrema, defaultSubExtrema, finalSubExtrema);
   const UINT dimension = (UINT)defaultExtrema.getDimension();
-  notifyPropertyChanged(INTERPOLATIONSPLINE, &dimension, (Function*)&interpolFunction);
+#ifdef __TODO__
+  notifyPropertyChanged(INTERPOLATIONSPLINE, &dimension, (Function*)&interpolFunction); TODO. Sucks!!!
+#endif
   BigRealVector result(dimension);
   for(UINT i = 0; i < dimension; i++) {
     result[i] = interpolFunction(i);

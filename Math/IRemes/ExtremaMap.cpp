@@ -26,11 +26,11 @@ tistream &operator>>(tistream &in, ExtremaKey &key) {
 }
 
 tostream &operator<<(tostream &out, const ExtremaVector &v) {
-  out << FullFormatBigReal(v.getE())      << endl;
-  out << FullFormatBigReal(v.getMMQuot()) << endl;
-  out << v.getDimension() << endl;
+  out << (FullFormatBigReal&)v.getE()      << endl;
+  out << (FullFormatBigReal&)v.getMMQuot() << endl;
+  out << v.getDimension()                  << endl;
   for(size_t i = 0; i < v.getDimension(); i++) {
-    out << FullFormatBigReal(v[i]) << endl;
+    out << (FullFormatBigReal&)v[i] << endl;
   }
   return out;
 }
@@ -113,18 +113,18 @@ bool ExtremaMap::fileExist() const {
 }
 
 const Array<ExtremaVector> *ExtremaMap::get(UINT M, UINT K) const {
-  return ExtremaHashMap::get(ExtremaKey(M, K));
+  return __super::get(ExtremaKey(M, K));
 }
 
 void ExtremaMap::put(UINT M, UINT K, const ExtremaVector &v) {
   const ExtremaKey key(M, K);
-  Array<ExtremaVector> *a = ExtremaHashMap::get(key);
+  Array<ExtremaVector> *a = __super::get(key);
   if(a != NULL) {
     a->add(v);
   } else {
     Array<ExtremaVector> a;
     a.add(v);
-    ExtremaHashMap::put(key, a);
+    __super::put(key, a);
   }
   m_updateCount++;
 }

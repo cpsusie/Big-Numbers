@@ -20,6 +20,8 @@ public:
   const BigRealInterval &getDomain() const {
     return m_domain;
   }
+  String         getDefaultName() const;
+  DoubleInterval getDefaultDomain() const;
   void setDigits(UINT digits) {
     m_digits = digits;
   }
@@ -54,26 +56,146 @@ public:
   }
 };
 
+class MonitorVariables {
+private:
+  mutable FastSemaphore   m_lock, m_approxLock;
+  CoefWindowData          m_coefWinData;
+  ExtremaStringArray      m_extrStrArray;
+  String                  m_searchEString, m_stateString, m_warning, m_error;
+  RationalFunction        m_lastApprox;
+  double                  m_maxError;
+  Point2DArray            m_errorPointArray;
+  int                     m_coefVectorIndexForPointArray;
+public:
+  MonitorVariables() : m_coefVectorIndexForPointArray(-1) {
+  }
+  void setCoefWinData(const CoefWindowData &src) {
+    m_lock.wait();
+    m_coefWinData = src;
+    m_lock.notify();
+  }
+  void getCoefWinData(CoefWindowData &dst) const {
+    m_lock.wait();
+    dst = m_coefWinData;
+    m_lock.notify();
+  }
+
+  void setExtremaStringArray(const ExtremaStringArray &src) {
+    m_lock.wait();
+    m_extrStrArray = src;
+    m_lock.notify();
+  }
+  void getExtremaStringArray(ExtremaStringArray &dst) const {
+    m_lock.wait();
+    dst = m_extrStrArray;
+    m_lock.notify();
+  }
+  void setSearchEString(const String &src) {
+    m_lock.wait();
+    m_searchEString = src;
+    m_lock.notify();
+  }
+  void getSearchEString(String &dst) const {
+    m_lock.wait();
+    dst = m_searchEString;
+    m_lock.notify();
+  }
+  void setStateString(const String &src) {
+    m_lock.wait();
+    m_stateString = src;
+    m_lock.notify();
+  }
+  void getStateString(String &dst) const {
+    m_lock.wait();
+    dst = m_stateString;
+    m_lock.notify();
+  }
+  void setErrorString(const String &src) {
+    m_lock.wait();
+    m_error = src;
+    m_lock.notify();
+  }
+  void getErrorString(String &dst) const {
+    m_lock.wait();
+    dst = m_error;
+    m_lock.notify();
+  }
+  void setWarningString(const String &src) {
+    m_lock.wait();
+    m_warning = src;
+    m_lock.notify();
+  }
+  void getWarningString(String &dst) const {
+    m_lock.wait();
+    dst = m_warning;
+    m_lock.notify();
+  }
+  void setApproximation(const RationalFunction &src) {
+    m_approxLock.wait();
+    m_lastApprox = src;
+    m_approxLock.notify();
+  }
+  void getApproximation(RationalFunction &dst) const {
+    m_approxLock.wait();
+    dst = m_lastApprox;
+    m_approxLock.notify();
+  }
+  bool isApproxEmpty() const {
+    m_approxLock.wait();
+    const bool b = m_lastApprox.isEmpty();
+    m_approxLock.notify();
+    return b;
+  }
+  void setMaxError(double maxError) {
+    m_lock.wait();
+    m_maxError = maxError;
+    m_lock.notify();
+  }
+  double getMaxError() const {
+    m_lock.wait();
+    const double result = m_maxError;
+    m_lock.notify();
+    return result;
+  }
+  void setPointArray(const Point2DArray &a, int key) {
+    m_lock.wait();
+    m_errorPointArray = a;
+    m_coefVectorIndexForPointArray = key;
+    m_lock.notify();
+  }
+  void getPointArray(Point2DArray &dst) {
+    m_lock.wait();
+    dst = m_errorPointArray;
+    m_lock.notify();
+  }
+  int getPointArrayKey() {
+    return m_coefVectorIndexForPointArray;
+  }
+  void clearPointArray() {
+    m_lock.wait();
+    m_errorPointArray.clear();
+    m_coefVectorIndexForPointArray = -1;
+    m_lock.notify();
+  }
+};
+
 class CIRemesDlg : public CDialog, public PropertyChangeListener {
+  friend class ErrorPlotCalculator;
 private:
   HACCEL                  m_accelTable;
   HICON                   m_hIcon;
   SimpleLayoutManager     m_layoutManager;
   RunMenuState            m_runMenuState;
-  Semaphore               m_gate;
   CListBoxDiffMarks       m_coefListBox;
   CCoordinateSystem       m_coorSystemError, m_coorSystemSpline;
   DynamicTargetFunction   m_targetFunction;
-  Remes                  *m_remes;
-  int                     m_subM, m_subK;
-  DebugThread            *m_debugThread;
-  int                     m_lastErrorPlotKey;
   bool                    m_reduceToInterpolate;
-  CoefWindowData          m_coefWinData;
-  ExtremaStringArray      m_extrStrArray, m_extrStrArrayOld;
-  String                  m_searchEString;
-  String                  m_stateString;
-  String                  m_warning, m_error;
+  ExtremaStringArray      m_extrStrArrayOld;
+  Remes                  *m_remes;
+  MonitorVariables        m_debugInfo;
+  int                     m_subM, m_subK;
+  Debugger               *m_debugger;
+  ErrorPlotCalculator    *m_errorPlotCalculator;
   CString                 m_name;
   UINT	                  m_M;
   UINT	                  m_K;
@@ -89,26 +211,34 @@ private:
   BOOL                    m_skipExisting;
 
   bool validateInput();
-  void startThread(bool singleStep);
-  void createThread();
-  void destroyThread();
+  void startDebugger(bool singleStep);
+  void createDebugger();
+  void destroyDebugger();
+  void startErrorPlotCalculator();
+  void stopErrorPlotCalculator();
+  bool hasErrorPlotCalculator() const {
+    return m_errorPlotCalculator != NULL;
+  }
   void setSubMK(int subM, int subK);
   void adjustMaxMKSum();
   String getThreadStateName() const;
-  inline bool hasDebugThread() const {
-    return m_debugThread != NULL;
+  inline bool hasRemes() const {
+    return m_remes != NULL;
   }
-  inline bool isThreadPaused() const {
-    return hasDebugThread() && !m_debugThread->isRunning() && !m_debugThread->isTerminated();
+  inline bool hasDebugger() const {
+    return m_debugger != NULL;
   }
-  inline bool isThreadRunning() const {
-    return hasDebugThread() && m_debugThread->isRunning();
+  inline bool isDebuggerPaused() const {
+    return hasDebugger() && !m_debugger->isRunning() && !m_debugger->isTerminated();
   }
-  inline bool isThreadTerminated() const {
-    return hasDebugThread() && m_debugThread->isTerminated();
+  inline bool isDebuggerRunning() const {
+    return hasDebugger() && m_debugger->isRunning();
+  }
+  inline bool isDebuggerTerminated() const {
+    return hasDebugger() && m_debugger->isTerminated();
   }
   inline bool hasSolution() const {
-    return isThreadTerminated() && (m_remes->getState() == REMES_SUCCEEDED);
+    return isDebuggerTerminated() && (m_remes->getState() == REMES_SUCCEEDED);
   }
   void ajourDialogItems();
   void setRunMenuState(RunMenuState menuState);
@@ -117,12 +247,16 @@ private:
   void showState(const String &str);
   void showWarning(const String &str);
   void showCoefWindowData(const CoefWindowData &data);
-  void showExtremaStringArray();
+  void showExtremaStringArray(const ExtremaStringArray &a);
   void showSearchE(const String &s);
-  void clearErrorPlot();
-  bool createErrorPlot(const Remes &r);
-  void showErrorPlot();
-  void setCoorSystemSplineVisible(bool visible);
+  void clearErrorPointArray();
+  void createErrorPointArray();
+  void showErrorPointArray();
+  void setErrorFunctionVisible(bool visible);
+  void removeErrorPlot();
+  void setSplineVisible(bool visible);
+  bool isErrorFunctionVisible();
+  bool isSplineVisible();
   int  getErrorPlotXPixelCount() const;
   void updateErrorPlotXRange();
   inline DoubleInterval getXRange() const {
@@ -185,7 +319,11 @@ public:
   afx_msg LRESULT OnMsgSearchEIterationChanged(WPARAM wp, LPARAM lp);
   afx_msg LRESULT OnMsgExtremaCountChanged(    WPARAM wp, LPARAM lp);
   afx_msg LRESULT OnMsgMaxErrorChanged(        WPARAM wp, LPARAM lp);
+  afx_msg LRESULT OnMsgShowErrorFunction(      WPARAM wp, LPARAM lp);
+  afx_msg LRESULT OnMsgClearErrorFunction(     WPARAM wp, LPARAM lp);
   afx_msg LRESULT OnMsgUpdateInterpolation(    WPARAM wp, LPARAM lp);
   afx_msg LRESULT OnMsgWarningChanged(         WPARAM wp, LPARAM lp);
+  afx_msg LRESULT OnMsgApproximationChanged(   WPARAM wp, LPARAM lp);
+  afx_msg LRESULT OnMsgErrorPointArrayChanged( WPARAM wp, LPARAM lp);
   DECLARE_MESSAGE_MAP()
 };
