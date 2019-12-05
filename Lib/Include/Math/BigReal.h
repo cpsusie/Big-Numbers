@@ -228,11 +228,11 @@ private:
   bool                       m_continueCalculation;
   // All BigReals using this digitPool, will have the m_flags-member initialized to this value
   BYTE                       m_initFlags;
-  // How many BigReal is using this digitpool (including members allocated below)
+  // How many BigReals uses this digitpool (including members allocated below)
   std::atomic<UINT>          m_refCount;
   UINT                       m_refCountOnFetch;
 
-  // Some frequently used constants. exist in every pool
+  // Some frequently used constants. exist in every pool. All will have m_flag-bit BR_MUTABLE=0
   // = 0
   BigInt               *m_0;
   // = 1
@@ -249,7 +249,7 @@ private:
 public:
 
   // InitialDigitcount in BIGREALBASE-digits
-  DigitPool(int id, const String &name, size_t intialDigitcount = 0);
+  DigitPool(int id, const String &name, size_t initialDigitcount = 0);
   virtual ~DigitPool();
 
   // Set name. Return old name

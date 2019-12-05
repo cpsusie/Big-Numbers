@@ -8,7 +8,7 @@
 
 extern const TCHAR *_compactArrayIteratorClassName;
 
-template <class T> class CompactArray {
+template <typename T> class CompactArray {
 private:
   size_t  m_capacity;
   size_t  m_size;

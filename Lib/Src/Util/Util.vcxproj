@@ -773,6 +773,7 @@
     </CustomBuild>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Include\AbstractFilterArrayIterator.h" />
     <ClInclude Include="..\..\Include\Array.h" />
     <ClInclude Include="..\..\Include\BasicIncludes.h" />
     <ClInclude Include="..\..\Include\BCDArray.h" />
@@ -856,6 +857,7 @@
     <ClInclude Include="..\..\Include\RegexIStream.h" />
     <ClInclude Include="..\..\Include\Registers.h" />
     <ClInclude Include="..\..\Include\Registry.h" />
+    <ClInclude Include="..\..\Include\ResourcePoolTemplate.h" />
     <ClInclude Include="..\..\Include\Runnable.h" />
     <ClInclude Include="..\..\Include\Scandir.h" />
     <ClInclude Include="..\..\Include\Scanner.h" />

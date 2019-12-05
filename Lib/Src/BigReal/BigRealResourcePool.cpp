@@ -22,7 +22,7 @@ BigRealResourcePool::BigRealResourcePool() {
   for(UINT i = 0; i < a.size(); i++) m_digitPoolPool->releaseResource(a[i]);
   a.clear(-1);
   for(UINT i = 0; i < 1       ; i++) a.add(m_lockedDigitPoolPool->fetchResource());
-  for(UINT i = 0; i < a.size(); i++) m_lockedDigitPoolPool->releaseResource(a[i]);
+  for(UINT i = 0; i < a.size(); i++) m_lockedDigitPoolPool->releaseResource((DigitPoolWithLock*)a[i]);
   a.clear(-1);
 
   notify();
@@ -159,7 +159,7 @@ void BigRealResourcePool::releaseDPool(DigitPool *pool) {
   pool->resetPoolCalculation();
 
   if(pool->isWithLock()) {
-    m_lockedDigitPoolPool->releaseResource(pool);
+    m_lockedDigitPoolPool->releaseResource((DigitPoolWithLock*)pool);
   } else {
     m_digitPoolPool->releaseResource(pool);
   }
@@ -168,8 +168,8 @@ void BigRealResourcePool::releaseDPool(DigitPool *pool) {
 void BigRealResourcePool::terminateAllPoolCalculations() { // // static
   BigRealResourcePool &instance = getInstance();
   instance.wait();
-
-  Iterator<DigitPool*> it = instance.m_digitPoolPool->getActiveIterator();
+  DigitPoolPool &pp = *instance.m_digitPoolPool;
+  Iterator<DigitPool*> it = pp.getIterator(&pp.getActiveIdSet());
   while(it.hasNext()) {
     it.next()->terminatePoolCalculation();
   }

@@ -330,7 +330,7 @@ inline String vformat(_In_z_ _Printf_format_string_ TCHAR const * const format, 
 // Same arguments as printf,sprintf
 String format(_In_z_ _Printf_format_string_ TCHAR const * const Format, ...);
 
-template<class T> class AbstractStringifier {
+template<typename T> class AbstractStringifier {
 public:
   virtual String toString(const T &e) = 0;
 };

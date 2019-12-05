@@ -2,6 +2,7 @@
 
 #include <Math/BigReal.h>
 #include <Runnable.h>
+#include <ResourcePoolTemplate.h>
 
 class DigitPoolArray : public CompactArray<DigitPool*> {
 };
@@ -46,132 +47,36 @@ public:
   }
 };
 
-template<class T> class AbstractFilteredIterator : public AbstractIterator {
-private:
-  CompactArray<T>  &m_a;
-  BitSet            m_activeSet;
-  Iterator<size_t>  m_it;
-public:
-  AbstractFilteredIterator(const CompactArray<T> &a, const BitSet &set)
-    : m_a((CompactArray<T>&)a)
-    , m_activeSet(set)
-  {
-    m_it = m_activeSet.getIterator();
-  }
-  AbstractIterator *clone() {
-    return new AbstractFilteredIterator(m_a, m_activeSet);
-  }
-
-  inline bool hasNext() const {
-    return m_it.hasNext();
-  }
-
-  void *next() {
-    if(m_it.hasNext()) {
-      noNextElementError(__TFUNCTION__);
-    }
-    return &m_a[m_it.next()];
-  }
-
-  void remove() {
-    throwUnsupportedOperationException(__TFUNCTION__);
-  }
-};
-
-template <class T> class ResourcePool : public CompactArray<T*> {
-private:
-  const String      m_typeName;
-  CompactStack<int> m_freeId;
+class SubProdRunnablePool : public ResourcePoolTemplate<SubProdRunnable> {
 protected:
-  virtual void allocateNewResources(size_t count) {
-    int id = (int)size();
-    for(size_t i = 0; i < count; i++, id++) {
-      m_freeId.push(id);
-      T *r = new T(id, format(_T("Resource %s(%d)"), m_typeName.cstr(), id)); TRACE_NEW(r);
-      add(r);
-    }
+  SubProdRunnable *newResource(UINT id) {
+    SubProdRunnable *r = new SubProdRunnable(id, format(_T("%s(%d)"), getTypeName().cstr(), id)); TRACE_NEW(r);
+    return r;
   }
 public:
-  ResourcePool(const String &typeName) : m_typeName(typeName) {
-  }
-  virtual ~ResourcePool() {
-    deleteAll();
-  }
-  T *fetchResource() {
-    if(m_freeId.isEmpty()) {
-      allocateNewResources(5);
-    }
-    const int index = m_freeId.pop();
-    return (*this)[index];
-  }
-
-  void releaseResource(const BigRealResource *resource) {
-    m_freeId.push(resource->getId());
-  }
-
-  void deleteAll() {
-    for(size_t i = 0; i < size(); i++) {
-      SAFEDELETE((*this)[i]);
-    }
-    clear();
-    m_freeId.clear();
-  }
-  BitSet getAllocatedIdSet() const {
-    if(size() == 0) {
-      return BitSet(8);
-    } else {
-      BitSet result(size());
-      return result.invert();
-    }
-  }
-  BitSet getFreeIdSet() const {
-    const int n = m_freeId.getHeight();
-    if(n == 0) {
-      return BitSet(8);
-    } else {
-      BitSet result(size());
-      for (int i = 0; i < n; i++) {
-        result.add(m_freeId.top(i));
-      }
-      return result;
-    }
-  }
-  BitSet getActiveIdSet() const {
-    return getAllocatedIdSet() - getFreeIdSet();
-  }
-
-  Iterator<T*> getAllIterator() const {
-    return __super::getIterator();
-
-  }
-  Iterator<T*> getActiveIterator() const {
-    return Iterator<T*>(new AbstractFilteredIterator<T*>(*this, getActiveIdSet()));
-  }
-
-  String toString() const {
-    const BitSet allocatedIdSet = getAllocatedIdSet();
-    const BitSet freeIdSet = getFreeIdSet();
-    return format(_T("Free:%s. In use:%s")
-                 ,freeIdSet.toString().cstr()
-                 ,(allocatedIdSet - freeIdSet).toString().cstr()
-    );
+  SubProdRunnablePool() : ResourcePoolTemplate<SubProdRunnable>(_T("SubProd")) {
   }
 };
 
-class SubProdRunnablePool : public ResourcePool<SubProdRunnable> {
+class DigitPoolPool : public ResourcePoolTemplate<DigitPool> {
+protected:
+  DigitPool *newResource(UINT id) {
+    DigitPool *dp = new DigitPool(id, format(_T("%s(%d)"), getTypeName().cstr(), id)); TRACE_NEW(dp);
+    return dp;
+  }
 public:
-  SubProdRunnablePool() : ResourcePool<SubProdRunnable>(_T("SubProd")) {
+  DigitPoolPool() : ResourcePoolTemplate<DigitPool>(_T("DigitPool")) {
   }
 };
 
-class DigitPoolPool : public ResourcePool<DigitPool> {
-public:
-  DigitPoolPool() : ResourcePool<DigitPool>(_T("DigitPool")) {
+class LockedDigitPoolPool : public ResourcePoolTemplate<DigitPoolWithLock> {
+protected:
+  DigitPoolWithLock *newResource(UINT id) {
+    DigitPoolWithLock *dp = new DigitPoolWithLock(id, format(_T("%s(%d)"), getTypeName().cstr(), id)); TRACE_NEW(dp);
+    return dp;
   }
-};
 
-class LockedDigitPoolPool : public ResourcePool<DigitPoolWithLock> {
 public:
-  LockedDigitPoolPool() : ResourcePool<DigitPoolWithLock>(_T("LockedDigitPool")) {
+  LockedDigitPoolPool() : ResourcePoolTemplate<DigitPoolWithLock>(_T("LockedDigitPool")) {
   }
 };

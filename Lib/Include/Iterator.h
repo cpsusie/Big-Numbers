@@ -17,7 +17,7 @@ public:
   virtual void remove() = 0;
 };
 
-template <class T> class Iterator {
+template <typename T> class Iterator {
 protected:
   AbstractIterator *m_it;
 public:

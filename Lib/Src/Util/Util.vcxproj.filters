@@ -1335,6 +1335,12 @@
     <ClInclude Include="InputTemplate.h">
       <Filter>Source Files\Console</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Include\ResourcePoolTemplate.h">
+      <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\AbstractFilterArrayIterator.h">
+      <Filter>Header Files\Collection</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="BitSetx64.asm">
