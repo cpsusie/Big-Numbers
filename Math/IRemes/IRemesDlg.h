@@ -1,7 +1,7 @@
 #pragma once
 
 #include <MFCUtil/CoordinateSystem/CoordinateSystem.h>
-#include "DebugThread.h"
+#include "Debugger.h"
 #include "ListBoxDiffMarks.h"
 
 class DynamicTargetFunction : public RemesTargetFunction {
@@ -195,6 +195,7 @@ private:
   MonitorVariables        m_debugInfo;
   int                     m_subM, m_subK;
   Debugger               *m_debugger;
+  DebuggerRunState        m_debuggerState;
   ErrorPlotCalculator    *m_errorPlotCalculator;
   CString                 m_name;
   UINT	                  m_M;
@@ -240,10 +241,10 @@ private:
   inline bool hasSolution() const {
     return isDebuggerTerminated() && (m_remes->getState() == REMES_SUCCEEDED);
   }
-  void ajourDialogItems();
+  void ajourDialogItems(DebuggerRunState state);
   void setRunMenuState(RunMenuState menuState);
   void enableFieldList(const int *ids, int n, bool enabled);
-  void showThreadState();
+  void showThreadState(DebuggerRunState state);
   void showState(const String &str);
   void showWarning(const String &str);
   void showCoefWindowData(const CoefWindowData &data);
@@ -294,7 +295,7 @@ public:
   afx_msg void    OnRunDebug();
   afx_msg void    OnRunContinue();
   afx_msg void    OnRunRestart();
-  afx_msg void    OnRunStop();
+  afx_msg void    OnRunStopDebugging();
   afx_msg void    OnRunBreak();
   afx_msg void    OnRunSingleIteration();
   afx_msg void    OnRunSingleSubIteration();

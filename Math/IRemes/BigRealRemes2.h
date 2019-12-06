@@ -1,5 +1,6 @@
 #pragma once
 
+#include <HashMap.h>
 #include "RationalFunction.h"
 #include <PropertyContainer.h>
 

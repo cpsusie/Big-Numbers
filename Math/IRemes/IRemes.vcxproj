@@ -298,7 +298,7 @@
     <ClCompile Include="BigRealRemesInitialExtrema.cpp" />
     <ClCompile Include="BigRealRemesStrings.cpp" />
     <ClCompile Include="PrecisionDlg.cpp" />
-    <ClCompile Include="DebugThread.cpp" />
+    <ClCompile Include="Debugger.cpp" />
     <ClCompile Include="ExtremaMap.cpp" />
     <ClCompile Include="IRemes.cpp" />
     <ClCompile Include="IRemesDlg.cpp" />
@@ -322,7 +322,7 @@
   <ItemGroup>
     <ClInclude Include="BigRealRemes2.h" />
     <ClInclude Include="PrecisionDlg.h" />
-    <ClInclude Include="DebugThread.h" />
+    <ClInclude Include="Debugger.h" />
     <ClInclude Include="IRemes.h" />
     <ClInclude Include="IRemesDlg.h" />
     <ClInclude Include="ListBoxDiffMarks.h" />

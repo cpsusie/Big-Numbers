@@ -45,11 +45,11 @@
 #define ID_RUN_GO                       32790
 #define ID_RUN_F5                       32791
 #define ID_RUN_RESTART                  32792
-#define ID_RUN_STOP                     32793
-#define ID_RUN_SINGLEITERATION          32794
-#define ID_RUN_SINGLESUBITERATION       32795
-#define ID_RUN_REDUCETOINTERPOLATE      32796
-#define ID_RUN_BREAK                    32797
+#define ID_RUN_BREAK                    32793
+#define ID_RUN_STOPDEBUGGING            32794
+#define ID_RUN_SINGLEITERATION          32795
+#define ID_RUN_SINGLESUBITERATION       32796
+#define ID_RUN_REDUCETOINTERPOLATE      32797
 #define ID_HELP_ABOUTIREMES             32800
 #define ID_GOTO_DOMAIN                  32850
 #define ID_GOTO_M                       32851
@@ -57,7 +57,6 @@
 #define ID_GOTO_DIGITS                  32853
 #define ID_GOTO_MAXSEARCHEITERATIONS    32854
 #define ID_MSG_THR_RUNSTATE_CHANGED     32900
-#define ID_MSG_THR_TERMINATED_CHANGED   32901
 #define ID_MSG_THR_ERROR_CHANGED        32902
 #define ID_MSG_STATE_CHANGED            32903
 #define ID_MSG_COEFFICIENTS_CHANGED     32904

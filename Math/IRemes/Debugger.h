@@ -1,16 +1,24 @@
 #pragma once
 
-#include <Runnable.h>
+#include <Thread.h>
+#include <Semaphore.h>
 #include <PropertyContainer.h>
 #include <TinyBitSet.h>
 #include "BigRealRemes2.h"
 
 typedef enum {
-  THREAD_RUNNING           // bool*
- ,THREAD_TERMINATED        // bool*
- ,THREAD_ERROR             // TCHAR*
- ,REMES_PROPERTY           // *RemesPropertyData (oldValue = NULL)
-} DebugThreadProperty;
+  DEBUGGER_CREATED
+ ,DEBUGGER_RUNNING
+ ,DEBUGGER_BREAK
+ ,DEBUGGER_TERMINATED
+} DebuggerRunState;
+
+typedef enum {
+  DEBUGGER_RUNSTATE           // RunState
+ ,DEBUGGER_REQUEST_TERMINATE  // bool*
+ ,DEBUGGER_ERROR              // TCHAR*
+ ,REMES_PROPERTY              // *RemesPropertyData (oldValue = NULL)
+} DebuggerProperty;
 
 class RemesPropertyData {
 public:
@@ -29,15 +37,16 @@ public:
 class Debugger : public Runnable, public PropertyContainer, public PropertyChangeListener {
 private:
   DECLARECLASSNAME;
-  Remes         &m_r;
-  IntInterval    m_mInterval, m_kInterval;
-  int            m_maxMKSum;
-  bool           m_skipExisting;
-  bool           m_running, m_killed, m_terminated;
-  Semaphore      m_runFinished;
-  String         m_errorMsg;
-  BitSet8        m_breakPoints;
-  Thread        *m_thread;
+  Remes                        &m_r;
+  IntInterval                   m_mInterval, m_kInterval;
+  int                           m_maxMKSum;
+  bool                          m_skipExisting;
+  DebuggerRunState              m_runState;
+  bool                          m_requestTerminate;
+  FastSemaphore                 m_terminated;
+  String                        m_errorMsg;
+  BitSet8                       m_breakPoints;
+  Thread                       *m_thread;
 
   void throwInvalidStateException(const TCHAR *method, RemesState state) const;
   void stop();
@@ -45,23 +54,26 @@ private:
   void resume();
 public:
   Debugger(Remes &r, const IntInterval &mInterval, const IntInterval &kInterval, int maxMKSum, bool skipExisting);
-  ~Debugger() {
-  }
+  ~Debugger();
   void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
   void singleStep();
   void singleSubStep();
-  void stopASAP();
-  void kill();
+  void breakASAP();
+  void requestTerminate();
   void go();
   UINT run();
   inline const String &getErrorMsg() const {
     return m_errorMsg;
   }
   inline bool isRunning() const {
-    return m_running;
+    return m_runState == DEBUGGER_RUNNING;
   }
   inline bool isTerminated() const {
-    return m_terminated;
+    return m_runState == DEBUGGER_TERMINATED;
   }
-  const TCHAR *getStateName() const;
+  inline bool isBreak() const {
+    return m_runState == DEBUGGER_BREAK;
+  }
+         const TCHAR *getStateName() const;
+  static const TCHAR *getStateName(DebuggerRunState state);
 };

@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include <ThreadPool.h>
+#include <Thread.h>
 #include <CPUInfo.h>
 #include "MultiExtremaFinder.h"
 
@@ -50,17 +51,21 @@ UINT ExtremumFinder::run() {
 #endif
   ExtremumSearchParamQueue &paramQueue = m_mf.m_paramQueue;
   Remes                    &remes      = m_mf.m_remes;
-  BigReal                   result(m_pool);
-  for(;;) {
-    try {
-      const ExtremumSearchParam *param = paramQueue.get(10);
-      result = remes.findExtremum(param->m_left, param->m_middle, param->m_right, m_pool);
-      m_mf.putExtremum(param->m_index, result);
-    } catch(TimeoutException e) {
-      if(paramQueue.isEmpty()) {
-        break;
+  try {
+    BigReal                   result(m_pool);
+    for(;;) {
+      try {
+        const ExtremumSearchParam *param = paramQueue.get(10);
+        result = remes.findExtremum(param->m_left, param->m_middle, param->m_right, m_pool);
+        m_mf.putExtremum(param->m_index, result);
+      } catch(TimeoutException e) {
+        if(paramQueue.isEmpty()) {
+          break;
+        }
       }
     }
+  } catch(...) {
+    m_mf.putTerminationCode();
   }
   return 0;
 }
@@ -76,6 +81,9 @@ void MultiExtremaFinder::putExtremum(int index, const BigReal &extremum) {
   m_resultQueue.put(r);
 }
 
+void MultiExtremaFinder::putTerminationCode() {
+  m_resultQueue.put(NULL);
+}
 
 class ExtremumNotifier : public Runnable {
 private:
@@ -99,6 +107,7 @@ UINT ExtremumNotifier::run() {
 
   for(size_t i = 0; i < m_expectedResultCount; i++) {
     const ExtremumResult *r = q.get();
+    if(r == NULL) break; // terminationCode
     remes.setExtremum(r->m_index, r->m_extr);
     m_mf.m_resultArray.add(r);
   }
@@ -109,7 +118,8 @@ MultiExtremaFinder::MultiExtremaFinder(Remes *remes) : m_remes(*remes) {
 }
 
 MultiExtremaFinder::~MultiExtremaFinder() {
-  assert(this->m_paramQueue.isEmpty() && m_resultQueue.isEmpty());
+  m_paramQueue.clear();
+  m_resultQueue.clear();
   for(size_t i = 0; i < m_jobArray.size(); i++) {
     Runnable *r = m_jobArray[i];
     SAFEDELETE(r);

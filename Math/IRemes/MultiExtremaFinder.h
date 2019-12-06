@@ -1,5 +1,8 @@
 #pragma once
 
+#include <SynchronizedQueue.h>
+#include <Runnable.h>
+
 #ifdef MULTITHREADEDEXTREMAFINDER
 
 class ExtremumSearchParam;
@@ -19,6 +22,7 @@ private:
   ExtremumSearchParamQueue                 m_paramQueue;
   ResultQueue                              m_resultQueue;
   void putExtremum(int index, const BigReal &extremum);
+  void putTerminationCode();
 public:
   MultiExtremaFinder(Remes *remes);
   ~MultiExtremaFinder();
