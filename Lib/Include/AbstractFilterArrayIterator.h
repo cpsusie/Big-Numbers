@@ -23,7 +23,7 @@ public:
   }
 
   void *next() {
-    if(m_it.hasNext()) {
+    if(!m_it.hasNext()) {
       noNextElementError(__TFUNCTION__);
     }
     return &m_a[m_it.next()];
