@@ -6,8 +6,8 @@
 #include <PropertyContainer.h>
 #include "CompactStack.h"
 
-class IdentifiedResultQueuePool;
-class IdentifiedThreadPool;
+class PoolThreadPool;
+class ResultQueuePool;
 class PoolLogger;
 
 typedef enum {
@@ -15,11 +15,11 @@ typedef enum {
 } ThreadPoolProperty;
 
 class ThreadPool : public PropertyChangeListener, PropertyContainer {
-  friend class IdentifiedThread;
+  friend class ThreadPoolThread;
   friend class ThreadPoolFactory;
 private:
-  IdentifiedThreadPool       *m_threadPool;
-  IdentifiedResultQueuePool  *m_queuePool;
+  PoolThreadPool             *m_threadPool;
+  ResultQueuePool            *m_queuePool;
   PoolLogger                 *m_logger;
   mutable FastSemaphore       m_gate;
   int                         m_processorCount;
@@ -32,11 +32,11 @@ private:
   ~ThreadPool();
   ThreadPool(const ThreadPool &src);            // not implemented
   ThreadPool &operator=(const ThreadPool &src); // not implemented
-  static void releaseThread(IdentifiedThread *thr);
-  inline IdentifiedThreadPool      &getTPool() const {
+  static void releaseThread(ThreadPoolThread *thr);
+  inline PoolThreadPool &getTPool() const {
     return *m_threadPool;
   }
-  inline IdentifiedResultQueuePool &getQPool() const {
+  inline ResultQueuePool &getQPool() const {
     return *m_queuePool;
   }
   inline void wait()   const { m_gate.wait();   }
@@ -71,5 +71,4 @@ public:
   void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
   static void addListener(   PropertyChangeListener *listener);
   static void removeListener(PropertyChangeListener *listener);
-
 };

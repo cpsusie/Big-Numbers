@@ -121,8 +121,8 @@ ThreadPool::ThreadPool() {
   m_activeThreads  = m_maxActiveThreads = 1;
   m_blockExecute   = false;
   s_propertySource = this;
-  m_threadPool = new IdentifiedThreadPool;      TRACE_NEW(m_threadPool);
-  m_queuePool  = new IdentifiedResultQueuePool; TRACE_NEW(m_queuePool);
+  m_threadPool = new PoolThreadPool;  TRACE_NEW(m_threadPool);
+  m_queuePool  = new ResultQueuePool; TRACE_NEW(m_queuePool);
   Thread::addListener(this);
   TRACE(_T("ThreadPool attached to Thread::propertyChangeListener\n"));
   TRACE(_T("%s done\n"), __TFUNCTION__);
@@ -145,7 +145,7 @@ ThreadPool::~ThreadPool() {
 void ThreadPool::setPriority(int priority) { // static
   ThreadPool &instance = getInstance();
   instance.wait();
-  IdentifiedThreadPool &pool = instance.getTPool();
+  PoolThreadPool &pool = instance.getTPool();
   try {
     if(priority != pool.getPriority()) {
       pool.setPriority(priority);
@@ -160,7 +160,7 @@ void ThreadPool::setPriority(int priority) { // static
 void ThreadPool::setPriorityBoost(bool disablePriorityBoost) { // static
   ThreadPool &instance = getInstance();
   instance.wait();
-  IdentifiedThreadPool &pool = instance.getTPool();
+  PoolThreadPool &pool = instance.getTPool();
   try {
     if(disablePriorityBoost != pool.getPriorityBoost()) {
       pool.setPriorityBoost(disablePriorityBoost);
@@ -176,7 +176,7 @@ void ThreadPool::executeNoWait(Runnable &job) {
   ThreadPool &instance = getInstance();
   instance.wait();  // get exclusive access to ThreadPool
   if(!instance.m_blockExecute) {
-    IdentifiedThreadPool &pool = instance.getTPool();
+    PoolThreadPool &pool = instance.getTPool();
     pool.fetchResource()->executeJob(job, NULL);
   }
   instance.notify(); // open gate for other threads
@@ -187,7 +187,7 @@ void ThreadPool::executeInParallelNoWait(RunnableArray &jobs) { // static
   ThreadPool &instance = getInstance();
   instance.wait();  // get exclusive access to ThreadPool
   if(!instance.m_blockExecute) {
-    IdentifiedThreadPool &pool = instance.getTPool();
+    PoolThreadPool &pool = instance.getTPool();
     for(size_t i = 0; i < jobs.size(); i++) {
       pool.fetchResource()->executeJob(*jobs[i], NULL);
     }
@@ -209,13 +209,13 @@ void ThreadPool::executeInParallel(RunnableArray &jobs) { // static
     throwException("ThreadPool is shutting down");
     return;
   }
-  IdentifiedThreadPool &Tpool = instance.getTPool();
+  PoolThreadPool &Tpool = instance.getTPool();
 
-  CompactArray<IdentifiedThread*> threadArray(jobs.size());
+  CompactArray<ThreadPoolThread*> threadArray(jobs.size());
   for(size_t i = 0; i < jobs.size(); i++) {
     threadArray.add(Tpool.fetchResource());
   }
-  IdentifiedResultQueue *queue = instance.getQPool().fetchResource();
+  ThreadPoolResultQueue *queue = instance.getQPool().fetchResource();
   for(size_t i = 0; i < jobs.size(); i++) {
     threadArray[i]->executeJob(*jobs[i], queue);
   }
@@ -234,7 +234,7 @@ void ThreadPool::executeInParallel(RunnableArray &jobs) { // static
   }
 }
 
-void ThreadPool::releaseThread(IdentifiedThread *thread) { // static
+void ThreadPool::releaseThread(ThreadPoolThread *thread) { // static
   ThreadPool &instance = getInstance();
   instance.wait();
   instance.getTPool().releaseResource(thread);

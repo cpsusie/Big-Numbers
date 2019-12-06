@@ -9,8 +9,7 @@ BigReal &BigReal::productMT(BigReal &result, const BigReal &x, const BigReal &y,
   const size_t YLength = sameXY ? XLength : y.getLength();
   DigitPool    *pool   = result.getDigitPool();
 
-  LOGPRODUCTRECURSION(_T("result.pool:%2d, x.len,y.len,w:(%4s,%4s,%4s)")
-                     ,pool->getId(), format1000(XLength).cstr(),format1000(YLength).cstr(), format1000(w).cstr());
+  LOGPRODUCTRECURSION(_T("result.pool:%2u, x.len,y.len,w:(%4zu,%4zu,%4s)"), pool->getId(), XLength,YLength, w);
 
   if((YLength <= s_splitLength) || (w <= (intptr_t)s_splitLength)) {
 //    _tprintf(_T("shortProd x.length:%3d y.length:%3d w:%d\n"),y.length(),w);

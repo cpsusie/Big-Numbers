@@ -1,6 +1,8 @@
 #pragma once
 
 
+#include <SynchronizedQueue.h>
+#include <Runnable.h>
 #include "TestStatistic.h"
 #include "TestInterval.h"
 

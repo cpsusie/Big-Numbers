@@ -2,7 +2,6 @@
 
 #include <Math/BigReal.h>
 #include <Runnable.h>
-#include <ResourcePoolTemplate.h>
 
 class DigitPoolArray : public CompactArray<DigitPool*> {
 };
@@ -50,7 +49,7 @@ public:
 class SubProdRunnablePool : public ResourcePoolTemplate<SubProdRunnable> {
 protected:
   SubProdRunnable *newResource(UINT id) {
-    SubProdRunnable *r = new SubProdRunnable(id, format(_T("%s(%d)"), getTypeName().cstr(), id)); TRACE_NEW(r);
+    SubProdRunnable *r = new SubProdRunnable(id, format(_T("%s(%u)"), getTypeName().cstr(), id)); TRACE_NEW(r);
     return r;
   }
 public:
@@ -61,7 +60,7 @@ public:
 class DigitPoolPool : public ResourcePoolTemplate<DigitPool> {
 protected:
   DigitPool *newResource(UINT id) {
-    DigitPool *dp = new DigitPool(id, format(_T("%s(%d)"), getTypeName().cstr(), id)); TRACE_NEW(dp);
+    DigitPool *dp = new DigitPool(id, format(_T("%s(%u)"), getTypeName().cstr(), id)); TRACE_NEW(dp);
     return dp;
   }
 public:
@@ -72,7 +71,7 @@ public:
 class LockedDigitPoolPool : public ResourcePoolTemplate<DigitPoolWithLock> {
 protected:
   DigitPoolWithLock *newResource(UINT id) {
-    DigitPoolWithLock *dp = new DigitPoolWithLock(id, format(_T("%s(%d)"), getTypeName().cstr(), id)); TRACE_NEW(dp);
+    DigitPoolWithLock *dp = new DigitPoolWithLock(id, format(_T("%s(%u)"), getTypeName().cstr(), id)); TRACE_NEW(dp);
     return dp;
   }
 

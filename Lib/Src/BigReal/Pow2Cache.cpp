@@ -1,5 +1,6 @@
 #include "pch.h"
 #include <DebugLog.h>
+#include <CompactHashMap.h>
 #include <ByteFile.h>
 #include <CompressFilter.h>
 #include <SingletonFactory.h>

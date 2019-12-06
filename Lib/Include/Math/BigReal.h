@@ -1,15 +1,11 @@
 #pragma once
 
 #include <MyUtil.h>
-#include <Thread.h>
 #include <FastSemaphore.h>
-#include <CompactStack.h>
-#include <CompactHashMap.h>
-#include <SynchronizedQueue.h>
+#include <ResourcePoolTemplate.h>
 #include <StreamParameters.h>
 #include <ByteStream.h>
 #include <Packer.h>
-#include <HashMap.h>
 #include <Random.h>
 #include "Double80.h"
 #include "Real.h"
@@ -208,7 +204,7 @@ class ConstBigReal;
 
 class BigRealResource : public IdentifiedResource {
 public:
-  BigRealResource(int id) : IdentifiedResource(id) {
+  BigRealResource(UINT id) : IdentifiedResource(id) {
   }
 };
 
@@ -252,6 +248,9 @@ public:
   DigitPool(int id, const String &name, size_t initialDigitcount = 0);
   virtual ~DigitPool();
 
+  inline UINT getId() const {
+    return getResourceId();
+  }
   // Set name. Return old name
   String setName(const String &name) {
     const String old = m_name;
@@ -1376,7 +1375,7 @@ public:
   inline DigitPool *getDigitPool() const {
     return &m_digitPool;
   }
-  inline int getPoolId() const {
+  inline UINT getPoolId() const {
     return m_digitPool.getId();
   }
   ULONG hashCode() const;
@@ -1706,6 +1705,7 @@ private:
   DigitPool *fetchDPool(bool withLock, BYTE initFlags);
   // Do the real release...no wait/notify
   void releaseDPool(DigitPool *pool);
+  static void setTerminateAllPoolsInUse(bool terminate);
   BigRealResourcePool();
   ~BigRealResourcePool();
   BigRealResourcePool(const BigRealResourcePool &src);            // not implemented
@@ -1718,7 +1718,13 @@ public:
   static void                  fetchDigitPoolArray(        DigitPoolArray &a, UINT count, bool withLock = false, BYTE initFlags = BR_MUTABLE);
   static void                  releaseDigitPoolArray(      DigitPoolArray &a);
   // call terminatePoolCalculation() for all DigitPools in use
-  static void                  terminateAllPoolCalculations();
+  static inline void           terminateAllPoolCalculations() {
+    setTerminateAllPoolsInUse(true);
+  }
+  // call resetPoolCalculation() for all DigitPools in use
+  static inline void            resetAllPoolCalculations() {
+    setTerminateAllPoolsInUse(false);
+  }
 
   static String toString(); // for debug
   // Sets the priority for all running and future running threads
@@ -1732,7 +1738,7 @@ void logProductRecursion(UINT level, const TCHAR *method, _In_z_ _Printf_format_
 #define LOGPRODUCTRECURSION(...) logProductRecursion(level, __TFUNCTION__, __VA_ARGS__)
 #else
 #define LOGPRODUCTRECURSION(...)
-#endif TRACEPRODUCTRECURSION
+#endif // TRACEPRODUCTRECURSION
 
 // Old version sign(x) * (|x| - floor(|x|))
 BigReal oldFraction(const BigReal &x);

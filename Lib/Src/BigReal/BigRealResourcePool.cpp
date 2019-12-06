@@ -165,13 +165,18 @@ void BigRealResourcePool::releaseDPool(DigitPool *pool) {
   }
 }
 
-void BigRealResourcePool::terminateAllPoolCalculations() { // // static
+void BigRealResourcePool::setTerminateAllPoolsInUse(bool terminate) { // static
   BigRealResourcePool &instance = getInstance();
   instance.wait();
-  DigitPoolPool &pp = *instance.m_digitPoolPool;
-  Iterator<DigitPool*> it = pp.getIterator(&pp.getActiveIdSet());
-  while(it.hasNext()) {
-    it.next()->terminatePoolCalculation();
+  DigitPoolPool &dpp = *instance.m_digitPoolPool;
+  Iterator<DigitPool*> it = dpp.getIterator(&dpp.getActiveIdSet());
+  while (it.hasNext()) {
+    DigitPool *dp = it.next();
+    if(terminate) {
+      dp->terminatePoolCalculation();
+    } else {
+      dp->resetPoolCalculation();
+    }
   }
   instance.notify();
 }

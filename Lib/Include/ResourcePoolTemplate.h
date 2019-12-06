@@ -3,14 +3,25 @@
 #include "CompactStack.h"
 #include "AbstractFilterArrayIterator.h"
 
+class IdentifiedResource {
+private:
+  const UINT m_id;
+public:
+  IdentifiedResource(UINT id) : m_id(id) {
+  }
+  inline UINT getResourceId() const {
+    return m_id;
+  }
+};
+
 template<typename T> class ResourcePoolTemplate : public CompactArray<T*> {
 private:
-  CompactStack<int> m_freeId;
-  const String      m_typeName;
+  CompactStack<UINT> m_freeId;
+  const String       m_typeName;
 protected:
-  virtual void allocateNewResources(size_t count) {
-    int id = (int)size();
-    for (size_t i = 0; i < count; i++, id++) {
+  virtual void allocateNewResources(UINT count) {
+    UINT id = (UINT)size();
+    for(size_t i = 0; i < count; i++, id++) {
       T *r = newResource(id);
       m_freeId.push(id);
       add(r);
@@ -27,7 +38,7 @@ public:
     if(m_freeId.isEmpty()) {
       allocateNewResources(5);
     }
-    const int index = m_freeId.pop();
+    const UINT index = m_freeId.pop();
     return (*this)[index];
   }
 
@@ -35,7 +46,7 @@ public:
     return m_typeName;
   }
   void releaseResource(T *resource) {
-    m_freeId.push(resource->getId());
+    m_freeId.push(resource->getResourceId());
   }
 
   void deleteAll() {
@@ -46,7 +57,7 @@ public:
     m_freeId.clear();
   }
   BitSet getAllocatedIdSet() const {
-    if (size() == 0) {
+    if(size() == 0) {
       return BitSet(8);
     } else {
       BitSet result(size());
@@ -54,12 +65,12 @@ public:
     }
   }
   BitSet getFreeIdSet() const {
-    const int n = m_freeId.getHeight();
+    const UINT n = m_freeId.getHeight();
     if(n == 0) {
       return BitSet(8);
     } else {
       BitSet result(size());
-      for(int i = 0; i < n; i++) {
+      for(UINT i = 0; i < n; i++) {
         result.add(m_freeId.top(i));
       }
       return result;

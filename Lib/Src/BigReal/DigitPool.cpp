@@ -130,7 +130,7 @@ DigitPool::~DigitPool() {
     s_totalAllocatedPageCount -= count;
   }
   if(s_dumpCountWhenDestroyed) {
-    debugLog(_T("DigitPool(%3d):%-10s:PageCount:%3d, DigitCount:%10s\n")
+    debugLog(_T("DigitPool(%3u):%-10s:PageCount:%3d, DigitCount:%10s\n")
             ,getId(), getName().cstr(), count, format1000((INT64)count*DIGITPAGESIZE).cstr());
   }
 }

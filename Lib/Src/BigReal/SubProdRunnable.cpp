@@ -17,9 +17,9 @@ UINT SubProdRunnable::run() {
   setThreadDescription(format(_T("Multiplier(level %d"), m_level));
 #endif // _DEBUG
 
-//  const int id = BigRealResource::getId();
-//  const int ypos = id + 20;
-//  Console::printf(100,ypos, _T("Thread[%d]:request:%4d lvl:%2d"), id, m_requestCount, m_level);
+//  const UINT id = __super::getId();
+//  const UINT ypos = id + 20;
+//  Console::printf(100,ypos, _T("Thread[%u]:request:%4d lvl:%2d"), id, m_requestCount, m_level);
   BigReal::product(*m_result,*m_x, *m_y, *m_f, m_level);
   return 0;
 }

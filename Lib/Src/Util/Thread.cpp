@@ -11,9 +11,20 @@
 DEFINECLASSNAME(Thread);
 
 #ifdef TRACE_THREAD
-#define TRACE(...) debugLog(__VA_ARGS__)
+void threadTrace(const TCHAR *function, const TCHAR *format, ...) {
+  va_list argptr;
+  va_start(argptr, format);
+  String msg = vformat(format, argptr);
+  va_end(argptr);
+  debugLog(_T("%-20s:%s\n"), function, msg.cstr());
+}
+#define THREAD_TRACE(format,...) threadTrace(__TFUNCTION__,_T(format), __VA_ARGS__)
+#define THREAD_ENTER ENTERFUNC
+#define THREAD_LEAVE LEAVEFUNC
 #else
-#define TRACE(...)
+#define THREAD_TRACE(...)
+#define THREAD_ENTER
+#define THREAD_LEAVE
 #endif
 
 class DefaultExceptionHandler : public UncaughtExceptionHandler {
@@ -22,7 +33,7 @@ public:
 };
 
 void DefaultExceptionHandler::uncaughtException(Thread &thread, Exception &e) {
-  String errorText = format(_T("Uncaught Exception in thread %s(%lu)\n%s\n"), thread.getDescription().cstr(), thread.getId(), e.what());
+  String errorText = format(_T("Uncaught Exception in thread %s(%lu)\n%s\n"), thread.getDescription().cstr(), thread.getThreadId(), e.what());
   if(isatty(stderr)) {
     _ftprintf(stderr, _T("\n%s\n"), errorText.cstr());
   } else {
@@ -47,7 +58,7 @@ private:
   void killDemonThreads();
   inline void blockNewThreads() {
     m_lock.wait();
-    TRACE(_T("%s:send notification THR_SHUTTINGDDOWN\n"), __TFUNCTION__);
+    THREAD_TRACE("send notification THR_SHUTTINGDDOWN");
     setProperty(THR_SHUTTINGDDOWN, m_blockNewThreads, true);
     m_lock.notify();
   }
@@ -81,28 +92,29 @@ public:
 typedef Entry<CompactUIntKeyType, Thread*> ThreadMapEntry;
 
 ThreadMap::ThreadMap() : m_blockNewThreads(false) {
+  THREAD_ENTER;
   Thread::s_propertySource = this;
   Thread::s_defaultUncaughtExceptionHandler = new DefaultExceptionHandler; TRACE_NEW(Thread::s_defaultUncaughtExceptionHandler);
-  TRACE(_T("ThreadMap created\n"));
+  THREAD_LEAVE
 }
 
 ThreadMap::~ThreadMap() { // declared virtual in Collection
-  TRACE(_T("%s called\n"),__TFUNCTION__);
+  THREAD_ENTER;
   blockNewThreads();
   killDemonThreads();
-  TRACE(_T("%s:waiting for activeisZero\n"), __TFUNCTION__);
+  THREAD_TRACE("waiting for activeisZero");
   m_activeIsZero.wait();
-  TRACE(_T("%s:activeisZero passed\n"), __TFUNCTION__);
+  THREAD_TRACE("activeisZero passed");
   SAFEDELETE(Thread::s_defaultUncaughtExceptionHandler);
   Thread::s_propertySource = NULL;
-  TRACE(_T("ThreadMap deleted\n"));
+  THREAD_LEAVE;
 }
 
 void ThreadMap::incrActiveCount() {
   m_activeCountLock.wait();
   if(Thread::s_activeCount++ == 0) {
     m_activeIsZero.wait();
-    TRACE(_T("%s:send notification THR_THREADSRUNNING=true\n"), __TFUNCTION__);
+    THREAD_TRACE("send notification THR_THREADSRUNNING=true");
     setProperty(THR_THREADSRUNNING, m_threadsRunning, true);
   }
   m_activeCountLock.notify();
@@ -111,7 +123,7 @@ void ThreadMap::incrActiveCount() {
 void ThreadMap::decrActiveCount() {
   m_activeCountLock.wait();
   if(--Thread::s_activeCount == 0) {
-    TRACE(_T("%s:send notification THR_THREADSRUNNING=false\n"),__TFUNCTION__);
+    THREAD_TRACE("send notification THR_THREADSRUNNING=false");
     setProperty(THR_THREADSRUNNING, m_threadsRunning, false);
     m_activeIsZero.notify();
   }
@@ -125,8 +137,8 @@ bool ThreadMap::addThread(Thread *thread) {
     throwException("No more threads can be started. Program is exitting");
   }
   size_t count = size();
-  const bool result = put(thread->m_threadId, thread);
-  TRACE(_T("%s(%d)(res=%s). size=%zu\n"), __TFUNCTION__, thread->m_threadId, boolToStr(result), size());
+  const bool result = put(thread->getThreadId(), thread);
+  THREAD_TRACE("(%u)(res=%s). size=%zu",thread->getThreadId(), boolToStr(result), size());
   m_lock.notify();
   return result;
 }
@@ -134,8 +146,8 @@ bool ThreadMap::addThread(Thread *thread) {
 bool ThreadMap::removeThread(Thread *thread) {
   m_lock.wait();
   size_t count = size();
-  const bool result = remove(thread->getId());
-  TRACE(_T("%s(%d)(res=%s). size=%zu\n"), __TFUNCTION__, thread->m_threadId, boolToStr(result), size());
+  const bool result = remove(thread->getThreadId());
+  THREAD_TRACE("(%u)(res=%s). size=%zu", thread->getThreadId(), boolToStr(result), size());
   m_lock.notify();
   return result;
 }
@@ -167,14 +179,14 @@ void ThreadMap::killDemonThreads() {
   const size_t n = demonArray.size();
   for(size_t i = 0; i < n; i++) {
     Thread *t = demonArray[i];
-    TRACE(_T("%s:Terminating demonthread(%d)\n"), __TFUNCTION__,t->getId());
+    THREAD_TRACE("Terminating demonthread(%d)", t->getThreadId());
     if(TerminateThread(t->m_threadHandle, 0)) {
       decrActiveCount();
       terminateCount++;
     }
   }
   if(terminateCount != n) {
-    TRACE(_T("Cannot terminate all demon threads\n"));
+    THREAD_TRACE("Cannot terminate all demon threads");
   }
   m_lock.notify();
 }
@@ -187,6 +199,7 @@ static UINT threadStartup(Thread *thread) {
     _set_se_translator(exceptionTranslator);
     try {
       Thread::getMap().incrActiveCount();
+      thread->m_terminated.wait();
       result = thread->run();
       thread->m_terminated.notify();
       Thread::getMap().decrActiveCount();
@@ -237,15 +250,16 @@ void Thread::releaseMap() { // static
   threadMapRequest(REQUEST_RELEASE);
 }
 
-Thread::Thread(const String &description, Runnable &target, size_t stackSize) : m_terminated(0) {
+Thread::Thread(const String &description, Runnable &target, size_t stackSize) {
   init(description, &target, stackSize);
 }
 
-Thread::Thread(const String &description, size_t stackSize) : m_terminated(0) {
+Thread::Thread(const String &description, size_t stackSize) {
   init(description, NULL, stackSize);
 }
 
 void Thread::init(const String &description, Runnable *target, size_t stackSize) {
+  THREAD_ENTER;
   m_target                   = target;
   m_isDemon                  = false;
   m_uncaughtExceptionHandler = NULL;
@@ -254,17 +268,20 @@ void Thread::init(const String &description, Runnable *target, size_t stackSize)
     throwMethodLastErrorOnSysCallException(s_className, _T("CreateThread"));
   }
   setDescription(description);
-  TRACE(_T("Thread(%u) desc=%s, created\n"), m_threadId, description.cstr());
+  THREAD_TRACE("Thread(%u) desc=%s, created", m_threadId, description.cstr());
   getMap().addThread(this);
+  THREAD_LEAVE;
 }
 
 Thread::~Thread() {
+  THREAD_ENTER;
   if(!m_isDemon) {
     m_terminated.wait();
   }
   getMap().removeThread(this);
   CloseHandle(m_threadHandle);
-  TRACE(_T("Thread(%u) deleted\n"), m_threadId);
+  THREAD_TRACE("Thread(%u) deleted", m_threadId);
+  THREAD_LEAVE;
 }
 
 void Thread::handleUncaughtException(Exception &e) {

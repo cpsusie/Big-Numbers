@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <Thread.h>
 #include <BitSet.h>
 #include <CPUInfo.h>
 #include <DebugLog.h>

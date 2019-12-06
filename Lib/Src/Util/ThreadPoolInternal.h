@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ThreadPool.h>
+#include <ResourcePoolTemplate.h>
 #include <Thread.h>
 #include <SynchronizedQueue.h>
 
@@ -11,85 +12,13 @@
 #define TRACE(...)
 #endif
 
-template <class T> class IdentifiedResourcePool : public CompactArray<T*> {
+class ThreadPoolResultQueue : private SynchronizedQueue<String*>, public IdentifiedResource {
 private:
-  CompactStack<int> m_freeId;
-protected:
-  virtual T   *newResource(UINT id) = NULL;
-
-  virtual void allocateNewResources(size_t count) {
-    UINT id = (UINT)size();
-    for(size_t i = 0; i < count; i++, id++) {
-      m_freeId.push(id);
-      T *r = newResource(id);
-      add(r);
-    }
-  }
+  ThreadPoolResultQueue(const ThreadPoolResultQueue &src);            // not implemented
+  ThreadPoolResultQueue &operator=(const ThreadPoolResultQueue &src); // not implemented
+  const String m_name;
 public:
-  virtual ~IdentifiedResourcePool() {
-    deleteAll();
-  }
-  T *fetchResource() {
-    if(m_freeId.isEmpty()) {
-      allocateNewResources(5);
-    }
-    const int index = m_freeId.pop();
-    return (*this)[index];
-  }
-
-  void releaseResource(const IdentifiedResource *resource) {
-    m_freeId.push(resource->getId());
-  }
-
-  void deleteAll() {
-    for(size_t i = 0; i < size(); i++) {
-      T *r = (*this)[i];
-      SAFEDELETE(r);
-    }
-    clear();
-    m_freeId.clear();
-  }
-  BitSet getAllocatedIdSet() const {
-    if(size() == 0) {
-      return BitSet(8);
-    } else {
-      BitSet result(size());
-      return result.invert();
-    }
-  }
-  BitSet getFreeIdSet() const {
-    const int n = m_freeId.getHeight();
-    if(n == 0) {
-      return BitSet(8);
-    } else {
-      BitSet result(size());
-      for(int i = 0; i < n; i++) {
-        result.add(m_freeId.top(i));
-      }
-      return result;
-    }
-  }
-  BitSet getActiveIdSet() const {
-    return getAllocatedIdSet() - getFreeIdSet();
-  }
-
-  String toString() const {
-    const BitSet allocatedIdSet = getAllocatedIdSet();
-    const BitSet freeIdSet = getFreeIdSet();
-    return format(_T("Free:%s. In use:%s")
-                 ,freeIdSet.toString().cstr()
-                 ,(allocatedIdSet - freeIdSet).toString().cstr()
-    );
-  }
-};
-
-class IdentifiedResultQueue : private SynchronizedQueue<String*>, public IdentifiedResource {
-private:
-  IdentifiedResultQueue(const IdentifiedResultQueue &src);            // not implemented
-  IdentifiedResultQueue &operator=(const IdentifiedResultQueue &src); // not implemented
-
-public:
-  IdentifiedResultQueue(int id) : IdentifiedResource(id) {
+  ThreadPoolResultQueue(UINT id, const String &name) : IdentifiedResource(id), m_name(name) {
   }
   void waitForResults(size_t expectedResultCount);
   void putAllDone() {
@@ -98,34 +27,40 @@ public:
   void putError(const String &s) {
     __super::put(new String(s));
   }
-};
-
-class IdentifiedResultQueuePool : public IdentifiedResourcePool<IdentifiedResultQueue> {
-protected:
-  IdentifiedResultQueue   *newResource(UINT id) {
-    IdentifiedResultQueue *q = new IdentifiedResultQueue(id); TRACE_NEW(q);
-    return q;
+  const String &getName() const {
+    return m_name;
   }
 };
 
-class IdentifiedThread : public Thread, public IdentifiedResource {
+class ThreadPoolThread : public Thread, public IdentifiedResource {
 private:
-  IdentifiedThreadPool   &m_pool;
+  PoolThreadPool         &m_pool;
   Runnable               *m_job;
-  IdentifiedResultQueue  *m_resultQueue;
+  ThreadPoolResultQueue  *m_resultQueue;
   FastSemaphore           m_execute;
   int                     m_requestCount;
   std::atomic<BYTE>       m_flags;
 public:
-  IdentifiedThread(IdentifiedThreadPool *pool, int id);
-  ~IdentifiedThread();
+  ThreadPoolThread(PoolThreadPool *pool, UINT id, const String &name);
+  ~ThreadPoolThread();
   UINT run();
-  void executeJob(Runnable &job, IdentifiedResultQueue *resultQueue);
+  void executeJob(Runnable &job, ThreadPoolResultQueue *resultQueue);
   void requestTerminate();
 };
 
-class IdentifiedThreadPool : public IdentifiedResourcePool<IdentifiedThread> {
-  friend class IdentifiedThread;
+class ResultQueuePool : public ResourcePoolTemplate<ThreadPoolResultQueue> {
+protected:
+  ThreadPoolResultQueue *newResource(UINT id) {
+    ThreadPoolResultQueue *q = new ThreadPoolResultQueue(id, format(_T("%s(%u)"), getTypeName().cstr(), id)); TRACE_NEW(q);
+    return q;
+  }
+public:
+  ResultQueuePool() : ResourcePoolTemplate<ThreadPoolResultQueue>("PoolResultQueue") {
+  }
+};
+
+class PoolThreadPool : public ResourcePoolTemplate<ThreadPoolThread> {
+  friend class ThreadPoolThread;
 private:
   int               m_threadPriority;
   bool              m_disablePriorityBoost;
@@ -146,12 +81,12 @@ private:
   }
 
 protected:
-  IdentifiedThread *newResource(UINT id) {
-    IdentifiedThread *t = new IdentifiedThread(this, id); TRACE_NEW(t);
+  ThreadPoolThread *newResource(UINT id) {
+    ThreadPoolThread *t = new ThreadPoolThread(this, id, format(_T("%s(%u)"), getTypeName().cstr(), id)); TRACE_NEW(t);
     return t;
   }
 
-  void allocateNewResources(size_t count) {
+  void allocateNewResources(UINT count) {
     const size_t oldSize = size();
     __super::allocateNewResources(count);
     for(size_t i = oldSize; i < size(); i++) {
@@ -161,11 +96,11 @@ protected:
     }
   }
 public:
-  IdentifiedThreadPool() : m_activeCount(0) {
+  PoolThreadPool() : ResourcePoolTemplate<ThreadPoolThread>("PoolThread"), m_activeCount(0) {
     m_threadPriority       = THREAD_PRIORITY_NORMAL;
     m_disablePriorityBoost = false;
   }
-  ~IdentifiedThreadPool() {
+  ~PoolThreadPool() {
     TRACE(_T("%s called. activeCount=%d wait until 0\n"), __TFUNCTION__, m_activeCount);
     m_activeIs0.wait();
     TRACE(_T("%s passed zero check. activeCount=%d. Now deleting threads\n"), __TFUNCTION__, m_activeCount);

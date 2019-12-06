@@ -10,17 +10,17 @@ static String flagsToString(BYTE flags) {
   String result;
 #define addFlag(f) if(flags & THR_##f) { result += _T(" "); result += _T(#f); }
   addFlag(BUSY)
-    addFlag(REQUESTTERMINATE)
-    addFlag(TERMINATED)
-    return result;
+  addFlag(REQUESTTERMINATE)
+  addFlag(TERMINATED)
+  return result;
 #undef addFlag
 }
 #define FLGSTR() flagsToString(m_flags).cstr()
 #endif
 
 
-IdentifiedThread::IdentifiedThread(IdentifiedThreadPool *pool, int id)
-: Thread(format(_T("TPT%03d"), id))
+ThreadPoolThread::ThreadPoolThread(PoolThreadPool *pool, UINT id, const String &name)
+: Thread(name)
 , IdentifiedResource(id)
 , m_pool(           *pool)
 , m_resultQueue(     NULL)
@@ -34,18 +34,18 @@ IdentifiedThread::IdentifiedThread(IdentifiedThreadPool *pool, int id)
   TRACE(_T("%s(%d) done\n"), __TFUNCTION__,id);
 }
 
-IdentifiedThread::~IdentifiedThread() {
-  TRACE(_T("%s(id=%d):state:%s\n"), __TFUNCTION__,IdentifiedResource::getId(), FLGSTR());
+ThreadPoolThread::~ThreadPoolThread() {
+  TRACE(_T("%s(id=%d):state:%s\n"), __TFUNCTION__,getResourceId(), FLGSTR());
 }
 
-void IdentifiedThread::requestTerminate() {
+void ThreadPoolThread::requestTerminate() {
   if((m_flags & THR_REQUESTTERMINATE) == 0) {
     m_flags |= THR_REQUESTTERMINATE;
     if((m_flags & THR_BUSY) == 0) m_execute.notify();
   }
 }
 
-UINT IdentifiedThread::run() {
+UINT ThreadPoolThread::run() {
 //#ifdef _DEBUG
   m_pool.incrActiveCount();
   const String oldDesc = getDescription();
@@ -64,7 +64,7 @@ UINT IdentifiedThread::run() {
     } catch(Exception e) {
       if(m_resultQueue) m_resultQueue->putError(e.what()); // indicating an error
     } catch(...) {
-      if(m_resultQueue) m_resultQueue->putError(format(_T("Unknown exception received in IdentifiedThread %s"), getDescription().cstr()));
+      if(m_resultQueue) m_resultQueue->putError(format(_T("Unknown exception received in ThreadPoolThread %s"), getDescription().cstr()));
     }
     m_resultQueue = NULL;
     m_flags &= ~THR_BUSY;
@@ -80,13 +80,13 @@ UINT IdentifiedThread::run() {
   return 0;
 }
 
-void IdentifiedThread::executeJob(Runnable &job, IdentifiedResultQueue *resultQueue) {
+void ThreadPoolThread::executeJob(Runnable &job, ThreadPoolResultQueue *resultQueue) {
   m_job         = &job;
   m_resultQueue = resultQueue;
   m_execute.notify();
 }
 
-void IdentifiedResultQueue::waitForResults(size_t expectedResultCount) {
+void ThreadPoolResultQueue::waitForResults(size_t expectedResultCount) {
   String errorMsg;
   bool gotException = false;
   for(;expectedResultCount > 0; expectedResultCount--) {

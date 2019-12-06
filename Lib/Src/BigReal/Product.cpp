@@ -70,7 +70,7 @@ BigReal &BigReal::product(BigReal &result, const BigReal &x, const BigReal &y, c
     w = min(w2, w1);
   }
 
-  LOGPRODUCTRECURSION(_T("result.pool:%2d, x.len,y.len,w:(%4d,%4d,%4d)"),pool->getId(), XLength,YLength, w);
+  LOGPRODUCTRECURSION(_T("result.pool:%2d, x.len,y.len,w:(%4zu,%4zu,%4zd)"),pool->getResouceId(), XLength,YLength, w);
 
   if((YLength <= s_splitLength) || (w <= (intptr_t)s_splitLength)) {
 //    _tprintf(_T("shortProd X.length:%3d Y.length:%3d w:%d\n"),Y.length(),w);

@@ -21,17 +21,6 @@ public:
   virtual void uncaughtException(Thread &thread, Exception &e) = 0;
 };
 
-class IdentifiedResource {
-private:
-  const int m_id;
-public:
-  IdentifiedResource(int id) : m_id(id) {
-  }
-  inline int getId() const {
-    return m_id;
-  }
-};
-
 typedef enum {
   THR_SHUTTINGDDOWN  // bool
  ,THR_THREADSRUNNING // bool
@@ -94,9 +83,6 @@ public:
 
   UINT run();
 
-  inline DWORD getId() const {
-    return m_threadId;
-  }
   inline void setDemon(bool on) {
     m_isDemon = on;
   }
