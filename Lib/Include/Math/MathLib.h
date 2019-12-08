@@ -5,6 +5,8 @@
 template <class Domain, class Range> class FunctionTemplate {
 public:
   virtual Range operator()(const Domain &x) = 0;
+  virtual ~FunctionTemplate() {
+  }
 };
 
 typedef FunctionTemplate<Real,Real>         Function;
