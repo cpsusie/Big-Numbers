@@ -157,7 +157,8 @@ void BigRational::init(const BigInt &numerator, const BigInt &denominator) {
     setToZero();
   } else {
     DigitPool *gcdPool = BigRealResourcePool::fetchDigitPool();
-    { m_num   = numerator;
+    try {
+      m_num = numerator;
       m_den = denominator;
       if(m_den.isNegative()) { // Negative numbers are represented with negative numerator and positive denominator
         m_num.changeSign();
@@ -171,6 +172,9 @@ void BigRational::init(const BigInt &numerator, const BigInt &denominator) {
         m_den /= gcd;
       }
       if(neg) m_num.flipSign();
+    } catch(...) {
+      BigRealResourcePool::releaseDigitPool(gcdPool);
+      throw;
     }
     BigRealResourcePool::releaseDigitPool(gcdPool);
   }
