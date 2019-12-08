@@ -243,11 +243,11 @@ private:
     try {
       newXtransform = allocateTransformation(NumberInterval<T>(from.getBottomLeft().x,from.getBottomRight().x)
                                             ,NumberInterval<T>(to.getBottomLeft().x  ,to.getBottomRight().x)
-                                            ,xScale);
+                                            ,xScale); TRACE_NEW(newXtransform)
 
       newYtransform = allocateTransformation(NumberInterval<T>(from.getTopLeft().y, from.getBottomLeft().y)
                                             ,NumberInterval<T>(to.getTopLeft().y  , to.getBottomLeft().y  )
-                                            ,yScale);
+                                            ,yScale); TRACE_NEW(newYtransform)
       cleanup();
       m_xtransform = newXtransform;
       m_ytransform = newYtransform;
