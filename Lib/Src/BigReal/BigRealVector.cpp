@@ -16,28 +16,18 @@ void BigRealVector::invalidDimensionError(const TCHAR *method, const BigRealVect
                        ,s_className, method, getDimensionString().cstr(), rhs.getDimensionString().cstr());
 }
 
-void BigRealVector::init(size_t dim, bool initialize, UINT digits) {
-  VectorTemplate<BigReal>::init(dim, initialize);
-  checkPrecision(digits);
-  m_digits = digits;
+BigRealVector::BigRealVector(size_t dim, UINT digits) : VectorTemplate<BigReal>(dim), m_digits(digits) {
+  checkPrecision(m_digits);
 }
 
-BigRealVector::BigRealVector(size_t dim, UINT digits) {
-  init(dim, true, digits);
+BigRealVector::BigRealVector(const BigRealVector &v) : VectorTemplate<BigReal>(v), m_digits(v.m_digits) {
+  checkPrecision(m_digits);
 }
 
-BigRealVector::BigRealVector(const BigRealVector &v) {
-  init(v.getDimension(), false, v.m_digits);
-  for(size_t i = 0; i < getDimension(); i++) {
-    (*this)[i] = v[i];
-  }
-}
-
-BigRealVector::BigRealVector(const VectorTemplate<BigReal> &v, UINT digits) {
-  init(v.getDimension(), false, digits);
-  for(size_t i = 0; i < getDimension(); i++) {
-    (*this)[i] = v[i];
-  }
+BigRealVector::BigRealVector(const VectorTemplate<BigReal> &v, UINT digits)
+  : VectorTemplate<BigReal>(v), m_digits(digits)
+{
+  checkPrecision(m_digits);
 }
 
 UINT BigRealVector::setPrecision(UINT digits) {
@@ -77,7 +67,7 @@ BigReal operator*(const BigRealVector &lts, const BigRealVector& rhs) {
   const size_t n      = lts.getDimension();
   const UINT   digits = min(lts.getPrecision(), rhs.getPrecision());
 
-  if (n != rhs.getDimension()) lts.invalidDimensionError(__TFUNCTION__, rhs);
+  if(n != rhs.getDimension()) lts.invalidDimensionError(__TFUNCTION__, rhs);
 
   BigReal sum = 0;
   for(size_t i = 0; i < n; i++) {
@@ -90,7 +80,7 @@ BigRealVector operator+(const BigRealVector& lts, const BigRealVector& rhs) {
   const size_t n      = lts.getDimension();
   const UINT   digits = min(lts.getPrecision(), rhs.getPrecision());
 
-  if (n != rhs.getDimension()) lts.invalidDimensionError(__TFUNCTION__, rhs);
+  if(n != rhs.getDimension()) lts.invalidDimensionError(__TFUNCTION__, rhs);
 
   BigRealVector result(n, digits);
   for(size_t i = 0; i < n; i++) {
@@ -103,7 +93,7 @@ BigRealVector operator-(const BigRealVector& lts, const BigRealVector& rhs) {
   const size_t n      = lts.getDimension();
   const UINT   digits = min(lts.getPrecision(), rhs.getPrecision());
 
-  if (n != rhs.getDimension()) lts.invalidDimensionError(__TFUNCTION__, rhs);
+  if(n != rhs.getDimension()) lts.invalidDimensionError(__TFUNCTION__, rhs);
 
   BigRealVector result(n, digits);
   for(size_t i = 0; i < n; i++) {
@@ -134,7 +124,7 @@ BigRealVector &BigRealVector::operator+=(const BigRealVector &rhs) {
   const size_t n      = getDimension();
   const UINT   digits = min(m_digits, rhs.getPrecision());
 
-  if (n != rhs.getDimension()) invalidDimensionError(__TFUNCTION__, rhs);
+  if(n != rhs.getDimension()) invalidDimensionError(__TFUNCTION__, rhs);
 
   for(size_t i = 0; i < n; i++) {
     BigReal &v = (*this)[i];
@@ -148,7 +138,7 @@ BigRealVector &BigRealVector::operator-=(const BigRealVector &rhs) {
   const size_t n      = getDimension();
   const UINT   digits = min(m_digits, rhs.getPrecision());
 
-  if (n != rhs.getDimension()) invalidDimensionError(__TFUNCTION__, rhs);
+  if(n != rhs.getDimension()) invalidDimensionError(__TFUNCTION__, rhs);
 
   for(size_t i = 0; i < n; i++) {
     BigReal &v = (*this)[i];
