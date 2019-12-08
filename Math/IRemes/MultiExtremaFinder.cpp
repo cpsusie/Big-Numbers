@@ -141,7 +141,7 @@ MultiExtremaFinder::~MultiExtremaFinder() {
 
 void MultiExtremaFinder::findAllExtrema() {
   m_resultArray.setCapacity(m_paramArray.getCapacity());
-  const int pCount = getProcessorCount();
+  const int pCount = getProcessorCount() + 4;
   m_jobArray.setCapacity(pCount+1);
   for(int i = 0; i < pCount; i++) {
     ExtremumFinder *f = new ExtremumFinder(this,i); TRACE_NEW(e);

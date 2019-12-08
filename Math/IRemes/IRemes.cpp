@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <DebugLog.h>
 #include "IRemes.h"
 #include "IRemesDlg.h"
 
@@ -35,8 +36,7 @@ BOOL CIRemesApp::InitInstance() {
     if(nResponse == IDOK) {
     } else if(nResponse == IDCANCEL) {
     }
-  }
-  catch (Exception e) {
+  } catch (Exception e) {
     showException(e);
   }
 

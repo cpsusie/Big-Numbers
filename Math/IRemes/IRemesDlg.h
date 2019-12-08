@@ -2,6 +2,7 @@
 
 #include <MFCUtil/CoordinateSystem/CoordinateSystem.h>
 #include "Debugger.h"
+#include "DebugInfo.h"
 #include "ListBoxDiffMarks.h"
 
 class DynamicTargetFunction : public RemesTargetFunction {
@@ -38,149 +39,8 @@ typedef enum {
  ,RUNMENU_PAUSED
 } RunMenuState;
 
-class CoefWindowData {
-private:
-  void initData(const Remes &r) {
-    m_M = r.getM(); m_K = r.getK(); m_coefStrings = r.getCoefficientStringArray();
-  }
-public:
-  int m_M, m_K;
-  StringArray m_coefStrings;
-  CoefWindowData() {}
-  CoefWindowData(const Remes &r) {
-    initData(r);
-  }
-  CoefWindowData &operator=(const Remes &r) {
-    initData(r);
-    return *this;
-  }
-};
-
-class MonitorVariables {
-private:
-  mutable FastSemaphore   m_lock, m_approxLock;
-  CoefWindowData          m_coefWinData;
-  ExtremaStringArray      m_extrStrArray;
-  String                  m_searchEString, m_stateString, m_warning, m_error;
-  RationalFunction        m_lastApprox;
-  double                  m_maxError;
-  Point2DArray            m_errorPointArray;
-  int                     m_coefVectorIndexForPointArray;
-public:
-  MonitorVariables() : m_coefVectorIndexForPointArray(-1) {
-  }
-  void setCoefWinData(const CoefWindowData &src) {
-    m_lock.wait();
-    m_coefWinData = src;
-    m_lock.notify();
-  }
-  void getCoefWinData(CoefWindowData &dst) const {
-    m_lock.wait();
-    dst = m_coefWinData;
-    m_lock.notify();
-  }
-
-  void setExtremaStringArray(const ExtremaStringArray &src) {
-    m_lock.wait();
-    m_extrStrArray = src;
-    m_lock.notify();
-  }
-  void getExtremaStringArray(ExtremaStringArray &dst) const {
-    m_lock.wait();
-    dst = m_extrStrArray;
-    m_lock.notify();
-  }
-  void setSearchEString(const String &src) {
-    m_lock.wait();
-    m_searchEString = src;
-    m_lock.notify();
-  }
-  void getSearchEString(String &dst) const {
-    m_lock.wait();
-    dst = m_searchEString;
-    m_lock.notify();
-  }
-  void setStateString(const String &src) {
-    m_lock.wait();
-    m_stateString = src;
-    m_lock.notify();
-  }
-  void getStateString(String &dst) const {
-    m_lock.wait();
-    dst = m_stateString;
-    m_lock.notify();
-  }
-  void setErrorString(const String &src) {
-    m_lock.wait();
-    m_error = src;
-    m_lock.notify();
-  }
-  void getErrorString(String &dst) const {
-    m_lock.wait();
-    dst = m_error;
-    m_lock.notify();
-  }
-  void setWarningString(const String &src) {
-    m_lock.wait();
-    m_warning = src;
-    m_lock.notify();
-  }
-  void getWarningString(String &dst) const {
-    m_lock.wait();
-    dst = m_warning;
-    m_lock.notify();
-  }
-  void setApproximation(const RationalFunction &src) {
-    m_approxLock.wait();
-    m_lastApprox = src;
-    m_approxLock.notify();
-  }
-  void getApproximation(RationalFunction &dst) const {
-    m_approxLock.wait();
-    dst = m_lastApprox;
-    m_approxLock.notify();
-  }
-  bool isApproxEmpty() const {
-    m_approxLock.wait();
-    const bool b = m_lastApprox.isEmpty();
-    m_approxLock.notify();
-    return b;
-  }
-  void setMaxError(double maxError) {
-    m_lock.wait();
-    m_maxError = maxError;
-    m_lock.notify();
-  }
-  double getMaxError() const {
-    m_lock.wait();
-    const double result = m_maxError;
-    m_lock.notify();
-    return result;
-  }
-  void setPointArray(const Point2DArray &a, int key) {
-    m_lock.wait();
-    m_errorPointArray = a;
-    m_coefVectorIndexForPointArray = key;
-    m_lock.notify();
-  }
-  void getPointArray(Point2DArray &dst) {
-    m_lock.wait();
-    dst = m_errorPointArray;
-    m_lock.notify();
-  }
-  int getPointArrayKey() {
-    return m_coefVectorIndexForPointArray;
-  }
-  void clearPointArray() {
-    m_lock.wait();
-    m_errorPointArray.clear();
-    m_coefVectorIndexForPointArray = -1;
-    m_lock.notify();
-  }
-};
-
 class CIRemesDlg : public CDialog, public PropertyChangeListener {
-  friend class ErrorPlotCalculator;
+  friend class ErrorPlotter;
 private:
   HACCEL                  m_accelTable;
   HICON                   m_hIcon;
@@ -192,11 +52,13 @@ private:
   bool                    m_reduceToInterpolate;
   ExtremaStringArray      m_extrStrArrayOld;
   Remes                  *m_remes;
-  MonitorVariables        m_debugInfo;
+  bool                    m_allowRemesProperties;
+  DebugInfo               m_debugInfo;
   int                     m_subM, m_subK;
   Debugger               *m_debugger;
   DebuggerRunState        m_debuggerState;
-  ErrorPlotCalculator    *m_errorPlotCalculator;
+  ErrorPlotter           *m_errorPlotter;
+  bool                    m_errorPlotTimerRunning;
   CString                 m_name;
   UINT	                  m_M;
   UINT	                  m_K;
@@ -215,11 +77,12 @@ private:
   void startDebugger(bool singleStep);
   void createDebugger();
   void destroyDebugger();
-  void startErrorPlotCalculator();
-  void stopErrorPlotCalculator();
-  bool hasErrorPlotCalculator() const {
-    return m_errorPlotCalculator != NULL;
+  void startErrorPlotter();
+  void stopErrorPlotter();
+  bool hasErrorPlotter() const {
+    return m_errorPlotter != NULL;
   }
+  void deallocateAll();
   void setSubMK(int subM, int subK);
   void adjustMaxMKSum();
   String getThreadStateName() const;
@@ -244,17 +107,19 @@ private:
   void ajourDialogItems(DebuggerRunState state);
   void setRunMenuState(RunMenuState menuState);
   void enableFieldList(const int *ids, int n, bool enabled);
-  void showThreadState(DebuggerRunState state);
-  void showState(const String &str);
+  void showDebuggerState(DebuggerRunState state);
+  void showRemesState(const String &str);
   void showWarning(const String &str);
   void showCoefWindowData(const CoefWindowData &data);
   void showExtremaStringArray(const ExtremaStringArray &a);
-  void showSearchE(const String &s);
+  void showSearchEString(const String &s);
   void clearErrorPointArray();
   void createErrorPointArray();
   void showErrorPointArray();
   void setErrorFunctionVisible(bool visible);
   void removeErrorPlot();
+  void startErrorPlotTimer();
+  void stopErrorPlotTimer();
   void setSplineVisible(bool visible);
   bool isErrorFunctionVisible();
   bool isSplineVisible();
@@ -276,6 +141,7 @@ public:
   virtual BOOL    OnInitDialog();
   virtual void    OnOK();
   virtual void    OnCancel();
+  afx_msg void    OnTimer(UINT_PTR nIDEvent);
   afx_msg void    OnSysCommand(UINT nID, LPARAM lParam);
   afx_msg HCURSOR OnQueryDragIcon();
   afx_msg void    OnSize(UINT nType, int cx, int cy);
@@ -312,10 +178,9 @@ public:
   afx_msg void    OnEnKillfocusEditkTo();
   afx_msg void    OnEnUpdateEditkTo();
   afx_msg void    OnEnUpdateEditmTo();
-  afx_msg LRESULT OnMsgThrRunStateChanged(     WPARAM wp, LPARAM lp);
-  afx_msg LRESULT OnMsgThrTerminatedChanged(   WPARAM wp, LPARAM lp);
-  afx_msg LRESULT OnMsgThrErrorChanged(        WPARAM wp, LPARAM lp);
-  afx_msg LRESULT OnMsgStateChanged(           WPARAM wp, LPARAM lp);
+  afx_msg LRESULT OnMsgDebugRunStateChanged(   WPARAM wp, LPARAM lp);
+  afx_msg LRESULT OnMsgDebugErrorChanged(      WPARAM wp, LPARAM lp);
+  afx_msg LRESULT OnMsgRemesStateChanged(      WPARAM wp, LPARAM lp);
   afx_msg LRESULT OnMsgCoefficientsChanged(    WPARAM wp, LPARAM lp);
   afx_msg LRESULT OnMsgSearchEIterationChanged(WPARAM wp, LPARAM lp);
   afx_msg LRESULT OnMsgExtremaCountChanged(    WPARAM wp, LPARAM lp);

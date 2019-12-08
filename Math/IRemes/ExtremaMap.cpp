@@ -95,6 +95,10 @@ void ExtremaMap::save() {
   m_saveCount = m_updateCount;
 }
 
+void ExtremaMap::clear() {
+  __super::clear();
+}
+
 void ExtremaMap::load() {
   clear();
   m_saveCount = m_updateCount = 0;

@@ -551,29 +551,18 @@ void Remes::getCurrentApproximation(RationalFunction &approx) const {
 }
 
 #undef _05
-bool Remes::getErrorPlot(UINT n, RationalFunction &approx, Point2DArray &pa, bool &stopSignal) const {
-  stopSignal = false;
+void Remes::getErrorPlot(UINT n, RationalFunction &approx, Point2DArray &pa, DigitPool *digitPool, float *progressPct) const {
+  if(approx.isEmpty()) return;
   pa.clear();
-  if(approx.isEmpty()) return false;
-  const UINT                 digits = approx.getDigits();
-  DigitPool                  *pool   = BigRealResourcePool::fetchDigitPool();
+  pa.setCapacity(n + 1);
+  const UINT                  digits = approx.getDigits();
   const ConstBigRealInterval &domain = approx.getDomain();
-  n = min(n, 200);
-  bool ok = true;
-  try {
-    const BigReal step = rQuot(domain.getLength(pool), BigReal(n,pool), digits, pool);
-    const BigReal stop = sum(domain.getTo(), step*pool->_05(), pool);
-    for(BigReal x(domain.getFrom(),pool); x <= stop; x += step) {
-      if(stopSignal) {
-        ok = false;
-        break;
-      }
-      pa.add(Point2D(getDouble(x), getDouble(errorFunction(approx, x))));
-    }
-  } catch (...) {
-    BigRealResourcePool::releaseDigitPool(pool);
-    throw;
+  const BigReal step = rQuot(domain.getLength(digitPool), BigReal(n, digitPool), digits, digitPool);
+  const BigReal maxx = sum(domain.getTo(), step*digitPool->_05(), digitPool);
+  if(progressPct) *progressPct = 0;
+  UINT count = 0;
+  for(BigReal x(domain.getFrom(), digitPool); x <= maxx; x += step) {
+    pa.add(Point2D(getDouble(x), getDouble(errorFunction(approx, x))));
+    if(progressPct) *progressPct = (float)((double)(++count) / n * 100.0);
   }
-  BigRealResourcePool::releaseDigitPool(pool);
-  return ok;
 }

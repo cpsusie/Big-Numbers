@@ -83,6 +83,7 @@ private:
   void load();
 public:
   ExtremaMap();
+  void clear();
   void save();
   bool fileExist() const;
   void setName(const String &name);
@@ -286,7 +287,8 @@ public:
   void setSearchEMaxIterations(UINT maxIterations) {
     m_searchEMaxIterations = maxIterations;
   }
-  void saveExtremaToFile();
+  static void saveExtremaToFile();
+  static void releaaseExtremaMap();
   inline RemesTargetFunction &getTargetFunction() {
     return m_targetFunction;
   }
@@ -327,8 +329,7 @@ public:
     return s_extremaMap;
   }
   void        getCurrentApproximation(RationalFunction &approx) const;
-  // Returns true on success. if stopSignal becomes true at some point during calculation, the function terminates asap and return false
-  bool        getErrorPlot(UINT n, RationalFunction &approx, Point2DArray &pa, bool &stopSignal) const;
+  void        getErrorPlot(UINT n, RationalFunction &approx, Point2DArray &pa, DigitPool *digitPool, float *progressPct=NULL) const;
 
   String      getCFunctionString(bool useDouble80) const;
   String      getJavaFunctionString() const;

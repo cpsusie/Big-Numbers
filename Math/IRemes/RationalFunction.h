@@ -6,9 +6,6 @@
 #include <Math/BigRealInterval.h>
 
 class BigRealFunction : public FunctionTemplate<BigReal, BigReal> {
-public:
-  virtual ~BigRealFunction() {
-  }
 };
 
 class RationalFunction : public BigRealFunction {

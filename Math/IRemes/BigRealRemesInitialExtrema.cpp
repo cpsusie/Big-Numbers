@@ -70,7 +70,7 @@ CompactArray<DataPoint> InterpolationFunction::getInterpolationPoints(const BigR
   assert(finalExtr.getDimension() == dim);
   result.add(DataPoint(0,0));
   for(UINT i = 1; i < dim1; i++) {
-    const Real x = (Real)i/(dim1);                        // x = [0..1] Equally spaced
+    const Real x = (Real)i/(dim1);                         // x = [0..1] Equally spaced
     const Real y = getReal(finalExtr[i] - initialExtr[i]); // first and last y will be 0
     result.add(DataPoint(x,y));
   }
@@ -171,6 +171,10 @@ String Remes::getMapFileName() const {
   return info.setFileName(fileName).setExtension(_T("dat")).getAbsolutePath();
 }
 
-void Remes::saveExtremaToFile() {
+void Remes::saveExtremaToFile() { // static
   s_extremaMap.save();
+}
+
+void Remes::releaaseExtremaMap() {
+  s_extremaMap.clear();
 }
