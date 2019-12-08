@@ -1,5 +1,7 @@
 #pragma once
 
+#include <MyString.h>
+
 void redirectDebugLog(bool append = false, const TCHAR *fileName = NULL);
 void unredirectDebugLog();
 bool isDebugLogRedirected();

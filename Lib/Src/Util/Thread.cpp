@@ -300,6 +300,13 @@ String Thread::getDescription() const {
   return getThreadDescription(m_threadHandle);
 }
 
+void Thread::setDemon(bool on) {
+  if(on) {
+    int fisk = 1;
+  }
+  m_isDemon = on;
+}
+
 void Thread::suspend() {
   SuspendThread(m_threadHandle);
 }

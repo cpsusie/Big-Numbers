@@ -83,9 +83,7 @@ public:
 
   UINT run();
 
-  inline void setDemon(bool on) {
-    m_isDemon = on;
-  }
+  void setDemon(bool on);
   inline bool isDemon() const {
     return m_isDemon;
   }
