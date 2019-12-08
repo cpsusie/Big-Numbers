@@ -15,7 +15,8 @@ DECLARE_CALLCOUNTER(shortProdLoopTotal);
 DECLARE_CALLCOUNTER(shortProdSumTooBig);
 
 // Return *this. Assume x._isnormal() && y._isnormal() && (loopCount > 0)
-BigReal &BigReal::shortProductNoZeroCheck(     const BigReal &x, const BigReal &y, UINT loopCount) { // return *this
+BigReal &BigReal::shortProductNoZeroCheck(const BigReal &x, const BigReal &y, UINT loopCount) { // return *this
+  if (!m_digitPool.continueCalculation()) throwBigRealException(_T("Operation was cancelled"));
   assert(isNormalProduct(x, y) && (loopCount > 0));
   COUNTCALL(shortProdCallTotal);
 

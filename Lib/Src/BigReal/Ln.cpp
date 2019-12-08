@@ -9,13 +9,17 @@ public:
   const ConstBigReal  c4;
   const ConstBigReal  c6;
   const ConstBigReal  c7;
-  const int          c8;
+  const int           c8;
   const ConstBigReal  c9;
   const ConstBigReal c10;
   const ConstBigReal c11;
   const ConstBigReal c12;
   const ConstBigReal c14;
   const ConstBigReal c15;
+
+  BigReal *m_ln10Value; // cache
+  BigReal *m_ln10Error; // cache
+
   Ln10Constants()
     :c4  ( 0.52)
     ,c6  ( e(ConstBigReal(6),-12))
@@ -30,13 +34,18 @@ public:
   {
     m_digitPool = BigRealResourcePool::fetchDigitPool();
     m_digitPool->setName(_T("LN"));
+    m_ln10Value = new BigReal(m_digitPool); TRACE_NEW(m_ln10Value);
+    m_ln10Error = new BigReal(m_digitPool); TRACE_NEW(m_ln10Error);
+  }
+  ~Ln10Constants() {
+    SAFEDELETE(m_ln10Error);
+    SAFEDELETE(m_ln10Value);
+    BigRealResourcePool::releaseDigitPool(m_digitPool);
+    m_digitPool = NULL;
   }
 };
 
 static const Ln10Constants LN10C;
-
-#define _1 pool->_1()
-#define _0 pool->_0()
 
 BigReal BigReal::ln10(const BigReal &f, DigitPool *digitPool) { // static
   VALIDATETOLERANCE(f)
@@ -47,10 +56,12 @@ BigReal BigReal::ln10(const BigReal &f, DigitPool *digitPool) { // static
   lnLock.wait();
   try {
 
-    DigitPool *LNPOOL = LN10C.m_digitPool;
+#define _0 pool->_0()
+#define _1 pool->_1()
+#define ln10Value (*LN10C.m_ln10Value)
+#define ln10Error (*LN10C.m_ln10Error)
 
-    static BigReal ln10Error(LNPOOL); // cache
-    static BigReal ln10Value(LNPOOL); // cache
+    DigitPool *LNPOOL = LN10C.m_digitPool;
 
     if(ln10Error.isZero() || (f < ln10Error)) {
       if(f >= LN10C.c6) {

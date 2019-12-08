@@ -23,6 +23,9 @@ public:
   const BigReal      &c16 ;
   const ConstBigReal  c17 ;
 
+  BigReal *m_piValue; // cache
+  BigReal *m_piError; // cache
+
   PiConstants()
     :c1 ( e(ConstBigReal(11),-12))
     ,c2 ( 3.14159265358979)
@@ -43,6 +46,14 @@ public:
   {
     m_digitPool = BigRealResourcePool::fetchDigitPool();
     m_digitPool->setName(_T("PI"));
+    m_piValue = new BigReal(m_digitPool); TRACE_NEW(m_piValue);
+    m_piError = new BigReal(m_digitPool); TRACE_NEW(m_piError);
+  }
+  ~PiConstants() {
+    SAFEDELETE(m_piError);
+    SAFEDELETE(m_piValue);
+    BigRealResourcePool::releaseDigitPool(m_digitPool);
+    m_digitPool = NULL;
   }
 };
 
@@ -60,13 +71,12 @@ BigReal pi(const BigReal &f, DigitPool *digitPool) {
 
 #define _0 PIP->_0()
 #define _1 PIP->_1()
+#define PIVALUE (*PIC.m_piValue)
+#define PIERROR (*PIC.m_piError)
 
-    static BigReal piValue(PIP); // cache
-    static BigReal piError(PIP); // cache
-
-    if(piError.isZero() || (f < piError)) {
+    if(PIERROR.isZero() || (f < PIERROR)) {
       if(f >= PIC.c1) {
-        piValue = PIC.c2;
+        PIVALUE = PIC.c2;
       } else {
 
         const BigInt l = floor(APCsum(>,APCprod(>,ln(-BigReal::getExpo10N(APCprod(<,f,PIC.c4,PIP),PIP),PIC.c5,PIP),PIC.c3,PIP),PIC.c6,PIP),PIP);
@@ -87,13 +97,13 @@ BigReal pi(const BigReal &f, DigitPool *digitPool) {
           d = s - a;
           t -= prod(BigReal::pow2(i),prod(d,d,w,PIP),z,PIP);
         }
-        piValue = quot(prod(a,a,APCprod(<,PIC.c12,f,PIP),PIP),t,APCprod(<,PIC.c13,f,PIP),PIP);
+        PIVALUE = quot(prod(a,a,APCprod(<,PIC.c12,f,PIP),PIP),t,APCprod(<,PIC.c13,f,PIP),PIP);
       }
-      piError = f; // rettet fra APCprod(c14,f,1);
-      result = piValue;
+      PIERROR = f; // rettet fra APCprod(c14,f,1);
+      result = PIVALUE;
       goto End;
     }
-    copy(result, piValue,APCprod(<,PIC.c15, f,PIP));
+    copy(result, PIVALUE,APCprod(<,PIC.c15, f,PIP));
   } catch(...) {
     piLock.notify();
     throw;

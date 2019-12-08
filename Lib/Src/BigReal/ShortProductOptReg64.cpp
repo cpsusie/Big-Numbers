@@ -62,6 +62,7 @@ DECLARE_CALLCOUNTER(shortSquareSumTooBig);
 
 // Return *this. Assume x._isnormal() && y._isnormal() && loopCount > 0
 BigReal &BigReal::shortProductNoZeroCheck(const BigReal &x, const BigReal &y, UINT loopCount) {
+  if(!m_digitPool.continueCalculation()) throwBigRealException(_T("Operation was cancelled"));
   assert(isNormalProduct(x, y) && (loopCount > 0));
   SubProductSum   sps(clearDigits1());
   int             digitsAdded;

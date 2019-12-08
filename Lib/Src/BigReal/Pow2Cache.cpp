@@ -1,63 +1,8 @@
 #include "pch.h"
 #include <DebugLog.h>
-#include <CompactHashMap.h>
 #include <ByteFile.h>
 #include <CompressFilter.h>
-#include <SingletonFactory.h>
-
-class Pow2ArgumentKey {
-public:
-  int    m_n;
-  size_t m_digits;
-  Pow2ArgumentKey() {
-  }
-  inline Pow2ArgumentKey(int n, size_t digits) : m_n(n), m_digits(digits) {
-  }
-  inline ULONG hashCode() const {
-    return m_n * 23 + sizetHash(m_digits);
-  }
-  inline bool operator==(const Pow2ArgumentKey &k) const {
-    return (m_n == k.m_n) && (m_digits == k.m_digits);
-  }
-  String toString() const {
-    return format(_T("(%6d,%3zu)"), m_n, m_digits);
-  }
-};
-
-class Pow2Cache : public CompactHashMap<Pow2ArgumentKey, const BigReal*> {
-  friend class Pow2CacheFactory;
-private:
-  // All values, saved in cache, uses this digitpool
-  FastSemaphore         m_lock;
-  DigitPool            *m_digitPool;
-  size_t                m_updateCount, m_savedCount;
-
-  void save(const String &fileName) const;
-  void load(const String &fileName);
-  void save(ByteOutputStream &s) const;
-  void load(ByteInputStream  &s);
-  void clear();
-  Pow2Cache();
-  ~Pow2Cache();
-  Pow2Cache(const Pow2Cache &src);            // not implemented
-  Pow2Cache &operator=(const Pow2Cache &src); // not implemented
-public:
-  bool put(const Pow2ArgumentKey &key, BigReal * const &v);
-  inline bool isChanged() const {
-    return m_updateCount != m_savedCount;
-  }
-  static bool hasCacheFile();
-  void load();
-  void save();
-  void dump() const;
-  const BigReal &calculatePow2(int n, size_t digits, DigitPool *workPool);
-
-  inline void wait()   { m_lock.wait(); }
-  inline void notify() { m_lock.notify(); }
-
-  // return the one and only instance of Pow2Cache, with a lock
-  static Pow2Cache &getInstance();
-};
+#include "Pow2Cache.h"
 
 #ifdef TRACEPOW2CACHE
 #define LOGPOW2CACHE(...) debugLog(__VA_ARGS__)
@@ -78,9 +23,20 @@ static CallCounter pow2CacheRequests(_T("pow2CacheRequests"));
 
 #define CACHEFILENAME _T("c:\\temp\\Pow2Cache.dat")
 
-Pow2Cache::Pow2Cache() {
-  m_digitPool   = BigRealResourcePool::fetchDigitPool(false, 0);
+Pow2Cache *Pow2Cache::s_instance = NULL; // this will be set by BigRealResourcePool.constructor
+
+Pow2Cache &Pow2Cache::getInstance() { // static
+  Pow2Cache &cache = *s_instance;
+  cache.wait();
+  return cache;
+}
+
+Pow2Cache::Pow2Cache(DigitPool *digitPool, DigitPool *workPool)
+: m_digitPool(digitPool)
+, m_workPool( workPool )
+{
   m_digitPool->setName(_T("POW2CACHE"));
+  m_workPool->setName( _T("POW2WORK"));
   m_updateCount = m_savedCount = 0;
 //  load();
 }
@@ -168,6 +124,7 @@ void Pow2Cache::clear() {
 }
 
 bool Pow2Cache::put(const Pow2ArgumentKey &key, BigReal * const &v) {
+  assert(v->getDigitPool() == m_digitPool);
   const bool ret = __super::put(key, v);
   if(ret) {
     TRACE_NEW(v);
@@ -218,37 +175,18 @@ void Pow2Cache::load(ByteInputStream &s) {
   if(n > capacity) {
     capacity = 65993;
   }
-  DigitPool *workPool = NULL;
-  try {
-    LOGPOW2CACHE(_T("Loading Pow2Cache. size:%lu, capacity:%lu...\n"), n, capacity);
-    setCapacity(capacity);
-    workPool = BigRealResourcePool::fetchDigitPool();
-    BigReal tmp(workPool);
-    for(UINT i = 0; i < n; i++) {
-      Pow2ArgumentKey key;
-      p >> key >> tmp;
-      put(key, new BigReal(tmp, m_digitPool));
-    }
-    LOGPOW2CACHE(_T("Pow2Cache loaded from %s\n"), CACHEFILENAME);
-  } catch (...) {
-    if(workPool) {
-      BigRealResourcePool::releaseDigitPool(workPool); workPool = NULL;
-    }
-    throw;
+  LOGPOW2CACHE(_T("Loading Pow2Cache. size:%lu, capacity:%lu...\n"), n, capacity);
+  setCapacity(capacity);
+  BigReal tmp(m_workPool);
+  for(UINT i = 0; i < n; i++) {
+    Pow2ArgumentKey key;
+    p >> key >> tmp;
+    put(key, new BigReal(tmp, m_digitPool));
   }
-  BigRealResourcePool::releaseDigitPool(workPool);
+  LOGPOW2CACHE(_T("Pow2Cache loaded from %s\n"), CACHEFILENAME);
 }
 
-DEFINESINGLETONFACTORY(Pow2Cache);
-
-Pow2Cache &Pow2Cache::getInstance() { // static
-  static Pow2CacheFactory factory;
-  Pow2Cache &cache = factory.getInstance();
-  cache.wait();
-  return cache;
-}
-
-const BigReal &Pow2Cache::calculatePow2(int n, size_t digits, DigitPool *workPool) {
+const BigReal &Pow2Cache::calculatePow2(int n, size_t digits) {
   const Pow2ArgumentKey key(n, digits);
 
   ADDCACHEREQ();
@@ -261,24 +199,24 @@ const BigReal &Pow2Cache::calculatePow2(int n, size_t digits, DigitPool *workPoo
       result = get(Pow2ArgumentKey(n,0));
     }
     if(result != NULL) {
-      put(key, new BigReal(::cut(**result, digits,workPool),m_digitPool));
+      put(key, new BigReal(::cut(**result, digits,m_workPool),m_digitPool));
     } else if(n == 0) {
       put(key, new BigReal(m_digitPool->_1()));              // 2^0 == 1
     } else {
-      BigReal tmp(workPool);
+      BigReal tmp(m_workPool);
       if(isEven(n)) {                                   // n even
-        const BigReal &t = calculatePow2(n/2,digits,workPool);
+        const BigReal &t = calculatePow2(n/2,digits);
         if(digits == 0) {
-          tmp = prod(t, t, workPool->_0(),workPool);
+          tmp = prod(t, t, m_workPool->_0(),m_workPool);
         } else {
-          tmp = rProd(t, t, digits, workPool).rRound(digits); // 2^n = pow2(n/2)^2
+          tmp = rProd(t, t, digits, m_workPool).rRound(digits); // 2^n = pow2(n/2)^2
         }
       } else if(n < 0) {                                      // n odd && (n < 0)
-        tmp = calculatePow2(n + 1, digits, workPool);
+        tmp = calculatePow2(n + 1, digits);
         tmp.divide2();
         if(digits) tmp.rRound(digits);
       } else {                                                 // n odd && (n > 0)
-        tmp = calculatePow2(n - 1, digits, workPool);
+        tmp = calculatePow2(n - 1, digits);
         tmp.multiply2();
         if(digits) tmp.rRound(digits);
       }
@@ -299,18 +237,10 @@ const BigReal &BigReal::pow2(int n, size_t digits) { // static
     ADDCACHEREQ();
     ADDCACHEHIT();
   } else {
-    DigitPool *pool = NULL;
     try {
-      pool = BigRealResourcePool::fetchDigitPool();
-      const BigReal &p2 = cache.calculatePow2(n, digits, pool);
-      BigRealResourcePool::releaseDigitPool(pool);
-      pool = NULL;
+      const BigReal &p2 = cache.calculatePow2(n, digits);
       result = cache.get(key);
     } catch (...) {
-      if(pool) {
-        BigRealResourcePool::releaseDigitPool(pool);
-        pool = NULL;
-      }
       cache.notify();
       throw;
     }

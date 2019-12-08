@@ -16,6 +16,8 @@
 // Measures of time show that getDecimalDigitCount64 is 5 times faster than getDecimalDigitCount64Loop
 //#define HAS_LOOP_DIGITCOUNT
 
+// Define this to count the number of fetchDigit on Locked DigitPools (first of all CONSTPOOL)
+#define COUNT_DIGITPOOLFETCHDIGIT
 // If this is defined, product wil trace recursive calls for when multiplying long BigReals
 // which will slow down the program (testBigReal) by a factor 20!!
 //#define TRACEPRODUCTRECURSION
@@ -209,10 +211,12 @@ public:
 };
 
 class DigitPool : public BigRealResource {
+  friend class BigRealResourcePool;
 private:
   // Holds the total number of allocated DigitPages in all digitpools
   static std::atomic<UINT>   s_totalAllocatedPageCount;
   static bool                s_dumpCountWhenDestroyed;
+  const String               m_origName;
   String                     m_name;
   // Holds the number of allocated pages in this digitPool, (number of allocated digits = m_allocatedPageCount*DIGITPAGESIZE
   size_t                     m_allocatedPageCount;
@@ -220,13 +224,17 @@ private:
   DigitPage                 *m_firstPage;
   // Pointer to first free digit. see newDigit/deleteDigits
   Digit                     *m_freeDigits;
-  // If m_continueCalculation is false, when a thread enters shortProductNoNormalCheck, it will call throwBigRealException("Operation was cancelled")
+  // If m_continueCalculation is false, when a thread enters shortProductNoZeroCheck, it will call throwBigRealException("Operation was cancelled")
   bool                       m_continueCalculation;
   // All BigReals using this digitPool, will have the m_flags-member initialized to this value
   BYTE                       m_initFlags;
   // How many BigReals uses this digitpool (including members allocated below)
   std::atomic<UINT>          m_refCount;
   UINT                       m_refCountOnFetch;
+
+#ifdef COUNT_DIGITPOOLFETCHDIGIT
+  UINT                       m_requestCount;
+#endif // COUNT_DIGITPOOLFETCHDIGIT
 
   // Some frequently used constants. exist in every pool. All will have m_flag-bit BR_MUTABLE=0
   // = 0
@@ -269,7 +277,7 @@ public:
   static void setDumpWhenDestroyed(bool dump) {
     s_dumpCountWhenDestroyed = dump;
   }
-  // Default implementation does NOT guarantee exclusive access to freelist , and will, if shared between threads,
+  // Default implementation does NOT guarantee exclusive access to freelist, and will, if shared between threads,
   // cause data-race...sooner or later
   // Overwritten in DigitPoolWithLock, which solves this problem
   virtual Digit *fetchDigit();
@@ -327,6 +335,9 @@ public:
   inline void resetPoolCalculation() {
     m_continueCalculation = true;
   }
+  inline void resetName() {
+    m_name = m_origName;
+  }
   inline void incRefCount() {
     m_refCount++;
   }
@@ -349,7 +360,9 @@ class DigitPoolWithLock : public DigitPool {
 private:
   FastSemaphore m_lock;
 public:
-  DigitPoolWithLock(int id, const String &name) : DigitPool(id, name) {
+  DigitPoolWithLock(int id, const String &name)
+    : DigitPool(id, name)
+  {
   }
 
   Digit *fetchDigit() {
@@ -419,6 +432,7 @@ private:
   static const BRDigitTypex64 s_power10Tablex64[BIGREAL_POW10TABLESIZEx64];
   // Defined in shortProduct.cpp. Split factors when length > s_splitLength
   static size_t               s_splitLength;
+  static const BR2DigitType   s_BIGREALBASEBR2; // BIGREALBASE as BR2DigitType (__UINT64 or _uint128)
 
   // Most significand  digit
   Digit                    *m_first;
@@ -461,10 +475,10 @@ private:
     return *this;
   }
   inline void startInit() {
-    m_digitPool.incRefCount();
     m_flags = m_digitPool.getInitFlags() & ~BR_INITDONE;
   }
   inline void endInit() {
+    m_digitPool.incRefCount();
     setInitDone();
   }
   inline BigReal &clrInitDone() {
@@ -747,6 +761,8 @@ private:
   // Set *this = x*y, with the specified number of loops, each loop, i, calculates
   // sum(y[j]*x[i-j]), j=[0..i], i=[0..loopCount], digits indexed [0..length-1], from head
   // Assume isNormalProduct(x,y) && (loopCount > 0)
+  // If m_digitPool.m_continueCalculation is false, when a thread enters this function,
+  // it will call throwBigRealException("Operation was cancelled")
   // Return *this.
   BigReal &shortProductNoZeroCheck(          const BigReal &x, const BigReal &y, UINT loopCount);
   // Set result = x*y, with |error| <= |f|
@@ -1431,34 +1447,36 @@ public:
   friend Double80    getDouble80(const BigReal &v, bool validate = true);
 
   // Comnon used constants allocated with ConstDigitPool (see below)
-  static const ConstBigInt  _0;          // 0
-  static const ConstBigInt  _1;          // 1
-  static const ConstBigInt  _2;          // 2
-  static const ConstBigReal _05;         // 0.5
+  static ConstBigInt  _0;          // 0
+  static ConstBigInt  _1;          // 1
+  static ConstBigInt  _2;          // 2
+  static ConstBigReal _05;         // 0.5
 
-  static const ConstBigInt  _i16_min;    // _I16_MIN
-  static const ConstBigInt  _i16_max;    // _I16_MAX
-  static const ConstBigInt  _ui16_max;   // _UI16_MAX
-  static const ConstBigInt  _i32_min;    // _I32_MIN
-  static const ConstBigInt  _i32_max;    // _I32_MAX
-  static const ConstBigInt  _ui32_max;   // _UI32_MAX
-  static const ConstBigInt  _i64_min;    // _I64_MIN
-  static const ConstBigInt  _i64_max;    // _I64_MAX
-  static const ConstBigInt  _ui64_max;   // _UI64_MAX
-  static const ConstBigInt  _i128_min;   // _I128_MIN
-  static const ConstBigInt  _i128_max;   // _I128_MAX
-  static const ConstBigInt  _ui128_max;  // _UI128_MAX
-  static const ConstBigReal _flt_min;    // FLT_MIN
-  static const ConstBigReal _flt_max;    // FLT_MAX
-  static const ConstBigReal _dbl_min;    // DBL_MIN
-  static const ConstBigReal _dbl_max;    // DBL_MAX
-  static const ConstBigReal _dbl80_min;  // DBL80_MIN
-  static const ConstBigReal _dbl80_max;  // DBL80_MAX
-  static const ConstBigReal _C1third;    // approx 1/3
-  static const BR2DigitType s_BIGREALBASEBR2; // BIGREALBASE as BR2DigitType (__UINT64 or _uint128)
-  static const ConstBigReal _BR_QNAN;    // non-signaling NaN (quiet NaN)
-  static const ConstBigReal _BR_PINF;    // +infinity;
-  static const ConstBigReal _BR_NINF;    // -infinity;
+  static ConstBigInt  _i16_min;    // _I16_MIN
+  static ConstBigInt  _i16_max;    // _I16_MAX
+  static ConstBigInt  _ui16_max;   // _UI16_MAX
+  static ConstBigInt  _i32_min;    // _I32_MIN
+  static ConstBigInt  _i32_max;    // _I32_MAX
+  static ConstBigInt  _ui32_max;   // _UI32_MAX
+  static ConstBigInt  _i64_min;    // _I64_MIN
+  static ConstBigInt  _i64_max;    // _I64_MAX
+  static ConstBigInt  _ui64_max;   // _UI64_MAX
+  static ConstBigInt  _i128_min;   // _I128_MIN
+  static ConstBigInt  _i128_max;   // _I128_MAX
+  static ConstBigInt  _ui128_max;  // _UI128_MAX
+  static ConstBigReal _flt_min;    // FLT_MIN
+  static ConstBigReal _flt_max;    // FLT_MAX
+  static ConstBigReal _dbl_min;    // DBL_MIN
+  static ConstBigReal _dbl_max;    // DBL_MAX
+  static ConstBigReal _dbl80_min;  // DBL80_MIN
+  static ConstBigReal _dbl80_max;  // DBL80_MAX
+  static ConstBigReal _C1third;    // approx 1/3
+  static ConstBigReal _BR_QNAN;    // non-signaling NaN (quiet NaN)
+  static ConstBigReal _BR_PINF;    // +infinity;
+  static ConstBigReal _BR_NINF;    // -infinity;
+
+  static void initClass();
+
 };
 
 class ConstBigReal : public BigReal {
@@ -1688,41 +1706,49 @@ class LockedDigitPoolPool;
 class SubProdRunnablePool;
 
 class BigRealResourcePool {
+  friend class InitBigReal;
   friend class BigRealResourcePoolFactory;
 private:
   DigitPoolPool        *m_digitPoolPool;
   LockedDigitPoolPool  *m_lockedDigitPoolPool;
   SubProdRunnablePool  *m_subProdPool;
-  mutable FastSemaphore m_gate;
+  UINT                  m_resourcesInUse;
+  mutable FastSemaphore m_lock;
 
-  inline void wait() {
-    m_gate.wait();
+  inline void wait() const {
+    m_lock.wait();
   }
-  inline void notify() {
-    m_gate.notify();
+  inline void notify() const {
+    m_lock.notify();
+  }
+  inline void updateResourcesInUse(int count) {
+    m_resourcesInUse += count;
   }
   // Do the real fetch...no wait/notify
   DigitPool *fetchDPool(bool withLock, BYTE initFlags);
   // Do the real release...no wait/notify
-  void releaseDPool(DigitPool *pool);
+  void       releaseDPool(DigitPool *pool);
   static void setTerminateAllPoolsInUse(bool terminate);
   BigRealResourcePool();
   ~BigRealResourcePool();
   BigRealResourcePool(const BigRealResourcePool &src);            // not implemented
   BigRealResourcePool &operator=(const BigRealResourcePool &src); // not implemented
+  static BigRealResourcePool *poolRequeest(int request);
+  static BigRealResourcePool &getInstance();
+  static void                 releaseInstance();
 public:
-  static void                  fetchSubProdRunnableArray(  SubProdRunnableArray &a, UINT runnableCount, UINT digitPoolCount);
-  static void                  releaseSubProdRunnableArray(SubProdRunnableArray &a);
-  static DigitPool            *fetchDigitPool(             bool withLock = false, BYTE initFlags = BR_MUTABLE);
-  static void                  releaseDigitPool(           DigitPool      *pool);
-  static void                  fetchDigitPoolArray(        DigitPoolArray &a, UINT count, bool withLock = false, BYTE initFlags = BR_MUTABLE);
-  static void                  releaseDigitPoolArray(      DigitPoolArray &a);
-  // call terminatePoolCalculation() for all DigitPools in use
-  static inline void           terminateAllPoolCalculations() {
+  static void                 fetchSubProdRunnableArray(  SubProdRunnableArray &a, UINT runnableCount, UINT digitPoolCount);
+  static void                 releaseSubProdRunnableArray(SubProdRunnableArray &a);
+  static DigitPool           *fetchDigitPool(             bool withLock = false, BYTE initFlags = BR_MUTABLE);
+  static void                 releaseDigitPool(           DigitPool      *pool);
+  static void                 fetchDigitPoolArray(        DigitPoolArray &a, UINT count, bool withLock = false, BYTE initFlags = BR_MUTABLE);
+  static void                 releaseDigitPoolArray(      DigitPoolArray &a);
+  // Call terminatePoolCalculation() for all DigitPools in use
+  static inline void          terminateAllPoolCalculations() {
     setTerminateAllPoolsInUse(true);
   }
-  // call resetPoolCalculation() for all DigitPools in use
-  static inline void            resetAllPoolCalculations() {
+  // Call resetPoolCalculation() for all DigitPools in use
+  static inline void           resetAllPoolCalculations() {
     setTerminateAllPoolsInUse(false);
   }
 
@@ -1730,7 +1756,6 @@ public:
   // Sets the priority for all running and future running threads
   // Default is THREAD_PRIORITY_BELOW_NORMAL
   // THREAD_PRIORITY_IDLE,-PRIORITY_LOWEST,-PRIORITY_BELOW_NORMAL,-PRIORITY_NORMAL,-PRIORITY_ABOVE_NORMAL
-  static BigRealResourcePool &getInstance();
 };
 
 #ifdef TRACEPRODUCTRECURSION

@@ -11,7 +11,6 @@ void logProductRecursion(UINT level, const TCHAR *method, _In_z_ _Printf_format_
 
 BigReal &BigReal::shortProductNoNormalCheck(const BigReal &x, const BigReal &y, BRExpoType fexpo) {
   assert(isNormalProduct(x, y));
-  if(!m_digitPool.continueCalculation()) throwBigRealException(_T("Operation was cancelled"));
   const BRExpoType fm = fexpo - 2;
   const BRExpoType lm = x.m_low + y.m_low;
   const BRExpoType loopCount = (x.m_expo + y.m_expo) - max(fm, lm) + 2;

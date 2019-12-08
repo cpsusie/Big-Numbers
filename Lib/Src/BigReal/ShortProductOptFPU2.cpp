@@ -15,6 +15,7 @@ BigReal &BigReal::shortProductNoZeroCheckDebug(const BigReal &x, const BigReal &
 #else
 BigReal &BigReal::shortProductNoZeroCheck(     const BigReal &x, const BigReal &y, UINT loopCount) { // return *this
 #endif
+  if(!m_digitPool.continueCalculation()) throwBigRealException(_T("Operation was cancelled"));
   assert(isNormalProduct(x, y) && (loopCount > 0));
 
   int              loopCounter = loopCount;
