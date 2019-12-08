@@ -38,10 +38,10 @@ static void usage() {
 
 class MRHandler : public MillerRabinHandler {
 private:
-  Semaphore m_gate;
-  int       m_primesFound;
-  int       m_threadCount;
-  int       m_winHeight;
+  FastSemaphore m_gate;
+  int           m_primesFound;
+  int           m_threadCount;
+  int           m_winHeight;
 public:
   void handleData(const MillerRabinCheck &data);
   MRHandler(int threadCount, int winHeight);
