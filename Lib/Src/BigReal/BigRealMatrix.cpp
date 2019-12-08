@@ -11,25 +11,6 @@ void BigRealMatrix::checkPrecision(UINT digits) {
   }
 }
 
-void BigRealMatrix::init(size_t rows, size_t cols, bool initialize, UINT digits) {
-  MatrixTemplate<BigReal>::init(rows, cols, initialize);
-  checkPrecision(digits);
-  m_digits = digits;
-}
-
-BigRealMatrix::BigRealMatrix(size_t rows, size_t cols, UINT digits) {
-  init(rows, cols, true, digits);
-}
-
-BigRealMatrix::BigRealMatrix(const BigRealMatrix &a) {
-  init(a.getRowCount(), a.getColumnCount(), false, a.getPrecision());
-  for(size_t r = 0; r < getRowCount(); r++) {
-    for(size_t c = 0; c < getColumnCount(); c++) {
-      (*this)(r,c) = a(r,c);
-    }
-  }
-}
-
 UINT BigRealMatrix::setPrecision(UINT digits) {
   checkPrecision(digits);
   const UINT oldDigits = m_digits;

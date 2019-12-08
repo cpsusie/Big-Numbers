@@ -46,10 +46,17 @@ private:
 protected:
   UINT m_digits;
   void checkPrecision(UINT digits);
-  void init(size_t rows, size_t cols, bool initialize, UINT digits);
 public:
-  explicit BigRealMatrix(size_t rows = 1, size_t cols = 1, UINT digits = 16);
-  BigRealMatrix(const BigRealMatrix &a);
+  BigRealMatrix(size_t rows = 1, size_t cols = 1, UINT digits = 16) : MatrixTemplate<BigReal>(rows, cols), m_digits(digits) {
+    checkPrecision(m_digits);
+  }
+
+  BigRealMatrix(const BigRealMatrix &a) : MatrixTemplate<BigReal>(a), m_digits(a.m_digits) {
+  }
+
+  explicit BigRealMatrix(const MatrixDimension &dim, UINT digits = 16) : MatrixTemplate<BigReal>(dim), m_digits(digits) {
+    checkPrecision(m_digits);
+  }
   UINT setPrecision(UINT digits);
   inline UINT getPrecision() const {
     return m_digits;
