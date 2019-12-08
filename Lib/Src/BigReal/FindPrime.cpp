@@ -1,5 +1,6 @@
 #include "pch.h"
 #include <Thread.h>
+#include <ThreadPool.h>
 #include <BitSet.h>
 #include <CPUInfo.h>
 #include <DebugLog.h>
@@ -87,94 +88,138 @@ bool Sieve::hasSmallFactor(const BigInt &n, int &factor) const {
   return false;
 }
 
-typedef SynchronizedQueue<BigInt> PrimeQueue;
+class PrimeMonitor;
 
-#define PSST_ALLOCATED   0x01
-#define PSST_RUNNING     0x02
-#define PSST_STOPPENDING 0x04
-#define PSST_TERMINATED  0x08
-
-class PrimeSearcher : public Thread {
+class PrimeSearcher : public Runnable {
 private:
+  PrimeMonitor       &m_mon;
   const int           m_id;
-  const int           m_digitCount;
-  PrimeQueue         &m_queue;
   DigitPool          *m_pool;
-  JavaRandom          m_rnd;
-  MillerRabinHandler *m_handler;
-  Semaphore           m_gate;
-  BYTE                m_flags;
-  void modifyFlags(BYTE add, BYTE remove) {
-    m_gate.wait();
-    m_flags |= add;
-    m_flags &= ~remove;
-    m_gate.notify();
-  }
+  FastSemaphore       m_terminated;
 public:
-  PrimeSearcher(int id, int digitCount, PrimeQueue &queue, MillerRabinHandler *handler);
+  PrimeSearcher(PrimeMonitor *mon, int id);
   ~PrimeSearcher();
   UINT run();
-  inline BYTE getFlags() const {
-    return m_flags;
-  }
-  inline void setStopPending() {
-    modifyFlags(PSST_STOPPENDING, 0);
+  inline void stopSearch() {
     m_pool->terminatePoolCalculation();
-  }
-  inline bool isRunning() const {
-    return (m_flags & PSST_RUNNING) != 0;
   }
 };
 
-PrimeSearcher::PrimeSearcher(int id, int digitCount, PrimeQueue &queue, MillerRabinHandler *handler)
-: Thread(format(_T("PrimeSearcher %d"), id))
-, m_id(        id        )
-, m_digitCount(digitCount)
-, m_queue(     queue     )
+class PrimeMonitor {
+  friend class PrimeSearcher;
+private:
+  const int                    m_digitCount;
+  DigitPool                   *m_digitPool;
+  MillerRabinHandler          *m_handler;
+  CompactArray<PrimeSearcher*> m_jobs;
+  std::atomic<BYTE>            m_runningCount;
+  mutable FastSemaphore        m_lock;
+  Array<BigInt>                m_result;
+public:
+  PrimeMonitor(int digitCount, int threadCount, DigitPool *pool, MillerRabinHandler *handler);
+  ~PrimeMonitor();
+  void startJobs();
+  void terminateJobs();
+  inline int getPrimesFound() const {
+    return m_result.size();
+  }
+  void putPrime(const BigInt &p);
+  Array<BigInt> getResult() const;
+};
+
+PrimeMonitor::PrimeMonitor(int digitCount, int threadCount, DigitPool *digitPool, MillerRabinHandler *handler)
+: m_digitCount(digitCount)
+, m_digitPool( digitPool )
 , m_handler(   handler   )
-, m_pool(BigRealResourcePool::fetchDigitPool())
-, m_flags(PSST_ALLOCATED   )
+, m_runningCount(0       )
 {
-  m_rnd.randomize();
-  setDemon(true);
+  threadCount = max(1, threadCount);
+  const int processorCount = getProcessorCount();
+  threadCount = min(threadCount,processorCount);
+  for(int i = 0; i < threadCount; i++) {
+    PrimeSearcher *ps = new PrimeSearcher(this, i); TRACE_NEW(ps);
+    m_jobs.add(ps);
+  }
+}
+
+PrimeMonitor::~PrimeMonitor() {
+  terminateJobs();
+  for(size_t i = 0; i < m_jobs.size(); i++) {
+    SAFEDELETE(m_jobs[i]);
+  }
+  m_jobs.clear();
+}
+
+void PrimeMonitor::putPrime(const BigInt &p) {
+  m_lock.wait();
+  m_result.add(BigInt(p, m_digitPool));
+  m_lock.notify();
+}
+
+void PrimeMonitor::startJobs() {
+  RunnableArray ra(m_jobs.size());
+  for(size_t i = 0; i < m_jobs.size(); i++) {
+    ra.add(m_jobs[i]);
+  }
+  ThreadPool::executeInParallelNoWait(ra);
+}
+
+void PrimeMonitor::terminateJobs() {
+  m_lock.wait();
+  for(size_t i = 0; i < m_jobs.size(); i++) {
+    m_jobs[i]->stopSearch();
+  }
+  m_lock.notify();
+  while(m_runningCount > 0) {
+    Sleep(500);
+  }
+}
+
+Array<BigInt> PrimeMonitor::getResult() const {
+  Array<BigInt> result;
+  m_lock.wait();
+  result = m_result;
+  m_lock.notify();
+  return result;
+}
+
+
+PrimeSearcher::PrimeSearcher(PrimeMonitor *mon, int id)
+: m_mon( *mon)
+, m_id(   id )
+, m_pool(BigRealResourcePool::fetchDigitPool())
+{
 }
 
 PrimeSearcher::~PrimeSearcher() {
-  assert(!isRunning());
-  for(int i = 0; i < 10; i++) {
-    if(stillActive()) {
-      Sleep(1000);
-    }
-  }
-  if(stillActive()) {
-    debugLog(_T("Cannot kill PrimeSearcher (id=%d)"), m_id);
-  }
+  m_terminated.wait();
   BigRealResourcePool::releaseDigitPool(m_pool);
 }
 
-#define CHECKTERMINATE() if(getFlags() & PSST_STOPPENDING) goto Terminate;
 UINT PrimeSearcher::run() {
-  modifyFlags(PSST_RUNNING,0);
+  m_terminated.wait();
+  m_mon.m_runningCount++;
+#ifdef _DEBUG
+  setThreadDescription(format(_T("PrimeSearcher %d"), m_id));
+#endif
+  const int           digitCount = m_mon.m_digitCount;
+  MillerRabinHandler *handler    = m_mon.m_handler;
+  JavaRandom rnd;
+  rnd.randomize();
   try {
     for(;;) {
-      CHECKTERMINATE();
-      BigInt n = randomOddInteger(m_digitCount, m_rnd, m_pool);
-      CHECKTERMINATE();
+      BigInt n = randomOddInteger(digitCount, rnd, m_pool);
       const Sieve sv(n);
       int sieveCount = 0;
-      CHECKTERMINATE();
       for(int i = 1;; n += BigReal::_2, i++) {
-        CHECKTERMINATE();
         int smallFactor;
         if(sv.hasSmallFactor(n,smallFactor)) {
-          CHECKTERMINATE();
           sieveCount++;
-          if(m_handler) m_handler->handleData(MillerRabinCheck(m_id, n, format(_T("has factor %6u. (Sieved number:%d)"),smallFactor, sieveCount),false));
+          if(handler) handler->handleData(MillerRabinCheck(m_id, n, format(_T("has factor %6u. (Sieved number:%d)"),smallFactor, sieveCount),false));
           continue;
         }
-        if(MRisprime(n, m_id, m_handler)) {
-          CHECKTERMINATE();
-          m_queue.put(n);
+        if(MRisprime(n, m_id, handler)) {
+          m_mon.putPrime(n);
           break;
         }
       }
@@ -182,104 +227,15 @@ UINT PrimeSearcher::run() {
   } catch(...) {
     // ignore
   }
-Terminate:
-  modifyFlags(PSST_TERMINATED, PSST_RUNNING|PSST_STOPPENDING);
+  
+  m_mon.m_runningCount--;
+  m_terminated.notify();
   return 0;
-}
-
-class PRMonitor {
-private:
-  mutable Semaphore            m_gate;
-  mutable PrimeQueue           m_resultQueue;
-  CompactArray<PrimeSearcher*> m_jobs;
-  const int                    m_digitCount;
-  DigitPool                   *m_digitPool;
-public:
-  PRMonitor(int digitCount, int threadCount, DigitPool *pool, MillerRabinHandler *handler);
-  ~PRMonitor();
-  void startJobs();
-  void terminateJobs();
-  int  getRunningCount() const;
-  inline int getPrimesFound() const {
-    return m_resultQueue.size();
-  }
-  Array<BigInt> getResult() const;
-};
-
-PRMonitor::PRMonitor(int digitCount, int threadCount, DigitPool *digitPool, MillerRabinHandler *handler)
-: m_digitCount(digitCount)
-, m_digitPool(digitPool)
-{
-  threadCount = max(1, threadCount);
-  const int processorCount = getProcessorCount();
-  threadCount = min(threadCount,processorCount);
-  m_gate.wait();
-  for(int i = 0; i < threadCount; i++) {
-    PrimeSearcher *ps = new PrimeSearcher(i, digitCount, m_resultQueue, handler); TRACE_NEW(ps);
-    m_jobs.add(ps);
-  }
-  m_gate.notify();
-}
-
-PRMonitor::~PRMonitor() {
-  terminateJobs();
-  m_gate.wait();
-  while(!m_resultQueue.isEmpty()) {
-    m_resultQueue.get();
-  }
-  for(size_t i = 0; i < m_jobs.size(); i++) {
-    SAFEDELETE(m_jobs[i]);
-  }
-  m_jobs.clear();
-  m_gate.notify();
-}
-
-void PRMonitor::startJobs() {
-  m_gate.wait();
-  for(size_t i = 0; i < m_jobs.size(); i++) {
-    m_jobs[i]->start();
-  }
-  m_gate.notify();
-}
-
-void PRMonitor::terminateJobs() {
-  if(getRunningCount() > 0) {
-    m_gate.wait();
-    for(size_t i = 0; i < m_jobs.size(); i++) {
-      m_jobs[i]->setStopPending();
-    }
-    m_gate.notify();
-    while(getRunningCount() > 0) {
-      Sleep(500);
-    }
-  }
-}
-
-int PRMonitor::getRunningCount() const {
-  int count = 0;
-  m_gate.wait();
-  for(size_t i = 0; i < m_jobs.size(); i++) {
-    if(m_jobs[i]->isRunning()) {
-      count++;
-    }
-  }
-  m_gate.notify();
-  return count;
-}
-
-Array<BigInt> PRMonitor::getResult() const {
-  Array<BigInt> result;
-  m_gate.wait();
-  while(!m_resultQueue.isEmpty()) {
-    result.add(BigInt(m_resultQueue.get(), m_digitPool));
-  }
-  m_gate.notify();
-  return result;
 }
 
 Array<BigInt> findRandomPrimes(int count, int digitCount, int threadCount, DigitPool *pool, MillerRabinHandler *handler) {
   if(pool == NULL) pool = DEFAULT_DIGITPOOL;
-  PRMonitor m(digitCount, threadCount, pool, handler);
+  PrimeMonitor m(digitCount, threadCount, pool, handler);
   m.startJobs();
   while(m.getPrimesFound() < count) {
     Sleep(1000);
