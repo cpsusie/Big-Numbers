@@ -354,6 +354,9 @@ public:
   inline void saveRefCount() {
     m_refCountOnFetch = m_refCount;
   }
+  // Allocates a vector (C-array) of BigReals, all using this digitPool
+  // To deallocate array a, use delete[] a;
+  BigReal *newBigRealArray(size_t count);
 };
 
 class DigitPoolWithLock : public DigitPool {
@@ -427,6 +430,14 @@ void throwNotMutableException(TCHAR const * const function, const BigRational &x
 #define BR_MUTABLE   0x04
 
 class BigReal {
+  friend class DigitPool;
+  friend class SubProdRunnable;
+  friend class Pow2Cache;
+  friend class BigRealTestClass;
+  friend class BigInt;
+  friend class BigRational;
+  friend class BigRealStream;
+
 private:
   static const BRDigitTypex86 s_power10Tablex86[BIGREAL_POW10TABLESIZEx86];
   static const BRDigitTypex64 s_power10Tablex64[BIGREAL_POW10TABLESIZEx64];
@@ -450,15 +461,6 @@ private:
   BRExpoType                m_expo, m_low;
   DigitPool                &m_digitPool;
   BYTE                      m_flags;
-
-  // Multiplication helperfunctions
-  friend class SubProdRunnable;
-  friend class Pow2Cache;
-  friend class BigRealTestClass;
-  friend class BigInt;
-  friend class BigRational;
-  friend class BigRealStream;
-  friend class DigitPool;
 
   // First remove bits specified in remove
   // Then add. Order is important, because add and remove may have overlapping bits
@@ -875,6 +877,11 @@ protected:
     }
   }
 
+  void *operator new[](size_t sz, DigitPool *digitPool);
+  inline void  operator delete[](void *p, DigitPool *digitPool) {
+    ::operator delete(p);
+  }
+
 #define DEFAULT_DIGITPOOL BigReal::s_defaultDigitPool
 #define CONST_DIGITPOOL   BigReal::s_constDigitPool
 
@@ -966,6 +973,13 @@ public:
   virtual ~BigReal() {
     releaseDigits();
     m_digitPool.decRefCount();
+  }
+
+  inline void *operator new[](std::size_t count) {
+    return ::operator new[](count);
+  }
+  inline void operator delete[](void* p) {
+    ::operator delete(p);
   }
 
   inline BigReal &operator=(int              n) {
@@ -1442,10 +1456,10 @@ public:
   friend Double80    getDouble80(const BigReal &v, bool validate = true);
 
   // Comnon used constants allocated with DEFAULT_DIGITPOOL (see below)
-  static const BigInt  _0;          // 0
-  static const BigInt  _1;          // 1
-  static const BigInt  _2;          // 2
-  static const BigReal _05;         // 0.5
+  static const BigInt  &_0;         // 0
+  static const BigInt  &_1;         // 1
+  static const BigInt  &_2;         // 2
+  static const BigReal &_05;        // 0.5
 
   static const BigInt  _i16_min;    // _I16_MIN
   static const BigInt  _i16_max;    // _I16_MAX
@@ -1466,9 +1480,9 @@ public:
   static const BigReal _dbl80_min;  // DBL80_MIN
   static const BigReal _dbl80_max;  // DBL80_MAX
   static const BigReal _C1third;    // approx 1/3
-  static const BigReal _BR_QNAN;    // non-signaling NaN (quiet NaN)
-  static const BigReal _BR_PINF;    // +infinity;
-  static const BigReal _BR_NINF;    // -infinity;
+  static const BigReal &_BR_QNAN;   // non-signaling NaN (quiet NaN)
+  static const BigReal &_BR_PINF;   // +infinity;
+  static const BigReal &_BR_NINF;   // -infinity;
 };
 
 class ConstBigReal : public BigReal {

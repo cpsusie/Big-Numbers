@@ -34,9 +34,9 @@ DigitPool        *BigReal::s_constDigitPool            = NULL;
 
 static InitBigReal initBigReal;
 
-const BigInt  BigReal::_0(        0         );
-const BigInt  BigReal::_1(        1         );
-const BigInt  BigReal::_2(        2         );
+const BigInt  &BigReal::_0 = DEFAULT_DIGITPOOL->_0();
+const BigInt  &BigReal::_1 = DEFAULT_DIGITPOOL->_1();
+const BigInt  &BigReal::_2 = DEFAULT_DIGITPOOL->_2();
 const BigInt  BigReal::_i16_min(  _I16_MIN  );
 const BigInt  BigReal::_i16_max(  _I16_MAX  );
 const BigInt  BigReal::_ui16_max( _UI16_MAX );
@@ -50,7 +50,7 @@ const BigInt  BigReal::_i128_min( _I128_MIN );
 const BigInt  BigReal::_i128_max( _I128_MAX );
 const BigInt  BigReal::_ui128_max(_UI128_MAX);
 
-const BigReal BigReal::_05(e(BigReal(5), -1));  // _05 and 2 must be initialize FIRST!!! and DONT use 0.5 here!!!
+const BigReal &BigReal::_05 = DEFAULT_DIGITPOOL->_05();
 const BigReal BigReal::_flt_min(  FLT_MIN   );
 const BigReal BigReal::_flt_max(  FLT_MAX   );
 const BigReal BigReal::_dbl_min(  DBL_MIN   );
@@ -60,9 +60,9 @@ const BigReal BigReal::_dbl80_max(DBL80_MAX );
 const BigReal BigReal::_C1third(0.333333f   );
 
 // No need for signalling NaN
-const BigReal BigReal::_BR_QNAN( std::numeric_limits<double>::quiet_NaN());   // non-signaling NaN (quiet NaN)
-const BigReal BigReal::_BR_PINF( std::numeric_limits<double>::infinity());    // +infinity;
-const BigReal BigReal::_BR_NINF(-std::numeric_limits<double>::infinity());    // -infinity;
+const BigReal &BigReal::_BR_QNAN = DEFAULT_DIGITPOOL->nan();
+const BigReal &BigReal::_BR_PINF = DEFAULT_DIGITPOOL->pinf();    // +infinity;
+const BigReal &BigReal::_BR_NINF = DEFAULT_DIGITPOOL->ninf();    // -infinity;
 
 const BigInt  BigInt::_BINT_QNAN(quot( BigReal::_0, BigReal::_0));  // non-signaling NaN (quiet NaN)
 const BigInt  BigInt::_BINT_PINF(quot( BigReal::_1, BigReal::_0));  // +infinity;

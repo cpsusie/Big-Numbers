@@ -132,3 +132,32 @@ DigitPage::DigitPage(DigitPage *nextPage, Digit *nextDigit) {
   p->next = nextDigit;
   while(p-- > m_page) p->next = p+1;
 }
+
+// Helper class to allocate vectors of BigReals with DigitPool != DEFAULT_DIGITPOOL
+class BigReal1 : public BigReal {
+public:
+  static FastSemaphore s_lock;
+  static DigitPool    *s_currentDigitPool; // protected by BigRealResourcePool wait()
+  BigReal1() : BigReal(s_currentDigitPool) {
+  }
+};
+
+FastSemaphore BigReal1::s_lock;
+DigitPool    *BigReal1::s_currentDigitPool = NULL;
+
+void *BigReal::operator new[](size_t sz, DigitPool *digitPool) {
+  BigReal1::s_currentDigitPool = digitPool;
+  return operator new[](sz);
+}
+
+BigReal *DigitPool::newBigRealArray(size_t count) {
+  BigReal1::s_lock.wait();
+  try {
+    BigReal1 *p = new(this) BigReal1[count];
+    BigReal1::s_lock.notify();
+    return p;
+  } catch(...) {
+    BigReal1::s_lock.notify();
+    throw;
+  }
+}
