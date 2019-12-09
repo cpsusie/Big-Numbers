@@ -89,7 +89,7 @@ double findRoot(double x0, BigRealFunction &f) {
     throwException(_T("%s:Cannot find start point"), __TFUNCTION__);
   }
   BigReal bestX, bestY;
-  if(compareAbs(y1,y2) < 0) {
+  if(BigReal::compareAbs(y1,y2) < 0) {
     bestX = x1; bestY = y1;
   } else {
     bestX = x2; bestY = y2;
@@ -102,10 +102,10 @@ double findRoot(double x0, BigRealFunction &f) {
     if(yn.isZero()) {
       return getDouble(xn);
     }
-    if(compareAbs(yn,bestY) < 0) {
+    if(BigReal::compareAbs(yn,bestY) < 0) {
       bestX = xn; bestY = yn;
     }
-    if(compareAbs(y1,y2) > 0) {
+    if(BigReal::compareAbs(y1,y2) > 0) {
       x1 = xn; y1 = yn;
     } else {
       x2 = xn; y2 = yn;
