@@ -8,10 +8,10 @@ static BigInt pow(int a, __int64 r) { // compute pow(a,r)
   int i = 1;
   while(r != 0) {
     if((r % 2) == 1) {
-      p = p * tmpa;
+      p *= tmpa;
       r--;
     } else {
-      tmpa = tmpa * tmpa;
+      tmpa *= tmpa;
       r /= 2;
     }
   }
@@ -20,7 +20,7 @@ static BigInt pow(int a, __int64 r) { // compute pow(a,r)
 
 bool LLisprime(INT64 p) { // Lucas-Lehmer primality test. is 2^p - 1 prime
   BigInt P(p);
-  if(!MRisprime(GetCurrentThreadId(), P)) return false;
+  if(!MRisprime(P)) return false;
   BigInt s(4);
   BigInt n(pow(2,p)-1);
   for(UINT i = 2; i < p; i++) {
@@ -52,31 +52,30 @@ int main(int argc, char **argv) {
   FILE *fdone = fopen("done.dat","r");
   __int64 i(2);
   if(fdone) {
-    fscanf(fdone,"%I64d",&i);
+    _ftscanf(fdone,_T("%I64d"),&i);
     fclose(fdone);
   }
-  double starttime,endtime;
   for(;; i++) {
-    starttime = getProcessTime();
-    bool prime = LLisprime(i);
-    endtime = getProcessTime();
+    const double starttime = getProcessTime();
+    const bool   prime     = LLisprime(i);
+    const double endtime   = getProcessTime();
     FILE *tf = fopen("tm.dat","a");
-    fprintf(tf,"%I64d %lf\n",i,endtime-starttime);
+    _ftprintf(tf,_T("%I64d %lf\n"),i,endtime-starttime);
     fclose(tf);
 
-    printf("%I64d:%s processtime:%.3lf estimate:%.3lf\n",i,(prime ? "primtal\n" : "ikke primtal\n"),(endtime-starttime)/1000000,timeestimate((double)i)/1000000);
+    _tprintf(_T("%I64d:%s processtime:%.3lf estimate:%.3lf\r")
+            ,i,(prime ? _T("primtal") : _T("ikke primtal")),(endtime-starttime)/1000000,timeestimate((double)i)/1000000);
     if(prime) {
-      FILE *f = fopen("mprimes.dat","a");
-      fprintf(f,"i:%I64d\n",i);
+      FILE *f = FOPEN("mprimes.dat","a");
+      _ftprintf(f,_T("i:%I64d\n"),i);
       fclose(f);
-      f = fopen("mprimes1.dat","a");
+      f = FOPEN("mprimes1.dat","a");
       BigInt n(pow(2,i)-1);
-      n.print(f,false);
-      fprintf(f,"\n");
+      _ftprintf(f, _T("%s\n"), toString(n).cstr());
       fclose(f);
     }
-    FILE *fdone = fopen("done.dat","w");
-    fprintf( fdone,"%I64d\n",i);
+    FILE *fdone = FOPEN("done.dat","w");
+    _ftprintf( fdone,_T("%I64d\n"),i);
     fclose(fdone);
   }
   return 0;
