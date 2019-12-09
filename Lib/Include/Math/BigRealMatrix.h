@@ -47,10 +47,12 @@ protected:
   UINT m_digits;
   void checkPrecision(UINT digits);
 public:
-  BigRealMatrix(size_t rows = 1, size_t cols = 1, UINT digits = 16) : MatrixTemplate<BigReal>(rows, cols), m_digits(digits) {
+  BigRealMatrix() : MatrixTemplate<BigReal>(1, 1), m_digits(16) {
     checkPrecision(m_digits);
   }
-
+  BigRealMatrix(size_t rows, size_t cols, UINT digits = 16) : MatrixTemplate<BigReal>(rows, cols), m_digits(digits) {
+    checkPrecision(m_digits);
+  }
   BigRealMatrix(const BigRealMatrix &a) : MatrixTemplate<BigReal>(a), m_digits(a.m_digits) {
   }
 
