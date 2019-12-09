@@ -298,6 +298,7 @@ BigRealMatrix round(const BigRealMatrix &a) {
 }
 
 bool PSLQ::solve(UINT maxDigits) {
+  DigitPool *pool = DEFAULT_DIGITPOOL;
   const BigReal       maxNorm = rSqrt(sqr(e(1,maxDigits+1)-1)*m_x.getDimension(),10);
   const BigRealMatrix H       = createH();
   m_A                         = createHermiteReducingMatrix(H);
@@ -308,7 +309,7 @@ bool PSLQ::solve(UINT maxDigits) {
         << _T("Max bound                       :") << dparam(5) << maxNorm   << endl;
 
   for(;;) {
-    m_minBound = rQuot(BigReal::_1, getMaxDiagElement(AHQ), 10);
+    m_minBound = rQuot(BigReal::_1, getMaxDiagElement(AHQ), 10, pool);
     if(m_minBound > maxNorm) {
       return false; // we are out of digits
     }
@@ -440,20 +441,19 @@ void BaileyBorwein(int digits) {
 }
 
 static void usage() {
-  _ftprintf(stderr,_T("pslq:Usage:pslq [-v[dmpyi]] [-pDigits] -rx|-xx1,x2,...xn|-f[file]|-t\n"
-                      "     -v[dmpyi]    : Verbose. Write temporary information to stdout.\n"
-                      "           d:Loop data\n"
-                      "           m:Matrices\n"
-                      "           p:Pivot row\n"
-                      "           y:x*inv(A)\n"
-                      "           i:inv(A)\n"
-                      "     -pDigits     : Specify the number of digits used in the calculation\n"
-                      "     -rx          : Try to find the integer polynomial with x as root\n"
-                      "     -xx1,x2,...xn: Try to find an integer relation between the specified x1,x2,...xn\n"
-                      "     -f[file]     : Same as -x, but x1..xn are read from file. If file is omitted, stdin is used.\n"
-                      "     -t           : Test. Find integer polynomial for number 3.6502815398728847452 which is (9 0 -14 0 1)\n")
-           );
-  exit(-1);
+  throwException(_T("pslq:Usage:pslq [-v[dmpyi]] [-pDigits] -rx|-xx1,x2,...xn|-f[file]|-t\n"
+                    "     -v[dmpyi]    : Verbose. Write temporary information to stdout.\n"
+                    "           d:Loop data\n"
+                    "           m:Matrices\n"
+                    "           p:Pivot row\n"
+                    "           y:x*inv(A)\n"
+                    "           i:inv(A)\n"
+                    "     -pDigits     : Specify the number of digits used in the calculation\n"
+                    "     -rx          : Try to find the integer polynomial with x as root\n"
+                    "     -xx1,x2,...xn: Try to find an integer relation between the specified x1,x2,...xn\n"
+                    "     -f[file]     : Same as -x, but x1..xn are read from file. If file is omitted, stdin is used.\n"
+                    "     -t           : Test. Find integer polynomial for number 3.6502815398728847452 which is (9 0 -14 0 1)\n")
+                );
 }
 
 typedef enum {
@@ -490,7 +490,7 @@ int main(int argc, char **argv) {
           if(*cp) continue; else break;
         case 'p':
           if(sscanf(cp+1, "%u", &digits) != 1) {
-            usage();
+            usage(); return -1;
           }
           break;
         case 'r':
