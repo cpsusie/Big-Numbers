@@ -153,9 +153,9 @@ public:
   // Fast version of *this /= 2
   BigInt &divide2();
 
-  static ConstBigInt _BINT_QNAN;  // non-signaling NaN (quiet NaN)
-  static ConstBigInt _BINT_PINF;  // +infinity;
-  static ConstBigInt _BINT_NINF;  // -infinity;
+  static const BigInt _BINT_QNAN;  // non-signaling NaN (quiet NaN)
+  static const BigInt _BINT_PINF;  // +infinity;
+  static const BigInt _BINT_NINF;  // -infinity;
 
   // Checks that this is a consistent BigReal with all the various invariants satisfied.
   // Throws an excpeption if not with a descripion of what is wrong. For debugging
@@ -178,11 +178,6 @@ BigInt randBigInt(const BigInt &n, RandomGenerator &rnd = *RandomGenerator::s_st
 BigInt randBigInt(const BigInt &from, const BigInt &to, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator, DigitPool *digitPool = NULL);
 
 class ConstBigInt : public BigInt {
-protected:
-  bool allowConstDigitPool() const {
-    return true;
-  }
-
 public:
   explicit ConstBigInt(const BigReal        &x) : BigInt(x, CONST_DIGITPOOL) {
   };

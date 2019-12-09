@@ -23,9 +23,6 @@ protected:
   // throws exception if fpclass is not in the list above
   BigRational &setToNonNormalFpClass(int fpclass);
 
-  virtual bool allowConstDigitPool() const {
-    return false;
-  }
   inline BigRational &clrInitDone() {
     modifyFlags(0, BR_INITDONE);
     return *this;
@@ -138,13 +135,13 @@ public:
   BigRational &setToNInf();
   BigRational &setToNan();
 
-  static ConstBigRational _0;          // 0
-  static ConstBigRational _05;         // 1/2
-  static ConstBigRational _1;          // 1
-  static ConstBigRational _2;          // 2
-  static ConstBigRational _BRAT_QNAN;  // non-signaling NaN (quiet NaN)
-  static ConstBigRational _BRAT_PINF;  // +infinity;
-  static ConstBigRational _BRAT_NINF;  // -infinity;
+  static const BigRational _0;          // 0
+  static const BigRational _05;         // 1/2
+  static const BigRational _1;          // 1
+  static const BigRational _2;          // 2
+  static const BigRational _BRAT_QNAN;  // non-signaling NaN (quiet NaN)
+  static const BigRational _BRAT_PINF;  // +infinity;
+  static const BigRational _BRAT_NINF;  // -infinity;
 
   void assertIsValid(const TCHAR *file, int line, const TCHAR *name) const;
   inline String flagsToString() const {
@@ -153,11 +150,6 @@ public:
 };
 
 class ConstBigRational : public BigRational {
-protected:
-  bool allowConstDigitPool() const {
-    return true;
-  }
-
 public:
   inline ConstBigRational(const BigRational &r)                                    : BigRational(r                     , CONST_DIGITPOOL) {
   }

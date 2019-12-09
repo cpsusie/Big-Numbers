@@ -882,12 +882,7 @@ protected:
 #define _INITPOOLTODEFAULTIFNULL()    _INITDIGITPOOL(*DEFAULT_DIGITPOOL)
 #define _SELECTDIGITPOOL(x)           DigitPool *pool = digitPool?digitPool:(x).getDigitPool()
 
-  // Only ConstBigReal and ConstBigInt may be attached to s_constDigitPool
-  virtual bool allowConstDigitPool() const {
-    return false;
-  }
 public:
-
   static DigitPool *s_defaultDigitPool;
   static DigitPool *s_constDigitPool;
 
@@ -1446,45 +1441,37 @@ public:
   friend double      getDouble(  const BigReal &v, bool validate = true);
   friend Double80    getDouble80(const BigReal &v, bool validate = true);
 
-  // Comnon used constants allocated with ConstDigitPool (see below)
-  static ConstBigInt  _0;          // 0
-  static ConstBigInt  _1;          // 1
-  static ConstBigInt  _2;          // 2
-  static ConstBigReal _05;         // 0.5
+  // Comnon used constants allocated with DEFAULT_DIGITPOOL (see below)
+  static const BigInt  _0;          // 0
+  static const BigInt  _1;          // 1
+  static const BigInt  _2;          // 2
+  static const BigReal _05;         // 0.5
 
-  static ConstBigInt  _i16_min;    // _I16_MIN
-  static ConstBigInt  _i16_max;    // _I16_MAX
-  static ConstBigInt  _ui16_max;   // _UI16_MAX
-  static ConstBigInt  _i32_min;    // _I32_MIN
-  static ConstBigInt  _i32_max;    // _I32_MAX
-  static ConstBigInt  _ui32_max;   // _UI32_MAX
-  static ConstBigInt  _i64_min;    // _I64_MIN
-  static ConstBigInt  _i64_max;    // _I64_MAX
-  static ConstBigInt  _ui64_max;   // _UI64_MAX
-  static ConstBigInt  _i128_min;   // _I128_MIN
-  static ConstBigInt  _i128_max;   // _I128_MAX
-  static ConstBigInt  _ui128_max;  // _UI128_MAX
-  static ConstBigReal _flt_min;    // FLT_MIN
-  static ConstBigReal _flt_max;    // FLT_MAX
-  static ConstBigReal _dbl_min;    // DBL_MIN
-  static ConstBigReal _dbl_max;    // DBL_MAX
-  static ConstBigReal _dbl80_min;  // DBL80_MIN
-  static ConstBigReal _dbl80_max;  // DBL80_MAX
-  static ConstBigReal _C1third;    // approx 1/3
-  static ConstBigReal _BR_QNAN;    // non-signaling NaN (quiet NaN)
-  static ConstBigReal _BR_PINF;    // +infinity;
-  static ConstBigReal _BR_NINF;    // -infinity;
-
-  static void initClass();
-
+  static const BigInt  _i16_min;    // _I16_MIN
+  static const BigInt  _i16_max;    // _I16_MAX
+  static const BigInt  _ui16_max;   // _UI16_MAX
+  static const BigInt  _i32_min;    // _I32_MIN
+  static const BigInt  _i32_max;    // _I32_MAX
+  static const BigInt  _ui32_max;   // _UI32_MAX
+  static const BigInt  _i64_min;    // _I64_MIN
+  static const BigInt  _i64_max;    // _I64_MAX
+  static const BigInt  _ui64_max;   // _UI64_MAX
+  static const BigInt  _i128_min;   // _I128_MIN
+  static const BigInt  _i128_max;   // _I128_MAX
+  static const BigInt  _ui128_max;  // _UI128_MAX
+  static const BigReal _flt_min;    // FLT_MIN
+  static const BigReal _flt_max;    // FLT_MAX
+  static const BigReal _dbl_min;    // DBL_MIN
+  static const BigReal _dbl_max;    // DBL_MAX
+  static const BigReal _dbl80_min;  // DBL80_MIN
+  static const BigReal _dbl80_max;  // DBL80_MAX
+  static const BigReal _C1third;    // approx 1/3
+  static const BigReal _BR_QNAN;    // non-signaling NaN (quiet NaN)
+  static const BigReal _BR_PINF;    // +infinity;
+  static const BigReal _BR_NINF;    // -infinity;
 };
 
 class ConstBigReal : public BigReal {
-protected:
-  bool allowConstDigitPool() const {
-    return true;
-  }
-
 public:
   inline ConstBigReal(int                       x) : BigReal(x, CONST_DIGITPOOL) {
   }

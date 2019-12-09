@@ -2,10 +2,12 @@
 
 String BigReal::flagsToString(BYTE flags) { // static
   String result;
-#define ADDFLAG(f) if(flags & BR_##f) { result += _T(#f); result += _T(" "); }
-  ADDFLAG(NEG);
+  TCHAR *delim = NULL;
+#define ADDSTR(s)  { if(delim) result += delim; else delim = _T(" "); result += _T(s); }
+#define ADDFLAG(f) { if(flags & BR_##f) ADDSTR(#f); }
+  if(flags & BR_MUTABLE) ADDSTR("MUTABLE") else ADDSTR("CONST");
   ADDFLAG(INITDONE);
-  ADDFLAG(MUTABLE);
+  ADDFLAG(NEG);
 #undef ADDFLAG
   return result;
 }

@@ -34,47 +34,56 @@ DigitPool        *BigReal::s_constDigitPool            = NULL;
 
 static InitBigReal initBigReal;
 
-ConstBigInt  BigReal::_0(        0         );
-ConstBigInt  BigReal::_1(        1         );
-ConstBigInt  BigReal::_2(        2         );
-ConstBigInt  BigReal::_i16_min(  _I16_MIN  );
-ConstBigInt  BigReal::_i16_max(  _I16_MAX  );
-ConstBigInt  BigReal::_ui16_max( _UI16_MAX );
-ConstBigInt  BigReal::_i32_min(  _I32_MIN  );
-ConstBigInt  BigReal::_i32_max(  _I32_MAX  );
-ConstBigInt  BigReal::_ui32_max( _UI32_MAX );
-ConstBigInt  BigReal::_i64_min(  _I64_MIN  );
-ConstBigInt  BigReal::_i64_max(  _I64_MAX  );
-ConstBigInt  BigReal::_ui64_max( _UI64_MAX );
-ConstBigInt  BigReal::_i128_min( _I128_MIN );
-ConstBigInt  BigReal::_i128_max( _I128_MAX );
-ConstBigInt  BigReal::_ui128_max(_UI128_MAX);
+const BigInt  BigReal::_0(        0         );
+const BigInt  BigReal::_1(        1         );
+const BigInt  BigReal::_2(        2         );
+const BigInt  BigReal::_i16_min(  _I16_MIN  );
+const BigInt  BigReal::_i16_max(  _I16_MAX  );
+const BigInt  BigReal::_ui16_max( _UI16_MAX );
+const BigInt  BigReal::_i32_min(  _I32_MIN  );
+const BigInt  BigReal::_i32_max(  _I32_MAX  );
+const BigInt  BigReal::_ui32_max( _UI32_MAX );
+const BigInt  BigReal::_i64_min(  _I64_MIN  );
+const BigInt  BigReal::_i64_max(  _I64_MAX  );
+const BigInt  BigReal::_ui64_max( _UI64_MAX );
+const BigInt  BigReal::_i128_min( _I128_MIN );
+const BigInt  BigReal::_i128_max( _I128_MAX );
+const BigInt  BigReal::_ui128_max(_UI128_MAX);
 
-ConstBigReal BigReal::_05(e(BigReal(5), -1));  // _05 and 2 must be initialize FIRST!!! and DONT use 0.5 here!!!
-ConstBigReal BigReal::_flt_min(  FLT_MIN   );
-ConstBigReal BigReal::_flt_max(  FLT_MAX   );
-ConstBigReal BigReal::_dbl_min(  DBL_MIN   );
-ConstBigReal BigReal::_dbl_max(  DBL_MAX   );
-ConstBigReal BigReal::_dbl80_min(DBL80_MIN );
-ConstBigReal BigReal::_dbl80_max(DBL80_MAX );
-ConstBigReal BigReal::_C1third(0.333333f   );
+const BigReal BigReal::_05(e(BigReal(5), -1));  // _05 and 2 must be initialize FIRST!!! and DONT use 0.5 here!!!
+const BigReal BigReal::_flt_min(  FLT_MIN   );
+const BigReal BigReal::_flt_max(  FLT_MAX   );
+const BigReal BigReal::_dbl_min(  DBL_MIN   );
+const BigReal BigReal::_dbl_max(  DBL_MAX   );
+const BigReal BigReal::_dbl80_min(DBL80_MIN );
+const BigReal BigReal::_dbl80_max(DBL80_MAX );
+const BigReal BigReal::_C1third(0.333333f   );
 
 // No need for signalling NaN
-ConstBigReal  BigReal::_BR_QNAN( std::numeric_limits<double>::quiet_NaN());   // non-signaling NaN (quiet NaN)
-ConstBigReal  BigReal::_BR_PINF( std::numeric_limits<double>::infinity());    // +infinity;
-ConstBigReal  BigReal::_BR_NINF(-std::numeric_limits<double>::infinity());    // -infinity;
+const BigReal BigReal::_BR_QNAN( std::numeric_limits<double>::quiet_NaN());   // non-signaling NaN (quiet NaN)
+const BigReal BigReal::_BR_PINF( std::numeric_limits<double>::infinity());    // +infinity;
+const BigReal BigReal::_BR_NINF(-std::numeric_limits<double>::infinity());    // -infinity;
 
-ConstBigInt   BigInt::_BINT_QNAN(quot( BigReal::_0, BigReal::_0));  // non-signaling NaN (quiet NaN)
-ConstBigInt   BigInt::_BINT_PINF(quot( BigReal::_1, BigReal::_0));  // +infinity;
-ConstBigInt   BigInt::_BINT_NINF(quot(-BigReal::_1, BigReal::_0));  // -infinity;
+const BigInt  BigInt::_BINT_QNAN(quot( BigReal::_0, BigReal::_0));  // non-signaling NaN (quiet NaN)
+const BigInt  BigInt::_BINT_PINF(quot( BigReal::_1, BigReal::_0));  // +infinity;
+const BigInt  BigInt::_BINT_NINF(quot(-BigReal::_1, BigReal::_0));  // -infinity;
 
-ConstBigRational BigRational::_0(         BigReal::_0, BigReal::_1);  // 0
-ConstBigRational BigRational::_05(        BigReal::_1, BigReal::_2);  // 1/2
-ConstBigRational BigRational::_1(         BigReal::_1, BigReal::_1);  // 1
-ConstBigRational BigRational::_2(         BigReal::_2, BigReal::_1);  // 2
-ConstBigRational BigRational::_BRAT_QNAN( BigReal::_0, BigReal::_0);  // non-signaling NaN (quiet NaN)
-ConstBigRational BigRational::_BRAT_PINF( BigReal::_1, BigReal::_0);  // +infinity;
-ConstBigRational BigRational::_BRAT_NINF(-BigReal::_1, BigReal::_0);  // -infinity;
+const BigRational BigRational::_0(         BigReal::_0, BigReal::_1);  // 0
+const BigRational BigRational::_05(        BigReal::_1, BigReal::_2);  // 1/2
+const BigRational BigRational::_1(         BigReal::_1, BigReal::_1);  // 1
+const BigRational BigRational::_2(         BigReal::_2, BigReal::_1);  // 2
+const BigRational BigRational::_BRAT_QNAN( BigReal::_0, BigReal::_0);  // non-signaling NaN (quiet NaN)
+const BigRational BigRational::_BRAT_PINF( BigReal::_1, BigReal::_0);  // +infinity;
+const BigRational BigRational::_BRAT_NINF(-BigReal::_1, BigReal::_0);  // -infinity;
+
+class DefaultDigitPoolModifier {
+public:
+  inline DefaultDigitPoolModifier() {
+    BigReal::s_defaultDigitPool->setInitFlags(BR_MUTABLE);
+  }
+};
+
+static DefaultDigitPoolModifier setDefaultDPToMutable;
 
 typedef enum {
   REQUEST_GETINSTANCE
@@ -120,7 +129,7 @@ BigRealResourcePool::BigRealResourcePool() {
   for(UINT i = 0; i < a.size(); i++) m_lockedDigitPoolPool->releaseResource((DigitPoolWithLock*)a[i]);
   a.clear(-1);
 
-  BigReal::s_defaultDigitPool = fetchDPool(false, BR_MUTABLE);
+  BigReal::s_defaultDigitPool = fetchDPool(false, 0); // this will be changed to BR_MUTABLE when all class constants have been defined and initialized
   BigReal::s_constDigitPool   = fetchDPool(true, 0);
   BigReal::s_defaultDigitPool->setName(_T("DEFAULT"));
   BigReal::s_constDigitPool->setName(_T("CONST"));
