@@ -145,15 +145,11 @@ public:
 FastSemaphore BigReal1::s_lock;
 DigitPool    *BigReal1::s_currentDigitPool = NULL;
 
-void *BigReal::operator new[](size_t sz, DigitPool *digitPool) {
-  BigReal1::s_currentDigitPool = digitPool;
-  return operator new[](sz);
-}
-
 BigReal *DigitPool::newBigRealArray(size_t count) {
   BigReal1::s_lock.wait();
   try {
-    BigReal1 *p = new(this) BigReal1[count];
+    BigReal1::s_currentDigitPool = this;
+    BigReal1 *p = new BigReal1[count];
     BigReal1::s_lock.notify();
     return p;
   } catch(...) {

@@ -877,11 +877,6 @@ protected:
     }
   }
 
-  void *operator new[](size_t sz, DigitPool *digitPool);
-  inline void  operator delete[](void *p, DigitPool *digitPool) {
-    ::operator delete(p);
-  }
-
 #define DEFAULT_DIGITPOOL BigReal::s_defaultDigitPool
 #define CONST_DIGITPOOL   BigReal::s_constDigitPool
 
@@ -973,13 +968,6 @@ public:
   virtual ~BigReal() {
     releaseDigits();
     m_digitPool.decRefCount();
-  }
-
-  inline void *operator new[](std::size_t count) {
-    return ::operator new[](count);
-  }
-  inline void operator delete[](void* p) {
-    ::operator delete(p);
   }
 
   inline BigReal &operator=(int              n) {
