@@ -3,7 +3,7 @@
 #include "CompactArray.h"
 #include <intrin.h>
 
-template<class T> class TinyBitSet {
+template<typename T> class TinyBitSet {
 private:
   static inline UINT getSize(BYTE b) {
     return __popcnt(b);

@@ -12,7 +12,7 @@ static inline void setNumberFloatValue(Number &n, const Double80 &v) {
 }
 
 #define setEnd(p) { if(end) *end=(p); }
-template<class CharType> Number _strtonum(const CharType *s, CharType **end, Double80 (*tod80)(const CharType *,CharType **), Rational (*toRational)(const CharType *,CharType **, int), _locale_t locale) {
+template<typename CharType> Number _strtonum(const CharType *s, CharType **end, Double80 (*tod80)(const CharType *,CharType **), Rational (*toRational)(const CharType *,CharType **, int), _locale_t locale) {
   CharType *afterD80 = NULL, *afterRat = NULL;
   const Double80 d80 = tod80(     s, &afterD80);
   const Rational rat = toRational(s, &afterRat ,10);

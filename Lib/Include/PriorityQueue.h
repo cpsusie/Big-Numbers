@@ -3,7 +3,7 @@
 #include "Array.h"
 #include "Comparator.h"
 
-template <class T> class PriorityQueue {
+template <typename T> class PriorityQueue {
 private:
   Array<T>                     m_a;
   bool                         m_reverseOrder;

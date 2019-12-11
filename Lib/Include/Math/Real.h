@@ -29,19 +29,19 @@ typedef enum {
 String            toString(TrigonometricMode mode);
 TrigonometricMode getTrigonometricModeFromString(const String &str);
 
-template<class T> T csc(T x) {
+template<typename T> T csc(T x) {
   return 1.0 / sin(x);
 }
 
-template<class T> T sec(T x) {
+template<typename T> T sec(T x) {
   return 1.0 / cos(x);
 }
 
-template<class T> T acsc(T x) {
+template<typename T> T acsc(T x) {
   return asin(1.0 / x);
 }
 
-template<class T> T asec(T x) {
+template<typename T> T asec(T x) {
   return acos(1.0 / x);
 }
 
@@ -103,11 +103,11 @@ Real chiSquaredDensity(      const Real &df, const Real &x);
 Real chiSquaredDistribution( const Real &df, const Real &x);
 
 // Calculates x! = x*(x-1)*(x-2)*...*2*1, extended to double numbers by the gamma function x! = gamma(x+1)
-template<class T> T  factorial(T x) {
+template<typename T> T  factorial(T x) {
   return gamma(x + 1);
 }
 
-template<class T> T binomial(T n, T k) {
+template<typename T> T binomial(T n, T k) {
   return  factorial(n) / (factorial(k)* factorial(n - k));
 }
 

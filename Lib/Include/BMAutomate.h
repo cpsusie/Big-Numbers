@@ -3,7 +3,7 @@
 #include "StringSearchAlgorithm.h"
 
 // Boyer-Moore string search algorithm
-template<class Ctype> class BMAutomateTemplate : public StringSearchAlgorithm<Ctype> {
+template<typename Ctype> class BMAutomateTemplate : public StringSearchAlgorithm<Ctype> {
 private:
   typedef intptr_t (BMAutomateTemplate<Ctype>::*SearchFunction)(const Ctype *buf, size_t length) const;
 

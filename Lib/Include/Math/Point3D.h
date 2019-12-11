@@ -5,7 +5,7 @@
 #include "Double80.h"
 
 // A point in 3-dimensional space
-template<class T> class Point3DTemplate {
+template<typename T> class Point3DTemplate {
 public:
   T x, y, z;
   inline Point3DTemplate() {
@@ -85,7 +85,7 @@ public:
 };
 
 // angle in radians between p1 and p2
-template<class T> T angle(const Point3DTemplate<T> &p1, const Point3DTemplate<T> &p2) {
+template<typename T> T angle(const Point3DTemplate<T> &p1, const Point3DTemplate<T> &p2) {
   const T l1 = p1.length();
   const T l2 = p2.length();
   if((l1 == 0) || (l2 == 0)) {
@@ -103,7 +103,7 @@ template<class T> T angle(const Point3DTemplate<T> &p1, const Point3DTemplate<T>
   }
 }
 
-template<class T> Point3DTemplate<T> crossProduct(const Point3DTemplate<T> &a, const Point3DTemplate<T> &b) {
+template<typename T> Point3DTemplate<T> crossProduct(const Point3DTemplate<T> &a, const Point3DTemplate<T> &b) {
   return Point3DTemplate<T>(a.y*b.z - a.z*b.y
                            ,a.z*b.x - a.x*b.z
                            ,a.x*b.y - a.y*b.x

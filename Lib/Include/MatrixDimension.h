@@ -23,7 +23,7 @@ public:
 class MatrixDimension {
 public:
   size_t rowCount, columnCount;
-  inline MatrixDimension() {
+  inline MatrixDimension() : rowCount(0), columnCount(0) {
   }
   inline MatrixDimension(size_t _rowCount, size_t _columnCount) : rowCount(_rowCount), columnCount(_columnCount) {
   }

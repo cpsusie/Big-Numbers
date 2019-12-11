@@ -274,7 +274,7 @@ D80StrStream &D80StrStream::operator<<(const Double80 &x) {
   return *this;
 }
 
-template <class OStreamType> OStreamType &putDouble80(OStreamType &out, const Double80 &x) {
+template<typename OStreamType> OStreamType &putDouble80(OStreamType &out, const Double80 &x) {
   D80StrStream stream(out);
   stream << x;
   out << (String&)stream;
@@ -284,7 +284,7 @@ template <class OStreamType> OStreamType &putDouble80(OStreamType &out, const Do
   return out;
 }
 
-template <class IStreamType, class CharType> IStreamType &getDouble80(IStreamType &in, Double80 &x) {
+template<typename IStreamType, typename CharType> IStreamType &getDouble80(IStreamType &in, Double80 &x) {
   IStreamScanner<IStreamType, CharType> scanner(in);
 
   const bool          hex   = ((in.flags() & ios::floatfield) == ios::hexfloat);

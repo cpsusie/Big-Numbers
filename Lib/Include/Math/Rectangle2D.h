@@ -4,7 +4,7 @@
 #include <NumberInterval.h>
 #include "Point2D.h"
 
-template <class T> class Rectangle2DTemplate {
+template<typename T> class Rectangle2DTemplate {
 public:
   T m_x, m_y, m_w, m_h;
   inline Rectangle2DTemplate() : m_x(0), m_y(0), m_w(0), m_h(0) {
@@ -115,7 +115,7 @@ typedef Rectangle2DTemplate<double  > Rectangle2D;
 typedef Rectangle2DTemplate<Double80> D80Rectangle2D;
 typedef Rectangle2DTemplate<Real    > RealRectangle2D;
 
-template<class T> Rectangle2DTemplate<T> getUnion(const Rectangle2DTemplate<T> &r1, const Rectangle2DTemplate<T> &r2) {
+template<typename T> Rectangle2DTemplate<T> getUnion(const Rectangle2DTemplate<T> &r1, const Rectangle2DTemplate<T> &r2) {
   const T minX = min(r1.getMinX(), r2.getMinX());
   const T minY = min(r1.getMinY(), r2.getMinY());
   const T maxX = max(r1.getMaxX(), r2.getMaxX());
@@ -123,7 +123,7 @@ template<class T> Rectangle2DTemplate<T> getUnion(const Rectangle2DTemplate<T> &
   return Rectangle2DTemplate<T>(minX,minY, maxX-minX,maxY-minY);
 }
 
-template<class T> class Point2DArrayTemplate : public CompactArray<Point2DTemplate<T> > {
+template<typename T> class Point2DArrayTemplate : public CompactArray<Point2DTemplate<T> > {
 public:
   Point2DArrayTemplate() {
   }
@@ -150,7 +150,7 @@ typedef Point2DArrayTemplate<double  > Point2DArray;
 typedef Point2DArrayTemplate<Double80> D80Point2DArray;
 typedef Point2DArrayTemplate<Real>     RealPoint2DArray;
 
-template<class T> class Point2DRefArrayTemplate : public CompactArray<Point2DTemplate<T>*> {
+template<typename T> class Point2DRefArrayTemplate : public CompactArray<Point2DTemplate<T>*> {
 public:
   String toString(int precision = 3) const {
     String result = _T("(");

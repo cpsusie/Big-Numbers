@@ -144,7 +144,7 @@ public:
   void remove();
 };
 
-template <class T> class TreeSet : public Set<T> {
+template <typename T> class TreeSet : public Set<T> {
 public:
   TreeSet(int (*comparator)(const T &key1, const T &key2))
     : Set<T>(new TreeSetImpl(ObjectManager<T>(), FunctionComparator<T>(comparator)))

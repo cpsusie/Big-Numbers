@@ -1,7 +1,7 @@
 #pragma once
 
 // Assume T has a public field T *m_next
-template<class T> class HeapObjectPool {
+template<typename T> class HeapObjectPool {
 private:
   class HeapObjectPage {
   private:
@@ -70,7 +70,7 @@ public:
   }
 };
 
-template <class T> class LinkObject {
+template <typename T> class LinkObject {
 public:
   LinkObject *m_next;
   T           m_e;

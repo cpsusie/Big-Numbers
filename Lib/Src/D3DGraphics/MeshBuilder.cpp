@@ -196,7 +196,7 @@ D3DXCube3 MeshBuilder::getBoundingBox() const {
 
 static FastSemaphore   meshCreatorGate;
 
-template<class VertexType, class IndexType> class MeshCreator {
+template<typename VertexType, typename IndexType> class MeshCreator {
 private:
   const MeshBuilder &m_mb;
 
@@ -378,7 +378,7 @@ public:
   }
 };
 
-template<class VertexType> class MeshCreator1 {
+template<typename VertexType> class MeshCreator1 {
 private:
   const MeshBuilder &m_mb;
 public:

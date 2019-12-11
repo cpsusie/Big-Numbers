@@ -11,7 +11,7 @@ static wchar_t *strdupa2w(_In_z_ char const* s) {
   return _wcsdup(A2W(s));
 }
 
-template<class ftype, class ttype> const ttype **argv2argv(const ftype **argv) {
+template<typename ftype, typename ttype> const ttype **argv2argv(const ftype **argv) {
   int count = 0;
   for(const ftype **tmp = argv; *tmp; tmp++) count++;
   ttype **result = new ttype*[count+1], **ttmp = result;

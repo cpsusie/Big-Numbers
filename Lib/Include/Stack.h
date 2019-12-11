@@ -2,7 +2,7 @@
 
 #include "Array.h"
 
-template <class T> class Stack : private Array<T> {
+template <typename T> class Stack : private Array<T> {
 public:
   void push(const T &v) {
     add(v);

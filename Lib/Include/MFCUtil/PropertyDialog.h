@@ -47,7 +47,7 @@ public:
   };
 };
 
-template<class T> class CPropertyDialog : public PropertyDialog {
+template<typename T> class CPropertyDialog : public PropertyDialog {
 private:
   T m_startValue, m_currentValue, m_prevValue;
 protected:

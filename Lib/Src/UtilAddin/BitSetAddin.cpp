@@ -12,7 +12,7 @@ public:
   QWORD m_capacity;
 };
 
-template<class BitSet> class BitSetAddIn {
+template<typename BitSet> class BitSetAddIn {
 private:
   DEBUGHELPER *m_helper;
 public:
@@ -23,7 +23,7 @@ public:
 
 #define BYTECOUNT(size) (((size)-1) / 8 + 1)
 
-template<class BitSet> String BitSetAddIn<BitSet>::toString(BitSet &set, size_t maxResult) const {
+template<typename BitSet> String BitSetAddIn<BitSet>::toString(BitSet &set, size_t maxResult) const {
   const QWORD  capacity = set.m_capacity;
 
   if(capacity == 0) {

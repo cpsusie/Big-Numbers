@@ -20,7 +20,7 @@ public:
   virtual const void         *getMax()        const = 0;
 };
 
-template <class T> class Set : public Collection<T> {
+template <typename T> class Set : public Collection<T> {
 public:
   Set(AbstractSet *set) : Collection<T>(set) {
   }

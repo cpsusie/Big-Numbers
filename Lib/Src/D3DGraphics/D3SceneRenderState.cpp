@@ -3,7 +3,7 @@
 
 DECLARE_THISFILE;
 
-template<class T> T getRenderState(LPDIRECT3DDEVICE device, D3DRENDERSTATETYPE id) {
+template<typename T> T getRenderState(LPDIRECT3DDEVICE device, D3DRENDERSTATETYPE id) {
   DWORD value;
   V(device->GetRenderState(id, &value));
   return (T)value;
@@ -13,7 +13,7 @@ static inline bool getBoolProperty(LPDIRECT3DDEVICE device, D3DRENDERSTATETYPE i
   return getRenderState<BOOL>(device, id) ? true : false;
 }
 
-template<class T> void setRenderState(LPDIRECT3DDEVICE device, D3DRENDERSTATETYPE id, T value) {
+template<typename T> void setRenderState(LPDIRECT3DDEVICE device, D3DRENDERSTATETYPE id, T value) {
   V(device->SetRenderState(id, (DWORD)value));
 }
 

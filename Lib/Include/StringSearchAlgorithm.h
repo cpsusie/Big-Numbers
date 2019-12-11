@@ -1,6 +1,6 @@
 #pragma once
 
-template<class Ctype> class StringSearchAlgorithm {
+template<typename Ctype> class StringSearchAlgorithm {
 protected:
   const Ctype *m_translateTable;
   inline bool charsEqual(Ctype c1, Ctype c2) const {

@@ -6,7 +6,7 @@
 #include "MathLib.h"
 #include "Double80.h"
 
-template<class T> class Size2DTemplate {
+template<typename T> class Size2DTemplate {
 public:
   T cx, cy;
   inline Size2DTemplate() {
@@ -70,7 +70,7 @@ typedef Size2DTemplate<double>   Size2D;
 typedef Size2DTemplate<Double80> D80Size2D;
 typedef Size2DTemplate<Real>     RealSize2D;
 
-template<class T> class Point2DTemplate {
+template<typename T> class Point2DTemplate {
 public:
   T x, y;
   inline Point2DTemplate() {
@@ -224,7 +224,7 @@ typedef Point2DTemplate<double>   Point2D;
 typedef Point2DTemplate<Double80> D80Point2D;
 typedef Point2DTemplate<Real>     RealPoint2D;
 
-template <class T> class Line2DTemplate {
+template<typename T> class Line2DTemplate {
 public:
   Point2DTemplate<T> m_p1, m_p2;
   Line2DTemplate(const Point2DTemplate<T> &p1, const Point2DTemplate<T> &p2)
@@ -239,11 +239,11 @@ typedef Line2DTemplate<double>   Line2D;
 typedef Line2DTemplate<Double80> D80Line2D;
 typedef Line2DTemplate<Real>     RealLine2D;
 
-template<class T> T distance(const Point2DTemplate<T> &p1, const Point2DTemplate<T> &p2) {
+template<typename T> T distance(const Point2DTemplate<T> &p1, const Point2DTemplate<T> &p2) {
   return sqrt(sqr(p1.x - p2.x) + sqr(p1.y - p2.y));
 }
 
-template<class T> Point2DTemplate<T> pointOfIntersection(const Line2DTemplate<T> &line1, const Line2DTemplate<T> &line2, bool &intersect) {
+template<typename T> Point2DTemplate<T> pointOfIntersection(const Line2DTemplate<T> &line1, const Line2DTemplate<T> &line2, bool &intersect) {
   const T A11 = line1.m_p1.y       - line1.m_p2.y;
   const T A12 = line1.m_p2.x       - line1.m_p1.x;
   const T A21 = line2.m_p1.y       - line2.m_p2.y;
@@ -270,7 +270,7 @@ template<class T> Point2DTemplate<T> pointOfIntersection(const Line2DTemplate<T>
   return Point2DTemplate<T>(dx/d, dy/d);
 }
 
-template<class T> T distanceFromLine(const Point2DTemplate<T> &lp0, const Point2DTemplate<T> &lp1, const Point2DTemplate<T> &p) {
+template<typename T> T distanceFromLine(const Point2DTemplate<T> &lp0, const Point2DTemplate<T> &lp1, const Point2DTemplate<T> &p) {
   if(lp1 == lp0) {
     return distance(p,lp1);
   }
@@ -280,7 +280,7 @@ template<class T> T distanceFromLine(const Point2DTemplate<T> &lp0, const Point2
   return (d - (d * u) * u).length();
 }
 
-template<class T> T distanceFromLineSegment(const Point2DTemplate<T> &lp0, const Point2DTemplate<T> &lp1, const Point2DTemplate<T> &p) {
+template<typename T> T distanceFromLineSegment(const Point2DTemplate<T> &lp0, const Point2DTemplate<T> &lp1, const Point2DTemplate<T> &p) {
   const Point2DTemplate<T> u = lp1 - lp0;
   if((p-lp0) * u < 0) {
     return distance(p, lp0);
@@ -291,32 +291,32 @@ template<class T> T distanceFromLineSegment(const Point2DTemplate<T> &lp0, const
   }
 }
 
-template<class T> T distanceFromLine(const Line2DTemplate<T> &line, const Point2DTemplate<T> &p) {
+template<typename T> T distanceFromLine(const Line2DTemplate<T> &line, const Point2DTemplate<T> &p) {
   return distanceFromLine(line.m_p1, line.m_p2, p);
 }
 
-template<class T> T distanceFromLineSegment(const Line2DTemplate<T> &line, const Point2DTemplate<T> &p) {
+template<typename T> T distanceFromLineSegment(const Line2DTemplate<T> &line, const Point2DTemplate<T> &p) {
   return distanceFromLineSegment(line.m_p1, line.m_p2, p);
 }
 
-template<class T> Point2DTemplate<T> unit(const Point2DTemplate<T> &p) {
+template<typename T> Point2DTemplate<T> unit(const Point2DTemplate<T> &p) {
   return Point2DTemplate<T>(p).normalize();
 }
 
-template<class T> Point2DTemplate<T> operator*(const T &factor, const Point2DTemplate<T> &p) {
+template<typename T> Point2DTemplate<T> operator*(const T &factor, const Point2DTemplate<T> &p) {
   return Point2DTemplate<T>(p.x*factor, p.y*factor);
 }
 
-template<class T> T det(const Point2DTemplate<T> &p1, const Point2DTemplate<T> &p2) {
+template<typename T> T det(const Point2DTemplate<T> &p1, const Point2DTemplate<T> &p2) {
   return p1.x*p2.y - p1.y*p2.x;
 }
 
-template<class T> bool isParallel(const Line2DTemplate<T> &line1, const Line2DTemplate<T> &line2) {
+template<typename T> bool isParallel(const Line2DTemplate<T> &line1, const Line2DTemplate<T> &line2) {
   return det(line1.m_p2 - line1.m_p1, line2.m_p2 - line2.m_p1) == 0;
 }
 
 // angle in radians between p1 and p2
-template<class T> T angle(const Point2DTemplate<T> &p1, const Point2DTemplate<T> &p2) {
+template<typename T> T angle(const Point2DTemplate<T> &p1, const Point2DTemplate<T> &p2) {
   const T l1 = p1.length();
   const T l2 = p2.length();
   if((l1 == 0) || (l2 == 0)) {

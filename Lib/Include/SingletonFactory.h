@@ -4,7 +4,7 @@
 #include <DebugLog.h>
 
 //#define TRACE_SINGLETONFACTORY
-template<class T> class SingletonFactoryTemplate {
+template<typename T> class SingletonFactoryTemplate {
 private:
   T            *m_instance;
   FastSemaphore m_gate;

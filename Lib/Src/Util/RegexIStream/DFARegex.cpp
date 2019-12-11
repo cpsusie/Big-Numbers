@@ -43,7 +43,7 @@ void DFARegex::compilePattern(const StringArray &pattern) {
 
 using namespace std;
 
-template<class IStreamType, class CharType> class DFARegexT {
+template<typename IStreamType, typename CharType> class DFARegexT {
 private:
   static CharType nextChar(IStreamType &in) {
     CharType ch;

@@ -75,7 +75,7 @@ public:
   }
 };
 
-template <class K, class V> class HashMap : public Map<K, V> {
+template <typename K, typename V> class HashMap : public Map<K, V> {
 public:
   HashMap(ULONG (*hash)(const K &key), int (*comparator)(const K &key1, const K &key2), size_t capacity = 31)
     : Map<K, V>(new HashMapImpl(ObjectManager<K>(), ObjectManager<V>(), (HashFunction)hash, FunctionComparator<K>(comparator), capacity))
@@ -103,91 +103,91 @@ public:
   }
 };
 
-template <class T> class ShortHashMap      : public HashMap<short, T> {
+template <typename T> class ShortHashMap      : public HashMap<short, T> {
 public:
   ShortHashMap(size_t capacity=31)  : HashMap<short, T>(shortHash, shortHashCmp, capacity) {
   }
 };
 
-template <class T> class UShortHashMap     : public HashMap<USHORT, T> {
+template <typename T> class UShortHashMap     : public HashMap<USHORT, T> {
 public:
   UShortHashMap(size_t capacity=31) : HashMap<USHORT, T>(ushortHash, ushortHashCmp, capacity) {
   }
 };
 
-template <class T> class IntHashMap        : public HashMap<int, T> {
+template <typename T> class IntHashMap        : public HashMap<int, T> {
 public:
   IntHashMap(size_t capacity=31)    : HashMap<int, T>(intHash, intHashCmp, capacity) {
   }
 };
 
-template <class T> class UIntHashMap       : public HashMap<UINT, T> {
+template <typename T> class UIntHashMap       : public HashMap<UINT, T> {
 public:
   UIntHashMap(size_t capacity=31)   : HashMap<UINT, T>(uintHash, uintHashCmp, capacity) {
   }
 };
 
-template <class T> class LongHashMap       : public HashMap<long, T> {
+template <typename T> class LongHashMap       : public HashMap<long, T> {
 public:
   LongHashMap(size_t capacity=31)   : HashMap<long, T>(longHash, longHashCmp, capacity) {
   }
 };
 
-template <class T> class ULongHashMap      : public HashMap<ULONG, T> {
+template <typename T> class ULongHashMap      : public HashMap<ULONG, T> {
 public:
   ULongHashMap(size_t capacity=31)  : HashMap<ULONG, T>(ulongHash, ulongHashCmp, capacity) {
   }
 };
 
-template <class T> class Int64HashMap      : public HashMap<INT64, T> {
+template <typename T> class Int64HashMap      : public HashMap<INT64, T> {
 public:
   Int64HashMap(size_t capacity=31)  : HashMap<INT64, T>(int64Hash, int64HashCmp, capacity) {
   }
 };
 
-template <class T> class UInt64HashMap     : public HashMap<UINT64, T> {
+template <typename T> class UInt64HashMap     : public HashMap<UINT64, T> {
 public:
   UInt64HashMap(size_t capacity=31) : HashMap<UINT64, T>(uint64Hash, uint64HashCmp, capacity) {
   }
 };
 
-template <class T> class FloatHashMap      : public HashMap<float, T> {
+template <typename T> class FloatHashMap      : public HashMap<float, T> {
 public:
   FloatHashMap(size_t capacity=31)  : HashMap<float, T>(floatHash, floatHashCmp, capacity) {
   }
 };
 
-template <class T> class DoubleHashMap      : public HashMap<double, T> {
+template <typename T> class DoubleHashMap      : public HashMap<double, T> {
 public:
   DoubleHashMap(size_t capacity=31)  : HashMap<double, T>(doubleHash, doubleHashCmp, capacity) {
   }
 };
 
-template <class T> class StrHashMap        : public HashMap<const TCHAR*, T> {
+template <typename T> class StrHashMap        : public HashMap<const TCHAR*, T> {
 public:
   StrHashMap(size_t capacity=31)    : HashMap<const TCHAR*, T>(strHash, strHashCmp, capacity) {
   }
 };
 
-template <class T> class StrIHashMap       : public HashMap<const TCHAR*, T> {
+template <typename T> class StrIHashMap       : public HashMap<const TCHAR*, T> {
 public:
   StrIHashMap(size_t capacity=31)   : HashMap<const TCHAR*, T>(striHash, striHashCmp, capacity) {
   }
 };
 
-template <class T> class StringHashMap     : public HashMap<String, T> {
+template <typename T> class StringHashMap     : public HashMap<String, T> {
 public:
   StringHashMap(size_t capacity=31) : HashMap<String, T>(stringHash, stringHashCmp, capacity) {
   }
 };
 
-template <class T> class StringIHashMap    : public HashMap<String, T> {
+template <typename T> class StringIHashMap    : public HashMap<String, T> {
 public:
   StringIHashMap(size_t capacity=31) : HashMap<String, T>(stringiHash, stringiHashCmp, capacity) {
   }
 };
 
-template <class K, class V> class PointerHashMap : public HashMap<K, V> {
+template <typename K, typename V> class PointerHashMap : public HashMap<K, V> {
 public:
   PointerHashMap(size_t capacity=31) : HashMap<K, V>(pointerHash, pointerHashCmp, capacity) {
   }

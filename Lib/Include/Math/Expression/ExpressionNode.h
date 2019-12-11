@@ -83,7 +83,7 @@ public:
 
 typedef CompactKeyType<ExpressionInputSymbol> ExpressionSymbolKey;
 
-template<class E> class CompactSymbolHashMap : public CompactHashMap<ExpressionSymbolKey, E> {
+template<typename E> class CompactSymbolHashMap : public CompactHashMap<ExpressionSymbolKey, E> {
 };
 
 class PackedSyntaxNodeInfo {
@@ -287,7 +287,7 @@ bool equalMinus(const ExpressionNode *n1, const ExpressionNode *n2);
 
 typedef CompactKeyType<const ExpressionNode*>  ExpressionNodeKey;
 
-template<class E> class CompactNodeHashMap : public CompactHashMap<ExpressionNodeKey, E> {
+template<typename E> class CompactNodeHashMap : public CompactHashMap<ExpressionNodeKey, E> {
 };
 
 class ExpressionNodeNumber : public ExpressionNode {

@@ -78,7 +78,7 @@ static const _uint128 powRadix[] = {
 #define STRCPY(dst, src) ((sizeof(Ctype)==sizeof(char))?(Ctype*)strcpy((char*)dst, (char*)src):(Ctype*)wcscpy((wchar_t*)dst, (wchar_t*)src))
 #define STRREV(str)      ((sizeof(Ctype)==sizeof(char))?(Ctype*)_strrev((char*)str):(Ctype*)_wcsrev((wchar_t*)str))
 
-template<class Int128Type, class Ctype> Ctype *int128toStr(Int128Type value, Ctype *str, UINT radix) {
+template<typename Int128Type, typename Ctype> Ctype *int128toStr(Int128Type value, Ctype *str, UINT radix) {
   if((radix < 2) || (radix > 36)) {
     errno = EINVAL;
     str[0] = 0;
@@ -190,7 +190,7 @@ static inline bool isRadixDigit(wchar_t ch, UINT radix, UINT &value) {
   return true;
 }
 
-template<class Int128Type, class Ctype, bool withSign> Int128Type strtoint128(const Ctype *s, Ctype **end, UINT radix, _locale_t locale) {
+template<typename Int128Type, class Ctype, bool withSign> Int128Type strtoint128(const Ctype *s, Ctype **end, UINT radix, _locale_t locale) {
   if((s == NULL) || ((radix != 0) && ((radix < 2) || (radix > 36)))) {
     errno = EINVAL;
     return 0;

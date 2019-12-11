@@ -17,7 +17,7 @@
 #define STRCHR(str,ch)   ((sizeof(Ctype)==1) ? (Ctype*) strchr((char*)str, (char)ch)   : (Ctype*) wcschr((wchar_t*)str, (wchar_t)ch ))
 #define STRDUP(str)      ((sizeof(Ctype)==1) ? (Ctype*)_strdup((char*)str)             : (Ctype*)_wcsdup((wchar_t*)str))
 
-template<class Ctype> void expandArgv(int &argc, Ctype **&argv) {
+template<typename Ctype> void expandArgv(int &argc, Ctype **&argv) {
   Ctype path[256],*last;
   CompactArray<Ctype*> list;
 

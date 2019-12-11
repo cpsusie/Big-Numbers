@@ -158,7 +158,7 @@ private:
   inline void setViewMatrix(const D3DXMATRIX &m) {
     setTransformation(D3DTS_VIEW, m);
   }
-  template<class T> void setRenderState(D3DRENDERSTATETYPE id, T value) {
+  template<typename T> void setRenderState(D3DRENDERSTATETYPE id, T value) {
     FV(m_device->SetRenderState(id, (DWORD)value));
   }
 

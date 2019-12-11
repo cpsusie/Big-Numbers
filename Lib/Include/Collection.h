@@ -18,7 +18,7 @@ public:
   virtual ~AbstractCollection() {}
 };
 
-template <class T> class Collection {
+template <typename T> class Collection {
 protected:
   AbstractCollection *m_collection;
 public:
@@ -273,7 +273,7 @@ public:
 
 };
 
-template<class S, class T, class D=StreamDelimiter> S &operator<<(S &out, const Collection<T> &c) {
+template<typename S, typename T, class D=StreamDelimiter> S &operator<<(S &out, const Collection<T> &c) {
   const D      delimiter;
   const UINT64 size = c.size();
   out << size << delimiter;
@@ -283,7 +283,7 @@ template<class S, class T, class D=StreamDelimiter> S &operator<<(S &out, const 
   return out;
 }
 
-template<class S, class T> S &operator>>(S &in, Collection<T> &c) {
+template<typename S, typename T> S &operator>>(S &in, Collection<T> &c) {
   UINT64 size;
   in >> size;
   CHECKUINT64ISVALIDSIZET(size);

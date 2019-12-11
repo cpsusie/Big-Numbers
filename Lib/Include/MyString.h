@@ -8,8 +8,10 @@
 
 #define EMPTYSTRING _T("")
 
-#define __TFILE__                   _T(__FILE__)
+#define __TFILE__                   _T(__FILE__    )
 #define __TFUNCTION__               _T(__FUNCTION__)
+#define __TFUNCSIG__                _T(__FUNCSIG__ )
+
 #define DEFINEMETHODNAME            static TCHAR const* const method = __TFUNCTION__
 #define DECLARECLASSNAME            static TCHAR const* const s_className
 #define DEFINECLASSNAME(className)  TCHAR const* const className::s_className = _T(#className)
@@ -52,17 +54,17 @@ int   strnHashCmp(  const TCHAR * const &s1, const TCHAR * const &s2, size_t n1,
 ULONG strniHash(    const TCHAR * const &s                          , size_t n);
 int   strniHashCmp( const TCHAR * const &s1, const TCHAR * const &s2, size_t n1, size_t n2);
 
-template<class DstCharType, class SrcCharType> DstCharType *strCpy(DstCharType *dst, const SrcCharType *src) {
+template<typename DstCharType, typename SrcCharType> DstCharType *strCpy(DstCharType *dst, const SrcCharType *src) {
   DstCharType *ret = dst;
   while(*(dst++) = (DstCharType)(*(src++)));
   return ret;
 }
 
-template<class CharType> CharType *strUpr(CharType *str) {
+template<typename CharType> CharType *strUpr(CharType *str) {
   return (sizeof(CharType) == 1) ? (CharType*)_strupr((char*)((void*)str)) : (CharType*)_wcsupr((wchar_t*)((void*)str));
 }
 
-template<class CharType> size_t strLen(const CharType *str) {
+template<typename CharType> size_t strLen(const CharType *str) {
   return (sizeof(CharType) == 1) ? strlen((char*)((void*)str)) : wcslen((wchar_t*)((void*)str));
 }
 

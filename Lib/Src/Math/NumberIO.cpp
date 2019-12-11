@@ -27,7 +27,7 @@ StringArray NumberValueStreamScanner::getRegexLines() { // static
   return StringArray(numberPatterns);
 }
 
-template <class IStreamType, class CharType> IStreamType &getNumber(IStreamType &in, Number &n) {
+template <typename IStreamType, typename CharType> IStreamType &getNumber(IStreamType &in, Number &n) {
   IStreamScanner<IStreamType, CharType> scanner(in);
 
   const RegexIStream &regex = NumberValueStreamScanner::getInstance();
@@ -47,7 +47,7 @@ template <class IStreamType, class CharType> IStreamType &getNumber(IStreamType 
 }
 
 // always use decimal, if hexfloat, then use scientific
-template<class OStreamType> OStreamType &putNumber(OStreamType &out, const Number &n) {
+template<typename OStreamType> OStreamType &putNumber(OStreamType &out, const Number &n) {
   const FormatFlags flg = out.flags();
   if((flg & ios::floatfield) == ios::hexfloat) {
     out.setf(0, ios::fixed);

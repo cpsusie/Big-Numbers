@@ -453,7 +453,7 @@ INT64 Rational::safeProd(const TCHAR *method, int line, const INT64 &a, const IN
   return result;
 }
 
-template<class T, class signedT> T findGCDTemplate(T a, T b) {
+template<typename T, typename signedT> T findGCDTemplate(T a, T b) {
   if((a|b) == 0) {
     throwInvalidArgumentException(__TFUNCTION__, _T("a=b=0"));
   }

@@ -192,23 +192,23 @@ extern const double M_E;
 
 // return x if x is in I = [min(x1, x2); max(x1, x2)] else the endpoint of I nearest to x
 // assume MIN <= MAX
-template<class T> T minMax1(const T &x, const T &MIN, const T &MAX) {
+template<typename T> T minMax1(const T &x, const T &MIN, const T &MAX) {
   return (x < MIN) ? MIN : (x > MAX) ? MAX : x;
 }
 
-template<class T> T minMax(T x, T x1, T x2) {
+template<typename T> T minMax(T x, T x1, T x2) {
   return (x1 <= x2) ? minMax1(x, x1, x2) : minMax1(x, x2, x1);
 }
 
-template<class T> T dsign(T x) {
+template<typename T> T dsign(T x) {
   return (x < 0) ? -1 : (x > 0) ? 1 : 0;
 }
 
-template<class T> T dmin(T x1, T x2) {
+template<typename T> T dmin(T x1, T x2) {
   return (x1 < x2) ? x1 : x2;
 }
 
-template<class T> T dmax(T x1, T x2) {
+template<typename T> T dmax(T x1, T x2) {
   return (x1 > x2) ? x1 : x2;
 }
 
@@ -352,7 +352,7 @@ typedef enum {
   ,_UNDEFREG_QNAN
 } _UndefNumericValue;
 
-template<class IStreamType, class CharType, class NumericType> class NumericStreamAcceptUndef {
+template<typename IStreamType, typename CharType, typename NumericType> class NumericStreamAcceptUndef {
 private:
   IStreamType &m_in;
   void parseOnFail(NumericType &x, bool neg) const {
@@ -399,7 +399,7 @@ public:
 };
 
 
-template<class IStreamType, class CharType, class NumericType> class NumericManipulatorStream {
+template<typename IStreamType, typename CharType, typename NumericType> class NumericManipulatorStream {
 public:
   mutable IStreamType *m_in;
   inline const NumericManipulatorStream &operator>>(NumericType &x) const {
@@ -411,18 +411,18 @@ public:
   }
 };
 
-template<class NumericType> NumericManipulatorStream<std::istream, char, NumericType> CharManip {
+template<typename NumericType> NumericManipulatorStream<std::istream, char, NumericType> CharManip {
 };
 
-template<class NumericType> NumericManipulatorStream<std::wistream, wchar_t, NumericType> WcharManip {
+template<typename NumericType> NumericManipulatorStream<std::wistream, wchar_t, NumericType> WcharManip {
 };
 
-template<class NumericType> NumericManipulatorStream<std::istream,char,NumericType> &operator>>(std::istream &in, NumericManipulatorStream<std::istream, char, NumericType> &dm) {
+template<typename NumericType> NumericManipulatorStream<std::istream,char,NumericType> &operator>>(std::istream &in, NumericManipulatorStream<std::istream, char, NumericType> &dm) {
   dm.m_in = &in;
   return dm;
 }
 
-template<class NumericType> NumericManipulatorStream<std::wistream, wchar_t, NumericType> &operator>>(std::wistream &in, NumericManipulatorStream<std::wistream, wchar_t, NumericType> &dm) {
+template<typename NumericType> NumericManipulatorStream<std::wistream, wchar_t, NumericType> &operator>>(std::wistream &in, NumericManipulatorStream<std::wistream, wchar_t, NumericType> &dm) {
   dm.m_in = &in;
   return dm;
 }

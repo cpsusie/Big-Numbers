@@ -14,7 +14,7 @@ private:
   CompactArray<PropertyChangeListener*> m_listeners;
 protected:
   void notifyPropertyChanged(int id, const void *oldValue, const void *newValue) const;
-  template<class T> void setProperty(int id, T &v, const T &newValue) {
+  template<typename T> void setProperty(int id, T &v, const T &newValue) {
     if(newValue != v) {
       const T oldValue = v;
       v = newValue;

@@ -3,7 +3,7 @@
 #include <MathUtil.h>
 #include "Point3D.h"
 
-template<class T> class SphericalTemplate {
+template<typename T> class SphericalTemplate {
 protected:
   void init(const T &x, const T &y, const T &z) {
     const T dxy2 = x*x + y*y;

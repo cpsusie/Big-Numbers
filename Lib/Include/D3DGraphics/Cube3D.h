@@ -4,7 +4,7 @@
 #include <Math/Point3D.h>
 #include <D3DX9.h>
 
-template<class C, class V> class Cube3DTemplate {
+template<typename C, typename V> class Cube3DTemplate {
   private:
   C m_lbn;
   C m_rtf;

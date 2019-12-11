@@ -129,7 +129,7 @@ public:
   // return NaN if (!isfinite(base) || !isfinite(e))
   // if(e==0) return NaN for base == 0, else 1
   // if(e< 0) return +inf for base == 0
-  template<class T> static T pow(T base, const Rational &e) {
+  template<typename T> static T pow(T base, const Rational &e) {
     if(!isfinite(base) || !isfinite(e)) {
       return numeric_limits<T>::quiet_NaN();
     }

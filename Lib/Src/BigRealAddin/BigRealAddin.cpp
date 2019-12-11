@@ -3,7 +3,7 @@
 
 using namespace std;
 
-template<class VTYPE> class DigitType {
+template<typename VTYPE> class DigitType {
 public:
   VTYPE n;
   VTYPE next;
@@ -16,7 +16,7 @@ public:
   }
 };
 
-template<class ETYPE, class VTYPE> class BigRealType {
+template<typename ETYPE, typename VTYPE> class BigRealType {
 public:
   VTYPE         m_vfptr;               // pointer to vtable
   VTYPE         m_first;               // Most significand  digit
@@ -34,7 +34,7 @@ typedef BigRealType<BRExpoTypex64, BRDigitTypex64> BigRealx64;
 
 // -------------------------------------------------------------------
 
-template<class INTTYPE> char *digitToStr(char *dst, INTTYPE n, UINT width) {
+template<typename INTTYPE> char *digitToStr(char *dst, INTTYPE n, UINT width) {
   char tmp[50], *d = width ? tmp : dst;
   if(sizeof(n) == sizeof(QWORD)) {
     _i64toa(n, d, 10);
@@ -53,7 +53,7 @@ template<class INTTYPE> char *digitToStr(char *dst, INTTYPE n, UINT width) {
   return dst;
 }
 
-template<class BRType, class ETYPE, class VTYPE, int log10Base, ETYPE nonNormalExpo> class BigRealAddIn {
+template<typename BRType, typename ETYPE, typename VTYPE, int log10Base, ETYPE nonNormalExpo> class BigRealAddIn {
 private:
   DEBUGHELPER *m_helper;
   bool         m_hasDecimalPoint;

@@ -139,7 +139,7 @@ void   moveCaret(                  CEdit     *edit, int amount=1);
 void   gotoMatchingParanthes(      CComboBox *cb);
 
 // assume id is CEdit
-template<class T> bool getEditValue(CWnd *wnd, int id, T &v) {
+template<typename T> bool getEditValue(CWnd *wnd, int id, T &v) {
   const String str = getWindowText(wnd, id);
   std::wstringstream stream(str.cstr());
   stream >> v;
@@ -150,7 +150,7 @@ template<class T> bool getEditValue(CWnd *wnd, int id, T &v) {
   }
   return true;
 }
-template<class T> void setEditValue(CWnd *wnd, int id, const T &v) {
+template<typename T> void setEditValue(CWnd *wnd, int id, const T &v) {
   std::wstringstream stream;
   stream << v;
   setWindowText(wnd, id, stream.str().c_str());

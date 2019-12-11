@@ -2,7 +2,7 @@
 
 #include "Real.h"
 
-template <class Domain, class Range> class FunctionTemplate {
+template <typename Domain, typename Range> class FunctionTemplate {
 public:
   virtual Range operator()(const Domain &x) = 0;
   virtual ~FunctionTemplate() {

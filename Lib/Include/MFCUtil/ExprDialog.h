@@ -102,7 +102,7 @@ protected:
   }
 };
 
-template <class T> class SaveLoadExprDialog : public CExprDialog {
+template <typename T> class SaveLoadExprDialog : public CExprDialog {
 private:
   const String m_paramTypeName;
   const String m_extension;

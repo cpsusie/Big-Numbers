@@ -44,7 +44,7 @@ private:
   }
   void cleanup();
 
-  template<class T> bool handleInfAndRationalValue(T v, bool init = false) {
+  template<typename T> bool handleInfAndRationalValue(T v, bool init = false) {
     if(!::isfinite(v)) {
       setToNaN(_fpclass(v), init);
       return true;

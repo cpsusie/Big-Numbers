@@ -79,7 +79,7 @@ public:
 };
 
 /*
-template <class T> class TArrayImpl : public ArrayImpl {
+template <typename T> class TArrayImpl : public ArrayImpl {
 public:
   TArrayImpl(AbstractObjectManager &om, size_t capacity) : ArrayImpl(om, capacity) {
   }
@@ -88,7 +88,7 @@ public:
 };
 */
 
-template <class T> class Array : public Collection<T> {
+template <typename T> class Array : public Collection<T> {
 public:
   Array() : Collection<T>(new ArrayImpl(ObjectManager<T>(), 10)) {
   }

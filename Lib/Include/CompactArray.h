@@ -585,7 +585,7 @@ public:
   }
 };
 
-template<class S, class T, class D=StreamDelimiter> S &operator<<(S &out, const CompactArray<T> &a) {
+template<typename S, typename T, class D=StreamDelimiter> S &operator<<(S &out, const CompactArray<T> &a) {
   const D      delimiter;
   const UINT   elemSize = sizeof(T);
   const size_t n        = a.size();
@@ -598,7 +598,7 @@ template<class S, class T, class D=StreamDelimiter> S &operator<<(S &out, const 
   return out;
 }
 
-template<class S, class T> S &operator>>(S &in, CompactArray<T> &a) {
+template<typename S, typename T> S &operator>>(S &in, CompactArray<T> &a) {
   UINT elemSize;
   in >> elemSize;
   if(elemSize != sizeof(T)) {
@@ -631,7 +631,7 @@ typedef CompactArray<float>  CompactFloatArray;
 typedef CompactArray<double> CompactDoubleArray;
 typedef CompactArray<size_t> CompactSizetArray;
 
-template <class T> class CompactFileArray {
+template <typename T> class CompactFileArray {
 private:
   mutable ByteInputFile  m_f;
   const UINT64           m_dataStartOffset;

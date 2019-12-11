@@ -3,7 +3,7 @@
 #include "Semaphore.h"
 #include "QueueList.h"
 
-template <class T> class SynchronizedQueue : private QueueList<T> {
+template <typename T> class SynchronizedQueue : private QueueList<T> {
 private:
   mutable Semaphore m_gate;
   Semaphore         m_emptySem;

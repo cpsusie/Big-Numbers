@@ -3,7 +3,7 @@
 #include <Math/Double80.h>
 #include <Math/FPU.h>
 
-template<class CharType> const CharType *parseD80Decimal(const CharType *s, Double80 &result, bool &gotDigit) {
+template<typename CharType> const CharType *parseD80Decimal(const CharType *s, Double80 &result, bool &gotDigit) {
   if(iswdigit(*s)) {
     gotDigit = true;
 #define TCHARTODECIMAL(ch) ((int)((ch) - '0'))
@@ -106,7 +106,7 @@ static UINT charToInt(wchar_t ch) {
   return 0;
 }
 
-template<class CharType> const CharType *parseD80Hex(const CharType *s, Double80 &result, bool &gotDigit) {
+template<typename CharType> const CharType *parseD80Hex(const CharType *s, Double80 &result, bool &gotDigit) {
   if(iswxdigit(*s)) {
     gotDigit = true;
     result   = charToInt(*(s++));
@@ -161,7 +161,7 @@ template<class CharType> const CharType *parseD80Hex(const CharType *s, Double80
   return s;
 }
 
-template<class CharType> Double80 _strtod80_locale(const CharType *s, CharType **end, _locale_t locale) {
+template<typename CharType> Double80 _strtod80_locale(const CharType *s, CharType **end, _locale_t locale) {
   errno=0;
   bool     isNegative     = false;
   bool     gotDigit       = false;
@@ -291,7 +291,7 @@ static void normalizeValue(Double80 &m, int &expo10) {
 }
 
 
-template<class CharType> CharType *_d80tostr(CharType *dst, const Double80 &x) {
+template<typename CharType> CharType *_d80tostr(CharType *dst, const Double80 &x) {
   if(!isfinite(x)) {
     return StrStream::formatUndefined(dst,_fpclass(x));
   } else if(x.isZero()) {

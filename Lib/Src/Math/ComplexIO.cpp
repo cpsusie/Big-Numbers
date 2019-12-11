@@ -9,7 +9,7 @@ using namespace std;
     (re)
     (re,im)
 */
-template <class IStreamType, class CharType> IStreamType &getComplex(IStreamType &in, Complex &c) {
+template <typename IStreamType, typename CharType> IStreamType &getComplex(IStreamType &in, Complex &c) {
   if(in.flags() & ios::skipws) skipspace(in);
   CharType ch = in.peek();
   Real re, im;
@@ -46,7 +46,7 @@ Fail:
   return in;
 }
 
-template <class OStreamType, class SStreamType> OStreamType &putComplex(OStreamType &out, const Complex &c) {
+template<typename OStreamType, typename SStreamType> OStreamType &putComplex(OStreamType &out, const Complex &c) {
   if(c.im == 0) {
     out << c.re;
   } else {

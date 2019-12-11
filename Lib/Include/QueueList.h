@@ -2,7 +2,7 @@
 
 #include "LinkedList.h"
 
-template <class T> class QueueList : protected LinkedList<T> {
+template <typename T> class QueueList : protected LinkedList<T> {
 public:
   void put(const T &e) {
     LinkedList<T>::add(e);

@@ -12,7 +12,7 @@ public:
   virtual const void *value() const = 0;
 };
 
-template <class K, class V> class Entry : public AbstractEntry {
+template <typename K, typename V> class Entry : public AbstractEntry {
 public:
   const K &getKey() const {
     return *(K*)key();
@@ -55,7 +55,7 @@ public:
   virtual ~AbstractMap() {}
 };
 
-template <class K, class V> class Map {
+template <typename K, typename V> class Map {
 protected:
   AbstractMap *m_map;
   Map(AbstractMap *map) {
@@ -266,7 +266,7 @@ public:
   }
 };
 
-template<class S, class K, class V, class D=StreamDelimiter> S &operator<<(S &out, const Map<K, V> &m) {
+template<typename S, typename K, typename V, typename D=StreamDelimiter> S &operator<<(S &out, const Map<K, V> &m) {
   const D      delimiter;
   const size_t size = m.size();
   out << size << delimiter;
@@ -277,7 +277,7 @@ template<class S, class K, class V, class D=StreamDelimiter> S &operator<<(S &ou
   return out;
 }
 
-template<class S, class K, class V> S &operator>>(S &in, Map<K, V> &m) {
+template<typename S, typename K, typename V> S &operator>>(S &in, Map<K, V> &m) {
   size_t size;
   in >> size;
   for(size_t i = 0; i < size; i++) {

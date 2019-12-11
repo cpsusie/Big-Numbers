@@ -4,7 +4,7 @@
 #include "CompactKeyType.h"
 #include "HeapObjectPool.h"
 
-template <class K> class SetEntry {
+template <typename K> class SetEntry {
 public:
   K m_key;
   inline SetEntry() {}
@@ -14,7 +14,7 @@ public:
 
 // Assume K has public member-function ULONG hashCode() const...
 // and bool operator==(const K &) defined
-template <class K> class CompactHashSet {
+template <typename K> class CompactHashSet {
 private:
   size_t                                    m_size;
   size_t                                    m_capacity;

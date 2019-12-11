@@ -147,7 +147,7 @@ public:
   void remove();
 };
 
-template <class T> class HashSet : public Set<T> {
+template <typename T> class HashSet : public Set<T> {
 public:
   HashSet(ULONG (*hash)(const T &key), int (*comparator)(const T &key1, const T &key2), size_t capacity = 31)
     : Set<T>(new HashSetImpl(ObjectManager<T>(), (HashFunction)hash, FunctionComparator<T>(comparator), capacity))
@@ -271,7 +271,7 @@ public:
   }
 };
 
-template<class T> class PointerHashSet : public HashSet<T> {
+template<typename T> class PointerHashSet : public HashSet<T> {
 public:
   PointerHashSet(size_t capacity=31) : HashSet<T>(pointerHash, pointerHashCmp, capacity) {
   }

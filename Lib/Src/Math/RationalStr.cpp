@@ -5,7 +5,7 @@
 
 #define EATWHITE() { while(iswspace(*s)) s++; }
 
-template<class INTTYPE, class CharType> Rational _strtorat(const CharType *s, CharType **end, INTTYPE (*strtointtype)(const CharType *, CharType **, int), int radix) {
+template<typename INTTYPE, typename CharType> Rational _strtorat(const CharType *s, CharType **end, INTTYPE (*strtointtype)(const CharType *, CharType **, int), int radix) {
   Rational result;
   EATWHITE();
   INTTYPE numerator = 0, denominator = 1;

@@ -218,7 +218,7 @@ public:
 };
 
 // Evaluate p(x,n,c) = c[n]*x^n + c[n-1]*x^(n-1)+...+c[1]*x+c[0]
-template<class T> T poly(T x, int degree, const T *coef) {
+template<typename T> T poly(T x, int degree, const T *coef) {
   const T *cp = coef + degree;
   T result = *cp;
   while(cp-- > coef) {
@@ -228,7 +228,7 @@ template<class T> T poly(T x, int degree, const T *coef) {
 }
 
 // Evaluate p(x,n,c) = c[0]*x^n + c[1]*x^(n-1)+...+c[n-1]*x+c[n]
-template<class T> T poly1(T x, int degree, const T *coef) {
+template<typename T> T poly1(T x, int degree, const T *coef) {
   T result = *coef;
   for(const T *last = coef + degree; coef++ < last;) {
     result = result * x + *coef;

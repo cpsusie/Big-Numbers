@@ -81,7 +81,7 @@ void DFATables::clear() {
   init();
 }
 
-template<class T> int countNonZeroes(const T *a, size_t size) {
+template<typename T> int countNonZeroes(const T *a, size_t size) {
   int count = 0;
   while(size--) {
     if(*(a++)) count++;
@@ -89,7 +89,7 @@ template<class T> int countNonZeroes(const T *a, size_t size) {
   return count;
 }
 
-template<class T> String arrayToString(const T *a, size_t size, size_t maxPerLine) {
+template<typename T> String arrayToString(const T *a, size_t size, size_t maxPerLine) {
   String result;
   for(size_t i = 0, j = 1; i < size; i++, j++) {
     if((size > maxPerLine) && (j == 1)) {
@@ -122,7 +122,7 @@ static String thinCharMapToString(const short *a, UINT size) {
   return result;
 }
 
-template<class T> String thinMapToString(const T *a, size_t size) {
+template<typename T> String thinMapToString(const T *a, size_t size) {
   String result;
   BitSet tmp(size);
   for(size_t i = 0; i < size; i++, a++) {

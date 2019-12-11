@@ -14,7 +14,7 @@ public:
   virtual ~AbstractSelector() {}
 };
 
-template <class T> class Comparator : public AbstractComparator {
+template <typename T> class Comparator : public AbstractComparator {
 private:
   inline int cmp(const void *e1, const void *e2) {
     return compare(*(const T*)e1, *(const T*)e2);
@@ -23,7 +23,7 @@ public:
   virtual int compare(const T &e1, const T &e2) = 0;
 };
 
-template <class T> class Selector : public AbstractSelector {
+template <typename T> class Selector : public AbstractSelector {
 private:
   inline bool select(const void *e) {
     return select(*(const T*)e);
@@ -33,7 +33,7 @@ public:
 };
 
 
-template <class T> class FunctionComparator : public Comparator<T> {
+template <typename T> class FunctionComparator : public Comparator<T> {
 private:
   typedef int (*CompareFunction)(const T*, const T*);
 protected:

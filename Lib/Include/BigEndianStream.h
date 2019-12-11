@@ -7,14 +7,14 @@
 
 #if __BYTE_ORDER__ != __ORDER_BIG_ENDIAN__
 
-template<class T, class C> intptr_t readItemArrayBE(ByteInputStream &s, T *buf, size_t n) {
+template<typename T, typename C> intptr_t readItemArrayBE(ByteInputStream &s, T *buf, size_t n) {
   s.getBytesForced((BYTE*)buf, n * sizeof(T));
   const T *end = buf + n;
   for(T *p = buf; p < end; p++) *p = C::ntoh(*p);
   return n;
 }
 
-template<class T, class C> void writeItemArrayBE(ByteOutputStream &s, const T *buf, size_t n) {
+template<typename T, typename C> void writeItemArrayBE(ByteOutputStream &s, const T *buf, size_t n) {
   T tmp[4096], *dst = tmp, *endtmp = dst+ARRAYSIZE(tmp);
   const T *endbuf = buf + n;
   while (buf < endbuf) {

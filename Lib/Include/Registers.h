@@ -36,7 +36,7 @@ inline int regSizeCmp(RegSize s1, RegSize s2) {
 #define DECLAREDEBUGSTR
 #endif // _DEBUG
 
-template<class E> class vBitSet8 : public BitSet8 {
+template<typename E> class vBitSet8 : public BitSet8 {
 public:
   // Terminate with -1
   vBitSet8(int e1, ...) {

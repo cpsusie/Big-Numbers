@@ -11,7 +11,7 @@ typedef enum {
  ,NORMAL_DISTRIBUTION
 } IntervalScale;
 
-template<class T> class IntervalTransformationTemplate {
+template<typename T> class IntervalTransformationTemplate {
 private:
   NumberInterval<T> m_fromInterval, m_toInterval;
   T m_a, m_b;
@@ -116,7 +116,7 @@ typedef IntervalTransformationTemplate<double  > IntervalTransformation;
 typedef IntervalTransformationTemplate<Double80> D80IntervalTransformation;
 typedef IntervalTransformationTemplate<Real    > RealIntervalTransformation;
 
-template<class T> class LinearTransformationTemplate : public IntervalTransformationTemplate<T> {
+template<typename T> class LinearTransformationTemplate : public IntervalTransformationTemplate<T> {
 protected:
   T translate(const T &x) const {
     return x;
@@ -145,7 +145,7 @@ typedef LinearTransformationTemplate<double  > LinearTransformation;
 typedef LinearTransformationTemplate<Double80> D80LinearTransformation;
 typedef LinearTransformationTemplate<Real    > RealLinearTransformation;
 
-template<class T> class LogarithmicTransformationTemplate : public IntervalTransformationTemplate<T> {
+template<typename T> class LogarithmicTransformationTemplate : public IntervalTransformationTemplate<T> {
 protected:
   T translate(const T &x) const {
     if(x <= 0) {
@@ -177,7 +177,7 @@ typedef LogarithmicTransformationTemplate<double  > LogarithmicTransformation;
 typedef LogarithmicTransformationTemplate<Double80> D80LogarithmicTransformation;
 typedef LogarithmicTransformationTemplate<Real    > RealLogarithmicTransformation;
 
-template<class T> class NormalDistributionTransformationTemplate : public IntervalTransformationTemplate<T> {
+template<typename T> class NormalDistributionTransformationTemplate : public IntervalTransformationTemplate<T> {
 protected:
   T translate(const T &x) const {
     if(x <= 0 || x >= 1) {
@@ -222,7 +222,7 @@ typedef NormalDistributionTransformationTemplate<Real    > RealNormalDistributio
 #define X_AXIS 1
 #define Y_AXIS 2
 
-template<class T> class RectangleTransformationTemplate {
+template<typename T> class RectangleTransformationTemplate {
 private:
   IntervalTransformationTemplate<T> *m_xtransform, *m_ytransform;
   IntervalTransformationTemplate<T> *allocateTransformation(const NumberInterval<T> &from, const NumberInterval<T> &to, IntervalScale scale) {

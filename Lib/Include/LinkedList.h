@@ -56,7 +56,7 @@ public:
   AbstractIterator *getIterator();
 };
 
-template <class T> class LinkedList : public Collection<T> {
+template <typename T> class LinkedList : public Collection<T> {
 public:
   LinkedList() : Collection<T>(new ListImpl(ObjectManager<T>())) {
   }

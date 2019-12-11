@@ -66,7 +66,7 @@ Int128StrStream &Int128StrStream::operator<<(const _int128 &n) {
   return *this;
 }
 
-template <class IStreamType, class CharType> IStreamType &getInt128(IStreamType &in, _int128 &n) {
+template <typename IStreamType, typename CharType> IStreamType &getInt128(IStreamType &in, _int128 &n) {
   IStreamScanner<IStreamType, CharType> scanner(in);
   CharType ch        = scanner.peek();
   bool     gotDigits = false;
@@ -138,7 +138,7 @@ template <class IStreamType, class CharType> IStreamType &getInt128(IStreamType 
   return in;
 }
 
-template <class IStreamType, class CharType> IStreamType &getUint128(IStreamType &in, _uint128 &n) {
+template <typename IStreamType, typename CharType> IStreamType &getUint128(IStreamType &in, _uint128 &n) {
   IStreamScanner<IStreamType, CharType> scanner(in);
   CharType ch        = scanner.peek();
   bool     gotDigits = false;
@@ -210,7 +210,7 @@ template <class IStreamType, class CharType> IStreamType &getUint128(IStreamType
   return in;
 }
 
-template <class OStreamType, class I128Type> OStreamType &putI128(OStreamType &out, const I128Type &n) {
+template <typename OStreamType, typename I128Type> OStreamType &putI128(OStreamType &out, const I128Type &n) {
   Int128StrStream buf(out);
   buf << n;
   out << (String&)buf;

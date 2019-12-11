@@ -3,7 +3,7 @@
 #include "Map.h"
 #include "CompactHashSet.h"
 
-template <class K, class V> class MapEntry : public SetEntry<K> {
+template <typename K, typename V> class MapEntry : public SetEntry<K> {
 public:
   V m_value;
   inline MapEntry() {
@@ -12,7 +12,7 @@ public:
   }
 };
 
-template <class K, class V> class CompactHashMap {
+template <typename K, typename V> class CompactHashMap {
 private:
   size_t                                       m_size;
   size_t                                       m_capacity;
@@ -451,7 +451,7 @@ public:
   }
 };
 
-template <class T> class CompactShortHashMap : public CompactHashMap<CompactShortKeyType, T> {
+template <typename T> class CompactShortHashMap : public CompactHashMap<CompactShortKeyType, T> {
 public:
   CompactShortHashMap() {
   }
@@ -461,7 +461,7 @@ public:
   }
 };
 
-template <class T> class CompactUShortHashMap : public CompactHashMap<CompactUShortKeyType, T> {
+template <typename T> class CompactUShortHashMap : public CompactHashMap<CompactUShortKeyType, T> {
 public:
   CompactUShortHashMap() {
   }
@@ -471,7 +471,7 @@ public:
   }
 };
 
-template <class T> class CompactIntHashMap : public CompactHashMap<CompactIntKeyType, T> {
+template <typename T> class CompactIntHashMap : public CompactHashMap<CompactIntKeyType, T> {
 public:
   CompactIntHashMap() {
   }
@@ -481,7 +481,7 @@ public:
   }
 };
 
-template <class T> class CompactUIntHashMap : public CompactHashMap<CompactUIntKeyType, T> {
+template <typename T> class CompactUIntHashMap : public CompactHashMap<CompactUIntKeyType, T> {
 public:
   CompactUIntHashMap() {
   }
@@ -491,7 +491,7 @@ public:
   }
 };
 
-template <class T> class CompactFloatHashMap : public CompactHashMap<CompactFloatKeyType, T> {
+template <typename T> class CompactFloatHashMap : public CompactHashMap<CompactFloatKeyType, T> {
 public:
   CompactFloatHashMap() {
   }
@@ -501,7 +501,7 @@ public:
   }
 };
 
-template <class T> class CompactDoubleHashMap : public CompactHashMap<CompactDoubleKeyType, T> {
+template <typename T> class CompactDoubleHashMap : public CompactHashMap<CompactDoubleKeyType, T> {
 public:
   CompactDoubleHashMap() {
   }
@@ -511,7 +511,7 @@ public:
   }
 };
 
-template <class T> class CompactStrHashMap    : public CompactHashMap<CompactStrKeyType, T> {
+template <typename T> class CompactStrHashMap    : public CompactHashMap<CompactStrKeyType, T> {
 public:
   CompactStrHashMap() {
   }
@@ -521,7 +521,7 @@ public:
   }
 };
 
-template <class T> class CompactStrIHashMap    : public CompactHashMap<CompactStrIKeyType, T> {
+template <typename T> class CompactStrIHashMap    : public CompactHashMap<CompactStrIKeyType, T> {
 public:
   CompactStrIHashMap() {
   }

@@ -130,7 +130,7 @@ public :
   String toString() const;
 };
 
-template <class T, class B> class ReferenceCountedType {
+template <typename T, typename B> class ReferenceCountedType {
 private :
   long m_count;
 protected :

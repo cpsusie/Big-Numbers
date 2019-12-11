@@ -65,7 +65,7 @@ public:
   }
 };
 
-template <class K, class V> class TreeMap : public Map<K, V> {
+template <typename K, typename V> class TreeMap : public Map<K, V> {
 public:
   TreeMap(int (*comparator)(const K &key1, const K &key2))
     : Map<K, V>(new TreeMapImpl(ObjectManager<K>(), ObjectManager<V>(), FunctionComparator<K>(comparator)))
@@ -81,85 +81,85 @@ public:
   }
 };
 
-template <class T> class ShortTreeMap : public TreeMap<short, T>  {
+template <typename T> class ShortTreeMap : public TreeMap<short, T>  {
 public:
   ShortTreeMap() : TreeMap<short, T>(shortHashCmp) {
   }
 };
 
-template <class T> class UShortTreeMap : public TreeMap<USHORT, T>  {
+template <typename T> class UShortTreeMap : public TreeMap<USHORT, T>  {
 public:
   UShortTreeMap() : TreeMap<USHORT, T>(ushortHashCmp) {
   }
 };
 
-template <class T> class IntTreeMap : public TreeMap<int, T>    {
+template <typename T> class IntTreeMap : public TreeMap<int, T>    {
 public:
   IntTreeMap() : TreeMap<int, T>(intHashCmp) {
   }
 };
 
-template <class T> class UIntTreeMap : public TreeMap<UINT, T>    {
+template <typename T> class UIntTreeMap : public TreeMap<UINT, T>    {
 public:
   UIntTreeMap() : TreeMap<UINT, T>(uintHashCmp) {
   }
 };
 
-template <class T> class LongTreeMap : public TreeMap<long, T> {
+template <typename T> class LongTreeMap : public TreeMap<long, T> {
 public:
   LongTreeMap() : TreeMap<long, T>(longHashCmp) {
   }
 };
 
-template <class T> class ULongTreeMap : public TreeMap<ULONG, T> {
+template <typename T> class ULongTreeMap : public TreeMap<ULONG, T> {
 public:
   ULongTreeMap() : TreeMap<ULONG, T>(ulongHashCmp) {
   }
 };
 
-template <class T> class Int64TreeMap       : public TreeMap<INT64, T> {
+template <typename T> class Int64TreeMap       : public TreeMap<INT64, T> {
 public:
   Int64TreeMap()   : TreeMap<INT64, T>(int64HashCmp) {
   }
 };
 
-template <class T> class UInt64TreeMap      : public TreeMap<UINT64, T> {
+template <typename T> class UInt64TreeMap      : public TreeMap<UINT64, T> {
 public:
   UInt64TreeMap()   : TreeMap<UINT64, T>(uint64HashCmp) {
   }
 };
 
-template <class T> class FloatTreeMap      : public TreeMap<float, T> {
+template <typename T> class FloatTreeMap      : public TreeMap<float, T> {
 public:
   FloatTreeMap()  : TreeMap<float, T>(floatHashCmp) {
   }
 };
 
-template <class T> class DoubleTreeMap      : public TreeMap<double, T> {
+template <typename T> class DoubleTreeMap      : public TreeMap<double, T> {
 public:
   DoubleTreeMap()  : TreeMap<double, T>(doubleHashCmp) {
   }
 };
 
-template <class T> class StrTreeMap : public TreeMap<const TCHAR*, T> {
+template <typename T> class StrTreeMap : public TreeMap<const TCHAR*, T> {
 public:
   StrTreeMap() : TreeMap<const TCHAR*, T>(strHashCmp) {
   }
 };
 
-template <class T> class StrITreeMap : public TreeMap<const TCHAR*, T> {
+template <typename T> class StrITreeMap : public TreeMap<const TCHAR*, T> {
 public:
   StrITreeMap() : TreeMap<const TCHAR*, T>(striHashCmp) {
   }
 };
 
-template <class T> class StringTreeMap : public TreeMap<String, T> {
+template <typename T> class StringTreeMap : public TreeMap<String, T> {
 public:
   StringTreeMap() : TreeMap<String, T>(stringHashCmp) {
   }
 };
 
-template <class T> class StringITreeMap : public TreeMap<String, T> {
+template <typename T> class StringITreeMap : public TreeMap<String, T> {
 public:
   StringITreeMap() : TreeMap<String, T>(stringiHashCmp) {
   }

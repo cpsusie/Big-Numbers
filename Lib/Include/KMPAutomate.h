@@ -3,7 +3,7 @@
 #include "StringSearchAlgorithm.h"
 
 // Knuth-Morris-Pratt string search algorithm
-template<class Ctype> class KMPAutomateTemplate : public StringSearchAlgorithm<Ctype> {
+template<typename Ctype> class KMPAutomateTemplate : public StringSearchAlgorithm<Ctype> {
 private:
   typedef intptr_t (KMPAutomateTemplate<Ctype>::*SearchFunction)(const Ctype *buf, size_t length) const;
 

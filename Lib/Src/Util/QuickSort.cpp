@@ -134,18 +134,13 @@ static void quicksortNoRecursionAnyWidth(void *base, size_t nelem, size_t width,
 
 // For T = bacic types (char,short,long,double), we can make swap and save operations
 // very fast, and these cases occur very often
-template <class T> class QuicksortClass {
-  public:
-    void sort(T *base, size_t nelem, AbstractComparator &comparator);
-};
-
 // This is a private quicksort-template, where we use the fact, that the compiler
 // generates much faster code to copy and swap elements, when we dont have
 // to call a function to do it.
 // Is only used for elements with size = sizeof(<primitive type>).
 // where <primitive type> is on of <char>,<short>,<long> and <double>.
 // For all other values of width, we call the general quicksortNoRecursionAnyWidth
-template <class T> void QuicksortClass<T>::sort(T *base, size_t nelem, AbstractComparator &comparator) {
+template<typename T> void sort(T *base, size_t nelem, AbstractComparator &comparator) {
   T     *baseStack[50];
   size_t sizeStack[50];
   int    stackTop = 0;
@@ -246,25 +241,17 @@ tailrecurse:
 void quickSort(void *base, size_t nelem, size_t width, AbstractComparator &comparator) {
   switch(width) {
   case sizeof(char)  :
-    { QuicksortClass<char>   sortchar;
-      sortchar.sort((char*)base,nelem,comparator);
-      break;
-    }
+    sort((char*)base,nelem,comparator);
+    break;
   case sizeof(short) :
-    { QuicksortClass<short>  sortshort;
-      sortshort.sort((short*)base,nelem,comparator);
-      break;
-    }
+    sort((short*)base,nelem,comparator);
+    break;
   case sizeof(long)  : // include pointertypes
-    { QuicksortClass<long>   sortlong;
-      sortlong.sort((long*)base,nelem,comparator);
-      break;
-    }
+    sort((long*)base,nelem,comparator);
+    break;
   case sizeof(__int64):
-    { QuicksortClass<__int64> sortint64;
-      sortint64.sort((__int64*)base,nelem,comparator);
-      break;
-    }
+    sort((__int64*)base,nelem,comparator);
+    break;
   default            : // for all other values of width, we must use the hard way to copy and swap elements
     quicksortNoRecursionAnyWidth(base,nelem,width,comparator);
     break;

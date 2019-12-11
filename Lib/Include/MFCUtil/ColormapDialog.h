@@ -5,7 +5,7 @@
 #include "ColorSpace.h"
 #include "PropertyDialog.h"
 
-template<class T> class CColormapDialog : public CPropertyDialog<T>  {
+template<typename T> class CColormapDialog : public CPropertyDialog<T>  {
 private:
   IntHashMap<CSliderCtrlWithTransformation*> m_sliderMap;
 public:

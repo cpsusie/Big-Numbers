@@ -2,7 +2,7 @@
 
 #include "CompactArray.h"
 
-template <class T> class CompactStack : private CompactArray<T> {
+template <typename T> class CompactStack : private CompactArray<T> {
 public:
   CompactStack() {
   }

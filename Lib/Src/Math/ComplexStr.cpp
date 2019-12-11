@@ -3,7 +3,7 @@
 
 #define EATWHITE() { while(iswspace(*s)) s++; }
 
-template<class CharType> Complex _strtoc(const CharType *s, CharType **end, Real (*toReal)(const CharType *,CharType **)) {
+template<typename CharType> Complex _strtoc(const CharType *s, CharType **end, Real (*toReal)(const CharType *,CharType **)) {
   bool ok = true;
   Real re = 0, im = 0;
   EATWHITE();

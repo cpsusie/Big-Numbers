@@ -33,7 +33,7 @@ public:
 
 #define _ParserError 0xffff
 
-template <class Type> class ParserTablesTemplate : public ParserTables {
+template <typename Type> class ParserTablesTemplate : public ParserTables {
 private:
   const BYTE          *m_compressedSet;
   const BYTE          *m_compressedLasets;

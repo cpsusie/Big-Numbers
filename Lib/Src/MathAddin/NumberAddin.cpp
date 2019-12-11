@@ -3,7 +3,7 @@
 #include <Math/Number.h>
 #include "D80ToDbgString.h"
 
-template<class PTYPE> class NumberT {
+template<typename PTYPE> class NumberT {
 public:
   PTYPE        m_vfptr;               // pointer to vtable
   NumberType   m_type;
@@ -13,7 +13,7 @@ public:
   }
 };
 
-template<class PTYPE> char *toDbgString(char *dst, NumberT<PTYPE> &n, DEBUGHELPER *helper) {
+template<typename PTYPE> char *toDbgString(char *dst, NumberT<PTYPE> &n, DEBUGHELPER *helper) {
   switch(n.getType()) {
   case NUMBERTYPE_FLOAT    :
     { float v;

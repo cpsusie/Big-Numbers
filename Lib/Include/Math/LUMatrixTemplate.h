@@ -4,7 +4,7 @@
 #include "MathException.h"
 
 // Implementation of LUMatrix
-template <class T> class LUMatrixTemplate : private MatrixTemplate<T> {
+template <typename T> class LUMatrixTemplate : private MatrixTemplate<T> {
 private:
 
   size_t *m_permut;

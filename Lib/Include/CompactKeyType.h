@@ -1,6 +1,6 @@
 #pragma once
 
-template <class T> class CompactKeyType {
+template <typename T> class CompactKeyType {
 private:
   T m_value;
 public:

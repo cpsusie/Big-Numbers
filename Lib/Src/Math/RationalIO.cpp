@@ -45,7 +45,7 @@ RationalStrStream &RationalStrStream::operator<<(const Rational &r) {
   return *this;
 }
 
-template <class IStreamType> IStreamType &getRational(IStreamType &in, Rational &r) {
+template <typename IStreamType> IStreamType &getRational(IStreamType &in, Rational &r) {
   const FormatFlags flg  = in.flags();
   const int         base = StreamParameters::radix(flg);
   INT64             num, den;
@@ -85,7 +85,7 @@ template <class IStreamType> IStreamType &getRational(IStreamType &in, Rational 
   return in;
 }
 
-template <class OStreamType> OStreamType &putRational(OStreamType &out, const Rational &r) {
+template <typename OStreamType> OStreamType &putRational(OStreamType &out, const Rational &r) {
   if(r.isInteger()) {
     out << r.getNumerator();
   } else {

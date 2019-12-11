@@ -4,7 +4,7 @@
 #include "BitSet.h"
 #include <io.h>
 
-template <class T> class BigArray {
+template <typename T> class BigArray {
 private:
   class PageMapElement {
   public:

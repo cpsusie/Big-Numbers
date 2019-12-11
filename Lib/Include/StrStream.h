@@ -67,26 +67,26 @@ public:
   StrStream &formatFilledFloatField(const String &str, bool negative, int flags=-1);
 
   static String &formatZero(String &result, StreamSize precision, FormatFlags flags, StreamSize maxPrecision = 0);
-  template<class CharType> static CharType *formatpinf(CharType *dst, bool uppercase) {
+  template<typename CharType> static CharType *formatpinf(CharType *dst, bool uppercase) {
     strCpy(dst, s_infStr);
     return uppercase ? strUpr(dst) : dst;
   }
-  template<class CharType> static CharType *formatninf(CharType *dst, bool uppercase) {
+  template<typename CharType> static CharType *formatninf(CharType *dst, bool uppercase) {
     *dst = '-';
     formatpinf(dst + 1, uppercase);
     return dst;
   }
-  template<class CharType> static CharType *formatqnan(CharType *dst, bool uppercase) {
+  template<typename CharType> static CharType *formatqnan(CharType *dst, bool uppercase) {
     strCpy(dst, s_qNaNStr);
     return uppercase ? strUpr(dst) : dst;
   }
-  template<class CharType> static CharType *formatsnan(CharType *dst, bool uppercase) {
+  template<typename CharType> static CharType *formatsnan(CharType *dst, bool uppercase) {
     strCpy(dst, s_sNaNStr);
     return uppercase ? strUpr(dst) : dst;
   }
 
   // fpclass is assumed to be one of _FPCLASS_PINF: _FPCLASS_NINF, _FPCLASS_SNAN : _FPCLASS_QNAN, return value from _fpclass(NumbeType)
-  template<class CharType> static CharType *formatUndefined(CharType *dst, int fpclass, bool uppercase=false, bool formatNinfAsPinf=false) {
+  template<typename CharType> static CharType *formatUndefined(CharType *dst, int fpclass, bool uppercase=false, bool formatNinfAsPinf=false) {
     switch(fpclass) {
     case _FPCLASS_SNAN:  // signaling NaN
       return formatsnan(dst, uppercase);
@@ -205,7 +205,7 @@ public:
 
 // ----------------------------------------------------------------------------------------------------
 
-template<class STREAM> String streamStateToString(STREAM &s) {
+template<typename STREAM> String streamStateToString(STREAM &s) {
   String result;
   if(s) {
     result = _T("ok ");
@@ -222,7 +222,7 @@ template<class STREAM> String streamStateToString(STREAM &s) {
 
 //#define DEBUG_ISTREAMSCANNER
 
-template<class IStreamType, class CharType> class IStreamScanner {
+template<typename IStreamType, typename CharType> class IStreamScanner {
 private:
   IStreamType       &m_in;
   const FormatFlags  m_flags;
@@ -362,7 +362,7 @@ public:
   }
 };
 
-template<class STREAM> STREAM &setFormat(STREAM &stream, const StreamParameters &param) {
+template<typename STREAM> STREAM &setFormat(STREAM &stream, const StreamParameters &param) {
   stream.width(    param.width());
   stream.precision(param.precision());
   stream.flags(    param.flags());
@@ -370,7 +370,7 @@ template<class STREAM> STREAM &setFormat(STREAM &stream, const StreamParameters 
   return stream;
 }
 
-template<class STREAM> STREAM &skipfill(STREAM &in) {
+template<typename STREAM> STREAM &skipfill(STREAM &in) {
   const wchar_t fillchar = in.fill();
   if(!iswspace(fillchar)) {
     const FormatFlags flg = in.flags();
@@ -384,7 +384,7 @@ template<class STREAM> STREAM &skipfill(STREAM &in) {
   return in;
 }
 
-template<class STREAM> STREAM &skipspace(STREAM &in) {
+template<typename STREAM> STREAM &skipspace(STREAM &in) {
   const FormatFlags flg = in.flags();
   in.flags(flg | ios::skipws);
   wchar_t ch;
