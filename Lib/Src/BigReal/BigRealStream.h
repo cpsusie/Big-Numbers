@@ -43,7 +43,7 @@ public:
   BigRealStream &operator<<(const BigReal &v);
 };
 
-template <class IStreamType, class CharType> IStreamType &getBigReal(IStreamType &in, BigReal &x) {
+template <typename IStreamType, typename CharType> IStreamType &getBigReal(IStreamType &in, BigReal &x) {
   IStreamScanner<IStreamType, CharType> scanner(in);
   String buf;
   if(DecFloatValueStreamScanner::getInstance().match(in, &buf) < 0) {
@@ -60,14 +60,14 @@ template <class IStreamType, class CharType> IStreamType &getBigReal(IStreamType
   return in;
 }
 
-template <class OStreamType> OStreamType &putBigReal(OStreamType &out, const BigReal &x, TCHAR separatorChar=0) {
+template <typename OStreamType> OStreamType &putBigReal(OStreamType &out, const BigReal &x, TCHAR separatorChar=0) {
   BigRealStream buf(out, separatorChar);
   buf << x;
   out << (String&)buf;
   return out;
 }
 
-template <class IStreamType, class CharType> IStreamType &getBigInt(IStreamType &in, BigInt &n) {
+template <typename IStreamType, typename CharType> IStreamType &getBigInt(IStreamType &in, BigInt &n) {
   IStreamScanner<IStreamType, CharType> scanner(in);
   String buf;
   if(DecIntValueStreamScanner::getInstance().match(in, &buf) < 0) {
@@ -84,7 +84,7 @@ template <class IStreamType, class CharType> IStreamType &getBigInt(IStreamType 
   return in;
 }
 
-template <class OStreamType> OStreamType &putBigInt(OStreamType &out, const BigInt &x, TCHAR separatorChar = 0) {
+template <typename OStreamType> OStreamType &putBigInt(OStreamType &out, const BigInt &x, TCHAR separatorChar = 0) {
   const StreamSize  oldprec = out.precision();
   const FormatFlags oldflags = out.flags();
   out.flags((oldflags | ios::fixed) & ~(ios::scientific|ios::showpoint));
@@ -95,7 +95,7 @@ template <class OStreamType> OStreamType &putBigInt(OStreamType &out, const BigI
   return out;
 }
 
-template <class OStreamType> OStreamType &putFullFormatBigReal(OStreamType &out, const BigReal &x, TCHAR separatorChar = 0) {
+template <typename OStreamType> OStreamType &putFullFormatBigReal(OStreamType &out, const BigReal &x, TCHAR separatorChar = 0) {
   const StreamSize  oldprec  = out.precision();
   const FormatFlags oldflags = out.flags();
   if(isfinite(x)) {
@@ -124,7 +124,7 @@ template <class OStreamType> OStreamType &putFullFormatBigReal(OStreamType &out,
   return out;
 }
 
-template <class OStreamType> OStreamType &putBigRational(OStreamType &out, const BigRational &x, TCHAR separatorChar = 0) {
+template <typename OStreamType> OStreamType &putBigRational(OStreamType &out, const BigRational &x, TCHAR separatorChar = 0) {
   DigitPool *pool = x.getDigitPool();
   if(!isfinite(x)) {
     char tmp[100];
@@ -144,7 +144,7 @@ template <class OStreamType> OStreamType &putBigRational(OStreamType &out, const
   return out;
 }
 
-template <class IStreamType, class CharType> IStreamType &getBigRational(IStreamType &in, BigRational &x) {
+template <typename IStreamType, typename CharType> IStreamType &getBigRational(IStreamType &in, BigRational &x) {
   DigitPool        *pool = x.getDigitPool();
   const FormatFlags flg  = in.flags();
   BigInt            num(pool->_0()), den(pool->_1());

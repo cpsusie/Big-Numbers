@@ -11,23 +11,34 @@ void BigRealVector::checkPrecision(UINT digits) {
   }
 }
 
-void BigRealVector::invalidDimensionError(const TCHAR *method, const BigRealVector &rhs) const {
-  throwBigRealException(_T("%s::%s:Invalid dimension. Left.%s, Right.%s")
-                       ,s_className, method, getDimensionString().cstr(), rhs.getDimensionString().cstr());
-}
-
-BigRealVector::BigRealVector(size_t dim, UINT digits) : VectorTemplate<BigReal>(dim), m_digits(digits) {
-  checkPrecision(m_digits);
-}
-
-BigRealVector::BigRealVector(const BigRealVector &v) : VectorTemplate<BigReal>(v), m_digits(v.m_digits) {
-  checkPrecision(m_digits);
-}
-
-BigRealVector::BigRealVector(const VectorTemplate<BigReal> &v, UINT digits)
-  : VectorTemplate<BigReal>(v), m_digits(digits)
+BigRealVector::BigRealVector(DigitPool *digitPool)
+  : VectorTemplate<BigReal>(_USEDEFAULTALLOCATORIFNULL())
+  , m_digits(16)
 {
-  checkPrecision(m_digits);
+  assert(getDigitPool());
+}
+
+BigRealVector::BigRealVector(size_t dim, UINT digits, DigitPool *digitPool)
+  : VectorTemplate<BigReal>(dim, _USEDEFAULTALLOCATORIFNULL())
+  , m_digits(digits)
+{
+  assert(getDigitPool());
+  checkPrecision(digits);
+}
+
+BigRealVector::BigRealVector(const BigRealVector &v, DigitPool *digitPool)
+  : VectorTemplate<BigReal>(v, _SELECTPOINTER(digitPool, v.getDigitPool()))
+  , m_digits(v.getPrecision())
+{
+  assert(getDigitPool());
+}
+
+BigRealVector::BigRealVector(const VectorTemplate<BigReal> &v, UINT digits, DigitPool *digitPool)
+  : VectorTemplate<BigReal>(v, _USEDEFAULTALLOCATORIFNULL())
+  , m_digits(digits)
+{
+  assert(getDigitPool());
+  checkPrecision(digits);
 }
 
 UINT BigRealVector::setPrecision(UINT digits) {
@@ -37,69 +48,68 @@ UINT BigRealVector::setPrecision(UINT digits) {
   return oldDigits;
 }
 
-BigRealVector operator*(const BigReal &d, const BigRealVector &rhs) {
-  const size_t n      = rhs.getDimension();
-  const UINT   digits = rhs.getPrecision();
+BigRealVector prod(const BigRealVector &v, const BigReal &d, DigitPool *digitPool) {
+  _SELECTDIGITPOOL(v);
+  const size_t n      = v.getDimension();
+  const UINT   digits = v.getPrecision();
 
-  BigRealVector result(n, digits);
+  BigRealVector result(n, digits, pool);
   for(size_t i = 0; i < n; i++) {
-    result[i] = rProd(rhs[i], d, digits);
+    result[i] = rProd(v[i], d, digits, pool);
   }
   return result;
 }
 
-BigRealVector operator*(const BigRealVector &lts, const BigReal &d ) {
-  return d * lts;
-}
+BigRealVector quot(const BigRealVector &v, const BigReal &d, DigitPool *digitPool) {
+  _SELECTDIGITPOOL(v);
+  const size_t n      = v.getDimension();
+  const UINT   digits = v.getPrecision();
 
-BigRealVector operator/(const BigRealVector &lts, const BigReal &d) {
-  const size_t n      = lts.getDimension();
-  const UINT   digits = lts.getPrecision();
-
-  BigRealVector result(n, digits);
+  BigRealVector result(n, digits, pool);
   for(size_t i = 0; i < n; i++) {
-    result[i] = rQuot(lts[i], d, digits);
+    result[i] = rQuot(v[i], d, digits, pool);
   }
   return result;
 }
 
-BigReal operator*(const BigRealVector &lts, const BigRealVector& rhs) {
-  const size_t n      = lts.getDimension();
-  const UINT   digits = min(lts.getPrecision(), rhs.getPrecision());
+BigRealVector sum(const BigRealVector &v1, const BigRealVector &v2, DigitPool *digitPool) {
+  v1.checkSameDimension(__TFUNCSIG__, v2);
+  _SELECTDIGITPOOL(v1);
+  const size_t n      = v1.getDimension();
+  const UINT   digits = min(v1.getPrecision(), v2.getPrecision());
 
-  if(n != rhs.getDimension()) lts.invalidDimensionError(__TFUNCTION__, rhs);
-
-  BigReal sum = 0;
+  BigRealVector result(n, digits, pool);
   for(size_t i = 0; i < n; i++) {
-    sum = rSum(sum, rProd(lts[i], rhs[i], digits), digits);
+    result[i] = rSum(v1[i], v2[i], digits);
+  }
+  return result;
+
+}
+BigRealVector dif(const BigRealVector &v1, const BigRealVector &v2, DigitPool *digitPool) {
+  v1.checkSameDimension(__TFUNCSIG__, v2);
+  _SELECTDIGITPOOL(v1);
+  const size_t n      = v1.getDimension();
+  const UINT   digits = min(v1.getPrecision(), v2.getPrecision());
+
+  BigRealVector result(n, digits, pool);
+  for(size_t i = 0; i < n; i++) {
+    result[i] = rDif(v1[i], v2[i], digits);
+  }
+  return result;
+
+}
+BigReal       dotp(const BigRealVector &v1, const BigRealVector &v2, DigitPool *digitPool) {
+  v1.checkSameDimension(__TFUNCSIG__, v2);
+  _SELECTDIGITPOOL(v1);
+  const size_t n      = v1.getDimension();
+  const UINT   digits = min(v1.getPrecision(), v2.getPrecision());
+
+  BigReal sum(0, pool);
+  for (size_t i = 0; i < n; i++) {
+    sum = rSum(sum, rProd(v1[i], v2[i], digits, pool), digits, pool);
   }
   return sum;
-}
 
-BigRealVector operator+(const BigRealVector& lts, const BigRealVector& rhs) {
-  const size_t n      = lts.getDimension();
-  const UINT   digits = min(lts.getPrecision(), rhs.getPrecision());
-
-  if(n != rhs.getDimension()) lts.invalidDimensionError(__TFUNCTION__, rhs);
-
-  BigRealVector result(n, digits);
-  for(size_t i = 0; i < n; i++) {
-    result[i] = rSum(lts[i], rhs[i], digits);
-  }
-  return result;
-}
-
-BigRealVector operator-(const BigRealVector& lts, const BigRealVector& rhs) {
-  const size_t n      = lts.getDimension();
-  const UINT   digits = min(lts.getPrecision(), rhs.getPrecision());
-
-  if(n != rhs.getDimension()) lts.invalidDimensionError(__TFUNCTION__, rhs);
-
-  BigRealVector result(n, digits);
-  for(size_t i = 0; i < n; i++) {
-    result[i] = rDif(lts[i], rhs[i], digits);
-  }
-  return result;
 }
 
 BigRealVector &BigRealVector::operator*=(const BigReal &d) {
@@ -121,10 +131,9 @@ BigRealVector &BigRealVector::operator/=(const BigReal &d) {
 }
 
 BigRealVector &BigRealVector::operator+=(const BigRealVector &rhs) {
+  checkSameDimension(__TFUNCSIG__, rhs);
   const size_t n      = getDimension();
   const UINT   digits = min(m_digits, rhs.getPrecision());
-
-  if(n != rhs.getDimension()) invalidDimensionError(__TFUNCTION__, rhs);
 
   for(size_t i = 0; i < n; i++) {
     BigReal &v = (*this)[i];
@@ -135,11 +144,9 @@ BigRealVector &BigRealVector::operator+=(const BigRealVector &rhs) {
 }
 
 BigRealVector &BigRealVector::operator-=(const BigRealVector &rhs) {
+  checkSameDimension(__TFUNCSIG__, rhs);
   const size_t n      = getDimension();
   const UINT   digits = min(m_digits, rhs.getPrecision());
-
-  if(n != rhs.getDimension()) invalidDimensionError(__TFUNCTION__, rhs);
-
   for(size_t i = 0; i < n; i++) {
     BigReal &v = (*this)[i];
     v = rDif(v, rhs[i], digits);
@@ -148,12 +155,13 @@ BigRealVector &BigRealVector::operator-=(const BigRealVector &rhs) {
   return *this;
 }
 
-BigReal BigRealVector::length() const {
-  const size_t n   = getDimension();
-  BigReal      sum = 0;
+BigReal BigRealVector::length(DigitPool *digitPool) const {
+  _SELECTDIGITPOOL(*this);
+  const size_t n    = getDimension();
+  BigReal      sum(0, pool);
   for(size_t i = 0; i < n; i++) {
     const BigReal &v = (*this)[i];
-    sum = rSum(sum, rProd(v, v, m_digits), m_digits);
+    sum = rSum(sum, rProd(v, v, m_digits, pool), m_digits, pool);
   }
-  return rSqrt(sum, m_digits);
+  return rSqrt(sum, m_digits, pool);
 }

@@ -210,7 +210,7 @@ public:
   }
 };
 
-class DigitPool : public BigRealResource {
+class DigitPool : public BigRealResource, public AbstractVectorAllocator<BigReal> {
   friend class BigRealResourcePool;
 private:
   // Holds the total number of allocated DigitPages in all digitpools
@@ -356,7 +356,8 @@ public:
   }
   // Allocates a vector (C-array) of BigReals, all using this digitPool
   // To deallocate array a, use delete[] a;
-  BigReal *newBigRealArray(size_t count);
+  // override virtual VectorAllocator::allocVector
+  BigReal *allocVector(size_t count);
 };
 
 class DigitPoolWithLock : public DigitPool {
@@ -880,9 +881,10 @@ protected:
 #define DEFAULT_DIGITPOOL BigReal::s_defaultDigitPool
 #define CONST_DIGITPOOL   BigReal::s_constDigitPool
 
-#define _INITDIGITPOOL(usePoolIfNull) m_digitPool(digitPool?(*digitPool):(usePoolIfNull))
-#define _INITPOOLTODEFAULTIFNULL()    _INITDIGITPOOL(*DEFAULT_DIGITPOOL)
-#define _SELECTDIGITPOOL(x)           DigitPool *pool = digitPool?digitPool:(x).getDigitPool()
+#define _SELECTPOINTER(p1, p2)       ((p1) ? (p1) : (p2))
+#define _INITDIGITPOOL(alternative)   m_digitPool(*(_SELECTPOINTER(digitPool,alternative)))
+#define _INITPOOLTODEFAULTIFNULL()    _INITDIGITPOOL(DEFAULT_DIGITPOOL)
+#define _SELECTDIGITPOOL(x)           DigitPool *pool = _SELECTPOINTER(digitPool,(x).getDigitPool())
 
 public:
   static DigitPool *s_defaultDigitPool;
@@ -1285,7 +1287,7 @@ public:
   static int     getDecimalDigitCount(BRDigitTypex64 n);
 
   // Return (n == 0) ? 0 : max(p)|n % (10^p) == 0, p=[0..LOG10BASEx86/x64]
-  template<class INTTYPE> static int getTrailingZeroCount(INTTYPE n) {
+  template<typename INTTYPE> static int getTrailingZeroCount(INTTYPE n) {
     if(n == 0) return 0;
     int result = 0;
     for(;n % 10 == 0; n /= 10) result++;
@@ -1515,7 +1517,7 @@ public:
 #define APCabs( bias, ...) BigReal::apcAbs( #@bias, __VA_ARGS__)
 
 // Assume fpclass in {_FPCLASS_PZ,_FPCLASS_NZ, _FPCLASS_PINF, _FPCLASS_NINF, _FPCLASS_QNAN, _FPCLASS_SNAN }
-template<class NumberType> NumberType getNonNormalValue(int fpclass, const NumberType &zero) {
+template<typename NumberType> NumberType getNonNormalValue(int fpclass, const NumberType &zero) {
   switch(fpclass) {
   case _FPCLASS_PZ  :
   case _FPCLASS_NZ  : return  zero;

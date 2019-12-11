@@ -5,7 +5,7 @@
 
 // Find needed decimal digitCount to use, so that add/sub of from and to will be done with at
 // least precision significant decimal digits.
-template<class T> size_t neededDecimalDigitsTemplate(const NumberInterval<T> *i, size_t digits) {
+template<typename T> size_t neededDecimalDigitsTemplate(const NumberInterval<T> *i, size_t digits) {
   const BigReal  len = i->getLength(); // don't care about sign. need only expo10
   const BigReal &m   = (BigReal::compareAbs(i->getFrom(), i->getTo()) > 0) ? i->getFrom() : i->getTo();
   return BigReal::getExpo10(m) - BigReal::getExpo10(len) + digits;
@@ -36,7 +36,7 @@ public:
     return dif(getTo(),getFrom(),pool->_0(), pool);
   }
 
-  template<class T> BigRealInterval &operator=(const T &src) {
+  template<typename T> BigRealInterval &operator=(const T &src) {
     DigitPool *dp = getDigitPool();
     setFrom(BigReal(src.getFrom(),dp));
     setTo(  BigReal(src.getTo()  ,dp));

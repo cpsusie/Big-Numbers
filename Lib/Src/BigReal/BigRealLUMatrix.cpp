@@ -12,11 +12,11 @@ void BigRealLUMatrix::initPermut() {
   m_detsign = 1;
 }
 
-BigRealLUMatrix::BigRealLUMatrix() {
+BigRealLUMatrix::BigRealLUMatrix(DigitPool *digitPool) : BigRealMatrix(digitPool) {
   initPermut();
 }
 
-BigRealLUMatrix::BigRealLUMatrix(const BigRealMatrix &src) : BigRealMatrix(src) {
+BigRealLUMatrix::BigRealLUMatrix(const BigRealMatrix &src, DigitPool *digitPool) : BigRealMatrix(src, digitPool) {
   _VALIDATEISSQUAREMATRIX(src);
   initPermut();
   lowerUpper();
@@ -27,7 +27,7 @@ BigRealLUMatrix& BigRealLUMatrix::operator=(const BigRealMatrix& src) { // assig
     return *this;
   }
   _VALIDATEISSQUAREMATRIX(src);
-  BigRealMatrix::operator=(src);
+  __super::operator=(src);
   initPermut();
   lowerUpper();
   return *this;
@@ -39,37 +39,38 @@ BigRealLUMatrix& BigRealLUMatrix::operator=(const BigRealMatrix& src) { // assig
 */
 
 BigRealVector BigRealLUMatrix::evald() const {
-  const BigRealLUMatrix &a = *this;
-  const size_t           n = getRowCount();
-  BigRealVector          d(n);
+  DigitPool             *pool = getDigitPool();
+  const BigRealLUMatrix &a    = *this;
+  const size_t           n    = getRowCount();
+  BigRealVector          d(n, getPrecision(), pool);
   for(size_t i = 0; i < n; i++) {
-    BigReal max,tmp;
-    for(size_t j = 0; j < n; j++) {
-      if((tmp = fabs(a(i,j))) > max) {
-        max = tmp;
+    const BigReal *rmax = &a(i, 0);
+    for(size_t j = 1; j < n; j++) {
+      if(BigReal::compareAbs(a(i,j), *rmax) > 0) {
+        rmax = &a(i,j);
       }
     }
-    d[i] = max;
+    d[i] = *rmax;
   }
   return d;
 }
 
 void BigRealLUMatrix::pivot(const BigRealVector &d, size_t k) {
+  DigitPool       *pool   = getDigitPool();
   BigRealLUMatrix &a      = *this;
   const size_t     n      = getRowCount();
   const UINT       digits = getPrecision();
-  BigReal          max    = 0;
+  BigReal          pmax(0, pool);
   size_t           current;
 
   for(size_t i = k; i < n; i++) {
-    BigReal tmp(rQuot(a(m_permut[i],k), d[m_permut[i]], digits));
-    if(tmp.isNegative()) tmp.changeSign();
-    if(tmp > max) {
-      max     = tmp;
+    const BigReal tmp(rQuot(a(m_permut[i],k), d[m_permut[i]], digits));
+    if(BigReal::compareAbs(tmp, pmax) > 0) {
+      pmax    = tmp;
       current = i;
     }
   }
-  if(max.isZero()) {
+  if(pmax.isZero()) {
     throwBigRealException(_T("The BigRealMatrix is singular"));
   }
 
@@ -84,14 +85,16 @@ void BigRealLUMatrix::pivot(const BigRealVector &d, size_t k) {
 
 void BigRealLUMatrix::lowerUpper() {
   BigRealLUMatrix &a      = *this;
+  DigitPool       *pool   = getDigitPool();
   const intptr_t   n      = getRowCount();
   const UINT       digits = getPrecision();
   BigRealVector    d      = evald();
 
   initPermut();
+  BigReal sum(pool);
   for(intptr_t k = 0; k < n; k++) {
     for(intptr_t i = k; i < n; i++) {
-      BigReal sum;
+      sum.setToZero();
       for(intptr_t l = 0; l <= k-1; l++) {
         sum = rSum(sum, rProd(a(m_permut[i],l), a(m_permut[l],k), digits), digits);
       }
@@ -99,7 +102,7 @@ void BigRealLUMatrix::lowerUpper() {
     }
     pivot(d, k);
     for(intptr_t j = k+1; j < n; j++) {
-      BigReal sum;
+      sum.setToZero();
       for(intptr_t l = 0; l <= k-1; l++) {
         sum = rSum(sum, rProd(a(m_permut[k],l), a(m_permut[l],j), digits), digits);
       }
@@ -109,54 +112,58 @@ void BigRealLUMatrix::lowerUpper() {
 }
 
 // Computes x so that A*x=y. Assumes A has been LU decomposed with lowerupper
-BigRealVector BigRealLUMatrix::solve(const BigRealVector &y) const {
+BigRealVector BigRealLUMatrix::solve(const BigRealVector &y, DigitPool *digitPool) const {
   const BigRealLUMatrix &a      = *this;
   const intptr_t         n      = getRowCount();
-  const UINT             digits = getPrecision();
+  const UINT             digits = __min(getPrecision(), y.getPrecision());
 
   if(y.getDimension() != n) {
-    throwBigRealException(_T("%s:Invalid dimension. y.%s, LU.%s"), __TFUNCTION__, y.getDimensionString().cstr(), getDimensionString().cstr());
+    throwBigRealException(_T("%s:Invalid dimension. y.%s, LU.%s"), __TFUNCSIG__, y.getDimensionString().cstr(), getDimensionString().cstr());
   }
-
-  BigRealVector z(n);
+  _SELECTDIGITPOOL(a);
+  BigRealVector z(n, digits, pool);
+  BigReal sum(0, pool);
   for(intptr_t i = 0; i < n; i++) {
-    BigReal sum = 0;
+    sum.setToZero();
     for(intptr_t j = 0; j <= i-1; j++) {
-      sum = rSum(sum, rProd(a(m_permut[i],j), z[j], digits), digits);
+      sum = rSum(sum, rProd(a(m_permut[i],j), z[j], digits, pool), digits);
     }
     z[i] = rQuot(rDif(y[m_permut[i]], sum, digits), a(m_permut[i],i), digits);
   }
-  BigRealVector x(n);
+  BigRealVector x(n, digits, pool);
   for(intptr_t i = n-1; i >= 0; i--) {
-    BigReal sum = 0;
+    sum.setToZero();
     for(intptr_t j = i+1; j < n; j++) {
-      sum = rSum(sum, rProd(a(m_permut[i],j), x[j], digits), digits);
+      sum = rSum(sum, rProd(a(m_permut[i],j), x[j], digits, pool), digits);
     }
-    x[i] = rDif(z[i], sum, digits);
+    x[i] = rDif(z[i], sum, digits, pool);
   }
   return x;
 }
 
-BigRealMatrix BigRealLUMatrix::getInverse() const {
-  const size_t  n = getRowCount();
-  BigRealMatrix result(n, n, getPrecision());
-  BigRealVector e(n);
+BigRealMatrix BigRealLUMatrix::getInverse(DigitPool *digitPool) const {
+  _SELECTDIGITPOOL(*this);
+  const size_t  n      = getRowCount();
+  const UINT    digits = getPrecision();
+  BigRealMatrix result(getDimension(), digits, pool);
+  BigRealVector e(n, digits, pool);
   for(size_t i = 0; i < n; i++) {
     e[i] = BigReal::_1;
-    result.setColumn(i, solve(e));
+    result.setColumn(i, solve(e, pool));
     e[i] = BigReal::_0;
   }
   return result;
 }
 
-BigReal BigRealLUMatrix::getDeterminant() const {
+BigReal BigRealLUMatrix::getDeterminant(DigitPool *digitPool) const {
+  _SELECTDIGITPOOL(*this);
   const BigRealLUMatrix &a      = *this;
-  BigReal                d      = m_detsign;
+  BigReal                d(m_detsign, pool);
   const size_t           n      = getRowCount();
   const UINT             digits = getPrecision();
 
   for(size_t i = 0; i < n; i++) {
-    d = rProd(d, a(a.m_permut[i], i), digits);
+    d = rProd(d, a(a.m_permut[i], i), digits, pool);
   }
   return d;
 }

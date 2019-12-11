@@ -23,7 +23,7 @@ class BigRealSize2D : public Size2DTemplate<BigReal> {
   inline DigitPool *getDigitPool() const {
     return cx.getDigitPool();
   }
-  template<class T> BigRealSize2D &operator=(const T &src) {
+  template<typename T> BigRealSize2D &operator=(const T &src) {
     DigitPool *dp = getDigitPool();
     x = BigReal(src.cx,dp);
     y = BigReal(src.cy,dp);
@@ -54,7 +54,7 @@ public:
   inline DigitPool *getDigitPool() const {
     return x.getDigitPool();
   }
-  template<class T> BigRealPoint2D &operator=(const T &src) {
+  template<typename T> BigRealPoint2D &operator=(const T &src) {
     DigitPool *dp = getDigitPool();
     x = BigReal(src.x,dp);
     y = BigReal(src.y,dp);
@@ -177,7 +177,7 @@ public:
   inline DigitPool *getDigitPool() const {
     return m_x.getDigitPool();
   }
-  template<class T> BigRealRectangle2D &operator=(const T &r) {
+  template<typename T> BigRealRectangle2D &operator=(const T &r) {
     DigitPool *dp = getDigitPool();
     *this = BigRealRectangle2D(BigReal(r.getX()     ,dp)
                               ,BigReal(r.getY()     ,dp)

@@ -18,121 +18,178 @@ UINT BigRealMatrix::setPrecision(UINT digits) {
   return oldDigits;
 }
 
-BigRealMatrix BigRealMatrix::_0(size_t rows, size_t columns, UINT digits) { // static
-  return BigRealMatrix(rows, columns, digits);
+BigRealMatrix BigRealMatrix::_0(size_t rows, size_t columns, UINT digits, DigitPool *digitPool) { // static
+  return BigRealMatrix(rows, columns, digits, digitPool);
 }
 
-BigRealMatrix BigRealMatrix::_1(size_t dim, UINT digits) { // static
-  BigRealMatrix result(dim,dim,digits);
+BigRealMatrix BigRealMatrix::_1(size_t dim, UINT digits, DigitPool *digitPool) { // static
+  BigRealMatrix result(dim,dim,digits, digitPool);
   for(size_t i = 0; i < dim; i++) {
     result(i,i) = BigReal::_1;
   }
   return result;
 }
 
-BigRealVector BigRealMatrix::getRow(size_t row) const {
-  return BigRealVector(MatrixTemplate<BigReal>::getRow(row), getPrecision());
+BigRealVector BigRealMatrix::getRow(size_t row, DigitPool *digitPool) const {
+  _SELECTDIGITPOOL(*this);
+  if(pool == getDigitPool()) {
+    return BigRealVector(__super::getRow(row), getPrecision(), pool);
+  } else {
+    checkRowIndex(__TFUNCSIG__, row);
+    const size_t cn = getColumnCount();
+    BigRealVector result(cn, getPrecision(), pool);
+    for(size_t c = 0; c < cn; c++) {
+      result[c] = (*this)(row, c);
+    }
+    return result;
+  }
 }
 
-BigRealVector BigRealMatrix::getColumn(size_t column) const {
-  return BigRealVector(MatrixTemplate<BigReal>::getColumn(column), getPrecision());
+BigRealVector BigRealMatrix::getColumn(size_t column, DigitPool *digitPool) const {
+  _SELECTDIGITPOOL(*this);
+  if (pool == getDigitPool()) {
+    return BigRealVector(__super::getColumn(column), getPrecision());
+  } else {
+    checkColumnIndex(__TFUNCSIG__, column);
+    const size_t rn = getRowCount();
+    BigRealVector result(rn, getPrecision(), pool);
+    for(size_t r = 0; r < rn; r++) {
+      result[r] = (*this)(r, column);
+    }
+    return result;
+  }
 }
 
 // Frobenius norm
-BigReal normf(const BigRealMatrix &a) {
+BigReal normf(const BigRealMatrix &a, DigitPool *digitPool) {
+  _SELECTDIGITPOOL(a);
   const UINT digits = a.getPrecision();
-  BigReal    sum    = 0;
+  BigReal    sum(0, pool);
   for(size_t r = 0; r < a.getRowCount(); r++) {
     for(size_t c = 0; c < a.getColumnCount(); c++) {
-      sum += rProd(a(r,c), a(r,c), digits);
+      sum += rProd(a(r,c), a(r,c), digits, pool);
     }
   }
   return rSqrt(sum,digits);
 }
 
-BigRealVector operator*(const BigRealMatrix &lts, const BigRealVector& rhs) {
-  const UINT digits = min(lts.getPrecision(), rhs.getPrecision());
+BigRealMatrix  prod(const BigRealMatrix &lts, const BigReal       &d, DigitPool *digitPool) {
+  _SELECTDIGITPOOL(lts);
+  const size_t rows   = lts.getRowCount();
+  const size_t cols   = lts.getColumnCount();
+  const UINT   digits = lts.getPrecision();
 
-  if(lts.getColumnCount() != rhs.getDimension()) {
-    throwBigRealException(_T("operator*(BigRealMatrix,BigRealVector):Invalid dimension. Matrix.%s, Vector.%s"),lts.getDimensionString().cstr(),rhs.getDimensionString().cstr());
-  }
-
-  BigRealVector result(lts.getRowCount(),digits);
-  for(size_t r = 0; r < lts.getRowCount(); r++) {
-    BigReal sum = 0;
-    for(size_t c = 0; c < lts.getColumnCount(); c++) {
-      sum = rSum(sum, rProd(lts(r,c), rhs[c], digits), digits);
+  BigRealMatrix result(rows, cols, digits, pool);
+  for(size_t r = 0; r < rows; r++) {
+    for(size_t c = 0; c < cols; c++) {
+      result(r, c) = rProd(lts(r, c), d, digits, pool);
     }
-    result[r] = sum;
   }
   return result;
 }
 
-BigRealVector operator*(const BigRealVector &lts, const BigRealMatrix& rhs) {
+BigRealMatrix  quot(const BigRealMatrix &lts, const BigReal       &d, DigitPool *digitPool) {
+  _SELECTDIGITPOOL(lts);
+  const size_t rows   = lts.getRowCount();
+  const size_t cols   = lts.getColumnCount();
+  const UINT   digits = lts.getPrecision();
+
+  BigRealMatrix result(rows, cols, digits, pool);
+  for(size_t r = 0; r < rows; r++) {
+    for(size_t c = 0; c < cols; c++) {
+      result(r, c) = rQuot(lts(r, c), d, digits, pool);
+    }
+  }
+  return result;
+}
+
+BigRealVector  prod(const BigRealVector &lts, const BigRealMatrix &rhs, DigitPool *digitPool) {
+  if(lts.getDimension() != rhs.getRowCount()) {
+    throwBigRealException(_T("%s:Invalid dimension. Vector.%s, Matrix.%s"), __TFUNCSIG__, lts.getDimensionString().cstr(), rhs.getDimensionString().cstr());
+  }
+  _SELECTDIGITPOOL(lts);
   const UINT digits = min(lts.getPrecision(), rhs.getPrecision());
 
-  if(lts.getDimension() != rhs.getRowCount()) {
-    throwBigRealException(_T("operator*(BigRealVector,BigRealMatrix):Invalid dimension. Vector.%s, Matrix.%s"), lts.getDimensionString().cstr(), rhs.getDimensionString().cstr());
-  }
-
-  BigRealVector result(rhs.getColumnCount(), digits);
+  BigRealVector result(rhs.getColumnCount(), digits, pool);
+  BigReal sum(0, pool);
   for(size_t c = 0; c < rhs.getColumnCount(); c++) {
-    BigReal sum = 0;
-    for(size_t r = 0; r < rhs.getColumnCount(); r++) {
-      sum = rSum(sum, rProd(lts(r), rhs(r,c), digits), digits);
+    sum.setToZero();
+    for(size_t r = 0; r < rhs.getRowCount(); r++) {
+      sum = rSum(sum, rProd(lts(r), rhs(r,c), digits,pool), digits,pool);
     }
     result[c] = sum;
   }
   return result;
 }
 
-BigRealMatrix operator*(const BigRealMatrix& lts, const BigRealMatrix& rhs) {
+BigRealVector  prod(const BigRealMatrix &lts, const BigRealVector &rhs, DigitPool *digitPool) {
+  if(lts.getColumnCount() != rhs.getDimension()) {
+    throwBigRealException(_T("%s:Invalid dimension. Matrix.%s, Vector.%s"), __TFUNCSIG__, lts.getDimensionString().cstr(),rhs.getDimensionString().cstr());
+  }
+  _SELECTDIGITPOOL(lts);
   const UINT digits = min(lts.getPrecision(), rhs.getPrecision());
 
-  if(lts.getColumnCount() != rhs.getRowCount()) {
+  BigRealVector result(lts.getRowCount(),digits, pool);
+  BigReal sum(0, pool);
+  for(size_t r = 0; r < lts.getRowCount(); r++) {
+    sum.setToZero();
+    for(size_t c = 0; c < lts.getColumnCount(); c++) {
+      sum = rSum(sum, rProd(lts(r,c), rhs[c], digits,pool), digits,pool);
+    }
+    result[r] = sum;
+  }
+  return result;
+
+}
+BigRealMatrix  sum(const BigRealMatrix &lts, const BigRealMatrix &rhs, DigitPool *digitPool) {
+  lts.checkSameDimension(__TFUNCSIG__, rhs);
+  const size_t rows   = lts.getRowCount();
+  const size_t cols   = lts.getColumnCount();
+  const UINT   digits = min(lts.getPrecision(), rhs.getPrecision());
+  _SELECTDIGITPOOL(lts);
+
+  BigRealMatrix result(lts.getDimension(),digits,pool);
+  for(size_t r = 0; r < rows; r++) {
+    for(size_t c = 0; c < cols; c++) {
+      result(r,c) = rSum(lts(r,c), rhs(r,c), digits,pool);
+    }
+  }
+  return result;
+}
+
+BigRealMatrix  dif(const BigRealMatrix &lts, const BigRealMatrix &rhs, DigitPool *digitPool) {
+  lts.checkSameDimension(__TFUNCSIG__, rhs);
+  const size_t rows   = lts.getRowCount();
+  const size_t cols   = lts.getColumnCount();
+  const UINT   digits = min(lts.getPrecision(), rhs.getPrecision());
+  _SELECTDIGITPOOL(lts);
+
+  BigRealMatrix result(lts.getDimension(),digits,pool);
+  for(size_t r = 0; r < rows; r++) {
+    for(size_t c = 0; c < cols; c++) {
+      result(r,c) = rDif(lts(r,c), rhs(r,c), digits,pool);
+    }
+  }
+  return result;
+}
+
+BigRealMatrix  prod(const BigRealMatrix &lts, const BigRealMatrix &rhs, DigitPool *digitPool) {
+  const UINT digits = min(lts.getPrecision(), rhs.getPrecision());
+
+  if (lts.getColumnCount() != rhs.getRowCount()) {
     throwBigRealException(_T("operator*(BigRealMatrix,BigRealMatrix):Invalid dimension. Matrix.%s, Vector.%s"), lts.getDimensionString().cstr(), rhs.getDimensionString().cstr());
   }
+  _SELECTDIGITPOOL(lts);
 
-  BigRealMatrix result(lts.getRowCount(),rhs.getColumnCount(),digits);
+  BigRealMatrix result(lts.getRowCount(), rhs.getColumnCount(), digits, pool);
+  BigReal sum(0, pool);
   for(size_t r = 0; r < lts.getRowCount(); r++) {
     for(size_t c = 0; c < rhs.getColumnCount(); c++) {
-      BigReal sum = 0;
+      sum.setToZero();
       for(size_t k = 0; k < lts.getColumnCount(); k++) {
-        sum = rSum(sum, rProd(lts(r,k), rhs(k,c), digits), digits);
+        sum = rSum(sum, rProd(lts(r, k), rhs(k, c), digits,pool), digits, pool);
       }
-      result(r,c) = sum;
-    }
-  }
-  return result;
-}
-
-BigRealMatrix operator+(const BigRealMatrix& lts, const BigRealMatrix& rhs) {
-  const size_t rows   = lts.getRowCount();
-  const size_t cols   = lts.getColumnCount();
-  const UINT   digits = min(lts.getPrecision(), rhs.getPrecision());
-
-  lts.checkSameDimension(__TFUNCTION__, rhs);
-
-  BigRealMatrix result(rows,cols,digits);
-  for(size_t r = 0; r < rows; r++) {
-    for(size_t c = 0; c < cols; c++) {
-      result(r,c) = rSum(lts(r,c), rhs(r,c), digits);
-    }
-  }
-  return result;
-}
-
-BigRealMatrix operator-(const BigRealMatrix& lts, const BigRealMatrix& rhs) {
-  const size_t rows   = lts.getRowCount();
-  const size_t cols   = lts.getColumnCount();
-  const UINT   digits = min(lts.getPrecision(), rhs.getPrecision());
-
-  lts.checkSameDimension(__TFUNCTION__, rhs);
-
-  BigRealMatrix result(rows,cols,digits);
-  for(size_t r = 0; r < rows; r++) {
-    for(size_t c = 0; c < cols; c++) {
-      result(r,c) = rDif(lts(r,c), rhs(r,c), digits);
+      result(r, c) = sum;
     }
   }
   return result;
@@ -171,44 +228,13 @@ double norm00( const BigRealMatrix& a) {
   return m;
 }
 */
-BigRealMatrix operator*(const BigRealMatrix &lts, const BigReal &d) {
-  const size_t rows   = lts.getRowCount();
-  const size_t cols   = lts.getColumnCount();
-  const UINT   digits = lts.getPrecision();
-
-  BigRealMatrix result(rows, cols, digits);
-  for(size_t r = 0; r < rows; r++) {
-    for(size_t c = 0; c < cols; c++) {
-      result(r,c) = rProd(lts(r,c), d, digits);
-    }
-  }
-  return result;
-}
-
-BigRealMatrix operator*(const BigReal &d, const BigRealMatrix &rhs) {
-  return rhs * d;
-}
-
-BigRealMatrix operator/(const BigRealMatrix &lts, const BigReal &d) {
-  const size_t rows   = lts.getRowCount();
-  const size_t cols   = lts.getColumnCount();
-  const UINT   digits = lts.getPrecision();
-
-  BigRealMatrix result(rows, cols, digits);
-  for(size_t r = 0; r < rows; r++) {
-    for(size_t c = 0; c < cols; c++) {
-      result(r,c) = rQuot(lts(r,c), d, digits);
-    }
-  }
-  return result;
-}
 
 BigRealMatrix operator-(const BigRealMatrix &m) {
   const size_t rows   = m.getRowCount();
   const size_t cols   = m.getColumnCount();
   const UINT   digits = m.getPrecision();
 
-  BigRealMatrix result(rows, cols, digits);
+  BigRealMatrix result(m.getDimension(), digits, m.getDigitPool());
   for(size_t r = 0; r < rows; r++) {
     for(size_t c = 0; c < cols; c++) {
       result(r,c) = -m(r,c);
@@ -218,7 +244,7 @@ BigRealMatrix operator-(const BigRealMatrix &m) {
 }
 
 BigRealMatrix &BigRealMatrix::operator+=(const BigRealMatrix &rhs) {
-  checkSameDimension(__TFUNCTION__, rhs);
+  checkSameDimension(__TFUNCSIG__, rhs);
   const size_t rows   = getRowCount();
   const size_t cols   = getColumnCount();
   const UINT   digits = min(getPrecision(), rhs.getPrecision());
@@ -233,7 +259,7 @@ BigRealMatrix &BigRealMatrix::operator+=(const BigRealMatrix &rhs) {
 }
 
 BigRealMatrix &BigRealMatrix::operator-=(const BigRealMatrix &rhs) {
-  checkSameDimension(__TFUNCTION__, rhs);
+  checkSameDimension(__TFUNCSIG__, rhs);
   const size_t rows   = getRowCount();
   const size_t cols   = getColumnCount();
   const UINT   digits = min(getPrecision(), rhs.getPrecision());
@@ -273,28 +299,30 @@ BigRealMatrix &BigRealMatrix::operator/=(const BigReal &d) {
   return *this;
 }
 
-BigRealMatrix inverse(const BigRealMatrix &a) {
+BigRealMatrix inverse(const BigRealMatrix &a, DigitPool *digitPool) {
   if(!a.isSquare()) {
-    throwBigRealException(_T("inverse(BigRealMatrix):Matrix not square. %s"), a.getDimensionString().cstr());
+    throwBigRealException(_T("%s:Matrix not square. %s"), __TFUNCSIG__, a.getDimensionString().cstr());
   }
 
   BigRealLUMatrix lu(a);
   return lu.getInverse();
 }
 
-BigRealMatrix transpose(const BigRealMatrix &a) {
-  BigRealMatrix result(a.getColumnCount(), a.getRowCount(), a.getPrecision());
-  for(size_t r = 0; r < a.getRowCount(); r++) {
-    for(size_t c = 0; c < a.getColumnCount(); c++) {
-      result(c,r) = a(r,c);
+BigRealMatrix transpose(const BigRealMatrix &m, DigitPool *digitPool) {
+  _SELECTDIGITPOOL(m);
+  BigRealMatrix result(m.getColumnCount(), m.getRowCount(), m.getPrecision(), pool);
+  for(size_t r = 0; r < m.getRowCount(); r++) {
+    for(size_t c = 0; c < m.getColumnCount(); c++) {
+      result(c,r) = m(r,c);
     }
   }
   return result;
 }
 
-BigReal det(const BigRealMatrix &a) {
+BigReal det(const BigRealMatrix &m, DigitPool *digitPool) {
   try {
-    BigRealLUMatrix lu(a);
+    _SELECTDIGITPOOL(m);
+    BigRealLUMatrix lu(m);
     return lu.getDeterminant();
   } catch(BigRealException) {
     return 0;

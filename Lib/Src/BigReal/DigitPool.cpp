@@ -145,7 +145,7 @@ public:
 FastSemaphore BigReal1::s_lock;
 DigitPool    *BigReal1::s_currentDigitPool = NULL;
 
-BigReal *DigitPool::newBigRealArray(size_t count) {
+BigReal *DigitPool::allocVector(size_t count) {
   BigReal1::s_lock.wait();
   try {
     BigReal1::s_currentDigitPool = this;
