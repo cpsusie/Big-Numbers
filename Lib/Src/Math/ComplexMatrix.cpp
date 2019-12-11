@@ -1,22 +1,6 @@
 #include "pch.h"
 #include <Math/Matrix.h>
 
-ComplexMatrix::ComplexMatrix() : MatrixTemplate<Complex>() {
-}
-
-ComplexMatrix::ComplexMatrix(Complex c) : MatrixTemplate<Complex>() {
-  (*this)(0,0) = c;
-}
-
-ComplexMatrix::ComplexMatrix(size_t rows, size_t columns) : MatrixTemplate<Complex>(rows,columns) {
-}
-
-ComplexMatrix::ComplexMatrix(const MatrixTemplate<Complex> &src) : MatrixTemplate<Complex>(src) {
-}
-
-ComplexMatrix::ComplexMatrix(const VectorTemplate<Complex> &diagonal) : MatrixTemplate<Complex>(diagonal) {
-}
-
 ComplexMatrix::ComplexMatrix(const Matrix &src) : MatrixTemplate<Complex>(src.getRowCount(),src.getColumnCount()) {
   for(size_t r = 0; r < getRowCount(); r++) {
     for(size_t c = 0; c < getColumnCount(); c++) {
@@ -33,12 +17,6 @@ ComplexMatrix &ComplexMatrix::operator=(const Matrix &src) {
     }
   }
   return *this;
-}
-
-ComplexMatrix::ComplexMatrix(const Vector &diagonal) : MatrixTemplate<Complex>(diagonal.getDimension(),diagonal.getDimension()) {
-  for(size_t i = 0; i < getRowCount(); i++) {
-    (*this)(i,i) = diagonal(i);
-  }
 }
 
 Matrix ComplexMatrix::getRealPart() const {
@@ -61,26 +39,12 @@ Matrix ComplexMatrix::getImaginaryPart() const {
   return result;
 }
 
-void setToRandom(ComplexVector &v, RandomGenerator &rnd) {
-  for(size_t i = 0; i < v.getDimension(); i++) {
-    setToRandom(v[i], rnd);
-  }
-}
-
 void setToRandom(ComplexMatrix &a, RandomGenerator &rnd) {
   for(size_t r = 0; r < a.getRowCount(); r++) {
     for(size_t c = 0; c < a.getColumnCount(); c++) {
       setToRandom(a(r,c), rnd);
     }
   }
-}
-
-Real fabs(const ComplexVector &v) {
-  Real sum = 0;
-  for(size_t i = 0; i < v.getDimension(); i++) {
-    sum += arg2(v[i]);
-  }
-  return sqrt(sum);
 }
 
 Real fabs(const ComplexMatrix &a) {
@@ -121,11 +85,11 @@ ComplexVector operator*(const Matrix &lts, const ComplexVector &rhs) {
   }
   ComplexVector result(rows);
   for(size_t r = 0; r < rows; r++) {
-	  Complex sum = 0;
+    Complex sum = 0;
     for(size_t c = 0; c < columns; c++) {
       sum += lts(r,c) * rhs[c];
     }
-	  result[r] = sum;
+    result[r] = sum;
   }
   return result;
 }

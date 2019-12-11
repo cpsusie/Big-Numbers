@@ -26,16 +26,26 @@ Vector levenberg(   VectorFunction &f, const Vector &x0);
 
 class ComplexMatrix : public MatrixTemplate<Complex> {
 public:
-  ComplexMatrix();
-  explicit ComplexMatrix(Complex c);
-  ComplexMatrix(size_t rows, size_t columns);
+  ComplexMatrix() : MatrixTemplate<Complex>() {
+  }
+  explicit ComplexMatrix(const Complex &c) : MatrixTemplate<Complex>(1, 1) {
+    (*this)(0, 0) = c;
+  }
+  ComplexMatrix(size_t rows, size_t columns) : MatrixTemplate<Complex>(rows, columns) {
+  }
+  ComplexMatrix(const MatrixDimension &dim) : MatrixTemplate<Complex>(dim) {
+  }
 
-  ComplexMatrix(const MatrixTemplate<Complex> &src);
-  explicit ComplexMatrix(const VectorTemplate<Complex> &diagonal);
+  ComplexMatrix(const MatrixTemplate<Complex> &src) : MatrixTemplate<Complex>(src) {
+  }
+  template<typename T> explicit ComplexMatrix(const VectorTemplate<T> &diagonal) : MatrixTemplate<Complex>(diagonal.getDimension(), diagonal.getDimension()) {
+    for(size_t i = 0; i < getRowCount(); i++) {
+      (*this)(i, i) = diagonal(i);
+    }
+  }
 
   ComplexMatrix(const Matrix &src);
   ComplexMatrix &operator=(const Matrix &src);
-  explicit ComplexMatrix(const Vector &diagonal);
 
   Matrix getRealPart() const;
   Matrix getImaginaryPart() const;

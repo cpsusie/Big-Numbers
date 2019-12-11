@@ -1149,6 +1149,7 @@
     <ClCompile Include="ComplexMatrix.cpp" />
     <ClCompile Include="ComplexMatrixSvd.cpp" />
     <ClCompile Include="ComplexStr.cpp" />
+    <ClCompile Include="ComplexVector.cpp" />
     <ClCompile Include="CubicSpline.cpp" />
     <ClCompile Include="DataFit.cpp" />
     <ClCompile Include="Double80.cpp" />
