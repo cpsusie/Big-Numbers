@@ -4,10 +4,11 @@
 #include "VectorTemplate.h"
 #include "MatrixDimension.h"
 
-template <class T> class MatrixTemplate {
+template <typename T> class MatrixTemplate {
 private:
-  T              *m_a;
-  MatrixDimension m_dim;
+  AbstractVectorAllocator<T> *m_va;
+  T                          *m_a;
+  MatrixDimension             m_dim;
 
   static void vthrowMatrixException(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
     throwException(_T("MatrixTemplate:%s."), vformat(format, argptr).cstr());
@@ -46,15 +47,10 @@ private:
     return index(i.r, i.c);
   }
 
-  static T *allocate(size_t rows, size_t columns, bool initialize) {
-    if(rows == 0) {
-      throwMatrixException(_T("allocate:Number of rows=0"));
-    }
-    if(columns == 0) {
-      throwMatrixException(_T("allocate:Number of columns=0"));
-    }
+  T *allocate(size_t rows, size_t columns, bool initialize) const {
     const size_t n = rows * columns;
-    T *a = new T[n]; TRACE_NEW(a);
+    if(n == 0) return NULL;
+    T *a = m_va ? m_va->allocVector(n) : new T[n]; TRACE_NEW(a);
     if(initialize) {
       T *p = a, *last = p + n;
       const T z(0);
@@ -72,32 +68,48 @@ protected:
     m_a   = allocate(rows, columns, initialize);
     m_dim = MatrixDimension(rows, columns);
   }
-public:
-  inline MatrixTemplate() {
-    init(1, 1, true);
+
+  inline AbstractVectorAllocator<T> *getVectorAllocator() const {
+    return m_va;
   }
 
-  explicit MatrixTemplate(const T &coef) {
+  void checkRowIndex(const TCHAR *method, size_t row) const {
+    if(row >= getRowCount()) {
+      throwIndexException(_T("%s:Row %s out of range"), method, formatSize(row).cstr());
+    }
+  }
+
+  void checkColumnIndex(const TCHAR *method, size_t column) const {
+    if(column >= getColumnCount()) {
+      throwIndexException(_T("%s:Column %s out of range"), formatSize(column).cstr());
+    }
+  }
+
+public:
+  inline MatrixTemplate(AbstractVectorAllocator<T> *va = NULL) : m_va(va), m_a(NULL), m_dim(0,0) {
+  }
+
+  explicit MatrixTemplate(const T &coef, AbstractVectorAllocator<T> *va = NULL) : m_va(va) {
     init(1, 1, false);
     m_a[0] = coef;
   }
 
-  inline MatrixTemplate(size_t rows, size_t columns) {
+  inline MatrixTemplate(size_t rows, size_t columns, AbstractVectorAllocator<T> *va = NULL) : m_va(va) {
     init(rows, columns, true);
   }
 
-  explicit MatrixTemplate(const MatrixDimension &dim) {
+  explicit MatrixTemplate(const MatrixDimension &dim, AbstractVectorAllocator<T> *va = NULL) : m_va(va) {
     init(dim.rowCount, dim.columnCount, true);
   }
 
-  MatrixTemplate(const MatrixTemplate<T> &src) {
+  MatrixTemplate(const MatrixTemplate<T> &src, AbstractVectorAllocator<T> *va = NULL) : m_va(va) {
     init(src.getRowCount(), src.getColumnCount(), false);
     T       *dp = m_a;
     const T *sp = src.m_a, *last = sp + m_dim.getElementCount();
     while(sp < last) *(dp++) = *(sp++);
   }
 
-  explicit MatrixTemplate(const VectorTemplate<T> &diagonal) {
+  explicit MatrixTemplate(const VectorTemplate<T> &diagonal, AbstractVectorAllocator<T> *va = NULL) : m_va(va) {
     const size_t d = diagonal.getDimension();
     init(d, d, true);
     for(size_t i = 0; i < d; i++) {
@@ -108,9 +120,9 @@ public:
   void checkSameDimension(const TCHAR *function, const MatrixTemplate<T> &m) const {
     if(!hasSameDimension(m)) {
       throwMatrixException(_T("%s:Invalid dimension. Left.%s. Right.%s")
-        ,function
-        ,getDimensionString().cstr()
-        ,m.getDimensionString().cstr()
+                           ,function
+                           ,getDimensionString().cstr()
+                           ,m.getDimensionString().cstr()
       );
     }
   }
@@ -140,25 +152,29 @@ public:
     while(p < last) *(p++) = z;
   }
 
-  MatrixTemplate<T> &setDimension(size_t rows, size_t columns) {
-    if(rows != getRowCount() || columns != getColumnCount()) {
-      T *newa = allocate(rows, columns, true);
-      const size_t copyr = __min(rows, getRowCount());
-      const size_t copyc = __min(columns, getColumnCount());
-      for(size_t r = 0; r < copyr; r++) {
-        size_t t = r*columns;
-        for(size_t c = 0; c < copyc; c++) {
-          newa[t++] = m_a[index(r,c)];
+  MatrixTemplate<T> &setDimension(const MatrixDimension &dim) {
+    if(dim != m_dim) {
+      T *newa = allocate(dim.rowCount, dim.columnCount, true);
+      const size_t copyr = __min(dim.rowCount   , getRowCount());
+      const size_t copyc = __min(dim.columnCount, getColumnCount());
+      for(size_t r = 0, t = 0; r < copyr; r++, t += dim.columnCount) {
+        for(T *dp = newa + t, *sp = m_a + index(r, 0), *last = sp + copyc; sp < last;) {
+          *(dp++) = *(sp++);
         }
       }
       cleanup();
       m_a   = newa;
-      m_dim = MatrixDimension(rows, columns);
+      m_dim = dim;
     }
     return *this;
   }
 
-  MatrixTemplate<T> &setDimension(size_t dim) {  // make it square
+  MatrixTemplate<T> &setDimension(size_t rowCount, size_t columnCount) {
+    return setDimension(MatrixDimension(rowCount, columnCount));
+  }
+
+  // make it square
+  MatrixTemplate<T> &setDimension(size_t dim) {
     return setDimension(dim, dim);
   }
 
@@ -231,9 +247,7 @@ public:
   }
 
   VectorTemplate<T> getRow(size_t row) const {
-    if(row >= getRowCount()) {
-      throwIndexException(_T("getRow:Row %s out of range"), formatSize(row).cstr());
-    }
+    checkRowIndex(__TFUNCTION__, row);
     const size_t cn = getColumnCount();
     VectorTemplate<T> result(cn);
     const T *p = m_a + index(row,0);
@@ -244,11 +258,9 @@ public:
   }
 
   VectorTemplate<T> getColumn(size_t column) const {
+    checkColumnIndex(__TFUNCTION__, column);
     const size_t rn = getRowCount();
     const size_t cn = getColumnCount();
-    if(column >= cn) {
-      throwIndexException(_T("getColumn:Column %s out of range"), formatSize(column).cstr());
-    }
     VectorTemplate<T> result(rn);
     const T *p = m_a + index(0, column);
     for(size_t r = 0; r < rn; p += cn) {
@@ -258,9 +270,7 @@ public:
   }
 
   MatrixTemplate<T> &setRow(size_t row, const VectorTemplate<T> &v) {
-    if(row >= getRowCount()) {
-      throwIndexException(_T("setRow:Row %s out of range"), formatSize(row).cstr());
-    }
+    checkRowIndex(__TFUNCTION__, row);
     const size_t cn = getColumnCount();
     if(v.getDimension() != cn) {
       throwMatrixException(_T("setRow:Invalid dimension. %s. Vector.%s")
@@ -275,11 +285,9 @@ public:
   }
 
   MatrixTemplate<T> &setColumn(size_t column, const VectorTemplate<T> &v) {
+    checkColumnIndex(__TFUNCTION__, column);
     const size_t rn = getRowCount();
     const size_t cn = getColumnCount();
-    if(column >= cn) {
-      throwIndexException(_T("setColumn:Column %s out of range"), formatSize(column).cstr());
-    }
     if(v.getDimension() != rn) {
       throwMatrixException(_T("setColumn:Invalid dimension. %s. Vector.%s")
                           ,getDimensionString().cstr(), v.getDimensionString().cstr());
@@ -689,7 +697,7 @@ public:
     return result;
   }
 
-  template<class OSTREAMTYPE> friend OSTREAMTYPE &operator<<(OSTREAMTYPE &out, const MatrixTemplate<T> &a) {
+  template<typename OSTREAMTYPE> friend OSTREAMTYPE &operator<<(OSTREAMTYPE &out, const MatrixTemplate<T> &a) {
     const StreamSize w = out.width();
     for(size_t r = 0; r < a.getRowCount(); r++) {
       for(size_t c = 0; c < a.getColumnCount(); c++) {
@@ -701,7 +709,7 @@ public:
     return out;
   }
 
-  template<class ISTREAMTYPE> friend ISTREAMTYPE &operator>>(ISTREAMTYPE &in, MatrixTemplate<T> &a) {
+  template<typename ISTREAMTYPE> friend ISTREAMTYPE &operator>>(ISTREAMTYPE &in, MatrixTemplate<T> &a) {
     const FormatFlags flg = in.flags();
     in.flags(flg | std::ios::skipws);
     for(size_t r = 0; r < a.getRowCount(); r++) {
@@ -724,7 +732,7 @@ public:
 };
 
 // assume m is type derived from MatrixTemplate
-template<class MatrixType> MatrixType transpose(const MatrixType &m) {
+template<typename MatrixType> MatrixType transpose(const MatrixType &m) {
   const size_t rc = m.getRowCount(), cc = m.getColumnCount();
   MatrixType result(cc, rc);
   for(size_t r = 0; r < rc; r++) {

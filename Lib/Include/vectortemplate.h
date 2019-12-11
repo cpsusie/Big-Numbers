@@ -5,10 +5,12 @@
 #include "Exception.h"
 #include "StreamParameters.h"
 
-template <class T> class VectorTemplate {
+
+template <typename T> class VectorTemplate {
 private:
-  T     *m_e;
-  size_t m_dim;
+  AbstractVectorAllocator<T> *m_va;
+  T                          *m_e;
+  size_t                      m_dim;
 
   static void throwVectorException(const TCHAR *method, _In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
     va_list argptr;
@@ -19,21 +21,14 @@ private:
   }
   void throwIndexError(const TCHAR *method, const size_t index) const {
     throwVectorException(method,_T("Index %s out of range. %s")
-                              ,format1000(index).cstr(), getDimensionString().cstr());
+                               ,format1000(index).cstr(), getDimensionString().cstr());
   }
 
 #define CHECKVECTORTEMPLATEINDEX(index) if((index) >= m_dim) throwIndexError(__TFUNCTION__, index)
 
-  static void throwOperatorException(const TCHAR *method, size_t dim1, size_t dim2) {
-    throwVectorException(method,_T("Invalid dimension. Left.dimension=%s. Right.dimension=%s")
-                               ,format1000(dim1).cstr(), format1000(dim2).cstr());
-  }
-
-  static T *allocate(size_t dim, bool initialize) {
-    if(dim == 0) {
-      throwVectorException(__TFUNCTION__, _T("dim=0"));
-    }
-    T *v = new T[dim]; TRACE_NEW(v);
+  T *allocate(size_t dim, bool initialize) const {
+    if(dim == 0) return NULL;
+    T *v = m_va ? m_va->allocVector(dim) : new T[dim]; TRACE_NEW(v);
     if(initialize) {
       for(size_t i = 0; i < dim; i++) {
         v[i] = T(0);
@@ -52,19 +47,29 @@ protected:
     m_dim = dim;
   }
 
+  inline AbstractVectorAllocator<T> *getVectorAllocator() const {
+    return m_va;
+  }
+
+  static void throwDimensionException(const TCHAR *method, const String &dim1, const String &dim2) {
+    throwVectorException(method, _T("Invalid dimension. Left.%s. Right.%s"), dim1.cstr(), dim2.cstr());
+  }
+
 public:
-  explicit VectorTemplate(size_t dim = 1) {
+  explicit VectorTemplate(AbstractVectorAllocator<T> *va = NULL) : m_va(va), m_dim(0), m_e(NULL) {
+  }
+  explicit VectorTemplate(size_t dim, AbstractVectorAllocator<T> *va = NULL) : m_va(va) {
     init(dim, true);
   }
 
-  VectorTemplate(const VectorTemplate<T> &src) {
+  VectorTemplate(const VectorTemplate<T> &src, AbstractVectorAllocator<T> *va = NULL) : m_va(va) {
     init(src.m_dim, false);
     for(size_t i = 0; i < m_dim; i++) {
       m_e[i] = src.m_e[i];
     }
   }
 
-  VectorTemplate(const Array<T> &src) {
+  VectorTemplate(const Array<T> &src, AbstractVectorAllocator<T> *va = NULL) : m_va(va) {
     init(src.size(), false);
     for(size_t i = 0; i < m_dim; i++) {
       m_e[i] = src[i];
@@ -87,6 +92,12 @@ public:
 
   virtual ~VectorTemplate() {
     cleanup();
+  }
+
+  void checkSameDimension(const TCHAR *method, const VectorTemplate &v) const {
+    if(getDimension() != v.getDimension()) {
+      throwDimensionException(method, getDimensionString(), v.getDimensionString());
+    }
   }
 
   VectorTemplate<T> &setDimension(size_t dim) {
@@ -135,12 +146,8 @@ public:
   }
 
   friend VectorTemplate<T> operator+(const VectorTemplate<T> &lts, const VectorTemplate<T> &rhs) {
+    lts.checkSameDimension(__TFUNCSIG__, rhs);
     const size_t n = lts.m_dim;
-
-    if(n != rhs.m_dim) {
-      throwOperatorException(__TFUNCTION__, n, rhs.m_dim);
-    }
-
     VectorTemplate<T> result(n);
     for(size_t i = 0; i < n; i++) {
       result.m_e[i] = lts.m_e[i] + rhs.m_e[i];
@@ -149,12 +156,8 @@ public:
   }
 
   friend VectorTemplate<T> operator-(const VectorTemplate<T> &lts, const VectorTemplate<T> &rhs) {
+    lts.checkSameDimension(__TFUNCSIG__, rhs);
     const size_t n = lts.m_dim;
-
-    if(n != rhs.m_dim) {
-      throwOperatorException(__TFUNCTION__, n, rhs.m_dim);
-    }
-
     VectorTemplate<T> result(n);
     for(size_t i = 0; i < n; i++) {
       result.m_e[i] = lts.m_e[i] - rhs.m_e[i];
@@ -173,12 +176,8 @@ public:
   }
 
   friend T operator*(const VectorTemplate<T> &lts, const VectorTemplate<T> &rhs) {
+    lts.checkSameDimension(__TFUNCSIG__, rhs);
     const size_t n = lts.m_dim;
-
-    if(n != rhs.m_dim) {
-      throwOperatorException(__TFUNCTION__, n, rhs.m_dim);
-    }
-
     T sum = 0;
     T *lts_e = lts.m_e;
     T *rhs_e = rhs.m_e;
@@ -203,9 +202,7 @@ public:
   }
 
   VectorTemplate<T> &operator+=(const VectorTemplate<T> &rhs) {
-    if(m_dim != rhs.m_dim) {
-      throwOperatorException(__TFUNCTION__, m_dim, rhs.m_dim);
-    }
+    checkSameDimension(__TFUNCSIG__, rhs);
     for(size_t i = 0; i < m_dim; i++) {
       m_e[i] += rhs.m_e[i];
     }
@@ -213,9 +210,7 @@ public:
   }
 
   VectorTemplate<T> &operator-=(const VectorTemplate<T> &rhs) {
-    if(m_dim != rhs.m_dim) {
-      throwOperatorException(__TFUNCTION__, m_dim, rhs.m_dim);
-    }
+    checkSameDimension(__TFUNCSIG__, rhs);
     for(size_t i = 0; i < m_dim; i++) {
       m_e[i] -= rhs.m_e[i];
     }
@@ -287,7 +282,7 @@ public:
     return result;
   }
 
-  template<class OSTREAMTYPE> friend OSTREAMTYPE &operator<<(OSTREAMTYPE &out, const VectorTemplate<T> &v) {
+  template<typename OSTREAMTYPE> friend OSTREAMTYPE &operator<<(OSTREAMTYPE &out, const VectorTemplate<T> &v) {
     const StreamSize w = out.width();
     for(size_t i = 0; i < v.m_dim; i++) {
       if(i > 0) {
@@ -299,7 +294,7 @@ public:
     return out;
   }
 
-  template<class ISTREAMTYPE> friend ISTREAMTYPE &operator>>(ISTREAMTYPE &in, VectorTemplate<T> &v) {
+  template<typename ISTREAMTYPE> friend ISTREAMTYPE &operator>>(ISTREAMTYPE &in, VectorTemplate<T> &v) {
     const FormatFlags flg = in.flags();
     in.flags(flg | std::ios::skipws);
     for(size_t i = 0; i < v.m_dim; i++) {
