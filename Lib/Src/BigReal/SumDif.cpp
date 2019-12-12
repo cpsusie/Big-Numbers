@@ -157,16 +157,12 @@ BigReal &BigReal::addAbs(const BigReal &x) {
     for(d = x.m_low; d <= t; d++, xp = xp->prev) {
       insertAfter(p, xp->n);
     }
-    if(d < m_low) {
-      insertZeroDigitsAfter(p, m_low-d);
-    }
+    if(d < m_low) insertZeroDigitsAfter(p, m_low-d);
     m_low = x.m_low;
   } else if(x.m_low > m_low) {
     if((p = findDigit(x. m_low)) == NULL) {
       const BRExpoType t = x.m_low - 1 - m_expo;
-      if(t > 0) {
-        insertZeroDigits(t);
-      }
+      if(t > 0) insertZeroDigits(t);
       for(xp = x.m_last; xp; xp = xp->prev) {
         insertDigit(xp->n);
       }

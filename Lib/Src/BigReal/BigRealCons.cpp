@@ -122,6 +122,17 @@ BigReal &BigReal::operator=(const BigReal &x) {
   } else {                   // both x and this are normal (have digits)
     const intptr_t missing = x.getLength() - getLength();
     if(missing >= 0) {       // First copy all the digits, then append the rest if x.length > this.length
+#ifdef USE_FETCHDIGITLIST
+      if(missing > 0) {
+        Digit *head = m_digitPool.fetchDigitList(missing), *last = head->prev;
+        (m_last->next = head)->prev = m_last;
+        (m_last = last)->next = NULL;
+      }
+      for(Digit *sd = x.m_first, *dd = m_first;;) {
+        dd->n = sd->n;
+        if(dd = dd->next) sd = sd->next; else break;
+      }
+#else
       Digit *sd, *dd;
       for(sd = x.m_first, dd = m_first; dd; sd = sd->next, dd = dd->next) {
         dd->n = sd->n;
@@ -135,14 +146,14 @@ BigReal &BigReal::operator=(const BigReal &x) {
         }
         (m_last = p)->next = NULL;
       }
+#endif // USE_FETCHDIGITLIST
     } else {                 // Missing < 0. First copy and then delete excess digits
       Digit *sd, *dd;
       for(sd = x.m_first, dd = m_first; sd; sd = sd->next, dd = dd->next) {
         dd->n = sd->n;
       }
       Digit *saveLast = m_last;
-      m_last = dd->prev;
-      m_last->next = NULL;
+      (m_last = dd->prev)->next = NULL;
       deleteDigits(dd, saveLast);
     }
   }

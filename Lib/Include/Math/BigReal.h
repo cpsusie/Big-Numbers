@@ -16,14 +16,20 @@
 // Measures of time show that getDecimalDigitCount64 is 5 times faster than getDecimalDigitCount64Loop
 //#define HAS_LOOP_DIGITCOUNT
 
-// Define this to count the number of fetchDigit on Locked DigitPools (first of all CONSTPOOL)
-#define COUNT_DIGITPOOLFETCHDIGIT
-// If this is defined, product wil trace recursive calls for when multiplying long BigReals
+#define USE_FETCHDIGITLIST
+
+// Define this to keep track of invariant for DigitPools, and fetched lists of Digits
+//#define CHECK_DIGITPOOLINVARIANT
+
+// Define this to count the number of fetchDigit on DigitPools
+//#define COUNT_DIGITPOOLFETCHDIGIT
+
+// If this is defined, product wil trace recursive calls when multiplying long BigReals
 // which will slow down the program (testBigReal) by a factor 20!!
 //#define TRACEPRODUCTRECURSION
 
 // If this is defined, load/save/the number of requests and cache-hits to pow2Cache will be logged
-// and written to debugLog when program exit
+// and written to debugLog at program exit
 //#define TRACEPOW2CACHE
 
 // If this is defined, the number of requests and cache-hits to pow2Cache will be logged
@@ -53,7 +59,7 @@ typedef _uint128       BR2DigitTypex64;
 typedef INT64          BRExpoTypex64;
 typedef INT64          BRDigitDiffTypex64;
 
-// Basic definitions depends on registersize. 32- og 64-bit
+// Basic definitions depends on registersize. 32/64-bit
 #ifdef IS32BIT
 
 #define BIGREAL_LOG10BASE  BIGREAL_LOG10BASEx86
@@ -250,6 +256,20 @@ private:
   void allocatePage();
   DigitPool(const DigitPool &src);            // not implemented
   DigitPool &operator=(const DigitPool &src); // not implemented
+
+#ifdef USE_FETCHDIGITLIST
+#ifdef CHECK_DIGITPOOLINVARIANT
+  // The free-list of digits, maintained by DigitPool
+  //                +------+   +------+   +------+   +------+   +------+
+  // m_freeDigits-->| next |-->| next |-->| next |-->| next |-->| next |-->nil
+  //    Undefined<--| prev |<--| prev |<--| prev |<--| prev |<--| prev |
+  //                +------+   +------+   +------+   +------+   +------+
+  //
+  void checkInvariant(const TCHAR *method, bool enter) const;
+  static void checkIsDoubleLinkedList(const TCHAR *method, const Digit *head, size_t expectedLength);
+#endif // CHECK_DIGITPOOLINVARIANT
+#endif
+
 public:
 
   // InitialDigitcount in BIGREALBASE-digits
@@ -281,9 +301,25 @@ public:
   // cause data-race...sooner or later
   // Overwritten in DigitPoolWithLock, which solves this problem
   virtual Digit *fetchDigit();
-  // See comment for newDigit
+
+#ifdef USE_FETCHDIGITLIST
+/** See comment for newDigit
+ Returns a double linked list, L, with count digits. all undefined
+ FetchDigitList(5) will return L which looks like following:
+     +------+   +------+   +------+   +------+   +------+
+ L-->| next |-->| next |-->| next |-->| next |-->| next |--->undefined
+   +-| prev |<--| prev |<--| prev |<--| prev |<--| prev |<-+
+   | +------+   +------+   +------+   +------+   +------+  |
+   +-------------------------------------------------------+
+*/
   virtual Digit *fetchDigitList(size_t count);
+// Returns a double linked list, L, with count digits.all values initialized to n
+  virtual Digit *fetchDigitList(size_t count, BRDigitType n);
+#endif // USE_FETCHDIGITLIST
+
   // See comment for newDigit
+  // Assume first points to head of double linked list of digits which ends with the digit pointed to by last
+
   virtual void deleteDigits(Digit *first, Digit *last);
   virtual bool isWithLock() const {
     return false;
@@ -375,13 +411,24 @@ public:
     m_lock.notify();
     return d;
   }
-  // Return head of double linked list with count digits. prev-pointer of head points to last digit in list
+
+#ifdef USE_FETCHDIGITLIST
+  // Return head of double linked list with count digits with undefined values. prev-pointer of head points to last digit in list
   Digit *fetchDigitList(size_t count) {
     m_lock.wait();
     Digit *d = __super::fetchDigitList(count);
     m_lock.notify();
     return d;
   }
+  // Return head of double linked list with count digits = n. prev-pointer of head points to last digit in list
+  Digit *fetchDigitList(size_t count, BRDigitType n) {
+    m_lock.wait();
+    Digit *d = __super::fetchDigitList(count, n);
+    m_lock.notify();
+    return d;
+  }
+#endif // USE_FETCHDIGITLIST
+
   void deleteDigits(Digit *first, Digit *last) {
     m_lock.wait();
     __super::deleteDigits(first, last);
@@ -641,11 +688,11 @@ private:
   // Dont modify m_expo,m_low,m_flags
   void    insertAfter(            Digit *p, BRDigitType n);
   // Insert count zero-digits after digit p.
-  // Assume p is a digit in digit-list of this.
+  // Assume (count > 0) && p is a digit in digit-list of this.
   // Dont modify m_expo,m_low,m_flags
   void    insertZeroDigitsAfter(  Digit *p, size_t count);
   // Insert count digits=BIGREALBASE-1 after digit p.
-  // Assume p is a digit in digit-list of this.
+  // Assume (count > 0) && p is a digit in digit-list of this.
   // Dont modify m_expo,m_low,m_flags
   void    insertBorrowDigitsAfter(Digit *p, size_t count);
   // Releases all digits in digit-list to this.m_digitPool.
@@ -660,7 +707,7 @@ private:
 
   // Assume _isfinite()
   // Does NOT call CHECKISMUTABLE
-  // is _isnormal() m_expo++; else m_expo = m_low = 0
+  // if _isnormal() m_expo++; else m_expo = m_low = 0
   inline void incrExpo() {
     assert(_isfinite());
     if(_isnormal()) m_expo++; else m_expo = m_low = 0;
@@ -778,7 +825,7 @@ private:
   static BigReal &productMT(BigReal &result, const BigReal &x, const BigReal &y, const BigReal &f, intptr_t  w, int level);
   // Assume this->_isnormal() && a.isZero() && b.isZero() && f._isfinite(). Dont care about sign(f)
   void    split(BigReal &a, BigReal &b, size_t n, const BigReal &f) const;
-  // Assume src._isnormal() && length <= src.getLength() && m_first == m_last == NULL
+  // Assume src._isnormal() && 0 < length <= src.getLength() && m_first == m_last == NULL
   // Modify only m_first and m_last of this
   // Does NOT call CHECKISMUTABLE
   // Return *this

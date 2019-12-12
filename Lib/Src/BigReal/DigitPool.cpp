@@ -71,45 +71,99 @@ DigitPool::~DigitPool() {
   }
 }
 
+#ifdef CHECK_DIGITPOOLINVARIANT
+#define ENTER checkInvariant(__TFUNCSIG__,true );
+#define LEAVE checkInvariant(__TFUNCSIG__,false);
+#define SAVECOUNT const size_t _origCount = count;
+#define CHECKISLIST(head) checkIsDoubleLinkedList(__TFUNCSIG__, head, _origCount);
+#else
+#define ENTER
+#define LEAVE
+#define SAVECOUNT
+#define CHECKISLIST(head)
+#endif // CHECK_DIGITPOOLINVARIANT
+
 Digit *DigitPool::fetchDigit() {
+  ENTER;
   if(m_freeDigits == NULL) allocatePage();
   Digit *p     = m_freeDigits;
   m_freeDigits = p->next;
 #ifdef COUNT_DIGITPOOLFETCHDIGIT
   m_requestCount++;
 #endif // COUNT_DIGITPOOLFETCHDIGIT
+  LEAVE
   return p;
 }
 
+#ifdef USE_FETCHDIGITLIST
 Digit *DigitPool::fetchDigitList(size_t count) {
+  ENTER
+  SAVECOUNT
+  if(m_freeDigits == NULL) allocatePage();
   Digit *head = m_freeDigits, *last = head;
-  for(Digit *q = head->next; --count; last=q, q = q->next) {
+  for(Digit *q = head->next; --count; q = (last=q)->next) {
     if(q == NULL) {
       m_freeDigits = NULL;
       allocatePage();
-      last->next = q = m_freeDigits;
+      (q = last->next = m_freeDigits)->prev = last;
     }
-    q->prev = last;
   }
   m_freeDigits = last->next;
-  last->next = NULL;
   head->prev = last;
 #ifdef COUNT_DIGITPOOLFETCHDIGIT
   m_requestCount++;
 #endif // COUNT_DIGITPOOLFETCHDIGIT
+  CHECKISLIST(head)
+  LEAVE
   return head;
 }
 
+Digit *DigitPool::fetchDigitList(size_t count, BRDigitType n) {
+  ENTER
+  SAVECOUNT
+  if(m_freeDigits == NULL) allocatePage();
+  Digit *head = m_freeDigits, *last = head;
+  head->n = n;
+  for(Digit *q = head->next; --count; q = (last = q)->next) {
+    if(q == NULL) {
+      m_freeDigits = NULL;
+      allocatePage();
+      (q = last->next = m_freeDigits)->prev = last;
+    }
+    q->n = n;
+  }
+  m_freeDigits = last->next;
+  head->prev = last;
+#ifdef COUNT_DIGITPOOLFETCHDIGIT
+  m_requestCount++;
+#endif // COUNT_DIGITPOOLFETCHDIGIT
+  CHECKISLIST(head)
+  LEAVE
+  return head;
+}
+
+#endif // USE_FETCHDIGITLIST
+
 void DigitPool::deleteDigits(Digit *first, Digit *last) {
+#ifdef USE_FETCHDIGITLIST
+  ENTER
+  if(last->next = m_freeDigits)
+    m_freeDigits->prev = last;
+  m_freeDigits = first;
+  LEAVE
+#else
   last->next = m_freeDigits;
   m_freeDigits = first;
+#endif // USE_FETCHDIGITLIST
 }
 
 void DigitPool::allocatePage() {
+  ENTER
   m_firstPage  = new DigitPage(m_firstPage, m_freeDigits); TRACE_NEW(m_firstPage);
   m_freeDigits = m_firstPage->m_page;
   m_allocatedPageCount++;
   s_totalAllocatedPageCount++;
+  LEAVE
 }
 
 size_t DigitPool::getFreeDigitCount() const {
@@ -124,13 +178,39 @@ size_t DigitPool::getUsedDigitCount() const {
   return getAllocatedDigitCount() - getFreeDigitCount();
 }
 
+#ifdef CHECK_DIGITPOOLINVARIANT
+void DigitPool::checkInvariant(const TCHAR *method, bool enter) const {
+  size_t count = 0;
+  for(const Digit *p = m_freeDigits, *last = p?p->prev:NULL; p; last = p, p = p->next, count++) {
+    if(p->prev != last) {
+      throwException(_T("%s %s:Invariant broken for digitPool %s"), enter?_T("enter"):_T("leave"), method, getName().cstr());
+    }
+  }
+}
+
+void DigitPool::checkIsDoubleLinkedList(const TCHAR *method, const Digit *head, size_t expectedLength) { // static
+  size_t count = 1;
+  const Digit *last = head->prev;
+  for(const Digit *p = head, *q = last; p != last; q = p, p = p->next, count++) {
+    if(p->prev != q) {
+      throwException(_T("%s:%p not doublelinked list"), method, head);
+    }
+  }
+  if(count != expectedLength) {
+    throwException(_T("%s:length=%zu. expectedLength=%zu"), method, count, expectedLength);
+  }
+}
+#endif // CHECK_DIGITPOOLINVARIANT
+
 DigitPage::DigitPage(DigitPage *nextPage, Digit *nextDigit) {
   memset(this, 0, sizeof(DigitPage));
   m_next = nextPage;
   // then link digits together
   Digit *p = &LASTVALUE(m_page);
-  p->next = nextDigit;
-  while(p-- > m_page) p->next = p+1;
+  if(p->next = nextDigit) {
+    nextDigit->prev = p;
+  }
+  while(p-- > m_page) (p->next = p+1)->prev = p;
 }
 
 // Helper class to allocate vectors of BigReals with DigitPool != DEFAULT_DIGITPOOL
