@@ -2,6 +2,7 @@
 #include <Console.h>
 #include <Math/FPU.h>
 #include <ThreadPool.h>
+#include <Thread.h>
 #include "FunctionTest.h"
 
 FastSemaphore   TesterJob::s_lock;

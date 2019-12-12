@@ -262,7 +262,9 @@ static void usage() {
                        "   -d: Dump pow2Cache, either at load time, or at end, after all tests have filled the cache\n"
                        "   -h: Halt all threads on first error detected\n"
                        "   -tThreadcount: run testnumber with the specified number of threads. Default is the number of cores in the CPU\n"
-                       "   -m: Start digit monitor. will write every 3 seconds the total number of allocated digits\n")
+                       "   -m: Start digit monitor. will write every 3 seconds the total number of allocated digits\n"
+                       "   -2: Disable pre-load of pow2cache"
+                      )
            );
   exit(-1);
 }
@@ -277,6 +279,7 @@ int _tmain(int argc, TCHAR **argv) {
   try {
     Command command           = CMD_STDTEST;
     bool    highPriority      = false;
+    bool    loadPow2          = true;
     bool    dumpPow2Cache     = false;
     bool    stopOnError       = false;
     bool    startDigitMonitor = false;
@@ -306,6 +309,8 @@ int _tmain(int argc, TCHAR **argv) {
                   break;
         case 'm': startDigitMonitor = true;
                   continue;
+        case '2': loadPow2 = false;
+                  continue;
         default : usage();
         }
         break;
@@ -334,7 +339,7 @@ int _tmain(int argc, TCHAR **argv) {
     switch(command) {
     case CMD_STDTEST          :
     case CMD_SPECIALTEST      :
-      if(BigReal::pow2CacheHasFile()) {
+      if(loadPow2 && BigReal::pow2CacheHasFile()) {
         BigReal::pow2CacheLoad();
         if(dumpPow2Cache) {
           BigReal::pow2CacheDump();
