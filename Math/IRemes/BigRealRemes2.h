@@ -207,7 +207,7 @@ private:
   BigRealVector                m_coefficientVector;
   // set to true the first time m_coefficient vector is calculated
   bool                         m_hasCoefficients;
-  FastSemaphore                m_lock;
+  mutable FastSemaphore        m_lock;
   RationalFunction             m_currentApprox;
   bool                         m_extremaCountChangedNotificationEnabled;
   mutable bool                 m_reduceToInterpolate;
@@ -250,7 +250,7 @@ private:
     m_extremaCountChangedNotificationEnabled = enable;
   }
   void                 findCoefficients();
-  BigReal              findExtremum(    const BigReal &l, const BigReal &m, const BigReal &r, DigitPool *pool);
+  BigReal              findExtremum(    BigRealFunction &f, const BigReal &l, const BigReal &m, const BigReal &r, DigitPool *pool);
   void                 findExtrema();
   BigRealVector        findFinalExtrema(UINT M, UINT K, bool highPrecision);
   // return sign of errorfunction at extremum
@@ -329,7 +329,7 @@ public:
     return s_extremaMap;
   }
   void        getCurrentApproximation(RationalFunction &approx) const;
-  void        getErrorPlot(UINT n, RationalFunction &approx, Point2DArray &pa, DigitPool *digitPool, float *progressPct=NULL) const;
+  void        getErrorPlot(RationalFunction &approx, UINT n, Point2DArray &pa, DigitPool *digitPool, float *progressPct=NULL) const;
 
   String      getCFunctionString(bool useDouble80) const;
   String      getJavaFunctionString() const;

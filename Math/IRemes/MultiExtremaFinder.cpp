@@ -33,8 +33,9 @@ private:
   MultiExtremaFinder &m_mf;
   const int           m_id;
   DigitPool          *m_pool;
+  RationalFunction   &m_approx;
 public:
-  ExtremumFinder(MultiExtremaFinder *mf, int id) : m_mf(*mf), m_id(id), m_pool(NULL) {
+  ExtremumFinder(MultiExtremaFinder *mf, int id) : m_mf(*mf), m_id(id), m_pool(NULL), m_approx(mf->m_approx) {
     m_pool = BigRealResourcePool::fetchDigitPool();
   }
   ~ExtremumFinder() {
@@ -56,7 +57,7 @@ UINT ExtremumFinder::run() {
     for(;;) {
       try {
         const ExtremumSearchParam *param = paramQueue.get(10);
-        result = remes.findExtremum(param->m_left, param->m_middle, param->m_right, m_pool);
+        result = remes.findExtremum(m_approx, param->m_left, param->m_middle, param->m_right, m_pool);
         m_mf.putExtremum(param->m_index, result);
       } catch(TimeoutException e) {
         if(paramQueue.isEmpty()) {
@@ -115,6 +116,7 @@ UINT ExtremumNotifier::run() {
 }
 
 MultiExtremaFinder::MultiExtremaFinder(Remes *remes) : m_remes(*remes) {
+  m_remes.getCurrentApproximation(m_approx);
 }
 
 MultiExtremaFinder::~MultiExtremaFinder() {
@@ -141,7 +143,7 @@ MultiExtremaFinder::~MultiExtremaFinder() {
 
 void MultiExtremaFinder::findAllExtrema() {
   m_resultArray.setCapacity(m_paramArray.getCapacity());
-  const int pCount = getProcessorCount() + 4;
+  const int pCount = getProcessorCount();
   m_jobArray.setCapacity(pCount+1);
   for(int i = 0; i < pCount; i++) {
     ExtremumFinder *f = new ExtremumFinder(this,i); TRACE_NEW(e);

@@ -372,13 +372,13 @@ static BigReal inverseInterpolate(const Point &p1, const Point &p2, const Point 
   return _05 * rQuot(t,d,digits);
 }
 
-BigReal Remes::findExtremum(const BigReal &from, const BigReal &middle, const BigReal &to, DigitPool *pool) {
+BigReal Remes::findExtremum(BigRealFunction &f, const BigReal &from, const BigReal &middle, const BigReal &to, DigitPool *pool) {
   DEFINEMETHODNAME;
   const UINT STEPCOUNT = 20;
   BigReal l(pool), r(pool), m(pool), brStepCount(pool);
   l = from; r = to; m = middle;
   brStepCount = STEPCOUNT - 1;
-  const int errorSign = sign(currentErrorFunction(m));
+  const int errorSign = sign(errorFunction(f, m));
 
   for(UINT depth = 0;; depth++) {
     Array<Point> plot;
@@ -393,7 +393,7 @@ BigReal Remes::findExtremum(const BigReal &from, const BigReal &middle, const Bi
     BigReal x = l;
     for(UINT count = 0;;) {
       checkRange(method, x, l, r);
-      plot.add(Point(x,signedValue(errorSign, currentErrorFunction(x))));
+      plot.add(Point(x,signedValue(errorSign, errorFunction(f, x))));
 
       count++;
       if(count < STEPCOUNT-1) {
@@ -415,7 +415,7 @@ BigReal Remes::findExtremum(const BigReal &from, const BigReal &middle, const Bi
     if(x < l || x > r) {
       x = plot[0].m_x;
     } else { // l <= x <= r
-      if(signedValue(errorSign, currentErrorFunction(x)) < plot[0].m_y) {
+      if(signedValue(errorSign, errorFunction(f, x)) < plot[0].m_y) {
         x = plot[0].m_x;
       }
     }
@@ -546,12 +546,13 @@ BigReal Remes::currentErrorFunction(const BigReal &x) {
   return v;
 }
 
+// No lock here.
 void Remes::getCurrentApproximation(RationalFunction &approx) const {
   approx = m_currentApprox;
 }
 
 #undef _05
-void Remes::getErrorPlot(UINT n, RationalFunction &approx, Point2DArray &pa, DigitPool *digitPool, float *progressPct) const {
+void Remes::getErrorPlot(RationalFunction &approx, UINT n, Point2DArray &pa, DigitPool *digitPool, float *progressPct) const {
   if(approx.isEmpty()) return;
   pa.clear();
   pa.setCapacity(n + 1);

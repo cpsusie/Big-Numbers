@@ -348,13 +348,13 @@ UINT ErrorPlotter::run() {
   setThreadDescription("ErrorPlotter");
   m_progress = 0;
   try {
-    DebugInfo &info = m_dlg.m_debugInfo;
+    DebugInfo       &info = m_dlg.m_debugInfo;
     RationalFunction f;
     Remes           *remes = m_dlg.m_remes;
     info.getApproximation(f);
     Point2DArray pa;
     m_dlg.startErrorPlotTimer();
-    remes->getErrorPlot(m_dlg.getErrorPlotXPixelCount(), f, pa, m_digitPool, &m_progress);
+    remes->getErrorPlot(f, m_dlg.getErrorPlotXPixelCount(), pa, m_digitPool, &m_progress);
     info.setPointArray(pa, f.getCoefVectorIndex());
     m_dlg.PostMessage(ID_MSG_ERRORPOINTARRAY_CHANGED, 0, 0);
     m_terminated.notify();

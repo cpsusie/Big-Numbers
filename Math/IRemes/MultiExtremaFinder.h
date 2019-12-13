@@ -16,6 +16,7 @@ class MultiExtremaFinder {
 private:
   FastSemaphore                            m_lock;
   Remes                                   &m_remes;
+  RationalFunction                         m_approx;
   RunnableArray                            m_jobArray;
   CompactArray<const ExtremumSearchParam*> m_paramArray;
   CompactArray<const ExtremumResult*>      m_resultArray;
