@@ -1,5 +1,4 @@
 #include "pch.h"
-#include "InstructionBuilder.h"
 
 OpcodeShiftRot::OpcodeShiftRot(const String &mnemonic, BYTE extension)
   : Opcode2ArgMI8(mnemonic, 0xC0, extension)

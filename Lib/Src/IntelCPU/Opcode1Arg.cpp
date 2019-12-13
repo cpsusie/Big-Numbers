@@ -1,5 +1,4 @@
 #include "pch.h"
-#include "InstructionBuilder.h"
 
 InstructionBase Opcode1Arg::operator()(const InstructionOperand &op) const {
   isValidOperand(op, true);

@@ -1,5 +1,4 @@
 #include "pch.h"
-#include <OpCode.h>
 
 static inline bool isGPR0AndImmAddr(const InstructionOperand &op1, const InstructionOperand &op2) {
   return op1.isGPR0() && op2.isDisplaceOnly();

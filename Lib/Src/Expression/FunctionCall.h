@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Opcode.h>
+#include <IntelCPU/Opcode.h>
 #include <Math/MathLib.h>
 
 namespace Expr {

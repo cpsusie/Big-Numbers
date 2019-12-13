@@ -1,9 +1,7 @@
 #pragma once
 
 #include <MyUtil.h>
-#include <DebugLog.h>
-#include <StringArray.h>
-#include <Opcode.h>
+#include <IntelCPU/Opcode.h>
 #include "FunctionCall.h"
 
 namespace Expr {

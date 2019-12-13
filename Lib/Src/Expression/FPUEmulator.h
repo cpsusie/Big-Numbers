@@ -1,7 +1,7 @@
 #pragma once
 
 #include <CompactHashMap.h>
-#include <OpCode.h>
+#include <IntelCPU/OpCode.h>
 
 namespace Expr {
 

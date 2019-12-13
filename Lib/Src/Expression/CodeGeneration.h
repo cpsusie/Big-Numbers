@@ -1,6 +1,6 @@
 #pragma once
 
-#include <OpCode.h>
+#include <IntelCPU/OpCode.h>
 #include <CompactArray.h>
 #include <CompactHashMap.h>
 #include <StringArray.h>

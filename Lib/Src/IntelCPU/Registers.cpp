@@ -1,5 +1,4 @@
 #include "pch.h"
-#include <Registers.h>
 
 String toString(RegType regType) {
   switch(regType) {

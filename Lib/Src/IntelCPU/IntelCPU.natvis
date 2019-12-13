@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+  <Type Name="Register">
+    <DisplayString>{m_debugStr.m_buf,su}</DisplayString>
+  </Type>
+  <Type Name="InstructionOperand">
+    <DisplayString>{m_debugStr.m_buf,su}</DisplayString>
+  </Type>
+  <Type Name="MemoryRef">
+    <DisplayString>{m_debugStr.m_buf,su}</DisplayString>
+  </Type>
+  <Type Name="OpcodeBase">
+    <DisplayString>{m_mnemonic.m_buf,su}</DisplayString>
+  </Type>
+  <Type Name="InstructionBuilder">
+    <DisplayString>{m_debugStr.m_buf,su}</DisplayString>
+  </Type>
+</AutoVisualizer>

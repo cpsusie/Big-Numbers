@@ -47,9 +47,6 @@
     <Filter Include="Source Files\System">
       <UniqueIdentifier>{55a6a7a8-bc3e-43cd-a337-44d1b5306212}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\IntelCPU">
-      <UniqueIdentifier>{296026c7-dc19-46c5-a753-4a1cc57b7dad}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Collection">
       <UniqueIdentifier>{695c9a81-c290-448a-8b2a-a4dbfff2f5cf}</UniqueIdentifier>
     </Filter>
@@ -83,11 +80,11 @@
     <Filter Include="Header Files\System">
       <UniqueIdentifier>{dd7e2fb9-1bc0-4bd9-831d-547133032af5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\IntelCPU">
-      <UniqueIdentifier>{623104d4-f11b-449a-b6fa-27c09e0d74b7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Stream\RegexIStream">
       <UniqueIdentifier>{e245533d-91a4-4fbb-8cc5-da720882740f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\IntelCPU">
+      <UniqueIdentifier>{476207fd-29d5-4be2-9d62-c2adda0335c2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -734,66 +731,6 @@
     <ClCompile Include="MedianCut.cpp">
       <Filter>Source Files\Math</Filter>
     </ClCompile>
-    <ClCompile Include="IntelCPU\InstructionBase.cpp">
-      <Filter>Source Files\IntelCPU</Filter>
-    </ClCompile>
-    <ClCompile Include="IntelCPU\InstructionBuilder.cpp">
-      <Filter>Source Files\IntelCPU</Filter>
-    </ClCompile>
-    <ClCompile Include="IntelCPU\InstructionOperand.cpp">
-      <Filter>Source Files\IntelCPU</Filter>
-    </ClCompile>
-    <ClCompile Include="IntelCPU\Opcode0Arg.cpp">
-      <Filter>Source Files\IntelCPU</Filter>
-    </ClCompile>
-    <ClCompile Include="IntelCPU\Opcode1Arg.cpp">
-      <Filter>Source Files\IntelCPU</Filter>
-    </ClCompile>
-    <ClCompile Include="IntelCPU\Opcode2Arg.cpp">
-      <Filter>Source Files\IntelCPU</Filter>
-    </ClCompile>
-    <ClCompile Include="IntelCPU\Opcode3Arg.cpp">
-      <Filter>Source Files\IntelCPU</Filter>
-    </ClCompile>
-    <ClCompile Include="IntelCPU\OpcodeBase.cpp">
-      <Filter>Source Files\IntelCPU</Filter>
-    </ClCompile>
-    <ClCompile Include="IntelCPU\OpcodeFPU.cpp">
-      <Filter>Source Files\IntelCPU</Filter>
-    </ClCompile>
-    <ClCompile Include="IntelCPU\OpcodeImul.cpp">
-      <Filter>Source Files\IntelCPU</Filter>
-    </ClCompile>
-    <ClCompile Include="IntelCPU\OpcodeLea.cpp">
-      <Filter>Source Files\IntelCPU</Filter>
-    </ClCompile>
-    <ClCompile Include="IntelCPU\OpcodeMov.cpp">
-      <Filter>Source Files\IntelCPU</Filter>
-    </ClCompile>
-    <ClCompile Include="IntelCPU\OpcodePushPop.cpp">
-      <Filter>Source Files\IntelCPU</Filter>
-    </ClCompile>
-    <ClCompile Include="IntelCPU\Opcodes.cpp">
-      <Filter>Source Files\IntelCPU</Filter>
-    </ClCompile>
-    <ClCompile Include="IntelCPU\OpcodeShiftRot.cpp">
-      <Filter>Source Files\IntelCPU</Filter>
-    </ClCompile>
-    <ClCompile Include="IntelCPU\OpcodeXchg.cpp">
-      <Filter>Source Files\IntelCPU</Filter>
-    </ClCompile>
-    <ClCompile Include="IntelCPU\Registers.cpp">
-      <Filter>Source Files\IntelCPU</Filter>
-    </ClCompile>
-    <ClCompile Include="IntelCPU\OpcodeCall.cpp">
-      <Filter>Source Files\IntelCPU</Filter>
-    </ClCompile>
-    <ClCompile Include="IntelCPU\OpcodeMovExtend.cpp">
-      <Filter>Source Files\IntelCPU</Filter>
-    </ClCompile>
-    <ClCompile Include="IntelCPU\OpcodeBitTest.cpp">
-      <Filter>Source Files\IntelCPU</Filter>
-    </ClCompile>
     <ClCompile Include="BCDArray.cpp">
       <Filter>Source Files\Math</Filter>
     </ClCompile>
@@ -805,9 +742,6 @@
     </ClCompile>
     <ClCompile Include="MD5.cpp">
       <Filter>Source Files\Misc</Filter>
-    </ClCompile>
-    <ClCompile Include="ExecutableByteArray.cpp">
-      <Filter>Source Files\IntelCPU</Filter>
     </ClCompile>
     <ClCompile Include="RegexIStream\DFA.cpp">
       <Filter>Source Files\Stream\RegexIStream</Filter>
@@ -935,15 +869,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
-    <ClInclude Include="IntelCPU\InstructionBuilder.h">
-      <Filter>Source Files\IntelCPU</Filter>
-    </ClInclude>
-    <ClInclude Include="IntelCPU\RexByte.h">
-      <Filter>Source Files\IntelCPU</Filter>
-    </ClInclude>
-    <ClInclude Include="IntelCPU\pch.h">
-      <Filter>Source Files\IntelCPU</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\BCDArray.h">
       <Filter>Header Files\Math</Filter>
     </ClInclude>
@@ -955,12 +880,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\MathUtil.h">
       <Filter>Header Files\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Registers.h">
-      <Filter>Header Files\IntelCPU</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Opcode.h">
-      <Filter>Header Files\IntelCPU</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\Array.h">
       <Filter>Header Files\Collection</Filter>
@@ -982,9 +901,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\CompactKeyType.h">
       <Filter>Header Files\Collection</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\ExecutableByteArray.h">
-      <Filter>Header Files\IntelCPU</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\HashMap.h">
       <Filter>Header Files\Collection</Filter>
@@ -1340,6 +1256,21 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\AbstractFilterArrayIterator.h">
       <Filter>Header Files\Collection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\IntelCPU\Opcode.h">
+      <Filter>Header Files\IntelCPU</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\IntelCPU\Registers.h">
+      <Filter>Header Files\IntelCPU</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\IntelCPU\ExecutableByteArray.h">
+      <Filter>Header Files\IntelCPU</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\IntelCPU\PragmaLib.h">
+      <Filter>Header Files\IntelCPU</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\IntelCPU\targetver.h">
+      <Filter>Header Files\IntelCPU</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

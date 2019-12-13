@@ -1,5 +1,4 @@
 #include "pch.h"
-#include "InstructionBuilder.h"
 
 bool OpcodeMovExtend::isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError) const {
   switch(op2.getSize()) {

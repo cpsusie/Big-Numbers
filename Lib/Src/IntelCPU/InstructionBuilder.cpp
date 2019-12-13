@@ -1,5 +1,4 @@
 #include "pch.h"
-#include "InstructionBuilder.h"
 
 const RegSizeSet InstructionBuilder::s_sizeBitSet(REGSIZE_WORD, REGSIZE_DWORD, REGSIZE_QWORD, -1);
 

@@ -1,5 +1,5 @@
 #include "pch.h"
-#include <Opcode.h>
+#include <IntelCPU/Opcode.h>
 #include "FPUEmulator.h"
 
 namespace Expr {

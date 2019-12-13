@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ExecutableByteArray.h>
+#include <IntelCPU/ExecutableByteArray.h>
 #include <Math/Real.h>
 
 namespace Expr {

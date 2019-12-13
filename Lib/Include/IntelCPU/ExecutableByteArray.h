@@ -1,6 +1,7 @@
 #pragma once
 
-#include "ByteArray.h"
+#include <ByteArray.h>
+#include "PragmaLib.h"
 
 class ExecutableByteArray : public ByteArray {
 protected:

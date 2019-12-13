@@ -1,5 +1,4 @@
 #include "pch.h"
-#include "InstructionBuilder.h"
 
 static inline bool isEAXOrRAX(const Register &reg) {
   return reg.isGPR0() && Register::sizeContainsSrcSize(reg.getSize(),REGSIZE_DWORD);
