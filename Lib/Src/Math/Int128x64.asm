@@ -333,48 +333,53 @@ uint128div PROC
      push       rsi                            ; but without sign check on arguments
      mov        r8, rcx                        ; r8 = &dst
      mov        r9, rdx                        ; r9 = &x
-     mov        rax, qword ptr[r9+8]           ;
+     mov        rax, qword ptr[r9+8]           ; rax = x.hi
      or         rax, rax                       ;
-     jne        L1                             ;
-     mov        rcx, qword ptr[r9]
-     mov        rax, qword ptr[r8+8]
-     xor        rdx, rdx
-     div        rcx
-     mov        rbx, rax
-     mov        rax, qword ptr[r8]
-     div        rcx
-     mov        rdx, rbx
-     jmp        L2
-L1:
-     mov        rcx, rax
-     mov        rbx, qword ptr[r9]
-     mov        rdx, qword ptr[r8+8]
-     mov        rax, qword ptr[r8]
-L3:
-     shr        rcx, 1
-     rcr        rbx, 1
-     shr        rdx, 1
-     rcr        rax, 1
-     or         rcx, rcx
-     jne        L3
-     div        rbx
-     mov        rsi, rax
-     mul        qword ptr[r9+8]
-     mov        rcx, rax
-     mov        rax, qword ptr[r9]
-     mul        rsi
-     add        rdx, rcx
-     jb         L4
-     cmp        rdx, qword ptr[r8+8]
-     ja         L4
-     jb         L5
-     cmp        rax, qword ptr[r8]
-     jbe        L5
+     jne        L1                             ; if(x.hi == 0) {
+     mov        rcx, qword ptr[r9]             ;   load x.lo
+     mov        rax, qword ptr[r8+8]           ;   load dst.hi
+     xor        rdx, rdx                       ;   rax:rdx == dst.hi:0
+     div        rcx                            ;   rax = q.hi. rdx = remainder.hi
+     mov        rbx, rax                       ;   rbx = q.hi
+     mov        rax, qword ptr[r8]             ;   rdx:rax <- remainder:lo word of dividend
+     div        rcx                            ;   rax:rdx = q.lo:remainder
+     mov        rdx, rbx                       ;   rdx:rax <- q hi:q lo
+     jmp        L2                             ;   restore stack and return
+                                               ; }
+L1:                                            ; Assume rax = x.hi
+     mov        rcx, rax                       ;
+     mov        rbx, qword ptr[r9]             ; rcx:rbx == x (divisor)
+     mov        rdx, qword ptr[r8+8]           ;
+     mov        rax, qword ptr[r8]             ; rdx:rax == dst (dividend)
+L3:                                            ; do {
+     shr        rcx, 1                         ;   rshift divisor 1; hi bit:=0
+     rcr        rbx, 1                         ;
+     shr        rdx, 1                         ;   rshift dividend 1; hi bit:=0
+     rcr        rax, 1                         ;
+     or         rcx, rcx                       ;
+     jne        L3                             ; } while(divisor.hi != 0);
+     div        rbx                            ; rax = quotiet. rdx = remainder (ignore)
+     mov        rsi, rax                       ; rsi = quotient (q)
+                                               ; q maybe 1 too big, so calculate t = q * x
+                                               ; and compare t and dst (original dividend)
+                                               ; Note that we must also check for overflow, which can occur if
+                                               ; dst is close to 2**128 and the q is 1 too big
+     mul        qword ptr[r9+8]                ; rax:rdx = q *= x.hi
+     mov        rcx, rax                       ; rcx = (q*x.hi)
+     mov        rax, qword ptr[r9]             ; rax = dst.lo
+     mul        rsi                            ; rax;rdx = q * x.lo
+     add        rdx, rcx                       ; rdx:rax = t = quotient * x
+     jc         L4                             ; carry means q is 1 too big
+     cmp        rdx, qword ptr[r8+8]           ; compare t.hi and dst.hi
+     ja         L4                             ; if(t.hi > dst.hi) q--
+     jb         L5                             ; if(t.hi < dst.hi) we are done
+     cmp        rax, qword ptr[r8]             ; t.hi == dst.hi. now compare lo words
+     jbe        L5                             ; if(t.lo <= dst.lo) we are done, else q--
 L4:
-     dec        rsi
+     dec        rsi                            ; quotient--
 L5:
      xor        rdx, rdx
-     mov        rax, rsi
+     mov        rax, rsi                       ; rdx:rax <- quotient
 L2:
      pop        rsi
      pop        rbx
