@@ -179,7 +179,6 @@ public:
   ULONG  hashCode()    const;
   String toBitString() const;
   String toString(AbstractStringifier<size_t> *sf = NULL, const TCHAR *delim = _T(",")) const;
-  String toStringIntervals() const;
 };
 
 // Union        = set containing all elements from lts and rhs

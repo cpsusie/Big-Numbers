@@ -184,9 +184,6 @@
     <ClCompile Include="BitSetStream.cpp">
       <Filter>Source Files\Collection</Filter>
     </ClCompile>
-    <ClCompile Include="BitSetToStringIntervals.cpp">
-      <Filter>Source Files\Collection</Filter>
-    </ClCompile>
     <ClCompile Include="ByteArray.cpp">
       <Filter>Source Files\Collection</Filter>
     </ClCompile>
