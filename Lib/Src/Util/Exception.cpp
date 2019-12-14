@@ -2,30 +2,33 @@
 #include <eh.h>
 #include <stdarg.h>
 
-#define CASE(c) case EXCEPTION_##c: return _T(#c);
+#define CASESTR(c) case EXCEPTION_##c: return _T(#c)
 
 static String translateExceptionCode(int code) {
   switch(code) {
-  CASE(ACCESS_VIOLATION         );
-  CASE(ARRAY_BOUNDS_EXCEEDED    );
-  CASE(BREAKPOINT               );
-  CASE(DATATYPE_MISALIGNMENT    );
-  CASE(FLT_DENORMAL_OPERAND     );
-  CASE(FLT_DIVIDE_BY_ZERO       );
-  CASE(FLT_INEXACT_RESULT       );
-  CASE(FLT_INVALID_OPERATION    );
-  CASE(FLT_OVERFLOW             );
-  CASE(FLT_STACK_CHECK          );
-  CASE(FLT_UNDERFLOW            );
-  CASE(ILLEGAL_INSTRUCTION      );
-  CASE(IN_PAGE_ERROR            );
-  CASE(INT_DIVIDE_BY_ZERO       );
-  CASE(INT_OVERFLOW             );
-  CASE(INVALID_DISPOSITION      );
-  CASE(NONCONTINUABLE_EXCEPTION );
-  CASE(PRIV_INSTRUCTION         );
-  CASE(SINGLE_STEP              );
-  CASE(STACK_OVERFLOW           );
+  CASESTR(ACCESS_VIOLATION         );
+  CASESTR(DATATYPE_MISALIGNMENT    );
+  CASESTR(BREAKPOINT               );
+  CASESTR(SINGLE_STEP              );
+  CASESTR(ARRAY_BOUNDS_EXCEEDED    );
+  CASESTR(FLT_DENORMAL_OPERAND     );
+  CASESTR(FLT_DIVIDE_BY_ZERO       );
+  CASESTR(FLT_INEXACT_RESULT       );
+  CASESTR(FLT_INVALID_OPERATION    );
+  CASESTR(FLT_OVERFLOW             );
+  CASESTR(FLT_STACK_CHECK          );
+  CASESTR(FLT_UNDERFLOW            );
+  CASESTR(INT_DIVIDE_BY_ZERO       );
+  CASESTR(INT_OVERFLOW             );
+  CASESTR(PRIV_INSTRUCTION         );
+  CASESTR(IN_PAGE_ERROR            );
+  CASESTR(ILLEGAL_INSTRUCTION      );
+  CASESTR(NONCONTINUABLE_EXCEPTION );
+  CASESTR(STACK_OVERFLOW           );
+  CASESTR(INVALID_DISPOSITION      );
+  CASESTR(GUARD_PAGE               );
+  CASESTR(INVALID_HANDLE           );
+//  CASESTR(POSSIBLE_DEADLOCK        ); Gives compiler error
   default:
     return format(_T("Unknown exceptioncode:%lx"), code);
   }
