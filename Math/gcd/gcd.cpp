@@ -42,7 +42,7 @@ ULONG gcd(ULONG u, ULONG v) {
 
 int main(int argc, char **argv) {
   for(;;) {
-    String line = inputString(_T("Angiv u v:"));
+    String line = inputValue<String>(_T("Angiv u v:"));
     ULONG u,v;
     if(_stscanf(line.cstr(),_T("%d %d"),&u,&v) != 2) continue;
     ULONG gc = gcd(u, v);

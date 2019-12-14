@@ -78,7 +78,7 @@ void DiffEquationGraph::calculate() {
     TRACE_NEW(m_pointGraphArray.last());
   }
   DiffEquationHandler handler(*this, vectorGraphMap);
-  RungeKuttaFehlberg(eq, handler).calculate(param.getStartVector(), param.getInterval().getTo(), param.getMaxError());
+  RungeKuttaFehlberg(eq, &handler).calculate(param.getStartVector(), param.getInterval().getTo(), param.getMaxError());
   for(size_t i = 0; i < m_pointGraphArray.size(); i++) {
     m_pointGraphArray[i]->updateDataRange();
   }

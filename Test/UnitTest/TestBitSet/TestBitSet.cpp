@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include <Random.h>
 #include <MathUtil.h>
+#include <InputValue.h>
 #include <BitSet.h>
 #include <BitMatrix.h>
 #include <CompactHashSet.h>
@@ -697,7 +698,7 @@ namespace TestBitSet {
       }
       /*
       for(;;) {
-      const UINT capacity = inputInt(_T("Enter capacity:"));
+      const UINT capacity = inputValue<UINT>(_T("Enter capacity:"));
       testAllBitSetIndices(capacity, rnd);
       }
       */

@@ -102,7 +102,7 @@ static void testrectpolar() {
     rectcoor rc;
     polarcoor pc;
 
-    String line = inputString(_T("Indtast x,y,z:"));
+    String line = inputValue<String>(_T("Indtast x,y,z:"));
     if(_stscanf(line.cstr(),_T("%le %le %le"), &rc.x, &rc.y, &rc.z) != 3) {
       printf("Fejl");
       continue;

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include <Date.h>
 #include <Console.h>
+#include <InputValue.h>
 #include <CPUInfo.h>
 #include <ThreadPool.h>
 #include "BigRealTestClass.h"
@@ -712,7 +713,7 @@ void BigRealTestClass::testTruncRound() {
 #ifdef INTERACTIVE
   for(;;) {
     const FullFormatBigReal x         = inputBigReal(*pool, _T("Enter x:"));
-    const int               digits    = inputInt(_T("Enter digits:"));
+    const int               digits    = inputValue<int>(_T("Enter digits:"));
     const int               decDigits = BigReal::getExpo10(x) + 1;
 
     FullFormatBigReal x1(x, pool), xRef(pool);
@@ -802,7 +803,7 @@ void BigRealTestClass::testCopyrTrunc() {
 #ifdef INTERACTIVE
   for(;;) {
     const FullFormatBigReal x         = inputBigReal(*pool, _T("Enter x:"));
-    const int               digits    = inputInt(_T("Enter digits:"));
+    const int               digits    = inputValue<int>(_T("Enter digits:"));
 
     FullFormatBigReal x1(1, pool), xRef(x, pool);
     try {

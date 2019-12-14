@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <Thread.h>
+#include <InputValue.h>
 #include <console.h>
 
 class Beat {
@@ -36,8 +37,8 @@ UINT controlthread::run() {
 
 
 int main(int argc, char **argv) {
-  int t1 = inputInt(_T("Indtast antal slag for takt 1:"));
-  int t2 = inputInt(_T("Indtast antal slag for takt 2:"));
+  int t1 = inputValue<int>(_T("Indtast antal slag for takt 1:"));
+  int t2 = inputValue<int>(_T("Indtast antal slag for takt 2:"));
   CompactArray<Beat> beatSequence;
   int len = t1 + t2 - 1;
   int i,c=1;

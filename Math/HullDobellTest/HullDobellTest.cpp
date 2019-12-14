@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <InputValue.h>
 #include <Math/Rational.h>
 #include <Math/PrimeFactors.h>
 
@@ -41,9 +42,9 @@ void hullDobellTest(UINT64 a, UINT64 c, UINT64 m) {
 
 int main(int argc, char **argv) {
   for(;;) {
-    const UINT64 a = inputUint64(_T("Enter a:"));
-    const UINT64 c = inputUint64(_T("Enter c:"));
-    const UINT64 m = inputUint64(_T("Enter m:"));
+    const UINT64 a = inputValue(UINT64>(_T("Enter a:"));
+    const UINT64 c = inputValue(UINT64>(_T("Enter c:"));
+    const UINT64 m = inputValue(UINT64>(_T("Enter m:"));
 
     try {
       hullDobellTest(a, c, m);

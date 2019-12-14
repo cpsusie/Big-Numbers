@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <InputValue.h>
 
 class ShiftAnd {
 private:
@@ -106,12 +107,12 @@ intptr_t ShiftAnd::searchApprox(const String &str, UINT maxErrors) const {
 
 int _tmain(int argc, TCHAR **argv) {
   for(;;) {
-    const String   pattern    = inputString(_T("Enter pattern:"));
-    const bool     ignoreCase = inputString(_T("Ignore case[yn]:")) == _T("y");
+    const String   pattern    = inputValue<String>(_T("Enter pattern:"));
+    const bool     ignoreCase = inputValue<String>(_T("Ignore case[yn]:")) == _T("y");
     const ShiftAnd A(pattern, ignoreCase);
-    const int      maxErrors  = inputInt(_T("Enter maxErrors:"));
+    const int      maxErrors  = inputValue<int>(_T("Enter maxErrors:"));
     for(;;) {
-      const String text = inputString(_T("Enter text:"));
+      const String text = inputValue<String>(_T("Enter text:"));
       if((text.length() > 0) && text[0] == _T('!')) break;
       const intptr_t i = A.searchApprox(text,maxErrors);
       _tprintf(_T("result:%zd\n"), i);

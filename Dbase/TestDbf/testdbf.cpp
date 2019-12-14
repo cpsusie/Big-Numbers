@@ -43,7 +43,7 @@ int FileArray::find(const String &name) const {
 
 String GETNAME() {
   Console::setCursorPos(1,23);
-  return inputString(_T("Indtast navn:"));
+  return inputValue<String>(_T("Indtast navn:"));
 }
 
 int main(int argc, char **argv) {

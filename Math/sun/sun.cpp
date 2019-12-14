@@ -72,7 +72,7 @@ double f0(double declin, double latit) {
 
 Date getDate(TCHAR *prompt) {
   for(;;) {
-    String s = inputString(_T("%s"), prompt);
+    String s = inputValue<String>(_T("%s"), prompt);
     try {
       Date dato(s);
       return dato;

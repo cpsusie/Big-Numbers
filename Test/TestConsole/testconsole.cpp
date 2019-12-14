@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <time.h>
+#include <InputValue.h>
 #include <ostream>
 
 // see vc98\include\wincon.h for a complete list of console-attributes
@@ -93,8 +94,8 @@ static void testSetScreenBufferSize() {
     switch(Console::getKey()) {
     case 'w':
     case 'W':
-      w = inputInt(_T("\nEnter new window width :"));
-      h = inputInt(_T("Enter new window height:"));
+      w = inputValue<int>(_T("\nEnter new window width :"));
+      h = inputValue<int>(_T("Enter new window height:"));
 
       try {
         Console::setWindowSize(w,h);
@@ -104,8 +105,8 @@ static void testSetScreenBufferSize() {
       break;
     case 'b':
     case 'B':
-      w = inputInt(_T("\nEnter new buffer width :"));
-      h = inputInt(_T("Enter new buffer height:"));
+      w = inputValue<int>(_T("\nEnter new buffer width :"));
+      h = inputValue<int>(_T("Enter new buffer height:"));
 
       try {
         Console::setBufferSize(w,h);

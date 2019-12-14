@@ -285,7 +285,9 @@ void CCustomFitThreadDlg::OnGotoXInterval() {
   gotoEditBox(this, IDC_EDITXFROM);
 }
 
-FitThread::FitThread(CCustomFitThreadDlg *dlg, FunctionFitter &functionFitter) : m_dlg(*dlg), m_functionFitter(functionFitter) {
+FitThread::FitThread(CCustomFitThreadDlg *dlg, FunctionFitter &functionFitter)
+ : Thread("FitThread")
+ , m_dlg(*dlg), m_functionFitter(functionFitter) {
   setDemon(true);
   m_killed = false;
 }

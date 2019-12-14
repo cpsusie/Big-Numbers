@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include <HashMap.h>
 #include <Math/BigReal.h>
+#include <InputValue.h>
 
 BigRational bernoulliDirect(UINT n) {
   if(n > 1 && (n & 1) == 1) {
@@ -120,7 +121,7 @@ int main(int argc, char **argv) {
     return 0;
 
     for(;;) {
-      int n = inputInt(_T("Enter n:"));
+      int n = inputValue<int>(_T("Enter n:"));
       _tprintf(_T("bernoulli(%d)=%s\n"),n, toString(bernoulli1(n)).cstr());
     }
   } catch(Exception e) {

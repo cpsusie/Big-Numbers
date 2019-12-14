@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <MathUtil.h>
+#include <InputValue.h>
 #include <Math/Double80.h>
 
 #define FSZ(n) format1000(n).cstr()
@@ -13,8 +14,8 @@ int main(int argc, TCHAR **argv) {
   unsigned __int64 rui64 = getUint64(dui64);
 
   for (;;) {
-    double x = inputDouble(_T("Enter x:"));
-//    double y = inputDouble(_T("Enter y:"));
+    double x = inputValue<double>(_T("Enter x:"));
+//    double y = inputValue<double>(_T("Enter y:"));
     Double80 x80 = x; // , y80 = y;
 //    Double80 z80 = pow(x80, y80);
     Double80 z80 = exp2(x80);

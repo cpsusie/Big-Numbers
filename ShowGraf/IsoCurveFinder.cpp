@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <Random.h>
+#include <Thread.h>
 #include "IsoCurveFinder.h"
 
 #define RES  10

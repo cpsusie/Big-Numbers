@@ -9,7 +9,7 @@ String getExpression() {
   String result;
   _tprintf(_T("Enter expression (terminate with empty line):\n"));
   for(;;) {
-    String line = inputString(_T(">"));
+    String line = inputValue<String>(_T(">"));
     line.trim();
     if(line.length() == 0) {
       break;

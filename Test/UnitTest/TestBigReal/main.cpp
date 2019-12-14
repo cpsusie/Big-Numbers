@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include <ProcessTools.h>
 #include <ThreadPool.h>
+#include <InputValue.h>
 #include "TestBigReal.h"
 #include "BigRealTestClass.h"
 
@@ -12,7 +13,7 @@
 static void testShortProd() {
   DigitPool pool(-5);
 //  for(;;) {
-//    int useReferenceVersion = inputInt(_T("Use reference version (1=reference, 2=debug"));
+//    int useReferenceVersion = inputValue<int>(_T("Use reference version (1=reference, 2=debug"));
 
 //    BigReal::setUseShortProdRefenceVersion(useReferenceVersion == 1);
 
@@ -136,8 +137,8 @@ static void testRandomBigReal() {
   DigitPool *pool = BigRealResourcePool::fetchDigitPool();
   MersenneTwister64 rnd;
   for(;;) {
-    int count  = inputInt(_T("Enter number of random numbers:"));
-    int length = inputInt(_T("Enter length (decimal digits):"));
+    int count  = inputValue<int>(_T("Enter number of random numbers:"));
+    int length = inputValue<int>(_T("Enter length (decimal digits):"));
     const FullFormatBigReal low  = inputBigReal(*pool, _T("Enter low :"));
     const FullFormatBigReal high = inputBigReal(*pool, _T("Enter high:"));
 

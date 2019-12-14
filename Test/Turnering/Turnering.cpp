@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <InputValue.h>
 
 class kamp {
 public:
@@ -63,7 +64,7 @@ void turneringsplan::print(FILE *f) {
 
 int main(int argc, char **argv) {
   for(;;) {
-    int n = inputInt(_T("angiv antal hold:"));
+    int n = inputValue<int>(_T("angiv antal hold:"));
     turneringsplan s;
     s.findturneringsplan(n);
     s.print();

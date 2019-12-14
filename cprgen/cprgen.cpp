@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <Date.h>
+#include <InputValue.h>
 
 static bool CPRCheck(TCHAR *cpr) {
   const int fac[] = { 4,3,2,7,6,5,4,3,2,1 };
@@ -163,7 +164,7 @@ int main(int argc, char **argv) {
   if(interactive) {
     for(;;) {
       try {
-        const int n = inputInt(_T("Indtast de første 6 cifre af cpr-nummeret:"));
+        const int n = inputValue<int>(_T("Indtast de første 6 cifre af cpr-nummeret:"));
         date = getDate(n);
         CprNumberArray list(date);
         UINT flags = (printEven?PRINTEVEN:0) | (printOdd?PRINTODD:0);

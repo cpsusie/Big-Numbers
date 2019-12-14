@@ -158,7 +158,7 @@ int userMove() {
   for(;;) {
     displayTable();
     Console::setCursorPos(10,14);
-    String line = inputString(_T("Dit træk:"));
+    String line = inputValue<String>(_T("Dit træk:"));
     if(line == _T("hint")) {
       if((candidateCount[gameState] == 0) || (getMoveCandidate() == MOVELOST)) {
         message(_T("Spørg mågerne !"));
