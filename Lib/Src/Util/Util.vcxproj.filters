@@ -328,9 +328,6 @@
     <ClCompile Include="GetProcessResources.cpp">
       <Filter>Source Files\Process</Filter>
     </ClCompile>
-    <ClCompile Include="ProcessTime.cpp">
-      <Filter>Source Files\Process</Filter>
-    </ClCompile>
     <ClCompile Include="ProcessInfo.cpp">
       <Filter>Source Files\Process</Filter>
     </ClCompile>
@@ -842,29 +839,23 @@
     <ClCompile Include="HexDumpStr.cpp">
       <Filter>Source Files\Debugging and Exceptions</Filter>
     </ClCompile>
-    <ClCompile Include="InputDouble.cpp">
-      <Filter>Source Files\Console</Filter>
-    </ClCompile>
-    <ClCompile Include="InputInt.cpp">
-      <Filter>Source Files\Console</Filter>
-    </ClCompile>
-    <ClCompile Include="InputInt64.cpp">
-      <Filter>Source Files\Console</Filter>
-    </ClCompile>
     <ClCompile Include="InputPassword.cpp">
-      <Filter>Source Files\Console</Filter>
-    </ClCompile>
-    <ClCompile Include="InputString.cpp">
-      <Filter>Source Files\Console</Filter>
-    </ClCompile>
-    <ClCompile Include="InputUint.cpp">
-      <Filter>Source Files\Console</Filter>
-    </ClCompile>
-    <ClCompile Include="InputUint64.cpp">
       <Filter>Source Files\Console</Filter>
     </ClCompile>
     <ClCompile Include="GetThreadDescription.cpp">
       <Filter>Source Files\Process</Filter>
+    </ClCompile>
+    <ClCompile Include="GetProcessTime.cpp">
+      <Filter>Source Files\Process</Filter>
+    </ClCompile>
+    <ClCompile Include="GetSystemTime.cpp">
+      <Filter>Source Files\Process</Filter>
+    </ClCompile>
+    <ClCompile Include="GetThreadTime.cpp">
+      <Filter>Source Files\Process</Filter>
+    </ClCompile>
+    <ClCompile Include="FileTimeToTotalTime.cpp">
+      <Filter>Source Files\Date</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1248,9 +1239,6 @@
       <Filter>Source Files\Process</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\targetver.h" />
-    <ClInclude Include="InputTemplate.h">
-      <Filter>Source Files\Console</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\ResourcePoolTemplate.h">
       <Filter>Header Files\Misc</Filter>
     </ClInclude>
@@ -1271,6 +1259,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\IntelCPU\targetver.h">
       <Filter>Header Files\IntelCPU</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\InputValue.h">
+      <Filter>Header Files\Console</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

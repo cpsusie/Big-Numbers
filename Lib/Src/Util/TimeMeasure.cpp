@@ -1,5 +1,7 @@
 #include "pch.h"
 #include <MyUtil.h>
+#include <Date.h>
+#include <ProcessTools.h>
 #include <Thread.h>
 #include <TimeMeasure.h>
 

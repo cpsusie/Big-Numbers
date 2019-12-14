@@ -362,7 +362,7 @@ private:
   D3DCOLOR                                     m_color;
 
   Point3D             findStartPoint(const Point3D &start);
-  IsoSurfaceTest      findStartPoint(bool positive, const Point3D &start);
+  IsoSurfaceTest      findStartPoint(bool positive, const Point3D &start, RandomGenerator &rnd);
   bool                putInitialCube();
   // return false, if cube should be divided into 8 smaller cubes. true if faces are accepted
   bool                addSurfaceVertices(const StackedCube &cube);

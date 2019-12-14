@@ -10,7 +10,7 @@
 
 #include "pch.h"
 #include <Random.h>
-#include <Date.h>
+#include <Thread.h>
 #include <DebugLog.h>
 #include <TinyBitSet.h>
 #include <MFCUtil/ColorSpace.h>
@@ -531,8 +531,10 @@ Point3D IsoSurfacePolygonizer::getCornerPoint(int i, int j, int k) const {
 
 // find point on surface, beginning search at start
 Point3D IsoSurfacePolygonizer::findStartPoint(const Point3D &start) {
-  const IsoSurfaceTest in  = findStartPoint(true , start);
-  const IsoSurfaceTest out = findStartPoint(false, start);
+  JavaRandom rnd;
+  rnd.randomize();
+  const IsoSurfaceTest in  = findStartPoint(true , start, rnd);
+  const IsoSurfaceTest out = findStartPoint(false, start, rnd);
   if(!in.m_ok || !out.m_ok) {
     throwException(_T("Cannot find starting point1"));
   }
@@ -540,9 +542,8 @@ Point3D IsoSurfacePolygonizer::findStartPoint(const Point3D &start) {
 }
 
 // findStartPoint: search for point with value of sign specified by positive-parameter
-IsoSurfaceTest IsoSurfacePolygonizer::findStartPoint(bool positive, const Point3D &p) {
+IsoSurfaceTest IsoSurfacePolygonizer::findStartPoint(bool positive, const Point3D &p, RandomGenerator &rnd) {
   IsoSurfaceTest result(p);
-  JavaRandom rnd(Timestamp().toString(ddMMyyyyhhmmssSSS).hashCode());
 #define STEPCOUNT 200000
   const double step  = root(1000,STEPCOUNT); // multiply range by this STEPCOUNT times
                                               // range will end up with value 10000*cellSize

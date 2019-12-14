@@ -817,6 +817,7 @@
     <ClInclude Include="..\..\Include\HashMap.h" />
     <ClInclude Include="..\..\Include\HashSet.h" />
     <ClInclude Include="..\..\Include\InputThread.h" />
+    <ClInclude Include="..\..\Include\InputValue.h" />
     <ClInclude Include="..\..\Include\IntelCPU\ExecutableByteArray.h" />
     <ClInclude Include="..\..\Include\IntelCPU\Opcode.h" />
     <ClInclude Include="..\..\Include\IntelCPU\PragmaLib.h" />
@@ -898,7 +899,6 @@
     <ClInclude Include="..\..\Include\WildCardRegex.h" />
     <ClInclude Include="..\..\Include\XmlDoc.h" />
     <ClInclude Include="..\..\Include\XMLUtil.h" />
-    <ClInclude Include="InputTemplate.h" />
     <ClInclude Include="pch.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">false</ExcludedFromBuild>
@@ -972,6 +972,7 @@
     <ClCompile Include="fgets.cpp" />
     <ClCompile Include="FileContent.cpp" />
     <ClCompile Include="FileNameSplitter.cpp" />
+    <ClCompile Include="FileTimeToTotalTime.cpp" />
     <ClCompile Include="FileTreeWalker.cpp" />
     <ClCompile Include="FileVersion.cpp" />
     <ClCompile Include="FindDataComp.cpp" />
@@ -1001,10 +1002,13 @@
     <ClCompile Include="GetProcessModules.cpp" />
     <ClCompile Include="GetProcessorCount.cpp" />
     <ClCompile Include="GetProcessResources.cpp" />
+    <ClCompile Include="GetProcessTime.cpp" />
     <ClCompile Include="gets.cpp" />
     <ClCompile Include="GetSize.cpp" />
+    <ClCompile Include="GetSystemTime.cpp" />
     <ClCompile Include="GetTestFileName.cpp" />
     <ClCompile Include="GetThreadDescription.cpp" />
+    <ClCompile Include="GetThreadTime.cpp" />
     <ClCompile Include="GetUserName.cpp" />
     <ClCompile Include="guid.cpp" />
     <ClCompile Include="HashMapImpl.cpp" />
@@ -1014,14 +1018,8 @@
     <ClCompile Include="HexDumpStr.cpp" />
     <ClCompile Include="HexFloatRegex.cpp" />
     <ClCompile Include="IndentString.cpp" />
-    <ClCompile Include="InputDouble.cpp" />
-    <ClCompile Include="InputInt.cpp" />
-    <ClCompile Include="InputInt64.cpp" />
     <ClCompile Include="InputPassword.cpp" />
-    <ClCompile Include="InputString.cpp" />
     <ClCompile Include="InputThread.cpp" />
-    <ClCompile Include="InputUint.cpp" />
-    <ClCompile Include="InputUint64.cpp" />
     <ClCompile Include="IntegerRegex.cpp" />
     <ClCompile Include="InterruptableRunnable.cpp" />
     <ClCompile Include="isatty.cpp" />
@@ -1066,7 +1064,6 @@
     <ClCompile Include="PrimitiveStringifiers.cpp" />
     <ClCompile Include="PrimitiveToString.cpp" />
     <ClCompile Include="ProcessInfo.cpp" />
-    <ClCompile Include="ProcessTime.cpp" />
     <ClCompile Include="ProgressBar.cpp" />
     <ClCompile Include="PropertyContainer.cpp" />
     <ClCompile Include="QuickSort.cpp" />

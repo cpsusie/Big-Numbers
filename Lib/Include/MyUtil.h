@@ -78,20 +78,8 @@ bool keyPressed(int vk);
 bool shiftKeyPressed();
 bool ctrlKeyPressed();
 unsigned char toAscii(UINT virtualCode);
-// read String     from stdin, terminate with enter. result string NOT containing '\n\r'
-String  inputString(  _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
 // read password   from console
 String  inputPassword(_In_z_ _Printf_format_string_ TCHAR const * const format, ...);
-// read integer from stdin
-int     inputInt(     _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
-// read UINT    from stdin
-UINT    inputUint(    _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
-// read INT64   from stdin
-INT64   inputInt64(   _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
-// read UINT64  from stdin
-UINT64  inputUint64(  _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
-// read double  from stdin
-double  inputDouble(  _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
 
 TCHAR   *searchenv(  TCHAR *dst, const TCHAR *fileName, const TCHAR *envName);
 String   searchenv(  const String &fileName, const String &envName);
@@ -117,11 +105,6 @@ void checkResult(const TCHAR *fileName, int line, BOOL    ok     );
 #define CHECKRESULT(result) checkResult(__TFILE__, __LINE__, result)
 
 void   sleep(int seconds);
-// microseconds. if process == NULL, return time for current Process
-double getProcessTime(HANDLE process = NULL);
-// microseconds. if thread  == NULL, return time for current Thread
-double getThreadTime( HANDLE thread  = NULL);
-double getSystemTime();
 
 extern int UseSafeNew; // assign something to this, and we use safe new_handler, which throws Exception on out of memory
 

@@ -480,3 +480,6 @@ public:
     return p >> ts.m_factor;
   }
 };
+
+double getSystemTime();
+double fileTimeToTotalTime(const FILETIME &kernelTime, const FILETIME &userTime);

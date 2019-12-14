@@ -16,6 +16,9 @@ void   setThreadDescription(const String &description, HANDLE hThread = INVALID_
 // if hThread is not specified, currentThreadHandle is used
 String getThreadDescription(HANDLE hThread = INVALID_HANDLE_VALUE);
 
+// microseconds. if thread  == INVALID_HANDLE_VALUE, return time for current Thread
+double getThreadTime(HANDLE hThread = INVALID_HANDLE_VALUE);
+
 class UncaughtExceptionHandler {
 public:
   virtual void uncaughtException(Thread &thread, Exception &e) = 0;

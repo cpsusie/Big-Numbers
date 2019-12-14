@@ -11,6 +11,8 @@ void enableTokenPrivilege(LPCTSTR privilege, bool enable);
 String getProcessCommandLine(       HANDLE hProcess = NULL);
 CompactArray<HMODULE> getModules(   HANDLE hProcess = NULL);
 CompactArray<DWORD>   getProcessIds();
+// microseconds. if process == NULL, return time for current Process
+double getProcessTime(              HANDLE hProcess = NULL);
 
 class ResourceCounters {
 public:
