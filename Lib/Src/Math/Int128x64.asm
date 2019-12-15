@@ -400,51 +400,135 @@ uint128rem PROC
      mov        rcx, qword ptr[r9]
      mov        rax, qword ptr[r8+8]
      xor        rdx, rdx
-     div        rcx
-     mov        rax, qword ptr[r8]
-     div        rcx
-     mov        rax, rdx
+     div        rcx                            ; rdx <- remainder, rax <- quotient
+     mov        rax, qword ptr[r8]             ; rdx:rax <- remainder:lo word of dividend
+     div        rcx                            ; rdx <- final remainder
+     mov        rax, rdx                       ; rdx:rax <- remainder
      xor        rdx, rdx
-     jmp        L2
+     jmp        L2                             ; restore stack and return
 L1:
      mov        rcx, rax
      mov        rbx, qword ptr[r9]
      mov        rdx, qword ptr[r8+8]
      mov        rax, qword ptr[r8]
-L3:
-     shr        rcx, 1
-     rcr        rbx, 1
-     shr        rdx, 1
-     rcr        rax, 1
-     or         rcx, rcx
-     jne        L3
-     div        rbx
-     mov        rcx, rax
-     mul        qword ptr[r9+8]
-     xchg       rax, rcx
-     mul        qword ptr[r9]
-     add        rdx, rcx
-     jb         L4
-     cmp        rdx, qword ptr[r8+8]
-     ja         L4
-     jb         L5
-     cmp        rax, qword ptr[r8]
-     jbe        L5
-L4:
-     sub        rax, qword ptr[r9]
+L3:                                            ;
+     shr        rcx, 1                         ;
+     rcr        rbx, 1                         ;
+     shr        rdx, 1                         ;
+     rcr        rax, 1                         ;
+     or         rcx, rcx                       ;
+     jne        L3                             ;
+     div        rbx                            ;
+     mov        rcx, rax                       ; save quotient
+     mul        qword ptr[r9+8]                ;
+     xchg       rax, rcx                       ; put partial product in rcx, get quotient in rax
+     mul        qword ptr[r9]                  ;
+     add        rdx, rcx                       ;
+     jb         L4                             ;
+     cmp        rdx, qword ptr[r8+8]           ;
+     ja         L4                             ;
+     jb         L5                             ;
+     cmp        rax, qword ptr[r8]             ;
+     jbe        L5                             ;
+L4:                                            ;
+     sub        rax, qword ptr[r9]             ; subtract divisor from result
+     sbb        rdx, qword ptr[r9+8]           ;
+L5:                                            ;
+                                               ; Calculate remainder by subtracting the result from the original dividend.
+                                               ; Since the result is already in a register, we will perform the subtract in
+                                               ; the opposite direction and negate the result to make it positive.
+     sub        rax, qword ptr[r8]             ;
+     sbb        rdx, qword ptr[r8+8]           ;
+     neg        rdx                            ;
+     neg        rax                            ;
+     sbb        rdx, 0                         ;
+L2:                                            ;
+     pop        rbx                            ;
+     mov        qword ptr[r8], rax             ;
+     mov        qword ptr[r8+8], rdx           ;
+     ret                                       ;
+uint128rem ENDP
+
+;typedef struct {
+;  _uint128 quot;
+;  _uint128 rem;
+;} _ui128div_t;
+;
+;void uint128quotrem(const _uint128 &numer, const _uint128 &denom, _ui128div_t *qr);
+uint128quotrem PROC
+     push       rbx                            ; same as signed division
+     push       rsi                            ; but without sign check on arguments
+     push       rdi
+     mov        rdi, r8                        ; rdi = qr
+     mov        r8, rcx                        ; r8  = &num
+     mov        r9, rdx                        ; r9  = &denom
+     mov        rax, qword ptr[r9+8]           ; rax = denom.hi
+     or         rax, rax                       ;
+     jne        L1                             ; if(denom.hi == 0) {
+     mov        rcx, qword ptr[r9]             ;   rcx = denom.lo
+     mov        rax, qword ptr[r8+8]           ;   rax = numer.hi
+     xor        rdx, rdx                       ;   rax:rdx == numer.hi:0
+     div        rcx                            ;   rax = q.hi. rdx = remainder.hi
+     mov        qword ptr[rdi+8], rax          ;   save q.hi
+     mov        rax, qword ptr[r8]             ;   rdx:rax <- remainder:lo word of dividend
+     div        rcx                            ;   rax:rdx = q.lo:remainder
+     mov        qword ptr[rdi], rax            ;   save q.lo
+     mov        qword ptr[rdi+10h], rdx        ;   save remainder.lo
+     xor        rax, rax                       ;
+     mov        qword ptr[rdi+18h], rax        ;   remainder.hi = 0
+     jmp        L2                             ;   restore stack and return
+                                               ; }
+L1:                                            ; Assume rax = denom.hi
+     mov        rcx, rax                       ;
+     mov        rbx, qword ptr[r9]             ; rcx:rbx == denom
+     mov        rdx, qword ptr[r8+8]           ;
+     mov        rax, qword ptr[r8]             ; rdx:rax == numer
+L3:                                            ; do {
+     shr        rcx, 1                         ;   rshift denom 1; hi bit:=0
+     rcr        rbx, 1                         ;
+     shr        rdx, 1                         ;   rshift numer 1; hi bit:=0
+     rcr        rax, 1                         ;
+     or         rcx, rcx                       ;
+     jne        L3                             ; } while(denom.hi != 0);
+     div        rbx                            ; rax = qquotient. rdx = remainder (ignore)
+     mov        rsi, rax                       ; rsi = quotient (q)
+                                               ; q maybe 1 too big, so calculate t = q * denom
+                                               ; and compare t and numer (original dividend)
+                                               ; Note that we must also check for overflow, which can occur if
+                                               ; numer is close to 2**128 and the q is 1 too big
+     mul        qword ptr[r9+8]                ; rax:rdx = q *= denom.hi
+     mov        rcx, rax                       ; rcx = (q*denom.hi).hi
+     mov        rax, qword ptr[r9]             ;
+     mul        rsi                            ; rdx:rax *= q
+     add        rdx, rcx                       ; rdx:rax = t = q * denom
+     jc         L4                             ; carry means q is 1 too big
+     cmp        rdx, qword ptr[r8+8]           ; compare t.hi and numer.hi
+     ja         L4                             ; if(t.hi > numer.hi) q--
+     jb         L5                             ; if(t.hi < numer.hi) we are done
+     cmp        rax, qword ptr[r8]             ; t.hi == numer.hi. now compare lo words
+     jbe        L5                             ; if(t.lo <= numer.lo) we are done, else q--
+L4:                                            ; Assume: rsi = q, rdx:rax = q * denom and q is 1 too big
+     dec        rsi                            ; q--
+     sub        rax, qword ptr[r9]             ; t -= denom
      sbb        rdx, qword ptr[r9+8]
 L5:
-     sub        rax, qword ptr[r8]
+     sub        rax, qword ptr[r8]             ; t -= numer
      sbb        rdx, qword ptr[r8+8]
-     neg        rdx
-     neg        rax
-     sbb        rdx, 0
+     neg        rdx                            ; remainder = -t
+     neg        rax                            ;
+     sbb        rdx, 0                         ; rsi = final quotient, rdx:rax = final remainder
+     mov        qword ptr[rdi], rsi            ; rq->quot.lo = rsi
+     xor        rbx, rbx
+     mov        qword ptr[rdi+8], rbx          ; rq->quot.hi = 0
+     mov        qword ptr[rdi+10h], rax        ; rq->rem.lo  = rax
+     mov        qword ptr[rdi+18h], rdx        ; rq->rem.hi  = rdx
 L2:
+     pop        rdi
+     pop        rsi
      pop        rbx
-     mov        qword ptr[r8], rax
-     mov        qword ptr[r8+8], rdx
      ret
-uint128rem ENDP
+uint128quotrem ENDP
+
 
 ;void uint128shr(int shft, void *x); do assignop x >>= shft. always shift 0-bits in from left
 uint128shr PROC
