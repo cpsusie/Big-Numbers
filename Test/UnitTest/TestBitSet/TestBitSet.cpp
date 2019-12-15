@@ -7,6 +7,7 @@
 #include <CompactHashSet.h>
 #include <ByteMemoryStream.h>
 #include <ByteFile.h>
+#include <Thread.h>
 #include <TimeMeasure.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;

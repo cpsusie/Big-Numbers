@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <BitSet.h>
+#include <ProcessTools.h>
 #include <CompactHashMap.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;

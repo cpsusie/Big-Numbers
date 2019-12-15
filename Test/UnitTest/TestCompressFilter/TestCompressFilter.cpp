@@ -2,6 +2,7 @@
 #include <ByteFile.h>
 #include <CompressFilter.h>
 #include <MathUtil.h>
+#include <ProcessTools.h>
 #include <Random.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;

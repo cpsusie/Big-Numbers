@@ -2,8 +2,8 @@
 #include <FileNameSplitter.h>
 #include <HashSet.h>
 #include <Date.h>
-#include <ExecutableByteArray.h>
-#include <Opcode.h>
+#include <IntelCPU/ExecutableByteArray.h>
+#include <IntelCPU/Opcode.h>
 
 #define TEST_MACHINECODE
 

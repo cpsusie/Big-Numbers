@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <Random.h>
+#include <ProcessTools.h>
 #include <PackedArray.h>
 #include <Console.h>
 

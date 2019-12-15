@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include <CompactArray.h>
 #include <CommonHashFunctions.h>
+#include <ProcessTools.h>
 #include <Math/Statistic.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;

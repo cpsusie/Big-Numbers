@@ -1,5 +1,9 @@
 #pragma once
 
+#include <ProcessTools.h>
+#include <Thread.h>
+#include <Date.h>
+
 typedef enum {
   MYSEC
  ,MSEC

@@ -2,6 +2,7 @@
 #include <Array.h>
 #include <ByteMemoryStream.h>
 #include <CompressFilter.h>
+#include <ProcessTools.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 

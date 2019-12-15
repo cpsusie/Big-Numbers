@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <FileNameSplitter.h>
+#include <ProcessTools.h>
 #include "TestDataArray.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
