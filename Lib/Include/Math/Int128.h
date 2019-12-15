@@ -39,6 +39,7 @@ extern "C" {
   void uint128rem(void *dst, const void *x);
   void uint128shr(int shft, void *x );
   int  uint128cmp(const void *x1, const void *x2);
+  void uint128quotrem(void *numer, void *denom, void *qr); // qr type _ui128div_t. See below
 };
 
 class _int128 {
@@ -1953,6 +1954,17 @@ inline _uint128 &operator^=(_uint128 &lft, short rhs) {
 }
 inline _uint128 &operator^=(_uint128 &lft, unsigned short rhs) {
   return lft ^= (_uint128)rhs;
+}
+
+typedef struct {
+  _uint128 quot;
+  _uint128 rem;
+} _ui128div_t;
+
+inline _ui128div_t uint128div(const _uint128 &numer, const _uint128 &denom) {
+  _ui128div_t div;
+  uint128quotrem((void*)&numer, (void*)&denom, &div);
+  return div;
 }
 
 _int128   _strtoi128_l( const char    *str, char    **end, int radix, _locale_t locale);

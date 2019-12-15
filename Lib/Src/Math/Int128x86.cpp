@@ -644,6 +644,12 @@ void uint128rem(void *dst, const void *x) {
   unsignedQuotRemainder(a, *(const _uint128*)x, NULL, *(_uint128*)dst);
 }
 
+// qr type _ui128div_t. See below
+void uint128quotrem(void *numer, void *denom, void *qr) {
+  _ui128div_t *div_t = (_ui128div_t*)qr;
+  unsignedQuotRemainder(*(_uint128*)numer, *(_uint128*)denom, &div_t->quot, div_t->rem);
+}
+
 void int128neg(void *x) {
   __asm {
     mov esi, x
