@@ -144,13 +144,13 @@ template<typename Int128Type, typename Ctype> Ctype *int128toStr(Int128Type valu
     const _uint128 &divisor = powRadix[radix];
     _uint128        v       = value;
     for(;;) {
-      const UINT c = v % divisor;
+      const _ui128div_t div_t = uint128div(v, divisor);
       Ctype tmpStr[40];
-      ULTOSTR(c, tmpStr, radix);
+      ULTOSTR((UINT)div_t.rem, tmpStr, radix);
       STRCPY(s, STRREV(tmpStr));
       size_t l = STRLEN(tmpStr);
       s += l;
-      v /= divisor;
+      v = div_t.quot;
       if(v) {
         while(l++ < dc) *(s++) = '0'; // append zeroes
       } else {
