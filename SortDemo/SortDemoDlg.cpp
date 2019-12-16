@@ -122,6 +122,7 @@ BOOL CSortDemoDlg::OnInitDialog() {
 
 //  makeMinSizeTimePlot();
 
+  setThreadDescription("Main Windoww");
   return TRUE;
 }
 
@@ -153,19 +154,19 @@ void CSortDemoDlg::OnFileInitialize() {
   Invalidate();
 }
 
-int CSortDemoDlg::getPanelCountByState(SortThreadState state) const {
+int CSortDemoDlg::getPanelCountByState(SortJobState state) const {
   int count = 0;
-  foreachConstPanel(p) if(p->getThreadState() == state) count++;
+  foreachConstPanel(p) if(p->getJobState() == state) count++;
   return count;
 }
 
-bool CSortDemoDlg::allPanelsInState(SortThreadState state) const {
-  foreachConstPanel(p) if(p->getThreadState() != state) return false;
+bool CSortDemoDlg::allPanelsInState(SortJobState state) const {
+  foreachConstPanel(p) if(p->getJobState() != state) return false;
   return true;
 }
 
-bool CSortDemoDlg::noPanelsInState(SortThreadState state) const {
-  foreachConstPanel(p) if(p->getThreadState() == state) return false;
+bool CSortDemoDlg::noPanelsInState(SortJobState state) const {
+  foreachConstPanel(p) if(p->getJobState() == state) return false;
   return true;
 }
 
@@ -175,7 +176,7 @@ void CSortDemoDlg::OnFileGo() {
     foreachPanel(p) p->doSort();
   } else {
     foreachPanel(p) {
-      switch(p->getThreadState()) {
+      switch(p->getJobState()) {
       case STATE_PAUSED:
         p->stopSort(TERMINATE_SORT);
         p->resumeSort();
@@ -192,7 +193,7 @@ void CSortDemoDlg::OnFileGo() {
 
 void CSortDemoDlg::OnFilePause() {
   foreachPanel(p) {
-    switch(p->getThreadState()) {
+    switch(p->getJobState()) {
     case STATE_RUNNING:
       p->stopSort(PAUSE_SORT);
       break;
@@ -204,7 +205,7 @@ void CSortDemoDlg::OnFilePause() {
 
 void CSortDemoDlg::OnFileResume() {
   foreachPanel(p) {
-    switch(p->getThreadState()) {
+    switch(p->getJobState()) {
     case STATE_PAUSED:
       p->resumeSort();
       break;
@@ -218,14 +219,20 @@ void CSortDemoDlg::OnFileExit() {
   EndDialog(IDOK);
 }
 
-void CSortDemoDlg::postStateShift(SortPanelWnd *panel, SortThreadState oldState, SortThreadState newState) {
-  PostMessage(ID_MSG_RECEIVESTATESHIFT, (WPARAM)panel, STATESHIFT(oldState, newState));
+void CSortDemoDlg::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
+  SortPanelWnd *panel = (SortPanelWnd*)source;
+  const SortJobState oldState = *(SortJobState*)oldValue, newState = *(SortJobState*)newValue;
+  switch(id) {
+  case JOBSTATE:
+    PostMessage(ID_MSG_RECEIVESTATESHIFT, (WPARAM)panel, STATESHIFT(oldState, newState));
+    break;
+  }
 }
 
 LRESULT CSortDemoDlg::OnReceiveStateShift(WPARAM wp, LPARAM lp) {
   SortPanelWnd         *panel    = (SortPanelWnd*)wp;
-//  const SortThreadState oldState = GETOLDSTATE(lp);
-  const SortThreadState newState = GETNEWSTATE(lp);
+//  const SortJobState oldState = GETOLDSTATE(lp);
+  const SortJobState newState = GETNEWSTATE(lp);
 /*
   debugLog(_T("stateShift %-5s -> %-5s : method:%s\n")
           ,SortPanelWnd::getStateString(oldState)
@@ -327,7 +334,7 @@ bool CSortDemoDlg::addSortPanel(int methodId) {
   }
 
   try {
-    SortPanelWnd *panel = new SortPanelWnd(this, methodId);
+    SortPanelWnd *panel = new SortPanelWnd(this, methodId); TRACE_NEW(panel);
     m_panels.add(panel);
     adjustLayout();
     return true;
@@ -344,7 +351,7 @@ bool CSortDemoDlg::deleteSortPanel(int methodId) {
   }
   SortPanelWnd *panel = m_panels[index];
   panel->DestroyWindow();
-  delete panel;
+  SAFEDELETE(panel);
   m_panels.remove(index);
   adjustLayout();
   return true;

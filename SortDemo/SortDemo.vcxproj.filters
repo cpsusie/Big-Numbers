@@ -51,7 +51,7 @@
     <ClInclude Include="SortPanelWnd.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SortThread.h">
+    <ClInclude Include="SortJob.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -143,9 +143,6 @@
     <ClCompile Include="SortPanelWnd.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SortThread.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CombSort11.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -159,6 +156,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SortMethod.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SortJob.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

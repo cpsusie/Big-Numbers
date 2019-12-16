@@ -272,7 +272,7 @@
     <ClInclude Include="SortDemoDlg.h" />
     <ClInclude Include="SortMethod.h" />
     <ClInclude Include="SortPanelWnd.h" />
-    <ClInclude Include="SortThread.h" />
+    <ClInclude Include="SortJob.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
@@ -310,7 +310,7 @@
     <ClCompile Include="SortDemoDlg.cpp" />
     <ClCompile Include="SortMethod.cpp" />
     <ClCompile Include="SortPanelWnd.cpp" />
-    <ClCompile Include="SortThread.cpp" />
+    <ClCompile Include="SortJob.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

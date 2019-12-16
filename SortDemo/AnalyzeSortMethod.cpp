@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include <Math.h>
-#include <Thread.h>
+#include <ThreadPool.h>
 #include <TimeMeasure.h>
 #include "LinePrinterThread.h"
 

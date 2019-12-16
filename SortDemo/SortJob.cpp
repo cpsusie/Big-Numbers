@@ -1,30 +1,31 @@
 #include "stdafx.h"
-#include "SortThread.h"
+#include <Thread.h>
+#include "SortJob.h"
 #include "SortPanelWnd.h"
 
 template <class T> class SimpleComparator : public CountComparator<T> {
 protected:
   SortPanelWnd       &m_wnd;
-  char               &m_threadSignal;
+  std::atomic<char>  &m_jobFlags;
   const T            *m_e0;
 public:
   SimpleComparator(SortPanelWnd &wnd)
   : CountComparator<T>(wnd.getCompareCount())
   , m_wnd(wnd)
-  , m_threadSignal(wnd.getThreadSignal())
+  , m_jobFlags(wnd.getJobFlags())
   , m_e0((const T*)wnd.getDataArray().getData())
   {
   }
 
   int cmp(const void *e1, const void *e2) {
-    if(m_threadSignal) {
-      if(m_threadSignal & TERMINATE_SORT) {
-        m_threadSignal &= ~TERMINATE_SORT;
+    if(m_jobFlags) {
+      if(m_jobFlags & TERMINATE_SORT) {
+        m_jobFlags &= ~TERMINATE_SORT;
         throw false;
       }
-      if(m_threadSignal & PAUSE_SORT) {
-        m_threadSignal &= ~PAUSE_SORT;
-        m_wnd.waitForResume();
+      if(m_jobFlags & PAUSE_SORT) {
+        m_jobFlags &= ~PAUSE_SORT;
+        m_wnd.waitForResume(STATE_PAUSED);
       }
     }
     return CountComparator<T>::cmp(e1, e2);
@@ -55,7 +56,7 @@ public:
     if(!m_fast) {
       Sleep(2);
     }
-    return SimpleComparator<T>::cmp(e1, e2);
+    return __super::cmp(e1, e2);
   }
 };
 
@@ -81,14 +82,33 @@ public:
   }
 };
 
-unsigned int SortThread::run() {
-  while(!(m_wnd.m_threadSignal & KILL_THREAD)) {
+SortJob::SortJob(SortPanelWnd *wnd)
+: m_thread(NULL)
+, m_wnd(*wnd)
+{
+}
+
+SortJob::~SortJob() {
+  m_wnd.m_jobFlags = TERMINATE_SORT | KILL_THREAD;
+  if(m_wnd.getJobState() != STATE_RUNNING) {
+    m_wnd.setJobState(STATE_RUNNING);
+  }
+  m_terminated.wait();
+}
+
+UINT SortJob::run() {
+  m_terminated.wait();
+  m_thread = Thread::getCurrentThread();
+#ifdef _DEBUG
+  m_thread->setDescription(m_wnd.m_sortMethod.getName());
+#endif
+  m_wnd.waitForResume(STATE_IDLE);
+  while(!(m_wnd.m_jobFlags & KILL_THREAD)) {
     bool sortOk;
     try {
       sortOk = true;
-      m_wnd.setThreadState(STATE_RUNNING);
       CClientDC dc(&m_wnd);
-      m_wnd.m_startTime = getThreadTime();
+      m_wnd.m_startTime = getTimeUsage();
 
       if(m_wnd.isAnimatedSort()) {
         doAnimatedSort();
@@ -106,21 +126,21 @@ unsigned int SortThread::run() {
     } catch(...) {
       showError(_T("%s:Unknown Exception in Sortthread"), __TFUNCTION__);
     }
-    if(m_wnd.m_threadSignal & KILL_THREAD) {
+    if(m_wnd.m_jobFlags & KILL_THREAD) {
       break;
     }
     if(!sortOk) {
-      m_wnd.setThreadState(STATE_ERROR);
+      m_wnd.waitForResume(STATE_ERROR);
     } else {
-      m_wnd.setThreadState(STATE_IDLE);
+      m_wnd.waitForResume(STATE_IDLE);
     }
-    suspend();
   }
-  m_wnd.setThreadState(STATE_KILLED);
+  m_wnd.setJobState(STATE_KILLED);
+  m_terminated.notify();
   return 0;
 }
 
-void SortThread::doSort() {
+void SortJob::doSort() {
   DataArray &array = m_wnd.getDataArray();
   const int n      = array.size();
   const int size   = array.getElementSize();
@@ -137,7 +157,7 @@ void SortThread::doSort() {
   }
 }
 
-void SortThread::doAnimatedSort() {
+void SortJob::doAnimatedSort() {
   DataArray &array = m_wnd.getDataArray();
   const int n      = array.size();
   const int size   = array.getElementSize();
@@ -156,4 +176,8 @@ void SortThread::doAnimatedSort() {
     m_wnd.m_sortMethod.getMethod()(array.getData(), n, size, ComparatorWithUpdateBigSize<unsigned int>(m_wnd));
     break;
   }
+}
+
+double SortJob::getTimeUsage() const {
+  return m_thread ? m_thread->getThreadTime() : 0;
 }

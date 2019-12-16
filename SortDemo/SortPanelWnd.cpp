@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <ThreadPool.h>
 #include "SortDemoDlg.h"
 #include "SortPanelWnd.h"
 
@@ -8,20 +9,19 @@
 
 BEGIN_MESSAGE_MAP(SortPanelWnd, CStatic)
   ON_WM_PAINT()
-	ON_WM_DESTROY()
+  ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
 SortPanelWnd::SortPanelWnd(CSortDemoDlg *parent, int methodId)
 : m_parent(parent)
 , m_sortMethod(SortMethodId::getMethodById(methodId))
-, m_fast(parent->getFast())
-, m_dataArray(parent->getInitParameters())
-, m_savedArray(parent->getInitParameters())
+, m_fast(       parent->getFast())
+, m_dataArray(  parent->getInitParameters())
+, m_savedArray( parent->getInitParameters())
 , m_modifiedSet(parent->getInitParameters().m_elementCount)
 , m_resume(0)
 {
-  m_sortThread     = NULL;
-
+  m_sortJob     = NULL;
   const CRect r(0,0,100,100);
   BOOL ok = Create( EMPTYSTRING, WS_VISIBLE|WS_CHILD|SS_WHITERECT, r, parent, parent->getNextCtrlId());
   if(!ok) {
@@ -37,11 +37,14 @@ SortPanelWnd::SortPanelWnd(CSortDemoDlg *parent, int methodId)
   m_blackPen.CreatePen(PS_SOLID, 1, BLACK);
   m_redPen.CreatePen(  PS_SOLID, 1, RED  );
 
-  m_threadState  = STATE_IDLE;
-  m_sortThread   = new SortThread(this);
 
   m_oldIndex1    = m_oldIndex2 = -1;
+  m_sortJob      = new SortJob(this); TRACE_NEW(m_sortJob);
+  m_jobState     = STATE_CREATED;
+  m_jobFlags     = 0;
   initArray();
+  addPropertyChangeListener(parent);
+  ThreadPool::executeNoWait(*m_sortJob);
 }
 
 void SortPanelWnd::setRect(const CRect &r) {
@@ -49,7 +52,7 @@ void SortPanelWnd::setRect(const CRect &r) {
 }
 
 void SortPanelWnd::OnPaint() {
-  CStatic::OnPaint();
+  __super::OnPaint();
   CClientDC dc(this);
   GetClientRect(&m_rect);
   m_elementCount = m_dataArray.size();
@@ -62,54 +65,59 @@ void SortPanelWnd::OnPaint() {
 void SortPanelWnd::doSort() {
   CClientDC dc(this);
   updateScreen(dc, m_fast);
-  m_threadSignal = 0;
-  m_sortThread->resume();
+  resumeSort();
 }
 
 void SortPanelWnd::resumeSort() {
-  setThreadState(STATE_RUNNING);
+  setJobState(STATE_RUNNING);
 }
 
-bool SortPanelWnd::invalidStateTransition(SortThreadState newState) {
-  errorMessage(_T("Invalid statetransition:%d->%d (%s -> %s)"), m_threadState, newState, getStateString(m_threadState), getStateString(newState));
+bool SortPanelWnd::invalidStateTransition(SortJobState newState) {
+  errorMessage(_T("Invalid statetransition:%d->%d (%s -> %s)"), m_jobState, newState, getStateString(m_jobState), getStateString(newState));
   return false;
 }
 
-static const bool legalTransitions[5][5] = {
-  false,  true, false,  true, false
- ,true , false,  true,  true,  true
- ,false,  true, false,  true, false
- ,false, false, false, false, false
- , true,  true, false, false, false
+static const bool legalTransitions[6][6] = {       
+//New state: CREATED,  IDLE  , RUNNING, PAUSED ,  ERROR , KILLED     OldState
+             false  ,  true  , false  , false  ,  true  ,  true   // CREATED
+            ,false  , false  ,  true  , false  , false  ,  true   // IDLE
+            ,false  ,  true  , false  ,  true  ,  true  ,  true   // RUNNING
+            ,false  , false  ,  true  , false  , false  ,  true   // PAUSED
+            ,false  ,  true  ,  true  , false  , false  , false   // ERROR
+            ,false  , false  , false  , false  , false  , false   // KILLED
 };
 
-bool SortPanelWnd::setThreadState(SortThreadState newState) {
-  if(!legalTransitions[m_threadState][newState]) {
+bool SortPanelWnd::setJobState(SortJobState newState) {
+  if(!legalTransitions[m_jobState][newState]) {
     return invalidStateTransition(newState);
   }
+  m_lock.wait();
+  bool doNotify = true;
 
-  switch(m_threadState) {
+  switch(m_jobState) {
   case STATE_PAUSED :
+  case STATE_ERROR  :
+  case STATE_IDLE   :
     if(newState == STATE_RUNNING) {
       m_resume.notify();
+      doNotify = false; // will be done m_sortJob when wakeup from m_resume.wait()
     }
     break;
   }
+  if(doNotify) {
+    setProperty(JOBSTATE, m_jobState, newState);
+  }
 
-  const SortThreadState oldState = m_threadState;
-  m_threadState = newState;
-  notifyStateChange(oldState, newState);
   Invalidate();
+
+  m_lock.notify();
   return true;
 }
 
-void SortPanelWnd::waitForResume() {
-  setThreadState(STATE_PAUSED);
+void SortPanelWnd::waitForResume(SortJobState newState) {
+  setJobState(newState);
   m_resume.wait();
-}
-
-void SortPanelWnd::notifyStateChange(SortThreadState oldState, SortThreadState newState) {
-  m_parent->postStateShift(this, oldState, newState);
+  setProperty(JOBSTATE, m_jobState, STATE_RUNNING);
 }
 
 const InitializeParameters &SortPanelWnd::getInitParameters() const {
@@ -127,7 +135,7 @@ void SortPanelWnd::initArray() {
   m_maxElementSize = m_dataArray.getMaxValue();
   m_compareCount   = 0;
   m_modifiedSet.setCapacity(m_elementCount);
-  m_startTime      = m_sortThread->getThreadTime(); // just to print 0 in updateScreen
+  m_startTime      = m_sortJob->getTimeUsage(); // just to print 0 in updateScreen
 }
 
 static void line(CDC &dc, int x1, int y1, int x2, int y2) {
@@ -196,7 +204,7 @@ void SortPanelWnd::saveArray() {
   m_savedArray = m_dataArray;
 }
 
-const TCHAR *SortPanelWnd::stateStringTable[] = {
+const TCHAR *SortPanelWnd::s_stateStringTable[] = {
   _T("IDLE")
  ,_T("RUN")
  ,_T("PAUSE")
@@ -212,7 +220,7 @@ void SortPanelWnd::printCompareCount(CDC &dc, bool showTime) {
                      ,m_sortMethod.getName().cstr()
                      ,getStateStr()
                      ,m_compareCount
-                     ,(m_sortThread->getThreadTime()-m_startTime)/1000.0).cstr());
+                     ,(m_sortJob->getTimeUsage()-m_startTime)/1000.0).cstr());
   } else {
     dc.TextOut(5,6
               ,format(_T("%s State:%-5s #Compares:%7d              ")
@@ -225,20 +233,6 @@ void SortPanelWnd::printCompareCount(CDC &dc, bool showTime) {
 
 
 void SortPanelWnd::OnDestroy() {
-  if(m_sortThread) {
-    m_threadSignal = TERMINATE_SORT | KILL_THREAD;
-    if(getThreadState() != STATE_RUNNING) {
-      m_sortThread->resume();
-    }
-    for(int emergencyCount = 0; (emergencyCount < 10) && m_sortThread->stillActive(); emergencyCount++) {
-      Sleep(50);
-    }
-    if(m_sortThread->stillActive()) {
-      errorMessage(_T("Cannot stop sortThread!!"));
-    } else {
-      delete m_sortThread;
-      m_sortThread = NULL;
-    }
-  }
-  CStatic::OnDestroy();
+  SAFEDELETE(m_sortJob);
+  __super::OnDestroy();
 }

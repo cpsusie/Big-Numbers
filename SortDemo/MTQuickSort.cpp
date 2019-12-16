@@ -63,7 +63,7 @@ private:
   void doPartition(const PartitionJob<T> &job);
 public:
   PartitioningThread(MTQuicksortClass<T> &qc, int id);
-  unsigned int run();
+  UINT run();
 };
 
 // ------------------------------------- MTQuicksortClass implementation --------------------------------------
@@ -138,7 +138,8 @@ template <class T> PartitionJob<T> &MTQuicksortClass<T>::getJob(int id, Partitio
 // ------------------------------------- PartitioningThread implementation --------------------------------------
 
 template <class T> PartitioningThread<T>::PartitioningThread(MTQuicksortClass<T> &qc, int id)
-: m_qc(qc)
+: Thread(format(_T("Partitioning %d"), id))
+, m_qc(qc)
 , m_comparator(m_qc.getComparator())
 {
   m_id = id;
@@ -147,7 +148,7 @@ template <class T> PartitioningThread<T>::PartitioningThread(MTQuicksortClass<T>
 
 #define MINMTSPLITSIZE 20
 
-template <class T> unsigned int PartitioningThread<T>::run() {
+template <class T> UINT PartitioningThread<T>::run() {
   m_qc.setActive(m_id, true);
   try {
     PartitionJob<T> job;
@@ -246,7 +247,7 @@ tailrecurse:
 
 class SynchronizedComparator : public AbstractComparator {
 private:
-  Semaphore           m_gate;
+  FastSemaphore       m_gate;
   AbstractComparator &m_cmp;
 public:
   SynchronizedComparator(AbstractComparator &cmp) : m_cmp(cmp) {
@@ -261,8 +262,7 @@ int SynchronizedComparator::cmp(const void *e1, const void *e2) {
     const int result = m_cmp.cmp(e1, e2);
     m_gate.notify();
     return result;
-  }
-  catch (...) {
+  } catch (...) {
     m_gate.notify();
     throw;
   }

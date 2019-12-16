@@ -1,10 +1,15 @@
 #pragma once
 
-#include "SortThread.h"
+#include "SortJob.h"
 
 class CSortDemoDlg;
 
-class SortPanelWnd : public CStatic {
+typedef enum {
+  JOBSTATE
+} SortPanelProperty;
+
+class SortPanelWnd : public CStatic, PropertyContainer {
+  friend class SortJob;
 private:
   CSortDemoDlg               *m_parent;
   const SortMethodId         &m_sortMethod;
@@ -18,24 +23,24 @@ private:
   double                      m_startTime;
   size_t                      m_elementCount;
   UINT                        m_maxElementSize;
-  SortThread                 *m_sortThread;
-  SortThreadState             m_threadState;
-  Semaphore                   m_resume;
-  char                        m_threadSignal;
+  SortJob                    *m_sortJob;
+  SortJobState                m_jobState;
+  FastSemaphore               m_resume, m_lock;
+  std::atomic<char>           m_jobFlags;
   intptr_t                    m_oldIndex1;
   intptr_t                    m_oldIndex2;
   CRect                       m_rect;
-  bool invalidStateTransition(SortThreadState newState);
-  void notifyStateChange(SortThreadState oldState, SortThreadState newState);
+  bool invalidStateTransition(SortJobState newState);
   void saveArray();
   void drawElement(      CDC &dc, size_t index);
   void markElement(      CDC &dc, size_t index, CPen &pen);
   void printCompareCount(CDC &dc, bool showTime);
-  static const TCHAR *stateStringTable[];
+  static const TCHAR *s_stateStringTable[];
+
 protected:
-	afx_msg void OnPaint();
-	afx_msg void OnDestroy();
-	DECLARE_MESSAGE_MAP()
+  afx_msg void OnPaint();
+  afx_msg void OnDestroy();
+  DECLARE_MESSAGE_MAP()
 
 public:
   SortPanelWnd(CSortDemoDlg *parent, int methodId);
@@ -47,22 +52,21 @@ public:
   }
   void initArray();
   void stopSort(int stopCode) { // any combination of PAUSE_SORT TERMINATE_SORT
-    m_threadSignal = stopCode;
+    m_jobFlags = stopCode;
   }
   void resumeSort();
   inline const TCHAR *getStateStr() const {
-    return stateStringTable[m_threadState];
+    return getStateString(m_jobState);
   }
-  static const TCHAR *getStateString(SortThreadState state) {
-    return stateStringTable[state];
+  static inline const TCHAR *getStateString(SortJobState state) {
+    return s_stateStringTable[state];
   }
 
-  inline SortThreadState getThreadState() const {
-    return m_threadState;
+  inline SortJobState getJobState() const {
+    return m_jobState;
   }
-  bool setThreadState(SortThreadState newState);
-  void waitForResume();
-  friend class SortThread;
+  bool setJobState(SortJobState newState);
+  void waitForResume(SortJobState newState);
   inline DataArray &getDataArray() {
     return m_dataArray;
   }
@@ -72,15 +76,14 @@ public:
   bool &getFast() {
     return m_fast;
   }
-  char &getThreadSignal() {
-    return m_threadSignal;
+  std::atomic<char> &getJobFlags() {
+    return m_jobFlags;
   }
-  SortThread &getThread() {
-    return *m_sortThread;
+  SortJob &getJob() {
+    return *m_sortJob;
   }
   const InitializeParameters &getInitParameters() const;
 
   void updateMarks( CDC &dc, size_t index1, size_t index2);
   void updateScreen(CDC &dc, bool showTime);
 };
-

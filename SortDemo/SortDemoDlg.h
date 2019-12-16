@@ -4,10 +4,10 @@
 #include "SortPanelWnd.h"
 
 #define STATESHIFT(oldState, newState) (((oldState) << 4) | (newState))
-#define GETOLDSTATE(stateShift)        ((SortThreadState)((stateShift) >>  4))
-#define GETNEWSTATE(stateShift)        ((SortThreadState)((stateShift) & 0xf))
+#define GETOLDSTATE(stateShift)        ((SortJobState)((stateShift) >>  4))
+#define GETNEWSTATE(stateShift)        ((SortJobState)((stateShift) & 0xf))
 
-class CSortDemoDlg : public CDialog {
+class CSortDemoDlg : public CDialog, public PropertyChangeListener {
 private:
   HICON                       m_hIcon;
   HACCEL                      m_accelTable;
@@ -28,9 +28,9 @@ private:
   void buildSortMethodMenu();
   void checkActiveMethodsItems();
   void adjustLayout();
-  int  getPanelCountByState(SortThreadState state) const;
-  bool allPanelsInState(SortThreadState state) const;
-  bool noPanelsInState( SortThreadState state) const;
+  int  getPanelCountByState(SortJobState state) const;
+  bool allPanelsInState(SortJobState state) const;
+  bool noPanelsInState( SortJobState state) const;
   int           findPanelIndexFromPoint(const CPoint &p);
   SortPanelWnd *findPanelFromPoint(const CPoint &p);
   inline bool isMoveingPanel() const {
@@ -52,8 +52,7 @@ public:
       return m_ctrlId++;
     };
     bool isAnimatedSort();
-
-    void postStateShift(SortPanelWnd *panel, SortThreadState oldState, SortThreadState newState);
+    void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
 
     enum { IDD = IDD_SORTDEMO_DIALOG };
 
