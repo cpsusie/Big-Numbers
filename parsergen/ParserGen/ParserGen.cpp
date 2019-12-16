@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include <io.h>
 #include <Tokenizer.h>
+#include <ProcessTools.h>
 #include <FileNameSplitter.h>
 #include "GrammarParser.h"
 #include "GrammarCode.h"
