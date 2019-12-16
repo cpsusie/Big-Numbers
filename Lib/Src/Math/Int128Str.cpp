@@ -144,7 +144,7 @@ template<typename Int128Type, typename Ctype> Ctype *int128toStr(Int128Type valu
     const _uint128 &divisor = powRadix[radix];
     _uint128        v       = value;
     for(;;) {
-      const _ui128div_t div_t = uint128div(v, divisor);
+      const _ui128div_t div_t = _ui128div(v, divisor);
       Ctype tmpStr[40];
       ULTOSTR((UINT)div_t.rem, tmpStr, radix);
       STRCPY(s, STRREV(tmpStr));

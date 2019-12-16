@@ -478,6 +478,29 @@ namespace TestInt128 {
       verify(R == expectedR);
     }
 
+    TEST_METHOD(Int128_ui128div) {
+      JavaRandom rnd;
+      _uint128 n = 5;
+      for(int p = 5; p < 128; p++) {
+        for(int i = 0; i < 1000; i++) {
+          _uint128 numer = randInt128(rnd);
+          _uint128 denom;
+          do {
+            denom = randInt128(n, rnd);
+          } while(denom == 0);
+
+          _uint128 quot = numer / denom;
+          _uint128 rem  = numer % denom;
+
+          const _ui128div_t div = _ui128div(numer, denom);
+          verify((quot == div.quot) && (rem == div.rem));
+          verify(div.quot * denom + div.rem == numer);
+        }
+        n <<= 1;
+        if(rnd.nextBool()) n |= 1;
+      }
+    }
+
     TEST_METHOD(Int128ArithmethicOperators) {
       _uint128 x1 = _strtoui128("0xffffffffffffffffffffffffffffffff", NULL, 0);
       _uint128 res1 = x1 + 1;

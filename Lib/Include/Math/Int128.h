@@ -1961,7 +1961,7 @@ typedef struct {
   _uint128 rem;
 } _ui128div_t;
 
-inline _ui128div_t uint128div(const _uint128 &numer, const _uint128 &denom) {
+inline _ui128div_t _ui128div(const _uint128 &numer, const _uint128 &denom) {
   _ui128div_t div;
   uint128quotrem((void*)&numer, (void*)&denom, &div);
   return div;

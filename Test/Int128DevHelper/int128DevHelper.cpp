@@ -1,6 +1,9 @@
 #include "stdafx.h"
 #include <Math/Int128.h>
+#include <TimeMeasure.h>
 #include <Timer.h>
+
+using namespace std;
 
 String ToString(const _uint128 &n, int radix=10) {
   char tmp[200];
@@ -135,10 +138,101 @@ static void testShift() {
   }
 }
 
+template<typename streamtype> streamtype &operator<<(streamtype &s, const _ui128div_t &div) {
+  s << "(" << div.rem << "," << div.rem << ")";
+  return s;
+}
+
+class QuotFunction : public MeasurableFunction {
+public:
+  CompactArray<_uint128> m_numerArray;
+  CompactArray<_uint128> m_denomArray;
+  QuotFunction();
+  void f();
+};
+
+QuotFunction::QuotFunction() {
+  JavaRandom rnd;
+  for (int k = 0; k < 5; k++) {
+    _uint128 p = randInt(3, 37, rnd);
+    for (int i = 1; i < 128; i++, p <<= 1) {
+      _uint128 numer = randInt128(p, rnd);
+      m_numerArray.add(numer);
+      _uint128 denom;
+      do {
+        denom = randInt128(p, rnd);
+      } while (denom == 0);
+      m_denomArray.add(denom);
+      if (rnd.nextBool()) p |= 1;
+    }
+  }
+}
+
+void QuotFunction::f() {
+  const size_t ncount = m_numerArray.size();
+  const size_t dcount = m_denomArray.size();
+  for (size_t i = 0; i < ncount; i++) {
+    const _uint128 &numer = m_numerArray[i];
+    for (size_t j = 0; j < dcount; j++) {
+      const _uint128 &denom = m_denomArray[j];
+//      _uint128 quot = numer / denom;
+//      _uint128 rem = numer % denom;
+      const _ui128div_t qr = _ui128div(numer, denom);
+    }
+  }
+
+}
+
+static void testUint128quotrem() {
+  try {
+    JavaRandom rnd;
+    for(int p = 5; p < 128; p++) {
+      const _uint128 n = _uint128(1) << p;
+      for (int i = 0; i < 1000; i++) {
+        _uint128 numer = randInt128(rnd);
+
+        _uint128 denom;
+        do {
+          denom = randInt128(n, rnd);
+        } while (denom == 0);
+
+        _uint128 quot = numer / denom;
+        _uint128 rem = numer % denom;
+
+        const _ui128div_t div = _ui128div(numer, denom);
+        if((quot != div.quot) || (rem != div.rem)) {
+          std::stringstream tmp;
+          cout << numer << "/" << denom << "=" << quot << endl
+               << numer << "%" << denom << "=" << rem << endl
+               << "_ui128div(" << numer << "," << denom << ") = " << div << endl;
+
+          _ui128div_t div1 = _ui128div(numer, denom);
+        }
+      }
+    }
+  } catch (Exception e) {
+
+  }
+}
+
+
 int main(int argc, TCHAR **argv) {
-  testShift();
-  loopUnsigned();
-  loopSigned();
+
+  testUint128quotrem();
+  double ttsum = 0;
+  for(int i = 0; i < 10; i++) {
+    QuotFunction qft;
+    double tt = measureTime(qft, MEASURE_THREADTIME);
+    cout << "QuotFunction:" << tt << " sec" << endl;
+    ttsum += tt;
+  }
+  cout << "avg:" << ttsum / 10 << endl;
+
+  return 0;
+
+//  testShift();
+//  loopUnsigned();
+//  loopSigned();
   _uint128  x1(0xaaaaaaaabbbbbbbb, 0xfabcdef12345678);
   _uint128  x2 = 0xccccdddddddd;
 
