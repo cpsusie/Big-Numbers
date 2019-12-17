@@ -296,11 +296,12 @@ public:
   void setFrequence(unsigned int frequence) {
     m_frequence = frequence;
   }
-
-  unsigned int run();
+  UINT run();
 };
 
-BeepThread::BeepThread(unsigned int frequence) :m_frequence(frequence) {
+BeepThread::BeepThread(unsigned int frequence)
+: Thread(_T("Bepper"))
+, m_frequence(frequence) {
 }
 
 void BeepThread::start() {
@@ -308,7 +309,7 @@ void BeepThread::start() {
   Thread::start();
 }
 
-unsigned int BeepThread::run() {
+UINT BeepThread::run() {
   for(;;) {
     while(m_cont) {
       Beep(m_frequence,2000);

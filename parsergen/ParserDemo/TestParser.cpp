@@ -64,13 +64,16 @@ private:
   TestParser &m_parser;
 public:
   YaccThread(TestParser &parser);
-  unsigned int run();
+  UINT run();
 };
 
-YaccThread::YaccThread(TestParser &parser) : m_parser(parser) {
+YaccThread::YaccThread(TestParser &parser)
+: Thread(_T("YeccThread"))
+, m_parser(parser)
+{
 }
 
-unsigned int YaccThread::run() {
+UINT YaccThread::run() {
   m_parser.buildStateArray();
   return 0;
 }

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include <MyUtil.h>
 #include <Process.h>
+#include <ProcessTools.h>
 #include <Random.h>
 #include <TreeMap.h>
 #include "wordsepgraph.h"
@@ -135,12 +136,12 @@ HCURSOR CWordsepgraphDlg::OnQueryDragIcon() {
 }
 
 void CWordsepgraphDlg::OnFileQuit() {
-  OnClose();
+  OnFileStopTraining();
+  EndDialog(IDOK);
 }
 
 void CWordsepgraphDlg::OnClose() {
-  OnFileStopTraining();
-  EndDialog(IDOK);
+  OnFileQuit();
 }
 
 void CWordsepgraphDlg::OnCancel() {
@@ -289,7 +290,10 @@ static void readCycleCount(int &cycleCount, int &errorCount) { // find the last 
   fclose(f);
 }
 
-TrainigThread::TrainigThread(const WordBpn &n) : m_trainingNetwork(n) {
+TrainigThread::TrainigThread(const WordBpn &n)
+: Thread(_T("Training"))
+, m_trainingNetwork(n)
+{
   setDemon(true);
   m_done      = false;
   m_terminate = false;

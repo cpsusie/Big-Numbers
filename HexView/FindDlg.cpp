@@ -66,7 +66,7 @@ public:
   }
 };
 
-SearchThread::SearchThread(SearchMachine &job) : Thread(job, _T("SearchThread")), m_job(job) {
+SearchThread::SearchThread(SearchMachine &job) : Thread(_T("SearchThread"), job), m_job(job) {
   m_quit = m_suspended = false;
 }
 

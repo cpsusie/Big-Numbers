@@ -2,7 +2,8 @@
 #include "DebugThread.h"
 
 DebugThread::DebugThread(DebugRegex &regex, const CompileParameters &cp, const BitSet &breakPoints)
-: m_command(COMMAND_COMPILE)
+: Thread(_T("Debugger"))
+, m_command(COMMAND_COMPILE)
 , m_regex(regex)
 , m_compileParameters(cp)
 , m_breakPoints(breakPoints)
@@ -11,7 +12,8 @@ DebugThread::DebugThread(DebugRegex &regex, const CompileParameters &cp, const B
 }
 
 DebugThread::DebugThread(ThreadCommand command, DebugRegex &regex, const String &text, const BitSet &breakPoints)
-: m_command(command)
+: Thread(_T("Debugger"))
+, m_command(command)
 , m_regex(regex)
 , m_text(text)
 , m_breakPoints(breakPoints)
