@@ -1,15 +1,45 @@
 #include "stdafx.h"
 #include <Thread.h>
-#include <TinyBitSet.h>
+#include <ThreadPool.h>
 #include <CPUInfo.h>
 #include <SynchronizedQueue.h>
 
-template <class T> class PartitionJob {
+class SynchronizedComparator : public AbstractComparator {
+private:
+  FastSemaphore       m_lock;
+  AbstractComparator &m_cmp;
+public:
+  SynchronizedComparator(AbstractComparator &cmp)
+    : m_cmp(cmp)
+  {
+  }
+  int cmp(const void *e1, const void *e2);
+  AbstractComparator *clone() const;
+};
+
+int SynchronizedComparator::cmp(const void *e1, const void *e2) {
+  m_lock.wait();
+  try {
+    const int result = m_cmp.cmp(e1, e2);
+    m_lock.notify();
+    return result;
+  } catch (...) {
+    m_lock.notify();
+    throw;
+  }
+}
+
+AbstractComparator *SynchronizedComparator::clone() const {
+  throwException(_T("SynchonizedComparator not cloneable"));
+  return NULL;
+}
+
+template<typename T> class JobParam {
 public:
   T      *m_base;
   size_t  m_size;
 
-  PartitionJob(T *base = NULL, size_t size = 0) {
+  JobParam(T *base = NULL, size_t size = 0) {
     m_base = base;
     m_size = size;
   }
@@ -18,24 +48,21 @@ public:
   }
 };
 
-template <class T> class PartitioningThread;
+template<typename T> class PartitionWorker;
 
-template <class T> class MTQuicksortClass {
+template<typename T> class MTQuicksortClass {
 private:
-  CompactArray<PartitioningThread<T>*> m_threadArray; // 1 thread for each processor in the CPU
-  SynchronizedQueue<PartitionJob<T> >  m_jobQueue;    // Common jobqueue for all threads
+  RunnableArray                        m_workerArray; // 1 thread for each processor in the CPU
+  SynchronizedQueue<JobParam<T> >      m_jobQueue;    // Common jobqueue for all threads
   AbstractComparator                  *m_comparator;  // the comparator specifying the order of the elements
   const int                            m_processorCount;
-  BitSet32                             m_activeThreads;
-  Semaphore                            m_gate, m_done;
-  bool                                 m_killed;
-
+  FastSemaphore                        m_lock;
+  bool                                 m_killAllRequest;
   void cleanup();
 public:
   MTQuicksortClass()
   : m_processorCount(getProcessorCount())
-  , m_done(0)
-  , m_killed(false)
+  , m_killAllRequest(false)
   {
   }
   ~MTQuicksortClass() {
@@ -44,127 +71,111 @@ public:
   void sort(T *base, size_t nelem, AbstractComparator &comparator);
 
   inline void addJob(T *base, size_t size) {
-    m_jobQueue.put(PartitionJob<T>(base, size));
+    m_jobQueue.put(JobParam<T>(base, size));
   }
-  inline PartitionJob<T> &getJob(int id, PartitionJob<T> &job);
+  inline JobParam<T> &getJob(int id, JobParam<T> &job);
 
   AbstractComparator &getComparator() {
     return *m_comparator;
   }
   void killAll();
-  void setActive(int id, bool active);
+  std::atomic<UINT> m_activeCount;
 };
 
-template <class T> class PartitioningThread : public Thread {
+template<typename T> class PartitionWorker : public Runnable {
 private:
   int                  m_id;
   MTQuicksortClass<T> &m_qc;
   AbstractComparator  &m_comparator;
-  void doPartition(const PartitionJob<T> &job);
+  FastSemaphore        m_terminated;
+  void doPartition(const JobParam<T> &job);
 public:
-  PartitioningThread(MTQuicksortClass<T> &qc, int id);
+  PartitionWorker(MTQuicksortClass<T> &qc, int id);
+  ~PartitionWorker() {
+    m_terminated.wait();
+  }
   UINT run();
 };
 
 // ------------------------------------- MTQuicksortClass implementation --------------------------------------
 
-template <class T> void MTQuicksortClass<T>::sort(T *base, size_t nelem, AbstractComparator &comparator) {
+template<typename T> void MTQuicksortClass<T>::sort(T *base, size_t nelem, AbstractComparator &comparator) {
   cleanup();
   m_comparator = &comparator;
   for(int i = 0; i < m_processorCount; i++) {
-    m_threadArray.add(new PartitioningThread<T>(*this, i));
+    PartitionWorker<T> *worker = new PartitionWorker<T>(*this, i); TRACE_NEW(worker);
+    m_workerArray.add(worker);
   }
+  m_activeCount = (UINT)m_workerArray.size();
   addJob(base, nelem);
-  for(size_t i = 0; i < m_threadArray.size(); i++) {
-    m_threadArray[i]->start();
-  }
-  m_done.wait();
-  if (m_killed) {
-    throw false;
-  } else {
-    killAll();
-  }
+  ThreadPool::executeInParallel(m_workerArray);
 }
 
-template <class T> void MTQuicksortClass<T>::cleanup() {
-  for(size_t i = 0; i < m_threadArray.size(); i++) {
-    Thread *thr = m_threadArray[i];
-    for (int k = 0; k < 10; k++) {
-      if(!thr->stillActive()) break;
-      Sleep(20);
-    }
-    delete thr;
+template<typename T> void MTQuicksortClass<T>::cleanup() {
+  for(size_t i = 0; i < m_workerArray.size(); i++) {
+    Runnable *job = m_workerArray[i];
+    SAFEDELETE(job);
   }
-  m_threadArray.clear();
-  m_killed = false;
+  m_workerArray.clear();
+  m_jobQueue.clear();
 }
 
-template <class T> void MTQuicksortClass<T>::setActive(int id, bool active) {
-  m_gate.wait();
-  if(active) {
-    m_activeThreads.add(id);
-  } else {
-    m_activeThreads.remove(id);
-    if (m_activeThreads.isEmpty()) {
-      m_done.notify();
-    }
-  }
-  m_gate.notify();
-}
-
-template <class T> void MTQuicksortClass<T>::killAll() {
-  m_gate.wait();
-  if(!m_killed) {
-    m_killed = true;
+template<typename T> void MTQuicksortClass<T>::killAll() {
+  m_lock.wait();
+  if(!m_killAllRequest) {
+    m_killAllRequest = true;
     m_jobQueue.clear();
-    for (size_t i = 0; i < m_threadArray.size(); i++) {
+    for(size_t i = 0; i < m_workerArray.size(); i++) {
       addJob(NULL,0);
     }
   }
-  m_gate.notify();
+  m_lock.notify();
 }
 
-template <class T> PartitionJob<T> &MTQuicksortClass<T>::getJob(int id, PartitionJob<T> &job) {
-  if(!m_jobQueue.isEmpty()) {
-    job = m_jobQueue.get();
-  } else {
-    setActive(id, false);
-    job = m_jobQueue.get();
-    setActive(id, true);
+template<typename T> JobParam<T> &MTQuicksortClass<T>::getJob(int id, JobParam<T> &job) {
+  const int thisActiveAcount = m_activeCount--;
+  if((thisActiveAcount == 1) && m_jobQueue.isEmpty()) { // we are the only active worker and there are no jobs in queue...time to move on
+    killAll();
   }
+  job = m_jobQueue.get();
+  m_activeCount++;
   return job;
 }
 
-// ------------------------------------- PartitioningThread implementation --------------------------------------
+// ------------------------------------- PartitionWorker implementation --------------------------------------
 
-template <class T> PartitioningThread<T>::PartitioningThread(MTQuicksortClass<T> &qc, int id)
-: Thread(format(_T("Partitioning %d"), id))
-, m_qc(qc)
+template<typename T> PartitionWorker<T>::PartitionWorker(MTQuicksortClass<T> &qc, int id)
+: m_qc(qc)
 , m_comparator(m_qc.getComparator())
 {
   m_id = id;
-  setDemon(true);
 }
 
 #define MINMTSPLITSIZE 20
 
-template <class T> UINT PartitioningThread<T>::run() {
-  m_qc.setActive(m_id, true);
+template<typename T> UINT PartitionWorker<T>::run() {
+#ifdef _DEBUG
+  setThreadDescription(format(_T("Partition(%d)"), m_id));
+#endif
+  m_terminated.wait();
   try {
-    PartitionJob<T> job;
+    JobParam<T> job;
     for(;;) {
       m_qc.getJob(m_id, job);
-      if(job.isEmpty()) break;
+      if(job.isEmpty()) {
+        break;
+      }
       doPartition(job);
     }
-  } catch (...) {
+  } catch(...) {
     m_qc.killAll();
+    m_qc.m_activeCount--;
   }
-  m_qc.setActive(m_id, false);
+  m_terminated.notify();
   return 0;
 }
 
-template <class T> void PartitioningThread<T>::doPartition(const PartitionJob<T> &job) {
+template<typename T> void PartitionWorker<T>::doPartition(const JobParam<T> &job) {
   DECLARE_STACK(stack, 80);
   PUSH(stack, job.m_base, job.m_size);
   while(!ISEMPTY(stack)) {
@@ -243,34 +254,6 @@ tailrecurse:
       }
     }
   }
-}
-
-class SynchronizedComparator : public AbstractComparator {
-private:
-  FastSemaphore       m_gate;
-  AbstractComparator &m_cmp;
-public:
-  SynchronizedComparator(AbstractComparator &cmp) : m_cmp(cmp) {
-  }
-  int cmp(const void *e1, const void *e2);
-  AbstractComparator *clone() const;
-};
-
-int SynchronizedComparator::cmp(const void *e1, const void *e2) {
-  m_gate.wait();
-  try {
-    const int result = m_cmp.cmp(e1, e2);
-    m_gate.notify();
-    return result;
-  } catch (...) {
-    m_gate.notify();
-    throw;
-  }
-}
-
-AbstractComparator *SynchronizedComparator::clone() const {
-  throwException(_T("SynchonizedComparator not cloneable"));
-  return NULL;
 }
 
 void MTQuickSort(void *base, size_t nelem, size_t width, AbstractComparator &comparator) {

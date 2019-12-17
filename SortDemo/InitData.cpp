@@ -120,44 +120,40 @@ unsigned int DataArray::getMaxValue() const {
   return maxv;
 }
 
-BitSet &DataArray::getModified(BitSet &dst, const DataArray &a) const {
+BitSet &DataArray::getModified(BitSet &dst, const DataArray &a, const IntInterval *interval) const {
   dst.setCapacity(size());
   dst.clear();
-  const int n           = size();
+  const int first       = interval ? __max(0, interval->getMin())     : 0;
+  const int last        = interval ? __min(size(),interval->getMax()) : size();
   const int elementSize = getElementSize();
   switch(elementSize) {
   case sizeof(BYTE):
-    { const BYTE *p1 = (const BYTE*)getData();
-      const BYTE *p2 = (const BYTE*)a.getData();
-      for(int i = 0; i < n; i++) {
-        if(*(p1++) != *(p2++)) {
-          dst.add(i);
-        }
-      }
+    { const BYTE *p0 = (const BYTE*)getData(), *p1 = p0+first, *pend = p0 + last;
+      const BYTE *p2 = (const BYTE*)a.getData() + first;
+      for(const BYTE *p = p1; p < pend; p++) if(*p != *(p2++)) dst.add(p-p0);
     }
     break;
-  case sizeof(unsigned short):
-    { const unsigned short *p1 = (const unsigned short*)getData();
-      const unsigned short *p2 = (const unsigned short*)a.getData();
-      for(int i = 0; i < n; i++) {
-        if(*(p1++) != *(p2++)) {
-          dst.add(i);
-        }
-      }
+  case sizeof(USHORT):
+    { const USHORT *p0 = (const USHORT*)getData(), *p1 = p0+first, *pend = p0 + last;
+      const USHORT *p2 = (const USHORT*)a.getData() + first;
+      for(const USHORT *p = p1; p < pend; p++) if(*p != *(p2++)) dst.add(p-p0);
     }
     break;
-  case sizeof(unsigned int):
-    { const unsigned int *p1 = (const unsigned int*)getData();
-      const unsigned int *p2 = (const unsigned int*)a.getData();
-      for(int i = 0; i < n; i++) {
-        if(*(p1++) != *(p2++)) {
-          dst.add(i);
-        }
-      }
+  case sizeof(UINT):
+    { const UINT *p0 = (const UINT*)getData(), *p1 = p0+first, *pend = p0 + last;
+      const UINT *p2 = (const UINT*)a.getData() + first;
+      for(const UINT *p = p1; p < pend; p++) if(*p != *(p2++)) dst.add(p-p0);
+    }
+    break;
+  case sizeof(UINT64):
+    { const UINT64 *p0 = (const UINT64*)getData(), *p1 = p0+first, *pend = p0 + last;
+      const UINT64 *p2 = (const UINT64*)a.getData() + first;
+      for(const UINT64 *p = p1; p < pend; p++) if(*p != *(p2++)) dst.add(p-p0);
     }
     break;
   default:
-    { const BYTE *p1 = (const BYTE*)getData();
+    { const int n = size();
+      const BYTE *p1 = (const BYTE*)getData();
       const BYTE *p2 = (const BYTE*)a.getData();
       for(int i = 0; i < n; i++, p1 += elementSize, p2 += elementSize) {
         if(*((unsigned int*)p1) != *((unsigned int*)p2)) {

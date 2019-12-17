@@ -275,6 +275,7 @@
     <ClInclude Include="SortJob.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="Util.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AboutBoxDlg.cpp" />
