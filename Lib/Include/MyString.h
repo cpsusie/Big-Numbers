@@ -60,6 +60,13 @@ template<typename DstCharType, typename SrcCharType> DstCharType *strCpy(DstChar
   return ret;
 }
 
+template<typename DstCharType, typename SrcCharType> DstCharType *strnCpy(DstCharType *dst, const SrcCharType *src, size_t num) {
+  DstCharType *ret = dst, *maxDst = dst+num;
+  while((dst < maxDst) && (*(dst++) = (DstCharType)(*(src++))));
+  while(dst < maxDst) *(dst++) = 0;
+  return ret;
+}
+
 template<typename CharType> CharType *strUpr(CharType *str) {
   return (sizeof(CharType) == 1) ? (CharType*)_strupr((char*)((void*)str)) : (CharType*)_wcsupr((wchar_t*)((void*)str));
 }
