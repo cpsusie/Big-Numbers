@@ -1,5 +1,7 @@
 #include "stdafx.h"
+#include <ThreadPool.h>
 #include <MFCUtil/Clipboard.h>
+
 #include "CalculatorDlg.h"
 #include "PrecisionDlg.h"
 
@@ -103,12 +105,12 @@ static ButtonAttribute *getAttribute(int id) {
 
 CCalculatorDlg::CCalculatorDlg(CWnd *pParent /*=NULL*/)	: CDialog(CCalculatorDlg::IDD, pParent) {
   m_display = EMPTYSTRING;
-  m_calc = new CalculatorThread();
-  m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
+  m_calc    = new Calculator(); TRACE_NEW(m_calc);
+  m_hIcon   = theApp.LoadIcon(IDR_MAINFRAME);
 }
 
 CCalculatorDlg::~CCalculatorDlg() {
-  delete m_calc;
+  SAFEDELETE(m_calc);
 }
 
 void CCalculatorDlg::DoDataExchange(CDataExchange *pDX) {
@@ -333,7 +335,7 @@ BOOL CCalculatorDlg::OnInitDialog() {
     }
   }
 
-  SetIcon(m_hIcon, TRUE);			// Set big icon
+  SetIcon(m_hIcon, TRUE);		// Set big icon
   SetIcon(m_hIcon, FALSE);		// Set small icon
   setWindowCursor(GetDlgItem(IDC_DISPLAY    ),OCR_NORMAL);
 
@@ -366,7 +368,7 @@ BOOL CCalculatorDlg::OnInitDialog() {
   }
 
   EnableToolTips();
-
+  ThreadPool::executeNoWait(*m_calc);
 //  MultiplierThreadPool::startLogging();
 
   showStatus();
@@ -414,6 +416,7 @@ void CCalculatorDlg::OnPaint() {
 }
 
 void CCalculatorDlg::OnFileQuit() {
+  SAFEDELETE(m_calc);
   EndDialog(IDOK);
 }
 
@@ -855,7 +858,7 @@ void CCalculatorDlg::OnEditCopy() {
 
 void CCalculatorDlg::OnEditPaste() {
   const String tmp = getClipboardText();
-  m_calc->setDisplayText(tmp);
+  m_calc->pasteText(tmp);
   showStatus();
 }
 

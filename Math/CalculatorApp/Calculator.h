@@ -1,9 +1,8 @@
 #pragma once
 
-#include <Math/BigReal.h>
-#include <Thread.h>
+#include <Runnable.h>
 #include <Stack.h>
-#include <Semaphore.h>
+#include <Math/BigReal.h>
 //typedef double BigReal;
 
 #define MAXPRECISION 500000
@@ -22,7 +21,7 @@ typedef enum {
  ,OPSIZE_OWORD
 } OperandSize;
 
-class Calculator {
+class Calculator : public Runnable {
 private:
   const BigReal   m_minusOne;
   String          m_displayText;
@@ -46,6 +45,10 @@ private:
   bool            m_gotError;
   Trigonometric   m_trigonometricBase;
   OperandSize     m_opsize;
+  mutable FastSemaphore   m_lock;
+  FastSemaphore   m_hasInput, m_terminated;
+  int             m_buttonPressed;
+  bool            m_busy, m_killed;
 
   void             initDisplay();
   void             initMemory();
@@ -73,20 +76,22 @@ private:
   String           printRadix(const BigReal &x) const;
   void             ajourDisplay();
   void             setDisplay(const BigReal &x);
-  const BigReal    &getDisplay() const;
-  DigitPool        *getDigitPool() const {
+  const BigReal   &getDisplay() const;
+  DigitPool       *getDigitPool() const {
     return m_display.getDigitPool();
   }
 
   void             pushDisplay();
   BigReal          toRadians(  const BigReal &x) const;
   BigReal          fromRadians(const BigReal &x) const;
-  void             enterButton(int button);
+  void             handleButton(int button);
+  void             putDisplayText(const String &s);
 public:
   Calculator();
+  ~Calculator();
   void          enter(int button);
-  const String &getDisplayText()        const { return m_displayText;       }
-  void          setDisplayText(const String &s);
+  String        getDisplayText()        const;
+  void          pasteText(const String &s);
   int           getRadix()              const { return m_radix;             }
   bool          getInverse()            const { return m_inverse;           }
   bool          getHyperbolic()         const { return m_hyperbolic;        }
@@ -98,24 +103,12 @@ public:
   int           getPrecision()          const { return m_ndigits;           }
   void          setPrecision(int ndigits);
   bool          getDigitGrouping()      const { return m_digitGrouping;     }
+  inline bool   isBusy() const {
+    return m_busy;
+  }
+  UINT          run();
+  void          terminateCalculation();
 };
 
 BigReal dms(const BigReal &x, const BigReal &f);
 BigReal inversdms(const BigReal &x, const BigReal &f);
-
-class CalculatorThread : public Thread,  public Calculator {
-private:
-  FastSemaphore m_hasInput, m_terminated;
-  int           m_buttonPressed;
-  bool          m_busy;
-  bool          m_killed;
-  UINT          run();
-public:
-  CalculatorThread();
- ~CalculatorThread();
-  void enter(int button);
-  inline bool isBusy() const {
-    return m_busy;
-  }
-  void terminateCalculation();
-};

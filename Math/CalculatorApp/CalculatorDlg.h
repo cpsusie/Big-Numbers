@@ -22,7 +22,7 @@ public:
 class CCalculatorDlg : public CDialog {
 private:
   DWORD                   m_helpid;
-  CalculatorThread       *m_calc;
+  Calculator             *m_calc;
   int                     m_timerInterval;
   time_t                  m_enterTime;
   bool                    m_waitCursorOn;

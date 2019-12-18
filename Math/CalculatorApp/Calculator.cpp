@@ -146,6 +146,7 @@ void Calculator::init() {
   initDisplay();
   m_numberStack.clear();
   m_opStack.clear();
+  BigRealResourcePool::resetAllPoolCalculations();
 //  m_numberstacktop = 0;
 //  m_opstacktop     = 0;
   m_inverse        = false;
@@ -154,7 +155,9 @@ void Calculator::init() {
   m_paranthesLevel = 0;
 }
 
-Calculator::Calculator() : m_minusOne(-1) {
+Calculator::Calculator() : m_minusOne(-1), m_hasInput(0) {
+  m_busy           = false;
+  m_killed         = false;
   m_digitGrouping  = false;
   m_gotError       = false;
   m_radix          = 10;
@@ -163,6 +166,17 @@ Calculator::Calculator() : m_minusOne(-1) {
   m_trigonometricBase = TRIGO_DEGREES;
   m_opsize            = OPSIZE_QWORD;
   m_ndigits           = 40;
+}
+
+Calculator::~Calculator() {
+  m_killed = true;
+  if(isBusy()) {
+    terminateCalculation();
+  }
+  else {
+    enter(0);
+  }
+  m_terminated.wait();
 }
 
 static void appendChar(TCHAR *s, char ch) {
@@ -207,7 +221,7 @@ unsigned int Calculator::maxBigRealLen() const {
 
 void Calculator::ajourDisplay() {
   const String tmp = m_digitGrouping ? groupDigits(m_mantissa) : m_mantissa;
-  m_displayText = m_inExponent ? (tmp + format(_T("e%s"), m_exponent)) : tmp;
+  putDisplayText(m_inExponent ? (tmp + format(_T("e%s"), m_exponent)) : tmp);
   m_displayDirty = true;
 }
 
@@ -513,7 +527,7 @@ const BigReal &Calculator::getDisplay() const {
 }
 
 void Calculator::setDisplay(const BigReal &x) {
-  m_displayText = printRadix(x);
+  putDisplayText(printRadix(x));
   if((m_radix == 10) || !isfinite(x)) {
     m_display = x;
   } else {
@@ -526,7 +540,7 @@ void Calculator::setDisplay(const BigReal &x) {
   m_displayDirty = false;
 }
 
-void Calculator::setDisplayText(const String &s) {
+void Calculator::pasteText(const String &s) {
   String tmp = s;
   switch(getRadix()) {
   case 10:
@@ -536,6 +550,19 @@ void Calculator::setDisplayText(const String &s) {
     setDisplay(scanRadix(s));
     break;
   }
+}
+
+void Calculator::putDisplayText(const String &s) {
+  m_lock.wait();
+  m_displayText = s;
+  m_lock.notify();
+}
+
+String Calculator::getDisplayText() const {
+  m_lock.wait();
+  const String s = m_displayText;
+  m_lock.notify();
+  return s;
 }
 
 void Calculator::handleRadix(int radix) {
@@ -850,13 +877,13 @@ void Calculator::handleDigitGrouping() {
 
 void Calculator::setPrecision(int ndigits) {
   if(gotError()) {
-    enterButton(IDC_BUTTONCLEAR);
+    handleButton(IDC_BUTTONCLEAR);
   }
   m_ndigits = ndigits;
   setDisplay(getDisplay());
 }
 
-void Calculator::enterButton(int button) {
+void Calculator::handleButton(int button) {
   DigitPool *pool = getDigitPool();
   if(m_gotError && (button != IDC_BUTTONCLEAR) && (button != IDC_BUTTONCE)) {
     return;
@@ -1083,58 +1110,35 @@ void Calculator::enterButton(int button) {
     handleDigitGrouping();
     break;
   default:
-    m_displayText = format(_T("Invalid key:%d"), button);
+    putDisplayText(format(_T("Invalid key:%d"), button));
     break;
   }
 }
 
-void Calculator::enter(int button) {
-  try {
-    enterButton(button);
-  } catch(BigRealException e) {
-    m_displayText = e.what();
-    m_gotError = true;
-  }
-}
-
-// ------------------------------------------------------------------
-
-CalculatorThread::CalculatorThread() : Thread("CalculatorThread"), m_hasInput(0), m_terminated(0) {
-  m_busy   = false;
-  m_killed = false;
-  resume();
-}
-
-CalculatorThread::~CalculatorThread() {
-  m_killed = true;
-  if(isBusy()) {
-    terminateCalculation();
-  } else {
-    enter(0);
-  }
+UINT Calculator::run() {
   m_terminated.wait();
-}
-
-UINT CalculatorThread::run() {
   while(!m_killed) {
     m_hasInput.wait();
     if(m_killed) break;
-    Calculator::enter(m_buttonPressed);
+    m_busy = true;
+    try {
+      handleButton(m_buttonPressed);
+    } catch(BigRealException e) {
+      putDisplayText(e.what());
+      m_gotError = true;
+    }
     m_busy = false;
   }
   m_terminated.notify();
   return 0;
 }
 
-void CalculatorThread::enter(int button) {
-  if(isBusy()) {
-    return;
-  }
+void Calculator::enter(int button) {
+  if(isBusy()) return;
   m_buttonPressed = button;
-  m_busy          = true;
   m_hasInput.notify();
 }
 
-void CalculatorThread::terminateCalculation() {
+void Calculator::terminateCalculation() {
   BigRealResourcePool::terminateAllPoolCalculations();
 }
