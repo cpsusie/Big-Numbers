@@ -7,14 +7,6 @@ void PropertyContainer::notifyPropertyChanged(int id, const void *oldValue, cons
   }
 }
 
-void PropertyContainer::addPropertyChangeListener(PropertyChangeListener *listener, bool first) {
-  if(first) {
-    m_listeners.add(0, listener);
-  } else {
-    m_listeners.add(listener);
-  }
-}
-
 void PropertyContainer::removePropertyChangeListener(PropertyChangeListener *listener) {
   const intptr_t index = m_listeners.getFirstIndex(listener);
   if(index >= 0) {

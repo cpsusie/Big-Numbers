@@ -28,9 +28,11 @@ public:
   virtual ~PropertyContainer() {
     clear();
   }
-  void addPropertyChangeListener(   PropertyChangeListener *listener, bool first = false);
+  inline void addPropertyChangeListener(PropertyChangeListener *listener) {
+    m_listeners.add(listener);
+  }
   void removePropertyChangeListener(PropertyChangeListener *listener);
-  void clear() {
+  inline void clear() {
     m_listeners.clear();
   }
 };
