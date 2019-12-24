@@ -38,7 +38,12 @@ void LayoutAttribute::setControlRect(const CRect &r) {
   if(r.right <= r.left || r.bottom <= r.top) {
     return;
   }
-  ::setWindowRect(getManager().getWindow(), m_ctrlId, r);
+  CWnd *ctrlWin = getManager().getWindow()->GetDlgItem(m_ctrlId);
+  if(ctrlWin->IsWindowVisible()) {
+    ::setWindowRect(ctrlWin, r);
+  } else {
+    ctrlWin->SetWindowPos(NULL, r.left, r.top, r.Width(), r.Height(), SWP_HIDEWINDOW);
+  }
   m_lastRect = r;
 }
 
