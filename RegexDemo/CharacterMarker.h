@@ -1,24 +1,24 @@
 #pragma once
 
 #include <PropertyContainer.h>
-#include <Semaphore.h>
+#include <FastSemaphore.h>
 
 class CharacterMarker {
 private:
-  CDialog     *m_dlg;
-  const int    m_ctrlId;
-  const bool   m_above             : 1;
-  bool         m_multiMarksAllowed : 1;
-  bool         m_marksVisible      : 1;
-  bool         m_blinking          : 1;
-  COLORREF     m_backgroundColor;
-  CBitmap      m_markBitmap;
-  CSize        m_bitmapSize;
-  UINT         m_charWidth;
-  size_t       m_textLength;
-  CRect        m_ctrlRect;
-  BitSet       m_markSet;
-  Semaphore    m_gate;
+  CDialog      *m_dlg;
+  const int     m_ctrlId;
+  const bool    m_above             : 1;
+  bool          m_multiMarksAllowed : 1;
+  bool          m_marksVisible      : 1;
+  bool          m_blinking          : 1;
+  COLORREF      m_backgroundColor;
+  CBitmap       m_markBitmap;
+  CSize         m_bitmapSize;
+  UINT          m_charWidth;
+  size_t        m_textLength;
+  CRect         m_ctrlRect;
+  BitSet        m_markSet;
+  FastSemaphore m_lock;
 
   void   paintAllMarkPositions(bool mark);
   void   paintMarkPosition(CDC &dc, size_t index, bool mark);
@@ -43,7 +43,7 @@ public:
 
 class CharacterMarkerArray : public CompactArray<CharacterMarker*>, public PropertyChangeListener {
 private:
-  Semaphore m_gate;
+  FastSemaphore m_lock;
 public:
   ~CharacterMarkerArray() {
     clear();

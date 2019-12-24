@@ -56,7 +56,7 @@
 #define ID_GOTO_PATTERN                 32820
 #define ID_GOTO_TEXT                    32821
 #define ID_GOTO_BYTECODE                32822
-#define ID_MSG_THREADRUNNING            32850
+#define ID_MSG_DEBUGGERSTATECHANGED     32850
 
 // Next default values for new objects
 // 

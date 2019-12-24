@@ -4,7 +4,7 @@
 #include <MFCUtil/StaticBottomAligned.h>
 #include <MFCUtil/ComboBoxWithHistory.h>
 #include <TinyBitSet.h>
-#include "DebugThread.h"
+#include "Debugger.h"
 #include "CharacterMarker.h"
 #include "DebugTextWindow.h"
 
@@ -38,7 +38,7 @@ private:
   // Change every 500msec by timer
   bool                           m_blinkersVisible;
   DebugRegex                     m_regex;
-  DebugThread                   *m_debugThread;
+  Debugger                      *m_debugger;
 
   void clearResult() {
     showResult(EMPTYSTRING);
@@ -46,12 +46,15 @@ private:
   void startTimer();
   void stopTimer();
   void showResult(const String &result, const String &registerString = EMPTYSTRING);
-  void showRegisters(const RegexRegisters &registers);
   void clearRegisterWindow();
+  void setRegisterWindowText(const String &str);
   void setRegisterWindowMode();
-  void setRegistersWindowVisible(bool visible);
+  void setRegisterWindowVisible(bool visible);
+  void enableRegisterWindow(bool enable);
+  void setGraphicsWindowVisible(bool visible);
+  bool isGraphicsWindowVisible();
   void setCylceAndStackWindowTop(int top);
-  void clearThreadState();
+  void clearDebuggerState();
   CompileParameters getCompileParameters();
   void showCompilerState();
   void setPatternCompiledOk();
@@ -103,25 +106,25 @@ private:
   inline void unmarkLastAcceptLine() {
     getCodeWindow()->unmarkLastAcceptLine();
   }
-  void startThread(ThreadCommand command, bool singleStep=false);
+  void startDebugger(RegexCommand command, bool singleStep=false);
   void startDebugCompile();
-  void killThread();
-  inline bool hasThread() const {
-    return m_debugThread != NULL;
+  void killDebugger();
+  inline bool hasDebugger() const {
+    return m_debugger != NULL;
   }
   inline bool searchForward() {
     return !isMenuItemChecked(this, ID_OPTIONS_SEARCHBACKWARDS);
   }
-  inline bool isThreadStopped() const {
-    return hasThread() && !m_debugThread->isRunning() && !m_debugThread->isFinished();
+  inline bool isDebuggerPaused() const {
+    return hasDebugger() && (m_debugger->getDebuggerState() == DEBUGGER_PAUSED);
   }
-  inline bool isThreadFinished() const {
-    return hasThread() && !m_debugThread->isRunning() && m_debugThread->isFinished();
+  inline bool isDebuggerTerminated() const {
+    return hasDebugger() && m_debugger->isTerminated();
   }
 
-  String getThreadPhaseName() const;
-  inline RegexPhaseType getThreadPhase() const {
-    return hasThread() ? m_debugThread->getRegexPhase() : REGEX_UNDEFINED;
+  String getDebuggerPhaseName() const;
+  inline RegexPhaseType getDebuggerPhase() const {
+    return hasDebugger() ? m_debugger->getRegexPhase() : REGEX_UNDEFINED;
   }
 
   void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
@@ -138,7 +141,7 @@ private:
     return &m_codeWindow;
   }
 
-  inline CStatic *getRegistersWindow() {
+  inline CStatic *getRegisterWindow() {
     return (CStatic*)GetDlgItem(IDC_STATICREGISTERS);
   }
   inline CStatic *getGraphicsWindow() {
@@ -160,7 +163,6 @@ public:
     virtual BOOL PreTranslateMessage(MSG *pMsg);
     virtual void DoDataExchange(CDataExchange *pDX);
     virtual BOOL OnInitDialog();
-    virtual BOOL DestroyWindow();
     afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
     afx_msg HCURSOR OnQueryDragIcon();
     afx_msg void OnSize(UINT nType, int cx, int cy);
@@ -198,6 +200,6 @@ public:
     afx_msg void OnSelChangeComboPattern();
     afx_msg void OnSelChangeComboTarget();
     afx_msg void OnSelChangeListByteCode();
-    afx_msg LRESULT OnMsgThreadRunning(WPARAM wp, LPARAM lp);
+    afx_msg LRESULT OnMsgDebuggerStateChanged(WPARAM wp, LPARAM lp);
     DECLARE_MESSAGE_MAP()
 };

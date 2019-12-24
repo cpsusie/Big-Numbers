@@ -33,17 +33,17 @@ CharacterMarker::CharacterMarker(CDialog *dlg, int ctrlId, int bitmapId, bool ab
 
 void CharacterMarker::setMark(size_t index) {
   if(index >= m_markSet.getCapacity()) {
-    m_gate.wait();
+    m_lock.wait();
     m_markSet.setCapacity(index + 10);
-    m_gate.notify();
+    m_lock.notify();
   }
   if(!m_markSet.contains(index)) {
     if(!m_multiMarksAllowed) {
       unmarkAll();
     }
-    m_gate.wait();
+    m_lock.wait();
     m_markSet.add(index);
-    m_gate.notify();
+    m_lock.notify();
 
     saveCtrlRect();
     saveTextLength();
@@ -70,22 +70,22 @@ void CharacterMarker::setBlinking(bool on) {
 }
 
 void CharacterMarker::setMarksVisible(bool visible) {
-  m_gate.wait();
+  m_lock.wait();
   m_marksVisible = visible;
   if(!m_markSet.isEmpty()) {
     paintAllMarkPositions(m_marksVisible);
   }
-  m_gate.notify();
+  m_lock.notify();
 }
 
 void CharacterMarker::unmarkAll() {
   if(m_markSet.isEmpty()) {
     return;
   }
-  m_gate.wait();
+  m_lock.wait();
   paintAllMarkPositions(false);
   m_markSet.clear();
-  m_gate.notify();
+  m_lock.notify();
 }
 
 void CharacterMarker::setMarks(const BitSet &s) {
@@ -93,10 +93,10 @@ void CharacterMarker::setMarks(const BitSet &s) {
     unmarkAll();
     saveCtrlRect();
     saveTextLength();
-    m_gate.wait();
+    m_lock.wait();
     m_markSet = s;
     paintAllMarkPositions(true);
-    m_gate.notify();
+    m_lock.notify();
   }
 }
 
@@ -140,23 +140,23 @@ void CharacterMarker::saveTextLength() {
 }
 
 void CharacterMarkerArray::add(CharacterMarker *m) {
-  m_gate.wait();
+  m_lock.wait();
   TRACE_NEW(m);
   __super::add(m);
-  m_gate.notify();
+  m_lock.notify();
 }
 
 void CharacterMarkerArray::clear() {
-  m_gate.wait();
+  m_lock.wait();
   for(size_t i = 0; i < size(); i++) {
     SAFEDELETE((*this)[i]);
   }
   __super::clear();
-  m_gate.notify();
+  m_lock.notify();
 }
 
 void CharacterMarkerArray::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
-  m_gate.wait();
+  m_lock.wait();
   const bool blinkersVisible = *(bool*)newValue;
   for(size_t i = 0; i < size(); i++) {
     CharacterMarker *cm = (*this)[i];
@@ -164,5 +164,5 @@ void CharacterMarkerArray::handlePropertyChanged(const PropertyContainer *source
       cm->setMarksVisible(blinkersVisible);
     }
   }
-  m_gate.notify();
+  m_lock.notify();
 }

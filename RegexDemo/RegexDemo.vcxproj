@@ -444,7 +444,7 @@
     <ClInclude Include="AutomatePainter.h" />
     <ClInclude Include="CharacterMarker.h" />
     <ClInclude Include="DebugTextWindow.h" />
-    <ClInclude Include="DebugThread.h" />
+    <ClInclude Include="Debugger.h" />
     <ClInclude Include="DFA.h" />
     <ClInclude Include="DFAPainter.h" />
     <ClInclude Include="DFARegex.h" />
@@ -461,7 +461,7 @@
     <ClCompile Include="CharacterMarker.cpp" />
     <ClCompile Include="DebugRegex.cpp" />
     <ClCompile Include="DebugTextWindow.cpp" />
-    <ClCompile Include="DebugThread.cpp" />
+    <ClCompile Include="Debugger.cpp" />
     <ClCompile Include="DFA.cpp" />
     <ClCompile Include="DFACode.cpp" />
     <ClCompile Include="DFAGraphics.cpp" />

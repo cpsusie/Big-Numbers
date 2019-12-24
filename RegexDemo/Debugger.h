@@ -4,14 +4,21 @@
 #error "Must compile with _DEBUG"
 #endif
 
-#include <Thread.h>
 #include <PropertyContainer.h>
+#include <Runnable.h>
 #include <Regex.h>
 #include "DFARegex.h"
 
 typedef enum {
-  THREAD_RUNNING
-} DebugThreadProperties;
+  DEBUGGER_STATE
+} DebuggerProperties;
+
+typedef enum {
+  DEBUGGER_CREATED
+ ,DEBUGGER_RUNNING
+ ,DEBUGGER_PAUSED
+ ,DEBUGGER_TERMINATED
+} DebuggerState;
 
 typedef enum {
   REGEX_UNDEFINED
@@ -30,14 +37,14 @@ typedef enum {
  ,COMMAND_SEARCHFORWARD
  ,COMMAND_SEARCHBACKWRD
  ,COMMAND_MATCH
-} ThreadCommand;
+} RegexCommand;
 
 typedef enum {
   EMACS_REGEX
  ,DFA_REGEX
 } RegexType;
 
-class DebugThread;
+class Debugger;
 
 class CompileParameters {
 public:
@@ -97,36 +104,37 @@ public:
   void     paint(CWnd *wnd, CDC &dc, bool animate) const;
   void     handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
   void     unmarkAll(CWnd *wnd, CDC &dc);
-  void     setHandler(DebugThread *handler);
+  void     setHandler(Debugger *handler);
   intptr_t getResultLength() const;
   CompileParameters getLastCompiledPattern() const;
 };
 
-class DebugThread : public Thread, public RegexStepHandler, public DFARegexStepHandler, public PropertyContainer {
+class Debugger : public Runnable, public RegexStepHandler, public DFARegexStepHandler, public PropertyContainer {
 private:
-  const ThreadCommand                m_command;
+  const RegexCommand                 m_command;
   DebugRegex                        &m_regex;
+  DebuggerState                      m_state;
   RegexPhaseType                     m_regexPhase;
   const void                        *m_handlerState;
   CompileParameters                  m_compileParameters;
   String                             m_text;
   const BitSet                      &m_breakPoints;
   bool                               m_singleStep;
-  bool                               m_running;
-  bool                               m_finished;
-  bool                               m_killed;
+  bool                               m_killRequest;
+  FastSemaphore                      m_terminated, m_go;
   intptr_t                           m_foundStart, m_resultLength;
   String                             m_resultMsg;
   void validateRegexTypeAndPhase(RegexType expectedType, RegexPhaseType expectedPhase) const;
-  void setPropRunning(bool value);
   void suspendOnSingleStep(RegexPhaseType phase, int lineNumber = -1);
   void enableHandleStep(bool enabled);
-  void initThread(bool singleStep);
+  void initDebugger(bool singleStep);
   void clearStates();
+  void suspend();
+  void resume();
 public:
-  DebugThread(DebugRegex &regex, const CompileParameters &cp, const BitSet &breakPoints);
-  DebugThread(ThreadCommand command, DebugRegex &regex, const String &text, const BitSet &breakPoints);
-  ~DebugThread();
+  Debugger(DebugRegex &regex, const CompileParameters &cp, const BitSet &breakPoints);
+  Debugger(RegexCommand command, DebugRegex &regex, const String &text, const BitSet &breakPoints);
+  ~Debugger();
   UINT run();
   void handleCompileStep(const _RegexCompilerState    &state);
   void handleSearchStep( const _RegexSearchState      &state);
@@ -134,23 +142,31 @@ public:
   void handleCompileStep(const _DFARegexCompilerState &state);
   void handleSearchStep( const _DFARegexSearchState   &state);
   void handleMatchStep(  const _DFARegexMatchState    &state);
-  ThreadCommand getCommand() const {
+  inline RegexCommand getCommand() const {
     return m_command;
   }
   void singleStep();
   void go();
   void kill();
-  bool isFinished() const {
-    return m_finished;
+  inline DebuggerState getDebuggerState() const {
+    return m_state;
   }
-  bool isRunning() const {
-    return m_running;
+  inline String getDebuggerStateName() const {
+    return getDebuggerStateName(getDebuggerState());
   }
-  RegexPhaseType getRegexPhase() const {
+  static String getDebuggerStateName(DebuggerState state);
+
+  inline bool isTerminated() const {
+    return m_state == DEBUGGER_TERMINATED;
+  }
+  inline bool isRunning() const {
+    return m_state == DEBUGGER_RUNNING;
+  }
+  inline RegexPhaseType getRegexPhase() const {
     return m_regexPhase;
   }
   static String getPhaseName(RegexPhaseType phase);
-  String getPhaseName() const {
+  inline String getPhaseName() const {
     return getPhaseName(getRegexPhase());
   }
 
@@ -163,6 +179,4 @@ public:
   const _DFARegexCompilerState      &getDFACompilerState()   const;
   const _DFARegexSearchState        &getDFASearchState()     const;
   const _DFARegexMatchState         &getDFAMatchState()      const;
-
 };
-

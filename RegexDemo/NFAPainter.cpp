@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include <Stack.h>
 #include <CompactStack.h>
 #include <Math/sigmoidIterator.h>
 #include "NFAPainter.h"

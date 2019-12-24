@@ -4,7 +4,7 @@
 #ifdef _DEBUG
 
 String toString(const GridElement &ge) {
-  return ge.d.m_occupied ? _T("1") : _T("0");
+  return ge.isOccupied() ? _T("1") : _T("0");
 }
 
 static MatrixDimension getGridSize(const CSize winSize) {
@@ -55,28 +55,28 @@ void TransitionGrid::markCircle(int cx, int cy) {
     CPoint gp = winToGrid(cx - x, cy - y);
     if(gp.y != gy[0]) {
       const int xr = (int)trX.forwardTransform(cx + x);
-      for(;gp.x <= xr; gp.x++) getGridElement(gp).setOccupied();
+      for(;gp.x <= xr; gp.x++) getGridElement(gp).setOccupied(true);
       gy[0] = gp.y;
     }
 
     gp = winToGrid(cx - x, cy + y);
     if(gp.y != gy[1]) {
       const int xr = (int)trX.forwardTransform(cx + x);
-      for(;gp.x <= xr; gp.x++) getGridElement(gp).setOccupied();
+      for(;gp.x <= xr; gp.x++) getGridElement(gp).setOccupied(true);
       gy[1] = gp.y;
     }
 
     gp = winToGrid(cx - y, cy - x);
     if(gp.y != gy[2]) {
       const int xr = (int)trX.forwardTransform(cx + y);
-      for(;gp.x <= xr; gp.x++) getGridElement(gp).setOccupied();
+      for(;gp.x <= xr; gp.x++) getGridElement(gp).setOccupied(true);
       gy[2] = gp.y;
     }
 
     gp = winToGrid(cx - y, cy + x);
     if(gp.y != gy[3]) {
       const int xr = (int)trX.forwardTransform(cx + y);
-      for(;gp.x <= xr; gp.x++) getGridElement(gp).setOccupied();
+      for(;gp.x <= xr; gp.x++) getGridElement(gp).setOccupied(true);
       gy[3] = gp.y;
     }
 
@@ -91,20 +91,19 @@ void TransitionGrid::markCircle(int cx, int cy) {
 void TransitionGrid::initGrid() {
   for(size_t r = 0; r < m_grid.getRowCount(); r++) {
     for(size_t c = 0; c < m_grid.getColumnCount(); c++) {
-      GridElement &e = m_grid(r,c);
-      e.d.m_distance = 0;
-      e.d.m_included = false;
+      m_grid(r, c).reset();
     }
   }
 }
 
 TransitionPath TransitionGrid::findShortestFreePath(const CPoint &from, const CPoint &to) {
+  size_t swz = sizeof(GridElement);
   initGrid();
   CompactStack<CPoint> stack;
   const CPoint startPoint = winToGrid(from);
   GridElement &goal       = getGridElement(to.x, to.y);
   getGridElement(startPoint).setDistance(0);
-  goal.setFree();
+  goal.setOccupied(false);
 
   CompactArray<CPoint> pa1(500), pa2(500);
   CompactArray<CPoint> *edge = &pa1, *newPoints = &pa2;
@@ -129,12 +128,12 @@ TransitionPath TransitionGrid::findShortestFreePath(const CPoint &from, const CP
     edge->clear(-1);
     std::swap(edge,newPoints);
   }
-  goal.setOccupied();
+  goal.setOccupied(true);
 
   if(!goal.isIncluded()) {
     throwException(_T("cannot connect (%d,%d) with (%d,%d)"), from.x, from.y, to.x, to.y);
   }
-  getGridElement(startPoint).setFree();
+  getGridElement(startPoint).setOccupied(false);
   TransitionPath result;
   result.add(to);
   CPoint gp = winToGrid(to);
@@ -189,7 +188,7 @@ void TransitionGrid::markPathAsOccupied(const TransitionPath &path) {
   if (path.isEmpty()) return;
   for(size_t i = 1; i < path.size()-1; i += m_edgeMarkStep) {
     const CPoint &p = path[i];
-    getGridElement(p.x,p.y).setOccupied();
+    getGridElement(p.x,p.y).setOccupied(true);
   }
 }
 
@@ -197,7 +196,7 @@ void TransitionGrid::unmarkPathAsOccupied(const TransitionPath &path) {
   if (path.isEmpty()) return;
   for(size_t i = 1; i < path.size()-1; i += m_edgeMarkStep) {
     const CPoint &p = path[i];
-    getGridElement(p.x,p.y).setFree();
+    getGridElement(p.x,p.y).setOccupied(false);
   }
 }
 

@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "DebugThread.h"
+#include "Debugger.h"
 
 void DebugRegex::compilePattern(const CompileParameters &cp) {
   switch(getType()) {
@@ -175,7 +175,7 @@ void DebugRegex::handlePropertyChanged(const PropertyContainer *source, int id, 
   }
 }
 
-void DebugRegex::setHandler(DebugThread *handler) {
+void DebugRegex::setHandler(Debugger *handler) {
   switch(getType()) {
   case EMACS_REGEX:
     m_regex.setHandler(handler);

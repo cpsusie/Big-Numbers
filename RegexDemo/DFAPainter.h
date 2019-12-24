@@ -107,24 +107,27 @@ public:
   void findPredecessors();
 };
 
+#pragma pack(push,1)
 class GridElement {
-public:
+private:
   union {
     struct {
       UINT m_distance : 30;
-      bool m_included : 1;
-      bool m_occupied : 1;
+      UINT m_included : 1;
+      UINT m_occupied : 1;
     } d;
     UINT m_data;
   };
+public:
   inline GridElement(UINT n = 0) {
     m_data = n;
   }
-  inline void setOccupied() {
-    d.m_occupied = true;
+  void reset() {
+    d.m_distance = 0;
+    d.m_included = FALSE;
   }
-  inline void setFree() {
-    d.m_occupied = false;
+  inline void setOccupied(bool occupied) {
+    d.m_occupied = occupied;
   }
   inline bool isOccupied() const {
     return d.m_occupied;
@@ -137,9 +140,10 @@ public:
   }
   void setDistance(UINT dist) {
     d.m_distance = dist;
-    d.m_included = true;
+    d.m_included = TRUE;
   }
 };
+#pragma pack(pop)
 
 String toString(const GridElement &ge);
 

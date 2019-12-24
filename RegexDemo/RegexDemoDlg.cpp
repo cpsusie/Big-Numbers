@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <ThreadPool.h>
 #include <MFCUtil/Clipboard.h>
 #include "RegexDemoDlg.h"
 
@@ -8,34 +9,23 @@
 
 class CAboutDlg : public CDialog {
 public:
-  CAboutDlg();
   enum { IDD = IDD_ABOUTBOX };
-
+  CAboutDlg() : CDialog(IDD) {
+  }
 protected:
   DECLARE_MESSAGE_MAP()
 };
 
-CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
-}
-
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CRegexDemoDlg::CRegexDemoDlg(CWnd *pParent) : CDialog(CRegexDemoDlg::IDD, pParent) {
+CRegexDemoDlg::CRegexDemoDlg(CWnd *pParent) : CDialog(IDD, pParent) {
   m_pattern         = EMPTYSTRING;
   m_target          = EMPTYSTRING;
   m_hIcon           = theApp.LoadIcon(IDR_MAINFRAME);
-  m_debugThread     = NULL;
+  m_debugger        = NULL;
   m_timerIsRunning  = false;
   m_blinkersVisible = true;
-}
-
-BOOL CRegexDemoDlg::DestroyWindow() {
-  unmarkAll();
-  stopTimer();
-  killThread();
-  m_charMarkers.clear();
-  return __super::DestroyWindow();
 }
 
 void CRegexDemoDlg::DoDataExchange(CDataExchange *pDX) {
@@ -51,36 +41,36 @@ BEGIN_MESSAGE_MAP(CRegexDemoDlg, CDialog)
   ON_WM_PAINT()
   ON_WM_CLOSE()
   ON_WM_TIMER()
-  ON_COMMAND(ID_FILE_EXIT                  , OnFileExit                   )
-  ON_COMMAND(ID_EDIT_COPY                  , OnEditCopy                   )
-  ON_COMMAND(ID_EDIT_FIND                  , OnEditFind                   )
-  ON_COMMAND(ID_EDIT_MATCH                 , OnEditMatch                  )
-  ON_COMMAND(ID_EDIT_COMPILEPATTERN        , OnEditCompilePattern         )
-  ON_COMMAND(ID_EDIT_FINDMATCHINGPAR       , OnEditFindMatchingParentesis )
-  ON_COMMAND(ID_DEBUG_COMPILE              , OnDebugCompile               )
-  ON_COMMAND(ID_DEBUG_FIND                 , OnDebugFind                  )
-  ON_COMMAND(ID_DEBUG_MATCH                , OnDebugMatch                 )
-  ON_COMMAND(ID_DEBUG_CONTINUE             , OnDebugContinue              )
-  ON_COMMAND(ID_DEBUG_STEP                 , OnDebugStep                  )
-  ON_COMMAND(ID_DEBUG_TOGGLEBREAKPOINT     , OnDebugToggleBreakPoint      )
-  ON_COMMAND(ID_OPTIONS_IGNORECASE         , OnOptionsIgnoreCase          )
-  ON_COMMAND(ID_OPTIONS_SEARCHBACKWARDS    , OnOptionsSearchBackwards     )
-  ON_COMMAND(ID_OPTIONS_DFA_REGEX          , OnOptionsDFARegex            )
-  ON_COMMAND(ID_OPTIONS_DFA_SHOWTABLES     , OnOptionsDFAShowTables       )
-  ON_COMMAND(ID_OPTIONS_DFA_NO_GRAPHICS    , OnOptionsDFANoGraphics       )
-  ON_COMMAND(ID_OPTIONS_DFA_PAINT_STATES   , OnOptionsDFAPaintStates      )
-  ON_COMMAND(ID_OPTIONS_DFA_ANIMATE_CREATE , OnOptionsDFAAnimateCreate    )
-  ON_COMMAND(ID_HELP_ABOUT                 , OnHelpAbout                  )
-  ON_COMMAND(ID_HELP_SHOWCTRLID            , OnHelpShowctrlid             )
-  ON_COMMAND(ID_GOTO_PATTERN               , OnGotoPattern                )
-  ON_COMMAND(ID_GOTO_TEXT                  , OnGotoText                   )
-  ON_COMMAND(ID_GOTO_BYTECODE              , OnGotoBytecode               )
-  ON_CBN_EDITCHANGE(IDC_COMBOPATTERN       , OnEditChangeComboPattern     )
-  ON_CBN_EDITCHANGE(IDC_COMBOTARGET        , OnEditChangeComboTarget      )
-  ON_CBN_SELCHANGE( IDC_COMBOPATTERN       , OnSelChangeComboPattern      )
-  ON_CBN_SELCHANGE( IDC_COMBOTARGET        , OnSelChangeComboTarget       )
-  ON_LBN_SELCHANGE( IDC_LISTBYTECODE       , OnSelChangeListByteCode      )
-  ON_MESSAGE(       ID_MSG_THREADRUNNING   , OnMsgThreadRunning           )
+  ON_COMMAND(ID_FILE_EXIT                      , OnFileExit                   )
+  ON_COMMAND(ID_EDIT_COPY                      , OnEditCopy                   )
+  ON_COMMAND(ID_EDIT_FIND                      , OnEditFind                   )
+  ON_COMMAND(ID_EDIT_MATCH                     , OnEditMatch                  )
+  ON_COMMAND(ID_EDIT_COMPILEPATTERN            , OnEditCompilePattern         )
+  ON_COMMAND(ID_EDIT_FINDMATCHINGPAR           , OnEditFindMatchingParentesis )
+  ON_COMMAND(ID_DEBUG_COMPILE                  , OnDebugCompile               )
+  ON_COMMAND(ID_DEBUG_FIND                     , OnDebugFind                  )
+  ON_COMMAND(ID_DEBUG_MATCH                    , OnDebugMatch                 )
+  ON_COMMAND(ID_DEBUG_CONTINUE                 , OnDebugContinue              )
+  ON_COMMAND(ID_DEBUG_STEP                     , OnDebugStep                  )
+  ON_COMMAND(ID_DEBUG_TOGGLEBREAKPOINT         , OnDebugToggleBreakPoint      )
+  ON_COMMAND(ID_OPTIONS_IGNORECASE             , OnOptionsIgnoreCase          )
+  ON_COMMAND(ID_OPTIONS_SEARCHBACKWARDS        , OnOptionsSearchBackwards     )
+  ON_COMMAND(ID_OPTIONS_DFA_REGEX              , OnOptionsDFARegex            )
+  ON_COMMAND(ID_OPTIONS_DFA_SHOWTABLES         , OnOptionsDFAShowTables       )
+  ON_COMMAND(ID_OPTIONS_DFA_NO_GRAPHICS        , OnOptionsDFANoGraphics       )
+  ON_COMMAND(ID_OPTIONS_DFA_PAINT_STATES       , OnOptionsDFAPaintStates      )
+  ON_COMMAND(ID_OPTIONS_DFA_ANIMATE_CREATE     , OnOptionsDFAAnimateCreate    )
+  ON_COMMAND(ID_HELP_ABOUT                     , OnHelpAbout                  )
+  ON_COMMAND(ID_HELP_SHOWCTRLID                , OnHelpShowctrlid             )
+  ON_COMMAND(ID_GOTO_PATTERN                   , OnGotoPattern                )
+  ON_COMMAND(ID_GOTO_TEXT                      , OnGotoText                   )
+  ON_COMMAND(ID_GOTO_BYTECODE                  , OnGotoBytecode               )
+  ON_CBN_EDITCHANGE(IDC_COMBOPATTERN           , OnEditChangeComboPattern     )
+  ON_CBN_EDITCHANGE(IDC_COMBOTARGET            , OnEditChangeComboTarget      )
+  ON_CBN_SELCHANGE( IDC_COMBOPATTERN           , OnSelChangeComboPattern      )
+  ON_CBN_SELCHANGE( IDC_COMBOTARGET            , OnSelChangeComboTarget       )
+  ON_LBN_SELCHANGE( IDC_LISTBYTECODE           , OnSelChangeListByteCode      )
+  ON_MESSAGE(       ID_MSG_DEBUGGERSTATECHANGED, OnMsgDebuggerStateChanged    )
 END_MESSAGE_MAP()
 
 void CRegexDemoDlg::OnSysCommand(UINT nID, LPARAM lParam) {
@@ -96,77 +86,78 @@ HCURSOR CRegexDemoDlg::OnQueryDragIcon() {
 }
 
 BOOL CRegexDemoDlg::OnInitDialog() {
-    __super::OnInitDialog();
+  __super::OnInitDialog();
 
-    ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
-    ASSERT(IDM_ABOUTBOX < 0xF000);
+  ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
+  ASSERT(IDM_ABOUTBOX < 0xF000);
 
-    CMenu *pSysMenu = GetSystemMenu(FALSE);
-    if(pSysMenu != NULL) {
-      CString strAboutMenu;
-      strAboutMenu.LoadString(IDS_ABOUTBOX);
-      if(!strAboutMenu.IsEmpty()) {
-        pSysMenu->AppendMenu(MF_SEPARATOR);
-        pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
-      }
+  CMenu *pSysMenu = GetSystemMenu(FALSE);
+  if(pSysMenu != NULL) {
+    CString strAboutMenu;
+    strAboutMenu.LoadString(IDS_ABOUTBOX);
+    if(!strAboutMenu.IsEmpty()) {
+      pSysMenu->AppendMenu(MF_SEPARATOR);
+      pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
     }
+  }
 
-    SetIcon(m_hIcon, TRUE);         // Set big icon
-    SetIcon(m_hIcon, FALSE);        // Set small icon
+  SetIcon(m_hIcon, TRUE);         // Set big icon
+  SetIcon(m_hIcon, FALSE);        // Set small icon
 
-    m_codeWindow.substituteControl(   this, IDC_LISTBYTECODE);
-    m_patternCombo.substituteControl( this, IDC_COMBOPATTERN      , _T("PatternHistory"));
-    m_targetCombo.substituteControl(  this, IDC_COMBOTARGET       , _T("TargetHistory") );
-    m_stackWindow.substituteControl(  this, IDC_STATICSTACK);
+  m_codeWindow.substituteControl(   this, IDC_LISTBYTECODE);
+  m_patternCombo.substituteControl( this, IDC_COMBOPATTERN      , _T("PatternHistory"));
+  m_targetCombo.substituteControl(  this, IDC_COMBOTARGET       , _T("TargetHistory") );
+  m_stackWindow.substituteControl(  this, IDC_STATICSTACK);
 
-    LOGFONT lf;
-    GetFont()->GetLogFont(&lf);
-    lf.lfHeight = (int)(1.5 * lf.lfHeight);
-    m_comboFont.CreateFontIndirect(&lf);
+  LOGFONT lf;
+  GetFont()->GetLogFont(&lf);
+  lf.lfHeight = (int)(1.5 * lf.lfHeight);
+  m_comboFont.CreateFontIndirect(&lf);
 
-    m_patternCombo.SetFont(&m_comboFont);
-    m_targetCombo.SetFont(&m_comboFont);
+  m_patternCombo.SetFont(&m_comboFont);
+  m_targetCombo.SetFont(&m_comboFont);
 
-    m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_MAINFRAME));
+  m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_MAINFRAME));
 
-    m_charMarkers.add(new CharacterMarker(this, IDC_COMBOPATTERN,IDB_BITMAP_BLACK_DOWNARROW , true )); // COMPILE_POSMARK
-    m_charMarkers.add(new CharacterMarker(this, IDC_COMBOPATTERN,IDB_BITMAP_YELLOW_DOWNARROW, true )); // PATTERN_POSMARK
-    m_charMarkers.add(new CharacterMarker(this, IDC_COMBOTARGET, IDB_BITMAP_BLACK_UPARROW   , false)); // SEARCH_POSMARK
-    m_charMarkers.add(new CharacterMarker(this, IDC_COMBOTARGET, IDB_BITMAP_PINK_UPARROW    , false)); // MATCH_STARTMARK
-    m_charMarkers.add(new CharacterMarker(this, IDC_COMBOTARGET, IDB_BITMAP_YELLOW_DOWNARROW, true )); // MATCH_DMARK
-    m_charMarkers.add(new CharacterMarker(this, IDC_COMBOTARGET, IDB_BITMAP_GREEN_UPARROW   , false)); // LASTACCEPT_MARK
-    m_charMarkers.last()->setBlinking(true);
+  m_charMarkers.add(new CharacterMarker(this, IDC_COMBOPATTERN,IDB_BITMAP_BLACK_DOWNARROW , true )); // COMPILE_POSMARK
+  m_charMarkers.add(new CharacterMarker(this, IDC_COMBOPATTERN,IDB_BITMAP_YELLOW_DOWNARROW, true )); // PATTERN_POSMARK
+  m_charMarkers.add(new CharacterMarker(this, IDC_COMBOTARGET, IDB_BITMAP_BLACK_UPARROW   , false)); // SEARCH_POSMARK
+  m_charMarkers.add(new CharacterMarker(this, IDC_COMBOTARGET, IDB_BITMAP_PINK_UPARROW    , false)); // MATCH_STARTMARK
+  m_charMarkers.add(new CharacterMarker(this, IDC_COMBOTARGET, IDB_BITMAP_YELLOW_DOWNARROW, true )); // MATCH_DMARK
+  m_charMarkers.add(new CharacterMarker(this, IDC_COMBOTARGET, IDB_BITMAP_GREEN_UPARROW   , false)); // LASTACCEPT_MARK
+  m_charMarkers.last()->setBlinking(true);
 
-    addPropertyChangeListener(&m_charMarkers );
-    addPropertyChangeListener(&m_regex       );
-    addPropertyChangeListener(getCodeWindow());
+  addPropertyChangeListener(&m_charMarkers );
+  addPropertyChangeListener(&m_regex       );
+  addPropertyChangeListener(getCodeWindow());
 
-    m_layoutManager.OnInitDialog(this);
+  m_layoutManager.OnInitDialog(this);
 
-    m_layoutManager.addControl(IDC_COMBOPATTERN            , RELATIVE_WIDTH                            );
-    m_layoutManager.addControl(IDC_COMBOTARGET             , RELATIVE_WIDTH                            );
-    m_layoutManager.addControl(IDC_STATICRESULT            , PCT_RELATIVE_RIGHT                        );
-    m_layoutManager.addControl(IDC_STATICSTATENAMELABEL    , PCT_RELATIVE_RIGHT  | CONSTANT_WIDTH      );
-    m_layoutManager.addControl(IDC_STATICSTATENAME         , PCT_RELATIVE_LEFT   | PCT_RELATIVE_RIGHT  );
-    m_layoutManager.addControl(IDC_LISTBYTECODE            , PCT_RELATIVE_RIGHT                        | RELATIVE_BOTTOM                           );
-    m_layoutManager.addControl(IDC_STATICFASTMAPLABEL      ,                                             RELATIVE_Y_POS                            );
-    m_layoutManager.addControl(IDC_STATICFASTMAP           , PCT_RELATIVE_RIGHT  |                       RELATIVE_Y_POS                            );
+  m_layoutManager.addControl(IDC_COMBOPATTERN            , RELATIVE_WIDTH                            );
+  m_layoutManager.addControl(IDC_COMBOTARGET             , RELATIVE_WIDTH                            );
+  m_layoutManager.addControl(IDC_STATICRESULT            , PCT_RELATIVE_RIGHT                        );
+  m_layoutManager.addControl(IDC_STATICSTATENAMELABEL    , PCT_RELATIVE_RIGHT  | CONSTANT_WIDTH      );
+  m_layoutManager.addControl(IDC_STATICSTATENAME         , PCT_RELATIVE_LEFT   | PCT_RELATIVE_RIGHT  );
+  m_layoutManager.addControl(IDC_LISTBYTECODE            , PCT_RELATIVE_RIGHT                        | RELATIVE_BOTTOM                           );
+  m_layoutManager.addControl(IDC_STATICFASTMAPLABEL      ,                                             RELATIVE_Y_POS                            );
+  m_layoutManager.addControl(IDC_STATICFASTMAP           , PCT_RELATIVE_RIGHT  |                       RELATIVE_Y_POS                            );
 
-    m_layoutManager.addControl(IDC_STATICREGISTERSLABEL    , PCT_RELATIVE_LEFT   | PCT_RELATIVE_RIGHT                                              );
-    m_layoutManager.addControl(IDC_STATICSTACKLABEL        , PCT_RELATIVE_LEFT   | PCT_RELATIVE_RIGHT  | PCT_RELATIVE_TOP    | CONSTANT_HEIGHT     );
+  m_layoutManager.addControl(IDC_STATICREGISTERSLABEL    , PCT_RELATIVE_LEFT   | PCT_RELATIVE_RIGHT                                              );
+  m_layoutManager.addControl(IDC_STATICREGISTERS         , PCT_RELATIVE_LEFT   | RELATIVE_RIGHT                            | PCT_RELATIVE_BOTTOM );
 
-    m_layoutManager.addControl(IDC_STATICREGISTERS         , PCT_RELATIVE_LEFT   | RELATIVE_RIGHT                            | PCT_RELATIVE_BOTTOM );
-    m_layoutManager.addControl(IDC_STATICDFAGRAPHICSWINDOW , PCT_RELATIVE_LEFT   | RELATIVE_RIGHT                            | PCT_RELATIVE_BOTTOM );
-    m_layoutManager.addControl(IDC_STATICCYCLES            , PCT_RELATIVE_LEFT   | RELATIVE_RIGHT      | PCT_RELATIVE_TOP    | CONSTANT_HEIGHT     );
-    m_layoutManager.addControl(IDC_STATICSTACK             , PCT_RELATIVE_LEFT   | RELATIVE_RIGHT      | PCT_RELATIVE_TOP    | RELATIVE_BOTTOM     );
+  m_layoutManager.addControl(IDC_STATICSTACKLABEL        , PCT_RELATIVE_LEFT   | PCT_RELATIVE_RIGHT  | PCT_RELATIVE_TOP    | CONSTANT_HEIGHT     );
+  m_layoutManager.addControl(IDC_STATICSTACK             , PCT_RELATIVE_LEFT   | RELATIVE_RIGHT      | PCT_RELATIVE_TOP    | RELATIVE_BOTTOM     );
 
-    m_patternDirty = false;
-    m_patternOk    = false;
+  m_layoutManager.addControl(IDC_STATICDFAGRAPHICSWINDOW , PCT_RELATIVE_LEFT   | RELATIVE_RIGHT                            | PCT_RELATIVE_BOTTOM );
+  m_layoutManager.addControl(IDC_STATICCYCLES            , PCT_RELATIVE_LEFT   | RELATIVE_RIGHT      | PCT_RELATIVE_TOP    | CONSTANT_HEIGHT     );
 
-    ajourDialogItems();
-    startTimer();
-    GetDlgItem(IDC_COMBOPATTERN)->SetFocus();
-    return FALSE;
+  m_patternDirty = false;
+  m_patternOk    = false;
+
+  ajourDialogItems();
+  startTimer();
+  GetDlgItem(IDC_COMBOPATTERN)->SetFocus();
+  return FALSE;
 }
 
 void CRegexDemoDlg::OnSize(UINT nType, int cx, int cy) {
@@ -178,7 +169,7 @@ void CRegexDemoDlg::OnSize(UINT nType, int cx, int cy) {
 }
 
 void CRegexDemoDlg::OnPaint() {
-  if (IsIconic()) {
+  if(IsIconic()) {
     CPaintDC dc(this);
 
     SendMessage(WM_ICONERASEBKGND, (WPARAM) dc.GetSafeHdc(), 0);
@@ -228,10 +219,14 @@ void CRegexDemoDlg::OnClose() {
 
 void CRegexDemoDlg::OnTimer(UINT_PTR nIDEvent) {
   setProperty(PROP_BLINKERSVISIBLE, m_blinkersVisible, !m_blinkersVisible);
-  CDialog::OnTimer(nIDEvent);
+  __super::OnTimer(nIDEvent);
 }
 
 void CRegexDemoDlg::OnFileExit() {
+  unmarkAll();
+  stopTimer();
+  killDebugger();
+  m_charMarkers.clear();
   EndDialog(IDOK);
 }
 
@@ -249,20 +244,20 @@ void CRegexDemoDlg::OnEditCopy() {
 void CRegexDemoDlg::OnEditFind() {
   unmarkAll();
   if(checkPattern()) {
-    startThread(searchForward() ? COMMAND_SEARCHFORWARD:COMMAND_SEARCHBACKWRD      );
+    startDebugger(searchForward() ? COMMAND_SEARCHFORWARD:COMMAND_SEARCHBACKWRD      );
   }
 }
 
 void CRegexDemoDlg::OnEditMatch()  {
   unmarkAll();
   if(checkPattern()) {
-    startThread(COMMAND_MATCH);
+    startDebugger(COMMAND_MATCH);
   }
 }
 
 void CRegexDemoDlg::OnEditCompilePattern() {
   unmarkAll();
-  killThread();
+  killDebugger();
   try {
     m_regex.compilePattern(getCompileParameters());
     setPatternCompiledOk();
@@ -297,26 +292,26 @@ void CRegexDemoDlg::OnDebugCompile() {
 void CRegexDemoDlg::OnDebugFind()  {
   unmarkAll();
   if(checkPattern()) {
-    startThread(searchForward() ? COMMAND_SEARCHFORWARD:COMMAND_SEARCHBACKWRD, true);
+    startDebugger(searchForward() ? COMMAND_SEARCHFORWARD:COMMAND_SEARCHBACKWRD, true);
   }
 }
 
 void CRegexDemoDlg::OnDebugMatch() {
   unmarkAll();
   if(checkPattern()) {
-    startThread(COMMAND_MATCH, true);
+    startDebugger(COMMAND_MATCH, true);
   }
 }
 
 void CRegexDemoDlg::OnDebugContinue() {
-  if(isThreadStopped()) {
-    m_debugThread->go();
+  if(isDebuggerPaused()) {
+    m_debugger->go();
   }
 }
 
 void CRegexDemoDlg::OnDebugStep() {
-  if(isThreadStopped()) {
-    m_debugThread->singleStep();
+  if(isDebuggerPaused()) {
+    m_debugger->singleStep();
   }
 }
 
@@ -332,7 +327,7 @@ void CRegexDemoDlg::OnDebugToggleBreakPoint() {
 }
 
 void CRegexDemoDlg::OnOptionsIgnoreCase() {
-  killThread();
+  killDebugger();
   unmarkAll();
   toggleMenuItem(this, ID_OPTIONS_IGNORECASE);
   if(getCompileParameters() == m_regex.getLastCompiledPattern()) {
@@ -345,13 +340,13 @@ void CRegexDemoDlg::OnOptionsIgnoreCase() {
 }
 
 void CRegexDemoDlg::OnOptionsSearchBackwards() {
-  killThread();
+  killDebugger();
   unmarkAll();
   toggleMenuItem(this, ID_OPTIONS_SEARCHBACKWARDS);
 }
 
 void CRegexDemoDlg::OnOptionsDFARegex() {
-  killThread();
+  killDebugger();
   unmarkAll();
   toggleMenuItem(this, ID_OPTIONS_DFA_REGEX);
   m_regex.setType(isMenuItemChecked(this, ID_OPTIONS_DFA_REGEX)?DFA_REGEX:EMACS_REGEX);
@@ -436,10 +431,12 @@ void CRegexDemoDlg::OnSelChangeListByteCode() {
   ajourDialogItems();
 }
 
-LRESULT CRegexDemoDlg::OnMsgThreadRunning(WPARAM wp, LPARAM lp) {
+LRESULT CRegexDemoDlg::OnMsgDebuggerStateChanged(WPARAM wp, LPARAM lp) {
   try {
-    const bool newRunning = (lp != 0);
-    if(newRunning) {
+    const DebuggerState oldState = (DebuggerState)wp;
+    const DebuggerState newState = (DebuggerState)lp;
+
+    if(newState == DEBUGGER_RUNNING) {
       unmarkCodeLine();
       unmarkAllCharacters(PATTERN_POSMARK);
     } else {
@@ -447,10 +444,10 @@ LRESULT CRegexDemoDlg::OnMsgThreadRunning(WPARAM wp, LPARAM lp) {
         fillCodeWindow(getCompiledCodeText());
       }
 
-      if(isThreadFinished()) {
-        clearThreadState();
+      if(isDebuggerTerminated()) {
+        clearDebuggerState();
       }
-      switch(m_debugThread->getRegexPhase()) {
+      switch(m_debugger->getRegexPhase()) {
       case REGEX_COMPILING    :
         showCompilerState();
         break;
@@ -458,7 +455,7 @@ LRESULT CRegexDemoDlg::OnMsgThreadRunning(WPARAM wp, LPARAM lp) {
         setPatternCompiledOk();
         break;
       case REGEX_COMPILEDFAILED:
-        showCompilerError(m_debugThread->getResultMsg());
+        showCompilerError(m_debugger->getResultMsg());
         break;
       case REGEX_SEARCHING    :
         showSearchState();
@@ -474,7 +471,7 @@ LRESULT CRegexDemoDlg::OnMsgThreadRunning(WPARAM wp, LPARAM lp) {
         showPatternNotFound();
         break;
       case REGEX_UNDEFINED:
-        showResult(m_debugThread->getResultMsg());
+        showResult(m_debugger->getResultMsg());
         break; // maybe an exception, access-violation or somthing like that
       }
     }
@@ -512,9 +509,9 @@ bool CRegexDemoDlg::checkPattern() {
   return m_patternOk;
 }
 
-String CRegexDemoDlg::getThreadPhaseName() const {
-  return hasThread()
-       ? m_debugThread->getPhaseName()
+String CRegexDemoDlg::getDebuggerPhaseName() const {
+  return hasDebugger()
+       ? m_debugger->getPhaseName()
        : _T("No thread");
 }
 
@@ -563,8 +560,8 @@ typedef enum {
 void CRegexDemoDlg::ajourDialogItems() {
   BitSet16 flags;
 
-  if(isThreadStopped()
-    && ((m_debugThread->getCommand() == COMMAND_COMPILE)
+  if(isDebuggerPaused()
+    && ((m_debugger->getCommand() == COMMAND_COMPILE)
      || (!m_patternDirty && m_patternOk && !m_targetDirty))) {
     flags.add(MENU_DEBUG);
   }
@@ -579,14 +576,16 @@ void CRegexDemoDlg::ajourDialogItems() {
     flags.add(MENU_BREAKPOINTS);
   }
 
-  setWindowText(this, IDC_STATICSTATENAME, getThreadPhaseName());
-  if(hasThread()) {
-    if(m_debugThread->isRunning()) {
+  setWindowText(this, IDC_STATICSTATENAME, getDebuggerPhaseName());
+  if(hasDebugger()) {
+    if(m_debugger->isRunning()) {
       return;
     }
-    switch(getThreadPhase()) {
+    switch(getDebuggerPhase()) {
     case REGEX_COMPILING     :
-      flags.add(WIN_REGISTERS);
+      if(m_regex.getType() == EMACS_REGEX) {
+        flags.add(WIN_REGISTERS);
+      }
       flags.add(WIN_STACK);
       break;
     case REGEX_COMPILEDFAILED:
@@ -615,7 +614,7 @@ void CRegexDemoDlg::ajourDialogItems() {
       flags.remove(MENU_DEBUG);
       break;
     default:
-      showError(_T("%s:Unnknown threadState:%d"), __TFUNCTION__, getThreadPhase());
+      showError(_T("%s:Unnknown threadState:%d"), __TFUNCTION__, getDebuggerPhase());
       break;
     }
   }
@@ -624,13 +623,12 @@ void CRegexDemoDlg::ajourDialogItems() {
 }
 
 void CRegexDemoDlg::enableDialogItems(BitSet16 flags) {
-  const BOOL enableRegisters  = flags.contains(WIN_REGISTERS);
-  const BOOL enableStack      = flags.contains(WIN_STACK    );
+  const bool enableRegisters  = flags.contains(WIN_REGISTERS);
+  const bool enableStack      = flags.contains(WIN_STACK    );
   const bool enableSearch     = flags.contains(MENU_SEARCH  );
   const bool enableDebug      = flags.contains(MENU_DEBUG   );
 
-  GetDlgItem(IDC_STATICREGISTERSLABEL   )->EnableWindow(enableRegisters );
-  GetDlgItem(IDC_STATICREGISTERS        )->EnableWindow(enableRegisters );
+  enableRegisterWindow(enableRegisters );
   GetDlgItem(IDC_STATICSTACKLABEL       )->EnableWindow(enableStack     );
   GetDlgItem(IDC_STATICSTACK            )->EnableWindow(enableStack     );
 
@@ -695,48 +693,51 @@ void CRegexDemoDlg::showCompilerError(const String &errorMsg) {
 
 void CRegexDemoDlg::startDebugCompile() {
   try {
-    killThread();
+    killDebugger();
     const String pattern = m_pattern;
 
-    m_debugThread = new DebugThread(m_regex, getCompileParameters(), getCodeWindow()->getBreakPoints()); TRACE_NEW(m_debugThread);
-    m_debugThread->addPropertyChangeListener(this);
-    m_debugThread->singleStep();
+    m_debugger = new Debugger(m_regex, getCompileParameters(), getCodeWindow()->getBreakPoints()); TRACE_NEW(m_debugger);
+    m_debugger->addPropertyChangeListener(this);
+    ThreadPool::executeNoWait(*m_debugger);
+    m_debugger->singleStep();
   } catch(Exception e) {
     showException(e);
   }
 }
 
-void CRegexDemoDlg::startThread(ThreadCommand command, bool singleStep) {
+void CRegexDemoDlg::startDebugger(RegexCommand command, bool singleStep) {
   try {
-    killThread();
+    killDebugger();
     m_targetCombo.updateList();
     m_targetDirty = false;
     const String target = m_target;
-    m_debugThread = new DebugThread(command, m_regex, target, getCodeWindow()->getBreakPoints()); TRACE_NEW(m_debugThread);
-    m_debugThread->addPropertyChangeListener(this);
+
+    m_debugger = new Debugger(command, m_regex, target, getCodeWindow()->getBreakPoints()); TRACE_NEW(m_debugger);
+    m_debugger->addPropertyChangeListener(this);
+    ThreadPool::executeNoWait(*m_debugger);
     if(singleStep) {
-      m_debugThread->singleStep();
+      m_debugger->singleStep();
     } else {
-      m_debugThread->go();
+      m_debugger->go();
     }
   } catch(Exception e) {
     showException(e);
   }
 }
 
-void CRegexDemoDlg::killThread() {
-  if(m_debugThread != NULL) {
-    m_debugThread->removePropertyChangeListener(this);
-    SAFEDELETE(m_debugThread);
+void CRegexDemoDlg::killDebugger() {
+  if(hasDebugger()) {
+    m_debugger->removePropertyChangeListener(this);
+    SAFEDELETE(m_debugger);
   }
 }
 
 void CRegexDemoDlg::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
   switch(id) {
-  case THREAD_RUNNING      :
-    { const bool oldRunning = *(bool*)oldValue;
-      const bool newRunning = *(bool*)newValue;
-      PostMessage(ID_MSG_THREADRUNNING, oldRunning, newRunning);
+  case DEBUGGER_STATE:
+    { const DebuggerState oldState = *(DebuggerState*)oldValue;
+      const DebuggerState newState = *(DebuggerState*)newValue;
+      SendMessage(ID_MSG_DEBUGGERSTATECHANGED, oldState, newState);
     }
     break;
   default:
@@ -745,7 +746,7 @@ void CRegexDemoDlg::handlePropertyChanged(const PropertyContainer *source, int i
   }
 }
 
-void CRegexDemoDlg::clearThreadState() {
+void CRegexDemoDlg::clearDebuggerState() {
   unmarkCodeLine();
   setWindowText(this, IDC_STATICSTACK, EMPTYSTRING);
   unmarkAllCharacters(SEARCH_POSMARK );
@@ -765,7 +766,7 @@ void CRegexDemoDlg::showCompilerState() {
 }
 
 void CRegexDemoDlg::showEmacsCompilerState() {
-  const _RegexCompilerState  &state = m_debugThread->getEmacsCompilerState();
+  const _RegexCompilerState  &state = m_debugger->getEmacsCompilerState();
   if(state.m_codeText != getCodeWindow()->getText()) {
     fillCodeWindow(state.m_codeText);
     getCodeWindow()->scrollToBottom();
@@ -782,7 +783,7 @@ void CRegexDemoDlg::showEmacsCompilerState() {
   if(state.m_registerInfo.length() > 0) {
     stateStr += _T("\n\nRegisters:\n") + state.m_registerInfo;
   }
-  getRegistersWindow()->SetWindowText(stateStr.replace('\n',_T("\r\n")).cstr());
+  setRegisterWindowText(stateStr.replace('\n',_T("\r\n")));
 
   String stackStr = state.m_compilerStack;
   m_stackWindow.SetWindowText(stackStr.replace('\n',_T("\r\n")).cstr());
@@ -802,7 +803,7 @@ bool CRegexDemoDlg::isGraphicsOn() {
 }
 
 void CRegexDemoDlg::showDFACompilerState() {
-  const _DFARegexCompilerState &state = m_debugThread->getDFACompilerState();
+  const _DFARegexCompilerState &state = m_debugger->getDFACompilerState();
   if(state.m_codeText != getCodeWindow()->getText()) {
     fillCodeWindow(state.m_codeText);
     getCodeWindow()->scrollToBottom();
@@ -835,14 +836,14 @@ void CRegexDemoDlg::showSearchState() {
 }
 
 void CRegexDemoDlg::showEmacsSearchState() {
-  const _RegexSearchState &state = m_debugThread->getEmacsSearchState();
+  const _RegexSearchState &state = m_debugger->getEmacsSearchState();
   unmarkAllCharacters(MATCH_STARTMARK);
   unmarkAllCharacters(MATCH_DMARK    );
   markCurrentChar(  SEARCH_POSMARK, state.m_charIndex);
 }
 
 void CRegexDemoDlg::showDFASearchState() {
-  const _DFARegexSearchState &state = m_debugThread->getDFASearchState();
+  const _DFARegexSearchState &state = m_debugger->getDFASearchState();
   unmarkAllCharacters(MATCH_STARTMARK);
   unmarkAllCharacters(MATCH_DMARK    );
   markCurrentChar(  SEARCH_POSMARK, state.m_charIndex);
@@ -862,10 +863,10 @@ void CRegexDemoDlg::showMatchState() {
 }
 
 void CRegexDemoDlg::showEmacsMatchState() {
-  const _RegexMatchState &state = m_debugThread->getEmacsMatchState();
+  const _RegexMatchState &state = m_debugger->getEmacsMatchState();
   setCurrentCodeLine(state.getDBGLineNumber());
   markCurrentChar(PATTERN_POSMARK, state.getDBGPatternCharIndex());
-  setWindowText(getRegistersWindow(), state.registersToString());
+  setRegisterWindowText(state.registersToString());
   showMatchStack(state);
 
   unmarkAllCharacters(SEARCH_POSMARK);
@@ -880,7 +881,7 @@ void CRegexDemoDlg::showEmacsMatchState() {
 }
 
 void CRegexDemoDlg::showDFAMatchState() {
-  const _DFARegexMatchState &state = m_debugThread->getDFAMatchState();
+  const _DFARegexMatchState &state = m_debugger->getDFAMatchState();
   setCurrentCodeLine(state.getDBGLineNumber());
   markLastAcceptLine(state.getDBGLastAcceptLine());
   const BitSet *patternIndexSet = state.getDBGPatternIndexSet();
@@ -899,7 +900,7 @@ void CRegexDemoDlg::showDFAMatchState() {
 
 void CRegexDemoDlg::showPatternFound() {
   OnGotoText();
-  showResult(m_debugThread->getResultMsg(), m_debugThread->registersToString());
+  showResult(m_debugger->getResultMsg(), m_debugger->registersToString());
   markFoundPattern();
   unmarkAllCharacters();
   showCycleCount();
@@ -908,14 +909,14 @@ void CRegexDemoDlg::showPatternFound() {
 }
 
 void CRegexDemoDlg::showPatternNotFound() {
-  showResult(m_debugThread->getResultMsg());
+  showResult(m_debugger->getResultMsg());
   unpaintRegex();
   showCycleCount();
 }
 
 void CRegexDemoDlg::markFoundPattern() {
   int start, end;
-  m_debugThread->getFoundPosition(start, end);
+  m_debugger->getFoundPosition(start, end);
   getTargetWindow()->SetEditSel(start, end);
 }
 
@@ -935,21 +936,30 @@ void CRegexDemoDlg::clearCyclesWindow() {
 }
 
 void CRegexDemoDlg::showCyclesText(const String &text) {
-  setWindowText(this, IDC_STATICCYCLES, text);
+  setWindowText(getCyclesWindow(), text);
 }
 
 void CRegexDemoDlg::showResult(const String &result, const String &registerString) {
   setWindowText(this, IDC_STATICRESULT, result);
-  setWindowText(getRegistersWindow(), registerString);
+  setRegisterWindowText(registerString);
 }
 
 void CRegexDemoDlg::clearRegisterWindow() {
-  setWindowText(getRegistersWindow(), EMPTYSTRING);
+  setRegisterWindowText(EMPTYSTRING);
+}
+
+void CRegexDemoDlg::setRegisterWindowText(const String &str) {
+  setWindowText(getRegisterWindow(), str);
 }
 
 void CRegexDemoDlg::setRegisterWindowMode() {
-  if((m_regex.getType() == DFA_REGEX) && isGraphicsOn()) {
-    setRegistersWindowVisible(false);
+  if(m_regex.getType() == EMACS_REGEX) {
+    setRegisterWindowVisible(true);
+    setGraphicsWindowVisible(false);
+    setCylceAndStackWindowTop(getWindowRect(getRegisterWindow()).bottom);
+  } else {
+    setRegisterWindowVisible(false);
+    if(isGraphicsOn()) {
 /*
     CRect rect;
     rect.left   = getWindowRect(this, IDC_STATICSTACKLABEL).left;
@@ -957,19 +967,29 @@ void CRegexDemoDlg::setRegisterWindowMode() {
     rect.right  = getWindowRect(this, IDC_STATICSTACK).right;
     rect.bottom = getClientRect(this).Height() - 200;
 */
-    getGraphicsWindow()->ShowWindow(SW_SHOW);
-    setCylceAndStackWindowTop(getWindowRect(getGraphicsWindow()).bottom);
-  } else {
-    setRegistersWindowVisible(true);
-    getGraphicsWindow()->ShowWindow(SW_HIDE);
-    setCylceAndStackWindowTop(getWindowRect(getRegistersWindow()).bottom);
+      setGraphicsWindowVisible(true);
+      setCylceAndStackWindowTop(getWindowRect(getGraphicsWindow()).bottom);
+    }
   }
 }
 
-void CRegexDemoDlg::setRegistersWindowVisible(bool visible) {
+void CRegexDemoDlg::setRegisterWindowVisible(bool visible) {
   int mode = visible?SW_SHOW:SW_HIDE;
   GetDlgItem(IDC_STATICREGISTERSLABEL)->ShowWindow(mode);
-  getRegistersWindow()->ShowWindow(mode);
+  getRegisterWindow()->ShowWindow(mode);
+}
+
+void CRegexDemoDlg::enableRegisterWindow(bool enable) {
+  GetDlgItem(IDC_STATICREGISTERSLABEL)->EnableWindow(enable);
+  getRegisterWindow()->EnableWindow(enable);
+}
+
+void CRegexDemoDlg::setGraphicsWindowVisible(bool visible) {
+  getGraphicsWindow()->ShowWindow(visible ? SW_SHOW : SW_HIDE);
+}
+
+bool CRegexDemoDlg::isGraphicsWindowVisible() {
+  return getGraphicsWindow()->IsWindowVisible() ? true : false;
 }
 
 void CRegexDemoDlg::setCylceAndStackWindowTop(int top) {
@@ -1045,8 +1065,10 @@ void CRegexDemoDlg::paintRegex(bool msgPaint, bool animate) {
 }
 
 void CRegexDemoDlg::unpaintRegex() {
-  CWnd *wnd = getGraphicsWindow();
-  m_regex.unmarkAll(wnd, CClientDC(wnd));
+  if(isGraphicsOn()) {
+    CWnd *wnd = getGraphicsWindow();
+    m_regex.unmarkAll(wnd, CClientDC(wnd));
+  }
   unmarkCodeLine();
   unmarkLastAcceptLine();
 }
@@ -1056,6 +1078,7 @@ bool CRegexDemoDlg::isCodeTextDFATables() const {
 }
 
 void CRegexDemoDlg::setDFAGraphicsMode(int id) {
+  const bool wasGraphicsOn = isGraphicsOn();
   static const int menuIds[] = {
     ID_OPTIONS_DFA_NO_GRAPHICS
    ,ID_OPTIONS_DFA_PAINT_STATES
@@ -1064,9 +1087,11 @@ void CRegexDemoDlg::setDFAGraphicsMode(int id) {
   for(int i = 0; i < ARRAYSIZE(menuIds); i++) {
     checkMenuItem(this, menuIds[i], menuIds[i] == id);
   }
-  unmarkAll();
+  if(wasGraphicsOn) {
+    unmarkAll();
+  }
   ajourDialogItems();
-  if(id != ID_OPTIONS_DFA_NO_GRAPHICS) {
+  if(isGraphicsOn()) {
     if(m_regex.isCompiled()) {
       paintRegex();
     }
