@@ -7,18 +7,18 @@
 #endif
 
 ShowStateDlg::ShowStateDlg(CDialog *mainDialog, CWnd *pParent): CDialog(ShowStateDlg::IDD, pParent), m_mainDialog(mainDialog) {
-	m_data = EMPTYSTRING;
-	m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
+  m_data = EMPTYSTRING;
+  m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
 }
 
 void ShowStateDlg::DoDataExchange(CDataExchange *pDX) {
-	__super::DoDataExchange(pDX);
-	DDX_Text(pDX, IDC_EDITSTATE, m_data);
+  __super::DoDataExchange(pDX);
+  DDX_Text(pDX, IDC_EDITSTATE, m_data);
 }
 
 BEGIN_MESSAGE_MAP(ShowStateDlg, CDialog)
-	ON_WM_SIZE()
-	ON_MESSAGE(      ID_SHOWSTATE_UPDATE, OnShowStateUpdate)
+  ON_WM_SIZE()
+  ON_MESSAGE(      ID_SHOWSTATE_UPDATE, OnShowStateUpdate)
 END_MESSAGE_MAP()
 
 void ShowStateDlg::ajourState() {

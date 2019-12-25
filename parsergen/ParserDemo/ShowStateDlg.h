@@ -10,22 +10,18 @@ private:
   CDialog            *m_mainDialog;
   void ajourState();
 public:
-    ShowStateDlg(CDialog *mainDialog, CWnd *pParent = NULL);
+  ShowStateDlg(CDialog *mainDialog, CWnd *pParent = NULL);
 
-    enum { IDD = IDD_DIALOGSHOWSTATE };
+  enum { IDD = IDD_DIALOGSHOWSTATE };
 
-    CString m_data;
+  CString m_data;
 
-    public:
-    virtual BOOL PreTranslateMessage(MSG *pMsg);
-    protected:
-    virtual void DoDataExchange(CDataExchange *pDX);
-
+public:
+  virtual BOOL PreTranslateMessage(MSG *pMsg);
 protected:
-
-    virtual BOOL OnInitDialog();
-    afx_msg void OnSize(UINT nType, int cx, int cy);
-    afx_msg LRESULT OnShowStateUpdate(WPARAM wp, LPARAM lp);
-    DECLARE_MESSAGE_MAP()
+  virtual void DoDataExchange(CDataExchange *pDX);
+  virtual BOOL OnInitDialog();
+  afx_msg void OnSize(UINT nType, int cx, int cy);
+  afx_msg LRESULT OnShowStateUpdate(WPARAM wp, LPARAM lp);
+  DECLARE_MESSAGE_MAP()
 };
-

@@ -1,19 +1,20 @@
 #pragma once
 
 class GotoDlg : public CDialog {
+private:
+  UINT    m_line;
 public:
-    GotoDlg(CWnd *pParent = NULL);
+  GotoDlg(CWnd *pParent = NULL);
 
-    enum { IDD = IDD_DIALOGGOTO };
-    UINT    m_line;
+  enum { IDD = IDD_DIALOGGOTO };
 
-    protected:
-    virtual void DoDataExchange(CDataExchange *pDX);
-
+  inline UINT getLine() const {
+    return m_line;
+  }
 protected:
-
-    virtual BOOL OnInitDialog();
-    virtual void OnOK();
-    DECLARE_MESSAGE_MAP()
+  virtual void DoDataExchange(CDataExchange *pDX);
+  virtual BOOL OnInitDialog();
+  virtual void OnOK();
+  DECLARE_MESSAGE_MAP()
 };
 

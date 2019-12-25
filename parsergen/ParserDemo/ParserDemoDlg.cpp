@@ -753,8 +753,8 @@ void CParserDemoDlg::OnOptionsListDebugFromScanner() {
 void CParserDemoDlg::OnOptionsErrors() {
   ErrorsDlg dlg(m_parser.getMaxErrorCount(), m_parser.getCascadeCount());
   if(dlg.DoModal() == IDOK) {
-    m_parser.setMaxErrorCount(dlg.m_maxErrorCount);
-    m_parser.setCascadeCount(dlg.m_cascadeCount);
+    m_parser.setMaxErrorCount(dlg.getMaxErrorCount());
+    m_parser.setCascadeCount(dlg.getCascadeCount());
   }
 }
 
@@ -942,7 +942,7 @@ void CParserDemoDlg::OnEditFindPrev() {
 void CParserDemoDlg::OnEditGoto() {
   GotoDlg dlg;
   if(dlg.DoModal() == IDOK) {
-    gotoTextPosition(SourcePosition(dlg.m_line, 0));
+    gotoTextPosition(SourcePosition(dlg.getLine(), 0));
   }
 }
 

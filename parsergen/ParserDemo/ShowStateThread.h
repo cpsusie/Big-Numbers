@@ -7,16 +7,12 @@ protected:
 
 public:
   CDialog *m_maindialog;
-public:
 
-    public:
-    virtual BOOL InitInstance();
-    virtual int ExitInstance();
+  virtual BOOL InitInstance();
+  virtual int ExitInstance();
 
 protected:
-    virtual ~CShowStateThread();
-
-
-    DECLARE_MESSAGE_MAP()
+  virtual ~CShowStateThread();
+  DECLARE_MESSAGE_MAP()
 };
 

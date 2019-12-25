@@ -27,18 +27,15 @@ private:
 public:
   CSelectBreakProductionsDlg(const ParserTables &tables, BitSet &prodSet, CWnd *pParent = NULL);
 
-    enum { IDD = IDD_DIALOGPRODUCTIONS };
-
-    protected:
-    virtual void DoDataExchange(CDataExchange *pDX);
+  enum { IDD = IDD_DIALOGPRODUCTIONS };
 
 protected:
-
-    virtual BOOL OnInitDialog();
-    virtual void OnOK();
-    afx_msg void OnButtonSelectAll();
-    afx_msg void OnButtonClear();
-    afx_msg void OnSize(UINT nType, int cx, int cy);
-    DECLARE_MESSAGE_MAP()
+  virtual void DoDataExchange(CDataExchange *pDX);
+  virtual BOOL OnInitDialog();
+  virtual void OnOK();
+  afx_msg void OnButtonSelectAll();
+  afx_msg void OnButtonClear();
+  afx_msg void OnSize(UINT nType, int cx, int cy);
+  DECLARE_MESSAGE_MAP()
 };
 
