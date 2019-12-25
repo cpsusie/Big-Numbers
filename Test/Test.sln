@@ -149,6 +149,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestSquare", "TestSquare\Te
 		{0D1324F1-16AC-4245-9A51-8BF3B09A6C5F} = {0D1324F1-16AC-4245-9A51-8BF3B09A6C5F}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestTimer", "TestTimer\TestTimer.vcxproj", "{A12C3FF5-10ED-45EF-BD82-1F2124E46588}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DA57B57F-CFF3-4620-87AE-69D3598B492D} = {DA57B57F-CFF3-4620-87AE-69D3598B492D}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -1309,6 +1314,42 @@ Global
 		{519A42C7-89E1-4621-A065-6DA5BFDF0837}.TraceMemRelease|x64.Build.0 = Release|x64
 		{519A42C7-89E1-4621-A065-6DA5BFDF0837}.TraceMemRelease|x86.ActiveCfg = Release|Win32
 		{519A42C7-89E1-4621-A065-6DA5BFDF0837}.TraceMemRelease|x86.Build.0 = Release|Win32
+		{A12C3FF5-10ED-45EF-BD82-1F2124E46588}.Debug|x64.ActiveCfg = Debug|x64
+		{A12C3FF5-10ED-45EF-BD82-1F2124E46588}.Debug|x64.Build.0 = Debug|x64
+		{A12C3FF5-10ED-45EF-BD82-1F2124E46588}.Debug|x86.ActiveCfg = Debug|Win32
+		{A12C3FF5-10ED-45EF-BD82-1F2124E46588}.Debug|x86.Build.0 = Debug|Win32
+		{A12C3FF5-10ED-45EF-BD82-1F2124E46588}.LDDebug|x64.ActiveCfg = Debug|x64
+		{A12C3FF5-10ED-45EF-BD82-1F2124E46588}.LDDebug|x64.Build.0 = Debug|x64
+		{A12C3FF5-10ED-45EF-BD82-1F2124E46588}.LDDebug|x86.ActiveCfg = Debug|Win32
+		{A12C3FF5-10ED-45EF-BD82-1F2124E46588}.LDDebug|x86.Build.0 = Debug|Win32
+		{A12C3FF5-10ED-45EF-BD82-1F2124E46588}.LDRelease|x64.ActiveCfg = Release|x64
+		{A12C3FF5-10ED-45EF-BD82-1F2124E46588}.LDRelease|x64.Build.0 = Release|x64
+		{A12C3FF5-10ED-45EF-BD82-1F2124E46588}.LDRelease|x86.ActiveCfg = Release|Win32
+		{A12C3FF5-10ED-45EF-BD82-1F2124E46588}.LDRelease|x86.Build.0 = Release|Win32
+		{A12C3FF5-10ED-45EF-BD82-1F2124E46588}.Profilling|x64.ActiveCfg = Release|x64
+		{A12C3FF5-10ED-45EF-BD82-1F2124E46588}.Profilling|x64.Build.0 = Release|x64
+		{A12C3FF5-10ED-45EF-BD82-1F2124E46588}.Profilling|x86.ActiveCfg = Release|Win32
+		{A12C3FF5-10ED-45EF-BD82-1F2124E46588}.Profilling|x86.Build.0 = Release|Win32
+		{A12C3FF5-10ED-45EF-BD82-1F2124E46588}.Release|x64.ActiveCfg = Release|x64
+		{A12C3FF5-10ED-45EF-BD82-1F2124E46588}.Release|x64.Build.0 = Release|x64
+		{A12C3FF5-10ED-45EF-BD82-1F2124E46588}.Release|x86.ActiveCfg = Release|Win32
+		{A12C3FF5-10ED-45EF-BD82-1F2124E46588}.Release|x86.Build.0 = Release|Win32
+		{A12C3FF5-10ED-45EF-BD82-1F2124E46588}.TraceMemDebug|x64.ActiveCfg = Debug|x64
+		{A12C3FF5-10ED-45EF-BD82-1F2124E46588}.TraceMemDebug|x64.Build.0 = Debug|x64
+		{A12C3FF5-10ED-45EF-BD82-1F2124E46588}.TraceMemDebug|x86.ActiveCfg = Debug|Win32
+		{A12C3FF5-10ED-45EF-BD82-1F2124E46588}.TraceMemDebug|x86.Build.0 = Debug|Win32
+		{A12C3FF5-10ED-45EF-BD82-1F2124E46588}.TraceMemLDDebug|x64.ActiveCfg = Debug|x64
+		{A12C3FF5-10ED-45EF-BD82-1F2124E46588}.TraceMemLDDebug|x64.Build.0 = Debug|x64
+		{A12C3FF5-10ED-45EF-BD82-1F2124E46588}.TraceMemLDDebug|x86.ActiveCfg = Debug|Win32
+		{A12C3FF5-10ED-45EF-BD82-1F2124E46588}.TraceMemLDDebug|x86.Build.0 = Debug|Win32
+		{A12C3FF5-10ED-45EF-BD82-1F2124E46588}.TraceMemLDRelease|x64.ActiveCfg = Release|x64
+		{A12C3FF5-10ED-45EF-BD82-1F2124E46588}.TraceMemLDRelease|x64.Build.0 = Release|x64
+		{A12C3FF5-10ED-45EF-BD82-1F2124E46588}.TraceMemLDRelease|x86.ActiveCfg = Release|Win32
+		{A12C3FF5-10ED-45EF-BD82-1F2124E46588}.TraceMemLDRelease|x86.Build.0 = Release|Win32
+		{A12C3FF5-10ED-45EF-BD82-1F2124E46588}.TraceMemRelease|x64.ActiveCfg = Release|x64
+		{A12C3FF5-10ED-45EF-BD82-1F2124E46588}.TraceMemRelease|x64.Build.0 = Release|x64
+		{A12C3FF5-10ED-45EF-BD82-1F2124E46588}.TraceMemRelease|x86.ActiveCfg = Release|Win32
+		{A12C3FF5-10ED-45EF-BD82-1F2124E46588}.TraceMemRelease|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
