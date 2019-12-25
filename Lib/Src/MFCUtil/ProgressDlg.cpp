@@ -291,7 +291,7 @@ void CProgressDlg::OnTimer( UINT_PTR nIDEvent) {
       m_newProgressCtrl.SetPos((int)promilleDone);
     }
     if(m_supportedFeatures & IR_SHOWTIMEESTIMATE) {
-      const double secondsElapsed   = diff(m_jobToDo.getJobStartTime(), Timestamp(), TSECOND);
+      const double secondsElapsed   = Timestamp::diff(m_jobToDo.getJobStartTime(), Timestamp(), TSECOND);
       const double secondsLeft      = m_jobToDo.getSecondsRemaining();
       const String timeElapsedMsg   = format(_T("%s:%s"), m_timeElapsedLabel.cstr(), formatSeconds(secondsElapsed).cstr());
       const String timeRemainingMsg = format(_T("%s:%s"), m_timeRemaingLabel.cstr(), formatSeconds(secondsLeft).cstr());

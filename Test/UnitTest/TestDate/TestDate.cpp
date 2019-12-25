@@ -541,7 +541,7 @@ namespace TestDate {
       for (int i = 0; i < 1000; i++) {
         double d = ts.getDATE();
         Timestamp ts1(d);
-        verify(fabs(diff(ts1, ts, TMILLISECOND)) <= 1);
+        verify(fabs(Timestamp::diff(ts1, ts, TMILLISECOND)) <= 1);
 /*          _tprintf(_T("ts=<%s>, ts1 = Timestamp(ts.getDATE())=<%s>\n")
             , ts.toString(ddMMyyyyhhmmssSSS).cstr()
             , ts1.toString(ddMMyyyyhhmmssSSS).cstr()

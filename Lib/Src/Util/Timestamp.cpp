@@ -146,21 +146,21 @@ Timestamp Timestamp::operator--(int) {
   return result;
 }
 
-static const double daysPerYear = 146097.0 / 400; // 365.2425
+const double Timestamp::s_daysPerYear = 146097.0 / 400; // 365.2425
 
 static void throwInvalidTimeComponent(const TCHAR *function, TimeComponent c) {
   throwException(_T("%s:Invalid TimeComponent (=%d)."), function, c);
 }
 
-double diff(const Timestamp &from, const Timestamp &to, TimeComponent c) {
+double Timestamp::diff(const Timestamp &from, const Timestamp &to, TimeComponent c) { // static
   switch(c) {
   case TMILLISECOND: return  to.m_factor - from.m_factor;
   case TSECOND     : return (to.m_factor - from.m_factor) / 1000;
   case TMINUTE     : return (to.m_factor - from.m_factor) / 60 / 1000;
   case THOUR       : return (to.m_factor - from.m_factor) / 3600 / 1000;
   case TDAYOFYEAR  : return (to.m_factor - from.m_factor) / 3600 / 1000 / 24;
-  case TMONTH      : return (to.m_factor - from.m_factor) / 3600 / 1000 / 2  / daysPerYear;
-  case TYEAR       : return (to.m_factor - from.m_factor) / 3600 / 1000 / 24 / daysPerYear;
+  case TMONTH      : return (to.m_factor - from.m_factor) / 3600 / 1000 / 2  / s_daysPerYear;
+  case TYEAR       : return (to.m_factor - from.m_factor) / 3600 / 1000 / 24 / s_daysPerYear;
   default          : throwInvalidTimeComponent(__TFUNCTION__, c);
                      return to.m_factor - from.m_factor;
   }

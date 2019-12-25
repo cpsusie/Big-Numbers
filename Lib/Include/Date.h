@@ -370,7 +370,7 @@ public:
   inline double operator-(const Timestamp &r) const {
     return ((double)m_factor - r.m_factor) / Time::getMaxFactor();
   }
-  friend double diff(const Timestamp &from, const Timestamp &to, TimeComponent c = TDAYOFMONTH);
+  static double diff(const Timestamp &from, const Timestamp &to, TimeComponent c = TDAYOFMONTH);
   Timestamp &add(TimeComponent c, int count);
   int        get(TimeComponent c);
   Timestamp &set(TimeComponent c, int value);
@@ -456,6 +456,7 @@ public:
 
   static const Timestamp &getMinTimestamp();
   static const Timestamp &getMaxTimestamp();
+  static const double s_daysPerYear;
 
   static inline INT64 getMinFactor() {
     return getMinTimestamp().m_factor;

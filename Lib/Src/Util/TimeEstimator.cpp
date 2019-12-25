@@ -30,7 +30,7 @@ void TimeEstimator::logTimeAndPct() {
     if(n >= 20) {
       removeFirst();
     }
-    appendLogPoint(diff(m_time0, now, TMILLISECOND), pctDone);
+    appendLogPoint(Timestamp::diff(m_time0, now, TMILLISECOND), pctDone);
   }
   m_gate.notify();
   switch(++m_timeoutCount) {
@@ -105,7 +105,7 @@ void TimeEstimator::calculateRegressionLine() const {
 }
 
 double TimeEstimator::getTimeEstimate() const { // assume hasRegressionLine()
-  const double x       = diff(m_time0, Timestamp(), TMILLISECOND);
+  const double x       = Timestamp::diff(m_time0, Timestamp(), TMILLISECOND);
   const double time100 = (100.0 - m_b) / m_a;
   if(x > time100) {
     return 0;

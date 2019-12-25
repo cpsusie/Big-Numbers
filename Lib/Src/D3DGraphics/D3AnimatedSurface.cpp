@@ -1,116 +1,66 @@
 #include "pch.h"
-#include <Semaphore.h>
 #include <D3DGraphics/D3Scene.h>
 
 DECLARE_THISFILE;
 
-class MeshAnimationThread : public Thread {
-private:
-  D3AnimatedSurface &m_surface;
-  int               &m_nextMeshIndex;
-  const UINT         m_frameCount;
-  Semaphore          m_timeout;
-  double             m_sleepTime;
-  bool               m_killed;
-  bool               m_running;
-  bool               m_forward;
-  AnimationType      m_type;
-  void nextIndex();
-  int  getSleepTime() const;
-public:
-  MeshAnimationThread(D3AnimatedSurface &surface)
-    : Thread(_T("Mesh Animation Thread"))
-    , m_surface(surface)
-    , m_nextMeshIndex(m_surface.m_nextMeshIndex)
-    , m_frameCount((UINT)m_surface.m_meshArray.size())
-    , m_timeout(0)
-    , m_killed(false)
-    , m_running(false)
-    , m_type(ANIMATE_FORWARD)
-    , m_forward(true)
-  {
-    m_sleepTime = 50;
-    resume();
-  }
-  void go(AnimationType type);
-  void stop();
-  void kill();
-  void scaleSpeed(double factor);
-  double getFramesPerSec() const;
-  bool isRunning() const {
-    return m_running;
-  }
-  AnimationType getAnimationType() const {
-    return m_type;
-  }
-  unsigned int run();
-};
+D3AnimatedSurface::D3AnimatedSurface(D3Scene &scene, const MeshArray &meshArray)
+: D3SceneObject(scene)
+, m_meshArray(meshArray)
+, m_frameCount((UINT)meshArray.size())
+, m_fillMode(D3DFILL_SOLID)
+, m_shadeMode(D3DSHADE_GOURAUD)
+, m_timer(1, format(_T("Timer for animated surface %s"), getName().cstr()))
+, m_sleepTime(50)
+, m_animationType(ANIMATE_FORWARD)
+, m_forward(true)
+, m_running(false)
+, m_nextMeshIndex(0)
+, m_lastRenderedIndex(-1)
+{
+}
 
-void MeshAnimationThread::go(AnimationType type) {
+D3AnimatedSurface::~D3AnimatedSurface() {
+  stopAnimation();
+}
+
+void D3AnimatedSurface::startAnimation(AnimationType type) {
   if(isRunning()) {
     return;
   }
-  m_type = type;
-  switch(type) {
-  case ANIMATE_FORWARD    :
-    m_forward = true;
-    break;
-  case ANIMATE_BACKWARD   :
-    m_forward = false;
-    break;
-  case ANIMATE_ALTERNATING:
-    break;
-  }
-
+  m_animationType = type;
+  m_timer.startTimer(getSleepTime(), *this, true);
   m_running = true;
-  m_timeout.notify();
 }
 
-void MeshAnimationThread::stop() {
-  if(!isRunning()) {
-    return;
-  }
-  m_running = false;
-}
-
-void MeshAnimationThread::kill() {
-  m_killed = true;
-  go(ANIMATE_FORWARD);
-  for(int i = 0; stillActive() && (i < 100); i++) {
-    Sleep(20);
-  }
-  if(stillActive()) {
-    showWarning(_T("Cannot stop animationThread"));
+void D3AnimatedSurface::stopAnimation() {
+  if(isRunning()) {
+    m_timer.stopTimer();
+    m_running = false;
   }
 }
 
-void MeshAnimationThread::scaleSpeed(double factor) {
-  if(factor == 0) {
+void D3AnimatedSurface::scaleSpeed(double factor) {
+  if((factor == 0) || (factor == 1)) {
     return;
   }
   m_sleepTime /= factor;
   if(m_sleepTime < 1) {
     m_sleepTime = 1;
   }
-}
-
-double MeshAnimationThread::getFramesPerSec() const {
-  return m_running ? 1000.0/m_sleepTime : 0;
-}
-
-UINT MeshAnimationThread::run() {
-  for(;;) {
-    m_timeout.wait(m_running ? getSleepTime() : INFINITE);
-    if(m_killed) {
-      break;
-    }
-    m_surface.getScene().setAnimationFrameIndex(m_surface.m_lastRenderedIndex, m_nextMeshIndex);
-    nextIndex();
+  if(isRunning()) {
+    m_timer.setTimeout(getSleepTime(), true);
   }
-  return 0;
 }
 
-int MeshAnimationThread::getSleepTime() const {
+void D3AnimatedSurface::handleTimeout(Timer &t) {
+  getScene().setAnimationFrameIndex(m_lastRenderedIndex, m_nextMeshIndex);
+  nextIndex();
+  if(getAnimationType() == ANIMATE_ALTERNATING) {
+    m_timer.setTimeout(getSleepTime(), true);
+  }
+}
+
+int D3AnimatedSurface::getSleepTime() const {
   switch(getAnimationType()) {
   case ANIMATE_FORWARD    :
   case ANIMATE_BACKWARD   :
@@ -123,7 +73,8 @@ int MeshAnimationThread::getSleepTime() const {
   return (int)m_sleepTime;
 }
 
-void MeshAnimationThread::nextIndex() { //  invariant:m_nextMeshIndex = [0..m_frameCount-1]
+//  invariant:m_nextMeshIndex = [0..m_frameCount-1]
+void D3AnimatedSurface::nextIndex() {
   switch(getAnimationType()) {
   case ANIMATE_FORWARD    :
     m_nextMeshIndex = (m_nextMeshIndex + 1) % m_frameCount;
@@ -145,46 +96,6 @@ void MeshAnimationThread::nextIndex() { //  invariant:m_nextMeshIndex = [0..m_fr
     }
     break;
   }
-}
-
-D3AnimatedSurface::D3AnimatedSurface(D3Scene &scene, const MeshArray &meshArray)
-: D3SceneObject(scene)
-, m_fillMode(D3DFILL_SOLID)
-, m_shadeMode(D3DSHADE_GOURAUD)
-{
-  m_meshArray         = meshArray;
-  m_nextMeshIndex     = 0;
-  m_lastRenderedIndex = -1;
-  m_animator          = new MeshAnimationThread(*this); TRACE_NEW(m_animator);
-}
-
-D3AnimatedSurface::~D3AnimatedSurface() {
-  m_animator->kill();
-  SAFEDELETE(m_animator);
-}
-
-void D3AnimatedSurface::startAnimation(AnimationType type) {
-  m_animator->go(type);
-}
-
-void D3AnimatedSurface::stopAnimation() {
-  m_animator->stop();
-}
-
-bool D3AnimatedSurface::isRunning() const {
-  return m_animator->isRunning();
-}
-
-AnimationType D3AnimatedSurface::getAnimationType() const {
-  return m_animator->getAnimationType();
-}
-
-void D3AnimatedSurface::scaleSpeed(double factor) { // sleepTime /= factor
-  m_animator->scaleSpeed(factor);
-}
-
-double D3AnimatedSurface::getFramePerSec() const {
-  return m_animator->getFramesPerSec();
 }
 
 void D3AnimatedSurface::draw() {

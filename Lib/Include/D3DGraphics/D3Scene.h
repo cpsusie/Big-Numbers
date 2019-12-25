@@ -1,9 +1,9 @@
 #pragma once
 
 #include <CompactArray.h>
-#include <Thread.h>
 #include <BitSet.h>
 #include <Date.h>
+#include <Timer.h>
 #include <PropertyContainer.h>
 #include <NumberInterval.h>
 #include <MFCUtil/D3DeviceFactory.h>
@@ -796,24 +796,38 @@ typedef enum {
  ,ANIMATE_ALTERNATING
 } AnimationType;
 
-class D3AnimatedSurface : public D3SceneObject {
+class D3AnimatedSurface : public D3SceneObject, public TimeoutHandler {
 private:
-  friend class MeshAnimationThread;
-  D3DFILLMODE  m_fillMode;
-  D3DSHADEMODE m_shadeMode;
-  MeshArray            m_meshArray;
-  int                  m_nextMeshIndex, m_lastRenderedIndex;
-  MeshAnimationThread *m_animator;
+  MeshArray     m_meshArray;
+  const UINT    m_frameCount;
+  D3DFILLMODE   m_fillMode;
+  D3DSHADEMODE  m_shadeMode;
+  Timer         m_timer;
+  double        m_sleepTime;
+  AnimationType m_animationType;
+  bool          m_forward;
+  bool          m_running;
+  int           m_nextMeshIndex, m_lastRenderedIndex;
+  void nextIndex();
+  int  getSleepTime() const;
+
 public:
   D3AnimatedSurface(D3Scene &scene, const MeshArray &meshArray);
   ~D3AnimatedSurface();
   void startAnimation(AnimationType type = ANIMATE_FORWARD);
   void stopAnimation();
-  bool isRunning() const;
-  AnimationType getAnimationType() const;
+  void handleTimeout(Timer &timer);
+  inline bool isRunning() const {
+    return m_running;
+  }
+  inline AnimationType getAnimationType() const {
+    return m_animationType;
+  }
   // sleepTime /= factor
   void scaleSpeed(double factor);
-  double getFramePerSec() const;
+  inline double getFramePerSec() const {
+    return m_running ? 1000.0 / m_sleepTime : 0;
+  }
   LPD3DXMESH getMesh() const;
   void draw();
   bool hasFillMode() const {
