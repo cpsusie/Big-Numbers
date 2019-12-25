@@ -10,6 +10,8 @@
 #define new DEBUG_NEW
 #endif
 
+using namespace std;
+
 class CAboutDlg : public CDialog {
 public:
     CAboutDlg();

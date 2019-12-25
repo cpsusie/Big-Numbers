@@ -5,15 +5,16 @@
 
 BigRational bernoulliDirect(UINT n) {
   if(n > 1 && (n & 1) == 1) {
-    return 0;
+    return BigRational::_0;
   }
 
   BigRational *A = new BigRational[n+1];
+  DigitPool *pool = A->getDigitPool();
 
   for(UINT m = 0; m <= n; m++) {
     A[m] = BigRational(BigReal::_1,m+1);
     for(int j = m; j >= 1; j--) {
-      A[j-1] = j * (A[j-1] - A[j]);
+      A[j-1] = BigRational(j, pool) * (A[j-1] - A[j]);
     }
   }
   BigRational result = A[0];
@@ -81,7 +82,7 @@ const BigRational &bernoulli0(UINT m) {
       } else {
         BigRational sum = (m == 0) ? 1 : 0;
         for(UINT k = 0; k < m; k++) {
-          sum -= binomial(m,k) * bernoulli0(k) / (m-k+1);
+          sum -= BigRational(binomial(m,k)) * bernoulli0(k) / (m-k+1);
         }
         map.put(m,sum);
       }
@@ -103,7 +104,7 @@ const BigRational &bernoulli1(UINT m) {
       } else {
         BigRational sum = 1;
         for(UINT k = 0; k < m; k++) {
-          sum -= binomial(m,k) * bernoulli1(k) / (m-k+1);
+          sum -= BigRational(binomial(m,k)) * bernoulli1(k) / (m-k+1);
         }
         map.put(m,sum);
       }
