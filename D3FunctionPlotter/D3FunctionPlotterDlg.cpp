@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <ProcessTools.h>
 #include <D3DGraphics/MeshCreators.h>
 #include "Function2DSurfaceDlg.h"
 #include "ParametricSurfaceDlg.h"
@@ -12,10 +13,9 @@
 
 class CAboutDlg : public CDialog {
 public:
-  CAboutDlg() : CDialog(CAboutDlg::IDD) {
-  }
-
   enum { IDD = IDD_ABOUTBOX };
+  CAboutDlg() : CDialog(IDD) {
+  }
 
   DECLARE_MESSAGE_MAP()
 };
@@ -23,9 +23,10 @@ public:
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CD3FunctionPlotterDlg::CD3FunctionPlotterDlg(CWnd *pParent) : CDialog(CD3FunctionPlotterDlg::IDD, pParent) {
+CD3FunctionPlotterDlg::CD3FunctionPlotterDlg(CWnd *pParent) : CDialog(IDD, pParent) {
   m_hIcon                = theApp.LoadIcon(IDR_MAINFRAME);
   m_infoVisible          = false;
+  m_timerRunning         = false;
 #ifdef DEBUG_POLYGONIZER
   m_debugThread          = NULL;
 #endif // DEBUG_POLYGONIZER
@@ -36,11 +37,12 @@ BEGIN_MESSAGE_MAP(CD3FunctionPlotterDlg, CDialog)
   ON_WM_PAINT()
   ON_WM_CLOSE()
   ON_WM_SIZE()
+  ON_WM_TIMER()
   ON_WM_QUERYDRAGICON()
   ON_WM_LBUTTONDOWN()
   ON_WM_LBUTTONUP()
-  ON_WM_MOUSEMOVE()
   ON_WM_LBUTTONDBLCLK()
+  ON_WM_MOUSEMOVE()
   ON_WM_MOUSEWHEEL()
   ON_WM_CONTEXTMENU()
   ON_COMMAND(ID_FILE_SAVESTATE                , OnFileSaveState                )
@@ -106,9 +108,6 @@ BOOL CD3FunctionPlotterDlg::OnInitDialog() {
   m_scene.setLightDirection(0, rotate(m_scene.getCameraDir(), m_scene.getCameraRight(), 0.2f));
 
   setInfoVisible(isMenuItemChecked(this, ID_VIEW_SHOW3DINFO));
-#ifdef LOGMEMORY
-  m_memlogThread.start();
-#endif
 
   String title = getWindowText(this);
   String architecture, compileMode;
@@ -260,7 +259,7 @@ LRESULT CD3FunctionPlotterDlg::OnMsgRender(WPARAM wp, LPARAM lp) {
   }
   if(wp & RENDER_INFO) {
     if(m_editor.isEnabled()) {
-      show3DInfo();
+      show3DInfo(INFO_EDIT);
     }
   }
   return 0;
@@ -673,8 +672,10 @@ void CD3FunctionPlotterDlg::setInfoVisible(bool visible) {
     getInfoPanel()->ShowWindow(SW_SHOW);
     m_scene.OnSize();
     m_infoVisible = visible;
-    show3DInfo();
+    show3DInfo(INFO_EDIT|INFO_MEM);
+    startTimer();
   } else {
+    stopTimer();
     getInfoPanel()->ShowWindow(SW_HIDE);
     setWindowRect(get3DWindow()  , upperRect);
     m_scene.OnSize();
@@ -714,9 +715,45 @@ void CD3FunctionPlotterDlg::OnAddBoxObject() {
   render(RENDER_ALL);
 }
 
-void CD3FunctionPlotterDlg::show3DInfo() {
+void CD3FunctionPlotterDlg::startTimer() {
+  if(!m_timerRunning) {
+    if(SetTimer(1, 5000, NULL) == 1) {
+      m_timerRunning = true;
+    }
+  }
+}
+
+void CD3FunctionPlotterDlg::stopTimer() {
+  if(m_timerRunning) {
+    KillTimer(1);
+    m_timerRunning = false;
+  }
+}
+
+void CD3FunctionPlotterDlg::OnTimer(UINT_PTR nIDEvent) {
+  show3DInfo(INFO_MEM);
+  __super::OnTimer(nIDEvent);
+}
+
+void CD3FunctionPlotterDlg::updateEditorInfo() {
+  m_editorInfo = m_editor.toString();
+}
+
+void CD3FunctionPlotterDlg::updateMemoryInfo() {
+  const PROCESS_MEMORY_COUNTERS mem = getProcessMemoryUsage();
+  const ResourceCounters        res = getProcessResources();
+  m_memoryInfo = format(_T("Time:%s Memory:%13s User-obj:%4d GDI-obj:%4d")
+                       ,Timestamp().toString(hhmmss).cstr()
+                       ,format1000(mem.WorkingSetSize).cstr()
+                       ,res.m_userObjectCount
+                       ,res.m_gdiObjectCount);
+}
+
+void CD3FunctionPlotterDlg::show3DInfo(BYTE flags) {
   if(!m_infoVisible) return;
-  showInfo(_T("%s"), m_editor.toString().cstr());
+  if(flags & INFO_MEM ) updateMemoryInfo();
+  if(flags & INFO_EDIT) updateEditorInfo();
+  showInfo(_T("%s\n%s"), m_memoryInfo.cstr(), m_editorInfo.cstr());
 }
 
 void CD3FunctionPlotterDlg::showInfo(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {

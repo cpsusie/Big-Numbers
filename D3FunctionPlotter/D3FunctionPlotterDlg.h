@@ -7,13 +7,12 @@
 #include "D3DGraphics/D3CoordinateSystem.h"
 #include "D3DGraphics/D3SceneEditor.h"
 
-#ifdef LOGMEMORY
-#include "MemoryLogThread.h"
-#endif // LOGMEMORY
 #ifdef DEBUG_POLYGONIZER
 #include "DebugThread.h"
 #endif // DEBUG_POLYGONIZER
 
+#define INFO_EDIT 0x01
+#define INFO_MEM  0x02
 
 class CD3FunctionPlotterDlg : public CDialog
                             , public D3SceneContainer
@@ -27,12 +26,11 @@ private:
     SimpleLayoutManager         m_layoutManager;
     D3Scene                     m_scene;
     D3SceneEditor               m_editor;
+    String                      m_editorInfo, m_memoryInfo;
+    bool                        m_timerRunning;
 #ifdef DEBUG_POLYGONIZER
     DebugThread                *m_debugThread;
 #endif // DEBUG_POLYGONIZER
-#ifdef LOGMEMORY
-    MemoryLogThread             m_memlogThread;
-#endif // LOGMEMORY
     Function2DSurfaceParameters m_function2DSurfaceParam;
     ParametricSurfaceParameters m_parametricSurfaceParam;
     IsoSurfaceParameters        m_isoSurfaceParam;
@@ -42,10 +40,15 @@ private:
     CWnd *getInfoPanel() {
       return GetDlgItem(IDC_STATIC_INFOPANEL);
     }
-
+    void startTimer();
+    void stopTimer();
     void setInfoVisible(bool visible);
+    void updateEditorInfo();
+    void updateMemoryInfo();
     void showInfo(_In_z_ _Printf_format_string_ TCHAR const * const format, ...);
-    void show3DInfo();
+    // flags any combination of INFO_MEM, INFO_EDIT
+    void show3DInfo(BYTE flags);
+
     void createInitialObject();
     CPoint get3DPanelPoint(CPoint point, bool screenRelative) const;
     D3SceneObject *createRotatedProfile();
@@ -120,6 +123,7 @@ protected:
     virtual void OnOK();
     afx_msg void OnClose();
     afx_msg void OnSize(UINT nType, int cx, int cy);
+    afx_msg void OnTimer(UINT_PTR nIDEvent);
     afx_msg HCURSOR OnQueryDragIcon();
     afx_msg void OnFileSaveState();
     afx_msg void OnFileLoadState();

@@ -457,7 +457,6 @@
     <ClCompile Include="DrawTool.cpp" />
     <ClCompile Include="Function2DSurfaceDlg.cpp" />
     <ClCompile Include="IsoSurfaceDlg.cpp" />
-    <ClCompile Include="MemoryLogThread.cpp" />
     <ClCompile Include="ParametricSurfaceDlg.cpp" />
     <ClCompile Include="ProfileDlg.cpp" />
     <ClCompile Include="ProfilePainter.cpp" />
@@ -489,7 +488,6 @@
     <ClInclude Include="DrawTool.h" />
     <ClInclude Include="Function2DSurfaceDlg.h" />
     <ClInclude Include="IsoSurfaceDlg.h" />
-    <ClInclude Include="MemoryLogThread.h" />
     <ClInclude Include="ParametricSurfaceDlg.h" />
     <ClInclude Include="ProfileDlg.h" />
     <ClInclude Include="ProfilePainter.h" />

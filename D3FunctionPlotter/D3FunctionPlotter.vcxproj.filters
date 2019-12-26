@@ -36,9 +36,6 @@
     <ClCompile Include="IsoSurfaceDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MemoryLogThread.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ProfileDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -78,9 +75,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="IsoSurfaceDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MemoryLogThread.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ProfileDlg.h">
