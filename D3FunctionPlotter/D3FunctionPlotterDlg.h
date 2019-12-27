@@ -8,11 +8,12 @@
 #include "D3DGraphics/D3SceneEditor.h"
 
 #ifdef DEBUG_POLYGONIZER
-#include "DebugThread.h"
+#include "Debugger.h"
 #endif // DEBUG_POLYGONIZER
 
 #define INFO_EDIT 0x01
 #define INFO_MEM  0x02
+#define INFO_ALL  (INFO_EDIT|INFO_MEM)
 
 class CD3FunctionPlotterDlg : public CDialog
                             , public D3SceneContainer
@@ -29,7 +30,9 @@ private:
     String                      m_editorInfo, m_memoryInfo;
     bool                        m_timerRunning;
 #ifdef DEBUG_POLYGONIZER
-    DebugThread                *m_debugThread;
+    Debugger                   *m_debugger;
+    bool                        m_cubeCenterSaved;
+    D3DXVECTOR3                 m_cubeCenter;
 #endif // DEBUG_POLYGONIZER
     Function2DSurfaceParameters m_function2DSurfaceParam;
     ParametricSurfaceParameters m_parametricSurfaceParam;
@@ -60,29 +63,26 @@ private:
     void setCalculatedObject(IsoSurfaceParameters        &param);
     D3SceneObject *getCalculatedObject() const;
 
-  void startDebugging();
   void stopDebugging();
+  void ajourDebuggerMenu();
 
 #ifdef DEBUG_POLYGONIZER
-  void startDebugThread(bool singleStep=false);
-  void killDebugThread(bool showCreateSurface);
-  void asyncKillDebugThread();
-  void ajourDebugMenuItems();
-  inline bool hasDebugThread() const {
-    return m_debugThread != NULL;
+  void startDebugging();
+  void startDebugger(bool singleStep=false);
+  void killDebugger(bool showCreateSurface);
+  void asyncKillDebugger();
+  inline bool hasDebugger() const {
+    return m_debugger != NULL;
   }
-  inline bool isDebugThreadRunning() const {
-    return hasDebugThread() && m_debugThread->isRunning();
-  }
-  inline bool isDebugThreadStopped() const {
-    return hasDebugThread() && !m_debugThread->isRunning() && !m_debugThread->isFinished();
-  }
-  inline bool isDebugThreadFinished() const {
-    return hasDebugThread() && !m_debugThread->isRunning() && m_debugThread->isFinished();
+  inline bool isDebuggerPaused() const {
+    return hasDebugger() && (m_debugger->getState() == DEBUGGER_PAUSED);
   }
   void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
 
-#endif
+  inline String getDebuggerStateName() const {
+    return hasDebugger() ? m_debugger->getStateName() : _T("No debugger");
+  }
+#endif // DEBUG_POLYGONIZER
 
 public:
     CD3FunctionPlotterDlg(CWnd *pParent = NULL);
@@ -102,6 +102,7 @@ public:
       appendMenuItem(menu, _T("Add box"), ID_ADDBOXOBJECT);
     }
     bool isBreakOnNextLevelChecked() const;
+    bool isAutoFocusCurrentCubeChecked() const;
 
     const Function2DSurfaceParameters &get2DSurfaceParameters() const {
       return m_function2DSurfaceParam;
@@ -139,12 +140,14 @@ protected:
     afx_msg void OnDebugSinglestep();
     afx_msg void OnDebugStepCube();
     afx_msg void OnDebugBreakOnNextLevel();
+    afx_msg void OnDebugStopDebugging();
+    afx_msg void OnDebugAutoFocusCurrentCube();
     afx_msg void OnResetPositions();
     afx_msg void OnObjectEditFunction();
     afx_msg void OnAddBoxObject();
-    afx_msg LRESULT OnMsgRender(WPARAM wp, LPARAM lp);
-    afx_msg LRESULT OnMsgDebugThreadRunning(WPARAM wp, LPARAM lp);
-    afx_msg LRESULT OnMsgKillDebugThread(WPARAM wp, LPARAM lp);
+    afx_msg LRESULT OnMsgRender(              WPARAM wp, LPARAM lp);
+    afx_msg LRESULT OnMsgDebuggerStateChanged(WPARAM wp, LPARAM lp);
+    afx_msg LRESULT OnMsgKillDebugger(        WPARAM wp, LPARAM lp);
 
     DECLARE_MESSAGE_MAP()
 };

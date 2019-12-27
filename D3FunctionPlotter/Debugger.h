@@ -6,16 +6,12 @@
 #error "Must compile with _DEBUG"
 #endif
 
-#include <Thread.h>
+#include <Runnable.h>
 #include <PropertyContainer.h>
 #include <Math/Expression/ExpressionWrapper.h>
 #include <D3DGraphics/D3SceneEditor.h>
 #include <D3DGraphics/IsoSurface.h>
 #include <D3DGraphics/IsosurfacePolygonizer.h>
-
-typedef enum {
-  THREAD_RUNNING
-} DebugThreadProperties;
 
 class CD3FunctionPlotterDlg;
 class DebugIsoSurface;
@@ -23,7 +19,18 @@ class DebugIsoSurface;
 #define BREAKONNEXTFACE  0x01
 #define BREAKONNEXTCUBE  0x02
 #define BREAKONNEXTLEVEL 0x04
-#define THREADKILLED     0x08
+#define BREAKKILLED      0x08
+
+typedef enum {
+  DEBUGGER_STATE
+} DebuggerProperties;
+
+typedef enum {
+  DEBUGGER_CREATED
+ ,DEBUGGER_RUNNING
+ ,DEBUGGER_PAUSED
+ ,DEBUGGER_TERMINATED
+} DebuggerState;
 
 typedef enum {
   NEW_FACE
@@ -31,23 +38,22 @@ typedef enum {
  ,NEW_LEVEL
 } StepType;
 
-class DebugThread : public Thread, public PropertyContainer {
+class Debugger : public Runnable, public PropertyContainer {
 private:
   CD3FunctionPlotterDlg             &m_dlg;
   DebugIsoSurface                   *m_surface;
   String                             m_resultMsg;
   BYTE                               m_breakPoints;
-  bool                               m_running;
-  bool                               m_finished;
+  DebuggerState                      m_state;
+  FastSemaphore                      m_terminated, m_go;
+  float                              m_currentCamDistance;
   bool                               m_ok;
-  inline void setPropRunning(bool value) {
-    setProperty(THREAD_RUNNING, m_running, value);
-  }
-  void initThread(bool singleStep);
-  void suspendThread();
+  void init(bool singleStep);
+  void suspend();
+  void resume();
 public:
-  DebugThread(CD3FunctionPlotterDlg *dlg);
-  ~DebugThread();
+  Debugger(CD3FunctionPlotterDlg *dlg);
+  ~Debugger();
   UINT run();
   void singleStep();
   void go();
@@ -55,18 +61,26 @@ public:
   void breakOnNextLevel(bool on);
   void kill();
   void handleStep(StepType type);
-  inline bool isFinished() const {
-    return m_finished;
+  inline DebuggerState getState() const {
+    return m_state;
   }
-  inline bool isRunning() const {
-    return m_running;
+  inline String getStateName() const {
+    return getStateName(getState());
   }
+  static String getStateName(DebuggerState state);
   inline bool isOK() const {
     return m_ok;
   }
   D3SceneObject *getSceneObject();
   const DebugIsoSurface &getDebugSurface() const {
     return *m_surface;
+  }
+  const StackedCube *getCurrentCube() const;
+  inline void setCurrentCamDistance(float dist) {
+    m_currentCamDistance = dist;
+  }
+  inline float getCurrentCamDistance() const {
+    return m_currentCamDistance;
   }
 };
 
@@ -120,7 +134,7 @@ public:
 
 class DebugIsoSurface : public IsoSurfaceEvaluator {
 private:
-  DebugThread                          &m_thread;
+  Debugger                             &m_thread;
   D3SceneContainer                     &m_sc;
   IsoSurfaceParameters                  m_param;
   ExpressionWrapper                     m_exprWrapper;
@@ -150,7 +164,7 @@ private:
     }
   }
 public:
-  DebugIsoSurface(DebugThread *thread, D3SceneContainer &sc, const IsoSurfaceParameters &param);
+  DebugIsoSurface(Debugger *thread, D3SceneContainer &sc, const IsoSurfaceParameters &param);
   void   createData();
   double evaluate(const Point3D &p);
   void   receiveFace(const Face3 &face);
@@ -167,6 +181,12 @@ public:
     return m_faceCount;
   }
   SceneObjectWithMesh *createMeshObject() const;
+  const StackedCube &getCurrentCube() const {
+    return m_currentCube;
+  }
+  inline bool hasCurrentCube() const {
+    return m_cubeCount > 0;
+  }
 };
 
 #endif // DEBUG_POLYGONIZER

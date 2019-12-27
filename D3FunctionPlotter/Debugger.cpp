@@ -2,130 +2,148 @@
 
 #ifdef DEBUG_POLYGONIZER
 
-#include "DebugThread.h"
+#include <Thread.h>
+#include "Debugger.h"
 #include "D3FunctionPlotterDlg.h"
 
-DebugThread::DebugThread(CD3FunctionPlotterDlg *dlg)
+#define setBreak(b) m_breakPoints |=  (b)
+#define clrBreak(b) m_breakPoints &= ~(b)
+
+Debugger::Debugger(CD3FunctionPlotterDlg *dlg)
 : m_dlg(*dlg)
 , m_ok(true)
+, m_go(0)
+, m_surface(NULL)
 {
-  initThread(true);
+  init(true);
   m_surface = new DebugIsoSurface(this,*dlg,dlg->getIsoSurfaceParameters()); TRACE_NEW(m_surface);
 }
 
-void DebugThread::initThread(bool singleStep) {
-  m_running     = m_finished = false;
-  m_breakPoints = 0;
-  if(singleStep) m_breakPoints |= BREAKONNEXTFACE;
+void Debugger::init(bool singleStep) {
+  m_state              = DEBUGGER_CREATED;
+  m_breakPoints        = 0;
+  m_currentCamDistance = 6;
+  if(singleStep) setBreak(BREAKONNEXTFACE);
   breakOnNextLevel(m_dlg.isBreakOnNextLevelChecked());
 }
 
-#define CHECKKILLED() { if(m_breakPoints & THREADKILLED) throwException(_T("Killed")); }
+#define CHECKKILLED()     { if(m_breakPoints & BREAKKILLED) throwException(_T("Killed")); }
+#define CHECKTERMINATED() if(getState() == DEBUGGER_TERMINATED) throwException(_T("%s:Debugger is terminated"),__TFUNCTION__)
 
-DebugThread::~DebugThread() {
+Debugger::~Debugger() {
   kill();
-  for(int i = 0; i < 500; i++) {
-    if(!stillActive()) {
-      break;
-    }
-    Sleep(100);
-  }
-  if(stillActive()) {
-    showWarning(_T("DebugThread still active in destructor"));
-  } else {
-    SAFEDELETE(m_surface);
-  }
+  m_terminated.wait();
+  SAFEDELETE(m_surface);
 }
 
-void DebugThread::singleStep() {
-  if(isFinished()) {
-    throwException(_T("%s:Thread has exited"),__TFUNCTION__);
-  }
-  m_breakPoints |= BREAKONNEXTFACE;
+void Debugger::singleStep() {
+  CHECKTERMINATED();
+  setBreak(BREAKONNEXTFACE);
   resume();
 }
 
-void DebugThread::go() {
-  if(isFinished()) {
-    throwException(_T("%s:Thread has exited"),__TFUNCTION__);
-  }
-  m_breakPoints &= ~(BREAKONNEXTFACE|BREAKONNEXTCUBE);
+void Debugger::go() {
+  CHECKTERMINATED();
+  clrBreak(BREAKONNEXTFACE|BREAKONNEXTCUBE);
   resume();
 }
 
-void DebugThread::goUntilNextCube() {
-  if(isFinished()) {
-    throwException(_T("%s:Thread has exited"),__TFUNCTION__);
-  }
-  m_breakPoints &= ~BREAKONNEXTFACE;
-  m_breakPoints |= BREAKONNEXTCUBE;
+void Debugger::goUntilNextCube() {
+  CHECKTERMINATED();
+  clrBreak(BREAKONNEXTFACE);
+  setBreak(BREAKONNEXTCUBE);
   resume();
 }
 
-void DebugThread::breakOnNextLevel(bool on) {
+void Debugger::breakOnNextLevel(bool on) {
   if(on) {
-    m_breakPoints |= BREAKONNEXTLEVEL;
+    setBreak(BREAKONNEXTLEVEL);
   } else {
-    m_breakPoints &= ~BREAKONNEXTLEVEL;
+    clrBreak(BREAKONNEXTLEVEL);
   }
 }
 
-void DebugThread::kill() {
-  m_breakPoints |= THREADKILLED;
-  if(stillActive() && !isRunning()) {
-    resume();
+void Debugger::kill() {
+  if((getState() != DEBUGGER_TERMINATED) && ((m_breakPoints & BREAKKILLED) == 0)) {
+    setBreak(BREAKKILLED);
+    if(getState() != DEBUGGER_RUNNING) {
+      resume();
+    }
   }
 }
 
-UINT DebugThread::run() {
-  setPropRunning(true);
+UINT Debugger::run() {
+  m_terminated.wait();
+  setThreadDescription("Debugger");
+  setProperty(DEBUGGER_STATE, m_state, DEBUGGER_RUNNING);
   try {
+    suspend();
     m_surface->createData();
   } catch(Exception e) {
     m_resultMsg = e.what();
-    m_ok = false;
+    m_ok        = false;
   } catch(...) {
-    m_resultMsg  = _T("Unknown exception");
-    m_ok = false;
+    m_resultMsg = _T("Unknown exception");
+    m_ok        = false;
   }
-  m_finished = true;
-  setPropRunning(false);
+  setProperty(DEBUGGER_STATE, m_state, DEBUGGER_TERMINATED);
+  m_terminated.notify();
   return 0;
 }
 
-void DebugThread::suspendThread() {
+void Debugger::suspend() {
   m_surface->updateSceneObject();
-  setPropRunning(false);
-  suspend();
-  setPropRunning(true);
+  setProperty(DEBUGGER_STATE, m_state, DEBUGGER_PAUSED);
+  m_go.wait();
+  setProperty(DEBUGGER_STATE, m_state, DEBUGGER_RUNNING);
   CHECKKILLED();
 }
 
-void DebugThread::handleStep(StepType type) {
+void Debugger::resume() {
+  m_go.notify();
+}
+
+void Debugger::handleStep(StepType type) {
   if(m_breakPoints) {
     CHECKKILLED();
     switch(type) {
     case NEW_FACE :
       if(m_breakPoints & BREAKONNEXTFACE) {
-        suspendThread();
+        suspend();
       }
       break;
     case NEW_CUBE :
       if(m_breakPoints & (BREAKONNEXTCUBE|BREAKONNEXTFACE)) {
-        suspendThread();
+        suspend();
       }
       break;
     case NEW_LEVEL:
       if(m_breakPoints & (BREAKONNEXTLEVEL|BREAKONNEXTCUBE|BREAKONNEXTFACE)) {
-        suspendThread();
+        suspend();
       }
       break;
     }
   }
 }
 
-D3SceneObject *DebugThread::getSceneObject() {
+D3SceneObject *Debugger::getSceneObject() {
   return m_surface->getSceneObject();
+}
+
+const StackedCube *Debugger::getCurrentCube() const {
+  return m_surface->hasCurrentCube() ? &m_surface->getCurrentCube() : NULL;
+}
+
+String Debugger::getStateName(DebuggerState state) { // static
+#define CASESTR(s) case DEBUGGER_##s: return _T(#s)
+  switch(state) {
+  CASESTR(CREATED   );
+  CASESTR(RUNNING   );
+  CASESTR(PAUSED    );
+  CASESTR(TERMINATED);
+  default: return format(_T("Unknown debuggerState:%d"), state);
+  }
+#undef CASESTR
 }
 
 // ----------------------------------------------------------------------------
@@ -238,7 +256,7 @@ void DebugSceneobject::deleteCubeObject() {
 
 // ----------------------------------------------------------------------------------
 
-DebugIsoSurface::DebugIsoSurface(DebugThread *thread, D3SceneContainer &sc, const IsoSurfaceParameters &param)
+DebugIsoSurface::DebugIsoSurface(Debugger *thread, D3SceneContainer &sc, const IsoSurfaceParameters &param)
 : m_thread(                *thread)
 , m_sc(                     sc)
 , m_param(                  param)

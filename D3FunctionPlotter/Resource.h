@@ -104,6 +104,8 @@
 #define ID_DEBUG_SINGLESTEP             32791
 #define ID_DEBUG_STEPCUBE               32792
 #define ID_DEBUG_BREAKONNEXTLEVEL       32793
+#define ID_DEBUG_STOPDEBUGGING          32794
+#define ID_DEBUG_AUTOFOCUSCURRENTCUBE   32795
 #define ID_EDIT_FINDMATCHINGPARENTESIS  32800
 #define ID_RESETPOSITIONS               32810
 #define ID_OBJECT_EDITFUNCTION          32820
@@ -142,15 +144,15 @@
 #define ID_FILE_READOBJ                 33257
 #define ID_FILE_READOBJFILE             33258
 #define ID_MSG_RENDER                   33300
-#define ID_MSG_DEBUGTHREADRUNNING       33301
-#define ID_MSG_KILLDEBUGTHREAD          33302
+#define ID_MSG_DEBUGGERSTATECHANGED     33301
+#define ID_MSG_KILLDEBUGGER             33302
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        207
-#define _APS_NEXT_COMMAND_VALUE         33275
+#define _APS_NEXT_COMMAND_VALUE         33313
 #define _APS_NEXT_CONTROL_VALUE         1233
 #define _APS_NEXT_SYMED_VALUE           103
 #endif
