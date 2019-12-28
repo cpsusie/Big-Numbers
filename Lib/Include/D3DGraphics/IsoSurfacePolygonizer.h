@@ -453,4 +453,7 @@ public:
   inline const Array<IsoSurfaceVertex> &getVertexArray() const {
     return m_vertexArray;
   }
+  inline BYTE getCurrentLevel() const {
+    return m_currentLevel;
+  }
 };

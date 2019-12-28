@@ -62,6 +62,10 @@ BEGIN_MESSAGE_MAP(CD3FunctionPlotterDlg, CDialog)
   ON_COMMAND(ID_DEBUG_BREAKONNEXTLEVEL        , OnDebugBreakOnNextLevel        )
   ON_COMMAND(ID_DEBUG_STOPDEBUGGING           , OnDebugStopDebugging           )
   ON_COMMAND(ID_DEBUG_AUTOFOCUSCURRENTCUBE    , OnDebugAutoFocusCurrentCube    )
+  ON_COMMAND(ID_DEBUG_ADJUSTCAM_45UP          , OnDebugAdjustCam45Up           )
+  ON_COMMAND(ID_DEBUG_ADJUSTCAM_45DOWN        , OnDebugAdjustCam45Down         )
+  ON_COMMAND(ID_DEBUG_ADJUSTCAM_45LEFT        , OnDebugAdjustCam45Left         )
+  ON_COMMAND(ID_DEBUG_ADJUSTCAM_45RIGHT       , OnDebugAdjustCam45Right        )
   ON_COMMAND(ID_RESETPOSITIONS                , OnResetPositions               )
   ON_COMMAND(ID_OBJECT_EDITFUNCTION           , OnObjectEditFunction           )
   ON_COMMAND(ID_ADDBOXOBJECT                  , OnAddBoxObject                 )
@@ -361,10 +365,13 @@ void CD3FunctionPlotterDlg::ajourDebuggerMenu() {
 #ifndef DEBUG_POLYGONIZER
   const bool enable1 = false;
   const bool enable2 = false;
+  const bool enable3 = false;
 #else
   const bool enable1 = isDebuggerPaused();
   const bool enable2 = hasDebugger();
-#endif  // DEBUG_POLYGONIZER
+  const bool enable3 = enable1 && isMenuItemChecked(this, ID_DEBUG_AUTOFOCUSCURRENTCUBE) && m_hasCubeCenter;
+#endif // DEBUG_POLYGONIZER
+
   enableSubMenuContainingId(this, ID_DEBUG_GO, enable1 || enable2);
   enableMenuItem(this, ID_DEBUG_GO                  , enable1);
   enableMenuItem(this, ID_DEBUG_SINGLESTEP          , enable1);
@@ -372,31 +379,31 @@ void CD3FunctionPlotterDlg::ajourDebuggerMenu() {
   enableMenuItem(this, ID_DEBUG_BREAKONNEXTLEVEL    , enable1);
   enableMenuItem(this, ID_DEBUG_AUTOFOCUSCURRENTCUBE, enable1);
   enableMenuItem(this, ID_DEBUG_STOPDEBUGGING       , enable2);
+  enableSubMenuContainingId(this, ID_DEBUG_ADJUSTCAM_45UP, enable3);
 }
 
 #ifndef DEBUG_POLYGONIZER
-void CD3FunctionPlotterDlg::stopDebugging() {}
-void CD3FunctionPlotterDlg::OnDebugGo() {}
-void CD3FunctionPlotterDlg::OnDebugSinglestep() {}
-void CD3FunctionPlotterDlg::OnDebugStepCube() {}
-void CD3FunctionPlotterDlg::OnDebugBreakOnNextLevel() {}
-void CD3FunctionPlotterDlg::OnDebugStopDebugging() {}
+void CD3FunctionPlotterDlg::startDebugging()              {}
+void CD3FunctionPlotterDlg::stopDebugging()               {}
+void CD3FunctionPlotterDlg::OnDebugGo()                   {}
+void CD3FunctionPlotterDlg::OnDebugSinglestep()           {}
+void CD3FunctionPlotterDlg::OnDebugStepCube()             {}
+void CD3FunctionPlotterDlg::OnDebugBreakOnNextLevel()     {}
+void CD3FunctionPlotterDlg::OnDebugStopDebugging()        {}
 void CD3FunctionPlotterDlg::OnDebugAutoFocusCurrentCube() {}
+void CD3FunctionPlotterDlg::OnDebugAdjustCam45Up()        {}
+void CD3FunctionPlotterDlg::OnDebugAdjustCam45Down()      {}
+void CD3FunctionPlotterDlg::OnDebugAdjustCam45Left()      {}
+void CD3FunctionPlotterDlg::OnDebugAdjustCam45Right()     {}
+
 LRESULT CD3FunctionPlotterDlg::OnMsgKillDebugger(        WPARAM wp, LPARAM lp) { return 0; }
 LRESULT CD3FunctionPlotterDlg::OnMsgDebuggerStateChanged(WPARAM wp, LPARAM lp) { return 0; }
 #else // DEBUG_POLYGONIZER
 
 void CD3FunctionPlotterDlg::startDebugging() {
   setCalculatedObject(NULL);
-  m_cubeCenterSaved = false;
-  startDebugger(true);
-}
-
-void CD3FunctionPlotterDlg::stopDebugging() {
-  killDebugger(false);
-}
-
-void CD3FunctionPlotterDlg::startDebugger(bool singleStep) {
+  m_hasCubeCenter      = false;
+  m_currentCamDistance = 5;
   try {
     killDebugger(false);
     m_debugger = new Debugger(this);
@@ -407,6 +414,10 @@ void CD3FunctionPlotterDlg::startDebugger(bool singleStep) {
   } catch(Exception e) {
     showException(e);
   }
+}
+
+void CD3FunctionPlotterDlg::stopDebugging() {
+  killDebugger(false);
 }
 
 void CD3FunctionPlotterDlg::asyncKillDebugger() {
@@ -477,7 +488,33 @@ void CD3FunctionPlotterDlg::OnDebugStopDebugging() {
 }
 
 void CD3FunctionPlotterDlg::OnDebugAutoFocusCurrentCube() {
-  toggleMenuItem(this, ID_DEBUG_AUTOFOCUSCURRENTCUBE);
+  enableSubMenuContainingId(this, ID_DEBUG_ADJUSTCAM_45UP, toggleMenuItem(this, ID_DEBUG_AUTOFOCUSCURRENTCUBE) && m_hasCubeCenter);
+}
+
+void CD3FunctionPlotterDlg::debugAdjustCamPos(int dfi, int dtheta) { // dfi,dtheta = [-1,0,1]
+  if(isDebuggerPaused() && m_hasCubeCenter) {
+    const Point3DP p = m_scene.getCameraPos() - m_cubeCenter;
+    Spherical s(p);
+    s.fi    += M_PI / 4 * dfi;
+    s.theta += M_PI / 4 * dtheta;
+    const Point3DP np = s;
+    const D3DXVECTOR3 ncamPos = m_cubeCenter + np;
+    m_scene.setCameraPos(ncamPos);
+    m_scene.setCameraLookAt(m_cubeCenter);
+  }
+}
+
+void CD3FunctionPlotterDlg::OnDebugAdjustCam45Up() {
+  debugAdjustCamPos(1, 0);
+}
+void CD3FunctionPlotterDlg::OnDebugAdjustCam45Down() {
+  debugAdjustCamPos(-1, 0);
+}
+void CD3FunctionPlotterDlg::OnDebugAdjustCam45Left() {
+  debugAdjustCamPos(0,-1);
+}
+void CD3FunctionPlotterDlg::OnDebugAdjustCam45Right() {
+  debugAdjustCamPos(0, 1);
 }
 
 bool CD3FunctionPlotterDlg::isBreakOnNextLevelChecked() const {
@@ -499,8 +536,8 @@ LRESULT CD3FunctionPlotterDlg::OnMsgDebuggerStateChanged(WPARAM wp, LPARAM lp) {
     const DebuggerState oldState = (DebuggerState)wp, newState = (DebuggerState)lp;
     switch(newState) {
     case DEBUGGER_RUNNING:
-      { if((oldState == DEBUGGER_PAUSED) && m_cubeCenterSaved) {
-          m_debugger->setCurrentCamDistance(length(m_scene.getCameraPos() - m_cubeCenter));
+      { if((oldState == DEBUGGER_PAUSED) && m_hasCubeCenter) {
+          m_currentCamDistance = length(m_scene.getCameraPos() - m_cubeCenter);
         }
         D3SceneObject *obj = m_debugger->getSceneObject();
         if(obj) {
@@ -513,14 +550,18 @@ LRESULT CD3FunctionPlotterDlg::OnMsgDebuggerStateChanged(WPARAM wp, LPARAM lp) {
       { D3SceneObject *obj = m_debugger->getSceneObject();
         m_scene.addSceneObject(obj);
         m_editor.setCurrentSceneObject(obj);
-        m_cubeCenterSaved = false;
+        m_hasCubeCenter = false;
         if(isAutoFocusCurrentCubeChecked()) {
-          const StackedCube *cube   = m_debugger->getCurrentCube();
-          if(cube) {
-            const Point3D  center = cube->getCenter();
-            m_cubeCenter          = D3DXVECTOR3((float)center.x, (float)center.y, (float)center.z);
-            m_cubeCenterSaved     = true;
-            m_scene.setCameraPos(m_cubeCenter - m_debugger->getCurrentCamDistance() * m_scene.getCameraDir());
+          const DebugIsoSurface  &surf = m_debugger->getDebugSurface();
+          if(surf.hasCurrentCube()) {
+            const StackedCube           &cube   = surf.getCurrentCube();
+            const IsoSurfacePolygonizer *poly   = surf.getPolygonizer();
+            const Point3DP               center = cube.getCenter();
+            m_hasCubeCenter                     = true;
+            m_cubeCenter                        = center;
+            m_cubeLevel                         = cube.getLevel();
+            m_scene.setCameraPos(m_cubeCenter - m_currentCamDistance * m_scene.getCameraDir());
+            show3DInfo(INFO_ALL);
           }
         }
       }
@@ -773,6 +814,21 @@ void CD3FunctionPlotterDlg::OnTimer(UINT_PTR nIDEvent) {
   __super::OnTimer(nIDEvent);
 }
 
+void CD3FunctionPlotterDlg::updateDebugInfo() {
+#ifdef DEBUG_POLYGONIZER
+  m_debugInfo = format(_T("Debugger State:%-8s"), getDebuggerStateName().cstr());
+  if(isDebuggerPaused() && m_hasCubeCenter) {
+    m_debugInfo += format(_T(", CubeCenter:(%s), level:%u"), toString(m_cubeCenter, 6).cstr(), m_cubeLevel);
+    const DebugIsoSurface       &surf = m_debugger->getDebugSurface();
+    const IsoSurfacePolygonizer *poly = surf.getPolygonizer();
+    if(poly) {
+      const PolygonizerStatistics &stat = poly->getStatistics();
+      m_debugInfo += format(_T(" CubeCalls:%5u, tetraCals:%5u, level:%u"), stat.m_doCubeCalls, stat.m_doTetraCalls, poly->getCurrentLevel());
+    }
+  }
+#endif
+}
+
 void CD3FunctionPlotterDlg::updateEditorInfo() {
   m_editorInfo = m_editor.toString();
 }
@@ -789,13 +845,10 @@ void CD3FunctionPlotterDlg::updateMemoryInfo() {
 
 void CD3FunctionPlotterDlg::show3DInfo(BYTE flags) {
   if(!m_infoVisible) return;
-  if(flags & INFO_MEM ) updateMemoryInfo();
-  if(flags & INFO_EDIT) updateEditorInfo();
-#ifdef DEBUG_POLYGONIZER
-  showInfo(_T("%s\n%s\n%s"), getDebuggerStateName().cstr(), m_memoryInfo.cstr(), m_editorInfo.cstr());
-#else
-  showInfo(_T("%s\n%s"), m_memoryInfo.cstr(), m_editorInfo.cstr());
-#endif //  DEBUG_POLYGONIZER
+  if (flags & INFO_DEBUG) updateDebugInfo();
+  if(flags  & INFO_MEM  ) updateMemoryInfo();
+  if(flags  & INFO_EDIT ) updateEditorInfo();
+  showInfo(_T("%s\n%s\n%s"), m_debugInfo.cstr(), m_memoryInfo.cstr(), m_editorInfo.cstr());
 }
 
 void CD3FunctionPlotterDlg::showInfo(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
@@ -805,3 +858,4 @@ void CD3FunctionPlotterDlg::showInfo(_In_z_ _Printf_format_string_ TCHAR const *
   va_end(argptr);
   setWindowText(getInfoPanel(), msg);
 }
+

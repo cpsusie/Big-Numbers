@@ -22,7 +22,6 @@ Debugger::Debugger(CD3FunctionPlotterDlg *dlg)
 void Debugger::init(bool singleStep) {
   m_state              = DEBUGGER_CREATED;
   m_breakPoints        = 0;
-  m_currentCamDistance = 6;
   if(singleStep) setBreak(BREAKONNEXTFACE);
   breakOnNextLevel(m_dlg.isBreakOnNextLevelChecked());
 }
@@ -128,10 +127,6 @@ void Debugger::handleStep(StepType type) {
 
 D3SceneObject *Debugger::getSceneObject() {
   return m_surface->getSceneObject();
-}
-
-const StackedCube *Debugger::getCurrentCube() const {
-  return m_surface->hasCurrentCube() ? &m_surface->getCurrentCube() : NULL;
 }
 
 String Debugger::getStateName(DebuggerState state) { // static
@@ -256,8 +251,8 @@ void DebugSceneobject::deleteCubeObject() {
 
 // ----------------------------------------------------------------------------------
 
-DebugIsoSurface::DebugIsoSurface(Debugger *thread, D3SceneContainer &sc, const IsoSurfaceParameters &param)
-: m_thread(                *thread)
+DebugIsoSurface::DebugIsoSurface(Debugger *debugger, D3SceneContainer &sc, const IsoSurfaceParameters &param)
+: m_debugger(              *debugger)
 , m_sc(                     sc)
 , m_param(                  param)
 , m_exprWrapper(            param.m_expr,param.m_machineCode)
@@ -269,10 +264,15 @@ DebugIsoSurface::DebugIsoSurface(Debugger *thread, D3SceneContainer &sc, const I
 , m_currentLevel(           0)
 , m_currentCube(            0,0,0,0)
 , m_sceneObject(            sc.getScene())
+, m_polygonizer(            NULL)
 {
   m_xp = m_exprWrapper.getVariableByName(_T("x"));
   m_yp = m_exprWrapper.getVariableByName(_T("y"));
   m_zp = m_exprWrapper.getVariableByName(_T("z"));
+}
+
+DebugIsoSurface::~DebugIsoSurface() {
+  SAFEDELETE(m_polygonizer)
 }
 
 void DebugIsoSurface::createData() {
@@ -281,20 +281,20 @@ void DebugIsoSurface::createData() {
   m_reverseSign = false; // dont delete this. Used in evaluate !!
   m_reverseSign = m_param.m_originOutside == (evaluate(origin) < 0);
 
-  IsoSurfacePolygonizer polygonizer(*this);
-  m_vertexArray = &polygonizer.getVertexArray();
+  m_polygonizer = new IsoSurfacePolygonizer(*this); TRACE_NEW(m_polygonizer);
+  m_vertexArray = &m_polygonizer->getVertexArray();
 
-  polygonizer.polygonize(Point3D(0,0,0)
-                        ,m_param.m_cellSize
-                        ,m_param.m_boundingBox
-                        ,m_param.m_tetrahedral
-                        ,m_param.m_tetraOptimize4
-                        ,m_param.m_adaptiveCellSize
-                        );
+  m_polygonizer->polygonize(Point3D(0,0,0)
+                           ,m_param.m_cellSize
+                           ,m_param.m_boundingBox
+                           ,m_param.m_tetrahedral
+                           ,m_param.m_tetraOptimize4
+                           ,m_param.m_adaptiveCellSize
+                           );
   if(m_faceCount == 0) {
     throwException(_T("No polygons generated. Cannot create object"));
   }
-  m_statistics = polygonizer.getStatistics();
+  m_statistics = m_polygonizer->getStatistics();
 }
 
 String DebugIsoSurface::getInfoMessage() const {
@@ -328,17 +328,17 @@ void DebugIsoSurface::receiveFace(const Face3 &face) {
   f.addVertexNormalIndex(face.m_i2, face.m_i2);
   f.addVertexNormalIndex(face.m_i3, face.m_i3);
 
-  m_thread.handleStep(NEW_FACE);
+  m_debugger.handleStep(NEW_FACE);
 }
 
 void DebugIsoSurface::markCurrentCube(const StackedCube &cube) {
   m_cubeCount++;
   m_currentCube = cube;
   if(cube.getLevel() == m_currentLevel) {
-    m_thread.handleStep(NEW_CUBE);
+    m_debugger.handleStep(NEW_CUBE);
   } else {
     m_currentLevel = cube.getLevel();
-    m_thread.handleStep(NEW_LEVEL);
+    m_debugger.handleStep(NEW_LEVEL);
   }
 }
 

@@ -7,13 +7,17 @@
 #include "D3DGraphics/D3CoordinateSystem.h"
 #include "D3DGraphics/D3SceneEditor.h"
 
+#define INFO_EDIT  0x01
+#define INFO_MEM   0x02
+
 #ifdef DEBUG_POLYGONIZER
+#define INFO_DEBUG 0x04
 #include "Debugger.h"
+#else
+#define INFO_DEBUG 0
 #endif // DEBUG_POLYGONIZER
 
-#define INFO_EDIT 0x01
-#define INFO_MEM  0x02
-#define INFO_ALL  (INFO_EDIT|INFO_MEM)
+#define INFO_ALL  (INFO_EDIT|INFO_MEM|INFO_DEBUG)
 
 class CD3FunctionPlotterDlg : public CDialog
                             , public D3SceneContainer
@@ -27,12 +31,14 @@ private:
     SimpleLayoutManager         m_layoutManager;
     D3Scene                     m_scene;
     D3SceneEditor               m_editor;
-    String                      m_editorInfo, m_memoryInfo;
+    String                      m_editorInfo, m_memoryInfo, m_debugInfo;
     bool                        m_timerRunning;
 #ifdef DEBUG_POLYGONIZER
     Debugger                   *m_debugger;
-    bool                        m_cubeCenterSaved;
+    float                       m_currentCamDistance;
+    bool                        m_hasCubeCenter;
     D3DXVECTOR3                 m_cubeCenter;
+    BYTE                        m_cubeLevel;
 #endif // DEBUG_POLYGONIZER
     Function2DSurfaceParameters m_function2DSurfaceParam;
     ParametricSurfaceParameters m_parametricSurfaceParam;
@@ -48,6 +54,7 @@ private:
     void setInfoVisible(bool visible);
     void updateEditorInfo();
     void updateMemoryInfo();
+    void updateDebugInfo();
     void showInfo(_In_z_ _Printf_format_string_ TCHAR const * const format, ...);
     // flags any combination of INFO_MEM, INFO_EDIT
     void show3DInfo(BYTE flags);
@@ -63,12 +70,11 @@ private:
     void setCalculatedObject(IsoSurfaceParameters        &param);
     D3SceneObject *getCalculatedObject() const;
 
+  void startDebugging();
   void stopDebugging();
   void ajourDebuggerMenu();
 
 #ifdef DEBUG_POLYGONIZER
-  void startDebugging();
-  void startDebugger(bool singleStep=false);
   void killDebugger(bool showCreateSurface);
   void asyncKillDebugger();
   inline bool hasDebugger() const {
@@ -82,6 +88,8 @@ private:
   inline String getDebuggerStateName() const {
     return hasDebugger() ? m_debugger->getStateName() : _T("No debugger");
   }
+  // dfi,dtheta = [-1,0,1]
+  void debugAdjustCamPos(int dfi, int dtheta);
 #endif // DEBUG_POLYGONIZER
 
 public:
@@ -142,6 +150,10 @@ protected:
     afx_msg void OnDebugBreakOnNextLevel();
     afx_msg void OnDebugStopDebugging();
     afx_msg void OnDebugAutoFocusCurrentCube();
+    afx_msg void OnDebugAdjustCam45Up();
+    afx_msg void OnDebugAdjustCam45Down();
+    afx_msg void OnDebugAdjustCam45Left();
+    afx_msg void OnDebugAdjustCam45Right();
     afx_msg void OnResetPositions();
     afx_msg void OnObjectEditFunction();
     afx_msg void OnAddBoxObject();

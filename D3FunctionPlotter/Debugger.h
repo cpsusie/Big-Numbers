@@ -46,7 +46,6 @@ private:
   BYTE                               m_breakPoints;
   DebuggerState                      m_state;
   FastSemaphore                      m_terminated, m_go;
-  float                              m_currentCamDistance;
   bool                               m_ok;
   void init(bool singleStep);
   void suspend();
@@ -75,29 +74,22 @@ public:
   const DebugIsoSurface &getDebugSurface() const {
     return *m_surface;
   }
-  const StackedCube *getCurrentCube() const;
-  inline void setCurrentCamDistance(float dist) {
-    m_currentCamDistance = dist;
-  }
-  inline float getCurrentCamDistance() const {
-    return m_currentCamDistance;
-  }
 };
 
 class DebugSceneobject : public D3SceneObject {
 private:
-  D3SceneObject *m_meshObject, *m_cubeObject;
-  D3DFILLMODE    m_fillMode;
-  D3DSHADEMODE   m_shadeMode;
+  D3SceneObject               *m_meshObject, *m_cubeObject;
+  D3DFILLMODE                  m_fillMode;
+  D3DSHADEMODE                 m_shadeMode;
   void deleteMeshObject();
   void deleteCubeObject();
 public:
   DebugSceneobject(D3Scene &scene)
     : D3SceneObject(scene, _T("Debug Polygonizer"))
-    , m_meshObject(NULL)
-    , m_cubeObject(NULL)
-    , m_fillMode(  D3DFILL_WIREFRAME)
-    , m_shadeMode( D3DSHADE_FLAT)
+    , m_meshObject( NULL)
+    , m_cubeObject( NULL)
+    , m_fillMode(   D3DFILL_WIREFRAME)
+    , m_shadeMode(  D3DSHADE_FLAT)
   {
   }
   ~DebugSceneobject();
@@ -134,10 +126,11 @@ public:
 
 class DebugIsoSurface : public IsoSurfaceEvaluator {
 private:
-  Debugger                             &m_thread;
+  Debugger                             &m_debugger;
   D3SceneContainer                     &m_sc;
   IsoSurfaceParameters                  m_param;
   ExpressionWrapper                     m_exprWrapper;
+  IsoSurfacePolygonizer                *m_polygonizer;
   bool                                  m_reverseSign;
   Real                                 *m_xp,*m_yp,*m_zp;
   DWORD                                 m_lastVertexCount;
@@ -164,12 +157,14 @@ private:
     }
   }
 public:
-  DebugIsoSurface(Debugger *thread, D3SceneContainer &sc, const IsoSurfaceParameters &param);
+  DebugIsoSurface(Debugger *debugger, D3SceneContainer &sc, const IsoSurfaceParameters &param);
+  ~DebugIsoSurface();
   void   createData();
   double evaluate(const Point3D &p);
   void   receiveFace(const Face3 &face);
   void   markCurrentCube(const StackedCube &cube);
   String getInfoMessage() const;
+
   inline D3SceneObject *getSceneObject() {
     return &m_sceneObject;
   }
@@ -186,6 +181,9 @@ public:
   }
   inline bool hasCurrentCube() const {
     return m_cubeCount > 0;
+  }
+  const IsoSurfacePolygonizer *getPolygonizer() const {
+    return m_polygonizer;
   }
 };
 
