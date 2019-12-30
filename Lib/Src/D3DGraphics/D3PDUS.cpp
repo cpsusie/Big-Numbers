@@ -9,9 +9,21 @@ D3PosDirUpScale::D3PosDirUpScale() {
 }
 
 D3PosDirUpScale &D3PosDirUpScale::setOrientation(const D3DXVECTOR3 &dir, const D3DXVECTOR3 &up) {
-  m_dir = unitVector(dir);
-  m_up  = unitVector(up);
-  return updateView();
+  if(length(crossProduct(dir, up)) != 0) {
+    m_dir = unitVector(dir);
+    m_up = unitVector(up);
+    updateView();
+  } else {
+    const D3DXVECTOR3 oldDir = getDir(), oldUp = getUp();
+    const D3DXVECTOR3 r     = getRight();
+    D3DXVECTOR3       newup = crossProduct(r, dir);
+    if(length(newup) != 0) {
+      m_dir = unitVector(dir);
+      m_up  = unitVector(newup);
+      updateView();
+    }
+  }
+  return *this;
 }
 
 D3PosDirUpScale &D3PosDirUpScale::setWorldMatrix(const D3DXMATRIX &world) {
@@ -28,9 +40,6 @@ D3PosDirUpScale &D3PosDirUpScale::setWorldMatrix(const D3DXMATRIX &world) {
 }
 
 D3PosDirUpScale &D3PosDirUpScale::updateView() {
-  if (length(crossProduct(m_dir, m_up)) == 0) {
-    int fisk = 0;
-  }
   D3DXVECTOR3 lookAt = m_pos + m_dir;
   D3DXMatrixLookAt(&m_view, &m_pos, &lookAt, &m_up);
   return *this;
