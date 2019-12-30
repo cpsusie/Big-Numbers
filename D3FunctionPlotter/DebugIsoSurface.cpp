@@ -32,20 +32,20 @@ int StackedCubeObject::s_matIndexNeg = -1;
 StackedCubeObject::StackedCubeObject(D3Scene &scene, const StackedCube &cube, double cellSize)
   : D3WireFrameBox(scene, *cube.m_corners[LBN], *cube.m_corners[RTF])
 {
-  for (int i = 0; i < ARRAYSIZE(m_cornerMark); i++) {
+  for(int i = 0; i < ARRAYSIZE(m_cornerMark); i++) {
     m_cornerMark[i] = createCubeCornerMark(*cube.m_corners[i], cellSize / (1 << cube.getLevel()));
   }
 }
 
 StackedCubeObject::~StackedCubeObject() {
-  for (int i = 0; i < ARRAYSIZE(m_cornerMark); i++) {
+  for(int i = 0; i < ARRAYSIZE(m_cornerMark); i++) {
     SAFEDELETE(m_cornerMark[i]);
   }
 }
 
 void StackedCubeObject::draw() {
   __super::draw();
-  for (int i = 0; i < ARRAYSIZE(m_cornerMark); i++) {
+  for(int i = 0; i < ARRAYSIZE(m_cornerMark); i++) {
     m_cornerMark[i]->draw();
   }
 }
@@ -54,15 +54,15 @@ CubeCornerMark *StackedCubeObject::createCubeCornerMark(const HashedCubeCorner &
   const int   matIndex = getCornerMaterial(c.m_positive);
   const float sz = (float)cellSize / 20;
   CubeCornerMark *mark = new CubeCornerMark(getScene()
-    , D3DXCube3(D3DXVECTOR3((float)c.x - sz, (float)c.y - sz, (float)c.z - sz)
-      , D3DXVECTOR3((float)c.x + sz, (float)c.y + sz, (float)c.z + sz))
-    , matIndex); TRACE_NEW(mark);
+                                           ,D3DXCube3(D3DXVECTOR3((float)c.x - sz, (float)c.y - sz, (float)c.z - sz)
+                                           ,D3DXVECTOR3((float)c.x + sz, (float)c.y + sz, (float)c.z + sz))
+                                           ,matIndex); TRACE_NEW(mark);
   return mark;
 }
 
 int StackedCubeObject::getCornerMaterial(bool positive) {
   int &result = positive ? s_matIndexPos : s_matIndexNeg;
-  if (result < 0) {
+  if(result < 0) {
     result = createCornerMaterial(positive);
   }
   return result;
@@ -71,14 +71,13 @@ int StackedCubeObject::getCornerMaterial(bool positive) {
 #define MATERIAL_DIFFUSE_POS D3DCOLOR_XRGB(66,196,56)
 #define MATERIAL_DIFFUSE_NEG D3DCOLOR_XRGB(216,50,50)
 
-
 int StackedCubeObject::createCornerMaterial(bool positive) {
   MATERIAL mat = getScene().getMaterial(0);
-  mat.Diffuse = colorToColorValue(positive ? MATERIAL_DIFFUSE_POS : MATERIAL_DIFFUSE_NEG);
+  mat.Diffuse  = colorToColorValue(positive ? MATERIAL_DIFFUSE_POS : MATERIAL_DIFFUSE_NEG);
   mat.Specular = colorToColorValue(D3D_WHITE);
-  mat.Ambient = colorToColorValue(D3D_BLACK);
+  mat.Ambient  = colorToColorValue(D3D_BLACK);
   mat.Emissive = mat.Ambient;
-  mat.Power = 200.0f;
+  mat.Power    = 200.0f;
   return getScene().addMaterial(mat);
 }
 

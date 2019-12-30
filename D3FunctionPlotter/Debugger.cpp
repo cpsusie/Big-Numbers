@@ -7,28 +7,19 @@
 #include "DebugIsoSurface.h"
 #include "D3FunctionPlotterDlg.h"
 
-#define setBreak(b) m_breakPoints |=  (b)
-#define clrBreak(b) m_breakPoints &= ~(b)
-
-Debugger::Debugger(CD3FunctionPlotterDlg *dlg)
-: m_dlg(*dlg)
-, m_ok(true)
-, m_go(0)
+Debugger::Debugger(D3SceneContainer *sc, const IsoSurfaceParameters &param, bool breakOnNextLevel)
+: m_go(0)
 , m_surface(NULL)
+, m_flags(0)
+, m_state(DEBUGGER_CREATED)
 {
-  init(true);
-  m_surface = new DebugIsoSurface(this,*dlg,dlg->getIsoSurfaceParameters()); TRACE_NEW(m_surface);
+  init(breakOnNextLevel);
+  m_surface = new DebugIsoSurface(this,*sc,param); TRACE_NEW(m_surface);
 }
 
-void Debugger::init(bool singleStep) {
-  m_state              = DEBUGGER_CREATED;
-  m_breakPoints        = 0;
-  if(singleStep) setBreak(BREAKONNEXTFACE);
-  breakOnNextLevel(m_dlg.isBreakOnNextLevelChecked());
+void Debugger::init(bool breakOnNextLevel) {
+  setFlags(FL_BREAKONNEXTFACE, true).setBreakOnNextLevel(breakOnNextLevel);
 }
-
-#define CHECKKILLED()     { if(m_breakPoints & BREAKKILLED) throwException(_T("Killed")); }
-#define CHECKTERMINATED() if(getState() == DEBUGGER_TERMINATED) throwException(_T("%s:Debugger is terminated"),__TFUNCTION__)
 
 Debugger::~Debugger() {
   kill();
@@ -37,35 +28,20 @@ Debugger::~Debugger() {
 }
 
 void Debugger::singleStep() {
-  CHECKTERMINATED();
-  setBreak(BREAKONNEXTFACE);
-  resume();
+  checkTerminated().setFlags(FL_BREAKONNEXTFACE).resume();
 }
 
 void Debugger::go() {
-  CHECKTERMINATED();
-  clrBreak(BREAKONNEXTFACE|BREAKONNEXTCUBE);
-  resume();
+  checkTerminated().clrFlags(FL_BREAKONNEXTFACE|FL_BREAKONNEXTCUBE).resume();
 }
 
 void Debugger::goUntilNextCube() {
-  CHECKTERMINATED();
-  clrBreak(BREAKONNEXTFACE);
-  setBreak(BREAKONNEXTCUBE);
-  resume();
-}
-
-void Debugger::breakOnNextLevel(bool on) {
-  if(on) {
-    setBreak(BREAKONNEXTLEVEL);
-  } else {
-    clrBreak(BREAKONNEXTLEVEL);
-  }
+  checkTerminated().clrFlags(FL_BREAKONNEXTFACE).setFlags(FL_BREAKONNEXTCUBE).resume();
 }
 
 void Debugger::kill() {
-  if((getState() != DEBUGGER_TERMINATED) && ((m_breakPoints & BREAKKILLED) == 0)) {
-    setBreak(BREAKKILLED);
+  if((getState() != DEBUGGER_TERMINATED) && ((m_flags & FL_KILLED) == 0)) {
+    setFlags(FL_KILLED);
     if(getState() != DEBUGGER_RUNNING) {
       resume();
     }
@@ -80,11 +56,11 @@ UINT Debugger::run() {
     suspend();
     m_surface->createData();
   } catch(Exception e) {
-    m_resultMsg = e.what();
-    m_ok        = false;
+    m_errorMsg = e.what();
+    setFlags(FL_ERROR);
   } catch(...) {
-    m_resultMsg = _T("Unknown exception");
-    m_ok        = false;
+    m_errorMsg = _T("Unknown exception");
+    setFlags(FL_ERROR);
   }
   setProperty(DEBUGGER_STATE, m_state, DEBUGGER_TERMINATED);
   m_terminated.notify();
@@ -96,7 +72,7 @@ void Debugger::suspend() {
   setProperty(DEBUGGER_STATE, m_state, DEBUGGER_PAUSED);
   m_go.wait();
   setProperty(DEBUGGER_STATE, m_state, DEBUGGER_RUNNING);
-  CHECKKILLED();
+  checkKilled();
 }
 
 void Debugger::resume() {
@@ -104,21 +80,21 @@ void Debugger::resume() {
 }
 
 void Debugger::handleStep(StepType type) {
-  if(m_breakPoints) {
-    CHECKKILLED();
+  if(m_flags) {
+    checkKilled();
     switch(type) {
     case NEW_FACE :
-      if(m_breakPoints & BREAKONNEXTFACE) {
+      if(m_flags & FL_BREAKONNEXTFACE) {
         suspend();
       }
       break;
     case NEW_CUBE :
-      if(m_breakPoints & (BREAKONNEXTCUBE|BREAKONNEXTFACE)) {
+      if(m_flags & (FL_BREAKONNEXTCUBE|FL_BREAKONNEXTFACE)) {
         suspend();
       }
       break;
     case NEW_LEVEL:
-      if(m_breakPoints & (BREAKONNEXTLEVEL|BREAKONNEXTCUBE|BREAKONNEXTFACE)) {
+      if(m_flags & (FL_BREAKONNEXTLEVEL|FL_BREAKONNEXTCUBE|FL_BREAKONNEXTFACE)) {
         suspend();
       }
       break;
@@ -128,6 +104,19 @@ void Debugger::handleStep(StepType type) {
 
 D3SceneObject *Debugger::getSceneObject() {
   return m_surface->getSceneObject();
+}
+
+String Debugger::getFlagNames(BYTE flags) { // static
+  const TCHAR *delim = NULL;
+  String result;
+#define ADDFLAG(f) if(flags & (FL_##f)) { if(delim) result += delim; else delim = _T(" "); result += _T(#f); }
+  ADDFLAG(BREAKONNEXTFACE )
+  ADDFLAG(BREAKONNEXTCUBE )
+  ADDFLAG(BREAKONNEXTLEVEL)
+  ADDFLAG(KILLED          )
+  ADDFLAG(ERROR           )
+  return result;
+#undef ADDFLAG
 }
 
 String Debugger::getStateName(DebuggerState state) { // static

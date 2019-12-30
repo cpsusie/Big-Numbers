@@ -10,9 +10,10 @@ class Debugger;
 
 class DebugSceneobject : public D3SceneObject {
 private:
-  D3SceneObject *m_meshObject, *m_cubeObject;
-  D3DFILLMODE    m_fillMode;
-  D3DSHADEMODE   m_shadeMode;
+  D3SceneObject  *m_meshObject, *m_cubeObject;
+  D3PosDirUpScale m_startPDUS, m_pdus;
+  D3DFILLMODE     m_fillMode;
+  D3DSHADEMODE    m_shadeMode;
   void deleteMeshObject();
   void deleteCubeObject();
 public:
@@ -23,13 +24,18 @@ public:
     , m_fillMode(D3DFILL_WIREFRAME)
     , m_shadeMode(D3DSHADE_FLAT)
   {
+    m_startPDUS = m_scene.getObjPDUS();
   }
   ~DebugSceneobject();
   void setMeshObject(D3SceneObject *obj);
   void setCubeObject(D3SceneObject *obj);
   void draw() {
-    if (m_meshObject) m_meshObject->draw();
-    if (m_cubeObject) m_cubeObject->draw();
+    if(m_meshObject) m_meshObject->draw();
+    if(m_cubeObject) m_cubeObject->draw();
+  }
+  D3PosDirUpScale &getPDUS() {
+    m_pdus = m_startPDUS;
+    return m_pdus;
   }
   LPD3DXMESH getMesh() const {
     return m_meshObject ? m_meshObject->getMesh() : NULL;

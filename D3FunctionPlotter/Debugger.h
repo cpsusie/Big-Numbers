@@ -11,12 +11,11 @@
 #include <D3DGraphics/D3SceneEditor.h>
 #include "DebugIsoSurface.h"
 
-class CD3FunctionPlotterDlg;
-
-#define BREAKONNEXTFACE  0x01
-#define BREAKONNEXTCUBE  0x02
-#define BREAKONNEXTLEVEL 0x04
-#define BREAKKILLED      0x08
+#define FL_BREAKONNEXTFACE  0x01
+#define FL_BREAKONNEXTCUBE  0x02
+#define FL_BREAKONNEXTLEVEL 0x04
+#define FL_KILLED           0x08
+#define FL_ERROR            0x10
 
 typedef enum {
   DEBUGGER_STATE
@@ -31,26 +30,54 @@ typedef enum {
 
 class Debugger : public Runnable, public PropertyContainer {
 private:
-  CD3FunctionPlotterDlg             &m_dlg;
   DebugIsoSurface                   *m_surface;
-  String                             m_resultMsg;
-  BYTE                               m_breakPoints;
+  BYTE                               m_flags;
   DebuggerState                      m_state;
   FastSemaphore                      m_terminated, m_go;
-  bool                               m_ok;
-  void init(bool singleStep);
+  String                             m_errorMsg;
+  void init(bool breakOnNextLevel);
+  inline Debugger &setFlags(BYTE flags) {
+    m_flags |= flags;
+    return *this;
+  }
+  inline Debugger &clrFlags(BYTE flags) {
+    m_flags &= ~flags;
+    return *this;
+  }
+  inline Debugger &setFlags(BYTE flags, bool on) {
+    if(on) setFlags(flags); else clrFlags(flags);
+    return *this;
+  }
+  inline Debugger &checkKilled() {
+    if(m_flags & FL_KILLED) throwException(_T("Killed"));
+    return *this;
+  }
+  inline Debugger &checkTerminated() {
+    if(getState() == DEBUGGER_TERMINATED) throwException(_T("Debugger is terminated"));
+    return *this;
+  }
+
   void suspend();
   void resume();
 public:
-  Debugger(CD3FunctionPlotterDlg *dlg);
+  Debugger(D3SceneContainer *sc, const IsoSurfaceParameters &param, bool breakOnNextLevel);
   ~Debugger();
   UINT run();
   void singleStep();
+  inline void setBreakOnNextLevel(bool on) {
+    setFlags(FL_BREAKONNEXTLEVEL, on);
+  }
   void go();
   void goUntilNextCube();
-  void breakOnNextLevel(bool on);
   void kill();
   void handleStep(StepType type);
+  inline BYTE getFlags() const {
+    return m_flags;
+  }
+  inline String getFlagNames() const {
+    return getFlagNames(getFlags());
+  }
+  static String getFlagNames(BYTE flags);
   inline DebuggerState getState() const {
     return m_state;
   }
@@ -59,7 +86,10 @@ public:
   }
   static String getStateName(DebuggerState state);
   inline bool isOK() const {
-    return m_ok;
+    return (m_flags & FL_ERROR) == 0;
+  }
+  inline const String &getErrorMsg() const {
+    return m_errorMsg;
   }
   D3SceneObject *getSceneObject();
   const DebugIsoSurface &getDebugSurface() const {

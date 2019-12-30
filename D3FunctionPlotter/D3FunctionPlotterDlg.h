@@ -39,6 +39,20 @@ private:
     bool                        m_hasCubeCenter;
     D3DXVECTOR3                 m_cubeCenter;
     BYTE                        m_cubeLevel;
+    int                         m_debugLightIndex;
+    inline void createDebugLight() {
+      m_debugLightIndex = m_scene.addLight(m_scene.getDefaultLight());
+    }
+    inline void destroyDebugLight() {
+      if(hasDebugLight()) {
+        m_scene.removeLight(m_debugLightIndex);
+        m_debugLightIndex = -1;
+      }
+    }
+    inline bool hasDebugLight() const {
+      return (m_debugLightIndex >= 0) && m_scene.isLightDefined(m_debugLightIndex);
+    }
+    void adjustDebugLightDir();
 #endif // DEBUG_POLYGONIZER
     Function2DSurfaceParameters m_function2DSurfaceParam;
     ParametricSurfaceParameters m_parametricSurfaceParam;
@@ -88,8 +102,6 @@ private:
   inline String getDebuggerStateName() const {
     return hasDebugger() ? m_debugger->getStateName() : _T("No debugger");
   }
-  // dfi,dtheta = [-1,0,1]
-  void debugAdjustCamPos(int dfi, int dtheta);
 #endif // DEBUG_POLYGONIZER
 
 public:

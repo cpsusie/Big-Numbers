@@ -30,6 +30,7 @@ CD3FunctionPlotterDlg::CD3FunctionPlotterDlg(CWnd *pParent) : CDialog(IDD, pPare
   m_timerRunning         = false;
 #ifdef DEBUG_POLYGONIZER
   m_debugger             = NULL;
+  m_debugLightIndex      = -1;
 #endif // DEBUG_POLYGONIZER
 }
 
@@ -406,8 +407,9 @@ void CD3FunctionPlotterDlg::startDebugging() {
   m_currentCamDistance = 5;
   try {
     killDebugger(false);
-    m_debugger = new Debugger(this);
+    m_debugger = new Debugger(this, m_isoSurfaceParam, isBreakOnNextLevelChecked());
     m_debugger->addPropertyChangeListener(this);
+    createDebugLight();
     ajourDebuggerMenu();
     ThreadPool::executeNoWait(*m_debugger);
     show3DInfo(INFO_MEM);
@@ -436,9 +438,17 @@ void CD3FunctionPlotterDlg::killDebugger(bool showCreateSurface) {
       setCalculatedObject(obj, &m_isoSurfaceParam);
     }
   }
+  const bool   allOk = m_debugger->isOK();
+  const String msg   = allOk ? _T("Polygonizing surface done") : m_debugger->getErrorMsg(); 
   SAFEDELETE(m_debugger);
+  destroyDebugLight();
   ajourDebuggerMenu();
   show3DInfo(INFO_ALL);
+  if(allOk) {
+    showInformation(_T("%s"), msg.cstr());
+  } else {
+    showError(_T("%s"), msg.cstr());
+  }
 }
 
 void CD3FunctionPlotterDlg::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
@@ -477,7 +487,7 @@ void CD3FunctionPlotterDlg::OnDebugStepCube() {
 void CD3FunctionPlotterDlg::OnDebugBreakOnNextLevel() {
   const bool breakOnLevel = toggleMenuItem(this, ID_DEBUG_BREAKONNEXTLEVEL);
   if(hasDebugger()) {
-    m_debugger->breakOnNextLevel(breakOnLevel);
+    m_debugger->setBreakOnNextLevel(breakOnLevel);
   }
 }
 
@@ -491,30 +501,57 @@ void CD3FunctionPlotterDlg::OnDebugAutoFocusCurrentCube() {
   enableSubMenuContainingId(this, ID_DEBUG_ADJUSTCAM_45UP, toggleMenuItem(this, ID_DEBUG_AUTOFOCUSCURRENTCUBE) && m_hasCubeCenter);
 }
 
-void CD3FunctionPlotterDlg::debugAdjustCamPos(int dfi, int dtheta) { // dfi,dtheta = [-1,0,1]
-  if(isDebuggerPaused() && m_hasCubeCenter) {
-    const Point3DP p = m_scene.getCameraPos() - m_cubeCenter;
-    Spherical s(p);
-    s.fi    += M_PI / 4 * dfi;
-    s.theta += M_PI / 4 * dtheta;
-    const Point3DP np = s;
-    const D3DXVECTOR3 ncamPos = m_cubeCenter + np;
-    m_scene.setCameraPos(ncamPos);
-    m_scene.setCameraLookAt(m_cubeCenter);
-  }
+void CD3FunctionPlotterDlg::adjustDebugLightDir() {
+  if(!hasDebugLight()) return;
+  D3PosDirUpScale   cam      = m_scene.getCameraPDUS();
+  const D3DXVECTOR3 dir      = m_cubeCenter - cam.getPos();
+  const D3DXVECTOR3 up       = cam.getUp();
+  const D3DXVECTOR3 lightDir = rotate(dir, up, M_PI / 4);
+  m_scene.setLightDirection(m_debugLightIndex, lightDir);
 }
 
 void CD3FunctionPlotterDlg::OnDebugAdjustCam45Up() {
-  debugAdjustCamPos(1, 0);
+  D3PosDirUpScale   cam  = m_scene.getCameraPDUS();
+  const D3DXVECTOR3 dir  = m_cubeCenter - cam.getPos();
+  const D3DXVECTOR3 up   = cam.getUp();
+  const D3DXVECTOR3 r    = cam.getRight();
+  const D3DXVECTOR3 ndir = rotate(dir, r, -M_PI / 4);
+  const D3DXVECTOR3 nup  = rotate(up , r, -M_PI / 4);
+  const D3DXVECTOR3 npos = m_cubeCenter - ndir;
+  m_scene.setCameraPDUS(cam.setPos(npos).setOrientation(ndir, nup));
+  adjustDebugLightDir();
 }
+
 void CD3FunctionPlotterDlg::OnDebugAdjustCam45Down() {
-  debugAdjustCamPos(-1, 0);
+  D3PosDirUpScale   cam  = m_scene.getCameraPDUS();
+  const D3DXVECTOR3 dir  = m_cubeCenter - cam.getPos();
+  const D3DXVECTOR3 up   = cam.getUp();
+  const D3DXVECTOR3 r    = cam.getRight();
+  const D3DXVECTOR3 ndir = rotate(dir, r, M_PI / 4);
+  const D3DXVECTOR3 nup  = rotate(up , r, M_PI / 4);
+  const D3DXVECTOR3 npos = m_cubeCenter - ndir;
+  m_scene.setCameraPDUS(cam.setPos(npos).setOrientation(ndir, nup));
+  adjustDebugLightDir();
 }
+
 void CD3FunctionPlotterDlg::OnDebugAdjustCam45Left() {
-  debugAdjustCamPos(0,-1);
+  D3PosDirUpScale   cam  = m_scene.getCameraPDUS();
+  const D3DXVECTOR3 dir  = m_cubeCenter - cam.getPos();
+  const D3DXVECTOR3 up   = cam.getUp();
+  const D3DXVECTOR3 ndir = rotate(dir, up, -M_PI / 4);
+  const D3DXVECTOR3 npos = m_cubeCenter - ndir;
+  m_scene.setCameraPDUS(cam.setPos(npos).setOrientation(ndir, up));
+  adjustDebugLightDir();
 }
+
 void CD3FunctionPlotterDlg::OnDebugAdjustCam45Right() {
-  debugAdjustCamPos(0, 1);
+  D3PosDirUpScale   cam  = m_scene.getCameraPDUS();
+  const D3DXVECTOR3 dir  = m_cubeCenter - cam.getPos();
+  const D3DXVECTOR3 up   = cam.getUp();
+  const D3DXVECTOR3 ndir = rotate(dir, up, M_PI / 4);
+  const D3DXVECTOR3 npos = m_cubeCenter - ndir;
+  m_scene.setCameraPDUS(cam.setPos(npos).setOrientation(ndir, up));
+  adjustDebugLightDir();
 }
 
 bool CD3FunctionPlotterDlg::isBreakOnNextLevelChecked() const {
@@ -561,6 +598,7 @@ LRESULT CD3FunctionPlotterDlg::OnMsgDebuggerStateChanged(WPARAM wp, LPARAM lp) {
             m_cubeCenter                        = center;
             m_cubeLevel                         = cube.getLevel();
             m_scene.setCameraPos(m_cubeCenter - m_currentCamDistance * m_scene.getCameraDir());
+            adjustDebugLightDir();
             show3DInfo(INFO_ALL);
           }
         }
@@ -817,13 +855,19 @@ void CD3FunctionPlotterDlg::OnTimer(UINT_PTR nIDEvent) {
 void CD3FunctionPlotterDlg::updateDebugInfo() {
 #ifdef DEBUG_POLYGONIZER
   m_debugInfo = format(_T("Debugger State:%-8s"), getDebuggerStateName().cstr());
-  if(isDebuggerPaused() && m_hasCubeCenter) {
-    m_debugInfo += format(_T(", CubeCenter:(%s), level:%u"), toString(m_cubeCenter, 6).cstr(), m_cubeLevel);
+  if(isDebuggerPaused()) {
+    m_debugInfo += format(_T(" Flags:%s"), m_debugger->getFlagNames().cstr());
+    if(!m_debugger->isOK()) {
+      m_debugInfo += format(_T("\nError:%s"), m_debugger->getErrorMsg().cstr());
+    }
+    if(m_hasCubeCenter) {
+      m_debugInfo += format(_T("\nCubeCenter:(%s), level:%u"), toString(m_cubeCenter, 6).cstr(), m_cubeLevel);
+    }
     const DebugIsoSurface       &surf = m_debugger->getDebugSurface();
     const IsoSurfacePolygonizer *poly = surf.getPolygonizer();
     if(poly) {
       const PolygonizerStatistics &stat = poly->getStatistics();
-      m_debugInfo += format(_T(" CubeCalls:%5u, tetraCals:%5u, level:%u"), stat.m_doCubeCalls, stat.m_doTetraCalls, poly->getCurrentLevel());
+      m_debugInfo += format(_T("\nCubeCalls:%5u, tetraCals:%5u, level:%u"), stat.m_doCubeCalls, stat.m_doTetraCalls, poly->getCurrentLevel());
     }
   }
 #endif
