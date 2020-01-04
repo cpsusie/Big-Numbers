@@ -173,7 +173,9 @@ private:
     void OnContextMenuSceneObject( CPoint point);
     void OnContextMenuVisualObject(CPoint point);
     void OnContextMenuLightControl(CPoint point);
+public:
     void OnControlCameraWalk();
+private:
     void OnObjectStartAnimation();
     void OnObjectStartBckAnimation();
     void OnObjectStartAltAnimation();
