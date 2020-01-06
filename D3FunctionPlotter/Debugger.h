@@ -11,11 +11,14 @@
 #include <D3DGraphics/D3SceneEditor.h>
 #include "DebugIsoSurface.h"
 
-#define FL_BREAKONNEXTFACE  0x01
-#define FL_BREAKONNEXTCUBE  0x02
-#define FL_BREAKONNEXTLEVEL 0x04
-#define FL_KILLED           0x08
-#define FL_ERROR            0x10
+#define FL_BREAKONNEXTLEVEL  0x01
+#define FL_BREAKONNEXTOCTA   0x02
+#define FL_BREAKONNEXTTETRA  0x04
+#define FL_BREAKONNEXTFACE   0x08
+#define FL_BREAKONNEXTVERTEX 0x10
+#define FL_KILLED            0x20
+#define FL_ERROR             0x40
+#define FL_ALLBREAKFLAGS (FL_BREAKONNEXTLEVEL | FL_BREAKONNEXTOCTA | FL_BREAKONNEXTTETRA | FL_BREAKONNEXTFACE | FL_BREAKONNEXTVERTEX)
 
 typedef enum {
   DEBUGGER_STATE
@@ -35,7 +38,6 @@ private:
   DebuggerState                      m_state;
   FastSemaphore                      m_terminated, m_go;
   String                             m_errorMsg;
-  void init(bool breakOnNextLevel);
   inline Debugger &setFlags(BYTE flags) {
     m_flags |= flags;
     return *this;
@@ -60,15 +62,13 @@ private:
   void suspend();
   void resume();
 public:
-  Debugger(D3SceneContainer *sc, const IsoSurfaceParameters &param, bool breakOnNextLevel);
+  Debugger(D3SceneContainer *sc, const IsoSurfaceParameters &param);
   ~Debugger();
   UINT run();
-  void singleStep();
-  inline void setBreakOnNextLevel(bool on) {
-    setFlags(FL_BREAKONNEXTLEVEL, on);
+  void singleStep(BYTE breakFlags);
+  inline void go() {
+    singleStep(0);
   }
-  void go();
-  void goUntilNextCube();
   void kill();
   void handleStep(StepType type);
   inline BYTE getFlags() const {

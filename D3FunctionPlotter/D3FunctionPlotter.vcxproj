@@ -455,6 +455,7 @@
     <ClCompile Include="D3FunctionPlotterDlg.cpp" />
     <ClCompile Include="Debugger.cpp" />
     <ClCompile Include="DebugIsoSurface.cpp" />
+    <ClCompile Include="DebugSceneObject.cpp" />
     <ClCompile Include="DrawTool.cpp" />
     <ClCompile Include="Function2DSurfaceDlg.cpp" />
     <ClCompile Include="IsoSurfaceDlg.cpp" />

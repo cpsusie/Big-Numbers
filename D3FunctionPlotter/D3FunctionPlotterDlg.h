@@ -94,6 +94,9 @@ private:
   inline bool hasDebugger() const {
     return m_debugger != NULL;
   }
+  inline void OnDebugStep(BYTE breakFlags) {
+    if(isDebuggerPaused()) m_debugger->singleStep(breakFlags);
+  }
   inline bool isDebuggerPaused() const {
     return hasDebugger() && (m_debugger->getState() == DEBUGGER_PAUSED);
   }
@@ -121,7 +124,6 @@ public:
     void modifyContextMenu(CMenu &menu) {
       appendMenuItem(menu, _T("Add box"), ID_ADDBOXOBJECT);
     }
-    bool isBreakOnNextLevelChecked() const;
     bool isAutoFocusCurrentCubeChecked() const;
 
     const Function2DSurfaceParameters &get2DSurfaceParameters() const {
@@ -157,9 +159,11 @@ protected:
     afx_msg void OnFileExit();
     afx_msg void OnViewShow3dinfo();
     afx_msg void OnDebugGo();
-    afx_msg void OnDebugSinglestep();
+    afx_msg void OnDebugStepLevel();
     afx_msg void OnDebugStepCube();
-    afx_msg void OnDebugBreakOnNextLevel();
+    afx_msg void OnDebugStepTetra();
+    afx_msg void OnDebugStepFace();
+    afx_msg void OnDebugStepVertex();
     afx_msg void OnDebugStopDebugging();
     afx_msg void OnDebugAutoFocusCurrentCube();
     afx_msg void OnDebugAdjustCam45Up();

@@ -84,6 +84,10 @@ public:
     : m_i1(i1), m_i2(i2), m_i3(i3), m_color(color)
   {
   }
+  inline void reset() {
+    m_i1 = m_i2 = m_i3 = 0;
+    m_color = 0;
+  }
   inline String toString() const {
     return format(_T("(%5u,%5u,%5u)"),m_i1,m_i2,m_i3);
   }
@@ -93,8 +97,11 @@ public:
 class IsoSurfaceVertex {
 public:
   // Position and surface normal
-  Point3D         m_position, m_normal;
+  Point3DP        m_position, m_normal;
   CompactIntArray m_faceArray; // faces, using this vertex as corner. indices into m_faceArray
+  inline void reset() {
+    m_position = m_normal = D3DXORIGIN;
+  }
   String toString(int precision=6) const {
     return format(_T("P:(%+.*le,%+.*le,%+.*le), N:(%+.*le,%+.*le,%+.*le)")
                  ,precision,m_position.x,precision,m_position.y,precision,m_position.z
@@ -250,6 +257,70 @@ public:
   String toString() const;
 };
 
+#ifdef DEBUG_POLYGONIZER
+class Octagon {
+private:
+  const StackedCube *m_cube;
+public:
+  inline Octagon() : m_cube(NULL) {
+  }
+  inline Octagon(const StackedCube &cube) : m_cube(&cube) {
+  }
+  inline const StackedCube &getCube() const {
+    return *m_cube;
+  }
+  inline BYTE getLevel() const {
+    return getCube().getLevel();
+  }
+  const D3DXVECTOR3 getCenter() const {
+    return Point3DP(getCube().getCenter());
+  }
+  virtual UINT getCornerCount() const {
+    return 8;
+  }
+  virtual const HashedCubeCorner &getHashedCorner(UINT index) const {
+    return *getCube().m_corners[index];
+  }
+  inline bool isEmpty() const {
+    return m_cube == NULL;
+  }
+  String toString() const {
+    return isEmpty() ? _T("Octa:---")
+                     : format(_T("Octa:%s"), m_cube->toString().cstr());
+  }
+};
+
+class Tetrahedron : public Octagon {
+private:
+  CubeCorner m_corner[4];
+public:
+  inline Tetrahedron() {
+    m_corner[0] = m_corner[1] = m_corner[2] = m_corner[3] = LBN;
+  }
+  inline Tetrahedron(const StackedCube &cube, CubeCorner c1, CubeCorner c2, CubeCorner c3, CubeCorner c4)
+    : Octagon(cube)
+  {
+    m_corner[0] = c1;  m_corner[1] = c2; m_corner[2] = c3; m_corner[3] = c4;
+  }
+  UINT getCornerCount() const {
+    return 4;
+  }
+  const HashedCubeCorner &getHashedCorner(UINT index) const {
+    return *getCube().m_corners[m_corner[index]];
+  }
+  String toString() const {
+    return isEmpty() ? _T("Tetra:---")
+                     : format(_T("Tetra:%s, corners:[%s,%s,%s,%s]")
+                             ,__super::toString().cstr()
+                             ,::toString(m_corner[0]).cstr()
+                             ,::toString(m_corner[1]).cstr()
+                             ,::toString(m_corner[2]).cstr()
+                             ,::toString(m_corner[3]).cstr());
+  }
+};
+
+#endif // DEBUG_POLYGONIZER
+
 class IsoSurfaceEvaluator {
 public:
   virtual double evaluate(const Point3D &p) = 0;
@@ -257,7 +328,13 @@ public:
   virtual void   receiveDebugVertices(int id,...) {
   };
 #ifdef DEBUG_POLYGONIZER
-  virtual void   markCurrentCube(const StackedCube &cube) {
+  virtual void   markCurrentOcta(  const Octagon          &octa  ) {
+  }
+  virtual void   markCurrentTetra( const Tetrahedron      &tetra ) {
+  }
+  virtual void   markCurrentFace(  const Face3            &face  ) {
+  }
+  virtual void   markCurrentVertex(const IsoSurfaceVertex *vertex) {
   }
 #endif // DEBUG_POLYGONIZER
 };
@@ -369,6 +446,9 @@ private:
   bool                acceptPendingFaces() const;
   void                splitCube(const StackedCube &cube); // create 8 smaller cubes, all contained in cube
   inline void         doTetra(const StackedCube &cube, CubeCorner c1, CubeCorner c2, CubeCorner c3, CubeCorner c4) {
+#ifdef DEBUG_POLYGONIZER
+    m_eval.markCurrentTetra(Tetrahedron(cube,c1,c2,c3,c4));
+#endif // DEBUG_POLYGONIZER
     doTetra(*cube.m_corners[c1], *cube.m_corners[c2], *cube.m_corners[c3], *cube.m_corners[c4]);
   }
 
@@ -388,7 +468,11 @@ private:
       throwException(_T("Invalid face(%u,%d,%d). vertexArray.size==%u"), i1,i2,i3, m_vertexArray.size());
     }
 #endif
-    m_face3Buffer.add(Face3(i1,i2,i3,m_color));
+    const Face3 f(i1, i2, i3, m_color);
+    m_face3Buffer.add(f);
+#ifdef DEBUG_POLYGONIZER
+    m_eval.markCurrentFace(f);
+#endif // DEBUG_POLYGONIZER
   }
   inline void         putFace3R(UINT i1, UINT i2, UINT i3) {
 #ifdef VALIDATE_PUTFACE

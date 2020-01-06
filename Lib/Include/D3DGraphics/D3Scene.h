@@ -643,6 +643,8 @@ protected:
   LPDIRECT3DVERTEXBUFFER m_vertexBuffer;
   void *allocateVertexBuffer(int vertexSize, UINT count, DWORD fvf);
   void  unlockVertexBuffer();
+  // vertexSize/fvf must equalk original parameters from allocateVertexBuffer
+  void *resizeVertexBuffer(int vertexSize, UINT newCount, DWORD fvf);
   inline void setStreamSource() {
     getScene().setStreamSource(m_vertexBuffer, m_vertexSize, m_fvf);
   }
@@ -752,11 +754,13 @@ public:
 
 class D3LineArray : public SceneObjectWithVertexBuffer {
 protected:
-  void initBuffer(const Line3D *lines, int n);
+  void initBuffer(const Line3D *lines, UINT n);
 public:
   D3LineArray(D3Scene &scene) : SceneObjectWithVertexBuffer(scene) {
   }
-  D3LineArray(D3Scene &scene, const Line3D *lines, int n);
+  D3LineArray(D3Scene &scene, const Line3D *lines, UINT n);
+  D3LineArray(D3Scene &scene, const CompactArray<Line3D> &lineArray);
+  void addLines(const CompactArray<Line3D> &lineArray);
   void draw();
 };
 

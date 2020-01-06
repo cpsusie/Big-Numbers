@@ -92,7 +92,7 @@ void IsoSurfacePolygonizer::polygonize(const Point3D &start
     while(hasActiveCubes()) { // process active cubes until none left
       const StackedCube cube = getActiveCube();
 #ifdef DEBUG_POLYGONIZER
-      m_eval.markCurrentCube(cube);
+      m_eval.markCurrentOcta(cube);
 #endif // DEBUG_POLYGONIZER
       const bool done = addSurfaceVertices(cube);
 
@@ -661,6 +661,9 @@ UINT IsoSurfacePolygonizer::getVertexId(const HashedCubeCorner &c1, const Hashed
   const int *p = m_edgeMap.get(edgeKey);
   if(p != NULL) {
     m_statistics.m_edgeHits++;
+#ifdef DEBUG_POLYGONIZER
+    m_eval.markCurrentVertex(&m_vertexArray[*p]);
+#endif // DEBUG_POLYGONIZER
     return *p; // previously computed
   }
 
@@ -709,9 +712,13 @@ UINT IsoSurfacePolygonizer::getVertexId(const HashedCubeCorner &c1, const Hashed
   IsoSurfaceVertex vertex;
   vertex.m_position   = converge(c1, c2);             // position;
   vertex.m_normal     = getNormal(vertex.m_position); // normal
+
   result = (UINT)m_vertexArray.size();
   m_vertexArray.add(vertex);
   m_edgeMap.put(edgeKey, result);
+#ifdef DEBUG_POLYGONIZER
+  m_eval.markCurrentVertex(&m_vertexArray[result]);
+#endif // DEBUG_POLYGONIZER
   return result;
 }
 

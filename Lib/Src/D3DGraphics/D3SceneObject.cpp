@@ -79,15 +79,53 @@ void *SceneObjectWithVertexBuffer::allocateVertexBuffer(int vertexSize, UINT cou
   return bufferItems;
 }
 
+void *SceneObjectWithVertexBuffer::resizeVertexBuffer(int vertexSize, UINT newCount, DWORD fvf) {
+  assert(vertexSize == m_vertexSize);
+  assert(fvf == m_fvf);
+  D3DVERTEXBUFFER_DESC desc;
+  memset(&desc, 0, sizeof(desc));
+  UINT oldBufferSize;
+  if(!hasVertexBuffer()) {
+    oldBufferSize = 0;
+  } else {
+    m_vertexBuffer->GetDesc(&desc);
+    oldBufferSize = desc.Size;
+  }
+  UINT newBufferSize = m_vertexSize * newCount;
+  void *newBufferItems = NULL;
+  if(newBufferSize != oldBufferSize) {
+    LPDIRECT3DVERTEXBUFFER newVertexBuffer = NULL;
+    if(newCount > 0) {
+      newVertexBuffer = getScene().allocateVertexBuffer(m_fvf, newCount, &newBufferSize);
+      assert(newBufferSize == m_vertexSize * newCount);
+      const UINT bytesToCopy = __min(newBufferSize, oldBufferSize);
+      V(newVertexBuffer->Lock(0, newBufferSize, &newBufferItems, 0));
+      if(bytesToCopy > 0) {
+        unlockVertexBuffer();
+        void *oldBufferItems = NULL;
+        V(m_vertexBuffer->Lock(0, oldBufferSize, &oldBufferItems, 0));
+        memcpy(newBufferItems, oldBufferItems, bytesToCopy);
+      }
+    }
+    unlockVertexBuffer();
+    releaseVertexBuffer();
+    m_vertexBuffer = newVertexBuffer;
+  }
+  return newBufferItems;
+}
+
 void SceneObjectWithVertexBuffer::unlockVertexBuffer() {
-  V(m_vertexBuffer->Unlock());
+  if(hasVertexBuffer()) {
+    V(m_vertexBuffer->Unlock());
+  }
 }
 
 void SceneObjectWithVertexBuffer::releaseVertexBuffer() {
   SAFERELEASE(m_vertexBuffer);
 }
 
-#define GETLOCKEDVERTEXBUFFER(type, count) (type*)allocateVertexBuffer(sizeof(type), count, type::FVF_Flags)
+#define GETLOCKEDVERTEXBUFFER( type, count) (type*)allocateVertexBuffer(sizeof(type), count, type::FVF_Flags)
+#define GETRESIZEDVERTEXBUFFER(type, count) (type*)resizeVertexBuffer(  sizeof(type), count, type::FVF_Flags)
 
 String SceneObjectWithVertexBuffer::toString() const {
   return format(_T("%s\nVertexBuffer:\n%s")
@@ -189,14 +227,26 @@ String SceneObjectWithMesh::toString() const {
 
 // ------------------------------------------------ D3LineArray -----------------------------------------------------------
 
-D3LineArray::D3LineArray(D3Scene &scene, const Line3D *lines, int n) : SceneObjectWithVertexBuffer(scene) {
+D3LineArray::D3LineArray(D3Scene &scene, const Line3D *lines, UINT n) : SceneObjectWithVertexBuffer(scene) {
   initBuffer(lines, n);
 }
 
-void D3LineArray::initBuffer(const Line3D *lines, int n) {
+D3LineArray::D3LineArray(D3Scene &scene, const CompactArray<Line3D> &lineArray) : SceneObjectWithVertexBuffer(scene) {
+  initBuffer(lineArray.getBuffer(), (UINT)lineArray.size());
+}
+
+void D3LineArray::initBuffer(const Line3D *lines, UINT n) {
   Vertex *vertices = GETLOCKEDVERTEXBUFFER(Vertex, 2*n);
   m_primitiveCount = n;
   memcpy(vertices, lines, sizeof(Line3D)*n);
+  unlockVertexBuffer();
+}
+
+void D3LineArray::addLines(const CompactArray<Line3D> &lineArray) {
+  const int n = m_primitiveCount + (int)lineArray.size();
+  Vertex *vertices = GETRESIZEDVERTEXBUFFER(Vertex, 2 * n);
+  memcpy(vertices + m_primitiveCount, lineArray.getBuffer(), (int)(sizeof(Line3D)*lineArray.size()));
+  m_primitiveCount = n;
   unlockVertexBuffer();
 }
 

@@ -8,31 +8,48 @@
 
 class Debugger;
 
+#define MESH_VISIBLE   0x01
+#define OCTA_VISIBLE   0x02
+#define TETRA_VISIBLE  0x04
+#define FACE_VISIBLE   0x08
+#define VERTEX_VISIBLE 0x10
+
 class DebugSceneobject : public D3SceneObject {
 private:
-  D3SceneObject  *m_meshObject, *m_cubeObject;
+  D3SceneObject  *m_meshObject, *m_octaObject, *m_tetraObject, *m_faceObject, *m_vertexObject, *m_visibleVertexArrayObject;
   D3PosDirUpScale m_startPDUS, m_pdus;
   D3DFILLMODE     m_fillMode;
   D3DSHADEMODE    m_shadeMode;
+  BYTE            m_visibleParts;
   void deleteMeshObject();
-  void deleteCubeObject();
+  void deleteOctaObject();
+  void deleteTetraObject();
+  void deleteFaceObject();
+  void deleteVertexObject();
+  void deleteVisibleVertexArrayObject();
 public:
   DebugSceneobject(D3Scene &scene)
     : D3SceneObject(scene, _T("Debug Polygonizer"))
-    , m_meshObject(NULL)
-    , m_cubeObject(NULL)
+    , m_meshObject(       NULL)
+    , m_octaObject(       NULL)
+    , m_tetraObject(      NULL)
+    , m_faceObject(       NULL)
+    , m_vertexObject(     NULL)
+    , m_visibleVertexArrayObject(NULL)
+    , m_visibleParts(0)
     , m_fillMode(D3DFILL_WIREFRAME)
     , m_shadeMode(D3DSHADE_FLAT)
   {
     m_startPDUS = m_scene.getObjPDUS();
   }
   ~DebugSceneobject();
-  void setMeshObject(D3SceneObject *obj);
-  void setCubeObject(D3SceneObject *obj);
-  void draw() {
-    if(m_meshObject) m_meshObject->draw();
-    if(m_cubeObject) m_cubeObject->draw();
-  }
+  void setMeshObject(              D3SceneObject *obj);
+  void setOctaObject(              D3SceneObject *obj);
+  void setTetraObject(             D3SceneObject *obj);
+  void setFaceObject(              D3SceneObject *obj);
+  void setVertexObject(            D3SceneObject *obj);
+  void setVisibleVertexArrayObject(D3SceneObject *obj);
+  void draw();
   D3PosDirUpScale &getPDUS() {
     m_pdus = m_startPDUS;
     return m_pdus;
@@ -45,7 +62,7 @@ public:
   }
   void setFillMode(D3DFILLMODE fillMode) {
     m_fillMode = fillMode;
-    if (m_meshObject) m_meshObject->setFillMode(fillMode);
+    if(m_meshObject) m_meshObject->setFillMode(fillMode);
   }
   D3DFILLMODE getFillMode() const {
     return m_meshObject ? m_meshObject->getFillMode() : m_fillMode;
@@ -60,45 +77,74 @@ public:
   D3DSHADEMODE getShadeMode() const {
     return m_meshObject ? m_meshObject->getShadeMode() : m_shadeMode;
   }
+  inline void setVisibleParts(BYTE visibleParts) {
+    m_visibleParts = visibleParts;
+  }
 };
 
 typedef enum {
-  NEW_FACE
- ,NEW_CUBE
- ,NEW_LEVEL
+  NEW_LEVEL
+ ,NEW_OCTA
+ ,NEW_TETRA
+ ,NEW_FACE
+ ,NEW_VERTEX
 } StepType;
+
+#define HAS_OCTA   0x01
+#define HAS_TETRA  0x02
+#define HAS_FACE   0x04
+#define HAS_VERTEX 0x08
 
 class DebugIsoSurface : public IsoSurfaceEvaluator {
 private:
-  Debugger                      &m_debugger;
-  D3SceneContainer              &m_sc;
-  IsoSurfaceParameters           m_param;
-  ExpressionWrapper              m_exprWrapper;
-  IsoSurfacePolygonizer         *m_polygonizer;
-  bool                           m_reverseSign;
-  Real                          *m_xp, *m_yp, *m_zp;
-  DWORD                          m_lastVertexCount;
-  DWORD                          m_faceCount;
-  DWORD                          m_cubeCount;
-  mutable DWORD                  m_lastCalculatedFaceCount;
-  mutable DWORD                  m_lastCalculatedCubeCount;
-  BYTE                           m_currentLevel;
-  const Array<IsoSurfaceVertex> *m_vertexArray;
-  MeshBuilder                    m_mb;
-  StackedCube                    m_currentCube;
-  DebugSceneobject               m_sceneObject;
-  PolygonizerStatistics          m_statistics;
-  D3SceneObject *createCubeObject();
-  inline void updateMeshObject() {
-    if(m_faceCount > m_lastCalculatedFaceCount) {
-      m_sceneObject.setMeshObject(createMeshObject());
-    }
-  }
+  Debugger                             &m_debugger;
+  D3SceneContainer                     &m_sc;
+  IsoSurfaceParameters                  m_param;
+  ExpressionWrapper                     m_exprWrapper;
+  IsoSurfacePolygonizer                *m_polygonizer;
+  PolygonizerStatistics                 m_statistics;
+  bool                                  m_reverseSign;
+  Real                                 *m_xp, *m_yp, *m_zp;
+  DWORD                                 m_faceCount, m_lastFaceCount, m_lastVertexCount;
+  const Array<IsoSurfaceVertex>        *m_vertexArray;
 
-  inline void updateCubeObject() {
-    if(m_cubeCount > m_lastCalculatedCubeCount) {
-      m_sceneObject.setCubeObject(createCubeObject());
-    }
+  BYTE                                  m_flags;
+  BYTE                                  m_currentLevel;
+  mutable DWORD                         m_octaCount  , m_octaCountObj;
+  mutable DWORD                         m_tetraCount , m_tetraCountObj;
+  mutable DWORD                         m_visibleFaceCount, m_visibleFaceCountObj;
+  mutable DWORD                         m_vertexCount, m_vertexCountObj;
+  mutable size_t                        m_visibleVertexArraySizeObj;
+
+  MeshBuilder                           m_mb;
+  DebugSceneobject                      m_sceneObject;
+  Octagon                               m_currentOcta;
+  Tetrahedron                           m_currentTetra;
+  Face3                                 m_currentFace;
+  IsoSurfaceVertex                      m_currentVertex;
+  CompactArray<const IsoSurfaceVertex*> m_visibleVertexArray;
+  D3SceneObject *createOctaObject();
+  D3SceneObject *createTetraObject();
+  D3SceneObject *createFaceObject();
+  D3SceneObject *createVertexObject();
+  D3SceneObject *createVisibleVertexArrayObject();
+
+  void           updateMeshObject();
+  void           updateOctaObject();
+  void           updateTetraObject();
+  void           updateFaceObject();
+  void           updateVertexObject();
+  void           updateVisibleVertexArrayObject();
+  inline void    clearVisibleVertexArray() {
+    m_visibleVertexArray.clear(-1);
+  }
+  inline DebugIsoSurface &setFlags(BYTE f) {
+    m_flags |= f;
+    return *this;
+  }
+  inline DebugIsoSurface &clrFlags(BYTE f) {
+    m_flags &= ~f;
+    return *this;
   }
 public:
   DebugIsoSurface(Debugger *debugger, D3SceneContainer &sc, const IsoSurfaceParameters &param);
@@ -106,29 +152,34 @@ public:
   void   createData();
   double evaluate(const Point3D &p);
   void   receiveFace(const Face3 &face);
-  void   markCurrentCube(const StackedCube &cube);
+
+  void   markCurrentOcta(  const Octagon          &octa  );
+  void   markCurrentTetra( const Tetrahedron      &tetra );
+  void   markCurrentFace(  const Face3            &fave  );
+  void   markCurrentVertex(const IsoSurfaceVertex *vertex);
   String getInfoMessage() const;
 
   inline D3SceneObject *getSceneObject() {
     return &m_sceneObject;
   }
-  inline void updateSceneObject() {
-    updateMeshObject();
-    updateCubeObject();
-  }
+  void updateSceneObject(BYTE visibleParts);
   inline int getFaceCount() const {
     return m_faceCount;
   }
   SceneObjectWithMesh *createMeshObject() const;
-  const StackedCube &getCurrentCube() const {
-    return m_currentCube;
+  const Octagon &getCurrentOcta() const {
+    return m_currentOcta;
   }
-  inline bool hasCurrentCube() const {
-    return m_cubeCount > 0;
+  inline bool hasCurrentOcta() const {
+    return (m_flags & HAS_OCTA) != 0;
+  }
+  inline bool hasVisibleVertexArray() const {
+    return m_visibleVertexArray.size() > 0;
   }
   const IsoSurfacePolygonizer *getPolygonizer() const {
     return m_polygonizer;
   }
+  String toString() const;
 };
 
 #endif // DEBUG_POLYGONIZER
