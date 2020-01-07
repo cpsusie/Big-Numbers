@@ -9,7 +9,6 @@
 // copies.
 
 #include "pch.h"
-#include <Random.h>
 #include <Thread.h>
 #include <DebugLog.h>
 #include <TinyBitSet.h>
@@ -65,6 +64,10 @@ void IsoSurfacePolygonizer::polygonize(const Point3D &start
                                       ) {
 
   const double startTime = getThreadTime();
+
+#ifndef _DEBUG
+  m_rnd.randomize();
+#endif // _DEBUG
 
   m_cellSize         = cellSize;
   m_boundingBox      = boundingBox;
@@ -531,10 +534,8 @@ Point3D IsoSurfacePolygonizer::getCornerPoint(int i, int j, int k) const {
 
 // find point on surface, beginning search at start
 Point3D IsoSurfacePolygonizer::findStartPoint(const Point3D &start) {
-  JavaRandom rnd;
-  rnd.randomize();
-  const IsoSurfaceTest in  = findStartPoint(true , start, rnd);
-  const IsoSurfaceTest out = findStartPoint(false, start, rnd);
+  const IsoSurfaceTest in  = findStartPoint(true , start);
+  const IsoSurfaceTest out = findStartPoint(false, start);
   if(!in.m_ok || !out.m_ok) {
     throwException(_T("Cannot find starting point1"));
   }
@@ -542,16 +543,16 @@ Point3D IsoSurfacePolygonizer::findStartPoint(const Point3D &start) {
 }
 
 // findStartPoint: search for point with value of sign specified by positive-parameter
-IsoSurfaceTest IsoSurfacePolygonizer::findStartPoint(bool positive, const Point3D &p, RandomGenerator &rnd) {
+IsoSurfaceTest IsoSurfacePolygonizer::findStartPoint(bool positive, const Point3D &p) {
   IsoSurfaceTest result(p);
 #define STEPCOUNT 200000
   const double step  = root(1000,STEPCOUNT); // multiply range by this STEPCOUNT times
-                                              // range will end up with value 10000*cellSize
+                                             // range will end up with value 10000*cellSize
   double       range = m_cellSize;
   for(int i = 0; i < STEPCOUNT; i++) {
-    result.x = p.x + randDouble(-range, range, rnd);
-    result.y = p.y + randDouble(-range, range, rnd);
-    result.z = p.z + randDouble(-range, range, rnd);
+    result.x = p.x + randDouble(-range, range, m_rnd);
+    result.y = p.y + randDouble(-range, range, m_rnd);
+    result.z = p.z + randDouble(-range, range, m_rnd);
     result.setValue(evaluate(result));
     if(result.m_positive == positive) {
       return result;

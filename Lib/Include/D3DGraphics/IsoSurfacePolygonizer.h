@@ -4,6 +4,7 @@
 #include <CompactArray.h>
 #include <CompactHashSet.h>
 #include <CompactHashMap.h>
+#include <Random.h>
 #include "Cube3D.h"
 
 typedef enum {
@@ -437,9 +438,10 @@ private:
   UINT                                         m_faceCount[MAXSPLITLEVEL+1];
   PolygonizerStatistics                        m_statistics;
   D3DCOLOR                                     m_color;
+  JavaRandom                                   m_rnd;
 
   Point3D             findStartPoint(const Point3D &start);
-  IsoSurfaceTest      findStartPoint(bool positive, const Point3D &start, RandomGenerator &rnd);
+  IsoSurfaceTest      findStartPoint(bool positive, const Point3D &start);
   bool                putInitialCube();
   // return false, if cube should be divided into 8 smaller cubes. true if faces are accepted
   bool                addSurfaceVertices(const StackedCube &cube);
