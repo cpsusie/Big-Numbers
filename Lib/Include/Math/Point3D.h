@@ -57,11 +57,6 @@ public:
   inline T distance(const Point3DTemplate &p) const {
     return sqrt(sqr(x-p.x)+sqr(y-p.y)+sqr(z-p.z));
   }
-  /*
-  inline operator D3DXVECTOR3() const {
-    return D3DXVECTOR3((float)x,(float)y,(float)z);
-  }
-  */
   inline bool operator==(const Point3DTemplate &p) const {
     return (x==p.x) && (y==p.y) && (z==p.z);
   }
