@@ -2,7 +2,7 @@
 
 #include <D3DGraphics/D3Scene.h>
 
-class D3LightControl : public SceneObjectWithMesh {
+class D3LightControl : public D3SceneObjectWithMesh {
 private:
   static bool   s_renderEffectEnabled;
   const int     m_lightIndex;

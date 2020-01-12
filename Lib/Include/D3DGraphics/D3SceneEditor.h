@@ -20,6 +20,7 @@ typedef enum {
  ,CONTROL_LIGHTCOLOR
  ,CONTROL_BACKGROUNDCOLOR
  ,CONTROL_AMBIENTLIGHTCOLOR
+ ,CONTROL_MARKEDCUBE
 } CurrentObjectControl;
 
 #define RENDER_3D   0x1
@@ -64,7 +65,7 @@ class D3SceneEditor : public PropertyChangeListener {
 private:
     D3SceneContainer                 *m_sceneContainer;
     CurrentObjectControl              m_currentControl;
-    D3SceneObject                    *m_currentSceneObject, *m_coordinateSystem;
+    D3SceneObject                    *m_currentSceneObject, *m_coordinateSystem, *m_selectedCube;
     PropertyDialogMap                 m_propertyDialogMap;
     PropertyContainer                *m_currentEditor;
     BitSet8                           m_stateFlags;
@@ -87,6 +88,9 @@ private:
     inline CPoint screenPTo3DP(CPoint p) const {
       get3DWindow()->ScreenToClient(&p);
       return p;
+    }
+    inline bool ptIn3DWindow(const CPoint &p) const {
+      return getWindowRect(get3DWindow()).PtInRect(p);
     }
     inline void render(BYTE flags) {
       if(isRenderEnabled()) m_sceneContainer->render(flags);
@@ -202,6 +206,7 @@ private:
     void OnShadingGouraud();
     void OnShadingPhong();
     void setCoordinateSystemVisible(bool visible);
+    void setSelectedCubeVisible(    bool visible);
     void setLightEnabled(bool enabled);
     void OnLightRemove();
     void OnLButtonDown(  UINT nFlags, CPoint point);
@@ -250,7 +255,10 @@ public:
       return m_pickedInfo;
     }
     inline bool isCoordinateSystemVisible() const {
-      return m_coordinateSystem && (m_coordinateSystem->isVisible());
+      return m_coordinateSystem && m_coordinateSystem->isVisible();
+    }
+    inline bool isSelectedCubeVisible() const {
+      return m_selectedCube && m_selectedCube->isVisible();
     }
     BOOL PreTranslateMessage(MSG *pMsg);
     String toString() const;

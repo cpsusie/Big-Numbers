@@ -5,7 +5,7 @@ DECLARE_THISFILE;
 
 bool D3LightControl::s_renderEffectEnabled = false;
 
-D3LightControl::D3LightControl(D3Scene &scene, int lightIndex) : SceneObjectWithMesh(scene), m_lightIndex(lightIndex) {
+D3LightControl::D3LightControl(D3Scene &scene, int lightIndex) : D3SceneObjectWithMesh(scene), m_lightIndex(lightIndex) {
   m_size          =  1;
   m_materialIndex = -1;
   m_effect        = NULL;

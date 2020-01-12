@@ -642,11 +642,21 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="D3AnimatedSurface.cpp" />
-    <ClCompile Include="D3CoordinateSystem.cpp" />
+    <ClCompile Include="D3SceneObjectCoordinateSystem.cpp" />
+    <ClCompile Include="D3SceneObjectCurve.cpp" />
+    <ClCompile Include="D3SceneObjectCurveArray.cpp" />
+    <ClCompile Include="D3SceneObjectLineArray.cpp" />
+    <ClCompile Include="D3SceneObjectLineArrow.cpp" />
     <ClCompile Include="D3PDUS.cpp" />
     <ClCompile Include="D3SceneEditor.cpp" />
     <ClCompile Include="D3SceneObjectIterator.cpp" />
+    <ClCompile Include="D3SceneObjectSolidBox.cpp" />
+    <ClCompile Include="D3SceneObjectWithIndexBuffer.cpp" />
+    <ClCompile Include="D3SceneObjectWithMesh.cpp" />
+    <ClCompile Include="D3SceneObjectWithVertexBuffer.cpp" />
     <ClCompile Include="D3SceneRenderState.cpp" />
+    <ClCompile Include="D3SelectedCube.cpp" />
+    <ClCompile Include="D3SceneObjectWireFrameBox.cpp" />
     <ClCompile Include="FVF.cpp" />
     <ClCompile Include="IsoCurve.cpp" />
     <ClCompile Include="Light.cpp" />
@@ -668,7 +678,6 @@
     <ClCompile Include="Function2DSurface.cpp" />
     <ClCompile Include="Function2DSurfaceMeshBuilder.cpp" />
     <ClCompile Include="IsoSurface.cpp" />
-    <ClCompile Include="IsoSurfaceDebugObject.cpp" />
     <ClCompile Include="IsoSurfaceMeshBuilder.cpp" />
     <ClCompile Include="MeshArray.cpp" />
     <ClCompile Include="MeshArrayJobMonitor.cpp" />
@@ -694,17 +703,19 @@
     <ClCompile Include="3DXML.cpp" />
     <ClCompile Include="Profile.cpp" />
     <ClCompile Include="RotateProfile.cpp" />
+    <ClCompile Include="VertexBufferToBoundingBox.cpp" />
     <ClCompile Include="VertexFileSurfaceMeshBuilder.cpp" />
     <ClCompile Include="WavefrontObjFileMeshBuilder.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\D3DGraphics\Cube3D.h" />
-    <ClInclude Include="..\..\Include\D3DGraphics\D3CoordinateSystem.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectCoordinateSystem.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3Error.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3LightControl.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3Math.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3Scene.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3SceneEditor.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\D3SelectedCube.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3TextureFactory.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3ToString.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\Function2DSurface.h" />

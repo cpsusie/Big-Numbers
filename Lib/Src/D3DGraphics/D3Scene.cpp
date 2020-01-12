@@ -510,17 +510,6 @@ D3SceneObject *D3Scene::getPickedObject(const CPoint &point, long mask, D3DXVECT
   return closestObject;
 }
 
-LPDIRECT3DVERTEXBUFFER D3Scene::allocateVertexBuffer(DWORD fvf, UINT count, UINT *bufferSize) {
-  const UINT vertexSize = ::FVFToSize(fvf);
-  UINT tmp;
-  UINT &totalSize  = bufferSize ? *bufferSize : tmp;
-  totalSize = vertexSize*count;
-  LPDIRECT3DVERTEXBUFFER result;
-  V(m_device->CreateVertexBuffer(totalSize, 0, fvf, D3DPOOL_DEFAULT, &result, NULL));
-  TRACE_CREATE(result);
-  return result;
-}
-
 LPDIRECT3DINDEXBUFFER D3Scene::allocateIndexBuffer(bool int32, UINT count, UINT *bufferSize) {
   const int itemSize = int32 ? sizeof(long) : sizeof(short);
   UINT tmp;

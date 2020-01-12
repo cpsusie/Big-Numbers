@@ -15,5 +15,3 @@ MeshArray      createMeshArray(CWnd *wnd,  AbstractMeshFactory &amf, const Param
 LPD3DXMESH     createMesh(                 AbstractMeshFactory &amf, const IsoSurfaceParameters        &param);
 MeshArray      createMeshArray(CWnd *wnd,  AbstractMeshFactory &amf, const IsoSurfaceParameters        &param);
 LPD3DXMESH     createSphereMesh(           AbstractMeshFactory &amf, double                            radius);
-
-D3SceneObject *createIsoSurfaceDebugObject(AbstractMeshFactory &amf, const IsoSurfaceParameters        &param);

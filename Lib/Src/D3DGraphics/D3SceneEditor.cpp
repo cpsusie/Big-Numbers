@@ -5,13 +5,15 @@
 #include <D3DGraphics/LightDlg.h>
 #include <D3DGraphics/MaterialDlg.h>
 #include <D3DGraphics/D3SceneEditor.h>
-#include <D3DGraphics/D3CoordinateSystem.h>
+#include <D3DGraphics/D3SceneObjectCoordinateSystem.h>
+#include <D3DGraphics/D3SelectedCube.h>
 
 D3SceneEditor::D3SceneEditor() {
   m_sceneContainer     = NULL;
   m_currentEditor      = NULL;
   m_currentSceneObject = NULL;
   m_coordinateSystem   = NULL;
+  m_selectedCube       = NULL;
   m_paramFileName      = _T("Untitled");
   m_stateFlags.add(SE_MOUSEVISIBLE);
 }
@@ -36,6 +38,8 @@ void D3SceneEditor::close() {
   m_propertyDialogMap.clear();
   getScene().removeSceneObject(m_coordinateSystem);
   SAFEDELETE(m_coordinateSystem);
+  getScene().removeSceneObject(m_selectedCube);
+  SAFEDELETE(m_selectedCube);
 }
 
 void D3SceneEditor::setEnabled(bool enabled) {
@@ -245,18 +249,23 @@ BOOL D3SceneEditor::PreTranslateMessage(MSG *pMsg) {
     }
     break;
   case WM_LBUTTONDOWN:
+    if(!ptIn3DWindow(pMsg->pt)) return false;
     OnLButtonDown((UINT)pMsg->wParam, screenPTo3DP(pMsg->pt));
     return true;
   case WM_LBUTTONUP  :
+    if(!ptIn3DWindow(pMsg->pt)) return false;
     OnLButtonUp((UINT)pMsg->wParam, screenPTo3DP(pMsg->pt));
     return true;
   case WM_MOUSEMOVE  :
+    if(!ptIn3DWindow(pMsg->pt)) return false;
     OnMouseMove((UINT)pMsg->wParam, screenPTo3DP(pMsg->pt));
     return true;
   case WM_MOUSEWHEEL :
+    if(!ptIn3DWindow(pMsg->pt)) return false;
     OnMouseWheel((UINT)(pMsg->wParam&0xffff), (short)(pMsg->wParam >> 16), screenPTo3DP(pMsg->pt));
     return true;
   case WM_RBUTTONUP:
+    if(!ptIn3DWindow(pMsg->pt)) return false;
     OnContextMenu(getMessageWindow(), pMsg->pt);
     return true;
   case WM_COMMAND:
@@ -304,7 +313,7 @@ BOOL D3SceneEditor::PreTranslateMessage(MSG *pMsg) {
     case ID_SAVESCENEPARAMETERS           : OnSaveSceneParameters()             ; return true;
     case ID_LOADSCENEPARAMETERS           : OnLoadSceneParameters()             ; return true;
     default:
-      if ((ID_SELECT_LIGHT0 <= pMsg->wParam) && (pMsg->wParam <= ID_SELECT_LIGHT20)) {
+      if((ID_SELECT_LIGHT0 <= pMsg->wParam) && (pMsg->wParam <= ID_SELECT_LIGHT20)) {
         const int index = (int)pMsg->wParam - ID_SELECT_LIGHT0;
         setCurrentSceneObject(getScene().setLightControlVisible(index, true));
         return true;
@@ -1195,7 +1204,7 @@ void D3SceneEditor::OnShadingPhong()      { getCurrentSceneObject()->setShadeMod
 void D3SceneEditor::setCoordinateSystemVisible(bool visible) {
   if(visible) {
     if(m_coordinateSystem == NULL) {
-      m_coordinateSystem = new D3CoordinateSystem(getScene()); TRACE_NEW(m_coordinateSystem);
+      m_coordinateSystem = new D3SceneObjectCoordinateSystem(getScene()); TRACE_NEW(m_coordinateSystem);
       getScene().addSceneObject(m_coordinateSystem);
     } else {
       m_coordinateSystem->setVisible(true);
@@ -1203,6 +1212,22 @@ void D3SceneEditor::setCoordinateSystemVisible(bool visible) {
   } else {
     if(isCoordinateSystemVisible()) {
       m_coordinateSystem->setVisible(false);
+    }
+  }
+  render(RENDER_3D);
+}
+
+void D3SceneEditor::setSelectedCubeVisible(bool visible) {
+  if(visible) {
+    if(m_selectedCube == NULL) {
+      m_selectedCube = new D3SelectedCube(getScene()); TRACE_NEW(m_selectedCube);
+      getScene().addSceneObject(m_selectedCube);
+    } else {
+      m_selectedCube->setVisible(true);
+    }
+  } else {
+    if(isSelectedCubeVisible()) {
+      m_selectedCube->setVisible(false);
     }
   }
   render(RENDER_3D);

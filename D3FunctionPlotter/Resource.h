@@ -17,7 +17,7 @@
 #define IDB_ROTATECORNERBITMAP          203
 #define IDC_BUTTON_DUMMY                1020
 #define IDC_STATIC_3DPANEL              1021
-#define IDC_STATIC_INFOPANEL            1022
+#define IDC_EDIT_INFOPANEL              1022
 #define IDC_STATIC_FUNCTION             1070
 #define IDC_EDIT_EXPR                   1071
 #define IDC_STATIC_XINTERVAL            1072
@@ -112,6 +112,7 @@
 #define ID_DEBUG_ADJUSTCAM_45DOWN       32802
 #define ID_DEBUG_ADJUSTCAM_45LEFT       32803
 #define ID_DEBUG_ADJUSTCAM_45RIGHT      32804
+#define ID_DEBUG_MARKCUBE               32805
 #define ID_EDIT_FINDMATCHINGPARENTESIS  32810
 #define ID_RESETPOSITIONS               32820
 #define ID_OBJECT_EDITFUNCTION          32830
@@ -158,8 +159,8 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        207
-#define _APS_NEXT_COMMAND_VALUE         33326
-#define _APS_NEXT_CONTROL_VALUE         1233
+#define _APS_NEXT_COMMAND_VALUE         33327
+#define _APS_NEXT_CONTROL_VALUE         1234
 #define _APS_NEXT_SYMED_VALUE           103
 #endif
 #endif

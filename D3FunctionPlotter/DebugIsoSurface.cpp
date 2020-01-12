@@ -29,48 +29,17 @@ public:
 
 static MaterialIndexWithColor blackMatIndex, whiteMatIndex, blueMatIndex, yellowMatIndex;
 
-class CornerMarkObject : public SceneObjectSolidBox {
-private:
-  static D3DXCube3 createCube(const D3DXVECTOR3 &center, float sideLength) {
-    return D3DXCube3(D3DXVECTOR3(center.x - sideLength / 2, center.y - sideLength / 2, center.z - sideLength / 2)
-                    ,D3DXVECTOR3(center.x + sideLength / 2, center.y + sideLength / 2, center.z + sideLength / 2));
-  }
+class CornerMarkObject : public D3SceneObjectSolidBox {
 public:
   CornerMarkObject(D3Scene &scene, const D3DXVECTOR3 &center, double sideLength, int materialIndex)
-    : SceneObjectSolidBox(scene, createCube(center, (float)sideLength), materialIndex)
+    : D3SceneObjectSolidBox(scene, D3DXCube3::getSquareCube(center, (float)sideLength), materialIndex)
   {
   }
 };
 
-class TemporaryFace : public D3LineArray {
-public:
-  TemporaryFace(D3Scene &scene, const CompactArray<Line3D> &lineArray) : D3LineArray(scene, lineArray) {
-  }
-  void draw();
-};
-
-void TemporaryFace::draw() {
-  getScene().selectMaterial(whiteMatIndex.getIndex(getScene(), D3D_WHITE));
-  __super::draw();
-}
-
-static TemporaryFace *createTemporaryFace(D3Scene &scene, const CompactArray<const IsoSurfaceVertex*> &vertexArray) {
-  if(vertexArray.size() < 2) {
-    return NULL;
-  }
-  CompactArray<Line3D> lineArray;
-  const IsoSurfaceVertex *c1 = vertexArray[0];
-  for(size_t i = 1; i < vertexArray.size(); i++) {
-    const IsoSurfaceVertex *c2 = vertexArray[i];
-    lineArray.add(Line3D(Point3DP(c1->m_position), Point3DP(c2->m_position)));
-    c1 = c2;
-  }
-  return new TemporaryFace(scene, lineArray);
-}
-
 // ------------------------------------------------------------Octa Object ----------------------------------------------
 
-class OctaObject : public D3WireFrameBox {
+class OctaObject : public D3SceneObjectWireFrameBox {
 private:
   static int s_matIndexPos, s_matIndexNeg;
   CompactArray<CornerMarkObject*> m_cornerMarkArray;
@@ -87,7 +56,7 @@ int OctaObject::s_matIndexPos           = -1;
 int OctaObject::s_matIndexNeg           = -1;
 
 OctaObject::OctaObject(D3Scene &scene, const Octagon &octa, double cellSize)
-  : D3WireFrameBox(scene, *octa.getCube().m_corners[LBN], *octa.getCube().m_corners[RTF])
+  : D3SceneObjectWireFrameBox(scene, *octa.getCube().m_corners[LBN], *octa.getCube().m_corners[RTF])
 {
   const double sideLength = cellSize/ 10 / (1 << octa.getLevel());
   for(UINT i = 0; i < octa.getCornerCount(); i++) {
@@ -140,7 +109,7 @@ void OctaObject::draw() {
 
 // ----------------------------------------------------Tetra Object ----------------------------------------------
 
-class TetraObject : public D3LineArray {
+class TetraObject : public D3SceneObjectLineArray {
 private:
   static int s_matIndexPos, s_matIndexNeg;
   CompactArray<CornerMarkObject*> m_cornerMarkArray;
@@ -157,7 +126,7 @@ int TetraObject::s_matIndexPos             = -1;
 int TetraObject::s_matIndexNeg             = -1;
 
 TetraObject::TetraObject(D3Scene &scene, const Tetrahedron &tetra, double cellSize)
-  : D3LineArray(scene, createLineArray(tetra))
+  : D3SceneObjectLineArray(scene, createLineArray(tetra))
 {
   const StackedCube &cube       = tetra.getCube();
   const double       sideLength = cellSize / 10 / (1 << cube.getLevel());
@@ -217,12 +186,12 @@ void TetraObject::draw() {
 
 // ------------------------------------------------------------Face Object ----------------------------------------------
 
-class FaceObject : public D3LineArray {
+class FaceObject : public D3SceneObjectLineArray {
 private:
   static CompactArray<Line3D> createLineArray(const Face3 &face, const Array<IsoSurfaceVertex> &va);
 public:
   FaceObject(D3Scene &scene, const Face3 &face, const Array<IsoSurfaceVertex> &va)
-    : D3LineArray(scene, createLineArray(face, va))
+    : D3SceneObjectLineArray(scene, createLineArray(face, va))
   {
   }
   void draw();
@@ -247,14 +216,14 @@ void FaceObject::draw() {
 
 // ------------------------------------------------------------Vertex Object ----------------------------------------------
 
-class VertexObject : public D3LineArray {
+class VertexObject : public D3SceneObjectLineArray {
   static CompactArray<Line3D> createLineArray(const IsoSurfaceVertex &v, float length);
 public:
   VertexObject(D3Scene &scene, const IsoSurfaceVertex &v, float length);
   void draw();
 };
 
-VertexObject::VertexObject(D3Scene &scene, const IsoSurfaceVertex &v, float length) : D3LineArray(scene, createLineArray(v, length)) {
+VertexObject::VertexObject(D3Scene &scene, const IsoSurfaceVertex &v, float length) : D3SceneObjectLineArray(scene, createLineArray(v, length)) {
 }
 
 CompactArray<Line3D> VertexObject::createLineArray(const IsoSurfaceVertex &v, float length) { // static
@@ -279,11 +248,11 @@ void VertexObject::draw() {
 
 // ------------------------------------------------------------VertexArray Object ----------------------------------------------
 
-class VertexArrayObject : public D3LineArray {
+class VertexArrayObject : public D3SceneObjectLineArray {
   static CompactArray<Line3D> createLineArray(CompactArray<const IsoSurfaceVertex*> &va, float length);
 public:
   VertexArrayObject(D3Scene &scene, CompactArray<const IsoSurfaceVertex*> &va, float length)
-    : D3LineArray(scene, createLineArray(va, length))
+    : D3SceneObjectLineArray(scene, createLineArray(va, length))
   {
   }
   void draw();
@@ -446,9 +415,9 @@ void DebugIsoSurface::markCurrentVertex(const IsoSurfaceVertex *v) {
   m_debugger.handleStep(NEW_VERTEX);
 }
 
-SceneObjectWithMesh *DebugIsoSurface::createMeshObject() const {
+D3SceneObjectWithMesh *DebugIsoSurface::createMeshObject() const {
   D3Scene             &scene = m_sc.getScene();
-  SceneObjectWithMesh *obj = new SceneObjectWithMesh(scene, m_mb.createMesh(scene, m_param.m_doubleSided)); TRACE_NEW(m_sceneObject);
+  D3SceneObjectWithMesh *obj = new D3SceneObjectWithMesh(scene, m_mb.createMesh(scene, m_param.m_doubleSided)); TRACE_NEW(m_sceneObject);
   obj->setFillMode(m_sceneObject.getFillMode());
   obj->setShadeMode(m_sceneObject.getShadeMode());
   return obj;

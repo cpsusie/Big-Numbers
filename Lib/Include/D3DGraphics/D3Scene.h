@@ -473,7 +473,15 @@ public:
   // if hitPoint != 0, then will receive point (in worldspace) of rays intersection with nearest object
   D3SceneObject *getPickedObject(const CPoint &point, long mask = OBJMASK_ALL, D3DXVECTOR3 *hitPoint = NULL, D3PickedInfo *info = NULL) const;
 
-  LPDIRECT3DVERTEXBUFFER  allocateVertexBuffer(DWORD fvf , UINT count, UINT *bufferSize = NULL);
+  template<typename VertexType> LPDIRECT3DVERTEXBUFFER allocateVertexBuffer(UINT count, UINT *bufferSize = NULL) {
+    const UINT vertexSize = sizeof(VertexType);
+    UINT tmp, &totalSize = bufferSize ? *bufferSize : tmp;
+    totalSize = vertexSize * count;
+    LPDIRECT3DVERTEXBUFFER result;
+    V(m_device->CreateVertexBuffer(totalSize, 0, VertexType::FVF_Flags, D3DPOOL_DEFAULT, &result, NULL)); TRACE_CREATE(result);
+    return result;
+  }
+
   LPDIRECT3DINDEXBUFFER   allocateIndexBuffer( bool int32, UINT count, UINT *bufferSize = NULL);
   LPD3DXMESH              allocateMesh(        DWORD fvf , UINT faceCount, UINT vertexCount, DWORD options);
   LPDIRECT3DTEXTURE loadTextureFromFile(const String &fileName) {
@@ -504,6 +512,9 @@ public:
 LPD3DXMESH        createMeshFromVertexFile(     AbstractMeshFactory &amf, const String &fileName, bool doubleSided);
 LPD3DXMESH        createMeshFromObjFile(        AbstractMeshFactory &amf, const String &fileName, bool doubleSided);
 //LPD3DXMESH     createMeshMarchingCube(     LPDIRECT3DDEVICE device, const IsoSurfaceParameters        &param);
+
+D3DXCube3 getBoundingBox(LPDIRECT3DVERTEXBUFFER vertexBuffer);
+D3DXCube3 getBoundingBox(LPD3DXMESH             mesh);
 
 class D3SceneObject {
 private:
@@ -633,7 +644,7 @@ public:
   }
 };
 
-class SceneObjectWithVertexBuffer : public D3SceneObject {
+class D3SceneObjectWithVertexBuffer : public D3SceneObject {
 private:
   void releaseVertexBuffer();
 protected:
@@ -641,17 +652,27 @@ protected:
   DWORD                  m_fvf;
   int                    m_vertexSize;
   LPDIRECT3DVERTEXBUFFER m_vertexBuffer;
-  void *allocateVertexBuffer(int vertexSize, UINT count, DWORD fvf);
-  void  unlockVertexBuffer();
-  // vertexSize/fvf must equalk original parameters from allocateVertexBuffer
-  void *resizeVertexBuffer(int vertexSize, UINT newCount, DWORD fvf);
+  template<typename VertexType> VertexType *allocateVertexArray(UINT count) {
+    releaseVertexBuffer();
+    UINT bufferSize;
+    m_vertexBuffer = getScene().allocateVertexBuffer<VertexType>(count, &bufferSize);
+    m_vertexSize = sizeof(VertexType);
+    m_fvf = VertexType::FVF_Flags;
+    assert(bufferSize == m_vertexSize * count);
+    VertexType *bufferItems = NULL;
+    lockVertexArray((void**)&bufferItems, bufferSize);
+    return bufferItems;
+  }
+
+  void  lockVertexArray(void **a, UINT nbytes);
+  void  unlockVertexArray();
   inline void setStreamSource() {
     getScene().setStreamSource(m_vertexBuffer, m_vertexSize, m_fvf);
   }
 
 public:
-  SceneObjectWithVertexBuffer(D3Scene &scene);
-  ~SceneObjectWithVertexBuffer();
+  D3SceneObjectWithVertexBuffer(D3Scene &scene);
+  ~D3SceneObjectWithVertexBuffer();
 
   inline LPDIRECT3DVERTEXBUFFER &getVertexBuffer() {
     return m_vertexBuffer;
@@ -659,10 +680,11 @@ public:
   inline bool hasVertexBuffer() const {
     return m_vertexBuffer != NULL;
   }
+  D3DXCube3 getBoundingBox() const;
   String toString() const;
 };
 
-class SceneObjectWithIndexBuffer : public SceneObjectWithVertexBuffer {
+class D3SceneObjectWithIndexBuffer : public D3SceneObjectWithVertexBuffer {
 private:
   void releaseIndexBuffer();
 protected:
@@ -675,15 +697,15 @@ protected:
   }
 
 public:
-  SceneObjectWithIndexBuffer(D3Scene &scene);
-  ~SceneObjectWithIndexBuffer();
+  D3SceneObjectWithIndexBuffer(D3Scene &scene);
+  ~D3SceneObjectWithIndexBuffer();
   inline bool hasIndexBuffer() const {
     return m_indexBuffer != NULL;
   }
   String toString() const;
 };
 
-class SceneObjectWithMesh : public D3SceneObject {
+class D3SceneObjectWithMesh : public D3SceneObject {
 private:
   D3DFILLMODE  m_fillMode;
   D3DSHADEMODE m_shadeMode;
@@ -700,8 +722,8 @@ protected:
   }
 public:
   // if mesh != NULL, it will be released when Object is destroyed
-  SceneObjectWithMesh(D3Scene &scene, LPD3DXMESH mesh = NULL);
-  ~SceneObjectWithMesh();
+  D3SceneObjectWithMesh(D3Scene &scene, LPD3DXMESH mesh = NULL);
+  ~D3SceneObjectWithMesh();
   LPD3DXMESH getMesh() const {
     return m_mesh;
   }
@@ -723,27 +745,31 @@ public:
   D3DSHADEMODE getShadeMode() const {
     return m_shadeMode;
   }
+  D3DXCube3 getBoundingBox() const;
   void draw();
   String toString() const;
 };
 
-class SceneObjectSolidBox : public SceneObjectWithMesh {
+class D3SceneObjectSolidBox : public D3SceneObjectWithMesh {
 private:
   int m_materialIndex;
   void makeSquareFace(MeshBuilder &mb, int v0, int v1, int v2, int v3);
 public:
-  SceneObjectSolidBox(D3Scene &scene, const D3DXCube3 &cube, int materialIndex = 0);
+  D3SceneObjectSolidBox(D3Scene &scene, const D3DXCube3 &cube, int materialIndex = 0);
   int getMaterialIndex() const {
     return m_materialIndex;
   }
+  inline void setMaterialIndex(int materialIndex) {
+    m_materialIndex = materialIndex;
+  }
 };
 
-class SolidBoxWithPos : public SceneObjectSolidBox {
+class D3SceneObjectSolidBoxWithPos : public D3SceneObjectSolidBox {
 private:
   D3PosDirUpScale m_pdus;
 public:
-  SolidBoxWithPos(D3Scene &scene, const D3DXCube3 &cube, int materialIndex = 0)
-    : SceneObjectSolidBox(scene, cube, materialIndex)
+  D3SceneObjectSolidBoxWithPos(D3Scene &scene, const D3DXCube3 &cube, int materialIndex = 0)
+    : D3SceneObjectSolidBox(scene, cube, materialIndex)
     , m_pdus(scene.getObjPDUS())
   {
   }
@@ -752,45 +778,44 @@ public:
   }
 };
 
-class D3LineArray : public SceneObjectWithVertexBuffer {
+class D3SceneObjectLineArray : public D3SceneObjectWithVertexBuffer {
 protected:
   void initBuffer(const Line3D *lines, UINT n);
 public:
-  D3LineArray(D3Scene &scene) : SceneObjectWithVertexBuffer(scene) {
+  D3SceneObjectLineArray(D3Scene &scene) : D3SceneObjectWithVertexBuffer(scene) {
   }
-  D3LineArray(D3Scene &scene, const Line3D *lines, UINT n);
-  D3LineArray(D3Scene &scene, const CompactArray<Line3D> &lineArray);
-  void addLines(const CompactArray<Line3D> &lineArray);
+  D3SceneObjectLineArray(D3Scene &scene, const Line3D *lines, UINT n);
+  D3SceneObjectLineArray(D3Scene &scene, const CompactArray<Line3D> &lineArray);
   void draw();
 };
 
-class D3WireFrameBox : public D3LineArray {
+class D3SceneObjectWireFrameBox : public D3SceneObjectLineArray {
 private:
   void init(const Vertex &p1, const Vertex &p2);
 public:
-  inline D3WireFrameBox(D3Scene &scene, const D3DXCube3 &cube)
-    : D3LineArray(scene)
+  inline D3SceneObjectWireFrameBox(D3Scene &scene, const D3DXCube3 &cube)
+    : D3SceneObjectLineArray(scene)
   {
     init(cube.getMin(), cube.getMax());
   }
-  inline D3WireFrameBox(D3Scene &scene, const Vertex &p1, const Vertex &p2)
-    : D3LineArray(scene)
+  inline D3SceneObjectWireFrameBox(D3Scene &scene, const Vertex &p1, const Vertex &p2)
+    : D3SceneObjectLineArray(scene)
   {
     init(p1,p2);
   }
 };
 
-class D3Curve : public SceneObjectWithVertexBuffer {
+class D3SceneObjectCurve : public D3SceneObjectWithVertexBuffer {
 public:
-  D3Curve(D3Scene &scene, const VertexArray &points);
+  D3SceneObjectCurve(D3Scene &scene, const VertexArray &points);
   void draw();
 };
 
-class D3CurveArray : public SceneObjectWithVertexBuffer {
+class D3SceneObjectCurveArray : public D3SceneObjectWithVertexBuffer {
 private:
   CompactIntArray m_curveSize;
 public:
-  D3CurveArray(D3Scene &scene, const CurveArray &curves);
+  D3SceneObjectCurveArray(D3Scene &scene, const CurveArray &curves);
   void draw();
 };
 
@@ -857,11 +882,11 @@ public:
   }
 };
 
-class D3LineArrow : public SceneObjectWithVertexBuffer {
+class D3SceneObjectLineArrow : public D3SceneObjectWithVertexBuffer {
 private:
   int m_materialIndex;
 public:
-  D3LineArrow(D3Scene &scene, const Vertex &from, const Vertex &to, D3DCOLOR color = 0);
+  D3SceneObjectLineArrow(D3Scene &scene, const Vertex &from, const Vertex &to, D3DCOLOR color = 0);
   int getMaterialIndex() const {
     return m_materialIndex;
   }
@@ -869,11 +894,11 @@ public:
   void draw();
 };
 
-class D3PickRayArrow : public D3LineArrow {
+class D3PickRayArrow : public D3SceneObjectLineArrow {
 private:
   D3PosDirUpScale m_pdus;
 public:
-  D3PickRayArrow(D3Scene &scene, const D3Ray &ray) : D3LineArrow(scene, ray.m_orig, ray.m_orig + 2 * ray.m_dir) {
+  D3PickRayArrow(D3Scene &scene, const D3Ray &ray) : D3SceneObjectLineArrow(scene, ray.m_orig, ray.m_orig + 2 * ray.m_dir) {
     D3DXMATRIX m;
     m_pdus.setWorldMatrix(*D3DXMatrixIdentity(&m));
   }

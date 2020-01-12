@@ -200,6 +200,4 @@ public:
   String toString() const;
 };
 
-D3DXCube3 getBoundingBox(LPD3DXMESH mesh);
-
 //#define DUMP_PRUNECOUNT

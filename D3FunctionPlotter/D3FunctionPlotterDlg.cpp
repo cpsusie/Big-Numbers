@@ -27,7 +27,9 @@ END_MESSAGE_MAP()
 CD3FunctionPlotterDlg::CD3FunctionPlotterDlg(CWnd *pParent) : CDialog(IDD, pParent) {
   m_hIcon                = theApp.LoadIcon(IDR_MAINFRAME);
   m_infoVisible          = false;
+  m_infoPanelTopLine     = 0;
   m_timerRunning         = false;
+
 #ifdef DEBUG_POLYGONIZER
   m_debugger             = NULL;
   m_debugLightIndex      = -1;
@@ -69,9 +71,11 @@ BEGIN_MESSAGE_MAP(CD3FunctionPlotterDlg, CDialog)
   ON_COMMAND(ID_DEBUG_ADJUSTCAM_45DOWN        , OnDebugAdjustCam45Down         )
   ON_COMMAND(ID_DEBUG_ADJUSTCAM_45LEFT        , OnDebugAdjustCam45Left         )
   ON_COMMAND(ID_DEBUG_ADJUSTCAM_45RIGHT       , OnDebugAdjustCam45Right        )
+  ON_COMMAND(ID_DEBUG_MARKCUBE                , OnDebugMarkCube                )
   ON_COMMAND(ID_RESETPOSITIONS                , OnResetPositions               )
   ON_COMMAND(ID_OBJECT_EDITFUNCTION           , OnObjectEditFunction           )
   ON_COMMAND(ID_ADDBOXOBJECT                  , OnAddBoxObject                 )
+  ON_EN_VSCROLL(IDC_EDIT_INFOPANEL            , OnVscrollEditInfoPanel         )
   ON_MESSAGE(ID_MSG_RENDER                    , OnMsgRender                    )
   ON_MESSAGE(ID_MSG_DEBUGGERSTATECHANGED      , OnMsgDebuggerStateChanged      )
   ON_MESSAGE(ID_MSG_KILLDEBUGGER              , OnMsgKillDebugger              )
@@ -100,8 +104,8 @@ BOOL CD3FunctionPlotterDlg::OnInitDialog() {
   m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_MAINFRAME));
 
   m_layoutManager.OnInitDialog(this);
-  m_layoutManager.addControl(IDC_STATIC_3DPANEL  , RELATIVE_SIZE                  );
-  m_layoutManager.addControl(IDC_STATIC_INFOPANEL, RELATIVE_Y_POS | RELATIVE_WIDTH);
+  m_layoutManager.addControl(IDC_STATIC_3DPANEL, RELATIVE_SIZE                  );
+  m_layoutManager.addControl(IDC_EDIT_INFOPANEL, RELATIVE_Y_POS | RELATIVE_WIDTH);
 
   ajourDebuggerMenu();
 
@@ -195,7 +199,7 @@ D3SceneObject *CD3FunctionPlotterDlg::createRotatedProfile() {
   param.m_edgeCount  = 20;
   param.m_smoothness = NORMALSMOOTH | ROTATESMOOTH;
   param.m_rotateAxis = 0;
-  SceneObjectWithMesh *obj = new SceneObjectWithMesh(m_scene, rotateProfile(m_scene, prof, param, true)); TRACE_NEW(obj);
+  D3SceneObjectWithMesh *obj = new D3SceneObjectWithMesh(m_scene, rotateProfile(m_scene, prof, param, true)); TRACE_NEW(obj);
   obj->setName(prof.getDisplayName());
   return obj;
 }
@@ -285,10 +289,10 @@ public:
   }
 };
 
-class D3FunctionSurface : public SceneObjectWithMesh {
+class D3FunctionSurface : public D3SceneObjectWithMesh {
 public:
   D3FunctionSurface(D3Scene &scene, LPD3DXMESH mesh)
-    : SceneObjectWithMesh(scene, mesh)
+    : D3SceneObjectWithMesh(scene, mesh)
   {
   }
   void modifyContextMenu(CMenu &menu) {
@@ -306,11 +310,6 @@ void CD3FunctionPlotterDlg::setCalculatedObject(Function2DSurfaceParameters &par
     setCalculatedObject(obj, &param);
   }
 }
-/*
-void CD3FunctionPlotterDlg::setCalculatedObject(IsoSurfaceParameters *param) {
-  setCalculatedObject(createIsoSurfaceDebugObject(m_scene, *param), param);
-}
-*/
 
 void CD3FunctionPlotterDlg::setCalculatedObject(ParametricSurfaceParameters &param) {
   stopDebugging();
@@ -402,6 +401,7 @@ void CD3FunctionPlotterDlg::OnDebugAdjustCam45Up()        {}
 void CD3FunctionPlotterDlg::OnDebugAdjustCam45Down()      {}
 void CD3FunctionPlotterDlg::OnDebugAdjustCam45Left()      {}
 void CD3FunctionPlotterDlg::OnDebugAdjustCam45Right()     {}
+void CD3FunctionPlotterDlg::OnDebugMarkCube()             {}
 
 LRESULT CD3FunctionPlotterDlg::OnMsgKillDebugger(        WPARAM wp, LPARAM lp) { return 0; }
 LRESULT CD3FunctionPlotterDlg::OnMsgDebuggerStateChanged(WPARAM wp, LPARAM lp) { return 0; }
@@ -416,6 +416,7 @@ void CD3FunctionPlotterDlg::startDebugging() {
     m_debugger = new Debugger(this, m_isoSurfaceParam);
     m_debugger->addPropertyChangeListener(this);
     createDebugLight();
+    OnResetPositions();
     checkMenuItem(this, ID_DEBUG_AUTOFOCUSCURRENTCUBE, true);
     ajourDebuggerMenu();
     m_editor.OnControlCameraWalk();
@@ -505,16 +506,19 @@ void CD3FunctionPlotterDlg::adjustDebugLightDir() {
   m_scene.setLightDirection(m_debugLightIndex, lightDir);
 }
 
+void CD3FunctionPlotterDlg::debugAdjustCamDir(const D3DXVECTOR3 &newDir, const D3DXVECTOR3 &newUp) {
+  const D3DXVECTOR3 newPos = m_cubeCenter - newDir;
+  D3PosDirUpScale   cam    = m_scene.getCameraPDUS();
+  m_scene.setCameraPDUS(cam.setPos(newPos).setOrientation(newDir, newUp));
+  adjustDebugLightDir();
+}
+
 void CD3FunctionPlotterDlg::OnDebugAdjustCam45Up() {
   D3PosDirUpScale   cam  = m_scene.getCameraPDUS();
   const D3DXVECTOR3 dir  = m_cubeCenter - cam.getPos();
   const D3DXVECTOR3 up   = cam.getUp();
   const D3DXVECTOR3 r    = cam.getRight();
-  const D3DXVECTOR3 ndir = rotate(dir, r, -M_PI / 4);
-  const D3DXVECTOR3 nup  = rotate(up , r, -M_PI / 4);
-  const D3DXVECTOR3 npos = m_cubeCenter - ndir;
-  m_scene.setCameraPDUS(cam.setPos(npos).setOrientation(ndir, nup));
-  adjustDebugLightDir();
+  debugAdjustCamDir(rotate(dir, r, -M_PI / 8), rotate(up , r, -M_PI / 8));
 }
 
 void CD3FunctionPlotterDlg::OnDebugAdjustCam45Down() {
@@ -522,35 +526,29 @@ void CD3FunctionPlotterDlg::OnDebugAdjustCam45Down() {
   const D3DXVECTOR3 dir  = m_cubeCenter - cam.getPos();
   const D3DXVECTOR3 up   = cam.getUp();
   const D3DXVECTOR3 r    = cam.getRight();
-  const D3DXVECTOR3 ndir = rotate(dir, r, M_PI / 4);
-  const D3DXVECTOR3 nup  = rotate(up , r, M_PI / 4);
-  const D3DXVECTOR3 npos = m_cubeCenter - ndir;
-  m_scene.setCameraPDUS(cam.setPos(npos).setOrientation(ndir, nup));
-  adjustDebugLightDir();
+  debugAdjustCamDir(rotate(dir, r, M_PI / 8), rotate(up, r, M_PI / 8));
 }
 
 void CD3FunctionPlotterDlg::OnDebugAdjustCam45Left() {
   D3PosDirUpScale   cam  = m_scene.getCameraPDUS();
   const D3DXVECTOR3 dir  = m_cubeCenter - cam.getPos();
   const D3DXVECTOR3 up   = cam.getUp();
-  const D3DXVECTOR3 ndir = rotate(dir, up, -M_PI / 4);
-  const D3DXVECTOR3 npos = m_cubeCenter - ndir;
-  m_scene.setCameraPDUS(cam.setPos(npos).setOrientation(ndir, up));
-  adjustDebugLightDir();
+  debugAdjustCamDir(rotate(dir, up, -M_PI / 8), up);
 }
 
 void CD3FunctionPlotterDlg::OnDebugAdjustCam45Right() {
   D3PosDirUpScale   cam  = m_scene.getCameraPDUS();
   const D3DXVECTOR3 dir  = m_cubeCenter - cam.getPos();
   const D3DXVECTOR3 up   = cam.getUp();
-  const D3DXVECTOR3 ndir = rotate(dir, up, M_PI / 4);
-  const D3DXVECTOR3 npos = m_cubeCenter - ndir;
-  m_scene.setCameraPDUS(cam.setPos(npos).setOrientation(ndir, up));
-  adjustDebugLightDir();
+  debugAdjustCamDir(rotate(dir, up, M_PI / 8), up);
 }
 
 bool CD3FunctionPlotterDlg::isAutoFocusCurrentCubeChecked() const {
   return isMenuItemChecked(this, ID_DEBUG_AUTOFOCUSCURRENTCUBE);
+}
+
+void CD3FunctionPlotterDlg::OnDebugMarkCube() {
+  // TODO: Add your command handler code here
 }
 
 LRESULT CD3FunctionPlotterDlg::OnMsgKillDebugger(WPARAM wp, LPARAM lp) {
@@ -704,7 +702,7 @@ void CD3FunctionPlotterDlg::OnFileRead3DPointsFromFile() {
       return;
     } else {
       const String fileName = dlg.m_ofn.lpstrFile;
-      SceneObjectWithMesh *obj = new SceneObjectWithMesh(m_scene, createMeshFromVertexFile(m_scene, fileName, true)); TRACE_NEW(obj);
+      D3SceneObjectWithMesh *obj = new D3SceneObjectWithMesh(m_scene, createMeshFromVertexFile(m_scene, fileName, true)); TRACE_NEW(obj);
       setCalculatedObject(obj);
       REPAINT();
     }
@@ -725,7 +723,7 @@ void CD3FunctionPlotterDlg::OnFileReadObjFile() {
       return;
     } else {
       const String fileName = dlg.m_ofn.lpstrFile;
-      SceneObjectWithMesh *obj = new SceneObjectWithMesh(m_scene, createMeshFromObjFile(m_scene, fileName, false)); TRACE_NEW(obj);
+      D3SceneObjectWithMesh *obj = new D3SceneObjectWithMesh(m_scene, createMeshFromObjFile(m_scene, fileName, false)); TRACE_NEW(obj);
       setCalculatedObject(obj);
       REPAINT();
     }
@@ -774,19 +772,21 @@ void CD3FunctionPlotterDlg::setInfoVisible(bool visible) {
   }
 
   if(visible) {
-    setWindowRect(get3DWindow()  , upperRect);
+    setWindowRect(get3DWindow() , upperRect);
     setWindowRect(getInfoPanel(), lowerRect);
     getInfoPanel()->ShowWindow(SW_SHOW);
     m_scene.OnSize();
     m_infoVisible = visible;
+    m_infoPanelTopLine = 0;
     show3DInfo(INFO_ALL);
     startTimer();
   } else {
     stopTimer();
     getInfoPanel()->ShowWindow(SW_HIDE);
-    setWindowRect(get3DWindow()  , upperRect);
+    setWindowRect(get3DWindow() , upperRect);
     m_scene.OnSize();
-    m_infoVisible = visible;
+    m_infoVisible      = visible;
+    m_infoPanelTopLine = 0;
   }
 }
 
@@ -817,7 +817,7 @@ void CD3FunctionPlotterDlg::OnObjectEditFunction() {
 void CD3FunctionPlotterDlg::OnAddBoxObject() {
   D3DXCube3 cube(D3DXVECTOR3(-1,-1,-1), D3DXVECTOR3(1,1,1));
   const int matIndex = m_scene.addMaterial(D3Scene::getDefaultMaterial());
-  D3SceneObject *box = new SolidBoxWithPos(m_scene, cube, matIndex); TRACE_NEW(box);
+  D3SceneObject *box = new D3SceneObjectSolidBoxWithPos(m_scene, cube, matIndex); TRACE_NEW(box);
   m_scene.addSceneObject(box);
   render(RENDER_ALL);
 }
@@ -890,8 +890,17 @@ void CD3FunctionPlotterDlg::show3DInfo(BYTE flags) {
 void CD3FunctionPlotterDlg::showInfo(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   va_list argptr;
   va_start(argptr, format);
-  const String msg = vformat(format, argptr);
+  String msg = vformat(format, argptr);
   va_end(argptr);
-  setWindowText(getInfoPanel(), msg);
+  CEdit *ip = getInfoPanel();
+  setWindowText(ip, msg.replace('\n',_T("\r\n")));
+  if(m_infoPanelTopLine > 0) {
+    ip->LineScroll(m_infoPanelTopLine);
+  }
 }
 
+void CD3FunctionPlotterDlg::OnVscrollEditInfoPanel() {
+  SCROLLINFO info;
+  getInfoPanel()->GetScrollInfo(SB_VERT, &info);
+  m_infoPanelTopLine = info.nPos;
+}

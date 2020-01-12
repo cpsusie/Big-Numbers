@@ -4,7 +4,7 @@
 #include <D3DGraphics/Function2DSurface.h>
 #include <D3DGraphics/ParametricSurface.h>
 #include <D3DGraphics/IsoSurface.h>
-#include "D3DGraphics/D3CoordinateSystem.h"
+#include "D3DGraphics/D3SceneObjectCoordinateSystem.h"
 #include "D3DGraphics/D3SceneEditor.h"
 
 #define INFO_EDIT  0x01
@@ -32,6 +32,7 @@ private:
     D3Scene                     m_scene;
     D3SceneEditor               m_editor;
     String                      m_editorInfo, m_memoryInfo, m_debugInfo;
+    int                         m_infoPanelTopLine;
     bool                        m_timerRunning;
 #ifdef DEBUG_POLYGONIZER
     Debugger                   *m_debugger;
@@ -54,14 +55,14 @@ private:
     }
     void adjustDebugLightDir();
 #endif // DEBUG_POLYGONIZER
-    Function2DSurfaceParameters m_function2DSurfaceParam;
-    ParametricSurfaceParameters m_parametricSurfaceParam;
-    IsoSurfaceParameters        m_isoSurfaceParam;
-    bool                        m_infoVisible;
-    D3CoordinateSystem         *m_coordinateSystem;
+    Function2DSurfaceParameters    m_function2DSurfaceParam;
+    ParametricSurfaceParameters    m_parametricSurfaceParam;
+    IsoSurfaceParameters           m_isoSurfaceParam;
+    bool                           m_infoVisible;
+    D3SceneObjectCoordinateSystem *m_coordinateSystem;
 
-    CWnd *getInfoPanel() {
-      return GetDlgItem(IDC_STATIC_INFOPANEL);
+    CEdit *getInfoPanel() {
+      return (CEdit*)GetDlgItem(IDC_EDIT_INFOPANEL);
     }
     void startTimer();
     void stopTimer();
@@ -70,7 +71,7 @@ private:
     void updateMemoryInfo();
     void updateDebugInfo();
     void showInfo(_In_z_ _Printf_format_string_ TCHAR const * const format, ...);
-    // flags any combination of INFO_MEM, INFO_EDIT
+    // flags any combination of INFO_MEM, INFO_EDIT, INFO_DEBUG
     void show3DInfo(BYTE flags);
 
     void createInitialObject();
@@ -105,6 +106,8 @@ private:
   inline String getDebuggerStateName() const {
     return hasDebugger() ? m_debugger->getStateName() : _T("No debugger");
   }
+  void debugAdjustCamDir(const D3DXVECTOR3 &newDir, const D3DXVECTOR3 &newUp);
+
 #endif // DEBUG_POLYGONIZER
 
 public:
@@ -170,9 +173,11 @@ protected:
     afx_msg void OnDebugAdjustCam45Down();
     afx_msg void OnDebugAdjustCam45Left();
     afx_msg void OnDebugAdjustCam45Right();
+    afx_msg void OnDebugMarkCube();
     afx_msg void OnResetPositions();
     afx_msg void OnObjectEditFunction();
     afx_msg void OnAddBoxObject();
+    afx_msg void OnVscrollEditInfoPanel();
     afx_msg LRESULT OnMsgRender(              WPARAM wp, LPARAM lp);
     afx_msg LRESULT OnMsgDebuggerStateChanged(WPARAM wp, LPARAM lp);
     afx_msg LRESULT OnMsgKillDebugger(        WPARAM wp, LPARAM lp);
