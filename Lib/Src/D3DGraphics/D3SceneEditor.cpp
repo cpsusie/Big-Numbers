@@ -283,6 +283,7 @@ BOOL D3SceneEditor::PreTranslateMessage(MSG *pMsg) {
     case ID_OBJECT_REVERSEANIMATION       : OnObjectReverseAnimation()          ; return true;
     case ID_OBJECT_STOPANIMATION          : OnObjectStopAnimation()             ; return true;
     case ID_OBJECT_CONTROL_SPEED          : OnObjectControlSpeed()              ; return true;
+    case ID_OBJECT_CREATECUBE             : OnObjectCreateCube()                ; return true;
     case ID_CONTROL_CAMERA_WALK           : OnControlCameraWalk()               ; return true;
     case ID_EDIT_AMBIENTLIGHT             : OnEditAmbientLight()                ; return true;
     case ID_EDIT_BACKGROUNDCOLOR          : OnEditBackgroundColor()             ; return true;
@@ -1018,6 +1019,10 @@ void D3SceneEditor::OnControlObjectMoveRotate() {
 }
 
 void D3SceneEditor::OnObjectControlSpeed() {
+  setCurrentControl(CONTROL_ANIMATION_SPEED);
+}
+
+void D3SceneEditor::OnObjectCreateCube() {
   setCurrentControl(CONTROL_ANIMATION_SPEED);
 }
 

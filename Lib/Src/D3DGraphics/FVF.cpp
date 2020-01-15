@@ -52,6 +52,9 @@ static const int textureCoordFlotCount[] = {
 #define MASK_TEXTUREFORMAT(fvf, CoordIndex) (((fvf) >> ((CoordIndex)*2 + 16)) & 0x3)
 
 int FVFToSize(DWORD fvf) {
+  return D3DXGetFVFVertexSize(fvf);
+
+#ifdef __NEVER__
   int bytes = 0;
 
 #undef  caseAddBytes
@@ -95,4 +98,5 @@ int FVFToSize(DWORD fvf) {
   addFlagBytes(D3DFVF_LASTBETA_D3DCOLOR);
 */
   return bytes;
+#endif // __NVER__
 }

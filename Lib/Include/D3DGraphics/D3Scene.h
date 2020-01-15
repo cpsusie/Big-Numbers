@@ -53,18 +53,19 @@ private:
   // Indices into vertexArray
   int           m_vertexIndex[3];
   // TextureVertex. Relative coordinates in picked face
-  TextureVertex m_textureVertex;
-  // hitPoint relative to mesh's position/orientation
-  D3DXVECTOR3   m_meshPoint;
+  D3DXVECTOR3   m_facePoint[3];
+  float         m_U, m_V;
 public:
   inline D3PickedInfo() : m_faceIndex(-1) {
   }
-  inline D3PickedInfo(int faceIndex, int i0,int i1,int i2, float pu,float pv, const D3DXVECTOR3 &meshPoint)
+  inline D3PickedInfo(int faceIndex, int vertexIndex[3], D3DXVECTOR3 facePoint[3], float U,float V)
                     : m_faceIndex(faceIndex)
-                    , m_textureVertex(pu, pv)
-                    , m_meshPoint(meshPoint)
+                    , m_U(U), m_V(V)
   {
-    m_vertexIndex[0] = i0; m_vertexIndex[1] = i1; m_vertexIndex[2] = i2;
+    for(int i = 0; i < 3; i++) {
+      m_vertexIndex[i] = vertexIndex[i];
+      m_facePoint[i]   = facePoint[i];
+    }
   }
   inline void clear() {
     m_faceIndex = -1;
@@ -75,22 +76,27 @@ public:
   inline int getFaceIndex() const {
     return m_faceIndex;
   }
-  inline const TextureVertex &getTextureVertex() const {
-    return m_textureVertex;
+  inline TextureVertex getTextureVertex() const {
+    return TextureVertex(m_U, m_V);
   }
-  inline const D3DXVECTOR3 &getMeshPoint() const {
-    return m_meshPoint;
+  inline D3DXVECTOR3 getMeshPoint() const {
+    return m_facePoint[0] + m_U * (m_facePoint[1] - m_facePoint[0]) + m_V * (m_facePoint[2] - m_facePoint[0]);
   }
-  int getVertexIndex(int i) const { // i = [0..2];
+  // i = [0..2];
+  int getVertexIndex(int i) const {
     return m_vertexIndex[i];
+  }
+  // i = [0..2];
+  const D3DXVECTOR3 getVertexPoint(int i) const {
+    return m_facePoint[i];
   }
   inline String toString(int dec=3) const {
     return isSet()
-         ? format(_T("Face:%5d:[%5d,%5d,%5d] TP:%s MP:(%s)")
+         ? format(_T("Face:%5d:[%5d,%5d,%5d], (U,V):(%5.3f,%5.3f), MP:(%s)")
                  ,m_faceIndex
                  ,m_vertexIndex[0], m_vertexIndex[1], m_vertexIndex[2]
-                 ,::toString(m_textureVertex,dec).cstr()
-                 ,::toString(m_meshPoint    ,dec).cstr()
+                 ,m_U,m_V
+                 ,::toString(getMeshPoint(),dec).cstr()
                  )
          : EMPTYSTRING;
   }

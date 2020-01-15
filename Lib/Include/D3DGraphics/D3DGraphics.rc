@@ -217,6 +217,8 @@ BEGIN
             MENUITEM "Adjust speed",                ID_OBJECT_CONTROL_SPEED
         END
         MENUITEM "Remove",                      ID_OBJECT_REMOVE
+        MENUITEM SEPARATOR
+        MENUITEM "Create Cube",                 ID_OBJECT_CREATECUBE
     END
 END
 

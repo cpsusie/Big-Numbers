@@ -20,7 +20,7 @@ typedef enum {
  ,CONTROL_LIGHTCOLOR
  ,CONTROL_BACKGROUNDCOLOR
  ,CONTROL_AMBIENTLIGHTCOLOR
- ,CONTROL_MARKEDCUBE
+ ,CONTROL_SELECTEDCUBE
 } CurrentObjectControl;
 
 #define RENDER_3D   0x1
@@ -85,12 +85,16 @@ private:
     D3Scene &getScene() const {
       return m_sceneContainer->getScene();
     }
+    // p in screen-coordinates
     inline CPoint screenPTo3DP(CPoint p) const {
       get3DWindow()->ScreenToClient(&p);
       return p;
     }
+    // p in screen-coordinates
     inline bool ptIn3DWindow(const CPoint &p) const {
-      return getWindowRect(get3DWindow()).PtInRect(p);
+      CRect r;
+      GetWindowRect(*get3DWindow(), &r);
+      return r.PtInRect(p);
     }
     inline void render(BYTE flags) {
       if(isRenderEnabled()) m_sceneContainer->render(flags);
@@ -186,6 +190,7 @@ private:
     void OnObjectReverseAnimation();
     void OnObjectStopAnimation();
     void OnObjectControlSpeed();
+    void OnObjectCreateCube();
     void OnObjectEditMaterial();
     void OnObjectResetScale();
     void OnObjectRemove();

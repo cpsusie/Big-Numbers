@@ -44,6 +44,7 @@
 #define ID_OBJECT_REVERSEANIMATION      34143
 #define ID_OBJECT_STOPANIMATION         34144
 #define ID_OBJECT_CONTROL_SPEED         34145
+#define ID_OBJECT_CREATECUBE            34146
 #define ID_CONTROL_CAMERA_WALK          34150
 #define ID_EDIT_AMBIENTLIGHT            34160
 #define ID_EDIT_BACKGROUNDCOLOR         34161
@@ -96,11 +97,11 @@
 #define ID_LOADSCENEPARAMETERS          34251
 
 // Next default values for new objects
-//
+// 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        713
-#define _APS_NEXT_COMMAND_VALUE         34300
+#define _APS_NEXT_COMMAND_VALUE         34260
 #define _APS_NEXT_CONTROL_VALUE         6041
 #define _APS_NEXT_SYMED_VALUE           103
 #endif
