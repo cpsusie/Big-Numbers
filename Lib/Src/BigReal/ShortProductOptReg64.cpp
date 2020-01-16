@@ -77,8 +77,8 @@ BigReal &BigReal::shortProductNoZeroCheck(const BigReal &x, const BigReal &y, UI
       COUNTCALL(shortSquareLoopTotal);
       if(!BigRealSquareColumn(yk, xk, &sps, sumLength)) {
         COUNTCALL(shorSquareSumTooBig);
-        BRDigitType carry = 0;
-        Digit      *d     = sps.m_cd;
+        BRDigitType carry      = 0;
+        Digit      *d          = sps.m_cd;
         _ui128div_t sumquotrem = _ui128div(sps.m_bigSum, s_BIGREALBASEBR2);
         d->n         = sumquotrem.rem;
         sps.m_bigSum = sumquotrem.quot;
@@ -111,16 +111,19 @@ BigReal &BigReal::shortProductNoZeroCheck(const BigReal &x, const BigReal &y, UI
       COUNTCALL(shortProdLoopTotal);
       if(!BigRealMultiplyColumn(yk, xk, &sps)) {
         COUNTCALL(shortProdSumTooBig);
-        BRDigitType carry = 0;
-        Digit      *d     = sps.m_cd;
-        d->n = sps.m_bigSum % s_BIGREALBASEBR2;
-        sps.m_bigSum /= s_BIGREALBASEBR2;
+        BRDigitType carry      = 0;
+        Digit      *d          = sps.m_cd;
+        _ui128div_t sumquotrem = _ui128div(sps.m_bigSum, s_BIGREALBASEBR2);
+        d->n = sumquotrem.rem;
+        sps.m_bigSum = sumquotrem.quot;
         do {
           d = d->prev;
-          carry  += d->n + (BRDigitType)(sps.m_bigSum % s_BIGREALBASEBR2);
-          d->n   = carry % BIGREALBASE;
-          carry  /= BIGREALBASE;
-          sps.m_bigSum /= s_BIGREALBASEBR2;
+          sumquotrem = _ui128div(sps.m_bigSum, s_BIGREALBASEBR2);
+          carry += d->n + (BRDigitType)sumquotrem.rem;
+          sps.m_bigSum = sumquotrem.quot;
+          lldiv_t carryquotrem = lldiv(carry, BIGREALBASE);
+          d->n = carryquotrem.rem;
+          carry = carryquotrem.quot;
         } while(sps.m_bigSum || carry);
         // dont call trimZeroes() !!;
       }
