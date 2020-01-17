@@ -1,5 +1,10 @@
 #pragma once
 
+#include <D3DGraphics/Function2DSurface.h>
+#include <D3DGraphics/ParametricSurface.h>
+#include <D3DGraphics/IsoSurface.h>
+#include "D3DGraphics/D3SceneObjectCoordinateSystem.h"
+#include "D3DGraphics/D3SceneEditor.h"
 #include "D3FunctionDoc.h"
 #include "D3SceneView.h"
 #include "InfoView.h"
@@ -50,12 +55,16 @@ private:
   bool                            m_statusPanesVisible;
   CStatusBar                      m_wndStatusBar;
   CToolBar                        m_wndToolBar;
+  HACCEL                          m_accelTable;
   CD3FunctionSplitterWnd          m_wndSplitter;
   CompactArray<StatusBarPaneInfo> m_paneInfo;
-  bool                            m_infoPanelVisible;
-  double                          m_relativeHeight;
-  D3Scene                        *m_scene;
   bool                            m_timerRunning;
+  double                          m_relativeHeight;
+  D3Scene                         m_scene;
+  D3SceneEditor                   m_editor;
+  Function2DSurfaceParameters     m_function2DSurfaceParam;
+  ParametricSurfaceParameters     m_parametricSurfaceParam;
+  IsoSurfaceParameters            m_isoSurfaceParam;
   String                          m_editorInfo, m_memoryInfo, m_debugInfo;
 
   void OnFileOpen(int id);
@@ -68,24 +77,36 @@ private:
   inline int getPanelCount() const {
     return m_wndSplitter.getPanelCount();
   }
-  inline CD3SceneView *get3DPanel() {
-    return m_wndSplitter.get3DPanel();
-  }
   inline CInfoView *getInfoPanel() {
     return m_wndSplitter.getInfoPanel();
   }
   friend class CD3FunctionSplitterWnd;
 
+  void init3D();
+  void createInitialObject();
+  void createSaddle();
+  void deleteCalculatedObject();
+  void setCalculatedObject(Function2DSurfaceParameters &param);
+  void setCalculatedObject(D3SceneObject *obj, PersistentData *param = NULL);
+  D3SceneObject *getCalculatedObject() const;
+
+  void startDebugging();
+  void stopDebugging();
+  void ajourDebuggerMenu();
+
 public:
 
   D3Scene &getScene() {
-    return *m_scene;
+    return m_scene;
+  }
+  D3SceneEditor &getEditor() {
+    return m_editor;
   }
   CWnd    *getMessageWindow() {
     return this;
   }
   CWnd    *get3DWindow() {
-    return get3DPanel();
+    return m_wndSplitter.get3DPanel();
   }
   void render(BYTE renderFlags) {
     SendMessage(ID_MSG_RENDER, renderFlags, 0);
@@ -93,7 +114,6 @@ public:
 
   void startTimer();
   void stopTimer();
-  void setInfoPanelVisible(bool visible);
   inline bool isInfoPanelVisible() const {
     return getPanelCount() > 1;
   }
@@ -108,7 +128,6 @@ public:
   void ajourMenuItems();
 
   virtual BOOL OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext *pContext);
-  virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
 
   virtual ~CMainFrame();
   void enableToolbarButtonAndMenuItem(int id, bool enable);
@@ -148,8 +167,19 @@ protected: // create from serialization only
     afx_msg void OnFileMruFile14();
     afx_msg void OnFileMruFile15();
     afx_msg void OnFileMruFile16();
-    afx_msg void OnViewStartTimer();
-    afx_msg void OnViewStopTimer();
+    afx_msg void OnDebugGo();
+    afx_msg void OnDebugStepLevel();
+    afx_msg void OnDebugStepCube();
+    afx_msg void OnDebugStepTetra();
+    afx_msg void OnDebugStepFace();
+    afx_msg void OnDebugStepVertex();
+    afx_msg void OnDebugStopDebugging();
+    afx_msg void OnDebugAutoFocusCurrentCube();
+    afx_msg void OnDebugAdjustCam45Up();
+    afx_msg void OnDebugAdjustCam45Down();
+    afx_msg void OnDebugAdjustCam45Left();
+    afx_msg void OnDebugAdjustCam45Right();
+    afx_msg void OnDebugMarkCube();
     afx_msg void OnOptionsSaveOptions();
     afx_msg void OnOptionsLoadOptions1();
     afx_msg void OnOptionsLoadOptions2();
@@ -161,5 +191,10 @@ protected: // create from serialization only
     afx_msg void OnOptionsLoadOptions8();
     afx_msg void OnOptionsLoadOptions9();
     afx_msg void OnOptionsOrganizeOptions();
+    afx_msg LRESULT OnMsgRender(              WPARAM wp, LPARAM lp);
+    afx_msg LRESULT OnMsgDebuggerStateChanged(WPARAM wp, LPARAM lp);
+    afx_msg LRESULT OnMsgKillDebugger(        WPARAM wp, LPARAM lp);
     DECLARE_MESSAGE_MAP()
+public:
+  virtual BOOL PreTranslateMessage(MSG* pMsg);
 };

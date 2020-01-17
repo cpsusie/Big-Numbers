@@ -28,7 +28,8 @@ typedef enum {
 #define RENDER_ALL  (RENDER_3D|RENDER_INFO)
 
 typedef enum {
-  SE_ENABLED
+  SE_INITDONE
+ ,SE_ENABLED
  ,SE_HANDLEPROPERTYCHANGES
  ,SE_RENDERENABLED
  ,SE_MOUSEVISIBLE
@@ -228,10 +229,14 @@ public:
     void init(D3SceneContainer *sceneContainer);
     void close();
     void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
+    inline bool isInitDone() const {
+      return m_stateFlags.contains(SE_INITDONE);
+    }
     void setEnabled(bool enabled);
     inline bool isEnabled() const {
       return m_stateFlags.contains(SE_ENABLED);
     }
+
     void                  setCurrentSceneObject(D3SceneObject *obj);
 
     inline D3SceneObject *getCurrentSceneObject() const {

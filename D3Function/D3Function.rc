@@ -63,9 +63,9 @@ END
 //
 
 IDD_INFOVIEW DIALOGEX 0, 0, 310, 102
-STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
+STYLE DS_SETFONT | WS_CHILD
 EXSTYLE WS_EX_STATICEDGE
-FONT 8, "MS Shell Dlg", 400, 0, 0x1
+FONT 9, "Courier New", 400, 0, 0x0
 BEGIN
     EDITTEXT        IDC_EDIT_INFOBOX,0,0,310,102,ES_MULTILINE | ES_AUTOHSCROLL | ES_READONLY | WS_VSCROLL
 END
@@ -107,29 +107,6 @@ END
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Bitmap
-//
-
-IDR_MAINFRAME           BITMAP                  "res\\Toolbar.bmp"
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Toolbar
-//
-
-IDR_MAINFRAME TOOLBAR 22, 22
-BEGIN
-    BUTTON      ID_FILE_FUNCTIONSURFACE
-    BUTTON      ID_FILE_PARAMETRICSURFACE
-    BUTTON      ID_FILE_ISOSURFACE
-    SEPARATOR
-    BUTTON      ID_VIEW_SHOW3DINFO
-END
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -386,6 +363,40 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_ABOUTBOX AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDR_MAINFRAME           BITMAP                  "res\\Toolbar.bmp"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Toolbar
+//
+
+IDR_MAINFRAME TOOLBAR 22, 22
+BEGIN
+    BUTTON      ID_FILE_FUNCTIONSURFACE
+    BUTTON      ID_FILE_PARAMETRICSURFACE
+    BUTTON      ID_FILE_ISOSURFACE
+    SEPARATOR
+    BUTTON      ID_VIEW_SHOW3DINFO
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
 // Accelerator
 //
 
@@ -400,6 +411,25 @@ BEGIN
     "7",            ID_OPTIONS_LOADOPTIONS7, VIRTKEY, CONTROL, NOINVERT
     "8",            ID_OPTIONS_LOADOPTIONS8, VIRTKEY, CONTROL, NOINVERT
     "9",            ID_OPTIONS_LOADOPTIONS9, VIRTKEY, CONTROL, NOINVERT
+    VK_DOWN,        ID_DEBUG_ADJUSTCAM_45DOWN, VIRTKEY, NOINVERT
+    VK_LEFT,        ID_DEBUG_ADJUSTCAM_45LEFT, VIRTKEY, NOINVERT
+    VK_RIGHT,       ID_DEBUG_ADJUSTCAM_45RIGHT, VIRTKEY, NOINVERT
+    VK_UP,          ID_DEBUG_ADJUSTCAM_45UP, VIRTKEY, NOINVERT
+    VK_F9,          ID_DEBUG_STEPLEVEL,     VIRTKEY, NOINVERT
+    VK_F5,          ID_DEBUG_GO,            VIRTKEY, NOINVERT
+    VK_F10,         ID_DEBUG_STEPCUBE,      VIRTKEY, NOINVERT
+    VK_F11,         ID_DEBUG_STEPFACE,      VIRTKEY, NOINVERT
+    VK_F5,          ID_DEBUG_STOPDEBUGGING, VIRTKEY, SHIFT, NOINVERT
+    "F",            ID_FILE_FUNCTIONSURFACE, VIRTKEY, CONTROL, NOINVERT
+    "I",            ID_FILE_ISOSURFACE,     VIRTKEY, CONTROL, NOINVERT
+    "L",            ID_FILE_LOADSTATE,      VIRTKEY, CONTROL, NOINVERT
+    "M",            ID_FILE_PARAMETRICSURFACE, VIRTKEY, CONTROL, NOINVERT
+    "P",            ID_FILE_PROFILESURFACE, VIRTKEY, CONTROL, NOINVERT
+    "R",            ID_FILE_READ3DPOINTSFROMFILE, VIRTKEY, CONTROL, NOINVERT
+    "O",            ID_FILE_READOBJFILE,    VIRTKEY, CONTROL, NOINVERT
+    "S",            ID_FILE_SAVESTATE,      VIRTKEY, CONTROL, NOINVERT
+    VK_F10,         ID_DEBUG_STEPTETRA,     VIRTKEY, CONTROL, NOINVERT
+    VK_F11,         ID_DEBUG_STEPVERTEX,    VIRTKEY, CONTROL, NOINVERT
 END
 
 
@@ -427,9 +457,6 @@ BEGIN
     END
     POPUP "&View"
     BEGIN
-        MENUITEM "Start Timer",                 ID_VIEW_STARTTIMER
-        MENUITEM "Stop Timer",                  ID_VIEW_STOPTIMER
-        MENUITEM SEPARATOR
         MENUITEM "&Toolbar",                    ID_VIEW_TOOLBAR
         MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
         MENUITEM "S&plit",                      ID_WINDOW_SPLIT
@@ -565,17 +592,6 @@ END
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDR_MAINFRAME           ICON                    "res\\D3Function.ico"
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// AFX_DIALOG_LAYOUT
-//
-
-IDD_ABOUTBOX AFX_DIALOG_LAYOUT
-BEGIN
-    0
-END
 
 
 /////////////////////////////////////////////////////////////////////////////

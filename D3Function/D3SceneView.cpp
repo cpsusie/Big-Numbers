@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "mainfrm.h"
+#include "MainFrm.h"
 #include "D3FunctionDoc.h"
 #include "D3SceneView.h"
 
@@ -11,8 +11,6 @@ IMPLEMENT_DYNCREATE(CD3SceneView, CView)
 
 BEGIN_MESSAGE_MAP(CD3SceneView, CView)
     ON_WM_SIZE()
-    ON_WM_CREATE()
-    ON_WM_DESTROY()
     ON_COMMAND(ID_FILE_PRINT        , OnFilePrint       )
     ON_COMMAND(ID_FILE_PRINT_DIRECT , OnFilePrint       )
 END_MESSAGE_MAP()
@@ -21,10 +19,6 @@ CD3SceneView::CD3SceneView() {
 }
 
 CD3SceneView::~CD3SceneView() {
-}
-
-BOOL CD3SceneView::PreCreateWindow(CREATESTRUCT &cs) {
-  return __super::PreCreateWindow(cs);
 }
 
 BOOL CD3SceneView::OnPreparePrinting(CPrintInfo *pInfo) {
@@ -57,23 +51,10 @@ void CD3SceneView::OnDraw(CDC *pDC) {
 
 void CD3SceneView::OnSize(UINT nType, int cx, int cy) {
   __super::OnSize(nType, cx, cy);
-}
-
-int CD3SceneView::OnCreate(LPCREATESTRUCT lpCreateStruct) {
-  if(__super::OnCreate(lpCreateStruct) == -1) {
-    return -1;
+  CMainFrame *mainFrm = theApp.getMainFrame();
+  if(mainFrm) {
+    D3Scene &scene = mainFrm->getScene();
+    scene.OnSize();
+    scene.render();
   }
-  return 0;
-}
-
-void CD3SceneView::OnDestroy() {
-  __super::OnDestroy();
-}
-
-BOOL CD3SceneView::PreTranslateMessage(MSG *pMsg) {
-  return __super::PreTranslateMessage(pMsg);
-}
-
-void CD3SceneView::OnInitialUpdate() {
-  __super::OnInitialUpdate();
 }

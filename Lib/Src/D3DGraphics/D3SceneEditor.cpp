@@ -31,6 +31,7 @@ void D3SceneEditor::init(D3SceneContainer *sceneContainer) {
 
   m_currentControl = CONTROL_IDLE;
   getScene().addPropertyChangeListener(this);
+  m_stateFlags.add(SE_INITDONE);
 }
 
 void D3SceneEditor::close() {
@@ -40,10 +41,12 @@ void D3SceneEditor::close() {
   SAFEDELETE(m_coordinateSystem);
   getScene().removeSceneObject(m_selectedCube);
   SAFEDELETE(m_selectedCube);
+  m_stateFlags.remove(SE_INITDONE);
 }
 
 void D3SceneEditor::setEnabled(bool enabled) {
-  if (enabled) {
+  if(!m_stateFlags.contains(SE_INITDONE)) return;
+  if(enabled) {
     m_stateFlags.add(SE_ENABLED);
     enablePropertyChanges();
     enableRender();
@@ -200,7 +203,7 @@ void D3SceneEditor::OnMouseMove(UINT nFlags, CPoint point) {
   case CONTROL_OBJECT_POS    :
     OnMouseMoveObjectPos(nFlags, point);
     break;
-  case CONTROL_LIGHT          :
+  case CONTROL_LIGHT         :
     OnMouseMoveLight(nFlags, point);
     break;
   case CONTROL_SPOTLIGHTPOINT:
@@ -1302,6 +1305,7 @@ String D3SceneEditor::stateFlagsToString() const {
   String result = _T("(");
   const TCHAR *delim = NULL;
 #define ADDDELIM { if(delim) result += delim; else delim=_T(" "); }
+  if(isInitDone())               { ADDDELIM; result += _T("initialized"); }
   if(isEnabled())                { ADDDELIM; result += _T("enabled"); }
   if(isPropertyChangesEnabled()) { ADDDELIM; result += _T("prop");    }
   if(isMouseVisible())           { ADDDELIM; result += _T("mouse");   }

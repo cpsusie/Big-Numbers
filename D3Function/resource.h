@@ -115,8 +115,6 @@
 #define ID_FILE_READOBJFILE             32807
 #define ID_FILE_EXIT                    32808
 #define ID_VIEW_SHOW3DINFO              32900
-#define ID_VIEW_STARTTIMER              32901
-#define ID_VIEW_STOPTIMER               32902
 #define ID_DEBUG_STEPLEVEL              33000
 #define ID_DEBUG_STEPCUBE               33001
 #define ID_DEBUG_STEPTETRA              33002

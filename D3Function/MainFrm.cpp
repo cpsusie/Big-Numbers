@@ -1,9 +1,10 @@
 #include "stdafx.h"
 #include <ProcessTools.h>
+#include <D3DGraphics/MeshCreators.h>
+#include "Function2DSurfaceDlg.h"
 #include "MainFrm.h"
 #include "EnterOptionsNameDlg.h"
 #include "OptionsOrganizerDlg.h"
-#include "InfoView.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -43,8 +44,9 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
   ON_COMMAND(ID_OPTIONS_LOADOPTIONS8      , OnOptionsLoadOptions8      )
   ON_COMMAND(ID_OPTIONS_LOADOPTIONS9      , OnOptionsLoadOptions9      )
   ON_COMMAND(ID_OPTIONS_ORGANIZEOPTIONS   , OnOptionsOrganizeOptions   )
-  ON_COMMAND(ID_VIEW_STARTTIMER           , OnViewStartTimer           )
-  ON_COMMAND(ID_VIEW_STOPTIMER            , OnViewStopTimer            )
+  ON_MESSAGE(ID_MSG_RENDER                , OnMsgRender                )
+  ON_MESSAGE(ID_MSG_DEBUGGERSTATECHANGED  , OnMsgDebuggerStateChanged  )
+  ON_MESSAGE(ID_MSG_KILLDEBUGGER          , OnMsgKillDebugger          )
 END_MESSAGE_MAP()
 
 static UINT indicators[] = {
@@ -86,6 +88,8 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
 
   EnableDocking(CBRS_ALIGN_ANY);
   DockControlBar(&m_wndToolBar);
+  m_accelTable = LoadAccelerators(theApp.m_hInstance, MAKEINTRESOURCE(IDR_MAINFRAME));
+  init3D();
   return 0;
 }
 
@@ -93,8 +97,8 @@ BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT /*lpcs*/, CCreateContext *pContex
   m_relativeHeight = 0.8;
 
   VERIFY(m_wndSplitter.CreateStatic(this, 2, 1));
-  VERIFY(m_wndSplitter.CreateView(0, 0, RUNTIME_CLASS(CD3SceneView), CSize(100, 100), pContext));
-  VERIFY(m_wndSplitter.CreateView(1, 0, RUNTIME_CLASS(CInfoView   ), CSize(100, 10), pContext));
+  VERIFY(m_wndSplitter.CreateView(0, 0, RUNTIME_CLASS(CD3SceneView), CSize(500, 400), pContext));
+  VERIFY(m_wndSplitter.CreateView(1, 0, RUNTIME_CLASS(CInfoView   ), CSize(500, 30), pContext));
   return TRUE;
 }
 
@@ -102,7 +106,14 @@ void CD3FunctionSplitterWnd::RecalcLayout() {
   getInfoPanel()->enableScroll(false);
   __super::RecalcLayout();
   if(m_splitPointMoved) {
-    ((CMainFrame*)GetParent())->saveRelativeHeight();
+    CMainFrame *mf = theApp.getMainFrame();
+    mf->saveRelativeHeight();
+    mf->getEditor().setEnabled(true);
+    if(mf->isInfoPanelVisible()) {
+      mf->startTimer();
+    } else {
+      mf->stopTimer();
+    }
     m_splitPointMoved = false;
   }
   getInfoPanel()->enableScroll(true);
@@ -110,6 +121,7 @@ void CD3FunctionSplitterWnd::RecalcLayout() {
 
 void CD3FunctionSplitterWnd::OnInvertTracker(const CRect& rect) {
   __super::OnInvertTracker(rect);
+  theApp.getMainFrame()->getEditor().setEnabled(false);
   m_splitPointMoved = true;
 }
 
@@ -119,13 +131,6 @@ CD3SceneView *CD3FunctionSplitterWnd::get3DPanel() {
 
 CInfoView *CD3FunctionSplitterWnd::getInfoPanel() {
   return (CInfoView*)GetPane(1, 0);
-}
-
-BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs) {
-  if(!__super::PreCreateWindow(cs)) {
-    return FALSE;
-  }
-  return TRUE;
 }
 
 #ifdef _DEBUG
@@ -259,7 +264,7 @@ void CMainFrame::startTimer() {
 }
 
 void CMainFrame::stopTimer() {
-  if (m_timerRunning) {
+  if(m_timerRunning) {
     KillTimer(1);
     m_timerRunning = false;
   }
@@ -269,6 +274,162 @@ void CMainFrame::OnTimer(UINT_PTR nIDEvent) {
   show3DInfo(INFO_MEM);
   __super::OnTimer(nIDEvent);
 }
+
+// -------------------------------------------- 3D --------------------------------------------
+
+void CMainFrame::init3D() {
+  m_scene.init(*get3DWindow());
+  m_editor.init(this);
+  m_editor.setEnabled(true);
+
+  createInitialObject();
+
+  m_scene.setLightDirection(0, rotate(m_scene.getCameraDir(), m_scene.getCameraRight(), 0.2f));
+  startTimer();
+}
+
+void CMainFrame::createInitialObject() {
+  try {
+//  D3LineArray *tt = new D3LineArray(m_scene, tetraEder, ARRAYSIZE(tetraEder)); TRACE_NEW(tt);
+//  setCalculatedObject(tt);
+
+  createSaddle();
+//    m_isoSurfaceParam.load("c:\\mytools\\D3FunctionPlotter\\samples\\jacktool.imp");
+//  m_isoSurfaceParam.load("c:\\mytools\\D3FunctionPlotter\\samples\\wifflecube.imp");
+//    setCalculatedObject(&m_isoSurfaceParam);
+  } catch(Exception e) {
+    showException(e);
+  }
+}
+
+void CMainFrame::createSaddle() {
+  m_function2DSurfaceParam.setName(_T("Saddle"));
+  m_function2DSurfaceParam.m_expr = _T("(x*x-y*y)/2");
+  m_function2DSurfaceParam.m_xInterval = DoubleInterval(-1, 1);
+  m_function2DSurfaceParam.m_yInterval = DoubleInterval(-1, 1);
+  m_function2DSurfaceParam.m_pointCount = 20;
+  m_function2DSurfaceParam.m_includeTime = false;
+  m_function2DSurfaceParam.m_machineCode = true;
+  m_function2DSurfaceParam.m_doubleSided = true;
+
+  setCalculatedObject(m_function2DSurfaceParam);
+}
+
+class D3AnimatedFunctionSurface : public D3AnimatedSurface {
+public:
+  D3AnimatedFunctionSurface(D3Scene &scene, const MeshArray &ma) : D3AnimatedSurface(scene, ma) {
+  }
+  void modifyContextMenu(CMenu &menu) {
+    appendMenuItem(menu, _T("Edit function"), ID_OBJECT_EDITFUNCTION);
+  }
+};
+
+class D3FunctionSurface : public D3SceneObjectWithMesh {
+public:
+  D3FunctionSurface(D3Scene &scene, LPD3DXMESH mesh) : D3SceneObjectWithMesh(scene, mesh) {
+  }
+  void modifyContextMenu(CMenu &menu) {
+    appendMenuItem(menu, _T("Edit function"), ID_OBJECT_EDITFUNCTION);
+  }
+};
+
+
+void CMainFrame::setCalculatedObject(Function2DSurfaceParameters &param) {
+  stopDebugging();
+  if(param.m_includeTime) {
+    D3AnimatedFunctionSurface *obj = new D3AnimatedFunctionSurface(m_scene, createMeshArray(this, m_scene, param)); TRACE_NEW(obj);
+    setCalculatedObject(obj, &param);
+  } else {
+    D3FunctionSurface *obj = new D3FunctionSurface(m_scene, createMesh(m_scene, param)); TRACE_NEW(obj);
+    setCalculatedObject(obj, &param);
+  }
+}
+
+void CMainFrame::deleteCalculatedObject() {
+  D3SceneObject *oldObj = getCalculatedObject();
+  if (oldObj) {
+    m_scene.removeSceneObject(oldObj);
+    SAFEDELETE(oldObj);
+  }
+}
+
+void CMainFrame::setCalculatedObject(D3SceneObject *obj, PersistentData *param) {
+  deleteCalculatedObject();
+  if(obj) {
+    obj->setUserData(param);
+    if(param) {
+      obj->setName(param->getDisplayName());
+    }
+    m_scene.addSceneObject(obj);
+  }
+  m_editor.setCurrentSceneObject(obj);
+}
+
+D3SceneObject *CMainFrame::getCalculatedObject() const {
+  for(Iterator<D3SceneObject*> it = m_scene.getObjectIterator(); it.hasNext();) {
+    D3SceneObject *obj = it.next();
+    if(obj->getUserData() != NULL) {
+      return obj;
+    }
+  }
+  return NULL;
+}
+
+LRESULT CMainFrame::OnMsgRender(WPARAM wp, LPARAM lp) {
+  if(wp & RENDER_3D) {
+    m_scene.render();
+  }
+  if(wp & RENDER_INFO) {
+    if(m_editor.isEnabled()) {
+      show3DInfo(INFO_EDIT);
+    }
+  }
+  return 0;
+}
+
+void CMainFrame::ajourDebuggerMenu() {
+#ifndef DEBUG_POLYGONIZER
+  const bool enable1 = false;
+  const bool enable2 = false;
+  const bool enable3 = false;
+#else
+  const bool enable1 = isDebuggerPaused();
+  const bool enable2 = hasDebugger();
+  const bool enable3 = enable1 && isMenuItemChecked(this, ID_DEBUG_AUTOFOCUSCURRENTCUBE) && m_hasCubeCenter;
+#endif // DEBUG_POLYGONIZER
+
+  enableSubMenuContainingId(this, ID_DEBUG_GO, enable1 || enable2);
+  enableMenuItem(this, ID_DEBUG_GO           , enable1);
+  enableMenuItem(this, ID_DEBUG_STEPLEVEL    , enable1);
+  enableMenuItem(this, ID_DEBUG_STEPCUBE     , enable1);
+  enableMenuItem(this, ID_DEBUG_STEPTETRA    , enable1);
+  enableMenuItem(this, ID_DEBUG_STEPFACE     , enable1);
+  enableMenuItem(this, ID_DEBUG_STEPVERTEX   , enable1);
+  enableMenuItem(this, ID_DEBUG_AUTOFOCUSCURRENTCUBE, enable1);
+  enableMenuItem(this, ID_DEBUG_STOPDEBUGGING, enable2);
+  enableSubMenuContainingId(this, ID_DEBUG_ADJUSTCAM_45UP, enable3);
+}
+
+#ifndef DEBUG_POLYGONIZER
+void CMainFrame::startDebugging() {}
+void CMainFrame::stopDebugging() {}
+void CMainFrame::OnDebugGo() {}
+void CMainFrame::OnDebugStepLevel() {}
+void CMainFrame::OnDebugStepCube() {}
+void CMainFrame::OnDebugStepTetra() {}
+void CMainFrame::OnDebugStepFace() {}
+void CMainFrame::OnDebugStepVertex() {}
+void CMainFrame::OnDebugStopDebugging() {}
+void CMainFrame::OnDebugAutoFocusCurrentCube() {}
+void CMainFrame::OnDebugAdjustCam45Up() {}
+void CMainFrame::OnDebugAdjustCam45Down() {}
+void CMainFrame::OnDebugAdjustCam45Left() {}
+void CMainFrame::OnDebugAdjustCam45Right() {}
+void CMainFrame::OnDebugMarkCube() {}
+
+LRESULT CMainFrame::OnMsgKillDebugger(WPARAM wp, LPARAM lp) { return 0; }
+LRESULT CMainFrame::OnMsgDebuggerStateChanged(WPARAM wp, LPARAM lp) { return 0; }
+#endif // DEBUG_POLYGONIZER
 
 void CMainFrame::updateDebugInfo() {
 #ifdef DEBUG_POLYGONIZER
@@ -294,13 +455,13 @@ void CMainFrame::updateDebugInfo() {
 }
 
 void CMainFrame::updateEditorInfo() {
-//  m_editorInfo = m_editor.toString(); TODO
+  m_editorInfo = m_editor.toString();
 }
 
 void CMainFrame::updateMemoryInfo() {
   const PROCESS_MEMORY_COUNTERS mem = getProcessMemoryUsage();
   const ResourceCounters        res = getProcessResources();
-  m_memoryInfo += format(_T("Time:%s Memory:%13s User-obj:%4d GDI-obj:%4d\n")
+  m_memoryInfo = format(_T("Time:%s Memory:%13s User-obj:%4d GDI-obj:%4d")
                        ,Timestamp().toString(hhmmss).cstr()
                        ,format1000(mem.WorkingSetSize).cstr()
                        ,res.m_userObjectCount
@@ -308,7 +469,7 @@ void CMainFrame::updateMemoryInfo() {
 }
 
 void CMainFrame::show3DInfo(BYTE flags) {
-  if(!m_infoPanelVisible) return;
+  if(!isInfoPanelVisible()) return;
   if(flags & INFO_DEBUG) updateDebugInfo();
   if(flags & INFO_MEM  ) updateMemoryInfo();
   if(flags & INFO_EDIT ) updateEditorInfo();
@@ -403,11 +564,12 @@ void CMainFrame::OnOptionsOrganizeOptions() {
 }
 
 
-void CMainFrame::OnViewStartTimer() {
-  startTimer();
-}
-
-
-void CMainFrame::OnViewStopTimer() {
-  stopTimer();
+BOOL CMainFrame::PreTranslateMessage(MSG * pMsg) {
+  if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
+    return true;
+  }
+  if(m_editor.PreTranslateMessage(pMsg)) {
+    return true;
+  }
+  return __super::PreTranslateMessage(pMsg);
 }
