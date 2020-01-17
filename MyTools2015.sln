@@ -275,6 +275,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MP3Convert", "MP3Convert\MP
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Id3Lib", "Lib\Src\id3lib\libprj\id3lib.vcxproj", "{4E1FDA09-0E5D-4855-B60E-6FE33669FCF2}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "D3Function", "D3Function\D3Function.vcxproj", "{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -1631,6 +1633,42 @@ Global
 		{4E1FDA09-0E5D-4855-B60E-6FE33669FCF2}.TraceMemRelease|x64.Build.0 = Release|x64
 		{4E1FDA09-0E5D-4855-B60E-6FE33669FCF2}.TraceMemRelease|x86.ActiveCfg = Release|Win32
 		{4E1FDA09-0E5D-4855-B60E-6FE33669FCF2}.TraceMemRelease|x86.Build.0 = Release|Win32
+		{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}.Debug|x64.ActiveCfg = Debug|x64
+		{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}.Debug|x64.Build.0 = Debug|x64
+		{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}.Debug|x86.ActiveCfg = Debug|Win32
+		{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}.Debug|x86.Build.0 = Debug|Win32
+		{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}.LDDebug|x64.ActiveCfg = Debug|x64
+		{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}.LDDebug|x64.Build.0 = Debug|x64
+		{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}.LDDebug|x86.ActiveCfg = Debug|Win32
+		{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}.LDDebug|x86.Build.0 = Debug|Win32
+		{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}.LDRelease|x64.ActiveCfg = Release|x64
+		{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}.LDRelease|x64.Build.0 = Release|x64
+		{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}.LDRelease|x86.ActiveCfg = Release|Win32
+		{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}.LDRelease|x86.Build.0 = Release|Win32
+		{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}.Profilling|x64.ActiveCfg = Release|x64
+		{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}.Profilling|x64.Build.0 = Release|x64
+		{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}.Profilling|x86.ActiveCfg = Release|Win32
+		{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}.Profilling|x86.Build.0 = Release|Win32
+		{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}.Release|x64.ActiveCfg = Release|x64
+		{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}.Release|x64.Build.0 = Release|x64
+		{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}.Release|x86.ActiveCfg = Release|Win32
+		{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}.Release|x86.Build.0 = Release|Win32
+		{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}.TraceMemDebug|x64.ActiveCfg = TraceMemDebug|x64
+		{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}.TraceMemDebug|x64.Build.0 = TraceMemDebug|x64
+		{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}.TraceMemDebug|x86.ActiveCfg = TraceMemDebug|Win32
+		{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}.TraceMemDebug|x86.Build.0 = TraceMemDebug|Win32
+		{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}.TraceMemLDDebug|x64.ActiveCfg = TraceMemDebug|x64
+		{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}.TraceMemLDDebug|x64.Build.0 = TraceMemDebug|x64
+		{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}.TraceMemLDDebug|x86.ActiveCfg = TraceMemDebug|Win32
+		{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}.TraceMemLDDebug|x86.Build.0 = TraceMemDebug|Win32
+		{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}.TraceMemLDRelease|x64.ActiveCfg = TraceMemDebug|x64
+		{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}.TraceMemLDRelease|x64.Build.0 = TraceMemDebug|x64
+		{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}.TraceMemLDRelease|x86.ActiveCfg = TraceMemDebug|Win32
+		{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}.TraceMemLDRelease|x86.Build.0 = TraceMemDebug|Win32
+		{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}.TraceMemRelease|x64.ActiveCfg = TraceMemDebug|x64
+		{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}.TraceMemRelease|x64.Build.0 = TraceMemDebug|x64
+		{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}.TraceMemRelease|x86.ActiveCfg = TraceMemDebug|Win32
+		{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}.TraceMemRelease|x86.Build.0 = TraceMemDebug|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
