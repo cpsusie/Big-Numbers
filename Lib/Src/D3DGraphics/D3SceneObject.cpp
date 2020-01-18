@@ -43,7 +43,7 @@ bool D3SceneObject::intersectsWithRay(const D3Ray &ray, float &dist, D3PickedInf
                  ,&infoBuffer
                  ,&hitCount
                  ));
-  hit = 0;
+  hit = FALSE;
   if(hitCount > 0) {
     D3DXINTERSECTINFO *infoArray = (D3DXINTERSECTINFO*)infoBuffer->GetBufferPointer();
     quickSort(infoArray, hitCount, sizeof(D3DXINTERSECTINFO), DistComparator());
@@ -80,7 +80,7 @@ bool D3SceneObject::intersectsWithRay(const D3Ray &ray, float &dist, D3PickedInf
         }
         D3DXVECTOR3 c = crossProduct(vtx[2] - vtx[0], vtx[1] - vtx[0]);
         if(rayDir * c < 0) {
-          hit  = 1;
+          hit  = TRUE;
           dist = hi.Dist;
           if(info) {
             *info = D3PickedInfo(faceIndex, inx, vtx, hi.U, hi.V);
@@ -99,32 +99,13 @@ bool D3SceneObject::intersectsWithRay(const D3Ray &ray, float &dist, D3PickedInf
   return hit ? true : false;
 }
 
-
-
-// -----------------------------------------------------------------------------------------------------------
-
-#define SINCOS(degree,c,s) double c = radians(degree), s; sincos(c,s)
-#define RSINCOS(degree,r,c,s) SINCOS(degree,c,s); c*=r; s*=r
-
-CurveArray createSphereObject(double r) {
-  CurveArray curves;
-  for(int fi = 0; fi < 180; fi += 45) {
-    RSINCOS(fi, r, RcosFi, RsinFi);
-    VertexArray va;
-    for(int theta = 0; theta < 360; theta += 5) {
-      RSINCOS(theta, RsinFi, RcosTheta, RsinTheta);
-      va.add(Vertex(RcosTheta, RsinTheta, RcosFi));
-    }
-    curves.add(va);
-  }
-  for(int fi = -180+30; fi < 180; fi += 30) {
-    RSINCOS(fi, r, RcosFi, RsinFi);
-    VertexArray va;
-    for(int theta = 0; theta < 360; theta += 5) {
-      RSINCOS(theta, RsinFi, RcosTheta, RsinTheta);
-      va.add(Vertex(RcosTheta, RsinTheta, RcosFi));
-    }
-    curves.add(va);
-  }
-  return curves;
+String D3PickedInfo::toString(int dec) const {
+  return isEmpty()
+       ? EMPTYSTRING
+       : format(_T("Face:%5d:[%5d,%5d,%5d], (U,V):(%s,%s), MP:%s")
+               ,m_faceIndex
+               ,m_vertexIndex[0], m_vertexIndex[1], m_vertexIndex[2]
+               ,::toString(m_U,dec).cstr(), ::toString(m_V, dec).cstr()
+               ,::toString(getMeshPoint(), dec).cstr()
+               );
 }

@@ -1338,7 +1338,7 @@ String D3SceneEditor::toString() const {
                         );
   if(m_pickedRay.isSet()) {
     result += format(_T("\nPicked ray:%s"), m_pickedRay.toString().cstr());
-    if (m_pickedInfo.isSet()) {
+    if(!m_pickedInfo.isEmpty()) {
       result += format(_T("\nPicked point:%s, info:%s")
                       ,::toString(m_pickedPoint).cstr()
                       ,m_pickedInfo.toString().cstr());

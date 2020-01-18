@@ -70,8 +70,8 @@ public:
   inline void clear() {
     m_faceIndex = -1;
   }
-  inline bool isSet() const {
-    return m_faceIndex >= 0;
+  inline bool isEmpty() const {
+    return m_faceIndex < 0;
   }
   inline int getFaceIndex() const {
     return m_faceIndex;
@@ -90,16 +90,7 @@ public:
   const D3DXVECTOR3 getVertexPoint(int i) const {
     return m_facePoint[i];
   }
-  inline String toString(int dec=3) const {
-    return isSet()
-         ? format(_T("Face:%5d:[%5d,%5d,%5d], (U,V):(%5.3f,%5.3f), MP:(%s)")
-                 ,m_faceIndex
-                 ,m_vertexIndex[0], m_vertexIndex[1], m_vertexIndex[2]
-                 ,m_U,m_V
-                 ,::toString(getMeshPoint(),dec).cstr()
-                 )
-         : EMPTYSTRING;
-  }
+  String toString(int dec = 3) const;
 };
 
 class D3SceneRenderState {
@@ -912,5 +903,3 @@ public:
     return m_pdus;
   }
 };
-
-CurveArray createSphereObject(double r);

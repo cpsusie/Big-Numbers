@@ -36,3 +36,29 @@ void D3SceneObjectCurveArray::draw() {
     }
   }
 }
+
+#define SINCOS(degree,c,s) double c = radians(degree), s; sincos(c,s)
+#define RSINCOS(degree,r,c,s) SINCOS(degree,c,s); c*=r; s*=r
+
+CurveArray CurveArray::createSphereObject(double r) {
+  CurveArray curves;
+  for(int fi = 0; fi < 180; fi += 45) {
+    RSINCOS(fi, r, RcosFi, RsinFi);
+    VertexArray va;
+    for(int theta = 0; theta < 360; theta += 5) {
+      RSINCOS(theta, RsinFi, RcosTheta, RsinTheta);
+      va.add(Vertex(RcosTheta, RsinTheta, RcosFi));
+    }
+    curves.add(va);
+  }
+  for(int fi = -180+30; fi < 180; fi += 30) {
+    RSINCOS(fi, r, RcosFi, RsinFi);
+    VertexArray va;
+    for(int theta = 0; theta < 360; theta += 5) {
+      RSINCOS(theta, RsinFi, RcosTheta, RsinTheta);
+      va.add(Vertex(RcosTheta, RsinTheta, RcosFi));
+    }
+    curves.add(va);
+  }
+  return curves;
+}

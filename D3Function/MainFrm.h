@@ -156,6 +156,7 @@ protected: // create from serialization only
     afx_msg void OnFileFunctionSurface();
     afx_msg void OnFileParametricSurface();
     afx_msg void OnFileIsoSurface();
+    afx_msg void OnObjectEditFunction();
     afx_msg void OnFilePrintPreview();
     afx_msg void OnFileMruFile1();
     afx_msg void OnFileMruFile2();

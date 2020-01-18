@@ -3,6 +3,9 @@
 class CD3SceneView : public CView {
 private:
 
+  CMainFrame *mainFrm = theApp.getMainFrame();
+  D3Scene *getScene();
+
 protected: // create from serialization only
   CD3SceneView();
   DECLARE_DYNCREATE(CD3SceneView)
@@ -11,11 +14,10 @@ public:
   CD3FunctionDoc  *GetDocument();
   virtual ~CD3SceneView();
 #ifdef _DEBUG
-    virtual void AssertValid() const;
-    virtual void Dump(CDumpContext& dc) const;
+  virtual void AssertValid() const;
+  virtual void Dump(CDumpContext& dc) const;
 #endif
 
-protected:
   virtual void OnDraw(           CDC *pDC);  // overridden to draw this view
   virtual BOOL OnPreparePrinting(CPrintInfo *pInfo);
   virtual void OnBeginPrinting(  CDC *pDC, CPrintInfo *pInfo);

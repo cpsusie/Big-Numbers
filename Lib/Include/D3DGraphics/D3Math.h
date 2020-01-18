@@ -234,7 +234,10 @@ public:
 
 typedef CompactArray<Vertex>        VertexArray;
 typedef CompactArray<TextureVertex> TextureVertexArray;
-typedef Array<VertexArray>          CurveArray;
+class CurveArray : public Array<VertexArray> {
+public:
+  static CurveArray createSphereObject(double r);
+};
 
 class Point3DP : public Point3D {
 public:

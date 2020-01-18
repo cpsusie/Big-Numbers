@@ -46,15 +46,18 @@ CD3FunctionDoc* CD3SceneView::GetDocument() { // non-debug version is inline
 }
 #endif //_DEBUG
 
+D3Scene *CD3SceneView::getScene() {
+  CMainFrame *mainFrm = theApp.getMainFrame();
+  return mainFrm ? &mainFrm->getScene() : NULL;
+}
+
 void CD3SceneView::OnDraw(CDC *pDC) {
+  D3Scene *scene = getScene();
+  if(scene) scene->render();
 }
 
 void CD3SceneView::OnSize(UINT nType, int cx, int cy) {
   __super::OnSize(nType, cx, cy);
-  CMainFrame *mainFrm = theApp.getMainFrame();
-  if(mainFrm) {
-    D3Scene &scene = mainFrm->getScene();
-    scene.OnSize();
-    scene.render();
-  }
+  D3Scene *scene = getScene();
+  if(scene) scene->OnSize();
 }

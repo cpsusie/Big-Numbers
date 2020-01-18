@@ -38,6 +38,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
   ON_COMMAND(ID_FILE_FUNCTIONSURFACE      , OnFileFunctionSurface      )
   ON_COMMAND(ID_FILE_PARAMETRICSURFACE    , OnFileParametricSurface    )
   ON_COMMAND(ID_FILE_ISOSURFACE           , OnFileIsoSurface           )
+  ON_COMMAND(ID_OBJECT_EDITFUNCTION       , OnObjectEditFunction       )
   ON_COMMAND(ID_OPTIONS_SAVEOPTIONS       , OnOptionsSaveOptions       )
   ON_COMMAND(ID_OPTIONS_LOADOPTIONS1      , OnOptionsLoadOptions1      )
   ON_COMMAND(ID_OPTIONS_LOADOPTIONS2      , OnOptionsLoadOptions2      )
@@ -158,14 +159,12 @@ void CMainFrame::updateLoadOptionsMenu() {
   HMENU optionsMenu = findMenuByString(m_hMenuDefault, saveOptionsMenuPath, &index);
   HMENU loadMenu    = (optionsMenu && (index >= 0)) ? getSubMenu(optionsMenu, _T("load options")) : NULL;
 
-  if(loadMenu == NULL) {
-    if(optionNames.size() > 0) {
-      loadMenu = insertSubMenu(optionsMenu, 12, _T("&Load options"));
-    } else {
-      return;
-    }
-  } else {
+  if(loadMenu != NULL) {
     removeAllMenuItems(loadMenu);
+  } else if(optionNames.size() > 0) {
+    loadMenu = insertSubMenu(optionsMenu, 12, _T("&Load options"));
+  } else {
+    return;
   }
   const int n = min((int)optionNames.size(), 9);
   for(int i = 0; i < n; i++) {
@@ -499,10 +498,10 @@ void CMainFrame::updateMemoryInfo() {
 
 void CMainFrame::show3DInfo(BYTE flags) {
   if(!isInfoPanelVisible()) return;
-  if(flags & INFO_DEBUG) updateDebugInfo();
   if(flags & INFO_MEM  ) updateMemoryInfo();
   if(flags & INFO_EDIT ) updateEditorInfo();
-  showInfo(_T("%s\n%s\n%s"), m_debugInfo.cstr(), m_memoryInfo.cstr(), m_editorInfo.cstr());
+  if(flags & INFO_DEBUG) updateDebugInfo();
+  showInfo(_T("%s\n%s\n%s"), m_memoryInfo.cstr(), m_editorInfo.cstr(), m_debugInfo.cstr());
 }
 
 void CMainFrame::showInfo(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
@@ -562,6 +561,26 @@ void CMainFrame::OnFileIsoSurface() {
 #endif // DEBUG_POLYGONIZER
   } catch(Exception e) {
     showException(e);
+  }
+}
+
+void CMainFrame::OnObjectEditFunction() {
+  D3SceneObject *calcObj = getCalculatedObject();
+  if(!calcObj) return;
+  PersistentData *param = (PersistentData*)calcObj->getUserData();
+  switch (param->getType()) {
+  case PP_2DFUNCTION:
+    OnFileFunctionSurface();
+    break;
+  case PP_PARAMETRICSURFACE:
+    OnFileParametricSurface();
+    break;
+  case PP_ISOSURFACE:
+    OnFileIsoSurface();
+    break;
+  default:
+    showWarning(_T("Unknown PersistentDataType:%d"), param->getType());
+    break;
   }
 }
 
