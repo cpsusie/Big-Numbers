@@ -2,6 +2,8 @@
 #include <ProcessTools.h>
 #include <D3DGraphics/MeshCreators.h>
 #include "Function2DSurfaceDlg.h"
+#include "ParametricSurfaceDlg.h"
+#include "IsoSurfaceDlg.h"
 #include "MainFrm.h"
 #include "EnterOptionsNameDlg.h"
 #include "OptionsOrganizerDlg.h"
@@ -33,6 +35,9 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
   ON_COMMAND(ID_FILE_MRU_FILE14           , OnFileMruFile14            )
   ON_COMMAND(ID_FILE_MRU_FILE15           , OnFileMruFile15            )
   ON_COMMAND(ID_FILE_MRU_FILE16           , OnFileMruFile16            )
+  ON_COMMAND(ID_FILE_FUNCTIONSURFACE      , OnFileFunctionSurface      )
+  ON_COMMAND(ID_FILE_PARAMETRICSURFACE    , OnFileParametricSurface    )
+  ON_COMMAND(ID_FILE_ISOSURFACE           , OnFileIsoSurface           )
   ON_COMMAND(ID_OPTIONS_SAVEOPTIONS       , OnOptionsSaveOptions       )
   ON_COMMAND(ID_OPTIONS_LOADOPTIONS1      , OnOptionsLoadOptions1      )
   ON_COMMAND(ID_OPTIONS_LOADOPTIONS2      , OnOptionsLoadOptions2      )
@@ -56,6 +61,8 @@ static UINT indicators[] = {
 };
 
 #define INDICATORCOUNT ARRAYSIZE(indicators)
+
+#define REPAINT() Invalidate(FALSE)
 
 CMainFrame::CMainFrame() {
   m_statusPanesVisible = true;
@@ -345,6 +352,28 @@ void CMainFrame::setCalculatedObject(Function2DSurfaceParameters &param) {
   }
 }
 
+void CMainFrame::setCalculatedObject(ParametricSurfaceParameters &param) {
+  stopDebugging();
+  if(param.m_includeTime) {
+    D3AnimatedFunctionSurface *obj = new D3AnimatedFunctionSurface(m_scene, createMeshArray(this, m_scene, param)); TRACE_NEW(obj);
+    setCalculatedObject(obj, &param);
+  } else {
+    D3FunctionSurface *obj = new D3FunctionSurface(m_scene, createMesh(m_scene, param)); TRACE_NEW(obj);
+    setCalculatedObject(obj, &param);
+  }
+}
+
+void CMainFrame::setCalculatedObject(IsoSurfaceParameters &param) {
+  stopDebugging();
+  if(param.m_includeTime) {
+    D3AnimatedFunctionSurface *obj = new D3AnimatedFunctionSurface(m_scene, createMeshArray(this, m_scene, param)); TRACE_NEW(obj);
+    setCalculatedObject(obj, &param);
+  } else {
+    D3FunctionSurface *obj = new D3FunctionSurface(m_scene, createMesh(m_scene, param)); TRACE_NEW(obj);
+    setCalculatedObject(obj, &param);
+  }
+}
+
 void CMainFrame::deleteCalculatedObject() {
   D3SceneObject *oldObj = getCalculatedObject();
   if (oldObj) {
@@ -485,6 +514,56 @@ void CMainFrame::showInfo(_In_z_ _Printf_format_string_ TCHAR const * const form
 
 // -------------------------------------------- File menu ----------------------------------------
 
+void CMainFrame::OnFileFunctionSurface() {
+  try {
+    CFunction2DSurfaceDlg dlg(m_function2DSurfaceParam);
+    if(dlg.DoModal() != IDOK) {
+      return;
+    }
+    m_function2DSurfaceParam = dlg.getData();
+    setCalculatedObject(m_function2DSurfaceParam);
+    REPAINT();
+  } catch(Exception e) {
+    showException(e);
+  }
+}
+
+void CMainFrame::OnFileParametricSurface() {
+  try {
+    CParametricSurfaceDlg dlg(m_parametricSurfaceParam);
+    if(dlg.DoModal() != IDOK) {
+      return;
+    }
+    m_parametricSurfaceParam = dlg.getData();
+    setCalculatedObject(m_parametricSurfaceParam);
+    REPAINT();
+  } catch(Exception e) {
+    showException(e);
+  }
+}
+
+void CMainFrame::OnFileIsoSurface() {
+  try {
+    CIsoSurfaceDlg dlg(m_isoSurfaceParam);
+    if(dlg.DoModal() != IDOK) {
+      return;
+    }
+    m_isoSurfaceParam = dlg.getData();
+#ifndef DEBUG_POLYGONIZER
+    setCalculatedObject(m_isoSurfaceParam);
+    REPAINT();
+#else
+    if(dlg.getDebugPolygonizer()) {
+      startDebugging();
+    } else {
+      setCalculatedObject(m_isoSurfaceParam);
+      REPAINT();
+    }
+#endif // DEBUG_POLYGONIZER
+  } catch(Exception e) {
+    showException(e);
+  }
+}
 
 void CMainFrame::OnFileMruFile1()  { onFileMruFile( 0);}
 void CMainFrame::OnFileMruFile2()  { onFileMruFile( 1);}

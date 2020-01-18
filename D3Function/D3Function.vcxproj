@@ -396,10 +396,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="EnterOptionsNameDlg.h" />
+    <ClInclude Include="Function2DSurfaceDlg.h" />
     <ClInclude Include="InfoView.h" />
+    <ClInclude Include="IsoSurfaceDlg.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="Options.h" />
     <ClInclude Include="OptionsOrganizerDlg.h" />
+    <ClInclude Include="ParametricSurfaceDlg.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="D3Function.h" />
     <ClInclude Include="D3FunctionDoc.h" />
@@ -409,10 +412,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EnterOptionsNameDlg.cpp" />
+    <ClCompile Include="Function2DSurfaceDlg.cpp" />
     <ClCompile Include="InfoView.cpp" />
+    <ClCompile Include="IsoSurfaceDlg.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="Options.cpp" />
     <ClCompile Include="OptionsOrganizerDlg.cpp" />
+    <ClCompile Include="ParametricSurfaceDlg.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|Win32'">Create</PrecompiledHeader>

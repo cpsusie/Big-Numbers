@@ -87,6 +87,8 @@ private:
   void createSaddle();
   void deleteCalculatedObject();
   void setCalculatedObject(Function2DSurfaceParameters &param);
+  void setCalculatedObject(ParametricSurfaceParameters &param);
+  void setCalculatedObject(IsoSurfaceParameters        &param);
   void setCalculatedObject(D3SceneObject *obj, PersistentData *param = NULL);
   D3SceneObject *getCalculatedObject() const;
 
@@ -128,6 +130,7 @@ public:
   void ajourMenuItems();
 
   virtual BOOL OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext *pContext);
+  virtual BOOL PreTranslateMessage(MSG* pMsg);
 
   virtual ~CMainFrame();
   void enableToolbarButtonAndMenuItem(int id, bool enable);
@@ -150,6 +153,9 @@ protected: // create from serialization only
     afx_msg void OnSize(UINT nType, int cx, int cy);
     afx_msg void OnTimer(UINT_PTR nIDEvent);
     afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
+    afx_msg void OnFileFunctionSurface();
+    afx_msg void OnFileParametricSurface();
+    afx_msg void OnFileIsoSurface();
     afx_msg void OnFilePrintPreview();
     afx_msg void OnFileMruFile1();
     afx_msg void OnFileMruFile2();
@@ -195,6 +201,4 @@ protected: // create from serialization only
     afx_msg LRESULT OnMsgDebuggerStateChanged(WPARAM wp, LPARAM lp);
     afx_msg LRESULT OnMsgKillDebugger(        WPARAM wp, LPARAM lp);
     DECLARE_MESSAGE_MAP()
-public:
-  virtual BOOL PreTranslateMessage(MSG* pMsg);
 };
