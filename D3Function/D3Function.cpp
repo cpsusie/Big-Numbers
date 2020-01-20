@@ -1,6 +1,4 @@
 #include "stdafx.h"
-#include "D3Function.h"
-
 #include <afxadv.h>
 #include "MainFrm.h"
 #include "D3FunctionDoc.h"
@@ -100,27 +98,30 @@ int CD3FunctionApp::ExitInstance() {
   return __super::ExitInstance();
 }
 
+// -----------------------------------------------------------------------------
+
 class CAboutDlg : public CDialog {
 public:
-  CAboutDlg();
-
   enum { IDD = IDD_ABOUTBOX };
 
+  CAboutDlg::CAboutDlg() : CDialog(IDD) {
+  }
+
 protected:
-  virtual void DoDataExchange(CDataExchange *pDX);
   virtual BOOL OnInitDialog();
   DECLARE_MESSAGE_MAP()
 };
 
-CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
-}
-
-void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-  __super::DoDataExchange(pDX);
+BOOL CAboutDlg::OnInitDialog() {
+  __super::OnInitDialog();
+  return TRUE;  // return TRUE unless you set the focus to a control
+                // EXCEPTION: OCX Property Pages should return FALSE
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
+
+// -----------------------------------------------------------------------------
 
 void CD3FunctionApp::OnAppAbout() {
   CAboutDlg().DoModal();
@@ -154,11 +155,4 @@ void CD3FunctionApp::removeFromRecentFiles(int index) {
     return;
   }
   list.Remove(index);
-}
-
-BOOL CAboutDlg::OnInitDialog() {
-  __super::OnInitDialog();
-
-  return TRUE;  // return TRUE unless you set the focus to a control
-                // EXCEPTION: OCX Property Pages should return FALSE
 }

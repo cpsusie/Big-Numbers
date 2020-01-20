@@ -59,13 +59,59 @@ private:
   CD3FunctionSplitterWnd          m_wndSplitter;
   CompactArray<StatusBarPaneInfo> m_paneInfo;
   bool                            m_timerRunning;
+  bool                            m_destroyCalled;
   double                          m_relativeHeight;
   D3Scene                         m_scene;
   D3SceneEditor                   m_editor;
   Function2DSurfaceParameters     m_function2DSurfaceParam;
   ParametricSurfaceParameters     m_parametricSurfaceParam;
   IsoSurfaceParameters            m_isoSurfaceParam;
-  String                          m_editorInfo, m_memoryInfo, m_debugInfo;
+  String                          m_memoryInfo, m_editorInfo;
+
+#ifdef DEBUG_POLYGONIZER
+  Debugger                   *m_debugger;
+  float                       m_currentCamDistance;
+  bool                        m_hasCubeCenter;
+  D3DXVECTOR3                 m_cubeCenter;
+  BYTE                        m_cubeLevel;
+  int                         m_debugLightIndex;
+  String                      m_debugInfo;
+
+  void killDebugger(bool showCreateSurface);
+  void asyncKillDebugger();
+  inline bool hasDebugger() const {
+    return m_debugger != NULL;
+  }
+  inline void OnDebugStep(BYTE breakFlags) {
+    if (isDebuggerPaused()) m_debugger->singleStep(breakFlags);
+  }
+  inline bool isDebuggerPaused() const {
+    return hasDebugger() && (m_debugger->getState() == DEBUGGER_PAUSED);
+  }
+  bool isAutoFocusCurrentCubeChecked() const;
+
+  void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
+
+  inline String getDebuggerStateName() const {
+    return hasDebugger() ? m_debugger->getStateName() : _T("No debugger");
+  }
+  void debugAdjustCamDir(const D3DXVECTOR3 &newDir, const D3DXVECTOR3 &newUp);
+
+  inline void createDebugLight() {
+    m_debugLightIndex = m_scene.addLight(m_scene.getDefaultLight());
+  }
+  inline void destroyDebugLight() {
+    if (hasDebugLight()) {
+      m_scene.removeLight(m_debugLightIndex);
+      m_debugLightIndex = -1;
+    }
+  }
+  inline bool hasDebugLight() const {
+    return (m_debugLightIndex >= 0) && m_scene.isLightDefined(m_debugLightIndex);
+  }
+  void adjustDebugLightDir();
+  void updateDebugInfo();
+#endif // DEBUG_POLYGONIZER
 
   void OnFileOpen(int id);
   void onFileMruFile(int index);
@@ -119,9 +165,8 @@ public:
   inline bool isInfoPanelVisible() const {
     return getPanelCount() > 1;
   }
-  void updateEditorInfo();
   void updateMemoryInfo();
-  void updateDebugInfo();
+  void updateEditorInfo();
   void showInfo(_In_z_ _Printf_format_string_ TCHAR const * const format, ...);
   // flags any combination of INFO_MEM, INFO_EDIT, INFO_DEBUG
   void show3DInfo(BYTE flags);
@@ -187,6 +232,7 @@ protected: // create from serialization only
     afx_msg void OnDebugAdjustCam45Left();
     afx_msg void OnDebugAdjustCam45Right();
     afx_msg void OnDebugMarkCube();
+    afx_msg void OnResetPositions();
     afx_msg void OnOptionsSaveOptions();
     afx_msg void OnOptionsLoadOptions1();
     afx_msg void OnOptionsLoadOptions2();
@@ -202,4 +248,6 @@ protected: // create from serialization only
     afx_msg LRESULT OnMsgDebuggerStateChanged(WPARAM wp, LPARAM lp);
     afx_msg LRESULT OnMsgKillDebugger(        WPARAM wp, LPARAM lp);
     DECLARE_MESSAGE_MAP()
+public:
+  afx_msg void OnDestroy();
 };

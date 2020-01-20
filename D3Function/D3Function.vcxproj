@@ -395,6 +395,8 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Debugger.h" />
+    <ClInclude Include="DebugIsoSurface.h" />
     <ClInclude Include="EnterOptionsNameDlg.h" />
     <ClInclude Include="Function2DSurfaceDlg.h" />
     <ClInclude Include="InfoView.h" />
@@ -411,6 +413,9 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Debugger.cpp" />
+    <ClCompile Include="DebugIsoSurface.cpp" />
+    <ClCompile Include="DebugSceneObject.cpp" />
     <ClCompile Include="EnterOptionsNameDlg.cpp" />
     <ClCompile Include="Function2DSurfaceDlg.cpp" />
     <ClCompile Include="InfoView.cpp" />

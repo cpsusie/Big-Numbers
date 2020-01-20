@@ -1,5 +1,8 @@
 #include "stdafx.h"
 #include <ProcessTools.h>
+#ifdef DEBUG_POLYGONIZER
+#include <ThreadPool.h>
+#endif
 #include <D3DGraphics/MeshCreators.h>
 #include "Function2DSurfaceDlg.h"
 #include "ParametricSurfaceDlg.h"
@@ -39,6 +42,20 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
   ON_COMMAND(ID_FILE_PARAMETRICSURFACE    , OnFileParametricSurface    )
   ON_COMMAND(ID_FILE_ISOSURFACE           , OnFileIsoSurface           )
   ON_COMMAND(ID_OBJECT_EDITFUNCTION       , OnObjectEditFunction       )
+  ON_COMMAND(ID_DEBUG_GO                  , OnDebugGo                  )
+  ON_COMMAND(ID_DEBUG_STEPLEVEL           , OnDebugStepLevel           )
+  ON_COMMAND(ID_DEBUG_STEPCUBE            , OnDebugStepCube            )
+  ON_COMMAND(ID_DEBUG_STEPTETRA           , OnDebugStepTetra           )
+  ON_COMMAND(ID_DEBUG_STEPFACE            , OnDebugStepFace            )
+  ON_COMMAND(ID_DEBUG_STEPVERTEX          , OnDebugStepVertex          )
+  ON_COMMAND(ID_DEBUG_STOPDEBUGGING       , OnDebugStopDebugging       )
+  ON_COMMAND(ID_DEBUG_AUTOFOCUSCURRENTCUBE, OnDebugAutoFocusCurrentCube)
+  ON_COMMAND(ID_DEBUG_ADJUSTCAM_45UP      , OnDebugAdjustCam45Up       )
+  ON_COMMAND(ID_DEBUG_ADJUSTCAM_45DOWN    , OnDebugAdjustCam45Down     )
+  ON_COMMAND(ID_DEBUG_ADJUSTCAM_45LEFT    , OnDebugAdjustCam45Left     )
+  ON_COMMAND(ID_DEBUG_ADJUSTCAM_45RIGHT   , OnDebugAdjustCam45Right    )
+  ON_COMMAND(ID_DEBUG_MARKCUBE            , OnDebugMarkCube            )
+  ON_COMMAND(ID_RESETPOSITIONS            , OnResetPositions           )
   ON_COMMAND(ID_OPTIONS_SAVEOPTIONS       , OnOptionsSaveOptions       )
   ON_COMMAND(ID_OPTIONS_LOADOPTIONS1      , OnOptionsLoadOptions1      )
   ON_COMMAND(ID_OPTIONS_LOADOPTIONS2      , OnOptionsLoadOptions2      )
@@ -53,6 +70,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
   ON_MESSAGE(ID_MSG_RENDER                , OnMsgRender                )
   ON_MESSAGE(ID_MSG_DEBUGGERSTATECHANGED  , OnMsgDebuggerStateChanged  )
   ON_MESSAGE(ID_MSG_KILLDEBUGGER          , OnMsgKillDebugger          )
+  ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
 static UINT indicators[] = {
@@ -68,6 +86,11 @@ static UINT indicators[] = {
 CMainFrame::CMainFrame() {
   m_statusPanesVisible = true;
   m_timerRunning       = false;
+  m_destroyCalled      = false;
+#ifdef DEBUG_POLYGONIZER
+  m_debugger           = NULL;
+  m_debugLightIndex    = -1;
+#endif // DEBUG_POLYGONIZER
 }
 
 CMainFrame::~CMainFrame() {
@@ -97,8 +120,16 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
   EnableDocking(CBRS_ALIGN_ANY);
   DockControlBar(&m_wndToolBar);
   m_accelTable = LoadAccelerators(theApp.m_hInstance, MAKEINTRESOURCE(IDR_MAINFRAME));
+  ajourDebuggerMenu();
+
   init3D();
   return 0;
+}
+
+void CMainFrame::OnDestroy() {
+  m_destroyCalled = true;
+  killDebugger(false);
+  __super::OnDestroy();
 }
 
 BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT /*lpcs*/, CCreateContext *pContext) {
@@ -263,7 +294,7 @@ void CMainFrame::ajourMenuItems() {
 
 void CMainFrame::startTimer() {
   if(!m_timerRunning) {
-    if (SetTimer(1, 5000, NULL) == 1) {
+    if(SetTimer(1, 5000, NULL) == 1) {
       m_timerRunning = true;
     }
   }
@@ -375,7 +406,7 @@ void CMainFrame::setCalculatedObject(IsoSurfaceParameters &param) {
 
 void CMainFrame::deleteCalculatedObject() {
   D3SceneObject *oldObj = getCalculatedObject();
-  if (oldObj) {
+  if(oldObj) {
     m_scene.removeSceneObject(oldObj);
     SAFEDELETE(oldObj);
   }
@@ -457,34 +488,229 @@ void CMainFrame::OnDebugMarkCube() {}
 
 LRESULT CMainFrame::OnMsgKillDebugger(WPARAM wp, LPARAM lp) { return 0; }
 LRESULT CMainFrame::OnMsgDebuggerStateChanged(WPARAM wp, LPARAM lp) { return 0; }
-#endif // DEBUG_POLYGONIZER
+#else
+
+void CMainFrame::startDebugging() {
+  setCalculatedObject(NULL);
+  m_hasCubeCenter = false;
+  m_currentCamDistance = 5;
+  try {
+    killDebugger(false);
+    m_debugger = new Debugger(this, m_isoSurfaceParam);
+    m_debugger->addPropertyChangeListener(this);
+    createDebugLight();
+    OnResetPositions();
+    checkMenuItem(this, ID_DEBUG_AUTOFOCUSCURRENTCUBE, true);
+    ajourDebuggerMenu();
+    m_editor.OnControlCameraWalk();
+    ThreadPool::executeNoWait(*m_debugger);
+    show3DInfo(INFO_MEM);
+  } catch (Exception e) {
+    showException(e);
+  }
+}
+
+void CMainFrame::stopDebugging() {
+  killDebugger(false);
+}
+
+void CMainFrame::asyncKillDebugger() {
+  PostMessage(ID_MSG_KILLDEBUGGER);
+}
+
+void CMainFrame::killDebugger(bool showCreateSurface) {
+  if(!hasDebugger()) return;
+  m_editor.setCurrentSceneObject(NULL);
+  m_scene.removeAllSceneObjects();
+  m_debugger->removePropertyChangeListener(this);
+  if(m_debugger->isOK() && showCreateSurface) {
+    const DebugIsoSurface &surface = m_debugger->getDebugSurface();
+    if(surface.getFaceCount()) {
+      D3SceneObject *obj = surface.createMeshObject();
+      setCalculatedObject(obj, &m_isoSurfaceParam);
+    }
+  }
+  const bool   allOk = m_debugger->isOK();
+  const String msg = allOk ? _T("Polygonizing surface done") : m_debugger->getErrorMsg();
+  SAFEDELETE(m_debugger);
+  destroyDebugLight();
+  if(!m_destroyCalled) {
+    ajourDebuggerMenu();
+    show3DInfo(INFO_ALL);
+    if(allOk) {
+      showInformation(_T("%s"), msg.cstr());
+    } else {
+      showError(_T("%s"), msg.cstr());
+    }
+  }
+}
+
+void CMainFrame::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
+  switch (id) {
+  case DEBUGGER_STATE:
+    { const DebuggerState oldState = *(DebuggerState*)oldValue;
+      const DebuggerState newState = *(DebuggerState*)newValue;
+      m_editor.setEnabled(newState != DEBUGGER_RUNNING);
+      SendMessage(ID_MSG_DEBUGGERSTATECHANGED, oldState, newState);
+    }
+    break;
+  default:
+    showError(_T("%s:Unknown property:%d"), __TFUNCTION__, id);
+    break;
+  }
+}
+
+void CMainFrame::OnDebugGo() {
+  if(isDebuggerPaused()) {
+    m_debugger->go();
+  }
+}
+
+void CMainFrame::OnDebugStepLevel()  { OnDebugStep(FL_BREAKONNEXTLEVEL ); }
+void CMainFrame::OnDebugStepCube()   { OnDebugStep(FL_BREAKONNEXTOCTA  ); }
+void CMainFrame::OnDebugStepTetra()  { OnDebugStep(FL_BREAKONNEXTTETRA ); }
+void CMainFrame::OnDebugStepFace()   { OnDebugStep(FL_BREAKONNEXTFACE  ); }
+void CMainFrame::OnDebugStepVertex() { OnDebugStep(FL_BREAKONNEXTVERTEX); }
+
+void CMainFrame::OnDebugStopDebugging() {
+  if(hasDebugger()) {
+    killDebugger(false);
+  }
+}
+
+void CMainFrame::OnDebugAutoFocusCurrentCube() {
+  enableSubMenuContainingId(this, ID_DEBUG_ADJUSTCAM_45UP, toggleMenuItem(this, ID_DEBUG_AUTOFOCUSCURRENTCUBE) && m_hasCubeCenter);
+}
+
+void CMainFrame::adjustDebugLightDir() {
+  if(!hasDebugLight()) return;
+  D3PosDirUpScale   cam = m_scene.getCameraPDUS();
+  const D3DXVECTOR3 dir = m_cubeCenter - cam.getPos();
+  const D3DXVECTOR3 up = cam.getUp();
+  const D3DXVECTOR3 lightDir = rotate(dir, up, M_PI / 4);
+  m_scene.setLightDirection(m_debugLightIndex, lightDir);
+}
+
+void CMainFrame::debugAdjustCamDir(const D3DXVECTOR3 &newDir, const D3DXVECTOR3 &newUp) {
+  const D3DXVECTOR3 newPos = m_cubeCenter - newDir;
+  D3PosDirUpScale   cam = m_scene.getCameraPDUS();
+  m_scene.setCameraPDUS(cam.setPos(newPos).setOrientation(newDir, newUp));
+  adjustDebugLightDir();
+}
+
+void CMainFrame::OnDebugAdjustCam45Up() {
+  D3PosDirUpScale   cam = m_scene.getCameraPDUS();
+  const D3DXVECTOR3 dir = m_cubeCenter - cam.getPos();
+  const D3DXVECTOR3 up = cam.getUp();
+  const D3DXVECTOR3 r = cam.getRight();
+  debugAdjustCamDir(rotate(dir, r, -M_PI / 8), rotate(up, r, -M_PI / 8));
+}
+
+void CMainFrame::OnDebugAdjustCam45Down() {
+  D3PosDirUpScale   cam = m_scene.getCameraPDUS();
+  const D3DXVECTOR3 dir = m_cubeCenter - cam.getPos();
+  const D3DXVECTOR3 up = cam.getUp();
+  const D3DXVECTOR3 r = cam.getRight();
+  debugAdjustCamDir(rotate(dir, r, M_PI / 8), rotate(up, r, M_PI / 8));
+}
+
+void CMainFrame::OnDebugAdjustCam45Left() {
+  D3PosDirUpScale   cam = m_scene.getCameraPDUS();
+  const D3DXVECTOR3 dir = m_cubeCenter - cam.getPos();
+  const D3DXVECTOR3 up = cam.getUp();
+  debugAdjustCamDir(rotate(dir, up, -M_PI / 8), up);
+}
+
+void CMainFrame::OnDebugAdjustCam45Right() {
+  D3PosDirUpScale   cam = m_scene.getCameraPDUS();
+  const D3DXVECTOR3 dir = m_cubeCenter - cam.getPos();
+  const D3DXVECTOR3 up = cam.getUp();
+  debugAdjustCamDir(rotate(dir, up, M_PI / 8), up);
+}
+
+bool CMainFrame::isAutoFocusCurrentCubeChecked() const {
+  return isMenuItemChecked(this, ID_DEBUG_AUTOFOCUSCURRENTCUBE);
+}
+
+void CMainFrame::OnDebugMarkCube() {
+  // TODO: Add your command handler code here
+}
+
+LRESULT CMainFrame::OnMsgKillDebugger(WPARAM wp, LPARAM lp) {
+  killDebugger(true);
+  return 0;
+}
+
+LRESULT CMainFrame::OnMsgDebuggerStateChanged(WPARAM wp, LPARAM lp) {
+  try {
+    show3DInfo(0);
+    const DebuggerState oldState = (DebuggerState)wp, newState = (DebuggerState)lp;
+    switch (newState) {
+    case DEBUGGER_RUNNING:
+      { if((oldState == DEBUGGER_PAUSED) && m_hasCubeCenter) {
+          m_currentCamDistance = length(m_scene.getCameraPos() - m_cubeCenter);
+        }
+        D3SceneObject *obj = m_debugger->getSceneObject();
+        if(obj) {
+          m_editor.setCurrentSceneObject(NULL);
+          m_scene.removeSceneObject(obj);
+        }
+      }
+      break;
+    case DEBUGGER_PAUSED:
+      { D3SceneObject *obj = m_debugger->getSceneObject();
+        m_scene.addSceneObject(obj);
+        m_editor.setCurrentSceneObject(obj);
+        m_hasCubeCenter = false;
+        if(isAutoFocusCurrentCubeChecked()) {
+          const DebugIsoSurface  &surf = m_debugger->getDebugSurface();
+          if(surf.hasCurrentOcta()) {
+            const Octagon               &octa = surf.getCurrentOcta();
+            const IsoSurfacePolygonizer *poly = surf.getPolygonizer();
+            m_cubeCenter = octa.getCenter();
+            m_hasCubeCenter = true;
+            m_cubeLevel = octa.getLevel();
+            m_scene.setCameraPos(m_cubeCenter - m_currentCamDistance * m_scene.getCameraDir());
+            adjustDebugLightDir();
+            show3DInfo(INFO_ALL);
+          }
+        }
+      }
+    break;
+    case DEBUGGER_TERMINATED:
+      asyncKillDebugger();
+      break;
+    }
+    ajourDebuggerMenu();
+  } catch (Exception e) {
+    showException(e);
+  }
+  return 0;
+}
+
 
 void CMainFrame::updateDebugInfo() {
-#ifdef DEBUG_POLYGONIZER
   m_debugInfo = format(_T("Debugger State:%-8s"), getDebuggerStateName().cstr());
-  if (isDebuggerPaused()) {
+  if(isDebuggerPaused()) {
     m_debugInfo += format(_T(" Flags:%s"), m_debugger->getFlagNames().cstr());
-    if (!m_debugger->isOK()) {
+    if(!m_debugger->isOK()) {
       m_debugInfo += format(_T("\nError:%s"), m_debugger->getErrorMsg().cstr());
     }
-    if (m_hasCubeCenter) {
+    if(m_hasCubeCenter) {
       m_debugInfo += format(_T("\nCubeCenter:(%s), level:%u"), toString(m_cubeCenter, 6).cstr(), m_cubeLevel);
     }
     const DebugIsoSurface       &surf = m_debugger->getDebugSurface();
     const IsoSurfacePolygonizer *poly = surf.getPolygonizer();
-    if (poly) {
+    if(poly) {
       const PolygonizerStatistics &stat = poly->getStatistics();
       m_debugInfo += format(_T("\n%s\nCubeCalls:%5u, tetraCals:%5u, level:%u")
-        , surf.toString().cstr()
-        , stat.m_doCubeCalls, stat.m_doTetraCalls, poly->getCurrentLevel());
+                           ,surf.toString().cstr()
+                           ,stat.m_doCubeCalls, stat.m_doTetraCalls, poly->getCurrentLevel());
     }
   }
-#endif
 }
 
-void CMainFrame::updateEditorInfo() {
-  m_editorInfo = m_editor.toString();
-}
+#endif // DEBUG_POLYGONIZER
 
 void CMainFrame::updateMemoryInfo() {
   const PROCESS_MEMORY_COUNTERS mem = getProcessMemoryUsage();
@@ -496,12 +722,20 @@ void CMainFrame::updateMemoryInfo() {
                        ,res.m_gdiObjectCount);
 }
 
+void CMainFrame::updateEditorInfo() {
+  m_editorInfo = m_editor.toString();
+}
+
 void CMainFrame::show3DInfo(BYTE flags) {
   if(!isInfoPanelVisible()) return;
   if(flags & INFO_MEM  ) updateMemoryInfo();
   if(flags & INFO_EDIT ) updateEditorInfo();
+#ifndef DEBUG_POLYGONIZER
+  showInfo(_T("%s\n%s"), m_memoryInfo.cstr(), m_editorInfo.cstr());
+#else
   if(flags & INFO_DEBUG) updateDebugInfo();
   showInfo(_T("%s\n%s\n%s"), m_memoryInfo.cstr(), m_editorInfo.cstr(), m_debugInfo.cstr());
+#endif //  DEBUG_POLYGONIZER
 }
 
 void CMainFrame::showInfo(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
@@ -621,6 +855,10 @@ void CMainFrame::onFileMruFile(int index) {
 }
 
 void CMainFrame::activateOptions() {
+}
+
+void CMainFrame::OnResetPositions() {
+  m_scene.initTrans();
 }
 
 void CMainFrame::OnOptionsSaveOptions() {
