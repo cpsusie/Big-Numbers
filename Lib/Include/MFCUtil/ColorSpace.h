@@ -175,6 +175,7 @@ public:
 #define D3D_BLUE   D3DCOLOR_XRGB(0  ,0  ,255)
 #define D3D_GREY   D3DCOLOR_XRGB(192,192,192)
 #define D3D_YELLOW D3DCOLOR_XRGB(255,255,  0)
+#define D3D_CYAN   D3DCOLOR_XRGB(255,  0,255)
 
 // COLORREF constants
 #define BLACK      RGB(0  ,0  ,0  )
@@ -184,3 +185,4 @@ public:
 #define GREEN      RGB(0  ,255,0  )
 #define GREY       RGB(192,192,192)
 #define YELLOW     RGB(255,255,0  )
+#define CYAN       RGB(255,0  ,255)
