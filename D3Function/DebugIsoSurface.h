@@ -11,12 +11,12 @@ class Debugger;
 #define MESH_VISIBLE   0x01
 #define OCTA_VISIBLE   0x02
 #define TETRA_VISIBLE  0x04
-#define FACE_VISIBLE   0x08
+#define FACES_VISIBLE  0x08
 #define VERTEX_VISIBLE 0x10
 
 class DebugSceneobject : public D3SceneObject {
 private:
-  D3SceneObject  *m_meshObject, *m_octaObject, *m_tetraObject, *m_faceObject, *m_vertexObject, *m_visibleVertexArrayObject;
+  D3SceneObject  *m_meshObject, *m_octaObject, *m_tetraObject, *m_facesObject, *m_vertexObject, *m_visibleVertexArrayObject;
   D3PosDirUpScale m_startPDUS, m_pdus;
   D3DFILLMODE     m_fillMode;
   D3DSHADEMODE    m_shadeMode;
@@ -24,7 +24,7 @@ private:
   void deleteMeshObject();
   void deleteOctaObject();
   void deleteTetraObject();
-  void deleteFaceObject();
+  void deleteFacesObject();
   void deleteVertexObject();
   void deleteVisibleVertexArrayObject();
 public:
@@ -33,7 +33,7 @@ public:
     , m_meshObject(       NULL)
     , m_octaObject(       NULL)
     , m_tetraObject(      NULL)
-    , m_faceObject(       NULL)
+    , m_facesObject(      NULL)
     , m_vertexObject(     NULL)
     , m_visibleVertexArrayObject(NULL)
     , m_visibleParts(0)
@@ -46,7 +46,7 @@ public:
   void setMeshObject(              D3SceneObject *obj);
   void setOctaObject(              D3SceneObject *obj);
   void setTetraObject(             D3SceneObject *obj);
-  void setFaceObject(              D3SceneObject *obj);
+  void setFacesObject(             D3SceneObject *obj);
   void setVertexObject(            D3SceneObject *obj);
   void setVisibleVertexArrayObject(D3SceneObject *obj);
   void draw();
@@ -106,7 +106,6 @@ private:
   bool                                  m_reverseSign;
   Real                                 *m_xp, *m_yp, *m_zp;
   DWORD                                 m_faceCount, m_lastFaceCount, m_lastVertexCount;
-  const Array<IsoSurfaceVertex>        *m_vertexArray;
 
   BYTE                                  m_flags;
   BYTE                                  m_currentLevel;
@@ -120,21 +119,24 @@ private:
   DebugSceneobject                      m_sceneObject;
   Octagon                               m_currentOcta;
   Tetrahedron                           m_currentTetra;
-  Face3                                 m_currentFace;
+  CompactArray<Face3>                   m_currentFaceArray;
   IsoSurfaceVertex                      m_currentVertex;
-  CompactArray<const IsoSurfaceVertex*> m_visibleVertexArray;
+  IsoSurfaceVertexArray                 m_visibleVertexArray;
   D3SceneObject *createOctaObject();
   D3SceneObject *createTetraObject();
-  D3SceneObject *createFaceObject();
+  D3SceneObject *createFacesObject();
   D3SceneObject *createVertexObject();
   D3SceneObject *createVisibleVertexArrayObject();
 
   void           updateMeshObject();
   void           updateOctaObject();
   void           updateTetraObject();
-  void           updateFaceObject();
+  void           updateFacesObject();
   void           updateVertexObject();
   void           updateVisibleVertexArrayObject();
+  inline void    clearCurrentFaceArray() {
+    m_currentFaceArray.clear(-1);
+  }
   inline void    clearVisibleVertexArray() {
     m_visibleVertexArray.clear(-1);
   }
@@ -156,9 +158,21 @@ public:
   void   markCurrentOcta(  const Octagon          &octa  );
   void   markCurrentTetra( const Tetrahedron      &tetra );
   void   markCurrentFace(  const Face3            &fave  );
-  void   markCurrentVertex(const IsoSurfaceVertex *vertex);
+  void   markCurrentVertex(const IsoSurfaceVertex &vertex);
   String getInfoMessage() const;
 
+  inline D3Scene &getScene() {
+    return m_sc.getScene();
+  }
+  inline float getCellSize() const {
+    return (float)m_param.m_cellSize;
+  }
+  inline BYTE getCurrentLevel() const {
+    return m_currentLevel;
+  }
+  inline const IsoSurfaceVertexArray &getVertexArray() const {
+    return m_polygonizer->getVertexArray();
+  }
   inline D3SceneObject *getSceneObject() {
     return &m_sceneObject;
   }

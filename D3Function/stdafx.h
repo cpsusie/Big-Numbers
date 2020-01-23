@@ -2,8 +2,6 @@
 
 #include "targetver.h"
 
-#define DEBUG_POLYGONIZER
-
 #include <MFCUtil/WinTools.h>
 #include <MFCUtil/D3DeviceFactory.h>
 #include <D3DGraphics/D3Math.h>

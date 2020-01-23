@@ -27,12 +27,12 @@ public:
   }
 };
 
-static MaterialIndexWithColor blackMatIndex, whiteMatIndex, blueMatIndex, yellowMatIndex;
+static MaterialIndexWithColor blackMatIndex, whiteMatIndex, blueMatIndex, yellowMatIndex, cyanMatIndex;
 
 class CornerMarkObject : public D3SceneObjectSolidBox {
 public:
-  CornerMarkObject(D3Scene &scene, const D3DXVECTOR3 &center, double sideLength, int materialIndex)
-    : D3SceneObjectSolidBox(scene, D3DXCube3::getSquareCube(center, (float)sideLength), materialIndex)
+  CornerMarkObject(D3Scene &scene, const D3DXVECTOR3 &center, float sideLength, int materialIndex)
+    : D3SceneObjectSolidBox(scene, D3DXCube3::getSquareCube(center, sideLength), materialIndex)
   {
   }
 };
@@ -46,23 +46,23 @@ private:
   int  createCornerMarkMaterial(bool positive);
   int  getCornerMarkMaterial(bool positive);
 public:
-  OctaObject(D3Scene &scene, const Octagon &octa, double cellSize);
+  OctaObject(DebugIsoSurface *dbgObject, const Octagon &octa);
   ~OctaObject();
-  static CornerMarkObject *createCornerMarkObject(D3Scene &scene, const HashedCubeCorner &c, double sideLengh, int materialIndex);
+  static CornerMarkObject *createCornerMarkObject(D3Scene &scene, const HashedCubeCorner &c, float sideLengh, int materialIndex);
   void draw();
 };
 
 int OctaObject::s_matIndexPos           = -1;
 int OctaObject::s_matIndexNeg           = -1;
 
-OctaObject::OctaObject(D3Scene &scene, const Octagon &octa, double cellSize)
-  : D3SceneObjectWireFrameBox(scene, *octa.getCube().m_corners[LBN], *octa.getCube().m_corners[RTF])
+OctaObject::OctaObject(DebugIsoSurface *dbgObject, const Octagon &octa)
+  : D3SceneObjectWireFrameBox(dbgObject->getScene(), *octa.getCube().m_corners[LBN], *octa.getCube().m_corners[RTF])
 {
-  const double sideLength = cellSize/ 10 / (1 << octa.getLevel());
+  const float sideLength = dbgObject->getCellSize() / 10 / (1 << dbgObject->getCurrentLevel());
   for(UINT i = 0; i < octa.getCornerCount(); i++) {
     const HashedCubeCorner &hc = octa.getHashedCorner(i);
     const int               matIndex = getCornerMarkMaterial(hc.m_positive);
-    m_cornerMarkArray.add(createCornerMarkObject(scene, hc, sideLength, matIndex));
+    m_cornerMarkArray.add(createCornerMarkObject(getScene(), hc, sideLength, matIndex));
   }
 }
 
@@ -73,7 +73,7 @@ OctaObject::~OctaObject() {
   m_cornerMarkArray.clear();
 }
 
-CornerMarkObject *OctaObject::createCornerMarkObject(D3Scene &scene, const HashedCubeCorner &c, double sideLength, int materialIndex) { // static
+CornerMarkObject *OctaObject::createCornerMarkObject(D3Scene &scene, const HashedCubeCorner &c, float sideLength, int materialIndex) { // static
   CornerMarkObject *mark = new CornerMarkObject(scene, Point3DP(c), sideLength, materialIndex); TRACE_NEW(mark);
   return mark;
 }
@@ -117,7 +117,7 @@ private:
   int                         createCornerMarkMaterial(bool positive);
   int                         getCornerMarkMaterial(   bool positive);
 public:
-  TetraObject(D3Scene &scene, const Tetrahedron &tetra, double cellSize);
+  TetraObject(DebugIsoSurface *dbgObject, const Tetrahedron &tetra);
   ~TetraObject();
   void draw();
 };
@@ -125,15 +125,15 @@ public:
 int TetraObject::s_matIndexPos             = -1;
 int TetraObject::s_matIndexNeg             = -1;
 
-TetraObject::TetraObject(D3Scene &scene, const Tetrahedron &tetra, double cellSize)
-  : D3SceneObjectLineArray(scene, createLineArray(tetra))
+TetraObject::TetraObject(DebugIsoSurface *dbgObject, const Tetrahedron &tetra)
+  : D3SceneObjectLineArray(dbgObject->getScene(), createLineArray(tetra))
 {
   const StackedCube &cube       = tetra.getCube();
-  const double       sideLength = cellSize / 10 / (1 << cube.getLevel());
+  const float        sideLength = dbgObject->getCellSize() / 10 / (1 << dbgObject->getCurrentLevel());
   for(UINT i = 0; i < tetra.getCornerCount(); i++) {
     const HashedCubeCorner &hc       = tetra.getHashedCorner(i);
     const int               matIndex = getCornerMarkMaterial(hc.m_positive);
-    m_cornerMarkArray.add(OctaObject::createCornerMarkObject(scene, hc, sideLength, matIndex));
+    m_cornerMarkArray.add(OctaObject::createCornerMarkObject(getScene(), hc, sideLength, matIndex));
   }
 }
 
@@ -186,18 +186,24 @@ void TetraObject::draw() {
 
 // ------------------------------------------------------------Face Object ----------------------------------------------
 
-class FaceObject : public D3SceneObjectLineArray {
+class FacesObject : public D3SceneObjectLineArray {
 private:
-  static CompactArray<Line3D> createLineArray(const Face3 &face, const Array<IsoSurfaceVertex> &va);
+  D3SceneObjectLineArray *m_prevFaceObjects;
+  static CompactArray<Line3D> createLineArray(const Face3 &face,              const IsoSurfaceVertexArray &va);
+  static CompactArray<Line3D> createLineArray(CompactArray<Face3> &faceArray, const IsoSurfaceVertexArray &va);
 public:
-  FaceObject(D3Scene &scene, const Face3 &face, const Array<IsoSurfaceVertex> &va)
-    : D3SceneObjectLineArray(scene, createLineArray(face, va))
+  FacesObject(DebugIsoSurface *dbgObject, CompactArray<Face3> &faceArray)
+    : D3SceneObjectLineArray(dbgObject->getScene(), createLineArray(faceArray.last(), dbgObject->getVertexArray()))
   {
+    m_prevFaceObjects = (faceArray.size() < 2) ? NULL : new D3SceneObjectLineArray(getScene(), createLineArray(faceArray, dbgObject->getVertexArray()));
+  }
+  ~FacesObject() {
+    SAFEDELETE(m_prevFaceObjects);
   }
   void draw();
 };
 
-CompactArray<Line3D> FaceObject::createLineArray(const Face3 &face, const Array<IsoSurfaceVertex> &va) { // static
+CompactArray<Line3D> FacesObject::createLineArray(const Face3 &face, const IsoSurfaceVertexArray &va) { // static
   CompactArray<Line3D> result;
   result.add(Line3D(va[face.m_i1].m_position, va[face.m_i2].m_position));
   result.add(Line3D(va[face.m_i2].m_position, va[face.m_i3].m_position));
@@ -209,27 +215,45 @@ CompactArray<Line3D> FaceObject::createLineArray(const Face3 &face, const Array<
   return result;
 }
 
-void FaceObject::draw() {
-  getScene().selectMaterial(blackMatIndex.getIndex(getScene(), D3D_BLACK));
+CompactArray<Line3D> FacesObject::createLineArray(CompactArray<Face3> &faceArray, const IsoSurfaceVertexArray &va) { // static
+  CompactArray<Line3D> result;
+  size_t n = faceArray.size();
+  if(n <= 1) {
+    return result;
+  }
+  n--;
+  for(size_t i = 0; i < n; i++) {
+    result.addAll(createLineArray(faceArray[i], va));
+  }
+  return result;
+}
+
+void FacesObject::draw() {
+  if(m_prevFaceObjects) {
+    getScene().selectMaterial(blackMatIndex.getIndex(getScene(), D3D_BLACK));
+    m_prevFaceObjects->draw();
+  }
+  getScene().selectMaterial(cyanMatIndex.getIndex(getScene(), D3D_CYAN));
   __super::draw();
 }
 
 // ------------------------------------------------------------Vertex Object ----------------------------------------------
 
 class VertexObject : public D3SceneObjectLineArray {
-  static CompactArray<Line3D> createLineArray(const IsoSurfaceVertex &v, float length);
+  static CompactArray<Line3D> createLineArray(const IsoSurfaceVertex &v, float lineLength);
 public:
-  VertexObject(D3Scene &scene, const IsoSurfaceVertex &v, float length);
+  VertexObject(DebugIsoSurface *dbgObject, const IsoSurfaceVertex &v);
   void draw();
 };
 
-VertexObject::VertexObject(D3Scene &scene, const IsoSurfaceVertex &v, float length) : D3SceneObjectLineArray(scene, createLineArray(v, length)) {
+VertexObject::VertexObject(DebugIsoSurface *dbgObject, const IsoSurfaceVertex &v)
+  : D3SceneObjectLineArray(dbgObject->getScene(), createLineArray(v, dbgObject->getCellSize()/20/(1<<dbgObject->getCurrentLevel()))) {
 }
 
-CompactArray<Line3D> VertexObject::createLineArray(const IsoSurfaceVertex &v, float length) { // static
+CompactArray<Line3D> VertexObject::createLineArray(const IsoSurfaceVertex &v, float lineLength) { // static
   CompactArray<Line3D> result;
   const D3DXVECTOR3 p0 = Point3DP(v.m_position);
-  float d = length;
+  float d = lineLength;
   const D3DXVECTOR3 v1( d, d, d);
   const D3DXVECTOR3 v2( d, d,-d);
   const D3DXVECTOR3 v3( d,-d, d);
@@ -249,22 +273,23 @@ void VertexObject::draw() {
 // ------------------------------------------------------------VertexArray Object ----------------------------------------------
 
 class VertexArrayObject : public D3SceneObjectLineArray {
-  static CompactArray<Line3D> createLineArray(CompactArray<const IsoSurfaceVertex*> &va, float length);
+private:
+  static CompactArray<Line3D> createLineArray(const IsoSurfaceVertexArray &va, float lineLength);
 public:
-  VertexArrayObject(D3Scene &scene, CompactArray<const IsoSurfaceVertex*> &va, float length)
-    : D3SceneObjectLineArray(scene, createLineArray(va, length))
+  VertexArrayObject(DebugIsoSurface *dbgObject, const IsoSurfaceVertexArray &va)
+    : D3SceneObjectLineArray(dbgObject->getScene(), createLineArray(va, dbgObject->getCellSize() / 20 / (1 << dbgObject->getCurrentLevel())))
   {
   }
   void draw();
 };
 
-CompactArray<Line3D> VertexArrayObject::createLineArray(CompactArray<const IsoSurfaceVertex*> &va, float length) {
+CompactArray<Line3D> VertexArrayObject::createLineArray(const IsoSurfaceVertexArray &va, float lineLength) {
   CompactArray<Line3D> result;
   const size_t n = va.size();
-  const float  d = length;
+  const float  d = lineLength;
   const D3DXVECTOR3 v1(d, d, d), v2(d, d, -d), v3(d, -d, d), v4(-d, d, d);
   for(size_t i = 0; i < n; i++) {
-    const D3DXVECTOR3 p0 = Point3DP(va[i]->m_position);
+    const D3DXVECTOR3 p0 = Point3DP(va[i].m_position);
     result.add(Line3D(p0 - v1, p0 + v1));
     result.add(Line3D(p0 - v2, p0 + v2));
     result.add(Line3D(p0 - v3, p0 + v3));
@@ -285,7 +310,6 @@ DebugIsoSurface::DebugIsoSurface(Debugger *debugger, D3SceneContainer &sc, const
   , m_sc(sc)
   , m_param(param)
   , m_polygonizer(NULL)
-  , m_vertexArray(NULL)
   , m_exprWrapper(param.m_expr, param.m_machineCode)
   , m_reverseSign(false)
   , m_lastVertexCount(          0)
@@ -305,7 +329,6 @@ DebugIsoSurface::DebugIsoSurface(Debugger *debugger, D3SceneContainer &sc, const
   , m_sceneObject(sc.getScene())
 
 {
-  m_currentFace.reset();
   m_currentVertex.reset();
   m_xp = m_exprWrapper.getVariableByName(_T("x"));
   m_yp = m_exprWrapper.getVariableByName(_T("y"));
@@ -323,14 +346,13 @@ void DebugIsoSurface::createData() {
   m_reverseSign = m_param.m_originOutside == (evaluate(origin) < 0);
 
   m_polygonizer = new IsoSurfacePolygonizer(*this); TRACE_NEW(m_polygonizer);
-  m_vertexArray = &m_polygonizer->getVertexArray();
 
   m_polygonizer->polygonize(Point3D(0, 0, 0)
                            ,m_param.m_cellSize
                            ,m_param.m_boundingBox
                            ,m_param.m_tetrahedral
                            ,m_param.m_tetraOptimize4
-                           ,m_param.m_adaptiveCellSize
+//                           ,m_param.m_adaptiveCellSize
                            );
   if(m_faceCount == 0) {
     throwException(_T("No polygons generated. Cannot create object"));
@@ -355,10 +377,11 @@ double DebugIsoSurface::evaluate(const Point3D &p) {
 
 void DebugIsoSurface::receiveFace(const Face3 &face) {
   m_faceCount++;
-  const size_t size = m_vertexArray->size();
+  const IsoSurfaceVertexArray &va = getVertexArray();
+  const size_t size = va.size();
   if(size > m_lastVertexCount) {
     for(size_t i = m_lastVertexCount; i < size; i++) {
-      const IsoSurfaceVertex &sv = (*m_vertexArray)[i];
+      const IsoSurfaceVertex &sv = va[i];
       m_mb.addVertex(sv.m_position);
       m_mb.addNormal(sv.m_normal);
     }
@@ -374,7 +397,7 @@ void DebugIsoSurface::updateSceneObject(BYTE visibleParts) {
   updateMeshObject();
   updateOctaObject();
   updateTetraObject();
-  updateFaceObject();
+  updateFacesObject();
   updateVisibleVertexArrayObject();
   m_sceneObject.setVisibleParts(visibleParts);
 }
@@ -384,6 +407,7 @@ void DebugIsoSurface::markCurrentOcta(const Octagon &octa) {
   m_currentOcta = octa;
   m_flags = HAS_OCTA;
   clearVisibleVertexArray();
+  clearCurrentFaceArray();
   if(octa.getLevel() == m_currentLevel) {
     m_debugger.handleStep(NEW_OCTA);
   } else {
@@ -395,22 +419,22 @@ void DebugIsoSurface::markCurrentOcta(const Octagon &octa) {
 void DebugIsoSurface::markCurrentTetra(const Tetrahedron &tetra) {
   m_tetraCount++;
   m_currentTetra = tetra;
-  setFlags(HAS_TETRA).clrFlags(HAS_FACE | HAS_VERTEX);
+  setFlags(HAS_TETRA).clrFlags(HAS_VERTEX);
   clearVisibleVertexArray();
   m_debugger.handleStep(NEW_TETRA);
 }
 
 void DebugIsoSurface::markCurrentFace(const Face3 &f) {
   m_visibleFaceCount++;
-  m_currentFace   = f;
+  m_currentFaceArray.add(f);
   setFlags(HAS_FACE).clrFlags(HAS_VERTEX);
   m_debugger.handleStep(NEW_FACE);
 }
 
-void DebugIsoSurface::markCurrentVertex(const IsoSurfaceVertex *v) {
+void DebugIsoSurface::markCurrentVertex(const IsoSurfaceVertex &v) {
   m_vertexCount++;
   setFlags(HAS_VERTEX);
-  m_currentVertex = *v;
+  m_currentVertex = v;
   m_visibleVertexArray.add(v);
   m_debugger.handleStep(NEW_VERTEX);
 }
@@ -424,27 +448,27 @@ D3SceneObjectWithMesh *DebugIsoSurface::createMeshObject() const {
 }
 
 D3SceneObject *DebugIsoSurface::createOctaObject() {
-  D3SceneObject *octa = new OctaObject(m_sc.getScene(), m_currentOcta, m_param.m_cellSize); TRACE_NEW(octa);
+  D3SceneObject *octa = new OctaObject(this, m_currentOcta); TRACE_NEW(octa);
   return octa;
 }
 
 D3SceneObject *DebugIsoSurface::createTetraObject() {
-  D3SceneObject *tetra = new TetraObject(m_sc.getScene(), m_currentTetra, m_param.m_cellSize); TRACE_NEW(tetra);
+  D3SceneObject *tetra = new TetraObject(this, m_currentTetra); TRACE_NEW(tetra);
   return tetra;
 }
 
-D3SceneObject *DebugIsoSurface::createFaceObject() {
-  D3SceneObject *v = new FaceObject(m_sc.getScene(), m_currentFace, *m_vertexArray); TRACE_NEW(v);
+D3SceneObject *DebugIsoSurface::createFacesObject() {
+  D3SceneObject *v = new FacesObject(this, m_currentFaceArray); TRACE_NEW(v);
   return v;
 }
 
 D3SceneObject *DebugIsoSurface::createVertexObject() {
-  D3SceneObject *v = new VertexObject(m_sc.getScene(), m_currentVertex, (float)(m_param.m_cellSize/10)); TRACE_NEW(v);
+  D3SceneObject *v = new VertexObject(this, m_currentVertex); TRACE_NEW(v);
   return v;
 }
 
 D3SceneObject *DebugIsoSurface::createVisibleVertexArrayObject() {
-  D3SceneObject *v = new VertexArrayObject(m_sc.getScene(), m_visibleVertexArray, (float)(m_param.m_cellSize / 10)); TRACE_NEW(v);
+  D3SceneObject *v = new VertexArrayObject(this, m_visibleVertexArray); TRACE_NEW(v);
   return v;
 }
 
@@ -477,12 +501,12 @@ void DebugIsoSurface::updateTetraObject() {
   }
 }
 
-void DebugIsoSurface::updateFaceObject() {
+void DebugIsoSurface::updateFacesObject() {
   if((m_flags & HAS_FACE) == 0) {
-    m_sceneObject.setFaceObject(NULL);
+    m_sceneObject.setFacesObject(NULL);
     m_visibleFaceCountObj = 0;
   } else if(m_visibleFaceCount > m_visibleFaceCountObj) {
-    m_sceneObject.setFaceObject(createFaceObject());
+    m_sceneObject.setFacesObject(createFacesObject());
     m_visibleFaceCountObj = m_visibleFaceCount;
   }
 }

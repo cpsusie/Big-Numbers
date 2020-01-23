@@ -89,13 +89,13 @@ void Debugger::handleStep(StepType type) {
       break;
     case NEW_FACE :
       if(m_flags & (FL_BREAKONNEXTFACE | FL_BREAKONNEXTVERTEX)) {
-        m_surface->updateSceneObject(MESH_VISIBLE | OCTA_VISIBLE | TETRA_VISIBLE | FACE_VISIBLE | VERTEX_VISIBLE);
+        m_surface->updateSceneObject(MESH_VISIBLE | OCTA_VISIBLE | TETRA_VISIBLE | FACES_VISIBLE | VERTEX_VISIBLE);
         suspend();
       }
       break;
     case NEW_VERTEX:
       if(m_flags & FL_BREAKONNEXTVERTEX) {
-        m_surface->updateSceneObject(MESH_VISIBLE | OCTA_VISIBLE | TETRA_VISIBLE | VERTEX_VISIBLE);
+        m_surface->updateSceneObject(MESH_VISIBLE | OCTA_VISIBLE | TETRA_VISIBLE | FACES_VISIBLE | VERTEX_VISIBLE);
         suspend();
       }
       break;

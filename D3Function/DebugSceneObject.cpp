@@ -10,7 +10,7 @@ DebugSceneobject::~DebugSceneobject() {
   deleteMeshObject();
   deleteOctaObject();
   deleteTetraObject();
-  deleteFaceObject();
+  deleteFacesObject();
   deleteVertexObject();
   deleteVisibleVertexArrayObject();
 }
@@ -30,9 +30,9 @@ void DebugSceneobject::setTetraObject(D3SceneObject *obj) {
   m_tetraObject = obj;
 }
 
-void DebugSceneobject::setFaceObject(D3SceneObject *obj) {
-  deleteFaceObject();
-  m_faceObject = obj;
+void DebugSceneobject::setFacesObject(D3SceneObject *obj) {
+  deleteFacesObject();
+  m_facesObject = obj;
 }
 
 void DebugSceneobject::setVertexObject(D3SceneObject *obj) {
@@ -49,7 +49,7 @@ void DebugSceneobject::draw() {
   if((m_visibleParts & MESH_VISIBLE   ) && m_meshObject              ) m_meshObject->draw();
   if((m_visibleParts & OCTA_VISIBLE   ) && m_octaObject              ) m_octaObject->draw();
   if((m_visibleParts & TETRA_VISIBLE  ) && m_tetraObject             ) m_tetraObject->draw();
-  if((m_visibleParts & FACE_VISIBLE   ) && m_faceObject              ) m_faceObject->draw();
+  if((m_visibleParts & FACES_VISIBLE  ) && m_facesObject             ) m_facesObject->draw();
   if((m_visibleParts & VERTEX_VISIBLE ) && m_vertexObject            ) m_vertexObject->draw();
   if((m_visibleParts & VERTEX_VISIBLE)  && m_visibleVertexArrayObject) m_visibleVertexArrayObject->draw();
 }
@@ -64,7 +64,7 @@ void DebugSceneobject::deleteMeshObject() {
 
 void DebugSceneobject::deleteOctaObject()               { SAFEDELETE(m_octaObject              ); }
 void DebugSceneobject::deleteTetraObject()              { SAFEDELETE(m_tetraObject             ); }
-void DebugSceneobject::deleteFaceObject()               { SAFEDELETE(m_faceObject              ); }
+void DebugSceneobject::deleteFacesObject()              { SAFEDELETE(m_facesObject             ); }
 void DebugSceneobject::deleteVertexObject()             { SAFEDELETE(m_vertexObject            ); }
 void DebugSceneobject::deleteVisibleVertexArrayObject() { SAFEDELETE(m_visibleVertexArrayObject); }
 

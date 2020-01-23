@@ -191,10 +191,12 @@ public:
   virtual void Dump(CDumpContext& dc) const;
 #endif
 
-protected: // create from serialization only
+public:
     CMainFrame();
     DECLARE_DYNCREATE(CMainFrame)
+    DECLARE_MESSAGE_MAP()
     afx_msg int  OnCreate(LPCREATESTRUCT lpCreateStruct);
+    afx_msg void OnDestroy();
     afx_msg void OnSize(UINT nType, int cx, int cy);
     afx_msg void OnTimer(UINT_PTR nIDEvent);
     afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
@@ -247,7 +249,4 @@ protected: // create from serialization only
     afx_msg LRESULT OnMsgRender(              WPARAM wp, LPARAM lp);
     afx_msg LRESULT OnMsgDebuggerStateChanged(WPARAM wp, LPARAM lp);
     afx_msg LRESULT OnMsgKillDebugger(        WPARAM wp, LPARAM lp);
-    DECLARE_MESSAGE_MAP()
-public:
-  afx_msg void OnDestroy();
 };

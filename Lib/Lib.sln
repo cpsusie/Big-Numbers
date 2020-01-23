@@ -42,14 +42,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UtilAddin", "Src\UtilAddin\
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lexgen", "..\parsergen\lexgen\lexgen.vcxproj", "{76688AD4-C2FB-4C19-BB38-DFF140CD80F6}"
-	ProjectSection(ProjectDependencies) = postProject
-		{DA57B57F-CFF3-4620-87AE-69D3598B492D} = {DA57B57F-CFF3-4620-87AE-69D3598B492D}
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ParserGen", "..\parsergen\ParserGen\ParserGen.vcxproj", "{DF08617D-DB7E-462F-854E-D4B3F7ADFAE7}"
-	ProjectSection(ProjectDependencies) = postProject
-		{DA57B57F-CFF3-4620-87AE-69D3598B492D} = {DA57B57F-CFF3-4620-87AE-69D3598B492D}
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "D3DGraphics", "Src\D3DGraphics\D3DGraphics.vcxproj", "{A90057E9-13D7-4E6F-8C02-0B355A71C134}"
 EndProject

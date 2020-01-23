@@ -156,7 +156,7 @@ public:
   void   markCurrentOcta(  const Octagon          &octa  );
   void   markCurrentTetra( const Tetrahedron      &tetra );
   void   markCurrentFace(  const Face3            &fave  );
-  void   markCurrentVertex(const IsoSurfaceVertex *vertex);
+  void   markCurrentVertex(const IsoSurfaceVertex &vertex);
   String getInfoMessage() const;
 
   inline D3SceneObject *getSceneObject() {

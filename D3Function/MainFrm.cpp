@@ -128,7 +128,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
 
 void CMainFrame::OnDestroy() {
   m_destroyCalled = true;
-  killDebugger(false);
+  stopDebugging();
   __super::OnDestroy();
 }
 

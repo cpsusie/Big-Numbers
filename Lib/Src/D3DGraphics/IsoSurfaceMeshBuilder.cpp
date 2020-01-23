@@ -16,7 +16,7 @@ private:
   size_t                                m_lastVertexCount;
   MeshBuilder                           m_mb;
   PolygonizerStatistics                 m_statistics;
-  const Array<IsoSurfaceVertex>        *m_vertexArray;
+  const IsoSurfaceVertexArray          *m_vertexArray;
   CompactArray<Point3D>                 m_debugPoints;
   InterruptableRunnable                *m_interruptable;
   void checkUserAction() const {
@@ -50,6 +50,7 @@ IsoSurface::IsoSurface(const IsoSurfaceParameters &param)
 : m_param(param)
 , m_exprWrapper(param.m_expr,param.m_machineCode)
 , m_interruptable(NULL)
+, m_vertexArray(NULL)
 {
   m_xp = m_exprWrapper.getVariableByName(_T("x"));
   m_yp = m_exprWrapper.getVariableByName(_T("y"));
@@ -69,13 +70,11 @@ void IsoSurface::createData(InterruptableRunnable *ir) {
 
     IsoSurfacePolygonizer polygonizer(*this);
     m_vertexArray = &polygonizer.getVertexArray();
-
     polygonizer.polygonize(Point3D(0,0,0)
                           ,m_param.m_cellSize
                           ,m_param.m_boundingBox
                           ,m_param.m_tetrahedral
                           ,m_param.m_tetraOptimize4
-                          ,m_param.m_adaptiveCellSize
                           );
     if(m_mb.isEmpty()) {
       throwException(_T("No polygons generated. Cannot create object"));
@@ -83,9 +82,11 @@ void IsoSurface::createData(InterruptableRunnable *ir) {
 
     m_statistics = polygonizer.getStatistics();
     m_mb.validate();
+    m_vertexArray = NULL;
   //  m_mb.dump();
   //  m_mb.optimize();
   } catch (...) {
+    m_vertexArray = NULL;
     m_interruptable = NULL;
     throw;
   }
