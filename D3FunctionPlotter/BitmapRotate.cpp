@@ -2,8 +2,6 @@
 #include <Math/Rectangle2D.h>
 #include "DrawTool.h"
 
-DECLARE_THISFILE;
-
 #define D3DFVF_BLENDVERTEX ( D3DFVF_XYZ | D3DFVF_TEX1 )
 
 class BlendVertex {

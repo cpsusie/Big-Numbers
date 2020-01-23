@@ -2,8 +2,6 @@
 #include <D3DGraphics/D3Scene.h>
 #include <D3DGraphics/D3ToString.h>
 
-DECLARE_THISFILE;
-
 void D3SceneObjectSolidBox::makeSquareFace(MeshBuilder &mb, int v0, int v1, int v2, int v3) {
   Face &f = mb.addFace();
   const int nIndex = mb.addNormal(mb.calculateNormal(v0, v1, v2));

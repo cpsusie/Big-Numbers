@@ -2,8 +2,6 @@
 #include <D3DGraphics/D3Scene.h>
 #include <D3DGraphics/D3ToString.h>
 
-DECLARE_THISFILE;
-
 // ----------------------------------------------------- D3SceneObjectLineArrow ------------------------------------------------------
 
 D3SceneObjectLineArrow::D3SceneObjectLineArrow(D3Scene &scene, const Vertex &from, const Vertex &to, D3DCOLOR color) : D3SceneObjectWithVertexBuffer(scene) {

@@ -79,6 +79,10 @@ public:
   }
 };
 
+template<typename T> T distance(const Point3DTemplate<T> &p1, const Point3DTemplate<T> &p2) {
+  return sqrt(sqr(p1.x - p2.x) + sqr(p1.y - p2.y) + sqr(p1.z - p2.z));
+}
+
 // angle in radians between p1 and p2
 template<typename T> T angle(const Point3DTemplate<T> &p1, const Point3DTemplate<T> &p2) {
   const T l1 = p1.length();

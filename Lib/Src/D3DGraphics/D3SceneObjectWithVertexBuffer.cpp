@@ -2,8 +2,6 @@
 #include <D3DGraphics/D3Scene.h>
 #include <D3DGraphics/D3ToString.h>
 
-DECLARE_THISFILE;
-
 // ------------------------------------------------ D3SceneObjectWithVertexBuffer ---------------------------------------------------
 
 D3SceneObjectWithVertexBuffer::D3SceneObjectWithVertexBuffer(D3Scene &scene) : D3SceneObject(scene) {

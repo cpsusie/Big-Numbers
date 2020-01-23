@@ -1,8 +1,6 @@
 #include "pch.h"
 #include <D3DGraphics/D3Scene.h>
 
-DECLARE_THISFILE;
-
 template<typename T> T getRenderState(LPDIRECT3DDEVICE device, D3DRENDERSTATETYPE id) {
   DWORD value;
   V(device->GetRenderState(id, &value));

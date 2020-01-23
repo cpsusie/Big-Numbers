@@ -5,8 +5,6 @@
 #include <CompactHashMap.h>
 #include <D3DGraphics/MeshBuilder.h>
 
-DECLARE_THISFILE;
-
 void Face::invertOrientation() {
   UINT n = getIndexCount()-1;
   for (UINT i = 0; i < n;) {

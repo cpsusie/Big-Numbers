@@ -1,8 +1,6 @@
 #include "pch.h"
 #include <D3DGraphics/D3Scene.h>
 
-DECLARE_THISFILE;
-
 D3AnimatedSurface::D3AnimatedSurface(D3Scene &scene, const MeshArray &meshArray)
 : D3SceneObject(scene)
 , m_meshArray(meshArray)

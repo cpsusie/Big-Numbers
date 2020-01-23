@@ -2,8 +2,6 @@
 #include <D3DGraphics/D3Scene.h>
 #include <D3DGraphics/D3ToString.h>
 
-DECLARE_THISFILE;
-
 // ------------------------------------------------ D3SceneObject ---------------------------------------------------
 
 #define CHECK_RAYDIR

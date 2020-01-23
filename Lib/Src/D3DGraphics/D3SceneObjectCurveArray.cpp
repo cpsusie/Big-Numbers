@@ -2,8 +2,6 @@
 #include <D3DGraphics/D3Scene.h>
 #include <D3DGraphics/D3ToString.h>
 
-DECLARE_THISFILE;
-
 D3SceneObjectCurveArray::D3SceneObjectCurveArray(D3Scene &scene, const CurveArray &curves) : D3SceneObjectWithVertexBuffer(scene) {
   int totalVertexCount = 0;
 

@@ -1,8 +1,6 @@
 #include "pch.h"
 #include <D3DGraphics/D3ToString.h>
 
-DECLARE_THISFILE;
-
 // -----------------------------------------------------------------------------------------------------------
 
 String toString(LPD3DXMESH mesh) {

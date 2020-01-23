@@ -2,8 +2,6 @@
 #include <D3DGraphics/D3ToString.h>
 #include <D3DGraphics/D3LightControl.h>
 
-DECLARE_THISFILE;
-
 int D3Scene::s_textureCoordCount;
 
 #pragma warning(disable : 4073)

@@ -1,8 +1,6 @@
 #include "pch.h"
 #include <D3DGraphics/D3TextureFactory.h>
 
-DECLARE_THISFILE;
-
 LPDIRECT3DTEXTURE AbstractTextureFactory::loadTextureFromFile(LPDIRECT3DDEVICE device, const String &fileName) {
   LPDIRECT3DTEXTURE result;
   V(D3DXCreateTextureFromFileEx( device

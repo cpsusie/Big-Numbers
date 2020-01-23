@@ -1,8 +1,6 @@
 #include "pch.h"
 #include <D3DGraphics/D3LightControl.h>
 
-DECLARE_THISFILE;
-
 bool D3LightControl::s_renderEffectEnabled = false;
 
 D3LightControl::D3LightControl(D3Scene &scene, int lightIndex) : D3SceneObjectWithMesh(scene), m_lightIndex(lightIndex) {

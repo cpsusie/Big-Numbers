@@ -2,8 +2,6 @@
 #include <D3DGraphics/D3Scene.h>
 #include <D3DGraphics/D3ToString.h>
 
-DECLARE_THISFILE;
-
 // ------------------------------------------------ D3SceneObjectLineArray -----------------------------------------------------------
 
 D3SceneObjectLineArray::D3SceneObjectLineArray(D3Scene &scene, const Line3D *lines, UINT n) : D3SceneObjectWithVertexBuffer(scene) {

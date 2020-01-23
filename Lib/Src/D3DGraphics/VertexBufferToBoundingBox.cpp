@@ -1,8 +1,6 @@
 #include "pch.h"
 #include <D3DGraphics/D3Scene.h>
 
-DECLARE_THISFILE;
-
 D3DXCube3 getBoundingBox(LPDIRECT3DVERTEXBUFFER vertexBuffer) {
   D3DVERTEXBUFFER_DESC desc;
   V(vertexBuffer->GetDesc(&desc));

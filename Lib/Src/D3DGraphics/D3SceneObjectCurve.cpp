@@ -2,8 +2,6 @@
 #include <D3DGraphics/D3Scene.h>
 #include <D3DGraphics/D3ToString.h>
 
-DECLARE_THISFILE;
-
 // ----------------------------------------------- D3SceneObjectCurve ------------------------------------------------------------
 
 D3SceneObjectCurve::D3SceneObjectCurve(D3Scene &scene, const VertexArray &points) : D3SceneObjectWithVertexBuffer(scene) {

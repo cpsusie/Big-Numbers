@@ -40,14 +40,14 @@ String getD3DErrorMsg(HRESULT hr) {
 
 #ifdef _DEBUG
 
-void checkD3DResult(const TCHAR *fileName, int line, HRESULT hr, bool exitOnError) {
+void checkD3DResult(const TCHAR *method, HRESULT hr, bool exitOnError) {
   if(hr != D3D_OK) {
     if(exitOnError) {
-      throwException(_T("D3D-error %s in %s, line %d"), getD3DErrorMsg(hr).cstr(), fileName, line);
-//      showError(_T("D3D-error %s in %s, line %d"), getD3DErrorMsg(hr).cstr(), fileName, line);
+      throwException(_T("D3D-error %s in %s"), getD3DErrorMsg(hr).cstr(), method);
+//      showError(_T("D3D-error %s in %s"), getD3DErrorMsg(hr).cstr(), method);
 //      exit(-1);
     } else {
-      throwException(_T("D3D-error %s in %s, line %d"), getD3DErrorMsg(hr).cstr(), fileName, line);
+      throwException(_T("D3D-error %s in %s"), getD3DErrorMsg(hr).cstr(), method);
     }
   }
 }

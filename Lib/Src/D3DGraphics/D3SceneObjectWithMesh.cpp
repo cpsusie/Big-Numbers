@@ -3,8 +3,6 @@
 #include <D3DGraphics/D3ToString.h>
 #include <D3DGraphics/MeshBuilder.h>
 
-DECLARE_THISFILE;
-
 // ----------------------------------- D3SceneObjectWithMesh --------------------------------------------
 
 D3SceneObjectWithMesh::D3SceneObjectWithMesh(D3Scene &scene, LPD3DXMESH mesh)
