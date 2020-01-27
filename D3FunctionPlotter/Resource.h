@@ -100,19 +100,6 @@
 #define ID_FILE_READ3DPOINTSFROMFILE    32777
 #define ID_FILE_EXIT                    32778
 #define ID_VIEW_SHOW3DINFO              32780
-#define ID_DEBUG_STEPLEVEL              32790
-#define ID_DEBUG_STEPCUBE               32791
-#define ID_DEBUG_STEPTETRA              32792
-#define ID_DEBUG_STEPFACE               32793
-#define ID_DEBUG_STEPVERTEX             32794
-#define ID_DEBUG_GO                     32795
-#define ID_DEBUG_STOPDEBUGGING          32796
-#define ID_DEBUG_AUTOFOCUSCURRENTCUBE   32800
-#define ID_DEBUG_ADJUSTCAM_45UP         32801
-#define ID_DEBUG_ADJUSTCAM_45DOWN       32802
-#define ID_DEBUG_ADJUSTCAM_45LEFT       32803
-#define ID_DEBUG_ADJUSTCAM_45RIGHT      32804
-#define ID_DEBUG_MARKCUBE               32805
 #define ID_EDIT_FINDMATCHINGPARENTESIS  32810
 #define ID_RESETPOSITIONS               32820
 #define ID_OBJECT_EDITFUNCTION          32830
@@ -151,8 +138,6 @@
 #define ID_FILE_READOBJ                 33257
 #define ID_FILE_READOBJFILE             33258
 #define ID_MSG_RENDER                   33300
-#define ID_MSG_DEBUGGERSTATECHANGED     33301
-#define ID_MSG_KILLDEBUGGER             33302
 
 // Next default values for new objects
 // 

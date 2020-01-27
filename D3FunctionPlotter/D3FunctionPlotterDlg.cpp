@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include <ProcessTools.h>
-#include <ThreadPool.h>
 #include <D3DGraphics/MeshCreators.h>
 #include "Function2DSurfaceDlg.h"
 #include "ParametricSurfaceDlg.h"
@@ -29,11 +28,6 @@ CD3FunctionPlotterDlg::CD3FunctionPlotterDlg(CWnd *pParent) : CDialog(IDD, pPare
   m_infoVisible          = false;
   m_infoPanelTopLine     = 0;
   m_timerRunning         = false;
-
-#ifdef DEBUG_POLYGONIZER
-  m_debugger             = NULL;
-  m_debugLightIndex      = -1;
-#endif // DEBUG_POLYGONIZER
 }
 
 BEGIN_MESSAGE_MAP(CD3FunctionPlotterDlg, CDialog)
@@ -59,26 +53,11 @@ BEGIN_MESSAGE_MAP(CD3FunctionPlotterDlg, CDialog)
   ON_COMMAND(ID_FILE_READOBJFILE              , OnFileReadObjFile              )
   ON_COMMAND(ID_FILE_EXIT                     , OnFileExit                     )
   ON_COMMAND(ID_VIEW_SHOW3DINFO               , OnViewShow3dinfo               )
-  ON_COMMAND(ID_DEBUG_GO                      , OnDebugGo                      )
-  ON_COMMAND(ID_DEBUG_STEPLEVEL               , OnDebugStepLevel               )
-  ON_COMMAND(ID_DEBUG_STEPCUBE                , OnDebugStepCube                )
-  ON_COMMAND(ID_DEBUG_STEPTETRA               , OnDebugStepTetra               )
-  ON_COMMAND(ID_DEBUG_STEPFACE                , OnDebugStepFace                )
-  ON_COMMAND(ID_DEBUG_STEPVERTEX              , OnDebugStepVertex              )
-  ON_COMMAND(ID_DEBUG_STOPDEBUGGING           , OnDebugStopDebugging           )
-  ON_COMMAND(ID_DEBUG_AUTOFOCUSCURRENTCUBE    , OnDebugAutoFocusCurrentCube    )
-  ON_COMMAND(ID_DEBUG_ADJUSTCAM_45UP          , OnDebugAdjustCam45Up           )
-  ON_COMMAND(ID_DEBUG_ADJUSTCAM_45DOWN        , OnDebugAdjustCam45Down         )
-  ON_COMMAND(ID_DEBUG_ADJUSTCAM_45LEFT        , OnDebugAdjustCam45Left         )
-  ON_COMMAND(ID_DEBUG_ADJUSTCAM_45RIGHT       , OnDebugAdjustCam45Right        )
-  ON_COMMAND(ID_DEBUG_MARKCUBE                , OnDebugMarkCube                )
   ON_COMMAND(ID_RESETPOSITIONS                , OnResetPositions               )
   ON_COMMAND(ID_OBJECT_EDITFUNCTION           , OnObjectEditFunction           )
   ON_COMMAND(ID_ADDBOXOBJECT                  , OnAddBoxObject                 )
   ON_EN_VSCROLL(IDC_EDIT_INFOPANEL            , OnVscrollEditInfoPanel         )
   ON_MESSAGE(ID_MSG_RENDER                    , OnMsgRender                    )
-  ON_MESSAGE(ID_MSG_DEBUGGERSTATECHANGED      , OnMsgDebuggerStateChanged      )
-  ON_MESSAGE(ID_MSG_KILLDEBUGGER              , OnMsgKillDebugger              )
 END_MESSAGE_MAP()
 
 #define REPAINT() Invalidate(FALSE)
@@ -106,8 +85,6 @@ BOOL CD3FunctionPlotterDlg::OnInitDialog() {
   m_layoutManager.OnInitDialog(this);
   m_layoutManager.addControl(IDC_STATIC_3DPANEL, RELATIVE_SIZE                  );
   m_layoutManager.addControl(IDC_EDIT_INFOPANEL, RELATIVE_Y_POS | RELATIVE_WIDTH);
-
-  ajourDebuggerMenu();
 
   m_scene.init(*get3DWindow());
   m_editor.init(this);
@@ -301,7 +278,6 @@ public:
 };
 
 void CD3FunctionPlotterDlg::setCalculatedObject(Function2DSurfaceParameters &param) {
-  stopDebugging();
   if(param.m_includeTime) {
     D3AnimatedFunctionSurface *obj = new D3AnimatedFunctionSurface(m_scene, createMeshArray(this, m_scene, param)); TRACE_NEW(obj);
     setCalculatedObject(obj, &param);
@@ -312,7 +288,6 @@ void CD3FunctionPlotterDlg::setCalculatedObject(Function2DSurfaceParameters &par
 }
 
 void CD3FunctionPlotterDlg::setCalculatedObject(ParametricSurfaceParameters &param) {
-  stopDebugging();
   if(param.m_includeTime) {
     D3AnimatedFunctionSurface *obj = new D3AnimatedFunctionSurface(m_scene, createMeshArray(this, m_scene, param)); TRACE_NEW(obj);
     setCalculatedObject(obj, &param);
@@ -323,7 +298,6 @@ void CD3FunctionPlotterDlg::setCalculatedObject(ParametricSurfaceParameters &par
 }
 
 void CD3FunctionPlotterDlg::setCalculatedObject(IsoSurfaceParameters &param) {
-  stopDebugging();
   if(param.m_includeTime) {
     D3AnimatedFunctionSurface *obj = new D3AnimatedFunctionSurface(m_scene, createMeshArray(this, m_scene, param)); TRACE_NEW(obj);
     setCalculatedObject(obj, &param);
@@ -362,248 +336,6 @@ D3SceneObject *CD3FunctionPlotterDlg::getCalculatedObject() const {
   }
   return NULL;
 }
-
-void CD3FunctionPlotterDlg::ajourDebuggerMenu() {
-#ifndef DEBUG_POLYGONIZER
-  const bool enable1 = false;
-  const bool enable2 = false;
-  const bool enable3 = false;
-#else
-  const bool enable1 = isDebuggerPaused();
-  const bool enable2 = hasDebugger();
-  const bool enable3 = enable1 && isMenuItemChecked(this, ID_DEBUG_AUTOFOCUSCURRENTCUBE) && m_hasCubeCenter;
-#endif // DEBUG_POLYGONIZER
-
-  enableSubMenuContainingId(this, ID_DEBUG_GO, enable1 || enable2);
-  enableMenuItem(this, ID_DEBUG_GO                  , enable1);
-  enableMenuItem(this, ID_DEBUG_STEPLEVEL           , enable1);
-  enableMenuItem(this, ID_DEBUG_STEPCUBE            , enable1);
-  enableMenuItem(this, ID_DEBUG_STEPTETRA           , enable1);
-  enableMenuItem(this, ID_DEBUG_STEPFACE            , enable1);
-  enableMenuItem(this, ID_DEBUG_STEPVERTEX          , enable1);
-  enableMenuItem(this, ID_DEBUG_AUTOFOCUSCURRENTCUBE, enable1);
-  enableMenuItem(this, ID_DEBUG_STOPDEBUGGING       , enable2);
-  enableSubMenuContainingId(this, ID_DEBUG_ADJUSTCAM_45UP, enable3);
-}
-
-#ifndef DEBUG_POLYGONIZER
-void CD3FunctionPlotterDlg::startDebugging()              {}
-void CD3FunctionPlotterDlg::stopDebugging()               {}
-void CD3FunctionPlotterDlg::OnDebugGo()                   {}
-void CD3FunctionPlotterDlg::OnDebugStepLevel()            {}
-void CD3FunctionPlotterDlg::OnDebugStepCube()             {}
-void CD3FunctionPlotterDlg::OnDebugStepTetra()            {}
-void CD3FunctionPlotterDlg::OnDebugStepFace()             {}
-void CD3FunctionPlotterDlg::OnDebugStepVertex()           {}
-void CD3FunctionPlotterDlg::OnDebugStopDebugging()        {}
-void CD3FunctionPlotterDlg::OnDebugAutoFocusCurrentCube() {}
-void CD3FunctionPlotterDlg::OnDebugAdjustCam45Up()        {}
-void CD3FunctionPlotterDlg::OnDebugAdjustCam45Down()      {}
-void CD3FunctionPlotterDlg::OnDebugAdjustCam45Left()      {}
-void CD3FunctionPlotterDlg::OnDebugAdjustCam45Right()     {}
-void CD3FunctionPlotterDlg::OnDebugMarkCube()             {}
-
-LRESULT CD3FunctionPlotterDlg::OnMsgKillDebugger(        WPARAM wp, LPARAM lp) { return 0; }
-LRESULT CD3FunctionPlotterDlg::OnMsgDebuggerStateChanged(WPARAM wp, LPARAM lp) { return 0; }
-#else // DEBUG_POLYGONIZER
-
-void CD3FunctionPlotterDlg::startDebugging() {
-  setCalculatedObject(NULL);
-  m_hasCubeCenter      = false;
-  m_currentCamDistance = 5;
-  try {
-    killDebugger(false);
-    m_debugger = new Debugger(this, m_isoSurfaceParam);
-    m_debugger->addPropertyChangeListener(this);
-    createDebugLight();
-    OnResetPositions();
-    checkMenuItem(this, ID_DEBUG_AUTOFOCUSCURRENTCUBE, true);
-    ajourDebuggerMenu();
-    m_editor.OnControlCameraWalk();
-    ThreadPool::executeNoWait(*m_debugger);
-    show3DInfo(INFO_MEM);
-  } catch(Exception e) {
-    showException(e);
-  }
-}
-
-void CD3FunctionPlotterDlg::stopDebugging() {
-  killDebugger(false);
-}
-
-void CD3FunctionPlotterDlg::asyncKillDebugger() {
-  PostMessage(ID_MSG_KILLDEBUGGER);
-}
-
-void CD3FunctionPlotterDlg::killDebugger(bool showCreateSurface) {
-  if(!hasDebugger()) return;
-  m_editor.setCurrentSceneObject(NULL);
-  m_scene.removeAllSceneObjects();
-  m_debugger->removePropertyChangeListener(this);
-  if(m_debugger->isOK() && showCreateSurface) {
-    const DebugIsoSurface &surface = m_debugger->getDebugSurface();
-    if(surface.getFaceCount()) {
-      D3SceneObject *obj = surface.createMeshObject();
-      setCalculatedObject(obj, &m_isoSurfaceParam);
-    }
-  }
-  const bool   allOk = m_debugger->isOK();
-  const String msg   = allOk ? _T("Polygonizing surface done") : m_debugger->getErrorMsg(); 
-  SAFEDELETE(m_debugger);
-  destroyDebugLight();
-  ajourDebuggerMenu();
-  show3DInfo(INFO_ALL);
-  if(allOk) {
-    showInformation(_T("%s"), msg.cstr());
-  } else {
-    showError(_T("%s"), msg.cstr());
-  }
-}
-
-void CD3FunctionPlotterDlg::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
-  switch(id) {
-  case DEBUGGER_STATE :
-    { const DebuggerState oldState = *(DebuggerState*)oldValue;
-      const DebuggerState newState = *(DebuggerState*)newValue;
-      m_editor.setEnabled(newState != DEBUGGER_RUNNING);
-      SendMessage(ID_MSG_DEBUGGERSTATECHANGED, oldState, newState);
-    }
-    break;
-  default:
-    showError(_T("%s:Unknown property:%d"), __TFUNCTION__,id);
-    break;
-  }
-}
-
-void CD3FunctionPlotterDlg::OnDebugGo() {
-  if(isDebuggerPaused()) {
-    m_debugger->go();
-  }
-}
-
-void CD3FunctionPlotterDlg::OnDebugStepLevel()  { OnDebugStep(FL_BREAKONNEXTLEVEL ); }
-void CD3FunctionPlotterDlg::OnDebugStepCube()   { OnDebugStep(FL_BREAKONNEXTOCTA  ); }
-void CD3FunctionPlotterDlg::OnDebugStepTetra()  { OnDebugStep(FL_BREAKONNEXTTETRA ); }
-void CD3FunctionPlotterDlg::OnDebugStepFace()   { OnDebugStep(FL_BREAKONNEXTFACE  ); }
-void CD3FunctionPlotterDlg::OnDebugStepVertex() { OnDebugStep(FL_BREAKONNEXTVERTEX); }
-
-void CD3FunctionPlotterDlg::OnDebugStopDebugging() {
-  if(hasDebugger()) {
-    killDebugger(false);
-  }
-}
-
-void CD3FunctionPlotterDlg::OnDebugAutoFocusCurrentCube() {
-  enableSubMenuContainingId(this, ID_DEBUG_ADJUSTCAM_45UP, toggleMenuItem(this, ID_DEBUG_AUTOFOCUSCURRENTCUBE) && m_hasCubeCenter);
-}
-
-void CD3FunctionPlotterDlg::adjustDebugLightDir() {
-  if(!hasDebugLight()) return;
-  D3PosDirUpScale   cam      = m_scene.getCameraPDUS();
-  const D3DXVECTOR3 dir      = m_cubeCenter - cam.getPos();
-  const D3DXVECTOR3 up       = cam.getUp();
-  const D3DXVECTOR3 lightDir = rotate(dir, up, M_PI / 4);
-  m_scene.setLightDirection(m_debugLightIndex, lightDir);
-}
-
-void CD3FunctionPlotterDlg::debugAdjustCamDir(const D3DXVECTOR3 &newDir, const D3DXVECTOR3 &newUp) {
-  const D3DXVECTOR3 newPos = m_cubeCenter - newDir;
-  D3PosDirUpScale   cam    = m_scene.getCameraPDUS();
-  m_scene.setCameraPDUS(cam.setPos(newPos).setOrientation(newDir, newUp));
-  adjustDebugLightDir();
-}
-
-void CD3FunctionPlotterDlg::OnDebugAdjustCam45Up() {
-  D3PosDirUpScale   cam  = m_scene.getCameraPDUS();
-  const D3DXVECTOR3 dir  = m_cubeCenter - cam.getPos();
-  const D3DXVECTOR3 up   = cam.getUp();
-  const D3DXVECTOR3 r    = cam.getRight();
-  debugAdjustCamDir(rotate(dir, r, -M_PI / 8), rotate(up , r, -M_PI / 8));
-}
-
-void CD3FunctionPlotterDlg::OnDebugAdjustCam45Down() {
-  D3PosDirUpScale   cam  = m_scene.getCameraPDUS();
-  const D3DXVECTOR3 dir  = m_cubeCenter - cam.getPos();
-  const D3DXVECTOR3 up   = cam.getUp();
-  const D3DXVECTOR3 r    = cam.getRight();
-  debugAdjustCamDir(rotate(dir, r, M_PI / 8), rotate(up, r, M_PI / 8));
-}
-
-void CD3FunctionPlotterDlg::OnDebugAdjustCam45Left() {
-  D3PosDirUpScale   cam  = m_scene.getCameraPDUS();
-  const D3DXVECTOR3 dir  = m_cubeCenter - cam.getPos();
-  const D3DXVECTOR3 up   = cam.getUp();
-  debugAdjustCamDir(rotate(dir, up, -M_PI / 8), up);
-}
-
-void CD3FunctionPlotterDlg::OnDebugAdjustCam45Right() {
-  D3PosDirUpScale   cam  = m_scene.getCameraPDUS();
-  const D3DXVECTOR3 dir  = m_cubeCenter - cam.getPos();
-  const D3DXVECTOR3 up   = cam.getUp();
-  debugAdjustCamDir(rotate(dir, up, M_PI / 8), up);
-}
-
-bool CD3FunctionPlotterDlg::isAutoFocusCurrentCubeChecked() const {
-  return isMenuItemChecked(this, ID_DEBUG_AUTOFOCUSCURRENTCUBE);
-}
-
-void CD3FunctionPlotterDlg::OnDebugMarkCube() {
-  // TODO: Add your command handler code here
-}
-
-LRESULT CD3FunctionPlotterDlg::OnMsgKillDebugger(WPARAM wp, LPARAM lp) {
-  killDebugger(true);
-  return 0;
-}
-
-LRESULT CD3FunctionPlotterDlg::OnMsgDebuggerStateChanged(WPARAM wp, LPARAM lp) {
-  try {
-    show3DInfo(0);
-    const DebuggerState oldState = (DebuggerState)wp, newState = (DebuggerState)lp;
-    switch(newState) {
-    case DEBUGGER_RUNNING:
-      { if((oldState == DEBUGGER_PAUSED) && m_hasCubeCenter) {
-          m_currentCamDistance = length(m_scene.getCameraPos() - m_cubeCenter);
-        }
-        D3SceneObject *obj = m_debugger->getSceneObject();
-        if(obj) {
-          m_editor.setCurrentSceneObject(NULL);
-          m_scene.removeSceneObject(obj);
-        }
-      }
-      break;
-    case DEBUGGER_PAUSED:
-      { D3SceneObject *obj = m_debugger->getSceneObject();
-        m_scene.addSceneObject(obj);
-        m_editor.setCurrentSceneObject(obj);
-        m_hasCubeCenter = false;
-        if(isAutoFocusCurrentCubeChecked()) {
-          const DebugIsoSurface  &surf = m_debugger->getDebugSurface();
-          if(surf.hasCurrentOcta()) {
-            const Octagon               &octa   = surf.getCurrentOcta();
-            const IsoSurfacePolygonizer *poly   = surf.getPolygonizer();
-            m_cubeCenter                        = octa.getCenter();
-            m_hasCubeCenter                     = true;
-            m_cubeLevel                         = octa.getLevel();
-            m_scene.setCameraPos(m_cubeCenter - m_currentCamDistance * m_scene.getCameraDir());
-            adjustDebugLightDir();
-            show3DInfo(INFO_ALL);
-          }
-        }
-      }
-      break;
-    case DEBUGGER_TERMINATED:
-      asyncKillDebugger();
-      break;
-    }
-    ajourDebuggerMenu();
-  } catch(Exception e) {
-    showException(e);
-  }
-  return 0;
-}
-
-#endif // DEBUG_POLYGONIZER
 
 static const String stateFileName = _T("c:\\temp\\D3FunctionPlotter.dat");
 
@@ -660,17 +392,8 @@ void CD3FunctionPlotterDlg::OnFileIsoSurface() {
       return;
     }
     m_isoSurfaceParam = dlg.getData();
-#ifndef DEBUG_POLYGONIZER
     setCalculatedObject(m_isoSurfaceParam);
     REPAINT();
-#else
-    if(dlg.getDebugPolygonizer()) {
-      startDebugging();
-    } else {
-      setCalculatedObject(m_isoSurfaceParam);
-      REPAINT();
-    }
-#endif // DEBUG_POLYGONIZER
   } catch(Exception e) {
     showException(e);
   }
@@ -733,7 +456,6 @@ void CD3FunctionPlotterDlg::OnFileReadObjFile() {
 }
 
 void CD3FunctionPlotterDlg::OnFileExit() {
-  stopDebugging();
   m_editor.close();
   deleteCalculatedObject();
   m_scene.close();
@@ -842,29 +564,6 @@ void CD3FunctionPlotterDlg::OnTimer(UINT_PTR nIDEvent) {
   __super::OnTimer(nIDEvent);
 }
 
-void CD3FunctionPlotterDlg::updateDebugInfo() {
-#ifdef DEBUG_POLYGONIZER
-  m_debugInfo = format(_T("Debugger State:%-8s"), getDebuggerStateName().cstr());
-  if(isDebuggerPaused()) {
-    m_debugInfo += format(_T(" Flags:%s"), m_debugger->getFlagNames().cstr());
-    if(!m_debugger->isOK()) {
-      m_debugInfo += format(_T("\nError:%s"), m_debugger->getErrorMsg().cstr());
-    }
-    if(m_hasCubeCenter) {
-      m_debugInfo += format(_T("\nCubeCenter:(%s), level:%u"), toString(m_cubeCenter, 6).cstr(), m_cubeLevel);
-    }
-    const DebugIsoSurface       &surf = m_debugger->getDebugSurface();
-    const IsoSurfacePolygonizer *poly = surf.getPolygonizer();
-    if(poly) {
-      const PolygonizerStatistics &stat = poly->getStatistics();
-      m_debugInfo += format(_T("\n%s\nCubeCalls:%5u, tetraCals:%5u, level:%u")
-                           ,surf.toString().cstr()
-                           ,stat.m_doCubeCalls, stat.m_doTetraCalls, poly->getCurrentLevel());
-    }
-  }
-#endif
-}
-
 void CD3FunctionPlotterDlg::updateEditorInfo() {
   m_editorInfo = m_editor.toString();
 }
@@ -881,10 +580,9 @@ void CD3FunctionPlotterDlg::updateMemoryInfo() {
 
 void CD3FunctionPlotterDlg::show3DInfo(BYTE flags) {
   if(!m_infoVisible) return;
-  if (flags & INFO_DEBUG) updateDebugInfo();
   if(flags  & INFO_MEM  ) updateMemoryInfo();
   if(flags  & INFO_EDIT ) updateEditorInfo();
-  showInfo(_T("%s\n%s\n%s"), m_debugInfo.cstr(), m_memoryInfo.cstr(), m_editorInfo.cstr());
+  showInfo(_T("%s\n%s"), m_memoryInfo.cstr(), m_editorInfo.cstr());
 }
 
 void CD3FunctionPlotterDlg::showInfo(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
