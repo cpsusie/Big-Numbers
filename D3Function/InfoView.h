@@ -42,6 +42,6 @@ public:
 
 #ifndef _DEBUG  // debug version in CInfoView.cpp
 inline CD3FunctionDoc *CInfoView::GetDocument() {
-  return (CWinDiffDoc*)m_pDocument;
+  return (CD3FunctionDoc*)m_pDocument;
 }
 #endif
