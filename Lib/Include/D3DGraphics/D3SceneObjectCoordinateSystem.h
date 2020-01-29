@@ -4,11 +4,11 @@
 
 class D3SceneObjectCoordinateSystem : public D3SceneObject {
 private:
-  D3DXCube3       m_cube;
+  D3DXCube3                  m_cube;
   D3SceneObjectWireFrameBox *m_box;
   D3SceneObjectLineArrow    *m_xaxis, *m_yaxis, *m_zaxis;
-  D3PosDirUpScale m_origin;
-  bool            m_boxVisible, m_axesVisible;
+  D3PosDirUpScale            m_origin;
+  bool                       m_boxVisible, m_axesVisible;
   void init();
   void cleanUp();
   void setCube(float minX, float minY, float minZ, float maxX, float maxY, float maxZ);
