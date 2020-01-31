@@ -208,6 +208,14 @@ XMLNodePtr XMLDoc::findChild(const XMLNodePtr &node, const TCHAR *nodeName, int 
   return NULL;
 }
 
+XMLNodePtr XMLDoc::getChild(const XMLNodePtr &node, const TCHAR *nodeName, int instans) {
+  XMLNodePtr child = findChild(node, nodeName, instans);
+  if(child == NULL) {
+    throwException(_T("ChildNode with name=\"%s\" not found in node %s"), nodeName, (TCHAR*)node->nodeName);
+  }
+  return child;
+}
+
 XMLNodePtr XMLDoc::findNode(const TCHAR *nodeName) {
   return findNode(m_doc->documentElement,nodeName);
 }

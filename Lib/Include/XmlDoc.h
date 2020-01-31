@@ -43,7 +43,10 @@ public:
 
   XMLNodePtr findNode( const TCHAR *nodeName);
   XMLNodePtr findNode( const XMLNodePtr &node, const TCHAR *nodeName);
+  // return NULL, if not found
   XMLNodePtr findChild(const XMLNodePtr &node, const TCHAR *nodeName, int instans=0);
+  // throws exception, if not found
+  XMLNodePtr getChild( const XMLNodePtr &node, const TCHAR *nodeName, int instans=0);
 
   XMLNodePtr createNode(const TCHAR *nodeName, bool force=true);
   XMLNodePtr createNode(const XMLNodePtr &parent, const TCHAR *nodeName, bool force=true);
