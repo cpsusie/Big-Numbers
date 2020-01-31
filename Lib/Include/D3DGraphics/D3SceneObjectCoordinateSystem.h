@@ -1,13 +1,16 @@
 #pragma once
 
+#include <MFCUtil/CoordinateSystem/AxisType.h>
+#include <MFCUtil/CoordinateSystem/DataRange.h>
 #include "D3Scene.h"
 
 class D3SceneObjectCoordinateSystem : public D3SceneObject {
 private:
   D3DXCube3                  m_cube;
   D3SceneObjectWireFrameBox *m_box;
-  D3SceneObjectLineArrow    *m_xaxis, *m_yaxis, *m_zaxis;
+  D3SceneObjectLineArrow    *m_axis[3];
   D3PosDirUpScale            m_origin;
+  AxisAttribute              m_axisAttr[3];
   bool                       m_boxVisible, m_axesVisible;
   void init();
   void cleanUp();
@@ -37,5 +40,7 @@ public:
     m_origin = D3Scene::getOrigo();
     return m_origin;
   }
+  static DoubleInterval getDefaultInterval(AxisType type);
+
   void draw();
 };

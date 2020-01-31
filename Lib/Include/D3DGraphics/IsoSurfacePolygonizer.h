@@ -5,7 +5,7 @@
 #include <CompactHashSet.h>
 #include <CompactHashMap.h>
 #include <Random.h>
-#include "Cube3D.h"
+#include <Math/Cube3D.h>
 
 typedef enum {
   LFACE // left   direction : -x, -i
@@ -243,7 +243,7 @@ public:
   inline Point3D getSize() const {
     return *m_corners[RTF] - *m_corners[LBN];
   }
-  inline Point3D getCenter() const {
+  inline Point3DP getCenter() const {
     return (*m_corners[LBN] + *m_corners[RTF])/2;
   }
   String toString() const;
@@ -264,13 +264,13 @@ public:
   inline BYTE getLevel() const {
     return 0;
   }
-  const D3DXVECTOR3 getCenter() const {
+  inline const D3DXVECTOR3 getCenter() const {
     return Point3DP(getCube().getCenter());
   }
-  virtual UINT getCornerCount() const {
+  inline UINT getCornerCount() const {
     return 8;
   }
-  virtual const HashedCubeCorner &getHashedCorner(UINT index) const {
+  inline const HashedCubeCorner &getHashedCorner(UINT index) const {
     return *getCube().m_corners[index];
   }
   inline bool isEmpty() const {
@@ -282,28 +282,42 @@ public:
   }
 };
 
-class Tetrahedron : public Octagon {
+class Tetrahedron {
 private:
   CubeCorner m_corner[4];
 public:
   inline Tetrahedron() {
     m_corner[0] = m_corner[1] = m_corner[2] = m_corner[3] = LBN;
   }
-  inline Tetrahedron(const StackedCube &cube, CubeCorner c1, CubeCorner c2, CubeCorner c3, CubeCorner c4)
-    : Octagon(cube)
-  {
+  inline Tetrahedron(CubeCorner c1, CubeCorner c2, CubeCorner c3, CubeCorner c4) {
     m_corner[0] = c1;  m_corner[1] = c2; m_corner[2] = c3; m_corner[3] = c4;
   }
-  UINT getCornerCount() const {
+  CubeCorner getCorner(UINT index) const {
+    return m_corner[index];
+  }
+  inline UINT getCornerCount() const {
     return 4;
   }
-  const HashedCubeCorner &getHashedCorner(UINT index) const {
-    return *getCube().m_corners[m_corner[index]];
+  inline bool isEmpty() const {
+    return m_corner[0] == m_corner[1];
+  }
+  inline bool operator==(const Tetrahedron &t) const {
+    return memcmp(m_corner, t.m_corner, sizeof(m_corner)) == 0;
+  }
+  inline bool operator!=(const Tetrahedron &t) const {
+    return !(*this == t);
+  }
+  ULONG hashCode() const {
+    ULONG c = m_corner[0];
+    for(int i = 1; i < 4; i++) {
+      c *= 13;
+      c += m_corner[i];
+    }
+    return c;
   }
   String toString() const {
     return isEmpty() ? _T("Tetra:---")
-                     : format(_T("Tetra:%s, corners:[%s,%s,%s,%s]")
-                             ,__super::toString().cstr()
+                     : format(_T("Tetra:Corners:[%s,%s,%s,%s]")
                              ,::toString(m_corner[0]).cstr()
                              ,::toString(m_corner[1]).cstr()
                              ,::toString(m_corner[2]).cstr()
@@ -432,7 +446,7 @@ private:
   void                addSurfaceVertices(const StackedCube &cube);
   inline void         doTetra(const StackedCube &cube, CubeCorner c1, CubeCorner c2, CubeCorner c3, CubeCorner c4) {
 #ifdef DEBUG_POLYGONIZER
-    m_eval.markCurrentTetra(Tetrahedron(cube,c1,c2,c3,c4));
+    m_eval.markCurrentTetra(Tetrahedron(c1,c2,c3,c4));
 #endif // DEBUG_POLYGONIZER
     doTetra(*cube.m_corners[c1], *cube.m_corners[c2], *cube.m_corners[c3], *cube.m_corners[c4]);
   }

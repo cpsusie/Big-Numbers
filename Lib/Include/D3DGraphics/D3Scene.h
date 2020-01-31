@@ -184,6 +184,9 @@ public:
   inline HWND getHwnd() {
     return m_hwnd;
   }
+  inline LPDIRECT3DDEVICE getDevice() {
+    return m_device;
+  }
   void addSceneObject(   D3SceneObject *obj);
   // Remove obj from scene. if obj is an animated object, the animationthread will be stopped.
   // Does NOT delete the object
@@ -536,6 +539,7 @@ protected:
   inline void drawPrimitive(D3DPRIMITIVETYPE pt, int startVertex, int count) {
     m_scene.drawPrimitive(pt, startVertex, count);
   }
+
 public:
   D3SceneObject(D3Scene &scene, const String &name=_T("Untitled"))
     : m_scene(scene)
@@ -751,8 +755,21 @@ class D3SceneObjectSolidBox : public D3SceneObjectWithMesh {
 private:
   int m_materialIndex;
   void makeSquareFace(MeshBuilder &mb, int v0, int v1, int v2, int v3);
+  void init(const Vertex &p1, const Vertex &p2);
 public:
-  D3SceneObjectSolidBox(D3Scene &scene, const D3DXCube3 &cube, int materialIndex = 0);
+  D3SceneObjectSolidBox::D3SceneObjectSolidBox(D3Scene &scene, const D3DXCube3 &cube, int materialIndex = 0)
+    : D3SceneObjectWithMesh(scene)
+    , m_materialIndex(materialIndex)
+  {
+    init(cube.getMin(), cube.getMax());
+  }
+
+  D3SceneObjectSolidBox::D3SceneObjectSolidBox(D3Scene &scene, const Vertex &p1, const Vertex &p2, int materialIndex = 0)
+    : D3SceneObjectWithMesh(scene)
+    , m_materialIndex(materialIndex)
+  {
+    init(p1, p2);
+  }
   int getMaterialIndex() const {
     return m_materialIndex;
   }

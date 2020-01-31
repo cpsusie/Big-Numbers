@@ -235,9 +235,7 @@ bool CIsoSurfaceDlg::winToParam(IsoSurfaceParameters &param) {
   if(!__super::winToParam(param)) return false;
   param.m_expr             = m_expr;
   param.m_cellSize         = m_cellSize;
-  param.m_boundingBox.setXInterval(getXInterval());
-  param.m_boundingBox.setYInterval(getYInterval());
-  param.m_boundingBox.setZInterval(getZInterval());
+  param.m_boundingBox      = Cube3D(getXInterval(),getYInterval(),getZInterval());
   param.m_tetrahedral      = m_tetrahedral      ? true : false;
   param.m_tetraOptimize4   = m_tetraOptimize4   ? true : false;
   param.m_adaptiveCellSize = m_adaptiveCellSize ? true : false;

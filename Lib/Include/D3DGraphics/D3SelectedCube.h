@@ -1,6 +1,7 @@
 #pragma once
 
 #include "D3Scene.h"
+#include "D3DXCube.h"
 
 class D3SelectedCube : public D3SceneObjectSolidBoxWithPos {
 private:

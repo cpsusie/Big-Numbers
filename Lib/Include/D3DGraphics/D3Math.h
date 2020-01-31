@@ -243,9 +243,9 @@ class Point3DP : public Point3D {
 public:
   inline Point3DP() {
   }
-  inline Point3DP(double _x, double _y, double _z) : Point3D(_x, _y, _z) {
+  template<typename X, typename Y, typename Z> Point3DP(X x, Y y, Z z) : Point3D((double)x, (double)y, (double)z) {
   }
-  inline Point3DP(const Point3D &p) : Point3D(p) {
+  template<typename T> Point3DP(const Point3DTemplate<T> &p) : Point3D((double)p.x, (double)p.y, (double)p.z) {
   }
   inline Point3DP(const D3DXVECTOR3 &v) : Point3D(v.x, v.y, v.z) {
   }

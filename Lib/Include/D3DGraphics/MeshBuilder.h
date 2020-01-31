@@ -2,7 +2,7 @@
 
 #include <MFCUtil/D3DeviceFactory.h>
 #include <D3DGraphics/D3Math.h>
-#include <D3DGraphics/Cube3D.h>
+#include <D3DGraphics/D3DXCube.h>
 
 class VertexNormalTextureIndex {
 public:

@@ -835,7 +835,7 @@
     <ClCompile Include="WavefrontObjFileMeshBuilder.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Include\D3DGraphics\Cube3D.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\D3DXCube.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectCoordinateSystem.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3Error.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3LightControl.h" />
@@ -845,6 +845,7 @@
     <ClInclude Include="..\..\Include\D3DGraphics\D3SelectedCube.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3TextureFactory.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3ToString.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\D3Transformation.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\Function2DSurface.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\IsoCurve.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\IsoSurface.h" />

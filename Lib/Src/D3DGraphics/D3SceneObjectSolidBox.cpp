@@ -11,12 +11,9 @@ void D3SceneObjectSolidBox::makeSquareFace(MeshBuilder &mb, int v0, int v1, int 
   f.addVertexNormalIndex(v3, nIndex);
 }
 
-D3SceneObjectSolidBox::D3SceneObjectSolidBox(D3Scene &scene, const D3DXCube3 &cube, int materialIndex)
-  : D3SceneObjectWithMesh(scene)
-  , m_materialIndex(materialIndex)
-{
+void D3SceneObjectSolidBox::init(const Vertex &p1, const Vertex &p2) {
   MeshBuilder mb;
-  const D3DXVECTOR3 &pmin = cube.getMin(), &pmax = cube.getMax();
+  const D3DXVECTOR3 pmin = p1, pmax = p2;
   const int  lbn = mb.addVertex(pmin.x, pmin.y, pmin.z); // left  bottom near corner
   const int  lbf = mb.addVertex(pmin.x, pmin.y, pmax.z); // left  bottom far  corner
   const int  ltn = mb.addVertex(pmin.x, pmax.y, pmin.z); // left  top    near corner
@@ -26,12 +23,12 @@ D3SceneObjectSolidBox::D3SceneObjectSolidBox(D3Scene &scene, const D3DXCube3 &cu
   const int  rtn = mb.addVertex(pmax.x, pmax.y, pmin.z); // right top    near corner
   const int  rtf = mb.addVertex(pmax.x, pmax.y, pmax.z); // right top    far  corner
 
-  makeSquareFace(mb, lbn, lbf, rbf, rbn);              // bottom
-  makeSquareFace(mb, ltn, rtn, rtf, ltf);              // top
-  makeSquareFace(mb, lbn, ltn, ltf, lbf);              // left side
-  makeSquareFace(mb, lbf, ltf, rtf, rbf);              // back side
-  makeSquareFace(mb, rbf, rtf, rtn, rbn);              // right side
-  makeSquareFace(mb, rbn, rtn, ltn, lbn);              // front side
+  makeSquareFace(mb, lbn, lbf, rbf, rbn);                // bottom
+  makeSquareFace(mb, ltn, rtn, rtf, ltf);                // top
+  makeSquareFace(mb, lbn, ltn, ltf, lbf);                // left side
+  makeSquareFace(mb, lbf, ltf, rtf, rbf);                // back side
+  makeSquareFace(mb, rbf, rtf, rtn, rbn);                // right side
+  makeSquareFace(mb, rbn, rtn, ltn, lbn);                // front side
 
   m_mesh = mb.createMesh(getScene(), false);
 }

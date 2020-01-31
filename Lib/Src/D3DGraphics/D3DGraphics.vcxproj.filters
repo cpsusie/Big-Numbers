@@ -173,9 +173,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Include\D3DGraphics\Cube3D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\D3DGraphics\D3Error.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -254,6 +251,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectCoordinateSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\D3Transformation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\D3DXCube.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

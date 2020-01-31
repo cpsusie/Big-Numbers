@@ -499,7 +499,6 @@ void CMainFrame::startDebugging() {
     m_debugger = new Debugger(this, m_isoSurfaceParam);
     m_debugger->addPropertyChangeListener(this);
     createDebugLight();
-    OnResetPositions();
     checkMenuItem(this, ID_DEBUG_AUTOFOCUSCURRENTCUBE, true);
     ajourDebuggerMenu();
     m_editor.OnControlCameraWalk();
