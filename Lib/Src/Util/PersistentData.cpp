@@ -25,11 +25,7 @@ void PersistentData::checkTag(XMLNodePtr node, const TCHAR *expectedTag) { // st
 }
 
 XMLNodePtr PersistentData::getChild(XMLDoc &doc, XMLNodePtr n, const TCHAR *tag) { // static
-  XMLNodePtr child = doc.findChild(n, tag);
-  if (child == NULL) {
-    throwException(_T("ChildNode with tag=\"%s\" not found in node %s"), tag, (TCHAR*)n->nodeName);
-  }
-  return child;
+  return doc.getChild(n, tag);
 }
 
 String PersistentData::getDisplayName() const {

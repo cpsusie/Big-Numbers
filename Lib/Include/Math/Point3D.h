@@ -4,11 +4,79 @@
 #include "MathLib.h"
 #include "Double80.h"
 
+template<typename T> class Size3DTemplate {
+public:
+  T cx, cy, cz;
+  inline Size3DTemplate() {
+    cx = cy = cz = 0;
+  }
+  inline Size3DTemplate(const T &_cx, const T&_cy, const T&_cz) : cx(_cx), cy(_cy), cz(_cz) {
+  }
+  inline Size3DTemplate operator-(const Size3DTemplate &s) const {
+    return Size3DTemplate(cx - s.cx, cy - s.cy, cz - s.cz);
+  }
+  inline Size3DTemplate operator+(const Size3DTemplate &s) const {
+    return Size3DTemplate(cx + s.cx, cy + s.cy, cz + s.cz);
+  }
+  friend inline Size3DTemplate operator*(const T &factor, const Size3DTemplate &s) {
+    return Size3DTemplate(factor*s.cx, factor*s.cy, factor*s.cz);
+  }
+  inline Size3DTemplate operator*(const T &factor) const {
+    return Size3DTemplate(cx*factor, cy*factor, cz*factor);
+  }
+  inline Size3DTemplate operator/(const T &factor) const {
+    return Size3DTemplate(cx / factor, cy / factor, cz / factor);
+  }
+  inline Size3DTemplate &operator*=(const T &factor) {
+    cx *= factor;
+    cy *= factor;
+    cz *= factor;
+    return *this;
+  }
+  inline Size3DTemplate &operator/=(const T &factor) {
+    cx /= factor;
+    cy /= factor;
+    cz /= factor;
+    return *this;
+  }
+
+  inline T length() const {
+    return sqrt(cx * cx + cy * cy + cz * cz);
+  }
+  inline T volume() const {
+    return cx * cy * cz;
+  }
+  inline Size3DTemplate &normalize() {
+    const T l = length();
+    if(l != 0) {
+      *this /= l;
+    }
+    return *this;
+  }
+
+  inline bool operator==(const Size3DTemplate &s) const {
+    return (cx == s.cx) && (cy == s.cy) && (cz == s.cz);
+  }
+  inline bool operator!=(const Size3DTemplate &s) const {
+    return !(*this == s);
+  }
+  inline String toString(int precision = 3) const {
+    return format(_T("(%s,%s,%s)"), ::toString(cx, precision).cstr(), ::toString(cy, precision).cstr(), ::toString(cz, precision).cstr());
+  }
+};
+
+typedef Size3DTemplate<float   > FloatSize3D;
+typedef Size3DTemplate<double  > Size3D;
+typedef Size3DTemplate<Double80> D80Size3D;
+typedef Size3DTemplate<Real    > RealSize3D;
+
 // A point in 3-dimensional space
 template<typename T> class Point3DTemplate {
 public:
   T x, y, z;
   inline Point3DTemplate() {
+  }
+  inline Point3DTemplate(const Size3DTemplate<T> &s) : x(s.cx), y(s.cy), z(s.cz) {
   }
   inline Point3DTemplate(const T &_x, const T &_y, const T &_z) : x(_x), y(_y), z(_z) {
   }
@@ -71,11 +139,7 @@ public:
   }
 
   inline String toString(int precision = 3) const {
-    return format(_T("(%s,%s,%s)")
-                 ,::toString(x, precision).cstr()
-                 ,::toString(y, precision).cstr()
-                 ,::toString(z, precision).cstr()
-                 );
+    return format(_T("(%s,%s,%s)"),::toString(x, precision).cstr(),::toString(y, precision).cstr(),::toString(z, precision).cstr());
   }
 };
 

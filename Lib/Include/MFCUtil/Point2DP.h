@@ -15,9 +15,9 @@ class Point2DP : public Point2D {
 public:
   inline Point2DP() {
   }
-  inline Point2DP(double _x, double _y) : Point2D(_x, _y) {
+  template<typename X, typename Y> Point2DP(X x, Y y) : Point2D((double)x, (double)y) {
   }
-  inline Point2DP(const Point2D &p) : Point2D(p) {
+  template<typename T> Point2DP(const Point2DTemplate<T> &p) : Point2D((double)p.x, (double)p.y) {
   }
   inline Point2DP(const CPoint &p) : Point2D(p.x, p.y) {
   }
@@ -32,9 +32,9 @@ class Size2DS : public Size2D {
 public:
   inline Size2DS() {
   }
-  inline Size2DS(double _cx, double _cy) : Size2D(_cx, _cy) {
+  template<typename X, typename Y> Size2DS(X cx, Y cy) : Size2D((double)cx, (double)cy) {
   }
-  inline Size2DS(const Size2D &s) : Size2D(s) {
+  template<typename T> Size2DS(const Size2DTemplate<T> &s) : Size2D((double)s.cx, (double)s.cy) {
   }
   inline Size2DS(const CSize &s) : Size2D(s.cx, s.cy) {
   }

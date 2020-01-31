@@ -221,10 +221,11 @@ typedef NormalDistributionTransformationTemplate<Real    > RealNormalDistributio
 
 #define X_AXIS 1
 #define Y_AXIS 2
+#define Z_AXIS 4 /* only used for CubeTransformationTemplate */
 
 template<typename T> class RectangleTransformationTemplate {
 private:
-  IntervalTransformationTemplate<T> *m_xtransform, *m_ytransform;
+  IntervalTransformationTemplate<T> *m_transform[2];
   IntervalTransformationTemplate<T> *allocateTransformation(const NumberInterval<T> &from, const NumberInterval<T> &to, IntervalScale scale) {
     switch(scale) {
     case LINEAR             : return new LinearTransformationTemplate<T>(            from, to);
@@ -235,8 +236,9 @@ private:
     }
   }
   void cleanup() {
-    SAFEDELETE(m_xtransform);
-    SAFEDELETE(m_ytransform);
+    for(int i = 0; i < ARRAYSIZE(m_transform); i++) {
+      SAFEDELETE(m_transform[i]);
+    }
   }
   void computeTransformation(const Rectangle2DTemplate<T> &from, const Rectangle2DTemplate<T> &to, IntervalScale xScale, IntervalScale yScale) {
     IntervalTransformationTemplate<T> *newXtransform = NULL, *newYtransform = NULL;
@@ -249,8 +251,8 @@ private:
                                             ,NumberInterval<T>(to.getTopLeft().y  , to.getBottomLeft().y  )
                                             ,yScale); TRACE_NEW(newYtransform)
       cleanup();
-      m_xtransform = newXtransform;
-      m_ytransform = newYtransform;
+      m_transform[0] = newXtransform;
+      m_transform[1] = newYtransform;
     } catch(Exception e) {
       SAFEDELETE(newXtransform);
       SAFEDELETE(newYtransform);
@@ -259,8 +261,8 @@ private:
   }
 
   RectangleTransformationTemplate(const IntervalTransformationTemplate<T> &tx, const IntervalTransformationTemplate<T> &ty) {
-    m_xtransform = tx.clone();
-    m_ytransform = ty.clone();
+    m_transform[0] = tx.clone();
+    m_transform[1] = ty.clone();
   }
 
   static Rectangle2DTemplate<T> getDefaultFromRectangle(IntervalScale xScale, IntervalScale yScale) {
@@ -274,31 +276,35 @@ private:
 
 public:
   RectangleTransformationTemplate(IntervalScale xScale = LINEAR, IntervalScale yScale = LINEAR) {
-    m_xtransform = m_ytransform = NULL;
+    m_transform[0] = m_transform[1] = NULL;
     computeTransformation(getDefaultFromRectangle(xScale,yScale), getDefaultToRectangle(), xScale, yScale);
   }
   RectangleTransformationTemplate(const RectangleTransformationTemplate &src) {
-    m_xtransform = src.getXTransformation().clone();
-    m_ytransform = src.getYTransformation().clone();
+    m_transform[0] = src.getXTransformation().clone();
+    m_transform[1] = src.getYTransformation().clone();
   }
   RectangleTransformationTemplate &operator=(const RectangleTransformationTemplate &src) {
     cleanup();
-    m_xtransform = src.getXTransformation().clone();
-    m_ytransform = src.getYTransformation().clone();
+    m_transform[0] = src.getXTransformation().clone();
+    m_transform[1] = src.getYTransformation().clone();
     return *this;
   }
   RectangleTransformationTemplate(const Rectangle2DTemplate<T> &from, const Rectangle2DTemplate<T> &to, IntervalScale xScale = LINEAR, IntervalScale yScale = LINEAR) {
-    m_xtransform = m_ytransform = NULL;
+    m_transform[0] = m_transform[1] = NULL;
     computeTransformation(from, to, xScale, yScale);
   }
   virtual ~RectangleTransformationTemplate() {
     cleanup();
   }
+  const IntervalTransformationTemplate<T> &getAxisTransformation(UINT index) const {
+    assert(index < ARRAYSIZE(m_transform));
+    return *m_transform[index];
+  }
   const IntervalTransformationTemplate<T> &getXTransformation() const {
-    return *m_xtransform;
+    return getAxisTransformation(0);
   }
   const IntervalTransformationTemplate<T> &getYTransformation() const {
-    return *m_ytransform;
+    return getAxisTransformation(1);
   }
 
   void   setFromRectangle(const Rectangle2DTemplate<T> &rect) {
@@ -354,10 +360,10 @@ public:
   // Returns new fromRectangle.
   Rectangle2DTemplate<T> zoom(const Point2DTemplate<T> &p, const T &factor, int flags = X_AXIS | Y_AXIS, bool pInToRectangle=true) {
     if(flags & X_AXIS) {
-      m_xtransform->zoom(p.x, factor, pInToRectangle);
+      m_transform[0]->zoom(p.x, factor, pInToRectangle);
     }
     if(flags & Y_AXIS) {
-      m_ytransform->zoom(p.y, factor, pInToRectangle);
+      m_transform[1]->zoom(p.y, factor, pInToRectangle);
     }
     return getFromRectangle();
   }
