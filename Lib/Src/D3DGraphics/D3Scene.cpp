@@ -68,8 +68,8 @@ void D3Scene::initTrans() {
   m_viewAngel      = radians(45);
   m_nearViewPlane  = 0.1f;
   updateProjMatrix();
-  initCameraTrans(D3DXVECTOR3(0,-5,0), D3DXVECTOR3(0,0,0), D3DXVECTOR3(0,0,1));
-  initObjTrans();
+  resetCameraTrans();
+  resetDefaultObjTrans();
 }
 
 D3Scene &D3Scene::selectMaterial(int materialIndex) {
@@ -77,7 +77,7 @@ D3Scene &D3Scene::selectMaterial(int materialIndex) {
     if((UINT)materialIndex < m_materials.size()) {
       const MATERIAL &mat = getMaterial(materialIndex);
       FV(m_device->SetMaterial(&mat));
-      if (mat.Diffuse.a < 1.0) {
+      if(mat.Diffuse.a < 1.0) {
         setCullMode(D3DCULL_CCW)
         .setZEnable(false)
         .setAlphaBlendEnable(true)
@@ -97,33 +97,31 @@ void D3Scene::setCameraPDUS(const D3PosDirUpScale &pdus) {
 }
 
 void D3Scene::setCameraPos(const D3DXVECTOR3 &pos) {
-  D3PosDirUpScale newCam = m_cameraPDUS;
-  newCam.setPos(pos);
-  setCameraPDUS(newCam);
+  setCameraPDUS(D3PosDirUpScale(m_cameraPDUS).setPos(pos));
 }
 
 void D3Scene::setCameraOrientation(const D3DXVECTOR3 &dir, const D3DXVECTOR3 &up) {
-  D3PosDirUpScale newCam = m_cameraPDUS;
-  newCam.setOrientation(dir, up);
-  setCameraPDUS(newCam);
+  setCameraPDUS(D3PosDirUpScale(m_cameraPDUS).setOrientation(dir, up));
 }
 
 void D3Scene::setCameraLookAt(const D3DXVECTOR3 &point) {
-  initCameraTrans(getCameraPos(), point, getCameraUp());
+  setCameraTrans(getCameraPos(), point, getCameraUp());
 }
 
-void D3Scene::initObjTrans(const D3DXVECTOR3 &pos, const D3DXVECTOR3 &dir, const D3DXVECTOR3 &up, const D3DXVECTOR3 &scale) {
-  m_objectPDUS.setPos(pos)
-              .setOrientation(dir, up)
-              .setScale(scale);
+void D3Scene::setCameraTrans(const D3DXVECTOR3 &pos, const D3DXVECTOR3 &lookAt, const D3DXVECTOR3 &up) {
+  setCameraPDUS(D3PosDirUpScale(m_cameraPDUS).setPos(pos).setOrientation(lookAt - pos, up).resetScale());
 }
 
-void D3Scene::initCameraTrans(const D3DXVECTOR3 &pos, const D3DXVECTOR3 &lookAt, const D3DXVECTOR3 &up) {
-  D3PosDirUpScale newCam = m_cameraPDUS;
-  newCam.setPos(pos)
-        .setOrientation(lookAt - pos, up)
-        .setScale(D3DXVECTOR3(1,1,1));
-  setCameraPDUS(newCam);
+void D3Scene::resetCameraTrans() {
+  setCameraTrans(D3DXVECTOR3(0, -5, 0), D3DXORIGIN, D3DXVECTOR3(0, 0, 1));
+}
+
+void D3Scene::setDefaultObjTrans(const D3DXVECTOR3 &pos, const D3DXVECTOR3 &dir, const D3DXVECTOR3 &up, const D3DXVECTOR3 &scale) {
+  m_defaultObjPDUS.setPos(pos).setOrientation(dir, up).setScale(scale);
+}
+
+void D3Scene::resetDefaultObjTrans() {
+  m_defaultObjPDUS.resetPos().resetOrientation().resetScale();
 }
 
 void D3Scene::updateViewMatrix() {

@@ -288,6 +288,16 @@ public:
   inline D3PosDirUpScale &setScaleAll(float scale) {
     return setScale(D3DXVECTOR3(scale, scale, scale));
   }
+  inline D3PosDirUpScale &resetPos() {
+    return setPos(D3DXORIGIN);
+  }
+  inline D3PosDirUpScale &resetScale() {
+    return setScaleAll(1);
+  }
+  inline D3PosDirUpScale &resetOrientation() {
+    return setOrientation(D3DXVECTOR3(0, 0, -1), D3DXVECTOR3(0, 1, 0));
+  }
+
   D3PosDirUpScale &setWorldMatrix(const D3DXMATRIX &world);
 
   inline D3DXMATRIX getWorldMatrix() const {

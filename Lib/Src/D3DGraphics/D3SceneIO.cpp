@@ -12,7 +12,7 @@ void D3Scene::loadState(const String &fileName) {
 
 void D3Scene::save(ByteOutputStream &s) const {
   s.putBytes(      (BYTE*)(&m_cameraPDUS    ), sizeof(m_cameraPDUS     ));
-  s.putBytes(      (BYTE*)(&m_objectPDUS    ), sizeof(m_objectPDUS     ));
+  s.putBytes(      (BYTE*)(&m_defaultObjPDUS), sizeof(m_defaultObjPDUS ));
   s.putBytes(      (BYTE*)(&m_viewAngel     ), sizeof(m_viewAngel      ));
   s.putBytes(      (BYTE*)(&m_nearViewPlane ), sizeof(m_nearViewPlane  ));
   s.putBytes(      (BYTE*)(&m_renderState   ), sizeof(m_renderState));
@@ -22,7 +22,7 @@ void D3Scene::save(ByteOutputStream &s) const {
 
 void D3Scene::load(ByteInputStream &s) {
   s.getBytesForced((BYTE*)(&m_cameraPDUS      ), sizeof(m_cameraPDUS     ));
-  s.getBytesForced((BYTE*)(&m_objectPDUS      ), sizeof(m_objectPDUS     ));
+  s.getBytesForced((BYTE*)(&m_defaultObjPDUS  ), sizeof(m_defaultObjPDUS ));
   s.getBytesForced((BYTE*)(&m_viewAngel       ), sizeof(m_viewAngel      ));
   s.getBytesForced((BYTE*)(&m_nearViewPlane   ), sizeof(m_nearViewPlane  ));
   s.getBytesForced((BYTE*)(&m_renderState     ), sizeof(m_renderState    ));

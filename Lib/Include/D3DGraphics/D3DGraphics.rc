@@ -118,6 +118,7 @@ BEGIN
     BEGIN
         MENUITEM "Move camera (walk && rotate)", ID_CONTROL_CAMERA_WALK
         MENUITEM "Move && rotate object",       ID_CONTROL_OBJECT_MOVEROTATE
+        MENUITEM "Reset camera",                ID_RESETCAMERA
         MENUITEM SEPARATOR
         POPUP "Light"
         BEGIN
@@ -161,9 +162,6 @@ BEGIN
         END
         MENUITEM "Show coordinatesystem",       ID_SHOWCOORDINATESYSTEM
         MENUITEM "Hide coordinatesystem",       ID_HIDECOORDINATESYSTEM
-        MENUITEM SEPARATOR
-        MENUITEM "Save scene parameters...",    ID_SAVESCENEPARAMETERS
-        MENUITEM "Load scene parameters...",    ID_LOADSCENEPARAMETERS
     END
 END
 
@@ -191,7 +189,10 @@ BEGIN
         MENUITEM "Move && Rotate",              ID_CONTROL_OBJECT_POS
         MENUITEM "Scale",                       ID_CONTROL_OBJECT_SCALE
         MENUITEM "Set center of rotation",      ID_OBJECT_SETCENTEROFROTATION
+        MENUITEM SEPARATOR
+        MENUITEM "Reset position",              ID_OBJECT_RESETPOSITION
         MENUITEM "Reset scale",                 ID_OBJECT_RESETSCALE
+        MENUITEM "Reset orientation",           ID_OBJECT_RESETORIENTATION
         MENUITEM SEPARATOR
         POPUP "Fillmode"
         BEGIN
@@ -203,7 +204,7 @@ BEGIN
         BEGIN
             MENUITEM "Flat",                        ID_SHADING_FLAT
             MENUITEM "Gouraud",                     ID_SHADING_GOURAUD
-            MENUITEM "Phong",                       ID_SHADING_PHONG, GRAYED
+            MENUITEM "Phong",                       ID_SHADING_PHONG
         END
         MENUITEM "Material...",                 ID_OBJECT_ADJUSTMATERIAL
         MENUITEM SEPARATOR

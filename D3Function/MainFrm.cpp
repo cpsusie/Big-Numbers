@@ -136,8 +136,8 @@ BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT /*lpcs*/, CCreateContext *pContex
   m_relativeHeight = 0.8;
 
   VERIFY(m_wndSplitter.CreateStatic(this, 2, 1));
-  VERIFY(m_wndSplitter.CreateView(0, 0, RUNTIME_CLASS(CD3SceneView), CSize(500, 400), pContext));
-  VERIFY(m_wndSplitter.CreateView(1, 0, RUNTIME_CLASS(CInfoView   ), CSize(500, 30), pContext));
+  VERIFY(m_wndSplitter.CreateView(0, 0, RUNTIME_CLASS(CD3SceneView), CSize(700, 500), pContext));
+  VERIFY(m_wndSplitter.CreateView(1, 0, RUNTIME_CLASS(CInfoView   ), CSize(700, 100), pContext));
   return TRUE;
 }
 
@@ -421,7 +421,7 @@ void CMainFrame::setCalculatedObject(D3SceneObject *obj, PersistentData *param) 
     }
     m_scene.addSceneObject(obj);
   }
-  m_editor.setCurrentSceneObject(obj);
+  m_editor.setCurrentObj(obj);
 }
 
 D3SceneObject *CMainFrame::getCalculatedObject() const {
@@ -519,7 +519,7 @@ void CMainFrame::asyncKillDebugger() {
 
 void CMainFrame::killDebugger(bool showCreateSurface) {
   if(!hasDebugger()) return;
-  m_editor.setCurrentSceneObject(NULL);
+  m_editor.setCurrentObj(NULL);
   m_scene.removeAllSceneObjects();
   m_debugger->removePropertyChangeListener(this);
   if(m_debugger->isOK() && showCreateSurface) {
@@ -651,7 +651,7 @@ LRESULT CMainFrame::OnMsgDebuggerStateChanged(WPARAM wp, LPARAM lp) {
         }
         D3SceneObject *obj = m_debugger->getSceneObject();
         if(obj) {
-          m_editor.setCurrentSceneObject(NULL);
+          m_editor.setCurrentObj(NULL);
           m_scene.removeSceneObject(obj);
         }
       }
@@ -659,7 +659,7 @@ LRESULT CMainFrame::OnMsgDebuggerStateChanged(WPARAM wp, LPARAM lp) {
     case DEBUGGER_PAUSED:
       { D3SceneObject *obj = m_debugger->getSceneObject();
         m_scene.addSceneObject(obj);
-        m_editor.setCurrentSceneObject(obj);
+        m_editor.setCurrentObj(obj);
         m_hasCubeCenter = false;
         if(isAutoFocusCurrentCubeChecked()) {
           const DebugIsoSurface  &surf = m_debugger->getDebugSurface();
@@ -675,7 +675,7 @@ LRESULT CMainFrame::OnMsgDebuggerStateChanged(WPARAM wp, LPARAM lp) {
           }
         }
       }
-    break;
+      break;
     case DEBUGGER_TERMINATED:
       asyncKillDebugger();
       break;

@@ -66,7 +66,7 @@ class D3SceneEditor : public PropertyChangeListener {
 private:
     D3SceneContainer                 *m_sceneContainer;
     CurrentObjectControl              m_currentControl;
-    D3SceneObject                    *m_currentSceneObject, *m_coordinateSystem, *m_selectedCube;
+    D3SceneObject                    *m_currentObj, *m_coordinateSystem, *m_selectedCube;
     PropertyDialogMap                 m_propertyDialogMap;
     PropertyContainer                *m_currentEditor;
     BitSet8                           m_stateFlags;
@@ -105,15 +105,21 @@ private:
     void rotateCurrentVisualLeftRight(double angle) ;
     void adjustCurrentVisualScale(int component, double factor);
 
-    void moveCurrentSceneObjectXY(CPoint pt);
-    void moveCurrentSceneObjectXZ(CPoint pt);
+    void moveCurrentObjXY(CPoint pt);
+    void moveCurrentObjXZ(CPoint pt);
 
-    D3DXVECTOR3 getCurrentSceneObjectPos();
-    void        setCurrentSceneObjectPos(   const D3DXVECTOR3 &pos);
-    void        setCurrentVisualOrientation(const D3DXVECTOR3 &dir, const D3DXVECTOR3 &up);
-    void        setCurrentVisualScale(      const D3DXVECTOR3 &pos);
-    void        resetCenterOfRotation();
-    void        setCenterOfRotation();
+    // Assume getCurrentObjType() in { SOTYPE_VISUALOBJECT, SOTYPE_LIGHTCONTROL, SOTYPE_ANIMATEDOBJECT }
+    D3DXVECTOR3     getCurrentObjPos();
+    // Assume getCurrentObjType() in { SOTYPE_VISUALOBJECT, SOTYPE_LIGHTCONTROL, SOTYPE_ANIMATEDOBJECT }
+    void            setCurrentObjPos(   const D3DXVECTOR3 &pos);
+    // Assume getCurrentVisual() != NULL (currentSceneObject.type in { SOTYPE_ANIMATEDOBJECT, SOTYPE_VISUALOBJECT }
+    void            setCurrentVisualPDUS(       const D3PosDirUpScale &pdus);
+    // return pointer to getCurrentVisual->getPDUS() if getCcurrentVisual() != NULL, else NULL
+    const D3PosDirUpScale *getCurrentVisualPDUS() const;
+    void            setCurrentVisualOrientation(const D3DXVECTOR3 &dir, const D3DXVECTOR3 &up);
+    void            setCurrentVisualScale(      const D3DXVECTOR3 &pos);
+    void            resetCenterOfRotation();
+    void            setCenterOfRotation();
     inline D3DXVECTOR3  getCenterOfRotation() const {
       return (getCurrentVisual() == m_centerOfRotation.m_obj) ? m_centerOfRotation.m_pos : D3DXORIGIN;
     }
@@ -155,17 +161,17 @@ private:
     void setSpecularEnable(          bool enabled);
     void OnSaveSceneParameters();
     void OnLoadSceneParameters();
-    void OnControlObjectMoveRotate();
-    void OnControlObjectPos();
-    void OnControlObjectScale();
+    void OnControlObjMoveRotate();
+    void OnControlObjPos();
+    void OnControlObjScale();
 
     void setLightControlsVisible(bool visible);
     void addLight(D3DLIGHTTYPE type);
     void setSpotToPointAt(CPoint point);
-    void OnMouseMoveCameraWalk(           UINT nFlags, CPoint pt);
-    void OnMouseMoveObjectPos(            UINT nFlags, CPoint pt);
-    void OnMouseWheelObjectPos(           UINT nFlags, short zDelta, CPoint pt);
-    void OnMouseWheelObjectScale(         UINT nFlags, short zDelta, CPoint pt);
+    void OnMouseMoveCameraWalk(        UINT nFlags, CPoint pt);
+    void OnMouseMoveObjPos(            UINT nFlags, CPoint pt);
+    void OnMouseWheelObjPos(           UINT nFlags, short zDelta, CPoint pt);
+    void OnMouseWheelObjScale(         UINT nFlags, short zDelta, CPoint pt);
     void OnMouseWheelAnimationSpeed(      UINT nFlags, short zDelta, CPoint pt);
     void OnMouseWheelCameraWalk(          UINT nFlags, short zDelta, CPoint pt);
 
@@ -179,11 +185,12 @@ private:
     void OnMouseWheelLightSpotAngle(      UINT nFlags, short zDelta, CPoint pt);
 
     void OnContextMenuBackground(  CPoint point);
-    void OnContextMenuSceneObject( CPoint point);
-    void OnContextMenuVisualObject(CPoint point);
+    void OnContextMenuObj(         CPoint point);
+    void OnContextMenuVisualObj(   CPoint point);
     void OnContextMenuLightControl(CPoint point);
 public:
     void OnControlCameraWalk();
+    void OnResetCamera();
 private:
     void OnObjectStartAnimation();
     void OnObjectStartBckAnimation();
@@ -193,7 +200,9 @@ private:
     void OnObjectControlSpeed();
     void OnObjectCreateCube();
     void OnObjectEditMaterial();
+    void OnObjectResetPosition();
     void OnObjectResetScale();
+    void OnObjectResetOrientation();
     void OnObjectRemove();
     void OnObjectSetCenterOfRotation();
     void OnLightAdjustColors();
@@ -237,26 +246,29 @@ public:
       return m_stateFlags.contains(SE_ENABLED);
     }
 
-    void                  setCurrentSceneObject(D3SceneObject *obj);
+    void                  setCurrentObj(D3SceneObject *obj);
 
-    inline D3SceneObject *getCurrentSceneObject() const {
-      return m_currentSceneObject;
+    inline D3SceneObject *getCurrentObj() const {
+      return m_currentObj;
     }
-    // Return NULL, if m_currentSceneObject->type not in {SOTYPE_VISUALOBJECT, SOTYPE_ANIMATEDOBJECT, }
-    D3SceneObject     *getCurrentVisual() const;
-    // return NULL, if m_currentSceneObject->type not SOTYPE_ANIMATEDOBJECT
-    D3AnimatedSurface *getCurrentAnimatedObject() const;
+    inline SceneObjectType getCurrentObjType() const {
+      return m_currentObj ? m_currentObj->getType() : SOTYPE_NULL;
+    }
+    // Return NULL, if m_currentObj->type not in {SOTYPE_VISUALOBJECT, SOTYPE_ANIMATEDOBJECT, }
+    D3SceneObject        *getCurrentVisual() const;
+    // return NULL, if m_currentObj->type not SOTYPE_ANIMATEDOBJECT
+    D3AnimatedSurface    *getCurrentAnimatedObj() const;
     inline const D3DXVECTOR3 &getPickedPoint() const {
       return m_pickedPoint;
     }
-    inline bool hasCurrentSceneObject() const {
-      return getCurrentSceneObject() != NULL;
+    inline bool hasCurrentObj() const {
+      return getCurrentObj() != NULL;
     }
     inline bool hasCurrentVisual() const {
       return getCurrentVisual() != NULL;
     }
-    inline bool hasCurrentAnimatedObject() const {
-      return getCurrentAnimatedObject() != NULL;
+    inline bool hasCurrentAnimatedObj() const {
+      return getCurrentAnimatedObj() != NULL;
     }
     inline const D3Ray &getPickedRay() const {
       return m_pickedRay;

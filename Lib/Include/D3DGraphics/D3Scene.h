@@ -33,7 +33,8 @@ typedef enum {
 } D3SceneProperty;
 
 typedef enum {
-  SOTYPE_VISUALOBJECT
+  SOTYPE_NULL
+ ,SOTYPE_VISUALOBJECT
  ,SOTYPE_LIGHTCONTROL
  ,SOTYPE_ANIMATEDOBJECT
 } SceneObjectType;
@@ -136,7 +137,7 @@ private:
   CompactArray<MATERIAL>            m_materials;
   CompactArray<D3SceneObject*>      m_objectArray;
   int                               m_oldObjectCount;
-  D3PosDirUpScale                   m_cameraPDUS, m_objectPDUS;
+  D3PosDirUpScale                   m_cameraPDUS, m_defaultObjPDUS;
   float                             m_viewAngel;
   float                             m_nearViewPlane;
   Timestamp                         m_renderTime;
@@ -144,11 +145,11 @@ private:
 
   void notifyPropertyChanged(int id, const void *oldValue, const void *newValue);
   void notifyIfObjectArrayChanged();
-  void initCameraTrans(const D3DXVECTOR3 &pos, const D3DXVECTOR3 &lookAt, const D3DXVECTOR3 &up);
-  void initObjTrans(const D3DXVECTOR3 &pos   = D3DXVECTOR3(0,0, 0)
-                   ,const D3DXVECTOR3 &dir   = D3DXVECTOR3(0,0,-1)
-                   ,const D3DXVECTOR3 &up    = D3DXVECTOR3(0,1, 0)
-                   ,const D3DXVECTOR3 &scale = D3DXVECTOR3(1,1, 1));
+  void setCameraTrans(const D3DXVECTOR3 &pos, const D3DXVECTOR3 &lookAt, const D3DXVECTOR3 &up);
+  void setDefaultObjTrans(const D3DXVECTOR3 &pos
+                         ,const D3DXVECTOR3 &dir
+                         ,const D3DXVECTOR3 &up
+                         ,const D3DXVECTOR3 &scale);
   void updateViewMatrix();
   void updateProjMatrix();
   void setProjMatrix(       const D3DXMATRIX &m);
@@ -179,6 +180,8 @@ public:
   void init(HWND hwnd);
   void close();
   void initTrans();
+  void resetCameraTrans();
+  void resetDefaultObjTrans();
   void render();
   void OnSize();
   inline HWND getHwnd() {
@@ -341,11 +344,8 @@ public:
     return *this;
   }
 
-  inline D3PosDirUpScale &getObjPDUS() {
-    return m_objectPDUS;
-  }
-  inline String getObjString() const {
-    return format(_T("Object:%s"), m_objectPDUS.toString().cstr());
+  inline D3PosDirUpScale &getDefaultPDUS() {
+    return m_defaultObjPDUS;
   }
 
   inline const D3PosDirUpScale &getCameraPDUS() const {
@@ -558,7 +558,7 @@ public:
     return NULL;
   }
   virtual D3PosDirUpScale &getPDUS() {
-    return m_scene.getObjPDUS();
+    return m_scene.getDefaultPDUS();
   }
   virtual int getMaterialIndex() const {
     return 0;
@@ -784,7 +784,7 @@ private:
 public:
   D3SceneObjectSolidBoxWithPos(D3Scene &scene, const D3DXCube3 &cube, int materialIndex = 0)
     : D3SceneObjectSolidBox(scene, cube, materialIndex)
-    , m_pdus(scene.getObjPDUS())
+    , m_pdus(scene.getDefaultPDUS())
   {
   }
   D3PosDirUpScale &getPDUS() {
