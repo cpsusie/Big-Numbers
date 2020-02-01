@@ -9,7 +9,6 @@
 IMPLEMENT_DYNCREATE(CInfoView, CFormView)
 
 BEGIN_MESSAGE_MAP(CInfoView, CFormView)
-  ON_WM_CREATE()
   ON_WM_SIZE()
   ON_COMMAND(ID_FILE_PRINT        , OnFilePrint           )
   ON_COMMAND(ID_FILE_PRINT_DIRECT , OnFilePrint           )
@@ -17,19 +16,12 @@ BEGIN_MESSAGE_MAP(CInfoView, CFormView)
   ON_EN_VSCROLL(IDC_EDIT_INFOBOX  , OnEnVscrollEditInfoBox)
 END_MESSAGE_MAP()
 
-CInfoView::CInfoView() : CFormView(CInfoView::IDD) {
+CInfoView::CInfoView() : CFormView(IDD) {
   m_topLine       = 0;
   m_scrollEnabled = true;
 }
 
 CInfoView::~CInfoView() {
-}
-
-int CInfoView::OnCreate(LPCREATESTRUCT lpCreateStruct) {
-  if (__super::OnCreate(lpCreateStruct) == -1) {
-    return -1;
-  }
-  return 0;
 }
 
 void CInfoView::OnDraw(CDC *pDC) {

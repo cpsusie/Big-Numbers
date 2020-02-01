@@ -35,7 +35,6 @@ public:
   virtual BOOL OnPreparePrinting(CPrintInfo *pInfo);
   virtual void OnBeginPrinting(  CDC *pDC, CPrintInfo *pInfo);
   virtual void OnEndPrinting(    CDC *pDC, CPrintInfo *pInfo);
-  afx_msg int  OnCreate(LPCREATESTRUCT lpCreateStruct);
   afx_msg void OnSize(UINT nType, int cx, int cy);
   afx_msg void OnEnVscrollEditInfoBox();
 };
