@@ -898,8 +898,10 @@ void CMainFrame::OnOptionsOrganizeOptions() {
   }
 }
 
-
 BOOL CMainFrame::PreTranslateMessage(MSG * pMsg) {
+  if((pMsg->message == WM_MOUSEMOVE) && m_editor.ptIn3DWindow(pMsg->pt)) {
+    m_wndStatusBar.SetPaneText(0, toString(m_editor.screenPTo3DP(pMsg->pt)).cstr());
+  }
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return true;
   }

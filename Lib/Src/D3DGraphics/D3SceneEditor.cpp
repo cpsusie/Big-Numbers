@@ -131,7 +131,7 @@ void D3SceneEditor::handlePropertyChanged(const PropertyContainer *source, int i
 void D3SceneEditor::OnLButtonDown(UINT nFlags, CPoint point) {
   m_lastMouse = point;
   m_pickedRay = getScene().getPickRay(m_lastMouse);
-  switch(m_currentControl) {
+  switch(getCurrentControl()) {
   case CONTROL_SPOTLIGHTPOINT:
     setSpotToPointAt(point);
     break;
@@ -139,12 +139,12 @@ void D3SceneEditor::OnLButtonDown(UINT nFlags, CPoint point) {
   default:
     { D3SceneObject *pickedObj = getScene().getPickedObject(point, OBJMASK_ALL, &m_pickedPoint, &m_pickedInfo);
       if(pickedObj == NULL) {
-        if(m_currentControl != CONTROL_CAMERA_WALK) {
-          setCurrentObj(NULL);
-          setCurrentControl(CONTROL_IDLE);
-        } else {
+        if(getCurrentControl() == CONTROL_CAMERA_WALK) {
           setMouseVisible(false);
           getMessageWindow()->SetCapture();
+        } else {
+          setCurrentObj(NULL);
+          setCurrentControl(CONTROL_IDLE);
         }
         m_pickedInfo.clear();
       } else {
@@ -165,7 +165,7 @@ void D3SceneEditor::OnLButtonDown(UINT nFlags, CPoint point) {
 }
 
 void D3SceneEditor::OnLButtonUp(UINT nFlags, CPoint point) {
-  switch(m_currentControl) {
+  switch(getCurrentControl()) {
   case CONTROL_SPOTLIGHTPOINT:
     setCurrentControl(CONTROL_IDLE);
     render(RENDER_INFO);
@@ -196,7 +196,7 @@ void D3SceneEditor::OnMouseMove(UINT nFlags, CPoint point) {
   if(!(nFlags & MK_LBUTTON)) {
     return;
   }
-  switch(m_currentControl) {
+  switch(getCurrentControl()) {
   case CONTROL_CAMERA_WALK   :
     OnMouseMoveCameraWalk(nFlags, point);
     break;
@@ -217,7 +217,7 @@ void D3SceneEditor::OnLButtonDblClk(UINT nFlags, CPoint point) {
 }
 
 BOOL D3SceneEditor::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) {
-  switch(m_currentControl) {
+  switch(getCurrentControl()) {
   case CONTROL_CAMERA_WALK           :
     OnMouseWheelCameraWalk(          nFlags, zDelta, pt);
     return TRUE;
@@ -949,7 +949,7 @@ void D3SceneEditor::OnContextMenuVisualObj(CPoint point) {
   loadMenu(menu, IDR_CONTEXT_MENU_VISUALOBJECT);
 
   int checkedItem = -1;
-  switch(m_currentControl) {
+  switch(getCurrentControl()) {
   case CONTROL_OBJECT_POS      : checkedItem = ID_CONTROL_OBJECT_POS      ; break;
   case CONTROL_OBJECT_SCALE    : checkedItem = ID_CONTROL_OBJECT_SCALE    ; break;
   }
@@ -1045,7 +1045,7 @@ void D3SceneEditor::OnObjectCreateCube() {
 
 void D3SceneEditor::setCurrentControl(CurrentObjectControl control) {
   m_currentControl = control;
-  switch(m_currentControl) {
+  switch(getCurrentControl()) {
   case CONTROL_OBJECT_POS:
     setWindowCursor(*get3DWindow(), MAKEINTRESOURCE(OCR_HAND));
     render(RENDER_INFO);
@@ -1355,7 +1355,7 @@ String D3SceneEditor::toString() const {
   if(!isEnabled()) return EMPTYSTRING;
 
   String result = format(_T("Current Motion:%s State:%s Selected:%s")
-                        ,controlString(m_currentControl)
+                        ,controlString(getCurrentControl())
                         ,stateFlagsToString().cstr()
                         ,getSelectedString().cstr()
                         );
@@ -1384,7 +1384,7 @@ String D3SceneEditor::toString() const {
     break;
   }
 
-  switch (m_currentControl) {
+  switch(getCurrentControl()) {
   case CONTROL_IDLE                  :
     return result;
   case CONTROL_CAMERA_WALK           :

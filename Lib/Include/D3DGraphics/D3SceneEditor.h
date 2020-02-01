@@ -86,17 +86,6 @@ private:
     D3Scene &getScene() const {
       return m_sceneContainer->getScene();
     }
-    // p in screen-coordinates
-    inline CPoint screenPTo3DP(CPoint p) const {
-      get3DWindow()->ScreenToClient(&p);
-      return p;
-    }
-    // p in screen-coordinates
-    inline bool ptIn3DWindow(const CPoint &p) const {
-      CRect r;
-      GetWindowRect(*get3DWindow(), &r);
-      return r.PtInRect(p);
-    }
     inline void render(BYTE flags) {
       if(isRenderEnabled()) m_sceneContainer->render(flags);
     }
@@ -245,7 +234,9 @@ public:
     inline bool isEnabled() const {
       return m_stateFlags.contains(SE_ENABLED);
     }
-
+    inline CurrentObjectControl getCurrentControl() const {
+      return m_currentControl;
+    }
     void                  setCurrentObj(D3SceneObject *obj);
 
     inline D3SceneObject *getCurrentObj() const {
@@ -269,6 +260,17 @@ public:
     }
     inline bool hasCurrentAnimatedObj() const {
       return getCurrentAnimatedObj() != NULL;
+    }
+    // p in screen-coordinates
+    inline CPoint screenPTo3DP(CPoint p) const {
+      get3DWindow()->ScreenToClient(&p);
+      return p;
+    }
+    // p in screen-coordinates
+    inline bool ptIn3DWindow(const CPoint &p) const {
+      CRect r;
+      GetWindowRect(*get3DWindow(), &r);
+      return r.PtInRect(p);
     }
     inline const D3Ray &getPickedRay() const {
       return m_pickedRay;
