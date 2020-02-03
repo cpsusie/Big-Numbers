@@ -49,6 +49,8 @@
 #define ID_OBJECT_CREATECUBE            34146
 #define ID_CONTROL_CAMERA_WALK          34150
 #define ID_RESETCAMERA                  34151
+#define ID_RIGHTHANDED                  34152
+#define ID_LEFTHANDED                   34153
 #define ID_EDIT_AMBIENTLIGHT            34160
 #define ID_EDIT_BACKGROUNDCOLOR         34161
 #define ID_SHADING_FLAT                 34162
@@ -98,13 +100,12 @@
 #define ID_SELECT_LIGHT20               34240
 #define ID_SAVESCENEPARAMETERS          34250
 #define ID_LOADSCENEPARAMETERS          34251
-
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        713
-#define _APS_NEXT_COMMAND_VALUE         34264
+#define _APS_NEXT_COMMAND_VALUE         34268
 #define _APS_NEXT_CONTROL_VALUE         6041
 #define _APS_NEXT_SYMED_VALUE           103
 #endif

@@ -2,19 +2,12 @@
 #include <MFCUtil/ColorSpace.h>
 #include <D3DGraphics/D3SceneObjectCoordinateSystem.h>
 
-D3SceneObjectCoordinateSystem::D3SceneObjectCoordinateSystem(D3Scene &scene, const D3DXCube3 *cube) : D3SceneObject(scene, _T("CoordinateSystem")) {
+D3SceneObjectCoordinateSystem::D3SceneObjectCoordinateSystem(D3Scene &scene, const D3DXCube3 *cube) 
+  : D3SceneObject(scene, _T("CoordinateSystem"))
+  , m_origin(scene.getRightHanded())
+{
   init();
   setCube(cube ? *cube : D3DXCube3::getStdCube());
-}
-
-D3SceneObjectCoordinateSystem::D3SceneObjectCoordinateSystem(const D3SceneObjectCoordinateSystem &src) : D3SceneObject(getScene(), getName()) {
-  init();
-  setCube(src.getCube());
-}
-
-D3SceneObjectCoordinateSystem &D3SceneObjectCoordinateSystem::operator=(const D3SceneObjectCoordinateSystem &src) {
-  setCube(src.getCube());
-  return *this;
 }
 
 D3SceneObjectCoordinateSystem::~D3SceneObjectCoordinateSystem() {

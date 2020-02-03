@@ -19,17 +19,18 @@ class D3LightControl;
 class D3SceneObject;
 
 typedef enum {
-  SP_BACKGROUNDCOLOR
- ,SP_AMBIENTLIGHT
- ,SP_CAMERAPDUS
- ,SP_PROJECTIONTRANSFORMATION
- ,SP_LIGHTPARAMETERS
- ,SP_LIGHTCOUNT
- ,SP_MATERIALPARAMETERS
- ,SP_MATERIALCOUNT
- ,SP_RENDERTIME
- ,SP_OBJECTCOUNT
- ,SP_ANIMATIONFRAMEINDEX
+  SP_BACKGROUNDCOLOR           // D3DCOLOR
+ ,SP_AMBIENTCOLOR              // D3DCOLOR
+ ,SP_CAMERAPDUS                // D3PosDirUpScale
+ ,SP_PROJECTIONTRANSFORMATION  // D3DXMATRIX
+ ,SP_RIGHTHANDED               // bool
+ ,SP_LIGHTPARAMETERS           // LIGHT
+ ,SP_LIGHTCOUNT                // UINT
+ ,SP_MATERIALPARAMETERS        // MATERIAL
+ ,SP_MATERIALCOUNT             // UINT
+ ,SP_RENDERTIME                // Timestamp
+ ,SP_OBJECTCOUNT               // UINT
+ ,SP_ANIMATIONFRAMEINDEX       // int
 } D3SceneProperty;
 
 typedef enum {
@@ -124,44 +125,44 @@ class D3Scene : public PropertyContainer
               , public AbstractTextureFactory
 {
 private:
-  static const D3PosDirUpScale s_pdusOrigo;
   friend class D3SceneObjectIterator;
 
   HWND                              m_hwnd;
   LPDIRECT3DDEVICE                  m_device;
   D3SceneRenderState                m_renderState;
+  bool                              m_rightHanded;
   int                               m_maxLightCount;
   static int                        s_textureCoordCount;
-  BitSet                           *m_lightsEnabled;
-  BitSet                           *m_lightsDefined;
+  BitSet                           *m_lightsEnabled, *m_lightsDefined;
   CompactArray<MATERIAL>            m_materials;
   CompactArray<D3SceneObject*>      m_objectArray;
-  int                               m_oldObjectCount;
-  D3PosDirUpScale                   m_cameraPDUS, m_defaultObjPDUS;
+  D3PosDirUpScale                  *m_cameraPDUS, *m_defaultObjPDUS, *m_origoPDUS;
   float                             m_viewAngel;
   float                             m_nearViewPlane;
   Timestamp                         m_renderTime;
   bool                              m_initDone;
 
   void notifyPropertyChanged(int id, const void *oldValue, const void *newValue);
-  void notifyIfObjectArrayChanged();
+  void notifyObjectCountChanged(UINT oldCount);
   void setCameraTrans(const D3DXVECTOR3 &pos, const D3DXVECTOR3 &lookAt, const D3DXVECTOR3 &up);
   void setDefaultObjTrans(const D3DXVECTOR3 &pos
                          ,const D3DXVECTOR3 &dir
                          ,const D3DXVECTOR3 &up
                          ,const D3DXVECTOR3 &scale);
-  void updateViewMatrix();
-  void updateProjMatrix();
-  void setProjMatrix(       const D3DXMATRIX &m);
-  inline void setViewMatrix(const D3DXMATRIX &m) {
-    setTransformation(D3DTS_VIEW, m);
+
+  void updateDevViewMatrix();
+  void updateDevProjMatrix();
+  void setDevProjMatrix(       const D3DXMATRIX &m);
+  inline void setDevViewMatrix(const D3DXMATRIX &m) {
+    setDevTransformation(D3DTS_VIEW, m);
   }
-  template<typename T> void setRenderState(D3DRENDERSTATETYPE id, T value) {
+  template<typename T> void setDevRenderState(D3DRENDERSTATETYPE id, T value) {
     FV(m_device->SetRenderState(id, (DWORD)value));
   }
 
-  void setTransformation(D3DTRANSFORMSTATETYPE id, const D3DXMATRIX &m);
-  D3DXMATRIX getTransformation(D3DTRANSFORMSTATETYPE id) const;
+  void setDevTransformation(D3DTRANSFORMSTATETYPE id, const D3DXMATRIX &m);
+  D3DXMATRIX getDevTransformation(D3DTRANSFORMSTATETYPE id) const;
+
   // Return -1 if none exist
   int getFirstFreeLightIndex() const;
   int getFirstFreeMaterialIndex();
@@ -204,7 +205,7 @@ public:
 
   D3Scene &setFillMode(D3DFILLMODE fillMode) {
     if(fillMode != getFillMode()) {
-      setRenderState(D3DRS_FILLMODE, fillMode);
+      setDevRenderState(D3DRS_FILLMODE, fillMode);
       m_renderState.m_fillMode = fillMode;
     }
     return *this;
@@ -214,7 +215,7 @@ public:
   }
   D3Scene &setShadeMode(D3DSHADEMODE shadeMode) {
     if(shadeMode != getShadeMode()) {
-      setRenderState(D3DRS_SHADEMODE, shadeMode);
+      setDevRenderState(D3DRS_SHADEMODE, shadeMode);
       m_renderState.m_shadeMode = shadeMode;
     }
     return *this;
@@ -231,8 +232,8 @@ public:
   }
   D3Scene &setAmbientColor(D3DCOLOR color) {
     if(color != getAmbientColor()) {
-      setRenderState(D3DRS_AMBIENT, color);
-      setProperty(SP_AMBIENTLIGHT, m_renderState.m_ambientColor,color);
+      setDevRenderState(D3DRS_AMBIENT, color);
+      setProperty(SP_AMBIENTCOLOR, m_renderState.m_ambientColor,color);
     }
     return *this;
   }
@@ -254,7 +255,7 @@ public:
   }
   inline D3Scene &setCullMode(D3DCULL cullMode) {
     if(cullMode != getCullMode()) {
-      setRenderState(D3DRS_CULLMODE, cullMode);
+      setDevRenderState(D3DRS_CULLMODE, cullMode);
       m_renderState.m_cullMode = cullMode;
     }
     return *this;
@@ -264,7 +265,7 @@ public:
   }
   inline D3Scene &setSrcBlend(D3DBLEND blend) {
     if(blend != getSrcBlend()) {
-      setRenderState(D3DRS_SRCBLEND, blend);
+      setDevRenderState(D3DRS_SRCBLEND, blend);
       m_renderState.m_srcBlend = blend;
     }
     return *this;
@@ -274,7 +275,7 @@ public:
   }
   inline D3Scene &setDstBlend(D3DBLEND blend) {
     if(blend != getDstBlend()) {
-      setRenderState(D3DRS_DESTBLEND, blend);
+      setDevRenderState(D3DRS_DESTBLEND, blend);
       m_renderState.m_dstBlend = blend;
     }
     return *this;
@@ -282,7 +283,7 @@ public:
 
   D3Scene &setZEnable(bool enabled) {
     if(enabled != isZEnable()) {
-      setRenderState(D3DRS_AMBIENT, enabled ? TRUE : FALSE);
+      setDevRenderState(D3DRS_AMBIENT, enabled ? TRUE : FALSE);
       m_renderState.m_zEnable = enabled;
     }
     return *this;
@@ -292,7 +293,7 @@ public:
   }
   D3Scene &setNormalizeNormalsEnable(bool enabled) {
     if(enabled != isNormalizeNormalsEnable()) {
-      setRenderState(D3DRS_NORMALIZENORMALS, enabled ? TRUE : FALSE);
+      setDevRenderState(D3DRS_NORMALIZENORMALS, enabled ? TRUE : FALSE);
       m_renderState.m_normalizeNormals = enabled;
     }
     return *this;
@@ -302,7 +303,7 @@ public:
   }
   D3Scene &D3Scene::setAlphaBlendEnable(bool enabled) {
     if(enabled != isAlphaBlendEnable()) {
-      setRenderState(D3DRS_ALPHABLENDENABLE, enabled ? TRUE : FALSE);
+      setDevRenderState(D3DRS_ALPHABLENDENABLE, enabled ? TRUE : FALSE);
       m_renderState.m_alphaBlendEnable = enabled;
     }
     return *this;
@@ -312,7 +313,7 @@ public:
   }
   D3Scene &setLightingEnable(bool enabled) {
     if(enabled != isLightingEnable()) {
-      setRenderState(D3DRS_LIGHTING, enabled ? TRUE : FALSE);
+      setDevRenderState(D3DRS_LIGHTING, enabled ? TRUE : FALSE);
       m_renderState.m_lighting = enabled;
     }
     return *this;
@@ -322,7 +323,7 @@ public:
   }
   D3Scene &setSpecularEnable(bool enabled) {
     if(enabled != isSpecularEnabled()) {
-      setRenderState(D3DRS_SPECULARENABLE, enabled ? TRUE : FALSE);
+      setDevRenderState(D3DRS_SPECULARENABLE, enabled ? TRUE : FALSE);
       m_renderState.m_specularHighLightEnable = enabled;
     }
     return *this;
@@ -344,24 +345,32 @@ public:
     return *this;
   }
 
+  void setRightHanded(bool rightHanded);
+  inline const bool &getRightHanded() const {
+    return m_rightHanded;
+  }
+  const D3PosDirUpScale &getOrigoPDUS() const {
+    return *m_origoPDUS;
+  }
+
   inline D3PosDirUpScale &getDefaultPDUS() {
-    return m_defaultObjPDUS;
+    return *m_defaultObjPDUS;
   }
 
   inline const D3PosDirUpScale &getCameraPDUS() const {
-    return m_cameraPDUS;
+    return *m_cameraPDUS;
   }
   inline const D3DXVECTOR3 &getCameraPos() const {
-    return m_cameraPDUS.getPos();
+    return getCameraPDUS().getPos();
   }
   inline const D3DXVECTOR3 &getCameraDir() const {
-    return m_cameraPDUS.getDir();
+    return getCameraPDUS().getDir();
   }
   inline const D3DXVECTOR3 &getCameraUp() const {
-    return m_cameraPDUS.getUp();
+    return getCameraPDUS().getUp();
   }
   inline D3DXVECTOR3 getCameraRight() const {
-    return m_cameraPDUS.getRight();
+    return getCameraPDUS().getRight();
   }
   void setCameraPDUS(       const D3PosDirUpScale &pdus);
   void setCameraPos(        const D3DXVECTOR3     &pos);
@@ -376,8 +385,8 @@ public:
   inline float getNearViewPlane() const {
     return m_nearViewPlane;
   }
-  inline D3DXMATRIX getProjMatrix() const {
-    return getTransformation(D3DTS_PROJECTION);
+  inline D3DXMATRIX getDevProjMatrix() const {
+    return getDevTransformation(D3DTS_PROJECTION);
   }
 
   void setAnimationFrameIndex(int &oldValue, int newValue);
@@ -452,9 +461,6 @@ public:
 
   static inline int getTextureCoordCount() {
     return s_textureCoordCount;
-  }
-  static inline const D3PosDirUpScale &getOrigo() {
-    return s_pdusOrigo;
   }
   inline void setStreamSource(LPDIRECT3DVERTEXBUFFER buffer, int vertexSize, DWORD fvf) {
     FV(m_device->SetStreamSource(0, buffer, 0, vertexSize));
@@ -912,7 +918,10 @@ class D3PickRayArrow : public D3SceneObjectLineArrow {
 private:
   D3PosDirUpScale m_pdus;
 public:
-  D3PickRayArrow(D3Scene &scene, const D3Ray &ray) : D3SceneObjectLineArrow(scene, ray.m_orig, ray.m_orig + 2 * ray.m_dir) {
+  D3PickRayArrow(D3Scene &scene, const D3Ray &ray) 
+    : D3SceneObjectLineArrow(scene, ray.m_orig, ray.m_orig + 2 * ray.m_dir)
+    , m_pdus(scene.getRightHanded())
+  {
     D3DXMATRIX m;
     m_pdus.setWorldMatrix(*D3DXMatrixIdentity(&m));
   }

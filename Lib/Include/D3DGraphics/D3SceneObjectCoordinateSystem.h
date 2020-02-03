@@ -15,10 +15,10 @@ private:
   void init();
   void cleanUp();
   void setCube(float minX, float minY, float minZ, float maxX, float maxY, float maxZ);
+  D3SceneObjectCoordinateSystem(           const D3SceneObjectCoordinateSystem &src); // not implemented
+  D3SceneObjectCoordinateSystem &operator=(const D3SceneObjectCoordinateSystem &src); // not implemented
 public:
   D3SceneObjectCoordinateSystem(D3Scene &scene, const D3DXCube3 *cube = NULL);
-  D3SceneObjectCoordinateSystem(const D3SceneObjectCoordinateSystem &src);
-  D3SceneObjectCoordinateSystem &operator=(const D3SceneObjectCoordinateSystem &src);
   ~D3SceneObjectCoordinateSystem();
   void setCube(const D3DXCube3 &cube);
   inline const D3DXCube3 &getCube() const {
@@ -37,8 +37,7 @@ public:
     return m_axesVisible;
   }
   D3PosDirUpScale &getPDUS() {
-    m_origin = D3Scene::getOrigo();
-    return m_origin;
+    return m_origin = getScene().getOrigoPDUS();
   }
   static DoubleInterval getDefaultInterval(AxisType type);
 

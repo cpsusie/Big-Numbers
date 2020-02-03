@@ -3,7 +3,10 @@
 
 bool D3LightControl::s_renderEffectEnabled = false;
 
-D3LightControl::D3LightControl(D3Scene &scene, int lightIndex) : D3SceneObjectWithMesh(scene), m_lightIndex(lightIndex) {
+D3LightControl::D3LightControl(D3Scene &scene, int lightIndex)
+  : D3SceneObjectWithMesh(scene), m_lightIndex(lightIndex)
+  , m_pdus(scene.getRightHanded())
+{
   m_size          =  1;
   m_materialIndex = -1;
   m_effect        = NULL;
@@ -98,7 +101,7 @@ void D3LightControl::prepareEffect() {
 
   const D3PosDirUpScale &pdus   = scene.getCameraPDUS();
   const D3DXMATRIX       mView  = pdus.getViewMatrix();
-  const D3DXMATRIX       mProj  = scene.getProjMatrix();
+  const D3DXMATRIX       mProj  = scene.getDevProjMatrix();
   const D3DXVECTOR3      camPos = pdus.getPos();
   const D3DXMATRIX       mWorld = getWorldMatrix();
   const D3DCOLORVALUE    color  = getColor();

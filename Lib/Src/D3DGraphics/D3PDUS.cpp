@@ -1,6 +1,7 @@
 #include "pch.h"
+#include <D3DGraphics/D3ToString.h>
 
-D3PosDirUpScale::D3PosDirUpScale() {
+D3PosDirUpScale::D3PosDirUpScale(bool rightHanded) : m_rightHanded(rightHanded) {
   m_pos   = D3DXVECTOR3(0,0,0);
   m_scale = D3DXVECTOR3(1,1,1);
   m_dir   = D3DXVECTOR3(0,0,1);
@@ -8,15 +9,23 @@ D3PosDirUpScale::D3PosDirUpScale() {
   updateView();
 }
 
+D3PosDirUpScale &D3PosDirUpScale::setRightHanded(bool rightHanded) {
+  if(rightHanded != m_rightHanded) {
+    m_rightHanded = rightHanded;
+    updateView();
+  }
+  return *this;
+}
+
 D3PosDirUpScale &D3PosDirUpScale::setOrientation(const D3DXVECTOR3 &dir, const D3DXVECTOR3 &up) {
   if(length(crossProduct(dir, up)) != 0) {
     m_dir = unitVector(dir);
-    m_up = unitVector(up);
+    m_up  = unitVector(up);
     updateView();
   } else {
     const D3DXVECTOR3 oldDir = getDir(), oldUp = getUp();
-    const D3DXVECTOR3 r     = getRight();
-    D3DXVECTOR3       newup = crossProduct(r, dir);
+    const D3DXVECTOR3 r      = getRight();
+    D3DXVECTOR3       newup  = crossProduct(r, dir);
     if(length(newup) != 0) {
       m_dir = unitVector(dir);
       m_up  = unitVector(newup);
@@ -41,7 +50,7 @@ D3PosDirUpScale &D3PosDirUpScale::setWorldMatrix(const D3DXMATRIX &world) {
 
 D3PosDirUpScale &D3PosDirUpScale::updateView() {
   D3DXVECTOR3 lookAt = m_pos + m_dir;
-  D3DXMatrixLookAt(&m_view, &m_pos, &lookAt, &m_up);
+  D3DXMatrixLookAt(m_view, m_pos, lookAt, m_up, m_rightHanded);
   return *this;
 }
 
@@ -59,12 +68,13 @@ String D3PosDirUpScale::toString(int dec) const {
                 ));
   }
 
-  return format(_T("P:%s D:%s U:%s R:%s S:%s\n%s")
+  return format(_T("P:%s D:%s U:%s R:%s S:%s %s\n%s")
                ,::toString(m_pos,dec).cstr()
                ,::toString(m_dir,dec).cstr()
                ,::toString(m_up,dec).cstr()
                ,::toString(getRight(),dec).cstr()
                ,::toString(m_scale,dec).cstr()
+               ,handednessToString(getRightHanded()).cstr()
                ,a.toString(_T("\n")).remove(0,1).removeLast().cstr()
                );
 }

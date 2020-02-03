@@ -181,6 +181,7 @@ public:
     void OnControlCameraWalk();
     void OnResetCamera();
 private:
+    void SetRightHanded(bool rightHanded);
     void OnObjectStartAnimation();
     void OnObjectStartBckAnimation();
     void OnObjectStartAltAnimation();

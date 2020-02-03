@@ -93,6 +93,7 @@ void D3SceneEditor::handlePropertyChanged(const PropertyContainer *source, int i
     case SP_LIGHTPARAMETERS         :
     case SP_MATERIALPARAMETERS      :
     case SP_OBJECTCOUNT             :
+    case SP_RIGHTHANDED             :
       render(RENDER_ALL);
       break;
     case SP_ANIMATIONFRAMEINDEX     :
@@ -116,11 +117,11 @@ void D3SceneEditor::handlePropertyChanged(const PropertyContainer *source, int i
     }
   } else if(source == m_currentEditor) {
     switch(id) {
-    case SP_BACKGROUNDCOLOR:
+    case SP_BACKGROUNDCOLOR   :
       getScene().setBackgroundColor(*(D3DCOLOR*)newValue);
       render(RENDER_ALL);
       break;
-    case SP_AMBIENTLIGHT           :
+    case SP_AMBIENTCOLOR      :
       getScene().setAmbientColor(*(D3DCOLOR*)newValue);
       render(RENDER_ALL);
       break;
@@ -291,6 +292,8 @@ BOOL D3SceneEditor::PreTranslateMessage(MSG *pMsg) {
     case ID_OBJECT_CREATECUBE             : OnObjectCreateCube()                ; return true;
     case ID_CONTROL_CAMERA_WALK           : OnControlCameraWalk()               ; return true;
     case ID_RESETCAMERA                   : OnResetCamera()                     ; return true;
+    case ID_RIGHTHANDED                   : SetRightHanded(true)                ; return true;
+    case ID_LEFTHANDED                    : SetRightHanded(false)               ; return true;
     case ID_EDIT_AMBIENTLIGHT             : OnEditAmbientLight()                ; return true;
     case ID_EDIT_BACKGROUNDCOLOR          : OnEditBackgroundColor()             ; return true;
     case ID_FILLMODE_POINT                : OnFillmodePoint()                   ; return true;
@@ -940,6 +943,10 @@ void D3SceneEditor::OnContextMenuBackground(CPoint point) {
                        ?ID_ENABLE_SPECULARHIGHLIGHT
                        :ID_DISABLE_SPECULARHIGHLIGHT);
 
+   removeMenuItem(menu, getScene().getRightHanded()
+                       ?ID_RIGHTHANDED
+                       :ID_LEFTHANDED);
+
    m_sceneContainer->modifyContextMenu(*menu.GetSubMenu(0));
    showContextMenu(menu, point);
 }
@@ -1077,6 +1084,10 @@ void D3SceneEditor::OnResetCamera() {
   getScene().resetCameraTrans();
 }
 
+void D3SceneEditor::SetRightHanded(bool rightHanded) {
+  getScene().setRightHanded(rightHanded);
+}
+
 typedef enum {
   ANIMATION_STOPPED
  ,ANIMATION_FORWARD
@@ -1199,7 +1210,7 @@ void D3SceneEditor::OnLightRemove() {
 
 void D3SceneEditor::OnEditAmbientLight() {
   const D3DCOLOR oldColor = getScene().getAmbientColor();
-  CColorDlg dlg(_T("Ambient color"), SP_AMBIENTLIGHT, oldColor);
+  CColorDlg dlg(_T("Ambient color"), SP_AMBIENTCOLOR, oldColor);
   dlg.addPropertyChangeListener(this);
   m_currentEditor = &dlg;
   setCurrentControl(CONTROL_AMBIENTLIGHTCOLOR);
@@ -1386,7 +1397,7 @@ String D3SceneEditor::toString() const {
 
   switch(getCurrentControl()) {
   case CONTROL_IDLE                  :
-    return result;
+    return result + _T("\n") + handednessToString(getScene().getRightHanded());
   case CONTROL_CAMERA_WALK           :
     return result + format(_T("\n%s"), getScene().getCameraString().cstr());
 

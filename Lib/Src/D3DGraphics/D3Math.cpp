@@ -26,6 +26,18 @@ D3DXVECTOR3 rotate(const D3DXVECTOR3 &v, const D3DXVECTOR3 &axes, double rad) {
   return *D3DXMatrixRotationAxis(&matRot, &axes, (float)rad) * v;
 }
 
+D3DXMATRIX &D3DXMatrixPerspectiveFov(D3DXMATRIX &mat, FLOAT angel, FLOAT apsect, FLOAT zn, FLOAT fn, bool rightHanded) {
+  return rightHanded
+       ? *D3DXMatrixPerspectiveFovRH(&mat, angel, apsect, zn, fn)
+       : *D3DXMatrixPerspectiveFovLH(&mat, angel, apsect, zn, fn);
+}
+
+D3DXMATRIX &D3DXMatrixLookAt(D3DXMATRIX &view, const D3DXVECTOR3 &eye, const D3DXVECTOR3 &lookAt, const D3DXVECTOR3 &up, bool rightHanded) {
+  return rightHanded
+       ? *D3DXMatrixLookAtRH(&view, &eye, &lookAt, &up)
+       : *D3DXMatrixLookAtLH(&view, &eye, &lookAt, &up);
+}
+
 static D3DXVECTOR3 randomUnitVector() {
   D3DXVECTOR3 v;
   v.x = (float)rand() / RAND_MAX;

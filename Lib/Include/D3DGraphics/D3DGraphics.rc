@@ -162,6 +162,8 @@ BEGIN
         END
         MENUITEM "Show coordinatesystem",       ID_SHOWCOORDINATESYSTEM
         MENUITEM "Hide coordinatesystem",       ID_HIDECOORDINATESYSTEM
+        MENUITEM "Left handed",                 ID_LEFTHANDED
+        MENUITEM "Right handed",                ID_RIGHTHANDED
     END
 END
 

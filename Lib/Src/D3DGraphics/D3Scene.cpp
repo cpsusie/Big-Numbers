@@ -7,14 +7,17 @@ int D3Scene::s_textureCoordCount;
 #pragma warning(disable : 4073)
 #pragma init_seg(lib)
 
-const D3PosDirUpScale D3Scene::s_pdusOrigo;
 
-D3Scene::D3Scene() {
-  m_device            = NULL;
-  m_oldObjectCount    = 0;
-  m_lightsEnabled     = NULL;
-  m_lightsDefined     = NULL;
-  m_initDone          = false;
+D3Scene::D3Scene()
+  : m_initDone(      false)
+  , m_device(        NULL )
+  , m_rightHanded(   true )
+  , m_lightsEnabled( NULL )
+  , m_lightsDefined( NULL )
+  , m_cameraPDUS(    NULL )
+  , m_defaultObjPDUS(NULL )
+  , m_origoPDUS(     NULL )
+{
 }
 
 D3Scene::~D3Scene() {
@@ -23,7 +26,7 @@ D3Scene::~D3Scene() {
 
 void D3Scene::notifyPropertyChanged(int id, const void *oldValue, const void *newValue) {
   if(m_initDone) {
-    PropertyContainer::notifyPropertyChanged(id, oldValue, newValue);
+    __super::notifyPropertyChanged(id, oldValue, newValue);
   }
 }
 
@@ -34,6 +37,9 @@ void D3Scene::init(HWND hwnd) {
   m_hwnd = hwnd;
 
   m_device = D3DeviceFactory::createDevice(m_hwnd);
+  m_cameraPDUS     = new D3PosDirUpScale(m_rightHanded); TRACE_NEW(m_cameraPDUS    );
+  m_defaultObjPDUS = new D3PosDirUpScale(m_rightHanded); TRACE_NEW(m_defaultObjPDUS);
+  m_origoPDUS      = new D3PosDirUpScale(m_rightHanded); TRACE_NEW(m_origoPDUS     );
 
   D3DCAPS deviceCaps;
   V(m_device->GetDeviceCaps(&deviceCaps));
@@ -58,16 +64,19 @@ void D3Scene::close() {
   PropertyContainer::clear();
   destroyAllLightControls();
   removeAllSceneObjects();
-  SAFEDELETE(m_lightsEnabled);
-  SAFEDELETE(m_lightsDefined);
-  SAFERELEASE(m_device);
+  SAFEDELETE(m_origoPDUS     );
+  SAFEDELETE(m_defaultObjPDUS);
+  SAFEDELETE(m_cameraPDUS    );
+  SAFEDELETE(m_lightsEnabled );
+  SAFEDELETE(m_lightsDefined );
+  SAFERELEASE(m_device)      ;
   m_initDone = false;
 }
 
 void D3Scene::initTrans() {
   m_viewAngel      = radians(45);
   m_nearViewPlane  = 0.1f;
-  updateProjMatrix();
+  updateDevProjMatrix();
   resetCameraTrans();
   resetDefaultObjTrans();
 }
@@ -92,16 +101,27 @@ D3Scene &D3Scene::selectMaterial(int materialIndex) {
   return *this;
 }
 
+void D3Scene::setRightHanded(bool rightHanded) {
+  if(rightHanded != m_rightHanded) {
+    const bool oldValue = m_rightHanded;
+    m_rightHanded = rightHanded;
+    m_cameraPDUS->setRightHanded(    m_rightHanded);
+    m_defaultObjPDUS->setRightHanded(m_rightHanded);
+    m_origoPDUS->setRightHanded(     m_rightHanded);
+    notifyPropertyChanged(SP_RIGHTHANDED, &oldValue, &m_rightHanded);
+  }
+}
+
 void D3Scene::setCameraPDUS(const D3PosDirUpScale &pdus) {
-  setProperty(SP_CAMERAPDUS, m_cameraPDUS, pdus);
+  setProperty(SP_CAMERAPDUS, *m_cameraPDUS, pdus);
 }
 
 void D3Scene::setCameraPos(const D3DXVECTOR3 &pos) {
-  setCameraPDUS(D3PosDirUpScale(m_cameraPDUS).setPos(pos));
+  setCameraPDUS(D3PosDirUpScale(*m_cameraPDUS).setPos(pos));
 }
 
 void D3Scene::setCameraOrientation(const D3DXVECTOR3 &dir, const D3DXVECTOR3 &up) {
-  setCameraPDUS(D3PosDirUpScale(m_cameraPDUS).setOrientation(dir, up));
+  setCameraPDUS(D3PosDirUpScale(*m_cameraPDUS).setOrientation(dir, up));
 }
 
 void D3Scene::setCameraLookAt(const D3DXVECTOR3 &point) {
@@ -109,7 +129,7 @@ void D3Scene::setCameraLookAt(const D3DXVECTOR3 &point) {
 }
 
 void D3Scene::setCameraTrans(const D3DXVECTOR3 &pos, const D3DXVECTOR3 &lookAt, const D3DXVECTOR3 &up) {
-  setCameraPDUS(D3PosDirUpScale(m_cameraPDUS).setPos(pos).setOrientation(lookAt - pos, up).resetScale());
+  setCameraPDUS(D3PosDirUpScale(*m_cameraPDUS).setPos(pos).setOrientation(lookAt - pos, up).resetScale());
 }
 
 void D3Scene::resetCameraTrans() {
@@ -117,28 +137,28 @@ void D3Scene::resetCameraTrans() {
 }
 
 void D3Scene::setDefaultObjTrans(const D3DXVECTOR3 &pos, const D3DXVECTOR3 &dir, const D3DXVECTOR3 &up, const D3DXVECTOR3 &scale) {
-  m_defaultObjPDUS.setPos(pos).setOrientation(dir, up).setScale(scale);
+  m_defaultObjPDUS->setPos(pos).setOrientation(dir, up).setScale(scale);
 }
 
 void D3Scene::resetDefaultObjTrans() {
-  m_defaultObjPDUS.resetPos().resetOrientation().resetScale();
+  m_defaultObjPDUS->resetPos().resetOrientation().resetScale();
 }
 
-void D3Scene::updateViewMatrix() {
-  setViewMatrix(m_cameraPDUS.getViewMatrix());
+void D3Scene::updateDevViewMatrix() {
+  setDevViewMatrix(m_cameraPDUS->getViewMatrix());
 }
 
 void D3Scene::setViewAngel(float angel) {
   if(angel > 0 && angel < D3DX_PI) {
     m_viewAngel = angel;
-    updateProjMatrix();
+    updateDevProjMatrix();
   }
 }
 
 void D3Scene::setNearViewPlane(float zn) {
   if(zn > 0) {
     m_nearViewPlane = zn;
-    updateProjMatrix();
+    updateDevProjMatrix();
   }
 }
 
@@ -146,29 +166,29 @@ String D3Scene::getCameraString() const {
   return format(_T("Camera:View angel:%.1lf, Near view:%.3lf\n%s")
                ,degrees(getViewAngel())
                ,getNearViewPlane()
-               ,m_cameraPDUS.toString().cstr()
+               ,m_cameraPDUS->toString().cstr()
                );
-  }
-
-void D3Scene::updateProjMatrix() {
-  const CRect cl = getClientRect(getHwnd());
-  D3DXMATRIX matProj;
-  setProjMatrix(*D3DXMatrixPerspectiveFov(&matProj, m_viewAngel, (float)cl.Width()/cl.Height(), m_nearViewPlane, 200.0f));
 }
 
-void D3Scene::setProjMatrix(const D3DXMATRIX &m) {
-  const D3DXMATRIX currentProj = getProjMatrix();
-  setTransformation(D3DTS_PROJECTION, m);
+void D3Scene::updateDevProjMatrix() {
+  const CSize size = getClientRect(getHwnd()).Size();
+  D3DXMATRIX matProj;
+  setDevProjMatrix(D3DXMatrixPerspectiveFov(matProj, m_viewAngel, (float)size.cx/size.cy, m_nearViewPlane, 200.0f, m_rightHanded));
+}
+
+void D3Scene::setDevProjMatrix(const D3DXMATRIX &m) {
+  const D3DXMATRIX currentProj = getDevProjMatrix();
+  setDevTransformation(D3DTS_PROJECTION, m);
   if(m != currentProj) {
     notifyPropertyChanged(SP_PROJECTIONTRANSFORMATION, &currentProj, &m);
   }
 }
 
-void D3Scene::setTransformation(D3DTRANSFORMSTATETYPE id, const D3DXMATRIX &m) {
+void D3Scene::setDevTransformation(D3DTRANSFORMSTATETYPE id, const D3DXMATRIX &m) {
   V(m_device->SetTransform(id, &m));
 }
 
-D3DXMATRIX D3Scene::getTransformation(D3DTRANSFORMSTATETYPE id) const {
+D3DXMATRIX D3Scene::getDevTransformation(D3DTRANSFORMSTATETYPE id) const {
   D3DXMATRIX m;
   V(m_device->GetTransform(id, &m));
   return m;
@@ -371,12 +391,12 @@ D3DMATERIAL D3Scene::getDefaultMaterial() { // static
 }
 
 int D3Scene::addMaterial(const D3DMATERIAL &material) {
-  const int oldCount = getMaterialCount();
-  const int index    = getFirstFreeMaterialIndex();
-  MATERIAL &m = m_materials[index];
+  const UINT oldCount = getMaterialCount();
+  const int  index    = getFirstFreeMaterialIndex();
+  MATERIAL  &m        = m_materials[index];
   ((D3DMATERIAL&)m) = material;
   m.m_index = index;
-  const int newCount = oldCount+1;
+  const UINT newCount = oldCount+1;
   notifyPropertyChanged(SP_MATERIALCOUNT, &oldCount, &newCount);
   return index;
 }
@@ -451,12 +471,13 @@ void D3Scene::render() {
                    ,0
                    ));
 
-  updateViewMatrix();
+  updateDevViewMatrix();
 
   V(m_device->BeginScene());
   for(Iterator<D3SceneObject*> it = getObjectIterator(); it.hasNext();) {
     D3SceneObject *obj = it.next();
     if(obj->isVisible()) {
+      obj->getPDUS().setRightHanded(getRightHanded());
       V(m_device->SetTransform(D3DTS_WORLD, &obj->getWorldMatrix()));
       obj->draw();
     }
@@ -471,7 +492,7 @@ void D3Scene::render() {
 D3Ray D3Scene::getPickRay(const CPoint &point) const {
   const CSize winSize = getClientRect(m_hwnd).Size();
 
-  const D3DXMATRIX matProj = getProjMatrix();
+  const D3DXMATRIX matProj = getDevProjMatrix();
 
   // Compute the vector of the pick ray in screen space
   D3DXVECTOR3 v;
@@ -479,7 +500,7 @@ D3Ray D3Scene::getPickRay(const CPoint &point) const {
   v.y = -(((2.0f * point.y) / winSize.cy) - 1) / matProj._22 * m_nearViewPlane;
   v.z = -m_nearViewPlane;
 
-  const D3DXMATRIX camWorld = m_cameraPDUS.getWorldMatrix();
+  const D3DXMATRIX camWorld = m_cameraPDUS->getWorldMatrix();
   return D3Ray(camWorld*v, v*camWorld);
 }
 
@@ -538,7 +559,7 @@ LPD3DXEFFECT D3Scene::compileEffect(const String &srcText, StringArray &errorMsg
     V(D3DXCreateEffect(m_device, text, textLen, NULL, NULL, flags, NULL, &effect, &compilerErrors));
     TRACE_CREATE(effect);
     return effect;
-  } catch (Exception e) {
+  } catch(Exception e) {
     const String errorText = (char*)compilerErrors->GetBufferPointer();
     errorMsg = StringArray(Tokenizer(errorText, _T("\n\r")));
     return NULL;
@@ -550,14 +571,15 @@ void D3Scene::OnSize() {
     D3DPRESENT_PARAMETERS present = D3DeviceFactory::getDefaultPresentParameters(getHwnd());
     if(present.BackBufferWidth && present.BackBufferHeight) {
       V(m_device->ResetEx(&present, NULL));
-      updateProjMatrix();
+      updateDevProjMatrix();
     }
   }
 }
 
 void D3Scene::addSceneObject(D3SceneObject *obj) {
+  const UINT oldCount = (UINT)m_objectArray.size();
   m_objectArray.add(obj);
-  notifyIfObjectArrayChanged();
+  notifyObjectCountChanged(oldCount);
 }
 
 void D3Scene::removeSceneObject(D3SceneObject *obj) {
@@ -572,8 +594,9 @@ void D3Scene::removeSceneObject(size_t index) {
   if(obj->getType() == SOTYPE_ANIMATEDOBJECT) {
     ((D3AnimatedSurface*)obj)->stopAnimation();
   }
+  const UINT oldCount = (UINT)m_objectArray.size();
   m_objectArray.remove(index);
-  notifyIfObjectArrayChanged();
+  notifyObjectCountChanged(oldCount);
 }
 
 void D3Scene::removeAllSceneObjects() {
@@ -581,7 +604,6 @@ void D3Scene::removeAllSceneObjects() {
     removeSceneObject(getObjectCount()-1);
   }
 }
-
 
 bool D3Scene::isSceneObject(const D3SceneObject *obj) const {
   return m_objectArray.getFirstIndex((D3SceneObject*)obj) >= 0;
@@ -593,9 +615,9 @@ void D3Scene::stopAllAnimations() {
   }
 }
 
-void D3Scene::notifyIfObjectArrayChanged() {
-  const int newCount = (int)m_objectArray.size();
-  setProperty(SP_OBJECTCOUNT, m_oldObjectCount, newCount);
+void D3Scene::notifyObjectCountChanged(UINT oldCount) {
+  const UINT newCount = (UINT)m_objectArray.size();
+  setProperty(SP_OBJECTCOUNT, oldCount, newCount);
 }
 
 void D3Scene::setAnimationFrameIndex(int &oldValue, int newValue) {

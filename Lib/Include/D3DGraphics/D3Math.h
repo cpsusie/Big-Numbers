@@ -7,21 +7,6 @@
 #include "Math/Point3D.h"
 #include "D3Error.h"
 
-//#define LEFTHANDED
-
-#ifdef LEFTHANDED
-
-#define D3DXMatrixPerspectiveFov(mat , angel, apsect, zn, fn)  D3DXMatrixPerspectiveFovLH(mat,angel,apsect,zn,fn)
-#define D3DXMatrixLookAt(        view, pos  , lookAt, up)      D3DXMatrixLookAtLH(view, pos, lookAt, up)
-
-#else
-
-#define D3DXMatrixPerspectiveFov(mat , angel, apsect, zn, fn)  D3DXMatrixPerspectiveFovRH(mat,angel,apsect,zn,fn)
-#define D3DXMatrixLookAt(        view, pos  , lookAt, up)      D3DXMatrixLookAtRH(view, pos, lookAt, up)
-
-#endif
-
-
 class ParametricSurface : public FunctionTemplate<Point2D, Point3D> {
 };
 
@@ -29,6 +14,8 @@ float       operator*(            const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2);
 float       length(               const D3DXVECTOR3 &v);
 float       angle(                const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2);
 // i = [0..2] giving ((1,0,0) or (0,1,0) or (0,0,1)
+D3DXMATRIX &D3DXMatrixPerspectiveFov(D3DXMATRIX &mat , FLOAT              angel, FLOAT            apsect, FLOAT zn, FLOAT    fn, bool rightHanded);
+D3DXMATRIX &D3DXMatrixLookAt(        D3DXMATRIX &view, const D3DXVECTOR3 &eye, const D3DXVECTOR3 &lookAt, const D3DXVECTOR3 &up, bool rightHanded);
 D3DXVECTOR3 unitVector(           const D3DXVECTOR3 &v);
 D3DXVECTOR3 createUnitVector(int i);
 D3DXVECTOR3 rotate(               const D3DXVECTOR3 &v , const D3DXVECTOR3 &axis, double rad);
@@ -256,11 +243,18 @@ public:
 
 class D3PosDirUpScale {
 private:
+  bool        m_rightHanded;
   D3DXVECTOR3 m_pos, m_dir, m_up, m_scale;
   D3DXMATRIX  m_view;
   D3PosDirUpScale &updateView();
 public:
-  D3PosDirUpScale();
+  D3PosDirUpScale(bool rightHanded);
+
+  inline bool getRightHanded() const {
+    return m_rightHanded;
+  }
+  // return *this
+  D3PosDirUpScale &setRightHanded(bool rightHanded);
   inline const D3DXVECTOR3 &getPos() const {
     return m_pos;
   }
@@ -321,7 +315,11 @@ public:
 
   String toString(int dec=3) const;
   inline bool operator==(const D3PosDirUpScale &pdus) const {
-    return (m_pos == pdus.m_pos) && (m_dir == pdus.m_dir) && (m_up == pdus.m_up) && (m_scale == pdus.m_scale);
+    return (m_pos            == pdus.m_pos           )
+        && (m_dir            == pdus.m_dir           )
+        && (m_up             == pdus.m_up            )
+        && (m_scale          == pdus.m_scale         )
+        && (getRightHanded() == pdus.getRightHanded());
   }
   inline bool operator!=(const D3PosDirUpScale &pdus) const {
     return !(*this == pdus);
