@@ -3,6 +3,7 @@
 #include <D3DGraphics/Profile.h>
 
 D3LightControlDirectional::D3LightControlDirectional(D3Scene &scene, int lightIndex) : D3LightControl(scene, lightIndex) {
+  createMaterial();
   setSize(0.4f);
   setSphereRadius(2);
   setName(format(_T("Directional light (%d)"), lightIndex));

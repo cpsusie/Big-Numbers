@@ -37,7 +37,7 @@ void D3AnimatedSurface::stopAnimation() {
   }
 }
 
-void D3AnimatedSurface::scaleSpeed(double factor) {
+void D3AnimatedSurface::scaleSpeed(float factor) {
   if((factor == 0) || (factor == 1)) {
     return;
   }

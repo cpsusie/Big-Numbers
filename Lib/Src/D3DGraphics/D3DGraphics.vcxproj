@@ -767,6 +767,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="D3AnimatedSurface.cpp" />
+    <ClCompile Include="D3Ray.cpp" />
+    <ClCompile Include="D3SceneEditorToString.cpp" />
     <ClCompile Include="D3SceneObjectCoordinateSystem.cpp" />
     <ClCompile Include="D3SceneObjectCurve.cpp" />
     <ClCompile Include="D3SceneObjectCurveArray.cpp" />
@@ -797,7 +799,6 @@
     <ClCompile Include="D3LightControlSpot.cpp" />
     <ClCompile Include="D3Scene.cpp" />
     <ClCompile Include="D3SceneIO.cpp" />
-    <ClCompile Include="D3SceneObject.cpp" />
     <ClCompile Include="D3TextureFactory.cpp" />
     <ClCompile Include="D3ToString.cpp" />
     <ClCompile Include="Function2DSurface.cpp" />

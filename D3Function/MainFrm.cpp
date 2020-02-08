@@ -158,9 +158,9 @@ void CD3FunctionSplitterWnd::RecalcLayout() {
   getInfoPanel()->enableScroll(true);
 }
 
-void CD3FunctionSplitterWnd::OnInvertTracker(const CRect& rect) {
+void CD3FunctionSplitterWnd::OnInvertTracker(const CRect &rect) {
   __super::OnInvertTracker(rect);
-  theApp.getMainFrame()->getEditor().setEnabled(false);
+  theApp.getMainFrame()->getEditor().setEnabled(false, SE_ENABLED | SE_PROPCHANGES | SE_RENDER3D);
   m_splitPointMoved = true;
 }
 
@@ -204,7 +204,7 @@ void CMainFrame::updateLoadOptionsMenu() {
 }
 
 void CMainFrame::saveRelativeHeight() {
-  CRect r = getClientRect(this);
+  const CRect r = getClientRect(this);
   if(getPanelCount() == 2) {
     int h1,cyMin;
     m_wndSplitter.GetRowInfo(0,h1,cyMin);
@@ -321,7 +321,7 @@ void CMainFrame::init3D() {
 
   createInitialObject();
 
-  m_scene.setLightDirection(0, rotate(m_scene.getCameraDir(), m_scene.getCameraRight(), 0.2f));
+  m_scene.setLightDirection(0, rotate(m_scene.getCamDir(), m_scene.getCamRight(), 0.2f));
   startTimer();
 }
 
@@ -407,6 +407,7 @@ void CMainFrame::setCalculatedObject(IsoSurfaceParameters &param) {
 void CMainFrame::deleteCalculatedObject() {
   D3SceneObject *oldObj = getCalculatedObject();
   if(oldObj) {
+    m_editor.setCurrentObj(NULL);
     m_scene.removeSceneObject(oldObj);
     SAFEDELETE(oldObj);
   }
@@ -435,10 +436,10 @@ D3SceneObject *CMainFrame::getCalculatedObject() const {
 }
 
 LRESULT CMainFrame::OnMsgRender(WPARAM wp, LPARAM lp) {
-  if(wp & RENDER_3D) {
+  if(wp & SE_RENDER3D) {
     m_scene.render();
   }
-  if(wp & RENDER_INFO) {
+  if(wp & SE_RENDERINFO) {
     if(m_editor.isEnabled()) {
       show3DInfo(INFO_EDIT);
     }
@@ -583,48 +584,49 @@ void CMainFrame::OnDebugAutoFocusCurrentCube() {
 
 void CMainFrame::adjustDebugLightDir() {
   if(!hasDebugLight()) return;
-  D3PosDirUpScale   cam = m_scene.getCameraPDUS();
+  D3PosDirUpScale   cam = m_scene.getCamPDUS();
   const D3DXVECTOR3 dir = m_cubeCenter - cam.getPos();
   const D3DXVECTOR3 up = cam.getUp();
-  const D3DXVECTOR3 lightDir = rotate(dir, up, M_PI / 4);
+  const D3DXVECTOR3 lightDir = rotate(dir, up, D3DX_PI / 4);
   m_scene.setLightDirection(m_debugLightIndex, lightDir);
 }
 
 void CMainFrame::debugAdjustCamDir(const D3DXVECTOR3 &newDir, const D3DXVECTOR3 &newUp) {
   const D3DXVECTOR3 newPos = m_cubeCenter - newDir;
-  D3PosDirUpScale   cam = m_scene.getCameraPDUS();
-  m_scene.setCameraPDUS(cam.setPos(newPos).setOrientation(newDir, newUp));
+  D3PosDirUpScale   cam = m_scene.getCamPDUS();
+  m_scene.setCamPDUS(cam.setPos(newPos).setOrientation(newDir, newUp));
   adjustDebugLightDir();
 }
 
+#define DBG_CAMADJANGLE (D3DX_PI / 8)
 void CMainFrame::OnDebugAdjustCam45Up() {
-  D3PosDirUpScale   cam = m_scene.getCameraPDUS();
+  D3PosDirUpScale   cam = m_scene.getCamPDUS();
   const D3DXVECTOR3 dir = m_cubeCenter - cam.getPos();
   const D3DXVECTOR3 up = cam.getUp();
   const D3DXVECTOR3 r = cam.getRight();
-  debugAdjustCamDir(rotate(dir, r, -M_PI / 8), rotate(up, r, -M_PI / 8));
+  debugAdjustCamDir(rotate(dir, r, -DBG_CAMADJANGLE), rotate(up, r, -DBG_CAMADJANGLE));
 }
 
 void CMainFrame::OnDebugAdjustCam45Down() {
-  D3PosDirUpScale   cam = m_scene.getCameraPDUS();
+  D3PosDirUpScale   cam = m_scene.getCamPDUS();
   const D3DXVECTOR3 dir = m_cubeCenter - cam.getPos();
   const D3DXVECTOR3 up = cam.getUp();
   const D3DXVECTOR3 r = cam.getRight();
-  debugAdjustCamDir(rotate(dir, r, M_PI / 8), rotate(up, r, M_PI / 8));
+  debugAdjustCamDir(rotate(dir, r, DBG_CAMADJANGLE), rotate(up, r, DBG_CAMADJANGLE));
 }
 
 void CMainFrame::OnDebugAdjustCam45Left() {
-  D3PosDirUpScale   cam = m_scene.getCameraPDUS();
+  D3PosDirUpScale   cam = m_scene.getCamPDUS();
   const D3DXVECTOR3 dir = m_cubeCenter - cam.getPos();
   const D3DXVECTOR3 up = cam.getUp();
-  debugAdjustCamDir(rotate(dir, up, -M_PI / 8), up);
+  debugAdjustCamDir(rotate(dir, up, -DBG_CAMADJANGLE), up);
 }
 
 void CMainFrame::OnDebugAdjustCam45Right() {
-  D3PosDirUpScale   cam = m_scene.getCameraPDUS();
+  D3PosDirUpScale   cam = m_scene.getCamPDUS();
   const D3DXVECTOR3 dir = m_cubeCenter - cam.getPos();
   const D3DXVECTOR3 up = cam.getUp();
-  debugAdjustCamDir(rotate(dir, up, M_PI / 8), up);
+  debugAdjustCamDir(rotate(dir, up, DBG_CAMADJANGLE), up);
 }
 
 bool CMainFrame::isAutoFocusCurrentCubeChecked() const {
@@ -647,7 +649,7 @@ LRESULT CMainFrame::OnMsgDebuggerStateChanged(WPARAM wp, LPARAM lp) {
     switch (newState) {
     case DEBUGGER_RUNNING:
       { if((oldState == DEBUGGER_PAUSED) && m_hasCubeCenter) {
-          m_currentCamDistance = length(m_scene.getCameraPos() - m_cubeCenter);
+          m_currentCamDistance = length(m_scene.getCamPos() - m_cubeCenter);
         }
         D3SceneObject *obj = m_debugger->getSceneObject();
         if(obj) {
@@ -669,7 +671,7 @@ LRESULT CMainFrame::OnMsgDebuggerStateChanged(WPARAM wp, LPARAM lp) {
             m_cubeCenter = octa.getCenter();
             m_hasCubeCenter = true;
             m_cubeLevel = octa.getLevel();
-            m_scene.setCameraPos(m_cubeCenter - m_currentCamDistance * m_scene.getCameraDir());
+            m_scene.setCamPos(m_cubeCenter - m_currentCamDistance * m_scene.getCamDir());
             adjustDebugLightDir();
             show3DInfo(INFO_ALL);
           }

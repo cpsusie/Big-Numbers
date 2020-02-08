@@ -7,16 +7,19 @@ D3LightControl::D3LightControl(D3Scene &scene, int lightIndex)
   : D3SceneObjectWithMesh(scene), m_lightIndex(lightIndex)
   , m_pdus(scene.getRightHanded())
 {
-  m_size          =  1;
-  m_materialIndex = -1;
-  m_effect        = NULL;
+  m_size       =  1;
+  m_materialId = -1;
+  m_effect     = NULL;
 }
 
 D3LightControl::~D3LightControl() {
   SAFERELEASE(m_effect);
+  if(hasMaterial()) {
+    getScene().removeMaterial(m_materialId);
+  }
 }
 
-LPD3DXMESH &D3LightControl::optimizeMesh(LPD3DXMESH &mesh) { // static
+LPD3DXMESH &D3LightControl::optimizeMesh(LPD3DXMESH &mesh) { // static, protected
   DWORD *rgdwAdjacency = new DWORD[mesh->GetNumFaces() * 3]; TRACE_NEW(rgdwAdjacency);
   if(rgdwAdjacency == NULL ) {
     throwException(_T("Out of memory"));
@@ -33,9 +36,9 @@ LPD3DXMESH &D3LightControl::optimizeMesh(LPD3DXMESH &mesh) { // static
   return mesh;
 }
 
-LIGHT D3LightControl::getLight() const {
+LIGHT D3LightControl::getLight() const { // public
   const LIGHT result = m_scene.getLight(m_lightIndex);
-  if ((result.m_index != m_lightIndex) || (result.Type != getLightType())) {
+  if((result.getIndex() != m_lightIndex) || (result.Type != getLightType())) {
     showError(_T("%s:Light %d is undefined")
              ,__TFUNCTION__
              ,m_lightIndex);
@@ -43,42 +46,43 @@ LIGHT D3LightControl::getLight() const {
   return result;
 }
 
-void D3LightControl::setMaterialColors(D3DMATERIAL &mat) const {
-  const D3DCOLORVALUE color = getColor();
+void D3LightControl::createMaterial() { // protected
+  m_materialId = getScene().addMaterial(createMaterialFromLight(getLight()));
+}
+
+D3DCOLORVALUE D3LightControl::getMaterialColor(const LIGHT &l) { // static
+  return l.isEnabled() ? l.Diffuse : getDisabledMaterialColor();
+}
+
+D3DMATERIAL D3LightControl::createMaterialFromLight(const LIGHT &l) { // static
+  D3DMATERIAL mat;
+  ZeroMemory(&mat, sizeof(D3DMATERIAL));
+  mat.Power = 0.7f;
+  const D3DCOLORVALUE color = getMaterialColor(l);
   mat.Diffuse  = color;
   mat.Specular = color;
 #define EMSIVEFACTOR 0.4f
-  mat.Emissive = D3DXCOLOR(color.r*EMSIVEFACTOR, color.g*EMSIVEFACTOR, color.b*EMSIVEFACTOR,1);
+  mat.Emissive = D3DXCOLOR(color.r*EMSIVEFACTOR, color.g*EMSIVEFACTOR, color.b*EMSIVEFACTOR, 1);
+  return mat;
 }
 
-void D3LightControl::createMaterial() {
-  if(hasMaterial()) return;
-  D3DMATERIAL mat;
-  ZeroMemory(&mat, sizeof(D3DMATERIAL));
-  setMaterialColors(mat);
-  mat.Power = 0.7f;
-  m_materialIndex = getScene().addMaterial(mat);
+void D3LightControl::updateMaterial() const {
+  MATERIAL mat = getScene().getMaterial(getMaterialId());
+  mat = createMaterialFromLight(getLight());
+  getScene().setLightControlMaterial(mat);
 }
 
-void D3LightControl::setMaterialColors() const {
-  MATERIAL mat = getScene().getMaterial(getMaterialIndex());
-  setMaterialColors(mat);
-  getScene().setMaterial(mat);
-}
-
-D3DCOLORVALUE D3LightControl::getColor() const {
-  const LIGHT light = getLight();
-  return light.m_enabled ? light.Diffuse : getDisabledColor();
+bool D3LightControl::isDifferentMaterial(const LIGHT &l1, const LIGHT &l2) { // static, public
+  if(s_renderEffectEnabled) return false;
+  return createMaterialFromLight(l1) != createMaterialFromLight(l2);
 }
 
 void D3LightControl::draw() {
   if(!s_renderEffectEnabled) {
-    if(!hasMaterial()) {
-      createMaterial();
-    } else {
-      setMaterialColors();
-    }
-    getScene().setFillMode(D3DFILL_SOLID).setShadeMode(D3DSHADE_GOURAUD);
+    updateMaterial();
+    getScene().selectMaterial(getMaterialId())
+              .setFillMode(D3DFILL_SOLID)
+              .setShadeMode(D3DSHADE_GOURAUD);
     drawSubset(0);
   } else {
     prepareEffect();
@@ -99,12 +103,12 @@ void D3LightControl::prepareEffect() {
     createEffect();
   }
 
-  const D3PosDirUpScale &pdus   = scene.getCameraPDUS();
+  const D3PosDirUpScale &pdus   = scene.getCamPDUS();
   const D3DXMATRIX       mView  = pdus.getViewMatrix();
   const D3DXMATRIX       mProj  = scene.getDevProjMatrix();
   const D3DXVECTOR3      camPos = pdus.getPos();
   const D3DXMATRIX       mWorld = getWorldMatrix();
-  const D3DCOLORVALUE    color  = getColor();
+  const D3DCOLORVALUE    color  = getMaterialColor();
 
   V(m_effect->SetTechnique( m_renderWith1LightNoTextureHandle));
   V(m_effect->SetVector(    m_materialDiffuseColorHandle, (D3DXVECTOR4*)&color));

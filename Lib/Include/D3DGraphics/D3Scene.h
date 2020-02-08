@@ -58,7 +58,8 @@ private:
   D3DXVECTOR3   m_facePoint[3];
   float         m_U, m_V;
 public:
-  inline D3PickedInfo() : m_faceIndex(-1) {
+  inline D3PickedInfo() {
+    clear();
   }
   inline D3PickedInfo(int faceIndex, int vertexIndex[3], D3DXVECTOR3 facePoint[3], float U,float V)
                     : m_faceIndex(faceIndex)
@@ -70,6 +71,7 @@ public:
     }
   }
   inline void clear() {
+    memset(this, 0, sizeof(D3PickedInfo));
     m_faceIndex = -1;
   }
   inline bool isEmpty() const {
@@ -85,11 +87,11 @@ public:
     return m_facePoint[0] + m_U * (m_facePoint[1] - m_facePoint[0]) + m_V * (m_facePoint[2] - m_facePoint[0]);
   }
   // i = [0..2];
-  int getVertexIndex(int i) const {
+  inline int getVertexIndex(int i) const {
     return m_vertexIndex[i];
   }
   // i = [0..2];
-  const D3DXVECTOR3 getVertexPoint(int i) const {
+  inline const D3DXVECTOR3 &getVertexPoint(int i) const {
     return m_facePoint[i];
   }
   String toString(int dec = 3) const;
@@ -110,7 +112,7 @@ public:
   bool         m_alphaBlendEnable        : 1;
   bool         m_lighting                : 1;
   bool         m_specularHighLightEnable : 1;
-  int          m_selectedMaterialIndex;
+  int          m_selectedMaterialId;
 
   D3SceneRenderState() {
     setDefault();
@@ -120,6 +122,10 @@ public:
   void setDefault();
 };
 
+#define SC_INITDONE    0x01
+#define SC_PROPCHANGES 0x02
+#define SC_RIGHTHANDED 0x04
+
 class D3Scene : public PropertyContainer
               , public AbstractMeshFactory
               , public AbstractTextureFactory
@@ -128,23 +134,35 @@ private:
   friend class D3SceneObjectIterator;
 
   HWND                              m_hwnd;
+  BYTE                              m_stateFlags;
   LPDIRECT3DDEVICE                  m_device;
   D3SceneRenderState                m_renderState;
-  bool                              m_rightHanded;
+  D3PosDirUpScale                   m_origoPDUS, m_camPDUS, m_defaultObjPDUS;
   int                               m_maxLightCount;
   static int                        s_textureCoordCount;
-  BitSet                           *m_lightsEnabled, *m_lightsDefined;
-  CompactArray<MATERIAL>            m_materials;
+  BitSet                            m_lightsEnabled, m_lightsDefined;
+  MATERIAL                          m_undefinedMaterial;
+  MaterialMap                       m_materialMap;
   CompactArray<D3SceneObject*>      m_objectArray;
-  D3PosDirUpScale                  *m_cameraPDUS, *m_defaultObjPDUS, *m_origoPDUS;
   float                             m_viewAngel;
   float                             m_nearViewPlane;
   Timestamp                         m_renderTime;
-  bool                              m_initDone;
+
+  inline D3Scene &setFlags(BYTE flags) {
+    m_stateFlags |= flags;
+    return *this;
+  }
+  inline D3Scene &clrFlags(BYTE flags) {
+    m_stateFlags &= ~flags;
+    return *this;
+  }
+  inline bool isSet(BYTE flags) const {
+    return (m_stateFlags & flags) != 0;
+  }
 
   void notifyPropertyChanged(int id, const void *oldValue, const void *newValue);
   void notifyObjectCountChanged(UINT oldCount);
-  void setCameraTrans(const D3DXVECTOR3 &pos, const D3DXVECTOR3 &lookAt, const D3DXVECTOR3 &up);
+  void setCamLookAt(const D3DXVECTOR3 &pos, const D3DXVECTOR3 &lookAt, const D3DXVECTOR3 &up);
   void setDefaultObjTrans(const D3DXVECTOR3 &pos
                          ,const D3DXVECTOR3 &dir
                          ,const D3DXVECTOR3 &up
@@ -164,8 +182,9 @@ private:
   D3DXMATRIX getDevTransformation(D3DTRANSFORMSTATETYPE id) const;
 
   // Return -1 if none exist
-  int getFirstFreeLightIndex() const;
-  int getFirstFreeMaterialIndex();
+  int  getFirstFreeLightIndex() const;
+  UINT getFirstFreeMaterialId() const;
+  void removeAllLights();
   D3LightControl *findLightControlByLightIndex(int lightIndex);
   D3LightControl *addLightControl(    UINT lightIndex);
   // Remove the lightControl associated with the given lightIndex from the scene, if its allocated,
@@ -176,12 +195,12 @@ private:
   void destroyAllLightControls();
   void removeSceneObject(size_t index);
 public:
-  D3Scene();
+  D3Scene(bool rightHanded = true);
   ~D3Scene();
   void init(HWND hwnd);
   void close();
   void initTrans();
-  void resetCameraTrans();
+  void resetCamTrans();
   void resetDefaultObjTrans();
   void render();
   void OnSize();
@@ -321,6 +340,7 @@ public:
   inline bool isLightingEnable() const {
     return m_renderState.m_lighting;
   }
+
   D3Scene &setSpecularEnable(bool enabled) {
     if(enabled != isSpecularEnabled()) {
       setDevRenderState(D3DRS_SPECULARENABLE, enabled ? TRUE : FALSE);
@@ -331,9 +351,9 @@ public:
   inline bool isSpecularEnabled() const {
     return m_renderState.m_specularHighLightEnable;
   }
-  D3Scene &selectMaterial(int materialIndex);
+  D3Scene &selectMaterial(UINT materialId);
   inline D3Scene &unselectMaterial() {
-    m_renderState.m_selectedMaterialIndex = -1;
+    m_renderState.m_selectedMaterialId = -1;
     return *this;
   }
   inline D3Scene &setSamplerState(DWORD sampler, D3DSAMPLERSTATETYPE type, DWORD value) {
@@ -346,37 +366,37 @@ public:
   }
 
   void setRightHanded(bool rightHanded);
-  inline const bool &getRightHanded() const {
-    return m_rightHanded;
+  inline bool getRightHanded() const {
+    return isSet(SC_RIGHTHANDED);
   }
   const D3PosDirUpScale &getOrigoPDUS() const {
-    return *m_origoPDUS;
+    return m_origoPDUS;
   }
 
   inline D3PosDirUpScale &getDefaultPDUS() {
-    return *m_defaultObjPDUS;
+    return m_defaultObjPDUS;
   }
 
-  inline const D3PosDirUpScale &getCameraPDUS() const {
-    return *m_cameraPDUS;
+  inline const D3PosDirUpScale &getCamPDUS() const {
+    return m_camPDUS;
   }
-  inline const D3DXVECTOR3 &getCameraPos() const {
-    return getCameraPDUS().getPos();
+  inline const D3DXVECTOR3 &getCamPos() const {
+    return getCamPDUS().getPos();
   }
-  inline const D3DXVECTOR3 &getCameraDir() const {
-    return getCameraPDUS().getDir();
+  inline const D3DXVECTOR3 &getCamDir() const {
+    return getCamPDUS().getDir();
   }
-  inline const D3DXVECTOR3 &getCameraUp() const {
-    return getCameraPDUS().getUp();
+  inline const D3DXVECTOR3 &getCamUp() const {
+    return getCamPDUS().getUp();
   }
-  inline D3DXVECTOR3 getCameraRight() const {
-    return getCameraPDUS().getRight();
+  inline D3DXVECTOR3 getCamRight() const {
+    return getCamPDUS().getRight();
   }
-  void setCameraPDUS(       const D3PosDirUpScale &pdus);
-  void setCameraPos(        const D3DXVECTOR3     &pos);
-  void setCameraOrientation(const D3DXVECTOR3     &dir, const D3DXVECTOR3 &up);
-  void setCameraLookAt(     const D3DXVECTOR3     &point);
-  String getCameraString() const;
+  void setCamPDUS(       const D3PosDirUpScale &pdus);
+  void setCamPos(        const D3DXVECTOR3     &pos);
+  void setCamOrientation(const D3DXVECTOR3     &dir, const D3DXVECTOR3 &up);
+  void setCamLookAt(     const D3DXVECTOR3     &point);
+  String getCamString() const;
   void setViewAngel(float angel);
   inline float getViewAngel() const {
     return m_viewAngel;
@@ -395,7 +415,7 @@ public:
 
   void   setLight(            const LIGHT &param);
   LIGHT  getLight(            UINT lightIndex) const;
-  const CompactArray<LIGHT> getAllLights() const;
+  LightArray          getAllLights() const;
   inline D3DLIGHTTYPE getLightType(UINT lightIndex) const {
     return getLight(lightIndex).Type;
   }
@@ -403,60 +423,59 @@ public:
   void removeLight(                UINT lightIndex);
   void setLightEnabled(            UINT lightIndex, bool enabled);
   inline bool isLightEnabled(      UINT lightIndex) const {
-    return m_lightsEnabled->contains(lightIndex);
+    return m_lightsEnabled.contains(lightIndex);
   }
   inline bool isLightDefined(      UINT lightIndex) const {
-    return m_lightsDefined->contains(lightIndex);
+    return m_lightsDefined.contains(lightIndex);
   }
   inline const BitSet &getLightsDefined() const {
-    return *m_lightsDefined;
+    return m_lightsDefined;
   }
   inline const BitSet &getLightsEnabled() const {
-    return *m_lightsEnabled;
+    return m_lightsEnabled;
   }
-  inline bool isLightVisible(UINT index) const {
-    return getLightsVisible().contains(index);
+  inline bool isLightControlVisible(UINT lightIndex) const {
+    return getLightControlsVisible().contains(lightIndex);
   }
-  BitSet getLightsVisible() const;
+  BitSet getLightControlsVisible() const;
   D3LightControl *setLightControlVisible(UINT lightIndex, bool visible);
 
   inline int getMaxLightCount() const {
     return m_maxLightCount;
   }
   inline int getLightCount() const {
-    return (int)m_lightsDefined->size();
+    return (int)m_lightsDefined.size();
   }
   inline int getLightEnabledCount() const {
-    return (int)m_lightsEnabled->size();
+    return (int)m_lightsEnabled.size();
   }
   void   setLightDirection(        UINT lightIndex, const D3DXVECTOR3 &dir);
   void   setLightPosition(         UINT lightIndex, const D3DXVECTOR3 &pos);
   String getLightString(           UINT lightIndex) const;
   String getLightString() const;
 
-  static D3DLIGHT getDefaultLight(D3DLIGHTTYPE type = D3DLIGHT_DIRECTIONAL);
-
 // --------------------------- MATERIAL ----------------------------
 
-  inline const MATERIAL &getMaterial(UINT index) const {
-    return m_materials[index];
+  inline const MATERIAL &getMaterial(UINT materialId) const {
+    const MATERIAL *m = m_materialMap.get(materialId);
+    return m ? *m : m_undefinedMaterial;
   }
-  const CompactArray<MATERIAL> &getAllMaterials() const {
-    return m_materials;
+  const MaterialMap &getAllMaterials() const {
+    return m_materialMap;
   }
-  void setMaterial(const MATERIAL &material);
-  int  addMaterial(const D3DMATERIAL &material);
-  void removeMaterial(UINT index);
+  void setMaterial(const MATERIAL    &material);
+  UINT addMaterial(const D3DMATERIAL &material);
+  void removeMaterial(UINT materialId);
+  // assume lcMaterial is defined. Dont notify listeners about change in material
+  void setLightControlMaterial(const MATERIAL &lcMaterial);
 
-  inline bool isMaterialDefined(UINT index) const {
-    return (index < m_materials.size()) && (m_materials[index].m_index == index);
+  inline bool isMaterialDefined(UINT materialId) const {
+    return m_materialMap.get(materialId) != NULL;
   }
-  const BitSet getMaterialsDefined() const;
-  inline int getMaterialCount() const {
-    return (int)getMaterialsDefined().size();
+  inline UINT getMaterialCount() const {
+    return (UINT)m_materialMap.size();
   }
-  static D3DMATERIAL getDefaultMaterial();
-  String getMaterialString(UINT index) const;
+  String getMaterialString(UINT materialId) const;
   String getMaterialString() const;
 
   static inline int getTextureCoordCount() {
@@ -475,9 +494,13 @@ public:
   inline void drawIndexedPrimitive(D3DPRIMITIVETYPE pt, int baseVertexIndex, UINT minVertexIndex, UINT numVertices, UINT startIndex, UINT primCount) {
     FV(m_device->DrawIndexedPrimitive(pt, baseVertexIndex, minVertexIndex, numVertices, startIndex, primCount));
   }
-  D3Ray          getPickRay(     const CPoint &point) const;
-  // if hitPoint != 0, then will receive point (in worldspace) of rays intersection with nearest object
-  D3SceneObject *getPickedObject(const CPoint &point, long mask = OBJMASK_ALL, D3DXVECTOR3 *hitPoint = NULL, D3PickedInfo *info = NULL) const;
+  D3Ray          getPickedRay(     const CPoint &point) const;
+  // if hitPoint != NULL, it will receive point (in worldspace) of rays intersection with nearest object
+  // if ray != NULL, it will receive value returned by getPicRay(point)
+  // if dist != NULL, is will receieve distnce to hitpoint, if any
+  // if info != NULL, it will receieve info returned by SceneObject::intersectWithRay, for the closest, visible object
+  D3SceneObject *getPickedObject(const CPoint &point, long mask = OBJMASK_ALL, D3DXVECTOR3 *hitPoint = NULL, D3Ray *ray  = NULL, float *dist = NULL, D3PickedInfo *info = NULL) const;
+  D3SceneObject *getPickedObject(const D3Ray  &ray  , long mask = OBJMASK_ALL, D3DXVECTOR3 *hitPoint = NULL, float *dist = NULL, D3PickedInfo *info = NULL) const;
 
   template<typename VertexType> LPDIRECT3DVERTEXBUFFER allocateVertexBuffer(UINT count, UINT *bufferSize = NULL) {
     const UINT vertexSize = sizeof(VertexType);
@@ -537,7 +560,7 @@ protected:
     m_scene.setFillMode(getFillMode()).setShadeMode(getShadeMode());
   }
   inline void setSceneMaterial() {
-    if(hasMaterial()) m_scene.selectMaterial(getMaterialIndex());
+    if(hasMaterial()) m_scene.selectMaterial(getMaterialId());
   }
   inline void setLightingEnable(bool enabled) {
     m_scene.setLightingEnable(enabled);
@@ -566,7 +589,7 @@ public:
   virtual D3PosDirUpScale &getPDUS() {
     return m_scene.getDefaultPDUS();
   }
-  virtual int getMaterialIndex() const {
+  virtual int getMaterialId() const {
     return 0;
   }
   virtual void modifyContextMenu(CMenu &menu) {
@@ -606,10 +629,10 @@ public:
     return D3DSHADE_GOURAUD;
   }
   const MATERIAL &getMaterial() const {
-    return getScene().getMaterial(getMaterialIndex());
+    return getScene().getMaterial(getMaterialId());
   }
   inline bool hasMaterial() const {
-    return getMaterialIndex() >= 0;
+    return getMaterialId() >= 0;
   }
   D3DXMATRIX getWorldMatrix() const {
     return getConstPDUS().getWorldMatrix();
@@ -759,28 +782,28 @@ public:
 
 class D3SceneObjectSolidBox : public D3SceneObjectWithMesh {
 private:
-  int m_materialIndex;
+  int m_materialId;
   void makeSquareFace(MeshBuilder &mb, int v0, int v1, int v2, int v3);
   void init(const Vertex &p1, const Vertex &p2);
 public:
-  D3SceneObjectSolidBox::D3SceneObjectSolidBox(D3Scene &scene, const D3DXCube3 &cube, int materialIndex = 0)
+  D3SceneObjectSolidBox::D3SceneObjectSolidBox(D3Scene &scene, const D3DXCube3 &cube, int materialId = 0)
     : D3SceneObjectWithMesh(scene)
-    , m_materialIndex(materialIndex)
+    , m_materialId(materialId)
   {
     init(cube.getMin(), cube.getMax());
   }
 
-  D3SceneObjectSolidBox::D3SceneObjectSolidBox(D3Scene &scene, const Vertex &p1, const Vertex &p2, int materialIndex = 0)
+  D3SceneObjectSolidBox::D3SceneObjectSolidBox(D3Scene &scene, const Vertex &p1, const Vertex &p2, int materialId = 0)
     : D3SceneObjectWithMesh(scene)
-    , m_materialIndex(materialIndex)
+    , m_materialId(materialId)
   {
     init(p1, p2);
   }
-  int getMaterialIndex() const {
-    return m_materialIndex;
+  int getMaterialId() const {
+    return m_materialId;
   }
-  inline void setMaterialIndex(int materialIndex) {
-    m_materialIndex = materialIndex;
+  inline void setmaterialId(int materialId) {
+    m_materialId = materialId;
   }
 };
 
@@ -788,8 +811,8 @@ class D3SceneObjectSolidBoxWithPos : public D3SceneObjectSolidBox {
 private:
   D3PosDirUpScale m_pdus;
 public:
-  D3SceneObjectSolidBoxWithPos(D3Scene &scene, const D3DXCube3 &cube, int materialIndex = 0)
-    : D3SceneObjectSolidBox(scene, cube, materialIndex)
+  D3SceneObjectSolidBoxWithPos(D3Scene &scene, const D3DXCube3 &cube, int materialId = 0)
+    : D3SceneObjectSolidBox(scene, cube, materialId)
     , m_pdus(scene.getDefaultPDUS())
   {
   }
@@ -852,7 +875,7 @@ private:
   D3DFILLMODE   m_fillMode;
   D3DSHADEMODE  m_shadeMode;
   Timer         m_timer;
-  double        m_sleepTime;
+  float         m_sleepTime;
   AnimationType m_animationType;
   bool          m_forward;
   bool          m_running;
@@ -873,9 +896,9 @@ public:
     return m_animationType;
   }
   // sleepTime /= factor
-  void scaleSpeed(double factor);
-  inline double getFramePerSec() const {
-    return m_running ? 1000.0 / m_sleepTime : 0;
+  void scaleSpeed(float factor);
+  inline float getFramePerSec() const {
+    return m_running ? 1000.0f / m_sleepTime : 0;
   }
   LPD3DXMESH getMesh() const;
   void draw();
@@ -903,14 +926,8 @@ public:
 };
 
 class D3SceneObjectLineArrow : public D3SceneObjectWithVertexBuffer {
-private:
-  int m_materialIndex;
 public:
-  D3SceneObjectLineArrow(D3Scene &scene, const Vertex &from, const Vertex &to, D3DCOLOR color = 0);
-  int getMaterialIndex() const {
-    return m_materialIndex;
-  }
-  void setColor(D3DCOLOR color);
+  D3SceneObjectLineArrow(D3Scene &scene, const Vertex &from, const Vertex &to);
   void draw();
 };
 
@@ -918,7 +935,7 @@ class D3PickRayArrow : public D3SceneObjectLineArrow {
 private:
   D3PosDirUpScale m_pdus;
 public:
-  D3PickRayArrow(D3Scene &scene, const D3Ray &ray) 
+  D3PickRayArrow(D3Scene &scene, const D3Ray &ray)
     : D3SceneObjectLineArrow(scene, ray.m_orig, ray.m_orig + 2 * ray.m_dir)
     , m_pdus(scene.getRightHanded())
   {

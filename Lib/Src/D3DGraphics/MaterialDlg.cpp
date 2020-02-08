@@ -55,7 +55,7 @@ void CMaterialDlg::resetControls() {
 }
 
 void CMaterialDlg::valueToWindow(const MATERIAL &v) {
-  setWindowText(this, format(_T("%s (Material %d)"), m_origName.cstr(), v.m_index));
+  setWindowText(this, format(_T("%s (Material %d)"), m_origName.cstr(), v.getId()));
 
   setSliderPower(v.Power);
   setSliderTransparency(v.Diffuse.a);

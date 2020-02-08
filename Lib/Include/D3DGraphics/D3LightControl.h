@@ -6,7 +6,7 @@ class D3LightControl : public D3SceneObjectWithMesh {
 private:
   static bool   s_renderEffectEnabled;
   const int     m_lightIndex;
-  int           m_materialIndex;
+  int           m_materialId;
   float         m_size;
 
   LPD3DXEFFECT  m_effect;
@@ -20,17 +20,19 @@ private:
   D3LightControl &operator=(const D3LightControl &src); // Not defined. Class not cloneable
 
   void createEffect();
-  void createMaterial();
-  void setMaterialColors() const;
-  void setMaterialColors(D3DMATERIAL &mat) const;
 protected:
   static LPD3DXMESH &optimizeMesh(LPD3DXMESH &mesh);
-  virtual D3DCOLORVALUE getColor() const;
+  void createMaterial();
   D3PosDirUpScale m_pdus;
   void prepareEffect();
 
-  inline D3DCOLORVALUE getDisabledColor() const {
+  static D3DCOLORVALUE getMaterialColor(const LIGHT &l);
+  static inline D3DCOLORVALUE getDisabledMaterialColor() {
     return D3DXCOLOR(0.1f,0.1f,0.1f,1);
+  }
+  static D3DMATERIAL   createMaterialFromLight(const LIGHT &l);
+  inline D3DCOLORVALUE getMaterialColor() const {
+    return getMaterialColor(getLight());
   }
 
   inline void setSize(float size) {
@@ -51,11 +53,12 @@ public:
   inline int getLightIndex() const {
     return m_lightIndex;
   }
-  int getMaterialIndex() const {
-    return s_renderEffectEnabled ? -1 : m_materialIndex;
+  int getMaterialId() const {
+    return s_renderEffectEnabled ? -1 : m_materialId;
   }
+  static bool isDifferentMaterial(const LIGHT &l1, const LIGHT &l2);
   LIGHT getLight() const;
-
+  void updateMaterial() const;
   static inline void enableRenderEffect(bool enabled) {
     s_renderEffectEnabled = enabled;
   }

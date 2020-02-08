@@ -12,28 +12,26 @@ typedef enum {
  ,CONTROL_CAMERA_WALK
  ,CONTROL_OBJECT_POS
  ,CONTROL_OBJECT_SCALE
+ ,CONTROL_ANIMATION_SPEED
+ ,CONTROL_MATERIAL
  ,CONTROL_LIGHT
  ,CONTROL_SPOTLIGHTPOINT
  ,CONTROL_SPOTLIGHTANGLES
- ,CONTROL_ANIMATION_SPEED
- ,CONTROL_MATERIAL
  ,CONTROL_LIGHTCOLOR
  ,CONTROL_BACKGROUNDCOLOR
  ,CONTROL_AMBIENTLIGHTCOLOR
- ,CONTROL_SELECTEDCUBE
 } CurrentObjectControl;
 
-#define RENDER_3D   0x1
-#define RENDER_INFO 0x2
-#define RENDER_ALL  (RENDER_3D|RENDER_INFO)
 
-typedef enum {
-  SE_INITDONE
- ,SE_ENABLED
- ,SE_HANDLEPROPERTYCHANGES
- ,SE_RENDERENABLED
- ,SE_MOUSEVISIBLE
-} StateFlags;
+#define SE_INITDONE           0x01
+#define SE_ENABLED            0x02
+#define SE_PROPCHANGES        0x04
+#define SE_RENDER3D           0x08
+#define SE_RENDERINFO         0x10
+#define SE_LIGHTCONTROLS      0x20
+#define SE_MOUSEVISIBLE       0x40
+#define SE_RENDERALL          (SE_RENDER3D | SE_RENDERINFO)
+#define SE_ALL                (SE_ENABLED | SE_PROPCHANGES | SE_RENDERALL | SE_LIGHTCONTROLS)
 
 class D3SceneContainer {
 public:
@@ -69,7 +67,7 @@ private:
     D3SceneObject                    *m_currentObj, *m_coordinateSystem, *m_selectedCube;
     PropertyDialogMap                 m_propertyDialogMap;
     PropertyContainer                *m_currentEditor;
-    BitSet8                           m_stateFlags;
+    BYTE                              m_stateFlags;
     CPoint                            m_lastMouse;
     CenterOfRotation                  m_centerOfRotation;
     D3DXVECTOR3                       m_pickedPoint; // in world space
@@ -87,16 +85,17 @@ private:
       return m_sceneContainer->getScene();
     }
     inline void render(BYTE flags) {
-      if(isRenderEnabled()) m_sceneContainer->render(flags);
+      if(isSet(flags)) {
+        m_sceneContainer->render(flags);
+      }
     }
 
-    void rotateCurrentVisualFrwBckw(  double angle1 , double angle2);
-    void rotateCurrentVisualLeftRight(double angle) ;
-    void adjustCurrentVisualScale(int component, double factor);
+    void rotateCurrentVisualFrwBckw(  float angle1 , float angle2);
+    void rotateCurrentVisualLeftRight(float angle) ;
+    void adjustCurrentVisualScale(int component, float factor);
 
     void moveCurrentObjXY(CPoint pt);
     void moveCurrentObjXZ(CPoint pt);
-
     // Assume getCurrentObjType() in { SOTYPE_VISUALOBJECT, SOTYPE_LIGHTCONTROL, SOTYPE_ANIMATEDOBJECT }
     D3DXVECTOR3     getCurrentObjPos();
     // Assume getCurrentObjType() in { SOTYPE_VISUALOBJECT, SOTYPE_LIGHTCONTROL, SOTYPE_ANIMATEDOBJECT }
@@ -112,36 +111,33 @@ private:
     inline D3DXVECTOR3  getCenterOfRotation() const {
       return (getCurrentVisual() == m_centerOfRotation.m_obj) ? m_centerOfRotation.m_pos : D3DXORIGIN;
     }
-    void walkWithCamera(       double dist   , double angle);
-    void sidewalkWithCamera(   double upDist , double rightDist);
-    void rotateCameraUpDown(   double angle) ;
-    void rotateCameraLeftRight(double angle);
+    void walkWithCamera(       float  dist   , float  angle);
+    void sidewalkWithCamera(   float  upDist , float rightDist);
+    void moveCamera(           const D3DXVECTOR3 &dir, float dist);
+    void rotateCameraUpDown(   float angle);
+    void rotateCameraLeftRight(float angle);
 
+    inline D3SceneEditor &setFlags(BYTE flags) {
+      m_stateFlags |= flags;
+      return *this;
+    }
+    inline D3SceneEditor &clrFlags(BYTE flags) {
+      m_stateFlags &= ~flags;
+      return *this;
+    }
+    inline bool isSet(BYTE flags) const {
+      return (m_stateFlags & flags) != 0;
+    }
     void setMouseVisible(bool visible);
+
     inline bool isMouseVisible() const {
-      return m_stateFlags.contains(SE_MOUSEVISIBLE);
-    }
-    inline void enableRender() {
-      m_stateFlags.add(SE_RENDERENABLED);
-    }
-    inline void disableRender() {
-      m_stateFlags.remove(SE_RENDERENABLED);
-    }
-    inline bool isRenderEnabled() const {
-      return m_stateFlags.contains(SE_RENDERENABLED);
-    }
-    inline void enablePropertyChanges() {
-      m_stateFlags.add(SE_HANDLEPROPERTYCHANGES);
-    }
-    inline void disablePropertyChanges() {
-      m_stateFlags.remove(SE_HANDLEPROPERTYCHANGES);
-    }
-    inline bool isPropertyChangesEnabled() const {
-      return m_stateFlags.contains(SE_HANDLEPROPERTYCHANGES);
+      return isSet(SE_MOUSEVISIBLE);
     }
     CMenu &loadMenu(CMenu &menu, int id);
     void showContextMenu(CMenu &menu, CPoint point);
 
+    // set m_currentControl = CONTROL_IDLE and m_currentObj = NULL
+    void resetCurrentControl();
     void setCurrentControl(CurrentObjectControl control);
 
           D3LightControl *getCurrentLightControl();
@@ -157,10 +153,10 @@ private:
     void setLightControlsVisible(bool visible);
     void addLight(D3DLIGHTTYPE type);
     void setSpotToPointAt(CPoint point);
-    void OnMouseMoveCameraWalk(        UINT nFlags, CPoint pt);
-    void OnMouseMoveObjPos(            UINT nFlags, CPoint pt);
-    void OnMouseWheelObjPos(           UINT nFlags, short zDelta, CPoint pt);
-    void OnMouseWheelObjScale(         UINT nFlags, short zDelta, CPoint pt);
+    void OnMouseMoveCameraWalk(           UINT nFlags, CPoint pt);
+    void OnMouseMoveObjPos(               UINT nFlags, CPoint pt);
+    void OnMouseWheelObjPos(              UINT nFlags, short zDelta, CPoint pt);
+    void OnMouseWheelObjScale(            UINT nFlags, short zDelta, CPoint pt);
     void OnMouseWheelAnimationSpeed(      UINT nFlags, short zDelta, CPoint pt);
     void OnMouseWheelCameraWalk(          UINT nFlags, short zDelta, CPoint pt);
 
@@ -222,6 +218,13 @@ private:
     void OnContextMenu(  CWnd *pwnd, CPoint point);
     String stateFlagsToString() const;
     String getSelectedString() const;
+#ifdef _DEBUG
+    void checkInvariant(const TCHAR *method, int line) const;
+#define CHECKINVARIANT() checkInvariant(__TFUNCTION__,__LINE__)
+#else
+#define CHECKINVARIANT()
+#endif // _DEBUG
+
 public:
     D3SceneEditor();
     ~D3SceneEditor();
@@ -229,28 +232,31 @@ public:
     void close();
     void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
     inline bool isInitDone() const {
-      return m_stateFlags.contains(SE_INITDONE);
+      return isSet(SE_INITDONE);
     }
-    void setEnabled(bool enabled);
+    // flags is any combination of SE_*
+    D3SceneEditor &setEnabled(bool enabled, BYTE flags = SE_ALL);
     inline bool isEnabled() const {
-      return m_stateFlags.contains(SE_ENABLED);
+      return isSet(SE_ENABLED);
     }
     inline CurrentObjectControl getCurrentControl() const {
       return m_currentControl;
     }
-    void                  setCurrentObj(D3SceneObject *obj);
+    // return one of { SOTYPE_NULL, SOTYPE_VISUALOBJECT, SOTYPE_LIGHTCONTROL }
+    SceneObjectType             getCurrentControlObjType() const;
+    void                        setCurrentObj(D3SceneObject *obj);
 
-    inline D3SceneObject *getCurrentObj() const {
+    inline D3SceneObject       *getCurrentObj() const {
       return m_currentObj;
     }
-    inline SceneObjectType getCurrentObjType() const {
+    inline SceneObjectType      getCurrentObjType() const {
       return m_currentObj ? m_currentObj->getType() : SOTYPE_NULL;
     }
     // Return NULL, if m_currentObj->type not in {SOTYPE_VISUALOBJECT, SOTYPE_ANIMATEDOBJECT, }
-    D3SceneObject        *getCurrentVisual() const;
+    D3SceneObject              *getCurrentVisual() const;
     // return NULL, if m_currentObj->type not SOTYPE_ANIMATEDOBJECT
-    D3AnimatedSurface    *getCurrentAnimatedObj() const;
-    inline const D3DXVECTOR3 &getPickedPoint() const {
+    D3AnimatedSurface          *getCurrentAnimatedObj() const;
+    inline const D3DXVECTOR3   &getPickedPoint() const {
       return m_pickedPoint;
     }
     inline bool hasCurrentObj() const {

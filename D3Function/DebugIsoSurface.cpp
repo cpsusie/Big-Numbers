@@ -5,9 +5,9 @@
 #include "Debugger.h"
 #include "DebugIsoSurface.h"
 
-class MaterialIndexWithColor {
+class ColorMaterialId {
 private:
-  mutable int  m_matIndex;
+  mutable int  m_materialId;
   const   bool m_specular;
   static int createColorMaterial(D3Scene &scene, D3DCOLOR color) {
     const D3DCOLORVALUE cv = colorToColorValue(color);
@@ -28,20 +28,20 @@ private:
   }
 
 public:
-  MaterialIndexWithColor(bool specular=false) : m_matIndex(-1), m_specular(specular) {
+  ColorMaterialId(bool specular=false) : m_materialId(-1), m_specular(specular) {
   }
-  inline UINT getIndex(D3Scene &scene, D3DCOLOR color) const {
-    if(m_matIndex < 0) {
-      m_matIndex = m_specular 
-                 ? createColorMaterialWithSpecular(scene, color)
-                 : createColorMaterial(scene, color);
+  inline UINT getId(D3Scene &scene, D3DCOLOR color) const {
+    if(m_materialId < 0) {
+      m_materialId = m_specular
+                   ? createColorMaterialWithSpecular(scene, color)
+                   : createColorMaterial(scene, color);
     }
-    return m_matIndex;
+    return m_materialId;
   }
 };
 
-static MaterialIndexWithColor blackMatIndex, whiteMatIndex, blueMatIndex, yellowMatIndex, cyanMatIndex;
-static MaterialIndexWithColor matIndexPos(true), matIndexNeg(true);
+static ColorMaterialId blackMatIndex, whiteMatIndex, blueMatIndex, yellowMatIndex, cyanMatIndex;
+static ColorMaterialId matIndexPos(true), matIndexNeg(true);
 
 // ------------------------------------------------------------Octa Object ----------------------------------------------
 
@@ -124,13 +124,13 @@ void OctaObject::setOctagon(const Octagon &octa) {
 
 int OctaObject::getCornerMarkMaterial(bool positive) {
   int result = positive 
-             ? matIndexPos.getIndex(getScene(), CUBE_MATERIAL_DIFFUSE_POS)
-             : matIndexNeg.getIndex(getScene(), CUBE_MATERIAL_DIFFUSE_NEG);
+             ? matIndexPos.getId(getScene(), CUBE_MATERIAL_DIFFUSE_POS)
+             : matIndexNeg.getId(getScene(), CUBE_MATERIAL_DIFFUSE_NEG);
   return result;
 }
 
 void OctaObject::draw() {
-  getScene().selectMaterial(blueMatIndex.getIndex(getScene(), D3D_BLUE));
+  getScene().selectMaterial(blueMatIndex.getId(getScene(), D3D_BLUE));
   D3DXMATRIX objWorld = getPDUS().getWorldMatrix();
   D3DXMATRIX tm;
   D3DXMatrixTranslation(&tm, m_center.x, m_center.y, m_center.z);
@@ -210,7 +210,7 @@ CompactArray<Line3D> TetraObject::createLineArray(const Tetrahedron &tetra) cons
 
 void TetraObject::draw() {
   if(m_linesObject == NULL) return;
-  getScene().selectMaterial(yellowMatIndex.getIndex(getScene(), D3D_YELLOW));
+  getScene().selectMaterial(yellowMatIndex.getId(getScene(), D3D_YELLOW));
   m_device->SetTransform(D3DTS_WORLD, &getWorld());
   m_linesObject->draw();
 }
@@ -276,11 +276,11 @@ CompactArray<Line3D> FacesObject::createLineArray(CompactArray<Face3> &faceArray
 void FacesObject::draw() {
   m_device->SetTransform(D3DTS_WORLD, &getPDUS().getWorldMatrix());
   if(m_prevFaceObjects) {
-    getScene().selectMaterial(blackMatIndex.getIndex(getScene(), D3D_BLACK));
+    getScene().selectMaterial(blackMatIndex.getId(getScene(), D3D_BLACK));
     m_prevFaceObjects->draw();
   }
   if(m_currentFaceObject) {
-    getScene().selectMaterial(cyanMatIndex.getIndex(getScene(), D3D_CYAN));
+    getScene().selectMaterial(cyanMatIndex.getId(getScene(), D3D_CYAN));
     m_currentFaceObject->draw();
   }
 }
@@ -333,7 +333,7 @@ CompactArray<Line3D> VertexObject::createLineArray(float lineLength) const {
 void VertexObject::draw() {
   const size_t n = m_positions.size();
   if(n == 0) return;
-  getScene().selectMaterial(whiteMatIndex.getIndex(getScene(), D3D_WHITE));
+  getScene().selectMaterial(whiteMatIndex.getId(getScene(), D3D_WHITE));
   D3DXMATRIX objWorld = getPDUS().getWorldMatrix(), tm, world;
   for(size_t i = 0; i < n; i++) {
     const D3DXVECTOR3 &p = m_positions[i];

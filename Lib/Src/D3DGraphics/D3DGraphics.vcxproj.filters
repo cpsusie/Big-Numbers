@@ -41,9 +41,6 @@
     <ClCompile Include="D3SceneIO.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D3SceneObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="D3ToString.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -169,6 +166,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="D3SceneObjectCoordinateSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D3Ray.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D3SceneEditorToString.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

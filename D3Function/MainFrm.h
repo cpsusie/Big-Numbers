@@ -19,7 +19,7 @@ public:
 
 class CD3FunctionSplitterWnd : public CSplitterWnd {
 private:
-  bool m_splitPointMoved;
+  bool            m_splitPointMoved;
 public:
   CD3FunctionSplitterWnd() : m_splitPointMoved(false) {
   }
@@ -98,7 +98,7 @@ private:
   void debugAdjustCamDir(const D3DXVECTOR3 &newDir, const D3DXVECTOR3 &newUp);
 
   inline void createDebugLight() {
-    m_debugLightIndex = m_scene.addLight(m_scene.getDefaultLight());
+    m_debugLightIndex = m_scene.addLight(LIGHT::createDefaultLight());
   }
   inline void destroyDebugLight() {
     if (hasDebugLight()) {

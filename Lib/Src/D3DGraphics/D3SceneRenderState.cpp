@@ -58,5 +58,5 @@ void D3SceneRenderState::setDefault() {
   m_alphaBlendEnable        = false;
   m_lighting                = true;
   m_specularHighLightEnable = true;
-  m_selectedMaterialIndex   = -1;
+  m_selectedMaterialId      = -1;
 }

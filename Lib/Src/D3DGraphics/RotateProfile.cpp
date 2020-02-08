@@ -168,8 +168,8 @@ LPD3DXMESH rotateProfile(AbstractMeshFactory &amf, const Profile &profile, const
   int normalsInOneSlice = 0;
 
   for(int edgeIndex = 0; edgeIndex <= param.m_edgeCount; edgeIndex++) {
-    const D3DXMATRIX vRotation = createRotationMatrix(rotaxis, step * edgeIndex);
-    const D3DXMATRIX nRotation = createRotationMatrix(rotaxis, step * (edgeIndex + nrotOffset));
+    const D3DXMATRIX vRotation = createRotationMatrix(rotaxis, (float)step * edgeIndex);
+    const D3DXMATRIX nRotation = createRotationMatrix(rotaxis, (float)(step * (edgeIndex + nrotOffset)));
     for(size_t i = 0; i < profile.m_polygonArray.size(); i++) {
       const ProfilePolygon &pp = profile.m_polygonArray[i];
       Point2DArray normals2D   = (param.m_smoothness & NORMALSMOOTH) ? pp.getSmoothNormals() : pp.getFlatNormals();

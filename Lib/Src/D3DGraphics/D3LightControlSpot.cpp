@@ -5,6 +5,7 @@
 D3LightControlSpot::D3LightControlSpot(D3Scene &scene, int lightIndex)
 : D3LightControl(scene, lightIndex)
 {
+  createMaterial();
   setSize(0.4f);
   m_mesh = createSpotMesh();
   setName(format(_T("Spot light (%d)"), lightIndex));

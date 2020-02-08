@@ -9,17 +9,17 @@ protected:
     const T dxy2 = x*x + y*y;
     if(y >= 0) {
       if(dxy2 > 0) {
-        r     = sqrt(dxy2 + z*z);
-        fi    = acos(z / r);
-        theta = acos(x / sqrt(dxy2));
+        r     = (T)sqrt(dxy2 + z*z);
+        fi    = (T)acos(z / r);
+        theta = (T)(acos(x / sqrt(dxy2)));
       } else {
         r     = z;
         fi    = theta = 0;
       }
     } else { // y < 0
-      r       = sqrt(dxy2 + z*z);
-      fi      = acos(z / r);
-      theta   = 2*M_PI - acos(x / sqrt(dxy2));
+      r       = (T)sqrt(dxy2 + z*z);
+      fi      = (T)acos(z / r);
+      theta   = (T)(2*M_PI - acos(x / sqrt(dxy2)));
     }
   }
 public:
@@ -29,11 +29,11 @@ public:
                 // theta > pi => y < 0
   SphericalTemplate() : r(0), fi(0), theta(0) {
   }
-  SphericalTemplate(const Point3DTemplate<T> &p) {
-    init(p.x, p.y, p.z);
+  template<typename TP> SphericalTemplate(const Point3DTemplate<TP> &p) {
+    init((T)p.x, (T)p.y, (T)p.z);
   }
-  SphericalTemplate(const T &x, const T &y, const T &z) {
-    init(x, y, z);
+  template<typename X, typename Y, typename Z> SphericalTemplate(const X &x, const Y &y, const Z &z) {
+    init((T)x, (T)y, (T)z);
   }
   operator Point3DTemplate<T>() const {
     Point3DTemplate<T> p;

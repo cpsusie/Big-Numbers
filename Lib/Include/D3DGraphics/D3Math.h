@@ -18,7 +18,7 @@ D3DXMATRIX &D3DXMatrixPerspectiveFov(D3DXMATRIX &mat , FLOAT              angel,
 D3DXMATRIX &D3DXMatrixLookAt(        D3DXMATRIX &view, const D3DXVECTOR3 &eye, const D3DXVECTOR3 &lookAt, const D3DXVECTOR3 &up, bool rightHanded);
 D3DXVECTOR3 unitVector(           const D3DXVECTOR3 &v);
 D3DXVECTOR3 createUnitVector(int i);
-D3DXVECTOR3 rotate(               const D3DXVECTOR3 &v , const D3DXVECTOR3 &axis, double rad);
+D3DXVECTOR3 rotate(               const D3DXVECTOR3 &v , const D3DXVECTOR3 &axis, float rad);
 D3DXVECTOR3 crossProduct(         const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2);
 D3DXVECTOR3 randomUnitVector();
 D3DXVECTOR3 ortonormalVector(     const D3DXVECTOR3 &v);
@@ -29,7 +29,7 @@ D3DXMATRIX  invers(               const D3DXMATRIX  &m);
 D3DXMATRIX  createIdentityMatrix();
 D3DXMATRIX  createTranslateMatrix(const D3DXVECTOR3 &v);
 D3DXMATRIX  createScaleMatrix(    const D3DXVECTOR3 &s);
-D3DXMATRIX  createRotationMatrix( const D3DXVECTOR3 &axis, double rad);
+D3DXMATRIX  createRotationMatrix( const D3DXVECTOR3 &axis, float rad);
 D3DXVECTOR3 operator*(            const D3DXMATRIX  &m, const D3DXVECTOR3 &v);
 D3DXVECTOR3 operator*(            const D3DXVECTOR3 &v, const D3DXMATRIX  &m);
 float       det(                  const D3DXMATRIX  &m);
@@ -282,14 +282,34 @@ public:
   inline D3PosDirUpScale &setScaleAll(float scale) {
     return setScale(D3DXVECTOR3(scale, scale, scale));
   }
+  // set Position to (0,0,0)
   inline D3PosDirUpScale &resetPos() {
-    return setPos(D3DXORIGIN);
+    return setPos(getDefaultPos());
   }
+  // set scale in all dimensions to 1
   inline D3PosDirUpScale &resetScale() {
     return setScaleAll(1);
   }
+  // return vector (0,0,0)
+  static D3DXVECTOR3 getDefaultPos() {
+    return D3DXORIGIN;
+  }
+  // return vector (0,0,0)
+  static D3DXVECTOR3 getDefaultScale() {
+    return D3DXVECTOR3(1, 1, 1);
+  }
+
+  // return vector (0,1,0)
+  static D3DXVECTOR3 getDefaultDir() {
+    return D3DXVECTOR3(0, 1, 0);
+  }
+  // return vector (0,0,1)
+  static D3DXVECTOR3 getDefaultUp() {
+    return D3DXVECTOR3(0, 0, 1);
+  }
+  // set dir=(0,1,0), up=(0,0,1)
   inline D3PosDirUpScale &resetOrientation() {
-    return setOrientation(D3DXVECTOR3(0, 0, -1), D3DXVECTOR3(0, 1, 0));
+    return setOrientation(getDefaultDir(), getDefaultUp());
   }
 
   D3PosDirUpScale &setWorldMatrix(const D3DXMATRIX &world);
@@ -302,7 +322,7 @@ public:
     return m_view;
   }
   inline D3DXMATRIX        getRotationMatrix() const {
-    return D3PosDirUpScale(*this).setPos(D3DXVECTOR3(0,0,0)).setScale(D3DXVECTOR3(1,1,1)).getWorldMatrix();
+    return D3PosDirUpScale(*this).resetPos().resetScale().getWorldMatrix();
   }
   inline D3DXQUATERNION    getQuarternion() const {
     D3DXQUATERNION result;
@@ -330,28 +350,31 @@ class D3Ray {
 public:
   D3DXVECTOR3 m_orig; // Point in world space where ray starts
   D3DXVECTOR3 m_dir;  // direction of ray in world space
-  inline D3Ray() : m_orig(0, 0, 0), m_dir(0, 0, 0) {
+  inline D3Ray() : m_orig(D3DXORIGIN), m_dir(D3DXORIGIN) {
   }
-  inline D3Ray(const D3DXVECTOR3 &orig, const D3DXVECTOR3 &m_dir) : m_orig(orig), m_dir(unitVector(m_dir)) {
+  inline D3Ray(const D3DXVECTOR3 &orig, const D3DXVECTOR3 &dir) : m_orig(orig), m_dir(unitVector(dir)) {
+  }
+  D3DXVECTOR3 getHitPoint(float dist) const {
+    return m_orig + m_dir * dist;
   }
   inline void clear() {
-    m_dir = m_orig = D3DXVECTOR3(0,0,0);
+    m_dir = m_orig = D3DXORIGIN;
   }
-  inline bool isSet() const {
-    return length(m_dir) > 0;
+  inline bool isEmpty() const {
+    return length(m_dir) == 0;
   }
   inline String toString(int dec=3) const {
     return format(_T("Orig:%s, Dir:%s"), ::toString(m_orig,dec).cstr(), ::toString(m_dir,dec).cstr());
   }
 };
 
-class D3Spherical : public Spherical {
+class D3Spherical : public FloatSpherical {
 public:
-  inline D3Spherical() : Spherical() {
+  inline D3Spherical() : FloatSpherical() {
   }
-  inline D3Spherical(const Point3D &p) : Spherical(p) {
+  template<typename TP> D3Spherical(const Point3DTemplate<TP> &p) : FloatSpherical(p) {
   }
-  inline D3Spherical(double x, double y, double z) : Spherical(x,y,z) {
+  template<typename X, typename Y, typename Z> D3Spherical(const X &x, const Y &y, const Z &z) : FloatSpherical(x,y,z) {
   }
   inline D3Spherical(const D3DXVECTOR3 &v) {
     init(v.x, v.y, v.z);

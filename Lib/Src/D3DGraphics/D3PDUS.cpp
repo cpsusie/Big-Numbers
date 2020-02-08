@@ -1,11 +1,13 @@
 #include "pch.h"
 #include <D3DGraphics/D3ToString.h>
 
-D3PosDirUpScale::D3PosDirUpScale(bool rightHanded) : m_rightHanded(rightHanded) {
-  m_pos   = D3DXVECTOR3(0,0,0);
-  m_scale = D3DXVECTOR3(1,1,1);
-  m_dir   = D3DXVECTOR3(0,0,1);
-  m_up    = D3DXVECTOR3(0,1,0);
+D3PosDirUpScale::D3PosDirUpScale(bool rightHanded)
+  : m_rightHanded(rightHanded      )
+  , m_pos(        getDefaultPos()  )
+  , m_scale(      getDefaultScale())
+  , m_dir(        getDefaultDir()  )
+  , m_up(         getDefaultUp()   )
+{
   updateView();
 }
 

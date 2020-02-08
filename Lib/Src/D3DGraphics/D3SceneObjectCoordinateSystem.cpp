@@ -2,51 +2,44 @@
 #include <MFCUtil/ColorSpace.h>
 #include <D3DGraphics/D3SceneObjectCoordinateSystem.h>
 
-D3SceneObjectCoordinateSystem::D3SceneObjectCoordinateSystem(D3Scene &scene, const D3DXCube3 *cube) 
+D3SceneObjectCoordinateSystem::D3SceneObjectCoordinateSystem(D3Scene &scene)
   : D3SceneObject(scene, _T("CoordinateSystem"))
+  , m_axis(scene, Vertex(-1,0,0), Vertex(1,0,0))
   , m_origin(scene.getRightHanded())
 {
-  init();
-  setCube(cube ? *cube : D3DXCube3::getStdCube());
+  m_axisMaterialId[0] = getScene().addMaterial(MATERIAL::createMaterialWithColor(D3D_RED  ));
+  m_axisMaterialId[1] = getScene().addMaterial(MATERIAL::createMaterialWithColor(D3D_GREEN));
+  m_axisMaterialId[2] = getScene().addMaterial(MATERIAL::createMaterialWithColor(D3D_BLUE ));
 }
 
 D3SceneObjectCoordinateSystem::~D3SceneObjectCoordinateSystem() {
-  cleanUp();
-}
-
-void D3SceneObjectCoordinateSystem::init() {
-  m_box   = NULL;
-  for(size_t i = 0; i < ARRAYSIZE(m_axis); i++) {
-    m_axis[i] = NULL;
+  for(int i = 0; i < 3; i++) {
+    m_scene.removeMaterial(m_axisMaterialId[i]);
   }
-}
-
-void D3SceneObjectCoordinateSystem::cleanUp() {
-  SAFEDELETE(m_box);
-  for(size_t i = 0; i < ARRAYSIZE(m_axis); i++) {
-    SAFEDELETE(m_axis[i]);
-  }
-}
-
-void D3SceneObjectCoordinateSystem::setCube(const D3DXCube3 &cube) {
-  setCube(cube.getMinX(), cube.getMinY(), cube.getMinZ()
-         ,cube.getMaxX(), cube.getMaxY(), cube.getMaxZ());
-}
-
-void D3SceneObjectCoordinateSystem::setCube(float minX, float minY, float minZ, float maxX, float maxY, float maxZ) {
-  D3Scene &scene = getScene();
-  cleanUp();
-  m_cube  = D3DXCube3(minX,minY,minZ, maxX,maxY,maxZ);
-  m_box   = new D3SceneObjectWireFrameBox(scene, Vertex(minX,minY,minZ), Vertex(maxX,maxY,maxZ)); TRACE_NEW(m_box);
-  const float mmx = minMax(0.f,minX,maxX), mmy = minMax(0.f,minY,maxY), mmz = minMax(0.f,minZ,maxZ);
-  m_axis[0] = new D3SceneObjectLineArrow(scene, Vertex(minX,mmy , mmz ), Vertex(maxX,mmy ,mmz ), D3D_RED  ); TRACE_NEW(m_axis[0]);
-  m_axis[1] = new D3SceneObjectLineArrow(scene, Vertex(mmx ,minY, mmz ), Vertex(mmx ,maxY,mmz ), D3D_GREEN); TRACE_NEW(m_axis[1]);
-  m_axis[2] = new D3SceneObjectLineArrow(scene, Vertex(mmx ,mmy , minZ), Vertex(mmx ,mmy ,maxZ), D3D_BLUE ); TRACE_NEW(m_axis[2]);
 }
 
 void D3SceneObjectCoordinateSystem::draw() {
-  m_box->draw();
-  for(size_t i = 0; i < ARRAYSIZE(m_axis); i++) {
-    m_axis[i]->draw();
-  }
+  LPDIRECT3DDEVICE device = getScene().getDevice();
+  D3PosDirUpScale pdus(getScene().getRightHanded());
+  pdus.resetPos().resetScale().setOrientation(D3DXVECTOR3(0, 1, 0), D3DXVECTOR3(0, 0, 1));
+  D3DXMATRIX world0 = pdus.getWorldMatrix(), rot;
+
+  // x-axis
+  getScene().selectMaterial(m_axisMaterialId[0]);
+  V(device->SetTransform(D3DTS_WORLD, &world0));
+  m_axis.draw();
+
+  // y-axis
+  D3DXMatrixRotationZ(&rot, D3DX_PI / 2);
+  rot = world0 * rot;
+  getScene().selectMaterial(m_axisMaterialId[1]);
+  V(device->SetTransform(D3DTS_WORLD, &rot));
+  m_axis.draw();
+
+  // z-axis
+  D3DXMatrixRotationY(&rot, -D3DX_PI / 2);
+  rot = world0 * rot;
+  getScene().selectMaterial(m_axisMaterialId[2]);
+  V(device->SetTransform(D3DTS_WORLD, &rot));
+  m_axis.draw();
 }

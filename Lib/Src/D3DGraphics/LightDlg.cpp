@@ -23,10 +23,10 @@ void CLightDlg::DoDataExchange(CDataExchange *pDX) {
 
 BEGIN_MESSAGE_MAP(CLightDlg, CDialog)
   ON_WM_HSCROLL()
-	ON_WM_SHOWWINDOW()
+  ON_WM_SHOWWINDOW()
   ON_MESSAGE(_ID_MSG_RESETCONTROLS   , OnMsgResetControls)
-	ON_BN_CLICKED(ID_BUTTON_HIDEWINDOW , OnHideWindow      )
-	ON_WM_CLOSE()
+  ON_BN_CLICKED(ID_BUTTON_HIDEWINDOW , OnHideWindow      )
+  ON_WM_CLOSE()
 END_MESSAGE_MAP()
 
 BOOL CLightDlg::OnInitDialog() {
@@ -79,7 +79,7 @@ void CLightDlg::valueToWindow(const LIGHT &v) {
   case D3DLIGHT_POINT          : lightTypeStr = _T("Point")      ; break;
   case D3DLIGHT_SPOT           : lightTypeStr = _T("Spot")       ; break;
   }
-  setWindowText(this, format(_T("%s (%s light %d)"), m_origName.cstr(), lightTypeStr, v.m_index));
+  setWindowText(this, format(_T("%s (%s light[%d]"), m_origName.cstr(), lightTypeStr, v.getIndex()));
 
   setSliderValue(IDC_SLIDER_RANGE               , v.Range        );
   setSliderValue(IDC_SLIDER_CONSTANTATTENUATION , v.Attenuation0 );

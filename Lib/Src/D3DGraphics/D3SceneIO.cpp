@@ -11,22 +11,22 @@ void D3Scene::loadState(const String &fileName) {
 }
 
 void D3Scene::save(ByteOutputStream &s) const {
-  s.putBytes(      (BYTE*)(&m_cameraPDUS    ), sizeof(m_cameraPDUS     ));
+  s.putBytes(      (BYTE*)(&m_camPDUS       ), sizeof(m_camPDUS        ));
   s.putBytes(      (BYTE*)(&m_defaultObjPDUS), sizeof(m_defaultObjPDUS ));
   s.putBytes(      (BYTE*)(&m_viewAngel     ), sizeof(m_viewAngel      ));
   s.putBytes(      (BYTE*)(&m_nearViewPlane ), sizeof(m_nearViewPlane  ));
   s.putBytes(      (BYTE*)(&m_renderState   ), sizeof(m_renderState));
-  m_materials.save(s);
+  m_materialMap.save(s);
   saveLights(s);
 }
 
 void D3Scene::load(ByteInputStream &s) {
-  s.getBytesForced((BYTE*)(&m_cameraPDUS      ), sizeof(m_cameraPDUS     ));
+  s.getBytesForced((BYTE*)(&m_camPDUS         ), sizeof(m_camPDUS        ));
   s.getBytesForced((BYTE*)(&m_defaultObjPDUS  ), sizeof(m_defaultObjPDUS ));
   s.getBytesForced((BYTE*)(&m_viewAngel       ), sizeof(m_viewAngel      ));
   s.getBytesForced((BYTE*)(&m_nearViewPlane   ), sizeof(m_nearViewPlane  ));
   s.getBytesForced((BYTE*)(&m_renderState     ), sizeof(m_renderState    ));
-  m_materials.load(s);
+  m_materialMap.load(s);
   loadLights(s);
 }
 
@@ -35,13 +35,10 @@ void D3Scene::saveLights(ByteOutputStream &s) const {
 }
 
 void D3Scene::loadLights(ByteInputStream &s) {
-  CompactArray<LIGHT> lightArray;
+  LightArray lightArray;
   lightArray.load(s);
-  BitSet definedLights = getLightsDefined();
-  for (Iterator<size_t> it = definedLights.getIterator(); it.hasNext();) {
-    removeLight((UINT)it.next());
-  }
-  for (size_t i = 0; i < lightArray.size(); i++) {
+  removeAllLights();
+  for(size_t i = 0; i < lightArray.size(); i++) {
     setLight(lightArray[i]);
   }
 }

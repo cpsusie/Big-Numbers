@@ -16,14 +16,14 @@ D3DXMATRIX createScaleMatrix(const D3DXVECTOR3 &s) {
   return *D3DXMatrixScaling(&m, s.x, s.y, s.z);
 }
 
-D3DXMATRIX createRotationMatrix(const D3DXVECTOR3 &axes, double rad) {
+D3DXMATRIX createRotationMatrix(const D3DXVECTOR3 &axes, float rad) {
   D3DXMATRIX matRot;
-  return *D3DXMatrixRotationAxis(&matRot, &axes, (float)rad);
+  return *D3DXMatrixRotationAxis(&matRot, &axes, rad);
 }
 
-D3DXVECTOR3 rotate(const D3DXVECTOR3 &v, const D3DXVECTOR3 &axes, double rad) {
+D3DXVECTOR3 rotate(const D3DXVECTOR3 &v, const D3DXVECTOR3 &axes, float rad) {
   D3DXMATRIX matRot;
-  return *D3DXMatrixRotationAxis(&matRot, &axes, (float)rad) * v;
+  return *D3DXMatrixRotationAxis(&matRot, &axes, rad) * v;
 }
 
 D3DXMATRIX &D3DXMatrixPerspectiveFov(D3DXMATRIX &mat, FLOAT angel, FLOAT apsect, FLOAT zn, FLOAT fn, bool rightHanded) {
