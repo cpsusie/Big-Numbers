@@ -1,5 +1,5 @@
 #include "pch.h"
-#include <D3DGraphics/3DXML.h>
+#include <D3DGraphics/D3XML.h>
 
 void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3DXVECTOR3 &v) {
   XMLNodePtr n = doc.createNode(parent, tag);

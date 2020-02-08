@@ -1,6 +1,6 @@
 #include "pch.h"
 #include <XMLUtil.h>
-#include <D3DGraphics/3DXML.h>
+#include <D3DGraphics/D3XML.h>
 #include "D3DGraphics/IsoSurface.h"
 
 IsoSurfaceParameters::IsoSurfaceParameters() {

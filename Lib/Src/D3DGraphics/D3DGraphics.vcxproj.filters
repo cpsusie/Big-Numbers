@@ -122,9 +122,6 @@
     <ClCompile Include="FVF.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="3DXML.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="IsoCurve.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -172,6 +169,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="D3SceneEditorToString.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D3XML.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -242,9 +242,6 @@
     <ClInclude Include="..\..\Include\D3DGraphics\D3ToString.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\D3DGraphics\3DXML.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\D3DGraphics\IsoCurve.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -260,6 +257,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\D3DGraphics\D3DXCube.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\D3XML.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

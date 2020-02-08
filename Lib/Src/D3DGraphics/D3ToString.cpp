@@ -170,9 +170,9 @@ String vertexToString(const char *v, DWORD fvf, int dec) {
   const TCHAR *delimiter = EMPTYSTRING;
 
 #define addTagName(        tag ) { result += delimiter; result += tag; result += _T(":"); }
-#define addTypeStr(        type) { result += toString(*(type*)v);             v += sizeof(type); delimiter = _T(", "); }
-#define addTypeStrD(       type) { result += toString(*(type*)v, dec);        v += sizeof(type); delimiter = _T(", "); }
-#define addTypeStrDW(      type) { result += toString(*(type*)v, dec, width); v += sizeof(type); delimiter = _T(", "); }
+#define addTypeStr(        type) { result += toString(*((type*)v));             v += sizeof(type); delimiter = _T(", "); }
+#define addTypeStrD(       type) { result += toString(*((type*)v), dec);        v += sizeof(type); delimiter = _T(", "); }
+#define addTypeStrDW(      type) { result += toString(*((type*)v), dec, width); v += sizeof(type); delimiter = _T(", "); }
 #define caseAddElement( s, type) case D3DFVF##_##s:     { addTagName(_T(#s)); addTypeStr( type); } break
 #define caseAddElementD(s, type) case D3DFVF##_##s:     { addTagName(_T(#s)); addTypeStrD(type); } break
 #define addFlagElement( s, type) if(fvf & D3DFVF##_##s) { addTagName(_T(#s)); addTypeStr( type); }
@@ -195,7 +195,9 @@ String vertexToString(const char *v, DWORD fvf, int dec) {
   caseAddElementD(XYZW             ,D3DXVECTOR4    );
   }
   addFlagElementD(NORMAL           ,D3DXVECTOR3    );
+
   addFlagElementD(PSIZE            ,float          );
+
   addFlagElement( DIFFUSE          ,D3PCOLOR       );
   addFlagElement( SPECULAR         ,D3PCOLOR       );
 

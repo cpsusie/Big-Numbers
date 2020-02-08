@@ -14,7 +14,9 @@ private:
   LIGHT &setDefaultSpot();
 
 public:
-  inline LIGHT(int index = -1) : m_index(index) {
+  inline LIGHT() : m_index(-1) {
+  }
+  explicit inline LIGHT(int index) : m_index(index) {
   }
 
   inline LIGHT &operator=(const D3DLIGHT &light) {
@@ -64,7 +66,7 @@ public:
   LIGHT &setDefaultColors();
   LIGHT &setDefault(D3DLIGHTTYPE type);
   static D3DLIGHT createDefaultLight(D3DLIGHTTYPE type = D3DLIGHT_DIRECTIONAL) {
-    return LIGHT(-1).setDefault(type);
+    return LIGHT().setDefault(type);
   }
   String toString(int dec=3) const;
 };

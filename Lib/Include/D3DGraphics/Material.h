@@ -18,7 +18,9 @@ private:
   // If < 0, material is undefined
   int m_id;
 public:
-  inline MATERIAL(int id = -1) : m_id(id) {
+  inline MATERIAL() : m_id(-1) {
+  }
+  inline explicit MATERIAL(int id) : m_id(id) {
   }
   inline MATERIAL &operator=(const D3DMATERIAL &m) {
     *((D3DMATERIAL*)this) = m;
