@@ -43,7 +43,7 @@ public:
     return D3DXCube3(center - D05, center + D05);
   }
   static D3DXCube3 getStdCube() {
-    return getSquareCube(D3DXORIGIN, 2);
+    return D3DXCube3(-1, -1, -1, 1, 1, 1);
   }
 
 };
