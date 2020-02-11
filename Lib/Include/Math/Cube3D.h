@@ -134,7 +134,6 @@ public:
   inline bool operator!=(const Cube3DTemplate &c) const {
     return !(*this == c);
   }
-
   inline bool contains(const Cube3DTemplate &c) const {
     return contains(c.getLBN()) && contains(c.getRTF());
   }
