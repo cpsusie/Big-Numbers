@@ -12,6 +12,7 @@ inline String toString(const LIGHT                &light, int dec=3) {
 inline String toString(const MATERIAL             &material, int dec = 3) {
   return material.toString(dec);
 }
+String toString(      D3DLIGHTTYPE          type     );
 String toString(      D3DFILLMODE           mode     );
 String toString(      D3DSHADEMODE          mode     );
 String toString(      D3DFORMAT             f        );

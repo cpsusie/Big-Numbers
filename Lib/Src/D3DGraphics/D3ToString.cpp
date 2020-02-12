@@ -3,6 +3,15 @@
 
 #define caseStr(f) case f: return _T(#f)
 
+String toString(D3DLIGHTTYPE type) {
+  switch(type) {
+  caseStr(D3DLIGHT_POINT      );
+  caseStr(D3DLIGHT_SPOT       );
+  caseStr(D3DLIGHT_DIRECTIONAL);
+  default: return format(_T("Unknown lightType:%d"), type);
+  }
+}
+
 String toString(D3DFILLMODE mode) {
   switch(mode) {
   caseStr(D3DFILL_POINT    );
