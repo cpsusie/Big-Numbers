@@ -20,6 +20,8 @@ template<typename T> void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *
 
 void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3DXVECTOR3 &v   );
 void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag,       D3DXVECTOR3 &v   );
+void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3DVECTOR   &v   );
+void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag,       D3DVECTOR   &v   );
 
 template<typename T> void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const Cube3DTemplate<T> &cube) {
   XMLNodePtr n = doc.createNode(parent, tag);
@@ -34,3 +36,12 @@ template<typename T> void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *
   getValue(doc, n, _T("rtf"), rtf);
   cube = Cube3DTemplate<T>(lbn, rtf);
 }
+
+void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3DCOLORVALUE &v);
+void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, D3DCOLORVALUE       &v);
+
+void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3DMATERIAL   &v);
+void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, D3DMATERIAL         &v);
+
+void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3DLIGHT      &v);
+void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, D3DLIGHT            &v);
