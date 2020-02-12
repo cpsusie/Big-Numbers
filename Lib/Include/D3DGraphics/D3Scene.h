@@ -4,6 +4,7 @@
 #include <BitSet.h>
 #include <Date.h>
 #include <Timer.h>
+#include <XMLDoc.h>
 #include <PropertyContainer.h>
 #include <NumberInterval.h>
 #include <MFCUtil/D3DeviceFactory.h>
@@ -448,7 +449,7 @@ public:
   inline D3DLIGHTTYPE getLightType(UINT lightIndex) const {
     return getLight(lightIndex).Type;
   }
-  int  addLight(                   const D3DLIGHT &light);
+  UINT addLight(                   const D3DLIGHT &light);
   void removeLight(                UINT lightIndex);
   void setLightEnabled(            UINT lightIndex, bool enabled);
   inline bool isLightEnabled(      UINT lightIndex) const {
@@ -559,12 +560,14 @@ public:
   }
 
   LPD3DXEFFECT      compileEffect(const String &srcText, StringArray &errorMsg);
-  void saveState(const String &fileName) const;
-  void loadState(const String &fileName);
-  void save(      ByteOutputStream &s) const;
-  void load(      ByteInputStream  &s);
-  void saveLights(ByteOutputStream &s) const;
-  void loadLights(ByteInputStream  &s);
+  void save(const String &fileName) const;
+  void load(const String &fileName);
+  void save(         XMLDoc &doc) const;
+  void load(         XMLDoc &doc);
+  void saveLights(   XMLDoc &doc, XMLNodePtr parent) const;
+  void loadLights(   XMLDoc &doc, XMLNodePtr parent);
+  void saveMaterials(XMLDoc &doc, XMLNodePtr parent) const;
+  void loadMaterials(XMLDoc &doc, XMLNodePtr parent);
 };
 
 LPD3DXMESH        createMeshFromVertexFile(     AbstractMeshFactory &amf, const String &fileName, bool doubleSided);

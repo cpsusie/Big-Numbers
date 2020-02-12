@@ -164,7 +164,10 @@ BEGIN
         MENUITEM "Hide coordinatesystem",       ID_HIDECOORDINATESYSTEM
         MENUITEM "Left handed",                 ID_LEFTHANDED
         MENUITEM "Right handed",                ID_RIGHTHANDED
-    END
+        MENUITEM SEPARATOR
+        MENUITEM "Save scene parameters...", ID_SAVESCENEPARAMETERS
+        MENUITEM "Load scene parameters...", ID_LOADSCENEPARAMETERS
+      END
 END
 
 IDR_CONTEXT_MENU_LIGHTCONTROL MENU

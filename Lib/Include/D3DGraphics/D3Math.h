@@ -302,15 +302,15 @@ public:
     return D3DXVECTOR3(1, 1, 1);
   }
 
-  // return vector (0,1,0)
+  // return vector (1,0,0)
   static D3DXVECTOR3 getDefaultDir() {
+    return D3DXVECTOR3(1, 0, 0);
+  }
+  // return vector (0,1,0)
+  static D3DXVECTOR3 getDefaultUp() {
     return D3DXVECTOR3(0, 1, 0);
   }
-  // return vector (0,0,1)
-  static D3DXVECTOR3 getDefaultUp() {
-    return D3DXVECTOR3(0, 0, 1);
-  }
-  // set dir=(0,1,0), up=(0,0,1)
+  // set dir=(1,0,0), up=(0,1,0)
   inline D3PosDirUpScale &resetOrientation() {
     return setOrientation(getDefaultDir(), getDefaultUp());
   }

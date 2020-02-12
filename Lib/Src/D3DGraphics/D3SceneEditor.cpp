@@ -333,8 +333,8 @@ BOOL D3SceneEditor::PreTranslateMessage(MSG *pMsg) {
     case ID_LIGHTCONTROL_SPOTAT           : OnLightControlSpotAt()              ; return true;
     case ID_LIGHTCONTROL_ENABLEEFFECT     : setLightControlRenderEffect(true)   ; return true;
     case ID_LIGHTCONTROL_DISABLEEFFECT    : setLightControlRenderEffect(false)  ; return true;
-//    case ID_SAVESCENEPARAMETERS           : OnSaveSceneParameters()             ; return true;
-//    case ID_LOADSCENEPARAMETERS           : OnLoadSceneParameters()             ; return true;
+    case ID_SAVESCENEPARAMETERS           : OnSaveSceneParameters()             ; return true;
+    case ID_LOADSCENEPARAMETERS           : OnLoadSceneParameters()             ; return true;
     default:
       if((ID_SELECT_LIGHT0 <= pMsg->wParam) && (pMsg->wParam <= ID_SELECT_LIGHT20)) {
         const int index = (int)pMsg->wParam - ID_SELECT_LIGHT0;
@@ -1436,7 +1436,7 @@ void D3SceneEditor::OnSaveSceneParameters() {
     return;
   }
   try {
-    getScene().save(ByteOutputFile(dlg.m_ofn.lpstrFile));
+    getScene().save(dlg.m_ofn.lpstrFile);
     m_paramFileName = dlg.m_ofn.lpstrFile;
   } catch (Exception e) {
     showException(e);
@@ -1455,7 +1455,7 @@ void D3SceneEditor::OnLoadSceneParameters() {
     return;
   }
   try {
-    getScene().load(ByteInputFile(dlg.m_ofn.lpstrFile));
+    getScene().load(dlg.m_ofn.lpstrFile);
     render(SE_RENDERALL);
     m_paramFileName = dlg.m_ofn.lpstrFile;
   } catch(Exception e) {

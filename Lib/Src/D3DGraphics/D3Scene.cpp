@@ -267,7 +267,7 @@ void D3Scene::destroyAllLightControls() {
   }
 }
 
-int D3Scene::addLight(const D3DLIGHT &light) {
+UINT D3Scene::addLight(const D3DLIGHT &light) {
   const UINT oldCount = getLightCount();
   const UINT index    = getFirstFreeLightIndex();
   V(m_device->SetLight(   index, &light));
