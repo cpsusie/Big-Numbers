@@ -232,8 +232,11 @@ public:
   }
   template<typename X, typename Y, typename Z> Point3DP(X x, Y y, Z z) : Point3D((double)x, (double)y, (double)z) {
   }
-  template<typename T> Point3DP(const Point3DTemplate<T> &p) : Point3D((double)p.x, (double)p.y, (double)p.z) {
+  template<typename T> Point3DP(const Point3DTemplate<T> &p) : Point3D(p) {
   }
+  template<typename T> Point3DP(const Size3DTemplate<T> &s) : Point3D(s) {
+  }
+
   inline Point3DP(const D3DXVECTOR3 &v) : Point3D(v.x, v.y, v.z) {
   }
   inline operator D3DXVECTOR3() const {

@@ -42,6 +42,9 @@ public:
   static inline D3DMATERIAL createDefaultMaterial() {
     return MATERIAL().setDefault();
   }
+  // v=0 => transparent, v=1 => opaque
+  MATERIAL &setOpacity(float v);
+  float getOpacity() const;
   String toString(int dec=3) const;
 };
 

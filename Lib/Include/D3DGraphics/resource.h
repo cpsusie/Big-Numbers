@@ -28,8 +28,8 @@
 #define IDC_STATIC_RANGEVALUE           6024
 #define IDC_STATIC_POWER                6025
 #define IDC_SLIDER_POWER                6026
-#define IDC_STATIC_TRANSPARENCY         6027
-#define IDC_SLIDER_TRANSPARENCY         6028
+#define IDC_STATIC_OPACITY              6027
+#define IDC_SLIDER_OPACITY              6028
 #define ID_BUTTON_HIDEWINDOW            6040
 #define ID_CONTROL_OBJECT_POS           34100
 #define ID_CONTROL_OBJECT_SCALE         34120

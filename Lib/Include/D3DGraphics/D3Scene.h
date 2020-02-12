@@ -99,20 +99,20 @@ public:
 
 class D3SceneRenderState {
 public:
-  D3DFILLMODE  m_fillMode;
-  D3DSHADEMODE m_shadeMode;
-  D3DCOLOR     m_backgroundColor;
-  D3DCOLOR     m_ambientColor;
-  DWORD        m_fvf;
-  D3DCULL      m_cullMode;
-  D3DBLEND     m_srcBlend;
-  D3DBLEND     m_dstBlend;
-  bool         m_zEnable                 : 1;
-  bool         m_normalizeNormals        : 1;
-  bool         m_alphaBlendEnable        : 1;
-  bool         m_lighting                : 1;
-  bool         m_specularHighLightEnable : 1;
-  int          m_selectedMaterialId;
+  D3DFILLMODE    m_fillMode;
+  D3DSHADEMODE   m_shadeMode;
+  D3DCOLOR       m_backgroundColor;
+  D3DCOLOR       m_ambientColor;
+  DWORD          m_fvf;
+  D3DCULL        m_cullMode;
+  D3DBLEND       m_srcBlend;
+  D3DBLEND       m_dstBlend;
+  D3DZBUFFERTYPE m_zEnable;
+  bool           m_normalizeNormals        : 1;
+  bool           m_alphaBlendEnable        : 1;
+  bool           m_lighting                : 1;
+  bool           m_specularHighLightEnable : 1;
+  int            m_selectedMaterialId;
 
   D3SceneRenderState() {
     setDefault();
@@ -168,17 +168,22 @@ private:
                          ,const D3DXVECTOR3 &up
                          ,const D3DXVECTOR3 &scale);
 
-  void updateDevViewMatrix();
-  void updateDevProjMatrix();
-  void setDevProjMatrix(       const D3DXMATRIX &m);
-  inline void setDevViewMatrix(const D3DXMATRIX &m) {
-    setDevTransformation(D3DTS_VIEW, m);
+  // call setDevViewMatrix(m_camPDUS.getViewMatrix());
+  D3Scene &updateDevViewMatrix();
+  // call setDevProjMatrix with newly generated projection-matrix
+  D3Scene &updateDevProjMatrix();
+  // call setDevTransformation(D3DTS_PROJECTION, m), and notify propertychangeListeners with propertyId=SP_PROJECTIONTRANSFORMATION
+  D3Scene &setDevProjMatrix(       const D3DXMATRIX &m);
+  // call setDevTransformation(D3DTS_VIEW, m).
+  inline D3Scene &setDevViewMatrix(const D3DXMATRIX &m) {
+    return setDevTransformation(D3DTS_VIEW, m);
   }
   template<typename T> void setDevRenderState(D3DRENDERSTATETYPE id, T value) {
     FV(m_device->SetRenderState(id, (DWORD)value));
   }
 
-  void setDevTransformation(D3DTRANSFORMSTATETYPE id, const D3DXMATRIX &m);
+  // set's the specified transformation on m_device. Doesn't notify propertyChangeListeners
+  D3Scene &setDevTransformation(D3DTRANSFORMSTATETYPE id, const D3DXMATRIX &m);
   D3DXMATRIX getDevTransformation(D3DTRANSFORMSTATETYPE id) const;
 
   // Return -1 if none exist
@@ -222,6 +227,7 @@ public:
     return (int)m_objectArray.size();
   }
 
+  // Set device fill-mode (D3DRS_FILLMODE), and update m_renderState.m_fillMode, if different from current
   D3Scene &setFillMode(D3DFILLMODE fillMode) {
     if(fillMode != getFillMode()) {
       setDevRenderState(D3DRS_FILLMODE, fillMode);
@@ -232,6 +238,7 @@ public:
   inline D3DFILLMODE getFillMode() const {
     return m_renderState.m_fillMode;
   }
+  // Set device' shade-mode (D3DRS_SHADEMODE), and update m_renderState.m_shademode, if different from current
   D3Scene &setShadeMode(D3DSHADEMODE shadeMode) {
     if(shadeMode != getShadeMode()) {
       setDevRenderState(D3DRS_SHADEMODE, shadeMode);
@@ -242,6 +249,7 @@ public:
   inline D3DSHADEMODE getShadeMode() const {
     return m_renderState.m_shadeMode;
   }
+  // set property renderState.m_backgroundColor, and notifies properyChangeListerners. (property-id=SP_BACKGROUNDCOLOR)
   D3Scene &setBackgroundColor(D3DCOLOR color) {
     setProperty(SP_BACKGROUNDCOLOR, m_renderState.m_backgroundColor, color);
     return *this;
@@ -249,6 +257,7 @@ public:
   inline D3PCOLOR getBackgroundColor() const {
     return m_renderState.m_backgroundColor;
   }
+  // set device ambient light (D3DRS_AMBIENT) , and notifies properyChangeListerners. (property-id=SP_AMBIENTCOLOR)
   D3Scene &setAmbientColor(D3DCOLOR color) {
     if(color != getAmbientColor()) {
       setDevRenderState(D3DRS_AMBIENT, color);
@@ -259,6 +268,8 @@ public:
   inline D3PCOLOR getAmbientColor() const {
     return m_renderState.m_ambientColor;
   }
+
+  // call device->SetFVF and update m_renderState.m_fvf if different from current
   D3Scene &D3Scene::setFVF(DWORD fvf) {
     if(fvf != getFVF()) {
       FV(m_device->SetFVF(fvf));
@@ -272,6 +283,7 @@ public:
   inline D3DCULL getCullMode() const {
     return m_renderState.m_cullMode;
   }
+  // set device cullmode (D3DRS_CULLMODE) and and update m_renderState.m_cullmode if different from current
   inline D3Scene &setCullMode(D3DCULL cullMode) {
     if(cullMode != getCullMode()) {
       setDevRenderState(D3DRS_CULLMODE, cullMode);
@@ -282,6 +294,7 @@ public:
   inline D3DBLEND getSrcBlend() const {
     return m_renderState.m_srcBlend;
   }
+  // set device srcblend (D3DRS_SRCBLEND) and and update m_renderState.m_srcBlend if different from current
   inline D3Scene &setSrcBlend(D3DBLEND blend) {
     if(blend != getSrcBlend()) {
       setDevRenderState(D3DRS_SRCBLEND, blend);
@@ -292,6 +305,7 @@ public:
   inline D3DBLEND getDstBlend() const {
     return m_renderState.m_dstBlend;
   }
+  // set device dstblend (D3DRS_DESTBLEND) and and update m_renderState.m_dstBlend if different from current
   inline D3Scene &setDstBlend(D3DBLEND blend) {
     if(blend != getDstBlend()) {
       setDevRenderState(D3DRS_DESTBLEND, blend);
@@ -300,16 +314,19 @@ public:
     return *this;
   }
 
-  D3Scene &setZEnable(bool enabled) {
-    if(enabled != isZEnable()) {
-      setDevRenderState(D3DRS_AMBIENT, enabled ? TRUE : FALSE);
-      m_renderState.m_zEnable = enabled;
+  // set device zenable (D3DRS_ZENABLE) and and update m_renderState.m_zEnable if different from current
+  D3Scene &setZEnable(D3DZBUFFERTYPE bufferType) {
+    if(bufferType != getZEnable()) {
+      setDevRenderState(D3DRS_ZENABLE, bufferType);
+      m_renderState.m_zEnable = bufferType;
     }
     return *this;
   }
-  inline bool isZEnable() const {
+  inline D3DZBUFFERTYPE getZEnable() const {
     return m_renderState.m_zEnable;
   }
+
+  // set device normalizeNormals (D3DRS_NORMALIZENORMALS) and and update m_renderState.m_normalizeNormals if different from current
   D3Scene &setNormalizeNormalsEnable(bool enabled) {
     if(enabled != isNormalizeNormalsEnable()) {
       setDevRenderState(D3DRS_NORMALIZENORMALS, enabled ? TRUE : FALSE);
@@ -320,6 +337,7 @@ public:
   inline bool isNormalizeNormalsEnable() const {
     return m_renderState.m_normalizeNormals;
   }
+  // set device enableAlphaBlend (D3DRS_ALPHABLENDENABLE) and and update m_renderState.m_alphaBlendEnable if different from current
   D3Scene &D3Scene::setAlphaBlendEnable(bool enabled) {
     if(enabled != isAlphaBlendEnable()) {
       setDevRenderState(D3DRS_ALPHABLENDENABLE, enabled ? TRUE : FALSE);
@@ -330,6 +348,7 @@ public:
   inline bool isAlphaBlendEnable() const {
     return m_renderState.m_alphaBlendEnable;
   }
+  // set device lightning (D3DRS_LIGHTING) and and update m_renderState.m_lighting if different from current
   D3Scene &setLightingEnable(bool enabled) {
     if(enabled != isLightingEnable()) {
       setDevRenderState(D3DRS_LIGHTING, enabled ? TRUE : FALSE);
@@ -341,6 +360,8 @@ public:
     return m_renderState.m_lighting;
   }
 
+  // set device specularHighLightEnable (D3DRS_SPECULARENABLE),
+  // and update m_renderState.m_specularHighLightEnable if different from current
   D3Scene &setSpecularEnable(bool enabled) {
     if(enabled != isSpecularEnabled()) {
       setDevRenderState(D3DRS_SPECULARENABLE, enabled ? TRUE : FALSE);
@@ -351,6 +372,9 @@ public:
   inline bool isSpecularEnabled() const {
     return m_renderState.m_specularHighLightEnable;
   }
+  // call m_device->SetMaterial(&mat), where mat is a material created in Scene internal table,
+  // and update m_renderState.m_selectedMaterialId = materialId;
+  // a warning is shown, if material is undefined in table
   D3Scene &selectMaterial(UINT materialId);
   inline D3Scene &unselectMaterial() {
     m_renderState.m_selectedMaterialId = -1;
@@ -397,18 +421,23 @@ public:
   void setCamOrientation(const D3DXVECTOR3     &dir, const D3DXVECTOR3 &up);
   void setCamLookAt(     const D3DXVECTOR3     &point);
   String getCamString() const;
-  void setViewAngel(float angel);
+  D3Scene &setViewAngel(float angel);
   inline float getViewAngel() const {
     return m_viewAngel;
   }
-  void setNearViewPlane(float zn);
+  D3Scene &setNearViewPlane(float zn);
   inline float getNearViewPlane() const {
     return m_nearViewPlane;
   }
   inline D3DXMATRIX getDevProjMatrix() const {
     return getDevTransformation(D3DTS_PROJECTION);
   }
-
+  inline D3Scene &setDevWorldMatrix(const D3DXMATRIX &world) {
+    return setDevTransformation(D3DTS_WORLD, world);
+  }
+  inline D3DXMATRIX getDevWorldMatrix() const {
+    return getDevTransformation(D3DTS_WORLD);
+  }
   void setAnimationFrameIndex(int &oldValue, int newValue);
 
 // --------------------------- LIGHT ----------------------------

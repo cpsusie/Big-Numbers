@@ -34,8 +34,8 @@ END_MESSAGE_MAP()
 BOOL CMaterialDlg::OnInitDialog() {
   __super::OnInitDialog();
   m_origName = getWindowText(this);
-  initSlider(IDC_SLIDER_POWER       , 0.1, 400, 200, LOGARITHMIC);
-  initSlider(IDC_SLIDER_TRANSPARENCY, 1  ,   0, 200);
+  initSlider(IDC_SLIDER_POWER  , 0.1, 400, 200, LOGARITHMIC);
+  initSlider(IDC_SLIDER_OPACITY, 1  ,   0, 200);
   return TRUE;
 }
 
@@ -58,7 +58,7 @@ void CMaterialDlg::valueToWindow(const MATERIAL &v) {
   setWindowText(this, format(_T("%s (Material %d)"), m_origName.cstr(), v.getId()));
 
   setSliderPower(v.Power);
-  setSliderTransparency(v.Diffuse.a);
+  setSliderOpacity(v.getOpacity());
   setD3DCOLORVALUE(IDC_COLORMAP_AMBIENT , v.Ambient );
   setD3DCOLORVALUE(IDC_COLORMAP_DIFFUSE , v.Diffuse );
   setD3DCOLORVALUE(IDC_COLORMAP_SPECULAR, v.Specular);
@@ -75,9 +75,8 @@ void CMaterialDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar) {
 
 void CMaterialDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar) {
   MATERIAL v  = getCurrentValue();
-  v.Diffuse.a = getSliderTransparency();
-  setCurrentValue(v);
-  showTransparency(v.Diffuse.a);
+  setCurrentValue(v.setOpacity(getSliderOpacity()));
+  showOpacity(v.getOpacity());
   __super::OnHScroll(nSBCode, nPos, pScrollBar);
 }
 
@@ -94,17 +93,17 @@ void CMaterialDlg::showPower(double v) {
   setWindowText(this, IDC_STATIC_POWER, format(_T("%.2f"), v));
 }
 
-void CMaterialDlg::setSliderTransparency(double v) {
-  setSliderValue(IDC_SLIDER_TRANSPARENCY, v);
-  showTransparency(v);
+void CMaterialDlg::setSliderOpacity(double v) {
+  setSliderValue(IDC_SLIDER_OPACITY, v);
+  showOpacity(v);
 }
 
-float CMaterialDlg::getSliderTransparency() const {
-  return getSliderValue(IDC_SLIDER_TRANSPARENCY);
+float CMaterialDlg::getSliderOpacity() const {
+  return getSliderValue(IDC_SLIDER_OPACITY);
 }
 
-void  CMaterialDlg::showTransparency(double v) {
-  setWindowText(this, IDC_STATIC_TRANSPARENCY, format(_T("%.1f%%"), v*100.0));
+void  CMaterialDlg::showOpacity(double v) {
+  setWindowText(this, IDC_STATIC_OPACITY, format(_T("%.1f%%"), v*100.0));
 }
 
 void CMaterialDlg::OnShowWindow(BOOL bShow, UINT nStatus) {
@@ -142,7 +141,7 @@ void CMaterialDlg::OnColorchangedColormapAmbient(){
 void CMaterialDlg::OnColorchangedColormapDiffuse() {
   MATERIAL v  = getCurrentValue();
   v.Diffuse   = getD3DCOLORVALUE(IDC_COLORMAP_DIFFUSE);
-  v.Diffuse.a = getSliderTransparency();
+  v.setOpacity(getSliderOpacity());
   setCurrentValue(v);
 }
 

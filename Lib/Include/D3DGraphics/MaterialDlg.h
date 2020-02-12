@@ -14,9 +14,9 @@ private:
   void  showPower(double v);
   void  setSliderPower(double v);
   float getSliderPower() const;
-  void  setSliderTransparency(double v);
-  float getSliderTransparency() const;
-  void  showTransparency(double v);
+  void  setSliderOpacity(double v);
+  float getSliderOpacity() const;
+  void  showOpacity(double v);
 public:
   CMaterialDlg(PropertyChangeListener *listener, CWnd *pParent = NULL);
   enum { IDD = IDD_MATERIAL_DIALOG };

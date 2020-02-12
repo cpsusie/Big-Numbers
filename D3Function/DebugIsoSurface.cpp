@@ -130,18 +130,18 @@ int OctaObject::getCornerMarkMaterial(bool positive) {
 }
 
 void OctaObject::draw() {
-  getScene().selectMaterial(blueMatIndex.getId(getScene(), D3D_BLUE));
+  D3Scene &s = getScene();
   D3DXMATRIX objWorld = getPDUS().getWorldMatrix();
   D3DXMATRIX tm;
   D3DXMatrixTranslation(&tm, m_center.x, m_center.y, m_center.z);
   m_world = objWorld * tm;
-  m_device->SetTransform(D3DTS_WORLD, &m_world);
+  s.selectMaterial(blueMatIndex.getId(getScene(), D3D_BLUE)).setDevWorldMatrix(m_world);
   m_wireFrameBox->draw();
   for(UINT i = 0; i < ARRAYSIZE(m_cornerCenters); i++) {
     const D3DXVECTOR3 &cc = m_cornerCenters[i];
     D3DXMatrixTranslation(&tm, cc.x, cc.y, cc.z);
     const D3DXMATRIX cornerWorld = m_world * tm;
-    m_device->SetTransform(D3DTS_WORLD, &cornerWorld);
+    s.setDevWorldMatrix(cornerWorld);
     const int markIndex = m_positive.contains(i) ? 1 : 0;
     m_cornerMark[markIndex]->draw();
   }
@@ -210,8 +210,7 @@ CompactArray<Line3D> TetraObject::createLineArray(const Tetrahedron &tetra) cons
 
 void TetraObject::draw() {
   if(m_linesObject == NULL) return;
-  getScene().selectMaterial(yellowMatIndex.getId(getScene(), D3D_YELLOW));
-  m_device->SetTransform(D3DTS_WORLD, &getWorld());
+  getScene().selectMaterial(yellowMatIndex.getId(getScene(), D3D_YELLOW)).setDevWorldMatrix(getWorld());
   m_linesObject->draw();
 }
 
@@ -274,13 +273,14 @@ CompactArray<Line3D> FacesObject::createLineArray(CompactArray<Face3> &faceArray
 }
 
 void FacesObject::draw() {
-  m_device->SetTransform(D3DTS_WORLD, &getPDUS().getWorldMatrix());
+  D3Scene &s = getScene();
+  s.setDevWorldMatrix(getPDUS().getWorldMatrix());
   if(m_prevFaceObjects) {
-    getScene().selectMaterial(blackMatIndex.getId(getScene(), D3D_BLACK));
+    s.selectMaterial(blackMatIndex.getId(s, D3D_BLACK));
     m_prevFaceObjects->draw();
   }
   if(m_currentFaceObject) {
-    getScene().selectMaterial(cyanMatIndex.getId(getScene(), D3D_CYAN));
+    s.selectMaterial(cyanMatIndex.getId(s, D3D_CYAN));
     m_currentFaceObject->draw();
   }
 }
@@ -333,13 +333,13 @@ CompactArray<Line3D> VertexObject::createLineArray(float lineLength) const {
 void VertexObject::draw() {
   const size_t n = m_positions.size();
   if(n == 0) return;
-  getScene().selectMaterial(whiteMatIndex.getId(getScene(), D3D_WHITE));
-  D3DXMATRIX objWorld = getPDUS().getWorldMatrix(), tm, world;
+  D3Scene &s = getScene();
+  s.selectMaterial(whiteMatIndex.getId(getScene(), D3D_WHITE));
+  D3DXMATRIX objWorld = getPDUS().getWorldMatrix(), tm;
   for(size_t i = 0; i < n; i++) {
     const D3DXVECTOR3 &p = m_positions[i];
     D3DXMatrixTranslation(&tm, p.x, p.y, p.z);
-    world = objWorld * tm;
-    m_device->SetTransform(D3DTS_WORLD, &world);
+    s.setDevWorldMatrix(objWorld * tm);
     m_linesObject->draw();
   }
 }

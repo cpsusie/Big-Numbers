@@ -27,12 +27,12 @@ D3SceneEditor::~D3SceneEditor() {
 
 void D3SceneEditor::init(D3SceneContainer *sceneContainer) {
   m_sceneContainer    = sceneContainer;
-  CLightDlg *dlg1 = new CLightDlg(   this); TRACE_NEW(dlg1);
+  CLightDlg    *dlg1  = new CLightDlg(   this); TRACE_NEW(dlg1);
   m_propertyDialogMap.addDialog(dlg1);
-  CMaterialDlg *dlg2 = new CMaterialDlg(this); TRACE_NEW(dlg2);
+  CMaterialDlg *dlg2  = new CMaterialDlg(this); TRACE_NEW(dlg2);
   m_propertyDialogMap.addDialog(dlg2);
 
-  m_currentControl = CONTROL_IDLE;
+  m_currentControl    = CONTROL_IDLE;
   getScene().addPropertyChangeListener(this);
   setFlags(SE_INITDONE);
   CHECKINVARIANT();

@@ -2,7 +2,7 @@
 #include <D3DGraphics/D3ToString.h>
 
 MATERIAL &MATERIAL::setDefault() {
-  ZeroMemory(this, sizeof(D3DMATERIAL));
+  ZeroMemory(this, sizeof(MATERIAL));
   Ambient  = D3DXCOLOR(0.10f , 0.10f , 0.16f, 1.0f);
   Diffuse  = D3DXCOLOR(0.1f  , 0.086f, 0.29f, 1.0f);
   Specular = D3DXCOLOR(0.835f, 0.808f, 0.95f, 1.0f);
@@ -18,6 +18,15 @@ D3DMATERIAL MATERIAL::createMaterialWithColor(D3DCOLOR color) { // static
   mat.Diffuse  = cv;
   mat.Emissive = cv;
   return mat;
+}
+
+MATERIAL &MATERIAL::setOpacity(float v) {
+  Diffuse.a = minMax(v, 0.0f, 1.0f);
+  return *this;
+}
+
+float MATERIAL::getOpacity() const {
+  return Diffuse.a;
 }
 
 String MATERIAL::toString(int dec) const {

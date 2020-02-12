@@ -24,16 +24,16 @@ public:
   {
   }
   inline D3DXVECTOR3 getMin() const {
-    return D3DXVECTOR3(getX(), getY(), getZ());
+    return D3DXVECTOR3(Left(), Bottom(), Near());
   }
   inline D3DXVECTOR3 getMax() const {
-    return D3DXVECTOR3(getX()+getWidth(), getY()+getHeight(), getZ()+getDepth());
+    return D3DXVECTOR3(Right(),Top(),Far());
   }
   D3DXCube3 operator+(const D3DXVECTOR3 &p) const {
-    return D3DXCube3(getMin() + p, getSize());
+    return D3DXCube3(getMin() + p, size());
   }
   D3DXCube3 operator-(const D3DXVECTOR3 &p) const {
-    return D3DXCube3(getMin() - p, getSize());
+    return D3DXCube3(getMin() - p, size());
   }
 
   static D3DXCube3 getSquareCube(const D3DXVECTOR3 &center, float sideLength) {
@@ -42,8 +42,7 @@ public:
     const D3DXVECTOR3 D05(S05, S05, S05); // half diagonal
     return D3DXCube3(center - D05, center + D05);
   }
-  static D3DXCube3 getStdCube() {
-    return D3DXCube3(-1, -1, -1, 1, 1, 1);
+  static inline D3DXCube3 getStdCube() {
+    return D3DXCube3(D3DXVECTOR3(-1, -1, -1), D3DXVECTOR3(1,1,1));
   }
-
 };

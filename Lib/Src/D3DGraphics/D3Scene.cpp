@@ -83,17 +83,20 @@ D3Scene &D3Scene::selectMaterial(UINT materialId) {
   if(materialId != m_renderState.m_selectedMaterialId) {
     const MATERIAL &mat = getMaterial(materialId);
     if(!mat.isDefined()) {
-
+      showWarning(_T("Material with id=%u is undefined"), materialId);
+      return *this;
     }
     FV(m_device->SetMaterial(&mat));
-    if(mat.Diffuse.a < 1.0) {
+    if(mat.getOpacity() < 1.0f) {
       setCullMode(D3DCULL_CCW)
-     .setZEnable(false)
+     .setZEnable(D3DZB_FALSE)
      .setAlphaBlendEnable(true)
      .setSrcBlend(D3DBLEND_SRCALPHA)
      .setDstBlend(D3DBLEND_INVSRCALPHA);
     } else {
-      setCullMode(D3DCULL_CCW).setZEnable(true).setAlphaBlendEnable(false);
+      setCullMode(D3DCULL_CCW)
+     .setZEnable(D3DZB_TRUE)
+     .setAlphaBlendEnable(false);
     }
     m_renderState.m_selectedMaterialId = materialId;
   }
@@ -150,22 +153,24 @@ void D3Scene::resetDefaultObjTrans() {
   m_defaultObjPDUS.resetPos().resetOrientation().resetScale();
 }
 
-void D3Scene::updateDevViewMatrix() {
-  setDevViewMatrix(m_camPDUS.getViewMatrix());
+D3Scene &D3Scene::updateDevViewMatrix() {
+  return setDevViewMatrix(m_camPDUS.getViewMatrix());
 }
 
-void D3Scene::setViewAngel(float angel) {
+D3Scene &D3Scene::setViewAngel(float angel) {
   if(angel > 0 && angel < D3DX_PI) {
     m_viewAngel = angel;
     updateDevProjMatrix();
   }
+  return *this;
 }
 
-void D3Scene::setNearViewPlane(float zn) {
+D3Scene &D3Scene::setNearViewPlane(float zn) {
   if(zn > 0) {
     m_nearViewPlane = zn;
     updateDevProjMatrix();
   }
+  return *this;
 }
 
 String D3Scene::getCamString() const {
@@ -176,22 +181,24 @@ String D3Scene::getCamString() const {
                );
 }
 
-void D3Scene::updateDevProjMatrix() {
+D3Scene &D3Scene::updateDevProjMatrix() {
   const CSize size = getClientRect(getHwnd()).Size();
   D3DXMATRIX matProj;
-  setDevProjMatrix(D3DXMatrixPerspectiveFov(matProj, m_viewAngel, (float)size.cx/size.cy, m_nearViewPlane, 200.0f, getRightHanded()));
+  return setDevProjMatrix(D3DXMatrixPerspectiveFov(matProj, m_viewAngel, (float)size.cx/size.cy, m_nearViewPlane, 200.0f, getRightHanded()));
 }
 
-void D3Scene::setDevProjMatrix(const D3DXMATRIX &m) {
+D3Scene &D3Scene::setDevProjMatrix(const D3DXMATRIX &m) {
   const D3DXMATRIX currentProj = getDevProjMatrix();
   setDevTransformation(D3DTS_PROJECTION, m);
   if(m != currentProj) {
     notifyPropertyChanged(SP_PROJECTIONTRANSFORMATION, &currentProj, &m);
   }
+  return *this;
 }
 
-void D3Scene::setDevTransformation(D3DTRANSFORMSTATETYPE id, const D3DXMATRIX &m) {
+D3Scene &D3Scene::setDevTransformation(D3DTRANSFORMSTATETYPE id, const D3DXMATRIX &m) {
   V(m_device->SetTransform(id, &m));
+  return *this;
 }
 
 D3DXMATRIX D3Scene::getDevTransformation(D3DTRANSFORMSTATETYPE id) const {
@@ -473,7 +480,7 @@ void D3Scene::render() {
     D3SceneObject *obj = it.next();
     if(obj->isVisible()) {
       obj->getPDUS().setRightHanded(getRightHanded());
-      V(m_device->SetTransform(D3DTS_WORLD, &obj->getWorldMatrix()));
+      setDevWorldMatrix(obj->getWorldMatrix());
       obj->draw();
     }
   }

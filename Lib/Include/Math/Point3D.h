@@ -10,33 +10,33 @@ public:
   inline Size3DTemplate() {
     cx = cy = cz = 0;
   }
+  template<typename TS> inline Size3DTemplate(const Size3DTemplate<TS> &src)
+    : cx((T)src.cx), cy((T)src.cy), cz((T)src.cz) {
+  }
   inline Size3DTemplate(const T &_cx, const T&_cy, const T&_cz) : cx(_cx), cy(_cy), cz(_cz) {
   }
-  inline Size3DTemplate operator-(const Size3DTemplate &s) const {
-    return Size3DTemplate(cx - s.cx, cy - s.cy, cz - s.cz);
+  template<typename TS> inline Size3DTemplate operator-(const Size3DTemplate<TS> &s) const {
+    return Size3DTemplate(cx - (T)s.cx, cy - (T)s.cy, cz - (T)s.cz);
   }
-  inline Size3DTemplate operator+(const Size3DTemplate &s) const {
-    return Size3DTemplate(cx + s.cx, cy + s.cy, cz + s.cz);
+  template<typename TS> inline Size3DTemplate operator+(const Size3DTemplate<TS> &s) const {
+    return Size3DTemplate(cx + (T)s.cx, cy + (T)s.cy, cz + (T)s.cz);
   }
-  friend inline Size3DTemplate operator*(const T &factor, const Size3DTemplate &s) {
-    return Size3DTemplate(factor*s.cx, factor*s.cy, factor*s.cz);
+  template<typename TS> inline Size3DTemplate operator*(const TS &d) const {
+    const T factor = (T)d;
+    return Size3DTemplate(cx * factor, cy * factor, cz * factor);
   }
-  inline Size3DTemplate operator*(const T &factor) const {
-    return Size3DTemplate(cx*factor, cy*factor, cz*factor);
-  }
-  inline Size3DTemplate operator/(const T &factor) const {
+  template<typename TS> inline Size3DTemplate operator/(const TS &d) const {
+    const T factor = (T)d;
     return Size3DTemplate(cx / factor, cy / factor, cz / factor);
   }
-  inline Size3DTemplate &operator*=(const T &factor) {
-    cx *= factor;
-    cy *= factor;
-    cz *= factor;
+  template<typename TS> inline Size3DTemplate &operator*=(const TS &d) {
+    const T factor = (T)d;
+    cx *= factor; cy *= factor; cz *= factor;
     return *this;
   }
-  inline Size3DTemplate &operator/=(const T &factor) {
-    cx /= factor;
-    cy /= factor;
-    cz /= factor;
+  template<typename TS> inline Size3DTemplate &operator/=(const TS &d) {
+    const T factor = (T)d;
+    cx /= factor; cy /= factor; cz /= factor;
     return *this;
   }
 
@@ -76,9 +76,15 @@ public:
   T x, y, z;
   inline Point3DTemplate() {
   }
-  inline Point3DTemplate(const Size3DTemplate<T> &s) : x(s.cx), y(s.cy), z(s.cz) {
+  template<typename TP> inline Point3DTemplate(const Point3DTemplate<TP> &src)
+    : x((T)src.x), y((T)src.y), z((T)src.z) {
   }
-  inline Point3DTemplate(const T &_x, const T &_y, const T &_z) : x(_x), y(_y), z(_z) {
+  template<typename TS> inline Point3DTemplate(const Size3DTemplate<TS> &s)
+    : x((T)s.cx), y((T)s.cy), z((T)s.cz)
+  {
+  }
+  inline Point3DTemplate(const T &_x, const T &_y, const T &_z)
+    : x(_x), y(_y), z(_z) {
   }
   inline T length() const {
     return sqrt(x*x + y*y + z*z);
@@ -92,44 +98,64 @@ public:
     return *this;
   }
 
-  inline Point3DTemplate &operator+=(const Point3DTemplate &p) {
-    x += p.x; y += p.y; z += p.z; return *this;
+  template<typename TP> inline Point3DTemplate &operator+=(const Point3DTemplate<TP> &p) {
+    x += (T)p.x; y += (T)p.y; z += (T)p.z;
+    return *this;
   }
-  inline Point3DTemplate &operator-=(const Point3DTemplate &p) {
-    x -= p.x; y -= p.y; z -= p.z; return *this;
+  template<typename TP> inline Point3DTemplate &operator-=(const Point3DTemplate<TP> &p) {
+    x -= (T)p.x; y -= (T)p.y; z -= (T)p.z;
+    return *this;
   }
-  inline T operator*(const Point3DTemplate &p) const {
-    return x*p.x + y*p.y + z*p.z;
-  };
-  inline Point3DTemplate &operator*=(const T &d) {
-    x *= d; y *= d; z *= d; return *this;
+  template<typename TP> inline Point3DTemplate operator+(const Point3DTemplate<TP> &p) const {
+    return Point3DTemplate(x + (T)p.x, y + (T)p.y, z + (T)p.z);
   }
-  inline Point3DTemplate &operator/=(const T &d) {
-    x /= d; y /= d; z /= d; return *this;
+  template<typename TP> inline Size3DTemplate<T> operator-(const Point3DTemplate<TP> &p) const {
+    return Size3DTemplate<T>(x - (T)p.x, y - (T)p.y, z - (T)p.z);
   }
-  inline Point3DTemplate operator+(const Point3DTemplate &p) const {
-    return Point3DTemplate(x + p.x, y + p.y, z + p.z);
+  template<typename TP> inline T operator*(const Point3DTemplate<TP> &p) const {
+    return x * (T)p.x + y * (T)p.y + z * (T)p.z;
   }
-  inline Point3DTemplate operator-(const Point3DTemplate &p) const {
-    return Point3DTemplate(x - p.x, y - p.y, z - p.z);
+  template<typename TS> inline Point3DTemplate operator+(const Size3DTemplate<TS> &sz) const {
+    return Point3DTemplate(x + (T)sz.cx, y + (T)sz.cy, z + (T)sz.cz);
   }
-  inline Point3DTemplate operator*(const T &d) const {
-    return Point3DTemplate(x * d, y * d, z * d);
+  template<typename TS> inline Point3DTemplate operator-(const Size3DTemplate<TS> &sz) const {
+    return Point3DTemplate(x - (T)sz.cx, y - (T)sz.cy, z - (T)sz.cz);
   }
-  inline Point3DTemplate operator/(const T &d) const {
-    return Point3DTemplate(x / d, y / d, z / d);
+  template<typename TS> inline Point3DTemplate &operator+=(const Size3DTemplate<TS> &sz) {
+    x += (T)sz.cx; y += (T)sz.cy; z += (T)sz.cz;  return *this;
+  }
+  template<typename TS> inline Point3DTemplate &operator-=(const Size3DTemplate<TS> &sz) {
+    x -= (T)sz.cx; y -= (T)sz.cy; z -= (T)sz.cz;  return *this;
+  }
+  template<typename TS> inline Point3DTemplate operator*(const TS &d) const {
+    const T factor = (T)d;
+    return Point3DTemplate(x * factor, y * factor, z * factor);
+  }
+  template<typename TS> inline Point3DTemplate operator/(const TS &d) const {
+    const T factor = (T)d;
+    return Point3DTemplate(x / factor, y / factor, z / factor);
+  }
+  template<typename TS> inline Point3DTemplate &operator*=(const TS &d) {
+    const T factor = (T)d;
+    x *= factor; y *= factor; z *= factor;
+    return *this;
+  }
+  template<typename TS> inline Point3DTemplate &operator/=(const TS &d) {
+    const T factor = (T)d;
+    x /= factor; y /= factor; z /= factor;
+    return *this;
   }
   inline Point3DTemplate operator-() const {
     return Point3DTemplate(-x, -y, -z);
   }
-  inline T distance(const Point3DTemplate &p) const {
-    return sqrt(sqr(x-p.x)+sqr(y-p.y)+sqr(z-p.z));
+  template<typename TP> inline T distance(const Point3DTemplate<TP> &p) const {
+    return (*this - p).length();
   }
   inline bool operator==(const Point3DTemplate &p) const {
     return (x==p.x) && (y==p.y) && (z==p.z);
   }
   inline bool operator!=(const Point3DTemplate &p) const {
-    return (x != p.x) || (y != p.y) || (z != p.z);
+    return !(*this == p);
   }
   inline bool operator<(const Point3DTemplate &p) const {
     return (x < p.x) && (y < p.y) && (z < p.z);
@@ -144,24 +170,24 @@ public:
 };
 
 template<typename T> T distance(const Point3DTemplate<T> &p1, const Point3DTemplate<T> &p2) {
-  return sqrt(sqr(p1.x - p2.x) + sqr(p1.y - p2.y) + sqr(p1.z - p2.z));
+  return p1.distance(p2);
 }
 
 // angle in radians between p1 and p2
 template<typename T> T angle(const Point3DTemplate<T> &p1, const Point3DTemplate<T> &p2) {
   const T l1 = p1.length();
   const T l2 = p2.length();
-  if((l1 == 0) || (l2 == 0)) {
-    return 0;
+  if((l1 == (T)0) || (l2 == (T)0)) {
+    return (T)0;
   } else {
     const T f = (p1 * p2) / (l1 * l2);
     if(f <= -1) {
-      return M_PI;
+      return (T)M_PI;
     } else if(f >= 1) {
-      return 0;
+      return (T)0;
     } else {
 //      debugLog("l1:%le, l2:%le, p1:%s, p2:%s\n", l1, l2, p1.toString(10).cstr(), p2.toString(10).cstr());
-      return acos(f);
+      return (T)acos(f);
     }
   }
 }

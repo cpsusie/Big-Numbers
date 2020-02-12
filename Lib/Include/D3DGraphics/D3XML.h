@@ -23,8 +23,8 @@ void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag,       D3DXVECTOR
 
 template<typename T> void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const Cube3DTemplate<T> &cube) {
   XMLNodePtr n = doc.createNode(parent, tag);
-  setValue(doc, n, _T("lbn"), cube.getLBN());
-  setValue(doc, n, _T("rtf"), cube.getRTF());
+  setValue(doc, n, _T("lbn"), cube.LBN());
+  setValue(doc, n, _T("rtf"), cube.RTF());
 }
 
 template<typename T> void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, Cube3DTemplate<T> &cube) {
