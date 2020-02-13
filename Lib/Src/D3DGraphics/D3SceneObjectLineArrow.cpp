@@ -14,23 +14,23 @@ D3SceneObjectLineArrow::D3SceneObjectLineArrow(D3Scene &scene, const Vertex &fro
   VertexNormal *vertices = allocateVertexArray<VertexNormal>(ITEMCOUNT);
 
   vertices[0].setPos(from);
-  vertices[1].setPos(to); vertices[1].setNormal(vn);
+  vertices[1].setPos(to).setNormal(vn);
   const D3DXVECTOR3 cirkelCenter = (D3DXVECTOR3)to - 0.1f * vn;
   D3DXVECTOR3   radius1 = ortonormalVector(v) * 0.04f;
   D3DXVECTOR3   p = cirkelCenter + radius1;
   VertexNormal *vtx1 = vertices + 2;
-  vtx1->setPos(p); vtx1->setNormal(radius1); vtx1++;
+  vtx1->setPos(p).setNormal(radius1); vtx1++;
 
   D3DXVECTOR3   radius2 = radius1;
   VertexNormal *vtx2 = vertices + FANCOUNT + 3;
-  vtx2->setPos(cirkelCenter); vtx2->setNormal(-vn); vtx2++;
-  vtx2->setPos(p);            vtx2->setNormal(-vn); vtx2++;
+  vtx2->setPos(cirkelCenter).setNormal(-vn); vtx2++;
+  vtx2->setPos(p).setNormal(-vn);            vtx2++;
 
   for (int i = 0; i < FANCOUNT; i++) {
     radius1 = rotate(radius1, v, radians(360.0f / FANCOUNT));
     radius2 = rotate(radius2, v, -radians(360.0f / FANCOUNT));
-    vtx1[i].setPos(cirkelCenter + radius1); vtx1[i].setNormal(unitVector(radius1));
-    vtx2[i].setPos(cirkelCenter + radius2); vtx2[i].setNormal(-vn);
+    vtx1[i].setPos(cirkelCenter + radius1).setNormal(unitVector(radius1));
+    vtx2[i].setPos(cirkelCenter + radius2).setNormal(-vn);
   }
   unlockVertexArray();
 }

@@ -44,53 +44,77 @@ inline float dist(const D3DXVECTOR3 &p1, const D3DXVECTOR3 &p2) {
 #define     radians(x) D3DXToRadian(x)
 #define     degrees(x) D3DXToDegree(x)
 
-#define POSITION_TRAITS                                                                                         \
-  inline void setPos(   double _x, double _y, double _z) { x  = (float)_x ; y  = (float)_y ; z  = (float)_z ; } \
-  inline void setPos(   const Vertex      &v)            { x  = v.x       ; y  = v.y       ; z  = v.z       ; } \
-  inline void setPos(   const D3DXVECTOR3 &v)            { x  = v.x       ; y  = v.y       ; z  = v.z       ; } \
-  inline void setPos(   const Point3D     &p)            { x  = (float)p.x; y  = (float)p.y; z  = (float)p.z; } \
-  inline Vertex operator-() const                        { return Vertex(     -x,-y,-z); }                      \
-  inline operator D3DXVECTOR3() const                    { return D3DXVECTOR3( x, y, z); }                      \
+#define A_POSITION_TRAITS(className)                                                                                                \
+  template<typename TX,typename TY,typename TZ> className &setPos(const TX &_x, const TY &_y, const TZ &_z) {                       \
+    x = (float)_x; y = (float)_y; z = (float)_z; return *this;                                                                      \
+  }                                                                                                                                 \
+  template<typename TV>                         className &setPos(const TV &v) {                                                    \
+    x = (float)v.x; y = (float)v.y; z = (float)v.z; return *this;                                                                   \
+  }                                                                                                                                 \
+  template<typename T>                          className &setPos(const Point3DTemplate<T> &p) {                                    \
+    x = (float)p.x; y = (float)p.y; z = (float)p.z; return *this;                                                                   \
+  }                                                                                                                                 \
+  inline Vertex operator-() const                        { return Vertex(     -x,-y,-z); }                                          \
+  inline operator D3DXVECTOR3() const                    { return D3DXVECTOR3( x, y, z); }                                          \
   inline operator Point3D()     const                    { return Point3D(     x, y, z); }
 
-#define NORMAL_TRAITS                                                                                           \
-  inline void setNormal(double _x, double _y, double _z) { nx = (float)_x ; ny = (float)_y ; nz = (float)_z ; } \
-  inline void setNormal(const Vertex                 &n) { nx = n.x       ; ny = n.y       ; nz = n.z       ; } \
-  inline void setNormal(const D3DXVECTOR3            &n) { nx = n.x       ; ny = n.y       ; nz = n.z       ; } \
-  inline void setNormal(const Point3D                &n) { nx = (float)n.x; ny = (float)n.y; nz = (float)n.z; } \
-  inline void reverseNormal() { nx*=-1; ny*=-1; nz*=-1; }
+#define A_NORMAL_TRAITS(className)                                                                                                  \
+  template<typename TX,typename TY,typename TZ> className &setNormal(const TX &_x, const TX &_y, const TX &_z) {                    \
+    nx = (float)_x ; ny = (float)_y ; nz = (float)_z; return *this;                                                                 \
+  }                                                                                                                                 \
+  template<typename TV> className &setNormal(const TV &n) {                                                                         \
+    nx = (float)n.x; ny = (float)n.y; nz = (float)n.z; return *this;                                                                \
+  }                                                                                                                                 \
+  inline className &reverseNormal() { nx = -nx; ny = -ny; nz = -nz; return *this; }
 
-#define EMPTY_NORMAL_TRAITS inline void setNormal(const Vertex &n) { ; /* do nothing */ }
+#define E_NORMAL_TRAITS(className)                                                                                                  \
+  template<typename TX,typename TY,typename TZ> className &setNormal(const TX &_x, const TX &_y, const TX &_z) { return *this; }    \
+  template<typename TV>                         className &setNormal(const TV &n)                              { return *this; }    \
+  inline                                        className &reverseNormal()                                     { return *this; }
 
-#define DIFFUSE_TRAITS \
-  inline void setDiffuse(D3DCOLOR _diffuse) { diffuse = _diffuse; }
+#define A_DIFFUSE_TRAITS(className)                                                                                                 \
+  inline                                        className &setDiffuse(D3DCOLOR _diffuse) {                                          \
+    diffuse = _diffuse; return *this;                                                                                               \
+  }
 
-#define EMPTY_DIFFUSE_TRAITS inline void setDiffuse(D3DCOLOR _diffuse) { ; /* do nothing */ }
+#define E_DIFFUSE_TRAITS(className)                                                                                                 \
+  inline                                        className &setDiffuse(D3DCOLOR _diffuse)                       { return *this; }
 
-#define TEXTURE_TRAITS                                                                                          \
-  inline void setTexture(double _tu, double _tv        ) { tu = (float)_tu ; tv = (float)_tv; }                 \
-  inline void setTexture(const TextureVertex &p        ) { tu = p.u        ; tv = p.v       ; }                 \
-  inline void setTexture(const D3DXVECTOR2   &p        ) { tu = (float)p.x ; tv = (float)p.y; }                 \
-  inline void setTexture(const Point2D       &p        ) { tu = (float)p.x ; tv = (float)p.y; }
+#define A_TEXTURE_TRAITS(className)                                                                                                 \
+  template<typename TU, typename TV>            className &setTexture(const TU &_tu, const TV &_tv) {                               \
+    tu = (float)_tu; tv = (float)_tv; return *this;                                                                                 \
+  }                                                                                                                                 \
+  inline                                        className &setTexture(const TextureVertex &p) {                                     \
+    tu = p.u; tv = p.v; return *this;                                                                                               \
+  }                                                                                                                                 \
+  template<typename T>                          className &setTexture(const T &p) {                                                 \
+    tu = (float)p.x ; tv = (float)p.y; return *this;                                                                                \
+  }
 
-#define EMPTY_TEXTURE_TRAITS inline void setTexture(const TextureVertex &p) { ;/* do nothing */ }
+#define E_TEXTURE_TRAITS(className)                                                                                                 \
+  template<typename TU, typename TV>            className &setTexture(const TU &_tu, const TV &_tv)            { return *this; }    \
+  template<typename T>                          className &setTexture(const T &p)                              { return *this; }
 
 #define SETFVFDATA_TRAITS                                                                                       \
   inline void setFVFData(const Vertex &v, const Vertex &n, D3DCOLOR diffuse, const TextureVertex &tv) {         \
     setPos(v); setNormal(n); setDiffuse(diffuse); setTexture(tv);                                               \
   }
 
+#define FVF_TRAITS(className, p,n,d,t) \
+  p##_POSITION_TRAITS(className)       \
+  n##_NORMAL_TRAITS(  className)       \
+  d##_DIFFUSE_TRAITS( className)       \
+  t##_TEXTURE_TRAITS( className)
+
 class TextureVertex {
 public:
   float u, v;
   inline TextureVertex() {}
-  inline TextureVertex(float  _u, float  _v ) : u(_u), v(_v) {
+  template<typename TU, typename TV> TextureVertex(TU _u, TV _v) : u((float)_u), v((float)_v) {
   }
-  inline TextureVertex(double _u, double _v ) : u((float)_u), v((float)_v) {
+  inline TextureVertex(const D3DXVECTOR2 &vec) : u(vec.x), v(vec.y) {
   }
-  inline TextureVertex(const D3DXVECTOR2 &_v) : u(_v.x), v(_v.y) {
-  }
-  inline TextureVertex(const Point2D     &p ) : u((float)p.x), v((float)p.y) {
+  template<typename T> TextureVertex(const Point2DTemplate<T> &p) : u((float)p.x), v((float)p.y) {
   }
 };
 
@@ -98,113 +122,99 @@ inline String toString(const TextureVertex &tv, int dec = 3) {
   return format(_T("(%*.*f,%*.*f)"), dec+3,dec, tv.u, dec+3,dec, tv.v);
 }
 
-typedef struct Vertex {
+class Vertex {
+public:
   float x, y, z;
   enum FVF {
     FVF_Flags = D3DFVF_XYZ
   };
   inline Vertex() {
   }
-  inline Vertex(int    _x, int    _y, int    _z) { x  = (float)_x ; y  = (float)_y ; z  = (float)_z ; }
-  inline Vertex(float  _x, float  _y, float  _z) { x  = _x        ; y  = _y        ; z  = _z        ; }
-  inline Vertex(double _x, double _y, double _z) { x  = (float)_x ; y  = (float)_y ; z  = (float)_z ; }
-  inline Vertex(     const Point3D     &p)       { x  = (float)p.x; y  = (float)p.y; z  = (float)p.z; }
-  inline Vertex(     const D3DXVECTOR3 &v)       { x  = v.x       ; y  = v.y       ; z  = v.z       ; }
+  template<typename TX, typename TY, typename TZ> Vertex(TX _x, TY _y, TZ _z) : x((float)_x), y((float)_y), z((float)_z) {
+  }
+  template<typename T> Vertex(const Point3DTemplate<T> &p) : x((float)p.x), y((float)p.y), z((float)p.z) {
+  }
+  inline Vertex(const D3DXVECTOR3 &v) : x(v.x), y(v.y), z(v.z) {
+  }
 
-  POSITION_TRAITS
-  EMPTY_NORMAL_TRAITS
-  EMPTY_DIFFUSE_TRAITS
-  EMPTY_TEXTURE_TRAITS
-} Vertex;
+  FVF_TRAITS(Vertex,A,E,E,E)
+};
 
-typedef struct {
+class VertexNormal {
+public:
   float x, y, z;
   float nx, ny, nz;
   enum FVF {
     FVF_Flags = D3DFVF_XYZ | D3DFVF_NORMAL
   };
-  POSITION_TRAITS
-  NORMAL_TRAITS
-  EMPTY_DIFFUSE_TRAITS
-  EMPTY_TEXTURE_TRAITS
-} VertexNormal;
 
-typedef struct {
+  FVF_TRAITS(VertexNormal,A,A,E,E)
+};
+
+class VertexDiffuse {
+public:
   float x, y, z;
   DWORD diffuse;
   enum FVF {
     FVF_Flags = D3DFVF_XYZ | D3DFVF_DIFFUSE
   };
-  POSITION_TRAITS
-  EMPTY_NORMAL_TRAITS
-  DIFFUSE_TRAITS
-  EMPTY_TEXTURE_TRAITS
-} VertexDiffuse;
+  FVF_TRAITS(VertexDiffuse, A,E,A,E)
+};
 
-typedef struct {
+class VertexNormalDiffuse {
+public:
   float x, y, z;
   float nx, ny, nz;
   DWORD diffuse;
   enum FVF {
     FVF_Flags = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE
   };
-  POSITION_TRAITS
-  NORMAL_TRAITS
-  DIFFUSE_TRAITS
-  EMPTY_TEXTURE_TRAITS
-} VertexNormalDiffuse;
+  FVF_TRAITS(VertexNormalDiffuse,A,A,A,E)
+};
 
-typedef struct {
+class VertexNormalTex1 {
+public:
   float x, y, z;
   float nx, ny, nz;
   float tu, tv;
   enum FVF {
-      FVF_Flags = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX1
+    FVF_Flags = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX1
   };
-  POSITION_TRAITS
-  NORMAL_TRAITS
-  EMPTY_DIFFUSE_TRAITS
-  TEXTURE_TRAITS
-} VertexNormalTex1;
+  FVF_TRAITS(VertexNormalTex1,A,A,E,A)
+};
 
-typedef struct {
+class VertexTex1 {
+public:
   float x, y, z;
   float tu, tv;
   enum FVF {
       FVF_Flags = D3DFVF_XYZ | D3DFVF_TEX1
   };
-  POSITION_TRAITS
-  EMPTY_NORMAL_TRAITS
-  EMPTY_DIFFUSE_TRAITS
-  TEXTURE_TRAITS
-} VertexTex1;
+  FVF_TRAITS(VertexTex1, A,E,E,A)
+};
 
-typedef struct {
+class VertexDiffuseTex1 {
+public:
   float x, y, z;
   DWORD diffuse;
   float tu, tv;
   enum FVF {
-      FVF_Flags = D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1
+    FVF_Flags = D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1
   };
-  POSITION_TRAITS
-  EMPTY_NORMAL_TRAITS
-  DIFFUSE_TRAITS
-  TEXTURE_TRAITS
-} VertexDiffuseTex1;
+  FVF_TRAITS(VertexDiffuseTex1,A,E,A,A)
+};
 
-typedef struct {
+class VertexNormalDiffuseTex1 {
+public:
   float x, y, z;
   float nx, ny, nz;
   DWORD diffuse;
   float tu, tv;
   enum FVF {
-      FVF_Flags = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX1
+    FVF_Flags = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX1
   };
-  POSITION_TRAITS
-  NORMAL_TRAITS
-  DIFFUSE_TRAITS
-  TEXTURE_TRAITS
-} VertexNormalDiffuseTex1;
+  FVF_TRAITS(VertexNormalDiffuseTex1,A,A,A,A)
+};
 
 int    FVFToSize(   DWORD     fvf);
 int    formatToSize(D3DFORMAT f  );
@@ -221,6 +231,7 @@ public:
 
 typedef CompactArray<Vertex>        VertexArray;
 typedef CompactArray<TextureVertex> TextureVertexArray;
+
 class CurveArray : public Array<VertexArray> {
 public:
   static CurveArray createSphereObject(double r);
@@ -230,7 +241,7 @@ class Point3DP : public Point3D {
 public:
   inline Point3DP() {
   }
-  template<typename X, typename Y, typename Z> Point3DP(X x, Y y, Z z) : Point3D((double)x, (double)y, (double)z) {
+  template<typename TX, typename TY, typename TZ> Point3DP(TX x, TY y, TZ z) : Point3D((double)x, (double)y, (double)z) {
   }
   template<typename T> Point3DP(const Point3DTemplate<T> &p) : Point3D(p) {
   }
