@@ -84,9 +84,12 @@ static UINT indicators[] = {
 #define REPAINT() Invalidate(FALSE)
 
 CMainFrame::CMainFrame() {
-  m_statusPanesVisible = true;
-  m_timerRunning       = false;
-  m_destroyCalled      = false;
+  m_statusPanesVisible     = true;
+  m_timerRunning           = false;
+  m_destroyCalled          = false;
+  m_renderLevel            = 0;
+  m_accumulatedRenderFlags = 0;
+
 #ifdef DEBUG_POLYGONIZER
   m_debugger           = NULL;
   m_debugLightIndex    = -1;
@@ -435,12 +438,35 @@ D3SceneObject *CMainFrame::getCalculatedObject() const {
   return NULL;
 }
 
+void CMainFrame::incrLevel() {
+  m_renderLevel++;
+}
+void CMainFrame::decrLevel() {
+  if(--m_renderLevel == 0) {
+    if(m_accumulatedRenderFlags) {
+      render(m_accumulatedRenderFlags);
+    }
+  }
+}
+
+void CMainFrame::render(BYTE renderFlags) {
+  if(m_renderLevel > 0) {
+    m_accumulatedRenderFlags |= renderFlags;
+  } else {
+    PostMessage(ID_MSG_RENDER, renderFlags, 0);
+    m_accumulatedRenderFlags = 0;
+  }
+}
+
+static UINT renderSceneCount = 0, renderInfoCount = 0;
 LRESULT CMainFrame::OnMsgRender(WPARAM wp, LPARAM lp) {
   if(wp & SE_RENDER3D) {
+    renderSceneCount++;
     m_scene.render();
   }
   if(wp & SE_RENDERINFO) {
     if(m_editor.isEnabled()) {
+      renderInfoCount++;
       show3DInfo(INFO_EDIT);
     }
   }
@@ -735,7 +761,7 @@ void CMainFrame::show3DInfo(BYTE flags) {
   showInfo(_T("%s\n%s"), m_memoryInfo.cstr(), m_editorInfo.cstr());
 #else
   if(flags & INFO_DEBUG) updateDebugInfo();
-  showInfo(_T("%s\n%s\n%s"), m_memoryInfo.cstr(), m_editorInfo.cstr(), m_debugInfo.cstr());
+  showInfo(_T("%s, RenderCount:(%5u,%5u)\n%s\n%s"), m_memoryInfo.cstr(), renderSceneCount, renderInfoCount, m_editorInfo.cstr(), m_debugInfo.cstr());
 #endif //  DEBUG_POLYGONIZER
 }
 
@@ -904,11 +930,16 @@ BOOL CMainFrame::PreTranslateMessage(MSG * pMsg) {
   if((pMsg->message == WM_MOUSEMOVE) && m_editor.ptIn3DWindow(pMsg->pt)) {
     m_wndStatusBar.SetPaneText(0, toString(m_editor.screenPTo3DP(pMsg->pt)).cstr());
   }
+  const bool levelIncremented = pMsg->message != ID_MSG_RENDER;
+  if(levelIncremented) incrLevel();
+  BOOL result;
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
-    return true;
+    result = true;
+  } else if(m_editor.PreTranslateMessage(pMsg)) {
+    result = true;
+  } else {
+    result = __super::PreTranslateMessage(pMsg);
   }
-  if(m_editor.PreTranslateMessage(pMsg)) {
-    return true;
-  }
-  return __super::PreTranslateMessage(pMsg);
+  if(levelIncremented) decrLevel();
+  return result;
 }

@@ -60,6 +60,8 @@ private:
   CompactArray<StatusBarPaneInfo> m_paneInfo;
   bool                            m_timerRunning;
   bool                            m_destroyCalled;
+  BYTE                            m_renderLevel;
+  BYTE                            m_accumulatedRenderFlags;
   double                          m_relativeHeight;
   D3Scene                         m_scene;
   D3SceneEditor                   m_editor;
@@ -142,6 +144,8 @@ private:
   void stopDebugging();
   void ajourDebuggerMenu();
 
+  void incrLevel();
+  void decrLevel();
 public:
 
   D3Scene &getScene() {
@@ -156,9 +160,7 @@ public:
   CWnd    *get3DWindow() {
     return m_wndSplitter.get3DPanel();
   }
-  void render(BYTE renderFlags) {
-    SendMessage(ID_MSG_RENDER, renderFlags, 0);
-  }
+  void render(BYTE renderFlags);
 
   void startTimer();
   void stopTimer();
