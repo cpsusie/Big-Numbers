@@ -75,12 +75,14 @@ String D3SceneEditor::toString() const {
   }
   switch(m_propertyDialogMap.getVisibleDialogId()) {
   case SP_LIGHTPARAMETERS   :
-    result += format(_T("\nDlg-light:%s")
-                    ,((LIGHT*)m_propertyDialogMap.getProperty(SP_LIGHTPARAMETERS))->toString().cstr());
+    { LIGHT tmp;
+      result += format(_T("\nDlg-light:%s"), m_propertyDialogMap.getProperty(SP_LIGHTPARAMETERS,tmp).toString().cstr());
+    }
     break;
   case SP_MATERIALPARAMETERS:
-    result += format(_T("\nDlg-material:%s")
-                    ,((MATERIAL*)m_propertyDialogMap.getProperty(SP_MATERIALPARAMETERS))->toString().cstr());
+    { MATERIAL tmp;
+      result += format(_T("\nDlg-material:%s"), m_propertyDialogMap.getProperty(SP_MATERIALPARAMETERS,tmp).toString().cstr());
+    }
     break;
   }
 

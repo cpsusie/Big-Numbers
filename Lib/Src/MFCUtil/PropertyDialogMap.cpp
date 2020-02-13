@@ -41,14 +41,14 @@ void PropertyDialogMap::clear() {
 
 bool PropertyDialogMap::isDialogVisible() const {
   m_gate.wait();
-  const bool result = m_visibleDlgThread != NULL;
+  const bool result = isDialogVisible1();
   m_gate.notify();
   return result;
 }
 
 int PropertyDialogMap::getVisibleDialogId() const {
   m_gate.wait();
-  const int result = m_visibleDlgThread ? m_visibleDlgThread->getPropertyId() : -1;
+  const int result = getCurrentVisibleDialogId();
   m_gate.notify();
   return result;
 }
@@ -59,9 +59,9 @@ void PropertyDialogMap::hideDialog() const {
   m_gate.notify();
 }
 
-void PropertyDialogMap::showDialog(int id, const void *data) const {
+void PropertyDialogMap::showDialog(int id, const void *data, size_t size) const {
   m_gate.wait();
-  if((m_visibleDlgThread == NULL) || (m_visibleDlgThread->getPropertyId() != id)) {
+  if(getCurrentVisibleDialogId() != id) {
     CPropertyDlgThread * const *thr = get(id);
     if(thr) {
       hideCurrentVisibleDialog();
@@ -70,7 +70,7 @@ void PropertyDialogMap::showDialog(int id, const void *data) const {
     }
   }
   if(data && m_visibleDlgThread) {
-    m_visibleDlgThread->setCurrentDialogProperty(data);
+    m_visibleDlgThread->setCurrentDialogProperty(data, size);
   }
   m_gate.notify();
 }
@@ -86,12 +86,12 @@ bool PropertyDialogMap::hasPropertyContainer(const PropertyContainer *pc) const 
   return m_containerSet.contains(pc);
 }
 
-const void *PropertyDialogMap::getProperty(int id) const {
+const void *PropertyDialogMap::getProperty(int id, size_t size) const {
   const void *result = NULL;
   m_gate.wait();
   CPropertyDlgThread * const *thr = get(id);
   if(thr) {
-    result = (*thr)->getCurrentDialogProperty();
+    result = (*thr)->getCurrentDialogProperty(size);
   }
   m_gate.notify();
   return result;

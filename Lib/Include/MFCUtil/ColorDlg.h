@@ -12,8 +12,10 @@ private:
   void OnColorchangedColormapColor();
 public:
   CColorDlg(const String &caption, int propertyId, D3DCOLOR color, CWnd *pParent = NULL);
-
-    enum { IDD = _IDD_COLOR_DIALOG };
+  String getTypeName() const {
+    return _T("D3DCOLOR");
+  }
+  enum { IDD = _IDD_COLOR_DIALOG };
 
 protected:
   virtual void DoDataExchange(CDataExchange *pDX);

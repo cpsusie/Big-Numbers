@@ -19,6 +19,9 @@ public:
     CLightDlg(PropertyChangeListener *listener, CWnd *pParent = NULL);
     enum { IDD = IDD_LIGHT_DIALOG };
     static LIGHT &copyModifiableValues(LIGHT &dst, const LIGHT &src);
+    String getTypeName() const {
+      return _T("LIGHT");
+    }
 protected:
     virtual void DoDataExchange(CDataExchange *pDX);
     virtual BOOL OnInitDialog();

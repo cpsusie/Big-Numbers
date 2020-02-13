@@ -155,6 +155,7 @@ void D3SceneEditor::OnLButtonDown(UINT nFlags, CPoint point) {
           getMessageWindow()->SetCapture();
         } else {
           resetCurrentControl();
+          setCurrentControl(CONTROL_CAMERA_WALK);
         }
       } else {
         resetCurrentControl();
@@ -866,9 +867,9 @@ void D3SceneEditor::setCurrentObj(D3SceneObject *obj) {
   const D3LightControl *lc = getCurrentLightControl();
   if(m_propertyDialogMap.isDialogVisible()) {
     if(lc) {
-      m_propertyDialogMap.showDialog(SP_LIGHTPARAMETERS, &lc->getLight());
+      m_propertyDialogMap.showDialog(SP_LIGHTPARAMETERS, lc->getLight());
     } else if(obj && obj->hasMaterial()) {
-      m_propertyDialogMap.showDialog(SP_MATERIALPARAMETERS, &obj->getMaterial());
+      m_propertyDialogMap.showDialog(SP_MATERIALPARAMETERS, obj->getMaterial());
     }
   }
   render(SE_RENDERINFO);
@@ -1195,7 +1196,7 @@ SceneObjectType D3SceneEditor::getCurrentControlObjType() const {
 void D3SceneEditor::OnObjectEditMaterial() {
   CHECKINVARIANT();
   if(m_currentObj && m_currentObj->hasMaterial()) {
-    m_propertyDialogMap.showDialog(SP_MATERIALPARAMETERS, &m_currentObj->getMaterial());
+    m_propertyDialogMap.showDialog(SP_MATERIALPARAMETERS, m_currentObj->getMaterial());
     setCurrentControl(CONTROL_MATERIAL);
   }
   CHECKINVARIANT();
@@ -1317,7 +1318,7 @@ void D3SceneEditor::OnLightAdjustColors() {
   CHECKINVARIANT();
   D3LightControl *lc = getCurrentLightControl();
   if(lc == NULL) return;
-  m_propertyDialogMap.showDialog(SP_LIGHTPARAMETERS, &lc->getLight());
+  m_propertyDialogMap.showDialog(SP_LIGHTPARAMETERS, lc->getLight());
   setCurrentControl(CONTROL_LIGHTCOLOR);
   CHECKINVARIANT();
 }

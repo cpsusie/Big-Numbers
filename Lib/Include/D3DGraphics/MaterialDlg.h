@@ -11,7 +11,7 @@ private:
 
   void  resetControls();
   void  valueToWindow(const MATERIAL &v);
-  void  showPower(double v);
+  void  showPower(     double v);
   void  setSliderPower(double v);
   float getSliderPower() const;
   void  setSliderOpacity(double v);
@@ -20,6 +20,9 @@ private:
 public:
   CMaterialDlg(PropertyChangeListener *listener, CWnd *pParent = NULL);
   enum { IDD = IDD_MATERIAL_DIALOG };
+  String getTypeName() const {
+    return _T("MATERIAL");
+  }
 protected:
     virtual void DoDataExchange(CDataExchange *pDX);
     virtual BOOL OnInitDialog();

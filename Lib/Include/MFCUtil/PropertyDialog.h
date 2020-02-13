@@ -28,6 +28,11 @@ protected:
     m_visible = visible;
   }
   void OnShowWindow(BOOL bShow, UINT nStatus);
+  void checkSize(const TCHAR *method, size_t size) const {
+    if(size != getDataSize()) {
+      throwInvalidArgumentException(method, _T("size=%zu, getDataSize(%s)=%zu"), size, getTypeName().cstr(), getDataSize());
+    }
+  }
 public:
   virtual ~PropertyDialog() {
     PropertyContainer::clear();
@@ -38,13 +43,15 @@ public:
   inline bool isVisible() const {
     return m_visible;
   }
-  virtual void setStartProperty(const void *v) = 0;
-  virtual const void *getCurrentProperty() const = 0;
+  virtual void setStartProperty(const void *v, size_t size) = 0;
+  virtual const void *getCurrentProperty(size_t size) const = 0;
   virtual void reposition() {
     putWindowBesideMainWindow(this);
   }
   virtual void resetControls() {
-  };
+  }
+  virtual size_t getDataSize() const = 0;
+  virtual String getTypeName() const = 0;
 };
 
 template<typename T> class CPropertyDialog : public PropertyDialog {
@@ -72,13 +79,18 @@ public:
   void setStartValue(const T &v) {
     m_startValue = v;
   }
-  const void *getCurrentProperty() const {
-    return &m_currentValue;
-  }
   const T &getCurrentValue() const {
     return m_currentValue;
   }
-  void setStartProperty(const void *v) {
+  const void *getCurrentProperty(size_t size) const {
+    checkSize(__TFUNCTION__, size);
+    return &m_currentValue;
+  }
+  void setStartProperty(const void *v, size_t size) {
+    checkSize(__TFUNCTION__, size);
     setStartValue(*(T*)v);
+  }
+  size_t getDataSize() const {
+    return sizeof(T);
   }
 };
