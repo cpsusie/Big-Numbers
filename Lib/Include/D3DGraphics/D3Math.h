@@ -304,27 +304,16 @@ public:
   inline D3PosDirUpScale &resetScale() {
     return setScaleAll(1);
   }
-  // return vector (0,0,0)
-  static D3DXVECTOR3 getDefaultPos() {
-    return D3DXORIGIN;
-  }
-  // return vector (0,0,0)
-  static D3DXVECTOR3 getDefaultScale() {
-    return D3DXVECTOR3(1, 1, 1);
-  }
-
-  // return vector (1,0,0)
-  static D3DXVECTOR3 getDefaultDir() {
-    return D3DXVECTOR3(1, 0, 0);
-  }
-  // return vector (0,1,0)
-  static D3DXVECTOR3 getDefaultUp() {
-    return D3DXVECTOR3(0, 1, 0);
-  }
-  // set dir=(1,0,0), up=(0,1,0)
-  inline D3PosDirUpScale &resetOrientation() {
-    return setOrientation(getDefaultDir(), getDefaultUp());
-  }
+  // Return vector (0,0,0)
+  static D3DXVECTOR3 getDefaultPos()   { return D3DXORIGIN;           }
+  // Return vector (0,0,0)
+  static D3DXVECTOR3 getDefaultScale() { return D3DXVECTOR3(1, 1, 1); }
+  // Return vector (0,1,0)
+  static D3DXVECTOR3 getDefaultDir()   { return D3DXVECTOR3(0,0,-1);   }
+  // Return vector (0,0,1)
+  static D3DXVECTOR3 getDefaultUp()    { return D3DXVECTOR3(0,1,0);   }
+  // Set dir=(0,1,0), up=(0,0,1)
+  inline D3PosDirUpScale &resetOrientation() { return setOrientation(getDefaultDir(), getDefaultUp()); }
 
   D3PosDirUpScale &setWorldMatrix(const D3DXMATRIX &world);
 

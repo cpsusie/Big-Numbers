@@ -60,7 +60,7 @@ D3SceneObjectCoordinateSystem::D3SceneObjectCoordinateSystem(D3Scene &scene, con
  , m_pdus(scene.getRightHanded())
  , m_cube(cube ? *cube : D3DXCube3::getStdCube())
 {
-  m_pdus.resetPos().resetScale().resetOrientation();
+  m_pdus.resetPos().resetScale().setOrientation(D3DXVECTOR3(0, 1, 0), D3DXVECTOR3(0, 0, 1));
   m_axisMaterialId[0] = getScene().addMaterial(MATERIAL::createMaterialWithColor(D3D_RED  ));
   m_axisMaterialId[1] = getScene().addMaterial(MATERIAL::createMaterialWithColor(D3D_GREEN));
   m_axisMaterialId[2] = getScene().addMaterial(MATERIAL::createMaterialWithColor(D3D_BLUE ));

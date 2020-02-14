@@ -1485,9 +1485,9 @@ void D3SceneEditor::checkInvariant(const TCHAR *method, int line) const {
   case CONTROL_CAMERA_WALK      :
     break;
   case CONTROL_OBJECT_POS       :
+  case CONTROL_OBJECT_SCALE     :
     verify((objType == SOTYPE_VISUALOBJECT) || (objType == SOTYPE_ANIMATEDOBJECT));
     break;
-  case CONTROL_OBJECT_SCALE     :
   case CONTROL_ANIMATION_SPEED  :
     verify(objType == SOTYPE_ANIMATEDOBJECT);
     break;
