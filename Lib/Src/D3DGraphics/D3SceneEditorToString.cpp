@@ -59,20 +59,20 @@ String D3SceneEditor::getSelectedString() const {
 
 String D3SceneEditor::toString() const {
   if(!isEnabled()) return EMPTYSTRING;
-
-  String result = format(_T("Current Camera:%d, %s")
-                        ,m_currentCameraIndex
-                        ,m_currentCamera ? m_currentCamera->toString().cstr() : _T("--")
-                        );
-  result += format(_T("\nCurrent Control:%s State:%s\nCurrent Object :%s")
+  String result;
+  result += format(    _T("Current Control:%s State:%s\nCurrent Object :%s")
                         ,::toString(getCurrentControl()).cstr()
                         ,stateFlagsToString().cstr()
                         ,getSelectedString().cstr()
                         );
+  result += format(    _T("\nCurrent Camera :%d, %s")
+                  ,m_currentCameraIndex
+                  ,m_currentCamera ? m_currentCamera->toString().cstr() : _T("--")
+                  );
   if(!m_pickedRay.isEmpty()) {
-    result += format(_T("\nPicked ray:%s"), m_pickedRay.toString().cstr());
+    result += format(  _T("\nPicked Ray     :%s"), m_pickedRay.toString().cstr());
     if(!m_pickedInfo.isEmpty()) {
-      result += format(_T("\nPicked point:%s, info:%s")
+      result += format(_T("\nPicked Point   :%s, Info:%s")
                       ,::toString(m_pickedPoint).cstr()
                       ,m_pickedInfo.toString().cstr());
     }
@@ -116,6 +116,7 @@ String D3SceneEditor::toString() const {
     { const D3LightControl *lc = getCurrentLightControl();
       if(lc) {
         result += format(_T("\n%s"), lc->getLight().toString().cstr());
+        result += format(_T("\nLightControl:%s"), D3World(m_currentObj->getWorld()).toString().cstr());
       }
     }
     break;
