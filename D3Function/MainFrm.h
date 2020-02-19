@@ -19,7 +19,7 @@ public:
 
 class CD3FunctionSplitterWnd : public CSplitterWnd {
 private:
-  bool            m_splitPointMoved;
+  bool m_splitPointMoved;
 public:
   CD3FunctionSplitterWnd() : m_splitPointMoved(false) {
   }
