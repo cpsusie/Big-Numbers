@@ -15,7 +15,7 @@ public:
 
 #pragma warning(disable:4703) // potentially uninitialized local pointer variable
 
-bool D3SceneObjectWithMesh::intersectsWithRay(const D3Ray &ray, float &dist, D3PickedInfo *info) const {
+bool D3SceneObjectVisual::intersectsWithRay(const D3Ray &ray, float &dist, D3PickedInfo *info) const {
   LPD3DXMESH mesh = getMesh();
   if(mesh == NULL) return false;
 

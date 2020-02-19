@@ -28,7 +28,6 @@ public:
   inline bool hasMesh() const {
     return m_mesh != NULL;
   }
-  virtual bool intersectsWithRay(const D3Ray &ray, float &dist, D3PickedInfo *info = NULL) const;
 
   virtual bool hasFillMode() const {
     return true;

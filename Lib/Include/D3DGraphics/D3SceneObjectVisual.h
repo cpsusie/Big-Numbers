@@ -103,9 +103,7 @@ public:
   inline D3DXQUATERNION getOrientation() const {
     return D3World(((D3SceneObjectVisual*)this)->getWorld()).getOrientation();
   }
-  virtual bool intersectsWithRay(const D3Ray &ray, float &dist, D3PickedInfo *info = NULL) const {
-    return false;
-  }
+  bool intersectsWithRay(const D3Ray &ray, float &dist, D3PickedInfo *info = NULL) const;
 
   inline const String &getName() const {
     return m_name;
