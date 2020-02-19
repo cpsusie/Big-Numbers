@@ -1,7 +1,9 @@
 #include "pch.h"
+#include <D3DGraphics/D3Device.h>
 #include <D3DGraphics/D3Scene.h>
 #include <D3DGraphics/D3ToString.h>
 #include <D3DGraphics/MeshBuilder.h>
+#include <D3DGraphics/D3SceneObjectWithMesh.h>
 
 // ----------------------------------- D3SceneObjectWithMesh --------------------------------------------
 
@@ -50,10 +52,14 @@ D3DXCube3 D3SceneObjectWithMesh::getBoundingBox() const {
   return ::getBoundingBox(m_mesh) + getPos();
 }
 
-void D3SceneObjectWithMesh::draw() {
-  setFillAndShadeMode();
-  setSceneMaterial();
-  setLightingEnable(true);
+void D3SceneObjectWithMesh::draw(D3Device &device) {
+  if(hasMaterial()) {
+    device.setMaterial(getMaterial());
+  }
+  device.setWorldMatrix(getWorld())
+        .setFillMode(getFillMode())
+        .setShadeMode(getShadeMode())
+        .setLightingEnable(true);
   drawSubset(0);
 }
 

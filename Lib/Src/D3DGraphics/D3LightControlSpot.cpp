@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <D3DGraphics/D3Scene.h>
 #include <D3DGraphics/D3LightControl.h>
 #include <D3DGraphics/Profile.h>
 
@@ -36,9 +37,9 @@ LPD3DXMESH D3LightControlSpot::createSpotMesh() {
   return optimizeMesh(mesh);
 }
 
-D3PosDirUpScale &D3LightControlSpot::getPDUS() {
-  const LIGHT param = getLight();
-  return m_pdus.setPos(param.Position)
-               .setScaleAll(getSize())
-               .setOrientation(param.Direction, ortonormalVector(param.Direction));
+D3DXMATRIX &D3LightControlSpot::getWorld() {
+  const LIGHT light = getLight();
+  const float size  = getSize();
+  m_world = D3World().setScaleAll(size).setOrientation(createOrientation(light.Direction)).setPos(light.Position);
+  return __super::getWorld();
 }

@@ -1,5 +1,11 @@
 #include "pch.h"
 #include <MFCUtil/ColorSpace.h>
+#include <D3DGraphics/MeshBuilder.h>
+#include <D3DGraphics/D3Device.h>
+#include <D3DGraphics/D3Scene.h>
+#include <D3DGraphics/D3SceneObjectLineArrow.h>
+#include <D3DGraphics/D3SceneObjectLineArray.h>
+#include <D3DGraphics/D3SceneObjectWithMesh.h>
 #include <D3DGraphics/D3SceneObjectCoordinateSystem.h>
 
 class D3SceneGridObject : public D3SceneObjectLineArray {
@@ -13,9 +19,10 @@ public:
   ~D3SceneGridObject() {
     getScene().removeMaterial(m_materialId);
   }
-  void draw(const D3DXMATRIX &world) {
-    getScene().setDevWorldMatrix(world).selectMaterial(m_materialId);
-    __super::draw();
+  void draw(D3Device &device, const D3DXMATRIX &world) {
+    device.setMaterial(getScene().getMaterial(m_materialId));
+    m_world = world;
+    __super::draw(device);
   }
 };
 
@@ -50,17 +57,14 @@ private:
 public:
   D3CoordinateSystemFrameObject(D3SceneObjectCoordinateSystem *system);
   ~D3CoordinateSystemFrameObject();
-  void draw(const D3DXMATRIX &world0);
+  void draw(D3Device &device, const D3DXMATRIX &world);
 };
 
 
 D3SceneObjectCoordinateSystem::D3SceneObjectCoordinateSystem(D3Scene &scene, const D3DXCube3 *cube)
  : D3SceneObject(scene, _T("CoordinateSystem"))
- , m_axis(scene, Vertex(-1,0,0), Vertex(1,0,0))
- , m_pdus(scene.getRightHanded())
  , m_cube(cube ? *cube : D3DXCube3::getStdCube())
 {
-  m_pdus.resetPos().resetScale().setOrientation(D3DXVECTOR3(0, 1, 0), D3DXVECTOR3(0, 0, 1));
   m_axisMaterialId[0] = getScene().addMaterial(MATERIAL::createMaterialWithColor(D3D_RED  ));
   m_axisMaterialId[1] = getScene().addMaterial(MATERIAL::createMaterialWithColor(D3D_GREEN));
   m_axisMaterialId[2] = getScene().addMaterial(MATERIAL::createMaterialWithColor(D3D_BLUE ));
@@ -78,22 +82,20 @@ LPD3DXMESH D3SceneObjectCoordinateSystem::getMesh() const {
   return m_frameObject->getMesh();
 }
 
-void D3SceneObjectCoordinateSystem::draw() {
-  const D3PosDirUpScale  &pdus = getPDUS();
-  const D3DXMATRIX        worldX = pdus.getWorldMatrix();
-  const D3DXMATRIX        worldY = worldX * createRotationMatrix(pdus.getUp(),  D3DX_PI / 2);
-  const D3DXMATRIX        worldZ = worldX * createRotationMatrix(pdus.getDir(),-D3DX_PI / 2);
+void D3SceneObjectCoordinateSystem::draw(D3Device &device) {
   // x-axis
-  getScene().setDevWorldMatrix(worldX).selectMaterial(m_axisMaterialId[0]);
-  m_axis.draw();
+  setPos(D3DXORIGIN);
+  device.setWorldMatrix(m_world).setMaterial(getScene().getMaterial(m_axisMaterialId[0]));
+  m_axis[0]->draw(device);
   // y-axis
-  getScene().setDevWorldMatrix(worldY).selectMaterial(m_axisMaterialId[1]);
-  m_axis.draw();
+  device.setMaterial(getScene().getMaterial(m_axisMaterialId[1]));
+  m_axis[1]->draw(device);
   // z-axis
-  getScene().setDevWorldMatrix(worldZ).selectMaterial(m_axisMaterialId[2]);
-  m_axis.draw();
+  device.setMaterial(getScene().getMaterial(m_axisMaterialId[2]));
+  m_axis[1]->draw(device);
+  m_axis[2]->draw(device);
 
-  m_frameObject->draw(worldX);
+  m_frameObject->draw(device, m_world);
 }
 
 void D3CoordinateSystemFrameObject::makeFace(MeshBuilder &mb, int v0, int v1, int v2, int v3) {
@@ -139,8 +141,8 @@ D3CoordinateSystemFrameObject::~D3CoordinateSystemFrameObject() {
   SAFEDELETE(m_gridObject);
 }
 
-void D3CoordinateSystemFrameObject::draw(const D3DXMATRIX &world) {
-  getScene().setDevWorldMatrix(world).setFillMode(D3DFILL_SOLID).selectMaterial(m_materialId);
-  drawSubset(0);
-  m_gridObject->draw(world);
+void D3CoordinateSystemFrameObject::draw(D3Device &device, const D3DXMATRIX &world) {
+  device.setWorldMatrix(world);
+  __super::draw(device);
+  m_gridObject->draw(device, world);
 }

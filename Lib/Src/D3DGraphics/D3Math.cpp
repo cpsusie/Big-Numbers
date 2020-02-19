@@ -21,6 +21,19 @@ D3DXMATRIX createRotationMatrix(const D3DXVECTOR3 &axes, float rad) {
   return *D3DXMatrixRotationAxis(&matRot, &axes, rad);
 }
 
+D3DXQUATERNION createOrientation(const D3DXVECTOR3 &dir) {
+  D3DXQUATERNION    q;
+  const D3DXVECTOR3 E1 = createUnitVector(0);
+  float             phi = angle(E1, dir);
+  if(phi == 0) {
+    return *D3DXQuaternionIdentity(&q);
+  } else {
+    const D3DXVECTOR3 axis = crossProduct(E1, dir);
+    return *D3DXQuaternionRotationAxis(&q, &axis, phi);
+  }
+}
+
+
 D3DXVECTOR3 rotate(const D3DXVECTOR3 &v, const D3DXVECTOR3 &axes, float rad) {
   D3DXMATRIX matRot;
   return *D3DXMatrixRotationAxis(&matRot, &axes, rad) * v;
@@ -138,6 +151,12 @@ String toString(const D3DXVECTOR3 &v, int dec) {
 String toString(const D3DXVECTOR4 &v, int dec) {
   const int n = dec+3;
   return format(_T("(% *.*f,% *.*f,% *.*f,% *.*f)"), n,dec,v.x, n,dec,v.y, n,dec,v.z, n,dec,v.w);
+}
+
+String toString(const D3DXQUATERNION &q, int dec) {
+  const int n = dec + 3;
+  return format(_T("(% *.*f,% *.*f,% *.*f,% *.*f)")
+               ,n, dec, q.x, n, dec, q.y, n, dec, q.z, n, dec, q.w);
 }
 
 String toString(const D3DXMATRIX &m, int dec) {

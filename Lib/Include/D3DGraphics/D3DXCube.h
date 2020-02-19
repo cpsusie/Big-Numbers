@@ -46,3 +46,7 @@ public:
     return D3DXCube3(D3DXVECTOR3(-1, -1, -1), D3DXVECTOR3(1,1,1));
   }
 };
+
+
+D3DXCube3 getBoundingBox(LPDIRECT3DVERTEXBUFFER vertexBuffer);
+D3DXCube3 getBoundingBox(LPD3DXMESH             mesh);

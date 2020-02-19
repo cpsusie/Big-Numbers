@@ -1,53 +1,7 @@
 #include "pch.h"
-#include <D3DGraphics/D3Scene.h>
-
-D3SceneObject *D3Scene::getPickedObject(const CPoint &point, long mask, D3DXVECTOR3 *hitPoint, D3Ray *ray, float *dist, D3PickedInfo *info) const {
-  D3Ray tmpRay, &pickedRay = ray ? *ray : tmpRay;
-  pickedRay = getPickedRay(point);
-  return getPickedObject(pickedRay, mask, hitPoint, dist, info);
-}
-
-D3SceneObject *D3Scene::getPickedObject(const D3Ray &ray, long mask, D3DXVECTOR3 *hitPoint, float *dist, D3PickedInfo *info) const {
-  float          minDistance   = -1;
-  D3SceneObject *closestObject = NULL;
-  for(Iterator<D3SceneObject*> it = getObjectIterator(mask); it.hasNext();) {
-    D3SceneObject *obj = it.next();
-    if(!obj->isVisible()) {
-      continue;
-    }
-    float distance;
-    if(obj->intersectsWithRay(ray, distance, info)) {
-      if((closestObject == NULL) || (distance < minDistance)) {
-        closestObject = obj;
-        minDistance = distance;
-      }
-    }
-  }
-  if(closestObject) {
-    if(hitPoint) {
-      *hitPoint = ray.getHitPoint(minDistance);
-    }
-    if(dist) {
-      *dist = minDistance;
-    }
-  }
-  return closestObject;
-}
-
-D3Ray D3Scene::getPickedRay(const CPoint &point) const {
-  const CSize winSize = getClientRect(m_hwnd).Size();
-
-  const D3DXMATRIX matProj = getDevProjMatrix();
-
-  // Compute the vector of the pick ray in screen space
-  D3DXVECTOR3 v;
-  v.x =  (((2.0f * point.x) / winSize.cx) - 1) / matProj._11 * m_nearViewPlane;
-  v.y = -(((2.0f * point.y) / winSize.cy) - 1) / matProj._22 * m_nearViewPlane;
-  v.z = -m_nearViewPlane;
-
-  const D3DXMATRIX camWorld = m_camPDUS.getWorldMatrix();
-  return D3Ray(camWorld*v, v*camWorld);
-}
+#include <D3DGraphics/D3Ray.h>
+#include <D3DGraphics/D3PickedInfo.h>
+#include <D3DGraphics/D3SceneObjectWithMesh.h>
 
 class DistComparator : public Comparator<D3DXINTERSECTINFO> {
 public:
@@ -61,11 +15,11 @@ public:
 
 #pragma warning(disable:4703) // potentially uninitialized local pointer variable
 
-bool D3SceneObject::intersectsWithRay(const D3Ray &ray, float &dist, D3PickedInfo *info) const {
+bool D3SceneObjectWithMesh::intersectsWithRay(const D3Ray &ray, float &dist, D3PickedInfo *info) const {
   LPD3DXMESH mesh = getMesh();
   if(mesh == NULL) return false;
 
-  const D3DXMATRIX  m      = invers(getWorldMatrix());
+  const D3DXMATRIX  m      = invers(m_world);
   const D3DXVECTOR3 rayPos = m * ray.m_orig;
   const D3DXVECTOR3 rayDir = ray.m_dir * m;
 
@@ -138,15 +92,4 @@ bool D3SceneObject::intersectsWithRay(const D3Ray &ray, float &dist, D3PickedInf
     }
   }
   return hit ? true : false;
-}
-
-String D3PickedInfo::toString(int dec) const {
-  return isEmpty()
-    ? EMPTYSTRING
-    : format(_T("Face:%5d:[%5d,%5d,%5d], (U,V):(%s,%s), MP:%s")
-            ,m_faceIndex
-            ,m_vertexIndex[0], m_vertexIndex[1], m_vertexIndex[2]
-            ,::toString(m_U, dec).cstr(), ::toString(m_V, dec).cstr()
-            ,::toString(getMeshPoint(), dec).cstr()
-            );
 }

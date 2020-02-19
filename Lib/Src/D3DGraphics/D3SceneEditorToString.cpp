@@ -1,8 +1,14 @@
 #include "pch.h"
-#include <D3DGraphics/D3ToString.h>
+#include <D3DGraphics/D3Device.h>
+#include <D3DGraphics/D3Camera.h>
+#include <D3DGraphics/D3Scene.h>
+#include <D3DGraphics/D3SceneObject.h>
+#include <D3DGraphics/D3SceneObjectAnimatedMesh.h>
+#include <D3DGraphics/D3LightControl.h>
 #include <D3DGraphics/D3SceneEditor.h>
+#include <D3DGraphics/D3ToString.h>
 
-String toString(CurrentObjectControl control) {
+String toString(D3EditorControl control) {
   switch(control) {
 #define caseStr(s) case CONTROL_##s: return _T(#s);
   caseStr(IDLE                   )
@@ -54,10 +60,14 @@ String D3SceneEditor::getSelectedString() const {
 String D3SceneEditor::toString() const {
   if(!isEnabled()) return EMPTYSTRING;
 
-  String result = format(_T("Current Object :%s\nCurrent Control:%s State:%s")
-                        ,getSelectedString().cstr()
+  String result = format(_T("Current Camera:%d, %s")
+                        ,m_currentCameraIndex
+                        ,m_currentCamera ? m_currentCamera->toString().cstr() : _T("--")
+                        );
+  result += format(_T("\nCurrent Control:%s State:%s\nCurrent Object :%s")
                         ,::toString(getCurrentControl()).cstr()
                         ,stateFlagsToString().cstr()
+                        ,getSelectedString().cstr()
                         );
   if(!m_pickedRay.isEmpty()) {
     result += format(_T("\nPicked ray:%s"), m_pickedRay.toString().cstr());
@@ -67,11 +77,8 @@ String D3SceneEditor::toString() const {
                       ,m_pickedInfo.toString().cstr());
     }
   }
-  if(getCenterOfRotation() != D3DXORIGIN) {
-    result += format(_T("\nCenter of rotation:MP:%s WP:%s")
-                    ,::toString(getCenterOfRotation()).cstr()
-                    ,::toString(getCurrentVisual()->getWorldMatrix() * getCenterOfRotation()).cstr()
-                    );
+  if(!m_centerOfRotation.isEmpty()) {
+    result += format(_T("\nCenter of rotation:%s"), m_centerOfRotation.toString().cstr());
   }
   switch(m_propertyDialogMap.getVisibleDialogId()) {
   case SP_LIGHTPARAMETERS   :
@@ -88,17 +95,19 @@ String D3SceneEditor::toString() const {
 
   switch(getCurrentControl()) {
   case CONTROL_IDLE                  :
-    return result + _T("\n") + handednessToString(getScene().getRightHanded());
+    result += _T("\n") + handednessToString(getScene().getRightHanded());
+    break;
   case CONTROL_CAMERA_WALK           :
-    return result + format(_T("\n%s"), getScene().getCamString().cstr());
-
+    if(m_currentCamera) {
+      result += format(_T("\nCamera PDUS:%s"), m_currentCamera->getPDUS().toString().cstr());
+    }
+    break;
   case CONTROL_OBJECT_POS            :
   case CONTROL_OBJECT_SCALE          :
     if(m_currentObj != NULL) {
-      result += format(_T("\nObject:\n%s")
-                      ,m_currentObj->getPDUS().toString().cstr());
+      result += format(_T("\nObject:\n%s"), D3World(m_currentObj->getWorld()).toString().cstr());
     }
-    return result;
+    break;
 
   case CONTROL_LIGHTCOLOR            :
   case CONTROL_LIGHT                 :
@@ -108,27 +117,29 @@ String D3SceneEditor::toString() const {
       if(lc) {
         result += format(_T("\n%s"), lc->getLight().toString().cstr());
       }
-      return result;
     }
+    break;
   case CONTROL_ANIMATION_SPEED       :
-    { D3AnimatedSurface *obj = getCurrentAnimatedObj();
+    { D3SceneObjectAnimatedMesh *obj = getCurrentAnimatedObj();
       if(obj) {
         result += format(_T("\nFrames/sec:%.2lf"), obj->getFramePerSec());
       }
-      return result;
     }
+    break;
   case CONTROL_MATERIAL              :
     if(m_currentObj && m_currentObj->hasMaterial()) {
       result += format(_T("\nMaterial:%s"), m_currentObj->getMaterial().toString().cstr());
     }
-    return result;
+    break;
 
   case CONTROL_BACKGROUNDCOLOR       :
-    return result + format(_T("\nBackground color:%s")
-                          ,::toString(getScene().getBackgroundColor(),false).cstr());
+    if(m_currentCamera) {
+      result += format(_T("\nBackground color:%s"),::toString(m_currentCamera->getBackgroundColor(),false).cstr());
+    }
+    break;
   case CONTROL_AMBIENTLIGHTCOLOR     :
-    return result + format(_T("\nAmbient color:%s")
-                          ,::toString(getScene().getAmbientColor(),false).cstr());
+    result += format(_T("\nAmbient color:%s"),::toString(getScene().getAmbientColor(),false).cstr());
+    break;
   }
   return result;
 }

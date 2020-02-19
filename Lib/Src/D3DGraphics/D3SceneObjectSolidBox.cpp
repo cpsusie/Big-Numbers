@@ -1,6 +1,7 @@
 #include "pch.h"
+#include <D3DGraphics/MeshBuilder.h>
 #include <D3DGraphics/D3Scene.h>
-#include <D3DGraphics/D3ToString.h>
+#include <D3DGraphics/D3SceneObjectSolidBox.h>
 
 void D3SceneObjectSolidBox::makeSquareFace(MeshBuilder &mb, int v0, int v1, int v2, int v3) {
   Face &f = mb.addFace();

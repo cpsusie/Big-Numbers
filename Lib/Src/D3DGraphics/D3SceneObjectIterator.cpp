@@ -1,5 +1,6 @@
 #include "pch.h"
 #include <D3DGraphics/D3Scene.h>
+#include <D3DGraphics/D3SceneObject.h>
 
 class D3SceneObjectIterator : public AbstractIterator {
 private:

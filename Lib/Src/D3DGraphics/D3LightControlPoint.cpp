@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <D3DGraphics/D3Scene.h>
 #include <D3DGraphics/D3LightControl.h>
 #include <D3DGraphics/MeshCreators.h>
 
@@ -12,7 +13,9 @@ D3LightControlPoint::D3LightControlPoint(D3Scene &scene, int lightIndex)
   optimizeMesh(m_mesh);
 }
 
-D3PosDirUpScale &D3LightControlPoint::getPDUS() {
-  return m_pdus.setScaleAll(getSize())
-               .setPos(getLight().Position);
+D3DXMATRIX &D3LightControlPoint::getWorld() {
+  const LIGHT    light = getLight();
+  const float    size  = getSize();
+  m_world = D3World().setScaleAll(size).setPos(light.Position);
+  return __super::getWorld();
 }

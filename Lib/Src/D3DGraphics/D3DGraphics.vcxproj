@@ -766,9 +766,15 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="D3AnimatedSurface.cpp" />
-    <ClCompile Include="D3Ray.cpp" />
+    <ClCompile Include="D3CameraArray.cpp" />
+    <ClCompile Include="D3Device.cpp" />
+    <ClCompile Include="D3SceneObjectAnimatedMesh.cpp" />
+    <ClCompile Include="D3PickedInfo.cpp" />
+    <ClCompile Include="D3CompileEffect.cpp" />
+    <ClCompile Include="D3SceneObjectIntersectWithRay.cpp" />
+    <ClCompile Include="D3Camera.cpp" />
     <ClCompile Include="D3SceneEditorToString.cpp" />
+    <ClCompile Include="D3SceneObject.cpp" />
     <ClCompile Include="D3SceneObjectCoordinateSystem.cpp" />
     <ClCompile Include="D3SceneObjectCurve.cpp" />
     <ClCompile Include="D3SceneObjectCurveArray.cpp" />
@@ -777,11 +783,14 @@
     <ClCompile Include="D3PDUS.cpp" />
     <ClCompile Include="D3SceneEditor.cpp" />
     <ClCompile Include="D3SceneObjectIterator.cpp" />
+    <ClCompile Include="D3SceneObjectPickArrow.cpp" />
+    <ClCompile Include="D3SceneObjectPoint.cpp" />
     <ClCompile Include="D3SceneObjectSolidBox.cpp" />
     <ClCompile Include="D3SceneObjectWithIndexBuffer.cpp" />
     <ClCompile Include="D3SceneObjectWithMesh.cpp" />
     <ClCompile Include="D3SceneObjectWithVertexBuffer.cpp" />
-    <ClCompile Include="D3SceneRenderState.cpp" />
+    <ClCompile Include="D3DeviceRenderState.cpp" />
+    <ClCompile Include="D3ScenePickedObject.cpp" />
     <ClCompile Include="D3SelectedCube.cpp" />
     <ClCompile Include="D3SceneObjectWireFrameBox.cpp" />
     <ClCompile Include="FVF.cpp" />
@@ -836,15 +845,36 @@
     <ClCompile Include="WavefrontObjFileMeshBuilder.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Include\D3DGraphics\D3AbstractMeshFactory.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\D3CameraArray.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\D3DeviceRenderState.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3DXCube.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\D3PickedInfo.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\D3Ray.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\D3Device.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectAnimatedMesh.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\D3Camera.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\D3SceneContainer.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObject.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectCoordinateSystem.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3Error.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3LightControl.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3Math.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3Scene.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3SceneEditor.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectCurve.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectCurveArray.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectLineArray.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectLineArrow.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectPickArrow.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectPoint.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectSolidBox.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectWireFrameBox.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectWithIndexBuffer.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectWithMesh.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectWithVertexBuffer.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3SelectedCube.h" />
-    <ClInclude Include="..\..\Include\D3DGraphics\D3TextureFactory.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\D3AbstractTextureFactory.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3ToString.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3Transformation.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\Function2DSurface.h" />

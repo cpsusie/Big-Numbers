@@ -1,6 +1,6 @@
 #include "pch.h"
-#include <D3DGraphics/D3Scene.h>
-#include <D3DGraphics/D3ToString.h>
+#include <D3DGraphics/D3Device.h>
+#include <D3DGraphics/D3SceneObjectCurveArray.h>
 
 D3SceneObjectCurveArray::D3SceneObjectCurveArray(D3Scene &scene, const CurveArray &curves) : D3SceneObjectWithVertexBuffer(scene) {
   int totalVertexCount = 0;
@@ -22,14 +22,17 @@ D3SceneObjectCurveArray::D3SceneObjectCurveArray(D3Scene &scene, const CurveArra
   unlockVertexArray();
 }
 
-void D3SceneObjectCurveArray::draw() {
+void D3SceneObjectCurveArray::draw(D3Device &device) {
   if(hasVertexBuffer()) {
-    setStreamSource();
-    setLightingEnable(true);
+    if(hasMaterial()) {
+      device.setMaterial(getMaterial());
+    }
+    setStreamSource(device).setLightingEnable(true);
     int startIndex = 0;
-    for (size_t i = 0; i < m_curveSize.size(); i++) {
+    for(size_t i = 0; i < m_curveSize.size(); i++) {
       const int vertexCount = m_curveSize[i];
-      drawPrimitive(D3DPT_LINESTRIP, startIndex, vertexCount - 1);
+      device.setWorldMatrix(getWorld())
+            .drawPrimitive(D3DPT_LINESTRIP, startIndex, vertexCount - 1);
       startIndex += vertexCount;
     }
   }

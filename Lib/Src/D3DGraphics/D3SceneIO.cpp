@@ -14,22 +14,23 @@ void D3Scene::load(const String &fileName) {
   load(doc);
 }
 
+
 void D3Scene::save(XMLDoc &doc) const {
   XMLNodePtr root = doc.createRoot(_T("scene"));
-  setValue(doc, root, _T("camera"       ), m_camPDUS       );
-  setValue(doc, root, _T("defaultobj"   ), m_defaultObjPDUS);
-  doc.setValue( root, _T("viewangel"    ), m_viewAngel     );
-  doc.setValue( root, _T("nearviewplane"), m_nearViewPlane );
+//  setValue(doc, root, _T("camera"       ), m_camPDUS       );
+//  setValue(doc, root, _T("defaultobj"   ), m_defaultObjPDUS);
+//  doc.setValue( root, _T("viewangel"    ), m_viewAngel     );
+//  doc.setValue( root, _T("nearviewplane"), m_nearViewPlane );
   saveMaterials(doc, root);
   saveLights(   doc, root);
 }
 
 void D3Scene::load(XMLDoc &doc) {
   XMLNodePtr root = doc.getRoot();
-  getValue(doc, root, _T("camera"       ), m_camPDUS       );
-  getValue(doc, root, _T("defaultobj"   ), m_defaultObjPDUS);
-  doc.getValue( root, _T("viewangel"    ), m_viewAngel     );
-  doc.getValue( root, _T("nearviewplane"), m_nearViewPlane );
+//  getValue(doc, root, _T("camera"       ), m_camPDUS       );
+//  getValue(doc, root, _T("defaultobj"   ), m_defaultObjPDUS);
+//  doc.getValue( root, _T("viewangel"    ), m_viewAngel     );
+//  doc.getValue( root, _T("nearviewplane"), m_nearViewPlane );
   loadMaterials(doc, root);
   loadLights(   doc, root);
 }

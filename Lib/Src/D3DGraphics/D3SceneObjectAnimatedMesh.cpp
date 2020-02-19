@@ -1,13 +1,15 @@
 #include "pch.h"
 #include <D3DGraphics/D3Scene.h>
+#include <D3DGraphics/D3Device.h>
+#include <D3DGraphics/D3SceneObjectAnimatedMesh.h>
 
-D3AnimatedSurface::D3AnimatedSurface(D3Scene &scene, const MeshArray &meshArray)
+D3SceneObjectAnimatedMesh::D3SceneObjectAnimatedMesh(D3Scene &scene, const MeshArray &meshArray)
 : D3SceneObject(scene)
 , m_meshArray(meshArray)
 , m_frameCount((UINT)meshArray.size())
 , m_fillMode(D3DFILL_SOLID)
 , m_shadeMode(D3DSHADE_GOURAUD)
-, m_timer(1, format(_T("Timer for animated surface %s"), getName().cstr()))
+, m_timer(1, format(_T("Timer for animated mesh %s"), getName().cstr()))
 , m_sleepTime(50)
 , m_animationType(ANIMATE_FORWARD)
 , m_forward(true)
@@ -17,11 +19,11 @@ D3AnimatedSurface::D3AnimatedSurface(D3Scene &scene, const MeshArray &meshArray)
 {
 }
 
-D3AnimatedSurface::~D3AnimatedSurface() {
+D3SceneObjectAnimatedMesh::~D3SceneObjectAnimatedMesh() {
   stopAnimation();
 }
 
-void D3AnimatedSurface::startAnimation(AnimationType type) {
+void D3SceneObjectAnimatedMesh::startAnimation(AnimationType type) {
   if(isRunning()) {
     return;
   }
@@ -30,14 +32,14 @@ void D3AnimatedSurface::startAnimation(AnimationType type) {
   m_running = true;
 }
 
-void D3AnimatedSurface::stopAnimation() {
+void D3SceneObjectAnimatedMesh::stopAnimation() {
   if(isRunning()) {
     m_timer.stopTimer();
     m_running = false;
   }
 }
 
-void D3AnimatedSurface::scaleSpeed(float factor) {
+void D3SceneObjectAnimatedMesh::scaleSpeed(float factor) {
   if((factor == 0) || (factor == 1)) {
     return;
   }
@@ -50,7 +52,7 @@ void D3AnimatedSurface::scaleSpeed(float factor) {
   }
 }
 
-void D3AnimatedSurface::handleTimeout(Timer &t) {
+void D3SceneObjectAnimatedMesh::handleTimeout(Timer &t) {
   getScene().setAnimationFrameIndex(m_lastRenderedIndex, m_nextMeshIndex);
   nextIndex();
   if(getAnimationType() == ANIMATE_ALTERNATING) {
@@ -58,7 +60,7 @@ void D3AnimatedSurface::handleTimeout(Timer &t) {
   }
 }
 
-int D3AnimatedSurface::getSleepTime() const {
+int D3SceneObjectAnimatedMesh::getSleepTime() const {
   switch(getAnimationType()) {
   case ANIMATE_FORWARD    :
   case ANIMATE_BACKWARD   :
@@ -72,7 +74,7 @@ int D3AnimatedSurface::getSleepTime() const {
 }
 
 //  invariant:m_nextMeshIndex = [0..m_frameCount-1]
-void D3AnimatedSurface::nextIndex() {
+void D3SceneObjectAnimatedMesh::nextIndex() {
   switch(getAnimationType()) {
   case ANIMATE_FORWARD    :
     m_nextMeshIndex = (m_nextMeshIndex + 1) % m_frameCount;
@@ -96,13 +98,15 @@ void D3AnimatedSurface::nextIndex() {
   }
 }
 
-void D3AnimatedSurface::draw() {
-  setFillAndShadeMode();
-  setSceneMaterial();
+void D3SceneObjectAnimatedMesh::draw(D3Device &device) {
+  device.setWorldMatrix(getWorld())
+        .setFillMode(getFillMode())
+        .setShadeMode(getShadeMode())
+        .setMaterial(getMaterial());
   V(m_meshArray[m_lastRenderedIndex = m_nextMeshIndex]->DrawSubset(0));
 }
 
-LPD3DXMESH D3AnimatedSurface::getMesh() const {
+LPD3DXMESH D3SceneObjectAnimatedMesh::getMesh() const {
   if(m_lastRenderedIndex < 0) {
     return NULL;
   }

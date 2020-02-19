@@ -3,9 +3,10 @@
 #include <TinyBitSet.h>
 #include <MFCUtil/WinTools.h>
 #include <MFCUtil/PropertyDialogMap.h>
-#include <D3DGraphics/Light.h>
-#include <D3DGraphics/Material.h>
-#include <D3DGraphics/D3LightControl.h>
+#include "D3Ray.h"
+#include "D3PickedInfo.h"
+#include "D3SceneObjectPoint.h"
+#include "D3SceneContainer.h"
 
 typedef enum {
   CONTROL_IDLE
@@ -20,7 +21,7 @@ typedef enum {
  ,CONTROL_LIGHTCOLOR
  ,CONTROL_BACKGROUNDCOLOR
  ,CONTROL_AMBIENTLIGHTCOLOR
-} CurrentObjectControl;
+} D3EditorControl;
 
 
 #define SE_INITDONE           0x01
@@ -33,63 +34,52 @@ typedef enum {
 #define SE_RENDERALL          (SE_RENDER3D | SE_RENDERINFO)
 #define SE_ALL                (SE_ENABLED | SE_PROPCHANGES | SE_RENDERALL | SE_LIGHTCONTROLS)
 
-class D3SceneContainer {
-public:
-  virtual D3Scene &getScene()               = 0;
-  virtual CWnd    *getMessageWindow()       = 0;
-  virtual CWnd    *get3DWindow()            = 0;
-  // renderFlags is any combination of RENDER_3D,RENDER_INFO
-  virtual void     render(BYTE renderFlags) = 0;
-  virtual void     modifyContextMenu(CMenu &menu) {
-  }
-};
-
-class CenterOfRotation {
-public:
-  D3SceneObject *m_obj; // which object does m_pos refer to
-  D3DXVECTOR3    m_pos; // relative to mesh (0,0,0)
-  CenterOfRotation() {
-    reset();
-  }
-  inline void reset() {
-    set(NULL,D3DXORIGIN);
-  }
-  inline void set(D3SceneObject *obj, const D3DXVECTOR3 &pos) {
-    m_obj = obj;
-    m_pos = pos;
-  }
-};
+class D3Camera;
+class D3SceneContainer;
+class D3SceneObject;
+class D3LightControl;
+class D3SceneObjectAnimatedMesh;
 
 class D3SceneEditor : public PropertyChangeListener {
 private:
     D3SceneContainer                 *m_sceneContainer;
-    CurrentObjectControl              m_currentControl;
+    D3EditorControl                   m_currentControl;
+    D3Camera                         *m_currentCamera;
+    int                               m_currentCameraIndex;
     D3SceneObject                    *m_currentObj, *m_coordinateSystem, *m_selectedCube;
     PropertyDialogMap                 m_propertyDialogMap;
-    PropertyContainer                *m_currentEditor;
+    PropertyDialog                   *m_currentPropertyDialog;
     BYTE                              m_stateFlags;
     CPoint                            m_lastMouse;
-    CenterOfRotation                  m_centerOfRotation;
+    D3SceneObjectPoint                m_centerOfRotation;
     D3DXVECTOR3                       m_pickedPoint; // in world space
     D3Ray                             m_pickedRay;   // in world space
     D3PickedInfo                      m_pickedInfo;
     String                            m_paramFileName;
 
-    inline CWnd *getMessageWindow() const {
-      return m_sceneContainer->getMessageWindow();
-    }
-    inline CWnd *get3DWindow() const {
-      return m_sceneContainer->get3DWindow();
-    }
+    HWND getCurrentHwnd() const;
     D3Scene &getScene() const {
       return m_sceneContainer->getScene();
     }
-    inline void render(BYTE flags) {
+    CameraSet getVisibleCameraSet() const;
+    CameraSet getCurrentCameraSet() const;
+    inline void render(BYTE flags, CameraSet cameraSet) {
       if(isSet(flags)) {
-        m_sceneContainer->render(flags);
+        m_sceneContainer->render(flags, cameraSet);
       }
     }
-
+    inline void renderInfo() {
+      render(SE_RENDERINFO, CameraSet());
+    }
+    inline void renderCurrent(BYTE flags) {
+      render(flags, getCurrentCameraSet());
+    }
+    inline void renderVisible(BYTE flags) {
+      render(flags, getVisibleCameraSet());
+    }
+    int  findCameraIndex(CPoint p) const;
+    // if index >= 0, set m_currentCamera = scene.getCameraArray()[index], else = NULL, and set m_currentCameraIndex = index
+    void selectCamera(int index);
     void rotateCurrentVisualFrwBckw(  float angle1 , float angle2);
     void rotateCurrentVisualLeftRight(float angle) ;
     void adjustCurrentVisualScale(int component, float factor);
@@ -97,20 +87,17 @@ private:
     void moveCurrentObjXY(CPoint pt);
     void moveCurrentObjXZ(CPoint pt);
     // Assume getCurrentObjType() in { SOTYPE_VISUALOBJECT, SOTYPE_LIGHTCONTROL, SOTYPE_ANIMATEDOBJECT }
-    D3DXVECTOR3     getCurrentObjPos();
+    D3DXVECTOR3       getCurrentObjPos();
     // Assume getCurrentObjType() in { SOTYPE_VISUALOBJECT, SOTYPE_LIGHTCONTROL, SOTYPE_ANIMATEDOBJECT }
-    void            setCurrentObjPos(   const D3DXVECTOR3 &pos);
+    void              setCurrentObjPos(   const D3DXVECTOR3 &pos);
     // Assume getCurrentVisual() != NULL (currentSceneObject.type in { SOTYPE_ANIMATEDOBJECT, SOTYPE_VISUALOBJECT }
-    void            setCurrentVisualPDUS(       const D3PosDirUpScale &pdus);
+    void              setCurrentVisualWorld(       const D3DXMATRIX &world);
     // return pointer to getCurrentVisual->getPDUS() if getCcurrentVisual() != NULL, else NULL
-    const D3PosDirUpScale *getCurrentVisualPDUS() const;
-    void            setCurrentVisualOrientation(const D3DXVECTOR3 &dir, const D3DXVECTOR3 &up);
-    void            setCurrentVisualScale(      const D3DXVECTOR3 &pos);
-    void            resetCenterOfRotation();
-    void            setCenterOfRotation();
-    inline D3DXVECTOR3  getCenterOfRotation() const {
-      return (getCurrentVisual() == m_centerOfRotation.m_obj) ? m_centerOfRotation.m_pos : D3DXORIGIN;
-    }
+    const D3DXMATRIX *getCurrentVisualWorld() const;
+    void              setCurrentVisualOrientation(const D3DXQUATERNION &q    );
+    void              setCurrentVisualScale(      const D3DXVECTOR3    &scale);
+    void              resetCenterOfRotation();
+    void              setCenterOfRotation();
     void walkWithCamera(       float  dist   , float  angle);
     void sidewalkWithCamera(   float  upDist , float rightDist);
     void moveCamera(           const D3DXVECTOR3 &dir, float dist);
@@ -136,9 +123,9 @@ private:
     CMenu &loadMenu(CMenu &menu, int id);
     void showContextMenu(CMenu &menu, CPoint point);
 
-    // set m_currentControl = CONTROL_IDLE and m_currentObj = NULL
+    // set m_currentControl = CONTROL_IDLE, m_currentCamera = NULL, m_currentObj = NULL
     void resetCurrentControl();
-    void setCurrentControl(CurrentObjectControl control);
+    void setCurrentControl(D3EditorControl control);
 
           D3LightControl *getCurrentLightControl();
     const D3LightControl *getCurrentLightControl() const;
@@ -153,21 +140,22 @@ private:
     void setLightControlsVisible(bool visible);
     void addLight(D3DLIGHTTYPE type);
     void setSpotToPointAt(CPoint point);
-    void OnMouseMoveCameraWalk(           UINT nFlags, CPoint pt);
-    void OnMouseMoveObjPos(               UINT nFlags, CPoint pt);
-    void OnMouseWheelObjPos(              UINT nFlags, short zDelta, CPoint pt);
-    void OnMouseWheelObjScale(            UINT nFlags, short zDelta, CPoint pt);
-    void OnMouseWheelAnimationSpeed(      UINT nFlags, short zDelta, CPoint pt);
-    void OnMouseWheelCameraWalk(          UINT nFlags, short zDelta, CPoint pt);
 
-    void OnMouseMoveLight(                UINT nFlags, CPoint pt);
-    void OnMouseMoveLightPoint(           UINT nFlags, CPoint pt);
-    void OnMouseMoveLightSpot(            UINT nFlags, CPoint pt);
-    void OnMouseWheelLight(               UINT nFlags, short zDelta, CPoint pt);
-    void OnMouseWheelLightPoint(          UINT nFlags, short zDelta, CPoint pt);
-    void OnMouseWheelLightDirectional(    UINT nFlags, short zDelta, CPoint pt);
-    void OnMouseWheelLightSpot(           UINT nFlags, short zDelta, CPoint pt);
-    void OnMouseWheelLightSpotAngle(      UINT nFlags, short zDelta, CPoint pt);
+    void OnMouseMoveCameraWalk(           UINT nFlags, CPoint pt);               // pt in window-coordinates
+    void OnMouseMoveObjPos(               UINT nFlags, CPoint pt);               // pt in window-coordinates
+    void OnMouseWheelObjPos(              UINT nFlags, short zDelta, CPoint pt); // pt in window-coordinates
+    void OnMouseWheelObjScale(            UINT nFlags, short zDelta, CPoint pt); // pt in window-coordinates
+    void OnMouseWheelAnimationSpeed(      UINT nFlags, short zDelta, CPoint pt); // pt in window-coordinates
+    void OnMouseWheelCameraWalk(          UINT nFlags, short zDelta, CPoint pt); // pt in window-coordinates
+
+    void OnMouseMoveLight(                UINT nFlags, CPoint pt);               // pt in window-coordinates
+    void OnMouseMoveLightPoint(           UINT nFlags, CPoint pt);               // pt in window-coordinates
+    void OnMouseMoveLightSpot(            UINT nFlags, CPoint pt);               // pt in window-coordinates
+    void OnMouseWheelLight(               UINT nFlags, short zDelta, CPoint pt); // pt in window-coordinates
+    void OnMouseWheelLightPoint(          UINT nFlags, short zDelta, CPoint pt); // pt in window-coordinates
+    void OnMouseWheelLightDirectional(    UINT nFlags, short zDelta, CPoint pt); // pt in window-coordinates
+    void OnMouseWheelLightSpot(           UINT nFlags, short zDelta, CPoint pt); // pt in window-coordinates
+    void OnMouseWheelLightSpotAngle(      UINT nFlags, short zDelta, CPoint pt); // pt in window-coordinates
 
     void OnContextMenuBackground(  CPoint point);
     void OnContextMenuObj(         CPoint point);
@@ -210,12 +198,16 @@ private:
     void setSelectedCubeVisible(    bool visible);
     void setLightEnabled(bool enabled);
     void OnLightRemove();
+    // point in window-coordinates
     void OnLButtonDown(  UINT nFlags, CPoint point);
+    // point in window-coordinates
     void OnLButtonUp(    UINT nFlags, CPoint point);
+    // point in window-coordinates
     void OnMouseMove(    UINT nFlags, CPoint point);
     void OnLButtonDblClk(UINT nFlags, CPoint point);
+    // pt in window-coordinates
     BOOL OnMouseWheel(   UINT nFlags, short zDelta, CPoint pt);
-    void OnContextMenu(  CWnd *pwnd, CPoint point);
+    void OnContextMenu(  HWND pwnd, CPoint point);
     String stateFlagsToString() const;
     String getSelectedString() const;
 #ifdef _DEBUG
@@ -239,8 +231,11 @@ public:
     inline bool isEnabled() const {
       return isSet(SE_ENABLED);
     }
-    inline CurrentObjectControl getCurrentControl() const {
+    inline D3EditorControl      getCurrentControl() const {
       return m_currentControl;
+    }
+    inline D3Camera            *getCurrentCamera() const {
+      return m_currentCamera;
     }
     // return one of { SOTYPE_NULL, SOTYPE_VISUALOBJECT, SOTYPE_LIGHTCONTROL }
     SceneObjectType             getCurrentControlObjType() const;
@@ -255,7 +250,7 @@ public:
     // Return NULL, if m_currentObj->type not in {SOTYPE_VISUALOBJECT, SOTYPE_ANIMATEDOBJECT, }
     D3SceneObject              *getCurrentVisual() const;
     // return NULL, if m_currentObj->type not SOTYPE_ANIMATEDOBJECT
-    D3AnimatedSurface          *getCurrentAnimatedObj() const;
+    D3SceneObjectAnimatedMesh  *getCurrentAnimatedObj() const;
     inline const D3DXVECTOR3   &getPickedPoint() const {
       return m_pickedPoint;
     }
@@ -269,16 +264,6 @@ public:
       return getCurrentAnimatedObj() != NULL;
     }
     // p in screen-coordinates
-    inline CPoint screenPTo3DP(CPoint p) const {
-      get3DWindow()->ScreenToClient(&p);
-      return p;
-    }
-    // p in screen-coordinates
-    inline bool ptIn3DWindow(const CPoint &p) const {
-      CRect r;
-      GetWindowRect(*get3DWindow(), &r);
-      return r.PtInRect(p);
-    }
     inline const D3Ray &getPickedRay() const {
       return m_pickedRay;
     }

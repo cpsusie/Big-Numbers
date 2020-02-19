@@ -2,6 +2,8 @@
 
 #ifdef _DEBUG
 
+#include <MFCUtil/WinTools.h>
+
 void checkD3DResult(const TCHAR *method, HRESULT hr, bool exitOnError);
 
 #define V(hr) checkD3DResult(__TFUNCTION__, hr, true )

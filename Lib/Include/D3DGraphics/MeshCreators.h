@@ -5,6 +5,7 @@
 #include "Function2DSurface.h"
 #include "ParametricSurface.h"
 #include "IsoSurface.h"
+#include "D3AbstractMeshFactory.h"
 #include "MeshArray.h"
 
 LPD3DXMESH     createMeshFrom2DFunction(   AbstractMeshFactory &amf, Function2D &f, const DoubleInterval &xInterval, const DoubleInterval &yInterval, UINT nx, UINT ny, bool doubleSided);

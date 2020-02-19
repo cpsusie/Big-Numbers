@@ -1,6 +1,5 @@
 #include "pch.h"
-#include <D3DGraphics/D3Scene.h>
-#include <D3DGraphics/D3ToString.h>
+#include <D3DGraphics/D3SceneObjectWireFrameBox.h>
 
 void D3SceneObjectWireFrameBox::init(const Vertex &p1, const Vertex &p2) {
   Line3D lines[12], *lp = lines, *ll;

@@ -2,7 +2,7 @@
 #include <MFCUtil/ColorSpace.h>
 #include <D3DGraphics/D3SelectedCube.h>
 
-D3SelectedCube::D3SelectedCube(D3Scene &scene, const D3DXCube3 &cube) : D3SceneObjectSolidBoxWithPos(scene, cube) {
+D3SelectedCube::D3SelectedCube(D3Scene &scene, const D3DXCube3 &cube) : D3SceneObjectSolidBox(scene, cube) {
   setName(_T("SelectedCube"));
 }
 

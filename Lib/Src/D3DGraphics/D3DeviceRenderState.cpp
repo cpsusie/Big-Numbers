@@ -1,5 +1,5 @@
 #include "pch.h"
-#include <D3DGraphics/D3Scene.h>
+#include <D3DGraphics/D3DeviceRenderState.h>
 
 template<typename T> T getRenderState(LPDIRECT3DDEVICE device, D3DRENDERSTATETYPE id) {
   DWORD value;
@@ -19,7 +19,7 @@ void setBoolProperty(LPDIRECT3DDEVICE device, D3DRENDERSTATETYPE id, bool value)
   setRenderState(device, id, value ? TRUE : FALSE);
 }
 
-void D3SceneRenderState::getValuesFromDevice(LPDIRECT3DDEVICE device) {
+D3DeviceRenderState &D3DeviceRenderState::getValuesFromDevice(LPDIRECT3DDEVICE device) {
   m_fillMode                 = getRenderState<D3DFILLMODE>(   device, D3DRS_FILLMODE );
   m_shadeMode                = getRenderState<D3DSHADEMODE>(  device, D3DRS_SHADEMODE);
   m_ambientColor             = getRenderState<D3DCOLOR>(      device, D3DRS_AMBIENT  );
@@ -32,9 +32,10 @@ void D3SceneRenderState::getValuesFromDevice(LPDIRECT3DDEVICE device) {
   m_alphaBlendEnable         = getBoolProperty(device, D3DRS_ALPHABLENDENABLE);
   m_lighting                 = getBoolProperty(device, D3DRS_LIGHTING        );
   m_specularHighLightEnable  = getBoolProperty(device, D3DRS_SPECULARENABLE  );
+  return *this;
 }
 
-void D3SceneRenderState::setValuesToDevice(LPDIRECT3DDEVICE device) {
+D3DeviceRenderState &D3DeviceRenderState::setValuesToDevice(LPDIRECT3DDEVICE device) {
   setRenderState( device, D3DRS_FILLMODE         , m_fillMode               );
   setRenderState( device, D3DRS_SHADEMODE        , m_shadeMode              );
   setRenderState( device, D3DRS_AMBIENT          , m_ambientColor           );
@@ -47,12 +48,12 @@ void D3SceneRenderState::setValuesToDevice(LPDIRECT3DDEVICE device) {
   setBoolProperty(device, D3DRS_ALPHABLENDENABLE , m_alphaBlendEnable       );
   setBoolProperty(device, D3DRS_LIGHTING         , m_lighting               );
   setBoolProperty(device, D3DRS_SPECULARENABLE   , m_specularHighLightEnable);
+  return *this;
 }
 
-void D3SceneRenderState::setDefault() {
+D3DeviceRenderState &D3DeviceRenderState::setDefault() {
   m_fillMode                = D3DFILL_SOLID;
   m_shadeMode               = D3DSHADE_GOURAUD;
-  m_backgroundColor         = D3DCOLOR_XRGB(192,192,192);
   m_ambientColor            = D3DCOLOR_XRGB(50, 50, 50);
   m_cullMode                = D3DCULL_CCW;
   m_srcBlend                = D3DBLEND_ONE;
@@ -62,5 +63,5 @@ void D3SceneRenderState::setDefault() {
   m_alphaBlendEnable        = false;
   m_lighting                = true;
   m_specularHighLightEnable = true;
-  m_selectedMaterialId      = -1;
+  return *this;
 }

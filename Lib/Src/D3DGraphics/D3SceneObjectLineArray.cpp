@@ -1,8 +1,7 @@
 #include "pch.h"
-#include <D3DGraphics/D3Scene.h>
+#include <D3DGraphics/D3Device.h>
+#include <D3DGraphics/D3SceneObjectLineArray.h>
 #include <D3DGraphics/D3ToString.h>
-
-// ------------------------------------------------ D3SceneObjectLineArray -----------------------------------------------------------
 
 D3SceneObjectLineArray::D3SceneObjectLineArray(D3Scene &scene, const Line3D *lines, UINT n) : D3SceneObjectWithVertexBuffer(scene) {
   initBuffer(lines, n);
@@ -19,10 +18,13 @@ void D3SceneObjectLineArray::initBuffer(const Line3D *lines, UINT n) {
   unlockVertexArray();
 }
 
-void D3SceneObjectLineArray::draw() {
+void D3SceneObjectLineArray::draw(D3Device &device) {
   if(hasVertexBuffer()) {
-    setStreamSource();
-    setLightingEnable(true);
-    drawPrimitive(D3DPT_LINELIST, 0, m_primitiveCount);
+    if(hasMaterial()) {
+      device.setMaterial(getMaterial());
+    }
+    setStreamSource(device).setWorldMatrix(getWorld())
+                           .setLightingEnable(true)
+                           .drawPrimitive(D3DPT_LINELIST, 0, m_primitiveCount);
   }
 }

@@ -1,11 +1,13 @@
 #include "pch.h"
+#include <D3DGraphics/D3Camera.h>
+#include <D3DGraphics/D3Device.h>
+#include <D3DGraphics/D3Scene.h>
 #include <D3DGraphics/D3LightControl.h>
 
 bool D3LightControl::s_renderEffectEnabled = false;
 
 D3LightControl::D3LightControl(D3Scene &scene, int lightIndex)
   : D3SceneObjectWithMesh(scene), m_lightIndex(lightIndex)
-  , m_pdus(scene.getRightHanded())
 {
   m_size       =  1;
   m_materialId = -1;
@@ -66,6 +68,10 @@ D3DMATERIAL D3LightControl::createMaterialFromLight(const LIGHT &l) { // static
   return mat;
 }
 
+D3DCOLORVALUE D3LightControl::getMaterialColor() const {
+  return getMaterialColor(getLight());
+}
+
 void D3LightControl::updateMaterial() const {
   MATERIAL mat = getScene().getMaterial(getMaterialId());
   mat = createMaterialFromLight(getLight());
@@ -77,15 +83,13 @@ bool D3LightControl::isDifferentMaterial(const LIGHT &l1, const LIGHT &l2) { // 
   return createMaterialFromLight(l1) != createMaterialFromLight(l2);
 }
 
-void D3LightControl::draw() {
+void D3LightControl::draw(D3Device &device) {
   if(!s_renderEffectEnabled) {
     updateMaterial();
-    getScene().selectMaterial(getMaterialId())
-              .setFillMode(D3DFILL_SOLID)
-              .setShadeMode(D3DSHADE_GOURAUD);
+    device.setWorldMatrix(getWorld()).setMaterial(getMaterial()).setFillMode(D3DFILL_SOLID).setShadeMode(D3DSHADE_GOURAUD);
     drawSubset(0);
   } else {
-    prepareEffect();
+    prepareEffect(device);
     UINT passCount;
     V(m_effect->Begin( &passCount, 0));
     for(UINT pass = 0; pass < passCount; pass++) {
@@ -97,17 +101,17 @@ void D3LightControl::draw() {
   }
 }
 
-void D3LightControl::prepareEffect() {
+void D3LightControl::prepareEffect(D3Device &device) {
   D3Scene &scene = getScene();
   if(m_effect == NULL) {
-    createEffect();
+    LPDIRECT3DDEVICE dev = device;
+    createEffect(dev);
   }
 
-  const D3PosDirUpScale &pdus   = scene.getCamPDUS();
-  const D3DXMATRIX       mView  = pdus.getViewMatrix();
-  const D3DXMATRIX       mProj  = scene.getDevProjMatrix();
-  const D3DXVECTOR3      camPos = pdus.getPos();
-  const D3DXMATRIX       mWorld = getWorldMatrix();
+  const D3DXMATRIX       mView  = device.getViewMatrix();
+  const D3DXMATRIX       mProj  = device.getProjMatrix();
+  const D3DXVECTOR3      camPos = device.getCurrentCamera()->getPos();
+  const D3DXMATRIX       mWorld = getWorld();
   const D3DCOLORVALUE    color  = getMaterialColor();
 
   V(m_effect->SetTechnique( m_renderWith1LightNoTextureHandle));
@@ -124,7 +128,7 @@ void D3LightControl::prepareEffect() {
   V(m_effect->SetMatrix(m_worldHandle, &mWorld));
 }
 
-void D3LightControl::createEffect() {
+void D3LightControl::createEffect(LPDIRECT3DDEVICE device) {
   const char *effectSourceText =
       "float4   g_MaterialDiffuseColor;    // Material's diffuse color                             \r\n"
       "float3   g_LightDir;                // Light's direction in world space                     \r\n"
@@ -172,7 +176,7 @@ void D3LightControl::createEffect() {
       ;
 
   StringArray compilerErrors;
-  m_effect = getScene().compileEffect(effectSourceText, compilerErrors);
+  m_effect = compileEffect(device, effectSourceText, compilerErrors);
   if(m_effect == NULL) {
     showWarning(compilerErrors.toString(_T("\n")));
     return;

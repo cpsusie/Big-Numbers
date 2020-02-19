@@ -1,8 +1,6 @@
 #include "pch.h"
-#include <D3DGraphics/D3Scene.h>
-#include <D3DGraphics/D3ToString.h>
-
-// ----------------------------------------------- D3SceneObjectCurve ------------------------------------------------------------
+#include <D3DGraphics/D3Device.h>
+#include <D3DGraphics/D3SceneObjectCurve.h>
 
 D3SceneObjectCurve::D3SceneObjectCurve(D3Scene &scene, const VertexArray &points) : D3SceneObjectWithVertexBuffer(scene) {
   m_primitiveCount = (int)points.size() - 1;
@@ -12,10 +10,12 @@ D3SceneObjectCurve::D3SceneObjectCurve(D3Scene &scene, const VertexArray &points
   unlockVertexArray();
 }
 
-void D3SceneObjectCurve::draw() {
+void D3SceneObjectCurve::draw(D3Device &device) {
   if(hasVertexBuffer()) {
-    setStreamSource();
-    setLightingEnable(true);
-    drawPrimitive(D3DPT_LINESTRIP, 0, m_primitiveCount);
+    if(hasMaterial()) {
+      device.setMaterial(getMaterial());
+    }
+    setStreamSource(device).setWorldMatrix(getWorld())
+                           .setLightingEnable(true).drawPrimitive(D3DPT_LINESTRIP, 0, m_primitiveCount);
   }
 }

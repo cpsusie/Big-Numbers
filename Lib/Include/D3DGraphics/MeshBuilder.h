@@ -1,6 +1,6 @@
 #pragma once
 
-#include <MFCUtil/D3DeviceFactory.h>
+#include <D3DGraphics/D3AbstractMeshFactory.h>
 #include <D3DGraphics/D3Math.h>
 #include <D3DGraphics/D3DXCube.h>
 
@@ -68,11 +68,6 @@ public:
 };
 
 #define MAX16BITVERTEXCOUNT 0xfffe
-
-class AbstractMeshFactory {
-public:
-  virtual LPD3DXMESH allocateMesh(DWORD fvf, UINT faceCount, UINT vertexCount, DWORD options) = 0;
-};
 
 class MeshBuilder {
 private:

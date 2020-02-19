@@ -1,6 +1,8 @@
 #pragma once
 
-#include <D3DGraphics/D3Scene.h>
+#include <D3DGraphics/D3SceneObjectWithMesh.h>
+
+class LIGHT;
 
 class D3LightControl : public D3SceneObjectWithMesh {
 private:
@@ -19,21 +21,18 @@ private:
   D3LightControl(           const D3LightControl &src); // Not defined. Class not cloneable
   D3LightControl &operator=(const D3LightControl &src); // Not defined. Class not cloneable
 
-  void createEffect();
+  void createEffect(LPDIRECT3DDEVICE device);
 protected:
   static LPD3DXMESH &optimizeMesh(LPD3DXMESH &mesh);
   void createMaterial();
-  D3PosDirUpScale m_pdus;
-  void prepareEffect();
+  void prepareEffect(D3Device &device);
 
   static D3DCOLORVALUE getMaterialColor(const LIGHT &l);
   static inline D3DCOLORVALUE getDisabledMaterialColor() {
     return D3DXCOLOR(0.1f,0.1f,0.1f,1);
   }
   static D3DMATERIAL   createMaterialFromLight(const LIGHT &l);
-  inline D3DCOLORVALUE getMaterialColor() const {
-    return getMaterialColor(getLight());
-  }
+  D3DCOLORVALUE getMaterialColor() const;
 
   inline void setSize(float size) {
     m_size = size;
@@ -65,7 +64,7 @@ public:
   static inline bool isRenderEffectEnabled() {
     return s_renderEffectEnabled;
   }
-  void draw();
+  void draw(D3Device &device);
 };
 
 class D3LightControlDirectional : public D3LightControl {
@@ -86,7 +85,7 @@ public:
   inline void setSphereRadius(float radius) {
     m_sphereRadius = radius;
   }
-  D3PosDirUpScale &getPDUS();
+  D3DXMATRIX &getWorld();
 };
 
 class D3LightControlPoint : public D3LightControl {
@@ -95,7 +94,7 @@ public:
   D3DLIGHTTYPE getLightType() const {
     return D3DLIGHT_POINT;
   }
-  D3PosDirUpScale &getPDUS();
+  D3DXMATRIX &getWorld();
 };
 
 class D3LightControlSpot : public D3LightControl {
@@ -107,5 +106,5 @@ public:
   D3DLIGHTTYPE getLightType() const {
     return D3DLIGHT_SPOT;
   }
-  D3PosDirUpScale &getPDUS();
+  D3DXMATRIX &getWorld();
 };

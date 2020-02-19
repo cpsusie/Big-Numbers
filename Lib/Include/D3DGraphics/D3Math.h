@@ -24,6 +24,7 @@ D3DXVECTOR3 randomUnitVector();
 D3DXVECTOR3 ortonormalVector(     const D3DXVECTOR3 &v);
 String      toString(             const D3DXVECTOR3 &v, int dec = 3);
 String      toString(             const D3DXVECTOR4 &v, int dec = 3);
+String      toString(             const D3DXQUATERNION &q, int dec = 3);
 D3DXMATRIX  transpose(            const D3DXMATRIX  &m);
 D3DXMATRIX  invers(               const D3DXMATRIX  &m);
 D3DXMATRIX  createIdentityMatrix();
@@ -32,6 +33,9 @@ D3DXMATRIX  createScaleMatrix(    const D3DXVECTOR3 &s);
 D3DXMATRIX  createRotationMatrix( const D3DXVECTOR3 &axis, float rad);
 D3DXVECTOR3 operator*(            const D3DXMATRIX  &m, const D3DXVECTOR3 &v);
 D3DXVECTOR3 operator*(            const D3DXVECTOR3 &v, const D3DXMATRIX  &m);
+// return quarternion that rotates x-axis (1,0,0) pointing into dir
+D3DXQUATERNION createOrientation(const D3DXVECTOR3 &dir);
+
 float       det(                  const D3DXMATRIX  &m);
 String      toString(             const D3DXMATRIX  &m, int dec = 3);
 
@@ -255,6 +259,79 @@ public:
   }
 };
 
+class D3World {
+private:
+  D3DXVECTOR3    m_scale, m_pos;
+  D3DXQUATERNION m_q;
+
+  static inline void decomposeMatrix(D3DXVECTOR3 &scale, D3DXQUATERNION &q, D3DXVECTOR3 &pos, const D3DXMATRIX &mat) {
+    FV(D3DXMatrixDecompose(&scale, &q, &pos, &mat));
+  }
+  static inline void composeMatrix(const D3DXVECTOR3 &scale, const D3DXQUATERNION &q, const D3DXVECTOR3 &pos, D3DXMATRIX &mat) {
+    D3DXMatrixTransformation(&mat, NULL, NULL, &scale, NULL, &q, &pos);
+  }
+
+public:
+  D3World() {
+    reset();
+  }
+  D3World(const D3DXMATRIX &world) {
+    decomposeMatrix(m_scale, m_q, m_pos, world);
+  }
+  operator D3DXMATRIX() const {
+    D3DXMATRIX world;
+    composeMatrix(m_scale, m_q, m_pos, world);
+    return world;
+  }
+  inline D3World &reset() {
+    D3DXMATRIX id;
+    D3DXMatrixIdentity(&id);
+    decomposeMatrix(m_scale, m_q, m_pos, id);
+    return *this;
+  }
+  inline D3World &resetPos() {
+    return setPos(D3DXORIGIN);
+  }
+  inline D3World &resetOrientation() {
+    D3DXQuaternionIdentity(&m_q);
+    return *this;
+  }
+  inline D3World &resetScale() {
+    return setScaleAll(1);
+  }
+  inline D3World &setPos(const D3DXVECTOR3 &pos) {
+    m_pos = pos;
+    return *this;
+  }
+  inline const D3DXVECTOR3 &getPos() const {
+    return m_pos;
+  }
+  inline D3World &setScale(const D3DXVECTOR3 &scale) {
+    m_scale = scale;
+    return *this;
+  }
+  inline const D3DXVECTOR3 &getScale() const {
+    return m_scale;
+  }
+  inline D3World &setScaleAll(float scale) {
+    return setScale(D3DXVECTOR3(scale, scale, scale));
+  }
+  inline D3World &setOrientation(const D3DXQUATERNION &q) {
+    m_q = q;
+    return *this;
+  }
+  inline const D3DXQUATERNION &getOrientation() const {
+    return m_q;
+  }
+  String toString(int dec = 3) const {
+    return format(_T("Pos:%s, Orientation:%s, Scale:%s")
+                 ,::toString(m_pos  ,dec).cstr()
+                 ,::toString(m_q    ,dec).cstr()
+                 ,::toString(m_scale,dec).cstr()
+                 );
+  }
+};
+
 class D3PosDirUpScale {
 private:
   bool        m_rightHanded;
@@ -346,28 +423,6 @@ public:
   }
   inline bool operator!=(const D3PosDirUpScale &pdus) const {
     return !(*this == pdus);
-  }
-};
-
-class D3Ray {
-public:
-  D3DXVECTOR3 m_orig; // Point in world space where ray starts
-  D3DXVECTOR3 m_dir;  // direction of ray in world space
-  inline D3Ray() : m_orig(D3DXORIGIN), m_dir(D3DXORIGIN) {
-  }
-  inline D3Ray(const D3DXVECTOR3 &orig, const D3DXVECTOR3 &dir) : m_orig(orig), m_dir(unitVector(dir)) {
-  }
-  D3DXVECTOR3 getHitPoint(float dist) const {
-    return m_orig + m_dir * dist;
-  }
-  inline void clear() {
-    m_dir = m_orig = D3DXORIGIN;
-  }
-  inline bool isEmpty() const {
-    return length(m_dir) == 0;
-  }
-  inline String toString(int dec=3) const {
-    return format(_T("Orig:%s, Dir:%s"), ::toString(m_orig,dec).cstr(), ::toString(m_dir,dec).cstr());
   }
 };
 

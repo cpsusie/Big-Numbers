@@ -1,5 +1,7 @@
 #include "pch.h"
+#include <D3DGraphics/D3Device.h>
 #include <D3DGraphics/D3Scene.h>
+#include <D3DGraphics/D3SceneObjectLineArrow.h>
 #include <D3DGraphics/D3ToString.h>
 
 // ----------------------------------------------------- D3SceneObjectLineArrow ------------------------------------------------------
@@ -35,13 +37,17 @@ D3SceneObjectLineArrow::D3SceneObjectLineArrow(D3Scene &scene, const Vertex &fro
   unlockVertexArray();
 }
 
-void D3SceneObjectLineArrow::draw() {
+void D3SceneObjectLineArrow::draw(D3Device &device) {
   if(hasVertexBuffer()) {
-    getScene().setFillMode(D3DFILL_SOLID).setShadeMode(D3DSHADE_GOURAUD);
-    setStreamSource();
-    setLightingEnable(true);
-    drawPrimitive(D3DPT_LINELIST, 0, 1);
-    drawPrimitive(D3DPT_TRIANGLEFAN, 1, FANCOUNT);
-    drawPrimitive(D3DPT_TRIANGLEFAN, FANCOUNT + 3, FANCOUNT);
+    if(hasMaterial()) {
+      device.setMaterial(getMaterial());
+    }
+    setStreamSource(device).setWorldMatrix(getWorld())
+                           .setFillMode(D3DFILL_SOLID)
+                           .setShadeMode(D3DSHADE_GOURAUD)
+                           .setLightingEnable(true)
+                           .drawPrimitive(D3DPT_LINELIST, 0, 1)
+                           .drawPrimitive(D3DPT_TRIANGLEFAN, 1, FANCOUNT)
+                           .drawPrimitive(D3DPT_TRIANGLEFAN, FANCOUNT + 3, FANCOUNT);
   }
 }

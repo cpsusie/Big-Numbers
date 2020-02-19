@@ -1,8 +1,7 @@
 #include "pch.h"
-#include <D3DGraphics/D3Scene.h>
+#include <D3DGraphics/D3Device.h>
 #include <D3DGraphics/D3ToString.h>
-
-// ------------------------------------------------ D3SceneObjectWithVertexBuffer ---------------------------------------------------
+#include <D3DGraphics/D3SceneObjectWithVertexBuffer.h>
 
 D3SceneObjectWithVertexBuffer::D3SceneObjectWithVertexBuffer(D3Scene &scene) : D3SceneObject(scene) {
   m_vertexBuffer   = NULL;
@@ -13,18 +12,26 @@ D3SceneObjectWithVertexBuffer::~D3SceneObjectWithVertexBuffer() {
   releaseVertexBuffer();
 }
 
-void D3SceneObjectWithVertexBuffer::lockVertexArray(void **a, UINT nbytes) {
+D3SceneObjectWithVertexBuffer &D3SceneObjectWithVertexBuffer::lockVertexArray(void **a, UINT nbytes) {
   V(m_vertexBuffer->Lock(0, nbytes, a, 0));
+  return *this;
 }
 
-void D3SceneObjectWithVertexBuffer::unlockVertexArray() {
+D3SceneObjectWithVertexBuffer &D3SceneObjectWithVertexBuffer::unlockVertexArray() {
   if(hasVertexBuffer()) {
     V(m_vertexBuffer->Unlock());
   }
+  return *this;
 }
 
-void D3SceneObjectWithVertexBuffer::releaseVertexBuffer() {
+D3SceneObjectWithVertexBuffer &D3SceneObjectWithVertexBuffer::releaseVertexBuffer() {
   SAFERELEASE(m_vertexBuffer);
+  return *this;
+}
+
+D3Device &D3SceneObjectWithVertexBuffer::setStreamSource(D3Device &device) {
+  device.setStreamSource(m_vertexBuffer, m_vertexSize, m_fvf);
+  return device;
 }
 
 D3DXCube3 D3SceneObjectWithVertexBuffer::getBoundingBox() const {
