@@ -36,8 +36,9 @@ D3DXVECTOR3 operator*(            const D3DXVECTOR3 &v, const D3DXMATRIX  &m);
 // return quarternion that rotates x-axis (1,0,0) pointing into dir
 D3DXQUATERNION createOrientation(const D3DXVECTOR3 &dir);
 D3DXQUATERNION createRotation(    const D3DXVECTOR3 &axis, float angle);
-float       det(                  const D3DXMATRIX  &m);
-String      toString(             const D3DXMATRIX  &m, int dec = 3);
+D3DXVECTOR3    operator*(         const D3DXQUATERNION &q, const D3DXVECTOR3 &v);
+float          det(               const D3DXMATRIX  &m);
+String         toString(          const D3DXMATRIX  &m, int dec = 3);
 
 #define D3DXORIGIN D3DXVECTOR3(0,0,0)
 
@@ -320,14 +321,26 @@ public:
     m_q = q;
     return *this;
   }
+  inline D3DXVECTOR3 getDir() const {
+    return m_q * createUnitVector(0);
+  }
+  inline D3DXVECTOR3 getUp() const {
+    return m_q * createUnitVector(2);
+  }
+  inline D3DXVECTOR3 getRight() const {
+    return m_q * createUnitVector(1);
+  }
   inline const D3DXQUATERNION &getOrientation() const {
     return m_q;
   }
   String toString(int dec = 3) const {
-    return format(_T("Pos:%s, Orientation:%s, Scale:%s")
-                 ,::toString(m_pos  ,dec).cstr()
-                 ,::toString(m_q    ,dec).cstr()
-                 ,::toString(m_scale,dec).cstr()
+    return format(_T("Pos:%s, Orientation:%s, Scale:%s, (D:%s, U:%s, R:%s)")
+                 ,::toString(m_pos     , dec).cstr()
+                 ,::toString(m_q       , dec).cstr()
+                 ,::toString(m_scale   , dec).cstr()
+                 ,::toString(getDir()  , dec).cstr()
+                 ,::toString(getUp()   , dec).cstr()
+                 ,::toString(getRight(), dec).cstr()
                  );
   }
 };

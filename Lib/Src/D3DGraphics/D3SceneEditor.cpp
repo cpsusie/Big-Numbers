@@ -118,7 +118,7 @@ void D3SceneEditor::handlePropertyChanged(const PropertyContainer *source, int i
     return;
   }
   if(source == &getScene()) {
-    switch (id) {
+    switch(id) {
     case SP_MATERIALPARAMETERS:
     case SP_LIGHTPARAMETERS:
     case SP_VISUALCOUNT:
@@ -591,11 +591,8 @@ void D3SceneEditor::rotateCurrentVisualFrwBckw(float angle1, float angle2) {
   const D3PosDirUpScale &camPDUS  = m_currentCamera->getPDUS();
   const D3DXVECTOR3      camUp    = camPDUS.getUp();
   const D3DXVECTOR3      camRight = camPDUS.getRight();
-  D3DXMATRIX m1,m2;
-  D3DXMatrixRotationAxis(&m1, &camUp   , angle1);
-  D3DXMatrixRotationAxis(&m2, &camRight, angle2);
-  D3DXMATRIX rot = m1 * m2;
-  setCurrentVisualWorld(rot * obj->getWorld());
+  const D3DXQUATERNION   rot      = createRotation(camUp, angle1) * createRotation(camRight, angle2);
+  setCurrentVisualOrientation(rot * obj->getOrientation());
   CHECKINVARIANT();
 }
 

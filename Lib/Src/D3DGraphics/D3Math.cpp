@@ -43,6 +43,11 @@ D3DXVECTOR3 rotate(const D3DXVECTOR3 &v, const D3DXVECTOR3 &axes, float rad) {
   return *D3DXMatrixRotationAxis(&matRot, &axes, rad) * v;
 }
 
+D3DXVECTOR3 operator*(const D3DXQUATERNION &q, const D3DXVECTOR3 &v) {
+  D3DXMATRIX m;
+  return *D3DXMatrixRotationQuaternion(&m, &q) * v;
+}
+
 D3DXMATRIX &D3DXMatrixPerspectiveFov(D3DXMATRIX &mat, FLOAT angel, FLOAT apsect, FLOAT zn, FLOAT fn, bool rightHanded) {
   return rightHanded
        ? *D3DXMatrixPerspectiveFovRH(&mat, angel, apsect, zn, fn)
