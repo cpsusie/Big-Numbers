@@ -33,6 +33,10 @@ D3DXQUATERNION createOrientation(const D3DXVECTOR3 &dir) {
   }
 }
 
+D3DXQUATERNION createRotation(const D3DXVECTOR3 &axis, float angle) {
+  D3DXQUATERNION q;
+  return *D3DXQuaternionRotationAxis(&q, &axis, angle);
+}
 
 D3DXVECTOR3 rotate(const D3DXVECTOR3 &v, const D3DXVECTOR3 &axes, float rad) {
   D3DXMATRIX matRot;

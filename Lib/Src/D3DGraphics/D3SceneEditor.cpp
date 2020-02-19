@@ -603,10 +603,9 @@ void D3SceneEditor::rotateCurrentVisualLeftRight(float angle) {
   CHECKINVARIANT();
   D3SceneObjectVisual *obj = getCurrentVisual();
   if(obj == NULL) return;
-  const D3DXVECTOR3 camDir = m_currentCamera->getDir();
-  D3DXMATRIX rot;
-  D3DXMatrixRotationAxis(&rot, &camDir, angle);
-  setCurrentVisualWorld(rot * obj->getWorld());
+  const D3DXVECTOR3     camDir = m_currentCamera->getDir();
+  const D3DXQUATERNION  rot    = createRotation(camDir, angle);
+  setCurrentVisualOrientation(rot * obj->getOrientation());
   CHECKINVARIANT();
 }
 

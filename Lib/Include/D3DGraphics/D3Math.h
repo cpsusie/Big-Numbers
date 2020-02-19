@@ -35,7 +35,7 @@ D3DXVECTOR3 operator*(            const D3DXMATRIX  &m, const D3DXVECTOR3 &v);
 D3DXVECTOR3 operator*(            const D3DXVECTOR3 &v, const D3DXMATRIX  &m);
 // return quarternion that rotates x-axis (1,0,0) pointing into dir
 D3DXQUATERNION createOrientation(const D3DXVECTOR3 &dir);
-
+D3DXQUATERNION createRotation(    const D3DXVECTOR3 &axis, float angle);
 float       det(                  const D3DXMATRIX  &m);
 String      toString(             const D3DXMATRIX  &m, int dec = 3);
 
