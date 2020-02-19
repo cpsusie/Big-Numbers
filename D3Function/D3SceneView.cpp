@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "MainFrm.h"
+#include <D3DGraphics/D3Camera.h>
 #include "D3FunctionDoc.h"
 #include "D3SceneView.h"
 
@@ -16,6 +17,7 @@ BEGIN_MESSAGE_MAP(CD3SceneView, CView)
 END_MESSAGE_MAP()
 
 CD3SceneView::CD3SceneView() {
+  m_camera = NULL;
 }
 
 CD3SceneView::~CD3SceneView() {
@@ -46,18 +48,34 @@ CD3FunctionDoc* CD3SceneView::GetDocument() { // non-debug version is inline
 }
 #endif //_DEBUG
 
-D3Scene *CD3SceneView::getScene() {
+D3Camera *CD3SceneView::findCamera() const {
+  const D3Scene *scene = getScene();
+  return scene ? scene->getCameraArray().findCamera(*this) : NULL;
+}
+
+D3Camera *CD3SceneView::getCamera() {
+  if((m_camera == NULL) || (m_camera->getHwnd() != *this)) {
+    m_camera = findCamera();
+  }
+  return m_camera;
+}
+
+D3Scene *CD3SceneView::getScene() const {
   CMainFrame *mainFrm = theApp.getMainFrame();
   return mainFrm ? &mainFrm->getScene() : NULL;
 }
 
 void CD3SceneView::OnDraw(CDC *pDC) {
-  D3Scene *scene = getScene();
-  if(scene) scene->render();
+  D3Camera *cam = getCamera();
+  if(cam) {
+    cam->render();
+  }
 }
 
 void CD3SceneView::OnSize(UINT nType, int cx, int cy) {
   __super::OnSize(nType, cx, cy);
-  D3Scene *scene = getScene();
-  if(scene) scene->OnSize();
+  D3Camera *cam = getCamera();
+  if(cam) {
+    cam->OnSize();
+  }
 }

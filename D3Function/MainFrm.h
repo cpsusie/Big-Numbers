@@ -25,8 +25,8 @@ public:
   }
   void RecalcLayout();
   void OnInvertTracker(const CRect& rect);
-  CD3SceneView *get3DPanel();
-  CInfoView    *getInfoPanel();
+  CD3SceneView *get3DPanel() const;
+  CInfoView    *getInfoPanel() const;
   int           getPanelCount() const {
     return GetRowCount();
   }
@@ -61,6 +61,7 @@ private:
   bool                            m_timerRunning;
   bool                            m_destroyCalled;
   BYTE                            m_renderLevel;
+  CameraSet                       m_accumulatedCameraSet;
   BYTE                            m_accumulatedRenderFlags;
   double                          m_relativeHeight;
   D3Scene                         m_scene;
@@ -154,13 +155,16 @@ public:
   D3SceneEditor &getEditor() {
     return m_editor;
   }
-  CWnd    *getMessageWindow() {
-    return this;
+  HWND getMessageWindow() const {
+    return *this;
   }
-  CWnd    *get3DWindow() {
-    return m_wndSplitter.get3DPanel();
+  HWND get3DWindow(UINT index) const {
+    return *m_wndSplitter.get3DPanel();
   }
-  void render(BYTE renderFlags);
+  UINT get3DWindowCount() const {
+    return 1;
+  }
+  void render(BYTE renderFlags, CameraSet cameraSet);
 
   void startTimer();
   void stopTimer();

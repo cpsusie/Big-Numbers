@@ -2,9 +2,10 @@
 
 class CD3SceneView : public CView {
 private:
-
-  CMainFrame *mainFrm = theApp.getMainFrame();
-  D3Scene *getScene();
+  D3Camera *m_camera;
+  D3Scene  *getScene() const;
+  D3Camera *findCamera() const;
+  D3Camera *getCamera();
 
 protected: // create from serialization only
   CD3SceneView();

@@ -4,6 +4,8 @@
 #include <ThreadPool.h>
 #endif
 #include <D3DGraphics/MeshCreators.h>
+#include <D3DGraphics/D3SceneEditor.h>
+#include <D3DGraphics/D3Camera.h>
 #include "Function2DSurfaceDlg.h"
 #include "ParametricSurfaceDlg.h"
 #include "IsoSurfaceDlg.h"
@@ -167,12 +169,12 @@ void CD3FunctionSplitterWnd::OnInvertTracker(const CRect &rect) {
   m_splitPointMoved = true;
 }
 
-CD3SceneView *CD3FunctionSplitterWnd::get3DPanel() {
-  return (CD3SceneView*)GetPane(0,0);
+CD3SceneView *CD3FunctionSplitterWnd::get3DPanel() const {
+  return (CD3SceneView*)(((CD3FunctionSplitterWnd*)this)->GetPane(0,0));
 }
 
-CInfoView *CD3FunctionSplitterWnd::getInfoPanel() {
-  return (CInfoView*)GetPane(1, 0);
+CInfoView *CD3FunctionSplitterWnd::getInfoPanel() const {
+  return (CInfoView*)(((CD3FunctionSplitterWnd*)this)->GetPane(1, 0));
 }
 
 #ifdef _DEBUG
@@ -318,13 +320,15 @@ void CMainFrame::OnTimer(UINT_PTR nIDEvent) {
 // -------------------------------------------- 3D --------------------------------------------
 
 void CMainFrame::init3D() {
-  m_scene.init(*get3DWindow());
+  m_scene.initDevice(*this);
   m_editor.init(this);
   m_editor.setEnabled(true);
 
   createInitialObject();
-
-  m_scene.setLightDirection(0, rotate(m_scene.getCamDir(), m_scene.getCamRight(), 0.2f));
+  D3Camera *cam = m_editor.getCurrentCamera();
+  if(cam) {
+    m_scene.setLightDirection(0, rotate(cam->getDir(), cam->getRight(), 0.2f));
+  }
   startTimer();
 }
 
@@ -355,9 +359,9 @@ void CMainFrame::createSaddle() {
   setCalculatedObject(m_function2DSurfaceParam);
 }
 
-class D3AnimatedFunctionSurface : public D3AnimatedSurface {
+class D3AnimatedFunctionSurface : public D3SceneObjectAnimatedMesh {
 public:
-  D3AnimatedFunctionSurface(D3Scene &scene, const MeshArray &ma) : D3AnimatedSurface(scene, ma) {
+  D3AnimatedFunctionSurface(D3Scene &scene, const MeshArray &ma) : D3SceneObjectAnimatedMesh(scene, ma) {
   }
   void modifyContextMenu(CMenu &menu) {
     appendMenuItem(menu, _T("Edit function"), ID_OBJECT_EDITFUNCTION);
@@ -443,26 +447,29 @@ void CMainFrame::incrLevel() {
 }
 void CMainFrame::decrLevel() {
   if(--m_renderLevel == 0) {
-    if(m_accumulatedRenderFlags) {
-      render(m_accumulatedRenderFlags);
+    if(m_accumulatedRenderFlags || !m_accumulatedCameraSet.isEmpty()) {
+      render(m_accumulatedRenderFlags, m_accumulatedCameraSet);
     }
   }
 }
 
-void CMainFrame::render(BYTE renderFlags) {
+void CMainFrame::render(BYTE renderFlags, CameraSet cameraSet) {
   if(m_renderLevel > 0) {
     m_accumulatedRenderFlags |= renderFlags;
+    m_accumulatedCameraSet   |= cameraSet;
   } else {
-    PostMessage(ID_MSG_RENDER, renderFlags, 0);
+    PostMessage(ID_MSG_RENDER, renderFlags, cameraSet);
     m_accumulatedRenderFlags = 0;
+    m_accumulatedCameraSet.clear();
   }
 }
 
 static UINT renderSceneCount = 0, renderInfoCount = 0;
 LRESULT CMainFrame::OnMsgRender(WPARAM wp, LPARAM lp) {
   if(wp & SE_RENDER3D) {
+    CameraSet cameraSet(lp);
     renderSceneCount++;
-    m_scene.render();
+    m_scene.render(cameraSet);
   }
   if(wp & SE_RENDERINFO) {
     if(m_editor.isEnabled()) {
@@ -885,7 +892,10 @@ void CMainFrame::activateOptions() {
 }
 
 void CMainFrame::OnResetPositions() {
-  m_scene.initTrans();
+  D3Camera *cam = m_editor.getCurrentCamera();
+  if(cam) {
+    cam->resetPos();
+  }
 }
 
 void CMainFrame::OnOptionsSaveOptions() {
@@ -926,9 +936,10 @@ void CMainFrame::OnOptionsOrganizeOptions() {
   }
 }
 
-BOOL CMainFrame::PreTranslateMessage(MSG * pMsg) {
-  if((pMsg->message == WM_MOUSEMOVE) && m_editor.ptIn3DWindow(pMsg->pt)) {
-    m_wndStatusBar.SetPaneText(0, toString(m_editor.screenPTo3DP(pMsg->pt)).cstr());
+BOOL CMainFrame::PreTranslateMessage(MSG *pMsg) {
+  D3Camera *cam;
+  if((pMsg->message == WM_MOUSEMOVE) && ((cam = m_scene.getPickedCamera(pMsg->pt)) != NULL)) {
+    m_wndStatusBar.SetPaneText(0, toString(cam->screenToWin(pMsg->pt)).cstr());
   }
   const bool levelIncremented = pMsg->message != ID_MSG_RENDER;
   if(levelIncremented) incrLevel();
