@@ -64,8 +64,8 @@ D3Device &D3Device::setLight(const LIGHT &light) {
   return *this;
 }
 
-LIGHT D3Device::getLight(UINT lightIndex) const {
-  LIGHT lp(lightIndex);
+D3DLIGHT D3Device::getLight(UINT lightIndex) const {
+  D3DLIGHT lp;
   V(m_device->GetLight(lightIndex, &lp));
   return lp;
 }

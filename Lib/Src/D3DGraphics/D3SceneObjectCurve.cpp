@@ -10,12 +10,12 @@ D3SceneObjectCurve::D3SceneObjectCurve(D3Scene &scene, const VertexArray &points
   unlockVertexArray();
 }
 
-void D3SceneObjectCurve::draw(D3Device &device) {
+void D3SceneObjectCurve::draw() {
   if(hasVertexBuffer()) {
     if(hasMaterial()) {
-      device.setMaterial(getMaterial());
+      getDevice().setMaterial(getMaterial());
     }
-    setStreamSource(device).setWorldMatrix(getWorld())
+    setStreamSource().setWorldMatrix(getWorld())
                            .setLightingEnable(true).drawPrimitive(D3DPT_LINESTRIP, 0, m_primitiveCount);
   }
 }

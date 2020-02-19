@@ -1,16 +1,16 @@
 #include "pch.h"
 #include <D3DGraphics/D3Scene.h>
-#include <D3DGraphics/D3SceneObject.h>
+#include <D3DGraphics/D3SceneObjectVisual.h>
 
 class D3SceneObjectIterator : public AbstractIterator {
 private:
   DECLARECLASSNAME;
-  D3Scene                      &m_scene;
-  CompactArray<D3SceneObject*> &m_a;
-  size_t                        m_next;
-  intptr_t                      m_current;
-  size_t                        m_updateCount;
-  const long                    m_mask;
+  D3Scene       &m_scene;
+  D3VisualArray &m_a;
+  size_t         m_next;
+  intptr_t       m_current;
+  size_t         m_updateCount;
+  const long     m_mask;
 
   inline bool checkMask(size_t i) const {
     return (OBJTYPE_MASK(m_a[i]->getType()) & m_mask) != 0;
@@ -28,7 +28,7 @@ private:
 public:
   D3SceneObjectIterator(D3Scene &scene, long mask)
     : m_scene(scene)
-    , m_a(scene.m_objectArray)
+    , m_a(scene.m_visualArray)
     , m_mask(mask)
   {
     m_current     = -1;
@@ -55,7 +55,7 @@ public:
       noCurrentElementError(s_className);
     }
     checkUpdateCount();
-    m_scene.removeSceneObject(m_current);
+    m_scene.removeVisual(m_current);
     m_current     = -1;
     m_updateCount = m_a.getUpdateCount();
   }
@@ -63,6 +63,6 @@ public:
 
 DEFINECLASSNAME(D3SceneObjectIterator);
 
-Iterator<D3SceneObject*> D3Scene::getObjectIterator(long mask) const {
-  return Iterator<D3SceneObject*>(new D3SceneObjectIterator(*(D3Scene*)this, mask));
+D3VisualIterator D3Scene::getVisualIterator(long mask) const {
+  return D3VisualIterator(new D3SceneObjectIterator(*(D3Scene*)this, mask));
 }

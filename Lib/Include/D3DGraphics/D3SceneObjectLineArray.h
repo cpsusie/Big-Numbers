@@ -10,5 +10,5 @@ public:
   }
   D3SceneObjectLineArray(D3Scene &scene, const Line3D *lines, UINT n);
   D3SceneObjectLineArray(D3Scene &scene, const CompactArray<Line3D> &lineArray);
-  void draw(D3Device &device);
+  void draw();
 };

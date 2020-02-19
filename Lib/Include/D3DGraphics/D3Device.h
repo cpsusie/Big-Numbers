@@ -20,7 +20,7 @@ private:
   template<typename T> void setDevRenderState(D3DRENDERSTATETYPE id, T value) {
     FV(m_device->SetRenderState(id, (DWORD)value));
   }
-  D3Device(const D3Device &src); // not implemented
+  D3Device(const D3Device &src);            // not implemented
   D3Device &operator=(const D3Device &src); // not implemented
 public:
   D3Device(HWND hwnd);
@@ -184,7 +184,7 @@ public:
     return *this;
   }
   D3Device &setLight(const LIGHT &light);
-  LIGHT     getLight(UINT index) const;
+  D3DLIGHT  getLight(UINT index) const;
   inline D3Device &setSamplerState(DWORD sampler, D3DSAMPLERSTATETYPE type, DWORD value) {
     FV(m_device->SetSamplerState(sampler, D3DSAMP_MINFILTER, D3DTEXF_LINEAR));
     return *this;
@@ -232,5 +232,14 @@ public:
   inline D3Device &drawIndexedPrimitive(D3DPRIMITIVETYPE pt, int baseVertexIndex, UINT minVertexIndex, UINT numVertices, UINT startIndex, UINT primCount) {
     FV(m_device->DrawIndexedPrimitive(pt, baseVertexIndex, minVertexIndex, numVertices, startIndex, primCount));
     return *this;
+  }
+
+  template<typename VertexType> LPDIRECT3DVERTEXBUFFER allocateVertexBuffer(UINT count, UINT *bufferSize = NULL) {
+    const UINT vertexSize = sizeof(VertexType);
+    UINT tmp, &totalSize = bufferSize ? *bufferSize : tmp;
+    totalSize = vertexSize * count;
+    LPDIRECT3DVERTEXBUFFER result;
+    V(m_device->CreateVertexBuffer(totalSize, 0, VertexType::FVF_Flags, D3DPOOL_DEFAULT, &result, NULL)); TRACE_CREATE(result);
+    return result;
   }
 };

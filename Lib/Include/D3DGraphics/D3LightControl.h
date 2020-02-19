@@ -21,11 +21,11 @@ private:
   D3LightControl(           const D3LightControl &src); // Not defined. Class not cloneable
   D3LightControl &operator=(const D3LightControl &src); // Not defined. Class not cloneable
 
-  void createEffect(LPDIRECT3DDEVICE device);
+  void createEffect();
 protected:
   static LPD3DXMESH &optimizeMesh(LPD3DXMESH &mesh);
   void createMaterial();
-  void prepareEffect(D3Device &device);
+  void prepareEffect();
 
   static D3DCOLORVALUE getMaterialColor(const LIGHT &l);
   static inline D3DCOLORVALUE getDisabledMaterialColor() {
@@ -64,7 +64,7 @@ public:
   static inline bool isRenderEffectEnabled() {
     return s_renderEffectEnabled;
   }
-  void draw(D3Device &device);
+  void draw();
 };
 
 class D3LightControlDirectional : public D3LightControl {

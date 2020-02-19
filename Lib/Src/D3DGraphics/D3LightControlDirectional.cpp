@@ -13,11 +13,11 @@ D3LightControlDirectional::D3LightControlDirectional(D3Scene &scene, int lightIn
 }
 
 static const Point2D dirLightMeshProfilePoints[] = {
-  Point2D(0   ,   0 )
- ,Point2D(0   , 0.1 )
- ,Point2D(0.53, 0.1 )
- ,Point2D(0.53, 0.25)
- ,Point2D(1   , 0   )
+  Point2D( 0   , 0   )
+ ,Point2D(-0.47, 0.25)
+ ,Point2D(-0.47, 0.1 )
+ ,Point2D(-1   , 0.1 )
+ ,Point2D(-1   ,   0 )
 };
 
 LPD3DXMESH D3LightControlDirectional::createArrowMesh() {
@@ -26,7 +26,7 @@ LPD3DXMESH D3LightControlDirectional::createArrowMesh() {
   ProfileRotationParameters param;
   param.m_alignx     = 0;
   param.m_aligny     = 1;
-  param.m_rad        = -radians(360);
+  param.m_rad        = radians(360);
   param.m_edgeCount  = 20;
   param.m_smoothness = ROTATESMOOTH;
   param.m_rotateAxis = 0;

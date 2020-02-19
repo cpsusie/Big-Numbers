@@ -793,6 +793,7 @@
     <ClCompile Include="D3ScenePickedObject.cpp" />
     <ClCompile Include="D3SelectedCube.cpp" />
     <ClCompile Include="D3SceneObjectWireFrameBox.cpp" />
+    <ClCompile Include="D3SceneObjectVisual.cpp" />
     <ClCompile Include="FVF.cpp" />
     <ClCompile Include="IsoCurve.cpp" />
     <ClCompile Include="Light.cpp" />
@@ -877,6 +878,7 @@
     <ClInclude Include="..\..\Include\D3DGraphics\D3AbstractTextureFactory.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3ToString.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3Transformation.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectVisual.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\Function2DSurface.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\IsoCurve.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\IsoSurface.h" />

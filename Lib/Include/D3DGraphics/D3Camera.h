@@ -5,10 +5,11 @@
 #include <MFCUtil/ColorSpace.h>
 #include "D3Math.h"
 #include "D3Ray.h"
+#include "D3SceneObject.h"
 
 class D3Device;
 class D3Scene;
-class D3SceneObject;
+class D3SceneObjectVisual;
 class D3PickedInfo;
 
 typedef enum {
@@ -17,9 +18,8 @@ typedef enum {
  ,CAM_BACKGROUNDCOLOR           // D3DCOLOR
 } D3CameraProperty;
 
-class D3Camera : public PropertyContainer {
+class D3Camera : public D3SceneObject, public PropertyContainer {
 private:
-  D3Scene                &m_scene;
   HWND                    m_hwnd;
   float                   m_viewAngel;
   float                   m_nearViewPlane;
@@ -34,6 +34,9 @@ private:
 public:
   D3Camera(D3Scene &scene, HWND hwnd);
   virtual ~D3Camera();
+  SceneObjectType getType() const {
+    return SOTYPE_CAMERA;
+  }
   void OnSize();
 
   inline HWND getHwnd() const {
@@ -108,7 +111,7 @@ public:
   // Return Ray in world-space
   D3Ray getPickedRay(const CPoint &point) const;
   // Point in window-coordinates (m_hwnd)
-  D3SceneObject *getPickedObject(const CPoint &p, long mask = -1, D3DXVECTOR3 *hitPoint = NULL, D3Ray *ray = NULL, float *dist = NULL, D3PickedInfo *info = NULL) const;
+  D3SceneObjectVisual *getPickedVisual(const CPoint &p, long mask = -1, D3DXVECTOR3 *hitPoint = NULL, D3Ray *ray = NULL, float *dist = NULL, D3PickedInfo *info = NULL) const;
   // call m_scene.render(*this)
   void render();
   String toString() const;

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "D3SceneObject.h"
+#include "D3SceneObjectVisual.h"
 #include "D3DXCube.h"
 
-class D3SceneObjectWithMesh : public D3SceneObject {
+class D3SceneObjectWithMesh : public D3SceneObjectVisual {
 private:
   D3DFILLMODE  m_fillMode;
   D3DSHADEMODE m_shadeMode;
@@ -24,6 +24,9 @@ public:
   ~D3SceneObjectWithMesh();
   LPD3DXMESH getMesh() const {
     return m_mesh;
+  }
+  inline bool hasMesh() const {
+    return m_mesh != NULL;
   }
   virtual bool intersectsWithRay(const D3Ray &ray, float &dist, D3PickedInfo *info = NULL) const;
 
@@ -46,6 +49,6 @@ public:
     return m_shadeMode;
   }
   D3DXCube3 getBoundingBox() const;
-  void draw(D3Device &device);
+  void draw();
   String toString() const;
 };

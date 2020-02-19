@@ -138,8 +138,8 @@ private:
   void setCalculatedObject(Function2DSurfaceParameters &param);
   void setCalculatedObject(ParametricSurfaceParameters &param);
   void setCalculatedObject(IsoSurfaceParameters        &param);
-  void setCalculatedObject(D3SceneObject *obj, PersistentData *param = NULL);
-  D3SceneObject *getCalculatedObject() const;
+  void setCalculatedObject(D3SceneObjectVisual *obj, PersistentData *param = NULL);
+  D3SceneObjectVisual *getCalculatedObject() const;
 
   void startDebugging();
   void stopDebugging();

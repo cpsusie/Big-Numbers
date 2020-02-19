@@ -412,29 +412,29 @@ void CMainFrame::setCalculatedObject(IsoSurfaceParameters &param) {
 }
 
 void CMainFrame::deleteCalculatedObject() {
-  D3SceneObject *oldObj = getCalculatedObject();
+  D3SceneObjectVisual *oldObj = getCalculatedObject();
   if(oldObj) {
     m_editor.setCurrentObj(NULL);
-    m_scene.removeSceneObject(oldObj);
+    m_scene.removeVisual(oldObj);
     SAFEDELETE(oldObj);
   }
 }
 
-void CMainFrame::setCalculatedObject(D3SceneObject *obj, PersistentData *param) {
+void CMainFrame::setCalculatedObject(D3SceneObjectVisual *obj, PersistentData *param) {
   deleteCalculatedObject();
   if(obj) {
     obj->setUserData(param);
     if(param) {
       obj->setName(param->getDisplayName());
     }
-    m_scene.addSceneObject(obj);
+    m_scene.addVisual(obj);
   }
   m_editor.setCurrentObj(obj);
 }
 
-D3SceneObject *CMainFrame::getCalculatedObject() const {
-  for(Iterator<D3SceneObject*> it = m_scene.getObjectIterator(); it.hasNext();) {
-    D3SceneObject *obj = it.next();
+D3SceneObjectVisual *CMainFrame::getCalculatedObject() const {
+  for(D3VisualIterator it = m_scene.getVisualIterator(); it.hasNext();) {
+    D3SceneObjectVisual *obj = it.next();
     if(obj->getUserData() != NULL) {
       return obj;
     }
@@ -833,7 +833,7 @@ void CMainFrame::OnFileIsoSurface() {
 }
 
 void CMainFrame::OnObjectEditFunction() {
-  D3SceneObject *calcObj = getCalculatedObject();
+  D3SceneObjectVisual *calcObj = getCalculatedObject();
   if(!calcObj) return;
   PersistentData *param = (PersistentData*)calcObj->getUserData();
   switch (param->getType()) {

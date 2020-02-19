@@ -2,7 +2,7 @@
 #include <D3DGraphics/D3Device.h>
 #include <D3DGraphics/D3Camera.h>
 #include <D3DGraphics/D3Scene.h>
-#include <D3DGraphics/D3SceneObject.h>
+#include <D3DGraphics/D3SceneObjectVisual.h>
 #include <D3DGraphics/D3SceneObjectAnimatedMesh.h>
 #include <D3DGraphics/D3LightControl.h>
 #include <D3DGraphics/D3SceneEditor.h>

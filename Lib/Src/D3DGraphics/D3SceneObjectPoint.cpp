@@ -1,5 +1,5 @@
 #include "pch.h"
-#include <D3DGraphics/D3SceneObject.h>
+#include <D3DGraphics/D3SceneObjectVisual.h>
 #include <D3DGraphics/D3SceneObjectPoint.h>
 
 const D3DXVECTOR3 D3SceneObjectPoint::getWorldPoint() const {

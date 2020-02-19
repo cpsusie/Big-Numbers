@@ -4,7 +4,7 @@
 #include <D3DGraphics/D3SceneObjectAnimatedMesh.h>
 
 D3SceneObjectAnimatedMesh::D3SceneObjectAnimatedMesh(D3Scene &scene, const MeshArray &meshArray)
-: D3SceneObject(scene)
+: D3SceneObjectVisual(scene)
 , m_meshArray(meshArray)
 , m_frameCount((UINT)meshArray.size())
 , m_fillMode(D3DFILL_SOLID)
@@ -98,11 +98,11 @@ void D3SceneObjectAnimatedMesh::nextIndex() {
   }
 }
 
-void D3SceneObjectAnimatedMesh::draw(D3Device &device) {
-  device.setWorldMatrix(getWorld())
-        .setFillMode(getFillMode())
-        .setShadeMode(getShadeMode())
-        .setMaterial(getMaterial());
+void D3SceneObjectAnimatedMesh::draw() {
+  getDevice().setWorldMatrix(getWorld())
+             .setFillMode(getFillMode())
+             .setShadeMode(getShadeMode())
+             .setMaterial(getMaterial());
   V(m_meshArray[m_lastRenderedIndex = m_nextMeshIndex]->DrawSubset(0));
 }
 

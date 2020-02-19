@@ -19,10 +19,10 @@ public:
   ~D3SceneGridObject() {
     getScene().removeMaterial(m_materialId);
   }
-  void draw(D3Device &device, const D3DXMATRIX &world) {
-    device.setMaterial(getScene().getMaterial(m_materialId));
+  void draw(const D3DXMATRIX &world) {
+    getDevice().setMaterial(getScene().getMaterial(m_materialId));
     m_world = world;
-    __super::draw(device);
+    __super::draw();
   }
 };
 
@@ -57,12 +57,12 @@ private:
 public:
   D3CoordinateSystemFrameObject(D3SceneObjectCoordinateSystem *system);
   ~D3CoordinateSystemFrameObject();
-  void draw(D3Device &device, const D3DXMATRIX &world);
+  void draw(const D3DXMATRIX &world);
 };
 
 
 D3SceneObjectCoordinateSystem::D3SceneObjectCoordinateSystem(D3Scene &scene, const D3DXCube3 *cube)
- : D3SceneObject(scene, _T("CoordinateSystem"))
+ : D3SceneObjectVisual(scene, _T("CoordinateSystem"))
  , m_cube(cube ? *cube : D3DXCube3::getStdCube())
 {
   m_axisMaterialId[0] = getScene().addMaterial(MATERIAL::createMaterialWithColor(D3D_RED  ));
@@ -73,7 +73,7 @@ D3SceneObjectCoordinateSystem::D3SceneObjectCoordinateSystem(D3Scene &scene, con
 
 D3SceneObjectCoordinateSystem::~D3SceneObjectCoordinateSystem() {
   for(int i = 0; i < 3; i++) {
-    m_scene.removeMaterial(m_axisMaterialId[i]);
+    getScene().removeMaterial(m_axisMaterialId[i]);
   }
   SAFEDELETE(m_frameObject);
 }
@@ -82,20 +82,21 @@ LPD3DXMESH D3SceneObjectCoordinateSystem::getMesh() const {
   return m_frameObject->getMesh();
 }
 
-void D3SceneObjectCoordinateSystem::draw(D3Device &device) {
+void D3SceneObjectCoordinateSystem::draw() {
+  D3Device &device = getDevice();
   // x-axis
   setPos(D3DXORIGIN);
   device.setWorldMatrix(m_world).setMaterial(getScene().getMaterial(m_axisMaterialId[0]));
-  m_axis[0]->draw(device);
+  m_axis[0]->draw();
   // y-axis
   device.setMaterial(getScene().getMaterial(m_axisMaterialId[1]));
-  m_axis[1]->draw(device);
+  m_axis[1]->draw();
   // z-axis
   device.setMaterial(getScene().getMaterial(m_axisMaterialId[2]));
-  m_axis[1]->draw(device);
-  m_axis[2]->draw(device);
+  m_axis[1]->draw();
+  m_axis[2]->draw();
 
-  m_frameObject->draw(device, m_world);
+  m_frameObject->draw(m_world);
 }
 
 void D3CoordinateSystemFrameObject::makeFace(MeshBuilder &mb, int v0, int v1, int v2, int v3) {
@@ -141,8 +142,8 @@ D3CoordinateSystemFrameObject::~D3CoordinateSystemFrameObject() {
   SAFEDELETE(m_gridObject);
 }
 
-void D3CoordinateSystemFrameObject::draw(D3Device &device, const D3DXMATRIX &world) {
-  device.setWorldMatrix(world);
-  __super::draw(device);
-  m_gridObject->draw(device, world);
+void D3CoordinateSystemFrameObject::draw(const D3DXMATRIX &world) {
+  getDevice().setWorldMatrix(world);
+  __super::draw();
+  m_gridObject->draw(world);
 }

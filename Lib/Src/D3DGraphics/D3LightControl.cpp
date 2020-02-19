@@ -39,7 +39,7 @@ LPD3DXMESH &D3LightControl::optimizeMesh(LPD3DXMESH &mesh) { // static, protecte
 }
 
 LIGHT D3LightControl::getLight() const { // public
-  const LIGHT result = m_scene.getLight(m_lightIndex);
+  const LIGHT result = getScene().getLight(m_lightIndex);
   if((result.getIndex() != m_lightIndex) || (result.Type != getLightType())) {
     showError(_T("%s:Light %d is undefined")
              ,__TFUNCTION__
@@ -83,13 +83,14 @@ bool D3LightControl::isDifferentMaterial(const LIGHT &l1, const LIGHT &l2) { // 
   return createMaterialFromLight(l1) != createMaterialFromLight(l2);
 }
 
-void D3LightControl::draw(D3Device &device) {
+void D3LightControl::draw() {
+  D3Device &device = getDevice();
   if(!s_renderEffectEnabled) {
     updateMaterial();
     device.setWorldMatrix(getWorld()).setMaterial(getMaterial()).setFillMode(D3DFILL_SOLID).setShadeMode(D3DSHADE_GOURAUD);
     drawSubset(0);
   } else {
-    prepareEffect(device);
+    prepareEffect();
     UINT passCount;
     V(m_effect->Begin( &passCount, 0));
     for(UINT pass = 0; pass < passCount; pass++) {
@@ -101,11 +102,10 @@ void D3LightControl::draw(D3Device &device) {
   }
 }
 
-void D3LightControl::prepareEffect(D3Device &device) {
-  D3Scene &scene = getScene();
+void D3LightControl::prepareEffect() {
+  D3Device &device = getDevice();
   if(m_effect == NULL) {
-    LPDIRECT3DDEVICE dev = device;
-    createEffect(dev);
+    createEffect();
   }
 
   const D3DXMATRIX       mView  = device.getViewMatrix();
@@ -128,7 +128,7 @@ void D3LightControl::prepareEffect(D3Device &device) {
   V(m_effect->SetMatrix(m_worldHandle, &mWorld));
 }
 
-void D3LightControl::createEffect(LPDIRECT3DDEVICE device) {
+void D3LightControl::createEffect() {
   const char *effectSourceText =
       "float4   g_MaterialDiffuseColor;    // Material's diffuse color                             \r\n"
       "float3   g_LightDir;                // Light's direction in world space                     \r\n"
@@ -176,7 +176,7 @@ void D3LightControl::createEffect(LPDIRECT3DDEVICE device) {
       ;
 
   StringArray compilerErrors;
-  m_effect = compileEffect(device, effectSourceText, compilerErrors);
+  m_effect = compileEffect(getDirectDevice(), effectSourceText, compilerErrors);
   if(m_effect == NULL) {
     showWarning(compilerErrors.toString(_T("\n")));
     return;

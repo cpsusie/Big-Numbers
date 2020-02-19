@@ -7,5 +7,5 @@ private:
   CompactIntArray m_curveSize;
 public:
   D3SceneObjectCurveArray(D3Scene &scene, const CurveArray &curves);
-  void draw(D3Device &device);
+  void draw();
 };

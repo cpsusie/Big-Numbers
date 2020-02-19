@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Timer.h>
-#include "D3SceneObject.h"
+#include "D3SceneObjectVisual.h"
 #include "MeshArray.h"
 
 typedef enum {
@@ -10,7 +10,7 @@ typedef enum {
  ,ANIMATE_ALTERNATING
 } AnimationType;
 
-class D3SceneObjectAnimatedMesh : public D3SceneObject, public TimeoutHandler {
+class D3SceneObjectAnimatedMesh : public D3SceneObjectVisual, public TimeoutHandler {
 private:
   MeshArray     m_meshArray;
   const UINT    m_frameCount;
@@ -43,7 +43,7 @@ public:
     return m_running ? 1000.0f / m_sleepTime : 0;
   }
   LPD3DXMESH getMesh() const;
-  void draw(D3Device &device);
+  void draw();
   bool hasFillMode() const {
     return true;
   }

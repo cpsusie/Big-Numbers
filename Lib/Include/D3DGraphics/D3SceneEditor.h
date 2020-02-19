@@ -23,7 +23,6 @@ typedef enum {
  ,CONTROL_AMBIENTLIGHTCOLOR
 } D3EditorControl;
 
-
 #define SE_INITDONE           0x01
 #define SE_ENABLED            0x02
 #define SE_PROPCHANGES        0x04
@@ -36,7 +35,7 @@ typedef enum {
 
 class D3Camera;
 class D3SceneContainer;
-class D3SceneObject;
+class D3SceneObjectVisual;
 class D3LightControl;
 class D3SceneObjectAnimatedMesh;
 
@@ -46,7 +45,7 @@ private:
     D3EditorControl                   m_currentControl;
     D3Camera                         *m_currentCamera;
     int                               m_currentCameraIndex;
-    D3SceneObject                    *m_currentObj, *m_coordinateSystem, *m_selectedCube;
+    D3SceneObjectVisual              *m_currentObj, *m_coordinateSystem, *m_selectedCube;
     PropertyDialogMap                 m_propertyDialogMap;
     PropertyDialog                   *m_currentPropertyDialog;
     BYTE                              m_stateFlags;
@@ -57,7 +56,7 @@ private:
     D3PickedInfo                      m_pickedInfo;
     String                            m_paramFileName;
 
-    HWND getCurrentHwnd() const;
+    HWND     getCurrentHwnd() const;
     D3Scene &getScene() const {
       return m_sceneContainer->getScene();
     }
@@ -77,22 +76,22 @@ private:
     inline void renderVisible(BYTE flags) {
       render(flags, getVisibleCameraSet());
     }
-    int  findCameraIndex(CPoint p) const;
+    int               findCameraIndex(CPoint p) const;
     // if index >= 0, set m_currentCamera = scene.getCameraArray()[index], else = NULL, and set m_currentCameraIndex = index
-    void selectCamera(int index);
-    void rotateCurrentVisualFrwBckw(  float angle1 , float angle2);
-    void rotateCurrentVisualLeftRight(float angle) ;
-    void adjustCurrentVisualScale(int component, float factor);
+    void              selectCamera(int index);
+    void              rotateCurrentVisualFrwBckw(  float angle1 , float angle2);
+    void              rotateCurrentVisualLeftRight(float angle) ;
+    void              adjustCurrentVisualScale(int component, float factor);
 
-    void moveCurrentObjXY(CPoint pt);
-    void moveCurrentObjXZ(CPoint pt);
+    void              moveCurrentObjXY(CPoint pt);
+    void              moveCurrentObjXZ(CPoint pt);
     // Assume getCurrentObjType() in { SOTYPE_VISUALOBJECT, SOTYPE_LIGHTCONTROL, SOTYPE_ANIMATEDOBJECT }
     D3DXVECTOR3       getCurrentObjPos();
     // Assume getCurrentObjType() in { SOTYPE_VISUALOBJECT, SOTYPE_LIGHTCONTROL, SOTYPE_ANIMATEDOBJECT }
     void              setCurrentObjPos(   const D3DXVECTOR3 &pos);
     // Assume getCurrentVisual() != NULL (currentSceneObject.type in { SOTYPE_ANIMATEDOBJECT, SOTYPE_VISUALOBJECT }
     void              setCurrentVisualWorld(       const D3DXMATRIX &world);
-    // return pointer to getCurrentVisual->getPDUS() if getCcurrentVisual() != NULL, else NULL
+    // return pointer to getCurrentObj->getWorld() if getCcurrentVisual() != NULL, else NULL
     const D3DXMATRIX *getCurrentVisualWorld() const;
     void              setCurrentVisualOrientation(const D3DXQUATERNION &q    );
     void              setCurrentVisualScale(      const D3DXVECTOR3    &scale);
@@ -123,7 +122,7 @@ private:
     CMenu &loadMenu(CMenu &menu, int id);
     void showContextMenu(CMenu &menu, CPoint point);
 
-    // set m_currentControl = CONTROL_IDLE, m_currentCamera = NULL, m_currentObj = NULL
+    // set m_currentControl = CONTROL_IDLE, m_currentCamera = NULL, m_currentVisual = NULL
     void resetCurrentControl();
     void setCurrentControl(D3EditorControl control);
 
@@ -239,17 +238,17 @@ public:
     }
     // return one of { SOTYPE_NULL, SOTYPE_VISUALOBJECT, SOTYPE_LIGHTCONTROL }
     SceneObjectType             getCurrentControlObjType() const;
-    void                        setCurrentObj(D3SceneObject *obj);
+    void                        setCurrentObj(D3SceneObjectVisual *obj);
 
-    inline D3SceneObject       *getCurrentObj() const {
+    inline D3SceneObjectVisual *getCurrentObj() const {
       return m_currentObj;
     }
     inline SceneObjectType      getCurrentObjType() const {
       return m_currentObj ? m_currentObj->getType() : SOTYPE_NULL;
     }
-    // Return NULL, if m_currentObj->type not in {SOTYPE_VISUALOBJECT, SOTYPE_ANIMATEDOBJECT, }
-    D3SceneObject              *getCurrentVisual() const;
-    // return NULL, if m_currentObj->type not SOTYPE_ANIMATEDOBJECT
+    // Return NULL, if m_currentVisual->type not in {SOTYPE_VISUALOBJECT, SOTYPE_ANIMATEDOBJECT, }
+    D3SceneObjectVisual       *getCurrentVisual() const;
+    // return NULL, if m_currentVisual->type not SOTYPE_ANIMATEDOBJECT
     D3SceneObjectAnimatedMesh  *getCurrentAnimatedObj() const;
     inline const D3DXVECTOR3   &getPickedPoint() const {
       return m_pickedPoint;

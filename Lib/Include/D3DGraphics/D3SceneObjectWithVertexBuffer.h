@@ -1,12 +1,12 @@
 #pragma once
 
-#include "D3SceneObject.h"
+#include "D3SceneObjectVisual.h"
 #include "D3DXCube.h"
 #include "D3Scene.h"
 
 class D3Device;
 
-class D3SceneObjectWithVertexBuffer : public D3SceneObject {
+class D3SceneObjectWithVertexBuffer : public D3SceneObjectVisual {
 private:
   D3SceneObjectWithVertexBuffer &releaseVertexBuffer();
 protected:
@@ -17,7 +17,7 @@ protected:
   template<typename VertexType> VertexType *allocateVertexArray(UINT count) {
     releaseVertexBuffer();
     UINT bufferSize;
-    m_vertexBuffer = getScene().allocateVertexBuffer<VertexType>(count, &bufferSize);
+    m_vertexBuffer = getDevice().allocateVertexBuffer<VertexType>(count, &bufferSize);
     m_vertexSize = sizeof(VertexType);
     m_fvf = VertexType::FVF_Flags;
     assert(bufferSize == m_vertexSize * count);
@@ -28,7 +28,7 @@ protected:
 
   D3SceneObjectWithVertexBuffer &lockVertexArray(void **a, UINT nbytes);
   D3SceneObjectWithVertexBuffer &unlockVertexArray();
-  D3Device &setStreamSource(D3Device &device);
+  D3Device &setStreamSource();
 
 public:
   D3SceneObjectWithVertexBuffer(D3Scene &scene);

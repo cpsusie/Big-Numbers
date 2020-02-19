@@ -3,7 +3,7 @@
 #include <D3DGraphics/D3ToString.h>
 #include <D3DGraphics/D3SceneObjectWithVertexBuffer.h>
 
-D3SceneObjectWithVertexBuffer::D3SceneObjectWithVertexBuffer(D3Scene &scene) : D3SceneObject(scene) {
+D3SceneObjectWithVertexBuffer::D3SceneObjectWithVertexBuffer(D3Scene &scene) : D3SceneObjectVisual(scene) {
   m_vertexBuffer   = NULL;
   m_primitiveCount = 0;
 }
@@ -29,7 +29,8 @@ D3SceneObjectWithVertexBuffer &D3SceneObjectWithVertexBuffer::releaseVertexBuffe
   return *this;
 }
 
-D3Device &D3SceneObjectWithVertexBuffer::setStreamSource(D3Device &device) {
+D3Device &D3SceneObjectWithVertexBuffer::setStreamSource() {
+  D3Device &device = getDevice();
   device.setStreamSource(m_vertexBuffer, m_vertexSize, m_fvf);
   return device;
 }

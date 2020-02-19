@@ -2,12 +2,12 @@
 
 #include <MFCUtil/CoordinateSystem/AxisType.h>
 #include "D3DXCube.h"
-#include "D3SceneObject.h"
+#include "D3SceneObjectVisual.h"
 
 class D3Scene;
 class D3SceneObjectLineArrow;
 
-class D3SceneObjectCoordinateSystem : public D3SceneObject {
+class D3SceneObjectCoordinateSystem : public D3SceneObjectVisual {
 private:
   friend class D3CoordinateSystemFrameObject;
   D3CoordinateSystemFrameObject *m_frameObject;
@@ -27,5 +27,5 @@ public:
     return *D3DXMatrixIdentity(&m_world);
   }
   LPD3DXMESH getMesh() const;
-  void draw(D3Device &device);
+  void draw();
 };

@@ -18,13 +18,13 @@ void D3SceneObjectLineArray::initBuffer(const Line3D *lines, UINT n) {
   unlockVertexArray();
 }
 
-void D3SceneObjectLineArray::draw(D3Device &device) {
+void D3SceneObjectLineArray::draw() {
   if(hasVertexBuffer()) {
     if(hasMaterial()) {
-      device.setMaterial(getMaterial());
+      getDevice().setMaterial(getMaterial());
     }
-    setStreamSource(device).setWorldMatrix(getWorld())
-                           .setLightingEnable(true)
-                           .drawPrimitive(D3DPT_LINELIST, 0, m_primitiveCount);
+    setStreamSource().setWorldMatrix(getWorld())
+                     .setLightingEnable(true)
+                     .drawPrimitive(D3DPT_LINELIST, 0, m_primitiveCount);
   }
 }

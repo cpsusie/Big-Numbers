@@ -22,12 +22,13 @@ D3SceneObjectCurveArray::D3SceneObjectCurveArray(D3Scene &scene, const CurveArra
   unlockVertexArray();
 }
 
-void D3SceneObjectCurveArray::draw(D3Device &device) {
+void D3SceneObjectCurveArray::draw() {
   if(hasVertexBuffer()) {
+    D3Device &device = getDevice();
     if(hasMaterial()) {
       device.setMaterial(getMaterial());
     }
-    setStreamSource(device).setLightingEnable(true);
+    setStreamSource().setLightingEnable(true);
     int startIndex = 0;
     for(size_t i = 0; i < m_curveSize.size(); i++) {
       const int vertexCount = m_curveSize[i];

@@ -37,12 +37,12 @@ D3SceneObjectLineArrow::D3SceneObjectLineArrow(D3Scene &scene, const Vertex &fro
   unlockVertexArray();
 }
 
-void D3SceneObjectLineArrow::draw(D3Device &device) {
+void D3SceneObjectLineArrow::draw() {
   if(hasVertexBuffer()) {
     if(hasMaterial()) {
-      device.setMaterial(getMaterial());
+      getDevice().setMaterial(getMaterial());
     }
-    setStreamSource(device).setWorldMatrix(getWorld())
+    setStreamSource().setWorldMatrix(getWorld())
                            .setFillMode(D3DFILL_SOLID)
                            .setShadeMode(D3DSHADE_GOURAUD)
                            .setLightingEnable(true)

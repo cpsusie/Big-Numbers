@@ -3,7 +3,7 @@
 #include <D3DGraphics/D3Camera.h>
 
 D3Camera::D3Camera(D3Scene &scene, HWND hwnd)
-  : m_scene( scene )
+  : D3SceneObject( scene )
   , m_hwnd(  hwnd  )
   , m_pdus(  true  )
 {
@@ -19,7 +19,7 @@ D3Camera::~D3Camera() {
 }
 
 void D3Camera::OnSize() {
-  LPDIRECT3DDEVICE device = m_scene.getDirectDevice();
+  LPDIRECT3DDEVICE device = getDirectDevice();
   D3DPRESENT_PARAMETERS present = D3DeviceFactory::getDefaultPresentParameters(getHwnd());
   if(present.BackBufferWidth && present.BackBufferHeight) {
     V(device->ResetEx(&present, NULL));
@@ -101,14 +101,14 @@ D3Ray D3Camera::getPickedRay(const CPoint &point) const {
   return D3Ray(world*v, v*world);
 }
 
-D3SceneObject *D3Camera::getPickedObject(const CPoint &p, long mask, D3DXVECTOR3 *hitPoint, D3Ray *ray, float *dist, D3PickedInfo *info) const {
+D3SceneObjectVisual *D3Camera::getPickedVisual(const CPoint &p, long mask, D3DXVECTOR3 *hitPoint, D3Ray *ray, float *dist, D3PickedInfo *info) const {
   D3Ray tmpRay, &pickedRay = ray ? *ray : tmpRay;
   pickedRay = getPickedRay(p);
-  return m_scene.getPickedObject(pickedRay, mask, hitPoint, dist, info);
+  return getScene().getPickedVisual(pickedRay, mask, hitPoint, dist, info);
 }
 
 void D3Camera::render() {
-  m_scene.render(*this);
+  getScene().render(*this);
 }
 
 String D3Camera::toString() const {

@@ -8,7 +8,7 @@
 // ----------------------------------- D3SceneObjectWithMesh --------------------------------------------
 
 D3SceneObjectWithMesh::D3SceneObjectWithMesh(D3Scene &scene, LPD3DXMESH mesh)
-: D3SceneObject(scene)
+: D3SceneObjectVisual(scene)
 , m_fillMode(D3DFILL_SOLID)
 , m_shadeMode(D3DSHADE_GOURAUD)
 {
@@ -52,15 +52,18 @@ D3DXCube3 D3SceneObjectWithMesh::getBoundingBox() const {
   return ::getBoundingBox(m_mesh) + getPos();
 }
 
-void D3SceneObjectWithMesh::draw(D3Device &device) {
-  if(hasMaterial()) {
-    device.setMaterial(getMaterial());
+void D3SceneObjectWithMesh::draw() {
+  if(hasMesh()) {
+    D3Device &device = getDevice();
+    if(hasMaterial()) {
+      device.setMaterial(getMaterial());
+    }
+    device.setWorldMatrix(getWorld())
+          .setFillMode(getFillMode())
+          .setShadeMode(getShadeMode())
+          .setLightingEnable(true);
+    drawSubset(0);
   }
-  device.setWorldMatrix(getWorld())
-        .setFillMode(getFillMode())
-        .setShadeMode(getShadeMode())
-        .setLightingEnable(true);
-  drawSubset(0);
 }
 
 String D3SceneObjectWithMesh::toString() const {
