@@ -8,21 +8,60 @@
 #include <D3DGraphics/D3SceneObjectWithMesh.h>
 #include <D3DGraphics/D3SceneObjectCoordinateSystem.h>
 
+static const D3DCOLOR axisColor[] = {
+  D3D_RED
+ ,D3D_GREEN
+ ,D3D_BLUE
+};
+
+class D3SCoordSystemLineArrow : public D3SceneObjectLineArrow {
+private:
+  D3SceneObjectCoordinateSystem &m_system;
+  const int                      m_id;
+  int                            m_materialId;
+public:
+  D3SCoordSystemLineArrow(D3SceneObjectCoordinateSystem *system, int id);
+  ~D3SCoordSystemLineArrow();
+  int getMaterialId() const {
+    return m_materialId;
+  }
+  D3DXMATRIX &getWorld() {
+    return m_system.getWorld();
+  }
+};
+
+D3SCoordSystemLineArrow::D3SCoordSystemLineArrow(D3SceneObjectCoordinateSystem *system, int id)
+: D3SceneObjectLineArrow(system->getScene(), D3DXORIGIN, createUnitVector(id))
+, m_system(*system)
+, m_id(     id)
+{
+  m_materialId = getScene().addMaterial(MATERIAL::createMaterialWithColor(axisColor[id]));
+}
+
+D3SCoordSystemLineArrow::~D3SCoordSystemLineArrow() {
+  getScene().removeMaterial(m_materialId);
+}
+
 class D3SceneGridObject : public D3SceneObjectLineArray {
 private:
+  D3SceneObjectCoordinateSystem &m_system;
   UINT m_materialId;
   static CompactArray<Line3D> createLineArray(const D3DXCube3 &cube);
 public:
-  D3SceneGridObject(D3Scene &scene, const D3DXCube3 &cube) : D3SceneObjectLineArray(scene, createLineArray(cube)) {
-    m_materialId = scene.addMaterial(MATERIAL::createMaterialWithColor(D3D_BLACK));
+  D3SceneGridObject(D3SceneObjectCoordinateSystem *system, const D3DXCube3 &cube)
+    : D3SceneObjectLineArray(system->getScene(), createLineArray(cube))
+    , m_system(*system)
+  {
+    m_materialId = getScene().addMaterial(MATERIAL::createMaterialWithColor(D3D_BLACK));
   }
   ~D3SceneGridObject() {
     getScene().removeMaterial(m_materialId);
   }
-  void draw(const D3DXMATRIX &world) {
-    getDevice().setMaterial(getScene().getMaterial(m_materialId));
-    m_world = world;
-    __super::draw();
+  int getMaterialId() const {
+    return m_materialId;
+  }
+  D3DXMATRIX &getWorld() {
+    return m_system.getWorld();
   }
 };
 
@@ -57,47 +96,14 @@ private:
 public:
   D3CoordinateSystemFrameObject(D3SceneObjectCoordinateSystem *system);
   ~D3CoordinateSystemFrameObject();
-  void draw(const D3DXMATRIX &world);
-};
-
-
-D3SceneObjectCoordinateSystem::D3SceneObjectCoordinateSystem(D3Scene &scene, const D3DXCube3 *cube)
- : D3SceneObjectVisual(scene, _T("CoordinateSystem"))
- , m_cube(cube ? *cube : D3DXCube3::getStdCube())
-{
-  m_axisMaterialId[0] = getScene().addMaterial(MATERIAL::createMaterialWithColor(D3D_RED  ));
-  m_axisMaterialId[1] = getScene().addMaterial(MATERIAL::createMaterialWithColor(D3D_GREEN));
-  m_axisMaterialId[2] = getScene().addMaterial(MATERIAL::createMaterialWithColor(D3D_BLUE ));
-  m_frameObject = new D3CoordinateSystemFrameObject(this);
-}
-
-D3SceneObjectCoordinateSystem::~D3SceneObjectCoordinateSystem() {
-  for(int i = 0; i < 3; i++) {
-    getScene().removeMaterial(m_axisMaterialId[i]);
+  int getMaterialId() const {
+    return m_materialId;
   }
-  SAFEDELETE(m_frameObject);
-}
-
-LPD3DXMESH D3SceneObjectCoordinateSystem::getMesh() const {
-  return m_frameObject->getMesh();
-}
-
-void D3SceneObjectCoordinateSystem::draw() {
-  D3Device &device = getDevice();
-  // x-axis
-  setPos(D3DXORIGIN);
-  device.setWorldMatrix(m_world).setMaterial(getScene().getMaterial(m_axisMaterialId[0]));
-  m_axis[0]->draw();
-  // y-axis
-  device.setMaterial(getScene().getMaterial(m_axisMaterialId[1]));
-  m_axis[1]->draw();
-  // z-axis
-  device.setMaterial(getScene().getMaterial(m_axisMaterialId[2]));
-  m_axis[1]->draw();
-  m_axis[2]->draw();
-
-  m_frameObject->draw(m_world);
-}
+  D3DXMATRIX &getWorld() {
+    return m_system.getWorld();
+  }
+  void draw();
+};
 
 void D3CoordinateSystemFrameObject::makeFace(MeshBuilder &mb, int v0, int v1, int v2, int v3) {
   Face &f = mb.addFace();
@@ -134,7 +140,7 @@ D3CoordinateSystemFrameObject::D3CoordinateSystemFrameObject(D3SceneObjectCoordi
   m_materialId = s.addMaterial(MATERIAL::createDefaultMaterial());
   MATERIAL m = s.getMaterial(m_materialId);
   s.setMaterial(m.setOpacity(0.3f));
-  m_gridObject = new D3SceneGridObject(s, system->getRange()); TRACE_NEW(m_gridObject);
+  m_gridObject = new D3SceneGridObject(system, system->getRange()); TRACE_NEW(m_gridObject);
 }
 
 D3CoordinateSystemFrameObject::~D3CoordinateSystemFrameObject() {
@@ -142,8 +148,36 @@ D3CoordinateSystemFrameObject::~D3CoordinateSystemFrameObject() {
   SAFEDELETE(m_gridObject);
 }
 
-void D3CoordinateSystemFrameObject::draw(const D3DXMATRIX &world) {
-  getDevice().setWorldMatrix(world);
+void D3CoordinateSystemFrameObject::draw() {
   __super::draw();
-  m_gridObject->draw(world);
+  m_gridObject->draw();
+}
+
+D3SceneObjectCoordinateSystem::D3SceneObjectCoordinateSystem(D3Scene &scene, const D3DXCube3 *cube)
+  : D3SceneObjectVisual(scene, _T("CoordinateSystem"))
+  , m_cube(cube ? *cube : D3DXCube3::getStdCube())
+{
+  for(int i = 0; i < 3; i++) {
+    m_axis[i] = new D3SCoordSystemLineArrow(this, i);
+  }
+  m_frameObject = new D3CoordinateSystemFrameObject(this);
+}
+
+D3SceneObjectCoordinateSystem::~D3SceneObjectCoordinateSystem() {
+  for(int i = 0; i < 3; i++) {
+    SAFEDELETE(m_axis[i]);
+  }
+  SAFEDELETE(m_frameObject);
+}
+
+LPD3DXMESH D3SceneObjectCoordinateSystem::getMesh() const {
+  return m_frameObject->getMesh();
+}
+
+void D3SceneObjectCoordinateSystem::draw() {
+  setPos(D3DXORIGIN);
+  for(int i = 0; i < 3; i++) {
+    m_axis[i]->draw();
+  }
+  m_frameObject->draw();
 }

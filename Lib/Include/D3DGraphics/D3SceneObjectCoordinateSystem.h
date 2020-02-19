@@ -5,15 +5,14 @@
 #include "D3SceneObjectVisual.h"
 
 class D3Scene;
-class D3SceneObjectLineArrow;
 
 class D3SceneObjectCoordinateSystem : public D3SceneObjectVisual {
 private:
   friend class D3CoordinateSystemFrameObject;
+  friend class D3SCoordSystemLineArrow;
   D3CoordinateSystemFrameObject *m_frameObject;
+  D3SCoordSystemLineArrow       *m_axis[3];
   D3DXCube3                      m_cube;
-  D3SceneObjectLineArrow        *m_axis[3];
-  int                            m_axisMaterialId[3];
   D3SceneObjectCoordinateSystem(           const D3SceneObjectCoordinateSystem &src); // not implemented
   D3SceneObjectCoordinateSystem &operator=(const D3SceneObjectCoordinateSystem &src); // not implemented
 public:
