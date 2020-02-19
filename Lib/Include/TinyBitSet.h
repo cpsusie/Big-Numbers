@@ -162,6 +162,9 @@ public:
     }
   }
 
+  inline operator T() const {
+    return m_bits;
+  }
   class TinyBitSetIterator : public AbstractIterator {
   private:
     TinyBitSet &m_set;

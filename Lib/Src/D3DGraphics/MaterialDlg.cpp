@@ -45,13 +45,13 @@ LRESULT CMaterialDlg::OnMsgResetControls(WPARAM wp, LPARAM lp) {
 }
 
 void CMaterialDlg::resetControls() {
-  setNotifyEnabled(false);
+  setNotifyEnable(false);
 
   const MATERIAL &v = getStartValue();
   setCurrentValue(v);
   valueToWindow(v);
 
-  setNotifyEnabled(true);
+  setNotifyEnable(true);
 }
 
 void CMaterialDlg::valueToWindow(const MATERIAL &v) {

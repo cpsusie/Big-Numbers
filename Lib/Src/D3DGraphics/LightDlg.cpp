@@ -47,12 +47,12 @@ LRESULT CLightDlg::OnMsgResetControls(WPARAM wp, LPARAM lp) {
 }
 
 void CLightDlg::resetControls() {
-  setNotifyEnabled(false);
+  setNotifyEnable(false);
 
   const LIGHT &v = getStartValue();
   setCurrentValue(v);
   valueToWindow(v);
-  setNotifyEnabled(true);
+  setNotifyEnable(true);
 }
 
 void CLightDlg::setCurrentValue(const LIGHT &v) {

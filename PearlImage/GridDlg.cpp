@@ -124,12 +124,12 @@ LRESULT CGridDlg::OnMsgWindowToTop(WPARAM wp, LPARAM lp) {
 }
 
 void CGridDlg::resetControls() {
-  setNotifyEnabled(false);
+  setNotifyEnable(false);
   const GridParameters &v = getStartValue();
   setCurrentValue(v);
   valueToWindow(v);
 
-  setNotifyEnabled(true);
+  setNotifyEnable(true);
 }
 
 void CGridDlg::OnClickedCalculate() {
@@ -139,13 +139,13 @@ void CGridDlg::OnClickedCalculate() {
 void CGridDlg::calculate() {
   if(!validate()) return;
 
-  setNotifyEnabled(false);
+  setNotifyEnable(false);
   windowToValue();
   const GridParameters v = getCurrentValue();
   GridParameters v1 = v;
   v1.m_colorCount++;
   setCurrentValue(v1);
-  setNotifyEnabled(true);
+  setNotifyEnable(true);
   setCurrentValue(v);
 }
 
@@ -336,12 +336,12 @@ void CGridDlg::windowToValue() {
   param.m_cellCount.cy  = m_verticalCount;
   param.m_colorCount    = m_colorCount;
   param.m_cellSizeMM    = m_cellSizeMM;
-  const bool wasEnabled = isNotifyEnabled();
+  const bool wasEnabled = getNotifyEnable();
   if(!IsDlgButtonChecked(IDC_CHECKAUTOCALCULATE)) {
-    setNotifyEnabled(false);
+    setNotifyEnable(false);
   }
   setCurrentValue(param);
-  setNotifyEnabled(wasEnabled);
+  setNotifyEnable(wasEnabled);
 }
 
 void CGridDlg::valueToWindow(const GridParameters &param) {

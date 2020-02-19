@@ -28,7 +28,7 @@ BOOL CColorDlg::OnInitDialog() {
   setCurrentValue(color);
   setD3DCOLOR(_IDC_COLORMAP_COLOR, color);
   putWindowBesideParent();
-  setNotifyEnabled(true);
+  setNotifyEnable(true);
   return TRUE;
 }
 

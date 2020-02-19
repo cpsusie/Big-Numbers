@@ -150,7 +150,11 @@ void CMainFrame::handlePropertyChanged(const PropertyContainer *source, int id, 
     switch (id) {
     case PROP_GRIDPARAM:
       const GridParameters *param = (GridParameters*)newValue;
-      SendMessage(ID_MSG_CALCULATEIMAGE, (WPARAM)param,0);
+      if(m_gridDlg->isVisible()) {
+        SendMessage(ID_MSG_CALCULATEIMAGE, (WPARAM)param, 0);
+      } else {
+        PostMessage(ID_MSG_CALCULATEIMAGE, (WPARAM)param, 0); // to prevent deadlock
+      }
       break;
     }
   }
@@ -349,7 +353,7 @@ void CMainFrame::OnFunctionMakePearlGrid() {
   if(!doc->hasImage()) return;
 
   saveDocState();
-  m_gridDlgThread->setCurrentDialogProperty(&doc->getGridParameters());
+  m_gridDlgThread->setCurrentDialogProperty(&doc->getGridParameters(), sizeof(GridParameters));
   m_gridDlg->setImage(doc->getImage());
   if(!m_gridDlgThread->isDialogVisible()) {
     m_gridDlgThread->setDialogVisible(true);

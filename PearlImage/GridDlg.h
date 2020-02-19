@@ -34,10 +34,10 @@ private:
   void resetControls();
   void cellCountFromSize();
   void releaseImage();
-  bool getUintValue(int id, UINT &value);
-  bool getUintEmptyZero(int id, UINT &value);
-  void setUintEmptyZero(int id, UINT value);
-  bool getDoubleValue(int id, double &value);
+  bool getUintValue(    int id, UINT   &value);
+  bool getUintEmptyZero(int id, UINT   &value);
+  void setUintEmptyZero(int id, UINT    value);
+  bool getDoubleValue(  int id, double &value);
   CSize getImageSize() const;
 public:
   CGridDlg(CWnd *pParent = NULL);
@@ -50,6 +50,9 @@ public:
   void setImage(const PixRect *image);
   const PixRect *getImage() const {
     return m_image;
+  }
+  String getTypeName() const {
+    return _T("GridParameters");
   }
 protected:
   virtual BOOL PreTranslateMessage(MSG *pMsg);

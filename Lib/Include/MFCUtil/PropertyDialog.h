@@ -9,20 +9,13 @@ inline void putWindowBesideMainWindow(CWnd *wnd) {
 class PropertyDialog : public CDialog, public PropertyContainer {
 private:
   const int m_propertyId;
-  bool      m_notifyEnabled;
   bool      m_visible;
   bool      m_showWinActive;
 protected:
   PropertyDialog(int resId, int propertyId, CWnd *pParent) : CDialog(resId, pParent), m_propertyId(propertyId) {
-    m_notifyEnabled = false;
+    setNotifyEnable(false);
     m_visible       = false;
     m_showWinActive = false; // to prevent infinte recursion
-  }
-  inline void setNotifyEnabled(bool enable) {
-    m_notifyEnabled = enable;
-  }
-  inline bool isNotifyEnabled() const {
-    return m_notifyEnabled;
   }
   inline void setVisible(bool visible) {
     m_visible = visible;
@@ -56,7 +49,7 @@ public:
 
 template<typename T> class CPropertyDialog : public PropertyDialog {
 private:
-  T m_startValue, m_currentValue, m_prevValue;
+  T m_startValue, m_currentValue;
 protected:
   CPropertyDialog(int resId, int propertyId, CWnd *pParent) : PropertyDialog(resId, propertyId, pParent) {
   }
@@ -66,14 +59,7 @@ protected:
   }
 
   void setCurrentValue(const T &v) {
-    m_currentValue = v;
-    if(isNotifyEnabled() && (m_currentValue != m_prevValue)) {
-      notifyPropertyChanged(getPropertyId(), &m_prevValue, &m_currentValue);
-    }
-    m_prevValue = m_currentValue;
-  }
-  const T &getPrevValue() const {
-    return m_prevValue;
+    setProperty(getPropertyId(), m_currentValue, v);
   }
 public:
   void setStartValue(const T &v) {
