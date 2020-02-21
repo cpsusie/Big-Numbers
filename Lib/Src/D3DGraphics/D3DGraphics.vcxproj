@@ -768,6 +768,8 @@
   <ItemGroup>
     <ClCompile Include="D3CameraArray.cpp" />
     <ClCompile Include="D3Device.cpp" />
+    <ClCompile Include="D3MathQuaternion.cpp" />
+    <ClCompile Include="D3MathPdus.cpp" />
     <ClCompile Include="D3SceneObjectAnimatedMesh.cpp" />
     <ClCompile Include="D3PickedInfo.cpp" />
     <ClCompile Include="D3CompileEffect.cpp" />
@@ -780,7 +782,6 @@
     <ClCompile Include="D3SceneObjectCurveArray.cpp" />
     <ClCompile Include="D3SceneObjectLineArray.cpp" />
     <ClCompile Include="D3SceneObjectLineArrow.cpp" />
-    <ClCompile Include="D3PDUS.cpp" />
     <ClCompile Include="D3SceneEditor.cpp" />
     <ClCompile Include="D3SceneObjectIterator.cpp" />
     <ClCompile Include="D3SceneObjectPickArrow.cpp" />
@@ -794,6 +795,7 @@
     <ClCompile Include="D3SelectedCube.cpp" />
     <ClCompile Include="D3SceneObjectWireFrameBox.cpp" />
     <ClCompile Include="D3SceneObjectVisual.cpp" />
+    <ClCompile Include="D3MathWorld.cpp" />
     <ClCompile Include="FVF.cpp" />
     <ClCompile Include="IsoCurve.cpp" />
     <ClCompile Include="Light.cpp" />
@@ -835,7 +837,7 @@
     </ClCompile>
     <ClCompile Include="D3Error.cpp" />
     <ClCompile Include="D3Math.cpp" />
-    <ClCompile Include="D3Spherical.cpp" />
+    <ClCompile Include="D3MathSpherical.cpp" />
     <ClCompile Include="IsoSurfacePolygonizer.cpp" />
     <ClCompile Include="MeshBuilder.cpp" />
     <ClCompile Include="D3XML.cpp" />
@@ -850,6 +852,7 @@
     <ClInclude Include="..\..\Include\D3DGraphics\D3CameraArray.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3DeviceRenderState.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3DXCube.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\D3Pdus.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3PickedInfo.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3Ray.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3Device.h" />
@@ -876,9 +879,11 @@
     <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectWithVertexBuffer.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3SelectedCube.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3AbstractTextureFactory.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\D3Spherical.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3ToString.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3Transformation.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectVisual.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\D3World.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\Function2DSurface.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\IsoCurve.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\IsoSurface.h" />

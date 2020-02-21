@@ -18,8 +18,10 @@ D3DXMATRIX &D3DXMatrixPerspectiveFov(D3DXMATRIX &mat , FLOAT              angel,
 D3DXMATRIX &D3DXMatrixLookAt(        D3DXMATRIX &view, const D3DXVECTOR3 &eye, const D3DXVECTOR3 &lookAt, const D3DXVECTOR3 &up, bool rightHanded);
 D3DXVECTOR3 unitVector(           const D3DXVECTOR3 &v);
 D3DXVECTOR3 createUnitVector(int i);
-D3DXVECTOR3 rotate(               const D3DXVECTOR3 &v , const D3DXVECTOR3 &axis, float rad);
-D3DXVECTOR3 crossProduct(         const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2);
+D3DXVECTOR3 rotate(               const D3DXVECTOR3 &v, const D3DXVECTOR3 &axis, float rad);
+D3DXVECTOR3 rotate(               const D3DXVECTOR3 &v, const D3DXQUATERNION &q);
+
+D3DXVECTOR3 cross(                const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2);
 D3DXVECTOR3 randomUnitVector();
 D3DXVECTOR3 ortonormalVector(     const D3DXVECTOR3 &v);
 String      toString(             const D3DXVECTOR3 &v, int dec = 3);
@@ -31,12 +33,15 @@ D3DXMATRIX  createIdentityMatrix();
 D3DXMATRIX  createTranslateMatrix(const D3DXVECTOR3 &v);
 D3DXMATRIX  createScaleMatrix(    const D3DXVECTOR3 &s);
 D3DXMATRIX  createRotationMatrix( const D3DXVECTOR3 &axis, float rad);
-D3DXVECTOR3 operator*(            const D3DXMATRIX  &m, const D3DXVECTOR3 &v);
-D3DXVECTOR3 operator*(            const D3DXVECTOR3 &v, const D3DXMATRIX  &m);
-// return quarternion that rotates x-axis (1,0,0) pointing into dir
-D3DXQUATERNION createOrientation(const D3DXVECTOR3 &dir);
+D3DXVECTOR3 operator*(            const D3DXMATRIX  &m   , const D3DXVECTOR3 &v);
+D3DXVECTOR3 operator*(            const D3DXVECTOR3 &v   , const D3DXMATRIX  &m);
+// return quarternion that rotates unit-vector[unitIndex] pointing into dir
+D3DXQUATERNION createOrientation( const D3DXVECTOR3 &dir , int unitIndex=0);
+D3DXQUATERNION createOrientation( const D3DXVECTOR3 &dir , const D3DXVECTOR3 &up);
+// return quarternion that rotates from into to
+D3DXQUATERNION createRotation(    const D3DXVECTOR3 &from, const D3DXVECTOR3 &to);
 D3DXQUATERNION createRotation(    const D3DXVECTOR3 &axis, float angle);
-D3DXVECTOR3    operator*(         const D3DXQUATERNION &q, const D3DXVECTOR3 &v);
+void           getDirUp(          const D3DXQUATERNION &q, D3DXVECTOR3 &dir, D3DXVECTOR3 &up);
 float          det(               const D3DXMATRIX  &m);
 String         toString(          const D3DXMATRIX  &m, int dec = 3);
 
@@ -258,199 +263,6 @@ public:
   inline operator D3DXVECTOR3() const {
     return D3DXVECTOR3((float)x, (float)y, (float)z);
   }
-};
-
-class D3World {
-private:
-  D3DXVECTOR3    m_scale, m_pos;
-  D3DXQUATERNION m_q;
-
-  static inline void decomposeMatrix(D3DXVECTOR3 &scale, D3DXQUATERNION &q, D3DXVECTOR3 &pos, const D3DXMATRIX &mat) {
-    FV(D3DXMatrixDecompose(&scale, &q, &pos, &mat));
-  }
-  static inline void composeMatrix(const D3DXVECTOR3 &scale, const D3DXQUATERNION &q, const D3DXVECTOR3 &pos, D3DXMATRIX &mat) {
-    D3DXMatrixTransformation(&mat, NULL, NULL, &scale, NULL, &q, &pos);
-  }
-
-public:
-  D3World() {
-    reset();
-  }
-  D3World(const D3DXMATRIX &world) {
-    decomposeMatrix(m_scale, m_q, m_pos, world);
-  }
-  operator D3DXMATRIX() const {
-    D3DXMATRIX world;
-    composeMatrix(m_scale, m_q, m_pos, world);
-    return world;
-  }
-  inline D3World &reset() {
-    D3DXMATRIX id;
-    D3DXMatrixIdentity(&id);
-    decomposeMatrix(m_scale, m_q, m_pos, id);
-    return *this;
-  }
-  inline D3World &resetPos() {
-    return setPos(D3DXORIGIN);
-  }
-  inline D3World &resetOrientation() {
-    D3DXQuaternionIdentity(&m_q);
-    return *this;
-  }
-  inline D3World &resetScale() {
-    return setScaleAll(1);
-  }
-  inline D3World &setPos(const D3DXVECTOR3 &pos) {
-    m_pos = pos;
-    return *this;
-  }
-  inline const D3DXVECTOR3 &getPos() const {
-    return m_pos;
-  }
-  inline D3World &setScale(const D3DXVECTOR3 &scale) {
-    m_scale = scale;
-    return *this;
-  }
-  inline const D3DXVECTOR3 &getScale() const {
-    return m_scale;
-  }
-  inline D3World &setScaleAll(float scale) {
-    return setScale(D3DXVECTOR3(scale, scale, scale));
-  }
-  inline D3World &setOrientation(const D3DXQUATERNION &q) {
-    m_q = q;
-    return *this;
-  }
-  inline D3DXVECTOR3 getDir() const {
-    return m_q * createUnitVector(0);
-  }
-  inline D3DXVECTOR3 getUp() const {
-    return m_q * createUnitVector(2);
-  }
-  inline D3DXVECTOR3 getRight() const {
-    return m_q * createUnitVector(1);
-  }
-  inline const D3DXQUATERNION &getOrientation() const {
-    return m_q;
-  }
-  String toString(int dec = 3) const {
-    return format(_T("Pos:%s, Orientation:%s, Scale:%s, (D:%s, U:%s, R:%s)")
-                 ,::toString(m_pos     , dec).cstr()
-                 ,::toString(m_q       , dec).cstr()
-                 ,::toString(m_scale   , dec).cstr()
-                 ,::toString(getDir()  , dec).cstr()
-                 ,::toString(getUp()   , dec).cstr()
-                 ,::toString(getRight(), dec).cstr()
-                 );
-  }
-};
-
-class D3PosDirUpScale {
-private:
-  bool        m_rightHanded;
-  D3DXVECTOR3 m_pos, m_dir, m_up, m_scale;
-  D3DXMATRIX  m_view;
-  D3PosDirUpScale &updateView();
-public:
-  D3PosDirUpScale(bool rightHanded);
-
-  inline bool getRightHanded() const {
-    return m_rightHanded;
-  }
-  // return *this
-  D3PosDirUpScale &setRightHanded(bool rightHanded);
-  inline const D3DXVECTOR3 &getPos() const {
-    return m_pos;
-  }
-  inline const D3DXVECTOR3 &getDir() const {
-    return m_dir;
-  }
-  inline const D3DXVECTOR3 &getUp() const {
-    return m_up;
-  }
-  inline D3DXVECTOR3 getRight() const {
-    return crossProduct(m_dir, m_up);
-  }
-  inline const D3DXVECTOR3 &getScale() const {
-    return m_scale;
-  }
-  D3PosDirUpScale &setPos(const D3DXVECTOR3 &pos) {
-    m_pos = pos;
-    return updateView();
-  }
-  D3PosDirUpScale &setOrientation( const D3DXVECTOR3 &dir, const D3DXVECTOR3 &up);
-  inline D3PosDirUpScale &setScale(const D3DXVECTOR3 &scale) {
-    m_scale = scale;
-    return *this;
-  }
-  inline D3PosDirUpScale &setScaleAll(float scale) {
-    return setScale(D3DXVECTOR3(scale, scale, scale));
-  }
-  // set Position to (0,0,0)
-  inline D3PosDirUpScale &resetPos() {
-    return setPos(getDefaultPos());
-  }
-  // set scale in all dimensions to 1
-  inline D3PosDirUpScale &resetScale() {
-    return setScaleAll(1);
-  }
-  // Return vector (0,0,0)
-  static D3DXVECTOR3 getDefaultPos()   { return D3DXORIGIN;           }
-  // Return vector (0,0,0)
-  static D3DXVECTOR3 getDefaultScale() { return D3DXVECTOR3(1, 1, 1); }
-  // Return vector (0,1,0)
-  static D3DXVECTOR3 getDefaultDir()   { return D3DXVECTOR3(0,0,-1);   }
-  // Return vector (0,0,1)
-  static D3DXVECTOR3 getDefaultUp()    { return D3DXVECTOR3(0,1,0);   }
-  // Set dir=(0,1,0), up=(0,0,1)
-  inline D3PosDirUpScale &resetOrientation() { return setOrientation(getDefaultDir(), getDefaultUp()); }
-
-  D3PosDirUpScale &setWorldMatrix(const D3DXMATRIX &world);
-
-  inline D3DXMATRIX getWorldMatrix() const {
-    D3DXMATRIX result;
-    return *D3DXMatrixScaling(&result, m_scale.x, m_scale.y, m_scale.z) * invers(m_view);
-  }
-  inline const D3DXMATRIX &getViewMatrix() const {
-    return m_view;
-  }
-  inline D3DXMATRIX        getRotationMatrix() const {
-    return D3PosDirUpScale(*this).resetPos().resetScale().getWorldMatrix();
-  }
-  inline D3DXQUATERNION    getQuarternion() const {
-    D3DXQUATERNION result;
-    return *D3DXQuaternionRotationMatrix(&result, &getRotationMatrix());
-  }
-  inline D3DXMATRIX        getScaleMatrix()    const {
-    D3DXMATRIX result;
-    return *D3DXMatrixScaling(&result, m_scale.x, m_scale.y, m_scale.z);
-  }
-
-  String toString(int dec=3) const;
-  inline bool operator==(const D3PosDirUpScale &pdus) const {
-    return (m_pos            == pdus.m_pos           )
-        && (m_dir            == pdus.m_dir           )
-        && (m_up             == pdus.m_up            )
-        && (m_scale          == pdus.m_scale         )
-        && (getRightHanded() == pdus.getRightHanded());
-  }
-  inline bool operator!=(const D3PosDirUpScale &pdus) const {
-    return !(*this == pdus);
-  }
-};
-
-class D3Spherical : public FloatSpherical {
-public:
-  inline D3Spherical() : FloatSpherical() {
-  }
-  template<typename TP> D3Spherical(const Point3DTemplate<TP> &p) : FloatSpherical(p) {
-  }
-  template<typename X, typename Y, typename Z> D3Spherical(const X &x, const Y &y, const Z &z) : FloatSpherical(x,y,z) {
-  }
-  inline D3Spherical(const D3DXVECTOR3 &v) {
-    init(v.x, v.y, v.z);
-  }
-  operator D3DXVECTOR3() const;
 };
 
 typedef enum {

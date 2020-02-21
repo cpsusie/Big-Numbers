@@ -1,7 +1,7 @@
 #pragma once
 
 #include <MyString.h>
-#include "D3Math.h"
+#include "D3World.h"
 #include "Material.h"
 #include "D3SceneObject.h"
 

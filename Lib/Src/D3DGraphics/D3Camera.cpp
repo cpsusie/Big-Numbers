@@ -5,7 +5,7 @@
 D3Camera::D3Camera(D3Scene &scene, HWND hwnd)
   : D3SceneObject( scene )
   , m_hwnd(  hwnd  )
-  , m_pdus(  true  )
+  , m_rightHanded(true)
 {
   m_viewAngel       = radians(45);
   m_nearViewPlane   = 0.1f;
@@ -19,11 +19,11 @@ D3Camera::~D3Camera() {
 }
 
 void D3Camera::OnSize() {
-  LPDIRECT3DDEVICE device = getDirectDevice();
+  LPDIRECT3DDEVICE      device  = getDirectDevice();
   D3DPRESENT_PARAMETERS present = D3DeviceFactory::getDefaultPresentParameters(getHwnd());
   if(present.BackBufferWidth && present.BackBufferHeight) {
     V(device->ResetEx(&present, NULL));
-    ajourProjMatrix();
+    setProjMatrix();
   }
 }
 
@@ -33,9 +33,15 @@ bool D3Camera::ptInRect(CPoint p) const {
   return r.PtInRect(p);
 }
 
-void D3Camera::ajourProjMatrix() {
+void D3Camera::setProjMatrix() {
   D3DXMATRIX m;
   setProperty(CAM_PROJECTION, m_projMatrix, createProjMatrix(m));
+}
+
+// notify listeners with properyId=CAM_VIEW
+void D3Camera::setViewMatrix() {
+  D3DXMATRIX m;
+  setProperty(CAM_VIEW, m_viewMatrix, createViewMatrix(m));
 }
 
 D3DXMATRIX &D3Camera::createProjMatrix(D3DXMATRIX &m) const {
@@ -44,10 +50,14 @@ D3DXMATRIX &D3Camera::createProjMatrix(D3DXMATRIX &m) const {
   return m;
 }
 
+D3DXMATRIX &D3Camera::createViewMatrix(D3DXMATRIX &m) const {
+  return m_world.createViewMatrix(m, getRightHanded());
+}
+
 D3Camera &D3Camera::setViewAngel(float angel) {
   if(angel > 0 && angel < D3DX_PI) {
     m_viewAngel = angel;
-    ajourProjMatrix();
+    setProjMatrix();
   }
   return *this;
 }
@@ -55,29 +65,41 @@ D3Camera &D3Camera::setViewAngel(float angel) {
 D3Camera &D3Camera::setNearViewPlane(float zn) {
   if(zn > 0) {
     m_nearViewPlane = zn;
-    ajourProjMatrix();
+    setProjMatrix();
   }
   return *this;
 }
 
 D3Camera &D3Camera::setRightHanded(bool rightHanded) {
-  return setPDUS(D3PosDirUpScale(m_pdus).setRightHanded(rightHanded));
+  if(rightHanded != m_rightHanded) {
+    m_rightHanded = rightHanded;
+    setProjMatrix();
+    setViewMatrix();
+  }
+  return *this;
+}
+
+D3Camera &D3Camera::setWorld(const D3World &world) {
+  m_world = world;
+  m_world.setScaleAll(1);
+  setViewMatrix();
+  return *this;
 }
 
 D3Camera &D3Camera::resetPos() {
   return setLookAt(D3DXVECTOR3(0, -5, 0), D3DXORIGIN, D3DXVECTOR3(0, 0, 1));
 }
 
-D3Camera &D3Camera::setPDUS(const D3PosDirUpScale &pdus) {
-  setProperty(CAM_PDUS, m_pdus, pdus);
+D3Camera &D3Camera::setPos(const D3DXVECTOR3 &pos) {
+  m_world.setPos(pos);
+  setViewMatrix();
   return *this;
 }
 
-D3Camera &D3Camera::setPos(const D3DXVECTOR3 &pos) {
-  return setPDUS(D3PosDirUpScale(m_pdus).setPos(pos));
-}
-D3Camera &D3Camera::setOrientation(const D3DXVECTOR3 &dir, const D3DXVECTOR3 &up) {
-  return setPDUS(D3PosDirUpScale(m_pdus).setOrientation(dir, up));
+D3Camera &D3Camera::setOrientation(D3DXQUATERNION &q) {
+  m_world.setOrientation(q);
+  setViewMatrix();
+  return *this;
 }
 
 D3Camera &D3Camera::setLookAt(const D3DXVECTOR3 &point) {
@@ -85,7 +107,7 @@ D3Camera &D3Camera::setLookAt(const D3DXVECTOR3 &point) {
 }
 
 D3Camera &D3Camera::setLookAt(const D3DXVECTOR3 &pos, const D3DXVECTOR3 &lookAt, const D3DXVECTOR3 &up) {
-  return setPDUS(D3PosDirUpScale(m_pdus).setPos(pos).setOrientation(lookAt - pos, up).resetScale());
+  return setWorld(D3World().setPos(pos).setOrientation(createOrientation(lookAt - pos, up)));
 }
 
 D3Ray D3Camera::getPickedRay(const CPoint &point) const {
@@ -97,8 +119,8 @@ D3Ray D3Camera::getPickedRay(const CPoint &point) const {
   v.y = -(((2.0f * point.y) / winSize.cy) - 1) / m_projMatrix._22 * m_nearViewPlane;
   v.z = -m_nearViewPlane;
 
-  const D3DXMATRIX world = m_pdus.getWorldMatrix();
-  return D3Ray(world*v, v*world);
+  const D3DXMATRIX m = invers(m_viewMatrix);
+  return D3Ray(m*v, v*m);
 }
 
 D3SceneObjectVisual *D3Camera::getPickedVisual(const CPoint &p, long mask, D3DXVECTOR3 *hitPoint, D3Ray *ray, float *dist, D3PickedInfo *info) const {

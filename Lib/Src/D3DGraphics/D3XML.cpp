@@ -29,27 +29,6 @@ void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, D3DVECTOR &v) {
   doc.getValue(n, _T("z"), v.z);
 }
 
-void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3PosDirUpScale &v) {
-  XMLNodePtr n = doc.createNode(parent, tag);
-  doc.setValue( n, _T("righthanded"), v.getRightHanded());
-  setValue(doc, n, _T("pos"        ), v.getPos()        );
-  setValue(doc, n, _T("dir"        ), v.getDir()        );
-  setValue(doc, n, _T("up"         ), v.getUp()         );
-  setValue(doc, n, _T("scale"      ), v.getScale()      );
-}
-
-void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, D3PosDirUpScale &v) {
-  XMLNodePtr n = doc.getChild(parent, tag);
-  bool rightHanded;
-  D3DXVECTOR3 pos, dir, up, scale;
-  doc.getValue( n, _T("righthanded"), rightHanded);
-  getValue(doc, n, _T("pos"        ), pos        );
-  getValue(doc, n, _T("dir"        ), dir        );
-  getValue(doc, n, _T("up"         ), up         );
-  getValue(doc, n, _T("scale"      ), scale      );
-  v = D3PosDirUpScale(rightHanded).setPos(pos).setOrientation(dir, up).setScale(scale);
-}
-
 void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3DCOLORVALUE &v) {
   XMLNodePtr n = doc.createNode(parent, tag);
   doc.setValue(n, _T("r"      ), v.r        );

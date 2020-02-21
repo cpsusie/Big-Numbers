@@ -100,7 +100,7 @@ static MeshBuilder &createMeshBuilderFromNodefile(const String &nodeFileName, Me
       const D3DXVECTOR3 v1  = vertexArray[face.v1];
       const D3DXVECTOR3 e12 = (D3DXVECTOR3)vertexArray[face.v2] - v1;
       const D3DXVECTOR3 e13 = (D3DXVECTOR3)vertexArray[face.v3] - v1;
-      const D3DXVECTOR3 c   = crossProduct(e13, e12);
+      const D3DXVECTOR3 c   = cross(e13, e12);
       face.m_normal = unitVector(c);
       face.m_area   = length(c)/2;
       faceArray.add(face);

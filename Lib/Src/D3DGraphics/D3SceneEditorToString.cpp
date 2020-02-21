@@ -99,7 +99,7 @@ String D3SceneEditor::toString() const {
     break;
   case CONTROL_CAMERA_WALK           :
     if(m_currentCamera) {
-      result += format(_T("\nCamera PDUS:%s"), m_currentCamera->getPDUS().toString().cstr());
+      result += format(_T("\nCamera World:%s"), m_currentCamera->getWorld().toString().cstr());
     }
     break;
   case CONTROL_OBJECT_POS            :

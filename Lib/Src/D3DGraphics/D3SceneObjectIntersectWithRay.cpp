@@ -73,7 +73,7 @@ bool D3SceneObjectVisual::intersectsWithRay(const D3Ray &ray, float &dist, D3Pic
           const D3DXVECTOR3 &p = (const D3DXVECTOR3&)(((const BYTE*)vertexItems)[inx[i] * itemSize]);
           vtx[i] = p;
         }
-        D3DXVECTOR3 c = crossProduct(vtx[2] - vtx[0], vtx[1] - vtx[0]);
+        D3DXVECTOR3 c = cross(vtx[2] - vtx[0], vtx[1] - vtx[0]);
         if(rayDir * c < 0) {
           hit = TRUE;
           dist = hi.Dist;

@@ -131,7 +131,7 @@ void D3SceneEditor::handlePropertyChanged(const PropertyContainer *source, int i
     }
   } else if(source == m_currentCamera) {
     switch (id) {
-    case CAM_PDUS           :           // D3PosDirUpScale
+    case CAM_VIEW           :           // D3DXMATRIX
     case CAM_PROJECTION     :           // D3DXMATRIX
     case CAM_BACKGROUNDCOLOR:           // D3DCOLOR
       renderCurrent(SE_RENDERALL);
@@ -448,10 +448,10 @@ void D3SceneEditor::moveCurrentObjXZ(CPoint pt) {
   const D3Ray            ray1           = m_currentCamera->getPickedRay(CPoint(pt.x,pt.y+1));
   const float            dRaydPixel     = length(newPickedRay.getHitPoint(dist) - ray1.getHitPoint(dist));
   const CSize            dMouse         = pt - m_lastMouse;
-  const D3PosDirUpScale &camPDUS        = m_currentCamera->getPDUS();
+  const D3DXVECTOR3      camDir         = m_currentCamera->getDir(), camRight = m_currentCamera->getRight();
   D3DXVECTOR3            newPickedPoint = m_pickedPoint
-                                        - (dRaydPixel * dMouse.cy) * camPDUS.getDir()
-                                        + (dRaydPixel * dMouse.cx) * camPDUS.getRight();
+                                        - (dRaydPixel * dMouse.cy) * camDir
+                                        + (dRaydPixel * dMouse.cx) * camRight;
   setCurrentObjPos(newPickedPoint + dp);
   m_pickedRay   = newPickedRay;
   m_pickedPoint = newPickedPoint;
@@ -588,9 +588,7 @@ void D3SceneEditor::rotateCurrentVisualFrwBckw(float angle1, float angle2) {
   CHECKINVARIANT();
   D3SceneObjectVisual *obj = getCurrentVisual();
   if(obj == NULL) return;
-  const D3PosDirUpScale &camPDUS  = m_currentCamera->getPDUS();
-  const D3DXVECTOR3      camUp    = camPDUS.getUp();
-  const D3DXVECTOR3      camRight = camPDUS.getRight();
+  const D3DXVECTOR3      camUp    = m_currentCamera->getUp(), camRight = m_currentCamera->getRight();
   const D3DXQUATERNION   rot      = createRotation(camUp, angle1) * createRotation(camRight, angle2);
   setCurrentVisualOrientation(rot * obj->getOrientation());
   CHECKINVARIANT();
@@ -678,43 +676,32 @@ void D3SceneEditor::OnMouseWheelCameraWalk(UINT nFlags, short zDelta, CPoint pt)
 }
 
 void D3SceneEditor::walkWithCamera(float dist, float angle) {
-  D3PosDirUpScale    pdus = m_currentCamera->getPDUS();
-  const D3DXVECTOR3 &dir  = pdus.getDir();
-  const D3DXVECTOR3 &up   = pdus.getUp();
-  m_currentCamera->setPDUS(
-    pdus.setPos(pdus.getPos() + dist * dir)
-        .setOrientation(rotate(dir, up, angle), up));
+  D3World world = m_currentCamera->getWorld();
+  world.setPos(world.getPos() + world.getDir()*dist)
+       .setOrientation(world.getOrientation()*createRotation(world.getUp(), angle));
+  m_currentCamera->setWorld(world);
 }
 
 void D3SceneEditor::sidewalkWithCamera(float upDist, float rightDist) {
-  D3PosDirUpScale pdus = m_currentCamera->getPDUS();
-  m_currentCamera->setPDUS(
-     pdus.setPos(pdus.getPos()
-               + upDist    * pdus.getUp()
-               + rightDist * pdus.getRight()));
+  const D3World &cw = m_currentCamera->getWorld();
+  m_currentCamera->setPos(cw.getPos()
+                        + cw.getUp()    * upDist
+                        + cw.getRight() * rightDist);
 }
 
 void D3SceneEditor::moveCamera(const D3DXVECTOR3 &dir, float dist) {
-  D3PosDirUpScale pdus = m_currentCamera->getPDUS();
-  m_currentCamera->setPDUS(pdus.setPos(pdus.getPos() + unitVector(dir) * dist));
+  const D3World &cw = m_currentCamera->getWorld();
+  m_currentCamera->setPos(cw.getPos() + unitVector(dir) * dist);
 }
 
 void D3SceneEditor::rotateCameraUpDown(float angle) {
-  D3PosDirUpScale   pdus  = m_currentCamera->getPDUS();
-  const D3DXVECTOR3 right = pdus.getRight();
-  m_currentCamera->setPDUS(
-    pdus.setOrientation(
-       rotate(pdus.getDir(), right, angle)
-      ,rotate(pdus.getUp() , right, angle)));
+  const D3World &cw = m_currentCamera->getWorld();
+  m_currentCamera->setOrientation(cw.getOrientation() * createRotation(cw.getRight(), angle));
 }
 
 void D3SceneEditor::rotateCameraLeftRight(float angle) {
-  D3PosDirUpScale    pdus = m_currentCamera->getPDUS();
-  const D3DXVECTOR3 &dir  = pdus.getDir();
-  m_currentCamera->setPDUS(
-    pdus.setOrientation(
-       dir
-      ,rotate(pdus.getUp(), dir, angle)));
+  const D3World &cw = m_currentCamera->getWorld();
+  m_currentCamera->setOrientation(cw.getOrientation() * createRotation(cw.getDir(), angle));
 }
 
 // ------------------------------------- controlling lights -----------------------------------------

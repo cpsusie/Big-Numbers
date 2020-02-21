@@ -25,9 +25,6 @@ void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag,       D3DXVECTOR
 void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3DVECTOR   &v   );
 void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag,       D3DVECTOR   &v   );
 
-void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3PosDirUpScale &v);
-void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag,       D3PosDirUpScale &v);
-
 template<typename T> void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const Cube3DTemplate<T> &cube) {
   XMLNodePtr n = doc.createNode(parent, tag);
   setValue(doc, n, _T("lbn"), cube.LBN());

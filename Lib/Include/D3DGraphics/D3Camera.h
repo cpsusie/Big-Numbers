@@ -3,7 +3,7 @@
 #include <PropertyContainer.h>
 #include <Date.h>
 #include <MFCUtil/ColorSpace.h>
-#include "D3Math.h"
+#include "D3World.h"
 #include "D3Ray.h"
 #include "D3SceneObject.h"
 
@@ -13,7 +13,7 @@ class D3SceneObjectVisual;
 class D3PickedInfo;
 
 typedef enum {
-  CAM_PDUS                      // D3PosDirUpScale
+  CAM_VIEW                      // D3DXMATRIX
  ,CAM_PROJECTION                // D3DXMATRIX
  ,CAM_BACKGROUNDCOLOR           // D3DCOLOR
 } D3CameraProperty;
@@ -21,14 +21,19 @@ typedef enum {
 class D3Camera : public D3SceneObject, public PropertyContainer {
 private:
   HWND                    m_hwnd;
+  bool                    m_rightHanded;
   float                   m_viewAngel;
   float                   m_nearViewPlane;
-  D3DXMATRIX              m_projMatrix;
-  D3PosDirUpScale         m_pdus;
+  D3World                 m_world;
+  D3DXMATRIX              m_projMatrix, m_viewMatrix;
   D3DCOLOR                m_backgroundColor;
+
   // notify listeners with properyId=CAM_PROJECTION
-  void           ajourProjMatrix();
+  void           setProjMatrix();
   D3DXMATRIX    &createProjMatrix(D3DXMATRIX &m) const;
+  // notify listeners with properyId=CAM_VIEW
+  void           setViewMatrix();
+  D3DXMATRIX    &createViewMatrix(D3DXMATRIX &m) const;
   D3Camera(           const D3Camera &src); // not implemented
   D3Camera &operator=(const D3Camera &src); // not implemented
 public:
@@ -76,28 +81,28 @@ public:
 
   D3Camera &setRightHanded(bool rightHanded);
   inline bool getRightHanded() const {
-    return m_pdus.getRightHanded();
+    return m_rightHanded;
   }
-  // notify listeners with properyId=CAM_PDUS
-  D3Camera &setPDUS(const D3PosDirUpScale &pdus);
-  inline const D3PosDirUpScale &getPDUS() const {
-    return m_pdus;
+  const D3World &getWorld() const {
+    return m_world;
   }
-  inline const D3DXVECTOR3 &getPos() const {
-    return getPDUS().getPos();
+  // notify listeners with properyId=CAM_VIEW
+  D3Camera &setWorld(const D3World &world);
+  inline const D3DXVECTOR3 getPos() const {
+    return m_world.getPos();
   }
-  inline const D3DXVECTOR3 &getDir() const {
-    return getPDUS().getDir();
+  inline const D3DXVECTOR3 getDir() const {
+    return m_world.getDir();
   }
-  inline const D3DXVECTOR3 &getUp() const {
-    return getPDUS().getUp();
+  inline const D3DXVECTOR3 getUp() const {
+    return m_world.getUp();
   }
   inline D3DXVECTOR3 getRight() const {
-    return getPDUS().getRight();
+    return m_world.getRight();
   }
   D3Camera &resetPos();
   D3Camera &setPos(        const D3DXVECTOR3     &pos);
-  D3Camera &setOrientation(const D3DXVECTOR3     &dir, const D3DXVECTOR3 &up);
+  D3Camera &setOrientation(D3DXQUATERNION        &q  );
   D3Camera &setLookAt(     const D3DXVECTOR3     &pos, const D3DXVECTOR3 &lookAt, const D3DXVECTOR3 &up);
   D3Camera &setLookAt(     const D3DXVECTOR3     &point);
 
@@ -105,7 +110,7 @@ public:
     return m_projMatrix;
   }
   inline const D3DXMATRIX &getViewMatrix() const {
-    return m_pdus.getViewMatrix();
+    return m_viewMatrix;
   }
   // point in window-coordinates (m_hwnd)
   // Return Ray in world-space

@@ -21,31 +21,9 @@ D3DXMATRIX createRotationMatrix(const D3DXVECTOR3 &axes, float rad) {
   return *D3DXMatrixRotationAxis(&matRot, &axes, rad);
 }
 
-D3DXQUATERNION createOrientation(const D3DXVECTOR3 &dir) {
-  D3DXQUATERNION    q;
-  const D3DXVECTOR3 E1 = createUnitVector(0);
-  float             phi = angle(E1, dir);
-  if(phi == 0) {
-    return *D3DXQuaternionIdentity(&q);
-  } else {
-    const D3DXVECTOR3 axis = crossProduct(E1, dir);
-    return *D3DXQuaternionRotationAxis(&q, &axis, phi);
-  }
-}
-
-D3DXQUATERNION createRotation(const D3DXVECTOR3 &axis, float angle) {
-  D3DXQUATERNION q;
-  return *D3DXQuaternionRotationAxis(&q, &axis, angle);
-}
-
 D3DXVECTOR3 rotate(const D3DXVECTOR3 &v, const D3DXVECTOR3 &axes, float rad) {
   D3DXMATRIX matRot;
   return *D3DXMatrixRotationAxis(&matRot, &axes, rad) * v;
-}
-
-D3DXVECTOR3 operator*(const D3DXQUATERNION &q, const D3DXVECTOR3 &v) {
-  D3DXMATRIX m;
-  return *D3DXMatrixRotationQuaternion(&m, &q) * v;
 }
 
 D3DXMATRIX &D3DXMatrixPerspectiveFov(D3DXMATRIX &mat, FLOAT angel, FLOAT apsect, FLOAT zn, FLOAT fn, bool rightHanded) {
@@ -80,7 +58,7 @@ float angle(const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2) {
   return acosf((v1*v2) / (length(v1)*length(v2)));
 }
 
-D3DXVECTOR3 crossProduct(const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2) {
+D3DXVECTOR3 cross(const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2) {
   D3DXVECTOR3 result;
   return *D3DXVec3Cross(&result, &v1, &v2);
 }
