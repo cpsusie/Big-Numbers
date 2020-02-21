@@ -88,13 +88,13 @@ public:
   }
   // notify listeners with properyId=CAM_VIEW
   D3Camera &setWorld(const D3World &world);
-  inline const D3DXVECTOR3 getPos() const {
+  inline const D3DXVECTOR3 &getPos() const {
     return m_world.getPos();
   }
-  inline const D3DXVECTOR3 getDir() const {
+  inline D3DXVECTOR3 getDir() const {
     return m_world.getDir();
   }
-  inline const D3DXVECTOR3 getUp() const {
+  inline D3DXVECTOR3 getUp() const {
     return m_world.getUp();
   }
   inline D3DXVECTOR3 getRight() const {
