@@ -1,5 +1,5 @@
 #include "pch.h"
-#include <D3DGraphics/D3World.h>
+#include <D3DGraphics/D3MathWorld.h>
 
 D3DXMATRIX &D3World::createViewMatrix(D3DXMATRIX &dst, bool rightHanded) const {
   return D3DXMatrixLookAt(dst, m_pos, m_pos + getDir(), getUp(), rightHanded);

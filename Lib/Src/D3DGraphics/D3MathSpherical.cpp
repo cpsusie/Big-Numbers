@@ -1,5 +1,5 @@
 #include "pch.h"
-#include <D3DGraphics/D3Spherical.h>
+#include <D3DGraphics/D3MathSpherical.h>
 
 D3Spherical::operator D3DXVECTOR3() const {
   const float tmp = r * sin(fi);

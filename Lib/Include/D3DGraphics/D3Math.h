@@ -2,7 +2,6 @@
 
 #include <MFCUtil/D3DeviceFactory.h>
 #include <Math/MathLib.h>
-#include <Math/Spherical.h>
 #include <Math/Point2D.h>
 #include "Math/Point3D.h"
 #include "D3Error.h"

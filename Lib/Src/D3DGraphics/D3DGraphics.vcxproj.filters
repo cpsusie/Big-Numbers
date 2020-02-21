@@ -367,10 +367,10 @@
     <ClInclude Include="..\..\Include\D3DGraphics\D3Pdus.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\D3DGraphics\D3Spherical.h">
+    <ClInclude Include="..\..\Include\D3DGraphics\D3MathSpherical.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\D3DGraphics\D3World.h">
+    <ClInclude Include="..\..\Include\D3DGraphics\D3MathWorld.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

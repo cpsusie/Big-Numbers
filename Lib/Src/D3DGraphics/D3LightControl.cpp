@@ -85,9 +85,10 @@ bool D3LightControl::isDifferentMaterial(const LIGHT &l1, const LIGHT &l2) { // 
 
 void D3LightControl::draw() {
   D3Device &device = getDevice();
+  device.setFillMode(D3DFILL_SOLID).setShadeMode(D3DSHADE_GOURAUD);
   if(!s_renderEffectEnabled) {
     updateMaterial();
-    device.setWorldMatrix(getWorld()).setMaterial(getMaterial()).setFillMode(D3DFILL_SOLID).setShadeMode(D3DSHADE_GOURAUD);
+    device.setWorldMatrix(getWorld()).setMaterial(getMaterial());
     drawSubset(0);
   } else {
     prepareEffect();
