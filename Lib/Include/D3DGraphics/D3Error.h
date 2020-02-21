@@ -13,9 +13,6 @@ void checkD3DResult(const TCHAR *method, HRESULT hr, bool exitOnError);
 void checkD3DResult(HRESULT hr, bool exitOnError);
 
 #define V( hr) checkD3DResult(hr, true )
-#define VW(hr) checkD3DResult(hr, false)
+#define W(hr)  checkD3DResult(hr, false)
 
 #endif
-
-#define FV(hr) V(hr)
-#define FW(hr) VW(hr)

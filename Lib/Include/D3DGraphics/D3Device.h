@@ -18,7 +18,7 @@ private:
   // only set in scene.render
   const D3Camera  *m_currentCamera;
   template<typename T> void setDevRenderState(D3DRENDERSTATETYPE id, T value) {
-    FV(m_device->SetRenderState(id, (DWORD)value));
+    V(m_device->SetRenderState(id, (DWORD)value));
   }
   D3Device(const D3Device &src);            // not implemented
   D3Device &operator=(const D3Device &src); // not implemented
@@ -67,7 +67,7 @@ public:
   // call device->SetFVF and update m_renderState.m_fvf if different from current
   inline D3Device &setFVF(DWORD fvf) {
     if (fvf != getFVF()) {
-      FV(m_device->SetFVF(fvf));
+      V(m_device->SetFVF(fvf));
       m_fvf = fvf;
     }
     return *this;
@@ -186,11 +186,11 @@ public:
   D3Device &setLight(const LIGHT &light);
   D3DLIGHT  getLight(UINT index) const;
   inline D3Device &setSamplerState(DWORD sampler, D3DSAMPLERSTATETYPE type, DWORD value) {
-    FV(m_device->SetSamplerState(sampler, D3DSAMP_MINFILTER, D3DTEXF_LINEAR));
+    V(m_device->SetSamplerState(sampler, D3DSAMP_MINFILTER, D3DTEXF_LINEAR));
     return *this;
   }
   inline D3Device &setTexture(DWORD stage, LPDIRECT3DTEXTURE texture) {
-    FV(m_device->SetTexture(stage, texture));
+    V(m_device->SetTexture(stage, texture));
     return *this;
   }
 
@@ -218,19 +218,19 @@ public:
   inline D3DXMATRIX      getWorldMatrix() const { return getTransformation(D3DTS_WORLD     ); }
 
   inline D3Device &setStreamSource(LPDIRECT3DVERTEXBUFFER buffer, int vertexSize, DWORD fvf) {
-    FV(m_device->SetStreamSource(0, buffer, 0, vertexSize));
+    V(m_device->SetStreamSource(0, buffer, 0, vertexSize));
     return setFVF(fvf);
   }
   inline D3Device &setIndices(LPDIRECT3DINDEXBUFFER indexBuffer) {
-    FV(m_device->SetIndices(indexBuffer));
+    V(m_device->SetIndices(indexBuffer));
     return *this;
   }
   inline D3Device &drawPrimitive(D3DPRIMITIVETYPE pt, int startVertex, int primitiveCount) {
-    FV(m_device->DrawPrimitive(pt, startVertex, primitiveCount));
+    V(m_device->DrawPrimitive(pt, startVertex, primitiveCount));
     return *this;
   }
   inline D3Device &drawIndexedPrimitive(D3DPRIMITIVETYPE pt, int baseVertexIndex, UINT minVertexIndex, UINT numVertices, UINT startIndex, UINT primCount) {
-    FV(m_device->DrawIndexedPrimitive(pt, baseVertexIndex, minVertexIndex, numVertices, startIndex, primCount));
+    V(m_device->DrawIndexedPrimitive(pt, baseVertexIndex, minVertexIndex, numVertices, startIndex, primCount));
     return *this;
   }
 

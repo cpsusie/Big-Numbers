@@ -16,7 +16,7 @@ protected:
   void unlockIndexBuffer();
   void releaseMesh();
   inline void drawSubset(DWORD attribId) {
-    FV(m_mesh->DrawSubset(attribId));
+    V(m_mesh->DrawSubset(attribId));
   }
 public:
   // if mesh != NULL, it will be released when Object is destroyed

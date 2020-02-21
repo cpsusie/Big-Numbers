@@ -391,7 +391,7 @@ LPDIRECT3DINDEXBUFFER D3Scene::allocateIndexBuffer(bool int32, UINT count, UINT 
 
 LPD3DXMESH D3Scene::allocateMesh(DWORD fvf , UINT faceCount, UINT vertexCount, DWORD options) {
   LPD3DXMESH result;
-  FV(D3DXCreateMeshFVF(faceCount, vertexCount, options, fvf, getDevice(), &result));
+  V(D3DXCreateMeshFVF(faceCount, vertexCount, options, fvf, getDevice(), &result));
   TRACE_CREATE(result);
   return result;
 }

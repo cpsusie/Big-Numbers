@@ -37,7 +37,7 @@ D3Device &D3Device::setCurrentCamera(const D3Camera *camera) {
 
 D3Device &D3Device::setMaterial(const MATERIAL &material) {
   if(material != m_material) {
-    FV(m_device->SetMaterial(&material));
+    V(m_device->SetMaterial(&material));
     if(material.getOpacity() < 1.0f) {
        setCullMode(D3DCULL_CCW)
       .setZEnable(D3DZB_FALSE)
