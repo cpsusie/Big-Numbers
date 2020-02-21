@@ -1,13 +1,11 @@
 #pragma once
 
 #include <PropertyContainer.h>
-#include <Date.h>
 #include <MFCUtil/ColorSpace.h>
 #include "D3MathWorld.h"
 #include "D3Ray.h"
 #include "D3SceneObject.h"
 
-class D3Device;
 class D3Scene;
 class D3SceneObjectVisual;
 class D3PickedInfo;
@@ -29,16 +27,16 @@ private:
   D3DCOLOR                m_backgroundColor;
 
   // notify listeners with properyId=CAM_PROJECTION
-  void           setProjMatrix();
+  D3Camera      &setProjMatrix();
   D3DXMATRIX    &createProjMatrix(D3DXMATRIX &m) const;
   // notify listeners with properyId=CAM_VIEW
-  void           setViewMatrix();
+  D3Camera      &setViewMatrix();
   D3DXMATRIX    &createViewMatrix(D3DXMATRIX &m) const;
   D3Camera(           const D3Camera &src); // not implemented
   D3Camera &operator=(const D3Camera &src); // not implemented
 public:
   D3Camera(D3Scene &scene, HWND hwnd);
-  virtual ~D3Camera();
+  ~D3Camera();
   SceneObjectType getType() const {
     return SOTYPE_CAMERA;
   }
@@ -102,7 +100,7 @@ public:
   }
   D3Camera &resetPos();
   D3Camera &setPos(        const D3DXVECTOR3     &pos);
-  D3Camera &setOrientation(D3DXQUATERNION        &q  );
+  D3Camera &setOrientation(const D3DXQUATERNION  &q  );
   D3Camera &setLookAt(     const D3DXVECTOR3     &pos, const D3DXVECTOR3 &lookAt, const D3DXVECTOR3 &up);
   D3Camera &setLookAt(     const D3DXVECTOR3     &point);
 

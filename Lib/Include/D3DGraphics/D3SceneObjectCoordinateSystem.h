@@ -22,9 +22,6 @@ public:
   inline const D3DXCube3 &getRange() const {
     return m_cube;
   }
-  D3DXMATRIX &getWorld() {
-    return *D3DXMatrixIdentity(&m_world);
-  }
   LPD3DXMESH getMesh() const;
   void draw();
 };

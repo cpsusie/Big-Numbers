@@ -33,15 +33,17 @@ bool D3Camera::ptInRect(CPoint p) const {
   return r.PtInRect(p);
 }
 
-void D3Camera::setProjMatrix() {
+D3Camera &D3Camera::setProjMatrix() {
   D3DXMATRIX m;
   setProperty(CAM_PROJECTION, m_projMatrix, createProjMatrix(m));
+  return *this;
 }
 
 // notify listeners with properyId=CAM_VIEW
-void D3Camera::setViewMatrix() {
+D3Camera &D3Camera::setViewMatrix() {
   D3DXMATRIX m;
   setProperty(CAM_VIEW, m_viewMatrix, createViewMatrix(m));
+  return *this;
 }
 
 D3DXMATRIX &D3Camera::createProjMatrix(D3DXMATRIX &m) const {
@@ -82,8 +84,7 @@ D3Camera &D3Camera::setRightHanded(bool rightHanded) {
 D3Camera &D3Camera::setWorld(const D3World &world) {
   m_world = world;
   m_world.setScaleAll(1);
-  setViewMatrix();
-  return *this;
+  return setViewMatrix();
 }
 
 D3Camera &D3Camera::resetPos() {
@@ -92,14 +93,12 @@ D3Camera &D3Camera::resetPos() {
 
 D3Camera &D3Camera::setPos(const D3DXVECTOR3 &pos) {
   m_world.setPos(pos);
-  setViewMatrix();
-  return *this;
+  return setViewMatrix();
 }
 
-D3Camera &D3Camera::setOrientation(D3DXQUATERNION &q) {
+D3Camera &D3Camera::setOrientation(const D3DXQUATERNION &q) {
   m_world.setOrientation(q);
-  setViewMatrix();
-  return *this;
+  return setViewMatrix();
 }
 
 D3Camera &D3Camera::setLookAt(const D3DXVECTOR3 &point) {
