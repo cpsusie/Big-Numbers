@@ -283,3 +283,7 @@ String toString(const D3DCOLORVALUE &c, bool showAlpha) {
     return format(_T("R:%.2f G:%.2f B:%.2f"), c.r,c.g,c.b);
   }
 }
+
+String handednessToString(bool rightHanded) {
+  return rightHanded ? _T("Right handed") : _T("Left handed");
+}

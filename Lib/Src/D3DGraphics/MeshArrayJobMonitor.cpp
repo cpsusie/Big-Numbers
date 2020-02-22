@@ -20,7 +20,7 @@ private:
   CompactStack<double>              m_jobStack;
   CompactArray<MeshResult>          m_resultArray;
   int                               m_jobCount;
-  mutable FastSemaphore             m_gate;
+  mutable FastSemaphore             m_lock;
   StringArray                       m_errors;
   void clearResultQueue();
 public:
@@ -43,32 +43,32 @@ public:
 };
 
 void MeshArrayJobMonitor::addResult(double t, LPD3DXMESH mesh) {
-  m_gate.wait();
+  m_lock.wait();
   m_resultArray.add(MeshResult(t, mesh));
-  m_gate.notify();
+  m_lock.notify();
 }
 
 void MeshArrayJobMonitor::addError(const String &msg) {
-  m_gate.wait();
+  m_lock.wait();
   m_errors.add(msg);
-  m_gate.notify();
+  m_lock.notify();
 }
 
 void MeshArrayJobMonitor::clearJobQueue() {
-  m_gate.wait();
+  m_lock.wait();
   m_jobStack.clear();
-  m_gate.notify();
+  m_lock.notify();
 }
 
 void MeshArrayJobMonitor::addJob(double t) {
-  m_gate.wait();
+  m_lock.wait();
   m_jobStack.push(t);
   m_jobCount++;
-  m_gate.notify();
+  m_lock.notify();
 }
 
 bool MeshArrayJobMonitor::fetchJob(double &t) {
-  m_gate.wait();
+  m_lock.wait();
   bool result;
   if(m_jobStack.isEmpty()) {
     result = false;
@@ -76,14 +76,14 @@ bool MeshArrayJobMonitor::fetchJob(double &t) {
     t = m_jobStack.pop();
     result = true;
   }
-  m_gate.notify();
+  m_lock.notify();
   return result;
 }
 
 int MeshArrayJobMonitor::getJobsDone() const {
-  m_gate.wait();
+  m_lock.wait();
   const int n = (int)(m_resultArray.size() + m_errors.size());
-  m_gate.notify();
+  m_lock.notify();
   return n;
 }
 
@@ -100,7 +100,7 @@ static int meshResultCmpByTime(const MeshResult &m1, const MeshResult &m2) {
 }
 
 MeshArray MeshArrayJobMonitor::getResult() {
-  m_gate.wait();
+  m_lock.wait();
   CompactArray<MeshResult> tmp = m_resultArray;
   tmp.sort(meshResultCmpByTime);
   MeshArray result;
@@ -109,7 +109,7 @@ MeshArray MeshArrayJobMonitor::getResult() {
   }
   tmp.clear();
   clearResultQueue();
-  m_gate.notify();
+  m_lock.notify();
   return result;
 }
 

@@ -81,13 +81,7 @@ public:
     return *D3DXMatrixScaling(&result, m_scale.x, m_scale.y, m_scale.z);
   }
   String toString(int dec = 3) const;
-  inline bool operator==(const D3PosDirUpScale &pdus) const {
-    return (m_pos == pdus.m_pos)
-        && (m_dir == pdus.m_dir)
-        && (m_up == pdus.m_up)
-        && (m_scale == pdus.m_scale)
-        && (getRightHanded() == pdus.getRightHanded());
-  }
+  bool operator==(const D3PosDirUpScale &pdus) const;
   inline bool operator!=(const D3PosDirUpScale &pdus) const {
     return !(*this == pdus);
   }

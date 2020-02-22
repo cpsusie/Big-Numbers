@@ -17,6 +17,5 @@ public:
   virtual UINT                  getFrameCount()      const = 0;
   virtual AbstractVariableMeshCreator  *fetchMeshCreator()   const = 0;
   MeshArray createMeshArray(CWnd *wnd);
-
 };
 

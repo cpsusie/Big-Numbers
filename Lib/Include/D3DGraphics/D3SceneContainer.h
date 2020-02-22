@@ -15,7 +15,7 @@ public:
   virtual void     render(BYTE renderFlags, CameraSet cameraSet) = 0;
   virtual void     modifyContextMenu(CMenu &menu) {
   }
-  inline CSize      getWinSize(UINT index) const {
+  inline CSize     getWinSize(UINT index) const {
     return getClientRect(get3DWindow(index)).Size();
   }
 };

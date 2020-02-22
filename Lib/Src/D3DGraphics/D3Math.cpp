@@ -68,14 +68,18 @@ D3DXVECTOR3 unitVector(const D3DXVECTOR3 &v) {
   return *D3DXVec3Normalize(&tmp, &v);
 }
 
-D3DXVECTOR3 createUnitVector(int i) {
-  switch(i) {
-  case 0 : return D3DXVECTOR3(1,0,0);
-  case 1 : return D3DXVECTOR3(0,1,0);
-  case 2 : return D3DXVECTOR3(0,0,1);
-  default: throwInvalidArgumentException(__TFUNCTION__, _T("i=%d. Must be [0..2]"), i);
-           return D3DXVECTOR3(0,0,0);
+D3DXVECTOR3 E[3] = {
+  D3DXVECTOR3(1,0,0)
+ ,D3DXVECTOR3(0,1,0)
+ ,D3DXVECTOR3(0,0,1)
+};
+
+D3DXVECTOR3 createUnitVector(UINT i) {
+  if(i < 3) {
+    return E[i];
   }
+  throwInvalidArgumentException(__TFUNCTION__, _T("i=%u. Must be [0..2]"), i);
+  return D3DXORIGIN;
 }
 
 D3DXVECTOR3 ortonormalVector(const D3DXVECTOR3 &v) {

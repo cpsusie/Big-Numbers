@@ -41,20 +41,20 @@ class D3SceneObjectAnimatedMesh;
 
 class D3SceneEditor : public PropertyChangeListener {
 private:
-    D3SceneContainer                 *m_sceneContainer;
-    D3EditorControl                   m_currentControl;
-    D3Camera                         *m_currentCamera;
-    int                               m_currentCameraIndex;
-    D3SceneObjectVisual              *m_currentObj, *m_coordinateSystem, *m_selectedCube;
-    PropertyDialogMap                 m_propertyDialogMap;
-    PropertyDialog                   *m_currentPropertyDialog;
-    BYTE                              m_stateFlags;
-    CPoint                            m_lastMouse;
-    D3SceneObjectPoint                m_centerOfRotation;
-    D3DXVECTOR3                       m_pickedPoint; // in world space
-    D3Ray                             m_pickedRay;   // in world space
-    D3PickedInfo                      m_pickedInfo;
-    String                            m_paramFileName;
+    D3SceneContainer     *m_sceneContainer;
+    D3EditorControl       m_currentControl;
+    D3Camera             *m_currentCamera;
+    int                   m_currentCameraIndex;
+    D3SceneObjectVisual  *m_currentObj, *m_coordinateSystem, *m_selectedCube;
+    PropertyDialogMap     m_propertyDialogMap;
+    PropertyDialog       *m_currentPropertyDialog;
+    BYTE                  m_stateFlags;
+    CPoint                m_lastMouse;
+    D3SceneObjectPoint    m_centerOfRotation;
+    D3DXVECTOR3           m_pickedPoint; // in world space
+    D3Ray                 m_pickedRay;   // in world space
+    D3PickedInfo          m_pickedInfo;
+    String                m_paramFileName;
 
     HWND     getCurrentHwnd() const;
     D3Scene &getScene() const {

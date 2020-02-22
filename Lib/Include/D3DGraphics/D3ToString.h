@@ -33,8 +33,5 @@ String toString(LPD3DXMESH             mesh        );
 String toString(LPDIRECT3DVERTEXBUFFER vertexBuffer);
 String toString(LPDIRECT3DINDEXBUFFER  indexBuffer );
 
-inline String handednessToString(bool rightHanded) {
-  return rightHanded ? _T("Right handed") : _T("Left handed");
-}
-
+String handednessToString(bool rightHanded);
 String vertexToString(const char *v, DWORD FVF  , int dec=3);

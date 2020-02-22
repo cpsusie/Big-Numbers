@@ -15,24 +15,21 @@
     <Filter Include="Source Files\Visual Objects">
       <UniqueIdentifier>{e540db03-be32-4123-9721-ab80db562a10}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\D3Math">
+      <UniqueIdentifier>{b69a197f-e77b-491a-a70c-51b88198b9f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\D3Math">
+      <UniqueIdentifier>{963ba29c-2b3f-4069-a004-6b42a98b3ad1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Mesh">
+      <UniqueIdentifier>{c91f3b6c-c7ef-46d5-88b3-f88495ab8156}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Mesh">
+      <UniqueIdentifier>{f3d9b821-27e6-45eb-a621-ba2f3843a1e6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="D3Error.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="D3Math.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="IsoSurfacePolygonizer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MeshBuilder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Profile.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RotateProfile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="D3Scene.cpp">
@@ -47,40 +44,10 @@
     <ClCompile Include="Function2DSurface.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Function2DSurfaceMeshBuilder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="IsoSurface.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="IsoSurfaceMeshBuilder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MeshArray.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MeshArrayJobMonitor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ParametricSurface.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ParametricSurfaceMeshBuilder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="VertexFileSurfaceMeshBuilder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="WavefrontObjFileMeshBuilder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MeshToString.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MeshBuilderToString.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MeshToBoundingBox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="LightDlg.cpp">
@@ -144,18 +111,6 @@
     <ClCompile Include="D3SceneObjectPoint.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D3MathQuaternion.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="D3MathPdus.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="D3MathSpherical.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="D3MathWorld.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="D3SceneObjectAnimatedMesh.cpp">
       <Filter>Source Files\Visual Objects</Filter>
     </ClCompile>
@@ -216,21 +171,78 @@
     <ClCompile Include="D3Material.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="D3Math.cpp">
+      <Filter>Source Files\D3Math</Filter>
+    </ClCompile>
+    <ClCompile Include="D3Pdus.cpp">
+      <Filter>Source Files\D3Math</Filter>
+    </ClCompile>
+    <ClCompile Include="D3Quaternion.cpp">
+      <Filter>Source Files\D3Math</Filter>
+    </ClCompile>
+    <ClCompile Include="D3Spherical.cpp">
+      <Filter>Source Files\D3Math</Filter>
+    </ClCompile>
+    <ClCompile Include="D3World.cpp">
+      <Filter>Source Files\D3Math</Filter>
+    </ClCompile>
+    <ClCompile Include="D3Ray.cpp">
+      <Filter>Source Files\D3Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Face.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshArray.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshArrayJobMonitor.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshBuilder.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshBuilderToString.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshToBoundingBox.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshToString.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="VertexNormalTextureIndex.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Profile.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="RotateProfile.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="ParametricSurfaceMeshBuilder.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="VertexFileSurfaceMeshBuilder.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="IsoSurfaceMeshBuilder.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="IsoSurfacePolygonizer.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Function2DSurfaceMeshBuilder.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="WavefrontObjFileMeshBuilder.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\D3DGraphics\D3Error.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\D3DGraphics\D3Math.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\D3DGraphics\IsosurfacePolygonizer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\D3DGraphics\MeshBuilder.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\D3DGraphics\Profile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\D3DGraphics\D3Scene.h">
@@ -242,16 +254,7 @@
     <ClInclude Include="..\..\Include\D3DGraphics\IsoSurface.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\D3DGraphics\MeshArrayJobMonitor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\D3DGraphics\ParametricSurface.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\D3DGraphics\MeshArray.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\D3DGraphics\MeshCreators.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\D3DGraphics\PragmaLib.h">
@@ -277,19 +280,10 @@
     </ClInclude>
     <ClInclude Include="pch.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="..\..\Include\D3DGraphics\D3Transformation.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\D3DGraphics\D3DXCube.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\D3DGraphics\D3XML.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\D3DGraphics\D3PickedInfo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\D3DGraphics\D3Ray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObject.h">
@@ -304,9 +298,6 @@
     <ClInclude Include="..\..\Include\D3DGraphics\D3AbstractTextureFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\D3DGraphics\D3AbstractMeshFactory.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\D3DGraphics\D3Device.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -317,15 +308,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectPoint.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\D3DGraphics\D3Pdus.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\D3DGraphics\D3MathSpherical.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\D3DGraphics\D3MathWorld.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectAnimatedMesh.h">
@@ -378,6 +360,45 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\D3DGraphics\D3Material.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\D3DXCube.h">
+      <Filter>Header Files\D3Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\D3Math.h">
+      <Filter>Header Files\D3Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\D3Pdus.h">
+      <Filter>Header Files\D3Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\D3Transformation.h">
+      <Filter>Header Files\D3Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\D3Ray.h">
+      <Filter>Header Files\D3Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\D3World.h">
+      <Filter>Header Files\D3Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\D3Spherical.h">
+      <Filter>Header Files\D3Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\MeshArray.h">
+      <Filter>Header Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\MeshArrayJobMonitor.h">
+      <Filter>Header Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\MeshBuilder.h">
+      <Filter>Header Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\MeshCreators.h">
+      <Filter>Header Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\D3AbstractMeshFactory.h">
+      <Filter>Header Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\Profile.h">
+      <Filter>Header Files\Mesh</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

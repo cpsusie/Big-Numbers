@@ -1,7 +1,7 @@
 #include "pch.h"
 #include <MFCUtil/ColorSpace.h>
-#include <D3DGraphics/D3MathWorld.h>
 #include <D3DGraphics/MeshBuilder.h>
+#include <D3DGraphics/D3World.h>
 #include <D3DGraphics/D3Device.h>
 #include <D3DGraphics/D3Scene.h>
 #include <D3DGraphics/D3Camera.h>

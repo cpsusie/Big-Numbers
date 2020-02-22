@@ -61,10 +61,10 @@ public:
     return *this;
   }
   inline D3DXVECTOR3 getDir() const {
-    return rotate(createUnitVector(0),m_q);
+    return rotate(E[0],m_q);
   }
   inline D3DXVECTOR3 getUp() const {
-    return rotate(createUnitVector(2), m_q);
+    return rotate(E[2], m_q);
   }
   inline D3DXVECTOR3 getRight() const {
     return cross(getDir(), getUp());

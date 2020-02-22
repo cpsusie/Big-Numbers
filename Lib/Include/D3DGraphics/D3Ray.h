@@ -19,7 +19,5 @@ public:
   inline bool isEmpty() const {
     return length(m_dir) == 0;
   }
-  inline String toString(int dec = 3) const {
-    return format(_T("Orig:%s, Dir:%s"), ::toString(m_orig, dec).cstr(), ::toString(m_dir, dec).cstr());
-  }
+  String toString(int dec = 3) const;
 };

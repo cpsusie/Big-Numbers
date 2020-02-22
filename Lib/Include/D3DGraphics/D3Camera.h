@@ -2,7 +2,7 @@
 
 #include <PropertyContainer.h>
 #include <MFCUtil/ColorSpace.h>
-#include "D3MathWorld.h"
+#include "D3World.h"
 #include "D3Ray.h"
 #include "D3SceneObject.h"
 

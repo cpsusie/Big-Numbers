@@ -893,7 +893,7 @@ void D3SceneEditor::addLight(D3DLIGHTTYPE type) {
     m_pickedPoint = lp.Position = m_pickedRay.getHitPoint(2);
     break;
   case D3DLIGHT_SPOT       :
-    m_pickedPoint = lp.Position  = m_pickedRay.getHitPoint(3);
+    m_pickedPoint = lp.Position = m_pickedRay.getHitPoint(3);
     lp.Direction  = unitVector((m_currentCamera->getPos() + 5 * m_currentCamera->getDir()) - lp.Position);
     break;
   }

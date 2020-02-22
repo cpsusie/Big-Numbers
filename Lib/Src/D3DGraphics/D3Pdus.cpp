@@ -12,6 +12,7 @@ D3PosDirUpScale::D3PosDirUpScale(bool rightHanded)
   updateView();
 }
 
+
 D3PosDirUpScale &D3PosDirUpScale::setRightHanded(bool rightHanded) {
   if(rightHanded != m_rightHanded) {
     m_rightHanded = rightHanded;
@@ -55,6 +56,14 @@ D3PosDirUpScale &D3PosDirUpScale::updateView() {
   D3DXVECTOR3 lookAt = m_pos + m_dir;
   D3DXMatrixLookAt(m_view, m_pos, lookAt, m_up, m_rightHanded);
   return *this;
+}
+
+bool D3PosDirUpScale::operator==(const D3PosDirUpScale &pdus) const {
+  return (m_pos == pdus.m_pos)
+    && (m_dir == pdus.m_dir)
+    && (m_up == pdus.m_up)
+    && (m_scale == pdus.m_scale)
+    && (getRightHanded() == pdus.getRightHanded());
 }
 
 String D3PosDirUpScale::toString(int dec) const {

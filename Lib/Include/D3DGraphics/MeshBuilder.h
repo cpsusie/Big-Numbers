@@ -12,17 +12,9 @@ public:
     : m_vIndex(vIndex), m_nIndex(nIndex), m_tIndex(tIndex)
   {
   }
-  inline bool operator==(const VertexNormalTextureIndex &v) const {
-    return (m_vIndex == v.m_vIndex)
-        && (m_nIndex == v.m_nIndex)
-        && (m_tIndex == v.m_tIndex);
-  }
-  inline ULONG hashCode() const {
-    return (m_vIndex * 100981 + m_nIndex) * 997 + m_tIndex;
-  }
-  inline String toString() const {
-    return format(_T("VertexNormalTextureIndex(v:%4d,n:%4d,t:%4d"), m_vIndex, m_nIndex, m_tIndex);
-  }
+  bool operator==(const VertexNormalTextureIndex &v) const;
+  ULONG hashCode() const;
+  String toString() const;
 };
 
 typedef CompactArray<VertexNormalTextureIndex> VNTIArray;
@@ -61,10 +53,7 @@ public:
   }
   void invertOrientation();
   friend class MeshBuilder;
-  inline String toString() const {
-    return format(_T("Face(Color:%#8x, IndexCount:%zu\nIndexArray:%s\n")
-                 ,m_diffuseColor, m_data.size(), m_data.toString().cstr());
-  }
+  String toString() const;
 };
 
 #define MAX16BITVERTEXCOUNT 0xfffe
@@ -93,37 +82,33 @@ public:
     clear();
   }
   void clear(UINT capacity = 0);
-  inline int addVertex(float x, float y, float z) {
-    m_vertices.add(Vertex(x, y, z));
-    return (int)m_vertices.size()-1;
-  }
   inline int addVertex(const Vertex &p) {
+    const int n = (int)m_vertices.size();
     m_vertices.add(p);
-    return (int)m_vertices.size()-1;
+    return n;
+  }
+  template<typename TX, typename TY, typename TZ> int addVertex(TX x, TY y, TZ z) {
+    return addVertex(Vertex(x, y, z));
   }
   inline int addVertex(const D3DXVECTOR3 &v) {
-    m_vertices.add(Vertex(v));
-    return (int)m_vertices.size()-1;
+    return addVertex(Vertex(v));
   }
-  inline int addVertex(const Point3D &p) {
-    m_vertices.add(Vertex(p));
-    return (int)m_vertices.size()-1;
-  }
-  inline int addNormal(float x, float y, float z) {
-    m_normals.add(Vertex(x, y, z));
-    return (int)m_normals.size()-1;
+  template<typename T> int addVertex(const Point3DTemplate<T> &p) {
+    return addVertex(Vertex(p));
   }
   inline int addNormal(const Vertex &n) {
+    const int c = (int)m_normals.size();
     m_normals.add(n);
-    return (int)m_normals.size()-1;
+    return c;
+  }
+  template<typename TX, typename TY, typename TZ> int addNormal(TX x, TY y, TZ z) {
+    return addNormal(Vertex(x, y, z));
   }
   inline int addNormal(const D3DXVECTOR3 &v) {
-    m_normals.add(Vertex(v));
-    return (int)m_normals.size()-1;
+    return addNormal(Vertex(v));
   }
-  inline int addNormal(const Point3D &n) {
-    m_normals.add(Vertex(n));
-    return (int)m_normals.size()-1;
+  template<typename T> int addNormal(const Point3DTemplate<T> &n) {
+    return addNormal(Vertex(n));
   }
   inline int addTextureVertex(const TextureVertex &vt) {
     m_textureVertexArray.add(vt);
