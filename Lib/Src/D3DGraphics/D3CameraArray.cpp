@@ -4,7 +4,7 @@
 
 // p in screen-coordinates
 int D3CameraArray::findCameraIndex(const CPoint &p) const {
-  const size_t n = size();
+  const int n = (int)size();
   for(int i = 0; i < n; i++) {
     if((*this)[i]->ptInRect(p)) {
       return i;

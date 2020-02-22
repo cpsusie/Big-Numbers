@@ -7,7 +7,7 @@
 #endif
 
 CMaterialDlg::CMaterialDlg(PropertyChangeListener *listener, CWnd *pParent)
-: CColormapDialog<MATERIAL>(CMaterialDlg::IDD, SP_MATERIALPARAMETERS, pParent)
+: CColormapDialog<D3Material>(IDD, SP_MATERIALPARAMETERS, pParent)
 {
   if(listener) {
     addPropertyChangeListener(listener);
@@ -47,14 +47,14 @@ LRESULT CMaterialDlg::OnMsgResetControls(WPARAM wp, LPARAM lp) {
 void CMaterialDlg::resetControls() {
   setNotifyEnable(false);
 
-  const MATERIAL &v = getStartValue();
+  const D3Material &v = getStartValue();
   setCurrentValue(v);
   valueToWindow(v);
 
   setNotifyEnable(true);
 }
 
-void CMaterialDlg::valueToWindow(const MATERIAL &v) {
+void CMaterialDlg::valueToWindow(const D3Material &v) {
   setWindowText(this, format(_T("%s (Material %d)"), m_origName.cstr(), v.getId()));
 
   setSliderPower(v.Power);
@@ -66,7 +66,7 @@ void CMaterialDlg::valueToWindow(const MATERIAL &v) {
 }
 
 void CMaterialDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar) {
-  MATERIAL v = getCurrentValue();
+  D3Material v = getCurrentValue();
   v.Power    = getSliderPower();
   setCurrentValue(v);
   showPower(v.Power);
@@ -74,7 +74,7 @@ void CMaterialDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar) {
 }
 
 void CMaterialDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar) {
-  MATERIAL v  = getCurrentValue();
+  D3Material v  = getCurrentValue();
   setCurrentValue(v.setOpacity(getSliderOpacity()));
   showOpacity(v.getOpacity());
   __super::OnHScroll(nSBCode, nPos, pScrollBar);
@@ -119,7 +119,7 @@ void CMaterialDlg::OnClose() {
 }
 
 void CMaterialDlg::OnCancel() {
-  const MATERIAL &v = getStartValue();
+  const D3Material &v = getStartValue();
   setCurrentValue(v);
   valueToWindow(v);
 }
@@ -133,26 +133,26 @@ END_EVENTSINK_MAP()
 
 
 void CMaterialDlg::OnColorchangedColormapAmbient(){
-  MATERIAL v = getCurrentValue();
+  D3Material v = getCurrentValue();
   v.Ambient = getD3DCOLORVALUE(IDC_COLORMAP_AMBIENT);
   setCurrentValue(v);
 }
 
 void CMaterialDlg::OnColorchangedColormapDiffuse() {
-  MATERIAL v  = getCurrentValue();
+  D3Material v  = getCurrentValue();
   v.Diffuse   = getD3DCOLORVALUE(IDC_COLORMAP_DIFFUSE);
   v.setOpacity(getSliderOpacity());
   setCurrentValue(v);
 }
 
 void CMaterialDlg::OnColorchangedColormapSpecular() {
-  MATERIAL v = getCurrentValue();
+  D3Material v = getCurrentValue();
   v.Specular = getD3DCOLORVALUE(IDC_COLORMAP_SPECULAR);
   setCurrentValue(v);
 }
 
 void CMaterialDlg::OnColorchangedColormapEmissive() {
-  MATERIAL v = getCurrentValue();
+  D3Material v = getCurrentValue();
   v.Emissive = getD3DCOLORVALUE(IDC_COLORMAP_EMISSIVE);
   setCurrentValue(v);
 }

@@ -11,8 +11,8 @@
 #include "D3SceneObjectVisual.h"
 #include "D3AbstractTextureFactory.h"
 #include "D3AbstractMeshFactory.h"
-#include "Light.h"
-#include "Material.h"
+#include "D3Light.h"
+#include "D3Material.h"
 
 class D3Device;
 class D3LightControl;
@@ -22,9 +22,9 @@ class D3PickedInfo;
 typedef enum {
   SP_AMBIENTCOLOR              // D3DCOLOR
  ,SP_RIGHTHANDED               // bool
- ,SP_LIGHTPARAMETERS           // LIGHT
+ ,SP_LIGHTPARAMETERS           // D3Light
  ,SP_LIGHTCOUNT                // UINT
- ,SP_MATERIALPARAMETERS        // MATERIAL
+ ,SP_MATERIALPARAMETERS        // D3Material
  ,SP_MATERIALCOUNT             // UINT
  ,SP_CAMERACOUNT               // UINT
  ,SP_VISUALCOUNT               // UINT
@@ -57,7 +57,7 @@ private:
   int              m_maxLightCount;
   D3DCOLOR         m_ambientColor;
   BitSet           m_lightsEnabled, m_lightsDefined;
-  MATERIAL         m_undefinedMaterial;
+  D3Material       m_undefinedMaterial;
   MaterialMap      m_materialMap;
   D3VisualArray    m_visualArray;
   D3CameraArray    m_cameraArray;
@@ -130,10 +130,10 @@ public:
   }
   void setAnimationFrameIndex(int &oldValue, int newValue);
 
-// --------------------------- LIGHT ----------------------------
+// --------------------------- D3Light ----------------------------
 
-  void   setLight(            const LIGHT &param);
-  LIGHT  getLight(      UINT lightIndex) const;
+  void     setLight(      const D3Light &param);
+  D3Light  getLight(      UINT lightIndex) const;
   // Return Array of defined lights
   LightArray          getAllLights() const;
   inline D3DLIGHTTYPE getLightType(UINT lightIndex) const {
@@ -198,20 +198,20 @@ public:
     return AbstractTextureFactory::loadTextureFromBitmapResource(getDirectDevice(), id);
   }
 
-// --------------------------- MATERIAL ----------------------------
+// --------------------------- D3Material ----------------------------
 
-  inline const MATERIAL &getMaterial(UINT materialId) const {
-    const MATERIAL *m = m_materialMap.get(materialId);
+  inline const D3Material &getMaterial(UINT materialId) const {
+    const D3Material *m = m_materialMap.get(materialId);
     return m ? *m : m_undefinedMaterial;
   }
   const MaterialMap &getAllMaterials() const {
     return m_materialMap;
   }
-  void setMaterial(const MATERIAL    &material);
+  void setMaterial(const D3Material  &material);
   UINT addMaterial(const D3DMATERIAL &material);
   void removeMaterial(UINT materialId);
   // assume lcMaterial is defined. Dont notify listeners about change in material
-  void setLightControlMaterial(const MATERIAL &lcMaterial);
+  void setLightControlMaterial(const D3Material &lcMaterial);
 
   inline bool isMaterialDefined(UINT materialId) const {
     return m_materialMap.get(materialId) != NULL;

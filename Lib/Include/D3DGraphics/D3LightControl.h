@@ -2,7 +2,7 @@
 
 #include <D3DGraphics/D3SceneObjectWithMesh.h>
 
-class LIGHT;
+class D3Light;
 
 class D3LightControl : public D3SceneObjectWithMesh {
 private:
@@ -27,11 +27,11 @@ protected:
   void createMaterial();
   void prepareEffect();
 
-  static D3DCOLORVALUE getMaterialColor(const LIGHT &l);
+  static D3DCOLORVALUE getMaterialColor(const D3Light &l);
   static inline D3DCOLORVALUE getDisabledMaterialColor() {
     return D3DXCOLOR(0.1f,0.1f,0.1f,1);
   }
-  static D3DMATERIAL   createMaterialFromLight(const LIGHT &l);
+  static D3DMATERIAL   createMaterialFromLight(const D3Light &l);
   D3DCOLORVALUE getMaterialColor() const;
 
   inline void setSize(float size) {
@@ -55,8 +55,8 @@ public:
   int getMaterialId() const {
     return s_renderEffectEnabled ? -1 : m_materialId;
   }
-  static bool isDifferentMaterial(const LIGHT &l1, const LIGHT &l2);
-  LIGHT getLight() const;
+  static bool isDifferentMaterial(const D3Light &l1, const D3Light &l2);
+  D3Light getLight() const;
   void updateMaterial() const;
   static inline void enableRenderEffect(bool enabled) {
     s_renderEffectEnabled = enabled;

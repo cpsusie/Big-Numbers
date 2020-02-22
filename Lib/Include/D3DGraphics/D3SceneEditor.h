@@ -102,7 +102,12 @@ private:
     void moveCamera(           const D3DXVECTOR3 &dir, float dist);
     void rotateCameraUpDown(   float angle);
     void rotateCameraLeftRight(float angle);
-
+    void selectPropertyDialog(PropertyDialog *dlg) {
+      m_currentPropertyDialog = dlg;
+    }
+    void unselectPropertyDialog() {
+      m_currentPropertyDialog = NULL;
+    }
     inline D3SceneEditor &setFlags(BYTE flags) {
       m_stateFlags |= flags;
       return *this;

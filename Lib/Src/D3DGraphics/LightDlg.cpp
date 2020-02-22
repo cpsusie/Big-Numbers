@@ -7,7 +7,7 @@
 #endif
 
 CLightDlg::CLightDlg(PropertyChangeListener *listener, CWnd *pParent)
-: CColormapDialog<LIGHT>(CLightDlg::IDD, SP_LIGHTPARAMETERS, pParent)
+: CColormapDialog<D3Light>(IDD, SP_LIGHTPARAMETERS, pParent)
 {
   if(listener) {
     addPropertyChangeListener(listener);
@@ -49,18 +49,18 @@ LRESULT CLightDlg::OnMsgResetControls(WPARAM wp, LPARAM lp) {
 void CLightDlg::resetControls() {
   setNotifyEnable(false);
 
-  const LIGHT &v = getStartValue();
+  const D3Light &v = getStartValue();
   setCurrentValue(v);
   valueToWindow(v);
   setNotifyEnable(true);
 }
 
-void CLightDlg::setCurrentValue(const LIGHT &v) {
-  CPropertyDialog<LIGHT>::setCurrentValue(v);
+void CLightDlg::setCurrentValue(const D3Light &v) {
+  CPropertyDialog<D3Light>::setCurrentValue(v);
   ajourSliders(v);
 }
 
-LIGHT &CLightDlg::copyModifiableValues(LIGHT &dst, const LIGHT &src) { // static
+D3Light &CLightDlg::copyModifiableValues(D3Light &dst, const D3Light &src) { // static
   dst.Diffuse      = src.Diffuse;
   dst.Specular     = src.Specular;
   dst.Ambient      = src.Ambient;
@@ -72,7 +72,7 @@ LIGHT &CLightDlg::copyModifiableValues(LIGHT &dst, const LIGHT &src) { // static
   return dst;
 }
 
-void CLightDlg::valueToWindow(const LIGHT &v) {
+void CLightDlg::valueToWindow(const D3Light &v) {
   const TCHAR *lightTypeStr = EMPTYSTRING;
   switch(v.Type) {
   case D3DLIGHT_DIRECTIONAL    : lightTypeStr = _T("Directional"); break;
@@ -94,12 +94,12 @@ void CLightDlg::valueToWindow(const LIGHT &v) {
   ajourSliders(v);
 }
 
-void CLightDlg::ajourSliders(const LIGHT &v) {
+void CLightDlg::ajourSliders(const D3Light &v) {
   enableSliders(v);
   showSliderValues(v);
 }
 
-void CLightDlg::enableSliders(const LIGHT &v) {
+void CLightDlg::enableSliders(const D3Light &v) {
   const bool isSpot        = v.Type == D3DLIGHT_SPOT;
   const bool isDirectional = v.Type == D3DLIGHT_DIRECTIONAL;
 
@@ -116,7 +116,7 @@ void CLightDlg::enableSliders(const LIGHT &v) {
   GetDlgItem(IDC_SLIDER_FALLOFF             )->EnableWindow(isSpot);
 }
 
-void CLightDlg::showSliderValues(const LIGHT &v) {
+void CLightDlg::showSliderValues(const D3Light &v) {
   setWindowText(this, IDC_STATIC_RANGEVALUE         ,format(_T("%.3f"), v.Range        ));
   setWindowText(this, IDC_STATIC_CONSTANTATTVALUE   ,format(_T("%.3f"), v.Attenuation0 ));
   setWindowText(this, IDC_STATIC_LINEARATTVALUE     ,format(_T("%.3f"), v.Attenuation1 ));
@@ -127,7 +127,7 @@ void CLightDlg::showSliderValues(const LIGHT &v) {
 void CLightDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar) {
   const int   ctrlId = pScrollBar->GetDlgCtrlID();
   const float pos    = getSliderValue(ctrlId);
-  LIGHT       v      = getCurrentValue();
+  D3Light     v      = getCurrentValue();
   switch(ctrlId) {
   case IDC_SLIDER_RANGE                 :
     v.Range        = pos;
@@ -170,26 +170,26 @@ void CLightDlg::OnClose() {
 }
 
 void CLightDlg::OnCancel() {
-  const LIGHT &v = getStartValue();
+  const D3Light &v = getStartValue();
   setCurrentValue(v);
   valueToWindow(v);
 }
 
 
 void CLightDlg::OnColorchangedColormapAmbient() {
-  LIGHT v = getCurrentValue();
+  D3Light v = getCurrentValue();
   v.Ambient  = getD3DCOLORVALUE(IDC_COLORMAP_AMBIENT);
   setCurrentValue(v);
 }
 
 void CLightDlg::OnColorchangedColormapDiffuse(){
-  LIGHT v = getCurrentValue();
+  D3Light v = getCurrentValue();
   v.Diffuse  = getD3DCOLORVALUE(IDC_COLORMAP_DIFFUSE);
   setCurrentValue(v);
 }
 
 void CLightDlg::OnColorchangedColormapSpecular() {
-  LIGHT v = getCurrentValue();
+  D3Light v = getCurrentValue();
   v.Specular = getD3DCOLORVALUE(IDC_COLORMAP_SPECULAR);
   setCurrentValue(v);
 }

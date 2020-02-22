@@ -41,7 +41,7 @@ D3SceneObjectVisual &D3SceneObjectVisual::addChild(D3SceneObjectVisual *child) {
   return *this;
 }
 
-const MATERIAL &D3SceneObjectVisual::getMaterial() const {
+const D3Material &D3SceneObjectVisual::getMaterial() const {
   return getScene().getMaterial(getMaterialId());
 }
 

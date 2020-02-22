@@ -33,8 +33,8 @@ void D3Scene::initDevice(HWND hwnd) {
   m_maxLightCount     = deviceCaps.MaxActiveLights;
   m_lightsEnabled.setCapacity(m_maxLightCount); m_lightsEnabled.clear();
   m_lightsDefined.setCapacity(m_maxLightCount); m_lightsDefined.clear();
-  addLight(   LIGHT::createDefaultLight());
-  addMaterial(MATERIAL::createDefaultMaterial());
+  addLight(   D3Light::createDefaultLight());
+  addMaterial(D3Material::createDefaultMaterial());
 }
 
 void D3Scene::close() {
@@ -100,7 +100,7 @@ void D3Scene::setRightHanded(bool rightHanded) {
   }
 }
 
-// -------------------------------- LIGHT ------------------------------------
+// -------------------------------- D3Light ------------------------------------
 BitSet D3Scene::getLightControlsVisible() const {
   BitSet result(m_maxLightCount);
   for(D3VisualIterator it = getVisualIterator(OBJMASK_LIGHTCONTROL); it.hasNext();) {
@@ -134,7 +134,7 @@ D3LightControl *D3Scene::addLightControl(UINT lightIndex) {
   }
   D3LightControl *result = findLightControlByLightIndex(lightIndex);
   if(result != NULL) return result;
-  const LIGHT &param = getLight(lightIndex);
+  const D3Light &param = getLight(lightIndex);
   switch(param.Type) {
   case D3DLIGHT_DIRECTIONAL    : result = new D3LightControlDirectional(*this, lightIndex); TRACE_NEW(result); break;
   case D3DLIGHT_POINT          : result = new D3LightControlPoint(      *this, lightIndex); TRACE_NEW(result); break;
@@ -154,7 +154,7 @@ void D3Scene::destroyLightControl(UINT lightIndex) {
 
 void D3Scene::destroyAllLightControls() {
   LightArray la = getAllLights();
-  for(Iterator<LIGHT> it = la.getIterator(); it.hasNext();) {
+  for(Iterator<D3Light> it = la.getIterator(); it.hasNext();) {
     destroyLightControl(it.next().getIndex());
   }
 }
@@ -207,13 +207,13 @@ void D3Scene::setLightPosition(UINT lightIndex, const D3DXVECTOR3 &pos) {
   setLight(getLight(lightIndex).setPosition(pos));
 }
 
-void D3Scene::setLight(const LIGHT &param) {
+void D3Scene::setLight(const D3Light &param) {
   const int index = param.getIndex();
   if(!isLightDefined(index)) {
     showWarning(_T("%s:Light %d is undefined"),__TFUNCTION__, index);
     return;
   }
-  const LIGHT oldLp = getLight(index);
+  const D3Light oldLp = getLight(index);
   if(param == oldLp) return;
   getDevice().setLight(param);
   if(param.isEnabled() != oldLp.isEnabled()) {
@@ -236,11 +236,11 @@ D3LightControl *D3Scene::findLightControlByLightIndex(int lightIndex) {
   return NULL;
 }
 
-LIGHT D3Scene::getLight(UINT lightIndex) const {
+D3Light D3Scene::getLight(UINT lightIndex) const {
   if(!isLightDefined(lightIndex)) {
-    return LIGHT(0).setUndefined();
+    return D3Light(0).setUndefined();
   } else {
-    LIGHT light(lightIndex);
+    D3Light light(lightIndex);
     light = getDevice().getLight(lightIndex);
     return light.setEnabled(isLightEnabled(lightIndex));
   }
@@ -275,8 +275,8 @@ String D3Scene::getLightString(UINT lightIndex) const {
 String D3Scene::getLightString() const {
   String result;
   LightArray allLights = getAllLights();
-  for(Iterator<LIGHT> it = allLights.getIterator(); it.hasNext(); ) {
-    const LIGHT &light = it.next();
+  for(Iterator<D3Light> it = allLights.getIterator(); it.hasNext(); ) {
+    const D3Light &light = it.next();
     if(result.length()) result += _T("\n");
     result += light.toString();
   }
@@ -290,12 +290,12 @@ bool D3Scene::getSpecularEnable() const {
   return getDevice().getSpecularEnable();
 }
 
-// ---------------------------- MATERIAL -----------------------------
+// ---------------------------- D3Material -----------------------------
 
 UINT D3Scene::addMaterial(const D3DMATERIAL &material) {
   const UINT oldCount = getMaterialCount();
   const UINT id       = getFirstFreeMaterialId();
-  MATERIAL  m(id);
+  D3Material  m(id);
   m = material;
   m_materialMap.put(id, m);
   const UINT newCount = oldCount+1;
@@ -321,7 +321,7 @@ void D3Scene::removeMaterial(UINT materialId) {
   notifyPropertyChanged(SP_MATERIALCOUNT, &oldCount, &newCount);
 }
 
-void D3Scene::setMaterial(const MATERIAL &material) {
+void D3Scene::setMaterial(const D3Material &material) {
   if(!material.isDefined()) {
     addMaterial(material);
   } else {
@@ -329,14 +329,14 @@ void D3Scene::setMaterial(const MATERIAL &material) {
     if(!isMaterialDefined(id)) {
       throwInvalidArgumentException(__TFUNCTION__, _T("id=%u, material undefined"), id);
     }
-    MATERIAL *m = m_materialMap.get(id);
+    D3Material *m = m_materialMap.get(id);
     setProperty(SP_MATERIALPARAMETERS, *m, material);
   }
 }
 
-void D3Scene::setLightControlMaterial(const MATERIAL &lcMaterial) {
+void D3Scene::setLightControlMaterial(const D3Material &lcMaterial) {
   assert(lcMaterial.isDefined());
-  MATERIAL *m = m_materialMap.get(lcMaterial.getId());
+  D3Material *m = m_materialMap.get(lcMaterial.getId());
   *m = lcMaterial;
 }
 
@@ -345,9 +345,9 @@ String D3Scene::getMaterialString(UINT materialId) const {
 }
 
 String D3Scene::getMaterialString() const {
-  Array<MATERIAL> matArray(getMaterialCount());
-  for(Iterator<Entry<CompactUIntKeyType, MATERIAL> > it = m_materialMap.getEntryIterator(); it.hasNext();) {
-    Entry<CompactUIntKeyType, MATERIAL> &e = it.next();
+  Array<D3Material> matArray(getMaterialCount());
+  for(Iterator<Entry<CompactUIntKeyType, D3Material> > it = m_materialMap.getEntryIterator(); it.hasNext();) {
+    Entry<CompactUIntKeyType, D3Material> &e = it.next();
     matArray.add(e.getValue());
   }
   matArray.sort(materialCmp);

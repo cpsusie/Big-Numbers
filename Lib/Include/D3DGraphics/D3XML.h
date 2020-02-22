@@ -2,8 +2,8 @@
 
 #include <XMLDoc.h>
 #include <Math/Cube3D.h>
-#include "Material.h"
-#include "Light.h"
+#include "D3Material.h"
+#include "D3Light.h"
 #include "D3Math.h"
 
 template<typename T> void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const Point3DTemplate<T> &p) {
@@ -49,7 +49,7 @@ void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, MaterialMap     
 
 void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3DLIGHT      &v);
 void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, D3DLIGHT            &v);
-void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const LIGHT         &v);
-void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, LIGHT               &v);
+void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3Light       &v);
+void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, D3Light             &v);
 void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const LightArray    &v);
 void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, LightArray          &v);

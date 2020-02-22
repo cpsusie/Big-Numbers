@@ -13,21 +13,21 @@ inline bool operator!=(const D3DMATERIAL &m1, const D3DMATERIAL &m2) {
 }
 
 // Sent to listener for id=SP_MATERIALPARAMETERS
-class MATERIAL : public D3DMATERIAL {
+class D3Material : public D3DMATERIAL {
 private:
   // If < 0, material is undefined
   int m_id;
 public:
-  inline MATERIAL() : m_id(-1) {
+  inline D3Material() : m_id(-1) {
   }
-  inline explicit MATERIAL(int id) : m_id(id) {
+  inline explicit D3Material(int id) : m_id(id) {
   }
-  inline MATERIAL &operator=(const D3DMATERIAL &m) {
+  inline D3Material &operator=(const D3DMATERIAL &m) {
     *((D3DMATERIAL*)this) = m;
     return *this;
   }
-  MATERIAL &setUndefined() {
-    memset(this, 0xff, sizeof(MATERIAL));
+  D3Material &setUndefined() {
+    memset(this, 0xff, sizeof(D3Material));
     return *this;
   }
   inline bool isDefined() const {
@@ -36,19 +36,19 @@ public:
   inline int getId() const {
     return m_id;
   }
-  MATERIAL &setDefault();
+  D3Material &setDefault();
   // create a material with the specified diffuse and emissive color
   static D3DMATERIAL createMaterialWithColor(D3DCOLOR color);
   static inline D3DMATERIAL createDefaultMaterial() {
-    return MATERIAL().setDefault();
+    return D3Material().setDefault();
   }
   // v=0 => transparent, v=1 => opaque
-  MATERIAL &setOpacity(float v);
+  D3Material &setOpacity(float v);
   float getOpacity() const;
   String toString(int dec=3) const;
 };
 
-typedef CompactUIntHashMap<MATERIAL> MaterialMap;
-inline int materialCmp(const MATERIAL &m1, const MATERIAL &m2) {
+typedef CompactUIntHashMap<D3Material> MaterialMap;
+inline int materialCmp(const D3Material &m1, const D3Material &m2) {
   return m1.getId() - m2.getId();
 }

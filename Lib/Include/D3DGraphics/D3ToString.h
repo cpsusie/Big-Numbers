@@ -3,13 +3,13 @@
 #include <MyUtil.h>
 #include <MFCUtil/D3DeviceFactory.h>
 #include <MFCUtil/ColorSpace.h>
-#include "Light.h"
-#include "Material.h"
+#include "D3Light.h"
+#include "D3Material.h"
 
-inline String toString(const LIGHT                &light, int dec=3) {
+inline String toString(const D3Light                &light, int dec=3) {
   return light.toString(dec);
 }
-inline String toString(const MATERIAL             &material, int dec = 3) {
+inline String toString(const D3Material             &material, int dec = 3) {
   return material.toString(dec);
 }
 String toString(      D3DLIGHTTYPE          type     );

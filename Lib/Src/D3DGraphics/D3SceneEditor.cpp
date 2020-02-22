@@ -140,8 +140,8 @@ void D3SceneEditor::handlePropertyChanged(const PropertyContainer *source, int i
   } else if(m_propertyDialogMap.hasPropertyContainer(source)) {
     switch(id) {
     case SP_LIGHTPARAMETERS:
-      { const LIGHT &newLight = *(LIGHT*)newValue;
-        LIGHT tmp = getScene().getLight(newLight.getIndex()); // to keep pos and direction as they are
+      { const D3Light &newLight = *(D3Light*)newValue;
+        D3Light        tmp      = getScene().getLight(newLight.getIndex()); // to keep pos and direction as they are
         if(tmp.getIndex() != newLight.getIndex()) {
           showWarning(_T("%s:Light %d is undefined"), __TFUNCTION__,newLight.getIndex());
         } else {
@@ -150,7 +150,7 @@ void D3SceneEditor::handlePropertyChanged(const PropertyContainer *source, int i
       }
       break;
     case SP_MATERIALPARAMETERS:
-      getScene().setMaterial(*(MATERIAL*)newValue);
+      getScene().setMaterial(*(D3Material*)newValue);
       break;
     }
   } else if(source == m_currentPropertyDialog) {
@@ -745,9 +745,9 @@ void D3SceneEditor::OnMouseMoveLightPoint(UINT nFlags, CPoint pt) {
 
 void D3SceneEditor::OnMouseMoveLightSpot(UINT nFlags, CPoint pt) {
   CHECKINVARIANT();
-  D3LightControl *lc = getCurrentLightControl();
+  D3LightControl   *lc    = getCurrentLightControl();
   assert(lc && (lc->getLightType() == D3DLIGHT_SPOT));
-  const LIGHT       param = lc->getLight();
+  const D3Light     param = lc->getLight();
   const D3DXVECTOR3 pos   = param.Position;
   const D3DXVECTOR3 dir   = param.Direction;
 
@@ -785,10 +785,10 @@ void D3SceneEditor::OnMouseWheelLight(UINT nFlags, short zDelta, CPoint pt) {
 
 void D3SceneEditor::OnMouseWheelLightDirectional(UINT nFlags, short zDelta, CPoint pt) {
   CHECKINVARIANT();
-  D3LightControl *lc = getCurrentLightControl();
+  D3LightControl            *lc  = getCurrentLightControl();
   assert(lc && (lc->getLightType() == D3DLIGHT_DIRECTIONAL));
   D3LightControlDirectional &ctrl = *(D3LightControlDirectional*)lc;
-  const D3DXVECTOR3 dir = ctrl.getLight().Direction;
+  const D3DXVECTOR3          dir  = ctrl.getLight().Direction;
   switch(nFlags & MK_CTRLSHIFT) {
   case 0           :
     ctrl.setSphereRadius(ctrl.getSphereRadius() * (1.0f-0.04f*signDelta));
@@ -809,10 +809,10 @@ void D3SceneEditor::OnMouseWheelLightDirectional(UINT nFlags, short zDelta, CPoi
 
 void D3SceneEditor::OnMouseWheelLightPoint(UINT nFlags, short zDelta, CPoint pt) {
   CHECKINVARIANT();
-  D3LightControl *lc = getCurrentLightControl();
+  D3LightControl      *lc   = getCurrentLightControl();
   assert(lc && (lc->getLightType() == D3DLIGHT_POINT));
   D3LightControlPoint &ctrl = *(D3LightControlPoint*)lc;
-  const D3DXVECTOR3 pos = ctrl.getLight().Position;
+  const D3DXVECTOR3    pos  = ctrl.getLight().Position;
   switch(nFlags & MK_CTRLSHIFT) {
   case 0           :
     getScene().setLightPosition(ctrl.getLightIndex(), pos + m_currentCamera->getDir()   * 0.04f*signDelta);
@@ -831,12 +831,12 @@ void D3SceneEditor::OnMouseWheelLightPoint(UINT nFlags, short zDelta, CPoint pt)
 
 void D3SceneEditor::OnMouseWheelLightSpot(UINT nFlags, short zDelta, CPoint pt) {
   CHECKINVARIANT();
-  D3LightControl *lc = getCurrentLightControl();
+  D3LightControl    *lc    = getCurrentLightControl();
   assert(lc && (lc->getLightType() == D3DLIGHT_SPOT));
   D3LightControlSpot &ctrl = *(D3LightControlSpot*)lc;
-  const LIGHT       param = ctrl.getLight();
-  const D3DXVECTOR3 pos   = param.Position;
-  const D3DXVECTOR3 dir   = param.Direction;
+  const D3Light      param = ctrl.getLight();
+  const D3DXVECTOR3  pos   = param.Position;
+  const D3DXVECTOR3  dir   = param.Direction;
   switch(nFlags & MK_CTRLSHIFT) {
   case 0           :
     getScene().setLightPosition( ctrl.getLightIndex(), pos + m_currentCamera->getUp() * 0.04f*signDelta);
@@ -862,7 +862,7 @@ void D3SceneEditor::OnMouseWheelLightSpotAngle(UINT nFlags, short zDelta, CPoint
     CHECKINVARIANT();
     return;
   }
-  LIGHT light = lc->getLight();
+  D3Light light = lc->getLight();
   switch(nFlags) {
   case 0           :
     light.setInnerAngle(light.getInnerAngle() * (1.0f - signDelta / 10.0f));
@@ -885,7 +885,7 @@ void D3SceneEditor::OnAddLightSpot()        { addLight(D3DLIGHT_SPOT);        }
 
 void D3SceneEditor::addLight(D3DLIGHTTYPE type) {
   CHECKINVARIANT();
-  D3DLIGHT lp = LIGHT::createDefaultLight(type);
+  D3DLIGHT lp = D3Light::createDefaultLight(type);
   switch(type) {
   case D3DLIGHT_DIRECTIONAL:
     break;
@@ -1016,7 +1016,7 @@ void D3SceneEditor::setSpotToPointAt(CPoint point) {
     CHECKINVARIANT();
     return;
   }
-  LIGHT param = lc->getLight();
+  D3Light param = lc->getLight();
   param.Direction = unitVector(m_pickedPoint - param.Position);
   getScene().setLight(param);
   CHECKINVARIANT();
@@ -1046,7 +1046,7 @@ void D3SceneEditor::showContextMenu(CMenu &menu, CPoint point) {
   TrackPopupMenu(*menu.GetSubMenu(0), TPM_LEFTALIGN|TPM_RIGHTBUTTON, point.x,point.y, 0, m_sceneContainer->getMessageWindow(),NULL);
 }
 
-static String lightMenuText(const LIGHT &light) {
+static String lightMenuText(const D3Light &light) {
   const TCHAR enabledChar = light.isEnabled() ?_T('+'):_T('-');
   const int   index       = light.getIndex();
   switch(light.Type) {
@@ -1077,7 +1077,7 @@ void D3SceneEditor::OnContextMenuBackground(CPoint point) {
   const LightArray lights = getScene().getAllLights();
   BitSet definedLights(getScene().getMaxLightCount());
   for(size_t i = 0; i < lights.size(); i++) {
-    const LIGHT &l = lights[i];
+    const D3Light &l = lights[i];
     definedLights.add(l.getIndex());
     setMenuItemText(menu, ID_SELECT_LIGHT0 + l.getIndex(), lightMenuText(l));
    }
@@ -1164,7 +1164,7 @@ void D3SceneEditor::OnContextMenuVisualObj(CPoint point) {
 void D3SceneEditor::OnContextMenuLightControl(CPoint point) {
   D3LightControl *lc = getCurrentLightControl();
   if(lc == NULL) return;
-  const LIGHT light = lc->getLight();
+  const D3Light light = lc->getLight();
   CMenu menu;
   loadMenu(menu, IDR_CONTEXT_MENU_LIGHTCONTROL);
   if(light.isEnabled()) { // light is on
@@ -1204,6 +1204,7 @@ void D3SceneEditor::OnObjectCreateCube() {
 
 void D3SceneEditor::resetCurrentControl() {
   setCurrentObj(NULL);
+  unselectPropertyDialog();
   setCurrentControl(CONTROL_IDLE);
 }
 
@@ -1414,14 +1415,13 @@ void D3SceneEditor::OnEditAmbientLight() {
   const D3DCOLOR oldColor = getScene().getAmbientColor();
   CColorDlg dlg(_T("Ambient color"), SP_AMBIENTCOLOR, oldColor);
   dlg.addPropertyChangeListener(this);
-  m_currentPropertyDialog = &dlg;
+  selectPropertyDialog(&dlg);
   setCurrentControl(CONTROL_AMBIENTLIGHTCOLOR);
   if(dlg.DoModal() != IDOK) {
     getScene().setAmbientColor(oldColor);
     renderVisible(SE_RENDERALL);
   }
   resetCurrentControl();
-  m_currentPropertyDialog = NULL;
   CHECKINVARIANT();
 }
 
@@ -1431,13 +1431,12 @@ void D3SceneEditor::OnEditBackgroundColor() {
   const D3DCOLOR oldColor = m_currentCamera->getBackgroundColor();
   CColorDlg dlg(_T("Background color"), CAM_BACKGROUNDCOLOR, oldColor);
   dlg.addPropertyChangeListener(this);
-  m_currentPropertyDialog = &dlg;
+  selectPropertyDialog(&dlg);
   setCurrentControl(CONTROL_BACKGROUNDCOLOR);
   if(dlg.DoModal() != IDOK) {
     m_currentCamera->setBackgroundColor(oldColor);
   }
   resetCurrentControl();
-  m_currentPropertyDialog = NULL;
   CHECKINVARIANT();
 }
 

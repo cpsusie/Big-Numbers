@@ -1,7 +1,7 @@
 #include "pch.h"
 #include <D3DGraphics/D3Device.h>
 #include <D3DGraphics/D3Camera.h>
-#include <D3DGraphics/Light.h>
+#include <D3DGraphics/D3Light.h>
 
 D3Device::D3Device(HWND hwnd) {
   m_device          = D3DeviceFactory::createDevice(hwnd);
@@ -35,7 +35,7 @@ D3Device &D3Device::setCurrentCamera(const D3Camera *camera) {
   return *this;
 }
 
-D3Device &D3Device::setMaterial(const MATERIAL &material) {
+D3Device &D3Device::setMaterial(const D3Material &material) {
   if(material != m_material) {
     V(m_device->SetMaterial(&material));
     if(material.getOpacity() < 1.0f) {
@@ -54,7 +54,7 @@ D3Device &D3Device::setMaterial(const MATERIAL &material) {
   return *this;
 }
 
-D3Device &D3Device::setLight(const LIGHT &light) {
+D3Device &D3Device::setLight(const D3Light &light) {
   if(light.isDefined()) {
     const UINT index = light.getIndex();
     setLight(index, light).enableLight(index,light.isEnabled());

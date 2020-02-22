@@ -9,6 +9,12 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
+    <Filter Include="Header Files\Visual Objects">
+      <UniqueIdentifier>{761fe97c-66af-459d-a1d9-8270b2cae1e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Visual Objects">
+      <UniqueIdentifier>{e540db03-be32-4123-9721-ab80db562a10}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="D3Error.cpp">
@@ -68,18 +74,6 @@
     <ClCompile Include="WavefrontObjFileMeshBuilder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D3LightControl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="D3LightControlDirectional.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="D3LightControlPoint.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="D3LightControlSpot.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="MeshToString.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -101,12 +95,6 @@
     <ClCompile Include="D3TextureFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Light.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Material.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="FVF.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -117,40 +105,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp" />
-    <ClCompile Include="D3SceneObjectWithMesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="VertexBufferToBoundingBox.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="D3SelectedCube.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="D3SceneObjectWithVertexBuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="D3SceneObjectWithIndexBuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="D3SceneObjectSolidBox.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="D3SceneObjectLineArray.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="D3SceneObjectWireFrameBox.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="D3SceneObjectLineArrow.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="D3SceneObjectCurve.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="D3SceneObjectCurveArray.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="D3SceneObjectCoordinateSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="D3SceneEditorToString.cpp">
@@ -177,9 +132,6 @@
     <ClCompile Include="D3Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D3SceneObjectPickArrow.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="D3Device.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -189,13 +141,7 @@
     <ClCompile Include="D3SceneObjectIntersectWithRay.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D3SceneObjectAnimatedMesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="D3SceneObjectPoint.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="D3SceneObjectVisual.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="D3MathQuaternion.cpp">
@@ -208,6 +154,66 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="D3MathWorld.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D3SceneObjectAnimatedMesh.cpp">
+      <Filter>Source Files\Visual Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="D3SceneObjectCoordinateSystem.cpp">
+      <Filter>Source Files\Visual Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="D3SceneObjectCurve.cpp">
+      <Filter>Source Files\Visual Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="D3SceneObjectCurveArray.cpp">
+      <Filter>Source Files\Visual Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="D3SceneObjectLineArray.cpp">
+      <Filter>Source Files\Visual Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="D3SceneObjectLineArrow.cpp">
+      <Filter>Source Files\Visual Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="D3SceneObjectPickArrow.cpp">
+      <Filter>Source Files\Visual Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="D3SceneObjectSolidBox.cpp">
+      <Filter>Source Files\Visual Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="D3SceneObjectVisual.cpp">
+      <Filter>Source Files\Visual Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="D3SceneObjectWireFrameBox.cpp">
+      <Filter>Source Files\Visual Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="D3SceneObjectWithIndexBuffer.cpp">
+      <Filter>Source Files\Visual Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="D3SceneObjectWithMesh.cpp">
+      <Filter>Source Files\Visual Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="D3SceneObjectWithVertexBuffer.cpp">
+      <Filter>Source Files\Visual Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="D3SelectedCube.cpp">
+      <Filter>Source Files\Visual Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="D3LightControl.cpp">
+      <Filter>Source Files\Visual Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="D3LightControlDirectional.cpp">
+      <Filter>Source Files\Visual Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="D3LightControlPoint.cpp">
+      <Filter>Source Files\Visual Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="D3LightControlSpot.cpp">
+      <Filter>Source Files\Visual Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="D3Light.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D3Material.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -242,9 +248,6 @@
     <ClInclude Include="..\..\Include\D3DGraphics\ParametricSurface.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\D3DGraphics\D3LightControl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\D3DGraphics\MeshArray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -266,12 +269,6 @@
     <ClInclude Include="..\..\Include\D3DGraphics\D3SceneEditor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\D3DGraphics\Light.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\D3DGraphics\Material.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\D3DGraphics\D3ToString.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -280,12 +277,6 @@
     </ClInclude>
     <ClInclude Include="pch.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="..\..\Include\D3DGraphics\D3SelectedCube.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectCoordinateSystem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\D3DGraphics\D3Transformation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -310,36 +301,6 @@
     <ClInclude Include="..\..\Include\D3DGraphics\D3Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectCurve.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectCurveArray.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectLineArray.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectSolidBox.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectWireFrameBox.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectWithIndexBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectWithMesh.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectWithVertexBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectLineArrow.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectPickArrow.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\D3DGraphics\D3AbstractTextureFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -352,16 +313,10 @@
     <ClInclude Include="..\..\Include\D3DGraphics\D3CameraArray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectAnimatedMesh.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\D3DGraphics\D3DeviceRenderState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectPoint.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectVisual.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\D3DGraphics\D3Pdus.h">
@@ -371,6 +326,57 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\D3DGraphics\D3MathWorld.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectAnimatedMesh.h">
+      <Filter>Header Files\Visual Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectCoordinateSystem.h">
+      <Filter>Header Files\Visual Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectCurve.h">
+      <Filter>Header Files\Visual Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectCurveArray.h">
+      <Filter>Header Files\Visual Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectLineArray.h">
+      <Filter>Header Files\Visual Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectLineArrow.h">
+      <Filter>Header Files\Visual Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectPickArrow.h">
+      <Filter>Header Files\Visual Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectSolidBox.h">
+      <Filter>Header Files\Visual Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectVisual.h">
+      <Filter>Header Files\Visual Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectWireFrameBox.h">
+      <Filter>Header Files\Visual Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectWithIndexBuffer.h">
+      <Filter>Header Files\Visual Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectWithMesh.h">
+      <Filter>Header Files\Visual Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectWithVertexBuffer.h">
+      <Filter>Header Files\Visual Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\D3SelectedCube.h">
+      <Filter>Header Files\Visual Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\D3LightControl.h">
+      <Filter>Header Files\Visual Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\D3Light.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\D3Material.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

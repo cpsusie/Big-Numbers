@@ -2,7 +2,7 @@
 
 #include <MyString.h>
 #include "D3MathWorld.h"
-#include "Material.h"
+#include "D3Material.h"
 #include "D3SceneObject.h"
 
 class D3Scene;
@@ -71,7 +71,7 @@ public:
   virtual D3DSHADEMODE getShadeMode() const {
     return D3DSHADE_GOURAUD;
   }
-  const MATERIAL &getMaterial() const;
+  const D3Material &getMaterial() const;
   inline bool hasMaterial() const {
     return getMaterialId() >= 0;
   }

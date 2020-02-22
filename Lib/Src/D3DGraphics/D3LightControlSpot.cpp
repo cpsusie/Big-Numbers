@@ -38,8 +38,7 @@ LPD3DXMESH D3LightControlSpot::createSpotMesh() {
 }
 
 D3DXMATRIX &D3LightControlSpot::getWorld() {
-  const LIGHT light = getLight();
-  const float size  = getSize();
-  m_world = D3World().setScaleAll(size).setOrientation(createOrientation(light.Direction)).setPos(light.Position);
-  return __super::getWorld();
+  const D3Light light = getLight();
+  const float   size  = getSize();
+  return m_world = D3World().setScaleAll(size).setOrientation(createOrientation(light.Direction)).setPos(light.Position);
 }

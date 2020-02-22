@@ -65,8 +65,8 @@ void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, D3DMATERIAL &v) 
 
 void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const MaterialMap &v) {
   XMLNodePtr n = doc.createNode(parent, tag);
-  for(Iterator<Entry<CompactUIntKeyType, MATERIAL> > it = v.getEntryIterator(); it.hasNext();) {
-    const Entry<CompactUIntKeyType, MATERIAL> &e = it.next();
+  for(Iterator<Entry<CompactUIntKeyType, D3Material> > it = v.getEntryIterator(); it.hasNext();) {
+    const Entry<CompactUIntKeyType, D3Material> &e = it.next();
     String id = format(_T("id%d"), e.getKey());
     setValue(doc, n, id.cstr(), e.getValue());
   }
@@ -80,7 +80,7 @@ void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, MaterialMap &v) 
     const UINT   id    = _wtoi(idStr.cstr()+2);
     D3DMATERIAL  d3m;
     getValue(doc, n, idStr.cstr(), d3m);
-    MATERIAL     mat(id);
+    D3Material   mat(id);
     mat = d3m;
     v.put(id, mat);
   }
@@ -165,13 +165,13 @@ void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, D3DLIGHT &v) {
   }
 }
 
-void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const LIGHT &v) {
+void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3Light &v) {
   XMLNodePtr n = doc.createNode(parent, tag);
   doc.setValue(n, _T("enabled"), v.isEnabled());
   setValue(doc, n, _T("parameters"), (D3DLIGHT&)v);
 }
 
-void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, LIGHT &v) {
+void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, D3Light &v) {
   XMLNodePtr n = doc.getChild(parent, tag);
   bool enabled;
   doc.getValue(n, _T("enabled"), enabled);
@@ -192,7 +192,7 @@ void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, LightArray &v) {
   v.clear(-1);
   for(XMLNodePtr child = n->firstChild; child; child = child->nextSibling) {
     const String idStr = (wchar_t*)child->nodeName;
-    LIGHT light((UINT)v.size());
+    D3Light light((UINT)v.size());
     getValue(doc, n, idStr.cstr(), light);
     v.add(light);
   }

@@ -5,12 +5,12 @@
 #include <D3DGraphics/resource.h>
 #include "D3Scene.h"
 
-class CMaterialDlg : public CColormapDialog<MATERIAL> {
+class CMaterialDlg : public CColormapDialog<D3Material> {
 private:
   String   m_origName;
 
   void  resetControls();
-  void  valueToWindow(const MATERIAL &v);
+  void  valueToWindow(const D3Material &v);
   void  showPower(     double v);
   void  setSliderPower(double v);
   float getSliderPower() const;
@@ -21,18 +21,18 @@ public:
   CMaterialDlg(PropertyChangeListener *listener, CWnd *pParent = NULL);
   enum { IDD = IDD_MATERIAL_DIALOG };
   String getTypeName() const {
-    return _T("MATERIAL");
+    return _T("D3Material");
   }
 protected:
-    virtual void DoDataExchange(CDataExchange *pDX);
-    virtual BOOL OnInitDialog();
-    afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar);
-    afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar);
-    afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
+    virtual void    DoDataExchange(CDataExchange *pDX);
+    virtual BOOL    OnInitDialog();
+    afx_msg void    OnHScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar);
+    afx_msg void    OnVScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar);
+    afx_msg void    OnShowWindow(BOOL bShow, UINT nStatus);
+    afx_msg void    OnHideWindow();
+    virtual void    OnCancel();
+    afx_msg void    OnClose();
     afx_msg LRESULT OnMsgResetControls(WPARAM wp, LPARAM lp);
-    afx_msg void OnHideWindow();
-    virtual void OnCancel();
-    afx_msg void OnClose();
     DECLARE_MESSAGE_MAP()
 private:
   CColormap m_colormapAmbient;

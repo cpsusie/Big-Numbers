@@ -1,6 +1,6 @@
 #include "pch.h"
 #include <D3DGraphics/D3Scene.h>
-#include <D3DGraphics/Light.h>
+#include <D3DGraphics/D3Light.h>
 #include <D3DGraphics/D3LightControl.h>
 #include <D3DGraphics/Profile.h>
 
@@ -37,8 +37,7 @@ LPD3DXMESH D3LightControlDirectional::createArrowMesh() {
 }
 
 D3DXMATRIX &D3LightControlDirectional::getWorld() {
-  const LIGHT light = getLight();
-  const float size  = getSize();
-  m_world = D3World().setScaleAll(size).setOrientation(createOrientation(light.Direction)).setPos(-m_sphereRadius * light.Direction);
-  return __super::getWorld();
+  const D3Light light = getLight();
+  const float   size  = getSize();
+  return m_world = D3World().setScaleAll(size).setOrientation(createOrientation(light.Direction)).setPos(-m_sphereRadius * light.Direction);
 }

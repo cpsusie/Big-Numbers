@@ -13,7 +13,7 @@ private:
   void noDialogException(const TCHAR *method) const;
   // no lock-protection
   inline bool isDialogVisible1() const {
-    return m_dlg && m_dlg->isVisible();
+    return m_dlg && m_inModalLoop && m_dlg->isVisible();
   }
 
   DECLARE_DYNCREATE(CPropertyDlgThread)

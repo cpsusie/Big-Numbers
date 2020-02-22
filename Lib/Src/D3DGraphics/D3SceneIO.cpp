@@ -44,7 +44,7 @@ void D3Scene::loadLights(XMLDoc &doc, XMLNodePtr parent) {
   getValue(doc, parent, _T("lights"), a);
   removeAllLights();
   for(size_t i = 0; i < a.size(); i++) {
-    const LIGHT &light = a[i];
+    const D3Light &light = a[i];
     setLightEnabled(addLight(light), light.isEnabled());
   }
 }

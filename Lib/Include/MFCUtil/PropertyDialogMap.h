@@ -4,6 +4,9 @@
 #include <FastSemaphore.h>
 #include "PropertyDlgThread.h"
 
+// TODO:must be PropertyContainer receieving changes from contained dialogs and resend them to listener of this.
+// it must also control visibility, and that at most one dialog is visible at any time
+// should notify listener when a dialog is closed
 class PropertyDialogMap : private IntHashMap<CPropertyDlgThread*> {
 private:
   PointerHashSet<const PropertyContainer*> m_containerSet;

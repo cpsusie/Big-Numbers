@@ -4,9 +4,9 @@
 #include <MFCUtil/ColorSpace.h>
 #include "D3Error.h"
 #include "D3DeviceRenderState.h"
-#include "Material.h"
+#include "D3Material.h"
 
-class LIGHT;
+class D3Light;
 class D3Camera;
 
 class D3Device : public D3DeviceRenderState {
@@ -14,7 +14,7 @@ private:
   HWND             m_hwnd;
   LPDIRECT3DDEVICE m_device;
   D3DCAPS          m_deviceCaps;
-  MATERIAL         m_material;
+  D3Material         m_material;
   // only set in scene.render
   const D3Camera  *m_currentCamera;
   template<typename T> void setDevRenderState(D3DRENDERSTATETYPE id, T value) {
@@ -170,8 +170,8 @@ public:
     return m_specularHighLightEnable;
   }
   // call m_device->SetMaterial(&mat), 
-  D3Device &setMaterial(const MATERIAL &matarial);
-  inline const MATERIAL &getMaterial() const {
+  D3Device &setMaterial(const D3Material &matarial);
+  inline const D3Material &getMaterial() const {
     return m_material;
   }
   inline D3Device &setLight(UINT index, const D3DLIGHT &light) {
@@ -183,7 +183,7 @@ public:
     V(m_device->LightEnable(index, enabled ? TRUE : FALSE));
     return *this;
   }
-  D3Device &setLight(const LIGHT &light);
+  D3Device &setLight(const D3Light &light);
   D3DLIGHT  getLight(UINT index) const;
   inline D3Device &setSamplerState(DWORD sampler, D3DSAMPLERSTATETYPE type, DWORD value) {
     V(m_device->SetSamplerState(sampler, D3DSAMP_MINFILTER, D3DTEXF_LINEAR));

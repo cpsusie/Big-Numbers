@@ -768,6 +768,7 @@
   <ItemGroup>
     <ClCompile Include="D3CameraArray.cpp" />
     <ClCompile Include="D3Device.cpp" />
+    <ClCompile Include="D3Light.cpp" />
     <ClCompile Include="D3MathQuaternion.cpp" />
     <ClCompile Include="D3MathPdus.cpp" />
     <ClCompile Include="D3SceneObjectAnimatedMesh.cpp" />
@@ -798,9 +799,8 @@
     <ClCompile Include="D3MathWorld.cpp" />
     <ClCompile Include="FVF.cpp" />
     <ClCompile Include="IsoCurve.cpp" />
-    <ClCompile Include="Light.cpp" />
     <ClCompile Include="LightDlg.cpp" />
-    <ClCompile Include="Material.cpp" />
+    <ClCompile Include="D3Material.cpp" />
     <ClCompile Include="MaterialDlg.cpp" />
     <ClCompile Include="MeshBuilderToString.cpp" />
     <ClCompile Include="MeshToBoundingBox.cpp" />
@@ -852,6 +852,7 @@
     <ClInclude Include="..\..\Include\D3DGraphics\D3CameraArray.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3DeviceRenderState.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3DXCube.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\D3Light.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3Pdus.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3PickedInfo.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3Ray.h" />
@@ -888,9 +889,8 @@
     <ClInclude Include="..\..\Include\D3DGraphics\IsoCurve.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\IsoSurface.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\IsosurfacePolygonizer.h" />
-    <ClInclude Include="..\..\Include\D3DGraphics\Light.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\LightDlg.h" />
-    <ClInclude Include="..\..\Include\D3DGraphics\Material.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\D3Material.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\MaterialDlg.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\MeshArray.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\MeshArrayJobMonitor.h" />

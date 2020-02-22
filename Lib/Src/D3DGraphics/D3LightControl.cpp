@@ -38,8 +38,8 @@ LPD3DXMESH &D3LightControl::optimizeMesh(LPD3DXMESH &mesh) { // static, protecte
   return mesh;
 }
 
-LIGHT D3LightControl::getLight() const { // public
-  const LIGHT result = getScene().getLight(m_lightIndex);
+D3Light D3LightControl::getLight() const { // public
+  const D3Light result = getScene().getLight(m_lightIndex);
   if((result.getIndex() != m_lightIndex) || (result.Type != getLightType())) {
     showError(_T("%s:Light %d is undefined")
              ,__TFUNCTION__
@@ -52,11 +52,11 @@ void D3LightControl::createMaterial() { // protected
   m_materialId = getScene().addMaterial(createMaterialFromLight(getLight()));
 }
 
-D3DCOLORVALUE D3LightControl::getMaterialColor(const LIGHT &l) { // static
+D3DCOLORVALUE D3LightControl::getMaterialColor(const D3Light &l) { // static
   return l.isEnabled() ? l.Diffuse : getDisabledMaterialColor();
 }
 
-D3DMATERIAL D3LightControl::createMaterialFromLight(const LIGHT &l) { // static
+D3DMATERIAL D3LightControl::createMaterialFromLight(const D3Light &l) { // static
   D3DMATERIAL mat;
   ZeroMemory(&mat, sizeof(D3DMATERIAL));
   mat.Power = 0.7f;
@@ -73,12 +73,12 @@ D3DCOLORVALUE D3LightControl::getMaterialColor() const {
 }
 
 void D3LightControl::updateMaterial() const {
-  MATERIAL mat = getScene().getMaterial(getMaterialId());
+  D3Material mat = getScene().getMaterial(getMaterialId());
   mat = createMaterialFromLight(getLight());
   getScene().setLightControlMaterial(mat);
 }
 
-bool D3LightControl::isDifferentMaterial(const LIGHT &l1, const LIGHT &l2) { // static, public
+bool D3LightControl::isDifferentMaterial(const D3Light &l1, const D3Light &l2) { // static, public
   if(s_renderEffectEnabled) return false;
   return createMaterialFromLight(l1) != createMaterialFromLight(l2);
 }

@@ -1,7 +1,7 @@
 #include "pch.h"
 #include <D3DGraphics/D3ToString.h>
 
-LIGHT &LIGHT::setDefault(D3DLIGHTTYPE type) {
+D3Light &D3Light::setDefault(D3DLIGHTTYPE type) {
   switch(type) {
   case D3DLIGHT_DIRECTIONAL    : setDefaultDirectional(); break;
   case D3DLIGHT_POINT          : setDefaultPoint();       break;
@@ -11,8 +11,8 @@ LIGHT &LIGHT::setDefault(D3DLIGHTTYPE type) {
   return *this;
 }
 
-LIGHT &LIGHT::setDefaultDirectional() {
-  ZeroMemory(this, sizeof(LIGHT));
+D3Light &D3Light::setDefaultDirectional() {
+  ZeroMemory(this, sizeof(D3Light));
   Type         = D3DLIGHT_DIRECTIONAL;
   m_enabled    = true;
   setDefaultColors();
@@ -20,8 +20,8 @@ LIGHT &LIGHT::setDefaultDirectional() {
   return *this;
 }
 
-LIGHT &LIGHT::setDefaultPoint() {
-  ZeroMemory(this, sizeof(LIGHT));
+D3Light &D3Light::setDefaultPoint() {
+  ZeroMemory(this, sizeof(D3Light));
   Type         = D3DLIGHT_POINT;
   m_enabled    = true;
   setDefaultColors();
@@ -31,8 +31,8 @@ LIGHT &LIGHT::setDefaultPoint() {
   return *this;
 }
 
-LIGHT &LIGHT::setDefaultSpot() {
-  ZeroMemory(this, sizeof(LIGHT));
+D3Light &D3Light::setDefaultSpot() {
+  ZeroMemory(this, sizeof(D3Light));
   Type         = D3DLIGHT_SPOT;
   m_enabled    = true;
   setDefaultColors();
@@ -46,7 +46,7 @@ LIGHT &LIGHT::setDefaultSpot() {
   return *this;
 }
 
-LIGHT &LIGHT::setInnerAngle(float rad) {
+D3Light &D3Light::setInnerAngle(float rad) {
   if((rad >= 0) && (rad <= D3DX_PI)) {
     Theta = rad;
     if(Theta > Phi) {
@@ -56,7 +56,7 @@ LIGHT &LIGHT::setInnerAngle(float rad) {
   return *this;
 }
 
-LIGHT &LIGHT::setOuterAngle(float rad) {
+D3Light &D3Light::setOuterAngle(float rad) {
   if((rad >= 0) && (rad <= D3DX_PI)) {
     Phi = rad;
     if(Phi < Theta) {
@@ -66,14 +66,14 @@ LIGHT &LIGHT::setOuterAngle(float rad) {
   return *this;
 }
 
-LIGHT &LIGHT::setDefaultColors() {
+D3Light &D3Light::setDefaultColors() {
   Ambient  = D3DXCOLOR(   1.0f ,  1.0f ,  1.0f , 1.0f);
   Diffuse  = D3DXCOLOR(   1.0f ,  1.0f ,  1.0f , 1.0f);
   Specular = D3DXCOLOR(   1.0f ,  1.0f ,  1.0f , 1.0f);
   return *this;
 }
 
-String LIGHT::toString(int dec) const {
+String D3Light::toString(int dec) const {
   if(!isDefined()) {
     return _T("Light undefined");
   }

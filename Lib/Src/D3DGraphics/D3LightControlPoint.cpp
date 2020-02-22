@@ -14,8 +14,7 @@ D3LightControlPoint::D3LightControlPoint(D3Scene &scene, int lightIndex)
 }
 
 D3DXMATRIX &D3LightControlPoint::getWorld() {
-  const LIGHT    light = getLight();
-  const float    size  = getSize();
-  m_world = D3World().setScaleAll(size).setPos(light.Position);
-  return __super::getWorld();
+  const D3Light light = getLight();
+  const float   size  = getSize();
+  return m_world = D3World().setScaleAll(size).setPos(light.Position);
 }
