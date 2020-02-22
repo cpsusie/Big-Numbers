@@ -463,7 +463,7 @@ D3DXVECTOR3 D3SceneEditor::getCurrentObjPos() {
   case SOTYPE_VISUALOBJECT  :
   case SOTYPE_LIGHTCONTROL  :
   case SOTYPE_ANIMATEDOBJECT:
-    return getCurrentObj()->getPos();
+    return ((D3World)(*getCurrentObj())).getPos();
   default:
     throwInvalidArgumentException(__TFUNCTION__, _T("type=%d"), getCurrentObjType());
     return D3DXVECTOR3(0,0,0);
@@ -481,7 +481,7 @@ void D3SceneEditor::setCurrentObjPos(const D3DXVECTOR3 &pos) {
     // continue case
   case SOTYPE_VISUALOBJECT  :
   case SOTYPE_ANIMATEDOBJECT:
-    obj->setPos(pos);
+    obj->getWorld() = D3World(*obj).setPos(pos);
     renderVisible(SE_RENDERALL);
     break;
   default:
@@ -511,7 +511,7 @@ void D3SceneEditor::setCurrentVisualOrientation(const D3DXQUATERNION &q) {
   CHECKINVARIANT();
   D3SceneObjectVisual *obj = getCurrentVisual();
   if(obj == NULL) return;
-  D3World w(obj->getWorld());
+  D3World w(*obj);
   if(obj != m_centerOfRotation.m_obj) {
     setCurrentVisualWorld(w.setOrientation(q));
   } else {
@@ -526,7 +526,7 @@ void D3SceneEditor::setCurrentVisualScale(const D3DXVECTOR3 &scale) {
   CHECKINVARIANT();
   D3SceneObjectVisual *obj = getCurrentVisual();
   if(obj == NULL) return;
-  D3World w(obj->getWorld());
+  D3World w(*obj);
   setCurrentVisualWorld(w.setScale(scale));
   CHECKINVARIANT();
 }
@@ -535,7 +535,7 @@ void D3SceneEditor::OnObjectResetPosition() {
   CHECKINVARIANT();
   D3SceneObjectVisual *obj = getCurrentVisual();
   if(obj == NULL) return;
-  D3World w(obj->getWorld());
+  D3World w(*obj);
   setCurrentVisualWorld(w.resetPos());
   CHECKINVARIANT();
 }
@@ -544,15 +544,15 @@ void D3SceneEditor::OnObjectResetScale() {
   CHECKINVARIANT();
   D3SceneObjectVisual *obj = getCurrentVisual();
   if(obj == NULL) return;
-  D3World w(obj->getWorld());
+  D3World w(*obj);
   setCurrentVisualWorld(w.resetScale());
   CHECKINVARIANT();
 }
 void D3SceneEditor::OnObjectResetOrientation() {
   CHECKINVARIANT();
   D3SceneObjectVisual *obj = getCurrentVisual();
-  if (obj == NULL) return;
-  D3World w(obj->getWorld());
+  if(obj == NULL) return;
+  D3World w(*obj);
   setCurrentVisualWorld(w.resetOrientation());
   CHECKINVARIANT();
 }
@@ -588,9 +588,10 @@ void D3SceneEditor::rotateCurrentVisualFrwBckw(float angle1, float angle2) {
   CHECKINVARIANT();
   D3SceneObjectVisual *obj = getCurrentVisual();
   if(obj == NULL) return;
+  D3World w(*obj);
   const D3DXVECTOR3      camUp    = m_currentCamera->getUp(), camRight = m_currentCamera->getRight();
   const D3DXQUATERNION   rot      = createRotation(camUp, angle1) * createRotation(camRight, angle2);
-  setCurrentVisualOrientation(rot * obj->getOrientation());
+  setCurrentVisualOrientation(w.getOrientation() * rot);
   CHECKINVARIANT();
 }
 
@@ -598,9 +599,10 @@ void D3SceneEditor::rotateCurrentVisualLeftRight(float angle) {
   CHECKINVARIANT();
   D3SceneObjectVisual *obj = getCurrentVisual();
   if(obj == NULL) return;
+  D3World w(*obj);
   const D3DXVECTOR3     camDir = m_currentCamera->getDir();
   const D3DXQUATERNION  rot    = createRotation(camDir, angle);
-  setCurrentVisualOrientation(rot * obj->getOrientation());
+  setCurrentVisualOrientation(w.getOrientation() * rot);
   CHECKINVARIANT();
 }
 
@@ -625,7 +627,7 @@ void D3SceneEditor::adjustCurrentVisualScale(int component, float factor) {
   CHECKINVARIANT();
   D3SceneObjectVisual *obj = getCurrentVisual();
   if(obj == NULL) return;
-  D3World w(obj->getWorld());
+  D3World w(*obj);
   D3DXVECTOR3 scale = w.getScale();
   if(component & VADJUST_X) scale.x *= factor;
   if(component & VADJUST_Y) scale.y *= factor;
@@ -676,10 +678,10 @@ void D3SceneEditor::OnMouseWheelCameraWalk(UINT nFlags, short zDelta, CPoint pt)
 }
 
 void D3SceneEditor::walkWithCamera(float dist, float angle) {
-  D3World world = m_currentCamera->getWorld();
-  world.setPos(world.getPos() + world.getDir()*dist)
-       .setOrientation(world.getOrientation()*createRotation(world.getUp(), angle));
-  m_currentCamera->setWorld(world);
+  D3World w = m_currentCamera->getWorld();
+  w.setPos(w.getPos() + w.getDir()*dist)
+       .setOrientation(w.getOrientation()*createRotation(w.getUp(), angle));
+  m_currentCamera->setWorld(w);
 }
 
 void D3SceneEditor::sidewalkWithCamera(float upDist, float rightDist) {
@@ -1342,6 +1344,7 @@ void D3SceneEditor::OnObjectRemove() {
   D3SceneObjectVisual *obj = m_currentObj;
   getScene().removeVisual(m_currentObj);
   setCurrentObj(NULL);
+  m_pickedInfo.clear();
   SAFEDELETE(obj);
   renderVisible(SE_RENDERALL);
   CHECKINVARIANT();

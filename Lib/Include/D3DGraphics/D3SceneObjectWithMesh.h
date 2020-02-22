@@ -20,7 +20,8 @@ protected:
   }
 public:
   // if mesh != NULL, it will be released when Object is destroyed
-  D3SceneObjectWithMesh(D3Scene &scene, LPD3DXMESH mesh = NULL);
+  D3SceneObjectWithMesh(D3Scene             &scene , LPD3DXMESH mesh = NULL, const String &name = _T("MeshObject"));
+  D3SceneObjectWithMesh(D3SceneObjectVisual *parent, LPD3DXMESH mesh = NULL, const String &name = _T("MeshObject"));
   ~D3SceneObjectWithMesh();
   LPD3DXMESH getMesh() const {
     return m_mesh;

@@ -3,20 +3,33 @@
 #include <D3DGraphics/D3Device.h>
 #include <D3DGraphics/D3SceneObjectAnimatedMesh.h>
 
-D3SceneObjectAnimatedMesh::D3SceneObjectAnimatedMesh(D3Scene &scene, const MeshArray &meshArray)
-: D3SceneObjectVisual(scene)
+D3SceneObjectAnimatedMesh::D3SceneObjectAnimatedMesh(D3Scene &scene, const MeshArray &meshArray, const String &name)
+: D3SceneObjectVisual(scene,name)
 , m_meshArray(meshArray)
 , m_frameCount((UINT)meshArray.size())
-, m_fillMode(D3DFILL_SOLID)
-, m_shadeMode(D3DSHADE_GOURAUD)
 , m_timer(1, format(_T("Timer for animated mesh %s"), getName().cstr()))
-, m_sleepTime(50)
-, m_animationType(ANIMATE_FORWARD)
-, m_forward(true)
-, m_running(false)
-, m_nextMeshIndex(0)
-, m_lastRenderedIndex(-1)
 {
+  init();
+}
+
+D3SceneObjectAnimatedMesh::D3SceneObjectAnimatedMesh(D3SceneObjectVisual *parent, const MeshArray &meshArray, const String &name)
+: D3SceneObjectVisual(parent,name)
+, m_meshArray(        meshArray)
+, m_frameCount((UINT)meshArray.size())
+, m_timer(1, format(_T("Timer for animated mesh %s"), getName().cstr()))
+{
+  init();
+}
+
+void D3SceneObjectAnimatedMesh::init() {
+  m_fillMode          = D3DFILL_SOLID;
+  m_shadeMode         = D3DSHADE_GOURAUD;
+  m_sleepTime         = 50;
+  m_animationType     = ANIMATE_FORWARD;
+  m_forward           = true;
+  m_running           = false;
+  m_nextMeshIndex     = 0;
+  m_lastRenderedIndex = -1;
 }
 
 D3SceneObjectAnimatedMesh::~D3SceneObjectAnimatedMesh() {
@@ -104,6 +117,7 @@ void D3SceneObjectAnimatedMesh::draw() {
              .setShadeMode(getShadeMode())
              .setMaterial(getMaterial());
   V(m_meshArray[m_lastRenderedIndex = m_nextMeshIndex]->DrawSubset(0));
+  __super::draw();
 }
 
 LPD3DXMESH D3SceneObjectAnimatedMesh::getMesh() const {

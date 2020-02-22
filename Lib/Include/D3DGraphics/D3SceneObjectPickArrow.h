@@ -4,5 +4,5 @@
 
 class D3PickRayArrow : public D3SceneObjectLineArrow {
 public:
-  D3PickRayArrow(D3Scene &scene, const D3Ray &ray);
+  D3PickRayArrow(D3Scene &scene, const D3Ray &ray, const String &name = _T("PickRayArrow"));
 };

@@ -6,7 +6,19 @@
 
 // ----------------------------------------------------- D3SceneObjectLineArrow ------------------------------------------------------
 
-D3SceneObjectLineArrow::D3SceneObjectLineArrow(D3Scene &scene, const Vertex &from, const Vertex &to) : D3SceneObjectWithVertexBuffer(scene) {
+D3SceneObjectLineArrow::D3SceneObjectLineArrow(D3Scene &scene, const Vertex &from, const Vertex &to, const String &name)
+: D3SceneObjectWithVertexBuffer(scene, name)
+{
+  init(from, to);
+}
+
+D3SceneObjectLineArrow::D3SceneObjectLineArrow(D3SceneObjectVisual *parent, const Vertex &from, const Vertex &to, const String &name)
+: D3SceneObjectWithVertexBuffer(parent, name)
+{
+  init(from, to);
+}
+
+void D3SceneObjectLineArrow::init(const Vertex &from, const Vertex &to) {
 #define FANCOUNT 14
 #define ITEMCOUNT (5 + 2 * FANCOUNT)
 
@@ -28,7 +40,7 @@ D3SceneObjectLineArrow::D3SceneObjectLineArrow(D3Scene &scene, const Vertex &fro
   vtx2->setPos(cirkelCenter).setNormal(-vn); vtx2++;
   vtx2->setPos(p).setNormal(-vn);            vtx2++;
 
-  for (int i = 0; i < FANCOUNT; i++) {
+  for(int i = 0; i < FANCOUNT; i++) {
     radius1 = rotate(radius1, v, radians(360.0f / FANCOUNT));
     radius2 = rotate(radius2, v, -radians(360.0f / FANCOUNT));
     vtx1[i].setPos(cirkelCenter + radius1).setNormal(unitVector(radius1));
@@ -50,4 +62,6 @@ void D3SceneObjectLineArrow::draw() {
                      .drawPrimitive(D3DPT_TRIANGLEFAN, 1, FANCOUNT)
                      .drawPrimitive(D3DPT_TRIANGLEFAN, FANCOUNT + 3, FANCOUNT);
   }
+  __super::draw();
+
 }

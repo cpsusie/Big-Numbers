@@ -6,36 +6,35 @@
 #include "D3SceneObject.h"
 
 class D3Scene;
-class D3Device;
+class D3SceneObjectVisual;
 class D3Ray;
 class D3PickedInfo;
 
+typedef CompactArray<D3SceneObjectVisual*> D3VisualArray;
+
 class D3SceneObjectVisual : public D3SceneObject {
 protected:
-  String       m_name;
-  bool         m_visible;
-  void        *m_userData;
-protected:
-  D3DXMATRIX   m_world;
+  D3SceneObjectVisual *m_parent;
+  D3VisualArray        m_children;
+  String               m_name;
+  bool                 m_visible;
+  void                *m_userData;
+  D3DXMATRIX           m_world;
+  D3SceneObjectVisual &addChild(D3SceneObjectVisual *child);
 public:
-  D3SceneObjectVisual(D3Scene &scene, const String &name=_T("Untitled"))
-    : D3SceneObject(scene)
-    , m_name(name)
-    , m_visible(true)
-    , m_userData(NULL)
-  {
-    m_world = D3World();
-  }
-  virtual ~D3SceneObjectVisual() {
-  }
+  D3SceneObjectVisual(D3Scene             &scene , const String &name=_T("VisualObject"));
+  D3SceneObjectVisual(D3SceneObjectVisual *parent, const String &name=EMPTYSTRING);
+  ~D3SceneObjectVisual();
   virtual SceneObjectType getType() const {
     return SOTYPE_VISUALOBJECT;
   }
-  virtual void draw() = 0;
+  D3SceneObjectVisual *getParent() const {
+    return m_parent;
+  }
+  virtual void draw();
   virtual LPD3DXMESH getMesh() const {
     return NULL;
   }
- 
   virtual int getMaterialId() const {
     return 0;
   }
@@ -77,31 +76,13 @@ public:
     return getMaterialId() >= 0;
   }
   void resetWorld() {
-    getWorld() = D3World();
+    m_world = D3World();
   }
   virtual D3DXMATRIX &getWorld() {
     return m_world;
   }
-  inline void setPos(const D3DXVECTOR3 &pos) {
-    getWorld() = D3World(getWorld()).setPos(pos);
-  }
-  inline D3DXVECTOR3 getPos() const {
-    return D3World(((D3SceneObjectVisual*)this)->getWorld()).getPos();
-  }
-  inline void setScale(const D3DXVECTOR3 &scale) {
-    getWorld() = D3World(getWorld()).setScale(scale);
-  }
-  inline void setScaleAll(float scale) {
-    setScale(D3DXVECTOR3(scale, scale, scale));
-  }
-  inline D3DXVECTOR3 getScale() const {
-    return D3World(((D3SceneObjectVisual*)this)->getWorld()).getScale();
-  }
-  inline void setOrientation(const D3DXQUATERNION &q) {
-    getWorld() = D3World(getWorld()).setOrientation(q);
-  }
-  inline D3DXQUATERNION getOrientation() const {
-    return D3World(((D3SceneObjectVisual*)this)->getWorld()).getOrientation();
+  operator D3World() const {
+    return D3World(m_world);
   }
   bool intersectsWithRay(const D3Ray &ray, float &dist, D3PickedInfo *info = NULL) const;
 
@@ -112,5 +93,3 @@ public:
     m_name = name;
   }
 };
-
-typedef CompactArray<D3SceneObjectVisual*>  D3VisualArray;

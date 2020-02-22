@@ -10,16 +10,6 @@
 #include <D3DGraphics/D3SceneObjectWithMesh.h>
 #include <D3DGraphics/D3SceneObjectCoordinateSystem.h>
 
-static MeshBuilder &makeSquareFace(MeshBuilder &mb, int v0, int v1, int v2, int v3) {
-  Face &f = mb.addFace();
-  const int nIndex = mb.addNormal(mb.calculateNormal(v0, v1, v2));
-  f.addVertexNormalIndex(v0, nIndex);
-  f.addVertexNormalIndex(v1, nIndex);
-  f.addVertexNormalIndex(v2, nIndex);
-  f.addVertexNormalIndex(v3, nIndex);
-  return mb;
-}
-
 static const D3DCOLOR axisColor[] = {
   D3D_RED
  ,D3D_GREEN
@@ -28,23 +18,21 @@ static const D3DCOLOR axisColor[] = {
 
 class D3SCoordSystemLineArrow : public D3SceneObjectLineArrow {
 private:
-  D3SceneObjectCoordinateSystem &m_system;
-  const int                      m_id;
-  int                            m_materialId;
+  const int m_id;
+  int       m_materialId;
 public:
-  D3SCoordSystemLineArrow(D3SceneObjectCoordinateSystem *system, int id);
+  D3SCoordSystemLineArrow(D3SceneObjectVisual *parent, int id);
   ~D3SCoordSystemLineArrow();
   int getMaterialId() const {
     return m_materialId;
   }
   D3DXMATRIX &getWorld() {
-    return m_system.getWorld();
+    return m_world = m_parent->getWorld();
   }
 };
 
-D3SCoordSystemLineArrow::D3SCoordSystemLineArrow(D3SceneObjectCoordinateSystem *system, int id)
-: D3SceneObjectLineArrow(system->getScene(), D3DXORIGIN, createUnitVector(id))
-, m_system(*system)
+D3SCoordSystemLineArrow::D3SCoordSystemLineArrow(D3SceneObjectVisual *parent, int id)
+: D3SceneObjectLineArrow(parent, D3DXORIGIN, createUnitVector(id), format(_T("%c axis"),'X'+id))
 , m_id(     id)
 {
   m_materialId = getScene().addMaterial(MATERIAL::createMaterialWithColor(axisColor[id]));
@@ -56,13 +44,11 @@ D3SCoordSystemLineArrow::~D3SCoordSystemLineArrow() {
 
 class D3SceneGridObject : public D3SceneObjectLineArray {
 private:
-  D3SceneObjectCoordinateSystem &m_system;
-  UINT                           m_materialId;
+  UINT m_materialId;
   static CompactArray<Line3D> createLineArray(const D3DXCube3 &cube);
 public:
-  D3SceneGridObject(D3SceneObjectCoordinateSystem *system, const D3DXCube3 &cube)
-    : D3SceneObjectLineArray(system->getScene(), createLineArray(cube))
-    , m_system(*system)
+  D3SceneGridObject(D3SceneObjectVisual *parent, const D3DXCube3 &cube)
+    : D3SceneObjectLineArray(parent, createLineArray(cube), _T("GridObject"))
   {
     m_materialId = getScene().addMaterial(MATERIAL::createMaterialWithColor(D3D_BLACK));
   }
@@ -73,7 +59,7 @@ public:
     return m_materialId;
   }
   D3DXMATRIX &getWorld() {
-    return m_system.getWorld();
+    return m_world = m_parent->getWorld();
   }
 };
 
@@ -100,14 +86,12 @@ CompactArray<Line3D> D3SceneGridObject::createLineArray(const D3DXCube3 &cube) {
 
 class VerticalAxisLineObject : public D3SceneObjectLineArray {
 private:
-  D3SceneObjectVisual &m_parent;
-  int                  m_materialId;
+  int m_materialId;
   static CompactArray<Line3D> createLineArray();
 
 public:
   VerticalAxisLineObject(D3SceneObjectVisual *parent)
-    : D3SceneObjectLineArray(parent->getScene(), createLineArray())
-    , m_parent(*parent)
+    : D3SceneObjectLineArray(parent, createLineArray(), _T("VerticalAxisLineObject"))
   {
     m_materialId = getScene().addMaterial(MATERIAL::createMaterialWithColor(D3D_BLACK));
   }
@@ -117,7 +101,9 @@ public:
   int getMaterialId() {
     return m_materialId;
   }
-  void draw();
+  D3DXMATRIX &getWorld() {
+    return m_world = m_parent->getWorld();
+  }
 };
 
 CompactArray<Line3D> VerticalAxisLineObject::createLineArray() {
@@ -126,33 +112,25 @@ CompactArray<Line3D> VerticalAxisLineObject::createLineArray() {
   return a;
 }
 
-void VerticalAxisLineObject::draw() {
-  m_world = m_parent.getWorld();
-  __super::draw();
-}
-
 class VerticalAxisMeshObject : public D3SceneObjectWithMesh {
 private:
-  D3SceneObjectCoordinateSystem &m_system;
-  VerticalAxisLineObject        *m_line;
-  int                            m_materialId;
+  int m_materialId;
   static LPD3DXMESH createMesh(D3Scene &scene);
   D3DXVECTOR3 findCornerNearestCam() const;
 public:
-  VerticalAxisMeshObject(D3SceneObjectCoordinateSystem *system);
+  VerticalAxisMeshObject(D3SceneObjectVisual *parent);
   ~VerticalAxisMeshObject();
   int getMaterialId() const {
     return m_materialId;
   }
-  void draw();
+  D3DXMATRIX &getWorld();
 };
 
-VerticalAxisMeshObject::VerticalAxisMeshObject(D3SceneObjectCoordinateSystem *system)
-  : D3SceneObjectWithMesh(system->getScene(), createMesh(system->getScene()))
-  , m_system(*system)
+VerticalAxisMeshObject::VerticalAxisMeshObject(D3SceneObjectVisual *parent)
+: D3SceneObjectWithMesh(parent, createMesh(parent->getScene()), _T("VerticalAxisMeshObject"))
 {
   D3Scene &s = getScene();
-  m_line       = new VerticalAxisLineObject(this); TRACE_NEW(m_line);
+  addChild(new VerticalAxisLineObject(this));
   m_materialId = s.addMaterial(MATERIAL::createDefaultMaterial());
   MATERIAL m   = s.getMaterial(m_materialId);
   s.setMaterial(m.setOpacity(0.3f));
@@ -160,7 +138,6 @@ VerticalAxisMeshObject::VerticalAxisMeshObject(D3SceneObjectCoordinateSystem *sy
 
 VerticalAxisMeshObject::~VerticalAxisMeshObject() {
   getScene().removeMaterial(m_materialId);
-  SAFEDELETE(m_line);
 }
 
 LPD3DXMESH VerticalAxisMeshObject::createMesh(D3Scene &scene) { // static
@@ -169,7 +146,7 @@ LPD3DXMESH VerticalAxisMeshObject::createMesh(D3Scene &scene) { // static
   const int c2 = mb.addVertex(0.1f, 0, 0);
   const int c3 = mb.addVertex(0.1f, 0, 2);
   const int c4 = mb.addVertex(0   , 0, 2);
-  return makeSquareFace(mb, c1, c2, c3, c4).createMesh(scene, true);
+  return mb.addSquareFace(c1, c2, c3, c4).createMesh(scene, true);
 }
 
 static const D3DXVECTOR3 bottomCorners[] = {
@@ -181,7 +158,7 @@ static const D3DXVECTOR3 bottomCorners[] = {
 
 D3DXVECTOR3 VerticalAxisMeshObject::findCornerNearestCam() const {
   const D3DXVECTOR3 camPos   = getScene().getDevice().getCurrentCamera()->getPos();
-  const D3DXMATRIX  &world   = m_system.getWorld();
+  const D3DXMATRIX  &world   = m_parent->getWorld();
   float              minDist = -1;
   D3DXVECTOR3        result;
   for(int i = 0; i < 4; i++) {
@@ -195,33 +172,23 @@ D3DXVECTOR3 VerticalAxisMeshObject::findCornerNearestCam() const {
   return result;
 }
 
-void VerticalAxisMeshObject::draw() {
-  D3World w = m_system.getWorld();
-//  D3DXQUATERNION q = w.getOrientation();
-//  D3DXVECTOR3 dir, up;
-  m_world = w.setPos(findCornerNearestCam());
-
-  __super::draw();
-  m_line->draw();
+D3DXMATRIX &VerticalAxisMeshObject::getWorld() {
+  return m_world = D3World(m_parent->getWorld()).setPos(findCornerNearestCam());
 }
 
 class D3CoordinateSystemFrameObject : public D3SceneObjectWithMesh {
 private:
-  D3SceneObjectCoordinateSystem &m_system;
-  UINT                           m_materialId;
-  D3SceneGridObject             *m_gridObject;
-  VerticalAxisMeshObject        *m_verticalAxisObject;
+  UINT m_materialId;
   static LPD3DXMESH createFrameMesh(D3Scene &scene, const D3DXCube3 &cube);
 public:
-  D3CoordinateSystemFrameObject(D3SceneObjectCoordinateSystem *system);
+  D3CoordinateSystemFrameObject(D3SceneObjectVisual *parent, const D3DXCube3 &cube);
   ~D3CoordinateSystemFrameObject();
   int getMaterialId() const {
     return m_materialId;
   }
   D3DXMATRIX &getWorld() {
-    return m_system.getWorld();
+    return m_world = m_parent->getWorld();
   }
-  void draw();
 };
 
 LPD3DXMESH D3CoordinateSystemFrameObject::createFrameMesh(D3Scene &scene, const D3DXCube3 &cube) {
@@ -231,31 +198,22 @@ LPD3DXMESH D3CoordinateSystemFrameObject::createFrameMesh(D3Scene &scene, const 
   const int c2 = mb.addVertex(p1.x, p2.y, p1.z);
   const int c3 = mb.addVertex(p2.x, p2.y, p1.z);
   const int c4 = mb.addVertex(p2.x, p1.y, p1.z);
-  return makeSquareFace(mb, c1, c2, c3, c4).createMesh(scene, true);
+  return mb.addSquareFace(c1, c2, c3, c4).createMesh(scene, true);
 }
 
-D3CoordinateSystemFrameObject::D3CoordinateSystemFrameObject(D3SceneObjectCoordinateSystem *system) 
-: m_system(*system)
-, D3SceneObjectWithMesh(system->getScene(), createFrameMesh(system->getScene(), system->getRange()))
+D3CoordinateSystemFrameObject::D3CoordinateSystemFrameObject(D3SceneObjectVisual *parent, const D3DXCube3 &cube)
+: D3SceneObjectWithMesh(parent, createFrameMesh(parent->getScene(), cube), _T("FrameObject"))
 {
   D3Scene &s = getScene();
   m_materialId = s.addMaterial(MATERIAL::createDefaultMaterial());
   MATERIAL m = s.getMaterial(m_materialId);
   s.setMaterial(m.setOpacity(0.3f));
-  m_gridObject         = new D3SceneGridObject(system, system->getRange()); TRACE_NEW(m_gridObject);
-  m_verticalAxisObject = new VerticalAxisMeshObject(system);
+  addChild(new D3SceneGridObject(     this, cube));
+  addChild(new VerticalAxisMeshObject(this));
 }
 
 D3CoordinateSystemFrameObject::~D3CoordinateSystemFrameObject() {
   getScene().removeMaterial(m_materialId);
-  SAFEDELETE(m_gridObject);
-  SAFEDELETE(m_verticalAxisObject);
-}
-
-void D3CoordinateSystemFrameObject::draw() {
-  __super::draw();
-  m_gridObject->draw();
-  m_verticalAxisObject->draw();
 }
 
 D3SceneObjectCoordinateSystem::D3SceneObjectCoordinateSystem(D3Scene &scene, const D3DXCube3 *cube)
@@ -264,26 +222,11 @@ D3SceneObjectCoordinateSystem::D3SceneObjectCoordinateSystem(D3Scene &scene, con
 {
   resetWorld();
   for(int i = 0; i < 3; i++) {
-    m_axis[i] = new D3SCoordSystemLineArrow(this, i);
+    addChild(new D3SCoordSystemLineArrow(this, i));
   }
-  m_frameObject = new D3CoordinateSystemFrameObject(this);
+  addChild(new D3CoordinateSystemFrameObject(this, m_cube));
 }
 
-D3SceneObjectCoordinateSystem::~D3SceneObjectCoordinateSystem() {
-  for(int i = 0; i < 3; i++) {
-    SAFEDELETE(m_axis[i]);
-  }
-  SAFEDELETE(m_frameObject);
-}
-
-LPD3DXMESH D3SceneObjectCoordinateSystem::getMesh() const {
-  return m_frameObject->getMesh();
-}
-
-void D3SceneObjectCoordinateSystem::draw() {
-  setPos(D3DXORIGIN);
-  for(int i = 0; i < 3; i++) {
-    m_axis[i]->draw();
-  }
-  m_frameObject->draw();
+D3DXMATRIX &D3SceneObjectCoordinateSystem::getWorld() {
+  return m_world = D3World(m_world).resetPos();
 }

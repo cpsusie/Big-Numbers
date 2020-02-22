@@ -3,13 +3,28 @@
 #include <D3DGraphics/D3Scene.h>
 #include <D3DGraphics/D3SceneObjectSolidBox.h>
 
-void D3SceneObjectSolidBox::makeSquareFace(MeshBuilder &mb, int v0, int v1, int v2, int v3) {
-  Face &f = mb.addFace();
-  const int nIndex = mb.addNormal(mb.calculateNormal(v0, v1, v2));
-  f.addVertexNormalIndex(v0, nIndex);
-  f.addVertexNormalIndex(v1, nIndex);
-  f.addVertexNormalIndex(v2, nIndex);
-  f.addVertexNormalIndex(v3, nIndex);
+D3SceneObjectSolidBox::D3SceneObjectSolidBox(D3Scene &scene, const D3DXCube3 &cube, const String &name)
+: D3SceneObjectWithMesh(scene, NULL, name)
+{
+  init(cube.getMin(), cube.getMax());
+}
+
+D3SceneObjectSolidBox::D3SceneObjectSolidBox(D3Scene &scene, const Vertex &p1, const Vertex &p2, const String &name)
+: D3SceneObjectWithMesh(scene, NULL, name)
+{
+  init(p1, p2);
+}
+
+D3SceneObjectSolidBox::D3SceneObjectSolidBox(D3SceneObjectVisual *parent, const D3DXCube3 &cube, const String &name)
+: D3SceneObjectWithMesh(parent, NULL, name)
+{
+  init(cube.getMin(), cube.getMax());
+}
+
+D3SceneObjectSolidBox::D3SceneObjectSolidBox(D3SceneObjectVisual *parent, const Vertex    &p1, const Vertex &p2, const String &name)
+: D3SceneObjectWithMesh(parent, NULL, name)
+{
+  init(p1, p2);
 }
 
 void D3SceneObjectSolidBox::init(const Vertex &p1, const Vertex &p2) {
@@ -24,12 +39,12 @@ void D3SceneObjectSolidBox::init(const Vertex &p1, const Vertex &p2) {
   const int  rtn = mb.addVertex(pmax.x, pmax.y, pmin.z); // right top    near corner
   const int  rtf = mb.addVertex(pmax.x, pmax.y, pmax.z); // right top    far  corner
 
-  makeSquareFace(mb, lbn, lbf, rbf, rbn);                // bottom
-  makeSquareFace(mb, ltn, rtn, rtf, ltf);                // top
-  makeSquareFace(mb, lbn, ltn, ltf, lbf);                // left side
-  makeSquareFace(mb, lbf, ltf, rtf, rbf);                // back side
-  makeSquareFace(mb, rbf, rtf, rtn, rbn);                // right side
-  makeSquareFace(mb, rbn, rtn, ltn, lbn);                // front side
+  mb.addSquareFace(lbn, lbf, rbf, rbn);                // bottom
+  mb.addSquareFace(ltn, rtn, rtf, ltf);                // top
+  mb.addSquareFace(lbn, ltn, ltf, lbf);                // left side
+  mb.addSquareFace(lbf, ltf, rtf, rbf);                // back side
+  mb.addSquareFace(rbf, rtf, rtn, rbn);                // right side
+  mb.addSquareFace(rbn, rtn, ltn, lbn);                // front side
 
   m_mesh = mb.createMesh(getScene(), false);
 }

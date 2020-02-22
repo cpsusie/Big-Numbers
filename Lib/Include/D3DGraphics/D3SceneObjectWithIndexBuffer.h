@@ -13,7 +13,8 @@ protected:
   D3Device &setIndices(D3Device &device);
 
 public:
-  D3SceneObjectWithIndexBuffer(D3Scene &scene);
+  D3SceneObjectWithIndexBuffer(D3Scene             &scene , const String &name = _T("ObjectWithIndexBuffer"));
+  D3SceneObjectWithIndexBuffer(D3SceneObjectVisual *parent, const String &name = _T("ObjectWithIndexBuffer"));
   ~D3SceneObjectWithIndexBuffer();
   inline bool hasIndexBuffer() const {
     return m_indexBuffer != NULL;

@@ -3,7 +3,16 @@
 #include <D3DGraphics/D3ToString.h>
 #include <D3DGraphics/D3SceneObjectWithVertexBuffer.h>
 
-D3SceneObjectWithVertexBuffer::D3SceneObjectWithVertexBuffer(D3Scene &scene) : D3SceneObjectVisual(scene) {
+D3SceneObjectWithVertexBuffer::D3SceneObjectWithVertexBuffer(D3Scene &scene, const String &name)
+: D3SceneObjectVisual(scene, name)
+{
+  m_vertexBuffer   = NULL;
+  m_primitiveCount = 0;
+}
+
+D3SceneObjectWithVertexBuffer::D3SceneObjectWithVertexBuffer(D3SceneObjectVisual *parent, const String &name)
+: D3SceneObjectVisual(parent, name)
+{
   m_vertexBuffer   = NULL;
   m_primitiveCount = 0;
 }
@@ -36,7 +45,7 @@ D3Device &D3SceneObjectWithVertexBuffer::setStreamSource() {
 }
 
 D3DXCube3 D3SceneObjectWithVertexBuffer::getBoundingBox() const {
-  return ::getBoundingBox(m_vertexBuffer) + getPos();
+  return ::getBoundingBox(m_vertexBuffer) + D3World(*this).getPos();
 }
 
 String D3SceneObjectWithVertexBuffer::toString() const {

@@ -17,77 +17,85 @@ public:
 
 bool D3SceneObjectVisual::intersectsWithRay(const D3Ray &ray, float &dist, D3PickedInfo *info) const {
   LPD3DXMESH mesh = getMesh();
-  if(mesh == NULL) return false;
+  BOOL       hit  = FALSE;
+  if(mesh) {
+    const D3DXMATRIX  m = invers(m_world);
+    const D3Ray       mray(m*ray.m_orig, ray.m_dir*m);
 
-  const D3DXMATRIX  m      = invers(m_world);
-  const D3Ray       mray(m*ray.m_orig, ray.m_dir*m);
+    DWORD        faceIndex;
+    float        U, V;
+    LPD3DXBUFFER infoBuffer;
+    DWORD        hitCount;
+    V(D3DXIntersect(mesh
+                  , &mray.m_orig
+                  , &mray.m_dir
+                  , &hit
+                  , &faceIndex
+                  , &U, &V
+                  , &dist
+                  , &infoBuffer
+                  , &hitCount
+    ));
+    if(hitCount > 0) {
+      D3DXINTERSECTINFO *infoArray = (D3DXINTERSECTINFO*)infoBuffer->GetBufferPointer();
+      quickSort(infoArray, hitCount, sizeof(D3DXINTERSECTINFO), DistComparator());
+      LPDIRECT3DINDEXBUFFER  indexBuffer;
+      LPDIRECT3DVERTEXBUFFER vertexBuffer;
+      void *indexItems = NULL, *vertexItems = NULL;
+      try {
+        V(mesh->GetIndexBuffer(&indexBuffer));
+        D3DINDEXBUFFER_DESC inxdesc;
+        V(indexBuffer->GetDesc(&inxdesc));
+        const bool use32Bit = inxdesc.Format == D3DFMT_INDEX32;
+        V(indexBuffer->Lock(0, 0, &indexItems, D3DLOCK_READONLY));
+        V(mesh->GetVertexBuffer(&vertexBuffer));
+        D3DVERTEXBUFFER_DESC vtxdesc;
+        V(vertexBuffer->GetDesc(&vtxdesc));
+        const size_t itemSize = FVFToSize(vtxdesc.FVF);
+        V(vertexBuffer->Lock(0, 0, &vertexItems, D3DLOCK_READONLY));
 
-  BOOL         hit;
-  DWORD        faceIndex;
-  float        U, V;
-  LPD3DXBUFFER infoBuffer;
-  DWORD        hitCount;
-  V(D3DXIntersect(mesh
-                , &mray.m_orig
-                , &mray.m_dir
-                , &hit
-                , &faceIndex
-                , &U, &V
-                , &dist
-                , &infoBuffer
-                , &hitCount
-  ));
-  hit = FALSE;
-  if(hitCount > 0) {
-    D3DXINTERSECTINFO *infoArray = (D3DXINTERSECTINFO*)infoBuffer->GetBufferPointer();
-    quickSort(infoArray, hitCount, sizeof(D3DXINTERSECTINFO), DistComparator());
-    LPDIRECT3DINDEXBUFFER  indexBuffer;
-    LPDIRECT3DVERTEXBUFFER vertexBuffer;
-    void *indexItems = NULL, *vertexItems = NULL;
-    try {
-      V(mesh->GetIndexBuffer(&indexBuffer));
-      D3DINDEXBUFFER_DESC inxdesc;
-      V(indexBuffer->GetDesc(&inxdesc));
-      const bool use32Bit = inxdesc.Format == D3DFMT_INDEX32;
-      V(indexBuffer->Lock(0, 0, &indexItems, D3DLOCK_READONLY));
-      V(mesh->GetVertexBuffer(&vertexBuffer));
-      D3DVERTEXBUFFER_DESC vtxdesc;
-      V(vertexBuffer->GetDesc(&vtxdesc));
-      const size_t itemSize = FVFToSize(vtxdesc.FVF);
-      V(vertexBuffer->Lock(0, 0, &vertexItems, D3DLOCK_READONLY));
-
-      for(UINT h = 0; h < hitCount; h++) {
-        const D3DXINTERSECTINFO &hi = infoArray[h];
-        faceIndex = hi.FaceIndex;
-        const int vertex0Index = faceIndex * 3;
-        int inx[3], i = 0;
-        if(use32Bit) {
-          for(const ULONG *ip = (ULONG*)indexItems + vertex0Index; i < 3;) inx[i++] = *(ip++);
-        } else {
-          for(const USHORT *ip = (USHORT*)indexItems + vertex0Index; i < 3;) inx[i++] = *(ip++);
-        }
-
-        D3DXVECTOR3 vtx[3];
-        for(int i = 0; i < 3; i++) {
-          const D3DXVECTOR3 &p = (const D3DXVECTOR3&)(((const BYTE*)vertexItems)[inx[i] * itemSize]);
-          vtx[i] = p;
-        }
-        D3DXVECTOR3 c = cross(vtx[2] - vtx[0], vtx[1] - vtx[0]);
-        if(mray.m_dir * c < 0) {
-          hit  = TRUE;
-          dist = hi.Dist;
-          if(info) {
-            *info = D3PickedInfo(faceIndex, inx, vtx, hi.U, hi.V);
+        for(UINT h = 0; h < hitCount; h++) {
+          const D3DXINTERSECTINFO &hi = infoArray[h];
+          faceIndex = hi.FaceIndex;
+          const int vertex0Index = faceIndex * 3;
+          int inx[3], i = 0;
+          if(use32Bit) {
+            for(const ULONG *ip = (ULONG*)indexItems + vertex0Index; i < 3;) inx[i++] = *(ip++);
+          } else {
+            for(const USHORT *ip = (USHORT*)indexItems + vertex0Index; i < 3;) inx[i++] = *(ip++);
           }
-          break;
+
+          D3DXVECTOR3 vtx[3];
+          for(int i = 0; i < 3; i++) {
+            const D3DXVECTOR3 &p = (const D3DXVECTOR3&)(((const BYTE*)vertexItems)[inx[i] * itemSize]);
+            vtx[i] = p;
+          }
+          D3DXVECTOR3 c = cross(vtx[2] - vtx[0], vtx[1] - vtx[0]);
+          if(mray.m_dir * c < 0) {
+            hit  = TRUE;
+            dist = hi.Dist;
+            if(info) {
+              *info = D3PickedInfo(this, faceIndex, inx, vtx, hi.U, hi.V);
+            }
+            break;
+          }
         }
+        V(indexBuffer->Unlock());  indexItems = NULL;
+        V(vertexBuffer->Unlock()); vertexItems = NULL;
+      } catch (...) {
+        if(indexItems  != NULL) indexBuffer->Unlock();
+        if(vertexItems != NULL) vertexBuffer->Unlock();
+        throw;
       }
-      V(indexBuffer->Unlock());  indexItems = NULL;
-      V(vertexBuffer->Unlock()); vertexItems = NULL;
-    } catch (...) {
-      if(indexItems  != NULL) indexBuffer->Unlock();
-      if(vertexItems != NULL) vertexBuffer->Unlock();
-      throw;
+    }
+  }
+  if(!hit) {
+    for(Iterator<D3SceneObjectVisual*> it = ((D3SceneObjectVisual*)this)->m_children.getIterator(); it.hasNext();) {
+      D3SceneObjectVisual *child = it.next();
+      if(child->intersectsWithRay(ray, dist, info)) {
+        hit = TRUE;
+        break;
+      }
     }
   }
   return hit ? true : false;

@@ -26,6 +26,16 @@ void MeshBuilder::clear(UINT capacity) {
   m_validateOk          = false;
 }
 
+MeshBuilder &MeshBuilder::addSquareFace(int v0, int v1, int v2, int v3) {
+  Face &f = addFace();
+  const int nIndex = addNormal(calculateNormal(v0, v1, v2));
+  f.addVertexNormalIndex(v0, nIndex);
+  f.addVertexNormalIndex(v1, nIndex);
+  f.addVertexNormalIndex(v2, nIndex);
+  f.addVertexNormalIndex(v3, nIndex);
+  return *this;
+}
+
 int MeshBuilder::getTriangleCount() const {
   int count = 0;
   const size_t n = m_faceArray.size();
@@ -62,6 +72,7 @@ void MeshBuilder::adjustNegativeTextureIndex(int &t) {
   t += (int)m_textureVertexArray.size();
   assert(t >= 0);
 }
+
 
 void MeshBuilder::check1NormalPerVertex() const {
   m_vertexNormalChecked = true;

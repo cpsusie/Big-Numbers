@@ -31,7 +31,8 @@ protected:
   D3Device &setStreamSource();
 
 public:
-  D3SceneObjectWithVertexBuffer(D3Scene &scene);
+  D3SceneObjectWithVertexBuffer(D3Scene             &scene , const String &name = _T("ObjectWithVertexBuffer"));
+  D3SceneObjectWithVertexBuffer(D3SceneObjectVisual *parent, const String &name = _T("ObjectWithVertexBuffer"));
   ~D3SceneObjectWithVertexBuffer();
 
   inline LPDIRECT3DVERTEXBUFFER &getVertexBuffer() {

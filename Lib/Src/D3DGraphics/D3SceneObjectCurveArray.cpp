@@ -2,7 +2,19 @@
 #include <D3DGraphics/D3Device.h>
 #include <D3DGraphics/D3SceneObjectCurveArray.h>
 
-D3SceneObjectCurveArray::D3SceneObjectCurveArray(D3Scene &scene, const CurveArray &curves) : D3SceneObjectWithVertexBuffer(scene) {
+D3SceneObjectCurveArray::D3SceneObjectCurveArray(D3Scene &scene, const CurveArray &curves, const String &name)
+: D3SceneObjectWithVertexBuffer(scene, name)
+{
+  init(curves);
+}
+
+D3SceneObjectCurveArray::D3SceneObjectCurveArray(D3SceneObjectVisual *parent, const CurveArray &curves, const String &name)
+: D3SceneObjectWithVertexBuffer(parent, name)
+{
+  init(curves);
+}
+
+void D3SceneObjectCurveArray::init(const CurveArray &curves) {
   int totalVertexCount = 0;
 
   for(size_t i = 0; i < curves.size(); i++) {
@@ -37,6 +49,8 @@ void D3SceneObjectCurveArray::draw() {
       startIndex += vertexCount;
     }
   }
+  __super::draw();
+
 }
 
 #define SINCOS(degree,c,s) double c = radians(degree), s; sincos(c,s)

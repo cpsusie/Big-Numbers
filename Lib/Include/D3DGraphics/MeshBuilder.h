@@ -144,6 +144,7 @@ public:
     m_vertexNormalChecked = m_validated = false;
     return m_faceArray.last();
   }
+  MeshBuilder &addSquareFace(int v0, int v1, int v2, int v3);
   static D3DXVECTOR3 calculateNormal(const D3DXVECTOR3 &v0, const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2) {
     return unitVector(cross(v2-v0, v1-v0));
   }

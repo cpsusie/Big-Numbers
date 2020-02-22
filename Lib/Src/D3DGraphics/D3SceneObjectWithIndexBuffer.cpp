@@ -3,9 +3,15 @@
 #include <D3DGraphics/D3ToString.h>
 #include <D3DGraphics/D3SceneObjectWithIndexBuffer.h>
 
-// ------------------------------------------------ D3SceneObjectWithIndexBuffer ---------------------------------------------------
+D3SceneObjectWithIndexBuffer::D3SceneObjectWithIndexBuffer(D3Scene &scene, const String &name)
+  : D3SceneObjectWithVertexBuffer(scene, name)
+{
+  m_indexBuffer = NULL;
+}
 
-D3SceneObjectWithIndexBuffer::D3SceneObjectWithIndexBuffer(D3Scene &scene) : D3SceneObjectWithVertexBuffer(scene) {
+D3SceneObjectWithIndexBuffer::D3SceneObjectWithIndexBuffer(D3SceneObjectVisual *parent, const String &name)
+: D3SceneObjectWithVertexBuffer(parent, name)
+{
   m_indexBuffer = NULL;
 }
 

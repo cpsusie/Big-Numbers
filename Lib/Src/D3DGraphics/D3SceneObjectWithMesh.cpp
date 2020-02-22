@@ -7,9 +7,17 @@
 
 // ----------------------------------- D3SceneObjectWithMesh --------------------------------------------
 
-D3SceneObjectWithMesh::D3SceneObjectWithMesh(D3Scene &scene, LPD3DXMESH mesh)
-: D3SceneObjectVisual(scene)
-, m_fillMode(D3DFILL_SOLID)
+D3SceneObjectWithMesh::D3SceneObjectWithMesh(D3Scene &scene, LPD3DXMESH mesh, const String &name)
+: D3SceneObjectVisual(scene, name)
+, m_fillMode( D3DFILL_SOLID)
+, m_shadeMode(D3DSHADE_GOURAUD)
+{
+  m_mesh = mesh;
+}
+
+D3SceneObjectWithMesh::D3SceneObjectWithMesh(D3SceneObjectVisual *parent, LPD3DXMESH mesh, const String &name)
+: D3SceneObjectVisual(parent, name)
+, m_fillMode( D3DFILL_SOLID)
 , m_shadeMode(D3DSHADE_GOURAUD)
 {
   m_mesh = mesh;
@@ -49,7 +57,7 @@ void D3SceneObjectWithMesh::unlockIndexBuffer() {
 }
 
 D3DXCube3 D3SceneObjectWithMesh::getBoundingBox() const {
-  return ::getBoundingBox(m_mesh) + getPos();
+  return ::getBoundingBox(m_mesh) + D3World(*this).getPos();
 }
 
 void D3SceneObjectWithMesh::draw() {
@@ -64,6 +72,7 @@ void D3SceneObjectWithMesh::draw() {
           .setLightingEnable(true);
     drawSubset(0);
   }
+  __super::draw();
 }
 
 String D3SceneObjectWithMesh::toString() const {

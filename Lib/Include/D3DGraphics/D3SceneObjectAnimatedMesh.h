@@ -14,9 +14,9 @@ class D3SceneObjectAnimatedMesh : public D3SceneObjectVisual, public TimeoutHand
 private:
   MeshArray     m_meshArray;
   const UINT    m_frameCount;
+  Timer         m_timer;
   D3DFILLMODE   m_fillMode;
   D3DSHADEMODE  m_shadeMode;
-  Timer         m_timer;
   float         m_sleepTime;
   AnimationType m_animationType;
   bool          m_forward;
@@ -24,9 +24,10 @@ private:
   int           m_nextMeshIndex, m_lastRenderedIndex;
   void nextIndex();
   int  getSleepTime() const;
-
+  void init();
 public:
-  D3SceneObjectAnimatedMesh(D3Scene &scene, const MeshArray &meshArray);
+  D3SceneObjectAnimatedMesh(D3Scene             &scene , const MeshArray &meshArray, const String &name = _T("Animated Mesh"));
+  D3SceneObjectAnimatedMesh(D3SceneObjectVisual *parent, const MeshArray &meshArray, const String &name = _T("Animated Mesh"));
   ~D3SceneObjectAnimatedMesh();
   void startAnimation(AnimationType type = ANIMATE_FORWARD);
   void stopAnimation();
