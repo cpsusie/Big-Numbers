@@ -20,7 +20,7 @@ class D3Camera : public D3SceneObject, public PropertyContainer {
 private:
   HWND                    m_hwnd;
   bool                    m_rightHanded;
-  float                   m_viewAngel;
+  float                   m_viewAngle;
   float                   m_nearViewPlane;
   D3World                 m_world;
   D3DXMATRIX              m_projMatrix, m_viewMatrix;
@@ -32,6 +32,9 @@ private:
   // notify listeners with properyId=CAM_VIEW
   D3Camera      &setViewMatrix();
   D3DXMATRIX    &createViewMatrix(D3DXMATRIX &m) const;
+  D3Camera      &initWorldAndProjection();
+  D3Camera      &initWorld();
+  D3Camera      &initProjection();
   D3Camera(           const D3Camera &src); // not implemented
   D3Camera &operator=(const D3Camera &src); // not implemented
 public:
@@ -68,9 +71,9 @@ public:
     return m_backgroundColor;
   }
 
-  D3Camera &setViewAngel(float angel);
-  inline float   getViewAngel() const {
-    return m_viewAngel;
+  D3Camera &setViewAngle(float angle);
+  inline float   getViewAngle() const {
+    return m_viewAngle;
   }
   D3Camera &setNearViewPlane(float zn);
   inline float getNearViewPlane() const {
@@ -98,7 +101,32 @@ public:
   inline D3DXVECTOR3 getRight() const {
     return m_world.getRight();
   }
+  inline D3PCOLOR getDefaultBackgroundColor() const {
+    return D3DCOLOR_XRGB(192, 192, 192);
+  }
+  // default viewangle in radians (=radians(45))
+  static inline float getDefaultViewAngle() {
+    return radians(45);
+  }
+  // default new view Plane (=0.1)
+  static inline float getDefaultNearViewPlane() {
+    return 0.1f;
+  }
+  static inline D3DXVECTOR3 getDefaultPos() {
+    return D3DXVECTOR3(0, -5, 0);
+  }
+  static inline D3DXVECTOR3 getDefaultLookAt() {
+    return D3DXORIGIN;
+  }
+  static inline D3DXVECTOR3 getDefaultUp() {
+    return D3DXVECTOR3(0, 0, 1);
+  }
+  D3Camera &resetBackgroundColor();
   D3Camera &resetPos();
+  D3Camera &resetOrientation();
+  D3Camera &resetProjection();
+  D3Camera &resetAll();
+
   D3Camera &setPos(        const D3DXVECTOR3     &pos);
   D3Camera &setOrientation(const D3DXQUATERNION  &q  );
   D3Camera &setLookAt(     const D3DXVECTOR3     &pos, const D3DXVECTOR3 &lookAt, const D3DXVECTOR3 &up);

@@ -7,15 +7,27 @@ D3Camera::D3Camera(D3Scene &scene, HWND hwnd)
   , m_hwnd(  hwnd  )
   , m_rightHanded(true)
 {
-  m_viewAngel       = radians(45);
-  m_nearViewPlane   = 0.1f;
-  m_backgroundColor = D3DCOLOR_XRGB(192, 192, 192);
-  createProjMatrix(m_projMatrix);
-  resetPos();
+  m_backgroundColor = getDefaultBackgroundColor();
+  initWorldAndProjection();
 }
 
 D3Camera::~D3Camera() {
   m_hwnd = (HWND)INVALID_HANDLE_VALUE;
+}
+
+D3Camera &D3Camera::initWorldAndProjection() {
+  return initWorld().initProjection();
+}
+
+D3Camera &D3Camera::initWorld() {
+  return resetPos().resetOrientation();
+}
+
+D3Camera &D3Camera::initProjection() {
+  m_viewAngle     = getDefaultViewAngle();
+  m_nearViewPlane = getDefaultNearViewPlane();
+  createProjMatrix(m_projMatrix);
+  return *this;
 }
 
 void D3Camera::OnSize() {
@@ -48,7 +60,7 @@ D3Camera &D3Camera::setViewMatrix() {
 
 D3DXMATRIX &D3Camera::createProjMatrix(D3DXMATRIX &m) const {
   const CSize size = getWinSize();
-  D3DXMatrixPerspectiveFov(m, m_viewAngel, (float)size.cx / size.cy, m_nearViewPlane, 200.0f, getRightHanded());
+  D3DXMatrixPerspectiveFov(m, m_viewAngle, (float)size.cx / size.cy, m_nearViewPlane, 200.0f, getRightHanded());
   return m;
 }
 
@@ -56,9 +68,9 @@ D3DXMATRIX &D3Camera::createViewMatrix(D3DXMATRIX &m) const {
   return m_world.createViewMatrix(m, getRightHanded());
 }
 
-D3Camera &D3Camera::setViewAngel(float angel) {
-  if(angel > 0 && angel < D3DX_PI) {
-    m_viewAngel = angel;
+D3Camera &D3Camera::setViewAngle(float angle) {
+  if((angle > 0) && (angle < D3DX_PI)) {
+    m_viewAngle = angle;
     setProjMatrix();
   }
   return *this;
@@ -88,7 +100,25 @@ D3Camera &D3Camera::setWorld(const D3World &world) {
 }
 
 D3Camera &D3Camera::resetPos() {
-  return setLookAt(D3DXVECTOR3(0, -5, 0), D3DXORIGIN, D3DXVECTOR3(0, 0, 1));
+  return setPos(D3DXVECTOR3(0, -5, 0));
+}
+
+D3Camera &D3Camera::resetOrientation() {
+  return setLookAt(getPos(), D3DXORIGIN, D3DXVECTOR3(0, 0, 1));
+}
+
+D3Camera &D3Camera::resetProjection() {
+  m_viewAngle     = getDefaultViewAngle();
+  m_nearViewPlane = getDefaultNearViewPlane();
+  return setProjMatrix();
+}
+
+D3Camera &D3Camera::resetBackgroundColor() {
+  return setBackgroundColor(getDefaultBackgroundColor());
+}
+
+D3Camera &D3Camera::resetAll() {
+  return resetPos().resetOrientation().resetProjection();
 }
 
 D3Camera &D3Camera::setPos(const D3DXVECTOR3 &pos) {
@@ -134,8 +164,8 @@ void D3Camera::render() {
 
 String D3Camera::toString() const {
   const CSize size = getWinSize();
-  return format(_T("View angel:%.1lf, Near view:%.3lf, winSize:(%3d,%3d)")
-               , degrees(getViewAngel())
+  return format(_T("View angle:%.2lf, Near view:%.3lf, winSize:(%3d,%3d)")
+               , degrees(getViewAngle())
                , getNearViewPlane()
                , size.cx,size.cy
                );

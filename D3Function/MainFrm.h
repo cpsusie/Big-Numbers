@@ -101,7 +101,7 @@ private:
   void debugAdjustCamDir(const D3DXVECTOR3 &newDir, const D3DXVECTOR3 &newUp);
 
   inline void createDebugLight() {
-    m_debugLightIndex = m_scene.addLight(LIGHT::createDefaultLight());
+    m_debugLightIndex = m_scene.addLight(D3Light::createDefaultLight());
   }
   inline void destroyDebugLight() {
     if (hasDebugLight()) {

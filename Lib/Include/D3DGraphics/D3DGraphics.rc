@@ -116,20 +116,30 @@ IDR_CONTEXT_MENU_BACKGROUND MENU
 BEGIN
     POPUP "Background contextmenu"
     BEGIN
-        MENUITEM "Move camera (walk && rotate)", ID_CONTROL_CAMERA_WALK
+        POPUP "Camera"
+        BEGIN
+            MENUITEM "Move",                        ID_CONTROL_CAMERA_WALK
+            MENUITEM "Projectection",               ID_CONTROL_CAMERA_PROJECTION
+            POPUP "Reset"
+            BEGIN
+                MENUITEM "Position = (0,-5,0)",         ID_CAMERA_RESETPOSITION
+                MENUITEM "Orientation (dir=(0,1,0), up=(0,0,1))", ID_CAMERA_RESETORIENTATION
+                MENUITEM "Projection (view angle=45, near view plane=0.1", ID_CAMERA_RESETPROJECTION
+                MENUITEM "All",                         ID_CAMERA_RESETALL
+            END
+        END
         MENUITEM "Move && rotate object",       ID_CONTROL_OBJECT_MOVEROTATE
-        MENUITEM "Reset camera",                ID_RESETCAMERA
         MENUITEM SEPARATOR
         POPUP "Light"
         BEGIN
             POPUP "Add light"
             BEGIN
-                MENUITEM "Directional",                 ID_ADDLIGHT_DIRECTIONAL
-                MENUITEM "Point",                       ID_ADDLIGHT_POINT
-                MENUITEM "Spot",                        ID_ADDLIGHT_SPOT
+                MENUITEM "Directional",                 ID_LIGHT_ADDDIRECTIONAL
+                MENUITEM "Point",                       ID_LIGHT_ADDPOINT
+                MENUITEM "Spot",                        ID_LIGHT_ADDSPOT
             END
-            MENUITEM "Show lights",                 ID_SHOW_LIGHTCONTROLS
-            MENUITEM "Hide lights",                 ID_HIDE_LIGHTCONTROLS
+            MENUITEM "Show lights",                 ID_LIGHT_SHOWCONTROLS
+            MENUITEM "Hide lights",                 ID_LIGHT_HIDECONTROLS
             POPUP "Select Light"
             BEGIN
                 MENUITEM "Light 0",                     ID_SELECT_LIGHT0
@@ -165,9 +175,9 @@ BEGIN
         MENUITEM "Left handed",                 ID_LEFTHANDED
         MENUITEM "Right handed",                ID_RIGHTHANDED
         MENUITEM SEPARATOR
-        MENUITEM "Save scene parameters...", ID_SAVESCENEPARAMETERS
-        MENUITEM "Load scene parameters...", ID_LOADSCENEPARAMETERS
-      END
+        MENUITEM "Save scene parameters...",    ID_SAVESCENEPARAMETERS
+        MENUITEM "Load scene parameters...",    ID_LOADSCENEPARAMETERS
+    END
 END
 
 IDR_CONTEXT_MENU_LIGHTCONTROL MENU
@@ -194,10 +204,15 @@ BEGIN
         MENUITEM "Move && Rotate",              ID_CONTROL_OBJECT_POS
         MENUITEM "Scale",                       ID_CONTROL_OBJECT_SCALE
         MENUITEM "Set center of rotation",      ID_OBJECT_SETCENTEROFROTATION
+        MENUITEM "Reset center of rotation",      ID_OBJECT_RESETCENTEROFROTATION
         MENUITEM SEPARATOR
-        MENUITEM "Reset position",              ID_OBJECT_RESETPOSITION
-        MENUITEM "Reset scale",                 ID_OBJECT_RESETSCALE
-        MENUITEM "Reset orientation",           ID_OBJECT_RESETORIENTATION
+        POPUP "Reset"
+        BEGIN
+            MENUITEM "Position",                    ID_OBJECT_RESETPOSITION
+            MENUITEM "Orientation",                 ID_OBJECT_RESETORIENTATION
+            MENUITEM "Scale",                       ID_OBJECT_RESETSCALE
+            MENUITEM "All",                         ID_OBJECT_RESETALL
+        END
         MENUITEM SEPARATOR
         POPUP "Fillmode"
         BEGIN

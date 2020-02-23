@@ -360,20 +360,38 @@ void CMainFrame::createSaddle() {
 }
 
 class D3AnimatedFunctionSurface : public D3SceneObjectAnimatedMesh {
+private:
+  int m_materialId;
 public:
   D3AnimatedFunctionSurface(D3Scene &scene, const MeshArray &ma) : D3SceneObjectAnimatedMesh(scene, ma) {
+    m_materialId = scene.addMaterial(D3Material::createDefaultMaterial());
+  }
+  ~D3AnimatedFunctionSurface() {
+    getScene().removeMaterial(m_materialId);
   }
   void modifyContextMenu(CMenu &menu) {
     appendMenuItem(menu, _T("Edit function"), ID_OBJECT_EDITFUNCTION);
+  }
+  int getMaterialId() const {
+    return m_materialId;
   }
 };
 
 class D3FunctionSurface : public D3SceneObjectWithMesh {
+private:
+  int m_materialId;
 public:
   D3FunctionSurface(D3Scene &scene, LPD3DXMESH mesh) : D3SceneObjectWithMesh(scene, mesh) {
+    m_materialId = scene.addMaterial(D3Material::createDefaultMaterial());
+  }
+  ~D3FunctionSurface() {
+    getScene().removeMaterial(m_materialId);
   }
   void modifyContextMenu(CMenu &menu) {
     appendMenuItem(menu, _T("Edit function"), ID_OBJECT_EDITFUNCTION);
+  }
+  int getMaterialId() const {
+    return m_materialId;
   }
 };
 
@@ -554,12 +572,12 @@ void CMainFrame::asyncKillDebugger() {
 void CMainFrame::killDebugger(bool showCreateSurface) {
   if(!hasDebugger()) return;
   m_editor.setCurrentObj(NULL);
-  m_scene.removeAllSceneObjects();
+  m_scene.removeAllVisuals();
   m_debugger->removePropertyChangeListener(this);
   if(m_debugger->isOK() && showCreateSurface) {
     const DebugIsoSurface &surface = m_debugger->getDebugSurface();
     if(surface.getFaceCount()) {
-      D3SceneObject *obj = surface.createMeshObject();
+      D3SceneObjectVisual *obj = surface.createMeshObject();
       setCalculatedObject(obj, &m_isoSurfaceParam);
     }
   }
@@ -617,48 +635,48 @@ void CMainFrame::OnDebugAutoFocusCurrentCube() {
 
 void CMainFrame::adjustDebugLightDir() {
   if(!hasDebugLight()) return;
-  D3PosDirUpScale   cam = m_scene.getCamPDUS();
-  const D3DXVECTOR3 dir = m_cubeCenter - cam.getPos();
-  const D3DXVECTOR3 up = cam.getUp();
+  const D3World     cw       = m_editor.getCurrentCamera()->getWorld();
+  const D3DXVECTOR3 dir      = m_cubeCenter - cw.getPos();
+  const D3DXVECTOR3 up       = cw.getUp();
   const D3DXVECTOR3 lightDir = rotate(dir, up, D3DX_PI / 4);
   m_scene.setLightDirection(m_debugLightIndex, lightDir);
 }
 
 void CMainFrame::debugAdjustCamDir(const D3DXVECTOR3 &newDir, const D3DXVECTOR3 &newUp) {
-  const D3DXVECTOR3 newPos = m_cubeCenter - newDir;
-  D3PosDirUpScale   cam = m_scene.getCamPDUS();
-  m_scene.setCamPDUS(cam.setPos(newPos).setOrientation(newDir, newUp));
+  D3World cw = m_editor.getCurrentCamera()->getWorld();
+  cw.setPos(m_cubeCenter - newDir).setOrientation(createOrientation(newDir, newUp));
+  m_editor.getCurrentCamera()->setWorld(cw);
   adjustDebugLightDir();
 }
 
 #define DBG_CAMADJANGLE (D3DX_PI / 8)
 void CMainFrame::OnDebugAdjustCam45Up() {
-  D3PosDirUpScale   cam = m_scene.getCamPDUS();
-  const D3DXVECTOR3 dir = m_cubeCenter - cam.getPos();
-  const D3DXVECTOR3 up = cam.getUp();
-  const D3DXVECTOR3 r = cam.getRight();
+  const D3World     cw  = m_editor.getCurrentCamera()->getWorld();
+  const D3DXVECTOR3 dir = m_cubeCenter - cw.getPos();
+  const D3DXVECTOR3 up  = cw.getUp();
+  const D3DXVECTOR3 r   = cw.getRight();
   debugAdjustCamDir(rotate(dir, r, -DBG_CAMADJANGLE), rotate(up, r, -DBG_CAMADJANGLE));
 }
 
 void CMainFrame::OnDebugAdjustCam45Down() {
-  D3PosDirUpScale   cam = m_scene.getCamPDUS();
-  const D3DXVECTOR3 dir = m_cubeCenter - cam.getPos();
-  const D3DXVECTOR3 up = cam.getUp();
-  const D3DXVECTOR3 r = cam.getRight();
+  const D3World     cw  = m_editor.getCurrentCamera()->getWorld();
+  const D3DXVECTOR3 dir = m_cubeCenter - cw.getPos();
+  const D3DXVECTOR3 up  = cw.getUp();
+  const D3DXVECTOR3 r   = cw.getRight();
   debugAdjustCamDir(rotate(dir, r, DBG_CAMADJANGLE), rotate(up, r, DBG_CAMADJANGLE));
 }
 
 void CMainFrame::OnDebugAdjustCam45Left() {
-  D3PosDirUpScale   cam = m_scene.getCamPDUS();
-  const D3DXVECTOR3 dir = m_cubeCenter - cam.getPos();
-  const D3DXVECTOR3 up = cam.getUp();
+  const D3World     cw  = m_editor.getCurrentCamera()->getWorld();
+  const D3DXVECTOR3 dir = m_cubeCenter - cw.getPos();
+  const D3DXVECTOR3 up  = cw.getUp();
   debugAdjustCamDir(rotate(dir, up, -DBG_CAMADJANGLE), up);
 }
 
 void CMainFrame::OnDebugAdjustCam45Right() {
-  D3PosDirUpScale   cam = m_scene.getCamPDUS();
-  const D3DXVECTOR3 dir = m_cubeCenter - cam.getPos();
-  const D3DXVECTOR3 up = cam.getUp();
+  const D3World     cw  = m_editor.getCurrentCamera()->getWorld();
+  const D3DXVECTOR3 dir = m_cubeCenter - cw.getPos();
+  const D3DXVECTOR3 up  = cw.getUp();
   debugAdjustCamDir(rotate(dir, up, DBG_CAMADJANGLE), up);
 }
 
@@ -679,21 +697,21 @@ LRESULT CMainFrame::OnMsgDebuggerStateChanged(WPARAM wp, LPARAM lp) {
   try {
     show3DInfo(0);
     const DebuggerState oldState = (DebuggerState)wp, newState = (DebuggerState)lp;
-    switch (newState) {
+    switch(newState) {
     case DEBUGGER_RUNNING:
       { if((oldState == DEBUGGER_PAUSED) && m_hasCubeCenter) {
-          m_currentCamDistance = length(m_scene.getCamPos() - m_cubeCenter);
+          m_currentCamDistance = length(m_editor.getCurrentCamera()->getPos() - m_cubeCenter);
         }
-        D3SceneObject *obj = m_debugger->getSceneObject();
+        D3SceneObjectVisual *obj = m_debugger->getSceneObject();
         if(obj) {
           m_editor.setCurrentObj(NULL);
-          m_scene.removeSceneObject(obj);
+          m_scene.removeVisual(obj);
         }
       }
       break;
     case DEBUGGER_PAUSED:
-      { D3SceneObject *obj = m_debugger->getSceneObject();
-        m_scene.addSceneObject(obj);
+      { D3SceneObjectVisual *obj = m_debugger->getSceneObject();
+        m_scene.addVisual(obj);
         m_editor.setCurrentObj(obj);
         m_hasCubeCenter = false;
         if(isAutoFocusCurrentCubeChecked()) {
@@ -704,7 +722,9 @@ LRESULT CMainFrame::OnMsgDebuggerStateChanged(WPARAM wp, LPARAM lp) {
             m_cubeCenter = octa.getCenter();
             m_hasCubeCenter = true;
             m_cubeLevel = octa.getLevel();
-            m_scene.setCamPos(m_cubeCenter - m_currentCamDistance * m_scene.getCamDir());
+            D3Camera *cam = m_editor.getCurrentCamera();
+            D3World   w   = cam->getWorld();
+            cam->setWorld(w.setPos(m_cubeCenter - m_currentCamDistance * w.getDir()));
             adjustDebugLightDir();
             show3DInfo(INFO_ALL);
           }

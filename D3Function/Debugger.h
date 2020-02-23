@@ -91,7 +91,7 @@ public:
   inline const String &getErrorMsg() const {
     return m_errorMsg;
   }
-  D3SceneObject *getSceneObject();
+  D3SceneObjectVisual *getSceneObject();
   const DebugIsoSurface &getDebugSurface() const {
     return *m_surface;
   }

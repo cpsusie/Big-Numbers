@@ -13,6 +13,7 @@ String toString(D3EditorControl control) {
 #define caseStr(s) case CONTROL_##s: return _T(#s);
   caseStr(IDLE                   )
   caseStr(CAMERA_WALK            )
+  caseStr(CAMERA_PROJECTION      )
   caseStr(OBJECT_POS             )
   caseStr(OBJECT_SCALE           )
   caseStr(LIGHT                  )

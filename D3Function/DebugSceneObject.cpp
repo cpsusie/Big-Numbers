@@ -7,7 +7,7 @@
 // --------------------------------------------- DebugSceneobject -------------------------------------
 
 DebugSceneobject::DebugSceneobject(D3Scene &scene)
-  : D3SceneObject( scene, _T("Debug Polygonizer"))
+  : D3SceneObjectVisual( scene, _T("Debug Polygonizer"))
   , m_meshObject(  NULL)
   , m_octaObject(  NULL)
   , m_tetraObject( NULL)
@@ -27,18 +27,21 @@ DebugSceneobject::~DebugSceneobject() {
   deleteVertexObject();
 }
 
-void DebugSceneobject::initOctaTetraVertex(D3SceneObject *octaObject, D3SceneObject *tetraObject, D3SceneObject *vertexObject) {
+void DebugSceneobject::initOctaTetraVertex(D3SceneObjectVisual *octaObject
+                                          ,D3SceneObjectVisual *tetraObject
+                                          ,D3SceneObjectVisual *vertexObject)
+{
   m_octaObject   = octaObject;
   m_tetraObject  = tetraObject;
   m_vertexObject = vertexObject;
 }
 
-void DebugSceneobject::setMeshObject(D3SceneObject *obj) {
+void DebugSceneobject::setMeshObject(D3SceneObjectVisual *obj) {
   deleteMeshObject();
   m_meshObject = obj;
 }
 
-void DebugSceneobject::setFacesObject(D3SceneObject *obj) {
+void DebugSceneobject::setFacesObject(D3SceneObjectVisual *obj) {
   deleteFacesObject();
   m_facesObject = obj;
 }

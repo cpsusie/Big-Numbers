@@ -2,6 +2,9 @@
 
 #ifdef DEBUG_POLYGONIZER
 
+#include <D3DGraphics/D3DXCube.h>
+#include <D3DGraphics/D3SceneObjectWireFrameBox.h>
+#include <D3DGraphics/D3SceneObjectSolidBox.h>
 #include "Debugger.h"
 #include "DebugIsoSurface.h"
 
@@ -18,7 +21,7 @@ private:
     return scene.addMaterial(mat);
   }
   static int createColorMaterialWithSpecular(D3Scene &scene, D3DCOLOR color) {
-    MATERIAL mat = scene.getMaterial(0);
+    D3Material mat = scene.getMaterial(0);
     mat.Diffuse  = colorToColorValue(color);
     mat.Specular = colorToColorValue(D3D_WHITE);
     mat.Ambient  = colorToColorValue(D3D_BLACK);
@@ -45,67 +48,89 @@ static ColorMaterialId matIndexPos(true), matIndexNeg(true);
 
 // ------------------------------------------------------------Octa Object ----------------------------------------------
 
-class OctaObject : public D3SceneObject {
+class OctaObject : public D3SceneObjectWireFrameBox {
 private:
-  D3SceneObjectWireFrameBox *m_wireFrameBox;
-  D3SceneObjectSolidBox     *m_cornerMark[2];
-  D3DXVECTOR3                m_cornerCenters[8]; // relative to m_center
-  const float                m_cellSize;
-  D3DXVECTOR3                m_center;
-  BitSet8                    m_positive;
-  LPDIRECT3DDEVICE           m_device;
-  D3DXMATRIX                 m_world;
-  int  getCornerMarkMaterial(bool positive);
+  friend class CornerMarkObject;
+  CornerMarkObject    *m_cornerMark;
+  D3DXVECTOR3          m_cornerCenterArray[8]; // relative to m_center
+  float                m_cellSize;
+  int                  m_materialId;
+  D3DXVECTOR3          m_center;
+  BitSet8              m_positive;
+  static D3DXCube3 createCube(float cellSize);
 public:
   OctaObject(D3Scene &scene, float cellSize);
   ~OctaObject();
   void setOctagon(const Octagon &octa);
-  inline const D3DXVECTOR3 *getCornerCenters() const {
-    return m_cornerCenters;
+  inline const D3DXVECTOR3 &getCornerCenter(UINT index) const {
+    return m_cornerCenterArray[index];
   }
-  inline float getCellSize() const {
-    return m_cellSize;
+  inline const D3DXVECTOR3 *getCornerCenterArray() const {
+    return m_cornerCenterArray;
   }
   inline const D3DXVECTOR3 &getCenter() const {
     return m_center;
   }
-  inline const D3DXMATRIX &getWorld() const {
-    return m_world;
+  int getMaterialId() const {
+    return m_materialId;
   }
-  inline LPDIRECT3DDEVICE &getDevice() {
-    return m_device;
-  }
+  D3DXMATRIX &getWorld();
   void draw();
 };
 
+class CornerMarkObject : public D3SceneObjectSolidBox {
+private:
+  OctaObject &m_octaObject;
+  int         m_materialId[2];
+  int         m_cornerIndex;
+  static D3DXCube3 createCube(float cellSize);
+public:
+  CornerMarkObject(OctaObject *parent);
+  ~CornerMarkObject();
+  int getMaterialId() const {
+    return m_materialId[m_octaObject.m_positive.contains(m_cornerIndex) ? 1 : 0];
+  }
+  inline CornerMarkObject &setCornerIndex(int index) {
+    m_cornerIndex = index;
+    return *this;
+  }
+  D3DXMATRIX &getWorld();
+};
+
+D3DXCube3 OctaObject::createCube(float cellSize) {
+  const float t = cellSize / 2;
+  return D3DXCube3(D3DXVECTOR3(-t,-t,-t), D3DXVECTOR3(t,t,t));
+}
+
 OctaObject::OctaObject(D3Scene &scene, float cellSize)
-  : D3SceneObject(scene)
-  , m_cellSize(cellSize)
-  , m_device(scene.getDevice())
+: D3SceneObjectWireFrameBox(scene, createCube(cellSize))
+, m_cellSize(cellSize)
 {
-  float t = m_cellSize / 2;
-  Vertex lbn(-t, -t, -t), rtf(t,t,t);
-  m_wireFrameBox = new D3SceneObjectWireFrameBox(getScene(), lbn, rtf); TRACE_NEW(m_wireFrameBox);
+  m_materialId = getScene().addMaterial(D3Material::createMaterialWithColor(D3D_BLUE));
 
-  m_cornerCenters[LBN] = D3DXVECTOR3(lbn.x, lbn.y, lbn.z); // left  bottom near corner
-  m_cornerCenters[LBF] = D3DXVECTOR3(lbn.x, lbn.y, rtf.z); // left  bottom far  corner
-  m_cornerCenters[LTN] = D3DXVECTOR3(lbn.x, rtf.y, lbn.z); // left  top    near corner
-  m_cornerCenters[LTF] = D3DXVECTOR3(lbn.x, rtf.y, rtf.z); // left  top    far  corner
-  m_cornerCenters[RBN] = D3DXVECTOR3(rtf.x, lbn.y, lbn.z); // right bottom near corner
-  m_cornerCenters[RBF] = D3DXVECTOR3(rtf.x, lbn.y, rtf.z); // right bottom far  corner
-  m_cornerCenters[RTN] = D3DXVECTOR3(rtf.x, rtf.y, lbn.z); // right top    near corner
-  m_cornerCenters[RTF] = D3DXVECTOR3(rtf.x, rtf.y, rtf.z); // right top    far  corner
+  const D3DXCube3 cube = createCube(cellSize);
+  D3DXVECTOR3 lbn = cube.getMin(), rtf = cube.getMax();
 
-  t   = m_cellSize / 20;
-  lbn = Vertex(-t, -t, -t); rtf = Vertex( t,  t,  t);
-  m_cornerMark[0] = new D3SceneObjectSolidBox(getScene(), lbn, rtf, getCornerMarkMaterial(false)); TRACE_NEW(m_cornerMark[0]);
-  m_cornerMark[1] = new D3SceneObjectSolidBox(getScene(), lbn, rtf, getCornerMarkMaterial(true )); TRACE_NEW(m_cornerMark[1]);
+  m_cornerCenterArray[LBN] = D3DXVECTOR3(lbn.x, lbn.y, lbn.z); // left  bottom near corner
+  m_cornerCenterArray[LBF] = D3DXVECTOR3(lbn.x, lbn.y, rtf.z); // left  bottom far  corner
+  m_cornerCenterArray[LTN] = D3DXVECTOR3(lbn.x, rtf.y, lbn.z); // left  top    near corner
+  m_cornerCenterArray[LTF] = D3DXVECTOR3(lbn.x, rtf.y, rtf.z); // left  top    far  corner
+  m_cornerCenterArray[RBN] = D3DXVECTOR3(rtf.x, lbn.y, lbn.z); // right bottom near corner
+  m_cornerCenterArray[RBF] = D3DXVECTOR3(rtf.x, lbn.y, rtf.z); // right bottom far  corner
+  m_cornerCenterArray[RTN] = D3DXVECTOR3(rtf.x, rtf.y, lbn.z); // right top    near corner
+  m_cornerCenterArray[RTF] = D3DXVECTOR3(rtf.x, rtf.y, rtf.z); // right top    far  corner
+
+  m_cornerMark = new CornerMarkObject(this); TRACE_NEW(m_cornerMark);
 }
 
 OctaObject::~OctaObject() {
-  SAFEDELETE(m_cornerMark[0]);
-  SAFEDELETE(m_cornerMark[1]);
-  SAFEDELETE(m_wireFrameBox);
+  SAFEDELETE(m_cornerMark);
+  getScene().removeMaterial(m_materialId);
+}
+
+D3DXMATRIX &OctaObject::getWorld() {
+  D3World w = m_world;
+  return m_world = w.setPos(w.getPos() + m_center);
 }
 
 void OctaObject::setOctagon(const Octagon &octa) {
@@ -119,85 +144,113 @@ void OctaObject::setOctagon(const Octagon &octa) {
   }
 }
 
-#define CUBE_MATERIAL_DIFFUSE_POS D3DCOLOR_XRGB(33,150,28)
-#define CUBE_MATERIAL_DIFFUSE_NEG D3DCOLOR_XRGB(120,25,30)
-
-int OctaObject::getCornerMarkMaterial(bool positive) {
-  int result = positive 
-             ? matIndexPos.getId(getScene(), CUBE_MATERIAL_DIFFUSE_POS)
-             : matIndexNeg.getId(getScene(), CUBE_MATERIAL_DIFFUSE_NEG);
-  return result;
+void OctaObject::draw() {
+  __super::draw();
+  for(UINT i = 0; i < ARRAYSIZE(m_cornerCenterArray); i++) {
+    m_cornerMark->setCornerIndex(i).draw();
+  }
 }
 
-void OctaObject::draw() {
-  D3Scene &s = getScene();
-  D3DXMATRIX objWorld = getPDUS().getWorldMatrix();
-  D3DXMATRIX tm;
-  D3DXMatrixTranslation(&tm, m_center.x, m_center.y, m_center.z);
-  m_world = objWorld * tm;
-  s.selectMaterial(blueMatIndex.getId(getScene(), D3D_BLUE)).setDevWorldMatrix(m_world);
-  m_wireFrameBox->draw();
-  for(UINT i = 0; i < ARRAYSIZE(m_cornerCenters); i++) {
-    const D3DXVECTOR3 &cc = m_cornerCenters[i];
-    D3DXMatrixTranslation(&tm, cc.x, cc.y, cc.z);
-    const D3DXMATRIX cornerWorld = m_world * tm;
-    s.setDevWorldMatrix(cornerWorld);
-    const int markIndex = m_positive.contains(i) ? 1 : 0;
-    m_cornerMark[markIndex]->draw();
-  }
+#define NEGATIVECOLOR D3DCOLOR_XRGB(120,25,30)
+#define POSITIVECOLOR D3DCOLOR_XRGB(33,150,28)
+
+CornerMarkObject::CornerMarkObject(OctaObject *parent)
+: D3SceneObjectSolidBox(parent->getScene(), createCube(parent->m_cellSize / 20))
+, m_octaObject(*parent)
+{
+  m_materialId[0] = getScene().addMaterial(D3Material::createMaterialWithColor(NEGATIVECOLOR));
+  m_materialId[1] = getScene().addMaterial(D3Material::createMaterialWithColor(POSITIVECOLOR));
+}
+
+CornerMarkObject::~CornerMarkObject() {
+  getScene().removeMaterial(m_materialId[0]);
+  getScene().removeMaterial(m_materialId[1]);
+}
+
+D3DXCube3 CornerMarkObject::createCube(float cellSize) {
+  const float t = cellSize / 2;
+  return D3DXCube3(D3DXVECTOR3(-t,-t,-t), D3DXVECTOR3(t,t,t));
+}
+
+D3DXMATRIX &CornerMarkObject::getWorld() {
+  D3World w = m_octaObject.getWorld();
+  return m_world = w.setPos(w.getPos()+rotate(m_octaObject.getCornerCenter(m_cornerIndex),w.getOrientation()));
 }
 
 // ----------------------------------------------------Tetra Object ----------------------------------------------
 
-class TetraObject : public D3SceneObject {
+class TetraObject : public D3SceneObjectVisual {
 private:
-  OctaObject                                                  &m_octaObject;
-  mutable CompactHashMap<Tetrahedron, D3SceneObjectLineArray*> m_objectCache;
-  D3SceneObjectLineArray                                      *m_linesObject;
-  LPDIRECT3DDEVICE                                             m_device;
-  CompactArray<Line3D>    createLineArray(const Tetrahedron &tetra) const;
-  D3SceneObjectLineArray &getLinesObject( const Tetrahedron &tetra) const;
-  const D3DXMATRIX       &getWorld() const {
-    return m_octaObject.getWorld();
-  }
+  friend class SubTetraObject;
+private:
+  OctaObject                                          &m_octaObject;
+  mutable CompactHashMap<Tetrahedron, SubTetraObject*> m_objectCache;
+  D3SceneObjectLineArray                              *m_linesObject;
+  int                                                  m_materialId;
+  CompactArray<Line3D>  createLineArray(const Tetrahedron &tetra) const;
+  SubTetraObject       &getLinesObject( const Tetrahedron &tetra) const;
 public:
   TetraObject(OctaObject *octaObject);
   ~TetraObject();
   void setTetrahedron(const Tetrahedron &tetra);
-  void draw();
+  int getMaterialId() const {
+    return m_materialId;
+  }
+  D3DXMATRIX &getWorld() {
+    return m_octaObject.getWorld();
+  }
+  void TetraObject::draw() {
+    if(m_linesObject) {
+      m_linesObject->draw();
+    }
+  }
+};
+
+class SubTetraObject : public D3SceneObjectLineArray {
+private:
+  const TetraObject &m_tetraObject;
+public:
+  SubTetraObject(const TetraObject *parent, const CompactArray<Line3D> &lineArray);
+  int getMaterialId() const {
+    return m_tetraObject.getMaterialId();
+  }
+  D3DXMATRIX &getWorld() {
+    return ((TetraObject&)m_tetraObject).getWorld();
+  }
 };
 
 TetraObject::TetraObject(OctaObject *octaObject)
-  : D3SceneObject(octaObject->getScene())
+  : D3SceneObjectVisual(octaObject->getScene())
   , m_octaObject(*octaObject)
   , m_linesObject(NULL)
 {
-  m_device = m_octaObject.getDevice();
+  m_materialId = getScene().addMaterial(D3Material::createMaterialWithColor(D3D_YELLOW));
 }
 
 TetraObject::~TetraObject() {
-  for(Iterator<Entry<Tetrahedron, D3SceneObjectLineArray*> > it = m_objectCache.getEntryIterator(); it.hasNext();) {
-    D3SceneObjectLineArray *obj = it.next().getValue();
+  for (Iterator<Entry<Tetrahedron, SubTetraObject*> > it = m_objectCache.getEntryIterator(); it.hasNext();) {
+    SubTetraObject *obj = it.next().getValue();
     SAFEDELETE(obj);
   }
   m_objectCache.clear();
+  getScene().removeMaterial(m_materialId);
 }
 
 void TetraObject::setTetrahedron(const Tetrahedron &tetra) {
   m_linesObject = &getLinesObject(tetra);
 }
 
-D3SceneObjectLineArray &TetraObject::getLinesObject(const Tetrahedron &tetra) const {
-  D3SceneObjectLineArray **a = m_objectCache.get(tetra);
+SubTetraObject &TetraObject::getLinesObject(const Tetrahedron &tetra) const {
+  SubTetraObject **a = m_objectCache.get(tetra);
   if(a == NULL) {
-    D3SceneObjectLineArray *laObj = new D3SceneObjectLineArray(getScene(), createLineArray(tetra)); TRACE_NEW(laObj);
-    m_objectCache.put(tetra, laObj);
+    SubTetraObject *sto = new SubTetraObject(this, createLineArray(tetra)); TRACE_NEW(sto);
+    m_objectCache.put(tetra, sto);
   }
   return **m_objectCache.get(tetra);
 }
 
 CompactArray<Line3D> TetraObject::createLineArray(const Tetrahedron &tetra) const {
-  const D3DXVECTOR3 *corners = m_octaObject.getCornerCenters();
+  const D3DXVECTOR3 *corners = m_octaObject.getCornerCenterArray();
   CompactArray<Line3D> result(6);
   const UINT n = tetra.getCornerCount();
   for(UINT i = 0; i < n; i++) {
@@ -208,18 +261,17 @@ CompactArray<Line3D> TetraObject::createLineArray(const Tetrahedron &tetra) cons
   return result;
 }
 
-void TetraObject::draw() {
-  if(m_linesObject == NULL) return;
-  getScene().selectMaterial(yellowMatIndex.getId(getScene(), D3D_YELLOW)).setDevWorldMatrix(getWorld());
-  m_linesObject->draw();
+SubTetraObject::SubTetraObject(const TetraObject *parent, const CompactArray<Line3D> &lineArray)
+: D3SceneObjectLineArray(parent->getScene(), lineArray)
+, m_tetraObject(*parent)
+{
 }
 
 // ------------------------------------------------------------Face Object ----------------------------------------------
 
-class FacesObject : public D3SceneObject {
+class FacesObject : public D3SceneObjectVisual {
 private:
   D3SceneObjectLineArray *m_currentFaceObject, *m_prevFaceObjects;
-  LPDIRECT3DDEVICE        m_device;
   CompactArray<Line3D> createLineArray(const Face3 &face,              const IsoSurfaceVertexArray &va) const;
   CompactArray<Line3D> createLineArray(CompactArray<Face3> &faceArray, const IsoSurfaceVertexArray &va) const;
 public:
@@ -229,22 +281,21 @@ public:
 };
 
 FacesObject::FacesObject(DebugIsoSurface *dbgObject, CompactArray<Face3> &faceArray)
-: D3SceneObject(dbgObject->getScene())
-, m_currentFaceObject(NULL)
-, m_prevFaceObjects( NULL)
+: D3SceneObjectVisual(dbgObject->getScene())
+//, m_currentFaceObject(NULL)
+//, m_prevFaceObjects( NULL)
 {
-  m_device = getScene().getDevice();
-  if(faceArray.isEmpty()) return;
-  const IsoSurfaceVertexArray &va = dbgObject->getVertexArray();
-  m_currentFaceObject = new D3SceneObjectLineArray(getScene(), createLineArray(faceArray.last(), va)); TRACE_NEW(m_currentFaceObject);
-  if(faceArray.size() > 1) {
-    m_prevFaceObjects = new D3SceneObjectLineArray(getScene(), createLineArray(faceArray, va)); TRACE_NEW(m_prevFaceObjects);
-  }
+//  if(faceArray.isEmpty()) return;
+//  const IsoSurfaceVertexArray &va = dbgObject->getVertexArray();
+//  m_currentFaceObject = new D3SceneObjectLineArray(getScene(), createLineArray(faceArray.last(), va)); TRACE_NEW(m_currentFaceObject);
+//  if(faceArray.size() > 1) {
+//    m_prevFaceObjects = new D3SceneObjectLineArray(getScene(), createLineArray(faceArray, va)); TRACE_NEW(m_prevFaceObjects);
+//  }
 }
 
 FacesObject::~FacesObject() {
-  SAFEDELETE(m_currentFaceObject);
-  SAFEDELETE(m_prevFaceObjects  );
+//  SAFEDELETE(m_currentFaceObject);
+//  SAFEDELETE(m_prevFaceObjects  );
 }
 
 CompactArray<Line3D> FacesObject::createLineArray(const Face3 &face, const IsoSurfaceVertexArray &va) const {
@@ -273,6 +324,7 @@ CompactArray<Line3D> FacesObject::createLineArray(CompactArray<Face3> &faceArray
 }
 
 void FacesObject::draw() {
+/*
   D3Scene &s = getScene();
   s.setDevWorldMatrix(getPDUS().getWorldMatrix());
   if(m_prevFaceObjects) {
@@ -283,15 +335,15 @@ void FacesObject::draw() {
     s.selectMaterial(cyanMatIndex.getId(s, D3D_CYAN));
     m_currentFaceObject->draw();
   }
+*/
 }
 
 // ------------------------------------------------------------Vertex Object ----------------------------------------------
 
-class VertexObject : public D3SceneObject {
+class VertexObject : public D3SceneObjectVisual {
 private:
   D3SceneObjectLineArray   *m_linesObject;
   CompactArray<D3DXVECTOR3> m_positions;
-  LPDIRECT3DDEVICE          m_device;
   CompactArray<Line3D> createLineArray(float lineLength) const;
 public:
   VertexObject(OctaObject *octaObject);
@@ -300,20 +352,19 @@ public:
   void draw();
 };
 
-VertexObject::VertexObject(OctaObject *octaObject) : D3SceneObject(octaObject->getScene()) {
-  m_device = getScene().getDevice();
-  m_linesObject = new D3SceneObjectLineArray(getScene(), createLineArray(octaObject->getCellSize() / 25));
+VertexObject::VertexObject(OctaObject *octaObject) : D3SceneObjectVisual(octaObject->getScene()) {
+//  m_linesObject = new D3SceneObjectLineArray(getScene(), createLineArray(octaObject->getCellSize() / 25));
 }
 
 VertexObject::~VertexObject() {
-  SAFEDELETE(m_linesObject)
+//  SAFEDELETE(m_linesObject)
 }
 
 void VertexObject::setSurfaceVertexArray(const IsoSurfaceVertexArray &a) {
-  m_positions.clear(-1);
-  for(size_t i = 0; i < a.size(); i++) {
-    m_positions.add(a[i].m_position);
-  }
+//  m_positions.clear(-1);
+//  for(size_t i = 0; i < a.size(); i++) {
+//    m_positions.add(a[i].m_position);
+//  }
 }
 
 CompactArray<Line3D> VertexObject::createLineArray(float lineLength) const {
@@ -331,6 +382,7 @@ CompactArray<Line3D> VertexObject::createLineArray(float lineLength) const {
 }
 
 void VertexObject::draw() {
+/*
   const size_t n = m_positions.size();
   if(n == 0) return;
   D3Scene &s = getScene();
@@ -342,6 +394,7 @@ void VertexObject::draw() {
     s.setDevWorldMatrix(objWorld * tm);
     m_linesObject->draw();
   }
+*/
 }
 
 // --------------------------------------- DebugIsoSurface -------------------------------------------
@@ -490,8 +543,8 @@ D3SceneObjectWithMesh *DebugIsoSurface::createMeshObject() const {
   return obj;
 }
 
-D3SceneObject *DebugIsoSurface::createFacesObject() {
-  D3SceneObject *v = new FacesObject(this, m_currentFaceArray); TRACE_NEW(v);
+D3SceneObjectVisual *DebugIsoSurface::createFacesObject() {
+  D3SceneObjectVisual *v = new FacesObject(this, m_currentFaceArray); TRACE_NEW(v);
   return v;
 }
 

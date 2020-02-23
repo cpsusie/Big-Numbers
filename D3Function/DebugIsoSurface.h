@@ -5,6 +5,7 @@
 #include <Math/Expression/ExpressionWrapper.h>
 #include <D3DGraphics/IsoSurface.h>
 #include <D3DGraphics/IsosurfacePolygonizer.h>
+#include <D3DGraphics/MeshBuilder.h>
 
 class Debugger;
 
@@ -14,12 +15,12 @@ class Debugger;
 #define FACES_VISIBLE  0x08
 #define VERTEX_VISIBLE 0x10
 
-class DebugSceneobject : public D3SceneObject {
+class DebugSceneobject : public D3SceneObjectVisual {
 private:
-  D3SceneObject  *m_meshObject, *m_octaObject, *m_tetraObject, *m_facesObject, *m_vertexObject;
-  D3DFILLMODE     m_fillMode;
-  D3DSHADEMODE    m_shadeMode;
-  BYTE            m_visibleParts;
+  D3SceneObjectVisual  *m_meshObject, *m_octaObject, *m_tetraObject, *m_facesObject, *m_vertexObject;
+  D3DFILLMODE           m_fillMode;
+  D3DSHADEMODE          m_shadeMode;
+  BYTE                  m_visibleParts;
   void deleteMeshObject();
   void deleteOctaObject();
   void deleteTetraObject();
@@ -28,20 +29,20 @@ private:
 public:
   DebugSceneobject(D3Scene &scene);
   ~DebugSceneobject();
-  void initOctaTetraVertex(D3SceneObject *octaObject, D3SceneObject *tetraObject, D3SceneObject *vertexObject);
-  void setMeshObject(              D3SceneObject *obj);
-  void setFacesObject(             D3SceneObject *obj);
+  void initOctaTetraVertex(D3SceneObjectVisual *octaObject, D3SceneObjectVisual *tetraObject, D3SceneObjectVisual *vertexObject);
+  void setMeshObject(              D3SceneObjectVisual *obj);
+  void setFacesObject(             D3SceneObjectVisual *obj);
   void draw();
   LPD3DXMESH getMesh() const {
     return m_meshObject ? m_meshObject->getMesh() : NULL;
   }
-  inline D3SceneObject *getOctaObject() const {
+  inline D3SceneObjectVisual *getOctaObject() const {
     return m_octaObject;
   }
-  inline D3SceneObject *getTetraObject() const {
+  inline D3SceneObjectVisual *getTetraObject() const {
     return m_tetraObject;
   }
-  inline D3SceneObject *getVertexObject() const {
+  inline D3SceneObjectVisual *getVertexObject() const {
     return m_vertexObject;
   }
 
@@ -60,7 +61,7 @@ public:
   }
   void setShadeMode(D3DSHADEMODE shadeMode) {
     m_shadeMode = shadeMode;
-    if (m_meshObject) m_meshObject->setShadeMode(shadeMode);
+    if(m_meshObject) m_meshObject->setShadeMode(shadeMode);
   }
   D3DSHADEMODE getShadeMode() const {
     return m_meshObject ? m_meshObject->getShadeMode() : m_shadeMode;
@@ -109,7 +110,7 @@ private:
   Tetrahedron                           m_currentTetra;
   CompactArray<Face3>                   m_currentFaceArray;
   IsoSurfaceVertexArray                 m_visibleVertexArray;
-  D3SceneObject *createFacesObject();
+  D3SceneObjectVisual *createFacesObject();
 
   void           updateMeshObject();
   void           updateOctaObject();

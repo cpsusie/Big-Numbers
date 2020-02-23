@@ -36,7 +36,7 @@ public:
     return NULL;
   }
   virtual int getMaterialId() const {
-    return 0;
+    return -1;
   }
   virtual void modifyContextMenu(CMenu &menu) {
   }

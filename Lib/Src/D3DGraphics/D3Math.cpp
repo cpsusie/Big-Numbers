@@ -55,7 +55,20 @@ float operator*(const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2) {
 }
 
 float angle(const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2) {
-  return acosf((v1*v2) / (length(v1)*length(v2)));
+  const float l1 = length(v1);
+  const float l2 = length(v2);
+  if((l1 == 0) || (l2 == 0)) {
+    return 0.0f;
+  } else {
+    const float f = (v1 * v2) / (l1 * l2);
+    if(f <= -1) {
+      return D3DX_PI;
+    } else if(f >= 1) {
+      return 0.0f;
+    } else {
+      return acosf(f);
+    }
+  }
 }
 
 D3DXVECTOR3 cross(const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2) {

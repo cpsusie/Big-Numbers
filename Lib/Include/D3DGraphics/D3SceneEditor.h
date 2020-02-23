@@ -11,6 +11,7 @@
 typedef enum {
   CONTROL_IDLE
  ,CONTROL_CAMERA_WALK
+ ,CONTROL_CAMERA_PROJECTION
  ,CONTROL_OBJECT_POS
  ,CONTROL_OBJECT_SCALE
  ,CONTROL_ANIMATION_SPEED
@@ -95,8 +96,6 @@ private:
     const D3DXMATRIX *getCurrentVisualWorld() const;
     void              setCurrentVisualOrientation(const D3DXQUATERNION &q    );
     void              setCurrentVisualScale(      const D3DXVECTOR3    &scale);
-    void              resetCenterOfRotation();
-    void              setCenterOfRotation();
     void walkWithCamera(       float  dist   , float  angle);
     void sidewalkWithCamera(   float  upDist , float rightDist);
     void moveCamera(           const D3DXVECTOR3 &dir, float dist);
@@ -151,6 +150,7 @@ private:
     void OnMouseWheelObjScale(            UINT nFlags, short zDelta, CPoint pt); // pt in window-coordinates
     void OnMouseWheelAnimationSpeed(      UINT nFlags, short zDelta, CPoint pt); // pt in window-coordinates
     void OnMouseWheelCameraWalk(          UINT nFlags, short zDelta, CPoint pt); // pt in window-coordinates
+    void OnMouseWheelCameraProjection(    UINT nFlags, short zDelta, CPoint pt); // pt in window-coordinates
 
     void OnMouseMoveLight(                UINT nFlags, CPoint pt);               // pt in window-coordinates
     void OnMouseMoveLightPoint(           UINT nFlags, CPoint pt);               // pt in window-coordinates
@@ -167,7 +167,11 @@ private:
     void OnContextMenuLightControl(CPoint point);
 public:
     void OnControlCameraWalk();
-    void OnResetCamera();
+    void OnControlCameraProjection();
+    void OnCameraResetPosition();
+    void OnCameraResetOrientation();
+    void OnCameraResetProjection();
+    void OnCameraResetAll();
 private:
     void SetRightHanded(bool rightHanded);
     void OnObjectStartAnimation();
@@ -181,8 +185,10 @@ private:
     void OnObjectResetPosition();
     void OnObjectResetScale();
     void OnObjectResetOrientation();
+    void OnObjectResetAll();
     void OnObjectRemove();
     void OnObjectSetCenterOfRotation();
+    void OnObjectResetCenterOfRotation();
     void OnLightAdjustColors();
     void OnLightAdjustSpotAngles();
     void OnLightControlSpotAt();

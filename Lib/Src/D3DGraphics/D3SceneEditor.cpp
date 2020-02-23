@@ -266,6 +266,9 @@ BOOL D3SceneEditor::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) {
   case CONTROL_CAMERA_WALK           :
     OnMouseWheelCameraWalk(          nFlags, zDelta, pt);
     return TRUE;
+  case CONTROL_CAMERA_PROJECTION     :
+    OnMouseWheelCameraProjection(    nFlags, zDelta, pt);
+    return TRUE;
   case CONTROL_OBJECT_POS            :
     OnMouseWheelObjPos(              nFlags, zDelta, pt);
     return TRUE;
@@ -356,9 +359,11 @@ BOOL D3SceneEditor::PreTranslateMessage(MSG *pMsg) {
     case ID_OBJECT_RESETPOSITION          : OnObjectResetPosition()             ; return true;
     case ID_OBJECT_RESETSCALE             : OnObjectResetScale()                ; return true;
     case ID_OBJECT_RESETORIENTATION       : OnObjectResetOrientation()          ; return true;
+    case ID_OBJECT_RESETALL               : OnObjectResetAll()                  ; return true;
     case ID_OBJECT_ADJUSTMATERIAL         : OnObjectEditMaterial()              ; return true;
     case ID_OBJECT_REMOVE                 : OnObjectRemove()                    ; return true;
     case ID_OBJECT_SETCENTEROFROTATION    : OnObjectSetCenterOfRotation()       ; return true;
+    case ID_OBJECT_RESETCENTEROFROTATION  : OnObjectResetCenterOfRotation()     ; return true;
     case ID_OBJECT_STARTANIMATION         : OnObjectStartAnimation()            ; return true;
     case ID_OBJECT_STARTBCKANIMATION      : OnObjectStartBckAnimation()         ; return true;
     case ID_OBJECT_STARTALTANIMATION      : OnObjectStartAltAnimation()         ; return true;
@@ -367,7 +372,11 @@ BOOL D3SceneEditor::PreTranslateMessage(MSG *pMsg) {
     case ID_OBJECT_CONTROL_SPEED          : OnObjectControlSpeed()              ; return true;
     case ID_OBJECT_CREATECUBE             : OnObjectCreateCube()                ; return true;
     case ID_CONTROL_CAMERA_WALK           : OnControlCameraWalk()               ; return true;
-    case ID_RESETCAMERA                   : OnResetCamera()                     ; return true;
+    case ID_CONTROL_CAMERA_PROJECTION     : OnControlCameraProjection()         ; return true;
+    case ID_CAMERA_RESETPOSITION          : OnCameraResetPosition()             ; return true;
+    case ID_CAMERA_RESETORIENTATION       : OnCameraResetOrientation()          ; return true;
+    case ID_CAMERA_RESETPROJECTION        : OnCameraResetProjection()           ; return true;
+    case ID_CAMERA_RESETALL               : OnCameraResetAll()                  ; return true;
     case ID_RIGHTHANDED                   : SetRightHanded(true)                ; return true;
     case ID_LEFTHANDED                    : SetRightHanded(false)               ; return true;
     case ID_EDIT_AMBIENTLIGHT             : OnEditAmbientLight()                ; return true;
@@ -382,16 +391,16 @@ BOOL D3SceneEditor::PreTranslateMessage(MSG *pMsg) {
     case ID_DISABLE_SPECULARHIGHLIGHT     : setSpecularEnable(false)            ; return true;
     case ID_SHOWCOORDINATESYSTEM          : setCoordinateSystemVisible(true)    ; return true;
     case ID_HIDECOORDINATESYSTEM          : setCoordinateSystemVisible(false)   ; return true;
-    case ID_ADDLIGHT_DIRECTIONAL          : OnAddLightDirectional()             ; return true;
-    case ID_ADDLIGHT_POINT                : OnAddLightPoint()                   ; return true;
-    case ID_ADDLIGHT_SPOT                 : OnAddLightSpot()                    ; return true;
+    case ID_LIGHT_ADDDIRECTIONAL          : OnAddLightDirectional()             ; return true;
+    case ID_LIGHT_ADDPOINT                : OnAddLightPoint()                   ; return true;
+    case ID_LIGHT_ADDSPOT                 : OnAddLightSpot()                    ; return true;
     case ID_LIGHT_REMOVE                  : OnLightRemove()                     ; return true;
     case ID_LIGHT_ENSABLE                 : setLightEnabled(true)               ; return true;
     case ID_LIGHT_DISABLE                 : setLightEnabled(false)              ; return true;
     case ID_LIGHT_ADJUSTCOLORS            : OnLightAdjustColors()               ; return true;
     case ID_LIGHT_ADJUSTSPOTANGLES        : OnLightAdjustSpotAngles()           ; return true;
-    case ID_SHOW_LIGHTCONTROLS            : setLightControlsVisible(true)       ; return true;
-    case ID_HIDE_LIGHTCONTROLS            : setLightControlsVisible(false)      ; return true;
+    case ID_LIGHT_SHOWCONTROLS            : setLightControlsVisible(true)       ; return true;
+    case ID_LIGHT_HIDECONTROLS            : setLightControlsVisible(false)      ; return true;
     case ID_LIGHTCONTROL_HIDE             : OnLightControlHide()                ; return true;
     case ID_LIGHTCONTROL_SPOTAT           : OnLightControlSpotAt()              ; return true;
     case ID_LIGHTCONTROL_ENABLEEFFECT     : setLightControlRenderEffect(true)   ; return true;
@@ -557,6 +566,14 @@ void D3SceneEditor::OnObjectResetOrientation() {
   CHECKINVARIANT();
 }
 
+void D3SceneEditor::OnObjectResetAll() {
+  CHECKINVARIANT();
+  D3SceneObjectVisual *obj = getCurrentVisual();
+  if(obj == NULL) return;
+  setCurrentVisualWorld(D3World());
+  CHECKINVARIANT();
+}
+
 #define signDelta ((float)sign(zDelta))
 
 void D3SceneEditor::OnMouseWheelObjPos(UINT nFlags, short zDelta, CPoint pt) {
@@ -663,16 +680,28 @@ void D3SceneEditor::OnMouseWheelCameraWalk(UINT nFlags, short zDelta, CPoint pt)
     }
     break;
   case MK_CONTROL  :
-    m_currentCamera->setNearViewPlane(m_currentCamera->getNearViewPlane() * (1 + 0.05f*signDelta));
+    rotateCameraUpDown(signDelta / -50.0f);
     break;
   case MK_SHIFT    :
     walkWithCamera(1.5f * signDelta, 0);
     break;
   case MK_CTRLSHIFT:
-    { const float a = m_currentCamera->getViewAngel();
+    rotateCameraLeftRight(signDelta / 50.0f);
+    break;
+  }
+}
+
+// pt in window-coordinates
+void D3SceneEditor::OnMouseWheelCameraProjection(UINT nFlags, short zDelta, CPoint pt) {
+  switch(nFlags & MK_CTRLSHIFT) {
+  case 0           :
+    { const float a = m_currentCamera->getViewAngle();
       const float d = ((a > D3DX_PI/2) ? (D3DX_PI - a) : a) / (D3DX_PI/2);
-      m_currentCamera->setViewAngel(a + d * 0.04f * signDelta);
+      m_currentCamera->setViewAngle(a + d * 0.04f * signDelta);
     }
+    break;
+  case MK_CONTROL  :
+    m_currentCamera->setNearViewPlane(m_currentCamera->getNearViewPlane() * (1 + 0.05f*signDelta));
     break;
   }
 }
@@ -1069,10 +1098,10 @@ void D3SceneEditor::OnContextMenuBackground(CPoint point) {
   loadMenu(menu, IDR_CONTEXT_MENU_BACKGROUND);
   const int visibleLightCount = (int)getScene().getLightControlsVisible().size();
   if(visibleLightCount == 0) {
-    removeMenuItem(menu,ID_HIDE_LIGHTCONTROLS);
+    removeMenuItem(menu,ID_LIGHT_HIDECONTROLS);
   }
   if(visibleLightCount == getScene().getLightCount()) {
-    removeMenuItem(menu, ID_SHOW_LIGHTCONTROLS);
+    removeMenuItem(menu, ID_LIGHT_SHOWCONTROLS);
   }
   const LightArray lights = getScene().getAllLights();
   BitSet definedLights(getScene().getMaxLightCount());
@@ -1139,6 +1168,9 @@ void D3SceneEditor::OnContextMenuVisualObj(CPoint point) {
     }
     break;
   }
+  if(m_centerOfRotation.isEmpty()) {
+    removeMenuItem(menu, ID_OBJECT_RESETCENTEROFROTATION);
+  }
   if(!m_currentObj->hasFillMode()) {
     removeSubMenuContainingId(menu, ID_FILLMODE_WIREFRAME);
   } else {
@@ -1185,9 +1217,10 @@ void D3SceneEditor::OnContextMenuLightControl(CPoint point) {
   showContextMenu(menu, point);
 }
 
-void D3SceneEditor::OnControlCameraWalk()      { setCurrentControl(CONTROL_CAMERA_WALK   ); }
-void D3SceneEditor::OnControlObjPos()          { setCurrentControl(CONTROL_OBJECT_POS    ); }
-void D3SceneEditor::OnControlObjScale()        { setCurrentControl(CONTROL_OBJECT_SCALE  ); }
+void D3SceneEditor::OnControlCameraWalk()       { setCurrentControl(CONTROL_CAMERA_WALK      ); }
+void D3SceneEditor::OnControlCameraProjection() { setCurrentControl(CONTROL_CAMERA_PROJECTION); }
+void D3SceneEditor::OnControlObjPos()           { setCurrentControl(CONTROL_OBJECT_POS       ); }
+void D3SceneEditor::OnControlObjScale()         { setCurrentControl(CONTROL_OBJECT_SCALE     ); }
 
 void D3SceneEditor::OnControlObjMoveRotate() {
 //  setSelectedObject(m_calculatedObject);
@@ -1233,7 +1266,8 @@ void D3SceneEditor::setCurrentControl(D3EditorControl control) {
 SceneObjectType D3SceneEditor::getCurrentControlObjType() const {
   switch(getCurrentControl()) {
   case CONTROL_IDLE             :
-  case CONTROL_CAMERA_WALK      : return SOTYPE_NULL;
+  case CONTROL_CAMERA_WALK      :
+  case CONTROL_CAMERA_PROJECTION: return SOTYPE_NULL;
   case CONTROL_OBJECT_POS       :
   case CONTROL_OBJECT_SCALE     :
   case CONTROL_ANIMATION_SPEED  :
@@ -1259,9 +1293,10 @@ void D3SceneEditor::OnObjectEditMaterial() {
   CHECKINVARIANT();
 }
 
-void D3SceneEditor::OnResetCamera() {
-  m_currentCamera->resetPos();
-}
+void D3SceneEditor::OnCameraResetPosition()    {  m_currentCamera->resetPos();         }
+void D3SceneEditor::OnCameraResetOrientation() {  m_currentCamera->resetOrientation(); }
+void D3SceneEditor::OnCameraResetProjection()  {  m_currentCamera->resetProjection();  }
+void D3SceneEditor::OnCameraResetAll()         {  m_currentCamera->resetAll();         }
 
 void D3SceneEditor::SetRightHanded(bool rightHanded) {
   getScene().setRightHanded(rightHanded);
@@ -1352,16 +1387,12 @@ void D3SceneEditor::OnObjectRemove() {
 }
 
 void D3SceneEditor::OnObjectSetCenterOfRotation() {
-  setCenterOfRotation();
-}
-
-void D3SceneEditor::resetCenterOfRotation() {
-  m_centerOfRotation.reset();
+  m_centerOfRotation.set(m_currentObj, m_pickedInfo.getMeshPoint());
   renderInfo();
 }
 
-void D3SceneEditor::setCenterOfRotation() {
-  m_centerOfRotation.set(m_currentObj, m_pickedInfo.getMeshPoint());
+void D3SceneEditor::OnObjectResetCenterOfRotation() {
+  m_centerOfRotation.reset();
   renderInfo();
 }
 
@@ -1539,6 +1570,7 @@ void D3SceneEditor::checkInvariant(const TCHAR *method, int line) const {
   switch(m_currentControl) {
   case CONTROL_IDLE             :
   case CONTROL_CAMERA_WALK      :
+  case CONTROL_CAMERA_PROJECTION:
     break;
   case CONTROL_OBJECT_POS       :
   case CONTROL_OBJECT_SCALE     :

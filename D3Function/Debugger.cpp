@@ -103,7 +103,7 @@ void Debugger::handleStep(StepType type) {
   }
 }
 
-D3SceneObject *Debugger::getSceneObject() {
+D3SceneObjectVisual *Debugger::getSceneObject() {
   return m_surface->getSceneObject();
 }
 
