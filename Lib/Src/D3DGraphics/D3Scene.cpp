@@ -303,6 +303,10 @@ UINT D3Scene::addMaterial(const D3DMATERIAL &material) {
   return id;
 }
 
+UINT D3Scene::addMaterialWithColor(D3DCOLOR color) {
+  return addMaterial(D3Material::createMaterialWithColor(color));
+}
+
 UINT D3Scene::getFirstFreeMaterialId() const {
   for(UINT id = 0;; id++) {
     if(m_materialMap.get(id) == NULL) {

@@ -163,7 +163,7 @@ public:
   inline int getFaceCount() const {
     return m_faceCount;
   }
-  D3SceneObjectWithMesh *createMeshObject() const;
+  D3SceneObjectVisual *createMeshObject() const;
   const Octagon &getCurrentOcta() const {
     return m_currentOcta;
   }

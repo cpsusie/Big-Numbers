@@ -20,7 +20,11 @@ protected:
   bool                 m_visible;
   void                *m_userData;
   D3DXMATRIX           m_world;
-  D3SceneObjectVisual &addChild(D3SceneObjectVisual *child);
+  // Return index of the child in m_children. can be used as parameter to getChild(UINT index)
+  UINT addChild(D3SceneObjectVisual *child);
+  inline D3SceneObjectVisual *getChild(UINT index) const {
+    return m_children[index];
+  }
 public:
   D3SceneObjectVisual(D3Scene             &scene , const String &name=_T("VisualObject"));
   D3SceneObjectVisual(D3SceneObjectVisual *parent, const String &name=EMPTYSTRING);

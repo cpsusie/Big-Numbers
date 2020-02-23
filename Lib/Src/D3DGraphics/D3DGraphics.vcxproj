@@ -770,7 +770,6 @@
     <ClCompile Include="D3Device.cpp" />
     <ClCompile Include="D3Light.cpp" />
     <ClCompile Include="D3Quaternion.cpp" />
-    <ClCompile Include="D3Pdus.cpp" />
     <ClCompile Include="D3Ray.cpp" />
     <ClCompile Include="D3SceneObjectAnimatedMesh.cpp" />
     <ClCompile Include="D3PickedInfo.cpp" />
@@ -856,7 +855,6 @@
     <ClInclude Include="..\..\Include\D3DGraphics\D3DeviceRenderState.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3DXCube.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3Light.h" />
-    <ClInclude Include="..\..\Include\D3DGraphics\D3Pdus.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3PickedInfo.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3Ray.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3Device.h" />

@@ -29,7 +29,7 @@ D3SceneObjectVisual::~D3SceneObjectVisual() {
   m_children.clear();
 }
 
-D3SceneObjectVisual &D3SceneObjectVisual::addChild(D3SceneObjectVisual *child) {
+UINT D3SceneObjectVisual::addChild(D3SceneObjectVisual *child) {
   if(child->m_parent != this) {
     throwInvalidArgumentException(__TFUNCTION__,_T("child(name=%s).parent(%s) != this (%s)")
                                  ,child->getName().cstr()
@@ -37,8 +37,9 @@ D3SceneObjectVisual &D3SceneObjectVisual::addChild(D3SceneObjectVisual *child) {
                                  ,getName().cstr()
                                  );
   }
+  const UINT index = (UINT)m_children.size();
   m_children.add(child);
-  return *this;
+  return index;
 }
 
 const D3Material &D3SceneObjectVisual::getMaterial() const {
@@ -47,6 +48,9 @@ const D3Material &D3SceneObjectVisual::getMaterial() const {
 
 void D3SceneObjectVisual::draw() {
   for(Iterator<D3SceneObjectVisual*> it = m_children.getIterator(); it.hasNext();) {
-    it.next()->draw();
+    D3SceneObjectVisual *child = it.next();
+    if(child->isVisible()) {
+      child->draw();
+    }
   }
 }

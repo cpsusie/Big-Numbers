@@ -90,7 +90,9 @@ public:
     return *m_device;
   }
   LPDIRECT3DDEVICE getDirectDevice() const;
+  // notify listeners with notification id = SP_CAMERACOUNT
   D3Camera       &addCamera(HWND wnd);
+  // notify listeners with notification id = SP_CAMERACOUNT
   void            removeCamera(D3Camera &camera);
   inline const D3CameraArray &getCameraArray() const {
     return m_cameraArray;
@@ -101,9 +103,11 @@ public:
   void close();
   void render(const D3Camera &camera);
   void render(CameraSet cameraSet);
+  // notify listeners with notification id=SP_VISUALCOUNT
   void addVisual(D3SceneObjectVisual *obj);
   // Remove obj from scene. if obj is an animated object, the animationthread will be stopped.
   // Does NOT delete the object
+  // notify listeners with notification id=SP_VISUALCOUNT
   void removeVisual(D3SceneObjectVisual *obj);
   void removeAllVisuals();
   D3VisualIterator getVisualIterator(long mask = OBJMASK_ALL) const;
@@ -124,6 +128,7 @@ public:
     return m_ambientColor;
   }
 
+  // notify listeners with notification id=SP_RIGHTHANDED
   void setRightHanded(bool rightHanded);
   inline bool getRightHanded() const {
     return m_rightHanded;
@@ -132,6 +137,7 @@ public:
 
 // --------------------------- D3Light ----------------------------
 
+  // notify listeners with notification id=SP_LIGHTPARAMETERS
   void     setLight(      const D3Light &param);
   D3Light  getLight(      UINT lightIndex) const;
   // Return Array of defined lights
@@ -139,8 +145,11 @@ public:
   inline D3DLIGHTTYPE getLightType(UINT lightIndex) const {
     return getLight(lightIndex).Type;
   }
+  // notify listeners with notification id=SP_LIGHTCOUNT
   UINT addLight(                   const D3DLIGHT &light);
+  // notify listeners with notification id=SP_LIGHTCOUNT
   void removeLight(                UINT lightIndex);
+  // notify listeners with notification id=SP_LIGHTPARAMETERS
   void setLightEnabled(            UINT lightIndex, bool enabled);
   inline bool isLightEnabled(      UINT lightIndex) const {
     return m_lightsEnabled.contains(lightIndex);
@@ -207,8 +216,14 @@ public:
   const MaterialMap &getAllMaterials() const {
     return m_materialMap;
   }
+  // notify listeners with either SP_MATERIALPARAMETERS or SP_MATERIALCOUNT incase of new material
   void setMaterial(const D3Material  &material);
+  // notify listeners by notification id=SP_MATERIALCOUNT
   UINT addMaterial(const D3DMATERIAL &material);
+  // add a material with the specified diffuse and emissive color, and return it's id
+  // uses D3Material::createMaterialWithColor
+  UINT addMaterialWithColor(D3DCOLOR color);
+  // notify listeners by notification id=SP_MATERIALCOUNT
   void removeMaterial(UINT materialId);
   // assume lcMaterial is defined. Dont notify listeners about change in material
   void setLightControlMaterial(const D3Material &lcMaterial);

@@ -35,7 +35,7 @@ D3SCoordSystemLineArrow::D3SCoordSystemLineArrow(D3SceneObjectVisual *parent, in
 : D3SceneObjectLineArrow(parent, D3DXORIGIN, createUnitVector(id), format(_T("%c axis"),'X'+id))
 , m_id(     id)
 {
-  m_materialId = getScene().addMaterial(D3Material::createMaterialWithColor(axisColor[id]));
+  m_materialId = getScene().addMaterialWithColor(axisColor[id]);
 }
 
 D3SCoordSystemLineArrow::~D3SCoordSystemLineArrow() {
@@ -50,7 +50,7 @@ public:
   D3SceneGridObject(D3SceneObjectVisual *parent, const D3DXCube3 &cube)
     : D3SceneObjectLineArray(parent, createLineArray(cube), _T("GridObject"))
   {
-    m_materialId = getScene().addMaterial(D3Material::createMaterialWithColor(D3D_BLACK));
+    m_materialId = getScene().addMaterialWithColor(D3D_BLACK);
   }
   ~D3SceneGridObject() {
     getScene().removeMaterial(m_materialId);
@@ -93,7 +93,7 @@ public:
   VerticalAxisLineObject(D3SceneObjectVisual *parent)
     : D3SceneObjectLineArray(parent, createLineArray(), _T("VerticalAxisLineObject"))
   {
-    m_materialId = getScene().addMaterial(D3Material::createMaterialWithColor(D3D_BLACK));
+    m_materialId = getScene().addMaterialWithColor(D3D_BLACK);
   }
   ~VerticalAxisLineObject() {
     getScene().removeMaterial(m_materialId);

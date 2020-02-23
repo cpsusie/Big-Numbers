@@ -174,9 +174,6 @@
     <ClCompile Include="D3Math.cpp">
       <Filter>Source Files\D3Math</Filter>
     </ClCompile>
-    <ClCompile Include="D3Pdus.cpp">
-      <Filter>Source Files\D3Math</Filter>
-    </ClCompile>
     <ClCompile Include="D3Quaternion.cpp">
       <Filter>Source Files\D3Math</Filter>
     </ClCompile>
@@ -365,9 +362,6 @@
       <Filter>Header Files\D3Math</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\D3DGraphics\D3Math.h">
-      <Filter>Header Files\D3Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\D3DGraphics\D3Pdus.h">
       <Filter>Header Files\D3Math</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\D3DGraphics\D3Transformation.h">
