@@ -369,7 +369,7 @@ public:
   ~D3AnimatedFunctionSurface() {
     getScene().removeMaterial(m_materialId);
   }
-  void modifyContextMenu(CMenu &menu) {
+  void modifyContextMenu(HMENU menu) {
     appendMenuItem(menu, _T("Edit function"), ID_OBJECT_EDITFUNCTION);
   }
   int getMaterialId() const {
@@ -387,7 +387,7 @@ public:
   ~D3FunctionSurface() {
     getScene().removeMaterial(m_materialId);
   }
-  void modifyContextMenu(CMenu &menu) {
+  void modifyContextMenu(HMENU menu) {
     appendMenuItem(menu, _T("Edit function"), ID_OBJECT_EDITFUNCTION);
   }
   int getMaterialId() const {

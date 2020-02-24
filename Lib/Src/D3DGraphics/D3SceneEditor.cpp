@@ -1109,27 +1109,27 @@ void D3SceneEditor::OnContextMenuBackground(CPoint point) {
     const D3Light &l = lights[i];
     definedLights.add(l.getIndex());
     setMenuItemText(menu, ID_SELECT_LIGHT0 + l.getIndex(), lightMenuText(l));
-   }
-   definedLights.invert().remove(21,definedLights.getCapacity()-1);
-   for(Iterator<size_t> it = definedLights.getIterator(); it.hasNext();) {
-     removeMenuItem(menu, (int)it.next() + ID_SELECT_LIGHT0);
-   }
-   if(getCurrentVisual() == NULL) {
-     removeMenuItem(menu, ID_CONTROL_OBJECT_MOVEROTATE);
-   }
-   removeMenuItem(menu, isCoordinateSystemVisible()
-                       ?ID_SHOWCOORDINATESYSTEM
-                       :ID_HIDECOORDINATESYSTEM);
-   removeMenuItem(menu, getScene().getSpecularEnable()
-                       ?ID_ENABLE_SPECULARHIGHLIGHT
-                       :ID_DISABLE_SPECULARHIGHLIGHT);
+  }
+  definedLights.invert().remove(21,definedLights.getCapacity()-1);
+  for(Iterator<size_t> it = definedLights.getIterator(); it.hasNext();) {
+    removeMenuItem(menu, (int)it.next() + ID_SELECT_LIGHT0);
+  }
+  if(getCurrentVisual() == NULL) {
+    removeMenuItem(menu, ID_CONTROL_OBJECT_MOVEROTATE);
+  }
+  removeMenuItem(menu, isCoordinateSystemVisible()
+                      ?ID_SHOWCOORDINATESYSTEM
+                      :ID_HIDECOORDINATESYSTEM);
+  removeMenuItem(menu, getScene().getSpecularEnable()
+                      ?ID_ENABLE_SPECULARHIGHLIGHT
+                      :ID_DISABLE_SPECULARHIGHLIGHT);
+  removeMenuItem(menu, getScene().getRightHanded()
+                      ?ID_RIGHTHANDED
+                      :ID_LEFTHANDED);
 
-   removeMenuItem(menu, getScene().getRightHanded()
-                       ?ID_RIGHTHANDED
-                       :ID_LEFTHANDED);
-
-   m_sceneContainer->modifyContextMenu(*menu.GetSubMenu(0));
-   showContextMenu(menu, point);
+  m_currentCamera->modifyContextMenu(*menu.GetSubMenu(0));
+  m_sceneContainer->modifyContextMenu(*menu.GetSubMenu(0));
+  showContextMenu(menu, point);
 }
 
 void D3SceneEditor::OnContextMenuVisualObj(CPoint point) {

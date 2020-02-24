@@ -13,7 +13,7 @@ public:
   virtual HWND     get3DWindow(UINT index) const = 0;
   // renderFlags is any combination of RENDER_3D,RENDER_INFO
   virtual void     render(BYTE renderFlags, CameraSet cameraSet) = 0;
-  virtual void     modifyContextMenu(CMenu &menu) {
+  virtual void     modifyContextMenu(HMENU menu) {
   }
   inline CSize     getWinSize(UINT index) const {
     return getClientRect(get3DWindow(index)).Size();

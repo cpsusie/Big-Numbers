@@ -812,7 +812,7 @@
     <ClCompile Include="D3LightControlSpot.cpp" />
     <ClCompile Include="D3Scene.cpp" />
     <ClCompile Include="D3SceneIO.cpp" />
-    <ClCompile Include="D3TextureFactory.cpp" />
+    <ClCompile Include="D3AbstractTextureFactory.cpp" />
     <ClCompile Include="D3ToString.cpp" />
     <ClCompile Include="Function2DSurface.cpp" />
     <ClCompile Include="Function2DSurfaceMeshBuilder.cpp" />

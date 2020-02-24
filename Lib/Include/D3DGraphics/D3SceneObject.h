@@ -26,5 +26,7 @@ public:
   }
   D3Device        &getDevice();
   LPDIRECT3DDEVICE getDirectDevice();
+  virtual void modifyContextMenu(HMENU menu) {
+  }
   virtual SceneObjectType getType() const = 0;
 };

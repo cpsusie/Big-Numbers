@@ -42,8 +42,6 @@ public:
   virtual int getMaterialId() const {
     return -1;
   }
-  virtual void modifyContextMenu(CMenu &menu) {
-  }
   virtual String toString() const {
     return getName();
   }
