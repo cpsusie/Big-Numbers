@@ -185,28 +185,6 @@ public:
   void   setSpecularEnable(bool enabled);
   bool   getSpecularEnable() const;
 
-// --------------------------- Texture ------------------------------
-// call SAFERELEASE(texture); on the returned value when finished use
-  inline LPDIRECT3DTEXTURE loadTextureFromFile(const String &fileName) {
-    return AbstractTextureFactory::loadTextureFromFile(getDirectDevice(), fileName);
-  }
-  // call SAFERELEASE(texture); on the returned value when finished use
-  inline LPDIRECT3DTEXTURE loadTextureFromResource(int resId, const String &typeName) {
-    return AbstractTextureFactory::loadTextureFromResource(getDirectDevice(), resId, typeName);
-  }
-  // call SAFERELEASE(texture); on the returned value when finished use
-  inline LPDIRECT3DTEXTURE loadTextureFromByteArray(ByteArray &ba) {
-    return AbstractTextureFactory::loadTextureFromByteArray(getDirectDevice(), ba);
-  }
-  // call SAFERELEASE(texture); on the returned value when finished use
-  inline LPDIRECT3DTEXTURE getTextureFromBitmap(HBITMAP bm) {
-    return AbstractTextureFactory::getTextureFromBitmap(getDirectDevice(), bm);
-  }
-  // call SAFERELEASE(texture); on the returned value when finished use
-  inline LPDIRECT3DTEXTURE loadTextureFromBitmapResource(int id) {
-    return AbstractTextureFactory::loadTextureFromBitmapResource(getDirectDevice(), id);
-  }
-
 // --------------------------- D3Material ----------------------------
 
   inline const D3Material &getMaterial(UINT materialId) const {

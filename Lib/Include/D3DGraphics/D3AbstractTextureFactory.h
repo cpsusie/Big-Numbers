@@ -11,9 +11,26 @@ public:
   static LPDIRECT3DTEXTURE getTextureFromBitmap(         LPDIRECT3DDEVICE device, HBITMAP bm);
   static LPDIRECT3DTEXTURE loadTextureFromBitmapResource(LPDIRECT3DDEVICE device, int id);
 
-  virtual LPDIRECT3DTEXTURE loadTextureFromFile(          const String &fileName)            = 0;
-  virtual LPDIRECT3DTEXTURE loadTextureFromResource(      int resId, const String &typeName) = 0;
-  virtual LPDIRECT3DTEXTURE loadTextureFromByteArray(     ByteArray &ba)                     = 0;
-  virtual LPDIRECT3DTEXTURE getTextureFromBitmap(         HBITMAP bm)                        = 0;
-  virtual LPDIRECT3DTEXTURE loadTextureFromBitmapResource(int id)                            = 0;
+  // call SAFERELEASE(texture); on the returned value when finished use
+  inline LPDIRECT3DTEXTURE loadTextureFromFile(const String &fileName) {
+    return loadTextureFromFile(getDirectDevice(), fileName);
+  }
+  // call SAFERELEASE(texture); on the returned value when finished use
+  inline LPDIRECT3DTEXTURE loadTextureFromResource(int resId, const String &typeName) {
+    return loadTextureFromResource(getDirectDevice(), resId, typeName);
+  }
+  // call SAFERELEASE(texture); on the returned value when finished use
+  inline LPDIRECT3DTEXTURE loadTextureFromByteArray(ByteArray &ba) {
+    return loadTextureFromByteArray(getDirectDevice(), ba);
+  }
+  // call SAFERELEASE(texture); on the returned value when finished use
+  inline LPDIRECT3DTEXTURE getTextureFromBitmap(HBITMAP bm) {
+    return getTextureFromBitmap(getDirectDevice(), bm);
+  }
+  // call SAFERELEASE(texture); on the returned value when finished use
+  inline LPDIRECT3DTEXTURE loadTextureFromBitmapResource(int id) {
+    return loadTextureFromBitmapResource(getDirectDevice(), id);
+  }
+
+  virtual LPDIRECT3DDEVICE getDirectDevice() const = 0;
 };
