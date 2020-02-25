@@ -6,7 +6,9 @@
 #endif
 
 CGetIntDlg::CGetIntDlg(const TCHAR *title, const TCHAR *prompt, const IntInterval *legalInterval, int defaultValue, CWnd *pParent)
-: CDialog(CGetIntDlg::IDD, pParent), m_title(title), m_prompt(prompt)
+: CDialog(IDD, pParent)
+, m_title(title)
+, m_prompt(prompt)
 {
   m_intervalSpecified = legalInterval != NULL;
   if(m_intervalSpecified) {

@@ -9,7 +9,7 @@
 #define new DEBUG_NEW
 #endif
 
-CShowDirAndArgDlg::CShowDirAndArgDlg(CWnd *pParent) : CDialog(CShowDirAndArgDlg::IDD, pParent) {
+CShowDirAndArgDlg::CShowDirAndArgDlg(CWnd *pParent) : CDialog(IDD, pParent) {
   m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
 }
 
@@ -18,9 +18,9 @@ void CShowDirAndArgDlg::DoDataExchange(CDataExchange *pDX) {
 }
 
 BEGIN_MESSAGE_MAP(CShowDirAndArgDlg, CDialog)
-    ON_WM_PAINT()
-    ON_WM_QUERYDRAGICON()
-    ON_WM_SIZE()
+  ON_WM_PAINT()
+  ON_WM_QUERYDRAGICON()
+  ON_WM_SIZE()
 END_MESSAGE_MAP()
 
 HCURSOR CShowDirAndArgDlg::OnQueryDragIcon() {

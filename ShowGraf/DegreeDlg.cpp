@@ -7,7 +7,7 @@
 
 CDegreeDlg::CDegreeDlg(const Point2DArray &pointArray, FunctionPlotter &fp, CWnd *pParent)
 : m_fp(fp)
-, CDialog(CDegreeDlg::IDD, pParent) {
+, CDialog(IDD, pParent) {
 
   for(size_t i = 0; i < pointArray.size(); i++) {
     m_data.add(pointArray[i]);

@@ -69,14 +69,12 @@ String CShowGrafApp::getRecentFile(int index) {
 
 class CAboutDlg : public CDialog {
 public:
-  CAboutDlg();
   enum { IDD = IDD_ABOUTBOX };
+  CAboutDlg() : CDialog(IDD) {
+  }
 protected:
   DECLARE_MESSAGE_MAP()
 };
-
-CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
-}
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()

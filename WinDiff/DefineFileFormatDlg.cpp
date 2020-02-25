@@ -10,7 +10,7 @@
 #define new DEBUG_NEW
 #endif
 
-CDefineFileFormatDlg::CDefineFileFormatDlg(FileFormat &param, const String &sampleline, CWnd *pParent)  : CDialog(CDefineFileFormatDlg::IDD, pParent), m_param(param) {
+CDefineFileFormatDlg::CDefineFileFormatDlg(FileFormat &param, const String &sampleline, CWnd *pParent)  : CDialog(IDD, pParent), m_param(param) {
   m_columnFrom         = 1;
   m_columnTo           = 1;
   m_fieldDelimiter     = EMPTYSTRING;
@@ -31,7 +31,6 @@ void CDefineFileFormatDlg::DoDataExchange(CDataExchange *pDX) {
   DDX_Text(    pDX, IDC_EDITSAMPLE, m_sampleLine);
   DDX_Check(   pDX, IDC_CHECKMULTIPLEDELIMITERS, m_multipleDelimiters);
 }
-
 
 BEGIN_MESSAGE_MAP(CDefineFileFormatDlg, CDialog)
   ON_WM_DRAWITEM()

@@ -5,24 +5,24 @@
 #define new DEBUG_NEW
 #endif
 
-CIntervalDlg::CIntervalDlg(const RectangleTransformation &tr, CWnd *pParent) : m_tr(tr), CDialog(CIntervalDlg::IDD, pParent) {
-    m_minx = m_tr.getFromRectangle().getMinX();
-    m_maxx = m_tr.getFromRectangle().getMaxX();
-    m_miny = m_tr.getFromRectangle().getMinY();
-    m_maxy = m_tr.getFromRectangle().getMaxY();
+CIntervalDlg::CIntervalDlg(const RectangleTransformation &tr, CWnd *pParent) : m_tr(tr), CDialog(IDD, pParent) {
+  m_minx = m_tr.getFromRectangle().getMinX();
+  m_maxx = m_tr.getFromRectangle().getMaxX();
+  m_miny = m_tr.getFromRectangle().getMinY();
+  m_maxy = m_tr.getFromRectangle().getMaxY();
 }
 
 void CIntervalDlg::DoDataExchange(CDataExchange *pDX) {
-    __super::DoDataExchange(pDX);
-    DDX_Text(pDX, IDC_EDITXFROM, m_minx);
-    DDX_Text(pDX, IDC_EDITXTO  , m_maxx);
-    DDX_Text(pDX, IDC_EDITYFROM, m_miny);
-    DDX_Text(pDX, IDC_EDITYTO  , m_maxy);
+  __super::DoDataExchange(pDX);
+  DDX_Text(pDX, IDC_EDITXFROM, m_minx);
+  DDX_Text(pDX, IDC_EDITXTO  , m_maxx);
+  DDX_Text(pDX, IDC_EDITYFROM, m_miny);
+  DDX_Text(pDX, IDC_EDITYTO  , m_maxy);
 }
 
 BEGIN_MESSAGE_MAP(CIntervalDlg, CDialog)
-    ON_COMMAND(ID_GOTO_XINTERVAL, OnGotoXInterval)
-    ON_COMMAND(ID_GOTO_YINTERVAL, OnGotoYInterval)
+  ON_COMMAND(ID_GOTO_XINTERVAL, OnGotoXInterval)
+  ON_COMMAND(ID_GOTO_YINTERVAL, OnGotoYInterval)
 END_MESSAGE_MAP()
 
 BOOL CIntervalDlg::OnInitDialog() {

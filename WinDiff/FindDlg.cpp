@@ -6,7 +6,10 @@
 #define new DEBUG_NEW
 #endif
 
-CFindDlg::CFindDlg(FindParameters &param, TextContainer *tc, CWnd *pParent) : CDialog(CFindDlg::IDD, pParent) , m_param(param), m_textContainer(tc) {
+CFindDlg::CFindDlg(FindParameters &param, TextContainer *tc, CWnd *pParent)
+: CDialog(IDD, pParent)
+, m_param(param), m_textContainer(tc)
+{
   m_matchCase      = param.m_matchCase;
   m_matchWholeWord = param.m_matchWholeWord;
   m_useRegex       = param.m_useRegex;

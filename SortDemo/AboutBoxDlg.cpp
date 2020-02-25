@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "AboutBoxDlg.h"
 
-CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
+CAboutDlg::CAboutDlg() : CDialog(IDD) {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange *pDX) {

@@ -7,7 +7,7 @@
 #define new DEBUG_NEW
 #endif
 
-CRegexDlg::CRegexDlg(RegexFilter &param, CWnd *pParent) : m_param(param), CDialog(CRegexDlg::IDD, pParent) {
+CRegexDlg::CRegexDlg(RegexFilter &param, CWnd *pParent) : CDialog(IDD, pParent), m_param(param) {
   m_matchCase      = m_param.m_matchCase;
   m_matchWholeWord = m_param.m_matchWholeWord;
   m_regex          = m_param.m_regex.cstr();

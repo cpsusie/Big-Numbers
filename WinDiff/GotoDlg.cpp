@@ -5,7 +5,7 @@
 #define new DEBUG_NEW
 #endif
 
-CGotoDlg::CGotoDlg(CWnd *pParent)   : CDialog(CGotoDlg::IDD, pParent) {
+CGotoDlg::CGotoDlg(CWnd *pParent)   : CDialog(IDD, pParent) {
   m_line = 0;
 }
 

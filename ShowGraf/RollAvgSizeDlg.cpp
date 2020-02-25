@@ -5,7 +5,7 @@
 #define new DEBUG_NEW
 #endif
 
-RollAvgSizeDlg::RollAvgSizeDlg(int rollAvgSize, CWnd *pParent) : CDialog(RollAvgSizeDlg::IDD, pParent) {
+RollAvgSizeDlg::RollAvgSizeDlg(int rollAvgSize, CWnd *pParent) : CDialog(IDD, pParent) {
   m_rollAvgSize = rollAvgSize;
 }
 

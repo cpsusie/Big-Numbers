@@ -95,27 +95,19 @@ int CCaptureApp::ExitInstance() {
 
 class CAboutDlg : public CDialog {
 public:
-  CAboutDlg();
-
   enum { IDD = IDD_ABOUTBOX };
+  CAboutDlg() : CDialog(IDD) {
+  }
 
   virtual BOOL PreTranslateMessage(MSG *pMsg);
-  virtual void DoDataExchange(CDataExchange *pDX);
   virtual BOOL OnInitDialog();
   DECLARE_MESSAGE_MAP()
 };
-
-CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
-}
 
 BOOL CAboutDlg::OnInitDialog() {
   __super::OnInitDialog();
   GetDlgItem(IDC_EDITHOMEPAGE)->SetWindowText(_T("http://www.mikkelsenware.dk"));
   return TRUE;
-}
-
-void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)

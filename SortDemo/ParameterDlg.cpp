@@ -9,35 +9,35 @@
 
 CParameterDlg::CParameterDlg(const InitializeParameters &parameters, CWnd *pParent)
 : m_parameters(parameters)
-, CDialog(CParameterDlg::IDD, pParent) {
-    m_elementCount = (UINT)m_parameters.m_elementCount;
-    m_seed         = m_parameters.m_seed;
-    m_periodCount  = m_parameters.m_periodCount;
-    m_fileName     = m_parameters.m_fileName.cstr();
+, CDialog(IDD, pParent) {
+  m_elementCount = (UINT)m_parameters.m_elementCount;
+  m_seed         = m_parameters.m_seed;
+  m_periodCount  = m_parameters.m_periodCount;
+  m_fileName     = m_parameters.m_fileName.cstr();
 }
 
 void CParameterDlg::DoDataExchange(CDataExchange *pDX) {
-    __super::DoDataExchange(pDX);
-    DDX_Text(pDX, IDC_EDIT_ELEMENTCOUNT, m_elementCount);
-    DDV_MinMaxUInt(pDX, m_elementCount, 2, 1000);
-    DDX_Text(pDX, IDC_EDIT_PERIODCOUNT, m_periodCount);
-    DDX_Text(pDX, IDC_EDIT_FILENAME, m_fileName);
-    DDX_Text(pDX, IDC_EDIT_SEED, m_seed);
+  __super::DoDataExchange(pDX);
+  DDX_Text(pDX, IDC_EDIT_ELEMENTCOUNT, m_elementCount);
+  DDV_MinMaxUInt(pDX, m_elementCount, 2, 1000);
+  DDX_Text(pDX, IDC_EDIT_PERIODCOUNT, m_periodCount);
+  DDX_Text(pDX, IDC_EDIT_FILENAME, m_fileName);
+  DDX_Text(pDX, IDC_EDIT_SEED, m_seed);
 }
 
 BEGIN_MESSAGE_MAP(CParameterDlg, CDialog)
-    ON_BN_CLICKED(IDC_RADIO_RANDOM       , OnRadioRandom        )
-    ON_BN_CLICKED(IDC_RADIO_SORTED       , OnRadioSorted        )
-    ON_BN_CLICKED(IDC_RADIO_INVERSESORTED, OnRadioInverseSorted )
-    ON_BN_CLICKED(IDC_RADIO_SINUS        , OnRadioSinus         )
-    ON_BN_CLICKED(IDC_RADIO_FILEDATA     , OnRadioFileData      )
-    ON_BN_CLICKED(IDC_BUTTON_BROWSE      , OnButtonBrowse       )
-    ON_COMMAND(ID_GOTO_ELEMENTCOUNT      , OnGotoElementCount   )
-    ON_COMMAND(ID_GOTO_ELEMENTSIZE       , OnGotoElementSize    )
-    ON_COMMAND(ID_GOTO_PERIODCOUNT       , OnGotoPeriodCount    )
-    ON_COMMAND(ID_GOTO_FILENAME          , OnGotoFileName       )
-    ON_COMMAND(ID_GOTO_SEED              , OnGotoSeed           )
-    ON_CBN_SELCHANGE(IDC_COMBO_RANDOMIZE, OnSelchangeComboRandomize)
+  ON_BN_CLICKED(IDC_RADIO_RANDOM       , OnRadioRandom        )
+  ON_BN_CLICKED(IDC_RADIO_SORTED       , OnRadioSorted        )
+  ON_BN_CLICKED(IDC_RADIO_INVERSESORTED, OnRadioInverseSorted )
+  ON_BN_CLICKED(IDC_RADIO_SINUS        , OnRadioSinus         )
+  ON_BN_CLICKED(IDC_RADIO_FILEDATA     , OnRadioFileData      )
+  ON_BN_CLICKED(IDC_BUTTON_BROWSE      , OnButtonBrowse       )
+  ON_COMMAND(ID_GOTO_ELEMENTCOUNT      , OnGotoElementCount   )
+  ON_COMMAND(ID_GOTO_ELEMENTSIZE       , OnGotoElementSize    )
+  ON_COMMAND(ID_GOTO_PERIODCOUNT       , OnGotoPeriodCount    )
+  ON_COMMAND(ID_GOTO_FILENAME          , OnGotoFileName       )
+  ON_COMMAND(ID_GOTO_SEED              , OnGotoSeed           )
+  ON_CBN_SELCHANGE(IDC_COMBO_RANDOMIZE , OnSelchangeComboRandomize)
 END_MESSAGE_MAP()
 
 BOOL CParameterDlg::OnInitDialog() {

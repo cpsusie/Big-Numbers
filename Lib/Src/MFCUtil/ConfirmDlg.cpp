@@ -10,7 +10,7 @@ CConfirmDlg::CConfirmDlg(const TCHAR *message, const TCHAR *caption, UINT nType,
 : m_message(message)
 , m_caption(caption)
 , m_nType(nType)
-, CDialog(CConfirmDlg::IDD, pParent)
+, CDialog(IDD, pParent)
 {
   m_icon            = NULL;
   m_hasCancelButton = false;

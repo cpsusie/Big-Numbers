@@ -21,81 +21,74 @@
 
 class CAboutDlg : public CDialog {
 public:
-  CAboutDlg();
   enum { IDD = IDD_ABOUTBOX };
+  CAboutDlg() : CDialog(IDD) {
+  }
 
 protected:
-  virtual void DoDataExchange(CDataExchange *pDX);
   DECLARE_MESSAGE_MAP()
 };
-
-CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
-}
-
-void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-    __super::DoDataExchange(pDX);
-}
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
 CPartyMakerDlg::CPartyMakerDlg(CWnd *pParent) : CDialog(CPartyMakerDlg::IDD, pParent) {
-    m_hIcon = theApp.LoadIcon(IDI_MAINFRAME);
+  m_hIcon = theApp.LoadIcon(IDI_MAINFRAME);
 }
 
 void CPartyMakerDlg::DoDataExchange(CDataExchange *pDX) {
-    __super::DoDataExchange(pDX);
-    DDX_Control(pDX, IDC_ALLMEDIA, m_allMedia);
-    DDX_Control(pDX, IDC_MEDIAPLAYER, m_player);
+  __super::DoDataExchange(pDX);
+  DDX_Control(pDX, IDC_ALLMEDIA, m_allMedia);
+  DDX_Control(pDX, IDC_MEDIAPLAYER, m_player);
 }
 
 BEGIN_MESSAGE_MAP(CPartyMakerDlg, CDialog)
-    ON_WM_SYSCOMMAND()
-    ON_WM_QUERYDRAGICON()
-    ON_WM_TIMER()
-    ON_WM_PAINT()
-    ON_WM_CONTEXTMENU()
-    ON_WM_MOVE()
-    ON_WM_CLOSE()
-    ON_WM_HSCROLL()
-    ON_COMMAND(ID_FILE_NEXTNUMBER              , OnFileNextNumber              )
-    ON_COMMAND(ID_FILE_EDITORDER               , OnFileEditOrder               )
-    ON_COMMAND(ID_FILE_PAUSE                   , OnFilePause                   )
-    ON_COMMAND(ID_FILE_PASSWORDPROTECT         , OnFilePasswordProtect         )
-    ON_COMMAND(ID_FILE_GENERATEPLAYLISTFROMDIR , OnFileGeneratePlaylistFromDir )
-    ON_COMMAND(ID_FILE_EXIT                    , OnFileExit                    )
-    ON_COMMAND(ID_EDIT_COPY                    , OnEditCopy                    )
-    ON_COMMAND(ID_EDIT_DELETE                  , OnEditDelete                  )
-    ON_COMMAND(ID_EDIT_MODIFYINFO              , OnEditModifyInfo              )
-    ON_COMMAND(ID_EDIT_SHOWINFO                , OnEditShowInfo                )
-    ON_COMMAND(ID_EDIT_SHOWLOG                 , OnEditShowLog                 )
-    ON_COMMAND(ID_EDIT_SHOWERRORS              , OnEditShowErrors              )
-    ON_COMMAND(ID_EDIT_FIND                    , OnEditFind                    )
-    ON_COMMAND(ID_OPTIONS_BALANCE              , OnOptionsBalance              )
-    ON_COMMAND(ID_OPTIONS_SPEED                , OnOptionsSpeed                )
-    ON_COMMAND(ID_OPTIONS_KATALOG              , OnOptionsKatalog              )
-    ON_COMMAND(ID_OPTIONS_RESCANCATALOG        , OnOptionsRescanCatalog        )
-    ON_COMMAND(ID_OPTIONS_AUTOSELECT           , OnOptionsAutoSelect           )
-    ON_COMMAND(ID_OPTIONS_ALLOWDUPLICATES      , OnOptionsAllowDuplicates      )
-    ON_COMMAND(ID_OPTIONS_CONFIRMCHOISE        , OnOptionsConfirmChoise        )
-    ON_COMMAND(ID_OPTIONS_MAXCHOISE            , OnOptionsMaxChoise            )
-    ON_COMMAND(ID_OPTIONS_COLORS_CURRENTTRACK  , OnOptionsColorsCurrentTrack   )
-    ON_COMMAND(ID_OPTIONS_COLORS_MEDIAQUEUE    , OnOptionsColorsMediaQueue     )
-    ON_COMMAND(ID_OPTIONS_COLORS_BACKGROUND    , OnOptionsColorsBackground     )
-    ON_COMMAND(ID_OPTIONS_CHANGEPASSWORD       , OnOptionsChangePassword       )
-    ON_COMMAND(ID_HELP_ABOUTPARTYMAKER         , OnHelpAboutPartymaker         )
-    ON_BN_CLICKED(IDC_SEARCHBUTTON             , OnButtonSearch                )
-    ON_BN_CLICKED(IDC_PAUSEBUTTON              , OnButtonPause                 )
-    ON_BN_CLICKED(IDC_NEXTBUTTON               , OnButtonNext                  )
-    ON_COMMAND(ID_SHOWCOUNT                    , OnShowCount                   )
-    ON_NOTIFY( NM_DBLCLK        , IDC_ALLMEDIA , OnDblClkAllMedia              )
-    ON_NOTIFY(LVN_COLUMNCLICK   , IDC_ALLMEDIA , OnColumnClickAllMedia         )
-    ON_NOTIFY(LVN_ITEMCHANGED   , IDC_ALLMEDIA , OnItemChangedAllMedia         )
-    ON_COMMAND(ID_CONTEXTMENU_REMOVE           , OnContextMenuRemove           )
-    ON_COMMAND(ID_CONTEXTMENU_INFO             , OnContextMenuInfo             )
-    ON_COMMAND(ID_SORT_BY_TITLE                , OnSortByTitle                 )
-    ON_COMMAND(ID_SORT_BY_ARTIST               , OnSortByArtist                )
-    ON_COMMAND(ID_SORT_BY_ALBUM                , OnSortByAlbum                 )
+  ON_WM_SYSCOMMAND()
+  ON_WM_QUERYDRAGICON()
+  ON_WM_TIMER()
+  ON_WM_PAINT()
+  ON_WM_CONTEXTMENU()
+  ON_WM_MOVE()
+  ON_WM_CLOSE()
+  ON_WM_HSCROLL()
+  ON_COMMAND(ID_FILE_NEXTNUMBER              , OnFileNextNumber              )
+  ON_COMMAND(ID_FILE_EDITORDER               , OnFileEditOrder               )
+  ON_COMMAND(ID_FILE_PAUSE                   , OnFilePause                   )
+  ON_COMMAND(ID_FILE_PASSWORDPROTECT         , OnFilePasswordProtect         )
+  ON_COMMAND(ID_FILE_GENERATEPLAYLISTFROMDIR , OnFileGeneratePlaylistFromDir )
+  ON_COMMAND(ID_FILE_EXIT                    , OnFileExit                    )
+  ON_COMMAND(ID_EDIT_COPY                    , OnEditCopy                    )
+  ON_COMMAND(ID_EDIT_DELETE                  , OnEditDelete                  )
+  ON_COMMAND(ID_EDIT_MODIFYINFO              , OnEditModifyInfo              )
+  ON_COMMAND(ID_EDIT_SHOWINFO                , OnEditShowInfo                )
+  ON_COMMAND(ID_EDIT_SHOWLOG                 , OnEditShowLog                 )
+  ON_COMMAND(ID_EDIT_SHOWERRORS              , OnEditShowErrors              )
+  ON_COMMAND(ID_EDIT_FIND                    , OnEditFind                    )
+  ON_COMMAND(ID_OPTIONS_BALANCE              , OnOptionsBalance              )
+  ON_COMMAND(ID_OPTIONS_SPEED                , OnOptionsSpeed                )
+  ON_COMMAND(ID_OPTIONS_KATALOG              , OnOptionsKatalog              )
+  ON_COMMAND(ID_OPTIONS_RESCANCATALOG        , OnOptionsRescanCatalog        )
+  ON_COMMAND(ID_OPTIONS_AUTOSELECT           , OnOptionsAutoSelect           )
+  ON_COMMAND(ID_OPTIONS_ALLOWDUPLICATES      , OnOptionsAllowDuplicates      )
+  ON_COMMAND(ID_OPTIONS_CONFIRMCHOISE        , OnOptionsConfirmChoise        )
+  ON_COMMAND(ID_OPTIONS_MAXCHOISE            , OnOptionsMaxChoise            )
+  ON_COMMAND(ID_OPTIONS_COLORS_CURRENTTRACK  , OnOptionsColorsCurrentTrack   )
+  ON_COMMAND(ID_OPTIONS_COLORS_MEDIAQUEUE    , OnOptionsColorsMediaQueue     )
+  ON_COMMAND(ID_OPTIONS_COLORS_BACKGROUND    , OnOptionsColorsBackground     )
+  ON_COMMAND(ID_OPTIONS_CHANGEPASSWORD       , OnOptionsChangePassword       )
+  ON_COMMAND(ID_HELP_ABOUTPARTYMAKER         , OnHelpAboutPartymaker         )
+  ON_BN_CLICKED(IDC_SEARCHBUTTON             , OnButtonSearch                )
+  ON_BN_CLICKED(IDC_PAUSEBUTTON              , OnButtonPause                 )
+  ON_BN_CLICKED(IDC_NEXTBUTTON               , OnButtonNext                  )
+  ON_COMMAND(ID_SHOWCOUNT                    , OnShowCount                   )
+  ON_NOTIFY( NM_DBLCLK        , IDC_ALLMEDIA , OnDblClkAllMedia              )
+  ON_NOTIFY(LVN_COLUMNCLICK   , IDC_ALLMEDIA , OnColumnClickAllMedia         )
+  ON_NOTIFY(LVN_ITEMCHANGED   , IDC_ALLMEDIA , OnItemChangedAllMedia         )
+  ON_COMMAND(ID_CONTEXTMENU_REMOVE           , OnContextMenuRemove           )
+  ON_COMMAND(ID_CONTEXTMENU_INFO             , OnContextMenuInfo             )
+  ON_COMMAND(ID_SORT_BY_TITLE                , OnSortByTitle                 )
+  ON_COMMAND(ID_SORT_BY_ARTIST               , OnSortByArtist                )
+  ON_COMMAND(ID_SORT_BY_ALBUM                , OnSortByAlbum                 )
 END_MESSAGE_MAP()
 
 static void showFile(const String &fileName) {

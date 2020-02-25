@@ -7,7 +7,7 @@
 #endif
 
 CAfstandDlg::CAfstandDlg(CWnd *pParent /*=NULL*/)
-  : CDialog(CAfstandDlg::IDD, pParent) {
+: CDialog(IDD, pParent) {
   m_afstand = 0;
   m_dag1    = EMPTYSTRING;
   m_dag2    = EMPTYSTRING;
@@ -21,8 +21,8 @@ void CAfstandDlg::DoDataExchange(CDataExchange *pDX) {
 }
 
 BEGIN_MESSAGE_MAP(CAfstandDlg, CDialog)
-  ON_BN_CLICKED(IDC_RESULT, OnResult)
-  ON_BN_CLICKED(IDC_RADIOADDER, OnRadioadder)
+  ON_BN_CLICKED(IDC_RESULT      , OnResult      )
+  ON_BN_CLICKED(IDC_RADIOADDER  , OnRadioadder  )
   ON_BN_CLICKED(IDC_RADIOAFSTAND, OnRadioafstand)
 END_MESSAGE_MAP()
 

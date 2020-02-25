@@ -9,25 +9,17 @@
 
 class CAboutDlg : public CDialog {
 public:
-  CAboutDlg();
-
   enum { IDD = IDD_ABOUTBOX };
+  CAboutDlg() : CDialog(IDD) {
+  }
 
-  virtual void DoDataExchange(CDataExchange *pDX);
   DECLARE_MESSAGE_MAP()
 };
-
-CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
-}
-
-void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-  __super::DoDataExchange(pDX);
-}
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CAvlTreeWndDlg::CAvlTreeWndDlg(CWnd *pParent) : CDialog(CAvlTreeWndDlg::IDD, pParent) {
+CAvlTreeWndDlg::CAvlTreeWndDlg(CWnd *pParent) : CDialog(IDD, pParent) {
   m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
 }
 

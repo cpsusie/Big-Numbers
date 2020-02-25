@@ -9,7 +9,7 @@
 CDataGraphDlg::CDataGraphDlg(DataGraph &g, CWnd *pParent)
 : m_graph(g)
 , m_model(g)
-, CDialog(CDataGraphDlg::IDD, pParent)
+, CDialog(IDD, pParent)
 {
   m_name  = EMPTYSTRING;
   m_style = EMPTYSTRING;

@@ -6,7 +6,7 @@
 #define new DEBUG_NEW
 #endif
 
-CFrequenceDlg::CFrequenceDlg(unsigned int frequence, CWnd *pParent) : CDialog(CFrequenceDlg::IDD, pParent) {
+CFrequenceDlg::CFrequenceDlg(unsigned int frequence, CWnd *pParent) : CDialog(IDD, pParent) {
   m_frequence = frequence;
 }
 

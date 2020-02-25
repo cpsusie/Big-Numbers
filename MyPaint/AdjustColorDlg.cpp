@@ -8,7 +8,7 @@
 
 CAdjustColorDlg::CAdjustColorDlg(PixRectContainer &container, CWnd *pParent)
 : m_container(container)
-, CDialog(CAdjustColorDlg::IDD, pParent) {
+, CDialog(IDD, pParent) {
 
   m_origImage     = m_container.getImage()->clone(true);
   m_size          = m_origImage->getSize();

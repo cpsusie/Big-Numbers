@@ -10,26 +10,18 @@
 
 class CAboutDlg : public CDialog {
 public:
-  CAboutDlg();
-
   enum { IDD = IDD_ABOUTBOX };
+  CAboutDlg() : CDialog(IDD) {
+  }
 
 protected:
-  virtual void DoDataExchange(CDataExchange *pDX);
   DECLARE_MESSAGE_MAP()
 };
-
-CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
-}
-
-void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-  __super::DoDataExchange(pDX);
-}
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CAlarmDlg::CAlarmDlg(CWnd *pParent) : CDialog(CAlarmDlg::IDD, pParent) {
+CAlarmDlg::CAlarmDlg(CWnd *pParent) : CDialog(IDD, pParent) {
   m_time = EMPTYSTRING;
   m_hIcon = theApp.LoadIcon(IDR_MAINICON);
   for(int t = 0; t < MAXTIMERCOUNT; t++) {

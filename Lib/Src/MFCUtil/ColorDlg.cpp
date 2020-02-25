@@ -6,7 +6,7 @@
 #endif
 
 CColorDlg::CColorDlg(const String &caption, int propertyId, D3DCOLOR color, CWnd *pParent)
-: CColormapDialog<D3DCOLOR>(CColorDlg::IDD, propertyId, pParent)
+: CColormapDialog<D3DCOLOR>(IDD, propertyId, pParent)
 , m_caption(caption)
 {
   setStartValue(color);

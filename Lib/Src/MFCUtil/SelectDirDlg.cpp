@@ -11,7 +11,7 @@
 #define new DEBUG_NEW
 #endif
 
-CSelectDirDlg::CSelectDirDlg(const String &startDir, CWnd *pParent) : CDialog(CSelectDirDlg::IDD, pParent) {
+CSelectDirDlg::CSelectDirDlg(const String &startDir, CWnd *pParent) : CDialog(IDD, pParent) {
     m_dir = startDir.cstr();
     m_drive = EMPTYSTRING;
 }

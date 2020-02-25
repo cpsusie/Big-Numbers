@@ -6,7 +6,7 @@
 #define new DEBUG_NEW
 #endif
 
-CScaleDlg::CScaleDlg(const ScaleParameters &scale, CWnd *pParent) : CDialog(CScaleDlg::IDD, pParent), m_scale(scale) {
+CScaleDlg::CScaleDlg(const ScaleParameters &scale, CWnd *pParent) : CDialog(IDD, pParent), m_scale(scale) {
   m_toSize      = m_scale.m_toSize;
   m_scaleWidth  = m_scale.m_scale.x;
   m_scaleHeight = m_scale.m_scale.y;

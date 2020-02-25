@@ -8,7 +8,7 @@
 #pragma warning(disable : 4244)
 
 CProgressDlg::CProgressDlg(CWnd *pParent, Thread &thread, InteractiveRunnable &jobToDo, UINT updateRate)
-: CDialog(CProgressDlg::IDD, pParent)
+: CDialog(IDD, pParent)
 , m_thread(thread)
 , m_jobToDo(jobToDo)
 , m_updateRate(updateRate)

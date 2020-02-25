@@ -6,20 +6,20 @@
 #define new DEBUG_NEW
 #endif
 
-CChangeOrderDlg::CChangeOrderDlg(MediaQueue &mediaQueue, CWnd *pParent) : CDialog(CChangeOrderDlg::IDD, pParent), m_mediaQueue(mediaQueue) {
+CChangeOrderDlg::CChangeOrderDlg(MediaQueue &mediaQueue, CWnd *pParent) : CDialog(IDD, pParent), m_mediaQueue(mediaQueue) {
 }
 
 void CChangeOrderDlg::DoDataExchange(CDataExchange *pDX) {
-    __super::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CChangeOrderDlg, CDialog)
-    ON_COMMAND(ID_EDIT_CUT, OnEditCut)
-    ON_COMMAND(ID_EDIT_PASTE, OnEditPaste)
-    ON_COMMAND(ID_EDIT_DELETE, OnEditDelete)
-    ON_LBN_SELCHANGE(IDC_EDITLIST, OnSelchangeEditlist)
-    ON_WM_KEYDOWN()
-    ON_COMMAND(ID_EDIT_RANDOM, OnEditRandom)
+  ON_COMMAND(ID_EDIT_CUT, OnEditCut)
+  ON_COMMAND(ID_EDIT_PASTE, OnEditPaste)
+  ON_COMMAND(ID_EDIT_DELETE, OnEditDelete)
+  ON_LBN_SELCHANGE(IDC_EDITLIST, OnSelchangeEditlist)
+  ON_WM_KEYDOWN()
+  ON_COMMAND(ID_EDIT_RANDOM, OnEditRandom)
 END_MESSAGE_MAP()
 
 BOOL CChangeOrderDlg::OnInitDialog() {

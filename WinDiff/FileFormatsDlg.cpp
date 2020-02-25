@@ -6,7 +6,7 @@
 #define new DEBUG_NEW
 #endif
 
-CFileFormatsDlg::CFileFormatsDlg(CWnd *pParent) : CDialog(CFileFormatsDlg::IDD, pParent) {
+CFileFormatsDlg::CFileFormatsDlg(CWnd *pParent) : CDialog(IDD, pParent) {
 }
 
 void CFileFormatsDlg::DoDataExchange(CDataExchange *pDX) {
@@ -15,10 +15,10 @@ void CFileFormatsDlg::DoDataExchange(CDataExchange *pDX) {
 }
 
 BEGIN_MESSAGE_MAP(CFileFormatsDlg, CDialog)
-    ON_BN_CLICKED(IDC_BUTTONRENAME, OnButtonRename)
-    ON_BN_CLICKED(IDC_BUTTONDELETE, OnButtonDelete)
-    ON_NOTIFY(LVN_ITEMCHANGED       , IDC_LISTFORMATNAMES, OnItemChangedList )
-    ON_NOTIFY(LVN_ENDLABELEDIT      , IDC_LISTFORMATNAMES, OnEndLabelEditList)
+  ON_BN_CLICKED(IDC_BUTTONRENAME  , OnButtonRename                         )
+  ON_BN_CLICKED(IDC_BUTTONDELETE  , OnButtonDelete                         )
+  ON_NOTIFY(LVN_ITEMCHANGED       , IDC_LISTFORMATNAMES, OnItemChangedList )
+  ON_NOTIFY(LVN_ENDLABELEDIT      , IDC_LISTFORMATNAMES, OnEndLabelEditList)
 END_MESSAGE_MAP()
 
 BOOL CFileFormatsDlg::OnInitDialog() {

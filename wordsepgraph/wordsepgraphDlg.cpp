@@ -14,21 +14,13 @@
 
 class CAboutDlg : public CDialog {
 public:
-  CAboutDlg();
-
   enum { IDD = IDD_ABOUTBOX };
+  CAboutDlg() : CDialog(IDD) {
+  }
 
 protected:
-  virtual void DoDataExchange(CDataExchange *pDX);
   DECLARE_MESSAGE_MAP()
 };
-
-CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
-}
-
-void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-  __super::DoDataExchange(pDX);
-}
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
@@ -48,24 +40,24 @@ void CWordsepgraphDlg::DoDataExchange(CDataExchange *pDX) {
 }
 
 BEGIN_MESSAGE_MAP(CWordsepgraphDlg, CDialog)
-    ON_WM_SYSCOMMAND()
-    ON_WM_PAINT()
-    ON_WM_QUERYDRAGICON()
-    ON_WM_SIZE()
-    ON_WM_TIMER()
-    ON_WM_CLOSE()
-    ON_COMMAND(ID_FILE_LOADNETWORK  , OnFileLoadNetwork  )
-    ON_COMMAND(ID_FILE_SAVENETWORK  , OnFileSaveNetwork  )
-    ON_COMMAND(ID_FILE_STARTTRAINING, OnFileStartTraining)
-    ON_COMMAND(ID_FILE_STOPTRAINING , OnFileStopTraining )
-    ON_COMMAND(ID_FILE_TRAININGDATA , OnFileTrainingdata )
-    ON_COMMAND(ID_FILE_ERRORWORDS   , OnFileErrorwords   )
-    ON_COMMAND(ID_FILE_QUIT         , OnFileQuit         )
-    ON_COMMAND(ID_OPTIONS_TRAININGPARAMETERS, OnOptionsTrainingParameters)
-    ON_BN_CLICKED(IDC_BUTTONSEPARATE, OnButtonSeparate   )
-    ON_BN_CLICKED(IDC_BUTTONLEARN   , OnButtonLearn      )
-    ON_COMMAND(ID_GOTO_EDITORD      , OnGotoEditord      )
-    ON_EN_CHANGE(IDC_EDITORD        , OnChangeEditOrd    )
+  ON_WM_SYSCOMMAND()
+  ON_WM_PAINT()
+  ON_WM_QUERYDRAGICON()
+  ON_WM_SIZE()
+  ON_WM_TIMER()
+  ON_WM_CLOSE()
+  ON_COMMAND(ID_FILE_LOADNETWORK  , OnFileLoadNetwork  )
+  ON_COMMAND(ID_FILE_SAVENETWORK  , OnFileSaveNetwork  )
+  ON_COMMAND(ID_FILE_STARTTRAINING, OnFileStartTraining)
+  ON_COMMAND(ID_FILE_STOPTRAINING , OnFileStopTraining )
+  ON_COMMAND(ID_FILE_TRAININGDATA , OnFileTrainingdata )
+  ON_COMMAND(ID_FILE_ERRORWORDS   , OnFileErrorwords   )
+  ON_COMMAND(ID_FILE_QUIT         , OnFileQuit         )
+  ON_COMMAND(ID_OPTIONS_TRAININGPARAMETERS, OnOptionsTrainingParameters)
+  ON_BN_CLICKED(IDC_BUTTONSEPARATE, OnButtonSeparate   )
+  ON_BN_CLICKED(IDC_BUTTONLEARN   , OnButtonLearn      )
+  ON_COMMAND(ID_GOTO_EDITORD      , OnGotoEditord      )
+  ON_EN_CHANGE(IDC_EDITORD        , OnChangeEditOrd    )
 END_MESSAGE_MAP()
 
 BOOL CWordsepgraphDlg::OnInitDialog() {

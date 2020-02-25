@@ -5,7 +5,7 @@
 #define new DEBUG_NEW
 #endif
 
-CDegreeDlg::CDegreeDlg(double degree, CWnd *pParent) : CDialog(CDegreeDlg::IDD, pParent) {
+CDegreeDlg::CDegreeDlg(double degree, CWnd *pParent) : CDialog(IDD, pParent) {
   m_degree = degree;
 }
 

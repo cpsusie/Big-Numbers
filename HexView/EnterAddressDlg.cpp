@@ -6,9 +6,9 @@
 #endif
 
 CEnterAddressDlg::CEnterAddressDlg(unsigned __int64 docSize, CWnd *pParent)
-: m_docSize(docSize)
-, CDialog(CEnterAddressDlg::IDD, pParent) {
-
+: CDialog(IDD, pParent)
+, m_docSize(docSize)
+{
   const Settings &settings = getSettings();
   m_addrRadix     = settings.getAddrRadix();
   m_addrUppercase = settings.getAddrHexUppercase();
@@ -18,13 +18,13 @@ CEnterAddressDlg::CEnterAddressDlg(unsigned __int64 docSize, CWnd *pParent)
 }
 
 void CEnterAddressDlg::DoDataExchange(CDataExchange *pDX) {
-    __super::DoDataExchange(pDX);
-    DDX_Text(pDX, IDC_EDITADDRESS, m_addressText);
+  __super::DoDataExchange(pDX);
+  DDX_Text(pDX, IDC_EDITADDRESS, m_addressText);
 }
 
 BEGIN_MESSAGE_MAP(CEnterAddressDlg, CDialog)
-    ON_COMMAND(ID_GOTO_EDITADDRESS, OnGotoEditAddress  )
-    ON_EN_CHANGE(IDC_EDITADDRESS  , OnChangeEditAddress)
+  ON_COMMAND(ID_GOTO_EDITADDRESS, OnGotoEditAddress  )
+  ON_EN_CHANGE(IDC_EDITADDRESS  , OnChangeEditAddress)
 END_MESSAGE_MAP()
 
 BOOL CEnterAddressDlg::OnInitDialog() {

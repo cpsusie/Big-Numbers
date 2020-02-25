@@ -12,21 +12,21 @@
 IMPLEMENT_DYNCREATE(CWinDiffView, CFormView)
 
 BEGIN_MESSAGE_MAP(CWinDiffView, CFormView)
-    ON_WM_SIZE()
-    ON_WM_CREATE()
-    ON_WM_HSCROLL()
-    ON_WM_VSCROLL()
-    ON_WM_DROPFILES()
-    ON_WM_DESTROY()
-    ON_WM_TIMER()
-    ON_COMMAND(ID_FILE_PRINT        , OnFilePrint       )
-    ON_COMMAND(ID_FILE_PRINT_DIRECT , OnFilePrint       )
-    ON_COMMAND(ID_FILE_PRINT_PREVIEW, OnFilePrintPreview)
+  ON_WM_SIZE()
+  ON_WM_CREATE()
+  ON_WM_HSCROLL()
+  ON_WM_VSCROLL()
+  ON_WM_DROPFILES()
+  ON_WM_DESTROY()
+  ON_WM_TIMER()
+  ON_COMMAND(ID_FILE_PRINT        , OnFilePrint       )
+  ON_COMMAND(ID_FILE_PRINT_DIRECT , OnFilePrint       )
+  ON_COMMAND(ID_FILE_PRINT_PREVIEW, OnFilePrintPreview)
 END_MESSAGE_MAP()
 
 #define SC_WIDTH 16
 
-CWinDiffView::CWinDiffView() : CFormView(CWinDiffView::IDD) {
+CWinDiffView::CWinDiffView() : CFormView(IDD) {
   m_timerIsRunning  = false;
   m_nameFontSizePct = 100;
   m_nameHeight      = SC_WIDTH;

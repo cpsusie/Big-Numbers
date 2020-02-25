@@ -104,25 +104,26 @@ int CWinDiffApp::ExitInstance() {
 
 class CAboutDlg : public CDialog {
 public:
-  CAboutDlg();
-
   enum { IDD = IDD_ABOUTBOX };
 
+  CAboutDlg() : CDialog(IDD) {
+  }
+
 protected:
-  virtual void DoDataExchange(CDataExchange *pDX);
   virtual BOOL OnInitDialog();
   DECLARE_MESSAGE_MAP()
 };
 
-CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
-}
-
-void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-  __super::DoDataExchange(pDX);
-}
-
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
+
+BOOL CAboutDlg::OnInitDialog() {
+  __super::OnInitDialog();
+
+  GetDlgItem(IDC_STATICCOPYRIGHT)->SetWindowText(format(_T("Copyright %c 2007"), 169).cstr());
+  return TRUE;  // return TRUE unless you set the focus to a control
+                // EXCEPTION: OCX Property Pages should return FALSE
+}
 
 void CWinDiffApp::OnAppAbout() {
   CAboutDlg().DoModal();
@@ -156,12 +157,4 @@ void CWinDiffApp::removeFromRecentFiles(int index) {
     return;
   }
   list.Remove(index);
-}
-
-BOOL CAboutDlg::OnInitDialog() {
-  __super::OnInitDialog();
-
-  GetDlgItem(IDC_STATICCOPYRIGHT)->SetWindowText(format(_T("Copyright %c 2007"),169).cstr());
-  return TRUE;  // return TRUE unless you set the focus to a control
-                // EXCEPTION: OCX Property Pages should return FALSE
 }

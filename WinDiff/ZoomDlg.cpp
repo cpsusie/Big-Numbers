@@ -6,7 +6,11 @@
 #define new DEBUG_NEW
 #endif
 
-CZoomDlg::CZoomDlg(const String &s1, const String &s2, CWnd *pParent) : m_s1(s1), m_s2(s2), CDialog(CZoomDlg::IDD, pParent) {
+CZoomDlg::CZoomDlg(const String &s1, const String &s2, CWnd *pParent)
+: CDialog(IDD, pParent)
+, m_s1(s1)
+, m_s2(s2)
+{
   m_lines = format(_T("%s\r\n%s"), s1.cstr(), s2.cstr()).cstr();
   m_ignorecase = FALSE;
 }

@@ -10,7 +10,7 @@
 #define foreachPanel(p)      if(m_panels.size()) for(SortPanelWnd **_##p = &m_panels[0], *p = *_##p; _##p <= &m_panels.last(); p = *(++_##p))
 #define foreachConstPanel(p) if(m_panels.size()) for(const SortPanelWnd * const *_##p = &m_panels[0], *p = *_##p; _##p <= &m_panels.last(); p = *(++_##p))
 
-CSortDemoDlg::CSortDemoDlg(CWnd *pParent /*=NULL*/) : CDialog(CSortDemoDlg::IDD, pParent) {
+CSortDemoDlg::CSortDemoDlg(CWnd *pParent /*=NULL*/) : CDialog(IDD, pParent) {
   m_hIcon            = theApp.LoadIcon(IDR_MAINFRAME);
   m_ctrlId           = WM_USER;
   m_movingPanelIndex = -1;

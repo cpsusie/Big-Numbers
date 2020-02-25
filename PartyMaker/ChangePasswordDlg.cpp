@@ -7,11 +7,11 @@
 #define new DEBUG_NEW
 #endif
 
-CChangePasswordDlg::CChangePasswordDlg(CWnd *pParent) : CDialog(CChangePasswordDlg::IDD, pParent) {
-    m_oldPassword  = EMPTYSTRING;
-    m_newPassword  = EMPTYSTRING;
-    m_newPassword2 = EMPTYSTRING;
-    m_tryCount = 0;
+CChangePasswordDlg::CChangePasswordDlg(CWnd *pParent) : CDialog(IDD, pParent) {
+  m_oldPassword  = EMPTYSTRING;
+  m_newPassword  = EMPTYSTRING;
+  m_newPassword2 = EMPTYSTRING;
+  m_tryCount = 0;
 }
 
 BOOL CChangePasswordDlg::OnInitDialog() {
@@ -21,10 +21,10 @@ BOOL CChangePasswordDlg::OnInitDialog() {
 }
 
 void CChangePasswordDlg::DoDataExchange(CDataExchange *pDX) {
-    __super::DoDataExchange(pDX);
-    DDX_Text(pDX, IDC_OLDPASSWORDEDIT , m_oldPassword );
-    DDX_Text(pDX, IDC_NEWPASSWORDEDIT , m_newPassword );
-    DDX_Text(pDX, IDC_NEWPASSWORDEDIT2, m_newPassword2);
+  __super::DoDataExchange(pDX);
+  DDX_Text(pDX, IDC_OLDPASSWORDEDIT , m_oldPassword );
+  DDX_Text(pDX, IDC_NEWPASSWORDEDIT , m_newPassword );
+  DDX_Text(pDX, IDC_NEWPASSWORDEDIT2, m_newPassword2);
 }
 
 BEGIN_MESSAGE_MAP(CChangePasswordDlg, CDialog)

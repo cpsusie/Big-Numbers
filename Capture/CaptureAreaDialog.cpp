@@ -5,7 +5,7 @@
 #define new DEBUG_NEW
 #endif
 
-CCaptureAreaDialog::CCaptureAreaDialog(CWnd *pParent) : CDialog(CCaptureAreaDialog::IDD, pParent) {
+CCaptureAreaDialog::CCaptureAreaDialog(CWnd *pParent) : CDialog(IDD, pParent) {
 }
 
 void CCaptureAreaDialog::DoDataExchange(CDataExchange *pDX) {

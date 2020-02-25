@@ -9,7 +9,7 @@
 #define new DEBUG_NEW
 #endif
 
-CLinePrinterDlg::CLinePrinterDlg(CLinePrinterThread &thread) : CDialog(CLinePrinterDlg::IDD, NULL), m_thread(thread) {
+CLinePrinterDlg::CLinePrinterDlg(CLinePrinterThread &thread) : CDialog(IDD, NULL), m_thread(thread) {
   m_hIcon     = theApp.LoadIcon(IDR_MAINFRAME);
   m_lineList  = NULL;
   m_visible   = false;

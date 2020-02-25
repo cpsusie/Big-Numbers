@@ -6,8 +6,9 @@
 #endif
 
 CFindDlg::CFindDlg(SearchMachine &searchMachine, CWnd *pParent)
-: m_searchMachine(searchMachine)
-, CDialog(CFindDlg::IDD, pParent) {
+: CDialog(IDD, pParent)
+, m_searchMachine(searchMachine)
+{
   m_findWhat       = searchMachine.getFindWhat().cstr();
   m_timerIsRunning = false;
   m_waitCursorOn   = false;
@@ -29,28 +30,28 @@ void CFindDlg::DoDataExchange(CDataExchange *pDX) {
 }
 
 BEGIN_MESSAGE_MAP(CFindDlg, CDialog)
-    ON_WM_SIZE()
-    ON_WM_TIMER()
-    ON_BN_CLICKED(IDC_FINDNEXT                  , OnFindNext                    )
-    ON_BN_CLICKED(IDC_BUTTONSPECIALCHAR         , OnButtonSpecialChar           )
-    ON_COMMAND(ID_GOTO_FINDWHAT                 , OnGotoFindWhat                )
-    ON_COMMAND(ID_SPECIALCHAR_CARRIAGERETURN    , OnSpecialCharCarriageReturn   )
-    ON_COMMAND(ID_SPECIALCHAR_NEWLINE           , OnSpecialCharNewline          )
-    ON_COMMAND(ID_SPECIALCHAR_BACKSPACE         , OnSpecialCharBackspace        )
-    ON_COMMAND(ID_SPECIALCHAR_TAB               , OnSpecialCharTab              )
-    ON_COMMAND(ID_SPECIALCHAR_FORMFEED          , OnSpecialCharFormfeed         )
-    ON_COMMAND(ID_SPECIALCHAR_ESCCHARACTER      , OnSpecialCharEscapeCharacter  )
-    ON_COMMAND(ID_SPECIALCHAR_OCTNUMBER         , OnSpecialCharOctalNumber      )
-    ON_COMMAND(ID_SPECIALCHAR_DECNUMBER         , OnSpecialCharDecimalNumber    )
-    ON_COMMAND(ID_SPECIALCHAR_HEXNUMBER         , OnSpecialCharHexadecimalNumber)
-    ON_COMMAND(ID_SPECIALCHAR_BACKSLASH         , OnSpecialCharBackslash        )
-    ON_CBN_SETFOCUS(    IDC_COMBOFINDWHAT       , OnSetFocusComboFindWhat       )
-    ON_CBN_KILLFOCUS(   IDC_COMBOFINDWHAT       , OnKillFocusComboFindWhat      )
-    ON_CBN_EDITCHANGE(  IDC_COMBOFINDWHAT       , OnEditChangeComboFindWhat     )
-    ON_CBN_EDITUPDATE(  IDC_COMBOFINDWHAT       , OnEditUpdateComboFindWhat     )
-    ON_CBN_SELCHANGE(   IDC_COMBOFINDWHAT       , OnSelChangeComboFindWhat      )
-    ON_CBN_SELENDOK(    IDC_COMBOFINDWHAT       , OnSelendOkComboFindWhat       )
-    ON_CBN_SELENDCANCEL(IDC_COMBOFINDWHAT       , OnSelendCancelComboFindWhat   )
+  ON_WM_SIZE()
+  ON_WM_TIMER()
+  ON_BN_CLICKED(IDC_FINDNEXT                  , OnFindNext                    )
+  ON_BN_CLICKED(IDC_BUTTONSPECIALCHAR         , OnButtonSpecialChar           )
+  ON_COMMAND(ID_GOTO_FINDWHAT                 , OnGotoFindWhat                )
+  ON_COMMAND(ID_SPECIALCHAR_CARRIAGERETURN    , OnSpecialCharCarriageReturn   )
+  ON_COMMAND(ID_SPECIALCHAR_NEWLINE           , OnSpecialCharNewline          )
+  ON_COMMAND(ID_SPECIALCHAR_BACKSPACE         , OnSpecialCharBackspace        )
+  ON_COMMAND(ID_SPECIALCHAR_TAB               , OnSpecialCharTab              )
+  ON_COMMAND(ID_SPECIALCHAR_FORMFEED          , OnSpecialCharFormfeed         )
+  ON_COMMAND(ID_SPECIALCHAR_ESCCHARACTER      , OnSpecialCharEscapeCharacter  )
+  ON_COMMAND(ID_SPECIALCHAR_OCTNUMBER         , OnSpecialCharOctalNumber      )
+  ON_COMMAND(ID_SPECIALCHAR_DECNUMBER         , OnSpecialCharDecimalNumber    )
+  ON_COMMAND(ID_SPECIALCHAR_HEXNUMBER         , OnSpecialCharHexadecimalNumber)
+  ON_COMMAND(ID_SPECIALCHAR_BACKSLASH         , OnSpecialCharBackslash        )
+  ON_CBN_SETFOCUS(    IDC_COMBOFINDWHAT       , OnSetFocusComboFindWhat       )
+  ON_CBN_KILLFOCUS(   IDC_COMBOFINDWHAT       , OnKillFocusComboFindWhat      )
+  ON_CBN_EDITCHANGE(  IDC_COMBOFINDWHAT       , OnEditChangeComboFindWhat     )
+  ON_CBN_EDITUPDATE(  IDC_COMBOFINDWHAT       , OnEditUpdateComboFindWhat     )
+  ON_CBN_SELCHANGE(   IDC_COMBOFINDWHAT       , OnSelChangeComboFindWhat      )
+  ON_CBN_SELENDOK(    IDC_COMBOFINDWHAT       , OnSelendOkComboFindWhat       )
+  ON_CBN_SELENDCANCEL(IDC_COMBOFINDWHAT       , OnSelendCancelComboFindWhat   )
 END_MESSAGE_MAP()
 
 class SearchThread : public Thread {

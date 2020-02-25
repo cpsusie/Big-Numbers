@@ -6,7 +6,7 @@
 #define new DEBUG_NEW
 #endif
 
-CGetFormatNameDlg::CGetFormatNameDlg(const String &name, CWnd *pParent) : CDialog(CGetFormatNameDlg::IDD, pParent) {
+CGetFormatNameDlg::CGetFormatNameDlg(const String &name, CWnd *pParent) : CDialog(IDD, pParent) {
   m_name = name.cstr();
 }
 

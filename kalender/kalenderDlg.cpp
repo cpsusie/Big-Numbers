@@ -11,73 +11,65 @@
 
 class CAboutDlg : public CDialog {
 public:
-    CAboutDlg();
+  enum { IDD = IDD_ABOUTBOX };
+  CAboutDlg() : CDialog(IDD) {
+  }
 
-
-    enum { IDD = IDD_ABOUTBOX };
 protected:
-    virtual void DoDataExchange(CDataExchange *pDX);
-    DECLARE_MESSAGE_MAP()
+  DECLARE_MESSAGE_MAP()
 };
-
-CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
-}
-
-void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-    __super::DoDataExchange(pDX);
-}
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CKalenderDlg::CKalenderDlg(CWnd *pParent) : CDialog(CKalenderDlg::IDD, pParent) {
-    m_year = 0;
-    m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
+CKalenderDlg::CKalenderDlg(CWnd *pParent) : CDialog(IDD, pParent) {
+  m_year = 0;
+  m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
 }
 
 void CKalenderDlg::DoDataExchange(CDataExchange *pDX) {
-    __super::DoDataExchange(pDX);
-    DDX_Text(pDX, IDC_EDITAAR, m_year);
-    DDV_MinMaxInt(pDX, m_year, MIN_YEAR, MAX_YEAR);
+  __super::DoDataExchange(pDX);
+  DDX_Text(pDX, IDC_EDITAAR, m_year);
+  DDV_MinMaxInt(pDX, m_year, MIN_YEAR, MAX_YEAR);
 }
 
 BEGIN_MESSAGE_MAP(CKalenderDlg, CDialog)
-    ON_WM_SYSCOMMAND()
-    ON_WM_PAINT()
-    ON_WM_QUERYDRAGICON()
-    ON_NOTIFY(UDN_DELTAPOS, IDC_SPINYEAR, OnDeltaposSpinyear)
-    ON_COMMAND(ID_DAGE_AFSTAND, OnDageAfstand)
+  ON_WM_SYSCOMMAND()
+  ON_WM_PAINT()
+  ON_WM_QUERYDRAGICON()
+  ON_NOTIFY(UDN_DELTAPOS, IDC_SPINYEAR, OnDeltaposSpinyear)
+  ON_COMMAND(ID_DAGE_AFSTAND, OnDageAfstand)
 END_MESSAGE_MAP()
 
 BOOL CKalenderDlg::OnInitDialog() {
-    __super::OnInitDialog();
+  __super::OnInitDialog();
 
-    ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
-    ASSERT(IDM_ABOUTBOX < 0xF000);
+  ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
+  ASSERT(IDM_ABOUTBOX < 0xF000);
 
-    CMenu *pSysMenu = GetSystemMenu(FALSE);
-    if (pSysMenu != NULL) {
-        CString strAboutMenu;
-        strAboutMenu.LoadString(IDS_ABOUTBOX);
-        if (!strAboutMenu.IsEmpty()) {
-            pSysMenu->AppendMenu(MF_SEPARATOR);
-            pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
-        }
-    }
+  CMenu *pSysMenu = GetSystemMenu(FALSE);
+  if (pSysMenu != NULL) {
+      CString strAboutMenu;
+      strAboutMenu.LoadString(IDS_ABOUTBOX);
+      if (!strAboutMenu.IsEmpty()) {
+          pSysMenu->AppendMenu(MF_SEPARATOR);
+          pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
+      }
+  }
 
-    SetIcon(m_hIcon, TRUE);
-    SetIcon(m_hIcon, FALSE);
+  SetIcon(m_hIcon, TRUE);
+  SetIcon(m_hIcon, FALSE);
 
-    m_PrintFont.CreateFont(12, 10, 0, 0, 400, FALSE, FALSE, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS
-                         ,CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY
-                         ,DEFAULT_PITCH | FF_MODERN
-                         ,_T("Courier New") );
+  m_PrintFont.CreateFont(12, 10, 0, 0, 400, FALSE, FALSE, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS
+                        ,CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY
+                        ,DEFAULT_PITCH | FF_MODERN
+                        ,_T("Courier New") );
 
-    Date now;
-    m_year = now.getYear();
-    UpdateData(FALSE);
+  Date now;
+  m_year = now.getYear();
+  UpdateData(FALSE);
 
-    return TRUE;  // return TRUE  unless you set the focus to a control
+  return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
 void CKalenderDlg::OnSysCommand(UINT nID, LPARAM lParam) {
