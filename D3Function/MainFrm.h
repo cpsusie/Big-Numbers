@@ -166,7 +166,7 @@ public:
     return (UINT)theApp.m_3DViewArray.size();
   }
   bool canSplit3DWindow(HWND hwnd) const;
-  WindowPair createNew3DWindow(HWND current, bool vertical);
+  WindowPair split3DWindow(HWND current, bool vertical);
   void render(BYTE renderFlags, CameraSet cameraSet);
 
   void startTimer();

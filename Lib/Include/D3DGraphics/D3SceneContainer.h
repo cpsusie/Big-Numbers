@@ -29,21 +29,26 @@ public:
 };
 class D3SceneContainer {
 public:
-  virtual D3Scene &getScene() = 0;
-  virtual UINT     get3DWindowCount() const = 0;
-  virtual HWND     getMessageWindow() const = 0;
-  virtual HWND     get3DWindow(UINT index) const = 0;
+  virtual D3Scene   &getScene() = 0;
+  virtual UINT       get3DWindowCount() const = 0;
+  virtual HWND       getMessageWindow() const = 0;
+  virtual HWND       get3DWindow(UINT index) const = 0;
   // renderFlags is any combination of RENDER_3D,RENDER_INFO
-  virtual void     render(BYTE renderFlags, CameraSet cameraSet) = 0;
-  virtual void     modifyContextMenu(HMENU menu) {
+  virtual void       render(BYTE renderFlags, CameraSet cameraSet) = 0;
+  virtual void       modifyContextMenu(HMENU menu) {
   }
-  virtual bool     canSplit3DWindow(HWND hwnd) const {
+  virtual bool       canSplit3DWindow(HWND hwnd) const {
     return false;
   }
-  virtual WindowPair createNew3DWindow(HWND current, bool vertical) {
+  virtual WindowPair split3DWindow(HWND current, bool vertical) {
     return WindowPair();
   }
-  inline CSize     getWinSize(UINT index) const {
+  virtual bool       canDelete3DWindow(HWND hwnd) const {
+    return false;
+  }
+  virtual void       delete3DWindow(HWND hwnd) const {
+  }
+  inline CSize       getWinSize(UINT index) const {
     return getClientRect(get3DWindow(index)).Size();
   }
 };

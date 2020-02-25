@@ -485,7 +485,7 @@ bool CMainFrame::canSplit3DWindow(HWND hwnd) const {
   return theApp.m_3DViewArray.findViewByHwnd(hwnd) != NULL;
 }
 
-WindowPair CMainFrame::createNew3DWindow(HWND current, bool vertical) {
+WindowPair CMainFrame::split3DWindow(HWND current, bool vertical) {
   WindowPair    result;
   C3DSceneView *currentView = theApp.m_3DViewArray.findViewByHwnd(current);
   if(currentView == NULL) {
