@@ -349,6 +349,9 @@
     <ClCompile Include="HWNDTools.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CreateView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\MFCUtil\Viewport2D.h">

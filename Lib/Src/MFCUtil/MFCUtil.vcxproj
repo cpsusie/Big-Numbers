@@ -685,6 +685,7 @@
     <ClCompile Include="CoordinateSystem\NormalDistributionAxisPainter.cpp" />
     <ClCompile Include="CoordinateSystem\OccupationMap.cpp" />
     <ClCompile Include="CoordinateSystem\SystemPainter.cpp" />
+    <ClCompile Include="CreateView.cpp" />
     <ClCompile Include="CursorTools.cpp" />
     <ClCompile Include="D3DeviceFactory.cpp" />
     <ClCompile Include="DeleteButton.cpp" />

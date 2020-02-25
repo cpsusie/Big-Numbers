@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <MFCUtil/WinTools.h>
 #include "MainFrm.h"
 #include "D3FunctionDoc.h"
 #include "SplitView.h"
@@ -18,29 +19,31 @@ BEGIN_MESSAGE_MAP(CSplitView, CView)
 END_MESSAGE_MAP()
 
 static FastSemaphore s_gate;
-CRuntimeClass *CSplitView::s_childClass1    = NULL;
-CRuntimeClass *CSplitView::s_childClass2    = NULL;
-SplitDirection CSplitView::s_splitDirection = SPLIT_NONE;
+CRuntimeClass *CSplitView::s_childClass1      = NULL;
+CRuntimeClass *CSplitView::s_childClass2      = NULL;
+SplitDirection CSplitView::s_splitDirection   = SPLIT_NONE;
+double         CSplitView::s_relativeSplitPos = 0;
 
-CSplitView *CSplitView::create(CWnd *parent, CRuntimeClass *child1, CRuntimeClass *child2, SplitDirection splitDirection, const CRect &rect) { // static
+CSplitView *CSplitView::create(CWnd *parent, CRuntimeClass *child1, CRuntimeClass *child2, SplitDirection splitDirection, const CRect &rect, double initialRelativeSplitPos) { // static
   s_gate.wait();
-  s_childClass1    = child1;
-  s_childClass2    = child2;
-  s_splitDirection = splitDirection;
+  s_childClass1      = child1;
+  s_childClass2      = child2;
+  s_splitDirection   = splitDirection;
+  s_relativeSplitPos = initialRelativeSplitPos;
 
-  CSplitView *view = (CSplitView*)createView(parent, RUNTIME_CLASS(CSplitView), rect);
+  CSplitView *view = createView(theApp.getMainFrame(), parent, CSplitView, rect);
 
-  s_childClass1    = NULL;
-  s_childClass2    = NULL;
-  s_splitDirection = SPLIT_NONE;
+  s_childClass1      = NULL;
+  s_childClass2      = NULL;
+  s_splitDirection   = SPLIT_NONE;
+  s_relativeSplitPos = 0;
 
   s_gate.notify();
 
   return view;
 }
 
-CSplitView::CSplitView() {
-  m_relativeSplitPoint = 0.5;
+CSplitView::CSplitView() : m_splitter(s_splitDirection, s_relativeSplitPos) {
 }
 
 CSplitView::~CSplitView() {
@@ -72,70 +75,50 @@ CD3FunctionDoc *CSplitView::GetDocument() { // non-debug version is inline
 #endif //_DEBUG
 
 int CSplitView::OnCreate(LPCREATESTRUCT lpCreateStruct) {
-  CSize childSize  = getClientRect(this).Size();
-  int rowCount = 1, colCount = 1;
-  switch(s_splitDirection) {
+  CSize childSize = getClientRect(this).Size();
+  switch(m_splitter.getSplitDirection()) {
   case SPLIT_VERTICAL:
     childSize.cx /= 2;
-    colCount++;
     break;
   case SPLIT_HORIZONTAL:
     childSize.cy /= 2;
-    rowCount++;
     break;
   default:
     return FALSE;
   }
-  const int r1 = 0           , c1 = 0;
-  const int r2 = rowCount - 1, c2 = colCount - 1;
-  VERIFY(m_splitter.CreateStatic(this, rowCount, colCount));
-  VERIFY(m_splitter.CreateView(r1, c1, s_childClass1, childSize, NULL));
-  VERIFY(m_splitter.CreateView(r2, c2, s_childClass2, childSize, NULL));
+  const MatrixDimension &dim = m_splitter.getDimension();
+  const int rows = (int)dim.rowCount, cols = (int)dim.columnCount;
+  VERIFY(m_splitter.CreateStatic(this, rows, cols));
+  VERIFY(m_splitter.CreateView(0     , 0     , s_childClass1, childSize, NULL));
+  VERIFY(m_splitter.CreateView(rows-1, cols-1, s_childClass2, childSize, NULL));
   return TRUE;
 }
 
 void CSplitView::OnShowWindow(BOOL bShow, UINT nStatus) {
   __super::OnShowWindow(bShow, nStatus);
-  if(m_splitter.getChildCount() == 2) {
-    const CSize size = getClientRect(this).Size();
-    if(m_splitter.getPanelCount() == 2) {
-      switch(m_splitter.getSplitDirection()) {
-      case SPLIT_HORIZONTAL:
-        m_splitter.SetRowInfo(0, (int)(m_relativeSplitPoint * size.cy), 10);
-        break;
-      case SPLIT_VERTICAL:
-        m_splitter.SetColumnInfo(0, (int)(m_relativeSplitPoint * size.cx), 10);
-        break;
-      }
-    } else {
-      switch(m_splitter.getSplitDirection()) {
-      case SPLIT_HORIZONTAL:
-        m_splitter.SplitRow(   (int)(m_relativeSplitPoint * size.cy));
-        break;
-      case SPLIT_VERTICAL:
-        m_splitter.SplitColumn((int)(m_relativeSplitPoint * size.cx));
-        break;
-      }
-    }
+  if(isChildrenCreated()) {
+    m_splitter.setSplit(getClientRect(this).Size());
   }
 }
 
 void CSplitView::OnSize(UINT nType, int cx, int cy) {
   __super::OnSize(nType, cx, cy);
-  if(m_splitter.getChildCount() == 2) {
-    setRelativeSplitPoint(cx,cy);
-    m_splitter.RecalcLayout();
+  if(isChildrenCreated()) {
+    m_splitter.OnSize(cx, cy);
   }
 }
 
 void CSplitView::OnDraw(CDC *pDC) {
-  if(m_splitter.getChildCount() == 2) {
+  if(isChildrenCreated()) {
     m_splitter.RedrawWindow();
   }
 }
 
 CWnd *CSplitView::getChild(UINT index) const {
-  const MatrixDimension dim = getDimension();
+  if(!isChildrenCreated()) {
+    return NULL;
+  }
+  const MatrixDimension &dim = m_splitter.getDimension();
   if(index >= dim.getElementCount()) {
     return NULL;
   }
@@ -143,73 +126,110 @@ CWnd *CSplitView::getChild(UINT index) const {
   return m_splitter.GetPane(r, c);
 }
 
-void CSplitView::saveRelativeSplitPoint() {
-  const CRect r = getClientRect(this);
-  switch(m_splitter.getSplitDirection()) {
-  case SPLIT_HORIZONTAL:
-    { int h1, cyMin;
-      m_splitter.GetRowInfo(0, h1, cyMin);
-      m_relativeSplitPoint = (double)h1 / r.Height();
-    }
-    break;
-  case SPLIT_VERTICAL:
-    { int w1, cxMin;
-      m_splitter.GetColumnInfo(0, w1, cxMin);
-      m_relativeSplitPoint = (double)w1 / r.Width();
-    }
-    break;
-  }
-}
-
-void CSplitView::setRelativeSplitPoint(int cx, int cy) {
-  if(m_splitter.getChildCount() != 2) {
-    return;
-  }
-  switch(m_splitter.getSplitDirection()) {
-  case SPLIT_HORIZONTAL:
-    m_splitter.SetRowInfo(0, (int)(m_relativeSplitPoint * cy), 10);
-    break;
-  case SPLIT_VERTICAL:
-    m_splitter.SetColumnInfo(0, (int)(m_relativeSplitPoint * cx), 10);
-    break;
-  }
-}
-
 BOOL SplitViewSplitter::CreateView(int row, int col, CRuntimeClass* pViewClass,
   SIZE sizeInit, CCreateContext* pContext) {
   const BOOL result = __super::CreateView(row, col, pViewClass, sizeInit, pContext);
-  if (result) {
-    m_childCount++;
+  if(result) {
+    incrChildCount();
   }
   return result;
 }
 
-SplitViewSplitter::SplitViewSplitter()
-: m_splitPointMoved(false)
-, m_splitDirection(CSplitView::s_splitDirection)
-, m_childCount(0)
+SplitViewSplitter::SplitViewSplitter(SplitDirection splitDirection, double relativeSplitPos)
+: m_splitDirection(     splitDirection  )
+, m_dim(createDimension(splitDirection) )
+, m_relativeSplitPos(   relativeSplitPos)
+, m_flags(              0               )
 {
 }
 
-void SplitViewSplitter::RecalcLayout() {
-  CRect r;
-  GetParent()->GetClientRect(&r);
-  setWindowSize(this, r.Size());
-  GetClientRect(&r);
-  __super::RecalcLayout();
-  GetClientRect(&r);
-  if (m_splitPointMoved) {
-    CSplitView *parent = (CSplitView*)GetParent();
-    parent->saveRelativeSplitPoint();
-    m_splitPointMoved = false;
+MatrixDimension SplitViewSplitter::createDimension(SplitDirection splitDirection) { // static
+  switch(splitDirection) {
+  case SPLIT_VERTICAL   : return MatrixDimension(1, 2);
+  case SPLIT_HORIZONTAL : return MatrixDimension(2, 1);
+  default               : return MatrixDimension(0, 0);
   }
+}
+
+void SplitViewSplitter::OnSize(int cx, int cy) {
+  setRelativeSplitPos(cx, cy);
+  RecalcLayout();
 }
 
 void SplitViewSplitter::OnInvertTracker(const CRect &rect) {
   __super::OnInvertTracker(rect);
-  m_splitPointMoved = true;
+  setFlag(SPLFMASK_SPLITPOSMOVED);
 }
 
-MatrixDimension SplitViewSplitter::getDimension() const {
-  return MatrixDimension(GetRowCount(), GetColumnCount());
+void SplitViewSplitter::RecalcLayout() {
+  if(isSet(SPLFMASK_RECALCACTIVE)) { // to prevent recursion
+    return;
+  }
+  setFlag(SPLFMASK_RECALCACTIVE);
+  try {
+    const CSize sz = getClientRect(GetParent()).Size();
+    setWindowSize(this, sz);
+    __super::RecalcLayout();
+    if(isSet(SPLFMASK_SPLITPOSMOVED)) {
+      saveRelativeSplitPos(sz);
+      clrFlag(SPLFMASK_SPLITPOSMOVED);
+    }
+    clrFlag(SPLFMASK_RECALCACTIVE);
+  } catch(...) {
+    clrFlag(SPLFMASK_RECALCACTIVE);
+    throw;
+  }
+}
+
+void SplitViewSplitter::setSplit(const CSize &size) {
+  if(getPanelCount() == 2) {
+    switch(getSplitDirection()) {
+    case SPLIT_HORIZONTAL:
+      SetRowInfo(0, (int)(m_relativeSplitPos * size.cy), 10);
+      break;
+    case SPLIT_VERTICAL:
+      SetColumnInfo(0, (int)(m_relativeSplitPos * size.cx), 10);
+      break;
+    }
+  } else {
+    switch(getSplitDirection()) {
+    case SPLIT_HORIZONTAL:
+      SplitRow(   (int)(m_relativeSplitPos * size.cy));
+      break;
+    case SPLIT_VERTICAL:
+      SplitColumn((int)(m_relativeSplitPos * size.cx));
+      break;
+    }
+  }
+}
+
+void SplitViewSplitter::setRelativeSplitPos(int cx, int cy) {
+  if(getChildCount() != 2) {
+    return;
+  }
+  switch(getSplitDirection()) {
+  case SPLIT_HORIZONTAL:
+    SetRowInfo(0, (int)(m_relativeSplitPos * cy), 10);
+    break;
+  case SPLIT_VERTICAL:
+    SetColumnInfo(0, (int)(m_relativeSplitPos * cx), 10);
+    break;
+  }
+}
+
+void SplitViewSplitter::saveRelativeSplitPos(const CSize &size) {
+  switch(getSplitDirection()) {
+  case SPLIT_HORIZONTAL:
+    { int h1, cyMin;
+      GetRowInfo(0, h1, cyMin);
+      m_relativeSplitPos = (double)h1 / size.cy;
+    }
+    break;
+  case SPLIT_VERTICAL:
+    { int w1, cxMin;
+      GetColumnInfo(0, w1, cxMin);
+      m_relativeSplitPos = (double)w1 / size.cx;
+    }
+    break;
+  }
 }

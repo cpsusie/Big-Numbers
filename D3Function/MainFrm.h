@@ -169,8 +169,6 @@ public:
   WindowPair createNew3DWindow(HWND current, bool vertical);
   void render(BYTE renderFlags, CameraSet cameraSet);
 
-  SplitViewSplitter *createNewSplitter(CWnd *parent, bool vertical, const CSize &size);
-
   void startTimer();
   void stopTimer();
   inline bool getTimerRunning() const {
@@ -264,5 +262,3 @@ public:
     afx_msg LRESULT OnMsgDebuggerStateChanged(WPARAM wp, LPARAM lp);
     afx_msg LRESULT OnMsgKillDebugger(        WPARAM wp, LPARAM lp);
 };
-
-CView *createView(CWnd *parent, CRuntimeClass *viewClass, const CRect &rect);

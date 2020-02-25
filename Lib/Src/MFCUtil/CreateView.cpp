@@ -1,32 +1,14 @@
-#include "stdafx.h"
-#include "MainFrm.h"
+#include "pch.h"
 
-CView *createView(CWnd *parent, CRuntimeClass *viewClass, const CRect &rect) {
-  CMainFrame    *mainFrame = theApp.getMainFrame();
+CView *_createView(CFrameWnd *frameWnd, CWnd *parent, CRuntimeClass *viewClass, const CRect &rect) {
   CCreateContext context;
-  CView         *currentView;
-
-  // If no active view for the frame, return FALSE because this
-  // function retrieves the current document from the active view.
-  if((currentView = mainFrame->GetActiveView()) == NULL) {
-    return FALSE;
-  }
-
-  // If you're already displaying this kind of view, no need to go
-  // further.
-  if(currentView->IsKindOf(viewClass))
-    return NULL;
-
-  // Get pointer to CDocument object so that it can be used in the
-  // creation process of the new view.
-  CDocument *pDoc = currentView->GetDocument();
 
   // Create new view and redraw.
   context.m_pNewViewClass   = viewClass;
   context.m_pCurrentDoc     = NULL;
   context.m_pNewDocTemplate = NULL;
   context.m_pLastView       = NULL;
-  context.m_pCurrentFrame   = mainFrame;
+  context.m_pCurrentFrame   = frameWnd;
 
   CView *newView = (CView*)viewClass->CreateObject();
 

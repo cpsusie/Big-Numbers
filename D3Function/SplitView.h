@@ -8,18 +8,42 @@ typedef enum {
  ,SPLIT_HORIZONTAL
 } SplitDirection;
 
+#define SPLFMASK_CHILDCOUNT    0x03
+#define SPLFMASK_SPLITPOSMOVED 0x04
+#define SPLFMASK_RECALCACTIVE  0x08
+
 class SplitViewSplitter : public CSplitterWnd {
 private:
-  const SplitDirection m_splitDirection;
-  bool                 m_splitPointMoved;
-  BYTE                 m_childCount;
+  const SplitDirection  m_splitDirection;
+  const MatrixDimension m_dim;
+  double                m_relativeSplitPos;
+  BYTE                  m_flags;
+  static MatrixDimension createDimension(SplitDirection splitDirection);
+  void   saveRelativeSplitPos(const CSize &size);
+  inline void incrChildCount() {
+    m_flags++;
+  }
+  inline void setFlag(BYTE flg) {
+    m_flags |= flg;
+  }
+  inline void clrFlag(BYTE flg) {
+    m_flags &= ~flg;
+  }
+  inline bool isSet(BYTE flg) {
+    return (m_flags & flg) != 0;
+  }
 public:
-  SplitViewSplitter();
+  SplitViewSplitter(SplitDirection splitDirection, double relativeSplitPos);
   BOOL CreateView(int row, int col, CRuntimeClass* pViewClass,
     SIZE sizeInit, CCreateContext* pContext);
+  void            setRelativeSplitPos(int cx, int cy);
+  void            setSplit(const CSize &size);
+  void            OnSize(int cx, int cy);
   void            RecalcLayout();
   void            OnInvertTracker(const CRect& rect);
-  MatrixDimension getDimension() const;
+  inline const MatrixDimension &getDimension() const {
+    return m_dim;
+  }
   inline SplitDirection getSplitDirection() const {
     return m_splitDirection;
   }
@@ -27,25 +51,25 @@ public:
     return GetRowCount()*GetColumnCount();
   }
   inline UINT getChildCount() const {
-    return m_childCount;
+    return m_flags & SPLFMASK_CHILDCOUNT;
   }
 };
 
 class CSplitView : public CView {
-  friend class SplitViewSplitter;
 private:
   SplitViewSplitter m_splitter;
-  double            m_relativeSplitPoint;
-  void saveRelativeSplitPoint();
 
   static CRuntimeClass *s_childClass1, *s_childClass2;
   static SplitDirection s_splitDirection;
-
+  static double         s_relativeSplitPos;
+  inline bool isChildrenCreated() const {
+    return m_splitter.getChildCount() == 2;
+  }
 protected: // create from serialization only
   DECLARE_DYNCREATE(CSplitView)
   DECLARE_MESSAGE_MAP()
 public:
-  static CSplitView *create(CWnd *parent, CRuntimeClass *child1, CRuntimeClass *child2, SplitDirection splitDirection, const CRect &rect);
+  static CSplitView *create(CWnd *parent, CRuntimeClass *child1, CRuntimeClass *child2, SplitDirection splitDirection, const CRect &rect, double initialRelativeSplitPos = 0.5);
   CSplitView();
   virtual ~CSplitView();
   CD3FunctionDoc *GetDocument();
@@ -53,14 +77,7 @@ public:
   virtual void AssertValid() const;
   virtual void Dump(CDumpContext& dc) const;
 #endif
-  void                   setRelativeSplitPoint(int cx, int cy);
-  inline MatrixDimension getDimension() const {
-    return m_splitter.getDimension();
-  }
-  CWnd                  *getChild(UINT index) const;
-  inline UINT            getChildCount() const {
-    return (UINT)getDimension().getElementCount();
-  }
+  CWnd        *getChild(UINT index) const;
   afx_msg int  OnCreate(LPCREATESTRUCT lpCreateStruct);
   afx_msg void OnSize(UINT nType, int cx, int cy);
   void         OnShowWindow(BOOL bShow, UINT nStatus);

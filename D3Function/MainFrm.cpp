@@ -485,59 +485,6 @@ bool CMainFrame::canSplit3DWindow(HWND hwnd) const {
   return theApp.m_3DViewArray.findViewByHwnd(hwnd) != NULL;
 }
 
-CView *CD3FunctionDoc::add3dView(CView* pNewView) {
-  CFrameWndEx* pMainWnd = (CFrameWndEx*)AfxGetMainWnd();
-  CView* pOldActiveView;
-  pOldActiveView = pMainWnd->GetActiveView();
-  CSplitterWnd *pSplitter = (CSplitterWnd*)pOldActiveView->GetParent();
-
-  // in this case Pane 0,0 is exchanged
-  pOldActiveView = (CView*)pSplitter->GetPane(0, 0);
-
-  // set flag so that document will not be deleted when view is destroyed
-  m_bAutoDelete = FALSE;
-  // Dettach existing view
-  RemoveView(pOldActiveView);
-  // set flag back to default 
-  m_bAutoDelete = TRUE;
-
-  // Set the child window ID of the active view to the ID of the corresponding
-  // pane. Set the child ID of the previously active view to some other ID.
-  ::SetWindowLong(pOldActiveView->m_hWnd, GWL_ID, 0);
-  ::SetWindowLong(pNewView->m_hWnd, GWL_ID, pSplitter->IdFromRowCol(0, 0));
-
-  // Show the newly active view and hide the inactive view.
-  pNewView->ShowWindow(SW_SHOW);
-  pOldActiveView->ShowWindow(SW_HIDE);
-
-  // Attach new view
-  AddView(pNewView);
-
-  // Set active 
-  pSplitter->GetParentFrame()->SetActiveView(pNewView);
-  pSplitter->RecalcLayout();
-  return pOldActiveView;
-}
-
-SplitViewSplitter *CMainFrame::createNewSplitter(CWnd *parent, bool vertical, const CSize &size) {
-  CSize childSize = size;
-  if(vertical) childSize.cx /= 2; else childSize.cy /= 2;
-  int rowCount = vertical?1:2, colCount = vertical?2:1;
-  const int r1 = 0           , c1 = 0;
-  const int r2 = rowCount - 1, c2 = colCount - 1;
-  BOOL ok = true;
-  SplitViewSplitter *newSplitter = new SplitViewSplitter;
-  ok &= newSplitter->CreateStatic(parent, rowCount, colCount);
-  ok &= newSplitter->CreateView(r1, c1, RUNTIME_CLASS(C3DSceneView), childSize, NULL);
-  ok &= newSplitter->CreateView(r2, c2, RUNTIME_CLASS(C3DSceneView), childSize, NULL);
-  if(!ok) {
-    return NULL;
-  } else {
-    newSplitter->RecalcLayout();
-  }
-  return newSplitter;
-}
-
 WindowPair CMainFrame::createNew3DWindow(HWND current, bool vertical) {
   WindowPair    result;
   C3DSceneView *currentView = theApp.m_3DViewArray.findViewByHwnd(current);
@@ -547,12 +494,12 @@ WindowPair CMainFrame::createNew3DWindow(HWND current, bool vertical) {
   bool timerRuns = getTimerRunning();
   stopTimer();
   const SplitDirection splitDirection = vertical ? SPLIT_VERTICAL : SPLIT_HORIZONTAL;
-  const CSize          size           = getWindowRect(currentView).Size();
+  const CRect          rect           = getWindowRect(currentView);
   CSplitterWnd        *parentSplitter = (CSplitterWnd*)currentView->GetParent();
   CSplitView          *newSplitView   = CSplitView::create(parentSplitter
                                                           ,RUNTIME_CLASS(C3DSceneView), RUNTIME_CLASS(C3DSceneView)
                                                           ,splitDirection
-                                                          , CRect(0,0,size.cx,size.cy));
+                                                          ,rect);
 
   const int parentRows = parentSplitter->GetRowCount();
   const int parentCols = parentSplitter->GetColumnCount();
@@ -568,6 +515,9 @@ WindowPair CMainFrame::createNew3DWindow(HWND current, bool vertical) {
         activeDoc->AddView((C3DSceneView*)newSplitView->getChild(1));
 
         bool ok = v1->DestroyWindow();
+        SetLastError(0);
+        LONG_PTR rr = ::SetWindowLongPtr(newSplitView->m_hWnd, GWL_ID, parentSplitter->IdFromRowCol(r, c));
+
         RecalcLayout();
         newSplitView->UpdateWindow();
         SetActiveView((C3DSceneView*)newSplitView->getChild(0));

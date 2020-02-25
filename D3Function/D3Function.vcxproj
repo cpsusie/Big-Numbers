@@ -537,7 +537,6 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CreateView.cpp" />
     <ClCompile Include="Debugger.cpp" />
     <ClCompile Include="DebugIsoSurface.cpp" />
     <ClCompile Include="DebugSceneObject.cpp" />

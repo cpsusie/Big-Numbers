@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include <FileNameSplitter.h>
 #include "MainFrm.h"
 #include "D3Function.h"
 #include "D3FunctionDoc.h"
@@ -37,7 +36,7 @@ BOOL CD3FunctionDoc::OnNewDocument() {
 }
 
 void CD3FunctionDoc::Serialize(CArchive& ar) {
-  if (ar.IsStoring()) {
+  if(ar.IsStoring()) {
   } else {
   }
 }

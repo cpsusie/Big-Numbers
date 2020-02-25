@@ -138,6 +138,10 @@ int    getCaretPos(                CEdit     *edit);
 void   moveCaret(                  CEdit     *edit, int amount=1);
 void   gotoMatchingParanthes(      CComboBox *cb);
 
+CView *_createView(CFrameWnd *frameWnd, CWnd *parent, CRuntimeClass *viewClass, const CRect &rect);
+
+#define createView(frameWnd, parent, ViewType, rect) (ViewType*)_createView(frameWnd, parent, RUNTIME_CLASS(ViewType), rect)
+
 // assume id is CEdit
 template<typename T> bool getEditValue(CWnd *wnd, int id, T &v) {
   const String str = getWindowText(wnd, id);
