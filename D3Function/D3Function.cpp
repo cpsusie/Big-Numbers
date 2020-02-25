@@ -104,7 +104,7 @@ class CAboutDlg : public CDialog {
 public:
   enum { IDD = IDD_ABOUTBOX };
 
-  CAboutDlg::CAboutDlg() : CDialog(IDD) {
+  CAboutDlg() : CDialog(IDD) {
   }
 
 protected:

@@ -8,7 +8,7 @@
 #define new DEBUG_NEW
 #endif
 
-CProfileDlg::CProfileDlg(const Profile &profile, CWnd *pParent) : CDialog(CProfileDlg::IDD, pParent), m_profile(profile) {
+CProfileDlg::CProfileDlg(const Profile &profile, CWnd *pParent) : CDialog(IDD, pParent), m_profile(profile) {
   ProfileRotationParameters parameters;
   m_degree           = RAD2GRAD(parameters.m_rad);
   m_normalSmooth     = parameters.m_smoothness & NORMALSMOOTH;

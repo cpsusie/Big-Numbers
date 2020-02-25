@@ -58,23 +58,23 @@ void CIsoSurfaceDlg::DoDataExchange(CDataExchange *pDX) {
 }
 
 BEGIN_MESSAGE_MAP(CIsoSurfaceDlg, CDialog)
-    ON_WM_SIZE()
-    ON_COMMAND(ID_FILE_OPEN                  , OnFileOpen                  )
-    ON_COMMAND(ID_FILE_SAVE                  , OnFileSave                  )
-    ON_COMMAND(ID_FILE_SAVE_AS               , OnFileSaveAs                )
-    ON_COMMAND(ID_EDIT_FINDMATCHINGPARENTESIS, OnEditFindMatchingParentesis)
-    ON_COMMAND(ID_GOTO_EXPR                  , OnGotoExpr                  )
-    ON_COMMAND(ID_GOTO_CELLSIZE              , OnGotoCellSize              )
-    ON_COMMAND(ID_GOTO_XINTERVAL             , OnGotoXInterval             )
-    ON_COMMAND(ID_GOTO_YINTERVAL             , OnGotoYInterval             )
-    ON_COMMAND(ID_GOTO_ZINTERVAL             , OnGotoZInterval             )
-    ON_COMMAND(ID_GOTO_TIMEINTERVAL          , OnGotoTimeInterval          )
-    ON_COMMAND(ID_GOTO_FRAMECOUNT            , OnGotoFrameCount            )
-    ON_BN_CLICKED(IDC_BUTTON_HELP            , OnButtonHelp                )
-    ON_BN_CLICKED(IDC_CHECK_DOUBLESIDED      , OnCheckDoubleSided          )
-    ON_BN_CLICKED(IDC_CHECK_INCLUDETIME      , OnCheckIncludeTime          )
-    ON_BN_CLICKED(IDC_CHECK_TETRAHEDRAL      , OnCheckTetrahedral          )
-	ON_BN_CLICKED(IDC_CHECK_MACHINECODE      , OnCheckMachineCode          )
+  ON_WM_SIZE()
+  ON_COMMAND(ID_FILE_OPEN                  , OnFileOpen                  )
+  ON_COMMAND(ID_FILE_SAVE                  , OnFileSave                  )
+  ON_COMMAND(ID_FILE_SAVE_AS               , OnFileSaveAs                )
+  ON_COMMAND(ID_EDIT_FINDMATCHINGPARENTESIS, OnEditFindMatchingParentesis)
+  ON_COMMAND(ID_GOTO_EXPR                  , OnGotoExpr                  )
+  ON_COMMAND(ID_GOTO_CELLSIZE              , OnGotoCellSize              )
+  ON_COMMAND(ID_GOTO_XINTERVAL             , OnGotoXInterval             )
+  ON_COMMAND(ID_GOTO_YINTERVAL             , OnGotoYInterval             )
+  ON_COMMAND(ID_GOTO_ZINTERVAL             , OnGotoZInterval             )
+  ON_COMMAND(ID_GOTO_TIMEINTERVAL          , OnGotoTimeInterval          )
+  ON_COMMAND(ID_GOTO_FRAMECOUNT            , OnGotoFrameCount            )
+  ON_BN_CLICKED(IDC_BUTTON_HELP            , OnButtonHelp                )
+  ON_BN_CLICKED(IDC_CHECK_DOUBLESIDED      , OnCheckDoubleSided          )
+  ON_BN_CLICKED(IDC_CHECK_INCLUDETIME      , OnCheckIncludeTime          )
+  ON_BN_CLICKED(IDC_CHECK_TETRAHEDRAL      , OnCheckTetrahedral          )
+  ON_BN_CLICKED(IDC_CHECK_MACHINECODE      , OnCheckMachineCode          )
 END_MESSAGE_MAP()
 
 BOOL CIsoSurfaceDlg::OnInitDialog() {
@@ -129,7 +129,7 @@ BOOL CIsoSurfaceDlg::OnInitDialog() {
 #define MAXFRAMECOUNT 300
 
 String CIsoSurfaceDlg::getListFileName() const {
-  if (!m_createListFile) return __super::getListFileName();
+  if(!m_createListFile) return __super::getListFileName();
   return FileNameSplitter(getData().getName()).setExtension(_T("lst")).getFullPath();
 }
 

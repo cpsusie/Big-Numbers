@@ -1,6 +1,9 @@
 #include "stdafx.h"
 #include <ProcessTools.h>
 #include <D3DGraphics/MeshCreators.h>
+#include <D3DGraphics/D3Scene.h>
+#include <D3DGraphics/D3SceneObjectWithMesh.h>
+#include <D3DGraphics/D3SceneObjectAnimatedMesh.h>
 #include "Function2DSurfaceDlg.h"
 #include "ParametricSurfaceDlg.h"
 #include "IsoSurfaceDlg.h"
@@ -256,12 +259,12 @@ HCURSOR CD3FunctionPlotterDlg::OnQueryDragIcon() {
   return (HCURSOR)m_hIcon;
 }
 
-class D3AnimatedFunctionSurface : public D3AnimatedSurface {
+class D3AnimatedFunctionSurface : public D3SceneObjectAnimatedMesh {
 public:
   D3AnimatedFunctionSurface(D3Scene &scene, const MeshArray &ma)
-    : D3AnimatedSurface(scene, ma) {
+    : D3SceneObjectAnimatedMesh(scene, ma) {
   }
-  void modifyContextMenu(CMenu &menu) {
+  void modifyContextMenu(HMENU menu) {
     appendMenuItem(menu, _T("Edit function"), ID_OBJECT_EDITFUNCTION);
   }
 };
@@ -272,7 +275,7 @@ public:
     : D3SceneObjectWithMesh(scene, mesh)
   {
   }
-  void modifyContextMenu(CMenu &menu) {
+  void modifyContextMenu(HMENU menu) {
     appendMenuItem(menu, _T("Edit function"), ID_OBJECT_EDITFUNCTION);
   }
 };
@@ -308,28 +311,28 @@ void CD3FunctionPlotterDlg::setCalculatedObject(IsoSurfaceParameters &param) {
 }
 
 void CD3FunctionPlotterDlg::deleteCalculatedObject() {
-  D3SceneObject *oldObj = getCalculatedObject();
+  D3SceneObjectVisual *oldObj = getCalculatedObject();
   if(oldObj) {
-    m_scene.removeSceneObject(oldObj);
+    m_scene.removeVisual(oldObj);
     SAFEDELETE(oldObj);
   }
 }
 
-void CD3FunctionPlotterDlg::setCalculatedObject(D3SceneObject *obj, PersistentData *param) {
+void CD3FunctionPlotterDlg::setCalculatedObject(D3SceneObjectVisual *obj, PersistentData *param) {
   deleteCalculatedObject();
   if(obj) {
     obj->setUserData(param);
     if(param) {
       obj->setName(param->getDisplayName());
     }
-    m_scene.addSceneObject(obj);
+    m_scene.addVisual(obj);
   }
   m_editor.setCurrentSceneObject(obj);
 }
 
-D3SceneObject *CD3FunctionPlotterDlg::getCalculatedObject() const {
-  for(Iterator<D3SceneObject*> it = m_scene.getObjectIterator(); it.hasNext();) {
-    D3SceneObject *obj = it.next();
+D3SceneObjectVisual *CD3FunctionPlotterDlg::getCalculatedObject() const {
+  for(D3VisualIterator it = m_scene.getVisualIterator(); it.hasNext();) {
+    D3SceneObjectVisual *obj = it.next();
     if(obj->getUserData() != NULL) {
       return obj;
     }
@@ -473,7 +476,7 @@ CPoint CD3FunctionPlotterDlg::get3DPanelPoint(CPoint point, bool screenRelative)
   if(!screenRelative) {
     ClientToScreen(&point);
   }
-  ((CD3FunctionPlotterDlg*)this)->get3DWindow()->ScreenToClient(&point);
+  ::ScreenToClient(get3DWindow(),&point);
   return point;
 }
 
@@ -517,7 +520,7 @@ void CD3FunctionPlotterDlg::OnResetPositions() {
 }
 
 void CD3FunctionPlotterDlg::OnObjectEditFunction() {
-  D3SceneObject *calcObj = getCalculatedObject();
+  D3SceneObjectVisual *calcObj = getCalculatedObject();
   if(!calcObj) return;
   PersistentData *param = (PersistentData*)calcObj->getUserData();
   switch(param->getType()) {
@@ -539,8 +542,8 @@ void CD3FunctionPlotterDlg::OnObjectEditFunction() {
 void CD3FunctionPlotterDlg::OnAddBoxObject() {
   D3DXCube3 cube(D3DXVECTOR3(-1,-1,-1), D3DXVECTOR3(1,1,1));
   const int matIndex = m_scene.addMaterial(D3Scene::getDefaultMaterial());
-  D3SceneObject *box = new D3SceneObjectSolidBoxWithPos(m_scene, cube, matIndex); TRACE_NEW(box);
-  m_scene.addSceneObject(box);
+  D3SceneObjectVisual *box = new D3SceneObjectSolidBoxWithPos(m_scene, cube, matIndex); TRACE_NEW(box);
+  m_scene.addVisual(box);
   render(RENDER_ALL);
 }
 

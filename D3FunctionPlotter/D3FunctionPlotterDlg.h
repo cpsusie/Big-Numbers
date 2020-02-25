@@ -47,22 +47,22 @@ private:
     D3SceneObject *createRotatedProfile();
     void createSaddle();
     void deleteCalculatedObject();
-    void setCalculatedObject(D3SceneObject *obj, PersistentData *param = NULL);
+    void setCalculatedObject(D3SceneObjectVisual *obj, PersistentData *param = NULL);
     void setCalculatedObject(Function2DSurfaceParameters &param);
     void setCalculatedObject(ParametricSurfaceParameters &param);
     void setCalculatedObject(IsoSurfaceParameters        &param);
-    D3SceneObject *getCalculatedObject() const;
+    D3SceneObjectVisual *getCalculatedObject() const;
 
 public:
     CD3FunctionPlotterDlg(CWnd *pParent = NULL);
     D3Scene &getScene() {
       return m_scene;
     }
-    CWnd    *getMessageWindow() {
-      return this;
+    HWND getMessageWindow() const {
+      return *this;
     }
-    CWnd    *get3DWindow() {
-      return GetDlgItem(IDC_STATIC_3DPANEL);
+    HWND get3DWindow() const {
+      return *GetDlgItem(IDC_STATIC_3DPANEL);
     }
     void render(BYTE renderFlags) {
       SendMessage(ID_MSG_RENDER, renderFlags, 0);

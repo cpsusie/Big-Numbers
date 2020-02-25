@@ -6,22 +6,22 @@
 #endif
 
 COptionsOrganizerDlg::COptionsOrganizerDlg(CWnd *pParent /*=NULL*/)
-    : CDialog(COptionsOrganizerDlg::IDD, pParent)
+  : CDialog(IDD, pParent)
 {
 }
 
 void COptionsOrganizerDlg::DoDataExchange(CDataExchange *pDX) {
-    __super::DoDataExchange(pDX);
-    DDX_Control(pDX, IDC_LISTOPTIONNAMES, m_nameListCtrl);
+  __super::DoDataExchange(pDX);
+  DDX_Control(pDX, IDC_LISTOPTIONNAMES, m_nameListCtrl);
 }
 
 BEGIN_MESSAGE_MAP(COptionsOrganizerDlg, CDialog)
-    ON_BN_CLICKED(IDC_BUTTONRENAME  , OnButtonRename    )
-    ON_BN_CLICKED(IDC_BUTTONDELETE  , OnButtonDelete)
-    ON_BN_CLICKED(IDC_BUTTONMOVEDOWN, OnButtonMoveDown)
-    ON_BN_CLICKED(IDC_BUTTONMOVEUP  , OnButtonMoveUp)
-    ON_NOTIFY(LVN_ITEMCHANGED       , IDC_LISTOPTIONNAMES, OnItemChangedList )
-    ON_NOTIFY(LVN_ENDLABELEDIT      , IDC_LISTOPTIONNAMES, OnEndLabelEditList)
+  ON_BN_CLICKED(IDC_BUTTONRENAME  , OnButtonRename    )
+  ON_BN_CLICKED(IDC_BUTTONDELETE  , OnButtonDelete    )
+  ON_BN_CLICKED(IDC_BUTTONMOVEDOWN, OnButtonMoveDown  )
+  ON_BN_CLICKED(IDC_BUTTONMOVEUP  , OnButtonMoveUp    )
+  ON_NOTIFY(LVN_ITEMCHANGED       , IDC_LISTOPTIONNAMES, OnItemChangedList )
+  ON_NOTIFY(LVN_ENDLABELEDIT      , IDC_LISTOPTIONNAMES, OnEndLabelEditList)
 END_MESSAGE_MAP()
 
 BOOL COptionsOrganizerDlg::OnInitDialog() {

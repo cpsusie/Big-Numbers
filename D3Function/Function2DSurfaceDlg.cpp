@@ -13,38 +13,38 @@ CFunction2DSurfaceDlg::CFunction2DSurfaceDlg(const Function2DSurfaceParameters &
 }
 
 void CFunction2DSurfaceDlg::DoDataExchange(CDataExchange *pDX) {
-    __super::DoDataExchange(pDX);
-    DDX_Text( pDX, IDC_EDIT_EXPR             , m_expr                      );
-    DDX_Text( pDX, IDC_EDIT_XFROM            , m_xfrom                     );
-    DDX_Text( pDX, IDC_EDIT_XTO              , m_xto                       );
-    DDX_Text( pDX, IDC_EDIT_YFROM            , m_yfrom                     );
-    DDX_Text( pDX, IDC_EDIT_YTO              , m_yto                       );
-    DDX_Text( pDX, IDC_EDIT_POINTS           , m_pointCount                );
-    DDX_Check(pDX, IDC_CHECK_MACHINECODE     , m_machineCode               );
-    DDX_Check(pDX, IDC_CHECKCREATELISTFILE   , m_createListFile            );
-    DDX_Check(pDX, IDC_CHECK_DOUBLESIDED     , m_doubleSided               );
-    DDX_Check(pDX, IDC_CHECK_INCLUDETIME     , m_includeTime               );
-    DDX_Text( pDX, IDC_EDIT_FRAMECOUNT       , m_frameCount                );
-    DDV_MinMaxUInt(pDX, m_frameCount, 1, 300                               );
-    DDX_Text( pDX, IDC_EDIT_TIMEFROM         , m_timefrom                  );
-    DDX_Text( pDX, IDC_EDIT_TIMETO           , m_timeto                    );
+  __super::DoDataExchange(pDX);
+  DDX_Text( pDX, IDC_EDIT_EXPR             , m_expr                      );
+  DDX_Text( pDX, IDC_EDIT_XFROM            , m_xfrom                     );
+  DDX_Text( pDX, IDC_EDIT_XTO              , m_xto                       );
+  DDX_Text( pDX, IDC_EDIT_YFROM            , m_yfrom                     );
+  DDX_Text( pDX, IDC_EDIT_YTO              , m_yto                       );
+  DDX_Text( pDX, IDC_EDIT_POINTS           , m_pointCount                );
+  DDX_Check(pDX, IDC_CHECK_MACHINECODE     , m_machineCode               );
+  DDX_Check(pDX, IDC_CHECKCREATELISTFILE   , m_createListFile            );
+  DDX_Check(pDX, IDC_CHECK_DOUBLESIDED     , m_doubleSided               );
+  DDX_Check(pDX, IDC_CHECK_INCLUDETIME     , m_includeTime               );
+  DDX_Text( pDX, IDC_EDIT_FRAMECOUNT       , m_frameCount                );
+  DDV_MinMaxUInt(pDX, m_frameCount, 1, 300                               );
+  DDX_Text( pDX, IDC_EDIT_TIMEFROM         , m_timefrom                  );
+  DDX_Text( pDX, IDC_EDIT_TIMETO           , m_timeto                    );
 }
 
 BEGIN_MESSAGE_MAP(CFunction2DSurfaceDlg, CDialog)
-    ON_WM_SIZE()
-    ON_COMMAND(ID_FILE_OPEN                  , OnFileOpen                       )
-    ON_COMMAND(ID_FILE_SAVE                  , OnFileSave                       )
-    ON_COMMAND(ID_FILE_SAVE_AS               , OnFileSaveAs                     )
-    ON_COMMAND(ID_EDIT_FINDMATCHINGPARENTESIS, OnEditFindMatchingParentesis     )
-    ON_COMMAND(ID_GOTO_EXPR                  , OnGotoExpr                       )
-    ON_COMMAND(ID_GOTO_XINTERVAL             , OnGotoXInterval                  )
-    ON_COMMAND(ID_GOTO_YINTERVAL             , OnGotoYInterval                  )
-    ON_COMMAND(ID_GOTO_TIMEINTERVAL          , OnGotoTimeInterval               )
-    ON_COMMAND(ID_GOTO_POINTCOUNT            , OnGotoPointCount                 )
-    ON_COMMAND(ID_GOTO_FRAMECOUNT            , OnGotoFrameCount                 )
-    ON_BN_CLICKED(IDC_BUTTON_HELP            , OnButtonHelp                     )
-    ON_BN_CLICKED(IDC_CHECK_INCLUDETIME      , OnCheckIncludeTime               )
-    ON_BN_CLICKED(IDC_CHECK_MACHINECODE      , OnCheckMachineCode               )
+  ON_WM_SIZE()
+  ON_COMMAND(ID_FILE_OPEN                  , OnFileOpen                       )
+  ON_COMMAND(ID_FILE_SAVE                  , OnFileSave                       )
+  ON_COMMAND(ID_FILE_SAVE_AS               , OnFileSaveAs                     )
+  ON_COMMAND(ID_EDIT_FINDMATCHINGPARENTESIS, OnEditFindMatchingParentesis     )
+  ON_COMMAND(ID_GOTO_EXPR                  , OnGotoExpr                       )
+  ON_COMMAND(ID_GOTO_XINTERVAL             , OnGotoXInterval                  )
+  ON_COMMAND(ID_GOTO_YINTERVAL             , OnGotoYInterval                  )
+  ON_COMMAND(ID_GOTO_TIMEINTERVAL          , OnGotoTimeInterval               )
+  ON_COMMAND(ID_GOTO_POINTCOUNT            , OnGotoPointCount                 )
+  ON_COMMAND(ID_GOTO_FRAMECOUNT            , OnGotoFrameCount                 )
+  ON_BN_CLICKED(IDC_BUTTON_HELP            , OnButtonHelp                     )
+  ON_BN_CLICKED(IDC_CHECK_INCLUDETIME      , OnCheckIncludeTime               )
+  ON_BN_CLICKED(IDC_CHECK_MACHINECODE      , OnCheckMachineCode               )
 END_MESSAGE_MAP()
 
 BOOL CFunction2DSurfaceDlg::OnInitDialog() {

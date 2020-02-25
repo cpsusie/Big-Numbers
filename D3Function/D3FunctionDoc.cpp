@@ -26,7 +26,7 @@ CD3FunctionDoc::~CD3FunctionDoc() {
 }
 
 BOOL CD3FunctionDoc::OnNewDocument() {
-  if(!CDocument::OnNewDocument()) {
+  if(!__super::OnNewDocument()) {
     return FALSE;
   }
 
@@ -44,11 +44,11 @@ void CD3FunctionDoc::Serialize(CArchive& ar) {
 
 #ifdef _DEBUG
 void CD3FunctionDoc::AssertValid() const {
-    CDocument::AssertValid();
+  __super::AssertValid();
 }
 
 void CD3FunctionDoc::Dump(CDumpContext& dc) const {
-    CDocument::Dump(dc);
+  __super::Dump(dc);
 }
 #endif //_DEBUG
 

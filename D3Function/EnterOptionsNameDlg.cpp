@@ -6,14 +6,14 @@
 #endif
 
 CEnterOptionsNameDlg::CEnterOptionsNameDlg(const String &currentName, CWnd *pParent /*=NULL*/)
-    : CDialog(CEnterOptionsNameDlg::IDD, pParent)
+  : CDialog(IDD, pParent)
 {
-    m_name = currentName.cstr();
+  m_name = currentName.cstr();
 }
 
 void CEnterOptionsNameDlg::DoDataExchange(CDataExchange *pDX) {
-    __super::DoDataExchange(pDX);
-    DDX_CBString(pDX, IDC_COMBOOPTIONSNAME, m_name);
+  __super::DoDataExchange(pDX);
+  DDX_CBString(pDX, IDC_COMBOOPTIONSNAME, m_name);
 }
 
 BEGIN_MESSAGE_MAP(CEnterOptionsNameDlg, CDialog)
