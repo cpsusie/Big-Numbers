@@ -9,8 +9,8 @@ protected: // create from serialization only
 
 // Attributes
 public:
-  void refresh(); // dont recompare, just make lines again. Faster than recompare()
-// Operations
+  CView *add3dView(CView* pNewView);
+    // Operations
 public:
 
 public:

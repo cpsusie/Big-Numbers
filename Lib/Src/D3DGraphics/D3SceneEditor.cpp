@@ -315,6 +315,13 @@ void D3SceneEditor::selectCamera(int index) {
   m_currentCameraIndex = index;
 }
 
+bool D3SceneEditor::isCoordinateSystemVisible() const {
+  return m_coordinateSystem && m_coordinateSystem->isVisible();
+}
+bool D3SceneEditor::isSelectedCubeVisible() const {
+  return m_selectedCube && m_selectedCube->isVisible();
+}
+
 BOOL D3SceneEditor::PreTranslateMessage(MSG *pMsg) {
   if(!isEnabled()) return false;
   int cameraIndex;
@@ -407,6 +414,9 @@ BOOL D3SceneEditor::PreTranslateMessage(MSG *pMsg) {
     case ID_LIGHTCONTROL_DISABLEEFFECT    : setLightControlRenderEffect(false)  ; return true;
     case ID_SAVESCENEPARAMETERS           : OnSaveSceneParameters()             ; return true;
     case ID_LOADSCENEPARAMETERS           : OnLoadSceneParameters()             ; return true;
+    case ID_SPLITWINDOW_VERTICAL          : OnSplitWindow(true)                 ; return true;
+    case ID_SPLITWINDOW_HORIZONTAL        : OnSplitWindow(false)                ; return true;
+
     default:
       if((ID_SELECT_LIGHT0 <= pMsg->wParam) && (pMsg->wParam <= ID_SELECT_LIGHT20)) {
         const int index = (int)pMsg->wParam - ID_SELECT_LIGHT0;
@@ -961,6 +971,10 @@ void D3SceneEditor::setCurrentObj(D3SceneObjectVisual *obj) {
   CHECKINVARIANT();
 }
 
+SceneObjectType D3SceneEditor::getCurrentObjType() const {
+  return m_currentObj ? m_currentObj->getType() : SOTYPE_NULL;
+}
+
 D3SceneObjectVisual *D3SceneEditor::getCurrentVisual() const {
   switch(getCurrentObjType()) {
   case SOTYPE_ANIMATEDOBJECT:
@@ -1127,6 +1141,9 @@ void D3SceneEditor::OnContextMenuBackground(CPoint point) {
                       ?ID_RIGHTHANDED
                       :ID_LEFTHANDED);
 
+  if(!m_sceneContainer->canSplit3DWindow(m_currentCamera->getHwnd())) {
+    removeSubMenuContainingId(menu, ID_SPLITWINDOW_VERTICAL);
+  }
   m_currentCamera->modifyContextMenu(*menu.GetSubMenu(0));
   m_sceneContainer->modifyContextMenu(*menu.GetSubMenu(0));
   showContextMenu(menu, point);

@@ -17,6 +17,8 @@ public:
   int  m_width;
 };
 
+class SplitViewSplitter;
+
 class CD3FunctionSplitterWnd : public CSplitterWnd {
 private:
   bool m_splitPointMoved;
@@ -25,8 +27,6 @@ public:
   }
   void RecalcLayout();
   void OnInvertTracker(const CRect& rect);
-  CD3SceneView *get3DPanel() const;
-  CInfoView    *getInfoPanel() const;
   int           getPanelCount() const {
     return GetRowCount();
   }
@@ -52,6 +52,7 @@ class CMainFrame : public CFrameWnd
 #endif // DEBUG_POLYGONIZER
 {
 private:
+  friend class C3DSceneView;
   bool                            m_statusPanesVisible;
   CStatusBar                      m_wndStatusBar;
   CToolBar                        m_wndToolBar;
@@ -127,7 +128,7 @@ private:
     return m_wndSplitter.getPanelCount();
   }
   inline CInfoView *getInfoPanel() {
-    return m_wndSplitter.getInfoPanel();
+    return (CInfoView*)m_wndSplitter.GetPane(1,0);
   }
   friend class CD3FunctionSplitterWnd;
 
@@ -159,15 +160,22 @@ public:
     return *this;
   }
   HWND get3DWindow(UINT index) const {
-    return *m_wndSplitter.get3DPanel();
+    return *theApp.m_3DViewArray[index];
   }
   UINT get3DWindowCount() const {
-    return 1;
+    return (UINT)theApp.m_3DViewArray.size();
   }
+  bool canSplit3DWindow(HWND hwnd) const;
+  WindowPair createNew3DWindow(HWND current, bool vertical);
   void render(BYTE renderFlags, CameraSet cameraSet);
+
+  SplitViewSplitter *createNewSplitter(CWnd *parent, bool vertical, const CSize &size);
 
   void startTimer();
   void stopTimer();
+  inline bool getTimerRunning() const {
+    return m_timerRunning;
+  }
   inline bool isInfoPanelVisible() const {
     return getPanelCount() > 1;
   }
@@ -256,3 +264,5 @@ public:
     afx_msg LRESULT OnMsgDebuggerStateChanged(WPARAM wp, LPARAM lp);
     afx_msg LRESULT OnMsgKillDebugger(        WPARAM wp, LPARAM lp);
 };
+
+CView *createView(CWnd *parent, CRuntimeClass *viewClass, const CRect &rect);

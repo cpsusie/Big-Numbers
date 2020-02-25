@@ -234,6 +234,9 @@
     <ClCompile Include="D3AbstractTextureFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="D3SceneEditorSplitWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\D3DGraphics\D3Error.h">

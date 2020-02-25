@@ -532,10 +532,12 @@
     <ClInclude Include="D3Function.h" />
     <ClInclude Include="D3FunctionDoc.h" />
     <ClInclude Include="D3SceneView.h" />
+    <ClInclude Include="SplitView.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CreateView.cpp" />
     <ClCompile Include="Debugger.cpp" />
     <ClCompile Include="DebugIsoSurface.cpp" />
     <ClCompile Include="DebugSceneObject.cpp" />
@@ -547,6 +549,7 @@
     <ClCompile Include="Options.cpp" />
     <ClCompile Include="OptionsOrganizerDlg.cpp" />
     <ClCompile Include="ParametricSurfaceDlg.cpp" />
+    <ClCompile Include="SplitView.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DEBUG_POLYGONIZER|Win32'">Create</PrecompiledHeader>

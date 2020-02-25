@@ -10,6 +10,7 @@
 #include "ParametricSurfaceDlg.h"
 #include "IsoSurfaceDlg.h"
 #include "MainFrm.h"
+#include "SplitView.h"
 #include "EnterOptionsNameDlg.h"
 #include "OptionsOrganizerDlg.h"
 
@@ -139,15 +140,15 @@ void CMainFrame::OnDestroy() {
 
 BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT /*lpcs*/, CCreateContext *pContext) {
   m_relativeHeight = 0.8;
-
   VERIFY(m_wndSplitter.CreateStatic(this, 2, 1));
-  VERIFY(m_wndSplitter.CreateView(0, 0, RUNTIME_CLASS(CD3SceneView), CSize(700, 500), pContext));
+  VERIFY(m_wndSplitter.CreateView(0, 0, RUNTIME_CLASS(C3DSceneView), CSize(700, 500), pContext));
   VERIFY(m_wndSplitter.CreateView(1, 0, RUNTIME_CLASS(CInfoView   ), CSize(700, 100), pContext));
   return TRUE;
 }
 
 void CD3FunctionSplitterWnd::RecalcLayout() {
-  getInfoPanel()->enableScroll(false);
+  CInfoView *infoView = (CInfoView*)GetPane(1, 0);
+  infoView->enableScroll(false);
   __super::RecalcLayout();
   if(m_splitPointMoved) {
     CMainFrame *mf = theApp.getMainFrame();
@@ -160,21 +161,13 @@ void CD3FunctionSplitterWnd::RecalcLayout() {
     }
     m_splitPointMoved = false;
   }
-  getInfoPanel()->enableScroll(true);
+  infoView->enableScroll(true);
 }
 
 void CD3FunctionSplitterWnd::OnInvertTracker(const CRect &rect) {
   __super::OnInvertTracker(rect);
   theApp.getMainFrame()->getEditor().setEnabled(false, SE_ENABLED | SE_PROPCHANGES | SE_RENDER3D);
   m_splitPointMoved = true;
-}
-
-CD3SceneView *CD3FunctionSplitterWnd::get3DPanel() const {
-  return (CD3SceneView*)(((CD3FunctionSplitterWnd*)this)->GetPane(0,0));
-}
-
-CInfoView *CD3FunctionSplitterWnd::getInfoPanel() const {
-  return (CInfoView*)(((CD3FunctionSplitterWnd*)this)->GetPane(1, 0));
 }
 
 #ifdef _DEBUG
@@ -205,6 +198,23 @@ void CMainFrame::updateLoadOptionsMenu() {
   const int n = min((int)optionNames.size(), 9);
   for(int i = 0; i < n; i++) {
     insertMenuItem(loadMenu,i, format(_T("%s\tCtrl+%d"), optionNames[i].cstr(), i+1), ID_OPTIONS_LOADOPTIONS+i+1);
+  }
+}
+
+void CMainFrame::loadOptions(int id) {
+  const int index = id - 1;
+  Array<Options> optionArray = Options::getExisting();
+  if (index >= (int)optionArray.size()) {
+    return;
+  }
+  getOptions() = optionArray[index];
+  activateOptions();
+}
+
+void CMainFrame::OnOptionsOrganizeOptions() {
+  COptionsOrganizerDlg dlg;
+  if(dlg.DoModal() == IDOK) {
+    updateLoadOptionsMenu();
   }
 }
 
@@ -469,6 +479,109 @@ void CMainFrame::decrLevel() {
       render(m_accumulatedRenderFlags, m_accumulatedCameraSet);
     }
   }
+}
+
+bool CMainFrame::canSplit3DWindow(HWND hwnd) const {
+  return theApp.m_3DViewArray.findViewByHwnd(hwnd) != NULL;
+}
+
+CView *CD3FunctionDoc::add3dView(CView* pNewView) {
+  CFrameWndEx* pMainWnd = (CFrameWndEx*)AfxGetMainWnd();
+  CView* pOldActiveView;
+  pOldActiveView = pMainWnd->GetActiveView();
+  CSplitterWnd *pSplitter = (CSplitterWnd*)pOldActiveView->GetParent();
+
+  // in this case Pane 0,0 is exchanged
+  pOldActiveView = (CView*)pSplitter->GetPane(0, 0);
+
+  // set flag so that document will not be deleted when view is destroyed
+  m_bAutoDelete = FALSE;
+  // Dettach existing view
+  RemoveView(pOldActiveView);
+  // set flag back to default 
+  m_bAutoDelete = TRUE;
+
+  // Set the child window ID of the active view to the ID of the corresponding
+  // pane. Set the child ID of the previously active view to some other ID.
+  ::SetWindowLong(pOldActiveView->m_hWnd, GWL_ID, 0);
+  ::SetWindowLong(pNewView->m_hWnd, GWL_ID, pSplitter->IdFromRowCol(0, 0));
+
+  // Show the newly active view and hide the inactive view.
+  pNewView->ShowWindow(SW_SHOW);
+  pOldActiveView->ShowWindow(SW_HIDE);
+
+  // Attach new view
+  AddView(pNewView);
+
+  // Set active 
+  pSplitter->GetParentFrame()->SetActiveView(pNewView);
+  pSplitter->RecalcLayout();
+  return pOldActiveView;
+}
+
+SplitViewSplitter *CMainFrame::createNewSplitter(CWnd *parent, bool vertical, const CSize &size) {
+  CSize childSize = size;
+  if(vertical) childSize.cx /= 2; else childSize.cy /= 2;
+  int rowCount = vertical?1:2, colCount = vertical?2:1;
+  const int r1 = 0           , c1 = 0;
+  const int r2 = rowCount - 1, c2 = colCount - 1;
+  BOOL ok = true;
+  SplitViewSplitter *newSplitter = new SplitViewSplitter;
+  ok &= newSplitter->CreateStatic(parent, rowCount, colCount);
+  ok &= newSplitter->CreateView(r1, c1, RUNTIME_CLASS(C3DSceneView), childSize, NULL);
+  ok &= newSplitter->CreateView(r2, c2, RUNTIME_CLASS(C3DSceneView), childSize, NULL);
+  if(!ok) {
+    return NULL;
+  } else {
+    newSplitter->RecalcLayout();
+  }
+  return newSplitter;
+}
+
+WindowPair CMainFrame::createNew3DWindow(HWND current, bool vertical) {
+  WindowPair    result;
+  C3DSceneView *currentView = theApp.m_3DViewArray.findViewByHwnd(current);
+  if(currentView == NULL) {
+    return result;
+  }
+  bool timerRuns = getTimerRunning();
+  stopTimer();
+  const SplitDirection splitDirection = vertical ? SPLIT_VERTICAL : SPLIT_HORIZONTAL;
+  const CSize          size           = getWindowRect(currentView).Size();
+  CSplitterWnd        *parentSplitter = (CSplitterWnd*)currentView->GetParent();
+  CSplitView          *newSplitView   = CSplitView::create(parentSplitter
+                                                          ,RUNTIME_CLASS(C3DSceneView), RUNTIME_CLASS(C3DSceneView)
+                                                          ,splitDirection
+                                                          , CRect(0,0,size.cx,size.cy));
+
+  const int parentRows = parentSplitter->GetRowCount();
+  const int parentCols = parentSplitter->GetColumnCount();
+  for(int r = 0; r < parentRows; r++) {
+    for(int c = 0; c < parentCols; c++) {
+      C3DSceneView *v1 = (C3DSceneView*)parentSplitter->GetPane(r, c);
+      if(v1 == currentView) {
+        CD3FunctionDoc *activeDoc = (CD3FunctionDoc*)GetActiveDocument();
+        activeDoc->m_bAutoDelete = false;
+        activeDoc->RemoveView(v1);
+        activeDoc->m_bAutoDelete = true;
+        activeDoc->AddView((C3DSceneView*)newSplitView->getChild(0));
+        activeDoc->AddView((C3DSceneView*)newSplitView->getChild(1));
+
+        bool ok = v1->DestroyWindow();
+        RecalcLayout();
+        newSplitView->UpdateWindow();
+        SetActiveView((C3DSceneView*)newSplitView->getChild(0));
+
+        result = WindowPair(*newSplitView->getChild(0), *newSplitView->getChild(1));
+        goto End;
+      } // if(v1->m_hwnd...
+    } // for(int c...)
+  }  // for(int r...)
+End:
+  if(timerRuns) {
+    startTimer();
+  }
+  return result;
 }
 
 void CMainFrame::render(BYTE renderFlags, CameraSet cameraSet) {
@@ -938,23 +1051,6 @@ void CMainFrame::OnOptionsLoadOptions6() { loadOptions(6); }
 void CMainFrame::OnOptionsLoadOptions7() { loadOptions(7); }
 void CMainFrame::OnOptionsLoadOptions8() { loadOptions(8); }
 void CMainFrame::OnOptionsLoadOptions9() { loadOptions(9); }
-
-void CMainFrame::loadOptions(int id) {
-  const int index = id - 1;
-  Array<Options> optionArray = Options::getExisting();
-  if(index >= (int)optionArray.size()) {
-    return;
-  }
-  getOptions() = optionArray[index];
-  activateOptions();
-}
-
-void CMainFrame::OnOptionsOrganizeOptions() {
-  COptionsOrganizerDlg dlg;
-  if(dlg.DoModal() == IDOK) {
-    updateLoadOptionsMenu();
-  }
-}
 
 BOOL CMainFrame::PreTranslateMessage(MSG *pMsg) {
   D3Camera *cam;

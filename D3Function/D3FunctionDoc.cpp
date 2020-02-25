@@ -22,9 +22,6 @@ CD3FunctionDoc::CD3FunctionDoc() {
 void CD3FunctionDoc::initOptions(const Options &options) {
 }
 
-void CD3FunctionDoc::refresh() {
-}
-
 CD3FunctionDoc::~CD3FunctionDoc() {
 }
 

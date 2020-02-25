@@ -52,9 +52,9 @@ LPDIRECT3DDEVICE D3Scene::getDirectDevice() const {
   return getDevice();
 }
 
-D3Camera &D3Scene::addCamera(HWND hwnd) {
+D3Camera &D3Scene::addCamera(HWND hwnd, D3Camera *src) {
   const UINT oldCount = getCameraCount();
-  D3Camera *camera = new D3Camera(*this, hwnd);
+  D3Camera *camera = (src == NULL) ? new D3Camera(*this, hwnd) : src->clone(hwnd);
   m_cameraArray.add(camera);
   const UINT newCount = getCameraCount();
   notifyPropertyChanged(SP_CAMERACOUNT, &oldCount, &newCount);

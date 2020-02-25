@@ -177,6 +177,11 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "Save scene parameters...",    ID_SAVESCENEPARAMETERS
         MENUITEM "Load scene parameters...",    ID_LOADSCENEPARAMETERS
+        POPUP "Split window"
+        BEGIN
+            MENUITEM "Vertical",                    ID_SPLITWINDOW_VERTICAL
+            MENUITEM "Horizontal",                  ID_SPLITWINDOW_HORIZONTAL
+        END
     END
 END
 
@@ -204,7 +209,7 @@ BEGIN
         MENUITEM "Move && Rotate",              ID_CONTROL_OBJECT_POS
         MENUITEM "Scale",                       ID_CONTROL_OBJECT_SCALE
         MENUITEM "Set center of rotation",      ID_OBJECT_SETCENTEROFROTATION
-        MENUITEM "Reset center of rotation",      ID_OBJECT_RESETCENTEROFROTATION
+        MENUITEM "Reset center of rotation",    ID_OBJECT_RESETCENTEROFROTATION
         MENUITEM SEPARATOR
         POPUP "Reset"
         BEGIN

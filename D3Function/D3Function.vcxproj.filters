@@ -63,6 +63,9 @@
     <ClInclude Include="DebugIsoSurface.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SplitView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MainFrm.cpp">
@@ -108,6 +111,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Debugger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SplitView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CreateView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

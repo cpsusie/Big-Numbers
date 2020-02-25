@@ -91,7 +91,9 @@ public:
   }
   LPDIRECT3DDEVICE getDirectDevice() const;
   // notify listeners with notification id = SP_CAMERACOUNT
-  D3Camera       &addCamera(HWND wnd);
+  // if src != NULL, the new camera will be a clone of this (except hwnd)
+  // else default-values will be used
+  D3Camera       &addCamera(HWND wnd, D3Camera *src=NULL);
   // notify listeners with notification id = SP_CAMERACOUNT
   void            removeCamera(D3Camera &camera);
   inline const D3CameraArray &getCameraArray() const {

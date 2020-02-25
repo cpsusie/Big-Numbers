@@ -8,10 +8,20 @@
 #include "Options.h"
 
 class CMainFrame;
+class C3DSceneView;
+
+class D3ViewArray : public CompactArray<C3DSceneView*> {
+public:
+  // return index of view with m_hwnd == hwnd, -1 if none found
+  int findIndex(HWND hwnd) const;
+  C3DSceneView *findViewByHwnd(HWND hwnd) const;
+  void remove(C3DSceneView*);
+};
 
 class CD3FunctionApp : public CWinApp {
 public:
-    Options m_options;
+    Options     m_options;
+    D3ViewArray m_3DViewArray;
     CD3FunctionApp();
     String getRecentFile(int index);
     void   removeFromRecentFiles(int index);

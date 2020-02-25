@@ -56,7 +56,7 @@ BOOL CD3FunctionApp::InitInstance() {
   CSingleDocTemplate *pDocTemplate = new CSingleDocTemplate(IDR_MAINFRAME
                                                            ,RUNTIME_CLASS(CD3FunctionDoc)
                                                            ,RUNTIME_CLASS(CMainFrame)       // main SDI frame window
-                                                           ,RUNTIME_CLASS(CD3SceneView));
+                                                           ,RUNTIME_CLASS(C3DSceneView));
   AddDocTemplate(pDocTemplate);
 
   // Parse command line for standard shell commands, DDE, file open
@@ -155,4 +155,26 @@ void CD3FunctionApp::removeFromRecentFiles(int index) {
     return;
   }
   list.Remove(index);
+}
+
+int D3ViewArray::findIndex(HWND hwnd) const {
+  for (size_t i = 0; i < size(); i++) {
+    C3DSceneView *view = (*this)[i];
+    if (view->m_hWnd == hwnd) {
+      return (int)i;
+    }
+  }
+  return -1;
+}
+
+C3DSceneView *D3ViewArray::findViewByHwnd(HWND hwnd) const {
+  const int index = findIndex(hwnd);
+  return (index < 0) ? NULL : (*this)[index];
+}
+
+void D3ViewArray::remove(C3DSceneView *view) {
+  const int index = findIndex(view->m_hWnd);
+  if (index >= 0) {
+    __super::remove(index);
+  }
 }

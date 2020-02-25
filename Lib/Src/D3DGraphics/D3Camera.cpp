@@ -11,6 +11,26 @@ D3Camera::D3Camera(D3Scene &scene, HWND hwnd)
   initWorldAndProjection();
 }
 
+D3Camera::D3Camera(const D3Camera *src, HWND hwnd)
+: D3SceneObject(src->getScene())
+, m_hwnd(hwnd)
+, m_rightHanded(src->getRightHanded())
+{
+  setNotifyEnable(false);
+  m_backgroundColor = src->getBackgroundColor();
+  m_viewAngle       = src->getViewAngle();
+  m_nearViewPlane   = src->getNearViewPlane();
+  m_world           = src->m_world;
+
+  setViewMatrix();
+  setProjMatrix();
+  setNotifyEnable(true);
+}
+
+D3Camera *D3Camera::clone(HWND hwnd) const {
+  return new D3Camera(this, hwnd);
+}
+
 D3Camera::~D3Camera() {
   m_hwnd = (HWND)INVALID_HANDLE_VALUE;
 }
@@ -37,6 +57,18 @@ void D3Camera::OnSize() {
     V(device->ResetEx(&present, NULL));
     setProjMatrix();
   }
+}
+
+D3Camera &D3Camera::setHwnd(HWND hwnd) {
+  HWND old = m_hwnd;
+  m_hwnd = hwnd;
+  if(IsWindow(m_hwnd)) {
+    const bool prop = setNotifyEnable(false);
+    setProjMatrix();
+    setNotifyEnable(prop);
+  }
+  notifyPropertyChanged(CAM_WINDOW, &old, &m_hwnd);
+  return *this;
 }
 
 bool D3Camera::ptInRect(CPoint p) const {

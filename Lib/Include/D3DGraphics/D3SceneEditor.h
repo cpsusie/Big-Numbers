@@ -3,6 +3,7 @@
 #include <TinyBitSet.h>
 #include <MFCUtil/WinTools.h>
 #include <MFCUtil/PropertyDialogMap.h>
+#include "D3SceneObject.h"
 #include "D3Ray.h"
 #include "D3PickedInfo.h"
 #include "D3SceneObjectPoint.h"
@@ -137,6 +138,7 @@ private:
     void OnSaveSceneParameters();
     void OnLoadSceneParameters();
     void OnControlObjMoveRotate();
+    void OnSplitWindow(bool vertical);
     void OnControlObjPos();
     void OnControlObjScale();
 
@@ -254,11 +256,9 @@ public:
     inline D3SceneObjectVisual *getCurrentObj() const {
       return m_currentObj;
     }
-    inline SceneObjectType      getCurrentObjType() const {
-      return m_currentObj ? m_currentObj->getType() : SOTYPE_NULL;
-    }
+    SceneObjectType             getCurrentObjType() const;
     // Return NULL, if m_currentVisual->type not in {SOTYPE_VISUALOBJECT, SOTYPE_ANIMATEDOBJECT, }
-    D3SceneObjectVisual       *getCurrentVisual() const;
+    D3SceneObjectVisual        *getCurrentVisual() const;
     // return NULL, if m_currentVisual->type not SOTYPE_ANIMATEDOBJECT
     D3SceneObjectAnimatedMesh  *getCurrentAnimatedObj() const;
     inline const D3DXVECTOR3   &getPickedPoint() const {
@@ -280,12 +280,8 @@ public:
     inline const D3PickedInfo &getPickedInfo() const {
       return m_pickedInfo;
     }
-    inline bool isCoordinateSystemVisible() const {
-      return m_coordinateSystem && m_coordinateSystem->isVisible();
-    }
-    inline bool isSelectedCubeVisible() const {
-      return m_selectedCube && m_selectedCube->isVisible();
-    }
+    bool isCoordinateSystemVisible() const;
+    bool isSelectedCubeVisible()     const;
     BOOL PreTranslateMessage(MSG *pMsg);
     String toString() const;
 };

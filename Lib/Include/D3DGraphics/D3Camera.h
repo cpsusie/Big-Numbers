@@ -14,17 +14,18 @@ typedef enum {
   CAM_VIEW                      // D3DXMATRIX
  ,CAM_PROJECTION                // D3DXMATRIX
  ,CAM_BACKGROUNDCOLOR           // D3DCOLOR
+ ,CAM_WINDOW                    // HWND
 } D3CameraProperty;
 
 class D3Camera : public D3SceneObject, public PropertyContainer {
 private:
   HWND                    m_hwnd;
   bool                    m_rightHanded;
+  D3DCOLOR                m_backgroundColor;
   float                   m_viewAngle;
   float                   m_nearViewPlane;
   D3World                 m_world;
   D3DXMATRIX              m_projMatrix, m_viewMatrix;
-  D3DCOLOR                m_backgroundColor;
 
   // notify listeners with properyId=CAM_PROJECTION
   D3Camera      &setProjMatrix();
@@ -37,17 +38,21 @@ private:
   D3Camera      &initProjection();
   D3Camera(           const D3Camera &src); // not implemented
   D3Camera &operator=(const D3Camera &src); // not implemented
+  D3Camera(const D3Camera *src, HWND hwnd);
 public:
   D3Camera(D3Scene &scene, HWND hwnd);
+  D3Camera *clone(HWND hwnd) const;
   ~D3Camera();
   SceneObjectType getType() const {
     return SOTYPE_CAMERA;
   }
   void OnSize();
 
+  D3Camera &setHwnd(HWND hwnd);
   inline HWND getHwnd() const {
     return m_hwnd;
   }
+
   // p in screen-coordinates
   inline CPoint screenToWin(CPoint p) const {
     ScreenToClient(getHwnd(), &p);
