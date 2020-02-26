@@ -166,9 +166,13 @@ public:
     return (UINT)theApp.m_3DViewArray.size();
   }
   bool canSplit3DWindow(HWND hwnd) const;
-  WindowPair split3DWindow(HWND current, bool vertical);
+  WindowPair split3DWindow(HWND hwnd, bool vertical);
+  bool canDelete3DWindow(HWND hwnd) const;
+  bool delete3DWindow(HWND hwnd);
+
   void render(BYTE renderFlags, CameraSet cameraSet);
 
+  bool is3DWindow(HWND hwnd) const;
   void startTimer();
   void stopTimer();
   inline bool getTimerRunning() const {

@@ -135,6 +135,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
 void CMainFrame::OnDestroy() {
   m_destroyCalled = true;
   stopDebugging();
+  deleteCalculatedObject();
   __super::OnDestroy();
 }
 
@@ -473,6 +474,7 @@ D3SceneObjectVisual *CMainFrame::getCalculatedObject() const {
 void CMainFrame::incrLevel() {
   m_renderLevel++;
 }
+
 void CMainFrame::decrLevel() {
   if(--m_renderLevel == 0) {
     if(m_accumulatedRenderFlags || !m_accumulatedCameraSet.isEmpty()) {
@@ -481,57 +483,102 @@ void CMainFrame::decrLevel() {
   }
 }
 
-bool CMainFrame::canSplit3DWindow(HWND hwnd) const {
+bool CMainFrame::is3DWindow(HWND hwnd) const {
   return theApp.m_3DViewArray.findViewByHwnd(hwnd) != NULL;
 }
 
-WindowPair CMainFrame::split3DWindow(HWND current, bool vertical) {
+bool CMainFrame::canSplit3DWindow(HWND hwnd) const {
+  return is3DWindow(hwnd);
+}
+
+bool CMainFrame::canDelete3DWindow(HWND hwnd) const {
+  return is3DWindow(hwnd) && (get3DWindowCount() > 1);
+}
+
+
+WindowPair CMainFrame::split3DWindow(HWND hwnd, bool vertical) {
   WindowPair    result;
-  C3DSceneView *currentView = theApp.m_3DViewArray.findViewByHwnd(current);
-  if(currentView == NULL) {
+  C3DSceneView *viewToSplit = theApp.m_3DViewArray.findViewByHwnd(hwnd);
+  if(viewToSplit == NULL) {
     return result;
   }
   bool timerRuns = getTimerRunning();
   stopTimer();
   const SplitDirection splitDirection = vertical ? SPLIT_VERTICAL : SPLIT_HORIZONTAL;
-  const CRect          rect           = getWindowRect(currentView);
-  CSplitterWnd        *parentSplitter = (CSplitterWnd*)currentView->GetParent();
+  const CRect          rect           = getWindowRect(viewToSplit);
+  CSplitterWnd        *parentSplitter = (CSplitterWnd*)viewToSplit->GetParent();
+  MatrixIndex          viewPos        = findPosition(parentSplitter, viewToSplit);
   CSplitView          *newSplitView   = CSplitView::create(parentSplitter
                                                           ,RUNTIME_CLASS(C3DSceneView), RUNTIME_CLASS(C3DSceneView)
                                                           ,splitDirection
                                                           ,rect);
 
-  const int parentRows = parentSplitter->GetRowCount();
-  const int parentCols = parentSplitter->GetColumnCount();
-  for(int r = 0; r < parentRows; r++) {
-    for(int c = 0; c < parentCols; c++) {
-      C3DSceneView *v1 = (C3DSceneView*)parentSplitter->GetPane(r, c);
-      if(v1 == currentView) {
-        CD3FunctionDoc *activeDoc = (CD3FunctionDoc*)GetActiveDocument();
-        activeDoc->m_bAutoDelete = false;
-        activeDoc->RemoveView(v1);
-        activeDoc->m_bAutoDelete = true;
-        activeDoc->AddView((C3DSceneView*)newSplitView->getChild(0));
-        activeDoc->AddView((C3DSceneView*)newSplitView->getChild(1));
+  CD3FunctionDoc *activeDoc           = (CD3FunctionDoc*)GetActiveDocument();
+  activeDoc->m_bAutoDelete            = false;
+  activeDoc->RemoveView(viewToSplit);
+  activeDoc->m_bAutoDelete = true;
+  activeDoc->AddView((C3DSceneView*)newSplitView->getChild(0));
+  activeDoc->AddView((C3DSceneView*)newSplitView->getChild(1));
 
-        bool ok = v1->DestroyWindow();
-        SetLastError(0);
-        LONG_PTR rr = ::SetWindowLongPtr(newSplitView->m_hWnd, GWL_ID, parentSplitter->IdFromRowCol(r, c));
+  bool ok = viewToSplit->DestroyWindow();
+  SetLastError(0);
+  LONG_PTR rr = ::SetWindowLongPtr(newSplitView->m_hWnd, GWL_ID, parentSplitter->IdFromRowCol((int)viewPos.r, (int)viewPos.c));
 
-        RecalcLayout();
-        newSplitView->UpdateWindow();
-        SetActiveView((C3DSceneView*)newSplitView->getChild(0));
-
-        result = WindowPair(*newSplitView->getChild(0), *newSplitView->getChild(1));
-        goto End;
-      } // if(v1->m_hwnd...
-    } // for(int c...)
-  }  // for(int r...)
-End:
+  RecalcLayout();
+  newSplitView->UpdateWindow();
+  SetActiveView((C3DSceneView*)newSplitView->getChild(0));
+  result = WindowPair(*newSplitView->getChild(0), *newSplitView->getChild(1));
   if(timerRuns) {
     startTimer();
   }
   return result;
+}
+
+CWnd *getParentAndCheckType(CWnd *wnd, CRuntimeClass *expectedClass) {
+  if(wnd == NULL) return NULL;
+  CWnd *parent = wnd->GetParent();
+  if((parent == NULL) || !parent->IsKindOf(expectedClass)) {
+    return NULL;
+  }
+  return parent;
+}
+#define GETPARENT(wnd,Class) ((Class*)getParentAndCheckType(wnd, RUNTIME_CLASS(Class)))
+
+bool CMainFrame::delete3DWindow(HWND hwnd) {
+  C3DSceneView      *viewToDelete      = theApp.m_3DViewArray.findViewByHwnd(hwnd);
+  SplitViewSplitter *parentSplitter    = GETPARENT(viewToDelete     , SplitViewSplitter);
+  CSplitView        *splitViewToDelete = GETPARENT(parentSplitter   , CSplitView       );
+  CSplitterWnd      *gparentSplitter   = GETPARENT(splitViewToDelete, CSplitterWnd     );
+  CWnd              *partner           = parentSplitter->findNeighbor(viewToDelete); // either C3DSceneView/CSplitView
+  if((partner == NULL) || (gparentSplitter == NULL)) { // something went wrong...cannot go further
+    return false;
+  }
+  const MatrixIndex   viewPos           = findPosition(gparentSplitter, splitViewToDelete);
+  const CRect         rect              = getWindowRect(splitViewToDelete);
+
+  bool               result             = false;
+  const bool         timerRuns          = getTimerRunning();
+  stopTimer();
+
+  CD3FunctionDoc *activeDoc = (CD3FunctionDoc*)GetActiveDocument();
+  activeDoc->m_bAutoDelete = false;
+  activeDoc->RemoveView(viewToDelete);
+  activeDoc->m_bAutoDelete = true;
+  partner->SetParent(gparentSplitter);
+
+//    bool ok = viewToSplit->DestroyWindow();
+    SetLastError(0);
+  LONG_PTR rr = ::SetWindowLongPtr(splitViewToDelete->m_hWnd, GWL_ID, 0);
+  rr = ::SetWindowLongPtr(partner->m_hWnd, GWL_ID, gparentSplitter->IdFromRowCol((int)viewPos.r, (int)viewPos.c));
+
+  BOOL ok = splitViewToDelete->DestroyWindow();
+  setWindowRect(partner, rect);
+  RecalcLayout();
+  SetActiveView(NULL, FALSE);
+  if(timerRuns) {
+    startTimer();
+  }
+  return true;
 }
 
 void CMainFrame::render(BYTE renderFlags, CameraSet cameraSet) {

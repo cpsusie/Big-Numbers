@@ -53,6 +53,9 @@ public:
   inline UINT getChildCount() const {
     return m_flags & SPLFMASK_CHILDCOUNT;
   }
+  // Expect this contains 2 child-windows (either 2x1 or 1x2)
+  // Return NULL if wnd is not one of them
+  CWnd *findNeighbor(CWnd *wnd) const;
 };
 
 class CSplitView : public CView {
@@ -79,6 +82,7 @@ public:
 #endif
   CWnd        *getChild(UINT index) const;
   afx_msg int  OnCreate(LPCREATESTRUCT lpCreateStruct);
+  afx_msg void OnDestroy();
   afx_msg void OnSize(UINT nType, int cx, int cy);
   void         OnShowWindow(BOOL bShow, UINT nStatus);
   virtual void OnDraw(CDC *pDC);  // overridden to draw this view
@@ -93,3 +97,5 @@ inline CD3FunctionDoc* CSplitView::GetDocument()
   return (CD3FunctionDoc*)m_pDocument;
 }
 #endif
+
+MatrixIndex findPosition(const CSplitterWnd *splitter, const CWnd *wnd);

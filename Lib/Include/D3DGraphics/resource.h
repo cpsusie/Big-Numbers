@@ -106,15 +106,16 @@
 #define ID_SELECT_LIGHT20               34240
 #define ID_SAVESCENEPARAMETERS          34250
 #define ID_LOADSCENEPARAMETERS          34251
-#define ID_SPLITWINDOW_VERTICAL         34260
-#define ID_SPLITWINDOW_HORIZONTAL       34261
+#define ID_SPLIT3DWINDOW_VERTICAL       34260
+#define ID_SPLIT3DWINDOW_HORIZONTAL     34261
+#define ID_DELETE3DWINDOW               34262
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        713
-#define _APS_NEXT_COMMAND_VALUE         34288
+#define _APS_NEXT_COMMAND_VALUE         34290
 #define _APS_NEXT_CONTROL_VALUE         6041
 #define _APS_NEXT_SYMED_VALUE           103
 #endif

@@ -179,9 +179,10 @@ BEGIN
         MENUITEM "Load scene parameters...",    ID_LOADSCENEPARAMETERS
         POPUP "Split window"
         BEGIN
-            MENUITEM "Vertical",                    ID_SPLITWINDOW_VERTICAL
-            MENUITEM "Horizontal",                  ID_SPLITWINDOW_HORIZONTAL
+            MENUITEM "Vertical",                    ID_SPLIT3DWINDOW_VERTICAL
+            MENUITEM "Horizontal",                  ID_SPLIT3DWINDOW_HORIZONTAL
         END
+        MENUITEM "Delete window",               ID_DELETE3DWINDOW
     END
 END
 

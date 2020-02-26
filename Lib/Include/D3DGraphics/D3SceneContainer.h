@@ -46,7 +46,8 @@ public:
   virtual bool       canDelete3DWindow(HWND hwnd) const {
     return false;
   }
-  virtual void       delete3DWindow(HWND hwnd) const {
+  virtual bool       delete3DWindow(HWND hwnd) {
+    return false;
   }
   inline CSize       getWinSize(UINT index) const {
     return getClientRect(get3DWindow(index)).Size();

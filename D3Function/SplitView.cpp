@@ -12,6 +12,7 @@ IMPLEMENT_DYNCREATE(CSplitView, CView)
 
 BEGIN_MESSAGE_MAP(CSplitView, CView)
   ON_WM_CREATE()
+  ON_WM_DESTROY()
   ON_WM_SIZE()
   ON_WM_SHOWWINDOW()
   ON_COMMAND(ID_FILE_PRINT, OnFilePrint)
@@ -92,6 +93,10 @@ int CSplitView::OnCreate(LPCREATESTRUCT lpCreateStruct) {
   VERIFY(m_splitter.CreateView(0     , 0     , s_childClass1, childSize, NULL));
   VERIFY(m_splitter.CreateView(rows-1, cols-1, s_childClass2, childSize, NULL));
   return TRUE;
+}
+
+void CSplitView::OnDestroy() {
+  __super::OnDestroy();
 }
 
 void CSplitView::OnShowWindow(BOOL bShow, UINT nStatus) {
@@ -232,4 +237,40 @@ void SplitViewSplitter::saveRelativeSplitPos(const CSize &size) {
     }
     break;
   }
+}
+
+CWnd *SplitViewSplitter::findNeighbor(CWnd *wnd) const {
+  const int rows = GetRowCount(), cols = GetColumnCount();
+  bool wndFound = false;
+  CWnd *result = NULL;
+  for(int r = 0; r < rows; r++) {
+    for(int c = 0; c < cols; c++) {
+      CWnd *w = GetPane(r, c);
+      if(w == wnd) {
+        wndFound = true;
+      } else {
+        if(result != NULL) {
+          return NULL; // Error....this may only contain 2 panes
+        }
+        result = w;
+      }
+    }
+  }
+  if(!wndFound) {
+    result = NULL;
+  }
+  return result;
+}
+
+MatrixIndex findPosition(const CSplitterWnd *splitter, const CWnd *wnd) {
+  const int rows = splitter->GetRowCount(), cols = splitter->GetColumnCount();
+  for(int r = 0; r < rows; r++) {
+    for(int c = 0; c < cols; c++) {
+      CWnd *w = splitter->GetPane(r, c);
+      if(w == wnd) {
+        return MatrixIndex(r, c);
+      }
+    }
+  }
+  return MatrixIndex(-1, -1);
 }

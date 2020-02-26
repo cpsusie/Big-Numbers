@@ -414,8 +414,9 @@ BOOL D3SceneEditor::PreTranslateMessage(MSG *pMsg) {
     case ID_LIGHTCONTROL_DISABLEEFFECT    : setLightControlRenderEffect(false)  ; return true;
     case ID_SAVESCENEPARAMETERS           : OnSaveSceneParameters()             ; return true;
     case ID_LOADSCENEPARAMETERS           : OnLoadSceneParameters()             ; return true;
-    case ID_SPLITWINDOW_VERTICAL          : OnSplitWindow(true)                 ; return true;
-    case ID_SPLITWINDOW_HORIZONTAL        : OnSplitWindow(false)                ; return true;
+    case ID_SPLIT3DWINDOW_VERTICAL        : OnSplit3DWindow(true)               ; return true;
+    case ID_SPLIT3DWINDOW_HORIZONTAL      : OnSplit3DWindow(false)              ; return true;
+    case ID_DELETE3DWINDOW                : OnDelete3DWindow()                  ; return true;
 
     default:
       if((ID_SELECT_LIGHT0 <= pMsg->wParam) && (pMsg->wParam <= ID_SELECT_LIGHT20)) {
@@ -1142,7 +1143,10 @@ void D3SceneEditor::OnContextMenuBackground(CPoint point) {
                       :ID_LEFTHANDED);
 
   if(!m_sceneContainer->canSplit3DWindow(m_currentCamera->getHwnd())) {
-    removeSubMenuContainingId(menu, ID_SPLITWINDOW_VERTICAL);
+    removeSubMenuContainingId(menu, ID_SPLIT3DWINDOW_VERTICAL);
+  }
+  if(!m_sceneContainer->canDelete3DWindow(m_currentCamera->getHwnd())) {
+    removeMenuItem(menu, ID_DELETE3DWINDOW);
   }
   m_currentCamera->modifyContextMenu(*menu.GetSubMenu(0));
   m_sceneContainer->modifyContextMenu(*menu.GetSubMenu(0));

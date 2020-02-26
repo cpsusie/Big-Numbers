@@ -138,7 +138,8 @@ private:
     void OnSaveSceneParameters();
     void OnLoadSceneParameters();
     void OnControlObjMoveRotate();
-    void OnSplitWindow(bool vertical);
+    void OnSplit3DWindow(bool vertical);
+    void OnDelete3DWindow();
     void OnControlObjPos();
     void OnControlObjScale();
 
