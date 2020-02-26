@@ -57,8 +57,8 @@
 #define ID_CAMERA_RESETALL              34135
 #define ID_RIGHTHANDED                  34150
 #define ID_LEFTHANDED                   34151
-#define ID_EDIT_AMBIENTLIGHT            34160
-#define ID_EDIT_BACKGROUNDCOLOR         34161
+#define ID_SCENE_EDIT_AMBIENTLIGHT      34160
+#define ID_CAMERA_EDIT_BACKGROUNDCOLOR  34161
 #define ID_SHADING_FLAT                 34162
 #define ID_SHADING_GOURAUD              34163
 #define ID_SHADING_PHONG                34164

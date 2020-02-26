@@ -31,6 +31,7 @@ void D3Scene::initDevice(HWND hwnd) {
   const D3DCAPS &deviceCaps = m_device->getDeviceCaps();
   s_textureCoordCount = deviceCaps.FVFCaps & D3DFVFCAPS_TEXCOORDCOUNTMASK;
   m_maxLightCount     = deviceCaps.MaxActiveLights;
+  m_ambientColor      = m_device->getAmbientColor();
   m_lightsEnabled.setCapacity(m_maxLightCount); m_lightsEnabled.clear();
   m_lightsDefined.setCapacity(m_maxLightCount); m_lightsDefined.clear();
   addLight(   D3Light::createDefaultLight());
@@ -366,7 +367,7 @@ String D3Scene::getMaterialString() const {
 
 void D3Scene::render(const D3Camera &camera) {
   D3Device &device = getDevice();
-  device.setCurrentCamera(&camera);
+  device.setAmbientColor(m_ambientColor).setCurrentCamera(&camera);
   for(D3VisualIterator it = getVisualIterator(); it.hasNext();) {
     D3SceneObjectVisual *obj = it.next();
     if(obj->isVisible()) {

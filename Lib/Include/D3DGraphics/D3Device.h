@@ -14,7 +14,7 @@ private:
   HWND             m_hwnd;
   LPDIRECT3DDEVICE m_device;
   D3DCAPS          m_deviceCaps;
-  D3Material         m_material;
+  D3Material       m_material;
   // only set in scene.render
   const D3Camera  *m_currentCamera;
   template<typename T> void setDevRenderState(D3DRENDERSTATETYPE id, T value) {
@@ -63,6 +63,17 @@ public:
   }
   inline D3DSHADEMODE getShadeMode() const {
     return m_shadeMode;
+  }
+  // Set device' ambient light color (D3DRS_AMBIENT), and update m_renderState.m_ambientColor, if different from current
+  inline D3Device &setAmbientColor(D3DCOLOR ambientColor) {
+    if(ambientColor != getAmbientColor()) {
+      setDevRenderState(D3DRS_AMBIENT, ambientColor);
+      m_ambientColor = ambientColor;
+    }
+    return *this;
+  }
+  inline D3DCOLOR getAmbientColor() const {
+    return m_ambientColor;
   }
   // call device->SetFVF and update m_renderState.m_fvf if different from current
   inline D3Device &setFVF(DWORD fvf) {

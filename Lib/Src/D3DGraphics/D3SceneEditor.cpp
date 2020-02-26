@@ -128,13 +128,18 @@ void D3SceneEditor::handlePropertyChanged(const PropertyContainer *source, int i
     case SP_ANIMATIONFRAMEINDEX:
       renderVisible(SE_RENDER3D);
       break;
+    case SP_AMBIENTCOLOR:
+      renderVisible(SE_RENDERALL | SE_RENDERNOW);
+      break;
     }
   } else if(source == m_currentCamera) {
     switch (id) {
     case CAM_VIEW           :           // D3DXMATRIX
     case CAM_PROJECTION     :           // D3DXMATRIX
-    case CAM_BACKGROUNDCOLOR:           // D3DCOLOR
       renderCurrent(SE_RENDERALL);
+      break;
+    case CAM_BACKGROUNDCOLOR:           // D3DCOLOR
+      renderCurrent(SE_RENDERALL|SE_RENDERNOW);
       break;
     }
   } else if(m_propertyDialogMap.hasPropertyContainer(source)) {
@@ -160,7 +165,6 @@ void D3SceneEditor::handlePropertyChanged(const PropertyContainer *source, int i
       break;
     case SP_AMBIENTCOLOR      :
       getScene().setAmbientColor(*(D3DCOLOR*)newValue);
-      renderVisible(SE_RENDERALL);
       break;
     }
   }
@@ -384,10 +388,10 @@ BOOL D3SceneEditor::PreTranslateMessage(MSG *pMsg) {
     case ID_CAMERA_RESETORIENTATION       : OnCameraResetOrientation()          ; return true;
     case ID_CAMERA_RESETPROJECTION        : OnCameraResetProjection()           ; return true;
     case ID_CAMERA_RESETALL               : OnCameraResetAll()                  ; return true;
+    case ID_CAMERA_EDIT_BACKGROUNDCOLOR   : OnCameraEditBackgroundColor()       ; return true;
     case ID_RIGHTHANDED                   : SetRightHanded(true)                ; return true;
     case ID_LEFTHANDED                    : SetRightHanded(false)               ; return true;
-    case ID_EDIT_AMBIENTLIGHT             : OnEditAmbientLight()                ; return true;
-    case ID_EDIT_BACKGROUNDCOLOR          : OnEditBackgroundColor()             ; return true;
+    case ID_SCENE_EDIT_AMBIENTLIGHT       : OnSceneEditAmbientLight()           ; return true;
     case ID_FILLMODE_POINT                : OnFillmodePoint()                   ; return true;
     case ID_FILLMODE_WIREFRAME            : OnFillmodeWireframe()               ; return true;
     case ID_FILLMODE_SOLID                : OnFillmodeSolid()                   ; return true;
@@ -1263,7 +1267,6 @@ void D3SceneEditor::resetCurrentControl() {
 }
 
 void D3SceneEditor::setCurrentControl(D3EditorControl control) {
-  CHECKINVARIANT();
   switch(control) {
   case CONTROL_OBJECT_POS:
     setWindowCursor(getCurrentHwnd(), MAKEINTRESOURCE(OCR_HAND));
@@ -1280,7 +1283,6 @@ void D3SceneEditor::setCurrentControl(D3EditorControl control) {
     break;
   }
   m_currentControl = control;
-  renderInfo();
   CHECKINVARIANT();
 }
 
@@ -1461,34 +1463,33 @@ void D3SceneEditor::OnLightRemove() {
   CHECKINVARIANT();
 }
 
-void D3SceneEditor::OnEditAmbientLight() {
+void D3SceneEditor::OnSceneEditAmbientLight() {
   CHECKINVARIANT();
   resetCurrentControl();
   const D3DCOLOR oldColor = getScene().getAmbientColor();
   CColorDlg dlg(_T("Ambient color"), SP_AMBIENTCOLOR, oldColor);
   dlg.addPropertyChangeListener(this);
-  selectPropertyDialog(&dlg);
-  setCurrentControl(CONTROL_AMBIENTLIGHTCOLOR);
+  selectPropertyDialog(&dlg, CONTROL_AMBIENTLIGHTCOLOR);
   if(dlg.DoModal() != IDOK) {
     getScene().setAmbientColor(oldColor);
     renderVisible(SE_RENDERALL);
   }
-  resetCurrentControl();
+  unselectPropertyDialog();
   CHECKINVARIANT();
 }
 
-void D3SceneEditor::OnEditBackgroundColor() {
+void D3SceneEditor::OnCameraEditBackgroundColor() {
   CHECKINVARIANT();
   resetCurrentControl();
   const D3DCOLOR oldColor = m_currentCamera->getBackgroundColor();
   CColorDlg dlg(_T("Background color"), CAM_BACKGROUNDCOLOR, oldColor);
+
   dlg.addPropertyChangeListener(this);
-  selectPropertyDialog(&dlg);
-  setCurrentControl(CONTROL_BACKGROUNDCOLOR);
+  selectPropertyDialog(&dlg, CONTROL_BACKGROUNDCOLOR);
   if(dlg.DoModal() != IDOK) {
     m_currentCamera->setBackgroundColor(oldColor);
   }
-  resetCurrentControl();
+  unselectPropertyDialog();
   CHECKINVARIANT();
 }
 

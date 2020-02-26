@@ -582,6 +582,10 @@ bool CMainFrame::delete3DWindow(HWND hwnd) {
 }
 
 void CMainFrame::render(BYTE renderFlags, CameraSet cameraSet) {
+  if(renderFlags & SE_RENDERNOW) {
+    OnMsgRender(renderFlags, cameraSet);
+    return;
+  }
   if(m_renderLevel > 0) {
     m_accumulatedRenderFlags |= renderFlags;
     m_accumulatedCameraSet   |= cameraSet;

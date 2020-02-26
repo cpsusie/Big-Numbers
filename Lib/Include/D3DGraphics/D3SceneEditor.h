@@ -30,8 +30,9 @@ typedef enum {
 #define SE_PROPCHANGES        0x04
 #define SE_RENDER3D           0x08
 #define SE_RENDERINFO         0x10
-#define SE_LIGHTCONTROLS      0x20
-#define SE_MOUSEVISIBLE       0x40
+#define SE_RENDERNOW          0x20
+#define SE_LIGHTCONTROLS      0x40
+#define SE_MOUSEVISIBLE       0x80
 #define SE_RENDERALL          (SE_RENDER3D | SE_RENDERINFO)
 #define SE_ALL                (SE_ENABLED | SE_PROPCHANGES | SE_RENDERALL | SE_LIGHTCONTROLS)
 
@@ -102,11 +103,13 @@ private:
     void moveCamera(           const D3DXVECTOR3 &dir, float dist);
     void rotateCameraUpDown(   float angle);
     void rotateCameraLeftRight(float angle);
-    void selectPropertyDialog(PropertyDialog *dlg) {
+    void selectPropertyDialog(PropertyDialog *dlg, D3EditorControl control) {
       m_currentPropertyDialog = dlg;
+      setCurrentControl(control);
     }
     void unselectPropertyDialog() {
       m_currentPropertyDialog = NULL;
+      setCurrentControl(CONTROL_IDLE);
     }
     inline D3SceneEditor &setFlags(BYTE flags) {
       m_stateFlags |= flags;
@@ -199,8 +202,8 @@ private:
     void OnAddLightDirectional();
     void OnAddLightPoint();
     void OnAddLightSpot();
-    void OnEditAmbientLight();
-    void OnEditBackgroundColor();
+    void OnSceneEditAmbientLight();
+    void OnCameraEditBackgroundColor();
     void OnFillmodePoint();
     void OnFillmodeWireframe();
     void OnFillmodeSolid();

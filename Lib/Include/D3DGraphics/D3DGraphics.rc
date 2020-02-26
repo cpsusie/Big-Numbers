@@ -165,8 +165,8 @@ BEGIN
                 MENUITEM "Light 20",                    ID_SELECT_LIGHT20
             END
             MENUITEM SEPARATOR
-            MENUITEM "Adjust ambient light...",     ID_EDIT_AMBIENTLIGHT
-            MENUITEM "Adjust background color...",  ID_EDIT_BACKGROUNDCOLOR
+            MENUITEM "Adjust ambient light...",     ID_SCENE_EDIT_AMBIENTLIGHT
+            MENUITEM "Adjust background color...",  ID_CAMERA_EDIT_BACKGROUNDCOLOR
             MENUITEM "Enable specular highlights",  ID_ENABLE_SPECULARHIGHLIGHT
             MENUITEM "Disable specular highlights", ID_DISABLE_SPECULARHIGHLIGHT
         END
