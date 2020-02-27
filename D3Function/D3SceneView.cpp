@@ -19,6 +19,8 @@ BEGIN_MESSAGE_MAP(C3DSceneView, CView)
   ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
+D3ViewArray C3DSceneView::s_3DViewArray;
+
 C3DSceneView::C3DSceneView() {
   m_camera = NULL;
 }
@@ -31,13 +33,13 @@ int C3DSceneView::OnCreate(LPCREATESTRUCT lpCreateStruct) {
     return -1;
   }
 
-  theApp.m_3DViewArray.add(this);
+  s_3DViewArray.add(this);
   return 0;
 }
 
 
 void C3DSceneView::OnDestroy() {
-  theApp.m_3DViewArray.remove(this);
+  s_3DViewArray.remove(this);
   __super::OnDestroy();
 }
 

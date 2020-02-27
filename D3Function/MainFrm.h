@@ -160,10 +160,10 @@ public:
     return *this;
   }
   HWND get3DWindow(UINT index) const {
-    return *theApp.m_3DViewArray[index];
+    return C3DSceneView::get3DWindow(index);
   }
   UINT get3DWindowCount() const {
-    return (UINT)theApp.m_3DViewArray.size();
+    return C3DSceneView::get3DWindowCount();
   }
   bool canSplit3DWindow(HWND hwnd) const;
   WindowPair split3DWindow(HWND hwnd, bool vertical);

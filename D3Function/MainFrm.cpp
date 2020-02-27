@@ -484,7 +484,7 @@ void CMainFrame::decrLevel() {
 }
 
 bool CMainFrame::is3DWindow(HWND hwnd) const {
-  return theApp.m_3DViewArray.findViewByHwnd(hwnd) != NULL;
+  return C3DSceneView::is3DWindow(hwnd);
 }
 
 bool CMainFrame::canSplit3DWindow(HWND hwnd) const {
@@ -498,7 +498,7 @@ bool CMainFrame::canDelete3DWindow(HWND hwnd) const {
 
 WindowPair CMainFrame::split3DWindow(HWND hwnd, bool vertical) {
   WindowPair    result;
-  C3DSceneView *viewToSplit = theApp.m_3DViewArray.findViewByHwnd(hwnd);
+  C3DSceneView *viewToSplit = C3DSceneView::findViewByHwnd(hwnd);
   if(viewToSplit == NULL) {
     return result;
   }
@@ -545,7 +545,7 @@ CWnd *getParentAndCheckType(CWnd *wnd, CRuntimeClass *expectedClass) {
 #define GETPARENT(wnd,Class) ((Class*)getParentAndCheckType(wnd, RUNTIME_CLASS(Class)))
 
 bool CMainFrame::delete3DWindow(HWND hwnd) {
-  C3DSceneView      *viewToDelete      = theApp.m_3DViewArray.findViewByHwnd(hwnd);
+  C3DSceneView      *viewToDelete      = C3DSceneView::findViewByHwnd(hwnd);
   SplitViewSplitter *parentSplitter    = GETPARENT(viewToDelete     , SplitViewSplitter);
   CSplitView        *splitViewToDelete = GETPARENT(parentSplitter   , CSplitView       );
   CSplitterWnd      *gparentSplitter   = GETPARENT(splitViewToDelete, CSplitterWnd     );

@@ -1,12 +1,22 @@
 #pragma once
 
+class C3DSceneView;
+
+class D3ViewArray : public CompactArray<C3DSceneView*> {
+public:
+  // return index of view with m_hwnd == hwnd, -1 if none found
+  int findIndex(HWND hwnd) const;
+  C3DSceneView *findViewByHwnd(HWND hwnd) const;
+  void remove(C3DSceneView*);
+};
+
 class C3DSceneView : public CView {
 private:
   D3Camera *m_camera;
   D3Scene  *getScene() const;
   D3Camera *findCamera() const;
   D3Camera *getCamera();
-
+  static D3ViewArray s_3DViewArray;
 protected: // create from serialization only
   DECLARE_DYNCREATE(C3DSceneView)
 
@@ -18,7 +28,18 @@ public:
   virtual void AssertValid() const;
   virtual void Dump(CDumpContext& dc) const;
 #endif
-
+  static inline HWND get3DWindow(UINT index) {
+    return *s_3DViewArray[index];
+  }
+  static inline UINT get3DWindowCount() {
+    return (UINT)s_3DViewArray.size();
+  }
+  static inline C3DSceneView *findViewByHwnd(HWND hwnd) {
+    return s_3DViewArray.findViewByHwnd(hwnd);
+  }
+  static inline bool is3DWindow(HWND hwnd) {
+    return s_3DViewArray.findIndex(hwnd) >= 0;
+  }
   virtual void OnDraw(           CDC *pDC);  // overridden to draw this view
   virtual BOOL OnPreparePrinting(CPrintInfo *pInfo);
   virtual void OnBeginPrinting(  CDC *pDC, CPrintInfo *pInfo);
