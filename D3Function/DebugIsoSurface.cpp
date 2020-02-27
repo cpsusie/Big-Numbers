@@ -8,17 +8,17 @@
 #include "Debugger.h"
 #include "DebugIsoSurface.h"
 
-// ------------------------------------------------------------Octa Object ----------------------------------------------
+// ------------------------------------------------------------ Octa Object ----------------------------------------------
 class CornerMarkObject;
 
 class OctaObject : public D3SceneObjectWireFrameBox {
 private:
-  CornerMarkObject    *m_cornerMark;
-  D3DXVECTOR3          m_cornerCenterArray[8]; // relative to m_center
-  const float          m_cellSize;
-  int                  m_materialId;
-  D3DXVECTOR3          m_center;
-  BitSet8              m_positive;
+  CornerMarkObject *m_cornerMark;
+  D3DXVECTOR3       m_cornerCenterArray[8]; // relative to m_center
+  const float       m_cellSize;
+  int               m_materialId;
+  D3DXVECTOR3       m_center;
+  BitSet8           m_positive;
   static D3Cube createCube(float cellSize);
 public:
   OctaObject(D3SceneObjectVisual *parent, float cellSize);
