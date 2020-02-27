@@ -16,18 +16,15 @@ protected:
   void unlockIndexBuffer();
   void releaseMesh();
   inline void drawSubset(DWORD attribId) {
-    V(m_mesh->DrawSubset(attribId));
+    V(getMesh()->DrawSubset(attribId));
   }
 public:
-  // if mesh != NULL, it will be released when Object is destroyed
+  // if mesh != NULL, it will be released when Object is deleted
   D3SceneObjectWithMesh(D3Scene             &scene , LPD3DXMESH mesh = NULL, const String &name = _T("MeshObject"));
   D3SceneObjectWithMesh(D3SceneObjectVisual *parent, LPD3DXMESH mesh = NULL, const String &name = _T("MeshObject"));
   ~D3SceneObjectWithMesh();
   LPD3DXMESH getMesh() const {
     return m_mesh;
-  }
-  inline bool hasMesh() const {
-    return m_mesh != NULL;
   }
 
   virtual bool hasFillMode() const {

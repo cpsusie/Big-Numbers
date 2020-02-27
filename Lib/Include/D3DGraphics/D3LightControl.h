@@ -18,12 +18,12 @@ private:
   D3DXHANDLE    m_worldViewProjectionHandle;
   D3DXHANDLE    m_worldHandle;
 
+
   D3LightControl(           const D3LightControl &src); // Not defined. Class not cloneable
   D3LightControl &operator=(const D3LightControl &src); // Not defined. Class not cloneable
 
   void createEffect();
 protected:
-  static LPD3DXMESH &optimizeMesh(LPD3DXMESH &mesh);
   void createMaterial();
   void prepareEffect();
 
@@ -52,6 +52,8 @@ public:
   inline int getLightIndex() const {
     return m_lightIndex;
   }
+  LPD3DXMESH getMesh() const;
+
   int getMaterialId() const {
     return s_renderEffectEnabled ? -1 : m_materialId;
   }
@@ -70,15 +72,11 @@ public:
 class D3LightControlDirectional : public D3LightControl {
 private:
   float m_sphereRadius;
-
-  LPD3DXMESH createArrowMesh();
 public:
   D3LightControlDirectional(D3Scene &scene, int lightIndex);
-
   D3DLIGHTTYPE getLightType() const {
     return D3DLIGHT_DIRECTIONAL;
   }
-
   inline float getSphereRadius() const {
     return m_sphereRadius;
   }
@@ -98,11 +96,8 @@ public:
 };
 
 class D3LightControlSpot : public D3LightControl {
-private:
-  LPD3DXMESH createSpotMesh();
 public:
   D3LightControlSpot(D3Scene &scene, int lightIndex);
-
   D3DLIGHTTYPE getLightType() const {
     return D3DLIGHT_SPOT;
   }

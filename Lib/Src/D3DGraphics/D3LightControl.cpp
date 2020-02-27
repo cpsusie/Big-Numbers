@@ -1,7 +1,10 @@
 #include "pch.h"
+#include <CompactHashMap.h>
 #include <D3DGraphics/D3Camera.h>
 #include <D3DGraphics/D3Device.h>
 #include <D3DGraphics/D3Scene.h>
+#include <D3DGraphics/Profile.h>
+#include <D3DGraphics/MeshCreators.h>
 #include <D3DGraphics/D3LightControl.h>
 
 bool D3LightControl::s_renderEffectEnabled = false;
@@ -21,7 +24,8 @@ D3LightControl::~D3LightControl() {
   }
 }
 
-LPD3DXMESH &D3LightControl::optimizeMesh(LPD3DXMESH &mesh) { // static, protected
+
+static LPD3DXMESH &optimizeMesh(LPD3DXMESH &mesh) {
   DWORD *rgdwAdjacency = new DWORD[mesh->GetNumFaces() * 3]; TRACE_NEW(rgdwAdjacency);
   if(rgdwAdjacency == NULL ) {
     throwException(_T("Out of memory"));
@@ -38,6 +42,70 @@ LPD3DXMESH &D3LightControl::optimizeMesh(LPD3DXMESH &mesh) { // static, protecte
   return mesh;
 }
 
+static const Point2D directionalMeshProfilePoints[] = {
+  Point2D(0   , 0)
+ ,Point2D(-0.47, 0.25)
+ ,Point2D(-0.47, 0.1)
+ ,Point2D(-1   , 0.1)
+ ,Point2D(-1   ,   0)
+};
+
+static LPD3DXMESH createDirectionalMesh(AbstractMeshFactory &factory) {
+  Profile prof;
+  prof.addLineStrip(directionalMeshProfilePoints, ARRAYSIZE(directionalMeshProfilePoints));
+  ProfileRotationParameters param;
+  param.m_alignx     = 0;
+  param.m_aligny     = 1;
+  param.m_rad        = radians(360);
+  param.m_edgeCount  = 20;
+  param.m_smoothness = ROTATESMOOTH;
+  param.m_rotateAxis = 0;
+  return rotateProfile(factory, prof, param, false);
+}
+
+static const Point2D spotMeshProfilePoints[] = {
+  Point2D(0   , 0)
+ ,Point2D(0   , 0.17)
+ ,Point2D(-0.25, 0.13)
+ ,Point2D(-0.3 , 0.1)
+ ,Point2D(-1.0 , 0.1)
+ ,Point2D(-1.0 , 0)
+};
+
+static LPD3DXMESH createSpotMesh(AbstractMeshFactory &factory) {
+  Profile prof;
+  prof.addLineStrip(spotMeshProfilePoints, ARRAYSIZE(spotMeshProfilePoints));
+
+  ProfileRotationParameters param;
+  param.m_alignx     = 0;
+  param.m_aligny     = 1;
+  param.m_rad        = radians(360);
+  param.m_edgeCount  = 20;
+  param.m_smoothness = ROTATESMOOTH | NORMALSMOOTH;
+  param.m_rotateAxis = 0;
+  return rotateProfile(factory, prof, param, false);
+}
+
+static LPD3DXMESH createLCMesh(AbstractMeshFactory &factory, D3DLIGHTTYPE lightType) {
+  LPD3DXMESH mesh;
+  switch(lightType) {
+  case D3DLIGHT_POINT      : mesh = createSphereMesh(     factory, 1 ); break;
+  case D3DLIGHT_SPOT       : mesh = createSpotMesh(       factory    ); break;
+  case D3DLIGHT_DIRECTIONAL: mesh = createDirectionalMesh(factory    ); break;
+  }
+  return optimizeMesh(mesh);
+}
+
+static CompactIntHashMap<LPD3DXMESH> m_meshCache;
+static LPD3DXMESH getMesh(AbstractMeshFactory &factory, D3DLIGHTTYPE lightType) {
+  LPD3DXMESH *mp = m_meshCache.get(lightType);
+  if(mp != NULL) {
+    return *mp;
+  }
+  m_meshCache.put(lightType, createLCMesh(factory, lightType));
+  return *m_meshCache.get(lightType);
+}
+
 D3Light D3LightControl::getLight() const { // public
   const D3Light result = getScene().getLight(m_lightIndex);
   if((result.getIndex() != m_lightIndex) || (result.Type != getLightType())) {
@@ -46,6 +114,10 @@ D3Light D3LightControl::getLight() const { // public
              ,m_lightIndex);
   }
   return result;
+}
+
+LPD3DXMESH D3LightControl::getMesh() const {
+  return ::getMesh(getScene(), getLightType());
 }
 
 void D3LightControl::createMaterial() { // protected

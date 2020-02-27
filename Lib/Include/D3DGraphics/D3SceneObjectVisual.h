@@ -39,6 +39,10 @@ public:
   virtual LPD3DXMESH getMesh() const {
     return NULL;
   }
+  inline bool hasMesh() const {
+    return getMesh() != NULL;
+  }
+
   virtual int getMaterialId() const {
     return -1;
   }
