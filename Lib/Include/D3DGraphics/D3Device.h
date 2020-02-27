@@ -42,6 +42,13 @@ public:
     return m_deviceCaps;
   }
 
+  inline UINT getTextureCoordCount() const {
+    return m_deviceCaps.FVFCaps & D3DFVFCAPS_TEXCOORDCOUNTMASK;
+  }
+  inline UINT getMaxLightCount() const {
+    return m_deviceCaps.MaxActiveLights;
+  }
+
   // Set device fill-mode (D3DRS_FILLMODE), and update m_renderState.m_fillMode, if different from current
   inline D3Device &setFillMode(D3DFILLMODE fillMode) {
     if(fillMode != getFillMode()) {

@@ -6,15 +6,12 @@
 #include <D3DGraphics/D3Scene.h>
 #include <D3DGraphics/D3SceneObjectAnimatedMesh.h>
 
-int D3Scene::s_textureCoordCount;
-
 #pragma warning(disable : 4073)
 #pragma init_seg(lib)
 
 D3Scene::D3Scene(bool rightHanded)
   : m_device(NULL)
   , m_rightHanded(rightHanded)
-  , m_maxLightCount(0)
   , m_ambientColor(0)
   , m_lightsEnabled(10)
   , m_lightsDefined(10)
@@ -29,11 +26,9 @@ D3Scene::~D3Scene() {
 void D3Scene::initDevice(HWND hwnd) {
   m_device = new D3Device(hwnd); TRACE_NEW(m_device);
   const D3DCAPS &deviceCaps = m_device->getDeviceCaps();
-  s_textureCoordCount = deviceCaps.FVFCaps & D3DFVFCAPS_TEXCOORDCOUNTMASK;
-  m_maxLightCount     = deviceCaps.MaxActiveLights;
   m_ambientColor      = m_device->getAmbientColor();
-  m_lightsEnabled.setCapacity(m_maxLightCount); m_lightsEnabled.clear();
-  m_lightsDefined.setCapacity(m_maxLightCount); m_lightsDefined.clear();
+  m_lightsEnabled.setCapacity(getMaxLightCount()); m_lightsEnabled.clear();
+  m_lightsDefined.setCapacity(getMaxLightCount()); m_lightsDefined.clear();
   addLight(   D3Light::createDefaultLight());
   addMaterial(D3Material::createDefaultMaterial());
 }
@@ -103,7 +98,7 @@ void D3Scene::setRightHanded(bool rightHanded) {
 
 // -------------------------------- D3Light ------------------------------------
 BitSet D3Scene::getLightControlsVisible() const {
-  BitSet result(m_maxLightCount);
+  BitSet result(getMaxLightCount());
   for(D3VisualIterator it = getVisualIterator(OBJMASK_LIGHTCONTROL); it.hasNext();) {
     D3LightControl *lc = (D3LightControl*)it.next();
     if(lc->isVisible()) {
@@ -193,6 +188,10 @@ void D3Scene::removeAllLights() {
   setNotifyEnable(notifyEnable);
 }
 
+UINT D3Scene::getMaxLightCount() const {
+  return getDevice().getMaxLightCount();
+}
+
 void D3Scene::setLightEnabled(UINT lightIndex, bool enabled) {
   if(!isLightDefined(lightIndex)) return;
   setLight(getLight(lightIndex).setEnabled(enabled));
@@ -257,13 +256,14 @@ LightArray D3Scene::getAllLights() const {
   return result;
 }
 
-int D3Scene::getFirstFreeLightIndex() const {
-  for(int i = 0; i < m_maxLightCount; i++) {
+UINT D3Scene::getFirstFreeLightIndex() const {
+  const UINT maxLightCount = getMaxLightCount();
+  for(UINT i = 0; i < maxLightCount; i++) {
     if(!isLightDefined(i)) {
       return i;
     }
   }
-  throwException(_T("No free lights available. Max=%d"), getMaxLightCount());
+  throwException(_T("No free lights available. Max=%u"), maxLightCount);
   return -1;
 }
 
@@ -363,6 +363,10 @@ String D3Scene::getMaterialString() const {
     result += matArray[i].toString();
   }
   return result;
+}
+
+UINT D3Scene::getTextureCoordCount() const {
+  return getDevice().getTextureCoordCount();
 }
 
 void D3Scene::render(const D3Camera &camera) {

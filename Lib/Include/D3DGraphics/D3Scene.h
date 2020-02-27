@@ -51,10 +51,8 @@ private:
   friend class D3SceneObjectIterator;
   friend class D3Camera;
 
-  static int       s_textureCoordCount;
   D3Device        *m_device;
   bool             m_rightHanded;
-  int              m_maxLightCount;
   D3DCOLOR         m_ambientColor;
   BitSet           m_lightsEnabled, m_lightsDefined;
   D3Material       m_undefinedMaterial;
@@ -64,8 +62,8 @@ private:
 
   void notifyVisualCountChanged(UINT oldCount);
 
-  // Return -1 if none exist
-  int  getFirstFreeLightIndex() const;
+  // throw exception if no more lights available
+  UINT getFirstFreeLightIndex() const;
   UINT getFirstFreeMaterialId() const;
   D3LightControl *findLightControlByLightIndex(int lightIndex);
   D3LightControl *addLightControl(    UINT lightIndex);
@@ -84,7 +82,7 @@ public:
   ~D3Scene();
   void initDevice(HWND hwnd);
   inline D3Device &getDevice() const {
-    if (m_device == NULL) {
+    if(m_device == NULL) {
       throwException(_T("Device not initialized"));
     }
     return *m_device;
@@ -171,14 +169,12 @@ public:
   BitSet getLightControlsVisible() const;
   D3LightControl *setLightControlVisible(UINT lightIndex, bool visible);
 
-  inline int getMaxLightCount() const {
-    return m_maxLightCount;
+  UINT getMaxLightCount() const;
+  inline UINT getLightCount() const {
+    return (UINT)m_lightsDefined.size();
   }
-  inline int getLightCount() const {
-    return (int)m_lightsDefined.size();
-  }
-  inline int getLightEnabledCount() const {
-    return (int)m_lightsEnabled.size();
+  inline UINT getLightEnabledCount() const {
+    return (UINT)m_lightsEnabled.size();
   }
   void   setLightDirection(        UINT lightIndex, const D3DXVECTOR3 &dir);
   void   setLightPosition(         UINT lightIndex, const D3DXVECTOR3 &pos);
@@ -217,9 +213,8 @@ public:
   String getMaterialString(UINT materialId) const;
   String getMaterialString() const;
 
-  static inline int getTextureCoordCount() {
-    return s_textureCoordCount;
-  }
+  UINT getTextureCoordCount() const;
+
   // p in screen-coordinates
   // Return the camera which uses device with HWND at the given point, or NULL if none
   D3Camera            *getPickedCamera(const CPoint &p) const;

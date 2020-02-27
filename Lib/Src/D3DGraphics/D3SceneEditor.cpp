@@ -941,7 +941,11 @@ void D3SceneEditor::addLight(D3DLIGHTTYPE type) {
     lp.Direction  = unitVector((m_currentCamera->getPos() + 5 * m_currentCamera->getDir()) - lp.Position);
     break;
   }
-  getScene().setLightControlVisible(getScene().addLight(lp), true);
+  try {
+    getScene().setLightControlVisible(getScene().addLight(lp), true);
+  } catch(Exception e) {
+    showException(e);
+  }
   CHECKINVARIANT();
 }
 
@@ -1548,7 +1552,7 @@ void D3SceneEditor::OnSaveSceneParameters() {
   try {
     getScene().save(dlg.m_ofn.lpstrFile);
     m_paramFileName = dlg.m_ofn.lpstrFile;
-  } catch (Exception e) {
+  } catch(Exception e) {
     showException(e);
   }
 }
