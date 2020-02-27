@@ -367,6 +367,12 @@ BOOL D3SceneEditor::PreTranslateMessage(MSG *pMsg) {
     case ID_CONTROL_OBJECT_POS            : OnControlObjPos()                   ; return true;
     case ID_CONTROL_OBJECT_SCALE          : OnControlObjScale()                 ; return true;
     case ID_CONTROL_OBJECT_MOVEROTATE     : OnControlObjMoveRotate()            ; return true;
+    case ID_OBJECT_FILLMODE_POINT         : OnObjectFillmodePoint()             ; return true;
+    case ID_OBJECT_FILLMODE_WIREFRAME     : OnObjectFillmodeWireframe()         ; return true;
+    case ID_OBJECT_FILLMODE_SOLID         : OnObjectFillmodeSolid()             ; return true;
+    case ID_OBJECT_SHADING_FLAT           : OnObjectShadingFlat()               ; return true;
+    case ID_OBJECT_SHADING_GOURAUD        : OnObjectShadingGouraud()            ; return true;
+    case ID_OBJECT_SHADING_PHONG          : OnObjectShadingPhong()              ; return true;
     case ID_OBJECT_RESETPOSITION          : OnObjectResetPosition()             ; return true;
     case ID_OBJECT_RESETSCALE             : OnObjectResetScale()                ; return true;
     case ID_OBJECT_RESETORIENTATION       : OnObjectResetOrientation()          ; return true;
@@ -392,19 +398,13 @@ BOOL D3SceneEditor::PreTranslateMessage(MSG *pMsg) {
     case ID_RIGHTHANDED                   : SetRightHanded(true)                ; return true;
     case ID_LEFTHANDED                    : SetRightHanded(false)               ; return true;
     case ID_SCENE_EDIT_AMBIENTLIGHT       : OnSceneEditAmbientLight()           ; return true;
-    case ID_FILLMODE_POINT                : OnFillmodePoint()                   ; return true;
-    case ID_FILLMODE_WIREFRAME            : OnFillmodeWireframe()               ; return true;
-    case ID_FILLMODE_SOLID                : OnFillmodeSolid()                   ; return true;
-    case ID_SHADING_FLAT                  : OnShadingFlat()                     ; return true;
-    case ID_SHADING_GOURAUD               : OnShadingGouraud()                  ; return true;
-    case ID_SHADING_PHONG                 : OnShadingPhong()                    ; return true;
     case ID_ENABLE_SPECULARHIGHLIGHT      : setSpecularEnable(true)             ; return true;
     case ID_DISABLE_SPECULARHIGHLIGHT     : setSpecularEnable(false)            ; return true;
     case ID_SHOWCOORDINATESYSTEM          : setCoordinateSystemVisible(true)    ; return true;
     case ID_HIDECOORDINATESYSTEM          : setCoordinateSystemVisible(false)   ; return true;
-    case ID_LIGHT_ADDDIRECTIONAL          : OnAddLightDirectional()             ; return true;
-    case ID_LIGHT_ADDPOINT                : OnAddLightPoint()                   ; return true;
-    case ID_LIGHT_ADDSPOT                 : OnAddLightSpot()                    ; return true;
+    case ID_LIGHT_ADDDIRECTIONAL          : OnLightAddDirectional()             ; return true;
+    case ID_LIGHT_ADDPOINT                : OnLightAddPoint()                   ; return true;
+    case ID_LIGHT_ADDSPOT                 : OnLightAddSpot()                    ; return true;
     case ID_LIGHT_REMOVE                  : OnLightRemove()                     ; return true;
     case ID_LIGHT_ENSABLE                 : setLightEnabled(true)               ; return true;
     case ID_LIGHT_DISABLE                 : setLightEnabled(false)              ; return true;
@@ -418,9 +418,9 @@ BOOL D3SceneEditor::PreTranslateMessage(MSG *pMsg) {
     case ID_LIGHTCONTROL_DISABLEEFFECT    : setLightControlRenderEffect(false)  ; return true;
     case ID_SAVESCENEPARAMETERS           : OnSaveSceneParameters()             ; return true;
     case ID_LOADSCENEPARAMETERS           : OnLoadSceneParameters()             ; return true;
-    case ID_SPLIT3DWINDOW_VERTICAL        : OnSplit3DWindow(true)               ; return true;
-    case ID_SPLIT3DWINDOW_HORIZONTAL      : OnSplit3DWindow(false)              ; return true;
-    case ID_DELETE3DWINDOW                : OnDelete3DWindow()                  ; return true;
+    case ID_CAMERA_SPLITVERTICAL          : OnCameraSplit(true)                 ; return true;
+    case ID_CAMERA_SPLITHORIZONTAL        : OnCameraSplit(false)                ; return true;
+    case ID_CAMERA_REMOVE                 : OnCameraRemove()                    ; return true;
 
     default:
       if((ID_SELECT_LIGHT0 <= pMsg->wParam) && (pMsg->wParam <= ID_SELECT_LIGHT20)) {
@@ -923,9 +923,9 @@ void D3SceneEditor::OnMouseWheelLightSpotAngle(UINT nFlags, short zDelta, CPoint
 }
 // ------------------------------------------------------------------------------------------------------------
 
-void D3SceneEditor::OnAddLightDirectional() { addLight(D3DLIGHT_DIRECTIONAL); }
-void D3SceneEditor::OnAddLightPoint()       { addLight(D3DLIGHT_POINT);       }
-void D3SceneEditor::OnAddLightSpot()        { addLight(D3DLIGHT_SPOT);        }
+void D3SceneEditor::OnLightAddDirectional() { addLight(D3DLIGHT_DIRECTIONAL); }
+void D3SceneEditor::OnLightAddPoint()       { addLight(D3DLIGHT_POINT);       }
+void D3SceneEditor::OnLightAddSpot()        { addLight(D3DLIGHT_SPOT);        }
 
 void D3SceneEditor::addLight(D3DLIGHTTYPE type) {
   CHECKINVARIANT();
@@ -1147,10 +1147,10 @@ void D3SceneEditor::OnContextMenuBackground(CPoint point) {
                       :ID_LEFTHANDED);
 
   if(!m_sceneContainer->canSplit3DWindow(m_currentCamera->getHwnd())) {
-    removeSubMenuContainingId(menu, ID_SPLIT3DWINDOW_VERTICAL);
+    removeSubMenuContainingId(menu, ID_CAMERA_SPLITVERTICAL);
   }
   if(!m_sceneContainer->canDelete3DWindow(m_currentCamera->getHwnd())) {
-    removeMenuItem(menu, ID_DELETE3DWINDOW);
+    removeMenuItem(menu, ID_CAMERA_REMOVE);
   }
   m_currentCamera->modifyContextMenu(*menu.GetSubMenu(0));
   m_sceneContainer->modifyContextMenu(*menu.GetSubMenu(0));
@@ -1197,21 +1197,21 @@ void D3SceneEditor::OnContextMenuVisualObj(CPoint point) {
     removeMenuItem(menu, ID_OBJECT_RESETCENTEROFROTATION);
   }
   if(!m_currentObj->hasFillMode()) {
-    removeSubMenuContainingId(menu, ID_FILLMODE_WIREFRAME);
+    removeSubMenuContainingId(menu, ID_OBJECT_FILLMODE_WIREFRAME);
   } else {
     switch(m_currentObj->getFillMode()) {
-    case D3DFILL_SOLID     : removeMenuItem(menu, ID_FILLMODE_SOLID    ); break;
-    case D3DFILL_WIREFRAME : removeMenuItem(menu, ID_FILLMODE_WIREFRAME); break;
-    case D3DFILL_POINT     : removeMenuItem(menu, ID_FILLMODE_POINT    ); break;
+    case D3DFILL_SOLID     : removeMenuItem(menu, ID_OBJECT_FILLMODE_SOLID    ); break;
+    case D3DFILL_WIREFRAME : removeMenuItem(menu, ID_OBJECT_FILLMODE_WIREFRAME); break;
+    case D3DFILL_POINT     : removeMenuItem(menu, ID_OBJECT_FILLMODE_POINT    ); break;
     }
   }
   if(!m_currentObj->hasShadeMode()) {
-    removeSubMenuContainingId(menu, ID_SHADING_FLAT);
+    removeSubMenuContainingId(menu, ID_OBJECT_SHADING_FLAT);
   } else {
     switch(m_currentObj->getShadeMode()) {
-    case D3DSHADE_FLAT     : removeMenuItem(menu, ID_SHADING_FLAT    ); break;
-    case D3DSHADE_GOURAUD  : removeMenuItem(menu, ID_SHADING_GOURAUD ); break;
-    case D3DSHADE_PHONG    : removeMenuItem(menu, ID_SHADING_PHONG   ); break;
+    case D3DSHADE_FLAT     : removeMenuItem(menu, ID_OBJECT_SHADING_FLAT    ); break;
+    case D3DSHADE_GOURAUD  : removeMenuItem(menu, ID_OBJECT_SHADING_GOURAUD ); break;
+    case D3DSHADE_PHONG    : removeMenuItem(menu, ID_OBJECT_SHADING_PHONG   ); break;
     }
   }
   m_currentObj->modifyContextMenu(*menu.GetSubMenu(0));
@@ -1493,12 +1493,12 @@ void D3SceneEditor::OnCameraEditBackgroundColor() {
   CHECKINVARIANT();
 }
 
-void D3SceneEditor::OnFillmodePoint()     { getCurrentObj()->setFillMode(D3DFILL_POINT     ); renderVisible(SE_RENDERALL); }
-void D3SceneEditor::OnFillmodeWireframe() { getCurrentObj()->setFillMode(D3DFILL_WIREFRAME ); renderVisible(SE_RENDERALL); }
-void D3SceneEditor::OnFillmodeSolid()     { getCurrentObj()->setFillMode(D3DFILL_SOLID     ); renderVisible(SE_RENDERALL); }
-void D3SceneEditor::OnShadingFlat()       { getCurrentObj()->setShadeMode(D3DSHADE_FLAT    ); renderVisible(SE_RENDERALL); }
-void D3SceneEditor::OnShadingGouraud()    { getCurrentObj()->setShadeMode(D3DSHADE_GOURAUD ); renderVisible(SE_RENDERALL); }
-void D3SceneEditor::OnShadingPhong()      { getCurrentObj()->setShadeMode(D3DSHADE_PHONG   ); renderVisible(SE_RENDERALL); }
+void D3SceneEditor::OnObjectFillmodePoint()     { getCurrentObj()->setFillMode(D3DFILL_POINT     ); renderVisible(SE_RENDERALL); }
+void D3SceneEditor::OnObjectFillmodeWireframe() { getCurrentObj()->setFillMode(D3DFILL_WIREFRAME ); renderVisible(SE_RENDERALL); }
+void D3SceneEditor::OnObjectFillmodeSolid()     { getCurrentObj()->setFillMode(D3DFILL_SOLID     ); renderVisible(SE_RENDERALL); }
+void D3SceneEditor::OnObjectShadingFlat()       { getCurrentObj()->setShadeMode(D3DSHADE_FLAT    ); renderVisible(SE_RENDERALL); }
+void D3SceneEditor::OnObjectShadingGouraud()    { getCurrentObj()->setShadeMode(D3DSHADE_GOURAUD ); renderVisible(SE_RENDERALL); }
+void D3SceneEditor::OnObjectShadingPhong()      { getCurrentObj()->setShadeMode(D3DSHADE_PHONG   ); renderVisible(SE_RENDERALL); }
 
 void D3SceneEditor::setCoordinateSystemVisible(bool visible) {
   if(visible) {

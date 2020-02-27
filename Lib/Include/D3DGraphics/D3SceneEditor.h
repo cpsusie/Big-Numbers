@@ -141,8 +141,6 @@ private:
     void OnSaveSceneParameters();
     void OnLoadSceneParameters();
     void OnControlObjMoveRotate();
-    void OnSplit3DWindow(bool vertical);
-    void OnDelete3DWindow();
     void OnControlObjPos();
     void OnControlObjScale();
 
@@ -178,6 +176,8 @@ public:
     void OnCameraResetOrientation();
     void OnCameraResetProjection();
     void OnCameraResetAll();
+    void OnCameraSplit(bool vertical);
+    void OnCameraRemove();
 private:
     void SetRightHanded(bool rightHanded);
     void OnObjectStartAnimation();
@@ -193,27 +193,27 @@ private:
     void OnObjectResetOrientation();
     void OnObjectResetAll();
     void OnObjectRemove();
+    void OnObjectFillmodePoint();
+    void OnObjectFillmodeWireframe();
+    void OnObjectFillmodeSolid();
+    void OnObjectShadingFlat();
+    void OnObjectShadingGouraud();
+    void OnObjectShadingPhong();
     void OnObjectSetCenterOfRotation();
     void OnObjectResetCenterOfRotation();
     void OnLightAdjustColors();
     void OnLightAdjustSpotAngles();
     void OnLightControlSpotAt();
     void OnLightControlHide();
-    void OnAddLightDirectional();
-    void OnAddLightPoint();
-    void OnAddLightSpot();
+    void OnLightAddDirectional();
+    void OnLightAddPoint();
+    void OnLightAddSpot();
+    void OnLightRemove();
     void OnSceneEditAmbientLight();
     void OnCameraEditBackgroundColor();
-    void OnFillmodePoint();
-    void OnFillmodeWireframe();
-    void OnFillmodeSolid();
-    void OnShadingFlat();
-    void OnShadingGouraud();
-    void OnShadingPhong();
     void setCoordinateSystemVisible(bool visible);
     void setSelectedCubeVisible(    bool visible);
     void setLightEnabled(bool enabled);
-    void OnLightRemove();
     // point in window-coordinates
     void OnLButtonDown(  UINT nFlags, CPoint point);
     // point in window-coordinates

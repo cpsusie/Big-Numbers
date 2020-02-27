@@ -3,7 +3,7 @@
 #include <D3DGraphics/D3Camera.h>
 #include <D3DGraphics/D3SceneEditor.h>
 
-void D3SceneEditor::OnSplit3DWindow(bool vertical) {
+void D3SceneEditor::OnCameraSplit(bool vertical) {
   const WindowPair wp = m_sceneContainer->split3DWindow(getCurrentCamera()->getHwnd(), vertical);
   if(!wp.isEmpty()) {
     getCurrentCamera()->setHwnd(wp.getWindow(0));
@@ -18,7 +18,7 @@ void D3SceneEditor::OnSplit3DWindow(bool vertical) {
   }
 }
 
-void D3SceneEditor::OnDelete3DWindow() {
+void D3SceneEditor::OnCameraRemove() {
   D3Camera *cam = getCurrentCamera();
   if(cam == NULL) {
     return;

@@ -119,7 +119,7 @@ BEGIN
         POPUP "Camera"
         BEGIN
             MENUITEM "Move",                        ID_CONTROL_CAMERA_WALK
-            MENUITEM "Projectection",               ID_CONTROL_CAMERA_PROJECTION
+            MENUITEM "Projection",               ID_CONTROL_CAMERA_PROJECTION
             POPUP "Reset"
             BEGIN
                 MENUITEM "Position = (0,-5,0)",         ID_CAMERA_RESETPOSITION
@@ -127,6 +127,13 @@ BEGIN
                 MENUITEM "Projection (view angle=45, near view plane=0.1", ID_CAMERA_RESETPROJECTION
                 MENUITEM "All",                         ID_CAMERA_RESETALL
             END
+            MENUITEM SEPARATOR
+            POPUP "Split"
+            BEGIN
+                MENUITEM "Vertical",                    ID_CAMERA_SPLITVERTICAL
+                MENUITEM "Horizontal",                  ID_CAMERA_SPLITHORIZONTAL
+            END
+            MENUITEM "Remove",                      ID_CAMERA_REMOVE
         END
         MENUITEM "Move && rotate object",       ID_CONTROL_OBJECT_MOVEROTATE
         MENUITEM SEPARATOR
@@ -177,12 +184,6 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "Save scene parameters...",    ID_SAVESCENEPARAMETERS
         MENUITEM "Load scene parameters...",    ID_LOADSCENEPARAMETERS
-        POPUP "Split window"
-        BEGIN
-            MENUITEM "Vertical",                    ID_SPLIT3DWINDOW_VERTICAL
-            MENUITEM "Horizontal",                  ID_SPLIT3DWINDOW_HORIZONTAL
-        END
-        MENUITEM "Delete window",               ID_DELETE3DWINDOW
     END
 END
 
@@ -222,15 +223,15 @@ BEGIN
         MENUITEM SEPARATOR
         POPUP "Fillmode"
         BEGIN
-            MENUITEM "Wireframe",                   ID_FILLMODE_WIREFRAME
-            MENUITEM "Solid",                       ID_FILLMODE_SOLID
-            MENUITEM "Point",                       ID_FILLMODE_POINT
+            MENUITEM "Wireframe",                   ID_OBJECT_FILLMODE_WIREFRAME
+            MENUITEM "Solid",                       ID_OBJECT_FILLMODE_SOLID
+            MENUITEM "Point",                       ID_OBJECT_FILLMODE_POINT
         END
         POPUP "Shading"
         BEGIN
-            MENUITEM "Flat",                        ID_SHADING_FLAT
-            MENUITEM "Gouraud",                     ID_SHADING_GOURAUD
-            MENUITEM "Phong",                       ID_SHADING_PHONG
+            MENUITEM "Flat",                        ID_OBJECT_SHADING_FLAT
+            MENUITEM "Gouraud",                     ID_OBJECT_SHADING_GOURAUD
+            MENUITEM "Phong",                       ID_OBJECT_SHADING_PHONG
         END
         MENUITEM "Material...",                 ID_OBJECT_ADJUSTMATERIAL
         MENUITEM SEPARATOR
