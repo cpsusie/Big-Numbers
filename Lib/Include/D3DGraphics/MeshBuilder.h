@@ -2,7 +2,7 @@
 
 #include <D3DGraphics/D3AbstractMeshFactory.h>
 #include <D3DGraphics/D3Math.h>
-#include <D3DGraphics/D3DXCube.h>
+#include <D3DGraphics/D3Cube.h>
 
 class VertexNormalTextureIndex {
 public:
@@ -175,7 +175,7 @@ public:
   }
 
   void optimize();
-  D3DXCube3 getBoundingBox() const;
+  D3Cube getBoundingBox() const;
   LPD3DXMESH createMesh(AbstractMeshFactory &amf, bool doubleSided) const;
   void parseWavefrontObjFile(FILE *f);
   String toString() const;

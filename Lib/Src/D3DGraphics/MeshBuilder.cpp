@@ -156,7 +156,7 @@ bool MeshBuilder::use32BitIndices(bool doubleSided) const {
   return (vertexCount > MAX16BITVERTEXCOUNT) || (faceCount > MAX16BITVERTEXCOUNT);
 }
 
-D3DXCube3 MeshBuilder::getBoundingBox() const {
+D3Cube MeshBuilder::getBoundingBox() const {
   D3DXVECTOR3  pmin,pmax;
   const size_t faceCount = m_faceArray.size();
   bool         firstTime = true;
@@ -193,7 +193,7 @@ D3DXCube3 MeshBuilder::getBoundingBox() const {
       }
     }
   }
-  return D3DXCube3(pmin,pmax);
+  return D3Cube(pmin,pmax);
 }
 
 static FastSemaphore   meshCreatorGate;

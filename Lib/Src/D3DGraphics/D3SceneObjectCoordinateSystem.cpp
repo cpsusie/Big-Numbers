@@ -45,9 +45,9 @@ D3SCoordSystemLineArrow::~D3SCoordSystemLineArrow() {
 class D3SceneGridObject : public D3SceneObjectLineArray {
 private:
   UINT m_materialId;
-  static CompactArray<Line3D> createLineArray(const D3DXCube3 &cube);
+  static CompactArray<Line3D> createLineArray(const D3Cube &cube);
 public:
-  D3SceneGridObject(D3SceneObjectVisual *parent, const D3DXCube3 &cube)
+  D3SceneGridObject(D3SceneObjectVisual *parent, const D3Cube &cube)
     : D3SceneObjectLineArray(parent, createLineArray(cube), _T("GridObject"))
   {
     m_materialId = getScene().addMaterialWithColor(D3D_BLACK);
@@ -64,7 +64,7 @@ public:
 };
 
 #define GRIDLINECOUNT 10
-CompactArray<Line3D> D3SceneGridObject::createLineArray(const D3DXCube3 &cube) {
+CompactArray<Line3D> D3SceneGridObject::createLineArray(const D3Cube &cube) {
   CompactArray<Line3D> result;
   const float xFrom = cube.getMinX(), xTo = cube.getMaxX();
   const float yFrom = cube.getMinY(), yTo = cube.getMaxY();
@@ -179,9 +179,9 @@ D3DXMATRIX &VerticalAxisMeshObject::getWorld() {
 class D3CoordinateSystemFrameObject : public D3SceneObjectWithMesh {
 private:
   UINT m_materialId;
-  static LPD3DXMESH createFrameMesh(D3Scene &scene, const D3DXCube3 &cube);
+  static LPD3DXMESH createFrameMesh(D3Scene &scene, const D3Cube &cube);
 public:
-  D3CoordinateSystemFrameObject(D3SceneObjectVisual *parent, const D3DXCube3 &cube);
+  D3CoordinateSystemFrameObject(D3SceneObjectVisual *parent, const D3Cube &cube);
   ~D3CoordinateSystemFrameObject();
   int getMaterialId() const {
     return m_materialId;
@@ -191,7 +191,7 @@ public:
   }
 };
 
-LPD3DXMESH D3CoordinateSystemFrameObject::createFrameMesh(D3Scene &scene, const D3DXCube3 &cube) {
+LPD3DXMESH D3CoordinateSystemFrameObject::createFrameMesh(D3Scene &scene, const D3Cube &cube) {
   MeshBuilder mb;
   const D3DXVECTOR3 p1 = cube.getMin(), p2 = cube.getMax();
   const int c1 = mb.addVertex(p1.x, p1.y, p1.z);
@@ -201,7 +201,7 @@ LPD3DXMESH D3CoordinateSystemFrameObject::createFrameMesh(D3Scene &scene, const 
   return mb.addSquareFace(c1, c2, c3, c4).createMesh(scene, true);
 }
 
-D3CoordinateSystemFrameObject::D3CoordinateSystemFrameObject(D3SceneObjectVisual *parent, const D3DXCube3 &cube)
+D3CoordinateSystemFrameObject::D3CoordinateSystemFrameObject(D3SceneObjectVisual *parent, const D3Cube &cube)
 : D3SceneObjectWithMesh(parent, createFrameMesh(parent->getScene(), cube), _T("FrameObject"))
 {
   D3Scene &s = getScene();
@@ -216,9 +216,9 @@ D3CoordinateSystemFrameObject::~D3CoordinateSystemFrameObject() {
   getScene().removeMaterial(m_materialId);
 }
 
-D3SceneObjectCoordinateSystem::D3SceneObjectCoordinateSystem(D3Scene &scene, const D3DXCube3 *cube)
+D3SceneObjectCoordinateSystem::D3SceneObjectCoordinateSystem(D3Scene &scene, const D3Cube *cube)
   : D3SceneObjectVisual(scene, _T("CoordinateSystem"))
-  , m_cube(cube ? *cube : D3DXCube3::getStdCube())
+  , m_cube(cube ? *cube : D3Cube::getStdCube())
 {
   resetWorld();
   for(int i = 0; i < 3; i++) {

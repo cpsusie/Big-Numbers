@@ -2,7 +2,7 @@
 
 #ifdef DEBUG_POLYGONIZER
 
-#include <D3DGraphics/D3DXCube.h>
+#include <D3DGraphics/D3Cube.h>
 #include <D3DGraphics/D3SceneObjectWireFrameBox.h>
 #include <D3DGraphics/D3SceneObjectSolidBox.h>
 #include "Debugger.h"
@@ -19,7 +19,7 @@ private:
   int                  m_materialId;
   D3DXVECTOR3          m_center;
   BitSet8              m_positive;
-  static D3DXCube3 createCube(float cellSize);
+  static D3Cube createCube(float cellSize);
 public:
   OctaObject(D3SceneObjectVisual *parent, float cellSize);
   ~OctaObject();
@@ -50,7 +50,7 @@ private:
   OctaObject &m_octaObject;
   int         m_materialId[2];
   int         m_cornerIndex;
-  static D3DXCube3 createCube(float cellSize);
+  static D3Cube createCube(float cellSize);
 public:
   CornerMarkObject(OctaObject *parent);
   ~CornerMarkObject();
@@ -68,7 +68,7 @@ OctaObject::OctaObject(D3SceneObjectVisual *parent, float cellSize)
 {
   m_materialId = getScene().addMaterialWithColor(D3D_BLUE);
 
-  const D3DXCube3 cube = createCube(cellSize);
+  const D3Cube cube = createCube(cellSize);
   D3DXVECTOR3 lbn = cube.getMin(), rtf = cube.getMax();
 
   m_cornerCenterArray[LBN] = D3DXVECTOR3(lbn.x, lbn.y, lbn.z); // left  bottom near corner
@@ -88,9 +88,9 @@ OctaObject::~OctaObject() {
   getScene().removeMaterial(m_materialId);
 }
 
-D3DXCube3 OctaObject::createCube(float cellSize) {
+D3Cube OctaObject::createCube(float cellSize) {
   const float t = cellSize / 2;
-  return D3DXCube3(D3DXVECTOR3(-t, -t, -t), D3DXVECTOR3(t, t, t));
+  return D3Cube(D3DXVECTOR3(-t, -t, -t), D3DXVECTOR3(t, t, t));
 }
 
 void OctaObject::setOctagon(const Octagon &octa) {
@@ -129,9 +129,9 @@ CornerMarkObject::~CornerMarkObject() {
   getScene().removeMaterial(m_materialId[1]);
 }
 
-D3DXCube3 CornerMarkObject::createCube(float cellSize) {
+D3Cube CornerMarkObject::createCube(float cellSize) {
   const float t = cellSize / 2;
-  return D3DXCube3(D3DXVECTOR3(-t,-t,-t), D3DXVECTOR3(t,t,t));
+  return D3Cube(D3DXVECTOR3(-t,-t,-t), D3DXVECTOR3(t,t,t));
 }
 
 int CornerMarkObject::getMaterialId() const {

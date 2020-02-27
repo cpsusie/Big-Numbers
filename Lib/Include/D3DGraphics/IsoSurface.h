@@ -2,7 +2,7 @@
 
 #include <PersistentData.h>
 #include <NumberInterval.h>
-#include <D3DGraphics/D3DXCube.h>
+#include <D3DGraphics/D3Cube.h>
 
 class IsoSurfaceParameters : public PersistentData {
 public:

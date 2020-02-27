@@ -1,7 +1,7 @@
 #include "pch.h"
-#include <D3DGraphics/D3DXCube.h>
+#include <D3DGraphics/D3Cube.h>
 
-D3DXCube3 getBoundingBox(LPDIRECT3DVERTEXBUFFER vertexBuffer) {
+D3Cube getBoundingBox(LPDIRECT3DVERTEXBUFFER vertexBuffer) {
   D3DVERTEXBUFFER_DESC desc;
   V(vertexBuffer->GetDesc(&desc));
   const int itemSize = FVFToSize(desc.FVF);
@@ -33,5 +33,5 @@ D3DXCube3 getBoundingBox(LPDIRECT3DVERTEXBUFFER vertexBuffer) {
     }
   }
   V(vertexBuffer->Unlock());
-  return D3DXCube3(pmin,pmax);
+  return D3Cube(pmin,pmax);
 }

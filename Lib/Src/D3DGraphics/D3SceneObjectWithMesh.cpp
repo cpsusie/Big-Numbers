@@ -57,7 +57,7 @@ void D3SceneObjectWithMesh::unlockIndexBuffer() {
   V(m_mesh->UnlockIndexBuffer());
 }
 
-D3DXCube3 D3SceneObjectWithMesh::getBoundingBox() const {
+D3Cube D3SceneObjectWithMesh::getBoundingBox() const {
   return ::getBoundingBox(m_mesh) + D3World(*this).getPos();
 }
 

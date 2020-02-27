@@ -1,7 +1,7 @@
 #pragma once
 
 #include "D3SceneObjectVisual.h"
-#include "D3DXCube.h"
+#include "D3Cube.h"
 
 class D3SceneObjectWithMesh : public D3SceneObjectVisual {
 private:
@@ -45,7 +45,7 @@ public:
   D3DSHADEMODE getShadeMode() const {
     return m_shadeMode;
   }
-  D3DXCube3 getBoundingBox() const;
+  D3Cube getBoundingBox() const;
   void draw();
   String toString() const;
 };

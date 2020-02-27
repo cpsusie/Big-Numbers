@@ -854,7 +854,7 @@
     <ClInclude Include="..\..\Include\D3DGraphics\D3AbstractMeshFactory.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3CameraArray.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3DeviceRenderState.h" />
-    <ClInclude Include="..\..\Include\D3DGraphics\D3DXCube.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\D3Cube.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3Light.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3PickedInfo.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3Ray.h" />

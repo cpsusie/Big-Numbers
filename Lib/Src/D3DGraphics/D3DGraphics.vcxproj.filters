@@ -361,9 +361,6 @@
     <ClInclude Include="..\..\Include\D3DGraphics\D3Material.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\D3DGraphics\D3DXCube.h">
-      <Filter>Header Files\D3Math</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\D3DGraphics\D3Math.h">
       <Filter>Header Files\D3Math</Filter>
     </ClInclude>
@@ -396,6 +393,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\D3DGraphics\Profile.h">
       <Filter>Header Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\D3Cube.h">
+      <Filter>Header Files\D3Math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

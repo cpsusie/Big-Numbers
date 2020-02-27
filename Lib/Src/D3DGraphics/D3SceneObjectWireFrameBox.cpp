@@ -1,7 +1,7 @@
 #include "pch.h"
 #include <D3DGraphics/D3SceneObjectWireFrameBox.h>
 
-D3SceneObjectWireFrameBox::D3SceneObjectWireFrameBox(D3Scene             &scene, const D3DXCube3 &cube              , const String &name)
+D3SceneObjectWireFrameBox::D3SceneObjectWireFrameBox(D3Scene             &scene, const D3Cube &cube              , const String &name)
   : D3SceneObjectLineArray(scene, name)
 {
   init(cube.getMin(), cube.getMax());
@@ -11,7 +11,7 @@ D3SceneObjectWireFrameBox::D3SceneObjectWireFrameBox(D3Scene             &scene,
 {
   init(p1, p2);
 }
-D3SceneObjectWireFrameBox::D3SceneObjectWireFrameBox(D3SceneObjectVisual *parent, const D3DXCube3 &cube             , const String &name)
+D3SceneObjectWireFrameBox::D3SceneObjectWireFrameBox(D3SceneObjectVisual *parent, const D3Cube &cube             , const String &name)
   : D3SceneObjectLineArray(parent, name)
 {
   init(cube.getMin(), cube.getMax());

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "D3SceneObjectVisual.h"
-#include "D3DXCube.h"
+#include "D3Cube.h"
 #include "D3Scene.h"
 
 class D3Device;
@@ -41,6 +41,6 @@ public:
   inline bool hasVertexBuffer() const {
     return m_vertexBuffer != NULL;
   }
-  D3DXCube3 getBoundingBox() const;
+  D3Cube getBoundingBox() const;
   String toString() const;
 };
