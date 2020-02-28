@@ -28,11 +28,11 @@ D3Camera *D3CameraArray::findCamera(HWND hwnd) const {
   return (index < 0) ? NULL : (*this)[index];
 }
 
-CameraSet D3CameraArray::getVisibleCameraSet() const {
+CameraSet D3CameraArray::getActiveCameraSet() const {
   CameraSet result;
   const UINT n = (UINT)size();
   for(UINT i = 0; i < n; i++) {
-    if((*this)[i]->isVisible()) {
+    if((*this)[i]->isActive()) {
       result.add(i);
     }
   }

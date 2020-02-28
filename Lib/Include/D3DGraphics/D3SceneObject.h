@@ -24,9 +24,13 @@ public:
   inline D3Scene &getScene() const {
     return m_scene;
   }
-  D3Device        &getDevice();
-  LPDIRECT3DDEVICE getDirectDevice();
+  virtual SceneObjectType getType() const = 0;
+  // default return false
+  virtual bool isVisible() const {
+    return false;
+  }
+  D3Device        &getDevice() const;
+  LPDIRECT3DDEVICE getDirectDevice() const;
   virtual void modifyContextMenu(HMENU menu) {
   }
-  virtual SceneObjectType getType() const = 0;
 };

@@ -24,6 +24,9 @@ D3LightControl::~D3LightControl() {
   }
 }
 
+bool D3LightControl::isVisible() const {
+  return getDevice().getCurrentCamera()->isLightControlVisible(m_lightIndex);
+}
 
 static LPD3DXMESH &optimizeMesh(LPD3DXMESH &mesh) {
   DWORD *rgdwAdjacency = new DWORD[mesh->GetNumFaces() * 3]; TRACE_NEW(rgdwAdjacency);

@@ -26,6 +26,6 @@ void D3SceneEditor::OnCameraRemove() {
   if(m_sceneContainer->delete3DWindow(cam->getHwnd())) {
     selectCamera(-1);
     getScene().removeCamera(*cam);
-    renderVisible(SE_RENDERALL);
+    renderActive(SE_RENDERALL);
   }
 }

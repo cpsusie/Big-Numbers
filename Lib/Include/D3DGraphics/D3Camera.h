@@ -8,6 +8,7 @@
 
 class D3Scene;
 class D3SceneObjectVisual;
+class D3LightControl;
 class D3PickedInfo;
 
 typedef enum {
@@ -15,13 +16,16 @@ typedef enum {
  ,CAM_PROJECTION                // D3DXMATRIX
  ,CAM_BACKGROUNDCOLOR           // D3DCOLOR
  ,CAM_WINDOW                    // HWND
+ ,CAM_LIGHTCONTROLSVISIBLE      // BitSet
 } D3CameraProperty;
+
 
 class D3Camera : public D3SceneObject, public PropertyContainer {
 private:
   HWND                    m_hwnd;
   bool                    m_rightHanded;
   D3DCOLOR                m_backgroundColor;
+  mutable BitSet          m_visibleLightControlSet;
   float                   m_viewAngle;
   float                   m_nearViewPlane;
   D3World                 m_world;
@@ -64,10 +68,18 @@ public:
   inline CSize getWinSize() const {
     return getClientRect(getHwnd()).Size();
   }
-  inline bool isVisible() const {
+  inline bool isActive() const {
     return IsWindowVisible(getHwnd());
   }
-  // set property m_backgroundColor, and notifies properyChangeListerners. (property-id=DEV_BACKGROUNDCOLOR)
+  inline bool isLightControlVisible(UINT lightIndex) const {
+    return getLightControlsVisible().contains(lightIndex);
+  }
+  const BitSet   &getLightControlsVisible() const;
+  // set visibility for many lightcontrols. notify only onnce (if changed)
+  D3Camera       &setLightControlsVisible(const BitSet &set);
+  // set property m_visibleLightControlSet with notifificationid=CAM_LIGHTCONTROLSVISIBLE
+  D3LightControl *setLightControlVisible(UINT lightIndex, bool visible);
+  // set property m_backgroundColor with notifificationid=CAM_BACKGROUNDCOLOR)
   inline D3Camera &setBackgroundColor(D3DCOLOR color) {
     setProperty(CAM_BACKGROUNDCOLOR, m_backgroundColor, color);
     return *this;

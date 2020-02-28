@@ -7,6 +7,7 @@
 #include "D3Ray.h"
 #include "D3PickedInfo.h"
 #include "D3SceneObjectPoint.h"
+#include "D3SceneObjectCoordinateSystem.h"
 #include "D3SceneContainer.h"
 
 typedef enum {
@@ -44,26 +45,27 @@ class D3SceneObjectAnimatedMesh;
 
 class D3SceneEditor : public PropertyChangeListener {
 private:
-    D3SceneContainer     *m_sceneContainer;
-    D3EditorControl       m_currentControl;
-    D3Camera             *m_currentCamera;
-    int                   m_currentCameraIndex;
-    D3SceneObjectVisual  *m_currentObj, *m_coordinateSystem, *m_selectedCube;
-    PropertyDialogMap     m_propertyDialogMap;
-    PropertyDialog       *m_currentPropertyDialog;
-    BYTE                  m_stateFlags;
-    CPoint                m_lastMouse;
-    D3SceneObjectPoint    m_centerOfRotation;
-    D3DXVECTOR3           m_pickedPoint; // in world space
-    D3Ray                 m_pickedRay;   // in world space
-    D3PickedInfo          m_pickedInfo;
-    String                m_paramFileName;
+    D3SceneContainer              *m_sceneContainer;
+    D3EditorControl                m_currentControl;
+    D3Camera                      *m_currentCamera;
+    int                            m_currentCameraIndex;
+    D3SceneObjectVisual           *m_currentObj;
+    D3SceneObjectCoordinateSystem *m_coordinateSystem;
+    PropertyDialogMap              m_propertyDialogMap;
+    PropertyDialog                *m_currentPropertyDialog;
+    BYTE                           m_stateFlags;
+    CPoint                         m_lastMouse;
+    D3SceneObjectPoint             m_centerOfRotation;
+    D3DXVECTOR3                    m_pickedPoint; // in world space
+    D3Ray                          m_pickedRay;   // in world space
+    D3PickedInfo                   m_pickedInfo;
+    String                         m_paramFileName;
 
     HWND     getCurrentHwnd() const;
     D3Scene &getScene() const {
       return m_sceneContainer->getScene();
     }
-    CameraSet getVisibleCameraSet() const;
+    CameraSet getActiveCameraSet() const;
     CameraSet getCurrentCameraSet() const;
     inline void render(BYTE flags, CameraSet cameraSet) {
       if(isSet(flags)) {
@@ -76,8 +78,8 @@ private:
     inline void renderCurrent(BYTE flags) {
       render(flags, getCurrentCameraSet());
     }
-    inline void renderVisible(BYTE flags) {
-      render(flags, getVisibleCameraSet());
+    inline void renderActive(BYTE flags) {
+      render(flags, getActiveCameraSet());
     }
     int               findCameraIndex(CPoint p) const;
     // if index >= 0, set m_currentCamera = scene.getCameraArray()[index], else = NULL, and set m_currentCameraIndex = index
@@ -144,7 +146,7 @@ private:
     void OnControlObjPos();
     void OnControlObjScale();
 
-    void setLightControlsVisible(bool visible);
+    void setAllLightControlsVisible(bool visible);
     void addLight(D3DLIGHTTYPE type);
     void setSpotToPointAt(CPoint point);
 
@@ -212,7 +214,6 @@ private:
     void OnSceneEditAmbientLight();
     void OnCameraEditBackgroundColor();
     void setCoordinateSystemVisible(bool visible);
-    void setSelectedCubeVisible(    bool visible);
     void setLightEnabled(bool enabled);
     // point in window-coordinates
     void OnLButtonDown(  UINT nFlags, CPoint point);
@@ -285,7 +286,6 @@ public:
       return m_pickedInfo;
     }
     bool isCoordinateSystemVisible() const;
-    bool isSelectedCubeVisible()     const;
     BOOL PreTranslateMessage(MSG *pMsg);
     String toString() const;
 };

@@ -1,6 +1,7 @@
 #include "pch.h"
-#include <D3DGraphics/D3Camera.h>
+#include <D3DGraphics/D3Device.h>
 #include <D3DGraphics/D3Scene.h>
+#include <D3DGraphics/D3Camera.h>
 #include <D3DGraphics/D3SceneObjectVisual.h>
 
 D3Camera *D3Scene::getPickedCamera(const CPoint &p) const {
@@ -16,9 +17,10 @@ D3SceneObjectVisual *D3Scene::getPickedVisual(const CPoint &p, long mask, D3DXVE
   return camera->getPickedVisual(camera->screenToWin(p), mask, hitPoint, ray, dist, info);
 }
 
-D3SceneObjectVisual *D3Scene::getPickedVisual(const D3Ray &ray, long mask, D3DXVECTOR3 *hitPoint, float *dist, D3PickedInfo *info) const {
+D3SceneObjectVisual *D3Scene::getPickedVisual(const D3Camera &camera, const D3Ray &ray, long mask, D3DXVECTOR3 *hitPoint, float *dist, D3PickedInfo *info) const {
   float                minDistance   = -1;
   D3SceneObjectVisual *closestObject = NULL;
+  getDevice().setCurrentCamera(&camera);
   for(Iterator<D3SceneObjectVisual*> it = getVisualIterator(mask); it.hasNext();) {
     D3SceneObjectVisual *obj = it.next();
     if(!obj->isVisible()) {
@@ -40,5 +42,6 @@ D3SceneObjectVisual *D3Scene::getPickedVisual(const D3Ray &ray, long mask, D3DXV
       *dist = minDistance;
     }
   }
+  getDevice().setCurrentCamera(NULL);
   return closestObject;
 }

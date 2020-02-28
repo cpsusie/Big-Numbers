@@ -97,31 +97,6 @@ void D3Scene::setRightHanded(bool rightHanded) {
 }
 
 // -------------------------------- D3Light ------------------------------------
-BitSet D3Scene::getLightControlsVisible() const {
-  BitSet result(getMaxLightCount());
-  for(D3VisualIterator it = getVisualIterator(OBJMASK_LIGHTCONTROL); it.hasNext();) {
-    D3LightControl *lc = (D3LightControl*)it.next();
-    if(lc->isVisible()) {
-      result.add(lc->getLightIndex());
-    }
-  }
-  return result;
-}
-
-D3LightControl *D3Scene::setLightControlVisible(UINT lightIndex, bool visible) {
-  if(!isLightDefined(lightIndex)) {
-    showWarning(_T("%s:Light %d is undefined"), __TFUNCTION__, lightIndex);
-    return NULL;
-  }
-  D3LightControl *lc = findLightControlByLightIndex(lightIndex);
-  if(lc == NULL) {
-    lc = addLightControl(lightIndex);
-  }
-  if(lc) {
-    lc->setVisible(visible);
-  }
-  return lc;
-}
 
 D3LightControl *D3Scene::addLightControl(UINT lightIndex) {
   if(!isLightDefined(lightIndex)) {
@@ -135,7 +110,7 @@ D3LightControl *D3Scene::addLightControl(UINT lightIndex) {
   case D3DLIGHT_DIRECTIONAL    : result = new D3LightControlDirectional(*this, lightIndex); TRACE_NEW(result); break;
   case D3DLIGHT_POINT          : result = new D3LightControlPoint(      *this, lightIndex); TRACE_NEW(result); break;
   case D3DLIGHT_SPOT           : result = new D3LightControlSpot(       *this, lightIndex); TRACE_NEW(result); break;
-  default                      : throwException(_T("Unknown lighttype for light %d:%d"), lightIndex, param.Type);
+  default                      : throwException(_T("Unknown lighttype for light %u:%d"), lightIndex, param.Type);
   }
   addVisual(result);
   return result;
@@ -371,14 +346,14 @@ UINT D3Scene::getTextureCoordCount() const {
 
 void D3Scene::render(const D3Camera &camera) {
   D3Device &device = getDevice();
-  device.setAmbientColor(m_ambientColor).setCurrentCamera(&camera);
+  device.setAmbientColor(m_ambientColor).beginRender(camera);
   for(D3VisualIterator it = getVisualIterator(); it.hasNext();) {
     D3SceneObjectVisual *obj = it.next();
     if(obj->isVisible()) {
       obj->draw();
     }
   }
-  device.setCurrentCamera(NULL);
+  device.endRender();
 }
 
 void D3Scene::render(CameraSet cameraSet) {

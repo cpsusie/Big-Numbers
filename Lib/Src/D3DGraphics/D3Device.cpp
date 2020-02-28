@@ -14,25 +14,25 @@ D3Device::~D3Device() {
   SAFERELEASE(m_device);
 }
 
-D3Device &D3Device::setCurrentCamera(const D3Camera *camera) {
-  if(camera) {
-    V(m_device->Clear(0
-                     ,NULL
-                     ,D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER
-                     ,camera->getBackgroundColor()
-                     ,1.0f
-                     ,0
-                     ));
+void D3Device::beginRender(const D3Camera &camera) {
+  setCurrentCamera(&camera);
+  V(m_device->Clear(0
+                    ,NULL
+                    ,D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER
+                    ,camera.getBackgroundColor()
+                    ,1.0f
+                    ,0
+                    ));
 
-    setViewMatrix(camera->getViewMatrix());
-    setProjMatrix(camera->getProjMatrix());
-    V(m_device->BeginScene());
-  } else {
-    V(m_device->EndScene());
-    V(m_device->Present(NULL, NULL, m_currentCamera->getHwnd(), NULL));
-  }
-  m_currentCamera = camera;
-  return *this;
+  setViewMatrix(camera.getViewMatrix()).setProjMatrix(camera.getProjMatrix());
+  V(m_device->BeginScene());
+}
+
+// call device->EndScene()M Present(NULL,NULL,currentCamera.getHwnd(), and setCurrentCamera(NULL);
+void D3Device::endRender() {
+  V(m_device->EndScene());
+  V(m_device->Present(NULL, NULL, m_currentCamera->getHwnd(), NULL));
+  setCurrentCamera(NULL);
 }
 
 D3Device &D3Device::setMaterial(const D3Material &material) {

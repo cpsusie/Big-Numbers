@@ -150,7 +150,6 @@ public:
   SubTetraObject(D3SceneObjectVisual *parent, const CompactArray<Line3D> &lineArray, const String &name)
     : D3SceneObjectLineArray(parent, lineArray, name)
   {
-    setVisible(false);
   }
   int getMaterialId() const {
     return m_parent->getMaterialId();
@@ -179,6 +178,11 @@ public:
   D3DXMATRIX &getWorld() {
     return m_octaObject.getWorld();
   }
+  void draw() {
+    if(m_currentVisible >= 0) {
+      getChild(m_currentVisible)->draw();
+    }
+  }
 };
 
 TetraObject::TetraObject(OctaObject *octaObject)
@@ -199,15 +203,7 @@ void TetraObject::setTetrahedron(const Tetrahedron &tetra) {
 }
 
 void TetraObject::selectVisibleChild(int index) {
-  if(index != m_currentVisible) {
-    if(m_currentVisible >= 0) {
-      getChild(m_currentVisible)->setVisible(false);
-    }
-    m_currentVisible = index;
-    if(m_currentVisible >= 0) {
-      getChild(m_currentVisible)->setVisible(true);
-    }
-  }
+  m_currentVisible = index;
 }
 
 UINT TetraObject::getLinesObject(const Tetrahedron &tetra) {

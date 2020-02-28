@@ -163,11 +163,6 @@ public:
   inline const BitSet &getLightsEnabled() const {
     return m_lightsEnabled;
   }
-  inline bool isLightControlVisible(UINT lightIndex) const {
-    return getLightControlsVisible().contains(lightIndex);
-  }
-  BitSet getLightControlsVisible() const;
-  D3LightControl *setLightControlVisible(UINT lightIndex, bool visible);
 
   UINT getMaxLightCount() const;
   inline UINT getLightCount() const {
@@ -224,7 +219,7 @@ public:
   // if dist     != NULL, is will receieve distnce to hitpoint, if any
   // if info     != NULL, it will receieve info returned by SceneObject::intersectWithRay, for the closest, visible object
   D3SceneObjectVisual *getPickedVisual(const CPoint &p  , long mask = OBJMASK_ALL, D3DXVECTOR3 *hitPoint = NULL, D3Ray *ray  = NULL, float *dist = NULL, D3PickedInfo *info = NULL) const;
-  D3SceneObjectVisual *getPickedVisual(const D3Ray  &ray, long mask = OBJMASK_ALL, D3DXVECTOR3 *hitPoint = NULL, float *dist = NULL, D3PickedInfo *info = NULL) const;
+  D3SceneObjectVisual *getPickedVisual(const D3Camera &camera, const D3Ray  &ray, long mask = OBJMASK_ALL, D3DXVECTOR3 *hitPoint = NULL, float *dist = NULL, D3PickedInfo *info = NULL) const;
 
   LPDIRECT3DINDEXBUFFER   allocateIndexBuffer( bool int32, UINT count, UINT *bufferSize = NULL);
   LPD3DXMESH              allocateMesh(        DWORD fvf , UINT faceCount, UINT vertexCount, DWORD options);

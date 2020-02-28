@@ -35,9 +35,16 @@ public:
   inline const D3Camera *getCurrentCamera() const {
     return m_currentCamera;
   }
-  // if(camera != NULL) call m_device.Clear(camera.backgroundColor),setup view- and projMatrix corresponding to camera, end BeginScene
-  // else call m_device->EndScene() and Present(NULL,NULL,camera.getHwnd()
-  D3Device &setCurrentCamera(const D3Camera *camera);
+  D3Device &setCurrentCamera(const D3Camera *camera) {
+    m_currentCamera = camera;
+    return *this;
+  }
+
+  // call device.Clear(camera.backgroundColor),setup view- and projMatrix corresponding to camera, device->BeginScene()
+  // and setCurrentCamera(&camera);
+  void beginRender(const D3Camera &camera);
+  // call device->EndScene()M Present(NULL,NULL,currentCamera.getHwnd(), and setCurrentCamera(NULL);
+  void endRender();
   const D3DCAPS &getDeviceCaps() const {
     return m_deviceCaps;
   }

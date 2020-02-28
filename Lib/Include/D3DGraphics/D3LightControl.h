@@ -47,6 +47,7 @@ public:
   SceneObjectType getType() const {
     return SOTYPE_LIGHTCONTROL;
   }
+  bool isVisible() const;
   virtual D3DLIGHTTYPE getLightType() const = 0;
 
   inline int getLightIndex() const {

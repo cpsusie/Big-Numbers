@@ -9,6 +9,7 @@ class D3Scene;
 class D3SceneObjectCoordinateSystem : public D3SceneObjectVisual {
 private:
   D3Cube m_cube;
+  bool   m_visible;
   D3SceneObjectCoordinateSystem(           const D3SceneObjectCoordinateSystem &src); // not implemented
   D3SceneObjectCoordinateSystem &operator=(const D3SceneObjectCoordinateSystem &src); // not implemented
 public:
@@ -16,6 +17,12 @@ public:
   void setRange(const D3Cube &cube);
   inline const D3Cube &getRange() const {
     return m_cube;
+  }
+  void setVisible(bool visible) {
+    m_visible = visible;
+  }
+  bool isVisible() const {
+    return m_visible;
   }
   D3DXMATRIX &getWorld();
 };

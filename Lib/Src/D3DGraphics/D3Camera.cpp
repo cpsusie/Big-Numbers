@@ -1,11 +1,13 @@
 #include "pch.h"
 #include <D3DGraphics/D3Scene.h>
+#include <D3DGraphics/D3LightControl.h>
 #include <D3DGraphics/D3Camera.h>
 
 D3Camera::D3Camera(D3Scene &scene, HWND hwnd)
   : D3SceneObject( scene )
   , m_hwnd(  hwnd  )
   , m_rightHanded(true)
+  , m_visibleLightControlSet(scene.getMaxLightCount())
 {
   m_backgroundColor = getDefaultBackgroundColor();
   initWorldAndProjection();
@@ -15,6 +17,7 @@ D3Camera::D3Camera(const D3Camera *src, HWND hwnd)
 : D3SceneObject(src->getScene())
 , m_hwnd(hwnd)
 , m_rightHanded(src->getRightHanded())
+, m_visibleLightControlSet(src->getLightControlsVisible())
 {
   setNotifyEnable(false);
   m_backgroundColor = src->getBackgroundColor();
@@ -75,6 +78,56 @@ bool D3Camera::ptInRect(CPoint p) const {
   CRect r;
   GetWindowRect(getHwnd(), &r);
   return r.PtInRect(p);
+}
+
+const BitSet &D3Camera::getLightControlsVisible() const {
+  m_visibleLightControlSet &= getScene().getLightsDefined();
+  return m_visibleLightControlSet;
+}
+
+D3Camera &D3Camera::setLightControlsVisible(const BitSet &set) {
+  const BitSet oldSet = getLightControlsVisible();
+  BitSet newSet = set & getScene().getLightsDefined();
+  if(newSet != oldSet) {
+    setNotifyEnable(false);
+    BitSet missing = newSet - oldSet;
+    if(!missing.isEmpty()) {
+      for(Iterator<size_t> it = missing.getIterator(); it.hasNext();) {
+        setLightControlVisible((UINT)it.next(), true);
+      }
+    }
+    BitSet hideSet = oldSet - newSet;
+    if(!hideSet.isEmpty()) {
+      for(Iterator<size_t> it = hideSet.getIterator(); it.hasNext();) {
+        setLightControlVisible((UINT)it.next(), false);
+      }
+    }
+    setNotifyEnable(true);
+    notifyPropertyChanged(CAM_LIGHTCONTROLSVISIBLE, &oldSet, &getLightControlsVisible());
+  }
+  return *this;
+}
+
+D3LightControl *D3Camera::setLightControlVisible(UINT lightIndex, bool visible) {
+  D3Scene &scene = getScene();
+  if(!scene.isLightDefined(lightIndex)) {
+    showWarning(_T("%s:Light %u is undefined"), __TFUNCTION__, lightIndex);
+    return NULL;
+  }
+  D3LightControl *lc = scene.findLightControlByLightIndex(lightIndex);
+  if(lc == NULL) {
+    lc = scene.addLightControl(lightIndex);
+  }
+  if(visible != isLightControlVisible(lightIndex)) {
+    BitSet newSet = getLightControlsVisible();
+    if(visible) {
+      newSet.add(lightIndex);
+    } else {
+      newSet.remove(lightIndex);
+    }
+    setProperty(CAM_LIGHTCONTROLSVISIBLE, m_visibleLightControlSet, newSet);
+  }
+  return lc;
 }
 
 D3Camera &D3Camera::setProjMatrix() {
@@ -187,7 +240,7 @@ D3Ray D3Camera::getPickedRay(const CPoint &point) const {
 D3SceneObjectVisual *D3Camera::getPickedVisual(const CPoint &p, long mask, D3DXVECTOR3 *hitPoint, D3Ray *ray, float *dist, D3PickedInfo *info) const {
   D3Ray tmpRay, &pickedRay = ray ? *ray : tmpRay;
   pickedRay = getPickedRay(p);
-  return getScene().getPickedVisual(pickedRay, mask, hitPoint, dist, info);
+  return getScene().getPickedVisual(*this, pickedRay, mask, hitPoint, dist, info);
 }
 
 void D3Camera::render() {

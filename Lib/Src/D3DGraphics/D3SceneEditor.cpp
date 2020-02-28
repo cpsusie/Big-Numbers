@@ -20,7 +20,6 @@ D3SceneEditor::D3SceneEditor()
 , m_currentObj(            NULL )
 , m_currentControl(CONTROL_IDLE )
 , m_coordinateSystem(      NULL )
-, m_selectedCube(          NULL )
 , m_paramFileName(_T("Untitled"))
 , m_stateFlags(  SE_MOUSEVISIBLE)
 {
@@ -31,8 +30,8 @@ D3SceneEditor::~D3SceneEditor() {
   close();
 }
 
-CameraSet D3SceneEditor::getVisibleCameraSet() const {
-  return getScene().getCameraArray().getVisibleCameraSet();
+CameraSet D3SceneEditor::getActiveCameraSet() const {
+  return getScene().getCameraArray().getActiveCameraSet();
 }
 
 CameraSet D3SceneEditor::getCurrentCameraSet() const {
@@ -66,8 +65,6 @@ void D3SceneEditor::close() {
   m_propertyDialogMap.clear();
   getScene().removeVisual(m_coordinateSystem);
   SAFEDELETE(m_coordinateSystem);
-  getScene().removeVisual(m_selectedCube);
-  SAFEDELETE(m_selectedCube);
   getScene().close();
   clrFlags(SE_INITDONE);
 }
@@ -123,22 +120,23 @@ void D3SceneEditor::handlePropertyChanged(const PropertyContainer *source, int i
     case SP_LIGHTPARAMETERS:
     case SP_VISUALCOUNT:
     case SP_RIGHTHANDED:
-      renderVisible(SE_RENDERALL);
+      renderActive(SE_RENDERALL);
       break;
     case SP_ANIMATIONFRAMEINDEX:
-      renderVisible(SE_RENDER3D);
+      renderActive(SE_RENDER3D);
       break;
     case SP_AMBIENTCOLOR:
-      renderVisible(SE_RENDERALL | SE_RENDERNOW);
+      renderActive(SE_RENDERALL | SE_RENDERNOW);
       break;
     }
   } else if(source == m_currentCamera) {
-    switch (id) {
-    case CAM_VIEW           :           // D3DXMATRIX
-    case CAM_PROJECTION     :           // D3DXMATRIX
+    switch(id) {
+    case CAM_VIEW                :      // D3DXMATRIX
+    case CAM_PROJECTION          :      // D3DXMATRIX
+    case CAM_LIGHTCONTROLSVISIBLE:      // BitSet
       renderCurrent(SE_RENDERALL);
       break;
-    case CAM_BACKGROUNDCOLOR:           // D3DCOLOR
+    case CAM_BACKGROUNDCOLOR      :     // D3DCOLOR
       renderCurrent(SE_RENDERALL|SE_RENDERNOW);
       break;
     }
@@ -322,9 +320,6 @@ void D3SceneEditor::selectCamera(int index) {
 bool D3SceneEditor::isCoordinateSystemVisible() const {
   return m_coordinateSystem && m_coordinateSystem->isVisible();
 }
-bool D3SceneEditor::isSelectedCubeVisible() const {
-  return m_selectedCube && m_selectedCube->isVisible();
-}
 
 BOOL D3SceneEditor::PreTranslateMessage(MSG *pMsg) {
   if(!isEnabled()) return false;
@@ -333,7 +328,7 @@ BOOL D3SceneEditor::PreTranslateMessage(MSG *pMsg) {
   case WM_KEYDOWN:
     switch(pMsg->wParam) {
     case VK_ESCAPE:
-      setEnabled(false).setEnabled(true,SE_RENDERINFO).renderVisible(SE_RENDERALL);
+      setEnabled(false).setEnabled(true,SE_RENDERINFO).renderActive(SE_RENDERALL);
       return true;
     }
     break;
@@ -410,8 +405,8 @@ BOOL D3SceneEditor::PreTranslateMessage(MSG *pMsg) {
     case ID_LIGHT_DISABLE                 : setLightEnabled(false)              ; return true;
     case ID_LIGHT_ADJUSTCOLORS            : OnLightAdjustColors()               ; return true;
     case ID_LIGHT_ADJUSTSPOTANGLES        : OnLightAdjustSpotAngles()           ; return true;
-    case ID_LIGHT_SHOWCONTROLS            : setLightControlsVisible(true)       ; return true;
-    case ID_LIGHT_HIDECONTROLS            : setLightControlsVisible(false)      ; return true;
+    case ID_LIGHT_SHOWCONTROLS            : setAllLightControlsVisible(true)    ; return true;
+    case ID_LIGHT_HIDECONTROLS            : setAllLightControlsVisible(false)   ; return true;
     case ID_LIGHTCONTROL_HIDE             : OnLightControlHide()                ; return true;
     case ID_LIGHTCONTROL_SPOTAT           : OnLightControlSpotAt()              ; return true;
     case ID_LIGHTCONTROL_ENABLEEFFECT     : setLightControlRenderEffect(true)   ; return true;
@@ -425,7 +420,7 @@ BOOL D3SceneEditor::PreTranslateMessage(MSG *pMsg) {
     default:
       if((ID_SELECT_LIGHT0 <= pMsg->wParam) && (pMsg->wParam <= ID_SELECT_LIGHT20)) {
         const int index = (int)pMsg->wParam - ID_SELECT_LIGHT0;
-        setCurrentObj(getScene().setLightControlVisible(index, true));
+        setCurrentObj(getCurrentCamera()->setLightControlVisible(index, true));
         return true;
       }
     }
@@ -506,7 +501,7 @@ void D3SceneEditor::setCurrentObjPos(const D3DXVECTOR3 &pos) {
   case SOTYPE_VISUALOBJECT  :
   case SOTYPE_ANIMATEDOBJECT:
     obj->getWorld() = D3World(*obj).setPos(pos);
-    renderVisible(SE_RENDERALL);
+    renderActive(SE_RENDERALL);
     break;
   default:
     throwInvalidArgumentException(__TFUNCTION__, _T("type=%d"), obj->getType());
@@ -519,7 +514,7 @@ void D3SceneEditor::setCurrentVisualWorld(const D3DXMATRIX &world) {
   D3SceneObjectVisual *obj = getCurrentVisual();
   if(obj) {
     obj->getWorld() = world;
-    renderVisible(SE_RENDERALL);
+    renderActive(SE_RENDERALL);
   }
   CHECKINVARIANT();
 }
@@ -836,7 +831,7 @@ void D3SceneEditor::OnMouseWheelLightDirectional(UINT nFlags, short zDelta, CPoi
   switch(nFlags & MK_CTRLSHIFT) {
   case 0           :
     ctrl.setSphereRadius(ctrl.getSphereRadius() * (1.0f-0.04f*signDelta));
-    renderVisible(SE_RENDERALL);
+    renderActive(SE_RENDERALL);
     break;
   case MK_CONTROL  :
     getScene().setLightDirection(ctrl.getLightIndex(), rotate(dir, m_currentCamera->getRight(), -0.06f*signDelta));
@@ -942,7 +937,7 @@ void D3SceneEditor::addLight(D3DLIGHTTYPE type) {
     break;
   }
   try {
-    getScene().setLightControlVisible(getScene().addLight(lp), true);
+    getCurrentCamera()->setLightControlVisible(getScene().addLight(lp), true);
   } catch(Exception e) {
     showException(e);
   }
@@ -1017,26 +1012,9 @@ const D3LightControl *D3SceneEditor::getCurrentLightControl() const {
   return NULL;
 }
 
-void D3SceneEditor::setLightControlsVisible(bool visible) {
+void D3SceneEditor::setAllLightControlsVisible(bool visible) {
   CHECKINVARIANT();
-  BitSet visibleLightSet = getScene().getLightControlsVisible();
-  if(visible) {
-    BitSet missing = getScene().getLightsDefined() - visibleLightSet;
-    if(missing.isEmpty()) {
-      return;
-    }
-    for(Iterator<size_t> it = missing.getIterator(); it.hasNext();) {
-      getScene().setLightControlVisible((UINT)it.next(), true);
-    }
-  } else {
-    if(visibleLightSet.isEmpty()) {
-      return;
-    }
-    for(Iterator<size_t> it = visibleLightSet.getIterator(); it.hasNext();) {
-      getScene().setLightControlVisible((UINT)it.next(), false);
-    }
-  }
-  renderVisible(SE_RENDERALL);
+  getCurrentCamera()->setLightControlsVisible(visible ? getScene().getLightsDefined() : BitSet(10));
   CHECKINVARIANT();
 }
 
@@ -1044,14 +1022,14 @@ void D3SceneEditor::setLightControlRenderEffect(bool enabled) {
   CHECKINVARIANT();
   if(enabled != D3LightControl::isRenderEffectEnabled()) {
     D3LightControl::enableRenderEffect(enabled);
-    renderVisible(SE_RENDER3D);
+    renderActive(SE_RENDER3D);
   }
   CHECKINVARIANT();
 }
 
 void D3SceneEditor::setSpecularEnable(bool enabled) {
   getScene().setSpecularEnable(enabled);
-  renderVisible(SE_RENDER3D);
+  renderActive(SE_RENDER3D);
 }
 
 void D3SceneEditor::setSpotToPointAt(CPoint point) {
@@ -1119,7 +1097,7 @@ static String lightMenuText(const D3Light &light) {
 void D3SceneEditor::OnContextMenuBackground(CPoint point) {
   CMenu menu;
   loadMenu(menu, IDR_CONTEXT_MENU_BACKGROUND);
-  const int visibleLightCount = (int)getScene().getLightControlsVisible().size();
+  const int visibleLightCount = (int)getCurrentCamera()->getLightControlsVisible().size();
   if(visibleLightCount == 0) {
     removeMenuItem(menu,ID_LIGHT_HIDECONTROLS);
   }
@@ -1409,7 +1387,7 @@ void D3SceneEditor::OnObjectRemove() {
   setCurrentObj(NULL);
   m_pickedInfo.clear();
   SAFEDELETE(obj);
-  renderVisible(SE_RENDERALL);
+  renderActive(SE_RENDERALL);
   CHECKINVARIANT();
 }
 
@@ -1426,7 +1404,7 @@ void D3SceneEditor::OnObjectResetCenterOfRotation() {
 void D3SceneEditor::setLightEnabled(bool enabled) {
   CHECKINVARIANT();
   getScene().setLightEnabled(getCurrentLightControl()->getLightIndex(), enabled);
-  renderVisible(SE_RENDERALL);
+  renderActive(SE_RENDERALL);
   CHECKINVARIANT();
 }
 
@@ -1451,8 +1429,8 @@ void D3SceneEditor::OnLightControlHide() {
   CHECKINVARIANT();
   D3LightControl *lc = getCurrentLightControl();
   if(lc == NULL) return;
-  getScene().setLightControlVisible(lc->getLightIndex(), false);
-  renderVisible(SE_RENDERALL);
+  getCurrentCamera()->setLightControlVisible(lc->getLightIndex(), false);
+  renderActive(SE_RENDERALL);
   CHECKINVARIANT();
 }
 
@@ -1463,7 +1441,7 @@ void D3SceneEditor::OnLightRemove() {
   setCurrentObj(NULL);
   const int lightIndex = lc->getLightIndex();
   getScene().removeLight(lightIndex);
-  renderVisible(SE_RENDERALL);
+  renderActive(SE_RENDERALL);
   CHECKINVARIANT();
 }
 
@@ -1476,7 +1454,7 @@ void D3SceneEditor::OnSceneEditAmbientLight() {
   selectPropertyDialog(&dlg, CONTROL_AMBIENTLIGHTCOLOR);
   if(dlg.DoModal() != IDOK) {
     getScene().setAmbientColor(oldColor);
-    renderVisible(SE_RENDERALL);
+    renderActive(SE_RENDERALL);
   }
   unselectPropertyDialog();
   CHECKINVARIANT();
@@ -1497,12 +1475,12 @@ void D3SceneEditor::OnCameraEditBackgroundColor() {
   CHECKINVARIANT();
 }
 
-void D3SceneEditor::OnObjectFillmodePoint()     { getCurrentObj()->setFillMode(D3DFILL_POINT     ); renderVisible(SE_RENDERALL); }
-void D3SceneEditor::OnObjectFillmodeWireframe() { getCurrentObj()->setFillMode(D3DFILL_WIREFRAME ); renderVisible(SE_RENDERALL); }
-void D3SceneEditor::OnObjectFillmodeSolid()     { getCurrentObj()->setFillMode(D3DFILL_SOLID     ); renderVisible(SE_RENDERALL); }
-void D3SceneEditor::OnObjectShadingFlat()       { getCurrentObj()->setShadeMode(D3DSHADE_FLAT    ); renderVisible(SE_RENDERALL); }
-void D3SceneEditor::OnObjectShadingGouraud()    { getCurrentObj()->setShadeMode(D3DSHADE_GOURAUD ); renderVisible(SE_RENDERALL); }
-void D3SceneEditor::OnObjectShadingPhong()      { getCurrentObj()->setShadeMode(D3DSHADE_PHONG   ); renderVisible(SE_RENDERALL); }
+void D3SceneEditor::OnObjectFillmodePoint()     { getCurrentObj()->setFillMode(D3DFILL_POINT     ); renderActive(SE_RENDERALL); }
+void D3SceneEditor::OnObjectFillmodeWireframe() { getCurrentObj()->setFillMode(D3DFILL_WIREFRAME ); renderActive(SE_RENDERALL); }
+void D3SceneEditor::OnObjectFillmodeSolid()     { getCurrentObj()->setFillMode(D3DFILL_SOLID     ); renderActive(SE_RENDERALL); }
+void D3SceneEditor::OnObjectShadingFlat()       { getCurrentObj()->setShadeMode(D3DSHADE_FLAT    ); renderActive(SE_RENDERALL); }
+void D3SceneEditor::OnObjectShadingGouraud()    { getCurrentObj()->setShadeMode(D3DSHADE_GOURAUD ); renderActive(SE_RENDERALL); }
+void D3SceneEditor::OnObjectShadingPhong()      { getCurrentObj()->setShadeMode(D3DSHADE_PHONG   ); renderActive(SE_RENDERALL); }
 
 void D3SceneEditor::setCoordinateSystemVisible(bool visible) {
   if(visible) {
@@ -1517,23 +1495,7 @@ void D3SceneEditor::setCoordinateSystemVisible(bool visible) {
       m_coordinateSystem->setVisible(false);
     }
   }
-  renderVisible(SE_RENDER3D);
-}
-
-void D3SceneEditor::setSelectedCubeVisible(bool visible) {
-  if(visible) {
-    if(m_selectedCube == NULL) {
-      m_selectedCube = new D3SelectedCube(getScene()); TRACE_NEW(m_selectedCube);
-      getScene().addVisual(m_selectedCube);
-    } else {
-      m_selectedCube->setVisible(true);
-    }
-  } else {
-    if(isSelectedCubeVisible()) {
-      m_selectedCube->setVisible(false);
-    }
-  }
-  renderVisible(SE_RENDER3D);
+  renderActive(SE_RENDER3D);
 }
 
 static const TCHAR *extensions = _T("Scene-files (*.scn)\0*.scn\0\0");
@@ -1570,7 +1532,7 @@ void D3SceneEditor::OnLoadSceneParameters() {
   }
   try {
     getScene().load(dlg.m_ofn.lpstrFile);
-    renderVisible(SE_RENDERALL);
+    renderActive(SE_RENDERALL);
     m_paramFileName = dlg.m_ofn.lpstrFile;
   } catch(Exception e) {
     showException(e);

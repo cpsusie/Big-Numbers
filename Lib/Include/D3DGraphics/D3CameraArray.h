@@ -19,6 +19,6 @@ public:
   int       findCameraIndex(const CPoint &p) const;
   int       findCameraIndex(HWND hwnd) const;
   D3Camera *findCamera(     HWND hwnd) const;
-  CameraSet getVisibleCameraSet() const;
+  CameraSet getActiveCameraSet() const;
 
 };

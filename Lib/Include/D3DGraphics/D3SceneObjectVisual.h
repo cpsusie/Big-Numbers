@@ -17,7 +17,6 @@ protected:
   D3SceneObjectVisual *m_parent;
   D3VisualArray        m_children;
   String               m_name;
-  bool                 m_visible;
   void                *m_userData;
   D3DXMATRIX           m_world;
   // Return index of the child in m_children. can be used as parameter to getChild(UINT index)
@@ -31,6 +30,9 @@ public:
   ~D3SceneObjectVisual();
   virtual SceneObjectType getType() const {
     return SOTYPE_VISUALOBJECT;
+  }
+  bool isVisible() const {
+    return true;
   }
   D3SceneObjectVisual *getParent() const {
     return m_parent;
@@ -54,12 +56,6 @@ public:
   }
   inline void setUserData(void *p) {
     m_userData = p;
-  }
-  inline void setVisible(bool visible) {
-    m_visible = visible;
-  }
-  inline bool isVisible() const {
-    return m_visible;
   }
   virtual bool hasFillMode() const {
     return false;
