@@ -2,6 +2,10 @@
 #include <D3DGraphics/D3Camera.h>
 #include <D3DGraphics/D3CameraArray.h>
 
+bool D3CameraArray::ptInCamera(UINT index, const CPoint &p) const {
+  return (index < size()) && (*this)[index]->ptInRect(p);
+}
+
 // p in screen-coordinates
 int D3CameraArray::findCameraIndex(const CPoint &p) const {
   const int n = (int)size();

@@ -47,8 +47,8 @@ class D3SceneEditor : public PropertyChangeListener {
 private:
     D3SceneContainer              *m_sceneContainer;
     D3EditorControl                m_currentControl;
-    D3Camera                      *m_currentCamera;
-    int                            m_currentCameraIndex;
+    D3Camera                      *m_selectedCamera;
+    int                            m_selectedCameraIndex;
     D3SceneObjectVisual           *m_currentObj;
     D3SceneObjectCoordinateSystem *m_coordinateSystem;
     PropertyDialogMap              m_propertyDialogMap;
@@ -66,7 +66,7 @@ private:
       return m_sceneContainer->getScene();
     }
     CameraSet getActiveCameraSet() const;
-    CameraSet getCurrentCameraSet() const;
+    CameraSet getSelectedCameraSet() const;
     inline void render(BYTE flags, CameraSet cameraSet) {
       if(isSet(flags)) {
         m_sceneContainer->render(flags, cameraSet);
@@ -75,15 +75,22 @@ private:
     inline void renderInfo() {
       render(SE_RENDERINFO, CameraSet());
     }
-    inline void renderCurrent(BYTE flags) {
-      render(flags, getCurrentCameraSet());
+    inline void renderSelected(BYTE flags) {
+      render(flags, getSelectedCameraSet());
     }
     inline void renderActive(BYTE flags) {
       render(flags, getActiveCameraSet());
     }
     int               findCameraIndex(CPoint p) const;
     // if index >= 0, set m_currentCamera = scene.getCameraArray()[index], else = NULL, and set m_currentCameraIndex = index
-    void              selectCamera(int index);
+    // return boolean value of (m_selectedCamera != NULL) after adjustment
+    bool              selectCAM(int index);
+    bool              selectCAM(CPoint p);
+    bool              isSameCAM(CPoint p) const;
+    bool              hasCAM() const {
+      return m_selectedCamera != NULL;
+    }
+
     void              rotateCurrentVisualFrwBckw(  float angle1 , float angle2);
     void              rotateCurrentVisualLeftRight(float angle) ;
     void              adjustCurrentVisualScale(int component, float factor);
@@ -140,8 +147,8 @@ private:
     const D3LightControl *getCurrentLightControl() const;
     void setLightControlRenderEffect(bool enabled);
     void setSpecularEnable(          bool enabled);
-    void OnSaveSceneParameters();
-    void OnLoadSceneParameters();
+    void OnSceneSaveParameters();
+    void OnSceneLoadParameters();
     void OnControlObjMoveRotate();
     void OnControlObjPos();
     void OnControlObjScale();
@@ -251,8 +258,8 @@ public:
     inline D3EditorControl      getCurrentControl() const {
       return m_currentControl;
     }
-    inline D3Camera            *getCurrentCamera() const {
-      return m_currentCamera;
+    inline D3Camera            *getSelectedCAM() const {
+      return m_selectedCamera;
     }
     // return one of { SOTYPE_NULL, SOTYPE_VISUALOBJECT, SOTYPE_LIGHTCONTROL }
     SceneObjectType             getCurrentControlObjType() const;
@@ -260,6 +267,9 @@ public:
 
     inline D3SceneObjectVisual *getCurrentObj() const {
       return m_currentObj;
+    }
+    inline bool                 hasObj() const {
+      return getCurrentObj() != NULL;
     }
     SceneObjectType             getCurrentObjType() const;
     // Return NULL, if m_currentVisual->type not in {SOTYPE_VISUALOBJECT, SOTYPE_ANIMATEDOBJECT, }

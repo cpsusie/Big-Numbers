@@ -73,12 +73,15 @@ D3Light &D3Light::setDefaultColors() {
   return *this;
 }
 
+String D3Light::getName() const {
+  return isDefined() ? format(_T("Light[%d]"), m_index) : EMPTYSTRING;
+}
+
 String D3Light::toString(int dec) const {
   if(!isDefined()) {
-    return _T("Light undefined");
+    return _T("Undefined");
   }
-  String indexStr = format(_T("Light[%2d] %-3s")
-                          ,m_index
+  String indexStr = format(_T("%-3s")
                           ,m_enabled ? _T("On ") : _T("Off")
                           );
   String colorStr = format(_T("Colors:Amb:%s Dif:%s Spec:%s")

@@ -44,52 +44,56 @@ String D3SceneEditor::stateFlagsToString() const {
 }
 
 String D3SceneEditor::getSelectedString() const {
-  if(m_currentObj == NULL) {
+  if(!hasObj()) {
     return _T("--");
   } else {
-    String result = m_currentObj->getName();
-    if(m_currentObj->hasFillMode()) {
-      result += format(_T(" %s"), ::toString(m_currentObj->getFillMode()).cstr());
+    const D3SceneObjectVisual &visual = *getCurrentObj();
+    String result = visual.getName();
+    if(visual.hasFillMode()) {
+      result += format(_T(" %s"), ::toString(visual.getFillMode()).cstr());
     }
-    if(m_currentObj->hasShadeMode()) {
-      result += format(_T(" %s"), ::toString(m_currentObj->getShadeMode()).cstr());
+    if(visual.hasShadeMode()) {
+      result += format(_T(" %s"), ::toString(visual.getShadeMode()).cstr());
     }
     return result;
   }
 }
 
+#define HEADLEN 18
+#define PRINTHEAD(label) result += format(_T("%-*s: "), HEADLEN, label)
+#define NEWLINE(label)   result += _T("\n"); PRINTHEAD(label)
 String D3SceneEditor::toString() const {
   if(!isEnabled()) return EMPTYSTRING;
   String result;
-  result += format(    _T("Current Control:%s State:%s\nCurrent Object :%s")
-                        ,::toString(getCurrentControl()).cstr()
-                        ,stateFlagsToString().cstr()
-                        ,getSelectedString().cstr()
-                        );
-  result += format(    _T("\nCurrent Camera :%d, %s")
-                  ,m_currentCameraIndex
-                  ,m_currentCamera ? m_currentCamera->toString().cstr() : _T("--")
-                  );
+  PRINTHEAD(_T("Current Control"))
+         + format(_T("%s State:%s")
+                 ,::toString(getCurrentControl()).cstr()
+                 ,stateFlagsToString().cstr()
+                 );
+  NEWLINE(_T("Current Object")) + getSelectedString();
+  NEWLINE(_T("Current Camera"))
+       + format(_T("%d, %s")
+               ,m_selectedCameraIndex
+               ,hasCAM() ? getSelectedCAM()->toString().cstr() : _T("/")
+               );
   if(!m_pickedRay.isEmpty()) {
-    result += format(  _T("\nPicked Ray     :%s"), m_pickedRay.toString().cstr());
+    NEWLINE(_T("Picked Ray")) + m_pickedRay.toString();
     if(!m_pickedInfo.isEmpty()) {
-      result += format(_T("\nPicked Point   :%s, Info:%s")
-                      ,::toString(m_pickedPoint).cstr()
-                      ,m_pickedInfo.toString().cstr());
+      NEWLINE(_T("Picked Point")) + ::toString(m_pickedPoint) + format(_T(", Info:%s"), m_pickedInfo.toString().cstr());
     }
   }
   if(!m_centerOfRotation.isEmpty()) {
-    result += format(_T("\nCenter of rotation:%s"), m_centerOfRotation.toString().cstr());
+    NEWLINE(_T("Center of rotation")) + m_centerOfRotation.toString();
   }
   switch(m_propertyDialogMap.getVisibleDialogId()) {
   case SP_LIGHTPARAMETERS   :
     { D3Light tmp;
-      result += format(_T("\nDlg-light:%s"), m_propertyDialogMap.getProperty(SP_LIGHTPARAMETERS,tmp).toString().cstr());
+      NEWLINE(_T("Dlg-Light")) + m_propertyDialogMap.getProperty(SP_LIGHTPARAMETERS,tmp).toString();
     }
     break;
   case SP_MATERIALPARAMETERS:
     { D3Material tmp;
-      result += format(_T("\nDlg-material:%s"), m_propertyDialogMap.getProperty(SP_MATERIALPARAMETERS,tmp).toString().cstr());
+      NEWLINE(_T("Dlg-Material")) + m_propertyDialogMap.getProperty(SP_MATERIALPARAMETERS,tmp).toString();
     }
     break;
   }
@@ -99,14 +103,14 @@ String D3SceneEditor::toString() const {
     result += _T("\n") + handednessToString(getScene().getRightHanded());
     break;
   case CONTROL_CAMERA_WALK           :
-    if(m_currentCamera) {
-      result += format(_T("\nCamera World:%s"), m_currentCamera->getWorld().toString().cstr());
+    if(hasCAM()) {
+      NEWLINE(_T("Camera World")) + getSelectedCAM()->getWorld().toString();
     }
     break;
   case CONTROL_OBJECT_POS            :
   case CONTROL_OBJECT_SCALE          :
-    if(m_currentObj != NULL) {
-      result += format(_T("\nObject:\n%s"), D3World(m_currentObj->getWorld()).toString().cstr());
+    if(hasObj()) {
+      NEWLINE(_T("Object")) + D3World(getCurrentObj()->getWorld()).toString();
     }
     break;
 
@@ -116,31 +120,32 @@ String D3SceneEditor::toString() const {
   case CONTROL_SPOTLIGHTANGLES       :
     { const D3LightControl *lc = getCurrentLightControl();
       if(lc) {
-        result += format(_T("\n%s"), lc->getLight().toString().cstr());
-        result += format(_T("\nLightControl:%s"), D3World(m_currentObj->getWorld()).toString().cstr());
+        const D3Light light = lc->getLight();
+        NEWLINE(light.getName().cstr()) + light.toString();
+        NEWLINE(_T("LightControl")) + ((D3World)*lc).toString();
       }
     }
     break;
   case CONTROL_ANIMATION_SPEED       :
     { D3SceneObjectAnimatedMesh *obj = getCurrentAnimatedObj();
       if(obj) {
-        result += format(_T("\nFrames/sec:%.2lf"), obj->getFramePerSec());
+        NEWLINE(_T("Frames/sec")) + format(_T("%.2f"), obj->getFramePerSec());
       }
     }
     break;
   case CONTROL_MATERIAL              :
     if(m_currentObj && m_currentObj->hasMaterial()) {
-      result += format(_T("\nMaterial:%s"), m_currentObj->getMaterial().toString().cstr());
+      NEWLINE(_T("Material"))     + m_currentObj->getMaterial().toString();
     }
     break;
 
   case CONTROL_BACKGROUNDCOLOR       :
-    if(m_currentCamera) {
-      result += format(_T("\nBackground color:%s"),::toString(m_currentCamera->getBackgroundColor(),false).cstr());
+    if(hasCAM()) {
+      NEWLINE(_T("Bckgnd.Color")) + ::toString(getSelectedCAM()->getBackgroundColor(),false);
     }
     break;
   case CONTROL_AMBIENTLIGHTCOLOR     :
-    result += format(_T("\nAmbient color:%s"),::toString(getScene().getAmbientColor(),false).cstr());
+    NEWLINE(_T("Amb.Color"))      + ::toString(getScene().getAmbientColor(),false);
     break;
   }
   return result;

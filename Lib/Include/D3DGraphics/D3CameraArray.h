@@ -15,6 +15,9 @@ public:
 class D3CameraArray : public CompactArray<D3Camera*> {
 public:
   // p in screen-coordinates
+  // return (index < size()) && (*this)[index]->ptInRect(p)
+  bool      ptInCamera(UINT index, const CPoint &p) const;
+  // p in screen-coordinates
   // return index of the camera corresponding to the window clicked on, if p in the clientRect, or -1 if none found
   int       findCameraIndex(const CPoint &p) const;
   int       findCameraIndex(HWND hwnd) const;

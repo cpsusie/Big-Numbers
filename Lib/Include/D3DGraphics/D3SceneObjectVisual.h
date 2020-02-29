@@ -78,13 +78,16 @@ public:
     return getMaterialId() >= 0;
   }
   void resetWorld() {
-    m_world = D3World();
+    getWorld() = D3World();
   }
   virtual D3DXMATRIX &getWorld() {
     return m_world;
   }
+  const D3DXMATRIX &getWorld() const { // non-virtual
+    return ((D3SceneObjectVisual*)this)->getWorld();
+  }
   operator D3World() const {
-    return D3World(m_world);
+    return D3World(getWorld());
   }
   bool intersectsWithRay(const D3Ray &ray, float &dist, D3PickedInfo *info = NULL) const;
 

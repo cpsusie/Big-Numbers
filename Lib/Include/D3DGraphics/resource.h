@@ -107,8 +107,8 @@
 #define ID_SELECT_LIGHT18               34238
 #define ID_SELECT_LIGHT19               34239
 #define ID_SELECT_LIGHT20               34240
-#define ID_SAVESCENEPARAMETERS          34250
-#define ID_LOADSCENEPARAMETERS          34251
+#define ID_SCENE_SAVEPARAMETERS         34250
+#define ID_SCENE_LOADPARAMETERS         34251
 
 // Next default values for new objects
 // 

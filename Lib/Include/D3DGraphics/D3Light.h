@@ -68,6 +68,7 @@ public:
   static D3DLIGHT createDefaultLight(D3DLIGHTTYPE type = D3DLIGHT_DIRECTIONAL) {
     return D3Light().setDefault(type);
   }
+  String getName() const;
   String toString(int dec=3) const;
 };
 

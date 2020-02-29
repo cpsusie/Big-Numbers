@@ -182,8 +182,8 @@ BEGIN
         MENUITEM "Left handed",                 ID_LEFTHANDED
         MENUITEM "Right handed",                ID_RIGHTHANDED
         MENUITEM SEPARATOR
-        MENUITEM "Save scene parameters...",    ID_SAVESCENEPARAMETERS
-        MENUITEM "Load scene parameters...",    ID_LOADSCENEPARAMETERS
+        MENUITEM "Save scene parameters...",    ID_SCENE_SAVEPARAMETERS
+        MENUITEM "Load scene parameters...",    ID_SCENE_LOADPARAMETERS
     END
 END
 
