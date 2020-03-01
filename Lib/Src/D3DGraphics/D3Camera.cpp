@@ -178,7 +178,7 @@ D3Camera &D3Camera::setRightHanded(bool rightHanded) {
   return *this;
 }
 
-D3Camera &D3Camera::setWorld(const D3World &world) {
+D3Camera &D3Camera::setD3World(const D3World &world) {
   m_world = world;
   m_world.setScaleAll(1);
   return setViewMatrix();
@@ -221,7 +221,7 @@ D3Camera &D3Camera::setLookAt(const D3DXVECTOR3 &point) {
 }
 
 D3Camera &D3Camera::setLookAt(const D3DXVECTOR3 &pos, const D3DXVECTOR3 &lookAt, const D3DXVECTOR3 &up) {
-  return setWorld(D3World().setPos(pos).setOrientation(createOrientation(lookAt - pos, up)));
+  return setD3World(D3World().setPos(pos).setOrientation(createOrientation(lookAt - pos, up)));
 }
 
 D3Ray D3Camera::getPickedRay(const CPoint &point) const {
@@ -233,7 +233,7 @@ D3Ray D3Camera::getPickedRay(const CPoint &point) const {
   v.y = -(((2.0f * point.y) / winSize.cy) - 1) / m_projMatrix._22 * m_nearViewPlane;
   v.z = -m_nearViewPlane;
 
-  const D3DXMATRIX m = invers(m_viewMatrix);
+  const D3DXMATRIX m = inverse(m_viewMatrix);
   return D3Ray(m*v, v*m);
 }
 
@@ -249,7 +249,7 @@ void D3Camera::render() {
 
 String D3Camera::toString() const {
   const CSize size = getWinSize();
-  return format(_T("View angle:%.2lf, Near view:%.3lf, winSize:(%3d,%3d)")
+  return format(_T("View angle:%.2lf, Near view:%.3lf, WinSize:(%3d,%3d)")
                , degrees(getViewAngle())
                , getNearViewPlane()
                , size.cx,size.cy

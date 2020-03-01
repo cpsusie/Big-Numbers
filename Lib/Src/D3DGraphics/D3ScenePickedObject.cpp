@@ -2,6 +2,7 @@
 #include <D3DGraphics/D3Device.h>
 #include <D3DGraphics/D3Scene.h>
 #include <D3DGraphics/D3Camera.h>
+#include <D3DGraphics/D3PickedInfo.h>
 #include <D3DGraphics/D3SceneObjectVisual.h>
 
 D3Camera *D3Scene::getPickedCamera(const CPoint &p) const {
@@ -20,6 +21,8 @@ D3SceneObjectVisual *D3Scene::getPickedVisual(const CPoint &p, long mask, D3DXVE
 D3SceneObjectVisual *D3Scene::getPickedVisual(const D3Camera &camera, const D3Ray &ray, long mask, D3DXVECTOR3 *hitPoint, float *dist, D3PickedInfo *info) const {
   float                minDistance   = -1;
   D3SceneObjectVisual *closestObject = NULL;
+  D3PickedInfo         closestInfo, tmpInfo, *pinfo = info ? &tmpInfo : NULL;
+
   getDevice().setCurrentCamera(&camera);
   for(Iterator<D3SceneObjectVisual*> it = getVisualIterator(mask); it.hasNext();) {
     D3SceneObjectVisual *obj = it.next();
@@ -27,10 +30,13 @@ D3SceneObjectVisual *D3Scene::getPickedVisual(const D3Camera &camera, const D3Ra
       continue;
     }
     float distance;
-    if(obj->intersectsWithRay(ray, distance, info)) {
+    if(obj->intersectsWithRay(ray, distance, pinfo)) {
       if((closestObject == NULL) || (distance < minDistance)) {
         closestObject = obj;
-        minDistance = distance;
+        minDistance   = distance;
+        if(pinfo) {
+          closestInfo   = tmpInfo;
+        }
       }
     }
   }
@@ -40,6 +46,9 @@ D3SceneObjectVisual *D3Scene::getPickedVisual(const D3Camera &camera, const D3Ra
     }
     if(dist) {
       *dist = minDistance;
+    }
+    if(info) {
+      *info = closestInfo;
     }
   }
   getDevice().setCurrentCamera(NULL);

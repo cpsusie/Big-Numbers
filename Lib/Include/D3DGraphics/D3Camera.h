@@ -101,11 +101,11 @@ public:
   inline bool getRightHanded() const {
     return m_rightHanded;
   }
-  const D3World &getWorld() const {
+  const D3World &getD3World() const {
     return m_world;
   }
   // notify listeners with properyId=CAM_VIEW
-  D3Camera &setWorld(const D3World &world);
+  D3Camera &setD3World(const D3World &world);
   inline const D3DXVECTOR3 &getPos() const {
     return m_world.getPos();
   }

@@ -112,7 +112,7 @@ D3DXMATRIX transpose(const D3DXMATRIX &m) {
   return *D3DXMatrixTranspose(&result, &m);
 }
 
-D3DXMATRIX invers(const D3DXMATRIX &m) {
+D3DXMATRIX inverse(const D3DXMATRIX &m) {
   D3DXMATRIX  result;
   return *D3DXMatrixInverse(&result, NULL, &m);
 }

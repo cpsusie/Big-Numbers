@@ -19,8 +19,8 @@ bool D3SceneObjectVisual::intersectsWithRay(const D3Ray &ray, float &dist, D3Pic
   LPD3DXMESH mesh = getMesh();
   BOOL       hit  = FALSE;
   if(mesh) {
-    const D3DXMATRIX  m = invers(m_world);
-    const D3Ray       mray(m*ray.m_orig, ray.m_dir*m);
+    const D3DXMATRIX m = inverse(getWorld());
+    const D3Ray      mray(m*ray.m_orig, unitVector(ray.m_dir*m));
 
     DWORD        faceIndex;
     float        U, V;
@@ -73,9 +73,10 @@ bool D3SceneObjectVisual::intersectsWithRay(const D3Ray &ray, float &dist, D3Pic
           D3DXVECTOR3 c = cross(vtx[2] - vtx[0], vtx[1] - vtx[0]);
           if(mray.m_dir * c < 0) {
             hit  = TRUE;
-            dist = hi.Dist;
+            const D3PickedInfo pickInfo(this, faceIndex, inx, vtx, hi.U, hi.V);
+            dist = length(ray.m_orig - pickInfo.getWorldPoint());
             if(info) {
-              *info = D3PickedInfo(this, faceIndex, inx, vtx, hi.U, hi.V);
+              *info = pickInfo;
             }
             break;
           }

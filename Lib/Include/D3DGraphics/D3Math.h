@@ -28,7 +28,7 @@ String      toString(             const D3DXVECTOR3 &v, int dec = 3);
 String      toString(             const D3DXVECTOR4 &v, int dec = 3);
 String      toString(             const D3DXQUATERNION &q, int dec = 3);
 D3DXMATRIX  transpose(            const D3DXMATRIX  &m);
-D3DXMATRIX  invers(               const D3DXMATRIX  &m);
+D3DXMATRIX  inverse(              const D3DXMATRIX  &m);
 D3DXMATRIX  createIdentityMatrix();
 D3DXMATRIX  createTranslateMatrix(const D3DXVECTOR3 &v);
 D3DXMATRIX  createScaleMatrix(    const D3DXVECTOR3 &s);

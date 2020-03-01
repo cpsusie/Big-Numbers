@@ -43,6 +43,18 @@ class D3SceneObjectVisual;
 class D3LightControl;
 class D3SceneObjectAnimatedMesh;
 
+class D3EditorPickedInfo {
+public:
+  D3PickedInfo m_info;
+  D3DXVECTOR3  m_worldPoint; // in world space
+  float        m_dist;
+  D3EditorPickedInfo() {
+    clear();
+  }
+  void clear();
+  String toString() const;
+};
+
 class D3SceneEditor : public PropertyChangeListener {
 private:
     D3SceneContainer              *m_sceneContainer;
@@ -56,9 +68,8 @@ private:
     BYTE                           m_stateFlags;
     CPoint                         m_lastMouse;
     D3SceneObjectPoint             m_centerOfRotation;
-    D3DXVECTOR3                    m_pickedPoint; // in world space
     D3Ray                          m_pickedRay;   // in world space
-    D3PickedInfo                   m_pickedInfo;
+    D3EditorPickedInfo             m_pickedInfo;
     String                         m_paramFileName;
 
     HWND     getCurrentHwnd() const;
@@ -95,7 +106,9 @@ private:
     void              rotateCurrentVisualLeftRight(float angle) ;
     void              adjustCurrentVisualScale(int component, float factor);
 
+    // pt in window-coordinates
     void              moveCurrentObjXY(CPoint pt);
+    // pt in window-coordinates
     void              moveCurrentObjXZ(CPoint pt);
     // Assume getCurrentObjType() in { SOTYPE_VISUALOBJECT, SOTYPE_LIGHTCONTROL, SOTYPE_ANIMATEDOBJECT }
     D3DXVECTOR3       getCurrentObjPos();
@@ -174,9 +187,13 @@ private:
     void OnMouseWheelLightSpot(           UINT nFlags, short zDelta, CPoint pt); // pt in window-coordinates
     void OnMouseWheelLightSpotAngle(      UINT nFlags, short zDelta, CPoint pt); // pt in window-coordinates
 
+    // point in screen-coordinates
     void OnContextMenuBackground(  CPoint point);
+    // point in screen-coordinates
     void OnContextMenuObj(         CPoint point);
+    // point in screen-coordinates
     void OnContextMenuVisualObj(   CPoint point);
+    // point in screen-coordinates
     void OnContextMenuLightControl(CPoint point);
 public:
     void OnControlCameraWalk();
@@ -231,6 +248,7 @@ private:
     void OnLButtonDblClk(UINT nFlags, CPoint point);
     // pt in window-coordinates
     BOOL OnMouseWheel(   UINT nFlags, short zDelta, CPoint pt);
+    // point in screen-coordinates
     void OnContextMenu(  HWND pwnd, CPoint point);
     String stateFlagsToString() const;
     String getSelectedString() const;
@@ -276,9 +294,6 @@ public:
     D3SceneObjectVisual        *getCurrentVisual() const;
     // return NULL, if m_currentVisual->type not SOTYPE_ANIMATEDOBJECT
     D3SceneObjectAnimatedMesh  *getCurrentAnimatedObj() const;
-    inline const D3DXVECTOR3   &getPickedPoint() const {
-      return m_pickedPoint;
-    }
     inline bool hasCurrentObj() const {
       return getCurrentObj() != NULL;
     }
@@ -288,11 +303,14 @@ public:
     inline bool hasCurrentAnimatedObj() const {
       return getCurrentAnimatedObj() != NULL;
     }
-    // p in screen-coordinates
     inline const D3Ray &getPickedRay() const {
       return m_pickedRay;
     }
-    inline const D3PickedInfo &getPickedInfo() const {
+
+    // Assume hasCAM(). Point in window-coordinates (m_hwnd) of m_selectedCamera;
+    D3SceneObjectVisual *getPickedVisual(const CPoint &point, long mask, D3Ray &ray, D3EditorPickedInfo &info) const;
+
+    inline const D3EditorPickedInfo &getPickedInfo() const {
       return m_pickedInfo;
     }
     bool isCoordinateSystemVisible() const;

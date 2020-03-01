@@ -45,7 +45,7 @@ String D3SceneEditor::stateFlagsToString() const {
 
 String D3SceneEditor::getSelectedString() const {
   if(!hasObj()) {
-    return _T("--");
+    return _T("/");
   } else {
     const D3SceneObjectVisual &visual = *getCurrentObj();
     String result = visual.getName();
@@ -77,10 +77,8 @@ String D3SceneEditor::toString() const {
                ,hasCAM() ? getSelectedCAM()->toString().cstr() : _T("/")
                );
   if(!m_pickedRay.isEmpty()) {
-    NEWLINE(_T("Picked Ray")) + m_pickedRay.toString();
-    if(!m_pickedInfo.isEmpty()) {
-      NEWLINE(_T("Picked Point")) + ::toString(m_pickedPoint) + format(_T(", Info:%s"), m_pickedInfo.toString().cstr());
-    }
+    NEWLINE(_T("Picked Ray" )) + m_pickedRay.toString();
+    NEWLINE(_T("Picked Info")) + m_pickedInfo.toString();
   }
   if(!m_centerOfRotation.isEmpty()) {
     NEWLINE(_T("Center of rotation")) + m_centerOfRotation.toString();
@@ -104,7 +102,7 @@ String D3SceneEditor::toString() const {
     break;
   case CONTROL_CAMERA_WALK           :
     if(hasCAM()) {
-      NEWLINE(_T("Camera World")) + getSelectedCAM()->getWorld().toString();
+      NEWLINE(_T("Camera World")) + getSelectedCAM()->getD3World().toString();
     }
     break;
   case CONTROL_OBJECT_POS            :

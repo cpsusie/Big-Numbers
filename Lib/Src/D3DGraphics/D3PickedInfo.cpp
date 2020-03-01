@@ -3,14 +3,15 @@
 #include <D3DGraphics/D3PickedInfo.h>
 
 D3PickedInfo::D3PickedInfo(const D3SceneObjectVisual *visualObject, int faceIndex, int vertexIndex[3], D3DXVECTOR3 facePoint[3], float U, float V)
-  : m_visualObject(visualObject)
-  , m_faceIndex(   faceIndex   )
-  , m_U(U), m_V(V)
+: m_visualObject(visualObject)
+, m_faceIndex(   faceIndex   )
+, m_U(U), m_V(V)
 {
   for(int i = 0; i < 3; i++) {
     m_vertexIndex[i] = vertexIndex[i];
     m_facePoint[i]   = facePoint[i];
   }
+  m_intersectionPoint = visualObject->getWorld() * getMeshPoint();
 }
 
 void D3PickedInfo::clear() {
@@ -25,7 +26,7 @@ D3DXVECTOR3 D3PickedInfo::getMeshPoint() const {
 String D3PickedInfo::toString(int dec) const {
   return isEmpty()
        ? EMPTYSTRING
-       : format(_T("Obj:%-20s:Face:%5d:[%5d,%5d,%5d], (U,V):(%s,%s), MP:%s")
+       : format(_T("Obj:%s, Face:%d:[%d,%d,%d], (U,V):(%s,%s), MP:%s")
                ,m_visualObject->getName().cstr()
                ,m_faceIndex
                ,m_vertexIndex[0], m_vertexIndex[1], m_vertexIndex[2]

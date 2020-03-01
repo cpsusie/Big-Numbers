@@ -13,6 +13,8 @@ private:
   int                        m_faceIndex;
   // Indices into vertexArray
   int                        m_vertexIndex[3];
+  // hitpoint In world space
+  D3DXVECTOR3                m_intersectionPoint;
   // TextureVertex. Relative coordinates in picked face
   D3DXVECTOR3                m_facePoint[3];
   float                      m_U, m_V;
@@ -35,6 +37,9 @@ public:
     return TextureVertex(m_U, m_V);
   }
   D3DXVECTOR3 getMeshPoint() const;
+  inline const D3DXVECTOR3 &getWorldPoint() const {
+    return m_intersectionPoint;
+  }
   // i = [0..2];
   inline int getVertexIndex(int i) const {
     return m_vertexIndex[i];

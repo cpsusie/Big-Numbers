@@ -330,13 +330,14 @@ void CMainFrame::OnTimer(UINT_PTR nIDEvent) {
 
 // -------------------------------------------- 3D --------------------------------------------
 
+#define sCAM() m_editor.getSelectedCAM()
 void CMainFrame::init3D() {
   m_scene.initDevice(*this);
   m_editor.init(this);
   m_editor.setEnabled(true);
 
   createInitialObject();
-  D3Camera *cam = m_editor.getSelectedCAM();
+  D3Camera *cam = sCAM();
   if(cam) {
     m_scene.setLightDirection(0, rotate(cam->getDir(), cam->getRight(), 0.2f));
   }
@@ -749,7 +750,7 @@ void CMainFrame::OnDebugAutoFocusCurrentCube() {
 
 void CMainFrame::adjustDebugLightDir() {
   if(!hasDebugLight()) return;
-  const D3World     cw       = m_editor.getSelectedCAM()->getWorld();
+  const D3World     cw       = sCAM()->getD3World();
   const D3DXVECTOR3 dir      = m_cubeCenter - cw.getPos();
   const D3DXVECTOR3 up       = cw.getUp();
   const D3DXVECTOR3 lightDir = rotate(dir, up, D3DX_PI / 4);
@@ -757,15 +758,15 @@ void CMainFrame::adjustDebugLightDir() {
 }
 
 void CMainFrame::debugAdjustCamDir(const D3DXVECTOR3 &newDir, const D3DXVECTOR3 &newUp) {
-  D3World cw = m_editor.getSelectedCAM()->getWorld();
+  D3World cw = sCAM()->getD3World();
   cw.setPos(m_cubeCenter - newDir).setOrientation(createOrientation(newDir, newUp));
-  m_editor.getSelectedCAM()->setWorld(cw);
+  sCAM()->setD3World(cw);
   adjustDebugLightDir();
 }
 
 #define DBG_CAMADJANGLE (D3DX_PI / 8)
 void CMainFrame::OnDebugAdjustCam45Up() {
-  const D3World     cw  = m_editor.getSelectedCAM()->getWorld();
+  const D3World    &cw  = sCAM()->getD3World();
   const D3DXVECTOR3 dir = m_cubeCenter - cw.getPos();
   const D3DXVECTOR3 up  = cw.getUp();
   const D3DXVECTOR3 r   = cw.getRight();
@@ -773,7 +774,7 @@ void CMainFrame::OnDebugAdjustCam45Up() {
 }
 
 void CMainFrame::OnDebugAdjustCam45Down() {
-  const D3World     cw  = m_editor.getSelectedCAM()->getWorld();
+  const D3World    &cw  = sCAM()->getD3World();
   const D3DXVECTOR3 dir = m_cubeCenter - cw.getPos();
   const D3DXVECTOR3 up  = cw.getUp();
   const D3DXVECTOR3 r   = cw.getRight();
@@ -781,14 +782,14 @@ void CMainFrame::OnDebugAdjustCam45Down() {
 }
 
 void CMainFrame::OnDebugAdjustCam45Left() {
-  const D3World     cw  = m_editor.getSelectedCAM()->getWorld();
+  const D3World    &cw  = sCAM()->getD3World();
   const D3DXVECTOR3 dir = m_cubeCenter - cw.getPos();
   const D3DXVECTOR3 up  = cw.getUp();
   debugAdjustCamDir(rotate(dir, up, -DBG_CAMADJANGLE), up);
 }
 
 void CMainFrame::OnDebugAdjustCam45Right() {
-  const D3World     cw  = m_editor.getSelectedCAM()->getWorld();
+  const D3World    &cw  = sCAM()->getD3World();
   const D3DXVECTOR3 dir = m_cubeCenter - cw.getPos();
   const D3DXVECTOR3 up  = cw.getUp();
   debugAdjustCamDir(rotate(dir, up, DBG_CAMADJANGLE), up);
@@ -814,7 +815,7 @@ LRESULT CMainFrame::OnMsgDebuggerStateChanged(WPARAM wp, LPARAM lp) {
     switch(newState) {
     case DEBUGGER_RUNNING:
       { if((oldState == DEBUGGER_PAUSED) && m_hasCubeCenter) {
-          m_currentCamDistance = length(m_editor.getSelectedCAM()->getPos() - m_cubeCenter);
+          m_currentCamDistance = length(sCAM()->getPos() - m_cubeCenter);
         }
         D3SceneObjectVisual *obj = m_debugger->getSceneObject();
         if(obj) {
@@ -833,12 +834,12 @@ LRESULT CMainFrame::OnMsgDebuggerStateChanged(WPARAM wp, LPARAM lp) {
           if(surf.hasCurrentOcta()) {
             const Octagon               &octa = surf.getCurrentOcta();
             const IsoSurfacePolygonizer *poly = surf.getPolygonizer();
-            m_cubeCenter = octa.getCenter();
+            m_cubeCenter    = octa.getCenter();
             m_hasCubeCenter = true;
-            m_cubeLevel = octa.getLevel();
-            D3Camera *cam = m_editor.getSelectedCAM();
-            D3World   w   = cam->getWorld();
-            cam->setWorld(w.setPos(m_cubeCenter - m_currentCamDistance * w.getDir()));
+            m_cubeLevel     = octa.getLevel();
+            D3Camera *cam   = sCAM();
+            D3World   w     = cam->getD3World();
+            cam->setD3World(w.setPos(m_cubeCenter - m_currentCamDistance * w.getDir()));
             adjustDebugLightDir();
             show3DInfo(INFO_ALL);
           }
@@ -1026,7 +1027,7 @@ void CMainFrame::activateOptions() {
 }
 
 void CMainFrame::OnResetPositions() {
-  D3Camera *cam = m_editor.getSelectedCAM();
+  D3Camera *cam = sCAM();
   if(cam) {
     cam->resetPos();
   }
