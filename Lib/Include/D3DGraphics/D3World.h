@@ -2,6 +2,11 @@
 
 #include <MFCUtil/D3DeviceFactory.h>
 
+#define VADJUST_X    0x01
+#define VADJUST_Y    0x02
+#define VADJUST_Z    0x04
+#define VADJUST_ALL  (VADJUST_X | VADJUST_Y | VADJUST_Z)
+
 class D3World {
 private:
   D3DXVECTOR3    m_scale, m_pos;
@@ -55,6 +60,12 @@ public:
   }
   inline D3World &setScaleAll(float scale) {
     return setScale(D3DXVECTOR3(scale, scale, scale));
+  }
+  inline D3World &multiplyScale(float factor, BYTE component = VADJUST_ALL) {
+    if(component & VADJUST_X) m_scale.x *= factor;
+    if(component & VADJUST_Y) m_scale.y *= factor;
+    if(component & VADJUST_Z) m_scale.z *= factor;
+    return *this;
   }
   inline D3World &setOrientation(const D3DXQUATERNION &q) {
     m_q = q;
