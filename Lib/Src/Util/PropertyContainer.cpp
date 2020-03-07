@@ -7,7 +7,13 @@ void PropertyContainer::alwaysNotifyPropertyChanged(int id, const void *oldValue
   }
 }
 
-void PropertyContainer::removePropertyChangeListener(PropertyChangeListener *listener) {
+void PropertyContainer::notifyPropertyChanged(int id, const void *oldValue, const void *newValue) const {
+  if(m_notifyEnable) {
+    alwaysNotifyPropertyChanged(id, oldValue, newValue);
+  }
+}
+
+void PropertyContainer::removePropertyChangeListener(PropertyChangeListener * const listener) {
   const intptr_t index = m_listeners.getFirstIndex(listener);
   if(index >= 0) {
     m_listeners.remove(index);

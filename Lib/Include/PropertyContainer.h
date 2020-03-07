@@ -12,15 +12,11 @@ public:
 class PropertyContainer {
 private:
   CompactArray<PropertyChangeListener*> m_listeners;
-  bool m_notifyEnable;
+  bool                                  m_notifyEnable;
   void alwaysNotifyPropertyChanged(int id, const void *oldValue, const void *newValue) const;
 protected:
   // Check if notifications of propertychanges is enabled, and if so, notifies all listeners
-  inline void notifyPropertyChanged(int id, const void *oldValue, const void *newValue) const {
-    if(m_notifyEnable) {
-      alwaysNotifyPropertyChanged(id, &oldValue, &newValue);
-    }
-  }
+  void notifyPropertyChanged(int id, const void *oldValue, const void *newValue) const;
 
   // Set v=newValue, and if newValue != v and notifications of propertychanges is enabled, notifies all listeners
   template<typename T> void setProperty(int id, T &v, const T &newValue) {
@@ -47,10 +43,15 @@ public:
   virtual ~PropertyContainer() {
     clear();
   }
-  inline void addPropertyChangeListener(PropertyChangeListener *listener) {
-    m_listeners.add(listener);
+  inline bool hasListener(PropertyChangeListener *listener) const {
+    return m_listeners.getFirstIndex(listener) >= 0;
   }
-  void removePropertyChangeListener(PropertyChangeListener *listener);
+  inline void addPropertyChangeListener(PropertyChangeListener *listener) {
+    if(!hasListener(listener)) {
+      m_listeners.add(listener);
+    }
+  }
+  void removePropertyChangeListener(PropertyChangeListener * const listener);
   inline void clear() {
     m_listeners.clear();
   }
