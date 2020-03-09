@@ -83,7 +83,7 @@ String D3SceneEditor::toString() const {
   if(!m_centerOfRotation.isEmpty()) {
     NEWLINE(_T("Center of rotation")) + m_centerOfRotation.toString();
   }
-  switch(m_propertyDialogMap.getVisibleDialogId()) {
+  switch(m_propertyDialogMap.getVisiblePropertyId()) {
   case SP_LIGHTPARAMETERS   :
     { D3Light tmp;
       NEWLINE(_T("Dlg-Light")) + m_propertyDialogMap.getProperty(SP_LIGHTPARAMETERS,tmp).toString();
@@ -145,6 +145,11 @@ String D3SceneEditor::toString() const {
   case CONTROL_AMBIENTLIGHTCOLOR     :
     NEWLINE(_T("Amb.Color"))      + ::toString(getScene().getAmbientColor(),false);
     break;
+  }
+  if(m_propertyDialogMap.isDialogVisible()) {
+    NEWLINE(_T("Map.Dlg")) + format(_T("Id:%d, Type:%s")
+                                   ,m_propertyDialogMap.getVisiblePropertyId()
+                                   ,m_propertyDialogMap.getVisibleTypeName().cstr());
   }
   return result;
 }

@@ -15,7 +15,7 @@ private:
     void  showSliderValues(const D3Light &v);
     void  setCurrentValue( const D3Light &v);
 public:
-    CLightDlg(PropertyChangeListener *listener, CWnd *pParent = NULL);
+    CLightDlg(PropertyChangeListener *listener = NULL, CWnd *pParent = NULL);
     enum { IDD = IDD_LIGHT_DIALOG };
     static D3Light &copyModifiableValues(D3Light &dst, const D3Light &src);
     String getTypeName() const {
@@ -25,7 +25,6 @@ protected:
     virtual void    DoDataExchange(CDataExchange *pDX);
     virtual BOOL    OnInitDialog();
     afx_msg void    OnHScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar);
-    afx_msg void    OnShowWindow(BOOL bShow, UINT nStatus);
     afx_msg void    OnHideWindow();
     virtual void    OnCancel();
     afx_msg void    OnClose();

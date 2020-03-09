@@ -1,42 +1,67 @@
 #include "pch.h"
+#include <MFCUtil/PropertyDialog.h>
+#include <MFCUtil/PropertyDialogThread.h>
 #include <MFCUtil/PropertyDialogMap.h>
 
-void PropertyDialogMap::addDialog(PropertyDialog *dlg) {
+PropertyDialogMap &PropertyDialogMap::addDialog(PropertyDialog *dlg) {
   m_gate.wait();
-  const int id = dlg->getPropertyId();
-  if(get(id)) {
-    m_gate.notify();
-    throwInvalidArgumentException(__TFUNCTION__, _T("PropertyDialog with id=%d already added"), id);
-  }
-  put(id, CPropertyDlgThread::startThread(dlg));
-  m_containerSet.add((*get(id))->getPropertyContainer());
-  m_gate.notify();
-}
-
-void PropertyDialogMap::removeDialog(int id) {
-  m_gate.wait();
-  CPropertyDlgThread **thr = get(id);
-  if(thr) {
-    if(*thr == m_visibleDlgThread) {
-      m_visibleDlgThread = NULL;
+  const UINT oldSize = (UINT)size();
+  UINT newSize;
+  try {
+    const int id = dlg->getPropertyId();
+    if(get(id)) {
+      throwInvalidArgumentException(__TFUNCTION__, _T("PropertyDialog with id=%d already added"), id);
     }
-    m_containerSet.remove((*thr)->getPropertyContainer());
-    (*thr)->kill();
-    remove(id);
+    dlg->addPropertyChangeListener(this);
+    put(id, CPropertyDialogThread::startThread(dlg));
+    newSize = (UINT)size();
+    m_gate.notify();
+  } catch(...) {
+    m_gate.notify();
+    throw;
   }
-  m_gate.notify();
+  notifyPropertyChanged(PDM_DIALOG_COUNT, &oldSize, &newSize);
+  return *this;
 }
 
-void PropertyDialogMap::clear() {
+PropertyDialogMap &PropertyDialogMap::removeDialog(int id) {
   m_gate.wait();
-  m_visibleDlgThread = NULL;
-  for(Iterator<Entry<int, CPropertyDlgThread*> > it = entrySet().getIterator(); it.hasNext(); ) {
-    Entry<int, CPropertyDlgThread*> &e = it.next();
-    e.getValue()->kill();
+  UINT oldSize = (UINT)size();
+  UINT newSize;
+  try {
+    CPropertyDialogThread **thr = get(id);
+    if(thr) {
+      (*thr)->kill();
+      remove(id);
+    }
+    newSize = (UINT)size();
+    m_gate.notify();
+  } catch (...) {
+    m_gate.notify();
+    throw;
   }
-  m_containerSet.clear();
-  __super::clear();
-  m_gate.notify();
+  setProperty(PDM_DIALOG_COUNT, oldSize, newSize);
+  return *this;
+}
+
+PropertyDialogMap &PropertyDialogMap::removeAllDialogs() {
+  m_gate.wait();
+  UINT oldSize = (UINT)size();
+  UINT newSize;
+  try {
+    for (Iterator<Entry<int, CPropertyDialogThread*> > it = entrySet().getIterator(); it.hasNext(); ) {
+      Entry<int, CPropertyDialogThread*> &e = it.next();
+      e.getValue()->kill();
+    }
+    IntHashMap<CPropertyDialogThread*>::clear();
+    newSize = (UINT)size();
+    m_gate.notify();
+  } catch (...) {
+    m_gate.notify();
+    throw;
+  }
+  setProperty(PDM_DIALOG_COUNT, oldSize, newSize);
+  return *this;
 }
 
 bool PropertyDialogMap::isDialogVisible() const {
@@ -46,53 +71,102 @@ bool PropertyDialogMap::isDialogVisible() const {
   return result;
 }
 
-int PropertyDialogMap::getVisibleDialogId() const {
+PropertyDialogMap &PropertyDialogMap::hideVisibleDialog() {
+  if(isDialogVisible1()) {
+    m_visibleDialogThread->setDialogVisible(false);
+  }
+  return *this;
+}
+
+String PropertyDialogMap::getVisibleTypeName() const {
+  String result;
   m_gate.wait();
-  const int result = getCurrentVisibleDialogId();
+  if(isDialogVisible1()) {
+    result = m_visibleDialogThread->getPropertyTypeName();
+  }
   m_gate.notify();
   return result;
 }
 
-void PropertyDialogMap::hideDialog() const {
+PropertyDialogMap &PropertyDialogMap::hideDialog() {
   m_gate.wait();
-  hideCurrentVisibleDialog();
-  m_gate.notify();
+  try {
+    hideVisibleDialog();
+    m_gate.notify();
+  } catch (...) {
+    m_gate.notify();
+    throw;
+  }
+  return *this;
 }
 
-void PropertyDialogMap::showDialog(int id, const void *data, size_t size) const {
+bool PropertyDialogMap::showDialog(int id, const void *data, size_t size) {
   m_gate.wait();
-  if(getCurrentVisibleDialogId() != id) {
-    CPropertyDlgThread * const *thr = get(id);
-    if(thr) {
-      hideCurrentVisibleDialog();
-      m_visibleDlgThread = *thr;
-      m_visibleDlgThread->setDialogVisible(true);
+  bool changed = false;
+  try {
+    CPropertyDialogThread * const * thr = get(id);
+    if((getVisiblePropertyId() != id) && thr) {
+      hideVisibleDialog();
+      (*thr)->setDialogVisible(true);
+      changed = true;
     }
+    if(thr && data) {
+      changed |= (*thr)->setCurrentDialogProperty(data, size);
+    }
+    m_gate.notify();
+  } catch (...) {
+    m_gate.notify();
+    throw;
   }
-  if(data && m_visibleDlgThread) {
-    m_visibleDlgThread->setCurrentDialogProperty(data, size);
-  }
-  m_gate.notify();
+  return changed;
 }
 
-void PropertyDialogMap::hideCurrentVisibleDialog() const {
-  if(m_visibleDlgThread) {
-    m_visibleDlgThread->setDialogVisible(false);
-    m_visibleDlgThread = NULL;
-  }
-}
-
-bool PropertyDialogMap::hasPropertyContainer(const PropertyContainer *pc) const {
-  return m_containerSet.contains(pc);
+// no lock-protection
+bool PropertyDialogMap::isDialogVisible1() const {
+  return m_visibleDialogThread && m_visibleDialogThread->isDialogVisible();
 }
 
 const void *PropertyDialogMap::getProperty(int id, size_t size) const {
-  const void *result = NULL;
   m_gate.wait();
-  CPropertyDlgThread * const *thr = get(id);
-  if(thr) {
-    result = (*thr)->getCurrentDialogProperty(size);
+  try {
+    const void *result = NULL;
+    CPropertyDialogThread * const *thr = get(id);
+    if(thr) {
+      result = (*thr)->getCurrentDialogProperty(size);
+    }
+    m_gate.notify();
+    return result;
+  } catch(...) {
+    m_gate.notify();
+    throw;
   }
-  m_gate.notify();
-  return result;
+}
+
+void PropertyDialogMap::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
+  PropertyDialog *dlg = (PropertyDialog*)source;
+  switch(dlg->getPropertyIdOffset(id)) {
+  case 0:
+    notifyPropertyChanged(PDM_CURRENT_DLGVALUE, oldValue, newValue);
+    break;
+  case PROPDLG_VISIBLE_OFFSET:
+    { const bool newVisible = *(bool*)newValue;
+      if(!newVisible) {
+        setVisibleDialogThread(NULL);
+      } else {
+        setVisibleDialogThread(*get(dlg->getPropertyId()));
+      }
+    }
+    break;
+  default:
+    showError(_T("%s:Unknown propertyId:%d"), __TFUNCTION__, id);
+    break;
+  }
+}
+
+void PropertyDialogMap::setVisibleDialogThread(CPropertyDialogThread *newValue) {
+  m_lock1.wait();
+  m_visibleDialogThread = newValue;
+  const int newVisibleId = newValue ? newValue->getPropertyId() : -1;
+  setProperty(PDM_VISIBLE_PROPERTYID, m_visiblePropertyId, newVisibleId);
+  m_lock1.notify();
 }

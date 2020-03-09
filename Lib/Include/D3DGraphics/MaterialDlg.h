@@ -11,14 +11,14 @@ private:
 
   void  resetControls();
   void  valueToWindow(const D3Material &v);
-  void  showPower(     double v);
-  void  setSliderPower(double v);
+  void  showPower(       double v);
+  void  setSliderPower(  double v);
   float getSliderPower() const;
   void  setSliderOpacity(double v);
   float getSliderOpacity() const;
-  void  showOpacity(double v);
+  void  showOpacity(     double v);
 public:
-  CMaterialDlg(PropertyChangeListener *listener, CWnd *pParent = NULL);
+  CMaterialDlg(PropertyChangeListener *listener = NULL, CWnd *pParent = NULL);
   enum { IDD = IDD_MATERIAL_DIALOG };
   String getTypeName() const {
     return _T("D3Material");
@@ -28,7 +28,6 @@ protected:
     virtual BOOL    OnInitDialog();
     afx_msg void    OnHScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar);
     afx_msg void    OnVScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar);
-    afx_msg void    OnShowWindow(BOOL bShow, UINT nStatus);
     afx_msg void    OnHideWindow();
     virtual void    OnCancel();
     afx_msg void    OnClose();

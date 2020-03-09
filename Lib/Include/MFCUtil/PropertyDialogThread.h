@@ -1,9 +1,9 @@
 #pragma once
 
 #include <FastSemaphore.h>
-#include "PropertyDialog.h"
 
-class CPropertyDlgThread : public CWinThread {
+class PropertyDialog;
+class CPropertyDialogThread : public CWinThread {
 private:
   PropertyDialog         *m_dlg;
   bool                    m_setVisibleBusy : 1;
@@ -16,26 +16,26 @@ private:
     return m_dlg && m_inModalLoop && m_dlg->isVisible();
   }
 
-  DECLARE_DYNCREATE(CPropertyDlgThread)
+  DECLARE_DYNCREATE(CPropertyDialogThread)
 protected:
-  CPropertyDlgThread();
-  virtual ~CPropertyDlgThread();
+  CPropertyDialogThread();
+  virtual ~CPropertyDialogThread();
 
   DECLARE_MESSAGE_MAP()
 public:
-  void setCurrentDialogProperty(const void *v, size_t size);
+  bool setCurrentDialogProperty(const void *v, size_t size);
   const void *getCurrentDialogProperty(size_t size) const;
   void reposition();
   void setDialogVisible(bool visible);
   bool isDialogVisible() const;
   void kill();
-  inline PropertyContainer *getPropertyContainer() {
-    return m_dlg;
-  }
-  inline int getPropertyId() const {
-    return m_dlg->getPropertyId();
+  PropertyContainer *getPropertyContainer();
+  int getPropertyId() const;
+  String getPropertyTypeName() const;
+  inline int getPropertyIdOffset(int propertyId) const {
+    return propertyId - getPropertyId();
   }
   virtual BOOL InitInstance();
   virtual int ExitInstance();
-  static CPropertyDlgThread *startThread(PropertyDialog *dlg);
+  static CPropertyDialogThread *startThread(PropertyDialog *dlg);
 };

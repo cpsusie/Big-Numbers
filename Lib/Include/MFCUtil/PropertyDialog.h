@@ -6,10 +6,12 @@ inline void putWindowBesideMainWindow(CWnd *wnd) {
   putWindowBesideWindow(wnd, AfxGetApp()->m_pMainWnd);
 }
 
+#define PROPDLG_VISIBLE_OFFSET 1
+
 class PropertyDialog : public CDialog, public PropertyContainer {
 private:
   const int m_propertyId;
-  bool      m_visible;
+  bool      m_visible; // when changed, notification with id = m_propertyId+PROPDLG_VISIBLE_OFFSET (bool) is sent to listeners
   bool      m_showWinActive;
 protected:
   PropertyDialog(int resId, int propertyId, CWnd *pParent) : CDialog(resId, pParent), m_propertyId(propertyId) {
@@ -17,9 +19,7 @@ protected:
     m_visible       = false;
     m_showWinActive = false; // to prevent infinte recursion
   }
-  inline void setVisible(bool visible) {
-    m_visible = visible;
-  }
+  void setVisible(bool visible);
   void OnShowWindow(BOOL bShow, UINT nStatus);
   void checkSize(const TCHAR *method, size_t size) const {
     if(size != getDataSize()) {
@@ -33,10 +33,13 @@ public:
   inline int getPropertyId() const {
     return m_propertyId;
   }
+  inline int getPropertyIdOffset(int propertyId) const {
+    return propertyId - getPropertyId();
+  }
   inline bool isVisible() const {
     return m_visible;
   }
-  virtual void setStartProperty(const void *v, size_t size) = 0;
+  virtual bool setStartProperty(const void *v, size_t size) = 0;
   virtual const void *getCurrentProperty(size_t size) const = 0;
   virtual void reposition() {
     putWindowBesideMainWindow(this);
@@ -62,8 +65,13 @@ protected:
     setProperty(getPropertyId(), m_currentValue, v);
   }
 public:
-  void setStartValue(const T &v) {
+  // Return true if m_startValue is changed
+  bool setStartValue(const T &v) {
+    if(v == m_startValue) {
+      return false;
+    }
     m_startValue = v;
+    return true;
   }
   const T &getCurrentValue() const {
     return m_currentValue;
@@ -72,9 +80,9 @@ public:
     checkSize(__TFUNCTION__, size);
     return &m_currentValue;
   }
-  void setStartProperty(const void *v, size_t size) {
+  bool setStartProperty(const void *v, size_t size) {
     checkSize(__TFUNCTION__, size);
-    setStartValue(*(T*)v);
+    return setStartValue(*(T*)v);
   }
   size_t getDataSize() const {
     return sizeof(T);

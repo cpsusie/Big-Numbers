@@ -274,12 +274,6 @@
     <ClCompile Include="colormap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PropertyDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PropertyDlgThread.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="PropertyDialogMap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -350,6 +344,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CreateView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PropertyDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PropertyDialogThread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -503,9 +503,6 @@
     <ClInclude Include="..\..\Include\MFCUtil\PropertyDialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\MFCUtil\PropertyDlgThread.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\MFCUtil\PropertyDialogMap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -541,6 +538,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\MFCUtil\ListCtrlChildTrait.h">
       <Filter>Header Files\EditListCtrl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\MFCUtil\PropertyDialogThread.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

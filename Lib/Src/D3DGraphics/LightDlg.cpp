@@ -37,7 +37,7 @@ BOOL CLightDlg::OnInitDialog() {
   initSlider(IDC_SLIDER_CONSTANTATTENUATION , 0.001 , 10 , 200, LOGARITHMIC);
   initSlider(IDC_SLIDER_LINEARATTENUATION   , 0.0001, 10 , 200, LOGARITHMIC);
   initSlider(IDC_SLIDER_QUADRATICATTENUATION, 0.0001, 10 , 200, LOGARITHMIC);
-  initSlider(IDC_SLIDER_FALLOFF             , 0, 300);
+  initSlider(IDC_SLIDER_FALLOFF             , 0     ,300);
   return TRUE;
 }
 
@@ -75,9 +75,9 @@ D3Light &CLightDlg::copyModifiableValues(D3Light &dst, const D3Light &src) { // 
 void CLightDlg::valueToWindow(const D3Light &v) {
   const TCHAR *lightTypeStr = EMPTYSTRING;
   switch(v.Type) {
-  case D3DLIGHT_DIRECTIONAL    : lightTypeStr = _T("Directional"); break;
-  case D3DLIGHT_POINT          : lightTypeStr = _T("Point")      ; break;
-  case D3DLIGHT_SPOT           : lightTypeStr = _T("Spot")       ; break;
+  case D3DLIGHT_DIRECTIONAL : lightTypeStr = _T("Directional"); break;
+  case D3DLIGHT_POINT       : lightTypeStr = _T("Point")      ; break;
+  case D3DLIGHT_SPOT        : lightTypeStr = _T("Spot")       ; break;
   }
   setWindowText(this, format(_T("%s (%s light[%d]"), m_origName.cstr(), lightTypeStr, v.getIndex()));
 
@@ -146,20 +146,14 @@ void CLightDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar) {
     break;
   }
   setCurrentValue(v);
-
   __super::OnHScroll(nSBCode, nPos, pScrollBar);
 }
 
 BEGIN_EVENTSINK_MAP(CLightDlg, CDialog)
-  ON_EVENT(CLightDlg, IDC_COLORMAP_AMBIENT , 1, CLightDlg::OnColorchangedColormapAmbient, VTS_NONE)
-  ON_EVENT(CLightDlg, IDC_COLORMAP_DIFFUSE , 1, CLightDlg::OnColorchangedColormapDiffuse, VTS_NONE)
-  ON_EVENT(CLightDlg, IDC_COLORMAP_SPECULAR, 1, CLightDlg::OnColorchangedColormapSpecular, VTS_NONE)
+  ON_EVENT(CLightDlg, IDC_COLORMAP_AMBIENT , 1, OnColorchangedColormapAmbient , VTS_NONE)
+  ON_EVENT(CLightDlg, IDC_COLORMAP_DIFFUSE , 1, OnColorchangedColormapDiffuse , VTS_NONE)
+  ON_EVENT(CLightDlg, IDC_COLORMAP_SPECULAR, 1, OnColorchangedColormapSpecular, VTS_NONE)
 END_EVENTSINK_MAP()
-
-
-void CLightDlg::OnShowWindow(BOOL bShow, UINT nStatus) {
-  PropertyDialog::OnShowWindow(bShow, nStatus);
-}
 
 void CLightDlg::OnHideWindow() {
   ShowWindow(SW_HIDE);
@@ -175,21 +169,20 @@ void CLightDlg::OnCancel() {
   valueToWindow(v);
 }
 
-
 void CLightDlg::OnColorchangedColormapAmbient() {
-  D3Light v = getCurrentValue();
+  D3Light v  = getCurrentValue();
   v.Ambient  = getD3DCOLORVALUE(IDC_COLORMAP_AMBIENT);
   setCurrentValue(v);
 }
 
 void CLightDlg::OnColorchangedColormapDiffuse(){
-  D3Light v = getCurrentValue();
+  D3Light v  = getCurrentValue();
   v.Diffuse  = getD3DCOLORVALUE(IDC_COLORMAP_DIFFUSE);
   setCurrentValue(v);
 }
 
 void CLightDlg::OnColorchangedColormapSpecular() {
-  D3Light v = getCurrentValue();
+  D3Light v  = getCurrentValue();
   v.Specular = getD3DCOLORVALUE(IDC_COLORMAP_SPECULAR);
   setCurrentValue(v);
 }

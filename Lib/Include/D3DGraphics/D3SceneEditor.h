@@ -5,7 +5,7 @@
 #include <MFCUtil/PropertyDialogMap.h>
 #include "D3SceneObject.h"
 #include "D3Ray.h"
-#include "D3PickedInfo.h"
+#include "D3SceneEditorPickedInfo.h"
 #include "D3SceneObjectPoint.h"
 #include "D3SceneObjectCoordinateSystem.h"
 #include "D3SceneContainer.h"
@@ -26,14 +26,16 @@ typedef enum {
  ,CONTROL_AMBIENTLIGHTCOLOR
 } D3EditorControl;
 
-#define SE_INITDONE           0x01
-#define SE_ENABLED            0x02
-#define SE_PROPCHANGES        0x04
-#define SE_RENDER3D           0x08
-#define SE_RENDERINFO         0x10
-#define SE_RENDERNOW          0x20
-#define SE_LIGHTCONTROLS      0x40
-#define SE_MOUSEVISIBLE       0x80
+#define SE_INITDONE           0x0001
+#define SE_ENABLED            0x0002
+#define SE_PROPCHANGES        0x0004
+#define SE_RENDER3D           0x0008
+#define SE_RENDERINFO         0x0010
+#define SE_RENDERNOW          0x0020
+#define SE_LIGHTCONTROLS      0x0040
+#define SE_MOUSEVISIBLE       0x0080
+#define SE_SETCONTROLACTIVE   0x0100
+#define SE_RESETCONTROLACTIVE 0x0200
 #define SE_RENDERALL          (SE_RENDER3D | SE_RENDERINFO)
 #define SE_ALL                (SE_ENABLED | SE_PROPCHANGES | SE_RENDERALL | SE_LIGHTCONTROLS)
 
@@ -42,18 +44,6 @@ class D3SceneContainer;
 class D3SceneObjectVisual;
 class D3LightControl;
 class D3SceneObjectAnimatedMesh;
-
-class D3EditorPickedInfo {
-public:
-  D3PickedInfo m_info;
-  D3DXVECTOR3  m_worldPoint; // in world space
-  float        m_dist;
-  D3EditorPickedInfo() {
-    clear();
-  }
-  void clear();
-  String toString() const;
-};
 
 class D3SceneEditor : public PropertyChangeListener {
 private:
@@ -65,11 +55,11 @@ private:
     D3SceneObjectCoordinateSystem *m_coordinateSystem;
     PropertyDialogMap              m_propertyDialogMap;
     PropertyDialog                *m_currentPropertyDialog;
-    BYTE                           m_stateFlags;
+    UINT                           m_stateFlags;
     CPoint                         m_lastMouse;
     D3SceneObjectPoint             m_centerOfRotation;
     D3Ray                          m_pickedRay;   // in world space
-    D3EditorPickedInfo             m_pickedInfo;
+    D3SceneEditorPickedInfo        m_pickedInfo;
     String                         m_paramFileName;
 
     HWND     getCurrentHwnd() const;
@@ -125,23 +115,20 @@ private:
     void moveCamera(           const D3DXVECTOR3 &dir, float dist);
     void rotateCameraUpDown(   float angle);
     void rotateCameraLeftRight(float angle);
-    void selectPropertyDialog(PropertyDialog *dlg, D3EditorControl control) {
-      m_currentPropertyDialog = dlg;
-      setCurrentControl(control);
-    }
-    void unselectPropertyDialog() {
-      m_currentPropertyDialog = NULL;
-      setCurrentControl(CONTROL_IDLE);
-    }
-    inline D3SceneEditor &setFlags(BYTE flags) {
+    void selectPropertyDialog(PropertyDialog *dlg, D3EditorControl control);
+    void unselectPropertyDialog();
+    void mapDialogShow(D3LightControl      *lc);
+    void mapDialogShow(D3SceneObjectVisual *obj);
+    void mapDialogHide();
+    inline D3SceneEditor &setFlags(UINT flags) {
       m_stateFlags |= flags;
       return *this;
     }
-    inline D3SceneEditor &clrFlags(BYTE flags) {
+    inline D3SceneEditor &clrFlags(UINT flags) {
       m_stateFlags &= ~flags;
       return *this;
     }
-    inline bool isSet(BYTE flags) const {
+    inline bool isSet(UINT flags) const {
       return (m_stateFlags & flags) != 0;
     }
     void setMouseVisible(bool visible);
@@ -153,8 +140,8 @@ private:
     void showContextMenu(CMenu &menu, CPoint point);
 
     // set m_currentControl = CONTROL_IDLE, m_currentCamera = NULL, m_currentVisual = NULL
-    void resetCurrentControl();
-    void setCurrentControl(D3EditorControl control);
+    D3SceneEditor &resetControl();
+    bool setControl(D3EditorControl control, D3SceneObjectVisual *visual);
 
           D3LightControl *getCurrentLightControl();
     const D3LightControl *getCurrentLightControl() const;
@@ -250,15 +237,9 @@ private:
     BOOL OnMouseWheel(   UINT nFlags, short zDelta, CPoint pt);
     // point in screen-coordinates
     void OnContextMenu(  HWND pwnd, CPoint point);
+
     String stateFlagsToString() const;
     String getSelectedString() const;
-#ifdef _DEBUG
-    void checkInvariant(const TCHAR *method, int line) const;
-#define CHECKINVARIANT() checkInvariant(__TFUNCTION__,__LINE__)
-#else
-#define CHECKINVARIANT()
-#endif // _DEBUG
-
 public:
     D3SceneEditor();
     ~D3SceneEditor();
@@ -279,10 +260,6 @@ public:
     inline D3Camera            *getSelectedCAM() const {
       return m_selectedCamera;
     }
-    // return one of { SOTYPE_NULL, SOTYPE_VISUALOBJECT, SOTYPE_LIGHTCONTROL }
-    SceneObjectType             getCurrentControlObjType() const;
-    void                        setCurrentObj(D3SceneObjectVisual *obj);
-
     inline D3SceneObjectVisual *getCurrentObj() const {
       return m_currentObj;
     }
@@ -308,9 +285,9 @@ public:
     }
 
     // Assume hasCAM(). Point in window-coordinates (m_hwnd) of m_selectedCamera;
-    D3SceneObjectVisual *getPickedVisual(const CPoint &point, long mask, D3Ray &ray, D3EditorPickedInfo &info) const;
+    D3SceneObjectVisual *getPickedVisual(const CPoint &point, long mask, D3Ray &ray, D3SceneEditorPickedInfo &info) const;
 
-    inline const D3EditorPickedInfo &getPickedInfo() const {
+    inline const D3SceneEditorPickedInfo &getPickedInfo() const {
       return m_pickedInfo;
     }
     bool isCoordinateSystemVisible() const;

@@ -741,8 +741,8 @@
     <ClCompile Include="ProgressDlg.cpp" />
     <ClCompile Include="ProgressWindow.cpp" />
     <ClCompile Include="ProgressWithPctCtrl.cpp" />
-    <ClCompile Include="PropertyDlg.cpp" />
-    <ClCompile Include="PropertyDlgThread.cpp" />
+    <ClCompile Include="PropertyDialog.cpp" />
+    <ClCompile Include="PropertyDialogThread.cpp" />
     <ClCompile Include="PropertyDialogMap.cpp" />
     <ClCompile Include="SelectDirDlg.cpp" />
     <ClCompile Include="SelectMultipleFileNames.cpp" />
@@ -822,7 +822,7 @@
     <ClInclude Include="..\..\Include\MFCUtil\ProgressWindow.h" />
     <ClInclude Include="..\..\Include\MFCUtil\ProgressWithPctCtrl.h" />
     <ClInclude Include="..\..\Include\MFCUtil\PropertyDialog.h" />
-    <ClInclude Include="..\..\Include\MFCUtil\PropertyDlgThread.h" />
+    <ClInclude Include="..\..\Include\MFCUtil\PropertyDialogThread.h" />
     <ClInclude Include="..\..\Include\MFCUtil\PropertyDialogMap.h" />
     <ClInclude Include="..\..\Include\MFCUtil\resource.h" />
     <ClInclude Include="..\..\Include\MFCUtil\SelectDirDlg.h" />

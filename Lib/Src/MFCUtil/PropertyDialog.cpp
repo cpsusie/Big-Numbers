@@ -1,6 +1,10 @@
 #include "pch.h"
 #include <MFCUtil/PropertyDialog.h>
 
+void PropertyDialog::setVisible(bool visible) {
+  setProperty(m_propertyId + PROPDLG_VISIBLE_OFFSET, m_visible, visible);
+}
+
 void PropertyDialog::OnShowWindow(BOOL bShow, UINT nStatus) {
   __super::OnShowWindow(bShow, nStatus);
   if(m_showWinActive) return;

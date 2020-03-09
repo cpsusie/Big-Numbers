@@ -237,6 +237,9 @@
     <ClCompile Include="D3SceneEditorSplitWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="D3SceneEditorPickedInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\D3DGraphics\D3Error.h">
@@ -396,6 +399,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\D3DGraphics\D3Cube.h">
       <Filter>Header Files\D3Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\D3SceneEditorPickedInfo.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

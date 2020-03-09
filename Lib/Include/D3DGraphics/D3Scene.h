@@ -111,7 +111,11 @@ public:
   void removeVisual(D3SceneObjectVisual *obj);
   void removeAllVisuals();
   D3VisualIterator getVisualIterator(long mask = OBJMASK_ALL) const;
+  // Return true, if obj is in m_visualArray, else false
   bool isVisual(const D3SceneObjectVisual *obj) const;
+  D3SceneObjectVisual *getLastVisual() const {
+    return m_visualArray.last();
+  }
   void stopAllAnimations();
   inline int getVisualCount() const {
     return (int)m_visualArray.size();

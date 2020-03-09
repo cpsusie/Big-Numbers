@@ -407,7 +407,6 @@ public:
   }
 };
 
-
 void CMainFrame::setCalculatedObject(Function2DSurfaceParameters &param) {
   stopDebugging();
   if(param.m_includeTime) {
@@ -444,7 +443,6 @@ void CMainFrame::setCalculatedObject(IsoSurfaceParameters &param) {
 void CMainFrame::deleteCalculatedObject() {
   D3SceneObjectVisual *oldObj = getCalculatedObject();
   if(oldObj) {
-    m_editor.setCurrentObj(NULL);
     m_scene.removeVisual(oldObj);
     SAFEDELETE(oldObj);
   }
@@ -459,7 +457,6 @@ void CMainFrame::setCalculatedObject(D3SceneObjectVisual *obj, PersistentData *p
     }
     m_scene.addVisual(obj);
   }
-  m_editor.setCurrentObj(obj);
 }
 
 D3SceneObjectVisual *CMainFrame::getCalculatedObject() const {
@@ -686,7 +683,6 @@ void CMainFrame::asyncKillDebugger() {
 
 void CMainFrame::killDebugger(bool showCreateSurface) {
   if(!hasDebugger()) return;
-  m_editor.setCurrentObj(NULL);
   m_scene.removeAllVisuals();
   m_debugger->removePropertyChangeListener(this);
   if(m_debugger->isOK() && showCreateSurface) {
@@ -819,7 +815,6 @@ LRESULT CMainFrame::OnMsgDebuggerStateChanged(WPARAM wp, LPARAM lp) {
         }
         D3SceneObjectVisual *obj = m_debugger->getSceneObject();
         if(obj) {
-          m_editor.setCurrentObj(NULL);
           m_scene.removeVisual(obj);
         }
       }
@@ -827,7 +822,6 @@ LRESULT CMainFrame::OnMsgDebuggerStateChanged(WPARAM wp, LPARAM lp) {
     case DEBUGGER_PAUSED:
       { D3SceneObjectVisual *obj = m_debugger->getSceneObject();
         m_scene.addVisual(obj);
-        m_editor.setCurrentObj(obj);
         m_hasCubeCenter = false;
         if(isAutoFocusCurrentCubeChecked()) {
           const DebugIsoSurface  &surf = m_debugger->getDebugSurface();

@@ -12,22 +12,6 @@
 #include <D3DGraphics/D3SelectedCube.h>
 #include <D3DGraphics/D3SceneEditor.h>
 
-void D3EditorPickedInfo::clear() {
-  m_info.clear();
-  m_worldPoint = D3DXORIGIN;
-  m_dist       = 0;
-}
-
-String D3EditorPickedInfo::toString() const {
-  return m_info.isEmpty()
-       ? _T("/")
-       : _T("WP:") + ::toString(m_worldPoint)
-                   + format(_T(", Dist:%.3f, Info:%s")
-                           ,m_dist
-                           ,m_info.toString().cstr()
-                           );
-}
-
 D3SceneEditor::D3SceneEditor()
 : m_sceneContainer(        NULL )
 , m_currentPropertyDialog( NULL )
@@ -39,7 +23,6 @@ D3SceneEditor::D3SceneEditor()
 , m_paramFileName(_T("Untitled"))
 , m_stateFlags(  SE_MOUSEVISIBLE)
 {
-  CHECKINVARIANT();
 }
 
 #define sCAM   (*getSelectedCAM())
@@ -61,26 +44,23 @@ CameraSet D3SceneEditor::getSelectedCameraSet() const {
 }
 
 void D3SceneEditor::init(D3SceneContainer *sceneContainer) {
-  m_sceneContainer    = sceneContainer;
-  CLightDlg    *dlg1  = new CLightDlg(   this); TRACE_NEW(dlg1);
-  m_propertyDialogMap.addDialog(dlg1);
-  CMaterialDlg *dlg2  = new CMaterialDlg(this); TRACE_NEW(dlg2);
-  m_propertyDialogMap.addDialog(dlg2);
+  m_sceneContainer   = sceneContainer;
+  CLightDlg    *dlg1 = new CLightDlg(); TRACE_NEW(dlg1);
+  CMaterialDlg *dlg2 = new CMaterialDlg(); TRACE_NEW(dlg2);
+  m_propertyDialogMap.addDialog(dlg1).addDialog(dlg2).addPropertyChangeListener(this);
   const UINT count = sceneContainer->get3DWindowCount();
   for(UINT i = 0; i < count; i++) {
     getScene().addCamera(sceneContainer->get3DWindow(i));
   }
-  m_currentControl    = CONTROL_IDLE;
+  m_currentControl = CONTROL_IDLE;
   selectCAM((count >= 1) ? 0 : -1);
   getScene().addPropertyChangeListener(this);
   setFlags(SE_INITDONE);
-  CHECKINVARIANT();
 }
 
 void D3SceneEditor::close() {
-  CHECKINVARIANT();
   getScene().removePropertyChangeListener(this);
-  m_propertyDialogMap.clear();
+  m_propertyDialogMap.removeAllDialogs();
   getScene().removeVisual(m_coordinateSystem);
   SAFEDELETE(m_coordinateSystem);
   getScene().close();
@@ -97,7 +77,7 @@ D3SceneEditor &D3SceneEditor::setEnabled(bool enabled, BYTE flags) {
       clrFlags(flags);
       if(!isSet(SE_LIGHTCONTROLS)) {
         OnLightControlHide();
-        m_propertyDialogMap.hideDialog();
+        mapDialogHide();
       }
       renderInfo();
     }
@@ -134,64 +114,112 @@ void D3SceneEditor::handlePropertyChanged(const PropertyContainer *source, int i
   }
   if(source == &getScene()) {
     switch(id) {
-    case SP_MATERIALPARAMETERS   :
-    case SP_LIGHTPARAMETERS      :
-    case SP_VISUALCOUNT          :
-    case SP_RIGHTHANDED          :
+    case SP_MATERIALPARAMETERS    :
+    case SP_LIGHTPARAMETERS       :
+    case SP_RIGHTHANDED           :
       renderActive(SE_RENDERALL);
       break;
-    case SP_ANIMATIONFRAMEINDEX:
+    case SP_VISUALCOUNT           :
+      { const UINT oldCount = *(UINT*)oldValue, newCount = *(UINT*)newValue;
+        if(newCount < oldCount) {
+          if(!getScene().isVisual(m_currentObj)) {
+            resetControl();
+          }
+        } else {
+          setControl(CONTROL_IDLE, getScene().getLastVisual());
+        }
+        renderActive(SE_RENDERALL);
+      }
+      break;
+    case SP_ANIMATIONFRAMEINDEX   :
       renderActive(SE_RENDER3D);
       break;
-    case SP_AMBIENTCOLOR         :
+    case SP_AMBIENTCOLOR          :
       renderActive(SE_RENDERALL | SE_RENDERNOW);
       break;
-    }
-  } else if(source == getSelectedCAM()) {
-    switch(id) {
-    case CAM_VIEW                :      // D3DXMATRIX
-    case CAM_PROJECTION          :      // D3DXMATRIX
-    case CAM_LIGHTCONTROLSVISIBLE:      // BitSet
-      renderSelected(SE_RENDERALL);
-      break;
-    case CAM_BACKGROUNDCOLOR     :     // D3DCOLOR
-      renderSelected(SE_RENDERALL|SE_RENDERNOW);
-      break;
-    }
-  } else if(m_propertyDialogMap.hasPropertyContainer(source)) {
-    switch(id) {
-    case SP_LIGHTPARAMETERS      :
-      { const D3Light &newLight = *(D3Light*)newValue;
-        D3Light        tmp      = getScene().getLight(newLight.getIndex()); // to keep pos and direction as they are
-        if(tmp.getIndex() != newLight.getIndex()) {
-          showWarning(_T("%s:Light %d is undefined"), __TFUNCTION__,newLight.getIndex());
-        } else {
-          getScene().setLight(CLightDlg::copyModifiableValues(tmp, newLight));
+    case SP_LIGHTCOUNT            :
+      { const UINT oldCount = *(UINT*)oldValue, newCount = *(UINT*)newValue;
+        if(newCount < oldCount) {
+          D3Light light;
+          if((m_propertyDialogMap.getVisiblePropertyId() == SP_LIGHTPARAMETERS)
+          &&  m_propertyDialogMap.getVisibleProperty(light)
+          && (!getScene().isLightDefined(light.getIndex())))
+          {
+            mapDialogHide();
+          }
         }
       }
       break;
-    case SP_MATERIALPARAMETERS   :
-      getScene().setMaterial(*(D3Material*)newValue);
+    case SP_MATERIALCOUNT         :
+      { const UINT oldCount = *(UINT*)oldValue, newCount = *(UINT*)newValue;
+        if(newCount < oldCount) {
+          D3Material material;
+          if((m_propertyDialogMap.getVisiblePropertyId() == SP_MATERIALPARAMETERS)
+          &&  m_propertyDialogMap.getVisibleProperty(material)
+          && (!getScene().isMaterialDefined(material.getId())))
+          {
+            mapDialogHide();
+          }
+        }
+      }
+      break;
+    } // switch
+  } else if(source == getSelectedCAM()) {
+    switch(id) {
+    case CAM_VIEW                 :  // D3DXMATRIX
+    case CAM_PROJECTION           :  // D3DXMATRIX
+    case CAM_LIGHTCONTROLSVISIBLE :  // BitSet
+      renderSelected(SE_RENDERALL);
+      break;
+    case CAM_BACKGROUNDCOLOR      :  // D3DCOLOR
+      renderSelected(SE_RENDERALL|SE_RENDERNOW);
+      break;
+    }
+  } else if(source == &m_propertyDialogMap) {
+    switch(id) {
+    case PDM_VISIBLE_PROPERTYID   :  // int    - notification id, when active dialog changes, or hide/show
+      { const int newId = *(int*)newValue;
+        if(newId == -1) {
+          resetControl();
+        }
+      }
+      break;
+    case PDM_CURRENT_DLGVALUE     :  // void * - notification id, when value in active dialog changes
+      { switch(m_propertyDialogMap.getVisiblePropertyId()) {
+        case SP_LIGHTPARAMETERS   :
+          { const D3Light &newLight = *(D3Light*)newValue;
+            D3Light        tmp      = getScene().getLight(newLight.getIndex()); // to keep pos and direction as they are
+            if(tmp.getIndex() != newLight.getIndex()) {
+              showWarning(_T("%s:Light %d is undefined"), __TFUNCTION__,newLight.getIndex());
+            } else {
+              getScene().setLight(CLightDlg::copyModifiableValues(tmp, newLight));
+            }
+          }
+          break;
+        case SP_MATERIALPARAMETERS:
+          getScene().setMaterial(*(D3Material*)newValue);
+          break;
+        }
+      }
       break;
     }
   } else if(source == m_currentPropertyDialog) {
     switch(id) {
-    case CAM_BACKGROUNDCOLOR     :
+    case CAM_BACKGROUNDCOLOR      :
       sCAM.setBackgroundColor(*(D3DCOLOR*)newValue);
       break;
-    case SP_AMBIENTCOLOR         :
+    case SP_AMBIENTCOLOR          :
       getScene().setAmbientColor(*(D3DCOLOR*)newValue);
       break;
     }
   }
 }
 
-D3SceneObjectVisual *D3SceneEditor::getPickedVisual(const CPoint &point, long mask, D3Ray &ray, D3EditorPickedInfo &info) const {
+D3SceneObjectVisual *D3SceneEditor::getPickedVisual(const CPoint &point, long mask, D3Ray &ray, D3SceneEditorPickedInfo &info) const {
   return sCAM.getPickedVisual(point, mask, &info.m_worldPoint, &ray, &info.m_dist, &info.m_info);
 }
 
 void D3SceneEditor::OnLButtonDown(UINT nFlags, CPoint point) {
-  CHECKINVARIANT();
   m_lastMouse = point;
   switch(getCurrentControl()) {
   case CONTROL_SPOTLIGHTPOINT:
@@ -201,47 +229,41 @@ void D3SceneEditor::OnLButtonDown(UINT nFlags, CPoint point) {
   default:
     { D3SceneObjectVisual *pickedObj = getPickedVisual(point, OBJMASK_ALL, m_pickedRay, m_pickedInfo);
       if(pickedObj == NULL) {
-        m_pickedInfo.clear();
         if(getCurrentControl() == CONTROL_CAMERA_WALK) {
           setMouseVisible(false);
           SetCapture(m_sceneContainer->getMessageWindow());
+          m_pickedInfo.clear();
         } else {
-          resetCurrentControl();
-          setCurrentControl(CONTROL_CAMERA_WALK);
+          resetControl().setControl(CONTROL_CAMERA_WALK, NULL);
         }
       } else {
-        resetCurrentControl();
-        setCurrentObj(pickedObj);
         switch(pickedObj->getType()) {
         case SOTYPE_VISUALOBJECT  :
         case SOTYPE_ANIMATEDOBJECT:
-          setCurrentControl(CONTROL_OBJECT_POS);
+          setControl(CONTROL_OBJECT_POS, pickedObj);
           break;
         case SOTYPE_LIGHTCONTROL  :
-          setCurrentControl(CONTROL_LIGHT);
+          setControl(CONTROL_LIGHT, pickedObj);
           break;
         }
       }
     }
     break;
   }
-  CHECKINVARIANT();
 }
 
 void D3SceneEditor::OnLButtonUp(UINT nFlags, CPoint point) {
-  CHECKINVARIANT();
   switch(getCurrentControl()) {
   case CONTROL_SPOTLIGHTPOINT:
-    setCurrentControl(CONTROL_IDLE);
+    setControl(CONTROL_IDLE, m_currentObj);
     break;
-  case CONTROL_OBJECT_POS:
-  case CONTROL_CAMERA_WALK:
+  case CONTROL_OBJECT_POS    :
+  case CONTROL_CAMERA_WALK   :
     setMouseVisible(true);
     ReleaseCapture();
     renderInfo();
     break;
   }
-  CHECKINVARIANT();
 }
 
 void D3SceneEditor::OnContextMenu(HWND pwnd, CPoint point) {
@@ -251,14 +273,12 @@ void D3SceneEditor::OnContextMenu(HWND pwnd, CPoint point) {
     m_pickedInfo.clear();
     OnContextMenuBackground(point);
   } else {
-    resetCurrentControl();
-    setCurrentObj(pickedObj);
+    setControl(CONTROL_IDLE, pickedObj);
     OnContextMenuObj(point);
   }
 }
 
 void D3SceneEditor::OnMouseMove(UINT nFlags, CPoint point) {
-  CHECKINVARIANT();
   if(!(nFlags & MK_LBUTTON)) {
     return;
   }
@@ -277,7 +297,6 @@ void D3SceneEditor::OnMouseMove(UINT nFlags, CPoint point) {
     break;
   }
   m_lastMouse = point;
-  CHECKINVARIANT();
 }
 
 void D3SceneEditor::OnLButtonDblClk(UINT nFlags, CPoint point) {
@@ -285,7 +304,6 @@ void D3SceneEditor::OnLButtonDblClk(UINT nFlags, CPoint point) {
 
 // pt in window-coordinates
 BOOL D3SceneEditor::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) {
-  CHECKINVARIANT();
   switch(getCurrentControl()) {
   case CONTROL_CAMERA_WALK           :
     OnMouseWheelCameraWalk(          nFlags, zDelta, pt);
@@ -456,7 +474,7 @@ BOOL D3SceneEditor::PreTranslateMessage(MSG *pMsg) {
     default:
       if(hasCAM() && (ID_SELECT_LIGHT0 <= pMsg->wParam) && (pMsg->wParam <= ID_SELECT_LIGHT20)) {
         const UINT index = (int)pMsg->wParam - ID_SELECT_LIGHT0;
-        setCurrentObj(sCAM.setLightControlVisible(index, true));
+        setControl(CONTROL_IDLE, sCAM.setLightControlVisible(index, true));
         return true;
       }
     }
@@ -465,9 +483,7 @@ BOOL D3SceneEditor::PreTranslateMessage(MSG *pMsg) {
 }
 
 // ---------------------------------- Controlling object -----------------------------------------
-
 void D3SceneEditor::OnMouseMoveObjPos(UINT nFlags, CPoint pt) {
-  CHECKINVARIANT();
   switch(nFlags & MK_CTRLSHIFT) {
   case 0           :
     moveCurrentObjXY(pt);
@@ -483,7 +499,6 @@ void D3SceneEditor::OnMouseMoveObjPos(UINT nFlags, CPoint pt) {
     rotateCurrentVisualLeftRight(float(pt.x - m_lastMouse.x) / 100.0f);
     break;
   }
-  CHECKINVARIANT();
 }
 
 void D3SceneEditor::moveCurrentObjXY(CPoint pt) {
@@ -515,7 +530,6 @@ void D3SceneEditor::moveCurrentObjXZ(CPoint pt) {
 }
 
 D3DXVECTOR3 D3SceneEditor::getCurrentObjPos() {
-  CHECKINVARIANT();
   switch(getCurrentObjType()) {
   case SOTYPE_VISUALOBJECT  :
   case SOTYPE_LIGHTCONTROL  :
@@ -525,11 +539,9 @@ D3DXVECTOR3 D3SceneEditor::getCurrentObjPos() {
     throwInvalidArgumentException(__TFUNCTION__, _T("type=%d"), getCurrentObjType());
     return D3DXVECTOR3(0,0,0);
   }
-  CHECKINVARIANT();
 }
 
 void D3SceneEditor::setCurrentObjPos(const D3DXVECTOR3 &pos) {
-  CHECKINVARIANT();
   D3SceneObjectVisual *obj = getCurrentObj();
   if(obj == NULL) return;
   switch(obj->getType()) {
@@ -541,31 +553,25 @@ void D3SceneEditor::setCurrentObjPos(const D3DXVECTOR3 &pos) {
     obj->getWorld() = D3World(*obj).setPos(pos);
     renderActive(SE_RENDERALL);
     break;
-  default:
+  default                   :
     throwInvalidArgumentException(__TFUNCTION__, _T("type=%d"), obj->getType());
   }
-  CHECKINVARIANT();
 }
 
 void D3SceneEditor::setCurrentVisualWorld(const D3DXMATRIX &world) {
-  CHECKINVARIANT();
   D3SceneObjectVisual *obj = getCurrentVisual();
   if(obj) {
     obj->getWorld() = world;
     renderActive(SE_RENDERALL);
   }
-  CHECKINVARIANT();
 }
 
 const D3DXMATRIX *D3SceneEditor::getCurrentVisualWorld() const {
-  CHECKINVARIANT();
   D3SceneObjectVisual *obj = getCurrentVisual();
   return (obj == NULL) ? NULL : &obj->getWorld();
-  CHECKINVARIANT();
 }
 
 void D3SceneEditor::setCurrentVisualOrientation(const D3DXQUATERNION &q) {
-  CHECKINVARIANT();
   D3SceneObjectVisual *obj = getCurrentVisual();
   if(obj == NULL) return;
   D3World w(*obj);
@@ -576,56 +582,40 @@ void D3SceneEditor::setCurrentVisualOrientation(const D3DXQUATERNION &q) {
     const D3DXVECTOR3 crNewPos = w.setOrientation(q) * m_centerOfRotation.getMeshPoint();
     setCurrentVisualWorld(w.setPos(w.getPos() + crOldPos - crNewPos));
   }
-  CHECKINVARIANT();
 }
 
 void D3SceneEditor::setCurrentVisualScale(const D3DXVECTOR3 &scale) {
-  CHECKINVARIANT();
   D3SceneObjectVisual *obj = getCurrentVisual();
   if(obj == NULL) return;
-  D3World w(*obj);
-  setCurrentVisualWorld(w.setScale(scale));
-  CHECKINVARIANT();
+  setCurrentVisualWorld(D3World(*obj).setScale(scale));
 }
 
 void D3SceneEditor::OnObjectResetPosition() {
-  CHECKINVARIANT();
   D3SceneObjectVisual *obj = getCurrentVisual();
   if(obj == NULL) return;
-  D3World w(*obj);
-  setCurrentVisualWorld(w.resetPos());
-  CHECKINVARIANT();
+  setCurrentVisualWorld(D3World(*obj).resetPos());
 }
 
 void D3SceneEditor::OnObjectResetScale() {
-  CHECKINVARIANT();
   D3SceneObjectVisual *obj = getCurrentVisual();
   if(obj == NULL) return;
-  D3World w(*obj);
-  setCurrentVisualWorld(w.resetScale());
-  CHECKINVARIANT();
+  setCurrentVisualWorld(D3World(*obj).resetScale());
 }
 void D3SceneEditor::OnObjectResetOrientation() {
-  CHECKINVARIANT();
   D3SceneObjectVisual *obj = getCurrentVisual();
   if(obj == NULL) return;
-  D3World w(*obj);
-  setCurrentVisualWorld(w.resetOrientation());
-  CHECKINVARIANT();
+  setCurrentVisualWorld(D3World(*obj).resetOrientation());
 }
 
 void D3SceneEditor::OnObjectResetAll() {
-  CHECKINVARIANT();
   D3SceneObjectVisual *obj = getCurrentVisual();
   if(obj == NULL) return;
   setCurrentVisualWorld(D3World());
-  CHECKINVARIANT();
 }
 
 #define signDelta ((float)sign(zDelta))
 
 void D3SceneEditor::OnMouseWheelObjPos(UINT nFlags, short zDelta, CPoint pt) {
-  CHECKINVARIANT();
   switch(nFlags & MK_CTRLSHIFT) {
   case 0           :
     { const D3DXVECTOR3 objPos = getCurrentObjPos();
@@ -646,38 +636,22 @@ void D3SceneEditor::OnMouseWheelObjPos(UINT nFlags, short zDelta, CPoint pt) {
     rotateCurrentVisualLeftRight( signDelta / 50.0f    );
     break;
   }
-  CHECKINVARIANT();
 }
 
 void D3SceneEditor::rotateCurrentVisualFrwBckw(float angle1, float angle2) {
-  CHECKINVARIANT();
   D3SceneObjectVisual *obj = getCurrentVisual();
   if(obj == NULL) return;
-  D3World w(*obj);
-  const D3DXVECTOR3      camUp    = sCAM.getUp(), camRight = sCAM.getRight();
-  const D3DXQUATERNION   rot      = createRotation(camUp, angle1) * createRotation(camRight, angle2);
-  setCurrentVisualOrientation(w.getOrientation() * rot);
-  CHECKINVARIANT();
+  const D3DXQUATERNION rot = createRotation(sCAM.getUp(), angle1) * createRotation(sCAM.getRight(), angle2);
+  setCurrentVisualOrientation(D3World(*obj).getOrientation() * rot);
 }
 
 void D3SceneEditor::rotateCurrentVisualLeftRight(float angle) {
-  CHECKINVARIANT();
   D3SceneObjectVisual *obj = getCurrentVisual();
   if(obj == NULL) return;
-  D3World w(*obj);
-  const D3DXVECTOR3     camDir = sCAM.getDir();
-  const D3DXQUATERNION  rot    = createRotation(camDir, angle);
-  setCurrentVisualOrientation(w.getOrientation() * rot);
-  CHECKINVARIANT();
+  setCurrentVisualOrientation(D3World(*obj).getOrientation() * createRotation(sCAM.getDir(), angle));
 }
 
-#define VADJUST_X    0x01
-#define VADJUST_Y    0x02
-#define VADJUST_Z    0x04
-#define VADJUST_ALL  (VADJUST_X | VADJUST_Y | VADJUST_Z)
-
 void D3SceneEditor::OnMouseWheelObjScale(UINT nFlags, short zDelta, CPoint pt) {
-  CHECKINVARIANT();
   const float factor = (1.0f+ 0.04f*signDelta);
   switch(nFlags & MK_CTRLSHIFT) {
   case 0           : adjustCurrentVisualScale(VADJUST_ALL, factor); break;
@@ -685,20 +659,12 @@ void D3SceneEditor::OnMouseWheelObjScale(UINT nFlags, short zDelta, CPoint pt) {
   case MK_SHIFT    : adjustCurrentVisualScale(VADJUST_Y  , factor); break;
   case MK_CTRLSHIFT: adjustCurrentVisualScale(VADJUST_Z  , factor); break;
   }
-  CHECKINVARIANT();
 }
 
 void D3SceneEditor::adjustCurrentVisualScale(int component, float factor) {
-  CHECKINVARIANT();
   D3SceneObjectVisual *obj = getCurrentVisual();
   if(obj == NULL) return;
-  D3World w(*obj);
-  D3DXVECTOR3 scale = w.getScale();
-  if(component & VADJUST_X) scale.x *= factor;
-  if(component & VADJUST_Y) scale.y *= factor;
-  if(component & VADJUST_Z) scale.z *= factor;
-  setCurrentVisualWorld(w.setScale(scale));
-  CHECKINVARIANT();
+  setCurrentVisualWorld(D3World(*obj).multiplyScale(factor, component));
 }
 
 // ------------------------------------- controlling camera -----------------------------------------
@@ -786,7 +752,6 @@ void D3SceneEditor::rotateCameraLeftRight(float angle) {
 // ------------------------------------- controlling lights -----------------------------------------
 
 void D3SceneEditor::OnMouseMoveLight(UINT nFlags, CPoint pt) {
-  CHECKINVARIANT();
   D3LightControl *lc = getCurrentLightControl();
   if(lc) {
     switch(lc->getLightType()) {
@@ -798,11 +763,9 @@ void D3SceneEditor::OnMouseMoveLight(UINT nFlags, CPoint pt) {
       break;
     }
   }
-  CHECKINVARIANT();
 }
 
 void D3SceneEditor::OnMouseMoveLightPoint(UINT nFlags, CPoint pt) {
-  CHECKINVARIANT();
   D3LightControl *lc = getCurrentLightControl();
   assert(lc && (lc->getLightType() == D3DLIGHT_POINT));
   switch(nFlags & MK_CTRLSHIFT) {
@@ -817,11 +780,9 @@ void D3SceneEditor::OnMouseMoveLightPoint(UINT nFlags, CPoint pt) {
   case MK_CTRLSHIFT:
     break;
   }
-  CHECKINVARIANT();
 }
 
 void D3SceneEditor::OnMouseMoveLightSpot(UINT nFlags, CPoint pt) {
-  CHECKINVARIANT();
   D3LightControl   *lc    = getCurrentLightControl();
   assert(lc && (lc->getLightType() == D3DLIGHT_SPOT));
   const D3Light     param = lc->getLight();
@@ -845,11 +806,9 @@ void D3SceneEditor::OnMouseMoveLightSpot(UINT nFlags, CPoint pt) {
   case MK_CTRLSHIFT:
     break;
   }
-  CHECKINVARIANT();
 }
 
 void D3SceneEditor::OnMouseWheelLight(UINT nFlags, short zDelta, CPoint pt) {
-  CHECKINVARIANT();
   D3LightControl *lc = getCurrentLightControl();
   if(lc == NULL) return;
   switch(lc->getLightType()) {
@@ -857,12 +816,10 @@ void D3SceneEditor::OnMouseWheelLight(UINT nFlags, short zDelta, CPoint pt) {
   case D3DLIGHT_POINT      : OnMouseWheelLightPoint(      nFlags, zDelta, pt); break;
   case D3DLIGHT_SPOT       : OnMouseWheelLightSpot(       nFlags, zDelta, pt); break;
   }
-  CHECKINVARIANT();
 }
 
 void D3SceneEditor::OnMouseWheelLightDirectional(UINT nFlags, short zDelta, CPoint pt) {
-  CHECKINVARIANT();
-  D3LightControl            *lc  = getCurrentLightControl();
+  D3LightControl            *lc   = getCurrentLightControl();
   assert(lc && (lc->getLightType() == D3DLIGHT_DIRECTIONAL));
   D3LightControlDirectional &ctrl = *(D3LightControlDirectional*)lc;
   const D3DXVECTOR3          dir  = ctrl.getLight().Direction;
@@ -881,11 +838,9 @@ void D3SceneEditor::OnMouseWheelLightDirectional(UINT nFlags, short zDelta, CPoi
     getScene().setLightDirection(ctrl.getLightIndex(), rotate(dir, sCAM.getDir(),    0.06f*signDelta));
     break;
   }
-  CHECKINVARIANT();
 }
 
 void D3SceneEditor::OnMouseWheelLightPoint(UINT nFlags, short zDelta, CPoint pt) {
-  CHECKINVARIANT();
   D3LightControl      *lc   = getCurrentLightControl();
   assert(lc && (lc->getLightType() == D3DLIGHT_POINT));
   D3LightControlPoint &ctrl = *(D3LightControlPoint*)lc;
@@ -903,11 +858,9 @@ void D3SceneEditor::OnMouseWheelLightPoint(UINT nFlags, short zDelta, CPoint pt)
   case MK_CTRLSHIFT:
     break;
   }
-  CHECKINVARIANT();
 }
 
 void D3SceneEditor::OnMouseWheelLightSpot(UINT nFlags, short zDelta, CPoint pt) {
-  CHECKINVARIANT();
   D3LightControl    *lc    = getCurrentLightControl();
   assert(lc && (lc->getLightType() == D3DLIGHT_SPOT));
   D3LightControlSpot &ctrl = *(D3LightControlSpot*)lc;
@@ -916,27 +869,24 @@ void D3SceneEditor::OnMouseWheelLightSpot(UINT nFlags, short zDelta, CPoint pt) 
   const D3DXVECTOR3  dir   = param.Direction;
   switch(nFlags & MK_CTRLSHIFT) {
   case 0           :
-    getScene().setLightPosition( ctrl.getLightIndex(), pos + sCAM.getUp() * 0.04f*signDelta);
+    getScene().setLightPosition( ctrl.getLightIndex(), pos + sCAM.getUp() * 0.04f * signDelta);
     break;
   case MK_CONTROL  :
-    getScene().setLightDirection(ctrl.getLightIndex(), rotate(dir, sCAM.getRight(), -0.06f*signDelta));
+    getScene().setLightDirection(ctrl.getLightIndex(), rotate(dir, sCAM.getRight(), -0.06f * signDelta));
     break;
   case MK_SHIFT    :
-    getScene().setLightPosition( ctrl.getLightIndex(), pos + sCAM.getRight()   * 0.04f*signDelta);
+    getScene().setLightPosition( ctrl.getLightIndex(), pos + sCAM.getRight() * 0.04f * signDelta);
     break;
   case MK_CTRLSHIFT:
-    getScene().setLightDirection(ctrl.getLightIndex(), rotate(dir, sCAM.getUp(), 0.06f*signDelta));
+    getScene().setLightDirection(ctrl.getLightIndex(), rotate(dir, sCAM.getUp(), 0.06f * signDelta));
     break;
   }
-  CHECKINVARIANT();
 }
 
 void D3SceneEditor::OnMouseWheelLightSpotAngle(UINT nFlags, short zDelta, CPoint pt) {
-  CHECKINVARIANT();
   const D3LightControl *lc = getCurrentLightControl();
-  if(lc == NULL || (lc->getLightType() != D3DLIGHT_SPOT)) {
-    resetCurrentControl();
-    CHECKINVARIANT();
+  if((lc == NULL) || (lc->getLightType() != D3DLIGHT_SPOT)) {
+    resetControl();
     return;
   }
   D3Light light = lc->getLight();
@@ -947,12 +897,10 @@ void D3SceneEditor::OnMouseWheelLightSpotAngle(UINT nFlags, short zDelta, CPoint
   case MK_SHIFT    :
     light.setOuterAngle(light.getOuterAngle() * (1.0f - signDelta / 10.0f));
     break;
-  default:
-    CHECKINVARIANT();
+  default          :
     return;
   }
   getScene().setLight(light);
-  CHECKINVARIANT();
 }
 // ------------------------------------------------------------------------------------------------------------
 
@@ -961,7 +909,6 @@ void D3SceneEditor::OnLightAddPoint()       { addLight(D3DLIGHT_POINT);       }
 void D3SceneEditor::OnLightAddSpot()        { addLight(D3DLIGHT_SPOT);        }
 
 void D3SceneEditor::addLight(D3DLIGHTTYPE type) {
-  CHECKINVARIANT();
   D3DLIGHT lp = D3Light::createDefaultLight(type);
   switch(type) {
   case D3DLIGHT_DIRECTIONAL:
@@ -979,38 +926,6 @@ void D3SceneEditor::addLight(D3DLIGHTTYPE type) {
   } catch(Exception e) {
     showException(e);
   }
-  CHECKINVARIANT();
-}
-
-void D3SceneEditor::setCurrentObj(D3SceneObjectVisual *obj) {
-  CHECKINVARIANT();
-  if(obj == NULL) {
-    switch(getCurrentControlObjType()) {
-    case SOTYPE_VISUALOBJECT:
-      if(getCurrentVisual()) {
-        setCurrentControl(CONTROL_IDLE);
-      }
-      break;
-    case SOTYPE_LIGHTCONTROL:
-      if(getCurrentLightControl()) {
-        setCurrentControl(CONTROL_IDLE);
-      }
-      break;
-    }
-  } else if(obj->getType() != getCurrentControlObjType()) {
-    setCurrentControl(CONTROL_IDLE);
-  }
-  m_currentObj = obj;
-  const D3LightControl *lc = getCurrentLightControl();
-  if(m_propertyDialogMap.isDialogVisible()) {
-    if(lc) {
-      m_propertyDialogMap.showDialog(SP_LIGHTPARAMETERS, lc->getLight());
-    } else if(obj && obj->hasMaterial()) {
-      m_propertyDialogMap.showDialog(SP_MATERIALPARAMETERS, obj->getMaterial());
-    }
-  }
-  renderInfo();
-  CHECKINVARIANT();
 }
 
 SceneObjectType D3SceneEditor::getCurrentObjType() const {
@@ -1051,18 +966,14 @@ const D3LightControl *D3SceneEditor::getCurrentLightControl() const {
 }
 
 void D3SceneEditor::setAllLightControlsVisible(bool visible) {
-  CHECKINVARIANT();
   sCAM.setLightControlsVisible(visible ? getScene().getLightsDefined() : BitSet(10));
-  CHECKINVARIANT();
 }
 
 void D3SceneEditor::setLightControlRenderEffect(bool enabled) {
-  CHECKINVARIANT();
   if(enabled != D3LightControl::isRenderEffectEnabled()) {
     D3LightControl::enableRenderEffect(enabled);
     renderActive(SE_RENDER3D);
   }
-  CHECKINVARIANT();
 }
 
 void D3SceneEditor::setSpecularEnable(bool enabled) {
@@ -1071,11 +982,9 @@ void D3SceneEditor::setSpecularEnable(bool enabled) {
 }
 
 void D3SceneEditor::setSpotToPointAt(CPoint point) {
-  CHECKINVARIANT();
   D3LightControl *lc = getCurrentLightControl();
   if((lc == NULL) || (lc->getLightType() != D3DLIGHT_SPOT)) {
-    resetCurrentControl();
-    CHECKINVARIANT();
+    resetControl();
     return;
   }
   D3SceneObjectVisual *obj = getPickedVisual(point, ~OBJMASK_LIGHTCONTROL, m_pickedRay, m_pickedInfo);
@@ -1086,7 +995,6 @@ void D3SceneEditor::setSpotToPointAt(CPoint point) {
     param.Direction = unitVector(m_pickedInfo.m_worldPoint - param.Position);
     getScene().setLight(param);
   }
-  CHECKINVARIANT();
 }
 
 void D3SceneEditor::OnContextMenuObj(CPoint point) {
@@ -1095,7 +1003,7 @@ void D3SceneEditor::OnContextMenuObj(CPoint point) {
   case SOTYPE_ANIMATEDOBJECT:
     OnContextMenuVisualObj(point);
     break;
-  case SOTYPE_LIGHTCONTROL:
+  case SOTYPE_LIGHTCONTROL  :
     OnContextMenuLightControl(point);
     break;
   }
@@ -1261,84 +1169,105 @@ void D3SceneEditor::OnContextMenuLightControl(CPoint point) {
   showContextMenu(menu, point);
 }
 
-void D3SceneEditor::OnControlCameraWalk()       { setCurrentControl(CONTROL_CAMERA_WALK      ); }
-void D3SceneEditor::OnControlCameraProjection() { setCurrentControl(CONTROL_CAMERA_PROJECTION); }
-void D3SceneEditor::OnControlObjPos()           { setCurrentControl(CONTROL_OBJECT_POS       ); }
-void D3SceneEditor::OnControlObjScale()         { setCurrentControl(CONTROL_OBJECT_SCALE     ); }
+void D3SceneEditor::OnControlCameraWalk()       { setControl(CONTROL_CAMERA_WALK      , NULL); }
+void D3SceneEditor::OnControlCameraProjection() { setControl(CONTROL_CAMERA_PROJECTION, NULL); }
+void D3SceneEditor::OnControlObjPos()           { setControl(CONTROL_OBJECT_POS       , NULL); }
+void D3SceneEditor::OnControlObjScale()         { setControl(CONTROL_OBJECT_SCALE     , NULL); }
 
 void D3SceneEditor::OnControlObjMoveRotate() {
-//  setSelectedObject(m_calculatedObject);
-  setCurrentControl(CONTROL_OBJECT_POS);
+  setControl(CONTROL_OBJECT_POS,getCurrentVisual());
 }
 
 void D3SceneEditor::OnObjectControlSpeed() {
-  setCurrentControl(CONTROL_ANIMATION_SPEED);
+  setControl(CONTROL_ANIMATION_SPEED, getCurrentAnimatedObj());
 }
 
 void D3SceneEditor::OnObjectCreateCube() {
-  setCurrentControl(CONTROL_ANIMATION_SPEED);
+  resetControl();
 }
 
-void D3SceneEditor::resetCurrentControl() {
-  setCurrentObj(NULL);
-  unselectPropertyDialog();
-  setCurrentControl(CONTROL_IDLE);
+D3SceneEditor &D3SceneEditor::resetControl() {
+  if(isSet(SE_RESETCONTROLACTIVE)) {
+    return *this;
+  }
+  setFlags(SE_RESETCONTROLACTIVE);
+  setControl(CONTROL_IDLE, NULL);
+  m_pickedInfo.clear();
+  clrFlags(SE_RESETCONTROLACTIVE);
+  return *this;
 }
 
-void D3SceneEditor::setCurrentControl(D3EditorControl control) {
+bool D3SceneEditor::setControl(D3EditorControl control, D3SceneObjectVisual *visual) {
+  if(isSet(SE_SETCONTROLACTIVE)) {
+    return false;
+  }
+  if((control == m_currentControl) && (visual == m_currentObj)) {
+    return false;
+  }
+  setFlags(SE_SETCONTROLACTIVE);
+  m_currentControl = control;
+  m_currentObj     = visual;
   switch(control) {
-  case CONTROL_OBJECT_POS:
-    setWindowCursor(getCurrentHwnd(), MAKEINTRESOURCE(OCR_HAND));
+  case CONTROL_OBJECT_POS    :
+    setWindowCursor(getCurrentHwnd(), MAKEINTRESOURCE(OCR_HAND  ));
     break;
-  case CONTROL_CAMERA_WALK     :
-    setCurrentObj(NULL);
+  case CONTROL_CAMERA_WALK   :
     setWindowCursor(getCurrentHwnd(), MAKEINTRESOURCE(OCR_NORMAL));
     break;
   case CONTROL_SPOTLIGHTPOINT:
-    setWindowCursor(getCurrentHwnd(), MAKEINTRESOURCE(OCR_CROSS));
+    setWindowCursor(getCurrentHwnd(), MAKEINTRESOURCE(OCR_CROSS ));
     break;
-  default:
+  default                    :
     setWindowCursor(getCurrentHwnd(), MAKEINTRESOURCE(OCR_NORMAL));
     break;
   }
-  m_currentControl = control;
-  CHECKINVARIANT();
+
+  D3LightControl *lc = getCurrentLightControl();
+  if(m_propertyDialogMap.isDialogVisible()) {
+    if(lc) {
+      mapDialogShow(lc);
+    } else if(visual && visual->hasMaterial()) {
+      mapDialogShow(visual);
+    } else {
+      mapDialogHide();
+    }
+  }
+  clrFlags(SE_SETCONTROLACTIVE);
+  renderInfo();
+  return true;
 }
 
-SceneObjectType D3SceneEditor::getCurrentControlObjType() const {
-  switch(getCurrentControl()) {
-  case CONTROL_IDLE             :
-  case CONTROL_CAMERA_WALK      :
-  case CONTROL_CAMERA_PROJECTION: return SOTYPE_NULL;
-  case CONTROL_OBJECT_POS       :
-  case CONTROL_OBJECT_SCALE     :
-  case CONTROL_ANIMATION_SPEED  :
-  case CONTROL_MATERIAL         : return SOTYPE_VISUALOBJECT;
-  case CONTROL_LIGHT            :
-  case CONTROL_SPOTLIGHTPOINT   :
-  case CONTROL_SPOTLIGHTANGLES  :
-  case CONTROL_LIGHTCOLOR       : return SOTYPE_LIGHTCONTROL;
-  case CONTROL_BACKGROUNDCOLOR  :
-  case CONTROL_AMBIENTLIGHTCOLOR: return SOTYPE_NULL;
-  default                       :
-    showWarning(_T("%s:Unknown controlType:%d"), __TFUNCTION__, getCurrentControl());
-    return SOTYPE_NULL;
-  }
+void D3SceneEditor::selectPropertyDialog(PropertyDialog *dlg, D3EditorControl control) {
+  m_currentPropertyDialog = dlg;
+  setControl(control, NULL);
+}
+void D3SceneEditor::unselectPropertyDialog() {
+  m_currentPropertyDialog = NULL;
+  setControl(CONTROL_IDLE, NULL);
+}
+
+void D3SceneEditor::mapDialogShow(D3LightControl *lc) {
+  m_propertyDialogMap.showDialog(SP_LIGHTPARAMETERS, lc->getLight());
+  setControl(CONTROL_LIGHTCOLOR, lc);
+}
+void D3SceneEditor::mapDialogShow(D3SceneObjectVisual *obj) {
+  m_propertyDialogMap.showDialog(SP_MATERIALPARAMETERS, obj->getMaterial());
+  setControl(CONTROL_MATERIAL, obj);
+}
+void D3SceneEditor::mapDialogHide() {
+  m_propertyDialogMap.hideDialog();
 }
 
 void D3SceneEditor::OnObjectEditMaterial() {
-  CHECKINVARIANT();
   if(hasObj() && getCurrentObj()->hasMaterial()) {
-    m_propertyDialogMap.showDialog(SP_MATERIALPARAMETERS, getCurrentObj()->getMaterial());
-    setCurrentControl(CONTROL_MATERIAL);
+    mapDialogShow(getCurrentObj());
   }
-  CHECKINVARIANT();
 }
 
-void D3SceneEditor::OnCameraResetPosition()    {  sCAM.resetPos();         }
-void D3SceneEditor::OnCameraResetOrientation() {  sCAM.resetOrientation(); }
-void D3SceneEditor::OnCameraResetProjection()  {  sCAM.resetProjection();  }
-void D3SceneEditor::OnCameraResetAll()         {  sCAM.resetAll();         }
+void D3SceneEditor::OnCameraResetPosition()    { sCAM.resetPos();         }
+void D3SceneEditor::OnCameraResetOrientation() { sCAM.resetOrientation(); }
+void D3SceneEditor::OnCameraResetProjection()  { sCAM.resetProjection();  }
+void D3SceneEditor::OnCameraResetAll()         { sCAM.resetAll();         }
 
 void D3SceneEditor::SetRightHanded(bool rightHanded) {
   getScene().setRightHanded(rightHanded);
@@ -1373,32 +1302,24 @@ static void setCurrentAnimationState(D3SceneObjectAnimatedMesh *obj, AnimationSt
 }
 
 void D3SceneEditor::OnObjectStartAnimation() {
-  CHECKINVARIANT();
   setCurrentAnimationState(getCurrentAnimatedObj(), ANIMATION_FORWARD);
-  CHECKINVARIANT();
 }
 
 void D3SceneEditor::OnObjectStartBckAnimation() {
-  CHECKINVARIANT();
   setCurrentAnimationState(getCurrentAnimatedObj(), ANIMATION_BACKWARDS);
-  CHECKINVARIANT();
 }
 
 void D3SceneEditor::OnObjectStartAltAnimation() {
-  CHECKINVARIANT();
   setCurrentAnimationState(getCurrentAnimatedObj(), ANIMATION_ALTERNATING);
-  CHECKINVARIANT();
 }
 
 void D3SceneEditor::OnObjectReverseAnimation() {
-  CHECKINVARIANT();
   D3SceneObjectAnimatedMesh *obj = getCurrentAnimatedObj();
   if((obj == NULL) || !obj->isRunning()) return;
   switch(obj->getAnimationType()) {
   case ANIMATE_FORWARD    : setCurrentAnimationState(obj, ANIMATION_BACKWARDS); break;
   case ANIMATE_BACKWARD   : setCurrentAnimationState(obj, ANIMATION_FORWARD  ); break;
   }
-  CHECKINVARIANT();
 }
 
 void D3SceneEditor::OnObjectStopAnimation() {
@@ -1406,26 +1327,20 @@ void D3SceneEditor::OnObjectStopAnimation() {
 }
 
 void D3SceneEditor::OnMouseWheelAnimationSpeed(UINT nFlags, short zDelta, CPoint pt) {
-  CHECKINVARIANT();
   const float factor = (1.0f + 0.04f*signDelta);
   D3SceneObjectAnimatedMesh *obj = getCurrentAnimatedObj();
   if(obj && obj->isRunning()) {
     obj->scaleSpeed(factor);
     renderInfo();
   }
-  CHECKINVARIANT();
 }
 
 void D3SceneEditor::OnObjectRemove() {
-  CHECKINVARIANT();
   if(!hasObj()) return;
   D3SceneObjectVisual *obj = m_currentObj;
   getScene().removeVisual(m_currentObj);
-  setCurrentObj(NULL);
-  m_pickedInfo.clear();
   SAFEDELETE(obj);
   renderActive(SE_RENDERALL);
-  CHECKINVARIANT();
 }
 
 void D3SceneEditor::OnObjectSetCenterOfRotation() {
@@ -1439,52 +1354,40 @@ void D3SceneEditor::OnObjectResetCenterOfRotation() {
 }
 
 void D3SceneEditor::setLightEnabled(bool enabled) {
-  CHECKINVARIANT();
   getScene().setLightEnabled(getCurrentLightControl()->getLightIndex(), enabled);
   renderActive(SE_RENDERALL);
-  CHECKINVARIANT();
 }
 
 void D3SceneEditor::OnLightAdjustColors() {
-  CHECKINVARIANT();
   D3LightControl *lc = getCurrentLightControl();
   if(lc == NULL) return;
-  m_propertyDialogMap.showDialog(SP_LIGHTPARAMETERS, lc->getLight());
-  setCurrentControl(CONTROL_LIGHTCOLOR);
-  CHECKINVARIANT();
+  mapDialogShow(lc);
 }
 
 void D3SceneEditor::OnLightAdjustSpotAngles() {
-  setCurrentControl(CONTROL_SPOTLIGHTANGLES);
+  setControl(CONTROL_SPOTLIGHTANGLES, getCurrentLightControl());
 }
 
 void D3SceneEditor::OnLightControlSpotAt() {
-  setCurrentControl(CONTROL_SPOTLIGHTPOINT);
+  setControl(CONTROL_SPOTLIGHTPOINT, getCurrentLightControl());
 }
 
 void D3SceneEditor::OnLightControlHide() {
-  CHECKINVARIANT();
   D3LightControl *lc = getCurrentLightControl();
   if(lc == NULL) return;
   sCAM.setLightControlVisible(lc->getLightIndex(), false);
-  renderActive(SE_RENDERALL);
-  CHECKINVARIANT();
+  resetControl().renderActive(SE_RENDERALL);
 }
 
 void D3SceneEditor::OnLightRemove() {
-  CHECKINVARIANT();
   D3LightControl *lc = getCurrentLightControl();
   if(lc == NULL) return;
-  setCurrentObj(NULL);
-  const int lightIndex = lc->getLightIndex();
-  getScene().removeLight(lightIndex);
-  renderActive(SE_RENDERALL);
-  CHECKINVARIANT();
+  getScene().removeLight(lc->getLightIndex());
+  resetControl().renderActive(SE_RENDERALL);
 }
 
 void D3SceneEditor::OnSceneEditAmbientLight() {
-  CHECKINVARIANT();
-  resetCurrentControl();
+  resetControl();
   const D3DCOLOR oldColor = getScene().getAmbientColor();
   CColorDlg dlg(_T("Ambient color"), SP_AMBIENTCOLOR, oldColor);
   dlg.addPropertyChangeListener(this);
@@ -1494,22 +1397,18 @@ void D3SceneEditor::OnSceneEditAmbientLight() {
     renderActive(SE_RENDERALL);
   }
   unselectPropertyDialog();
-  CHECKINVARIANT();
 }
 
 void D3SceneEditor::OnCameraEditBackgroundColor() {
-  CHECKINVARIANT();
-  resetCurrentControl();
+  resetControl();
   const D3DCOLOR oldColor = sCAM.getBackgroundColor();
   CColorDlg dlg(_T("Background color"), CAM_BACKGROUNDCOLOR, oldColor);
-
   dlg.addPropertyChangeListener(this);
   selectPropertyDialog(&dlg, CONTROL_BACKGROUNDCOLOR);
   if(dlg.DoModal() != IDOK) {
     sCAM.setBackgroundColor(oldColor);
   }
   unselectPropertyDialog();
-  CHECKINVARIANT();
 }
 
 void D3SceneEditor::OnObjectFillmodePoint()     { getCurrentObj()->setFillMode(D3DFILL_POINT     ); renderActive(SE_RENDERALL); }
@@ -1575,67 +1474,3 @@ void D3SceneEditor::OnSceneLoadParameters() {
     showException(e);
   }
 }
-
-#ifdef _DEBUG
-
-#ifdef verify
-#undef verify
-#endif
-#define verify(exp) (void)((exp) || (showError(_T("%s line %d:%s"), method, line, _T(#exp)), 0))
-
-void D3SceneEditor::checkInvariant(const TCHAR *method, int line) const {
-  const SceneObjectType objType = getCurrentObjType();
-/*
-  case SOTYPE_NULL          :
-  case SOTYPE_VISUALOBJECT  :
-  case SOTYPE_LIGHTCONTROL  :
-  case SOTYPE_ANIMATEDOBJECT:;
-*/
-
-  switch(m_currentControl) {
-  case CONTROL_IDLE             :
-  case CONTROL_CAMERA_WALK      :
-  case CONTROL_CAMERA_PROJECTION:
-    break;
-  case CONTROL_OBJECT_POS       :
-  case CONTROL_OBJECT_SCALE     :
-    verify((objType == SOTYPE_VISUALOBJECT) || (objType == SOTYPE_ANIMATEDOBJECT));
-    break;
-  case CONTROL_ANIMATION_SPEED  :
-    verify(objType == SOTYPE_ANIMATEDOBJECT);
-    break;
-  case CONTROL_MATERIAL         :
-    verify((objType == SOTYPE_VISUALOBJECT) || (objType == SOTYPE_ANIMATEDOBJECT));
-    verify(m_propertyDialogMap.getVisibleDialogId() == SP_MATERIALPARAMETERS);
-    break;
-  case CONTROL_LIGHT            :
-    verify(objType == SOTYPE_LIGHTCONTROL);
-    break;
-  case CONTROL_LIGHTCOLOR:
-    verify(objType                                  == SOTYPE_LIGHTCONTROL);
-    verify(m_propertyDialogMap.getVisibleDialogId() == SP_LIGHTPARAMETERS );
-    break;
-  case CONTROL_SPOTLIGHTPOINT   :
-  case CONTROL_SPOTLIGHTANGLES  :
-    verify(objType == SOTYPE_LIGHTCONTROL);
-    verify(getCurrentLightControl()->getLightType() == D3DLIGHT_SPOT);
-    break;
-  case CONTROL_BACKGROUNDCOLOR  :
-  case CONTROL_AMBIENTLIGHTCOLOR:
-    break;
-  }
-
-  switch(m_currentControl) {
-  case CONTROL_IDLE             :
-    break;
-  case CONTROL_BACKGROUNDCOLOR  :
-  case CONTROL_AMBIENTLIGHTCOLOR:
-    verify(m_currentPropertyDialog != NULL);
-    break;
-  default                       :
-    verify(m_currentPropertyDialog == NULL);
-    break;
-  }
-}
-
-#endif // _DEBUG

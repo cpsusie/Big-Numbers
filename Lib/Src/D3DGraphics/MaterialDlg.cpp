@@ -16,8 +16,8 @@ CMaterialDlg::CMaterialDlg(PropertyChangeListener *listener, CWnd *pParent)
 
 void CMaterialDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
-  DDX_Control(pDX, IDC_COLORMAP_AMBIENT, m_colormapAmbient);
-  DDX_Control(pDX, IDC_COLORMAP_DIFFUSE, m_colormapDiffuse);
+  DDX_Control(pDX, IDC_COLORMAP_AMBIENT , m_colormapAmbient );
+  DDX_Control(pDX, IDC_COLORMAP_DIFFUSE , m_colormapDiffuse );
   DDX_Control(pDX, IDC_COLORMAP_EMISSIVE, m_colormapEmissive);
   DDX_Control(pDX, IDC_COLORMAP_SPECULAR, m_colormapSpecular);
 }
@@ -106,10 +106,6 @@ void  CMaterialDlg::showOpacity(double v) {
   setWindowText(this, IDC_STATIC_OPACITY, format(_T("%.1f%%"), v*100.0));
 }
 
-void CMaterialDlg::OnShowWindow(BOOL bShow, UINT nStatus) {
-  PropertyDialog::OnShowWindow(bShow, nStatus);
-}
-
 void CMaterialDlg::OnHideWindow() {
   ShowWindow(SW_HIDE);
 }
@@ -125,10 +121,10 @@ void CMaterialDlg::OnCancel() {
 }
 
 BEGIN_EVENTSINK_MAP(CMaterialDlg, CColormapDialog)
-  ON_EVENT(CMaterialDlg, IDC_COLORMAP_AMBIENT , 1, CMaterialDlg::OnColorchangedColormapAmbient , VTS_NONE)
-  ON_EVENT(CMaterialDlg, IDC_COLORMAP_DIFFUSE , 1, CMaterialDlg::OnColorchangedColormapDiffuse , VTS_NONE)
-  ON_EVENT(CMaterialDlg, IDC_COLORMAP_SPECULAR, 1, CMaterialDlg::OnColorchangedColormapSpecular, VTS_NONE)
-  ON_EVENT(CMaterialDlg, IDC_COLORMAP_EMISSIVE, 1, CMaterialDlg::OnColorchangedColormapEmissive, VTS_NONE)
+  ON_EVENT(CMaterialDlg, IDC_COLORMAP_AMBIENT , 1, OnColorchangedColormapAmbient , VTS_NONE)
+  ON_EVENT(CMaterialDlg, IDC_COLORMAP_DIFFUSE , 1, OnColorchangedColormapDiffuse , VTS_NONE)
+  ON_EVENT(CMaterialDlg, IDC_COLORMAP_SPECULAR, 1, OnColorchangedColormapSpecular, VTS_NONE)
+  ON_EVENT(CMaterialDlg, IDC_COLORMAP_EMISSIVE, 1, OnColorchangedColormapEmissive, VTS_NONE)
 END_EVENTSINK_MAP()
 
 
