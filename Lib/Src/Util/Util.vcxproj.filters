@@ -854,6 +854,9 @@
     <ClCompile Include="FileTimeToTotalTime.cpp">
       <Filter>Source Files\Date</Filter>
     </ClCompile>
+    <ClCompile Include="BCDArrayPacker.cpp">
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
