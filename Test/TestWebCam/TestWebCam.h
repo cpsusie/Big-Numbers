@@ -8,12 +8,11 @@
 
 class CTestWebCamApp : public CWinApp {
 public:
-	CTestWebCamApp();
+  CTestWebCamApp();
 
-	public:
-	virtual BOOL InitInstance();
-
-	DECLARE_MESSAGE_MAP()
+public:
+  virtual BOOL InitInstance();
+  DECLARE_MESSAGE_MAP()
 };
 
 extern CTestWebCamApp theApp;

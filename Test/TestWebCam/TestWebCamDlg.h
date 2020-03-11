@@ -6,14 +6,14 @@
 
 class CTestWebCamDlg : public CDialog, public CaptureReceiver {
 private:
-    HICON      m_hIcon;
+  HICON      m_hIcon;
   bool       m_timerIsRunning;
   bool       m_edgeDetectionOn;
   PixRect   *m_lastImage;
   MMCapture *m_capture;
   Semaphore  m_gate;
 public:
-    CTestWebCamDlg(CWnd *pParent = NULL);   // standard constructor
+  CTestWebCamDlg(CWnd *pParent = NULL);   // standard constructor
   HWND getWindow() {
     return m_hWnd;
   }
@@ -26,7 +26,7 @@ public:
   void startTimer();
   void stopTimer();
 
-    enum { IDD = IDD_TESTWEBCAM_DIALOG };
+  enum { IDD = IDD_TESTWEBCAM_DIALOG };
 
 protected:
     virtual void DoDataExchange(CDataExchange *pDX);

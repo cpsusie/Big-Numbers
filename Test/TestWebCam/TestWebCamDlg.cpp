@@ -8,28 +8,17 @@
 
 class CAboutDlg : public CDialog {
 public:
-  CAboutDlg();
-
+  CAboutDlg() : CDialog(IDD) {
+  }
   enum { IDD = IDD_ABOUTBOX };
-
-protected:
-  virtual void DoDataExchange(CDataExchange *pDX);
-
 protected:
   DECLARE_MESSAGE_MAP()
 };
 
-CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
-}
-
-void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-  __super::DoDataExchange(pDX);
-}
-
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CTestWebCamDlg::CTestWebCamDlg(CWnd *pParent) : CDialog(CTestWebCamDlg::IDD, pParent) {
+CTestWebCamDlg::CTestWebCamDlg(CWnd *pParent) : CDialog(IDD, pParent) {
   m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
   m_timerIsRunning  = false;
   m_edgeDetectionOn = false;
@@ -58,7 +47,7 @@ BEGIN_MESSAGE_MAP(CTestWebCamDlg, CDialog)
   ON_WM_QUERYDRAGICON()
   ON_WM_TIMER()
   ON_WM_CLOSE()
-	ON_WM_MOVE()
+  ON_WM_MOVE()
   ON_BN_CLICKED(IDOK                  , OnBnClickedOk       )
   ON_BN_CLICKED(IDCANCEL              , OnBnClickedCancel   )
   ON_BN_CLICKED(IDC_BUTTONSTARTCAPTURE, OnButtonStartCapture)
