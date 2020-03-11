@@ -18,17 +18,17 @@ public:
   }
 
   T &top(UINT index = 0) {
-    int i = (int)size() - 1 - index;
+    const int i = (int)size() - 1 - index;
     if(i < 0) {
-      throwException(_T("Cannot get element %u of stack with height %d"), index, (int)size());
+      throwException(_T("Cannot get element %u of stack with height %u"), index, getHeight());
     }
     return (*this)[i];
   }
 
   const T &top(UINT index = 0) const {
-    int i = (int)size() - 1 - index;
+    const int i = (int)size() - 1 - index;
     if(i < 0) {
-      throwException(_T("Cannot get element %u of stack with height %d"), index, (int)size());
+      throwException(_T("Cannot get element %u of stack with height %u"), index, getHeight());
     }
     return (*this)[i];
   }
@@ -38,7 +38,7 @@ public:
   }
 
   inline void clear() {
-    Array<T>::clear();
+    __super::clear();
   }
 
   inline bool isEmpty() const {

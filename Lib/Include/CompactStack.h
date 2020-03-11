@@ -44,7 +44,7 @@ public:
   }
 
   inline void clear() {
-    CompactArray<T>::clear();
+    __super::clear();
   }
 
   inline bool isEmpty() const {
