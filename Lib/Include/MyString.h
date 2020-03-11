@@ -68,11 +68,33 @@ template<typename DstCharType, typename SrcCharType> DstCharType *strnCpy(DstCha
 }
 
 template<typename CharType> CharType *strUpr(CharType *str) {
-  return (sizeof(CharType) == 1) ? (CharType*)_strupr((char*)((void*)str)) : (CharType*)_wcsupr((wchar_t*)((void*)str));
+  return (sizeof(CharType) == 1) ? (CharType*)_strupr((char   *)((void*)str))
+                                 : (CharType*)_wcsupr((wchar_t*)((void*)str));
 }
 
 template<typename CharType> size_t strLen(const CharType *str) {
-  return (sizeof(CharType) == 1) ? strlen((char*)((void*)str)) : wcslen((wchar_t*)((void*)str));
+  return (sizeof(CharType) == 1) ? strlen((char   *)((void*)str))
+                                 : wcslen((wchar_t*)((void*)str));
+}
+
+template<typename CharType> CharType *strChr(CharType *str, CharType ch) {
+  return (sizeof(CharType) == 1) ? (CharType*)strchr((char   *)((void*)str), (char   )ch)
+                                 : (CharType*)wcschr((wchar_t*)((void*)str), (wchar_t)ch);
+}
+
+template<typename CharType> const CharType *strChr(const CharType *str, CharType ch) {
+  return (sizeof(CharType) == 1) ? (const CharType*)strchr((const char   *)str, (char   )ch)
+                                 : (const CharType*)wcschr((const wchar_t*)str, (wchar_t)ch);
+}
+
+template<typename CharType> CharType *strDup(const CharType *str) {
+  return (sizeof(CharType) == 1) ? (CharType*)_strdup((const char   *)str)
+                                 : (CharType*)_wcsdup((const wchar_t*)str);
+}
+
+template<typename CharType> CharType *strRev(CharType *str) {
+  return (sizeof(CharType) == 1) ? (CharType*)_strrev((char   *)str)
+                                 : (CharType*)_wcsrev((wchar_t*)str)
 }
 
 class String {
