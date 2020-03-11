@@ -1,21 +1,21 @@
 #pragma once
 
-#include <MFCUtil/PropertyDlgThread.h>
+#include <MFCUtil/PropertyDialogThread.h>
 #include "PearlImageView.h"
 #include "GridDlg.h"
 
 class CMainFrame : public CFrameWnd, public PropertyChangeListener {
 private:
-  static const TCHAR *s_saveFileDialogExtensions;
-  static const TCHAR *s_loadFileDialogExtensions;
-  CStatusBar          m_wndStatusBar;
-  CToolBar            m_wndToolBar;
-  HACCEL              m_accelTable;
-  bool                m_created;
-  double              m_currentDegree;
-  ScaleParameters     m_currentScale;
-  CGridDlg           *m_gridDlg;
-  CPropertyDlgThread *m_gridDlgThread;
+  static const TCHAR    *s_saveFileDialogExtensions;
+  static const TCHAR    *s_loadFileDialogExtensions;
+  CStatusBar             m_wndStatusBar;
+  CToolBar               m_wndToolBar;
+  HACCEL                 m_accelTable;
+  bool                   m_created;
+  double                 m_currentDegree;
+  ScaleParameters        m_currentScale;
+  CGridDlg              *m_gridDlg;
+  CPropertyDialogThread *m_gridDlgThread;
 
   String getLoadFileName();
   void   onFileMruFile(int index);

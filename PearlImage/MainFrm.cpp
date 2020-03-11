@@ -581,12 +581,12 @@ void CMainFrame::createGridDlg() {
     m_gridDlg->addPropertyChangeListener(this);
   }
   if(m_gridDlgThread == NULL) {
-    m_gridDlgThread = CPropertyDlgThread::startThread(m_gridDlg);
+    m_gridDlgThread = CPropertyDialogThread::startThread(m_gridDlg);
   }
 }
 
 void CMainFrame::destroyGridDlg() {
-  if (m_gridDlg) {
+  if(m_gridDlg) {
     m_gridDlg->removePropertyChangeListener(this);
   }
   if(m_gridDlgThread) {
