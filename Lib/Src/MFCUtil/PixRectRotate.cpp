@@ -1,5 +1,7 @@
 #include "pch.h"
 #include <Math.h>
+#include <MFCUtil/D3Error.h>
+#include <MFCUtil/PixRectDevice.h>
 #include <MFCUtil/Viewport2D.h>
 #include <MFCUtil/PixRect.h>
 
@@ -48,8 +50,6 @@ Rectangle2DR getTransformedRectangle(const D3DXMATRIX &m, const Rectangle2DR &r)
   }
   return trCorners.getBoundingBox();
 }
-
-#define V CHECK3DRESULT
 
 void PixRect::drawRotated(const PixRect *src, const CPoint &dst, double degree, const Point2DP &rotationCenter) {
   const CSize           dstSize = getSize();

@@ -101,6 +101,10 @@ void CPropertyDialogThread::setDialogVisible(bool visible) {
   m_lock.notify();
 }
 
+bool CPropertyDialogThread::isDialogVisible1() const {
+  return m_dlg && m_inModalLoop && m_dlg->isVisible();
+}
+
 bool CPropertyDialogThread::isDialogVisible() const {
   m_lock.wait();
   const bool result = isDialogVisible1();

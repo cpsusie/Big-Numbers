@@ -1,9 +1,9 @@
 #pragma once
 
 #include <PropertyContainer.h>
-#include <ByteStream.h>
-#include "PixRect.h"
+#include <MFCUtil/PixRectDevice.h>
 
+class PixRect;
 class AnimatedImage;
 
 class GifFrame {

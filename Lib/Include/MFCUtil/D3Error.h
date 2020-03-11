@@ -2,7 +2,7 @@
 
 #ifdef _DEBUG
 
-#include <MFCUtil/WinTools.h>
+#include "WinTools.h"
 
 void checkD3DResult(const TCHAR *method, HRESULT hr, bool exitOnError);
 

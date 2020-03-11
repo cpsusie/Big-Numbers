@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <MFCUtil/PixRect.h>
 #include <MFCUtil/MMCapture.h>
 
 #pragma comment(lib, "winmm.lib")
@@ -315,7 +316,7 @@ bool MMCapture::saveVideoFrame(VIDEOHDR *videoHeader) {
   bool result = false;
 
   if(!m_captureBlocked) {
-    m_videoPr->copy(*videoHeader);
+    m_videoPr->copy(*(VideoHeader*)videoHeader);
     m_imagePr->formatConversion(*m_videoPr);
     m_videoFrameCount++;
     result = true;

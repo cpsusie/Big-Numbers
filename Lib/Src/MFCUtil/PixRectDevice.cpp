@@ -1,21 +1,7 @@
 #include "pch.h"
+#include <MFCUtil/D3Error.h>
 #include <MFCUtil/PixRect.h>
-
-#ifdef _DEBUG
-void PixRectDevice::check3DResult(TCHAR *fileName, int line, HRESULT hr) const {
-  if((hr != D3D_OK) && !m_exceptionInProgress) {
-    m_exceptionInProgress = true;
-    throwException(_T("D3D-error %s in %s, line %d"), get3DErrorMsg(hr).cstr(), fileName, line);
-  }
-}
-#else
-void PixRectDevice::check3DResult(HRESULT hr) const {
-  if((hr != D3D_OK) && !m_exceptionInProgress) {
-    m_exceptionInProgress = true;
-    throwException(_T("D3D-error %s"), get3DErrorMsg(hr).cstr());
-  }
-}
-#endif
+#include <MFCUtil/PixRectDevice.h>
 
 PixRectDevice::PixRectDevice() {
   m_device       = NULL;
@@ -63,7 +49,7 @@ void PixRectDevice::attach(HWND hwnd, bool windowed, const CSize *size) {
   m_device = D3DeviceFactory::createDevice(hwnd, &param, D3DADAPTER_DEFAULT);
 
   D3DDISPLAYMODE displayMode;
-  CHECK3DRESULT(m_device->GetDisplayMode(0, &displayMode));
+  V(m_device->GetDisplayMode(0, &displayMode));
   m_defaultPixelFormat = displayMode.Format;
 }
 
@@ -71,6 +57,13 @@ void PixRectDevice::detach() {
   releaseRenderTarget();
   SAFERELEASE(m_device);
   resetException();
+}
+
+void PixRectDevice::beginScene() {
+  V(m_device->BeginScene());
+}
+void PixRectDevice::endScene() {
+  V(m_device->EndScene());
 }
 
 void PixRectDevice::releaseRenderTarget() {
@@ -97,7 +90,7 @@ LPDIRECT3DTEXTURE PixRectDevice::createTexture(const CSize &size, D3DFORMAT form
   }
   DWORD usage = D3DUSAGE_DYNAMIC; // (pool == D3DPOOL_MANAGED) ? 0 : D3DUSAGE_DYNAMIC;
 
-  CHECK3DRESULT(m_device->CreateTexture(size.cx, size.cy, 1, usage, format, pool, &texture, NULL));
+  V(m_device->CreateTexture(size.cx, size.cy, 1, usage, format, pool, &texture, NULL));
   TRACE_CREATE(texture);
   return texture;
 }
@@ -106,15 +99,15 @@ LPDIRECT3DSURFACE PixRectDevice::createRenderTarget(const CSize &size, D3DFORMAT
   LPDIRECT3DSURFACE surface;
 
   LPDIRECT3DSURFACE oldRenderTarget;
-  CHECK3DRESULT(m_device->GetRenderTarget(0, &oldRenderTarget));
+  V(m_device->GetRenderTarget(0, &oldRenderTarget));
   TRACE_REFCOUNT(oldRenderTarget);
   D3DSURFACE_DESC desc;
-  CHECK3DRESULT(oldRenderTarget->GetDesc(&desc));
+  V(oldRenderTarget->GetDesc(&desc));
   releaseSurface(oldRenderTarget, PIXRECT_RENDERTARGET);
   if(format == D3DFMT_FORCE_DWORD) {
     format = desc.Format;
   }
-  CHECK3DRESULT(m_device->CreateRenderTarget(size.cx, size.cy, format, desc.MultiSampleType, desc.MultiSampleQuality, lockable, &surface, NULL));
+  V(m_device->CreateRenderTarget(size.cx, size.cy, format, desc.MultiSampleType, desc.MultiSampleQuality, lockable, &surface, NULL));
   TRACE_CREATE(surface);
   return surface;
 }
@@ -127,14 +120,14 @@ LPDIRECT3DSURFACE PixRectDevice::createOffscreenPlainSurface(const CSize &size, 
     pool = D3DPOOL_SYSTEMMEM;
   }
   LPDIRECT3DSURFACE surface;
-  CHECK3DRESULT(m_device->CreateOffscreenPlainSurface(size.cx, size.cy, format, pool, &surface, NULL));
+  V(m_device->CreateOffscreenPlainSurface(size.cx, size.cy, format, pool, &surface, NULL));
   TRACE_CREATE(surface);
   return surface;
 }
 
 LPDIRECT3DSURFACE PixRectDevice::getRenderTarget() {
   LPDIRECT3DSURFACE surface;
-  CHECK3DRESULT(m_device->GetRenderTarget(0,&surface));
+  V(m_device->GetRenderTarget(0,&surface));
   TRACE_CREATE(surface);
   return surface;
 }
@@ -146,7 +139,7 @@ bool PixRectDevice::supportFormatConversion(D3DFORMAT srcFormat, D3DFORMAT dstFo
 
 D3DCAPS PixRectDevice::getDeviceCaps() const {
   D3DCAPS caps;
-  CHECK3DRESULT(m_device->GetDeviceCaps(&caps));
+  V(m_device->GetDeviceCaps(&caps));
   return caps;
 }
 
@@ -154,7 +147,7 @@ D3DCAPS PixRectDevice::getDeviceCaps() const {
 DDCAPS PixRect::getEmulatorCaps() { // static
   DDCAPS result;
   result.dwSize = sizeof(DDCAPS);
-  CHECK3DRESULT(directDraw->GetCaps(NULL, &result));
+  V(directDraw->GetCaps(NULL, &result));
   return result;
 }
 */
@@ -167,20 +160,20 @@ void PixRectDevice::render(const PixRect *pr) {
   LPDIRECT3DSURFACE oldRenderTarget = NULL;
   try {
     beginScene();
-    CHECK3DRESULT(m_device->SetRenderState(D3DRS_LIGHTING, FALSE));
+    V(m_device->SetRenderState(D3DRS_LIGHTING, FALSE));
     endScene();
 
     oldRenderTarget = getRenderTarget();
     if(pr->m_desc.Pool != D3DPOOL_DEFAULT) {
       setRenderTargetSize(pr->getSize());
-      CHECK3DRESULT(m_device->UpdateSurface(pr->m_surface, NULL, m_renderTarget, NULL));
-      CHECK3DRESULT(m_device->StretchRect(m_renderTarget, NULL, oldRenderTarget, NULL, D3DTEXF_NONE));
+      V(m_device->UpdateSurface(pr->m_surface, NULL, m_renderTarget, NULL));
+      V(m_device->StretchRect(m_renderTarget, NULL, oldRenderTarget, NULL, D3DTEXF_NONE));
     } else {
-      CHECK3DRESULT(m_device->StretchRect(pr->m_surface, NULL, oldRenderTarget, NULL, D3DTEXF_NONE));
+      V(m_device->StretchRect(pr->m_surface, NULL, oldRenderTarget, NULL, D3DTEXF_NONE));
     }
 
     SAFERELEASE(oldRenderTarget);
-    CHECK3DRESULT(m_device->Present(NULL, NULL, NULL, NULL));
+    V(m_device->Present(NULL, NULL, NULL, NULL));
   } catch (...) {
     endScene();
     SAFERELEASE(oldRenderTarget);
@@ -203,13 +196,21 @@ void PixRectDevice::set2DTransform(const CSize &size) {
   projection._34 = 0;
   projection._44 = 1;
 
-  CHECK3DRESULT(m_device->SetTransform(D3DTS_PROJECTION, &projection));
+  V(m_device->SetTransform(D3DTS_PROJECTION, &projection));
 /*
   const CSize sz = getSize(m_someTexture);
   const D3DXVECTOR2 rotationCenter(37,37);
   D3DXMATRIX matWorld;
   CHECKD3DRESULT(m_device->SetTransform( D3DTS_WORLD, D3DXMatrixAffineTransformation2D(&matWorld, 1, &rotationCenter, (float)GRAD2RAD(m_rotation), NULL)));
 */
+}
+
+void PixRectDevice::setWorldMatrix(const D3DXMATRIX &m) {
+  V(m_device->SetTransform(D3DTS_WORLD, &m));
+}
+D3DXMATRIX &PixRectDevice::getWorldMatrix(D3DXMATRIX &m) const {
+  V(m_device->GetTransform(D3DTS_WORLD, &m));
+  return m;
 }
 
 class TextureVertex2D {
@@ -227,7 +228,6 @@ public:
 };
 
 class TextureTriangleFan2D {
-  DECLARERESULTCHECKER;
   PixRectDevice &m_device;
 public:
   TextureVertex2D m_vtx[4];
@@ -251,66 +251,56 @@ TextureTriangleFan2D::TextureTriangleFan2D(PixRectDevice *device, const CRect &d
 
 void TextureTriangleFan2D::draw() const {
   LPDIRECT3DDEVICE &device = m_device.getD3Device();
-  CHECK3DRESULT(device->SetFVF(TextureVertex2D::FVF_Flags));
-  CHECK3DRESULT(device->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, 2, m_vtx, sizeof(TextureVertex2D)));
+  V(device->SetFVF(TextureVertex2D::FVF_Flags));
+  V(device->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, 2, m_vtx, sizeof(TextureVertex2D)));
 }
 
-#ifdef _DEBUG
-void TextureTriangleFan2D::check3DResult(TCHAR *fileName, int line, HRESULT hr) const {
-  m_device.check3DResult(fileName, line, hr);
-}
-#else
-void TextureTriangleFan2D::check3DResult(HRESULT hr) const {
-  m_device.check3DResult(hr);
-}
-#endif
+#define SetTextureColorStage(dev, stage, arg1, op, arg2)        \
+  V(dev->SetTextureStageState(stage, D3DTSS_COLOROP  , op   )); \
+  V(dev->SetTextureStageState(stage, D3DTSS_COLORARG1, arg1 )); \
+  V(dev->SetTextureStageState(stage, D3DTSS_COLORARG2, arg2 ));
 
-#define SetTextureColorStage(dev, stage, arg1, op, arg2)                    \
-  CHECK3DRESULT(dev->SetTextureStageState(stage, D3DTSS_COLOROP  , op   )); \
-  CHECK3DRESULT(dev->SetTextureStageState(stage, D3DTSS_COLORARG1, arg1 )); \
-  CHECK3DRESULT(dev->SetTextureStageState(stage, D3DTSS_COLORARG2, arg2 ));
-
-#define SetTextureAlphaStage(dev, stage, arg1, op, arg2)                    \
-  CHECK3DRESULT(dev->SetTextureStageState(stage, D3DTSS_ALPHAOP  , op   )); \
-  CHECK3DRESULT(dev->SetTextureStageState(stage, D3DTSS_ALPHAARG1, arg1 )); \
-  CHECK3DRESULT(dev->SetTextureStageState(stage, D3DTSS_ALPHAARG2, arg2 ));
+#define SetTextureAlphaStage(dev, stage, arg1, op, arg2)        \
+  V(dev->SetTextureStageState(stage, D3DTSS_ALPHAOP  , op   )); \
+  V(dev->SetTextureStageState(stage, D3DTSS_ALPHAARG1, arg1 )); \
+  V(dev->SetTextureStageState(stage, D3DTSS_ALPHAARG2, arg2 ));
 
 void PixRectDevice::alphaBlend(const PixRect *texture, const CRect &dstRect) {
-  CHECK3DRESULT(m_device->SetRenderState( D3DRS_ALPHABLENDENABLE  , TRUE   ));
-  CHECK3DRESULT(m_device->SetRenderState( D3DRS_ALPHATESTENABLE   , TRUE   ));
+  V(m_device->SetRenderState( D3DRS_ALPHABLENDENABLE  , TRUE   ));
+  V(m_device->SetRenderState( D3DRS_ALPHATESTENABLE   , TRUE   ));
 
   SetTextureColorStage(m_device, 0, D3DTA_TEXTURE, D3DTOP_BLENDTEXTUREALPHA, D3DTA_DIFFUSE);
   SetTextureAlphaStage(m_device, 0, D3DTA_TEXTURE, D3DTOP_MODULATE         , D3DTA_DIFFUSE);
 
-  CHECK3DRESULT(m_device->SetRenderState( D3DRS_LIGHTING          , FALSE               ));
-  CHECK3DRESULT(m_device->SetRenderState( D3DRS_CULLMODE          , D3DCULL_NONE        ));
-  CHECK3DRESULT(m_device->SetRenderState( D3DRS_ZENABLE           , FALSE               ));
-  CHECK3DRESULT(m_device->SetRenderState( D3DRS_SRCBLEND          , D3DBLEND_SRCALPHA   ));
-  CHECK3DRESULT(m_device->SetRenderState( D3DRS_DESTBLEND         , D3DBLEND_INVSRCALPHA));
-  CHECK3DRESULT(m_device->SetTexture(0, ((PixRect*)texture)->getTexture()));
+  V(m_device->SetRenderState( D3DRS_LIGHTING          , FALSE               ));
+  V(m_device->SetRenderState( D3DRS_CULLMODE          , D3DCULL_NONE        ));
+  V(m_device->SetRenderState( D3DRS_ZENABLE           , FALSE               ));
+  V(m_device->SetRenderState( D3DRS_SRCBLEND          , D3DBLEND_SRCALPHA   ));
+  V(m_device->SetRenderState( D3DRS_DESTBLEND         , D3DBLEND_INVSRCALPHA));
+  V(m_device->SetTexture(0, ((PixRect*)texture)->getTexture()));
   TextureTriangleFan2D(this, dstRect, texture->getSize()).draw();
 
-  CHECK3DRESULT(m_device->SetRenderState( D3DRS_ALPHABLENDENABLE  , FALSE));
+  V(m_device->SetRenderState( D3DRS_ALPHABLENDENABLE  , FALSE));
 }
 
 void PixRectDevice::draw(const PixRect *pr, const CRect &dstRect) {
   const PixRect *texture = (pr->getType() == PIXRECT_TEXTURE) ? pr  : pr->clone(true, PIXRECT_TEXTURE, D3DPOOL_DEFAULT);
 
-  CHECK3DRESULT(m_device->SetRenderState( D3DRS_ALPHABLENDENABLE  , TRUE   ));
-  CHECK3DRESULT(m_device->SetRenderState( D3DRS_ALPHATESTENABLE   , TRUE   ));
+  V(m_device->SetRenderState( D3DRS_ALPHABLENDENABLE  , TRUE   ));
+  V(m_device->SetRenderState( D3DRS_ALPHATESTENABLE   , TRUE   ));
 
   SetTextureColorStage(m_device, 0, D3DTA_TEXTURE, D3DTOP_BLENDTEXTUREALPHA, D3DTA_DIFFUSE);
   SetTextureAlphaStage(m_device, 0, D3DTA_TEXTURE, D3DTOP_MODULATE         , D3DTA_DIFFUSE);
 
-  CHECK3DRESULT(m_device->SetRenderState( D3DRS_LIGHTING          , FALSE               ));
-  CHECK3DRESULT(m_device->SetRenderState( D3DRS_CULLMODE          , D3DCULL_NONE        ));
-  CHECK3DRESULT(m_device->SetRenderState( D3DRS_ZENABLE           , FALSE               ));
-  CHECK3DRESULT(m_device->SetRenderState( D3DRS_SRCBLEND          , D3DBLEND_SRCALPHA   ));
-  CHECK3DRESULT(m_device->SetRenderState( D3DRS_DESTBLEND         , D3DBLEND_ZERO       ));
-  CHECK3DRESULT(m_device->SetTexture(0, ((PixRect*)texture)->getTexture()));
+  V(m_device->SetRenderState( D3DRS_LIGHTING          , FALSE               ));
+  V(m_device->SetRenderState( D3DRS_CULLMODE          , D3DCULL_NONE        ));
+  V(m_device->SetRenderState( D3DRS_ZENABLE           , FALSE               ));
+  V(m_device->SetRenderState( D3DRS_SRCBLEND          , D3DBLEND_SRCALPHA   ));
+  V(m_device->SetRenderState( D3DRS_DESTBLEND         , D3DBLEND_ZERO       ));
+  V(m_device->SetTexture(0, ((PixRect*)texture)->getTexture()));
   TextureTriangleFan2D(this, dstRect, texture->getSize()).draw();
 
-  CHECK3DRESULT(m_device->SetRenderState( D3DRS_ALPHABLENDENABLE  , FALSE));
+  V(m_device->SetRenderState( D3DRS_ALPHABLENDENABLE  , FALSE));
 
   if(texture != pr) {
     SAFEDELETE(texture);

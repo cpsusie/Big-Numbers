@@ -838,7 +838,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Profiling|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="D3Error.cpp" />
     <ClCompile Include="D3Math.cpp" />
     <ClCompile Include="D3Spherical.cpp" />
     <ClCompile Include="IsoSurfacePolygonizer.cpp" />
@@ -866,7 +865,6 @@
     <ClInclude Include="..\..\Include\D3DGraphics\D3SceneContainer.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObject.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectCoordinateSystem.h" />
-    <ClInclude Include="..\..\Include\D3DGraphics\D3Error.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3LightControl.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3Math.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3Scene.h" />

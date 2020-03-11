@@ -352,6 +352,9 @@
     <ClCompile Include="PropertyDialogThread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="D3Error.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\MFCUtil\Viewport2D.h">
@@ -540,6 +543,18 @@
       <Filter>Header Files\EditListCtrl</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\MFCUtil\PropertyDialogThread.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\MFCUtil\PixRectDevice.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\MFCUtil\D3Error.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\MFCUtil\PixRectType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\MFCUtil\VideoHeader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

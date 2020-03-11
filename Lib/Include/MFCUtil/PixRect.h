@@ -2,14 +2,15 @@
 
 #include "WinTools.h"
 #include "D3DeviceFactory.h"
-#include <vfw.h>
 #include "Point2DP.h"
 #include "PolygonCurve.h"
 #include "ShapeFunctions.h"
 #include "ColorSpace.h"
+#include "PixRectType.h"
 
 class PixRectFont;
 class GlyphCurveData;
+class VideoHeader;
 
 class TextOperator : public CurveOperator {
 public:
@@ -17,16 +18,6 @@ public:
   virtual void endGlyph() {
   };
 };
-
-String get3DErrorMsg(HRESULT hr);
-
-#ifdef _DEBUG
-#define DECLARERESULTCHECKER void check3DResult(TCHAR *fileName, int line, HRESULT hr) const
-#define CHECK3DRESULT(hr) check3DResult(__TFILE__,__LINE__,hr)
-#else
-#define DECLARERESULTCHECKER void check3DResult(HRESULT hr) const
-#define CHECK3DRESULT(hr) check3DResult(hr)
-#endif
 
 class PixelAccessor {
   friend class PixRect;
@@ -237,75 +228,8 @@ public:
 };
 */
 
-typedef enum {
-  PIXRECT_TEXTURE
- ,PIXRECT_RENDERTARGET
- ,PIXRECT_PLAINSURFACE
- ,PiXRECT_FORCE_DWORD = 0xffffffff
-} PixRectType;
-
-class PixRectDevice {
-private:
-  LPDIRECT3DDEVICE   m_device;
-  LPDIRECT3DSURFACE  m_renderTarget;
-  CSize              m_renderTargetSize;
-  D3DFORMAT          m_defaultPixelFormat; // same format as the screen
-  float              m_appScaleX, m_appScaleY;
-  mutable bool       m_exceptionInProgress;
-
-  LPDIRECT3DSURFACE getRenderTarget();
-  void releaseRenderTarget();
-  void setRenderTargetSize(const CSize &size);
-public:
-  PixRectDevice();
-  ~PixRectDevice();
-  void attach(HWND hwnd, bool windowed = true, const CSize *size = NULL);
-  void detach();
-  void beginScene() {
-    CHECK3DRESULT(m_device->BeginScene());
-  }
-  void endScene() {
-    CHECK3DRESULT(m_device->EndScene());
-  }
-  void render(const PixRect *pr);
-  LPDIRECT3DTEXTURE createTexture(              const CSize &size, D3DFORMAT format, D3DPOOL pool);
-  LPDIRECT3DSURFACE createRenderTarget(         const CSize &size, D3DFORMAT format = D3DFMT_FORCE_DWORD, bool    lockable = false); // always in D3DPOOL_DEFAULT
-  LPDIRECT3DSURFACE createOffscreenPlainSurface(const CSize &size, D3DFORMAT format, D3DPOOL pool);
-  inline void releaseTexture(LPDIRECT3DTEXTURE &texture) {
-    SAFERELEASE(texture);
-  }
-  inline void releaseSurface(LPDIRECT3DSURFACE &surface, PixRectType type) {
-    SAFERELEASE(surface)
-  }
-
-  inline D3DFORMAT getDefaultPixelFormat() const {
-    return m_defaultPixelFormat;
-  }
-  LPDIRECT3DDEVICE &getD3Device() {
-    return m_device;
-  }
-  bool supportFormatConversion(D3DFORMAT srcFormat, D3DFORMAT dstFormat, UINT adapter = D3DADAPTER_DEFAULT) const;
-  void setWorldMatrix(const D3DXMATRIX &m) {
-    CHECK3DRESULT(m_device->SetTransform(D3DTS_WORLD, &m));
-  }
-  D3DXMATRIX &getWorldMatrix(D3DXMATRIX &m) const {
-    CHECK3DRESULT(m_device->GetTransform(D3DTS_WORLD, &m));
-    return m;
-  }
-  void set2DTransform(const CSize &size);
-  static CompactArray<D3DDISPLAYMODE> getDisplayModes(UINT adapter = D3DADAPTER_DEFAULT);
-  D3DCAPS getDeviceCaps() const;
-  DECLARERESULTCHECKER;
-  inline void resetException() {
-    m_exceptionInProgress = false;
-  }
-  void alphaBlend(const PixRect *texture, const CRect &dstRect);
-  void draw(      const PixRect *pr     , const CRect &dstRect);
-};
-
 class PixRect {
 private:
-  DECLARERESULTCHECKER;
   friend class PixelAccessor;
   friend class PixRectOperator;
   friend class PixRectClipper;
@@ -462,7 +386,7 @@ public:
   void text(const CPoint &p, const String &text, const PixRectFont &font, D3DCOLOR color, bool invert=false);
   void drawGlyph(const CPoint &p, const GlyphCurveData &glyphCurve, D3DCOLOR color, bool invert=false);
   void drawText( const CPoint &p, const String &text, const PixRectFont &font, D3DCOLOR color, bool invert=false);
-  void copy(const VIDEOHDR &videoHeader);
+  void copy(const VideoHeader &videoHeader);
   void formatConversion(const PixRect &pr);
 
   inline bool contains(const CPoint &p) const {
@@ -511,9 +435,7 @@ public:
   PixRect &apply(PixRectOperator &op    );                                                // return *this
   PixRect &apply(PixRectFilter   &filter);                                                // return *this
 
-  inline void render() {
-    getDevice().render(this);
-  }
+  void render();
   void setClipper(PixRectClipper *clipper);
 
   PixRect &operator=(HBITMAP src);

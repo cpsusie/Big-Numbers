@@ -3,6 +3,8 @@
 #include <FastSemaphore.h>
 
 class PropertyDialog;
+class PropertyContainer;
+
 class CPropertyDialogThread : public CWinThread {
 private:
   PropertyDialog         *m_dlg;
@@ -12,9 +14,7 @@ private:
   mutable FastSemaphore   m_lock;
   void noDialogException(const TCHAR *method) const;
   // no lock-protection
-  inline bool isDialogVisible1() const {
-    return m_dlg && m_inModalLoop && m_dlg->isVisible();
-  }
+  bool isDialogVisible1() const;
 
   DECLARE_DYNCREATE(CPropertyDialogThread)
 protected:

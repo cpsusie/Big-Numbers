@@ -4,7 +4,6 @@
 #include <Math/MathLib.h>
 #include <Math/Point2D.h>
 #include "Math/Point3D.h"
-#include "D3Error.h"
 
 class ParametricSurface : public FunctionTemplate<Point2D, Point3D> {
 };

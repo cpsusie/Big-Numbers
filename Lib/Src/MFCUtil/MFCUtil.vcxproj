@@ -688,6 +688,7 @@
     <ClCompile Include="CreateView.cpp" />
     <ClCompile Include="CursorTools.cpp" />
     <ClCompile Include="D3DeviceFactory.cpp" />
+    <ClCompile Include="D3Error.cpp" />
     <ClCompile Include="DeleteButton.cpp" />
     <ClCompile Include="EditListBooleanEditor.cpp" />
     <ClCompile Include="EditListCtrl.cpp" />
@@ -796,6 +797,7 @@
     <ClInclude Include="..\..\Include\MFCUtil\CoordinateSystem\NormalDistributionAxisPainter.h" />
     <ClInclude Include="..\..\Include\MFCUtil\CoordinateSystem\SystemPainter.h" />
     <ClInclude Include="..\..\Include\MFCUtil\D3DeviceFactory.h" />
+    <ClInclude Include="..\..\Include\MFCUtil\D3Error.h" />
     <ClInclude Include="..\..\Include\MFCUtil\DeleteButton.h" />
     <ClInclude Include="..\..\Include\MFCUtil\EditListBooleanEditor.h" />
     <ClInclude Include="..\..\Include\MFCUtil\EditListCtrl.h" />
@@ -814,6 +816,8 @@
     <ClInclude Include="..\..\Include\MFCUtil\OBMButton.h" />
     <ClInclude Include="..\..\Include\MFCUtil\Picture.h" />
     <ClInclude Include="..\..\Include\MFCUtil\PixRect.h" />
+    <ClInclude Include="..\..\Include\MFCUtil\PixRectDevice.h" />
+    <ClInclude Include="..\..\Include\MFCUtil\PixRectType.h" />
     <ClInclude Include="..\..\Include\MFCUtil\Point2DP.h" />
     <ClInclude Include="..\..\Include\MFCUtil\PointSet.h" />
     <ClInclude Include="..\..\Include\MFCUtil\PolygonCurve.h" />
@@ -830,6 +834,7 @@
     <ClInclude Include="..\..\Include\MFCUtil\SliderCtrlWithTransformation.h" />
     <ClInclude Include="..\..\Include\MFCUtil\StaticBottomAligned.h" />
     <ClInclude Include="..\..\Include\MFCUtil\TreeCtrlWalker.h" />
+    <ClInclude Include="..\..\Include\MFCUtil\VideoHeader.h" />
     <ClInclude Include="..\..\Include\MFCUtil\Viewport2D.h" />
     <ClInclude Include="..\..\Include\MFCUtil\WinTools.h" />
     <ClInclude Include="..\..\Include\MFCUtil\_Font.h" />

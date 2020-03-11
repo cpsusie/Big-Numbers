@@ -1,6 +1,7 @@
 #pragma once
 
-#include "PixRect.h"
+#include "PixRectDevice.h"
+#include <vfw.h>
 #include <Thread.h>
 #include <FastSemaphore.h>
 #include <SynchronizedQueue.h>
@@ -110,7 +111,7 @@ private:
   MMCapture(const MMCapture &capture);        // Not defined. Class not cloneable
   MMCapture &operator=(const MMCapture &src); // Not defined. Class not cloneable
 
-  bool saveVideoFrame(VIDEOHDR *videoHeader);
+  bool saveVideoFrame(      VIDEOHDR *videoHeader);
   void saveAudioFrame(const WAVEHDR  *audioHeader);
   friend class AudioPlayerThread;
   UINT run();

@@ -1,6 +1,9 @@
 #include "pch.h"
 #include <Math.h>
 #include <float.h>
+#include <MFCUtil/VideoHeader.h>
+#include <MFCUtil/D3Error.h>
+#include <MFCUtil/PixRectDevice.h>
 #include <MFCUtil/PixRect.h>
 
 #pragma warning(disable : 4073)
@@ -33,16 +36,6 @@ const TCHAR *PixRect::s_typeName[] {
  ,_T("PIXRECT_RENDERTARGET")
  ,_T("PIXRECT_PLAINSURFACE")
 };
-
-#ifdef _DEBUG
-void PixRect::check3DResult(TCHAR *fileName, int line, HRESULT hr) const {
-  m_device.check3DResult(fileName, line, hr);
-}
-#else
-void PixRect::check3DResult(HRESULT hr) const {
-  m_device.check3DResult(hr);
-}
-#endif
 
 void PixRect::reOpenDirectX() { // static
 //  uninitialize();
@@ -102,7 +95,7 @@ PixRect *PixRect::clone(bool cloneImage, PixRectType type, D3DPOOL pool) const {
       try {
         srcSurface = getSurface();
         dstSurface = copy->getSurface();
-        CHECK3DRESULT(m_device.getD3Device()->UpdateSurface(srcSurface, NULL, dstSurface, NULL));
+        V(m_device.getD3Device()->UpdateSurface(srcSurface, NULL, dstSurface, NULL));
         SAFERELEASE(srcSurface);
         SAFERELEASE(dstSurface);
       } catch(...) {
@@ -146,7 +139,7 @@ void PixRect::moveToPool(D3DPOOL pool) {
 LPDIRECT3DSURFACE PixRect::cloneSurface(D3DPOOL pool) const {
   LPDIRECT3DSURFACE dstSurface = m_device.createOffscreenPlainSurface(getSize(), getPixelFormat(), pool);
   LPDIRECT3DSURFACE srcSurface = getSurface();
-  CHECK3DRESULT(m_device.getD3Device()->UpdateSurface(srcSurface, NULL, dstSurface, NULL));
+  V(m_device.getD3Device()->UpdateSurface(srcSurface, NULL, dstSurface, NULL));
   m_device.releaseSurface(srcSurface, m_type);
   return dstSurface;
 }
@@ -173,7 +166,7 @@ bool PixRect::canUseColorFill() const {
 void PixRect::fillColor(D3DCOLOR color, const CRect *r) {
   if(canUseColorFill()) {
     LPDIRECT3DSURFACE surface = getSurface();
-    CHECK3DRESULT(m_device.getD3Device()->ColorFill(surface, r, color));
+    V(m_device.getD3Device()->ColorFill(surface, r, color));
     SAFERELEASE(surface);
   } else {
     PixelAccessor *pa = getPixelAccessor();
@@ -314,19 +307,19 @@ void PixRect::createTexture(const CSize &sz, D3DFORMAT pixelFormat, D3DPOOL pool
   m_texture = m_device.createTexture(sz, pixelFormat, pool);
   m_type    = PIXRECT_TEXTURE;
   const int levels = m_texture->GetLevelCount();
-  CHECK3DRESULT(m_texture->GetLevelDesc(0, &m_desc));
+  V(m_texture->GetLevelDesc(0, &m_desc));
 }
 
 void PixRect::createRenderTarget(const CSize &sz, D3DFORMAT pixelFormat, bool lockable) { // always in D3DPOOL_DEFAULT
   m_surface = m_device.createRenderTarget(sz, pixelFormat, lockable);
   m_type    = PIXRECT_RENDERTARGET;
-  CHECK3DRESULT(m_surface->GetDesc(&m_desc));
+  V(m_surface->GetDesc(&m_desc));
 }
 
 void PixRect::createPlainSurface(const CSize &sz, D3DFORMAT pixelFormat, D3DPOOL pool) {
   m_surface = m_device.createOffscreenPlainSurface(sz, pixelFormat, pool);
   m_type    = PIXRECT_PLAINSURFACE;
-  CHECK3DRESULT(m_surface->GetDesc(&m_desc));
+  V(m_surface->GetDesc(&m_desc));
 }
 
 void PixRect::destroy() {
@@ -476,11 +469,15 @@ void PixRect::toBitmap(CBitmap &dst) const {
   }
 }
 
+void PixRect::render() {
+  getDevice().render(this);
+}
+
 HDC PixRect::getDC() const {
   assert(m_DCSurface == NULL);
   HDC dc;
   m_DCSurface = getSurface();
-  CHECK3DRESULT(m_DCSurface->GetDC(&dc));
+  V(m_DCSurface->GetDC(&dc));
   return dc;
 }
 
@@ -495,7 +492,7 @@ LPDIRECT3DSURFACE PixRect::getSurface() const {
   LPDIRECT3DSURFACE surface = NULL;
   switch (getType()) {
   case PIXRECT_TEXTURE:
-    CHECK3DRESULT(m_texture->GetSurfaceLevel(0, &surface));
+    V(m_texture->GetSurfaceLevel(0, &surface));
     TRACE_REFCOUNT(surface);
     break;
   case PIXRECT_RENDERTARGET:
@@ -534,11 +531,11 @@ D3DLOCKED_RECT PixRect::lockRect(DWORD flags, const CRect *rect) {
   D3DLOCKED_RECT lr;
   switch (getType()) {
   case PIXRECT_TEXTURE:
-    CHECK3DRESULT(m_texture->LockRect(0, &lr, rect, flags));
+    V(m_texture->LockRect(0, &lr, rect, flags));
     break;
   case PIXRECT_RENDERTARGET:
   case PIXRECT_PLAINSURFACE:
-    CHECK3DRESULT(m_surface->LockRect(&lr, rect, flags));
+    V(m_surface->LockRect(&lr, rect, flags));
     break;
   default:
     unknownTypeError(__TFUNCTION__);
@@ -550,11 +547,11 @@ D3DLOCKED_RECT PixRect::lockRect(DWORD flags, const CRect *rect) {
 void PixRect::unlockRect() {
   switch (getType()) {
   case PIXRECT_TEXTURE:
-    CHECK3DRESULT(m_texture->UnlockRect(0));
+    V(m_texture->UnlockRect(0));
     break;
   case PIXRECT_RENDERTARGET:
   case PIXRECT_PLAINSURFACE:
-    CHECK3DRESULT(m_surface->UnlockRect());
+    V(m_surface->UnlockRect());
     break;
   default:
     unknownTypeError(__TFUNCTION__);
@@ -829,8 +826,8 @@ void PixRect::mask(int x, int y, int w, int h, ULONG op, const PixRect *src, int
 
 /*
 PixRectClipper::PixRectClipper(HWND hwnd) {
-  CHECK3DRESULT(PixRect::directDraw->CreateClipper(0, &m_clipper, NULL));
-  CHECK3DRESULT(m_clipper->SetHWnd(0, hwnd));
+  V(PixRect::directDraw->CreateClipper(0, &m_clipper, NULL));
+  V(m_clipper->SetHWnd(0, hwnd));
 }
 
 PixRectClipper::~PixRectClipper() {
@@ -839,18 +836,18 @@ PixRectClipper::~PixRectClipper() {
 
 void PixRect::setClipper(PixRectClipper *clipper) {
   if(clipper != NULL) {
-    CHECK3DRESULT(m_surface->SetClipper(clipper->m_clipper));
+    V(m_surface->SetClipper(clipper->m_clipper));
   } else {
-    CHECK3DRESULT(m_surface->SetClipper(NULL));
+    V(m_surface->SetClipper(NULL));
   }
 }
 */
 
-void PixRect::copy(const VIDEOHDR &videoHeader) {
+void PixRect::copy(const VideoHeader &videoHeader) {
   D3DLOCKED_RECT lr;
-  CHECK3DRESULT(m_surface->LockRect(&lr, NULL, D3DLOCK_NOSYSLOCK));
+  V(m_surface->LockRect(&lr, NULL, D3DLOCK_NOSYSLOCK));
   memcpy(lr.pBits, videoHeader.lpData, videoHeader.dwBytesUsed);
-  CHECK3DRESULT(m_surface->UnlockRect());
+  V(m_surface->UnlockRect());
 }
 
 void PixRect::formatConversion(const PixRect &pr) {

@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <MFCUtil/D3DeviceFactory.h>
 
 String getD3DErrorMsg(HRESULT hr) {
 

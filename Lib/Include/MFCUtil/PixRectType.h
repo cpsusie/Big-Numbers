@@ -1,0 +1,8 @@
+#pragma once
+
+typedef enum {
+  PIXRECT_TEXTURE
+ ,PIXRECT_RENDERTARGET
+ ,PIXRECT_PLAINSURFACE
+ ,PiXRECT_FORCE_DWORD = 0xffffffff
+} PixRectType;

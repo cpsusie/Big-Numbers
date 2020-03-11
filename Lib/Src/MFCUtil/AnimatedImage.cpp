@@ -5,6 +5,7 @@
 #include <ThreadPool.h>
 #include <Thread.h>
 #include <Semaphore.h>
+#include <MFCUtil/PixRect.h>
 #include <MFCUtil/AnimatedImage.h>
 #include <..\..\GifLib\giflib-5.1.1\lib\gif_lib.h>
 

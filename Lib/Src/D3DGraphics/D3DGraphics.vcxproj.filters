@@ -29,9 +29,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="D3Error.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="D3Scene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -242,9 +239,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Include\D3DGraphics\D3Error.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\D3DGraphics\IsosurfacePolygonizer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
