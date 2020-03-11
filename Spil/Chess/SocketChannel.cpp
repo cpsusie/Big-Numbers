@@ -1,15 +1,17 @@
 #include "stdafx.h"
 #include <RefCountedObject.h>
+#include <ThreadPool.h>
+#include <Runnable.h>
 #include "SocketChannel.h"
 #include <DebugLog.h>
 
-class SocketConnecter : public Thread {
+class SocketConnecter : public Runnable {
 private:
   const int m_port;
   SOCKET   &m_socket;
 public:
   SocketConnecter(int port, SOCKET &socket) : m_port(port), m_socket(socket) {
-    start();
+    ThreadPool::executeNoWait(*this);
   }
   UINT run();
 };

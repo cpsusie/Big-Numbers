@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <ThreadPool.h>
 #include <MFCUtil/WinTools.h>
 #include "AnimatedImage.h"
 
@@ -16,7 +17,6 @@ AnimatedImage::AnimatedImage(int resId, UINT imageCount) {
     m_imageArray.add(frame);
   }
   setSecondsPerCycle(0.25 * imageCount);
-  setDemon(true);
   m_wnd        = NULL;
   m_background = NULL;
 }
@@ -38,7 +38,7 @@ void AnimatedImage::startAnimation(CWnd *wnd, const CPoint &p, double scale, boo
   m_continue       = true;
   m_removeWhenDone = removeWhenDone;
   m_loopCount      = loopCount;
-  resume();
+  ThreadPool::executeNoWait(*this);
 }
 
 void AnimatedImage::stopAnimation() {
@@ -113,6 +113,5 @@ UINT AnimatedImage::run() {
     if(m_removeWhenDone) {
       restoreBackground();
     }
-    suspend();
   }
 }

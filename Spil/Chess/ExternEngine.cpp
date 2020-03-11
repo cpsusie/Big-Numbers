@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <ThreadPool.h>
 
 #ifndef TABLEBASE_BUILDER
 
@@ -90,7 +91,7 @@ void ExternEngine::start(AbstractMoveReceiver *mr) {
     m_inputThread  = new RedirectingInputThread(getInput()); TRACE_NEW(m_inputThread);
     sendUCI();
     if(m_moveReceiver) {
-      resume();
+      ThreadPool::executeNoWait(*this);
       if(!m_threadIsStarted.wait(500)) {
         throwException(_T("Extern enginethread did not start withinh 500 msec."));
       }
@@ -208,7 +209,7 @@ void ExternEngine::sendUCI() {
 
     Timestamp startTime;
     while((line = getLine(500)) != _T("uciok")) {
-      if(diff(startTime, Timestamp(), TSECOND) > 10) {
+      if(Timestamp::diff(startTime, Timestamp(), TSECOND) > 10) {
         throwException(_T("timeout"));
       }
       Tokenizer tok(line, _T(" "));

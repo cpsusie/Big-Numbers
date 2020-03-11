@@ -5,19 +5,20 @@
 #endif
 
 #include <MFCUtil/PixRect.h>
+#include <MFCUtil/PixRectDevice.h>
 
 class CChessApp : public CWinApp {
 private:
   static void createFileAssociation();
 public:
-    CChessApp();
-    PixRectDevice m_device;
-    Options       m_options;
+  CChessApp();
+  PixRectDevice m_device;
+  Options       m_options;
 public:
-    virtual BOOL InitInstance();
-    virtual int  ExitInstance();
+  virtual BOOL InitInstance();
+  virtual int  ExitInstance();
 
-    DECLARE_MESSAGE_MAP()
+  DECLARE_MESSAGE_MAP()
 };
 
 extern CChessApp theApp;

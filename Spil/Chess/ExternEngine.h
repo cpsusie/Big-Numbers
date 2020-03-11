@@ -115,7 +115,7 @@ public:
 
 #define isStateFlagsSet(flags) ((m_stateFlags & (flags)) == (flags))
 
-class ExternEngine : public ExternProcess, public Thread, public OptionsAccessor {
+class ExternEngine : public ExternProcess, public Runnable, public OptionsAccessor {
 private:
   const Player                 m_player;
   EngineDescription            m_desc;
@@ -124,7 +124,8 @@ private:
   AbstractMoveReceiver        *m_moveReceiver;
   mutable Game                 m_game;
   BYTE                         m_stateFlags;
-  Semaphore                    m_gate, m_threadIsStarted;
+  FastSemaphore                m_lock;
+  Semaphore                    m_threadIsStarted;
 
   mutable int                  m_callLevel;
 
@@ -138,21 +139,21 @@ private:
   void sendPosition() const;
 
   inline void setStateFlags(BYTE flags) {
-    m_gate.wait();
+    m_lock.wait();
     m_stateFlags |= flags;
-    m_gate.notify();
+    m_lock.notify();
   }
 
   inline void clrStateFlags(BYTE flags) {
-    m_gate.wait();
+    m_lock.wait();
     m_stateFlags &= ~flags;
-    m_gate.notify();
+    m_lock.notify();
   }
 
   inline void clrAllStateFlags() {
-    m_gate.wait();
+    m_lock.wait();
     m_stateFlags = 0;
-    m_gate.notify();
+    m_lock.notify();
   }
 
   // timeout in milliseconds. If INFINTE, thread is blocked until input arrives

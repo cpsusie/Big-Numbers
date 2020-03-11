@@ -117,7 +117,7 @@ void StopWatch::stop() {
 void StopWatch::resume() {
   if(!m_running) {
     m_running = true;
-    m_msecondsPaused += (int)diff(m_stopTime, Timestamp(), TMILLISECOND);
+    m_msecondsPaused += (int)diffmsec(m_stopTime, Timestamp());
   }
 }
 
@@ -128,15 +128,15 @@ void StopWatch::addSeconds(UINT seconds) {
 UINT StopWatch::getElapsedTime() const { // in milliseconds
   if(m_running) {
     if(m_countDown) {
-      return (UINT)diff(m_startTime, Timestamp(), TMILLISECOND) - m_msecondsPaused;
+      return (UINT)diffmsec(m_startTime, Timestamp()) - m_msecondsPaused;
     } else {
-      return (UINT)diff(m_startTime, Timestamp(), TMILLISECOND) - m_msecondsPaused + m_startMSeconds;
+      return (UINT)diffmsec(m_startTime, Timestamp()) - m_msecondsPaused + m_startMSeconds;
     }
   } else { // !running
     if(m_countDown) {
-      return (UINT)diff(m_startTime, m_stopTime, TMILLISECOND) - m_msecondsPaused;
+      return (UINT)diffmsec(m_startTime, m_stopTime) - m_msecondsPaused;
     } else {
-      return (UINT)diff(m_startTime, m_stopTime, TMILLISECOND) - m_msecondsPaused + m_startMSeconds;
+      return (UINT)diffmsec(m_startTime, m_stopTime) - m_msecondsPaused + m_startMSeconds;
     }
   }
 }

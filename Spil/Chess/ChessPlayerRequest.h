@@ -1,5 +1,6 @@
 #pragma once
 
+#include <SynchronizedQueue.h>
 #include <RefCountedObject.h>
 #include "SocketChannel.h"
 

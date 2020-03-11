@@ -1,8 +1,9 @@
 #include "stdafx.h"
-#include <MFCUtil/ProgressWindow.h>
-#include <MFCUtil/resource.h>
+#include <ThreadPool.h>
 #include <CPUInfo.h>
 #include <SynchronizedQueue.h>
+#include <MFCUtil/ProgressWindow.h>
+#include <MFCUtil/resource.h>
 #include "EndGameTablebase.h"
 
 #ifndef TABLEBASE_BUILDER
@@ -29,11 +30,10 @@ public:
 
 class DecompressJobQueue : public SynchronizedQueue<DecompressSingleJob> {
 private:
-  UINT64    m_sumFileSize;
-  Semaphore m_gate;
+  UINT64 m_sumFileSize;
 public:
   DecompressJobQueue(const EndGameTablebaseList &list) : m_sumFileSize(0) {
-    for (size_t i = 0; i < list.size(); i++) {
+    for(size_t i = 0; i < list.size(); i++) {
       DecompressSingleJob job(list[i]);
       put(job);
       m_sumFileSize += job.getFileSize();
@@ -46,11 +46,11 @@ public:
 
 class Decompressor : public InterruptableRunnable, public ByteCounter {
 private:
-  DecompressJobQueue        &m_jobQueue;
-  mutable Semaphore          m_gate;
-  DecompressSingleJob        m_currentJob;
-  String                     m_currentMsg;
-  UINT64                     m_byteCounterStart, m_currentFileSize;
+  DecompressJobQueue   &m_jobQueue;
+  mutable FastSemaphore m_gate, m_terminated;
+  DecompressSingleJob   m_currentJob;
+  String                m_currentMsg;
+  UINT64                m_byteCounterStart, m_currentFileSize;
   inline void setCurrentFileSize() {
     m_byteCounterStart = getCount();
     m_currentFileSize  = m_currentJob.getFileSize();
@@ -89,18 +89,17 @@ Decompressor::Decompressor(DecompressJobQueue &jobQueue) : m_jobQueue(jobQueue) 
 
 Decompressor::~Decompressor() {
   setInterrupted();
-  while(!isTerminated()) {
-    Sleep(200);
-  }
+  m_terminated.wait();
 }
 
 UINT Decompressor::run() {
   try {
-    for (;;) {
+    m_terminated.wait();
+    for(;;) {
       checkInterruptAndSuspendFlags();
       try {
         m_currentJob = m_jobQueue.get(500);
-      } catch (...) {
+      } catch(...) {
         if(!m_jobQueue.isEmpty()) continue;
         break;
       }
@@ -111,19 +110,20 @@ UINT Decompressor::run() {
       verbose(_T("\n"));
     }
     setCurrentMessage(_T("Done"));
-  } catch (...) {
+  } catch(...) {
     // do nothing
   }
   setTerminated();
+  m_terminated.notify();
   return 0;
 }
 
 class DecompressJob : public InteractiveRunnable {
 private:
-  DecompressJobQueue              m_jobQueue;
-  UINT64                          m_startSumFileSize;
-  CompactArray<Decompressor*>     m_decompArray;
-  String                          m_title;
+  DecompressJobQueue          m_jobQueue;
+  UINT64                      m_startSumFileSize;
+  CompactArray<Decompressor*> m_decompArray;
+  String                      m_title;
   void   clearDecompArray();
   void   suspendAll();
   void   resumeAll();
@@ -168,15 +168,15 @@ DecompressJob::DecompressJob(const EndGameTablebaseList &list) : m_jobQueue(list
 #else
   const int cpuCount = getProcessorCount();
 #endif // _DEBUG
-  for (int i = 0; i < cpuCount; i++) {
+  for(int i = 0; i < cpuCount; i++) {
     Decompressor *dc = new Decompressor(m_jobQueue); TRACE_NEW(dc);
     m_decompArray.add(dc);
   }
 
   m_title = format(_T("%s - %s:%s")
-                 ,loadString(IDS_DECOMPRESSALLTITLE).cstr()
-                 ,loadString(IDS_METRIC).cstr()
-                 ,EndGameKeyDefinition::getMetricName().cstr()
+                  ,loadString(IDS_DECOMPRESSALLTITLE).cstr()
+                  ,loadString(IDS_METRIC).cstr()
+                  ,EndGameKeyDefinition::getMetricName().cstr()
                   );
 }
 
@@ -185,7 +185,7 @@ DecompressJob::~DecompressJob() {
 }
 
 bool DecompressJob::anyDecompressorsActive() const {
-  for (size_t i = 0; i < m_decompArray.size(); i++) {
+  for(size_t i = 0; i < m_decompArray.size(); i++) {
     if(!m_decompArray[i]->isTerminated()) {
       return true;
     }
@@ -195,7 +195,7 @@ bool DecompressJob::anyDecompressorsActive() const {
 
 UINT64 DecompressJob::sumDecompressorsBytesDone() const {
   UINT64 sum = 0;
-  for (size_t i = 0; i < m_decompArray.size(); i++) {
+  for(size_t i = 0; i < m_decompArray.size(); i++) {
     sum += m_decompArray[i]->getCount();
   }
   return sum;
@@ -203,26 +203,26 @@ UINT64 DecompressJob::sumDecompressorsBytesDone() const {
 
 void DecompressJob::clearDecompArray() {
   interruptAll();
-  for (size_t i = 0; i < m_decompArray.size(); i++) {
+  for(size_t i = 0; i < m_decompArray.size(); i++) {
     SAFEDELETE(m_decompArray[i]);
   }
   m_decompArray.clear();
 }
 
 void DecompressJob::suspendAll() {
-  for (size_t i = 0; i < m_decompArray.size(); i++) {
+  for(size_t i = 0; i < m_decompArray.size(); i++) {
     m_decompArray[i]->setSuspended();
   }
 }
 
 void DecompressJob::resumeAll() {
-  for (size_t i = 0; i < m_decompArray.size(); i++) {
+  for(size_t i = 0; i < m_decompArray.size(); i++) {
     m_decompArray[i]->resume();
   }
 }
 
 void DecompressJob::interruptAll() {
-  for (size_t i = 0; i < m_decompArray.size(); i++) {
+  for(size_t i = 0; i < m_decompArray.size(); i++) {
     m_decompArray[i]->setInterrupted();
   }
   waitUntilAllTerminated();
@@ -238,7 +238,7 @@ void DecompressJob::waitUntilAllTerminated() {
 }
 
 UINT DecompressJob::run() {
-  for (size_t i = 0; i < m_decompArray.size(); i++) {
+  for(size_t i = 0; i < m_decompArray.size(); i++) {
     ThreadPool::executeNoWait(*m_decompArray[i]);
   }
   while(!m_jobQueue.isEmpty() || anyDecompressorsActive()) {

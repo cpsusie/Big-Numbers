@@ -4,12 +4,12 @@
 
 class StopWatch {
 private:
-  bool         m_countDown;
-  UINT         m_startMSeconds;
-  bool         m_running;
-  UINT         m_msecondsPaused;
-  Timestamp    m_startTime;
-  Timestamp    m_stopTime;
+  bool       m_countDown, m_running;
+  UINT       m_startMSeconds, m_msecondsPaused;
+  Timestamp  m_startTime, m_stopTime;
+  static inline int diffmsec(const Timestamp &from, const Timestamp &to) {
+    return (int)Timestamp::diff(from, to, TMILLISECOND);
+  }
 public:
   StopWatch(bool countDown = true);
   void init(UINT startSeconds = 0);

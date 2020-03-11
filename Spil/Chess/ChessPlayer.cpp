@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <ThreadPool.h>
 #include "TraceDlgThread.h"
 #include "ChessPlayer.h"
 #include "MoveFinderRandom.h"
@@ -56,10 +57,10 @@
 
 #define ENTER_LOCK()        \
   ENTERFUNC();              \
-  m_gate.wait()
+  m_lock.wait()
 
 #define UNLOCK_LEAVE()      \
-  m_gate.notify();          \
+  m_lock.notify();          \
   LEAVEFUNC()
 
 #define UNLOCK_RETURN(expr) \
@@ -86,7 +87,7 @@ catch(TcpException e) {                                                         
 
 #define CATCH_UNLOCK_RETHROW() \
 catch (...) {                  \
-  m_gate.notify();             \
+  m_lock.notify();             \
   LEAVEFUNC();                 \
   throw;                       \
 }
@@ -101,7 +102,6 @@ OpeningLibrary ChessPlayer::s_openingLibrary;
 
 // public
 ChessPlayer::ChessPlayer(Player player) : m_player(player) {
-  setDemon(true);
   m_state      = CPS_IDLE;
   m_callLevel  = 0;
   m_moveFinder = NULL;
@@ -112,10 +112,12 @@ ChessPlayer::~ChessPlayer() {
   ENTERFUNC();
   putRequest(REQUEST_RESET);
   putRequest(REQUEST_KILL);
-  while(stillActive()) {
-    Sleep(20);
-  }
+  m_terminated.wait();
   LEAVEFUNC();
+}
+
+void ChessPlayer::start() {
+  ThreadPool::executeNoWait(*this);
 }
 
 // public
@@ -131,10 +133,10 @@ void ChessPlayer::startSearch(const Game &game, const TimeLimit &timeLimit, bool
   } else if(gr != NORESULT) {
     putRequest(REQUEST_NULLMOVE);
   } else {
-    m_gate.wait();
+    m_lock.wait();
     m_searchResult.m_move.setNoMove();
     putRequest(ChessPlayerRequest(game, timeLimit, hint, talking)); // REQUEST_FINDMOVE
-    m_gate.notify();
+    m_lock.notify();
   }
   LEAVEFUNC();
 }
@@ -237,12 +239,12 @@ bool ChessPlayer::acceptUndoMove() {
 void ChessPlayer::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
   ENTERFUNC();
   if(id == TRACEWINDOW_ACTIVE) {
-    m_gate.wait();
+    m_lock.wait();
     if(m_moveFinder != NULL) {
       const bool verbose = *(const bool*)newValue;
       m_moveFinder->setVerbose(verbose);
     }
-    m_gate.notify();
+    m_lock.notify();
   }
   LEAVEFUNC();
 }
@@ -250,6 +252,8 @@ void ChessPlayer::handlePropertyChanged(const PropertyContainer *source, int id,
 // mainloop
 UINT ChessPlayer::run() {
   ENTERFUNC();
+  m_terminated.wait();
+
   setSelectedLanguageForThread();
 
   while(getState() != CPS_KILLED) {
@@ -314,6 +318,7 @@ UINT ChessPlayer::run() {
     }
   }
   LEAVEFUNC();
+  m_terminated.notify();
   return 0;
 }
 
@@ -329,14 +334,14 @@ void ChessPlayer::dohandleRequestFindMove(const RequestParamFindMove &param) {
   try {
     CHECKSTATE(CPS_IDLE,CPS_MOVEREADY);
     setState(CPS_PREPARESEARCH);
-    m_gate.notify();
+    m_lock.notify();
   } CATCH_UNLOCK_RETHROW();
 
   if(getOptions().isOpeningLibraryEnabled() && !isRemote()) {
     const PrintableMove libMove = getOpeningLibrary().findLibraryMove(param.getGame(), param.isVerbose());
     if(libMove.isMove()) {
       setMoveFinder(NULL);
-      m_gate.wait();
+      m_lock.wait();
       if(getState() == CPS_PREPARESEARCH) {
         setState(CPS_BUSY);
         putRequest(ChessPlayerRequest(libMove, param.isHint()));
@@ -352,7 +357,7 @@ void ChessPlayer::dohandleRequestFindMove(const RequestParamFindMove &param) {
     allocateMoveFinder(param);
   }
 
-  m_gate.wait();
+  m_lock.wait();
   try {
     if(m_moveFinder != NULL) {
       if(getState() == CPS_PREPARESEARCH) {

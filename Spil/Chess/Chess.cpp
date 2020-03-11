@@ -18,8 +18,8 @@ CChessApp theApp;
 
 class OptionsSaver : public TimeoutHandler {
 private:
-  Options  &m_options;
-  Semaphore m_gate;
+  Options      &m_options;
+  FastSemaphore m_gate;
 public:
   OptionsSaver(Options &options) : m_options(options) {
   }

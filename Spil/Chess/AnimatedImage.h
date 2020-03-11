@@ -1,11 +1,11 @@
 #pragma once
 
-#include <Thread.h>
+#include <Runnable.h>
 #include "Image.h"
 
 #define ANIMATE_INFINITE -1
 
-class AnimatedImage : private Thread {
+class AnimatedImage : private Runnable {
 private:
   ImageArray      m_imageArray;
   PixRect        *m_background;

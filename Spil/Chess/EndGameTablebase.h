@@ -176,7 +176,7 @@ private:
   mutable bool                                                      m_useRemoteSubTablebase;
   int                                                               m_loadRefCount;
 #ifndef TABLEBASE_BUILDER
-  static  Semaphore                                                 s_loadGate;
+  static  FastSemaphore                                             s_loadGate;
 #endif
 
   // assume gameKey.positionSignature == keydef.positionSignature

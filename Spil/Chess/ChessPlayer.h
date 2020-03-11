@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Thread.h>
+#include <Runnable.h>
 #include <SynchronizedQueue.h>
 #include "OpeningLibrary.h"
 #include "AbstractMoveFinder.h"
@@ -23,7 +23,7 @@ typedef enum {
  ,CPP_MESSAGETEXT     // String*             Id of notification  when ChessPlayer.m_msg is changed
 } ChessPlayerProperty;
 
-class ChessPlayer : public Thread, public PropertyContainer, public PropertyChangeListener, OptionsAccessor {
+class ChessPlayer : public Runnable, public PropertyContainer, public PropertyChangeListener, OptionsAccessor {
 private:
 
   static OpeningLibrary s_openingLibrary;
@@ -35,7 +35,7 @@ private:
   SocketChannel           m_channel;
   SearchMoveResult        m_searchResult;
   String                  m_messageText;
-  mutable Semaphore       m_gate;
+  mutable FastSemaphore   m_lock, m_terminated;
   mutable BYTE            m_callLevel;
 
   void putRequest(ChessPlayerRequest request) {
@@ -75,6 +75,7 @@ private:
 public:
   ChessPlayer(Player player);
   ~ChessPlayer();
+  void start();
   UINT run();
 
   inline Player getPlayer() const {
