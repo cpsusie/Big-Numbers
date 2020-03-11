@@ -75,9 +75,9 @@ public:
     return getLightControlsVisible().contains(lightIndex);
   }
   const BitSet   &getLightControlsVisible() const;
-  // set visibility for many lightcontrols. notify only onnce (if changed)
+  // set visibility for many lightcontrols. notify only once (if changed)
   D3Camera       &setLightControlsVisible(const BitSet &set);
-  // set property m_visibleLightControlSet with notifificationid=CAM_LIGHTCONTROLSVISIBLE
+  // set property m_visibleLightControlSet with notificationid=CAM_LIGHTCONTROLSVISIBLE
   D3LightControl *setLightControlVisible(UINT lightIndex, bool visible);
   // set property m_backgroundColor with notifificationid=CAM_BACKGROUNDCOLOR)
   inline D3Camera &setBackgroundColor(D3DCOLOR color) {
