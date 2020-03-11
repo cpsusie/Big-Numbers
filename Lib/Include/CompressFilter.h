@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ByteArray.h"
+#include "ByteStream.h"
 
 typedef enum {
   DEFAULT_COMPRESSION    = -1

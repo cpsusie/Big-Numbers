@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <ByteStream.h>
 #include <ByteArray.h>
 
 ByteArray::ByteArray() {
