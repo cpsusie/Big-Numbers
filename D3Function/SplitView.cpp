@@ -27,21 +27,30 @@ double         CSplitView::s_relativeSplitPos = 0;
 
 CSplitView *CSplitView::create(CWnd *parent, CRuntimeClass *child1, CRuntimeClass *child2, SplitDirection splitDirection, const CRect &rect, double initialRelativeSplitPos) { // static
   s_gate.wait();
-  s_childClass1      = child1;
-  s_childClass2      = child2;
-  s_splitDirection   = splitDirection;
-  s_relativeSplitPos = initialRelativeSplitPos;
+  try {
+    s_childClass1      = child1;
+    s_childClass2      = child2;
+    s_splitDirection   = splitDirection;
+    s_relativeSplitPos = initialRelativeSplitPos;
 
-  CSplitView *view = createView(theApp.getMainFrame(), parent, CSplitView, rect);
+    CSplitView *view = createView(theApp.getMainFrame(), parent, CSplitView, rect);
 
-  s_childClass1      = NULL;
-  s_childClass2      = NULL;
-  s_splitDirection   = SPLIT_NONE;
-  s_relativeSplitPos = 0;
+    s_childClass1      = NULL;
+    s_childClass2      = NULL;
+    s_splitDirection   = SPLIT_NONE;
+    s_relativeSplitPos = 0;
 
-  s_gate.notify();
+    s_gate.notify();
+    return view;
+  } catch(...) {
+    s_childClass1      = NULL;
+    s_childClass2      = NULL;
+    s_splitDirection   = SPLIT_NONE;
+    s_relativeSplitPos = 0;
 
-  return view;
+    s_gate.notify();
+    throw;
+  }
 }
 
 CSplitView::CSplitView() : m_splitter(s_splitDirection, s_relativeSplitPos) {
