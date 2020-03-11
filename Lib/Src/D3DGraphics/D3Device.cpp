@@ -4,7 +4,7 @@
 #include <D3DGraphics/D3Light.h>
 
 D3Device::D3Device(HWND hwnd) {
-  m_device          = D3DeviceFactory::createDevice(hwnd);
+  m_device          = DirectXDeviceFactory::createDevice(hwnd);
   getValuesFromDevice(m_device).setDefault().setValuesToDevice(m_device);
   V(m_device->GetDeviceCaps(&m_deviceCaps));
   m_currentCamera = NULL;

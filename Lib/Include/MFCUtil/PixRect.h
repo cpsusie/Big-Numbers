@@ -1,7 +1,7 @@
 #pragma once
 
 #include "WinTools.h"
-#include "D3DeviceFactory.h"
+#include "DirectXDeviceFactory.h"
 #include "Point2DP.h"
 #include "PolygonCurve.h"
 #include "ShapeFunctions.h"

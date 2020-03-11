@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Math/Point2D.h>
-#include <MFCUtil/D3DeviceFactory.h>
+#include <MFCUtil/DirectXDeviceFactory.h>
 #include "Function2DSurface.h"
 #include "ParametricSurface.h"
 #include "IsoSurface.h"

@@ -1,6 +1,5 @@
 #include "pch.h"
 #include <Math.h>
-#include <MFCUtil/D3Error.h>
 #include <MFCUtil/PixRectDevice.h>
 #include <MFCUtil/Viewport2D.h>
 #include <MFCUtil/PixRect.h>

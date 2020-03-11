@@ -1,7 +1,7 @@
 #pragma once
 
 #include <MyUtil.h>
-#include <MFCUtil/D3DeviceFactory.h>
+#include <MFCUtil/DirectXDeviceFactory.h>
 
 class AbstractTextureFactory {
 public:

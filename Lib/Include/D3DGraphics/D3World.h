@@ -1,6 +1,6 @@
 #pragma once
 
-#include <MFCUtil/D3DeviceFactory.h>
+#include <MFCUtil/DirectXDeviceFactory.h>
 
 #define VADJUST_X    0x01
 #define VADJUST_Y    0x02

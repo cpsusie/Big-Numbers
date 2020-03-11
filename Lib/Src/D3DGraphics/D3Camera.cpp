@@ -55,7 +55,7 @@ D3Camera &D3Camera::initProjection() {
 
 void D3Camera::OnSize() {
   LPDIRECT3DDEVICE      device  = getDirectDevice();
-  D3DPRESENT_PARAMETERS present = D3DeviceFactory::getDefaultPresentParameters(getHwnd());
+  D3DPRESENT_PARAMETERS present = DirectXDeviceFactory::getDefaultPresentParameters(getHwnd());
   if(present.BackBufferWidth && present.BackBufferHeight) {
     V(device->ResetEx(&present, NULL));
     setProjMatrix();

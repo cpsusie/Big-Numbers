@@ -1,6 +1,6 @@
 #pragma once
 
-#include <MFCUtil/D3DeviceFactory.h>
+#include <MFCUtil/DirectXDeviceFactory.h>
 #include <Math/Spherical.h>
 
 class D3Spherical : public FloatSpherical {

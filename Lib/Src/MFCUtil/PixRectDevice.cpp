@@ -1,5 +1,4 @@
 #include "pch.h"
-#include <MFCUtil/D3Error.h>
 #include <MFCUtil/PixRect.h>
 #include <MFCUtil/PixRectDevice.h>
 
@@ -46,7 +45,7 @@ void PixRectDevice::attach(HWND hwnd, bool windowed, const CSize *size) {
   param.BackBufferHeight       = sz.cy;
   param.PresentationInterval   = D3DPRESENT_INTERVAL_IMMEDIATE;
 
-  m_device = D3DeviceFactory::createDevice(hwnd, &param, D3DADAPTER_DEFAULT);
+  m_device = DirectXDeviceFactory::createDevice(hwnd, &param, D3DADAPTER_DEFAULT);
 
   D3DDISPLAYMODE displayMode;
   V(m_device->GetDisplayMode(0, &displayMode));
@@ -134,7 +133,11 @@ LPDIRECT3DSURFACE PixRectDevice::getRenderTarget() {
 
 bool PixRectDevice::supportFormatConversion(D3DFORMAT srcFormat, D3DFORMAT dstFormat, UINT adapter) const {
   const D3DDEVTYPE deviceType = getDeviceCaps().DeviceType;
-  return D3DeviceFactory::supportFormatConversion(deviceType, srcFormat, dstFormat, adapter);
+  return DirectXDeviceFactory::supportFormatConversion(deviceType, srcFormat, dstFormat, adapter);
+}
+
+CompactArray<D3DDISPLAYMODE> PixRectDevice::getDisplayModes(UINT adapter) {
+  return DirectXDeviceFactory::getDisplayModes(adapter);
 }
 
 D3DCAPS PixRectDevice::getDeviceCaps() const {

@@ -14,6 +14,9 @@
 
 #pragma comment(lib, VFWLIB "vfw32.lib")
 
+#ifdef V
+#undef V
+#endif
 #define V(f) checkMMResult(__TFILE__,__LINE__,f)
 
 // ******************************************** Raw Callback functions ********************************************

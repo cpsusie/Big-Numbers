@@ -1,7 +1,7 @@
 #pragma once
 
 #include <MyUtil.h>
-#include <MFCUtil/D3DeviceFactory.h>
+#include <MFCUtil/DirectXDeviceFactory.h>
 #include <MFCUtil/ColorSpace.h>
 #include "D3Light.h"
 #include "D3Material.h"

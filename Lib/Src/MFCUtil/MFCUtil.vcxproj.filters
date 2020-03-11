@@ -265,9 +265,6 @@
     <ClCompile Include="PolygonCurve.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D3DeviceFactory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ColorDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -352,7 +349,10 @@
     <ClCompile Include="PropertyDialogThread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D3Error.cpp">
+    <ClCompile Include="DirectXDeviceFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXErrorMsg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -485,9 +485,6 @@
     <ClInclude Include="..\..\Include\MFCUtil\PolygonCurve.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\MFCUtil\D3DeviceFactory.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\MFCUtil\PragmaLib.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -555,6 +552,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\MFCUtil\VideoHeader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\MFCUtil\DirectXDeviceFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

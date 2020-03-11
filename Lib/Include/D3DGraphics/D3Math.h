@@ -1,6 +1,6 @@
 #pragma once
 
-#include <MFCUtil/D3DeviceFactory.h>
+#include <MFCUtil/DirectXDeviceFactory.h>
 #include <Math/MathLib.h>
 #include <Math/Point2D.h>
 #include "Math/Point3D.h"

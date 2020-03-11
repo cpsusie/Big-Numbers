@@ -2,7 +2,7 @@
 
 #include <MyUtil.h>
 #include <CompactHashMap.h>
-#include <MFCUtil/D3DeviceFactory.h>
+#include <MFCUtil/DirectXDeviceFactory.h>
 
 inline bool operator==(const D3DMATERIAL &m1, const D3DMATERIAL &m2) {
   return memcmp(&m1, &m2, sizeof(D3DMATERIAL)) == 0;

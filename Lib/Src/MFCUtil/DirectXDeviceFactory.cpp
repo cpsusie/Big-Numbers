@@ -1,10 +1,10 @@
 #include "pch.h"
 #include <MyUtil.h>
-#include <MFCUtil/D3DeviceFactory.h>
+#include <MFCUtil/DirectXDeviceFactory.h>
 
-LPDIRECT3D D3DeviceFactory::s_direct3D = NULL;
+LPDIRECT3D DirectXDeviceFactory::s_direct3D = NULL;
 
-void D3DeviceFactory::initDirect3D() { // static
+void DirectXDeviceFactory::initDirect3D() { // static
   Direct3DCreate9Ex( D3D_SDK_VERSION, &s_direct3D);
   if(s_direct3D == NULL) {
     const TCHAR *msg = _T("Cannot initialize Direct3D");
@@ -14,13 +14,13 @@ void D3DeviceFactory::initDirect3D() { // static
   TRACE_CREATE(s_direct3D);
 }
 
-D3DeviceFactory::~D3DeviceFactory() {
+DirectXDeviceFactory::~DirectXDeviceFactory() {
   SAFERELEASE(s_direct3D);
 }
 
-static D3DeviceFactory deviceFactory;
+static DirectXDeviceFactory deviceFactory;
 
-LPDIRECT3DDEVICE D3DeviceFactory::createDevice(HWND hwnd, D3DPRESENT_PARAMETERS *param, UINT adapter) { // static
+LPDIRECT3DDEVICE DirectXDeviceFactory::createDevice(HWND hwnd, D3DPRESENT_PARAMETERS *param, UINT adapter) { // static
   if(s_direct3D == NULL) {
     initDirect3D();
   }
@@ -44,7 +44,7 @@ LPDIRECT3DDEVICE D3DeviceFactory::createDevice(HWND hwnd, D3DPRESENT_PARAMETERS 
   return device;
 }
 
-D3DPRESENT_PARAMETERS D3DeviceFactory::getDefaultPresentParameters(HWND hwnd, UINT adapter) { // static
+D3DPRESENT_PARAMETERS DirectXDeviceFactory::getDefaultPresentParameters(HWND hwnd, UINT adapter) { // static
   D3DPRESENT_PARAMETERS param;
   ZeroMemory(&param, sizeof(param));
 
@@ -62,15 +62,15 @@ D3DPRESENT_PARAMETERS D3DeviceFactory::getDefaultPresentParameters(HWND hwnd, UI
   return param;
 }
 
-D3DDISPLAYMODE D3DeviceFactory::getDisplayMode(UINT adapter) { // static
+D3DDISPLAYMODE DirectXDeviceFactory::getDisplayMode(UINT adapter) { // static
   D3DDISPLAYMODE result;
   CHECKRESULT(s_direct3D->GetAdapterDisplayMode(adapter, &result));
   return result;
 }
 
-CompactArray<D3DDISPLAYMODE> D3DeviceFactory::getDisplayModes(UINT adapter) { // static
+CompactArray<D3DDISPLAYMODE> DirectXDeviceFactory::getDisplayModes(UINT adapter) { // static
   CompactArray<D3DDISPLAYMODE> result;
-  D3DDISPLAYMODE adapterMode = D3DeviceFactory::getDisplayMode(adapter);
+  D3DDISPLAYMODE adapterMode = DirectXDeviceFactory::getDisplayMode(adapter);
   const UINT modeCount = s_direct3D->GetAdapterModeCount(adapter, adapterMode.Format);
   for (UINT mode = 0; mode < modeCount; mode++) {
     D3DDISPLAYMODE dp;
@@ -80,7 +80,7 @@ CompactArray<D3DDISPLAYMODE> D3DeviceFactory::getDisplayModes(UINT adapter) { //
   return result;
 }
 
-bool D3DeviceFactory::supportFormatConversion(D3DDEVTYPE deviceType, D3DFORMAT srcFormat, D3DFORMAT dstFormat, UINT adapter) { // static
+bool DirectXDeviceFactory::supportFormatConversion(D3DDEVTYPE deviceType, D3DFORMAT srcFormat, D3DFORMAT dstFormat, UINT adapter) { // static
   const HRESULT hr = s_direct3D->CheckDeviceFormatConversion(adapter, deviceType, srcFormat, dstFormat);
   switch(hr) {
   case D3D_OK             : return true;

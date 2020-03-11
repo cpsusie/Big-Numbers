@@ -687,9 +687,9 @@
     <ClCompile Include="CoordinateSystem\SystemPainter.cpp" />
     <ClCompile Include="CreateView.cpp" />
     <ClCompile Include="CursorTools.cpp" />
-    <ClCompile Include="D3DeviceFactory.cpp" />
-    <ClCompile Include="D3Error.cpp" />
+    <ClCompile Include="DirectXErrorMsg.cpp" />
     <ClCompile Include="DeleteButton.cpp" />
+    <ClCompile Include="DirectXDeviceFactory.cpp" />
     <ClCompile Include="EditListBooleanEditor.cpp" />
     <ClCompile Include="EditListCtrl.cpp" />
     <ClCompile Include="EditListNumericEditor.cpp" />
@@ -796,9 +796,9 @@
     <ClInclude Include="..\..\Include\MFCUtil\CoordinateSystem\LogarithmicAxisPainter.h" />
     <ClInclude Include="..\..\Include\MFCUtil\CoordinateSystem\NormalDistributionAxisPainter.h" />
     <ClInclude Include="..\..\Include\MFCUtil\CoordinateSystem\SystemPainter.h" />
-    <ClInclude Include="..\..\Include\MFCUtil\D3DeviceFactory.h" />
     <ClInclude Include="..\..\Include\MFCUtil\D3Error.h" />
     <ClInclude Include="..\..\Include\MFCUtil\DeleteButton.h" />
+    <ClInclude Include="..\..\Include\MFCUtil\DirectXDeviceFactory.h" />
     <ClInclude Include="..\..\Include\MFCUtil\EditListBooleanEditor.h" />
     <ClInclude Include="..\..\Include\MFCUtil\EditListCtrl.h" />
     <ClInclude Include="..\..\Include\MFCUtil\EditListNumericEditor.h" />

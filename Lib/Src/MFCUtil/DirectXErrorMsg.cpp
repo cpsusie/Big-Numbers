@@ -1,7 +1,7 @@
 #include "pch.h"
-#include <MFCUtil/D3DeviceFactory.h>
+#include <MFCUtil/DirectXDeviceFactory.h>
 
-String getD3DErrorMsg(HRESULT hr) {
+String getDirectXErrorMsg(HRESULT hr) {
 
 #define casepr(v) case v: return _T(#v)
 
@@ -41,29 +41,29 @@ String getD3DErrorMsg(HRESULT hr) {
 
 #ifdef _DEBUG
 
-void checkD3DResult(const TCHAR *method, HRESULT hr, bool exitOnError) {
+void checkDirectXResult(const TCHAR *method, HRESULT hr, bool exitOnError) {
   if(hr != D3D_OK) {
     if(exitOnError) {
-      throwException(_T("D3D-error %s in %s"), getD3DErrorMsg(hr).cstr(), method);
-//      showError(_T("D3D-error %s in %s"), getD3DErrorMsg(hr).cstr(), method);
+      throwException(_T("D3D-error %s in %s"), getDirectXErrorMsg(hr).cstr(), method);
+//      showError(_T("D3D-error %s in %s"), getDirectXErrorMsg(hr).cstr(), method);
 //      exit(-1);
     } else {
-      throwException(_T("D3D-error %s in %s"), getD3DErrorMsg(hr).cstr(), method);
+      throwException(_T("D3D-error %s in %s"), getDirectXErrorMsg(hr).cstr(), method);
     }
   }
 }
 
-#else
+#else // _DEBUG
 
-void checkD3DResult(HRESULT hr, bool exitOnError) {
+void checkDirectXResult(HRESULT hr, bool exitOnError) {
   if(hr != D3D_OK) {
     if(exitOnError) {
-      showError(_T("D3D-error %s"), getD3DErrorMsg(hr).cstr());
+      showError(_T("D3D-error %s"), getDirectXErrorMsg(hr).cstr());
       exit(-1);
     } else {
-      throwException(_T("D3D-error %s"), getD3DErrorMsg(hr).cstr());
+      throwException(_T("D3D-error %s"), getDirectXErrorMsg(hr).cstr());
     }
   }
 }
 
-#endif
+#endif // _DEBUG

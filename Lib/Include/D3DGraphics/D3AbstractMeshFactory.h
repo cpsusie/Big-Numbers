@@ -1,6 +1,6 @@
 #pragma once
 
-#include <MFCUtil/D3DeviceFactory.h>
+#include <MFCUtil/DirectXDeviceFactory.h>
 
 class AbstractMeshFactory {
 public:

@@ -15,18 +15,33 @@ typedef D3DVIEWPORT9            D3DVIEWPORT;
 typedef LPDIRECT3DVERTEXBUFFER9 LPDIRECT3DVERTEXBUFFER;
 typedef LPDIRECT3DINDEXBUFFER9  LPDIRECT3DINDEXBUFFER;
 
-class D3DeviceFactory {
+class DirectXDeviceFactory {
 private:
   static LPDIRECT3D s_direct3D;
   static void initDirect3D();
 public:
-  ~D3DeviceFactory();
+  ~DirectXDeviceFactory();
   static LPDIRECT3DDEVICE             createDevice(HWND hwnd, D3DPRESENT_PARAMETERS *param = NULL, UINT adapter = D3DADAPTER_DEFAULT);
   static D3DDISPLAYMODE               getDisplayMode(                                              UINT adapter = D3DADAPTER_DEFAULT);
   static CompactArray<D3DDISPLAYMODE> getDisplayModes(                                             UINT adapter = D3DADAPTER_DEFAULT);
   static D3DPRESENT_PARAMETERS        getDefaultPresentParameters(HWND hwnd                      , UINT adapter = D3DADAPTER_DEFAULT);
   static bool supportFormatConversion(D3DDEVTYPE deviceType, D3DFORMAT srcFormat, D3DFORMAT dstFormat, UINT adapter = D3DADAPTER_DEFAULT);
 };
+
+#ifdef _DEBUG
+
+void checkDirectXResult(const TCHAR *method, HRESULT hr, bool exitOnError);
+
+#define V(hr) checkDirectXResult(__TFUNCTION__, hr, true )
+#define W(hr) checkDirectXResult(__TFUNCTION__, hr, false)
+#else
+
+void checkDirectXResult(HRESULT hr, bool exitOnError);
+
+#define V( hr) checkDirectXResult(hr, true )
+#define W(hr)  checkDirectXResult(hr, false)
+
+#endif
 
 #include "PragmaLib.h"
 

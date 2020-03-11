@@ -2,7 +2,6 @@
 #include <Math.h>
 #include <float.h>
 #include <MFCUtil/VideoHeader.h>
-#include <MFCUtil/D3Error.h>
 #include <MFCUtil/PixRectDevice.h>
 #include <MFCUtil/PixRect.h>
 

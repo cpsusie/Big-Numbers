@@ -2,7 +2,7 @@
 
 #include <afxwin.h>         // MFC core and standard components
 #include "PixRectType.h"
-#include "D3DeviceFactory.h"
+#include "DirectXDeviceFactory.h"
 
 class PixRect;
 

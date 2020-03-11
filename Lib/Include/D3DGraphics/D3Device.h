@@ -2,7 +2,6 @@
 
 #include <PropertyContainer.h>
 #include <MFCUtil/ColorSpace.h>
-#include <MFCUtil/D3Error.h>
 #include "D3DeviceRenderState.h"
 #include "D3Material.h"
 
