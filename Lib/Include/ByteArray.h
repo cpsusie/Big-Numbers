@@ -1,5 +1,7 @@
 #pragma once
 
+#include "MyString.h"
+
 class ByteInputStream;
 class ByteOutputStream;
 
