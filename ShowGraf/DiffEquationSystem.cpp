@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include <Math/Expression/ExpressionNode.h>
+#include <Math/Expression/ParserTree.h>
 #include "DiffEquationSystem.h"
 
 DiffEquationSystem::~DiffEquationSystem() {
@@ -62,11 +64,12 @@ bool DiffEquationSystem::compile(CompilerErrorList &errorList, FILE *listFile) {
       if(listFile) {
         _ftprintf(listFile,_T(";Expression for %s':\n"), desc.getName().cstr());
       }
-      e->compile(expr, true, false, listFile);
+      StringArray errors;
+      e->compile(expr, errors, true, false, listFile);
       if(e->isOk()) {
         m_exprArray.add(e);
       } else {
-        bool hasCommonErrors = errorList.addErrors(i, e->getErrors(), expr, (UINT)commonText.length());
+        bool hasCommonErrors = errorList.addErrors(i, errors, expr, (UINT)commonText.length());
         SAFEDELETE(e);
         if(hasCommonErrors) {
           break;
@@ -123,11 +126,7 @@ bool DiffEquationDescription::isValidName(const String &s) {
   String tmp = s;
   tmp.trim();
   if((tmp != s) || (tmp == _T("x"))) return false;
-  LexStringStream stream(s);
-  ExpressionLex lex(&stream);
-  if(lex.getNextLexeme() != NAME) return false;
-  if(lex.getNextLexeme() != EOI ) return false;
-  return true;
+  return ParserTree::isValidName(s);
 }
 
 Real ExpressionWithInputVector::evaluate(const Vector &x) {
@@ -167,7 +166,7 @@ bool CompilerErrorList::addErrors(UINT eqIndex, const StringArray &errors, const
       addError(eqIndex, ERROR_INEXPR, _T("%s"), errorText.cstr());
     } else {
       String tmp = errorText;
-      const UINT index = ParserTree::decodeErrorString(expr, tmp);
+      const UINT index = Expression::decodeErrorString(expr, tmp);
       if(index < prefixLen) {
         addError(-1, ERROR_INCOMMON, _T("%s"), errorText.cstr());
         result = true;
@@ -198,7 +197,7 @@ ErrorPosition::ErrorPosition(const String &error) {
     case ERROR_INEXPR  :
       try {
         String errorStr = tok.next();
-        m_pos = ParserTree::decodeErrorString(errorStr);
+        m_pos = Expression::decodeErrorString(errorStr);
       } catch(Exception) {
         m_pos.setLocation(0,0);
       }

@@ -79,7 +79,7 @@ BOOL CTestTreesEqualDlg::OnInitDialog() {
   m_layoutManager.addControl(IDC_STATICIMAGE2         , PCT_RELATIVE_RIGHT | PCT_RELATIVE_TOP   | RELATIVE_BOTTOM);
   m_layoutManager.addControl(IDC_TREE2                , PCT_RELATIVE_LEFT  | RELATIVE_RIGHT     | PCT_RELATIVE_TOP | RELATIVE_BOTTOM);
 
-  m_device.attach(*this);
+  theApp.m_device.attach(*this);
 
   return false;
 }
@@ -93,8 +93,8 @@ void CTestTreesEqualDlg::OnPaint() {
 
 void CTestTreesEqualDlg::ajourButtons() {
   const bool expOk           = m_edata[0].m_expr.isOk() && m_edata[1].m_expr.isOk();
-  const bool isCanonicalForm = expOk && (m_edata[0].m_expr.getTreeForm() == TREEFORM_CANONICAL)
-                                     && (m_edata[1].m_expr.getTreeForm() == TREEFORM_CANONICAL);
+  const bool isCanonicalForm = expOk && (m_edata[0].m_expr.getTree()->getTreeForm() == TREEFORM_CANONICAL)
+                                     && (m_edata[1].m_expr.getTree()->getTreeForm() == TREEFORM_CANONICAL);
 
   GetDlgItem(IDC_TESTTREESEQUAL     )->EnableWindow(expOk && isCanonicalForm);
   GetDlgItem(IDC_TESTTREESEQUALMINUS)->EnableWindow(expOk && isCanonicalForm);
@@ -165,14 +165,14 @@ void CTestTreesEqualDlg::OnEditFindMatchingParentesis() {
 void CTestTreesEqualDlg::OnButtonConvert() {
   const bool expOk = m_edata[0].m_expr.isOk() && m_edata[1].m_expr.isOk();
   if(expOk) {
-    const bool isCanonicalForm = (m_edata[0].m_expr.getTreeForm() == TREEFORM_CANONICAL)
-                              && (m_edata[1].m_expr.getTreeForm() == TREEFORM_CANONICAL);
+    const bool isCanonicalForm = (m_edata[0].m_expr.getTree()->getTreeForm() == TREEFORM_CANONICAL)
+                              && (m_edata[1].m_expr.getTree()->getTreeForm() == TREEFORM_CANONICAL);
     if(isCanonicalForm) {
-      m_edata[0].m_expr.setTreeForm(TREEFORM_STANDARD);
-      m_edata[1].m_expr.setTreeForm(TREEFORM_STANDARD);
+      m_edata[0].m_expr.getTree()->setTreeForm(TREEFORM_STANDARD);
+      m_edata[1].m_expr.getTree()->setTreeForm(TREEFORM_STANDARD);
     } else {
-      m_edata[0].m_expr.setTreeForm(TREEFORM_CANONICAL);
-      m_edata[1].m_expr.setTreeForm(TREEFORM_CANONICAL);
+      m_edata[0].m_expr.getTree()->setTreeForm(TREEFORM_CANONICAL);
+      m_edata[1].m_expr.getTree()->setTreeForm(TREEFORM_CANONICAL);
     }
     makeImage(0);
     makeImage(1);
@@ -185,7 +185,8 @@ bool CTestTreesEqualDlg::compile(int index) {
 
   Expression  &e   = ed.m_expr;
   const String str = getWindowText(&ed.m_cb);
-  e.compile(str, false);
+  StringArray  errors;
+  e.compile(str, errors, false);
   if(e.isOk()) {
     makeImage(index);
     ed.m_cb.updateList();
@@ -195,7 +196,6 @@ bool CTestTreesEqualDlg::compile(int index) {
     ed.m_tree.DeleteAllItems();
   }
 
-  const StringArray &errors = e.getErrors();
   String error = errors[0];
   int pos = e.decodeErrorString(str, error);
   showWarning(error);
@@ -211,7 +211,7 @@ void CTestTreesEqualDlg::makeImage(int index) {
 
 ExpressionImage CTestTreesEqualDlg::makeImage(const Expression &e) {
   try {
-    return expressionToImage(m_device, e, 24);
+    return expressionToImage(getDevice(), e, 24);
   } catch(Exception e) {
     showException(e);
     return ExpressionImage();

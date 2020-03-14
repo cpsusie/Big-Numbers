@@ -21,7 +21,10 @@ IsoCurveGraphEvaluator::IsoCurveGraphEvaluator(IsoCurveGraph *graph)
 , m_expr(((IsoCurveGraphParameters&)graph->getParam()).getTrigonometricMode()) {
 
   const IsoCurveGraphParameters &param = (IsoCurveGraphParameters&)m_graph.getParam();
-  m_expr.compile(param.getExprText(), true);
+  StringArray errors;
+  if (!m_expr.compile(param.getExprText(), errors, true)) {
+    throwException(errors[0]);
+  }
   const ExpressionVariable *xvp = m_expr.getVariable(_T("x"));
   const ExpressionVariable *yvp = m_expr.getVariable(_T("y"));
   m_x = xvp ? &m_expr.getValueRef(*xvp) : &m_dummyX;

@@ -15,7 +15,9 @@ private:
   ExpressionNode       *m_selectedNode;
   CExpressionTreeCtrl   m_treeCtrl;
   BOOL                  m_extendedInfo;
-
+  inline PixRectDevice &getDevice() const {
+    return theApp.m_device;
+  }
   HTREEITEM findItemFromNode(const ExpressionNode *n);
   const ExpressionNode *getNodeFromPoint(CPoint p);
 

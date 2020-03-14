@@ -8,10 +8,11 @@
 
 class CTestExpressionGraphicsApp : public CWinApp {
 public:
-    CTestExpressionGraphicsApp();
+  PixRectDevice m_device;
+  CTestExpressionGraphicsApp();
 
-    virtual BOOL InitInstance();
-    DECLARE_MESSAGE_MAP()
+  virtual BOOL InitInstance();
+  DECLARE_MESSAGE_MAP()
 };
 
 extern CTestExpressionGraphicsApp theApp;

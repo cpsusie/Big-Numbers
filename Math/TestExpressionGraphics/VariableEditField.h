@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Math/Expression/ExpressionNode.h>
-
 class VariableEditField : public CEdit {
 private:
   CStatic m_label;

@@ -52,13 +52,13 @@ BOOL CExpressionTreeDlg::OnInitDialog() {
   m_layoutManager.addControl(IDC_LIST_SYMBOLTABLE , RELATIVE_Y_POS | RELATIVE_WIDTH);
 
   m_treeCtrl.showTree(m_node, m_extendedInfo);
-
-  const String treeFormName = m_expr.getTreeFormName();
-  const String stateName    = m_expr.getStateName();
-  const int    nodeCount    = m_expr.getNodeCount();
+  ParserTree *tree = m_expr.getTree();
+  const String treeFormName = tree->getTreeFormName();
+  const String stateName    = tree->getStateName();
+  const UINT   nodeCount    = tree->getNodeCount();
 
   String title = getWindowText(this);
-  title += format(_T(" - %s form - state %s. %d nodes")
+  title += format(_T(" - %s form - state %s. %u nodes")
                  ,treeFormName.cstr()
                  ,stateName.cstr()
                  ,nodeCount
@@ -66,7 +66,7 @@ BOOL CExpressionTreeDlg::OnInitDialog() {
   setWindowText(this, title);
 
   CListBox *lb = (CListBox*)GetDlgItem(IDC_LIST_SYMBOLTABLE);
-  const ExpressionVariableArray variables = m_expr.getSymbolTable().getAllVariables();
+  const ExpressionVariableArray variables = tree->getSymbolTable().getAllVariables();
   for(size_t i = 0; i < variables.size(); i++) {
     const ExpressionVariableWithValue &v = variables[i];
     lb->InsertString(-1, v.toString().cstr());

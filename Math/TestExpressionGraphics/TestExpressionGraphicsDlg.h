@@ -1,9 +1,10 @@
 #pragma once
 
+#include <TinyBitSet.h>
+#include <MFCUtil/PixRectDevice.h>
 #include <MFCUtil/StaticBottomAligned.h>
 #include <MFCUtil/ComboBoxWithHistory.h>
-#include <TinyBitSet.h>
-#include "DebugThread.h"
+#include "Debugger.h"
 
 typedef enum {
   ISDIRTY
@@ -21,7 +22,6 @@ class CTestExpressionGraphicsDlg : public CDialog, public PropertyChangeListener
 private:
   HICON                        m_hIcon;
   HACCEL                       m_accelTabel;
-  PixRectDevice                m_device;
   SimpleLayoutManager          m_layoutManager;
   CStaticBottomAligned         m_reductionStackWindow;
   CComboBoxWithHistory         m_exprCombo;
@@ -30,7 +30,7 @@ private:
   ExpressionImage              m_exprImage, m_derivedImage;
   int                          m_numberFormat;
   ExpressionVariableArray      m_savedVariables;
-  DebugThread                 *m_debugThread;
+  Debugger                    *m_debugger;
   PropertyContainer           *m_currentChildDlg;
   int                          m_contextWinId;
   const ExpressionRectangle   *m_contextRect, *m_leastContextRect;
@@ -58,6 +58,11 @@ private:
   void         setNumberFormat(NumberFormat nf);
   void         saveOptions();
   void         loadOptions();
+
+  inline PixRectDevice &getDevice() const {
+    return theApp.m_device;
+  }
+
   bool loadMenu(CMenu &menu, int id);
   void buildSamplesMenu();
   void compileExpr();
@@ -84,21 +89,21 @@ private:
   void saveExprVariables();
   void clearSavedVariables();
   bool restoreExprVariables();
-  void startThread(int debugWinId, bool singleStep);
-  void createThread(Expression &expr);
-  void destroyThread();
+  void startDebugger(int debugWinId, bool singleStep);
+  void createDebugger(Expression &expr);
+  void destroyDebugger();
   void paintDebugExpr();
   void enableFieldList(const int *ids, int n, bool enabled);
   void ajourDialogItems();
   void callNotepad(const String &s);
-  inline bool hasDebugThread() const {
-    return m_debugThread != NULL;
+  inline bool hasDebugger() const {
+    return m_debugger != NULL;
   }
-  inline bool isThreadPaused() const {
-    return hasDebugThread() && !m_debugThread->isRunning() && !m_debugThread->isTerminated();
+  inline bool isDebuggerPaused() const {
+    return hasDebugger() && !m_debugger->isRunning() && !m_debugger->isTerminated();
   }
-  inline bool isThreadRunning() const {
-    return hasDebugThread() && m_debugThread->isRunning();
+  inline bool isDebuggerRunning() const {
+    return hasDebugger() && m_debugger->isRunning();
   }
 
   int                                getWindowIdFromPoint(CPoint &p); // return childwindow and adjust p to be relative to this window (if selectable)

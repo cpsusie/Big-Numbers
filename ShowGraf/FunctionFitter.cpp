@@ -1,9 +1,12 @@
 #include "stdafx.h"
 #include <ostream>
 #include <Float.h>
-#include <Math/MathLib.h>
 #include <Random.h>
+#include <Math/MathLib.h>
 #include <Math/MathException.h>
+#include <Math/Expression/Expressionnode.h>
+#include <Math/Expression/ExpressionSymbolTable.h>
+#include <Math/Expression/ParserTree.h>
 #include "FunctionFitter.h"
 
 void FunctionFitter::randomVarList() {
@@ -217,10 +220,10 @@ void FunctionFitter::solve() {
 
 FunctionFitter::FunctionFitter(const String &expr, const Point2DArray &data) : m_data(data) {
   if(m_data.size() == 0) {
-    addError(_T("No datapoints to fit"));
+    m_errors.add(_T("No datapoints to fit"));
     return;
   }
-  compile(expr,true);
+  compile(expr,m_errors, true);
   if(!isOk()) {
     return;
   }

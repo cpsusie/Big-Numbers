@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <InputValue.h>
 #include <Math/Expression/Expression.h>
 
 using namespace Expr;
@@ -24,12 +25,12 @@ static bool test(const String &expr, bool runCode) {
   Expression compiledExpr, interpreterExpr;
   bool ok = true;
   try {
-    compiledExpr.compile(expr, true, false,stdout);
-    interpreterExpr.compile(expr, false, false);
-    if(!compiledExpr.isOk()) {
-      const StringArray &errors = compiledExpr.getErrors();
-      for(size_t i = 0; i < errors.size(); i++) {
-        OUTPUT(_T("%s"), errors[i].cstr());
+    StringArray errors1, errors2;
+    const bool ok1 = compiledExpr.compile(expr, errors1, true, false,stdout);
+    const bool ok2 = interpreterExpr.compile(expr, errors2, false, false);
+    if(!ok1) {
+      for(size_t i = 0; i < errors1.size(); i++) {
+        OUTPUT(_T("%s"), errors1[i].cstr());
       }
       ok = false;
     } else {
@@ -76,13 +77,17 @@ static bool test(const String &expr, bool runCode) {
 
 int main() {
   bool runCode = true;
-  for(;;) {
-    const String str = inputValue<String>(_T("\nEnter expression('?'=list all samples,'-'=disable runmode,'+'=enable runmode,'*'=run all samples,':10'=run sample 10, expr):"));
+  for(bool done = false; !done;) {
+    const String str = inputValue<String>(_T("\nEnter expression\n'?'=list all samples\n'q'=quit\n'-'=disable runmode\n'+'=enable runmode\n'*'=run all samples,':10'=run sample 10\nexpr:"));
     String expr;
     if(str.isEmpty()) continue;
     switch(str[0]) {
     case '?':
       listSamples();
+      continue;
+    case 'q':
+    case 'Q':
+      done = true;
       continue;
     case '-':
       runCode = false;

@@ -3,6 +3,7 @@
 #include "targetver.h"
 
 #include <MFCUtil/PixRect.h>
+#include <MFCUtil/PixRectDevice.h>
 #include <Math.h>
 #include <Math/Polynomial.h>
 #include "resource.h"

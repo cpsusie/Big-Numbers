@@ -15,10 +15,12 @@ class CTestTreesEqualDlg : public CDialog {
 private:
   HACCEL                  m_accelTabel;
   SimpleLayoutManager     m_layoutManager;
-  PixRectDevice           m_device;
   ExprData                m_edata[2];
   int                     m_contextWinIndex, m_focusCtrlId;
 
+  inline PixRectDevice &getDevice() const {
+    return theApp.m_device;
+  }
   bool     compile(     int index);
   void     makeImage(   int index);
   void     paintImage(  int index);

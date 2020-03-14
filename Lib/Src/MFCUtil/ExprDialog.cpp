@@ -93,7 +93,7 @@ bool CExprDialog::validateMinMax(int id, double min, double max) {
 void CExprDialog::showExprError(const String &msg, int id) {
   try {
     String     errorMsg  = msg;
-    UINT       charIndex = ParserTree::decodeErrorString(getExprText(id), errorMsg);
+    UINT       charIndex = Expression::decodeErrorString(getExprText(id), errorMsg);
     const UINT prefixLen = (UINT)getCommonExprText().length();
     if(charIndex < prefixLen) {
       gotoExpr(getCommonExprFieldId());

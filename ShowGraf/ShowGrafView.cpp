@@ -2,6 +2,9 @@
 #include "ShowGrafDoc.h"
 #include "ShowGrafView.h"
 #include "MouseTool.h"
+#ifdef _DEBUG
+#include <DebugLog.h>
+#endif
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

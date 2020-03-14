@@ -85,7 +85,7 @@ static String getExtendedString(const ExpressionNode *n) {
     { const Number &number = n->getNumber();
       return format(_T("%s (%s) - (%-8s %s)")
                    ,number.getTypeName().cstr()
-                   ,number.toString().cstr()
+                   ,toString(number).cstr()
                    ,n->getNodeTypeName().cstr()
                    ,n->getInfo().toString().cstr());
     }

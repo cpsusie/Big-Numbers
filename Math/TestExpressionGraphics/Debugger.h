@@ -1,24 +1,25 @@
 #pragma once
 
-#include <Thread.h>
 #include <TinyBitSet.h>
 #include <PropertyContainer.h>
+#include <Runnable.h>
+#include <FastSemaphore.h>
 
 using namespace Expr;
 
 typedef enum {
-  THREAD_RUNNING           // bool*
- ,THREAD_TERMINATED        // bool*
- ,THREAD_ERROR             // TCHAR*
-} DebugThreadProperty;
+  DBG_RUNNING           // bool
+ ,DBG_TERMINATED        // bool
+ ,DBG_ERROR             // TCHAR*
+} DebuggerProperty;
 
-class DebugThread : public Thread, public PropertyContainer, public PropertyChangeListener {
+class Debugger : public Runnable, public PropertyContainer, public PropertyChangeListener {
 private:
   bool                  m_running, m_killed, m_terminated;
-
+  FastSemaphore         m_terminateSem, m_continueSem;
 #ifdef TRACE_REDUCTION_CALLSTACK
-  const ReductionStack        *m_reductionStack;
-  UINT                         m_breakOnTopIndex;
+  ReductionStack       *m_reductionStack;
+  UINT                  m_breakOnTopIndex;
 #endif
 
   String                m_errorMsg;
@@ -27,24 +28,34 @@ private:
   Expression           &m_expr;
   const Expression     *m_exprp;
   ParserTree           *m_treep;
+  void suspend();
+  void resume();
   void stop(bool onReturn = false);
   void throwInvalidStateException(const TCHAR *method, ParserTreeState state) const;
 public:
-  DebugThread(Expression &expr);
-  ~DebugThread();
-  unsigned int run();
+  Debugger(Expression &expr);
+  ~Debugger();
+  UINT run();
 
   void go();
   void singleStep();
   void singleSubStep();
 #ifdef TRACE_REDUCTION_CALLSTACK
   void goUntilReturn();
-#endif
+  inline const ReductionStack &getReductionStack() const {
+    return *m_reductionStack;
+  }
+#endif /// TRACE_REDUCTION_CALLSTACK
+
+  String getDebugInfo() const;
   void stopASAP();
   void kill();
 
   Expression &getDebugExpr() {
     return *(Expression*)m_exprp;
+  }
+  inline ParserTreeState getTreeState() const {
+    return m_treep->getState();
   }
   void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
 

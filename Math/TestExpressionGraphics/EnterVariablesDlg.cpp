@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include <Math/Expression/Expression.h>
 #include "EnterVariablesDlg.h"
 
 #ifdef _DEBUG

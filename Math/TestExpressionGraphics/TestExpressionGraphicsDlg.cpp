@@ -1,11 +1,13 @@
 #include "stdafx.h"
 #include <Process.h>
+#include <ThreadPool.h>
+#include <FileNameSplitter.h>
 #include <MFCUtil/ProgressWindow.h>
-#include "TestExpressionGraphicsDlg.h"
 #include "EnterVariablesDlg.h"
 #include "ExpressionTreeDlg.h"
 #include "TestTreesEqualDlg.h"
 #include "../../Test/testexpr/ExpressionSamples.h"
+#include "TestExpressionGraphicsDlg.h"
 
 #define APSTUDIO_INVOKED
 #include "Resource.h"
@@ -37,7 +39,7 @@ CTestExpressionGraphicsDlg::CTestExpressionGraphicsDlg(CWnd *pParent /*=NULL*/) 
     m_x                = 0.0;
     m_hIcon            = theApp.LoadIcon(IDR_MAINFRAME);
     m_debugExpr        = NULL;
-    m_debugThread      = NULL;
+    m_debugger      = NULL;
     m_debugWinId       = -1;
     m_contextWinId     = -1;
     m_contextRect      = NULL;
@@ -153,7 +155,7 @@ BOOL CTestExpressionGraphicsDlg::OnInitDialog() {
   m_layoutManager.addControl(IDC_STATICDERIVEDIMAGE   , PCT_RELATIVE_RIGHT  | PCT_RELATIVE_TOP | RELATIVE_BOTTOM );
   m_layoutManager.addControl(IDC_STATICREDUCTIONSTACK , PCT_RELATIVE_LEFT   | RELATIVE_RIGHT | RELATIVE_HEIGHT);
 
-  m_device.attach(*this);
+  theApp.m_device.attach(*this);
 
 #ifndef TRACE_REDUCTION_CALLSTACK
   enableMenuItem(this, ID_VIEW_SHOWREDUCTIONSTACK , false);
@@ -239,7 +241,7 @@ void CTestExpressionGraphicsDlg::buildSamplesMenu() {
 void CTestExpressionGraphicsDlg::OnFileExit() {
   clearExprImage();
   clearDerivedExpr();
-  destroyThread();
+  destroyDebugger();
   EndDialog(IDOK);
 }
 
@@ -370,7 +372,6 @@ void CTestExpressionGraphicsDlg::OnSamplesSampleId(UINT cmd) {
 class AllSamplesTester : public InteractiveRunnable {
 private:
   const String       m_dir;
-  PixRectDevice     &m_device;
   const int          m_fontSize;
   const NumberFormat m_numberFormat;
   UINT               m_maxCount, m_count;
@@ -381,10 +382,13 @@ private:
   int getFontSize() const {
     return m_fontSize;
   }
+  inline PixRectDevice &getDevice() const {
+    return theApp.m_device;
+  }
+
 public:
   AllSamplesTester(const String &dir, PixRectDevice &device, int fontSize, NumberFormat numberFormat)
                  : m_dir(         dir         )
-                 , m_device(      device      )
                  , m_fontSize(    fontSize    )
                  , m_numberFormat(numberFormat)
   {
@@ -414,10 +418,14 @@ public:
 UINT AllSamplesTester::run() {
   for(m_count = 0; m_count < m_maxCount; m_count++) {
     const String str = ExpressionSamples::getSample(m_count);
+    if (m_count == 69) {
+      int fisk = 1;
+    }
     try {
       Expression expr;
-      expr.compile(str,false);
-      Expr::ExpressionImage image = expressionToImage(m_device, expr, getFontSize(), getNumberFormat());
+      StringArray errors;
+      expr.compile(str, errors, false);
+      Expr::ExpressionImage image = expressionToImage(getDevice(), expr, getFontSize(), getNumberFormat());
       const String fileName = format(_T("testCase%03d.jpg"), m_count);
       const String fullName = FileNameSplitter::getChildName(m_dir,fileName);
       image.getImage()->writeAsJPG(ByteOutputFile(fullName));
@@ -433,7 +441,7 @@ UINT AllSamplesTester::run() {
 
 void CTestExpressionGraphicsDlg::OnSamplesRunall() {
   const String     dir = _T("C:\\temp\\ExprList\\Images");
-  AllSamplesTester testJob(dir, m_device, getFontSize(), getNumberFormat());
+  AllSamplesTester testJob(dir, getDevice(), getFontSize(), getNumberFormat());
   ProgressWindow(this, testJob, 1);
   startViewPhoto(dir, _T("testCase000.jpg"));
 }
@@ -444,12 +452,12 @@ void CTestExpressionGraphicsDlg::startViewPhoto(const String &dir, const String 
   HINSTANCE inst = ::ShellExecute(NULL,L"open",_T("rundll32.exe"),cmd.cstr(),dir.cstr(),SW_SHOWNORMAL);
 }
 
-void CTestExpressionGraphicsDlg::startThread(int debugWinId, bool singleStep) {
+void CTestExpressionGraphicsDlg::startDebugger(int debugWinId, bool singleStep) {
   if(!UpdateData()) {
     return;
   }
   try {
-    destroyThread();
+    destroyDebugger();
     Expression *ee;
     switch(debugWinId) {
     case IDC_STATICEXPRIMAGE   :
@@ -459,67 +467,50 @@ void CTestExpressionGraphicsDlg::startThread(int debugWinId, bool singleStep) {
       ee = &m_derivedExpr;
       break;
     default:
-      showWarning(_T("startThread:Invalid debugWinId:%d"), debugWinId);
+      showWarning(_T("%s:Invalid debugWinId:%d"), __TFUNCTION__, debugWinId);
       return;
     }
     m_debugWinId = debugWinId;
-    createThread(*ee);
+    createDebugger(*ee);
+    ThreadPool::executeNoWait(*m_debugger);
     INVALIDATE();
     if(singleStep) {
-      m_debugThread->singleSubStep();
+      m_debugger->singleSubStep();
     } else {
-      m_debugThread->go();
+      m_debugger->go();
     }
   } catch(Exception e) {
     showException(e);
   }
 }
 
-void CTestExpressionGraphicsDlg::createThread(Expression &expr) {
-  m_debugThread = new DebugThread(expr); TRACE_NEW(m_debugThread);
-  m_debugThread->addPropertyChangeListener(this);
-  expr.addPropertyChangeListener(m_debugThread);
-#ifdef TRACE_REDUCTION_CALLSTACK
-  expr.getReductionStack().addPropertyChangeListener(m_debugThread);
-#endif
+void CTestExpressionGraphicsDlg::createDebugger(Expression &expr) {
+  m_debugger = new Debugger(expr); TRACE_NEW(m_debugger);
+  m_debugger->addPropertyChangeListener(this);
 }
 
-void CTestExpressionGraphicsDlg::destroyThread() {
+void CTestExpressionGraphicsDlg::destroyDebugger() {
   m_debugError = EMPTYSTRING;
-  if(hasDebugThread()) {
-    m_debugThread->kill();
-    switch(m_debugWinId) {
-    case IDC_STATICEXPRIMAGE   :
-      m_expr.removePropertyChangeListener(m_debugThread);
-#ifdef TRACE_REDUCTION_CALLSTACK
-      m_expr.getReductionStack().removePropertyChangeListener(m_debugThread);
-#endif
-      break;
-    case IDC_STATICDERIVEDIMAGE:
-      m_derivedExpr.removePropertyChangeListener(m_debugThread);
-#ifdef TRACE_REDUCTION_CALLSTACK
-      m_derivedExpr.getReductionStack().removePropertyChangeListener(m_debugThread);
-#endif
-      break;
-    }
-    SAFEDELETE(m_debugThread);
+  if(hasDebugger()) {
+    m_debugger->kill();
+    SAFEDELETE(m_debugger);
     m_debugWinId  = -1;
     clearDebugInfo();
   }
 }
 
 void CTestExpressionGraphicsDlg::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
-  if(source == m_debugThread) {
+  if(source == m_debugger) {
     switch(id) {
-    case THREAD_RUNNING   :
-      PostMessage(ID_MSG_RUNSTATE_CHANGED, (WPARAM)(*(bool*)oldValue), (LPARAM)(*(bool*)newValue));
+    case DBG_RUNNING   :
+      SendMessage(ID_MSG_RUNSTATE_CHANGED, (WPARAM)(*(bool*)oldValue), (LPARAM)(*(bool*)newValue));
       break;
-    case THREAD_TERMINATED:
-      if(m_derivedExpr.getState() == PS_REDUCTIONDONE) {
+    case DBG_TERMINATED:
+      if(m_debugger->getTreeState() == PS_REDUCTIONDONE) {
       }
       INVALIDATE();
       break;
-    case THREAD_ERROR     :
+    case DBG_ERROR     :
       { const TCHAR *msg = (const TCHAR*)newValue;
         m_debugError = msg;
         PostMessage(ID_MSG_SHOW_DEBUGERROR,0,0);
@@ -584,8 +575,8 @@ void CTestExpressionGraphicsDlg::ajourDialogItems() {
 
 #define ENABLEFIELDLIST(a,enabled) enableFieldList(a, ARRAYSIZE(a), enabled)
 
-  if(hasDebugThread()) {
-    if(m_debugThread->isRunning()) {
+  if(hasDebugger()) {
+    if(m_debugger->isRunning()) {
       ENABLEFIELDLIST(dialogFields, false);
       enableMenuItem(this, ID_DEBUG_REDUCEEXPR          , false);
       enableMenuItem(this, ID_DEBUG_REDUCEDERIVED       , false);
@@ -593,7 +584,7 @@ void CTestExpressionGraphicsDlg::ajourDialogItems() {
       enableMenuItem(this, ID_DEBUG_STEP1REDUCEITERATION, false);
       enableMenuItem(this, ID_DEBUG_RUN                 , false);
       enableMenuItem(this, ID_DEBUG_STOP                , true );
-    } else if(m_debugThread->isTerminated()) {
+    } else if(m_debugger->isTerminated()) {
       ENABLEFIELDLIST(dialogFields, true );
       enableMenuItem(this, ID_DEBUG_REDUCEEXPR          , true );
       enableMenuItem(this, ID_DEBUG_REDUCEDERIVED       , true );
@@ -624,17 +615,12 @@ void CTestExpressionGraphicsDlg::ajourDialogItems() {
 
 void CTestExpressionGraphicsDlg::paintDebugExpr() {
   try {
-    m_debugExpr = &m_debugThread->getDebugExpr();
-    showDebugInfo(_T("State:%-14s. it:%d complexity(%s), rat.const:%3zu")
-                 ,m_debugExpr->getStateName().cstr()
-                 ,m_debugExpr->getReduceIteration()
-                 ,m_debugExpr->getComplexity().toString().cstr()
-                 ,m_debugExpr->getRationalConstantMap().size()
-                 );
+    m_debugExpr = &m_debugger->getDebugExpr();
+    showDebugInfo(_T("%s"), m_debugger->getDebugInfo().cstr());
 
 #ifdef TRACE_REDUCTION_CALLSTACK
     if(isMenuItemChecked(this, ID_VIEW_SHOWREDUCTIONSTACK)) {
-      const ReductionStack &stack = m_debugExpr->getReductionStack();
+      const ReductionStack &stack = m_debugger->getReductionStack();
       const String s = stack.toString();
       m_reductionStackWindow.SetWindowText(s.cstr());
     }
@@ -654,7 +640,7 @@ void CTestExpressionGraphicsDlg::paintDebugExpr() {
       break;
     }
 
-    setWindowText(this, IDC_EDITDERIVED      , m_debugExpr->toString());
+    setWindowText(this, IDC_EDITDERIVED, m_debugExpr->toString());
     INVALIDATE();
   } catch(Exception e) {
     showException(e);
@@ -668,7 +654,7 @@ void CTestExpressionGraphicsDlg::OnFunctionsCompileFx() {
       saveExprVariables();
     }
 
-    destroyThread();
+    destroyDebugger();
     m_flags.remove(ISCOMPILED);
     clearExprImage();
     clearDerivedImage();
@@ -693,7 +679,7 @@ void CTestExpressionGraphicsDlg::OnFunctionsReduceFx() {
     const BitSet16 oldFlags = m_flags;
     if(hasExprImage() /*&& !m_flags.contains(ISEXPRREDUCED) */) {
       clearExprImage();
-      m_expr.reduce();
+      m_expr.getTree()->reduce();
       m_flags.add(ISEXPRREDUCED);
       makeExprImage();
       if(oldFlags.contains(HASFVALUE)) {
@@ -711,7 +697,7 @@ void CTestExpressionGraphicsDlg::OnFunctionsReduceDerived() {
     const BitSet16 oldFlags = m_flags;
     if(hasDerivedImage() /*&& !m_flags.contains(ISDERIVEDREDUCED) */) {
       clearDerivedImage();
-      m_derivedExpr.reduce();
+      m_derivedExpr.getTree()->reduce();
       m_flags.add(ISDERIVEDREDUCED);
       makeDerivedImage();
       if(oldFlags.contains(HASDERIVEDVALUE2)) {
@@ -822,7 +808,7 @@ void CTestExpressionGraphicsDlg::OnSelChangeComboFontSize() {
 
 void CTestExpressionGraphicsDlg::onSelChangeCombo() {
   saveOptions();
-  if(isThreadPaused()) {
+  if(isDebuggerPaused()) {
     paintDebugExpr();
   } else {
     const bool hasImage1 = hasExprImage();
@@ -914,14 +900,14 @@ void CTestExpressionGraphicsDlg::OnContextMenu(CWnd *pWnd, CPoint point) {
         return;
       }
       if(!loadMenu(menu, IDR_CONTEXTMENU)) return;
-      if(hasDebugThread()) {
+      if(hasDebugger()) {
         removeMenuItem(menu, ID_CONTEXTMENU_TOSTANDARDFORM);
         removeMenuItem(menu, ID_CONTEXTMENU_TOCANONCALFORM);
         removeMenuItem(menu, ID_CONTEXTMENU_TONUMERICFORM );
         removeMenuItem(menu, ID_CONTEXTMENU_EXPAND        );
         removeMenuItem(menu, ID_CONTEXTMENU_MULTIPLY      );
       } else {
-        switch(getContextExpression()->getTreeForm()) {
+        switch(getContextExpression()->getTree()->getTreeForm()) {
         case TREEFORM_STANDARD  : removeMenuItem(menu, ID_CONTEXTMENU_TOSTANDARDFORM); break;
         case TREEFORM_CANONICAL : removeMenuItem(menu, ID_CONTEXTMENU_TOCANONCALFORM); break;
         case TREEFORM_NUMERIC   : removeMenuItem(menu, ID_CONTEXTMENU_TONUMERICFORM ); break;
@@ -993,11 +979,11 @@ bool CTestExpressionGraphicsDlg::loadMenu(CMenu &menu, int id) {
 
 #ifdef TRACE_REDUCTION_CALLSTACK
 const ReductionStackElement *CTestExpressionGraphicsDlg::getSelectedStackElement(CPoint p) {
-  if(!isThreadPaused()) return NULL;
+  if(!isDebuggerPaused()) return NULL;
 
   const int             lineHeight  = m_reductionStackWindow.getLineHeight();
   const CSize           clSize      = getClientRect(m_reductionStackWindow).Size();
-  const ReductionStack &stack       = m_debugExpr->getReductionStack();
+  const ReductionStack &stack       = m_debugger->getReductionStack();
   const int             stackHeight = stack.getHeight();
   const int             index       = stackHeight - 1 - (clSize.cy - p.y) / lineHeight ; // from top
 
@@ -1013,7 +999,7 @@ void CTestExpressionGraphicsDlg::OnContextMenuShowExprTree() {
   Expression     *expr;
   ExpressionNode *node = NULL;
   bool  handleNodeChanges = false;
-  if(isThreadPaused() && (getContextWindowId() == m_debugWinId)) {
+  if(isDebuggerPaused() && (getContextWindowId() == m_debugWinId)) {
     expr = m_debugExpr;
   } else {
     expr = getContextExpression();
@@ -1035,7 +1021,7 @@ void CTestExpressionGraphicsDlg::OnContextMenuShowExprTree() {
       m_currentChildDlg->addPropertyChangeListener(this);
     }
     dlg.DoModal();
-    expr->unmarkAll();
+    expr->getTree()->unmarkAll();
     if(handleNodeChanges) {
       updateContextWinImage();
       INVALIDATE();
@@ -1049,7 +1035,7 @@ void CTestExpressionGraphicsDlg::OnContextMenuToStandardForm() {
     showWarning(_T("No expression to convert"));
     return;
   }
-  expr->setTreeForm(TREEFORM_STANDARD);
+  expr->getTree()->setTreeForm(TREEFORM_STANDARD);
   updateContextWinImage();
   INVALIDATE();
 }
@@ -1060,7 +1046,7 @@ void CTestExpressionGraphicsDlg::OnContextMenuToCanoncalForm() {
     showWarning(_T("No expression to convert"));
     return;
   }
-  expr->setTreeForm(TREEFORM_CANONICAL);
+  expr->getTree()->setTreeForm(TREEFORM_CANONICAL);
   updateContextWinImage();
   INVALIDATE();
 }
@@ -1071,7 +1057,7 @@ void CTestExpressionGraphicsDlg::OnContextMenuToNumericForm() {
     showWarning(_T("No expression to convert"));
     return;
   }
-  expr->setTreeForm(TREEFORM_NUMERIC);
+  expr->getTree()->setTreeForm(TREEFORM_NUMERIC);
   updateContextWinImage();
   INVALIDATE();
 }
@@ -1090,7 +1076,7 @@ void CTestExpressionGraphicsDlg::OnContextMenuExpand() {
     showWarning(_T("No expression to expand"));
     return;
   }
-  expr->unmarkAll();
+  expr->getTree()->unmarkAll();
   getContextNode()->mark();
   expr->expandMarkedNodes();
   updateContextWinImage();
@@ -1104,7 +1090,7 @@ void CTestExpressionGraphicsDlg::OnContextMenuMultiply() {
     showWarning(_T("No expression to multiply"));
     return;
   }
-  expr->unmarkAll();
+  expr->getTree()->unmarkAll();
   getContextNode()->mark();
   expr->multiplyMarkedNodes();
   updateContextWinImage();
@@ -1117,7 +1103,7 @@ void CTestExpressionGraphicsDlg::OnDebugReduceExpr() {
   clearDerivedExpr();
   if(hasExprImage()) {
     if(hasFValue) m_flags.add(HASFVALUE);
-    startThread(IDC_STATICEXPRIMAGE, true);
+    startDebugger(IDC_STATICEXPRIMAGE, true);
     INVALIDATE();
   }
 }
@@ -1125,36 +1111,36 @@ void CTestExpressionGraphicsDlg::OnDebugReduceExpr() {
 void CTestExpressionGraphicsDlg::OnDebugReduceDerived() {
   makeDerivedImage();
   if(hasDerivedImage()) {
-    startThread(IDC_STATICDERIVEDIMAGE, true);
+    startDebugger(IDC_STATICDERIVEDIMAGE, true);
     INVALIDATE();
   }
 }
 
 void CTestExpressionGraphicsDlg::OnDebugRun() {
-  if(isThreadPaused()) {
-    m_debugThread->go();
+  if(isDebuggerPaused()) {
+    m_debugger->go();
   }
 }
 
 void CTestExpressionGraphicsDlg::OnDebugTraceReductionStep() {
-  if(isThreadPaused()) {
+  if(isDebuggerPaused()) {
 #ifdef TRACE_REDUCTION_CALLSTACK
     if(isMenuItemChecked(this, ID_VIEW_SHOWREDUCTIONSTACK)) {
-      m_debugThread->goUntilReturn();
+      m_debugger->goUntilReturn();
     } else
 #endif
-    m_debugThread->singleStep();
+    m_debugger->singleStep();
   }
 }
 
 void CTestExpressionGraphicsDlg::OnDebugStep1ReduceIteration() {
-  if(isThreadPaused()) m_debugThread->singleSubStep();
+  if(isDebuggerPaused()) m_debugger->singleSubStep();
 }
 
 void CTestExpressionGraphicsDlg::OnDebugStop() {
   try {
-    if(hasDebugThread()) {
-      m_debugThread->kill();
+    if(hasDebugger()) {
+      m_debugger->kill();
     }
   } catch(Exception e) {
     showException(e);
@@ -1163,8 +1149,8 @@ void CTestExpressionGraphicsDlg::OnDebugStop() {
 
 void CTestExpressionGraphicsDlg::OnDebugClearAllBreakPoints() {
 #ifdef TRACE_REDUCTION_CALLSTACK
-  if(isThreadPaused()) {
-    m_debugExpr->clearAllBreakPoints();
+  if(isDebuggerPaused()) {
+    m_debugExpr->getTree()->clearAllBreakPoints();
   }
 #endif
 }
@@ -1178,7 +1164,8 @@ void CTestExpressionGraphicsDlg::compileExpr() {
   if(m_flags.contains(ISDIRTY) || !m_flags.contains(ISCOMPILED)) {
     UpdateData();
     const String exprStr = (LPCTSTR)m_exprText;
-    m_expr.compile(exprStr, false);
+    StringArray errors;
+    m_expr.compile(exprStr, errors, false);
     clearExprImage();
     m_flags.clear();
 
@@ -1186,7 +1173,6 @@ void CTestExpressionGraphicsDlg::compileExpr() {
       m_flags.add(ISCOMPILED);
       m_exprCombo.updateList();
     } else {
-      const StringArray &errors = m_expr.getErrors();
       String error = errors[0];
       int pos = m_expr.decodeErrorString(exprStr, error);
       OnEditGotoComboFx();
@@ -1234,7 +1220,7 @@ void CTestExpressionGraphicsDlg::makeExprImage(const Expression &expr) {
   try {
     const int oldContextWindow = getContextWindowId();
     clearExprImage();
-    m_exprImage = expressionToImage(m_device, expr, getFontSize(), getNumberFormat());
+    m_exprImage = expressionToImage(getDevice(), expr, getFontSize(), getNumberFormat());
     if(oldContextWindow == IDC_STATICEXPRIMAGE) {
       setContextWindow(oldContextWindow);
     }
@@ -1249,7 +1235,7 @@ void CTestExpressionGraphicsDlg::makeDerivedImage(const Expression &expr) {
   try {
     const int oldContextWindow = getContextWindowId();
     clearDerivedImage();
-    m_derivedImage = expressionToImage(m_device, expr, getFontSize(), getNumberFormat());
+    m_derivedImage = expressionToImage(getDevice(), expr, getFontSize(), getNumberFormat());
     if(oldContextWindow == IDC_STATICDERIVEDIMAGE) {
       setContextWindow(oldContextWindow);
     }

@@ -15,6 +15,7 @@ private:
   bool                  m_done;
   Vector                m_gradient;
   double                m_stepSize;
+  StringArray           m_errors;
 
   void   randomVarList();
   double computeSSD();
@@ -32,7 +33,9 @@ public:
   void   solve();
   double eval(double x);
   String toString() const;
-
+  inline const StringArray &getErrors() const {
+    return m_errors;
+  }
   bool done() const {
     return m_done;
   }

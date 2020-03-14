@@ -431,7 +431,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Test\testexpr\ExpressionSamples.cpp" />
-    <ClCompile Include="DebugThread.cpp" />
+    <ClCompile Include="Debugger.cpp" />
     <ClCompile Include="EnterVariablesDlg.cpp" />
     <ClCompile Include="ExpressionTreeCtrl.cpp" />
     <ClCompile Include="ExpressionTreeDlg.cpp" />
@@ -459,7 +459,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Test\testexpr\ExpressionSamples.h" />
-    <ClInclude Include="DebugThread.h" />
+    <ClInclude Include="Debugger.h" />
     <ClInclude Include="EnterVariablesDlg.h" />
     <ClInclude Include="ExpressionTreeCtrl.h" />
     <ClInclude Include="ExpressionTreeDlg.h" />

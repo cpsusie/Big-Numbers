@@ -1,5 +1,9 @@
 #include "stdafx.h"
 #include <FileNameSplitter.h>
+#include <Math/Double64.h>
+#include <Math/Double80.h>
+#include <Math/Rational.h>
+#include <Math/MathLib.h>
 #include <Math/FPU.h>
 #include "TestSamples.h"
 
@@ -49,10 +53,10 @@ namespace TestExpression {
     return fs.getFullPath();
   }
 
-  void verifyExprOk(const Expression &e, bool expectedOk=true) {
+  void verifyExprOk(const Expression &e, const StringArray &errors, bool expectedOk=true) {
     if(expectedOk) {
       if(!e.isOk()) {
-        OUTPUT(_T("Expr.isOk=false. %s"), e.getErrors().toString().cstr());
+        OUTPUT(_T("Expr.isOk=false. %s"), errors.toString().cstr());
         verify(false);
       }
     } else {
@@ -106,10 +110,11 @@ namespace TestExpression {
 
   void EqualExpressionSample::doTest() const {
     Expression exp1, exp2;
-    exp1.compile(m_e1, false);
-    verifyExprOk(exp1);
-    exp2.compile(m_e1, false);
-    verifyExprOk(exp2);
+    StringArray errors1, errors2;
+    exp1.compile(m_e1, errors1, false);
+    verifyExprOk(exp1, errors1);
+    exp2.compile(m_e1, errors2, false);
+    verifyExprOk(exp2, errors2);
     switch(m_expected) {
     case CMP_EQUAL     :
       verify(exp1.equal(exp2));
@@ -172,9 +177,6 @@ namespace TestExpression {
         for(UINT i = 0; i < n; i++) {
           ExpressionTest &test = *testArray[i];
           const String    expr = test.getExpr();
-          if (i == 119) {
-            int fisk = 1;
-          }
 #ifdef TRACE_MEMORY
           debugLog(_T("testcase %3d:<%-50s>\n"),i,expr.cstr());
 #endif
@@ -188,8 +190,9 @@ namespace TestExpression {
           Expression compiledExpr(   test.getTrigonometricMode());
           Expression interpreterExpr(test.getTrigonometricMode());
           Expression reducedExpr(    test.getTrigonometricMode());
-          compiledExpr.compile(expr, true,false, listFile);
-          reducedExpr.compile( expr, true,true ,RlistFile);
+          StringArray compiledErrors, interpErrors, reducedErrors;
+          compiledExpr.compile(expr, compiledErrors, true,false, listFile);
+          reducedExpr.compile( expr, reducedErrors , true,true ,RlistFile);
 
           FPRINTF( dumpFile, _T("%s\n%s\n"), expr.cstr(),compiledExpr.treeToString().cstr());
           FPRINTF(RdumpFile, _T("%s\n%s\n"), expr.cstr(),reducedExpr.treeToString().cstr());
@@ -201,17 +204,16 @@ namespace TestExpression {
 
 //          debugLog(_T("Test %d %s\n%s\n"), i, expr.cstr(), compiledExpr.treeToString().cstr());
 
-          interpreterExpr.compile(expr, false,false);
+          interpreterExpr.compile(expr, interpErrors, false,false);
           if(!compiledExpr.isOk()) {
             OUTPUT(_T("Error in testcase[%d]<%s>"), i, expr.cstr());
-            const StringArray &errors = compiledExpr.getErrors();
-            for(size_t i = 0; i < errors.size(); i++) {
-              OUTPUT(_T("%s"), errors[i].cstr());
+            for(size_t i = 0; i < compiledErrors.size(); i++) {
+              OUTPUT(_T("%s"), compiledErrors[i].cstr());
             }
             verify(false);
           } else {
-            verifyExprOk(reducedExpr    );
-            verifyExprOk(interpreterExpr);
+            verifyExprOk(reducedExpr    , reducedErrors);
+            verifyExprOk(interpreterExpr, interpErrors);
             verify(compiledExpr.getReturnType()    == test.getReturnType());
             verify(reducedExpr.getReturnType()     == test.getReturnType());
             verify(interpreterExpr.getReturnType() == test.getReturnType());
@@ -296,25 +298,25 @@ namespace TestExpression {
       try {
         for(Real p = -70; p <= 70; p += 0.5) {
           str = format(_T("(1+x)^%s"),toString(p).cstr());
-          Expression compPowExpr, interpretPowExpr;
-
+          Expression  compPowExpr, interpretPowExpr;
+          StringArray compErrors , interpErrors;
           FILE *powListFile = openPowListFile(listFileCounter);
-          compPowExpr.compile(   str, true, false, powListFile);
+          compPowExpr.compile(   str, compErrors, true, false, powListFile);
           FCLOSE(powListFile);
 
-          interpretPowExpr.compile(str, false);
-          verifyExprOk(compPowExpr     );
-          verifyExprOk(interpretPowExpr);
+          interpretPowExpr.compile(str, interpErrors, false);
+          verifyExprOk(compPowExpr     , compErrors  );
+          verifyExprOk(interpretPowExpr, interpErrors);
 
           str = format(_T("root(1+x,%s)"),toString(p).cstr());
           Expression compRootExpr, interpretRootExpr;
           FILE *rootListFile = openRootListFile(listFileCounter++);
-          compRootExpr.compile(   str, true, false, rootListFile);
+          compRootExpr.compile(   str, compErrors, true, false, rootListFile);
           FCLOSE(rootListFile);
 
-          interpretRootExpr.compile(str, false);
-          verifyExprOk(compRootExpr     ,p!=0);
-          verifyExprOk(interpretRootExpr);
+          interpretRootExpr.compile(str, interpErrors, false);
+          verifyExprOk(compRootExpr     , compErrors,p!=0);
+          verifyExprOk(interpretRootExpr, interpErrors);
 
           const Real startx = (p == getInt(p)) ? -1.9 : -0.9, step = 0.125;
           for(Real x = startx; x <= 0.5; x += step) {
@@ -344,22 +346,23 @@ namespace TestExpression {
           for(int den = 2; den <= 64; den++) {
             const Rational p(num,den);
             str = format(_T("(1+x)^(%s)"),toString(p).cstr());
-            Expression compPowExpr, interpretPowExpr;
+            Expression  compPowExpr, interpretPowExpr;
+            StringArray compErrors , interpErrors;
             FILE *listPowFile = openPowListFile(listFileCounter);
-            compPowExpr.compile(   str, true, false, listPowFile);
+            compPowExpr.compile(   str, compErrors, true, false, listPowFile);
             FCLOSE(listPowFile);
-            interpretPowExpr.compile(str, false);
-            verifyExprOk(compPowExpr     );
-            verifyExprOk(interpretPowExpr);
+            interpretPowExpr.compile(str, interpErrors, false);
+            verifyExprOk(compPowExpr     , compErrors  );
+            verifyExprOk(interpretPowExpr, interpErrors);
 
             str = format(_T("root(1+x,%s)"),toString(p).cstr());
             Expression compRootExpr, interpretRootExpr;
             FILE *listRootFile = openRootListFile(listFileCounter++);
-            compRootExpr.compile(   str, true, false, listRootFile);
+            compRootExpr.compile(     str, compErrors, true, false, listRootFile);
             FCLOSE(listRootFile);
-            interpretRootExpr.compile(str, false);
-            verifyExprOk(compRootExpr     );
-            verifyExprOk(interpretRootExpr);
+            interpretRootExpr.compile(str, interpErrors, false);
+            verifyExprOk(compRootExpr     , compErrors  );
+            verifyExprOk(interpretRootExpr, interpErrors);
 
             const Real startx = -0.9, step = 0.125;
             for(Real x = startx; x <= 0.5; x += step) {
@@ -468,8 +471,9 @@ namespace TestExpression {
           FILE      *RdumpFile = openBoolReducedDumpFile(i);
 
           Expression compiledExpr, interpreterExpr, reducedExpr;
-          compiledExpr.compile(expr, true,false, listFile);
-          reducedExpr.compile( expr, true,true ,RlistFile);
+          StringArray compiledErrors, interpErrors, reducedErrors;
+          compiledExpr.compile(expr, compiledErrors, true,false, listFile);
+          reducedExpr.compile( expr, reducedErrors , true,true ,RlistFile);
 
           FPRINTF( dumpFile, _T("%s\n%s\n"), expr.cstr(),compiledExpr.treeToString().cstr());
           FPRINTF(RdumpFile, _T("%s\n%s\n"), expr.cstr(),reducedExpr.treeToString().cstr());
@@ -480,17 +484,16 @@ namespace TestExpression {
 
 //          debugLog(_T("Test %d %s\n%s\n"), i, expr.cstr(), compiledExpr.treeToString().cstr());
 
-          interpreterExpr.compile(expr, false,false);
+          interpreterExpr.compile(expr, interpErrors, false, false);
           if(!compiledExpr.isOk()) {
             OUTPUT(_T("Error in testcase[%d]<%s>"), i, expr.cstr());
-            const StringArray &errors = compiledExpr.getErrors();
-            for(size_t i = 0; i < errors.size(); i++) {
-              OUTPUT(_T("%s"), errors[i].cstr());
+            for(size_t i = 0; i < compiledErrors.size(); i++) {
+              OUTPUT(_T("%s"), compiledErrors[i].cstr());
             }
             verify(false);
           } else {
-            verifyExprOk(reducedExpr    );
-            verifyExprOk(interpreterExpr);
+            verifyExprOk(reducedExpr    , reducedErrors);
+            verifyExprOk(interpreterExpr, interpErrors );
             verify(compiledExpr.getReturnType()    == EXPR_RETURN_BOOL);
             verify(reducedExpr.getReturnType()     == EXPR_RETURN_BOOL);
             verify(interpreterExpr.getReturnType() == EXPR_RETURN_BOOL);

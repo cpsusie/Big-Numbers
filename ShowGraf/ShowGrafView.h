@@ -1,5 +1,6 @@
 #pragma once
 
+#include <CompactStack.h>
 #include "ShowGrafDoc.h"
 #include "CoordinateSystemContainer.h"
 

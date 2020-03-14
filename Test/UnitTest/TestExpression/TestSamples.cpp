@@ -60,7 +60,6 @@ ExpressionTest::~ExpressionTest() {
   }
 }
 
-
 #define IF(e,e1,e2) ((e)?(e1):(e2))
 #define NOT !
 #define AND &&

@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include <Math/Expression/Expression.h>
 
 #define APSTUDIO_INVOKED
 #include "resource.h"

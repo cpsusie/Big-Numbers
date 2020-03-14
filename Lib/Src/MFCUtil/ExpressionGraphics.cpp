@@ -1,6 +1,8 @@
 #include "pch.h"
 #include <DebugLog.h>
 #include <CompactHashMap.h>
+#include <Math/Expression/ParserTree.h>
+#include <Math/Expression/ExpressionNode.h>
 #include <MFCUtil/ExpressionGraphics.h>
 
 //#define SHOW_LINES
@@ -279,7 +281,7 @@ private:
   bool                         m_getNumberActive;
   CompactArray<AlignedImage*>  m_imageTable;
   PixRectDevice               &m_device;
-  Expression                  &m_expression;
+  ParserTree                  *m_tree;
   D3DCOLOR                     m_backgroundColor;
   ExpressionRectangle          m_rectangle;
 
@@ -349,8 +351,8 @@ FontCache             ExpressionPainter::s_fontCache;
 const SymbolStringMap ExpressionPainter::s_stringMap;
 
 ExpressionPainter::ExpressionPainter(PixRectDevice &device, const Expression &expr, NumberFormat numberFormat, int decimals, int maxWidth)
-: m_device(    device           )
-, m_expression((Expression&)expr)
+: m_device(      device         )
+, m_tree(        expr.getTree() )
 , m_numberFormat(numberFormat   )
 , m_decimals(    decimals       )
 , m_maxWidth(    maxWidth       )
@@ -369,11 +371,11 @@ void ExpressionPainter::clear() {
 
 PixRect *ExpressionPainter::paintExpression(int fontSize) {
   clearImageTable();
-  if(m_expression.getRoot() == NULL) {
+  if(m_tree->getRoot() == NULL) {
     return getTextImage(_T("null"), true, fontSize, m_rectangle);
   }
-  PixRect *pr = getImage(m_expression.getRoot(), fontSize, m_rectangle);
-  m_expression.pruneUnusedNodes();
+  PixRect *pr = getImage(m_tree->getRoot(), fontSize, m_rectangle);
+  m_tree->pruneUnusedNodes();
   return pr;
 }
 
@@ -1237,15 +1239,15 @@ AlignedImage *ExpressionPainter::getNumberImage(SNode n, int fontSize, Expressio
       }
     }
 
-    ExpressionNode *en = m_expression.fetchTreeNode(PROD
-                                                   ,m_expression.numberExpr(significand)
-                                                   ,m_expression.fetchTreeNode(POW
-                                                                              ,m_expression.numberExpr(10)
-                                                                              ,m_expression.numberExpr(exponent)
-                                                                              ,NULL
-                                                                              )
-                                                    ,NULL
-                                                    );
+    ExpressionNode *en = m_tree->fetchTreeNode(PROD
+                                              ,m_tree->numberExpr(significand)
+                                              ,m_tree->fetchTreeNode(POW
+                                                                    ,m_tree->numberExpr(10)
+                                                                    ,m_tree->numberExpr(exponent)
+                                                                    ,NULL
+                                                                    )
+                                              ,NULL
+                                              );
 
     AlignedImage *result = getImage(en, fontSize, rect);
     rect.m_children.clear();
