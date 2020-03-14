@@ -46,38 +46,38 @@ public:
 // Only an interface....do not save any state in this, or any derived classes
 class NodeOperators {
 protected:
-  static ExpressionNode  *getZero(           ExpressionNode *n);
-  static ExpressionNode  *getOne(            ExpressionNode *n);
-  static ExpressionNode  *getMinusOne(       ExpressionNode *n);
-  static ExpressionNode  *getTwo(            ExpressionNode *n);
-  static ExpressionNode  *getHalf(           ExpressionNode *n);
-  static ExpressionNode  *getTen(            ExpressionNode *n);
-  static ExpressionNode  *numberExpr(        ExpressionNode *n, const Number &v);
-  static ExpressionNode  *numberExpr(        ExpressionNode *n, INT64         v);
+  static ExpressionNode  *getZero(    ExpressionNode *n);
+  static ExpressionNode  *getOne(     ExpressionNode *n);
+  static ExpressionNode  *getMinusOne(ExpressionNode *n);
+  static ExpressionNode  *getTwo(     ExpressionNode *n);
+  static ExpressionNode  *getHalf(    ExpressionNode *n);
+  static ExpressionNode  *getTen(     ExpressionNode *n);
+  static ExpressionNode  *numberExpr( ExpressionNode *n, const Number &v);
+  static ExpressionNode  *numberExpr( ExpressionNode *n, INT64         v);
 
-  static ExpressionNode  *unaryExpr( ExpressionInputSymbol symbol, ExpressionNode *n);
-  static ExpressionNode  *binaryExpr(ExpressionInputSymbol symbol, ExpressionNode *n1, ExpressionNode *n2);
-  static ExpressionNode  *funcExpr(  ExpressionInputSymbol symbol, ExpressionNode *n);
+  static ExpressionNode  *unaryExpr(  ExpressionInputSymbol symbol, ExpressionNode *n);
+  static ExpressionNode  *binaryExpr( ExpressionInputSymbol symbol, ExpressionNode *n1, ExpressionNode *n2);
+  static ExpressionNode  *funcExpr(   ExpressionInputSymbol symbol, ExpressionNode *n);
 public:
-  virtual ExpressionNode *sum(       ExpressionNode *n1, ExpressionNode *n2) const = NULL;
-  virtual ExpressionNode *diff(      ExpressionNode *n1, ExpressionNode *n2) const = NULL;
-  virtual ExpressionNode *prod(      ExpressionNode *n1, ExpressionNode *n2) const = NULL;
-  virtual ExpressionNode *quot(      ExpressionNode *n1, ExpressionNode *n2) const = NULL;
+  virtual ExpressionNode *sum(        ExpressionNode *n1, ExpressionNode *n2) const = NULL;
+  virtual ExpressionNode *diff(       ExpressionNode *n1, ExpressionNode *n2) const = NULL;
+  virtual ExpressionNode *prod(       ExpressionNode *n1, ExpressionNode *n2) const = NULL;
+  virtual ExpressionNode *quot(       ExpressionNode *n1, ExpressionNode *n2) const = NULL;
   // Return a division node without reduction to rational. to be used with exponents ie sqrt(x^2) != x
-  virtual ExpressionNode *quot(      ParserTree *tree, INT64 num, INT64 den) const = NULL;
-  virtual ExpressionNode *mod(       ExpressionNode *n1, ExpressionNode *n2) const = NULL;
-  virtual ExpressionNode *power(     ExpressionNode *n1, ExpressionNode *n2) const = NULL;
-  virtual ExpressionNode *root(      ExpressionNode *n1, ExpressionNode *n2) const = NULL;
-  virtual ExpressionNode *minus(     ExpressionNode *n) const = NULL;
-  virtual ExpressionNode *reciprocal(ExpressionNode *n) const = NULL;
-  virtual ExpressionNode *sqr(       ExpressionNode *n) const = NULL;
-  virtual ExpressionNode *sqrt(      ExpressionNode *n) const = NULL;
-  virtual ExpressionNode *exp(       ExpressionNode *n) const = NULL;
-  virtual ExpressionNode *exp10(     ExpressionNode *n) const = NULL;
-  virtual ExpressionNode *exp2(      ExpressionNode *n) const = NULL;
-  virtual ExpressionNode *cot(       ExpressionNode *n) const = NULL;
-  virtual ExpressionNode *csc(       ExpressionNode *n) const = NULL;
-  virtual ExpressionNode *sec(       ExpressionNode *n) const = NULL;
+  virtual ExpressionNode *quot(       ParserTree *tree, INT64 num, INT64 den) const = NULL;
+  virtual ExpressionNode *mod(        ExpressionNode *n1, ExpressionNode *n2) const = NULL;
+  virtual ExpressionNode *power(      ExpressionNode *n1, ExpressionNode *n2) const = NULL;
+  virtual ExpressionNode *root(       ExpressionNode *n1, ExpressionNode *n2) const = NULL;
+  virtual ExpressionNode *minus(      ExpressionNode *n) const = NULL;
+  virtual ExpressionNode *reciprocal( ExpressionNode *n) const = NULL;
+  virtual ExpressionNode *sqr(        ExpressionNode *n) const = NULL;
+  virtual ExpressionNode *sqrt(       ExpressionNode *n) const = NULL;
+  virtual ExpressionNode *exp(        ExpressionNode *n) const = NULL;
+  virtual ExpressionNode *exp10(      ExpressionNode *n) const = NULL;
+  virtual ExpressionNode *exp2(       ExpressionNode *n) const = NULL;
+  virtual ExpressionNode *cot(        ExpressionNode *n) const = NULL;
+  virtual ExpressionNode *csc(        ExpressionNode *n) const = NULL;
+  virtual ExpressionNode *sec(        ExpressionNode *n) const = NULL;
 
   virtual ParserTreeForm  getTreeForm() const = NULL;
   virtual void            checkTreeFormConsistent(const ParserTree *tree) const = NULL;
