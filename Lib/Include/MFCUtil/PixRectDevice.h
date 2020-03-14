@@ -1,5 +1,6 @@
 #pragma once
 
+#include <BasicIncludes.h>
 #include <afxwin.h>         // MFC core and standard components
 #include "PixRectType.h"
 #include "DirectXDeviceFactory.h"
