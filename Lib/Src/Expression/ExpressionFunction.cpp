@@ -24,10 +24,10 @@ ExpressionFunction &ExpressionFunction::operator=(ExpressionFunction &src) {
 
 void ExpressionFunction::compile(const String &expr, const String &name, TrigonometricMode mode, bool machineCode) {
   cleanup();
+  StringArray errors;
   m_expr.setTrigonometricMode(mode);
-  m_expr.compile(expr, machineCode);
-  if(!m_expr.isOk()) {
-    throwException(m_expr.getErrors().first());
+  if(!m_expr.compile(expr, errors, machineCode)) {
+    throwException(errors.first());
   }
   if(m_expr.getReturnType() != EXPR_RETURN_REAL) {
     throwException(_T("Returntype of expression not real"));
@@ -37,7 +37,7 @@ void ExpressionFunction::compile(const String &expr, const String &name, Trigono
 }
 
 void ExpressionFunction::initx() {
-  if(m_expr.getState() == PS_COMPILED) {
+  if(m_expr.hasSyntaxTree()) {
     const ExpressionVariable *xvp = m_expr.getVariable(m_varName);
     m_x = xvp ? &m_expr.getValueRef(*xvp) : &m_dummyX;
   } else {

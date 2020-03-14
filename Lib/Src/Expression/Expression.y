@@ -1,8 +1,9 @@
 %{
 
-#include <Math/Expression/ExpressionSymbol.h>
-#include <Math/Expression/ExpressionLex.h>
 #include <Math/Expression/ParserTree.h>
+#include <Math/Expression/ExpressionNode.h>
+
+#include "ExpressionLex.h"
 
 $PUSHNAMESPACE$
 
@@ -55,7 +56,7 @@ $POPNAMESPACE$
 
 #include "pch.h"
 #include <Math/Real.h>
-#include <Math/Expression/ExpressionParser.h>
+#include "ExpressionParser.h"
 
 %}
 %%

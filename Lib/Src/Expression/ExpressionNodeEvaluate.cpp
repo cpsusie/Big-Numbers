@@ -1,5 +1,6 @@
 #include "pch.h"
-#include <Math/Expression/Expression.h>
+#include <Math/Rational.h>
+#include <Math/Expression/ExpressionNode.h>
 #include "ExpressionRandom.h"
 
 namespace Expr {

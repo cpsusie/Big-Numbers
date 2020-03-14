@@ -3,8 +3,7 @@
 #include <DebugLog.h>
 #include <CompactStack.h>
 #include <CompactHashMap.h>
-#include <Scanner.h>
-#include "PragmaLib.h"
+#include <SourcePosition.h>
 #include "SNode.h"
 
 namespace Expr {
@@ -55,7 +54,13 @@ public:
   }
 };
 
-typedef Array<ExpressionVariableWithValue> ExpressionVariableArray;
+class ExpressionVariableArray : public Array<ExpressionVariableWithValue> {
+public:
+  ExpressionVariableArray() {
+  }
+  explicit ExpressionVariableArray(size_t capacity) : Array<ExpressionVariableWithValue>(capacity) {
+  }
+};
 
 class ExpressionNode;
 class ParserTree;
@@ -112,6 +117,7 @@ private:
   ParserTree          &m_tree;
 protected:
   PackedSyntaxNodeInfo m_info;
+  ExpressionSymbolTable &getSymbolTable() const;
 private:
   ExpressionNode &operator=(const ExpressionNode &src); // not implemented
   ExpressionNode(           const ExpressionNode &src); // not implemented
@@ -284,11 +290,6 @@ public:
 // Should only be called in Canonical treeform
 bool equal(     const ExpressionNode *n1, const ExpressionNode *n2);
 bool equalMinus(const ExpressionNode *n1, const ExpressionNode *n2);
-
-typedef CompactKeyType<const ExpressionNode*>  ExpressionNodeKey;
-
-template<typename E> class CompactNodeHashMap : public CompactHashMap<ExpressionNodeKey, E> {
-};
 
 class ExpressionNodeNumber : public ExpressionNode {
 private:

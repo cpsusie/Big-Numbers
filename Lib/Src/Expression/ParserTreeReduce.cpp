@@ -1,14 +1,11 @@
 #include "pch.h"
 #include <Math/PrimeFactors.h>
 #include <Math/Expression/ParserTree.h>
-#include <Math/Expression/ExpressionParser.h>
+#include <Math/Expression/ExpressionSymbolTable.h>
+#include <Math/Expression/ParserTreeComplexity.h>
 #include <Math/Expression/SNodeReduceDbgStack.h>
 
 namespace Expr {
-
-UINT ParserTree::getTerminalCount() { // static
-  return ExpressionParser::getTables().getTerminalCount();
-};
 
 class MainReducer : public ParserTreeTransformer {
 private:
@@ -32,7 +29,7 @@ public:
 // Minimal number of nodes in a valid syntax-tree. stmtlist + returnvalue
 #define MINNODECOUNT 2
 
-void ParserTree::reduce() {
+ParserTree &ParserTree::reduce() {
   try {
     const ExpressionVariableArray oldVariables = getSymbolTable().getAllVariables();
 
@@ -55,35 +52,44 @@ void ParserTree::reduce() {
       setTreeForm(TREEFORM_STANDARD);
     }
 
-    buildSymbolTable(&oldVariables);
     pruneUnusedNodes();
+    buildSymbolTable(&oldVariables);
 
     setState(PS_REDUCTIONDONE);
   } catch(...) {
-    clear();
+    releaseAll();
     throw;
   }
+  return *this;
 }
 
-class TreeWithScore : public ParserTree {
+class ExpressionWithScore : public Expression {
 private:
   const ParserTreeComplexity m_complexity;
 public:
-  TreeWithScore(const ParserTree &tree) : ParserTree(tree), m_complexity(tree) {
+  ExpressionWithScore(const ExpressionWithScore &src)
+    : Expression(src)
+    , m_complexity(src.m_complexity)
+  {
+  }
+  ExpressionWithScore(const ParserTree &tree)
+    : Expression(tree.getExpression())
+    , m_complexity(tree)
+  {
   }
   const ParserTreeComplexity &getComplexity() const {
     return m_complexity;
   }
 };
 
-class ReductionArray : public Array<TreeWithScore> {
+class ReductionArray : public Array<ExpressionWithScore> {
 public:
-  int find(const ParserTree &tree) const;
+  int find(const Expression &expr) const;
 };
 
-int ReductionArray::find(const ParserTree &tree) const {
+int ReductionArray::find(const Expression &expr) const {
   for(UINT i = 0; i < size(); i++) {
-    if(tree.equal((*this)[i])) {
+    if(expr.equal((*this)[i])) {
       return i;
     }
   }
@@ -99,7 +105,7 @@ void ParserTree::iterateTransformation(ParserTreeTransformer &transformer) {
   const int      maxIterations = 30;
   size_t         bestIndex     = 0;
   ReductionArray reductionArray;
-  reductionArray.add(TreeWithScore(*this));
+  reductionArray.add(ExpressionWithScore(*this));
 
   STARTREDUCTION();
 
@@ -110,7 +116,7 @@ void ParserTree::iterateTransformation(ParserTreeTransformer &transformer) {
     setRoot(transformer.transform(getRoot()).node());
     setState(transformer.getState());
     checkIsCanonicalForm();
-    if(reductionArray.find(*this) >= 0) {
+    if(reductionArray.find(getExpression()) >= 0) {
       break;
     } else {
       reductionArray.add(*this);
@@ -123,7 +129,7 @@ void ParserTree::iterateTransformation(ParserTreeTransformer &transformer) {
       break;
     }
   }
-  *this = reductionArray[bestIndex];
+  *this = *(reductionArray[bestIndex].getTree());
 }
 
 }; // namespace Expr

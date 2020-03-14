@@ -1,10 +1,13 @@
 #pragma once
 
 #include <MyUtil.h>
-#include <HashMap.h>
+#include <CompactHashMap.h>
 #include <PropertyContainer.h>
-#include <Scanner.h>
-#include "ParserTreeSymbolTable.h"
+#include <SourcePosition.h>
+#include "ExpressionSymbol.h"
+#include "SNode.h"
+
+class ParserTables;
 
 namespace Expr {
 
@@ -12,11 +15,7 @@ typedef enum {
   PP_STATE                 // ParserTreeState
  ,PP_REDUCEITERATION       // UINT
  ,PP_ROOT                  // ExpressionNode
- ,PP_OK                    // bool
  ,PP_TREEFORM              // ParserTreeForm
- ,EP_TRIGONOMETRICMODE     // TrigonometricMode    (expressionProperty)
- ,EP_RETURNTYPE            // ExpressionReturnType (expressionProperty)
- ,EP_MACHINECODE           // bool                 (expressionProperty)
 } ParserTreeProperties;
 
 typedef enum {
@@ -36,40 +35,6 @@ typedef enum {
  ,PS_REDUCTIONDONE
 } ParserTreeState;
 
-class ParserTreeComplexity {
-private:
-  UINT m_nodeCount;
-  UINT m_nameCount;
-  UINT m_treeDepth;
-  int compare(const ParserTreeComplexity &tc) const;
-public:
-  ParserTreeComplexity(const ParserTree &tree);
-  inline bool operator==(const ParserTreeComplexity &tc) const {
-    return compare(tc) == 0;
-  }
-  inline bool operator!=(const ParserTreeComplexity &tc) const {
-    return compare(tc) != 0;
-  }
-  inline bool operator< (const ParserTreeComplexity &tc) const {
-    return compare(tc) <  0;
-  }
-  inline bool operator<=(const ParserTreeComplexity &tc) const {
-    return compare(tc) <= 0;
-  }
-  inline bool operator> (const ParserTreeComplexity &tc) const {
-    return compare(tc) >  0;
-  }
-  inline bool operator>=(const ParserTreeComplexity &tc) const {
-    return compare(tc) >= 0;
-  }
-  inline UINT getNodeCount() const {
-    return m_nodeCount;
-  }
-  String toString() const {
-    return format(_T("#nodes:%3u, #names:%2u, treedepth:%u\n"), m_nodeCount, m_nameCount, m_treeDepth);
-  }
-};
-
 class ParserTreeTransformer {
 public:
   ParserTreeTransformer() {
@@ -77,7 +42,6 @@ public:
   virtual SNode           transform(SNode n) = 0;
   virtual ParserTreeState getState() const = 0;
 };
-
 
 // Only an interface....do not save any state in this, or any derived classes
 class NodeOperators {
@@ -120,6 +84,15 @@ public:
   static const NodeOperators *s_stdForm, *s_canonForm, *s_stdNumForm, *s_canonNumForm;
 };
 
+class ExpressionNode;
+class ExpressionNodeNumber;
+class ExpressionNodeBoolConst;
+class ExpressionNodeTree;
+class ExpressionNodeSelector;
+class ExpressionNodeHandler;
+class ExpressionVariableArray;
+class ExpressionSymbolTable;
+
 class RationalConstantMap : public CompactHashMap<Rational, ExpressionNodeNumber*> {
 private:
   RationalConstantMap(           const RationalConstantMap &src); // not implemented
@@ -129,15 +102,18 @@ public:
   void removeUnmarked();
 };
 
+typedef CompactKeyType<const ExpressionNode*>  ExpressionNodeKey;
+
+template<typename E> class CompactNodeHashMap : public CompactHashMap<ExpressionNodeKey, E> {
+};
+
 class ParserTree : public PropertyContainer {
 private:
+  Expression                   &m_expression;
   ExpressionNode               *m_root;
   CompactArray<ExpressionNode*> m_nodeTable, m_nonRootNodes;
-  ParserTreeSymbolTable         m_symbolTable;
   StringArray                   m_errors;
-  bool                          m_ok;
   const NodeOperators          *m_ops;
-  TrigonometricMode             m_trigonometricMode;
   mutable ParserTreeState       m_state;
   mutable UINT                  m_reduceIteration;
   RationalConstantMap           m_rationalConstantMap;
@@ -155,16 +131,13 @@ private:
   }
   void markSimpleConstants();
   ExpressionNodeNumber *getRationalConstant(const Rational &r);
-  void init(TrigonometricMode    mode
-           ,ParserTreeState      state
-           ,UINT                 reduceIteration);
+  void init(ParserTreeState state, UINT reduceIteration);
   friend class ExpressionNode;
   friend class ExpressionNodeName;
   friend class NodeOperators;
   friend class NodeOperatorsCanonForm;
   friend class NodeOperatorsStdForm;
   friend class SNode;
-  friend class ParserTreeSymbolTable;
   friend class FactorArray;
   friend class MarkedNodeTransformer;
   friend class ExpressionPainter;
@@ -173,36 +146,24 @@ private:
   void checkIsConsistent() const;
 #endif // CHECK_CONSISTENCY
 protected:
-  ParserTree(TrigonometricMode mode);
-  // if root!=NULL, it must be a node in src. If root=NULL, then src.root is used
-  ParserTree(           const ParserTree &src, const ExpressionNode *root=NULL);
-  ParserTree &operator=(const ParserTree &src);
-  void setTrigonometricMode(TrigonometricMode mode) { // no notification from here.
-    m_trigonometricMode = mode;
-  }
-  void setOk(             bool            ok      );
-  void setTreeForm(       ParserTreeForm  form    );
-  void setState(          ParserTreeState newState);
+  void  parse(const String &expr);
+  void  setState(          ParserTreeState newState);
   // Reduction
-  void setReduceIteration(UINT            it      );
-  void iterateTransformation(ParserTreeTransformer &transformer);
-  void checkIsStandardForm() const;
-  void checkIsCanonicalForm() const;
+  void  setReduceIteration(   UINT                   it         );
+  void  iterateTransformation(ParserTreeTransformer &transformer);
+  void  checkIsStandardForm()  const;
+  void  checkIsCanonicalForm() const;
   SNode toStandardForm( SNode n);
   SNode toCanonicalForm(SNode n);
   SNode toNumericForm(  SNode n);
-  void releaseAll();
-  void pruneUnusedNodes();
-  void markPow1Nodes() const;
-  void markNonRootNodes();
-  void addNonRootNode(ExpressionNode *n);
-  void deleteUnmarked();
-  void buildSymbolTable(const ExpressionVariableArray *oldVariables = NULL) {
-    m_symbolTable.create(this, oldVariables);
-  }
-  ExpressionVariable *getVariableByName(const String &name) {
-    return m_symbolTable.getVariable(name);
-  }
+  void  releaseAll();
+  void  pruneUnusedNodes();
+  void  markPow1Nodes() const;
+  void  markNonRootNodes();
+  void  addNonRootNode(ExpressionNode *n);
+  void  deleteUnmarked();
+  void  buildSymbolTable(const ExpressionVariableArray *oldVariables = NULL);
+  ExpressionVariable *getVariableByName(const String &name);
   inline void setValueByIndex(UINT valueIndex, Real value) const {
     getValueRef(valueIndex) = value;
   }
@@ -211,11 +172,7 @@ protected:
   }
   SNode traverseSubstituteNodes(SNode n, CompactNodeHashMap<ExpressionNode*> &nodeMap);
 
-  ExpressionNode *allocateLoopVarNode(const String &prefix) {
-    ExpressionNodeName *result = fetchNameNode(m_symbolTable.getNewLoopName(prefix));
-    m_symbolTable.allocateSymbol(result, false, true, true);
-    return result;
-  }
+  ExpressionNode *allocateLoopVarNode(const String &prefix);
 
   ExpressionNodeName     *fetchNameNode(  const String               &name    );
   // terminate argumentlist with NULL
@@ -233,30 +190,23 @@ protected:
   inline ExpressionNodeNumber *numberExpr(INT64           v) {
     return numberExpr(Rational(v));
   }
-  inline ExpressionNodeNumber *numberExpr(const Number   &v) {
-    if(isRational(v)) return numberExpr(getRational(v));
-    ExpressionNodeNumber *n = new ExpressionNodeNumber(this, v); TRACE_NEW(n);
-    return n;
-  }
-  inline ExpressionNodeNumber *numberExpr(const Real     &v) {
-    ExpressionNodeNumber *n = new ExpressionNodeNumber(this, v); TRACE_NEW(n);
-    return n;
-  }
-  inline ExpressionNodeBoolConst *boolConstExpr(bool b, bool checkIsSimple=true) {
-    if(checkIsSimple) return b ? getTrue() : getFalse();
-    ExpressionNodeBoolConst *n = new ExpressionNodeBoolConst(this, b); TRACE_NEW(n);
-    return n;
-  }
-  ExpressionNode                 *constExpr(const String &name);
-
-  void expandMarkedNodes();
-  void multiplyMarkedNodes();
-
+  ExpressionNodeNumber        *numberExpr(const Number   &v);
+  ExpressionNodeNumber        *numberExpr(const Real     &v);
+  ExpressionNodeBoolConst     *boolConstExpr(bool b, bool checkIsSimple = true);
+  ExpressionNode              *constExpr(const String &name);
 public:
+  ParserTree(Expression *expression, const String &str);
+  // if(root != NULL) this->m_root = root->clone(this)
+  ParserTree(Expression *expression, const ExpressionNode *root);
+  ParserTree &operator=(const ParserTree &src);
   virtual ~ParserTree();
 
+  ParserTree &setTreeForm(ParserTreeForm form);
   inline const ExpressionNode *getRoot() const {
     return m_root;
+  }
+  inline Expression &getExpression() const {
+    return m_expression;
   }
 
   inline ExpressionNode *getRoot() {
@@ -270,23 +220,17 @@ public:
     return m_root == NULL;
   }
 
-  bool equal(const ParserTree &tree) const {
-    return Expr::equal(getRoot(), tree.getRoot());
-  }
-
-  bool equalMinus(const ParserTree &tree) const {
-    return Expr::equalMinus(getRoot(), tree.getRoot());
-  }
+  bool equal(     const ParserTree &tree) const;
+  bool equalMinus(const ParserTree &tree) const;
 
   inline TrigonometricMode getTrigonometricMode() const {
-    return m_trigonometricMode;
+    return m_expression.getTrigonometricMode();
   }
-  void reduce();
-  static UINT getTerminalCount();
+  ParserTree &reduce();
 
   void unmarkAll() const;
   inline bool isOk() const {
-    return m_ok;
+    return (m_root != NULL) && (m_errors.size() == 0);
   }
 
   inline ParserTreeForm getTreeForm() const {
@@ -320,12 +264,10 @@ public:
     if(!m_true    ) m_true     = boolConstExpr(true,false);
     return m_true;
   }
-  inline Real &getValueRef(UINT valueIndex) const {
-    return m_symbolTable.getValueRef(valueIndex);
-  }
-  inline Real &getValueRef(const ExpressionVariable &var) const {
-    return getValueRef(var.getValueIndex());
-  }
+  Real &getValueRef(UINT valueIndex) const;
+  Real &getValueRef(const ExpressionVariable &var) const;
+  ParserTree &setValue(const String &name, const Real &value);
+  const ExpressionVariable *getVariable(const String &name) const;
 
   inline ExpressionNode  *sum(       ExpressionNode *n1, ExpressionNode *n2) { return m_ops->sum(  n1,n2); }
   inline ExpressionNode  *diff(      ExpressionNode *n1, ExpressionNode *n2) { return m_ops->diff( n1,n2); }
@@ -406,6 +348,10 @@ public:
   ExpressionNode *multiplyExponents(         ExpressionNode *n1, ExpressionNode *n2);
   ExpressionNode *divideExponents(           ExpressionNode *n1, ExpressionNode *n2);
 
+  ParserTree      &expandMarkedNodes();
+  ParserTree      &multiplyMarkedNodes();
+  ParserTree      &getDerived(const String &name);
+
   void addError( ExpressionNode *n              , _In_z_ _Printf_format_string_ TCHAR const * const format,...);
   void addError( const SourcePosition       &pos, _In_z_ _Printf_format_string_ TCHAR const * const format,...);
   void addError(                                  _In_z_ _Printf_format_string_ TCHAR const * const format,...);
@@ -415,34 +361,14 @@ public:
     return m_errors;
   }
 
-  // Error should be an element from StringArray returned by getErrors().
-  // Will return sourcePosition specified in error as "(line,col):errorText"
-  // and modify error to be text after "(line,col):"
-  // If no leading "(line,col):" an Exception is thrown
-  static SourcePosition decodeErrorString(String &error);
-
-  // Error should be an element from StringArray returned by getErrors().
-  // Will return textposition in expr, remove the textposition "(line,column)" from error
-  // If no leading "(line,col):" an Exception is thrown
-  static inline UINT decodeErrorString(const String &expr, String &error) {
-    return decodeErrorString(error).findCharIndex(expr);
-  }
-
   void listErrors(FILE *f = stdout) const;
   void listErrors(tostream &out) const;
   void listErrors(const TCHAR *fname) const;
-  inline void setValue(const String &name, const Real &value) {
-    m_symbolTable.setValue(name,value);
-  }
-  inline const ExpressionVariable *getVariable(const String &name) const {
-    return m_symbolTable.getVariable(name);
-  }
 
   UINT getNodeCount(ExpressionNodeSelector *selector = NULL) const;
   // if(validSymbolSet != NULL, only node with symbols contained in set will be counted
   UINT getNodeCount(bool ignoreMarked, const ExpressionSymbolSet *validSymbolSet = NULL) const;
   UINT getTreeDepth() const;
-  ParserTreeComplexity getComplexity() const;
 #ifdef TRACE_REDUCTION_CALLSTACK
   inline ReductionStack &getReductionStack() {
     return m_reductionStack;
@@ -455,13 +381,20 @@ public:
   }
   void substituteNodes(CompactNodeHashMap<ExpressionNode*> &nodeMap);
   void traverseTree(ExpressionNodeHandler &handler);
-  const ParserTreeSymbolTable &getSymbolTable() const {
-    return m_symbolTable;
+  ExpressionSymbolTable &getSymbolTable() const {
+    return *m_expression.m_symbolTable;
   }
   const RationalConstantMap &getRationalConstantMap() const {
     return m_rationalConstantMap;
   }
-  String treeToString() const;
+
+  // From grammar
+  static const ParserTables &getParserTables();
+  static UINT                getTerminalCount();
+  static bool                isValidName(const String &str);
+  static String              getSymbolName(ExpressionInputSymbol symbol);
+
+  String toString() const;
 };
 
 }; // namespace Expr

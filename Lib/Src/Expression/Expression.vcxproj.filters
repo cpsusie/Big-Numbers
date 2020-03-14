@@ -30,28 +30,13 @@
     <ClInclude Include="..\..\Include\Math\Expression\ExpressionFunction.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\Math\Expression\ExpressionLex.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\Math\Expression\ExpressionNode.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Math\Expression\ExpressionParser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Math\Expression\ExpressionSymbol.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\Math\Expression\ExpressionWrapper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\Math\Expression\MachineCode.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\Math\Expression\ParserTree.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Math\Expression\ParserTreeSymbolTable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\Math\Expression\SNode.h">
@@ -64,9 +49,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CodeGeneration.h">
-      <Filter>Source Files\MachineCode</Filter>
-    </ClInclude>
-    <ClInclude Include="ExpressionCompile.h">
       <Filter>Source Files\MachineCode</Filter>
     </ClInclude>
     <ClInclude Include="FPUEmulator.h">
@@ -83,6 +65,27 @@
     </ClInclude>
     <ClInclude Include="pch.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="ExpressionLex.h">
+      <Filter>Source Files\Expression Grammar</Filter>
+    </ClInclude>
+    <ClInclude Include="ExpressionParser.h">
+      <Filter>Source Files\Expression Grammar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Expression\ExpressionSymbol.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MachineCode.h">
+      <Filter>Source Files\MachineCode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Expression\ExpressionSymbolTable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Expression\ParserTreeComplexity.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CodeGenerator.h">
+      <Filter>Source Files\MachineCode</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Expression.cpp">
@@ -154,9 +157,6 @@
     <ClCompile Include="ParserTreeReduce.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ParserTreeSymbolTable.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="SNode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -205,9 +205,6 @@
     <ClCompile Include="CodeGeneration.cpp">
       <Filter>Source Files\MachineCode</Filter>
     </ClCompile>
-    <ClCompile Include="ExpressionCompile.cpp">
-      <Filter>Source Files\MachineCode</Filter>
-    </ClCompile>
     <ClCompile Include="FPUEmulator.cpp">
       <Filter>Source Files\MachineCode</Filter>
     </ClCompile>
@@ -254,6 +251,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp" />
+    <ClCompile Include="ExpressionSymbolTable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ParserTreeDerive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CodeGenerator.cpp">
+      <Filter>Source Files\MachineCode</Filter>
+    </ClCompile>
+    <ClCompile Include="ExpressionCompile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Expression.txt">

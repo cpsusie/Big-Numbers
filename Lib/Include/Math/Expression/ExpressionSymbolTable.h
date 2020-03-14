@@ -10,9 +10,9 @@ public:
   String toString() const;
 };
 
-class ParserTreeSymbolTable {
+class ExpressionSymbolTable {
 private:
-  ParserTree                   *m_tree;
+  Expression                   &m_expression;
   // map name -> index in m_variableTable
   NameTable                     m_nameTable;
   Array<ExpressionVariable>     m_variableTable;
@@ -21,7 +21,7 @@ private:
   CompactIntHashMap<int>        m_valueRefCountHashMap;
   void                  incrValueRefCount(UINT valueIndex);
   void                  buildValueRefCountTable();
-  void                  init();
+  ParserTree           *getTree();
   void                  buildTable(           ExpressionNode *n);
   void                  buildTableIndexedExpr(ExpressionNode *n);
   void                  buildTableAssign(     ExpressionNode *n, bool loopAssignment);
@@ -36,17 +36,16 @@ private:
   // Find i, so m_valueTable[i] == value, and m_valueTable[i] is not used by a vaiable. return -1, if not found
   int                   findNumberIndexByValue(const Real &value) const;
   void                  checkDependentOnLoopVariablesOnly(   ExpressionNode *n);
-  ParserTreeSymbolTable(           const ParserTreeSymbolTable   &src); // not implemented
-  ParserTreeSymbolTable &operator=(const ParserTreeSymbolTable   &src); // not implemented
+  ExpressionSymbolTable(           const ExpressionSymbolTable   &src); // not implemented
+  ExpressionSymbolTable &operator=(const ExpressionSymbolTable   &src); // not implemented
   friend class ParserTree;
   friend class AllocateNumbers;
   friend class ExpressionNodeName;
 public:
-  ParserTreeSymbolTable() {
-    init();
+  ExpressionSymbolTable(Expression *expr) : m_expression(*expr) {
   }
-  void                             create(ParserTree *tree, const ExpressionVariableArray *oldVariables);
-  void                             clear( ParserTree *tree);
+  void                             create(const ExpressionVariableArray *oldVariables);
+  void                             clear();
   inline ExpressionVariable       *getVariable(const String &name) {
     const UINT *index = m_nameTable.get(name.cstr());
     return index ? &m_variableTable[*index] : NULL;
@@ -57,7 +56,7 @@ public:
   }
   String                           getNewLoopName(const String &oldName) const;
   inline Iterator<ExpressionVariable> getVariablesIterator() const {
-    return ((ParserTreeSymbolTable*)this)->m_variableTable.getIterator();
+    return ((ExpressionSymbolTable*)this)->m_variableTable.getIterator();
   }
   ExpressionVariableArray getAllVariables() const;
   void unmarkAllReferencedNodes() const;

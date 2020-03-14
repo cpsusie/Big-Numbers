@@ -1,9 +1,12 @@
 #pragma once
 
-#include <Math/Expression/ParserTree.h>
+#include <Math/Expression/SNode.h>
 #include "CodeGeneration.h"
 
 namespace Expr {
+
+class ParserTree;
+class MachineCode;
 
 class CodeGenerator {
 private:
@@ -12,9 +15,7 @@ private:
   CodeGeneration *m_code;
   LabelGenerator  m_labelGen;
 
-  inline TrigonometricMode getTrigonometricMode() const {
-    return m_tree.getTrigonometricMode();
-  }
+  TrigonometricMode getTrigonometricMode() const;
 
   inline ParserTree &getTree() {
     return m_tree;

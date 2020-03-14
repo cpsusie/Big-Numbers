@@ -1,18 +1,19 @@
 #include "pch.h"
 #include <Math/Expression/ParserTree.h>
+#include <Math/Expression/ExpressionNode.h>
 
 namespace Expr {
 
 ExpressionNodeStmtList::ExpressionNodeStmtList(ParserTree *tree, const SNodeArray &childArray)
-  : ExpressionNodeTree(tree, STMTLIST, childArray)
-  , m_returnType(childArray.last().getReturnType())
+: ExpressionNodeTree(tree, STMTLIST, childArray)
+, m_returnType(childArray.last().getReturnType())
 {
   SETDEBUGSTRING();
 }
 
 ExpressionNodeStmtList::ExpressionNodeStmtList(ParserTree *tree, const ExpressionNodeStmtList *src)
-  : ExpressionNodeTree(tree, src)
-  , m_returnType(src->getReturnType())
+: ExpressionNodeTree(tree, src)
+, m_returnType(src->getReturnType())
 {
   SETDEBUGSTRING();
 }

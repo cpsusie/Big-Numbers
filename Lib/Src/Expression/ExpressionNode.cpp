@@ -1,11 +1,15 @@
 #include "pch.h"
-#include <Math/Expression/ExpressionParser.h>
+#include <Math/Expression/ParserTree.h>
 #include <Math/Expression/ExpressionNode.h>
 
 namespace Expr {
 
 ExpressionNode::ExpressionNode(ParserTree *tree, ExpressionInputSymbol symbol) : m_tree(*tree), m_info(symbol) {
   m_tree.m_nodeTable.add(this);
+}
+
+ExpressionSymbolTable &ExpressionNode::getSymbolTable() const {
+  return m_tree.getSymbolTable();
 }
 
 String ExpressionNode::getNodeTypeName(ExpressionNodeType nt) { // static
@@ -63,12 +67,8 @@ Exception ExpressionNode::createAttributeNotSupportedException(const char *attri
   return Exception(format(_T("Attribute %s not defined for syntaxNode with symbol=%s"), attr.cstr(), getSymbolName().cstr()));
 }
 
-/*static*/ String ExpressionNode::getSymbolName(ExpressionInputSymbol symbol) {
-  const ParserTables &tables = ExpressionParser::getTables();
-  if((UINT)symbol >= tables.getSymbolCount()) {
-    return format(_T("Unknown symbol (=%u)"), symbol);
-  }
-  return tables.getSymbolName(symbol);
+String ExpressionNode::getSymbolName(ExpressionInputSymbol symbol) { // static
+  return ParserTree::getSymbolName(symbol);
 }
 
 Real &ExpressionNode::getValueRef() const {

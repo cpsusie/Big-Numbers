@@ -1,5 +1,5 @@
 #include "pch.h"
-#include <Math/Expression/Expression.h>
+#include <Math/Expression/ParserTree.h>
 
 namespace Expr {
 
@@ -7,20 +7,18 @@ Expression Expression::getDerived(const String &name, bool optimize /*=true*/) c
   if(getReturnType() != EXPR_RETURN_REAL) {
     throwException(_T("Cannot get derived of an expression returning boolean"));
   }
+  if(!hasSyntaxTree()) {
+    throwException(_T("Cannot get derived of an expression. No syntaxtree present"));
+  }
   Expression result = *this;
-  result.setTreeForm(TREEFORM_STANDARD);
-  result.setMachineCode(false);
-  SNode e(result.getRoot());
-  result.setRoot(e.D(name).node());
-  result.pruneUnusedNodes();
-  result.buildSymbolTable();
-  result.setState(PS_DERIVED);
+  ParserTree *tree = result.m_tree;
+  tree->getDerived(name);
 
   if(optimize) {
-    result.reduce();
+    tree->reduce();
   }
   if(isMachineCode()) {
-    result.setTreeForm(TREEFORM_STANDARD);
+    tree->setTreeForm(TREEFORM_STANDARD);
     result.setMachineCode(true);
   }
   return result;

@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <IntelCPU/Opcode.h>
 #include "FunctionCall.h"
 
 namespace Expr {
@@ -12,6 +13,10 @@ void ValueAddressCalculation::setValueCount(size_t valueCount) {
     m_esiOffset = (char)min(maxOffset, (valueCount / 2) * sizeof(Real));
     m_esi       = (BYTE*)m_valueTable.getBuffer() + m_esiOffset;
   }
+}
+
+String FunctionCall::toString() const {
+  return format(_T("%-20s (%s)"), m_signature.cstr(), formatHexValue((size_t)m_fp).cstr());
 }
 
 }; // namespace Expr

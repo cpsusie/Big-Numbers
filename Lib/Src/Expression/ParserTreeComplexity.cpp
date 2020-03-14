@@ -1,5 +1,7 @@
 #include "pch.h"
 #include <Math/Expression/ParserTree.h>
+#include <Math/Expression/ExpressionNode.h>
+#include <Math/Expression/ParserTreeComplexity.h>
 
 namespace Expr {
 
@@ -15,8 +17,8 @@ int ParserTreeComplexity::compare(const ParserTreeComplexity &tc) const {
   return (int)m_treeDepth - (int)tc.m_treeDepth;
 }
 
-ParserTreeComplexity ParserTree::getComplexity() const {
-  return ParserTreeComplexity(*this);
+String ParserTreeComplexity::toString() const {
+  return format(_T("#nodes:%3u, #names:%2u, treedepth:%u\n"), m_nodeCount, m_nameCount, m_treeDepth);
 }
 
 }; // namespace Expr

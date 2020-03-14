@@ -4,9 +4,10 @@
 #include <LRparser.h>
 
 #line 3 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.y"
-#include <Math/Expression/ExpressionSymbol.h>
-#include <Math/Expression/ExpressionLex.h>
 #include <Math/Expression/ParserTree.h>
+#include <Math/Expression/ExpressionNode.h>
+
+#include "ExpressionLex.h"
 
 namespace Expr {
 

@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "MachineCode.h"
 #include "CodeGeneration.h"
 
 namespace Expr {
@@ -31,6 +32,10 @@ CodeGeneration::CodeGeneration(MachineCode *code, const CompactRealArray &valueT
         ,m_addressTable.esiOffsetToIndex(0)
     );
   }
+}
+
+UINT CodeGeneration::size() const {
+  return (UINT)m_code.size();
 }
 
 InstructionInfo CodeGeneration::insertIns(UINT pos, const InstructionBase &ins) {

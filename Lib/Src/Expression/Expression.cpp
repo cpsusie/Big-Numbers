@@ -1,18 +1,32 @@
 #include "pch.h"
 #include <Math/Expression/Expression.h>
-#include "ExpressionCompile.h"
+#include <Math/Expression/ParserTree.h>
+#include <Math/Expression/ExpressionNode.h>
+#include <Math/Expression/ExpressionSymbolTable.h>
 #include <FileNameSplitter.h>
 
 namespace Expr {
 
-Expression::Expression(TrigonometricMode mode) : ParserTree(mode) {
-  init();
+Expression::Expression(TrigonometricMode mode) : m_trigonometricMode(mode) {
+  initialize();
 }
 
-Expression::Expression(const Expression &src) : ParserTree(src) {
-  init(src.getReturnType());
-  buildSymbolTable(&src.getSymbolTable().getAllVariables());
+Expression::Expression(const Expression &src) : m_trigonometricMode(src.getTrigonometricMode()) {
+  initialize(src.getReturnType());
+  if(src.m_tree) {
+    new ParserTree(this, src.getRoot()); TRACE_NEW(m_tree);
+  }
   setMachineCode(src.isMachineCode());
+}
+
+Expression::Expression(const ExpressionNode *root) : m_trigonometricMode(root->getTrigonometricMode()) {
+  initialize(root->getReturnType());
+  new ParserTree(this, root); TRACE_NEW(m_tree);
+}
+
+Expression::~Expression() {
+  clear();
+  uninitialize();
 }
 
 Expression &Expression::operator=(const Expression &src) {
@@ -21,118 +35,61 @@ Expression &Expression::operator=(const Expression &src) {
   }
 
   clear();
-  __super::operator=(src);
   setTrigonometricMode(src.getTrigonometricMode());
-  buildSymbolTable(   &src.getSymbolTable().getAllVariables());
-  setMachineCode(      src.isMachineCode());
-  setReturnType(       src.getReturnType());
-
+  if(src.m_tree) {
+    new ParserTree(this, src.getRoot()); TRACE_NEW(m_tree);
+  }
+  setMachineCode(src.isMachineCode());
+  setReturnType( src.getReturnType());
   return *this;
 }
 
-void Expression::init(ExpressionReturnType returnType) {
+void Expression::initialize(ExpressionReturnType returnType) {
+  m_symbolTable       = new ExpressionSymbolTable(this);
+  m_tree              = NULL;
   m_returnType        = returnType;
   m_machineCode       = false;
   m_code              = NULL;
   m_listFile          = NULL;
+  m_ok                = false;
   updateEvalPointers();
 }
 
+void Expression::uninitialize() {
+  SAFEDELETE(m_symbolTable);
+}
+
+bool Expression::hasSyntaxTree() const {
+  return m_tree && !m_tree->isEmpty();
+}
+
 void Expression::clear() {
-  releaseAll();
+  SAFEDELETE(m_tree);
+  m_symbolTable->clear();
+  m_ok = false;
   setReturnType(EXPR_NORETURNTYPE);
   setMachineCode(false);
-  setState(PS_EMPTY);
-  setReduceIteration(0);
 }
 
-void Expression::compile(const String &expr, bool machineCode, bool optimize, FILE *listFile) {
-  parse(expr);
-  if(!isOk()) {
-    return;
+SourcePosition Expression::decodeErrorString(String &error) { // static
+  Tokenizer tok(error, _T(":"));
+  String posStr = tok.next();
+  int line, col;
+  if(_stscanf(posStr.cstr(), _T("(%d,%d)"), &line, &col) == 2) {
+    error = tok.getRemaining();
+  } else {
+    throwException(_T("No sourceposition"));
   }
-  setReturnType(getRoot()->getReturnType());
-  try {
-    m_listFile = listFile;
-    if(m_listFile) {
-      ListFile::printComment(m_listFile, _T("%s\n\n"), expr.cstr());
-      ListFile::printComment(m_listFile, _T("%s\n\n"), getSymbolTable().toString().cstr());
-      ListFile::printComment(m_listFile, _T("%s\n"  ), treeToString().cstr());
-    }
-    if(optimize) {
-      reduce();
-      if(m_listFile) {
-        ListFile::printComment(m_listFile, _T("Reduced\n"));
-        ListFile::printComment(m_listFile, _T("%s\n\n"), getSymbolTable().toString().cstr());
-        ListFile::printComment(m_listFile, _T("%s\n"), treeToString().cstr());
-      }
-    }
-    if(machineCode) {
-/*
-      setTreeForm(TREEFORM_NUMERIC );
-      setTreeForm(TREEFORM_STANDARD);
-      if(m_listFile) {
-        ListFile::printComment(m_listFile, _T("Optimized\n"));
-        ListFile::printComment(m_listFile, _T("%s\n"), toString().cstr());
-        ListFile::printComment(m_listFile, _T("%s\n\n"), getSymbolTable().toString().cstr());
-      }
-*/
-      setMachineCode(true);
-
-      if(m_listFile) {
-        ListFile::printComment(m_listFile, _T("%s\n"), ListFile::makeSkillLineString().cstr());
-        m_listFile = NULL;
-      }
-    }
-  } catch(Exception e) {
-    addError(_T("%s"), e.what());
-    m_listFile = NULL;
-  } catch(...) {
-    m_listFile = NULL;
-    throw;
-  }
+  return SourcePosition(line, col);
 }
 
-void Expression::parse(const String &expr) {
-  clear();
-  setOk(true);
-  setTreeForm(TREEFORM_STANDARD);
-  LexStringStream    stream(expr);
-  ExpressionLex      lex(&stream);
-  ExpressionParser   parser(*this, &lex);
-  lex.setParser(&parser);
-  parser.parse();
-  if(isOk()) {
-    buildSymbolTable();
-    setState(PS_COMPILED);
-  }
+UINT Expression::decodeErrorString(const String &expr, String &error) { // static
+  return decodeErrorString(error).findCharIndex(expr);
 }
-
 
 void Expression::setReturnType(ExpressionReturnType returnType) {
   setProperty(EP_RETURNTYPE, m_returnType, returnType);
   updateEvalPointers();
-}
-
-void Expression::setMachineCode(bool machinecode) {
-  if(machinecode != isMachineCode()) {
-    if(machinecode) {
-      genMachineCode();
-    } else {
-      clearMachineCode();
-    }
-    setProperty(EP_MACHINECODE, m_machineCode, machinecode);
-  }
-  updateEvalPointers();
-}
-
-void Expression::genMachineCode() {
-  clearMachineCode();
-  m_code = CodeGenerator(this, m_listFile).getCode();
-}
-
-void Expression::clearMachineCode() {
-  SAFEDELETE(m_code);
 }
 
 void Expression::updateEvalPointers() {
@@ -141,14 +98,14 @@ void Expression::updateEvalPointers() {
     setEvalPointers(&Expression::evalRealError, &Expression::evalBoolError);
     break;
   case EXPR_RETURN_REAL :
-    setEvalPointers(isMachineCode()?&Expression::evalRealFast
-                                   :isEmpty()?&Expression::evalRealError:&Expression::evalRealTree
-                                   ,&Expression::evalBoolError);
+    setEvalPointers(isMachineCode() ? &Expression::evalRealFast
+                                    : hasSyntaxTree() ? &Expression::evalRealTree : &Expression::evalRealError
+                   ,&Expression::evalBoolError);
     break;
   case EXPR_RETURN_BOOL :
     setEvalPointers(&Expression::evalRealError
-                   ,isMachineCode()?&Expression::evalBoolFast
-                                   :isEmpty()?&Expression::evalBoolError:&Expression::evalBoolTree);
+                   ,isMachineCode() ? &Expression::evalBoolFast
+                                    : hasSyntaxTree() ? &Expression::evalBoolTree : &Expression::evalBoolError);
     break;
   }
 }
@@ -167,10 +124,17 @@ bool Expression::evalBoolError() const {
   return false;
 }
 
+Real Expression::evalRealTree() const {
+  return getRoot()->evaluateReal();
+}
+bool Expression::evalBoolTree() const {
+  return getRoot()->evaluateBool();
+}
+
 void Expression::setTrigonometricMode(TrigonometricMode mode) {
-  const TrigonometricMode oldMode = getTrigonometricMode();
-  if(mode != oldMode) {
-    __super::setTrigonometricMode(mode);
+  if(mode != m_trigonometricMode) {
+    const TrigonometricMode oldMode = m_trigonometricMode;
+    m_trigonometricMode = mode;
     if(isMachineCode()) {
       genMachineCode();
     }
@@ -178,9 +142,53 @@ void Expression::setTrigonometricMode(TrigonometricMode mode) {
   }
 }
 
-void Expression::setTreeForm(ParserTreeForm form) {
-  if(form == getTreeForm()) return;
-  __super::setTreeForm(form);
+ExpressionNode *Expression::getRoot() const {
+  return m_tree ? m_tree->getRoot() : NULL;
+}
+
+const ExpressionSymbolTable &Expression::getSymbolTable() const {
+  return *m_symbolTable;
+}
+Expression &Expression::setValue(const String &name, const Real &value) {
+  m_symbolTable->setValue(name, value);
+  return *this;
+}
+
+const ExpressionVariable *Expression::getVariable(const String &name) const {
+  return m_symbolTable->getVariable(name);
+}
+
+Real &Expression::getValueRef(const ExpressionVariable &var) const {
+  return m_symbolTable->getValueRef(var.getValueIndex());
+}
+
+Real *Expression::getValueRef(const String &name) const {
+  const ExpressionVariable *var = getVariable(name);
+  return (var != NULL) ? &getValueRef(*var) : NULL;
+}
+
+Expression &Expression::expandMarkedNodes() {
+  if(hasSyntaxTree()) m_tree->expandMarkedNodes();
+  return *this;
+}
+// return this
+Expression &Expression::multiplyMarkedNodes() {
+  if(hasSyntaxTree()) m_tree->multiplyMarkedNodes();
+  return *this;
+}
+
+bool Expression::equal(const Expression &e) const {
+  if(m_tree == NULL) return false;
+  const ParserTree *t = e.getTree();
+  if(t == NULL) return false;
+  return m_tree->equal(*t);
+}
+
+bool Expression::equalMinus(const Expression &e) const {
+  if(m_tree == NULL) return false;
+  const ParserTree *t = e.getTree();
+  if(t == NULL) return false;
+  return m_tree->equalMinus(*t);
 }
 
 String Expression::toString() const {

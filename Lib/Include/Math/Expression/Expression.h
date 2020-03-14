@@ -1,34 +1,61 @@
 #pragma once
 
-#include "ExpressionParser.h"
-#include "MachineCode.h"
+#include <StringArray.h>
+#include <PropertyContainer.h>
+#include <SourcePosition.h>
+#include <Math/Real.h>
+#include "PragmaLib.h"
 
 namespace Expr {
 
-class Expression : public ParserTree {
+typedef enum {
+  EXPR_NORETURNTYPE
+ ,EXPR_RETURN_REAL
+ ,EXPR_RETURN_BOOL
+} ExpressionReturnType;
+
+class MachineCode;
+class ExpressionVariable;
+
+typedef enum {
+  EP_TRIGONOMETRICMODE     // TrigonometricMode
+ ,EP_RETURNTYPE            // ExpressionReturnType
+ ,EP_MACHINECODE           // bool
+} ExpressionProperty;
+
+class Expression : public PropertyContainer {
+  friend class ParserTree;
+  friend class ExpressionSymbolTable;
+  friend class ExpressionNode;
 private:
   typedef Real (Expression::*PevalReal)() const;
   typedef bool (Expression::*PevalBool)() const;
 
+  ExpressionSymbolTable     *m_symbolTable;
+  ParserTree                *m_tree;
+  TrigonometricMode          m_trigonometricMode;
+  ExpressionReturnType       m_returnType;
   bool                       m_machineCode;
+  bool                       m_ok;
   const MachineCode         *m_code;
   PevalReal                  m_realfp;
   PevalBool                  m_boolfp;
   FILE                      *m_listFile;
-  ExpressionReturnType       m_returnType;
 
-  void   init(ExpressionReturnType returnType = EXPR_NORETURNTYPE);
-  void   parse(const String &expr);
+  void   initialize(ExpressionReturnType returnType = EXPR_NORETURNTYPE);
+  void   uninitialize();
   void   print(const ExpressionNode *n, FILE *f = stdout) const;
 
   void   genMachineCode();
   void   clearMachineCode();
+  // throws Exception - called by evaluate(), when no compile code/parsertree
   Real evalRealError() const;
+  // throws Exception - called by evaluateBool(), when no compile code/parsertree
   bool evalBoolError() const;
-  inline Real evalRealFast()  const { return m_code->evaluateReal();    }
-  inline bool evalBoolFast()  const { return m_code->evaluateBool();    }
-  inline Real evalRealTree()  const { return getRoot()->evaluateReal(); }
-  inline bool evalBoolTree()  const { return getRoot()->evaluateBool(); }
+  Real evalRealFast()  const;
+  bool evalBoolFast()  const;
+  Real evalRealTree()  const;
+  bool evalBoolTree()  const;
   inline void setEvalPointers(PevalReal rf, PevalBool bf) {
     m_realfp = rf; m_boolfp = bf;
   }
@@ -40,21 +67,35 @@ private:
 public:
   Expression(TrigonometricMode mode = RADIANS);
   Expression(const Expression &src);
+  explicit Expression(const ExpressionNode *root);
   Expression &operator=(const Expression &src);
-  ~Expression() {
-    clear();
-  }
+  virtual ~Expression();
   Expression getDerived(const String &name, bool optimize = true) const;
   static String getDefaultListFileName();
 
-  void compile(const String &expr, bool machineCode, bool optimize = false, FILE *listFile = NULL);
+  bool compile(const String &expr, StringArray &errors, bool machineCode, bool optimize = false, FILE *listFile = NULL);
+
+  // Error should be an element from StringArray returned by compile().
+  // Will return sourcePosition specified in error as "(line,col):errorText"
+  // and modify error to be text after "(line,col):"
+  // If no leading "(line,col):" an Exception is thrown
+  static SourcePosition decodeErrorString(String &error);
+
+  // Error should be an element from StringArray returned by compile().
+  // Will return textposition in expr, remove the textposition "(line,column)" from error
+  // If no leading "(line,col):" an Exception is thrown
+  static UINT decodeErrorString(const String &expr, String &error);
+
   inline ExpressionReturnType getReturnType() const {
     return m_returnType;
   }
   inline bool isMachineCode() const {
     return m_machineCode;
   }
-
+  inline bool isOk() const {
+    return m_ok;
+  }
+  bool hasSyntaxTree() const;
   inline Real evaluate() const {
     return (this->*m_realfp)();
   }
@@ -63,20 +104,27 @@ public:
   }
   void clear();
   void setTrigonometricMode(TrigonometricMode mode);
-  void setTreeForm(ParserTreeForm form);
-
-  inline Expression &expandMarkedNodes() {
-    __super::expandMarkedNodes();
-    return *this;
+  inline TrigonometricMode getTrigonometricMode() const {
+    return m_trigonometricMode;
   }
+  inline ParserTree           *getTree() const {
+    return m_tree;
+  }
+  ExpressionNode              *getRoot() const;
+  const ExpressionSymbolTable &getSymbolTable() const;
+  Expression                  &setValue(   const String &name, const Real &value);
+  const ExpressionVariable    *getVariable(const String &name) const;
+  Real                        &getValueRef(const ExpressionVariable &var) const;
+  Real                        *getValueRef(const String &name) const;
   // return this
-  inline Expression &multiplyMarkedNodes() {
-    __super::multiplyMarkedNodes();
-    return *this;
-  }
+  Expression                  &expandMarkedNodes();
+  // return this
+  Expression                  &multiplyMarkedNodes();
+  bool                         equal(      const Expression &e) const;
+  bool                         equalMinus( const Expression &e) const;
 
-  String toString() const;
   void print(FILE *f = stdout) const;
+  String toString() const;
 };
 
 class ExpressionDescription {

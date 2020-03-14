@@ -1,11 +1,12 @@
 #include "pch.h"
 #include <Math/Expression/ParserTree.h>
+#include <Math/Expression/ExpressionSymbolTable.h>
 
 namespace Expr {
 
 ExpressionNodeName::ExpressionNodeName(ParserTree *tree, const String &name) : ExpressionNode(tree, NAME) {
   m_name = name;
-  tree->m_symbolTable.allocateSymbol(this, false, false, false);
+  getSymbolTable().allocateSymbol(this, false, false, false);
   SETDEBUGSTRING();
 }
 
@@ -15,7 +16,7 @@ void ExpressionNodeName::setName(const String &name) {
   if(v) {
     setVariable((ExpressionVariable*)v);
   } else {
-    getTree().m_symbolTable.allocateSymbol(this, false, false, false);
+    getSymbolTable().allocateSymbol(this, false, false, false);
   }
   SETDEBUGSTRING();
 }

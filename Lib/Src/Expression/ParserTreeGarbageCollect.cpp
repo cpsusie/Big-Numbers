@@ -1,5 +1,6 @@
 #include "pch.h"
 #include <Math/Expression/ParserTree.h>
+#include <Math/Expression/ExpressionSymbolTable.h>
 
 namespace Expr {
 
@@ -61,7 +62,7 @@ void ParserTree::unmarkAll() const {
   for(size_t i = 0; i < m_nodeTable.size(); i++) {
     m_nodeTable[i]->unMark();
   }
-  m_symbolTable.unmarkAllReferencedNodes();
+  getSymbolTable().unmarkAllReferencedNodes();
 }
 
 void ParserTree::deleteUnmarked() {

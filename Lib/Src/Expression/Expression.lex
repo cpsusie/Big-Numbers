@@ -31,8 +31,8 @@ $POPNAMESPACE$
 
 #include "pch.h"
 #include <Math/Expression/ExpressionSymbol.h>
-#include <Math/Expression/ExpressionLex.h>
 #include <CompactHashMap.h>
+#include "ExpressionLex.h"
 
 $PUSHNAMESPACE$
 

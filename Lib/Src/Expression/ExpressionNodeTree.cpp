@@ -1,5 +1,5 @@
 #include "pch.h"
-#include <Math/Expression/Expression.h>
+#include <Math/Expression/ExpressionNode.h>
 
 namespace Expr {
 

@@ -3,8 +3,8 @@
 #line 32 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
 #include "pch.h"
 #include <Math/Expression/ExpressionSymbol.h>
-#include <Math/Expression/ExpressionLex.h>
 #include <CompactHashMap.h>
+#include "ExpressionLex.h"
 
 namespace Expr {
 

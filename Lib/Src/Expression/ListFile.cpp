@@ -1,5 +1,6 @@
 #include "pch.h"
 #include <CommonHashFunctions.h>
+#include <IntelCPU/Opcode.h>
 #include "FPUEmulator.h"
 #include "ListFile.h"
 

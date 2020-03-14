@@ -2,6 +2,7 @@
 
 #include <Math/Number.h>
 #include <TinyBitSet.h>
+#include <Math/Expression/Expression.h>
 #include <Math/Expression/ExpressionSymbol.h>
 #include "SNodeReduceDbgStack.h"
 
@@ -25,12 +26,6 @@ class ParserTree;
 #else
 #define CHECKISCONSISTENT(n)
 #endif // CHECK_CONSISTENCY
-
-typedef enum {
-  EXPR_NORETURNTYPE
- ,EXPR_RETURN_REAL
- ,EXPR_RETURN_BOOL
-} ExpressionReturnType;
 
 typedef enum {
   NT_NUMBER

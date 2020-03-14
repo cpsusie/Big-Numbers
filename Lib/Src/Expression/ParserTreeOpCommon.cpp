@@ -1,6 +1,6 @@
 #include "pch.h"
 #include <Math/Expression/ParserTree.h>
-#include <Math/Expression/SNode.h>
+#include <Math/Expression/ExpressionNode.h>
 
 namespace Expr {
 

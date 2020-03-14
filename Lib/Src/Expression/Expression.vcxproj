@@ -842,23 +842,24 @@
   <ItemGroup>
     <ClInclude Include="..\..\Include\Math\Expression\Expression.h" />
     <ClInclude Include="..\..\Include\Math\Expression\ExpressionFunction.h" />
-    <ClInclude Include="..\..\Include\Math\Expression\ExpressionLex.h" />
     <ClInclude Include="..\..\Include\Math\Expression\ExpressionNode.h" />
-    <ClInclude Include="..\..\Include\Math\Expression\ExpressionParser.h" />
     <ClInclude Include="..\..\Include\Math\Expression\ExpressionSymbol.h" />
     <ClInclude Include="..\..\Include\Math\Expression\ExpressionWrapper.h" />
-    <ClInclude Include="..\..\Include\Math\Expression\MachineCode.h" />
     <ClInclude Include="..\..\Include\Math\Expression\ParserTree.h" />
-    <ClInclude Include="..\..\Include\Math\Expression\ParserTreeSymbolTable.h" />
+    <ClInclude Include="..\..\Include\Math\Expression\ExpressionSymbolTable.h" />
+    <ClInclude Include="..\..\Include\Math\Expression\ParserTreeComplexity.h" />
     <ClInclude Include="..\..\Include\Math\Expression\PragmaLib.h" />
     <ClInclude Include="..\..\Include\Math\Expression\SNode.h" />
     <ClInclude Include="..\..\Include\Math\Expression\SNodeReduceDbgStack.h" />
     <ClInclude Include="CodeGeneration.h" />
-    <ClInclude Include="ExpressionCompile.h" />
+    <ClInclude Include="CodeGenerator.h" />
+    <ClInclude Include="ExpressionLex.h" />
+    <ClInclude Include="ExpressionParser.h" />
     <ClInclude Include="ExpressionRandom.h" />
     <ClInclude Include="FPUEmulator.h" />
     <ClInclude Include="FunctionCall.h" />
     <ClInclude Include="ListFile.h" />
+    <ClInclude Include="MachineCode.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
@@ -868,8 +869,9 @@
     <ClCompile Include="CoefArray.cpp" />
     <ClCompile Include="Expression.cpp" />
     <ClCompile Include="ExpressionAction.cpp" />
-    <ClCompile Include="ExpressionNodeAddent.cpp" />
     <ClCompile Include="ExpressionCompile.cpp" />
+    <ClCompile Include="ExpressionNodeAddent.cpp" />
+    <ClCompile Include="CodeGenerator.cpp" />
     <ClCompile Include="ExpressionDerive.cpp" />
     <ClCompile Include="ExpressionNodePower.cpp" />
     <ClCompile Include="ExpressionFunction.cpp" />
@@ -906,10 +908,11 @@
     <ClCompile Include="NodeOperatorsStdForm.cpp" />
     <ClCompile Include="ParserTree.cpp" />
     <ClCompile Include="ParserTreeComplexity.cpp" />
+    <ClCompile Include="ParserTreeDerive.cpp" />
     <ClCompile Include="ParserTreeGarbageCollect.cpp" />
     <ClCompile Include="ParserTreeOpCommon.cpp" />
     <ClCompile Include="ParserTreeReduce.cpp" />
-    <ClCompile Include="ParserTreeSymbolTable.cpp" />
+    <ClCompile Include="ExpressionSymbolTable.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|Win32'">Create</PrecompiledHeader>
@@ -957,22 +960,22 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">false</ExcludedFromBuild>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">c:\bin\lexgen -v -NExpr -O.,..\..\Include\Math\Expression Expression.lex</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|Win32'">c:\bin\lexgen -v -NExpr -O.,..\..\Include\Math\Expression Expression.lex</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='LDDebug|Win32'">c:\bin\lexgen -v -NExpr -O.,..\..\Include\Math\Expression Expression.lex</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemLDDebug|Win32'">c:\bin\lexgen -v -NExpr -O.,..\..\Include\Math\Expression Expression.lex</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='LDRelease|Win32'">c:\bin\lexgen -v -NExpr -O.,..\..\Include\Math\Expression Expression.lex</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|Win32'">c:\bin\lexgen -v -NExpr -O.,..\..\Include\Math\Expression Expression.lex</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">c:\bin\lexgen -v -NExpr -O.,..\..\Include\Math\Expression Expression.lex</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|Win32'">c:\bin\lexgen -v -NExpr -O.,..\..\Include\Math\Expression Expression.lex</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">c:\bin\lexgen -v -NExpr -O.,..\..\Include\Math\Expression Expression.lex</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">c:\bin\lexgen -v -NExpr -O.,..\..\Include\Math\Expression Expression.lex</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">c:\bin\lexgen -v -NExpr -O.,..\..\Include\Math\Expression Expression.lex</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemLDDebug|x64'">c:\bin\lexgen -v -NExpr -O.,..\..\Include\Math\Expression Expression.lex</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">c:\bin\lexgen -v -NExpr -O.,..\..\Include\Math\Expression Expression.lex</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|x64'">c:\bin\lexgen -v -NExpr -O.,..\..\Include\Math\Expression Expression.lex</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">c:\bin\lexgen -v -NExpr -O.,..\..\Include\Math\Expression Expression.lex</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">c:\bin\lexgen -v -NExpr -O.,..\..\Include\Math\Expression Expression.lex</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">c:\bin\lexgen -v -NExpr Expression.lex</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|Win32'">c:\bin\lexgen -v -NExpr Expression.lex</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='LDDebug|Win32'">c:\bin\lexgen -v -NExpr Expression.lex</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemLDDebug|Win32'">c:\bin\lexgen -v -NExpr Expression.lex</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='LDRelease|Win32'">c:\bin\lexgen -v -NExpr Expression.lex</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|Win32'">c:\bin\lexgen -v -NExpr Expression.lex</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">c:\bin\lexgen -v -NExpr Expression.lex</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|Win32'">c:\bin\lexgen -v -NExpr Expression.lex</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">c:\bin\lexgen -v -NExpr Expression.lex</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">c:\bin\lexgen -v -NExpr Expression.lex</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">c:\bin\lexgen -v -NExpr Expression.lex</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemLDDebug|x64'">c:\bin\lexgen -v -NExpr Expression.lex</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">c:\bin\lexgen -v -NExpr Expression.lex</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|x64'">c:\bin\lexgen -v -NExpr Expression.lex</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">c:\bin\lexgen -v -NExpr Expression.lex</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">c:\bin\lexgen -v -NExpr Expression.lex</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Generating Expression lexer </Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|Win32'">Generating Expression lexer </Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='LDDebug|Win32'">Generating Expression lexer </Message>
@@ -989,22 +992,22 @@
       <Message Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|x64'">Generating Expression lexer </Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generating Expression lexer </Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">Generating Expression lexer </Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">ExpressionLex.cpp;..\..\Include\Math\Expression\ExpressionLex.h</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|Win32'">ExpressionLex.cpp;..\..\Include\Math\Expression\ExpressionLex.h</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='LDDebug|Win32'">ExpressionLex.cpp;..\..\Include\Math\Expression\ExpressionLex.h</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemLDDebug|Win32'">ExpressionLex.cpp;..\..\Include\Math\Expression\ExpressionLex.h</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='LDRelease|Win32'">ExpressionLex.cpp;..\..\Include\Math\Expression\ExpressionLex.h</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|Win32'">ExpressionLex.cpp;..\..\Include\Math\Expression\ExpressionLex.h</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">ExpressionLex.cpp;..\..\Include\Math\Expression\ExpressionLex.h</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|Win32'">ExpressionLex.cpp;..\..\Include\Math\Expression\ExpressionLex.h</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ExpressionLex.cpp;..\..\Include\Math\Expression\ExpressionLex.h</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">ExpressionLex.cpp;..\..\Include\Math\Expression\ExpressionLex.h</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">ExpressionLex.cpp;..\..\Include\Math\Expression\ExpressionLex.h</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemLDDebug|x64'">ExpressionLex.cpp;..\..\Include\Math\Expression\ExpressionLex.h</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">ExpressionLex.cpp;..\..\Include\Math\Expression\ExpressionLex.h</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|x64'">ExpressionLex.cpp;..\..\Include\Math\Expression\ExpressionLex.h</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">ExpressionLex.cpp;..\..\Include\Math\Expression\ExpressionLex.h</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">ExpressionLex.cpp;..\..\Include\Math\Expression\ExpressionLex.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">ExpressionLex.cpp;ExpressionLex.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|Win32'">ExpressionLex.cpp;ExpressionLex.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='LDDebug|Win32'">ExpressionLex.cpp;ExpressionLex.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemLDDebug|Win32'">ExpressionLex.cpp;ExpressionLex.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='LDRelease|Win32'">ExpressionLex.cpp;ExpressionLex.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|Win32'">ExpressionLex.cpp;ExpressionLex.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">ExpressionLex.cpp;ExpressionLex.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|Win32'">ExpressionLex.cpp;ExpressionLex.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ExpressionLex.cpp;ExpressionLex.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">ExpressionLex.cpp;ExpressionLex.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">ExpressionLex.cpp;ExpressionLex.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemLDDebug|x64'">ExpressionLex.cpp;ExpressionLex.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">ExpressionLex.cpp;ExpressionLex.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|x64'">ExpressionLex.cpp;ExpressionLex.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">ExpressionLex.cpp;ExpressionLex.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">ExpressionLex.cpp;ExpressionLex.h</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">c:\mytools2015\parsergen\lib\lexgencpp.par;c:\bin\lexgen.exe</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|Win32'">c:\mytools2015\parsergen\lib\lexgencpp.par;c:\bin\lexgen.exe</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='LDDebug|Win32'">c:\mytools2015\parsergen\lib\lexgencpp.par;c:\bin\lexgen.exe</AdditionalInputs>
@@ -1040,22 +1043,54 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">false</ExcludedFromBuild>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">parsergen -NExpr -O.,..\..\include\math\Expression  Expression.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|Win32'">parsergen -NExpr -O.,..\..\include\math\Expression  Expression.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='LDDebug|Win32'">parsergen -NExpr -O.,..\..\include\math\Expression  Expression.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemLDDebug|Win32'">parsergen -NExpr -O.,..\..\include\math\Expression  Expression.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='LDRelease|Win32'">parsergen -NExpr -O.,..\..\include\math\Expression  Expression.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|Win32'">parsergen -NExpr -O.,..\..\include\math\Expression  Expression.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">parsergen -NExpr -O.,..\..\include\math\Expression  Expression.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|Win32'">parsergen -NExpr -O.,..\..\include\math\Expression  Expression.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">parsergen -NExpr -O.,..\..\include\math\Expression  Expression.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">parsergen -NExpr -O.,..\..\include\math\Expression  Expression.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">parsergen -NExpr -O.,..\..\include\math\Expression  Expression.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemLDDebug|x64'">parsergen -NExpr -O.,..\..\include\math\Expression  Expression.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">parsergen -NExpr -O.,..\..\include\math\Expression  Expression.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|x64'">parsergen -NExpr -O.,..\..\include\math\Expression  Expression.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">parsergen -NExpr -O.,..\..\include\math\Expression  Expression.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">parsergen -NExpr -O.,..\..\include\math\Expression  Expression.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">parsergen -NExpr  Expression.y
+copy ExpressionSymbol.h ..\..\include\Math\Expression\ExpressionSymbol.h
+del ExpressionSymbol.h</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|Win32'">parsergen -NExpr  Expression.y
+copy ExpressionSymbol.h ..\..\include\Math\Expression\ExpressionSymbol.h
+del ExpressionSymbol.h</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='LDDebug|Win32'">parsergen -NExpr  Expression.y
+copy ExpressionSymbol.h ..\..\include\Math\Expression\ExpressionSymbol.h
+del ExpressionSymbol.h</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemLDDebug|Win32'">parsergen -NExpr  Expression.y
+copy ExpressionSymbol.h ..\..\include\Math\Expression\ExpressionSymbol.h
+del ExpressionSymbol.h</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='LDRelease|Win32'">parsergen -NExpr  Expression.y
+copy ExpressionSymbol.h ..\..\include\Math\Expression\ExpressionSymbol.h
+del ExpressionSymbol.h</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|Win32'">parsergen -NExpr  Expression.y
+copy ExpressionSymbol.h ..\..\include\Math\Expression\ExpressionSymbol.h
+del ExpressionSymbol.h</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">parsergen -NExpr  Expression.y
+copy ExpressionSymbol.h ..\..\include\Math\Expression\ExpressionSymbol.h
+del ExpressionSymbol.h</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|Win32'">parsergen -NExpr  Expression.y
+copy ExpressionSymbol.h ..\..\include\Math\Expression\ExpressionSymbol.h
+del ExpressionSymbol.h</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">parsergen -NExpr  Expression.y
+copy ExpressionSymbol.h ..\..\include\Math\Expression\ExpressionSymbol.h
+del ExpressionSymbol.h</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">parsergen -NExpr  Expression.y
+copy ExpressionSymbol.h ..\..\include\Math\Expression\ExpressionSymbol.h
+del ExpressionSymbol.h</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">parsergen -NExpr  Expression.y
+copy ExpressionSymbol.h ..\..\include\Math\Expression\ExpressionSymbol.h
+del ExpressionSymbol.h</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemLDDebug|x64'">parsergen -NExpr  Expression.y
+copy ExpressionSymbol.h ..\..\include\Math\Expression\ExpressionSymbol.h
+del ExpressionSymbol.h</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">parsergen -NExpr  Expression.y
+copy ExpressionSymbol.h ..\..\include\Math\Expression\ExpressionSymbol.h
+del ExpressionSymbol.h</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|x64'">parsergen -NExpr  Expression.y
+copy ExpressionSymbol.h ..\..\include\Math\Expression\ExpressionSymbol.h
+del ExpressionSymbol.h</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">parsergen -NExpr  Expression.y
+copy ExpressionSymbol.h ..\..\include\Math\Expression\ExpressionSymbol.h
+del ExpressionSymbol.h</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">parsergen -NExpr  Expression.y
+copy ExpressionSymbol.h ..\..\include\Math\Expression\ExpressionSymbol.h
+del ExpressionSymbol.h</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Analyzing Expression Grammar</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|Win32'">Analyzing Expression Grammar</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='LDDebug|Win32'">Analyzing Expression Grammar</Message>
@@ -1072,22 +1107,22 @@
       <Message Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|x64'">Analyzing Expression Grammar</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Analyzing Expression Grammar</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">Analyzing Expression Grammar</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\include\Math\Expression\ExpressionParser.h;..\..\include\Math\Expression\ExpressionSymbol.h;ExpressionTables.cpp;ExpressionAction.cpp</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|Win32'">..\..\include\Math\Expression\ExpressionParser.h;..\..\include\Math\Expression\ExpressionSymbol.h;ExpressionTables.cpp;ExpressionAction.cpp</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='LDDebug|Win32'">..\..\include\Math\Expression\ExpressionParser.h;..\..\include\Math\Expression\ExpressionSymbol.h;ExpressionTables.cpp;ExpressionAction.cpp</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemLDDebug|Win32'">..\..\include\Math\Expression\ExpressionParser.h;..\..\include\Math\Expression\ExpressionSymbol.h;ExpressionTables.cpp;ExpressionAction.cpp</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='LDRelease|Win32'">..\..\include\Math\Expression\ExpressionParser.h;..\..\include\Math\Expression\ExpressionSymbol.h;ExpressionTables.cpp;ExpressionAction.cpp</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|Win32'">..\..\include\Math\Expression\ExpressionParser.h;..\..\include\Math\Expression\ExpressionSymbol.h;ExpressionTables.cpp;ExpressionAction.cpp</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\include\Math\Expression\ExpressionParser.h;..\..\include\Math\Expression\ExpressionSymbol.h;ExpressionTables.cpp;ExpressionAction.cpp</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|Win32'">..\..\include\Math\Expression\ExpressionParser.h;..\..\include\Math\Expression\ExpressionSymbol.h;ExpressionTables.cpp;ExpressionAction.cpp</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\..\include\Math\Expression\ExpressionParser.h;..\..\include\Math\Expression\ExpressionSymbol.h;ExpressionTables.cpp;ExpressionAction.cpp</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">..\..\include\Math\Expression\ExpressionParser.h;..\..\include\Math\Expression\ExpressionSymbol.h;ExpressionTables.cpp;ExpressionAction.cpp</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">..\..\include\Math\Expression\ExpressionParser.h;..\..\include\Math\Expression\ExpressionSymbol.h;ExpressionTables.cpp;ExpressionAction.cpp</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemLDDebug|x64'">..\..\include\Math\Expression\ExpressionParser.h;..\..\include\Math\Expression\ExpressionSymbol.h;ExpressionTables.cpp;ExpressionAction.cpp</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">..\..\include\Math\Expression\ExpressionParser.h;..\..\include\Math\Expression\ExpressionSymbol.h;ExpressionTables.cpp;ExpressionAction.cpp</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|x64'">..\..\include\Math\Expression\ExpressionParser.h;..\..\include\Math\Expression\ExpressionSymbol.h;ExpressionTables.cpp;ExpressionAction.cpp</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\include\Math\Expression\ExpressionParser.h;..\..\include\Math\Expression\ExpressionSymbol.h;ExpressionTables.cpp;ExpressionAction.cpp</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">..\..\include\Math\Expression\ExpressionParser.h;..\..\include\Math\Expression\ExpressionSymbol.h;ExpressionTables.cpp;ExpressionAction.cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">ExpressionAction.cpp;ExpressionTables.cpp;ExpressionParser.h;..\..\include\Math\Expression\ExpressionSymbol.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|Win32'">ExpressionAction.cpp;ExpressionTables.cpp;ExpressionParser.h;..\..\include\Math\Expression\ExpressionSymbol.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='LDDebug|Win32'">ExpressionAction.cpp;ExpressionTables.cpp;ExpressionParser.h;..\..\include\Math\Expression\ExpressionSymbol.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemLDDebug|Win32'">ExpressionAction.cpp;ExpressionTables.cpp;ExpressionParser.h;..\..\include\Math\Expression\ExpressionSymbol.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='LDRelease|Win32'">ExpressionAction.cpp;ExpressionTables.cpp;ExpressionParser.h;..\..\include\Math\Expression\ExpressionSymbol.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|Win32'">ExpressionAction.cpp;ExpressionTables.cpp;ExpressionParser.h;..\..\include\Math\Expression\ExpressionSymbol.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">ExpressionAction.cpp;ExpressionTables.cpp;ExpressionParser.h;..\..\include\Math\Expression\ExpressionSymbol.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|Win32'">ExpressionAction.cpp;ExpressionTables.cpp;ExpressionParser.h;..\..\include\Math\Expression\ExpressionSymbol.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ExpressionAction.cpp;ExpressionTables.cpp;ExpressionParser.h;..\..\include\Math\Expression\ExpressionSymbol.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">ExpressionAction.cpp;ExpressionTables.cpp;ExpressionParser.h;..\..\include\Math\Expression\ExpressionSymbol.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">ExpressionAction.cpp;ExpressionTables.cpp;ExpressionParser.h;..\..\include\Math\Expression\ExpressionSymbol.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemLDDebug|x64'">ExpressionAction.cpp;ExpressionTables.cpp;ExpressionParser.h;..\..\include\Math\Expression\ExpressionSymbol.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">ExpressionAction.cpp;ExpressionTables.cpp;ExpressionParser.h;..\..\include\Math\Expression\ExpressionSymbol.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|x64'">ExpressionAction.cpp;ExpressionTables.cpp;ExpressionParser.h;..\..\include\Math\Expression\ExpressionSymbol.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">ExpressionAction.cpp;ExpressionTables.cpp;ExpressionParser.h;..\..\include\Math\Expression\ExpressionSymbol.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">ExpressionAction.cpp;ExpressionTables.cpp;ExpressionParser.h;..\..\include\Math\Expression\ExpressionSymbol.h</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">c:\mytools2015\parsergen\lib\parsergencpp.par;c:\bin\parsergen.exe</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|Win32'">c:\mytools2015\parsergen\lib\parsergencpp.par;c:\bin\parsergen.exe</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='LDDebug|Win32'">c:\mytools2015\parsergen\lib\parsergencpp.par;c:\bin\parsergen.exe</AdditionalInputs>

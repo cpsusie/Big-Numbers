@@ -23,7 +23,7 @@ ExpressionWrapper::~ExpressionWrapper() {
 
 ExpressionWrapper::ExpressionWrapper(const String &text, bool machineCode, FILE *listFile) {
   m_expr = allocateExpression();
-  compile(text, machineCode, listFile);
+  m_ok   = compile(text, machineCode, listFile);
   if(!ok()) {
     const String msg = getErrorMessage();
     deleteExpression(m_expr);
@@ -31,13 +31,15 @@ ExpressionWrapper::ExpressionWrapper(const String &text, bool machineCode, FILE 
   }
 }
 
-void ExpressionWrapper::compile(const String &text, bool machineCode, FILE *listFile) {
-  m_expr->compile(text, machineCode, false, listFile);
+bool ExpressionWrapper::compile(const String &text, bool machineCode, FILE *listFile) {
+  m_ok = m_expr->compile(text, m_errors, machineCode, false, listFile);
 
   m_xp = getVariableByName(_T("x"));
   m_yp = getVariableByName(_T("y"));
   m_zp = getVariableByName(_T("z"));
   m_tp = getVariableByName(_T("t"));
+
+  return m_ok;
 }
 
 Real ExpressionWrapper::operator()(const Point2D &p) {
@@ -58,11 +60,8 @@ Real *ExpressionWrapper::getVariableByName(const String &name) {
   return (var == NULL) ? &s_dummy : &m_expr->getValueRef(*var);
 }
 
-String ExpressionWrapper::getErrorMessage() {
-  if(m_expr->getErrors().size() == 0) {
-    return _T("No errors");
-  }
-  return m_expr->getErrors()[0];
+String ExpressionWrapper::getErrorMessage() const {
+  return m_errors.isEmpty() ? _T("No errors") : m_errors.first();
 }
 
 String ExpressionWrapper::getDefaultFileName() { // static

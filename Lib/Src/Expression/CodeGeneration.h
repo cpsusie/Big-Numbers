@@ -5,7 +5,6 @@
 #include <CompactHashMap.h>
 #include <StringArray.h>
 #include <Math/MathLib.h>
-#include <Math/Expression/MachineCode.h>
 #include "ListFile.h"
 #include "FPUEmulator.h"
 
@@ -302,9 +301,7 @@ private:
   }
 public:
   CodeGeneration(MachineCode *code, const CompactRealArray &valueTable, const StringArray &nameCommentArray, FILE *listFile);
-  inline UINT size() const {
-    return (UINT)m_code.size();
-  }
+  UINT size() const;
   void list(const TCHAR *format,...) const;
   inline bool listEnabled() const {
     return m_listEnabled && m_listFile.isOpen();

@@ -1,7 +1,9 @@
 #pragma once
 
 #include <CompactHashMap.h>
-#include <IntelCPU/OpCode.h>
+
+class OpcodeBase;
+class InstructionOperand;
 
 namespace Expr {
 
@@ -28,10 +30,7 @@ class FPUOpcodeHashMap : public CompactStrHashMap<FPUOpcodeKey> {
 public:
   FPUOpcodeHashMap(size_t capacity);
   // Returns the corresponding FPUOpcodeKey if opcode is for FPU. _NOTFPU if not
-  inline FPUOpcodeKey getOpcodeKey(const OpcodeBase &opcode) const {
-    const FPUOpcodeKey *v = get(opcode.getMnemonic().cstr());
-    return v ? *v : _NOTFPU;
-  }
+  FPUOpcodeKey getOpcodeKey(const OpcodeBase &opcode) const;
 };
 
 typedef enum { // all must be negative. saved in an int, where a value>=0 will be interpreted as valueIndex

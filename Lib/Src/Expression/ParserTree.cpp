@@ -1,5 +1,7 @@
 #include "pch.h"
 #include <Math/Expression/ParserTree.h>
+#include <Math/Expression/ExpressionSymbolTable.h>
+#include "ExpressionParser.h"
 
 namespace Expr {
 
@@ -25,34 +27,35 @@ void ParserTree::checkIsConsistent() const {
 #define CHECKTREE_ISCONSISTENT(tree)
 #endif
 
-ParserTree::ParserTree(TrigonometricMode mode) {
-  init(mode, PS_EMPTY,0);
-  m_root   = NULL;
-  m_ops    = NodeOperators::s_stdForm;
-  m_ok     = false;
+ParserTree::ParserTree(Expression *expr, const String &str)
+: m_expression(*expr)
+{
+  init(PS_EMPTY,0);
+  m_root              = NULL;
+  m_ops               = NodeOperators::s_stdForm;
+  parse(str);
 }
 
-ParserTree::ParserTree(const ParserTree &src, const ExpressionNode *root) {
-  CHECKTREE_ISCONSISTENT(src)
-  init(src.getTrigonometricMode(), src.getState(), src.getReduceIteration());
-  m_errors = src.m_errors;
+ParserTree::ParserTree(Expression *expression, const ExpressionNode *root)
+: m_expression(*expression)
+{
   if(root == NULL) {
-    m_root   = src.isEmpty() ? NULL : src.getRoot()->clone(this);
+    init(PS_EMPTY, 0);
+    m_root   = NULL;
+    m_ops    = NodeOperators::s_stdForm;
   } else {
-    if(&root->getTree() != &src) {
-      throwInvalidArgumentException(__TFUNCTION__, _T("root doesn't belong to src"));
-    }
+    ParserTree &src = root->getTree();
+    init(src.getState(), src.getReduceIteration());
+    m_errors = src.m_errors;
     m_root   = root->clone(this);
+    m_ops    = src.m_ops;
+    buildSymbolTable(&src.getSymbolTable().getAllVariables());
   }
-  m_ops    = src.m_ops;
-  m_ok     = src.m_ok;
-  CHECKTREE_ISCONSISTENT(*this);
 }
 
-void ParserTree::init(TrigonometricMode    mode
-                     ,ParserTreeState      state
+void ParserTree::init(ParserTreeState      state
                      ,UINT                 reduceIteration) {
-  m_trigonometricMode = mode;
+  m_expression.m_tree = this;
   m_state             = state;
   m_reduceIteration   = reduceIteration;
   resetSimpleConstants();
@@ -67,7 +70,6 @@ ParserTree &ParserTree::operator=(const ParserTree &src) {
   m_errors = src.m_errors;
   setTreeForm(         src.getTreeForm());
   setRoot(             src.isEmpty() ? NULL : src.getRoot()->clone(this));
-  setOk(               src.m_ok);
   setReduceIteration(  src.getReduceIteration());
   setState(            src.getState());
   CHECKTREE_ISCONSISTENT(*this)
@@ -78,13 +80,70 @@ ParserTree::~ParserTree() {
   releaseAll();
 }
 
+void ParserTree::parse(const String &expr) {
+  setTreeForm(TREEFORM_STANDARD);
+  LexStringStream    stream(expr);
+  ExpressionLex      lex(&stream);
+  ExpressionParser   parser(*this, &lex);
+  lex.setParser(&parser);
+  parser.parse();
+  if(isOk()) {
+    buildSymbolTable();
+    setState(PS_COMPILED);
+  }
+}
+
+bool ParserTree::isValidName(const String &s) { // static
+  LexStringStream stream(s);
+  ExpressionLex lex(&stream);
+  if(lex.getNextLexeme() != NAME) return false;
+  if(lex.getNextLexeme() != EOI) return false;
+  return true;
+}
+
+const ParserTables &ParserTree::getParserTables() { // static
+  return ExpressionParser::getTables();
+}
+
+UINT ParserTree::getTerminalCount() { // static
+  return getParserTables().getTerminalCount();
+};
+
+String ParserTree::getSymbolName(ExpressionInputSymbol symbol) { // static
+  const ParserTables &tables = getParserTables();
+  if((UINT)symbol >= tables.getSymbolCount()) {
+    return format(_T("Unknown symbol (=%u)"), symbol);
+  }
+  return tables.getSymbolName(symbol);
+}
+
+void ParserTree::buildSymbolTable(const ExpressionVariableArray *oldVariables) {
+  getSymbolTable().create(oldVariables);
+}
+
+ExpressionVariable *ParserTree::getVariableByName(const String &name) {
+  return getSymbolTable().getVariable(name);
+}
+
+Real &ParserTree::getValueRef(UINT valueIndex) const {
+  return getSymbolTable().getValueRef(valueIndex);
+}
+
+Real &ParserTree::getValueRef(const ExpressionVariable &var) const {
+  return getValueRef(var.getValueIndex());
+}
+
+ParserTree &ParserTree::setValue(const String &name, const Real &value) {
+  getSymbolTable().setValue(name, value);
+  return *this;
+}
+const ExpressionVariable *ParserTree::getVariable(const String &name) const {
+  return getSymbolTable().getVariable(name);
+}
+
 void ParserTree::setRoot(ExpressionNode *n) {
   setProperty(PP_ROOT, m_root, n);
   CHECKTREE_ISCONSISTENT(*this);
-}
-
-void ParserTree::setOk(bool ok) {
-  setProperty(PP_OK, m_ok, ok);
 }
 
 void ParserTree::setState(ParserTreeState newState) {
@@ -95,7 +154,15 @@ void ParserTree::setReduceIteration(UINT iteration) {
   setProperty(PP_REDUCEITERATION, m_reduceIteration, iteration);
 }
 
-void ParserTree::setTreeForm(ParserTreeForm form) {
+bool ParserTree::equal(const ParserTree &tree) const {
+  return Expr::equal(getRoot(), tree.getRoot());
+}
+
+bool ParserTree::equalMinus(const ParserTree &tree) const {
+  return Expr::equalMinus(getRoot(), tree.getRoot());
+}
+
+ParserTree &ParserTree::setTreeForm(ParserTreeForm form) {
   const ParserTreeForm oldForm = getTreeForm();
   if(form != oldForm) {
     CHECKTREE_ISCONSISTENT(*this);
@@ -112,6 +179,7 @@ void ParserTree::setTreeForm(ParserTreeForm form) {
     CHECKTREE_ISCONSISTENT(*this);
     notifyPropertyChanged(PP_TREEFORM, &oldForm, &form);
   }
+  return *this;
 }
 
 
@@ -146,12 +214,11 @@ void ParserTree::releaseAll() {
   }
   resetSimpleConstants();
   setRoot(NULL);
-  setOk(false);
   m_errors.clear();
   m_nodeTable.clear();
   m_nonRootNodes.clear();
   m_rationalConstantMap.clear();
-  m_symbolTable.clear(NULL);
+  getSymbolTable().clear();
 }
 
 ExpressionNodeNumber *ParserTree::getRationalConstant(const Rational &r) {
@@ -189,28 +256,11 @@ void ParserTree::addError(_In_z_ _Printf_format_string_ TCHAR const * const form
 }
 
 void ParserTree::vAddError(const SourcePosition *pos, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
-  String tmp2;
-  String tmp = vformat(format, argptr);
-  if(pos != NULL) {
-    tmp2 = ::format(_T("%s:%s"), pos->toString().cstr(), tmp.cstr());
-  } else {
-    tmp2 = ::format(_T("%s"), tmp.cstr());
-  }
-  tmp2.replace('\n',' ');
-  m_errors.add(tmp2);
-  setOk(false);
-}
-
-SourcePosition ParserTree::decodeErrorString(String &error) { // static
-  Tokenizer tok(error, _T(":"));
-  String posStr = tok.next();
-  int line, col;
-  if(_stscanf(posStr.cstr(), _T("(%d,%d)"), &line, &col) == 2) {
-    error = tok.getRemaining();
-  } else {
-    throwException(_T("No sourceposition"));
-  }
-  return SourcePosition(line,col);
+  String tmp = (pos != NULL)
+             ? ::format(_T("%s:%s"), pos->toString().cstr(), vformat(format, argptr).cstr())
+             : vformat(format, argptr);
+  tmp.replace('\n',' ');
+  m_errors.add(tmp);
 }
 
 void ParserTree::listErrors(FILE *f) const {
@@ -356,6 +406,12 @@ void ParserTree::traverseTree(ExpressionNodeHandler &handler) {
   }
 }
 
+ExpressionNode *ParserTree::allocateLoopVarNode(const String &prefix) {
+  ExpressionNodeName *result = fetchNameNode(getSymbolTable().getNewLoopName(prefix));
+  getSymbolTable().allocateSymbol(result, false, true, true);
+  return result;
+}
+
 class MarkedNodeTransformer : public ExpressionNodeHandler {
 private:
   CompactNodeHashMap<ExpressionNode*> m_nodeMap;
@@ -406,12 +462,14 @@ bool MarkedNodeMultiplier::handleNode(ExpressionNode *n) {
   return true;
 }
 
-void ParserTree::expandMarkedNodes() {
+ParserTree &ParserTree::expandMarkedNodes() {
   MarkedNodeExpander(this).transform();
+  return *this;
 }
 
-void ParserTree::multiplyMarkedNodes() {
+ParserTree &ParserTree::multiplyMarkedNodes() {
   MarkedNodeMultiplier(this).transform();
+  return *this;
 }
 
 // ---------------------------------------- only used by parser --------------------------------------------------
@@ -469,6 +527,23 @@ ExpressionNodeName *ParserTree::fetchNameNode(const String &name) {
   return v;
 }
 
+ExpressionNodeNumber *ParserTree::numberExpr(const Number   &v) {
+  if (isRational(v)) return numberExpr(getRational(v));
+  ExpressionNodeNumber *n = new ExpressionNodeNumber(this, v); TRACE_NEW(n);
+  return n;
+}
+
+ExpressionNodeNumber *ParserTree::numberExpr(const Real     &v) {
+  ExpressionNodeNumber *n = new ExpressionNodeNumber(this, v); TRACE_NEW(n);
+  return n;
+}
+
+ExpressionNodeBoolConst *ParserTree::boolConstExpr(bool b, bool checkIsSimple) {
+  if (checkIsSimple) return b ? getTrue() : getFalse();
+  ExpressionNodeBoolConst *n = new ExpressionNodeBoolConst(this, b); TRACE_NEW(n);
+  return n;
+}
+
 ExpressionNode *ParserTree::constExpr(const String &name) {
   DEFINEMETHODNAME;
 
@@ -482,20 +557,20 @@ ExpressionNode *ParserTree::constExpr(const String &name) {
   return n;
 }
 
-String ParserTree::treeToString() const {
+String ParserTree::toString() const {
   unmarkAll();
   String result = format(_T("Mode:%-10s, Trigonometic:%-8s, State:%-14s, Reduceiteration:%3u\n")
                         ,getTreeFormName().cstr()
-                        ,toString(getTrigonometricMode()).cstr()
+                        ,::toString(getTrigonometricMode()).cstr()
                         ,getStateName().cstr()
                         ,getReduceIteration());
 
-  if (isEmpty()) {
+  result += getSymbolTable().toString();
+  if(isEmpty()) {
     result += _T("Root = NULL\n");
   } else {
     getRoot()->dumpNode(result, 0);
   }
-  result += getSymbolTable().toString();
   return result;
 }
 

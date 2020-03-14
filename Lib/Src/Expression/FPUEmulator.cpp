@@ -1,10 +1,15 @@
 #include "pch.h"
+#include <IntelCPU/OpCode.h>
+#include "Math/Expression/ExpressionSymbolTable.h"
 #include "FPUEmulator.h"
-#include "Math/Expression/ParserTreeSymbolTable.h"
 
 namespace Expr {
 
 FPUOpcodeHashMap FPUEmulator::s_FPUOpcodeMap(555);
+FPUOpcodeKey FPUOpcodeHashMap::getOpcodeKey(const OpcodeBase &opcode) const {
+  const FPUOpcodeKey *v = get(opcode.getMnemonic().cstr());
+  return v ? *v : _NOTFPU;
+}
 
 FPUOpcodeKey FPUEmulator::execute(const OpcodeBase &opcode) {
   FPUOpcodeKey codeKey;
@@ -151,7 +156,7 @@ void FPUState::execute(FPUOpcodeKey codeKey, char stackDelta, int memIndex, int 
       if(reg1 >= 0) {
         push(ST(reg1));
       } else if(memIndex >= 0) {
-        if(ParserTreeSymbolTable::isTempVarIndex(memIndex)) {
+        if(ExpressionSymbolTable::isTempVarIndex(memIndex)) {
           push(TEMPVAR);
         } else {
           push(memIndex);

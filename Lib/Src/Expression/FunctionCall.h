@@ -1,6 +1,5 @@
 #pragma once
 
-#include <IntelCPU/Opcode.h>
 #include <Math/MathLib.h>
 
 namespace Expr {
@@ -49,9 +48,7 @@ public:
     , m_signature(makeSignatureString(name,_T("(real &x, real &y)")))
   {
   }
-  inline String toString() const {
-    return format(_T("%-20s (%s)"),m_signature.cstr(),formatHexValue((size_t)m_fp).cstr());
-  }
+  String toString() const;
 };
 
 class ValueAddressCalculation {

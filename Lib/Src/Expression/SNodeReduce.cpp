@@ -1,16 +1,19 @@
 #include "pch.h"
 #include <Math/PrimeFactors.h>
 #include <Math/Expression/ParserTree.h>
+#include <Math/Expression/ExpressionNode.h>
 #include <Math/Expression/SNodeReduceDbgStack.h>
 
 namespace Expr {
 
 SNode SNode::beautify(SNode n) { // static
   if(n.isEmpty()) return n;
-  ParserTree &src = n.getTree(), tmp(src, n.node());
-  tmp.reduce();
-  ExpressionNode *result = tmp.getRoot()->clone(&src);
-  src.addNonRootNode(result);
+
+  Expression     e(n.node());
+  ParserTree     *srcTree = &n.getTree();
+  ParserTree     *tmpTree = e.getTree();
+  ExpressionNode *result  = tmpTree->reduce().getRoot()->clone(srcTree);
+  n.getTree().addNonRootNode(result);
   return SNode(result);
 }
 
@@ -248,8 +251,7 @@ SNode SNode::reduceSum() const {
         if(done.contains(i2)) continue;
         SNode e2 = tmp[i2];
         if(e1.left().equal(e2.left())) {
-          done.add(i1);
-          done.add(i2);
+          done.add(i1).add(i2);
           int factor = (e1.isPositive() == e2.isPositive()) ? 2 : 0;
           for(size_t i3 = i2+1; i3 < tmp.size(); i3++) { // check if there are more copies
             if(done.contains(i3)) continue;
@@ -281,16 +283,13 @@ SNode SNode::reduceSum() const {
           }
         } else if(hasTrigonometricFunctions && canUseIdiotRule(e1.left(), e2.left()) && (e1.isPositive() == e2.isPositive())) {
           reduced.add(addentExp(_1(), e1.isPositive()));
-          done.add(i1);
-          done.add(i2);
+          done.add(i1).add(i2);
         } else if(hasTrigonometricFunctions && canUseReverseIdiotRule(e1, e2, sqrSinOrCos)) {
           reduced.add(sqrSinOrCos);
-          done.add(i1);
-          done.add(i2);
+          done.add(i1).add(i2);
         } else if(hasLogarithmicFunctions && e1.left().sameLogarithm(e2.left())) {
           reduced.add(mergeLogarithms(e1, e2));
-          done.add(i1);
-          done.add(i2);
+          done.add(i1).add(i2);
         } else {
           SNode cf = (getTree().getState() == PS_MAINREDUCTION1) ? getCommonFactor(e1, e2) : NULL;
           if(!cf.isEmpty()) {
@@ -303,8 +302,7 @@ SNode SNode::reduceSum() const {
                 reduced -= cf.left().getAddentArray();
               }
             }
-            done.add(i1);
-            done.add(i2);
+            done.add(i1).add(i2);
           }
         }
       }

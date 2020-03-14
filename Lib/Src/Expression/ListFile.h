@@ -1,8 +1,15 @@
 #pragma once
 
 #include <MyUtil.h>
-#include <IntelCPU/Opcode.h>
 #include "FunctionCall.h"
+
+class IndexRegister;
+class OpcodeBase;
+class Opcode0Arg;
+class OpcodeCall;
+class InstructionBase;
+class StringPrefix;
+class StringInstruction;
 
 namespace Expr {
 
