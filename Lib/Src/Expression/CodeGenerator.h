@@ -17,8 +17,8 @@ private:
 
   TrigonometricMode getTrigonometricMode() const;
 
-  inline ParserTree &getTree() {
-    return m_tree;
+  inline ExpressionSymbolTable &getSymbolTable() const {
+    return m_tree.getSymbolTable();
   }
   inline MemoryRef getTableRef(SNode n) {
     return m_code->getTableRef(n.getValueIndex());

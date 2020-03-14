@@ -12,9 +12,9 @@ ExpressionNodeName::ExpressionNodeName(ParserTree *tree, const String &name) : E
 
 void ExpressionNodeName::setName(const String &name) {
   m_name = name;
-  const ExpressionVariable *v = getTree().getVariable(getName());
+  ExpressionVariable *v = getSymbolTable().getVariable(getName());
   if(v) {
-    setVariable((ExpressionVariable*)v);
+    setVariable(v);
   } else {
     getSymbolTable().allocateSymbol(this, false, false, false);
   }
@@ -39,7 +39,7 @@ bool ExpressionNodeName::equalMinus(const ExpressionNode *n) const {
 bool ExpressionNodeName::isConstant(Number *v) const {
   const bool result = m_var->isConstant();
   if(result && (v != NULL)) {
-    *v = getTree().getValueByIndex(m_var->getValueIndex());
+    *v = getSymbolTable().getValue(m_var->getValueIndex());
   }
   return result;
 }

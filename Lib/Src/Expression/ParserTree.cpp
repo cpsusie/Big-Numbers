@@ -55,6 +55,9 @@ ParserTree::ParserTree(Expression *expression, const ExpressionNode *root)
 
 void ParserTree::init(ParserTreeState      state
                      ,UINT                 reduceIteration) {
+  if(m_expression.m_tree != NULL) {
+    throwException(_T("%s:m_expression.m_tree already set to another ParserTree"),__TFUNCTION__);
+  }
   m_expression.m_tree = this;
   m_state             = state;
   m_reduceIteration   = reduceIteration;
@@ -78,6 +81,7 @@ ParserTree &ParserTree::operator=(const ParserTree &src) {
 
 ParserTree::~ParserTree() {
   releaseAll();
+  m_expression.m_tree = NULL;
 }
 
 void ParserTree::parse(const String &expr) {
@@ -119,26 +123,6 @@ String ParserTree::getSymbolName(ExpressionInputSymbol symbol) { // static
 
 void ParserTree::buildSymbolTable(const ExpressionVariableArray *oldVariables) {
   getSymbolTable().create(oldVariables);
-}
-
-ExpressionVariable *ParserTree::getVariableByName(const String &name) {
-  return getSymbolTable().getVariable(name);
-}
-
-Real &ParserTree::getValueRef(UINT valueIndex) const {
-  return getSymbolTable().getValueRef(valueIndex);
-}
-
-Real &ParserTree::getValueRef(const ExpressionVariable &var) const {
-  return getValueRef(var.getValueIndex());
-}
-
-ParserTree &ParserTree::setValue(const String &name, const Real &value) {
-  getSymbolTable().setValue(name, value);
-  return *this;
-}
-const ExpressionVariable *ParserTree::getVariable(const String &name) const {
-  return getSymbolTable().getVariable(name);
 }
 
 void ParserTree::setRoot(ExpressionNode *n) {
@@ -400,9 +384,9 @@ void ParserTree::substituteNodes(CompactNodeHashMap<ExpressionNode*> &nodeMap) {
   }
 }
 
-void ParserTree::traverseTree(ExpressionNodeHandler &handler) {
+void ParserTree::traverseTree(ExpressionNodeHandler &handler) const {
   if(!isEmpty()) {
-    getRoot()->traverseExpression(handler);
+    m_root->traverseExpression(handler);
   }
 }
 
@@ -547,13 +531,13 @@ ExpressionNodeBoolConst *ParserTree::boolConstExpr(bool b, bool checkIsSimple) {
 ExpressionNode *ParserTree::constExpr(const String &name) {
   DEFINEMETHODNAME;
 
-  const ExpressionVariable *v = getVariable(name);
+  ExpressionVariable *v = getSymbolTable().getVariable(name);
   if(v == NULL) {
     throwInvalidArgumentException(method, _T("%s not found in symbol table"), name.cstr());
   } else if(!v->isConstant()) {
     throwInvalidArgumentException(method, _T("%s is not a constant"), name.cstr());
   }
-  ExpressionNode *n = new ExpressionNodeName(this, name, *(ExpressionVariable*)v); TRACE_NEW(n);
+  ExpressionNode *n = new ExpressionNodeName(this, name, *v); TRACE_NEW(n);
   return n;
 }
 

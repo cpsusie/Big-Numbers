@@ -10,7 +10,6 @@ namespace Expr {
 bool Expression::compile(const String &expr, StringArray &errors, bool machineCode, bool optimize, FILE *listFile) {
   errors.clear();
   clear();
-  m_ok = true;
   try {
     new ParserTree(this, expr); TRACE_NEW(m_tree);
     if(!m_tree->isOk()) {
@@ -51,6 +50,7 @@ bool Expression::compile(const String &expr, StringArray &errors, bool machineCo
         m_listFile = NULL;
       }
     }
+    m_ok = true;
   } catch(Exception e) {
     m_ok = false;
     errors.add(e.what());

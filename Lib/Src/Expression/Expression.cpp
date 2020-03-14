@@ -146,9 +146,6 @@ ExpressionNode *Expression::getRoot() const {
   return m_tree ? m_tree->getRoot() : NULL;
 }
 
-const ExpressionSymbolTable &Expression::getSymbolTable() const {
-  return *m_symbolTable;
-}
 Expression &Expression::setValue(const String &name, const Real &value) {
   m_symbolTable->setValue(name, value);
   return *this;

@@ -2,19 +2,19 @@
 #include <Math/Expression/ExpressionSymbolTable.h>
 #include <Math/Expression/ParserTree.h>
 #include "ExpressionRandom.h"
-#include "CodeGenerator.h"
 #include "MachineCode.h"
+#include "CodeGenerator.h"
 
 namespace Expr {
 
 // --------------------------------- CodeGenerator -----------------------------------
 
 CodeGenerator::CodeGenerator(ParserTree *tree, FILE *listFile) : m_tree(*tree) {
-  if(tree->getTreeForm() != TREEFORM_STANDARD) {
+  if(m_tree.getTreeForm() != TREEFORM_STANDARD) {
     throwException(_T("Treeform must be STANDARD to generate machinecode. Form=%s"), m_tree.getTreeFormName().cstr());
   }
   m_codeArray = new MachineCode; TRACE_NEW(m_codeArray);
-  const ExpressionSymbolTable &table = tree->getSymbolTable();
+  const ExpressionSymbolTable &table = m_tree.getSymbolTable();
   m_code      = new CodeGeneration(m_codeArray
                                   ,table.getValueTable()
                                   ,table.getIndexedNameArray()
@@ -392,7 +392,7 @@ void CodeGenerator::genExpression(SNode n DCL_DSTPARAM) {
         if((isInt(rexpo) && ExpressionNode::isLogarithmicPowExponent(getInt(rexpo)))
          || ExpressionNode::isLogarithmicRoot(rexpo)) {
           // don't use pow here, causes infinite recursion
-          genExpression(binExp(POW, n.left(), SNV(rexpo)) DST_PARAM);
+          genExpression(binExp(POW, n.left(), SNode(m_tree,rexpo)) DST_PARAM);
           return;
         }
       }
@@ -731,7 +731,7 @@ void CodeGenerator::genPolynomial(SNode n) {
   for(int i = 0; i < (int)coefArray.size(); i++) {
     SNode coef = coefArray[i];
     if(coef.isConstant()) {
-      m_tree.getValueRef(firstCoefIndex + i) = coef.evaluateReal();
+      getSymbolTable().getValueRef(firstCoefIndex + i) = coef.evaluateReal();
     } else {
       genExpression(coef);
       m_code->emitFSTP(m_code->getTableRef(firstCoefIndex + i));
@@ -739,7 +739,7 @@ void CodeGenerator::genPolynomial(SNode n) {
   }
 
   int bytesPushed = 0;
-  bytesPushed += genPushRef(&m_tree.getValueRef(firstCoefIndex));
+  bytesPushed += genPushRef(&getSymbolTable().getValueRef(firstCoefIndex));
   bytesPushed += genPushInt((int)coefArray.size());
   bytesPushed += genPush(n.getArgument());
   bytesPushed += genPushReturnAddr();
@@ -771,7 +771,7 @@ int CodeGenerator::genPushRef(SNode n, int index) {
   } else {
     genExpression(n DST_FPU);
     m_code->emitFSTP(m_code->getTableRef(index));
-    return genPushRef(&m_tree.getValueRef(index));
+    return genPushRef(&getSymbolTable().getValueRef(index));
   }
 }
 
@@ -842,7 +842,7 @@ int CodeGenerator::genPushInt(int n) {
 
 int CodeGenerator::genPushReturnAddr() {
 #ifdef LONGDOUBLE
-  return genPushRef(&m_tree.getValueRef(0));
+  return genPushRef(&getSymbolTable().getValueRef(0));
 #else
   return 0;
 #endif
@@ -956,7 +956,7 @@ void CodeGenerator::genPolynomial(SNode n DCL_DSTPARAM) {
   for(int i = 0; i < (int)coefArray.size(); i++) {
     SNode coef = coefArray[i];
     if(coef.isConstant()) {
-      m_tree.getValueRef(firstCoefIndex + i) = coef.evaluateReal();
+      getSymbolTable().getValueRef(firstCoefIndex + i) = coef.evaluateReal();
     } else {
       genExpression(coef DST_INVALUETABLE(firstCoefIndex + i));
     }

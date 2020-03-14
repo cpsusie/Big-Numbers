@@ -163,13 +163,6 @@ protected:
   void  addNonRootNode(ExpressionNode *n);
   void  deleteUnmarked();
   void  buildSymbolTable(const ExpressionVariableArray *oldVariables = NULL);
-  ExpressionVariable *getVariableByName(const String &name);
-  inline void setValueByIndex(UINT valueIndex, Real value) const {
-    getValueRef(valueIndex) = value;
-  }
-  inline Real getValueByIndex(UINT valueIndex) const {
-    return getValueRef(valueIndex);
-  }
   SNode traverseSubstituteNodes(SNode n, CompactNodeHashMap<ExpressionNode*> &nodeMap);
 
   ExpressionNode *allocateLoopVarNode(const String &prefix);
@@ -202,14 +195,14 @@ public:
   virtual ~ParserTree();
 
   ParserTree &setTreeForm(ParserTreeForm form);
-  inline const ExpressionNode *getRoot() const {
-    return m_root;
-  }
   inline Expression &getExpression() const {
     return m_expression;
   }
 
   inline ExpressionNode *getRoot() {
+    return m_root;
+  }
+  inline ExpressionNode const *getRoot() const {
     return m_root;
   }
 
@@ -264,10 +257,6 @@ public:
     if(!m_true    ) m_true     = boolConstExpr(true,false);
     return m_true;
   }
-  Real &getValueRef(UINT valueIndex) const;
-  Real &getValueRef(const ExpressionVariable &var) const;
-  ParserTree &setValue(const String &name, const Real &value);
-  const ExpressionVariable *getVariable(const String &name) const;
 
   inline ExpressionNode  *sum(       ExpressionNode *n1, ExpressionNode *n2) { return m_ops->sum(  n1,n2); }
   inline ExpressionNode  *diff(      ExpressionNode *n1, ExpressionNode *n2) { return m_ops->diff( n1,n2); }
@@ -380,7 +369,7 @@ public:
     return (int)m_nodeTable.size();
   }
   void substituteNodes(CompactNodeHashMap<ExpressionNode*> &nodeMap);
-  void traverseTree(ExpressionNodeHandler &handler);
+  void traverseTree(ExpressionNodeHandler &handler) const;
   ExpressionSymbolTable &getSymbolTable() const {
     return *m_expression.m_symbolTable;
   }

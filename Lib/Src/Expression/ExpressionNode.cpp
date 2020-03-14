@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <Math/Expression/ExpressionSymbolTable.h>
 #include <Math/Expression/ParserTree.h>
 #include <Math/Expression/ExpressionNode.h>
 
@@ -72,7 +73,7 @@ String ExpressionNode::getSymbolName(ExpressionInputSymbol symbol) { // static
 }
 
 Real &ExpressionNode::getValueRef() const {
-  return m_tree.getValueRef(getValueIndex());
+  return getSymbolTable().getValueRef(getValueIndex());
 }
 
 bool ExpressionNode::traverseExpression(ExpressionNodeHandler &handler) {

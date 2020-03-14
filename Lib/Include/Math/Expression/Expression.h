@@ -14,8 +14,11 @@ typedef enum {
  ,EXPR_RETURN_BOOL
 } ExpressionReturnType;
 
+
 class MachineCode;
+class ExpressionNode;
 class ExpressionVariable;
+class ExpressionSymbolTable;
 
 typedef enum {
   EP_TRIGONOMETRICMODE     // TrigonometricMode
@@ -25,8 +28,6 @@ typedef enum {
 
 class Expression : public PropertyContainer {
   friend class ParserTree;
-  friend class ExpressionSymbolTable;
-  friend class ExpressionNode;
 private:
   typedef Real (Expression::*PevalReal)() const;
   typedef bool (Expression::*PevalBool)() const;
@@ -111,7 +112,9 @@ public:
     return m_tree;
   }
   ExpressionNode              *getRoot() const;
-  const ExpressionSymbolTable &getSymbolTable() const;
+  inline const ExpressionSymbolTable &getSymbolTable() const {
+    return *m_symbolTable;
+  }
   Expression                  &setValue(   const String &name, const Real &value);
   const ExpressionVariable    *getVariable(const String &name) const;
   Real                        &getValueRef(const ExpressionVariable &var) const;

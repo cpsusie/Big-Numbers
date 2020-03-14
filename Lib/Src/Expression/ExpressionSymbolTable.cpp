@@ -52,7 +52,7 @@ public:
 #define TMPVARCOUNT 2 // the first 2 elements are reserverd for temporary variables in machinecode
 
 ParserTree *ExpressionSymbolTable::getTree() {
-  return m_expression.m_tree;
+  return m_expression.getTree();
 }
 
 void ExpressionSymbolTable::clear() {
