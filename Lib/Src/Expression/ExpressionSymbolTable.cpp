@@ -306,6 +306,119 @@ void ExpressionSymbolTable::incrValueRefCount(UINT valueIndex) {
   }
 }
 
+// #define REARRANGE_VALUETABLE Doesn't work with polynomial coefficients
+
+#ifdef REARRANGE_VALUETABLE
+
+class IndexRefCount {
+public:
+  UINT m_index, m_refCount, m_newIndex;
+  IndexRefCount()
+    : m_index(0)
+    , m_refCount(0)
+    , m_newIndex(0)
+  {
+  }
+  IndexRefCount(UINT index, UINT refCount)
+    : m_index(index)
+    , m_refCount(refCount)
+    , m_newIndex(index)
+  {
+  }
+  String toString() const;
+};
+
+String IndexRefCount::toString() const {
+  return format(_T("Value[%2d]: %2d references, new Index[%2d]")
+               ,m_index, m_refCount, m_newIndex);
+}
+
+static int indexRefCountRefCountCmp(const IndexRefCount &e1, const IndexRefCount &e2) {
+  return (int)e2.m_refCount - (int)e1.m_refCount;
+}
+
+static int indexRefCountOldIndexCmp(const IndexRefCount &e1, const IndexRefCount &e2) {
+  return (int)e1.m_index - (int)e2.m_index;
+}
+
+class ValueTableOptimizer : public ExpressionNodeHandler {
+private:
+  ExpressionSymbolTable &m_symbolTable;
+  CompactArray<IndexRefCount>  m_refArray;
+public:
+  ValueTableOptimizer(ExpressionSymbolTable *symbolTable) : m_symbolTable(*symbolTable) {
+  }
+  ValueTableOptimizer &findOptimalPermutation();
+  ValueTableOptimizer &savePermutation();
+  bool handleNode(ExpressionNode *n);
+
+  String toString() const;
+};
+
+ValueTableOptimizer &ValueTableOptimizer::findOptimalPermutation() {
+  const UINT n = (UINT)m_symbolTable.m_valueRefCountTable.size();
+  m_refArray.clear();
+  m_refArray.setCapacity(n-2);
+  for(UINT i = 0; i < n; i++) {
+    m_refArray.add(IndexRefCount(i, m_symbolTable.m_valueRefCountTable[i]));
+  }
+  m_refArray.sort(2, n-2, indexRefCountRefCountCmp);
+  int l = (n+1) / 2, h = l + 1;
+  for(UINT i = 2; i < n; i++) {
+    IndexRefCount &e = m_refArray[i];
+    if((i & 1) == 0) {
+      e.m_newIndex = l--;
+    } else {
+      e.m_newIndex = h++;
+    }
+  }
+  m_refArray.sort(2, n - 2, indexRefCountOldIndexCmp);
+  return *this;
+}
+
+ValueTableOptimizer &ValueTableOptimizer::savePermutation() {
+  CompactRealArray &valueTable         = m_symbolTable.m_valueTable;
+  CompactIntArray  &valueRefCountTable = m_symbolTable.m_valueRefCountTable;
+  CompactRealArray tmp(valueTable);
+  CompactIntArray  tmpRef(valueRefCountTable);
+  UINT n = (UINT)tmp.size();
+  for(UINT i = 0; i < n; i++) {
+    const IndexRefCount &irc = m_refArray[i];
+    tmp[   irc.m_newIndex] = valueTable[i];
+    tmpRef[irc.m_newIndex] = valueRefCountTable[i];
+  }
+  valueTable         = tmp;
+  valueRefCountTable = tmpRef;
+  n = (UINT)m_symbolTable.m_variableTable.size();
+  for(UINT i = 0; i < n; i++) {
+    ExpressionVariable &var = m_symbolTable.m_variableTable[i];
+    var.setValueIndex(m_refArray[var.getValueIndex()].m_newIndex);
+  }
+  m_symbolTable.getTree()->traverseTree(*this);
+  return *this;
+}
+
+bool ValueTableOptimizer::handleNode(ExpressionNode *n) {
+  if(n->getSymbol() == NUMBER) {
+    const int oldIndex = n->getValueIndex();
+    const int newIndex = m_refArray[oldIndex].m_newIndex;
+    n->setValueIndex(newIndex);
+  }
+  return true;
+}
+
+String ValueTableOptimizer::toString() const {
+  const size_t n = m_refArray.size();
+  String result = _T("Optimized Value references\n");
+  for(size_t i = 0; i < n; i++) {
+    result += format(_T("  %s\n"), m_refArray[i].toString().cstr());
+  }
+  return result;
+
+}
+
+#endif // REARRANGE_VALUETABLE
+
 void ExpressionSymbolTable::buildValueRefCountTable() {
   const size_t n = getValueTable().size();
   m_valueRefCountTable.clear();
@@ -316,6 +429,9 @@ void ExpressionSymbolTable::buildValueRefCountTable() {
     m_valueRefCountTable[e.getKey()] = e.getValue();
   }
   m_valueRefCountHashMap.clear();
+#ifdef REARRANGE_VALUETABLE
+  ValueTableOptimizer(this).findOptimalPermutation().savePermutation();
+#endif // REARRANGE_VALUETABLE
 }
 
 int ExpressionSymbolTable::findMostReferencedValueIndex(int &count) const {

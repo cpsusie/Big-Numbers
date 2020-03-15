@@ -11,6 +11,7 @@ public:
 };
 
 class ExpressionSymbolTable {
+  friend class ValueTableOptimizer;
 private:
   Expression                   &m_expression;
   // map name -> index in m_variableTable
