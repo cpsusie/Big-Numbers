@@ -357,6 +357,7 @@ void D3Scene::render(const D3Camera &camera) {
 }
 
 void D3Scene::render(CameraSet cameraSet) {
+  cameraSet &= getCameraArray().getActiveCameraSet();
   for(Iterator<UINT> it = cameraSet.getIterator(); it.hasNext();) {
     render(*m_cameraArray[it.next()]);
   }
