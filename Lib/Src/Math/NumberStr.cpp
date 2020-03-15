@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <Math/Double80.h>
 #include <Math/Number.h>
 
 static inline void setNumberFloatValue(Number &n, const Double80 &v) {

@@ -1,6 +1,7 @@
 #include "pch.h"
 #include <Math/Number.h>
 #include <Math/Double64.h>
+#include <Math/Double80.h>
 
 using namespace std;
 

@@ -6,6 +6,7 @@
 #include <StrStream.h>
 #include <Math/MathLib.h>
 #include <Math/Rational.h>
+#include <Math/Double80.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace std;

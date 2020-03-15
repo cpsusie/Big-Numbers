@@ -1,8 +1,9 @@
 #pragma once
 
 #include <CommonHashFunctions.h>
-#include "Double80.h"
 #include "Real.h"
+
+class Double80;
 
 class Rational {
 private:
@@ -227,7 +228,7 @@ inline long     getLong(    const Rational &r) { return getInt(r);              
 inline ULONG    getUlong(   const Rational &r) { return getUint(r);                                           }
 inline float    getFloat(   const Rational &r) { return (float)((double)r.getNumerator()/r.getDenominator()); }
 inline double   getDouble(  const Rational &r) { return (double)r.getNumerator()/r.getDenominator();          }
-inline Double80 getDouble80(const Rational &r) { return Double80(r.getNumerator())/r.getDenominator();        }
+Double80        getDouble80(const Rational &r);
 
 inline Real     getReal(    const Rational &r) {
 #ifdef LONGDOUBLE

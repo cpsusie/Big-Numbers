@@ -1,8 +1,9 @@
 #pragma once
 
 #include <MyString.h>
-#include "Double80.h"
 #include "Rational.h"
+
+class Double80;
 
 typedef enum {
   NUMBERTYPE_FLOAT

@@ -6,6 +6,7 @@
 #include <CompactHashSet.h>
 #include <StrStream.h>
 #include <Math/MathLib.h>
+#include <Math/Double80.h>
 #include <Math/Number.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;

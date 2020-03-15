@@ -1,5 +1,6 @@
 #include "pch.h"
 #include <StrStream.h>
+#include <Math/Double80.h>
 #include <Math/Number.h>
 
 using namespace std;

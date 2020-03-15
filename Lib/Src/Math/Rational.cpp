@@ -1,6 +1,7 @@
 #include "pch.h"
 #include <limits.h>
 #include <Math/Int128.h>
+#include <Math/Double80.h>
 #include <Math/Rational.h>
 #include <Math/PrimeFactors.h>
 
@@ -16,6 +17,10 @@ const Rational Rational::_RAT_NINF(-1,0       );    // -infinity;         (-1/0)
 #define SAFESUM( a,b) Rational::safeSum( __TFUNCTION__,__LINE__,a,b)
 #define SAFEDIF( a,b) Rational::safeDif( __TFUNCTION__,__LINE__,a,b)
 #define SAFEPROD(a,b) Rational::safeProd(__TFUNCTION__,__LINE__,a,b)
+
+Double80 getDouble80(const Rational &r) {
+  return Double80(r.getNumerator()) / r.getDenominator();
+}
 
 int fpclassify(const Rational &r) {
   switch(_fpclass(r)) {
