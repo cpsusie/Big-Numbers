@@ -85,7 +85,7 @@ int ExpressionParser::reduceAction(unsigned int prod) {
     break;
   case 21: /* unary -> MINUS expr */
 #line 99 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.y"
-    { m_leftSide = newNode( getPos(1), MINUS, getStackTop(0), NULL);                }
+    { m_leftSide = newNode( getPos(1), UNARYMINUS, getStackTop(0), NULL);           }
 #line 34 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
   case 22: /* unary -> PLUS expr */

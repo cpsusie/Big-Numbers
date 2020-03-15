@@ -57,13 +57,11 @@ ExpressionNode *NodeOperatorsStdForm::minus(ExpressionNode *n) const {
       return numberExpr(n,-n->getNumber());
     }
   case MINUS:
-    if(n->isUnaryMinus()) {
-      return n->left();
-    } else {
-      return diff(n->right(), n->left());
-    }
+    return diff(n->right(), n->left());
+  case UNARYMINUS:
+    return n->left();
   default:
-    return unaryExpr(MINUS, n);
+    return unaryExpr(UNARYMINUS, n);
   }
 }
 

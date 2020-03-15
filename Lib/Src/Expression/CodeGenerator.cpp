@@ -249,12 +249,7 @@ void CodeGenerator::genExpression(SNode n DCL_DSTPARAM) {
     break;
 #endif // LONGDOUBLE
 
-  case MINUS :
-    if(n.isUnaryMinus()) {
-      genExpression(n.left() DST_FPU);
-      m_code->emit(FCHS);
-      break;
-    }
+  case MINUS:
 #ifdef LONGDOUBLE
     if(n.left().getHeight() > n.right().getHeight()) {
       genExpression(n.left()  DST_FPU);
@@ -286,6 +281,10 @@ void CodeGenerator::genExpression(SNode n DCL_DSTPARAM) {
     }
     break;
 #endif // LONGDOUBLE
+  case UNARYMINUS:
+    genExpression(n.left() DST_FPU);
+    m_code->emit(FCHS);
+    break;
 
   case PROD  :
 #ifdef LONGDOUBLE

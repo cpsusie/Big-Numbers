@@ -29,7 +29,8 @@ Real ExpressionNode::evaluateReal() const {
 
   switch(getSymbol()) {
   case PLUS     : return left()->evaluateReal() + right()->evaluateReal();
-  case MINUS    : return isUnaryMinus() ? -left()->evaluateReal() : (left()->evaluateReal() - right()->evaluateReal());
+  case MINUS    : return (left()->evaluateReal() - right()->evaluateReal());
+  case UNARYMINUS:return -left()->evaluateReal();
   case PROD     : return left()->evaluateReal() * right()->evaluateReal();
   case QUOT     : return left()->evaluateReal() / right()->evaluateReal();
   case MOD      : return fmod(                   left()->evaluateReal(),  right()->evaluateReal());

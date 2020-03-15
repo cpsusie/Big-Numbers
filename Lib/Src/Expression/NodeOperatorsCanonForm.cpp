@@ -76,8 +76,7 @@ ExpressionNode *NodeOperatorsCanonForm::minus(ExpressionNode *n) const {
   switch(n->getSymbol()) {
   case NUMBER    :
     return numberExpr(n,-n->getNumber());
-  case MINUS     :
-    assert(n->isUnaryMinus());
+  case UNARYMINUS:
     return n->left();
   case ADDENT    :
     return addentExpr(n->left(),!n->isPositive());
@@ -337,14 +336,11 @@ CNode CNode::toCForm() const {
   case BOOLCONST      :
   case NAME           : RETURNTHIS;
 
-  case MINUS          : if(isUnaryMinus()) {
-                          RETURNNODE(-C(left()).toCForm());
-                        }
-                        // NB continue case
-
   case PLUS           :
+  case MINUS          :
   case SUM            : RETURNNODE( toCFormSum() );
 
+  case UNARYMINUS     : RETURNNODE(-C(left()).toCForm());
   case PRODUCT        :
   case PROD           :
   case QUOT           :
@@ -420,11 +416,10 @@ AddentArray &CNode::toCFormSum(AddentArray &result, bool positive) const {
     C(right()).toCFormSum(C(left()).toCFormSum(result, positive), positive);
     break;
   case MINUS:
-    if(isUnaryMinus()) {
-      C(left()).toCFormSum(result, !positive);
-    } else {
-      C(right()).toCFormSum(C(left()).toCFormSum(result, positive), !positive);
-    }
+    C(right()).toCFormSum(C(left()).toCFormSum(result, positive), !positive);
+    break;
+  case UNARYMINUS:
+    C(left()).toCFormSum(result, !positive);
     break;
   default:
     result.add(addentExp(toCForm(), positive));
@@ -589,13 +584,12 @@ public:
 
 bool CanonicalFormChecker::handleNode(ExpressionNode *n) {
   static const ExpressionSymbolSet illegalSymbolSet(
-    PLUS  ,PROD  ,QUOT  ,ROOT  ,SQRT
-   ,SQR   ,EXP   ,EXP10 ,EXP2  ,SEC
-   ,CSC   ,COT
-   ,EOI
+    PLUS  ,MINUS ,PROD  ,QUOT  ,ROOT
+   ,SQRT  ,SQR   ,EXP   ,EXP10 ,EXP2
+   ,SEC   ,CSC   ,COT   ,EOI
   );
 
-  if(illegalSymbolSet.contains(n->getSymbol()) || n->isBinaryMinus()) {
+  if(illegalSymbolSet.contains(n->getSymbol())) {
     m_error = format(_T("Illegal symbol in canonical form:<%s>. node=<%s>")
                     ,n->getSymbolName().cstr()
                     ,n->toString().cstr());

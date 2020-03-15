@@ -26,11 +26,10 @@ SNode SNode::D(const String &name) const {
     return ddx(left()) + ddx(right());
 
   case MINUS     :
-    if(isUnaryMinus()) {
-      return -ddx(left());
-    } else {
-      return ddx(left()) - ddx(right());
-    }
+    return ddx(left()) - ddx(right());
+
+  case UNARYMINUS:
+    return -ddx(left());
 
   case PROD      :
     return ddx(left()) * right() + left() * ddx(right());

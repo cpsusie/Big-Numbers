@@ -288,11 +288,9 @@ bool ExpressionNode::needParentheses(const ExpressionNode *parent) const {
     return false;
   } else {
     switch(parent->getSymbol()) {
+    case UNARYMINUS :
+      return true;
     case MINUS :
-      if(parent->isUnaryMinus()) {
-        return true;
-      }
-      // continue case
     case QUOT  :
     case MOD   :
     case POW   :
@@ -310,6 +308,7 @@ int ExpressionNode::getPrecedence() const {
   case NOT    : return 3;
   case PLUS   :
   case MINUS  :
+  case UNARYMINUS:
   case SUM    : return 4;
   case PROD   :
   case QUOT   :
@@ -372,6 +371,7 @@ SymbolOrderMap::SymbolOrderMap() {
    ,MOD
    ,PLUS
    ,MINUS
+   ,UNARYMINUS
    ,NAME
    ,NUMBER
   };

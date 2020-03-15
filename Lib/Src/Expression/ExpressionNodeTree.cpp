@@ -107,8 +107,7 @@ int ExpressionNodeTree::compare(const ExpressionNode *n) const {
 
 bool ExpressionNodeTree::equal(const ExpressionNode *n) const {
   switch(getSymbol()) {
-  case MINUS :
-    assert(isUnaryMinus());
+  case UNARYMINUS :
     assert(n->isUnaryMinus());
     return Expr::equal(left(), n->left());
 
@@ -140,8 +139,7 @@ bool ExpressionNodeTree::equal(const ExpressionNode *n) const {
 
 bool ExpressionNodeTree::equalMinus(const ExpressionNode *n) const {
   switch(getSymbol()) {
-  case MINUS :
-    assert(isUnaryMinus());
+  case UNARYMINUS :
     assert(n->isUnaryMinus());
     return Expr::equalMinus(left(), n->left());
 
@@ -257,18 +255,12 @@ void ExpressionNodeTree::dumpNode(String &s, int level) const {
 
 String ExpressionNodeTree::toString() const {
   switch(getSymbol()) {
-  case MINUS     :
-    if(isUnaryMinus()) {
-      return _T("-") + CHILDPARSTR(0);
-    } else {
-      return CHILDPARSTR(0) + _T(" - ") + CHILDPARSTR(1);
-    }
-
-  case PLUS          : return CHILDPARSTR(0) + _T(" + "  ) + CHILDPARSTR(1);
-  case PROD          : return CHILDPARSTR(0) + _T("*"    ) + CHILDPARSTR(1);
-  case QUOT          : return CHILDPARSTR(0) + _T("/"    ) + CHILDPARSTR(1);
-  case MOD           : return CHILDPARSTR(0) + _T("%"    ) + CHILDPARSTR(1);
-  case POW           : return CHILDPARSTR(0) + _T("^"    ) + CHILDPARSTR(1);
+  case PLUS          : return CHILDPARSTR(0)   + _T(" + "  ) + CHILDPARSTR(1);
+  case MINUS         : return CHILDPARSTR(0)   + _T(" - "  ) + CHILDPARSTR(1);
+  case UNARYMINUS    : return                    _T(" - "  ) + CHILDPARSTR(0);
+  case QUOT          : return CHILDPARSTR(0)   + _T("/"    ) + CHILDPARSTR(1);
+  case MOD           : return CHILDPARSTR(0)   + _T("%"    ) + CHILDPARSTR(1);
+  case POW           : return CHILDPARSTR(0)   + _T("^"    ) + CHILDPARSTR(1);
   case ROOT          : return _T("root("     ) + CHILDSTR(0) + COMMASTR + CHILDSTR(1) + RPSTR;
   case BINOMIAL      : return _T("binomial(" ) + CHILDSTR(0) + COMMASTR + CHILDSTR(1) + RPSTR;
   case CHI2DENS      : return _T("chi2dens(" ) + CHILDSTR(0) + COMMASTR + CHILDSTR(1) + RPSTR;
@@ -278,47 +270,47 @@ String ExpressionNodeTree::toString() const {
   case MIN           : return _T("min("      ) + CHILDSTR(0) + COMMASTR + CHILDSTR(1) + RPSTR;
   case RAND          : return _T("rand("     ) + CHILDSTR(0) + COMMASTR + CHILDSTR(1) + RPSTR;
   case NORMRAND      : return _T("normrand(" ) + CHILDSTR(0) + COMMASTR + CHILDSTR(1) + RPSTR;
-  case ABS           : return _T("abs("   ) + CHILDSTR(0) + RPSTR;
-  case ACOS          : return _T("acos("  ) + CHILDSTR(0) + RPSTR;
-  case ACOSH         : return _T("acosh(" ) + CHILDSTR(0) + RPSTR;
-  case ACOT          : return _T("acot("  ) + CHILDSTR(0) + RPSTR;
-  case ACSC          : return _T("acsc("  ) + CHILDSTR(0) + RPSTR;
-  case ASEC          : return _T("asec("  ) + CHILDSTR(0) + RPSTR;
-  case ASIN          : return _T("asin("  ) + CHILDSTR(0) + RPSTR;
-  case ASINH         : return _T("asinh(" ) + CHILDSTR(0) + RPSTR;
-  case ATAN          : return _T("atan("  ) + CHILDSTR(0) + RPSTR;
-  case ATAN2         : return _T("atan2(" ) + CHILDSTR(0) + COMMASTR + CHILDSTR(1) + RPSTR;
-  case ATANH         : return _T("atanh(" ) + CHILDSTR(0) + RPSTR;
-  case CEIL          : return _T("ceil("  ) + CHILDSTR(0) + RPSTR;
-  case COS           : return _T("cos("   ) + CHILDSTR(0) + RPSTR;
-  case COSH          : return _T("cosh("  ) + CHILDSTR(0) + RPSTR;
-  case COT           : return _T("cot("   ) + CHILDSTR(0) + RPSTR;
-  case CSC           : return _T("csc("   ) + CHILDSTR(0) + RPSTR;
-  case ERF           : return _T("erf("   ) + CHILDSTR(0) + RPSTR;
-  case EXP           : return _T("exp("   ) + CHILDSTR(0) + RPSTR;
-  case EXP10         : return _T("exp10(" ) + CHILDSTR(0) + RPSTR;
-  case EXP2          : return _T("exp2("  ) + CHILDSTR(0) + RPSTR;
-  case FAC           : return _T("fac("   ) + CHILDSTR(0) + RPSTR;
-  case FLOOR         : return _T("floor(" ) + CHILDSTR(0) + RPSTR;
-  case GAMMA         : return _T("gamma(" ) + CHILDSTR(0) + RPSTR;
-  case GAUSS         : return _T("gauss(" ) + CHILDSTR(0) + RPSTR;
-  case INVERF        : return _T("inverf(") + CHILDSTR(0) + RPSTR;
-  case LN            : return _T("ln("    ) + CHILDSTR(0) + RPSTR;
-  case LOG10         : return _T("log10(" ) + CHILDSTR(0) + RPSTR;
-  case LOG2          : return _T("log2("  ) + CHILDSTR(0) + RPSTR;
-  case NORM          : return _T("norm("  ) + CHILDSTR(0) + RPSTR;
-  case PROBIT        : return _T("probit(") + CHILDSTR(0) + RPSTR;
-  case SEC           : return _T("sec("   ) + CHILDSTR(0) + RPSTR;
-  case SIGN          : return _T("sign("  ) + CHILDSTR(0) + RPSTR;
-  case SIN           : return _T("sin("   ) + CHILDSTR(0) + RPSTR;
-  case SINH          : return _T("sinh("  ) + CHILDSTR(0) + RPSTR;
-  case SQR           : return _T("sqr("   ) + CHILDSTR(0) + RPSTR;
-  case SQRT          : return _T("sqrt("  ) + CHILDSTR(0) + RPSTR;
-  case TAN           : return _T("tan("   ) + CHILDSTR(0) + RPSTR;
-  case TANH          : return _T("tanh("  ) + CHILDSTR(0) + RPSTR;
-  case IIF           : return _T("if("    ) + CHILDSTR(0) + COMMASTR + CHILDSTR(1) + COMMASTR + CHILDSTR(2) + RPSTR;
-  case INDEXEDSUM    : return _T("sum(")     + CHILDSTR(0) + _T(" to ") + CHILDSTR(1) + _T(") ") + CHILDSTR(2);
-  case INDEXEDPRODUCT: return _T("product(") + CHILDSTR(0) + _T(" to ") + CHILDSTR(1) + _T(") ") + CHILDSTR(2);
+  case ABS           : return _T("abs("      ) + CHILDSTR(0) + RPSTR;
+  case ACOS          : return _T("acos("     ) + CHILDSTR(0) + RPSTR;
+  case ACOSH         : return _T("acosh("    ) + CHILDSTR(0) + RPSTR;
+  case ACOT          : return _T("acot("     ) + CHILDSTR(0) + RPSTR;
+  case ACSC          : return _T("acsc("     ) + CHILDSTR(0) + RPSTR;
+  case ASEC          : return _T("asec("     ) + CHILDSTR(0) + RPSTR;
+  case ASIN          : return _T("asin("     ) + CHILDSTR(0) + RPSTR;
+  case ASINH         : return _T("asinh("    ) + CHILDSTR(0) + RPSTR;
+  case ATAN          : return _T("atan("     ) + CHILDSTR(0) + RPSTR;
+  case ATAN2         : return _T("atan2("    ) + CHILDSTR(0) + COMMASTR + CHILDSTR(1) + RPSTR;
+  case ATANH         : return _T("atanh("    ) + CHILDSTR(0) + RPSTR;
+  case CEIL          : return _T("ceil("     ) + CHILDSTR(0) + RPSTR;
+  case COS           : return _T("cos("      ) + CHILDSTR(0) + RPSTR;
+  case COSH          : return _T("cosh("     ) + CHILDSTR(0) + RPSTR;
+  case COT           : return _T("cot("      ) + CHILDSTR(0) + RPSTR;
+  case CSC           : return _T("csc("      ) + CHILDSTR(0) + RPSTR;
+  case ERF           : return _T("erf("      ) + CHILDSTR(0) + RPSTR;
+  case EXP           : return _T("exp("      ) + CHILDSTR(0) + RPSTR;
+  case EXP10         : return _T("exp10("    ) + CHILDSTR(0) + RPSTR;
+  case EXP2          : return _T("exp2("     ) + CHILDSTR(0) + RPSTR;
+  case FAC           : return _T("fac("      ) + CHILDSTR(0) + RPSTR;
+  case FLOOR         : return _T("floor("    ) + CHILDSTR(0) + RPSTR;
+  case GAMMA         : return _T("gamma("    ) + CHILDSTR(0) + RPSTR;
+  case GAUSS         : return _T("gauss("    ) + CHILDSTR(0) + RPSTR;
+  case INVERF        : return _T("inverf("   ) + CHILDSTR(0) + RPSTR;
+  case LN            : return _T("ln("       ) + CHILDSTR(0) + RPSTR;
+  case LOG10         : return _T("log10("    ) + CHILDSTR(0) + RPSTR;
+  case LOG2          : return _T("log2("     ) + CHILDSTR(0) + RPSTR;
+  case NORM          : return _T("norm("     ) + CHILDSTR(0) + RPSTR;
+  case PROBIT        : return _T("probit("   ) + CHILDSTR(0) + RPSTR;
+  case SEC           : return _T("sec("      ) + CHILDSTR(0) + RPSTR;
+  case SIGN          : return _T("sign("     ) + CHILDSTR(0) + RPSTR;
+  case SIN           : return _T("sin("      ) + CHILDSTR(0) + RPSTR;
+  case SINH          : return _T("sinh("     ) + CHILDSTR(0) + RPSTR;
+  case SQR           : return _T("sqr("      ) + CHILDSTR(0) + RPSTR;
+  case SQRT          : return _T("sqrt("     ) + CHILDSTR(0) + RPSTR;
+  case TAN           : return _T("tan("      ) + CHILDSTR(0) + RPSTR;
+  case TANH          : return _T("tanh("     ) + CHILDSTR(0) + RPSTR;
+  case IIF           : return _T("if("       ) + CHILDSTR(0) + COMMASTR + CHILDSTR(1) + COMMASTR + CHILDSTR(2) + RPSTR;
+  case INDEXEDSUM    : return _T("sum("      ) + CHILDSTR(0) + _T(" to ") + CHILDSTR(1) + _T(") ") + CHILDSTR(2);
+  case INDEXEDPRODUCT: return _T("product("  ) + CHILDSTR(0) + _T(" to ") + CHILDSTR(1) + _T(") ") + CHILDSTR(2);
   default            : return _T("Unknown symbol:") + getSymbolName();
   }
 }

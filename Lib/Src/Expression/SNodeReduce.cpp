@@ -124,7 +124,7 @@ SNode SNode::reduceRealExp() {
   case NAME           :
     setReduced();
     RETURNTHIS;
-  case MINUS          : RETURNNODE( -left().reduceRealExp() );
+  case UNARYMINUS     : RETURNNODE( -left().reduceRealExp() );
   case SUM            : RETURNNODE( reduceSum()     );
   case PRODUCT        : RETURNNODE( reduceProduct() );
   case POW            : RETURNNODE( reducePower()   );
@@ -1225,18 +1225,18 @@ SNode SNode::reduceAsymmetricFunction() {
   CHECKNODETYPE(*this,NT_TREE);
   if(isReduced()) RETURNTHIS;
 
-  SNode arg  = left();
+  SNode arg = left();
   if(getInverseFunction() == arg.getSymbol()) {
-    RETURNNODE( arg.left() );
+    RETURNNODE(arg.left());
   }
   const SNode Rarg = arg.reduceRealExp();
   if(Rarg.isUnaryMinus()) {                                                       // f(-exp) = -f(exp)
-    RETURNNODE( -unaryExp(getSymbol(), Rarg.left()) );
-  } else if( Rarg.isSameNode(arg) ) {
+    RETURNNODE(-unaryExp(getSymbol(), Rarg.left()));
+  } else if(Rarg.isSameNode(arg)) {
     setReduced();
     RETURNTHIS;
   } else {
-    RETURNNODE( unaryExp(getSymbol(), Rarg) );
+    RETURNNODE(unaryExp(getSymbol(), Rarg));
   }
 }
 
@@ -1245,18 +1245,18 @@ SNode SNode::reduceSymmetricFunction() {
   CHECKNODETYPE(*this,NT_TREE);
   if(isReduced()) RETURNTHIS;
 
-  SNode arg  = left();
+  SNode arg = left();
   if(getInverseFunction() == arg.getSymbol()) {
-    RETURNNODE( arg.left() );
+    RETURNNODE(arg.left());
   }
   const SNode Rarg = arg.reduceRealExp();
   if(Rarg.isUnaryMinus()) {                                                       // f(-exp) = f(exp)
-    RETURNNODE( unaryExp(getSymbol(), Rarg.left()) );
-  } else if( Rarg.isSameNode(arg) ) {
+    RETURNNODE( unaryExp(getSymbol(), Rarg.left()));
+  } else if(Rarg.isSameNode(arg)) {
     setReduced();
     RETURNTHIS;
   } else {
-    RETURNNODE( unaryExp(getSymbol(), Rarg) );
+    RETURNNODE(unaryExp(getSymbol(), Rarg));
   }
 }
 

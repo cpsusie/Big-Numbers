@@ -38,11 +38,9 @@ bool ExpressionNodePower::isExpandable() const {
 
   const ExpressionNode *base = left();
   switch(base->getSymbol()) {
+  case UNARYMINUS:
+    return false;
   case MINUS:
-    if(base->isUnaryMinus()) {
-      return false;
-    }
-    // NB continue case;
   case SUM  :
   case PLUS :
     return true;

@@ -209,8 +209,7 @@ public:
   inline  bool                       isMultiplyable()               const   { return !isNameOrNumber();                                        }
   inline  Real                       getReal()                      const   { return ::getReal(getNumber());                                   }
   inline  Rational                   getRational()                  const   { return ::getRational(getNumber());                               }
-  inline  bool                       isUnaryMinus()                 const   { return (getSymbol() == MINUS) && (getChildCount() == 1);         }
-  inline  bool                       isBinaryMinus()                const   { return (getSymbol() == MINUS) && (getChildCount() == 2);         }
+  inline  bool                       isUnaryMinus()                 const   { return getSymbol() == UNARYMINUS;                                }
   inline  bool                       isEulersConstant()             const   { return isName()     && getName()  == _T("e");                    }
   inline  bool                       isPi()                         const   { return isName()     && getName()  == _T("pi");                   }
   inline  bool                       isZero()                       const   { return isNumber()   && getReal()  == 0;                          }

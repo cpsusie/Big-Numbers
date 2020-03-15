@@ -156,7 +156,7 @@ ExpressionNode *ParserTree::funcExpr(ExpressionInputSymbol symbol, ExpressionNod
 }
 
 ExpressionNode *ParserTree::unaryMinus(ExpressionNode *child) {
-  return unaryExpr(MINUS, child);
+  return unaryExpr(UNARYMINUS, child);
 }
 
 ExpressionNode *ParserTree::unaryExpr(ExpressionInputSymbol symbol, ExpressionNode *child) {

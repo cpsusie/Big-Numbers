@@ -116,6 +116,7 @@ SymbolStringMap::SymbolStringMap() {
   putString(MOD            , true , _T(" mod "));
   putString(PLUS           , true , _T("+"    ));
   putString(MINUS          , true , _T("-"    ));
+  putString(UNARYMINUS     , true , _T("-"    ));
   putString(PROD           , true , _T("\xB7" ));
   putString(COMMA          , true , _T(","    ));
   putString(SEMI           , true , _T(";"    ));
@@ -469,13 +470,6 @@ AlignedImage *ExpressionPainter::getImage1(SNode n, int fontSize, ExpressionRect
   case PRODUCT           :
     return getProductImage(n, fontSize, rect);
 
-  case MINUS             :
-    if(n.isUnaryMinus()) {
-      return getUnaryOpImage( n, fontSize, rect);
-    } else {
-      return getBinaryOpImage(n, fontSize, rect);
-    }
-
   case QUOT              :
     return getQuotImage(   n, fontSize, rect);
 
@@ -495,6 +489,7 @@ AlignedImage *ExpressionPainter::getImage1(SNode n, int fontSize, ExpressionRect
     return getUnaryOpImage(n, fontSize, rect);
 
   case PLUS              :
+  case MINUS             :
   case PROD              :
   case MOD               :
   case AND               :
@@ -507,6 +502,9 @@ AlignedImage *ExpressionPainter::getImage1(SNode n, int fontSize, ExpressionRect
   case LT                :
   case ASSIGN            :
     return getBinaryOpImage(n, fontSize, rect);
+
+  case UNARYMINUS:
+    return getUnaryOpImage(n, fontSize, rect);
 
   case FAC               :
     { AlignedImage *parImage, *facImage;

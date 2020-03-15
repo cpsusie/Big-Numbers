@@ -70,10 +70,10 @@ static const BYTE compressedSet[20] = {
 *   action == _ParserError - not found (=unexpected input).                  *
 \****************************************************************************/
 static const BYTE compressedLasets[44] = {
-  /*  0  59 tokens */  0x1a,0x4c,0x80,0xc1,0xff,0xff,0xff,0xff,0xff,0xff,0x02
-  /*  1  20 tokens */ ,0x81,0xb3,0x9f,0x3d,0x00,0x00,0x00,0x00,0x00,0x00,0x05
-  /*  2  21 tokens */ ,0xc1,0xb3,0x9f,0x3d,0x00,0x00,0x00,0x00,0x00,0x00,0x05
-  /*  3   6 tokens */ ,0x01,0x31,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x05
+  /*  0  59 tokens */  0x1a,0x4c,0x80,0x81,0xff,0xff,0xff,0xff,0xff,0xff,0x05
+  /*  1  20 tokens */ ,0x81,0xb3,0x9f,0x79,0x00,0x00,0x00,0x00,0x00,0x00,0x0a
+  /*  2  21 tokens */ ,0xc1,0xb3,0x9f,0x79,0x00,0x00,0x00,0x00,0x00,0x00,0x0a
+  /*  3   6 tokens */ ,0x01,0x31,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x0a
 }; // Size of table:44(x86)/48(x64) bytes.
 
 #define act0001 (void*)0x00000000    /* reduce by 0 on EOI                       */
@@ -82,64 +82,64 @@ static const BYTE compressedLasets[44] = {
 #define act0007 (void*)0x005c0007    /* shift to 92 on SEMI                      */
 #define act0009 (void*)0xfff1800b    /* reduce by 15 on tokens in set[1]         */
 #define act0010 (void*)0xfff0800b    /* reduce by 16 on tokens in set[1]         */
-#define act0011 (void*)0x005e004f    /* shift to 94 on LPAR                      */
-#define act0012 (void*)0x005f004f    /* shift to 95 on LPAR                      */
+#define act0011 (void*)0x005e0050    /* shift to 94 on LPAR                      */
+#define act0012 (void*)0x005f0050    /* shift to 95 on LPAR                      */
 #define act0016 (void*)0xffe9800b    /* reduce by 23 on tokens in set[1]         */
 #define act0017 (void*)0xffe8800b    /* reduce by 24 on tokens in set[1]         */
 #define act0018 (void*)0xffe7800b    /* reduce by 25 on tokens in set[1]         */
 #define act0019 (void*)0xffe6800b    /* reduce by 26 on tokens in set[1]         */
-#define act0021 (void*)0x0068004f    /* shift to 104 on LPAR                     */
-#define act0022 (void*)0x0069004f    /* shift to 105 on LPAR                     */
-#define act0023 (void*)0x006a004f    /* shift to 106 on LPAR                     */
-#define act0024 (void*)0x006b0051    /* shift to 107 on LB                       */
-#define act0025 (void*)0xffde004f    /* reduce by 34 on LPAR                     */
-#define act0026 (void*)0xffdd004f    /* reduce by 35 on LPAR                     */
-#define act0027 (void*)0xffdc004f    /* reduce by 36 on LPAR                     */
-#define act0028 (void*)0xffdb004f    /* reduce by 37 on LPAR                     */
-#define act0029 (void*)0xffda004f    /* reduce by 38 on LPAR                     */
-#define act0030 (void*)0xffd9004f    /* reduce by 39 on LPAR                     */
-#define act0031 (void*)0xffd8004f    /* reduce by 40 on LPAR                     */
-#define act0032 (void*)0xffd7004f    /* reduce by 41 on LPAR                     */
-#define act0033 (void*)0xffd6004f    /* reduce by 42 on LPAR                     */
-#define act0034 (void*)0xffd5004f    /* reduce by 43 on LPAR                     */
-#define act0035 (void*)0xffd4004f    /* reduce by 44 on LPAR                     */
-#define act0036 (void*)0xffd3004f    /* reduce by 45 on LPAR                     */
-#define act0037 (void*)0xffd2004f    /* reduce by 46 on LPAR                     */
-#define act0038 (void*)0xffd1004f    /* reduce by 47 on LPAR                     */
-#define act0039 (void*)0xffd0004f    /* reduce by 48 on LPAR                     */
-#define act0040 (void*)0xffcf004f    /* reduce by 49 on LPAR                     */
-#define act0041 (void*)0xffce004f    /* reduce by 50 on LPAR                     */
-#define act0042 (void*)0xffcd004f    /* reduce by 51 on LPAR                     */
-#define act0043 (void*)0xffcc004f    /* reduce by 52 on LPAR                     */
-#define act0044 (void*)0xffcb004f    /* reduce by 53 on LPAR                     */
-#define act0045 (void*)0xffca004f    /* reduce by 54 on LPAR                     */
-#define act0046 (void*)0xffc9004f    /* reduce by 55 on LPAR                     */
-#define act0047 (void*)0xffc8004f    /* reduce by 56 on LPAR                     */
-#define act0048 (void*)0xffc7004f    /* reduce by 57 on LPAR                     */
-#define act0049 (void*)0xffc6004f    /* reduce by 58 on LPAR                     */
-#define act0050 (void*)0xffc5004f    /* reduce by 59 on LPAR                     */
-#define act0051 (void*)0xffc4004f    /* reduce by 60 on LPAR                     */
-#define act0052 (void*)0xffc3004f    /* reduce by 61 on LPAR                     */
-#define act0053 (void*)0xffc2004f    /* reduce by 62 on LPAR                     */
-#define act0054 (void*)0xffc1004f    /* reduce by 63 on LPAR                     */
-#define act0055 (void*)0xffc0004f    /* reduce by 64 on LPAR                     */
-#define act0056 (void*)0xffbf004f    /* reduce by 65 on LPAR                     */
-#define act0057 (void*)0xffbe004f    /* reduce by 66 on LPAR                     */
-#define act0058 (void*)0xffbd004f    /* reduce by 67 on LPAR                     */
-#define act0059 (void*)0xffbc004f    /* reduce by 68 on LPAR                     */
-#define act0060 (void*)0xffbb004f    /* reduce by 69 on LPAR                     */
-#define act0061 (void*)0xffba004f    /* reduce by 70 on LPAR                     */
-#define act0063 (void*)0xffaf004f    /* reduce by 81 on LPAR                     */
-#define act0064 (void*)0xffae004f    /* reduce by 82 on LPAR                     */
-#define act0065 (void*)0xffad004f    /* reduce by 83 on LPAR                     */
-#define act0066 (void*)0xffac004f    /* reduce by 84 on LPAR                     */
-#define act0067 (void*)0xffab004f    /* reduce by 85 on LPAR                     */
-#define act0068 (void*)0xffaa004f    /* reduce by 86 on LPAR                     */
-#define act0069 (void*)0xffa9004f    /* reduce by 87 on LPAR                     */
-#define act0070 (void*)0xffa8004f    /* reduce by 88 on LPAR                     */
-#define act0071 (void*)0xffa7004f    /* reduce by 89 on LPAR                     */
-#define act0072 (void*)0xffa6004f    /* reduce by 90 on LPAR                     */
-#define act0073 (void*)0xffa5004f    /* reduce by 91 on LPAR                     */
+#define act0021 (void*)0x00680050    /* shift to 104 on LPAR                     */
+#define act0022 (void*)0x00690050    /* shift to 105 on LPAR                     */
+#define act0023 (void*)0x006a0050    /* shift to 106 on LPAR                     */
+#define act0024 (void*)0x006b0052    /* shift to 107 on LB                       */
+#define act0025 (void*)0xffde0050    /* reduce by 34 on LPAR                     */
+#define act0026 (void*)0xffdd0050    /* reduce by 35 on LPAR                     */
+#define act0027 (void*)0xffdc0050    /* reduce by 36 on LPAR                     */
+#define act0028 (void*)0xffdb0050    /* reduce by 37 on LPAR                     */
+#define act0029 (void*)0xffda0050    /* reduce by 38 on LPAR                     */
+#define act0030 (void*)0xffd90050    /* reduce by 39 on LPAR                     */
+#define act0031 (void*)0xffd80050    /* reduce by 40 on LPAR                     */
+#define act0032 (void*)0xffd70050    /* reduce by 41 on LPAR                     */
+#define act0033 (void*)0xffd60050    /* reduce by 42 on LPAR                     */
+#define act0034 (void*)0xffd50050    /* reduce by 43 on LPAR                     */
+#define act0035 (void*)0xffd40050    /* reduce by 44 on LPAR                     */
+#define act0036 (void*)0xffd30050    /* reduce by 45 on LPAR                     */
+#define act0037 (void*)0xffd20050    /* reduce by 46 on LPAR                     */
+#define act0038 (void*)0xffd10050    /* reduce by 47 on LPAR                     */
+#define act0039 (void*)0xffd00050    /* reduce by 48 on LPAR                     */
+#define act0040 (void*)0xffcf0050    /* reduce by 49 on LPAR                     */
+#define act0041 (void*)0xffce0050    /* reduce by 50 on LPAR                     */
+#define act0042 (void*)0xffcd0050    /* reduce by 51 on LPAR                     */
+#define act0043 (void*)0xffcc0050    /* reduce by 52 on LPAR                     */
+#define act0044 (void*)0xffcb0050    /* reduce by 53 on LPAR                     */
+#define act0045 (void*)0xffca0050    /* reduce by 54 on LPAR                     */
+#define act0046 (void*)0xffc90050    /* reduce by 55 on LPAR                     */
+#define act0047 (void*)0xffc80050    /* reduce by 56 on LPAR                     */
+#define act0048 (void*)0xffc70050    /* reduce by 57 on LPAR                     */
+#define act0049 (void*)0xffc60050    /* reduce by 58 on LPAR                     */
+#define act0050 (void*)0xffc50050    /* reduce by 59 on LPAR                     */
+#define act0051 (void*)0xffc40050    /* reduce by 60 on LPAR                     */
+#define act0052 (void*)0xffc30050    /* reduce by 61 on LPAR                     */
+#define act0053 (void*)0xffc20050    /* reduce by 62 on LPAR                     */
+#define act0054 (void*)0xffc10050    /* reduce by 63 on LPAR                     */
+#define act0055 (void*)0xffc00050    /* reduce by 64 on LPAR                     */
+#define act0056 (void*)0xffbf0050    /* reduce by 65 on LPAR                     */
+#define act0057 (void*)0xffbe0050    /* reduce by 66 on LPAR                     */
+#define act0058 (void*)0xffbd0050    /* reduce by 67 on LPAR                     */
+#define act0059 (void*)0xffbc0050    /* reduce by 68 on LPAR                     */
+#define act0060 (void*)0xffbb0050    /* reduce by 69 on LPAR                     */
+#define act0061 (void*)0xffba0050    /* reduce by 70 on LPAR                     */
+#define act0063 (void*)0xffaf0050    /* reduce by 81 on LPAR                     */
+#define act0064 (void*)0xffae0050    /* reduce by 82 on LPAR                     */
+#define act0065 (void*)0xffad0050    /* reduce by 83 on LPAR                     */
+#define act0066 (void*)0xffac0050    /* reduce by 84 on LPAR                     */
+#define act0067 (void*)0xffab0050    /* reduce by 85 on LPAR                     */
+#define act0068 (void*)0xffaa0050    /* reduce by 86 on LPAR                     */
+#define act0069 (void*)0xffa90050    /* reduce by 87 on LPAR                     */
+#define act0070 (void*)0xffa80050    /* reduce by 88 on LPAR                     */
+#define act0071 (void*)0xffa70050    /* reduce by 89 on LPAR                     */
+#define act0072 (void*)0xffa60050    /* reduce by 90 on LPAR                     */
+#define act0073 (void*)0xffa50050    /* reduce by 91 on LPAR                     */
 #define act0074 (void*)0xffa48016    /* reduce by 92 on tokens in set[2]         */
 #define act0075 (void*)0xffa3800b    /* reduce by 93 on tokens in set[1]         */
 #define act0076 (void*)0xfffe0000    /* reduce by 2 on EOI                       */
@@ -158,132 +158,132 @@ static const BYTE compressedLasets[44] = {
 #define act0132 (void*)0x005d0006    /* shift to 93 on ASSIGN                    */
 #define act0133 (void*)0x008c0009    /* shift to 140 on TO                       */
 #define act0136 (void*)0xffee800b    /* reduce by 18 on tokens in set[1]         */
-#define act0141 (void*)0x0093004f    /* shift to 147 on LPAR                     */
+#define act0141 (void*)0x00930050    /* shift to 147 on LPAR                     */
 #define act0149 (void*)0xffed800b    /* reduce by 19 on tokens in set[1]         */
 #define act0157 (void*)0xffe1800b    /* reduce by 31 on tokens in set[1]         */
 #define act0158 (void*)0xffe4800b    /* reduce by 28 on tokens in set[1]         */
 
 static const TableType act0000[] = {  59,   1,  75,   3,  74,   4,  21,  10,  22,  11,  23
-                                        ,  14,  62,  23,  15,  24,  14,  30,  26,  31,  27
-                                        ,  32,  28,  33,  29,  34,  30,  35,  31,  36,  32
-                                        ,  37,  33,  38,  72,  39,  34,  40,  36,  41,  37
-                                        ,  42,  38,  43,  39,  44,  54,  45,  56,  46,  57
-                                        ,  47,  60,  48,  61,  49,  25,  50,  35,  51,  40
-                                        ,  52,  41,  53,  42,  54,  43,  55,  44,  56,  45
-                                        ,  57,  73,  58,  46,  59,  47,  60,  48,  61,  49
-                                        ,  62,  50,  63,  51,  64,  52,  65,  53,  66,  70
-                                        ,  67,  69,  68,  71,  69,  67,  70,  55,  71,  58
-                                        ,  72,  59,  73,  68,  74,  63,  75,  64,  76,  65
-                                        ,  77,  24,  78,  66,  79,  13,  81,  20};
+                                        ,  14,  62,  23,  15,  24,  14,  31,  26,  32,  27
+                                        ,  33,  28,  34,  29,  35,  30,  36,  31,  37,  32
+                                        ,  38,  33,  39,  72,  40,  34,  41,  36,  42,  37
+                                        ,  43,  38,  44,  39,  45,  54,  46,  56,  47,  57
+                                        ,  48,  60,  49,  61,  50,  25,  51,  35,  52,  40
+                                        ,  53,  41,  54,  42,  55,  43,  56,  44,  57,  45
+                                        ,  58,  73,  59,  46,  60,  47,  61,  48,  62,  49
+                                        ,  63,  50,  64,  51,  65,  52,  66,  53,  67,  70
+                                        ,  68,  69,  69,  71,  70,  67,  71,  55,  72,  58
+                                        ,  73,  59,  74,  68,  75,  63,  76,  64,  77,  65
+                                        ,  78,  24,  79,  66,  80,  13,  82,  20};
 static const TableType act0004[] = {  13,   0,  -3,  15,  84,  16,  88,  17,  89,  18,  86
-                                        ,  19,  87,  20,  85,  23,  78,  24,  79,  26,  80
-                                        ,  27,  81,  28,  82,  29,  83};
+                                        ,  19,  87,  20,  85,  23,  78,  24,  79,  27,  80
+                                        ,  28,  81,  29,  82,  30,  83};
 static const TableType act0005[] = {   3,   0,  -4,  12,  91,  13,  90};
 static const TableType act0008[] = {  14,   0, -17,   6,  93,  15, -17,  16, -17,  17, -17
                                         ,  18, -17,  19, -17,  20, -17,  23, -17,  24, -17
-                                        ,  26, -17,  27, -17,  28, -17,  29, -17};
+                                        ,  27, -17,  28, -17,  29, -17,  30, -17};
 static const TableType act0014[] = {  58,   1,  75,   3,  74,   4,  21,  10,  22,  11,  23
-                                        ,  23,  15,  24,  14,  30,  26,  31,  27,  32,  28
-                                        ,  33,  29,  34,  30,  35,  31,  36,  32,  37,  33
-                                        ,  38,  72,  39,  34,  40,  36,  41,  37,  42,  38
-                                        ,  43,  39,  44,  54,  45,  56,  46,  57,  47,  60
-                                        ,  48,  61,  49,  25,  50,  35,  51,  40,  52,  41
-                                        ,  53,  42,  54,  43,  55,  44,  56,  45,  57,  73
-                                        ,  58,  46,  59,  47,  60,  48,  61,  49,  62,  50
-                                        ,  63,  51,  64,  52,  65,  53,  66,  70,  67,  69
-                                        ,  68,  71,  69,  67,  70,  55,  71,  58,  72,  59
-                                        ,  73,  68,  74,  63,  75,  64,  76,  65,  77,  24
-                                        ,  78,  66,  79, 100,  81,  20};
+                                        ,  23,  15,  24,  14,  31,  26,  32,  27,  33,  28
+                                        ,  34,  29,  35,  30,  36,  31,  37,  32,  38,  33
+                                        ,  39,  72,  40,  34,  41,  36,  42,  37,  43,  38
+                                        ,  44,  39,  45,  54,  46,  56,  47,  57,  48,  60
+                                        ,  49,  61,  50,  25,  51,  35,  52,  40,  53,  41
+                                        ,  54,  42,  55,  43,  56,  44,  57,  45,  58,  73
+                                        ,  59,  46,  60,  47,  61,  48,  62,  49,  63,  50
+                                        ,  64,  51,  65,  52,  66,  53,  67,  70,  68,  69
+                                        ,  69,  71,  70,  67,  71,  55,  72,  58,  73,  59
+                                        ,  74,  68,  75,  63,  76,  64,  77,  65,  78,  24
+                                        ,  79,  66,  80, 100,  82,  20};
 static const TableType act0096[] = {  13,  15,  84,  16,  88,  17,  89,  18,  86,  19,  87
-                                        ,  20,  85,  23,  78,  24,  79,  26,  80,  27,  81
-                                        ,  28,  82,  29,  83,  80, 126};
-static const TableType act0097[] = {   3,  12,  91,  13,  90,  80, 127};
+                                        ,  20,  85,  23,  78,  24,  79,  27,  80,  28,  81
+                                        ,  29,  82,  30,  83,  81, 126};
+static const TableType act0097[] = {   3,  12,  91,  13,  90,  81, 127};
 static const TableType act0099[] = {  20,   0, -21,   7, -21,   8, -21,   9, -21,  12, -21
                                         ,  13, -21,  15, -21,  16, -21,  17, -21,  18, -21
-                                        ,  19, -21,  20, -21,  23, -21,  24, -21,  26,  80
-                                        ,  27,  81,  28,  82,  29,  83,  80, -21,  82, -21};
+                                        ,  19, -21,  20, -21,  23, -21,  24, -21,  27,  80
+                                        ,  28,  81,  29,  82,  30,  83,  81, -21,  83, -21};
 static const TableType act0101[] = {  20,   0, -22,   7, -22,   8, -22,   9, -22,  12, -22
                                         ,  13, -22,  15, -22,  16, -22,  17, -22,  18, -22
-                                        ,  19, -22,  20, -22,  23, -22,  24, -22,  26,  80
-                                        ,  27,  81,  28,  82,  29,  83,  80, -22,  82, -22};
-static const TableType act0102[] = {   3,  12,  91,  13,  90,  82, 129};
+                                        ,  19, -22,  20, -22,  23, -22,  24, -22,  27,  80
+                                        ,  28,  81,  29,  82,  30,  83,  81, -22,  83, -22};
+static const TableType act0102[] = {   3,  12,  91,  13,  90,  83, 129};
 static const TableType act0103[] = {  12,  15,  84,  16,  88,  17,  89,  18,  86,  19,  87
-                                        ,  20,  85,  23,  78,  24,  79,  26,  80,  27,  81
-                                        ,  28,  82,  29,  83};
+                                        ,  20,  85,  23,  78,  24,  79,  27,  80,  28,  81
+                                        ,  29,  82,  30,  83};
 static const TableType act0109[] = {  20,   0,  -9,   7,  -9,   8,  -9,   9,  -9,  12,  -9
                                         ,  13,  -9,  15,  -9,  16,  -9,  17,  -9,  18,  -9
-                                        ,  19,  -9,  20,  -9,  23,  -9,  24,  -9,  26,  80
-                                        ,  27,  81,  28,  82,  29,  83,  80,  -9,  82,  -9};
+                                        ,  19,  -9,  20,  -9,  23,  -9,  24,  -9,  27,  80
+                                        ,  28,  81,  29,  82,  30,  83,  81,  -9,  83,  -9};
 static const TableType act0110[] = {  20,   0, -10,   7, -10,   8, -10,   9, -10,  12, -10
                                         ,  13, -10,  15, -10,  16, -10,  17, -10,  18, -10
-                                        ,  19, -10,  20, -10,  23, -10,  24, -10,  26,  80
-                                        ,  27,  81,  28,  82,  29,  83,  80, -10,  82, -10};
+                                        ,  19, -10,  20, -10,  23, -10,  24, -10,  27,  80
+                                        ,  28,  81,  29,  82,  30,  83,  81, -10,  83, -10};
 static const TableType act0111[] = {  20,   0, -11,   7, -11,   8, -11,   9, -11,  12, -11
                                         ,  13, -11,  15, -11,  16, -11,  17, -11,  18, -11
-                                        ,  19, -11,  20, -11,  23, -11,  24, -11,  26, -11
-                                        ,  27, -11,  28, -11,  29,  83,  80, -11,  82, -11};
+                                        ,  19, -11,  20, -11,  23, -11,  24, -11,  27, -11
+                                        ,  28, -11,  29, -11,  30,  83,  81, -11,  83, -11};
 static const TableType act0112[] = {  20,   0, -12,   7, -12,   8, -12,   9, -12,  12, -12
                                         ,  13, -12,  15, -12,  16, -12,  17, -12,  18, -12
-                                        ,  19, -12,  20, -12,  23, -12,  24, -12,  26, -12
-                                        ,  27, -12,  28, -12,  29,  83,  80, -12,  82, -12};
+                                        ,  19, -12,  20, -12,  23, -12,  24, -12,  27, -12
+                                        ,  28, -12,  29, -12,  30,  83,  81, -12,  83, -12};
 static const TableType act0113[] = {  20,   0, -13,   7, -13,   8, -13,   9, -13,  12, -13
                                         ,  13, -13,  15, -13,  16, -13,  17, -13,  18, -13
-                                        ,  19, -13,  20, -13,  23, -13,  24, -13,  26, -13
-                                        ,  27, -13,  28, -13,  29,  83,  80, -13,  82, -13};
+                                        ,  19, -13,  20, -13,  23, -13,  24, -13,  27, -13
+                                        ,  28, -13,  29, -13,  30,  83,  81, -13,  83, -13};
 static const TableType act0115[] = {  12,   0, -71,   8, -71,  12, -71,  13, -71,  23,  78
-                                        ,  24,  79,  26,  80,  27,  81,  28,  82,  29,  83
-                                        ,  80, -71,  82, -71};
+                                        ,  24,  79,  27,  80,  28,  81,  29,  82,  30,  83
+                                        ,  81, -71,  83, -71};
 static const TableType act0116[] = {  12,   0, -72,   8, -72,  12, -72,  13, -72,  23,  78
-                                        ,  24,  79,  26,  80,  27,  81,  28,  82,  29,  83
-                                        ,  80, -72,  82, -72};
+                                        ,  24,  79,  27,  80,  28,  81,  29,  82,  30,  83
+                                        ,  81, -72,  83, -72};
 static const TableType act0117[] = {  12,   0, -73,   8, -73,  12, -73,  13, -73,  23,  78
-                                        ,  24,  79,  26,  80,  27,  81,  28,  82,  29,  83
-                                        ,  80, -73,  82, -73};
+                                        ,  24,  79,  27,  80,  28,  81,  29,  82,  30,  83
+                                        ,  81, -73,  83, -73};
 static const TableType act0118[] = {  12,   0, -74,   8, -74,  12, -74,  13, -74,  23,  78
-                                        ,  24,  79,  26,  80,  27,  81,  28,  82,  29,  83
-                                        ,  80, -74,  82, -74};
+                                        ,  24,  79,  27,  80,  28,  81,  29,  82,  30,  83
+                                        ,  81, -74,  83, -74};
 static const TableType act0119[] = {  12,   0, -75,   8, -75,  12, -75,  13, -75,  23,  78
-                                        ,  24,  79,  26,  80,  27,  81,  28,  82,  29,  83
-                                        ,  80, -75,  82, -75};
+                                        ,  24,  79,  27,  80,  28,  81,  29,  82,  30,  83
+                                        ,  81, -75,  83, -75};
 static const TableType act0120[] = {  12,   0, -76,   8, -76,  12, -76,  13, -76,  23,  78
-                                        ,  24,  79,  26,  80,  27,  81,  28,  82,  29,  83
-                                        ,  80, -76,  82, -76};
-static const TableType act0122[] = {   6,   0, -78,   8, -78,  12, -78,  13,  90,  80, -78
-                                        ,  82, -78};
-static const TableType act0123[] = {   8,   7,  -8,   9,  -8,  23,  78,  24,  79,  26,  80
-                                        ,  27,  81,  28,  82,  29,  83};
-static const TableType act0124[] = {   7,  23,  78,  24,  79,  26,  80,  27,  81,  28,  82
-                                        ,  29,  83,  80, 136};
-static const TableType act0125[] = {   7,   8, 137,  23,  78,  24,  79,  26,  80,  27,  81
-                                        ,  28,  82,  29,  83};
-static const TableType act0128[] = {   7,  23,  78,  24,  79,  26,  80,  27,  81,  28,  82
-                                        ,  29,  83,  80, 126};
+                                        ,  24,  79,  27,  80,  28,  81,  29,  82,  30,  83
+                                        ,  81, -76,  83, -76};
+static const TableType act0122[] = {   6,   0, -78,   8, -78,  12, -78,  13,  90,  81, -78
+                                        ,  83, -78};
+static const TableType act0123[] = {   8,   7,  -8,   9,  -8,  23,  78,  24,  79,  27,  80
+                                        ,  28,  81,  29,  82,  30,  83};
+static const TableType act0124[] = {   7,  23,  78,  24,  79,  27,  80,  28,  81,  29,  82
+                                        ,  30,  83,  81, 136};
+static const TableType act0125[] = {   7,   8, 137,  23,  78,  24,  79,  27,  80,  28,  81
+                                        ,  29,  82,  30,  83};
+static const TableType act0128[] = {   7,  23,  78,  24,  79,  27,  80,  28,  81,  29,  82
+                                        ,  30,  83,  81, 126};
 static const TableType act0130[] = {   3,   8, 138,  12,  91,  13,  90};
-static const TableType act0134[] = {   2,   8, 142,  82, 141};
-static const TableType act0135[] = {   8,   8, -33,  23,  78,  24,  79,  26,  80,  27,  81
-                                        ,  28,  82,  29,  83,  82, -33};
-static const TableType act0143[] = {   7,  23,  78,  24,  79,  26,  80,  27,  81,  28,  82
-                                        ,  29,  83,  80, 149};
-static const TableType act0144[] = {   7,   8, 150,  23,  78,  24,  79,  26,  80,  27,  81
-                                        ,  28,  82,  29,  83};
-static const TableType act0145[] = {   7,  23,  78,  24,  79,  26,  80,  27,  81,  28,  82
-                                        ,  29,  83,  80, 151};
-static const TableType act0146[] = {   7,  23,  78,  24,  79,  26,  80,  27,  81,  28,  82
-                                        ,  29,  83,  80, 152};
-static const TableType act0148[] = {   8,   8, -32,  23,  78,  24,  79,  26,  80,  27,  81
-                                        ,  28,  82,  29,  83,  82, -32};
-static const TableType act0153[] = {   7,  23,  78,  24,  79,  26,  80,  27,  81,  28,  82
-                                        ,  29,  83,  80, 157};
-static const TableType act0154[] = {   7,  23,  78,  24,  79,  26,  80,  27,  81,  28,  82
-                                        ,  29,  83,  80, 158};
+static const TableType act0134[] = {   2,   8, 142,  83, 141};
+static const TableType act0135[] = {   8,   8, -33,  23,  78,  24,  79,  27,  80,  28,  81
+                                        ,  29,  82,  30,  83,  83, -33};
+static const TableType act0143[] = {   7,  23,  78,  24,  79,  27,  80,  28,  81,  29,  82
+                                        ,  30,  83,  81, 149};
+static const TableType act0144[] = {   7,   8, 150,  23,  78,  24,  79,  27,  80,  28,  81
+                                        ,  29,  82,  30,  83};
+static const TableType act0145[] = {   7,  23,  78,  24,  79,  27,  80,  28,  81,  29,  82
+                                        ,  30,  83,  81, 151};
+static const TableType act0146[] = {   7,  23,  78,  24,  79,  27,  80,  28,  81,  29,  82
+                                        ,  30,  83,  81, 152};
+static const TableType act0148[] = {   8,   8, -32,  23,  78,  24,  79,  27,  80,  28,  81
+                                        ,  29,  82,  30,  83,  83, -32};
+static const TableType act0153[] = {   7,  23,  78,  24,  79,  27,  80,  28,  81,  29,  82
+                                        ,  30,  83,  81, 157};
+static const TableType act0154[] = {   7,  23,  78,  24,  79,  27,  80,  28,  81,  29,  82
+                                        ,  30,  83,  81, 158};
 static const TableType act0155[] = {  20,   0, -29,   7, -29,   8, -29,   9, -29,  12, -29
                                         ,  13, -29,  15, -29,  16, -29,  17, -29,  18, -29
-                                        ,  19, -29,  20, -29,  23,  78,  24,  79,  26,  80
-                                        ,  27,  81,  28,  82,  29,  83,  80, -29,  82, -29};
+                                        ,  19, -29,  20, -29,  23,  78,  24,  79,  27,  80
+                                        ,  28,  81,  29,  82,  30,  83,  81, -29,  83, -29};
 static const TableType act0156[] = {  20,   0, -30,   7, -30,   8, -30,   9, -30,  12, -30
                                         ,  13, -30,  15, -30,  16, -30,  17, -30,  18, -30
-                                        ,  19, -30,  20, -30,  23,  78,  24,  79,  26,  80
-                                        ,  27,  81,  28,  82,  29,  83,  80, -30,  82, -30};
+                                        ,  19, -30,  20, -30,  23,  78,  24,  79,  27,  80
+                                        ,  28,  81,  29,  82,  30,  83,  81, -30,  83, -30};
 
 // Total size of uncompressed actNNNN tables:2.268(x86)/2.360(x64) bytes.
 
@@ -351,90 +351,90 @@ static const void *action[159] = {
 *   NonTerminal A--------------------+ |                                     *
 *   Go to this state-------------------+                                     *
 \****************************************************************************/
-static const TableType succ0000[] = { 16,  84,   1,  85,   2,  86,   3,  87,   4,  88,   5
-                                        ,  89,   6,  90,   7,  91,   8,  92,   9,  93,  10
-                                        ,  94,  11,  95,  12,  96,  16,  97,  17,  98,  18
-                                        ,  99,  19};
-static const TableType succ0003[] = { 14,  85,  76,  87,   4,  88,   5,  89,  77,  90,   7
-                                        ,  91,   8,  92,   9,  93,  10,  94,  11,  95,  12
-                                        ,  96,  16,  97,  17,  98,  18,  99,  19};
-static const TableType succ0013[] = { 11,  87,  96,  88,  97,  91,  98,  92,   9,  93,  10
-                                        ,  94,  11,  95,  12,  96,  16,  97,  17,  98,  18
-                                        ,  99,  19};
-static const TableType succ0014[] = { 10,  87,  99,  91,  98,  92,   9,  93,  10,  94,  11
-                                        ,  95,  12,  96,  16,  97,  17,  98,  18,  99,  19};
-static const TableType succ0015[] = { 10,  87, 101,  91,  98,  92,   9,  93,  10,  94,  11
-                                        ,  95,  12,  96,  16,  97,  17,  98,  18,  99,  19};
-static const TableType succ0020[] = { 11,  87, 103,  88, 102,  91,  98,  92,   9,  93,  10
-                                        ,  94,  11,  95,  12,  96,  16,  97,  17,  98,  18
-                                        ,  99,  19};
-static const TableType succ0062[] = { 11,  87, 103,  88, 108,  91,  98,  92,   9,  93,  10
-                                        ,  94,  11,  95,  12,  96,  16,  97,  17,  98,  18
-                                        ,  99,  19};
-static const TableType succ0078[] = { 10,  87, 109,  91,  98,  92,   9,  93,  10,  94,  11
-                                        ,  95,  12,  96,  16,  97,  17,  98,  18,  99,  19};
-static const TableType succ0079[] = { 10,  87, 110,  91,  98,  92,   9,  93,  10,  94,  11
-                                        ,  95,  12,  96,  16,  97,  17,  98,  18,  99,  19};
-static const TableType succ0080[] = { 10,  87, 111,  91,  98,  92,   9,  93,  10,  94,  11
-                                        ,  95,  12,  96,  16,  97,  17,  98,  18,  99,  19};
-static const TableType succ0081[] = { 10,  87, 112,  91,  98,  92,   9,  93,  10,  94,  11
-                                        ,  95,  12,  96,  16,  97,  17,  98,  18,  99,  19};
-static const TableType succ0082[] = { 10,  87, 113,  91,  98,  92,   9,  93,  10,  94,  11
-                                        ,  95,  12,  96,  16,  97,  17,  98,  18,  99,  19};
-static const TableType succ0083[] = { 10,  87, 114,  91,  98,  92,   9,  93,  10,  94,  11
-                                        ,  95,  12,  96,  16,  97,  17,  98,  18,  99,  19};
-static const TableType succ0084[] = { 10,  87, 115,  91,  98,  92,   9,  93,  10,  94,  11
-                                        ,  95,  12,  96,  16,  97,  17,  98,  18,  99,  19};
-static const TableType succ0085[] = { 10,  87, 116,  91,  98,  92,   9,  93,  10,  94,  11
-                                        ,  95,  12,  96,  16,  97,  17,  98,  18,  99,  19};
-static const TableType succ0086[] = { 10,  87, 117,  91,  98,  92,   9,  93,  10,  94,  11
-                                        ,  95,  12,  96,  16,  97,  17,  98,  18,  99,  19};
-static const TableType succ0087[] = { 10,  87, 118,  91,  98,  92,   9,  93,  10,  94,  11
-                                        ,  95,  12,  96,  16,  97,  17,  98,  18,  99,  19};
-static const TableType succ0088[] = { 10,  87, 119,  91,  98,  92,   9,  93,  10,  94,  11
-                                        ,  95,  12,  96,  16,  97,  17,  98,  18,  99,  19};
-static const TableType succ0089[] = { 10,  87, 120,  91,  98,  92,   9,  93,  10,  94,  11
-                                        ,  95,  12,  96,  16,  97,  17,  98,  18,  99,  19};
-static const TableType succ0090[] = { 11,  87, 103,  88, 121,  91,  98,  92,   9,  93,  10
-                                        ,  94,  11,  95,  12,  96,  16,  97,  17,  98,  18
-                                        ,  99,  19};
-static const TableType succ0091[] = { 11,  87, 103,  88, 122,  91,  98,  92,   9,  93,  10
-                                        ,  94,  11,  95,  12,  96,  16,  97,  17,  98,  18
-                                        ,  99,  19};
-static const TableType succ0093[] = { 10,  87, 123,  91,  98,  92,   9,  93,  10,  94,  11
-                                        ,  95,  12,  96,  16,  97,  17,  98,  18,  99,  19};
-static const TableType succ0094[] = { 10,  87, 124,  91,  98,  92,   9,  93,  10,  94,  11
-                                        ,  95,  12,  96,  16,  97,  17,  98,  18,  99,  19};
-static const TableType succ0095[] = { 10,  87, 125,  91,  98,  92,   9,  93,  10,  94,  11
-                                        ,  95,  12,  96,  16,  97,  17,  98,  18,  99,  19};
-static const TableType succ0100[] = { 10,  87, 128,  91,  98,  92,   9,  93,  10,  94,  11
-                                        ,  95,  12,  96,  16,  97,  17,  98,  18,  99,  19};
-static const TableType succ0104[] = { 11,  87, 103,  88, 130,  91,  98,  92,   9,  93,  10
-                                        ,  94,  11,  95,  12,  96,  16,  97,  17,  98,  18
-                                        ,  99,  19};
-static const TableType succ0105[] = {  2,  90, 131,  91, 132};
-static const TableType succ0106[] = {  2,  90, 133,  91, 132};
-static const TableType succ0107[] = { 11,  87, 135,  91,  98,  92,   9,  93,  10,  94,  11
-                                        ,  95,  12,  96,  16,  97,  17,  98,  18,  99,  19
-                                        , 100, 134};
-static const TableType succ0137[] = { 10,  87, 143,  91,  98,  92,   9,  93,  10,  94,  11
-                                        ,  95,  12,  96,  16,  97,  17,  98,  18,  99,  19};
-static const TableType succ0138[] = { 10,  87, 144,  91,  98,  92,   9,  93,  10,  94,  11
-                                        ,  95,  12,  96,  16,  97,  17,  98,  18,  99,  19};
-static const TableType succ0139[] = { 10,  87, 145,  91,  98,  92,   9,  93,  10,  94,  11
-                                        ,  95,  12,  96,  16,  97,  17,  98,  18,  99,  19};
-static const TableType succ0140[] = { 10,  87, 146,  91,  98,  92,   9,  93,  10,  94,  11
-                                        ,  95,  12,  96,  16,  97,  17,  98,  18,  99,  19};
-static const TableType succ0142[] = { 10,  87, 148,  91,  98,  92,   9,  93,  10,  94,  11
-                                        ,  95,  12,  96,  16,  97,  17,  98,  18,  99,  19};
-static const TableType succ0147[] = { 10,  87, 153,  91,  98,  92,   9,  93,  10,  94,  11
-                                        ,  95,  12,  96,  16,  97,  17,  98,  18,  99,  19};
-static const TableType succ0150[] = { 10,  87, 154,  91,  98,  92,   9,  93,  10,  94,  11
-                                        ,  95,  12,  96,  16,  97,  17,  98,  18,  99,  19};
-static const TableType succ0151[] = { 10,  87, 155,  91,  98,  92,   9,  93,  10,  94,  11
-                                        ,  95,  12,  96,  16,  97,  17,  98,  18,  99,  19};
-static const TableType succ0152[] = { 10,  87, 156,  91,  98,  92,   9,  93,  10,  94,  11
-                                        ,  95,  12,  96,  16,  97,  17,  98,  18,  99,  19};
+static const TableType succ0000[] = { 16,  85,   1,  86,   2,  87,   3,  88,   4,  89,   5
+                                        ,  90,   6,  91,   7,  92,   8,  93,   9,  94,  10
+                                        ,  95,  11,  96,  12,  97,  16,  98,  17,  99,  18
+                                        , 100,  19};
+static const TableType succ0003[] = { 14,  86,  76,  88,   4,  89,   5,  90,  77,  91,   7
+                                        ,  92,   8,  93,   9,  94,  10,  95,  11,  96,  12
+                                        ,  97,  16,  98,  17,  99,  18, 100,  19};
+static const TableType succ0013[] = { 11,  88,  96,  89,  97,  92,  98,  93,   9,  94,  10
+                                        ,  95,  11,  96,  12,  97,  16,  98,  17,  99,  18
+                                        , 100,  19};
+static const TableType succ0014[] = { 10,  88,  99,  92,  98,  93,   9,  94,  10,  95,  11
+                                        ,  96,  12,  97,  16,  98,  17,  99,  18, 100,  19};
+static const TableType succ0015[] = { 10,  88, 101,  92,  98,  93,   9,  94,  10,  95,  11
+                                        ,  96,  12,  97,  16,  98,  17,  99,  18, 100,  19};
+static const TableType succ0020[] = { 11,  88, 103,  89, 102,  92,  98,  93,   9,  94,  10
+                                        ,  95,  11,  96,  12,  97,  16,  98,  17,  99,  18
+                                        , 100,  19};
+static const TableType succ0062[] = { 11,  88, 103,  89, 108,  92,  98,  93,   9,  94,  10
+                                        ,  95,  11,  96,  12,  97,  16,  98,  17,  99,  18
+                                        , 100,  19};
+static const TableType succ0078[] = { 10,  88, 109,  92,  98,  93,   9,  94,  10,  95,  11
+                                        ,  96,  12,  97,  16,  98,  17,  99,  18, 100,  19};
+static const TableType succ0079[] = { 10,  88, 110,  92,  98,  93,   9,  94,  10,  95,  11
+                                        ,  96,  12,  97,  16,  98,  17,  99,  18, 100,  19};
+static const TableType succ0080[] = { 10,  88, 111,  92,  98,  93,   9,  94,  10,  95,  11
+                                        ,  96,  12,  97,  16,  98,  17,  99,  18, 100,  19};
+static const TableType succ0081[] = { 10,  88, 112,  92,  98,  93,   9,  94,  10,  95,  11
+                                        ,  96,  12,  97,  16,  98,  17,  99,  18, 100,  19};
+static const TableType succ0082[] = { 10,  88, 113,  92,  98,  93,   9,  94,  10,  95,  11
+                                        ,  96,  12,  97,  16,  98,  17,  99,  18, 100,  19};
+static const TableType succ0083[] = { 10,  88, 114,  92,  98,  93,   9,  94,  10,  95,  11
+                                        ,  96,  12,  97,  16,  98,  17,  99,  18, 100,  19};
+static const TableType succ0084[] = { 10,  88, 115,  92,  98,  93,   9,  94,  10,  95,  11
+                                        ,  96,  12,  97,  16,  98,  17,  99,  18, 100,  19};
+static const TableType succ0085[] = { 10,  88, 116,  92,  98,  93,   9,  94,  10,  95,  11
+                                        ,  96,  12,  97,  16,  98,  17,  99,  18, 100,  19};
+static const TableType succ0086[] = { 10,  88, 117,  92,  98,  93,   9,  94,  10,  95,  11
+                                        ,  96,  12,  97,  16,  98,  17,  99,  18, 100,  19};
+static const TableType succ0087[] = { 10,  88, 118,  92,  98,  93,   9,  94,  10,  95,  11
+                                        ,  96,  12,  97,  16,  98,  17,  99,  18, 100,  19};
+static const TableType succ0088[] = { 10,  88, 119,  92,  98,  93,   9,  94,  10,  95,  11
+                                        ,  96,  12,  97,  16,  98,  17,  99,  18, 100,  19};
+static const TableType succ0089[] = { 10,  88, 120,  92,  98,  93,   9,  94,  10,  95,  11
+                                        ,  96,  12,  97,  16,  98,  17,  99,  18, 100,  19};
+static const TableType succ0090[] = { 11,  88, 103,  89, 121,  92,  98,  93,   9,  94,  10
+                                        ,  95,  11,  96,  12,  97,  16,  98,  17,  99,  18
+                                        , 100,  19};
+static const TableType succ0091[] = { 11,  88, 103,  89, 122,  92,  98,  93,   9,  94,  10
+                                        ,  95,  11,  96,  12,  97,  16,  98,  17,  99,  18
+                                        , 100,  19};
+static const TableType succ0093[] = { 10,  88, 123,  92,  98,  93,   9,  94,  10,  95,  11
+                                        ,  96,  12,  97,  16,  98,  17,  99,  18, 100,  19};
+static const TableType succ0094[] = { 10,  88, 124,  92,  98,  93,   9,  94,  10,  95,  11
+                                        ,  96,  12,  97,  16,  98,  17,  99,  18, 100,  19};
+static const TableType succ0095[] = { 10,  88, 125,  92,  98,  93,   9,  94,  10,  95,  11
+                                        ,  96,  12,  97,  16,  98,  17,  99,  18, 100,  19};
+static const TableType succ0100[] = { 10,  88, 128,  92,  98,  93,   9,  94,  10,  95,  11
+                                        ,  96,  12,  97,  16,  98,  17,  99,  18, 100,  19};
+static const TableType succ0104[] = { 11,  88, 103,  89, 130,  92,  98,  93,   9,  94,  10
+                                        ,  95,  11,  96,  12,  97,  16,  98,  17,  99,  18
+                                        , 100,  19};
+static const TableType succ0105[] = {  2,  91, 131,  92, 132};
+static const TableType succ0106[] = {  2,  91, 133,  92, 132};
+static const TableType succ0107[] = { 11,  88, 135,  92,  98,  93,   9,  94,  10,  95,  11
+                                        ,  96,  12,  97,  16,  98,  17,  99,  18, 100,  19
+                                        , 101, 134};
+static const TableType succ0137[] = { 10,  88, 143,  92,  98,  93,   9,  94,  10,  95,  11
+                                        ,  96,  12,  97,  16,  98,  17,  99,  18, 100,  19};
+static const TableType succ0138[] = { 10,  88, 144,  92,  98,  93,   9,  94,  10,  95,  11
+                                        ,  96,  12,  97,  16,  98,  17,  99,  18, 100,  19};
+static const TableType succ0139[] = { 10,  88, 145,  92,  98,  93,   9,  94,  10,  95,  11
+                                        ,  96,  12,  97,  16,  98,  17,  99,  18, 100,  19};
+static const TableType succ0140[] = { 10,  88, 146,  92,  98,  93,   9,  94,  10,  95,  11
+                                        ,  96,  12,  97,  16,  98,  17,  99,  18, 100,  19};
+static const TableType succ0142[] = { 10,  88, 148,  92,  98,  93,   9,  94,  10,  95,  11
+                                        ,  96,  12,  97,  16,  98,  17,  99,  18, 100,  19};
+static const TableType succ0147[] = { 10,  88, 153,  92,  98,  93,   9,  94,  10,  95,  11
+                                        ,  96,  12,  97,  16,  98,  17,  99,  18, 100,  19};
+static const TableType succ0150[] = { 10,  88, 154,  92,  98,  93,   9,  94,  10,  95,  11
+                                        ,  96,  12,  97,  16,  98,  17,  99,  18, 100,  19};
+static const TableType succ0151[] = { 10,  88, 155,  92,  98,  93,   9,  94,  10,  95,  11
+                                        ,  96,  12,  97,  16,  98,  17,  99,  18, 100,  19};
+static const TableType succ0152[] = { 10,  88, 156,  92,  98,  93,   9,  94,  10,  95,  11
+                                        ,  96,  12,  97,  16,  98,  17,  99,  18, 100,  19};
 
 // Total size of all succNNNN tables:1.676(x86)/1.800(x64) bytes.
 
@@ -479,16 +479,16 @@ static const unsigned char productionLength[94] = {
 * nonTerminal symbol on the left side of each production.                    *
 \****************************************************************************/
 static const TableType leftSide[94] = {
-  /*   0 */   83,  84,  84,  85,  85,  86,  86,  89,  90,  87,
-  /*  10 */   87,  87,  87,  87,  87,  87,  92,  92,  92,  92,
-  /*  20 */   92,  92,  92,  92,  92,  92,  92,  92,  96,  97,
-  /*  30 */   98,  99, 100, 100,  94,  94,  94,  94,  94,  94,
-  /*  40 */   94,  94,  94,  94,  94,  94,  94,  94,  94,  94,
-  /*  50 */   94,  94,  94,  94,  94,  94,  94,  94,  94,  94,
-  /*  60 */   94,  94,  94,  94,  94,  94,  94,  94,  94,  94,
-  /*  70 */   94,  88,  88,  88,  88,  88,  88,  88,  88,  88,
-  /*  80 */   88,  95,  95,  95,  95,  95,  95,  95,  95,  95,
-  /*  90 */   95,  95,  91,  93
+  /*   0 */   84,  85,  85,  86,  86,  87,  87,  90,  91,  88,
+  /*  10 */   88,  88,  88,  88,  88,  88,  93,  93,  93,  93,
+  /*  20 */   93,  93,  93,  93,  93,  93,  93,  93,  97,  98,
+  /*  30 */   99, 100, 101, 101,  95,  95,  95,  95,  95,  95,
+  /*  40 */   95,  95,  95,  95,  95,  95,  95,  95,  95,  95,
+  /*  50 */   95,  95,  95,  95,  95,  95,  95,  95,  95,  95,
+  /*  60 */   95,  95,  95,  95,  95,  95,  95,  95,  95,  95,
+  /*  70 */   95,  89,  89,  89,  89,  89,  89,  89,  89,  89,
+  /*  80 */   89,  96,  96,  96,  96,  96,  96,  96,  96,  96,
+  /*  90 */   96,  96,  92,  94
 }; // Size of table:188(x86)/192(x64) bytes.
 
 /****************************************************************************\
@@ -497,98 +497,98 @@ static const TableType leftSide[94] = {
 * Compressed and only used for debugging.                                    *
 \****************************************************************************/
 static const TableType rightSideTable[171] = {
-  /*   0 */   84
-  /*   1 */ , 85
-  /*   2 */ , 86, 85
-  /*   3 */ , 87
-  /*   4 */ , 88
-  /*   5 */ , 89
-  /*   6 */ , 86, 89
-  /*   7 */ , 90,  7
-  /*   8 */ , 91,  6, 87
-  /*   9 */ , 87, 23, 87
-  /*  10 */ , 87, 24, 87
-  /*  11 */ , 87, 26, 87
-  /*  12 */ , 87, 27, 87
-  /*  13 */ , 87, 28, 87
-  /*  14 */ , 87, 29, 87
-  /*  15 */ , 92
-  /*  16 */ , 93
-  /*  17 */ , 91
-  /*  18 */ , 94, 79, 87, 80
-  /*  19 */ , 95, 79, 87,  8, 87, 80
-  /*  20 */ , 79, 87, 80
-  /*  21 */ , 24, 87
-  /*  22 */ , 23, 87
-  /*  23 */ , 96
-  /*  24 */ , 97
-  /*  25 */ , 98
-  /*  26 */ , 99
-  /*  27 */ , 81, 88, 82
-  /*  28 */ ,  4, 79, 88,  8, 87,  8, 87, 80
-  /*  29 */ , 10, 79, 90,  9, 87, 80, 87
-  /*  30 */ , 11, 79, 90,  9, 87, 80, 87
-  /*  31 */ , 77, 81,100, 82, 79, 87, 80
-  /*  32 */ ,100,  8, 87
-  /*  33 */ , 87
-  /*  34 */ , 49
-  /*  35 */ , 30
-  /*  36 */ , 31
-  /*  37 */ , 32
-  /*  38 */ , 33
-  /*  39 */ , 34
-  /*  40 */ , 35
-  /*  41 */ , 36
-  /*  42 */ , 37
-  /*  43 */ , 39
-  /*  44 */ , 50
-  /*  45 */ , 40
-  /*  46 */ , 41
-  /*  47 */ , 42
-  /*  48 */ , 43
-  /*  49 */ , 51
-  /*  50 */ , 52
-  /*  51 */ , 53
-  /*  52 */ , 54
-  /*  53 */ , 55
-  /*  54 */ , 56
-  /*  55 */ , 58
-  /*  56 */ , 59
-  /*  57 */ , 60
-  /*  58 */ , 61
-  /*  59 */ , 62
-  /*  60 */ , 63
-  /*  61 */ , 64
-  /*  62 */ , 65
-  /*  63 */ , 44
-  /*  64 */ , 70
-  /*  65 */ , 45
-  /*  66 */ , 46
-  /*  67 */ , 71
-  /*  68 */ , 72
-  /*  69 */ , 47
-  /*  70 */ , 48
-  /*  71 */ , 87, 15, 87
-  /*  72 */ , 87, 20, 87
-  /*  73 */ , 87, 18, 87
-  /*  74 */ , 87, 19, 87
-  /*  75 */ , 87, 16, 87
-  /*  76 */ , 87, 17, 87
-  /*  77 */ , 88, 13, 88
-  /*  78 */ , 88, 12, 88
-  /*  79 */ , 14, 88
-  /*  80 */ , 79, 88, 80
-  /*  81 */ , 74
-  /*  82 */ , 75
-  /*  83 */ , 76
-  /*  84 */ , 78
-  /*  85 */ , 69
-  /*  86 */ , 73
-  /*  87 */ , 67
-  /*  88 */ , 66
-  /*  89 */ , 68
-  /*  90 */ , 38
-  /*  91 */ , 57
+  /*   0 */   85
+  /*   1 */ , 86
+  /*   2 */ , 87, 86
+  /*   3 */ , 88
+  /*   4 */ , 89
+  /*   5 */ , 90
+  /*   6 */ , 87, 90
+  /*   7 */ , 91,  7
+  /*   8 */ , 92,  6, 88
+  /*   9 */ , 88, 23, 88
+  /*  10 */ , 88, 24, 88
+  /*  11 */ , 88, 27, 88
+  /*  12 */ , 88, 28, 88
+  /*  13 */ , 88, 29, 88
+  /*  14 */ , 88, 30, 88
+  /*  15 */ , 93
+  /*  16 */ , 94
+  /*  17 */ , 92
+  /*  18 */ , 95, 80, 88, 81
+  /*  19 */ , 96, 80, 88,  8, 88, 81
+  /*  20 */ , 80, 88, 81
+  /*  21 */ , 24, 88
+  /*  22 */ , 23, 88
+  /*  23 */ , 97
+  /*  24 */ , 98
+  /*  25 */ , 99
+  /*  26 */ ,100
+  /*  27 */ , 82, 89, 83
+  /*  28 */ ,  4, 80, 89,  8, 88,  8, 88, 81
+  /*  29 */ , 10, 80, 91,  9, 88, 81, 88
+  /*  30 */ , 11, 80, 91,  9, 88, 81, 88
+  /*  31 */ , 78, 82,101, 83, 80, 88, 81
+  /*  32 */ ,101,  8, 88
+  /*  33 */ , 88
+  /*  34 */ , 50
+  /*  35 */ , 31
+  /*  36 */ , 32
+  /*  37 */ , 33
+  /*  38 */ , 34
+  /*  39 */ , 35
+  /*  40 */ , 36
+  /*  41 */ , 37
+  /*  42 */ , 38
+  /*  43 */ , 40
+  /*  44 */ , 51
+  /*  45 */ , 41
+  /*  46 */ , 42
+  /*  47 */ , 43
+  /*  48 */ , 44
+  /*  49 */ , 52
+  /*  50 */ , 53
+  /*  51 */ , 54
+  /*  52 */ , 55
+  /*  53 */ , 56
+  /*  54 */ , 57
+  /*  55 */ , 59
+  /*  56 */ , 60
+  /*  57 */ , 61
+  /*  58 */ , 62
+  /*  59 */ , 63
+  /*  60 */ , 64
+  /*  61 */ , 65
+  /*  62 */ , 66
+  /*  63 */ , 45
+  /*  64 */ , 71
+  /*  65 */ , 46
+  /*  66 */ , 47
+  /*  67 */ , 72
+  /*  68 */ , 73
+  /*  69 */ , 48
+  /*  70 */ , 49
+  /*  71 */ , 88, 15, 88
+  /*  72 */ , 88, 20, 88
+  /*  73 */ , 88, 18, 88
+  /*  74 */ , 88, 19, 88
+  /*  75 */ , 88, 16, 88
+  /*  76 */ , 88, 17, 88
+  /*  77 */ , 89, 13, 89
+  /*  78 */ , 89, 12, 89
+  /*  79 */ , 14, 89
+  /*  80 */ , 80, 89, 81
+  /*  81 */ , 75
+  /*  82 */ , 76
+  /*  83 */ , 77
+  /*  84 */ , 79
+  /*  85 */ , 70
+  /*  86 */ , 74
+  /*  87 */ , 68
+  /*  88 */ , 67
+  /*  89 */ , 69
+  /*  90 */ , 39
+  /*  91 */ , 58
   /*  92 */ ,  3
   /*  93 */ ,  1
 }; // Size of table:344(x86)/344(x64) bytes.
@@ -598,7 +598,7 @@ static const TableType rightSideTable[171] = {
 * the name of each symbol (terminal or nonTerminal).                         *
 * Used for debugging.                                                        *
 \****************************************************************************/
-static const TCHAR *symbolName[101] = {
+static const TCHAR *symbolName[102] = {
   /*   0 */ _T("EOI"            ),
   /*   1 */ _T("NUMBER"         ),
   /*   2 */ _T("BOOLCONST"      ),
@@ -624,93 +624,94 @@ static const TCHAR *symbolName[101] = {
   /*  22 */ _T("ADDENT"         ),
   /*  23 */ _T("PLUS"           ),
   /*  24 */ _T("MINUS"          ),
-  /*  25 */ _T("PRODUCT"        ),
-  /*  26 */ _T("PROD"           ),
-  /*  27 */ _T("QUOT"           ),
-  /*  28 */ _T("MOD"            ),
-  /*  29 */ _T("POW"            ),
-  /*  30 */ _T("ACOS"           ),
-  /*  31 */ _T("ACOSH"          ),
-  /*  32 */ _T("ACOT"           ),
-  /*  33 */ _T("ACSC"           ),
-  /*  34 */ _T("ASEC"           ),
-  /*  35 */ _T("ASIN"           ),
-  /*  36 */ _T("ASINH"          ),
-  /*  37 */ _T("ATAN"           ),
-  /*  38 */ _T("ATAN2"          ),
-  /*  39 */ _T("ATANH"          ),
-  /*  40 */ _T("COS"            ),
-  /*  41 */ _T("COSH"           ),
-  /*  42 */ _T("COT"            ),
-  /*  43 */ _T("CSC"            ),
-  /*  44 */ _T("SEC"            ),
-  /*  45 */ _T("SIN"            ),
-  /*  46 */ _T("SINH"           ),
-  /*  47 */ _T("TAN"            ),
-  /*  48 */ _T("TANH"           ),
-  /*  49 */ _T("ABS"            ),
-  /*  50 */ _T("CEIL"           ),
-  /*  51 */ _T("ERF"            ),
-  /*  52 */ _T("EXP"            ),
-  /*  53 */ _T("EXP10"          ),
-  /*  54 */ _T("EXP2"           ),
-  /*  55 */ _T("FAC"            ),
-  /*  56 */ _T("FLOOR"          ),
-  /*  57 */ _T("HYPOT"          ),
-  /*  58 */ _T("GAMMA"          ),
-  /*  59 */ _T("GAUSS"          ),
-  /*  60 */ _T("INVERF"         ),
-  /*  61 */ _T("LN"             ),
-  /*  62 */ _T("LOG10"          ),
-  /*  63 */ _T("LOG2"           ),
-  /*  64 */ _T("NORM"           ),
-  /*  65 */ _T("PROBIT"         ),
-  /*  66 */ _T("CHI2DIST"       ),
-  /*  67 */ _T("CHI2DENS"       ),
-  /*  68 */ _T("LINCGAMMA"      ),
-  /*  69 */ _T("ROOT"           ),
-  /*  70 */ _T("SIGN"           ),
-  /*  71 */ _T("SQR"            ),
-  /*  72 */ _T("SQRT"           ),
-  /*  73 */ _T("BINOMIAL"       ),
-  /*  74 */ _T("MAX"            ),
-  /*  75 */ _T("MIN"            ),
-  /*  76 */ _T("NORMRAND"       ),
-  /*  77 */ _T("POLY"           ),
-  /*  78 */ _T("RAND"           ),
-  /*  79 */ _T("LPAR"           ),
-  /*  80 */ _T("RPAR"           ),
-  /*  81 */ _T("LB"             ),
-  /*  82 */ _T("RB"             ),
-  /*  83 */ _T("start"          ),
-  /*  84 */ _T("function"       ),
-  /*  85 */ _T("final_expr"     ),
-  /*  86 */ _T("assignStmtList" ),
-  /*  87 */ _T("expr"           ),
-  /*  88 */ _T("boolExpr"       ),
-  /*  89 */ _T("assignStmt"     ),
-  /*  90 */ _T("assign"         ),
-  /*  91 */ _T("name"           ),
-  /*  92 */ _T("unary"          ),
-  /*  93 */ _T("number"         ),
-  /*  94 */ _T("function1"      ),
-  /*  95 */ _T("function2"      ),
-  /*  96 */ _T("conditionalExpr"),
-  /*  97 */ _T("sumExpr"        ),
-  /*  98 */ _T("productExpr"    ),
-  /*  99 */ _T("polyExpr"       ),
-  /* 100 */ _T("exprList"       )
-}; // Total size of strings:1.218(x86)/1.218(x64) bytes, size of pointertable:404(x86)/808(x64) bytes.
+  /*  25 */ _T("UNARYMINUS"     ),
+  /*  26 */ _T("PRODUCT"        ),
+  /*  27 */ _T("PROD"           ),
+  /*  28 */ _T("QUOT"           ),
+  /*  29 */ _T("MOD"            ),
+  /*  30 */ _T("POW"            ),
+  /*  31 */ _T("ACOS"           ),
+  /*  32 */ _T("ACOSH"          ),
+  /*  33 */ _T("ACOT"           ),
+  /*  34 */ _T("ACSC"           ),
+  /*  35 */ _T("ASEC"           ),
+  /*  36 */ _T("ASIN"           ),
+  /*  37 */ _T("ASINH"          ),
+  /*  38 */ _T("ATAN"           ),
+  /*  39 */ _T("ATAN2"          ),
+  /*  40 */ _T("ATANH"          ),
+  /*  41 */ _T("COS"            ),
+  /*  42 */ _T("COSH"           ),
+  /*  43 */ _T("COT"            ),
+  /*  44 */ _T("CSC"            ),
+  /*  45 */ _T("SEC"            ),
+  /*  46 */ _T("SIN"            ),
+  /*  47 */ _T("SINH"           ),
+  /*  48 */ _T("TAN"            ),
+  /*  49 */ _T("TANH"           ),
+  /*  50 */ _T("ABS"            ),
+  /*  51 */ _T("CEIL"           ),
+  /*  52 */ _T("ERF"            ),
+  /*  53 */ _T("EXP"            ),
+  /*  54 */ _T("EXP10"          ),
+  /*  55 */ _T("EXP2"           ),
+  /*  56 */ _T("FAC"            ),
+  /*  57 */ _T("FLOOR"          ),
+  /*  58 */ _T("HYPOT"          ),
+  /*  59 */ _T("GAMMA"          ),
+  /*  60 */ _T("GAUSS"          ),
+  /*  61 */ _T("INVERF"         ),
+  /*  62 */ _T("LN"             ),
+  /*  63 */ _T("LOG10"          ),
+  /*  64 */ _T("LOG2"           ),
+  /*  65 */ _T("NORM"           ),
+  /*  66 */ _T("PROBIT"         ),
+  /*  67 */ _T("CHI2DIST"       ),
+  /*  68 */ _T("CHI2DENS"       ),
+  /*  69 */ _T("LINCGAMMA"      ),
+  /*  70 */ _T("ROOT"           ),
+  /*  71 */ _T("SIGN"           ),
+  /*  72 */ _T("SQR"            ),
+  /*  73 */ _T("SQRT"           ),
+  /*  74 */ _T("BINOMIAL"       ),
+  /*  75 */ _T("MAX"            ),
+  /*  76 */ _T("MIN"            ),
+  /*  77 */ _T("NORMRAND"       ),
+  /*  78 */ _T("POLY"           ),
+  /*  79 */ _T("RAND"           ),
+  /*  80 */ _T("LPAR"           ),
+  /*  81 */ _T("RPAR"           ),
+  /*  82 */ _T("LB"             ),
+  /*  83 */ _T("RB"             ),
+  /*  84 */ _T("start"          ),
+  /*  85 */ _T("function"       ),
+  /*  86 */ _T("final_expr"     ),
+  /*  87 */ _T("assignStmtList" ),
+  /*  88 */ _T("expr"           ),
+  /*  89 */ _T("boolExpr"       ),
+  /*  90 */ _T("assignStmt"     ),
+  /*  91 */ _T("assign"         ),
+  /*  92 */ _T("name"           ),
+  /*  93 */ _T("unary"          ),
+  /*  94 */ _T("number"         ),
+  /*  95 */ _T("function1"      ),
+  /*  96 */ _T("function2"      ),
+  /*  97 */ _T("conditionalExpr"),
+  /*  98 */ _T("sumExpr"        ),
+  /*  99 */ _T("productExpr"    ),
+  /* 100 */ _T("polyExpr"       ),
+  /* 101 */ _T("exprList"       )
+}; // Total size of strings:1.240(x86)/1.240(x64) bytes, size of pointertable:408(x86)/816(x64) bytes.
 
 static const ParserShortTables ExpressionTables_s(compressedSet, compressedLasets
                                                  ,action, successor, productionLength, leftSide
                                                  ,rightSideTable, symbolName
-                                                 ,83, 101, 94, 159);
+                                                 ,84, 102, 94, 159);
 
 const ParserTables *ExpressionParser::ExpressionTables = &ExpressionTables_s;
 // Size of ExpressionTables_s: 48(x86)/88(x64) bytes. Size of ExpressionTables:4(x86)/8(x64) bytes
 
 
-// Total size of table data:7.582(x86)/9.530(x64) bytes.
+// Total size of table data:7.608(x86)/9.560(x64) bytes.
 
 }; // namespace Expr

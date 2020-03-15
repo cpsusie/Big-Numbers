@@ -39,9 +39,9 @@ $POPNAMESPACE$
 %left AND
 %term NOT
 %term EQ GE GT LE LT NE
-%left SUM ADDENT PLUS MINUS      /*  + - (lowest precedence)      */
-%left PRODUCT PROD QUOT MOD      /*  * / %                        */
-%left POW                        /*  ^                            */
+%left SUM ADDENT PLUS MINUS UNARYMINUS     /*  + - (lowest precedence)      */
+%left PRODUCT PROD QUOT MOD                /*  * / %                        */
+%left POW                                  /*  ^                            */
 %term ACOS ACOSH ACOT ACSC ASEC ASIN ASINH ATAN ATAN2 ATANH COS COSH COT CSC SEC SIN SINH TAN TANH
 %term ABS CEIL ERF EXP EXP10 EXP2 FAC FLOOR HYPOT GAMMA GAUSS INVERF LN LOG10 LOG2
 %term NORM PROBIT CHI2DIST CHI2DENS LINCGAMMA
@@ -96,7 +96,7 @@ unary               : number
                     | function1 LPAR expr RPAR              { $$ = newNode( $1->getPos(),$1->getSymbol(), $3, NULL);    }
                     | function2 LPAR expr COMMA expr RPAR   { $$ = newNode( $1->getPos(),$1->getSymbol(), $3, $5, NULL);}
                     | LPAR expr RPAR                        { $$ = $2;                                                  }
-                    | MINUS expr                            { $$ = newNode( getPos(1), MINUS, $2, NULL);                }
+                    | MINUS expr                            { $$ = newNode( getPos(1), UNARYMINUS, $2, NULL);           }
                     | PLUS  expr                            { $$ = $2;                                                  }
                     | conditionalExpr
                     | sumExpr
