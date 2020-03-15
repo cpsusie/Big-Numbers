@@ -38,8 +38,8 @@ public:
   inline void setT(double t) {
     *m_tp = t;
   }
-  inline bool isReturnTypeReal() const {
-    return m_expr->getReturnType() == Expr::EXPR_RETURN_REAL;
+  inline bool isReturnTypeFloat() const {
+    return m_expr->getReturnType() == Expr::EXPR_RETURN_FLOAT;
   }
   inline bool isReturnTypeBool() const {
     return m_expr->getReturnType() == Expr::EXPR_RETURN_BOOL;

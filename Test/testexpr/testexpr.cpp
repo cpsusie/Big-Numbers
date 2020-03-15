@@ -42,7 +42,7 @@ static bool test(const String &expr, bool runCode) {
         compiledExpr.setValue(   _T("x"), x);
         interpreterExpr.setValue(_T("x"), x);
         switch(compiledExpr.getReturnType()) {
-        case EXPR_RETURN_REAL:
+        case EXPR_RETURN_FLOAT:
           { const Real compiledResult     = compiledExpr.evaluate();
             const Real interpreterResult  = interpreterExpr.evaluate();
             const bool compiledDefined    = !isnan(compiledResult);
@@ -55,7 +55,7 @@ static bool test(const String &expr, bool runCode) {
             }
           }
           break;
-        case EXPR_RETURN_BOOL:
+        case EXPR_RETURN_BOOL :
           { const bool compiledResult    = compiledExpr.evaluateBool();
             const bool interpreterResult = interpreterExpr.evaluateBool();
             if(compiledResult != interpreterResult) {

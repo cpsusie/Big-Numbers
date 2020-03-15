@@ -222,7 +222,7 @@ namespace TestExpression {
               reducedExpr.setValue(    _T("x"), x);
               interpreterExpr.setValue(_T("x"), x);
               switch(compiledExpr.getReturnType()) {
-              case EXPR_RETURN_REAL:
+              case EXPR_RETURN_FLOAT:
                 { const Real cppResult          = test.fr(x);
                   const Real compiledResult     = compiledExpr.evaluate();
                   const Real reducedResult      = reducedExpr.evaluate();
@@ -260,7 +260,7 @@ namespace TestExpression {
                   CHECKDEFANDVALUE(interpreter)
                 }
                 break;
-              case EXPR_RETURN_BOOL:
+              case EXPR_RETURN_BOOL :
                 { const bool cppResult         = test.fb(x);
                   const bool compiledResult    = compiledExpr.evaluateBool();
                   const bool reducedResult     = reducedExpr.evaluateBool();
@@ -549,8 +549,8 @@ namespace TestExpression {
             }
             verify(false);
           }
-          verify(compiledExpr.getReturnType()    == EXPR_RETURN_REAL);
-          verify(interpreterExpr.getReturnType() == EXPR_RETURN_REAL);
+          verify(compiledExpr.getReturnType()    == EXPR_RETURN_FLOAT);
+          verify(interpreterExpr.getReturnType() == EXPR_RETURN_FLOAT);
           Expression compiledDFDX    = compiledExpr.getDerived(   _T("x"),true);
           Expression interpreterDFDX = interpreterExpr.getDerived(_T("x"),true);
           verifyExprOk(compiledDFDX   );

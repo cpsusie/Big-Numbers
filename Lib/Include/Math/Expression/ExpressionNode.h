@@ -184,7 +184,7 @@ public:
   virtual Real                      &doAssignment()                 const   { UNSUPPORTEDOP();                                                 }
   virtual ExpressionNode            *clone(ParserTree *tree)        const = 0;
   virtual ExpressionNodeType         getNodeType()                  const = 0;
-  virtual ExpressionReturnType       getReturnType()                const   { return EXPR_RETURN_REAL;                                         }
+  virtual ExpressionReturnType       getReturnType()                const   { return EXPR_RETURN_FLOAT;                                        }
   virtual Real                       evaluateReal()                 const;
   virtual bool                       evaluateBool()                 const   { UNSUPPORTEDOP();                                                 }
 

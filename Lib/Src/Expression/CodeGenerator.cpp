@@ -48,7 +48,7 @@ void CodeGenerator::genMachineCode() {
   const ExpressionReturnType returnType = genStatementList(m_tree.getRoot());
   if(hasExtraPush) {
 #ifdef IS32BIT
-    if(returnType == EXPR_RETURN_REAL) {
+    if(returnType == EXPR_RETURN_FLOAT) {
       m_code->emit(FXCH,ST1);
     }
 #endif // IS32BIT
@@ -68,13 +68,13 @@ ExpressionReturnType CodeGenerator::genStatementList(const ExpressionNode *n) {
   }
   SNode last = list.last();
   switch(last.getReturnType()) {
-  case EXPR_RETURN_REAL:
+  case EXPR_RETURN_FLOAT:
     genExpression(last DST_ADDRRDI);
     break;
-  case EXPR_RETURN_BOOL:
+  case EXPR_RETURN_BOOL :
     genReturnBoolExpression(last);
     break;
-  default    :
+  default               :
     last.throwUnknownSymbolException(__TFUNCTION__);
     break;
   }

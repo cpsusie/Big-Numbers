@@ -79,13 +79,13 @@ NNode NNode::toNFormStmtList() const {
   }
   NNode last = childArray.last();
   switch(last.getReturnType()) {
-  case EXPR_RETURN_REAL:
+  case EXPR_RETURN_FLOAT:
     newStmtList.add(last.toNFormRealExp());
     break;
-  case EXPR_RETURN_BOOL:
+  case EXPR_RETURN_BOOL :
     newStmtList.add(last.toNFormBoolExp());
     break;
-  default:
+  default               :
     last.throwUnknownSymbolException(__TFUNCTION__);
   }
   RETURNNODE( stmtList(newStmtList.removeUnusedAssignments()) );

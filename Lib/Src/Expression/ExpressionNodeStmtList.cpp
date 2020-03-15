@@ -24,7 +24,7 @@ ExpressionNode *ExpressionNodeStmtList::clone(ParserTree *tree) const {
 }
 
 Real ExpressionNodeStmtList::evaluateReal() const {
-  if(m_returnType != EXPR_RETURN_REAL) UNSUPPORTEDOP();
+  if(m_returnType != EXPR_RETURN_FLOAT) UNSUPPORTEDOP();
   SNode last = doAssignments();
   return last.evaluateReal();
 }

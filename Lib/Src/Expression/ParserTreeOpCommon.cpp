@@ -12,8 +12,8 @@ ExpressionNode *ParserTree::stmtList(const SNodeArray &stmtArray) {
 }
 
 ExpressionNode *ParserTree::assignStmt(ExpressionNode *leftSide, ExpressionNode *expr) {
-  CHECKNODEPTYPE(      leftSide,NT_VARIABLE     );
-  CHECKNODEPRETURNTYPE(expr    ,EXPR_RETURN_REAL);
+  CHECKNODEPTYPE(      leftSide,NT_VARIABLE      );
+  CHECKNODEPRETURNTYPE(expr    ,EXPR_RETURN_FLOAT);
   ExpressionNode *n = new ExpressionNodeAssign(leftSide, expr); TRACE_NEW(n);
   return n;
 }
@@ -98,16 +98,16 @@ ExpressionNode *ParserTree::productExpr(const FactorArray &a) {
 }
 
 ExpressionNode *ParserTree::indexedSum(SNode assign, SNode endExpr, SNode expr) {
-  CHECKNODETYPE(      assign , NT_ASSIGN      );
-  CHECKNODERETURNTYPE(endExpr,EXPR_RETURN_REAL);
-  CHECKNODERETURNTYPE(expr   ,EXPR_RETURN_REAL);
+  CHECKNODETYPE(      assign , NT_ASSIGN       );
+  CHECKNODERETURNTYPE(endExpr,EXPR_RETURN_FLOAT);
+  CHECKNODERETURNTYPE(expr   ,EXPR_RETURN_FLOAT);
   return ternaryExpr(INDEXEDSUM, assign.node(), endExpr.node(), expr.node());
 }
 
 ExpressionNode *ParserTree::indexedProduct(SNode assign, SNode endExpr, SNode expr) {
-  CHECKNODETYPE(      assign ,NT_ASSIGN       );
-  CHECKNODERETURNTYPE(endExpr,EXPR_RETURN_REAL);
-  CHECKNODERETURNTYPE(expr   ,EXPR_RETURN_REAL);
+  CHECKNODETYPE(      assign ,NT_ASSIGN        );
+  CHECKNODERETURNTYPE(endExpr,EXPR_RETURN_FLOAT);
+  CHECKNODERETURNTYPE(expr   ,EXPR_RETURN_FLOAT);
   return ternaryExpr(INDEXEDPRODUCT, assign.node(), endExpr.node(), expr.node());
 }
 
@@ -122,9 +122,9 @@ ExpressionNode *ParserTree::indexedExpr(  ExpressionInputSymbol symbol, SNode as
 }
 
 ExpressionNode *ParserTree::condExpr(SNode condition, SNode exprTrue, SNode exprFalse) {
-  CHECKNODETYPE(      condition ,NT_BOOLEXPR     );
-  CHECKNODERETURNTYPE(exprTrue  ,EXPR_RETURN_REAL);
-  CHECKNODERETURNTYPE(exprFalse ,EXPR_RETURN_REAL);
+  CHECKNODETYPE(      condition ,NT_BOOLEXPR      );
+  CHECKNODERETURNTYPE(exprTrue  ,EXPR_RETURN_FLOAT);
+  CHECKNODERETURNTYPE(exprFalse ,EXPR_RETURN_FLOAT);
   return ternaryExpr(IIF, condition.node(), exprTrue.node(), exprFalse.node());
 }
 

@@ -97,12 +97,12 @@ void Expression::updateEvalPointers() {
   case EXPR_NORETURNTYPE:
     setEvalPointers(&Expression::evalRealError, &Expression::evalBoolError);
     break;
-  case EXPR_RETURN_REAL :
+  case EXPR_RETURN_FLOAT :
     setEvalPointers(isMachineCode() ? &Expression::evalRealFast
                                     : hasSyntaxTree() ? &Expression::evalRealTree : &Expression::evalRealError
                    ,&Expression::evalBoolError);
     break;
-  case EXPR_RETURN_BOOL :
+  case EXPR_RETURN_BOOL  :
     setEvalPointers(&Expression::evalRealError
                    ,isMachineCode() ? &Expression::evalBoolFast
                                     : hasSyntaxTree() ? &Expression::evalBoolTree : &Expression::evalBoolError);

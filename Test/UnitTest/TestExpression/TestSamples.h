@@ -29,7 +29,7 @@ public:
     s_evaluatedCount++;
   }
   void setDerived() {
-    verify(getReturnType() == EXPR_RETURN_REAL);
+    verify(getReturnType() == EXPR_RETURN_FLOAT);
     verify(m_derivable);
     m_derived = true;
     s_derivedCount++;
@@ -66,7 +66,7 @@ public:
     return 0;
   }
   ExpressionReturnType getReturnType() const {
-    return EXPR_RETURN_REAL;
+    return EXPR_RETURN_FLOAT;
   }
 };
 

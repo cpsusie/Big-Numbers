@@ -25,11 +25,11 @@ SNode SNode::reduce() {
     RETURNNODE(reduceStmtList());
   case NT_ASSIGN    :
     RETURNNODE(reduceAssign());
-  default            :
+  default           :
     switch(getReturnType()) {
-    case EXPR_RETURN_REAL:
+    case EXPR_RETURN_FLOAT:
       RETURNNODE(reduceRealExp());
-    case EXPR_RETURN_BOOL:
+    case EXPR_RETURN_BOOL :
       RETURNNODE(reduceBoolExp());
     }
     throwUnknownReturnTypeException(__TFUNCTION__);
@@ -52,13 +52,13 @@ SNode SNode::reduceStmtList() {
   }
   SNode last = childArray.last();
   switch(last.getReturnType()) {
-  case EXPR_RETURN_REAL:
+  case EXPR_RETURN_FLOAT:
     newStmtList.add(last.reduceRealExp());
     break;
-  case EXPR_RETURN_BOOL:
+  case EXPR_RETURN_BOOL :
     newStmtList.add(last.reduceBoolExp());
     break;
-  default:
+  default               :
     last.throwUnknownSymbolException(__TFUNCTION__);
   }
   newStmtList.removeUnusedAssignments();
@@ -117,7 +117,7 @@ SNode SNode::reduceBoolExp() {
 
 SNode SNode::reduceRealExp() {
   ENTERMETHOD();
-  CHECKNODERETURNTYPE(*this, EXPR_RETURN_REAL);
+  CHECKNODERETURNTYPE(*this, EXPR_RETURN_FLOAT);
   if(isReduced()) RETURNTHIS;
   switch(getSymbol()) {
   case NUMBER         :

@@ -4,7 +4,7 @@
 namespace Expr {
 
 Expression Expression::getDerived(const String &name, bool optimize /*=true*/) const {
-  if(getReturnType() != EXPR_RETURN_REAL) {
+  if(getReturnType() != EXPR_RETURN_FLOAT) {
     throwException(_T("Cannot get derived of an expression returning boolean"));
   }
   if(!hasSyntaxTree()) {

@@ -22,7 +22,7 @@ ExpressionTest::ExpressionTest(bool derivable) : m_derivable(derivable) {
 }
 
 Real ExpressionTest::numDFDX(const Real &x) const {
-  verify(getReturnType() == EXPR_RETURN_REAL);
+  verify(getReturnType() == EXPR_RETURN_FLOAT);
   Real x1, x2;
   if(x == 0) {
     x1 = EPS/2;

@@ -37,7 +37,7 @@ String ExpressionNode::getReturnTypeName(ExpressionReturnType rt) { // static
 #define CASESTR(t) case EXPR_##t: return _T("EXPR_" #t);
   switch(rt) {
   CASESTR(NORETURNTYPE);
-  CASESTR(RETURN_REAL );
+  CASESTR(RETURN_FLOAT);
   CASESTR(RETURN_BOOL );
   default: return format(_T("Unknown returntype:%d"),rt);
   }

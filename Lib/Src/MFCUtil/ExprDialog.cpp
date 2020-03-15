@@ -59,7 +59,7 @@ bool CExprDialog::validateExpr(int id) {
     showExprError(expr.getErrorMessage(),id);
     return false;
   }
-  if(!expr.isReturnTypeReal()) {
+  if(!expr.isReturnTypeFloat()) {
     gotoExpr(id);
     showWarning(_T("Expression must return real value"));
     return false;

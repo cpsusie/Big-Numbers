@@ -10,7 +10,7 @@ namespace Expr {
 
 typedef enum {
   EXPR_NORETURNTYPE
- ,EXPR_RETURN_REAL
+ ,EXPR_RETURN_FLOAT
  ,EXPR_RETURN_BOOL
 } ExpressionReturnType;
 

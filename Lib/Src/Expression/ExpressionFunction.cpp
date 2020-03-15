@@ -29,7 +29,7 @@ void ExpressionFunction::compile(const String &expr, const String &name, Trigono
   if(!m_expr.compile(expr, errors, machineCode)) {
     throwException(errors.first());
   }
-  if(m_expr.getReturnType() != EXPR_RETURN_REAL) {
+  if(m_expr.getReturnType() != EXPR_RETURN_FLOAT) {
     throwException(_T("Returntype of expression not real"));
   }
   m_varName = name;
