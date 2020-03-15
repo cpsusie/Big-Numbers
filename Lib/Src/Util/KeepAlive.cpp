@@ -1,42 +1,38 @@
 #include "pch.h"
 #include <Thread.h>
+#include <Timer.h>
 
-class KeepAliveThread : public Thread {
+class KeepAliveTrigger : public TimeoutHandler {
 private:
   EXECUTION_STATE m_flags;
+  Timer           m_timer;
 public:
-  KeepAliveThread();
+  KeepAliveTrigger();
   void setFlags(EXECUTION_STATE flags);
   EXECUTION_STATE getFlags() const {
     return m_flags;
   }
-
-  UINT run();
+  void handleTimeout(Timer &timer);
 };
 
-KeepAliveThread::KeepAliveThread() : Thread(_T("KeepAlive")) {
-  setDemon(true);
+KeepAliveTrigger::KeepAliveTrigger() : m_timer(1,_T("Keep Alive")) {
   m_flags = ES_CONTINUOUS | ES_SYSTEM_REQUIRED;
 }
 
-UINT KeepAliveThread::run() {
-  for(;;) {
-    setExecutionState(m_flags);
-    Sleep(60000);
-  }
+void KeepAliveTrigger::handleTimeout(Timer &timer) {
+  Thread::setExecutionState(m_flags);
 }
 
-void KeepAliveThread::setFlags(EXECUTION_STATE  flags) {
+void KeepAliveTrigger::setFlags(EXECUTION_STATE  flags) {
   m_flags = flags;
   if(flags == 0) {
-    suspend();
+    m_timer.stopTimer();
   } else {
-    resume();
+    m_timer.startTimer(6000, *this, true);
   }
 }
 
-static KeepAliveThread keepAliveThread;
-
 void Thread::keepAlive(EXECUTION_STATE flags) { // static
-  keepAliveThread.setFlags(flags);
+  static KeepAliveTrigger keepAliveTrigger;
+  keepAliveTrigger.setFlags(flags);
 }
