@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include <Process.h>
 #include <ThreadPool.h>
+#include <Thread.h>
 #include <FileNameSplitter.h>
 #include <MFCUtil/ProgressWindow.h>
 #include "EnterVariablesDlg.h"
@@ -21,30 +22,28 @@
 
 class CAboutDlg : public CDialog {
 public:
-  CAboutDlg();
+  CAboutDlg() : CDialog(IDD) {
+  }
   enum { IDD = IDD_ABOUTBOX };
 
 protected:
   DECLARE_MESSAGE_MAP()
 };
 
-CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
-}
-
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
 CTestExpressionGraphicsDlg::CTestExpressionGraphicsDlg(CWnd *pParent /*=NULL*/) : CDialog(CTestExpressionGraphicsDlg::IDD, pParent), m_numberFormat(0) {
-    m_exprText         = EMPTYSTRING;
-    m_x                = 0.0;
-    m_hIcon            = theApp.LoadIcon(IDR_MAINFRAME);
-    m_debugExpr        = NULL;
-    m_debugger      = NULL;
-    m_debugWinId       = -1;
-    m_contextWinId     = -1;
-    m_contextRect      = NULL;
-    m_leastContextRect = NULL;
-    m_currentChildDlg  = NULL;
+  m_exprText         = EMPTYSTRING;
+  m_x                = 0.0;
+  m_hIcon            = theApp.LoadIcon(IDR_MAINFRAME);
+  m_debugExpr        = NULL;
+  m_debugger      = NULL;
+  m_debugWinId       = -1;
+  m_contextWinId     = -1;
+  m_contextRect      = NULL;
+  m_leastContextRect = NULL;
+  m_currentChildDlg  = NULL;
 }
 
 CTestExpressionGraphicsDlg::~CTestExpressionGraphicsDlg() {
@@ -59,53 +58,53 @@ void CTestExpressionGraphicsDlg::DoDataExchange(CDataExchange *pDX) {
 #define INVALIDATE() Invalidate(FALSE)
 
 BEGIN_MESSAGE_MAP(CTestExpressionGraphicsDlg, CDialog)
-    ON_WM_SYSCOMMAND()
-    ON_WM_QUERYDRAGICON()
-    ON_WM_PAINT()
-    ON_WM_CLOSE()
-    ON_WM_SIZE()
-    ON_WM_LBUTTONDOWN()
-    ON_WM_CONTEXTMENU()
-    ON_COMMAND(       ID_CONTEXTMENU_SHOWEXPRTREE   , OnContextMenuShowExprTree      )
-    ON_COMMAND(       ID_CONTEXTMENU_TOSTANDARDFORM , OnContextMenuToStandardForm    )
-    ON_COMMAND(       ID_CONTEXTMENU_TOCANONCALFORM , OnContextMenuToCanoncalForm    )
-    ON_COMMAND(       ID_CONTEXTMENU_TONUMERICFORM  , OnContextMenuToNumericForm     )
-    ON_COMMAND(       ID_CONTEXTMENU_SHOWNODETREE   , OnContextMenuShowNodeTree      )
-    ON_COMMAND(       ID_CONTEXTMENU_EXPAND         , OnContextMenuExpand            )
-    ON_COMMAND(       ID_CONTEXTMENU_MULTIPLY       , OnContextMenuMultiply          )
-    ON_COMMAND(       ID_GOTOX                      , OnGotoX                        )
-    ON_COMMAND(       ID_GOTOFONTSIZE               , OnGotoFontSize                 )
-    ON_COMMAND(       ID_GOTONUMBERFORMAT           , OnGotoNumberFormat             )
-    ON_CBN_SELCHANGE( IDC_COMBOEXPR                 , OnCbnSelChangeComboExpr        )
-    ON_CBN_EDITCHANGE(IDC_COMBOEXPR                 , OnCbnEditChangeComboExpr       )
-    ON_EN_CHANGE(     IDC_EDITX                     , OnChangeEditX                  )
-    ON_CBN_SELCHANGE( IDC_COMBONUMBERFORMAT         , OnSelchangeComboNumberFormat   )
-    ON_CBN_SELCHANGE( IDC_COMBOFONTSIZE             , OnSelChangeComboFontSize       )
-    ON_COMMAND(       ID_FILE_EXIT                  , OnFileExit                     )
-    ON_COMMAND(       ID_EDIT_FINDMATCHINGPARENTESIS, OnEditFindMatchingParentesis   )
-    ON_COMMAND(       ID_EDIT_GOTOCOMBOFX           , OnEditGotoComboFx              )
-    ON_COMMAND(       ID_EDIT_ENTERPARAMETERS       , OnEditEnterParameters          )
-    ON_COMMAND(       ID_VIEW_SHOWREDUCTIONSTACK    , OnViewShowReductionStack       )
-    ON_COMMAND(       ID_VIEW_SHOWRECTANGLES        , OnViewShowRectangles           )
-    ON_COMMAND(       ID_DEBUG_REDUCEEXPR           , OnDebugReduceExpr              )
-    ON_COMMAND(       ID_DEBUG_REDUCEDERIVED        , OnDebugReduceDerived           )
-    ON_COMMAND(       ID_DEBUG_RUN                  , OnDebugRun                     )
-    ON_COMMAND(       ID_DEBUG_STOP                 , OnDebugStop                    )
-    ON_COMMAND(       ID_DEBUG_CLEARALLBREAKPOINTS  , OnDebugClearAllBreakPoints     )
-    ON_COMMAND(       ID_DEBUG_TRACEREDUCTIONSTEP   , OnDebugTraceReductionStep      )
-    ON_COMMAND(       ID_DEBUG_STEP1REDUCEITERATION , OnDebugStep1ReduceIteration    )
-    ON_COMMAND(       ID_DEBUG_TESTTREESEQUAL       , OnDebugTestTreesEqual          )
-    ON_COMMAND(       ID_FUNCTIONS_COMPILEFX        , OnFunctionsCompileFx           )
-    ON_COMMAND(       ID_FUNCTIONS_DERIVEFX         , OnFunctionsDeriveFx            )
-    ON_COMMAND(       ID_FUNCTIONS_EVALUATEFX       , OnFunctionsEvaluateFx          )
-    ON_COMMAND(       ID_FUNCTIONS_EVALUATEDERIVED  , OnFunctionsEvaluateDerived     )
-    ON_COMMAND(       ID_FUNCTIONS_REDUCEFX         , OnFunctionsReduceFx            )
-    ON_COMMAND(       ID_FUNCTIONS_REDUCEDERIVED    , OnFunctionsReduceDerived       )
-    ON_COMMAND(       ID_FUNCTIONS_EVALUATEALL      , OnFunctionsEvaluateAll         )
-    ON_COMMAND_RANGE( FIRST_SAMPLE_COMMAND,LAST_SAMPLE_COMMAND, OnSamplesSampleId    )
-    ON_MESSAGE(       ID_MSG_RUNSTATE_CHANGED       , OnMsgRunStateChanged           )
-    ON_MESSAGE(       ID_MSG_SHOW_DEBUGERROR        , OnMsgShowDebugError            )
-    ON_COMMAND(       ID_SAMPLES_RUNALL             , OnSamplesRunall                )
+  ON_WM_SYSCOMMAND()
+  ON_WM_QUERYDRAGICON()
+  ON_WM_PAINT()
+  ON_WM_CLOSE()
+  ON_WM_SIZE()
+  ON_WM_LBUTTONDOWN()
+  ON_WM_CONTEXTMENU()
+  ON_COMMAND(       ID_CONTEXTMENU_SHOWEXPRTREE   , OnContextMenuShowExprTree      )
+  ON_COMMAND(       ID_CONTEXTMENU_TOSTANDARDFORM , OnContextMenuToStandardForm    )
+  ON_COMMAND(       ID_CONTEXTMENU_TOCANONCALFORM , OnContextMenuToCanoncalForm    )
+  ON_COMMAND(       ID_CONTEXTMENU_TONUMERICFORM  , OnContextMenuToNumericForm     )
+  ON_COMMAND(       ID_CONTEXTMENU_SHOWNODETREE   , OnContextMenuShowNodeTree      )
+  ON_COMMAND(       ID_CONTEXTMENU_EXPAND         , OnContextMenuExpand            )
+  ON_COMMAND(       ID_CONTEXTMENU_MULTIPLY       , OnContextMenuMultiply          )
+  ON_COMMAND(       ID_GOTOX                      , OnGotoX                        )
+  ON_COMMAND(       ID_GOTOFONTSIZE               , OnGotoFontSize                 )
+  ON_COMMAND(       ID_GOTONUMBERFORMAT           , OnGotoNumberFormat             )
+  ON_CBN_SELCHANGE( IDC_COMBOEXPR                 , OnCbnSelChangeComboExpr        )
+  ON_CBN_EDITCHANGE(IDC_COMBOEXPR                 , OnCbnEditChangeComboExpr       )
+  ON_EN_CHANGE(     IDC_EDITX                     , OnChangeEditX                  )
+  ON_CBN_SELCHANGE( IDC_COMBONUMBERFORMAT         , OnSelchangeComboNumberFormat   )
+  ON_CBN_SELCHANGE( IDC_COMBOFONTSIZE             , OnSelChangeComboFontSize       )
+  ON_COMMAND(       ID_FILE_EXIT                  , OnFileExit                     )
+  ON_COMMAND(       ID_EDIT_FINDMATCHINGPARENTESIS, OnEditFindMatchingParentesis   )
+  ON_COMMAND(       ID_EDIT_GOTOCOMBOFX           , OnEditGotoComboFx              )
+  ON_COMMAND(       ID_EDIT_ENTERPARAMETERS       , OnEditEnterParameters          )
+  ON_COMMAND(       ID_VIEW_SHOWREDUCTIONSTACK    , OnViewShowReductionStack       )
+  ON_COMMAND(       ID_VIEW_SHOWRECTANGLES        , OnViewShowRectangles           )
+  ON_COMMAND(       ID_DEBUG_REDUCEEXPR           , OnDebugReduceExpr              )
+  ON_COMMAND(       ID_DEBUG_REDUCEDERIVED        , OnDebugReduceDerived           )
+  ON_COMMAND(       ID_DEBUG_RUN                  , OnDebugRun                     )
+  ON_COMMAND(       ID_DEBUG_STOP                 , OnDebugStop                    )
+  ON_COMMAND(       ID_DEBUG_CLEARALLBREAKPOINTS  , OnDebugClearAllBreakPoints     )
+  ON_COMMAND(       ID_DEBUG_TRACEREDUCTIONSTEP   , OnDebugTraceReductionStep      )
+  ON_COMMAND(       ID_DEBUG_STEP1REDUCEITERATION , OnDebugStep1ReduceIteration    )
+  ON_COMMAND(       ID_DEBUG_TESTTREESEQUAL       , OnDebugTestTreesEqual          )
+  ON_COMMAND(       ID_FUNCTIONS_COMPILEFX        , OnFunctionsCompileFx           )
+  ON_COMMAND(       ID_FUNCTIONS_DERIVEFX         , OnFunctionsDeriveFx            )
+  ON_COMMAND(       ID_FUNCTIONS_EVALUATEFX       , OnFunctionsEvaluateFx          )
+  ON_COMMAND(       ID_FUNCTIONS_EVALUATEDERIVED  , OnFunctionsEvaluateDerived     )
+  ON_COMMAND(       ID_FUNCTIONS_REDUCEFX         , OnFunctionsReduceFx            )
+  ON_COMMAND(       ID_FUNCTIONS_REDUCEDERIVED    , OnFunctionsReduceDerived       )
+  ON_COMMAND(       ID_FUNCTIONS_EVALUATEALL      , OnFunctionsEvaluateAll         )
+  ON_COMMAND_RANGE( FIRST_SAMPLE_COMMAND,LAST_SAMPLE_COMMAND, OnSamplesSampleId    )
+  ON_MESSAGE(       ID_MSG_RUNSTATE_CHANGED       , OnMsgRunStateChanged           )
+  ON_MESSAGE(       ID_MSG_SHOW_DEBUGERROR        , OnMsgShowDebugError            )
+  ON_COMMAND(       ID_SAMPLES_RUNALL             , OnSamplesRunall                )
 END_MESSAGE_MAP()
 
 BOOL CTestExpressionGraphicsDlg::OnInitDialog() {
@@ -124,6 +123,7 @@ BOOL CTestExpressionGraphicsDlg::OnInitDialog() {
       pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
     }
   }
+  setThreadDescription(_T("MainThread"));
 
   SetIcon(m_hIcon, TRUE);         // Set big icon
   SetIcon(m_hIcon, FALSE);        // Set small icon

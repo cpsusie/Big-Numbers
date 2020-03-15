@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <Thread.h>
 #include <Math/Expression/ParserTreeComplexity.h>
 #include "Debugger.h"
 
@@ -130,6 +131,7 @@ String Debugger::getDebugInfo() const {
 
 UINT Debugger::run() {
   m_terminateSem.wait();
+  setThreadDescription(_T("Debugger"));
   try {
     suspend();
     setProperty(DBG_RUNNING, m_running, true);
