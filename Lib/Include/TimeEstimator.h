@@ -52,11 +52,11 @@ private:
     return m_a != 0;
   }
   double getTimeEstimate() const;
-public:
-  TimeEstimator(const ProgressProvider &progressProvider);
-  ~TimeEstimator();
   void handleTimeout(Timer &timer) {
     logTimeAndPct();
   }
+public:
+  TimeEstimator(const ProgressProvider &progressProvider);
+  ~TimeEstimator();
   double getMilliSecondsRemaining() const;
 };

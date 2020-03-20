@@ -12,9 +12,7 @@ TimeEstimator::TimeEstimator(const ProgressProvider &progressProvider)
 }
 
 TimeEstimator::~TimeEstimator() {
-  m_gate.wait();
   m_timer.stopTimer();
-  m_gate.notify();
 }
 
 void TimeEstimator::logTimeAndPct() {
