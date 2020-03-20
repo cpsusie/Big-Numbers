@@ -43,7 +43,7 @@ public:
   virtual ~PropertyContainer() {
     clear();
   }
-  inline bool hasListener(PropertyChangeListener *listener) const {
+  inline bool hasListener(PropertyChangeListener * listener) const {
     return m_listeners.getFirstIndex(listener) >= 0;
   }
   inline void addPropertyChangeListener(PropertyChangeListener *listener) {
