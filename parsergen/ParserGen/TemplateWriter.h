@@ -56,6 +56,8 @@ private:
   StringHashMap<String>          m_macroes;
   SourcePositionWithName         m_currentPos;
   const CodeFlags                m_flags;
+  String                         m_wantedOutputName;
+  bool                           m_outputIsTemp;
 
   void           checkChar(     const TCHAR *&s, char expected) const;
   String         parseMacro(    const TCHAR *&s    ) const; // assume *s = '$'
