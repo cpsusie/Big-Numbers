@@ -157,11 +157,11 @@ void Time::getHMS(int &hour, int &minute, int &second, int &millisecond) const {
 }                                                            \
 break
 
-TCHAR *Time::tostr(TCHAR *dst, const String &format) const {
+TCHAR *Time::tostr(TCHAR *dst, const TCHAR *format) const {
   int hour, minute, second, millisecond;
   getHMS(hour, minute, second, millisecond);
   TCHAR *t = dst;
-  for(const TCHAR *cp = format.cstr(); *cp;) {
+  for(const TCHAR *cp = format; *cp;) {
     switch(*cp) {
     CASECH('h', hour       );
     CASECH('m', minute     );

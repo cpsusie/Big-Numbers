@@ -3,14 +3,20 @@
 #include <ThreadPool.h>
 #include <ResourcePoolTemplate.h>
 #include <Thread.h>
+#include <FlagTraits.h>
 #include <SynchronizedQueue.h>
 
 #ifdef TRACE_THREADPOOL
 #include <DebugLog.h>
-#define TRACE(...) debugLog(__VA_ARGS__)
+void threadPoolTrace(const TCHAR *function, const TCHAR *format, ...);
+#define THREADPOOL_TRACE(format,...) threadPoolTrace(__TFUNCTION__,_T(format), __VA_ARGS__)
+#define THREADPOOL_ENTER ENTERFUNC
+#define THREADPOOL_LEAVE LEAVEFUNC
 #else
-#define TRACE(...)
-#endif
+#define THREADPOOL_TRACE(...)
+#define THREADPOOL_ENTER
+#define THREADPOOL_LEAVE
+#endif // TRACE_THREADPOOL
 
 class ThreadPoolResultQueue : private SynchronizedQueue<String*>, public IdentifiedResource {
 private:
@@ -39,7 +45,7 @@ private:
   ThreadPoolResultQueue  *m_resultQueue;
   FastSemaphore           m_execute;
   int                     m_requestCount;
-  std::atomic<BYTE>       m_flags;
+  ATOMICFLAGTRAITS(BYTE, ThreadPoolThread)
 public:
   ThreadPoolThread(PoolThreadPool *pool, UINT id, const String &name);
   ~ThreadPoolThread();
@@ -49,19 +55,27 @@ public:
 };
 
 class ResultQueuePool : public ResourcePoolTemplate<ThreadPoolResultQueue> {
+private:
+  ThreadPool &m_threadPool;
 protected:
   ThreadPoolResultQueue *newResource(UINT id) {
     ThreadPoolResultQueue *q = new ThreadPoolResultQueue(id, format(_T("%s(%u)"), getTypeName().cstr(), id)); TRACE_NEW(q);
     return q;
   }
 public:
-  ResultQueuePool() : ResourcePoolTemplate<ThreadPoolResultQueue>("PoolResultQueue") {
+  ResultQueuePool(ThreadPool *threadPool)
+    : m_threadPool(*threadPool)
+    , ResourcePoolTemplate<ThreadPoolResultQueue>("PoolResultQueue") {
+  }
+  inline ThreadPool &getThreadPool() const {
+    return m_threadPool;
   }
 };
 
 class PoolThreadPool : public ResourcePoolTemplate<ThreadPoolThread> {
   friend class ThreadPoolThread;
 private:
+  ThreadPool       &m_threadPool;
   int               m_threadPriority;
   bool              m_disablePriorityBoost;
   FastSemaphore     m_lock, m_activeIs0;
@@ -71,12 +85,12 @@ private:
   }
   inline void incrActiveCount() {
     m_lock.wait();
-    if (m_activeCount++ == 0) m_activeIs0.wait();
+    if(m_activeCount++ == 0) m_activeIs0.wait();
     m_lock.notify();
   }
   inline void decrActiveCount() {
     m_lock.wait();
-    if (--m_activeCount == 0) m_activeIs0.notify();
+    if(--m_activeCount == 0) m_activeIs0.notify();
     m_lock.notify();
   }
 
@@ -96,23 +110,30 @@ protected:
     }
   }
 public:
-  PoolThreadPool() : ResourcePoolTemplate<ThreadPoolThread>("PoolThread"), m_activeCount(0) {
+  PoolThreadPool(ThreadPool *threadPool)
+    : m_threadPool(*threadPool)
+    , ResourcePoolTemplate<ThreadPoolThread>("PoolThread")
+    , m_activeCount(0)
+  {
     m_threadPriority       = THREAD_PRIORITY_NORMAL;
     m_disablePriorityBoost = false;
   }
   ~PoolThreadPool() {
-    TRACE(_T("%s called. activeCount=%d wait until 0\n"), __TFUNCTION__, m_activeCount);
+    THREADPOOL_TRACE("%s called. activeCount=%d wait until 0\n", __TFUNCTION__, m_activeCount);
     m_activeIs0.wait();
-    TRACE(_T("%s passed zero check. activeCount=%d. Now deleting threads\n"), __TFUNCTION__, m_activeCount);
+    THREADPOOL_TRACE("%s passed zero check. activeCount=%d. Now deleting threads\n", __TFUNCTION__, m_activeCount);
     deleteAll();
-    TRACE(_T("%s done\n"), __TFUNCTION__);
+    THREADPOOL_TRACE("%s done\n", __TFUNCTION__);
+  }
+  inline ThreadPool &getThreadPool() const {
+    return m_threadPool;
   }
   void requestTerminateAll() {
-    TRACE(_T("%s called\n"), __TFUNCTION__);
+    THREADPOOL_ENTER;
     for(size_t i = 0; i < size(); i++) {
       (*this)[i]->requestTerminate();
     }
-    TRACE(_T("%s done\n"), __TFUNCTION__);
+    THREADPOOL_LEAVE;
   }
   void setPriority(int priority) {
     if(priority == m_threadPriority) {

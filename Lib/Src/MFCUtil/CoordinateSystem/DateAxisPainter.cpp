@@ -225,13 +225,6 @@ void DateAxisPainter::init() {
   }
 }
 
-static const String ssSSS      = _T("ss:SSS"        );
-static const String ss         = _T("ss"            );
-static const String mmss       = _T("mm:ss"         );
-static const String ddMMhhmm   = _T("dd.MM hh:mm"   );
-static const String ddMMhhmmss = _T("dd.MM hh:mm:ss");
-static const String ddMMyyhhmm = _T("dd.MM.yy hh:mm");
-
 String DateAxisPainter::getValueText(double v) const {
   Timestamp t(v);
   if(m_timeComponent == TMILLISECOND) {
@@ -240,12 +233,12 @@ String DateAxisPainter::getValueText(double v) const {
 
   t.add(TMILLISECOND, 50); // add a small amount to fix rounding error from double, so we wont get 1.59.59 instead of 2
   switch(m_timeComponent) {
-  case TSECOND     : return t.toString(isMouseMode()?ddMMhhmmss :mmss);
-  case TMINUTE     : return t.toString(isMouseMode()?((getStep()<=5)?ddMMhhmmss:ddMMhhmm):hhmm  );
-  case THOUR       : return t.toString(isMouseMode()?ddMMyyhhmm  :hhmm  );
-  case TDAYOFMONTH : return t.toString(isMouseMode()?ddMM:ddMMyy);
-  case TWEEK       : return t.toString(isMouseMode()?ddMM:ddMMyy);
-  case TMONTH      : return t.toString(isMouseMode()?ddMM:MMyyyy);
+  case TSECOND     : return t.toString(isMouseMode() ? ddMMhhmmss : mmss);
+  case TMINUTE     : return t.toString(isMouseMode() ? ((getStep()<=5) ? ddMMhhmmss : ddMMhhmm) : hhmm  );
+  case THOUR       : return t.toString(isMouseMode() ? ddMMyyhhmm : hhmm  );
+  case TDAYOFMONTH : return t.toString(isMouseMode() ? ddMM : ddMMyy);
+  case TWEEK       : return t.toString(isMouseMode() ? ddMM : ddMMyy);
+  case TMONTH      : return t.toString(isMouseMode() ? ddMM : MMyyyy);
   case TYEAR       : return t.toString(yyyy);
   default          : throwException(_T("%s:Illegal timecomponent(=%d)"),__TFUNCTION__,(int)m_timeComponent);
                      return EMPTYSTRING;

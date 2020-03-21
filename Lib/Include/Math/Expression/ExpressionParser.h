@@ -6,7 +6,6 @@
 #line 3 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.y"
 #include <Math/Expression/ParserTree.h>
 #include <Math/Expression/ExpressionNode.h>
-
 #include "ExpressionLex.h"
 
 namespace Expr {

@@ -15,15 +15,15 @@
 #define IR_SHOWPERCENT        0x80
 
 class InteractiveRunnable : public InterruptableRunnable, public ProgressProvider {
+  friend class ProgressWindow;
 private:
   Timestamp      m_jobStartTime;
   TimeEstimator *m_timeEstimator;
-  void setStartTime(); // set startTime til now, and if neccessary, allocate m_timeEstimator
+  const Timestamp &setStartTime(); // set startTime til now, and if neccessary, allocate m_timeEstimator
   void cleanup();
 protected:
   double getAvgSubProgressPercent();
 
-  friend class ProgressWindow;
 public:
   InteractiveRunnable() : m_timeEstimator(NULL) {
   }

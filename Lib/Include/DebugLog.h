@@ -14,6 +14,12 @@ typedef void(*printfFunction)(_In_z_ _Printf_format_string_ TCHAR const * const 
 
 String getMessageName(int msg);
 
+#ifdef _DEBUG
+#define DEBUGLOG(...) debugLog(__VA_ARGS__)
+#else
+#define DEBUGLOG(...)
+#endif
+
 #define DEBUGTRACE debugLogLine(__TFILE__, __LINE__)
 #define ENTERFUNC  debugLog(_T("Enter %s\n"), __TFUNCTION__)
 #define LEAVEFUNC  debugLog(_T("Leave %s\n"), __TFUNCTION__)

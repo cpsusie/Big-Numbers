@@ -7,6 +7,9 @@
 
 #ifdef TRACE_THREADPOOL
 static String flagsToString(BYTE flags) {
+  if(flags == 0) {
+    return _T("IDLE (0)");
+  }
   String result;
 #define addFlag(f) if(flags & THR_##f) { result += _T(" "); result += _T(#f); }
   addFlag(BUSY)
@@ -27,21 +30,23 @@ ThreadPoolThread::ThreadPoolThread(PoolThreadPool *pool, UINT id, const String &
 , m_flags(           0)
 , m_execute(         0)
 {
-  TRACE(_T("%s(id=%d) called\n"), __TFUNCTION__,id);
+  THREADPOOL_TRACE("%s(id=%d) called\n", __TFUNCTION__,id);
   setDemon(false);
   m_requestCount = 0;
   start();
-  TRACE(_T("%s(%d) done\n"), __TFUNCTION__,id);
+  THREADPOOL_TRACE("%s(%d) done\n", __TFUNCTION__,id);
 }
 
 ThreadPoolThread::~ThreadPoolThread() {
-  TRACE(_T("%s(id=%d):state:%s\n"), __TFUNCTION__,getResourceId(), FLGSTR());
+  THREADPOOL_TRACE("%s(id=%d):state:%s\n", __TFUNCTION__,getResourceId(), FLGSTR());
 }
 
 void ThreadPoolThread::requestTerminate() {
-  if((m_flags & THR_REQUESTTERMINATE) == 0) {
-    m_flags |= THR_REQUESTTERMINATE;
-    if((m_flags & THR_BUSY) == 0) m_execute.notify();
+  if(!isSet(THR_REQUESTTERMINATE)) {
+    setFlag(THR_REQUESTTERMINATE);
+    if(!isSet(THR_BUSY)) {
+      m_execute.notify();
+    }
   }
 }
 
@@ -52,13 +57,17 @@ UINT ThreadPoolThread::run() {
 //#endif
   for(;;) {
     try {
-      if(m_flags & THR_REQUESTTERMINATE) break;
-      TRACE(_T("%s(%s) waiting for job (state:%s)\n"), __TFUNCTION__, oldDesc.cstr(), FLGSTR());
+      if(isSet(THR_REQUESTTERMINATE)) {
+        break;
+      }
+      THREADPOOL_TRACE("%s(%s) waiting for job (state:%s)\n", __TFUNCTION__, oldDesc.cstr(), FLGSTR());
       m_execute.wait();
-      if(m_flags & THR_REQUESTTERMINATE) break;
+      if (isSet(THR_REQUESTTERMINATE)) {
+        break;
+      }
       m_requestCount++;
-      m_flags |= THR_BUSY;
-      TRACE(_T("%s(%s) now running job %d (state=%s)\n"), __TFUNCTION__, oldDesc.cstr(), m_requestCount, FLGSTR());
+      setFlag(THR_BUSY);
+      THREADPOOL_TRACE("%s(%s) now running job %d (state=%s)\n", __TFUNCTION__, oldDesc.cstr(), m_requestCount, FLGSTR());
       m_job->run();
       if(m_resultQueue) m_resultQueue->putAllDone();
     } catch(Exception e) {
@@ -67,15 +76,15 @@ UINT ThreadPoolThread::run() {
       if(m_resultQueue) m_resultQueue->putError(format(_T("Unknown exception received in ThreadPoolThread %s"), getDescription().cstr()));
     }
     m_resultQueue = NULL;
-    m_flags &= ~THR_BUSY;
+    clrFlag(THR_BUSY);
 #ifdef _DEBUG
     setDescription(oldDesc);
 #endif
-    TRACE(_T("%s(%s) finished job %d (state=%s)\n"), __TFUNCTION__, oldDesc.cstr(), m_requestCount, FLGSTR());
-    ThreadPool::releaseThread(this);
+    THREADPOOL_TRACE("%s(%s) finished job %d (state=%s)\n", __TFUNCTION__, oldDesc.cstr(), m_requestCount, FLGSTR());
+    m_pool.getThreadPool().releaseThread(this);
   }
-  m_flags |= THR_TERMINATED;
-  TRACE(_T("Thread(%s) terminated (state=%s)\n"), oldDesc.cstr(), FLGSTR());
+  setFlag(THR_TERMINATED);
+  THREADPOOL_TRACE("Thread(%s) terminated (state=%s)\n", oldDesc.cstr(), FLGSTR());
   m_pool.decrActiveCount();
   return 0;
 }

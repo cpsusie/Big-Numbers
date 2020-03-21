@@ -2,7 +2,7 @@
 #include <DebugLog.h>
 #include <ByteFile.h>
 #include <CompressFilter.h>
-#include "Pow2Cache.h"
+#include "ResourcePoolInternal.h"
 
 #ifdef TRACEPOW2CACHE
 #define LOGPOW2CACHE(...) debugLog(__VA_ARGS__)
@@ -23,12 +23,8 @@ static CallCounter pow2CacheRequests(_T("pow2CacheRequests"));
 
 #define CACHEFILENAME _T("c:\\temp\\Pow2Cache.dat")
 
-Pow2Cache *Pow2Cache::s_instance = NULL; // this will be set by BigRealResourcePool.constructor
-
 Pow2Cache &Pow2Cache::getInstance() { // static
-  Pow2Cache &cache = *s_instance;
-  cache.wait();
-  return cache;
+  return BigRealResourcePool::getPow2Cache()->wait();
 }
 
 Pow2Cache::Pow2Cache(DigitPool *digitPool, DigitPool *workPool)

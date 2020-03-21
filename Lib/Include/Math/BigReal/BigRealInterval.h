@@ -1,7 +1,6 @@
 #pragma once
 
 #include <NumberInterval.h>
-#include "BigReal.h"
 
 // Find needed decimal digitCount to use, so that add/sub of from and to will be done with at
 // least precision significant decimal digits.

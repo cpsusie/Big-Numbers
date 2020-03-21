@@ -1,5 +1,5 @@
 #include "pch.h"
-#include <Math/BigRealMatrix.h>
+#include <Math/BigReal/BigRealMatrix.h>
 
 // Implementation of basic matrix-operations
 

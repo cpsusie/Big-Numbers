@@ -687,14 +687,18 @@
     </Xdcmake>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Include\Math\BigInt.h" />
-    <ClInclude Include="..\..\Include\Math\BigRational.h" />
-    <ClInclude Include="..\..\Include\Math\BigReal.h" />
-    <ClInclude Include="..\..\Include\Math\BigRealInterval.h" />
-    <ClInclude Include="..\..\Include\Math\BigRealMatrix.h" />
-    <ClInclude Include="..\..\Include\Math\BigRealTransformation.h" />
+    <ClInclude Include="..\..\Include\Math\BigReal\BigInt.h" />
+    <ClInclude Include="..\..\Include\Math\BigReal\BigRational.h" />
+    <ClInclude Include="..\..\Include\Math\BigReal\BigReal.h" />
+    <ClInclude Include="..\..\Include\Math\BigReal\BigRealConfig.h" />
+    <ClInclude Include="..\..\Include\Math\BigReal\BigRealInterval.h" />
+    <ClInclude Include="..\..\Include\Math\BigReal\BigRealMatrix.h" />
+    <ClInclude Include="..\..\Include\Math\BigReal\BigRealResourcePool.h" />
+    <ClInclude Include="..\..\Include\Math\BigReal\BigRealTransformation.h" />
+    <ClInclude Include="..\..\Include\Math\BigReal\DigitPool.h" />
+    <ClInclude Include="..\..\Include\Math\BigReal\MRisprime.h" />
     <ClInclude Include="BigRealInternal.h" />
-    <ClInclude Include="BigRealResourcePool.h" />
+    <ClInclude Include="ResourcePoolInternal.h" />
     <ClInclude Include="BigRealStream.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Pow2Cache.h" />

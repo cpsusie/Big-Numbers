@@ -1,7 +1,7 @@
 #include "pch.h"
 #include <Math/Expression/ParserTree.h>
 #include <Math/Expression/ExpressionSymbolTable.h>
-#include "ExpressionParser.h"
+#include "Math/Expression/ExpressionParser.h"
 
 namespace Expr {
 

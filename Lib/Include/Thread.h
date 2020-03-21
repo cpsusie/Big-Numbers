@@ -5,6 +5,12 @@
 #include "FastSemaphore.h"
 #include "PropertyContainer.h"
 
+//#define TRACE_THREAD
+
+#ifdef TRACE_THREAD
+#define TRACE_THREADPOOL
+#endif // TRACE_THREAD
+
 class Thread;
 
 HANDLE getCurrentThreadHandle(); // call DuplicateHandle(GetCurrentThread())
@@ -25,8 +31,8 @@ public:
 };
 
 typedef enum {
-  THR_SHUTTINGDDOWN  // bool
- ,THR_THREADSRUNNING // bool
+  THR_BLOCKNEWTHREADS  // bool // Thread::remove/addListener is blocked and should NOT be called on this notification
+ ,THR_THREADSRUNNING   // bool
 } ThreadMapProperty;
 
 /* Threadpriorities defined in winbase.h
@@ -39,13 +45,15 @@ typedef enum {
  *  THREAD_PRIORITY_HIGHEST
  */
 class Thread : public Runnable {
+  friend class         ThreadMap;
+  friend class         ThreadPool;
 private:
   DECLARECLASSNAME;
   friend UINT          threadStartup(Thread *thread);
-  friend class         ThreadMap;
   static PropertyContainer        *s_propertySource;
   static UncaughtExceptionHandler *s_defaultUncaughtExceptionHandler;
   static UINT                      s_activeCount;
+  ThreadMap                       &m_map;
   DWORD                            m_threadId;
   HANDLE                           m_threadHandle;
   FastSemaphore                    m_terminated;
@@ -58,9 +66,7 @@ private:
 
   void              handleUncaughtException(Exception &e);
   void              init(const String &desciption, Runnable *target, size_t stackSize);
-  static ThreadMap *threadMapRequest(int request);
   static ThreadMap &getMap();
-  static void       releaseMap();
 public:
   Thread(const String &description, Runnable &target, size_t stackSize = 0); // stacksize = 0, makes createThread use the default stacksize
   Thread(const String &description                  , size_t stackSize = 0); // do

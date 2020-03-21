@@ -1,5 +1,5 @@
 #include "pch.h"
-#include <Math/MRIsPrime.h>
+#include <Math/BigReal/MRIsPrime.h>
 
 #define _1 pool->_1()
 #define _2 pool->_2()

@@ -3,7 +3,7 @@
 #include <InterruptableRunnable.h>
 
 void InterruptableRunnable::setInterrupted() {
-  m_flags |= 2;
+  setFlag(_IRFLG_INTERRUPTED);
   if(isSuspended()) {
     resume();
   }

@@ -1,6 +1,6 @@
 #include "pch.h"
 #include <ThreadPool.h>
-#include "BigRealResourcePool.h"
+#include "ResourcePoolInternal.h"
 
 BigReal &BigReal::productMT(BigReal &result, const BigReal &x, const BigReal &y, const BigReal &f, intptr_t w, int level) { // static
   assert(isNormalProduct(x, y) && f._isfinite() && (x.getLength() >= y.getLength()));

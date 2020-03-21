@@ -51,6 +51,7 @@ public:
   }
   FileNameSplitter &setFileName( const TCHAR         *fileName );
   FileNameSplitter &setFileName( const String        &fileName );
+  FileNameSplitter &tempFileName(const String        &prefix=_T("F"));
   FileNameSplitter &setExtension(const TCHAR         *extension);
   FileNameSplitter &setExtension(const String        &extension);
 

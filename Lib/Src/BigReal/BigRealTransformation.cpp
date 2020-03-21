@@ -1,5 +1,5 @@
 #include "pch.h"
-#include <Math/BigRealTransformation.h>
+#include <Math/BigReal/BigRealTransformation.h>
 
 UINT BigRealIntervalTransformation::setPrecision(UINT precision) {
   const UINT oldPrecision = m_precision;

@@ -2,7 +2,7 @@
 #include <Process.h>
 #include <processthreadsapi.h>
 #include <MyUtil.h>
-#include <SingletonFactory.h>
+#include <Singleton.h>
 #include <Thread.h>
 #include <FastSemaphore.h>
 #include <CompactHashMap.h>
@@ -11,6 +11,9 @@
 DEFINECLASSNAME(Thread);
 
 #ifdef TRACE_THREAD
+
+#include <DebugLog.h>
+
 void threadTrace(const TCHAR *function, const TCHAR *format, ...) {
   va_list argptr;
   va_start(argptr, format);
@@ -43,9 +46,8 @@ void DefaultExceptionHandler::uncaughtException(Thread &thread, Exception &e) {
 }
 
 // map ThreadId -> Thread*
-class ThreadMap : private CompactUIntHashMap<Thread*>, private PropertyContainer {
-  friend class ThreadMapFactory;
-
+class ThreadMap : public Singleton, private CompactUIntHashMap<Thread*>, private PropertyContainer {
+  friend class SingletonFactory;
 private:
   mutable FastSemaphore m_lock;
   mutable FastSemaphore m_activeCountLock, m_activeIsZero; // need separate locks to prevent deadlock
@@ -58,12 +60,11 @@ private:
   void killDemonThreads();
   inline void blockNewThreads() {
     m_lock.wait();
-    THREAD_TRACE("send notification THR_SHUTTINGDDOWN");
-    setProperty(THR_SHUTTINGDDOWN, m_blockNewThreads, true);
+    THREAD_TRACE("send notification THR_BLOCKNEWTHREADS");
+    setProperty(THR_BLOCKNEWTHREADS, m_blockNewThreads, true);
     m_lock.notify();
   }
-
-  ThreadMap();
+  ThreadMap(SingletonFactory *factory);
   ~ThreadMap();                               // declared virtual in Collection
   ThreadMap(const ThreadMap &src);            // not implemented
   ThreadMap &operator=(const ThreadMap &src); // not implemented
@@ -86,16 +87,22 @@ public:
     removePropertyChangeListener(listener);
     m_lock.notify();
   }
+  bool hasListener(PropertyChangeListener *listener) const {
+    return __super::hasListener(listener);
+  }
   bool isEmpty() const;
 };
 
 typedef Entry<CompactUIntKeyType, Thread*> ThreadMapEntry;
 
-ThreadMap::ThreadMap() : m_blockNewThreads(false) {
+ThreadMap::ThreadMap(SingletonFactory *factory)
+: Singleton(factory)
+, m_blockNewThreads(false)
+{
   THREAD_ENTER;
   Thread::s_propertySource = this;
   Thread::s_defaultUncaughtExceptionHandler = new DefaultExceptionHandler; TRACE_NEW(Thread::s_defaultUncaughtExceptionHandler);
-  THREAD_LEAVE
+  THREAD_LEAVE;
 }
 
 ThreadMap::~ThreadMap() { // declared virtual in Collection
@@ -106,7 +113,6 @@ ThreadMap::~ThreadMap() { // declared virtual in Collection
   m_activeIsZero.wait();
   THREAD_TRACE("activeisZero passed");
   SAFEDELETE(Thread::s_defaultUncaughtExceptionHandler);
-  Thread::s_propertySource = NULL;
   THREAD_LEAVE;
 }
 
@@ -198,11 +204,11 @@ static UINT threadStartup(Thread *thread) {
   try {
     _set_se_translator(exceptionTranslator);
     try {
-      Thread::getMap().incrActiveCount();
+      thread->m_map.incrActiveCount();
       thread->m_terminated.wait();
       result = thread->run();
       thread->m_terminated.notify();
-      Thread::getMap().decrActiveCount();
+      thread->m_map.decrActiveCount();
     } catch(Exception e) {
       thread->handleUncaughtException(e);
       throw;
@@ -212,7 +218,7 @@ static UINT threadStartup(Thread *thread) {
     }
   } catch(...) {
     thread->m_terminated.notify();
-    Thread::getMap().decrActiveCount();
+    thread->m_map.decrActiveCount();
     throw;
   }
   return result;
@@ -222,39 +228,21 @@ PropertyContainer        *Thread::s_propertySource                  = NULL;
 UncaughtExceptionHandler *Thread::s_defaultUncaughtExceptionHandler = NULL;
 UINT                      Thread::s_activeCount                     = 0;
 
-typedef enum {
-  REQUEST_GETINSTANCE
- ,REQUEST_RELEASE
-} POOLREQUEST;
-
-DEFINESINGLETONFACTORY(ThreadMap);
-
-
-ThreadMap *Thread::threadMapRequest(int request) {
-  static ThreadMapFactory factory;
-  switch(request) {
-  case REQUEST_GETINSTANCE:
-    return &factory.getInstance();
-  case REQUEST_RELEASE:
-    factory.releaseInstance();
-    break;
-  }
-  return NULL;
-}
+DEFINESINGLETON(ThreadMap);
 
 ThreadMap &Thread::getMap() { // static
-  return *threadMapRequest(REQUEST_GETINSTANCE);
+  return getThreadMap();
 }
 
-void Thread::releaseMap() { // static
-  threadMapRequest(REQUEST_RELEASE);
-}
-
-Thread::Thread(const String &description, Runnable &target, size_t stackSize) {
+Thread::Thread(const String &description, Runnable &target, size_t stackSize)
+: m_map(getMap())
+{
   init(description, &target, stackSize);
 }
 
-Thread::Thread(const String &description, size_t stackSize) {
+Thread::Thread(const String &description, size_t stackSize)
+: m_map(getMap())
+{
   init(description, NULL, stackSize);
 }
 
@@ -269,7 +257,7 @@ void Thread::init(const String &description, Runnable *target, size_t stackSize)
   }
   setDescription(description);
   THREAD_TRACE("Thread(%u) desc=%s, created", m_threadId, description.cstr());
-  getMap().addThread(this);
+  m_map.addThread(this);
   THREAD_LEAVE;
 }
 
@@ -278,7 +266,7 @@ Thread::~Thread() {
   if(!m_isDemon) {
     m_terminated.wait();
   }
-  getMap().removeThread(this);
+  m_map.removeThread(this);
   CloseHandle(m_threadHandle);
   THREAD_TRACE("Thread(%u) deleted", m_threadId);
   THREAD_LEAVE;

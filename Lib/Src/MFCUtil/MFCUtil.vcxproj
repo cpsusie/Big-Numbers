@@ -709,6 +709,7 @@
     <ClCompile Include="IconInfo.cpp" />
     <ClCompile Include="IconTools.cpp" />
     <ClCompile Include="InteractiveRunnable.cpp" />
+    <ClCompile Include="InterInteractiveRunnableWrapper.cpp" />
     <ClCompile Include="IsBorderHit.cpp" />
     <ClCompile Include="LayoutAttribute.cpp" />
     <ClCompile Include="LayoutManager.cpp" />
@@ -810,6 +811,7 @@
     <ClInclude Include="..\..\Include\MFCUtil\FileSrc.h" />
     <ClInclude Include="..\..\Include\MFCUtil\GifCtrl.h" />
     <ClInclude Include="..\..\Include\MFCUtil\InteractiveRunnable.h" />
+    <ClInclude Include="..\..\Include\MFCUtil\InteractiveRunnableWrapper.h" />
     <ClInclude Include="..\..\Include\MFCUtil\LayoutManager.h" />
     <ClInclude Include="..\..\Include\MFCUtil\ListCtrlChildTrait.h" />
     <ClInclude Include="..\..\Include\MFCUtil\MMCapture.h" />
@@ -822,7 +824,6 @@
     <ClInclude Include="..\..\Include\MFCUtil\PointSet.h" />
     <ClInclude Include="..\..\Include\MFCUtil\PolygonCurve.h" />
     <ClInclude Include="..\..\Include\MFCUtil\PragmaLib.h" />
-    <ClInclude Include="..\..\Include\MFCUtil\ProgressDlg.h" />
     <ClInclude Include="..\..\Include\MFCUtil\ProgressWindow.h" />
     <ClInclude Include="..\..\Include\MFCUtil\ProgressWithPctCtrl.h" />
     <ClInclude Include="..\..\Include\MFCUtil\PropertyDialog.h" />
@@ -841,6 +842,7 @@
     <ClInclude Include="BitmapCodec.h" />
     <ClInclude Include="CoordinateSystem\pch.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="ProgressDlg.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>

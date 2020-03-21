@@ -1,5 +1,6 @@
 #include "pch.h"
-#include <Math/BigReal.h>
+#include <DebugLog.h>
+#include <Math/BigReal/BigReal.h>
 
 using namespace std;
 
@@ -16,6 +17,8 @@ public:
   }
 };
 
+static const UINT64 debugPattern = 0xccccccccccccccccui64;
+
 template<typename ETYPE, typename VTYPE> class BigRealType {
 public:
   VTYPE         m_vfptr;               // pointer to vtable
@@ -26,6 +29,11 @@ public:
   BYTE          m_flags;
   inline bool isNegative() const {
     return m_flags & BR_NEG;
+  }
+  inline void checkInitializing() const {
+    if(memcmp(&m_first, &debugPattern, 6) == 0) {
+      throw 1;
+    }
   }
 };
 
@@ -377,18 +385,20 @@ ADDIN_API HRESULT WINAPI AddIn_BigReal(DWORD dwAddress, DEBUGHELPER *pHelper, in
     case PRTYPE_X86:
       { BigRealx86 n;
         pHelper->getRealObject(&n, sizeof(n));
+        n.checkInitializing();
         BigRealAddInx86(pHelper, tmpStr, SHOWFLAGS).toRealString(n, maxResult - 1);
       }
       break;
     case PRTYPE_X64:
       { BigRealx64 n;
         pHelper->getRealObject(&n, sizeof(n));
+        n.checkInitializing();
         BigRealAddInx64(pHelper, tmpStr, SHOWFLAGS).toRealString(n, maxResult - 1);
       }
       break;
     }
     strncpy(pResult, tmpStr.c_str(), maxResult);
-  } catch (...) {
+  } catch(...) {
     strncpy(pResult, "", maxResult);
   }
   return S_OK;
@@ -401,18 +411,20 @@ ADDIN_API HRESULT WINAPI AddIn_BigInt(DWORD dwAddress, DEBUGHELPER *pHelper, int
     case PRTYPE_X86:
       { BigRealx86 n;
         pHelper->getRealObject(&n, sizeof(n));
+        n.checkInitializing();
         BigRealAddInx86(pHelper, tmpStr, SHOWFLAGS).toIntString(n, maxResult - 1);
        }
       break;
     case PRTYPE_X64:
       { BigRealx64 n;
         pHelper->getRealObject(&n, sizeof(n));
+        n.checkInitializing();
         BigRealAddInx64(pHelper, tmpStr, SHOWFLAGS).toIntString(n, maxResult - 1);
       }
       break;
     }
     strncpy(pResult, tmpStr.c_str(), maxResult);
-  } catch (...) {
+  } catch(...) {
     strncpy(pResult, "", maxResult);
   }
   return S_OK;

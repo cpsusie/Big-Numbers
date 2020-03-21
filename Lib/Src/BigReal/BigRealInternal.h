@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Math/BigReal/BigRealConfig.h>
+
 //#define COUNT_CALLS
 
 #ifdef COUNT_CALLS
@@ -26,3 +28,10 @@
 #else
 #define assert(exp)
 #endif
+
+#ifdef TRACEPRODUCTRECURSION
+void logProductRecursion(UINT level, const TCHAR *method, _In_z_ _Printf_format_string_ const TCHAR * const format, ...);
+#define LOGPRODUCTRECURSION(...) logProductRecursion(level, __TFUNCTION__, __VA_ARGS__)
+#else
+#define LOGPRODUCTRECURSION(...)
+#endif // TRACEPRODUCTRECURSION

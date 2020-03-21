@@ -16,20 +16,29 @@ const TCHAR *Date::s_daynames[] = {
 const short Date::s_ydaynl[] = { 30  ,58  ,89  ,119 ,150 ,180 ,211 ,242 ,272 ,303 ,333 ,364 }; // nonleapyear
 const short Date::s_ydayl[]  = { 30  ,59  ,90  ,120 ,151 ,181 ,212 ,243 ,273 ,304 ,334 ,365 }; // leapYear
 
-const String ddMMyy            = _T("dd.MM.yy");
-const String ddMMyyyy          = _T("dd.MM.yyyy");
-const String ddMM              = _T("dd.MM");
-const String MMyyyy            = _T("MM.yyyy");
-const String MMyy              = _T("MM.yy");
-const String yyyy              = _T("yyyy");
-const String yy                = _T("yy");
-const String hhmm              = _T("hh:mm");
-const String hhmmss            = _T("hh:mm:ss");
-const String hhmmssSSS         = _T("hh:mm:ss:SSS");
-
-const String ddMMyyyyhhmm      = ddMMyyyy + _T(" ") + hhmm;
-const String ddMMyyyyhhmmss    = ddMMyyyy + _T(" ") + hhmmss;
-const String ddMMyyyyhhmmssSSS = ddMMyyyy + _T(" ") + hhmmssSSS;
+const TCHAR *yy                = _T("yy");
+const TCHAR *yyyy              = _T("yyyy");
+const TCHAR *MMyy              = _T("MM.yy");
+const TCHAR *MMyyyy            = _T("MM.yyyy");
+const TCHAR *ddMM              = _T("dd.MM");
+const TCHAR *ddMMyy            = _T("dd.MM.yy");
+const TCHAR *ddMMyyyy          = _T("dd.MM.yyyy");
+const TCHAR *ss                = _T("ss");
+const TCHAR *ssSSS             = _T("ss:SSS");
+const TCHAR *mmss              = _T("mm:ss");
+const TCHAR *mmssSSS           = _T("mm:ss:SSS");
+const TCHAR *hhmm              = _T("hh:mm");
+const TCHAR *hhmmss            = _T("hh:mm:ss");
+const TCHAR *hhmmssSSS         = _T("hh:mm:ss:SSS");
+const TCHAR *ddMMhhmm          = _T("dd.MM hh:mm");
+const TCHAR *ddMMhhmmss        = _T("dd.MM hh:mm:ss");
+const TCHAR *ddMMhhmmssSSS     = _T("dd.MM hh:mm:ss:SSS");
+const TCHAR *ddMMyyhhmm        = _T("dd.MM.yy hh:mm");
+const TCHAR *ddMMyyhhmmss      = _T("dd.MM.yy hh:mm:ss");
+const TCHAR *ddMMyyhhmmssSSS   = _T("dd.MM.yy hh:mm:ss:SSS");
+const TCHAR *ddMMyyyyhhmm      = _T("dd.MM.yyyy hh:mm");
+const TCHAR *ddMMyyyyhhmmss    = _T("dd.MM.yyyy hh:mm:ss");
+const TCHAR *ddMMyyyyhhmmssSSS = _T("dd.MM.yyyy hh:mm:ss:SSS");
 
 Date::Date() {
   time_t tt;
@@ -481,11 +490,11 @@ Date Date::getEaster(int year) { // static
 }                                                           \
 break
 
-TCHAR *Date::tostr(TCHAR *dst, const String &format) const {
+TCHAR *Date::tostr(TCHAR *dst, const TCHAR *format) const {
   int year, month, day;
   getDMY(day, month, year);
   TCHAR *t  = dst;
-  for(const TCHAR *cp = format.cstr(); *cp;) {
+  for(const TCHAR *cp = format; *cp;) {
     switch(*cp) {
     CASECH(_T('y'), year          );
     CASECH(_T('M'), month         );

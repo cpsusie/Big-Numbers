@@ -5,7 +5,8 @@
 #include <CPUInfo.h>
 #include <DebugLog.h>
 #include <SynchronizedQueue.h>
-#include <Math/MRisprime.h>
+#include <Math/BigReal/BigRealResourcePool.h>
+#include <Math/BigReal/MRisprime.h>
 
 static BigInt randomOddInteger(int digits, RandomGenerator &rnd, DigitPool *pool) {
   BigInt n = randBigInt(digits, rnd, pool);

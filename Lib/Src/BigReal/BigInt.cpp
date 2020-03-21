@@ -1,5 +1,5 @@
 #include "pch.h"
-#include <Math/BigInt.h>
+#include <Math/BigReal/BigInt.h>
 
 BigInt::BigInt(const BigReal &x, DigitPool *digitPool) : BigReal(digitPool ? digitPool : x.getDigitPool()) {
   digitPool = getDigitPool();

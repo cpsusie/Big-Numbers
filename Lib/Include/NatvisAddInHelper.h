@@ -41,15 +41,14 @@ typedef struct tagDEBUGHELPER {
   inline void *getObjectx86(void *dst, DWORD addr, int size) const {
     DWORD got;
     const BOOL hr = ReadDebuggeeMemory(this, addr, size, dst, &got);
-    if (got != size) throwException(_T("undefined"));
+    if(got != size) throwException(_T("undefined"));
     return dst;
   }
   inline void *getObjectx64(void *dst, QWORD addr, int size) const {
     DWORD got;
     const BOOL hr = ReadDebuggeeMemoryEx(this, addr, size, dst, &got);
-    if (got != size) throwException(_T("undefined"));
+    if(got != size) throwException(_T("undefined"));
     return dst;
   }
 
 } DEBUGHELPER;
-

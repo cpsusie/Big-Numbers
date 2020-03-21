@@ -1,7 +1,9 @@
 #pragma once
 
-#include <Math/BigReal.h>
 #include <Runnable.h>
+#include <Math/BigReal/BigRealResourcePool.h>
+#include <Math/BigReal/BigReal.h>
+#include "Pow2Cache.h"
 
 class DigitPoolArray : public CompactArray<DigitPool*> {
 };

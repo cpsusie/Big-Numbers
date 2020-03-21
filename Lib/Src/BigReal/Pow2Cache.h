@@ -23,7 +23,6 @@ public:
 class Pow2Cache : public CompactHashMap<Pow2ArgumentKey, const BigReal*> {
   friend class BigRealResourcePool;
 private:
-  static Pow2Cache     *s_instance;
   FastSemaphore         m_lock;
   // All values, saved in cache, uses m_digitpool
   // cand m_workPool is used to calculate new values
@@ -50,8 +49,8 @@ public:
   void dump() const;
   const BigReal &calculatePow2(int n, size_t digits);
 
-  inline void wait()   { m_lock.wait();   }
-  inline void notify() { m_lock.notify(); }
+  inline Pow2Cache &wait() { m_lock.wait(); return *this; }
+  inline void notify()     { m_lock.notify(); }
 
   // return the one and only instance of Pow2Cache, with a lock
   static Pow2Cache &getInstance();

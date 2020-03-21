@@ -26,19 +26,29 @@ typedef enum {
  ,TYEAR
 } TimeComponent;
 
-extern const String ddMMyy;
-extern const String ddMMyyyy;
-extern const String ddMM;
-extern const String MMyyyy;
-extern const String MMyy;
-extern const String yyyy;
-extern const String yy;
-extern const String hhmm;
-extern const String hhmmss;
-extern const String hhmmssSSS;
-extern const String ddMMyyyyhhmm;
-extern const String ddMMyyyyhhmmss;
-extern const String ddMMyyyyhhmmssSSS;
+extern const TCHAR *yy;                // "yy"
+extern const TCHAR *yyyy;              // "yyyy"
+extern const TCHAR *MMyy;              // "MM.yy"
+extern const TCHAR *MMyyyy;            // "MM.yyyy"
+extern const TCHAR *ddMM;              // "dd.MM"
+extern const TCHAR *ddMMyy;            // "dd.MM.yy"
+extern const TCHAR *ddMMyyyy;          // "dd.MM.yyyy"
+extern const TCHAR *ss;                // "ss"
+extern const TCHAR *ssSSS;             // "ss:SSS"
+extern const TCHAR *mmss;              // "mm:ss"
+extern const TCHAR *mmssSSS;           // "mm:ss:SSS"
+extern const TCHAR *hhmm;              // "hh:mm"
+extern const TCHAR *hhmmss;            // "hh:mm:ss"
+extern const TCHAR *hhmmssSSS;         // "hh:mm:ss:SSS"
+extern const TCHAR *ddMMhhmm;          // "dd.MM hh:mm"
+extern const TCHAR *ddMMhhmmss;        // "dd.MM hh:mm:ss"
+extern const TCHAR *ddMMhhmmssSSS;     // "dd.MM hh:mm:ss:SSS"
+extern const TCHAR *ddMMyyhhmm;        // "dd.MM.yy hh:mm"
+extern const TCHAR *ddMMyyhhmmss;      // "dd.MM.yy hh:mm:ss"
+extern const TCHAR *ddMMyyhhmmssSSS;   // "dd.MM.yy hh:mm:ss:SSS"
+extern const TCHAR *ddMMyyyyhhmm;      // "dd.MM.yyyy hh:mm"
+extern const TCHAR *ddMMyyyyhhmmss;    // "dd.MM.yyyy hh:mm:ss"
+extern const TCHAR *ddMMyyyyhhmmssSSS; // "dd.MM.yyyy hh:mm:ss:SSS"
 
 class Date {
 private:
@@ -165,8 +175,8 @@ public:
     return getMaxDate().m_factor;
   }
 
-  TCHAR *tostr(TCHAR *dst, const String &format = ddMMyyyy) const;
-  inline String toString(const String &format = ddMMyyyy) const {
+  TCHAR *tostr(TCHAR *dst, const TCHAR *format = ddMMyyyy) const;
+  inline String toString(const TCHAR *format = ddMMyyyy) const {
     TCHAR tmp[1024];
     return tostr(tmp, format);
   }
@@ -289,8 +299,8 @@ public:
     return getMaxTime().m_factor + 1;
   }
 
-  TCHAR *tostr(TCHAR *dst, const String &format = hhmm) const;
-  inline String toString(const String &format = hhmm) const {
+  TCHAR *tostr(TCHAR *dst, const TCHAR *format = hhmm) const;
+  inline String toString(const TCHAR *format = hhmm) const {
     TCHAR tmp[1024];
     return tostr(tmp, format);
   }
@@ -466,8 +476,8 @@ public:
     return getMaxTimestamp().m_factor;
   }
 
-  TCHAR *tostr(TCHAR *dst, const String &DateFormat = ddMMyyyyhhmm) const;
-  inline String toString(const String &format = ddMMyyyyhhmm) const {
+  TCHAR *tostr(TCHAR *dst, const TCHAR *dateFormat = ddMMyyyyhhmm) const;
+  inline String toString(const TCHAR *format = ddMMyyyyhhmm) const {
     TCHAR tmp[1024];
     return tostr(tmp, format);
   }

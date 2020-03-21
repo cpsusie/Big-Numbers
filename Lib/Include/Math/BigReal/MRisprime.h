@@ -1,7 +1,7 @@
 #pragma once
 
-#include "MathLib.h"
-#include "AlgorithmHandler.h"
+#include <Math/MathLib.h>
+#include <Math/AlgorithmHandler.h>
 #include "BigReal.h"
 
 class MillerRabinCheck {

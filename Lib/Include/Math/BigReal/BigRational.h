@@ -1,7 +1,7 @@
 #pragma once
 
+#include <Math/Rational.h>
 #include "BigInt.h"
-#include "Rational.h"
 
 class ConstBigRational;
 

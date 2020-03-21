@@ -857,6 +857,12 @@
     <ClCompile Include="BCDArrayPacker.cpp">
       <Filter>Source Files\Math</Filter>
     </ClCompile>
+    <ClCompile Include="Singleton.cpp">
+      <Filter>Source Files\Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="RunnableWrapper.cpp">
+      <Filter>Source Files\Process</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -1229,9 +1235,6 @@
     <ClInclude Include="..\..\Include\FastSemaphore.h">
       <Filter>Header Files\Process</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\SingletonFactory.h">
-      <Filter>Header Files\Misc</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\ThreadPool.h">
       <Filter>Header Files\Process</Filter>
     </ClInclude>
@@ -1262,6 +1265,15 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\InputValue.h">
       <Filter>Header Files\Console</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\RunnableWrapper.h">
+      <Filter>Header Files\Process</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Singleton.h">
+      <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\FlagTraits.h">
+      <Filter>Header Files\Collection</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,32 +1,40 @@
 #include "pch.h"
 #include <MyUtil.h>
 #include <FileNameSplitter.h>
-#include <Thread.h>
-#include <Date.h>
-#include <MFCUtil/ProgressWindow.h>
+#include <ThreadPool.h>
+#include <RunnableWrapper.h>
+#include "ProgressDlg.h"
 #include <MFCUtil/resource.h>
-#include <MFCUtil/ProgressDlg.h>
+#include <MFCUtil/ProgressWindow.h>
 
 ProgressWindow::ProgressWindow(CWnd *parent, InteractiveRunnable &jobToDo, UINT delay, UINT updateRate) {
-  Thread jobExecutor(_T("Progress Windows Executor"), jobToDo);
+  InteractiveRunnableWrapper rm(jobToDo);
+  const Timestamp startTime = jobToDo.setStartTime();
+  ThreadPool::executeNoWait(rm);
 
-  jobToDo.setStartTime();
-  jobExecutor.start();
-
-  while(delay) {
-    const int sleepTime = min(delay, 150);
-    Sleep(sleepTime);
-    if(!jobExecutor.stillActive()) {
+  for(;;) {
+    const double timeElapsed = Timestamp::diff(startTime, Timestamp(), TMILLISECOND);
+    const double sleepTime   = min((double)delay-timeElapsed, 150.0);
+    if(sleepTime <= 0) {
+      break;
+    }
+    Sleep((DWORD)sleepTime);
+    if(rm.isJobDone()) {
+      if(!rm.isOk()) {
+        showError(rm.getErrorMsg());
+      }
       return;
     }
-    delay -= sleepTime;
   }
 
-  CProgressDlg dlg(parent, jobExecutor, jobToDo, updateRate);
-  INT_PTR ret;
-  switch(ret = dlg.DoModal()) {
+  CProgressDlg dlg(parent, rm, updateRate);
+  const INT_PTR ret = dlg.DoModal();
+  switch(ret) {
   case IDOK:
   case IDCANCEL:
+    if(!rm.isOk()) {
+      showError(rm.getErrorMsg());
+    }
     break;
   default:
     { const String programName = FileNameSplitter(getModuleFileName()).getFileName();
@@ -34,9 +42,7 @@ ProgressWindow::ProgressWindow(CWnd *parent, InteractiveRunnable &jobToDo, UINT 
                ,programName.cstr()
                ,programName.cstr());
 
-      while(jobExecutor.stillActive()) {
-        Sleep(200);
-      }
     }
+    break;
   }
 }

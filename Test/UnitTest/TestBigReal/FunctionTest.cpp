@@ -4,7 +4,7 @@
 #include <ByteMemoryStream.h>
 #include <CompressFilter.h>
 #include <MathUtil.h>
-#include <Math/MRisprime.h>
+#include <Math/BigReal/MRisprime.h>
 #include "FunctionTest.h"
 
 void FunctionTest1ArgND64D80::runTest(int threadId, DigitPool *pool) {

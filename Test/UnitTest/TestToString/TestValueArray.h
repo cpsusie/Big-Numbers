@@ -1,7 +1,7 @@
 #include <BasicIncludes.h>
 #include <CompactArray.h>
 #include <Math/Double80.h>
-#include <Math/BigReal.h>
+#include <Math/BigReal/BigReal.h>
 
 class TestValueArrayElement {
   double    m_d;

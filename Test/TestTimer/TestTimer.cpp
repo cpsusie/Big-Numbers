@@ -23,11 +23,11 @@ void TestHandler::handleTimeout(Timer &t) {
 }
 
 int main() {
-  Timer timer(1, "TestTimer");
   TestHandler handler;
+  Timer timer(1, "TestTimer");
   UINT msec = 1000;
   bool repeatTimeout = true;
-  for (;;) {
+  for(;;) {
     Console::setCursorPos(0, 0);
     char ch = (char)inputValue<TCHAR>(_T("Enter command:((S)tart/S(t)op/(C)hange time/change (R)epeat/(Q)uit:"));
     ch = isupper(ch) ? tolower(ch) : ch;

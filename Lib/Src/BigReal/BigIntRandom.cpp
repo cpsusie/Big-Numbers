@@ -1,5 +1,5 @@
 #include "pch.h"
-#include <Math/BigInt.h>
+#include <Math/BigReal/BigInt.h>
 
 #define _0 pool->_0()
 #define _1 pool->_1()

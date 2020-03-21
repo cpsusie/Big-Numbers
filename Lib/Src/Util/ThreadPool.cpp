@@ -1,61 +1,51 @@
 #include "pch.h"
 #include <CPUInfo.h>
-#include <SingletonFactory.h>
 #include "ThreadPoolInternal.h"
 
-typedef enum {
-  REQUEST_GETINSTANCE
- ,REQUEST_RELEASEALL
-} POOLREQUEST;
-
-DEFINESINGLETONFACTORY(ThreadPool);
-
-void *ThreadPool::poolRequest(int request) {
-  static ThreadPoolFactory factory;
-  switch(request) {
-  case REQUEST_GETINSTANCE:
-    return &factory.getInstance();
-  case REQUEST_RELEASEALL:
-    factory.releaseInstance();
-    break;
-  }
-  return NULL;
+#ifdef TRACE_THREADPOOL
+void threadPoolTrace(const TCHAR *function, const TCHAR *format, ...) {
+  va_list argptr;
+  va_start(argptr, format);
+  String msg = vformat(format, argptr);
+  va_end(argptr);
+  debugLog(_T("%-20s:%s\n"), function, msg.cstr());
 }
+#endif // TRACE_THREADPOOL
+
+DEFINESINGLETON(ThreadPool);
 
 ThreadPool &ThreadPool::getInstance() { // static
-  return *((ThreadPool*)poolRequest(REQUEST_GETINSTANCE));
+  return getThreadPool();
 }
 
 void ThreadPool::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
   if(Thread::isPropertyContainer(source)) {
     switch(id) {
-    case THR_SHUTTINGDDOWN:
-      TRACE(_T("%s:received THR_SHUTTINGDDOWN\n"), __TFUNCTION__);
+    case THR_BLOCKNEWTHREADS:
+      THREADPOOL_TRACE("%s:received THR_BLOCKNEWTHREADS\n", __TFUNCTION__);
       prepareDelete();
       break;
 
     case THR_THREADSRUNNING:
-      { bool threadsRunning = *(bool*)newValue;
-        TRACE(_T("%s:received THR_THREADSRUNNING=%s\n"), __TFUNCTION__, boolToStr(threadsRunning));
-        if(!threadsRunning) {
-          poolRequest(REQUEST_RELEASEALL);
-        }
+      { const bool threadsRunning = *(bool*)newValue;
+        THREADPOOL_TRACE("%s:received THR_THREADSRUNNING=%s\n", __TFUNCTION__, boolToStr(threadsRunning));
       }
+      break;
     }
   }
 }
 
 void ThreadPool::prepareDelete() {
   wait();
-  TRACE(_T("%s enter. m_blockExecute=%s\n"), __TFUNCTION__, boolToStr(m_blockExecute));
+  THREADPOOL_TRACE("%s enter. m_blockExecute=%s\n", __TFUNCTION__, boolToStr(m_blockExecute));
   if(!m_blockExecute) {
-    TRACE(_T("%s:now prepare delete\n"), __TFUNCTION__);
+    THREADPOOL_TRACE("%s:now prepare delete\n", __TFUNCTION__);
     setProperty(THREADPOOL_SHUTTINGDDOWN, m_blockExecute, true);
     killLogger();
     m_threadPool->requestTerminateAll();
-    TRACE(_T("%s:prepare delete done\n"), __TFUNCTION__);
+    THREADPOOL_TRACE("%s:prepare delete done\n", __TFUNCTION__);
   }
-  TRACE(_T("%s leave\n"), __TFUNCTION__);
+  THREADPOOL_TRACE("%s leave\n", __TFUNCTION__);
   notify();
 }
 
@@ -97,7 +87,6 @@ public:
   UINT run();
 };
 
-
 UINT PoolLogger::run() {
   for(;;) {
     const int timeout = m_stopped ? INFINITE : 2000;
@@ -106,7 +95,7 @@ UINT PoolLogger::run() {
     if(m_stopped) {
       continue;
     }
-    TRACE(_T("%s\n"), ThreadPool::getInstance().toString().cstr());
+    THREADPOOL_TRACE("%s\n", ThreadPool::getInstance().toString().cstr());
     if(m_killed) break;
   }
   m_terminated.notify();
@@ -115,31 +104,33 @@ UINT PoolLogger::run() {
 
 PropertyContainer *ThreadPool::s_propertySource = NULL;
 
-ThreadPool::ThreadPool() {
-  TRACE(_T("%s called\n"),__TFUNCTION__);
-  m_processorCount = getProcessorCount();
+ThreadPool::ThreadPool(SingletonFactory *factory)
+: Singleton(factory)
+, m_processorCount(getProcessorCount())
+{
+  THREADPOOL_ENTER;
+  s_propertySource = this;
+  Thread::getMap(); // to create ThreadMap is before this is created. then ist will automatic be destroyed after this
   m_activeThreads  = m_maxActiveThreads = 1;
   m_blockExecute   = false;
-  s_propertySource = this;
-  m_threadPool = new PoolThreadPool;  TRACE_NEW(m_threadPool);
-  m_queuePool  = new ResultQueuePool; TRACE_NEW(m_queuePool);
+  m_threadPool     = new PoolThreadPool(this);  TRACE_NEW(m_threadPool);
+  m_queuePool      = new ResultQueuePool(this); TRACE_NEW(m_queuePool );
   Thread::addListener(this);
-  TRACE(_T("ThreadPool attached to Thread::propertyChangeListener\n"));
-  TRACE(_T("%s done\n"), __TFUNCTION__);
+  THREADPOOL_TRACE("ThreadPool attached to Thread::propertyChangeListener\n");
+  THREADPOOL_LEAVE;
 }
 
 ThreadPool::~ThreadPool() {
-  TRACE(_T("%s called\n"), __TFUNCTION__);
+  THREADPOOL_ENTER;
   prepareDelete();
   wait();
   Thread::removeListener(this);
-  TRACE(_T("ThreadPool detached from Thread::propertyChangeListener\n"));
   SAFEDELETE(m_threadPool);
-  SAFEDELETE(m_queuePool);
+  SAFEDELETE(m_queuePool );
   SAFEDELETE(m_logger    );
   s_propertySource = NULL;
   notify();
-  TRACE(_T("ThreadPool deleted\n"));
+  THREADPOOL_LEAVE;
 }
 
 void ThreadPool::setPriority(int priority) { // static
@@ -234,44 +225,38 @@ void ThreadPool::executeInParallel(RunnableArray &jobs) { // static
   }
 }
 
-void ThreadPool::releaseThread(ThreadPoolThread *thread) { // static
-  ThreadPool &instance = getInstance();
-  instance.wait();
-  instance.getTPool().releaseResource(thread);
-  instance.notify();
+void ThreadPool::releaseThread(ThreadPoolThread *thread) {
+  wait();
+  getTPool().releaseResource(thread);
+  notify();
 }
 
-String ThreadPool::toString() { // static
-  ThreadPool &instance = getInstance();
-  String result;
-  instance.wait();
-
-  result = format(_T("Threads:%s Queues:%s")
-                 ,instance.getTPool().toString().cstr()
-                 ,instance.getQPool().toString().cstr()
-                 );
-  instance.notify();
+String ThreadPool::toString() const {
+  wait();
+  const String result = format(_T("Threads:%s Queues:%s")
+                              ,getTPool().toString().cstr()
+                              ,getQPool().toString().cstr()
+                              );
+  notify();
   return result;
 }
 
-void ThreadPool::startLogging() { // static
-  ThreadPool &instance = getInstance();
-  instance.wait();
+void ThreadPool::startLogging() {
+  wait();
 
-  if(instance.m_logger == NULL) {
-    instance.m_logger = new PoolLogger(); TRACE_NEW(instance.m_logger);
+  if(m_logger == NULL) {
+    m_logger = new PoolLogger(); TRACE_NEW(instance.m_logger);
   }
-  instance.notify();
-  instance.executeNoWait(*instance.m_logger);
+  notify();
+  executeNoWait(*m_logger);
 }
 
-void ThreadPool::stopLogging() {  // static
-  ThreadPool &instance = getInstance();
-  instance.wait();
-  if(instance.m_logger != NULL) {
-    instance.m_logger->stopLogging();
+void ThreadPool::stopLogging() {
+  wait();
+  if(m_logger != NULL) {
+    m_logger->stopLogging();
   }
-  instance.notify();
+  notify();
 }
 
 void ThreadPool::killLogger() { // not static. no wait/notify.....we are called from propertyCahngeListener which has a lock on this

@@ -1,80 +1,65 @@
 #include "pch.h"
-#include <SingletonFactory.h>
-#include "BigRealResourcePool.h"
-#include "Pow2Cache.h"
 #include <DebugLog.h>
+#include "ResourcePoolInternal.h"
 
-// The order of declaration is importatnt here.!
+// The order of declaration is important here.!
 
 #pragma warning(disable : 4073)
 #pragma init_seg(lib)
 
-class InitBigReal {
-private:
-  BigRealResourcePool *dummy;
-public:
-  InitBigReal() {
-    dummy = &BigRealResourcePool::getInstance();
-  }
-  ~InitBigReal() {
-    BigRealResourcePool::releaseInstance();
-  }
-};
+const BR2DigitType BigReal::s_BIGREALBASEBR2 = BIGREALBASE;
 
-const BR2DigitType BigReal::s_BIGREALBASEBR2(BIGREALBASE);
-
-std::atomic<UINT> DigitPool::s_totalAllocatedPageCount;
+std::atomic<UINT>  DigitPool::s_totalAllocatedPageCount;
 #ifndef COUNT_DIGITPOOLFETCHDIGIT
-bool              DigitPool::s_dumpCountWhenDestroyed  = false;
+bool               DigitPool::s_dumpCountWhenDestroyed  = false;
 #else
-bool              DigitPool::s_dumpCountWhenDestroyed  = true;
+bool               DigitPool::s_dumpCountWhenDestroyed  = true;
 #endif // COUNT_DIGITPOOLFETCHDIGIT
-DigitPool        *BigReal::s_defaultDigitPool          = NULL;
-DigitPool        *BigReal::s_constDigitPool            = NULL;
 
-static InitBigReal initBigReal;
+DigitPool         *BigReal::s_defaultDigitPool = BigRealResourcePool::getDefaultDigitPool();
+DigitPool         *BigReal::s_constDigitPool   = BigRealResourcePool::getConstDigitPool();
 
-const BigInt  &BigReal::_0 = DEFAULT_DIGITPOOL->_0();
-const BigInt  &BigReal::_1 = DEFAULT_DIGITPOOL->_1();
-const BigInt  &BigReal::_2 = DEFAULT_DIGITPOOL->_2();
-const BigInt  BigReal::_i16_min(  _I16_MIN  );
-const BigInt  BigReal::_i16_max(  _I16_MAX  );
-const BigInt  BigReal::_ui16_max( _UI16_MAX );
-const BigInt  BigReal::_i32_min(  _I32_MIN  );
-const BigInt  BigReal::_i32_max(  _I32_MAX  );
-const BigInt  BigReal::_ui32_max( _UI32_MAX );
-const BigInt  BigReal::_i64_min(  _I64_MIN  );
-const BigInt  BigReal::_i64_max(  _I64_MAX  );
-const BigInt  BigReal::_ui64_max( _UI64_MAX );
-const BigInt  BigReal::_i128_min( _I128_MIN );
-const BigInt  BigReal::_i128_max( _I128_MAX );
-const BigInt  BigReal::_ui128_max(_UI128_MAX);
+const BigInt      &BigReal::_0 = DEFAULT_DIGITPOOL->_0();
+const BigInt      &BigReal::_1 = DEFAULT_DIGITPOOL->_1();
+const BigInt      &BigReal::_2 = DEFAULT_DIGITPOOL->_2();
+const BigInt       BigReal::_i16_min(  _I16_MIN  );
+const BigInt       BigReal::_i16_max(  _I16_MAX  );
+const BigInt       BigReal::_ui16_max( _UI16_MAX );
+const BigInt       BigReal::_i32_min(  _I32_MIN  );
+const BigInt       BigReal::_i32_max(  _I32_MAX  );
+const BigInt       BigReal::_ui32_max( _UI32_MAX );
+const BigInt       BigReal::_i64_min(  _I64_MIN  );
+const BigInt       BigReal::_i64_max(  _I64_MAX  );
+const BigInt       BigReal::_ui64_max( _UI64_MAX );
+const BigInt       BigReal::_i128_min( _I128_MIN );
+const BigInt       BigReal::_i128_max( _I128_MAX );
+const BigInt       BigReal::_ui128_max(_UI128_MAX);
 
-const BigReal &BigReal::_05 = DEFAULT_DIGITPOOL->_05();
-const BigReal BigReal::_flt_min(  FLT_MIN   );
-const BigReal BigReal::_flt_max(  FLT_MAX   );
-const BigReal BigReal::_dbl_min(  DBL_MIN   );
-const BigReal BigReal::_dbl_max(  DBL_MAX   );
-const BigReal BigReal::_dbl80_min(DBL80_MIN );
-const BigReal BigReal::_dbl80_max(DBL80_MAX );
-const BigReal BigReal::_C1third(0.333333f   );
+const BigReal     &BigReal::_05 = DEFAULT_DIGITPOOL->_05();
+const BigReal      BigReal::_flt_min(  FLT_MIN   );
+const BigReal      BigReal::_flt_max(  FLT_MAX   );
+const BigReal      BigReal::_dbl_min(  DBL_MIN   );
+const BigReal      BigReal::_dbl_max(  DBL_MAX   );
+const BigReal      BigReal::_dbl80_min(DBL80_MIN );
+const BigReal      BigReal::_dbl80_max(DBL80_MAX );
+const BigReal      BigReal::_C1third(0.333333f   );
 
 // No need for signalling NaN
-const BigReal &BigReal::_BR_QNAN = DEFAULT_DIGITPOOL->nan();
-const BigReal &BigReal::_BR_PINF = DEFAULT_DIGITPOOL->pinf();    // +infinity;
-const BigReal &BigReal::_BR_NINF = DEFAULT_DIGITPOOL->ninf();    // -infinity;
+const BigReal     &BigReal::_BR_QNAN = DEFAULT_DIGITPOOL->nan();
+const BigReal     &BigReal::_BR_PINF = DEFAULT_DIGITPOOL->pinf();       // +infinity;
+const BigReal     &BigReal::_BR_NINF = DEFAULT_DIGITPOOL->ninf();       // -infinity;
 
-const BigInt  BigInt::_BINT_QNAN(quot( BigReal::_0, BigReal::_0));  // non-signaling NaN (quiet NaN)
-const BigInt  BigInt::_BINT_PINF(quot( BigReal::_1, BigReal::_0));  // +infinity;
-const BigInt  BigInt::_BINT_NINF(quot(-BigReal::_1, BigReal::_0));  // -infinity;
+const BigInt       BigInt::_BINT_QNAN(quot( BigReal::_0, BigReal::_0)); // non-signaling NaN (quiet NaN)
+const BigInt       BigInt::_BINT_PINF(quot( BigReal::_1, BigReal::_0)); // +infinity;
+const BigInt       BigInt::_BINT_NINF(quot(-BigReal::_1, BigReal::_0)); // -infinity;
 
-const BigRational BigRational::_0(         BigReal::_0, BigReal::_1);  // 0
-const BigRational BigRational::_05(        BigReal::_1, BigReal::_2);  // 1/2
-const BigRational BigRational::_1(         BigReal::_1, BigReal::_1);  // 1
-const BigRational BigRational::_2(         BigReal::_2, BigReal::_1);  // 2
-const BigRational BigRational::_BRAT_QNAN( BigReal::_0, BigReal::_0);  // non-signaling NaN (quiet NaN)
-const BigRational BigRational::_BRAT_PINF( BigReal::_1, BigReal::_0);  // +infinity;
-const BigRational BigRational::_BRAT_NINF(-BigReal::_1, BigReal::_0);  // -infinity;
+const BigRational  BigRational::_0(         BigReal::_0, BigReal::_1);  // 0
+const BigRational  BigRational::_05(        BigReal::_1, BigReal::_2);  // 1/2
+const BigRational  BigRational::_1(         BigReal::_1, BigReal::_1);  // 1
+const BigRational  BigRational::_2(         BigReal::_2, BigReal::_1);  // 2
+const BigRational  BigRational::_BRAT_QNAN( BigReal::_0, BigReal::_0);  // non-signaling NaN (quiet NaN)
+const BigRational  BigRational::_BRAT_PINF( BigReal::_1, BigReal::_0);  // +infinity;
+const BigRational  BigRational::_BRAT_NINF(-BigReal::_1, BigReal::_0);  // -infinity;
 
 class DefaultDigitPoolModifier {
 public:
@@ -85,34 +70,16 @@ public:
 
 static DefaultDigitPoolModifier setDefaultDPToMutable;
 
-typedef enum {
-  REQUEST_GETINSTANCE
- ,REQUEST_RELEASE
-} POOLREQUEST;
-
-DEFINESINGLETONFACTORY(BigRealResourcePool);
-
-BigRealResourcePool *BigRealResourcePool::poolRequeest(int request) { // static
-  static BigRealResourcePoolFactory factory;
-  switch(request) {
-  case REQUEST_GETINSTANCE:
-    return &factory.getInstance();
-  case REQUEST_RELEASE:
-    factory.releaseInstance();
-    break;
-  }
-  return NULL;
-}
+DEFINESINGLETON(BigRealResourcePool);
 
 BigRealResourcePool &BigRealResourcePool::getInstance() { // static
-  return *poolRequeest(REQUEST_GETINSTANCE);
+  return getBigRealResourcePool().wait();
 }
 
-void BigRealResourcePool::releaseInstance() { // static
-  poolRequeest(REQUEST_RELEASE);
-}
-
-BigRealResourcePool::BigRealResourcePool() {
+BigRealResourcePool::BigRealResourcePool(SingletonFactory *factory)
+: Singleton(factory)
+{
+  DEBUGLOG(_T("BigRealResourcePool allocated\n"));
   Double80::initClass();
   DigitPool::s_totalAllocatedPageCount = 0;
 
@@ -129,35 +96,24 @@ BigRealResourcePool::BigRealResourcePool() {
   for(UINT i = 0; i < a.size(); i++) m_lockedDigitPoolPool->releaseResource((DigitPoolWithLock*)a[i]);
   a.clear(-1);
 
-  BigReal::s_defaultDigitPool = fetchDPool(false, 0); // this will be changed to BR_MUTABLE when all class constants have been defined and initialized
-  BigReal::s_constDigitPool   = fetchDPool(true, 0);
-  BigReal::s_defaultDigitPool->setName(_T("DEFAULT"));
-  BigReal::s_constDigitPool->setName(_T("CONST"));
-  Pow2Cache::s_instance       = new Pow2Cache(fetchDPool(false, 0), fetchDPool(false, BR_MUTABLE)); TRACE_NEW(Pow2Cache::s_instance);
+  m_defaultDigitPool = NULL;
+  m_constDigitPool   = NULL;
+  m_pow2Cache        = NULL;
 }
 
 BigRealResourcePool::~BigRealResourcePool() {
-  DigitPool *p2DigitPool = Pow2Cache::s_instance->m_digitPool;
-  DigitPool *p2WorkPool  = Pow2Cache::s_instance->m_workPool;
-
-  SAFEDELETE(Pow2Cache::s_instance);
-
-  releaseDPool(p2DigitPool);
-  releaseDPool(p2WorkPool );
-  releaseDPool(BigReal::s_defaultDigitPool);
-  releaseDPool(BigReal::s_constDigitPool  );
-
-  BigReal::s_constDigitPool   = NULL;
-  BigReal::s_defaultDigitPool = NULL;
+  deallocatePow2Cache();
+  releaseDPool(m_defaultDigitPool);
+  releaseDPool(m_constDigitPool  );
 
   SAFEDELETE(m_subProdPool       );
   SAFEDELETE(m_digitPoolPool     );
   SAFEDELETE(m_lockedDigitPoolPool);
+  DEBUGLOG(_T("BigRealResourcePool deallocated\n"));
 }
 
 void BigRealResourcePool::fetchSubProdRunnableArray(SubProdRunnableArray &a, UINT runnableCount, UINT digitPoolCount) { // static
   BigRealResourcePool &instance = getInstance();
-  instance.wait();
   try {
     a.clear(runnableCount, digitPoolCount);
     for(UINT i = 0; i < runnableCount; i++) {
@@ -176,7 +132,6 @@ void BigRealResourcePool::fetchSubProdRunnableArray(SubProdRunnableArray &a, UIN
 
 void BigRealResourcePool::releaseSubProdRunnableArray(SubProdRunnableArray &a) {
   BigRealResourcePool &instance = getInstance();
-  instance.wait();
   try {
     const UINT runnableCount = a.getRunnableCount();
     for(UINT i = 0; i < runnableCount; i++) {
@@ -201,7 +156,6 @@ void BigRealResourcePool::releaseSubProdRunnableArray(SubProdRunnableArray &a) {
 
 DigitPool *BigRealResourcePool::fetchDigitPool(bool withLock, BYTE initFlags) { // static
   BigRealResourcePool &instance = getInstance();
-  instance.wait();
   try {
     DigitPool *pool = instance.fetchDPool(withLock, initFlags);
     instance.notify();
@@ -214,7 +168,6 @@ DigitPool *BigRealResourcePool::fetchDigitPool(bool withLock, BYTE initFlags) { 
 
 void BigRealResourcePool::releaseDigitPool(DigitPool *pool) { // static
   BigRealResourcePool &instance = getInstance();
-  instance.wait();
   try {
     instance.releaseDPool(pool);
     instance.notify();
@@ -228,8 +181,6 @@ void BigRealResourcePool::fetchDigitPoolArray(DigitPoolArray &a, UINT count, boo
   a.clear(count);
   if(count == 0) return;
   BigRealResourcePool &instance = getInstance();
-
-  instance.wait();
   try {
     for(UINT i = 0; i < count; i++) {
       a.add(instance.fetchDPool(withLock, initFlags));
@@ -245,8 +196,6 @@ void BigRealResourcePool::releaseDigitPoolArray(DigitPoolArray &a) {  // static
   const UINT count = (UINT)a.size();
   if(count == 0) return;
   BigRealResourcePool &instance = getInstance();
-
-  instance.wait();
   try {
     for(UINT i = 0; i < count; i++) {
       instance.releaseDPool(a[i]);
@@ -256,6 +205,67 @@ void BigRealResourcePool::releaseDigitPoolArray(DigitPoolArray &a) {  // static
   } catch (...) {
     instance.notify();
     throw;
+  }
+}
+
+DigitPool *BigRealResourcePool::getDefaultDigitPool() { // static
+  BigRealResourcePool &instance = getInstance();
+  try {
+    if(instance.m_defaultDigitPool == NULL) {
+      instance.m_defaultDigitPool = instance.fetchDPool(false, 0); // this will be changed to BR_MUTABLE when all class constants have been defined and initialized
+      instance.m_defaultDigitPool->setName(_T("DEFAULT"));
+    }
+    instance.notify();
+  } catch(...) {
+    instance.notify();
+    throw;
+  }
+  return instance.m_defaultDigitPool;
+}
+
+DigitPool *BigRealResourcePool::getConstDigitPool() {  // static
+  BigRealResourcePool &instance = getInstance();
+  try {
+    if(instance.m_constDigitPool == NULL) {
+      instance.m_constDigitPool = instance.fetchDPool(true, 0);
+      instance.m_constDigitPool->setName(_T("CONST"));
+    }
+    instance.notify();
+  } catch(...) {
+    instance.notify();
+    throw;
+  }
+  return instance.m_constDigitPool;
+}
+
+Pow2Cache *BigRealResourcePool::getPow2Cache() { // static
+  BigRealResourcePool &instance = getInstance();
+  try {
+    if(instance.m_pow2Cache == NULL) {
+      instance.allocatePow2Cache();
+    }
+    instance.notify();
+  } catch (...) {
+    instance.notify();
+    throw;
+  }
+  return instance.m_pow2Cache;
+}
+
+void BigRealResourcePool::allocatePow2Cache() {
+  DigitPool *digitPool = fetchDPool(false, 0);
+  DigitPool *workPool  = fetchDPool(false, BR_MUTABLE);
+  m_pow2Cache = new Pow2Cache(digitPool, workPool); TRACE_NEW(m_pow2Cache);
+}
+
+void BigRealResourcePool::deallocatePow2Cache() {
+  if(m_pow2Cache) {
+    DigitPool *workPool  = m_pow2Cache->m_workPool;
+    DigitPool *digitPool = m_pow2Cache->m_digitPool;
+
+    SAFEDELETE(m_pow2Cache);
+    releaseDPool(workPool);
+    releaseDPool(digitPool);
   }
 }
 
@@ -292,7 +302,6 @@ void BigRealResourcePool::releaseDPool(DigitPool *pool) {
 
 void BigRealResourcePool::setTerminateAllPoolsInUse(bool terminate) { // static
   BigRealResourcePool &instance = getInstance();
-  instance.wait();
   DigitPoolPool &dpp = *instance.m_digitPoolPool;
   Iterator<DigitPool*> it = dpp.getIterator(&dpp.getActiveIdSet());
   while(it.hasNext()) {
@@ -308,14 +317,11 @@ void BigRealResourcePool::setTerminateAllPoolsInUse(bool terminate) { // static
 
 String BigRealResourcePool::toString() { // static
   BigRealResourcePool &instance = getInstance();
-  String result;
-  instance.wait();
-
-  result = format(_T("SubProds:%s DigitPools:%s LockedDigitPools:%s")
-                 ,instance.m_subProdPool->toString().cstr()
-                 ,instance.m_digitPoolPool->toString().cstr()
-                 ,instance.m_lockedDigitPoolPool->toString().cstr()
-                 );
+  const String result = format(_T("SubProds:%s DigitPools:%s LockedDigitPools:%s")
+                              ,instance.m_subProdPool->toString().cstr()
+                              ,instance.m_digitPoolPool->toString().cstr()
+                              ,instance.m_lockedDigitPoolPool->toString().cstr()
+                              );
   instance.notify();
   return result;
 }

@@ -1,10 +1,11 @@
 #pragma once
 
 #include "PropertyContainer.h"
+#include <FlagTraits.h>
 #include "FastSemaphore.h"
 
 class Timer;
-class _TimerJob;
+class TimerJobWrapper;
 
 class TimeoutHandler {
 public:
@@ -13,16 +14,21 @@ public:
 };
 
 class Timer : private PropertyChangeListener {
+  friend class _TimerJob;
 private:
   const int             m_id;
   const String          m_name;
-  _TimerJob            *m_job;
+  UINT                  m_timeoutMsec;
+  ATOMICFLAGTRAITS(BYTE,Timer)
+  TimerJobWrapper      *m_job;
   mutable FastSemaphore m_lock;
-  bool                  m_blockStart;
   void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
-  void createJob(UINT msec, TimeoutHandler &handler, bool repeatTimeout);
+  // no lock protection
+  void createJob(TimeoutHandler &handler);
+  // no lock protection
   void destroyJob();
-
+  bool isDestroyingJob() const;
+  bool isHandlerActive() const;
 public:
   Timer(int id, const String &name=EMPTYSTRING);
   virtual ~Timer();
@@ -34,7 +40,8 @@ public:
   inline const String &getName() const {
     return m_name;
   }
-  void setTimeout(UINT msec, bool repeatTimeout); // do nothing, if !timer.isRunning()
+  // do nothing, if !timer.isRunning()
+  void setTimeout(UINT msec, bool repeatTimeout);
   UINT getTimeout() const;
   bool isRunning() const;
 };

@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "BigRealResourcePool.h"
+#include "ResourcePoolInternal.h"
 
 #ifdef _DEBUG
 #include <Thread.h>

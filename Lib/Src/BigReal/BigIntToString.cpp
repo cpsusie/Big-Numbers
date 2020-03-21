@@ -1,5 +1,5 @@
 #include "pch.h"
-#include <Math/BigInt.h>
+#include <Math/BigReal/BigInt.h>
 #include "BigRealStream.h"
 
 String toString(const BigInt &x, StreamSize width, FormatFlags flags, TCHAR separatorChar) {

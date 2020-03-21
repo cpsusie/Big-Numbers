@@ -4,7 +4,9 @@
     <DisplayString Condition="m_buf == 0">empty</DisplayString> 
     <DisplayString>{m_buf,su}</DisplayString>
   </Type>
-
+  <Type Name="Singleton">
+    <DisplayString>{m_factory.m_className,su}</DisplayString>
+  </Type>
   <Type Name="ByteArray">
     <DisplayString>{size = {m_size}}</DisplayString>
     <Expand>

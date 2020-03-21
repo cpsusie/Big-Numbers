@@ -244,36 +244,48 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Include\Math\BigReal.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Math\BigRealMatrix.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="pch.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="..\..\Include\Math\BigRealInterval.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Math\BigRealTransformation.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="BigRealInternal.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="BigRealStream.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\Math\BigRational.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Math\BigInt.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BigRealResourcePool.h">
+    <ClInclude Include="Pow2Cache.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="Pow2Cache.h">
+    <ClInclude Include="..\..\Include\Math\BigReal\BigInt.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\BigReal\BigRational.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\BigReal\BigReal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\BigReal\BigRealInterval.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\BigReal\BigRealMatrix.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\BigReal\BigRealTransformation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\BigReal\BigRealConfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\BigReal\DigitPool.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\BigReal\MRisprime.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\BigReal\BigRealResourcePool.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourcePoolInternal.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

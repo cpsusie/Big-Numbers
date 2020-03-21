@@ -2,6 +2,7 @@
 
 #include "BitSet.h"
 #include "Runnable.h"
+#include "Singleton.h"
 #include "FastSemaphore.h"
 #include <PropertyContainer.h>
 #include "CompactStack.h"
@@ -14,25 +15,25 @@ typedef enum {
   THREADPOOL_SHUTTINGDDOWN
 } ThreadPoolProperty;
 
-class ThreadPool : public PropertyChangeListener, PropertyContainer {
+class ThreadPool : public Singleton, public PropertyChangeListener, PropertyContainer {
+  friend class SingletonFactory;
   friend class ThreadPoolThread;
-  friend class ThreadPoolFactory;
 private:
   PoolThreadPool             *m_threadPool;
   ResultQueuePool            *m_queuePool;
   PoolLogger                 *m_logger;
   mutable FastSemaphore       m_gate;
-  int                         m_processorCount;
+  const int                   m_processorCount;
   int                         m_activeThreads, m_maxActiveThreads;
   bool                        m_blockExecute;
   static PropertyContainer   *s_propertySource;
   void prepareDelete();
   void killLogger();
-  ThreadPool();
+  ThreadPool(SingletonFactory *factory);
   ~ThreadPool();
   ThreadPool(const ThreadPool &src);            // not implemented
   ThreadPool &operator=(const ThreadPool &src); // not implemented
-  static void releaseThread(ThreadPoolThread *thr);
+  void releaseThread(ThreadPoolThread *thr);
   inline PoolThreadPool &getTPool() const {
     return *m_threadPool;
   }
@@ -53,9 +54,9 @@ public:
     return getInstance().m_maxActiveThreads;
   }
 
-  static String toString(); // for debug
-  static void   startLogging();
-  static void   stopLogging();
+  String toString() const; // for debug
+  void   startLogging();
+  void   stopLogging();
   static void   setPriority(int priority); // Sets the priority for all running and future running threads
   // Default is THREAD_PRIORITY_BELOW_NORMAL
   // THREAD_PRIORITY_IDLE,-PRIORITY_LOWEST,-PRIORITY_BELOW_NORMAL,-PRIORITY_NORMAL,-PRIORITY_ABOVE_NORMAL

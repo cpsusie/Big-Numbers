@@ -7,12 +7,13 @@ void InteractiveRunnable::cleanup() {
   SAFEDELETE(m_timeEstimator);
 }
 
-void InteractiveRunnable::setStartTime() {
+const Timestamp &InteractiveRunnable::setStartTime() {
   cleanup();
   m_jobStartTime = Timestamp();
   if(getSupportedFeatures() & IR_SHOWTIMEESTIMATE) {
     m_timeEstimator = new TimeEstimator(*this); TRACE_NEW(m_timeEstimator);
   }
+  return m_jobStartTime;
 }
 
 double InteractiveRunnable::getAvgSubProgressPercent() {

@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "ResourcePoolInternal.h"
 
 BigRational::BigRational(DigitPool *digitPool)
 : m_num(0, digitPool)

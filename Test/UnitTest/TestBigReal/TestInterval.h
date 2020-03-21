@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Math/BigRealInterval.h>
-
 class TestInterval : public BigRealInterval {
 private:
   const bool m_exponentialStep;

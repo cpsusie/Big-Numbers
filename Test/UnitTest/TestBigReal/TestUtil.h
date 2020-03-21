@@ -4,7 +4,6 @@
 #include <Float.h>
 #include <Math/Double64.h>
 #include <Math/Double80.h>
-#include "TestInterval.h"
 
 typedef double    (* DoubleFunction1      )(double x);
 typedef double    (* DoubleFunction2      )(double x, double y);

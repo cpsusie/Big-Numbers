@@ -1,189 +1,208 @@
 #include "pch.h"
-#include <ThreadPool.h>
-#include <Thread.h>
 #include <Date.h>
+#include <ThreadPool.h>
 #include <Semaphore.h>
-#include <PropertyContainer.h>
+#include <RunnableWrapper.h>
 #include <Timer.h>
+#include <DebugLog.h>
 
-#define KILLED                 0x01
-#define REPEAT_TIMEOUT         0x02
-#define HANDLER_ACTIVE         0x04
-#define CHANGETIMEOUT_PENDING  0x08
+#ifdef _DEBUG
+#include <Thread.h>
+#endif
 
-#define ISKILLED()                (m_flags & KILLED               )
-#define ISREPEATTIMEOUT()         (m_flags & REPEAT_TIMEOUT       )
-#define ISHANDLERACTIVE()         (m_flags & HANDLER_ACTIVE       )
-#define ISCHANGETIMEOUT_PENDING() (m_flags & CHANGETIMEOUT_PENDING)
-
-#define setFlag(fl) m_flags |= (fl)
-#define clrFlag(fl) m_flags &= ~(fl)
+#define TM_TIMEOUTREPEAT          0x01
+#define TM_KILLPENDING            0x02
+#define TM_BLOCKSTART             0x04
+#define TM_HANDLERACTIVE          0x08
+#define TM_TIMEOUTCHANGE_PENDING  0x10
+#define TM_STOPTIMERCALLED        0x20
+#define TM_DESTRUCTORCALLED       0x40
 
 class _TimerJob : public Runnable {
 private:
   Timer            &m_timer;
-  FastSemaphore     m_terminated;
   Semaphore         m_timeout;
-  std::atomic<BYTE> m_flags;
   Timestamp         m_lastTimeout;
-  UINT              m_msec, m_changePendingmsec; // msec
+  UINT              m_changePendingmsec; // msec
   TimeoutHandler   &m_handler;
 public:
-  _TimerJob(Timer *timer, UINT msec, TimeoutHandler &handler, bool repeatTimeout);
-  ~_TimerJob();
+  _TimerJob(Timer *timer, TimeoutHandler &handler);
   UINT run();
-  void kill();
   inline bool isKilled() const {
-    return ISKILLED();
+    return m_timer.isSet(TM_KILLPENDING);
   }
-  void setTimeout(UINT msec, bool repeatTimeout);
-  inline UINT getTimeout() const {
-    return m_msec;
+  void notifyTimeout() {
+    m_timeout.notify();
+  }
+  void timeoutChanged();
+  inline UINT getTimeoutMsec() const {
+    return m_timer.m_timeoutMsec;
+  }
+  inline bool isTimeoutRepeated() const {
+    return m_timer.isSet(TM_TIMEOUTREPEAT);
   }
 };
 
-_TimerJob::_TimerJob(Timer *timer, UINT msec, TimeoutHandler &handler, bool repeatTimeout)
+_TimerJob::_TimerJob(Timer *timer, TimeoutHandler &handler)
 : m_timer(*timer)
-, m_msec(msec)
 , m_handler(handler)
 , m_timeout(0)
 {
-  m_flags = repeatTimeout ? REPEAT_TIMEOUT : 0;
 }
 
-_TimerJob::~_TimerJob() {
-  kill();
-  m_terminated.wait();
-}
-
-void _TimerJob::kill() {
-  setFlag(KILLED);
-  if(!ISHANDLERACTIVE()) {
-    m_timeout.notify();
-  }
-}
-
-void _TimerJob::setTimeout(UINT msec, bool repeatTimeout) {
-  if(repeatTimeout) {
-    setFlag(REPEAT_TIMEOUT);
-  } else {
-    clrFlag(REPEAT_TIMEOUT);
-  }
-  if(msec == m_msec) return;
-  m_msec = msec;
-  if(!ISHANDLERACTIVE()) {
+void _TimerJob::timeoutChanged() {
+  if(!m_timer.isSet(TM_HANDLERACTIVE)) {
     const UINT sleepTimemsec = (UINT)Timestamp::diff(m_lastTimeout, Timestamp(), TMILLISECOND);
+    const UINT msec          = getTimeoutMsec();
     if(msec > sleepTimemsec) {
       m_changePendingmsec = msec - sleepTimemsec;
-      setFlag(CHANGETIMEOUT_PENDING);
+      m_timer.setFlag(TM_TIMEOUTCHANGE_PENDING);
     }
-    m_timeout.notify();
+    notifyTimeout();
   }
 }
 
 UINT _TimerJob::run() {
-  m_terminated.wait();
   m_lastTimeout = Timestamp();
   try {
 #ifdef _DEBUG
-    setThreadDescription(m_timer.getName());
+    setThreadDescription(format(_T("TimerJob(%s,id=%d"), m_timer.getName().cstr(), m_timer.getId()));
 #endif // _DEBUG
-
-    while(!ISKILLED()) {
-      m_timeout.wait(m_msec);
-      if(ISKILLED()) break;
-      if(ISCHANGETIMEOUT_PENDING()) {
-        clrFlag(CHANGETIMEOUT_PENDING);
-        m_timeout.wait(m_changePendingmsec);
-        if(ISKILLED()) break;
+    while(!isKilled()) {
+      m_timeout.wait(getTimeoutMsec());
+      if(isKilled()) {
+        break;
       }
-      setFlag(HANDLER_ACTIVE);
+      if(m_timer.isSet(TM_TIMEOUTCHANGE_PENDING)) {
+        m_timer.clrFlag(TM_TIMEOUTCHANGE_PENDING);
+        m_timeout.wait(m_changePendingmsec);
+        if(isKilled()) {
+          break;
+        }
+      }
+      m_timer.setFlag(TM_HANDLERACTIVE);
       try {
         m_lastTimeout = Timestamp();
         m_handler.handleTimeout(m_timer);
-        clrFlag(HANDLER_ACTIVE);
-      } catch(...) {
-        clrFlag(HANDLER_ACTIVE);
+        m_timer.clrFlag(TM_HANDLERACTIVE);
+      } catch (...) {
+        m_timer.clrFlag(TM_HANDLERACTIVE);
         throw;
       }
-      if(!ISREPEATTIMEOUT()) setFlag(KILLED);
+      if(!isTimeoutRepeated()) {
+        break;
+      }
     }
+  } catch(Exception e) {
+    DEBUGLOG(_T("%s:got exception:%s\n"), __TFUNCTION__, e.what());
   } catch(...) {
+    DEBUGLOG(_T("%s:got unknown exception:%s\n"), __TFUNCTION__);
     // ignore
   }
-  m_terminated.notify();
   return 0;
 }
 
+class TimerJobWrapper : public RunnableWrapperTemplate<_TimerJob> {
+public:
+  TimerJobWrapper(Timer *timer, TimeoutHandler &handler)
+    : RunnableWrapperTemplate(*new _TimerJob(timer, handler))
+  {
+  }
+  ~TimerJobWrapper() {
+    Runnable *job = &waitUntilJobDone().getRunnable();
+    delete job;
+  }
+};
+
 Timer::Timer(int id, const String &name)
 : m_id(id)
-, m_name(name.length()?name:format(_T("Timer(%d)"),id))
-, m_blockStart(false)
+, m_name(name.length() ? name : format(_T("Timer(%d)"), id))
+, m_flags(0)
 , m_job(NULL)
 {
   ThreadPool::addListener(this);
 }
 
 Timer::~Timer() {
+  m_lock.wait();
+  setFlag(TM_DESTRUCTORCALLED);
   ThreadPool::removeListener(this);
-  stopTimer();
+  m_lock.notify();
   destroyJob();
 }
 
-void Timer::createJob(UINT msec, TimeoutHandler &handler, bool repeatTimeout) {
-  m_job = new _TimerJob(this, msec, handler, repeatTimeout); TRACE_NEW(m_job);
+void Timer::createJob(TimeoutHandler &handler) {
+  m_job = new TimerJobWrapper(this, handler); TRACE_NEW(m_job);
   ThreadPool::executeNoWait(*m_job);
 }
 
+bool Timer::isHandlerActive() const {
+  return isSet(TM_HANDLERACTIVE);
+}
+
 void Timer::destroyJob() {
+  setFlag(TM_KILLPENDING);
   SAFEDELETE(m_job);
+  clrFlag(TM_KILLPENDING);
+}
+
+bool Timer::isDestroyingJob() const {
+  return isSet(TM_DESTRUCTORCALLED | TM_STOPTIMERCALLED | TM_KILLPENDING);
 }
 
 void Timer::startTimer(UINT msec, TimeoutHandler &handler, bool repeatTimeout) {
+  if(isDestroyingJob()) return;
   m_lock.wait();
-  if(!m_blockStart) {
-    if((m_job == NULL) || m_job->isKilled()) {
+  if(!isSet(TM_BLOCKSTART)) {
+    if((m_job == NULL) || isSet(TM_KILLPENDING)) {
       destroyJob();
-      createJob(msec, handler, repeatTimeout);
+      m_timeoutMsec = msec;
+      setFlag(TM_TIMEOUTREPEAT, repeatTimeout);
+      createJob(handler);
     }
   }
   m_lock.notify();
 }
 
 void Timer::stopTimer() {
+  if(isDestroyingJob()) return;
   m_lock.wait();
-  if(m_job) {
-    m_job->kill();
-  }
+  setFlag(TM_STOPTIMERCALLED);
   m_lock.notify();
+  destroyJob();
+  clrFlag(TM_STOPTIMERCALLED);
 }
 
 bool Timer::isRunning() const {
+  if(isDestroyingJob()) return false;
   m_lock.wait();
-  const bool result = m_job && !m_job->isKilled();
+  const bool result = (m_job != NULL);
   m_lock.notify();
   return result;
 }
 
 UINT Timer::getTimeout() const {
+  if(isDestroyingJob()) return 0;
   m_lock.wait();
-  const UINT result = m_job ? m_job->getTimeout() : 0;
+  const UINT result = m_job ? m_timeoutMsec : 0;
   m_lock.notify();
   return result;
 }
 
 void Timer::setTimeout(UINT msec, bool repeatTimeout) {
+  if(isDestroyingJob()) return;
   m_lock.wait();
-  if(m_job && !m_job->isKilled()) {
-    m_job->setTimeout(msec, repeatTimeout);
+  if((m_job != NULL) && (msec != m_timeoutMsec)) {
+    m_timeoutMsec = msec;
+    setFlag(TM_TIMEOUTREPEAT, repeatTimeout);
+    m_job->getJob().timeoutChanged();
   }
   m_lock.notify();
 }
 
 void Timer::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
   if(ThreadPool::isPropertyContainer(source) && (id == THREADPOOL_SHUTTINGDDOWN)) {
-    m_blockStart = true;
+    setFlag(TM_BLOCKSTART);
     stopTimer();
-    destroyJob();
   }
 }

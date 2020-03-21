@@ -1,5 +1,5 @@
 #include "pch.h"
-#include <Math/BigInt.h>
+#include <Math/BigReal/BigInt.h>
 #include "BigRealStream.h"
 
 istream  &operator>>(istream  &in ,       BigInt &x) {

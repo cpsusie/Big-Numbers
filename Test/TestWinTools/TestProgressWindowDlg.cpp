@@ -11,19 +11,19 @@
 
 CTestProgressWindowDlg::CTestProgressWindowDlg(CWnd *pParent) : CDialog(CTestProgressWindowDlg::IDD, pParent), m_jobCount(0)
 {
-    m_hasMessageBox         = TRUE;
-    m_hasTimeEstimate       = TRUE;
-    m_autoCorrelateEstimate = FALSE;
-    m_interruptable         = TRUE;
-    m_hasProgressBar        = TRUE;
-    m_showPercent           = FALSE;
-    m_hasSubProgressBar     = FALSE;
-    m_suspendable           = FALSE;
-    m_delayMSec             = 600;
-    m_title                 = _T("Some job");
-    m_jobTime               = 10;
-    m_updateRate            = 200;
-    m_jobCount              = 1;
+  m_hasMessageBox         = TRUE;
+  m_hasTimeEstimate       = TRUE;
+  m_autoCorrelateEstimate = FALSE;
+  m_interruptable         = TRUE;
+  m_hasProgressBar        = TRUE;
+  m_showPercent           = FALSE;
+  m_hasSubProgressBar     = FALSE;
+  m_suspendable           = FALSE;
+  m_delayMSec             = 600;
+  m_title                 = _T("Some job");
+  m_jobTime               = 10;
+  m_updateRate            = 200;
+  m_jobCount              = 1;
 }
 
 void CTestProgressWindowDlg::DoDataExchange(CDataExchange *pDX) {
@@ -42,11 +42,11 @@ void CTestProgressWindowDlg::DoDataExchange(CDataExchange *pDX) {
   DDX_Text(pDX, IDC_EDIT_UPDATERATE, m_updateRate);
   DDV_MinMaxUInt(pDX, m_updateRate, 10, 2000);
   DDX_Text(pDX, IDC_EDIT_JOBCOUNT, m_jobCount);
-    DDV_MinMaxUInt(pDX, m_jobCount, 1, 4);
+  DDV_MinMaxUInt(pDX, m_jobCount, 1, 4);
 }
 
 BEGIN_MESSAGE_MAP(CTestProgressWindowDlg, CDialog)
-    ON_BN_CLICKED(IDC_BUTTON_STARTJOB              , OnButtonStartJob )
+  ON_BN_CLICKED(IDC_BUTTON_STARTJOB              , OnButtonStartJob )
 END_MESSAGE_MAP()
 
 BOOL CTestProgressWindowDlg::OnInitDialog() {
@@ -91,8 +91,8 @@ SomeJob::SomeJob(const TCHAR *title, int seconds, UINT supportedFeatures, USHORT
 , m_supportedFeatures(supportedFeatures)
 , m_jobCount(jobCount)
 {
-  m_totalMsec    = (double)seconds * 1000000;
-  m_threadMsec   = 0;
+  m_totalMsec  = (double)seconds * 1000000;
+  m_threadMsec = 0;
 }
 
 double SomeJob::getProgress() const {
@@ -104,7 +104,8 @@ USHORT SomeJob::getSubProgressPercent(UINT i) {
 }
 
 UINT SomeJob::run() {
-  while(m_threadMsec < m_totalMsec) {
+  const double startTime = getThreadTime();
+  while((m_threadMsec = (getThreadTime() - startTime)) < m_totalMsec) {
     if(isInterrupted()) {
       break;
     }
@@ -112,7 +113,6 @@ UINT SomeJob::run() {
       suspend();
     }
     for(int i = 0; i < 1000000; i++);
-    m_threadMsec = getThreadTime();
   }
   return 0;
 }

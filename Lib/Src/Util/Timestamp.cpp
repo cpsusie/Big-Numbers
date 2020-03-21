@@ -262,17 +262,17 @@ Timestamp &Timestamp::set(TimeComponent c, int value) {
     scale *= 10;                                            \
   }                                                         \
   String tmp = ::format(_T("%0*d"), count, (comp) % scale); \
-  _tcscpy(t, tmp.cstr());                                    \
+  _tcscpy(t, tmp.cstr());                                   \
   t += tmp.length();                                        \
 }                                                           \
 break
 
-TCHAR *Timestamp::tostr(TCHAR *dst, const String &format) const {
+TCHAR *Timestamp::tostr(TCHAR *dst, const TCHAR *format) const {
   int year, month, day, hour, minute, second, millisecond;
   getDMY(day, month, year);
   getHMS(hour, minute, second, millisecond);
   TCHAR *t = dst;
-  for(const TCHAR *cp = format.cstr(); *cp;) {
+  for(const TCHAR *cp = format; *cp;) {
     switch(*cp) {
     CASECH('y', year          );
     CASECH('M', month         );

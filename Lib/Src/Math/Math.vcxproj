@@ -1240,12 +1240,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\Math\AlgorithmHandler.h" />
-    <ClInclude Include="..\..\Include\Math\BigInt.h" />
-    <ClInclude Include="..\..\Include\Math\BigRational.h" />
-    <ClInclude Include="..\..\Include\Math\BigReal.h" />
-    <ClInclude Include="..\..\Include\Math\BigRealInterval.h" />
-    <ClInclude Include="..\..\Include\Math\BigRealMatrix.h" />
-    <ClInclude Include="..\..\Include\Math\BigRealTransformation.h" />
+    <ClInclude Include="..\..\Include\Math\BigReal\BigInt.h" />
+    <ClInclude Include="..\..\Include\Math\BigReal\BigRational.h" />
+    <ClInclude Include="..\..\Include\Math\BigReal\BigReal.h" />
+    <ClInclude Include="..\..\Include\Math\BigReal\BigRealConfig.h" />
+    <ClInclude Include="..\..\Include\Math\BigReal\BigRealInterval.h" />
+    <ClInclude Include="..\..\Include\Math\BigReal\BigRealMatrix.h" />
+    <ClInclude Include="..\..\Include\Math\BigReal\BigRealTransformation.h" />
+    <ClInclude Include="..\..\Include\Math\BigReal\DigitPool.h" />
+    <ClInclude Include="..\..\Include\Math\BigReal\MRisprime.h" />
     <ClInclude Include="..\..\Include\Math\Complex.h" />
     <ClInclude Include="..\..\Include\Math\Cube3D.h" />
     <ClInclude Include="..\..\Include\Math\Double64.h" />
@@ -1260,7 +1263,6 @@
     <ClInclude Include="..\..\Include\Math\MathException.h" />
     <ClInclude Include="..\..\Include\Math\MathLib.h" />
     <ClInclude Include="..\..\Include\Math\Matrix.h" />
-    <ClInclude Include="..\..\Include\Math\MRisprime.h" />
     <ClInclude Include="..\..\Include\Math\Number.h" />
     <ClInclude Include="..\..\Include\Math\Point2D.h" />
     <ClInclude Include="..\..\Include\Math\Point2DTransformations.h" />
