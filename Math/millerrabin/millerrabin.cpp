@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include <CPUInfo.h>
 #include <Console.h>
-#include <Math/MRisprime.h>
 #include <Date.h>
+#include <Math/BigReal/MRisprime.h>
 
 using namespace std;
 
