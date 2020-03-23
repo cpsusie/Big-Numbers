@@ -26,7 +26,6 @@ public:
 };
 
 struct GifFileType;
-class Animator;
 class AnimatedImage : private PropertyChangeListener {
   friend class Animator;
   friend class GifFrame;
@@ -42,9 +41,8 @@ private:
   const GifFrame        *m_lastPaintedFrame;
   CPoint                 m_savedPosition;
   String                 m_comment;
-  void throwGifError(int errorCode);
   void parseApplicationBlock(const unsigned char *bytes, int n);
-  void extractGifData(const GifFileType *gifFile);                           // gifFile actually GifFileType
+  void extractGifData(const GifFileType *gifFile);                // gifFile actually GifFileType
   void releaseBackground();
   void saveBackground(const CPoint &p, const CSize *size = NULL); // if size=NULL, then m_size
   void restoreBackground();
@@ -76,8 +74,8 @@ public:
   void paintWork(     CDC  &dc,  const CPoint &p);
   void paintAllFrames(const CRect  &r);
   void hide();
-  inline int getFrameCount() const {
-    return (int)m_frameTable.size();
+  inline UINT getFrameCount() const {
+    return (UINT)m_frameTable.size();
   }
   inline const GifFrame &getFrame(int index) const {
     return m_frameTable[index];

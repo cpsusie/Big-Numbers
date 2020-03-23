@@ -130,13 +130,17 @@ class MeshArrayCreator : public InteractiveRunnable {
 private:
   MeshArrayJobMonitor m_jobMonitor;
   const UINT          m_frameCount;
+  RunnableArray       m_workerArray;
+  void cleanup();
 public:
   MeshArrayCreator(const AbstractMeshArrayJobParameter &param)
   : m_jobMonitor(param)
   , m_frameCount(param.getFrameCount())
   {
   }
-
+  ~MeshArrayCreator() {
+    cleanup();
+  }
   double getMaxProgress() const {
     return m_frameCount;
   }
@@ -155,10 +159,10 @@ public:
   MeshArray getResult() {
     return m_jobMonitor.getResult();
   }
-  UINT run();
+  UINT safeRun();
 };
 
-UINT MeshArrayCreator::run() {
+UINT MeshArrayCreator::safeRun() {
   const double stept = getJobMonitor().m_param.getTimeInterval().getLength() / (m_frameCount-1);
   double       t     = getJobMonitor().m_param.getTimeInterval().getFrom();
 
@@ -170,18 +174,26 @@ UINT MeshArrayCreator::run() {
 #else
   const int processorCount = getProcessorCount();
 #endif
-  RunnableArray workerArray;
   for(int i = 0; i < processorCount; i++) {
     Runnable *r = new MeshBuilderWorker(this); TRACE_NEW(r);
-    workerArray.add(r);
+    m_workerArray.add(r);
   }
-  ThreadPool::executeInParallel(workerArray);
-  for(size_t i = 0; i < workerArray.size(); i++) {
-    Runnable *r = workerArray[i];
+  try {
+    ThreadPool::executeInParallel(m_workerArray);
+    cleanup();
+  } catch (...) {
+    cleanup();
+    throw;
+  }
+  return 0;
+}
+
+void MeshArrayCreator::cleanup() {
+  for(size_t i = 0; i < m_workerArray.size(); i++) {
+    Runnable *r = m_workerArray[i];
     SAFEDELETE(r);
   }
-  workerArray.clear();
-  return 0;
+  m_workerArray.clear();
 }
 
 MeshBuilderWorker::MeshBuilderWorker(MeshArrayCreator *arrayCreator)

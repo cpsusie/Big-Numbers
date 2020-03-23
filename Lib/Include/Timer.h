@@ -5,7 +5,6 @@
 #include "FastSemaphore.h"
 
 class Timer;
-class TimerJobWrapper;
 
 class TimeoutHandler {
 public:
@@ -20,7 +19,7 @@ private:
   const String          m_name;
   UINT                  m_timeoutMsec;
   ATOMICFLAGTRAITS(BYTE,Timer)
-  TimerJobWrapper      *m_job;
+  _TimerJob            *m_job;
   mutable FastSemaphore m_lock;
   void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
   // no lock protection

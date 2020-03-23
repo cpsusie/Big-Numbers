@@ -83,7 +83,7 @@ public:
     return format(_T("Job %d:%.1lf/%.0lf sec"), index, m_threadMsec / 1000000, m_totalMsec / 1000000);
   }
 
-  UINT run();
+  UINT safeRun();
 };
 
 SomeJob::SomeJob(const TCHAR *title, int seconds, UINT supportedFeatures, USHORT jobCount)
@@ -103,7 +103,7 @@ USHORT SomeJob::getSubProgressPercent(UINT i) {
   return (short)fmod(m_threadMsec / 10000.0,100);
 }
 
-UINT SomeJob::run() {
+UINT SomeJob::safeRun() {
   const double startTime = getThreadTime();
   while((m_threadMsec = (getThreadTime() - startTime)) < m_totalMsec) {
     if(isInterrupted()) {

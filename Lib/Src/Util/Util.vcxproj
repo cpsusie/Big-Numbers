@@ -864,6 +864,7 @@
     <ClInclude Include="..\..\Include\ResourcePoolTemplate.h" />
     <ClInclude Include="..\..\Include\Runnable.h" />
     <ClInclude Include="..\..\Include\RunnableWrapper.h" />
+    <ClInclude Include="..\..\Include\SafeRunnable.h" />
     <ClInclude Include="..\..\Include\Scandir.h" />
     <ClInclude Include="..\..\Include\Scanner.h" />
     <ClInclude Include="..\..\Include\Semaphore.h" />
@@ -1070,7 +1071,7 @@
     <ClCompile Include="PropertyContainer.cpp" />
     <ClCompile Include="QuickSort.cpp" />
     <ClCompile Include="RationalRegex.cpp" />
-    <ClCompile Include="RunnableWrapper.cpp" />
+    <ClCompile Include="SafeRunnable.cpp" />
     <ClCompile Include="Singleton.cpp" />
     <ClCompile Include="StandardRandomGenerator.cpp" />
     <ClCompile Include="RandomGenerator.cpp" />

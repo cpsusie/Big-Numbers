@@ -1,33 +1,37 @@
 #include "pch.h"
-#include <RunnableWrapper.h>
-#include <DebugLog.h>
+#include <SafeRunnable.h>
 
-RunnableWrapper::~RunnableWrapper() {
-  waitUntilJobDone();
-}
-
-void RunnableWrapper::setErrorMsg(const TCHAR *msg) {
+void SafeRunnable::setErrorMsg(const TCHAR *msg) {
   m_lock.wait();
   m_errorMsg = msg;
-  setFlag(_RWJOB_ERROR);
+  setFlag(_SRJOB_ERROR);
   m_lock.notify();
 }
-void RunnableWrapper::setJobStarted() {
+
+void SafeRunnable::setJobStarted() {
   m_lock.wait();
+  if(isSet(_SRJOB_STARTED)) {
+    m_lock.notify();
+    return;
+  }
   m_terminated.wait();
-  setFlag(_RWJOB_STARTED | _RWJOB_RUNNING);
+  setFlag(_SRJOB_STARTED | _SRJOB_RUNNING);
+  m_lock.notify();
   m_started.notify();
-  m_lock.notify();
 }
 
-void RunnableWrapper::setJobDone() {
+void SafeRunnable::setJobDone() {
   m_lock.wait();
-  clrFlag(_RWJOB_RUNNING).setFlag(_RWJOB_DONE);
-  m_terminated.notify();
+  if(isSet(_SRJOB_DONE)) {
+    m_lock.wait();
+    return;
+  }
+  setFlag(_SRJOB_DONE).clrFlag(_SRJOB_RUNNING);
   m_lock.notify();
+  m_terminated.notify();
 }
 
-void RunnableWrapper::waitUntilJobStarted() {
+void SafeRunnable::waitUntilJobStarted() {
   m_lock.wait();
   if(!isJobStarted()) {
     m_lock.notify();
@@ -37,7 +41,7 @@ void RunnableWrapper::waitUntilJobStarted() {
   m_lock.notify();
 }
 
-RunnableWrapper &RunnableWrapper::waitUntilJobDone() {
+SafeRunnable &SafeRunnable::waitUntilJobDone() {
   m_lock.wait();
   if(!isJobDone()) {
     m_lock.notify();
@@ -48,22 +52,22 @@ RunnableWrapper &RunnableWrapper::waitUntilJobDone() {
   return *this;
 }
 
-String RunnableWrapper::getErrorMsg() const {
+String SafeRunnable::getErrorMsg() const {
   m_lock.wait();
   const String result = m_errorMsg;
   m_lock.notify();
   return result;
 }
 
-UINT RunnableWrapper::run() {
+UINT SafeRunnable::run() {
   setJobStarted();
   UINT result;
   try {
-    result = m_job.run();
-  } catch (Exception e) {
+    result = safeRun();
+  } catch(Exception e) {
     setErrorMsg(e.what());
     result = -1;
-  } catch (...) {
+  } catch(...) {
     result = -1;
     setErrorMsg(_T("Unknown exception"));
   }

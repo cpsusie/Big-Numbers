@@ -2,13 +2,13 @@
 
 #include <afxcmn.h>         // MFC support for Windows Common Controls
 #include <MFCUtil/resource.h>
-#include "MFCUtil/InteractiveRunnableWrapper.h"
+#include "MFCUtil/InteractiveRunnable.h"
 #include "MFCUtil/ProgressWithPctCtrl.h"
 
 class CProgressDlg : public CDialog {
 private:
   HACCEL                      m_accelTable;
-  InteractiveRunnableWrapper &m_rw;
+  InteractiveRunnable        &m_jobToDo;
   const UINT                  m_updateRate;
   const int                   m_supportedFeatures;
   bool                        m_timerRunning;
@@ -25,11 +25,11 @@ private:
   void startTimer();
   void stopTimer();
   void setWaitCursor(bool on = true);
-  int moveControlsBelowUp(CWnd *win, int dh=0);
+  int  moveControlsBelowUp(CWnd *win, int dh=0);
   void resumeJob();
   void suspendJob();
 public:
-  CProgressDlg(CWnd *pParent, InteractiveRunnableWrapper &rw, UINT updateRate);
+  CProgressDlg(CWnd *pParent, InteractiveRunnable &jobToDo, UINT updateRate);
 
   enum { IDD = _IDD_PROGRESSDIALOG };
 

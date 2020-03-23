@@ -7,14 +7,15 @@
 
 #pragma warning(disable : 4244)
 
-CProgressDlg::CProgressDlg(CWnd *pParent, InteractiveRunnableWrapper &rw, UINT updateRate)
-: CDialog(IDD, pParent)
-, m_rw(rw)
-, m_updateRate(updateRate)
-, m_supportedFeatures(rw.getJob().getSupportedFeatures())
-, m_timerRunning(false)
+CProgressDlg::CProgressDlg(CWnd *pParent, InteractiveRunnable &jobToDo, UINT updateRate)
+: CDialog(            IDD, pParent)
+, m_accelTable(       NULL        )
+, m_jobToDo(          jobToDo     )
+, m_updateRate(       updateRate  )
+, m_supportedFeatures(jobToDo.getSupportedFeatures())
+, m_timerRunning(     false       )
+, m_jobCount(         0           )
 {
-  m_accelTable      = NULL;
 }
 
 BEGIN_MESSAGE_MAP(CProgressDlg, CDialog)
@@ -29,9 +30,9 @@ BOOL CProgressDlg::OnInitDialog() {
 
   m_newProgressCtrl.substituteControl(this, _IDC_PROGRESSBAR);
   m_newProgressCtrl.setShowPercent((m_supportedFeatures & IR_SHOWPERCENT) != 0);
-  setWindowText(this, m_rw.getJob().getTitle());
+  setWindowText(this, m_jobToDo.getTitle());
   CSize winSize = getWindowSize(this);
-  m_jobCount = minMax(m_rw.getJob().getJobCount(), (USHORT)1, (USHORT)4);
+  m_jobCount = minMax(m_jobToDo.getJobCount(), (USHORT)1, (USHORT)4);
   if(!(m_supportedFeatures & (IR_SHOWPROGRESSMSG | IR_SUBPROGRESSBAR))) {
     winSize.cy -= setVisibleJobs(0);
   } else {
@@ -50,7 +51,7 @@ BOOL CProgressDlg::OnInitDialog() {
     m_newProgressCtrl.ShowWindow(SW_HIDE);
   } else {
     m_newProgressCtrl.SetRange(0, 1000);
-    m_newProgressCtrl.SetPos((int)(m_rw.getJob().getPercentDone()*10));
+    m_newProgressCtrl.SetPos((int)(m_jobToDo.getPercentDone()*10));
   }
   int buttonh;
   bool hasButton = false;
@@ -96,7 +97,6 @@ static const SubProgressBarMsgId barMsgIdArray[] = {
 };
 
 int CProgressDlg::setVisibleJobs(UINT count) {
-  InteractiveRunnable &job = m_rw.getJob();
   const int  lh = getWindowPosition(this, _IDC_STATICPROGRESSMSG2).y
                 - getWindowPosition(this, _IDC_STATICPROGRESSMSG1).y;
 
@@ -106,10 +106,10 @@ int CProgressDlg::setVisibleJobs(UINT count) {
   if(count >= maxCount) count = maxCount;
 
   if(features & IR_SUBPROGRESSBAR) {
-    for (UINT i = 0; i < count; i++) {
+    for(UINT i = 0; i < count; i++) {
       CProgressCtrl *ctrl = getSubProgressCtrl(i);
       ctrl->SetRange(0, 100);
-      ctrl->SetPos(job.getSubProgressPercent(i));
+      ctrl->SetPos(m_jobToDo.getSubProgressPercent(i));
     }
   }
   for(UINT i = maxCount; i--;) {
@@ -173,12 +173,12 @@ int CProgressDlg::moveControlsBelowUp(CWnd *win, int dh) {
 }
 
 void CProgressDlg::OnCancel() {
-  m_rw.getJob().setInterrupted();
+  m_jobToDo.setInterrupted();
   startTimer();
 }
 
 void CProgressDlg::OnButtonSuspend() {
-  if(m_rw.getJob().isSuspended()) {
+  if(m_jobToDo.isSuspended()) {
     resumeJob();
   } else {
     suspendJob();
@@ -187,13 +187,13 @@ void CProgressDlg::OnButtonSuspend() {
 
 void CProgressDlg::resumeJob() {
   setWindowText(getSuspendButton(), loadString(_IDC_BUTTONSUSPEND));
-  m_rw.getJob().resume();
+  m_jobToDo.resume();
   startTimer();
 }
 
 void CProgressDlg::suspendJob() {
   stopTimer();
-  m_rw.getJob().setSuspended();
+  m_jobToDo.setSuspended();
   setWindowText(getSuspendButton(), loadString(_IDC_BUTTONRESUME));
 }
 
@@ -265,12 +265,12 @@ void CProgressDlg::OnTimer(UINT_PTR nIDEvent) {
     if(m_supportedFeatures & (IR_PROGRESSBAR | IR_SUBPROGRESSBAR | IR_SHOWTIMEESTIMATE)) {
       if(m_supportedFeatures & IR_SUBPROGRESSBAR) {
         for(UINT i = 0; i < m_jobCount; i++) {
-          subPercent.add(m_rw.getJob().getSubProgressPercent(i));
+          subPercent.add(m_jobToDo.getSubProgressPercent(i));
         }
       }
     }
     if(m_supportedFeatures & (IR_PROGRESSBAR | IR_SUBPROGRESSBAR)) {
-      double promilleDone = m_rw.getJob().getPercentDone() * 10;
+      double promilleDone = m_jobToDo.getPercentDone() * 10;
 
       if(m_supportedFeatures & IR_SUBPROGRESSBAR) {
         double sumSubPercent = 0;
@@ -286,19 +286,19 @@ void CProgressDlg::OnTimer(UINT_PTR nIDEvent) {
       m_newProgressCtrl.SetPos((int)promilleDone);
     }
     if(m_supportedFeatures & IR_SHOWTIMEESTIMATE) {
-      const double secondsElapsed   = Timestamp::diff(m_rw.getJob().getJobStartTime(), Timestamp(), TSECOND);
-      const double secondsLeft      = m_rw.getJob().getSecondsRemaining();
+      const double secondsElapsed   = Timestamp::diff(m_jobToDo.getJobStartTime(), Timestamp(), TSECOND);
+      const double secondsLeft      = m_jobToDo.getSecondsRemaining();
       const String timeElapsedMsg   = format(_T("%s:%s"), m_timeElapsedLabel.cstr(), formatSeconds(secondsElapsed).cstr());
       const String timeRemainingMsg = format(_T("%s:%s"), m_timeRemaingLabel.cstr(), formatSeconds(secondsLeft).cstr());
       setWindowText(getStaticTimeEstimate(), format(_T("%s       %s"), timeElapsedMsg.cstr(), timeRemainingMsg.cstr()));
     }
     if(m_supportedFeatures & IR_SHOWPROGRESSMSG) {
       for(USHORT i = 0; i < m_jobCount; i++) {
-        setWindowText(getStaticProgressMessage(i), m_rw.getJob().getProgressMessage(i));
+        setWindowText(getStaticProgressMessage(i), m_jobToDo.getProgressMessage(i));
       }
     }
   }
-  if(m_rw.isJobDone()) {
+  if(m_jobToDo.isJobDone()) {
     stopTimer();
     setWaitCursor(false);
     EndDialog(IDOK);

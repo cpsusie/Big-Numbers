@@ -709,7 +709,6 @@
     <ClCompile Include="IconInfo.cpp" />
     <ClCompile Include="IconTools.cpp" />
     <ClCompile Include="InteractiveRunnable.cpp" />
-    <ClCompile Include="InterInteractiveRunnableWrapper.cpp" />
     <ClCompile Include="IsBorderHit.cpp" />
     <ClCompile Include="LayoutAttribute.cpp" />
     <ClCompile Include="LayoutManager.cpp" />
@@ -811,7 +810,6 @@
     <ClInclude Include="..\..\Include\MFCUtil\FileSrc.h" />
     <ClInclude Include="..\..\Include\MFCUtil\GifCtrl.h" />
     <ClInclude Include="..\..\Include\MFCUtil\InteractiveRunnable.h" />
-    <ClInclude Include="..\..\Include\MFCUtil\InteractiveRunnableWrapper.h" />
     <ClInclude Include="..\..\Include\MFCUtil\LayoutManager.h" />
     <ClInclude Include="..\..\Include\MFCUtil\ListCtrlChildTrait.h" />
     <ClInclude Include="..\..\Include\MFCUtil\MMCapture.h" />

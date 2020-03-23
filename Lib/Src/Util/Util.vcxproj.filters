@@ -860,7 +860,7 @@
     <ClCompile Include="Singleton.cpp">
       <Filter>Source Files\Misc</Filter>
     </ClCompile>
-    <ClCompile Include="RunnableWrapper.cpp">
+    <ClCompile Include="SafeRunnable.cpp">
       <Filter>Source Files\Process</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1274,6 +1274,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\FlagTraits.h">
       <Filter>Header Files\Collection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\SafeRunnable.h">
+      <Filter>Header Files\Process</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

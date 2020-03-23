@@ -2,15 +2,13 @@
 #include <MyUtil.h>
 #include <FileNameSplitter.h>
 #include <ThreadPool.h>
-#include <RunnableWrapper.h>
 #include "ProgressDlg.h"
 #include <MFCUtil/resource.h>
 #include <MFCUtil/ProgressWindow.h>
 
 ProgressWindow::ProgressWindow(CWnd *parent, InteractiveRunnable &jobToDo, UINT delay, UINT updateRate) {
-  InteractiveRunnableWrapper rm(jobToDo);
   const Timestamp startTime = jobToDo.setStartTime();
-  ThreadPool::executeNoWait(rm);
+  ThreadPool::executeNoWait(jobToDo);
 
   for(;;) {
     const double timeElapsed = Timestamp::diff(startTime, Timestamp(), TMILLISECOND);
@@ -19,21 +17,21 @@ ProgressWindow::ProgressWindow(CWnd *parent, InteractiveRunnable &jobToDo, UINT 
       break;
     }
     Sleep((DWORD)sleepTime);
-    if(rm.isJobDone()) {
-      if(!rm.isOk()) {
-        showError(rm.getErrorMsg());
+    if(jobToDo.isJobDone()) {
+      if(!jobToDo.isOk()) {
+        showError(jobToDo.getErrorMsg());
       }
       return;
     }
   }
 
-  CProgressDlg dlg(parent, rm, updateRate);
+  CProgressDlg dlg(parent, jobToDo, updateRate);
   const INT_PTR ret = dlg.DoModal();
   switch(ret) {
   case IDOK:
   case IDCANCEL:
-    if(!rm.isOk()) {
-      showError(rm.getErrorMsg());
+    if(!jobToDo.isOk()) {
+      showError(jobToDo.getErrorMsg());
     }
     break;
   default:

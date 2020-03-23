@@ -4,6 +4,7 @@
 #include <ByteMemoryStream.h>
 #include <ThreadPool.h>
 #include <Thread.h>
+#include <InterruptableRunnable.h>
 #include <Semaphore.h>
 #include <MFCUtil/PixRect.h>
 #include <MFCUtil/AnimatedImage.h>
@@ -11,144 +12,138 @@
 
 #pragma warning(disable : 4244)
 
+typedef enum {
+  PLAYING
+ ,STOPPED
+ ,KILLED
+} AnimatorState;
 
-class Animator : public Runnable {
+class Animator : private InterruptableRunnable {
 private:
-  AnimatedImage *m_owner;
-  Thread        *m_thread;
+  AnimatedImage &m_owner;
   String         m_description;
-  CPoint         m_point;
-  int            m_frameIndex;
   Semaphore      m_delaySem;
-  FastSemaphore  m_lock, m_terminated;
-  bool           m_running    : 1;
-  bool           m_killed     : 1;
-  bool           m_stopSignal : 1;
-  // no wait/notify
-  void stopLoop();
-  // no wait/notify
-  void resume();
-  // no wait/notify
-  void suspend();
-  bool hasThread() const {
-    return m_thread != NULL;
+  FastSemaphore  m_animatorStopped;
+  AnimatorState  m_state;
+  CPoint         m_point;
+  UINT           m_frameIndex;
+  void waitUntilStopped() {
+    m_animatorStopped.wait();
   }
-  void setThread(Thread *t);
+  void setState(AnimatorState newState);
 public:
   Animator(AnimatedImage *owner, const String &description = "Animator");
-  ~Animator();
+  inline AnimatorState getState() const {
+    return m_state;
+  }
   void startAnimation(const CPoint &p);
   void stopAnimation();
   void kill();
-  UINT run();
-  inline bool isRunning() const {
-    return m_running;
-  }
+  UINT safeRun();
 };
 
-Animator::Animator(AnimatedImage *owner, const String &description) : m_delaySem(0), m_thread(NULL) {
-  m_owner       = owner;
-  m_description = description;
-  m_point       = CPoint(-1,-1);
-  m_running     = false;
-  m_killed      = false;
-  m_stopSignal  = false;
-  m_frameIndex  = 0;
+Animator::Animator(AnimatedImage *owner, const String &description)
+: m_owner(*owner)
+, m_description(description)
+, m_delaySem(0)
+, m_point(-1,-1)
+, m_frameIndex(0)
+{
+  setSuspended();
+  m_state = PLAYING;
+  m_animatorStopped.wait();
+  ThreadPool::executeNoWait(*this);
 }
 
-Animator::~Animator() {
-  kill();
-}
-
-void Animator::resume() {
-  if(!hasThread()) {
-    ThreadPool::executeNoWait(*this);
-  } else {
-    m_thread->resume();
+void Animator::setState(AnimatorState newState) {
+  if(newState == m_state) {
+    return;
   }
-}
-
-void Animator::suspend() {
-  m_thread->suspend();
-}
-
-void Animator::setThread(Thread *t) {
-  m_lock.wait();
-  m_thread = t;
-  if(t) m_terminated.wait();
-  else  m_terminated.notify();
-  m_lock.notify();
+  switch(getState()) {
+  case STOPPED:
+    switch(newState) {
+    case PLAYING:
+    case KILLED:
+      m_state = newState;
+      break;
+    }
+    break;
+  case PLAYING:
+    switch(newState) {
+    case STOPPED:
+      m_state = newState;
+      m_animatorStopped.notify();
+      suspend();
+      break;
+    case KILLED:
+      m_state = newState;
+      m_animatorStopped.notify();
+      break;
+    }
+    break;
+  case KILLED:
+    switch(newState) {
+    case STOPPED:
+      throwInvalidArgumentException(__TFUNCTION__, _T("m_state=KILLED,newState=STOPPED"));
+      break;
+    case PLAYING:
+      throwInvalidArgumentException(__TFUNCTION__, _T("m_state=KILLED,newState=PLAYING"));
+      break;
+    }
+    break;
+  }
 }
 
 void Animator::startAnimation(const CPoint &p) {
-  m_lock.wait();
-  if(!isRunning()) {
-    m_point   = p;
-    m_running = true;
+  switch(getState()) {
+  case STOPPED  :
+    m_point = p;
     resume();
   }
-  m_lock.notify();
 }
 
 void Animator::stopAnimation() {
-  m_lock.wait();
-  if(isRunning()) {
-    stopLoop();
+  switch(getState()) {
+  case PLAYING:
+    setSuspended();
+    waitUntilStopped();
+    break;
   }
-  m_lock.notify();
 }
 
 void Animator::kill() {
-  m_lock.wait();
-  bool waitForTermination = false;
-  if(!m_killed && hasThread()) {
-    waitForTermination = true;
-    m_killed = true;
-    if(isRunning()) {
-      stopLoop();
-    } else {
-      resume();
-    }
-  }
-  m_lock.notify();
-  if(waitForTermination) {
-    m_terminated.wait();
+  switch(getState()) {
+  case PLAYING:
+  case STOPPED  :
+    setInterrupted();
+    waitUntilJobDone();
+    break;
   }
 }
 
-void Animator::stopLoop() {
-  if(isRunning()) {
-    m_stopSignal = true;
-    m_delaySem.notify();
-    while(isRunning()) {
-      Sleep(30);
-    }
-  }
-}
-
-UINT Animator::run() {
-  setThread(Thread::getCurrentThread());
+UINT Animator::safeRun() {
 #ifdef _DEBUG
-  m_thread->setDescription(m_description);
+  setThreadDescription(m_description);
 #endif
-  while(!m_killed) {
-    const int imageCount = m_owner->getFrameCount();
-    for(m_stopSignal = false, m_frameIndex = 0; !m_stopSignal; m_frameIndex = (m_frameIndex + 1) % imageCount) {
-      const GifFrame &frame = m_owner->getFrame(m_frameIndex);
+  for(;;) {
+    const UINT imageCount = m_owner.getFrameCount();
+    for(m_frameIndex = 0; !isInterruptedOrSuspended(); m_frameIndex = (m_frameIndex + 1) % imageCount) {
+      setState(PLAYING);
+      const GifFrame &frame = m_owner.getFrame(m_frameIndex);
       frame.paint();
-      m_owner->flushWork(m_point);
+      m_owner.flushWork(m_point);
       m_delaySem.wait(frame.m_delayTime);
       frame.dispose();
     }
-    m_running = false;
-    if(m_killed) break;
-    suspend();
+    if(isInterrupted()) {
+      break;
+    }
+    setState(STOPPED);
   }
-  setThread(NULL);
+  setState(KILLED);
   return 0;
 }
 
-void checkGifErrorCode(int errorCode, const TCHAR *fileName, int line);
 #define THROWGIFERROR(code) throwGifErrorCode(code, __TFILE__, __LINE__)
 
 String gifErrorCodeToString(int errorCode) {
@@ -553,7 +548,7 @@ void AnimatedImage::stopAnimation() {
 }
 
 bool AnimatedImage::isPlaying() const {
-  return m_animator->isRunning();
+  return m_animator->getState() == PLAYING;
 }
 
 void AnimatedImage::hide() {

@@ -355,9 +355,6 @@
     <ClCompile Include="DirectXErrorMsg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="InterInteractiveRunnableWrapper.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\MFCUtil\Viewport2D.h">
@@ -559,9 +556,6 @@
     </ClInclude>
     <ClInclude Include="ProgressDlg.h">
       <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\MFCUtil\InteractiveRunnableWrapper.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

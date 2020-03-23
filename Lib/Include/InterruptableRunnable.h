@@ -1,13 +1,11 @@
 #pragma once
 
-#include "Runnable.h"
-#include "FlagTraits.h"
+#include "SafeRunnable.h"
 
 #define _IRFLG_SUSPENDED   0x01
 #define _IRFLG_INTERRUPTED 0x02
-#define _IRFLG_TERMINATED  0x04
 
-class InterruptableRunnable : public Runnable {
+class InterruptableRunnable : public SafeRunnable {
 private:
   HANDLE m_thr;
   FLAGTRAITS(BYTE, InterruptableRunnable);
@@ -24,9 +22,6 @@ protected:
   // Throw Exception. If msg == NULL, exception-text is "Interrupted"
   void die(const TCHAR *msg = NULL);
   void suspend();
-  inline void setTerminated() {
-    setFlag(_IRFLG_TERMINATED);
-  }
   virtual void handleInterruptOrSuspend();
   // if job has to be started again, use this to reset
   void clearAllFlags() {
@@ -46,9 +41,6 @@ public:
   }
   inline bool isInterrupted() const {
     return isSet(_IRFLG_INTERRUPTED);
-  }
-  inline bool isTerminated() const {
-    return isSet(_IRFLG_TERMINATED);
   }
   inline bool isInterruptedOrSuspended() const {
     return isSet(_IRFLG_SUSPENDED | _IRFLG_INTERRUPTED);

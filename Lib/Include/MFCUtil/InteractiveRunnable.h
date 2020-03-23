@@ -19,7 +19,8 @@ class InteractiveRunnable : public InterruptableRunnable, public ProgressProvide
 private:
   Timestamp      m_jobStartTime;
   TimeEstimator *m_timeEstimator;
-  const Timestamp &setStartTime(); // set startTime til now, and if neccessary, allocate m_timeEstimator
+  // Set startTime til now, and if neccessary, allocate m_timeEstimator
+  const Timestamp &setStartTime();
   void cleanup();
 protected:
   double getAvgSubProgressPercent();
@@ -33,25 +34,32 @@ public:
   inline bool isSuspendOrCancelButtonPressed() const {
     return isInterruptedOrSuspended();
   }
-  /*virtual*/ double getMaxProgress() const {                      // Only called if getSupportedFeatures() contains IR_PROGRESSBAR, IR_SHOWTIMEESTIMATE or IR_SUBPROGRESSBAR
+  // Only called if getSupportedFeatures() contains IR_PROGRESSBAR, IR_SHOWTIMEESTIMATE or IR_SUBPROGRESSBAR
+  /*virtual*/ double getMaxProgress() const {
     return 0;
   }
-  /*virtual*/ double getProgress() const {                         // do. Should return a value in the range [0..getMaxProgress()]
+  // Only called if getSupportedFeatures() contains IR_PROGRESSBAR, IR_SHOWTIMEESTIMATE or IR_SUBPROGRESSBAR
+  // Should return a value in the range [0..getMaxProgress()]
+  /*virtual*/ double getProgress() const {
     return 0;
   };
   virtual USHORT getJobCount() const {
     return 1;
   }
-  virtual USHORT getSubProgressPercent(UINT index=0) { // Only called if getSupportedFeatures() contains IR_SUBPROGRESSBAR
-    return 0;                                          // Should return an integer in the range [0..100]
+  // Only called if getSupportedFeatures() contains IR_SUBPROGRESSBAR
+  // Should return an integer in the range [0..100]
+  virtual USHORT getSubProgressPercent(UINT index=0) {
+    return 0;
   }
   virtual String getProgressMessage(UINT index=0) {
     return EMPTYSTRING;
   }
-  virtual String getTitle() {                          // Title of progress-window
+  // Title of progress-window
+  virtual String getTitle() {
     return _T("Progress");
   }
-  virtual int getSupportedFeatures() {                 // Should return any combination of IR_-constants
+  // Should return any combination of IR_-constants
+  virtual int getSupportedFeatures() {
     return 0;
   }
   double getSecondsRemaining() const {
