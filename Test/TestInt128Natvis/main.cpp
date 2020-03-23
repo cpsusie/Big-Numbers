@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include <Math/Rational.h>
-#include <Math/BigReal.h>
 #include <Math/Double80.h>
 #include <Math/Int128.h>
+#include <Math/BigReal/BigReal.h>
 
 void doInt128Math() {
   _int128 x, y;

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include <time.h>
-#include <Math/MRisprime.h>
+#include <ProcessTools.h>
+#include <Math/BigReal/MRisprime.h>
 
 static BigInt pow(int a, __int64 r) { // compute pow(a,r)
   BigInt p(1);

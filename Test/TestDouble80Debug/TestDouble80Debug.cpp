@@ -3,7 +3,7 @@
 #include <FileNameSplitter.h>
 #include <Math/FPU.h>
 #include <Math/Double80.h>
-#include <Math/BigReal.h>
+#include <Math/BigReal/BigReal.h>
 #include <FloatFields.h>
 
 using namespace std;

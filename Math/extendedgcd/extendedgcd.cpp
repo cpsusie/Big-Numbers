@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include <Random.h>
-#include <Math/BigReal.h>
-#include <Math/MrIsprime.h>
+#include <Math/BigReal/BigReal.h>
+#include <Math/BigReal/MrIsprime.h>
 
 class GCDResult {
 public:

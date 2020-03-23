@@ -2,7 +2,7 @@
 
 #include <Runnable.h>
 #include <Stack.h>
-#include <Math/BigReal.h>
+#include <Math/BigReal/BigReal.h>
 //typedef double BigReal;
 
 #define MAXPRECISION 500000

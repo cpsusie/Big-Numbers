@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include <Tokenizer.h>
 #include <Console.h>
-#include <Math/BigRealMatrix.h>
+#include <Math/BigReal/BigRealMatrix.h>
 
 using namespace std;
 

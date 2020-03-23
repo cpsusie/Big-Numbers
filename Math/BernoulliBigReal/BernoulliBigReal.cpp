@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include <HashMap.h>
-#include <Math/BigReal.h>
 #include <InputValue.h>
+#include <Math/BigReal/BigReal.h>
 
 BigRational bernoulliDirect(UINT n) {
   if(n > 1 && (n & 1) == 1) {
