@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include <ExternProcess.h>
 #include <ThreadPool.h>
+#include <Math/BigReal/BigRealResourcePool.h>
 #include "IRemesDlg.h"
 #include "PrecisionDlg.h"
 
@@ -27,7 +28,6 @@ CIRemesDlg::CIRemesDlg(CWnd *pParent /*=NULL*/)
   , m_name(EMPTYSTRING)
   , m_maxSearchEIterations(0)
 {
-
   m_M                      = 6;
   m_K                      = 6;
   m_MTo                    = m_M;

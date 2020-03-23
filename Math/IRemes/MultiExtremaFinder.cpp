@@ -2,6 +2,7 @@
 #include <ThreadPool.h>
 #include <Thread.h>
 #include <CPUInfo.h>
+#include <Math/BigReal/BigRealResourcePool.h>
 #include "MultiExtremaFinder.h"
 
 #ifdef MULTITHREADEDEXTREMAFINDER

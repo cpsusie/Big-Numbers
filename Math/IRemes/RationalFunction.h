@@ -1,9 +1,9 @@
 #pragma once
 
 #include <Math/MathLib.h>
-#include <Math/BigReal.h>
-#include <Math/BigRealMatrix.h>
-#include <Math/BigRealInterval.h>
+#include <Math/BigReal/BigReal.h>
+#include <Math/BigReal/BigRealMatrix.h>
+#include <Math/BigReal/BigRealInterval.h>
 
 class BigRealFunction : public FunctionTemplate<BigReal, BigReal> {
 };

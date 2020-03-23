@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <ThreadPool.h>
+#include <Math/BigReal/BigRealResourcePool.h>
 #include "Debugger.h"
 
 DEFINECLASSNAME(Debugger);
