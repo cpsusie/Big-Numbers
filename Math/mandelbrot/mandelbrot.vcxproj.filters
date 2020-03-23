@@ -18,13 +18,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DebugLogThread.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="EdgeMatrix.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ImageListThread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="JuliaDlg.cpp">
@@ -75,6 +69,9 @@
     <ClCompile Include="EditColorMapDlgThread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ImageListJob.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Mandelbrot.rc">
@@ -82,13 +79,7 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="DebugLogThread.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="EdgeMatrix.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ImageListThread.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="JuliaDlg.h">
@@ -140,6 +131,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="EditColorMapDlgThread.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageListJob.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

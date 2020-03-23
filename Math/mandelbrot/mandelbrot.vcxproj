@@ -274,11 +274,10 @@
     <ClCompile Include="CellCountMatrix.cpp" />
     <ClCompile Include="ColorMap.cpp" />
     <ClCompile Include="colormapctrl.cpp" />
-    <ClCompile Include="DebugLogThread.cpp" />
     <ClCompile Include="EdgeMatrix.cpp" />
     <ClCompile Include="EditColorMapDlg.cpp" />
     <ClCompile Include="EditColorMapDlgThread.cpp" />
-    <ClCompile Include="ImageListThread.cpp" />
+    <ClCompile Include="ImageListJob.cpp" />
     <ClCompile Include="JuliaDlg.cpp" />
     <ClCompile Include="Mandelbrot.cpp" />
     <ClCompile Include="MandelbrotDlg.cpp" />
@@ -307,11 +306,10 @@
     <ClInclude Include="CellCountMatrix.h" />
     <ClInclude Include="ColorMap.h" />
     <ClInclude Include="colormapctrl.h" />
-    <ClInclude Include="DebugLogThread.h" />
     <ClInclude Include="EdgeMatrix.h" />
     <ClInclude Include="EditColorMapDlg.h" />
     <ClInclude Include="EditColorMapDlgThread.h" />
-    <ClInclude Include="ImageListThread.h" />
+    <ClInclude Include="ImageListJob.h" />
     <ClInclude Include="JuliaDlg.h" />
     <ClInclude Include="Mandelbrot.h" />
     <ClInclude Include="MandelbrotDlg.h" />

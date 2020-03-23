@@ -2,7 +2,7 @@
 
 #include <Stack.h>
 #include "MBCalculator.h"
-#include "ImageListThread.h"
+#include "ImageListJob.h"
 #include "EditColorMapDlgThread.h"
 
 typedef enum {
@@ -61,8 +61,8 @@ private:
   BigRealLinearTransformation *m_linearTransform;
   // in pixels
   const CSize                  m_frameSize;
-  ImageListThread             *m_imageListThread;
-  Semaphore                    m_frameReady;
+  ImageListJob                *m_imageListJob;
+  FastSemaphore                m_frameReady;
   int                          m_totalFrameCount;
   int                          m_frameIndex;
   HBITMAP                      m_bm;
@@ -86,7 +86,7 @@ public:
     return m_frameSize;
   }
   void notifyFrameReady() {
-    DLOG(_T("notify FrameReady\n"));
+    DEBUGLOG(_T("notify FrameReady\n"));
     m_frameReady.notify();
   }
   inline int getTotalFrameCount() const {
@@ -167,7 +167,7 @@ private:
   CEditColorMapDlgThread        *m_colorMapEditThread;
   RealRectangleTransformation    m_realTransform;
   BigRealRectangleTransformation m_bigRealTransform;
-  Semaphore                      m_gate;
+  FastSemaphore                  m_gate;
   bool                           m_hasResized;
   BitSet8                        m_runningTimerSet;
   SynchronizedQueue<CRect>       m_jobQueue;

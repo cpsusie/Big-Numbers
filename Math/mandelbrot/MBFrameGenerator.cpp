@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <ThreadPool.h>
 #include "MandelbrotDlg.h"
 #include "MBBigRealCalculator.h"
 
@@ -27,23 +28,23 @@ MBFrameGenerator::MBFrameGenerator(CMandelbrotDlg *dlg, const String &dirName)
   m_bm = CreateCompatibleBitmap(screenDC, m_frameSize.cx, m_frameSize.cy);
   DeleteDC(screenDC);
 
-  m_imageListThread  = new ImageListThread(this); TRACE_NEW(m_imageListThread);
-  m_imageListThread->start();
+  m_imageListJob  = new ImageListJob(this); TRACE_NEW(m_imageListJob);
+  ThreadPool::executeNoWait(*m_imageListJob);
 }
 
 MBFrameGenerator::~MBFrameGenerator() {
-  DLOG(_T("enter ~MBFrameGenerator\n"));
+  DEBUGLOG(_T("enter ~MBFrameGenerator\n"));
   m_frameIndex = m_totalFrameCount + 10;
   m_frameReady.notify();
-  while(m_imageListThread->stillActive()) {
-    Sleep(50);
+  if(!m_imageListJob->isOk()) {
+    showError(m_imageListJob->getErrorMsg());
   }
-  SAFEDELETE(m_imageListThread);
+  SAFEDELETE(m_imageListJob);
   DeleteObject(m_bm);
   DeleteDC(m_dc);
   SAFEDELETE(m_expTransform);
   SAFEDELETE(m_linearTransform);
-  DLOG(_T("leave ~MBFrameGenerator\n"));
+  DEBUGLOG(_T("leave ~MBFrameGenerator\n"));
 }
 
 #define ZOOMSTEP 0.0078125
@@ -67,7 +68,7 @@ BigRealRectangle2D MBFrameGenerator::getInterpolatedRectangle() const {
   DigitPool *dp = getDigitPool();
   const BigReal fw = m_expTransform->transform(m_frameIndex);       // 1 -> finalWidth/startWidth
   const BigReal t1 = m_linearTransform->forwardTransform(fw);       // 1 -> 0
-  const BigReal t2 = (dp->get1() - t1);                             // 0 -> 1
+  const BigReal t2 = (dp->_1() - t1);                             // 0 -> 1
   const BigReal x  = t1 * m_startRect.m_x + t2 * m_finalRect.m_x;
   const BigReal y  = t1 * m_startRect.m_y + t2 * m_finalRect.m_y;
   const BigReal w  = fw * m_startRect.getWidth();
@@ -76,19 +77,19 @@ BigRealRectangle2D MBFrameGenerator::getInterpolatedRectangle() const {
 }
 
 HBITMAP MBFrameGenerator::nextBitmap() { // should return NULL when no more frames.
-  DLOG(_T("enter nextBitmap\n"));
+  DEBUGLOG(_T("enter nextBitmap\n"));
   if(!requestNextFrame()) return NULL;
-  DLOG(_T("got frame %d\n"), m_frameIndex);
+  DEBUGLOG(_T("got frame %d\n"), m_frameIndex);
 
   HGDIOBJ oldGDI = SelectObject(m_dc, m_bm);
   CClientDC imageDC(m_dlg.getImageWindow());
   BitBlt(m_dc, 0,0,m_frameSize.cx, m_frameSize.cy, imageDC, 0,0,SRCCOPY);
   SelectObject(m_dc, oldGDI);
-  DLOG(_T("BitBlt succeeded\n"));
+  DEBUGLOG(_T("BitBlt succeeded\n"));
   m_dlg.setScale(getInterpolatedRectangle(), true);
   m_frameIndex++;
-  DLOG(_T("zoom succeeded\n"));
-  DLOG(_T("leave nextBitmap\n"));
+  DEBUGLOG(_T("zoom succeeded\n"));
+  DEBUGLOG(_T("leave nextBitmap\n"));
   return m_bm;
 }
 
@@ -107,6 +108,6 @@ bool MBFrameGenerator::requestNextFrame() {
 }
 
 void MBFrameGenerator::postMovieDone() {
-  DLOG(_T("Post MOVIEDONE\n"));
+  DEBUGLOG(_T("Post MOVIEDONE\n"));
   m_dlg.PostMessage(ID_MSG_MOVIEDONE);
 }

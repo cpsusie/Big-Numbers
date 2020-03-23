@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Math/BigReal/BigRealResourcePool.h>
 #include "MBCalculator.h"
 
 inline CPoint toCPoint(const BigRealPoint2D &p) {
@@ -40,13 +41,13 @@ private:
 public:
   MBBigRealCalculator(CalculatorPool *pool, int id)
     : MBCalculator(pool, id)
-    , _4(4,BigRealResourcePool::getInstance().fetchDigitPool())
+    , _4(4,BigRealResourcePool::fetchDigitPool())
   {
     m_digitPool = _4.getDigitPool();
   }
   ~MBBigRealCalculator() {
     _4.setToZero(); // no more digits in use by digitPool
-    BigRealResourcePool::getInstance().releaseDigitPool(m_digitPool);
+    BigRealResourcePool::releaseDigitPool(m_digitPool);
   }
   static void prepareMaps(const BigRealRectangleTransformation &tr);
   static void cleanupMaps();

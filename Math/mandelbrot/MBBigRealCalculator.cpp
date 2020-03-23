@@ -5,7 +5,7 @@ UINT MBBigRealCalculator::findCountFast(const BigReal &X, const BigReal &Y, UINT
   UINT          count = 0;
   BigReal       a(X, getDigitPool());
   BigReal       b(Y, getDigitPool());
-  const BigInt &_2 = getDigitPool()->get2();
+  const BigInt &_2 = getDigitPool()->_2();
   for(;count < maxCount; count++) {
     const BigReal a2 = rProd(a,a,m_digits);
     const BigReal b2 = rProd(b,b,m_digits);
@@ -26,7 +26,7 @@ UINT MBBigRealCalculator::findCountPaintOrbit(const BigReal &X, const BigReal &Y
   UINT          count   = 0;
   BigReal       a(X, getDigitPool());
   BigReal       b(Y, getDigitPool());
-  const BigInt &_2 = getDigitPool()->get2();
+  const BigInt &_2 = getDigitPool()->_2();
   const CPoint  p0(toCPoint(a,b));
   if(isEdgeTracing()) mbc.paintMark(p0);
   for(; count < maxCount; count++) {
@@ -95,7 +95,7 @@ UINT MBBigRealCalculator::run() {
   try {
     while(mbc.getJobToDo(m_currentRect)) {
 
-//      DLOG(_T("calc(%d) got rect (%d,%d,%d,%d)\n"), getId(), m_currentRect.left,m_currentRect.top,m_currentRect.right,m_currentRect.bottom);
+//      DEBUGLOG(_T("calc(%d) got rect (%d,%d,%d,%d)\n"), getId(), m_currentRect.left,m_currentRect.top,m_currentRect.right,m_currentRect.bottom);
 
       enableEdgeTracing(false);
       CPoint p;
@@ -109,7 +109,7 @@ UINT MBBigRealCalculator::run() {
           const UINT count = FINDCOUNT(xt, yt, maxCount);
 
           if((count == maxCount) && useEdgeDetection) {
-//            DLOG(_T("calc(%d) found black point (%d,%d)\n"), getId(), p.x,p.y);
+//            DEBUGLOG(_T("calc(%d) found black point (%d,%d)\n"), getId(), p.x,p.y);
             enableEdgeTracing(true);
             cca = followBlackEdge(p, cca, maxCount);
             enableEdgeTracing(false);
@@ -119,17 +119,17 @@ UINT MBBigRealCalculator::run() {
         }
       }
     }
-    DLOG(_T("calc(%d) done\n"), getId());
+    DEBUGLOG(_T("calc(%d) done\n"), getId());
   } catch(bool) {
 #ifdef SAVE_CALCULATORINFO
-    DLOG(_T("calc(%d) killed in phase %s\n"), getId(), m_phase);
+    DEBUGLOG(_T("calc(%d) killed in phase %s\n"), getId(), m_phase);
 #else
-    DLOG(_T("calc(%d) killed\n"), getId());
+    DEBUGLOG(_T("calc(%d) killed\n"), getId());
 #endif
   } catch(Exception e) {
-    DLOG(_T("calc(%d) caught Exception:%s\n"), getId(), e.what());
+    DEBUGLOG(_T("calc(%d) caught Exception:%s\n"), getId(), e.what());
   } catch(...) {
-    DLOG(_T("calc(%d) caught unknown Exception\n"), getId());
+    DEBUGLOG(_T("calc(%d) caught unknown Exception\n"), getId());
   }
   POPPHASE();
   setPoolState(CALC_TERMINATED);
@@ -156,7 +156,7 @@ CellCountAccessor *MBBigRealCalculator::followBlackEdge(const CPoint &p, CellCou
   #ifdef SAVE_CALCULATORINFO
     m_info = new CalculatorInfo(getId(), rect);
   #endif
-  //  DLOG(_T("Follow black edge starting at (%d,%d)\n"), p.x,p.y);
+  //  DEBUGLOG(_T("Follow black edge starting at (%d,%d)\n"), p.x,p.y);
 
     EdgeMatrix edgeMatrix;
     for(;;) {
@@ -198,7 +198,7 @@ CellCountAccessor *MBBigRealCalculator::followBlackEdge(const CPoint &p, CellCou
       }
       if((dir = edgeMatrix.findStepDirection(dir)) == NODIR) {
         if(!innerSetEmpty) {
-          DLOG(_T("dir == NODIR and has innerpoints\n"));
+          DEBUGLOG(_T("dir == NODIR and has innerpoints\n"));
           innerSet -= edgeSet;
         }
   #ifdef SAVE_CALCULATORINFO

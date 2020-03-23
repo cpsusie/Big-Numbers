@@ -5,14 +5,18 @@
 #define USE_DOUBLE80
 
 #include "resource.h"
-#include <Math.h>
-#include <Direct.h>
 #include <MFCUtil/PixRect.h>
+#include <MFCUtil/PixRectDevice.h>
 #include <MFCUtil/SelectDirDlg.h>
 #include <MFCUtil/Layoutmanager.h>
-#include <Thread.h>
+#include <Direct.h>
+#include <FileNameSplitter.h>
+#include <Runnable.h>
+#include <RunnableWrapper.h>
+#include <ThreadPool.h>
 #include <SynchronizedQueue.h>
+#include <Math.h>
 #include <Math/MathLib.h>
-#include "DebugLogThread.h"
-#include "Mandelbrot.h"
+#include <DebugLog.h>
 #include <afxdisp.h>
+#include "Mandelbrot.h"

@@ -1,13 +1,13 @@
 #include "stdafx.h"
 #include <ByteFile.h>
 #include <Random.h>
-#include <FileNameSplitter.h>
-#include <DebugLog.h>
 #include "MandelbrotDlg.h"
 #include "MaxCountDlg.h"
 #include "JuliaDlg.h"
 #include "ShowColorMapDlg.h"
 #include "MBBigRealCalculator.h"
+
+using namespace std;
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -636,7 +636,7 @@ void CMandelbrotDlg::handlePropertyChanged(const PropertyContainer *source, int 
         if(oldActive && !newActive) {
           m_jobQueue.clear();
           stopTimer(TIMER_CALCULATION);
-          DLOG(_T("CalculationACtive=FALSE. Now POST WM_PAINT\n"));
+          DEBUGLOG(_T("CalculationACtive=FALSE. Now POST WM_PAINT\n"));
           PostMessage(WM_PAINT);
         } else if(newActive) {
           remoteUpdateWindowState();
@@ -881,12 +881,12 @@ void CMandelbrotDlg::showMousePoint(const CPoint &p) {
 }
 
 void CMandelbrotDlg::remoteStartCalculation() {
-  DLOG(_T("Post STARTCALCULATION\n"));
+  DEBUGLOG(_T("Post STARTCALCULATION\n"));
   PostMessage(ID_MSG_STARTCALCULATION);
 }
 
 void CMandelbrotDlg::remoteUpdateWindowState() {
-  DLOG(_T("Post UPDATEWINDOWSTATE\n"));
+  DEBUGLOG(_T("Post UPDATEWINDOWSTATE\n"));
   PostMessage(ID_MSG_UPDATEWINDOWSTATE);
 }
 
@@ -1292,7 +1292,7 @@ void CMandelbrotDlg::resetImageStack() {
 CellCountAccessor *CMandelbrotDlg::getCCA() {
   if(!hasCCA()) {
     m_cca = m_ccMatrix->getCCA();
-    DLOG(_T("ccMatrix locked with CellCountAccessor\n"));
+    DEBUGLOG(_T("ccMatrix locked with CellCountAccessor\n"));
   }
   return (calculateWithOrbit() || animateCalculation()) ? m_mbContainer : m_cca;
 }
@@ -1301,7 +1301,7 @@ void CMandelbrotDlg::clearCCA() {
   if(hasCCA()) {
     m_ccMatrix->releaseCCA();
     m_cca = NULL;
-    DLOG(_T("ccMatrix unlocked\n"));
+    DEBUGLOG(_T("ccMatrix unlocked\n"));
   }
 }
 

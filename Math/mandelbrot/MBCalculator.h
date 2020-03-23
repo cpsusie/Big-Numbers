@@ -5,7 +5,7 @@
 #include <PropertyContainer.h>
 #include <Math/FPU.h>
 #include <Math/Transformation.h>
-#include <Math/BigRealTransformation.h>
+#include <Math/BigReal/BigRealTransformation.h>
 #include "CellCountMatrix.h"
 #include "EdgeMatrix.h"
 
@@ -90,17 +90,17 @@ typedef enum {
 typedef BitSet16 CalculatorSet;
 
 class CalculatorPool;
-
-class MBCalculator : public Thread {
+//: format(_T("MBCalc(%d)"), id))
+class MBCalculator : public Runnable {
 private:
-  static Semaphore     s_followBlackEdgeGate;
-  const UINT           m_id;
-  double               m_startTime, m_threadTime;
-  bool                 m_edgeTracing;
-  MBContainer         &m_mbc;
-  OrbitPoint          *m_orbitPoints;
-  Semaphore            m_gate;
-  mutable Semaphore    m_wakeup;
+  static FastSemaphore  s_followBlackEdgeGate;
+  mutable FastSemaphore m_wakeup;
+  FastSemaphore         m_gate;
+  const UINT            m_id;
+  double                m_startTime, m_threadTime;
+  bool                  m_edgeTracing;
+  MBContainer          &m_mbc;
+  OrbitPoint           *m_orbitPoints;
 #ifdef SAVE_CALCULATORINFO
   CompactStack<TCHAR*> m_phaseStack;
   CalculatorInfo      *m_info;
@@ -122,12 +122,8 @@ protected:
   CRect           m_currentRect;
   size_t          m_doneCount; // number of pixels calculated
   MBCalculator(CalculatorPool *pool, UINT id);
-  inline void initStartTime() {
-    m_startTime = m_threadTime = getThreadTime();
-  }
-  inline void updateThreadTime() {
-    m_threadTime = getThreadTime();
-  }
+  void initStartTime();
+  void updateThreadTime();
   CellCountAccessor *fillInnerArea(PointSet &innerSet, CellCountAccessor *cca, UINT maxCount);
   inline MBContainer &getMBContainer() const {
     return m_mbc;
@@ -192,7 +188,7 @@ private:
   static CalculatorSet  s_maxSet;
   static const TCHAR   *s_stateName[3];
   MBContainer          &m_mbc;
-  mutable Semaphore     m_gate;
+  mutable FastSemaphore m_gate;
   ULONG                 m_pendingFlags;
   ULONG                 m_suspendAllPendingFlags;
   ULONG                 m_killAllPendingFlags;

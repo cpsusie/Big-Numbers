@@ -9,7 +9,7 @@ public:
 	CMandelbrotApp();
 
 public:
-	virtual BOOL InitInstance();
+  virtual BOOL InitInstance();
   virtual int ExitInstance();
   PixRectDevice m_device;
 

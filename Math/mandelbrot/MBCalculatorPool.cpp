@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <CPUInfo.h>
+#include <ThreadPool.h>
 #include "MBRealCalculator.h"
 #include "MBBigRealCalculator.h"
 
@@ -54,7 +55,7 @@ void CalculatorPool::startCalculators(UINT count) {
   m_pendingFlags = 0;
   for(UINT i = 0; i < s_CPUCount; i++) {
     if(m_existing.contains(i)) {
-      (*this)[i]->start();
+      ThreadPool::executeNoWait(*(*this)[i]);
     }
   }
   m_gate.notify();
@@ -73,7 +74,7 @@ void CalculatorPool::killAllInternal() {
   waitUntilAllTerminatedInternal();
 
   if(m_calculatorsInState[CALC_TERMINATED] != m_existing) {
-    DLOG(_T("Cannot kill all calculators. Still running:%s. Delete them anyway.\n")
+    DEBUGLOG(_T("Cannot kill all calculators. Still running:%s. Delete them anyway.\n")
           ,(m_calculatorsInState[CALC_RUNNING] | m_calculatorsInState[CALC_SUSPENDED]).toString().cstr());
   }
 
@@ -213,7 +214,7 @@ CalculatorState CalculatorPool::getStateInternal(UINT id) const {
   } else if(m_calculatorsInState[CALC_TERMINATED].contains(id)) {
     return CALC_TERMINATED;
   } else if(m_existing.contains(id)) {
-    DLOG(_T("Undefined state for calculator %u. Existing:%s, Suspended:%s, Running:%s, Terminated:%s\n")
+    DEBUGLOG(_T("Undefined state for calculator %u. Existing:%s, Suspended:%s, Running:%s, Terminated:%s\n")
               ,id
               ,m_existing.toString().cstr()
               ,m_calculatorsInState[CALC_SUSPENDED ].toString().cstr()
@@ -221,7 +222,7 @@ CalculatorState CalculatorPool::getStateInternal(UINT id) const {
               ,m_calculatorsInState[CALC_TERMINATED].toString().cstr()
               );
   } else {
-    DLOG(_T("Trying to get state for non-existing calculator:%u\n"), id);
+    DEBUGLOG(_T("Trying to get state for non-existing calculator:%u\n"), id);
   }
   return CALC_TERMINATED;
 }
@@ -235,7 +236,7 @@ void CalculatorPool::setStateInternal(UINT id, CalculatorState state) {
   switch(state) {
   case CALC_SUSPENDED :
     if(m_calculatorsInState[CALC_TERMINATED].contains(id)) {
-      DLOG(_T("Trying to set terminated calulator %u to state SUSPENDED. Skipped\n"), id);
+      DEBUGLOG(_T("Trying to set terminated calulator %u to state SUSPENDED. Skipped\n"), id);
       break;
     }
     m_calculatorsInState[CALC_RUNNING   ].remove(id);
@@ -243,7 +244,7 @@ void CalculatorPool::setStateInternal(UINT id, CalculatorState state) {
     break;
   case CALC_RUNNING   :
     if(m_calculatorsInState[CALC_TERMINATED].contains(id)) {
-      DLOG(_T("Trying to set terminated calulator %u to state RUNNING. Skipped\n"), id);
+      DEBUGLOG(_T("Trying to set terminated calulator %u to state RUNNING. Skipped\n"), id);
       break;
     }
     m_calculatorsInState[CALC_SUSPENDED ].remove(id);

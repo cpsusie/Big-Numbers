@@ -8,12 +8,12 @@
 CJuliaDlg::CJuliaDlg(const RealPoint2D &point, CWnd *pParent /*=NULL*/)
 : m_point(point)
 , CDialog(CJuliaDlg::IDD, pParent)
-, m_thread(NULL)
+, m_job(NULL)
 {
 }
 
 CJuliaDlg::~CJuliaDlg() {
-  SAFEDELETE(m_thread);
+  SAFEDELETE(m_job);
 }
 
 BEGIN_MESSAGE_MAP(CJuliaDlg, CDialog)
@@ -27,8 +27,8 @@ BOOL CJuliaDlg::OnInitDialog() {
   m_transform.setFromRectangle(rr);
   adjustToRectangle();
 
-  m_thread = new JuliaCalculatorThread(*this); TRACE_NEW(m_thread);
-  m_thread->start();
+  m_job = new JuliaCalculatorJob(*this); TRACE_NEW(m_job);
+  ThreadPool::executeNoWait(*m_job);
   return TRUE;
 }
 
@@ -40,25 +40,22 @@ void CJuliaDlg::adjustToRectangle() {
   m_transform.setToRectangle(toRealRect(cl));
 }
 
-JuliaCalculatorThread::JuliaCalculatorThread(CJuliaDlg &dlg) : m_dlg(dlg) {
+JuliaCalculatorJob::JuliaCalculatorJob(CJuliaDlg &dlg) : m_dlg(dlg) {
   m_killed = false;
 }
 
-
-JuliaCalculatorThread::~JuliaCalculatorThread() {
+JuliaCalculatorJob::~JuliaCalculatorJob() {
   kill();
+  waitUntilJobDone();
 }
 
-void JuliaCalculatorThread::kill() {
+void JuliaCalculatorJob::kill() {
   m_killed = true;
-  while(stillActive()) {
-    Sleep(20);
-  }
 };
 
-UINT JuliaCalculatorThread::run() {
-  const RealPoint2D                  c    = m_dlg.getC();
-  const RealRectangleTransformation &tr   = m_dlg.getTransform();
+UINT JuliaCalculatorJob::safeRun() {
+  const RealPoint2D                  c  = m_dlg.getC();
+  const RealRectangleTransformation &tr = m_dlg.getTransform();
 
   RealPoint2D z = c;
 #define POINTBUFFERSIZE 10000

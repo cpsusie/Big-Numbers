@@ -4,22 +4,22 @@
 
 class CJuliaDlg;
 
-class JuliaCalculatorThread : public Thread {
+class JuliaCalculatorJob : public SafeRunnable {
 private:
   CJuliaDlg &m_dlg;
   bool       m_killed;
 public:
-  JuliaCalculatorThread(CJuliaDlg &dlg);
-  ~JuliaCalculatorThread();
+  JuliaCalculatorJob(CJuliaDlg &dlg);
+  ~JuliaCalculatorJob();
   void kill();
-  UINT run();
+  UINT safeRun();
 };
 
 class CJuliaDlg : public CDialog {
   const RealPoint2D             m_point;
   RealRectangleTransformation   m_transform;
   HRGN                          m_imageRGN;
-  JuliaCalculatorThread        *m_thread;
+  JuliaCalculatorJob           *m_job;
   void adjustToRectangle();
 public:
   CJuliaDlg(const RealPoint2D &point, CWnd *pParent = NULL);

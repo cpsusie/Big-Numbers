@@ -9,10 +9,10 @@ public:
   virtual String   getDirName() = 0;
 };
 
-class ImageListThread : public Thread {
+class ImageListJob : public SafeRunnable {
 private:
   FrameGenerator  &m_frameGenerator;
 public:
-  ImageListThread(FrameGenerator *frameGenerator);
-  UINT run();
+  ImageListJob(FrameGenerator *frameGenerator);
+  UINT safeRun();
 };

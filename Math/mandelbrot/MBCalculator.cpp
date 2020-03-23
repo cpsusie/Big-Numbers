@@ -1,9 +1,9 @@
 #include "stdafx.h"
+#include <Thread.h>
 #include "MBCalculator.h"
 
 MBCalculator::MBCalculator(CalculatorPool *pool, UINT id)
-: Thread(format(_T("MBCalc(%d)"),id))
-, m_pool(*pool)
+: m_pool(*pool)
 , m_id(id)
 , m_mbc(pool->getMBContainer())
 , m_wakeup(0)
@@ -13,11 +13,17 @@ MBCalculator::MBCalculator(CalculatorPool *pool, UINT id)
 , m_startTime(0)
 , m_threadTime(0)
 {
-  setDemon(true);
   setWithOrbit();
 #ifdef SAVE_CALCULATORINFO
   m_info = NULL;
 #endif
+}
+
+void MBCalculator::initStartTime() {
+  m_startTime = m_threadTime = getThreadTime();
+}
+void MBCalculator::updateThreadTime() {
+  m_threadTime = getThreadTime();
 }
 
 void MBCalculator::setPoolState(CalculatorState state) {
@@ -56,18 +62,18 @@ CellCountAccessor *MBCalculator::handlePending() {
       throw true;
     }
     if(pendingFlags & CALC_SUSPEND_PENDING) {
-      DLOG(_T("calc(%d) suspending\n"), m_id);
+      DEBUGLOG(_T("calc(%d) suspending\n"), m_id);
       m_pool.setState(m_id, CALC_SUSPENDED);
       m_wakeup.wait();
       m_pool.setState(m_id, CALC_RUNNING  );
-      DLOG(_T("calc(%d) resuming\n"), m_id);
+      DEBUGLOG(_T("calc(%d) resuming\n"), m_id);
     }
   }
   setWithOrbit();
   return m_mbc.getCCA();
 }
 
-Semaphore MBCalculator::s_followBlackEdgeGate;
+FastSemaphore MBCalculator::s_followBlackEdgeGate;
 
 bool MBCalculator::enterFollowBlackEdge(const CPoint &p, CellCountAccessor *cca) {
   m_pool.setState(m_id, CALC_SUSPENDED);
