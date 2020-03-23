@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Runnable.h>
+#include <SafeRunnable.h>
 #include <Stack.h>
 #include <Math/BigReal/BigReal.h>
 //typedef double BigReal;
@@ -21,7 +21,7 @@ typedef enum {
  ,OPSIZE_OWORD
 } OperandSize;
 
-class Calculator : public Runnable {
+class Calculator : public SafeRunnable {
 private:
   const BigReal   m_minusOne;
   String          m_displayText;
@@ -46,7 +46,7 @@ private:
   Trigonometric   m_trigonometricBase;
   OperandSize     m_opsize;
   mutable FastSemaphore   m_lock;
-  FastSemaphore   m_hasInput, m_terminated;
+  FastSemaphore   m_hasInput;
   int             m_buttonPressed;
   bool            m_busy, m_killed;
 
@@ -106,7 +106,7 @@ public:
   inline bool   isBusy() const {
     return m_busy;
   }
-  UINT          run();
+  UINT          safeRun();
   void          terminateCalculation();
 };
 

@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <MyUtil.h>
+#include <Math/BigReal/BigRealResourcePool.h>
 #include "Calculator.h"
 #include "resource.h"
 
@@ -172,11 +173,10 @@ Calculator::~Calculator() {
   m_killed = true;
   if(isBusy()) {
     terminateCalculation();
-  }
-  else {
+  } else {
     enter(0);
   }
-  m_terminated.wait();
+  waitUntilJobDone();
 }
 
 static void appendChar(TCHAR *s, char ch) {
@@ -1115,8 +1115,7 @@ void Calculator::handleButton(int button) {
   }
 }
 
-UINT Calculator::run() {
-  m_terminated.wait();
+UINT Calculator::safeRun() {
   while(!m_killed) {
     m_hasInput.wait();
     if(m_killed) break;
@@ -1129,7 +1128,6 @@ UINT Calculator::run() {
     }
     m_busy = false;
   }
-  m_terminated.notify();
   return 0;
 }
 
