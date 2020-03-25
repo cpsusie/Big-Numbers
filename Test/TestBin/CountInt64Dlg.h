@@ -9,7 +9,12 @@ private:
   CCountInt64Dlg &m_dlg;
   UINT64         m_counter;
 public:
-  CounterThread(CCountInt64Dlg &dlg) : m_dlg(dlg) { m_counter = 0; }
+  CounterThread(CCountInt64Dlg &dlg)
+    : Thread(_T("Counter"))
+    , m_dlg(dlg)
+    , m_counter(0)
+  {
+  }
   UINT run();
   inline UINT64 getCounter() const       { return m_counter;  }
   inline void   setCounter(UINT64 value) { m_counter = value; }

@@ -5,6 +5,7 @@
 #include "Compressor.h"
 #include <MFCUtil/WinTools.h>
 #include <MFCUtil/PixRect.h>
+#include <MFCUtil/PixRectDevice.h>
 
 #define DCTBlockSize 8
 

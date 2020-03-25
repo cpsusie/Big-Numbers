@@ -8,7 +8,10 @@ class ProducerThread : public Thread {
 private:
   TestQueue &m_queue;
 public:
-  ProducerThread(TestQueue &queue) : m_queue(queue) {
+  ProducerThread(TestQueue &queue)
+    : Thread(_T("Producer"))
+    , m_queue(queue)
+  {
   }
   UINT run() {
     for(int i = 0;; i++) {
@@ -23,7 +26,10 @@ class ConsumerThread : public Thread {
 private:
   TestQueue &m_queue;
 public:
-  ConsumerThread(TestQueue &queue) : m_queue(queue) {
+  ConsumerThread(TestQueue &queue)
+    : Thread("Consumer")
+    , m_queue(queue)
+  {
   }
   UINT run() {
     for(;;) {

@@ -274,7 +274,6 @@
     <ClCompile Include="TestFastSemaphore.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="FastSemaphore.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="SyncQueue.h" />
     <ClInclude Include="targetver.h" />

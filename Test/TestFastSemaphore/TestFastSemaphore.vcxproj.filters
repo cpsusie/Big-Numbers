@@ -29,9 +29,6 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FastSemaphore.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="SyncQueue.h">
       <Filter>Header Files</Filter>
     </ClInclude>

@@ -29,7 +29,7 @@ SigApprox::SigApprox(const BigReal &x, UINT64 s0, int adds, const BigReal &p2) {
 
 static Double80 createPrciseDouble80(const BigReal &x) {
   DigitPool     &pool  = *x.getDigitPool();
-  const BigReal  l2    = rLog(pool.get2(), x, 40);
+  const BigReal  l2    = rLog(pool._2(), x, 40);
   int            expo2 = getInt(floor(l2));
   UINT           expoField, normalizingSteps = 0;
 
