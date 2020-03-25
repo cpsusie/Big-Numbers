@@ -8,8 +8,7 @@
 #include "Mainfrm.h"
 
 Debugger::Debugger(D3SceneContainer *sc, const IsoSurfaceParameters &param)
-: m_go(0)
-, m_surface(NULL)
+: m_surface(NULL)
 , m_flags(FL_BREAKONNEXTFACE)
 , m_state(DEBUGGER_CREATED)
 {
@@ -18,51 +17,41 @@ Debugger::Debugger(D3SceneContainer *sc, const IsoSurfaceParameters &param)
 
 Debugger::~Debugger() {
   kill();
-  m_terminated.wait();
+  waitUntilJobDone();
   SAFEDELETE(m_surface);
 }
 
 void Debugger::singleStep(BYTE breakFlags) {
-  checkTerminated().clrFlags(FL_ALLBREAKFLAGS).setFlags(breakFlags).resume();
+  checkTerminated().clrFlag(FL_ALLBREAKFLAGS).setFlag(breakFlags).resume();
 }
 
 void Debugger::kill() {
-  if((getState() != DEBUGGER_TERMINATED) && ((m_flags & FL_KILLED) == 0)) {
-    setFlags(FL_KILLED);
+  if((getState() != DEBUGGER_TERMINATED) && !isSet(FL_KILLED)) {
+    setFlag(FL_KILLED);
     if(getState() != DEBUGGER_RUNNING) {
       resume();
     }
   }
 }
 
-UINT Debugger::run() {
-  m_terminated.wait();
+UINT Debugger::safeRun() {
   setThreadDescription("Debugger");
   setProperty(DEBUGGER_STATE, m_state, DEBUGGER_RUNNING);
   try {
     suspend();
     m_surface->createData();
-  } catch(Exception e) {
-    m_errorMsg = e.what();
-    setFlags(FL_ERROR);
+    setProperty(DEBUGGER_STATE, m_state, DEBUGGER_TERMINATED);
   } catch(...) {
-    m_errorMsg = _T("Unknown exception");
-    setFlags(FL_ERROR);
+    setProperty(DEBUGGER_STATE, m_state, DEBUGGER_TERMINATED);
   }
-  setProperty(DEBUGGER_STATE, m_state, DEBUGGER_TERMINATED);
-  m_terminated.notify();
   return 0;
 }
 
 void Debugger::suspend() {
   setProperty(DEBUGGER_STATE, m_state, DEBUGGER_PAUSED);
-  m_go.wait();
+  __super::suspend();
   setProperty(DEBUGGER_STATE, m_state, DEBUGGER_RUNNING);
   checkKilled();
-}
-
-void Debugger::resume() {
-  m_go.notify();
 }
 
 void Debugger::handleStep(StepType type) {
@@ -70,31 +59,31 @@ void Debugger::handleStep(StepType type) {
     checkKilled();
     switch(type) {
     case NEW_LEVEL:
-      if(m_flags & FL_ALLBREAKFLAGS) {
+      if(isSet(FL_ALLBREAKFLAGS)) {
         m_surface->updateSceneObject(MESH_VISIBLE | OCTA_VISIBLE);
         suspend();
       }
       break;
     case NEW_OCTA:
-      if(m_flags & FL_BREAKONNEXTOCTA) {
+      if(isSet(FL_BREAKONNEXTOCTA)) {
         m_surface->updateSceneObject(MESH_VISIBLE | OCTA_VISIBLE);
         suspend();
       }
       break;
     case NEW_TETRA:
-      if(m_flags & FL_BREAKONNEXTTETRA) {
+      if(isSet(FL_BREAKONNEXTTETRA)) {
         m_surface->updateSceneObject(MESH_VISIBLE | OCTA_VISIBLE | TETRA_VISIBLE);
         suspend();
       }
       break;
     case NEW_FACE :
-      if(m_flags & (FL_BREAKONNEXTFACE | FL_BREAKONNEXTVERTEX)) {
+      if(isSet(FL_BREAKONNEXTFACE | FL_BREAKONNEXTVERTEX)) {
         m_surface->updateSceneObject(MESH_VISIBLE | OCTA_VISIBLE | TETRA_VISIBLE | FACES_VISIBLE | VERTEX_VISIBLE);
         suspend();
       }
       break;
     case NEW_VERTEX:
-      if(m_flags & FL_BREAKONNEXTVERTEX) {
+      if(isSet(FL_BREAKONNEXTVERTEX)) {
         m_surface->updateSceneObject(MESH_VISIBLE | OCTA_VISIBLE | TETRA_VISIBLE | FACES_VISIBLE | VERTEX_VISIBLE);
         suspend();
       }
@@ -117,7 +106,6 @@ String Debugger::getFlagNames(BYTE flags) { // static
   ADDFLAG(BREAKONNEXTFACE  )
   ADDFLAG(BREAKONNEXTVERTEX)
   ADDFLAG(KILLED           )
-  ADDFLAG(ERROR            )
   return result;
 #undef ADDFLAG
 }

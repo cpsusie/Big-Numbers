@@ -1,8 +1,8 @@
 #pragma once
 
-#include <Thread.h>
+#include <InterruptableRunnable.h>
 #include <PropertyContainer.h>
-#include <TinyBitSet.h>
+#include <FlagTraits.h>
 
 typedef enum {
   DEBUGGER_CREATED
@@ -32,24 +32,20 @@ public:
   {}
 };
 
-class Debugger : public Runnable, public PropertyContainer, public PropertyChangeListener {
+class Debugger : public InterruptableRunnable, public PropertyContainer, public PropertyChangeListener {
 private:
   DECLARECLASSNAME;
+  FLAGTRAITS(Debugger, BYTE, m_breakPoints);
+  bool                          m_skipExisting;
+  bool                          m_requestTerminate;
+  DebuggerRunState              m_runState;
   Remes                        &m_r;
   IntInterval                   m_mInterval, m_kInterval;
   int                           m_maxMKSum;
-  bool                          m_skipExisting;
-  DebuggerRunState              m_runState;
-  bool                          m_requestTerminate;
-  FastSemaphore                 m_terminated;
-  String                        m_errorMsg;
-  BitSet8                       m_breakPoints;
-  Thread                       *m_thread;
 
   void throwInvalidStateException(const TCHAR *method, RemesState state) const;
   void stop();
   void suspend();
-  void resume();
 public:
   Debugger(Remes &r, const IntInterval &mInterval, const IntInterval &kInterval, int maxMKSum, bool skipExisting);
   ~Debugger();
@@ -59,10 +55,7 @@ public:
   void breakASAP();
   void requestTerminate();
   void go();
-  UINT run();
-  inline const String &getErrorMsg() const {
-    return m_errorMsg;
-  }
+  UINT safeRun();
   inline bool isRunning() const {
     return m_runState == DEBUGGER_RUNNING;
   }

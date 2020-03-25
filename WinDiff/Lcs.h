@@ -1,7 +1,6 @@
 #pragma once
 
 #include <CompactArray.h>
-#include <Semaphore.h>
 #include <StringPool.h>
 #include "CompareJob.h"
 

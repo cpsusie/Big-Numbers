@@ -427,7 +427,7 @@ public:
   ~LineFilterJob() {
     delete m_filter;
   }
-  UINT run();
+  UINT safeRun();
   size_t getWeight() const {
     return m_n;
   }
@@ -436,7 +436,7 @@ public:
   }
 };
 
-UINT LineFilterJob::run() {
+UINT LineFilterJob::safeRun() {
   m_fa.setLineCapacity(m_a.size());
   for(m_count = 0; m_count < m_n; m_count++) {
     checkInterruptAndSuspendFlags();
@@ -511,7 +511,7 @@ public:
   ~GetLinesJob() {
     delete m_filter;
   }
-  UINT run() {
+  UINT safeRun() {
     m_doc.getLines(*m_filter, m_lines, this);
     return 0;
   }

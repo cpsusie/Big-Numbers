@@ -2,7 +2,7 @@
 
 #include <TinyBitSet.h>
 #include <PropertyContainer.h>
-#include <Runnable.h>
+#include <SafeRunnable.h>
 #include <FastSemaphore.h>
 
 using namespace Expr;
@@ -13,10 +13,10 @@ typedef enum {
  ,DBG_ERROR             // TCHAR*
 } DebuggerProperty;
 
-class Debugger : public Runnable, public PropertyContainer, public PropertyChangeListener {
+class Debugger : public SafeRunnable, public PropertyContainer, public PropertyChangeListener {
 private:
   bool                  m_running, m_killed, m_terminated;
-  FastSemaphore         m_terminateSem, m_continueSem;
+  FastSemaphore         m_continueSem;
 #ifdef TRACE_REDUCTION_CALLSTACK
   ReductionStack       *m_reductionStack;
   UINT                  m_breakOnTopIndex;
@@ -35,7 +35,7 @@ private:
 public:
   Debugger(Expression &expr);
   ~Debugger();
-  UINT run();
+  UINT safeRun();
 
   void go();
   void singleStep();

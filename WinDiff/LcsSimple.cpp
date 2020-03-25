@@ -178,7 +178,7 @@ public:
   {
     m_cmp.setRunnable(this);
   }
-  UINT run() {
+  UINT safeRun() {
 #ifdef MEASURE_STEPTIME
   debugLog(_T("%s(lineCount:%s, compareCountEstimate:%s\n")
           ,__TFUNCTION__

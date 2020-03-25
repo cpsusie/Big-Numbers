@@ -1,6 +1,7 @@
 #pragma once
 
 #include <MatrixDimension.h>
+#include <FlagTraits.h>
 
 typedef enum {
   SPLIT_NONE
@@ -17,20 +18,11 @@ private:
   const SplitDirection  m_splitDirection;
   const MatrixDimension m_dim;
   double                m_relativeSplitPos;
-  BYTE                  m_flags;
+  FLAGTRAITS(SplitViewSplitter, BYTE, m_flags)
   static MatrixDimension createDimension(SplitDirection splitDirection);
   void   saveRelativeSplitPos(const CSize &size);
   inline void incrChildCount() {
     m_flags++;
-  }
-  inline void setFlag(BYTE flg) {
-    m_flags |= flg;
-  }
-  inline void clrFlag(BYTE flg) {
-    m_flags &= ~flg;
-  }
-  inline bool isSet(BYTE flg) {
-    return (m_flags & flg) != 0;
   }
 public:
   SplitViewSplitter(SplitDirection splitDirection, double relativeSplitPos);

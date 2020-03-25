@@ -62,7 +62,7 @@ void SearchMachine::prepareSearch(bool forwardSearch, __int64 startPosition, con
   m_maxProgress = forwardSearch ? (m_size - m_startPosition) : m_startPosition;
 }
 
-UINT SearchMachine::run() {
+UINT SearchMachine::safeRun() {
   try {
     if((m_result = doSearch()).isEmpty()) {
       m_resultMessage = isInterrupted()

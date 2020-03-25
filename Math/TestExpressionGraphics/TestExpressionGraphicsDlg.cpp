@@ -412,10 +412,10 @@ public:
          | IR_AUTOCORRELATETIME
          | IR_SHOWPERCENT;
   }
-  UINT run();
+  UINT safeRun();
 };
 
-UINT AllSamplesTester::run() {
+UINT AllSamplesTester::safeRun() {
   for(m_count = 0; m_count < m_maxCount; m_count++) {
     const String str = ExpressionSamples::getSample(m_count);
     if (m_count == 69) {

@@ -284,8 +284,6 @@ private:
   int                m_index;
   HDC                m_dc;
   HBITMAP            m_bitmap;
-  bool               m_ok;
-  String             m_msg;
 public:
   AviConverter(const String &outFileName, const StringArray &nameArray, UINT framesPerSecond, UINT useEvery)
     : m_outFileName(outFileName)
@@ -296,7 +294,6 @@ public:
     m_index   = 0;
     m_dc      = NULL;
     m_bitmap  = 0;
-    m_ok      = true;
   }
   ~AviConverter();
   double getMaxProgress() const {
@@ -312,13 +309,7 @@ public:
   virtual int getSupportedFeatures() {
     return IR_PROGRESSBAR | IR_INTERRUPTABLE | IR_SHOWTIMEESTIMATE | IR_SHOWPERCENT;
   }
-  UINT run();
-  bool isOk() const {
-    return m_ok;
-  }
-  const String &getMessage() const {
-    return m_msg;
-  }
+  UINT safeRun();
 };
 
 AviConverter::~AviConverter() {
@@ -330,36 +321,31 @@ AviConverter::~AviConverter() {
   }
 }
 
-UINT AviConverter::run() {
-  try {
-    CPicture picture;
-    picture.load(m_nameArray[0]);
-    const CSize imageSize = picture.getSize();
+UINT AviConverter::safeRun() {
+  CPicture picture;
+  picture.load(m_nameArray[0]);
+  const CSize imageSize = picture.getSize();
 
-    HDC screenDC = getScreenDC();
-    m_dc     = CreateCompatibleDC(screenDC);
-    m_bitmap = CreateCompatibleBitmap(screenDC, imageSize.cx, imageSize.cy);
-    DeleteDC(screenDC);
-    DWORD codec = 0; // mmioFOURCC('w','m','v',' ');
+  HDC screenDC = getScreenDC();
+  m_dc     = CreateCompatibleDC(screenDC);
+  m_bitmap = CreateCompatibleBitmap(screenDC, imageSize.cx, imageSize.cy);
+  DeleteDC(screenDC);
+  DWORD codec = 0; // mmioFOURCC('w','m','v',' ');
 
-    if(ACCESS(m_outFileName, 0) == 0) {
-      UNLINK(m_outFileName);
+  if(ACCESS(m_outFileName, 0) == 0) {
+    UNLINK(m_outFileName);
+  }
+  CAviFile aviFile(m_outFileName, true, codec, m_framesPerSecond);
+
+  for(m_index = 0; m_index < (int)m_nameArray.size(); m_index += m_useEvery) {
+    if(isInterrupted()) {
+      throwException(_T("Interrupted by user"));
     }
-    CAviFile aviFile(m_outFileName, true, codec, m_framesPerSecond);
-
-    for(m_index = 0; m_index < (int)m_nameArray.size(); m_index += m_useEvery) {
-      if(isInterrupted()) {
-        throwException(_T("Interrupted by user"));
-      }
-      picture.load(m_nameArray[m_index]);
-      HGDIOBJ oldGDI = SelectObject(m_dc, m_bitmap);
-      picture.show(m_dc);
-      SelectObject(m_dc, oldGDI);
-      aviFile.appendNewFrame(m_bitmap);
-    }
-  } catch(Exception e) {
-    m_ok  = false;
-    m_msg = e.what();
+    picture.load(m_nameArray[m_index]);
+    HGDIOBJ oldGDI = SelectObject(m_dc, m_bitmap);
+    picture.show(m_dc);
+    SelectObject(m_dc, oldGDI);
+    aviFile.appendNewFrame(m_bitmap);
   }
   return 0;
 }
@@ -397,7 +383,7 @@ void CMakeAviDlg::OnButtonMakeAVI() {
   AviConverter converter(outName, m_nameArray, m_framePerSecond, m_useEvery);
   ProgressWindow(this, converter);
   if(!converter.isOk()) {
-    showWarning(converter.getMessage());
+    showWarning(converter.getErrorMsg());
   }
 }
 
@@ -406,13 +392,10 @@ private:
   const String       m_inFileName;
   int                m_maxIndex;
   int                m_index;
-  bool               m_ok;
-  String             m_msg;
 public:
   AviReader(const String &inFileName) : m_inFileName(inFileName) {
     m_maxIndex = 0;
     m_index    = 0;
-    m_ok       = true;
   }
   ~AviReader();
   double getMaxProgress() const {
@@ -428,36 +411,25 @@ public:
   virtual int getSupportedFeatures() {
     return IR_PROGRESSBAR | IR_INTERRUPTABLE | IR_SHOWTIMEESTIMATE | IR_SHOWPERCENT;
   }
-  UINT run();
-  bool isOk() const {
-    return m_ok;
-  }
-  const String &getMessage() const {
-    return m_msg;
-  }
+  UINT safeRun();
 };
 
 AviReader::~AviReader() {
 }
 
-UINT AviReader::run() {
-  try {
-    CAviFile aviFile(m_inFileName, false);
-    FileNameSplitter spl(m_inFileName);
-    const String dir = spl.getDrive() + spl.getDir();
-    m_maxIndex = aviFile.getStreamInfo(). dwLength;
-    HBITMAP bitmap;
-    while((bitmap = aviFile.readFrame()) != NULL) {
-      m_index++;
-      if(isInterrupted()) {
-        throwException(_T("Interrupted by user"));
-      }
-      const String fileName = FileNameSplitter::getChildName(dir, format(_T("out%05d.jpg"), m_index));
-      writeAsJPG(bitmap, ByteOutputFile(fileName));
+UINT AviReader::safeRun() {
+  CAviFile aviFile(m_inFileName, false);
+  FileNameSplitter spl(m_inFileName);
+  const String dir = spl.getDrive() + spl.getDir();
+  m_maxIndex = aviFile.getStreamInfo(). dwLength;
+  HBITMAP bitmap;
+  while((bitmap = aviFile.readFrame()) != NULL) {
+    m_index++;
+    if(isInterrupted()) {
+      throwException(_T("Interrupted by user"));
     }
-  } catch(Exception e) {
-    m_ok = false;
-    m_msg = e.what();
+    const String fileName = FileNameSplitter::getChildName(dir, format(_T("out%05d.jpg"), m_index));
+    writeAsJPG(bitmap, ByteOutputFile(fileName));
   }
   return 0;
 }
@@ -481,7 +453,7 @@ void CMakeAviDlg::OnButtonReadAVI() {
   AviReader reader(aviFileName);
   ProgressWindow(this, reader);
   if(!reader.isOk()) {
-    showWarning(reader.getMessage());
+    showWarning(reader.getErrorMsg());
   }
 }
 

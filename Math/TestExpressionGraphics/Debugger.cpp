@@ -129,8 +129,7 @@ String Debugger::getDebugInfo() const {
   );
 }
 
-UINT Debugger::run() {
-  m_terminateSem.wait();
+UINT Debugger::safeRun() {
   setThreadDescription(_T("Debugger"));
   try {
     suspend();
@@ -146,7 +145,6 @@ UINT Debugger::run() {
   }
   setProperty(DBG_TERMINATED, m_terminated, true );
   setProperty(DBG_RUNNING   , m_running   , false);
-  m_terminateSem.notify();
   return 0;
 }
 
@@ -215,5 +213,5 @@ void Debugger::kill() {
       resume();
     }
   }
-  m_terminateSem.wait();
+  waitUntilJobDone();
 }

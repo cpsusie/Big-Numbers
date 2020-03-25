@@ -132,7 +132,7 @@ void CHexViewDoc::saveAs(const String &newName) {
   SaveAsJob job(newName, *this);
   ProgressWindow(NULL, job, 1000);
   if(!job.isOk()) {
-    throwException(job.getErrorMessage());
+    throwException(job.getErrorMsg());
   } else {
     const bool readOnly = isReadOnly();
     OnOpenDocument((TCHAR*)newName.cstr());

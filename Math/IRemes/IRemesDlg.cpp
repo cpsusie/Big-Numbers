@@ -6,27 +6,26 @@
 #include "PrecisionDlg.h"
 
 #ifdef _DEBUG
+#include <Thread.h>
 #define new DEBUG_NEW
 #endif
 
 class CAboutDlg : public CDialog {
 public:
-  CAboutDlg();
+  CAboutDlg() : CDialog(IDD) {
+  }
   enum { IDD = IDD_ABOUTBOX };
 protected:
   DECLARE_MESSAGE_MAP()
 };
 
-CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
-}
-
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
 CIRemesDlg::CIRemesDlg(CWnd *pParent /*=NULL*/)
-  : CDialog(CIRemesDlg::IDD, pParent)
-  , m_name(EMPTYSTRING)
-  , m_maxSearchEIterations(0)
+: CDialog(IDD, pParent)
+, m_name(EMPTYSTRING)
+, m_maxSearchEIterations(0)
 {
   m_M                      = 6;
   m_K                      = 6;
@@ -311,16 +310,12 @@ void CIRemesDlg::clearErrorPointArray() {
   m_debugInfo.clearPointArray();
 }
 
-class ErrorPlotter : public Runnable {
+class ErrorPlotter : public SafeRunnable {
 private:
   CIRemesDlg       &m_dlg;
   bool              m_requestTerminate;
   DigitPool        *m_digitPool;
   float             m_progress; // in pct
-  FastSemaphore     m_terminated;
-  inline void waitUntilDone() {
-    m_terminated.wait();
-  }
 public:
   ErrorPlotter(CIRemesDlg *dlg) : m_dlg(*dlg), m_requestTerminate(false) {
     m_digitPool = BigRealResourcePool::fetchDigitPool();
@@ -328,7 +323,7 @@ public:
   }
   ~ErrorPlotter() {
     requestTerminate();
-    waitUntilDone();
+    waitUntilJobDone();
     BigRealResourcePool::releaseDigitPool(m_digitPool);
   }
   void requestTerminate() {
@@ -337,15 +332,16 @@ public:
       m_digitPool->terminatePoolCalculation();
     }
   }
-  UINT run();
+  UINT safeRun();
   float getProgress() const {
     return m_progress;
   }
 };
 
-UINT ErrorPlotter::run() {
-  m_terminated.wait();
+UINT ErrorPlotter::safeRun() {
+#ifdef _DEBUG
   setThreadDescription("ErrorPlotter");
+#endif // _DEBUG
   m_progress = 0;
   try {
     DebugInfo       &info = m_dlg.m_debugInfo;
@@ -357,11 +353,11 @@ UINT ErrorPlotter::run() {
     remes->getErrorPlot(f, m_dlg.getErrorPlotXPixelCount(), pa, m_digitPool, &m_progress);
     info.setPointArray(pa, f.getCoefVectorIndex());
     m_dlg.PostMessage(ID_MSG_ERRORPOINTARRAY_CHANGED, 0, 0);
-    m_terminated.notify();
+    m_dlg.stopErrorPlotTimer();
   } catch (...) {
-    m_terminated.notify();
+    m_dlg.stopErrorPlotTimer();
+    throw;
   }
-  m_dlg.stopErrorPlotTimer();
   return 0;
 }
 

@@ -7,17 +7,10 @@ SaveAsJob::SaveAsJob(const String &newName, ByteContainer &src)
 , m_size(src.getSize())
 , m_fileIndex(0)
 {
-  m_ok = true;
 }
 
-UINT SaveAsJob::run() {
-  try {
-    doSave();
-  } catch(Exception e) {
-    m_errorMessage = e.what();
-  } catch(...) {
-    m_errorMessage = _T("Unknown Exception");
-  }
+UINT SaveAsJob::safeRun() {
+  doSave();
   return 0;
 }
 
@@ -41,7 +34,6 @@ void SaveAsJob::doSave() {
       fclose(dst);
     }
     unlink(m_newName);
-    m_ok = false;
     throw;
   }
 }

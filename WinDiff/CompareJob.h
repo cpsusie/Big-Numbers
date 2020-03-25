@@ -1,7 +1,6 @@
 #pragma once
 
 #include <CompactArray.h>
-#include <Semaphore.h>
 #include <Timer.h>
 #include <MFCUtil/InteractiveRunnable.h>
 
@@ -38,7 +37,7 @@ private:
   String                       m_progressMessage;
   CompactArray<_ProgressStep>  m_stepArray;
   double                       m_sumEstimatedTimeUnits, m_timeUnitsDone;
-  mutable Semaphore            m_gate;
+  mutable FastSemaphore        m_gate;
   Timestamp                    m_stepStartTime;
 
   void updateProgressMessage();
@@ -79,7 +78,7 @@ public:
 
   void addStep(double estimatedTimeUnits, const TCHAR *msg);
 
-  UINT run();
+  UINT safeRun();
   void handleInterruptOrSuspend();
 };
 

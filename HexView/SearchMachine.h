@@ -60,7 +60,7 @@ public:
     return m_findWhat;
   }
 // ---------------------- Functions to implement InteractiveRunnable ---------------
-  UINT run();
+  UINT safeRun();
   double getMaxProgress() const {
     return (double)m_maxProgress;
   }

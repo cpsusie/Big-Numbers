@@ -1,25 +1,26 @@
 #include "stdafx.h"
 #include <ThreadPool.h>
+#include <Thread.h>
 #include <Math/BigReal/BigRealResourcePool.h>
 #include "Debugger.h"
 
 DEFINECLASSNAME(Debugger);
 
 Debugger::Debugger(Remes &r, const IntInterval &mInterval, const IntInterval &kInterval, int maxMKSum, bool skipExisting)
-: m_r(r)
-, m_mInterval(   mInterval   )
-, m_kInterval(   kInterval   )
-, m_maxMKSum(    maxMKSum    )
-, m_skipExisting(skipExisting)
-, m_runState(DEBUGGER_CREATED)
-, m_requestTerminate(false   )
-, m_thread(      NULL        )
+: m_breakPoints(     0               )
+, m_skipExisting(    skipExisting    )
+, m_requestTerminate(false           )
+, m_runState(        DEBUGGER_CREATED)
+, m_r(               r               )
+, m_mInterval(       mInterval       )
+, m_kInterval(       kInterval       )
+, m_maxMKSum(        maxMKSum        )
 {
+  ThreadPool::executeNoWait(*this);
 }
 
 Debugger::~Debugger() {
   requestTerminate();
-  m_terminated.wait();
 }
 
 void Debugger::suspend() {
@@ -31,59 +32,36 @@ void Debugger::suspend() {
   case DEBUGGER_RUNNING   :
     if(!m_requestTerminate) {
       setProperty(DEBUGGER_RUNSTATE, m_runState, DEBUGGER_BREAK);
-      m_thread->suspend();
+      __super::suspend();
       setProperty(DEBUGGER_RUNSTATE, m_runState, DEBUGGER_RUNNING);
     }
     break;
   }
 }
 
-void Debugger::resume() {
-  switch(m_runState) {
-  case DEBUGGER_CREATED   :
-    ThreadPool::executeNoWait(*this);
-    break;
-
-  case DEBUGGER_BREAK     :
-    m_thread->resume();
-    break;
-  case DEBUGGER_RUNNING   :
-  case DEBUGGER_TERMINATED:
-    return; // Do nothing
-  }
-}
-
-UINT Debugger::run() {
-  m_terminated.wait();
-  m_thread = Thread::getCurrentThread();
-  m_thread->setDescription("DEBUGGER");
+UINT Debugger::safeRun() {
+  setThreadDescription("DEBUGGER");
+  setProperty(DEBUGGER_RUNSTATE, m_runState, DEBUGGER_RUNNING);
   try {
     m_r.addPropertyChangeListener(this);
-    try {
-      setProperty(DEBUGGER_RUNSTATE, m_runState, DEBUGGER_RUNNING);
-      for(int M = m_mInterval.getFrom(); M <= m_mInterval.getTo(); M++) {
-        for(int K = m_kInterval.getFrom(); K <= m_kInterval.getTo(); K++) {
-          if(M + K <= m_maxMKSum) {
-            if(m_skipExisting && m_r.solutionExist(M, K)) {
-              continue;
-            }
-            m_r.solve(M, K);
+    suspend();
+    for(int M = m_mInterval.getFrom(); M <= m_mInterval.getTo(); M++) {
+      for(int K = m_kInterval.getFrom(); K <= m_kInterval.getTo(); K++) {
+        if(M + K <= m_maxMKSum) {
+          if(m_skipExisting && m_r.solutionExist(M, K)) {
+            continue;
           }
+          m_r.solve(M, K);
         }
       }
-    } catch(Exception e) {
-      if(!m_requestTerminate) {
-        setProperty(DEBUGGER_ERROR, m_errorMsg, e.what());
-      }
-    } catch (...) {
-      setProperty(DEBUGGER_ERROR, m_errorMsg, _T("Unknown exception"));
     }
     m_r.removePropertyChangeListener(this);
-  } catch(...) {
+    setProperty(DEBUGGER_RUNSTATE, m_runState, DEBUGGER_TERMINATED);
+  } catch (...) {
+    m_r.removePropertyChangeListener(this);
+    setProperty(DEBUGGER_RUNSTATE, m_runState, DEBUGGER_TERMINATED);
+    throw;
   }
-  m_thread = NULL;
-  setProperty(DEBUGGER_RUNSTATE, m_runState, DEBUGGER_TERMINATED);
-  m_terminated.notify();
   return 0;
 }
 
@@ -103,8 +81,8 @@ void Debugger::handlePropertyChanged(const PropertyContainer *source, int id, co
 
   RemesPropertyData prop(*(const Remes*)source, id, oldValue, newValue);
   notifyPropertyChanged(REMES_PROPERTY, NULL, &prop);
-  if(!m_breakPoints.isEmpty()) {
-    if(m_breakPoints.contains(BREAKASAP)) {
+  if(m_breakPoints) {
+    if(isSet(BREAKASAP)) {
       stop();
       return;
     }
@@ -117,7 +95,7 @@ void Debugger::handlePropertyChanged(const PropertyContainer *source, int id, co
         case REMES_SEARCH_COEFFICIENTS:
         case REMES_SEARCH_EXTREMA     :
         case REMES_SUCCEEDED          :
-          if(m_breakPoints.contains(BREAKSTEP) || m_breakPoints.contains(BREAKSUBSTEP)) {
+          if(isSet(BREAKSTEP | BREAKSUBSTEP)) {
             stop();
           }
           break;
@@ -131,7 +109,7 @@ void Debugger::handlePropertyChanged(const PropertyContainer *source, int id, co
     case EXTREMACOUNT         :
     case MAXERROR             :
     case WARNING              :
-      if(m_breakPoints.contains(BREAKSUBSTEP)) {
+      if(isSet(BREAKSUBSTEP)) {
         stop();
       }
       break;
@@ -145,16 +123,16 @@ void Debugger::stop() {
 
 const TCHAR *Debugger::getStateName(DebuggerRunState state) { // static
   switch(state) {
-  case DEBUGGER_CREATED   : return _T("Created");
-  case DEBUGGER_RUNNING   : return _T("Running");
-  case DEBUGGER_BREAK     : return _T("Suspended");
+  case DEBUGGER_CREATED   : return _T("Created"   );
+  case DEBUGGER_RUNNING   : return _T("Running"   );
+  case DEBUGGER_BREAK     : return _T("Suspended" );
   case DEBUGGER_TERMINATED: return _T("Terminated");
   }
   return _T("Unknown state");
 }
 
 const TCHAR *Debugger::getStateName() const {
-  return getStateName(this->m_runState);
+  return getStateName(m_runState);
 }
 
 void Debugger::requestTerminate() {
@@ -179,30 +157,18 @@ void Debugger::requestTerminate() {
 
 void Debugger::singleStep() {
   switch(m_runState) {
-  case DEBUGGER_CREATED:
-  case DEBUGGER_BREAK:
-    m_breakPoints.add(   BREAKSTEP   );
-    m_breakPoints.remove(BREAKSUBSTEP);
-    m_breakPoints.remove(BREAKASAP   );
-    resume();
-    break;
-  case DEBUGGER_RUNNING:
-  case DEBUGGER_TERMINATED:
+  case DEBUGGER_CREATED   :
+  case DEBUGGER_BREAK     :
+    setFlag(BREAKSTEP).clrFlag(BREAKSUBSTEP | BREAKASAP).resume();
     break;
   }
 }
 
 void Debugger::singleSubStep() {
   switch(m_runState) {
-  case DEBUGGER_CREATED:
-  case DEBUGGER_BREAK:
-    m_breakPoints.add(BREAKSTEP   );
-    m_breakPoints.add(BREAKSUBSTEP);
-    m_breakPoints.remove(BREAKASAP);
-    resume();
-    break;
-  case DEBUGGER_RUNNING:
-  case DEBUGGER_TERMINATED:
+  case DEBUGGER_CREATED   :
+  case DEBUGGER_BREAK     :
+    setFlag(BREAKSTEP | BREAKSUBSTEP).clrFlag(BREAKASAP).resume();
     break;
   }
 }
@@ -211,18 +177,12 @@ void Debugger::go() {
   switch(m_runState) {
   case DEBUGGER_CREATED   : 
   case DEBUGGER_BREAK     : 
-    m_breakPoints.remove(BREAKSTEP   );
-    m_breakPoints.remove(BREAKSUBSTEP);
-    m_breakPoints.remove(BREAKASAP   );
-    resume();
+    clrFlag(BREAKSTEP | BREAKSUBSTEP | BREAKASAP ).resume();
     break;
-  case DEBUGGER_RUNNING   :
-  case DEBUGGER_TERMINATED:
-    break;;
   }
 }
 
 void Debugger::breakASAP() {
   if(!isRunning()) return;
-  m_breakPoints.add(   BREAKASAP   );
+  setFlag(BREAKASAP);
 }

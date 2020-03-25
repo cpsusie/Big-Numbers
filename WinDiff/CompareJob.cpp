@@ -108,7 +108,7 @@ void CompareJob::addStep(double estimatedTimeUnits, const TCHAR *msg) {
   m_sumEstimatedTimeUnits += estimatedTimeUnits;
 }
 
-UINT CompareJob::run() {
+UINT CompareJob::safeRun() {
   try {
     m_currentStep         = 0;
     m_subProgressPercent  = 0;
