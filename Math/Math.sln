@@ -179,6 +179,10 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FindNice4DegreeEquation", "FindNice4DegreeEquation\FindNice4DegreeEquation.vcxproj", "{3BFBB7A2-C1DB-42B5-A6BD-77C38D52E6A0}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "extendedgcd", "extendedgcd\extendedgcd.vcxproj", "{1AE43652-4048-4069-9619-D25280D70E10}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1A2B1860-57C7-4A1B-BA1D-3CA3D773446C} = {1A2B1860-57C7-4A1B-BA1D-3CA3D773446C}
+		{DA57B57F-CFF3-4620-87AE-69D3598B492D} = {DA57B57F-CFF3-4620-87AE-69D3598B492D}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fraktals", "fraktals\fraktals.vcxproj", "{3ADE8618-CA6F-463B-AB63-4C4C9802805D}"
 EndProject

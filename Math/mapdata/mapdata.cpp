@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <InputValue.h>
 #include <Math.h>
 #include <MathUtil.h>
 

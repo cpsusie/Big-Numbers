@@ -209,7 +209,7 @@ void CDraw3dDlg::OnLButtonUp(UINT nFlags, CPoint point) {
   __super::OnLButtonUp(nFlags, point);
 }
 
-void CDraw3dDlg::walkWithCamera(double dist, double angle) {
+void CDraw3dDlg::walkWithCamera(float dist, float angle) {
   D3DXVECTOR3 cameraDir, cameraUp;
   D3DXVECTOR3 cameraPos;
 
@@ -221,7 +221,7 @@ void CDraw3dDlg::walkWithCamera(double dist, double angle) {
   m_scene.setCameraOrientation(cameraDir, cameraUp);
 }
 
-void CDraw3dDlg::rotateCameraUpDown(double angle) {
+void CDraw3dDlg::rotateCameraUpDown(float angle) {
   D3DXVECTOR3 cameraDir, cameraUp, cameraRight;
 
   m_scene.getCameraOrientation(cameraDir, cameraUp, cameraRight);
@@ -230,7 +230,7 @@ void CDraw3dDlg::rotateCameraUpDown(double angle) {
   m_scene.setCameraOrientation(cameraDir, cameraUp);
 }
 
-void CDraw3dDlg::rotateCameraLeftRight(double angle) {
+void CDraw3dDlg::rotateCameraLeftRight(float angle) {
   D3DXVECTOR3 cameraDir, cameraUp;
 
   m_scene.getCameraOrientation(cameraDir, cameraUp);
@@ -238,7 +238,7 @@ void CDraw3dDlg::rotateCameraLeftRight(double angle) {
   m_scene.setCameraOrientation(cameraDir, cameraUp);
 }
 
-void CDraw3dDlg::sidewalkWithCamera(double up, double right) {
+void CDraw3dDlg::sidewalkWithCamera(float up, float right) {
   D3DXVECTOR3 cameraDir, cameraUp, cameraRight;
   D3DXVECTOR3 cameraPos;
 
@@ -253,20 +253,20 @@ void CDraw3dDlg::OnMouseMove(UINT nFlags, CPoint point) {
   if(nFlags & MK_LBUTTON) {
     if(nFlags & MK_CONTROL) {
       if(nFlags & MK_SHIFT) {
-        rotateCameraLeftRight(double(point.x - m_lastMouse.x) / -100.0);
+        rotateCameraLeftRight(float(point.x - m_lastMouse.x) / -100.0f);
         msg = _T("rotateCameraLeftRight");
       } else {
-        rotateCameraUpDown(double(point.y - m_lastMouse.y) / 100.0);
+        rotateCameraUpDown(float(point.y - m_lastMouse.y) / 100.0f);
         msg = _T("rotateCameraUpDown");
       }
     } else {
       if(nFlags & MK_SHIFT) {
-        sidewalkWithCamera(double(point.y - m_lastMouse.y) / -10,
-                           double(point.x - m_lastMouse.x) /  10);
+        sidewalkWithCamera(float(point.y - m_lastMouse.y) / -10.0f,
+                           float(point.x - m_lastMouse.x) /  10.0f);
         msg = _T("sidewalkWithCamera");
       } else {
-        walkWithCamera(double(point.y - m_lastMouse.y) / -10,
-                       double(point.x - m_lastMouse.x) / 300.0);
+        walkWithCamera(float(point.y - m_lastMouse.y) / -10.0f,
+                       float(point.x - m_lastMouse.x) / 300.0f);
         msg = _T("walkWithCamera");
       }
     }

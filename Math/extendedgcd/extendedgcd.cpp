@@ -1,7 +1,10 @@
 #include "stdafx.h"
 #include <Random.h>
 #include <Math/BigReal/BigReal.h>
+#include <Math/BigReal/BigRealResourcePool.h>
 #include <Math/BigReal/MrIsprime.h>
+
+using namespace std;
 
 class GCDResult {
 public:
@@ -119,7 +122,7 @@ int main(int argc, char **argv) {
     BigInt k = findRandomPrime(200);
     tcout << "Done\n"; tcout.flush();
 
-    BigReal::resumeCalculation();
+    BigRealResourcePool::resetAllPoolCalculations();
 
     BigInt r = (p-1)*(q-1);
 

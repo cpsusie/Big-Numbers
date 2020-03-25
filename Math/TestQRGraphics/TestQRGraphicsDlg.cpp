@@ -64,13 +64,13 @@ BOOL CTestQRGraphicsDlg::OnInitDialog() {
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
   CMenu *pSysMenu = GetSystemMenu(FALSE);
-  if (pSysMenu != NULL) {
-      CString strAboutMenu;
-      strAboutMenu.LoadString(IDS_ABOUTBOX);
-      if (!strAboutMenu.IsEmpty()) {
-          pSysMenu->AppendMenu(MF_SEPARATOR);
-          pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
-      }
+  if(pSysMenu != NULL) {
+    CString strAboutMenu;
+    strAboutMenu.LoadString(IDS_ABOUTBOX);
+    if(!strAboutMenu.IsEmpty()) {
+      pSysMenu->AppendMenu(MF_SEPARATOR);
+      pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
+    }
   }
 
   SetIcon(m_hIcon, TRUE);         // Set big icon
@@ -89,8 +89,7 @@ BOOL CTestQRGraphicsDlg::OnInitDialog() {
 void CTestQRGraphicsDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   if((nID & 0xFFF0) == IDM_ABOUTBOX) {
     CAboutDlg().DoModal();
-  }
-  else {
+  } else {
     __super::OnSysCommand(nID, lParam);
   }
 }
@@ -98,7 +97,7 @@ void CTestQRGraphicsDlg::OnSysCommand(UINT nID, LPARAM lParam) {
 class QRDialog : public QRTracer {
 private:
   CTestQRGraphicsDlg *m_dlg;
-  int                m_lastDeflatedSize;
+  int                 m_lastDeflatedSize;
 public:
   QRDialog(CTestQRGraphicsDlg *dlg) { m_dlg = dlg; m_lastDeflatedSize = 0; }
   void handleData(const QRTraceElement &data);
@@ -159,7 +158,7 @@ void QRDialog::handleData(const QRTraceElement &data) {
 }
 
 void CTestQRGraphicsDlg::OnPaint() {
-  if (IsIconic()) {
+  if(IsIconic()) {
     CPaintDC dc(this);
 
     SendMessage(WM_ICONERASEBKGND, (WPARAM) dc.GetSafeHdc(), 0);
@@ -181,7 +180,7 @@ void CTestQRGraphicsDlg::OnPaint() {
       QRTraceElement element(QR);
       QRDialog qrDialog(this);
       qrDialog.handleData(element);
-    } catch (Exception e) {
+    } catch(Exception e) {
       showException(e);
     }
     __super::OnPaint();
@@ -204,19 +203,16 @@ void CTestQRGraphicsDlg::OnFileNew() {
       }
     }
     Invalidate(false);
-  }
-  catch (Exception e) {
+  } catch(Exception e) {
     showException(e);
   }
-
 }
 
 void CTestQRGraphicsDlg::OnFileSolve() {
   try {
     QRDialog qrDialog(this);
     ComplexVector eValues = findEigenValues(a,&qrDialog);
-  }
-  catch (Exception e) {
+  } catch(Exception e) {
     showException(e);
   }
 }
@@ -224,7 +220,7 @@ void CTestQRGraphicsDlg::OnFileSolve() {
 void CTestQRGraphicsDlg::OnFileUn() {
   try {
     size_t dim = a.getRowCount();
-    a = Matrix::zero(dim,dim);
+    a = Matrix::_0(dim,dim);
 
     for(size_t i = 1; i < dim; i++) {
       a(i,i-1) = 1;
@@ -232,17 +228,15 @@ void CTestQRGraphicsDlg::OnFileUn() {
     a(0,dim-1) = 1;
 
     Invalidate(false);
-  }
-  catch (Exception e) {
+  } catch(Exception e) {
     showException(e);
   }
-
 }
 
 void CTestQRGraphicsDlg::OnFileIllconditioned() {
   try {
     size_t dim = a.getRowCount();
-    a = Matrix::zero(dim,dim);
+    a = Matrix::_0(dim,dim);
 
     for(size_t i = 1; i < dim; i++) {
       a(i,i-1) = 1;
@@ -264,8 +258,7 @@ void CTestQRGraphicsDlg::OnFileIllconditioned() {
       a(0,i) = -p1[dim-i-1];
     }
     Invalidate(false);
-  }
-  catch (Exception e) {
+  } catch(Exception e) {
     showException(e);
   }
 }
@@ -278,10 +271,8 @@ void CTestQRGraphicsDlg::OnFileSymmetric() {
         a(c,r) = a(r,c) = rand() % 10 - 5;
       }
     }
-
     Invalidate(false);
-  }
-  catch (Exception e) {
+  } catch(Exception e) {
     showException(e);
   }
 }
@@ -290,7 +281,7 @@ void CTestQRGraphicsDlg::OnFileRandomAntiSymmetric() {
   try {
     size_t dim = a.getRowCount();
     size_t n = dim - 1;
-    a = Matrix::zero(dim,dim);
+    a = Matrix::_0(dim,dim);
 
     double s = 1;
     for(size_t i = 0; i < dim; i++) {
@@ -304,8 +295,7 @@ void CTestQRGraphicsDlg::OnFileRandomAntiSymmetric() {
     a(2,0) = 2;
 
     Invalidate(false);
-  }
-  catch (Exception e) {
+  } catch(Exception e) {
     showException(e);
   }
 }
@@ -328,8 +318,7 @@ void CTestQRGraphicsDlg::OnFileSpecial() {
       a(r,r-1) = 1;
     }
     Invalidate(false);
-  }
-  catch (Exception e) {
+  } catch(Exception e) {
     showException(e);
   }
 

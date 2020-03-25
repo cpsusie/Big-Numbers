@@ -8,6 +8,8 @@
 #include <fstream>
 #include "Remes2.h"
 
+using namespace std;
+
 #define EXTRLINE   6
 #define MMQUOTLINE EXTRLINE + m_N + 2
 #define COEFLINE   EXTRLINE + m_N + 4

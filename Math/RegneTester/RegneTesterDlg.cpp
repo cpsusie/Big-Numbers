@@ -287,7 +287,7 @@ void CRegneTesterDlg::OnTimer(UINT_PTR nIDEvent) {
 }
 
 void CRegneTesterDlg::updateTime() {
-  m_usedTime = diff(m_startTime, Timestamp(), TMILLISECOND);
+  m_usedTime = Timestamp::diff(m_startTime, Timestamp(), TMILLISECOND);
   updateWatch();
   setWindowText(this, IDC_TIME, secondsToString(m_usedTime));
 }

@@ -3,6 +3,8 @@
 #include <Math/Polynomial.h>
 #include <Tokenizer.h>
 
+using namespace std;
+
 ComplexVector root1(double *c) {
   const double A = c[0], B = c[1];
   ComplexVector roots(1);

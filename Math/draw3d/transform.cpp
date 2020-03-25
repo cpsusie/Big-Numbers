@@ -31,14 +31,14 @@ bool D3DFrame::calcw2e() {
   D3DXVECTOR3 baseA(m_dir);
   baseA /= l1;
 
-  D3DXVECTOR3 baseB(crossProduct(m_up,baseA));
+  D3DXVECTOR3 baseB(cross(m_up,baseA));
   const float l2 = length(baseB);
   if(l2 < EPSILON) {
     return false;
   }
   baseB /= l2;
 
-  D3DXVECTOR3 baseC(crossProduct(baseA,baseB));
+  D3DXVECTOR3 baseC(cross(baseA,baseB));
   m_w2e(0,0) = baseB.x; m_w2e(0,1) = baseB.y; m_w2e(0,2) = baseB.z;
   m_w2e(1,0) = baseA.x; m_w2e(1,1) = baseA.y; m_w2e(1,2) = baseA.z;
   m_w2e(2,0) = baseC.x; m_w2e(2,1) = baseC.y; m_w2e(2,2) = baseC.z;
@@ -58,7 +58,7 @@ void D3DFrame::getOrientation(D3DXVECTOR3 &dir, D3DXVECTOR3 &up) {
 
 void D3DFrame::getOrientation(D3DXVECTOR3 &dir, D3DXVECTOR3 &up, D3DXVECTOR3 &right) {
   getOrientation(dir,up);
-  right = crossProduct(up,dir);
+  right = cross(up,dir);
 }
 
 /*

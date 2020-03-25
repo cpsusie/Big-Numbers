@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <InputValue.h>
 
 #define PI 3.141592653
 #define tpi (2 * PI)

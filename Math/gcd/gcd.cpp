@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <MyUtil.h>
+#include <InputValue.h>
 
 bool even(ULONG n) {
   return (n & 0x1) == 0;

@@ -30,8 +30,8 @@ public:
 };
 
 double FindTheta::operator()(const double &v) {
-  D3DXVECTOR3 p1 = rotate(d2,d1,v);
-  D3DXVECTOR3 p2 = rotate(d4,d3,v);
+  D3DXVECTOR3 p1 = rotate(d2,d1,(float)v);
+  D3DXVECTOR3 p2 = rotate(d4,d3,(float)v);
   return dist(p1,p2);
 }
 
@@ -230,7 +230,7 @@ bool operator==(const Face &p1, const Face &p2) {
 void Face::reverseOrder() {
   const int n = m_n / 2;
   for(int i = 0; i < n; i++) {
-    ::swap(m_p[i],m_p[m_n-1-i]);
+    std::swap(m_p[i],m_p[m_n-1-i]);
   }
 }
 
@@ -359,7 +359,7 @@ bool RegPolyEder::hasRightFaceOrder(int f) const {
   const Face &face = m_faces[f];
   switch(m_printFormat) {
   case FORMAT_WAVEFRONT:
-    return crossProduct(m_points[face.m_p[0]], m_points[face.m_p[1]]) * m_points[face.m_p[2]] > 0;
+    return cross(m_points[face.m_p[0]], m_points[face.m_p[1]]) * m_points[face.m_p[2]] > 0;
 
   case FORMAT_MSDDRAW  :
     { D3DXMATRIX m;
@@ -502,7 +502,7 @@ void RegPolyEder::makeFace(int corners, double theta, const D3DXVECTOR3 &start, 
     }
     f.addPoint(pindex);
     p += d;
-    d = rotate(d,normal,GRAD2RAD(s*v));
+    d = rotate(d,normal,(float)GRAD2RAD(s*v));
   }
   f.m_normal = normal;
 //  f.print();
@@ -515,11 +515,11 @@ void RegPolyEder::makeFace(int corners, double theta, const D3DXVECTOR3 &start, 
     d = dir;
     for(int i = 0; i < corners; i++) {
       if(edgeCount(f.m_p[i],f.m_p[(i+1) % corners]) < 2) {
-        D3DXVECTOR3 newnormal = rotate(normal,d,GRAD2RAD(s*theta));
+        D3DXVECTOR3 newnormal = rotate(normal,d,(float)GRAD2RAD(s*theta));
         makeFace(corners,theta,p,newnormal,d,-s);
       }
       p += d;
-      d = rotate(d,normal,GRAD2RAD(s*v));
+      d = rotate(d,normal,(float)GRAD2RAD(s*v));
     }
   }
 }

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <InputValue.h>
 #include <Math/Matrix.h>
 #include <Math/MathException.h>
 #include <Math/Expression/Expression.h>
@@ -97,9 +98,12 @@ int _tmain(int argc, TCHAR **argv) {
       expr = getExpression();
     }
     Expression e;
-    e.compile(expr,true);
+    StringArray errors;
+    e.compile(expr,errors, true);
     if(!e.isOk()) {
-      e.listErrors();
+      for(size_t i = 0; i < errors.size(); i++) {
+        _tprintf(_T("%s\n"), errors[i].cstr());
+      }
       exit(-1);
     }
 

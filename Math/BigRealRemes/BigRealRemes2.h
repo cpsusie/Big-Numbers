@@ -2,7 +2,7 @@
 
 #include <HashMap.h>
 #include <Math/MathLib.h>
-#include <Math/BigRealMatrix.h>
+#include <Math/BigReal/BigRealMatrix.h>
 
 class ExtremaKey {
 private:
