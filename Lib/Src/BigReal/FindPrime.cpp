@@ -245,3 +245,8 @@ Array<BigInt> findRandomPrimes(int count, int digitCount, int threadCount, Digit
   Array<BigInt> resultArray = m.getResult();
   return resultArray;
 }
+
+BigInt findRandomPrime(int digitCount, int threadCount, DigitPool *pool, MillerRabinHandler *handler) {
+  Array<BigInt> pa = findRandomPrimes(1, digitCount, threadCount, pool, handler);
+  return pa[0];
+}

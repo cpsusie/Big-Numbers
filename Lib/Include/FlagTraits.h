@@ -22,14 +22,11 @@ public:
   inline bool allSet(P s) const {
     return (m_flags & s) == s;
   }
-  inline P operator&(P s) const {
-    return m_flags & s;
+  inline operator M&() {
+    return m_flags;
   }
-  inline FlagSet operator++(int) { // postfix-form
-    return m_flags++;
-  }
-  inline FlagSet operator--(int) { // postfix-form
-    return m_flags--;
+  inline operator const M&() const {
+    return m_flags;
   }
 };
 
