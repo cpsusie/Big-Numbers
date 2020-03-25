@@ -14,7 +14,7 @@ private:
   FastSemaphore         m_terminated, m_started;
   mutable FastSemaphore m_lock;
   String                m_errorMsg;
-  ATOMICFLAGTRAITS(BYTE, SafeRunnable);
+  ATOMICFLAGTRAITS(SafeRunnable, BYTE, m_flags);
 
   void setErrorMsg(const TCHAR *msg);
   void setJobStarted();

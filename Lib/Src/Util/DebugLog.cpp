@@ -28,7 +28,7 @@ class DebugLogger : public Singleton {
 private:
   friend class SingletonFactory;
   mutable FastSemaphore m_lock;
-  FLAGTRAITS(BYTE, DebugLogger);
+  FLAGTRAITS(DebugLogger, BYTE, m_flags);
   FILE                 *m_traceFile;
   TCHAR                *m_fileName; // has to be a pointer, so it will not be deallocated before any
                                     // destructors of static variables do som logging

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <TinyBitSet.h>
+#include <FlagTraits.h>
 #include <MFCUtil/WinTools.h>
 #include <MFCUtil/PropertyDialogMap.h>
 #include "D3SceneObject.h"
@@ -55,7 +55,7 @@ private:
     D3SceneObjectCoordinateSystem *m_coordinateSystem;
     PropertyDialogMap              m_propertyDialogMap;
     PropertyDialog                *m_currentPropertyDialog;
-    UINT                           m_stateFlags;
+    FLAGTRAITS(D3SceneEditor, UINT, m_stateFlags)
     CPoint                         m_lastMouse;
     D3SceneObjectPoint             m_centerOfRotation;
     D3Ray                          m_pickedRay;   // in world space
@@ -120,17 +120,6 @@ private:
     void mapDialogShow(D3LightControl      *lc);
     void mapDialogShow(D3SceneObjectVisual *obj);
     void mapDialogHide();
-    inline D3SceneEditor &setFlags(UINT flags) {
-      m_stateFlags |= flags;
-      return *this;
-    }
-    inline D3SceneEditor &clrFlags(UINT flags) {
-      m_stateFlags &= ~flags;
-      return *this;
-    }
-    inline bool isSet(UINT flags) const {
-      return (m_stateFlags & flags) != 0;
-    }
     void setMouseVisible(bool visible);
 
     inline bool isMouseVisible() const {

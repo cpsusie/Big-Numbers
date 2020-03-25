@@ -8,7 +8,7 @@
 class InterruptableRunnable : public SafeRunnable {
 private:
   HANDLE m_thr;
-  FLAGTRAITS(BYTE, InterruptableRunnable);
+  FLAGTRAITS(InterruptableRunnable, BYTE, m_flags);
 
   InterruptableRunnable(           const InterruptableRunnable &); // not implemented. not clonable
   InterruptableRunnable &operator=(const InterruptableRunnable &); // not implemented

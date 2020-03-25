@@ -55,7 +55,7 @@ void D3SceneEditor::init(D3SceneContainer *sceneContainer) {
   m_currentControl = CONTROL_IDLE;
   selectCAM((count >= 1) ? 0 : -1);
   getScene().addPropertyChangeListener(this);
-  setFlags(SE_INITDONE);
+  setFlag(SE_INITDONE);
 }
 
 void D3SceneEditor::close() {
@@ -64,17 +64,17 @@ void D3SceneEditor::close() {
   getScene().removeVisual(m_coordinateSystem);
   SAFEDELETE(m_coordinateSystem);
   getScene().close();
-  clrFlags(SE_INITDONE);
+  clrFlag(SE_INITDONE);
 }
 
 D3SceneEditor &D3SceneEditor::setEnabled(bool enabled, BYTE flags) {
   if(isInitDone()) {
     flags &= ~SE_INITDONE;
     if(enabled) {
-      setFlags(flags);
+      setFlag(flags);
       renderInfo();
     } else {
-      clrFlags(flags);
+      clrFlag(flags);
       if(!isSet(SE_LIGHTCONTROLS)) {
         OnLightControlHide();
         mapDialogHide();
@@ -101,10 +101,10 @@ void D3SceneEditor::setMouseVisible(bool visible) {
   }
   if(visible) {
     ShowCursor(TRUE);
-    setFlags(SE_MOUSEVISIBLE);
+    setFlag(SE_MOUSEVISIBLE);
   } else {
     ShowCursor(FALSE);
-    clrFlags(SE_MOUSEVISIBLE);
+    clrFlag(SE_MOUSEVISIBLE);
   }
 }
 
@@ -1190,10 +1190,10 @@ D3SceneEditor &D3SceneEditor::resetControl() {
   if(isSet(SE_RESETCONTROLACTIVE)) {
     return *this;
   }
-  setFlags(SE_RESETCONTROLACTIVE);
+  setFlag(SE_RESETCONTROLACTIVE);
   setControl(CONTROL_IDLE, NULL);
   m_pickedInfo.clear();
-  clrFlags(SE_RESETCONTROLACTIVE);
+  clrFlag(SE_RESETCONTROLACTIVE);
   return *this;
 }
 
@@ -1204,7 +1204,7 @@ bool D3SceneEditor::setControl(D3EditorControl control, D3SceneObjectVisual *vis
   if((control == m_currentControl) && (visual == m_currentObj)) {
     return false;
   }
-  setFlags(SE_SETCONTROLACTIVE);
+  setFlag(SE_SETCONTROLACTIVE);
   m_currentControl = control;
   m_currentObj     = visual;
   switch(control) {
@@ -1232,7 +1232,7 @@ bool D3SceneEditor::setControl(D3EditorControl control, D3SceneObjectVisual *vis
       mapDialogHide();
     }
   }
-  clrFlags(SE_SETCONTROLACTIVE);
+  clrFlag(SE_SETCONTROLACTIVE);
   renderInfo();
   return true;
 }

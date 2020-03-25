@@ -45,7 +45,7 @@ private:
   ThreadPoolResultQueue  *m_resultQueue;
   FastSemaphore           m_execute;
   int                     m_requestCount;
-  ATOMICFLAGTRAITS(BYTE, ThreadPoolThread)
+  ATOMICFLAGTRAITS(ThreadPoolThread, BYTE, m_flags)
 public:
   ThreadPoolThread(PoolThreadPool *pool, UINT id, const String &name);
   ~ThreadPoolThread();
