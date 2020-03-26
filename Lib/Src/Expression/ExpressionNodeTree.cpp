@@ -258,6 +258,7 @@ String ExpressionNodeTree::toString() const {
   case PLUS          : return CHILDPARSTR(0)   + _T(" + "  ) + CHILDPARSTR(1);
   case MINUS         : return CHILDPARSTR(0)   + _T(" - "  ) + CHILDPARSTR(1);
   case UNARYMINUS    : return                    _T(" - "  ) + CHILDPARSTR(0);
+  case PROD          : return CHILDPARSTR(0)   + _T("*"    ) + CHILDPARSTR(1);
   case QUOT          : return CHILDPARSTR(0)   + _T("/"    ) + CHILDPARSTR(1);
   case MOD           : return CHILDPARSTR(0)   + _T("%"    ) + CHILDPARSTR(1);
   case POW           : return CHILDPARSTR(0)   + _T("^"    ) + CHILDPARSTR(1);
@@ -311,7 +312,7 @@ String ExpressionNodeTree::toString() const {
   case IIF           : return _T("if("       ) + CHILDSTR(0) + COMMASTR + CHILDSTR(1) + COMMASTR + CHILDSTR(2) + RPSTR;
   case INDEXEDSUM    : return _T("sum("      ) + CHILDSTR(0) + _T(" to ") + CHILDSTR(1) + _T(") ") + CHILDSTR(2);
   case INDEXEDPRODUCT: return _T("product("  ) + CHILDSTR(0) + _T(" to ") + CHILDSTR(1) + _T(") ") + CHILDSTR(2);
-  default            : return _T("Unknown symbol:") + getSymbolName();
+  default            : return format(_T("Unknown symbol:%d:%s"), getSymbol(), getSymbolName().cstr());
   }
 }
 

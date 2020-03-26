@@ -376,7 +376,7 @@ PixRect *ExpressionPainter::paintExpression(int fontSize) {
     return getTextImage(_T("null"), true, fontSize, m_rectangle);
   }
   PixRect *pr = getImage(m_tree->getRoot(), fontSize, m_rectangle);
-  m_tree->pruneUnusedNodes();
+//  m_tree->pruneUnusedNodes(); Dont call this here. cause reduction-debugger in TestExpressionGraphics to crash
   return pr;
 }
 
