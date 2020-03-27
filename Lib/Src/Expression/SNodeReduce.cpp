@@ -59,7 +59,7 @@ SNode SNode::reduceStmtList() {
     newStmtList.add(last.reduceBoolExp());
     break;
   default               :
-    last.throwUnknownSymbolException(__TFUNCTION__);
+    last.UNKNOWNSYMBOL();
   }
   newStmtList.removeUnusedAssignments();
   if(newStmtList.isSameNodes(childArray)) {
@@ -109,7 +109,7 @@ SNode SNode::reduceBoolExp() {
         }
       }
     default:
-      throwUnknownSymbolException(__TFUNCTION__);
+      UNKNOWNSYMBOL();
       RETURNNULL;
     }
   }
@@ -176,7 +176,7 @@ SNode SNode::reduceRealExp() {
   case INDEXEDPRODUCT : RETURNNODE( reduceIndexedExpr() );
   case IIF            : RETURNNODE( reduceCondExp() );
   default             :
-    throwUnknownSymbolException(__TFUNCTION__);
+    UNKNOWNSYMBOL();
     RETURNNULL;
   }
 }
@@ -241,8 +241,7 @@ SNode SNode::reduceSum() const {
   do {
     AddentArray tmp = reduced;
     reduced.clear();
-    done.setCapacity(tmp.size());
-    done.clear();
+    done.setCapacity(tmp.size()).clear();
     SNode sqrSinOrCos;
     for(size_t i1 = 1; i1 < tmp.size(); i1++) {
       SNode e1 = tmp[i1];
@@ -662,8 +661,7 @@ SNode SNode::reduceProduct() {
     do {
       FactorArray tmp = reduced;
       reduced.clear();
-      done.setCapacity(tmp.size());
-      done.clear();
+      done.setCapacity(tmp.size()).clear();
       for(size_t i1 = 1; i1 < tmp.size(); i1++) {
         SNode f1 = tmp[i1];
         for(size_t i2 = 0; i2 < i1; i2++) {
@@ -675,13 +673,11 @@ SNode SNode::reduceProduct() {
             if(!newExponent.isZero()) {
               reduced *= powerExp(f1.base(), newExponent);
             }
-            done.add(i1);
-            done.add(i2);
+            done.add(i1).add(i2);
           } else {
             SNode f = reduceTrigonometricFactors(f1, f2);
             if(!f.isEmpty()) {
-              done.add(i1);
-              done.add(i2);
+              done.add(i1).add(i2);
               Number v;
               if(!f.isConstant(&v)) {
                 reduced *= f;
@@ -952,25 +948,21 @@ SNode SNode::reduceConstantFactors(FactorArray &factorArray) {
         if(e1IsRationalConstant && e2IsRationalConstant) {
           if(E1R == E2R) {
             reduced *= powerExp(reducedBase1 * reducedBase2, E1R);
-            done.add(i1);
-            done.add(i2);
+            done.add(i1).add(i2);
           } else if(E1R == -E2R) {
             if(E1R > 0) {
               reduced *= powerExp(reducedBase1 / reducedBase2, E1R);
             } else {
               reduced *= powerExp(reducedBase2 / reducedBase1, E2R);
             }
-            done.add(i1);
-            done.add(i2);
+            done.add(i1).add(i2);
           } else if(base1.equal(base2)) {
             reduced *= powerExp(reducedBase1, E2R + E1R);
-            done.add(i1);
-            done.add(i2);
+            done.add(i1).add(i2);
           }
         } else if(expo1.equal(expo2)) {
           reduced *= powerExp(reducedBase1 * reducedBase2, expo1);
-          done.add(i1);
-          done.add(i2);
+          done.add(i1).add(i2);
         }
       }
     }

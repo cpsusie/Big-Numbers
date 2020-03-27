@@ -6,3 +6,5 @@
 #include <Math.h>
 #include <Math/MathLib.h>
 #include <Math/MathException.h>
+
+#define UNKNOWNSYMBOL() throwUnknownSymbolException(__TFUNCTION__)

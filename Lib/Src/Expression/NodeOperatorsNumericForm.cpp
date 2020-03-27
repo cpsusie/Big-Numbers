@@ -86,7 +86,7 @@ NNode NNode::toNFormStmtList() const {
     newStmtList.add(last.toNFormBoolExp());
     break;
   default               :
-    last.throwUnknownSymbolException(__TFUNCTION__);
+    last.UNKNOWNSYMBOL();
   }
   RETURNNODE( stmtList(newStmtList.removeUnusedAssignments()) );
 }
@@ -136,7 +136,7 @@ NNode NNode::toNFormBoolExp() const {
       RETURNNODE( boolExp(getSymbol(), l, r) );
     }
   default    :
-    throwUnknownSymbolException(__TFUNCTION__);
+    UNKNOWNSYMBOL();
     return NULL;
   }
 }

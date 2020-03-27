@@ -41,7 +41,7 @@ bool ExpressionNodeBoolExpr::isConstant(Number *v) const {
   case LT      :
   case GE      :
   case GT      : return left()->isConstant() && right()->isConstant();
-  default      : throwUnknownSymbolException(__TFUNCTION__);
+  default      : UNKNOWNSYMBOL();
   }
   return false;
 }
@@ -57,7 +57,7 @@ bool ExpressionNodeBoolExpr::evaluateBool() const {
   case LT      : return left()->evaluateReal() <  right()->evaluateReal();
   case GE      : return left()->evaluateReal() >= right()->evaluateReal();
   case GT      : return left()->evaluateReal() >  right()->evaluateReal();
-  default      : throwUnknownSymbolException(__TFUNCTION__);
+  default      : UNKNOWNSYMBOL();
   }
   return true;
 }

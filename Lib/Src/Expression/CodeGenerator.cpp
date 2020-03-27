@@ -75,7 +75,7 @@ ExpressionReturnType CodeGenerator::genStatementList(const ExpressionNode *n) {
     genReturnBoolExpression(last);
     break;
   default               :
-    last.throwUnknownSymbolException(__TFUNCTION__);
+    last.UNKNOWNSYMBOL();
     break;
   }
   return last.getReturnType();
@@ -475,7 +475,7 @@ void CodeGenerator::genExpression(SNode n DCL_DSTPARAM) {
     break;
   case IIF           :    GENIF(n);
   default            :
-    n.throwUnknownSymbolException(__TFUNCTION__);
+    n.UNKNOWNSYMBOL();
     break;
   }
 #ifdef IS64BIT
@@ -659,7 +659,7 @@ void CodeGenerator::genBoolExpression(SNode n, JumpList &jl, bool trueAtEnd) {
     }
     break;
   default       :
-    n.throwUnknownSymbolException(__TFUNCTION__);
+    n.UNKNOWNSYMBOL();
   }
 }
 

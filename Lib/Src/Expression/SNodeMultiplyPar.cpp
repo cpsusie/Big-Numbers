@@ -112,8 +112,7 @@ SNode SNode::multiplyParenthesesInProduct() const {
   do {
     FactorArray tmp = newFactorArray;
     newFactorArray.clear();
-    done.setCapacity(tmp.size() + 1);
-    done.clear();
+    done.setCapacity(tmp.size() + 1).clear();
     for(size_t i1 = 1; i1 < tmp.size(); i1++) {
       if(done.contains(i1)) continue;
       SNode f1 = tmp[i1];
@@ -129,12 +128,10 @@ SNode SNode::multiplyParenthesesInProduct() const {
         }
         if(f1.base().getSymbol() == SUM) {
           newFactorArray *= multiplyFactorSum(f2, f1.base());
-          done.add(i1);
-          done.add(i2);
+          done.add(i1).add(i2);
         } else if(f2.base().getSymbol() == SUM) {
           newFactorArray *= multiplyFactorSum(f1, f2.base());
-          done.add(i1);
-          done.add(i2);
+          done.add(i1).add(i2);
         }
       }
     }

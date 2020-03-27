@@ -143,7 +143,8 @@ public:
   inline size_t getCapacity() const {
     return m_capacity;
   }
-  void setCapacity(size_t newCapacity);
+  // Return *this
+  BitSet &setCapacity(size_t newCapacity);
   inline size_t getAtomCount() const {
      return _BS_ATOMCOUNT(m_capacity);
   }

@@ -87,7 +87,7 @@ BitSet &BitSet::operator=(const BitSet &rhs) {
   return *this;
 }
 
-void BitSet::setCapacity(size_t newCapacity) {
+BitSet &BitSet::setCapacity(size_t newCapacity) {
   const size_t newAtomCount = _BS_ATOMCOUNT(newCapacity);
   const size_t oldAtomCount = _BS_ATOMCOUNT(m_capacity );
   if(newAtomCount != oldAtomCount) {
@@ -102,6 +102,7 @@ void BitSet::setCapacity(size_t newCapacity) {
     m_p = p;
   }
   m_capacity = newCapacity;
+  return *this;
 }
 
 BitSet &BitSet::remove(size_t a, size_t b) {

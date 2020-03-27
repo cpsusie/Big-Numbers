@@ -314,7 +314,7 @@ SNode SNode::reduceNot() {
     case OR : RETURNNODE(!l.left() && !l.right()); // !(a || b) = !a && !b
     case NOT: RETURNNODE(l.left());                // !(!b) == b
     default :
-      throwUnknownSymbolException(__TFUNCTION__);
+      UNKNOWNSYMBOL();
       RETURNTHIS;
     }
   }

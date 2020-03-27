@@ -1,72 +1,72 @@
 #include "pch.h"
+#include <Singleton.h>
 #include <Math/Double80.h>
 #include <Math/PrimeFactors.h>
 
-class Primes {
+class Primes : public Singleton {
+  friend class SingletonFactory;
 private:
-  static Primes *s_instance;
-  BitSet         m_primes;
-
-  Primes();
-  // remove all nonprimes from m_primes
+  BitSet        m_primeSet;
+  FastSemaphore m_lock;
+  Primes(SingletonFactory *factory);
+  // remove all nonprimes from m_primeSet
   void removeNonPrimes(size_t start);
-  // extend m_primes to contain all primes from start..upperLimit (incl)
-  void extendPrimeSet(UINT upperLimit);
-  friend void deallocatePrimesInstance();
+  // extend m_primeSet to contain all primes from start..upperLimit (incl)
+  void extendPrimeSet(UINT newCapacity);
+
 public:
   Iterator<size_t> getIterator(UINT upperLimit);
   static Primes &getInstance();
+  inline Primes &wait() {
+    m_lock.wait();
+    return *this;
+  }
+  inline Primes &notify() {
+    m_lock.notify();
+    return *this;
+  }
 };
 
-Primes::Primes() : m_primes(3) {
-  m_primes.add(2);
+Primes::Primes(SingletonFactory *factory)
+: Singleton(factory)
+, m_primeSet(3)
+{
+  m_primeSet.add(2);
 }
 
-// extend m_primes to contain all primes [2..upperLimit]
-void Primes::extendPrimeSet(UINT upperLimit) {
-  const size_t lastUpperLimit = m_primes.getCapacity() - 1;
-  if(upperLimit > lastUpperLimit) {
-    m_primes.setCapacity(upperLimit+1);
-    m_primes.add(lastUpperLimit+1, upperLimit);
-    removeNonPrimes(lastUpperLimit);
-  }
+// extend m_primeSet to contain all primes [2..newCapacity-1]
+void Primes::extendPrimeSet(UINT newCapacity) {
+  const size_t lastUpperLimit = m_primeSet.getCapacity() - 1;
+  m_primeSet.setCapacity(newCapacity).add(lastUpperLimit+1, newCapacity-1);
+  removeNonPrimes(lastUpperLimit);
 }
 
 void Primes::removeNonPrimes(size_t start) {
-  const size_t upper = m_primes.getCapacity()-1;
-  for(Iterator<size_t> it = m_primes.getIterator(); it.hasNext();) {
+  const size_t upper = m_primeSet.getCapacity();
+  for(Iterator<size_t> it = m_primeSet.getIterator(); it.hasNext();) {
     const size_t p = it.next();
     const size_t q = max(start / p,1) + 1;
-    for(size_t j = q*p; j <= upper; j += p) {
-      m_primes.remove(j);
+    for(size_t j = q*p; j < upper; j += p) {
+      m_primeSet.remove(j);
     }
   }
 }
 
 Iterator<size_t> Primes::getIterator(UINT upperLimit) {
-  extendPrimeSet(upperLimit);
-  return m_primes.getIterator();
-}
-
-static void deallocatePrimesInstance() {
-  if(Primes::s_instance != NULL) {
-    delete Primes::s_instance;
-    Primes::s_instance = NULL;
+  if(upperLimit >= m_primeSet.getCapacity()) {
+    extendPrimeSet(upperLimit+1);
   }
+  return m_primeSet.getIterator();
 }
 
-Primes *Primes::s_instance = NULL;
+DEFINESINGLETON(Primes);
 
 Primes &Primes::getInstance() { // static
-  if(s_instance == NULL) {
-    s_instance = new Primes;
-    atexit(deallocatePrimesInstance);
-  }
-  return *s_instance;
+  return getPrimes();
 }
 
 PrimeFactorArray::PrimeFactorArray(INT64 n, UINT limit) {
-  if (n == 0) {
+  if(n == 0) {
     return;
   }
   if(n > 0) {
@@ -75,8 +75,9 @@ PrimeFactorArray::PrimeFactorArray(INT64 n, UINT limit) {
     n = -n;
     m_positive = false;
   }
-  const ULONG upperLimit = limit ? limit : (getUlong(sqrt(Double80(n))) + 1);
-  for(Iterator<size_t> it = Primes::getInstance().getIterator(upperLimit); it.hasNext();) {
+  const UINT upperLimit = limit ? limit : (getUint(sqrt(Double80(n))) + 1);
+  Primes &primes = Primes::getInstance().wait();
+  for(Iterator<size_t> it = primes.getIterator(upperLimit); it.hasNext();) {
     const size_t p = it.next();
     if(n % p == 0) {
       PrimeFactor pf(p);
@@ -89,6 +90,7 @@ PrimeFactorArray::PrimeFactorArray(INT64 n, UINT limit) {
       break;
     }
   }
+  primes.notify();
   if((n != 1) && (limit == 0)) {
     add(PrimeFactor(n));
   }

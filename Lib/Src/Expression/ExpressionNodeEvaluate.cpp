@@ -104,7 +104,7 @@ Real ExpressionNode::evaluateReal() const {
                  }
                  return acc;
     }
-  default      : throwUnknownSymbolException(method);
+  default      : UNKNOWNSYMBOL();
                  return 0;
   }
 }

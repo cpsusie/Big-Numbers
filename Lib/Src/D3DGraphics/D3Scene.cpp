@@ -27,8 +27,8 @@ void D3Scene::initDevice(HWND hwnd) {
   m_device = new D3Device(hwnd); TRACE_NEW(m_device);
   const D3DCAPS &deviceCaps = m_device->getDeviceCaps();
   m_ambientColor      = m_device->getAmbientColor();
-  m_lightsEnabled.setCapacity(getMaxLightCount()); m_lightsEnabled.clear();
-  m_lightsDefined.setCapacity(getMaxLightCount()); m_lightsDefined.clear();
+  m_lightsEnabled.setCapacity(getMaxLightCount()).clear();
+  m_lightsDefined.setCapacity(getMaxLightCount()).clear();
   addLight(   D3Light::createDefaultLight());
   addMaterial(D3Material::createDefaultMaterial());
 }
