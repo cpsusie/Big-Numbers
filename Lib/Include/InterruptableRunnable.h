@@ -7,21 +7,33 @@
 
 class InterruptableRunnable : public SafeRunnable {
 private:
+  // m_thr == INVALID_HANDLE_VALUE, unless suspend() is called, and the running thread is temporarily stopped
+  // Set to INVALID_HANDLE_VALUE, when thread is resumed
   HANDLE m_thr;
   FLAGTRAITS(InterruptableRunnable, BYTE, m_flags);
 
   InterruptableRunnable(           const InterruptableRunnable &); // not implemented. not clonable
   InterruptableRunnable &operator=(const InterruptableRunnable &); // not implemented
 
-  inline void clrSuspended() {
-    clrFlag(_IRFLG_SUSPENDED);
+  inline InterruptableRunnable &clrSuspended() {
+    return clrFlag(_IRFLG_SUSPENDED);
   }
-
+  void saveHandle();
+  InterruptableRunnable &clearHandle();
+  inline bool isPaused() const {
+    return m_thr != INVALID_HANDLE_VALUE;
+  }
 protected:
-  // The next 3 functions should only be called by this (operate on currentthread)
+  // Should only be called by this (operate on currentthread)
   // Throw Exception. If msg == NULL, exception-text is "Interrupted"
   void die(const TCHAR *msg = NULL);
+  // Should only be called by this (operate on currentthread)
+  // Save currentThreadHandle in m_thr, and call SuspendThread(m_thr)
+  // When resume is called, clearHandle() and clrSuspended() are called
+  // If isInterrupted(), die() is called, or else thread continues execution
+  // Only thread itself should call this function, may cause deadlocks if not use with care
   void suspend();
+  // Should only be called by this (operate on currentthread)
   virtual void handleInterruptOrSuspend();
   // if job has to be started again, use this to reset
   void clearAllFlags() {
@@ -30,7 +42,7 @@ protected:
 public:
   inline InterruptableRunnable() : m_thr(INVALID_HANDLE_VALUE), m_flags(0) {
   }
-  // Mark this as interrupted. If isSuspended(), resume will be called
+  // Mark this as interrupted. If isPaused(), resume will be called
   void setInterrupted();
 
   inline void setSuspended() {
@@ -54,5 +66,6 @@ public:
     }
   }
   // Should only be called by foreign thread to wake up this
+  // Do nothing unless isPaused() == true
   void resume();
 };

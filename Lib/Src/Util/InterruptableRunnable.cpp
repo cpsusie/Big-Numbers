@@ -4,9 +4,7 @@
 
 void InterruptableRunnable::setInterrupted() {
   setFlag(_IRFLG_INTERRUPTED);
-  if(isSuspended()) {
-    resume();
-  }
+  resume();
 }
 
 void InterruptableRunnable::die(const TCHAR *msg) {
@@ -14,17 +12,26 @@ void InterruptableRunnable::die(const TCHAR *msg) {
 }
 
 void InterruptableRunnable::resume() {
-  if(m_thr != INVALID_HANDLE_VALUE) {
+  if(isPaused()) {
     ResumeThread(m_thr);
   }
 }
 
-void InterruptableRunnable::suspend() {
+void InterruptableRunnable::saveHandle() {
   m_thr = getCurrentThreadHandle();
-  SuspendThread(m_thr);
+}
+InterruptableRunnable &InterruptableRunnable::clearHandle() {
   CloseHandle(m_thr);
   m_thr = INVALID_HANDLE_VALUE;
-  clrSuspended();
+  return *this;
+}
+
+void InterruptableRunnable::suspend() {
+  saveHandle();
+  SuspendThread(m_thr);
+  if(clearHandle().clrSuspended().isInterrupted()) {
+    die();
+  }
 }
 
 void InterruptableRunnable::handleInterruptOrSuspend() {
