@@ -1,71 +1,85 @@
 #pragma once
 
-#include <TinyBitSet.h>
+#include <InterruptableRunnable.h>
 #include <PropertyContainer.h>
-#include <SafeRunnable.h>
-#include <FastSemaphore.h>
+#include <FlagTraits.h>
 
 using namespace Expr;
 
-typedef enum {
-  DBG_RUNNING           // bool
- ,DBG_TERMINATED        // bool
- ,DBG_ERROR             // TCHAR*
-} DebuggerProperty;
+#define FL_BREAKSTEP       0x01
+#define FL_BREAKSUBSTEP    0x02
+#define FL_BREAKONRETURN   0x04
+#define FL_COUNTONRETURN   0x08
+#define FL_STOPPEDONRETURN 0x10
 
-class Debugger : public SafeRunnable, public PropertyContainer, public PropertyChangeListener {
+#define FL_ALLBREAKFLAGS (FL_BREAKSTEP | FL_BREAKSUBSTEP | FL_BREAKONRETURN | FL_COUNTONRETURN)
+
+typedef enum {
+  DEBUGGER_STATE    // DebuggerState
+} DebuggerProperties;
+
+typedef enum {
+  DEBUGGER_CREATED
+ ,DEBUGGER_RUNNING
+ ,DEBUGGER_PAUSED
+ ,DEBUGGER_TERMINATED
+} DebuggerState;
+
+class Debugger : public InterruptableRunnable, public PropertyContainer, public PropertyChangeListener {
 private:
-  bool                  m_running, m_killed, m_terminated;
-  FastSemaphore         m_continueSem;
+  FLAGTRAITS(Debugger, BYTE, m_flags)
+  DebuggerState         m_state;
+  Expression           &m_expr;
+  const Expression     *m_exprp;
+  ParserTree           *m_treep;
 #ifdef TRACE_REDUCTION_CALLSTACK
   ReductionStack       *m_reductionStack;
   UINT                  m_breakOnTopIndex;
 #endif
-
-  String                m_errorMsg;
-  BitSet8               m_breakPoints;
-  bool                  m_stoppedOnReturn;
-  Expression           &m_expr;
-  const Expression     *m_exprp;
-  ParserTree           *m_treep;
+  inline Debugger &checkTerminated() {
+    if(getState() == DEBUGGER_TERMINATED) throwException(_T("Debugger is terminated"));
+    return *this;
+  }
   void suspend();
-  void resume();
   void stop(bool onReturn = false);
-  void throwInvalidStateException(const TCHAR *method, ParserTreeState state) const;
 public:
   Debugger(Expression &expr);
   ~Debugger();
-  UINT safeRun();
-
-  void go();
-  void singleStep();
-  void singleSubStep();
+  void singleStep(BYTE breakFlags);
+  inline void go() {
+    singleStep(0);
+  }
+  void stopASAP();
+  void kill();
 #ifdef TRACE_REDUCTION_CALLSTACK
   void goUntilReturn();
   inline const ReductionStack &getReductionStack() const {
     return *m_reductionStack;
   }
 #endif /// TRACE_REDUCTION_CALLSTACK
+  UINT safeRun();
+  void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
+  inline BYTE getFlags() const {
+    return m_flags;
+  }
+  inline String getFlagNames() const {
+    return getFlagNames(getFlags());
+  }
+  static String getFlagNames(BYTE flags);
+  inline DebuggerState getState() const {
+    return m_state;
+  }
+  inline String getStateName() const {
+    return getStateName(getState());
+  }
+  static String getStateName(DebuggerState state);
 
   String getDebugInfo() const;
-  void stopASAP();
-  void kill();
 
   Expression &getDebugExpr() {
     return *(Expression*)m_exprp;
   }
   inline ParserTreeState getTreeState() const {
     return m_treep->getState();
-  }
-  void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
-
-  inline const String &getErrorMsg() const {
-    return m_errorMsg;
-  }
-  inline bool isRunning() const {
-    return m_running;
-  }
-  inline bool isTerminated() const {
-    return m_terminated;
   }
 };

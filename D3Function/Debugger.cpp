@@ -3,13 +3,12 @@
 #ifdef DEBUG_POLYGONIZER
 
 #include <Thread.h>
-#include "Debugger.h"
 #include "DebugIsoSurface.h"
 #include "Mainfrm.h"
+#include "Debugger.h"
 
 Debugger::Debugger(D3SceneContainer *sc, const IsoSurfaceParameters &param)
-: m_surface(NULL)
-, m_flags(FL_BREAKONNEXTFACE)
+: m_flags(FL_BREAKONNEXTFACE)
 , m_state(DEBUGGER_CREATED)
 {
   m_surface = new DebugIsoSurface(this,*sc,param); TRACE_NEW(m_surface);
@@ -17,7 +16,6 @@ Debugger::Debugger(D3SceneContainer *sc, const IsoSurfaceParameters &param)
 
 Debugger::~Debugger() {
   kill();
-  waitUntilJobDone();
   SAFEDELETE(m_surface);
 }
 
@@ -26,24 +24,17 @@ void Debugger::singleStep(BYTE breakFlags) {
 }
 
 void Debugger::kill() {
-  if((getState() != DEBUGGER_TERMINATED) && !isSet(FL_KILLED)) {
-    setFlag(FL_KILLED);
-    if(getState() != DEBUGGER_RUNNING) {
-      resume();
-    }
-  }
+  setInterrupted();
+  waitUntilJobDone();
+  setProperty(DEBUGGER_STATE, m_state, DEBUGGER_TERMINATED);
 }
 
 UINT Debugger::safeRun() {
-  setThreadDescription("Debugger");
+  SETTHREADDESCRIPTION("Debugger");
   setProperty(DEBUGGER_STATE, m_state, DEBUGGER_RUNNING);
-  try {
-    suspend();
-    m_surface->createData();
-    setProperty(DEBUGGER_STATE, m_state, DEBUGGER_TERMINATED);
-  } catch(...) {
-    setProperty(DEBUGGER_STATE, m_state, DEBUGGER_TERMINATED);
-  }
+  suspend();
+  m_surface->createData();
+  setProperty(DEBUGGER_STATE, m_state, DEBUGGER_TERMINATED);
   return 0;
 }
 
@@ -51,12 +42,18 @@ void Debugger::suspend() {
   setProperty(DEBUGGER_STATE, m_state, DEBUGGER_PAUSED);
   __super::suspend();
   setProperty(DEBUGGER_STATE, m_state, DEBUGGER_RUNNING);
-  checkKilled();
 }
 
 void Debugger::handleStep(StepType type) {
+  if(isInterruptedOrSuspended()) {
+    if(isInterrupted()) {
+      die();
+    } else if(isSuspended()) {
+      suspend();
+      return;
+    }
+  }
   if(m_flags) {
-    checkKilled();
     switch(type) {
     case NEW_LEVEL:
       if(isSet(FL_ALLBREAKFLAGS)) {
@@ -105,7 +102,6 @@ String Debugger::getFlagNames(BYTE flags) { // static
   ADDFLAG(BREAKONNEXTTETRA )
   ADDFLAG(BREAKONNEXTFACE  )
   ADDFLAG(BREAKONNEXTVERTEX)
-  ADDFLAG(KILLED           )
   return result;
 #undef ADDFLAG
 }

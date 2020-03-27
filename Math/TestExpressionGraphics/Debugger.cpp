@@ -3,8 +3,11 @@
 #include <Math/Expression/ParserTreeComplexity.h>
 #include "Debugger.h"
 
-Debugger::Debugger(Expression &expr) : m_expr(expr), m_continueSem(0) {
-  m_running = m_killed = m_terminated = false;
+Debugger::Debugger(Expression &expr)
+: m_flags(FL_BREAKSUBSTEP)
+, m_state(DEBUGGER_CREATED)
+, m_expr(expr)
+{
   m_exprp   = &m_expr;
   m_treep   = m_expr.getTree();
   m_treep->addPropertyChangeListener(this);
@@ -15,33 +18,72 @@ Debugger::Debugger(Expression &expr) : m_expr(expr), m_continueSem(0) {
 }
 
 Debugger::~Debugger() {
+  kill();
   m_treep->removePropertyChangeListener(this);
 #ifdef TRACE_REDUCTION_CALLSTACK
   m_reductionStack->removePropertyChangeListener(this);
 #endif
 }
 
-typedef enum {
-  BREAKSTEP
- ,BREAKSUBSTEP
- ,COUNTONRETURN
- ,BREAKONRETURN
- ,BREAKASAP
-} BreakPointType;
+void Debugger::singleStep(BYTE breakFlags) {
+  checkTerminated().clrFlag(FL_ALLBREAKFLAGS).setFlag(breakFlags).resume();
+}
 
-void Debugger::throwInvalidStateException(const TCHAR *method, ParserTreeState state) const {
-  throwInvalidArgumentException(method, _T("State=%d"), state);
+#ifdef TRACE_REDUCTION_CALLSTACK
+void Debugger::goUntilReturn() {
+  if(getState() == DEBUGGER_RUNNING) {
+    return;
+  }
+  const ReductionStackElement *e = m_reductionStack->topPointer(isSet(FL_STOPPEDONRETURN)?1:0);
+  m_breakOnTopIndex = e ? e->getIndex() : 0;
+  singleStep(FL_COUNTONRETURN);
+}
+#endif // TRACE_REDUCTION_CALLSTACK
+
+void Debugger::stopASAP() {
+  if(getState() != DEBUGGER_RUNNING) {
+    return;
+  }
+  setInterrupted();
+}
+
+void Debugger::kill() {
+  setInterrupted();
+  waitUntilJobDone();
+  setProperty(DEBUGGER_STATE, m_state, DEBUGGER_TERMINATED);
+}
+
+UINT Debugger::safeRun() {
+  SETTHREADDESCRIPTION("Debugger");
+  setProperty(DEBUGGER_STATE, m_state, DEBUGGER_RUNNING);
+  suspend();
+  m_treep->reduce();
+  setProperty(DEBUGGER_STATE, m_state, DEBUGGER_TERMINATED);
+  return 0;
+}
+
+void Debugger::suspend() {
+  setProperty(DEBUGGER_STATE, m_state, DEBUGGER_PAUSED);
+  __super::suspend();
+  setProperty(DEBUGGER_STATE, m_state, DEBUGGER_RUNNING);
+}
+
+void Debugger::stop(bool onReturn) {
+  setFlag(FL_STOPPEDONRETURN, onReturn);
+  suspend();
 }
 
 #define ISPOP(to,tn) (to && ((tn==NULL) || ((tn)->getIndex() < (to)->getIndex())))
 #define ISPOPFROMSAVEDPOP(to,tn) ISPOP(to,tn) && ((to)->getIndex() == m_breakOnTopIndex)
 
 void Debugger::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
-  if(m_killed) throw true;
-
-  if(m_breakPoints.contains(BREAKASAP)) {
-    stop();
-    return;
+  if(isInterruptedOrSuspended()) {
+    if(isInterrupted()) {
+      die();
+    } else if (isSuspended()) {
+      stop();
+      return;
+    }
   }
 
 #ifdef TRACE_REDUCTION_CALLSTACK
@@ -50,14 +92,13 @@ void Debugger::handlePropertyChanged(const PropertyContainer *source, int id, co
     case REDUCTION_STACKTOP   :
       { const ReductionStackElement *oldTop = (ReductionStackElement*)oldValue;
         const ReductionStackElement *newTop = (ReductionStackElement*)newValue;
-        if(m_breakPoints.contains(COUNTONRETURN)) {
+        if(isSet(FL_COUNTONRETURN)) {
           if(ISPOPFROMSAVEDPOP(oldTop,newTop)) {
-            m_breakPoints.remove(COUNTONRETURN);
-            m_breakPoints.add(   BREAKONRETURN);
+            clrFlag(FL_COUNTONRETURN).setFlag(FL_BREAKONRETURN);
           }
-        } else if(m_breakPoints.contains(BREAKONRETURN)) {
+        } else if(isSet(FL_BREAKONRETURN)) {
           if(ISPOPFROMSAVEDPOP(oldTop,newTop)) {
-            m_breakPoints.remove(BREAKONRETURN);
+            clrFlag(FL_BREAKONRETURN);
             stop(true);
             break;
           }
@@ -74,7 +115,7 @@ void Debugger::handlePropertyChanged(const PropertyContainer *source, int id, co
             break;
           }
         }
-        if(m_breakPoints.contains(BREAKSUBSTEP)) {
+        if(isSet(FL_BREAKSUBSTEP)) {
           stop();
           break;
         }
@@ -95,7 +136,7 @@ void Debugger::handlePropertyChanged(const PropertyContainer *source, int id, co
       case PS_DERIVED  :
         break;
       default:
-        if(m_breakPoints.contains(BREAKSTEP)) {
+        if(isSet(FL_BREAKSTEP)) {
           stop();
         }
         break;
@@ -110,7 +151,7 @@ void Debugger::handlePropertyChanged(const PropertyContainer *source, int id, co
       break;
 
     case PP_REDUCEITERATION :
-      if(m_breakPoints.contains(BREAKSUBSTEP)) {
+      if(isSet(FL_BREAKSUBSTEP)) {
         stop();
       }
       break;
@@ -120,6 +161,31 @@ void Debugger::handlePropertyChanged(const PropertyContainer *source, int id, co
   }
 }
 
+String Debugger::getFlagNames(BYTE flags) { // static
+  const TCHAR *delim = NULL;
+  String result;
+#define ADDFLAG(f) if(flags & (FL_##f)) { if(delim) result += delim; else delim = _T(" "); result += _T(#f); }
+  ADDFLAG(BREAKSTEP      )
+  ADDFLAG(BREAKSUBSTEP   )
+  ADDFLAG(BREAKONRETURN  )
+  ADDFLAG(COUNTONRETURN  )
+  ADDFLAG(STOPPEDONRETURN)
+  return result;
+#undef ADDFLAG
+}
+
+String Debugger::getStateName(DebuggerState state) { // static
+#define CASESTR(s) case DEBUGGER_##s: return _T(#s)
+  switch(state) {
+  CASESTR(CREATED   );
+  CASESTR(RUNNING   );
+  CASESTR(PAUSED    );
+  CASESTR(TERMINATED);
+  default: return format(_T("Unknown debuggerState:%d"), state);
+  }
+#undef CASESTR
+}
+
 String Debugger::getDebugInfo() const {
   return format(_T("State:%-14s. it:%d complexity(%s), rat.const:%3zu")
                ,m_treep->getStateName().cstr()
@@ -127,91 +193,4 @@ String Debugger::getDebugInfo() const {
                ,ParserTreeComplexity(*m_treep).toString().cstr()
                ,m_treep->getRationalConstantMap().size()
   );
-}
-
-UINT Debugger::safeRun() {
-  setThreadDescription(_T("Debugger"));
-  try {
-    suspend();
-    setProperty(DBG_RUNNING, m_running, true);
-    m_treep->reduce();
-  } catch(Exception e) {
-    m_errorMsg = e.what();
-    notifyPropertyChanged(DBG_ERROR, EMPTYSTRING, m_errorMsg.cstr());
-  } catch(bool) {
-    // ignore. thrown after resume, when killed
-  } catch (...) {
-    m_errorMsg = _T("Unknown exception caught in Debugger");
-  }
-  setProperty(DBG_TERMINATED, m_terminated, true );
-  setProperty(DBG_RUNNING   , m_running   , false);
-  return 0;
-}
-
-void Debugger::suspend() {
-  m_continueSem.wait();
-}
-
-void Debugger::resume() {
-  m_continueSem.notify();
-}
-
-void Debugger::stop(bool onReturn) {
-  setProperty(DBG_RUNNING, m_running, false);
-  m_stoppedOnReturn = onReturn;
-  suspend();
-  if(m_killed) throw true;
-  setProperty(DBG_RUNNING, m_running, true  );
-}
-
-void Debugger::go() {
-  if(m_running) return;
-  m_breakPoints.clear();
-  resume();
-}
-
-void Debugger::singleStep() {
-  if(m_running) return;
-  m_breakPoints.clear();
-  m_breakPoints.add(   BREAKSTEP    );
-  resume();
-}
-
-void Debugger::singleSubStep() {
-  if(m_running) return;
-  m_breakPoints.clear();
-  m_breakPoints.add(   BREAKSTEP    );
-  m_breakPoints.add(   BREAKSUBSTEP );
-  resume();
-}
-
-#ifdef TRACE_REDUCTION_CALLSTACK
-
-void Debugger::goUntilReturn() {
-  if(m_running) return;
-  const ReductionStackElement *e = m_reductionStack->topPointer(m_stoppedOnReturn?1:0);
-  m_breakOnTopIndex = e ? e->getIndex() : 0;
-
-  m_breakPoints.clear();
-  m_breakPoints.add(COUNTONRETURN);
-  resume();
-}
-#endif
-
-void Debugger::stopASAP() {
-  if(!m_running) return;
-  m_breakPoints.clear();
-  m_breakPoints.add(BREAKASAP);
-}
-
-void Debugger::kill() {
-  if(!m_terminated) {
-    m_killed = true;
-    if(m_running) {
-      stopASAP();
-    } else {
-      resume();
-    }
-  }
-  waitUntilJobDone();
 }

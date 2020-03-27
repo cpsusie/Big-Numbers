@@ -36,8 +36,7 @@ private:
   const ExpressionRectangle   *m_contextRect, *m_leastContextRect;
   int                          m_debugWinId;
   Expression                  *m_debugExpr;
-  String                       m_debugError;
-  double	                     m_x;
+  double	                   m_x;
   CString                      m_exprText;
 
 #ifdef TRACE_REDUCTION_CALLSTACK
@@ -100,10 +99,10 @@ private:
     return m_debugger != NULL;
   }
   inline bool isDebuggerPaused() const {
-    return hasDebugger() && !m_debugger->isRunning() && !m_debugger->isTerminated();
+    return hasDebugger() && (m_debugger->getState() == DEBUGGER_PAUSED);
   }
   inline bool isDebuggerRunning() const {
-    return hasDebugger() && m_debugger->isRunning();
+    return hasDebugger() && (m_debugger->getState() == DEBUGGER_RUNNING);
   }
 
   int                                getWindowIdFromPoint(CPoint &p); // return childwindow and adjust p to be relative to this window (if selectable)
@@ -184,8 +183,7 @@ public:
   afx_msg void OnFunctionsReduceDerived();
   afx_msg void OnFunctionsEvaluateAll();
   afx_msg void OnSamplesSampleId(UINT cmd);
-  afx_msg LRESULT OnMsgRunStateChanged(      WPARAM wp, LPARAM lp);
-  afx_msg LRESULT OnMsgShowDebugError(       WPARAM wp, LPARAM lp);
+  afx_msg LRESULT OnMsgDebuggerStateChanged( WPARAM wp, LPARAM lp);
   afx_msg void OnSamplesRunall();
 
   DECLARE_MESSAGE_MAP()

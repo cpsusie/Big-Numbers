@@ -8,6 +8,7 @@
 #include <D3DGraphics/MeshBuilder.h>
 
 class Debugger;
+class D3SceneContainer;
 
 #define MESH_VISIBLE   0x01
 #define OCTA_VISIBLE   0x02
@@ -144,9 +145,7 @@ public:
   void   markCurrentVertex(const IsoSurfaceVertex &vertex);
   String getInfoMessage() const;
 
-  inline D3Scene &getScene() {
-    return m_sc.getScene();
-  }
+  D3Scene &getScene();
   inline float getCellSize() const {
     return (float)m_param.m_cellSize;
   }

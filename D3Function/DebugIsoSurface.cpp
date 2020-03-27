@@ -421,6 +421,10 @@ String DebugIsoSurface::getInfoMessage() const {
   return m_statistics.toString();
 }
 
+D3Scene &DebugIsoSurface::getScene() {
+  return m_sc.getScene();
+}
+
 double DebugIsoSurface::evaluate(const Point3D &p) {
   *m_xp = p.x;
   *m_yp = p.y;

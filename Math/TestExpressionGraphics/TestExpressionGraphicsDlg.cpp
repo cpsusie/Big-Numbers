@@ -38,7 +38,7 @@ CTestExpressionGraphicsDlg::CTestExpressionGraphicsDlg(CWnd *pParent /*=NULL*/) 
   m_x                = 0.0;
   m_hIcon            = theApp.LoadIcon(IDR_MAINFRAME);
   m_debugExpr        = NULL;
-  m_debugger      = NULL;
+  m_debugger         = NULL;
   m_debugWinId       = -1;
   m_contextWinId     = -1;
   m_contextRect      = NULL;
@@ -102,8 +102,7 @@ BEGIN_MESSAGE_MAP(CTestExpressionGraphicsDlg, CDialog)
   ON_COMMAND(       ID_FUNCTIONS_REDUCEDERIVED    , OnFunctionsReduceDerived       )
   ON_COMMAND(       ID_FUNCTIONS_EVALUATEALL      , OnFunctionsEvaluateAll         )
   ON_COMMAND_RANGE( FIRST_SAMPLE_COMMAND,LAST_SAMPLE_COMMAND, OnSamplesSampleId    )
-  ON_MESSAGE(       ID_MSG_RUNSTATE_CHANGED       , OnMsgRunStateChanged           )
-  ON_MESSAGE(       ID_MSG_SHOW_DEBUGERROR        , OnMsgShowDebugError            )
+  ON_MESSAGE(       ID_MSG_DEBUGGERSTATE_CHANGED  , OnMsgDebuggerStateChanged      )
   ON_COMMAND(       ID_SAMPLES_RUNALL             , OnSamplesRunall                )
 END_MESSAGE_MAP()
 
@@ -123,7 +122,7 @@ BOOL CTestExpressionGraphicsDlg::OnInitDialog() {
       pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
     }
   }
-  setThreadDescription(_T("MainThread"));
+  SETTHREADDESCRIPTION("MainThread");
 
   SetIcon(m_hIcon, TRUE);         // Set big icon
   SetIcon(m_hIcon, FALSE);        // Set small icon
@@ -475,7 +474,7 @@ void CTestExpressionGraphicsDlg::startDebugger(int debugWinId, bool singleStep) 
     ThreadPool::executeNoWait(*m_debugger);
     INVALIDATE();
     if(singleStep) {
-      m_debugger->singleSubStep();
+      m_debugger->singleStep(FL_BREAKSUBSTEP);
     } else {
       m_debugger->go();
     }
@@ -490,36 +489,21 @@ void CTestExpressionGraphicsDlg::createDebugger(Expression &expr) {
 }
 
 void CTestExpressionGraphicsDlg::destroyDebugger() {
-  m_debugError = EMPTYSTRING;
   if(hasDebugger()) {
     m_debugger->kill();
     SAFEDELETE(m_debugger);
     m_debugWinId  = -1;
     clearDebugInfo();
+    m_reductionStackWindow.SetWindowText(EMPTYSTRING);
   }
+
 }
 
 void CTestExpressionGraphicsDlg::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
   if(source == m_debugger) {
     switch(id) {
-    case DBG_RUNNING   :
-      SendMessage(ID_MSG_RUNSTATE_CHANGED, (WPARAM)(*(bool*)oldValue), (LPARAM)(*(bool*)newValue));
-      break;
-    case DBG_TERMINATED:
-      if(m_debugger->getTreeState() == PS_REDUCTIONDONE) {
-      }
-      INVALIDATE();
-      break;
-    case DBG_ERROR     :
-      { const TCHAR *msg = (const TCHAR*)newValue;
-        m_debugError = msg;
-        PostMessage(ID_MSG_SHOW_DEBUGERROR,0,0);
-      }
-      break;
-    default:
-      { m_debugError = format(_T("Received unknown property change. Id=%d"), id);
-        PostMessage(ID_MSG_SHOW_DEBUGERROR,0,0);
-      }
+    case DEBUGGER_STATE:
+      SendMessage(ID_MSG_DEBUGGERSTATE_CHANGED, (WPARAM)(*(DebuggerState*)oldValue), (LPARAM)(*(DebuggerState*)newValue));
       break;
     }
   } else if(source == m_currentChildDlg) {
@@ -540,17 +524,28 @@ void CTestExpressionGraphicsDlg::handlePropertyChanged(const PropertyContainer *
   }
 }
 
-LRESULT CTestExpressionGraphicsDlg::OnMsgRunStateChanged(WPARAM wp, LPARAM lp) {
-  const bool oldRunning = wp ? true : false;
-  const bool newRunning = lp ? true : false;
-  if(!newRunning) {
+LRESULT CTestExpressionGraphicsDlg::OnMsgDebuggerStateChanged(WPARAM wp, LPARAM lp) {
+  const DebuggerState oldState = (DebuggerState)wp;
+  const DebuggerState newState = (DebuggerState)lp;
+  switch(newState) {
+  case DEBUGGER_CREATED   :
+    break;
+  case DEBUGGER_RUNNING   :
+    ajourDialogItems();
+    break;
+  case DEBUGGER_PAUSED    :
     paintDebugExpr();
+    ajourDialogItems();
+    break;
+  case DEBUGGER_TERMINATED:
+    if(!m_debugger->isOk()) {
+      ajourDialogItems();
+      showWarning(m_debugger->getErrorMsg());
+    } else if(m_debugger->getTreeState() == PS_REDUCTIONDONE) {
+      INVALIDATE();
+    }
+    break;
   }
-  return 0;
-}
-
-LRESULT CTestExpressionGraphicsDlg::OnMsgShowDebugError(WPARAM wp, LPARAM lp) {
-  showWarning(m_debugError);
   return 0;
 }
 
@@ -576,7 +571,8 @@ void CTestExpressionGraphicsDlg::ajourDialogItems() {
 #define ENABLEFIELDLIST(a,enabled) enableFieldList(a, ARRAYSIZE(a), enabled)
 
   if(hasDebugger()) {
-    if(m_debugger->isRunning()) {
+    switch(m_debugger->getState()) {
+    case DEBUGGER_RUNNING:
       ENABLEFIELDLIST(dialogFields, false);
       enableMenuItem(this, ID_DEBUG_REDUCEEXPR          , false);
       enableMenuItem(this, ID_DEBUG_REDUCEDERIVED       , false);
@@ -584,7 +580,8 @@ void CTestExpressionGraphicsDlg::ajourDialogItems() {
       enableMenuItem(this, ID_DEBUG_STEP1REDUCEITERATION, false);
       enableMenuItem(this, ID_DEBUG_RUN                 , false);
       enableMenuItem(this, ID_DEBUG_STOP                , true );
-    } else if(m_debugger->isTerminated()) {
+      break;
+    case DEBUGGER_TERMINATED:
       ENABLEFIELDLIST(dialogFields, true );
       enableMenuItem(this, ID_DEBUG_REDUCEEXPR          , true );
       enableMenuItem(this, ID_DEBUG_REDUCEDERIVED       , true );
@@ -592,7 +589,8 @@ void CTestExpressionGraphicsDlg::ajourDialogItems() {
       enableMenuItem(this, ID_DEBUG_STEP1REDUCEITERATION, false);
       enableMenuItem(this, ID_DEBUG_RUN                 , false);
       enableMenuItem(this, ID_DEBUG_STOP                , false);
-    } else { // paused
+      break;
+    case DEBUGGER_PAUSED:
       ENABLEFIELDLIST(dialogFields  , false);
       ENABLEFIELDLIST(comboFields   , true );
       enableMenuItem(this, ID_DEBUG_REDUCEEXPR          , false);
@@ -601,6 +599,7 @@ void CTestExpressionGraphicsDlg::ajourDialogItems() {
       enableMenuItem(this, ID_DEBUG_STEP1REDUCEITERATION, true );
       enableMenuItem(this, ID_DEBUG_RUN                 , true );
       enableMenuItem(this, ID_DEBUG_STOP                , true );
+      break;
     }
   } else { // No debug thread
     ENABLEFIELDLIST(dialogFields, true);
@@ -1129,12 +1128,14 @@ void CTestExpressionGraphicsDlg::OnDebugTraceReductionStep() {
       m_debugger->goUntilReturn();
     } else
 #endif
-    m_debugger->singleStep();
+    m_debugger->singleStep(FL_BREAKSTEP);
   }
 }
 
 void CTestExpressionGraphicsDlg::OnDebugStep1ReduceIteration() {
-  if(isDebuggerPaused()) m_debugger->singleSubStep();
+  if (isDebuggerPaused()) {
+    m_debugger->singleStep(FL_BREAKSUBSTEP);
+  }
 }
 
 void CTestExpressionGraphicsDlg::OnDebugStop() {

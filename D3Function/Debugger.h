@@ -17,7 +17,6 @@
 #define FL_BREAKONNEXTTETRA  0x04
 #define FL_BREAKONNEXTFACE   0x08
 #define FL_BREAKONNEXTVERTEX 0x10
-#define FL_KILLED            0x20
 #define FL_ALLBREAKFLAGS (FL_BREAKONNEXTLEVEL | FL_BREAKONNEXTOCTA | FL_BREAKONNEXTTETRA | FL_BREAKONNEXTFACE | FL_BREAKONNEXTVERTEX)
 
 typedef enum {
@@ -34,12 +33,8 @@ typedef enum {
 class Debugger : public InterruptableRunnable, public PropertyContainer {
 private:
   FLAGTRAITS(Debugger, BYTE, m_flags)
-    DebugIsoSurface                   *m_surface;
-  DebuggerState                      m_state;
-  inline Debugger &checkKilled() {
-    if(isSet(FL_KILLED)) throwException(_T("Killed"));
-    return *this;
-  }
+  DebuggerState         m_state;
+  DebugIsoSurface      *m_surface;
   inline Debugger &checkTerminated() {
     if(getState() == DEBUGGER_TERMINATED) throwException(_T("Debugger is terminated"));
     return *this;
@@ -48,12 +43,12 @@ private:
 public:
   Debugger(D3SceneContainer *sc, const IsoSurfaceParameters &param);
   ~Debugger();
-  UINT safeRun();
   void singleStep(BYTE breakFlags);
   inline void go() {
     singleStep(0);
   }
   void kill();
+  UINT safeRun();
   void handleStep(StepType type);
   inline BYTE getFlags() const {
     return m_flags;
