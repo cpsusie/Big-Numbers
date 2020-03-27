@@ -72,7 +72,7 @@ void Debugger::kill() {
 
 UINT Debugger::run() {
   m_terminated.wait();
-  setThreadDescription("Debugger");
+  SETTHREADDESCRIPTION("Debugger");
   setProperty(DEBUGGER_STATE, m_state, DEBUGGER_RUNNING);
   m_foundStart   = -1;
   m_resultLength = 0;

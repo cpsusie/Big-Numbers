@@ -13,9 +13,7 @@ void SubProdRunnable::clear() {
 }
 
 UINT SubProdRunnable::run() {
-#ifdef _DEBUG
-  setThreadDescription(format(_T("Multiplier(level %d"), m_level));
-#endif // _DEBUG
+  SETTHREADDESCRIPTION(format(_T("Multiplier(level %d"), m_level));
 
 //  const UINT id = __super::getId();
 //  const UINT ypos = id + 20;

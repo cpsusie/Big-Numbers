@@ -200,9 +200,7 @@ PrimeSearcher::~PrimeSearcher() {
 UINT PrimeSearcher::run() {
   m_terminated.wait();
   m_mon.m_runningCount++;
-#ifdef _DEBUG
-  setThreadDescription(format(_T("PrimeSearcher %d"), m_id));
-#endif
+  SETTHREADDESCRIPTION(format(_T("PrimeSearcher %d"), m_id));
   const int           digitCount = m_mon.m_digitCount;
   MillerRabinHandler *handler    = m_mon.m_handler;
   JavaRandom rnd;

@@ -122,7 +122,7 @@ BOOL CSortDemoDlg::OnInitDialog() {
 
 //  makeMinSizeTimePlot();
 
-  setThreadDescription("Main Windoww");
+  SETTHREADDESCRIPTION("Main Window");
   return TRUE;
 }
 

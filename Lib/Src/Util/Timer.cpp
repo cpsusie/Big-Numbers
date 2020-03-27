@@ -64,9 +64,7 @@ void _TimerJob::timeoutChanged() {
 
 UINT _TimerJob::safeRun() {
   m_lastTimeout = Timestamp();
-#ifdef _DEBUG
-  setThreadDescription(format(_T("TimerJob(%s,id=%d"), m_timer.getName().cstr(), m_timer.getId()));
-#endif // _DEBUG
+  SETTHREADDESCRIPTION(format(_T("TimerJob(%s,id=%d"), m_timer.getName().cstr(), m_timer.getId()));
   while(!isKilled()) {
     m_timeout.wait(getTimeoutMsec());
     if(isKilled()) {

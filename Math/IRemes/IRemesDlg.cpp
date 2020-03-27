@@ -197,9 +197,7 @@ BOOL CIRemesDlg::OnInitDialog() {
   UpdateData(0);
   adjustMaxMKSum();
   gotoEditBox(this, IDC_EDITNAME);
-#ifdef _DEBUG
-  setThreadDescription("WinThread");
-#endif
+  SETTHREADDESCRIPTION("WinThread");
   return TRUE;
 }
 
@@ -339,9 +337,7 @@ public:
 };
 
 UINT ErrorPlotter::safeRun() {
-#ifdef _DEBUG
-  setThreadDescription("ErrorPlotter");
-#endif // _DEBUG
+  SETTHREADDESCRIPTION("ErrorPlotter");
   m_progress = 0;
   try {
     DebugInfo       &info = m_dlg.m_debugInfo;

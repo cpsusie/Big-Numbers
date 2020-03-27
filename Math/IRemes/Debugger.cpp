@@ -40,7 +40,7 @@ void Debugger::suspend() {
 }
 
 UINT Debugger::safeRun() {
-  setThreadDescription("DEBUGGER");
+  SETTHREADDESCRIPTION("DEBUGGER");
   setProperty(DEBUGGER_RUNSTATE, m_runState, DEBUGGER_RUNNING);
   try {
     m_r.addPropertyChangeListener(this);

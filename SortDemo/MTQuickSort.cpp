@@ -154,9 +154,7 @@ template<typename T> PartitionWorker<T>::PartitionWorker(MTQuicksortClass<T> &qc
 #define MINMTSPLITSIZE 20
 
 template<typename T> UINT PartitionWorker<T>::run() {
-#ifdef _DEBUG
-  setThreadDescription(format(_T("Partition(%d)"), m_id));
-#endif
+  SETTHREADDESCRIPTION(format(_T("Partition(%d)"), m_id));
   m_terminated.wait();
   try {
     JobParam<T> job;

@@ -122,9 +122,7 @@ void Animator::kill() {
 }
 
 UINT Animator::safeRun() {
-#ifdef _DEBUG
-  setThreadDescription(m_description);
-#endif
+  SETTHREADDESCRIPTION(m_description);
   for(;;) {
     const UINT imageCount = m_owner.getFrameCount();
     for(m_frameIndex = 0; !isInterruptedOrSuspended(); m_frameIndex = (m_frameIndex + 1) % imageCount) {

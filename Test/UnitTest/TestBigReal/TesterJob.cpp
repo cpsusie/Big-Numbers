@@ -30,9 +30,7 @@ UINT TesterJob::run() {
     } catch(TimeoutException) {
       break;
     }
-#ifdef _DEBUG
-    setThreadDescription(format(_T("pool:%d, %s"), m_pool->getId(), test->getFunctionName().cstr()));
-#endif
+    SETTHREADDESCRIPTION(format(_T("pool:%d, %s"), m_pool->getId(), test->getFunctionName().cstr()));
     if(!s_allOk && s_stopOnError) {
       s_doneQueue.put(test);
       continue;

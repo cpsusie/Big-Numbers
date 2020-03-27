@@ -48,9 +48,7 @@ public:
 };
 
 UINT ExtremumFinder::run() {
-#ifdef _DEBUG
-  setThreadDescription(format(_T("ExtrFinder(%d),pool=%d"), m_id, m_pool->getId()));
-#endif
+  SETTHREADDESCRIPTION(format(_T("ExtrFinder(%d),pool=%d"), m_id, m_pool->getId()));
   ExtremumSearchParamQueue &paramQueue = m_mf.m_paramQueue;
   Remes                    &remes      = m_mf.m_remes;
   try {
@@ -101,9 +99,7 @@ public:
 };
 
 UINT ExtremumNotifier::run() {
-#ifdef _DEBUG
-  setThreadDescription("NOTIFIER");
-#endif
+  SETTHREADDESCRIPTION("NOTIFIER");
   Remes       &remes = m_mf.m_remes;
   ResultQueue &q     = m_mf.m_resultQueue;
 
