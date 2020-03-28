@@ -311,7 +311,7 @@ void CRegexDemoDlg::OnDebugContinue() {
 
 void CRegexDemoDlg::OnDebugStep() {
   if(isDebuggerPaused()) {
-    m_debugger->singleStep();
+    m_debugger->singleStep(FL_SINGLESTEP);
   }
 }
 
@@ -578,7 +578,7 @@ void CRegexDemoDlg::ajourDialogItems() {
 
   setWindowText(this, IDC_STATICSTATENAME, getDebuggerPhaseName());
   if(hasDebugger()) {
-    if(m_debugger->isRunning()) {
+    if(isDebuggerRunning()) {
       return;
     }
     switch(getDebuggerPhase()) {
@@ -695,11 +695,10 @@ void CRegexDemoDlg::startDebugCompile() {
   try {
     killDebugger();
     const String pattern = m_pattern;
-
     m_debugger = new Debugger(m_regex, getCompileParameters(), getCodeWindow()->getBreakPoints()); TRACE_NEW(m_debugger);
     m_debugger->addPropertyChangeListener(this);
     ThreadPool::executeNoWait(*m_debugger);
-    m_debugger->singleStep();
+    m_debugger->singleStep(FL_SINGLESTEP);
   } catch(Exception e) {
     showException(e);
   }
@@ -715,11 +714,7 @@ void CRegexDemoDlg::startDebugger(RegexCommand command, bool singleStep) {
     m_debugger = new Debugger(command, m_regex, target, getCodeWindow()->getBreakPoints()); TRACE_NEW(m_debugger);
     m_debugger->addPropertyChangeListener(this);
     ThreadPool::executeNoWait(*m_debugger);
-    if(singleStep) {
-      m_debugger->singleStep();
-    } else {
-      m_debugger->go();
-    }
+    m_debugger->singleStep(singleStep ? FL_SINGLESTEP : 0);
   } catch(Exception e) {
     showException(e);
   }

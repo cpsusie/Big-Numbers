@@ -4,10 +4,13 @@
 #error "Must compile with _DEBUG"
 #endif
 
+#include <InterruptableRunnable.h>
 #include <PropertyContainer.h>
-#include <Runnable.h>
 #include <Regex.h>
 #include "DFARegex.h"
+
+#define FL_SINGLESTEP 0x01
+#define FL_ALLBREAKFLAGS (FL_SINGLESTEP)
 
 typedef enum {
   DEBUGGER_STATE
@@ -109,58 +112,49 @@ public:
   CompileParameters getLastCompiledPattern() const;
 };
 
-class Debugger : public Runnable, public RegexStepHandler, public DFARegexStepHandler, public PropertyContainer {
+class Debugger : public InterruptableRunnable, public RegexStepHandler, public DFARegexStepHandler, public PropertyContainer {
 private:
+  FLAGTRAITS(Debugger, BYTE, m_flags);
+  DebuggerState                      m_state;
+  const BitSet                      &m_breakPoints;
   const RegexCommand                 m_command;
   DebugRegex                        &m_regex;
-  DebuggerState                      m_state;
   RegexPhaseType                     m_regexPhase;
   const void                        *m_handlerState;
   CompileParameters                  m_compileParameters;
   String                             m_text;
-  const BitSet                      &m_breakPoints;
-  bool                               m_singleStep;
-  bool                               m_killRequest;
-  FastSemaphore                      m_terminated, m_go;
   intptr_t                           m_foundStart, m_resultLength;
   String                             m_resultMsg;
   void validateRegexTypeAndPhase(RegexType expectedType, RegexPhaseType expectedPhase) const;
   void suspendOnSingleStep(RegexPhaseType phase, int lineNumber = -1);
-  void enableHandleStep(bool enabled);
+  Debugger &enableHandleStep(bool enabled);
   void initDebugger(bool singleStep);
   void clearStates();
+  inline Debugger &checkTerminated() {
+    if(getState() == DEBUGGER_TERMINATED) throwException(_T("Debugger is terminated"));
+    return *this;
+  }
   void suspend();
-  void resume();
 public:
   Debugger(DebugRegex &regex, const CompileParameters &cp, const BitSet &breakPoints);
   Debugger(RegexCommand command, DebugRegex &regex, const String &text, const BitSet &breakPoints);
   ~Debugger();
-  UINT run();
-  void handleCompileStep(const _RegexCompilerState    &state);
-  void handleSearchStep( const _RegexSearchState      &state);
-  void handleMatchStep(  const _RegexMatchState       &state);
-  void handleCompileStep(const _DFARegexCompilerState &state);
-  void handleSearchStep( const _DFARegexSearchState   &state);
-  void handleMatchStep(  const _DFARegexMatchState    &state);
-  inline RegexCommand getCommand() const {
-    return m_command;
+  void singleStep(BYTE breakFlags);
+  inline void go() {
+    singleStep(0);
   }
-  void singleStep();
-  void go();
   void kill();
-  inline DebuggerState getDebuggerState() const {
+  UINT safeRun();
+  inline DebuggerState getState() const {
     return m_state;
   }
-  inline String getDebuggerStateName() const {
-    return getDebuggerStateName(getDebuggerState());
+  inline String getStateName() const {
+    return getStateName(getState());
   }
-  static String getDebuggerStateName(DebuggerState state);
+  static String getStateName(DebuggerState state);
 
-  inline bool isTerminated() const {
-    return m_state == DEBUGGER_TERMINATED;
-  }
-  inline bool isRunning() const {
-    return m_state == DEBUGGER_RUNNING;
+  inline RegexCommand getCommand() const {
+    return m_command;
   }
   inline RegexPhaseType getRegexPhase() const {
     return m_regexPhase;
@@ -173,6 +167,12 @@ public:
   void   getFoundPosition(int &start, int &end);
   String getResultMsg()      const;
   String registersToString() const;
+  void handleCompileStep(const _RegexCompilerState    &state);
+  void handleSearchStep( const _RegexSearchState      &state);
+  void handleMatchStep(  const _RegexMatchState       &state);
+  void handleCompileStep(const _DFARegexCompilerState &state);
+  void handleSearchStep( const _DFARegexSearchState   &state);
+  void handleMatchStep(  const _DFARegexMatchState    &state);
   const _RegexCompilerState         &getEmacsCompilerState() const;
   const _RegexSearchState           &getEmacsSearchState()   const;
   const _RegexMatchState            &getEmacsMatchState()    const;

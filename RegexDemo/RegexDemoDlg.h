@@ -115,11 +115,17 @@ private:
   inline bool searchForward() {
     return !isMenuItemChecked(this, ID_OPTIONS_SEARCHBACKWARDS);
   }
+  inline bool isDebuggerState(DebuggerState state) const {
+    return hasDebugger() && (m_debugger->getState() == state);
+  }
   inline bool isDebuggerPaused() const {
-    return hasDebugger() && (m_debugger->getDebuggerState() == DEBUGGER_PAUSED);
+    return isDebuggerState(DEBUGGER_PAUSED);
+  }
+  inline bool isDebuggerRunning() const {
+    return isDebuggerState(DEBUGGER_RUNNING);
   }
   inline bool isDebuggerTerminated() const {
-    return hasDebugger() && m_debugger->isTerminated();
+    return isDebuggerState(DEBUGGER_TERMINATED);
   }
 
   String getDebuggerPhaseName() const;

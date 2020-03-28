@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <Thread.h>
+#include <ThreadPool.h>
 #include "Debugger.h"
 
 Debugger::Debugger(DebugRegex &regex, const CompileParameters &cp, const BitSet &breakPoints)
@@ -7,7 +8,6 @@ Debugger::Debugger(DebugRegex &regex, const CompileParameters &cp, const BitSet 
 , m_regex(regex)
 , m_compileParameters(cp)
 , m_breakPoints(breakPoints)
-, m_go(0)
 {
   initDebugger(true);
 }
@@ -17,19 +17,17 @@ Debugger::Debugger(RegexCommand command, DebugRegex &regex, const String &text, 
 , m_regex(regex)
 , m_text(text)
 , m_breakPoints(breakPoints)
-, m_go(0)
 {
-  initDebugger(m_command == COMMAND_COMPILE);
-  if(m_command == COMMAND_COMPILE) {
+   if(m_command == COMMAND_COMPILE) {
     m_compileParameters = text;
   }
+  initDebugger(m_command == COMMAND_COMPILE);
 }
 
 void Debugger::initDebugger(bool singleStep) {
   clearStates();
+  setFlag(FL_SINGLESTEP, singleStep);
   m_state       = DEBUGGER_CREATED;
-  m_killRequest = false;
-  m_singleStep  = singleStep;
   m_regexPhase  = REGEX_UNDEFINED;
 }
 
@@ -38,90 +36,64 @@ void Debugger::clearStates() {
 }
 
 Debugger::~Debugger() {
-  enableHandleStep(false);
-  kill();
-  m_terminated.wait();
+  enableHandleStep(false).kill();
 }
 
-void Debugger::singleStep() {
-  if(isTerminated()) {
-    throwException(_T("%s:Debugger has exited"),__TFUNCTION__);
-  }
-  m_singleStep = true;
-  enableHandleStep(true);
-  resume();
-}
-
-void Debugger::go() {
-  if(isTerminated()) {
-    throwException(_T("%s:Debugger has exited"),__TFUNCTION__);
-  }
-  m_singleStep = false;
-  enableHandleStep(!m_breakPoints.isEmpty());
-  resume();
+void Debugger::singleStep(BYTE breakFlags) {
+  checkTerminated()
+ .clrFlag(FL_ALLBREAKFLAGS)
+ .setFlag(breakFlags)
+ .enableHandleStep(breakFlags || !m_breakPoints.isEmpty()).resume();
 }
 
 void Debugger::kill() {
-  if(!isTerminated()) {
-    m_killRequest = true;
-    if(!isRunning()) {
-      resume();
-    }
-  }
+  setInterrupted();
+  waitUntilJobDone();
+  setProperty(DEBUGGER_STATE, m_state, DEBUGGER_TERMINATED);
 }
 
-UINT Debugger::run() {
-  m_terminated.wait();
+UINT Debugger::safeRun() {
   SETTHREADDESCRIPTION("Debugger");
   setProperty(DEBUGGER_STATE, m_state, DEBUGGER_RUNNING);
   m_foundStart   = -1;
   m_resultLength = 0;
-  try {
-    suspend();
-    switch(m_command) {
-    case COMMAND_COMPILE:
-      m_regex.compilePattern(m_compileParameters);
-      m_resultMsg  = _T("Pattern Ok");
-      m_regexPhase = REGEX_COMPILEDOK;
-      break;
-    case COMMAND_SEARCHFORWARD:
-    case COMMAND_SEARCHBACKWRD:
-      m_foundStart = m_regex.search(m_text, m_command == COMMAND_SEARCHFORWARD);
-      if(m_foundStart >= 0) {
-        m_resultLength = m_regex.getResultLength();
-        m_resultMsg    = format(_T("Found at %zd. length:%zd"), m_foundStart, m_resultLength);
-        m_regexPhase   = REGEX_PATTERNFOUND;
-      } else {
-        m_resultMsg    = _T("Not found");
-        m_regexPhase   = REGEX_SEARCHFAILED;
-      }
-      break;
-    case COMMAND_MATCH  :
-      if(m_regex.match(m_text)) {
-        m_foundStart   = 0;
-        m_resultLength = (int)m_text.length();
-        m_resultMsg    = _T("Match");
-        m_regexPhase   = REGEX_PATTERNFOUND;
-      } else {
-        m_resultMsg    = _T("No match");
-        m_regexPhase   = REGEX_MATCHFAILED;
-      }
-      break;
+  switch(m_command) {
+  case COMMAND_COMPILE:
+    m_regex.compilePattern(m_compileParameters);
+    m_resultMsg  = _T("Pattern Ok");
+    m_regexPhase = REGEX_COMPILEDOK;
+    break;
+  case COMMAND_SEARCHFORWARD:
+  case COMMAND_SEARCHBACKWRD:
+    m_foundStart = m_regex.search(m_text, m_command == COMMAND_SEARCHFORWARD);
+    if(m_foundStart >= 0) {
+      m_resultLength = m_regex.getResultLength();
+      m_resultMsg    = format(_T("Found at %zd. length:%zd"), m_foundStart, m_resultLength);
+      m_regexPhase   = REGEX_PATTERNFOUND;
+    } else {
+      m_resultMsg    = _T("Not found");
+      m_regexPhase   = REGEX_SEARCHFAILED;
     }
-  } catch(Exception e) {
-    m_resultMsg  = e.what();
-    m_regexPhase = REGEX_UNDEFINED;
-  } catch(...) {
-    m_resultMsg  = _T("Unknown exception");
-    m_regexPhase = REGEX_UNDEFINED;
+    break;
+  case COMMAND_MATCH  :
+    if(m_regex.match(m_text)) {
+      m_foundStart   = 0;
+      m_resultLength = (int)m_text.length();
+      m_resultMsg    = _T("Match");
+      m_regexPhase   = REGEX_PATTERNFOUND;
+    } else {
+      m_resultMsg    = _T("No match");
+      m_regexPhase   = REGEX_MATCHFAILED;
+    }
+    break;
   }
   setProperty(DEBUGGER_STATE, m_state, DEBUGGER_TERMINATED);
-  m_terminated.notify();
   return 0;
 }
 
-void Debugger::enableHandleStep(bool enabled) {
+Debugger &Debugger::enableHandleStep(bool enabled) {
   m_regex.setHandler(enabled ? this : NULL);
+  return *this;
 }
 
 void Debugger::handleCompileStep(const _RegexCompilerState &state) {
@@ -155,25 +127,18 @@ void Debugger::handleMatchStep(const _DFARegexMatchState &state) {
 }
 
 void Debugger::suspendOnSingleStep(RegexPhaseType phase, int lineNumber) {
-  if(m_singleStep || ((lineNumber>=0) && m_breakPoints.contains(lineNumber))) {
+  if(isSet(FL_SINGLESTEP) || ((lineNumber>=0) && m_breakPoints.contains(lineNumber))) {
     m_regexPhase  = phase;
     suspend();
   }
   clearStates();
-  if(m_killRequest) {
-    throwException(_T("Killed"));
-  }
 }
 
 void Debugger::suspend() {
   setProperty(DEBUGGER_STATE, m_state, DEBUGGER_PAUSED);
-  m_go.wait();
+  __super::suspend();
   m_regexPhase = REGEX_UNDEFINED;
   setProperty(DEBUGGER_STATE, m_state, DEBUGGER_RUNNING);
-}
-
-void Debugger::resume() {
-  m_go.notify();
 }
 
 void Debugger::getFoundPosition(int &start, int &end) {
@@ -186,7 +151,7 @@ void Debugger::getFoundPosition(int &start, int &end) {
 }
 
 String Debugger::getResultMsg() const {
-  if(isRunning()) {
+  if(getState() == DEBUGGER_RUNNING) {
     return _T("No result yet. Thread not finished");
   }
   return m_resultMsg;
@@ -249,7 +214,7 @@ String Debugger::getPhaseName(RegexPhaseType phase) { // static
   }
 }
 
-String Debugger::getDebuggerStateName(DebuggerState state) { // static
+String Debugger::getStateName(DebuggerState state) { // static
 #define CASESTR(s) case DEBUGGER_##s: return _T(#s)
   switch(state) {
   CASESTR(CREATED   );
@@ -270,7 +235,7 @@ void Debugger::validateRegexTypeAndPhase(RegexType expectedType, RegexPhaseType 
   if((m_state != DEBUGGER_PAUSED) || (m_regexPhase != expectedPhase)) {
     throwException(_T("Cannot get %s-state at this time (debuggerState:%s)")
                   ,getPhaseName(expectedPhase).cstr()
-                  ,getDebuggerStateName().cstr()
+                  ,getStateName().cstr()
                   );
   }
 }
