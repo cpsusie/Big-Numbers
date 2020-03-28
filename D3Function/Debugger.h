@@ -8,7 +8,6 @@
 
 #include <InterruptableRunnable.h>
 #include <PropertyContainer.h>
-#include <FlagTraits.h>
 #include <D3DGraphics/D3SceneEditor.h>
 #include "DebugIsoSurface.h"
 

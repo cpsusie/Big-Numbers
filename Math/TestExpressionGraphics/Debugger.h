@@ -2,7 +2,6 @@
 
 #include <InterruptableRunnable.h>
 #include <PropertyContainer.h>
-#include <FlagTraits.h>
 
 using namespace Expr;
 
@@ -11,7 +10,6 @@ using namespace Expr;
 #define FL_BREAKONRETURN   0x04
 #define FL_COUNTONRETURN   0x08
 #define FL_STOPPEDONRETURN 0x10
-
 #define FL_ALLBREAKFLAGS (FL_BREAKSTEP | FL_BREAKSUBSTEP | FL_BREAKONRETURN | FL_COUNTONRETURN)
 
 typedef enum {
