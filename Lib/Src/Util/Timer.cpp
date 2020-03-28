@@ -1,14 +1,11 @@
 #include "pch.h"
 #include <Date.h>
 #include <ThreadPool.h>
+#include <Thread.h>
 #include <Semaphore.h>
 #include <SafeRunnable.h>
-#include <Timer.h>
 #include <DebugLog.h>
-
-#ifdef _DEBUG
-#include <Thread.h>
-#endif
+#include <Timer.h>
 
 #define TM_TIMEOUTREPEAT          0x01
 #define TM_KILLPENDING            0x02

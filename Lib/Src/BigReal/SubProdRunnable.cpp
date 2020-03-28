@@ -1,9 +1,6 @@
 #include "pch.h"
-#include "ResourcePoolInternal.h"
-
-#ifdef _DEBUG
 #include <Thread.h>
-#endif
+#include "ResourcePoolInternal.h"
 
 void SubProdRunnable::clear() {
   m_x         = NULL;
