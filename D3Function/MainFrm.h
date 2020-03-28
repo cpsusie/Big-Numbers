@@ -86,11 +86,14 @@ private:
   inline bool hasDebugger() const {
     return m_debugger != NULL;
   }
-  inline void OnDebugStep(BYTE breakFlags) {
-    if (isDebuggerPaused()) m_debugger->singleStep(breakFlags);
+  inline bool isDebuggerState(DebuggerState state) const {
+    return hasDebugger() && (m_debugger->getState() == state);
   }
   inline bool isDebuggerPaused() const {
-    return hasDebugger() && (m_debugger->getState() == DEBUGGER_PAUSED);
+    return isDebuggerState(DEBUGGER_PAUSED);
+  }
+  inline void OnDebugStep(BYTE breakFlags) {
+    if(isDebuggerPaused()) m_debugger->singleStep(breakFlags);
   }
   bool isAutoFocusCurrentCubeChecked() const;
 
@@ -105,7 +108,7 @@ private:
     m_debugLightIndex = m_scene.addLight(D3Light::createDefaultLight());
   }
   inline void destroyDebugLight() {
-    if (hasDebugLight()) {
+    if(hasDebugLight()) {
       m_scene.removeLight(m_debugLightIndex);
       m_debugLightIndex = -1;
     }

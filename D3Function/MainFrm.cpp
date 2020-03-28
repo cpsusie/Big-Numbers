@@ -685,24 +685,23 @@ void CMainFrame::killDebugger(bool showCreateSurface) {
   if(!hasDebugger()) return;
   m_scene.removeAllVisuals();
   m_debugger->removePropertyChangeListener(this);
-  if(m_debugger->isOk() && showCreateSurface) {
+  const bool allOk = m_debugger->isOk();
+  if(allOk && showCreateSurface) {
     const DebugIsoSurface &surface = m_debugger->getDebugSurface();
     if(surface.getFaceCount()) {
       D3SceneObjectVisual *obj = surface.createMeshObject();
       setCalculatedObject(obj, &m_isoSurfaceParam);
     }
   }
-  const bool   allOk = m_debugger->isOk();
-  const String msg = allOk ? _T("Polygonizing surface done") : m_debugger->getErrorMsg();
   SAFEDELETE(m_debugger);
   destroyDebugLight();
   if(!m_destroyCalled) {
     ajourDebuggerMenu();
     show3DInfo(INFO_ALL);
     if(allOk) {
-      showInformation(_T("%s"), msg.cstr());
+      showInformation(_T("%s"), _T("Polygonizing surface done"));
     } else {
-      showError(_T("%s"), msg.cstr());
+      showError(_T("%s"), m_debugger->getErrorMsg().cstr());
     }
   }
 }

@@ -98,11 +98,14 @@ private:
   inline bool hasDebugger() const {
     return m_debugger != NULL;
   }
+  inline bool isDebuggerState(DebuggerState state) const {
+    return hasDebugger() && (m_debugger->getState() == state);
+  }
   inline bool isDebuggerPaused() const {
-    return hasDebugger() && (m_debugger->getState() == DEBUGGER_PAUSED);
+    return isDebuggerState(DEBUGGER_PAUSED);
   }
   inline bool isDebuggerRunning() const {
-    return hasDebugger() && (m_debugger->getState() == DEBUGGER_RUNNING);
+    return isDebuggerState(DEBUGGER_RUNNING);
   }
 
   int                                getWindowIdFromPoint(CPoint &p); // return childwindow and adjust p to be relative to this window (if selectable)
