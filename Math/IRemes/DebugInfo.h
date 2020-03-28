@@ -21,7 +21,7 @@ private:
   mutable FastSemaphore   m_lock, m_approxLock;
   CoefWindowData          m_coefWinData;
   ExtremaStringArray      m_extrStrArray;
-  String                  m_searchEString, m_remesStateString, m_warning, m_error;
+  String                  m_searchEString, m_remesStateString, m_warning;
   RationalFunction        m_lastApprox;
   double                  m_maxError;
   Point2DArray            m_errorPointArray;
@@ -36,8 +36,6 @@ public:
   void   getSearchEString(           String &dst) const;
   void   setRemesStateString(  const String &src);
   void   getRemesStateString(        String &dst) const;
-  void   setErrorString(       const String &src);
-  void   getErrorString(             String &dst) const;
   void   setWarningString(     const String &src);
   void   getWarningString(           String &dst) const;
   void   setApproximation(     const RationalFunction &src);

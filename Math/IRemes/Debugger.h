@@ -4,19 +4,21 @@
 #include <PropertyContainer.h>
 #include <FlagTraits.h>
 
+#define FL_BREAKSTEP     0x01
+#define FL_BREAKSUBSTEP  0x02
+#define FL_ALLBREAKFLAGS (FL_BREAKSTEP | FL_BREAKSUBSTEP)
+
+typedef enum {
+  DEBUGGER_STATE           // DebuggerState
+ ,REMES_PROPERTY           // *RemesPropertyData (oldValue = NULL)
+} DebuggerProperty;
+
 typedef enum {
   DEBUGGER_CREATED
  ,DEBUGGER_RUNNING
- ,DEBUGGER_BREAK
+ ,DEBUGGER_PAUSED
  ,DEBUGGER_TERMINATED
-} DebuggerRunState;
-
-typedef enum {
-  DEBUGGER_RUNSTATE           // RunState
- ,DEBUGGER_REQUEST_TERMINATE  // bool*
- ,DEBUGGER_ERROR              // TCHAR*
- ,REMES_PROPERTY              // *RemesPropertyData (oldValue = NULL)
-} DebuggerProperty;
+} DebuggerState;
 
 class RemesPropertyData {
 public:
@@ -34,37 +36,33 @@ public:
 
 class Debugger : public InterruptableRunnable, public PropertyContainer, public PropertyChangeListener {
 private:
-  DECLARECLASSNAME;
-  FLAGTRAITS(Debugger, BYTE, m_breakPoints);
-  bool                          m_skipExisting;
-  bool                          m_requestTerminate;
-  DebuggerRunState              m_runState;
-  Remes                        &m_r;
-  IntInterval                   m_mInterval, m_kInterval;
-  int                           m_maxMKSum;
-
-  void throwInvalidStateException(const TCHAR *method, RemesState state) const;
-  void stop();
+  FLAGTRAITS(Debugger, BYTE, m_flags);
+  DebuggerState              m_state;
+  bool                       m_skipExisting;
+  Remes                     &m_r;
+  IntInterval                m_mInterval, m_kInterval;
+  int                        m_maxMKSum;
+  inline Debugger &checkTerminated() {
+    if(getState() == DEBUGGER_TERMINATED) throwException(_T("Debugger is terminated"));
+    return *this;
+  }
   void suspend();
 public:
   Debugger(Remes &r, const IntInterval &mInterval, const IntInterval &kInterval, int maxMKSum, bool skipExisting);
   ~Debugger();
-  void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
-  void singleStep();
-  void singleSubStep();
+  void singleStep(BYTE breakFlags);
+  inline void go() {
+    singleStep(0);
+  }
   void breakASAP();
-  void requestTerminate();
-  void go();
+  void kill();
   UINT safeRun();
-  inline bool isRunning() const {
-    return m_runState == DEBUGGER_RUNNING;
+  void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
+  inline DebuggerState getState() const {
+    return m_state;
   }
-  inline bool isTerminated() const {
-    return m_runState == DEBUGGER_TERMINATED;
+  String getStateName() const {
+    return getStateName(getState());
   }
-  inline bool isBreak() const {
-    return m_runState == DEBUGGER_BREAK;
-  }
-         const TCHAR *getStateName() const;
-  static const TCHAR *getStateName(DebuggerRunState state);
+  static String getStateName(DebuggerState state);
 };

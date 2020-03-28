@@ -1,12 +1,12 @@
 #include "stdafx.h"
 #include <ExternProcess.h>
 #include <ThreadPool.h>
+#include <Thread.h>
 #include <Math/BigReal/BigRealResourcePool.h>
-#include "IRemesDlg.h"
 #include "PrecisionDlg.h"
+#include "IRemesDlg.h"
 
 #ifdef _DEBUG
-#include <Thread.h>
 #define new DEBUG_NEW
 #endif
 
@@ -112,8 +112,7 @@ BEGIN_MESSAGE_MAP(CIRemesDlg, CDialog)
   ON_COMMAND(ID_GOTO_K                       , OnGotoK                     )
   ON_COMMAND(ID_GOTO_DIGITS                  , OnGotoDigits                )
   ON_COMMAND(ID_GOTO_MAXSEARCHEITERATIONS    , OnGotoMaxSearchEIterations  )
-  ON_MESSAGE(ID_MSG_DEBUG_RUNSTATE_CHANGED   , OnMsgDebugRunStateChanged   )
-  ON_MESSAGE(ID_MSG_DEBUG_ERROR_CHANGED      , OnMsgDebugErrorChanged      )
+  ON_MESSAGE(ID_MSG_DEBUGGERSTATE_CHANGED    , OnMsgDebuggerStateChanged   )
   ON_MESSAGE(ID_MSG_REMES_STATE_CHANGED      , OnMsgRemesStateChanged      )
   ON_MESSAGE(ID_MSG_COEFFICIENTS_CHANGED     , OnMsgCoefficientsChanged    )
   ON_MESSAGE(ID_MSG_SEARCHEITERATION_CHANGED , OnMsgSearchEIterationChanged)
@@ -252,14 +251,13 @@ bool CIRemesDlg::isSplineVisible() {
   return isMenuItemChecked(this, ID_VIEW_SHOW_SPLINE);
 }
 
-void CIRemesDlg::showDebuggerState(DebuggerRunState state) {
-  const TCHAR *str;
+void CIRemesDlg::showDebuggerState(DebuggerState state) {
+  String str;
   bool resetRemesState = false;
   if(hasDebugger()) {
     str = Debugger::getStateName(state);
   } else {
     str = _T("No thread");
-//    resetRemesState = true;
   }
   m_debuggerState = state;
 
@@ -459,7 +457,7 @@ void CIRemesDlg::enableFieldList(const int *ids, int n, bool enabled) {
 
 #define ENABLEFIELDLIST(a,enabled) enableFieldList(a, ARRAYSIZE(a), enabled)
 
-void CIRemesDlg::ajourDialogItems(DebuggerRunState state) {
+void CIRemesDlg::ajourDialogItems(DebuggerState state) {
   static const int dialogFields[] = {
     IDC_EDITNAME
    ,IDC_EDITMFROM
@@ -483,7 +481,7 @@ void CIRemesDlg::ajourDialogItems(DebuggerRunState state) {
       break;
 
     case DEBUGGER_CREATED    :
-    case DEBUGGER_BREAK      :
+    case DEBUGGER_PAUSED     :
       ENABLEFIELDLIST(dialogFields, false);
       setRunMenuState(RUNMENU_PAUSED);
       break;
@@ -600,6 +598,7 @@ void CIRemesDlg::OnFileExit() {
 
 void CIRemesDlg::deallocateAll() {
   destroyDebugger();
+  removeErrorPlot();
   m_debugInfo.clear();
   Remes::releaaseExtremaMap();
 }
@@ -698,16 +697,16 @@ void CIRemesDlg::OnRunRestart() {
 void CIRemesDlg::OnRunStopDebugging() {
   try {
     if(hasDebugger()) {
-      m_debugger->requestTerminate();
+      m_debugger->kill();
     }
   } catch(Exception e) {
     showException(e);
   }
 }
 
-void CIRemesDlg::OnRunBreak()                 { if(hasDebugger())       m_debugger->breakASAP();      }
-void CIRemesDlg::OnRunSingleIteration()       { if(isDebuggerPaused())  m_debugger->singleStep();     }
-void CIRemesDlg::OnRunSingleSubIteration()    { if(isDebuggerPaused())  m_debugger->singleSubStep();  }
+void CIRemesDlg::OnRunBreak()                 { if(hasDebugger())       m_debugger->breakASAP();                 }
+void CIRemesDlg::OnRunSingleIteration()       { if(isDebuggerPaused())  m_debugger->singleStep(FL_BREAKSTEP);    }
+void CIRemesDlg::OnRunSingleSubIteration()    { if(isDebuggerPaused())  m_debugger->singleStep(FL_BREAKSUBSTEP); }
 void CIRemesDlg::OnRunReduceToInterpolate()   { if(isDebuggerRunning()) m_reduceToInterpolate = true; }
 void CIRemesDlg::OnGotoDomain()               { gotoEditBox(this, IDC_EDITXFROM               );      }
 void CIRemesDlg::OnGotoM()                    { gotoEditBox(this, IDC_EDITMFROM               );      }
@@ -749,14 +748,8 @@ void CIRemesDlg::adjustMaxMKSum() {
 void CIRemesDlg::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
   if(source == m_debugger) {
     switch(id) {
-    case DEBUGGER_RUNSTATE:
-      PostMessage(ID_MSG_DEBUG_RUNSTATE_CHANGED, *(DebuggerRunState*)oldValue, *(DebuggerRunState*)newValue);
-      break;
-    case DEBUGGER_ERROR:
-      { const String str = *(const String*)newValue;
-        m_debugInfo.setErrorString(str);
-        PostMessage(ID_MSG_DEBUG_ERROR_CHANGED, 0, 0);
-      }
+    case DEBUGGER_STATE:
+      PostMessage(ID_MSG_DEBUGGERSTATE_CHANGED, *(DebuggerState*)oldValue, *(DebuggerState*)newValue);
       break;
     case REMES_PROPERTY:
       if(!m_allowRemesProperties) break;
@@ -855,19 +848,15 @@ void CIRemesDlg::handleRemesProperty(const Remes &r, int id, const void *oldValu
   }
 }
 
-LRESULT CIRemesDlg::OnMsgDebugRunStateChanged(WPARAM wp, LPARAM lp) {
-  const DebuggerRunState state = (DebuggerRunState)lp;
+LRESULT CIRemesDlg::OnMsgDebuggerStateChanged(WPARAM wp, LPARAM lp) {
+  const DebuggerState state = (DebuggerState)lp;
   ajourDialogItems(state);
   if(state == DEBUGGER_TERMINATED) {
     BigRealResourcePool::resetAllPoolCalculations();
+    if(!m_debugger->isOk()) {
+      showWarning(m_debugger->getErrorMsg());
+    }
   }
-  return 0;
-}
-
-LRESULT CIRemesDlg::OnMsgDebugErrorChanged(WPARAM wp, LPARAM lp) {
-  String s;
-  m_debugInfo.getErrorString(s);
-  showWarning(s);
   return 0;
 }
 
@@ -977,7 +966,7 @@ void CIRemesDlg::startDebugger(bool singleStep) {
     destroyDebugger();
     createDebugger();
     if(singleStep) {
-      m_debugger->singleStep();
+      m_debugger->singleStep(FL_BREAKSUBSTEP);
     } else {
       m_debugger->go();
     }
@@ -1047,10 +1036,10 @@ void CIRemesDlg::destroyDebugger() {
   stopErrorPlotter();
   if(hasDebugger()) {
     m_allowRemesProperties = false;
-    m_debugger->requestTerminate();
     SAFEDELETE(m_debugger);
     SAFEDELETE(m_remes);
   }
+  BigRealResourcePool::resetAllPoolCalculations();
 }
 
 String CIRemesDlg::getThreadStateName() const {

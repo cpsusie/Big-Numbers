@@ -73,17 +73,6 @@ void DebugInfo::getRemesStateString(String &dst) const {
   m_lock.notify();
 }
 
-void DebugInfo::setErrorString(const String &src) {
-  m_lock.wait();
-  m_error = src;
-  m_lock.notify();
-}
-void DebugInfo::getErrorString(String &dst) const {
-  m_lock.wait();
-  dst = m_error;
-  m_lock.notify();
-}
-
 void DebugInfo::setWarningString(const String &src) {
   m_lock.wait();
   m_warning = src;
@@ -153,7 +142,6 @@ void DebugInfo::clear() {
   m_searchEString    = EMPTYSTRING;
   m_remesStateString = EMPTYSTRING;
   m_warning          = EMPTYSTRING;
-  m_error            = EMPTYSTRING;
   m_lastApprox.clear();
   m_maxError = 0;
   m_errorPointArray;

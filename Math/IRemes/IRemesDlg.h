@@ -56,7 +56,7 @@ private:
   DebugInfo               m_debugInfo;
   int                     m_subM, m_subK;
   Debugger               *m_debugger;
-  DebuggerRunState        m_debuggerState;
+  DebuggerState           m_debuggerState;
   ErrorPlotter           *m_errorPlotter;
   bool                    m_errorPlotTimerRunning;
   CString                 m_name;
@@ -93,21 +93,21 @@ private:
     return m_debugger != NULL;
   }
   inline bool isDebuggerPaused() const {
-    return hasDebugger() && !m_debugger->isRunning() && !m_debugger->isTerminated();
+    return hasDebugger() && (m_debugger->getState() == DEBUGGER_PAUSED);
   }
   inline bool isDebuggerRunning() const {
-    return hasDebugger() && m_debugger->isRunning();
+    return hasDebugger() && (m_debugger->getState() == DEBUGGER_RUNNING);
   }
   inline bool isDebuggerTerminated() const {
-    return hasDebugger() && m_debugger->isTerminated();
+    return hasDebugger() && (m_debugger->getState() == DEBUGGER_TERMINATED);
   }
   inline bool hasSolution() const {
     return isDebuggerTerminated() && (m_remes->getState() == REMES_SUCCEEDED);
   }
-  void ajourDialogItems(DebuggerRunState state);
+  void ajourDialogItems(DebuggerState state);
   void setRunMenuState(RunMenuState menuState);
   void enableFieldList(const int *ids, int n, bool enabled);
-  void showDebuggerState(DebuggerRunState state);
+  void showDebuggerState(DebuggerState state);
   void showRemesState(const String &str);
   void showWarning(const String &str);
   void showCoefWindowData(const CoefWindowData &data);
@@ -178,8 +178,7 @@ public:
   afx_msg void    OnEnKillfocusEditkTo();
   afx_msg void    OnEnUpdateEditkTo();
   afx_msg void    OnEnUpdateEditmTo();
-  afx_msg LRESULT OnMsgDebugRunStateChanged(   WPARAM wp, LPARAM lp);
-  afx_msg LRESULT OnMsgDebugErrorChanged(      WPARAM wp, LPARAM lp);
+  afx_msg LRESULT OnMsgDebuggerStateChanged(   WPARAM wp, LPARAM lp);
   afx_msg LRESULT OnMsgRemesStateChanged(      WPARAM wp, LPARAM lp);
   afx_msg LRESULT OnMsgCoefficientsChanged(    WPARAM wp, LPARAM lp);
   afx_msg LRESULT OnMsgSearchEIterationChanged(WPARAM wp, LPARAM lp);
