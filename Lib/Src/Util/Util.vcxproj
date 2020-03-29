@@ -798,6 +798,7 @@
     <ClInclude Include="..\..\Include\DebugLog.h" />
     <ClInclude Include="..\..\Include\FastSemaphore.h" />
     <ClInclude Include="..\..\Include\FlagTraits.h" />
+    <ClInclude Include="..\..\Include\GenericDebugger.h" />
     <ClInclude Include="..\..\Include\HeapObjectPool.h" />
     <ClInclude Include="..\..\Include\CompactHashMap.h" />
     <ClInclude Include="..\..\Include\CompactHashSet.h" />
@@ -992,6 +993,7 @@
     <ClCompile Include="fstat.cpp" />
     <ClCompile Include="fstat64.cpp" />
     <ClCompile Include="fwrite.cpp" />
+    <ClCompile Include="GenericDebugger.cpp" />
     <ClCompile Include="GetCommandline.cpp" />
     <ClCompile Include="GetCurrentThreadHandle.cpp" />
     <ClCompile Include="getcwd.cpp" />
