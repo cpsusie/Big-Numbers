@@ -94,7 +94,7 @@ template<typename CharType> CharType *strDup(const CharType *str) {
 
 template<typename CharType> CharType *strRev(CharType *str) {
   return (sizeof(CharType) == 1) ? (CharType*)_strrev((char   *)str)
-                                 : (CharType*)_wcsrev((wchar_t*)str)
+                                 : (CharType*)_wcsrev((wchar_t*)str);
 }
 
 class String {
@@ -262,7 +262,7 @@ public:
   }
 
   inline bool isAscii() const {
-    for(const _TUCHAR *cp = m_buf, *endp = cp + m_len; cp < endp;) {
+    for(const _TUCHAR *cp = (_TUCHAR*)m_buf, *endp = cp + m_len; cp < endp;) {
       if(!isascii(*(cp++))) {
         return false;
       }

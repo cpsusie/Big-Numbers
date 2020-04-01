@@ -36,20 +36,20 @@
 
 #else // !unicode
 
-#define tfilebuf    filebuf
-#define tistream    istream
-#define tostream    ostream
-#define tiostream   iostream
-#define tfstream    fstream
-#define tifstream   ifstream
-#define tofstream   ofstream
-#define tistrstream istringstream
-#define tostrstream ostringstream
+#define tfilebuf    std::filebuf
+#define tistream    std::istream
+#define tostream    std::ostream
+#define tiostream   std::iostream
+#define tfstream    std::fstream
+#define tifstream   std::ifstream
+#define tofstream   std::ofstream
+#define tistrstream std::istringstream
+#define tostrstream std::ostringstream
 
-#define tcin      cin
-#define tcout     cout
-#define tcerr     cerr
-#define tclog     clog
+#define tcin      std::cin
+#define tcout     std::cout
+#define tcerr     std::cerr
+#define tclog     std::clog
 
 #define TMEMSET( dst, v  , count)             memset( dst, v  , count)
 #define TMEMCPY( dst, src, count)             memcpy( dst, src, count)
