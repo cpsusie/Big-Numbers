@@ -26,7 +26,6 @@
 #pragma once
 
 #include <iostream>
-
 #include "ijk.h"
 
 /// Classes and routines for storing and manipulating isosurface lookup table.
