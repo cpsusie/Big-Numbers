@@ -1,11 +1,16 @@
 #include "stdafx.h"
-#include <stdlib.h>
-#include <stdarg.h>
+#include "error.h"
 
-static string vformat(_In_z_ _Printf_format_string_ char const * const format, va_list argptr) {
-  char tmp[2000];
-  vsprintf_s(tmp, format, argptr);
-  return tmp;
+void throwMethodException(const char *className, const char *method, _In_z_ _Printf_format_string_ char const * const format, ...) {
+  va_list argptr;
+  va_start(argptr, format);
+  const string msg = vformat(format, argptr);
+  va_end(argptr);
+  throwException("%s::%s:%s", className, method, msg.c_str());
+}
+
+void throwUnsupportedOperationException(const char *method) {
+  throwException("%s:Unsupported operation", method);
 }
 
 void throwInvalidArgumentException(const char *method, _In_z_ _Printf_format_string_ char const * const format, ...) {
@@ -31,6 +36,7 @@ void throwException(_In_z_ _Printf_format_string_ char const * const format, ...
 void throwPROCEDURE_ERROR(const char *method, const string msg) {
   throwException("%s:%s", method, msg.c_str());
 }
+
 void throwPROCEDURE_ERROR(const char *method, _In_z_ _Printf_format_string_ char const * const format, ...) {
   va_list argptr;
   va_start(argptr, format);

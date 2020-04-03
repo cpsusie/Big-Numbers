@@ -46,7 +46,7 @@ namespace {
 // ISOSURFACE_TABLE_POLYHEDRON
 //**************************************************
 
-ISOSURFACE_TABLE_POLYHEDRON::ISOSURFACE_TABLE_POLYHEDRON(u_int d)
+ISOSURFACE_TABLE_POLYHEDRON::ISOSURFACE_TABLE_POLYHEDRON(uint  d)
 : vertex_coord(0)
 , edge_endpoint(0)
 , num_facet_vertices(0)
@@ -77,25 +77,25 @@ ISOSURFACE_TABLE_POLYHEDRON &ISOSURFACE_TABLE_POLYHEDRON::operator=(const ISOSUR
     SetSize(src.NumVertices(), src.NumEdges(), src.NumFacets());
 
     // copy vertices
-    for(u_int iv = 0; iv < NumVertices(); iv++) {
-      for(u_int ic = 0; ic < Dimension(); ic++) {
+    for(uint  iv = 0; iv < NumVertices(); iv++) {
+      for(uint  ic = 0; ic < Dimension(); ic++) {
         SetVertexCoord(iv, ic, src.VertexCoord(iv, ic));
       }
     }
 
     // copy edges
-    for(u_int ie = 0; ie < NumEdges(); ie++) {
+    for(uint  ie = 0; ie < NumEdges(); ie++) {
       SetEdge(ie, src.EdgeEndpoint(ie, 0), src.EdgeEndpoint(ie, 1));
     }
     /// **** NOTE: NEED TO MODIFY ***
     // copy facets
-    for(u_int jf = 0; jf < NumFacets(); jf++) {
+    for(uint  jf = 0; jf < NumFacets(); jf++) {
       facet[jf] = src.Facet(jf);
-      u_int num_fv = src.NumFacetVertices(jf);
+      uint  num_fv = src.NumFacetVertices(jf);
       SetNumFacetVertices(jf, num_fv);
 
-      for(u_int k = 0; k < num_fv; k++) {
-        u_int iv = src.FacetVertex(jf, k);
+      for(uint  k = 0; k < num_fv; k++) {
+        uint  iv = src.FacetVertex(jf, k);
         SetFacetVertex(jf, k, iv);
       }
     }
@@ -106,15 +106,13 @@ ISOSURFACE_TABLE_POLYHEDRON &ISOSURFACE_TABLE_POLYHEDRON::operator=(const ISOSUR
 /// Free facet arrays.
 void ISOSURFACE_TABLE_POLYHEDRON::FreeFacets() {
   if(facet_vertex_list != NULL) {
-    for(u_int jf = 0; jf < num_facets; jf++) {
-      delete[] facet_vertex_list[jf];
-      facet_vertex_list[jf] = NULL;
+    for(uint  jf = 0; jf < num_facets; jf++) {
+      SAFEDELETEARRAY(facet_vertex_list[jf]);
     }
   }
-  delete[] facet_vertex_list;
+  SAFEDELETEARRAY(facet_vertex_list);
   num_facet_vertices.setSize(0);
   facet.setSize(0);
-  facet_vertex_list  = NULL;
   num_facets         = 0;
 }
 
@@ -136,7 +134,7 @@ void ISOSURFACE_TABLE_POLYHEDRON::Init() {
 }
 
 // set polyhedron dimension
-void ISOSURFACE_TABLE_POLYHEDRON::SetDimension(u_int d) {
+void ISOSURFACE_TABLE_POLYHEDRON::SetDimension(uint  d) {
   FreeAll();
   num_vertices = num_edges = 0;
   dimension    = d;
@@ -144,7 +142,7 @@ void ISOSURFACE_TABLE_POLYHEDRON::SetDimension(u_int d) {
 
 // set number of vertices
 // Must be called before setting polyhedron vertices
-void ISOSURFACE_TABLE_POLYHEDRON::SetNumVertices(u_int numv) {
+void ISOSURFACE_TABLE_POLYHEDRON::SetNumVertices(uint  numv) {
   if(!CheckDimension()) {
     throwPROCEDURE_ERROR(__FUNCTION__, "Illegal polyhedron dimension");
   }
@@ -165,7 +163,7 @@ void ISOSURFACE_TABLE_POLYHEDRON::SetNumVertices(u_int numv) {
 
 // set number of edges
 // Must be called before setting polyhedron edges
-void ISOSURFACE_TABLE_POLYHEDRON::SetNumEdges(u_int nume) {
+void ISOSURFACE_TABLE_POLYHEDRON::SetNumEdges(uint  nume) {
   num_edges = 0;
 
   if(!CheckDimension()) {
@@ -189,7 +187,7 @@ void ISOSURFACE_TABLE_POLYHEDRON::SetNumEdges(u_int nume) {
 
 // set number of facets
 // Must be called before setting polyhedron facets
-void ISOSURFACE_TABLE_POLYHEDRON::SetNumFacets(u_int numf) {
+void ISOSURFACE_TABLE_POLYHEDRON::SetNumFacets(uint  numf) {
   FreeFacets();
 
   if(!CheckDimension()) {
@@ -207,13 +205,13 @@ void ISOSURFACE_TABLE_POLYHEDRON::SetNumFacets(u_int numf) {
   num_facets         = numf;
   facet.setSize(numf);
   num_facet_vertices.setSize(numf);
-  facet_vertex_list  = new u_int*[numf];
+  facet_vertex_list = new uint *[numf]; TRACE_NEW(facet_vertex_list);
 
   if(facet_vertex_list == NULL) {
     throwPROCEDURE_ERROR(__FUNCTION__, "Unable to allocate memory for list of facets");
   }
   // initialize each facet to 0
-  for(u_int jf = 0; jf < numf; jf++) {
+  for(uint  jf = 0; jf < numf; jf++) {
     facet[jf] = 0;
     num_facet_vertices[jf] = 0;
     facet_vertex_list[jf] = NULL;
@@ -221,24 +219,21 @@ void ISOSURFACE_TABLE_POLYHEDRON::SetNumFacets(u_int numf) {
 }
 
 /// Set number of vertices in facet \a jf.
-void ISOSURFACE_TABLE_POLYHEDRON::SetNumFacetVertices(FACET_INDEX jf, u_int numv) {
-  u_int jf_int = jf;
+void ISOSURFACE_TABLE_POLYHEDRON::SetNumFacetVertices(FACET_INDEX jf, uint  numv) {
+  uint  jf_int = jf;
   Assert(jf_int < NumFacets());
 
-  if(facet_vertex_list[jf] != NULL) {
-    delete[] facet_vertex_list[jf];
-    facet_vertex_list[jf] = NULL;
-  }
+  SAFEDELETEARRAY(facet_vertex_list[jf]);
 
   num_facet_vertices[jf] = numv;
-  facet_vertex_list[jf] = new u_int[numv];
+  facet_vertex_list[jf]  = new uint[numv]; TRACE_NEW(facet_vertex_list[jf]);
 }
 
 // set polyhedron vertex coordinate
 // iv = vertex index.  In range [0..NumVertices()-1].
 // ic = coordinate index. In range [0..Dimension()-1].
 // coord = coordinate.  Must be even.
-void ISOSURFACE_TABLE_POLYHEDRON::SetVertexCoord(u_int iv, u_int ic, u_int coord) {
+void ISOSURFACE_TABLE_POLYHEDRON::SetVertexCoord(uint  iv, uint  ic, uint  coord) {
   Assert(iv < NumVertices());
   Assert(ic < Dimension());
   if(coord%2 != 0) {
@@ -251,17 +246,17 @@ void ISOSURFACE_TABLE_POLYHEDRON::SetVertexCoord(u_int iv, u_int ic, u_int coord
 // ie = edge index.  In range [0..NumEdges()-1].
 // iv0 = vertex 0 index.  In range [0..NumVertices()-1].
 // iv1 = vertex 1 index.  In range [0..NumVertices()-1].
-void ISOSURFACE_TABLE_POLYHEDRON::SetEdge(EDGE_INDEX ie, u_int iv0, u_int iv1) {
-  u_int ie_int = ie;
+void ISOSURFACE_TABLE_POLYHEDRON::SetEdge(EDGE_INDEX ie, uint  iv0, uint  iv1) {
+  uint  ie_int = ie;
   Assert(ie_int < NumEdges());
   Assert(iv0 < NumVertices() && iv1 < NumVertices());
-  u_int index = 2 * ie;
+  uint  index = 2 * ie;
   edge_endpoint[index++] = iv0;
   edge_endpoint[index  ] = iv1;
 }
 
-void ISOSURFACE_TABLE_POLYHEDRON::SetFacetVertex(FACET_INDEX jf, u_int k, u_int iv) {
-  const u_int jf_int = jf;
+void ISOSURFACE_TABLE_POLYHEDRON::SetFacetVertex(FACET_INDEX jf, uint  k, uint  iv) {
+  const uint  jf_int = jf;
   Assert(jf_int < NumFacets());
   Assert(k      < NumFacetVertices(jf));
   Assert(iv     < NumVertices());
@@ -271,33 +266,33 @@ void ISOSURFACE_TABLE_POLYHEDRON::SetFacetVertex(FACET_INDEX jf, u_int k, u_int 
 
 // return ic'th coordinate of midpoint of edge ie
 // Note: vertice coordinates must all be even so midpoint coordinate is an integer
-u_int ISOSURFACE_TABLE_POLYHEDRON::MidpointCoord(EDGE_INDEX ie, u_int ic) const {
+uint  ISOSURFACE_TABLE_POLYHEDRON::MidpointCoord(EDGE_INDEX ie, uint  ic) const {
   Assert((ie < num_edges) && (ic < dimension));
-  u_int iv0    = EdgeEndpoint(ie, 0);
-  u_int iv1    = EdgeEndpoint(ie, 1);
-  u_int coord0 = VertexCoord(iv0, ic);
-  u_int coord1 = VertexCoord(iv1, ic);
+  uint  iv0    = EdgeEndpoint(ie, 0);
+  uint  iv1    = EdgeEndpoint(ie, 1);
+  uint  coord0 = VertexCoord(iv0, ic);
+  uint  coord1 = VertexCoord(iv1, ic);
   return (coord0+coord1)/2;
 }
 
 // generate a polyhedron
-void ISOSURFACE_TABLE_POLYHEDRON::GenCube(u_int cube_dimension) {
+void ISOSURFACE_TABLE_POLYHEDRON::GenCube(uint  cube_dimension) {
   dimension = cube_dimension;
   if(!CheckDimension()) {
     throwPROCEDURE_ERROR(__FUNCTION__, "Illegal cube dimension");
   }
-  const u_int numv = 1L << Dimension();
-  const u_int nume = (numv * Dimension()) / 2;
-  const u_int numf = 2*Dimension();
+  const uint  numv = 1L << Dimension();
+  const uint  nume = (numv * Dimension()) / 2;
+  const uint  numf = 2*Dimension();
 
   SetSize(numv, nume, numf);
 
   // set vertex coordinates
-  for(u_int iv = 0; iv < NumVertices(); iv++) {
-    u_int mask = 1L;
-    for(u_int ic = 0; ic < Dimension(); ic++) {
-      u_int bit   = mask & iv;
-      u_int coord = 0;
+  for(uint  iv = 0; iv < NumVertices(); iv++) {
+    uint  mask = 1L;
+    for(uint  ic = 0; ic < Dimension(); ic++) {
+      uint  bit   = mask & iv;
+      uint  coord = 0;
       if(bit != 0) {
         coord = 2;
       }
@@ -307,25 +302,25 @@ void ISOSURFACE_TABLE_POLYHEDRON::GenCube(u_int cube_dimension) {
   }
 
   // generate edges in lexicographic order
-  u_int ie = 0;
-  u_int control = 0;
+  uint  ie = 0;
+  uint  control = 0;
   while (ie < NumEdges()) {
     // find first 0 bit in control
-    u_int ic    = 0;
-    u_int mask = 1L;
+    uint  ic    = 0;
+    uint  mask = 1L;
     while((mask & control) != 0) {
       mask <<= 1;
       ic++;
     }
 
     // find start vertex by stripping ic bits from control
-    u_int start = control;
+    uint  start = control;
     start = start >> ic;
     start = start << ic;
-    const u_int icpow2 = (1L << ic);
-    for(u_int i = 0; i < icpow2; i++) {
-      u_int iv0 = start + i;
-      u_int iv1 = iv0 + icpow2;
+    const uint  icpow2 = (1L << ic);
+    for(uint  i = 0; i < icpow2; i++) {
+      uint  iv0 = start + i;
+      uint  iv1 = iv0 + icpow2;
       SetEdge(ie, iv0, iv1);
       ie++;
     }
@@ -336,21 +331,21 @@ void ISOSURFACE_TABLE_POLYHEDRON::GenCube(u_int cube_dimension) {
     throwPROCEDURE_ERROR(__FUNCTION__, "Programming error in edge generation");
   }
   // generate facets
-  const u_int num_vertices_per_facet = NumVertices()/2;
+  const uint  num_vertices_per_facet = NumVertices()/2;
 
-  for(u_int jf = 0; jf < numf; jf++) {
+  for(uint  jf = 0; jf < numf; jf++) {
     SetNumFacetVertices(jf, num_vertices_per_facet);
   }
 
-  u_int mask = 1L;
-  for(u_int ic = 0; ic < Dimension(); ic++) {
-    u_int jf0 = 2*ic;
-    u_int jf1 = jf0+1;
-    u_int k0  = 0;
-    u_int k1  = 0;
+  uint  mask = 1L;
+  for(uint  ic = 0; ic < Dimension(); ic++) {
+    uint  jf0 = 2*ic;
+    uint  jf1 = jf0+1;
+    uint  k0  = 0;
+    uint  k1  = 0;
 
-    for(u_int iv = 0; iv < NumVertices(); iv++) {
-      u_int bit = mask & iv;
+    for(uint  iv = 0; iv < NumVertices(); iv++) {
+      uint  bit = mask & iv;
       if(bit == 0) {
         SetFacetVertex(jf0, k0, iv);
         k0++;
@@ -368,35 +363,35 @@ void ISOSURFACE_TABLE_POLYHEDRON::GenCube(u_int cube_dimension) {
 }
 
 // generate a simplex
-void ISOSURFACE_TABLE_POLYHEDRON::GenSimplex(u_int simplex_dimension) {
+void ISOSURFACE_TABLE_POLYHEDRON::GenSimplex(uint  simplex_dimension) {
   dimension = simplex_dimension;
   if(!CheckDimension())
     throwPROCEDURE_ERROR(__FUNCTION__, "Illegal simplex dimension");
 
-  const u_int numv = Dimension() + 1;
-  const u_int nume = (numv * Dimension()) / 2;
-  const u_int numf = Dimension() + 1;
+  const uint  numv = Dimension() + 1;
+  const uint  nume = (numv * Dimension()) / 2;
+  const uint  numf = Dimension() + 1;
 
   SetSize(numv, nume, numf);
 
   // initialize all vertex coordinates to 0
-  for(u_int iv = 0; iv < NumVertices(); iv++) {
-    for(u_int ic = 0; ic < Dimension(); ic++) {
+  for(uint  iv = 0; iv < NumVertices(); iv++) {
+    for(uint  ic = 0; ic < Dimension(); ic++) {
       SetVertexCoord(iv, ic, 0);
     }
   }
 
   // set vertex coordinates
-  u_int ic = 0;
-  for(u_int jv = 1; jv < NumVertices(); jv++) {
+  uint  ic = 0;
+  for(uint  jv = 1; jv < NumVertices(); jv++) {
     SetVertexCoord(jv, ic, 2);
     ic++;
   }
 
   // generate edges in lexicographic order
-  u_int ie = 0;
-  for(u_int iv0 = 0; iv0 < NumVertices() - 1; iv0++) {
-    for(u_int iv1 = iv0 + 1; iv1 < NumVertices(); iv1++) {
+  uint  ie = 0;
+  for(uint  iv0 = 0; iv0 < NumVertices() - 1; iv0++) {
+    for(uint  iv1 = iv0 + 1; iv1 < NumVertices(); iv1++) {
       SetEdge(ie, iv0, iv1);
       ie++;
     }
@@ -405,16 +400,16 @@ void ISOSURFACE_TABLE_POLYHEDRON::GenSimplex(u_int simplex_dimension) {
     throwPROCEDURE_ERROR(__FUNCTION__, "Programming error in edge generation");
   }
   // generate facets
-  const u_int num_vertices_per_facet = Dimension();
+  const uint  num_vertices_per_facet = Dimension();
 
-  for(u_int jf = 0; jf < numf; jf++) {
+  for(uint  jf = 0; jf < numf; jf++) {
     SetNumFacetVertices(jf, num_vertices_per_facet);
   }
 
-  for(u_int jf = 0; jf < numf; jf++) {
-    u_int k = 0;
-    for(u_int jv = 0; jv < num_vertices_per_facet; jv++) {
-      u_int iv = (jf + jv) % numv;
+  for(uint  jf = 0; jf < numf; jf++) {
+    uint  k = 0;
+    for(uint  jv = 0; jv < num_vertices_per_facet; jv++) {
+      uint  iv = (jf + jv) % numv;
       SetFacetVertex(jf, k, iv);
       k++;
     }
@@ -426,27 +421,27 @@ void ISOSURFACE_TABLE_POLYHEDRON::GenSimplex(u_int simplex_dimension) {
 }
 
 // generate a pyramid
-void ISOSURFACE_TABLE_POLYHEDRON::GenPyramid(u_int pyramid_dimension) {
+void ISOSURFACE_TABLE_POLYHEDRON::GenPyramid(uint  pyramid_dimension) {
   dimension = pyramid_dimension;
   CheckDimension();
   if(dimension < 2) {
     throwPROCEDURE_ERROR(__FUNCTION__, "Illegal pyramid dimension");
   }
-  u_int numv = (1L << (Dimension()-1)) + 1;
-  u_int num_base_edges = (numv-1) * (Dimension()-1)/2;
-  u_int nume = num_base_edges + (numv-1);
-  u_int numf = 2*Dimension()-1;
+  uint  numv = (1L << (Dimension()-1)) + 1;
+  uint  num_base_edges = (numv-1) * (Dimension()-1)/2;
+  uint  nume = num_base_edges + (numv-1);
+  uint  numf = 2*Dimension()-1;
 
-  u_int apex = numv-1;
+  uint  apex = numv-1;
 
   SetSize(numv, nume, numf);
 
   // set vertex coordinates
-  for(u_int iv = 0; iv < NumVertices()-1; iv++) {
-    u_int mask = 1L;
-    for(u_int ic = 0; ic < Dimension(); ic++) {
-      u_int bit = mask & iv;
-      u_int coord = 0;
+  for(uint  iv = 0; iv < NumVertices()-1; iv++) {
+    uint  mask = 1L;
+    for(uint  ic = 0; ic < Dimension(); ic++) {
+      uint  bit = mask & iv;
+      uint  coord = 0;
       if(bit != 0) {
         coord = 4;
       }
@@ -456,30 +451,30 @@ void ISOSURFACE_TABLE_POLYHEDRON::GenPyramid(u_int pyramid_dimension) {
   }
 
   // Set coordinate of pyramid
-  for(u_int ic = 0; ic < Dimension(); ic++) {
+  for(uint  ic = 0; ic < Dimension(); ic++) {
     SetVertexCoord(apex, ic, 2);
   }
 
   // generate edges in lexicographic order
-  u_int ie = 0;
-  u_int control = 0;
+  uint  ie = 0;
+  uint  control = 0;
   while(ie < num_base_edges) {
     // find first 0 bit in control
-    u_int ic = 0;
-    u_int mask = 1L;
+    uint  ic = 0;
+    uint  mask = 1L;
     while((mask & control) != 0) {
       mask <<= 1;
       ic++;
     }
 
     // find start vertex by stripping ic bits from control
-    u_int start = control;
+    uint  start = control;
     start = start >> ic;
     start = start << ic;
-    const u_int icpow2 = (1L << ic);
-    for(u_int i = 0; i < icpow2; i++) {
-      const u_int iv0 = start + i;
-      const u_int iv1 = iv0   + icpow2;
+    const uint  icpow2 = (1L << ic);
+    for(uint  i = 0; i < icpow2; i++) {
+      const uint  iv0 = start + i;
+      const uint  iv1 = iv0   + icpow2;
       SetEdge(ie, iv0, iv1);
       ie++;
     }
@@ -489,29 +484,29 @@ void ISOSURFACE_TABLE_POLYHEDRON::GenPyramid(u_int pyramid_dimension) {
   if(control+1 != (1L << (Dimension()-1))) {
     throwPROCEDURE_ERROR(__FUNCTION__, "Programming error in edge generation");
   }
-  for(u_int iv = 0; iv < NumVertices()-1; iv++) {
+  for(uint  iv = 0; iv < NumVertices()-1; iv++) {
     SetEdge(num_base_edges+iv, iv, apex);
   }
 
   // generate facets containing apex
-  u_int num_vertices_per_facet = 1+(numv-1)/2;
+  uint  num_vertices_per_facet = 1+(numv-1)/2;
 
-  for(u_int jf = 0; jf+1 < numf; jf++) {
+  for(uint  jf = 0; jf+1 < numf; jf++) {
     SetNumFacetVertices(jf, num_vertices_per_facet);
   }
 
-  u_int mask = 1L;
-  for(u_int ic = 0; ic < Dimension()-1; ic++) {
-    u_int jf0 = 2*ic;
-    u_int jf1 = jf0+1;
+  uint  mask = 1L;
+  for(uint  ic = 0; ic < Dimension()-1; ic++) {
+    uint  jf0 = 2*ic;
+    uint  jf1 = jf0+1;
 
     SetFacetVertex(jf0, 0, apex);
     SetFacetVertex(jf1, 0, apex);
 
-    u_int k0 = 1;
-    u_int k1 = 1;
-    for(u_int iv = 0; iv < NumVertices()-1; iv++) {
-      u_int bit = mask & iv;
+    uint  k0 = 1;
+    uint  k1 = 1;
+    for(uint  iv = 0; iv < NumVertices()-1; iv++) {
+      uint  bit = mask & iv;
       if(bit == 0) {
         SetFacetVertex(jf0, k0, iv);
         k0++;
@@ -528,11 +523,11 @@ void ISOSURFACE_TABLE_POLYHEDRON::GenPyramid(u_int pyramid_dimension) {
   }
 
   // generate base facet
-  u_int base_facet = numf-1;
-  u_int num_vertices_in_base_facet = numv-1;
+  uint  base_facet = numf-1;
+  uint  num_vertices_in_base_facet = numv-1;
   SetNumFacetVertices(base_facet, num_vertices_in_base_facet);
 
-  for(u_int iv = 0; iv < NumVertices()-1; iv++) {
+  for(uint  iv = 0; iv < NumVertices()-1; iv++) {
     SetFacetVertex(base_facet, iv, iv);
   }
 }
@@ -556,17 +551,17 @@ void ISOSURFACE_TABLE_POLYHEDRON::Check() const {
     throwException("Illegal number of edges (=%d)", NumEdges());
   }
 
-  for(u_int iv = 0; iv < NumVertices(); iv++) {
-    for(u_int ic = 0; ic < Dimension(); ic++) {
+  for(uint  iv = 0; iv < NumVertices(); iv++) {
+    for(uint  ic = 0; ic < Dimension(); ic++) {
       if((VertexCoord(iv, ic) % 2) != 0) {
         throwException("Vertex coordinates must be even integers");
       }
     }
   }
 
-  for(u_int ie = 0; ie < NumEdges(); ie++) {
-    for(u_int ip = 0; ip < 2; ip++) {
-      u_int iv = EdgeEndpoint(ie, ip);
+  for(uint  ie = 0; ie < NumEdges(); ie++) {
+    for(uint  ip = 0; ip < 2; ip++) {
+      uint  iv = EdgeEndpoint(ie, ip);
       if(iv >= NumVertices()) {
         throwException("Illegal edge endpoint %d for edge %d", iv, ie);
       }
@@ -585,23 +580,15 @@ ISOSURFACE_VERTEX::ISOSURFACE_VERTEX() {
 }
 
 ISOSURFACE_VERTEX::~ISOSURFACE_VERTEX() {
-  if(coord != NULL) { 
-    delete[] coord;
-    coord = NULL;
-  }
-
-  num_coord = 0;
+  SAFEDELETEARRAY(coord);
+  num_coord    = 0;
   is_label_set = false;
 }
 
-void ISOSURFACE_VERTEX::SetNumCoord(u_int numc) {
-  if(coord != NULL) {
-    delete[] coord;
-  }
-  coord = NULL;
-
+void ISOSURFACE_VERTEX::SetNumCoord(uint numc) {
+  SAFEDELETEARRAY(coord);
   num_coord = numc;
-  coord = new COORD_TYPE[numc];
+  coord = new COORD_TYPE[numc];  TRACE_NEW(coord );
 }
 
 //**************************************************
@@ -627,8 +614,7 @@ void ISOSURFACE_TABLE::ISOSURFACE_TABLE_ENTRY::Check() const {
 }
 
 void ISOSURFACE_TABLE::ISOSURFACE_TABLE_ENTRY::FreeAll() {
-  delete[] simplex_vertex_list;
-  simplex_vertex_list = NULL;
+  SAFEDELETEARRAY(simplex_vertex_list);
   num_simplices = 0;
 }
 
@@ -639,19 +625,19 @@ ISOSURFACE_TABLE::ISOSURFACE_TABLE() : polyhedron(3) {
 
 // constructor
 // d = dimension of space containing isosurface.  Should be 2, 3 or 4.
-ISOSURFACE_TABLE::ISOSURFACE_TABLE(u_int d) : polyhedron(d) {
+ISOSURFACE_TABLE::ISOSURFACE_TABLE(uint  d) : polyhedron(d) {
   Init(d, d-1);
 }
 
 // constructor
 // d = dimension of space containing isosurface.  Should be 2, 3 or 4.
-ISOSURFACE_TABLE::ISOSURFACE_TABLE(u_int dimension, u_int simplex_dimension):polyhedron(dimension) {
+ISOSURFACE_TABLE::ISOSURFACE_TABLE(uint  dimension, uint  simplex_dimension):polyhedron(dimension) {
   Init(dimension, simplex_dimension);
 }
 
 // constructor
 // d = dimension of space containing isosurface.  Should be 2, 3 or 4.
-void ISOSURFACE_TABLE::Init(u_int dimension, u_int simplex_dimension) {
+void ISOSURFACE_TABLE::Init(uint  dimension, uint  simplex_dimension) {
   this->simplex_dimension = simplex_dimension;
 
   max_num_vertices = 20;
@@ -690,21 +676,17 @@ void ISOSURFACE_TABLE::SetNonstandardEncoding(const std::string & name) {
   encoding_name = name;
 }
 
-void ISOSURFACE_TABLE::SetNumIsosurfaceVertices(u_int num_vertices) {
-  if(isosurface_vertex != NULL) {
-    delete[] isosurface_vertex;
-  }
-  isosurface_vertex = NULL;
-
+void ISOSURFACE_TABLE::SetNumIsosurfaceVertices(uint  num_vertices) {
+  SAFEDELETEARRAY(isosurface_vertex);
   num_isosurface_vertices = num_vertices;
-  isosurface_vertex = new ISOSURFACE_VERTEX[num_vertices];
+  isosurface_vertex = new ISOSURFACE_VERTEX[num_vertices]; TRACE_NEW(isosurface_vertex);
 }
 
 // check allocation of array isosurface_vertices
 // procname = calling procedure name, for error messages
 // vstart = first vertex
 // numv = number of vertices required
-void ISOSURFACE_TABLE::CheckIsoVerticesAlloc(const char * procname, u_int vstart, u_int numv) {
+void ISOSURFACE_TABLE::CheckIsoVerticesAlloc(const char * procname, uint  vstart, uint  numv) {
   if(numv == 0) return;
 
   if(isosurface_vertex == NULL) {
@@ -718,11 +700,11 @@ void ISOSURFACE_TABLE::CheckIsoVerticesAlloc(const char * procname, u_int vstart
 
 // store polyhedron vertices as isosurface vertices
 // store polyhedron vertices starting at isosurface vertex vstart
-void ISOSURFACE_TABLE::StorePolyVerticesAsIsoVertices(u_int vstart) {
-  const u_int num_polyv = Polyhedron().NumVertices();
+void ISOSURFACE_TABLE::StorePolyVerticesAsIsoVertices(uint  vstart) {
+  const uint  num_polyv = Polyhedron().NumVertices();
   CheckIsoVerticesAlloc(__FUNCTION__, vstart, num_polyv);
 
-  for(u_int iv = 0; iv < num_polyv; iv++) {
+  for(uint  iv = 0; iv < num_polyv; iv++) {
     SetIsoVertexType(iv+vstart, ISOSURFACE_VERTEX::VERTEX);
     SetIsoVertexFace(iv+vstart, iv);
   }
@@ -730,10 +712,10 @@ void ISOSURFACE_TABLE::StorePolyVerticesAsIsoVertices(u_int vstart) {
 
 // store polyhedron edges as isosurface vertices
 // store polyhedron edges starting at isosurface vertex vstart
-void ISOSURFACE_TABLE::StorePolyEdgesAsIsoVertices(u_int vstart) {
-  const u_int num_polye = Polyhedron().NumEdges();
+void ISOSURFACE_TABLE::StorePolyEdgesAsIsoVertices(uint  vstart) {
+  const uint  num_polye = Polyhedron().NumEdges();
   CheckIsoVerticesAlloc(__FUNCTION__, vstart, num_polye);
-  for(u_int ie = 0; ie < num_polye; ie++) {
+  for(uint  ie = 0; ie < num_polye; ie++) {
     SetIsoVertexType(ie+vstart, ISOSURFACE_VERTEX::EDGE);
     SetIsoVertexFace(ie+vstart, ie);
   }
@@ -741,22 +723,21 @@ void ISOSURFACE_TABLE::StorePolyEdgesAsIsoVertices(u_int vstart) {
 
 // store polyhedron facets as isosurface vertices
 // store polyhedron facets starting at isosurface vertex vstart
-void ISOSURFACE_TABLE::StorePolyFacetsAsIsoVertices(u_int vstart) {
-  u_int num_polyf = Polyhedron().NumFacets();
+void ISOSURFACE_TABLE::StorePolyFacetsAsIsoVertices(uint  vstart) {
+  uint  num_polyf = Polyhedron().NumFacets();
   CheckIsoVerticesAlloc(__FUNCTION__, vstart, num_polyf);
-  for(u_int jf = 0; jf < num_polyf; jf++) {
+  for(uint  jf = 0; jf < num_polyf; jf++) {
     SetIsoVertexType(jf+vstart, ISOSURFACE_VERTEX::FACET);
     SetIsoVertexFace(jf+vstart, jf);
   }
 }
 
-void ISOSURFACE_TABLE::SetNumTableEntries(u_int num_table_entries) {
-  if(entry != NULL) delete [] entry;
-  entry = NULL;
+void ISOSURFACE_TABLE::SetNumTableEntries(uint  num_table_entries) {
+  SAFEDELETEARRAY(entry);
   this->num_table_entries = 0;
   is_table_allocated = false;
 
-  entry = new ISOSURFACE_TABLE_ENTRY[num_table_entries];
+  entry = new ISOSURFACE_TABLE_ENTRY[num_table_entries]; TRACE_NEW(entry);
   if(entry == NULL && num_table_entries > 0) {
     throwPROCEDURE_ERROR(__FUNCTION__, "Unable to allocate memory for isosurface table");
   }
@@ -768,7 +749,7 @@ void ISOSURFACE_TABLE::SetNumTableEntries(u_int num_table_entries) {
 // set number of simplices in table entry it
 // it = table entry
 // nums = number of simplices
-void ISOSURFACE_TABLE::SetNumSimplices(TABLE_INDEX it, u_int nums) {
+void ISOSURFACE_TABLE::SetNumSimplices(TABLE_INDEX it, uint  nums) {
   if(!IsTableAllocated() || entry == NULL) {
     throwPROCEDURE_ERROR(__FUNCTION__, "Table must be allocated before entering table entries");
   }
@@ -776,11 +757,10 @@ void ISOSURFACE_TABLE::SetNumSimplices(TABLE_INDEX it, u_int nums) {
   Assert(it < NumTableEntries());
 
   entry[it].num_simplices = 0;
-  delete entry[it].simplex_vertex_list;
-  entry[it].simplex_vertex_list = NULL;
+  SAFEDELETE(entry[it].simplex_vertex_list);
 
   if(nums > 0) {
-    entry[it].simplex_vertex_list = new ISOSURFACE_VERTEX_INDEX[nums*NumVerticesPerSimplex()];
+    entry[it].simplex_vertex_list = new ISOSURFACE_VERTEX_INDEX[nums*NumVerticesPerSimplex()]; TRACE_NEW(entry[it].simplex_vertex_list );
   }
   entry[it].num_simplices = nums;
 }
@@ -790,7 +770,7 @@ void ISOSURFACE_TABLE::SetNumSimplices(TABLE_INDEX it, u_int nums) {
 // is = index simplex.  
 // k = k'th simplex vertex.  In range [0..NumVerticesPerSimplex()-1].
 // isov = index of isosurface vertex
-void ISOSURFACE_TABLE::SetSimplexVertex(TABLE_INDEX it, u_int is, u_int k, ISOSURFACE_VERTEX_INDEX isov) {
+void ISOSURFACE_TABLE::SetSimplexVertex(TABLE_INDEX it, uint  is, uint  k, ISOSURFACE_VERTEX_INDEX isov) {
   entry[it].simplex_vertex_list[is*NumVerticesPerSimplex()+k] = isov;
 }
 
@@ -816,7 +796,7 @@ void ISOSURFACE_TABLE::CheckTable() const {
     throwException("Memory for isosurface table not allocated");
   }
 
-  for(u_int it = 0; it < NumTableEntries(); it++) {
+  for(uint  it = 0; it < NumTableEntries(); it++) {
     try {
       entry[it].Check();
     } catch(Exception e) {
@@ -824,9 +804,9 @@ void ISOSURFACE_TABLE::CheckTable() const {
                     ,it, e.what());
     }
   }
-  for(u_int jt = 0; jt < NumTableEntries(); jt++) {
-    for(u_int is = 0; is < NumSimplices(jt); is++) {
-      for(u_int iv = 0; iv < NumVerticesPerSimplex(); iv++) {
+  for(uint  jt = 0; jt < NumTableEntries(); jt++) {
+    for(uint  is = 0; is < NumSimplices(jt); is++) {
+      for(uint  iv = 0; iv < NumVerticesPerSimplex(); iv++) {
         int iso_v = int(SimplexVertex(jt, is, iv));
         if(iso_v < 0 || iso_v >= (int)NumIsosurfaceVertices()) {
           throwException("Illegal isosurface vertex %d in isosurface table entry %d", iso_v, jt);
@@ -843,19 +823,17 @@ void ISOSURFACE_TABLE::Check() const {
 
 void ISOSURFACE_TABLE::FreeAll() {
   if(entry != NULL) {
-    for(u_int i = 0; i < num_table_entries; i++) {
+    for(uint  i = 0; i < num_table_entries; i++) {
       entry[i].FreeAll();
     }
-    delete[] entry;
-    entry = NULL;
+    SAFEDELETEARRAY(entry);
   }
   num_table_entries = 0;
   is_table_allocated = false;
 
   polyhedron.FreeAll();
 
-  delete[] isosurface_vertex;
-  isosurface_vertex = NULL;
+  SAFEDELETEARRAY(isosurface_vertex);
   num_isosurface_vertices = 0;
 }
 
@@ -883,8 +861,7 @@ void ISOSURFACE_EDGE_TABLE::ISOSURFACE_EDGE_TABLE_ENTRY::Check() const {
 }
 
 void ISOSURFACE_EDGE_TABLE::ISOSURFACE_EDGE_TABLE_ENTRY::FreeAll() {
-  delete [] edge_endpoint_list;
-  edge_endpoint_list = NULL;
+  SAFEDELETEARRAY(edge_endpoint_list);
   num_edges = 0;
 }
 
@@ -904,10 +881,10 @@ ISOSURFACE_EDGE_TABLE::~ISOSURFACE_EDGE_TABLE() {
   FreeAll();
 }
 
-void ISOSURFACE_EDGE_TABLE::SetNumTableEntries(u_int num_table_entries) {
+void ISOSURFACE_EDGE_TABLE::SetNumTableEntries(uint  num_table_entries) {
   ISOSURFACE_TABLE::SetNumTableEntries(num_table_entries);
 
-  edge_entry = new ISOSURFACE_EDGE_TABLE_ENTRY[num_table_entries];
+  edge_entry = new ISOSURFACE_EDGE_TABLE_ENTRY[num_table_entries]; TRACE_NEW(edge_entry );
   if(edge_entry == NULL) {
     throwPROCEDURE_ERROR(__FUNCTION__, "Unable to allocate memory for isosurface edge table");
   }
@@ -920,16 +897,16 @@ void ISOSURFACE_EDGE_TABLE::CheckTable() const {
     throwException("Memory for isosurface table edge entries not allocated");
   }
 
-  for(u_int it = 0; it < NumTableEntries(); it++) {
+  for(uint  it = 0; it < NumTableEntries(); it++) {
     try {
       edge_entry[it].Check();
     } catch(Exception e) {
       throwException("Error detected at isosurface table entry %d:%s", it, e.what());
     }
   }
-  for(u_int jt = 0; jt < NumTableEntries(); jt++) {
-    for(u_int ie = 0; ie < NumEdges(jt); ie++) {
-      for(u_int iend = 0; iend < 2; iend++) {
+  for(uint  jt = 0; jt < NumTableEntries(); jt++) {
+    for(uint  ie = 0; ie < NumEdges(jt); ie++) {
+      for(uint  iend = 0; iend < 2; iend++) {
         int iso_v = int(EdgeEndpoint(jt, ie, iend));
         if(iso_v < 0 || iso_v >= (int)NumIsosurfaceVertices()) {
           throwException("Illegal isosurface vertex %d in isosurface table edge entry %d", iso_v, jt);
@@ -946,11 +923,10 @@ void ISOSURFACE_EDGE_TABLE::Check() const {
 
 void ISOSURFACE_EDGE_TABLE::ISOSURFACE_EDGE_TABLE::FreeAll() {
   if(edge_entry != NULL) {
-    for(u_int i = 0; i < num_table_entries; i++) {
+    for(uint  i = 0; i < num_table_entries; i++) {
       edge_entry[i].FreeAll();
     }
-    delete[] edge_entry;
-    edge_entry = NULL;  
+    SAFEDELETEARRAY(edge_entry);
   }
   ISOSURFACE_TABLE::FreeAll();
 }
@@ -978,19 +954,19 @@ void ISOSURFACE_EDGE_TABLE::GenEdgeLists() {
     throwPROCEDURE_ERROR(__FUNCTION__,"Programming error: Isosurface table not allocated");
   }
 
-  for(u_int it = 0; it < NumTableEntries(); it++) {
+  for(uint  it = 0; it < NumTableEntries(); it++) {
     eset.clear();
 
-    for(u_int is = 0; is < NumSimplices(it); is++) {
+    for(uint  is = 0; is < NumSimplices(it); is++) {
       // get simplex vertices
-      for(u_int iv = 0; iv < Dimension(); iv++) {
+      for(uint  iv = 0; iv < Dimension(); iv++) {
         vlist[iv] = SimplexVertex(it, is, iv);
       }
       sort(&vlist[0], &vlist[0]+Dimension());
 
       // store simplex edges
-      for(u_int i0 = 0; i0 < Dimension(); i0++) {
-        for(u_int i1 = i0+1; i1 < Dimension(); i1++) {
+      for(uint  i0 = 0; i0 < Dimension(); i0++) {
+        for(uint  i1 = i0+1; i1 < Dimension(); i1++) {
           EDGE_CONTAINER e;
           e.v[0] = vlist[i0];
           e.v[1] = vlist[i1];
@@ -1001,7 +977,7 @@ void ISOSURFACE_EDGE_TABLE::GenEdgeLists() {
 
     edge_entry[it].FreeAll();
     if(eset.size() > 0) {
-      edge_entry[it].edge_endpoint_list = new EDGE_INDEX[2*eset.size()];
+      edge_entry[it].edge_endpoint_list = new EDGE_INDEX[2*eset.size()]; TRACE_NEW(edge_entry[it].edge_endpoint_list );
       if(edge_entry[it].edge_endpoint_list == NULL) {
         throwPROCEDURE_ERROR(__FUNCTION__, "Unable to allocate memory for edge list in table entry %d", it);
       }
@@ -1033,25 +1009,22 @@ ISOSURFACE_TABLE_AMBIG_INFO::~ISOSURFACE_TABLE_AMBIG_INFO() {
 }
 
 void ISOSURFACE_TABLE_AMBIG_INFO::FreeAll() {
-  delete[] is_ambiguous;
-  delete[] num_ambiguous_facets;
-  delete[] ambiguous_facet;
-  is_ambiguous         = NULL;
-  num_ambiguous_facets = NULL;
-  ambiguous_facet      = NULL;
+  SAFEDELETEARRAY(is_ambiguous        );
+  SAFEDELETEARRAY(num_ambiguous_facets);
+  SAFEDELETEARRAY(ambiguous_facet     );
   num_table_entries    = 0;
 }
 
 /// Allocate memory.
 /// Free any previously allocated memory.
-void ISOSURFACE_TABLE_AMBIG_INFO::Alloc(u_int num_table_entries) {
+void ISOSURFACE_TABLE_AMBIG_INFO::Alloc(uint  num_table_entries) {
   if(this->num_table_entries > 0) {
     FreeAll();
   }
 
-  is_ambiguous         = new bool[num_table_entries];
-  num_ambiguous_facets = new FACET_INDEX[num_table_entries];
-  ambiguous_facet      = new FACET_SET[num_table_entries];
+  is_ambiguous         = new bool[num_table_entries];        TRACE_NEW(is_ambiguous         );
+  num_ambiguous_facets = new FACET_INDEX[num_table_entries]; TRACE_NEW(num_ambiguous_facets );
+  ambiguous_facet      = new FACET_SET[num_table_entries];   TRACE_NEW(ambiguous_facet      );
 
   this->num_table_entries = num_table_entries;
 }
@@ -1089,22 +1062,19 @@ ISOSURFACE_TABLE_AMBIG::~ISOSURFACE_TABLE_AMBIG() {
 }
 
 void ISOSURFACE_TABLE_AMBIG::FreeAll() {
-  delete[] is_ambiguous;
-  delete[] num_ambiguous_facets;
-  delete[] ambiguous_facet;
-  is_ambiguous         = NULL;
-  num_ambiguous_facets = NULL;
-  ambiguous_facet      = NULL;
+  SAFEDELETEARRAY(is_ambiguous        );
+  SAFEDELETEARRAY(num_ambiguous_facets);
+  SAFEDELETEARRAY(ambiguous_facet     );
 }
 
 // allocate table
-void ISOSURFACE_TABLE_AMBIG::SetNumTableEntries(u_int num_table_entries) {
+void ISOSURFACE_TABLE_AMBIG::SetNumTableEntries(uint  num_table_entries) {
   ISOSURFACE_TABLE::SetNumTableEntries(num_table_entries);
   FreeAll();
 
-  is_ambiguous         = new bool[num_table_entries];
-  num_ambiguous_facets = new FACET_INDEX[num_table_entries];
-  ambiguous_facet      = new FACET_SET[num_table_entries];
+  is_ambiguous         = new bool[num_table_entries];        TRACE_NEW(is_ambiguous         );
+  num_ambiguous_facets = new FACET_INDEX[num_table_entries]; TRACE_NEW(num_ambiguous_facets );
+  ambiguous_facet      = new FACET_SET[num_table_entries];   TRACE_NEW(ambiguous_facet      );
 
   if(num_table_entries > 0) {
     if(is_ambiguous == NULL || num_ambiguous_facets == NULL || ambiguous_facet == NULL) {
@@ -1149,24 +1119,24 @@ void ISOSURFACE_TABLE_AMBIG::ComputeAmbiguousFacets(const fixedarray<int> &verte
 // third numv edges connect first to second set of vertices
 // (numv = # vertices in base_polyhedron; nume = # edges in base_polyhedron)
 void IJKTABLE::generate_prism(const ISOSURFACE_TABLE_POLYHEDRON &base_polyhedron, ISOSURFACE_TABLE_POLYHEDRON &prism) {
-  u_int dim  = base_polyhedron.Dimension();
-  u_int numc = dim;
-  u_int numv = base_polyhedron.NumVertices();
-  u_int nume = base_polyhedron.NumEdges();
-  u_int numf = base_polyhedron.NumFacets();
-  u_int prism_dim   = dim + 1;
-  u_int prism_numc  = prism_dim;
-  u_int prism_lastc = prism_numc - 1;
-  u_int prism_numv  = numv * 2;
-  u_int prism_nume  = nume * 2 + numv;
-  u_int prism_numf  = 2 + numf;
+  uint  dim  = base_polyhedron.Dimension();
+  uint  numc = dim;
+  uint  numv = base_polyhedron.NumVertices();
+  uint  nume = base_polyhedron.NumEdges();
+  uint  numf = base_polyhedron.NumFacets();
+  uint  prism_dim   = dim + 1;
+  uint  prism_numc  = prism_dim;
+  uint  prism_lastc = prism_numc - 1;
+  uint  prism_numv  = numv * 2;
+  uint  prism_nume  = nume * 2 + numv;
+  uint  prism_numf  = 2 + numf;
   prism.SetDimension(prism_dim);
   prism.SetSize(prism_numv, prism_nume, prism_numf);
 
   // set prism vertex coord
-  for(u_int iv = 0; iv < numv; iv++) {
-    for(u_int ic = 0; ic < prism_lastc; ic++) {
-      u_int coord = base_polyhedron.VertexCoord(iv, ic);
+  for(uint  iv = 0; iv < numv; iv++) {
+    for(uint  ic = 0; ic < prism_lastc; ic++) {
+      uint  coord = base_polyhedron.VertexCoord(iv, ic);
       prism.SetVertexCoord(iv, ic, coord);
       prism.SetVertexCoord(iv+numv, ic, coord);
     }
@@ -1175,15 +1145,15 @@ void IJKTABLE::generate_prism(const ISOSURFACE_TABLE_POLYHEDRON &base_polyhedron
   }
 
   // set edges
-  for(u_int ie = 0; ie < base_polyhedron.NumEdges(); ie++) {
-    u_int iv0 = base_polyhedron.EdgeEndpoint(ie, 0);
-    u_int iv1 = base_polyhedron.EdgeEndpoint(ie, 1);
+  for(uint  ie = 0; ie < base_polyhedron.NumEdges(); ie++) {
+    uint  iv0 = base_polyhedron.EdgeEndpoint(ie, 0);
+    uint  iv1 = base_polyhedron.EdgeEndpoint(ie, 1);
     prism.SetEdge(ie, iv0, iv1);
     prism.SetEdge(ie+nume, iv0+numv, iv1+numv);
   }
 
-  for(u_int iv = 0; iv < base_polyhedron.NumVertices(); iv++) {
-    u_int ie = 2*nume + iv;
+  for(uint  iv = 0; iv < base_polyhedron.NumVertices(); iv++) {
+    uint  ie = 2*nume + iv;
     prism.SetEdge(ie, iv, iv+numv);
   }
 
@@ -1191,20 +1161,20 @@ void IJKTABLE::generate_prism(const ISOSURFACE_TABLE_POLYHEDRON &base_polyhedron
   prism.SetNumFacetVertices(0, numv);
   prism.SetNumFacetVertices(1, numv);
 
-  for(u_int iv = 0; iv < numv; iv++) {
+  for(uint  iv = 0; iv < numv; iv++) {
     // set two base facets
     prism.SetFacetVertex(0, iv, iv);
     prism.SetFacetVertex(1, iv, iv+numv);
   }
 
-  for(u_int jf = 0; jf < numf; jf++) {
+  for(uint  jf = 0; jf < numf; jf++) {
     // set prism facet corresponding to original facet jf
-    u_int prism_jf = 2 + jf;
-    u_int base_num_fv = base_polyhedron.NumFacetVertices(jf);
+    uint  prism_jf = 2 + jf;
+    uint  base_num_fv = base_polyhedron.NumFacetVertices(jf);
     prism.SetNumFacetVertices(prism_jf, 2*base_num_fv);
 
-    for(u_int k = 0; k < base_num_fv; k++) {
-      u_int iv = base_polyhedron.FacetVertex(jf, k);
+    for(uint  k = 0; k < base_num_fv; k++) {
+      uint  iv = base_polyhedron.FacetVertex(jf, k);
       prism.SetFacetVertex(prism_jf, k, iv);
       prism.SetFacetVertex(prism_jf, k+base_num_fv, iv+numv);
     }
@@ -1216,15 +1186,15 @@ void IJKTABLE::generate_prism(const ISOSURFACE_TABLE_POLYHEDRON &base_polyhedron
 //**************************************************
 
   // calculate num table entries = (num_colors)^(num_vert)
-u_int IJKTABLE::calculate_num_entries(u_int num_vert, u_int num_colors) {
-  u_int num_table_entries = 0;
+uint  IJKTABLE::calculate_num_entries(uint  num_vert, uint  num_colors) {
+  uint  num_table_entries = 0;
   if(num_colors < 1)
     throwPROCEDURE_ERROR(__FUNCTION__, "Number of colors must be positive");
 
-  const u_int max2 = ULONG_MAX/num_colors;
+  const uint  max2 = ULONG_MAX/num_colors;
 
   num_table_entries = 1;
-  for(u_int iv = 0; iv < num_vert; iv++) {
+  for(uint  iv = 0; iv < num_vert; iv++) {
     if(num_table_entries > max2) {
       throwPROCEDURE_ERROR(__FUNCTION__, "Number of entries is too large");
     }
@@ -1233,9 +1203,9 @@ u_int IJKTABLE::calculate_num_entries(u_int num_vert, u_int num_colors) {
   return num_table_entries;
 }
 
-void IJKTABLE::convert2base(u_long ival, u_int base, fixedarray<int> &digit, u_int max_num_digits) {
-  u_long jval = ival;
-  for(u_int i = 0; i < max_num_digits; i++) {
+void IJKTABLE::convert2base(ulong  ival, uint  base, fixedarray<int> &digit, uint  max_num_digits) {
+  ulong  jval = ival;
+  for(uint  i = 0; i < max_num_digits; i++) {
     digit[i] = jval % base;
     jval = jval / base;
   }
@@ -1288,13 +1258,13 @@ bool IJKTABLE::is_facet_ambiguous(const IJKTABLE::ISOSURFACE_TABLE_POLYHEDRON & 
 
 /// Return number of vertices connected by edges to iv with same sign as iv.
 /// @param vertex_sign[i] = Sign of isosurface vertex i.
-u_int IJKTABLE::compute_num_connected(const IJKTABLE::ISOSURFACE_TABLE_POLYHEDRON &poly, u_int iv, const fixedarray<int> &vertex_sign) {
-  const u_int numv  = poly.NumVertices();
-  const u_int nume  = poly.NumEdges();
+uint  IJKTABLE::compute_num_connected(const IJKTABLE::ISOSURFACE_TABLE_POLYHEDRON &poly, uint  iv, const fixedarray<int> &vertex_sign) {
+  const uint  numv  = poly.NumVertices();
+  const uint  nume  = poly.NumEdges();
   const int   isign = vertex_sign[iv];
   fixedarray<bool> visited(numv);
 
-  for(u_int j = 0; j < numv; j++) {
+  for(uint  j = 0; j < numv; j++) {
     visited[j] = false;
   }
   visited[iv] = true;
@@ -1302,9 +1272,9 @@ u_int IJKTABLE::compute_num_connected(const IJKTABLE::ISOSURFACE_TABLE_POLYHEDRO
   bool found_next = false;
   do {
     found_next = false;
-    for(u_int k = 0; k < nume; k++) {
-      u_int iv0 = poly.EdgeEndpoint(k, 0);
-      u_int iv1 = poly.EdgeEndpoint(k, 1);
+    for(uint  k = 0; k < nume; k++) {
+      uint  iv0 = poly.EdgeEndpoint(k, 0);
+      uint  iv1 = poly.EdgeEndpoint(k, 1);
       if(vertex_sign[iv0] == isign && vertex_sign[iv1] == isign) {
         if(visited[iv0] && !visited[iv1]) {
           visited[iv1] = true;
@@ -1317,8 +1287,8 @@ u_int IJKTABLE::compute_num_connected(const IJKTABLE::ISOSURFACE_TABLE_POLYHEDRO
     }
   } while(found_next);
   
-  u_int count = 0;
-  for(u_int j = 0; j < numv; j++) {
+  uint  count = 0;
+  for(uint  j = 0; j < numv; j++) {
     if(visited[j]) {
       count++;
     }
@@ -1345,13 +1315,13 @@ void IJKTABLE::compute_ambiguous_facets(const ISOSURFACE_TABLE_POLYHEDRON & poly
 /// @param jf = Facet index.
 /// @param iv = Vertex index.  Precondition: Vertex iv is in facet jf.
 /// @param vertex_sign[i] = Sign of isosurface vertex i.
-u_int IJKTABLE::compute_num_connected_in_facet(const IJKTABLE::ISOSURFACE_TABLE_POLYHEDRON &poly, FACET_INDEX jf, u_int iv, const fixedarray<int> &vertex_sign) {
-  const u_int numv  = poly.NumVertices();
-  const u_int nume  = poly.NumEdges();
+uint  IJKTABLE::compute_num_connected_in_facet(const IJKTABLE::ISOSURFACE_TABLE_POLYHEDRON &poly, FACET_INDEX jf, uint  iv, const fixedarray<int> &vertex_sign) {
+  const uint  numv  = poly.NumVertices();
+  const uint  nume  = poly.NumEdges();
   const int   isign = vertex_sign[iv];
   fixedarray<bool> visited(numv);
 
-  for(u_int j = 0; j < numv; j++) {
+  for(uint  j = 0; j < numv; j++) {
     visited[j] = false;
   }
   visited[iv] = true;
@@ -1359,9 +1329,9 @@ u_int IJKTABLE::compute_num_connected_in_facet(const IJKTABLE::ISOSURFACE_TABLE_
   bool found_next = false;
   do {
     found_next = false;
-    for(u_int k = 0; k < nume; k++) {
-      u_int iv0 = poly.EdgeEndpoint(k, 0);
-      u_int iv1 = poly.EdgeEndpoint(k, 1);
+    for(uint  k = 0; k < nume; k++) {
+      uint  iv0 = poly.EdgeEndpoint(k, 0);
+      uint  iv1 = poly.EdgeEndpoint(k, 1);
       if(vertex_sign[iv0] == isign && vertex_sign[iv1] == isign) {
         if(poly.IsVertexInFacet(jf, iv0) && poly.IsVertexInFacet(jf, iv1)) {
           if(visited[iv0] && !visited[iv1]) {
@@ -1376,8 +1346,8 @@ u_int IJKTABLE::compute_num_connected_in_facet(const IJKTABLE::ISOSURFACE_TABLE_
     }
   } while(found_next);
   
-  u_int count = 0;
-  for(u_int j = 0; j < numv; j++) {
+  uint  count = 0;
+  for(uint  j = 0; j < numv; j++) {
     if(visited[j]) {
       count++;
     }

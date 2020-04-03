@@ -111,10 +111,8 @@ typedef unsigned long XML_Size;
 #define XML_LIB_ROOT "c:/mytools2015/expat/build/"
 
 #ifdef _DEBUG
-#define _CONFIGURATION_ "Debug/"
 #define LIB_NAME "libexpatMTd.lib"
 #else
-#define _CONFIGURATION_ "Release/"
 #define LIB_NAME "libexpatMT.lib"
 #endif
 

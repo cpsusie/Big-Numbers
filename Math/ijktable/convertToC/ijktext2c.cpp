@@ -3,6 +3,8 @@
 
 #include "stdafx.h"
 
+typedef unsigned int uint;
+
 char * outfilename = NULL;
 vector<string> infilename;
 
@@ -31,7 +33,7 @@ int main(int argc, char **argv) {
 }
 
 void convert_text_to_c_define(ostream & out) {
-  for(u_int k = 0; k < infilename.size(); k++) {
+  for(uint  k = 0; k < infilename.size(); k++) {
     ifstream infile(infilename[k].c_str(), ios::in);
     if(!infile) {
       cerr << "Error opening file " << infilename[k] << "." << endl;
@@ -40,7 +42,7 @@ void convert_text_to_c_define(ostream & out) {
     }
 
     string def_name = infilename[k];
-    for(u_int i = 0; i < def_name.length(); i++) {
+    for(uint  i = 0; i < def_name.length(); i++) {
       def_name[i] = toupper(def_name[i]);
       if(!isalnum(def_name[i])) {
         def_name[i] = '_';

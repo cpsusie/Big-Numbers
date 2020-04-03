@@ -527,7 +527,7 @@ public:
 unsigned long calculate_num_entries(const int num_vert, const int num_colors);
 
 // convert integer to base "base"
-void convert2base(u_long ival, u_int base, int * digit, u_int max_num_digits);
+void convert2base(ulong  ival, uint  base, int * digit, uint  max_num_digits);
 
 //**************************************************
 // ROUTINES FOR GENERATING POLYHEDRA

@@ -34,9 +34,9 @@ namespace IJKTABLE {
   typedef unsigned char ISOSURFACE_VERTEX_INDEX;  ///< Index of isosurface vertex.
   typedef unsigned char EDGE_INDEX;    ///< Index of edge.
   typedef unsigned char FACET_INDEX;   ///< Index of facet.
-  typedef u_int TABLE_INDEX;           ///< Index of entry in isosurface lookup table.
-  typedef u_int FACET;                 ///< Bits representing vertices in facet.
-  typedef u_int FACET_SET;             ///< Bits representing set of facets.
+  typedef uint  TABLE_INDEX;           ///< Index of entry in isosurface lookup table.
+  typedef uint  FACET;                 ///< Bits representing vertices in facet.
+  typedef uint  FACET_SET;             ///< Bits representing set of facets.
 
   const int NO_VERTEX = -1;
 
@@ -47,80 +47,80 @@ namespace IJKTABLE {
 /// Isosurface table polyhedron.
 class ISOSURFACE_TABLE_POLYHEDRON {
 protected:
-  u_int             dimension;          /// Polyhedron dimension.
-  u_int             num_vertices;       /// Number of polyhedron vertices.
-  u_int             num_edges;          /// Number of polyhedron edges.
-  u_int             num_facets;         /// Number of polyhedron facets.
-  fixedarray<u_int> vertex_coord;       /// Polyhedron vertex coordinates.
-  fixedarray<u_int> edge_endpoint;      /// Polyhedron edge endpoints.
-  fixedarray<u_int> num_facet_vertices; /// Number of vertices of each facet.
-  u_int           **facet_vertex_list;  /// List of vertices in each facet.
+  uint              dimension;          /// Polyhedron dimension.
+  uint              num_vertices;       /// Number of polyhedron vertices.
+  uint              num_edges;          /// Number of polyhedron edges.
+  uint              num_facets;         /// Number of polyhedron facets.
+  fixedarray<uint>  vertex_coord;       /// Polyhedron vertex coordinates.
+  fixedarray<uint>  edge_endpoint;      /// Polyhedron edge endpoints.
+  fixedarray<uint>  num_facet_vertices; /// Number of vertices of each facet.
+  uint            **facet_vertex_list;  /// List of vertices in each facet.
   fixedarray<FACET> facet;              /// Polyhedron facets.
   void Init();                          /// Initialize.
   void FreeFacets();                    /// Free all facet arrays.
 
 public:
-  ISOSURFACE_TABLE_POLYHEDRON(const u_int d);
+  ISOSURFACE_TABLE_POLYHEDRON(const uint  d);
   ~ISOSURFACE_TABLE_POLYHEDRON();
   ISOSURFACE_TABLE_POLYHEDRON(const ISOSURFACE_TABLE_POLYHEDRON &src);
   ISOSURFACE_TABLE_POLYHEDRON &operator=(const ISOSURFACE_TABLE_POLYHEDRON &src);
 
    // Polyhedron dimension.
-  inline u_int Dimension() const  {
+  inline uint  Dimension() const  {
     return dimension;
   }
   // Number of polyhedron vertices.
-  inline u_int NumVertices() const {
+  inline uint  NumVertices() const {
     return num_vertices;
   }
   // Number of polyhedron edges.
-  inline u_int NumEdges() const {
+  inline uint  NumEdges() const {
     return num_edges;
   }
   // Number of polyhedron facets.
-  inline u_int NumFacets() const {
+  inline uint  NumFacets() const {
     return num_facets;
   }
   // Number of facet vertices of facet jf.
-  inline u_int NumFacetVertices(FACET_INDEX jf) const {
+  inline uint  NumFacetVertices(FACET_INDEX jf) const {
     Assert(jf < num_facets);
     return num_facet_vertices[jf];
   }
   // ic'th vertex coordinate of vertex iv.
-  inline u_int VertexCoord(u_int iv, u_int ic) const {
+  inline uint  VertexCoord(uint  iv, uint  ic) const {
     Assert((iv < num_vertices) && (ic < dimension));
     return vertex_coord[iv*dimension + ic];
   }
   // j'th endpoint of edge ie. j = 0 or 1.
-  inline u_int EdgeEndpoint(EDGE_INDEX ie, u_int j) const {
+  inline uint  EdgeEndpoint(EDGE_INDEX ie, uint  j) const {
     Assert((j < 2) && (ie < num_edges));
-    return edge_endpoint[(u_int)ie*2 + j];
+    return edge_endpoint[(uint )ie*2 + j];
   }
   // ic'th coordinate of midpoint of edge ie.
-  u_int MidpointCoord(EDGE_INDEX ie, u_int ic) const;
+  uint  MidpointCoord(EDGE_INDEX ie, uint  ic) const;
   // Bits representing vertices in facet jf.
   FACET Facet(FACET_INDEX jf) const {
     Assert(jf < num_facets);
     return facet[jf];
   }
   // Return true if vertex iv is in facet jf.
-  bool IsVertexInFacet(FACET_INDEX jf, u_int iv) const {
+  bool IsVertexInFacet(FACET_INDEX jf, uint  iv) const {
     Assert((jf < num_facets) && (iv < num_vertices));
     return facet[jf] & ((1L) << iv);
   }
   // Return k'th vertex in facet jf.
-  u_int FacetVertex(FACET_INDEX jf, u_int k) const {
+  uint  FacetVertex(FACET_INDEX jf, uint  k) const {
     Assert((jf < num_facets) && (k < num_facet_vertices[jf]));
     return facet_vertex_list[jf][k];
   }
 
-  void SetDimension(  u_int d   ); // Set polyhedron dimension.
-  void SetNumVertices(u_int numv); // Set number of polyhedron vertices.
-  void SetNumEdges(   u_int nume); // Set number of polyhedron edges.
-  void SetNumFacets(  u_int numf); // Set number of polyhedron facets.
+  void SetDimension(  uint  d   ); // Set polyhedron dimension.
+  void SetNumVertices(uint  numv); // Set number of polyhedron vertices.
+  void SetNumEdges(   uint  nume); // Set number of polyhedron edges.
+  void SetNumFacets(  uint  numf); // Set number of polyhedron facets.
 
   // Set number of polyhedron vertices, edges and facets.
-  void SetSize(u_int numv, u_int nume, u_int numf) {
+  void SetSize(uint  numv, uint  nume, uint  numf) {
     SetNumVertices(numv);
     SetNumEdges(   nume);
     SetNumFacets(  numf);
@@ -128,19 +128,19 @@ public:
 
   // Set ic'th coordinate of vertex iv.
   // SetNumVertices or SetSize must be called before SetVertexCoord.
-  void SetVertexCoord(u_int iv, u_int ic, u_int coord);
+  void SetVertexCoord(uint  iv, uint  ic, uint  coord);
 
   // Set endpoints of edge ie.
   // SetNumEdges or SetSize must be called before SetEdge.
-  void SetEdge(EDGE_INDEX ie, u_int iv0, u_int iv1);
+  void SetEdge(EDGE_INDEX ie, uint  iv0, uint  iv1);
 
   // Set number of vertices in facet jf.
   // SetNumFacets or SetSize must be called before SetNumFacetVertices.
-  void SetNumFacetVertices(FACET_INDEX jf, u_int numv);
+  void SetNumFacetVertices(FACET_INDEX jf, uint  numv);
 
   // Set \a k'th facet vertex of facet jf to vertex iv.
   // SetNumFacetVertices(jf) must be called before SetFacetVertex.
-  void SetFacetVertex(FACET_INDEX jf, u_int k, u_int iv);
+  void SetFacetVertex(FACET_INDEX jf, uint  k, uint  iv);
 
   // Memory Management Functions
   void FreeAll();
@@ -149,13 +149,13 @@ public:
   void Check() const;
 
   // Generate a square, cube or hypercube.
-  void GenCube(u_int cube_dimension); 
+  void GenCube(uint  cube_dimension); 
 
   // Generate a triangle, tetrahedron or simplex.      
-  void GenSimplex(u_int simplex_dimension);
+  void GenSimplex(uint  simplex_dimension);
 
   // Generate a pyramid over a square, cube or hypercube base.
-  void GenPyramid(u_int pyramid_dimension);
+  void GenPyramid(uint  pyramid_dimension);
 
 };
 
@@ -179,8 +179,8 @@ public:
 
 protected:
   ISOSURFACE_VERTEX_TYPE vtype;
-  u_int                  face;
-  u_int                  num_coord;
+  uint                   face;
+  uint                   num_coord;
   COORD_TYPE            *coord;
   string                 label;
   bool                   is_label_set;
@@ -197,19 +197,19 @@ public:
 
   /// Return index of face (vertex, edge, facet) containing isosurface.
   /// Valid only if vertex type is VERTEX, EDGE or FACET.
-  u_int Face() const {
+  uint  Face() const {
     return face;
   }
 
   /// Return coordinate of isosurface vertex.
   /// Valid only if vertex type is POINT.
-  COORD_TYPE Coord(u_int d) const {
+  COORD_TYPE Coord(uint  d) const {
     return coord[d];
   }
 
   /// Return number of isosurface vertex coordinates.
   /// Valid only if vertex type is POINT.
-  u_int NumCoord() const {
+  uint  NumCoord() const {
     return num_coord;
   }
 
@@ -228,11 +228,11 @@ public:
   void SetType(ISOSURFACE_VERTEX_TYPE t) {
     vtype = t;
   }
-  void SetFace(u_int index) {
+  void SetFace(uint  index) {
     face = index;
   }
-  void SetNumCoord(u_int numc);
-  void SetCoord(u_int ic, COORD_TYPE c) {
+  void SetNumCoord(uint  numc);
+  void SetCoord(uint  ic, COORD_TYPE c) {
     Assert(ic < num_coord);
     coord[ic] = c;
   }
@@ -255,7 +255,7 @@ protected:
   /// Entry in the isosurface lookup table.
   class ISOSURFACE_TABLE_ENTRY {
   public:
-    u_int                     num_simplices;
+    uint                      num_simplices;
     ISOSURFACE_VERTEX_INDEX  *simplex_vertex_list;
     ISOSURFACE_TABLE_ENTRY();
     ~ISOSURFACE_TABLE_ENTRY();
@@ -285,27 +285,27 @@ protected:
   string                      encoding_name;           // string storing encoding name
 
   ISOSURFACE_TABLE_POLYHEDRON polyhedron;              /// Mesh polyhedron.
-  u_int                       simplex_dimension;       /// Simplex dimension.
+  uint                        simplex_dimension;       /// Simplex dimension.
   ISOSURFACE_VERTEX          *isosurface_vertex;       /// Array of isosurface vertex descriptors.
-  u_int                       num_isosurface_vertices; /// Number of vertices in array isosurface_vertex[].
+  uint                        num_isosurface_vertices; /// Number of vertices in array isosurface_vertex[].
   ISOSURFACE_TABLE_ENTRY     *entry;                   ///< Array of isosurface table entries.
-  u_long                      num_table_entries;       ///< Number of entries in table.
+  ulong                       num_table_entries;       ///< Number of entries in table.
 
   /// Maximum number of vertices allowed for table polyhedron.
-  u_int                       max_num_vertices; 
+  uint                        max_num_vertices; 
   bool                        is_table_allocated;      ///< True, if array num_table_entries[] is allocated.
 
   /// Check if isosurface vertices are allocated.
   /// Throw error if not enough isosurface vertices are allocated.
-  void CheckIsoVerticesAlloc(const char * procname, u_int vstart, u_int numv);
+  void CheckIsoVerticesAlloc(const char * procname, uint  vstart, uint  numv);
 
   /// Initialization routine.
-  void Init(const u_int dimension, const u_int simplex_dimension);
+  void Init(const uint  dimension, const uint  simplex_dimension);
 
  public:
   ISOSURFACE_TABLE();
-  ISOSURFACE_TABLE(const u_int d);
-  ISOSURFACE_TABLE(const u_int dimension, const u_int simplex_dimension);
+  ISOSURFACE_TABLE(const uint  d);
+  ISOSURFACE_TABLE(const uint  dimension, const uint  simplex_dimension);
   ~ISOSURFACE_TABLE();
 
   /// Return table encoding.
@@ -319,27 +319,27 @@ protected:
   }
 
   /// Return polyhedron dimension.
-  u_int Dimension() const {
+  uint  Dimension() const {
     return polyhedron.Dimension();
   }
 
   /// Return isosurface simplex dimension.
-  u_int SimplexDimension() const {
+  uint  SimplexDimension() const {
     return simplex_dimension;
   }
 
   /// Return number of vertices in each isosurface simplex.
-  u_int NumVerticesPerSimplex() const {
+  uint  NumVerticesPerSimplex() const {
     return SimplexDimension()+1;
   }
 
   /// Return number of isosurface vertices in polyhedron.
-  u_int NumIsosurfaceVertices() const {
+  uint  NumIsosurfaceVertices() const {
     return num_isosurface_vertices;
   }
 
   /// Return number of lookup table entries.
-  u_int NumTableEntries() const {
+  uint  NumTableEntries() const {
     return num_table_entries;
   }
 
@@ -349,13 +349,13 @@ protected:
   }
 
   /// Access i'th isosurface vertex.
-  const ISOSURFACE_VERTEX & IsosurfaceVertex(u_int i) const {
+  const ISOSURFACE_VERTEX & IsosurfaceVertex(uint  i) const {
     Assert(i < num_isosurface_vertices);
     return isosurface_vertex[i];
   }
 
   /// Return number of simplices in isosurface patch for table entry \a it.
-  u_int NumSimplices(TABLE_INDEX it) const {
+  uint  NumSimplices(TABLE_INDEX it) const {
     return entry[it].num_simplices;
   }
 
@@ -363,14 +363,14 @@ protected:
   /// @param it = Index of table entry.
   /// @param is = Simplex \a is of table entry \a it.
   /// @param k = Return \a k'th vertex of simplex \a is.
-  ISOSURFACE_VERTEX_INDEX SimplexVertex(TABLE_INDEX it, u_int is, u_int k) const {
+  ISOSURFACE_VERTEX_INDEX SimplexVertex(TABLE_INDEX it, uint  is, uint  k) const {
     return entry[it].simplex_vertex_list[is*NumVerticesPerSimplex()+k];
   }
 
   /// Return maximum number of polyhedron vertices permitted in any table.
   /// Note: Even tables for polyhedra of this size are probably impossible 
   ///   to compute/store.
-  u_int MaxNumVertices() const {
+  uint  MaxNumVertices() const {
     return max_num_vertices;
   }
 
@@ -383,29 +383,29 @@ protected:
   static std::string StandardEncodingName(const ENCODING encoding);
 
   /// @name Set Polyhedron Functions
-  void SetDimension(u_int d) {
+  void SetDimension(uint  d) {
     polyhedron.SetDimension(d);
   }
-  void SetNumPolyVertices(u_int numv) {
+  void SetNumPolyVertices(uint  numv) {
     polyhedron.SetNumVertices(numv);
   }
-  void SetNumPolyEdges(u_int nume) {
+  void SetNumPolyEdges(uint  nume) {
     polyhedron.SetNumEdges(nume);
   }
-  void SetNumPolyFacets(u_int numf) {
+  void SetNumPolyFacets(uint  numf) {
     polyhedron.SetNumFacets(numf);
   }
-  void SetPolySize(u_int numv, u_int nume, u_int numf) {
+  void SetPolySize(uint  numv, uint  nume, uint  numf) {
     SetNumPolyVertices(numv);
     SetNumPolyEdges(nume); 
     SetNumPolyFacets(numf);
   }
-  void SetPolyVertexCoord(u_int iv, u_int ic, u_int coord) {
+  void SetPolyVertexCoord(uint  iv, uint  ic, uint  coord) {
     polyhedron.SetVertexCoord(iv, ic, coord);
   }
   // Note: SetNumPolyVertices or SetPolySize must be called before 
   //   SetPolyVertexCoord
-  void SetPolyEdge(u_int ie, u_int iv0, u_int iv1) {
+  void SetPolyEdge(uint  ie, uint  iv0, uint  iv1) {
     polyhedron.SetEdge(ie, iv0, iv1);
   }
   // Note: SetNumPolyEdges or SetPolySize must be called before SetPolyEdge
@@ -421,32 +421,32 @@ protected:
   }
 
   /// @name Set Isosurface Vertices Functions
-  void SetNumIsosurfaceVertices(u_int num_vertices);
-  void SetIsoVertexType(u_int i, const ISOSURFACE_VERTEX::ISOSURFACE_VERTEX_TYPE t) {
+  void SetNumIsosurfaceVertices(uint  num_vertices);
+  void SetIsoVertexType(uint  i, const ISOSURFACE_VERTEX::ISOSURFACE_VERTEX_TYPE t) {
     Assert(i < num_isosurface_vertices);
     isosurface_vertex[i].SetType(t);
   }
-  void SetIsoVertexFace(u_int i, u_int index) {
+  void SetIsoVertexFace(uint  i, uint  index) {
     Assert(i < num_isosurface_vertices);
     isosurface_vertex[i].SetFace(index);
   }
-  void SetIsoVertexNumCoord(u_int i, u_int numc) {
+  void SetIsoVertexNumCoord(uint  i, uint  numc) {
     Assert(i < num_isosurface_vertices);
     isosurface_vertex[i].SetNumCoord(numc);
   }
-  void SetIsoVertexCoord(u_int i, u_int ic, ISOSURFACE_VERTEX::COORD_TYPE c) {
+  void SetIsoVertexCoord(uint  i, uint  ic, ISOSURFACE_VERTEX::COORD_TYPE c) {
     Assert(i < num_isosurface_vertices);
     isosurface_vertex[i].SetCoord(ic, c);
   }
-  void SetIsoVertexLabel(u_int i, const string &s) {
+  void SetIsoVertexLabel(uint  i, const string &s) {
     Assert(i < num_isosurface_vertices);
     isosurface_vertex[i].SetLabel(s);
   }
 
   // store polyhedron vertices, edges or faces as isosurface vertices
-  void StorePolyVerticesAsIsoVertices(u_int vstart);
-  void StorePolyEdgesAsIsoVertices(   u_int vstart);
-  void StorePolyFacetsAsIsoVertices(  u_int vstart);
+  void StorePolyVerticesAsIsoVertices(uint  vstart);
+  void StorePolyEdgesAsIsoVertices(   uint  vstart);
+  void StorePolyFacetsAsIsoVertices(  uint  vstart);
 
   /// @name Set Isosurface Table Functions
   void SetSimplexDimension(const int d) {
@@ -456,16 +456,16 @@ protected:
   void SetBinaryEncoding() { SetEncoding(BINARY); }
   void SetBase3Encoding()  { SetEncoding(BASE3);  }
   void SetNonstandardEncoding(const std::string & name);
-  virtual void SetNumTableEntries(u_int num_table_entries);
-  void SetNumSimplices( TABLE_INDEX it, u_int nums);
-  void SetSimplexVertex(TABLE_INDEX it, u_int is, u_int iv, ISOSURFACE_VERTEX_INDEX isov);
+  virtual void SetNumTableEntries(uint  num_table_entries);
+  void SetNumSimplices( TABLE_INDEX it, uint  nums);
+  void SetSimplexVertex(TABLE_INDEX it, uint  is, uint  iv, ISOSURFACE_VERTEX_INDEX isov);
 
   /// @name Generate Polyhedron Functions
-  void GenCube(u_int cube_dimension) {
+  void GenCube(uint  cube_dimension) {
     polyhedron.GenCube(cube_dimension);
   }
   // Note: Cubes of dimension > 4 will have too many vertices
-  void GenSimplex(u_int simplex_dimension) {
+  void GenSimplex(uint  simplex_dimension) {
     polyhedron.GenSimplex(simplex_dimension);
   }
   void GenPyramid(const int pyramid_dimension) {
@@ -499,7 +499,7 @@ protected:
   /// Entry in isosurface edge table.
   class ISOSURFACE_EDGE_TABLE_ENTRY {
   public:
-    u_int       num_edges;
+    uint        num_edges;
     EDGE_INDEX *edge_endpoint_list;
 
     ISOSURFACE_EDGE_TABLE_ENTRY();
@@ -520,16 +520,16 @@ public:
   ~ISOSURFACE_EDGE_TABLE();
 
   // get functions
-  u_int NumEdges(TABLE_INDEX it) const {
+  uint  NumEdges(TABLE_INDEX it) const {
     return edge_entry[it].num_edges;
   }
   // it = table entry index. ie = edge index. iend = endpoint index (0 or 1)
-  EDGE_INDEX EdgeEndpoint(TABLE_INDEX it, u_int ie, u_int iend) const {
+  EDGE_INDEX EdgeEndpoint(TABLE_INDEX it, uint  ie, uint  iend) const {
     return edge_entry[it].edge_endpoint_list[2*ie+iend];
   }
 
   // set isosurface table functions
-  virtual void SetNumTableEntries(u_int num_table_entries);
+  virtual void SetNumTableEntries(uint  num_table_entries);
 
   // generate edge lists
   void GenEdgeLists();
@@ -553,13 +553,13 @@ typedef ISOSURFACE_EDGE_TABLE *ISOSURFACE_EDGE_TABLE_PTR;
 class ISOSURFACE_TABLE_AMBIG_INFO {
 protected:
    bool         is_allocated;                 /// True if table is allocated
-   u_int        num_table_entries;            /// Number of table entries
+   uint         num_table_entries;            /// Number of table entries
    bool        *is_ambiguous;                 /// True for ambiguous configurations.
    FACET_INDEX *num_ambiguous_facets;         /// Number of ambiguous facts.
    FACET_SET   *ambiguous_facet;              /// k'th bit is 1 if facet k is ambiguous
 
    void Init();                               /// Initialization routine.
-   void Alloc(u_int num_table_entries);       /// Allocate memory.
+   void Alloc(uint  num_table_entries);       /// Allocate memory.
    void FreeAll();                            /// Free all memory.
 
  public:
@@ -579,7 +579,7 @@ protected:
    bool IsFacetAmbiguous(TABLE_INDEX it, FACET_INDEX jf) const {
      return ambiguous_facet[it] & ((1L) << jf);
    }
-   u_int NumTableEntries() const {
+   uint  NumTableEntries() const {
      return num_table_entries;
    }
 
@@ -614,10 +614,10 @@ protected:
    ISOSURFACE_TABLE_AMBIG() : ISOSURFACE_TABLE() {
      Init();
    }
-   ISOSURFACE_TABLE_AMBIG(u_int d) : ISOSURFACE_TABLE(d) {
+   ISOSURFACE_TABLE_AMBIG(uint  d) : ISOSURFACE_TABLE(d) {
      Init();
    }
-   ISOSURFACE_TABLE_AMBIG(u_int dimension, u_int simplex_dimension)
+   ISOSURFACE_TABLE_AMBIG(uint  dimension, uint  simplex_dimension)
      : ISOSURFACE_TABLE(dimension, simplex_dimension)
    {
      Init();
@@ -638,7 +638,7 @@ protected:
    }
 
    // set functions
-   virtual void SetNumTableEntries(u_int num_table_entries);
+   virtual void SetNumTableEntries(uint  num_table_entries);
 
    // compute functions
    void ComputeAmbiguityInformation() const;
@@ -649,10 +649,10 @@ protected:
 //**************************************************
 
 // calculate number of entries required in ISOSURFACE_TABLE
-u_int calculate_num_entries(u_int num_vert, u_int num_colors);
+uint  calculate_num_entries(uint  num_vert, uint  num_colors);
 
 // convert integer to base "base"
-void convert2base(u_long ival, u_int base, fixedarray<int> &digit, u_int max_num_digits);
+void convert2base(ulong  ival, uint  base, fixedarray<int> &digit, uint  max_num_digits);
 
 
 //**************************************************
@@ -673,13 +673,13 @@ bool is_facet_ambiguous(const ISOSURFACE_TABLE_POLYHEDRON &poly, FACET_INDEX jf,
 
 /// Return number of vertices connected by edges to iv with same sign as iv.
 /// @param vertex_sign[i] = Sign of isosurface vertex i.
-u_int compute_num_connected(const ISOSURFACE_TABLE_POLYHEDRON & poly, u_int iv, const fixedarray<int> &vertex_sign);
+uint  compute_num_connected(const ISOSURFACE_TABLE_POLYHEDRON & poly, uint  iv, const fixedarray<int> &vertex_sign);
 
 /// Return number of vertices connected by edges in facet jf to vertex iv with same sign as iv.
 /// @param jf = Facet index.
 /// @param iv = Vertex index.  Precondition: Vertex iv is in facet jf.
 /// @param vertex_sign[i] = Sign of isosurface vertex i.
-u_int compute_num_connected_in_facet(const ISOSURFACE_TABLE_POLYHEDRON &poly, FACET_INDEX jf, u_int iv, const fixedarray<int> &vertex_sign);
+uint  compute_num_connected_in_facet(const ISOSURFACE_TABLE_POLYHEDRON &poly, FACET_INDEX jf, uint  iv, const fixedarray<int> &vertex_sign);
 
 /// Compute ambiguous facets.
 /// @param vertex_sign[i] = Sign of isosurface vertex i.

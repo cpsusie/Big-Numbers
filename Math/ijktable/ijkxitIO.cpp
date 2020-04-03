@@ -531,12 +531,12 @@ namespace {
 }
 
 void IJKXIO::write_xit(ostream & out, const IJKTABLE::ISOSURFACE_TABLE & table) {
-  u_int dimension       = table.Dimension();
-  u_int numv            = table.Polyhedron().NumVertices();
-  u_int nume            = table.Polyhedron().NumEdges();
-  u_int numf            = table.Polyhedron().NumFacets();
-  u_int numisov         = table.NumIsosurfaceVertices();
-  u_int numTableEntries = table.NumTableEntries();
+  uint  dimension       = table.Dimension();
+  uint  numv            = table.Polyhedron().NumVertices();
+  uint  nume            = table.Polyhedron().NumEdges();
+  uint  numf            = table.Polyhedron().NumFacets();
+  uint  numisov         = table.NumIsosurfaceVertices();
+  uint  numTableEntries = table.NumTableEntries();
 
   out << "<?xml version=\"1.0\"?>" << endl;
   out << "<isotable>" << endl;
@@ -550,9 +550,9 @@ void IJKXIO::write_xit(ostream & out, const IJKTABLE::ISOSURFACE_TABLE & table) 
   out << "<poly>" << endl;
   out << "<vertices>" << endl;
   out << "<numVertices> " << numv << " </numVertices>" << endl;
-  for(u_int i = 0; i < numv; i++) {
+  for(uint  i = 0; i < numv; i++) {
     out << "<c> ";
-    for(u_int d = 0; d < dimension; d++) {
+    for(uint  d = 0; d < dimension; d++) {
       out << table.Polyhedron().VertexCoord(i, d) << " ";
     }
     out << "</c>" << endl;
@@ -560,9 +560,9 @@ void IJKXIO::write_xit(ostream & out, const IJKTABLE::ISOSURFACE_TABLE & table) 
   out << "</vertices>" << endl;
   out << "<edges>" << endl;
   out << "<numEdges> " << nume << " </numEdges>" << endl;
-  for(u_int i = 0; i < nume; i++) {
+  for(uint  i = 0; i < nume; i++) {
     out << "<v> ";
-    for(u_int j = 0; j < 2; j++) {
+    for(uint  j = 0; j < 2; j++) {
       out << table.Polyhedron().EdgeEndpoint(i, j) << " ";
     }
     out << "</v>" << endl;
@@ -570,10 +570,10 @@ void IJKXIO::write_xit(ostream & out, const IJKTABLE::ISOSURFACE_TABLE & table) 
   out << "</edges>" << endl;
   out << "<facets>" << endl;
   out << "<numFacets> " << numf << " </numFacets>" << endl;
-  for(u_int i = 0; i < numf; i++) {
+  for(uint  i = 0; i < numf; i++) {
     out << "<f> ";
     out << table.Polyhedron().NumFacetVertices(i) << " ";
-    for(u_int jv = 0; jv < numv; jv++) {
+    for(uint  jv = 0; jv < numv; jv++) {
       if(table.Polyhedron().IsVertexInFacet(i, jv)) {
         out << jv << " ";
       }
@@ -585,10 +585,10 @@ void IJKXIO::write_xit(ostream & out, const IJKTABLE::ISOSURFACE_TABLE & table) 
 
   out << "<isoVertices>" << endl;
   out << "<numVertices> " << numisov << " </numVertices>" << endl;
-  for(u_int i = 0; i < numisov; i++) {
+  for(uint  i = 0; i < numisov; i++) {
     out << "<w> ";
     IJKTABLE::ISOSURFACE_VERTEX::ISOSURFACE_VERTEX_TYPE vtype = table.IsosurfaceVertex(i).Type();
-    u_int iv, ie, jf, numc;
+    uint  iv, ie, jf, numc;
     switch(vtype) {
     case IJKTABLE::ISOSURFACE_VERTEX::VERTEX:
       iv = table.IsosurfaceVertex(i).Face();
@@ -610,7 +610,7 @@ void IJKXIO::write_xit(ostream & out, const IJKTABLE::ISOSURFACE_TABLE & table) 
       out << "<c> ";
       if (numc > 0) {
         out << "<c> ";
-        for(u_int ic = 0; ic < numc; ic++) {
+        for(uint  ic = 0; ic < numc; ic++) {
           out << table.IsosurfaceVertex(i).Coord(ic) << " ";
         }
         out << "</c> ";
@@ -629,12 +629,12 @@ void IJKXIO::write_xit(ostream & out, const IJKTABLE::ISOSURFACE_TABLE & table) 
   out << "<encoding> " << table.EncodingName() << " </encoding>" << endl;
   out << "<numEntries> " << numTableEntries << " </numEntries>" 
       << endl;
-  for(u_int it = 0; it < numTableEntries; it++) {
-    u_int nums = table.NumSimplices(it);
+  for(uint  it = 0; it < numTableEntries; it++) {
+    uint  nums = table.NumSimplices(it);
     out << "<s> ";
     out << nums << " ";
-    for(u_int js = 0; js < nums; js++) {
-      for(u_int kv = 0; kv < table.SimplexDimension()+1; kv++) {
+    for(uint  js = 0; js < nums; js++) {
+      for(uint  kv = 0; kv < table.SimplexDimension()+1; kv++) {
         out << int(table.SimplexVertex(it, js, kv)) << " ";
       }
     }

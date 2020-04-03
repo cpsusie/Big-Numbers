@@ -2,16 +2,6 @@
 
 /* stormacs.h */
 
-void  *xmalloc(size_t n);
-void  *xrealloc(void *q, size_t n);
-char  *xstrdup(const char *str);
-void   xfree(void *p);
-
-#define MALLOC(type, n)     (type*)xmalloc(sizeof(type)*(n))
-#define REALLOC(p, type, n) (type*)xrealloc(p, sizeof(type)*(n))
-#define STRDUP(p)           xstrdup(p)
-#define FREE(p)             xfree(p)
-
 #define max_blocks 10000
 #define Nobj 10000
 #ifdef DEBUG
@@ -111,13 +101,28 @@ X * new_block_##X (int make_blocks)                             \
 void free_##X##_storage(void) {new_block_##X (0);}              \
 
 
+#ifdef TRACE_MEMORY
+#define TRACENEWL(p,type,var,method,line) debugLog("FETCH:%p:%s(%d):type:%s,var:%s\n",p,method,line,type,var);
+#else
+#define TRACENEWL(p,type,var,method,line) 
+#endif
+
+
 #define NEWL(X,p)                                               \
 {                                                               \
         p = X##_list ? X##_list : new_block_##X(1);             \
         Assert(p);                                              \
         X##_list = p->next;                                     \
+        TRACENEWL(p,#X,#p,__FUNCTION__,__LINE__)                \
 }                                                               \
 
+
+#ifdef TRACE_MEMORY
+#define TRACENEWLRC(p,type,var,method,line) debugLog("create:%p:refCount=%d:%s(%d),type:%s,var:%s\n" \
+                                                    ,p,p->ref_count, method,line,type,var);
+#else
+#define TRACENEWLRC(p,type,var,method,line) 
+#endif
 
 
 #define NEWLRC(X,p)                                             \
@@ -126,6 +131,7 @@ void free_##X##_storage(void) {new_block_##X (0);}              \
         Assert(p);                                              \
         X##_list = p->next;                                     \
         p->ref_count = 1;                                       \
+        TRACENEWLRC(p,#X,#p,__FUNCTION__,__LINE__)              \
 }                                                               \
 
 

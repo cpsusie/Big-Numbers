@@ -116,7 +116,7 @@ int main(int argc, char **argv) {
 
     int numv_per_simplex = isotable[0].NumVerticesPerSimplex();
     for(int i = 0; i < 2; i++) {
-      vlist[i] = new int[numv_per_simplex];
+      vlist[i] = new int[numv_per_simplex]; TRACE_NEW(vlist[i] );
     }
 
     for(int it = 0; it < isotable[0].NumTableEntries(); it++) {
@@ -163,8 +163,7 @@ int main(int argc, char **argv) {
   }
 
   for(int i = 0; i < 2; i++) {
-    delete vlist[i];
-    vlist[i] = NULL;
+    SAFEDELETE(vlist[i]);
   }
 
   return 0;

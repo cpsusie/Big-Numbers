@@ -96,17 +96,12 @@ ISOSURFACE_TABLE_POLYHEDRON & ISOSURFACE_TABLE_POLYHEDRON::operator=(const ISOSU
 void ISOSURFACE_TABLE_POLYHEDRON::FreeFacets() {
   if(facet_vertex_list != NULL) {
     for(int jf = 0; jf < num_facets; jf++) {
-      delete[] facet_vertex_list[jf];
-      facet_vertex_list[jf] = NULL;
+      SAFEDELETEARRAY(facet_vertex_list[jf]);
     }
   }
-  delete[] facet_vertex_list;
-  facet_vertex_list = NULL;
-
-  delete[] num_facet_vertices;
-  num_facet_vertices = NULL;
-  delete[] facet;
-  facet = NULL;
+  SAFEDELETEARRAY(facet_vertex_list );
+  SAFEDELETEARRAY(num_facet_vertices);
+  SAFEDELETEARRAY(facet             );
   num_facets = 0;
 }
 
@@ -115,10 +110,8 @@ void ISOSURFACE_TABLE_POLYHEDRON::FreeAll() {
   FreeFacets();
   num_vertices = 0;
   num_edges    = 0;
-  delete [] vertex_coord;
-  vertex_coord = NULL;
-  delete [] edge_endpoint;
-  edge_endpoint = NULL;
+  SAFEDELETEARRAY(vertex_coord );
+  SAFEDELETEARRAY(edge_endpoint);
 }
 
 void ISOSURFACE_TABLE_POLYHEDRON::Init() {
@@ -160,7 +153,7 @@ void ISOSURFACE_TABLE_POLYHEDRON::SetNumVertices(const int numv) {
     throw PROCEDURE_ERROR(procname, "Number of polyhedron vertices is too large.");
 
   num_vertices = numv;
-  vertex_coord = new int[num_vertices*Dimension()];
+  vertex_coord = new int[num_vertices*Dimension()]; TRACE_NEW(vertex_coord );
 }
 
 // set number of edges
@@ -168,8 +161,7 @@ void ISOSURFACE_TABLE_POLYHEDRON::SetNumVertices(const int numv) {
 void ISOSURFACE_TABLE_POLYHEDRON::SetNumEdges(const int nume) {
   const char * procname = "ISOSURFACE_TABLE_POLYHEDRON::SetNumEdges";
 
-  delete [] edge_endpoint;
-  edge_endpoint = NULL;
+  SAFEDELETEARRAY(edge_endpoint);
   num_edges = 0;
 
   if(!CheckDimension()) 
@@ -185,7 +177,7 @@ void ISOSURFACE_TABLE_POLYHEDRON::SetNumEdges(const int nume) {
     throw PROCEDURE_ERROR(procname, "Number of polyhedron edges is too large.");
 
   num_edges = nume;
-  edge_endpoint = new int[num_edges*2];
+  edge_endpoint = new int[num_edges*2]; TRACE_NEW(edge_endpoint );
 }
 
 // set number of facets
@@ -208,9 +200,9 @@ void ISOSURFACE_TABLE_POLYHEDRON::SetNumFacets(const int numf) {
     throw PROCEDURE_ERROR(procname, "Number of polyhedron facets is too large.");
 
   num_facets = numf;
-  facet = new FACET[numf];
-  num_facet_vertices = new int[numf];
-  facet_vertex_list = new int *[numf];
+  facet              = new FACET[numf]; TRACE_NEW(facet              );
+  num_facet_vertices = new int[  numf]; TRACE_NEW(num_facet_vertices );
+  facet_vertex_list  = new int*[ numf]; TRACE_NEW(facet_vertex_list  );
 
   if(facet == NULL || num_facet_vertices == NULL || facet_vertex_list == NULL)
     throw PROCEDURE_ERROR(procname, "Unable to allocate memory for list of facets.");
@@ -232,12 +224,11 @@ void ISOSURFACE_TABLE_POLYHEDRON::SetNumFacetVertices(const FACET_INDEX jf, cons
     throw PROCEDURE_ERROR(procname, "Illegal facet index.");
 
   if(facet_vertex_list[jf] != NULL) {
-    delete [] facet_vertex_list[jf];
-    facet_vertex_list[jf] = NULL;
+    SAFEDELETEARRAY(facet_vertex_list[jf]);
   }
 
   num_facet_vertices[jf] = numv;
-  facet_vertex_list[jf] = new int[numv];
+  facet_vertex_list[jf] = new int[numv]; TRACE_NEW(facet_vertex_list[jf] );
 }
 
 // set polyhedron vertex coordinate
@@ -657,21 +648,16 @@ ISOSURFACE_VERTEX::ISOSURFACE_VERTEX() {
 
 ISOSURFACE_VERTEX::~ISOSURFACE_VERTEX() {
   if(coord != NULL) { 
-    delete [] coord;
-    coord = NULL;
+    SAFEDELETEARRAY(coord);
   }
-
   num_coord = 0;
   is_label_set = false;
 }
 
 void ISOSURFACE_VERTEX::SetNumCoord(const int numc) {
-  if(coord != NULL)
-    delete [] coord;
-  coord = NULL;
-
+  SAFEDELETEARRAY(coord);
   num_coord = numc;
-  coord = new COORD_TYPE[numc];
+  coord = new COORD_TYPE[numc]; TRACE_NEW(coord );
 }
 
 //**************************************************
@@ -703,8 +689,7 @@ bool ISOSURFACE_TABLE::ISOSURFACE_TABLE_ENTRY::Check(ERROR & error_msg) const {
 }
 
 void ISOSURFACE_TABLE::ISOSURFACE_TABLE_ENTRY::FreeAll() {
-  delete [] simplex_vertex_list;
-  simplex_vertex_list = NULL;
+  SAFEDELETEARRAY(simplex_vertex_list);
   num_simplices = 0;
 }
 
@@ -768,12 +753,9 @@ void ISOSURFACE_TABLE::SetNonstandardEncoding(const std::string & name) {
 }
 
 void ISOSURFACE_TABLE::SetNumIsosurfaceVertices(const int num_vertices) {
-  if(isosurface_vertex != NULL)
-    delete [] isosurface_vertex;
-  isosurface_vertex = NULL;
-
+  SAFEDELETEARRAY(isosurface_vertex);
   num_isosurface_vertices = num_vertices;
-  isosurface_vertex = new ISOSURFACE_VERTEX[num_vertices];
+  isosurface_vertex = new ISOSURFACE_VERTEX[num_vertices]; TRACE_NEW(isosurface_vertex );
 }
 
 // check allocation of array isosurface_vertices
@@ -836,16 +818,13 @@ void ISOSURFACE_TABLE::StorePolyFacetsAsIsoVertices(const int vstart) {
 
 // allocate table
 void ISOSURFACE_TABLE::SetNumTableEntries(const int num_table_entries) {
-  const char * procname = "ISOSURFACE_TABLE::SetNumTableEntries";
-
-  if(entry != NULL) delete [] entry;
-  entry = NULL;
+  SAFEDELETEARRAY(entry);
   this->num_table_entries = 0;
   is_table_allocated = false;
 
-  entry = new ISOSURFACE_TABLE_ENTRY[num_table_entries];
+  entry = new ISOSURFACE_TABLE_ENTRY[num_table_entries]; TRACE_NEW(entry );
   if(entry == NULL && num_table_entries > 0)
-    throw PROCEDURE_ERROR(procname, "Unable to allocate memory for isosurface table.");
+    throw PROCEDURE_ERROR(__FUNCTION__, "Unable to allocate memory for isosurface table.");
 
   this->num_table_entries = num_table_entries;
   is_table_allocated = true;
@@ -855,23 +834,22 @@ void ISOSURFACE_TABLE::SetNumTableEntries(const int num_table_entries) {
 // it = table entry
 // nums = number of simplices
 void ISOSURFACE_TABLE::SetNumSimplices(const TABLE_INDEX it, const int nums) {
-  const char * procname = "ISOSURFACE_TABLE::SetNumSimplices";
-
   if(!IsTableAllocated() || entry == NULL) {
-    throw PROCEDURE_ERROR(procname, "Table must be allocated before entering table entries.");
+    throw PROCEDURE_ERROR(__FUNCTION__, "Table must be allocated before entering table entries.");
   }
 
-  if(it < 0 || it >= NumTableEntries())
-    throw PROCEDURE_ERROR(procname, "Illegal table index.");
+  if(it < 0 || it >= NumTableEntries()) {
+    throw PROCEDURE_ERROR(__FUNCTION__, "Illegal table index.");
+  }
   if(nums < 0)
-    throw PROCEDURE_ERROR(procname, "Number of simplices must be non-negative.");
+    throw PROCEDURE_ERROR(__FUNCTION__, "Number of simplices must be non-negative.");
 
   entry[it].num_simplices = 0;
-  delete entry[it].simplex_vertex_list;
-  entry[it].simplex_vertex_list = NULL;
+  SAFEDELETE(entry[it].simplex_vertex_list);
 
-  if(nums > 0)
-    entry[it].simplex_vertex_list = new ISOSURFACE_VERTEX_INDEX[nums*NumVerticesPerSimplex()];
+  if(nums > 0) {
+    entry[it].simplex_vertex_list = new ISOSURFACE_VERTEX_INDEX[nums*NumVerticesPerSimplex()]; TRACE_NEW(entry[it].simplex_vertex_list );
+  }
 
   entry[it].num_simplices = nums;
 }
@@ -944,18 +922,17 @@ bool ISOSURFACE_TABLE::Check(ERROR & error_msg) const {
 
 void ISOSURFACE_TABLE::FreeAll() {
   if(entry != NULL) {
-    for(int i = 0; i < num_table_entries; i++)
+    for(int i = 0; i < num_table_entries; i++) {
       entry[i].FreeAll();
-    delete [] entry;
-    entry = NULL;
-  };
+    }
+    SAFEDELETEARRAY(entry);
+  }
   num_table_entries = 0;
   is_table_allocated = false;
 
   polyhedron.FreeAll();
 
-  delete [] isosurface_vertex;
-  isosurface_vertex = NULL;
+  SAFEDELETEARRAY(isosurface_vertex);
   num_isosurface_vertices = 0;
 }
 
@@ -988,8 +965,7 @@ bool ISOSURFACE_EDGE_TABLE::ISOSURFACE_EDGE_TABLE_ENTRY::Check(ERROR & error_msg
 }
 
 void ISOSURFACE_EDGE_TABLE::ISOSURFACE_EDGE_TABLE_ENTRY::FreeAll() {
-  delete [] edge_endpoint_list;
-  edge_endpoint_list = NULL;
+  SAFEDELETEARRAY(edge_endpoint_list);
   num_edges = 0;
 }
 
@@ -1014,7 +990,7 @@ void ISOSURFACE_EDGE_TABLE::SetNumTableEntries(const int num_table_entries) {
 
   ISOSURFACE_TABLE::SetNumTableEntries(num_table_entries);
 
-  edge_entry = new ISOSURFACE_EDGE_TABLE_ENTRY[num_table_entries];
+  edge_entry = new ISOSURFACE_EDGE_TABLE_ENTRY[num_table_entries]; TRACE_NEW(edge_entry );
   if(edge_entry == NULL)
     throw PROCEDURE_ERROR(procname, "Unable to allocate memory for isosurface edge table.");
 }
@@ -1059,8 +1035,7 @@ void ISOSURFACE_EDGE_TABLE::ISOSURFACE_EDGE_TABLE::FreeAll() {
     for(int i = 0; i < num_table_entries; i++) {
       edge_entry[i].FreeAll();
     }
-    delete [] edge_entry;
-    edge_entry = NULL;  
+    SAFEDELETEARRAY(edge_entry);
   }
   ISOSURFACE_TABLE::FreeAll();
 }
@@ -1115,7 +1090,7 @@ void ISOSURFACE_EDGE_TABLE::GenEdgeLists() {
 
     edge_entry[it].FreeAll();
     if(eset.size() > 0) {
-      edge_entry[it].edge_endpoint_list = new EDGE_INDEX[2*eset.size()];
+      edge_entry[it].edge_endpoint_list = new EDGE_INDEX[2*eset.size()]; TRACE_NEW(edge_entry[it].edge_endpoint_list );
       if(edge_entry[it].edge_endpoint_list == NULL) {
         error.AddMessage("Unable to allocate memory for edge list in table entry ", it, ".");
         throw error;
@@ -1149,12 +1124,9 @@ ISOSURFACE_TABLE_AMBIG_INFO::~ISOSURFACE_TABLE_AMBIG_INFO() {
 }
 
 void ISOSURFACE_TABLE_AMBIG_INFO::FreeAll() {
-  delete[] is_ambiguous;
-  delete[] num_ambiguous_facets;
-  delete[] ambiguous_facet;
-  is_ambiguous         = NULL;
-  num_ambiguous_facets = NULL;
-  ambiguous_facet      = NULL;
+  SAFEDELETEARRAY(is_ambiguous        );
+  SAFEDELETEARRAY(num_ambiguous_facets);
+  SAFEDELETEARRAY(ambiguous_facet     );
   num_table_entries    = 0;
   is_allocated         = false;
 }
@@ -1166,9 +1138,9 @@ void ISOSURFACE_TABLE_AMBIG_INFO::Alloc(const long num_table_entries) {
     FreeAll();
   }
 
-  is_ambiguous         = new bool[num_table_entries];
-  num_ambiguous_facets = new FACET_INDEX[num_table_entries];
-  ambiguous_facet      = new FACET_SET[num_table_entries];
+  is_ambiguous         = new bool[num_table_entries];        TRACE_NEW(is_ambiguous         );
+  num_ambiguous_facets = new FACET_INDEX[num_table_entries]; TRACE_NEW(num_ambiguous_facets );
+  ambiguous_facet      = new FACET_SET[num_table_entries];   TRACE_NEW(ambiguous_facet      );
 
   this->num_table_entries = num_table_entries;
 
@@ -1211,12 +1183,9 @@ ISOSURFACE_TABLE_AMBIG::~ISOSURFACE_TABLE_AMBIG() {
 }
 
 void ISOSURFACE_TABLE_AMBIG::FreeAll() {
-  delete[] is_ambiguous;
-  delete[] num_ambiguous_facets;
-  delete[] ambiguous_facet;
-  is_ambiguous         = NULL;
-  num_ambiguous_facets = NULL;
-  ambiguous_facet      = NULL;
+  SAFEDELETEARRAY(is_ambiguous        );
+  SAFEDELETEARRAY(num_ambiguous_facets);
+  SAFEDELETEARRAY(ambiguous_facet     );
 }
 
 void ISOSURFACE_TABLE_AMBIG::SetNumTableEntries(const int num_table_entries) {
@@ -1225,9 +1194,9 @@ void ISOSURFACE_TABLE_AMBIG::SetNumTableEntries(const int num_table_entries) {
 
   FreeAll();
 
-  is_ambiguous         = new bool[num_table_entries];
-  num_ambiguous_facets = new FACET_INDEX[num_table_entries];
-  ambiguous_facet      = new FACET_SET[num_table_entries];
+  is_ambiguous         = new bool[num_table_entries];        TRACE_NEW(is_ambiguous         );
+  num_ambiguous_facets = new FACET_INDEX[num_table_entries]; TRACE_NEW(num_ambiguous_facets );
+  ambiguous_facet      = new FACET_SET[num_table_entries];   TRACE_NEW(ambiguous_facet      );
 
   if(num_table_entries > 0) {
     if(is_ambiguous == NULL || num_ambiguous_facets == NULL || ambiguous_facet == NULL) {
@@ -1342,13 +1311,13 @@ void IJKTABLE::generate_prism(const ISOSURFACE_TABLE_POLYHEDRON & base_polyhedro
 //**************************************************
 
 // calculate num table entries = (num_colors)^(num_vert)
-u_long IJKTABLE::calculate_num_entries(const int num_vert, const int num_colors) {
-  u_long num_table_entries = 0;
+ulong  IJKTABLE::calculate_num_entries(const int num_vert, const int num_colors) {
+  ulong  num_table_entries = 0;
 
   if(num_colors < 1) {
     throw PROCEDURE_ERROR(__FUNCTION__, "Number of colors must be positive.");
   }
-  const u_long max2 = ULONG_MAX/num_colors;
+  const ulong  max2 = ULONG_MAX/num_colors;
 
   num_table_entries = 1;
   for(int iv = 0; iv < num_vert; iv++) {
@@ -1361,9 +1330,9 @@ u_long IJKTABLE::calculate_num_entries(const int num_vert, const int num_colors)
   return num_table_entries;
 }
 
-void IJKTABLE::convert2base(u_long ival, u_int base, int * digit, u_int max_num_digits) {
-  u_long jval = ival;
-  for(u_int i = 0; i < max_num_digits; i++) {
+void IJKTABLE::convert2base(ulong  ival, uint  base, int * digit, uint  max_num_digits) {
+  ulong  jval = ival;
+  for(uint  i = 0; i < max_num_digits; i++) {
     digit[i] = jval % base;
     jval = jval/base;
   }

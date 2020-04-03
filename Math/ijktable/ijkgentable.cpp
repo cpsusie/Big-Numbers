@@ -51,10 +51,10 @@ void generate_isosurface_table(     ISOSURFACE_TABLE & isotable);
 void generate_nep_isosurface_table( ISOSURFACE_TABLE & isotable);
 void generate_interval_volume_table(ISOSURFACE_TABLE & isotable);
 void parse_command_line(int argc, char **argv);
-void check_dimension(const u_int d, const MESH_POLYHEDRON_TYPE mesh_poly_type);
-void check_num_vertices(const u_int d
+void check_dimension(const uint  d, const MESH_POLYHEDRON_TYPE mesh_poly_type);
+void check_num_vertices(const uint  d
                        ,const MESH_POLYHEDRON_TYPE mesh_poly_type
-                       ,const u_int max_numv);
+                       ,const uint  max_numv);
 
 void memory_exhaustion();
 void usage_error();
@@ -64,17 +64,17 @@ void help_msg();
 void ijkgenpatch(    const ISOSURFACE_TABLE_POLYHEDRON                 &polyhedron
                     ,const fixedarray<int>                             &vertex_sign
                     ,vector<ISOSURFACE_VERTEX_INDEX>                   &edge_list
-                    ,u_int                                             &num_simplices);
+                    ,uint                                              &num_simplices);
 
 void ijkgenpatch_nep(const ISOSURFACE_TABLE_POLYHEDRON                 &polyhedron
                     ,const fixedarray<int>                             &vertex_sign
                     ,vector<ISOSURFACE_VERTEX_INDEX>                   &isov_list
                     ,vector<ISOSURFACE_VERTEX::ISOSURFACE_VERTEX_TYPE> &isov_type
-                    ,u_int                                             &num_simplices);
+                    ,uint                                              &num_simplices);
 
 
 int main(int argc, char **argv) {
-  std::set_new_handler(memory_exhaustion);
+  redirectDebugLog();
   ostringstream isotable_filename;
 
   try {
@@ -137,26 +137,26 @@ int main(int argc, char **argv) {
       throwPROCEDURE_ERROR(__FUNCTION__,"%s:Problem constructing polyhedron",e.what());
     }
 
-    u_int num_table_entries = 0;
-    u_int nume = isotable.Polyhedron().NumEdges();
-    u_int numv = isotable.Polyhedron().NumVertices();
+    uint  num_table_entries = 0;
+    uint  nume = isotable.Polyhedron().NumEdges();
+    uint  numv = isotable.Polyhedron().NumVertices();
     if(!genivoltable) {
       if(!nep_flag) {
-        u_int num_isosurface_vertices = nume;
+        uint  num_isosurface_vertices = nume;
         isotable.SetNumIsosurfaceVertices(num_isosurface_vertices);
         isotable.StorePolyEdgesAsIsoVertices(0);
         num_table_entries = calculate_num_entries(numv, 2);
       } else {
-        u_int num_isosurface_vertices = nume+numv;
+        uint  num_isosurface_vertices = nume+numv;
         isotable.SetNumIsosurfaceVertices(num_isosurface_vertices);
         isotable.StorePolyVerticesAsIsoVertices(0);
         isotable.StorePolyEdgesAsIsoVertices(numv);
         num_table_entries = calculate_num_entries(numv, 3);
       }
     } else {
-      u_int num_isosurface_vertices = 2*nume+numv;
+      uint  num_isosurface_vertices = 2*nume+numv;
       isotable.SetNumIsosurfaceVertices(num_isosurface_vertices);
-      for(u_int ie = 0; ie < nume; ie++) {
+      for(uint  ie = 0; ie < nume; ie++) {
         isotable.SetIsoVertexFace(2*ie, ie);
         isotable.SetIsoVertexType(2*ie, ISOSURFACE_VERTEX::EDGE);
         isotable.SetIsoVertexLabel(2*ie, "0");
@@ -165,7 +165,7 @@ int main(int argc, char **argv) {
         isotable.SetIsoVertexLabel(2*ie+1, "1");
       }
 
-      for(u_int iv = 0; iv < numv; iv++) {
+      for(uint  iv = 0; iv < numv; iv++) {
         isotable.SetIsoVertexFace(iv+2*nume, iv);
         isotable.SetIsoVertexType(iv+2*nume, ISOSURFACE_VERTEX::VERTEX);
       }
@@ -302,14 +302,14 @@ int main(int argc, char **argv) {
 void generate_isosurface_table(ISOSURFACE_TABLE &isotable) {
   fixedarray<int> vertex_sign(isotable.Polyhedron().NumVertices());
   vector<ISOSURFACE_VERTEX_INDEX> edge_list;
-  const u_int numv = isotable.Polyhedron().NumVertices();
+  const uint  numv = isotable.Polyhedron().NumVertices();
 
-  for(u_int it = 0; it < isotable.NumTableEntries(); it++) {
+  for(uint  it = 0; it < isotable.NumTableEntries(); it++) {
     edge_list.clear();
-    u_int num_simplices = 0;
+    uint  num_simplices = 0;
 
     convert2base(it, 2, vertex_sign, numv);
-    for(u_int j = 0; j < numv; j++) {
+    for(uint  j = 0; j < numv; j++) {
       // convert 0 to -1
       vertex_sign[j] = 2*vertex_sign[j]-1;
       // if vertex_sign[j] < 0, vertex j is negative
@@ -320,9 +320,9 @@ void generate_isosurface_table(ISOSURFACE_TABLE &isotable) {
 
     isotable.SetNumSimplices(it, num_simplices);
 
-    for(u_int is = 0; is < num_simplices; is++) {
-      for(u_int j = 0; j < isotable.Dimension(); j++) {
-        u_int ie = edge_list[is*isotable.Dimension() + j];
+    for(uint  is = 0; is < num_simplices; is++) {
+      for(uint  j = 0; j < isotable.Dimension(); j++) {
+        uint  ie = edge_list[is*isotable.Dimension() + j];
         isotable.SetSimplexVertex(it, is, j, ie);
       }
     }
@@ -345,14 +345,14 @@ void generate_nep_isosurface_table(ISOSURFACE_TABLE &isotable) {
   fixedarray<int> vertex_sign(isotable.Polyhedron().NumVertices());
   vector<ISOSURFACE_VERTEX_INDEX> isov_list;
   vector<ISOSURFACE_VERTEX::ISOSURFACE_VERTEX_TYPE> isov_type;
-  const u_int numv = isotable.Polyhedron().NumVertices();
+  const uint  numv = isotable.Polyhedron().NumVertices();
 
-  for(u_int it = 0; it < isotable.NumTableEntries(); it++) {
+  for(uint  it = 0; it < isotable.NumTableEntries(); it++) {
     isov_list.clear();
-    u_int num_simplices = 0;
+    uint  num_simplices = 0;
 
     convert2base(it, 3, vertex_sign, numv);
-    for(u_int j = 0; j < numv; j++) {
+    for(uint  j = 0; j < numv; j++) {
       // convert 0 to -1, 1 to 0 and 2 to 1
       vertex_sign[j]--;
       // if vertex_sign[j] < 0, vertex j is negative
@@ -364,10 +364,10 @@ void generate_nep_isosurface_table(ISOSURFACE_TABLE &isotable) {
     Assert(isov_list.size() == isov_type.size());
     isotable.SetNumSimplices(it, num_simplices);
 
-    for(u_int is = 0; is < num_simplices; is++) {
-      for(u_int j = 0; j < isotable.Dimension(); j++) {
-        u_int k  = is*isotable.Dimension() + j;
-        u_int kf = isov_list[k];
+    for(uint  is = 0; is < num_simplices; is++) {
+      for(uint  j = 0; j < isotable.Dimension(); j++) {
+        uint  k  = is*isotable.Dimension() + j;
+        uint  kf = isov_list[k];
         if(isov_type[k] == ISOSURFACE_VERTEX::VERTEX) {
           isotable.SetSimplexVertex(it, is, j, kf);
         } else {
@@ -395,20 +395,20 @@ void generate_interval_volume_table(ISOSURFACE_TABLE & isotable) {
   fixedarray<int> index_base3(isotable.Polyhedron().NumVertices());
   fixedarray<int> vertex_prism_sign(2*isotable.Polyhedron().NumVertices());
   vector<ISOSURFACE_VERTEX_INDEX> edge_list;
-  const u_int numv = isotable.Polyhedron().NumVertices();
-  const u_int nume = isotable.Polyhedron().NumEdges();
+  const uint  numv = isotable.Polyhedron().NumVertices();
+  const uint  nume = isotable.Polyhedron().NumEdges();
 
   ISOSURFACE_TABLE_POLYHEDRON prism(isotable.Dimension()+1);
 
   generate_prism(isotable.Polyhedron(), prism);
-  const u_int num_prism_vertices = prism.NumVertices();
+  const uint  num_prism_vertices = prism.NumVertices();
 
-  for(u_int it = 0; it < isotable.NumTableEntries(); it++) {
+  for(uint  it = 0; it < isotable.NumTableEntries(); it++) {
     edge_list.clear();
-    u_int num_simplices = 0;
+    uint  num_simplices = 0;
 
     convert2base(it, 3, index_base3, numv);
-    for(u_int i = 0; i < numv; i++) {
+    for(uint  i = 0; i < numv; i++) {
       if(index_base3[i] == 0) {
         vertex_prism_sign[i]      = -1;
         vertex_prism_sign[i+numv] = -1;
@@ -425,10 +425,10 @@ void generate_interval_volume_table(ISOSURFACE_TABLE & isotable) {
 
     isotable.SetNumSimplices(it, num_simplices);
 
-    for(u_int is = 0; is < num_simplices; is++) {
-      for(u_int j = 0; j < isotable.NumVerticesPerSimplex(); j++) {
-        u_int prism_ie = edge_list[is*isotable.NumVerticesPerSimplex() + j];
-        u_int ie;
+    for(uint  is = 0; is < num_simplices; is++) {
+      for(uint  j = 0; j < isotable.NumVerticesPerSimplex(); j++) {
+        uint  prism_ie = edge_list[is*isotable.NumVerticesPerSimplex() + j];
+        uint  ie;
 
         if(prism_ie < nume) {
           ie = 2*prism_ie;
@@ -530,7 +530,7 @@ void parse_command_line(int argc, char **argv) {
 }
 
 // exit if illegal dimension found
-void check_dimension(u_int dimension, const MESH_POLYHEDRON_TYPE mesh_polyhedron_type) {
+void check_dimension(uint  dimension, const MESH_POLYHEDRON_TYPE mesh_polyhedron_type) {
   if(dimension < 2) {
     cerr << "Illegal dimension: " << dimension << endl;
     cerr << "Dimension must be at least 2." << endl;
@@ -564,11 +564,11 @@ void check_dimension(u_int dimension, const MESH_POLYHEDRON_TYPE mesh_polyhedron
   }
 }
 
-void check_num_vertices(const u_int                d,
+void check_num_vertices(const uint                 d,
                         const MESH_POLYHEDRON_TYPE mesh_poly_type,
-                        const u_int                max_numv)
+                        const uint                 max_numv)
 {
-  u_int numv = 0;
+  uint  numv = 0;
   if(mesh_polyhedron_type == CUBE) {
     numv = (1L << dimension);
   } else {

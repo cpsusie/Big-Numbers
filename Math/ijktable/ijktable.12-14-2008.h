@@ -451,11 +451,11 @@ typedef ISOSURFACE_EDGE_TABLE * ISOSURFACE_EDGE_TABLE_PTR;
 //**************************************************
 
 // calculate number of entries required in ISOSURFACE_TABLE
-u_long calculate_num_entries(const int num_vert, const int num_colors);
+ulong  calculate_num_entries(const int num_vert, const int num_colors);
 
 // convert integer to base "base"
-void convert2base(const u_long ival, const u_int base, int * digit,
-		  const u_int max_num_digits);
+void convert2base(const ulong  ival, const uint  base, int * digit,
+		  const uint  max_num_digits);
 
 
 //**************************************************

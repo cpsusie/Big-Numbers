@@ -31,23 +31,23 @@ using namespace IJKTABLE;
 typedef float COORD_TYPE;
 
 // global variables
-const char * isotable_filename;
-bool out_stat_flag = false;
-bool out_poly_flag = false;
+const char *isotable_filename;
+bool out_stat_flag    = false;
+bool out_poly_flag    = false;
 bool out_isovert_flag = false;
-bool edge_table_flag = false;
+bool edge_table_flag  = false;
 vector<int> entry;
 
 // routines
 void tableinfo();
 void edgetableinfo();
-void read_isotable(ISOSURFACE_TABLE & isotable);
-void out_poly(const ISOSURFACE_TABLE_POLYHEDRON & poly);
-void out_isosurface_vertices(const ISOSURFACE_TABLE & isotable);
-void out_entry(const int it, const ISOSURFACE_TABLE & isotable);
-void out_edge_entry(const int it, const ISOSURFACE_EDGE_TABLE & iso_edge_table);
-void out_stat(const ISOSURFACE_TABLE & isotable);
-void out_etable_stat(const ISOSURFACE_EDGE_TABLE & iso_edge_table);
+void read_isotable(                ISOSURFACE_TABLE            &isotable      );
+void out_poly(               const ISOSURFACE_TABLE_POLYHEDRON &poly          );
+void out_isosurface_vertices(const ISOSURFACE_TABLE            &isotable      );
+void out_entry(     uint it, const ISOSURFACE_TABLE            &isotable      );
+void out_edge_entry(uint it, const ISOSURFACE_EDGE_TABLE       &iso_edge_table);
+void out_stat(               const ISOSURFACE_TABLE            &isotable      );
+void out_etable_stat(        const ISOSURFACE_EDGE_TABLE       &iso_edge_table);
 void parse_command_line(int argc, char **argv);
 void help_msg(), usage_error();
 
@@ -59,17 +59,9 @@ int main(int argc, char **argv) {
     } else {
       tableinfo();
     }
-  } catch(ERROR error) {
-    if(error.NumMessages() == 0) {
-      cerr << "Unknown error." << endl;
-    } else {
-      error.Print(cerr);
-    }
-    cerr << "Exiting." << endl;
-    exit(20);
-  } catch(...) {
-    cerr << "Unknown error." << endl;
-    exit(50);
+  } catch(Exception e) {
+    cerr << e.what() << endl;
+    return -1;
   }
   return 0;
 }
@@ -85,7 +77,7 @@ void tableinfo() {
   if(out_isovert_flag) {
     out_isosurface_vertices(isotable);
   }
-  for(u_int i = 0; i < entry.size(); i++) {
+  for(uint  i = 0; i < entry.size(); i++) {
     out_entry(entry[i], isotable);
   }
   if(out_stat_flag) {
@@ -106,7 +98,7 @@ void edgetableinfo() {
   if(out_isovert_flag) {
     out_isosurface_vertices(iso_edge_table);
   }
-  for(u_int i = 0; i < entry.size(); i++) {
+  for(uint  i = 0; i < entry.size(); i++) {
     out_edge_entry(entry[i], iso_edge_table);
   }
   if(out_stat_flag) {
@@ -123,8 +115,7 @@ void read_isotable(ISOSURFACE_TABLE & isotable) {
   ifstream isotable_file(isotable_filename, ios::in);
 
   if(!isotable_file) {
-    string error_msg = "Unable to open isosurface table file " + string(isotable_filename) + ".";
-    throw ERROR(error_msg);
+    throwException("Unable to open isosurface table file %s", isotable_filename);
   }
 
   try {
@@ -134,13 +125,7 @@ void read_isotable(ISOSURFACE_TABLE & isotable) {
     throw;
   }
   isotable_file.close();
-  ERROR error;
-  if (!isotable.Check(error)) {
-    cerr << "Warning: Data structure inconsistency in isosurface table."
-         << endl;
-    error.Print(cerr);
-    cerr << "  Attempting to continue..." << endl << endl;
-  }
+  isotable.Check();
 }
 
 //**************************************************
@@ -154,7 +139,7 @@ void out_poly(const ISOSURFACE_TABLE_POLYHEDRON &poly) {
   cout << "Vertices:" << endl;
   for(int iv = 0; iv < numv; iv++) {
     cout << "  " << setw(3) << iv << ":";
-    for(int ic = 0; ic < poly.Dimension(); ic++) {
+    for(uint ic = 0; ic < poly.Dimension(); ic++) {
       cout << "  " << poly.VertexCoord(iv, ic);
     }
     cout << endl;
@@ -164,9 +149,9 @@ void out_poly(const ISOSURFACE_TABLE_POLYHEDRON &poly) {
   int nume = poly.NumEdges();
   cout << "Number of polyhedron edges = " << nume << "." << endl;
   cout << "Edges: " << endl;
-  for (int ie = 0; ie < nume; ie++) {
+  for(int ie = 0; ie < nume; ie++) {
     cout << "  " << setw(3) << ie << ":";
-    for (int j = 0; j < 2; j++) {
+    for(int j = 0; j < 2; j++) {
       cout << "  " << poly.EdgeEndpoint(ie, j);
     }
     cout << endl;
@@ -176,10 +161,10 @@ void out_poly(const ISOSURFACE_TABLE_POLYHEDRON &poly) {
   int numf = poly.NumFacets();
   cout << "Number of polyhedron facets = " << numf << "." << endl;
   cout << "Facets: " << endl;
-  for (int jf = 0; jf < numf; jf++) {
+  for(int jf = 0; jf < numf; jf++) {
     cout << "  " << setw(3) << jf << ":";
-    for (int k = 0; k < numv; k++) {
-      if (poly.IsVertexInFacet(jf, k)) {
+    for(int k = 0; k < numv; k++) {
+      if(poly.IsVertexInFacet(jf, k)) {
         cout << "  " <<  k;
       }
     }
@@ -198,7 +183,7 @@ void out_isosurface_vertices(const ISOSURFACE_TABLE & isotable) {
        << isotable.NumIsosurfaceVertices() << "."
        << endl;
   cout << "Vertices:" << endl;
-  for (int i = 0; i < isotable.NumIsosurfaceVertices(); i++) {
+  for(uint i = 0; i < isotable.NumIsosurfaceVertices(); i++) {
     cout << "  " << setw(3) << i << ":  ";
     switch(isotable.IsosurfaceVertex(i).Type()) {
     case ISOSURFACE_VERTEX::VERTEX:
@@ -215,9 +200,9 @@ void out_isosurface_vertices(const ISOSURFACE_TABLE & isotable) {
 
     case ISOSURFACE_VERTEX::POINT:
       cout << "Point";
-      if (isotable.IsosurfaceVertex(i).NumCoord() > 0) {
+      if(isotable.IsosurfaceVertex(i).NumCoord() > 0) {
         cout << ".  Coordinates:";
-        for (int d = 0; d < isotable.Dimension(); d++) {
+        for(uint d = 0; d < isotable.Dimension(); d++) {
           cout << " " << isotable.IsosurfaceVertex(i).Coord(d);
         }
       }
@@ -225,9 +210,8 @@ void out_isosurface_vertices(const ISOSURFACE_TABLE & isotable) {
     }
     cout << ".";
 
-    if (isotable.IsosurfaceVertex(i).IsLabelSet()) {
-      cout << "  Label = \"" << isotable.IsosurfaceVertex(i).Label()
-           << "\".";
+    if(isotable.IsosurfaceVertex(i).IsLabelSet()) {
+      cout << "  Label = \"" << isotable.IsosurfaceVertex(i).Label() << "\".";
     }
     cout << endl;
   }
@@ -239,8 +223,8 @@ void out_isosurface_vertices(const ISOSURFACE_TABLE & isotable) {
 //**************************************************
 // return true if "it" is in range
 // print error message and return false if "it" is out of range
-bool CheckEntryRange(const int it, const ISOSURFACE_TABLE & isotable) {
-  if(it < 0 || it >= isotable.NumTableEntries()) {
+bool CheckEntryRange(uint it, const ISOSURFACE_TABLE & isotable) {
+  if(it >= isotable.NumTableEntries()) {
     cerr << "Error.  Entry " << it
          << " is not in range [0.." << isotable.NumTableEntries()-1
          << "]." << endl;
@@ -251,20 +235,16 @@ bool CheckEntryRange(const int it, const ISOSURFACE_TABLE & isotable) {
 }
 
 // output simplices in isosurface edge table entry
-void out_simplices(const int it, const ISOSURFACE_TABLE & isotable) {
-  PROCEDURE_ERROR error(__FUNCTION__);
-
-  if (it < 0 || it >= isotable.NumTableEntries()) {
-    error.AddMessage("Table index ", it, " is out of bounds.");
-    throw error;
+void out_simplices(uint it, const ISOSURFACE_TABLE & isotable) {
+  if(it >= isotable.NumTableEntries()) {
+    throwPROCEDURE_ERROR(__FUNCTION__, "Table index %d is out of bounds.", it);
   }
 
-  cout << "  Number of simplices = "
-       << isotable.NumSimplices(it) << "." << endl;
+  cout << "  Number of simplices = "  << isotable.NumSimplices(it) << "." << endl;
   cout << "  Simplex vertices:" << endl;
-  for (int is = 0; is < isotable.NumSimplices(it); is++) {
+  for(uint is = 0; is < isotable.NumSimplices(it); is++) {
     cout << "  ";
-    for (int iv = 0; iv < isotable.NumVerticesPerSimplex(); iv++) {
+    for(uint iv = 0; iv < isotable.NumVerticesPerSimplex(); iv++) {
       cout << "  " << int(isotable.SimplexVertex(it, is, iv));
     }
     cout << endl;
@@ -272,20 +252,17 @@ void out_simplices(const int it, const ISOSURFACE_TABLE & isotable) {
 }
 
 // output edges in isosurface edge table entry
-void out_edges(const int it, const ISOSURFACE_EDGE_TABLE & iso_edge_table) {
-  PROCEDURE_ERROR error(__FUNCTION__);
+void out_edges(uint it, const ISOSURFACE_EDGE_TABLE & iso_edge_table) {
 
-  if (it < 0 || it >= iso_edge_table.NumTableEntries()) {
-    error.AddMessage("Table index ", it, " is out of bounds.");
-    throw error;
+  if(it >= iso_edge_table.NumTableEntries()) {
+    throwPROCEDURE_ERROR(__FUNCTION__,"Table index %d is out of bounds", it);
   }
 
-  cout << "  Number of edges = "
-       << iso_edge_table.NumEdges(it) << "." << endl;
+  cout << "  Number of edges = "  << iso_edge_table.NumEdges(it) << "." << endl;
   cout << "  Edge endpoints:" << endl;
-  for (int ie = 0; ie < iso_edge_table.NumEdges(it); ie++) {
+  for(uint ie = 0; ie < iso_edge_table.NumEdges(it); ie++) {
     cout << "  ";
-    for (int iend = 0; iend < 2; iend++) {
+    for(int iend = 0; iend < 2; iend++) {
       cout << "  " << int(iso_edge_table.EdgeEndpoint(it, ie, iend));
     }
     cout << endl;
@@ -293,8 +270,8 @@ void out_edges(const int it, const ISOSURFACE_EDGE_TABLE & iso_edge_table) {
 }
 
 // output simplices in isosurface table entry
-void out_entry(const int it, const ISOSURFACE_TABLE & isotable) {
-  if (!CheckEntryRange(it, isotable)) {
+void out_entry(uint it, const ISOSURFACE_TABLE & isotable) {
+  if(!CheckEntryRange(it, isotable)) {
     return;
   }
 
@@ -304,7 +281,7 @@ void out_entry(const int it, const ISOSURFACE_TABLE & isotable) {
 }
 
 // output isosurface edge table entry
-void out_edge_entry(const int it, const ISOSURFACE_EDGE_TABLE & iso_edge_table) {
+void out_edge_entry(uint it, const ISOSURFACE_EDGE_TABLE & iso_edge_table) {
   if(!CheckEntryRange(it, iso_edge_table)) {
     return;
   }
@@ -323,17 +300,17 @@ void out_edge_entry(const int it, const ISOSURFACE_EDGE_TABLE & iso_edge_table) 
 void out_poly_stat(const ISOSURFACE_TABLE & isotable) {
   cout << "Polyhedron:" << endl;
   cout << "  # Vertices = " << isotable.Polyhedron().NumVertices() << endl;
-  cout << "  # Edges = " << isotable.Polyhedron().NumEdges() << endl;
-  cout << "  # Facets = " << isotable.Polyhedron().NumFacets() << endl;
+  cout << "  # Edges = "    << isotable.Polyhedron().NumEdges()    << endl;
+  cout << "  # Facets = "   << isotable.Polyhedron().NumFacets()   << endl;
 }
 
 // output isosurface vertices statistics
 void out_isovert_stat(const ISOSURFACE_TABLE & isotable) {
-  int num_isov_on_vert = 0;
-  int num_isov_on_edges = 0;
-  int num_isov_on_facets = 0;
-  int num_isov_points = 0;
-  for (int i = 0; i < isotable.NumIsosurfaceVertices(); i++) {
+  uint num_isov_on_vert   = 0;
+  uint num_isov_on_edges  = 0;
+  uint num_isov_on_facets = 0;
+  uint num_isov_points    = 0;
+  for(uint i = 0; i < isotable.NumIsosurfaceVertices(); i++) {
     switch(isotable.IsosurfaceVertex(i).Type()) {
     case ISOSURFACE_VERTEX::VERTEX:
       num_isov_on_vert++;
@@ -372,10 +349,10 @@ void out_isovert_stat(const ISOSURFACE_TABLE & isotable) {
 
 // output isosurface simplices statistics
 void out_simplices_stat(const ISOSURFACE_TABLE & isotable) {
-  long max_s = 0;
-  long total_s = 0;
-  for (long i = 0; i < isotable.NumTableEntries(); i++) {
-    long n = isotable.NumSimplices(i);
+  ulong max_s = 0;
+  ulong total_s = 0;
+  for(ulong i = 0; i < isotable.NumTableEntries(); i++) {
+    ulong n = isotable.NumSimplices(i);
     if(max_s < n) {
       max_s = n;
     }
@@ -389,11 +366,11 @@ void out_simplices_stat(const ISOSURFACE_TABLE & isotable) {
 
 // output isosurface edges statistics
 void out_edges_stat(const ISOSURFACE_EDGE_TABLE & iso_edge_table) {
-  long max_e = 0;
-  long total_e = 0;
-  for (long i = 0; i < iso_edge_table.NumTableEntries(); i++) {
-    long n = iso_edge_table.NumEdges(i);
-    if (max_e < n) max_e = n;
+  ulong max_e = 0;
+  ulong total_e = 0;
+  for(ulong i = 0; i < iso_edge_table.NumTableEntries(); i++) {
+    ulong n = iso_edge_table.NumEdges(i);
+    if(max_e < n) max_e = n;
     total_e += n;
   }
   double avg_e = ((double) total_e)/((double) iso_edge_table.NumTableEntries());
@@ -404,9 +381,9 @@ void out_edges_stat(const ISOSURFACE_EDGE_TABLE & iso_edge_table) {
 
 // output isosurface table statistics
 void out_stat(const ISOSURFACE_TABLE & isotable) {
-  cout << "Dimension = " << isotable.Dimension() << endl;
+  cout << "Dimension = "         << isotable.Dimension()        << endl;
   cout << "Simplex Dimension = " << isotable.SimplexDimension() << endl;
-  cout << "Encoding = " << isotable.EncodingName() << endl;
+  cout << "Encoding = "          << isotable.EncodingName()     << endl;
   out_poly_stat(isotable);
   out_isovert_stat(isotable);
   cout << "Table:" << endl;
@@ -416,8 +393,8 @@ void out_stat(const ISOSURFACE_TABLE & isotable) {
 
 // output isosurface edge table statistics
 void out_etable_stat(const ISOSURFACE_EDGE_TABLE & iso_edge_table) {
-  cout << "Dimension = " << iso_edge_table.Dimension() << endl;
-  cout << "Encoding = " << iso_edge_table.EncodingName() << endl;
+  cout << "Dimension = " << iso_edge_table.Dimension()   << endl;
+  cout << "Encoding = "  << iso_edge_table.EncodingName() << endl;
   out_poly_stat(iso_edge_table);
   out_isovert_stat(iso_edge_table);
   cout << "Table:" << endl;
@@ -439,13 +416,13 @@ void parse_command_line(int argc, char **argv) {
 
     if(strcmp(argv[iarg], "-poly") == 0) {
       out_poly_flag = true;
-    } else if (strcmp(argv[iarg], "-isovert") == 0) {
+    } else if(strcmp(argv[iarg], "-isovert") == 0) {
       out_isovert_flag = true;
-    } else if (strcmp(argv[iarg], "-stat") == 0) {
+    } else if(strcmp(argv[iarg], "-stat") == 0) {
       out_stat_flag = true;
-    } else if (strcmp(argv[iarg], "-isoedge") == 0) {
+    } else if(strcmp(argv[iarg], "-isoedge") == 0) {
       edge_table_flag = true;
-    } else if (strcmp(argv[iarg], "-entry") == 0) {
+    } else if(strcmp(argv[iarg], "-entry") == 0) {
       iarg++;
       if(iarg >= argc) {
         usage_error();
@@ -453,7 +430,7 @@ void parse_command_line(int argc, char **argv) {
       int i;
       sscanf(argv[iarg], "%d", &i);
       entry.push_back(i);
-    } else if (strcmp(argv[iarg], "-h") == 0 || strcmp(argv[iarg], "-help") == 0) {
+    } else if(strcmp(argv[iarg], "-h") == 0 || strcmp(argv[iarg], "-help") == 0) {
       help_msg();
     } else {
       usage_error();

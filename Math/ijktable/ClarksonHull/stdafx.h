@@ -10,7 +10,8 @@
 #include <string.h>
 #include <float.h>
 #include <math.h>
-#include "util.h"
+#include <util.h>
+#include <fixedarray.h>
 #include "stormacs.h"
 
 #define LOGB(x) (int)logb(x)

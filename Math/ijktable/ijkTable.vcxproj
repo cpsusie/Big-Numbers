@@ -28,7 +28,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -46,13 +46,13 @@
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <ReferencePath>C:\mytools2015\Math\ijktable\ClarksonHull;$(ReferencePath)</ReferencePath>
-    <IncludePath>C:\mytools2015\Math\ijktable\ClarksonHull;c:\mytools2015\lib\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\mytools2015\Math\ijktable\util;C:\mytools2015\Math\ijktable\ClarksonHull;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <ReferencePath>C:\mytools2015\Math\ijktable\ClarksonHull;$(ReferencePath)</ReferencePath>
-    <IncludePath>C:\mytools2015\Math\ijktable\ClarksonHull;c:\mytools2015\lib\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\mytools2015\Math\ijktable\util;C:\mytools2015\Math\ijktable\ClarksonHull;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -65,6 +65,7 @@
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PreprocessorDefinitions>XML_STATIC</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\mytools2015\Math\ijktable\util;C:\mytools2015\Math\ijktable\ClarksonHull;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -83,6 +84,7 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PreprocessorDefinitions>XML_STATIC</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\mytools2015\Math\ijktable\util;C:\mytools2015\Math\ijktable\ClarksonHull;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

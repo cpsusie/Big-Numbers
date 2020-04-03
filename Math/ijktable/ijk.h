@@ -148,10 +148,8 @@ namespace IJK {
 
   template <class T> void BOX<T>::FreeAll() {
     dimension = 0;
-    if (min_coord != NULL) { delete [] min_coord; }
-    if (max_coord != NULL) { delete [] max_coord; }
-    min_coord = NULL;
-    max_coord = NULL;
+    SAFEDELETEARRAY(min_coord);
+    SAFEDELETEARRAY(max_coord);
   }
 
   template <class T> BOX<T>::BOX(const int dimension) {
@@ -163,8 +161,8 @@ namespace IJK {
     FreeAll();
     Init();
     if (d <= 0) return;
-    min_coord = new COORD_TYPE[d];
-    max_coord = new COORD_TYPE[d];
+    min_coord = new COORD_TYPE[d]; TRACE_NEW(min_coord);
+    max_coord = new COORD_TYPE[d]; TRACE_NEW(max_coord);
     dimension = d;
   }
 
