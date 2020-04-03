@@ -22,6 +22,10 @@ typedef enum {
  ,KDESTROY
  ,KNEW
  ,KDELETE
+ ,KMALLOC
+ ,KREALLOC
+ ,KSTRDUP
+ ,KFREE
  ,KOTHER
 } Keyword;
 
@@ -40,6 +44,11 @@ static const KeywordName keywordTable[] = {
  ,_T("destroy"), KDESTROY
  ,_T("NEW"    ), KNEW
  ,_T("DELETE" ), KDELETE
+ ,_T("MALLOC" ), KMALLOC
+ ,_T("REALLOC"), KREALLOC
+ ,_T("STRDUP" ), KSTRDUP
+ ,_T("FREE"   ), KFREE
+
 };
 
 class KeywordMap : public StrHashMap<Keyword> {
@@ -61,12 +70,12 @@ KeywordMap::KeywordMap() {
 static const KeywordMap keywords;
 
 class PointerMap : public UInt64HashMap<PointerObject> {
-private:
+protected:
   bool m_ok;
 public:
   PointerMap() : m_ok(true) {
   }
-  void handlePointerCommand(Keyword kw, Tokenizer &tok, int lineCount, const String &line);
+  virtual void handlePointerCommand(Keyword kw, Tokenizer &tok, int lineCount, const String &line);
   void logErrors();
   inline bool isOk() const {
     return m_ok;
@@ -123,6 +132,59 @@ void PointerMap::logErrors() {
   m_ok = false;
 }
 
+class MallocPointerMap : public PointerMap {
+public:
+  void handlePointerCommand(Keyword kw, Tokenizer &tok, int lineCount, const String &line);
+};
+
+void MallocPointerMap::handlePointerCommand(Keyword kw, Tokenizer &tok, int lineCount, const String &line) {
+  String       addrStr     = tok.next();
+  UINT64       addr;
+  if(_stscanf(addrStr.cstr(), _T("%I64X"), &addr) != 1) {
+    throwException(_T("%s not a valid hex-address"), addrStr.cstr());
+  }
+  switch(kw) {
+  case KMALLOC:
+    { PointerObject *obj = get(addr);
+      if(obj != NULL) {
+        _tprintf(_T("Line %d<%s>:%s already allocated\n")
+                ,lineCount, line.cstr(), addrStr.cstr());
+        m_ok = false;
+      }
+      put(addr, PointerObject(lineCount, tok.getRemaining()));
+    }
+    break;
+  case KFREE:
+    { PointerObject *obj = get(addr);
+      if(obj == NULL) {
+        _tprintf(_T("Line %d<%s>:%s not allocated\n")
+                ,lineCount, line.cstr(), addrStr.cstr());
+        m_ok = false;
+      } else {
+        remove(addr);
+      }
+    }
+    break;
+  case KREALLOC:
+    _tprintf(_T("skipping realloc. use following free/malloc\n"));
+    break;
+  case KSTRDUP:
+    { PointerObject *obj = get(addr);
+      if(obj != NULL) {
+        _tprintf(_T("Line %d<%s>:%s already allocated\n")
+                ,lineCount, line.cstr(), addrStr.cstr());
+        m_ok = false;
+      }
+      put(addr, PointerObject(lineCount, tok.getRemaining()));
+    }
+    break;
+
+  default:
+    _tprintf(_T("Line %d<%s>:Invalid Heap-command\n"), lineCount, line.cstr());
+    m_ok = false;
+  }
+}
+
 class RefObject : public PointerObject {
 public:
   const int m_startRefCount;
@@ -137,7 +199,6 @@ public:
 class RefObjectMap : public UInt64HashMap<RefObject> {
 private:
   bool m_ok;
-public:
 public:
   RefObjectMap() : m_ok(true) {
   }
@@ -306,8 +367,10 @@ int _tmain(int argc, TCHAR **argv) {
     FILE *f = FOPEN(fileName, _T("r"));
     String line;
     int lineCount = 0;
-    RefObjectMap refPointerMap;
-    PointerMap   pointerMap;
+    RefObjectMap     refPointerMap;
+    PointerMap       pointerMap;
+    MallocPointerMap mpointerMap;
+
     try {
       while(readLine(f, line)) {
         lineCount++;
@@ -328,10 +391,17 @@ int _tmain(int argc, TCHAR **argv) {
         case KDELETE:
           pointerMap.handlePointerCommand(cmd, tok, lineCount, line);
           break;
+        case KMALLOC :
+        case KREALLOC:
+        case KSTRDUP :
+        case KFREE   :
+          mpointerMap.handlePointerCommand(cmd, tok, lineCount, line);
+          break;
         }
       }
       refPointerMap.logErrors();
       pointerMap.logErrors();
+      mpointerMap.logErrors();
       if(refPointerMap.isOk() && pointerMap.isOk()) {
         _tprintf(_T("All ok                   \n"));
       }
