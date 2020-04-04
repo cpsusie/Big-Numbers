@@ -15,7 +15,7 @@ extern Coord   mins[MAXDIM], maxs[MAXDIM];
 extern int     rdim;                   /* region dimension: (max) number of sites specifying region     */
 extern int     cdim;                   /* number of sites currently specifying region                   */
 extern long    pnum;
-extern double  Huge;
+#define Huge std::numeric_limits<double>::infinity()
 
 class SiteIterator {
 public:

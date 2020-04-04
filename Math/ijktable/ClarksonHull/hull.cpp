@@ -6,6 +6,7 @@
  */
 
 #include "stdafx.h"
+#include <CompactStack.h>
 #include "points.h"
 #include "io.h"
 #include "hull.h"
@@ -54,8 +55,7 @@ PrintFull         printFull;
 CheckSimplex      checkSimplex;
 STORAGE(simplex)
 
-#define push(x) *(st+tms++) = x;
-#define pop(x)  x = *(st + --tms);
+typedef CompactStack<simplex*> SimplexStack;
 
 point get_another_site() {
   /* static int scount =0; */
@@ -92,34 +92,18 @@ void buildhull(simplex *root) {
  * when visit returns non NULL, exit and return its value
  */
 void *visit_triang_gen(simplex *s, SimplexVisitor &visitor, SimplexTester &tester) {
-  neighbor *sn;
   void     *v;
-  simplex  *t;
-  int       i;
-  long      tms = 0;
+  SimplexStack simstack;
   static long      vnum = -1;
-  static long      ss = 2000;
-  static simplex **st;
 
   vnum--;
-  if(!st) { 
-    /* bug fix: 10-17-2006 by R. Wenger */
-    st = MALLOC(simplex*,(ss+MAXDIM+1));
-    Assert(st != 0);
-  }
 
   if(s) {
-    push(s);
+    simstack.push(s);
   }
 
-  while(tms) {
-    if(tms > ss) {
-      DEBEXP(-1, tms);
-      /* bug fix: 10-17-2006 by R. Wenger */
-      st = REALLOC(st, simplex*,(ss += ss) + MAXDIM + 1);
-      Assert(st != 0);
-    }
-    pop(t);
+  while(!simstack.isEmpty()) {
+    simplex *t = simstack.pop();
     if(!t || t->visit == vnum) {
       continue;
     }
@@ -127,9 +111,11 @@ void *visit_triang_gen(simplex *s, SimplexVisitor &visitor, SimplexTester &teste
     if(v = visitor.visit(t,0)) {
       return v;
     }
-    for(i = -1, sn = t->neigh - 1; i < cdim; i++, sn++) {
+    neighbor *sn = t->neigh - 1;
+
+    for(int i = -1; i < cdim; i++, sn++) {
       if((sn->simp->visit != vnum) && sn->simp && tester.test(t, i, 0)) {
-        push(sn->simp);
+        simstack.push(sn->simp);
       }
     }
   }
@@ -260,7 +246,13 @@ static simplex *extend_simplices(simplex *s) {
   simplex  *ns;
   neighbor *nsn;
 
-  if(s->visit == pnum) return s->peak.vert ? s->neigh[ocdim].simp : s;
+  if(s->visit == pnum) {
+    if(s->peak.vert) {
+      return s->neigh[ocdim].simp;
+    } else {
+      return s;
+    }
+  }
   s->visit = pnum;
   s->neigh[ocdim].vert = p;
   NULLIFY(basis_s,s->normal);
@@ -286,31 +278,17 @@ static simplex *extend_simplices(simplex *s) {
  * current hull, and sees(p, s)
  */
 static simplex *search(simplex *root) {
-  simplex         *s;
-  static simplex **st;
-  static long      ss = MAXDIM;
-  neighbor        *sn;
-  int              i;
-  long             tms = 0;
-
-  if(!st) {
-    st = MALLOC(simplex*,ss+MAXDIM+1);
-  }
-  push(root->peak.simp);
+  SimplexStack simstack;
+  simstack.push(root->peak.simp);
   root->visit = pnum;
   if(!sees(p, root)) {
-    for(i = 0, sn = root->neigh; i < cdim; i++, sn++) {
-      push(sn->simp);
+    neighbor *sn = root->neigh;
+    for(int i = 0; i < cdim; i++, sn++) {
+      simstack.push(sn->simp);
     }
   }
-  while(tms) {
-    if(tms>ss) {
-      /* bug fix: 10-17-2006 by R. Wenger */
-      st = REALLOC(st, simplex*, (ss+=ss)+MAXDIM+1);
-      Assert(st != 0);
-    }
-
-    pop(s);
+  while(!simstack.isEmpty()) {
+    simplex *s = simstack.pop();
     if(s->visit == pnum) {
       continue;
     }
@@ -318,11 +296,12 @@ static simplex *search(simplex *root) {
     if(!sees(p, s)) {
       continue;
     }
-    if (!s->peak.vert) {
+    if(!s->peak.vert) {
       return s;
     }
-    for (i = 0, sn = s->neigh; i < cdim; i++, sn++) {
-      push(sn->simp);
+    neighbor *sn = s->neigh;
+    for(int i = 0; i < cdim; i++, sn++) {
+      simstack.push(sn->simp);
     }
   }
   return NULL;
@@ -335,7 +314,6 @@ simplex *ch_root;
 #define SMALL (100*FLT_EPSILON)*(100*FLT_EPSILON)
 #define SWAP(X,a,b) {X t; t = a; a = b; b = t;}
 #define DMAX 
-double Huge;
 
 #define check_overshoot(x) {                                                     \
   if(CHECK_OVERSHOOT && check_overshoot_f && ((x)>9e15)) {                       \
@@ -435,10 +413,6 @@ STORAGE(basis_s)
 simplex *build_convex_hull(SiteIterator &it, const SiteToIndexConverter &site_numm, short dim, short vdd) {
   simplex *s, *root;
 
-  if(!Huge) {
-    Huge = DBL_MAX * DBL_MAX;
-  }
-
   cdim     = 0;
   get_site = &it;
   site_num = &site_numm;
@@ -453,16 +427,24 @@ simplex *build_convex_hull(SiteIterator &it, const SiteToIndexConverter &site_nu
 
   rdim = vd ? pdim+1 : pdim;
   if(rdim > MAXDIM) {
-    panic("dimension bound MAXDIM exceeded; rdim=%d; pdim=%d\n", rdim, pdim);
+    throwException("dimension bound MAXDIM exceeded; rdim=%d; pdim=%d", rdim, pdim);
     /* fprintf(DFILE, "rdim=%d; pdim=%d\n", rdim, pdim); fflush(DFILE);*/
   }
 
   point_size     = site_size = sizeof(Coord)*pdim;
   basis_vec_size = sizeof(Coord)*rdim;
+
+#ifndef USE_TEMPLATEPOOL
   basis_s_size   = sizeof(basis_s) + (2*rdim-1)*sizeof(Coord   );
   simplex_size   = sizeof(simplex) + (  rdim-1)*sizeof(neighbor);
   Tree_size      = sizeof(Tree);
   fg_size        = sizeof(fg);
+#else
+  basis_spool.setXsize(sizeof(basis_s) + (2*rdim-1)*sizeof(Coord   ));
+  simplexpool.setXsize(sizeof(simplex) + (  rdim-1)*sizeof(neighbor));
+  Treepool.setXsize(sizeof(Tree));
+  fgpool.setXsize(  sizeof(fg));
+#endif
 
   root = NULL;
   if(vd) {
@@ -717,7 +699,7 @@ static bool out_of_flat(simplex *root, point p) {
   static neighbor p_neigh={0,0,0};
 
   if(!p_neigh.basis) {
-    p_neigh.basis = MALLOC(basis_s,1);
+    p_neigh.basis = (basis_s*)MALLOC(char, basis_s_size);
   }
 
   p_neigh.vert = p;
@@ -756,7 +738,7 @@ bool check_perps(simplex *s) {
   }
   if(!b) {
     /* bug fix: 10-17-2006 by R. Wenger */
-    b = MALLOC(basis_s, 1);
+    b = (basis_s*)MALLOC(char, basis_s_size);
     Assert(b != 0);
   }
   b->lscale = 0;
@@ -855,7 +837,7 @@ bool sees(site p, simplex *s) {
 
   if(!b) {
     /* bug fix: 10-17-2006 by R. Wenger */
-    b = MALLOC(basis_s, 1);
+    b = (basis_s*)MALLOC(char, basis_s_size);
     Assert(b != 0);
   }
   b->lscale = 0;

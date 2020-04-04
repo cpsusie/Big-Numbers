@@ -21,6 +21,22 @@ void throwInvalidArgumentException(const char *method, _In_z_ _Printf_format_str
   throwException("%s:Invalid argument. %s", method, msg.c_str());
 }
 
+void throwIndexOutOfRangeException(const char *method, UINT64 index, UINT64 size) {
+  throwException("%s:Index %s out of range. size=%s"
+                ,method
+                ,format1000(index).c_str()
+                ,format1000(size).c_str());
+}
+
+void throwIndexOutOfRangeException(const char *method, UINT64 index, UINT64 count, UINT64 size) {
+  throwException("%s(%s,%s):%s out of range. size=%s"
+                ,method
+                ,format1000(index).c_str()
+                ,format1000(count).c_str()
+                ,format1000(index + count).c_str()
+                ,format1000(size).c_str());
+}
+
 void throwException(const string &s) {
   throw Exception(s);
 }

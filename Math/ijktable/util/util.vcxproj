@@ -83,6 +83,7 @@
   <ItemGroup>
     <ClInclude Include="BitSet.h" />
     <ClInclude Include="CommonHashFunctions.h" />
+    <ClInclude Include="CompactArray.h" />
     <ClInclude Include="CompactStack.h" />
     <ClInclude Include="Date.h" />
     <ClInclude Include="DebugLog.h" />

@@ -40,12 +40,3 @@ FILE *epopen(char *com, const char *mode) {
   exit(1);
   return 0;
 }
-
-void panic(const char *fmt, ...) {
-  va_list args;
-  va_start(args, fmt);
-  vfprintf(DFILE, fmt, args);
-  fflush(DFILE);
-  va_end(args);
-  exit(1);
-}
