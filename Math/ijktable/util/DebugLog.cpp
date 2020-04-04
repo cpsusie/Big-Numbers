@@ -63,13 +63,13 @@ DebugLogger &DebugLogger::getInstance() { // static
 
 DebugLogger &DebugLogger::setFileName(const string &fileName) {
   releaseFileName();
-  m_fileName = STRDUP(fileName.c_str());
+  m_fileName = _strdup(fileName.c_str());
   return *this;
 }
 
 DebugLogger &DebugLogger::releaseFileName() {
   if(m_fileName != NULL) {
-    FREE(m_fileName);
+    free(m_fileName);
     m_fileName = NULL;
   }
   return *this;

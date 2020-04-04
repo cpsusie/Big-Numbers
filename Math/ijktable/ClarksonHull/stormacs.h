@@ -65,7 +65,7 @@ extern FILE *DFILE;
 
 #endif
 
-//#define USE_TEMPLATEPOOL
+#define USE_TEMPLATEPOOL
 
 #ifndef USE_TEMPLATEPOOL
 
@@ -202,19 +202,27 @@ private:
   uint            m_blockCount;
   X              *m_list;
 
-  X *new_block() {
-    Assert(m_blockCount < max_blocks);
-    X *xbt = (X*)malloc(Nobj * m_Xsize);
-    Assert(xbt);
-    m_blockTable[m_blockCount++] = xbt;
-    memset(xbt, 0, Nobj*m_Xsize);
-    X *xlm = (X*)(((char*)xbt + Nobj * m_Xsize));
+  inline size_t blockSize() const {
+    return Nobj * m_Xsize;
+  }
+  void initBlock(X *block) {
+    size_t bsize = blockSize();
+    memset(block, 0, bsize);
+    X *xlm = (X*)(((char*)block + bsize));
     for(int i = 0; i < Nobj; i++) {
       (char*&)xlm -= m_Xsize;
       xlm->next = m_list;
       m_list = xlm;
     }
-    return m_list;
+  }
+
+  void newBlock() {
+    Assert(m_Xsize  != 0);
+    Assert(m_blockCount < max_blocks);
+    X *xbt = (X*)malloc(blockSize());
+    Assert(xbt);
+    m_blockTable[m_blockCount++] = xbt;
+    initBlock(xbt);
   }
 
 public:
@@ -226,23 +234,21 @@ public:
     , m_list(NULL)
   {
   }
-  void deleteAll() {
+  ~ElementPool() {
     for(uint i = 0; i < m_blockCount; i++) {
       free(m_blockTable[i]);
-      m_blockTable[i] = NULL;
     }
-    m_blockCount = 0;
+  }
+  void releaseAll() {
     m_list = NULL;
+    for(uint i = 0; i < m_blockCount; i++) {
+      initBlock(m_blockTable[i]);
+    }
   }
   X *fetch(const X *src = NULL) {
-    X *result;
-    if(m_list) {
-      result = m_list;
-      m_list = m_list->next;
-    }
-    else {
-      result = new_block();
-    }
+    if(m_list == NULL) newBlock();
+    X *result = m_list;
+    m_list = m_list->next;
     if(src) {
       memcpy(result, src, m_Xsize);
     }
@@ -254,8 +260,10 @@ public:
     m_list = p;
   }
   void setXsize(size_t Xsize) {
-    Assert(m_blockCount == 0);
-    m_Xsize = Xsize;
+    if(Xsize != m_Xsize) {
+      Assert(m_blockCount == 0);
+      m_Xsize = Xsize;
+    }
   }
   inline size_t getXsize() const {
     return m_Xsize;
@@ -266,7 +274,7 @@ public:
 typedef ElementPool<X> X##ElementPool;                    \
 extern X##ElementPool X##pool;                            \
 inline void free_##X##_storage() {                        \
-  X##pool.deleteAll();                                    \
+  X##pool.releaseAll();                                   \
 }
 
 #define STORAGE(X)                                        \
@@ -275,11 +283,9 @@ X##ElementPool X##pool(#X);
 #define NEWL(X,p,...) {                                   \
   p = X##pool.fetch(__VA_ARGS__);                         \
   Assert(p);                                              \
-  TRACENEWL(p,#X,#p,__FUNCTION__,__LINE__)                \
 }                                                         \
 
 #define FREEL(X,p) {                                      \
-  TRACEFREEL(p,#X,#p,__FUNCTION__,__LINE__)               \
   X##pool.release(p);                                     \
 }
 
@@ -287,7 +293,6 @@ X##ElementPool X##pool(#X);
   p = X##pool.fetch();                                    \
   Assert(p);                                              \
   p->ref_count = 1;                                       \
-  TRACENEWLRC(p,#X,#p,__FUNCTION__,__LINE__)              \
 }
 
 #define FREELRC(X,p) {                                    \
@@ -296,7 +301,6 @@ X##ElementPool X##pool(#X);
 
 #define dec_ref(X,p) {                                    \
   if((p) && --(p)->ref_count == 0) {                      \
-    TRACERELEASE(p,#X,#p,__FUNCTION__,__LINE__)           \
     FREELRC(X, (p));                                      \
   }                                                       \
 }
@@ -304,7 +308,6 @@ X##ElementPool X##pool(#X);
 #define inc_ref(X,p) {                                    \
   if(p) {                                                 \
     (p)->ref_count++;                                     \
-    TRACEADDREF(p,#X,#p,__FUNCTION__,__LINE__)            \
   }                                                       \
 }
 

@@ -74,7 +74,7 @@ void ijkgenpatch_nep(const ISOSURFACE_TABLE_POLYHEDRON                 &polyhedr
 
 
 int main(int argc, char **argv) {
-  redirectDebugLog();
+//  redirectDebugLog();
   ostringstream isotable_filename;
 
   try {

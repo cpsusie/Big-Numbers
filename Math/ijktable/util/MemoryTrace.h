@@ -1,6 +1,6 @@
 #pragma once
 
-#define TRACE_MEMORY
+//#define TRACE_MEMORY
 
 #ifdef TRACE_MEMORY
 
