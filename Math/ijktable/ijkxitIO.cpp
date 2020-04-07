@@ -24,15 +24,12 @@
 
 #include "stdafx.h"
 #include <ctime>
+#include <StringArray.h>
 #include "expat.h"
 #include "ijkxitIO.h"
-
+#include "ijktable.h"
 using namespace IJK;
 using namespace IJKXIO;
-
-//**************************************************
-// read_xit
-//**************************************************
 
 // types
 typedef enum { START_TAG, END_TAG } XML_TAG_TYPE;
@@ -67,7 +64,7 @@ namespace {
   void read_tag(istream & in, XML_Parser parser, USER_DATA & user_data);
   void read_start_tag(istream & in, XML_Parser parser, const XML_ELEMENT element, USER_DATA & user_data);
   void read_end_tag(istream & in, XML_Parser parser, const XML_ELEMENT element, USER_DATA & user_data);
-  std::string read_string(istream & in, XML_Parser parser, USER_DATA & user_data);
+  string read_string(istream & in, XML_Parser parser, USER_DATA & user_data);
   void read_isosurface_vertex(istream & in, XML_Parser parser, USER_DATA & user_data, IJKTABLE::ISOSURFACE_TABLE & table, const int isov);
   void XMLCALL startElement(void *data, const char *name, const char **attr);
   void XMLCALL endElement(void *data, const char *ename);
@@ -78,185 +75,190 @@ namespace {
   void initUserData(USER_DATA & user_data);
 }
 
-void IJKXIO::read_xit(istream & in, IJKTABLE::ISOSURFACE_TABLE & table) {
-  XML_Parser parser = NULL;
-  USER_DATA user_data;
-  int polyDimension = 0;
-  int surfaceDimension = 0;
-  int numVertices = 0;
-  int numEdges = 0;
-  int numFacets = 0;
-  int numIsosurfaceVertices = 0;
-  int numEntries = 0;
-  int d = 0;
-  ostringstream msg;
+namespace IJKXIO {
+  void read_xit(istream & in, IJKTABLE::ISOSURFACE_TABLE & table) {
+    XML_Parser parser = NULL;
+    USER_DATA user_data;
+    int polyDimension = 0;
+    int surfaceDimension = 0;
+    int numVertices = 0;
+    int numEdges = 0;
+    int numFacets = 0;
+    int numIsosurfaceVertices = 0;
+    int numEntries = 0;
+    int d = 0;
+    ostringstream msg;
 
-  try {
-    initUserData(user_data);
-    parser = XML_ParserCreate(NULL);
-    if (!parser) 
-      throwPROCEDURE_ERROR(__FUNCTION__, "Couldn't allocate memory for XML parser.");
+    try {
+      initUserData(user_data);
+      parser = XML_ParserCreate(NULL);
+      if(!parser)
+        throwPROCEDURE_ERROR(__FUNCTION__, "Couldn't allocate memory for XML parser.");
 
-    XML_SetElementHandler(parser, startElement, endElement);
-    XML_SetUserData(parser, (void *) &user_data);
+      XML_SetElementHandler(parser, startElement, endElement);
+      XML_SetUserData(parser, (void *)&user_data);
 
-    // read in version, creationDate
-    read_start_tag(in, parser, VERSION, user_data);
-    read_start_tag(in, parser, CREATION_DATE, user_data);
+      // read in version, creationDate
+      read_start_tag(in, parser, VERSION, user_data);
+      read_start_tag(in, parser, CREATION_DATE, user_data);
 
-    // read dimension
-    read_start_tag(in, parser, DIMENSION, user_data);
-    in >> polyDimension;
-    in >> surfaceDimension;
-    if (in.fail()) throwPROCEDURE_ERROR(__FUNCTION__, "Error reading dimension.");
-    table.SetDimension(polyDimension);
-    table.SetSimplexDimension(surfaceDimension);
+      // read dimension
+      read_start_tag(in, parser, DIMENSION, user_data);
+      in >> polyDimension;
+      in >> surfaceDimension;
+      if(in.fail()) throwPROCEDURE_ERROR(__FUNCTION__, "Error reading dimension.");
+      table.SetDimension(polyDimension);
+      table.SetSimplexDimension(surfaceDimension);
 
-    // read in polytope description
-    XML_SetElementHandler(parser, startPolyElement, endElement);
-    read_start_tag(in, parser, POLY, user_data);
+      // read in polytope description
+      XML_SetElementHandler(parser, startPolyElement, endElement);
+      read_start_tag(in, parser, POLY, user_data);
 
-    // read vertices
-    read_start_tag(in, parser, VERTICES, user_data);
-    read_start_tag(in, parser, NUM_VERTICES, user_data);
-    in >> numVertices;
-    if(in.fail()) throwPROCEDURE_ERROR(__FUNCTION__, "Error reading number of vertices.");
-    table.SetNumPolyVertices(numVertices);
+      // read vertices
+      read_start_tag(in, parser, VERTICES, user_data);
+      read_start_tag(in, parser, NUM_VERTICES, user_data);
+      in >> numVertices;
+      if(in.fail()) throwPROCEDURE_ERROR(__FUNCTION__, "Error reading number of vertices.");
+      table.SetNumPolyVertices(numVertices);
 
-    for (int i = 0; i < numVertices; i++) {
-      read_start_tag(in, parser, C, user_data);
-      if(in.fail()) {
-        throwPROCEDURE_ERROR(__FUNCTION__, "Error reading vertex coordinates of polyhedron vertex %d", i);
-      }
-    
-      int coord;
-      for (int d = 0; d < polyDimension; d++) {
-        in >> coord;
+      for(int i = 0; i < numVertices; i++) {
+        read_start_tag(in, parser, C, user_data);
         if(in.fail()) {
-          throwPROCEDURE_ERROR(__FUNCTION__, "Error reading polyhedron vertex %d coordinate %d", i, d);
+          throwPROCEDURE_ERROR(__FUNCTION__, "Error reading vertex coordinates of polyhedron vertex %d", i);
         }
-        table.SetPolyVertexCoord(i, d, coord);
-      }
-    }
-    // read edges
-    read_start_tag(in, parser, EDGES, user_data);
-    read_start_tag(in, parser, NUM_EDGES, user_data);
-    in >> numEdges;
-    if (in.fail()) throwPROCEDURE_ERROR(__FUNCTION__, "Error reading number of edges");
-    table.SetNumPolyEdges(numEdges);
 
-    for(int i = 0; i < numEdges; i++) {
-      read_start_tag(in, parser, V, user_data);
-      int end0, end1;
-      in >> end0;
-      in >> end1;
-      if(in.fail()) {
-        throwPROCEDURE_ERROR(__FUNCTION__, "Error reading polyhedron edge %d", i);
-      }
-      if (end0 < 0 || end1 < 0 || end0 >= numVertices || end1 >= numVertices) {
-        throwPROCEDURE_ERROR(__FUNCTION__, "Error reading polyhedron edge %d. Illegal vertex indices:%d %d", i, end0, end1);
-      }
-      table.SetPolyEdge(i, end0, end1);
-    }
-
-    // read facets
-    read_start_tag(in, parser, FACETS, user_data);
-    read_start_tag(in, parser, NUM_FACETS, user_data);
-    in >> numFacets;
-    if(in.fail()) throwPROCEDURE_ERROR(__FUNCTION__, "Error reading number of facets");
-    table.SetNumPolyFacets(numFacets);
-
-    for(int i = 0; i < numFacets; i++) {
-      read_start_tag(in, parser, F, user_data);
-      int numv;
-      in >> numv;
-      if(in.fail()) {
-        throwPROCEDURE_ERROR(__FUNCTION__, "Error reading polyhedron facet %d", i);
-      }
-      table.SetPolyNumFacetVertices(i, numv);
-      for(int j = 0; j < numv; j++) {
-        int v;
-        in >> v;
-        if(in.fail()) {
-          throwPROCEDURE_ERROR(__FUNCTION__, "Error reading polyhedron facet %d, vertex %d", i, j);
-        }
-        if (v < 0 || v >= numVertices) {
-          throwPROCEDURE_ERROR(__FUNCTION__
-                              ,"Error reading polyhedron facet %d, vertex %d. Illegal vertex index %d"
-                              , i, j, v);
-        }
-        table.SetPolyFacetVertex(i, j, v);
-      }
-    }
-
-    // read isosurface vertices
-    XML_SetElementHandler(parser, startIsoVerticesElement, endIsoVerticesElement);
-    read_start_tag(in, parser, ISO_VERTICES, user_data);
-    read_start_tag(in, parser, NUM_VERTICES, user_data);
-    in >> numIsosurfaceVertices;
-    table.SetNumIsosurfaceVertices(numIsosurfaceVertices);
-    for (int iv = 0; iv < numIsosurfaceVertices; iv++) {
-      read_isosurface_vertex(in, parser, user_data, table, iv);
-    }
-
-    // read isosurface lookup table
-    XML_SetElementHandler(parser, startTableElement, endElement);
-    read_start_tag(in, parser, TABLE, user_data);
-
-    // read encoding
-    read_start_tag(in, parser, ENCODING, user_data);
-    std::string encoding_name = read_string(in, parser, user_data);
-    if(encoding_name == table.StandardEncodingName(IJKTABLE::ISOSURFACE_TABLE::BINARY)) {
-      table.SetEncoding(IJKTABLE::ISOSURFACE_TABLE::BINARY);
-    } else if(encoding_name == table.StandardEncodingName(IJKTABLE::ISOSURFACE_TABLE::BASE3)) {
-      table.SetEncoding(IJKTABLE::ISOSURFACE_TABLE::BASE3);
-    } else {
-      table.SetNonstandardEncoding(encoding_name);
-    }
-  
-    read_start_tag(in, parser, NUM_ENTRIES, user_data);
-    in >> numEntries;
-    if(in.fail()) {
-      throwPROCEDURE_ERROR(__FUNCTION__,"Error reading number of lookup table entries");
-    }
-    table.SetNumTableEntries(numEntries);
-
-    if(table.NumTableEntries() != numEntries) {
-      throwPROCEDURE_ERROR(__FUNCTION__,"Error in number of table entries");
-    }
-    for(int it = 0; it < numEntries; it++) {
-      read_start_tag(in, parser, S, user_data);
-      int nums;
-      in >> nums;
-      if(in.fail()) {
-        throwPROCEDURE_ERROR(__FUNCTION__, "Error reading table entry %d", it);
-      }
-
-      table.SetNumSimplices(it, nums);
-
-      for (int js = 0; js < nums; js++) {
-        for (int k = 0; k <= surfaceDimension; k++) {
-          int ie;
-          in >> ie;
+        int coord;
+        for(int d = 0; d < polyDimension; d++) {
+          in >> coord;
           if(in.fail()) {
-            throwPROCEDURE_ERROR(__FUNCTION__,  "Error reading table entry %d, simplex %d, vertex/edge %d"
-                                ,it, js, k);
+            throwPROCEDURE_ERROR(__FUNCTION__, "Error reading polyhedron vertex %d coordinate %d", i, d);
           }
+          table.SetPolyVertexCoord(i, d, coord);
+        }
+      }
+      // read edges
+      read_start_tag(in, parser, EDGES, user_data);
+      read_start_tag(in, parser, NUM_EDGES, user_data);
+      in >> numEdges;
+      if(in.fail()) throwPROCEDURE_ERROR(__FUNCTION__, "Error reading number of edges");
+      table.SetNumPolyEdges(numEdges);
 
-          // NOTE: There is no check on the value of ie
+      for(int i = 0; i < numEdges; i++) {
+        read_start_tag(in, parser, V, user_data);
+        int end0, end1;
+        in >> end0;
+        in >> end1;
+        if(in.fail()) {
+          throwPROCEDURE_ERROR(__FUNCTION__, "Error reading polyhedron edge %d", i);
+        }
+        if(end0 < 0 || end1 < 0 || end0 >= numVertices || end1 >= numVertices) {
+          throwPROCEDURE_ERROR(__FUNCTION__, "Error reading polyhedron edge %d. Illegal vertex indices:%d %d", i, end0, end1);
+        }
+        table.SetPolyEdge(i, end0, end1);
+      }
 
-          table.SetSimplexVertex(it, js, k, ie);
+      // read facets
+      read_start_tag(in, parser, FACETS, user_data);
+      read_start_tag(in, parser, NUM_FACETS, user_data);
+      in >> numFacets;
+      if(in.fail()) throwPROCEDURE_ERROR(__FUNCTION__, "Error reading number of facets");
+      table.SetNumPolyFacets(numFacets);
+
+      for(int i = 0; i < numFacets; i++) {
+        read_start_tag(in, parser, F, user_data);
+        int numv;
+        in >> numv;
+        if(in.fail()) {
+          throwPROCEDURE_ERROR(__FUNCTION__, "Error reading polyhedron facet %d", i);
+        }
+        table.SetPolyNumFacetVertices(i, numv);
+        for(int j = 0; j < numv; j++) {
+          int v;
+          in >> v;
+          if(in.fail()) {
+            throwPROCEDURE_ERROR(__FUNCTION__, "Error reading polyhedron facet %d, vertex %d", i, j);
+          }
+          if(v < 0 || v >= numVertices) {
+            throwPROCEDURE_ERROR(__FUNCTION__
+              , "Error reading polyhedron facet %d, vertex %d. Illegal vertex index %d"
+              , i, j, v);
+          }
+          table.SetPolyFacetVertex(i, j, v);
+        }
+      }
+
+      // read isosurface vertices
+      XML_SetElementHandler(parser, startIsoVerticesElement, endIsoVerticesElement);
+      read_start_tag(in, parser, ISO_VERTICES, user_data);
+      read_start_tag(in, parser, NUM_VERTICES, user_data);
+      in >> numIsosurfaceVertices;
+      table.SetNumIsosurfaceVertices(numIsosurfaceVertices);
+      for(int iv = 0; iv < numIsosurfaceVertices; iv++) {
+        read_isosurface_vertex(in, parser, user_data, table, iv);
+      }
+
+      // read isosurface lookup table
+      XML_SetElementHandler(parser, startTableElement, endElement);
+      read_start_tag(in, parser, TABLE, user_data);
+
+      // read encoding
+      read_start_tag(in, parser, ENCODING, user_data);
+      string encoding_name = read_string(in, parser, user_data);
+      if(encoding_name == table.StandardEncodingName(IJKTABLE::ISOSURFACE_TABLE::BINARY)) {
+        table.SetEncoding(IJKTABLE::ISOSURFACE_TABLE::BINARY);
+      }
+      else if(encoding_name == table.StandardEncodingName(IJKTABLE::ISOSURFACE_TABLE::BASE3)) {
+        table.SetEncoding(IJKTABLE::ISOSURFACE_TABLE::BASE3);
+      }
+      else {
+        table.SetNonstandardEncoding(encoding_name);
+      }
+
+      read_start_tag(in, parser, NUM_ENTRIES, user_data);
+      in >> numEntries;
+      if(in.fail()) {
+        throwPROCEDURE_ERROR(__FUNCTION__, "Error reading number of lookup table entries");
+      }
+      table.SetNumTableEntries(numEntries);
+
+      if(table.NumTableEntries() != numEntries) {
+        throwPROCEDURE_ERROR(__FUNCTION__, "Error in number of table entries");
+      }
+      for(int it = 0; it < numEntries; it++) {
+        read_start_tag(in, parser, S, user_data);
+        int nums;
+        in >> nums;
+        if(in.fail()) {
+          throwPROCEDURE_ERROR(__FUNCTION__, "Error reading table entry %d", it);
+        }
+
+        table.SetNumSimplices(it, nums);
+
+        for(int js = 0; js < nums; js++) {
+          for(int k = 0; k <= surfaceDimension; k++) {
+            int ie;
+            in >> ie;
+            if(in.fail()) {
+              throwPROCEDURE_ERROR(__FUNCTION__, "Error reading table entry %d, simplex %d, vertex/edge %d"
+                , it, js, k);
+            }
+
+            // NOTE: There is no check on the value of ie
+
+            table.SetSimplexVertex(it, js, k, ie);
+          }
         }
       }
     }
-  } catch(...) {
-    if(parser != NULL) {
-      XML_ParserFree(parser);
+    catch(...) {
+      if(parser != NULL) {
+        XML_ParserFree(parser);
+      }
+      throw;
     }
-    throw;
+    XML_ParserFree(parser);
   }
-  XML_ParserFree(parser);
-}
+}; // namespace IJKXIO 
 
 namespace {
 
@@ -310,7 +312,7 @@ void read_end_tag(istream & in, XML_Parser parser, const XML_ELEMENT element, US
 
 // read string, starting with first non-blank character and ending
 // with next blank character
-std::string read_string(istream & in, XML_Parser parser, USER_DATA & user_data) {
+string read_string(istream & in, XML_Parser parser, USER_DATA & user_data) {
   string s;
   char c;
 
@@ -391,7 +393,7 @@ void read_isosurface_vertex(istream & in, XML_Parser parser, USER_DATA & user_da
   }
 
   if (user_data.element == L && user_data.tag_type == START_TAG) {
-    std::string label = read_string(in, parser, user_data);
+    string label = read_string(in, parser, user_data);
     table.SetIsoVertexLabel(isov, label);
   }
 }
@@ -527,122 +529,179 @@ void initUserData(USER_DATA & user_data) {
 
 // local functions
 namespace {
-  void write_date(ostream & out);
+  void write_date(ostream &out);
 }
 
-void IJKXIO::write_xit(ostream & out, const IJKTABLE::ISOSURFACE_TABLE & table) {
-  uint  dimension       = table.Dimension();
-  uint  numv            = table.Polyhedron().NumVertices();
-  uint  nume            = table.Polyhedron().NumEdges();
-  uint  numf            = table.Polyhedron().NumFacets();
-  uint  numisov         = table.NumIsosurfaceVertices();
-  uint  numTableEntries = table.NumTableEntries();
+namespace IJKXIO {
 
-  out << "<?xml version=\"1.0\"?>" << endl;
-  out << "<isotable>" << endl;
-  out << "<!-- Isosurface lookup table -->" << endl;
-  out << "<version> 1.0 </version>" << endl;
-  out << "<creationDate> ";
-  write_date(out);
-  out << " </creationDate>" << endl;
-  out << "<dimension> " << table.Dimension() << "  "
+  void write_xit(ostream &out, const IJKTABLE::ISOSURFACE_TABLE &table) {
+    uint  dimension = table.Dimension();
+    uint  numv = table.Polyhedron().NumVertices();
+    uint  nume = table.Polyhedron().NumEdges();
+    uint  numf = table.Polyhedron().NumFacets();
+    uint  numisov = table.NumIsosurfaceVertices();
+    uint  numTableEntries = table.NumTableEntries();
+
+    out << "<?xml version=\"1.0\"?>" << endl;
+    out << "<isotable>" << endl;
+    out << "<!-- Isosurface lookup table -->" << endl;
+    out << "<version> 1.0 </version>" << endl;
+    out << "<creationDate> ";
+    write_date(out);
+    out << " </creationDate>" << endl;
+    out << "<dimension> " << table.Dimension() << "  "
       << table.SimplexDimension() << " </dimension>" << endl;
-  out << "<poly>" << endl;
-  out << "<vertices>" << endl;
-  out << "<numVertices> " << numv << " </numVertices>" << endl;
-  for(uint  i = 0; i < numv; i++) {
-    out << "<c> ";
-    for(uint  d = 0; d < dimension; d++) {
-      out << table.Polyhedron().VertexCoord(i, d) << " ";
-    }
-    out << "</c>" << endl;
-  }
-  out << "</vertices>" << endl;
-  out << "<edges>" << endl;
-  out << "<numEdges> " << nume << " </numEdges>" << endl;
-  for(uint  i = 0; i < nume; i++) {
-    out << "<v> ";
-    for(uint  j = 0; j < 2; j++) {
-      out << table.Polyhedron().EdgeEndpoint(i, j) << " ";
-    }
-    out << "</v>" << endl;
-  }
-  out << "</edges>" << endl;
-  out << "<facets>" << endl;
-  out << "<numFacets> " << numf << " </numFacets>" << endl;
-  for(uint  i = 0; i < numf; i++) {
-    out << "<f> ";
-    out << table.Polyhedron().NumFacetVertices(i) << " ";
-    for(uint  jv = 0; jv < numv; jv++) {
-      if(table.Polyhedron().IsVertexInFacet(i, jv)) {
-        out << jv << " ";
-      }
-    }
-    out << "</f>" << endl;
-  }
-  out << "</facets>" << endl;
-  out << "</poly>" << endl;
-
-  out << "<isoVertices>" << endl;
-  out << "<numVertices> " << numisov << " </numVertices>" << endl;
-  for(uint  i = 0; i < numisov; i++) {
-    out << "<w> ";
-    IJKTABLE::ISOSURFACE_VERTEX::ISOSURFACE_VERTEX_TYPE vtype = table.IsosurfaceVertex(i).Type();
-    uint  iv, ie, jf, numc;
-    switch(vtype) {
-    case IJKTABLE::ISOSURFACE_VERTEX::VERTEX:
-      iv = table.IsosurfaceVertex(i).Face();
-      out << "<inV> " << iv << " </inV> ";
-      break;
-
-    case IJKTABLE::ISOSURFACE_VERTEX::EDGE:
-      ie = table.IsosurfaceVertex(i).Face();
-      out << "<inE> " << ie << " </inE> ";
-      break;
-
-    case IJKTABLE::ISOSURFACE_VERTEX::FACET:
-      jf = table.IsosurfaceVertex(i).Face();
-      out << "<inF> " << jf << " </inF> ";
-      break;
-
-    case IJKTABLE::ISOSURFACE_VERTEX::POINT:
-      numc = table.IsosurfaceVertex(i).NumCoord();
+    out << "<poly>" << endl;
+    out << "<vertices>" << endl;
+    out << "<numVertices> " << numv << " </numVertices>" << endl;
+    for(uint i = 0; i < numv; i++) {
       out << "<c> ";
-      if (numc > 0) {
-        out << "<c> ";
-        for(uint  ic = 0; ic < numc; ic++) {
-          out << table.IsosurfaceVertex(i).Coord(ic) << " ";
+      for(uint d = 0; d < dimension; d++) {
+        out << table.Polyhedron().VertexCoord(i, d) << " ";
+      }
+      out << "</c>" << endl;
+    }
+    out << "</vertices>" << endl;
+    out << "<edges>" << endl;
+    out << "<numEdges> " << nume << " </numEdges>" << endl;
+    for(uint i = 0; i < nume; i++) {
+      out << "<v> ";
+      for(uint j = 0; j < 2; j++) {
+        out << table.Polyhedron().EdgeEndpoint(i, j) << " ";
+      }
+      out << "</v>" << endl;
+    }
+    out << "</edges>" << endl;
+    out << "<facets>" << endl;
+    out << "<numFacets> " << numf << " </numFacets>" << endl;
+    for(uint i = 0; i < numf; i++) {
+      out << "<f> ";
+      out << table.Polyhedron().NumFacetVertices(i) << " ";
+      for(uint jv = 0; jv < numv; jv++) {
+        if(table.Polyhedron().IsVertexInFacet(i, jv)) {
+          out << jv << " ";
         }
-        out << "</c> ";
       }
-      break;
+      out << "</f>" << endl;
     }
+    out << "</facets>" << endl;
+    out << "</poly>" << endl;
 
-    if(table.IsosurfaceVertex(i).IsLabelSet()) {
-      out << "<L> " << table.IsosurfaceVertex(i).Label() << " </L> ";
+    out << "<isoVertices>" << endl;
+    out << "<numVertices> " << numisov << " </numVertices>" << endl;
+    for(uint i = 0; i < numisov; i++) {
+      out << "<w> ";
+      IJKTABLE::ISOSURFACE_VERTEX::ISOSURFACE_VERTEX_TYPE vtype = table.IsosurfaceVertex(i).Type();
+      uint  iv, ie, jf, numc;
+      switch(vtype) {
+      case IJKTABLE::ISOSURFACE_VERTEX::VERTEX:
+        iv = table.IsosurfaceVertex(i).Face();
+        out << "<inV> " << iv << " </inV> ";
+        break;
+
+      case IJKTABLE::ISOSURFACE_VERTEX::EDGE:
+        ie = table.IsosurfaceVertex(i).Face();
+        out << "<inE> " << ie << " </inE> ";
+        break;
+
+      case IJKTABLE::ISOSURFACE_VERTEX::FACET:
+        jf = table.IsosurfaceVertex(i).Face();
+        out << "<inF> " << jf << " </inF> ";
+        break;
+
+      case IJKTABLE::ISOSURFACE_VERTEX::POINT:
+        numc = table.IsosurfaceVertex(i).NumCoord();
+        out << "<c> ";
+        if(numc > 0) {
+          out << "<c> ";
+          for(uint ic = 0; ic < numc; ic++) {
+            out << table.IsosurfaceVertex(i).Coord(ic) << " ";
+          }
+          out << "</c> ";
+        }
+        break;
+      }
+
+      if(table.IsosurfaceVertex(i).IsLabelSet()) {
+        out << "<L> " << table.IsosurfaceVertex(i).Label() << " </L> ";
+      }
+      out << "</w>" << endl;
     }
-    out << "</w>" << endl;
-  }
-  out << "</isoVertices>" << endl;
+    out << "</isoVertices>" << endl;
 
-  out << "<table>" << endl;
-  out << "<encoding> " << table.EncodingName() << " </encoding>" << endl;
-  out << "<numEntries> " << numTableEntries << " </numEntries>" 
+    out << "<table>" << endl;
+    out << "<encoding> " << table.EncodingName() << " </encoding>" << endl;
+    out << "<numEntries> " << numTableEntries << " </numEntries>"
       << endl;
-  for(uint  it = 0; it < numTableEntries; it++) {
-    uint  nums = table.NumSimplices(it);
-    out << "<s> ";
-    out << nums << " ";
-    for(uint  js = 0; js < nums; js++) {
-      for(uint  kv = 0; kv < table.SimplexDimension()+1; kv++) {
-        out << int(table.SimplexVertex(it, js, kv)) << " ";
+    for(uint it = 0; it < numTableEntries; it++) {
+      const uint  nums = table.NumSimplices(it);
+      out << "<s> ";
+      out << nums << " ";
+      for(uint js = 0; js < nums; js++) {
+        for(uint kv = 0; kv < table.SimplexDimension() + 1; kv++) {
+          out << int(table.SimplexVertex(it, js, kv)) << " ";
+        }
+      }
+      out << "</s>" << endl;
+    }
+    out << "</table>" << endl;
+    out << "</isotable>" << endl;
+  }
+
+  void write_cpp(ostream &out, const IJKTABLE::ISOSURFACE_TABLE &table) {
+    const uint  dimension = table.Dimension();
+    const uint  numv = table.Polyhedron().NumVertices();
+    const uint  nume = table.Polyhedron().NumEdges();
+    const uint  numf = table.Polyhedron().NumFacets();
+    const uint  numisov = table.NumIsosurfaceVertices();
+    const uint  numTableEntries = table.NumTableEntries();
+    const uint numvertices = table.SimplexDimension() + 1;
+
+    StringArray varNames;
+    for(uint it = 0; it < numTableEntries; it++) {
+      const uint  nums = table.NumSimplices(it);
+      static const char *signstr = "-=+";
+      fixedarray<int> vertex_sign(numv);
+      IJKTABLE::convert2base(it, 3, vertex_sign, numv);
+      const string varName = (nums == 0) ? "NULL     " : format("vlist%04d", it);
+      string comment;
+      for(uint d = numv; d--;) {
+        comment += signstr[vertex_sign[d]];
+      }
+      varNames.push_back(varName);
+      int len;
+      if(nums == 0) {
+        out << "                                      ";
+        len = 0;
+      }
+      else {
+        out << "static const char " << varName << "[] = { " << nums;
+        for(uint js = 0; js < nums; js++) {
+          for(uint kv = 0; kv < numvertices; kv++) {
+            out << ",";
+            out.width(2);
+            out << int(table.SimplexVertex(it, js, kv));
+          }
+        }
+        out << "}; ";
+        len = 3 * nums*numvertices;
+      }
+      out.width(60 - len);
+      out << "// " << comment << endl;
+    }
+    out << "const char *isosurfaceLookup[" << numTableEntries << "] = {" << endl << "  ";
+    for(uint it = 0; it < numTableEntries; it++) {
+      if(it > 0) {
+        out << ",";
+      }
+      out << varNames[it];
+      if(it % 10 == 9) {
+        out << endl << " ";
       }
     }
-    out << "</s>" << endl;
+    out << endl << "};" << endl;
   }
-  out << "</table>" << endl;
-  out << "</isotable>" << endl;
-}
+} // namespace IJKXIO
 
 namespace {
   void write_date(ostream & out) {

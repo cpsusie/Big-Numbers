@@ -178,7 +178,7 @@ void ISOSURFACE_TABLE_POLYHEDRON::SetNumEdges(uint  nume) {
 #ifdef max
 #undef max
 #endif
-  if(nume > std::numeric_limits<EDGE_INDEX>::max()) {
+  if(nume > numeric_limits<EDGE_INDEX>::max()) {
     throwPROCEDURE_ERROR(__FUNCTION__, "Number of polyhedron edges is too large");
   }
   num_edges     = nume;
@@ -199,7 +199,7 @@ void ISOSURFACE_TABLE_POLYHEDRON::SetNumFacets(uint  numf) {
   if(numf < 1) {
     throwPROCEDURE_ERROR(__FUNCTION__, "Number of facets must be non-zero");
   }
-  if(numf > std::numeric_limits<FACET_INDEX>::max()) {
+  if(numf > numeric_limits<FACET_INDEX>::max()) {
     throwPROCEDURE_ERROR(__FUNCTION__, "Number of polyhedron facets is too large");
   }
   num_facets         = numf;
@@ -662,7 +662,7 @@ ISOSURFACE_TABLE::~ISOSURFACE_TABLE() {
   FreeAll();
 }
 
-std::string ISOSURFACE_TABLE::StandardEncodingName(const ENCODING encoding) {
+string ISOSURFACE_TABLE::StandardEncodingName(const ENCODING encoding) {
   return standard_encoding_name[encoding];
 }
 
@@ -671,7 +671,7 @@ void ISOSURFACE_TABLE::SetEncoding(const ENCODING encoding) {
   encoding_name = StandardEncodingName(encoding);
 }
 
-void ISOSURFACE_TABLE::SetNonstandardEncoding(const std::string & name) {
+void ISOSURFACE_TABLE::SetNonstandardEncoding(const string & name) {
   this->encoding = NONSTANDARD;
   encoding_name = name;
 }

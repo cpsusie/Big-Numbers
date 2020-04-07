@@ -22,6 +22,7 @@
 */
 
 #include "stdafx.h"
+#include <FileNameSplitter.h>
 #include "ijktable.h"
 #include "ijkxitIO.h"
 
@@ -74,7 +75,6 @@ void ijkgenpatch_nep(const ISOSURFACE_TABLE_POLYHEDRON                 &polyhedr
 
 
 int main(int argc, char **argv) {
-//  redirectDebugLog();
   ostringstream isotable_filename;
 
   try {
@@ -195,16 +195,12 @@ int main(int argc, char **argv) {
       }
 
       cout << isotable.Polyhedron().NumVertices()
-           << " vertices and " << isotable.Polyhedron().NumEdges()
-           << " edges."
-           << endl;
+           << " vertices and " << isotable.Polyhedron().NumEdges() << " edges" << endl;
       string table_string2 = table_string;
       if(table_string2.length() > 0) {
         table_string2[0] = toupper(table_string2[0]);
       }
-      cout << table_string2 << " has "
-           << isotable.NumTableEntries() << " entries."
-           << endl;
+      cout << table_string2 << " has " << isotable.NumTableEntries() << " entries" << endl;
     }
 
     if(verbose) {
@@ -256,47 +252,51 @@ int main(int argc, char **argv) {
         isotable_filename << "cube";
         break;
       }
-
-      isotable_filename << "." << isotable.Dimension() 
-                        << "D.xit"
-                        << ends; 
+      isotable_filename << "." << isotable.Dimension() << "D.xit" << ends; 
     } else {
       isotable_filename << output_filename;
     }
-
-    if(verbose)
-      cout << "Writing " << table_string << " to file " 
-           << isotable_filename.str() << "."
-           << endl;
-
+    if(verbose) {
+      cout << "Writing " << table_string << " to file " << isotable_filename.str() << endl;
+    }
     ofstream isotable_file(isotable_filename.str().c_str(), ios::out);
     if(!isotable_file) {
-      cerr << "Unable to open file " << isotable_filename.str() 
-           << endl;
-      cerr << "Exiting."
-           << endl;
-      exit(15);
+      cerr << "Unable to open file " << isotable_filename.str() << endl;
+      cerr << "Exiting" << endl;
+      return -1;
     }
 
     try {
       IJKXIO::write_xit(isotable_file, isotable);
     } catch(...) {
-      cerr << "Error writing file " << isotable_filename.str() 
-           << "." << endl;
+      cerr << "Error writing file " << isotable_filename.str() << endl;
       throw;
     }
-  }
-  /* *** DEBUG ***
-  catch (const ERROR & error) {
-  */
-  catch(Exception e) {
+
+    string cpp_filename = FileNameSplitter(isotable_filename.str()).setExtension("cpp").getFullPath();
+    ofstream cpp_file(cpp_filename.c_str(), ios::out);
+    if(!cpp_file) {
+      cerr << "Unable to open file " << cpp_filename << endl;
+      cerr << "Exiting" << endl;
+      return -1;
+    }
+    if(verbose) {
+      cout << "Writing " << table_string << " to file " << cpp_filename << endl;
+    }
+    try {
+      IJKXIO::write_cpp(cpp_file, isotable);
+    } catch(...) {
+      cerr << "Error writing file " << cpp_filename << endl;
+      throw;
+    }
+  } catch(Exception e) {
     cerr << e.what() << endl;
-    exit(20);
+    return -1;
   } catch (...) {
-    cerr << "Unknown error." << endl;
-    exit(50);
+    cerr << "Unknown error" << endl;
+    return -1;
   }
-  exit(0);
+  return 0;
 }
 
 void generate_isosurface_table(ISOSURFACE_TABLE &isotable) {

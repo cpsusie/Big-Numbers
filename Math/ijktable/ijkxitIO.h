@@ -29,7 +29,7 @@
 #include "ijktable.h"
 
 namespace IJKXIO {
-
-  void read_xit(std::istream & in, IJKTABLE::ISOSURFACE_TABLE & table);
-  void write_xit(std::ostream & out, const IJKTABLE::ISOSURFACE_TABLE & table);
+  void read_xit( istream &in ,       IJKTABLE::ISOSURFACE_TABLE &table);
+  void write_xit(ostream &out, const IJKTABLE::ISOSURFACE_TABLE &table);
+  void write_cpp(ostream &out, const IJKTABLE::ISOSURFACE_TABLE &table);
 };

@@ -380,7 +380,7 @@ protected:
   }
 
   /// Return standard string for the encoding.
-  static std::string StandardEncodingName(const ENCODING encoding);
+  static string StandardEncodingName(const ENCODING encoding);
 
   /// @name Set Polyhedron Functions
   void SetDimension(uint  d) {
@@ -455,7 +455,7 @@ protected:
   void SetEncoding(const ENCODING encoding);
   void SetBinaryEncoding() { SetEncoding(BINARY); }
   void SetBase3Encoding()  { SetEncoding(BASE3);  }
-  void SetNonstandardEncoding(const std::string & name);
+  void SetNonstandardEncoding(const string &name);
   virtual void SetNumTableEntries(uint  num_table_entries);
   void SetNumSimplices( TABLE_INDEX it, uint  nums);
   void SetSimplexVertex(TABLE_INDEX it, uint  is, uint  iv, ISOSURFACE_VERTEX_INDEX isov);
@@ -485,7 +485,7 @@ protected:
   virtual void FreeAll();
 };
 
-typedef ISOSURFACE_TABLE * ISOSURFACE_TABLE_PTR;
+typedef ISOSURFACE_TABLE *ISOSURFACE_TABLE_PTR;
 
 // **************************************************
 // ISOSURFACE EDGE TABLE
@@ -524,12 +524,12 @@ public:
     return edge_entry[it].num_edges;
   }
   // it = table entry index. ie = edge index. iend = endpoint index (0 or 1)
-  EDGE_INDEX EdgeEndpoint(TABLE_INDEX it, uint  ie, uint  iend) const {
+  EDGE_INDEX EdgeEndpoint(TABLE_INDEX it, uint ie, uint iend) const {
     return edge_entry[it].edge_endpoint_list[2*ie+iend];
   }
 
   // set isosurface table functions
-  virtual void SetNumTableEntries(uint  num_table_entries);
+  virtual void SetNumTableEntries(uint num_table_entries);
 
   // generate edge lists
   void GenEdgeLists();
