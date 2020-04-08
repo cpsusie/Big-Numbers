@@ -13,7 +13,7 @@
 #include <DebugLog.h>
 #include <TinyBitSet.h>
 #include <MFCUtil/ColorSpace.h>
-#include <D3DGraphics/IsoSurfacePolygonizer.h>
+#include <D3DGraphics/IsoSurfacePolygonizerStandard.h>
 
 namespace ISOSURFACE_POLYGONIZER_STANDARD {
 
@@ -158,14 +158,14 @@ void IsoSurfacePolygonizer::addSurfaceVertices(const StackedCube &cube) {
 // if surface crosses face, compute other four corners of adjacent cube
 // and add new cube to cube stack
 void IsoSurfacePolygonizer::testFace(int i, int j, int k, const StackedCube &oldCube, CubeFace face, CubeCorner c1, CubeCorner c2, CubeCorner c3, CubeCorner c4) {
-  static int facebit[6] = {2, 2, 1, 1, 0, 0};
-  int        bit        = facebit[face];
-  bool       c1Positive = oldCube.m_corners[c1]->m_positive;
+  static int facebit[6]    = {2, 2, 1, 1, 0, 0};
+  int        bit           = facebit[face];
+  const  GridLabel c1Label = oldCube.m_corners[c1]->m_label;
 
   // test if no surface crossing, cube out of bounds, or already visited:
-  if(oldCube.m_corners[c2]->m_positive == c1Positive
-  && oldCube.m_corners[c3]->m_positive == c1Positive
-  && oldCube.m_corners[c4]->m_positive == c1Positive) {
+  if(oldCube.m_corners[c2]->m_label == c1Label
+  && oldCube.m_corners[c3]->m_label == c1Label
+  && oldCube.m_corners[c4]->m_label == c1Label) {
     return;
   }
 
@@ -220,19 +220,19 @@ void IsoSurfacePolygonizer::doTetra(const HashedCubeCorner &a, const HashedCubeC
   m_statistics.m_doTetraCalls++;
 
   BYTE index = 0;
-  if(a.m_positive) index |= 8;
-  if(b.m_positive) index |= 4;
-  if(c.m_positive) index |= 2;
-  if(d.m_positive) index |= 1;
+  if(a.isPositive()) index |= 8;
+  if(b.isPositive()) index |= 4;
+  if(c.isPositive()) index |= 2;
+  if(d.isPositive()) index |= 1;
   // index is now 4-bit number representing one of the 16 possible cases
 
   int ab, ac, ad, bc, bd, cd;
-  if(a.m_positive != b.m_positive) ab = getVertexId(a, b);
-  if(a.m_positive != c.m_positive) ac = getVertexId(a, c);
-  if(a.m_positive != d.m_positive) ad = getVertexId(a, d);
-  if(b.m_positive != c.m_positive) bc = getVertexId(b, c);
-  if(b.m_positive != d.m_positive) bd = getVertexId(b, d);
-  if(c.m_positive != d.m_positive) cd = getVertexId(c, d);
+  if(hasOppositeSign(a, b)) ab = getVertexId(a, b);
+  if(hasOppositeSign(a, c)) ac = getVertexId(a, c);
+  if(hasOppositeSign(a, d)) ad = getVertexId(a, d);
+  if(hasOppositeSign(b, c)) bc = getVertexId(b, c);
+  if(hasOppositeSign(b, d)) bd = getVertexId(b, d);
+  if(hasOppositeSign(c, d)) cd = getVertexId(c, d);
   // 14 productive tetrahedral cases (0000 and 1111 do not yield polygons
 
   TriangleStrip ts;
@@ -322,6 +322,10 @@ void IsoSurfacePolygonizer::resetTables() {
 }
 
 void IsoSurfacePolygonizer::pushCube(const StackedCube &cube) {
+#ifdef VALIDATE_CUBES
+  cube.validate();
+#endif //  VALIDATE_CUBES
+
   m_cubeStack.push(cube);
   m_statistics.m_cubeCount++;
 #ifdef DUMP_CUBES
@@ -374,7 +378,7 @@ IsoSurfaceTest IsoSurfacePolygonizer::findStartPoint(bool positive, const Point3
     result.y = p.y + randDouble(-range, range, m_rnd);
     result.z = p.z + randDouble(-range, range, m_rnd);
     result.setValue(evaluate(result));
-    if(result.m_positive == positive) {
+    if(result.isPositive() == positive) {
       return result;
     }
     range *= step; // slowly expand search outwards
@@ -459,11 +463,12 @@ bool IsoSurfacePolygonizer::addToDoneSet(const Point3DKey &key) {
 // return saved index if any; else calculate and save vertex for later use
 UINT IsoSurfacePolygonizer::getVertexId(const HashedCubeCorner &c1, const HashedCubeCorner &c2) {
 #ifdef VALIDATE_OPPOSITESIGN
-  if(c1.m_positive == c2.m_positive) {
-    throwException(_T("getVertexId:corners have same sign. c1:%s, c2:%s"), c1.toString().cstr(), c2.toString().cstr());
+  if(!hasOppositeSign(c1, c2)) {
+    throwException(_T("%s:Corners doesn't have opposite sign. c1:%s, c2:%s")
+                  ,__TFUNCTION__
+                  ,c1.toString().cstr(), c2.toString().cstr());
   }
 #endif
-
   const CubeEdgeHashKey edgeKey(c1.m_key, c2.m_key);
   const UINT *p = m_edgeMap.get(edgeKey);
   if(p != NULL) {
@@ -501,12 +506,12 @@ Point3D IsoSurfacePolygonizer::getNormal(const Point3D &point) {
 // Assume sign(v1) = -sign(v2)
 Point3D IsoSurfacePolygonizer::converge(const Point3DWithValue &p1, const Point3DWithValue &p2, int itCount) {
 #ifdef _DEBUG
-  if(p1.m_positive == p2.m_positive) {
+  if(!hasOppositeSign(p1, p2)) {
     throwInvalidArgumentException(__TFUNCTION__, _T("%s has same sign as %s"), p1.toString().cstr(), p2.toString().cstr());
   }
 #endif // _DEBUG
   Point3DWithValue x1, x2;
-  if(p1.m_positive) {
+  if(p1.isPositive()) {
     x1 = p1;
     x2 = p2;
   } else {
@@ -533,7 +538,7 @@ Point3D IsoSurfacePolygonizer::converge(const Point3DWithValue &p1, const Point3
 // convergeStartPoint: from two points of differing sign, converge to zero crossing
 Point3D IsoSurfacePolygonizer::convergeStartPoint(const Point3DWithValue &p1, const Point3DWithValue &p2, int itCount) {
   Point3D pos, neg;
-  if(p1.m_positive) {
+  if(p1.isPositive()) {
     pos = p1;
     neg = p2;
   } else {
@@ -670,17 +675,19 @@ String toString(CubeCorner cb) {
 }
 
 
-#define TOLERANCE 1e-10
-
 UINT StackedCube::calculateIndex() const {
   UINT index = 0;
   for(int i = 0; i < ARRAYSIZE(m_corners); i++)  {
-    if(m_corners[i]->m_positive) {
+    if(m_corners[i]->isPositive()) {
       index |= (1<<i);
     }
   }
   return index;
 }
+
+#ifdef VALIDATE_CUBES
+
+#define TOLERANCE 1e-10
 
 void StackedCube::validate() {
   if((fabs(m_corners[LBN]->x - m_corners[LTN]->x) > TOLERANCE)
@@ -713,6 +720,7 @@ void StackedCube::validate() {
     throwException(_T("Cube not valid\n%s"), toString().cstr());
   }
 }
+#endif // VALIDATE_CUBES
 
 String StackedCube::toString() const {
   String result = format(_T("Cube:Key:%s. Size:%s\n"), m_key.toString().cstr(), getSize().toString(5).cstr());

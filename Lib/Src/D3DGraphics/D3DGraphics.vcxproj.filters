@@ -219,9 +219,6 @@
     <ClCompile Include="IsoSurfaceMeshBuilder.cpp">
       <Filter>Source Files\Mesh</Filter>
     </ClCompile>
-    <ClCompile Include="IsoSurfacePolygonizer.cpp">
-      <Filter>Source Files\Mesh</Filter>
-    </ClCompile>
     <ClCompile Include="Function2DSurfaceMeshBuilder.cpp">
       <Filter>Source Files\Mesh</Filter>
     </ClCompile>
@@ -241,6 +238,9 @@
       <Filter>Source Files\Mesh</Filter>
     </ClCompile>
     <ClCompile Include="IsoSurfaceSnapMCLookupTable.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="IsoSurfacePolygonizerStandard.cpp">
       <Filter>Source Files\Mesh</Filter>
     </ClCompile>
   </ItemGroup>
@@ -400,10 +400,13 @@
     <ClInclude Include="..\..\Include\D3DGraphics\D3SceneEditorPickedInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\D3DGraphics\IsosurfacePolygonizer.h">
+    <ClInclude Include="..\..\Include\D3DGraphics\IsosurfacePolygonizerSnapMC.h">
       <Filter>Header Files\Mesh</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\D3DGraphics\IsosurfacePolygonizerSnapMC.h">
+    <ClInclude Include="..\..\Include\D3DGraphics\IsosurfacePolygonizerStandard.h">
+      <Filter>Header Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\IsosurfacePolygonizer.h">
       <Filter>Header Files\Mesh</Filter>
     </ClInclude>
   </ItemGroup>

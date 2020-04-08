@@ -2,14 +2,8 @@
 #include <Math/Expression/ExpressionWrapper.h>
 #include <D3DGraphics/MeshBuilder.h>
 #include <D3DGraphics/IsoSurface.h>
-#ifdef USE_SNAPMC
-#include <D3DGraphics/IsoSurfacePolygonizerSnapMC.h>
-using namespace ISOSURFACE_POLYGONIZER_SNAPMC;
-#else
-#include <D3DGraphics/IsoSurfacePolygonizer.h>
-using namespace ISOSURFACE_POLYGONIZER_STANDARD;
-#endif //  USE_SNAPMC
-#include "D3DGraphics/MeshArrayJobMonitor.h"
+#include <D3DGraphics/IsosurfacePolygonizer.h>
+#include <D3DGraphics/MeshArrayJobMonitor.h>
 
 /* ---------------- Implicit surface polygonizer supportfunctions ------------------- */
 

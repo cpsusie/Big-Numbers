@@ -18,7 +18,7 @@ private:
   const float       m_cellSize;
   int               m_materialId;
   D3DXVECTOR3       m_center;
-  BitSet8           m_positive;
+  GridLabel         m_cornerLabel[8];
   static D3Cube createCube(float cellSize);
 public:
   OctaObject(D3SceneObjectVisual *parent, float cellSize);
@@ -30,8 +30,8 @@ public:
   inline const D3DXVECTOR3 *getCornerCenterArray() const {
     return m_cornerCenterArray;
   }
-  inline bool isCornerPositive(UINT index) const {
-    return m_positive.contains(index);
+  inline GridLabel getCornerLabel(UINT index) const {
+    return m_cornerLabel[index];
   }
   inline const D3DXVECTOR3 &getCenter() const {
     return m_center;
@@ -48,7 +48,11 @@ public:
 class CornerMarkObject : public D3SceneObjectSolidBox {
 private:
   OctaObject &m_octaObject;
+#ifdef USE_SNAPMC
+  int         m_materialId[3];
+#else
   int         m_materialId[2];
+#endif // USE_SNAPMC
   int         m_cornerIndex;
   static D3Cube createCube(float cellSize);
 public:
@@ -68,9 +72,18 @@ OctaObject::OctaObject(D3SceneObjectVisual *parent, float cellSize)
 {
   m_materialId = getScene().addMaterialWithColor(D3D_BLUE);
 
-  const D3Cube cube = createCube(cellSize);
-  D3DXVECTOR3 lbn = cube.getMin(), rtf = cube.getMax();
-
+  const D3Cube      cube = createCube(cellSize);
+  const D3DXVECTOR3 lbn  = cube.getMin(), rtf = cube.getMax();
+#ifdef USE_SNAPMC // x={left,right}, y={near,far}, z={bottom,top}
+  m_cornerCenterArray[LBN] = D3DXVECTOR3(lbn.x, lbn.y, lbn.z); // left  bottom near corner
+  m_cornerCenterArray[LBF] = D3DXVECTOR3(lbn.x, rtf.y, lbn.z); // left  bottom far  corner
+  m_cornerCenterArray[LTN] = D3DXVECTOR3(lbn.x, lbn.y, rtf.z); // left  top    near corner
+  m_cornerCenterArray[LTF] = D3DXVECTOR3(lbn.x, rtf.y, rtf.z); // left  top    far  corner
+  m_cornerCenterArray[RBN] = D3DXVECTOR3(rtf.x, lbn.y, lbn.z); // right bottom near corner
+  m_cornerCenterArray[RBF] = D3DXVECTOR3(rtf.x, rtf.y, lbn.z); // right bottom far  corner
+  m_cornerCenterArray[RTN] = D3DXVECTOR3(rtf.x, lbn.y, rtf.z); // right top    near corner
+  m_cornerCenterArray[RTF] = D3DXVECTOR3(rtf.x, rtf.y, rtf.z); // right top    far  corner
+#else
   m_cornerCenterArray[LBN] = D3DXVECTOR3(lbn.x, lbn.y, lbn.z); // left  bottom near corner
   m_cornerCenterArray[LBF] = D3DXVECTOR3(lbn.x, lbn.y, rtf.z); // left  bottom far  corner
   m_cornerCenterArray[LTN] = D3DXVECTOR3(lbn.x, rtf.y, lbn.z); // left  top    near corner
@@ -79,6 +92,7 @@ OctaObject::OctaObject(D3SceneObjectVisual *parent, float cellSize)
   m_cornerCenterArray[RBF] = D3DXVECTOR3(rtf.x, lbn.y, rtf.z); // right bottom far  corner
   m_cornerCenterArray[RTN] = D3DXVECTOR3(rtf.x, rtf.y, lbn.z); // right top    near corner
   m_cornerCenterArray[RTF] = D3DXVECTOR3(rtf.x, rtf.y, rtf.z); // right top    far  corner
+#endif // USE_SNAPMC
 
   m_cornerMark = new CornerMarkObject(this); TRACE_NEW(m_cornerMark);
 }
@@ -95,12 +109,9 @@ D3Cube OctaObject::createCube(float cellSize) {
 
 void OctaObject::setOctagon(const Octagon &octa) {
   m_center = octa.getCube().getCenter();
-  m_positive.clear();
   const UINT n = octa.getCornerCount();
   for(UINT i = 0; i < n; i++) {
-    if(octa.getHashedCorner(i).m_positive) {
-      m_positive.add(i);
-    }
+    m_cornerLabel[i] = octa.getHashedCorner(i).m_label;
   }
   D3World w(m_parent->getWorld());
   m_world = w.setPos(w.getPos() + rotate(m_center, w.getOrientation()));
@@ -113,20 +124,28 @@ void OctaObject::draw() {
   }
 }
 
-#define NEGATIVECOLOR D3DCOLOR_XRGB(120,25,30)
-#define POSITIVECOLOR D3DCOLOR_XRGB(33,150,28)
+#define NEGATIVECOLOR D3DCOLOR_XRGB(120, 25, 30)
+#define ZEROCOLOR     D3DCOLOR_XRGB(110,110,110)
+#define POSITIVECOLOR D3DCOLOR_XRGB( 33,150, 28)
 
 CornerMarkObject::CornerMarkObject(OctaObject *parent)
 : D3SceneObjectSolidBox(parent, createCube(parent->getCellSize() / 10), _T("CornerMark"))
 , m_octaObject(*parent)
 {
-  m_materialId[0] = getScene().addMaterialWithColor(NEGATIVECOLOR);
-  m_materialId[1] = getScene().addMaterialWithColor(POSITIVECOLOR);
+#ifdef USE_SNAPMC
+  m_materialId[V_NEGATIVE] = getScene().addMaterialWithColor(NEGATIVECOLOR);
+  m_materialId[V_ZERO    ] = getScene().addMaterialWithColor(ZEROCOLOR    );
+  m_materialId[V_POSITIVE] = getScene().addMaterialWithColor(POSITIVECOLOR);
+#else
+  m_materialId[false     ] = getScene().addMaterialWithColor(NEGATIVECOLOR);
+  m_materialId[true      ] = getScene().addMaterialWithColor(POSITIVECOLOR);
+#endif // USE_SNAPMC
 }
 
 CornerMarkObject::~CornerMarkObject() {
-  getScene().removeMaterial(m_materialId[0]);
-  getScene().removeMaterial(m_materialId[1]);
+  for(size_t i = 0; i < ARRAYSIZE(m_materialId); i++) {
+    getScene().removeMaterial(m_materialId[i]);
+  }
 }
 
 D3Cube CornerMarkObject::createCube(float cellSize) {
@@ -135,7 +154,7 @@ D3Cube CornerMarkObject::createCube(float cellSize) {
 }
 
 int CornerMarkObject::getMaterialId() const {
-  return m_materialId[m_octaObject.isCornerPositive(m_cornerIndex) ? 1 : 0];
+  return m_materialId[m_octaObject.getCornerLabel(m_cornerIndex)];
 }
 
 D3DXMATRIX &CornerMarkObject::getWorld() {
