@@ -8,66 +8,114 @@
 #include <Math/Cube3D.h>
 #include <DebugLog.h>
 
-namespace ISOSURFACE_POLYGONIZER_STANDARD {
+namespace ISOSURFACE_POLYGONIZER_SNAPMC {
+
+typedef enum {                        // x y z
+  LBN   // left  bottom near corner  <c> 0 0 0 </c> 0
+ ,RBN   // right bottom near corner  <c> 2 0 0 </c> 1
+ ,LBF   // left  bottom far  corner  <c> 0 2 0 </c> 2
+ ,RBF   // right bottom far  corner  <c> 2 2 0 </c> 3
+ ,LTN   // left  top    near corner  <c> 0 0 2 </c> 4
+ ,RTN   // right top    near corner  <c> 2 0 2 </c> 5
+ ,LTF   // left  top    far  corner  <c> 0 2 2 </c> 6
+ ,RTF   // right top    far  corner  <c> 2 2 2 </c> 7
+} CubeCorner;
 
 typedef enum {
-  LFACE // left   direction : -x, -i
- ,RFACE // right  direction : +x, +i
- ,BFACE // bottom direction : -y, -j
- ,TFACE // top    direction : +y, +j
- ,NFACE // near   direction : -z, -k
- ,FFACE // far    direction : +z, +k
+  LFACE // left   direction : -x, -i <f> 0 2 6 4 </f> LBN LBF LTF LTN  0
+ ,RFACE // right  direction : +x, +i <f> 1 3 7 5 </f> RBN RBF RTF RTN  1
+ ,NFACE // near   direction : -y, -j <f> 0 1 5 4 </f> LBN RBN RTN LTN  2
+ ,FFACE // far    direction : +y, +j <f> 2 3 7 6 </f> LBF RBF RTF LTF  3
+ ,BFACE // bottom direction : -z, -k <f> 0 1 3 2 </f> LBN RBN RBF LBF  4
+ ,TFACE // top    direction : +z, +k <f> 4 5 7 6 </f> LTN RTN RTF LTF  5
 } CubeFace;
 
-typedef enum {
-  LBN   // left  bottom near corner
- ,LBF   // left  bottom far  corner
- ,LTN   // left  top    near corner
- ,LTF   // left  top    far  corner
- ,RBN   // right bottom near corner
- ,RBF   // right bottom far  corner
- ,RTN   // right top    near corner
- ,RTF   // right top    far  corner
-} CubeCorner;
 
 String toString(CubeCorner cb);
 
-// the LBN corner of cube (i, j, k), corresponds with location
+// the LBN corner of cube (i, k, j), corresponds with location
 // (start.x+(i-.5)*size, start.y+(j-.5)*size, start.z+(k-.5)*size)
 
 //**** Cubical Polygonization ****
 typedef enum {
-  LB    // left   bottom edge 0
- ,LT    // left   top    edge 1
- ,LN    // left   near   edge 2
- ,LF    // left   far    edge 3
- ,RB    // right  bottom edge 4
- ,RT    // right  top    edge 5
- ,RN    // right  near   edge 6
- ,RF    // right  far    edge 7
- ,BN    // bottom near   edge 8
- ,BF    // bottom far    edge 9
- ,TN    // top    near   edge 10
- ,TF    // top    far    edge 11
+  BN    // bottom near   edge  0 <v> 0 1 </v> LBN RBN = BN
+ ,LB    // left   bottom edge  1 <v> 0 2 </v> LBN LBF = LB
+ ,RB    // right  bottom edge  2 <v> 1 3 </v> RBN RBF = RB
+ ,BF    // bottom far    edge  3 <v> 2 3 </v> LBF RBF = BF
+ ,LN    // left   near   edge  4 <v> 0 4 </v> LBN LTN = LN
+ ,RN    // right  near   edge  5 <v> 1 5 </v> RBN RTN = RN
+ ,LF    // left   far    edge  6 <v> 2 6 </v> LBF LTF = LF
+ ,RF    // right  far    edge  7 <v> 3 7 </v> RBF RTF = RF
+ ,TN    // top    near   edge  8 <v> 4 5 </v> LTN RTN = TN
+ ,LT    // left   top    edge  9 <v> 4 6 </v> LTN LTF = LT
+ ,RT    // right  top    edge 10 <v> 5 7 </v> RTN RTF = RT
+ ,TF    // top    far    edge 11 <v> 6 7 </v> LTF RTF = TF
  ,NN    // No edge
 } CubeEdge;
 
+typedef enum {
+  CVLBN   // corner vertex 0
+ ,CVRBN   // corner vertex 1
+ ,CVLBF   // corner vertex 2
+ ,CVRBF   // corner vertex 3
+ ,CVLTN   // corner vertex 4
+ ,CVRTN   // corner vertex 5
+ ,CVLTF   // corner vertex 6
+ ,CVRTF   // corner vertex 7
+ ,EVBN    // edge vertex   8   midpoint edge BN
+ ,EVLB    // edge vertex   9   midpoint edge LB
+ ,EVRB    // edge vertex   10  midpoint edge RB
+ ,EVBF    // edge vertex   11  midpoint edge BF
+ ,EVLN    // edge vertex   12  midpoint edge LN
+ ,EVRN    // edge vertex   13  midpoint edge RN
+ ,EVLF    // edge vertex   14  midpoint edge LF
+ ,EVRF    // edge vertex   15  midpoint edge RF
+ ,EVTN    // edge vertex   16  midpoint edge TN
+ ,EVLT    // edge vertex   17  midpoint edge LT
+ ,EVRT    // edge vertex   18  midpoint edge RN
+ ,EVTF    // edge vertex   19  midpoint edge TF
+} IsoVertex;
+
+inline bool isdge(IsoVertex iv) {
+  return iv > 7;
+}
+inline bool isCorner(IsoVertex iv) {
+  return iv <= 7;
+}
+
+typedef enum {
+  V_NEGATIVE
+ ,V_ZERO
+ ,V_POSITIVE
+} GridLabel;
+
+inline bool hasOppositeSign(GridLabel l1, GridLabel l2) {
+  return (l1 ^ l2) == 2;
+}
+
 class Point3DWithValue : public Point3D {
 public:
-  double m_value;    // Function value at m_point
-  bool   m_positive;
+  double    m_value;    // Function value at m_point
+  GridLabel m_label;
   inline Point3DWithValue() {
   }
   inline Point3DWithValue(const Point3D &p) : Point3D(p) {
   }
   inline void setValue(double v) {
-    m_positive = (m_value = v) > 0;
+    m_label = (m_value = v) < 0 ? V_NEGATIVE : (v > 0) ? V_POSITIVE : V_ZERO;
+  }
+  inline bool isPositive() const {
+    return m_label == V_POSITIVE;
   }
   inline String toString(int precision=6) const {
     return format(_T("P:(%+.*le,%+.*le,%+.*le), V:%+.*le")
                  ,precision,x,precision,y,precision,z,precision,m_value);
   }
 };
+
+inline bool hasOppositeSign(const Point3DWithValue &p1, const Point3DWithValue &p2) {
+  return hasOppositeSign(p1.m_label, p2.m_label);
+}
 
 // Test the function for a signed value
 class IsoSurfaceTest : public Point3DWithValue {
@@ -143,7 +191,8 @@ public:
 //#define DUMP_FACEARRAY
 //#define VALIDATE_OPPOSITESIGN
 //#define VALIDATE_PUTFACE
-//#define DEBUG_POLYGONIZER // shoud be defined in compile-options, to make it defined in D3FunctionPlotter too
+//#define VALIDATE_CUBES
+//#define DEBUG_POLYGONIZER // should be defined in compile-options, to make it defined in D3FunctionPlotter too
 
 class CubeEdgeHashKey {
 private:
@@ -220,6 +269,9 @@ class StackedCube {
 private:
   mutable int m_index;
   UINT calculateIndex() const;
+#ifdef VALIDATE_CUBES
+  void verifyCubeConstraint(int line, const TCHAR *expr) const;
+#endif // VALIDATE_CUBES
 public:
   // Lattice location of cube
   Point3DKey              m_key;
@@ -234,7 +286,7 @@ public:
   }
   inline bool intersectSurface() const {
     const UINT index = getIndex();
-    return index && (index < 255);
+    return index && (index < 6561);
   }
   inline bool contains(const Point3D &p) const {
     return (*m_corners[LBN] <= p) && (p <= *m_corners[RTF]);
@@ -242,13 +294,16 @@ public:
   inline bool contains(const StackedCube &cube) const {
     return contains(*cube.m_corners[LBN]) && contains(*cube.m_corners[RTF]);
   }
-  void validate();
   inline Point3D getSize() const {
     return *m_corners[RTF] - *m_corners[LBN];
   }
   inline Point3DP getCenter() const {
     return (*m_corners[LBN] + *m_corners[RTF])/2;
   }
+#ifdef VALIDATE_CUBES
+  void validate() const;
+#endif // VALIDATE_CUBES
+
   String toString() const;
 };
 
@@ -370,48 +425,43 @@ public:
   String toString() const;
 };
 
-class PolygonizerCubeArray : public Array<CompactArray<char> > {
-private:
-  const BYTE m_index;
+class Simplex {
 public:
-  PolygonizerCubeArray(UINT index);
-#ifdef DUMP_CUBETABLE
-  String toString() const;
-#endif
+  IsoVertex m_v[3];
+  inline Simplex(const BYTE *vp) {
+    m_v[0] = (IsoVertex)*(vp++);
+    m_v[1] = (IsoVertex)*(vp++);
+    m_v[2] = (IsoVertex)*(vp++);
+  }
+};
+class SimplexArray {
+private:
+  const BYTE  m_n;
+  const BYTE *m_triangles;
+public:
+  inline SimplexArray(const char *lookupEntry)
+    : m_n(*lookupEntry)
+    , m_triangles((BYTE*)(lookupEntry + 1))
+  {
+  }
+  inline UINT size() const {
+    return m_n;
+  }
+  inline Simplex getSimplex(UINT i) const {
+    if(i >= size()) {
+      throwInvalidArgumentException(__TFUNCTION__, _T("index %u out of range, size=%u"), i, size());
+    }
+    return Simplex(m_triangles + 3 * i);
+  }
 };
 
 class PolygonizerCubeArrayTable {
 private:
-  mutable PolygonizerCubeArray *m_table[256];
-  void createTable() const {
-    for(UINT i = 0; i < ARRAYSIZE(m_table); i++) {
-      m_table[i] = new PolygonizerCubeArray(i); TRACE_NEW(m_table[i]);
-    }
-#ifdef DUMP_CUBETABLE
-    debugLog(_T("CubeArray:\n%s"), toString().cstr());
-#endif
-  }
-  void destroyTable() {
-    for(UINT i = 0; i < ARRAYSIZE(m_table); i++) {
-      SAFEDELETE(m_table[i]);
-    }
-  }
-  inline bool isTableCreated() const {
-    return m_table[0] != NULL;
-  }
+  static const char *s_isosurfaceLookup[6561];
 public:
-  inline PolygonizerCubeArrayTable() {
-    createTable(); // memset(m_table, 0, sizeof(m_table));
+  inline SimplexArray get(UINT index) const {
+    return SimplexArray(s_isosurfaceLookup[index]);
   }
-  ~PolygonizerCubeArrayTable() {
-    destroyTable();
-  }
-  inline const PolygonizerCubeArray &get(UINT index) const {
-    return *m_table[index];
-  }
-#ifdef DUMP_CUBETABLE
-  String toString() const;
-#endif
 };
 
 class IsoSurfacePolygonizer {
@@ -444,7 +494,7 @@ private:
   JavaRandom                                   m_rnd;
 
   Point3D             findStartPoint(const Point3D &start);
-  IsoSurfaceTest      findStartPoint(bool positive, const Point3D &start);
+  IsoSurfaceTest      findStartPoint(GridLabel label, const Point3D &start);
   bool                putInitialCube();
   void                addSurfaceVertices(const StackedCube &cube);
   inline void         doTetra(const StackedCube &cube, CubeCorner c1, CubeCorner c2, CubeCorner c3, CubeCorner c4) {
@@ -539,4 +589,4 @@ public:
   }
 };
 
-};
+}; // namespace

@@ -389,7 +389,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_WINDOWS;_DEBUG;_AFXEXT;_CRT_SECURE_NO_WARNINGS=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINDOWS;_DEBUG;_AFXEXT;_CRT_SECURE_NO_WARNINGS=1;USE_SNAPMC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
       <BrowseInformation>true</BrowseInformation>
@@ -432,7 +432,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_WINDOWS;_DEBUG;_AFXEXT;_CRT_SECURE_NO_WARNINGS=1;DEBUG_POLYGONIZER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINDOWS;_DEBUG;_AFXEXT;_CRT_SECURE_NO_WARNINGS=1;DEBUG_POLYGONIZER;USE_SNAPMC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
       <BrowseInformation>true</BrowseInformation>
@@ -800,8 +800,10 @@
     <ClCompile Include="D3SceneEditorSplitWindow.cpp" />
     <ClCompile Include="D3World.cpp" />
     <ClCompile Include="Face.cpp" />
+    <ClCompile Include="IsoSurfaceSnapMCLookupTable.cpp" />
     <ClCompile Include="FVF.cpp" />
     <ClCompile Include="IsoCurve.cpp" />
+    <ClCompile Include="IsoSurfacePolygonizerSnapMC.cpp" />
     <ClCompile Include="LightDlg.cpp" />
     <ClCompile Include="D3Material.cpp" />
     <ClCompile Include="MaterialDlg.cpp" />
@@ -891,6 +893,7 @@
     <ClInclude Include="..\..\Include\D3DGraphics\IsoCurve.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\IsoSurface.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\IsosurfacePolygonizer.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\IsosurfacePolygonizerSnapMC.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\LightDlg.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3Material.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\MaterialDlg.h" />
