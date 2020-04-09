@@ -1,6 +1,6 @@
 #include "pch.h"
-
 #include <ByteFile.h>
+#include <ExternProcess.h>
 #include <MFCUtil/ColorDlg.h>
 #include <D3DGraphics/D3ToString.h>
 #include <D3DGraphics/LightDlg.h>
@@ -427,6 +427,7 @@ BOOL D3SceneEditor::PreTranslateMessage(MSG *pMsg) {
     case ID_OBJECT_RESETORIENTATION       : OnObjectResetOrientation()          ; return true;
     case ID_OBJECT_RESETALL               : OnObjectResetAll()                  ; return true;
     case ID_OBJECT_ADJUSTMATERIAL         : OnObjectEditMaterial()              ; return true;
+    case ID_OBJECT_SHOWDATA               : OnObjectShowData()                  ; return true;
     case ID_OBJECT_REMOVE                 : OnObjectRemove()                    ; return true;
     case ID_OBJECT_SETCENTEROFROTATION    : OnObjectSetCenterOfRotation()       ; return true;
     case ID_OBJECT_RESETCENTEROFROTATION  : OnObjectResetCenterOfRotation()     ; return true;
@@ -1261,6 +1262,20 @@ void D3SceneEditor::mapDialogHide() {
 void D3SceneEditor::OnObjectEditMaterial() {
   if(hasObj() && getCurrentObj()->hasMaterial()) {
     mapDialogShow(getCurrentObj());
+  }
+}
+
+static void showText(const String &str) {
+  const String fileName = _T("c:\\temp\\fisk.txt");
+  FILE *f = MKFOPEN(fileName, _T("w"));
+  _ftprintf(f, _T("%s"), str.cstr());
+  fclose(f);
+  ExternProcess::run(false, _T("c:\\windows\\system32\\notepad.exe"), fileName.cstr(), NULL);
+}
+
+void D3SceneEditor::OnObjectShowData() {
+  if(hasObj() && getCurrentObj()->hasMesh()) {
+    showText(::toString(getCurrentObj()->getMesh()));
   }
 }
 

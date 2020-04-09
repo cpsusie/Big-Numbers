@@ -236,13 +236,16 @@ int formatToSize(D3DFORMAT f) {
   }
 }
 
-String toString(const D3DVERTEXBUFFER_DESC &desc) {
-  return format(_T("Type      :%s\n"
-                   "Format    :%s\n"
-                   "Pool      :%s\n"
-                   "Usage     :%s\n"
-                   "FVF       :%s\n"
-                   "Buffersize:%s bytes\n")
+String toString(const D3DVERTEXBUFFER_DESC &desc, bool multiLines) {
+  const TCHAR *formatStr = multiLines
+    ? _T("Type  :%s\n"
+         "Format:%s\n"
+         "Pool  :%s\n"
+         "Usage :%s\n"
+         "FVF   :%s\n"
+         "Size  :%s bytes\n")
+    : _T("Type:%s,Format:%s,Pool:%s,Usage:%s,FVF:%s,Size:%s bytes");
+  return format(formatStr
                ,toString(     desc.Type  ).cstr()
                ,toString(     desc.Format).cstr()
                ,toString(     desc.Pool  ).cstr()
@@ -252,12 +255,15 @@ String toString(const D3DVERTEXBUFFER_DESC &desc) {
                );
 }
 
-String toString(const D3DINDEXBUFFER_DESC &desc) {
-  return format(_T("Type      :%s\n"
-                   "Format    :%s\n"
-                   "Pool      :%s\n"
-                   "Usage     :%s\n"
-                   "Buffersize:%s bytes\n")
+String toString(const D3DINDEXBUFFER_DESC &desc, bool multiLines) {
+  const TCHAR *formatStr = multiLines
+    ? _T("Type  :%s\n"
+         "Format:%s\n"
+         "Pool  :%s\n"
+         "Usage :%s\n"
+         "Size  :%s bytes\n")
+    : _T("Type:%s,Format:%s,Pool:%s,Usage:%s,Size:%s bytes");
+  return format(formatStr
                ,toString(     desc.Type  ).cstr()
                ,toString(     desc.Format).cstr()
                ,toString(     desc.Pool  ).cstr()

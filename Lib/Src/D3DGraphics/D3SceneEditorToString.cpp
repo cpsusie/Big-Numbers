@@ -43,6 +43,14 @@ String D3SceneEditor::stateFlagsToString() const {
   return result;
 }
 
+static String getMeshString(LPD3DXMESH mesh) {
+  return ::toString(mesh, FORMAT_BUFFERDESC | FORMAT_VERTEXBUFFER)
+       + "\n"
+       + ::toString(mesh, FORMAT_BUFFERDESC | FORMAT_INDEXBUFFER);
+}
+
+#define HEADLEN 18
+
 String D3SceneEditor::getSelectedString() const {
   if(!hasObj()) {
     return _T("/");
@@ -50,16 +58,21 @@ String D3SceneEditor::getSelectedString() const {
     const D3SceneObjectVisual &visual = *getCurrentObj();
     String result = visual.getName();
     if(visual.hasFillMode()) {
-      result += format(_T(" %s"), ::toString(visual.getFillMode()).cstr());
+      result += " ";
+      result += ::toString(visual.getFillMode());
     }
     if(visual.hasShadeMode()) {
-      result += format(_T(" %s"), ::toString(visual.getShadeMode()).cstr());
+      result += " ";
+      result += ::toString(visual.getShadeMode());
     }
-    return result;
+    if(visual.hasMesh()) {
+      if(result.length()) result += "\n";
+      result += indentString(getMeshString(visual.getMesh()),HEADLEN+2);
+    }
+    return result.trimRight();
   }
 }
 
-#define HEADLEN 18
 #define PRINTHEAD(label) result += format(_T("%-*s: "), HEADLEN, label)
 #define NEWLINE(label)   result += _T("\n"); PRINTHEAD(label)
 String D3SceneEditor::toString() const {

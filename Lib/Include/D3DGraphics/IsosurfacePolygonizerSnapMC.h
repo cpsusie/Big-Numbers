@@ -155,6 +155,12 @@ public:
     : m_i1(i1), m_i2(i2), m_i3(i3), m_color(color)
   {
   }
+#ifdef __NEVER__
+  Face3 &reverseOrientation() {
+    std::swap(m_i1, m_i2);
+    return *this;
+  }
+#endif
   inline void reset() {
     m_i1 = m_i2 = m_i3 = 0;
     m_color = 0;
@@ -541,13 +547,19 @@ private:
     m_statistics.m_evalCount++;
     return m_eval.evaluate(p);
   }
+#ifdef __NEVER__
+  bool checkOrientation(const Face3 &f) const;
+#endif
   inline void         putFace3(UINT i1, UINT i2, UINT i3) {
 #ifdef VALIDATE_PUTFACE
     if(i1 >= m_vertexArray.size() || i2 >= m_vertexArray.size() || i3 >= m_vertexArray.size()) {
       throwException(_T("Invalid face(%u,%d,%d). vertexArray.size==%u"), i1,i2,i3, m_vertexArray.size());
     }
 #endif
-    const Face3 f(i1, i2, i3, m_color);
+    Face3 f(i1, i2, i3, m_color);
+//    if(!checkOrientation(f)) {
+//      f.reverseOrientation();
+//    }
     m_face3Buffer.add(f);
 #ifdef DEBUG_POLYGONIZER
     m_eval.markCurrentFace(f);

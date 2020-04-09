@@ -25,13 +25,22 @@ String toString(const D3DDISPLAYMODE       &mode     );
 inline String toString(D3PCOLOR             c        ,bool showAlpha=false) {
   return c.toString(showAlpha);
 }
-String toString(const D3DCOLORVALUE        &c        ,bool showAlpha=false);
-String toString(const D3DVERTEXBUFFER_DESC &desc     );
-String toString(const D3DINDEXBUFFER_DESC  &desc     );
 
-String toString(LPD3DXMESH             mesh        );
-String toString(LPDIRECT3DVERTEXBUFFER vertexBuffer);
-String toString(LPDIRECT3DINDEXBUFFER  indexBuffer );
+String toString(const D3DCOLORVALUE        &c        ,bool showAlpha=false);
+String toString(const D3DVERTEXBUFFER_DESC &desc     ,bool multiLines=true);
+String toString(const D3DINDEXBUFFER_DESC  &desc     ,bool multiLines=true);
+
+#define FORMAT_BUFFERDESC   0x01
+#define FORMAT_BUFFERDESCNL 0x02
+#define FORMAT_BUFFERDATA   0x04
+#define FORMAT_VERTEXBUFFER 0x08
+#define FORMAT_INDEXBUFFER  0x10
+#define FORMAT_BUFFERALL (FORMAT_BUFFERDESC | FORMAT_BUFFERDATA)
+
+// if FORMAT_BUFFERDATA bit in flags is set, it implies FORMAT_BUFFERDESCNL too
+String toString(LPD3DXMESH             mesh        , BYTE flags = FORMAT_BUFFERALL | FORMAT_VERTEXBUFFER | FORMAT_INDEXBUFFER);
+String toString(LPDIRECT3DVERTEXBUFFER vertexBuffer, BYTE flags = FORMAT_BUFFERALL);
+String toString(LPDIRECT3DINDEXBUFFER  indexBuffer , BYTE flags = FORMAT_BUFFERALL);
 
 String handednessToString(bool rightHanded);
 String vertexToString(const char *v, DWORD FVF  , int dec=3);

@@ -259,6 +259,19 @@ void IsoSurfacePolygonizer::doTetra(const HashedCubeCorner &a, const HashedCubeC
   }
   putTriangleStrip(ts);
 }
+#ifdef __NEVER__
+bool IsoSurfacePolygonizer::checkOrientation(const Face3 &f) const {
+  const Point3D &p1 = m_vertexArray[f.m_i1].m_position;
+  const Point3D &p2 = m_vertexArray[f.m_i2].m_position;
+  const Point3D &p3 = m_vertexArray[f.m_i3].m_position;
+  const Point3D &n1 = m_vertexArray[f.m_i1].m_normal;
+  const Point3D &n2 = m_vertexArray[f.m_i2].m_normal;
+  const Point3D &n3 = m_vertexArray[f.m_i3].m_normal;
+  Point3D c = cross(Point3D(p3 - p1), Point3D(p2 - p1));
+  double s1 = c * n1, s2 = c * n2, s3 = c * n3;
+  return s1 > 0;
+}
+#endif
 
 void IsoSurfacePolygonizer::putTriangleStrip(const TriangleStrip &ts) {
   if(ts.m_count == 3) {

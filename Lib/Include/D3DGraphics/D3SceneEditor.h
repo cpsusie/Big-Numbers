@@ -190,6 +190,7 @@ private:
     void OnObjectControlSpeed();
     void OnObjectCreateCube();
     void OnObjectEditMaterial();
+    void OnObjectShowData();
     void OnObjectResetPosition();
     void OnObjectResetScale();
     void OnObjectResetOrientation();
