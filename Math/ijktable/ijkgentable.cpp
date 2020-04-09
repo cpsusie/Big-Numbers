@@ -89,20 +89,19 @@ int main(int argc, char **argv) {
 
     ISOSURFACE_TABLE isotable(dimension);
 
-    if(!genivoltable) {
-      table_string = isosurface_table_string;
-      isotable.SetSimplexDimension(dimension-1);
-      if(!nep_flag) { 
-        isotable.SetBinaryEncoding(); 
-      } else { 
-        isotable.SetBase3Encoding(); 
-      }
-    } else {
+    if(genivoltable) {
       Assert(!nep_flag);
-
       table_string = interval_volume_table_string;
       isotable.SetBase3Encoding();
       isotable.SetSimplexDimension(dimension);
+    } else {
+      table_string = isosurface_table_string;
+      isotable.SetSimplexDimension(dimension-1);
+      if(nep_flag) { 
+        isotable.SetBase3Encoding();
+      } else { 
+        isotable.SetBinaryEncoding();
+      }
     }
 
     check_num_vertices(dimension, mesh_polyhedron_type, isotable.MaxNumVertices());
@@ -141,20 +140,20 @@ int main(int argc, char **argv) {
     uint  nume = isotable.Polyhedron().NumEdges();
     uint  numv = isotable.Polyhedron().NumVertices();
     if(!genivoltable) {
-      if(!nep_flag) {
-        uint  num_isosurface_vertices = nume;
-        isotable.SetNumIsosurfaceVertices(num_isosurface_vertices);
-        isotable.StorePolyEdgesAsIsoVertices(0);
-        num_table_entries = calculate_num_entries(numv, 2);
-      } else {
-        uint  num_isosurface_vertices = nume+numv;
+      if(nep_flag) {
+        const uint  num_isosurface_vertices = nume + numv;
         isotable.SetNumIsosurfaceVertices(num_isosurface_vertices);
         isotable.StorePolyVerticesAsIsoVertices(0);
         isotable.StorePolyEdgesAsIsoVertices(numv);
         num_table_entries = calculate_num_entries(numv, 3);
+      } else {
+        const uint  num_isosurface_vertices = nume;
+        isotable.SetNumIsosurfaceVertices(num_isosurface_vertices);
+        isotable.StorePolyEdgesAsIsoVertices(0);
+        num_table_entries = calculate_num_entries(numv, 2);
       }
     } else {
-      uint  num_isosurface_vertices = 2*nume+numv;
+      const uint  num_isosurface_vertices = 2*nume+numv;
       isotable.SetNumIsosurfaceVertices(num_isosurface_vertices);
       for(uint  ie = 0; ie < nume; ie++) {
         isotable.SetIsoVertexFace(2*ie, ie);
@@ -204,17 +203,15 @@ int main(int argc, char **argv) {
     }
 
     if(verbose) {
-      cout << "Generating " << table_string << "." << endl;
+      cout << "Generating " << table_string << endl;
     }
 
-    if(!genivoltable) {
-      if(!nep_flag) {
-        generate_isosurface_table(isotable);
-      } else {
-        generate_nep_isosurface_table(isotable);
-      }
-    } else {
+    if(genivoltable) {
       generate_interval_volume_table(isotable);
+    } else if(nep_flag) {
+      generate_nep_isosurface_table(isotable);
+    } else {
+      generate_isosurface_table(isotable);
     }
 
     try {
@@ -226,15 +223,15 @@ int main(int argc, char **argv) {
     if(output_filename == NULL) {
       // generate isosurface table file name
       isotable_filename.str("");
-      if(!genivoltable) {
-        isotable_filename << "iso.";
-      } else {
+      if(genivoltable) {
         isotable_filename << "ivol.";
+      } else {
+        isotable_filename << "iso.";
       }
       if(nep_flag) {
         isotable_filename << "nep.";
       }
-      switch (mesh_polyhedron_type) {
+      switch(mesh_polyhedron_type) {
       case SIMPLEX:
         isotable_filename << "simplex";
         break;

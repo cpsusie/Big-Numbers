@@ -648,6 +648,149 @@ namespace IJKXIO {
     out << "</isotable>" << endl;
   }
 
+typedef struct {
+  double x, y, z;
+} CornerPoint;
+
+class Point {
+public:
+  double x, y, z;
+  Point() : x(0), y(0), z(0) {
+  }
+  Point(double _x, double _y, double _z) : x(_x), y(_y), z(_z) {
+  }
+};
+
+Point operator+(const Point &p1, const Point &p2) {
+  return Point(p1.x + p2.x, p1.y + p2.y, p1.z + p2.z);
+}
+
+Point operator-(const Point &p1, const Point &p2) {
+  return Point(p1.x - p2.x, p1.y - p2.y, p1.z - p2.z);
+}
+
+Point operator-(const Point &p) {
+  return Point(-p.x, -p.y, -p.z);
+}
+
+double operator*(const Point &p1, const Point &p2) {
+  return p1.x * p2.x + p1.y * p2.y + p1.z * p2.z;
+}
+
+Point operator*(const Point &p, double s) {
+  return Point(p.x * s, p.y * s, p.z * s);
+}
+Point operator*(double s, const Point &p) {
+  return Point(p.x * s, p.y * s, p.z * s);
+}
+Point operator/(const Point &p, double s) {
+  return Point(p.x / s, p.y / s, p.z / s);
+}
+Point cross(const Point &a, const Point &b) {
+  return Point(a.y*b.z - a.z*b.y
+              ,a.z*b.x - a.x*b.z
+              ,a.x*b.y - a.y*b.x
+              );
+}
+
+static CornerPoint cornerCoord[] = {
+  0,0,0
+ ,2,0,0
+ ,0,2,0
+ ,2,2,0
+ ,0,0,2
+ ,2,0,2
+ ,0,2,2
+ ,2,2,2
+};
+
+typedef struct {
+  int v0, v1;
+} CubeEdge;
+
+static CubeEdge cubeEdge[] = {
+  0,1
+ ,0,2
+ ,1,3
+ ,2,3
+ ,0,4
+ ,1,5
+ ,2,6
+ ,3,7
+ ,4,5
+ ,4,6
+ ,5,7
+ ,6,7
+};
+
+class Face3 {
+public:
+  uint i0, i1, i2;
+  inline Face3() : i0(0), i1(0), i2(0) {}
+  inline Face3(uint _i0, uint _i1, uint _i2) : i0(_i0), i1(_i1), i2(_i2) {
+  }
+  inline Face3 reverseOrientation() {
+    std::swap(i0, i1);
+    return *this;
+  }
+};
+
+ostream &operator<<(ostream &s, const Face3 &f) {
+  s.width(2);
+  s << f.i0 << ",";
+  s.width(2);
+  s << f.i1 << ",";
+  s.width(2);
+  s << f.i2;
+  return s;
+}
+
+class CubeData {
+  fixedarray<Point> m_vertices;
+public:
+  CubeData();
+  bool checkOrientation(const Face3 &f, fixedarray<int> &signs) const;
+};
+
+CubeData::CubeData() : m_vertices(20) {
+  for(int i = 0; i < 8; i++) {
+    const CornerPoint &cp = cornerCoord[i];
+    m_vertices[i] = Point(cp.x, cp.y, cp.z);
+  }
+  int k = 0;
+  for(int i = 8; i < 20; i++) {
+    const CubeEdge &e = cubeEdge[k++];
+    m_vertices[i] = (m_vertices[e.v0] + m_vertices[e.v1]) / 2;
+  }
+}
+
+//    change the orientation of face3(i0,i1,i2) so that vector
+//    v = cross(p2 - p0, p1 - p0) points toward positive end (visible side of triangle)
+bool CubeData::checkOrientation(const Face3 &f, fixedarray<int> &signs) const {
+  const Point &p0 = m_vertices[f.i0];
+  const Point &p1 = m_vertices[f.i1];
+  const Point &p2 = m_vertices[f.i2];
+  const Point v   = cross(p2 - p0, p1 - p0);
+  const uint  n   = signs.size();
+  int posMatch = 0, negMatch = 0, posFail = 0, negFail = 0;
+  for(uint i = 0; i < n; i++) {
+    if(i == f.i0 || i == f.i1 || i == f.i2) {
+      continue;
+    }
+    const int si = signs[i];
+    const Point &pp = m_vertices[i];
+    const double sp = (pp - p0) * v;
+    if(si > 0) {
+      if(sp > 0) posMatch++;
+      else if(sp < 0) posFail++;
+    } else if(si < 0) {
+      if(sp < 0) negMatch++;
+      else if(sp > 0) negFail++;
+    }
+  }
+  return (posMatch + negMatch) > (posFail + negFail);
+}
+
   void write_cpp(ostream &out, const IJKTABLE::ISOSURFACE_TABLE &table) {
     const uint  dimension = table.Dimension();
     const uint  numv = table.Polyhedron().NumVertices();
@@ -656,8 +799,11 @@ namespace IJKXIO {
     const uint  numisov = table.NumIsosurfaceVertices();
     const uint  numTableEntries = table.NumTableEntries();
     const uint numvertices = table.SimplexDimension() + 1;
+//    change the orientation of face3(i0,i1,i2) so that vector
+//    v = cross(p2 - p0, p1 - p0) points toward positive end (visible side of triangle)
 
     StringArray varNames;
+    const CubeData cd;
     for(uint it = 0; it < numTableEntries; it++) {
       const uint  nums = table.NumSimplices(it);
       static const char *signstr = "-=+";
@@ -668,20 +814,22 @@ namespace IJKXIO {
       for(uint d = numv; d--;) {
         comment += signstr[vertex_sign[d]];
       }
+      for(uint d = 0; d < vertex_sign.size(); d++) {
+        vertex_sign[d]--;
+      }
       varNames.push_back(varName);
       int len;
       if(nums == 0) {
         out << "                                      ";
         len = 0;
-      }
-      else {
+      } else {
         out << "static const char " << varName << "[] = { " << nums;
         for(uint js = 0; js < nums; js++) {
-          for(uint kv = 0; kv < numvertices; kv++) {
-            out << ",";
-            out.width(2);
-            out << int(table.SimplexVertex(it, js, kv));
+          Face3 f(table.SimplexVertex(it, js, 0), table.SimplexVertex(it, js, 1), table.SimplexVertex(it, js, 2));
+          if(!cd.checkOrientation(f, vertex_sign)) {
+            f.reverseOrientation();
           }
+          out << "," << f;
         }
         out << "}; ";
         len = 3 * nums*numvertices;
