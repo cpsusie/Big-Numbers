@@ -60,11 +60,11 @@ ByteArray &ByteArray::clear(intptr_t newCapacity) {
   return *this;
 }
 
-ByteArray &ByteArray::append(const ByteArray &d) {
-  return append(d.m_data, d.size());
+ByteArray &ByteArray::addAll(const ByteArray &d) {
+  return add(d.m_data, d.size());
 }
 
-ByteArray &ByteArray::append(const BYTE *data, size_t size) {
+ByteArray &ByteArray::add(const BYTE *data, size_t size) {
   if(size) {
     const size_t newSize = m_size + size;
     if(newSize > m_capacity) {     // Careful here!!! data and m_data might overlap!!
@@ -117,11 +117,11 @@ ByteArray &ByteArray::insertConstant(size_t index, BYTE b, size_t count) {
 
 ByteArray ByteArray::operator+(const ByteArray &d) const {
   ByteArray result(*this);
-  return result.append(d);
+  return result.addAll(d);
 }
 
 ByteArray &ByteArray::operator+=(const ByteArray &d) {
-  return append(d);
+  return addAll(d);
 }
 
 ByteArray &ByteArray::setData(const BYTE *data, size_t size) {

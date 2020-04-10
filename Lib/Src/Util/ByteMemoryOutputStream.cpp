@@ -19,7 +19,7 @@ void ByteMemoryOutputStream::putBytes(const BYTE *src, size_t n) {
     memcpy(m_p+m_pos, src, n);
     m_pos += n;
   } else {
-    m_dstArray->append(src,n);
+    m_dstArray->add(src,n);
   }
 }
 
@@ -27,6 +27,6 @@ void ByteMemoryOutputStream::putByte(BYTE b) {
   if(m_p) {
     m_p[m_pos++] = b;
   } else {
-    m_dstArray->append(&b,1);
+    m_dstArray->add(&b,1);
   }
 }

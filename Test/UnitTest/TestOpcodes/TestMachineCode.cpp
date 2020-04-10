@@ -392,7 +392,7 @@ UINT CodeArray::s_emitCount = 0;
 
 int CodeArray::addBytes(const void *bytes, int count) {
   const int ret = (int)size();
-  append((BYTE*)bytes,count);
+  add((BYTE*)bytes,count);
   return ret;
 }
 

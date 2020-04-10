@@ -14,13 +14,13 @@ namespace TestSHA256 {
       switch(n-j) {
       case 1 :
         { const BYTE byte = (BYTE)ttoi(substr(hexStr, j, 1).cstr(), nullptr, 16);
-          result.append(byte);
+          result.add(byte);
           j++;
         }
         break;
       default:
         { const BYTE byte = (BYTE)ttoi(substr(hexStr, j, 2).cstr(), nullptr, 16);
-          result.append(byte);
+          result.add(byte);
           j += 2;
         }
         break;

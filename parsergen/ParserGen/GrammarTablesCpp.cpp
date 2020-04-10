@@ -246,7 +246,7 @@ ByteCount GrammarTables::printCompressedActionsCpp(MarginFile &output) const {
     ByteArray laSetTotal;
     StringArray linePrefix;
     for(int i = 0; i < laSetCount; i++) {
-      laSetTotal.append(bitSetToByteArray(laSetArray[i]));
+      laSetTotal.addAll(bitSetToByteArray(laSetArray[i]));
       linePrefix.add(format(_T("%2d %3d tokens"), i, laSetArray[i].size()));
     }
     laSetSize1State = (int)laSetTotal.size() / laSetCount; // all laSets are the same size

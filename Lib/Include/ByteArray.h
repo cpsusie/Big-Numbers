@@ -31,27 +31,27 @@ public:
   ByteArray  operator+( const ByteArray &d) const;
   ByteArray &operator+=(const ByteArray &d);
   inline ByteArray &operator+=(BYTE byte) {
-    return append(byte);
+    return add(byte);
   }
 
   // return this, if newCapcity == -1 it will not be changed
   ByteArray &clear(intptr_t newCapacity = 0);
-  ByteArray &append( const ByteArray &d);
-  ByteArray &append( const BYTE *data, size_t size);
+  ByteArray &addAll( const ByteArray &d);
+  ByteArray &add( const BYTE *data, size_t size);
   // return this
-  inline ByteArray &append(BYTE byte) {
-    return appendConstant(byte, 1);
+  inline ByteArray &add(BYTE byte) {
+    return addConstant(byte, 1);
   }
   // return this
-  inline ByteArray &appendZeroes(size_t count) {
-    return appendConstant(0, count);
+  inline ByteArray &addZeroes(size_t count) {
+    return addConstant(0, count);
   }
   // return this
   inline ByteArray &insertZeroes(size_t index, size_t count) {
     return insertConstant(index, 0, count);
   }
   // return this
-  inline ByteArray &appendConstant(BYTE b, size_t count) {
+  inline ByteArray &addConstant(BYTE b, size_t count) {
     return insertConstant(size(), b, count);
   }
 

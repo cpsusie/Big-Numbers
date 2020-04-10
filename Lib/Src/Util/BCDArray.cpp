@@ -13,7 +13,7 @@
                                const BYTE *name##_bp = getData(),                          \
                                           *name##_endp=name##_bp+size()
 #define BCDBUF_ISEMPTY(name)   (name##_head == 0)
-#define BCDBUF_FLUSH(  name)   { append(name##_byte); name##_head = 0; }
+#define BCDBUF_FLUSH(  name)   { add(name##_byte); name##_head = 0; }
 #define BCDBUF_ADD(    name,v) if(BCDBUF_ISEMPTY(name)) {                                  \
                                  name##_byte=(v)<<4; name##_head++;                        \
                                } else {                                                    \

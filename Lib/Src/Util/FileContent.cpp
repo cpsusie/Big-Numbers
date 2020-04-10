@@ -28,7 +28,7 @@ FileContent &FileContent::load(ByteInputStream &in) {
   BYTE buffer[4096];
   intptr_t n;
   while((n = in.getBytes(buffer,sizeof(buffer))) > 0) {
-    append(buffer, n);
+    add(buffer, n);
   }
   return *this;
 }

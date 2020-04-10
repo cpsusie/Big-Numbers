@@ -327,12 +327,12 @@ void ByteBitSet::stopAdding() {
 
 void ByteBitSet::append(ByteArray &buffer) const {
   const int size0 = (int)buffer.size();
-  buffer.append((BYTE*)&m_min, sizeof(m_min)); // unpacked by CharSet
-  buffer.append((BYTE*)&m_max, sizeof(m_max));
+  buffer.add((BYTE*)&m_min, sizeof(m_min)); // unpacked by CharSet
+  buffer.add((BYTE*)&m_max, sizeof(m_max));
   const BYTE *firstByte = GETBITADDRESS(m_min);
   const BYTE *lastByte  = GETBITADDRESS(m_max);
   const unsigned short byteCount = (unsigned short)(lastByte - firstByte + 1);
-  buffer.append(firstByte, byteCount);
+  buffer.add(firstByte, byteCount);
 }
 
 int ByteBitSet::compare(const ByteBitSet &s1, const ByteBitSet &s2) { // static
@@ -725,11 +725,11 @@ void Regex::storeShort(UINT addr, short s) {
 }
 
 void Regex::appendUShort(unsigned short s) {
-  m_buffer.append((BYTE*)&s, sizeof(s));
+  m_buffer.add((BYTE*)&s, sizeof(s));
 }
 
 void Regex::appendCharacter(TCHAR ch) {
-  m_buffer.append((BYTE*)&ch, sizeof(ch));
+  m_buffer.add((BYTE*)&ch, sizeof(ch));
 }
 
 void Regex::storeData(UINT addr, const void *data, UINT size) {
@@ -740,11 +740,11 @@ void Regex::storeData(UINT addr, const void *data, UINT size) {
 void Regex::assertHasSpace(UINT addr, UINT count) { // extend m_buffer if needed
   const int needed = (int)addr + (int)count - (int)m_buffer.size();
   if(needed > 0) {
-    m_buffer.appendZeroes(needed);
+    m_buffer.addZeroes(needed);
   }
 }
 
-#define appendByte(        b         )               m_buffer.append(b)
+#define appendByte(        b         )               m_buffer.add(b)
 #define appendShort(       s         )               storeShort((int)m_buffer.size(), s)
 #define appendOpcode(      opcode    )               appendByte((BYTE)(opcode))
 #define appendJump(        opcode, to)               storeJump(        opcode, (int)m_buffer.size(), to)

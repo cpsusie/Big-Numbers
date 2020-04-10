@@ -45,7 +45,7 @@ InstructionInfo CodeGeneration::insertIns(UINT pos, const InstructionBase &ins) 
     insertZeroes(pos,n);
     m_code.setBytes(pos, ins.getBytes(), n);
   } else {
-    m_code.append(ins.getBytes(), n);
+    m_code.add(ins.getBytes(), n);
   }
   return InstructionInfo(pos,ins);
 }
@@ -329,11 +329,11 @@ void CodeGeneration::linkFunctionCalls() {
     UINT rest8 = size()%8;
     if(rest8==0) rest8 = 8;
     const UINT fillers = 24 - rest8;
-    m_code.appendZeroes(fillers); // to have some fillers
+    m_code.addZeroes(fillers); // to have some fillers
 
     m_functionTableStart = size();
 
-    m_code.appendZeroes(m_uniqueFunctionCall.size() * FUNCENTRYSIZE); // for functionTable
+    m_code.addZeroes(m_uniqueFunctionCall.size() * FUNCENTRYSIZE); // for functionTable
 // At entry in x64-mode, RCX contains address of the first instruction
     UINT pos = 0;
     pos += insert(   pos,PUSH,RBX).size();

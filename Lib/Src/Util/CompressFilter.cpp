@@ -40,7 +40,7 @@ void CompressFilter::putByte(BYTE b) {
 void CompressFilter::putBytes(const BYTE *src, size_t n) {
   while(n > 0) {
     const size_t size = min(n, MAX_BUFFERSIZE - m_inputBuffer.size());
-    if(m_inputBuffer.append(src, size).size() >= MAX_BUFFERSIZE) {
+    if(m_inputBuffer.add(src, size).size() >= MAX_BUFFERSIZE) {
       flushInput();
     }
     n   -= size;
@@ -107,7 +107,7 @@ void CompressFilter::flushOutput() {
 
 void CompressFilter::getCompressedData() {
   z_streamp zStreamp = (z_streamp)m_zStreamp;
-  m_outputBuffer.append(m_buffer, MAX_BUFFERSIZE*2 - zStreamp->avail_out);
+  m_outputBuffer.add(m_buffer, MAX_BUFFERSIZE*2 - zStreamp->avail_out);
   setAvailableOut();
 }
 

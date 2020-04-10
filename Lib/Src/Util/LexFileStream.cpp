@@ -119,7 +119,7 @@ size_t ByteQueue::readUntilHasNewLine(FILE *f) {
     const intptr_t n = fread(tmp, 1, sizeof(tmp), f);
     if(n > 0) {
       const size_t oldSize = size();
-      append(tmp, n);
+      add(tmp, n);
       nl = memrchr(tmp, '\n', n);
       if(nl) {
         nl = getData() + oldSize + (nl - tmp);
@@ -172,7 +172,7 @@ String ByteQueue::getConvertedString(size_t count) {
         if(count > 1) {
           count--;
         } else if(++count > size()) {
-          append(0); // add a 0-byte to end the stream
+          add(0); // add a 0-byte to end the stream
         }
       }
       for(size_t i = 0; (i < count) && !isEmpty();) {

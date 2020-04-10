@@ -83,7 +83,7 @@ void DecompressFilter::fillInputBuffer() {
     BYTE tmp[MAX_BUFFERSIZE];
     const intptr_t n = m_src.getBytes(tmp,sizeof(tmp));
     if(n > 0) {
-      m_inputBuffer.append(tmp,n);
+      m_inputBuffer.add(tmp,n);
     }
     if(n < sizeof(tmp)) {
       break;
@@ -105,7 +105,7 @@ void DecompressFilter::decompress() {
 
 void DecompressFilter::getDecompressedData() {
   z_streamp zStreamp = (z_streamp)m_zStreamp;
-  m_outputBuffer.append(m_buffer, MAX_BUFFERSIZE - zStreamp->avail_out);
+  m_outputBuffer.add(m_buffer, MAX_BUFFERSIZE - zStreamp->avail_out);
   setAvailableOut();
 }
 

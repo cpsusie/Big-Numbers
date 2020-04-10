@@ -64,13 +64,13 @@ ByteArray GrammarTables::bitSetToByteArray(const BitSet &set) { // static
       b |= mask;
     }
     if((mask <<= 1) == 0) {
-      result.append(b);
+      result.add(b);
       mask = 1;
       b    = 0;
     }
   }
   if(mask != 1) {
-    result.append(b);
+    result.add(b);
   }
   return result;
 }
