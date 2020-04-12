@@ -114,14 +114,12 @@ AbstractEntry *HashMapImpl::selectEntry(RandomGenerator &rnd) const {
 }
 
 const AbstractEntry *HashMapImpl::getMinEntry() const {
-  DEFINEMETHODNAME;
-  throwUnsupportedOperationException(method);
+  throwUnsupportedOperationException(__TFUNCTION__);
   return NULL;
 }
 
 const AbstractEntry *HashMapImpl::getMaxEntry() const {
-  DEFINEMETHODNAME;
-  throwUnsupportedOperationException(method);
+  throwUnsupportedOperationException(__TFUNCTION__);
   return NULL;
 }
 

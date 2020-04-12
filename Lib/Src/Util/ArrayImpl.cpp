@@ -133,8 +133,7 @@ bool ArrayImpl::add(const void *e) {
 }
 
 bool ArrayImpl::add(size_t i, const void *e, size_t count) {
-  DEFINEMETHODNAME;
-  if(i > m_size) indexError(method, i);
+  if(i > m_size) indexError(__TFUNCTION__, i);
   if(count == 0) {
     return false;
   }
@@ -153,12 +152,11 @@ bool ArrayImpl::add(size_t i, const void *e, size_t count) {
 }
 
 void ArrayImpl::removeIndex(size_t i, size_t count) {
-  DEFINEMETHODNAME;
   if(count == 0) {
     return;
   }
   const size_t j = i + count;
-  if(j > m_size) indexError(method, i, count);
+  if(j > m_size) indexError(__TFUNCTION__, i, count);
   for(size_t k = i; k < j; k++) {
     m_objectManager->deleteObject(m_elem[k]);
   }
