@@ -69,7 +69,7 @@ void int128mul(void *dst, const void *x) {
   _int128       *dp = (_int128*)dst;
   const _int128 *b = (const _int128*)x;
 
-  if (!(dp->s4.i[1] || b->s4.i[1] || dp->s4.i[2] || b->s4.i[2] || dp->s4.i[3] || b->s4.i[3])) {
+  if(!(dp->s4.i[1] || b->s4.i[1] || dp->s4.i[2] || b->s4.i[2] || dp->s4.i[3] || b->s4.i[3])) {
     HI64(*dp) = 0;
     LO64(*dp) = __int64(dp->s4.i[0]) * b->s4.i[0]; // simple _int64 multiplication. int32 * int32
   }

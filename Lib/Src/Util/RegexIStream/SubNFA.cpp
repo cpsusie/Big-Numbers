@@ -4,14 +4,14 @@
 
 SubNFA SubNFA::clone() const {
   SubNFA result(m_statePool);
-  if (isEmpty()) {
+  if(isEmpty()) {
     return result;
   }
 
   NFA srcNFA(m_statePool, m_start);
   NFA newNFA(m_statePool);
 
-  for (size_t i = 0; i < srcNFA.size(); i++) {
+  for(size_t i = 0; i < srcNFA.size(); i++) {
     NFAState *s = srcNFA[i];
     NFAState *s1 = m_statePool.fetch(s->getEdge());
     *s1 = *s;
@@ -20,11 +20,11 @@ SubNFA SubNFA::clone() const {
 
   result.m_start = newNFA[0];
   result.m_end = newNFA[m_end->getID()];;
-  for (size_t i = 0; i < srcNFA.size(); i++) {
+  for(size_t i = 0; i < srcNFA.size(); i++) {
     NFAState *s1 = srcNFA[i];
     NFAState *s2 = newNFA[i];
-    if (s1->m_next) s2->m_next = newNFA[s1->m_next->getID()];
-    if (s2->m_next2) s2->m_next2 = newNFA[s1->m_next2->getID()];
+    if(s1->m_next) s2->m_next = newNFA[s1->m_next->getID()];
+    if(s2->m_next2) s2->m_next2 = newNFA[s1->m_next2->getID()];
   }
   newNFA.clear();
   srcNFA.clear();
@@ -83,7 +83,7 @@ SubNFA &SubNFA::createEpsilon() {
 }
 
 SubNFA SubNFA::questClosure() const {
-  if (isEmpty()) {
+  if(isEmpty()) {
     return *this;
   }
   SubNFA result(m_statePool, true);
@@ -95,7 +95,7 @@ SubNFA SubNFA::questClosure() const {
 }
 
 SubNFA SubNFA::plusClosure() const {
-  if (isEmpty()) {
+  if(isEmpty()) {
     return *this;
   }
   SubNFA result(m_statePool, true);
@@ -107,7 +107,7 @@ SubNFA SubNFA::plusClosure() const {
 }
 
 SubNFA SubNFA::starClosure() const {
-  if (isEmpty()) {
+  if(isEmpty()) {
     return *this;
   }
   SubNFA result(m_statePool, true);

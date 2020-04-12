@@ -327,7 +327,7 @@ Rational operator/(const Rational &l, const Rational &r) {
   case FP_NORMAL:
     try {
       return Rational(SAFEPROD(l.m_num, r.m_den), SAFEPROD(l.m_den, r.m_num));
-    } catch (Exception) {
+    } catch(Exception) {
       return Rational::prod128(l, reciprocal(r));
     }
   case FP_ZERO:
@@ -355,7 +355,7 @@ Rational operator%(const Rational &l, const Rational &r) {
       return Rational::mod128(l, r);
     }
   case FP_ZERO:
-    switch (lclass) {
+    switch(lclass) {
     case _FPCLASS_PN: return Rational::_RAT_PINF;   // +finite%0 -> +inf
     case _FPCLASS_NN: return Rational::_RAT_NINF;   // -finite%0 -> -inf
     case _FPCLASS_NZ:

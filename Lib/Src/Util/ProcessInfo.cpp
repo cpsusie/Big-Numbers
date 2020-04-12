@@ -9,7 +9,7 @@ ProcessInfo::ProcessInfo(DWORD processId) {
   }
   try {
     m_commandLine = getProcessCommandLine(hProcess);
-  } catch (Exception e) {
+  } catch(Exception e) {
     m_commandLine = e.what();
   }
   try {

@@ -36,7 +36,7 @@ PropertyDialogMap &PropertyDialogMap::removeDialog(int id) {
     }
     newSize = (UINT)size();
     m_gate.notify();
-  } catch (...) {
+  } catch(...) {
     m_gate.notify();
     throw;
   }
@@ -49,14 +49,14 @@ PropertyDialogMap &PropertyDialogMap::removeAllDialogs() {
   UINT oldSize = (UINT)size();
   UINT newSize;
   try {
-    for (Iterator<Entry<int, CPropertyDialogThread*> > it = entrySet().getIterator(); it.hasNext(); ) {
+    for(Iterator<Entry<int, CPropertyDialogThread*> > it = entrySet().getIterator(); it.hasNext(); ) {
       Entry<int, CPropertyDialogThread*> &e = it.next();
       e.getValue()->kill();
     }
     IntHashMap<CPropertyDialogThread*>::clear();
     newSize = (UINT)size();
     m_gate.notify();
-  } catch (...) {
+  } catch(...) {
     m_gate.notify();
     throw;
   }
@@ -93,7 +93,7 @@ PropertyDialogMap &PropertyDialogMap::hideDialog() {
   try {
     hideVisibleDialog();
     m_gate.notify();
-  } catch (...) {
+  } catch(...) {
     m_gate.notify();
     throw;
   }
@@ -114,7 +114,7 @@ bool PropertyDialogMap::showDialog(int id, const void *data, size_t size) {
       changed |= (*thr)->setCurrentDialogProperty(data, size);
     }
     m_gate.notify();
-  } catch (...) {
+  } catch(...) {
     m_gate.notify();
     throw;
   }

@@ -202,7 +202,7 @@ CONSOLE_FONT_INFOEX Console::getFont() {
 COORD Console::getFontSize() {
   const CONSOLE_FONT_INFOEX info = getFont();
   const COORD               c    = GetConsoleFontSize(s_hStdOut, info.nFont);
-  if ((c.X | c.Y) == 0) {
+  if((c.X | c.Y) == 0) {
     checkSysCall(FALSE, __LINE__);
   }
   return c;

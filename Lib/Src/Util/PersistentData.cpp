@@ -19,7 +19,7 @@ void PersistentData::load(const String &fileName) {
 }
 
 void PersistentData::checkTag(XMLNodePtr node, const TCHAR *expectedTag) { // static
-  if (_tcsicmp(node->nodeName, expectedTag) != 0) {
+  if(_tcsicmp(node->nodeName, expectedTag) != 0) {
     throwException(_T("nodename=%s. Expected name:%s"), (TCHAR*)node->nodeName, expectedTag);
   }
 }

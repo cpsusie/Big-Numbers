@@ -2,8 +2,8 @@
 
 String &String::replace(TCHAR from, TCHAR to) {
   const TCHAR *last = m_buf + m_len - 1;
-  for (TCHAR *s = m_buf; s <= last; s++) {
-    if (*s == from) {
+  for(TCHAR *s = m_buf; s <= last; s++) {
+    if(*s == from) {
       *s = to;
     }
   }
@@ -24,10 +24,10 @@ String &String::replace(const TCHAR *from, const TCHAR *to) {
 
 String &String::replace(const String &from, TCHAR to) {
   const size_t fromLength = from.length();
-  if (fromLength == 0) {
+  if(fromLength == 0) {
     return *this;
   }
-  if (fromLength == 1) {
+  if(fromLength == 1) {
     return replace(from[0], to);
   }
   // fromLength > 1 => string will bnot grow
@@ -35,8 +35,8 @@ String &String::replace(const String &from, TCHAR to) {
   const size_t newCapacity = m_len + 1;
   TCHAR       *newBuf = new TCHAR[newCapacity];
   TCHAR       *s, *d;
-  for (s = m_buf, d = newBuf; s <= last;) {
-    if (TMEMCMP(s, from.m_buf, fromLength)) {
+  for(s = m_buf, d = newBuf; s <= last;) {
+    if(TMEMCMP(s, from.m_buf, fromLength)) {
       *(d++) = *(s++);
     }
     else { // replace
@@ -45,7 +45,7 @@ String &String::replace(const String &from, TCHAR to) {
     }
   }
   const intptr_t rest = m_len - (s - m_buf);
-  if (rest > 0) {
+  if(rest > 0) {
     TMEMCPY(d, s, rest);
     d += rest;
   }
@@ -60,14 +60,14 @@ String &String::replace(const String &from, TCHAR to) {
 
 String &String::replace(TCHAR from, const String &to) {
   const size_t toLength = to.length();
-  if (toLength == 1) {
+  if(toLength == 1) {
     return replace(from, to[0]);
   }
-  if (toLength == 0) { // String will be smaller
+  if(toLength == 0) { // String will be smaller
     const TCHAR *last = m_buf + m_len - 1;
     TCHAR *s, *d;
-    for (d = s = m_buf; s <= last; s++) {
-      if (*s != from) {
+    for(d = s = m_buf; s <= last; s++) {
+      if(*s != from) {
         *(d++) = *s;
       }
     }
@@ -78,12 +78,12 @@ String &String::replace(TCHAR from, const String &to) {
 
   const TCHAR *last = m_buf + m_len - 1;
   int count = 0;
-  for (const TCHAR *t = m_buf; t <= last; t++) { // count all occurrences of from in this. be aware of 0-characters
-    if (*t == from) {
+  for(const TCHAR *t = m_buf; t <= last; t++) { // count all occurrences of from in this. be aware of 0-characters
+    if(*t == from) {
       count++;
     }
   }
-  if (count == 0) {
+  if(count == 0) {
     return *this; // nothing to do
   }
   const size_t newLength = m_len + count * (toLength - 1);
@@ -92,8 +92,8 @@ String &String::replace(TCHAR from, const String &to) {
   TCHAR       *dst = newBuf;
 
   // dont worry about overlap. copying to a new string
-  for (const TCHAR *s = m_buf; s <= last;) {
-    if (*s != from) {
+  for(const TCHAR *s = m_buf; s <= last;) {
+    if(*s != from) {
       *(dst++) = *(s++);
     }
     else {
@@ -113,20 +113,20 @@ String &String::replace(TCHAR from, const String &to) {
 String &String::replace(const String &from, const String &to) {
   const intptr_t fromLength = from.length();
   const intptr_t toLength = to.length();
-  if (fromLength == 0) {
+  if(fromLength == 0) {
     return *this;
   }
-  if (fromLength == 1) {
+  if(fromLength == 1) {
     return replace(from[0], to);
   }
-  if (toLength == 1) {
+  if(toLength == 1) {
     return replace(from, to[0]);
   }
 
   int count = 0;
   const TCHAR *last = m_buf + m_len - fromLength;
-  for (const TCHAR *t = m_buf; t <= last;) { // count all occurrences of from in this
-    if (TMEMCMP(t, from.m_buf, fromLength) == 0) {
+  for(const TCHAR *t = m_buf; t <= last;) { // count all occurrences of from in this
+    if(TMEMCMP(t, from.m_buf, fromLength) == 0) {
       count++;
       t += fromLength;
     }
@@ -135,7 +135,7 @@ String &String::replace(const String &from, const String &to) {
     }
   }
 
-  if (count == 0) {
+  if(count == 0) {
     return *this;  // nothing to do
   }
 
@@ -143,12 +143,12 @@ String &String::replace(const String &from, const String &to) {
   m_capacity = m_len + 1;
   TCHAR *newBuf = new TCHAR[m_capacity];
   TCHAR *s, *d;
-  for (s = m_buf, d = newBuf; s <= last;) {
-    if (TMEMCMP(s, from.m_buf, fromLength)) {
+  for(s = m_buf, d = newBuf; s <= last;) {
+    if(TMEMCMP(s, from.m_buf, fromLength)) {
       *(d++) = *(s++);
     }
     else { // replace
-      if (toLength) {
+      if(toLength) {
         TMEMCPY(d, to.m_buf, toLength);
         d += toLength;
       }
@@ -156,7 +156,7 @@ String &String::replace(const String &from, const String &to) {
     }
   }
   const intptr_t tail = m_len - (d - newBuf);
-  if (tail > 0) {
+  if(tail > 0) {
     TMEMCPY(d, s, tail);
     d += tail;
   }

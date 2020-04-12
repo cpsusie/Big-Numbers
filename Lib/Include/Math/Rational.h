@@ -127,7 +127,7 @@ public:
   // if(r != NULL), *r will contain the calculated value
   static bool isRationalPow(const Rational &base, const Rational &e, Rational *r);
 
-  // return NaN if (!isfinite(base) || !isfinite(e))
+  // return NaN if(!isfinite(base) || !isfinite(e))
   // if(e==0) return NaN for base == 0, else 1
   // if(e< 0) return +inf for base == 0
   template<typename T> static T pow(T base, const Rational &e) {

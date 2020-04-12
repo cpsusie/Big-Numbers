@@ -62,7 +62,7 @@ UINT ThreadPoolThread::run() {
       }
       THREADPOOL_TRACE("%s(%s) waiting for job (state:%s)\n", __TFUNCTION__, oldDesc.cstr(), FLGSTR());
       m_execute.wait();
-      if (isSet(THR_REQUESTTERMINATE)) {
+      if(isSet(THR_REQUESTTERMINATE)) {
         break;
       }
       m_requestCount++;

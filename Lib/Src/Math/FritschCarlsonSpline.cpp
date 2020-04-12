@@ -139,7 +139,7 @@ FritschCarlsonSpline::FritschCarlsonSpline(const CompactArray<DataPoint> &data) 
     yd(n-1,1) = 0.0;
   } else if(del1*del2 < 0.0) {
     delmax = 3.0*del2;
-    if (fabs(yd(n-1,1))>fabs(delmax)) yd(n-1,1) = delmax;
+    if(fabs(yd(n-1,1))>fabs(delmax)) yd(n-1,1) = delmax;
   }
 
   /* compute 2nd and 3rd derivatives of cubic polynomials */

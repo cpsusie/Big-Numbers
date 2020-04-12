@@ -12,7 +12,7 @@ public:
 #pragma warning(disable:4311 4302)
 
   inline ULONG hashCode() const {
-    if (sizeof(m_value) > sizeof(ULONG)) {
+    if(sizeof(m_value) > sizeof(ULONG)) {
       ULONG result = 0;
       const ULONG *start = (ULONG*)&m_value;
       const ULONG *end   = start + sizeof(m_value) / sizeof(ULONG);

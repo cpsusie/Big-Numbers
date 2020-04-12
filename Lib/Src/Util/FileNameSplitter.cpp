@@ -67,7 +67,7 @@ FileNameSplitter &FileNameSplitter::tempFileName(const String &prefix) {
     if(oldtmp != NULL) {
       int err = _tputenv_s(_T("TMP"), oldtmp);
     }
-  } catch (...) {
+  } catch(...) {
     if(oldtmp != NULL) {
       int err = _tputenv_s(_T("TMP"), oldtmp);
     }

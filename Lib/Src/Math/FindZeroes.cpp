@@ -48,13 +48,13 @@ CompactRealArray findZeroes(Function &f, const RealInterval &interval) {
   for(int t = 0; t < SEARCHCOUNT-1; t++, x += step) {
     try {
       pointArray.add(RealPoint2D(x,f(x)));
-    } catch (...) {
+    } catch(...) {
       // ignore
     }
   }
   try {
     pointArray.add(RealPoint2D(interval.getTo(), f(interval.getTo())));
-  } catch (...) {
+  } catch(...) {
     // ignore
   }
   const size_t       n     = pointArray.size();

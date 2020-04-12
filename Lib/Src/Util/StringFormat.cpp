@@ -4,20 +4,20 @@ String &String::vprintf(_In_z_ _Printf_format_string_ TCHAR const * const format
   TCHAR buffer[16384];
   int bufSize = ARRAYSIZE(buffer);
   TCHAR *tmp = buffer;
-  for (;;) {
+  for(;;) {
     int written;
     if((written = _vsntprintf(tmp, bufSize, format, argptr)) >= 0) {
-      if ((written >= (int)m_capacity) || (written + 100 < (int)m_capacity)) {
+      if((written >= (int)m_capacity) || (written + 100 < (int)m_capacity)) {
         delete[] m_buf;
         m_buf = new TCHAR[m_capacity = written + 1];
       }
       TMEMCPY(m_buf, tmp, (m_len = written) + 1);
-      if (tmp != buffer) {
+      if(tmp != buffer) {
         delete[] tmp;
       }
       break;
     }
-    if (tmp != buffer) {
+    if(tmp != buffer) {
       delete[] tmp;
     }
     bufSize *= 3;

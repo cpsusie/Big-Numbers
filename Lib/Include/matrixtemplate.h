@@ -361,7 +361,7 @@ public:
     if(r2 >= getRowCount()) {
       throwIndexException(_T("swapRows:r2=%s out of range"), formatSize(r2).cstr());
     }
-    if (r1 != r2) {
+    if(r1 != r2) {
       T *p1 = m_a + index(r1, 0);
       T *p2 = m_a + index(r2, 0);
       const T *lastp1 = p1 + getColumnCount();

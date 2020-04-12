@@ -242,7 +242,7 @@ void ConsoleBufferOp::putRect(const CHAR_INFO *src, int op, int l, int t, int w,
     }
     break;
   default:
-    if (op != 0) {
+    if(op != 0) {
       throwInvalidArgumentException(__TFUNCTION__, _T("op=%#x"), op);
     }
     break;
@@ -346,7 +346,7 @@ void TextRect::vset(int l, int t, int w, int h, int op, va_list argptr) {
   if(op & TR_ATEXT) {
     assert((op & TR_WTEXT) == 0);
     arg.Char.AsciiChar   = va_arg(argptr, int);
-  } else if (op & TR_WTEXT) {
+  } else if(op & TR_WTEXT) {
     arg.Char.UnicodeChar = va_arg(argptr, int);
   }
   if(op & TR_ATTR) {

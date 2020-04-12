@@ -161,7 +161,7 @@ public:
     if(InterlockedDecrement(&m_count) == 0)  {
       try {
         preRelease();
-      } catch (...) {
+      } catch(...) {
       }
       REGISTRYLOG("delete", this);
       TRACE_DELETE(this); delete this;

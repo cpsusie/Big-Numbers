@@ -16,7 +16,7 @@ BitMatrix &BitMatrix::setDimension(const MatrixDimension &dim) {
   if(newBitCount == 0) {
     throwInvalidArgumentException(__TFUNCTION__, _T("Dim=%s"), dim.toString().cstr());
   }
-  if (isEmpty() || (dim.columnCount == m_dim.columnCount)) {
+  if(isEmpty() || (dim.columnCount == m_dim.columnCount)) {
     setCapacity(newBitCount);
     m_dim = dim;
   } else {
@@ -27,7 +27,7 @@ BitMatrix &BitMatrix::setDimension(const MatrixDimension &dim) {
     m_dim = dim;
     const size_t copyR = min(oldDim.rowCount   , dim.rowCount   );
     const size_t copyC = min(oldDim.columnCount, dim.columnCount);
-    for (size_t r = 0; r < copyR; r++) {
+    for(size_t r = 0; r < copyR; r++) {
       const size_t firstIndexInRow = r*oldDim.columnCount;
       const size_t lastIndexInRow  = firstIndexInRow + copyC;
       for(Iterator<size_t> it = old.getIterator(firstIndexInRow); it.hasNext();) {
@@ -76,7 +76,7 @@ BitSet &BitMatrix::getColumn(size_t c, BitSet &s) const {
 
 void BitMatrix::setRow(size_t r, bool v) {
   checkValidRow(__TFUNCTION__, r);
-  if (v) {
+  if(v) {
     add(getIndex(r,0), getIndex(r,getColumnCount()-1));
   } else {
     remove(getIndex(r,0), getIndex(r,getColumnCount()-1));
@@ -85,12 +85,12 @@ void BitMatrix::setRow(size_t r, bool v) {
 
 void BitMatrix::setColumn(size_t c, bool v) {
   checkValidColumn(__TFUNCTION__, c);
-  if (v) {
-    for (size_t index = c; index < getCapacity(); index += getColumnCount()) {
+  if(v) {
+    for(size_t index = c; index < getCapacity(); index += getColumnCount()) {
       add(index);
     }
   } else {
-    for (size_t index = c; index < getCapacity(); index += getColumnCount()) {
+    for(size_t index = c; index < getCapacity(); index += getColumnCount()) {
       remove(index);
     }
   }
@@ -288,8 +288,8 @@ DEFINECLASSNAME(BitMatrixColumnIterator);
 void BitMatrixColumnIterator::first(size_t c) {
   m_next.c = m_p.c = c;
   setCurrentUndefined();
-  for (m_next.r = 0; m_next.r < m_matrix.getRowCount(); m_next.r++) {
-    if (m_matrix.get(m_next)) {
+  for(m_next.r = 0; m_next.r < m_matrix.getRowCount(); m_next.r++) {
+    if(m_matrix.get(m_next)) {
       m_hasNext = true;
       return;
     }
@@ -302,8 +302,8 @@ AbstractIterator *BitMatrixColumnIterator::clone() {
 }
 
 void *BitMatrixColumnIterator::next() {
-  if (!hasNext()) noNextElementError(s_className);
-  for (m_p.r = m_next.r++; m_next.r < m_matrix.getRowCount(); m_next.r++) {
+  if(!hasNext()) noNextElementError(s_className);
+  for(m_p.r = m_next.r++; m_next.r < m_matrix.getRowCount(); m_next.r++) {
     if(m_matrix.get(m_next)) return &m_p;
   }
   m_hasNext = false;

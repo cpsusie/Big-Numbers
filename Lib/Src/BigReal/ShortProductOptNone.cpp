@@ -73,7 +73,7 @@ BigReal &BigReal::shortProductNoZeroCheckDebug(const BigReal &x, const BigReal &
 #else
 BigReal &BigReal::shortProductNoZeroCheck(     const BigReal &x, const BigReal &y, UINT loopCount) { // return *this
 #endif
-  if (!m_digitPool.continueCalculation()) throwBigRealException(_T("Operation was cancelled"));
+  if(!m_digitPool.continueCalculation()) throwBigRealException(_T("Operation was cancelled"));
   assert(isNormalProduct(x, y) && (loopCount > 0));
   // loopCount assumes we multiply NUMBERDIGITS. Here we multiply only SQRT_NUMBERDIGITS (half size)
   // in each iteration, so we have to do twice as many iterations

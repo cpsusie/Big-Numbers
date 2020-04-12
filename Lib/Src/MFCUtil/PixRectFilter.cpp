@@ -227,7 +227,7 @@ void EdgeDirectionFilter::apply(const CPoint &p) {
 // --------------------------------- CannyEdgeFilter ---------------------------------
 
 void CannyEdgeFilter::setPixRect(PixRect *src) {
-  if (src == NULL) {
+  if(src == NULL) {
     __super::setPixRect(NULL);
   } else {
     src->apply(GaussFilter()).apply(EdgeDirectionFilter());

@@ -213,20 +213,20 @@ void ComboBox::drawItem(int i) {
 }
 
 void ComboBox::setSel(int i) {
-  if (i < 0) {
+  if(i < 0) {
     i = 0;
-  } else if (i >= (int)m_list.size()) {
+  } else if(i >= (int)m_list.size()) {
     i = (int)m_list.size() - 1;
   }
   if(i != m_currentSel) {
-    if (!getDialog().isVisible()) {
+    if(!getDialog().isVisible()) {
       m_currentSel = i;
     } else {
       if(!isDropDownVisible()) {
         m_currentSel = i;
         setBuffer(m_list[i].cstr());
       } else {
-        if (m_currentSel >= 0) {
+        if(m_currentSel >= 0) {
           drawItem(m_currentSel, false);
         }
         m_currentSel = i;
@@ -245,14 +245,14 @@ int ComboBox::getMaxScrollOffset() {
 
 void ComboBox::setScrollOffset(int i) {
   int m = getMaxScrollOffset();
-  if (i > m) {
+  if(i > m) {
     m_scrollOffset = m;
-  } else if (i < 0) {
+  } else if(i < 0) {
     m_scrollOffset = 0;
   } else {
     m_scrollOffset = i;
   }
-  if (isDropDownVisible()) {
+  if(isDropDownVisible()) {
     drawDropDown();
   }
 }
@@ -268,7 +268,7 @@ void ComboBox::drawScrollBar() {
 void ComboBox::drawBorder() {
   WORD attr = REVERSEVIDEO | BACKGROUND_INTENSITY;
   m_tw->rectangle(0, 0, m_dropDownWidth - 1, getRealDropDownHeight() - 1,SINGLE_FRAME,attr);
-  if (getMaxScrollOffset() > 0) {
+  if(getMaxScrollOffset() > 0) {
     drawScrollBar();
   }
 }
@@ -276,7 +276,7 @@ void ComboBox::drawBorder() {
 void ComboBox::drawDropDown() {
   drawBorder();
   int n = getNoOfVisibleItems();
-  for (int i = m_scrollOffset; i < m_scrollOffset + n; i++) {
+  for(int i = m_scrollOffset; i < m_scrollOffset + n; i++) {
     drawItem(i);
   }
 }

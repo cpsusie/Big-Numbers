@@ -144,7 +144,7 @@ template <typename IStreamType, typename CharType> IStreamType &getUint128(IStre
   bool     gotDigits = false;
   _uint128 result;
 
-  switch (ch) {
+  switch(ch) {
   case '-':
   case '+':
     ch = scanner.next();

@@ -6,7 +6,7 @@ void textOut(HDC hdc, const CPoint &p, const String &s) {
 
 void textOut(HDC hdc, int x, int y, const String &s) {
   const BOOL ok = TextOut(hdc, x, y, s.cstr(), (int)s.length());
-  if (!ok) {
+  if(!ok) {
     throwLastErrorOnSysCallException(_T("textOut"));
   }
 }

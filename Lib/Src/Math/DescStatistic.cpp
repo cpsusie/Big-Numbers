@@ -41,7 +41,7 @@ DescriptiveStatistics::DescriptiveStatistics(const CompactRealArray &data) {
 
 Real DescriptiveStatistics::findMomentAboutMean(const CompactRealArray &data, int r) {
   Real sum = 0;
-  for (int i = 0; i < m_count; i++) {
+  for(int i = 0; i < m_count; i++) {
     sum += mypow(data[i] - m_average, r);
   }
   return sum / m_count;

@@ -143,12 +143,12 @@ Real LssdPolynomial::operator()(int d, const Real &x) {
   case 0:
     return (*this)(x);
   default:
-    { for (int i = 0; i < MAXM + 2; i++) {
+    { for(int i = 0; i < MAXM + 2; i++) {
         q[i][degree + 1] = q[i][degree + 2] = 0;
       }
       for(int k = degree; k >= 0; k--) {
         q[0][k] = b[k] + (x - alfa[k+1]) * q[0][k+1] - beta[k+1]*q[0][k+2];
-        for (int i = 1; i <= d; i++) {
+        for(int i = 1; i <= d; i++) {
           q[i][k] = i*q[i - 1][k + 1] + (x - alfa[k + 1]) * q[i][k + 1] - beta[k + 1] * q[i][k + 2];
         }
       }
@@ -174,7 +174,7 @@ LssdPolynomial::operator Polynomial() const {
     q[j+2][j+1] = q[j+1][j];
   }
   Vector coef(degree+1);
-  for (int j = 0; j <= degree; j++) {
+  for(int j = 0; j <= degree; j++) {
     coef[j] = 0;
   }
   for(int j = 0; j <= degree; j++) {

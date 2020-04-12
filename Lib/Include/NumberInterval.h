@@ -60,7 +60,7 @@ public:
   NumberInterval<T> &operator+=(const NumberInterval<T> &rhs) { // union operator
     const T l = rhs.getMin();
     const T r = rhs.getMax();
-    if (m_from < m_to) {
+    if(m_from < m_to) {
       m_from = min(m_from, l);
       m_to   = max(m_to  , r);
     } else {

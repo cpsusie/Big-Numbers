@@ -24,7 +24,7 @@ CodeGenerator::CodeGenerator(ParserTree *tree, FILE *listFile) : m_tree(*tree) {
   try {
     genMachineCode();
     SAFEDELETE(m_code);
-  } catch (...) {
+  } catch(...) {
     SAFEDELETE(m_code);
     SAFEDELETE(m_codeArray)
     throw;
@@ -84,7 +84,7 @@ ExpressionReturnType CodeGenerator::genStatementList(const ExpressionNode *n) {
 void CodeGenerator::genFLD(SNode n) {
   if(n.isOne()) {
     m_code->emit(FLD1);
-  } else if (n.isPi()) {
+  } else if(n.isPi()) {
     m_code->emit(FLDPI);
   } else if(n.isZero()) {
     m_code->emit(FLDZ);
@@ -356,7 +356,7 @@ void CodeGenerator::genExpression(SNode n DCL_DSTPARAM) {
       GENCALLARG(  n.right(), ::exp  );
     } else if(n.left().isTwo()) {
       GENCALLARG(  n.right(), ::exp2 );
-    } else if (n.left().isTen()) {
+    } else if(n.left().isTen()) {
       GENCALLARG(  n.right(), ::exp10);
     }
     { Rational rexpo;
@@ -870,7 +870,7 @@ void CodeGenerator::genCall2Arg(SNode arg1, SNode arg2, BuiltInFunction2 f, cons
   if(!arg2HasCalls) {
     genSetParameter(arg1, 0);
     genSetParameter(arg2, 1);
-  } else if (!arg1HasCalls) {
+  } else if(!arg1HasCalls) {
     genSetParameter(arg2, 1);
     genSetParameter(arg1, 0);
   } else { // both parmeters are expressions using function calls

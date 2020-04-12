@@ -3,14 +3,14 @@
 #include <MFCUtil/Coordinatesystem/CoordinateSystem.h>
 
 void OccupationMap::setCellSize(int cx, int cy) {
-  if (cx == 0 || cy == 0) {
+  if(cx == 0 || cy == 0) {
     return;
   }
   MatrixDimension gridDim;
-  if (m_winSize.cx > 0) {
+  if(m_winSize.cx > 0) {
     gridDim.columnCount = (int)ceil((double)m_winSize.cx / cx);
   }
-  if (m_winSize.cy > 0) {
+  if(m_winSize.cy > 0) {
     gridDim.rowCount = (int)ceil((double)m_winSize.cy / cy);
   }
   m_cellSize = CSize(cx, cy);
@@ -18,7 +18,7 @@ void OccupationMap::setCellSize(int cx, int cy) {
 }
 
 void OccupationMap::setWindowSize(const CSize &size) {
-  if (size.cx == 0 || size.cy == 0) {
+  if(size.cx == 0 || size.cy == 0) {
     return;
   }
   m_winSize = size;
@@ -61,8 +61,8 @@ void OccupationMap::setOccupiedRect(const CRect &r) {
 
   const MatrixIndex itl(tl.y / m_cellSize.cy, tl.x / m_cellSize.cx);
   const MatrixIndex ibr(br.y / m_cellSize.cy, br.x / m_cellSize.cx);
-  for (size_t r = itl.r; r <= ibr.r; r++) {
-    for (size_t c = itl.c; c <= ibr.c; c++) {
+  for(size_t r = itl.r; r <= ibr.r; r++) {
+    for(size_t c = itl.c; c <= ibr.c; c++) {
       set(r,c,true);
     }
   }
@@ -73,9 +73,9 @@ PointArray &OccupationMap::createDistinctPointArray(PointArray &dst, const Point
   const CPoint *end = &src.last();
   CPoint        last((int)(p->x / m_cellSize.cx), (int)(p->y / m_cellSize.cy));
   dst.add(CPoint(last.x*m_cellSize.cx,last.y*m_cellSize.cy));
-  while (p++ < end) {
+  while(p++ < end) {
     const CPoint next((int)(p->x / m_cellSize.cx), (int)(p->y / m_cellSize.cy));
-    if (next != last) {
+    if(next != last) {
       last = next;
       dst.add(CPoint(last.x*m_cellSize.cx,last.y*m_cellSize.cy));
     }
@@ -103,7 +103,7 @@ void OccupationMap::setOccupiedConnectedPoints(const PointArray &pointArray) {
     set(last->y, last->x, true);
   } else {
     const CPoint *end = &tmp.last();
-    for (const CPoint *next = last; next++ < end; last = next) {
+    for(const CPoint *next = last; next++ < end; last = next) {
       setOccupiedLine(*last, *next);
     }
   }

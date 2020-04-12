@@ -350,7 +350,7 @@ private:
 
 public:
   BigArray() : m_freeFilePages(256) {
-    if (_ELEMENTS_PER_PAGE == 0) {
+    if(_ELEMENTS_PER_PAGE == 0) {
       throwInvalidArgumentException(__TFUNCTION__, _T("Elements/page = 0. sizeof(T)=%zu"), sizeof(T));
     }
     init();

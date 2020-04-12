@@ -177,7 +177,7 @@ void PixRectDevice::render(const PixRect *pr) {
 
     SAFERELEASE(oldRenderTarget);
     V(m_device->Present(NULL, NULL, NULL, NULL));
-  } catch (...) {
+  } catch(...) {
     endScene();
     SAFERELEASE(oldRenderTarget);
     throw;

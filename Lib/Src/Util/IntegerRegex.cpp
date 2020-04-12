@@ -30,7 +30,7 @@ StringArray OctIntValueStreamScanner::getRegexLines() { // static
 
 // radix must be 8,10, 16
 const RegexIStream &getIntegerStreamScanner(int radix) {
-  switch (radix) {
+  switch(radix) {
   case 8 : return OctIntValueStreamScanner::getInstance();
   case 10: return DecIntValueStreamScanner::getInstance();
   case 16: return HexIntValueStreamScanner::getInstance();

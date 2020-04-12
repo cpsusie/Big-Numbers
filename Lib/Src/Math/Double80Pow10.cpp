@@ -37,7 +37,7 @@ public:
       const int l = p % ARRAYSIZE(m_pow10L), h = p / ARRAYSIZE(m_pow10L);
       if(h == 0) {
         return m_pow10L[l];
-      } else if (h < ARRAYSIZE(m_pow10H)) {
+      } else if(h < ARRAYSIZE(m_pow10H)) {
         return l ? (m_pow10H[h] * m_pow10L[l]) : m_pow10H[h];
       }
       return DBL80_MAX;
@@ -58,7 +58,7 @@ Double80 DefaultPow10Cache::pow10(int p) const {
   const Double80 d2 = m_c2.pow10(p);
   const UINT64 sig1 = *((UINT64*)&d1);
   const UINT64 sig2 = *((UINT64*)&d2);
-  if (sig1 == sig2) {
+  if(sig1 == sig2) {
     return d1;
   }
   (*(UINT64*)&d1) = (sig1 & 0xffffffff00000000) + (((sig1 & 0xffffffff) + (sig2 & 0xffffffff)) >> 1);

@@ -4,7 +4,7 @@
 // Assume x >= 0
 Real chiSquaredDensity(const Real &df, const Real &x) {
   DEFINEMETHODNAME;
-  if (x < 0) {
+  if(x < 0) {
     throwInvalidArgumentException(method, _T("x=%s. Valid range[0;inf["), toString(x).cstr());
   }
   const Real df2 = df / 2.0;
@@ -14,7 +14,7 @@ Real chiSquaredDensity(const Real &df, const Real &x) {
 // Calculate lower incomplete gamma function
 Real lowerIncGamma(const Real &a, const Real &x) {
   DEFINEMETHODNAME;
-  if (x < 0) {
+  if(x < 0) {
     throwInvalidArgumentException(method, _T("x=%s. Valid range:[0; inf["), toString(x).cstr());
   }
   Real sum = 0, ai = a, p = 1.0/ai++;
@@ -60,7 +60,7 @@ static Real lnLowerIncGammaTaylor(const Real &a, const Real &x) {
 }
 
 Real chiSquaredDistribution(const Real &df, const Real &x) {
-  if (x <= 0) {
+  if(x <= 0) {
     return 0;
   }
   const Real df2    = (Real)df/2.0;

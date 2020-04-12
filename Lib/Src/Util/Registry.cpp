@@ -129,7 +129,7 @@ ReferenceCountedRegKey *RegistryKey::newCountedKey(HKEY key, bool closeKeyOnFail
 
   try {
     result = new ReferenceCountedRegKey(key); TRACE_NEW(result);
-  } catch (...) {
+  } catch(...) {
     result = NULL;
   }
 
@@ -716,7 +716,7 @@ RegistryValue::operator ByteArray() const {
 String &RegistryValue::bytesToString(String &dst, const void *data, size_t size) { // static
   BYTE * p = (BYTE*)data;
   dst = EMPTYSTRING;
-  for (size_t i = 0; i < size; i++) {
+  for(size_t i = 0; i < size; i++) {
     TCHAR tmp[10];
     _stprintf(tmp, _T("%02x "), p[i]);
     dst += tmp;

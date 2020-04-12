@@ -1,10 +1,10 @@
 #include "pch.h"
 
 String left(const String &str, intptr_t length) {
-  if (length >= (intptr_t)str.m_len) {
+  if(length >= (intptr_t)str.m_len) {
     return str;
   }
-  else if (length <= 0) {
+  else if(length <= 0) {
     return EMPTYSTRING;
   }
   else {
@@ -15,10 +15,10 @@ String left(const String &str, intptr_t length) {
 }
 
 String right(const String &str, intptr_t length) {
-  if (length >= (intptr_t)str.m_len) {
+  if(length >= (intptr_t)str.m_len) {
     return str;
   }
-  else if (length <= 0) {
+  else if(length <= 0) {
     return EMPTYSTRING;
   }
   else {
@@ -27,11 +27,11 @@ String right(const String &str, intptr_t length) {
 }
 
 String substr(const String &str, intptr_t from, intptr_t length) {
-  if ((from < 0) || (from >= (intptr_t)str.m_len) || (length <= 0)) {
+  if((from < 0) || (from >= (intptr_t)str.m_len) || (length <= 0)) {
     return EMPTYSTRING;
   }
   else {
-    if (length > (intptr_t)str.m_len - from) {
+    if(length > (intptr_t)str.m_len - from) {
       length = str.m_len - from;
     }
     String result;

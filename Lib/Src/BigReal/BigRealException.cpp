@@ -31,7 +31,7 @@ void throwNotMutableException(TCHAR const * const file, int line, TCHAR const * 
                        , x.getDigitPool()->getName().cstr()
                        , x.flagsToString().cstr());
 }
-#else 
+#else
 void throwNotMutableException(TCHAR const * const function, const BigReal &x) {
   throwBigRealException(_T("%s:BigReal mutable. digitPool=%s, flags={%s}")
                        , function

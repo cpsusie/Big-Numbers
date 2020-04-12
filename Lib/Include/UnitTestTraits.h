@@ -1,7 +1,7 @@
 #pragma once
 
 static void myVerify(bool b, TCHAR *str) {
-  if (!b) {
+  if(!b) {
     Assert::IsTrue(b, str);
   }
 }

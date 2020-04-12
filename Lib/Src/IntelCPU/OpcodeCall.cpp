@@ -45,7 +45,7 @@ OpcodeJmp::OpcodeJmp(const String &mnemonic)
 }
 
 bool OpcodeJmp::isValidOperand(const InstructionOperand &op, bool throwOnError) const {
-  switch (op.getType()) {
+  switch(op.getType()) {
   case REGISTER      :
   case MEMORYOPERAND : return __super::isValidOperand(   op, throwOnError);
   case IMMEDIATEVALUE: return m_jmpRelImm.isValidOperand(op, throwOnError);
@@ -76,7 +76,7 @@ InstructionBase OpcodeJcc::operator()(const InstructionOperand &op) const {
     return InstructionBuilder(m_shortCode).setImmediateOperand(op, REGSIZE_BYTE);
   } else {
 #ifdef IS32BIT
-    switch (op.getSize()) {
+    switch(op.getSize()) {
     case REGSIZE_WORD :
 // NEVER USE THIS. it will clear high 16 bits of EIP !!
 //    return InstructionBuilder(*this).setImmediateOperand(op, REGSIZE_WORD).wordIns();

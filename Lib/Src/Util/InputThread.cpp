@@ -17,15 +17,15 @@ InputThread::InputThread(FILE *input, bool verbose)
 }
 
 InputThread::~InputThread() {
-  if (stillActive()) {
+  if(stillActive()) {
     kill();
   }
 }
 
 void InputThread::kill() {
   m_killed.notify();
-  for (int i = 0; i < 10; i++) {
-    if (!stillActive()) {
+  for(int i = 0; i < 10; i++) {
+    if(!stillActive()) {
       return;
     }
     Sleep(100);
@@ -41,7 +41,7 @@ UINT InputThread::run() {
   try {
     while(!m_eoi) {
       DWORD waitResult = WaitForMultipleObjects(ARRAYSIZE(handles), handles, FALSE, INFINITE);
-      switch (waitResult) {
+      switch(waitResult) {
       case WAIT_OBJECT_0 + 0: // m_killed is signaled
         m_eoi = true;
         m_inputQueue.put(EMPTYSTRING);

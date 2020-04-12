@@ -14,10 +14,10 @@ void ParserTree::checkIsConsistent() const {
       getRoot()->checkIsConsistent();
       m_ops->checkTreeFormConsistent(this);
     }
-  } catch (Exception e) {
+  } catch(Exception e) {
     int fisk = 1;
     throw;
-  } catch (...) {
+  } catch(...) {
     int fisk = 1;
     throw;
   }
@@ -178,7 +178,7 @@ String ParserTree::getTreeFormName(ParserTreeForm treeForm) { // static
 
 String ParserTree::getStateName(ParserTreeState state) { // static
 #define CASESTR(s) case PS_##s: return _T(#s)
-  switch (state) {
+  switch(state) {
   CASESTR(EMPTY         );
   CASESTR(COMPILED      );
   CASESTR(DERIVED       );
@@ -511,7 +511,7 @@ ExpressionNodeName *ParserTree::fetchNameNode(const String &name) {
 }
 
 ExpressionNodeNumber *ParserTree::numberExpr(const Number   &v) {
-  if (isRational(v)) return numberExpr(getRational(v));
+  if(isRational(v)) return numberExpr(getRational(v));
   ExpressionNodeNumber *n = new ExpressionNodeNumber(this, v); TRACE_NEW(n);
   return n;
 }
@@ -522,7 +522,7 @@ ExpressionNodeNumber *ParserTree::numberExpr(const Real     &v) {
 }
 
 ExpressionNodeBoolConst *ParserTree::boolConstExpr(bool b, bool checkIsSimple) {
-  if (checkIsSimple) return b ? getTrue() : getFalse();
+  if(checkIsSimple) return b ? getTrue() : getFalse();
   ExpressionNodeBoolConst *n = new ExpressionNodeBoolConst(this, b); TRACE_NEW(n);
   return n;
 }

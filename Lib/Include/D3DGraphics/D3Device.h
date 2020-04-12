@@ -68,7 +68,7 @@ public:
   }
   // Set device' shade-mode (D3DRS_SHADEMODE), and update m_renderState.m_shademode, if different from current
   inline D3Device &setShadeMode(D3DSHADEMODE shadeMode) {
-    if (shadeMode != getShadeMode()) {
+    if(shadeMode != getShadeMode()) {
       setDevRenderState(D3DRS_SHADEMODE, shadeMode);
       m_shadeMode = shadeMode;
     }
@@ -90,7 +90,7 @@ public:
   }
   // call device->SetFVF and update m_renderState.m_fvf if different from current
   inline D3Device &setFVF(DWORD fvf) {
-    if (fvf != getFVF()) {
+    if(fvf != getFVF()) {
       V(m_device->SetFVF(fvf));
       m_fvf = fvf;
     }
@@ -101,7 +101,7 @@ public:
   }
   // set device cullmode (D3DRS_CULLMODE) and and update m_renderState.m_cullmode if different from current
   inline D3Device &setCullMode(D3DCULL cullMode) {
-    if (cullMode != getCullMode()) {
+    if(cullMode != getCullMode()) {
       setDevRenderState(D3DRS_CULLMODE, cullMode);
       m_cullMode = cullMode;
     }
@@ -112,7 +112,7 @@ public:
   }
   // set device srcblend (D3DRS_SRCBLEND) and and update m_renderState.m_srcBlend if different from current
   inline D3Device &setSrcBlend(D3DBLEND blend) {
-    if (blend != getSrcBlend()) {
+    if(blend != getSrcBlend()) {
       setDevRenderState(D3DRS_SRCBLEND, blend);
       m_srcBlend = blend;
     }
@@ -123,7 +123,7 @@ public:
   }
   // set device dstblend (D3DRS_DESTBLEND) and and update m_renderState.m_dstBlend if different from current
   inline D3Device &setDstBlend(D3DBLEND blend) {
-    if (blend != getDstBlend()) {
+    if(blend != getDstBlend()) {
       setDevRenderState(D3DRS_DESTBLEND, blend);
       m_dstBlend = blend;
     }
@@ -135,7 +135,7 @@ public:
 
   // set device zenable (D3DRS_ZENABLE) and and update m_renderState.m_zEnable if different from current
   inline D3Device &setZEnable(D3DZBUFFERTYPE bufferType) {
-    if (bufferType != getZEnable()) {
+    if(bufferType != getZEnable()) {
       setDevRenderState(D3DRS_ZENABLE, bufferType);
       m_zEnable = bufferType;
     }
@@ -147,7 +147,7 @@ public:
 
   // set device normalizeNormals (D3DRS_NORMALIZENORMALS) and and update m_renderState.m_normalizeNormals if different from current
   inline D3Device &setNormalizeNormalsEnable(bool enabled) {
-    if (enabled != isNormalizeNormalsEnable()) {
+    if(enabled != isNormalizeNormalsEnable()) {
       setDevRenderState(D3DRS_NORMALIZENORMALS, enabled ? TRUE : FALSE);
       m_normalizeNormals = enabled;
     }
@@ -159,7 +159,7 @@ public:
 
   // set device enableAlphaBlend (D3DRS_ALPHABLENDENABLE) and and update m_renderState.m_alphaBlendEnable if different from current
   inline D3Device &setAlphaBlendEnable(bool enabled) {
-    if (enabled != isAlphaBlendEnable()) {
+    if(enabled != isAlphaBlendEnable()) {
       setDevRenderState(D3DRS_ALPHABLENDENABLE, enabled ? TRUE : FALSE);
       m_alphaBlendEnable = enabled;
     }
@@ -171,7 +171,7 @@ public:
 
   // set device lightning (D3DRS_LIGHTING) and and update m_renderState.m_lighting if different from current
   inline D3Device &setLightingEnable(bool enabled) {
-    if (enabled != isLightingEnable()) {
+    if(enabled != isLightingEnable()) {
       setDevRenderState(D3DRS_LIGHTING, enabled ? TRUE : FALSE);
       m_lighting = enabled;
     }
@@ -184,7 +184,7 @@ public:
   // set device specularHighLightEnable (D3DRS_SPECULARENABLE),
   // and update m_renderState.m_specularHighLightEnable if different from current
   inline D3Device &setSpecularEnable(bool enabled) {
-    if (enabled != getSpecularEnable()) {
+    if(enabled != getSpecularEnable()) {
       setDevRenderState(D3DRS_SPECULARENABLE, enabled ? TRUE : FALSE);
       m_specularHighLightEnable = enabled;
     }
@@ -193,7 +193,7 @@ public:
   inline bool getSpecularEnable() const {
     return m_specularHighLightEnable;
   }
-  // call m_device->SetMaterial(&mat), 
+  // call m_device->SetMaterial(&mat),
   D3Device &setMaterial(const D3Material &matarial);
   inline const D3Material &getMaterial() const {
     return m_material;

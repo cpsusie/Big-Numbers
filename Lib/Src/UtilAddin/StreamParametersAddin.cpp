@@ -9,7 +9,7 @@ ADDIN_API HRESULT WINAPI AddIn_StreamParameters(DWORD dwAddress, DEBUGHELPER *pH
     char tmp[2000];
     strncpy(pResult, strCpy(tmp, str.cstr()), maxResult);
     return S_OK;
-  } catch (...) {
+  } catch(...) {
     strcpy(pResult, "");
     return S_OK;
   }

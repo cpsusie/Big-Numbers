@@ -45,7 +45,7 @@ wostream &operator<<(wostream &out, const MD5HashCode &code) {
 String MD5HashCode::toString(bool upper) const {
   const TCHAR *fstr = upper ? _T("%02X") : _T("%02x");
   String result;
-  for (size_t i = 0; i < ARRAYSIZE(m_v); i++) {
+  for(size_t i = 0; i < ARRAYSIZE(m_v); i++) {
     result += format(fstr, m_v[i]);
   }
   return result;
@@ -64,7 +64,7 @@ typedef unsigned short UINT16;
 static void *MD5_memcpy(POINTER output, POINTER input, UINT length) {
   UINT i;
 
-  for (i = 0; i < length; i++)
+  for(i = 0; i < length; i++)
     output[i] = input[i];
   return output;
 }
@@ -73,7 +73,7 @@ static void *MD5_memcpy(POINTER output, POINTER input, UINT length) {
 static void *MD5_memset(POINTER output, int value, UINT length) {
   UINT i;
 
-  for (i = 0; i < length; i++)
+  for(i = 0; i < length; i++)
    ((char *)output)[i] = (char)value;
   return output;
 }

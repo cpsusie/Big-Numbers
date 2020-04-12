@@ -25,7 +25,7 @@ Packer &Packer::operator>>(String &s) {
         tmp[l] = 0;
         s = tmp;
         SAFEDELETEARRAY(tmp);
-      } catch (...) {
+      } catch(...) {
         SAFEDELETEARRAY(tmp);
         throw;
       }
@@ -38,7 +38,7 @@ Packer &Packer::operator>>(String &s) {
         tmp[l] = 0;
         s = tmp;
         SAFEDELETEARRAY(tmp);
-      } catch (...) {
+      } catch(...) {
         SAFEDELETEARRAY(tmp);
         throw;
       }

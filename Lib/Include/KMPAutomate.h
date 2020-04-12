@@ -79,7 +79,7 @@ public:
 private:
 
   void allocate(size_t patternLength) {
-    if (patternLength > INT_MAX) {
+    if(patternLength > INT_MAX) {
       throwInvalidArgumentException(__TFUNCTION__, _T("patternLength > %u not allowed"), INT_MAX);
     }
     m_tableSize = (m_patternLength = patternLength) + 1;

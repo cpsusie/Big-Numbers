@@ -82,7 +82,7 @@ bool ExpressionNode::traverseExpression(ExpressionNodeHandler &handler) {
     const bool result = traverseNode(handler);
     handler.m_path.pop();
     return result;
-  } catch (...) {
+  } catch(...) {
     handler.m_path.pop();
     throw;
   }

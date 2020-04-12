@@ -124,7 +124,7 @@ void BigRealResourcePool::fetchSubProdRunnableArray(SubProdRunnableArray &a, UIN
       a.m_digitPoolArray.add(instance.fetchDPool(false, BR_MUTABLE));
     }
     instance.notify();
-  } catch (...) {
+  } catch(...) {
     instance.notify();
     throw;
   }
@@ -148,7 +148,7 @@ void BigRealResourcePool::releaseSubProdRunnableArray(SubProdRunnableArray &a) {
     a.reset();
 
     instance.notify();
-  } catch (...) {
+  } catch(...) {
     instance.notify();
     throw;
   }
@@ -160,7 +160,7 @@ DigitPool *BigRealResourcePool::fetchDigitPool(bool withLock, BYTE initFlags) { 
     DigitPool *pool = instance.fetchDPool(withLock, initFlags);
     instance.notify();
     return pool;
-  } catch (...) {
+  } catch(...) {
     instance.notify();
     throw;
   }
@@ -186,7 +186,7 @@ void BigRealResourcePool::fetchDigitPoolArray(DigitPoolArray &a, UINT count, boo
       a.add(instance.fetchDPool(withLock, initFlags));
     }
     instance.notify();
-  } catch (...) {
+  } catch(...) {
     instance.notify();
     throw;
   }
@@ -202,7 +202,7 @@ void BigRealResourcePool::releaseDigitPoolArray(DigitPoolArray &a) {  // static
     }
     a.clear();
     instance.notify();
-  } catch (...) {
+  } catch(...) {
     instance.notify();
     throw;
   }
@@ -245,7 +245,7 @@ Pow2Cache *BigRealResourcePool::getPow2Cache() { // static
       instance.allocatePow2Cache();
     }
     instance.notify();
-  } catch (...) {
+  } catch(...) {
     instance.notify();
     throw;
   }

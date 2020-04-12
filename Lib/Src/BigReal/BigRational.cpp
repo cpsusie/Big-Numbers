@@ -320,7 +320,7 @@ int BigRational::compare(const BigRational &r1, const BigRational &r2) { // stat
 BigRational BigRational::operator-() const {
   switch(_fpclass(*this)) {
   case _FPCLASS_SNAN  :
-  case _FPCLASS_QNAN  : 
+  case _FPCLASS_QNAN  :
   case _FPCLASS_NZ    :
   case _FPCLASS_PZ    : return *this;
   case _FPCLASS_NINF  :

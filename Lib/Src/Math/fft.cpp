@@ -27,7 +27,7 @@ void dft(CompactArray<Complex> &data, bool forward) {
   memset(y2,0,sizeof(Real)*n);
 
   Real factor = 2.0 * REAL_PI / n;
-  if (!forward) {
+  if(!forward) {
     factor = -factor;
   }
   for(int j = 0; j < n; j++) {

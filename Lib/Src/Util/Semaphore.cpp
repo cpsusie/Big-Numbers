@@ -48,7 +48,7 @@ void Semaphore::notify() {
 static String getCurrentThreadIdentification() {
   try {
     return getThreadDescription(GetCurrentThread());
-  } catch (...) {
+  } catch(...) {
     return format(_T("%08d"), GetCurrentThreadId());
   }
 }

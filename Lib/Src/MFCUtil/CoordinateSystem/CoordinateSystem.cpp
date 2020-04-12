@@ -150,7 +150,7 @@ DataRange CCoordinateSystem::getDefaultDataRange(AxisType xType, AxisType yType)
 // should only be called when m_objectArray.size() > 0
 DataRange CCoordinateSystem::findSmallestDataRange() const {
   DataRange result = m_objectArray[0]->getDataRange();
-  for (size_t i = 1; i < m_objectArray.size(); i++) {
+  for(size_t i = 1; i < m_objectArray.size(); i++) {
     result += m_objectArray[i]->getDataRange();
   }
   return result;
@@ -249,7 +249,7 @@ FunctionObject::FunctionObject(CCoordinateSystem &system, Function &f, const Dou
       const Real x = range.getFrom() * (1.0-t) + t * range.getTo();
       const Real y = f(x);
       m_points.add(Point2D(x, y));
-    } catch (...) {
+    } catch(...) {
       // ignore
     }
   }

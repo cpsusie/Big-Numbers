@@ -8,7 +8,7 @@ HANDLE getCurrentThreadHandle() {
   HANDLE processHandle = GetCurrentProcess();
   HANDLE threadHandle  = GetCurrentThread();
   HANDLE result;
-  if (!DuplicateHandle(processHandle, threadHandle, processHandle, &result, 0, true, DUPLICATE_SAME_ACCESS)) {
+  if(!DuplicateHandle(processHandle, threadHandle, processHandle, &result, 0, true, DUPLICATE_SAME_ACCESS)) {
     throwLastErrorOnSysCallException(__TFUNCTION__);
   }
   return result;

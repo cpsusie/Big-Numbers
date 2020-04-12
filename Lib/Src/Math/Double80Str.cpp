@@ -79,7 +79,7 @@ template<typename CharType> const CharType *parseD80Decimal(const CharType *s, D
 }
 
 static UINT charToInt(wchar_t ch) {
-  switch (ch) {
+  switch(ch) {
   case '0':
   case '1':
   case '2':

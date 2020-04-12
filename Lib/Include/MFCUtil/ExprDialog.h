@@ -219,7 +219,7 @@ protected:
       } else {
         save(param.getName(), param);
       }
-    } catch (Exception e) {
+    } catch(Exception e) {
       showException(e);
     }
   }
@@ -229,7 +229,7 @@ protected:
       T param;
       if(!winToParam(param)) return;
       saveAs(param);
-    } catch (Exception e) {
+    } catch(Exception e) {
       showException(e);
     }
   }

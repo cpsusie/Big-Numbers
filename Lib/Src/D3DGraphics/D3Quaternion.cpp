@@ -45,7 +45,7 @@ D3DXQUATERNION createOrientation(const D3DXVECTOR3 &dir, const D3DXVECTOR3 &up) 
     float          udiruup    = udir * uup;                      // expected 0
     verify(fabs(diruup ) <= 1e-6f);
     verify(fabs(udiruup) <= 1e-6f);
-    D3DXVECTOR3    right1      = unitVector(cross(dir , up)); 
+    D3DXVECTOR3    right1      = unitVector(cross(dir , up));
     D3DXVECTOR3    right2      = unitVector(cross(udir, uup));   // right2 == right1
     verify(length(right1 - right2) <= 1e-6);
     D3DXVECTOR3    rotE0q1     = rotate(E[0], q1    );           // expected udir

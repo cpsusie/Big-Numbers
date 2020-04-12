@@ -275,7 +275,7 @@ int ExpressionSymbolTable::findNumberIndexByValue(const Real &value) const {
 
 BitSet ExpressionSymbolTable::getVariablesIndexSet() const {
   BitSet result(m_valueTable.size()+1);
-  for (size_t i = 0; i < m_variableTable.size(); i++) {
+  for(size_t i = 0; i < m_variableTable.size(); i++) {
     const ExpressionVariable &v = m_variableTable[i];
     result.add(v.getValueIndex());
   }
@@ -284,7 +284,7 @@ BitSet ExpressionSymbolTable::getVariablesIndexSet() const {
 
 ExpressionVariableArray ExpressionSymbolTable::getAllVariables() const {
   ExpressionVariableArray result(m_variableTable.size());
-  for (size_t i = 0; i < m_variableTable.size(); i++) {
+  for(size_t i = 0; i < m_variableTable.size(); i++) {
     const ExpressionVariable &var = m_variableTable[i];
     result.add(ExpressionVariableWithValue(var, getValueRef(var)));
   }

@@ -67,7 +67,7 @@ void PixRect::fillRect(const CRect &rect, D3DCOLOR color, bool invert) {
   CRect dstRect = makePositiveRect(rect);
   HDC hdc = getDC();
   try {
-    if (invert) {
+    if(invert) {
       BitBlt( hdc, dstRect.left, dstRect.top, dstRect.Width(), dstRect.Height(), NULL, 0, 0, DSTINVERT);
     }
     else {
@@ -77,7 +77,7 @@ void PixRect::fillRect(const CRect &rect, D3DCOLOR color, bool invert) {
     }
     releaseDC(hdc);
   }
-  catch (...) {
+  catch(...) {
     releaseDC(hdc);
     throw;
   }

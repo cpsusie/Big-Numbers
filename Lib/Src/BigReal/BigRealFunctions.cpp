@@ -118,7 +118,7 @@ BigReal round(const BigReal &x, intptr_t prec, DigitPool *digitPool) { // sign(x
   BigReal result(pool);
   result.clrInitDone();
   if(prec == 0) {
-    result = (x.isNegative()) 
+    result = (x.isNegative())
            ? -floor(pool->_05() - x)
            :  floor(pool->_05() + x);
   } else {

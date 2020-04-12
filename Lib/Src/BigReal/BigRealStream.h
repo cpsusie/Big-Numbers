@@ -52,7 +52,7 @@ template <typename IStreamType, typename CharType> IStreamType &getBigReal(IStre
   }
   try {
     x = BigReal(buf.cstr(), x.getDigitPool());
-  } catch (...) {
+  } catch(...) {
     scanner.endScan(false);
     throw;
   }
@@ -76,7 +76,7 @@ template <typename IStreamType, typename CharType> IStreamType &getBigInt(IStrea
   }
   try {
     n = BigInt(buf.cstr(), n.getDigitPool());
-  } catch (...) {
+  } catch(...) {
     scanner.endScan(false);
     throw;
   }
@@ -160,7 +160,7 @@ template <typename IStreamType, typename CharType> IStreamType &getBigRational(I
   if(in) {
     try {
       x = BigRational(num, den);
-    } catch (...) {
+    } catch(...) {
       in.setstate(ios::failbit);
       in.flags(flg);
       throw;

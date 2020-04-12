@@ -61,7 +61,7 @@ void GenericDebugger::handleStep() {
 
 String GenericDebugger::getStateName(DebuggerState state) { // static
 #define CASESTR(s) case DEBUGGER_##s: return _T(#s)
-  switch (state) {
+  switch(state) {
   CASESTR(CREATED   );
   CASESTR(RUNNING   );
   CASESTR(PAUSED    );

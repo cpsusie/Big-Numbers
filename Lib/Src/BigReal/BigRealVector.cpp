@@ -105,7 +105,7 @@ BigReal       dotp(const BigRealVector &v1, const BigRealVector &v2, DigitPool *
   const UINT   digits = min(v1.getPrecision(), v2.getPrecision());
 
   BigReal sum(0, pool);
-  for (size_t i = 0; i < n; i++) {
+  for(size_t i = 0; i < n; i++) {
     sum = rSum(sum, rProd(v1[i], v2[i], digits, pool), digits, pool);
   }
   return sum;

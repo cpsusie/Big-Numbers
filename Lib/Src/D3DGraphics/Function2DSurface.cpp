@@ -22,7 +22,7 @@ void Function2DSurfaceParameters::putDataToDoc(XMLDoc &doc) {
   doc.setValue( root, _T("machinecode"), m_machineCode);
   doc.setValue( root, _T("doublesided"), m_doubleSided);
   doc.setValue( root, _T("includetime"), m_includeTime);
-  if (m_includeTime) {
+  if(m_includeTime) {
     setValue(doc, root, _T("timeinterval"), m_timeInterval);
     doc.setValue( root, _T("framecount"), m_frameCount);
   }

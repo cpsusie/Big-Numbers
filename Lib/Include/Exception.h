@@ -42,7 +42,7 @@ bool getDebuggerPresent();
 
 #ifdef IS32BIT
 #define CHECKUINT64ISVALIDSIZET(size64)                         \
-if (size64 > UINT_MAX) {                                        \
+if(size64 > UINT_MAX) {                                         \
   throwException(_T("%s:%s (=%s) exceeds maxint32 (=%s)")       \
                 ,__TFUNCTION__                                  \
                 ,_T(#size64)                                    \

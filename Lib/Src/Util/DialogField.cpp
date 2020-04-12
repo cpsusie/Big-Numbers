@@ -146,7 +146,7 @@ void DialogField::copyToClipboard() {
         HANDLE v = SetClipboardData(CF_TEXT,buf);
       }
       CloseClipboard();
-    } catch (...) {
+    } catch(...) {
       CloseClipboard();
       throw;
     }

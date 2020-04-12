@@ -49,7 +49,7 @@ void TreeSetIterator::findPath(const void *key) {
     if(c > 0) {                    // p->key > key
       push(p,LEFT_DONE);
       p = p->left();
-    } else if (c < 0) {            // p->key < key
+    } else if(c < 0) {            // p->key < key
       push(p,RIGHT_DONE);
       p = p->right();
     } else {

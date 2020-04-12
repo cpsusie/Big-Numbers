@@ -311,7 +311,7 @@ public:
 
   CompactArray<T> &reverse() {
     if(size() == 0) return *this;
-    for (T *p1 = &first(), *p2 = &last(); p1 < p2; p1++, p2--) {
+    for(T *p1 = &first(), *p2 = &last(); p1 < p2; p1++, p2--) {
       const T tmp = *p1; *p1 = *p2; *p2 = tmp;
     }
     m_updateCount++;

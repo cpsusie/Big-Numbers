@@ -226,7 +226,7 @@ UINT PrimeSearcher::run() {
   } catch(...) {
     // ignore
   }
-  
+
   m_mon.m_runningCount--;
   m_terminated.notify();
   return 0;

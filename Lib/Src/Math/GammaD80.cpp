@@ -27,8 +27,8 @@ static Double80 approximation0807(Double80 x) {
   Double80 sum1 = coef[8];
   Double80 sum2 = coef[15];
   int i;
-  for (i = 7; i >= 0; i--) sum1 = sum1 * x + coef[i];
-  for (i = 14; i > 8; i--) sum2 = sum2 * x + coef[i];
+  for(i = 7; i >= 0; i--) sum1 = sum1 * x + coef[i];
+  for(i = 14; i > 8; i--) sum2 = sum2 * x + coef[i];
   return sum1 / (sum2 * x + 1.0);
 }
 

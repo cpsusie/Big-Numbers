@@ -30,7 +30,7 @@ Packer &operator>>(Packer &p, BigReal &v) {
     break;
   case Packer::E_FLOAT    :
     { float f;
-      p >> f; 
+      p >> f;
       if(isnormal(f)) {
         throwException(_T("%s:E_FLOAT is normal (=%.8le), when reading BigReal"), __TFUNCTION__, f);
       }

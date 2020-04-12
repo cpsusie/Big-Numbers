@@ -76,7 +76,7 @@ intptr_t LexFileStream::getChars(_TUCHAR *dst, size_t n) {
 
   while(!eof()) {
     const intptr_t done = d - dst;
-    if (done >= (intptr_t)n) return done;
+    if(done >= (intptr_t)n) return done;
     const intptr_t needed = (intptr_t)n - done;
     const intptr_t got  = m_convertedQueue.get(d, needed);
     if(got) {
@@ -212,7 +212,7 @@ String ByteQueue::getConvertedString(size_t count) {
         SAFEDELETEARRAY(buffer);
       }
       remove(0, count);
-    } catch (...) {
+    } catch(...) {
       if(buffer != tmp) {
         SAFEDELETEARRAY(buffer);
       }

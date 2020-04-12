@@ -18,7 +18,7 @@ const WORD _wVerMinor = 1;
 BOOL CColormapApp::InitInstance() {
 	BOOL bInit = COleControlModule::InitInstance();
 
-	if (bInit) {
+	if(bInit) {
 		// TODO: Add your own module initialization code here.
 	}
 	return bInit;
@@ -34,10 +34,10 @@ int CColormapApp::ExitInstance() {
 STDAPI DllRegisterServer() {
 	AFX_MANAGE_STATE(_afxModuleAddrThis);
 
-  if (!AfxOleRegisterTypeLib(AfxGetInstanceHandle(), _tlid)) {
+  if(!AfxOleRegisterTypeLib(AfxGetInstanceHandle(), _tlid)) {
     return ResultFromScode(SELFREG_E_TYPELIB);
   }
-  if (!COleObjectFactoryEx::UpdateRegistryAll(TRUE)) {
+  if(!COleObjectFactoryEx::UpdateRegistryAll(TRUE)) {
     return ResultFromScode(SELFREG_E_CLASS);
   }
 	return NOERROR;
@@ -47,10 +47,10 @@ STDAPI DllRegisterServer() {
 STDAPI DllUnregisterServer() {
 	AFX_MANAGE_STATE(_afxModuleAddrThis);
 
-  if (!AfxOleUnregisterTypeLib(_tlid, _wVerMajor, _wVerMinor)) {
+  if(!AfxOleUnregisterTypeLib(_tlid, _wVerMajor, _wVerMinor)) {
     return ResultFromScode(SELFREG_E_TYPELIB);
   }
-  if (!COleObjectFactoryEx::UpdateRegistryAll(FALSE)) {
+  if(!COleObjectFactoryEx::UpdateRegistryAll(FALSE)) {
     return ResultFromScode(SELFREG_E_CLASS);
   }
 	return NOERROR;

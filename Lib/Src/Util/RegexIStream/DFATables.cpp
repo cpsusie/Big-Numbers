@@ -96,7 +96,7 @@ template<typename T> String arrayToString(const T *a, size_t size, size_t maxPer
       result += format(_T("(%3u) "), (UINT)i);
     }
     result += format(_T("%3d"), a[i]);
-    if (i < size - 1) {
+    if(i < size - 1) {
       result += _T(",");
     }
     if((j == maxPerLine) || (i == size - 1)) {

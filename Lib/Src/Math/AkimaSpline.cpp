@@ -61,7 +61,7 @@ AkimaSpline::AkimaSpline(const CompactArray<DataPoint> &data) {
 
   m_ok = true;
   /* if n=1, then use constant interpolation */
-  if (n==1) {
+  if(n==1) {
     yd(0,1) = 0.0;
     yd(0,2) = 0.0;
     yd(0,3) = 0.0;
@@ -69,7 +69,7 @@ AkimaSpline::AkimaSpline(const CompactArray<DataPoint> &data) {
 
   /* else, if n=2, then use linear interpolation */
   }
-  else if (n==2) {
+  else if(n==2) {
     yd(0,1) = yd(1,1) = (y[1]-y[0])/(a[1]-a[0]);
     yd(0,2) = yd(1,2) = 0.0;
     yd(0,3) = yd(1,3) = 0.0;
@@ -97,7 +97,7 @@ AkimaSpline::AkimaSpline(const CompactArray<DataPoint> &data) {
   /* compute 1st derivatives in interior as weighted 1st differences */
   for(int i = 1; i < n-1; i++) {
     sumw = yd(i+1,3)+yd(i-1,3);
-    if (sumw!=0.0)
+    if(sumw!=0.0)
       yd(i,1) = (yd(i+1,3)*yd(i,2)+yd(i-1,3)*yd(i+1,2))/sumw;
     else
       yd(i,1) = 0.5*(yd(i,2)+yd(i+1,2));

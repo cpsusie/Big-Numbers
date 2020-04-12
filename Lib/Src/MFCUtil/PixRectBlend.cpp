@@ -35,7 +35,7 @@ void PixRect::alphaBlend(HDC dst, int x, int y, int w, int h,  const PixRect &sr
   try {
     ::alphaBlend(dst, x,y,w,h, srcDC, sx,sy,sw,sh, srcConstAlpha);
     src.releaseDC(srcDC);
-  } catch (...) {
+  } catch(...) {
     src.releaseDC(srcDC);
     throw;
   }

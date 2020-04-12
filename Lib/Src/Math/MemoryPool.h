@@ -145,14 +145,14 @@ template<class T> void MemoryPool<T>::poolinit(int bytecount, int itemcount, int
   //   - The parameter `alignment'.
   //   - sizeof(void*), so the stack of dead items can be maintained
   //       without unaligned accesses.
-  if (alignment > sizeof(void*)) {
+  if(alignment > sizeof(void*)) {
     alignbytes = alignment;
   } else {
     alignbytes = sizeof(void*);
   }
   itembytes = ((bytecount - 1) / alignbytes + 1) * alignbytes;
   itemsperblock = itemcount;
-  if (firstitemcount == 0) {
+  if(firstitemcount == 0) {
     itemsfirstblock = itemcount;
   } else {
     itemsfirstblock = firstitemcount;
@@ -169,7 +169,7 @@ template<class T> void MemoryPool<T>::poolinit(int bytecount, int itemcount, int
 
 // Free to the operating system all memory taken by a pool.
 template<class T> void MemoryPool<T>::pooldeinit() {
-  while (firstblock != NULL) {
+  while(firstblock != NULL) {
     nowblock = (void**) *(firstblock);
     trifree((void*)firstblock);
     firstblock = nowblock;
@@ -184,14 +184,14 @@ template<class T> T *MemoryPool<T>::alloc() {
 
   // First check the linked list of dead items.  If the list is not
   // empty, allocate an item from the list rather than a fresh one.
-  if (deaditemstack != NULL) {
+  if(deaditemstack != NULL) {
     newitem = deaditemstack;               // Take first item in list.
     deaditemstack = *(void**)deaditemstack;
   } else {
     // Check if there are any free items left in the current block.
-    if (unallocateditems == 0) {
+    if(unallocateditems == 0) {
       // Check if another block must be allocated.
-      if (*(nowblock) == NULL) {
+      if(*(nowblock) == NULL) {
         // Allocate a new block of items, pointed to by the previous block.
         newblock = (void**)trimalloc(itemsperblock * getItemBytes() + sizeof(void*) + alignbytes);
         *(nowblock) = (void*)newblock;
@@ -265,12 +265,12 @@ template<class T> T *MemoryPool<T>::traverse() {
   size_t alignptr;
 
   // Stop upon exhausting the list of items.
-  if (pathitem == nextitem) {
+  if(pathitem == nextitem) {
     return NULL;
   }
 
   // Check whether any untraversed items remain in the current block.
-  if (pathitemsleft == 0) {
+  if(pathitemsleft == 0) {
     // Find the next block.
     pathblock = (void**)*(pathblock);
     // Find the first item in the block.  Increment by the size of (void*).

@@ -134,7 +134,7 @@ public:
   }
 
   bool addAll(const Map<K, V> &src) {
-    if (this == &src) {
+    if(this == &src) {
       return false;
     }
     const size_t n = size();

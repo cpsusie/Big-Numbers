@@ -19,7 +19,7 @@ void IsoCurveParameters::putDataToDoc(XMLDoc &doc) {
   setValue(doc,  root, _T("boundingbox"  ), m_boundingBox );
   doc.setValue(  root, _T("machinecode"  ), m_machineCode );
   doc.setValue(  root, _T("includetime"  ), m_includeTime );
-  if (m_includeTime) {
+  if(m_includeTime) {
     setValue(doc, root, _T("timeinterval"), m_tInterval   );
     doc.setValue( root, _T("framecount"  ), m_frameCount  );
   }
@@ -33,7 +33,7 @@ void IsoCurveParameters::getDataFromDoc(XMLDoc &doc) {
   getValue(doc,  root, _T("boundingbox"  ), m_boundingBox );
   doc.getValue(  root, _T("machinecode"  ), m_machineCode );
   doc.getValue(  root, _T("includetime"  ), m_includeTime );
-  if (m_includeTime) {
+  if(m_includeTime) {
     getValue(doc, root, _T("timeinterval"), m_tInterval   );
     doc.getValue( root, _T("framecount"  ), m_frameCount  );
   }

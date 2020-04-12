@@ -285,7 +285,7 @@ void ExternProcess::send(_In_z_ _Printf_format_string_ TCHAR const * const forma
   va_list argptr;
   va_start(argptr, format);
   _vftprintf(m_output, format, argptr);
-  if (m_verbose) {
+  if(m_verbose) {
     const String s = vformat(format, argptr);
     VERBOSE(s.cstr());
   }
@@ -297,7 +297,7 @@ void ExternProcess::send(_In_z_ _Printf_format_string_ TCHAR const * const forma
 String ExternProcess::receive() {
   ENTERFUNC
   TCHAR line[10000];
-  if (!FGETS(line, ARRAYSIZE(line), m_input)) {
+  if(!FGETS(line, ARRAYSIZE(line), m_input)) {
     line[0] = 0;
   }
   VERBOSE(line);
@@ -341,7 +341,7 @@ int ExternProcess::runCreateProcess(const String &program, const String &command
 
 int ExternProcess::run(bool silent, const ArgArray &argv) { // static
   const String program = argv[0];
-  if (silent) {
+  if(silent) {
     return runCreateProcess(program, argv.getCommandLine());
   } else {
     return runSpawn(program, argv.getBuffer());

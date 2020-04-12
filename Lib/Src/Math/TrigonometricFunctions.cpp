@@ -159,9 +159,9 @@ String toString(TrigonometricMode mode) {
 TrigonometricMode getTrigonometricModeFromString(const String &str) {
   if(str.equalsIgnoreCase(_T("radians"))) {
     return RADIANS;
-  } else if (str.equalsIgnoreCase(_T("degrees"))) {
+  } else if(str.equalsIgnoreCase(_T("degrees"))) {
     return DEGREES;
-  } else if (str.equalsIgnoreCase(_T("grads"))) {
+  } else if(str.equalsIgnoreCase(_T("grads"))) {
     return GRADS;
   } else {
     return RADIANS;

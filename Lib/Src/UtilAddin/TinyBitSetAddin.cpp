@@ -31,7 +31,7 @@ ADDIN_API HRESULT WINAPI AddIn_BitSet8(DWORD dwAddress, DEBUGHELPER *pHelper, in
     BitSet8 set;
     pHelper->getRealObject(&set, sizeof(set));
     strncpy(pResult, tinyBitSetToString((BYTE*)&set, sizeof(set)).c_str(), maxResult);
-  } catch (...) {
+  } catch(...) {
     strcpy(pResult, "");
   }
   return S_OK;
@@ -42,7 +42,7 @@ ADDIN_API HRESULT WINAPI AddIn_BitSet16(DWORD dwAddress, DEBUGHELPER *pHelper, i
     BitSet16 set;
     pHelper->getRealObject(&set, sizeof(set));
     strncpy(pResult, tinyBitSetToString((BYTE*)&set, sizeof(set)).c_str(), maxResult);
-  } catch (...) {
+  } catch(...) {
     strcpy(pResult, "");
   }
   return S_OK;
@@ -53,7 +53,7 @@ ADDIN_API HRESULT WINAPI AddIn_BitSet32(DWORD dwAddress, DEBUGHELPER *pHelper, i
     BitSet32 set;
     pHelper->getRealObject(&set, sizeof(set));
     strncpy(pResult, tinyBitSetToString((BYTE*)&set, sizeof(set)).c_str(), maxResult);
-  } catch (...) {
+  } catch(...) {
     strcpy(pResult, "");
   }
   return S_OK;
@@ -64,7 +64,7 @@ ADDIN_API HRESULT WINAPI AddIn_BitSet64(DWORD dwAddress, DEBUGHELPER *pHelper, i
     BitSet64 set;
     pHelper->getRealObject(&set, sizeof(set));
     strncpy(pResult, tinyBitSetToString((BYTE*)&set, sizeof(set)).c_str(), maxResult);
-  } catch (...) {
+  } catch(...) {
     strcpy(pResult, "");
   }
   return S_OK;

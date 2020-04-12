@@ -181,7 +181,7 @@ UINT MeshArrayCreator::safeRun() {
   try {
     ThreadPool::executeInParallel(m_workerArray);
     cleanup();
-  } catch (...) {
+  } catch(...) {
     cleanup();
     throw;
   }

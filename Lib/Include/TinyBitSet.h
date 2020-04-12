@@ -305,7 +305,7 @@ public:
   String toString(AbstractStringifier<UINT> *sf = NULL, const TCHAR *delim = _T(",")) const {
     String result = _T("(");
     Iterator<UINT> it = ((TinyBitSet*)this)->getIterator();
-    if (sf) {
+    if(sf) {
       result += it.toString(*sf, delim);
     } else {
       result += it.toString(UIntStringifier(), delim);

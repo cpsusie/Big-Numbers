@@ -308,7 +308,7 @@ void MemoryRef::throwInvalidIndex(const TCHAR *method, char op, const String &st
 }
 
 String MemoryOperand::toString() const {
-  switch (getSize()) {
+  switch(getSize()) {
   case REGSIZE_VOID:
     return (m_segReg)
           ? format(_T("%s:[%s]"), m_segReg->getName().cstr(), m_mr.toString().cstr())

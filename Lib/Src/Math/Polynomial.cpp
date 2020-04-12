@@ -203,7 +203,7 @@ Complex Polynomial::findRoot(const Complex &start, bool verbose, const Real &roo
     x -= y / dy;
   }
 
-  if (i == maxit && verbose) {
+  if(i == maxit && verbose) {
     throwException(_T("findRoot:bad convergence"));
   }
 

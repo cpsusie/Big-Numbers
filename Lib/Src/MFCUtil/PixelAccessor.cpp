@@ -227,7 +227,7 @@ D3DCOLOR DWordPixelAccessor::getPixel(UINT x, UINT y) const {
 
 void DWordPixelAccessor::fillRect(D3DCOLOR color, const CRect *r) {
   UINT left,right,top,bottom;
-  if (r == NULL) {
+  if(r == NULL) {
     left   = 0;
     right  = m_desc.Width;
     top    = 0;

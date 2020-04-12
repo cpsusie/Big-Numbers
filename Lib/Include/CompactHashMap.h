@@ -298,7 +298,7 @@ public:
     }
 
     inline void checkUpdateCount() const {
-      if (m_updateCount != m_map.m_updateCount) {
+      if(m_updateCount != m_map.m_updateCount) {
         concurrentModificationError(_T("CompactMapEntryIterator"));
       }
     }
@@ -376,8 +376,8 @@ public:
   }
 
   bool operator==(const CompactHashMap &map) const {
-    if (this == &map) return true;
-    if (map.size() != size()) {
+    if(this == &map) return true;
+    if(map.size() != size()) {
       return false;
     }
     for(Iterator<Entry<K,V> > it = getEntryIterator(); it.hasNext();) {
@@ -417,7 +417,7 @@ public:
       s.putBytes((BYTE*)a.getBuffer(),sizeof(MapEntry<K,V>)*a.size());
       wCount += a.size();
     }
-    if (wCount != count) {
+    if(wCount != count) {
       throwException(_T("%s:#written elements:%I64u. setSize:%I64u")
                     ,__TFUNCTION__, wCount, count);
     }

@@ -3,7 +3,7 @@
 
 void Face::invertOrientation() {
   UINT n = getIndexCount() - 1;
-  for (UINT i = 0; i < n;) {
+  for(UINT i = 0; i < n;) {
     m_data.swap(i++, n--);
   }
 }

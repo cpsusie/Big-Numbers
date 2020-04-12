@@ -1,7 +1,7 @@
 #include "pch.h"
 
 String spaceString(std::streamsize length, TCHAR ch) {
-  if (length <= 0) {
+  if(length <= 0) {
     return EMPTYSTRING;
   }
   String result;

@@ -1231,7 +1231,7 @@ AlignedImage *ExpressionPainter::getNumberImage(SNode n, int fontSize, Expressio
     splitReal(getReal(num), significand, exponent);
     if(m_numberFormat == ENGINEERING_NOTATION) {
       const int r = ::abs(exponent % 3);
-      if (r) {
+      if(r) {
         exponent    -= r;
         significand *= (r==1) ? 10 : 100;
       }
@@ -1346,7 +1346,7 @@ String ExpressionRectangle::toString() const {
   } else {
     try {
       return format(_T("%s Node:%p (%s)"), rStr.cstr(), m_node, m_node->toString().cstr());
-    } catch (...) {
+    } catch(...) {
       return format(_T("%s Node:%p (Illegal pointer)"), rStr.cstr(), m_node);
     }
   }

@@ -237,7 +237,7 @@ void IsoSurfacePolygonizer::doTetra(const HashedCubeCorner &a, const HashedCubeC
 
   TriangleStrip ts;
 
-  switch (index) {
+  switch(index) {
   case  0:                                         //----
   case 15:                                         //++++
     m_statistics.m_nonProduktiveCalls++;
@@ -440,7 +440,7 @@ String PolygonizerCubeArray::toString() const {
 
 String PolygonizerCubeArrayTable::toString() const {
   String result;
-  for (UINT i = 0; i < ARRAYSIZE(m_table); i++) {
+  for(UINT i = 0; i < ARRAYSIZE(m_table); i++) {
     result += format(_T("%3d,%s\n"), i, sprintbin((BYTE)i).cstr());
     result += indentString(get(i).toString(),2);
   }
@@ -713,7 +713,7 @@ void StackedCube::validate() {
   ) {
     throwException(_T("Cube not valid\n%s"), toString().cstr());
   }
-  if ((m_corners[LBN]->x >= m_corners[RBN]->x)
+  if((m_corners[LBN]->x >= m_corners[RBN]->x)
     || (m_corners[LBN]->y >= m_corners[LTN]->y)
     || (m_corners[LBN]->z >= m_corners[LBF]->z))
   {

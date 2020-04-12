@@ -347,7 +347,7 @@ TreeSetNode *TreeSetImpl::findNode(const void *key) {
     const int c = m_comparator->cmp(p->m_key, key);
     if(c > 0) {                    // p->key > key
       p = p->m_left;
-    } else if (c < 0) {            // p->key < key
+    } else if(c < 0) {            // p->key < key
       p = p->m_right;
     } else {
       return p;
@@ -363,7 +363,7 @@ const TreeSetNode *TreeSetImpl::findNode(const void *key) const {
     const int c = m_comparator->cmp(p->m_key, key);
     if(c > 0) {                    // p->key > key
       p = p->m_left;
-    } else if (c < 0) {            // p->key < key
+    } else if(c < 0) {            // p->key < key
       p = p->m_right;
     } else {
       return p;

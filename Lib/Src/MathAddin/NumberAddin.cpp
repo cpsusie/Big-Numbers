@@ -64,7 +64,7 @@ ADDIN_API HRESULT WINAPI AddIn_Number(DWORD dwAddress, DEBUGHELPER *pHelper, int
       }
       break;
     }
-  } catch (...) {
+  } catch(...) {
     tmpstr[0] = 0;
   }
 

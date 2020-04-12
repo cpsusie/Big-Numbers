@@ -202,7 +202,7 @@ template<typename Int128Type, class Ctype, bool withSign> Int128Type strtoint128
   if(*s == '-') { // read optional sign
     s++;
     negative = true;
-  } else if (*s == '+') {
+  } else if(*s == '+') {
     s++;
   }
   UINT digit;

@@ -451,7 +451,7 @@ private:
   // Return *this
   BigReal &approxQuot128(    const BigReal &x, const BigReal           &y);
   // *this = approximately |x/e(y,scale)|
-  // Assume y != 0.        
+  // Assume y != 0.
   // Return *this
   BigReal &approxQuot128Abs( const BigReal &x, const _uint128          &y, BRExpoType scale);
 #endif // IS64BIT
@@ -464,7 +464,7 @@ private:
   // Assume bias is {<,>,#}
 #ifdef _DEBUG
   BigReal  &adjustAPCResult(const char bias, const TCHAR *function);
-#else 
+#else
   BigReal  &adjustAPCResult(const char bias);
 #endif // _DEBUG
 

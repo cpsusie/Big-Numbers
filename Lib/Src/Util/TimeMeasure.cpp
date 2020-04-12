@@ -57,7 +57,7 @@ static double measureThreadTime(MeasurableFunction &ftm) {
     sumTicks     += endTicks.QuadPart - startTicks.QuadPart;
     sumCallCount += callCount;
     const double totalTime = (double)sumTicks / freq.QuadPart;
-    if (totalTime < 4 * interruptTimeSec) {
+    if(totalTime < 4 * interruptTimeSec) {
       callCount <<= 1;
     } else {
       return totalTime / sumCallCount;
@@ -67,7 +67,7 @@ static double measureThreadTime(MeasurableFunction &ftm) {
 #endif
 double measureTime(MeasurableFunction &ftm, TimeMeasureType timeType) {
 #ifdef NEW_MEASURE_METHOD
-  switch (timeType) {
+  switch(timeType) {
   case MEASURE_THREADTIME : return measureThreadTime( ftm);
   case MEASURE_PROCESSTIME:
   case MEASURE_REALTIME   : break;

@@ -72,7 +72,7 @@ CompactArray<D3DDISPLAYMODE> DirectXDeviceFactory::getDisplayModes(UINT adapter)
   CompactArray<D3DDISPLAYMODE> result;
   D3DDISPLAYMODE adapterMode = DirectXDeviceFactory::getDisplayMode(adapter);
   const UINT modeCount = s_direct3D->GetAdapterModeCount(adapter, adapterMode.Format);
-  for (UINT mode = 0; mode < modeCount; mode++) {
+  for(UINT mode = 0; mode < modeCount; mode++) {
     D3DDISPLAYMODE dp;
     CHECKRESULT(s_direct3D->EnumAdapterModes(adapter, adapterMode.Format, mode, &dp));
     result.add(dp);

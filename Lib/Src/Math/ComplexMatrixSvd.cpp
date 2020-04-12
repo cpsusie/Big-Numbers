@@ -9,10 +9,10 @@ static Real radius(Real u, Real v) {
   u = fabs(u);
   v = fabs(v);
 
-  if (u > v) {
+  if(u > v) {
     Real q = v / u;
     return u * sqrt(1.0 + q*q);
-  } else if (v != 0) {
+  } else if(v != 0) {
     Real q = u / v;
     return v * sqrt(1.0 + q*q);
   } else {
@@ -39,21 +39,21 @@ static void svdDecompose(Matrix &a, ComplexVector &d, Matrix &v) {
   Complex anorm = 0.0;
   Complex c, z;
 
-  if (m < n)
+  if(m < n)
     throwInvalidArgumentException(__TFUNCTION__, _T("a must be augmented with extra zero rows. %s"), a.getDimensionString().cstr());
 
   Vector rv1(n);
 
   // Householder reduction to bidigonal form
-  for (i = 0; i < n; i++) {
+  for(i = 0; i < n; i++) {
     l = i + 1;
     rv1[i] = scale * g;
     g = s = scale = 0;
-    if (i < m) {
-      for (k = i; k < m; k++)
+    if(i < m) {
+      for(k = i; k < m; k++)
         scale += fabs(a(k,i));
-      if (scale != 0) {
-        for (k = i; k < m; k++) {
+      if(scale != 0) {
+        for(k = i; k < m; k++) {
           a(k,i) /= scale;
           s += a(k,i) * a(k,i);
         }
@@ -61,26 +61,26 @@ static void svdDecompose(Matrix &a, ComplexVector &d, Matrix &v) {
         g = -Sign(sqrt(s), f);
         h = f * g - s;
         a(i,i) = f - g;
-        if (i != nm1) {
-          for (j = l; j < n; j++) {
-            for (s = 0, k = i; k < m; k++)
+        if(i != nm1) {
+          for(j = l; j < n; j++) {
+            for(s = 0, k = i; k < m; k++)
               s += a(k,i) * a(k,j);
             f = s / h;
-            for (k = i; k < m; k++)
+            for(k = i; k < m; k++)
               a(k,j) += f * a(k,i);
           }
         }
-        for (k = i; k < m; k++)
+        for(k = i; k < m; k++)
           a(k,i) *= scale;
       }
     }
     d[i] = scale * g;
     g = s = scale = 0;
-    if (i < m && i != nm1) {
-      for (k = l; k < n; k++)
+    if(i < m && i != nm1) {
+      for(k = l; k < n; k++)
         scale += fabs(a(i,k));
-      if (scale != 0) {
-        for (k = l; k < n; k++) {
+      if(scale != 0) {
+        for(k = l; k < n; k++) {
           a(i,k) /= scale;
           s += a(i,k) * a(i,k);
         }
@@ -88,17 +88,17 @@ static void svdDecompose(Matrix &a, ComplexVector &d, Matrix &v) {
         g = -Sign(sqrt(s), f);
         h = f * g - s;
         a(i,l) = f - g;
-        for (k = l; k < n; k++)
+        for(k = l; k < n; k++)
           rv1[k] = a(i,k) / h;
-        if (i != mm1) {
-          for (j = l; j < m; j++) {
-            for (s = 0, k = l; k < n; k++)
+        if(i != mm1) {
+          for(j = l; j < m; j++) {
+            for(s = 0, k = l; k < n; k++)
               s += a(j,k) * a(i,k);
-            for (k = l; k < n; k++)
+            for(k = l; k < n; k++)
               a(j,k) += s * rv1[k];
           }
         }
-        for (k = l; k < n; k++)
+        for(k = l; k < n; k++)
           a(i,k) *= scale;
       }
     }
@@ -106,19 +106,19 @@ static void svdDecompose(Matrix &a, ComplexVector &d, Matrix &v) {
   }
 
   // Accumulation of right-hand transformations
-  for (i = n - 1; i >= 0; i--) {
-    if (i < nm1) {
-      if (g != 0) { // double division to avoid possible underflow
-        for (j = l; j < n; j++)
+  for(i = n - 1; i >= 0; i--) {
+    if(i < nm1) {
+      if(g != 0) { // double division to avoid possible underflow
+        for(j = l; j < n; j++)
           v(j,i) = (a(i,j) / a(i,l)) / g;
-        for (j = l; j < n; j++) {
-          for (s = 0, k = l; k < n; k++)
+        for(j = l; j < n; j++) {
+          for(s = 0, k = l; k < n; k++)
             s += a(i,k) * v(k,j);
-          for (k = l; k < n; k++)
+          for(k = l; k < n; k++)
             v(k,j) += s * v(k,i);
         }
       }
-      for (j = l; j < n; j++)
+      for(j = l; j < n; j++)
         v(i,j) = v(j,i) = 0;
     }
     v(i,i) = 1;
@@ -127,27 +127,27 @@ static void svdDecompose(Matrix &a, ComplexVector &d, Matrix &v) {
   }
 
   // Accumulation of left-hand transformations
-  for (i = n - 1; i >= 0; i--) {
+  for(i = n - 1; i >= 0; i--) {
     l = i + 1;
     g = d[i];
-    if (i < nm1)
-      for (j = l; j < n; j++)
+    if(i < nm1)
+      for(j = l; j < n; j++)
         a(i,j) = 0;
-      if (g != 0) {
+      if(g != 0) {
         g = 1.0 / g;
-        if (i != nm1) {
-          for (j = l; j < n; j++) {
-            for (s = 0.0, k = l; k < m; k++)
+        if(i != nm1) {
+          for(j = l; j < n; j++) {
+            for(s = 0.0, k = l; k < m; k++)
               s += a(k,i) * a(k,j);
             f = (s / a(i,i)) * g;
-            for (k = i; k < m; k++)
+            for(k = i; k < m; k++)
               a(k,j) += f * a(k,i);
           }
         }
-        for (j = i; j < m; j++)
+        for(j = i; j < m; j++)
           a(j,i) *= g;
       } else
-        for (j = i; j < m; j++)
+        for(j = i; j < m; j++)
           a(j,i) = 0;
         a(i,i) += 1;
   }
@@ -156,31 +156,31 @@ static void svdDecompose(Matrix &a, ComplexVector &d, Matrix &v) {
 
 #define MAXITERATION 40
   // diagonalization of the bidigonal form
-  for (k = n - 1; k >= 0; k--) { // loop over singlar values
-    for (int iteration = 0; iteration < MAXITERATION; iteration++) { // loop over allowed iterations
+  for(k = n - 1; k >= 0; k--) { // loop over singlar values
+    for(int iteration = 0; iteration < MAXITERATION; iteration++) { // loop over allowed iterations
       bool flag = true;
-      for (l = k; l >= 0; l--) { // test for splitting
+      for(l = k; l >= 0; l--) { // test for splitting
         nm = l - 1;     // note that rv1[l] is always zero
-        if (fabs(rv1[l]) + anorm == anorm) {
+        if(fabs(rv1[l]) + anorm == anorm) {
           flag = false;
           break;
         }
-        if (fabs(d[nm]) + anorm == anorm)
+        if(fabs(d[nm]) + anorm == anorm)
           break;
       }
-      if (flag) {
+      if(flag) {
         c = 0;        // cancellation of rv1[l], if l>1
         s = 1;
-        for (i = l; i <= k; i++) {
+        for(i = l; i <= k; i++) {
           f = s * rv1[i];
-          if (fabs(f) + anorm != anorm) {
+          if(fabs(f) + anorm != anorm) {
             g = d[i];
             h = radius(f, g);
             d[i] = h;
             h = 1.0 / h;
             c = g * h;
             s = -f * h;
-            for (j = 0; j < m; j++) {
+            for(j = 0; j < m; j++) {
               Real y = a(j,nm);
               z = a(j,i);
               a(j,nm) = y * c + z * s;
@@ -190,10 +190,10 @@ static void svdDecompose(Matrix &a, ComplexVector &d, Matrix &v) {
         }
       }
       z = d[k];
-      if (l == k) { // convergence
-        if (z < 0.0) {
+      if(l == k) { // convergence
+        if(z < 0.0) {
           d[k] = -z;
-          for (j = 0; j < n; j++)
+          for(j = 0; j < n; j++)
             v(j,k) = -v(j,k);
         }
         break;
@@ -209,7 +209,7 @@ static void svdDecompose(Matrix &a, ComplexVector &d, Matrix &v) {
       // next QR transformation
       f = ((x - z) * (x + z) + h * ((y / (f + Sign(g, f))) - h)) / x;
       c = s = 1;
-      for (j = l; j <= nm; j++) {
+      for(j = l; j <= nm; j++) {
         i = j + 1;
         g = rv1[i];
         y = d[i];
@@ -223,7 +223,7 @@ static void svdDecompose(Matrix &a, ComplexVector &d, Matrix &v) {
         g = g * c - x * s;
         h = y * s;
         y = y * c;
-        for (int jj = 0; jj < n; jj++) {
+        for(int jj = 0; jj < n; jj++) {
           x = v(jj,j);
           z = v(jj,i);
           v(jj,j) = x * c + z * s;
@@ -231,14 +231,14 @@ static void svdDecompose(Matrix &a, ComplexVector &d, Matrix &v) {
         }
         z = radius(f, h);
         d[j] = z;       // rotation can be arbitrary if z=0
-        if (z != 0) {
+        if(z != 0) {
           z = 1.0 / z;
           c = f * z;
           s = h * z;
         }
         f = (c * g) + (s * y);
         x = (c * y) - (s * g);
-        for (jj = 0; jj < m; jj++) {
+        for(jj = 0; jj < m; jj++) {
           y = a(jj,j);
           z = a(jj,i);
           a(jj,j) = y * c + z * s;
@@ -252,7 +252,7 @@ static void svdDecompose(Matrix &a, ComplexVector &d, Matrix &v) {
 
 //    cout << "k:" << k << " Iterations:" << iteration << "\n";
 
-    if (iteration == MAXITERATION)
+    if(iteration == MAXITERATION)
       throwException(_T("No convergence in %d svdDecompose iterations"), MAXITERATION);
   }
 }
@@ -268,10 +268,10 @@ static ComplexVector svdSolve(const ComplexMatrix &u, const ComplexVector &d, co
   int j;
 
   ComplexVector tmp(n);
-  for (j = 0; j < n; j++) { // calculate <U,b>
+  for(j = 0; j < n; j++) { // calculate <U,b>
     Complex s = 0;
-    if (d[j] != 0) {        // nonzero result only if nonzero d[j]
-      for (int i = 0; i < m; i++)
+    if(d[j] != 0) {        // nonzero result only if nonzero d[j]
+      for(int i = 0; i < m; i++)
         s += u(i,j) * b[i];
       s /= d[j];            // premultiply by inverse D
     }
@@ -279,9 +279,9 @@ static ComplexVector svdSolve(const ComplexMatrix &u, const ComplexVector &d, co
   }
 
   ComplexVector result(n);
-  for (j = 0; j < n; j++) { // V(U'b/D)
+  for(j = 0; j < n; j++) { // V(U'b/D)
     Complex s = 0;
-    for (int jj = 0; jj < n; jj++)
+    for(int jj = 0; jj < n; jj++)
       s += v(j,jj) * tmp[jj];
     result[j] = s;
   }

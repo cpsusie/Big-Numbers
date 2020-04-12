@@ -37,7 +37,7 @@ protected:
         throwInvalidArgumentException(__TFUNCTION__, _T("ctrlID=%d already exist"), ctrlId);
       }
       ctrl->substituteControl(this, ctrlId, DoubleInterval(from,to), stepCount, type);
-    } catch (Exception e) {
+    } catch(Exception e) {
       SAFEDELETE(ctrl);
       showException(e);
     }

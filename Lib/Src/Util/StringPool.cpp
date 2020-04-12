@@ -232,7 +232,7 @@ void StringPool::load(ByteInputStream &s) {
 
 void StringPool::dump() const {
   debugLog(_T("Stringpool\n"));
-  for (Iterator<const TCHAR*> it = getIterator(); it.hasNext();) {
+  for(Iterator<const TCHAR*> it = getIterator(); it.hasNext();) {
     debugLog(_T("<%s>\n"),it.next());
   }
 }

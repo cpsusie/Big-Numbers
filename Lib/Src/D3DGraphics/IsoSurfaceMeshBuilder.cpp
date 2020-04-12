@@ -85,7 +85,7 @@ void IsoSurface::createData(InterruptableRunnable *ir) {
     m_vertexArray = NULL;
   //  m_mb.dump();
   //  m_mb.optimize();
-  } catch (...) {
+  } catch(...) {
     m_vertexArray = NULL;
     m_interruptable = NULL;
     throw;
@@ -138,7 +138,7 @@ LPD3DXMESH createMesh(AbstractMeshFactory &amf, IsoSurface &surface, Interruptab
   try {
     surface.createData(ir);
     return surface.getMeshbuilder().createMesh(amf, surface.getParam().m_doubleSided);
-  } catch (...) {
+  } catch(...) {
     throw;
   }
 }
@@ -167,7 +167,7 @@ LPD3DXMESH VariableIsoSurfaceMeshCreator::createMesh(double time, InterruptableR
   try {
     m_surface.setT(time);
     return ::createMesh(m_amf, m_surface, ir);
-  } catch (...) {
+  } catch(...) {
     int fisk = 1;
     throw;
   }

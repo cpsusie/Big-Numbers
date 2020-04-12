@@ -79,7 +79,7 @@ UINT _TimerJob::safeRun() {
       m_lastTimeout = Timestamp();
       m_handler.handleTimeout(m_timer);
       m_timer.clrFlag(TM_HANDLERACTIVE);
-    } catch (...) {
+    } catch(...) {
       m_timer.clrFlag(TM_HANDLERACTIVE);
       throw;
     }

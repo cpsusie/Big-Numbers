@@ -144,7 +144,7 @@ private:
     m_plm1    = (m_patternLength = (int)patternLength) - 1;
     m_pattern = new Ctype[patternLength+1]; TRACE_NEW(m_pattern);
     int CtypeMaxValue;
-    switch (sizeof(Ctype)) {
+    switch(sizeof(Ctype)) {
     case 1 : CtypeMaxValue = 0xff  ; break;
     case 2 : CtypeMaxValue = 0xffff; break;
     default: throwException(_T("BMAutomateTemplate is valid for sizeof(Ctype) <= 2 only"));

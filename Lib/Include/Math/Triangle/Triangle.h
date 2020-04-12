@@ -134,7 +134,7 @@
 //    maximum area at index [3], followed by the remaining area constraints.
 //    Four REALs per area constraint. Note that each regional attribute is
 //    used only if you select the `A' switch, and each area constraint is
-//    used only if you select the `a' switch (with no number following), but
+//    used only if you select the `a' switch(with no number following), but
 //    omitting one of these switches does not change the memory layout.
 //    Input only, although the pointer is copied to the output structure for
 //    your convenience.

@@ -83,7 +83,7 @@ bool D3SceneObjectVisual::intersectsWithRay(const D3Ray &ray, float &dist, D3Pic
         }
         V(indexBuffer->Unlock());  indexItems = NULL;
         V(vertexBuffer->Unlock()); vertexItems = NULL;
-      } catch (...) {
+      } catch(...) {
         if(indexItems  != NULL) indexBuffer->Unlock();
         if(vertexItems != NULL) vertexBuffer->Unlock();
         throw;

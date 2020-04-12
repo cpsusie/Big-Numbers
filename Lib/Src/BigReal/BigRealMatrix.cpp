@@ -47,7 +47,7 @@ BigRealVector BigRealMatrix::getRow(size_t row, DigitPool *digitPool) const {
 
 BigRealVector BigRealMatrix::getColumn(size_t column, DigitPool *digitPool) const {
   _SELECTDIGITPOOL(*this);
-  if (pool == getDigitPool()) {
+  if(pool == getDigitPool()) {
     return BigRealVector(__super::getColumn(column), getPrecision());
   } else {
     checkColumnIndex(__TFUNCSIG__, column);
@@ -176,7 +176,7 @@ BigRealMatrix  dif(const BigRealMatrix &lts, const BigRealMatrix &rhs, DigitPool
 BigRealMatrix  prod(const BigRealMatrix &lts, const BigRealMatrix &rhs, DigitPool *digitPool) {
   const UINT digits = min(lts.getPrecision(), rhs.getPrecision());
 
-  if (lts.getColumnCount() != rhs.getRowCount()) {
+  if(lts.getColumnCount() != rhs.getRowCount()) {
     throwBigRealException(_T("operator*(BigRealMatrix,BigRealMatrix):Invalid dimension. Matrix.%s, Vector.%s"), lts.getDimensionString().cstr(), rhs.getDimensionString().cstr());
   }
   _SELECTDIGITPOOL(lts);

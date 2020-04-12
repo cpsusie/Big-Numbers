@@ -236,7 +236,7 @@ const BigReal &BigReal::pow2(int n, size_t digits) { // static
     try {
       const BigReal &p2 = cache.calculatePow2(n, digits);
       result = cache.get(key);
-    } catch (...) {
+    } catch(...) {
       cache.notify();
       throw;
     }

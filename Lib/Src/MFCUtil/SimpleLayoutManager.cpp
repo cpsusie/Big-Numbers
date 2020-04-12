@@ -60,9 +60,9 @@ void SimpleLayoutManager::addControl(int ctrlId, int flags) {
 }
 
 void SimpleLayoutManager::removeControl(int ctrlId) {
-  for (size_t i = 0; i < m_attributes.size(); i++) {
+  for(size_t i = 0; i < m_attributes.size(); i++) {
     LayoutAttribute *attr = m_attributes[i];
-    if (attr->getCtrlId() == ctrlId) {
+    if(attr->getCtrlId() == ctrlId) {
       m_attributes.remove(i);
       SAFEDELETE(attr);
       m_arrayModified = true;
@@ -77,7 +77,7 @@ void SimpleLayoutManager::removeControl(int ctrlId) {
 
 void SimpleLayoutManager::removeAll() {
   if(m_attributes.size() == 0) return;
-  for (size_t i = 0; i < m_attributes.size(); i++) {
+  for(size_t i = 0; i < m_attributes.size(); i++) {
     LayoutAttribute *la = m_attributes[i];
     SAFEDELETE(la);
   }

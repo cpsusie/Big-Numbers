@@ -210,7 +210,7 @@ String FPUState::toString() const {
 }
 
 String FPUSlot::toString() const {
-  switch (m_value) {
+  switch(m_value) {
   case SLOT_EMPTY: return EMPTYSTRING;
   case SLOT_MIXED: return _T("mixed");
   case TEMPVAR   : return _T("$temp");

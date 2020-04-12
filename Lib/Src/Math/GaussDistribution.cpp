@@ -72,7 +72,7 @@ Real probitFunction(const Real &x) {
   static const Real p_low  = 0.02425;
   static const Real p_high = 1 - p_low;
 
-  if (0 < x && x < p_low) {
+  if(0 < x && x < p_low) {
     Real q = sqrt(-2 * log(x));
     return poly1(q,5,c) / poly1(q,4,d);
   }

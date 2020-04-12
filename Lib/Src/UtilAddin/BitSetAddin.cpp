@@ -81,7 +81,7 @@ template<typename BitSet> String BitSetAddIn<BitSet>::toString(BitSet &set, size
 ADDIN_API HRESULT WINAPI AddIn_BitSet(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t maxResult, DWORD /*reserved*/) {
   try {
     String tmpStr;
-    switch (pHelper->getProcessorType()) {
+    switch(pHelper->getProcessorType()) {
     case PRTYPE_X86:
       { BitSetx86 set;
         pHelper->getRealObject(&set, sizeof(set));
@@ -98,7 +98,7 @@ ADDIN_API HRESULT WINAPI AddIn_BitSet(DWORD dwAddress, DEBUGHELPER *pHelper, int
     USES_CONVERSION;
     const char *cp = T2A(tmpStr.cstr());
     strncpy(pResult, cp, maxResult);
-  } catch (...) {
+  } catch(...) {
     strncpy(pResult, "undefined", maxResult);
   }
   return S_OK;

@@ -182,7 +182,7 @@ void quotRemainder128(const BigReal &x, const BigReal &y, BigInt *quotient, BigR
       q.fractionate(quotient, &t);
       z += (t * y).copySign(z);
       if(BigReal::compareAbs(z, y) >= 0) {
-        if (quotient) { ++(*quotient); }
+        if(quotient) { ++(*quotient); }
         if(remainder) { *remainder = yNeg ? (z + y) : (z - y); }
       } else {
         if(remainder) { *remainder = z; }

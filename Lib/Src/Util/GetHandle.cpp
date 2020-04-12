@@ -7,7 +7,7 @@ HANDLE getHandle(FILE *f) {
 
 HANDLE GETHANDLE(FILE *f) {
   HANDLE h = getHandle(f);
-  if (h == INVALID_HANDLE_VALUE) {
+  if(h == INVALID_HANDLE_VALUE) {
     throwErrNoOnSysCallException(_T("GETHANDLE"));
   }
   return h;

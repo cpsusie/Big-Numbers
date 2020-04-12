@@ -93,7 +93,7 @@ public:
     case _FPCLASS_QNAN:  // quiet NaN
       return formatqnan(dst, uppercase);
     case _FPCLASS_NINF:  // negative infinity
-      if (!formatNinfAsPinf) {
+      if(!formatNinfAsPinf) {
         return formatninf(dst, uppercase);
       } // else Continue case
     case _FPCLASS_PINF:  // positive infinity

@@ -51,7 +51,7 @@ void TimeEstimator::removeFirst() { // assume queue not empty
   } else { // avoid truncation errors if mseconds becomes to large
     m_time0.add(TMILLISECOND, (int)first.m_msec);
     initAllSums();
-    for (Iterator<_TimePctLogPoint> it = m_logQueue.getIterator(); it.hasNext();) {
+    for(Iterator<_TimePctLogPoint> it = m_logQueue.getIterator(); it.hasNext();) {
       _TimePctLogPoint &p = it.next();
       p.m_msec -= first.m_msec;
       addTimePct(p);
@@ -84,7 +84,7 @@ void TimeEstimator::subTimePct(const _TimePctLogPoint &p) {
 void TimeEstimator::calculateRegressionLine() const {
   const double n = (double)m_logQueue.size();
   m_needCalculateRegressionLine = false;
-  if (n < 2) {
+  if(n < 2) {
     m_a = 0; // indicates no regressionLine
     return;
   }

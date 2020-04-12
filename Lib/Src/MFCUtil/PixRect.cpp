@@ -78,18 +78,18 @@ PixRect::~PixRect() {
 }
 
 PixRect *PixRect::clone(bool cloneImage, PixRectType type, D3DPOOL pool) const {
-  if (type == PiXRECT_FORCE_DWORD) {
+  if(type == PiXRECT_FORCE_DWORD) {
     type = getType();
   }
-  if (type == PIXRECT_RENDERTARGET) {
+  if(type == PIXRECT_RENDERTARGET) {
     pool = D3DPOOL_DEFAULT;
   }
-  if (pool == D3DPOOL_FORCE_DWORD) {
+  if(pool == D3DPOOL_FORCE_DWORD) {
     pool = getPool();
   }
   PixRect *copy = new PixRect(m_device, type, getSize(), pool, getPixelFormat()); TRACE_NEW(copy);
   if(cloneImage) {
-    if ((getPool() == D3DPOOL_SYSTEMMEM) && (pool == D3DPOOL_DEFAULT)) {
+    if((getPool() == D3DPOOL_SYSTEMMEM) && (pool == D3DPOOL_DEFAULT)) {
       LPDIRECT3DSURFACE srcSurface = NULL, dstSurface = NULL;
       try {
         srcSurface = getSurface();
@@ -112,8 +112,8 @@ PixRect *PixRect::clone(bool cloneImage, PixRectType type, D3DPOOL pool) const {
 
 void PixRect::moveToPool(D3DPOOL pool) {
   DEFINEMETHODNAME;
-  if (pool == getPool()) return;
-  if (getType() == PIXRECT_RENDERTARGET) {
+  if(pool == getPool()) return;
+  if(getType() == PIXRECT_RENDERTARGET) {
     throwException(_T("%s:RenderTargets cannot be moved from D3DPOOL_DEFAULT"), method);
   }
   PixRect *tmp = clone(true, getType(), pool);
@@ -145,7 +145,7 @@ LPDIRECT3DSURFACE PixRect::cloneSurface(D3DPOOL pool) const {
 
 void PixRect::showPixRect(const PixRect *pr) { // static
   HDC screenDC = getScreenDC();
-  if (pr->hasAlphaChannel()) {
+  if(pr->hasAlphaChannel()) {
     alphaBlend(screenDC,0,0,pr->getWidth(),pr->getHeight(), *pr, 0, 0, pr->getWidth(),pr->getHeight(), 255);
   } else {
     BitBlt(screenDC,0,0,pr->getWidth(),pr->getHeight(),NULL,0,0,WHITENESS);
@@ -155,7 +155,7 @@ void PixRect::showPixRect(const PixRect *pr) { // static
 }
 
 bool PixRect::canUseColorFill() const {
-  switch (getType()) {
+  switch(getType()) {
   case PIXRECT_RENDERTARGET: return true;
   case PIXRECT_PLAINSURFACE: return getPool() == D3DPOOL_DEFAULT;
   default                  : return false;
@@ -175,7 +175,7 @@ void PixRect::fillColor(D3DCOLOR color, const CRect *r) {
 }
 
 void PixRect::checkType(const TCHAR *method, PixRectType expectedType) const {
-  if (getType() != expectedType) {
+  if(getType() != expectedType) {
     throwException(_T("%s::Type is %s. Expected type:%s"), method, s_typeName[m_type], s_typeName[expectedType]);
   }
 }
@@ -195,13 +195,13 @@ LPDIRECT3DTEXTURE &PixRect::getTexture() {
 }
 
 void PixRect::checkHasAlphaChannel() const { // throw Exception if no alpha-channel
-  if (!hasAlphaChannel()) {
+  if(!hasAlphaChannel()) {
     throwException(_T("PixRect has no alpha-channel. PixelFormat=%s"), getFormatName(getPixelFormat()));
   }
 }
 
 bool PixRect::hasAlphaChannel(D3DFORMAT format) { //static
-  switch (format) {
+  switch(format) {
   case D3DFMT_A8R8G8B8      :
   case D3DFMT_A1R5G5B5      :
   case D3DFMT_A4R4G4B4      :
@@ -287,7 +287,7 @@ void PixRect::init(HBITMAP src, D3DFORMAT pixelFormat, D3DPOOL pool) {
 
 void PixRect::create(PixRectType type, const CSize &sz, D3DFORMAT pixelFormat, D3DPOOL pool) {
   destroy();
-  switch (type) {
+  switch(type) {
   case PIXRECT_TEXTURE:
     createTexture(sz, pixelFormat, pool);
     break;
@@ -322,9 +322,9 @@ void PixRect::createPlainSurface(const CSize &sz, D3DFORMAT pixelFormat, D3DPOOL
 }
 
 void PixRect::destroy() {
-  if (m_surface == NULL) return;
+  if(m_surface == NULL) return;
   destroyPixelAccessor();
-  switch (getType()) {
+  switch(getType()) {
   case PIXRECT_TEXTURE     :
     destroyTexture();
     break;
@@ -489,7 +489,7 @@ void PixRect::releaseDC(HDC dc) const {
 
 LPDIRECT3DSURFACE PixRect::getSurface() const {
   LPDIRECT3DSURFACE surface = NULL;
-  switch (getType()) {
+  switch(getType()) {
   case PIXRECT_TEXTURE:
     V(m_texture->GetSurfaceLevel(0, &surface));
     TRACE_REFCOUNT(surface);
@@ -528,7 +528,7 @@ void PixRect::destroyPixelAccessor() const {
 
 D3DLOCKED_RECT PixRect::lockRect(DWORD flags, const CRect *rect) {
   D3DLOCKED_RECT lr;
-  switch (getType()) {
+  switch(getType()) {
   case PIXRECT_TEXTURE:
     V(m_texture->LockRect(0, &lr, rect, flags));
     break;
@@ -544,7 +544,7 @@ D3DLOCKED_RECT PixRect::lockRect(DWORD flags, const CRect *rect) {
 }
 
 void PixRect::unlockRect() {
-  switch (getType()) {
+  switch(getType()) {
   case PIXRECT_TEXTURE:
     V(m_texture->UnlockRect(0));
     break;
@@ -671,7 +671,7 @@ void PixRect::rop(const CRect &dr, ULONG op, const PixRect *src, const CRect &sr
       stretchBlt(dstDC, dr, op, src, sr);
     }
     releaseDC(dstDC);
-  } catch (...) {
+  } catch(...) {
     releaseDC(dstDC);
     throw;
   }

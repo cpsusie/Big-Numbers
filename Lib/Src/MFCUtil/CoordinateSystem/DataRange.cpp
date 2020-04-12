@@ -22,7 +22,7 @@ DataRange::DataRange(const Point2D &p) {
 }
 
 DataRange::DataRange(const Point2DArray &pa) {
-  if (pa.size() > 0) {
+  if(pa.size() > 0) {
     const Point2D *p = &pa.first(), *end = &pa.last();
     init(p->x, p->x, p->y, p->y);
     while(p++ < end) {
@@ -32,7 +32,7 @@ DataRange::DataRange(const Point2DArray &pa) {
 }
 
 DataRange &DataRange::operator+=(const Point2DArray &pa) {
-  if (pa.size() > 0) {
+  if(pa.size() > 0) {
     const Point2D *end = &pa.last();
     for(const Point2D *p = &pa.first(); p <= end;) {
       *this += *(p++);

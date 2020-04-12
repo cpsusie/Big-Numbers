@@ -21,7 +21,7 @@ void MarginFile::open(const String &name) {
 }
 
 void MarginFile::open(FILE *file, const String &name, const String &absolutName, bool openedByMe) {
-  if (isOpen()) {
+  if(isOpen()) {
     throwException(_T("%s:(%s) - Already open"), __TFUNCTION__, name.cstr());
   }
   m_file             = file;

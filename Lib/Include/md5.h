@@ -47,7 +47,7 @@ public:
     init(v);
   }
   inline void clear(const BYTE *v = NULL) {
-    if (v) init(v); else reset();
+    if(v) init(v); else reset();
   }
   inline const BYTE &operator[](UINT index) const {
     assert(index < ARRAYSIZE(m_v));

@@ -152,8 +152,8 @@ void Dialog::addListBox(      int id, int left, int top, int width, int height, 
 }
 
 int Dialog::findControlIndex(int id) {
-  for (size_t i = 0; i < m_controls.size(); i++) {
-    if (m_controls[i]->getid() == id) {
+  for(size_t i = 0; i < m_controls.size(); i++) {
+    if(m_controls[i]->getid() == id) {
       return (int)i;
     }
   }

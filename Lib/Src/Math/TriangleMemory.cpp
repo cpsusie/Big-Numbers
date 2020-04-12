@@ -3,7 +3,7 @@
 
 void *trimalloc(size_t size) {
   void *memptr = malloc(size);
-  if (memptr == NULL) {
+  if(memptr == NULL) {
     throwException(_T("Out of memory"));
   }
   return memptr;

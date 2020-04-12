@@ -39,7 +39,7 @@ template <typename IStreamType, typename CharType> IStreamType &getNumber(IStrea
   }
   try {
     n = _tcstonum(buf.cstr(), NULL);
-  } catch (...) {
+  } catch(...) {
     scanner.endScan(false);
     throw;
   }

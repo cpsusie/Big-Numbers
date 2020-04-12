@@ -40,7 +40,7 @@ void CSliderCtrlWithTransformation::cleanup() {
 }
 
 void CSliderCtrlWithTransformation::assertCreated(const TCHAR *method) const {
-  if (m_tr == NULL) {
+  if(m_tr == NULL) {
     throwException(_T("%s:Not initialized"), method);
   }
 }
@@ -49,7 +49,7 @@ void CSliderCtrlWithTransformation::setTransformation(DoubleInterval &interval, 
   DEFINEMETHODNAME;
   const DoubleInterval toInterval = stepsToToInterval(steps);
   cleanup();
-  switch (type) {
+  switch(type) {
   case LINEAR             :
     m_tr = new LinearTransformation(interval, toInterval); TRACE_NEW(m_tr);
     break;
@@ -87,7 +87,7 @@ void CSliderCtrlWithTransformation::setSteps(UINT steps) {
 
 DoubleInterval CSliderCtrlWithTransformation::stepsToToInterval(UINT steps) {
   DEFINEMETHODNAME;
-  if (steps < 2 || steps > 10000) {
+  if(steps < 2 || steps > 10000) {
     throwInvalidArgumentException(method, _T("steps=%u, must be in range [2..10000]"), steps);
   }
   const int minRange = 0;

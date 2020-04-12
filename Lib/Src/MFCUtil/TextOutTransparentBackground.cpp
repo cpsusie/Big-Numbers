@@ -13,7 +13,7 @@ void textOutTransparentBackground(HDC hdc, const CPoint &p, const String &s, CFo
     SetTextColor(hdc, oldColor);
     SelectObject(hdc, oldFont );
     SetBkMode(   hdc, oldMode );
-  } catch (...) {
+  } catch(...) {
     SetTextColor(hdc, oldColor);
     SelectObject(hdc, oldFont );
     SetBkMode(   hdc, oldMode );

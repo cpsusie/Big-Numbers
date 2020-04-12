@@ -1477,7 +1477,7 @@ int triunsuitable(Vertex triorg, Vertex tridest, Vertex triapex, REAL area) {
   maxlen = (dalen > oalen) ? dalen : oalen;
   maxlen = (odlen > maxlen) ? odlen : maxlen;
 
-  if (maxlen > 0.05 * (triorg[0] * triorg[0] + triorg[1] * triorg[1]) + 0.02) {
+  if(maxlen > 0.05 * (triorg[0] * triorg[0] + triorg[1] * triorg[1]) + 0.02) {
     return 1;
   } else {
     return 0;
@@ -1568,24 +1568,24 @@ void Behavior::parsecommandline(int argc, char **argv) {
   innodefilename[0] = '\0';
 #endif // not TRILIBRARY
 
-  for (i = STARTINDEX; i < argc; i++) {
+  for(i = STARTINDEX; i < argc; i++) {
 #ifndef TRILIBRARY
-    if (argv[i][0] == '-') {
+    if(argv[i][0] == '-') {
 #endif // not TRILIBRARY
-      for (j = STARTINDEX; argv[i][j] != '\0'; j++) {
-        if (argv[i][j] == 'p') {
+      for(j = STARTINDEX; argv[i][j] != '\0'; j++) {
+        if(argv[i][j] == 'p') {
           poly = 1;
         }
 #ifndef CDT_ONLY
-        if (argv[i][j] == 'r') {
+        if(argv[i][j] == 'r') {
           refine = 1;
         }
-        if (argv[i][j] == 'q') {
+        if(argv[i][j] == 'q') {
           quality = 1;
-          if (((argv[i][j + 1] >= '0') && (argv[i][j + 1] <= '9')) ||
+          if(((argv[i][j + 1] >= '0') && (argv[i][j + 1] <= '9')) ||
               (argv[i][j + 1] == '.')) {
             k = 0;
-            while (((argv[i][j + 1] >= '0') && (argv[i][j + 1] <= '9')) ||
+            while(((argv[i][j + 1] >= '0') && (argv[i][j + 1] <= '9')) ||
                    (argv[i][j + 1] == '.')) {
               j++;
               workstring[k] = argv[i][j];
@@ -1597,13 +1597,13 @@ void Behavior::parsecommandline(int argc, char **argv) {
             minangle = 20.0;
           }
         }
-        if (argv[i][j] == 'a') {
+        if(argv[i][j] == 'a') {
           quality = 1;
-          if (((argv[i][j + 1] >= '0') && (argv[i][j + 1] <= '9')) ||
+          if(((argv[i][j + 1] >= '0') && (argv[i][j + 1] <= '9')) ||
               (argv[i][j + 1] == '.')) {
             fixedarea = 1;
             k = 0;
-            while (((argv[i][j + 1] >= '0') && (argv[i][j + 1] <= '9')) ||
+            while(((argv[i][j + 1] >= '0') && (argv[i][j + 1] <= '9')) ||
                    (argv[i][j + 1] == '.')) {
               j++;
               workstring[k] = argv[i][j];
@@ -1611,122 +1611,122 @@ void Behavior::parsecommandline(int argc, char **argv) {
             }
             workstring[k] = '\0';
             maxarea = (REAL) strtod(workstring, NULL);
-            if (maxarea <= 0.0) {
+            if(maxarea <= 0.0) {
               triError(_T("Maximum area must be greater than zero"));
 	          }
 	        } else {
             vararea = 1;
 	        }
 	      }
-        if (argv[i][j] == 'u') {
+        if(argv[i][j] == 'u') {
           quality = 1;
           usertest = 1;
         }
 #endif // not CDT_ONLY
-        if (argv[i][j] == 'A') {
+        if(argv[i][j] == 'A') {
           regionattrib = 1;
         }
-        if (argv[i][j] == 'c') {
+        if(argv[i][j] == 'c') {
           convex = 1;
         }
-        if (argv[i][j] == 'w') {
+        if(argv[i][j] == 'w') {
           weighted = 1;
         }
-        if (argv[i][j] == 'W') {
+        if(argv[i][j] == 'W') {
           weighted = 2;
         }
-        if (argv[i][j] == 'j') {
+        if(argv[i][j] == 'j') {
           jettison = 1;
         }
-        if (argv[i][j] == 'z') {
+        if(argv[i][j] == 'z') {
           firstnumber = 0;
         }
-        if (argv[i][j] == 'e') {
+        if(argv[i][j] == 'e') {
           edgesout = 1;
 	}
-        if (argv[i][j] == 'v') {
+        if(argv[i][j] == 'v') {
           voronoi = 1;
 	}
-        if (argv[i][j] == 'n') {
+        if(argv[i][j] == 'n') {
           neighbors = 1;
 	}
-        if (argv[i][j] == 'g') {
+        if(argv[i][j] == 'g') {
           geomview = 1;
 	}
-        if (argv[i][j] == 'B') {
+        if(argv[i][j] == 'B') {
           nobound = 1;
 	}
-        if (argv[i][j] == 'P') {
+        if(argv[i][j] == 'P') {
           nopolywritten = 1;
 	}
-        if (argv[i][j] == 'N') {
+        if(argv[i][j] == 'N') {
           nonodewritten = 1;
 	}
-        if (argv[i][j] == 'E') {
+        if(argv[i][j] == 'E') {
           noelewritten = 1;
 	}
 #ifndef TRILIBRARY
-        if (argv[i][j] == 'I') {
+        if(argv[i][j] == 'I') {
           noiterationnum = 1;
 	}
 #endif // not TRILIBRARY
-        if (argv[i][j] == 'O') {
+        if(argv[i][j] == 'O') {
           noholes = 1;
 	}
-        if (argv[i][j] == 'X') {
+        if(argv[i][j] == 'X') {
           noexact = 1;
 	}
-        if (argv[i][j] == 'o') {
-          if (argv[i][j + 1] == '2') {
+        if(argv[i][j] == 'o') {
+          if(argv[i][j + 1] == '2') {
             j++;
             order = 2;
           }
 	}
 #ifndef CDT_ONLY
-        if (argv[i][j] == 'Y') {
+        if(argv[i][j] == 'Y') {
           nobisect++;
 	}
-        if (argv[i][j] == 'S') {
+        if(argv[i][j] == 'S') {
           steiner = 0;
-          while ((argv[i][j + 1] >= '0') && (argv[i][j + 1] <= '9')) {
+          while((argv[i][j + 1] >= '0') && (argv[i][j + 1] <= '9')) {
             j++;
             steiner = steiner * 10 + (int) (argv[i][j] - '0');
           }
         }
 #endif // not CDT_ONLY
 #ifndef REDUCED
-        if (argv[i][j] == 'i') {
+        if(argv[i][j] == 'i') {
           incremental = 1;
         }
-        if (argv[i][j] == 'F') {
+        if(argv[i][j] == 'F') {
           sweepline = 1;
         }
 #endif // not REDUCED
-        if (argv[i][j] == 'l') {
+        if(argv[i][j] == 'l') {
           dwyer = 0;
         }
 #ifndef REDUCED
 #ifndef CDT_ONLY
-        if (argv[i][j] == 's') {
+        if(argv[i][j] == 's') {
           splitseg = 1;
         }
-        if ((argv[i][j] == 'D') || (argv[i][j] == 'L')) {
+        if((argv[i][j] == 'D') || (argv[i][j] == 'L')) {
           quality = 1;
           conformdel = 1;
         }
 #endif // not CDT_ONLY
-        if (argv[i][j] == 'C') {
+        if(argv[i][j] == 'C') {
           docheck = 1;
         }
 #endif // not REDUCED
-        if (argv[i][j] == 'Q') {
+        if(argv[i][j] == 'Q') {
           quiet = 1;
         }
-        if (argv[i][j] == 'V') {
+        if(argv[i][j] == 'V') {
           verbose++;
         }
 #ifndef TRILIBRARY
-        if ((argv[i][j] == 'h') || (argv[i][j] == 'H') || (argv[i][j] == '?')) {
+        if((argv[i][j] == 'h') || (argv[i][j] == 'H') || (argv[i][j] == '?')) {
           printInfoMsgAndExit();
 	}
 #endif // not TRILIBRARY
@@ -1739,22 +1739,22 @@ void Behavior::parsecommandline(int argc, char **argv) {
 #endif // not TRILIBRARY
   }
 #ifndef TRILIBRARY
-  if (innodefilename[0] == '\0') {
+  if(innodefilename[0] == '\0') {
     printSyntaxMsgAndExit();
   }
-  if (!strcmp(&innodefilename[strlen(innodefilename) - 5], ".node")) {
+  if(!strcmp(&innodefilename[strlen(innodefilename) - 5], ".node")) {
     innodefilename[strlen(innodefilename) - 5] = '\0';
   }
-  if (!strcmp(&innodefilename[strlen(innodefilename) - 5], ".poly")) {
+  if(!strcmp(&innodefilename[strlen(innodefilename) - 5], ".poly")) {
     innodefilename[strlen(innodefilename) - 5] = '\0';
     poly = 1;
   }
 #ifndef CDT_ONLY
-  if (!strcmp(&innodefilename[strlen(innodefilename) - 4], ".ele")) {
+  if(!strcmp(&innodefilename[strlen(innodefilename) - 4], ".ele")) {
     innodefilename[strlen(innodefilename) - 4] = '\0';
     refine = 1;
   }
-  if (!strcmp(&innodefilename[strlen(innodefilename) - 5], ".area")) {
+  if(!strcmp(&innodefilename[strlen(innodefilename) - 5], ".area")) {
     innodefilename[strlen(innodefilename) - 5] = '\0';
     refine = 1;
     quality = 1;
@@ -1764,34 +1764,34 @@ void Behavior::parsecommandline(int argc, char **argv) {
 #endif // not TRILIBRARY
   usesegments = poly || refine || quality || convex;
   goodangle = cos(minangle * PI / 180.0);
-  if (goodangle == 1.0) {
+  if(goodangle == 1.0) {
     offconstant = 0.0;
   } else {
     offconstant = 0.475 * sqrt((1.0 + goodangle) / (1.0 - goodangle));
   }
   goodangle *= goodangle;
-  if (refine && noiterationnum) {
+  if(refine && noiterationnum) {
     triError(_T("You cannot use the -I switch when refining a triangulation"));
   }
   // Be careful not to allocate space for element area constraints that
   // will never be assigned any value (other than the default -1.0).
-  if (!refine && !poly) {
+  if(!refine && !poly) {
     vararea = 0;
   }
   // Be careful not to add an extra attribute to each element unless the
   // input supports it (PSLG in, but not refining a preexisting mesh).
-  if (refine || !poly) {
+  if(refine || !poly) {
     regionattrib = 0;
   }
   // Regular/weighted triangulations are incompatible with PSLGs and meshing.
-  if (weighted && (poly || quality)) {
+  if(weighted && (poly || quality)) {
     weighted = 0;
-    if (!quiet) {
+    if(!quiet) {
       printf("Warning:  weighted triangulations (-w, -W) are incompatible\n");
       printf("  with PSLGs (-p) and meshing (-q, -a, -u). Weights ignored.\n");
     }
   }
-  if (jettison && nonodewritten && !quiet) {
+  if(jettison && nonodewritten && !quiet) {
     printf("Warning:  -j and -N switches are somewhat incompatible.\n");
     printf("  If any vertices are jettisoned, you will need the output\n");
     printf("  .node file to reconstruct the new node indices.");
@@ -1804,25 +1804,25 @@ void Behavior::parsecommandline(int argc, char **argv) {
   increment = 0;
   strcpy(workstring, innodefilename);
   j = 1;
-  while (workstring[j] != '\0') {
-    if ((workstring[j] == '.') && (workstring[j + 1] != '\0')) {
+  while(workstring[j] != '\0') {
+    if((workstring[j] == '.') && (workstring[j + 1] != '\0')) {
       increment = j + 1;
     }
     j++;
   }
   meshnumber = 0;
-  if (increment > 0) {
+  if(increment > 0) {
     j = increment;
     do {
-      if ((workstring[j] >= '0') && (workstring[j] <= '9')) {
+      if((workstring[j] >= '0') && (workstring[j] <= '9')) {
         meshnumber = meshnumber * 10 + (int) (workstring[j] - '0');
       } else {
         increment = 0;
       }
       j++;
-    } while (workstring[j] != '\0');
+    } while(workstring[j] != '\0');
   }
-  if (noiterationnum) {
+  if(noiterationnum) {
     strcpy(outnodefilename, innodefilename);
     strcpy(outelefilename, innodefilename);
     strcpy(edgefilename, innodefilename);
@@ -1837,7 +1837,7 @@ void Behavior::parsecommandline(int argc, char **argv) {
     strcat(vedgefilename, ".v.edge");
     strcat(neighborfilename, ".neigh");
     strcat(offfilename, ".off");
-  } else if (increment == 0) {
+  } else if(increment == 0) {
     strcpy(outnodefilename, innodefilename);
     strcpy(outpolyfilename, innodefilename);
     strcpy(outelefilename, innodefilename);
@@ -1901,56 +1901,56 @@ void Mesh::printtriangle(otri *t) {
 
   _tprintf(_T("triangle %p with orientation %d:\n"), t->tri, t->orient);
   decode(t->tri[0], printtri);
-  if (printtri.tri == dummytri) {
+  if(printtri.tri == dummytri) {
     _tprintf(_T("    [0] = Outer space\n"));
   } else {
     _tprintf(_T("    [0] = %p  %d\n"), printtri.tri, printtri.orient);
   }
   decode(t->tri[1], printtri);
-  if (printtri.tri == dummytri) {
+  if(printtri.tri == dummytri) {
     _tprintf(_T("    [1] = Outer space\n"));
   } else {
     _tprintf(_T("    [1] = %p  %d\n"), printtri.tri, printtri.orient);
   }
   decode(t->tri[2], printtri);
-  if (printtri.tri == dummytri) {
+  if(printtri.tri == dummytri) {
     _tprintf(_T("    [2] = Outer space\n"));
   } else {
     _tprintf(_T("    [2] = %p  %d\n"), printtri.tri, printtri.orient);
   }
 
   org(*t, printvertex);
-  if (printvertex == NULL)
+  if(printvertex == NULL)
     _tprintf(_T("    Origin[%d] = NULL\n"), (t->orient + 1) % 3 + 3);
   else
     _tprintf(_T("    Origin[%d] = %p  %s\n"), (t->orient + 1) % 3 + 3, printvertex, vertexToString(printvertex).cstr());
   dest(*t, printvertex);
-  if (printvertex == NULL)
+  if(printvertex == NULL)
     _tprintf(_T("    Dest  [%d] = NULL\n"), (t->orient + 2) % 3 + 3);
   else
     _tprintf(_T("    Dest  [%d] = %p  %s\n"), (t->orient + 2) % 3 + 3, printvertex, vertexToString(printvertex).cstr());
   apex(*t, printvertex);
-  if (printvertex == NULL)
+  if(printvertex == NULL)
     _tprintf(_T("    Apex  [%d] = NULL\n"), t->orient + 3);
   else
     _tprintf(_T("    Apex  [%d] = %p  %s\n"), t->orient + 3, printvertex, vertexToString(printvertex).cstr());
 
-  if (m_b.usesegments) {
+  if(m_b.usesegments) {
     sdecode(t->tri[6], printsh);
-    if (printsh.ss != dummysub) {
+    if(printsh.ss != dummysub) {
       _tprintf(_T("    [6] = %p  %d\n"), printsh.ss, printsh.ssorient);
     }
     sdecode(t->tri[7], printsh);
-    if (printsh.ss != dummysub) {
+    if(printsh.ss != dummysub) {
       _tprintf(_T("    [7] = %p  %d\n"), printsh.ss, printsh.ssorient);
     }
     sdecode(t->tri[8], printsh);
-    if (printsh.ss != dummysub) {
+    if(printsh.ss != dummysub) {
       _tprintf(_T("    [8] = %p  %d\n"), printsh.ss, printsh.ssorient);
     }
   }
 
-  if (m_b.vararea) {
+  if(m_b.vararea) {
     _tprintf(_T("    Area constraint:  %.4g\n"), areabound(*t));
   }
 }
@@ -1969,49 +1969,49 @@ void Mesh::printsubseg(osub *s) {
 
   _tprintf(_T("subsegment %p with orientation %d and mark %d:\n"), s->ss, s->ssorient, mark(*s));
   sdecode(s->ss[0], printsh);
-  if (printsh.ss == dummysub) {
+  if(printsh.ss == dummysub) {
     _tprintf(_T("    [0] = No subsegment\n"));
   } else {
     _tprintf(_T("    [0] = %p  %d\n"), printsh.ss, printsh.ssorient);
   }
   sdecode(s->ss[1], printsh);
-  if (printsh.ss == dummysub) {
+  if(printsh.ss == dummysub) {
     _tprintf(_T("    [1] = No subsegment\n"));
   } else {
     _tprintf(_T("    [1] = %p  %d\n"), printsh.ss, printsh.ssorient);
   }
 
   sorg(*s, printvertex);
-  if (printvertex == NULL)
+  if(printvertex == NULL)
     _tprintf(_T("    Origin[%d] = NULL\n"), 2+s->ssorient);
   else
     _tprintf(_T("    Origin[%d] = %p  %s\n"), 2+s->ssorient, printvertex, vertexToString(printvertex).cstr());
   sdest(*s, printvertex);
-  if (printvertex == NULL)
+  if(printvertex == NULL)
     _tprintf(_T("    Dest  [%d] = NULL\n"), 3-s->ssorient);
   else
     _tprintf(_T("    Dest  [%d] = %p  %s\n"), 3-s->ssorient, printvertex, vertexToString(printvertex).cstr());
 
   decode(s->ss[6], printtri);
-  if (printtri.tri == dummytri) {
+  if(printtri.tri == dummytri) {
     _tprintf(_T("    [6] = Outer space\n"));
   } else {
     _tprintf(_T("    [6] = %p  %d\n"), printtri.tri, printtri.orient);
   }
   decode(s->ss[7], printtri);
-  if (printtri.tri == dummytri) {
+  if(printtri.tri == dummytri) {
     _tprintf(_T("    [7] = Outer space\n"));
   } else {
     _tprintf(_T("    [7] = %p  %d\n"), printtri.tri, printtri.orient);
   }
 
   segorg(*s, printvertex);
-  if (printvertex == NULL)
+  if(printvertex == NULL)
     _tprintf(_T("    Segment origin[%d] = NULL\n"), 4+s->ssorient);
   else
     _tprintf(_T("    Segment origin[%d] = %p  %s\n"), 4+s->ssorient, printvertex, vertexToString(printvertex).cstr());
   segdest(*s, printvertex);
-  if (printvertex == NULL)
+  if(printvertex == NULL)
     _tprintf(_T("    Segment dest  [%d] = NULL\n"), 5-s->ssorient);
   else
     _tprintf(_T("    Segment dest  [%d] = %p  %s\n"), 5-s->ssorient, printvertex, vertexToString(printvertex).cstr());
@@ -2066,7 +2066,7 @@ void Mesh::dummyinit(int trianglebytes, int subsegbytes) {
   dummytri[4] = NULL;
   dummytri[5] = NULL;
 
-  if (m_b.usesegments) {
+  if(m_b.usesegments) {
     // Set up `dummysub', the omnipresent subsegment pointed to by any
     // Triangle side or subsegment end that isn't attached to a real
     // subsegment.
@@ -2115,7 +2115,7 @@ void Mesh::initializevertexpool() {
                         sizeof(int) - 1) /
                        sizeof(int);
   vertexsize = (vertexmarkindex + 2) * sizeof(int);
-  if (m_b.poly) {
+  if(m_b.poly) {
     // The index within each Vertex at which a Triangle pointer is found.
     // Ensure the pointer is aligned to a sizeof(Triangle)-byte address.
     vertex2triindex = (vertexsize + sizeof(Triangle) - 1) /
@@ -2154,16 +2154,16 @@ void Mesh::initializetrisubpools() {
   areaboundindex = elemattribindex + eextras + m_b.regionattrib;
   // If Triangle attributes or an area bound are needed, increase the number
   // of bytes occupied by a Triangle.
-  if (m_b.vararea) {
+  if(m_b.vararea) {
     trisize = (areaboundindex + 1) * sizeof(REAL);
-  } else if (eextras + m_b.regionattrib > 0) {
+  } else if(eextras + m_b.regionattrib > 0) {
     trisize = areaboundindex * sizeof(REAL);
   }
   // If a Voronoi diagram or Triangle neighbor graph is requested, make
   // sure there's room to store an integer index in each Triangle. This
   // integer index can occupy the same space as the subsegment pointers
   // or attributes or area constraint or extra nodes.
-  if ((m_b.voronoi || m_b.neighbors) && (trisize < 6 * sizeof(Triangle) + sizeof(int))) {
+  if((m_b.voronoi || m_b.neighbors) && (trisize < 6 * sizeof(Triangle) + sizeof(int))) {
     trisize = 6 * sizeof(Triangle) + sizeof(int);
   }
 
@@ -2172,7 +2172,7 @@ void Mesh::initializetrisubpools() {
            (2 * invertices - 2) > TRIPERBLOCK ? (2 * invertices - 2) :
            TRIPERBLOCK, 4);
 
-  if (m_b.usesegments) {
+  if(m_b.usesegments) {
     // Initialize the pool of subsegments. Take into account all eight
     // pointers and one boundary marker.
     subsegs.poolinit(8 * sizeof(Triangle) + sizeof(int), SUBSEGPERBLOCK, SUBSEGPERBLOCK, 4);
@@ -2199,10 +2199,10 @@ Triangle *Mesh::triangletraverse() {
 
   do {
     newtriangle = triangles.traverse();
-    if (newtriangle == NULL) {
+    if(newtriangle == NULL) {
       return NULL;
     }
-  } while (deadtri(newtriangle)); // Skip dead ones.
+  } while(deadtri(newtriangle)); // Skip dead ones.
   return newtriangle;
 }
 
@@ -2220,10 +2220,10 @@ SubSeg *Mesh::subsegtraverse() {
 
   do {
     newsubseg = subsegs.traverse();
-    if (newsubseg == NULL) {
+    if(newsubseg == NULL) {
       return NULL;
     }
-  } while (deadsubseg(newsubseg));
+  } while(deadsubseg(newsubseg));
   return newsubseg;
 }
 
@@ -2240,10 +2240,10 @@ Vertex Mesh::vertextraverse() {
   Vertex newvertex;
   do {
     newvertex = vertices.traverse();
-    if (newvertex == NULL) {
+    if(newvertex == NULL) {
       return NULL;
     }
-  } while (vertextype(newvertex) == DEADVERTEX); // Skip dead ones.
+  } while(vertextype(newvertex) == DEADVERTEX); // Skip dead ones.
   return newvertex;
 }
 
@@ -2263,10 +2263,10 @@ BadSubSeg *Mesh::badsubsegtraverse() {
 
   do {
     newseg = badsubsegs.traverse();
-    if (newseg == NULL) {
+    if(newseg == NULL) {
       return NULL;
     }
-  } while (newseg->subsegorg == NULL); // Skip dead ones.
+  } while(newseg->subsegorg == NULL); // Skip dead ones.
   return newseg;
 }
 
@@ -2289,10 +2289,10 @@ Vertex Mesh::getvertex(int number) {
   current = m_b.firstnumber;
 
   // Find the right block.
-  if (current + vertices.getItemsFirstBlock() <= number) {
+  if(current + vertices.getItemsFirstBlock() <= number) {
     getblock = (VOID **) *getblock;
     current += vertices.getItemsFirstBlock();
-    while (current + vertices.getItemsPerBlock() <= number) {
+    while(current + vertices.getItemsPerBlock() <= number) {
       getblock = (VOID **) *getblock;
       current += vertices.getItemsPerBlock();
     }
@@ -2309,15 +2309,15 @@ Vertex Mesh::getvertex(int number) {
 void Mesh::triangledeinit() {
   triangles.pooldeinit();
   trifree((VOID *) dummytribase);
-  if (m_b.usesegments) {
+  if(m_b.usesegments) {
     subsegs.pooldeinit();
     trifree((VOID *) dummysubbase);
   }
   vertices.pooldeinit();
 #ifndef CDT_ONLY
-  if (m_b.quality) {
+  if(m_b.quality) {
     badsubsegs.pooldeinit();
-    if ((m_b.minangle > 0.0) || m_b.vararea || m_b.fixedarea || m_b.usertest) {
+    if((m_b.minangle > 0.0) || m_b.vararea || m_b.fixedarea || m_b.usertest) {
       badtriangles.pooldeinit();
       flipstackers.pooldeinit();
     }
@@ -2342,16 +2342,16 @@ void Mesh::maketriangle(otri *newotri) {
   newotri->tri[3] = NULL;
   newotri->tri[4] = NULL;
   newotri->tri[5] = NULL;
-  if (m_b.usesegments) {
+  if(m_b.usesegments) {
     // Initialize the three adjoining subsegments to be the omnipresent subsegment.
     newotri->tri[6] = (Triangle) dummysub;
     newotri->tri[7] = (Triangle) dummysub;
     newotri->tri[8] = (Triangle) dummysub;
   }
-  for (i = 0; i < eextras; i++) {
+  for(i = 0; i < eextras; i++) {
     setelemattribute(*newotri, i, 0.0);
   }
-  if (m_b.vararea) {
+  if(m_b.vararea) {
     setareabound(*newotri, -1.0);
   }
 
@@ -2561,12 +2561,12 @@ void exactinit() {
   do {
     lastcheck = check;
     epsilon *= half;
-    if (every_other) {
+    if(every_other) {
       splitter *= 2.0;
     }
     every_other = !every_other;
     check = 1.0 + epsilon;
-  } while ((check != 1.0) && (check != lastcheck));
+  } while((check != 1.0) && (check != lastcheck));
   splitter += 1.0;
   // Error bounds for orientation and incircle tests.
   resulterrbound = (3.0 + 8.0 * epsilon) * epsilon;
@@ -2603,7 +2603,7 @@ int fast_expansion_sum_zeroelim(int elen, REAL *e, int flen, REAL *f, REAL *h) {
   enow = e[0];
   fnow = f[0];
   eindex = findex = 0;
-  if ((fnow > enow) == (fnow > -enow)) {
+  if((fnow > enow) == (fnow > -enow)) {
     Q = enow;
     enow = e[++eindex];
   } else {
@@ -2611,8 +2611,8 @@ int fast_expansion_sum_zeroelim(int elen, REAL *e, int flen, REAL *f, REAL *h) {
     fnow = f[++findex];
   }
   hindex = 0;
-  if ((eindex < elen) && (findex < flen)) {
-    if ((fnow > enow) == (fnow > -enow)) {
+  if((eindex < elen) && (findex < flen)) {
+    if((fnow > enow) == (fnow > -enow)) {
       Fast_Two_Sum(enow, Q, Qnew, hh);
       enow = e[++eindex];
     } else {
@@ -2620,11 +2620,11 @@ int fast_expansion_sum_zeroelim(int elen, REAL *e, int flen, REAL *f, REAL *h) {
       fnow = f[++findex];
     }
     Q = Qnew;
-    if (hh != 0.0) {
+    if(hh != 0.0) {
       h[hindex++] = hh;
     }
-    while ((eindex < elen) && (findex < flen)) {
-      if ((fnow > enow) == (fnow > -enow)) {
+    while((eindex < elen) && (findex < flen)) {
+      if((fnow > enow) == (fnow > -enow)) {
         Two_Sum(Q, enow, Qnew, hh);
         enow = e[++eindex];
       } else {
@@ -2632,28 +2632,28 @@ int fast_expansion_sum_zeroelim(int elen, REAL *e, int flen, REAL *f, REAL *h) {
         fnow = f[++findex];
       }
       Q = Qnew;
-      if (hh != 0.0) {
+      if(hh != 0.0) {
         h[hindex++] = hh;
       }
     }
   }
-  while (eindex < elen) {
+  while(eindex < elen) {
     Two_Sum(Q, enow, Qnew, hh);
     enow = e[++eindex];
     Q = Qnew;
-    if (hh != 0.0) {
+    if(hh != 0.0) {
       h[hindex++] = hh;
     }
   }
-  while (findex < flen) {
+  while(findex < flen) {
     Two_Sum(Q, fnow, Qnew, hh);
     fnow = f[++findex];
     Q = Qnew;
-    if (hh != 0.0) {
+    if(hh != 0.0) {
       h[hindex++] = hh;
     }
   }
-  if ((Q != 0.0) || (hindex == 0)) {
+  if((Q != 0.0) || (hindex == 0)) {
     h[hindex++] = Q;
   }
   return hindex;
@@ -2687,22 +2687,22 @@ int scale_expansion_zeroelim(int elen, REAL *e, REAL b, REAL *h) {
   Split(b, bhi, blo);
   Two_Product_Presplit(e[0], b, bhi, blo, Q, hh);
   hindex = 0;
-  if (hh != 0) {
+  if(hh != 0) {
     h[hindex++] = hh;
   }
-  for (eindex = 1; eindex < elen; eindex++) {
+  for(eindex = 1; eindex < elen; eindex++) {
     enow = e[eindex];
     Two_Product_Presplit(enow, b, bhi, blo, product1, product0);
     Two_Sum(Q, product0, sum, hh);
-    if (hh != 0) {
+    if(hh != 0) {
       h[hindex++] = hh;
     }
     Fast_Two_Sum(product1, sum, Q, hh);
-    if (hh != 0) {
+    if(hh != 0) {
       h[hindex++] = hh;
     }
   }
-  if ((Q != 0.0) || (hindex == 0)) {
+  if((Q != 0.0) || (hindex == 0)) {
     h[hindex++] = Q;
   }
   return hindex;
@@ -2715,7 +2715,7 @@ REAL estimate(int elen, REAL *e) {
   int eindex;
 
   Q = e[0];
-  for (eindex = 1; eindex < elen; eindex++) {
+  for(eindex = 1; eindex < elen; eindex++) {
     Q += e[eindex];
   }
   return Q;
@@ -2776,7 +2776,7 @@ REAL counterclockwiseadapt(Vertex pa, Vertex pb, Vertex pc, REAL detsum) {
 
   det = estimate(4, B);
   errbound = ccwerrboundB * detsum;
-  if ((det >= errbound) || (-det >= errbound)) {
+  if((det >= errbound) || (-det >= errbound)) {
     return det;
   }
 
@@ -2785,7 +2785,7 @@ REAL counterclockwiseadapt(Vertex pa, Vertex pb, Vertex pc, REAL detsum) {
   Two_Diff_Tail(pa[1], pc[1], acy, acytail);
   Two_Diff_Tail(pb[1], pc[1], bcy, bcytail);
 
-  if ((acxtail == 0.0) && (acytail == 0.0)
+  if((acxtail == 0.0) && (acytail == 0.0)
       && (bcxtail == 0.0) && (bcytail == 0.0)) {
     return det;
   }
@@ -2793,7 +2793,7 @@ REAL counterclockwiseadapt(Vertex pa, Vertex pb, Vertex pc, REAL detsum) {
   errbound = ccwerrboundC * detsum + resulterrbound * Absolute(det);
   det += (acx * bcytail + bcy * acxtail)
        - (acy * bcxtail + bcx * acytail);
-  if ((det >= errbound) || (-det >= errbound)) {
+  if((det >= errbound) || (-det >= errbound)) {
     return det;
   }
 
@@ -2828,18 +2828,18 @@ REAL Mesh::counterclockwise(Vertex pa, Vertex pb, Vertex pc) {
   detright = (pa[1] - pc[1]) * (pb[0] - pc[0]);
   det = detleft - detright;
 
-  if (m_b.noexact) {
+  if(m_b.noexact) {
     return det;
   }
 
-  if (detleft > 0.0) {
-    if (detright <= 0.0) {
+  if(detleft > 0.0) {
+    if(detright <= 0.0) {
       return det;
     } else {
       detsum = detleft + detright;
     }
-  } else if (detleft < 0.0) {
-    if (detright >= 0.0) {
+  } else if(detleft < 0.0) {
+    if(detright >= 0.0) {
       return det;
     } else {
       detsum = -detleft - detright;
@@ -2849,7 +2849,7 @@ REAL Mesh::counterclockwise(Vertex pa, Vertex pb, Vertex pc) {
   }
 
   errbound = ccwerrboundA * detsum;
-  if ((det >= errbound) || (-det >= errbound)) {
+  if((det >= errbound) || (-det >= errbound)) {
     return det;
   }
 
@@ -2977,7 +2977,7 @@ REAL incircleadapt(Vertex pa, Vertex pb, Vertex pc, Vertex pd, REAL permanent) {
 
   det = estimate(finlength, fin1);
   errbound = iccerrboundB * permanent;
-  if ((det >= errbound) || (-det >= errbound)) {
+  if((det >= errbound) || (-det >= errbound)) {
     return det;
   }
 
@@ -2987,7 +2987,7 @@ REAL incircleadapt(Vertex pa, Vertex pb, Vertex pc, Vertex pd, REAL permanent) {
   Two_Diff_Tail(pb[1], pd[1], bdy, bdytail);
   Two_Diff_Tail(pc[0], pd[0], cdx, cdxtail);
   Two_Diff_Tail(pc[1], pd[1], cdy, cdytail);
-  if ((adxtail == 0.0) && (bdxtail == 0.0) && (cdxtail == 0.0)
+  if((adxtail == 0.0) && (bdxtail == 0.0) && (cdxtail == 0.0)
       && (adytail == 0.0) && (bdytail == 0.0) && (cdytail == 0.0)) {
     return det;
   }
@@ -3002,28 +3002,28 @@ REAL incircleadapt(Vertex pa, Vertex pb, Vertex pc, Vertex pd, REAL permanent) {
        + ((cdx * cdx + cdy * cdy) * ((adx * bdytail + bdy * adxtail)
                                      - (ady * bdxtail + bdx * adytail))
           + 2.0 * (cdx * cdxtail + cdy * cdytail) * (adx * bdy - ady * bdx));
-  if ((det >= errbound) || (-det >= errbound)) {
+  if((det >= errbound) || (-det >= errbound)) {
     return det;
   }
 
   finnow = fin1;
   finother = fin2;
 
-  if ((bdxtail != 0.0) || (bdytail != 0.0)
+  if((bdxtail != 0.0) || (bdytail != 0.0)
       || (cdxtail != 0.0) || (cdytail != 0.0)) {
     Square(adx, adxadx1, adxadx0);
     Square(ady, adyady1, adyady0);
     Two_Two_Sum(adxadx1, adxadx0, adyady1, adyady0, aa3, aa[2], aa[1], aa[0]);
     aa[3] = aa3;
   }
-  if ((cdxtail != 0.0) || (cdytail != 0.0)
+  if((cdxtail != 0.0) || (cdytail != 0.0)
       || (adxtail != 0.0) || (adytail != 0.0)) {
     Square(bdx, bdxbdx1, bdxbdx0);
     Square(bdy, bdybdy1, bdybdy0);
     Two_Two_Sum(bdxbdx1, bdxbdx0, bdybdy1, bdybdy0, bb3, bb[2], bb[1], bb[0]);
     bb[3] = bb3;
   }
-  if ((adxtail != 0.0) || (adytail != 0.0)
+  if((adxtail != 0.0) || (adytail != 0.0)
       || (bdxtail != 0.0) || (bdytail != 0.0)) {
     Square(cdx, cdxcdx1, cdxcdx0);
     Square(cdy, cdycdy1, cdycdy0);
@@ -3031,7 +3031,7 @@ REAL incircleadapt(Vertex pa, Vertex pb, Vertex pc, Vertex pd, REAL permanent) {
     cc[3] = cc3;
   }
 
-  if (adxtail != 0.0) {
+  if(adxtail != 0.0) {
     axtbclen = scale_expansion_zeroelim(4, bc, adxtail, axtbc);
     temp16alen = scale_expansion_zeroelim(axtbclen, axtbc, 2.0 * adx,
                                           temp16a);
@@ -3050,7 +3050,7 @@ REAL incircleadapt(Vertex pa, Vertex pb, Vertex pc, Vertex pd, REAL permanent) {
                                             temp48, finother);
     finswap = finnow; finnow = finother; finother = finswap;
   }
-  if (adytail != 0.0) {
+  if(adytail != 0.0) {
     aytbclen = scale_expansion_zeroelim(4, bc, adytail, aytbc);
     temp16alen = scale_expansion_zeroelim(aytbclen, aytbc, 2.0 * ady,
                                           temp16a);
@@ -3069,7 +3069,7 @@ REAL incircleadapt(Vertex pa, Vertex pb, Vertex pc, Vertex pd, REAL permanent) {
                                             temp48, finother);
     finswap = finnow; finnow = finother; finother = finswap;
   }
-  if (bdxtail != 0.0) {
+  if(bdxtail != 0.0) {
     bxtcalen = scale_expansion_zeroelim(4, ca, bdxtail, bxtca);
     temp16alen = scale_expansion_zeroelim(bxtcalen, bxtca, 2.0 * bdx,
                                           temp16a);
@@ -3088,7 +3088,7 @@ REAL incircleadapt(Vertex pa, Vertex pb, Vertex pc, Vertex pd, REAL permanent) {
                                             temp48, finother);
     finswap = finnow; finnow = finother; finother = finswap;
   }
-  if (bdytail != 0.0) {
+  if(bdytail != 0.0) {
     bytcalen = scale_expansion_zeroelim(4, ca, bdytail, bytca);
     temp16alen = scale_expansion_zeroelim(bytcalen, bytca, 2.0 * bdy,
                                           temp16a);
@@ -3107,7 +3107,7 @@ REAL incircleadapt(Vertex pa, Vertex pb, Vertex pc, Vertex pd, REAL permanent) {
                                             temp48, finother);
     finswap = finnow; finnow = finother; finother = finswap;
   }
-  if (cdxtail != 0.0) {
+  if(cdxtail != 0.0) {
     cxtablen = scale_expansion_zeroelim(4, ab, cdxtail, cxtab);
     temp16alen = scale_expansion_zeroelim(cxtablen, cxtab, 2.0 * cdx,
                                           temp16a);
@@ -3126,7 +3126,7 @@ REAL incircleadapt(Vertex pa, Vertex pb, Vertex pc, Vertex pd, REAL permanent) {
                                             temp48, finother);
     finswap = finnow; finnow = finother; finother = finswap;
   }
-  if (cdytail != 0.0) {
+  if(cdytail != 0.0) {
     cytablen = scale_expansion_zeroelim(4, ab, cdytail, cytab);
     temp16alen = scale_expansion_zeroelim(cytablen, cytab, 2.0 * cdy,
                                           temp16a);
@@ -3146,8 +3146,8 @@ REAL incircleadapt(Vertex pa, Vertex pb, Vertex pc, Vertex pd, REAL permanent) {
     finswap = finnow; finnow = finother; finother = finswap;
   }
 
-  if ((adxtail != 0.0) || (adytail != 0.0)) {
-    if ((bdxtail != 0.0) || (bdytail != 0.0)
+  if((adxtail != 0.0) || (adytail != 0.0)) {
+    if((bdxtail != 0.0) || (bdytail != 0.0)
         || (cdxtail != 0.0) || (cdytail != 0.0)) {
       Two_Product(bdxtail, cdy, ti1, ti0);
       Two_Product(bdx, cdytail, tj1, tj0);
@@ -3173,7 +3173,7 @@ REAL incircleadapt(Vertex pa, Vertex pb, Vertex pc, Vertex pd, REAL permanent) {
       bcttlen = 1;
     }
 
-    if (adxtail != 0.0) {
+    if(adxtail != 0.0) {
       temp16alen = scale_expansion_zeroelim(axtbclen, axtbc, adxtail, temp16a);
       axtbctlen = scale_expansion_zeroelim(bctlen, bct, adxtail, axtbct);
       temp32alen = scale_expansion_zeroelim(axtbctlen, axtbct, 2.0 * adx,
@@ -3183,7 +3183,7 @@ REAL incircleadapt(Vertex pa, Vertex pb, Vertex pc, Vertex pd, REAL permanent) {
       finlength = fast_expansion_sum_zeroelim(finlength, finnow, temp48len,
                                               temp48, finother);
       finswap = finnow; finnow = finother; finother = finswap;
-      if (bdytail != 0.0) {
+      if(bdytail != 0.0) {
         temp8len = scale_expansion_zeroelim(4, cc, adxtail, temp8);
         temp16alen = scale_expansion_zeroelim(temp8len, temp8, bdytail,
                                               temp16a);
@@ -3191,7 +3191,7 @@ REAL incircleadapt(Vertex pa, Vertex pb, Vertex pc, Vertex pd, REAL permanent) {
                                                 temp16a, finother);
         finswap = finnow; finnow = finother; finother = finswap;
       }
-      if (cdytail != 0.0) {
+      if(cdytail != 0.0) {
         temp8len = scale_expansion_zeroelim(4, bb, -adxtail, temp8);
         temp16alen = scale_expansion_zeroelim(temp8len, temp8, cdytail,
                                               temp16a);
@@ -3215,7 +3215,7 @@ REAL incircleadapt(Vertex pa, Vertex pb, Vertex pc, Vertex pd, REAL permanent) {
                                               temp64, finother);
       finswap = finnow; finnow = finother; finother = finswap;
     }
-    if (adytail != 0.0) {
+    if(adytail != 0.0) {
       temp16alen = scale_expansion_zeroelim(aytbclen, aytbc, adytail, temp16a);
       aytbctlen = scale_expansion_zeroelim(bctlen, bct, adytail, aytbct);
       temp32alen = scale_expansion_zeroelim(aytbctlen, aytbct, 2.0 * ady,
@@ -3243,8 +3243,8 @@ REAL incircleadapt(Vertex pa, Vertex pb, Vertex pc, Vertex pd, REAL permanent) {
       finswap = finnow; finnow = finother; finother = finswap;
     }
   }
-  if ((bdxtail != 0.0) || (bdytail != 0.0)) {
-    if ((cdxtail != 0.0) || (cdytail != 0.0)
+  if((bdxtail != 0.0) || (bdytail != 0.0)) {
+    if((cdxtail != 0.0) || (cdytail != 0.0)
         || (adxtail != 0.0) || (adytail != 0.0)) {
       Two_Product(cdxtail, ady, ti1, ti0);
       Two_Product(cdx, adytail, tj1, tj0);
@@ -3270,7 +3270,7 @@ REAL incircleadapt(Vertex pa, Vertex pb, Vertex pc, Vertex pd, REAL permanent) {
       cattlen = 1;
     }
 
-    if (bdxtail != 0.0) {
+    if(bdxtail != 0.0) {
       temp16alen = scale_expansion_zeroelim(bxtcalen, bxtca, bdxtail, temp16a);
       bxtcatlen = scale_expansion_zeroelim(catlen, cat, bdxtail, bxtcat);
       temp32alen = scale_expansion_zeroelim(bxtcatlen, bxtcat, 2.0 * bdx,
@@ -3280,7 +3280,7 @@ REAL incircleadapt(Vertex pa, Vertex pb, Vertex pc, Vertex pd, REAL permanent) {
       finlength = fast_expansion_sum_zeroelim(finlength, finnow, temp48len,
                                               temp48, finother);
       finswap = finnow; finnow = finother; finother = finswap;
-      if (cdytail != 0.0) {
+      if(cdytail != 0.0) {
         temp8len = scale_expansion_zeroelim(4, aa, bdxtail, temp8);
         temp16alen = scale_expansion_zeroelim(temp8len, temp8, cdytail,
                                               temp16a);
@@ -3288,7 +3288,7 @@ REAL incircleadapt(Vertex pa, Vertex pb, Vertex pc, Vertex pd, REAL permanent) {
                                                 temp16a, finother);
         finswap = finnow; finnow = finother; finother = finswap;
       }
-      if (adytail != 0.0) {
+      if(adytail != 0.0) {
         temp8len = scale_expansion_zeroelim(4, cc, -bdxtail, temp8);
         temp16alen = scale_expansion_zeroelim(temp8len, temp8, adytail,
                                               temp16a);
@@ -3312,7 +3312,7 @@ REAL incircleadapt(Vertex pa, Vertex pb, Vertex pc, Vertex pd, REAL permanent) {
                                               temp64, finother);
       finswap = finnow; finnow = finother; finother = finswap;
     }
-    if (bdytail != 0.0) {
+    if(bdytail != 0.0) {
       temp16alen = scale_expansion_zeroelim(bytcalen, bytca, bdytail, temp16a);
       bytcatlen = scale_expansion_zeroelim(catlen, cat, bdytail, bytcat);
       temp32alen = scale_expansion_zeroelim(bytcatlen, bytcat, 2.0 * bdy,
@@ -3340,8 +3340,8 @@ REAL incircleadapt(Vertex pa, Vertex pb, Vertex pc, Vertex pd, REAL permanent) {
       finswap = finnow; finnow = finother; finother = finswap;
     }
   }
-  if ((cdxtail != 0.0) || (cdytail != 0.0)) {
-    if ((adxtail != 0.0) || (adytail != 0.0)
+  if((cdxtail != 0.0) || (cdytail != 0.0)) {
+    if((adxtail != 0.0) || (adytail != 0.0)
         || (bdxtail != 0.0) || (bdytail != 0.0)) {
       Two_Product(adxtail, bdy, ti1, ti0);
       Two_Product(adx, bdytail, tj1, tj0);
@@ -3367,7 +3367,7 @@ REAL incircleadapt(Vertex pa, Vertex pb, Vertex pc, Vertex pd, REAL permanent) {
       abttlen = 1;
     }
 
-    if (cdxtail != 0.0) {
+    if(cdxtail != 0.0) {
       temp16alen = scale_expansion_zeroelim(cxtablen, cxtab, cdxtail, temp16a);
       cxtabtlen = scale_expansion_zeroelim(abtlen, abt, cdxtail, cxtabt);
       temp32alen = scale_expansion_zeroelim(cxtabtlen, cxtabt, 2.0 * cdx,
@@ -3377,7 +3377,7 @@ REAL incircleadapt(Vertex pa, Vertex pb, Vertex pc, Vertex pd, REAL permanent) {
       finlength = fast_expansion_sum_zeroelim(finlength, finnow, temp48len,
                                               temp48, finother);
       finswap = finnow; finnow = finother; finother = finswap;
-      if (adytail != 0.0) {
+      if(adytail != 0.0) {
         temp8len = scale_expansion_zeroelim(4, bb, cdxtail, temp8);
         temp16alen = scale_expansion_zeroelim(temp8len, temp8, adytail,
                                               temp16a);
@@ -3385,7 +3385,7 @@ REAL incircleadapt(Vertex pa, Vertex pb, Vertex pc, Vertex pd, REAL permanent) {
                                                 temp16a, finother);
         finswap = finnow; finnow = finother; finother = finswap;
       }
-      if (bdytail != 0.0) {
+      if(bdytail != 0.0) {
         temp8len = scale_expansion_zeroelim(4, aa, -cdxtail, temp8);
         temp16alen = scale_expansion_zeroelim(temp8len, temp8, bdytail,
                                               temp16a);
@@ -3409,7 +3409,7 @@ REAL incircleadapt(Vertex pa, Vertex pb, Vertex pc, Vertex pd, REAL permanent) {
                                               temp64, finother);
       finswap = finnow; finnow = finother; finother = finswap;
     }
-    if (cdytail != 0.0) {
+    if(cdytail != 0.0) {
       temp16alen = scale_expansion_zeroelim(cytablen, cytab, cdytail, temp16a);
       cytabtlen = scale_expansion_zeroelim(abtlen, abt, cdytail, cytabt);
       temp32alen = scale_expansion_zeroelim(cytabtlen, cytabt, 2.0 * cdy,
@@ -3473,7 +3473,7 @@ REAL Mesh::incircle(Vertex pa, Vertex pb, Vertex pc, Vertex pd) {
       + blift * (cdxady - adxcdy)
       + clift * (adxbdy - bdxady);
 
-  if (m_b.noexact) {
+  if(m_b.noexact) {
     return det;
   }
 
@@ -3481,7 +3481,7 @@ REAL Mesh::incircle(Vertex pa, Vertex pb, Vertex pc, Vertex pd) {
             + (Absolute(cdxady) + Absolute(adxcdy)) * blift
             + (Absolute(adxbdy) + Absolute(bdxady)) * clift;
   errbound = iccerrboundA * permanent;
-  if ((det > errbound) || (-det > errbound)) {
+  if((det > errbound) || (-det > errbound)) {
     return det;
   }
 
@@ -3596,7 +3596,7 @@ REAL orient3dadapt(Vertex pa, Vertex pb, Vertex pc, Vertex pd,
 
   det = estimate(finlength, fin1);
   errbound = o3derrboundB * permanent;
-  if ((det >= errbound) || (-det >= errbound)) {
+  if((det >= errbound) || (-det >= errbound)) {
     return det;
   }
 
@@ -3610,7 +3610,7 @@ REAL orient3dadapt(Vertex pa, Vertex pb, Vertex pc, Vertex pd,
   Two_Diff_Tail(bheight, dheight, bdheight, bdheighttail);
   Two_Diff_Tail(cheight, dheight, cdheight, cdheighttail);
 
-  if ((adxtail == 0.0) && (bdxtail == 0.0) && (cdxtail == 0.0) &&
+  if((adxtail == 0.0) && (bdxtail == 0.0) && (cdxtail == 0.0) &&
       (adytail == 0.0) && (bdytail == 0.0) && (cdytail == 0.0) &&
       (adheighttail == 0.0) &&
       (bdheighttail == 0.0) &&
@@ -3628,15 +3628,15 @@ REAL orient3dadapt(Vertex pa, Vertex pb, Vertex pc, Vertex pd,
          (cdheight * ((adx * bdytail + bdy * adxtail) -
                       (ady * bdxtail + bdx * adytail)) +
           cdheighttail * (adx * bdy - ady * bdx));
-  if ((det >= errbound) || (-det >= errbound)) {
+  if((det >= errbound) || (-det >= errbound)) {
     return det;
   }
 
   finnow = fin1;
   finother = fin2;
 
-  if (adxtail == 0.0) {
-    if (adytail == 0.0) {
+  if(adxtail == 0.0) {
+    if(adytail == 0.0) {
       at_b[0] = 0.0;
       at_blen = 1;
       at_c[0] = 0.0;
@@ -3651,7 +3651,7 @@ REAL orient3dadapt(Vertex pa, Vertex pb, Vertex pc, Vertex pd,
       at_clen = 2;
     }
   } else {
-    if (adytail == 0.0) {
+    if(adytail == 0.0) {
       Two_Product(adxtail, bdy, at_blarge, at_b[0]);
       at_b[1] = at_blarge;
       at_blen = 2;
@@ -3674,8 +3674,8 @@ REAL orient3dadapt(Vertex pa, Vertex pb, Vertex pc, Vertex pd,
       at_clen = 4;
     }
   }
-  if (bdxtail == 0.0) {
-    if (bdytail == 0.0) {
+  if(bdxtail == 0.0) {
+    if(bdytail == 0.0) {
       bt_c[0] = 0.0;
       bt_clen = 1;
       bt_a[0] = 0.0;
@@ -3690,7 +3690,7 @@ REAL orient3dadapt(Vertex pa, Vertex pb, Vertex pc, Vertex pd,
       bt_alen = 2;
     }
   } else {
-    if (bdytail == 0.0) {
+    if(bdytail == 0.0) {
       Two_Product(bdxtail, cdy, bt_clarge, bt_c[0]);
       bt_c[1] = bt_clarge;
       bt_clen = 2;
@@ -3713,8 +3713,8 @@ REAL orient3dadapt(Vertex pa, Vertex pb, Vertex pc, Vertex pd,
       bt_alen = 4;
     }
   }
-  if (cdxtail == 0.0) {
-    if (cdytail == 0.0) {
+  if(cdxtail == 0.0) {
+    if(cdytail == 0.0) {
       ct_a[0] = 0.0;
       ct_alen = 1;
       ct_b[0] = 0.0;
@@ -3729,7 +3729,7 @@ REAL orient3dadapt(Vertex pa, Vertex pb, Vertex pc, Vertex pd,
       ct_blen = 2;
     }
   } else {
-    if (cdytail == 0.0) {
+    if(cdytail == 0.0) {
       Two_Product(cdxtail, ady, ct_alarge, ct_a[0]);
       ct_a[1] = ct_alarge;
       ct_alen = 2;
@@ -3771,34 +3771,34 @@ REAL orient3dadapt(Vertex pa, Vertex pb, Vertex pc, Vertex pd,
                                           finother);
   finswap = finnow; finnow = finother; finother = finswap;
 
-  if (adheighttail != 0.0) {
+  if(adheighttail != 0.0) {
     vlength = scale_expansion_zeroelim(4, bc, adheighttail, v);
     finlength = fast_expansion_sum_zeroelim(finlength, finnow, vlength, v,
                                             finother);
     finswap = finnow; finnow = finother; finother = finswap;
   }
-  if (bdheighttail != 0.0) {
+  if(bdheighttail != 0.0) {
     vlength = scale_expansion_zeroelim(4, ca, bdheighttail, v);
     finlength = fast_expansion_sum_zeroelim(finlength, finnow, vlength, v,
                                             finother);
     finswap = finnow; finnow = finother; finother = finswap;
   }
-  if (cdheighttail != 0.0) {
+  if(cdheighttail != 0.0) {
     vlength = scale_expansion_zeroelim(4, ab, cdheighttail, v);
     finlength = fast_expansion_sum_zeroelim(finlength, finnow, vlength, v,
                                             finother);
     finswap = finnow; finnow = finother; finother = finswap;
   }
 
-  if (adxtail != 0.0) {
-    if (bdytail != 0.0) {
+  if(adxtail != 0.0) {
+    if(bdytail != 0.0) {
       Two_Product(adxtail, bdytail, adxt_bdyt1, adxt_bdyt0);
       Two_One_Product(adxt_bdyt1, adxt_bdyt0, cdheight, u3, u[2], u[1], u[0]);
       u[3] = u3;
       finlength = fast_expansion_sum_zeroelim(finlength, finnow, 4, u,
                                               finother);
       finswap = finnow; finnow = finother; finother = finswap;
-      if (cdheighttail != 0.0) {
+      if(cdheighttail != 0.0) {
         Two_One_Product(adxt_bdyt1, adxt_bdyt0, cdheighttail,
                         u3, u[2], u[1], u[0]);
         u[3] = u3;
@@ -3807,7 +3807,7 @@ REAL orient3dadapt(Vertex pa, Vertex pb, Vertex pc, Vertex pd,
         finswap = finnow; finnow = finother; finother = finswap;
       }
     }
-    if (cdytail != 0.0) {
+    if(cdytail != 0.0) {
       negate = -adxtail;
       Two_Product(negate, cdytail, adxt_cdyt1, adxt_cdyt0);
       Two_One_Product(adxt_cdyt1, adxt_cdyt0, bdheight, u3, u[2], u[1], u[0]);
@@ -3815,7 +3815,7 @@ REAL orient3dadapt(Vertex pa, Vertex pb, Vertex pc, Vertex pd,
       finlength = fast_expansion_sum_zeroelim(finlength, finnow, 4, u,
                                               finother);
       finswap = finnow; finnow = finother; finother = finswap;
-      if (bdheighttail != 0.0) {
+      if(bdheighttail != 0.0) {
         Two_One_Product(adxt_cdyt1, adxt_cdyt0, bdheighttail,
                         u3, u[2], u[1], u[0]);
         u[3] = u3;
@@ -3825,15 +3825,15 @@ REAL orient3dadapt(Vertex pa, Vertex pb, Vertex pc, Vertex pd,
       }
     }
   }
-  if (bdxtail != 0.0) {
-    if (cdytail != 0.0) {
+  if(bdxtail != 0.0) {
+    if(cdytail != 0.0) {
       Two_Product(bdxtail, cdytail, bdxt_cdyt1, bdxt_cdyt0);
       Two_One_Product(bdxt_cdyt1, bdxt_cdyt0, adheight, u3, u[2], u[1], u[0]);
       u[3] = u3;
       finlength = fast_expansion_sum_zeroelim(finlength, finnow, 4, u,
                                               finother);
       finswap = finnow; finnow = finother; finother = finswap;
-      if (adheighttail != 0.0) {
+      if(adheighttail != 0.0) {
         Two_One_Product(bdxt_cdyt1, bdxt_cdyt0, adheighttail,
                         u3, u[2], u[1], u[0]);
         u[3] = u3;
@@ -3842,7 +3842,7 @@ REAL orient3dadapt(Vertex pa, Vertex pb, Vertex pc, Vertex pd,
         finswap = finnow; finnow = finother; finother = finswap;
       }
     }
-    if (adytail != 0.0) {
+    if(adytail != 0.0) {
       negate = -bdxtail;
       Two_Product(negate, adytail, bdxt_adyt1, bdxt_adyt0);
       Two_One_Product(bdxt_adyt1, bdxt_adyt0, cdheight, u3, u[2], u[1], u[0]);
@@ -3850,7 +3850,7 @@ REAL orient3dadapt(Vertex pa, Vertex pb, Vertex pc, Vertex pd,
       finlength = fast_expansion_sum_zeroelim(finlength, finnow, 4, u,
                                               finother);
       finswap = finnow; finnow = finother; finother = finswap;
-      if (cdheighttail != 0.0) {
+      if(cdheighttail != 0.0) {
         Two_One_Product(bdxt_adyt1, bdxt_adyt0, cdheighttail,
                         u3, u[2], u[1], u[0]);
         u[3] = u3;
@@ -3860,15 +3860,15 @@ REAL orient3dadapt(Vertex pa, Vertex pb, Vertex pc, Vertex pd,
       }
     }
   }
-  if (cdxtail != 0.0) {
-    if (adytail != 0.0) {
+  if(cdxtail != 0.0) {
+    if(adytail != 0.0) {
       Two_Product(cdxtail, adytail, cdxt_adyt1, cdxt_adyt0);
       Two_One_Product(cdxt_adyt1, cdxt_adyt0, bdheight, u3, u[2], u[1], u[0]);
       u[3] = u3;
       finlength = fast_expansion_sum_zeroelim(finlength, finnow, 4, u,
                                               finother);
       finswap = finnow; finnow = finother; finother = finswap;
-      if (bdheighttail != 0.0) {
+      if(bdheighttail != 0.0) {
         Two_One_Product(cdxt_adyt1, cdxt_adyt0, bdheighttail,
                         u3, u[2], u[1], u[0]);
         u[3] = u3;
@@ -3877,7 +3877,7 @@ REAL orient3dadapt(Vertex pa, Vertex pb, Vertex pc, Vertex pd,
         finswap = finnow; finnow = finother; finother = finswap;
       }
     }
-    if (bdytail != 0.0) {
+    if(bdytail != 0.0) {
       negate = -cdxtail;
       Two_Product(negate, bdytail, cdxt_bdyt1, cdxt_bdyt0);
       Two_One_Product(cdxt_bdyt1, cdxt_bdyt0, adheight, u3, u[2], u[1], u[0]);
@@ -3885,7 +3885,7 @@ REAL orient3dadapt(Vertex pa, Vertex pb, Vertex pc, Vertex pd,
       finlength = fast_expansion_sum_zeroelim(finlength, finnow, 4, u,
                                               finother);
       finswap = finnow; finnow = finother; finother = finswap;
-      if (adheighttail != 0.0) {
+      if(adheighttail != 0.0) {
         Two_One_Product(cdxt_bdyt1, cdxt_bdyt0, adheighttail,
                         u3, u[2], u[1], u[0]);
         u[3] = u3;
@@ -3896,19 +3896,19 @@ REAL orient3dadapt(Vertex pa, Vertex pb, Vertex pc, Vertex pd,
     }
   }
 
-  if (adheighttail != 0.0) {
+  if(adheighttail != 0.0) {
     wlength = scale_expansion_zeroelim(bctlen, bct, adheighttail, w);
     finlength = fast_expansion_sum_zeroelim(finlength, finnow, wlength, w,
                                             finother);
     finswap = finnow; finnow = finother; finother = finswap;
   }
-  if (bdheighttail != 0.0) {
+  if(bdheighttail != 0.0) {
     wlength = scale_expansion_zeroelim(catlen, cat, bdheighttail, w);
     finlength = fast_expansion_sum_zeroelim(finlength, finnow, wlength, w,
                                             finother);
     finswap = finnow; finnow = finother; finother = finswap;
   }
-  if (cdheighttail != 0.0) {
+  if(cdheighttail != 0.0) {
     wlength = scale_expansion_zeroelim(abtlen, abt, cdheighttail, w);
     finlength = fast_expansion_sum_zeroelim(finlength, finnow, wlength, w,
                                             finother);
@@ -3951,7 +3951,7 @@ REAL Mesh::orient3d(Vertex pa, Vertex pb, Vertex pc, Vertex pd,
       + bdheight * (cdxady - adxcdy)
       + cdheight * (adxbdy - bdxady);
 
-  if (m_b.noexact) {
+  if(m_b.noexact) {
     return det;
   }
 
@@ -3959,7 +3959,7 @@ REAL Mesh::orient3d(Vertex pa, Vertex pb, Vertex pc, Vertex pd,
             + (Absolute(cdxady) + Absolute(adxcdy)) * Absolute(bdheight)
             + (Absolute(adxbdy) + Absolute(bdxady)) * Absolute(cdheight);
   errbound = o3derrboundA * permanent;
-  if ((det > errbound) || (-det > errbound)) {
+  if((det > errbound) || (-det > errbound)) {
     return det;
   }
 
@@ -3983,9 +3983,9 @@ REAL Mesh::orient3d(Vertex pa, Vertex pb, Vertex pc, Vertex pd,
 //  directly. If neither switch is used, the incircle test is applied.
 //***************************************************************************
 REAL Mesh::nonregular(Vertex pa, Vertex pb, Vertex pc, Vertex pd) {
-  if (m_b.weighted == 0) {
+  if(m_b.weighted == 0) {
     return incircle(pa, pb, pc, pd);
-  } else if (m_b.weighted == 1) {
+  } else if(m_b.weighted == 1) {
     return orient3d(pa, pb, pc, pd,
                     pa[0] * pa[0] + pa[1] * pa[1] - pa[2],
                     pb[0] * pb[0] + pb[1] * pb[1] - pb[2],
@@ -4026,7 +4026,7 @@ void Mesh::findcircumcenter(Vertex torg, Vertex tdest, Vertex tapex,
   aodist = xao * xao + yao * yao;
   dadist = (tdest[0] - tapex[0]) * (tdest[0] - tapex[0]) +
            (tdest[1] - tapex[1]) * (tdest[1] - tapex[1]);
-  if (m_b.noexact) {
+  if(m_b.noexact) {
     denominator = 0.5 / (xdo * yao - xao * ydo);
   } else {
     // Use the counterclockwise() routine to ensure a positive (and
@@ -4044,38 +4044,38 @@ void Mesh::findcircumcenter(Vertex torg, Vertex tdest, Vertex tapex,
   // circumcenter's parent. The estimate is used to ensure that
   // the algorithm terminates even if very small angles appear in
   // the input PSLG.
-  if ((dodist < aodist) && (dodist < dadist)) {
-    if (offcenter && (m_b.offconstant > 0.0)) {
+  if((dodist < aodist) && (dodist < dadist)) {
+    if(offcenter && (m_b.offconstant > 0.0)) {
       // Find the position of the off-center, as described by Alper Ungor.
       dxoff = 0.5 * xdo - m_b.offconstant * ydo;
       dyoff = 0.5 * ydo + m_b.offconstant * xdo;
       // If the off-center is closer to the origin than the
       // circumcenter, use the off-center instead.
-      if (dxoff * dxoff + dyoff * dyoff < dx * dx + dy * dy) {
+      if(dxoff * dxoff + dyoff * dyoff < dx * dx + dy * dy) {
         dx = dxoff;
         dy = dyoff;
       }
     }
-  } else if (aodist < dadist) {
-    if (offcenter && (m_b.offconstant > 0.0)) {
+  } else if(aodist < dadist) {
+    if(offcenter && (m_b.offconstant > 0.0)) {
       dxoff = 0.5 * xao + m_b.offconstant * yao;
       dyoff = 0.5 * yao - m_b.offconstant * xao;
       // If the off-center is closer to the origin than the
       // circumcenter, use the off-center instead.
-      if (dxoff * dxoff + dyoff * dyoff < dx * dx + dy * dy) {
+      if(dxoff * dxoff + dyoff * dyoff < dx * dx + dy * dy) {
         dx = dxoff;
         dy = dyoff;
       }
     }
   } else {
-    if (offcenter && (m_b.offconstant > 0.0)) {
+    if(offcenter && (m_b.offconstant > 0.0)) {
       dxoff = 0.5 * (tapex[0] - tdest[0]) -
               m_b.offconstant * (tapex[1] - tdest[1]);
       dyoff = 0.5 * (tapex[1] - tdest[1]) +
               m_b.offconstant * (tapex[0] - tdest[0]);
       // If the off-center is closer to the destination than the
       // circumcenter, use the off-center instead.
-      if (dxoff * dxoff + dyoff * dyoff <
+      if(dxoff * dxoff + dyoff * dyoff <
           (dx - xdo) * (dx - xdo) + (dy - ydo) * (dy - ydo)) {
         dx = xdo + dxoff;
         dy = ydo + dyoff;
@@ -4126,22 +4126,22 @@ void Mesh::checkmesh() {
   // Temporarily turn on exact arithmetic if it's off.
   saveexact = m_b.noexact;
   m_b.noexact = 0;
-  if (!m_b.quiet) {
+  if(!m_b.quiet) {
     _tprintf(_T("  Checking consistency of mesh...\n"));
   }
   horrors = 0;
   // Run through the list of triangles, checking each one.
   triangles.traversalinit();
   triangleloop.tri = triangletraverse();
-  while (triangleloop.tri != NULL) {
+  while(triangleloop.tri != NULL) {
     // Check all three edges of the Triangle.
-    for (triangleloop.orient = 0; triangleloop.orient < 3;triangleloop.orient++) {
+    for(triangleloop.orient = 0; triangleloop.orient < 3;triangleloop.orient++) {
       org(triangleloop, triorg);
       dest(triangleloop, tridest);
-      if (triangleloop.orient == 0) {       // Only test for inversion once.
+      if(triangleloop.orient == 0) {       // Only test for inversion once.
         // Test if the Triangle is flat or inverted.
         apex(triangleloop, triapex);
-        if (counterclockwise(triorg, tridest, triapex) <= 0.0) {
+        if(counterclockwise(triorg, tridest, triapex) <= 0.0) {
           printf("  !! !! Inverted ");
           printtriangle(&triangleloop);
           horrors++;
@@ -4149,13 +4149,13 @@ void Mesh::checkmesh() {
       }
       // Find the neighboring Triangle on this edge.
       sym(triangleloop, oppotri);
-      if (oppotri.tri != dummytri) {
+      if(oppotri.tri != dummytri) {
         // Check that the Triangle's neighbor knows it's a neighbor.
         sym(oppotri, oppooppotri);
-        if ((triangleloop.tri != oppooppotri.tri)
+        if((triangleloop.tri != oppooppotri.tri)
             || (triangleloop.orient != oppooppotri.orient)) {
           printf("  !! !! Asymmetric Triangle-Triangle bond:\n");
-          if (triangleloop.tri == oppooppotri.tri) {
+          if(triangleloop.tri == oppooppotri.tri) {
             printf("   (Right Triangle, wrong orientation)\n");
           }
           printf("    First ");
@@ -4168,7 +4168,7 @@ void Mesh::checkmesh() {
         // of their shared vertices.
         org(oppotri, oppoorg);
         dest(oppotri, oppodest);
-        if ((triorg != oppodest) || (tridest != oppoorg)) {
+        if((triorg != oppodest) || (tridest != oppoorg)) {
           printf("  !! !! Mismatched edge coordinates between two triangles:\n");
           printf("    First mismatched ");
           printtriangle(&triangleloop);
@@ -4180,11 +4180,11 @@ void Mesh::checkmesh() {
     }
     triangleloop.tri = triangletraverse();
   }
-  if (horrors == 0) {
-    if (!m_b.quiet) {
+  if(horrors == 0) {
+    if(!m_b.quiet) {
       printf("  In my studied opinion, the mesh appears to be consistent.\n");
     }
-  } else if (horrors == 1) {
+  } else if(horrors == 1) {
     printf("  !! !! !! !! Precisely one festering wound discovered.\n");
   } else {
     printf("  !! !! !! !! %d abominations witnessed.\n", horrors);
@@ -4213,16 +4213,16 @@ void Mesh::checkdelaunay() {
   // Temporarily turn on exact arithmetic if it's off.
   saveexact = m_b.noexact;
   m_b.noexact = 0;
-  if (!m_b.quiet) {
+  if(!m_b.quiet) {
     printf("  Checking Delaunay property of mesh...\n");
   }
   horrors = 0;
   // Run through the list of triangles, checking each one.
   triangles.traversalinit();
   triangleloop.tri = triangletraverse();
-  while (triangleloop.tri != NULL) {
+  while(triangleloop.tri != NULL) {
     // Check all three edges of the Triangle.
-    for (triangleloop.orient = 0; triangleloop.orient < 3; triangleloop.orient++) {
+    for(triangleloop.orient = 0; triangleloop.orient < 3; triangleloop.orient++) {
       org(triangleloop, triorg);
       dest(triangleloop, tridest);
       apex(triangleloop, triapex);
@@ -4241,17 +4241,17 @@ void Mesh::checkdelaunay() {
             (triapex != infvertex3) &&
             (oppoapex != infvertex1) && (oppoapex != infvertex2) &&
             (oppoapex != infvertex3);
-      if (checksegments && shouldbedelaunay) {
+      if(checksegments && shouldbedelaunay) {
         // If a subsegment separates the triangles, then the edge is
         // constrained, so no local Delaunay test should be done.
         tspivot(triangleloop, opposubseg);
-        if (opposubseg.ss != dummysub){
+        if(opposubseg.ss != dummysub){
           shouldbedelaunay = 0;
         }
       }
-      if (shouldbedelaunay) {
-        if (nonregular(triorg, tridest, triapex, oppoapex) > 0.0) {
-          if (!m_b.weighted) {
+      if(shouldbedelaunay) {
+        if(nonregular(triorg, tridest, triapex, oppoapex) > 0.0) {
+          if(!m_b.weighted) {
             printf("  !! !! Non-Delaunay pair of triangles:\n");
             printf("    First non-Delaunay ");
             printtriangle(&triangleloop);
@@ -4269,11 +4269,11 @@ void Mesh::checkdelaunay() {
     }
     triangleloop.tri = triangletraverse();
   }
-  if (horrors == 0) {
-    if (!m_b.quiet) {
+  if(horrors == 0) {
+    if(!m_b.quiet) {
       printf("  By virtue of my perceptive intelligence, I declare the mesh Delaunay.\n");
     }
-  } else if (horrors == 1) {
+  } else if(horrors == 1) {
     printf("  !! !! !! !! Precisely one terrifying transgression identified.\n");
   } else {
     printf("  !! !! !! !! %d obscenities viewed with horror.\n", horrors);
@@ -4299,14 +4299,14 @@ void Mesh::enqueuebadtriang(BadTriangle *badtri) {
   int posexponent;
   int i;
 
-  if (m_b.verbose > 2) {
+  if(m_b.verbose > 2) {
     _tprintf(_T("  Queueing bad Triangle: %s\n")
             ,triangleToString(badtri->triangorg, badtri->triangdest, badtri->triangapex).cstr());
   }
 
   // Determine the appropriate queue to put the bad Triangle into.
   // Recall that the key is the square of its shortest edge length.
-  if (badtri->key >= 1.0) {
+  if(badtri->key >= 1.0) {
     length = badtri->key;
     posexponent = 1;
   } else {
@@ -4318,11 +4318,11 @@ void Mesh::enqueuebadtriang(BadTriangle *badtri) {
   // length' is approximately 2.0 to what exponent?  The following code
   // determines the answer in time logarithmic in the exponent.
   exponent = 0;
-  while (length > 2.0) {
+  while(length > 2.0) {
     // Find an approximation by repeated squaring of two.
     expincrement = 1;
     multiplier = 0.5;
-    while (length * multiplier * multiplier > 1.0) {
+    while(length * multiplier * multiplier > 1.0) {
       expincrement *= 2;
       multiplier *= multiplier;
     }
@@ -4335,17 +4335,17 @@ void Mesh::enqueuebadtriang(BadTriangle *badtri) {
   // `exponent' is now in the range 0...2047 for IEEE double precision.
   //  Choose a queue in the range 0...4095. The shortest edges have the
   //  highest priority (queue 4095).
-  if (posexponent) {
+  if(posexponent) {
     queuenumber = 2047 - exponent;
   } else {
     queuenumber = 2048 + exponent;
   }
 
   // Are we inserting into an empty queue?
-  if (queuefront[queuenumber] == NULL) {
+  if(queuefront[queuenumber] == NULL) {
     // Yes, we are inserting into an empty queue.
     // Will this become the highest-priority queue?
-    if (queuenumber > firstnonemptyq) {
+    if(queuenumber > firstnonemptyq) {
       // Yes, this is the highest-priority queue.
       nextnonemptyq[queuenumber] = firstnonemptyq;
       firstnonemptyq = queuenumber;
@@ -4353,7 +4353,7 @@ void Mesh::enqueuebadtriang(BadTriangle *badtri) {
       // No, this is not the highest-priority queue.
       // Find the queue with next higher priority.
       i = queuenumber + 1;
-      while (queuefront[i] == NULL) {
+      while(queuefront[i] == NULL) {
         i++;
       }
       // Mark the newly nonempty queue as following a higher-priority queue.
@@ -4395,7 +4395,7 @@ BadTriangle *Mesh::dequeuebadtriang() {
   BadTriangle *result;
 
   // If no queues are nonempty, return NULL.
-  if (firstnonemptyq < 0) {
+  if(firstnonemptyq < 0) {
     return NULL;
   }
   // Find the first Triangle of the highest-priority queue.
@@ -4404,7 +4404,7 @@ BadTriangle *Mesh::dequeuebadtriang() {
   queuefront[firstnonemptyq] = result->nexttriang;
   // If this queue is now empty, note the new highest-priority
   //   nonempty queue.
-  if (result == queuetail[firstnonemptyq]) {
+  if(result == queuetail[firstnonemptyq]) {
     firstnonemptyq = nextnonemptyq[firstnonemptyq];
   }
   return result;
@@ -4448,7 +4448,7 @@ int Mesh::checkseg4encroach(osub *testsubseg) {
   // Check one neighbor of the subsegment.
   stpivot(*testsubseg, neighbortri);
   // Does the neighbor exist, or is this a boundary edge?
-  if (neighbortri.tri != dummytri) {
+  if(neighbortri.tri != dummytri) {
     sides++;
     // Find a Vertex opposite this subsegment.
     apex(neighbortri, eapex);
@@ -4459,8 +4459,8 @@ int Mesh::checkseg4encroach(osub *testsubseg) {
     // lenses; 90 degrees for diametral circles).
     dotproduct = (eorg[0] - eapex[0]) * (edest[0] - eapex[0])
                + (eorg[1] - eapex[1]) * (edest[1] - eapex[1]);
-    if (dotproduct < 0.0) {
-      if (m_b.conformdel ||
+    if(dotproduct < 0.0) {
+      if(m_b.conformdel ||
           (dotproduct * dotproduct >=
            (2.0 * m_b.goodangle - 1.0) * (2.0 * m_b.goodangle - 1.0) *
            ((eorg[0] - eapex[0]) * (eorg[0] - eapex[0]) +
@@ -4475,7 +4475,7 @@ int Mesh::checkseg4encroach(osub *testsubseg) {
   ssym(*testsubseg, testsym);
   stpivot(testsym, neighbortri);
   // Does the neighbor exist, or is this a boundary edge?
-  if (neighbortri.tri != dummytri) {
+  if(neighbortri.tri != dummytri) {
     sides++;
     // Find the other Vertex opposite this subsegment.
     apex(neighbortri, eapex);
@@ -4483,8 +4483,8 @@ int Mesh::checkseg4encroach(osub *testsubseg) {
     // (or the diametral circle, if `conformdel' is set).
     dotproduct = (eorg[0] - eapex[0]) * (edest[0] - eapex[0]) +
                  (eorg[1] - eapex[1]) * (edest[1] - eapex[1]);
-    if (dotproduct < 0.0) {
-      if (m_b.conformdel ||
+    if(dotproduct < 0.0) {
+      if(m_b.conformdel ||
           (dotproduct * dotproduct >=
            (2.0 * m_b.goodangle - 1.0) * (2.0 * m_b.goodangle - 1.0) *
            ((eorg[0] - eapex[0]) * (eorg[0] - eapex[0]) +
@@ -4496,14 +4496,14 @@ int Mesh::checkseg4encroach(osub *testsubseg) {
     }
   }
 
-  if (encroached && (!m_b.nobisect || ((m_b.nobisect == 1) && (sides == 2)))) {
-    if (m_b.verbose > 2) {
+  if(encroached && (!m_b.nobisect || ((m_b.nobisect == 1) && (sides == 2)))) {
+    if(m_b.verbose > 2) {
       _tprintf(_T("  Queueing encroached subsegment %s\n"), edgeToString(eorg, edest).cstr());
     }
     // Add the subsegment to the list of encroached subsegments.
     // Be sure to get the orientation right.
     encroachedseg = badsubsegs.alloc();
-    if (encroached == 1) {
+    if(encroached == 1) {
       encroachedseg->encsubseg = sencode(*testsubseg);
       encroachedseg->subsegorg = eorg;
       encroachedseg->subsegdest = edest;
@@ -4560,7 +4560,7 @@ void Mesh::testtriangle(otri *testtri) {
   orglen = dxda2 + dyda2;
   destlen = dxao2 + dyao2;
 
-  if ((apexlen < orglen) && (apexlen < destlen)) {
+  if((apexlen < orglen) && (apexlen < destlen)) {
     // The edge opposite the apex is shortest.
     minedge = apexlen;
     // Find the square of the cosine of the angle at the apex.
@@ -4569,7 +4569,7 @@ void Mesh::testtriangle(otri *testtri) {
     base1 = torg;
     base2 = tdest;
     otricopy(*testtri, tri1);
-  } else if (orglen < destlen) {
+  } else if(orglen < destlen) {
     // The edge opposite the origin is shortest.
     minedge = orglen;
     // Find the square of the cosine of the angle at the origin.
@@ -4589,26 +4589,26 @@ void Mesh::testtriangle(otri *testtri) {
     lprev(*testtri, tri1);
   }
 
-  if (m_b.vararea || m_b.fixedarea || m_b.usertest) {
+  if(m_b.vararea || m_b.fixedarea || m_b.usertest) {
     // Check whether the area is larger than permitted.
     area = 0.5 * (dxod * dyda - dyod * dxda);
-    if (m_b.fixedarea && (area > m_b.maxarea)) {
+    if(m_b.fixedarea && (area > m_b.maxarea)) {
       // Add this Triangle to the list of bad triangles.
       enqueuebadtri(testtri, minedge, tapex, torg, tdest);
       return;
     }
 
     // Nonpositive area constraints are treated as unconstrained.
-    if ((m_b.vararea) && (area > areabound(*testtri)) &&
+    if((m_b.vararea) && (area > areabound(*testtri)) &&
         (areabound(*testtri) > 0.0)) {
       // Add this Triangle to the list of bad triangles.
       enqueuebadtri(testtri, minedge, tapex, torg, tdest);
       return;
     }
 
-    if (m_b.usertest) {
+    if(m_b.usertest) {
       // Check whether the user thinks this Triangle is too large.
-      if (triunsuitable(torg, tdest, tapex, area)) {
+      if(triunsuitable(torg, tdest, tapex, area)) {
         enqueuebadtri(testtri, minedge, tapex, torg, tdest);
         return;
       }
@@ -4616,7 +4616,7 @@ void Mesh::testtriangle(otri *testtri) {
   }
 
   // Check whether the angle is smaller than permitted.
-  if (angle > m_b.goodangle) {
+  if(angle > m_b.goodangle) {
     // Use the rules of Miller, Pav, and Walkington to decide that certain
     // triangles should not be split, even if they have bad angles.
     // A skinny Triangle is not split if its shortest edge subtends a
@@ -4626,17 +4626,17 @@ void Mesh::testtriangle(otri *testtri) {
     // both lie in segment interiors, equidistant from the apex where
     // the two segments meet.
     // First, check if both points lie in segment interiors.
-    if ((vertextype(base1) == SEGMENTVERTEX) && (vertextype(base2) == SEGMENTVERTEX)) {
+    if((vertextype(base1) == SEGMENTVERTEX) && (vertextype(base2) == SEGMENTVERTEX)) {
       // Check if both points lie in a common segment. If they do, the
       // skinny Triangle is enqueued to be split as usual.
       tspivot(tri1, testsub);
-      if (testsub.ss == dummysub) {
+      if(testsub.ss == dummysub) {
         // No common segment. Find a subsegment that contains `torg'.
         otricopy(tri1, tri2);
         do {
           oprevself(tri1);
           tspivot(tri1, testsub);
-        } while (testsub.ss == dummysub);
+        } while(testsub.ss == dummysub);
         // Find the endpoints of the containing segment.
         segorg(testsub, org1);
         segdest(testsub, dest1);
@@ -4644,18 +4644,18 @@ void Mesh::testtriangle(otri *testtri) {
         do {
           dnextself(tri2);
           tspivot(tri2, testsub);
-        } while (testsub.ss == dummysub);
+        } while(testsub.ss == dummysub);
         // Find the endpoints of the containing segment.
         segorg(testsub, org2);
         segdest(testsub, dest2);
         // Check if the two containing segments have an endpoint in common.
         joinvertex = NULL;
-        if ((dest1[0] == org2[0]) && (dest1[1] == org2[1])) {
+        if((dest1[0] == org2[0]) && (dest1[1] == org2[1])) {
           joinvertex = dest1;
-        } else if ((org1[0] == dest2[0]) && (org1[1] == dest2[1])) {
+        } else if((org1[0] == dest2[0]) && (org1[1] == dest2[1])) {
           joinvertex = org1;
         }
-        if (joinvertex != NULL) {
+        if(joinvertex != NULL) {
           // Compute the distance from the common endpoint (of the two
           // segments) to each of the endpoints of the shortest edge.
           dist1 = ((base1[0] - joinvertex[0]) * (base1[0] - joinvertex[0])
@@ -4663,7 +4663,7 @@ void Mesh::testtriangle(otri *testtri) {
           dist2 = ((base2[0] - joinvertex[0]) * (base2[0] - joinvertex[0])
                 +  (base2[1] - joinvertex[1]) * (base2[1] - joinvertex[1]));
           // If the two distances are equal, don't split the Triangle.
-          if ((dist1 < 1.001 * dist2) && (dist1 > 0.999 * dist2)) {
+          if((dist1 < 1.001 * dist2) && (dist1 > 0.999 * dist2)) {
             // Return now to avoid enqueueing the bad Triangle.
             return;
           }
@@ -4697,14 +4697,14 @@ void Mesh::makevertexmap() {
   otri triangleloop;
   Vertex triorg;
 
-  if (m_b.verbose) {
+  if(m_b.verbose) {
     printf("    Constructing mapping from vertices to triangles.\n");
   }
   triangles.traversalinit();
   triangleloop.tri = triangletraverse();
-  while (triangleloop.tri != NULL) {
+  while(triangleloop.tri != NULL) {
     // Check all three vertices of the Triangle.
-    for (triangleloop.orient = 0; triangleloop.orient < 3; triangleloop.orient++) {
+    for(triangleloop.orient = 0; triangleloop.orient < 3; triangleloop.orient++) {
       org(triangleloop, triorg);
       setvertex2tri(triorg, encode(triangleloop));
     }
@@ -4785,19 +4785,19 @@ LocateResult Mesh::preciselocate(Vertex searchpoint, otri *searchtri, int stopat
   Triangle ptr;                     // Temporary variable used by sym().
   SubSeg sptr;                      // Temporary variable used by tspivot().
 
-  if (m_b.verbose > 2) {
+  if(m_b.verbose > 2) {
     _tprintf(_T("  Searching for point %s\n"), vertexToString(searchpoint).cstr());
   }
   // Where are we?
   org(*searchtri, forg);
   dest(*searchtri, fdest);
   apex(*searchtri, fapex);
-  while (1) {
-    if (m_b.verbose > 2) {
+  while(1) {
+    if(m_b.verbose > 2) {
       _tprintf(_T("    At %s\n"), triangleToString(forg,fdest,fapex).cstr());
     }
     // Check whether the apex is the point we seek.
-    if ((fapex[0] == searchpoint[0]) && (fapex[1] == searchpoint[1])) {
+    if((fapex[0] == searchpoint[0]) && (fapex[1] == searchpoint[1])) {
       lprevself(*searchtri);
       return ONVERTEX;
     }
@@ -4807,8 +4807,8 @@ LocateResult Mesh::preciselocate(Vertex searchpoint, otri *searchtri, int stopat
     // Does the point lie on the other side of the line defined by the
     // Triangle edge opposite the Triangle's origin?
     orgorient = counterclockwise(fapex, fdest, searchpoint);
-    if (destorient > 0.0) {
-      if (orgorient > 0.0) {
+    if(destorient > 0.0) {
+      if(orgorient > 0.0) {
         // Move left if the inner product of (fapex - searchpoint) and
         // (fdest - forg) is positive. This is equivalent to drawing
         // a line perpendicular to the line (forg, fdest) and passing
@@ -4820,15 +4820,15 @@ LocateResult Mesh::preciselocate(Vertex searchpoint, otri *searchtri, int stopat
         moveleft = 1;
       }
     } else {
-      if (orgorient > 0.0) {
+      if(orgorient > 0.0) {
         moveleft = 0;
       } else {
         // The point we seek must be on the boundary of or inside this Triangle.
-        if (destorient == 0.0) {
+        if(destorient == 0.0) {
           lprevself(*searchtri);
           return ONEDGE;
         }
-        if (orgorient == 0.0) {
+        if(orgorient == 0.0) {
           lnextself(*searchtri);
           return ONEDGE;
         }
@@ -4839,7 +4839,7 @@ LocateResult Mesh::preciselocate(Vertex searchpoint, otri *searchtri, int stopat
     // Move to another Triangle. Leave a trace `backtracktri' in case
     // floating-point roundoff or some such bogey causes us to walk
     // off a boundary of the triangulation.
-    if (moveleft) {
+    if(moveleft) {
       lprev(*searchtri, backtracktri);
       fdest = fapex;
     } else {
@@ -4848,17 +4848,17 @@ LocateResult Mesh::preciselocate(Vertex searchpoint, otri *searchtri, int stopat
     }
     sym(backtracktri, *searchtri);
 
-    if (checksegments && stopatsubsegment) {
+    if(checksegments && stopatsubsegment) {
       // Check for walking through a subsegment.
       tspivot(backtracktri, checkedge);
-      if (checkedge.ss != dummysub) {
+      if(checkedge.ss != dummysub) {
         // Go back to the last Triangle.
         otricopy(backtracktri, *searchtri);
         return OUTSIDE;
       }
     }
     // Check for walking right out of the triangulation.
-    if (searchtri->tri == dummytri) {
+    if(searchtri->tri == dummytri) {
       // Go back to the last Triangle.
       otricopy(backtracktri, *searchtri);
       return OUTSIDE;
@@ -4913,32 +4913,32 @@ LocateResult Mesh::locate(Vertex searchpoint, otri *searchtri) {
   long population, totalpopulation;
   Triangle ptr;                         // Temporary variable used by sym().
 
-  if (m_b.verbose > 2) {
+  if(m_b.verbose > 2) {
     _tprintf(_T("  Randomly sampling for a Triangle near point %s\n"), vertexToString(searchpoint).cstr());
   }
   // Record the distance from the suggested starting Triangle to the point we seek.
   org(*searchtri, torg);
   searchdist = (searchpoint[0] - torg[0]) * (searchpoint[0] - torg[0])
              + (searchpoint[1] - torg[1]) * (searchpoint[1] - torg[1]);
-  if (m_b.verbose > 2) {
+  if(m_b.verbose > 2) {
     _tprintf(_T("    Boundary Triangle has origin %s\n"), vertexToString(torg).cstr());
   }
 
   // If a recently encountered Triangle has been recorded and has not been
   // deallocated, test it as a good starting point.
-  if (recenttri.tri != NULL) {
-    if (!deadtri(recenttri.tri)) {
+  if(recenttri.tri != NULL) {
+    if(!deadtri(recenttri.tri)) {
       org(recenttri, torg);
-      if ((torg[0] == searchpoint[0]) && (torg[1] == searchpoint[1])) {
+      if((torg[0] == searchpoint[0]) && (torg[1] == searchpoint[1])) {
         otricopy(recenttri, *searchtri);
         return ONVERTEX;
       }
       dist = (searchpoint[0] - torg[0]) * (searchpoint[0] - torg[0])
            + (searchpoint[1] - torg[1]) * (searchpoint[1] - torg[1]);
-      if (dist < searchdist) {
+      if(dist < searchdist) {
         otricopy(recenttri, *searchtri);
         searchdist = dist;
-        if (m_b.verbose > 2) {
+        if(m_b.verbose > 2) {
           _tprintf(_T("    Choosing recent Triangle with origin %s\n"), vertexToString(torg).cstr());
         }
       }
@@ -4949,7 +4949,7 @@ LocateResult Mesh::locate(Vertex searchpoint, otri *searchtri) {
   // the number of triangles in the mesh. The next bit of code assumes
   // that the number of triangles increases monotonically (or at least
   // doesn't decrease enough to matter).
-  while (SAMPLEFACTOR * samples * samples * samples < triangles.getItems()) {
+  while(SAMPLEFACTOR * samples * samples * samples < triangles.getItems()) {
     samples++;
   }
 
@@ -4966,9 +4966,9 @@ LocateResult Mesh::locate(Vertex searchpoint, otri *searchtri) {
   totalpopulation  = triangles.getMaxItems();
   sampleblock      = triangles.getFirstBlock();
   sampletri.orient = 0;
-  while (totalsamplesleft > 0) {
+  while(totalsamplesleft > 0) {
     // If we're in the last block, `population' needs to be corrected.
-    if (population > totalpopulation) {
+    if(population > totalpopulation) {
       population = totalpopulation;
     }
     // Find a pointer to the first Triangle in the block.
@@ -4979,14 +4979,14 @@ LocateResult Mesh::locate(Vertex searchpoint, otri *searchtri) {
     // Choose `samplesleft' randomly sampled triangles in this block.
     do {
       sampletri.tri = (Triangle*)(firsttri + (randInt((UINT) population) * triangles.getItemBytes()));
-      if (!deadtri(sampletri.tri)) {
+      if(!deadtri(sampletri.tri)) {
         org(sampletri, torg);
         dist = (searchpoint[0] - torg[0]) * (searchpoint[0] - torg[0])
              + (searchpoint[1] - torg[1]) * (searchpoint[1] - torg[1]);
-        if (dist < searchdist) {
+        if(dist < searchdist) {
           otricopy(sampletri, *searchtri);
           searchdist = dist;
-          if (m_b.verbose > 2) {
+          if(m_b.verbose > 2) {
             _tprintf(_T("    Choosing Triangle with origin %s\n"), vertexToString(torg).cstr());
           }
         }
@@ -4994,9 +4994,9 @@ LocateResult Mesh::locate(Vertex searchpoint, otri *searchtri) {
 
       samplesleft--;
       totalsamplesleft--;
-    } while ((samplesleft > 0) && (totalsamplesleft > 0));
+    } while((samplesleft > 0) && (totalsamplesleft > 0));
 
-    if (totalsamplesleft > 0) {
+    if(totalsamplesleft > 0) {
       sampleblock = (VOID **)*sampleblock;
       samplesleft = samplesperblock;
       totalpopulation -= population;
@@ -5008,21 +5008,21 @@ LocateResult Mesh::locate(Vertex searchpoint, otri *searchtri) {
   org(*searchtri, torg);
   dest(*searchtri, tdest);
   // Check the starting Triangle's vertices.
-  if ((torg[0] == searchpoint[0]) && (torg[1] == searchpoint[1])) {
+  if((torg[0] == searchpoint[0]) && (torg[1] == searchpoint[1])) {
     return ONVERTEX;
   }
-  if ((tdest[0] == searchpoint[0]) && (tdest[1] == searchpoint[1])) {
+  if((tdest[0] == searchpoint[0]) && (tdest[1] == searchpoint[1])) {
     lnextself(*searchtri);
     return ONVERTEX;
   }
   // Orient `searchtri' to fit the preconditions of calling preciselocate().
   ahead = counterclockwise(torg, tdest, searchpoint);
-  if (ahead < 0.0) {
+  if(ahead < 0.0) {
     // Turn around so that `searchpoint' is to the left of the edge specified by `searchtri'.
     symself(*searchtri);
-  } else if (ahead == 0.0) {
+  } else if(ahead == 0.0) {
     // Check if `searchpoint' is between `torg' and `tdest'.
-    if (((torg[0] < searchpoint[0]) == (searchpoint[0] < tdest[0]))
+    if(((torg[0] < searchpoint[0]) == (searchpoint[0] < tdest[0]))
      && ((torg[1] < searchpoint[1]) == (searchpoint[1] < tdest[1]))) {
       return ONEDGE;
     }
@@ -5050,15 +5050,15 @@ void Mesh::insertsubseg(otri *tri, int subsegmark) {
   org(*tri, triorg);
   dest(*tri, tridest);
   // Mark vertices if possible.
-  if (vertexmark(triorg) == 0) {
+  if(vertexmark(triorg) == 0) {
     setvertexmark(triorg, subsegmark);
   }
-  if (vertexmark(tridest) == 0) {
+  if(vertexmark(tridest) == 0) {
     setvertexmark(tridest, subsegmark);
   }
   // Check if there's already a subsegment here.
   tspivot(*tri, newsubseg);
-  if (newsubseg.ss == dummysub) {
+  if(newsubseg.ss == dummysub) {
     // Make new subsegment and initialize its vertices.
     makesubseg(&newsubseg);
     setsorg(newsubseg, tridest);
@@ -5074,12 +5074,12 @@ void Mesh::insertsubseg(otri *tri, int subsegmark) {
     ssymself(newsubseg);
     tsbond(oppotri, newsubseg);
     setmark(newsubseg, subsegmark);
-    if (m_b.verbose > 2) {
+    if(m_b.verbose > 2) {
       printf("  Inserting new ");
       printsubseg(&newsubseg);
     }
   } else {
-    if (mark(newsubseg) == 0) {
+    if(mark(newsubseg) == 0) {
       setmark(newsubseg, subsegmark);
     }
   }
@@ -5152,14 +5152,14 @@ void Mesh::flip(otri *flipedge) {
   apex(*flipedge, botvertex);
   sym(*flipedge, top);
 #ifdef SELF_CHECK
-  if (top.tri == dummytri) {
+  if(top.tri == dummytri) {
     printf("Internal error in flip():  Attempt to flip on boundary.\n");
     lnextself(*flipedge);
     return;
   }
-  if (checksegments) {
+  if(checksegments) {
     tspivot(*flipedge, toplsubseg);
-    if (toplsubseg.ss != dummysub) {
+    if(toplsubseg.ss != dummysub) {
       printf("Internal error in flip():  Attempt to flip a segment.\n");
       lnextself(*flipedge);
       return;
@@ -5183,28 +5183,28 @@ void Mesh::flip(otri *flipedge) {
   bond(botright, toprcasing);
   bond(topright, toplcasing);
 
-  if (checksegments) {
+  if(checksegments) {
     // Check for subsegments and rebond them to the quadrilateral.
     tspivot(topleft, toplsubseg);
     tspivot(botleft, botlsubseg);
     tspivot(botright, botrsubseg);
     tspivot(topright, toprsubseg);
-    if (toplsubseg.ss == dummysub) {
+    if(toplsubseg.ss == dummysub) {
       tsdissolve(topright);
     } else {
       tsbond(topright, toplsubseg);
     }
-    if (botlsubseg.ss == dummysub) {
+    if(botlsubseg.ss == dummysub) {
       tsdissolve(topleft);
     } else {
       tsbond(topleft, botlsubseg);
     }
-    if (botrsubseg.ss == dummysub) {
+    if(botrsubseg.ss == dummysub) {
       tsdissolve(botleft);
     } else {
       tsbond(botleft, botrsubseg);
     }
-    if (toprsubseg.ss == dummysub) {
+    if(toprsubseg.ss == dummysub) {
       tsdissolve(botright);
     } else {
       tsbond(botright, toprsubseg);
@@ -5218,7 +5218,7 @@ void Mesh::flip(otri *flipedge) {
   setorg(top, botvertex);
   setdest(top, farvertex);
   setapex(top, leftvertex);
-  if (m_b.verbose > 2) {
+  if(m_b.verbose > 2) {
     printf("  Edge flip results in left ");
     printtriangle(&top);
     printf("  and right ");
@@ -5277,14 +5277,14 @@ void Mesh::unflip(otri *flipedge) {
   apex(*flipedge, botvertex);
   sym(*flipedge, top);
 #ifdef SELF_CHECK
-  if (top.tri == dummytri) {
+  if(top.tri == dummytri) {
     printf("Internal error in unflip():  Attempt to flip on boundary.\n");
     lnextself(*flipedge);
     return;
   }
-  if (checksegments) {
+  if(checksegments) {
     tspivot(*flipedge, toplsubseg);
-    if (toplsubseg.ss != dummysub) {
+    if(toplsubseg.ss != dummysub) {
       printf("Internal error in unflip():  Attempt to flip a subsegment.\n");
       lnextself(*flipedge);
       return;
@@ -5308,28 +5308,28 @@ void Mesh::unflip(otri *flipedge) {
   bond(botright, botlcasing);
   bond(topright, botrcasing);
 
-  if (checksegments) {
+  if(checksegments) {
     // Check for subsegments and rebond them to the quadrilateral.
     tspivot(topleft, toplsubseg);
     tspivot(botleft, botlsubseg);
     tspivot(botright, botrsubseg);
     tspivot(topright, toprsubseg);
-    if (toplsubseg.ss == dummysub) {
+    if(toplsubseg.ss == dummysub) {
       tsdissolve(botleft);
     } else {
       tsbond(botleft, toplsubseg);
     }
-    if (botlsubseg.ss == dummysub) {
+    if(botlsubseg.ss == dummysub) {
       tsdissolve(botright);
     } else {
       tsbond(botright, botlsubseg);
     }
-    if (botrsubseg.ss == dummysub) {
+    if(botrsubseg.ss == dummysub) {
       tsdissolve(topright);
     } else {
       tsbond(topright, botrsubseg);
     }
-    if (toprsubseg.ss == dummysub) {
+    if(toprsubseg.ss == dummysub) {
       tsdissolve(topleft);
     } else {
       tsbond(topleft, toprsubseg);
@@ -5343,7 +5343,7 @@ void Mesh::unflip(otri *flipedge) {
   setorg(top, farvertex);
   setdest(top, botvertex);
   setapex(top, rightvertex);
-  if (m_b.verbose > 2) {
+  if(m_b.verbose > 2) {
     printf("  Edge unflip results in left ");
     printtriangle(flipedge);
     printf("  and right ");
@@ -5434,14 +5434,14 @@ InserVvertexResult Mesh::insertvertex(Vertex    newvertex
   Triangle ptr;        // Temporary variable used by sym().
   SubSeg sptr;         // Temporary variable used by spivot() and tspivot().
 
-  if (m_b.verbose > 1) {
+  if(m_b.verbose > 1) {
     _tprintf(_T("  Inserting %s\n"), vertexToString(newvertex).cstr());
   }
 
-  if (splitseg == NULL) {
+  if(splitseg == NULL) {
     // Find the location of the Vertex to be inserted. Check if a good
     // starting Triangle has already been provided by the caller.
-    if (searchtri->tri == dummytri) {
+    if(searchtri->tri == dummytri) {
       // Find a boundary Triangle.
       horiz.tri = dummytri;
       horiz.orient = 0;
@@ -5459,34 +5459,34 @@ InserVvertexResult Mesh::insertvertex(Vertex    newvertex
     intersect = ONEDGE;
   }
 
-  if (intersect == ONVERTEX) {
+  if(intersect == ONVERTEX) {
     // There's already a Vertex there. Return in `searchtri' a Triangle
     // whose origin is the existing Vertex.
     otricopy(horiz, *searchtri);
     otricopy(horiz, recenttri);
     return DUPLICATEVERTEX;
   }
-  if ((intersect == ONEDGE) || (intersect == OUTSIDE)) {
+  if((intersect == ONEDGE) || (intersect == OUTSIDE)) {
     // The Vertex falls on an edge or boundary.
-    if (checksegments && (splitseg == NULL)) {
+    if(checksegments && (splitseg == NULL)) {
       // Check whether the Vertex falls on a subsegment.
       tspivot(horiz, brokensubseg);
-      if (brokensubseg.ss != dummysub) {
+      if(brokensubseg.ss != dummysub) {
         // The Vertex falls on a subsegment, and hence will not be inserted.
-        if (segmentflaws) {
+        if(segmentflaws) {
           enq = m_b.nobisect != 2;
-          if (enq && (m_b.nobisect == 1)) {
+          if(enq && (m_b.nobisect == 1)) {
             // This subsegment may be split only if it is an internal boundary.
             sym(horiz, testtri);
             enq = testtri.tri != dummytri;
           }
-          if (enq) {
+          if(enq) {
             // Add the subsegment to the list of encroached subsegments.
             encroached = badsubsegs.alloc();
             encroached->encsubseg = sencode(brokensubseg);
             sorg(brokensubseg, encroached->subsegorg);
             sdest(brokensubseg, encroached->subsegdest);
-            if (m_b.verbose > 2) {
+            if(m_b.verbose > 2) {
               _tprintf(_T("  Queueing encroached subsegment %s\n")
                       ,edgeToString(encroached->subsegorg, encroached->subsegdest).cstr());
             }
@@ -5506,7 +5506,7 @@ InserVvertexResult Mesh::insertvertex(Vertex    newvertex
     sym(horiz, topright);
     // Is there a second Triangle?  (Or does this edge lie on a boundary?)
     mirrorflag = topright.tri != dummytri;
-    if (mirrorflag) {
+    if(mirrorflag) {
       lnextself(topright);
       sym(topright, toprcasing);
       maketriangle(&newtopright);
@@ -5524,40 +5524,40 @@ InserVvertexResult Mesh::insertvertex(Vertex    newvertex
     setdest(newbotright, rightvertex);
     setapex(newbotright, newvertex);
     setorg(horiz, newvertex);
-    for (i = 0; i < eextras; i++) {
+    for(i = 0; i < eextras; i++) {
       // Set the element attributes of a new Triangle.
       setelemattribute(newbotright, i, elemattribute(botright, i));
     }
-    if (m_b.vararea) {
+    if(m_b.vararea) {
       // Set the area constraint of a new Triangle.
       setareabound(newbotright, areabound(botright));
     }
-    if (mirrorflag) {
+    if(mirrorflag) {
       dest(topright, topvertex);
       setorg(newtopright, rightvertex);
       setdest(newtopright, topvertex);
       setapex(newtopright, newvertex);
       setorg(topright, newvertex);
-      for (i = 0; i < eextras; i++) {
+      for(i = 0; i < eextras; i++) {
         // Set the element attributes of another new Triangle.
         setelemattribute(newtopright, i, elemattribute(topright, i));
       }
-      if (m_b.vararea) {
+      if(m_b.vararea) {
         // Set the area constraint of another new Triangle.
         setareabound(newtopright, areabound(topright));
       }
     }
 
     // There may be subsegments that need to be bonded to the new Triangle(s).
-    if (checksegments) {
+    if(checksegments) {
       tspivot(botright, botrsubseg);
-      if (botrsubseg.ss != dummysub) {
+      if(botrsubseg.ss != dummysub) {
         tsdissolve(botright);
         tsbond(newbotright, botrsubseg);
       }
-      if (mirrorflag) {
+      if(mirrorflag) {
         tspivot(topright, toprsubseg);
-        if (toprsubseg.ss != dummysub) {
+        if(toprsubseg.ss != dummysub) {
           tsdissolve(topright);
           tsbond(newtopright, toprsubseg);
         }
@@ -5569,7 +5569,7 @@ InserVvertexResult Mesh::insertvertex(Vertex    newvertex
     lprevself(newbotright);
     bond(newbotright, botright);
     lprevself(newbotright);
-    if (mirrorflag) {
+    if(mirrorflag) {
       bond(newtopright, toprcasing);
       lnextself(newtopright);
       bond(newtopright, topright);
@@ -5577,7 +5577,7 @@ InserVvertexResult Mesh::insertvertex(Vertex    newvertex
       bond(newtopright, newbotright);
     }
 
-    if (splitseg != NULL) {
+    if(splitseg != NULL) {
       // Split the subsegment into two.
       setsdest(*splitseg, newvertex);
       segorg(*splitseg, segmentorg);
@@ -5593,12 +5593,12 @@ InserVvertexResult Mesh::insertvertex(Vertex    newvertex
       sbond(newsubseg, rightsubseg);
       ssymself(*splitseg);
       // Transfer the subsegment's boundary marker to the Vertex if required.
-      if (vertexmark(newvertex) == 0) {
+      if(vertexmark(newvertex) == 0) {
         setvertexmark(newvertex, mark(*splitseg));
       }
     }
 
-    if (checkquality) {
+    if(checkquality) {
       flipstackers.restart();
       lastflip = flipstackers.alloc();
       lastflip->flippedtri = encode(horiz);
@@ -5606,37 +5606,37 @@ InserVvertexResult Mesh::insertvertex(Vertex    newvertex
     }
 
 #ifdef SELF_CHECK
-    if (counterclockwise(rightvertex, leftvertex, botvertex) < 0.0) {
+    if(counterclockwise(rightvertex, leftvertex, botvertex) < 0.0) {
       printf("Internal error in insertvertex():\n");
       printf("  Clockwise Triangle prior to edge Vertex insertion (bottom).\n");
     }
-    if (mirrorflag) {
-      if (counterclockwise(leftvertex, rightvertex, topvertex) < 0.0) {
+    if(mirrorflag) {
+      if(counterclockwise(leftvertex, rightvertex, topvertex) < 0.0) {
         printf("Internal error in insertvertex():\n");
         printf("  Clockwise Triangle prior to edge Vertex insertion (top).\n");
       }
-      if (counterclockwise(rightvertex, topvertex, newvertex) < 0.0) {
+      if(counterclockwise(rightvertex, topvertex, newvertex) < 0.0) {
         printf("Internal error in insertvertex():\n");
         printf("  Clockwise Triangle after edge Vertex insertion (top right).\n");
       }
-      if (counterclockwise(topvertex, leftvertex, newvertex) < 0.0) {
+      if(counterclockwise(topvertex, leftvertex, newvertex) < 0.0) {
         printf("Internal error in insertvertex():\n");
         printf("  Clockwise Triangle after edge Vertex insertion (top left).\n");
       }
     }
-    if (counterclockwise(leftvertex, botvertex, newvertex) < 0.0) {
+    if(counterclockwise(leftvertex, botvertex, newvertex) < 0.0) {
       printf("Internal error in insertvertex():\n");
       printf("  Clockwise Triangle after edge Vertex insertion (bottom left).\n");
     }
-    if (counterclockwise(botvertex, rightvertex, newvertex) < 0.0) {
+    if(counterclockwise(botvertex, rightvertex, newvertex) < 0.0) {
       printf("Internal error in insertvertex():\n");
       printf("  Clockwise Triangle after edge Vertex insertion (bottom right).\n");
     }
 #endif // SELF_CHECK
-    if (m_b.verbose > 2) {
+    if(m_b.verbose > 2) {
       printf("  Updating bottom left ");
       printtriangle(&botright);
-      if (mirrorflag) {
+      if(mirrorflag) {
         printf("  Updating top left ");
         printtriangle(&topright);
         printf("  Creating top right ");
@@ -5668,13 +5668,13 @@ InserVvertexResult Mesh::insertvertex(Vertex    newvertex
     setdest(newbotright, rightvertex);
     setapex(newbotright, newvertex);
     setapex(horiz, newvertex);
-    for (i = 0; i < eextras; i++) {
+    for(i = 0; i < eextras; i++) {
       // Set the element attributes of the new triangles.
       attrib = elemattribute(horiz, i);
       setelemattribute(newbotleft, i, attrib);
       setelemattribute(newbotright, i, attrib);
     }
-    if (m_b.vararea) {
+    if(m_b.vararea) {
       // Set the area constraint of the new triangles.
       area = areabound(horiz);
       setareabound(newbotleft, area);
@@ -5682,14 +5682,14 @@ InserVvertexResult Mesh::insertvertex(Vertex    newvertex
     }
 
     // There may be subsegments that need to be bonded to the new triangles.
-    if (checksegments) {
+    if(checksegments) {
       tspivot(botleft, botlsubseg);
-      if (botlsubseg.ss != dummysub) {
+      if(botlsubseg.ss != dummysub) {
         tsdissolve(botleft);
         tsbond(newbotleft, botlsubseg);
       }
       tspivot(botright, botrsubseg);
-      if (botrsubseg.ss != dummysub) {
+      if(botrsubseg.ss != dummysub) {
         tsdissolve(botright);
         tsbond(newbotright, botrsubseg);
       }
@@ -5706,7 +5706,7 @@ InserVvertexResult Mesh::insertvertex(Vertex    newvertex
     lprevself(newbotright);
     bond(botright, newbotright);
 
-    if (checkquality) {
+    if(checkquality) {
       flipstackers.restart();
       lastflip = flipstackers.alloc();
       lastflip->flippedtri = encode(horiz);
@@ -5714,24 +5714,24 @@ InserVvertexResult Mesh::insertvertex(Vertex    newvertex
     }
 
 #ifdef SELF_CHECK
-    if (counterclockwise(rightvertex, leftvertex, botvertex) < 0.0) {
+    if(counterclockwise(rightvertex, leftvertex, botvertex) < 0.0) {
       printf("Internal error in insertvertex():\n");
       printf("  Clockwise Triangle prior to Vertex insertion.\n");
     }
-    if (counterclockwise(rightvertex, leftvertex, newvertex) < 0.0) {
+    if(counterclockwise(rightvertex, leftvertex, newvertex) < 0.0) {
       printf("Internal error in insertvertex():\n");
       printf("  Clockwise Triangle after Vertex insertion (top).\n");
     }
-    if (counterclockwise(leftvertex, botvertex, newvertex) < 0.0) {
+    if(counterclockwise(leftvertex, botvertex, newvertex) < 0.0) {
       printf("Internal error in insertvertex():\n");
       printf("  Clockwise Triangle after Vertex insertion (left).\n");
     }
-    if (counterclockwise(botvertex, rightvertex, newvertex) < 0.0) {
+    if(counterclockwise(botvertex, rightvertex, newvertex) < 0.0) {
       printf("Internal error in insertvertex():\n");
       printf("  Clockwise Triangle after Vertex insertion (right).\n");
     }
 #endif // SELF_CHECK
-    if (m_b.verbose > 2) {
+    if(m_b.verbose > 2) {
       printf("  Updating top ");
       printtriangle(&horiz);
       printf("  Creating left ");
@@ -5751,20 +5751,20 @@ InserVvertexResult Mesh::insertvertex(Vertex    newvertex
   rightvertex = first;
   dest(horiz, leftvertex);
   // Circle until finished.
-  while (1) {
+  while(1) {
     // By default, the edge will be flipped.
     doflip = 1;
 
-    if (checksegments) {
+    if(checksegments) {
       // Check for a subsegment, which cannot be flipped.
       tspivot(horiz, checksubseg);
-      if (checksubseg.ss != dummysub) {
+      if(checksubseg.ss != dummysub) {
         // The edge is a subsegment and cannot be flipped.
         doflip = 0;
 #ifndef CDT_ONLY
-        if (segmentflaws) {
+        if(segmentflaws) {
           // Does the new Vertex encroach upon this subsegment?
-          if (checkseg4encroach(&checksubseg)) {
+          if(checkseg4encroach(&checksubseg)) {
             success = ENCROACHINGVERTEX;
           }
         }
@@ -5772,10 +5772,10 @@ InserVvertexResult Mesh::insertvertex(Vertex    newvertex
       }
     }
 
-    if (doflip) {
+    if(doflip) {
       // Check if the edge is a boundary edge.
       sym(horiz, top);
-      if (top.tri == dummytri) {
+      if(top.tri == dummytri) {
         // The edge is a boundary edge and cannot be flipped.
         doflip = 0;
       } else {
@@ -5786,14 +5786,14 @@ InserVvertexResult Mesh::insertvertex(Vertex    newvertex
         // of the triangular bounding box. These vertices must be
         // treated as if they are infinitely distant, even though their
         // "coordinates" are not.
-        if ((leftvertex == infvertex1) || (leftvertex == infvertex2) ||
+        if((leftvertex == infvertex1) || (leftvertex == infvertex2) ||
             (leftvertex == infvertex3)) {
           // leftvertex' is infinitely distant. Check the convexity of
           // the boundary of the triangulation. 'farvertex' might be
           // infinite as well, but trust me, this same condition should
           // be applied.
           doflip = counterclockwise(newvertex, rightvertex, farvertex) > 0.0;
-        } else if ((rightvertex == infvertex1) ||
+        } else if((rightvertex == infvertex1) ||
                    (rightvertex == infvertex2) ||
                    (rightvertex == infvertex3)) {
           // `rightvertex' is infinitely distant. Check the convexity of
@@ -5801,7 +5801,7 @@ InserVvertexResult Mesh::insertvertex(Vertex    newvertex
           // infinite as well, but trust me, this same condition should
           // be applied.
           doflip = counterclockwise(farvertex, leftvertex, newvertex) > 0.0;
-        } else if ((farvertex == infvertex1) ||
+        } else if((farvertex == infvertex1) ||
                    (farvertex == infvertex2) ||
                    (farvertex == infvertex3)) {
           // `farvertex' is infinitely distant and cannot be inside
@@ -5811,7 +5811,7 @@ InserVvertexResult Mesh::insertvertex(Vertex    newvertex
           // Test whether the edge is locally Delaunay.
           doflip = incircle(leftvertex, newvertex, rightvertex, farvertex) > 0.0;
         }
-        if (doflip) {
+        if(doflip) {
           // We made it!  Flip the edge `horiz' by rotating its containing
           // quadrilateral (the two triangles adjacent to `horiz').
           // Identify the casing of the quadrilateral.
@@ -5828,28 +5828,28 @@ InserVvertexResult Mesh::insertvertex(Vertex    newvertex
           bond(botleft, botrcasing);
           bond(botright, toprcasing);
           bond(topright, toplcasing);
-          if (checksegments) {
+          if(checksegments) {
             // Check for subsegments and rebond them to the quadrilateral.
             tspivot(topleft, toplsubseg);
             tspivot(botleft, botlsubseg);
             tspivot(botright, botrsubseg);
             tspivot(topright, toprsubseg);
-            if (toplsubseg.ss == dummysub) {
+            if(toplsubseg.ss == dummysub) {
               tsdissolve(topright);
             } else {
               tsbond(topright, toplsubseg);
             }
-            if (botlsubseg.ss == dummysub) {
+            if(botlsubseg.ss == dummysub) {
               tsdissolve(topleft);
             } else {
               tsbond(topleft, botlsubseg);
             }
-            if (botrsubseg.ss == dummysub) {
+            if(botrsubseg.ss == dummysub) {
               tsdissolve(botleft);
             } else {
               tsbond(botleft, botrsubseg);
             }
-            if (toprsubseg.ss == dummysub) {
+            if(toprsubseg.ss == dummysub) {
               tsdissolve(botright);
             } else {
               tsbond(botright, toprsubseg);
@@ -5862,14 +5862,14 @@ InserVvertexResult Mesh::insertvertex(Vertex    newvertex
           setorg(top, newvertex);
           setdest(top, farvertex);
           setapex(top, leftvertex);
-          for (i = 0; i < eextras; i++) {
+          for(i = 0; i < eextras; i++) {
             // Take the average of the two triangles' attributes.
             attrib = 0.5 * (elemattribute(top, i) + elemattribute(horiz, i));
             setelemattribute(top, i, attrib);
             setelemattribute(horiz, i, attrib);
           }
-          if (m_b.vararea) {
-            if ((areabound(top) <= 0.0) || (areabound(horiz) <= 0.0)) {
+          if(m_b.vararea) {
+            if((areabound(top) <= 0.0) || (areabound(horiz) <= 0.0)) {
               area = -1.0;
             } else {
               // Take the average of the two triangles' area constraints.
@@ -5881,7 +5881,7 @@ InserVvertexResult Mesh::insertvertex(Vertex    newvertex
             setareabound(horiz, area);
           }
 
-          if (checkquality) {
+          if(checkquality) {
             newflip = flipstackers.alloc();
             newflip->flippedtri = encode(horiz);
             newflip->prevflip = lastflip;
@@ -5889,8 +5889,8 @@ InserVvertexResult Mesh::insertvertex(Vertex    newvertex
           }
 
 #ifdef SELF_CHECK
-          if (newvertex != NULL) {
-            if (counterclockwise(leftvertex, newvertex, rightvertex) < 0.0) {
+          if(newvertex != NULL) {
+            if(counterclockwise(leftvertex, newvertex, rightvertex) < 0.0) {
               printf("Internal error in insertvertex():\n");
               printf("  Clockwise Triangle prior to edge flip (bottom).\n");
             }
@@ -5898,22 +5898,22 @@ InserVvertexResult Mesh::insertvertex(Vertex    newvertex
             // sometimes generates inverted triangles that insertvertex()
             // removes.
 //
-            if (counterclockwise(rightvertex, farvertex, leftvertex) < 0.0) {
+            if(counterclockwise(rightvertex, farvertex, leftvertex) < 0.0) {
               printf("Internal error in insertvertex():\n");
               printf("  Clockwise Triangle prior to edge flip (top).\n");
             }
 
-            if (counterclockwise(farvertex, leftvertex, newvertex) < 0.0) {
+            if(counterclockwise(farvertex, leftvertex, newvertex) < 0.0) {
               printf("Internal error in insertvertex():\n");
               printf("  Clockwise Triangle after edge flip (left).\n");
             }
-            if (counterclockwise(newvertex, rightvertex, farvertex) < 0.0) {
+            if(counterclockwise(newvertex, rightvertex, farvertex) < 0.0) {
               printf("Internal error in insertvertex():\n");
               printf("  Clockwise Triangle after edge flip (right).\n");
             }
           }
 #endif // SELF_CHECK
-          if (m_b.verbose > 2) {
+          if(m_b.verbose > 2) {
             printf("  Edge flip results in left ");
             lnextself(topleft);
             printtriangle(&topleft);
@@ -5928,10 +5928,10 @@ InserVvertexResult Mesh::insertvertex(Vertex    newvertex
         }
       }
     }
-    if (!doflip) {
+    if(!doflip) {
       // The handle `horiz' is accepted as locally Delaunay.
 #ifndef CDT_ONLY
-      if (triflaws) {
+      if(triflaws) {
         // Check the Triangle `horiz' for quality.
         testtriangle(&horiz);
       }
@@ -5942,7 +5942,7 @@ InserVvertexResult Mesh::insertvertex(Vertex    newvertex
       // Check for finishing a complete revolution about the new Vertex, or
       // falling outside  of the triangulation. The latter will happen
       // when a Vertex is inserted at a boundary.
-      if ((leftvertex == first) || (testtri.tri == dummytri)) {
+      if((leftvertex == first) || (testtri.tri == dummytri)) {
         // We're done. Return a Triangle whose origin is the new Vertex.
         lnext(horiz, *searchtri);
         lnext(horiz, recenttri);
@@ -6038,7 +6038,7 @@ void Mesh::triangulatepolygon(otri     *firstedge
   // Identify the base vertices.
   apex(*lastedge, leftbasevertex);
   dest(*firstedge, rightbasevertex);
-  if (m_b.verbose > 2) {
+  if(m_b.verbose > 2) {
     _tprintf(_T("  Triangulating interior polygon at edge %s\n")
             ,edgeToString(leftbasevertex, rightbasevertex).cstr());
   }
@@ -6047,26 +6047,26 @@ void Mesh::triangulatepolygon(otri     *firstedge
   dest(besttri, bestvertex);
   otricopy(besttri, testtri);
   bestnumber = 1;
-  for (i = 2; i <= edgecount - 2; i++) {
+  for(i = 2; i <= edgecount - 2; i++) {
     onextself(testtri);
     dest(testtri, testvertex);
     // Is this a better Vertex?
-    if (incircle(leftbasevertex, rightbasevertex, bestvertex,
+    if(incircle(leftbasevertex, rightbasevertex, bestvertex,
                  testvertex) > 0.0) {
       otricopy(testtri, besttri);
       bestvertex = testvertex;
       bestnumber = i;
     }
   }
-  if (m_b.verbose > 2) {
+  if(m_b.verbose > 2) {
     _tprintf(_T("    Connecting edge to %s\n"), vertexToString(bestvertex).cstr());
   }
-  if (bestnumber > 1) {
+  if(bestnumber > 1) {
     // Recursively triangulate the smaller polygon on the right.
     oprev(besttri, tempedge);
     triangulatepolygon(firstedge, &tempedge, bestnumber + 1, 1, triflaws);
   }
-  if (bestnumber < edgecount - 2) {
+  if(bestnumber < edgecount - 2) {
     // Recursively triangulate the smaller polygon on the left.
     sym(besttri, tempedge);
     triangulatepolygon(&besttri, lastedge, edgecount - bestnumber, 1,
@@ -6074,11 +6074,11 @@ void Mesh::triangulatepolygon(otri     *firstedge
     // Find `besttri' again; it may have been lost to edge flips.
     sym(tempedge, besttri);
   }
-  if (doflip) {
+  if(doflip) {
     // Do one final edge flip.
     flip(&besttri);
 #ifndef CDT_ONLY
-    if (triflaws) {
+    if(triflaws) {
       // Check the quality of the newly committed Triangle.
       sym(besttri, testtri);
       testtriangle(&testtri);
@@ -6117,7 +6117,7 @@ void Mesh::deletevertex(otri *deltri) {
   SubSeg sptr;    // Temporary variable used by tspivot().
 
   org(*deltri, delvertex);
-  if (m_b.verbose > 1) {
+  if(m_b.verbose > 1) {
     _tprintf(_T("  Deleting %s\n"), vertexToString(delvertex).cstr());
   }
   vertexdealloc(delvertex);
@@ -6125,9 +6125,9 @@ void Mesh::deletevertex(otri *deltri) {
   // Count the degree of the Vertex being deleted.
   onext(*deltri, countingtri);
   edgecount = 1;
-  while (!otriequal(*deltri, countingtri)) {
+  while(!otriequal(*deltri, countingtri)) {
 #ifdef SELF_CHECK
-    if (countingtri.tri == dummytri) {
+    if(countingtri.tri == dummytri) {
       internalerror(__TFUNCTION__, _T("Attempt to delete boundary Vertex"));
     }
 #endif // SELF_CHECK
@@ -6136,11 +6136,11 @@ void Mesh::deletevertex(otri *deltri) {
   }
 
 #ifdef SELF_CHECK
-  if (edgecount < 3) {
+  if(edgecount < 3) {
     internalerror(__TFUNCTION__, _T("Vertex has degree %d"), edgecount);
   }
 #endif // SELF_CHECK
-  if (edgecount > 3) {
+  if(edgecount > 3) {
     // Triangulate the polygon defined by the union of all triangles
     // adjacent to the Vertex being deleted. Check the quality of the resulting triangles.
     onext(*deltri, firstedge);
@@ -6156,18 +6156,18 @@ void Mesh::deletevertex(otri *deltri) {
   bond(*deltri, leftcasing);
   bond(deltriright, rightcasing);
   tspivot(lefttri, leftsubseg);
-  if (leftsubseg.ss != dummysub) {
+  if(leftsubseg.ss != dummysub) {
     tsbond(*deltri, leftsubseg);
   }
   tspivot(righttri, rightsubseg);
-  if (rightsubseg.ss != dummysub) {
+  if(rightsubseg.ss != dummysub) {
     tsbond(deltriright, rightsubseg);
   }
 
   // Set the new origin of `deltri' and check its quality.
   org(lefttri, neworg);
   setorg(*deltri, neworg);
-  if (!m_b.nobisect) {
+  if(!m_b.nobisect) {
     testtriangle(deltri);
   }
 
@@ -6198,7 +6198,7 @@ void Mesh::undovertex() {
 
   // Walk through the list of transformations (flips and a Vertex insertion)
   // in the reverse of the order in which they were done, and undo them.
-  while (lastflip != NULL) {
+  while(lastflip != NULL) {
     // Find a Triangle involved in the last unreversed transformation.
     decode(lastflip->flippedtri, fliptri);
 
@@ -6206,7 +6206,7 @@ void Mesh::undovertex() {
     // Triangle into three (by inserting a Vertex in the Triangle), a
     // bisection of two triangles into four (by inserting a Vertex in an
     // edge), or an edge flip.
-    if (lastflip->prevflip == NULL) {
+    if(lastflip->prevflip == NULL) {
       // Restore a Triangle that was split into three triangles,
       // so it is again one Triangle.
       dprev(fliptri, botleft);
@@ -6230,7 +6230,7 @@ void Mesh::undovertex() {
       // Delete the two spliced-out triangles.
       triangledealloc(botleft.tri);
       triangledealloc(botright.tri);
-    } else if (lastflip->prevflip == FLIPSTACKER_MERGE4) {
+    } else if(lastflip->prevflip == FLIPSTACKER_MERGE4) {
       // Restore two triangles that were split into four triangles, so they are again two triangles.
       lprev(fliptri, gluetri);
       sym(gluetri, botright);
@@ -6247,7 +6247,7 @@ void Mesh::undovertex() {
       triangledealloc(botright.tri);
 
       sym(fliptri, gluetri);
-      if (gluetri.tri != dummytri) {
+      if(gluetri.tri != dummytri) {
         lnextself(gluetri);
         dnext(gluetri, topright);
         sym(topright, toprcasing);
@@ -6325,9 +6325,9 @@ void vertexsort(Vertex *sortarray, int arraysize) {
   REAL pivotx, pivoty;
   Vertex temp;
 
-  if (arraysize == 2) {
+  if(arraysize == 2) {
     // Recursive base case.
-    if ((sortarray[0][0] > sortarray[1][0]) ||
+    if((sortarray[0][0] > sortarray[1][0]) ||
         ((sortarray[0][0] == sortarray[1][0]) &&
          (sortarray[0][1] > sortarray[1][1]))) {
       temp = sortarray[1];
@@ -6343,31 +6343,31 @@ void vertexsort(Vertex *sortarray, int arraysize) {
   // Split the array.
   left = -1;
   right = arraysize;
-  while (left < right) {
+  while(left < right) {
     // Search for a Vertex whose x-coordinate is too large for the left.
     do {
       left++;
-    } while ((left <= right) && ((sortarray[left][0] < pivotx) ||
+    } while((left <= right) && ((sortarray[left][0] < pivotx) ||
                                  ((sortarray[left][0] == pivotx) &&
                                   (sortarray[left][1] < pivoty))));
     // Search for a Vertex whose x-coordinate is too small for the right.
     do {
       right--;
-    } while ((left <= right) && ((sortarray[right][0] > pivotx) ||
+    } while((left <= right) && ((sortarray[right][0] > pivotx) ||
                                  ((sortarray[right][0] == pivotx) &&
                                   (sortarray[right][1] > pivoty))));
-    if (left < right) {
+    if(left < right) {
       // Swap the left and right vertices.
       temp = sortarray[left];
       sortarray[left] = sortarray[right];
       sortarray[right] = temp;
     }
   }
-  if (left > 1) {
+  if(left > 1) {
     // Recursively sort the left subset.
     vertexsort(sortarray, left);
   }
-  if (right < arraysize - 2) {
+  if(right < arraysize - 2) {
     // Recursively sort the right subset.
     vertexsort(&sortarray[right + 1], arraysize - right - 1);
   }
@@ -6390,9 +6390,9 @@ void vertexmedian(Vertex *sortarray, int arraysize, int median, int axis) {
   REAL pivot1, pivot2;
   Vertex temp;
 
-  if (arraysize == 2) {
+  if(arraysize == 2) {
     // Recursive base case.
-    if ((sortarray[0][axis] > sortarray[1][axis]) ||
+    if((sortarray[0][axis] > sortarray[1][axis]) ||
         ((sortarray[0][axis] == sortarray[1][axis]) &&
          (sortarray[0][1 - axis] > sortarray[1][1 - axis]))) {
       temp = sortarray[1];
@@ -6408,20 +6408,20 @@ void vertexmedian(Vertex *sortarray, int arraysize, int median, int axis) {
   // Split the array.
   left = -1;
   right = arraysize;
-  while (left < right) {
+  while(left < right) {
     // Search for a Vertex whose x-coordinate is too large for the left.
     do {
       left++;
-    } while ((left <= right) && ((sortarray[left][axis] < pivot1) ||
+    } while((left <= right) && ((sortarray[left][axis] < pivot1) ||
                                  ((sortarray[left][axis] == pivot1) &&
                                   (sortarray[left][1 - axis] < pivot2))));
     // Search for a Vertex whose x-coordinate is too small for the right.
     do {
       right--;
-    } while ((left <= right) && ((sortarray[right][axis] > pivot1) ||
+    } while((left <= right) && ((sortarray[right][axis] > pivot1) ||
                                  ((sortarray[right][axis] == pivot1) &&
                                   (sortarray[right][1 - axis] > pivot2))));
-    if (left < right) {
+    if(left < right) {
       // Swap the left and right vertices.
       temp = sortarray[left];
       sortarray[left] = sortarray[right];
@@ -6429,11 +6429,11 @@ void vertexmedian(Vertex *sortarray, int arraysize, int median, int axis) {
     }
   }
   // Unlike in vertexsort(), at most one of the following conditionals is true.
-  if (left > median) {
+  if(left > median) {
     // Recursively shuffle the left subset.
     vertexmedian(sortarray, left, median, axis);
   }
-  if (right < median - 1) {
+  if(right < median - 1) {
     // Recursively shuffle the right subset.
     vertexmedian(&sortarray[right + 1], arraysize - right - 1, median - right - 1, axis);
   }
@@ -6453,7 +6453,7 @@ void alternateaxes(Vertex *sortarray, int arraysize, int axis) {
   int divider;
 
   divider = arraysize >> 1;
-  if (arraysize <= 3) {
+  if(arraysize <= 3) {
     // Recursive base case:  subsets of two or three vertices will be
     // handled specially, and should always be sorted by x-coordinate.
     axis = 0;
@@ -6461,8 +6461,8 @@ void alternateaxes(Vertex *sortarray, int arraysize, int axis) {
   // Partition with a horizontal or vertical cut.
   vertexmedian(sortarray, arraysize, divider, axis);
   // Recursively partition the subsets with a cross cut.
-  if (arraysize - divider >= 2) {
-    if (divider >= 2) {
+  if(arraysize - divider >= 2) {
+    if(divider >= 2) {
       alternateaxes(sortarray, divider, 1 - axis);
     }
     alternateaxes(&sortarray[divider], arraysize - divider, 1 - axis);
@@ -6533,7 +6533,7 @@ void Mesh::mergehulls(otri     *farleft
   org(*innerright, innerrightorg);
   apex(*innerright, innerrightapex);
   // Special treatment for horizontal cuts.
-  if (m_b.dwyer && (axis == 1)) {
+  if(m_b.dwyer && (axis == 1)) {
     org(*farleft, farleftpt);
     apex(*farleft, farleftapex);
     dest(*farright, farrightpt);
@@ -6541,7 +6541,7 @@ void Mesh::mergehulls(otri     *farleft
     // The pointers to the extremal vertices are shifted to point to the
     // topmost and bottommost Vertex of each hull, rather than the
     // leftmost and rightmost vertices.
-    while (farleftapex[1] < farleftpt[1]) {
+    while(farleftapex[1] < farleftpt[1]) {
       lnextself(*farleft);
       symself(*farleft);
       farleftpt = farleftapex;
@@ -6549,14 +6549,14 @@ void Mesh::mergehulls(otri     *farleft
     }
     sym(*innerleft, checkedge);
     apex(checkedge, checkvertex);
-    while (checkvertex[1] > innerleftdest[1]) {
+    while(checkvertex[1] > innerleftdest[1]) {
       lnext(checkedge, *innerleft);
       innerleftapex = innerleftdest;
       innerleftdest = checkvertex;
       sym(*innerleft, checkedge);
       apex(checkedge, checkvertex);
     }
-    while (innerrightapex[1] < innerrightorg[1]) {
+    while(innerrightapex[1] < innerrightorg[1]) {
       lnextself(*innerright);
       symself(*innerright);
       innerrightorg = innerrightapex;
@@ -6564,7 +6564,7 @@ void Mesh::mergehulls(otri     *farleft
     }
     sym(*farright, checkedge);
     apex(checkedge, checkvertex);
-    while (checkvertex[1] > farrightpt[1]) {
+    while(checkvertex[1] > farrightpt[1]) {
       lnext(checkedge, *farright);
       farrightapex = farrightpt;
       farrightpt = checkvertex;
@@ -6576,7 +6576,7 @@ void Mesh::mergehulls(otri     *farleft
   do {
     changemade = 0;
     // Make innerleftdest the "bottommost" Vertex of the left hull.
-    if (counterclockwise(innerleftdest, innerleftapex, innerrightorg) > 0.0) {
+    if(counterclockwise(innerleftdest, innerleftapex, innerrightorg) > 0.0) {
       lprevself(*innerleft);
       symself(*innerleft);
       innerleftdest = innerleftapex;
@@ -6584,14 +6584,14 @@ void Mesh::mergehulls(otri     *farleft
       changemade = 1;
     }
     // Make innerrightorg the "bottommost" Vertex of the right hull.
-    if (counterclockwise(innerrightapex, innerrightorg, innerleftdest) > 0.0) {
+    if(counterclockwise(innerrightapex, innerrightorg, innerleftdest) > 0.0) {
       lnextself(*innerright);
       symself(*innerright);
       innerrightorg = innerrightapex;
       apex(*innerright, innerrightapex);
       changemade = 1;
     }
-  } while (changemade);
+  } while(changemade);
   // Find the two candidates to be the next "gear tooth."
   sym(*innerleft, leftcand);
   sym(*innerright, rightcand);
@@ -6605,17 +6605,17 @@ void Mesh::mergehulls(otri     *farleft
   setorg(baseedge, innerrightorg);
   setdest(baseedge, innerleftdest);
   // Apex is intentionally left NULL.
-  if (m_b.verbose > 2) {
+  if(m_b.verbose > 2) {
     printf("  Creating base bounding ");
     printtriangle(&baseedge);
   }
   // Fix the extreme triangles if necessary.
   org(*farleft, farleftpt);
-  if (innerleftdest == farleftpt) {
+  if(innerleftdest == farleftpt) {
     lnext(baseedge, *farleft);
   }
   dest(*farright, farrightpt);
-  if (innerrightorg == farrightpt) {
+  if(innerrightorg == farrightpt) {
     lprev(baseedge, *farright);
   }
   // The vertices of the current knitting edge.
@@ -6625,14 +6625,14 @@ void Mesh::mergehulls(otri     *farleft
   apex(leftcand, upperleft);
   apex(rightcand, upperright);
   // Walk up the gap between the two triangulations, knitting them together.
-  while (1) {
+  while(1) {
     // Have we reached the top?  (This isn't quite the right question,
     // because even though the left triangulation might seem finished now,
     // moving up on the right triangulation might reveal a new Vertex of
     // the left triangulation. And vice-versa.)
     leftfinished = counterclockwise(upperleft, lowerleft, lowerright) <= 0.0;
     rightfinished = counterclockwise(upperright, lowerleft, lowerright) <= 0.0;
-    if (leftfinished && rightfinished) {
+    if(leftfinished && rightfinished) {
       // Create the top new bounding Triangle.
       maketriangle(&nextedge);
       setorg(nextedge, lowerleft);
@@ -6644,12 +6644,12 @@ void Mesh::mergehulls(otri     *farleft
       bond(nextedge, rightcand);
       lnextself(nextedge);
       bond(nextedge, leftcand);
-      if (m_b.verbose > 2) {
+      if(m_b.verbose > 2) {
         printf("  Creating top bounding ");
         printtriangle(&nextedge);
       }
       // Special treatment for horizontal cuts.
-      if (m_b.dwyer && (axis == 1)) {
+      if(m_b.dwyer && (axis == 1)) {
         org(*farleft, farleftpt);
         apex(*farleft, farleftapex);
         dest(*farright, farrightpt);
@@ -6659,14 +6659,14 @@ void Mesh::mergehulls(otri     *farleft
         // The pointers to the extremal vertices are restored to the
         // leftmost and rightmost vertices (rather than topmost and
         // bottommost).
-        while (checkvertex[0] < farleftpt[0]) {
+        while(checkvertex[0] < farleftpt[0]) {
           lprev(checkedge, *farleft);
           farleftapex = farleftpt;
           farleftpt = checkvertex;
           sym(*farleft, checkedge);
           apex(checkedge, checkvertex);
         }
-        while (farrightapex[0] > farrightpt[0]) {
+        while(farrightapex[0] > farrightpt[0]) {
           lprevself(*farright);
           symself(*farright);
           farrightpt = farrightapex;
@@ -6676,17 +6676,17 @@ void Mesh::mergehulls(otri     *farleft
       return;
     }
     // Consider eliminating edges from the left triangulation.
-    if (!leftfinished) {
+    if(!leftfinished) {
       // What Vertex would be exposed if an edge were deleted?
       lprev(leftcand, nextedge);
       symself(nextedge);
       apex(nextedge, nextapex);
       // If nextapex is NULL, then no Vertex would be exposed; the
       // triangulation would have been eaten right through.
-      if (nextapex != NULL) {
+      if(nextapex != NULL) {
         // Check whether the edge is Delaunay.
         badedge = incircle(lowerleft, lowerright, upperleft, nextapex) > 0.0;
-        while (badedge) {
+        while(badedge) {
           // Eliminate the edge with an edge flip. As a result,the
           // left triangulation will have one more boundary Triangle.
           lnextself(nextedge);
@@ -6711,7 +6711,7 @@ void Mesh::mergehulls(otri     *farleft
           // What Vertex would be exposed if another edge were deleted?
           otricopy(sidecasing, nextedge);
           apex(nextedge, nextapex);
-          if (nextapex != NULL) {
+          if(nextapex != NULL) {
             // Check whether the edge is Delaunay.
             badedge = incircle(lowerleft, lowerright, upperleft, nextapex) > 0.0;
           } else {
@@ -6722,17 +6722,17 @@ void Mesh::mergehulls(otri     *farleft
       }
     }
     // Consider eliminating edges from the right triangulation.
-    if (!rightfinished) {
+    if(!rightfinished) {
       // What Vertex would be exposed if an edge were deleted?
       lnext(rightcand, nextedge);
       symself(nextedge);
       apex(nextedge, nextapex);
       // If nextapex is NULL, then no Vertex would be exposed; the
       // triangulation would have been eaten right through.
-      if (nextapex != NULL) {
+      if(nextapex != NULL) {
         // Check whether the edge is Delaunay.
         badedge = incircle(lowerleft, lowerright, upperright, nextapex) > 0.0;
-        while (badedge) {
+        while(badedge) {
           // Eliminate the edge with an edge flip. As a result, the
           // right triangulation will have one more boundary Triangle.
           lprevself(nextedge);
@@ -6757,7 +6757,7 @@ void Mesh::mergehulls(otri     *farleft
           // What Vertex would be exposed if another edge were deleted?
           otricopy(sidecasing, nextedge);
           apex(nextedge, nextapex);
-          if (nextapex != NULL) {
+          if(nextapex != NULL) {
             // Check whether the edge is Delaunay.
             badedge = incircle(lowerleft, lowerright, upperright, nextapex) > 0.0;
           } else {
@@ -6767,7 +6767,7 @@ void Mesh::mergehulls(otri     *farleft
         }
       }
     }
-    if (leftfinished || (!rightfinished &&
+    if(leftfinished || (!rightfinished &&
            (incircle(upperleft, lowerleft, lowerright, upperright) > 0.0))) {
       // Knit the triangulations, adding an edge from `lowerleft' to `upperright'.
       bond(baseedge, rightcand);
@@ -6785,7 +6785,7 @@ void Mesh::mergehulls(otri     *farleft
       sym(baseedge, leftcand);
       apex(leftcand, upperleft);
     }
-    if (m_b.verbose > 2) {
+    if(m_b.verbose > 2) {
       printf("  Connecting ");
       printtriangle(&baseedge);
     }
@@ -6819,10 +6819,10 @@ void Mesh::divconqrecurse(Vertex   *sortarray
   REAL area;
   int divider;
 
-  if (m_b.verbose > 2) {
+  if(m_b.verbose > 2) {
     printf("  Triangulating %d vertices.\n", vertices);
   }
-  if (vertices == 2) {
+  if(vertices == 2) {
     // The triangulation of two vertices is an edge. An edge is
     // represented by two bounding triangles.
     maketriangle(farleft);
@@ -6840,7 +6840,7 @@ void Mesh::divconqrecurse(Vertex   *sortarray
     lprevself(*farleft);
     lnextself(*farright);
     bond(*farleft, *farright);
-    if (m_b.verbose > 2) {
+    if(m_b.verbose > 2) {
       printf("  Creating ");
       printtriangle(farleft);
       printf("  Creating ");
@@ -6849,7 +6849,7 @@ void Mesh::divconqrecurse(Vertex   *sortarray
     // Ensure that the origin of `farleft' is sortarray[0].
     lprev(*farright, *farleft);
     return;
-  } else if (vertices == 3) {
+  } else if(vertices == 3) {
     // The triangulation of three vertices is either a Triangle (with
     // three bounding triangles) or two edges (with four bounding
     // triangles). In either case, four triangles are created.
@@ -6858,7 +6858,7 @@ void Mesh::divconqrecurse(Vertex   *sortarray
     maketriangle(&tri2);
     maketriangle(&tri3);
     area = counterclockwise(sortarray[0], sortarray[1], sortarray[2]);
-    if (area == 0.0) {
+    if(area == 0.0) {
       // Three collinear vertices; the triangulation is two edges.
       setorg(midtri, sortarray[0]);
       setdest(midtri, sortarray[1]);
@@ -6893,7 +6893,7 @@ void Mesh::divconqrecurse(Vertex   *sortarray
       setdest(tri1, sortarray[0]);
       setorg(tri3, sortarray[0]);
       // Apices of tri1, tri2, and tri3 are left NULL.
-      if (area > 0.0) {
+      if(area > 0.0) {
         // The vertices are in counterclockwise order.
         setdest(midtri, sortarray[1]);
         setorg(tri1, sortarray[1]);
@@ -6928,13 +6928,13 @@ void Mesh::divconqrecurse(Vertex   *sortarray
       // Ensure that the origin of `farleft' is sortarray[0].
       otricopy(tri1, *farleft);
       // Ensure that the destination of `farright' is sortarray[2].
-      if (area > 0.0) {
+      if(area > 0.0) {
         otricopy(tri2, *farright);
       } else {
         lnext(*farleft, *farright);
       }
     }
-    if (m_b.verbose > 2) {
+    if(m_b.verbose > 2) {
       printf("  Creating ");
       printtriangle(&midtri);
       printf("  Creating ");
@@ -6951,7 +6951,7 @@ void Mesh::divconqrecurse(Vertex   *sortarray
     // Recursively triangulate each half.
     divconqrecurse(sortarray, divider, 1 - axis, farleft, &innerleft);
     divconqrecurse(&sortarray[divider], vertices - divider, 1 - axis, &innerright, farright);
-    if (m_b.verbose > 1) {
+    if(m_b.verbose > 1) {
       printf("  Joining triangulations with %d and %d vertices.\n", divider, vertices - divider);
     }
     // Merge the two triangulations into one.
@@ -6967,7 +6967,7 @@ long Mesh::removeghosts(otri *startghost) {
   long hullsize;
   Triangle ptr;                         // Temporary variable used by sym().
 
-  if (m_b.verbose) {
+  if(m_b.verbose) {
     printf("  Removing ghost triangles.\n");
   }
   // Find an edge on the convex hull to start point location from.
@@ -6984,11 +6984,11 @@ long Mesh::removeghosts(otri *startghost) {
     symself(dissolveedge);
     // If no PSLG is involved, set the boundary markers of all the vertices
     // on the convex hull. If a PSLG is used, this step is done later.
-    if (!m_b.poly) {
+    if(!m_b.poly) {
       // Watch out for the case where all the input vertices are collinear.
-      if (dissolveedge.tri != dummytri) {
+      if(dissolveedge.tri != dummytri) {
         org(dissolveedge, markorg);
-        if (vertexmark(markorg) == 0) {
+        if(vertexmark(markorg) == 0) {
           setvertexmark(markorg, 1);
         }
       }
@@ -6999,7 +6999,7 @@ long Mesh::removeghosts(otri *startghost) {
     sym(deadtriangle, dissolveedge);
     // Delete the bounding Triangle.
     triangledealloc(deadtriangle.tri);
-  } while (!otriequal(dissolveedge, *startghost));
+  } while(!otriequal(dissolveedge, *startghost));
   return hullsize;
 }
 
@@ -7018,23 +7018,23 @@ long Mesh::divconqdelaunay() {
   int divider;
   int i, j;
 
-  if (m_b.verbose) {
+  if(m_b.verbose) {
     printf("  Sorting vertices.\n");
   }
 
   // Allocate an array of pointers to vertices for sorting.
   sortarray = MALLOC(Vertex, invertices);
   vertices.traversalinit();
-  for (i = 0; i < invertices; i++) {
+  for(i = 0; i < invertices; i++) {
     sortarray[i] = vertextraverse();
   }
   // Sort the vertices.
   vertexsort(sortarray, invertices);
   // Discard duplicate vertices, which can really mess up the algorithm.
   i = 0;
-  for (j = 1; j < invertices; j++) {
-    if ((sortarray[i][0] == sortarray[j][0]) && (sortarray[i][1] == sortarray[j][1])) {
-      if (!m_b.quiet) {
+  for(j = 1; j < invertices; j++) {
+    if((sortarray[i][0] == sortarray[j][0]) && (sortarray[i][1] == sortarray[j][1])) {
+      if(!m_b.quiet) {
         duplicateVertexWarning(sortarray[j]);
       }
       setvertextype(sortarray[j], UNDEADVERTEX);
@@ -7045,18 +7045,18 @@ long Mesh::divconqdelaunay() {
     }
   }
   i++;
-  if (m_b.dwyer) {
+  if(m_b.dwyer) {
     // Re-sort the array of vertices to accommodate alternating cuts.
     divider = i >> 1;
-    if (i - divider >= 2) {
-      if (divider >= 2) {
+    if(i - divider >= 2) {
+      if(divider >= 2) {
         alternateaxes(sortarray, divider, 1);
       }
       alternateaxes(&sortarray[divider], i - divider, 1);
     }
   }
 
-  if (m_b.verbose) {
+  if(m_b.verbose) {
     printf("  Forming triangulation.\n");
   }
 
@@ -7085,15 +7085,15 @@ void Mesh::boundingbox() {
   otri inftri;          // Handle for the triangular bounding box.
   REAL width;
 
-  if (m_b.verbose) {
+  if(m_b.verbose) {
     printf("  Creating triangular bounding box.\n");
   }
   // Find the width (or height, whichever is larger) of the triangulation.
   width = xmax - xmin;
-  if (ymax - ymin > width) {
+  if(ymax - ymin > width) {
     width = ymax - ymin;
   }
-  if (width == 0.0) {
+  if(width == 0.0) {
     width = 1.0;
   }
   // Create the vertices of the bounding box.
@@ -7115,7 +7115,7 @@ void Mesh::boundingbox() {
   // Link dummytri to the bounding box so we can always find an
   // edge to begin searching (point location) from.
   dummytri[0] = (Triangle) inftri.tri;
-  if (m_b.verbose > 2) {
+  if(m_b.verbose > 2) {
     printf("  Creating ");
     printtriangle(&inftri);
   }
@@ -7143,7 +7143,7 @@ long Mesh::removebox() {
   long hullsize;
   Triangle ptr;                         // Temporary variable used by sym().
 
-  if (m_b.verbose) {
+  if(m_b.verbose) {
     printf("  Removing triangular bounding box.\n");
   }
   // Find a boundary Triangle.
@@ -7162,7 +7162,7 @@ long Mesh::removebox() {
   // adjacent to the first one.
   lnext(nextedge, checkedge);
   symself(checkedge);
-  if (checkedge.tri == dummytri) {
+  if(checkedge.tri == dummytri) {
     // Go on to the next Triangle. There are only three boundary
     // triangles, and this next Triangle cannot be the third one,
     // so it's safe to stop here.
@@ -7173,20 +7173,20 @@ long Mesh::removebox() {
   // edge lies on a bounding box Triangle and will be deleted.
   dummytri[0] = encode(searchedge);
   hullsize = -2l;
-  while (!otriequal(nextedge, finaledge)) {
+  while(!otriequal(nextedge, finaledge)) {
     hullsize++;
     lprev(nextedge, dissolveedge);
     symself(dissolveedge);
     // If not using a PSLG, the vertices should be marked now.
     // (If using a PSLG, markhull() will do the job.)
-    if (!m_b.poly) {
+    if(!m_b.poly) {
       // Be careful!  One must check for the case where all the input
       // vertices are collinear, and thus all the triangles are part of
       // the bounding box. Otherwise, the setvertexmark() call below
       // will cause a bad pointer reference.
-      if (dissolveedge.tri != dummytri) {
+      if(dissolveedge.tri != dummytri) {
         org(dissolveedge, markorg);
-        if (vertexmark(markorg) == 0) {
+        if(vertexmark(markorg) == 0) {
           setvertexmark(markorg, 1);
         }
       }
@@ -7198,7 +7198,7 @@ long Mesh::removebox() {
     // Get rid of the bounding box Triangle.
     triangledealloc(deadtriangle.tri);
     // Do we need to turn the corner?
-    if (nextedge.tri == dummytri) {
+    if(nextedge.tri == dummytri) {
       // Turn the corner.
       otricopy(dissolveedge, nextedge);
     }
@@ -7226,15 +7226,15 @@ long Mesh::incrementaldelaunay() {
 
   // Create a triangular bounding box.
   boundingbox();
-  if (m_b.verbose) {
+  if(m_b.verbose) {
     printf("  Incrementally inserting vertices.\n");
   }
   vertices.traversalinit();
   vertexloop = vertextraverse();
-  while (vertexloop != NULL) {
+  while(vertexloop != NULL) {
     starttri.tri = dummytri;
-    if (insertvertex(vertexloop, &starttri, NULL, 0, 0) == DUPLICATEVERTEX) {
-      if (!m_b.quiet) {
+    if(insertvertex(vertexloop, &starttri, NULL, 0, 0) == DUPLICATEVERTEX) {
+      if(!m_b.quiet) {
         duplicateVertexWarning(vertexloop);
       }
       setvertextype(vertexloop, UNDEADVERTEX);
@@ -7256,9 +7256,9 @@ void eventheapinsert(Event **heap, int heapsize, Event *newevent) {
   eventy = newevent->ykey;
   eventnum = heapsize;
   notdone = eventnum > 0;
-  while (notdone) {
+  while(notdone) {
     parent = (eventnum - 1) >> 1;
-    if ((heap[parent]->ykey < eventy) ||
+    if((heap[parent]->ykey < eventy) ||
         ((heap[parent]->ykey == eventy)
          && (heap[parent]->xkey <= eventx))) {
       notdone = 0;
@@ -7286,8 +7286,8 @@ void eventheapify(Event **heap, int heapsize, int eventnum) {
   eventy = thisevent->ykey;
   leftchild = 2 * eventnum + 1;
   notdone = leftchild < heapsize;
-  while (notdone) {
-    if ((heap[leftchild]->ykey < eventy) ||
+  while(notdone) {
+    if((heap[leftchild]->ykey < eventy) ||
         ((heap[leftchild]->ykey == eventy)
          && (heap[leftchild]->xkey < eventx))) {
       smallest = leftchild;
@@ -7295,14 +7295,14 @@ void eventheapify(Event **heap, int heapsize, int eventnum) {
       smallest = eventnum;
     }
     rightchild = leftchild + 1;
-    if (rightchild < heapsize) {
-      if ((heap[rightchild]->ykey < heap[smallest]->ykey) ||
+    if(rightchild < heapsize) {
+      if((heap[rightchild]->ykey < heap[smallest]->ykey) ||
           ((heap[rightchild]->ykey == heap[smallest]->ykey)
            && (heap[rightchild]->xkey < heap[smallest]->xkey))) {
         smallest = rightchild;
       }
     }
-    if (smallest == eventnum) {
+    if(smallest == eventnum) {
       notdone = 0;
     } else {
       heap[eventnum] = heap[smallest];
@@ -7324,12 +7324,12 @@ void eventheapdelete(Event **heap, int heapsize, int eventnum) {
   int notdone;
 
   moveevent = heap[heapsize - 1];
-  if (eventnum > 0) {
+  if(eventnum > 0) {
     eventx = moveevent->xkey;
     eventy = moveevent->ykey;
     do {
       parent = (eventnum - 1) >> 1;
-      if ((heap[parent]->ykey < eventy) ||
+      if((heap[parent]->ykey < eventy) ||
           ((heap[parent]->ykey == eventy)
            && (heap[parent]->xkey <= eventx))) {
         notdone = 0;
@@ -7340,7 +7340,7 @@ void eventheapdelete(Event **heap, int heapsize, int eventnum) {
         eventnum = parent;
         notdone = eventnum > 0;
       }
-    } while (notdone);
+    } while(notdone);
   }
   heap[eventnum] = moveevent;
   moveevent->heapposition = eventnum;
@@ -7356,7 +7356,7 @@ void Mesh::createeventheap(Event ***eventheap, Event **events, Event **freeevent
   *eventheap = MALLOC(Event*, maxevents);
   *events = MALLOC(Event, maxevents);
   vertices.traversalinit();
-  for (i = 0; i < invertices; i++) {
+  for(i = 0; i < invertices; i++) {
     thisvertex = vertextraverse();
     (*events)[i].eventptr = (VOID *) thisvertex;
     (*events)[i].xkey = thisvertex[0];
@@ -7364,7 +7364,7 @@ void Mesh::createeventheap(Event ***eventheap, Event **events, Event **freeevent
     eventheapinsert(*eventheap, i, *events + i);
   }
   *freeevents = NULL;
-  for (i = maxevents - 1; i >= invertices; i--) {
+  for(i = maxevents - 1; i >= invertices; i--) {
     (*events)[i].eventptr = (VOID *) *freeevents;
     *freeevents = *events + i;
   }
@@ -7378,14 +7378,14 @@ int Mesh::rightofhyperbola(otri *fronttri, Vertex newsite) {
 
   dest(*fronttri, leftvertex);
   apex(*fronttri, rightvertex);
-  if ((leftvertex[1] < rightvertex[1]) ||
+  if((leftvertex[1] < rightvertex[1]) ||
       ((leftvertex[1] == rightvertex[1]) &&
        (leftvertex[0] < rightvertex[0]))) {
-    if (newsite[0] >= rightvertex[0]) {
+    if(newsite[0] >= rightvertex[0]) {
       return 1;
     }
   } else {
-    if (newsite[0] <= leftvertex[0]) {
+    if(newsite[0] <= leftvertex[0]) {
       return 0;
     }
   }
@@ -7421,7 +7421,7 @@ void check4deadevent(otri *checktri, Event **freeevents, Event **eventheap, int 
   int eventnum;
 
   org(*checktri, eventvertex);
-  if (eventvertex != NULL) {
+  if(eventvertex != NULL) {
     deadevent = (Event*) eventvertex;
     eventnum = deadevent->heapposition;
     deadevent->eventptr = (VOID *) *freeevents;
@@ -7439,26 +7439,26 @@ SplayNode *Mesh::splay(SplayNode *splaytree, Vertex searchpoint, otri *searchtri
   Vertex checkvertex;
   int rightofroot, rightofchild;
 
-  if (splaytree == NULL) {
+  if(splaytree == NULL) {
     return NULL;
   }
   dest(splaytree->keyedge, checkvertex);
-  if (checkvertex == splaytree->keydest) {
+  if(checkvertex == splaytree->keydest) {
     rightofroot = rightofhyperbola(&splaytree->keyedge, searchpoint);
-    if (rightofroot) {
+    if(rightofroot) {
       otricopy(splaytree->keyedge, *searchtri);
       child = splaytree->rchild;
     } else {
       child = splaytree->lchild;
     }
-    if (child == NULL) {
+    if(child == NULL) {
       return splaytree;
     }
     dest(child->keyedge, checkvertex);
-    if (checkvertex != child->keydest) {
+    if(checkvertex != child->keydest) {
       child = splay(child, searchpoint, searchtri);
-      if (child == NULL) {
-        if (rightofroot) {
+      if(child == NULL) {
+        if(rightofroot) {
           splaytree->rchild = NULL;
         } else {
           splaytree->lchild = NULL;
@@ -7467,7 +7467,7 @@ SplayNode *Mesh::splay(SplayNode *splaytree, Vertex searchpoint, otri *searchtri
       }
     }
     rightofchild = rightofhyperbola(&child->keyedge, searchpoint);
-    if (rightofchild) {
+    if(rightofchild) {
       otricopy(child->keyedge, *searchtri);
       grandchild = splay(child->rchild, searchpoint, searchtri);
       child->rchild = grandchild;
@@ -7475,8 +7475,8 @@ SplayNode *Mesh::splay(SplayNode *splaytree, Vertex searchpoint, otri *searchtri
       grandchild = splay(child->lchild, searchpoint, searchtri);
       child->lchild = grandchild;
     }
-    if (grandchild == NULL) {
-      if (rightofroot) {
+    if(grandchild == NULL) {
+      if(rightofroot) {
         splaytree->rchild = child->lchild;
         child->lchild = splaytree;
       } else {
@@ -7485,8 +7485,8 @@ SplayNode *Mesh::splay(SplayNode *splaytree, Vertex searchpoint, otri *searchtri
       }
       return child;
     }
-    if (rightofchild) {
-      if (rightofroot) {
+    if(rightofchild) {
+      if(rightofroot) {
         splaytree->rchild = child->lchild;
         child->lchild = splaytree;
       } else {
@@ -7496,7 +7496,7 @@ SplayNode *Mesh::splay(SplayNode *splaytree, Vertex searchpoint, otri *searchtri
       child->rchild = grandchild->lchild;
       grandchild->lchild = child;
     } else {
-      if (rightofroot) {
+      if(rightofroot) {
         splaytree->rchild = grandchild->lchild;
         grandchild->lchild = splaytree;
       } else {
@@ -7512,22 +7512,22 @@ SplayNode *Mesh::splay(SplayNode *splaytree, Vertex searchpoint, otri *searchtri
     righttree = splay(splaytree->rchild, searchpoint, searchtri);
 
     splaynodes.dealloc(splaytree);
-    if (lefttree == NULL) {
+    if(lefttree == NULL) {
       return righttree;
-    } else if (righttree == NULL) {
+    } else if(righttree == NULL) {
       return lefttree;
-    } else if (lefttree->rchild == NULL) {
+    } else if(lefttree->rchild == NULL) {
       lefttree->rchild = righttree->lchild;
       righttree->lchild = lefttree;
       return righttree;
-    } else if (righttree->lchild == NULL) {
+    } else if(righttree->lchild == NULL) {
       righttree->lchild = lefttree->rchild;
       lefttree->rchild = righttree;
       return lefttree;
     } else {
 //      printf("Holy Toledo!!!\n");
       leftright = lefttree->rchild;
-      while (leftright->rchild != NULL) {
+      while(leftright->rchild != NULL) {
         leftright = leftright->rchild;
       }
       leftright->rchild = righttree;
@@ -7542,10 +7542,10 @@ SplayNode *Mesh::splayinsert(SplayNode *splayroot, otri *newkey, Vertex searchpo
   newsplaynode = splaynodes.alloc();
   otricopy(*newkey, newsplaynode->keyedge);
   dest(*newkey, newsplaynode->keydest);
-  if (splayroot == NULL) {
+  if(splayroot == NULL) {
     newsplaynode->lchild = NULL;
     newsplaynode->rchild = NULL;
-  } else if (rightofhyperbola(&splayroot->keyedge, searchpoint)) {
+  } else if(rightofhyperbola(&splayroot->keyedge, searchpoint)) {
     newsplaynode->lchild = splayroot;
     newsplaynode->rchild = splayroot->rchild;
     splayroot->rchild = NULL;
@@ -7590,7 +7590,7 @@ SplayNode *Mesh::frontlocate(SplayNode *splayroot,
   splayroot = splay(splayroot, searchvertex, searchtri);
 
   farrightflag = 0;
-  while (!farrightflag && rightofhyperbola(searchtri, searchvertex)) {
+  while(!farrightflag && rightofhyperbola(searchtri, searchvertex)) {
     onextself(*searchtri);
     farrightflag = otriequal(*searchtri, *bottommost);
   }
@@ -7622,13 +7622,13 @@ long Mesh::sweeplinedelaunay() {
   splaynodes.poolinit(sizeof(SplayNode), SPLAYNODEPERBLOCK, SPLAYNODEPERBLOCK, 0);
   splayroot = NULL;
 
-  if (m_b.verbose) {
+  if(m_b.verbose) {
     printf("  Placing vertices in event heap.\n");
   }
   createeventheap(&eventheap, &events, &freeevents);
   heapsize = invertices;
 
-  if (m_b.verbose) {
+  if(m_b.verbose) {
     printf("  Forming triangulation.\n");
   }
   maketriangle(&lefttri);
@@ -7646,7 +7646,7 @@ long Mesh::sweeplinedelaunay() {
   eventheapdelete(eventheap, heapsize, 0);
   heapsize--;
   do {
-    if (heapsize == 0) {
+    if(heapsize == 0) {
       triError(_T("Input vertices are all identical"));
     }
     secondvertex = (Vertex) eventheap[0]->eventptr;
@@ -7654,15 +7654,15 @@ long Mesh::sweeplinedelaunay() {
     freeevents = eventheap[0];
     eventheapdelete(eventheap, heapsize, 0);
     heapsize--;
-    if ((firstvertex[0] == secondvertex[0]) &&
+    if((firstvertex[0] == secondvertex[0]) &&
         (firstvertex[1] == secondvertex[1])) {
-      if (!m_b.quiet) {
+      if(!m_b.quiet) {
         duplicateVertexWarning(secondvertex);
       }
       setvertextype(secondvertex, UNDEADVERTEX);
       undeads++;
     }
-  } while ((firstvertex[0] == secondvertex[0]) &&
+  } while((firstvertex[0] == secondvertex[0]) &&
            (firstvertex[1] == secondvertex[1]));
   setorg(lefttri, firstvertex);
   setdest(lefttri, secondvertex);
@@ -7670,19 +7670,19 @@ long Mesh::sweeplinedelaunay() {
   setdest(righttri, firstvertex);
   lprev(lefttri, bottommost);
   lastvertex = secondvertex;
-  while (heapsize > 0) {
+  while(heapsize > 0) {
     nextevent = eventheap[0];
     eventheapdelete(eventheap, heapsize, 0);
     heapsize--;
     check4events = 1;
-    if (nextevent->xkey < xmin) {
+    if(nextevent->xkey < xmin) {
       decode(nextevent->eventptr, fliptri);
       oprev(fliptri, farlefttri);
       check4deadevent(&farlefttri, &freeevents, eventheap, &heapsize);
       onext(fliptri, farrighttri);
       check4deadevent(&farrighttri, &freeevents, eventheap, &heapsize);
 
-      if (otriequal(farlefttri, bottommost)) {
+      if(otriequal(farlefttri, bottommost)) {
         lprev(fliptri, bottommost);
       }
       flip(&fliptri);
@@ -7691,7 +7691,7 @@ long Mesh::sweeplinedelaunay() {
       lnext(fliptri, righttri);
       sym(lefttri, farlefttri);
 
-      if (randInt(SAMPLERATE) == 0) {
+      if(randInt(SAMPLERATE) == 0) {
         symself(fliptri);
         dest(fliptri, leftvertex);
         apex(fliptri, midvertex);
@@ -7700,8 +7700,8 @@ long Mesh::sweeplinedelaunay() {
       }
     } else {
       nextvertex = (Vertex) nextevent->eventptr;
-      if ((nextvertex[0] == lastvertex[0]) && (nextvertex[1] == lastvertex[1])) {
-        if (!m_b.quiet) {
+      if((nextvertex[0] == lastvertex[0]) && (nextvertex[1] == lastvertex[1])) {
+        if(!m_b.quiet) {
           duplicateVertexWarning(nextvertex);
         }
         setvertextype(nextvertex, UNDEADVERTEX);
@@ -7714,7 +7714,7 @@ long Mesh::sweeplinedelaunay() {
 //
         otricopy(bottommost, searchtri);
         farrightflag = 0;
-        while (!farrightflag && rightofhyperbola(&searchtri, nextvertex)) {
+        while(!farrightflag && rightofhyperbola(&searchtri, nextvertex)) {
           onextself(searchtri);
           farrightflag = otriequal(searchtri, bottommost);
         }
@@ -7739,13 +7739,13 @@ long Mesh::sweeplinedelaunay() {
         lprevself(righttri);
         bond(lefttri, farlefttri);
         bond(righttri, farrighttri);
-        if (!farrightflag && otriequal(farrighttri, bottommost)) {
+        if(!farrightflag && otriequal(farrighttri, bottommost)) {
           otricopy(lefttri, bottommost);
         }
 
-        if (randInt(SAMPLERATE) == 0) {
+        if(randInt(SAMPLERATE) == 0) {
           splayroot = splayinsert(splayroot, &lefttri, nextvertex);
-        } else if (randInt(SAMPLERATE) == 0) {
+        } else if(randInt(SAMPLERATE) == 0) {
           lnext(righttri, inserttri);
           splayroot = splayinsert(splayroot, &inserttri, nextvertex);
         }
@@ -7754,12 +7754,12 @@ long Mesh::sweeplinedelaunay() {
     nextevent->eventptr = (VOID *) freeevents;
     freeevents = nextevent;
 
-    if (check4events) {
+    if(check4events) {
       apex(farlefttri, leftvertex);
       dest(lefttri, midvertex);
       apex(lefttri, rightvertex);
       lefttest = counterclockwise(leftvertex, midvertex, rightvertex);
-      if (lefttest > 0.0) {
+      if(lefttest > 0.0) {
         newevent = freeevents;
         freeevents = (Event *) freeevents->eventptr;
         newevent->xkey = xminextreme;
@@ -7773,7 +7773,7 @@ long Mesh::sweeplinedelaunay() {
       org(righttri, midvertex);
       apex(farrighttri, rightvertex);
       righttest = counterclockwise(leftvertex, midvertex, rightvertex);
-      if (righttest > 0.0) {
+      if(righttest > 0.0) {
         newevent = freeevents;
         freeevents = (Event *) freeevents->eventptr;
         newevent->xkey = xminextreme;
@@ -7803,31 +7803,31 @@ long Mesh::delaunay() {
   initializetrisubpools();
 
 #ifdef REDUCED
-  if (!m_b.quiet) {
+  if(!m_b.quiet) {
     printf("Constructing Delaunay triangulation by divide-and-conquer method.\n");
   }
   hulledges = divconqdelaunay();
 #else // not REDUCED
-  if (!m_b.quiet) {
+  if(!m_b.quiet) {
     printf("Constructing Delaunay triangulation ");
-    if (m_b.incremental) {
+    if(m_b.incremental) {
       printf("by incremental method.\n");
-    } else if (m_b.sweepline) {
+    } else if(m_b.sweepline) {
       printf("by sweepline method.\n");
     } else {
       printf("by divide-and-conquer method.\n");
     }
   }
-  if (m_b.incremental) {
+  if(m_b.incremental) {
     hulledges = incrementaldelaunay();
-  } else if (m_b.sweepline) {
+  } else if(m_b.sweepline) {
     hulledges = sweeplinedelaunay();
   } else {
     hulledges = divconqdelaunay();
   }
 #endif // not REDUCED
 
-  if (triangles.getItems() == 0) {
+  if(triangles.getItems() == 0) {
     // The input vertices were all collinear, so there are no triangles.
     return 0l;
   } else {
@@ -7943,7 +7943,7 @@ long Mesh::reconstruct(char     *elefilename
     }
   }
   stringptr = findfield(stringptr);
-  if (*stringptr == '\0') {
+  if(*stringptr == '\0') {
     eextras = 0;
   } else {
     eextras = (int) strtol(stringptr, &stringptr, 0);
@@ -7953,14 +7953,14 @@ long Mesh::reconstruct(char     *elefilename
   initializetrisubpools();
 
   // Create the triangles.
-  for (elementnumber = 1; elementnumber <= inelements; elementnumber++) {
+  for(elementnumber = 1; elementnumber <= inelements; elementnumber++) {
     maketriangle(&triangleloop);
     // Mark the Triangle as living.
     triangleloop.tri[3] = (Triangle) triangleloop.tri;
   }
 
   segmentmarkers = 0;
-  if (m_b.poly) {
+  if(m_b.poly) {
 #ifdef TRILIBRARY
     insegments = numberofsegments;
     segmentmarkers = segmentmarkerlist != NULL;
@@ -7969,13 +7969,13 @@ long Mesh::reconstruct(char     *elefilename
     stringptr = readline(inputline, polyfile, m_b.inpolyfilename);
     insegments = (int) strtol(stringptr, &stringptr, 0);
     stringptr = findfield(stringptr);
-    if (*stringptr != '\0') {
+    if(*stringptr != '\0') {
       segmentmarkers = (int) strtol(stringptr, &stringptr, 0);
     }
 #endif // not TRILIBRARY
 
     // Create the subsegments.
-    for (segmentnumber = 1; segmentnumber <= insegments; segmentnumber++) {
+    for(segmentnumber = 1; segmentnumber <= insegments; segmentnumber++) {
       makesubseg(&subsegloop);
       // Mark the subsegment as living.
       subsegloop.ss[2] = (SubSeg) subsegloop.ss;
@@ -7986,21 +7986,21 @@ long Mesh::reconstruct(char     *elefilename
   vertexindex = 0;
   attribindex = 0;
 #else // not TRILIBRARY
-  if (m_b.vararea) {
+  if(m_b.vararea) {
     // Open an .area file, check for consistency with the .ele file.
-    if (!m_b.quiet) {
+    if(!m_b.quiet) {
       printf("Opening %s.\n", areafilename);
     }
     areafile = FOPEN(areafilename, "r");
     stringptr = readline(inputline, areafile, areafilename);
     areaelements = (int) strtol(stringptr, &stringptr, 0);
-    if (areaelements != inelements) {
+    if(areaelements != inelements) {
       triError(_T("%s and %s disagree on number of triangles"), String(elefilename).cstr(), String(areafilename).cstr());
     }
   }
 #endif // not TRILIBRARY
 
-  if (!m_b.quiet) {
+  if(!m_b.quiet) {
     printf("Reconstructing mesh.\n");
   }
   // Allocate a temporary array that maps each Vertex to some adjacent
@@ -8008,11 +8008,11 @@ long Mesh::reconstruct(char     *elefilename
   // triangles and subsegments first.
   vertexarray = MALLOC(Triangle, vertices.getItems());
   // Each Vertex is initially unrepresented.
-  for (i = 0; i < vertices.getItems(); i++) {
+  for(i = 0; i < vertices.getItems(); i++) {
     vertexarray[i] = (Triangle) dummytri;
   }
 
-  if (m_b.verbose) {
+  if(m_b.verbose) {
     printf("  Assembling triangles.\n");
   }
   // Read the triangles from the .ele file, and link
@@ -8020,21 +8020,21 @@ long Mesh::reconstruct(char     *elefilename
   triangles.traversalinit();
   triangleloop.tri = triangletraverse();
   elementnumber = m_b.firstnumber;
-  while (triangleloop.tri != NULL) {
+  while(triangleloop.tri != NULL) {
 #ifdef TRILIBRARY
     // Copy the Triangle's three corners.
-    for (j = 0; j < 3; j++) {
+    for(j = 0; j < 3; j++) {
       corner[j] = trianglelist[vertexindex++];
-      if ((corner[j] < m_b.firstnumber) || (corner[j] >= m_b.firstnumber + invertices)) {
+      if((corner[j] < m_b.firstnumber) || (corner[j] >= m_b.firstnumber + invertices)) {
         triError(_T("Triangle %ld has an invalid Vertex index"), elementnumber);
       }
     }
 #else // not TRILIBRARY
     // Read Triangle number and the Triangle's three corners.
     stringptr = readline(inputline, elefile, elefilename);
-    for (j = 0; j < 3; j++) {
+    for(j = 0; j < 3; j++) {
       stringptr = findfield(stringptr);
-      if (*stringptr == '\0') {
+      if(*stringptr == '\0') {
         triError(_T("Triangle %ld is missing Vertex %d in %s"), elementnumber, j + 1, String(elefilename).cstr());
       } else {
         corner[j] = (int) strtol(stringptr, &stringptr, 0);
@@ -8046,19 +8046,19 @@ long Mesh::reconstruct(char     *elefilename
 #endif // not TRILIBRARY
 
     // Find out about (and throw away) extra nodes.
-    for (j = 3; j < incorners; j++) {
+    for(j = 3; j < incorners; j++) {
 #ifdef TRILIBRARY
       killvertexindex = trianglelist[vertexindex++];
 #else // not TRILIBRARY
       stringptr = findfield(stringptr);
-      if (*stringptr != '\0') {
+      if(*stringptr != '\0') {
         killvertexindex = (int) strtol(stringptr, &stringptr, 0);
 #endif // not TRILIBRARY
-        if ((killvertexindex >= m_b.firstnumber) &&
+        if((killvertexindex >= m_b.firstnumber) &&
             (killvertexindex < m_b.firstnumber + invertices)) {
           // Delete the non-corner Vertex if it's not already deleted.
           killvertex = getvertex(killvertexindex);
-          if (vertextype(killvertex) != DEADVERTEX) {
+          if(vertextype(killvertex) != DEADVERTEX) {
             vertexdealloc(killvertex);
           }
         }
@@ -8068,12 +8068,12 @@ long Mesh::reconstruct(char     *elefilename
     }
 
     // Read the Triangle's attributes.
-    for (j = 0; j < eextras; j++) {
+    for(j = 0; j < eextras; j++) {
 #ifdef TRILIBRARY
       setelemattribute(triangleloop, j, triangleattriblist[attribindex++]);
 #else // not TRILIBRARY
       stringptr = findfield(stringptr);
-      if (*stringptr == '\0') {
+      if(*stringptr == '\0') {
         setelemattribute(triangleloop, j, 0);
       } else {
         setelemattribute(triangleloop, j, (REAL) strtod(stringptr, &stringptr));
@@ -8081,14 +8081,14 @@ long Mesh::reconstruct(char     *elefilename
 #endif // not TRILIBRARY
     }
 
-    if (m_b.vararea) {
+    if(m_b.vararea) {
 #ifdef TRILIBRARY
       area = trianglearealist[elementnumber - m_b.firstnumber];
 #else // not TRILIBRARY
       // Read an area constraint from the .area file.
       stringptr = readline(inputline, areafile, areafilename);
       stringptr = findfield(stringptr);
-      if (*stringptr == '\0') {
+      if(*stringptr == '\0') {
         area = -1.0;                      // No constraint on this Triangle.
       } else {
         area = (REAL) strtod(stringptr, &stringptr);
@@ -8103,7 +8103,7 @@ long Mesh::reconstruct(char     *elefilename
     setdest(triangleloop, getvertex(corner[1]));
     setapex(triangleloop, getvertex(corner[2]));
     // Try linking the Triangle to others that share these vertices.
-    for (triangleloop.orient = 0; triangleloop.orient < 3; triangleloop.orient++) {
+    for(triangleloop.orient = 0; triangleloop.orient < 3; triangleloop.orient++) {
       // Take the number for the origin of triangleloop.
       aroundvertex = corner[triangleloop.orient];
       // Look for other triangles having this Vertex.
@@ -8113,19 +8113,19 @@ long Mesh::reconstruct(char     *elefilename
       // Push the current Triangle onto the stack.
       vertexarray[aroundvertex - m_b.firstnumber] = encode(triangleloop);
       decode(nexttri, checktri);
-      if (checktri.tri != dummytri) {
+      if(checktri.tri != dummytri) {
         dest(triangleloop, tdest);
         apex(triangleloop, tapex);
         // Look for other triangles that share an edge.
         do {
           dest(checktri, checkdest);
           apex(checktri, checkapex);
-          if (tapex == checkdest) {
+          if(tapex == checkdest) {
             // The two triangles share an edge; bond them together.
             lprev(triangleloop, triangleleft);
             bond(triangleleft, checktri);
           }
-          if (tdest == checkapex) {
+          if(tdest == checkapex) {
             // The two triangles share an edge; bond them together.
             lprev(checktri, checkleft);
             bond(triangleloop, checkleft);
@@ -8133,7 +8133,7 @@ long Mesh::reconstruct(char     *elefilename
           // Find the next Triangle in the stack.
           nexttri = checktri.tri[6 + checktri.orient];
           decode(nexttri, checktri);
-        } while (checktri.tri != dummytri);
+        } while(checktri.tri != dummytri);
       }
     }
     triangleloop.tri = triangletraverse();
@@ -8144,14 +8144,14 @@ long Mesh::reconstruct(char     *elefilename
   vertexindex = 0;
 #else // not TRILIBRARY
   fclose(elefile);
-  if (m_b.vararea) {
+  if(m_b.vararea) {
     fclose(areafile);
   }
 #endif // not TRILIBRARY
 
   hullsize = 0;                      // Prepare to count the boundary edges.
-  if (m_b.poly) {
-    if (m_b.verbose) {
+  if(m_b.poly) {
+    if(m_b.verbose) {
       printf("  Marking segments in triangulation.\n");
     }
     // Read the segments from the .poly file, and link them to their neighboring triangles.
@@ -8159,11 +8159,11 @@ long Mesh::reconstruct(char     *elefilename
     subsegs.traversalinit();
     subsegloop.ss = subsegtraverse();
     segmentnumber = m_b.firstnumber;
-    while (subsegloop.ss != NULL) {
+    while(subsegloop.ss != NULL) {
 #ifdef TRILIBRARY
       end[0] = segmentlist[vertexindex++];
       end[1] = segmentlist[vertexindex++];
-      if (segmentmarkers) {
+      if(segmentmarkers) {
         boundmarker = segmentmarkerlist[segmentnumber - m_b.firstnumber];
       }
 #else // not TRILIBRARY
@@ -8182,17 +8182,17 @@ long Mesh::reconstruct(char     *elefilename
       } else {
         end[1] = (int) strtol(stringptr, &stringptr, 0);
       }
-      if (segmentmarkers) {
+      if(segmentmarkers) {
         stringptr = findfield(stringptr);
-        if (*stringptr == '\0') {
+        if(*stringptr == '\0') {
           boundmarker = 0;
         } else {
           boundmarker = (int) strtol(stringptr, &stringptr, 0);
         }
       }
 #endif // not TRILIBRARY
-      for (j = 0; j < 2; j++) {
-        if ((end[j] < m_b.firstnumber) || (end[j] >= m_b.firstnumber + invertices)) {
+      for(j = 0; j < 2; j++) {
+        if((end[j] < m_b.firstnumber) || (end[j] >= m_b.firstnumber + invertices)) {
           triError(_T("Segment %ld has an invalid Vertex index"), segmentnumber);
         }
       }
@@ -8207,7 +8207,7 @@ long Mesh::reconstruct(char     *elefilename
       setsegdest(subsegloop, segmentdest);
       setmark(subsegloop, boundmarker);
       // Try linking the subsegment to triangles that share these vertices.
-      for (subsegloop.ssorient = 0; subsegloop.ssorient < 2; subsegloop.ssorient++) {
+      for(subsegloop.ssorient = 0; subsegloop.ssorient < 2; subsegloop.ssorient++) {
         // Take the number for the destination of subsegloop.
         aroundvertex = end[1 - subsegloop.ssorient];
         // Look for triangles having this Vertex.
@@ -8223,16 +8223,16 @@ long Mesh::reconstruct(char     *elefilename
         // occurrence of a Triangle on a list can (and does) represent
         // an edge. In this way, most edges are represented twice, and
         // every Triangle-subsegment bond is represented once.
-        while (notfound && (checktri.tri != dummytri)) {
+        while(notfound && (checktri.tri != dummytri)) {
           dest(checktri, checkdest);
-          if (shorg == checkdest) {
+          if(shorg == checkdest) {
             // We have a match. Remove this Triangle from the list.
             *prevlink = checktri.tri[6 + checktri.orient];
             // Bond the subsegment to the Triangle.
             tsbond(checktri, subsegloop);
             // Check if this is a boundary edge.
             sym(checktri, checkneighbor);
-            if (checkneighbor.tri == dummytri) {
+            if(checkneighbor.tri == dummytri) {
               // The next line doesn't insert a subsegment (because there's
               // already one there), but it sets the boundary markers of
               // the existing subsegment and its vertices.
@@ -8254,17 +8254,17 @@ long Mesh::reconstruct(char     *elefilename
 
   // Mark the remaining edges as not being attached to any subsegment.
   // Also, count the (yet uncounted) boundary edges.
-  for (i = 0; i < vertices.getItems(); i++) {
+  for(i = 0; i < vertices.getItems(); i++) {
     // Search the stack of triangles adjacent to a Vertex.
     nexttri = vertexarray[i];
     decode(nexttri, checktri);
-    while (checktri.tri != dummytri) {
+    while(checktri.tri != dummytri) {
       // Find the next Triangle in the stack before this information gets overwritten.
       nexttri = checktri.tri[6 + checktri.orient];
       // No adjacent subsegment.(This overwrites the stack info.)
       tsdissolve(checktri);
       sym(checktri, checkneighbor);
-      if (checkneighbor.tri == dummytri) {
+      if(checkneighbor.tri == dummytri) {
         insertsubseg(&checktri, 1);
         hullsize++;
       }
@@ -8314,20 +8314,20 @@ FindDirectionResult Mesh::finddirection(otri *searchtri, Vertex searchpoint) {
   // Is `searchpoint' to the right?
   rightccw = counterclockwise(startvertex, searchpoint, rightvertex);
   rightflag = rightccw > 0.0;
-  if (leftflag && rightflag) {
+  if(leftflag && rightflag) {
     // `searchtri' faces directly away from `searchpoint'. We could go left
     // or right. Ask whether it's a Triangle or a boundary on the left.
     onext(*searchtri, checktri);
-    if (checktri.tri == dummytri) {
+    if(checktri.tri == dummytri) {
       leftflag = 0;
     } else {
       rightflag = 0;
     }
   }
-  while (leftflag) {
+  while(leftflag) {
     // Turn left until satisfied.
     onextself(*searchtri);
-    if (searchtri->tri == dummytri) {
+    if(searchtri->tri == dummytri) {
       internalerrorNoTriangleFound(method, startvertex, searchpoint);
     }
     apex(*searchtri, leftvertex);
@@ -8335,10 +8335,10 @@ FindDirectionResult Mesh::finddirection(otri *searchtri, Vertex searchpoint) {
     leftccw = counterclockwise(searchpoint, startvertex, leftvertex);
     leftflag = leftccw > 0.0;
   }
-  while (rightflag) {
+  while(rightflag) {
     // Turn right until satisfied.
     oprevself(*searchtri);
-    if (searchtri->tri == dummytri) {
+    if(searchtri->tri == dummytri) {
       internalerrorNoTriangleFound(method, startvertex, searchpoint);
     }
     dest(*searchtri, rightvertex);
@@ -8346,9 +8346,9 @@ FindDirectionResult Mesh::finddirection(otri *searchtri, Vertex searchpoint) {
     rightccw = counterclockwise(startvertex, searchpoint, rightvertex);
     rightflag = rightccw > 0.0;
   }
-  if (leftccw == 0.0) {
+  if(leftccw == 0.0) {
     return LEFTCOLLINEAR;
-  } else if (rightccw == 0.0) {
+  } else if(rightccw == 0.0) {
     return RIGHTCOLLINEAR;
   } else {
     return WITHIN;
@@ -8400,29 +8400,29 @@ void Mesh::segmentintersection(otri *splittri, osub *splitsubseg, Vertex endpoin
   etx = torg[0] - endpoint2[0];
   ety = torg[1] - endpoint2[1];
   denom = ty * ex - tx * ey;
-  if (denom == 0.0) {
+  if(denom == 0.0) {
     internalerror(method, _T("Attempt to find intersection of parallel segments"));
   }
   split = (ey * etx - ex * ety) / denom;
   // Create the new Vertex.
   newvertex = vertices.alloc();
   // Interpolate its coordinate and attributes.
-  for (i = 0; i < 2 + nextras; i++) {
+  for(i = 0; i < 2 + nextras; i++) {
     newvertex[i] = torg[i] + split * (tdest[i] - torg[i]);
   }
   setvertexmark(newvertex, mark(*splitsubseg));
   setvertextype(newvertex, INPUTVERTEX);
-  if (m_b.verbose > 1) {
+  if(m_b.verbose > 1) {
     _tprintf(_T("  Splitting subsegment %s\n"), triangleToString(torg, tdest, newvertex).cstr());
   }
   // Insert the intersection Vertex. This should always succeed.
   success = insertvertex(newvertex, splittri, splitsubseg, 0, 0);
-  if (success != SUCCESSFULVERTEX) {
+  if(success != SUCCESSFULVERTEX) {
     internalerror(method, _T("Failure to split a segment"));
   }
   // Record a Triangle whose origin is the new Vertex.
   setvertex2tri(newvertex, encode(*splittri));
-  if (steinerleft > 0) {
+  if(steinerleft > 0) {
     steinerleft--;
   }
 
@@ -8434,20 +8434,20 @@ void Mesh::segmentintersection(otri *splittri, osub *splitsubseg, Vertex endpoin
   do {
     setsegorg(*splitsubseg, newvertex);
     snextself(*splitsubseg);
-  } while (splitsubseg->ss != dummysub);
+  } while(splitsubseg->ss != dummysub);
   do {
     setsegorg(opposubseg, newvertex);
     snextself(opposubseg);
-  } while (opposubseg.ss != dummysub);
+  } while(opposubseg.ss != dummysub);
 
   // Inserting the Vertex may have caused edge flips. We wish to rediscover
   // the edge connecting endpoint1 to the new intersection Vertex.
   collinear = finddirection(splittri, endpoint1);
   dest(*splittri, rightvertex);
   apex(*splittri, leftvertex);
-  if ((leftvertex[0] == endpoint1[0]) && (leftvertex[1] == endpoint1[1])) {
+  if((leftvertex[0] == endpoint1[0]) && (leftvertex[1] == endpoint1[1])) {
     onextself(*splittri);
-  } else if ((rightvertex[0] != endpoint1[0]) || (rightvertex[1] != endpoint1[1])) {
+  } else if((rightvertex[0] != endpoint1[0]) || (rightvertex[1] != endpoint1[1])) {
     internalerror(method, _T("Topological inconsistency after splitting a segment"));
   }
   // `splittri' should have destination endpoint1.
@@ -8486,23 +8486,23 @@ int Mesh::scoutsegment(otri *searchtri, Vertex endpoint2, int newmark) {
   collinear = finddirection(searchtri, endpoint2);
   dest(*searchtri, rightvertex);
   apex(*searchtri, leftvertex);
-  if (((leftvertex[0] == endpoint2[0]) && (leftvertex[1] == endpoint2[1])) ||
+  if(((leftvertex[0] == endpoint2[0]) && (leftvertex[1] == endpoint2[1])) ||
       ((rightvertex[0] == endpoint2[0]) && (rightvertex[1] == endpoint2[1]))) {
     // The segment is already an edge in the mesh.
-    if ((leftvertex[0] == endpoint2[0]) && (leftvertex[1] == endpoint2[1])) {
+    if((leftvertex[0] == endpoint2[0]) && (leftvertex[1] == endpoint2[1])) {
       lprevself(*searchtri);
     }
     // Insert a subsegment, if there isn't already one there.
     insertsubseg(searchtri, newmark);
     return 1;
-  } else if (collinear == LEFTCOLLINEAR) {
+  } else if(collinear == LEFTCOLLINEAR) {
     // We've collided with a Vertex between the segment's endpoints.
     // Make the collinear Vertex be the Triangle's origin.
     lprevself(*searchtri);
     insertsubseg(searchtri, newmark);
     // Insert the remainder of the segment.
     return scoutsegment(searchtri, endpoint2, newmark);
-  } else if (collinear == RIGHTCOLLINEAR) {
+  } else if(collinear == RIGHTCOLLINEAR) {
     // We've collided with a Vertex between the segment's endpoints.
     insertsubseg(searchtri, newmark);
     // Make the collinear Vertex be the Triangle's origin.
@@ -8513,7 +8513,7 @@ int Mesh::scoutsegment(otri *searchtri, Vertex endpoint2, int newmark) {
     lnext(*searchtri, crosstri);
     tspivot(crosstri, crosssubseg);
     // Check for a crossing segment.
-    if (crosssubseg.ss == dummysub) {
+    if(crosssubseg.ss == dummysub) {
       return 0;
     } else {
       // Insert a Vertex at the intersection.
@@ -8556,14 +8556,14 @@ void Mesh::conformingedge(Vertex endpoint1, Vertex endpoint2, int newmark) {
   int i;
   SubSeg sptr;                      // Temporary variable used by tspivot().
 
-  if (m_b.verbose > 2) {
+  if(m_b.verbose > 2) {
     _tprintf(_T("Forcing segment into triangulation by recursive splitting:%s\n")
             ,edgeToString(endpoint1, endpoint2).cstr());
   }
   // Create a new Vertex to insert in the middle of the segment.
   newvertex = vertices.alloc();
   // Interpolate coordinates and attributes.
-  for (i = 0; i < 2 + nextras; i++) {
+  for(i = 0; i < 2 + nextras; i++) {
     newvertex[i] = 0.5 * (endpoint1[i] + endpoint2[i]);
   }
   setvertexmark(newvertex, newmark);
@@ -8572,27 +8572,27 @@ void Mesh::conformingedge(Vertex endpoint1, Vertex endpoint2, int newmark) {
   searchtri1.tri = dummytri;
   // Attempt to insert the new Vertex.
   success = insertvertex(newvertex, &searchtri1, NULL, 0, 0);
-  if (success == DUPLICATEVERTEX) {
-    if (m_b.verbose > 2) {
+  if(success == DUPLICATEVERTEX) {
+    if(m_b.verbose > 2) {
       _tprintf(_T("  Segment intersects existing vertex %s\n"), vertexToString(newvertex).cstr());
     }
     // Use the Vertex that's already there.
     vertexdealloc(newvertex);
     org(searchtri1, newvertex);
   } else {
-    if (success == VIOLATINGVERTEX) {
-      if (m_b.verbose > 2) {
+    if(success == VIOLATINGVERTEX) {
+      if(m_b.verbose > 2) {
         _tprintf(_T("  Two segments intersect at %s\n"), vertexToString(newvertex).cstr());
       }
       // By fluke, we've landed right on another segment. Split it.
       tspivot(searchtri1, brokensubseg);
       success = insertvertex(newvertex, &searchtri1, &brokensubseg, 0, 0);
-      if (success != SUCCESSFULVERTEX) {
+      if(success != SUCCESSFULVERTEX) {
         internalerror(__TFUNCTION__, _T("Failure to split a segment"));
       }
     }
     // The Vertex has been inserted successfully.
-    if (steinerleft > 0) {
+    if(steinerleft > 0) {
       steinerleft--;
     }
   }
@@ -8602,13 +8602,13 @@ void Mesh::conformingedge(Vertex endpoint1, Vertex endpoint2, int newmark) {
   // respectively. First, we must get `searchtri2' out of the way so it
   // won't be invalidated during the insertion of the first half of the segment.
   finddirection(&searchtri2, endpoint2);
-  if (!scoutsegment(&searchtri1, endpoint1, newmark)) {
+  if(!scoutsegment(&searchtri1, endpoint1, newmark)) {
     // The origin of searchtri1 may have changed if a collision with an
     // intervening Vertex on the segment occurred.
     org(searchtri1, midvertex1);
     conformingedge(midvertex1, endpoint1, newmark);
   }
-  if (!scoutsegment(&searchtri2, endpoint2, newmark)) {
+  if(!scoutsegment(&searchtri2, endpoint2, newmark)) {
     // The origin of searchtri2 may have changed if a collision with an
     // intervening Vertex on the segment occurred.
     org(searchtri2, midvertex2);
@@ -8667,11 +8667,11 @@ void Mesh::delaunayfixup(otri *fixuptri, int leftside) {
   lnext(*fixuptri, neartri);
   sym(neartri, fartri);
   // Check if the edge opposite the origin of fixuptri can be flipped.
-  if (fartri.tri == dummytri) {
+  if(fartri.tri == dummytri) {
     return;
   }
   tspivot(neartri, faredge);
-  if (faredge.ss != dummysub) {
+  if(faredge.ss != dummysub) {
     return;
   }
   // Find all the relevant vertices.
@@ -8680,25 +8680,25 @@ void Mesh::delaunayfixup(otri *fixuptri, int leftside) {
   dest(neartri, rightvertex);
   apex(fartri, farvertex);
   // Check whether the previous polygon Vertex is a reflex Vertex.
-  if (leftside) {
-    if (counterclockwise(nearvertex, leftvertex, farvertex) <= 0.0) {
+  if(leftside) {
+    if(counterclockwise(nearvertex, leftvertex, farvertex) <= 0.0) {
       // leftvertex is a reflex Vertex too. Nothing can
       // be done until a convex section is found.
       return;
     }
   } else {
-    if (counterclockwise(farvertex, rightvertex, nearvertex) <= 0.0) {
+    if(counterclockwise(farvertex, rightvertex, nearvertex) <= 0.0) {
       // rightvertex is a reflex Vertex too. Nothing can
       // be done until a convex section is found.
       return;
     }
   }
-  if (counterclockwise(rightvertex, leftvertex, farvertex) > 0.0) {
+  if(counterclockwise(rightvertex, leftvertex, farvertex) > 0.0) {
     // fartri is not an inverted Triangle, and farvertex is not a reflex
     // Vertex. As there are no reflex vertices, fixuptri isn't an
     // inverted Triangle, either. Hence, test the edge between the
     // triangles to ensure it is locally Delaunay.
-    if (incircle(leftvertex, farvertex, rightvertex, nearvertex) <= 0.0) {
+    if(incircle(leftvertex, farvertex, rightvertex, nearvertex) <= 0.0) {
       return;
     }
     // Not locally Delaunay; go on to an edge flip.
@@ -8785,7 +8785,7 @@ void Mesh::constrainededge(otri *starttri, Vertex endpoint2, int newmark) {
     org(fixuptri, farvertex);
     // `farvertex' is the extreme point of the polygon we are "digging"
     // to get from endpoint1 to endpoint2.
-    if ((farvertex[0] == endpoint2[0]) && (farvertex[1] == endpoint2[1])) {
+    if((farvertex[0] == endpoint2[0]) && (farvertex[1] == endpoint2[1])) {
       oprev(fixuptri, fixuptri2);
       // Enforce the Delaunay condition around endpoint2.
       delaunayfixup(&fixuptri, 0);
@@ -8796,7 +8796,7 @@ void Mesh::constrainededge(otri *starttri, Vertex endpoint2, int newmark) {
       // being inserted, to decide which edge of fixuptri to dig
       // through next.
       area = counterclockwise(endpoint1, endpoint2, farvertex);
-      if (area == 0.0) {
+      if(area == 0.0) {
         // We've collided with a Vertex between endpoint1 and endpoint2.
         collision = 1;
         oprev(fixuptri, fixuptri2);
@@ -8805,7 +8805,7 @@ void Mesh::constrainededge(otri *starttri, Vertex endpoint2, int newmark) {
         delaunayfixup(&fixuptri2, 1);
         done = 1;
       } else {
-        if (area > 0.0) {        // farvertex is to the left of the segment.
+        if(area > 0.0) {        // farvertex is to the left of the segment.
           oprev(fixuptri, fixuptri2);
           // Enforce the Delaunay condition around farvertex, on the
           // left side of the segment only.
@@ -8823,7 +8823,7 @@ void Mesh::constrainededge(otri *starttri, Vertex endpoint2, int newmark) {
         }
         // Check for two intersecting segments.
         tspivot(fixuptri, crosssubseg);
-        if (crosssubseg.ss == dummysub) {
+        if(crosssubseg.ss == dummysub) {
           flip(&fixuptri);    // May create inverted Triangle at left.
         } else { // We've collided with a segment between endpoint1 and endpoint2.
           collision = 1;
@@ -8833,14 +8833,14 @@ void Mesh::constrainededge(otri *starttri, Vertex endpoint2, int newmark) {
         }
       }
     }
-  } while (!done);
+  } while(!done);
   // Insert a subsegment to make the segment permanent.
   insertsubseg(&fixuptri, newmark);
   // If there was a collision with an interceding Vertex, install another
   // segment connecting that Vertex with endpoint2.
-  if (collision) {
+  if(collision) {
     // Insert the remainder of the segment.
-    if (!scoutsegment(&fixuptri, endpoint2, newmark)) {
+    if(!scoutsegment(&fixuptri, endpoint2, newmark)) {
       constrainededge(&fixuptri, endpoint2, newmark);
     }
   }
@@ -8854,7 +8854,7 @@ void Mesh::insertsegment(Vertex endpoint1, Vertex endpoint2, int newmark) {
   Vertex checkvertex;
   Triangle ptr;                         // Temporary variable used by sym().
 
-  if (m_b.verbose > 1) {
+  if(m_b.verbose > 1) {
     _tprintf(_T("  Connecting %s to %s\n")
             ,vertexToString(endpoint1).cstr(), vertexToString(endpoint2).cstr());
   }
@@ -8862,24 +8862,24 @@ void Mesh::insertsegment(Vertex endpoint1, Vertex endpoint2, int newmark) {
   // Find a Triangle whose origin is the segment's first endpoint.
   checkvertex = NULL;
   encodedtri = vertex2tri(endpoint1);
-  if (encodedtri != NULL) {
+  if(encodedtri != NULL) {
     decode(encodedtri, searchtri1);
     org(searchtri1, checkvertex);
   }
-  if (checkvertex != endpoint1) {
+  if(checkvertex != endpoint1) {
     // Find a boundary Triangle to search from.
     searchtri1.tri = dummytri;
     searchtri1.orient = 0;
     symself(searchtri1);
     // Search for the segment's first endpoint by point location.
-    if (locate(endpoint1, &searchtri1) != ONVERTEX) {
+    if(locate(endpoint1, &searchtri1) != ONVERTEX) {
       internalerrorNoPSLGVertex(method, endpoint1);
     }
   }
   // Remember this Triangle to improve subsequent point location.
   otricopy(searchtri1, recenttri);
   // Scout the beginnings of a path from the first endpoint toward the second.
-  if (scoutsegment(&searchtri1, endpoint2, newmark)) {
+  if(scoutsegment(&searchtri1, endpoint2, newmark)) {
     // The segment was easily inserted.
     return;
   }
@@ -8890,17 +8890,17 @@ void Mesh::insertsegment(Vertex endpoint1, Vertex endpoint2, int newmark) {
   // Find a Triangle whose origin is the segment's second endpoint.
   checkvertex = NULL;
   encodedtri = vertex2tri(endpoint2);
-  if (encodedtri != NULL) {
+  if(encodedtri != NULL) {
     decode(encodedtri, searchtri2);
     org(searchtri2, checkvertex);
   }
-  if (checkvertex != endpoint2) {
+  if(checkvertex != endpoint2) {
     // Find a boundary Triangle to search from.
     searchtri2.tri = dummytri;
     searchtri2.orient = 0;
     symself(searchtri2);
     // Search for the segment's second endpoint by point location.
-    if (locate(endpoint2, &searchtri2) != ONVERTEX) {
+    if(locate(endpoint2, &searchtri2) != ONVERTEX) {
       internalerrorNoPSLGVertex(method, endpoint2);
     }
   }
@@ -8908,7 +8908,7 @@ void Mesh::insertsegment(Vertex endpoint1, Vertex endpoint2, int newmark) {
   otricopy(searchtri2, recenttri);
   // Scout the beginnings of a path from the second endpoint
   // toward the first.
-  if (scoutsegment(&searchtri2, endpoint1, newmark)) {
+  if(scoutsegment(&searchtri2, endpoint1, newmark)) {
     // The segment was easily inserted.
     return;
   }
@@ -8918,7 +8918,7 @@ void Mesh::insertsegment(Vertex endpoint1, Vertex endpoint2, int newmark) {
 
 #ifndef REDUCED
 #ifndef CDT_ONLY
-  if (m_b.splitseg) {
+  if(m_b.splitseg) {
     // Insert vertices to force the segment into the triangulation.
     conformingedge(endpoint1, endpoint2, newmark);
   } else {
@@ -8953,11 +8953,11 @@ void Mesh::markhull() {
     // To find the next hull edge, go clockwise around the next Vertex.
     lnextself(hulltri);
     oprev(hulltri, nexttri);
-    while (nexttri.tri != dummytri) {
+    while(nexttri.tri != dummytri) {
       otricopy(nexttri, hulltri);
       oprev(hulltri, nexttri);
     }
-  } while (!otriequal(hulltri, starttri));
+  } while(!otriequal(hulltri, starttri));
 }
 
 //***************************************************************************
@@ -8988,8 +8988,8 @@ void Mesh::formskeleton(FILE *polyfile, char *polyfilename)
   int boundmarker;
   int i;
 
-  if (m_b.poly) {
-    if (!m_b.quiet) {
+  if(m_b.poly) {
+    if(!m_b.quiet) {
       printf("Recovering segments in Delaunay triangulation.\n");
     }
 #ifdef TRILIBRARY
@@ -9003,7 +9003,7 @@ void Mesh::formskeleton(FILE *polyfile, char *polyfilename)
     stringptr = readline(inputline, polyfile, polyfilename);
     insegments = (int) strtol(stringptr, &stringptr, 0);
     stringptr = findfield(stringptr);
-    if (*stringptr == '\0') {
+    if(*stringptr == '\0') {
       segmentmarkers = 0;
     } else {
       segmentmarkers = (int) strtol(stringptr, &stringptr, 0);
@@ -9012,25 +9012,25 @@ void Mesh::formskeleton(FILE *polyfile, char *polyfilename)
 
     // If the input vertices are collinear, there is no triangulation,
     // so don't try to insert segments.
-    if (triangles.getItems() == 0) {
+    if(triangles.getItems() == 0) {
       return;
     }
 
     // If segments are to be inserted, compute a mapping from vertices to triangles.
-    if (insegments > 0) {
+    if(insegments > 0) {
       makevertexmap();
-      if (m_b.verbose) {
+      if(m_b.verbose) {
         printf("  Recovering PSLG segments.\n");
       }
     }
 
     boundmarker = 0;
     // Read and insert the segments.
-    for (i = 0; i < insegments; i++) {
+    for(i = 0; i < insegments; i++) {
 #ifdef TRILIBRARY
       end1 = segmentlist[index++];
       end2 = segmentlist[index++];
-      if (segmentmarkers) {
+      if(segmentmarkers) {
         boundmarker = segmentmarkerlist[i];
       }
 #else // not TRILIBRARY
@@ -9060,8 +9060,8 @@ void Mesh::formskeleton(FILE *polyfile, char *polyfilename)
         if(!m_b.quiet) {
           printf("Warning:  Invalid first endpoint of segment %d in %s.\n", m_b.firstnumber + i, polyfilename);
         }
-      } else if ((end2 < m_b.firstnumber) || (end2 >= m_b.firstnumber + invertices)) {
-        if (!m_b.quiet) {
+      } else if((end2 < m_b.firstnumber) || (end2 >= m_b.firstnumber + invertices)) {
+        if(!m_b.quiet) {
           printf("Warning:  Invalid second endpoint of segment %d in %s.\n"
                 ,m_b.firstnumber + i, polyfilename);
         }
@@ -9110,7 +9110,7 @@ void Mesh::infecthull() {
   Triangle ptr;                     // Temporary variable used by sym().
   SubSeg sptr;                      // Temporary variable used by tspivot().
 
-  if (m_b.verbose) {
+  if(m_b.verbose) {
     printf("  Marking concavities (external triangles) for elimination.\n");
   }
   // Find a Triangle handle on the hull.
@@ -9122,26 +9122,26 @@ void Mesh::infecthull() {
   // Go once counterclockwise around the convex hull.
   do {
     // Ignore triangles that are already infected.
-    if (!infected(hulltri)) {
+    if(!infected(hulltri)) {
       // Is the Triangle protected by a subsegment?
       tspivot(hulltri, hullsubseg);
-      if (hullsubseg.ss == dummysub) {
+      if(hullsubseg.ss == dummysub) {
         // The Triangle is not protected; infect it.
-        if (!infected(hulltri)) {
+        if(!infected(hulltri)) {
           infect(hulltri);
           deadtriangle = viri.alloc();
           *deadtriangle = hulltri.tri;
         }
       } else {
         // The Triangle is protected; set boundary markers if appropriate.
-        if (mark(hullsubseg) == 0) {
+        if(mark(hullsubseg) == 0) {
           setmark(hullsubseg, 1);
           org(hulltri, horg);
           dest(hulltri, hdest);
-          if (vertexmark(horg) == 0) {
+          if(vertexmark(horg) == 0) {
             setvertexmark(horg, 1);
           }
-          if (vertexmark(hdest) == 0) {
+          if(vertexmark(hdest) == 0) {
             setvertexmark(hdest, 1);
           }
         }
@@ -9150,11 +9150,11 @@ void Mesh::infecthull() {
     // To find the next hull edge, go clockwise around the next Vertex.
     lnextself(hulltri);
     oprev(hulltri, nexttri);
-    while (nexttri.tri != dummytri) {
+    while(nexttri.tri != dummytri) {
       otricopy(nexttri, hulltri);
       oprev(hulltri, nexttri);
     }
-  } while (!otriequal(hulltri, starttri));
+  } while(!otriequal(hulltri, starttri));
 }
 
 //***************************************************************************
@@ -9186,21 +9186,21 @@ void Mesh::plague() {
   Triangle ptr;             // Temporary variable used by sym() and onext().
   SubSeg sptr;              // Temporary variable used by tspivot().
 
-  if (m_b.verbose) {
+  if(m_b.verbose) {
     printf("  Marking neighbors of marked triangles.\n");
   }
   // Loop through all the infected triangles, spreading the virus to
   // their neighbors, then to their neighbors' neighbors.
   viri.traversalinit();
   virusloop = viri.traverse();
-  while (virusloop != NULL) {
+  while(virusloop != NULL) {
     testtri.tri = *virusloop;
     // A Triangle is marked as infected by messing with one of its pointers
     // to subsegments, setting it to an illegal value. Hence, we have to
     // temporarily uninfect this Triangle so that we can examine its
     // adjacent subsegments.
     uninfect(testtri);
-    if (m_b.verbose > 2) {
+    if(m_b.verbose > 2) {
       // Assign the Triangle an orientation for convenience in
       // checking its vertices.
       testtri.orient = 0;
@@ -9210,18 +9210,18 @@ void Mesh::plague() {
       _tprintf(_T("    Checking %s\n"), triangleToString(deadorg,deaddest,deadapex).cstr());
     }
     // Check each of the Triangle's three neighbors.
-    for (testtri.orient = 0; testtri.orient < 3; testtri.orient++) {
+    for(testtri.orient = 0; testtri.orient < 3; testtri.orient++) {
       // Find the neighbor.
       sym(testtri, neighbor);
       // Check for a subsegment between the Triangle and its neighbor.
       tspivot(testtri, neighborsubseg);
       // Check if the neighbor is nonexistent or already infected.
-      if ((neighbor.tri == dummytri) || infected(neighbor)) {
-        if (neighborsubseg.ss != dummysub) {
+      if((neighbor.tri == dummytri) || infected(neighbor)) {
+        if(neighborsubseg.ss != dummysub) {
           // There is a subsegment separating the Triangle from its
           // neighbor, but both triangles are dying, so the subsegment dies too.
           subsegdealloc(neighborsubseg.ss);
-          if (neighbor.tri != dummytri) {
+          if(neighbor.tri != dummytri) {
             // Make sure the subsegment doesn't get deallocated again
             // later when the infected neighbor is visited.
             uninfect(neighbor);
@@ -9230,9 +9230,9 @@ void Mesh::plague() {
           }
         }
       } else {                   // The neighbor exists and is not infected.
-        if (neighborsubseg.ss == dummysub) {
+        if(neighborsubseg.ss == dummysub) {
           // There is no subsegment protecting the neighbor, so the neighbor becomes infected.
-          if (m_b.verbose > 2) {
+          if(m_b.verbose > 2) {
             org(neighbor, deadorg);
             dest(neighbor, deaddest);
             apex(neighbor, deadapex);
@@ -9246,15 +9246,15 @@ void Mesh::plague() {
           // Remove this Triangle from the subsegment.
           stdissolve(neighborsubseg);
           // The subsegment becomes a boundary. Set markers accordingly.
-          if (mark(neighborsubseg) == 0) {
+          if(mark(neighborsubseg) == 0) {
             setmark(neighborsubseg, 1);
           }
           org(neighbor, norg);
           dest(neighbor, ndest);
-          if (vertexmark(norg) == 0) {
+          if(vertexmark(norg) == 0) {
             setvertexmark(norg, 1);
           }
-          if (vertexmark(ndest) == 0) {
+          if(vertexmark(ndest) == 0) {
             setvertexmark(ndest, 1);
           }
         }
@@ -9265,30 +9265,30 @@ void Mesh::plague() {
     virusloop = viri.traverse();
   }
 
-  if (m_b.verbose) {
+  if(m_b.verbose) {
     printf("  Deleting marked triangles.\n");
   }
 
   viri.traversalinit();
   virusloop = viri.traverse();
-  while (virusloop != NULL) {
+  while(virusloop != NULL) {
     testtri.tri = *virusloop;
 
     // Check each of the three corners of the Triangle for elimination.
     // This is done by walking around each Vertex, checking if it is
     // still connected to at least one live Triangle.
-    for (testtri.orient = 0; testtri.orient < 3; testtri.orient++) {
+    for(testtri.orient = 0; testtri.orient < 3; testtri.orient++) {
       org(testtri, testvertex);
       // Check if the Vertex has already been tested.
-      if (testvertex != NULL) {
+      if(testvertex != NULL) {
         killorg = 1;
         // Mark the corner of the Triangle as having been tested.
         setorg(testtri, NULL);
         // Walk counterclockwise about the Vertex.
         onext(testtri, neighbor);
         // Stop upon reaching a boundary or the starting Triangle.
-        while ((neighbor.tri != dummytri) && (!otriequal(neighbor, testtri))) {
-          if (infected(neighbor)) {
+        while((neighbor.tri != dummytri) && (!otriequal(neighbor, testtri))) {
+          if(infected(neighbor)) {
             // Mark the corner of this Triangle as having been tested.
             setorg(neighbor, NULL);
           } else {
@@ -9299,12 +9299,12 @@ void Mesh::plague() {
           onextself(neighbor);
         }
         // If we reached a boundary, we must walk clockwise as well.
-        if (neighbor.tri == dummytri) {
+        if(neighbor.tri == dummytri) {
           // Walk clockwise about the Vertex.
           oprev(testtri, neighbor);
           // Stop upon reaching a boundary.
-          while (neighbor.tri != dummytri) {
-            if (infected(neighbor)) {
+          while(neighbor.tri != dummytri) {
+            if(infected(neighbor)) {
             // Mark the corner of this Triangle as having been tested.
               setorg(neighbor, NULL);
             } else {
@@ -9315,8 +9315,8 @@ void Mesh::plague() {
             oprevself(neighbor);
           }
         }
-        if (killorg) {
-          if (m_b.verbose > 1) {
+        if(killorg) {
+          if(m_b.verbose > 1) {
             _tprintf(_T("    Deleting Vertex %s\n"), vertexToString(testvertex).cstr());
           }
           setvertextype(testvertex, UNDEADVERTEX);
@@ -9327,9 +9327,9 @@ void Mesh::plague() {
 
     // Record changes in the number of boundary edges, and disconnect
     // dead triangles from their neighbors.
-    for (testtri.orient = 0; testtri.orient < 3; testtri.orient++) {
+    for(testtri.orient = 0; testtri.orient < 3; testtri.orient++) {
       sym(testtri, neighbor);
-      if (neighbor.tri == dummytri) {
+      if(neighbor.tri == dummytri) {
         // There is no neighboring Triangle on this edge, so this edge
         // is a boundary edge. This Triangle is being deleted, so this
         // boundary edge is deleted.
@@ -9374,29 +9374,29 @@ void Mesh::regionplague(REAL attribute, REAL area) {
   Triangle ptr;             // Temporary variable used by sym() and onext().
   SubSeg sptr;              // Temporary variable used by tspivot().
 
-  if (m_b.verbose > 1) {
+  if(m_b.verbose > 1) {
     printf("  Marking neighbors of marked triangles.\n");
   }
   // Loop through all the infected triangles, spreading the attribute
   // and/or area constraint to their neighbors, then to their neighbors' neighbors.
   viri.traversalinit();
   virusloop = viri.traverse();
-  while (virusloop != NULL) {
+  while(virusloop != NULL) {
     testtri.tri = *virusloop;
     // A Triangle is marked as infected by messing with one of its pointers
     // to subsegments, setting it to an illegal value. Hence, we have to
     // temporarily uninfect this Triangle so that we can examine its
     // adjacent subsegments.
     uninfect(testtri);
-    if (m_b.regionattrib) {
+    if(m_b.regionattrib) {
       // Set an attribute.
       setelemattribute(testtri, eextras, attribute);
     }
-    if (m_b.vararea) {
+    if(m_b.vararea) {
       // Set an area constraint.
       setareabound(testtri, area);
     }
-    if (m_b.verbose > 2) {
+    if(m_b.verbose > 2) {
       // Assign the Triangle an orientation for convenience in
       // checking its vertices.
       testtri.orient = 0;
@@ -9406,15 +9406,15 @@ void Mesh::regionplague(REAL attribute, REAL area) {
       _tprintf(_T("    Checking %s\n"), triangleToString(regionorg, regiondest, regionapex).cstr());
     }
     // Check each of the Triangle's three neighbors.
-    for (testtri.orient = 0; testtri.orient < 3; testtri.orient++) {
+    for(testtri.orient = 0; testtri.orient < 3; testtri.orient++) {
       // Find the neighbor.
       sym(testtri, neighbor);
       // Check for a subsegment between the Triangle and its neighbor.
       tspivot(testtri, neighborsubseg);
       // Make sure the neighbor exists, is not already infected, and
       // isn't protected by a subsegment.
-      if ((neighbor.tri != dummytri) && !infected(neighbor) && (neighborsubseg.ss == dummysub)) {
-        if (m_b.verbose > 2) {
+      if((neighbor.tri != dummytri) && !infected(neighbor) && (neighborsubseg.ss == dummysub)) {
+        if(m_b.verbose > 2) {
           org(neighbor, regionorg);
           dest(neighbor, regiondest);
           apex(neighbor, regionapex);
@@ -9433,12 +9433,12 @@ void Mesh::regionplague(REAL attribute, REAL area) {
   }
 
   // Uninfect all triangles.
-  if (m_b.verbose > 1) {
+  if(m_b.verbose > 1) {
     printf("  Unmarking marked triangles.\n");
   }
   viri.traversalinit();
   virusloop = viri.traverse();
-  while (virusloop != NULL) {
+  while(virusloop != NULL) {
     testtri.tri = *virusloop;
     uninfect(testtri);
     virusloop = viri.traverse();
@@ -9468,37 +9468,37 @@ void Mesh::carveholes(REAL *holelist, int holes, REAL *regionlist, int regions) 
   int i;
   Triangle ptr;                         // Temporary variable used by sym().
 
-  if (!(m_b.quiet || (m_b.noholes && m_b.convex))) {
+  if(!(m_b.quiet || (m_b.noholes && m_b.convex))) {
     printf("Removing unwanted triangles.\n");
-    if (m_b.verbose && (holes > 0)) {
+    if(m_b.verbose && (holes > 0)) {
       printf("  Marking holes for elimination.\n");
     }
   }
 
-  if (regions > 0) {
+  if(regions > 0) {
     // Allocate storage for the triangles in which region points fall.
     regiontris = MALLOC(otri, regions);
   } else {
     regiontris = NULL;
   }
 
-  if (((holes > 0) && !m_b.noholes) || !m_b.convex || (regions > 0)) {
+  if(((holes > 0) && !m_b.noholes) || !m_b.convex || (regions > 0)) {
     // Initialize a pool of viri to be used for holes, concavities,
     // regional attributes, and/or regional area constraints.
     viri.poolinit(sizeof(Triangle *), VIRUSPERBLOCK, VIRUSPERBLOCK, 0);
   }
 
-  if (!m_b.convex) {
+  if(!m_b.convex) {
     // Mark as infected any unprotected triangles on the boundary.
     // This is one way by which concavities are created.
     infecthull();
   }
 
-  if ((holes > 0) && !m_b.noholes) {
+  if((holes > 0) && !m_b.noholes) {
     // Infect each Triangle in which a hole lies.
-    for (i = 0; i < 2 * holes; i += 2) {
+    for(i = 0; i < 2 * holes; i += 2) {
       // Ignore holes that aren't within the bounds of the mesh.
-      if ((holelist[i] >= xmin) && (holelist[i] <= xmax)
+      if((holelist[i] >= xmin) && (holelist[i] <= xmax)
           && (holelist[i + 1] >= ymin) && (holelist[i + 1] <= ymax)) {
         // Start searching from some Triangle on the outer boundary.
         searchtri.tri = dummytri;
@@ -9509,10 +9509,10 @@ void Mesh::carveholes(REAL *holelist, int holes, REAL *regionlist, int regions) 
         // falls within the starting Triangle.
         org(searchtri, searchorg);
         dest(searchtri, searchdest);
-        if (counterclockwise(searchorg, searchdest, &holelist[i]) > 0.0) {
+        if(counterclockwise(searchorg, searchdest, &holelist[i]) > 0.0) {
           // Find a Triangle that contains the hole.
           intersect = locate(&holelist[i], &searchtri);
-          if ((intersect != OUTSIDE) && (!infected(searchtri))) {
+          if((intersect != OUTSIDE) && (!infected(searchtri))) {
             // Infect the Triangle. This is done by marking the Triangle
             // as infected and including the Triangle in the virus pool.
             infect(searchtri);
@@ -9530,12 +9530,12 @@ void Mesh::carveholes(REAL *holelist, int holes, REAL *regionlist, int regions) 
   // constraints can't be used when refining a preexisting mesh, which
   // might not be convex; they can only be used with a freshly
   //  triangulated PSLG.)
-  if (regions > 0) {
+  if(regions > 0) {
     // Find the starting Triangle for each region.
-    for (i = 0; i < regions; i++) {
+    for(i = 0; i < regions; i++) {
       regiontris[i].tri = dummytri;
       // Ignore region points that aren't within the bounds of the mesh.
-      if ((regionlist[4 * i] >= xmin)     && (regionlist[4 * i]     <= xmax)
+      if((regionlist[4 * i] >= xmin)     && (regionlist[4 * i]     <= xmax)
        && (regionlist[4 * i + 1] >= ymin) && (regionlist[4 * i + 1] <= ymax)) {
         // Start searching from some Triangle on the outer boundary.
         searchtri.tri = dummytri;
@@ -9546,10 +9546,10 @@ void Mesh::carveholes(REAL *holelist, int holes, REAL *regionlist, int regions) 
         // region point falls within the starting Triangle.
         org(searchtri, searchorg);
         dest(searchtri, searchdest);
-        if (counterclockwise(searchorg, searchdest, &regionlist[4 * i]) > 0.0) {
+        if(counterclockwise(searchorg, searchdest, &regionlist[4 * i]) > 0.0) {
           // Find a Triangle that contains the region point.
           intersect = locate(&regionlist[4 * i], &searchtri);
-          if ((intersect != OUTSIDE) && (!infected(searchtri))) {
+          if((intersect != OUTSIDE) && (!infected(searchtri))) {
             // Record the Triangle for processing after the holes have been carved.
             otricopy(searchtri, regiontris[i]);
           }
@@ -9558,16 +9558,16 @@ void Mesh::carveholes(REAL *holelist, int holes, REAL *regionlist, int regions) 
     }
   }
 
-  if (viri.getItems() > 0) {
+  if(viri.getItems() > 0) {
     // Carve the holes and concavities.
     plague();
   }
   // The virus pool should be empty now.
 
-  if (regions > 0) {
-    if (!m_b.quiet) {
-      if (m_b.regionattrib) {
-        if (m_b.vararea) {
+  if(regions > 0) {
+    if(!m_b.quiet) {
+      if(m_b.regionattrib) {
+        if(m_b.vararea) {
           printf("Spreading regional attributes and area constraints.\n");
         } else {
           printf("Spreading regional attributes.\n");
@@ -9576,21 +9576,21 @@ void Mesh::carveholes(REAL *holelist, int holes, REAL *regionlist, int regions) 
         printf("Spreading regional area constraints.\n");
       }
     }
-    if (m_b.regionattrib && !m_b.refine) {
+    if(m_b.regionattrib && !m_b.refine) {
       // Assign every Triangle a regional attribute of zero.
       triangles.traversalinit();
       triangleloop.orient = 0;
       triangleloop.tri = triangletraverse();
-      while (triangleloop.tri != NULL) {
+      while(triangleloop.tri != NULL) {
         setelemattribute(triangleloop, eextras, 0.0);
         triangleloop.tri = triangletraverse();
       }
     }
-    for (i = 0; i < regions; i++) {
-      if (regiontris[i].tri != dummytri) {
+    for(i = 0; i < regions; i++) {
+      if(regiontris[i].tri != dummytri) {
         // Make sure the Triangle under consideration still exists.
         // It may have been eaten by the virus.
-        if (!deadtri(regiontris[i].tri)) {
+        if(!deadtri(regiontris[i].tri)) {
           // Put one Triangle in the virus pool.
           infect(regiontris[i]);
           regiontri = viri.alloc();
@@ -9601,17 +9601,17 @@ void Mesh::carveholes(REAL *holelist, int holes, REAL *regionlist, int regions) 
         }
       }
     }
-    if (m_b.regionattrib && !m_b.refine) {
+    if(m_b.regionattrib && !m_b.refine) {
       // Note the fact that each Triangle has an additional attribute.
       eextras++;
     }
   }
 
   // Free up memory.
-  if (((holes > 0) && !m_b.noholes) || !m_b.convex || (regions > 0)) {
+  if(((holes > 0) && !m_b.noholes) || !m_b.convex || (regions > 0)) {
     viri.pooldeinit();
   }
-  if (regions > 0) {
+  if(regions > 0) {
     trifree((VOID *) regiontris);
   }
 }
@@ -9633,7 +9633,7 @@ void Mesh::tallyencs() {
   subsegs.traversalinit();
   subsegloop.ssorient = 0;
   subsegloop.ss = subsegtraverse();
-  while (subsegloop.ss != NULL) {
+  while(subsegloop.ss != NULL) {
     // If the segment is encroached, add it to the list.
     dummy = checkseg4encroach(&subsegloop);
     subsegloop.ss = subsegtraverse();
@@ -9684,10 +9684,10 @@ void Mesh::splitencsegs(int triflaws) {
   SubSeg sptr;                        // Temporary variable used by snext().
 
   // Note that steinerleft == -1 if an unlimited number of Steiner points is allowed.
-  while ((badsubsegs.getItems() > 0) && (steinerleft != 0)) {
+  while((badsubsegs.getItems() > 0) && (steinerleft != 0)) {
     badsubsegs.traversalinit();
     encloop = badsubsegtraverse();
-    while ((encloop != NULL) && (steinerleft != 0)) {
+    while((encloop != NULL) && (steinerleft != 0)) {
       sdecode(encloop->encsubseg, currentenc);
       sorg(currentenc, eorg);
       sdest(currentenc, edest);
@@ -9695,7 +9695,7 @@ void Mesh::splitencsegs(int triflaws) {
       // when it was determined to be encroached. If the segment was
       // enqueued multiple times (because several newly inserted
       // vertices encroached it), it may have already been split.
-      if (!deadsubseg(currentenc.ss) && (eorg == encloop->subsegorg) && (edest == encloop->subsegdest)) {
+      if(!deadsubseg(currentenc.ss) && (eorg == encloop->subsegorg) && (edest == encloop->subsegdest)) {
         // To decide where to split a segment, we need to know if the
         // segment shares an endpoint with an adjacent segment.
         // The concern is that, if we simply split every encroached
@@ -9724,9 +9724,9 @@ void Mesh::splitencsegs(int triflaws) {
         // If we're using Chew's algorithm (rather than Ruppert's)
         // to define encroachment, delete free vertices from the
         // subsegment's diametral circle.
-        if (!m_b.conformdel && !acuteorg && !acutedest) {
+        if(!m_b.conformdel && !acuteorg && !acutedest) {
           apex(enctri, eapex);
-          while ((vertextype(eapex) == FREEVERTEX) &&
+          while((vertextype(eapex) == FREEVERTEX) &&
                  ((eorg[0] - eapex[0]) * (edest[0] - eapex[0]) +
                   (eorg[1] - eapex[1]) * (edest[1] - eapex[1]) < 0.0)) {
             deletevertex(&testtri);
@@ -9738,7 +9738,7 @@ void Mesh::splitencsegs(int triflaws) {
 
         // Now, check the other side of the segment, if there's a Triangle there.
         sym(enctri, testtri);
-        if (testtri.tri != dummytri) {
+        if(testtri.tri != dummytri) {
           // Is the destination shared with another segment?
           lnextself(testtri);
           tspivot(testtri, testsh);
@@ -9751,9 +9751,9 @@ void Mesh::splitencsegs(int triflaws) {
           acuteorg = acuteorg || acuteorg2;
 
           // Delete free vertices from the subsegment's diametral circle.
-          if (!m_b.conformdel && !acuteorg2 && !acutedest2) {
+          if(!m_b.conformdel && !acuteorg2 && !acutedest2) {
             org(testtri, eapex);
-            while ((vertextype(eapex) == FREEVERTEX) &&
+            while((vertextype(eapex) == FREEVERTEX) &&
                    ((eorg[0] - eapex[0]) * (edest[0] - eapex[0]) +
                     (eorg[1] - eapex[1]) * (edest[1] - eapex[1]) < 0.0)) {
               deletevertex(&testtri);
@@ -9766,21 +9766,21 @@ void Mesh::splitencsegs(int triflaws) {
 
         // Use the concentric circles if exactly one endpoint is shared
         // with another adjacent segment.
-        if (acuteorg || acutedest) {
+        if(acuteorg || acutedest) {
           segmentlength = sqrt((edest[0] - eorg[0]) * (edest[0] - eorg[0]) +
                                (edest[1] - eorg[1]) * (edest[1] - eorg[1]));
           // Find the power of two that most evenly splits the segment.
           // The worst case is a 2:1 ratio between subsegment lengths.
           nearestpoweroftwo = 1.0;
-          while (segmentlength > 3.0 * nearestpoweroftwo) {
+          while(segmentlength > 3.0 * nearestpoweroftwo) {
             nearestpoweroftwo *= 2.0;
           }
-          while (segmentlength < 1.5 * nearestpoweroftwo) {
+          while(segmentlength < 1.5 * nearestpoweroftwo) {
             nearestpoweroftwo *= 0.5;
           }
           // Where do we split the segment?
           split = nearestpoweroftwo / segmentlength;
-          if (acutedest) {
+          if(acutedest) {
             split = 1.0 - split;
           }
         } else {
@@ -9791,21 +9791,21 @@ void Mesh::splitencsegs(int triflaws) {
         // Create the new Vertex.
         newvertex = vertices.alloc();
         // Interpolate its coordinate and attributes.
-        for (i = 0; i < 2 + nextras; i++) {
+        for(i = 0; i < 2 + nextras; i++) {
           newvertex[i] = eorg[i] + split * (edest[i] - eorg[i]);
         }
 
-        if (!m_b.noexact) {
+        if(!m_b.noexact) {
           // Roundoff in the above calculation may yield a `newvertex'
           // that is not precisely collinear with `eorg' and `edest'.
           // Improve collinearity by one step of iterative refinement.
           multiplier = counterclockwise(eorg, edest, newvertex);
           divisor = ((eorg[0] - edest[0]) * (eorg[0] - edest[0]) +
                      (eorg[1] - edest[1]) * (eorg[1] - edest[1]));
-          if ((multiplier != 0.0) && (divisor != 0.0)) {
+          if((multiplier != 0.0) && (divisor != 0.0)) {
             multiplier = multiplier / divisor;
             // Watch out for NANs.
-            if (multiplier == multiplier) {
+            if(multiplier == multiplier) {
               newvertex[0] += multiplier * (edest[1] - eorg[1]);
               newvertex[1] += multiplier * (eorg[0] - edest[0]);
             }
@@ -9814,12 +9814,12 @@ void Mesh::splitencsegs(int triflaws) {
 
         setvertexmark(newvertex, mark(currentenc));
         setvertextype(newvertex, SEGMENTVERTEX);
-        if (m_b.verbose > 1) {
+        if(m_b.verbose > 1) {
           _tprintf(_T("  Splitting subsegment %s at %s\n")
                   ,edgeToString(eorg, edest).cstr(), vertexToString(newvertex).cstr());
         }
         // Check whether the new Vertex lies on an endpoint.
-        if (((newvertex[0] == eorg[0]) && (newvertex[1] == eorg[1])) ||
+        if(((newvertex[0] == eorg[0]) && (newvertex[1] == eorg[1])) ||
             ((newvertex[0] == edest[0]) && (newvertex[1] == edest[1]))) {
           triError(_T("Ran out of precision at %s.\n"
                       " Attempted to split a segment to a smaller size than"
@@ -9829,10 +9829,10 @@ void Mesh::splitencsegs(int triflaws) {
         }
         // Insert the splitting Vertex. This should always succeed.
         success = insertvertex(newvertex, &enctri, &currentenc, 1, triflaws);
-        if ((success != SUCCESSFULVERTEX) && (success != ENCROACHINGVERTEX)) {
+        if((success != SUCCESSFULVERTEX) && (success != ENCROACHINGVERTEX)) {
           internalerror(__TFUNCTION__, _T("Failure to split a segment"));
         }
-        if (steinerleft > 0) {
+        if(steinerleft > 0) {
           steinerleft--;
         }
         // Check the two new subsegments to see if they're encroached.
@@ -9851,13 +9851,13 @@ void Mesh::splitencsegs(int triflaws) {
 void Mesh::tallyfaces() {
   otri triangleloop;
 
-  if (m_b.verbose) {
+  if(m_b.verbose) {
     printf("  Making a list of bad triangles.\n");
   }
   triangles.traversalinit();
   triangleloop.orient = 0;
   triangleloop.tri = triangletraverse();
-  while (triangleloop.tri != NULL) {
+  while(triangleloop.tri != NULL) {
     // If the Triangle is bad, enqueue it.
     testtriangle(&triangleloop);
     triangleloop.tri = triangletraverse();
@@ -9887,9 +9887,9 @@ void Mesh::splittriangle(BadTriangle *badtri) {
   // Make sure that this Triangle is still the same Triangle it was
   // when it was tested and determined to be of bad quality.
   // Subsequent transformations may have made it a different Triangle.
-  if (!deadtri(badotri.tri) && (borg == badtri->triangorg) &&
+  if(!deadtri(badotri.tri) && (borg == badtri->triangorg) &&
       (bdest == badtri->triangdest) && (bapex == badtri->triangapex)) {
-    if (m_b.verbose > 1) {
+    if(m_b.verbose > 1) {
       _tprintf(_T("  Splitting this Triangle at its circumcenter:%s\n"), triangleToString(borg, bdest, bapex).cstr());
     }
 
@@ -9899,16 +9899,16 @@ void Mesh::splittriangle(BadTriangle *badtri) {
     findcircumcenter(borg, bdest, bapex, newvertex, &xi, &eta, 1);
 
     // Check whether the new Vertex lies on a Triangle Vertex.
-    if (((newvertex[0] == borg[0]) && (newvertex[1] == borg[1])) ||
+    if(((newvertex[0] == borg[0]) && (newvertex[1] == borg[1])) ||
         ((newvertex[0] == bdest[0]) && (newvertex[1] == bdest[1])) ||
         ((newvertex[0] == bapex[0]) && (newvertex[1] == bapex[1]))) {
-      if (!m_b.quiet) {
+      if(!m_b.quiet) {
         vertexFallsOnExistingWarning(newvertex);
         errorflag = 1;
       }
       vertexdealloc(newvertex);
     } else {
-      for (i = 2; i < 2 + nextras; i++) {
+      for(i = 2; i < 2 + nextras; i++) {
         // Interpolate the Vertex attributes at the circumcenter.
         newvertex[i] = borg[i] + xi * (bdest[i] - borg[i]) + eta * (bapex[i] - borg[i]);
       }
@@ -9924,38 +9924,38 @@ void Mesh::splittriangle(BadTriangle *badtri) {
       // circumcenter lies outside the org-dest edge, and eta is
       // negative. Roundoff error might prevent eta from being
       // negative when it should be, so I test eta against xi.)
-      if (eta < xi) {
+      if(eta < xi) {
         lprevself(badotri);
       }
 
       // Insert the circumcenter, searching from the edge of the Triangle,
       // and maintain the Delaunay property of the triangulation.
       success = insertvertex(newvertex, &badotri, NULL, 1, 1);
-      if (success == SUCCESSFULVERTEX) {
-        if (steinerleft > 0) {
+      if(success == SUCCESSFULVERTEX) {
+        if(steinerleft > 0) {
           steinerleft--;
         }
-      } else if (success == ENCROACHINGVERTEX) {
+      } else if(success == ENCROACHINGVERTEX) {
         // If the newly inserted Vertex encroaches upon a subsegment, delete the new Vertex.
         undovertex();
-        if (m_b.verbose > 1) {
+        if(m_b.verbose > 1) {
           _tprintf(_T("  Rejecting %s\n"), vertexToString(newvertex).cstr());
         }
         vertexdealloc(newvertex);
-      } else if (success == VIOLATINGVERTEX) {
+      } else if(success == VIOLATINGVERTEX) {
         // Failed to insert the new Vertex, but some subsegment was marked as being encroached.
         vertexdealloc(newvertex);
       } else { // success == DUPLICATEVERTEX
         // Couldn't insert the new Vertex because a Vertex is already there.
-        if (!m_b.quiet) {
+        if(!m_b.quiet) {
           vertexFallsOnExistingWarning(newvertex);
           errorflag = 1;
         }
         vertexdealloc(newvertex);
       }
     }
-    if (errorflag) {
-      if (m_b.verbose) {
+    if(errorflag) {
+      if(m_b.verbose) {
         _tprintf(_T("The new vertex is at the circumcenter of triangle %s\n")
                 ,triangleToString(borg, bdest, bapex).cstr());
       }
@@ -9973,17 +9973,17 @@ void Mesh::enforcequality() {
   BadTriangle *badtri;
   int i;
 
-  if (!m_b.quiet) {
+  if(!m_b.quiet) {
     printf("Adding Steiner points to enforce quality.\n");
   }
   // Initialize the pool of encroached subsegments.
   badsubsegs.poolinit(sizeof(BadSubSeg), BADSUBSEGPERBLOCK, BADSUBSEGPERBLOCK, 0);
-  if (m_b.verbose) {
+  if(m_b.verbose) {
     printf("  Looking for encroached subsegments.\n");
   }
   // Test all segments to see if they're encroached.
   tallyencs();
-  if (m_b.verbose && (badsubsegs.getItems() > 0)) {
+  if(m_b.verbose && (badsubsegs.getItems() > 0)) {
     printf("  Splitting encroached subsegments.\n");
   }
   // Fix encroached subsegments without noting bad triangles.
@@ -9992,11 +9992,11 @@ void Mesh::enforcequality() {
   // triangulation should be (conforming) Delaunay.
 
   // Next, we worry about enforcing Triangle quality.
-  if ((m_b.minangle > 0.0) || m_b.vararea || m_b.fixedarea || m_b.usertest) {
+  if((m_b.minangle > 0.0) || m_b.vararea || m_b.fixedarea || m_b.usertest) {
     // Initialize the pool of bad triangles.
     badtriangles.poolinit(sizeof(BadTriangle), BADTRIPERBLOCK, BADTRIPERBLOCK, 0);
     // Initialize the queues of bad triangles.
-    for (i = 0; i < 4096; i++) {
+    for(i = 0; i < 4096; i++) {
       queuefront[i] = NULL;
     }
     firstnonemptyq = -1;
@@ -10005,14 +10005,14 @@ void Mesh::enforcequality() {
     // Initialize the pool of recently flipped triangles.
     flipstackers.poolinit(sizeof(FlipStacker), FLIPSTACKERPERBLOCK, FLIPSTACKERPERBLOCK, 0);
     checkquality = 1;
-    if (m_b.verbose) {
+    if(m_b.verbose) {
       printf("  Splitting bad triangles.\n");
     }
-    while ((badtriangles.getItems() > 0) && (steinerleft != 0)) {
+    while((badtriangles.getItems() > 0) && (steinerleft != 0)) {
       // Fix one bad Triangle by inserting a Vertex at its circumcenter.
       badtri = dequeuebadtriang();
       splittriangle(badtri);
-      if (badsubsegs.getItems() > 0) {
+      if(badsubsegs.getItems() > 0) {
         // Put bad Triangle back in queue for another try later.
         enqueuebadtriang(badtri);
         // Fix any encroached subsegments that resulted.
@@ -10029,9 +10029,9 @@ void Mesh::enforcequality() {
   // and have no low-quality triangles.
 
   // Might we have run out of Steiner points too soon?
-  if (!m_b.quiet && m_b.conformdel && (badsubsegs.getItems() > 0) && (steinerleft == 0)) {
+  if(!m_b.quiet && m_b.conformdel && (badsubsegs.getItems() > 0) && (steinerleft == 0)) {
     printf("\nWarning:  I ran out of Steiner points, but the mesh has\n");
-    if (badsubsegs.getItems() == 1) {
+    if(badsubsegs.getItems() == 1) {
       printf("  one encroached subsegment, and therefore might not be truly\n");
     } else {
       printf("  %ld encroached subsegments, and therefore might not be truly\n", badsubsegs.getItems());
@@ -10054,7 +10054,7 @@ void Mesh::highorder() {
   Triangle ptr;                     // Temporary variable used by sym().
   SubSeg sptr;                      // Temporary variable used by tspivot().
 
-  if (!m_b.quiet) {
+  if(!m_b.quiet) {
     printf("Adding vertices for second-order triangles.\n");
   }
   // The following line ensures that dead items in the pool of nodes
@@ -10072,34 +10072,34 @@ void Mesh::highorder() {
   // adjacent Triangle, operate on the edge only if the current Triangle
   // has a smaller pointer than its neighbor. This way, each edge is
   // considered only once.
-  while (triangleloop.tri != NULL) {
-    for (triangleloop.orient = 0; triangleloop.orient < 3; triangleloop.orient++) {
+  while(triangleloop.tri != NULL) {
+    for(triangleloop.orient = 0; triangleloop.orient < 3; triangleloop.orient++) {
       sym(triangleloop, trisym);
-      if ((triangleloop.tri < trisym.tri) || (trisym.tri == dummytri)) {
+      if((triangleloop.tri < trisym.tri) || (trisym.tri == dummytri)) {
         org(triangleloop, torg);
         dest(triangleloop, tdest);
         // Create a new node in the middle of the edge. Interpolate its attributes.
         newvertex = vertices.alloc();
-        for (i = 0; i < 2 + nextras; i++) {
+        for(i = 0; i < 2 + nextras; i++) {
           newvertex[i] = 0.5 * (torg[i] + tdest[i]);
         }
         // Set the new node's marker to zero or one, depending on whether it lies on a boundary.
         setvertexmark(newvertex, trisym.tri == dummytri);
         setvertextype(newvertex, trisym.tri == dummytri ? FREEVERTEX : SEGMENTVERTEX);
-        if (m_b.usesegments) {
+        if(m_b.usesegments) {
           tspivot(triangleloop, checkmark);
           // If this edge is a segment, transfer the marker to the new node.
-          if (checkmark.ss != dummysub) {
+          if(checkmark.ss != dummysub) {
             setvertexmark(newvertex, mark(checkmark));
             setvertextype(newvertex, SEGMENTVERTEX);
           }
         }
-        if (m_b.verbose > 1) {
+        if(m_b.verbose > 1) {
           _tprintf(_T("  Creating %s\n"), vertexToString(newvertex).cstr());
         }
         // Record the new node in the (one or two) adjacent elements.
         triangleloop.tri[highorderindex + triangleloop.orient] = (Triangle)newvertex;
-        if (trisym.tri != dummytri) {
+        if(trisym.tri != dummytri) {
           trisym.tri[highorderindex + trisym.orient] = (Triangle)newvertex;
         }
       }
@@ -10125,9 +10125,9 @@ void Mesh::readnodes(char *nodefilename, char *polyfilename, FILE **polyfile) {
   int currentmarker;
   int i, j;
 
-  if (m_b.poly) {
+  if(m_b.poly) {
     // Read the vertices from a .poly file.
-    if (!m_b.quiet) {
+    if(!m_b.quiet) {
       printf("Opening %s.\n", polyfilename);
     }
     *polyfile = FOPEN(polyfilename, "r");
@@ -10136,24 +10136,24 @@ void Mesh::readnodes(char *nodefilename, char *polyfilename, FILE **polyfile) {
     stringptr = readline(inputline, *polyfile, polyfilename);
     invertices = (int) strtol(stringptr, &stringptr, 0);
     stringptr = findfield(stringptr);
-    if (*stringptr == '\0') {
+    if(*stringptr == '\0') {
       mesh_dim = 2;
     } else {
       mesh_dim = (int) strtol(stringptr, &stringptr, 0);
     }
     stringptr = findfield(stringptr);
-    if (*stringptr == '\0') {
+    if(*stringptr == '\0') {
       nextras = 0;
     } else {
       nextras = (int) strtol(stringptr, &stringptr, 0);
     }
     stringptr = findfield(stringptr);
-    if (*stringptr == '\0') {
+    if(*stringptr == '\0') {
       nodemarkers = 0;
     } else {
       nodemarkers = (int) strtol(stringptr, &stringptr, 0);
     }
-    if (invertices > 0) {
+    if(invertices > 0) {
       infile = *polyfile;
       infilename = polyfilename;
       readnodefile = 0;
@@ -10169,9 +10169,9 @@ void Mesh::readnodes(char *nodefilename, char *polyfilename, FILE **polyfile) {
     *polyfile = NULL;
   }
 
-  if (readnodefile) {
+  if(readnodefile) {
     // Read the vertices from a .node file.
-    if (!m_b.quiet) {
+    if(!m_b.quiet) {
       printf("Opening %s.\n", nodefilename);
     }
     infile = FOPEN(nodefilename, "r");
@@ -10180,72 +10180,72 @@ void Mesh::readnodes(char *nodefilename, char *polyfilename, FILE **polyfile) {
     stringptr = readline(inputline, infile, nodefilename);
     invertices = (int) strtol(stringptr, &stringptr, 0);
     stringptr = findfield(stringptr);
-    if (*stringptr == '\0') {
+    if(*stringptr == '\0') {
       mesh_dim = 2;
     } else {
       mesh_dim = (int) strtol(stringptr, &stringptr, 0);
     }
     stringptr = findfield(stringptr);
-    if (*stringptr == '\0') {
+    if(*stringptr == '\0') {
       nextras = 0;
     } else {
       nextras = (int) strtol(stringptr, &stringptr, 0);
     }
     stringptr = findfield(stringptr);
-    if (*stringptr == '\0') {
+    if(*stringptr == '\0') {
       nodemarkers = 0;
     } else {
       nodemarkers = (int) strtol(stringptr, &stringptr, 0);
     }
   }
 
-  if (invertices < 3) {
+  if(invertices < 3) {
     triError(_T("Input must have at least three input vertices"));
   }
-  if (mesh_dim != 2) {
+  if(mesh_dim != 2) {
     triError(_T("Triangle only works with two-dimensional meshes"));
   }
-  if (nextras == 0) {
+  if(nextras == 0) {
     m_b.weighted = 0;
   }
 
   initializevertexpool();
 
   // Read the vertices.
-  for (i = 0; i < invertices; i++) {
+  for(i = 0; i < invertices; i++) {
     vertexloop = vertices.alloc();
     stringptr = readline(inputline, infile, infilename);
-    if (i == 0) {
+    if(i == 0) {
       firstnode = (int) strtol(stringptr, &stringptr, 0);
-      if ((firstnode == 0) || (firstnode == 1)) {
+      if((firstnode == 0) || (firstnode == 1)) {
         m_b.firstnumber = firstnode;
       }
     }
     stringptr = findfield(stringptr);
-    if (*stringptr == '\0') {
+    if(*stringptr == '\0') {
       triError(_T("Vertex %d has no x coordinate"), m_b.firstnumber + i);
     }
     x = (REAL) strtod(stringptr, &stringptr);
     stringptr = findfield(stringptr);
-    if (*stringptr == '\0') {
+    if(*stringptr == '\0') {
       triError(_T("Vertex %d has no y coordinate"), m_b.firstnumber + i);
     }
     y = (REAL) strtod(stringptr, &stringptr);
     vertexloop[0] = x;
     vertexloop[1] = y;
     // Read the Vertex attributes.
-    for (j = 2; j < 2 + nextras; j++) {
+    for(j = 2; j < 2 + nextras; j++) {
       stringptr = findfield(stringptr);
-      if (*stringptr == '\0') {
+      if(*stringptr == '\0') {
         vertexloop[j] = 0.0;
       } else {
         vertexloop[j] = (REAL) strtod(stringptr, &stringptr);
       }
     }
-    if (nodemarkers) {
+    if(nodemarkers) {
       // Read a Vertex marker.
       stringptr = findfield(stringptr);
-      if (*stringptr == '\0') {
+      if(*stringptr == '\0') {
         setvertexmark(vertexloop, 0);
       } else {
         currentmarker = (int) strtol(stringptr, &stringptr, 0);
@@ -10257,7 +10257,7 @@ void Mesh::readnodes(char *nodefilename, char *polyfilename, FILE **polyfile) {
     }
     setvertextype(vertexloop, INPUTVERTEX);
     // Determine the smallest and largest x and y coordinates.
-    if (i == 0) {
+    if(i == 0) {
       xmin = xmax = x;
       ymin = ymax = y;
     } else {
@@ -10267,7 +10267,7 @@ void Mesh::readnodes(char *nodefilename, char *polyfilename, FILE **polyfile) {
       ymax = (y > ymax) ? y : ymax;
     }
   }
-  if (readnodefile) {
+  if(readnodefile) {
     fclose(infile);
   }
 
@@ -10295,19 +10295,19 @@ void Mesh::readholes(FILE *polyfile, char *polyfilename, REAL **hlist, int *hole
   // Read the holes.
   stringptr = readline(inputline, polyfile, polyfilename);
   *holes = (int) strtol(stringptr, &stringptr, 0);
-  if (*holes > 0) {
+  if(*holes > 0) {
     holelist = MALLOC(REAL, 2 * *holes);
     *hlist = holelist;
-    for (i = 0; i < 2 * *holes; i += 2) {
+    for(i = 0; i < 2 * *holes; i += 2) {
       stringptr = readline(inputline, polyfile, polyfilename);
       stringptr = findfield(stringptr);
-      if (*stringptr == '\0') {
+      if(*stringptr == '\0') {
         triError(_T("Hole %d has no x coordinate"), m_b.firstnumber + (i >> 1));
       } else {
         holelist[i] = (REAL) strtod(stringptr, &stringptr);
       }
       stringptr = findfield(stringptr);
-      if (*stringptr == '\0') {
+      if(*stringptr == '\0') {
         triError(_T("Hole %d has no y coordinate"), m_b.firstnumber + (i >> 1));
       } else {
         holelist[i + 1] = (REAL) strtod(stringptr, &stringptr);
@@ -10318,36 +10318,36 @@ void Mesh::readholes(FILE *polyfile, char *polyfilename, REAL **hlist, int *hole
   }
 
 #ifndef CDT_ONLY
-  if ((m_b.regionattrib || m_b.vararea) && !m_b.refine) {
+  if((m_b.regionattrib || m_b.vararea) && !m_b.refine) {
     // Read the area constraints.
     stringptr = readline(inputline, polyfile, polyfilename);
     *regions = (int) strtol(stringptr, &stringptr, 0);
-    if (*regions > 0) {
+    if(*regions > 0) {
       regionlist = MALLOC(REAL, 4 * *regions);
       *rlist = regionlist;
       index = 0;
-      for (i = 0; i < *regions; i++) {
+      for(i = 0; i < *regions; i++) {
         stringptr = readline(inputline, polyfile, polyfilename);
         stringptr = findfield(stringptr);
-        if (*stringptr == '\0') {
+        if(*stringptr == '\0') {
           triError(_T("Region %d has no x coordinate"), m_b.firstnumber + i);
         } else {
           regionlist[index++] = (REAL) strtod(stringptr, &stringptr);
         }
         stringptr = findfield(stringptr);
-        if (*stringptr == '\0') {
+        if(*stringptr == '\0') {
           triError(_T("Region %d has no y coordinate"), m_b.firstnumber + i);
         } else {
           regionlist[index++] = (REAL) strtod(stringptr, &stringptr);
         }
         stringptr = findfield(stringptr);
-        if (*stringptr == '\0') {
+        if(*stringptr == '\0') {
           triError(_T("Region %d has no region attribute or area constraint"), m_b.firstnumber + i);
         } else {
           regionlist[index++] = (REAL) strtod(stringptr, &stringptr);
         }
         stringptr = findfield(stringptr);
-        if (*stringptr == '\0') {
+        if(*stringptr == '\0') {
           regionlist[index] = regionlist[index - 1];
         } else {
           regionlist[index] = (REAL) strtod(stringptr, &stringptr);
@@ -10375,7 +10375,7 @@ void finishfile(FILE *outfile, int argc, char **argv) {
   int i;
 
   fprintf(outfile, "# Generated by");
-  for (i = 0; i < argc; i++) {
+  for(i = 0; i < argc; i++) {
     fprintf(outfile, " ");
     fputs(argv[i], outfile);
   }
@@ -10402,10 +10402,10 @@ void Mesh::transfernodes(REAL     *pointlist
   mesh_dim = 2;
   nextras = numberofpointattribs;
   readnodefile = 0;
-  if (invertices < 3) {
+  if(invertices < 3) {
     triError(_T("Input must have at least three input vertices"));
   }
-  if (nextras == 0) {
+  if(nextras == 0) {
     m_b.weighted = 0;
   }
 
@@ -10414,16 +10414,16 @@ void Mesh::transfernodes(REAL     *pointlist
   // Read the vertices.
   coordindex = 0;
   attribindex = 0;
-  for (i = 0; i < invertices; i++) {
+  for(i = 0; i < invertices; i++) {
     vertexloop = vertices.alloc();
     // Read the Vertex coordinates.
     x = vertexloop[0] = pointlist[coordindex++];
     y = vertexloop[1] = pointlist[coordindex++];
     // Read the Vertex attributes.
-    for (j = 0; j < numberofpointattribs; j++) {
+    for(j = 0; j < numberofpointattribs; j++) {
       vertexloop[2 + j] = pointattriblist[attribindex++];
     }
-    if (pointmarkerlist != NULL) {
+    if(pointmarkerlist != NULL) {
       // Read a Vertex marker.
       setvertexmark(vertexloop, pointmarkerlist[i]);
     } else {
@@ -10432,7 +10432,7 @@ void Mesh::transfernodes(REAL     *pointlist
     }
     setvertextype(vertexloop, INPUTVERTEX);
     // Determine the smallest and largest x and y coordinates.
-    if (i == 0) {
+    if(i == 0) {
       xmin = xmax = x;
       ymin = ymax = y;
     } else {
@@ -10478,26 +10478,26 @@ void Mesh::writenodes(char *nodefilename, int argc, char **argv)
   int vertexnumber;
   int i;
 
-  if (m_b.jettison) {
+  if(m_b.jettison) {
     outvertices = vertices.getItems() - undeads;
   } else {
     outvertices = vertices.getItems();
   }
 
 #ifdef TRILIBRARY
-  if (!m_b.quiet) {
+  if(!m_b.quiet) {
     printf("Writing vertices.\n");
   }
   // Allocate memory for output vertices if necessary.
-  if (*pointlist == NULL) {
+  if(*pointlist == NULL) {
     *pointlist = MALLOC(REAL, outvertices * 2);
   }
   // Allocate memory for output Vertex attributes if necessary.
-  if ((nextras > 0) && (*pointattriblist == NULL)) {
+  if((nextras > 0) && (*pointattriblist == NULL)) {
     *pointattriblist = MALLOC(REAL, outvertices * nextras);
   }
   // Allocate memory for output Vertex markers if necessary.
-  if (!m_b.nobound && (*pointmarkerlist == NULL)) {
+  if(!m_b.nobound && (*pointmarkerlist == NULL)) {
     *pointmarkerlist = MALLOC(int, outvertices);
   }
   plist = *pointlist;
@@ -10506,7 +10506,7 @@ void Mesh::writenodes(char *nodefilename, int argc, char **argv)
   coordindex = 0;
   attribindex = 0;
 #else // not TRILIBRARY
-  if (!m_b.quiet) {
+  if(!m_b.quiet) {
     printf("Writing %s.\n", nodefilename);
   }
   outfile = FOPEN(nodefilename, "w");
@@ -10519,17 +10519,17 @@ void Mesh::writenodes(char *nodefilename, int argc, char **argv)
   vertices.traversalinit();
   vertexnumber = m_b.firstnumber;
   vertexloop = vertextraverse();
-  while (vertexloop != NULL) {
-    if (!m_b.jettison || (vertextype(vertexloop) != UNDEADVERTEX)) {
+  while(vertexloop != NULL) {
+    if(!m_b.jettison || (vertextype(vertexloop) != UNDEADVERTEX)) {
 #ifdef TRILIBRARY
       // X and y coordinates.
       plist[coordindex++] = vertexloop[0];
       plist[coordindex++] = vertexloop[1];
       // Vertex attributes.
-      for (i = 0; i < nextras; i++) {
+      for(i = 0; i < nextras; i++) {
         palist[attribindex++] = vertexloop[2 + i];
       }
-      if (!m_b.nobound) {
+      if(!m_b.nobound) {
         // Copy the boundary marker.
         pmlist[vertexnumber - m_b.firstnumber] = vertexmark(vertexloop);
       }
@@ -10537,11 +10537,11 @@ void Mesh::writenodes(char *nodefilename, int argc, char **argv)
       // Vertex number, x and y coordinates.
       fprintf(outfile, "%4d    %.17g  %.17g", vertexnumber, vertexloop[0],
               vertexloop[1]);
-      for (i = 0; i < nextras; i++) {
+      for(i = 0; i < nextras; i++) {
         // Write an attribute.
         fprintf(outfile, "  %.17g", vertexloop[i + 2]);
       }
-      if (m_b.nobound) {
+      if(m_b.nobound) {
         fprintf(outfile, "\n");
       } else {
         // Write the boundary marker.
@@ -10576,9 +10576,9 @@ void Mesh::numbernodes() {
   vertices.traversalinit();
   vertexnumber = m_b.firstnumber;
   vertexloop = vertextraverse();
-  while (vertexloop != NULL) {
+  while(vertexloop != NULL) {
     setvertexmark(vertexloop, vertexnumber);
-    if (!m_b.jettison || (vertextype(vertexloop) != UNDEADVERTEX)) {
+    if(!m_b.jettison || (vertextype(vertexloop) != UNDEADVERTEX)) {
       vertexnumber++;
     }
     vertexloop = vertextraverse();
@@ -10607,15 +10607,15 @@ void Mesh::writeelements(char *elefilename, int argc, char **argv)
   int i;
 
 #ifdef TRILIBRARY
-  if (!m_b.quiet) {
+  if(!m_b.quiet) {
     printf("Writing triangles.\n");
   }
   // Allocate memory for output triangles if necessary.
-  if (*trianglelist == NULL) {
+  if(*trianglelist == NULL) {
     *trianglelist = MALLOC(int, triangles.getItems() * ((m_b.order + 1) * (m_b.order + 2) / 2));
   }
   // Allocate memory for output Triangle attributes if necessary.
-  if ((eextras > 0) && (*triangleattriblist == NULL)) {
+  if((eextras > 0) && (*triangleattriblist == NULL)) {
     *triangleattriblist = MALLOC(REAL, triangles.getItems() * eextras);
   }
   tlist = *trianglelist;
@@ -10623,7 +10623,7 @@ void Mesh::writeelements(char *elefilename, int argc, char **argv)
   vertexindex = 0;
   attribindex = 0;
 #else // not TRILIBRARY
-  if (!m_b.quiet) {
+  if(!m_b.quiet) {
     printf("Writing %s.\n", elefilename);
   }
   outfile = FOPEN(elefilename, "w");
@@ -10636,11 +10636,11 @@ void Mesh::writeelements(char *elefilename, int argc, char **argv)
   triangleloop.tri = triangletraverse();
   triangleloop.orient = 0;
   elementnumber = m_b.firstnumber;
-  while (triangleloop.tri != NULL) {
+  while(triangleloop.tri != NULL) {
     org(triangleloop, p1);
     dest(triangleloop, p2);
     apex(triangleloop, p3);
-    if (m_b.order == 1) {
+    if(m_b.order == 1) {
 #ifdef TRILIBRARY
       tlist[vertexindex++] = vertexmark(p1);
       tlist[vertexindex++] = vertexmark(p2);
@@ -10669,11 +10669,11 @@ void Mesh::writeelements(char *elefilename, int argc, char **argv)
     }
 
 #ifdef TRILIBRARY
-    for (i = 0; i < eextras; i++) {
+    for(i = 0; i < eextras; i++) {
       talist[attribindex++] = elemattribute(triangleloop, i);
     }
 #else // not TRILIBRARY
-    for (i = 0; i < eextras; i++) {
+    for(i = 0; i < eextras; i++) {
       fprintf(outfile, "  %.17g", elemattribute(triangleloop, i));
     }
     fprintf(outfile, "\n");
@@ -10713,22 +10713,22 @@ void Mesh::writepoly(char     *polyfilename
   long subsegnumber;
 
 #ifdef TRILIBRARY
-  if (!m_b.quiet) {
+  if(!m_b.quiet) {
     printf("Writing segments.\n");
   }
   // Allocate memory for output segments if necessary.
-  if (*segmentlist == NULL) {
+  if(*segmentlist == NULL) {
     *segmentlist = MALLOC(int, subsegs.getItems() * 2);
   }
   // Allocate memory for output segment markers if necessary.
-  if (!m_b.nobound && (*segmentmarkerlist == NULL)) {
+  if(!m_b.nobound && (*segmentmarkerlist == NULL)) {
     *segmentmarkerlist = MALLOC(int, subsegs.getItems());
   }
   slist = *segmentlist;
   smlist = *segmentmarkerlist;
   index = 0;
 #else // not TRILIBRARY
-  if (!m_b.quiet) {
+  if(!m_b.quiet) {
     printf("Writing %s.\n", polyfilename);
   }
   outfile = FOPEN(polyfilename, "w");
@@ -10744,20 +10744,20 @@ void Mesh::writepoly(char     *polyfilename
   subsegloop.ss = subsegtraverse();
   subsegloop.ssorient = 0;
   subsegnumber = m_b.firstnumber;
-  while (subsegloop.ss != NULL) {
+  while(subsegloop.ss != NULL) {
     sorg(subsegloop, endpoint1);
     sdest(subsegloop, endpoint2);
 #ifdef TRILIBRARY
     // Copy indices of the segment's two endpoints.
     slist[index++] = vertexmark(endpoint1);
     slist[index++] = vertexmark(endpoint2);
-    if (!m_b.nobound) {
+    if(!m_b.nobound) {
       // Copy the boundary marker.
       smlist[subsegnumber - m_b.firstnumber] = mark(subsegloop);
     }
 #else // not TRILIBRARY
     // Segment number, indices of its two endpoints, and possibly a marker.
-    if (m_b.nobound) {
+    if(m_b.nobound) {
       fprintf(outfile, "%4ld    %4d  %4d\n", subsegnumber, vertexmark(endpoint1), vertexmark(endpoint2));
     } else {
       fprintf(outfile, "%4ld    %4d  %4d    %4d\n"
@@ -10772,8 +10772,8 @@ void Mesh::writepoly(char     *polyfilename
 #ifndef TRILIBRARY
 #ifndef CDT_ONLY
   fprintf(outfile, "%d\n", holes);
-  if (holes > 0) {
-    for (holenumber = 0; holenumber < holes; holenumber++) {
+  if(holes > 0) {
+    for(holenumber = 0; holenumber < holes; holenumber++) {
       // Hole number, x and y coordinates.
       fprintf(outfile, "%4ld   %.17g  %.17g\n"
              ,m_b.firstnumber + holenumber
@@ -10781,9 +10781,9 @@ void Mesh::writepoly(char     *polyfilename
              ,holelist[2 * holenumber + 1]);
     }
   }
-  if (regions > 0) {
+  if(regions > 0) {
     fprintf(outfile, "%d\n", regions);
-    for (regionnumber = 0; regionnumber < regions; regionnumber++) {
+    for(regionnumber = 0; regionnumber < regions; regionnumber++) {
       // Region number, x and y coordinates, attribute, maximum area.
       fprintf(outfile, "%4ld   %.17g  %.17g  %.17g  %.17g\n"
              ,m_b.firstnumber + regionnumber
@@ -10821,22 +10821,22 @@ void Mesh::writeedges(char *edgefilename, int argc, char **argv)
   SubSeg sptr;                      // Temporary variable used by tspivot().
 
 #ifdef TRILIBRARY
-  if (!m_b.quiet) {
+  if(!m_b.quiet) {
     printf("Writing edges.\n");
   }
   // Allocate memory for edges if necessary.
-  if (*edgelist == NULL) {
+  if(*edgelist == NULL) {
     *edgelist = MALLOC(int, edges * 2);
   }
   // Allocate memory for edge markers if necessary.
-  if (!m_b.nobound && (*edgemarkerlist == NULL)) {
+  if(!m_b.nobound && (*edgemarkerlist == NULL)) {
     *edgemarkerlist = MALLOC(int, edges);
   }
   elist = *edgelist;
   emlist = *edgemarkerlist;
   index = 0;
 #else // not TRILIBRARY
-  if (!m_b.quiet) {
+  if(!m_b.quiet) {
     printf("Writing %s.\n", edgefilename);
   }
   outfile = FOPEN(edgefilename, "w");
@@ -10853,17 +10853,17 @@ void Mesh::writeedges(char *edgefilename, int argc, char **argv)
   // adjacent Triangle, operate on the edge only if the current Triangle
   // has a smaller pointer than its neighbor. This way, each edge is
   // considered only once.
-  while (triangleloop.tri != NULL) {
-    for (triangleloop.orient = 0; triangleloop.orient < 3; triangleloop.orient++) {
+  while(triangleloop.tri != NULL) {
+    for(triangleloop.orient = 0; triangleloop.orient < 3; triangleloop.orient++) {
       sym(triangleloop, trisym);
-      if ((triangleloop.tri < trisym.tri) || (trisym.tri == dummytri)) {
+      if((triangleloop.tri < trisym.tri) || (trisym.tri == dummytri)) {
         org(triangleloop, p1);
         dest(triangleloop, p2);
 #ifdef TRILIBRARY
         elist[index++] = vertexmark(p1);
         elist[index++] = vertexmark(p2);
 #endif // TRILIBRARY
-        if (m_b.nobound) {
+        if(m_b.nobound) {
 #ifndef TRILIBRARY
           // Edge number, indices of two endpoints.
           fprintf(outfile, "%4ld   %d  %d\n", edgenumber, vertexmark(p1), vertexmark(p2));
@@ -10871,9 +10871,9 @@ void Mesh::writeedges(char *edgefilename, int argc, char **argv)
         } else {
           // Edge number, indices of two endpoints, and a boundary marker.
           // If there's no subsegment, the boundary marker is zero.
-          if (m_b.usesegments) {
+          if(m_b.usesegments) {
             tspivot(triangleloop, checkmark);
-            if (checkmark.ss == dummysub) {
+            if(checkmark.ss == dummysub) {
 #ifdef TRILIBRARY
               emlist[edgenumber - m_b.firstnumber] = 0;
 #else // not TRILIBRARY
@@ -10951,15 +10951,15 @@ void Mesh::writevoronoi(char *vnodefilename, char *vedgefilename, int argc, char
   Triangle ptr;                         // Temporary variable used by sym().
 
 #ifdef TRILIBRARY
-  if (!m_b.quiet) {
+  if(!m_b.quiet) {
     printf("Writing Voronoi vertices.\n");
   }
   // Allocate memory for Voronoi vertices if necessary.
-  if (*vpointlist == NULL) {
+  if(*vpointlist == NULL) {
     *vpointlist = MALLOC(REAL, triangles.getItems() * 2);
   }
   // Allocate memory for Voronoi Vertex attributes if necessary.
-  if (*vpointattriblist == NULL) {
+  if(*vpointattriblist == NULL) {
     *vpointattriblist = MALLOC(REAL, triangles.getItems() * nextras);
   }
   *vpointmarkerlist = NULL;
@@ -10968,7 +10968,7 @@ void Mesh::writevoronoi(char *vnodefilename, char *vedgefilename, int argc, char
   coordindex = 0;
   attribindex = 0;
 #else // not TRILIBRARY
-  if (!m_b.quiet) {
+  if(!m_b.quiet) {
     printf("Writing %s.\n", vnodefilename);
   }
   outfile = FOPEN(vnodefilename, "w");
@@ -10980,7 +10980,7 @@ void Mesh::writevoronoi(char *vnodefilename, char *vedgefilename, int argc, char
   triangleloop.tri = triangletraverse();
   triangleloop.orient = 0;
   vnodenumber = m_b.firstnumber;
-  while (triangleloop.tri != NULL) {
+  while(triangleloop.tri != NULL) {
     org(triangleloop, torg);
     dest(triangleloop, tdest);
     apex(triangleloop, tapex);
@@ -10989,14 +10989,14 @@ void Mesh::writevoronoi(char *vnodefilename, char *vedgefilename, int argc, char
     // X and y coordinates.
     plist[coordindex++] = circumcenter[0];
     plist[coordindex++] = circumcenter[1];
-    for (i = 2; i < 2 + nextras; i++) {
+    for(i = 2; i < 2 + nextras; i++) {
       // Interpolate the Vertex attributes at the circumcenter.
       palist[attribindex++] = torg[i] + xi * (tdest[i] - torg[i]) + eta * (tapex[i] - torg[i]);
     }
 #else // not TRILIBRARY
     // Voronoi Vertex number, x and y coordinates.
     fprintf(outfile, "%4ld    %.17g  %.17g", vnodenumber, circumcenter[0], circumcenter[1]);
-    for (i = 2; i < 2 + nextras; i++) {
+    for(i = 2; i < 2 + nextras; i++) {
       // Interpolate the Vertex attributes at the circumcenter.
       fprintf(outfile, "  %.17g", torg[i] + xi * (tdest[i] - torg[i]) + eta * (tapex[i] - torg[i]));
     }
@@ -11013,23 +11013,23 @@ void Mesh::writevoronoi(char *vnodefilename, char *vedgefilename, int argc, char
 #endif // not TRILIBRARY
 
 #ifdef TRILIBRARY
-  if (!m_b.quiet) {
+  if(!m_b.quiet) {
     printf("Writing Voronoi edges.\n");
   }
   // Allocate memory for output Voronoi edges if necessary.
-  if (*vedgelist == NULL) {
+  if(*vedgelist == NULL) {
     *vedgelist = MALLOC(int, edges * 2);
   }
   *vedgemarkerlist = NULL;
   // Allocate memory for output Voronoi norms if necessary.
-  if (*vnormlist == NULL) {
+  if(*vnormlist == NULL) {
     *vnormlist = MALLOC(REAL, edges * 2);
   }
   elist = *vedgelist;
   normlist = *vnormlist;
   coordindex = 0;
 #else // not TRILIBRARY
-  if (!m_b.quiet) {
+  if(!m_b.quiet) {
     printf("Writing %s.\n", vedgefilename);
   }
   outfile = FOPEN(vedgefilename, "w");
@@ -11046,13 +11046,13 @@ void Mesh::writevoronoi(char *vnodefilename, char *vedgefilename, int argc, char
   // adjacent Triangle, operate on the edge only if the current Triangle
   // has a smaller pointer than its neighbor. This way, each edge is
   // considered only once.
-  while (triangleloop.tri != NULL) {
-    for (triangleloop.orient = 0; triangleloop.orient < 3; triangleloop.orient++) {
+  while(triangleloop.tri != NULL) {
+    for(triangleloop.orient = 0; triangleloop.orient < 3; triangleloop.orient++) {
       sym(triangleloop, trisym);
-      if ((triangleloop.tri < trisym.tri) || (trisym.tri == dummytri)) {
+      if((triangleloop.tri < trisym.tri) || (trisym.tri == dummytri)) {
         // Find the number of this Triangle (and Voronoi Vertex).
         p1 = * (int *) (triangleloop.tri + 6);
-        if (trisym.tri == dummytri) {
+        if(trisym.tri == dummytri) {
           org(triangleloop, torg);
           dest(triangleloop, tdest);
 #ifdef TRILIBRARY
@@ -11109,17 +11109,17 @@ void Mesh::writeneighbors(char *neighborfilename, int argc, char **argv)
   Triangle ptr;                         // Temporary variable used by sym().
 
 #ifdef TRILIBRARY
-  if (!m_b.quiet) {
+  if(!m_b.quiet) {
     printf("Writing neighbors.\n");
   }
   // Allocate memory for neighbors if necessary.
-  if (*neighborlist == NULL) {
+  if(*neighborlist == NULL) {
     *neighborlist = MALLOC(int, triangles.getItems() * 3);
   }
   nlist = *neighborlist;
   index = 0;
 #else // not TRILIBRARY
-  if (!m_b.quiet) {
+  if(!m_b.quiet) {
     printf("Writing %s.\n", neighborfilename);
   }
   outfile = FOPEN(neighborfilename, "w");
@@ -11131,7 +11131,7 @@ void Mesh::writeneighbors(char *neighborfilename, int argc, char **argv)
   triangleloop.tri = triangletraverse();
   triangleloop.orient = 0;
   elementnumber = m_b.firstnumber;
-  while (triangleloop.tri != NULL) {
+  while(triangleloop.tri != NULL) {
     * (int *) (triangleloop.tri + 6) = (int) elementnumber;
     triangleloop.tri = triangletraverse();
     elementnumber++;
@@ -11141,7 +11141,7 @@ void Mesh::writeneighbors(char *neighborfilename, int argc, char **argv)
   triangles.traversalinit();
   triangleloop.tri = triangletraverse();
   elementnumber = m_b.firstnumber;
-  while (triangleloop.tri != NULL) {
+  while(triangleloop.tri != NULL) {
     triangleloop.orient = 1;
     sym(triangleloop, trisym);
     neighbor1 = * (int *) (trisym.tri + 6);
@@ -11185,11 +11185,11 @@ void Mesh::writeoff(char *offfilename, int argc, char **argv) {
   Vertex p1, p2, p3;
   long outvertices;
 
-  if (!m_b.quiet) {
+  if(!m_b.quiet) {
     printf("Writing %s.\n", offfilename);
   }
 
-  if (m_b.jettison) {
+  if(m_b.jettison) {
     outvertices = vertices.getItems() - undeads;
   } else {
     outvertices = vertices.getItems();
@@ -11202,8 +11202,8 @@ void Mesh::writeoff(char *offfilename, int argc, char **argv) {
   // Write the vertices.
   vertices.traversalinit();
   vertexloop = vertextraverse();
-  while (vertexloop != NULL) {
-    if (!m_b.jettison || (vertextype(vertexloop) != UNDEADVERTEX)) {
+  while(vertexloop != NULL) {
+    if(!m_b.jettison || (vertextype(vertexloop) != UNDEADVERTEX)) {
       // The "0.0" is here because the OFF format uses 3D coordinates.
       fprintf(outfile, " %.17g  %.17g  %.17g\n", vertexloop[0], vertexloop[1], 0.0);
     }
@@ -11214,7 +11214,7 @@ void Mesh::writeoff(char *offfilename, int argc, char **argv) {
   triangles.traversalinit();
   triangleloop.tri = triangletraverse();
   triangleloop.orient = 0;
-  while (triangleloop.tri != NULL) {
+  while(triangleloop.tri != NULL) {
     org(triangleloop, p1);
     dest(triangleloop, p2);
     apex(triangleloop, p3);
@@ -11261,11 +11261,11 @@ String Mesh::getQualityStatistics() {
   result = _T("Mesh quality statistics:\n\n");
   radconst = PI / 18.0;
   degconst = 180.0 / PI;
-  for (i = 0; i < 8; i++) {
+  for(i = 0; i < 8; i++) {
     cossquaretable[i] = cos(radconst * (REAL) (i + 1));
     cossquaretable[i] = cossquaretable[i] * cossquaretable[i];
   }
-  for (i = 0; i < 18; i++) {
+  for(i = 0; i < 18; i++) {
     angletable[i] = 0;
   }
 
@@ -11277,7 +11277,7 @@ String Mesh::getQualityStatistics() {
   ratiotable[10] =    100.0;      ratiotable[11] =   300.0;
   ratiotable[12] =   1000.0;      ratiotable[13] = 10000.0;
   ratiotable[14] = 100000.0;      ratiotable[15] =     0.0;
-  for (i = 0; i < 16; i++) {
+  for(i = 0; i < 16; i++) {
     aspecttable[i] = 0;
   }
 
@@ -11296,72 +11296,72 @@ String Mesh::getQualityStatistics() {
   triangles.traversalinit();
   triangleloop.tri = triangletraverse();
   triangleloop.orient = 0;
-  while (triangleloop.tri != NULL) {
+  while(triangleloop.tri != NULL) {
     org(triangleloop, p[0]);
     dest(triangleloop, p[1]);
     apex(triangleloop, p[2]);
     trilongest2 = 0.0;
 
-    for (i = 0; i < 3; i++) {
+    for(i = 0; i < 3; i++) {
       j = plus1mod3[i];
       k = minus1mod3[i];
       dx[i] = p[j][0] - p[k][0];
       dy[i] = p[j][1] - p[k][1];
       edgelength[i] = dx[i] * dx[i] + dy[i] * dy[i];
-      if (edgelength[i] > trilongest2) {
+      if(edgelength[i] > trilongest2) {
         trilongest2 = edgelength[i];
       }
-      if (edgelength[i] > longest) {
+      if(edgelength[i] > longest) {
         longest = edgelength[i];
       }
-      if (edgelength[i] < shortest) {
+      if(edgelength[i] < shortest) {
         shortest = edgelength[i];
       }
     }
 
     triarea = counterclockwise(p[0], p[1], p[2]);
-    if (triarea < smallestarea) {
+    if(triarea < smallestarea) {
       smallestarea = triarea;
     }
-    if (triarea > biggestarea) {
+    if(triarea > biggestarea) {
       biggestarea = triarea;
     }
     triminaltitude2 = triarea * triarea / trilongest2;
-    if (triminaltitude2 < minaltitude) {
+    if(triminaltitude2 < minaltitude) {
       minaltitude = triminaltitude2;
     }
     triaspect2 = trilongest2 / triminaltitude2;
-    if (triaspect2 > worstaspect) {
+    if(triaspect2 > worstaspect) {
       worstaspect = triaspect2;
     }
     aspectindex = 0;
-    while ((triaspect2 > ratiotable[aspectindex] * ratiotable[aspectindex]) && (aspectindex < 15)) {
+    while((triaspect2 > ratiotable[aspectindex] * ratiotable[aspectindex]) && (aspectindex < 15)) {
       aspectindex++;
     }
     aspecttable[aspectindex]++;
 
-    for (i = 0; i < 3; i++) {
+    for(i = 0; i < 3; i++) {
       j = plus1mod3[i];
       k = minus1mod3[i];
       dotproduct = dx[j] * dx[k] + dy[j] * dy[k];
       cossquare = dotproduct * dotproduct / (edgelength[j] * edgelength[k]);
       tendegree = 8;
-      for (ii = 7; ii >= 0; ii--) {
-        if (cossquare > cossquaretable[ii]) {
+      for(ii = 7; ii >= 0; ii--) {
+        if(cossquare > cossquaretable[ii]) {
           tendegree = ii;
         }
       }
-      if (dotproduct <= 0.0) {
+      if(dotproduct <= 0.0) {
         angletable[tendegree]++;
-        if (cossquare > smallestangle) {
+        if(cossquare > smallestangle) {
           smallestangle = cossquare;
         }
-        if (acutebiggest && (cossquare < biggestangle)) {
+        if(acutebiggest && (cossquare < biggestangle)) {
           biggestangle = cossquare;
         }
       } else {
         angletable[17 - tendegree]++;
-        if (acutebiggest || (cossquare > biggestangle)) {
+        if(acutebiggest || (cossquare > biggestangle)) {
           biggestangle = cossquare;
           acutebiggest = 0;
         }
@@ -11376,15 +11376,15 @@ String Mesh::getQualityStatistics() {
   worstaspect = sqrt(worstaspect);
   smallestarea *= 0.5;
   biggestarea *= 0.5;
-  if (smallestangle >= 1.0) {
+  if(smallestangle >= 1.0) {
     smallestangle = 0.0;
   } else {
     smallestangle = degconst * acos(sqrt(smallestangle));
   }
-  if (biggestangle >= 1.0) {
+  if(biggestangle >= 1.0) {
     biggestangle = 180.0;
   } else {
-    if (acutebiggest) {
+    if(acutebiggest) {
       biggestangle = degconst * acos(sqrt(biggestangle));
     } else {
       biggestangle = 180.0 - degconst * acos(sqrt(biggestangle));
@@ -11400,7 +11400,7 @@ String Mesh::getQualityStatistics() {
   result += format(_T("  1.1547 - %-6.6g    :  %8d    | %6.6g - %-6.6g     :  %8d\n")
                   , ratiotable[0], aspecttable[0], ratiotable[7], ratiotable[8]
                   , aspecttable[8]);
-  for (i = 1; i < 7; i++) {
+  for(i = 1; i < 7; i++) {
     result += format(_T("  %6.6g - %-6.6g    :  %8d    | %6.6g - %-6.6g     :  %8d\n")
                     , ratiotable[i - 1], ratiotable[i], aspecttable[i]
                     , ratiotable[i + 7], ratiotable[i + 8], aspecttable[i + 8]);
@@ -11411,7 +11411,7 @@ String Mesh::getQualityStatistics() {
   result += format(_T("  (Aspect ratio is longest edge divided by shortest altitude)\n\n"));
   result += format(_T("  Smallest angle: %15.5g   |  Largest angle: %15.5g\n\n"), smallestangle, biggestangle);
   result += _T("  Angle histogram:\n");
-  for (i = 0; i < 9; i++) {
+  for(i = 0; i < 9; i++) {
     result += format(_T("    %3d - %3d degrees:  %8d    |    %3d - %3d degrees:  %8d\n")
                     ,i * 10, i * 10 + 10, angletable[i]
                     ,i * 10 + 90, i * 10 + 100, angletable[i + 9]);
@@ -11425,12 +11425,12 @@ String Mesh::getStatistics() {
   String result;
   result = _T("\nStatistics:\n\n");
   result += format(_T("  Input vertices: %d\n"), invertices);
-  if (m_b.refine) {
+  if(m_b.refine) {
     result += format(_T("  Input triangles: %d\n"), inelements);
   }
-  if (m_b.poly) {
+  if(m_b.poly) {
     result += format(_T("  Input segments: %d\n"), insegments);
-    if (!m_b.refine) {
+    if(!m_b.refine) {
       result += format(_T("  Input holes: %d\n"), holes);
     }
   }
@@ -11439,33 +11439,33 @@ String Mesh::getStatistics() {
   result += format(_T("  Mesh triangles: %ld\n"), triangles.getItems());
   result += format(_T("  Mesh edges: %ld\n"), edges);
   result += format(_T("  Mesh exterior boundary edges: %ld\n"), hullsize);
-  if (m_b.poly || m_b.refine) {
+  if(m_b.poly || m_b.refine) {
     result += format(_T("  Mesh interior boundary edges: %ld\n"), subsegs.getItems() - hullsize);
     result += format(_T("  Mesh subsegments (constrained edges): %ld\n"), subsegs.getItems());
   }
   result += _T("\n");
 
-  if (m_b.verbose) {
+  if(m_b.verbose) {
     result += getQualityStatistics();
     result += _T("Memory allocation statistics\n\n");
     result += format(_T("  Maximum number of vertices: %ld\n"), vertices.getMaxItems());
     result += format(_T("  Maximum number of triangles: %ld\n"), triangles.getMaxItems());
-    if (subsegs.getMaxItems() > 0) {
+    if(subsegs.getMaxItems() > 0) {
       result += format(_T("  Maximum number of subsegments: %ld\n"), subsegs.getMaxItems());
     }
-    if (viri.getMaxItems() > 0) {
+    if(viri.getMaxItems() > 0) {
       result += format(_T("  Maximum number of viri: %ld\n"), viri.getMaxItems());
     }
-    if (badsubsegs.getMaxItems() > 0) {
+    if(badsubsegs.getMaxItems() > 0) {
       result += format(_T("  Maximum number of encroached subsegments: %ld\n"), badsubsegs.getMaxItems());
     }
-    if (badtriangles.getMaxItems() > 0) {
+    if(badtriangles.getMaxItems() > 0) {
       result += format(_T("  Maximum number of bad triangles: %ld\n"), badtriangles.getMaxItems());
     }
-    if (flipstackers.getMaxItems() > 0) {
+    if(flipstackers.getMaxItems() > 0) {
       result += format(_T("  Maximum number of stacked Triangle flips: %ld\n"), flipstackers.getMaxItems());
     }
-    if (splaynodes.getMaxItems() > 0) {
+    if(splaynodes.getMaxItems() > 0) {
       result += format(_T("  Maximum number of splay tree nodes: %ld\n"), splaynodes.getMaxItems());
     }
     result += format(_T("  Approximate heap memory use (bytes): %ld\n\n")
@@ -11479,19 +11479,19 @@ String Mesh::getStatistics() {
                    + splaynodes.getMaxItems()   * splaynodes.getItemBytes());
 
     result += _T("Algorithmic statistics:\n\n");
-    if (!m_b.weighted) {
+    if(!m_b.weighted) {
       result += format(_T("  Number of incircle tests: %ld\n"), incirclecount);
     } else {
       result += format(_T("  Number of 3D orientation tests: %ld\n"), orient3dcount);
     }
     result += format(_T("  Number of 2D orientation tests: %ld\n"), counterclockcount);
-    if (hyperbolacount > 0) {
+    if(hyperbolacount > 0) {
       result += format(_T("  Number of right-of-hyperbola tests: %ld\n"), hyperbolacount);
     }
-    if (circletopcount > 0) {
+    if(circletopcount > 0) {
       result += format(_T("  Number of circle top computations: %ld\n"), circletopcount);
     }
-    if (circumcentercount > 0) {
+    if(circumcentercount > 0) {
       result += format(_T("  Number of Triangle circumcenter computations: %ld\n"), circumcentercount);
     }
     result += _T("\n");
@@ -11565,7 +11565,7 @@ int triangleMain(int argc, char **argv)
 #endif // not TRILIBRARY
 
 #ifndef NO_TIMER
-  if (!b.quiet) {
+  if(!b.quiet) {
     gettimeofday(&tv1, &tz);
   }
 #endif // not NO_TIMER
@@ -11573,7 +11573,7 @@ int triangleMain(int argc, char **argv)
 #ifdef CDT_ONLY
   m.hullsize = m.delaunay();                // Triangulate the vertices.
 #else // not CDT_ONLY
-  if (b.refine) {                           // Read and reconstruct a mesh.
+  if(b.refine) {                           // Read and reconstruct a mesh.
 
 #ifdef TRILIBRARY
     m.hullsize = m.reconstruct(in->trianglelist
@@ -11596,9 +11596,9 @@ int triangleMain(int argc, char **argv)
 #endif // not CDT_ONLY
 
 #ifndef NO_TIMER
-  if (!b.quiet) {
+  if(!b.quiet) {
     gettimeofday(&tv2, &tz);
-    if (b.refine) {
+    if(b.refine) {
       printf("Mesh reconstruction");
     } else {
       printf("Delaunay");
@@ -11613,9 +11613,9 @@ int triangleMain(int argc, char **argv)
   m.infvertex2 = NULL;
   m.infvertex3 = NULL;
 
-  if (b.usesegments) {
+  if(b.usesegments) {
     m.checksegments = 1;                // Segments will be introduced next.
-    if (!b.refine) {
+    if(!b.refine) {
       // Insert PSLG segments and/or convex hull segments.
 #ifdef TRILIBRARY
       m.formskeleton(in->segmentlist, in->segmentmarkerlist, in->numberofsegments);
@@ -11626,16 +11626,16 @@ int triangleMain(int argc, char **argv)
   }
 
 #ifndef NO_TIMER
-  if (!b.quiet) {
+  if(!b.quiet) {
     gettimeofday(&tv3, &tz);
-    if (b.usesegments && !b.refine) {
+    if(b.usesegments && !b.refine) {
       printf("Segment milliseconds:  %ld\n",
              1000l * (tv3.tv_sec - tv2.tv_sec) + (tv3.tv_usec - tv2.tv_usec) / 1000l);
     }
   }
 #endif // not NO_TIMER
 
-  if (b.poly && (m.triangles.getItems() > 0)) {
+  if(b.poly && (m.triangles.getItems() > 0)) {
 #ifdef TRILIBRARY
     holearray   = in->holelist;
     m.holes     = in->numberofholes;
@@ -11649,7 +11649,7 @@ int triangleMain(int argc, char **argv)
                ,&regionarray
                ,&m.regions);
 #endif // not TRILIBRARY
-    if (!b.refine) {
+    if(!b.refine) {
       // Carve out holes and concavities.
       m.carveholes(holearray, m.holes, regionarray, m.regions);
     }
@@ -11662,9 +11662,9 @@ int triangleMain(int argc, char **argv)
   }
 
 #ifndef NO_TIMER
-  if (!b.quiet) {
+  if(!b.quiet) {
     gettimeofday(&tv4, &tz);
-    if (b.poly && !b.refine) {
+    if(b.poly && !b.refine) {
       printf("Hole milliseconds:  %ld\n"
             , 1000l * (tv4.tv_sec - tv3.tv_sec) + (tv4.tv_usec - tv3.tv_usec) / 1000l);
     }
@@ -11672,16 +11672,16 @@ int triangleMain(int argc, char **argv)
 #endif // not NO_TIMER
 
 #ifndef CDT_ONLY
-  if (b.quality && (m.triangles.getItems() > 0)) {
+  if(b.quality && (m.triangles.getItems() > 0)) {
     m.enforcequality();           // Enforce angle and area constraints.
   }
 #endif // not CDT_ONLY
 
 #ifndef NO_TIMER
-  if (!b.quiet) {
+  if(!b.quiet) {
     gettimeofday(&tv5, &tz);
 #ifndef CDT_ONLY
-    if (b.quality) {
+    if(b.quality) {
       printf("Quality milliseconds:  %ld\n",
              1000l * (tv5.tv_sec - tv4.tv_sec) + (tv5.tv_usec - tv4.tv_usec) / 1000l);
     }
@@ -11692,15 +11692,15 @@ int triangleMain(int argc, char **argv)
   // Calculate the number of edges.
   m.edges = (3l * m.triangles.getItems() + m.hullsize) / 2l;
 
-  if (b.order > 1) {
+  if(b.order > 1) {
     m.highorder();       // Promote elements to higher polynomial order.
   }
-  if (!b.quiet) {
+  if(!b.quiet) {
     printf("\n");
   }
 
 #ifdef TRILIBRARY
-  if (b.jettison) {
+  if(b.jettison) {
     out->numberofpoints = m.vertices.getItems() - m.undeads;
   } else {
     out->numberofpoints = m.vertices.getItems();
@@ -11710,12 +11710,12 @@ int triangleMain(int argc, char **argv)
   out->numberofcorners = (b.order + 1) * (b.order + 2) / 2;
   out->numberoftriangleattributes = m.eextras;
   out->numberofedges = m.edges;
-  if (b.usesegments) {
+  if(b.usesegments) {
     out->numberofsegments = m.subsegs.getItems();
   } else {
     out->numberofsegments = m.hullsize;
   }
-  if (vorout != NULL) {
+  if(vorout != NULL) {
     vorout->numberofpoints          = m.triangles.getItems();
     vorout->numberofpointattributes = m.nextras;
     vorout->numberofedges           = m.edges;
@@ -11723,8 +11723,8 @@ int triangleMain(int argc, char **argv)
 #endif // TRILIBRARY
   // If not using iteration numbers, don't write a .node file if one was
   // read, because the original one would be overwritten!
-  if (b.nonodewritten || (b.noiterationnum && m.readnodefile)) {
-    if (!b.quiet) {
+  if(b.nonodewritten || (b.noiterationnum && m.readnodefile)) {
+    if(!b.quiet) {
 #ifdef TRILIBRARY
       printf("NOT writing vertices.\n");
 #else // not TRILIBRARY
@@ -11740,8 +11740,8 @@ int triangleMain(int argc, char **argv)
     m.writenodes(b.outnodefilename, argc, argv);
 #endif // TRILIBRARY
   }
-  if (b.noelewritten) {
-    if (!b.quiet) {
+  if(b.noelewritten) {
+    if(!b.quiet) {
 #ifdef TRILIBRARY
       printf("NOT writing triangles.\n");
 #else // not TRILIBRARY
@@ -11755,12 +11755,12 @@ int triangleMain(int argc, char **argv)
     m.writeelements(b.outelefilename, argc, argv);
 #endif // not TRILIBRARY
   }
-  // The -c switch (convex switch) causes a PSLG to be written
+  // The -c switch(convex switch) causes a PSLG to be written
   // even if none was read.
-  if (b.poly || b.convex) {
+  if(b.poly || b.convex) {
     // If not using iteration numbers, don't overwrite the .poly file.
-    if (b.nopolywritten || b.noiterationnum) {
-      if (!b.quiet) {
+    if(b.nopolywritten || b.noiterationnum) {
+      if(!b.quiet) {
 #ifdef TRILIBRARY
         printf("NOT writing segments.\n");
 #else // not TRILIBRARY
@@ -11772,7 +11772,7 @@ int triangleMain(int argc, char **argv)
       m.writepoly(&out->segmentlist, &out->segmentmarkerlist);
       out->numberofholes   = m.holes;
       out->numberofregions = m.regions;
-      if (b.poly) {
+      if(b.poly) {
         out->holelist   = in->holelist;
         out->regionlist = in->regionlist;
       } else {
@@ -11791,25 +11791,25 @@ int triangleMain(int argc, char **argv)
   }
 #ifndef TRILIBRARY
 #ifndef CDT_ONLY
-  if (m.regions > 0) {
+  if(m.regions > 0) {
     trifree((VOID*)regionarray);
   }
 #endif // not CDT_ONLY
-  if (m.holes > 0) {
+  if(m.holes > 0) {
     trifree((VOID *)holearray);
   }
-  if (b.geomview) {
+  if(b.geomview) {
     m.writeoff(b.offfilename, argc, argv);
   }
 #endif // not TRILIBRARY
-  if (b.edgesout) {
+  if(b.edgesout) {
 #ifdef TRILIBRARY
     m.writeedges(&out->edgelist, &out->edgemarkerlist);
 #else // not TRILIBRARY
     m.writeedges(b.edgefilename, argc, argv);
 #endif // not TRILIBRARY
   }
-  if (b.voronoi) {
+  if(b.voronoi) {
 #ifdef TRILIBRARY
     m.writevoronoi(&vorout->pointlist
                   ,&vorout->pointattributelist
@@ -11821,7 +11821,7 @@ int triangleMain(int argc, char **argv)
     m.writevoronoi(b.vnodefilename, b.vedgefilename, argc, argv);
 #endif // not TRILIBRARY
   }
-  if (b.neighbors) {
+  if(b.neighbors) {
 #ifdef TRILIBRARY
     m.writeneighbors(&out->neighborlist);
 #else // not TRILIBRARY
@@ -11829,7 +11829,7 @@ int triangleMain(int argc, char **argv)
 #endif // not TRILIBRARY
   }
 
-  if (!b.quiet) {
+  if(!b.quiet) {
 #ifndef NO_TIMER
     gettimeofday(&tv6, &tz);
     printf("\nOutput milliseconds:  %ld\n",
@@ -11842,7 +11842,7 @@ int triangleMain(int argc, char **argv)
   }
 
 #ifndef REDUCED
-  if (b.docheck) {
+  if(b.docheck) {
     m.checkmesh();
     m.checkdelaunay();
   }

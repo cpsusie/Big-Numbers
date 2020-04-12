@@ -35,7 +35,7 @@ IMPLEMENT_OLECREATE_EX(CColormapPropPage, "COLORMAP.ColormapPropPage.1",
 
 BOOL CColormapPropPage::CColormapPropPageFactory::UpdateRegistry(BOOL bRegister)
 {
-    if (bRegister)
+    if(bRegister)
         return AfxOleRegisterPropertyPageClass(AfxGetInstanceHandle(),
             m_clsid, IDS_COLORMAP_PPG);
     else

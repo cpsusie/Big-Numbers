@@ -9,7 +9,7 @@ DigitPool::DigitPool(int id, const String &name, size_t intialDigitCount)
 , m_allocatedPageCount(0)
 , m_firstPage(NULL)
 , m_freeDigits(NULL)
-, m_initFlags(BR_MUTABLE)          // so that constants allocated 
+, m_initFlags(BR_MUTABLE)          // so that constants allocated
 , m_refCount(0)
 #ifdef COUNT_DIGITPOOLFETCHDIGIT
 , m_requestCount(0)

@@ -9,8 +9,8 @@ ULONG strnHash(const TCHAR * const &s, size_t n) {
 }
 
 int strnHashCmp(const TCHAR * const &s1, const TCHAR * const &s2, size_t n1, size_t n2) {
-  if (n1 == n2) {
-    for (const _TUCHAR *cp1 = s1, *cp2 = s2, *last1 = cp1 + n1; cp1 < last1;) {
+  if(n1 == n2) {
+    for(const _TUCHAR *cp1 = s1, *cp2 = s2, *last1 = cp1 + n1; cp1 < last1;) {
       const int c = (int)*(cp1++) - (int)*(cp2++);
       if(c) return c;
     }

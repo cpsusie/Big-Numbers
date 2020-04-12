@@ -23,10 +23,10 @@ static String convertVertexFile(const String &fileName) {
     String line;
     int lineno = 0;
     CompactArray<Point3D> pointArray;
-    while (readLine(f, line)) {
+    while(readLine(f, line)) {
       lineno++;
       Point3D p;
-      if (_stscanf(line.cstr(), _T("%le %le %le"), &p.x, &p.y, &p.z) != 3) {
+      if(_stscanf(line.cstr(), _T("%le %le %le"), &p.x, &p.y, &p.z) != 3) {
         throwException(_T("Invalid input in file %s line %d"), fileName.cstr(), lineno);
       }
       pointArray.add(p);
@@ -106,7 +106,7 @@ static MeshBuilder &createMeshBuilderFromNodefile(const String &nodeFileName, Me
       faceArray.add(face);
     }
     fclose(f); f = NULL;
-    for (int i = 0; i < vertexCount; i++) {
+    for(int i = 0; i < vertexCount; i++) {
       VertexWithFaceArray   &v  = vertexArray[i];
       const CompactIntArray &fa = v.m_faceArray;
       D3DXVECTOR3 normal(0.0f,0.0f,0.0f);
@@ -136,7 +136,7 @@ static MeshBuilder &createMeshBuilderFromNodefile(const String &nodeFileName, Me
     UNLINK(eleFileName );
     return mb;
   } catch(Exception e) {
-    if (f) {
+    if(f) {
       fclose(f); f = NULL;
     }
     throw;

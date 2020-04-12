@@ -410,7 +410,7 @@ public:
     if(set.size() != size()) {
       return false;
     }
-    for (Iterator<K> it = getIterator(); it.hasNext();) {
+    for(Iterator<K> it = getIterator(); it.hasNext();) {
       if(!set.contains(it.next())) {
         return false;
       }
@@ -433,7 +433,7 @@ public:
     return true;
   }
 
-  // Pure subset. return true if (*this <= set) && (size() < set.size())
+  // Pure subset. return true if(*this <= set) && (size() < set.size())
   inline bool operator<(const CompactHashSet &set) const {
     return (size() < set.size()) && (*this <= set);
   }

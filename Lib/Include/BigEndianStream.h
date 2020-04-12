@@ -17,14 +17,14 @@ template<typename T, typename C> intptr_t readItemArrayBE(ByteInputStream &s, T 
 template<typename T, typename C> void writeItemArrayBE(ByteOutputStream &s, const T *buf, size_t n) {
   T tmp[4096], *dst = tmp, *endtmp = dst+ARRAYSIZE(tmp);
   const T *endbuf = buf + n;
-  while (buf < endbuf) {
+  while(buf < endbuf) {
     *(dst++) = C::hton(*(buf++));
     if(dst == endtmp) {
       s.putBytes((BYTE*)tmp, (dst-tmp) * sizeof(T));
       dst = tmp;
     }
   }
-  if (dst > tmp) {
+  if(dst > tmp) {
     s.putBytes((BYTE*)tmp, (dst-tmp) * sizeof(T));
   }
 }

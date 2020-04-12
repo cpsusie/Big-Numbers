@@ -307,11 +307,11 @@ UINT Thread::run() {
   return m_target ? m_target->run() : 0;
 }
 
-void Thread::addListener(PropertyChangeListener *listener) { // static 
+void Thread::addListener(PropertyChangeListener *listener) { // static
   getMap().addListener(listener);
 }
 
-void Thread::removeListener(PropertyChangeListener *listener) { // static 
+void Thread::removeListener(PropertyChangeListener *listener) { // static
   getMap().removeListener(listener);
 }
 

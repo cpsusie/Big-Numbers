@@ -10,8 +10,8 @@ ULONG strniHash(const TCHAR * const &s, size_t n) {
 }
 
 int strniHashCmp(const TCHAR * const &s1, const TCHAR * const &s2, size_t n1, size_t n2) {
-  if (n1 == n2) {
-    for (const _TUCHAR *cp1 = s1, *cp2 = s2, *last1 = cp1 + n1; cp1 < last1; cp1++, cp2++) {
+  if(n1 == n2) {
+    for(const _TUCHAR *cp1 = s1, *cp2 = s2, *last1 = cp1 + n1; cp1 < last1; cp1++, cp2++) {
       const int ch1 = _istupper(*cp1) ? _totlower(*cp1) : *cp1;
       const int ch2 = _istupper(*cp2) ? _totlower(*cp2) : *cp2;
       const int c   = ch1 - ch2;

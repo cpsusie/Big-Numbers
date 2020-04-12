@@ -106,7 +106,7 @@ BOOL CColormapCtrl::CColormapCtrlFactory::UpdateRegistry(BOOL bRegister)
     // you must modify the code below, changing the 6th parameter from
     // afxRegApartmentThreading to 0.
 
-    if (bRegister)
+    if(bRegister)
         return AfxOleRegisterControlClass(
             AfxGetInstanceHandle(),
             m_clsid,
@@ -149,7 +149,7 @@ CColormapCtrl::~CColormapCtrl()
 // CColormapCtrl::OnDraw - Drawing function
 
 void CColormapCtrl::OnDraw(CDC* pdc, const CRect& rcBounds, const CRect& /* rcInvalid */) {
-  if (!pdc) {
+  if(!pdc) {
     return;
   }
 
@@ -628,7 +628,7 @@ int CColormapCtrl::getFieldValue(CEdit &f) {
 }
 
 void CColormapCtrl::updateColor(COLORREF color) {
-  if (m_updateActive) {
+  if(m_updateActive) {
     return;
   }
   if(color != m_oldColor) {
@@ -671,7 +671,7 @@ void CColormapCtrl::OnChangeHue() {
 bool CColormapCtrl::adjustField(CEdit &f, int dv) {
   int v = getFieldValue(f);
   v += dv;
-  if (v < 0 || v > 255) {
+  if(v < 0 || v > 255) {
     return false;
   }
   setFieldValue(f,v);
@@ -684,13 +684,13 @@ void CColormapCtrl::adjustHue(int dv) {
 }
 
 void CColormapCtrl::adjustSaturation(int dv) {
-  if (adjustField(m_saturationEdit, dv)) {
+  if(adjustField(m_saturationEdit, dv)) {
     OnChangeSaturation();
   }
 }
 
 void CColormapCtrl::adjustLumination(int dv) {
-  if (adjustField(m_luminationEdit, dv)) {
+  if(adjustField(m_luminationEdit, dv)) {
     OnChangeLumination();
   }
 }

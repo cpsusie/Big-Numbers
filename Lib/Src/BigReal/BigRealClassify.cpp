@@ -8,8 +8,8 @@
 // _FPCLASS_PN    0x0100   positive normal
 // _FPCLASS_PINF  0x0200   positive infinity
 int _fpclass(const BigReal &x) {
-  if (x.m_expo == BIGREAL_NONNORMAL) {
-    switch (x.m_low) {
+  if(x.m_expo == BIGREAL_NONNORMAL) {
+    switch(x.m_low) {
     case BIGREAL_ZEROLOW: return _FPCLASS_PZ;
     case BIGREAL_INFLOW: return x.isNegative() ? _FPCLASS_NINF : _FPCLASS_PINF;
     case BIGREAL_QNANLOW: return _FPCLASS_QNAN;
@@ -47,17 +47,17 @@ int BigReal::getNonNormalProductFpClass(const BigReal &x, const BigReal &y) { //
 // Assume !x._isnormal() || !y._isnormal() return _FPCLASS_PZ, _FPCLASS_PINF, _FPCLASS_NINF, _FPCLASS_QNAN
 int BigReal::getNonNormalQuotientFpClass(const BigReal &x, const BigReal &y) { // static
   assert(!x._isnormal() || !y._isnormal());
-  if (!x._isfinite() || !y._isfinite()) {
+  if(!x._isfinite() || !y._isfinite()) {
     return _FPCLASS_QNAN;
   }
-  if (y.isZero()) {
-    switch (_fpclass(x)) {
+  if(y.isZero()) {
+    switch(_fpclass(x)) {
     case _FPCLASS_PN: return _FPCLASS_PINF;
     case _FPCLASS_NN: return _FPCLASS_NINF;
     default: return _FPCLASS_QNAN;
     }
   }
-  if (x.isZero()) return _FPCLASS_PZ;
+  if(x.isZero()) return _FPCLASS_PZ;
   // should never come here
   throwException(_T("%s:_fpclass(x):%d, _fpclass(y):%d"), __TFUNCTION__, _fpclass(x), _fpclass(y));
   return _FPCLASS_QNAN;

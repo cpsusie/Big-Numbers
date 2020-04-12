@@ -1,7 +1,7 @@
 #include "pch.h"
 
 intptr_t String::find(TCHAR ch, size_t from) const {
-  if (from >= m_len) {
+  if(from >= m_len) {
     return -1;
   }
   TCHAR *s = _tcschr(m_buf + from, ch);
@@ -9,7 +9,7 @@ intptr_t String::find(TCHAR ch, size_t from) const {
 }
 
 intptr_t String::find(const String &str, size_t from) const {
-  if (str.length() + from > m_len) {
+  if(str.length() + from > m_len) {
     return -1;
   }
   TCHAR *s = _tcsstr(m_buf + from, str.m_buf);
@@ -17,7 +17,7 @@ intptr_t String::find(const String &str, size_t from) const {
 }
 
 intptr_t String::find(const TCHAR *str, size_t from) const {
-  if (from > m_len) {
+  if(from > m_len) {
     return -1;
   }
   TCHAR *s = _tcsstr(m_buf + from, str);

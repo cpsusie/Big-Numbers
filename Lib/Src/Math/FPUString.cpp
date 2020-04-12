@@ -90,7 +90,7 @@ String FPUState::toString() const {
   String tmp;
   TCHAR  d80str[50];
   for(UINT i = 0; i < 8; i++) {
-    switch (m_tagWord.getContent(i)) {
+    switch(m_tagWord.getContent(i)) {
     case FPUREG_VALID_NZ: tmp += format(_T("st%d:%s\n" ), i, d80tot(d80str, getReg(i))); break;
     case FPUREG_ZERO    : tmp += format(_T("st%d:0\n"  ), i); break;
     case FPUREG_NAN     : tmp += format(_T("st%d:Nan\n"), i); break;

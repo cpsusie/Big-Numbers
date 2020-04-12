@@ -96,7 +96,7 @@ String getProcessCommandLine(HANDLE hProcess) {
     const String s = str;
     FREE(str);
     return s;
-  } catch (...) {
+  } catch(...) {
     if(str != NULL) {
       FREE(str);
     }
@@ -176,7 +176,7 @@ int xxx ( int argc, wchar_t *argv[] )
     HANDLE  hProcess = NULL;
 
 
-    if ( argc != 2 )
+    if( argc != 2 )
     {
         puts ( "Usage: cmdline pid" );
         return 0;
@@ -188,7 +188,7 @@ int xxx ( int argc, wchar_t *argv[] )
     // enable the SE_DEBUG_NAME privilege
     // in our own token, so we can open any
     // process in the system.
-    if ( !EnableTokenPrivilege ( SE_DEBUG_NAME ) )
+    if( !EnableTokenPrivilege ( SE_DEBUG_NAME ) )
     {
         printf ( "Failed o get required privileges, error %lu\n", GetLastError () );
         return 0;
@@ -198,12 +198,12 @@ int xxx ( int argc, wchar_t *argv[] )
     hProcess = OpenProcess ( PROCESS_VM_OPERATION | PROCESS_VM_READ | PROCESS_QUERY_INFORMATION,
                             FALSE, pid );
 
-    if ( hProcess == NULL )
+    if( hProcess == NULL )
     {
         printf ( "Failed to open process. pid: %lu, error %lu\n", pid, GetLastError () );
         return 0;
     }
-    if ( !GetProcessCmdLine ( hProcess, cmdline ) )
+    if( !GetProcessCmdLine ( hProcess, cmdline ) )
     {
         printf ( "Failed to get process command line, error: %lu\n", GetLastError () );
         return 0;

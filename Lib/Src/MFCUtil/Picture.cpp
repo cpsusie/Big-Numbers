@@ -544,7 +544,7 @@ void CPicture::show(HDC dc, const CRect &dstRect, const CRect &srcRect) const {
     render(dc, dstRect, srcRect);
   } else {
     const int blendCaps = GetDeviceCaps(dc, SHADEBLENDCAPS);
-    switch (blendCaps) {
+    switch(blendCaps) {
     case SB_NONE       :
       { const CSize &srcsz = srcRect.Size();
         const CSize  dstsz = dstRect.Size();
@@ -562,7 +562,7 @@ void CPicture::show(HDC dc, const CRect &dstRect, const CRect &srcRect) const {
           BitBlt(dc, dstRect.left,dstRect.top, dstsz.cx,dstsz.cy,tmpDC, 0,0,SRCCOPY);
           SelectObject(picDC,picOld); DeleteDC(picDC); DeleteObject(picBM);
           SelectObject(tmpDC,tmpOld); DeleteDC(tmpDC); DeleteObject(tmpBM);
-        } catch (...) {
+        } catch(...) {
           SelectObject(picDC,picOld); DeleteDC(picDC); DeleteObject(picBM);
           SelectObject(tmpDC,tmpOld); DeleteDC(tmpDC); DeleteObject(tmpBM);
           throw;
