@@ -315,7 +315,6 @@ UINT ParserTree::getTreeDepth() const {
 }
 
 SNode ParserTree::traverseSubstituteNodes(SNode n, CompactNodeHashMap<ExpressionNode*> &nodeMap) {
-  DEFINEMETHODNAME;
   ExpressionNode **n1 = nodeMap.get(n.node());
   if(n1) {
     return *n1;
@@ -372,7 +371,7 @@ SNode ParserTree::traverseSubstituteNodes(SNode n, CompactNodeHashMap<Expression
     }
 
   default            :
-    n.throwUnknownNodeTypeException(method);
+    n.throwUnknownNodeTypeException(__TFUNCTION__);
     return NULL;
   }
 }
@@ -529,13 +528,11 @@ ExpressionNodeBoolConst *ParserTree::boolConstExpr(bool b, bool checkIsSimple) {
 }
 
 ExpressionNode *ParserTree::constExpr(const String &name) {
-  DEFINEMETHODNAME;
-
   ExpressionVariable *v = getSymbolTable().getVariable(name);
   if(v == NULL) {
-    throwInvalidArgumentException(method, _T("%s not found in symbol table"), name.cstr());
+    throwInvalidArgumentException(__TFUNCTION__, _T("%s not found in symbol table"), name.cstr());
   } else if(!v->isConstant()) {
-    throwInvalidArgumentException(method, _T("%s is not a constant"), name.cstr());
+    throwInvalidArgumentException(__TFUNCTION__, _T("%s is not a constant"), name.cstr());
   }
   ExpressionNode *n = new ExpressionNodeName(this, name, *v); TRACE_NEW(n);
   return n;

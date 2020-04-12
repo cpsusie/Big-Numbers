@@ -234,8 +234,6 @@ SNode SNode::DPoly(const String &name) const {
 }
 
 SNode SNode::DStmtList(const String &name) const {
-  DEFINEMETHODNAME;
-
   const StmtList &alist = getChildArray();
   SNodeArray result(getTree());
   const size_t assignCount = alist.size() - 1;
@@ -253,7 +251,7 @@ SNode SNode::DStmtList(const String &name) const {
       }
       break;
     default:
-      stmt.throwUnknownSymbolException(method);
+      stmt.throwUnknownSymbolException(__TFUNCTION__);
     }
   }
   result.add(ddx(alist.last()));

@@ -25,8 +25,6 @@ static Real myroot(Real rad, Real rt) {
 }
 
 Real ExpressionNode::evaluateReal() const {
-  DEFINEMETHODNAME;
-
   switch(getSymbol()) {
   case PLUS     : return left()->evaluateReal() + right()->evaluateReal();
   case MINUS    : return (left()->evaluateReal() - right()->evaluateReal());

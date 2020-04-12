@@ -110,7 +110,6 @@ BigReal rLog10(const BigReal &x, size_t digits, DigitPool *digitPool) { // log(x
 }
 
 BigReal rPow(const BigReal &x, const BigReal &y, size_t digits, DigitPool *digitPool) { // x^y
-  DEFINEMETHODNAME;
   _SELECTDIGITPOOL(x);
   if(y.isZero()) {
     return x.isZero() ? pool->nan() : _1;
@@ -135,7 +134,6 @@ BigReal rPow(const BigReal &x, const BigReal &y, size_t digits, DigitPool *digit
 }
 
 BigReal rRoot(const BigReal &x, const BigReal &y, size_t digits, DigitPool *digitPool) {
-  DEFINEMETHODNAME;
   _SELECTDIGITPOOL(x);
   if(!x.isNegative()) {
     return rPow(x,rQuot(_1,y,digits,pool),digits,pool);

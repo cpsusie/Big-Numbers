@@ -97,8 +97,6 @@ int ReductionArray::find(const Expression &expr) const {
 }
 
 void ParserTree::iterateTransformation(ParserTreeTransformer &transformer) {
-  DEFINEMETHODNAME;
-
   checkIsCanonicalForm();
   pruneUnusedNodes();
 

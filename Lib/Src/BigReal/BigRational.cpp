@@ -122,11 +122,10 @@ BigRational &BigRational::operator=(const Rational &r) {
 }
 
 void BigRational::init(const String &s) {
-  DEFINEMETHODNAME;
   String tmp(s);
   const int slash = (int)tmp.find(_T('/'));
   if(slash == 0) {
-    throwBigRealInvalidArgumentException(method, _T("s=%s"), s.cstr());
+    throwBigRealInvalidArgumentException(__TFUNCTION__, _T("s=%s"), s.cstr());
   }
   DigitPool *pool = getDigitPool();
   if(slash < 0) {
