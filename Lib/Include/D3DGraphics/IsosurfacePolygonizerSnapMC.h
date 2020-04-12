@@ -454,7 +454,7 @@ class Simplex {
 public:
   IsoVertex m_v[3];
   inline Simplex(const BYTE *vp) {
-    m_v[0] = (IsoVertex)*(vp++);
+    m_v[0] = (IsoVertex)(*(vp++) & 0x1f);
     m_v[1] = (IsoVertex)*(vp++);
     m_v[2] = (IsoVertex)*(vp++);
   }
@@ -464,12 +464,10 @@ class SimplexArray {
 private:
   const BYTE  m_n;
   const BYTE *m_triangles;
-  SimplexArray() : m_n(0), m_triangles(NULL) {
-  }
 public:
-  inline SimplexArray(const char *lookupEntry)
-    : m_n(*lookupEntry)
-    , m_triangles((BYTE*)(lookupEntry + 1))
+  inline SimplexArray(const BYTE *lookupEntry)
+    : m_n(*lookupEntry >> 5)
+    , m_triangles((BYTE*)lookupEntry)
   {
   }
   inline UINT size() const {
@@ -484,22 +482,22 @@ public:
     }
     return Simplex(m_triangles + 3 * i);
   }
-  static SimplexArray s_emptyArray;
 };
 
 class PolygonizerCubeArrayTable {
 private:
-  static const char *s_isosurfaceLookup[6561];
+  static const BYTE  s_isosurfaceLookup[];
+  CompactUshortArray m_vlistStart; // index by cubes index and initialized in constructor
 public:
+  PolygonizerCubeArrayTable();
   inline SimplexArray get(UINT index) const {
-    const char *e = s_isosurfaceLookup[index];
-    return e ? SimplexArray(e) : SimplexArray::s_emptyArray;
+    return SimplexArray(s_isosurfaceLookup + m_vlistStart[index]);
   }
 };
 
 class IsoSurfacePolygonizer {
 private:
-  static PolygonizerCubeArrayTable             s_cubetable;
+  static const PolygonizerCubeArrayTable       s_cubetable;
   // Implicit surface function
   IsoSurfaceEvaluator                         &m_eval;
   // Cube size, normal delta

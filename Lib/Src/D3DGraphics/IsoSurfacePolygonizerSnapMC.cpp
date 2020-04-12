@@ -20,7 +20,6 @@ namespace ISOSURFACE_POLYGONIZER_SNAPMC {
 #define RES 10 // # converge iterations
 
 const TCHAR *labelChars = _T("-=+");
-SimplexArray SimplexArray::s_emptyArray;
 
 typedef struct {
   const CubeCorner corner1, corner2;
@@ -45,7 +44,7 @@ static const CubeEdgeInfo cubeEdgeTable[12] = {
 #define BIT(i, bit) (((i)>>(bit))&1)
 #define FLIP(i,bit) ((i)^(1<<(bit))) // flip the given bit of i
 
-PolygonizerCubeArrayTable IsoSurfacePolygonizer::s_cubetable;
+const PolygonizerCubeArrayTable IsoSurfacePolygonizer::s_cubetable;
 
 IsoSurfacePolygonizer::IsoSurfacePolygonizer(IsoSurfaceEvaluator &eval)
 : m_eval(eval)
@@ -236,7 +235,7 @@ void IsoSurfacePolygonizer::doTetra(const HashedCubeCorner &a, const HashedCubeC
 
   TriangleStrip ts;
 
-  switch (index) {
+  switch(index) {
   case  0:                                         //----
   case 15:                                         //++++
     m_statistics.m_nonProduktiveCalls++;
@@ -663,7 +662,7 @@ void StackedCube::validate() const {
   const HashedCubeCorner *rtn = m_corners[RTN];
   const HashedCubeCorner *ltf = m_corners[LTF];
   const HashedCubeCorner *rtf = m_corners[RTF];
-  
+
   verify(lbn != NULL);
   verify(rbn != NULL);
   verify(lbf != NULL);
