@@ -736,7 +736,9 @@ public:
 };
 
 ostream &operator<<(ostream &s, const Face3 &f) {
-  s.width(2);
+  if(s.width() < 2) {
+    s.width(2);
+  }
   s << f.i0 << ",";
   s.width(2);
   s << f.i1 << ",";
@@ -791,64 +793,60 @@ bool CubeData::checkOrientation(const Face3 &f, fixedarray<int> &signs) const {
   return (posMatch + negMatch) > (posFail + negFail);
 }
 
-  void write_cpp(ostream &out, const IJKTABLE::ISOSURFACE_TABLE &table) {
-    const uint  dimension = table.Dimension();
-    const uint  numv = table.Polyhedron().NumVertices();
-    const uint  nume = table.Polyhedron().NumEdges();
-    const uint  numf = table.Polyhedron().NumFacets();
-    const uint  numisov = table.NumIsosurfaceVertices();
-    const uint  numTableEntries = table.NumTableEntries();
-    const uint numvertices = table.SimplexDimension() + 1;
+void write_cpp(ostream &out, const IJKTABLE::ISOSURFACE_TABLE &table) {
+  const uint  dimension = table.Dimension();
+  const uint  numv = table.Polyhedron().NumVertices();
+  const uint  nume = table.Polyhedron().NumEdges();
+  const uint  numf = table.Polyhedron().NumFacets();
+  const uint  numisov = table.NumIsosurfaceVertices();
+  const uint  numTableEntries = table.NumTableEntries();
+  const uint numvertices = table.SimplexDimension() + 1;
 //    change the orientation of face3(i0,i1,i2) so that vector
 //    v = cross(p2 - p0, p1 - p0) points toward positive end (visible side of triangle)
 
-    StringArray varNames;
-    const CubeData cd;
-    for(uint it = 0; it < numTableEntries; it++) {
-      const uint  nums = table.NumSimplices(it);
-      static const char *signstr = "-=+";
-      fixedarray<int> vertex_sign(numv);
-      IJKTABLE::convert2base(it, 3, vertex_sign, numv);
-      const string varName = (nums == 0) ? "NULL     " : format("vlist%04d", it);
-      string comment;
-      for(uint d = numv; d--;) {
-        comment += signstr[vertex_sign[d]];
-      }
-      for(uint d = 0; d < vertex_sign.size(); d++) {
-        vertex_sign[d]--;
-      }
-      varNames.push_back(varName);
-      int len;
-      if(nums == 0) {
-        out << "                                      ";
-        len = 0;
-      } else {
-        out << "static const char " << varName << "[] = { " << nums;
-        for(uint js = 0; js < nums; js++) {
-          Face3 f(table.SimplexVertex(it, js, 0), table.SimplexVertex(it, js, 1), table.SimplexVertex(it, js, 2));
-          if(!cd.checkOrientation(f, vertex_sign)) {
-            f.reverseOrientation();
-          }
-          out << "," << f;
+  const CubeData cd;
+  const char *linePrefix = " ";
+  out << "const unsigned char isosurfaceLookup[] = {" << endl;
+  for(uint it = 0; it < numTableEntries; it++, linePrefix = ",") {
+    const uint nums = table.NumSimplices(it);
+    Assert(nums < 8);
+    static const char *signstr = "-=+";
+    fixedarray<int> vertex_sign(numv);
+    IJKTABLE::convert2base(it, 3, vertex_sign, numv);
+    string comment;
+    for(uint d = numv; d--;) {
+      comment += signstr[vertex_sign[d]];
+    }
+    for(uint d = 0; d < vertex_sign.size(); d++) {
+      vertex_sign[d]--;
+    }
+    int len;
+    out << linePrefix;
+    if(nums == 0) {
+      out << "  0";
+      len = 3;
+    } else {
+      for(uint js = 0; js < nums; js++) {
+        Face3 f(table.SimplexVertex(it, js, 0), table.SimplexVertex(it, js, 1), table.SimplexVertex(it, js, 2));
+        if(!cd.checkOrientation(f, vertex_sign)) {
+          f.reverseOrientation();
         }
-        out << "}; ";
-        len = 3 * nums*numvertices;
+        if(js == 0) {
+          f.i0 |= (nums << 5);
+          out.width(3);
+        } else {
+          out << ",";
+        }
+        out << f;
       }
-      out.width(60 - len);
-      out << "// " << comment << endl;
+      len = 3 * nums*numvertices;
     }
-    out << "const char *isosurfaceLookup[" << numTableEntries << "] = {" << endl << "  ";
-    for(uint it = 0; it < numTableEntries; it++) {
-      if(it > 0) {
-        out << ",";
-      }
-      out << varNames[it];
-      if(it % 10 == 9) {
-        out << endl << " ";
-      }
-    }
-    out << endl << "};" << endl;
+    out.width(63 - len); out << "// ";
+    out.width(4); out << it << " " << comment << endl;
   }
+  out << endl << "};" << endl;
+}
+
 } // namespace IJKXIO
 
 namespace {
