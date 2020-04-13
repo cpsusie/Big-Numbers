@@ -75,11 +75,13 @@ public:
     SAFEDELETEARRAY(m_array);
   }
 
-  void setCapacity(size_t capacity) {
+  CompactArray<T> &setCapacity(size_t capacity) {
     if(capacity < m_size) {
       capacity = m_size;
     }
-    if(capacity == m_capacity) return;
+    if(capacity == m_capacity) {
+      return *this;
+    }
     T *newArray = capacity ? new T[capacity] : NULL; TRACE_NEW(newArray);
     if(m_size) {
       __assume(m_size  );
@@ -92,6 +94,7 @@ public:
     SAFEDELETEARRAY(m_array);
     m_array    = newArray;
     m_capacity = capacity;
+    return *this;
   }
 
   inline size_t getCapacity() const {
