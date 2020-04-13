@@ -53,46 +53,6 @@ public:
   XMLNodePtr createRoot(const TCHAR *rootName);
   XMLNodePtr getRoot();
 
-  inline void getValue(const TCHAR *nodeName, const TCHAR *tagName, String    &value, int  instans = 0) {
-    getValue(findNode(nodeName),tagName,value,instans);
-  }
-  inline void getValueLF(const TCHAR *nodeName, const TCHAR *tagName, String  &value, int  instans = 0) {
-    getValueLF(findNode(nodeName),tagName,value,instans);
-  }
-  inline void getValue(const TCHAR *nodeName, const TCHAR *tagName, int       &value, int  instans = 0) {
-    getValue(findNode(nodeName),tagName,value,instans);
-  }
-  inline void getValue(const TCHAR *nodeName, const TCHAR *tagName, UINT      &value, int  instans = 0) {
-    getValue(findNode(nodeName),tagName,value,instans);
-  }
-  inline void getValue(const TCHAR *nodeName, const TCHAR *tagName, long      &value, int  instans = 0) {
-    getValue(findNode(nodeName),tagName,value,instans);
-  }
-  inline void getValue(const TCHAR *nodeName, const TCHAR *tagName, ULONG     &value, int  instans = 0) {
-    getValue(findNode(nodeName),tagName,value,instans);
-  }
-  inline void getValue(const TCHAR *nodeName, const TCHAR *tagName, INT64     &value, int  instans = 0) {
-    getValue(findNode(nodeName),tagName,value,instans);
-  }
-  inline void getValue(const TCHAR *nodeName, const TCHAR *tagName, UINT64    &value, int  instans = 0) {
-    getValue(findNode(nodeName),tagName,value,instans);
-  }
-  inline void getValue(const TCHAR *nodeName, const TCHAR *tagName, float     &value, int  instans = 0) {
-    getValue(findNode(nodeName),tagName,value,instans);
-  }
-  inline void getValue(const TCHAR *nodeName, const TCHAR *tagName, double    &value, int  instans = 0) {
-    getValue(findNode(nodeName),tagName,value,instans);
-  }
-  inline void getValue(const TCHAR *nodeName, const TCHAR *tagName, Date      &value, int  instans = 0) {
-    getValue(findNode(nodeName),tagName,value,instans);
-  }
-  inline void getValue(const TCHAR *nodeName, const TCHAR *tagName, Timestamp &value, int  instans = 0) {
-    getValue(findNode(nodeName),tagName,value,instans);
-  }
-  inline void getValue(const TCHAR *nodeName, const TCHAR *tagName, bool      &value, int  instans = 0) {
-    getValue(findNode(nodeName),tagName,value,instans);
-  }
-
   void getValue(  const XMLNodePtr &node  , const TCHAR *tagName, String          &value, int  instans=0);
   void getValueLF(const XMLNodePtr &node  , const TCHAR *tagName, String          &value, int  instans=0);
   void getValue(  const XMLNodePtr &node  , const TCHAR *tagName, int             &value, int  instans=0);
@@ -107,44 +67,13 @@ public:
   void getValue(  const XMLNodePtr &node  , const TCHAR *tagName, Timestamp       &value, int  instans=0);
   void getValue(  const XMLNodePtr &node  , const TCHAR *tagName, bool            &value, int  instans=0);
 
-  inline void setValue(const TCHAR *nodeName, const TCHAR *tagName, const String    &value, bool force=true) {
-    setValue(findNode(nodeName),tagName,value.cstr(),force);
-  }
-  inline void setValue(const TCHAR *nodeName, const TCHAR *tagName, const TCHAR     *value, bool force = true) {
-    setValue(findNode(nodeName),tagName,value,force);
-  }
-  inline void setValue(const TCHAR *nodeName, const TCHAR *tagName, int              value, bool force = true) {
-    setValue(findNode(nodeName),tagName,value,force);
-  }
-  inline void setValue(const TCHAR *nodeName, const TCHAR *tagName, UINT             value, bool force = true) {
-    setValue(findNode(nodeName),tagName,value,force);
-  }
-  inline void setValue(const TCHAR *nodeName, const TCHAR *tagName, long             value, bool force = true) {
-    setValue(findNode(nodeName),tagName,value,force);
-  }
-  inline void setValue(const TCHAR *nodeName, const TCHAR *tagName, ULONG            value, bool force = true) {
-    setValue(findNode(nodeName),tagName,value,force);
-  }
-  inline void setValue(const TCHAR *nodeName, const TCHAR *tagName, INT64            value, bool force = true) {
-    setValue(findNode(nodeName),tagName,value,force);
-  }
-  inline void setValue(const TCHAR *nodeName, const TCHAR *tagName, UINT64           value, bool force = true) {
-    setValue(findNode(nodeName),tagName,value,force);
-  }
-  inline void setValue(const TCHAR *nodeName, const TCHAR *tagName, float            value, bool force = true) {
-    setValue(findNode(nodeName),tagName,value,force);
-  }
-  inline void setValue(const TCHAR *nodeName, const TCHAR *tagName, double           value, bool force = true) {
-    setValue(findNode(nodeName),tagName,value,force);
-  }
-  inline void setValue(const TCHAR *nodeName, const TCHAR *tagName, const Date      &value, bool force = true) {
-    setValue(findNode(nodeName),tagName,value,force);
-  }
-  inline void setValue(const TCHAR *nodeName, const TCHAR *tagName, const Timestamp &value, bool force = true) {
-    setValue(findNode(nodeName),tagName,value,force);
-  }
-  inline void setValue(const TCHAR *nodeName, const TCHAR *tagName, bool             value, bool force = true) {
-    setValue(findNode(nodeName),tagName,value,force);
+  template<typename T> T getValueOrDefault(const XMLNodePtr &node, const TCHAR *tagName, const T &defaultValue, int instans = 0) {
+    if(findChild(node, tagName, instans) == NULL) {
+      return defaultValue;
+    }
+    T v;
+    getValue(node, tagName, v, instans);
+    return v;
   }
 
   void setValue(const XMLNodePtr &node    , const TCHAR *tagName, const String    &value, bool force=true);
@@ -160,6 +89,17 @@ public:
   void setValue(const XMLNodePtr &node    , const TCHAR *tagName, const Date      &value, bool force=true);
   void setValue(const XMLNodePtr &node    , const TCHAR *tagName, const Timestamp &value, bool force=true);
   void setValue(const XMLNodePtr &node    , const TCHAR *tagName, bool             value, bool force=true);
+
+  inline void getValueLF(const TCHAR *nodeName, const TCHAR *tagName, String  &value, int  instans = 0) {
+    getValueLF(findNode(nodeName), tagName, value, instans);
+  }
+  template<typename T> void getValue(const TCHAR *nodeName, const TCHAR *tagName, T &value, int  instans = 0) {
+    getValue(findNode(nodeName), tagName, value, instans);
+  }
+  template<typename T> void setValue(const TCHAR *nodeName, const TCHAR *tagName, const T &value, bool force = true) {
+    setValue(findNode(nodeName),tagName,value,force);
+  }
+
 };
 
 String BSTRToString(const BSTR &s);
