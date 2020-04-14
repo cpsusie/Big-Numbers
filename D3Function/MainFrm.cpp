@@ -905,9 +905,9 @@ void CMainFrame::updateDebugInfo() {
     const IsoSurfacePolygonizer *poly = surf.getPolygonizer();
     if(poly) {
       const PolygonizerStatistics &stat = poly->getStatistics();
-      m_debugInfo += format(_T("\n%s\nCubeCalls:%5u, tetraCals:%5u, level:%u")
+      m_debugInfo += format(_T("\n%s\nCubeCalls:%5u, tetraCals:%5u")
                            ,surf.toString().cstr()
-                           ,stat.m_doCubeCalls, stat.m_doTetraCalls, poly->getCurrentLevel());
+                           ,stat.m_doCubeCalls, stat.m_doTetraCalls);
     }
   }
 }
