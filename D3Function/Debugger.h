@@ -11,12 +11,13 @@
 #include <D3DGraphics/D3SceneEditor.h>
 #include "DebugIsoSurface.h"
 
-#define FL_BREAKONNEXTLEVEL  0x01
+#define FL_BREAKONOCTAINDEX  0x01
 #define FL_BREAKONNEXTOCTA   0x02
 #define FL_BREAKONNEXTTETRA  0x04
 #define FL_BREAKONNEXTFACE   0x08
 #define FL_BREAKONNEXTVERTEX 0x10
-#define FL_ALLBREAKFLAGS (FL_BREAKONNEXTLEVEL | FL_BREAKONNEXTOCTA | FL_BREAKONNEXTTETRA | FL_BREAKONNEXTFACE | FL_BREAKONNEXTVERTEX)
+
+#define FL_ALLBREAKFLAGS (FL_BREAKONOCTAINDEX | FL_BREAKONNEXTTETRA | FL_BREAKONNEXTFACE | FL_BREAKONNEXTVERTEX)
 
 typedef enum {
   DEBUGGER_STATE
@@ -32,6 +33,8 @@ typedef enum {
 class Debugger : public InterruptableRunnable, public PropertyContainer {
 private:
   FLAGTRAITS(Debugger, BYTE, m_flags)
+  BitSet                m_octaBreakPoints;
+  UINT                  m_octaCounter;
   DebuggerState         m_state;
   DebugIsoSurface      *m_surface;
   inline Debugger &checkTerminated() {
@@ -39,12 +42,13 @@ private:
     return *this;
   }
   void suspend();
+  bool hasOctaBreakPointsAboveCounter(const BitSet &s) const;
 public:
   Debugger(D3SceneContainer *sc, const IsoSurfaceParameters &param);
   ~Debugger();
-  void singleStep(BYTE breakFlags);
-  inline void go() {
-    singleStep(0);
+  void singleStep(BYTE breakFlags, const BitSet &octaBreakPoints);
+  inline void go(const BitSet &octaBreakPoints) {
+    singleStep(FL_BREAKONOCTAINDEX, octaBreakPoints);
   }
   void kill();
   UINT safeRun();
@@ -63,6 +67,9 @@ public:
     return getStateName(getState());
   }
   static String getStateName(DebuggerState state);
+  inline UINT getOctaCounter() const {
+    return m_octaCounter;
+  }
   D3SceneObjectVisual *getSceneObject();
   const DebugIsoSurface &getDebugSurface() const {
     return *m_surface;

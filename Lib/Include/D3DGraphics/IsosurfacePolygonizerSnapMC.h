@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Stack.h>
+#include <CompactStack.h>
 #include <CompactArray.h>
 #include <CompactHashSet.h>
 #include <CompactHashMap.h>
@@ -22,14 +22,13 @@ typedef enum {                        // x y z  x={left,right}, y={near,far}, z=
 } CubeCorner;
 
 typedef enum {
-  LFACE // left   direction : -x, -i <f> 0 2 6 4 </f> LBN LBF LTF LTN  0
- ,RFACE // right  direction : +x, +i <f> 1 3 7 5 </f> RBN RBF RTF RTN  1
- ,NFACE // near   direction : -y, -j <f> 0 1 5 4 </f> LBN RBN RTN LTN  2
- ,FFACE // far    direction : +y, +j <f> 2 3 7 6 </f> LBF RBF RTF LTF  3
- ,BFACE // bottom direction : -z, -k <f> 0 1 3 2 </f> LBN RBN RBF LBF  4
- ,TFACE // top    direction : +z, +k <f> 4 5 7 6 </f> LTN RTN RTF LTF  5
+  LFACE // left   LBN, LBF, LTF, LTN  direction: -x, -i
+ ,RFACE // right  RBN, RTN, RTF, RBF  direction: +x, +i
+ ,NFACE // near   LBN, LTN, RTN, RBN  direction: -y, -j
+ ,FFACE // far    LBF, RBF, RTF, LTF  direction: +y, +j
+ ,BFACE // bottom LBN, RBN, RBF, LBF  direction: -z, -k
+ ,TFACE // top    LTN, LTF, RTF, RTN  direction: +z, +k
 } CubeFace;
-
 
 String toString(CubeCorner cb);
 
@@ -120,8 +119,11 @@ public:
   }
   inline Point3DWithValue(const Point3D &p) : Point3D(p) {
   }
+  inline void setLabel(GridLabel l) {
+    m_label = l;
+  }
   inline void setValue(double v) {
-    m_label = (m_value = v) < 0 ? V_NEGATIVE : (v > 0) ? V_POSITIVE : V_ZERO;
+    setLabel(((m_value = v) >= 0) ? V_POSITIVE : V_NEGATIVE);
   }
   inline bool isPositive() const {
     return m_label == V_POSITIVE;
@@ -155,12 +157,10 @@ public:
     : m_i1(i1), m_i2(i2), m_i3(i3), m_color(color)
   {
   }
-#ifdef __NEVER__
   Face3 &reverseOrientation() {
     std::swap(m_i1, m_i2);
     return *this;
   }
-#endif
   inline void reset() {
     m_i1 = m_i2 = m_i3 = 0;
     m_color = 0;
@@ -175,8 +175,14 @@ class IsoSurfaceVertex {
 public:
   // Position and surface normal
   Point3DP m_position, m_normal;
-  inline void reset() {
+  inline IsoSurfaceVertex &reset() {
     m_position = m_normal = D3DXORIGIN;
+    return *this;
+  }
+  inline IsoSurfaceVertex &setPosition(const Point3D &pos, const Point3D &normal) {
+    m_position = pos;
+    m_normal   = normal;
+    return *this;
   }
   String toString(int precision=6) const {
     return format(_T("P:(%+.*le,%+.*le,%+.*le), N:(%+.*le,%+.*le,%+.*le)")
@@ -205,6 +211,8 @@ public:
   inline String toString() const {
     return format(_T("(% 5d,% 5d,% 5d)"), i, j, k);
   }
+  static int    compare( const Point3DKey &k1, const Point3DKey &k2);
+  static double distance(const Point3DKey &k1, const Point3DKey &k2);
 };
 
 //#define DUMP_STATISTICS
@@ -249,14 +257,29 @@ public:
 // Corner of a cube
 class HashedCubeCorner : public Point3DWithValue {
 public:
-  Point3DKey m_key;
+  Point3DKey     m_key;
+  mutable int    m_snappedIsoVertexIndex;
+  mutable double m_shortestSnapDistance;
   inline HashedCubeCorner() {
   }
   inline HashedCubeCorner(const Point3DKey &k, const Point3D &p)
     : m_key(k)
     , Point3DWithValue(p)
+    , m_snappedIsoVertexIndex(-1)
+    , m_shortestSnapDistance(0)
   {
   }
+  inline bool hasSnapVertex() const {
+    return m_snappedIsoVertexIndex >= 0;
+  }
+  inline UINT getSnapIndex() const {
+    assert(hasSnapVertex());
+    return m_snappedIsoVertexIndex;
+  }
+  inline double getSnapDistance() const {
+    return m_shortestSnapDistance;
+  }
+  void setSnapDistance(double dist, int vertexIndex = -1) const;
   inline String toString() const {
     return format(_T("CubeCorner:(Key:%s, %s)")
                  ,m_key.toString().cstr()
@@ -289,10 +312,44 @@ public:
   String toString() const;
 };
 
+class Simplex {
+public:
+  IsoVertex m_v[3];
+  inline Simplex(const BYTE *vp) {
+    m_v[0] = (IsoVertex)(*(vp++) & 0x1f);
+    m_v[1] = (IsoVertex)*(vp++);
+    m_v[2] = (IsoVertex)*(vp++);
+  }
+};
+
+class SimplexArray {
+private:
+  const BYTE  m_n;
+  const BYTE *m_triangles;
+public:
+  inline SimplexArray(const BYTE *lookupEntry)
+    : m_n(*lookupEntry >> 5)
+    , m_triangles((BYTE*)lookupEntry)
+  {
+  }
+  inline UINT size() const {
+    return m_n;
+  }
+  inline bool isEmpty() const {
+    return size() == 0;
+  }
+  inline Simplex operator[](UINT i) const {
+    if(i >= size()) {
+      throwInvalidArgumentException(__TFUNCTION__, _T("index %u out of range, size=%u"), i, size());
+    }
+    return Simplex(m_triangles + 3 * i);
+  }
+};
+
 // Partitioning cell (cube)
 class StackedCube {
 private:
-  mutable int m_index;
+  mutable int m_index, m_index0;
   UINT calculateIndex() const;
 #ifdef VALIDATE_CUBES
   void verifyCubeConstraint(int line, const TCHAR *expr) const;
@@ -302,8 +359,15 @@ public:
   Point3DKey              m_key;
   // Eight corners, each one in m_cornerMap
   const HashedCubeCorner *m_corners[8];
-  inline StackedCube(int i, int j, int k) : m_key(i,j,k), m_index(-1) {
+  inline StackedCube() : m_index(-1), m_index0(-1) {
+  }
+  inline StackedCube(int i, int j, int k) : m_key(i,j,k), m_index(-1), m_index0(-1) {
     memset(m_corners, 0, sizeof(m_corners));
+  }
+  inline StackedCube &resetIndex() {
+    m_index0 = m_index;
+    m_index  = -1;
+    return *this;
   }
   inline UINT getIndex() const {
     if(m_index < 0) m_index = calculateIndex();
@@ -325,6 +389,7 @@ public:
   inline Point3DP getCenter() const {
     return (*m_corners[LBN] + *m_corners[RTF])/2;
   }
+  SimplexArray has4ZeroCorners(CubeFace cf) const;
 #ifdef VALIDATE_CUBES
   void validate() const;
 #endif // VALIDATE_CUBES
@@ -343,9 +408,6 @@ public:
   }
   inline const StackedCube &getCube() const {
     return *m_cube;
-  }
-  inline BYTE getLevel() const {
-    return 0;
   }
   inline const D3DXVECTOR3 getCenter() const {
     return Point3DP(getCube().getCenter());
@@ -450,40 +512,6 @@ public:
   String toString() const;
 };
 
-class Simplex {
-public:
-  IsoVertex m_v[3];
-  inline Simplex(const BYTE *vp) {
-    m_v[0] = (IsoVertex)(*(vp++) & 0x1f);
-    m_v[1] = (IsoVertex)*(vp++);
-    m_v[2] = (IsoVertex)*(vp++);
-  }
-};
-
-class SimplexArray {
-private:
-  const BYTE  m_n;
-  const BYTE *m_triangles;
-public:
-  inline SimplexArray(const BYTE *lookupEntry)
-    : m_n(*lookupEntry >> 5)
-    , m_triangles((BYTE*)lookupEntry)
-  {
-  }
-  inline UINT size() const {
-    return m_n;
-  }
-  inline bool isEmpty() const {
-    return size() == 0;
-  }
-  inline Simplex operator[](UINT i) const {
-    if(i >= size()) {
-      throwInvalidArgumentException(__TFUNCTION__, _T("index %u out of range, size=%u"), i, size());
-    }
-    return Simplex(m_triangles + 3 * i);
-  }
-};
-
 class PolygonizerCubeArrayTable {
 private:
   static const BYTE  s_isosurfaceLookup[];
@@ -502,6 +530,8 @@ private:
   IsoSurfaceEvaluator                         &m_eval;
   // Cube size, normal delta
   double                                       m_cellSize, m_delta;
+  // Snap edge-vertex if distance from corner < m_maxSnapDistance. m_lambda = ]0..0.3]
+  double                                       m_lambda, m_maxSnapDistance; // m_maxSnapDistance = m_cellSize * m_lambda
   // Bounding box. surface will be contained in this
   Cube3D                                       m_boundingBox;
   // Start point on surface
@@ -510,7 +540,8 @@ private:
   bool                                         m_tetrahedralMode;
   bool                                         m_tetraOptimize4;
   // Active cubes
-  Stack<StackedCube>                           m_cubeStack;
+  CompactStack<StackedCube>                    m_cubeStack;
+  CompactArray<StackedCube>                    m_intersectingCubeTable;
   // Surface vertices
   IsoSurfaceVertexArray                        m_vertexArray;
   // Cubes done so far
@@ -526,6 +557,7 @@ private:
 
   Point3D             findStartPoint(const Point3D &start);
   IsoSurfaceTest      findStartPoint(bool positive, const Point3D &start);
+  UINT                findLeftBottomFarCube(const CompactArray<StackedCube> &a) const;
   bool                putInitialCube();
   void                addSurfaceVertices(const StackedCube &cube);
   inline void         doTetra(const StackedCube &cube, CubeCorner c1, CubeCorner c2, CubeCorner c3, CubeCorner c4) {
@@ -535,8 +567,10 @@ private:
     doTetra(*cube.m_corners[c1], *cube.m_corners[c2], *cube.m_corners[c3], *cube.m_corners[c4]);
   }
 
-  void                doTetra(const HashedCubeCorner &a, const HashedCubeCorner &b, const HashedCubeCorner &c, const HashedCubeCorner &d);
-  void                doCube(const StackedCube &cube);
+  void                doTetra(   const HashedCubeCorner &a, const HashedCubeCorner &b, const HashedCubeCorner &c, const HashedCubeCorner &d);
+  void                doCube1(   const StackedCube &cube);
+  bool                doCube2(   const StackedCube &cube);
+  bool                doCubeFace(const StackedCube &cube, CubeFace face);
   bool                addToDoneSet(const Point3DKey &key);
   void                testFace (int i, int j, int k, const StackedCube &oldCube, CubeFace face, CubeCorner c1, CubeCorner c2, CubeCorner c3, CubeCorner c4);
   void                resetTables();
@@ -545,9 +579,7 @@ private:
     m_statistics.m_evalCount++;
     return m_eval.evaluate(p);
   }
-#ifdef __NEVER__
   bool checkOrientation(const Face3 &f) const;
-#endif
   inline void         putFace3(UINT i1, UINT i2, UINT i3) {
 #ifdef VALIDATE_PUTFACE
     if(i1 >= m_vertexArray.size() || i2 >= m_vertexArray.size() || i3 >= m_vertexArray.size()) {
@@ -585,7 +617,8 @@ private:
     return m_cubeStack.pop();
   }
   void                    pushCube(const StackedCube &cube);
-  UINT                    getVertexId(const HashedCubeCorner &c1, const HashedCubeCorner &c2);
+  UINT                    getCubeEdgeVertexId(const StackedCube &cube, CubeEdge edge);
+  UINT                    getVertexId(       const HashedCubeCorner &c1, const HashedCubeCorner &c2, BYTE coordIndex=-1);
   Point3D                 getNormal(const Point3D &point);
   const HashedCubeCorner *getCorner(int i, int j, int k);
 
@@ -611,6 +644,7 @@ public:
   // bool tetraOptimize4   : only active if tetrahedralmode==true
   void polygonize(const Point3D &start
                  ,double         cellSize
+                 ,double         lambda
                  ,const Cube3D  &boundingBox
                  ,bool           tetrahedralMode
                  ,bool           tetraOptimize4

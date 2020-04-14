@@ -4,6 +4,7 @@
 
 #include <D3DGraphics/D3Cube.h>
 #include <D3DGraphics/D3SceneObjectWireFrameBox.h>
+#include <D3DGraphics/D3SceneObjectLineArrow.h>
 #include <D3DGraphics/D3SceneObjectSolidBox.h>
 #include "Debugger.h"
 #include "DebugIsoSurface.h"
@@ -316,12 +317,29 @@ CompactArray<Line3D> FacesObject::createLineArray(CompactArray<Face3> &faceArray
 
 // ------------------------------------------------------------Vertex Object ----------------------------------------------
 
-class VertexObject : public D3SceneObjectLineArray {
+class VertexObject;
+class NormalArrowObject : public D3SceneObjectLineArrow {
 private:
-  CompactArray<D3DXVECTOR3> m_positions;
+  VertexObject *m_vertexObject;
+  const float   m_scale;
+  int           m_materialId;
+public:
+  NormalArrowObject(VertexObject *vertexObject, float scale);
+  ~NormalArrowObject();
+  int getMaterialId() const {
+    return m_materialId;
+  }
+  D3DXMATRIX &getWorld();
+};
+
+class VertexObject : public D3SceneObjectLineArray {
+  friend class NormalArrowObject;
+private:
+  IsoSurfaceVertexArray     m_vertexArray;
   size_t                    m_positionIndex;
   int                       m_materialId;
   D3World                   m_octaWorld;
+  NormalArrowObject        *m_normalObject;
   CompactArray<Line3D> createLineArray(float lineLength) const;
 public:
   VertexObject(OctaObject *octaObject);
@@ -330,8 +348,11 @@ public:
   int getMaterialId() const {
     return m_materialId;
   }
+  const IsoSurfaceVertex &getCurrentVertex() const {
+    return m_vertexArray[m_positionIndex];
+  }
   D3DXMATRIX &getWorld() {
-    return m_world = D3World(m_octaWorld).setPos(rotate(m_positions[m_positionIndex], m_octaWorld.getOrientation()));
+    return m_world = D3World(m_octaWorld).setPos(rotate(getCurrentVertex().m_position, m_octaWorld.getOrientation()));
   }
   void draw();
 };
@@ -339,18 +360,17 @@ public:
 VertexObject::VertexObject(OctaObject *octaObject) 
 : D3SceneObjectLineArray(octaObject, createLineArray(octaObject->getCellSize() / 25))
 {
-  m_materialId = getScene().addMaterialWithColor(D3D_WHITE);
+  m_materialId   = getScene().addMaterialWithColor(D3D_WHITE);
+  m_normalObject = new NormalArrowObject(this, octaObject->getCellSize() / 3); TRACE_NEW(m_normalObject);
 }
 
 VertexObject::~VertexObject() {
+  SAFEDELETE(m_normalObject);
   getScene().removeMaterial(m_materialId);
 }
 
 void VertexObject::setSurfaceVertexArray(const IsoSurfaceVertexArray &a) {
-  m_positions.clear(-1);
-  for(size_t i = 0; i < a.size(); i++) {
-    m_positions.add(a[i].m_position);
-  }
+  m_vertexArray = a;
 }
 
 CompactArray<Line3D> VertexObject::createLineArray(float lineLength) const {
@@ -368,12 +388,35 @@ CompactArray<Line3D> VertexObject::createLineArray(float lineLength) const {
 }
 
 void VertexObject::draw() {
-  const size_t n = m_positions.size();
+  const size_t n = m_vertexArray.size();
   if(n == 0) return;
   m_octaWorld = getParent()->getWorld();
   for(m_positionIndex = 0; m_positionIndex < n; m_positionIndex++) {
     __super::draw();
+    m_normalObject->draw();
   }
+}
+
+// --------------------------------------- NormalObject -------------------------------------------
+
+#define D3D_DARKCYAN       D3DCOLOR_XRGB(128,  0,128)
+
+NormalArrowObject::NormalArrowObject(VertexObject *vertexObject, float scale)
+: D3SceneObjectLineArrow(vertexObject->getScene(), D3DXORIGIN, Vertex(1, 0, 0))
+, m_vertexObject(vertexObject)
+, m_scale(scale)
+{
+  m_materialId = getScene().addMaterialWithColor(D3D_DARKCYAN);
+}
+
+NormalArrowObject::~NormalArrowObject() {
+  getScene().removeMaterial(m_materialId);
+}
+
+D3DXMATRIX &NormalArrowObject::getWorld() {
+  return m_world = D3World(m_vertexObject->getWorld())
+    .setOrientation(createOrientation(m_vertexObject->getCurrentVertex().m_normal))
+    .setScaleAll(m_scale);
 }
 
 // --------------------------------------- DebugIsoSurface -------------------------------------------
@@ -388,7 +431,6 @@ DebugIsoSurface::DebugIsoSurface(Debugger *debugger, D3SceneContainer &sc, const
   , m_lastVertexCount(          0)
   , m_faceCount(                0)
   , m_lastFaceCount(            0)
-  , m_currentLevel(             0)
   , m_flags(                    0)
   , m_octaCount(                0)
   , m_octaCountObj(             0)
@@ -425,6 +467,7 @@ void DebugIsoSurface::createData() {
 
   m_polygonizer->polygonize(Point3D(0, 0, 0)
                            ,m_param.m_cellSize
+                           ,m_param.m_lambda
                            ,m_param.m_boundingBox
                            ,m_param.m_tetrahedral
                            ,m_param.m_tetraOptimize4
@@ -488,12 +531,7 @@ void DebugIsoSurface::markCurrentOcta(const Octagon &octa) {
   m_flags = HAS_OCTA;
   clearVisibleVertexArray();
   clearCurrentFaceArray();
-  if(octa.getLevel() == m_currentLevel) {
-    m_debugger.handleStep(NEW_OCTA);
-  } else {
-    m_currentLevel = octa.getLevel();
-    m_debugger.handleStep(NEW_LEVEL);
-  }
+  m_debugger.handleStep(NEW_OCTA);
 }
 
 void DebugIsoSurface::markCurrentTetra(const Tetrahedron &tetra) {

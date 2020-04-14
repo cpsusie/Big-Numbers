@@ -73,8 +73,7 @@ public:
 };
 
 typedef enum {
-  NEW_LEVEL
- ,NEW_OCTA
+  NEW_OCTA
  ,NEW_TETRA
  ,NEW_FACE
  ,NEW_VERTEX
@@ -98,7 +97,6 @@ private:
   DWORD                                 m_faceCount, m_lastFaceCount, m_lastVertexCount;
 
   BYTE                                  m_flags;
-  BYTE                                  m_currentLevel;
   mutable DWORD                         m_octaCount  , m_octaCountObj;
   mutable DWORD                         m_tetraCount , m_tetraCountObj;
   mutable DWORD                         m_visibleFaceCount, m_visibleFaceCountObj;
@@ -148,9 +146,6 @@ public:
   D3Scene &getScene();
   inline float getCellSize() const {
     return (float)m_param.m_cellSize;
-  }
-  inline BYTE getCurrentLevel() const {
-    return m_currentLevel;
   }
   inline const IsoSurfaceVertexArray &getVertexArray() const {
     return m_polygonizer->getVertexArray();

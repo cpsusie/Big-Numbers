@@ -72,6 +72,7 @@ void IsoSurface::createData(InterruptableRunnable *ir) {
     m_vertexArray = &polygonizer.getVertexArray();
     polygonizer.polygonize(Point3D(0,0,0)
                           ,m_param.m_cellSize
+                          ,m_param.m_lambda
                           ,m_param.m_boundingBox
                           ,m_param.m_tetrahedral
                           ,m_param.m_tetraOptimize4

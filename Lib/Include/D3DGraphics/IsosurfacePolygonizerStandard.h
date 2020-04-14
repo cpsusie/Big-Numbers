@@ -278,9 +278,6 @@ public:
   inline const StackedCube &getCube() const {
     return *m_cube;
   }
-  inline BYTE getLevel() const {
-    return 0;
-  }
   inline const D3DXVECTOR3 getCenter() const {
     return Point3DP(getCube().getCenter());
   }
@@ -542,9 +539,6 @@ public:
                  ,bool           tetrahedralMode
                  ,bool           tetraOptimize4
                  );
-  inline BYTE getCurrentLevel() const {
-    return 0;
-  }
   inline const PolygonizerStatistics &getStatistics() const {
     return m_statistics;
   }

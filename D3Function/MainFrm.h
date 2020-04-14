@@ -77,7 +77,8 @@ private:
   float                       m_currentCamDistance;
   bool                        m_hasCubeCenter;
   D3DXVECTOR3                 m_cubeCenter;
-  BYTE                        m_cubeLevel;
+  BitSet                      m_octaBreakPoints;
+  bool                        m_breakPointsEnabled;
   int                         m_debugLightIndex;
   String                      m_debugInfo;
 
@@ -93,7 +94,7 @@ private:
     return isDebuggerState(DEBUGGER_PAUSED);
   }
   inline void OnDebugStep(BYTE breakFlags) {
-    if(isDebuggerPaused()) m_debugger->singleStep(breakFlags);
+    if(isDebuggerPaused()) m_debugger->singleStep(breakFlags, m_octaBreakPoints);
   }
   bool isAutoFocusCurrentCubeChecked() const;
 
@@ -241,12 +242,14 @@ public:
     afx_msg void OnFileMruFile15();
     afx_msg void OnFileMruFile16();
     afx_msg void OnDebugGo();
-    afx_msg void OnDebugStepLevel();
     afx_msg void OnDebugStepCube();
     afx_msg void OnDebugStepTetra();
     afx_msg void OnDebugStepFace();
     afx_msg void OnDebugStepVertex();
     afx_msg void OnDebugStopDebugging();
+    afx_msg void OnDebugToggleBreakOnPrevCube();
+    afx_msg void OnDebugDisableAllBreakPoints();
+    afx_msg void OnDebugClearAllBreakPoints();
     afx_msg void OnDebugAutoFocusCurrentCube();
     afx_msg void OnDebugAdjustCam45Up();
     afx_msg void OnDebugAdjustCam45Down();

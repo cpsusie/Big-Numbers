@@ -10,6 +10,8 @@
 Debugger::Debugger(D3SceneContainer *sc, const IsoSurfaceParameters &param)
 : m_flags(FL_BREAKONNEXTFACE)
 , m_state(DEBUGGER_CREATED)
+, m_octaCounter(0)
+, m_octaBreakPoints(10000)
 {
   m_surface = new DebugIsoSurface(this,*sc,param); TRACE_NEW(m_surface);
 }
@@ -19,7 +21,28 @@ Debugger::~Debugger() {
   SAFEDELETE(m_surface);
 }
 
-void Debugger::singleStep(BYTE breakFlags) {
+bool Debugger::hasOctaBreakPointsAboveCounter(const BitSet &s) const {
+  if(s.getCapacity() <= m_octaCounter) {
+    return false;
+  }
+  return !BitSet(s).remove(0, m_octaCounter).isEmpty();
+}
+
+void Debugger::singleStep(BYTE breakFlags, const BitSet &octaBreakPoints) {
+  m_octaBreakPoints = octaBreakPoints;
+  if(breakFlags & FL_BREAKONNEXTOCTA) {
+    breakFlags &= ~FL_BREAKONNEXTOCTA;
+    breakFlags |= FL_BREAKONOCTAINDEX;
+    const UINT   nextOctaBreak = m_octaCounter + 1;
+    const size_t minCapacity   = nextOctaBreak + 1;
+    if(m_octaBreakPoints.getCapacity() < minCapacity) {
+      m_octaBreakPoints.setCapacity(2 * minCapacity);
+    }
+    m_octaBreakPoints.add(nextOctaBreak);
+  }
+  if(!hasOctaBreakPointsAboveCounter(m_octaBreakPoints)) {
+    breakFlags &= ~FL_BREAKONOCTAINDEX;
+  }
   checkTerminated().clrFlag(FL_ALLBREAKFLAGS).setFlag(breakFlags).resume();
 }
 
@@ -55,14 +78,9 @@ void Debugger::handleStep(StepType type) {
   }
   if(m_flags) {
     switch(type) {
-    case NEW_LEVEL:
-      if(isSet(FL_ALLBREAKFLAGS)) {
-        m_surface->updateSceneObject(MESH_VISIBLE | OCTA_VISIBLE);
-        suspend();
-      }
-      break;
     case NEW_OCTA:
-      if(isSet(FL_BREAKONNEXTOCTA)) {
+      m_octaCounter++;
+      if(isSet(FL_BREAKONOCTAINDEX) && m_octaBreakPoints.contains(m_octaCounter)) {
         m_surface->updateSceneObject(MESH_VISIBLE | OCTA_VISIBLE);
         suspend();
       }
@@ -97,8 +115,7 @@ String Debugger::getFlagNames(BYTE flags) { // static
   const TCHAR *delim = NULL;
   String result;
 #define ADDFLAG(f) if(flags & (FL_##f)) { if(delim) result += delim; else delim = _T(" "); result += _T(#f); }
-  ADDFLAG(BREAKONNEXTLEVEL )
-  ADDFLAG(BREAKONNEXTOCTA  )
+  ADDFLAG(BREAKONOCTAINDEX )
   ADDFLAG(BREAKONNEXTTETRA )
   ADDFLAG(BREAKONNEXTFACE  )
   ADDFLAG(BREAKONNEXTVERTEX)

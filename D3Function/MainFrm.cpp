@@ -25,54 +25,56 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
   ON_WM_SIZE()
   ON_WM_SHOWWINDOW()
   ON_WM_TIMER()
-  ON_COMMAND(ID_FILE_MRU_FILE1            , OnFileMruFile1             )
-  ON_COMMAND(ID_FILE_MRU_FILE2            , OnFileMruFile2             )
-  ON_COMMAND(ID_FILE_MRU_FILE3            , OnFileMruFile3             )
-  ON_COMMAND(ID_FILE_MRU_FILE4            , OnFileMruFile4             )
-  ON_COMMAND(ID_FILE_MRU_FILE5            , OnFileMruFile5             )
-  ON_COMMAND(ID_FILE_MRU_FILE6            , OnFileMruFile6             )
-  ON_COMMAND(ID_FILE_MRU_FILE7            , OnFileMruFile7             )
-  ON_COMMAND(ID_FILE_MRU_FILE8            , OnFileMruFile8             )
-  ON_COMMAND(ID_FILE_MRU_FILE9            , OnFileMruFile9             )
-  ON_COMMAND(ID_FILE_MRU_FILE10           , OnFileMruFile10            )
-  ON_COMMAND(ID_FILE_MRU_FILE11           , OnFileMruFile11            )
-  ON_COMMAND(ID_FILE_MRU_FILE12           , OnFileMruFile12            )
-  ON_COMMAND(ID_FILE_MRU_FILE13           , OnFileMruFile13            )
-  ON_COMMAND(ID_FILE_MRU_FILE14           , OnFileMruFile14            )
-  ON_COMMAND(ID_FILE_MRU_FILE15           , OnFileMruFile15            )
-  ON_COMMAND(ID_FILE_MRU_FILE16           , OnFileMruFile16            )
-  ON_COMMAND(ID_FILE_FUNCTIONSURFACE      , OnFileFunctionSurface      )
-  ON_COMMAND(ID_FILE_PARAMETRICSURFACE    , OnFileParametricSurface    )
-  ON_COMMAND(ID_FILE_ISOSURFACE           , OnFileIsoSurface           )
-  ON_COMMAND(ID_OBJECT_EDITFUNCTION       , OnObjectEditFunction       )
-  ON_COMMAND(ID_DEBUG_GO                  , OnDebugGo                  )
-  ON_COMMAND(ID_DEBUG_STEPLEVEL           , OnDebugStepLevel           )
-  ON_COMMAND(ID_DEBUG_STEPCUBE            , OnDebugStepCube            )
-  ON_COMMAND(ID_DEBUG_STEPTETRA           , OnDebugStepTetra           )
-  ON_COMMAND(ID_DEBUG_STEPFACE            , OnDebugStepFace            )
-  ON_COMMAND(ID_DEBUG_STEPVERTEX          , OnDebugStepVertex          )
-  ON_COMMAND(ID_DEBUG_STOPDEBUGGING       , OnDebugStopDebugging       )
-  ON_COMMAND(ID_DEBUG_AUTOFOCUSCURRENTCUBE, OnDebugAutoFocusCurrentCube)
-  ON_COMMAND(ID_DEBUG_ADJUSTCAM_45UP      , OnDebugAdjustCam45Up       )
-  ON_COMMAND(ID_DEBUG_ADJUSTCAM_45DOWN    , OnDebugAdjustCam45Down     )
-  ON_COMMAND(ID_DEBUG_ADJUSTCAM_45LEFT    , OnDebugAdjustCam45Left     )
-  ON_COMMAND(ID_DEBUG_ADJUSTCAM_45RIGHT   , OnDebugAdjustCam45Right    )
-  ON_COMMAND(ID_DEBUG_MARKCUBE            , OnDebugMarkCube            )
-  ON_COMMAND(ID_RESETPOSITIONS            , OnResetPositions           )
-  ON_COMMAND(ID_OPTIONS_SAVEOPTIONS       , OnOptionsSaveOptions       )
-  ON_COMMAND(ID_OPTIONS_LOADOPTIONS1      , OnOptionsLoadOptions1      )
-  ON_COMMAND(ID_OPTIONS_LOADOPTIONS2      , OnOptionsLoadOptions2      )
-  ON_COMMAND(ID_OPTIONS_LOADOPTIONS3      , OnOptionsLoadOptions3      )
-  ON_COMMAND(ID_OPTIONS_LOADOPTIONS4      , OnOptionsLoadOptions4      )
-  ON_COMMAND(ID_OPTIONS_LOADOPTIONS5      , OnOptionsLoadOptions5      )
-  ON_COMMAND(ID_OPTIONS_LOADOPTIONS6      , OnOptionsLoadOptions6      )
-  ON_COMMAND(ID_OPTIONS_LOADOPTIONS7      , OnOptionsLoadOptions7      )
-  ON_COMMAND(ID_OPTIONS_LOADOPTIONS8      , OnOptionsLoadOptions8      )
-  ON_COMMAND(ID_OPTIONS_LOADOPTIONS9      , OnOptionsLoadOptions9      )
-  ON_COMMAND(ID_OPTIONS_ORGANIZEOPTIONS   , OnOptionsOrganizeOptions   )
-  ON_MESSAGE(ID_MSG_RENDER                , OnMsgRender                )
-  ON_MESSAGE(ID_MSG_DEBUGGERSTATECHANGED  , OnMsgDebuggerStateChanged  )
-  ON_MESSAGE(ID_MSG_KILLDEBUGGER          , OnMsgKillDebugger          )
+  ON_COMMAND(ID_FILE_MRU_FILE1             , OnFileMruFile1              )
+  ON_COMMAND(ID_FILE_MRU_FILE2             , OnFileMruFile2              )
+  ON_COMMAND(ID_FILE_MRU_FILE3             , OnFileMruFile3              )
+  ON_COMMAND(ID_FILE_MRU_FILE4             , OnFileMruFile4              )
+  ON_COMMAND(ID_FILE_MRU_FILE5             , OnFileMruFile5              )
+  ON_COMMAND(ID_FILE_MRU_FILE6             , OnFileMruFile6              )
+  ON_COMMAND(ID_FILE_MRU_FILE7             , OnFileMruFile7              )
+  ON_COMMAND(ID_FILE_MRU_FILE8             , OnFileMruFile8              )
+  ON_COMMAND(ID_FILE_MRU_FILE9             , OnFileMruFile9              )
+  ON_COMMAND(ID_FILE_MRU_FILE10            , OnFileMruFile10             )
+  ON_COMMAND(ID_FILE_MRU_FILE11            , OnFileMruFile11             )
+  ON_COMMAND(ID_FILE_MRU_FILE12            , OnFileMruFile12             )
+  ON_COMMAND(ID_FILE_MRU_FILE13            , OnFileMruFile13             )
+  ON_COMMAND(ID_FILE_MRU_FILE14            , OnFileMruFile14             )
+  ON_COMMAND(ID_FILE_MRU_FILE15            , OnFileMruFile15             )
+  ON_COMMAND(ID_FILE_MRU_FILE16            , OnFileMruFile16             )
+  ON_COMMAND(ID_FILE_FUNCTIONSURFACE       , OnFileFunctionSurface       )
+  ON_COMMAND(ID_FILE_PARAMETRICSURFACE     , OnFileParametricSurface     )
+  ON_COMMAND(ID_FILE_ISOSURFACE            , OnFileIsoSurface            )
+  ON_COMMAND(ID_OBJECT_EDITFUNCTION        , OnObjectEditFunction        )
+  ON_COMMAND(ID_DEBUG_GO                   , OnDebugGo                   )
+  ON_COMMAND(ID_DEBUG_STEPCUBE             , OnDebugStepCube             )
+  ON_COMMAND(ID_DEBUG_STEPTETRA            , OnDebugStepTetra            )
+  ON_COMMAND(ID_DEBUG_STEPFACE             , OnDebugStepFace             )
+  ON_COMMAND(ID_DEBUG_STEPVERTEX           , OnDebugStepVertex           )
+  ON_COMMAND(ID_DEBUG_STOPDEBUGGING        , OnDebugStopDebugging        )
+  ON_COMMAND(ID_DEBUG_TOGGLEBREAKONPREVCUBE, OnDebugToggleBreakOnPrevCube)
+  ON_COMMAND(ID_DEBUG_DISABLEALLBREAKPOINTS, OnDebugDisableAllBreakPoints)
+  ON_COMMAND(ID_DEBUG_CLEARALLBREAKPOINTS  , OnDebugClearAllBreakPoints  )
+  ON_COMMAND(ID_DEBUG_AUTOFOCUSCURRENTCUBE , OnDebugAutoFocusCurrentCube )
+  ON_COMMAND(ID_DEBUG_ADJUSTCAM_45UP       , OnDebugAdjustCam45Up        )
+  ON_COMMAND(ID_DEBUG_ADJUSTCAM_45DOWN     , OnDebugAdjustCam45Down      )
+  ON_COMMAND(ID_DEBUG_ADJUSTCAM_45LEFT     , OnDebugAdjustCam45Left      )
+  ON_COMMAND(ID_DEBUG_ADJUSTCAM_45RIGHT    , OnDebugAdjustCam45Right     )
+  ON_COMMAND(ID_DEBUG_MARKCUBE             , OnDebugMarkCube             )
+  ON_COMMAND(ID_RESETPOSITIONS             , OnResetPositions            )
+  ON_COMMAND(ID_OPTIONS_SAVEOPTIONS        , OnOptionsSaveOptions        )
+  ON_COMMAND(ID_OPTIONS_LOADOPTIONS1       , OnOptionsLoadOptions1       )
+  ON_COMMAND(ID_OPTIONS_LOADOPTIONS2       , OnOptionsLoadOptions2       )
+  ON_COMMAND(ID_OPTIONS_LOADOPTIONS3       , OnOptionsLoadOptions3       )
+  ON_COMMAND(ID_OPTIONS_LOADOPTIONS4       , OnOptionsLoadOptions4       )
+  ON_COMMAND(ID_OPTIONS_LOADOPTIONS5       , OnOptionsLoadOptions5       )
+  ON_COMMAND(ID_OPTIONS_LOADOPTIONS6       , OnOptionsLoadOptions6       )
+  ON_COMMAND(ID_OPTIONS_LOADOPTIONS7       , OnOptionsLoadOptions7       )
+  ON_COMMAND(ID_OPTIONS_LOADOPTIONS8       , OnOptionsLoadOptions8       )
+  ON_COMMAND(ID_OPTIONS_LOADOPTIONS9       , OnOptionsLoadOptions9       )
+  ON_COMMAND(ID_OPTIONS_ORGANIZEOPTIONS    , OnOptionsOrganizeOptions    )
+  ON_MESSAGE(ID_MSG_RENDER                 , OnMsgRender                 )
+  ON_MESSAGE(ID_MSG_DEBUGGERSTATECHANGED   , OnMsgDebuggerStateChanged   )
+  ON_MESSAGE(ID_MSG_KILLDEBUGGER           , OnMsgKillDebugger           )
   ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
@@ -86,7 +88,7 @@ static UINT indicators[] = {
 
 #define REPAINT() Invalidate(FALSE)
 
-CMainFrame::CMainFrame() {
+CMainFrame::CMainFrame() : m_octaBreakPoints(100), m_breakPointsEnabled(true) {
   m_statusPanesVisible     = true;
   m_timerRunning           = false;
   m_destroyCalled          = false;
@@ -622,14 +624,16 @@ void CMainFrame::ajourDebuggerMenu() {
 #endif // DEBUG_POLYGONIZER
 
   enableSubMenuContainingId(this, ID_DEBUG_GO, enable1 || enable2);
-  enableMenuItem(this, ID_DEBUG_GO           , enable1);
-  enableMenuItem(this, ID_DEBUG_STEPLEVEL    , enable1);
-  enableMenuItem(this, ID_DEBUG_STEPCUBE     , enable1);
-  enableMenuItem(this, ID_DEBUG_STEPTETRA    , enable1);
-  enableMenuItem(this, ID_DEBUG_STEPFACE     , enable1);
-  enableMenuItem(this, ID_DEBUG_STEPVERTEX   , enable1);
-  enableMenuItem(this, ID_DEBUG_AUTOFOCUSCURRENTCUBE, enable1);
-  enableMenuItem(this, ID_DEBUG_STOPDEBUGGING, enable2);
+  enableMenuItem(this, ID_DEBUG_GO                   , enable1);
+  enableMenuItem(this, ID_DEBUG_STEPCUBE             , enable1);
+  enableMenuItem(this, ID_DEBUG_STEPTETRA            , enable1);
+  enableMenuItem(this, ID_DEBUG_STEPFACE             , enable1);
+  enableMenuItem(this, ID_DEBUG_STEPVERTEX           , enable1);
+  enableMenuItem(this, ID_DEBUG_TOGGLEBREAKONPREVCUBE, enable1);
+  enableMenuItem(this, ID_DEBUG_DISABLEALLBREAKPOINTS, enable1);
+  enableMenuItem(this, ID_DEBUG_CLEARALLBREAKPOINTS  , enable1);
+  enableMenuItem(this, ID_DEBUG_AUTOFOCUSCURRENTCUBE , enable1);
+  enableMenuItem(this, ID_DEBUG_STOPDEBUGGING        , enable2);
   enableSubMenuContainingId(this, ID_DEBUG_ADJUSTCAM_45UP, enable3);
 }
 
@@ -637,7 +641,6 @@ void CMainFrame::ajourDebuggerMenu() {
 void CMainFrame::startDebugging() {}
 void CMainFrame::stopDebugging() {}
 void CMainFrame::OnDebugGo() {}
-void CMainFrame::OnDebugStepLevel() {}
 void CMainFrame::OnDebugStepCube() {}
 void CMainFrame::OnDebugStepTetra() {}
 void CMainFrame::OnDebugStepFace() {}
@@ -656,8 +659,8 @@ LRESULT CMainFrame::OnMsgDebuggerStateChanged(WPARAM wp, LPARAM lp) { return 0; 
 
 void CMainFrame::startDebugging() {
   setCalculatedObject(NULL);
-  m_hasCubeCenter = false;
-  m_currentCamDistance = 5;
+  m_hasCubeCenter      = false;
+  m_currentCamDistance = 0.25;
   try {
     killDebugger(false);
     m_debugger = new Debugger(this, m_isoSurfaceParam);
@@ -665,6 +668,7 @@ void CMainFrame::startDebugging() {
     createDebugLight();
     checkMenuItem(this, ID_DEBUG_AUTOFOCUSCURRENTCUBE, true);
     ajourDebuggerMenu();
+    m_editor.getSelectedCAM()->setViewAngle(0.2864f);
     m_editor.OnControlCameraWalk();
     ThreadPool::executeNoWait(*m_debugger);
     show3DInfo(INFO_MEM);
@@ -723,11 +727,10 @@ void CMainFrame::handlePropertyChanged(const PropertyContainer *source, int id, 
 
 void CMainFrame::OnDebugGo() {
   if(isDebuggerPaused()) {
-    m_debugger->go();
+    m_debugger->go(m_octaBreakPoints);
   }
 }
 
-void CMainFrame::OnDebugStepLevel()  { OnDebugStep(FL_BREAKONNEXTLEVEL ); }
 void CMainFrame::OnDebugStepCube()   { OnDebugStep(FL_BREAKONNEXTOCTA  ); }
 void CMainFrame::OnDebugStepTetra()  { OnDebugStep(FL_BREAKONNEXTTETRA ); }
 void CMainFrame::OnDebugStepFace()   { OnDebugStep(FL_BREAKONNEXTFACE  ); }
@@ -736,6 +739,37 @@ void CMainFrame::OnDebugStepVertex() { OnDebugStep(FL_BREAKONNEXTVERTEX); }
 void CMainFrame::OnDebugStopDebugging() {
   if(hasDebugger()) {
     killDebugger(false);
+  }
+}
+
+void CMainFrame::OnDebugToggleBreakOnPrevCube() {
+  if(isDebuggerPaused()) {
+    const int octaCounter = m_debugger->getOctaCounter();
+    if(octaCounter == 0) return;
+    const UINT breakPoint = octaCounter - 1;
+    if(m_octaBreakPoints.getCapacity() <= breakPoint) {
+      m_octaBreakPoints.setCapacity(2 * breakPoint);
+    }
+    if(m_octaBreakPoints.contains(breakPoint)) {
+      m_octaBreakPoints.remove(breakPoint);
+    } else {
+      m_octaBreakPoints.add(breakPoint);
+    }
+    show3DInfo(INFO_DEBUG);
+  }
+}
+
+void CMainFrame::OnDebugDisableAllBreakPoints() {
+  if(isDebuggerPaused()) {
+    m_breakPointsEnabled = !m_breakPointsEnabled;
+    show3DInfo(INFO_DEBUG);
+  }
+}
+
+void CMainFrame::OnDebugClearAllBreakPoints() {
+  if(isDebuggerPaused()) {
+    m_octaBreakPoints.clear();
+    show3DInfo(INFO_DEBUG);
   }
 }
 
@@ -829,7 +863,6 @@ LRESULT CMainFrame::OnMsgDebuggerStateChanged(WPARAM wp, LPARAM lp) {
             const IsoSurfacePolygonizer *poly = surf.getPolygonizer();
             m_cubeCenter    = octa.getCenter();
             m_hasCubeCenter = true;
-            m_cubeLevel     = octa.getLevel();
             D3Camera *cam   = sCAM();
             D3World   w     = cam->getD3World();
             cam->setD3World(w.setPos(m_cubeCenter - m_currentCamDistance * w.getDir()));
@@ -859,7 +892,14 @@ void CMainFrame::updateDebugInfo() {
       m_debugInfo += format(_T("\nError:%s"), m_debugger->getErrorMsg().cstr());
     }
     if(m_hasCubeCenter) {
-      m_debugInfo += format(_T("\nCubeCenter:(%s), level:%u"), toString(m_cubeCenter, 6).cstr(), m_cubeLevel);
+      m_debugInfo += format(_T("\nCubeCenter:(%s), CubeIndex:%4u, camDistance:%f")
+                           ,toString(m_cubeCenter, 4).cstr()
+                           ,m_debugger->getOctaCounter()
+                           ,m_currentCamDistance);
+    }
+    if(!m_octaBreakPoints.isEmpty()) {
+      m_debugInfo += format(_T("\nBreakpoints:%s"), m_octaBreakPoints.toString().cstr());
+      m_debugInfo += format(_T("\nBreakpoints %s"), m_breakPointsEnabled ? _T("enabled") : _T("disabled"));
     }
     const DebugIsoSurface       &surf = m_debugger->getDebugSurface();
     const IsoSurfacePolygonizer *poly = surf.getPolygonizer();
@@ -896,7 +936,11 @@ void CMainFrame::show3DInfo(BYTE flags) {
   showInfo(_T("%s\n%s"), m_memoryInfo.cstr(), m_editorInfo.cstr());
 #else
   if(flags & INFO_DEBUG) updateDebugInfo();
-  showInfo(_T("%s, RenderCount:(%5u,%5u)\n%s\n%s"), m_memoryInfo.cstr(), renderSceneCount, renderInfoCount, m_editorInfo.cstr(), m_debugInfo.cstr());
+  showInfo(_T("%s, RenderCount:(%5u,%5u)\n%s\n%s")
+          ,m_memoryInfo.cstr()
+          ,renderSceneCount, renderInfoCount
+          ,m_editorInfo.cstr()
+          ,m_debugInfo.cstr());
 #endif //  DEBUG_POLYGONIZER
 }
 

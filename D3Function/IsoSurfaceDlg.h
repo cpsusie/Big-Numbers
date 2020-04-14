@@ -7,6 +7,7 @@ class CIsoSurfaceDlg : public SaveLoadExprDialog<IsoSurfaceParameters> {
 private:
   CString m_expr;
   double  m_cellSize;
+  double  m_lambda;
   UINT    m_bounds;
   BOOL    m_tetrahedral;
   BOOL    m_tetraOptimize4;
@@ -75,6 +76,7 @@ protected:
     afx_msg void OnEditFindMatchingParentesis();
     afx_msg void OnGotoExpr();
     afx_msg void OnGotoCellSize();
+    afx_msg void OnGotoLambda();
     afx_msg void OnGotoXInterval();
     afx_msg void OnGotoYInterval();
     afx_msg void OnGotoZInterval();

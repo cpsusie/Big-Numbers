@@ -33,11 +33,13 @@
 #define IDC_STATIC_EQUAL_ZERO           1093
 #define IDC_STATIC_CELLSIZE             1094
 #define IDC_EDIT_CELLSIZE               1095
-#define IDC_CHECK_TETRAHEDRAL           1096
-#define IDC_CHECK_TETRAOPTIMIZE4        1097
-#define IDC_CHECK_ORIGINOUTSIDE         1098
-#define IDC_CHECK_ADAPTIVECELLSIZE      1099
-#define IDC_CHECK_DEBUGPOLYGONIZER      1100
+#define IDC_STATIC_LAMBDA               1096
+#define IDC_EDIT_LAMBDA                 1097
+#define IDC_CHECK_TETRAHEDRAL           1098
+#define IDC_CHECK_TETRAOPTIMIZE4        1099
+#define IDC_CHECK_ORIGINOUTSIDE         1100
+#define IDC_CHECK_ADAPTIVECELLSIZE      1101
+#define IDC_CHECK_DEBUGPOLYGONIZER      1102
 #define IDC_CHECK_DOUBLESIDED           1110
 #define IDC_CHECK_MACHINECODE           1111
 #define IDC_CHECKCREATELISTFILE         1112
@@ -91,14 +93,16 @@
 #define ID_RESETPOSITIONS               32910
 #define ID_OBJECT_EDITFUNCTION          32920
 #define ID_ADDBOXOBJECT                 32931
-#define ID_DEBUG_STEPLEVEL              33000
-#define ID_DEBUG_STEPCUBE               33001
-#define ID_DEBUG_STEPTETRA              33002
-#define ID_DEBUG_STEPFACE               33003
-#define ID_DEBUG_STEPVERTEX             33004
-#define ID_DEBUG_GO                     33005
-#define ID_DEBUG_STOPDEBUGGING          33006
-#define ID_DEBUG_AUTOFOCUSCURRENTCUBE   33007
+#define ID_DEBUG_STEPCUBE               33000
+#define ID_DEBUG_STEPTETRA              33001
+#define ID_DEBUG_STEPFACE               33002
+#define ID_DEBUG_STEPVERTEX             33003
+#define ID_DEBUG_GO                     33004
+#define ID_DEBUG_STOPDEBUGGING          33005
+#define ID_DEBUG_TOGGLEBREAKONPREVCUBE  33006
+#define ID_DEBUG_CLEARALLBREAKPOINTS    33007
+#define ID_DEBUG_DISABLEALLBREAKPOINTS  33008
+#define ID_DEBUG_AUTOFOCUSCURRENTCUBE   33009
 #define ID_DEBUG_ADJUSTCAM_45UP         33010
 #define ID_DEBUG_ADJUSTCAM_45DOWN       33011
 #define ID_DEBUG_ADJUSTCAM_45LEFT       33012
@@ -119,7 +123,6 @@
 #define ID_MSG_RENDER                   33202
 #define ID_MSG_DEBUGGERSTATECHANGED     33203
 #define ID_MSG_KILLDEBUGGER             33204
-
 #define ID_GOTO_EXPR                    33500
 #define ID_GOTO_EXPRX                   33501
 #define ID_GOTO_EXPRY                   33502
@@ -141,8 +144,8 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        210
-#define _APS_NEXT_COMMAND_VALUE         33332
+#define _APS_NEXT_RESOURCE_VALUE        211
+#define _APS_NEXT_COMMAND_VALUE         33336
 #define _APS_NEXT_CONTROL_VALUE         1235
 #define _APS_NEXT_SYMED_VALUE           103
 #endif

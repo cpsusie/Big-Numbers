@@ -1,4 +1,5 @@
 //
+//
 // An implicit surface polygonizer, translated from Mesa
 // applications should call polygonize()
 //
@@ -23,21 +24,37 @@ const TCHAR *labelChars = _T("-=+");
 
 typedef struct {
   const CubeCorner corner1, corner2;
+  const BYTE       coordIndex; // = [0..2], 0=x, 1=y, 2=z
 } CubeEdgeInfo;
 
 static const CubeEdgeInfo cubeEdgeTable[12] = {
-  { LBN,RBN }  // bottom near   edge BN
- ,{ LBN,LBF }  // left   bottom edge LB
- ,{ RBN,RBF }  // right  bottom edge RB
- ,{ LBF,RBF }  // bottom far    edge BF
- ,{ LBN,LTN }  // left   near   edge LN
- ,{ RBN,RTN }  // right  near   edge RN
- ,{ LBF,LTF }  // left   far    edge LF
- ,{ RBF,RTF }  // right  far    edge RF
- ,{ LTN,RTN }  // top    near   edge TN
- ,{ LTN,LTF }  // left   top    edge LT
- ,{ RTN,RTF }  // right  top    edge RT
- ,{ LTF,RTF }  // top    far    edge TF
+  { LBN,RBN, 0}  // bottom near   edge BN
+ ,{ LBN,LBF, 1}  // left   bottom edge LB
+ ,{ RBN,RBF, 1}  // right  bottom edge RB
+ ,{ LBF,RBF, 0}  // bottom far    edge BF
+ ,{ LBN,LTN, 2}  // left   near   edge LN
+ ,{ RBN,RTN, 2}  // right  near   edge RN
+ ,{ LBF,LTF, 2}  // left   far    edge LF
+ ,{ RBF,RTF, 2}  // right  far    edge RF
+ ,{ LTN,RTN, 0}  // top    near   edge TN
+ ,{ LTN,LTF, 1}  // left   top    edge LT
+ ,{ RTN,RTF, 1}  // right  top    edge RT
+ ,{ LTF,RTF, 0}  // top    far    edge TF
+};
+
+typedef struct {
+  const CubeCorner c1, c2, c3, c4;
+  const BYTE       vertex[6];
+} CubeFaceInfo;
+
+// order clockwise looked from outside (visible side)
+static const CubeFaceInfo cubeFaceTable[6] = {
+  LBN, LBF, LTF, LTN, 64, 2, 6, 0, 6, 4  // LFACE direction : -x, -i
+ ,RBN, RTN, RTF, RBF, 65, 5, 7, 1, 7, 3  // RFACE direction : +x, +i
+ ,LBN, LTN, RTN, RBN, 64, 4, 5, 0, 5, 1  // NFACE direction : -y, -j
+ ,LBF, RBF, RTF, LTF, 66, 7, 3, 2, 6, 7  // FFACE direction : +y, +j
+ ,LBN, RBN, RBF, LBF, 64, 1, 3, 0, 3, 2  // BFACE direction : -z, -k
+ ,LTN, LTF, RTF, RTN, 68, 6, 7, 4, 7, 5  // TFACE direction : +z, +k
 };
 
 #define HASHSIZE 100001
@@ -55,12 +72,33 @@ IsoSurfacePolygonizer::IsoSurfacePolygonizer(IsoSurfaceEvaluator &eval)
 IsoSurfacePolygonizer::~IsoSurfacePolygonizer() {
 }
 
+static int cubeCenterCompare(const StackedCube &c1, const StackedCube &c2) {
+  return Point3DKey::compare(c1.m_key, c2.m_key);
+}
+
+
+class CubeCenterDistanceComparator : public Comparator<StackedCube> {
+private:
+  const Point3DKey m_key0;
+public:
+  CubeCenterDistanceComparator(const StackedCube &c0) : m_key0(c0.m_key) {
+  }
+  AbstractComparator *clone() const {
+    return new CubeCenterDistanceComparator(*this);
+  }
+  int compare(const StackedCube &c1, const StackedCube &c2) {
+    return sign(Point3DKey::distance(c1.m_key, m_key0) - Point3DKey::distance(c2.m_key, m_key0));
+  }
+};
+
 void IsoSurfacePolygonizer::polygonize(const Point3D &start
                                       ,double         cellSize
+                                      ,double         lambda
                                       ,const Cube3D  &boundingBox
                                       ,bool           tetrahedralMode
                                       ,bool           tetraOptimize4
-                                      ) {
+                                      )
+{
 
   const double startTime = getThreadTime();
 
@@ -69,6 +107,8 @@ void IsoSurfacePolygonizer::polygonize(const Point3D &start
 #endif // _DEBUG
 
   m_cellSize         = cellSize;
+  m_lambda           = lambda;
+  m_maxSnapDistance  = m_cellSize * m_lambda;
   m_boundingBox      = boundingBox;
   m_delta            = cellSize/(double)(RES*RES);
   m_tetrahedralMode  = tetrahedralMode;
@@ -90,9 +130,6 @@ void IsoSurfacePolygonizer::polygonize(const Point3D &start
   m_edgeMap.setCapacity(     HASHSIZE);
   while(hasActiveCubes()) { // process active cubes until none left
     const StackedCube cube = getActiveCube();
-#ifdef DEBUG_POLYGONIZER
-    m_eval.markCurrentOcta(cube);
-#endif // DEBUG_POLYGONIZER
     addSurfaceVertices(cube);
     // test six face directions, maybe add to stack:
     testFace(cube.m_key.i-1 , cube.m_key.j   , cube.m_key.k   , cube, LFACE, LBN, LBF, LTN, LTF);
@@ -101,6 +138,22 @@ void IsoSurfacePolygonizer::polygonize(const Point3D &start
     testFace(cube.m_key.i   , cube.m_key.j+1 , cube.m_key.k   , cube, FFACE, LBF, LTF, RBF, RTF);
     testFace(cube.m_key.i   , cube.m_key.j   , cube.m_key.k-1 , cube, BFACE, LBN, LBF, RBN, RBF);
     testFace(cube.m_key.i   , cube.m_key.j   , cube.m_key.k+1 , cube, TFACE, LTN, LTF, RTN, RTF);
+  }
+  for(Iterator<Entry< Point3DKey, HashedCubeCorner> > it = m_cornerMap.getEntryIterator(); it.hasNext();) {
+    HashedCubeCorner &c = it.next().getValue();
+    if(c.hasSnapVertex()) {
+      c.setLabel(V_ZERO);
+    }
+  }
+
+//  const UINT lbfCube = findLeftBottomFarCube(m_intersectingCubeTable);
+//  m_intersectingCubeTable.sort(CubeCenterDistanceComparator(m_intersectingCubeTable[lbfCube]));
+
+  const size_t cubeCount = m_intersectingCubeTable.size();
+  for(size_t i = 0; i < cubeCount; i++) {
+    if(doCube2(m_intersectingCubeTable[i].resetIndex())) {
+      flushFaceBuffer();
+    }
   }
   saveStatistics(startTime);
   flushFaceArray();
@@ -145,10 +198,10 @@ void IsoSurfacePolygonizer::addSurfaceVertices(const StackedCube &cube) {
     doTetra(cube, RTN, RBN, LBF, RBF);
     doTetra(cube, RTN, LBF, LTF, RBF);
     doTetra(cube, RTN, LTF, RTF, RBF);
+    flushFaceBuffer();
   } else {
-    doCube(cube);         // or polygonize the cube directly:
+    doCube1(cube);
   }
-  flushFaceBuffer();
 }
 
 // testface: given cube at lattice (i, j, k), and four corners of face,
@@ -189,8 +242,9 @@ void IsoSurfacePolygonizer::testFace(int i, int j, int k, const StackedCube &old
 }
 
 // doCube: triangulate the cube directly, without decomposition
-void IsoSurfacePolygonizer::doCube(const StackedCube &cube) {
+void IsoSurfacePolygonizer::doCube1(const StackedCube &cube) {
   m_statistics.m_doCubeCalls++;
+  m_intersectingCubeTable.add(cube);
   const SimplexArray sa = s_cubetable.get(cube.getIndex());
   const UINT         n  = sa.size();
   for(UINT i = 0; i < n; i++) {
@@ -199,16 +253,72 @@ void IsoSurfacePolygonizer::doCube(const StackedCube &cube) {
     for(BYTE j = 0; j < 3; j++) {
       const IsoVertex iv = s.m_v[j];
       if(isCubeEdge(iv)) {
-        const CubeEdgeInfo     &edge = cubeEdgeTable[isoVertexToCubeEdge(iv)];
-        const HashedCubeCorner &c1 = *cube.m_corners[edge.corner1];
-        const HashedCubeCorner &c2 = *cube.m_corners[edge.corner2];
-        v[j] = getVertexId(c1, c2);
+        v[j] = getCubeEdgeVertexId(cube, isoVertexToCubeEdge(iv));
       } else {
-        int fisk = 1;
+        showWarning(_T("vertex not on CubeEdge"));
       }
+    }
+  }
+}
+
+bool IsoSurfacePolygonizer::doCube2(const StackedCube &cube) {
+  const SimplexArray sa = s_cubetable.get(cube.getIndex());
+#ifdef DEBUG_POLYGONIZER
+  m_eval.markCurrentOcta(cube);
+#endif // DEBUG_POLYGONIZER
+  const UINT         n  = sa.size();
+  if(n == 0) {
+    for(int i = 0; i < 6; i++) {
+      const CubeFace face = (CubeFace)i;
+      if(doCubeFace(cube, face)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  for(UINT i = 0; i < n; i++) {
+    const Simplex s = sa[i];
+    UINT v[3];
+    for(BYTE j = 0; j < 3; j++) {
+      const IsoVertex iv = s.m_v[j];
+      if(isCubeEdge(iv)) {
+        v[j] = getCubeEdgeVertexId(cube, isoVertexToCubeEdge(iv));
+      } else {
+        v[j] = cube.m_corners[isoVertexToCubeCorner(iv)]->getSnapIndex();
+      }
+#ifdef DEBUG_POLYGONIZER
+      m_eval.markCurrentVertex(m_vertexArray[v[j]]);
+#endif // DEBUG_POLYGONIZER
     }
     putFace3(v[0], v[1], v[2]);
   }
+  return true;
+}
+
+bool IsoSurfacePolygonizer::doCubeFace(const StackedCube &cube, CubeFace face) {
+  const SimplexArray sa = cube.has4ZeroCorners(face);
+  UINT         n = sa.size();
+  if(n == 0) {
+    return false;
+  }
+#ifdef DEBUG_POLYGONIZER
+  m_eval.markCurrentOcta(cube);
+#endif // DEBUG_POLYGONIZER
+
+  for(UINT i = 0; i < n; i++) {
+    const Simplex s = sa[i];
+    UINT v[3];
+    for(BYTE j = 0; j < 3; j++) {
+      const IsoVertex iv = s.m_v[j];
+      v[j] = cube.m_corners[isoVertexToCubeCorner(iv)]->getSnapIndex();
+#ifdef DEBUG_POLYGONIZER
+      m_eval.markCurrentVertex(m_vertexArray[v[j]]);
+#endif // DEBUG_POLYGONIZER
+    }
+    putFace3(v[0], v[1], v[2]);
+  }
+  return true;
 }
 
 // **** Tetrahedral Polygonization ****
@@ -258,7 +368,7 @@ void IsoSurfacePolygonizer::doTetra(const HashedCubeCorner &a, const HashedCubeC
   }
   putTriangleStrip(ts);
 }
-#ifdef __NEVER__
+
 bool IsoSurfacePolygonizer::checkOrientation(const Face3 &f) const {
   const Point3D &p1 = m_vertexArray[f.m_i1].m_position;
   const Point3D &p2 = m_vertexArray[f.m_i2].m_position;
@@ -270,7 +380,6 @@ bool IsoSurfacePolygonizer::checkOrientation(const Face3 &f) const {
   double s1 = c * n1, s2 = c * n2, s3 = c * n3;
   return s1 > 0;
 }
-#endif
 
 void IsoSurfacePolygonizer::putTriangleStrip(const TriangleStrip &ts) {
   if(ts.m_count == 3) {
@@ -400,6 +509,23 @@ IsoSurfaceTest IsoSurfacePolygonizer::findStartPoint(bool positive, const Point3
   return result;
 }
 
+UINT IsoSurfacePolygonizer::findLeftBottomFarCube(const CompactArray<StackedCube> &a) const {
+  const size_t n = a.size();
+  if(n == 0) {
+    return -1;
+  }
+  UINT bestIndex = 0;
+  Point3DKey bestKey = a[bestIndex].m_key;
+  for(UINT i = 1; i < n; i++) {
+    const Point3DKey &key = a[i].m_key;
+    if(Point3DKey::compare(key, bestKey) < 0) {
+      bestIndex = i;
+      bestKey   = key;
+    }
+  }
+  return bestIndex;
+}
+
 // return false if already set; otherwise add to m_centerSet and return true
 bool IsoSurfacePolygonizer::addToDoneSet(const Point3DKey &key) {
   if(m_cubesDoneSet.contains(key)) {
@@ -410,10 +536,17 @@ bool IsoSurfacePolygonizer::addToDoneSet(const Point3DKey &key) {
   }
 }
 
+UINT IsoSurfacePolygonizer::getCubeEdgeVertexId(const StackedCube &cube, CubeEdge ce) {
+  const CubeEdgeInfo     &edge = cubeEdgeTable[ce];
+  const HashedCubeCorner &c1   = *cube.m_corners[edge.corner1];
+  const HashedCubeCorner &c2   = *cube.m_corners[edge.corner2];
+  return getVertexId(c1, c2, edge.coordIndex);
+}
+
 // getVertexId: return index for vertex on edge:
 // c1.m_value and c2.m_value are presumed of different sign
 // return saved index if any; else calculate and save vertex for later use
-UINT IsoSurfacePolygonizer::getVertexId(const HashedCubeCorner &c1, const HashedCubeCorner &c2) {
+UINT IsoSurfacePolygonizer::getVertexId(const HashedCubeCorner &c1, const HashedCubeCorner &c2, BYTE coordIndex) {
 #ifdef VALIDATE_OPPOSITESIGN
   if(!hasOppositeSign(c1, c2)) {
     throwException(_T("%s:Corners doesn't have opposite sign. c1:%s, c2:%s")
@@ -426,24 +559,85 @@ UINT IsoSurfacePolygonizer::getVertexId(const HashedCubeCorner &c1, const Hashed
   const UINT *p = m_edgeMap.get(edgeKey);
   if(p != NULL) {
     m_statistics.m_edgeHits++;
-#ifdef DEBUG_POLYGONIZER
-    m_eval.markCurrentVertex(m_vertexArray[*p]);
-#endif // DEBUG_POLYGONIZER
     return *p; // previously computed
   }
 
-  IsoSurfaceVertex vertex;
-  vertex.m_position   = converge(c1, c2);             // position;
-  vertex.m_normal     = getNormal(vertex.m_position); // normal
-
-  const UINT result = (UINT)m_vertexArray.size();
-  m_vertexArray.add(vertex);
+  const Point3D           sp = converge(c1, c2);             // position;
+  double                  dist;
+  const HashedCubeCorner *snapCorner;
+  switch(coordIndex) {
+  case 0:
+    if((dist = fabs(sp.x - c1.x)) <= m_maxSnapDistance) {
+      snapCorner = &c1;
+    } else if((dist = fabs(sp.x - c2.x)) <= m_maxSnapDistance) {
+      snapCorner = &c2;
+    } else {
+      snapCorner = NULL;
+    }
+    break;
+  case 1:
+    if((dist = fabs(sp.y - c1.y)) <= m_maxSnapDistance) {
+      snapCorner = &c1;
+    } else if((dist = fabs(sp.y - c2.y)) <= m_maxSnapDistance) {
+      snapCorner = &c2;
+    } else {
+      snapCorner = NULL;
+    }
+    break;
+  case 2:
+    if((dist = fabs(sp.z - c1.z)) <= m_maxSnapDistance) {
+      snapCorner = &c1;
+    } else if((dist = fabs(sp.z - c2.z)) <= m_maxSnapDistance) {
+      snapCorner = &c2;
+    } else {
+      snapCorner = NULL;
+    }
+    break;
+  default:
+    snapCorner = NULL;
+    break;
+  }
+  UINT result;
+  if(snapCorner == NULL) {
+    result = (UINT)m_vertexArray.size();
+    m_vertexArray.add(IsoSurfaceVertex().setPosition(sp, getNormal(sp)));
+  } else if(snapCorner->hasSnapVertex()) {
+    result = snapCorner->getSnapIndex();
+    if(dist < snapCorner->m_shortestSnapDistance) {
+      snapCorner->setSnapDistance(dist);
+      IsoSurfaceVertex &sv = m_vertexArray[result];
+      sv.setPosition(sp, getNormal(sp));
+    }
+  } else { // no isoVertex snapped to this corner yet. Create one
+    result = (UINT)m_vertexArray.size();
+    m_vertexArray.add(IsoSurfaceVertex().setPosition(sp, getNormal(sp)));
+    snapCorner->setSnapDistance(dist, result);
+  }
   m_edgeMap.put(edgeKey, result);
-#ifdef DEBUG_POLYGONIZER
-  m_eval.markCurrentVertex(m_vertexArray[result]);
-#endif // DEBUG_POLYGONIZER
   return result;
 }
+
+void HashedCubeCorner::setSnapDistance(double dist, int vertexIndex) const {
+  if(dist < 0) {
+    throwInvalidArgumentException(__TFUNCTION__, _T("dist=%le"), dist);
+  }
+  if(hasSnapVertex()) {
+    if(vertexIndex >= 0) {
+      throwInvalidArgumentException(__TFUNCTION__, _T("vertexIndex=%d"), vertexIndex);
+    }
+    if(dist > getSnapDistance()) {
+      throwInvalidArgumentException(__TFUNCTION__, _T("dist=%le"), dist);
+    }
+    m_shortestSnapDistance = dist;
+  } else {
+    if(vertexIndex < 0) {
+      throwInvalidArgumentException(__TFUNCTION__, _T("vertexIndex=%d"), vertexIndex);
+    }
+    m_snappedIsoVertexIndex = vertexIndex;
+    m_shortestSnapDistance  = dist;
+  }
+}
+
 
 // getNormal: calculate unit length surface normal at point
 Point3D IsoSurfacePolygonizer::getNormal(const Point3D &point) {
@@ -515,11 +709,15 @@ Point3D IsoSurfacePolygonizer::convergeStartPoint(const Point3DWithValue &p1, co
   }
 }
 
-static inline int point3DKeyCmp(const Point3DKey &k1, const Point3DKey &k2) {
+int Point3DKey::compare(const Point3DKey &k1, const Point3DKey &k2) { // static
   int c;
   if(c = k1.i - k2.i) return c;
   if(c = k1.j - k2.j) return c;
   return k1.k - k2.k;
+}
+
+double Point3DKey::distance(const Point3DKey &k1, const Point3DKey &k2) { // static
+  return sqrt((sqr((double)k1.i - k2.i) + sqr((double)k1.j - k2.j) + sqr((double)k1.k - k2.k)));
 }
 
 #ifdef DUMP_CORNERMAP
@@ -557,8 +755,8 @@ public:
 
 static int sortedCubeEdgeCmp(const SortedCubeEdge &e1, const SortedCubeEdge &e2) {
   int c;
-  if(c = point3DKeyCmp(e1.getKey1(),e2.getKey1())) return c;
-  return point3DKeyCmp(e1.getKey2(),e2.getKey2());
+  if(c = Point3DKey::compare(e1.getKey1(),e2.getKey1())) return c;
+  return Point3DKey::compare(e1.getKey2(),e2.getKey2());
 }
 
 void IsoSurfacePolygonizer::dumpEdgeMap() const {
@@ -596,7 +794,7 @@ void IsoSurfacePolygonizer::dumpFaceArray() const {
 #endif // DUMP_FACEARRAY
 
 void CubeEdgeHashKey::checkAndSwap() {
-  if(point3DKeyCmp(m_key1, m_key2)) {
+  if(Point3DKey::compare(m_key1, m_key2)) {
     std::swap(m_key1, m_key2);
   }
 }
@@ -722,6 +920,17 @@ void StackedCube::validate() const {
 }
 
 #endif // VALIDATE_CUBES
+
+SimplexArray StackedCube::has4ZeroCorners(CubeFace cf) const {
+  const CubeFaceInfo &info = cubeFaceTable[cf];
+  static const BYTE empty[] = { 0 };
+  return (m_corners[info.c1]->m_label == V_ZERO)
+      && (m_corners[info.c2]->m_label == V_ZERO)
+      && (m_corners[info.c3]->m_label == V_ZERO)
+      && (m_corners[info.c4]->m_label == V_ZERO)
+    ? SimplexArray(info.vertex)
+    : SimplexArray(empty);
+}
 
 String StackedCube::toString() const {
   String result = format(_T("Cube:Key:%s. Size:%s\n")

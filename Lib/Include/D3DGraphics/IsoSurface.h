@@ -8,6 +8,7 @@ class IsoSurfaceParameters : public PersistentData {
 public:
   String         m_expr;
   double         m_cellSize;
+  double         m_lambda;
   Cube3D         m_boundingBox;
   bool           m_tetrahedral;
   bool           m_tetraOptimize4;

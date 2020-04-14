@@ -5,6 +5,7 @@
 
 IsoSurfaceParameters::IsoSurfaceParameters() {
   m_cellSize         = 0.25;
+  m_lambda           = 0.25;
   m_boundingBox      = Cube3D(Point3D(-5,-5,-5), Point3D( 5, 5, 5));
   m_tetrahedral      = true;
   m_tetraOptimize4   = false;
@@ -21,6 +22,7 @@ void IsoSurfaceParameters::putDataToDoc(XMLDoc &doc) {
   XMLNodePtr root = doc.createRoot(_T("IsoSurface"));
   doc.setValue(  root, _T("expr"              ), m_expr            );
   doc.setValue(  root, _T("cellsize"          ), m_cellSize        );
+  doc.setValue(  root, _T("lambda"            ), m_lambda          );
   setValue( doc, root, _T("boundingbox"       ), m_boundingBox     );
   doc.setValue(  root, _T("tetrahedral"       ), m_tetrahedral     );
   doc.setValue(  root, _T("tetraoptimize4"    ), m_tetraOptimize4  );
@@ -40,6 +42,7 @@ void IsoSurfaceParameters::getDataFromDoc(XMLDoc &doc) {
   checkTag(root, _T("IsoSurface"));
   doc.getValueLF(root, _T("expr"              ), m_expr            );
   doc.getValue(  root, _T("cellsize"          ), m_cellSize        );
+  m_lambda = doc.getValueOrDefault(root, _T("lambda"), 0.25);
   getValue( doc, root, _T("boundingbox"       ), m_boundingBox     );
   doc.getValue(  root, _T("tetrahedral"       ), m_tetrahedral     );
   doc.getValue(  root, _T("tetraoptimize4"    ), m_tetraOptimize4  );
