@@ -71,8 +71,10 @@ public:
     m_q = q;
     return *this;
   }
+  // centerOfRotation in world space
+  D3World &setOrientation(const D3DXQUATERNION &q, const D3DXVECTOR3 &centerOfRotation);
   inline D3DXVECTOR3 getDir() const {
-    return rotate(E[0],m_q);
+    return rotate(E[0], m_q);
   }
   inline D3DXVECTOR3 getUp() const {
     return rotate(E[2], m_q);
