@@ -4,7 +4,7 @@
 
 class D3SceneObjectVisual;
 
-// Informarmation about where a ray intersects a mesh
+// Information about where a ray intersects a mesh
 class D3PickedInfo {
 private:
   // Visual object containing the mesh which intersect the ray
