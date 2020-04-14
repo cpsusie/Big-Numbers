@@ -106,9 +106,11 @@ private:
     void              setCurrentObjPos(   const D3DXVECTOR3 &pos);
     // Assume getCurrentVisual() != NULL (currentSceneObject.type in { SOTYPE_ANIMATEDOBJECT, SOTYPE_VISUALOBJECT }
     void              setCurrentVisualWorld(       const D3DXMATRIX &world);
-    // return pointer to getCurrentObj->getWorld() if getCcurrentVisual() != NULL, else NULL
+    // Return pointer to getCurrentObj->getWorld() if getCcurrentVisual() != NULL, else NULL
     const D3DXMATRIX *getCurrentVisualWorld() const;
     void              setCurrentVisualOrientation(const D3DXQUATERNION &q    );
+    // Set orientation for current visual to q, rotating around centerOfRotation (in world-space)
+    void              setCurrentVisualOrientation(const D3DXQUATERNION &q, const D3DXVECTOR3 &centerOfRotation);
     void              setCurrentVisualScale(      const D3DXVECTOR3    &scale);
     void walkWithCamera(       float  dist   , float  angle);
     void sidewalkWithCamera(   float  upDist , float rightDist);

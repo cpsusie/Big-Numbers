@@ -575,16 +575,19 @@ const D3DXMATRIX *D3SceneEditor::getCurrentVisualWorld() const {
   return (obj == NULL) ? NULL : &obj->getWorld();
 }
 
+void D3SceneEditor::setCurrentVisualOrientation(const D3DXQUATERNION &q, const D3DXVECTOR3 &centerOfRotation) {
+  D3SceneObjectVisual *obj = getCurrentVisual();
+  if(obj == NULL) return;
+  setCurrentVisualWorld(D3World(*obj).setOrientation(q, centerOfRotation));
+}
+
 void D3SceneEditor::setCurrentVisualOrientation(const D3DXQUATERNION &q) {
   D3SceneObjectVisual *obj = getCurrentVisual();
   if(obj == NULL) return;
-  D3World w(*obj);
   if(obj != m_centerOfRotation.m_obj) {
-    setCurrentVisualWorld(w.setOrientation(q));
+    setCurrentVisualWorld(D3World(*obj).setOrientation(q));
   } else {
-    const D3DXVECTOR3 crOldPos = m_centerOfRotation.getWorldPoint();
-    const D3DXVECTOR3 crNewPos = w.setOrientation(q) * m_centerOfRotation.getMeshPoint();
-    setCurrentVisualWorld(w.setPos(w.getPos() + crOldPos - crNewPos));
+    setCurrentVisualOrientation(q, m_centerOfRotation.getWorldPoint());
   }
 }
 
