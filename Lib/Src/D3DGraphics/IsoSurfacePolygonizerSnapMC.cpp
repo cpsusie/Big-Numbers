@@ -50,11 +50,11 @@ typedef struct {
 // order clockwise looked from outside (visible side)
 static const CubeFaceInfo cubeFaceTable[6] = {
   LBN, LBF, LTF, LTN, 64, 2, 6, 0, 6, 4  // LFACE direction : -x, -i
- ,RBN, RTN, RTF, RBF, 65, 5, 7, 1, 7, 3  // RFACE direction : +x, +i
- ,LBN, LTN, RTN, RBN, 64, 4, 5, 0, 5, 1  // NFACE direction : -y, -j
+ ,RBN, RTN, RTF, RBF, 65, 7, 5, 1, 3, 7  // RFACE direction : +x, +i
+ ,LBN, LTN, RTN, RBN, 64, 5, 4, 0, 1, 5  // NFACE direction : -y, -j
  ,LBF, RBF, RTF, LTF, 66, 7, 3, 2, 6, 7  // FFACE direction : +y, +j
- ,LBN, RBN, RBF, LBF, 64, 1, 3, 0, 3, 2  // BFACE direction : -z, -k
- ,LTN, LTF, RTF, RTN, 68, 6, 7, 4, 7, 5  // TFACE direction : +z, +k
+ ,LBN, RBN, RBF, LBF, 64, 3, 1, 0, 2, 3  // BFACE direction : -z, -k
+ ,LTN, LTF, RTF, RTN, 68, 7, 6, 4, 5, 7  // TFACE direction : +z, +k
 };
 
 #define HASHSIZE 100001

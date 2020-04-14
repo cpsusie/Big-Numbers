@@ -587,9 +587,9 @@ private:
     }
 #endif
     Face3 f(i1, i2, i3, m_color);
-//    if(!checkOrientation(f)) {
-//      f.reverseOrientation();
-//    }
+    if(!checkOrientation(f)) {
+      f.reverseOrientation();
+    }
     m_face3Buffer.add(f);
 #ifdef DEBUG_POLYGONIZER
     m_eval.markCurrentFace(f);
@@ -649,9 +649,6 @@ public:
                  ,bool           tetrahedralMode
                  ,bool           tetraOptimize4
                  );
-  inline BYTE getCurrentLevel() const {
-    return 0;
-  }
   inline const PolygonizerStatistics &getStatistics() const {
     return m_statistics;
   }
