@@ -103,20 +103,11 @@ int CD3FunctionApp::ExitInstance() {
 class CAboutDlg : public CDialog {
 public:
   enum { IDD = IDD_ABOUTBOX };
-
   CAboutDlg() : CDialog(IDD) {
   }
-
 protected:
-  virtual BOOL OnInitDialog();
   DECLARE_MESSAGE_MAP()
 };
-
-BOOL CAboutDlg::OnInitDialog() {
-  __super::OnInitDialog();
-  return TRUE;  // return TRUE unless you set the focus to a control
-                // EXCEPTION: OCX Property Pages should return FALSE
-}
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
