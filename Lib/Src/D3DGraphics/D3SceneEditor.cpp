@@ -128,6 +128,9 @@ void D3SceneEditor::handlePropertyChanged(const PropertyContainer *source, int i
         } else {
           setControl(CONTROL_IDLE, getScene().getLastVisual());
         }
+        if(!m_centerOfRotation.isEmpty() && !getScene().isVisual(m_centerOfRotation.m_obj)) {
+          m_centerOfRotation.reset();
+        }
         renderActive(SE_RENDERALL);
       }
       break;
@@ -216,7 +219,7 @@ void D3SceneEditor::handlePropertyChanged(const PropertyContainer *source, int i
 }
 
 D3SceneObjectVisual *D3SceneEditor::getPickedVisual(const CPoint &point, long mask, D3Ray &ray, D3SceneEditorPickedInfo &info) const {
-  return sCAM.getPickedVisual(point, mask, &info.m_worldPoint, &ray, &info.m_dist, &info.m_info);
+  return sCAM.getPickedVisual(point, mask, &info.m_hitPoint, &ray, &info.m_dist, &info.m_info);
 }
 
 void D3SceneEditor::OnLButtonDown(UINT nFlags, CPoint point) {
@@ -503,31 +506,31 @@ void D3SceneEditor::OnMouseMoveObjPos(UINT nFlags, CPoint pt) {
 }
 
 void D3SceneEditor::moveCurrentObjXY(CPoint pt) {
-  const D3DXVECTOR3 dp             = getCurrentObjPos() - m_pickedInfo.m_worldPoint;
-  const float       dist           = length(m_pickedInfo.m_worldPoint - m_pickedRay.m_orig);
+  const D3DXVECTOR3 dp             = getCurrentObjPos() - m_pickedInfo.m_hitPoint;
+  const float       dist           = length(m_pickedInfo.m_hitPoint - m_pickedRay.m_orig);
   const D3Ray       newPickedRay   = sCAM.getPickedRay(pt);
   const D3DXVECTOR3 newPickedPoint = newPickedRay.getHitPoint(dist);
   setCurrentObjPos(newPickedPoint  + dp);
   m_pickedRay                      = newPickedRay;
-  m_pickedInfo.m_worldPoint        = newPickedPoint;
+  m_pickedInfo.m_hitPoint          = newPickedPoint;
   m_pickedInfo.m_dist              = length(newPickedPoint - newPickedRay.m_orig);
 }
 
 void D3SceneEditor::moveCurrentObjXZ(CPoint pt) {
-  const D3DXVECTOR3 dp             = getCurrentObjPos() - m_pickedInfo.m_worldPoint;
-  const float       dist           = length(m_pickedInfo.m_worldPoint - m_pickedRay.m_orig);
+  const D3DXVECTOR3 dp             = getCurrentObjPos() - m_pickedInfo.m_hitPoint;
+  const float       dist           = length(m_pickedInfo.m_hitPoint - m_pickedRay.m_orig);
   const D3Ray       newPickedRay   = sCAM.getPickedRay(pt);
   const D3Ray       ray1           = sCAM.getPickedRay(CPoint(pt.x,pt.y+1));
   const float       dRaydPixel     = length(newPickedRay.getHitPoint(dist) - ray1.getHitPoint(dist));
   const CSize       dMouse         = pt - m_lastMouse;
   const D3DXVECTOR3 camDir         = sCAM.getDir(), camRight = sCAM.getRight();
-  const D3DXVECTOR3 newPickedPoint = m_pickedInfo.m_worldPoint
+  const D3DXVECTOR3 newPickedPoint = m_pickedInfo.m_hitPoint
                                    - (dRaydPixel * dMouse.cy) * camDir
                                    + (dRaydPixel * dMouse.cx) * camRight;
   setCurrentObjPos(newPickedPoint + dp);
-  m_pickedRay               = newPickedRay;
-  m_pickedInfo.m_worldPoint = newPickedPoint;
-  m_pickedInfo.m_dist       = length(newPickedPoint - newPickedRay.m_orig);
+  m_pickedRay             = newPickedRay;
+  m_pickedInfo.m_hitPoint = newPickedPoint;
+  m_pickedInfo.m_dist     = length(newPickedPoint - newPickedRay.m_orig);
 }
 
 D3DXVECTOR3 D3SceneEditor::getCurrentObjPos() {
@@ -619,12 +622,16 @@ void D3SceneEditor::OnObjectResetAll() {
 void D3SceneEditor::OnMouseWheelObjPos(UINT nFlags, short zDelta, CPoint pt) {
   switch(nFlags & MK_CTRLSHIFT) {
   case 0           :
-    { const D3DXVECTOR3 objPos = getCurrentObjPos();
-      const D3DXVECTOR3 dir    = objPos - sCAM.getPos();
-      const float       dist   = length(dir);
-      if(dist > 0) {
-        setCurrentObjPos(objPos + unitVector(dir) * dist / 30.0f * signDelta);
-      }
+    { D3Ray                   ray;
+      D3SceneEditorPickedInfo info;
+      D3SceneObjectVisual    *obj = getPickedVisual(pt, OBJMASK_VISUALOBJECT | OBJMASK_ANIMATEDOBJECT, ray, info);
+      if(obj != getCurrentVisual()) return;
+      const float       factor = 1.0f + signDelta / 30.0f;
+      const D3DXVECTOR3 v0     = info.m_hitPoint - ray.m_orig;
+      const D3DXVECTOR3 newPos = ray.m_orig + v0 * factor;
+      const D3DXVECTOR3 dp     = newPos - info.m_hitPoint;
+      const D3DXVECTOR3 objPos = getCurrentObjPos();
+      setCurrentObjPos(objPos + dp);
     }
     break;
   case MK_CONTROL  :
@@ -993,7 +1000,7 @@ void D3SceneEditor::setSpotToPointAt(CPoint point) {
     m_pickedInfo.clear();
   } else {
     D3Light param = lc->getLight();
-    param.Direction = unitVector(m_pickedInfo.m_worldPoint - param.Position);
+    param.Direction = unitVector(m_pickedInfo.m_hitPoint - param.Position);
     getScene().setLight(param);
   }
 }

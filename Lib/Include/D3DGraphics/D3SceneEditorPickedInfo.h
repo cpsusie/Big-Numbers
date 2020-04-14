@@ -5,7 +5,7 @@
 class D3SceneEditorPickedInfo {
 public:
   D3PickedInfo m_info;
-  D3DXVECTOR3  m_worldPoint; // in world space
+  D3DXVECTOR3  m_hitPoint; // in world space
   float        m_dist;
   D3SceneEditorPickedInfo() {
     clear();
