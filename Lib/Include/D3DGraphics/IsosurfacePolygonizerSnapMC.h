@@ -569,7 +569,7 @@ private:
 
   void                doTetra(   const HashedCubeCorner &a, const HashedCubeCorner &b, const HashedCubeCorner &c, const HashedCubeCorner &d);
   void                doCube1(   const StackedCube &cube);
-  bool                doCube2(   const StackedCube &cube);
+  void                doCube2(   const StackedCube &cube);
   bool                doCubeFace(const StackedCube &cube, CubeFace face);
   bool                addToDoneSet(const Point3DKey &key);
   void                testFace (int i, int j, int k, const StackedCube &oldCube, CubeFace face, CubeCorner c1, CubeCorner c2, CubeCorner c3, CubeCorner c4);

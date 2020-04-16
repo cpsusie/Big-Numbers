@@ -151,9 +151,8 @@ void IsoSurfacePolygonizer::polygonize(const Point3D &start
 
   const size_t cubeCount = m_intersectingCubeTable.size();
   for(size_t i = 0; i < cubeCount; i++) {
-    if(doCube2(m_intersectingCubeTable[i].resetIndex())) {
-      flushFaceBuffer();
-    }
+    doCube2(m_intersectingCubeTable[i].resetIndex());
+    flushFaceBuffer();
   }
   saveStatistics(startTime);
   flushFaceArray();
@@ -244,7 +243,6 @@ void IsoSurfacePolygonizer::testFace(int i, int j, int k, const StackedCube &old
 // doCube: triangulate the cube directly, without decomposition
 void IsoSurfacePolygonizer::doCube1(const StackedCube &cube) {
   m_statistics.m_doCubeCalls++;
-  m_intersectingCubeTable.add(cube);
   const SimplexArray sa = s_cubetable.get(cube.getIndex());
   const UINT         n  = sa.size();
   for(UINT i = 0; i < n; i++) {
@@ -261,12 +259,13 @@ void IsoSurfacePolygonizer::doCube1(const StackedCube &cube) {
   }
 }
 
-bool IsoSurfacePolygonizer::doCube2(const StackedCube &cube) {
+void IsoSurfacePolygonizer::doCube2(const StackedCube &cube) {
   const SimplexArray sa = s_cubetable.get(cube.getIndex());
 #ifdef DEBUG_POLYGONIZER
   m_eval.markCurrentOcta(cube);
 #endif // DEBUG_POLYGONIZER
   const UINT         n  = sa.size();
+/*
   if(n == 0) {
     for(int i = 0; i < 6; i++) {
       const CubeFace face = (CubeFace)i;
@@ -276,6 +275,7 @@ bool IsoSurfacePolygonizer::doCube2(const StackedCube &cube) {
     }
     return false;
   }
+*/
 
   for(UINT i = 0; i < n; i++) {
     const Simplex s = sa[i];
@@ -293,7 +293,6 @@ bool IsoSurfacePolygonizer::doCube2(const StackedCube &cube) {
     }
     putFace3(v[0], v[1], v[2]);
   }
-  return true;
 }
 
 bool IsoSurfacePolygonizer::doCubeFace(const StackedCube &cube, CubeFace face) {
@@ -447,6 +446,7 @@ void IsoSurfacePolygonizer::pushCube(const StackedCube &cube) {
 #endif //  VALIDATE_CUBES
 
   m_cubeStack.push(cube);
+  m_intersectingCubeTable.add(cube);
   m_statistics.m_cubeCount++;
 #ifdef DUMP_CUBES
   debugLog(_T("pushCube():%s"), cube.toString().cstr());
