@@ -552,6 +552,9 @@ void DebugIsoSurface::markCurrentFace(const Face3 &f) {
 void DebugIsoSurface::markCurrentVertex(const IsoSurfaceVertex &v) {
   m_vertexCount++;
   setFlags(HAS_VERTEX);
+  if(m_visibleVertexArray.size() == 3) {
+    m_visibleVertexArray.clear(-1);
+  }
   m_visibleVertexArray.add(v);
   m_debugger.handleStep(NEW_VERTEX);
 }
