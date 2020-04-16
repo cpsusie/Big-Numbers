@@ -75,6 +75,7 @@ private:
 #ifdef DEBUG_POLYGONIZER
   Debugger                   *m_debugger;
   float                       m_currentCamDistance;
+  bool                        m_hasIsoSurfaceParam;
   bool                        m_hasCubeCenter;
   D3DXVECTOR3                 m_cubeCenter;
   BitSet                      m_octaBreakPoints;

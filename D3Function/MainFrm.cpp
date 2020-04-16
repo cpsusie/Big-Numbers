@@ -98,6 +98,7 @@ CMainFrame::CMainFrame() : m_octaBreakPoints(100), m_breakPointsEnabled(true) {
 #ifdef DEBUG_POLYGONIZER
   m_debugger           = NULL;
   m_debugLightIndex    = -1;
+  m_hasIsoSurfaceParam = false;
 #endif // DEBUG_POLYGONIZER
 }
 
@@ -614,17 +615,25 @@ LRESULT CMainFrame::OnMsgRender(WPARAM wp, LPARAM lp) {
 
 void CMainFrame::ajourDebuggerMenu() {
 #ifndef DEBUG_POLYGONIZER
-  const bool enable1 = false;
-  const bool enable2 = false;
-  const bool enable3 = false;
+  const bool enableStart = false;
+  const bool enable1     = false;
+  const bool enable2     = false;
+  const bool enable3     = false;
 #else
-  const bool enable1 = isDebuggerPaused();
-  const bool enable2 = hasDebugger();
-  const bool enable3 = enable1 && isMenuItemChecked(this, ID_DEBUG_AUTOFOCUSCURRENTCUBE) && m_hasCubeCenter;
+  const bool enableStart = !hasDebugger() && m_hasIsoSurfaceParam;
+  const bool enable1     = isDebuggerPaused();
+  const bool enable2     = hasDebugger();
+  const bool enable3     = enable1 && isMenuItemChecked(this, ID_DEBUG_AUTOFOCUSCURRENTCUBE) && m_hasCubeCenter;
 #endif // DEBUG_POLYGONIZER
 
-  enableSubMenuContainingId(this, ID_DEBUG_GO, enable1 || enable2);
-  enableMenuItem(this, ID_DEBUG_GO                   , enable1);
+  enableSubMenuContainingId(this, ID_DEBUG_STEPCUBE, enableStart || enable1 || enable2);
+  if(enableStart) {
+    setMenuItemText(this, ID_DEBUG_GO, _T("Start debugging\tF5"));
+  } else if(enable1) {
+    setMenuItemText(this, ID_DEBUG_GO, _T("Go\tF5"));
+  }
+
+  enableMenuItem(this, ID_DEBUG_GO                   , enableStart || enable1);
   enableMenuItem(this, ID_DEBUG_STEPCUBE             , enable1);
   enableMenuItem(this, ID_DEBUG_STEPTETRA            , enable1);
   enableMenuItem(this, ID_DEBUG_STEPFACE             , enable1);
@@ -726,7 +735,11 @@ void CMainFrame::handlePropertyChanged(const PropertyContainer *source, int id, 
 }
 
 void CMainFrame::OnDebugGo() {
-  if(isDebuggerPaused()) {
+  if(!hasDebugger()) {
+    if(m_hasIsoSurfaceParam) {
+      startDebugging();
+    }
+  } else if(isDebuggerPaused()) {
     m_debugger->go(m_octaBreakPoints);
   }
 }
@@ -892,9 +905,10 @@ void CMainFrame::updateDebugInfo() {
       m_debugInfo += format(_T("\nError:%s"), m_debugger->getErrorMsg().cstr());
     }
     if(m_hasCubeCenter) {
-      m_debugInfo += format(_T("\nCubeCenter:(%s), CubeIndex:%4u, camDistance:%f")
+      m_debugInfo += format(_T("\nCubeCenter:(%s), CubeCount:%4u, LookupIndex:%4u, camDistance:%f")
                            ,toString(m_cubeCenter, 4).cstr()
                            ,m_debugger->getOctaCounter()
+                           ,m_debugger->getDebugSurface().getCurrentOcta().getCube().getIndex()
                            ,m_currentCamDistance);
     }
     if(!m_octaBreakPoints.isEmpty()) {
@@ -992,6 +1006,7 @@ void CMainFrame::OnFileIsoSurface() {
     setCalculatedObject(m_isoSurfaceParam);
     REPAINT();
 #else
+    m_hasIsoSurfaceParam = true;
     if(dlg.getDebugPolygonizer()) {
       startDebugging();
     } else {
