@@ -141,7 +141,7 @@ protected:
 public:
   DrawTool(ViewportContainer *container);
   virtual ~DrawTool();
-  BOOL OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
+  bool OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
   bool canConnect() const;
   void connect();
   bool canInvertNormals() const;
@@ -170,17 +170,17 @@ private:
   Point2D *m_p0,*m_p1;
 public:
   LineTool(ViewportContainer *container) : DrawTool(container) { m_p0 = m_p1 = NULL; }
-  void OnLButtonDown(  UINT nFlags, CPoint point);
-  void OnMouseMove(    UINT nFlags, CPoint point);
-  void OnLButtonUp(    UINT nFlags, CPoint point);
+  bool OnLButtonDown(  UINT nFlags, CPoint point);
+  bool OnMouseMove(    UINT nFlags, CPoint point);
+  bool OnLButtonUp(    UINT nFlags, CPoint point);
 };
 
 class BezierCurveTool : public DrawTool {
 public:
   BezierCurveTool(ViewportContainer *container) : DrawTool(container) {}
-  void OnLButtonDown(  UINT nFlags, CPoint point);
-  void OnMouseMove(    UINT nFlags, CPoint point);
-  void OnLButtonUp(    UINT nFlags, CPoint point);
+  bool OnLButtonDown(  UINT nFlags, CPoint point);
+  bool OnMouseMove(    UINT nFlags, CPoint point);
+  bool OnLButtonUp(    UINT nFlags, CPoint point);
 };
 
 class RectangleTool : public DrawTool {
@@ -188,9 +188,9 @@ private:
   Point2D *m_ul,*m_ur,*m_ll,*m_lr;
 public:
   RectangleTool(ViewportContainer *container) : DrawTool(container) {}
-  void OnLButtonDown(  UINT nFlags, CPoint point);
-  void OnMouseMove(    UINT nFlags, CPoint point);
-  void OnLButtonUp(    UINT nFlags, CPoint point);
+  bool OnLButtonDown(  UINT nFlags, CPoint point);
+  bool OnMouseMove(    UINT nFlags, CPoint point);
+  bool OnLButtonUp(    UINT nFlags, CPoint point);
 };
 
 class PolygonTool : public DrawTool {
@@ -198,10 +198,10 @@ private:
   ProfilePolygon *m_pp;
 public:
   PolygonTool(ViewportContainer *container) : DrawTool(container) { m_pp = NULL; }
-  void OnLButtonDown(  UINT nFlags, CPoint point);
-  void OnLButtonDblClk(UINT nFlags, CPoint point);
-  void OnMouseMove(    UINT nFlags, CPoint point);
-  void OnLButtonUp(    UINT nFlags, CPoint point);
+  bool OnLButtonDown(  UINT nFlags, CPoint point);
+  bool OnLButtonDblClk(UINT nFlags, CPoint point);
+  bool OnMouseMove(    UINT nFlags, CPoint point);
+  bool OnLButtonUp(    UINT nFlags, CPoint point);
 };
 
 class EllipseTool : public DrawTool {
@@ -209,9 +209,9 @@ private:
   CPoint m_p0,m_p1;
 public:
   EllipseTool(ViewportContainer *container) : DrawTool(container) {}
-  void OnLButtonDown(  UINT nFlags, CPoint point);
-  void OnMouseMove(    UINT nFlags, CPoint point);
-  void OnLButtonUp(    UINT nFlags, CPoint point);
+  bool OnLButtonDown(  UINT nFlags, CPoint point);
+  bool OnMouseMove(    UINT nFlags, CPoint point);
+  bool OnLButtonUp(    UINT nFlags, CPoint point);
 };
 
 class SelectTool : public DrawTool {
@@ -228,10 +228,10 @@ private:
   void adjustMousePosition();
 public:
   SelectTool(ViewportContainer *container);
-  void OnLButtonDown(  UINT nFlags, CPoint point);
-  void OnLButtonDblClk(UINT nFlags, CPoint point);
-  void OnLButtonUp(    UINT nFlags, CPoint point);
-  void OnRButtonDown(  UINT nFlags, CPoint point);
-  void OnRButtonUp(    UINT nFlags, CPoint point);
-  void OnMouseMove(    UINT nFlags, CPoint point);
+  bool OnLButtonDown(  UINT nFlags, CPoint point);
+  bool OnLButtonDblClk(UINT nFlags, CPoint point);
+  bool OnLButtonUp(    UINT nFlags, CPoint point);
+  bool OnRButtonDown(  UINT nFlags, CPoint point);
+  bool OnRButtonUp(    UINT nFlags, CPoint point);
+  bool OnMouseMove(    UINT nFlags, CPoint point);
 };

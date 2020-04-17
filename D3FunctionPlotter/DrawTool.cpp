@@ -93,7 +93,7 @@ DrawTool::DrawTool(ViewportContainer *container) : m_container(*container) {
 DrawTool::~DrawTool() {
 }
 
-BOOL DrawTool::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) {
+bool DrawTool::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) {
   _stprintf(infostr,_T("nchar:%c (#%x), nFlags:%08x     "),nChar,nChar,nFlags);
   switch(nChar) {
   case VK_DELETE:
@@ -368,7 +368,7 @@ void DrawTool::mirror(bool horizontal) {
   repaintScreen();
 }
 
-void LineTool::OnLButtonDown(UINT nFlags, CPoint point) {
+bool LineTool::OnLButtonDown(UINT nFlags, CPoint point) {
   Profile &profile = m_container.getProfile();
   Point2D p = m_container.getViewport().backwardTransform(point);
   profile.addLine(p,p);
@@ -381,7 +381,7 @@ void LineTool::OnLButtonDown(UINT nFlags, CPoint point) {
   repaintScreen();
 }
 
-void LineTool::OnMouseMove(UINT nFlags, CPoint point) {
+bool LineTool::OnMouseMove(UINT nFlags, CPoint point) {
   if(nFlags & MK_LBUTTON && m_p1 != NULL) {
     *m_p1 = m_container.getViewport().backwardTransform(point);
     repaintProfile();
@@ -389,11 +389,11 @@ void LineTool::OnMouseMove(UINT nFlags, CPoint point) {
   }
 }
 
-void LineTool::OnLButtonUp(UINT nFlags, CPoint point) {
+bool LineTool::OnLButtonUp(UINT nFlags, CPoint point) {
   m_p0 = m_p1 = NULL;
 }
 
-void BezierCurveTool::OnLButtonDown(  UINT nFlags, CPoint point) {
+bool BezierCurveTool::OnLButtonDown(  UINT nFlags, CPoint point) {
   Profile &profile = m_container.getProfile();
   Point2D p = m_container.getViewport().backwardTransform(point);
   ProfilePolygon polygon;
@@ -417,13 +417,13 @@ void BezierCurveTool::OnLButtonDown(  UINT nFlags, CPoint point) {
   repaintScreen();
 }
 
-void BezierCurveTool::OnMouseMove(    UINT nFlags, CPoint point) {
+bool BezierCurveTool::OnMouseMove(    UINT nFlags, CPoint point) {
 }
 
-void BezierCurveTool::OnLButtonUp(    UINT nFlags, CPoint point) {
+bool BezierCurveTool::OnLButtonUp(    UINT nFlags, CPoint point) {
 }
 
-void RectangleTool::OnLButtonDown(UINT nFlags, CPoint point) {
+bool RectangleTool::OnLButtonDown(UINT nFlags, CPoint point) {
   Profile &profile = m_container.getProfile();
   Point2D p = m_container.getViewport().backwardTransform(point);
   ProfilePolygon polygon;
@@ -449,7 +449,7 @@ void RectangleTool::OnLButtonDown(UINT nFlags, CPoint point) {
   repaintScreen();
 }
 
-void RectangleTool::OnMouseMove(UINT nFlags, CPoint point) {
+bool RectangleTool::OnMouseMove(UINT nFlags, CPoint point) {
   if(nFlags & MK_LBUTTON) {
     Point2D p = m_container.getViewport().backwardTransform(point);
     m_ur->x = p.x;
@@ -460,11 +460,11 @@ void RectangleTool::OnMouseMove(UINT nFlags, CPoint point) {
   }
 }
 
-void RectangleTool::OnLButtonUp(UINT nFlags, CPoint point) {
+bool RectangleTool::OnLButtonUp(UINT nFlags, CPoint point) {
   repaintScreen();
 }
 
-void PolygonTool::OnLButtonDown(UINT nFlags, CPoint point) {
+bool PolygonTool::OnLButtonDown(UINT nFlags, CPoint point) {
   Point2D p = m_container.getViewport().backwardTransform(point);
   Profile &profile = m_container.getProfile();
   if(m_pp == NULL) {
@@ -483,7 +483,7 @@ void PolygonTool::OnLButtonDown(UINT nFlags, CPoint point) {
   }
 }
 
-void PolygonTool::OnLButtonDblClk(UINT nFlags, CPoint point) {
+bool PolygonTool::OnLButtonDblClk(UINT nFlags, CPoint point) {
   if(m_pp != NULL) {
     m_pp->m_closed = true;
   }
@@ -492,7 +492,7 @@ void PolygonTool::OnLButtonDblClk(UINT nFlags, CPoint point) {
   repaintScreen();
 }
 
-void PolygonTool::OnMouseMove(UINT nFlags, CPoint point) {
+bool PolygonTool::OnMouseMove(UINT nFlags, CPoint point) {
   Point2D p = m_container.getViewport().backwardTransform(point);
   if(m_pp != NULL) {
     m_pp->getLastPoint() = p;
@@ -501,22 +501,22 @@ void PolygonTool::OnMouseMove(UINT nFlags, CPoint point) {
   }
 }
 
-void PolygonTool::OnLButtonUp(UINT nFlags, CPoint point) {
+bool PolygonTool::OnLButtonUp(UINT nFlags, CPoint point) {
 }
 
-void EllipseTool::OnLButtonDown(UINT nFlags, CPoint point) {
+bool EllipseTool::OnLButtonDown(UINT nFlags, CPoint point) {
   m_p0 = m_p1 = point;
   repaintScreen();
 }
 
-void EllipseTool::OnMouseMove(UINT nFlags, CPoint point) {
+bool EllipseTool::OnMouseMove(UINT nFlags, CPoint point) {
   if(nFlags & MK_LBUTTON) {
     m_p1 = point;
     repaintScreen();
   }
 }
 
-void EllipseTool::OnLButtonUp(UINT nFlags, CPoint point) {
+bool EllipseTool::OnLButtonUp(UINT nFlags, CPoint point) {
   repaintScreen();
 }
 
@@ -616,7 +616,7 @@ void SelectTool::moveSelectedPoints(const Point2D &dp) {
   }
 }
 
-void SelectTool::OnLButtonDown(UINT nFlags, CPoint point) {
+bool SelectTool::OnLButtonDown(UINT nFlags, CPoint point) {
   m_mouseDownPoint = point;
   ProfilePolygon *np = findNearestPolygon(point);
   switch(m_state) {
@@ -679,7 +679,7 @@ void SelectTool::OnLButtonDown(UINT nFlags, CPoint point) {
   m_lastMousePoint = point;
 }
 
-void SelectTool::OnLButtonDblClk(UINT nFlags, CPoint point) {
+bool SelectTool::OnLButtonDblClk(UINT nFlags, CPoint point) {
   switch(m_state) {
   case IDLE       :
     break;
@@ -711,7 +711,7 @@ void SelectTool::OnLButtonDblClk(UINT nFlags, CPoint point) {
   }
 }
 
-void SelectTool::OnLButtonUp(UINT nFlags, CPoint point) {
+bool SelectTool::OnLButtonUp(UINT nFlags, CPoint point) {
   switch(m_state) {
   case IDLE       :
   case MOVING     :
@@ -729,7 +729,7 @@ void SelectTool::OnLButtonUp(UINT nFlags, CPoint point) {
   }
 }
 
-void SelectTool::OnRButtonDown(UINT nFlags, CPoint point) {
+bool SelectTool::OnRButtonDown(UINT nFlags, CPoint point) {
   m_mouseDownPoint = point;
   Point2D *np = findNearestPoint(point);
   switch(m_state) {
@@ -769,7 +769,7 @@ void SelectTool::OnRButtonDown(UINT nFlags, CPoint point) {
   m_lastMousePoint = point;
 }
 
-void SelectTool::OnRButtonUp(UINT nFlags, CPoint point) {
+bool SelectTool::OnRButtonUp(UINT nFlags, CPoint point) {
   switch(m_state) {
   case IDLE       :
   case MOVING     :
@@ -790,7 +790,7 @@ void SelectTool::adjustMousePosition() {
 //  m_container.setMousePosition(m_polygonSet.getSelectedMarkPoint());
 }
 
-void SelectTool::OnMouseMove(UINT nFlags, CPoint point) {
+bool SelectTool::OnMouseMove(UINT nFlags, CPoint point) {
   Point2D dp = m_container.getViewport().backwardTransform(point) - m_container.getViewport().backwardTransform(m_lastMousePoint);
   switch(m_state) {
   case IDLE       :
