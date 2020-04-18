@@ -332,6 +332,8 @@ void CMainFrame::OnTimer(UINT_PTR nIDEvent) {
 // -------------------------------------------- 3D --------------------------------------------
 
 #define sCAM() m_editor.getSelectedCAM()
+#define CHECKHASCAM() { if(!hasCamera()) { showWarning(_T("No camera selected")); return; } }
+
 void CMainFrame::init3D() {
   m_scene.initDevice(*this);
   m_editor.init(this);
@@ -771,6 +773,7 @@ void CMainFrame::OnDebugAutoFocusCurrentCube() {
 
 void CMainFrame::adjustDebugLightDir() {
   if(!hasDebugLight()) return;
+  CHECKHASCAM();
   const D3World     cw       = sCAM()->getD3World();
   const D3DXVECTOR3 dir      = m_cubeCenter - cw.getPos();
   const D3DXVECTOR3 up       = cw.getUp();
@@ -779,6 +782,7 @@ void CMainFrame::adjustDebugLightDir() {
 }
 
 void CMainFrame::debugAdjustCamDir(const D3DXVECTOR3 &newDir, const D3DXVECTOR3 &newUp) {
+  CHECKHASCAM();
   D3World cw = sCAM()->getD3World();
   cw.setPos(m_cubeCenter - newDir).setOrientation(createOrientation(newDir, newUp));
   sCAM()->setD3World(cw);
@@ -787,6 +791,7 @@ void CMainFrame::debugAdjustCamDir(const D3DXVECTOR3 &newDir, const D3DXVECTOR3 
 
 #define DBG_CAMADJANGLE (D3DX_PI / 8)
 void CMainFrame::OnDebugAdjustCam45Up() {
+  CHECKHASCAM();
   const D3World    &cw  = sCAM()->getD3World();
   const D3DXVECTOR3 dir = m_cubeCenter - cw.getPos();
   const D3DXVECTOR3 up  = cw.getUp();
@@ -795,6 +800,7 @@ void CMainFrame::OnDebugAdjustCam45Up() {
 }
 
 void CMainFrame::OnDebugAdjustCam45Down() {
+  CHECKHASCAM();
   const D3World    &cw  = sCAM()->getD3World();
   const D3DXVECTOR3 dir = m_cubeCenter - cw.getPos();
   const D3DXVECTOR3 up  = cw.getUp();
@@ -803,6 +809,7 @@ void CMainFrame::OnDebugAdjustCam45Down() {
 }
 
 void CMainFrame::OnDebugAdjustCam45Left() {
+  CHECKHASCAM();
   const D3World    &cw  = sCAM()->getD3World();
   const D3DXVECTOR3 dir = m_cubeCenter - cw.getPos();
   const D3DXVECTOR3 up  = cw.getUp();
@@ -810,6 +817,7 @@ void CMainFrame::OnDebugAdjustCam45Left() {
 }
 
 void CMainFrame::OnDebugAdjustCam45Right() {
+  CHECKHASCAM();
   const D3World    &cw  = sCAM()->getD3World();
   const D3DXVECTOR3 dir = m_cubeCenter - cw.getPos();
   const D3DXVECTOR3 up  = cw.getUp();
@@ -835,7 +843,7 @@ LRESULT CMainFrame::OnMsgDebuggerStateChanged(WPARAM wp, LPARAM lp) {
     const DebuggerState oldState = (DebuggerState)wp, newState = (DebuggerState)lp;
     switch(newState) {
     case DEBUGGER_RUNNING:
-      { if((oldState == DEBUGGER_PAUSED) && m_hasCubeCenter) {
+      { if((oldState == DEBUGGER_PAUSED) && m_hasCubeCenter && hasCamera()) {
           m_currentCamDistance = length(sCAM()->getPos() - m_cubeCenter);
         }
         D3SceneObjectVisual *obj = m_debugger->getSceneObject();

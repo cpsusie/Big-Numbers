@@ -85,6 +85,9 @@ private:
   inline bool hasDebugger() const {
     return m_debugger != NULL;
   }
+  inline bool hasCamera() const {
+    return m_editor.getSelectedCAM() != NULL;
+  }
   inline bool isDebuggerState(DebuggerState state) const {
     return hasDebugger() && (m_debugger->getState() == state);
   }
