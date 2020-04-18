@@ -18,6 +18,7 @@ private:
   D3DXVECTOR3       m_cornerCenterArray[8]; // relative to m_center
   const float       m_cellSize;
   int               m_materialId;
+  StackedCube       m_cube;
   D3DXVECTOR3       m_center;
   GridLabel         m_cornerLabel[8];
   static D3Cube createCube(float cellSize);
@@ -43,7 +44,10 @@ public:
   inline float getCellSize() const {
     return m_cellSize;
   }
+  D3DXMATRIX &getWorld();
   void draw();
+  String getInfoString() const;
+
 };
 
 class CornerMarkObject : public D3SceneObjectSolidBox {
@@ -71,6 +75,7 @@ OctaObject::OctaObject(D3SceneObjectVisual *parent, float cellSize)
 : D3SceneObjectWireFrameBox(parent, createCube(cellSize), _T("OctaObject"))
 , m_cellSize(cellSize)
 {
+  m_cube.clear();
   m_materialId = getScene().addMaterialWithColor(D3D_BLUE);
 
   const D3Cube      cube = createCube(cellSize);
@@ -109,13 +114,17 @@ D3Cube OctaObject::createCube(float cellSize) {
 }
 
 void OctaObject::setOctagon(const Octagon &octa) {
-  m_center = octa.getCube().getCenter();
+  m_cube   = octa.getCube();
+  m_center = m_cube.getCenter();
   const UINT n = octa.getCornerCount();
   for(UINT i = 0; i < n; i++) {
     m_cornerLabel[i] = octa.getHashedCorner(i).m_label;
   }
+}
+
+D3DXMATRIX &OctaObject::getWorld() {
   D3World w(m_parent->getWorld());
-  m_world = w.setPos(w.getPos() + rotate(m_center, w.getOrientation()));
+  return m_world = w.setPos(w.getPos() + rotate(m_center, w.getOrientation()));
 }
 
 void OctaObject::draw() {
@@ -123,6 +132,10 @@ void OctaObject::draw() {
   for(UINT i = 0; i < ARRAYSIZE(m_cornerCenterArray); i++) {
     m_cornerMark->setCornerIndex(i).draw();
   }
+}
+
+String OctaObject::getInfoString() const {
+  return m_cube.toString();
 }
 
 #define NEGATIVECOLOR D3DCOLOR_XRGB(120, 25, 30)
@@ -419,6 +432,105 @@ D3DXMATRIX &NormalArrowObject::getWorld() {
     .setScaleAll(m_scale);
 }
 
+// ---------------------------------------- DebugMeshObject -----------------------------------------
+class DebugMeshObject : public D3SceneObjectWithMesh {
+private:
+  int m_materialId;
+public:
+  DebugMeshObject(D3Scene &scene, LPD3DXMESH m);
+  ~DebugMeshObject();
+  int getMaterialId() const {
+    return m_materialId;
+  }
+};
+
+DebugMeshObject::DebugMeshObject(D3Scene &scene, LPD3DXMESH m)
+: D3SceneObjectWithMesh(scene, m)
+{
+  m_materialId = getScene().addMaterialWithColor(D3D_BLACK);
+}
+
+DebugMeshObject::~DebugMeshObject() {
+  getScene().removeMaterial(m_materialId);
+}
+
+// ---------------------------------------- FinalMeshObject -----------------------------------------
+class FinalMeshObject : public DebugMeshObject {
+private:
+  OctaObject           *m_octaObject;
+  D3SceneEditor        &m_editor;
+  const PolygonizerBase m_polygonizer;
+  const StackedCube *findCube(CPoint point) const;
+public:
+  FinalMeshObject(D3SceneEditor &editor, LPD3DXMESH m, const PolygonizerBase &polygonizer);
+  ~FinalMeshObject();
+  bool OnLButtonDown(UINT nFlags, CPoint point);
+  inline const PolygonizerBase &getPolygonizer() const {
+    return m_polygonizer;
+  }
+  void draw();
+  String getInfoString() const;
+
+};
+
+FinalMeshObject::FinalMeshObject(D3SceneEditor &editor, LPD3DXMESH m, const PolygonizerBase &polygonizer)
+: DebugMeshObject(*editor.getScene(), m)
+, m_octaObject(NULL)
+, m_editor(editor)
+, m_polygonizer(polygonizer)
+{
+}
+
+FinalMeshObject::~FinalMeshObject() {
+  SAFEDELETE(m_octaObject);
+}
+
+bool FinalMeshObject::OnLButtonDown(UINT nFlags, CPoint point) {
+  if(nFlags != 1) return false;
+  const StackedCube *cube = findCube(point);
+  if(cube) {
+    if(m_octaObject == NULL) {
+      m_octaObject = new OctaObject(this, (float)m_polygonizer.getCellSize());
+    }
+    m_octaObject->setOctagon(Octagon(*cube));
+    m_editor.renderActiveCameras(SC_RENDERALL);
+    return true;
+  }
+  return false;
+}
+
+const StackedCube *FinalMeshObject::findCube(CPoint point) const {
+  if(m_editor.getCurrentVisual() == this) {
+    const D3DXVECTOR3 mp = m_editor.getPickedInfo().m_info.getMeshPoint();
+    Point3D mp3(mp.x,mp.y,mp.z);
+    const CompactArray<StackedCube> &table = m_polygonizer.getCubeArray();
+    const size_t n = table.size();
+    for(size_t i = 0; i < n; i++) {
+      const StackedCube &cube = table[i];
+      if(cube.contains(mp3)) {
+        return &cube;
+      }
+    }
+  }
+  return NULL;
+}
+
+void FinalMeshObject::draw() {
+  __super::draw();
+  if(m_octaObject) {
+    m_octaObject->draw();
+  }
+}
+
+String FinalMeshObject::getInfoString() const {
+  String result = __super::getInfoString();
+  if(m_octaObject) {
+    result += _T("\n");
+    result += m_octaObject->getInfoString();
+  }
+  return result;
+}
+
 // --------------------------------------- DebugIsoSurface -------------------------------------------
 
 DebugIsoSurface::DebugIsoSurface(Debugger *debugger, D3SceneContainer &sc, const IsoSurfaceParameters &param)
@@ -559,31 +671,19 @@ void DebugIsoSurface::markCurrentVertex(const IsoSurfaceVertex &v) {
   m_debugger.handleStep(NEW_VERTEX);
 }
 
-class DebugMeshObject : public D3SceneObjectWithMesh {
-private:
-  int m_materialId;
-public:
-  DebugMeshObject(D3Scene &scene, LPD3DXMESH m);
-  ~DebugMeshObject();
-  int getMaterialId() const {
-    return m_materialId;
-  }
-};
-
-DebugMeshObject::DebugMeshObject(D3Scene &scene, LPD3DXMESH m)
-: D3SceneObjectWithMesh(scene, m)
-{
-  m_materialId = getScene().addMaterialWithColor(D3D_BLACK);
-}
-
-DebugMeshObject::~DebugMeshObject() {
-  getScene().removeMaterial(m_materialId);
-}
-
+// ---------------------------------------- DebugIsoSurface -----------------------------------------
 D3SceneObjectVisual *DebugIsoSurface::createMeshObject() const {
   D3Scene         &scene = m_sc.getScene();
   DebugMeshObject *obj = new DebugMeshObject(scene, m_mb.createMesh(scene, m_param.m_doubleSided)); TRACE_NEW(obj);
   obj->setFillMode(m_sceneObject.getFillMode());
+  obj->setShadeMode(m_sceneObject.getShadeMode());
+  return obj;
+}
+
+D3SceneObjectVisual *DebugIsoSurface::createFinalMeshObject(D3SceneEditor &editor) const {
+  D3Scene         &scene = *editor.getScene();
+  FinalMeshObject *obj = new FinalMeshObject(editor, m_mb.createMesh(scene, m_param.m_doubleSided), *m_polygonizer); TRACE_NEW(obj);
+  obj->setFillMode( m_sceneObject.getFillMode());
   obj->setShadeMode(m_sceneObject.getShadeMode());
   return obj;
 }

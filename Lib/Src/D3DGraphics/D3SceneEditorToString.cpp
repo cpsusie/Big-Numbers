@@ -8,6 +8,8 @@
 #include <D3DGraphics/D3SceneEditor.h>
 #include <D3DGraphics/D3ToString.h>
 
+#define SCENE  (*getScene())
+
 String toString(D3EditorControl control) {
   switch(control) {
 #define caseStr(s) case CONTROL_##s: return _T(#s);
@@ -35,93 +37,113 @@ String D3SceneEditor::stateFlagsToString() const {
   ADDFLAG(INITDONE     );
   ADDFLAG(ENABLED      );
   ADDFLAG(PROPCHANGES  );
-  ADDFLAG(RENDER3D     );
-  ADDFLAG(RENDERINFO   );
+  ADDFLAG(RENDER       );
   ADDFLAG(LIGHTCONTROLS);
   ADDFLAG(MOUSEVISIBLE );
   result += _T(")");
   return result;
 }
 
-static String getMeshString(LPD3DXMESH mesh) {
-  return ::toString(mesh, FORMAT_BUFFERDESC | FORMAT_VERTEXBUFFER)
-       + "\n"
-       + ::toString(mesh, FORMAT_BUFFERDESC | FORMAT_INDEXBUFFER);
-}
-
-#define HEADLEN 18
-
 String D3SceneEditor::getSelectedString() const {
   if(!hasObj()) {
     return _T("/");
   } else {
-    const D3SceneObjectVisual &visual = *getCurrentObj();
-    String result = visual.getName();
-    if(visual.hasFillMode()) {
-      result += " ";
-      result += ::toString(visual.getFillMode());
-    }
-    if(visual.hasShadeMode()) {
-      result += " ";
-      result += ::toString(visual.getShadeMode());
-    }
-    if(visual.hasMesh()) {
-      if(result.length()) result += "\n";
-      result += indentString(getMeshString(visual.getMesh()),HEADLEN+2);
-    }
-    return result.trimRight();
+    return getCurrentObj()->getInfoString();
   }
 }
 
-#define PRINTHEAD(label) result += format(_T("%-*s: "), HEADLEN, label)
-#define NEWLINE(label)   result += _T("\n"); PRINTHEAD(label)
+class TextSection {
+public:
+  String m_head;
+  String m_text;
+  TextSection(const String &head) : m_head(head) {
+  }
+  TextSection &printf(const TCHAR *format, ...);
+  TextSection &addText(const String &s);
+};
+
+TextSection &TextSection::printf(const TCHAR *format, ...) {
+  va_list argptr;
+  va_start(argptr, format);
+  addText(vformat(format, argptr));
+  va_end(argptr);
+  return *this;
+}
+
+TextSection &TextSection::addText(const String &s) {
+  m_text += s;
+  return *this;
+}
+
+class FormattedText : public Array<TextSection> {
+private:
+  UINT m_maxHeadLength;
+public:
+  inline FormattedText() : m_maxHeadLength(0) {
+  }
+  TextSection &addSection(const String &head);
+  String toString() const;
+};
+
+TextSection &FormattedText::addSection(const String &head) {
+  add(TextSection(head));
+  if(head.length() > m_maxHeadLength) {
+    m_maxHeadLength = (UINT)head.length();
+  }
+  return last();
+}
+
+String FormattedText::toString() const {
+  String result;
+  const size_t n = size();
+  for(size_t i = 0; i < n; i++) {
+    const TextSection &section = (*this)[i];
+    if(i) {
+      result += _T("\n");
+    }
+    result += format(_T("%-*s: %s")
+                    ,m_maxHeadLength, section.m_head.cstr()
+                    ,indentString(section.m_text,m_maxHeadLength+2).trim().cstr());
+  }
+  return result;
+}
+
 String D3SceneEditor::toString() const {
   if(!isEnabled()) return EMPTYSTRING;
-  String result;
-  PRINTHEAD(_T("Current Control"))
-         + format(_T("%s State:%s")
-                 ,::toString(getCurrentControl()).cstr()
-                 ,stateFlagsToString().cstr()
-                 );
-  NEWLINE(_T("Current Object")) + getSelectedString();
-  NEWLINE(_T("Current Camera"))
-       + format(_T("%d, %s")
-               ,m_selectedCameraIndex
-               ,hasCAM() ? getSelectedCAM()->toString().cstr() : _T("/")
-               );
+  FormattedText text;
+  text.addSection("Current Control").printf(_T("%s State:%s, %s")
+                                           ,::toString(getCurrentControl()).cstr()
+                                           ,stateFlagsToString().cstr()
+                                           ,handednessToString(SCENE.getRightHanded()).cstr()
+                                           );
+  text.addSection("Current Camera").printf(_T("%d, %s"),m_selectedCameraIndex
+                                          ,hasCAM() ? getSelectedCAM()->toString().cstr() : _T("/")
+                                          );
+  text.addSection("Current Object").addText(getSelectedString());
   if(!m_pickedRay.isEmpty()) {
-    NEWLINE(_T("Picked Ray" )) + m_pickedRay.toString();
-    NEWLINE(_T("Picked Info")) + m_pickedInfo.toString();
+    text.addSection("Picked Ray" ).addText(m_pickedRay.toString());
+    text.addSection("Picked Info").addText(m_pickedInfo.toString());
   }
   if(!m_centerOfRotation.isEmpty()) {
-    NEWLINE(_T("Center of rotation")) + m_centerOfRotation.toString();
+    text.addSection("Center of rotation").addText(m_centerOfRotation.toString());
   }
   switch(m_propertyDialogMap.getVisiblePropertyId()) {
   case SP_LIGHTPARAMETERS   :
     { D3Light tmp;
-      NEWLINE(_T("Dlg-Light")) + m_propertyDialogMap.getProperty(SP_LIGHTPARAMETERS,tmp).toString();
+      text.addSection("Dlg-Light").addText(m_propertyDialogMap.getProperty(SP_LIGHTPARAMETERS,tmp).toString());
     }
     break;
   case SP_MATERIALPARAMETERS:
     { D3Material tmp;
-      NEWLINE(_T("Dlg-Material")) + m_propertyDialogMap.getProperty(SP_MATERIALPARAMETERS,tmp).toString();
+      text.addSection("Dlg-Material").addText(m_propertyDialogMap.getProperty(SP_MATERIALPARAMETERS,tmp).toString());
     }
     break;
   }
 
   switch(getCurrentControl()) {
-  case CONTROL_IDLE                  :
-    result += _T("\n") + handednessToString(getScene().getRightHanded());
-    break;
   case CONTROL_CAMERA_WALK           :
     if(hasCAM()) {
-      NEWLINE(_T("Camera World")) + getSelectedCAM()->getD3World().toString();
-    }
-    break;
-  case CONTROL_OBJECT_POS            :
-  case CONTROL_OBJECT_SCALE          :
-    if(hasObj()) {
-      NEWLINE(_T("Object")) + D3World(getCurrentObj()->getWorld()).toString();
+      text.addSection("Camera World").addText(getSelectedCAM()->getD3World().toString());
     }
     break;
 
@@ -132,37 +154,37 @@ String D3SceneEditor::toString() const {
     { const D3LightControl *lc = getCurrentLightControl();
       if(lc) {
         const D3Light light = lc->getLight();
-        NEWLINE(light.getName().cstr()) + light.toString();
-        NEWLINE(_T("LightControl")) + ((D3World)*lc).toString();
+        text.addSection(light.getName()).addText(light.toString());
+        text.addSection("LightControl" ).addText(((D3World)*lc).toString());
       }
     }
     break;
   case CONTROL_ANIMATION_SPEED       :
     { D3SceneObjectAnimatedMesh *obj = getCurrentAnimatedObj();
       if(obj) {
-        NEWLINE(_T("Frames/sec")) + format(_T("%.2f"), obj->getFramePerSec());
+        text.addSection("Frames/sec").printf(_T("%.2f"), obj->getFramePerSec());
       }
     }
     break;
   case CONTROL_MATERIAL              :
     if(m_currentObj && m_currentObj->hasMaterial()) {
-      NEWLINE(_T("Material"))     + m_currentObj->getMaterial().toString();
+      text.addSection("Material").addText(m_currentObj->getMaterial().toString());
     }
     break;
 
   case CONTROL_BACKGROUNDCOLOR       :
     if(hasCAM()) {
-      NEWLINE(_T("Bckgnd.Color")) + ::toString(getSelectedCAM()->getBackgroundColor(),false);
+      text.addSection("Bckgnd.Color").addText(::toString(getSelectedCAM()->getBackgroundColor(),false));
     }
     break;
   case CONTROL_AMBIENTLIGHTCOLOR     :
-    NEWLINE(_T("Amb.Color"))      + ::toString(getScene().getAmbientColor(),false);
+    text.addSection("Amb.Color").addText(::toString(SCENE.getAmbientColor(),false));
     break;
   }
   if(m_propertyDialogMap.isDialogVisible()) {
-    NEWLINE(_T("Map.Dlg")) + format(_T("Id:%d, Type:%s")
-                                   ,m_propertyDialogMap.getVisiblePropertyId()
-                                   ,m_propertyDialogMap.getVisibleTypeName().cstr());
+    text.addSection("Map.Dlg").printf(_T("Id:%d, Type:%s")
+                                     ,m_propertyDialogMap.getVisiblePropertyId()
+                                     ,m_propertyDialogMap.getVisibleTypeName().cstr());
   }
-  return result;
+  return text.toString();
 }

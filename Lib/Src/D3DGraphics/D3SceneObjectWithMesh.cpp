@@ -82,3 +82,17 @@ String D3SceneObjectWithMesh::toString() const {
                ,indentString(::toString(getMesh()),2).cstr());
 }
 
+static String getMeshString(LPD3DXMESH mesh) {
+  return ::toString(mesh, FORMAT_BUFFERDESC | FORMAT_VERTEXBUFFER)
+    + "\n"
+    + ::toString(mesh, FORMAT_BUFFERDESC | FORMAT_INDEXBUFFER);
+}
+
+String D3SceneObjectWithMesh::getInfoString() const {
+  String result = __super::getInfoString();
+  if(hasMesh()) {
+    if(result.length()) result += "\n";
+    result += getMeshString(getMesh());
+  }
+  return result.trimRight();
+}

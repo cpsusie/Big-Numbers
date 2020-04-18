@@ -43,4 +43,5 @@ public:
   }
   D3Cube getBoundingBox() const;
   String toString() const;
+  String getInfoString() const;
 };

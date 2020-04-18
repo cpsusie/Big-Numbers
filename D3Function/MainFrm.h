@@ -61,9 +61,6 @@ private:
   CompactArray<StatusBarPaneInfo> m_paneInfo;
   bool                            m_timerRunning;
   bool                            m_destroyCalled;
-  BYTE                            m_renderLevel;
-  CameraSet                       m_accumulatedCameraSet;
-  BYTE                            m_accumulatedRenderFlags;
   double                          m_relativeHeight;
   D3Scene                         m_scene;
   D3SceneEditor                   m_editor;
@@ -150,9 +147,6 @@ private:
   void startDebugging();
   void stopDebugging();
   void ajourDebuggerMenu();
-
-  void incrLevel();
-  void decrLevel();
 public:
 
   D3Scene &getScene() {
@@ -175,7 +169,7 @@ public:
   bool canDelete3DWindow(HWND hwnd) const;
   bool delete3DWindow(HWND hwnd);
 
-  void render(BYTE renderFlags, CameraSet cameraSet);
+  void doRender(BYTE renderFlags, CameraSet cameraSet);
 
   bool is3DWindow(HWND hwnd) const;
   void startTimer();

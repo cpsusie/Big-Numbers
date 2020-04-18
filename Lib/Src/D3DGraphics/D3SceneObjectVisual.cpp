@@ -1,5 +1,6 @@
 #include "pch.h"
 #include <D3DGraphics/D3Scene.h>
+#include <D3DGraphics/D3ToString.h>
 #include <D3DGraphics/D3SceneObjectVisual.h>
 
 D3SceneObjectVisual::D3SceneObjectVisual(D3Scene &scene, const String &name)
@@ -51,4 +52,21 @@ void D3SceneObjectVisual::draw() {
       child->draw();
     }
   }
+}
+
+String D3SceneObjectVisual::getInfoString() const {
+  String result = getName();
+  if(hasFillMode()) {
+    result += _T(" ");
+    result += ::toString(getFillMode());
+  }
+  if(hasShadeMode()) {
+    result += _T(" ");
+    result += ::toString(getShadeMode());
+  }
+  if(result.length()) {
+    result += _T("\n");
+    result += D3World(getWorld()).toString();
+  }
+  return result.trimRight();
 }

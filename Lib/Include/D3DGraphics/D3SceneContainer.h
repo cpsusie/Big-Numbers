@@ -27,14 +27,25 @@ public:
     return m_hwnd[index];
   }
 };
+
+#define SC_RENDER3D           0x0001
+#define SC_RENDERINFO         0x0002
+#define SC_RENDERNOW          0x0004
+#define SC_RENDERALL          (SC_RENDER3D | SC_RENDERINFO)
+
 class D3SceneContainer {
+private:
+  BYTE      m_renderLevel;
+  CameraSet m_accumulatedCameraSet;
+  BYTE      m_accumulatedRenderFlags;
+
 public:
+  D3SceneContainer() : m_renderLevel(0), m_accumulatedRenderFlags(0) {
+  }
   virtual D3Scene   &getScene() = 0;
   virtual UINT       get3DWindowCount() const = 0;
   virtual HWND       getMessageWindow() const = 0;
   virtual HWND       get3DWindow(UINT index) const = 0;
-  // renderFlags is any combination of RENDER_3D,RENDER_INFO
-  virtual void       render(BYTE renderFlags, CameraSet cameraSet) = 0;
   virtual void       modifyContextMenu(HMENU menu) {
   }
   virtual bool       canSplit3DWindow(HWND hwnd) const {
@@ -52,4 +63,11 @@ public:
   inline CSize       getWinSize(UINT index) const {
     return getClientRect(get3DWindow(index)).Size();
   }
+  inline void        incrLevel() {
+    m_renderLevel++;
+  }
+  void               decrLevel();
+  // renderFlags is any combination of SC_RENDER*
+  void               render(  BYTE renderFlags, CameraSet cameraSet);
+  virtual void       doRender(BYTE renderFlags, CameraSet cameraSet);
 };

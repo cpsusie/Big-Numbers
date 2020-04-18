@@ -92,8 +92,6 @@ CMainFrame::CMainFrame() : m_octaBreakPoints(100), m_breakPointsEnabled(true) {
   m_statusPanesVisible     = true;
   m_timerRunning           = false;
   m_destroyCalled          = false;
-  m_renderLevel            = 0;
-  m_accumulatedRenderFlags = 0;
 
 #ifdef DEBUG_POLYGONIZER
   m_debugger           = NULL;
@@ -170,7 +168,7 @@ void CD3FunctionSplitterWnd::RecalcLayout() {
 
 void CD3FunctionSplitterWnd::OnInvertTracker(const CRect &rect) {
   __super::OnInvertTracker(rect);
-  theApp.getMainFrame()->getEditor().setEnabled(false, SE_ENABLED | SE_PROPCHANGES | SE_RENDER3D);
+  theApp.getMainFrame()->getEditor().setEnabled(false, SE_ENABLED | SE_PROPCHANGES | SE_RENDER);
   m_splitPointMoved = true;
 }
 
@@ -472,18 +470,6 @@ D3SceneObjectVisual *CMainFrame::getCalculatedObject() const {
   return NULL;
 }
 
-void CMainFrame::incrLevel() {
-  m_renderLevel++;
-}
-
-void CMainFrame::decrLevel() {
-  if(--m_renderLevel == 0) {
-    if(m_accumulatedRenderFlags || !m_accumulatedCameraSet.isEmpty()) {
-      render(m_accumulatedRenderFlags, m_accumulatedCameraSet);
-    }
-  }
-}
-
 bool CMainFrame::is3DWindow(HWND hwnd) const {
   return C3DSceneView::is3DWindow(hwnd);
 }
@@ -582,29 +568,22 @@ bool CMainFrame::delete3DWindow(HWND hwnd) {
   return true;
 }
 
-void CMainFrame::render(BYTE renderFlags, CameraSet cameraSet) {
-  if(renderFlags & SE_RENDERNOW) {
+void CMainFrame::doRender(BYTE renderFlags, CameraSet cameraSet) {
+  if(renderFlags & SC_RENDERNOW) {
     OnMsgRender(renderFlags, cameraSet);
-    return;
-  }
-  if(m_renderLevel > 0) {
-    m_accumulatedRenderFlags |= renderFlags;
-    m_accumulatedCameraSet   |= cameraSet;
   } else {
     PostMessage(ID_MSG_RENDER, renderFlags, cameraSet);
-    m_accumulatedRenderFlags = 0;
-    m_accumulatedCameraSet.clear();
   }
 }
 
 static UINT renderSceneCount = 0, renderInfoCount = 0;
 LRESULT CMainFrame::OnMsgRender(WPARAM wp, LPARAM lp) {
-  if(wp & SE_RENDER3D) {
+  if(wp & SC_RENDER3D) {
     CameraSet cameraSet(lp);
+    __super::doRender((BYTE)wp, cameraSet);
     renderSceneCount++;
-    m_scene.render(cameraSet);
   }
-  if(wp & SE_RENDERINFO) {
+  if(wp & SC_RENDERINFO) {
     if(m_editor.isEnabled()) {
       renderInfoCount++;
       show3DInfo(INFO_EDIT);
@@ -702,7 +681,7 @@ void CMainFrame::killDebugger(bool showCreateSurface) {
   if(allOk && showCreateSurface) {
     const DebugIsoSurface &surface = m_debugger->getDebugSurface();
     if(surface.getFaceCount()) {
-      D3SceneObjectVisual *obj = surface.createMeshObject();
+      D3SceneObjectVisual *obj = surface.createFinalMeshObject(m_editor);
       setCalculatedObject(obj, &m_isoSurfaceParam);
     }
   }

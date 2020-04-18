@@ -63,10 +63,59 @@ static const CubeFaceInfo cubeFaceTable[6] = {
 
 const PolygonizerCubeArrayTable IsoSurfacePolygonizer::s_cubetable;
 
-IsoSurfacePolygonizer::IsoSurfacePolygonizer(IsoSurfaceEvaluator &eval)
-: m_eval(eval)
-, m_cornerMap(HASHSIZE)
-{
+PolygonizerBase::PolygonizerBase() : m_cornerMap(HASHSIZE) {
+}
+
+PolygonizerBase::PolygonizerBase(const PolygonizerBase &src) {
+  copy(src);
+
+}
+
+PolygonizerBase &PolygonizerBase::operator=(const PolygonizerBase &src) {
+  return cleanup().copy(src);
+}
+
+PolygonizerBase::~PolygonizerBase() {
+  cleanup();
+}
+
+PolygonizerBase &PolygonizerBase::copy(const PolygonizerBase &src) {
+  m_cellSize     = src.m_cellSize;
+  m_start        = src.m_start;
+  m_cornerMap    = src.m_cornerMap;
+  m_cubesDoneSet = src.m_cubesDoneSet;
+  m_edgeMap      = src.m_edgeMap;
+  m_faceArray    = src.m_faceArray;
+  m_vertexArray  = src.m_vertexArray;
+  const size_t n = src.m_intersectingCubeTable.size();
+  m_intersectingCubeTable.setCapacity(n);
+  for(size_t i = 0; i < n; i++) {
+    m_intersectingCubeTable.add(StackedCube().copy(src.m_intersectingCubeTable[i], m_cornerMap));
+  }
+  return *this;
+}
+
+PolygonizerBase &PolygonizerBase::cleanup() {
+  m_cellSize = 0;
+  m_start    = Point3D(0, 0, 0);
+  m_cornerMap.clear();
+  m_cubesDoneSet.clear();
+  m_edgeMap.clear();
+  m_faceArray.clear();
+  m_vertexArray.clear();
+  m_intersectingCubeTable.clear();
+  return *this;
+}
+
+Point3D PolygonizerBase::getCornerPoint(int i, int j, int k) const {
+  Point3D result;
+  result.x = m_start.x + ((double)i)*m_cellSize;
+  result.y = m_start.y + ((double)j)*m_cellSize;
+  result.z = m_start.z + ((double)k)*m_cellSize;
+  return result;
+}
+
+IsoSurfacePolygonizer::IsoSurfacePolygonizer(IsoSurfaceEvaluator &eval) : m_eval(eval) {
 }
 
 IsoSurfacePolygonizer::~IsoSurfacePolygonizer() {
@@ -75,7 +124,6 @@ IsoSurfacePolygonizer::~IsoSurfacePolygonizer() {
 static int cubeCenterCompare(const StackedCube &c1, const StackedCube &c2) {
   return Point3DKey::compare(c1.m_key, c2.m_key);
 }
-
 
 class CubeCenterDistanceComparator : public Comparator<StackedCube> {
 private:
@@ -106,6 +154,9 @@ void IsoSurfacePolygonizer::polygonize(const Point3D &start
   m_rnd.randomize();
 #endif // _DEBUG
 
+  m_statistics.clear();
+  cleanup();
+
   m_cellSize         = cellSize;
   m_lambda           = lambda;
   m_maxSnapDistance  = m_cellSize * m_lambda;
@@ -113,9 +164,6 @@ void IsoSurfacePolygonizer::polygonize(const Point3D &start
   m_delta            = cellSize/(double)(RES*RES);
   m_tetrahedralMode  = tetrahedralMode;
   m_tetraOptimize4   = tetraOptimize4;
-
-  m_statistics.clear();
-  resetTables();
 
   m_start = start;
   for(int i = 0; i < 10; i++) {
@@ -244,6 +292,7 @@ void IsoSurfacePolygonizer::testFace(int i, int j, int k, const StackedCube &old
 void IsoSurfacePolygonizer::doCube1(const StackedCube &cube) {
   m_statistics.m_doCubeCalls++;
   const SimplexArray sa = s_cubetable.get(cube.getIndex());
+  m_intersectingCubeTable.add(cube);
   const UINT         n  = sa.size();
   for(UINT i = 0; i < n; i++) {
     const Simplex s = sa[i];
@@ -430,14 +479,10 @@ void IsoSurfacePolygonizer::flushFaceArray() {
 #endif // DEBUG_POLYGONIZER
 }
 
-void IsoSurfacePolygonizer::resetTables() {
+void IsoSurfacePolygonizer::cleanup() {
+  __super::cleanup();
   m_cubeStack.clear();
-  m_vertexArray.clear();
-  m_cubesDoneSet.clear();
-  m_cornerMap.clear();
-  m_edgeMap.clear();
   m_face3Buffer.clear();
-  m_faceArray.clear();
 }
 
 void IsoSurfacePolygonizer::pushCube(const StackedCube &cube) {
@@ -446,7 +491,6 @@ void IsoSurfacePolygonizer::pushCube(const StackedCube &cube) {
 #endif //  VALIDATE_CUBES
 
   m_cubeStack.push(cube);
-  m_intersectingCubeTable.add(cube);
   m_statistics.m_cubeCount++;
 #ifdef DUMP_CUBES
   debugLog(_T("pushCube():%s"), cube.toString().cstr());
@@ -466,14 +510,6 @@ const HashedCubeCorner *IsoSurfacePolygonizer::getCorner(int i, int j, int k) {
     m_cornerMap.put(key, corner);
     return m_cornerMap.get(key);
   }
-}
-
-Point3D IsoSurfacePolygonizer::getCornerPoint(int i, int j, int k) const {
-  Point3D result;
-  result.x = m_start.x+((double)i)*m_cellSize;
-  result.y = m_start.y+((double)j)*m_cellSize;
-  result.z = m_start.z+((double)k)*m_cellSize;
-  return result;
 }
 
 // find point on surface, beginning search at start
@@ -547,20 +583,19 @@ UINT IsoSurfacePolygonizer::getCubeEdgeVertexId(const StackedCube &cube, CubeEdg
 // c1.m_value and c2.m_value are presumed of different sign
 // return saved index if any; else calculate and save vertex for later use
 UINT IsoSurfacePolygonizer::getVertexId(const HashedCubeCorner &c1, const HashedCubeCorner &c2, BYTE coordIndex) {
-#ifdef VALIDATE_OPPOSITESIGN
-  if(!hasOppositeSign(c1, c2)) {
-    throwException(_T("%s:Corners doesn't have opposite sign. c1:%s, c2:%s")
-                  ,__TFUNCTION__
-                  ,c1.toString().cstr(), c2.toString().cstr());
-  }
-#endif // VALIDATE_OPPOSITESIGN
-
   const CubeEdgeHashKey edgeKey(c1.m_key, c2.m_key);
   const UINT *p = m_edgeMap.get(edgeKey);
   if(p != NULL) {
     m_statistics.m_edgeHits++;
     return *p; // previously computed
   }
+#ifdef VALIDATE_OPPOSITESIGN
+  if(!hasOppositeSign(c1, c2)) {
+    throwException(_T("%s:Corners doesn't have opposite sign. c1:%s, c2:%s")
+      , __TFUNCTION__
+      , c1.toString().cstr(), c2.toString().cstr());
+  }
+#endif // VALIDATE_OPPOSITESIGN
 
   const Point3D           sp = converge(c1, c2);             // position;
   double                  dist;
@@ -727,7 +762,7 @@ static int cubeCornerCmp(const HashedCubeCorner * const &c1, const HashedCubeCor
   return point3DKeyCmp(c1->m_key,c2->m_key);
 }
 
-void IsoSurfacePolygonizer::dumpCornerMap() const {
+void PolygonizerBase::dumpCornerMap() const {
   debugLog(_T("CornerMap\n"));
   CompactArray<const HashedCubeCorner*> tmpArray(m_cornerMap.size());
   for(Iterator<CornerMapEntry> it = m_cornerMap.getEntryIterator(); it.hasNext();) {
@@ -743,8 +778,7 @@ void IsoSurfacePolygonizer::dumpCornerMap() const {
 }
 #endif // DUMP_CORNERMAP
 
-#define DUMP_EDGEMAP
-
+#ifdef DUMP_EDGEMAP
 typedef Entry<CubeEdgeHashKey, UINT> EdgeMapEntry;
 class SortedCubeEdge : public CubeEdgeHashKey {
 public:
@@ -759,7 +793,7 @@ static int sortedCubeEdgeCmp(const SortedCubeEdge &e1, const SortedCubeEdge &e2)
   return Point3DKey::compare(e1.getKey2(),e2.getKey2());
 }
 
-void IsoSurfacePolygonizer::dumpEdgeMap() const {
+void PolygonizerBase::dumpEdgeMap() const {
   debugLog(_T("EdgeMap\n"));
   Array<SortedCubeEdge> tmpArray(m_edgeMap.size());
   for(Iterator<EdgeMapEntry> it = m_edgeMap.getEntryIterator(); it.hasNext();) {
@@ -772,9 +806,10 @@ void IsoSurfacePolygonizer::dumpEdgeMap() const {
     debugLog(_T("%s:%6d\n"), e.toString().cstr(), e.m_index);
   }
 }
+#endif
 
 #ifdef DUMP_VERTEXARRAY
-void IsoSurfacePolygonizer::dumpVertexArray() const {
+void PolygonizerBase::dumpVertexArray() const {
   debugLog(_T("VertexArray\n"));
   const size_t n = m_vertexArray.size();
   for(size_t i = 0; i < n; i++) {
@@ -782,9 +817,8 @@ void IsoSurfacePolygonizer::dumpVertexArray() const {
   }
 }
 #endif // DUMP_VERTEXARRAY
-
 #ifdef DUMP_FACEARRAY
-void IsoSurfacePolygonizer::dumpFaceArray() const {
+void PolygonizerBase::dumpFaceArray() const {
   debugLog(_T("FaceArray\n"));
   const size_t n = m_faceArray.size();
   for(size_t i = 0; i < n; i++) {
@@ -932,10 +966,19 @@ SimplexArray StackedCube::has4ZeroCorners(CubeFace cf) const {
     : SimplexArray(empty);
 }
 
+StackedCube &StackedCube::copy(const StackedCube &src, const HashedCubeCornerMap &cornerMap) {
+  *this = src;
+  for(int i = 0; i < ARRAYSIZE(m_corners); i++) {
+    m_corners[i] = cornerMap.get(src.m_corners[i]->m_key);
+  }
+  return *this;
+}
+
 String StackedCube::toString() const {
-  String result = format(_T("Cube:Key:%s. Size:%s\n")
+  String result = format(_T("Cube:Key:%s,Size:%s, Index0:%4d, Index:%4d\n")
                         ,m_key.toString().cstr()
-                        , getSize().toString(5).cstr());
+                        ,getSize().toString(5).cstr()
+                        ,m_index0, m_index);
   for(int i = 0; i < ARRAYSIZE(m_corners); i++) {
     const HashedCubeCorner *c = m_corners[i];
     result += format(_T("  %s:%s\n")

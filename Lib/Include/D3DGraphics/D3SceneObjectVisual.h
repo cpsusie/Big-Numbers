@@ -1,10 +1,10 @@
 #pragma once
 
 #include <MyString.h>
+#include <MFCUtil/AbstractMouseHandler.h>
 #include "D3World.h"
 #include "D3Material.h"
 #include "D3SceneObject.h"
-
 class D3Scene;
 class D3SceneObjectVisual;
 class D3Ray;
@@ -12,7 +12,7 @@ class D3PickedInfo;
 
 typedef CompactArray<D3SceneObjectVisual*> D3VisualArray;
 
-class D3SceneObjectVisual : public D3SceneObject {
+class D3SceneObjectVisual : public D3SceneObject, public AbstractMouseHandler {
 protected:
   D3SceneObjectVisual *m_parent;
   D3VisualArray        m_children;
@@ -97,4 +97,5 @@ public:
   inline void setName(const String &name) {
     m_name = name;
   }
+  virtual String getInfoString() const;
 };

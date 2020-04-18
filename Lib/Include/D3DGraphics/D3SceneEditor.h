@@ -29,15 +29,12 @@ typedef enum {
 #define SE_INITDONE           0x0001
 #define SE_ENABLED            0x0002
 #define SE_PROPCHANGES        0x0004
-#define SE_RENDER3D           0x0008
-#define SE_RENDERINFO         0x0010
-#define SE_RENDERNOW          0x0020
-#define SE_LIGHTCONTROLS      0x0040
-#define SE_MOUSEVISIBLE       0x0080
-#define SE_SETCONTROLACTIVE   0x0100
-#define SE_RESETCONTROLACTIVE 0x0200
-#define SE_RENDERALL          (SE_RENDER3D | SE_RENDERINFO)
-#define SE_ALL                (SE_ENABLED | SE_PROPCHANGES | SE_RENDERALL | SE_LIGHTCONTROLS)
+#define SE_LIGHTCONTROLS      0x0008
+#define SE_MOUSEVISIBLE       0x0010
+#define SE_SETCONTROLACTIVE   0x0020
+#define SE_RESETCONTROLACTIVE 0x0040
+#define SE_RENDER             0x0080
+#define SE_ALL                (SE_ENABLED | SE_PROPCHANGES | SE_RENDER | SE_LIGHTCONTROLS)
 
 class D3Camera;
 class D3SceneContainer;
@@ -62,26 +59,7 @@ private:
     D3SceneEditorPickedInfo        m_pickedInfo;
     String                         m_paramFileName;
 
-    HWND     getCurrentHwnd() const;
-    D3Scene &getScene() const {
-      return m_sceneContainer->getScene();
-    }
-    CameraSet getActiveCameraSet() const;
-    CameraSet getSelectedCameraSet() const;
-    inline void render(BYTE flags, CameraSet cameraSet) {
-      if(isSet(flags)) {
-        m_sceneContainer->render(flags, cameraSet);
-      }
-    }
-    inline void renderInfo() {
-      render(SE_RENDERINFO, CameraSet());
-    }
-    inline void renderSelected(BYTE flags) {
-      render(flags, getSelectedCameraSet());
-    }
-    inline void renderActive(BYTE flags) {
-      render(flags, getActiveCameraSet());
-    }
+    HWND              getCurrentHwnd() const;
     int               findCameraIndex(CPoint p) const;
     // if index >= 0, set m_currentCamera = scene.getCameraArray()[index], else = NULL, and set m_currentCameraIndex = index
     // return boolean value of (m_selectedCamera != NULL) after adjustment
@@ -91,7 +69,6 @@ private:
     bool              hasCAM() const {
       return m_selectedCamera != NULL;
     }
-
     void              rotateCurrentVisualFrwBckw(  float angle1 , float angle2);
     void              rotateCurrentVisualLeftRight(float angle) ;
     void              adjustCurrentVisualScale(int component, float factor);
@@ -227,8 +204,7 @@ private:
     void OnLButtonDblClk(UINT nFlags, CPoint point);
     // pt in window-coordinates
     BOOL OnMouseWheel(   UINT nFlags, short zDelta, CPoint pt);
-    // point in screen-coordinates
-    void OnContextMenu(  HWND pwnd, CPoint point);
+    void OnContextMenu(  HWND pwnd, MSG *pMsg);
 
     String stateFlagsToString() const;
     String getSelectedString() const;
@@ -246,11 +222,36 @@ public:
     inline bool isEnabled() const {
       return isSet(SE_ENABLED);
     }
+    inline bool hasSceneContainer() const {
+      return m_sceneContainer != NULL;
+    }
+    inline D3SceneContainer *getSceneContainer() const {
+      return m_sceneContainer;
+    }
+    inline D3Scene *getScene() const {
+      return hasSceneContainer() ? &m_sceneContainer->getScene() : NULL;
+    }
     inline D3EditorControl      getCurrentControl() const {
       return m_currentControl;
     }
     inline D3Camera            *getSelectedCAM() const {
       return m_selectedCamera;
+    }
+    CameraSet getActiveCameraSet() const;
+    CameraSet getSelectedCameraSet() const;
+    inline void render(BYTE flags, CameraSet cameraSet) {
+      if(isSet(flags)) {
+        m_sceneContainer->render(flags, cameraSet);
+      }
+    }
+    inline void renderInfo() {
+      render(SC_RENDERINFO, CameraSet());
+    }
+    inline void renderSelectedCamera(BYTE flags) {
+      render(flags, getSelectedCameraSet());
+    }
+    inline void renderActiveCameras(BYTE flags) {
+      render(flags, getActiveCameraSet());
     }
     inline D3SceneObjectVisual *getCurrentObj() const {
       return m_currentObj;

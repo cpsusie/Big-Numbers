@@ -26,13 +26,14 @@ D3SceneEditor::D3SceneEditor()
 }
 
 #define sCAM   (*getSelectedCAM())
+#define SCENE  (*getScene())
 
 D3SceneEditor::~D3SceneEditor() {
   close();
 }
 
 CameraSet D3SceneEditor::getActiveCameraSet() const {
-  return getScene().getCameraArray().getActiveCameraSet();
+  return SCENE.getCameraArray().getActiveCameraSet();
 }
 
 CameraSet D3SceneEditor::getSelectedCameraSet() const {
@@ -45,25 +46,25 @@ CameraSet D3SceneEditor::getSelectedCameraSet() const {
 
 void D3SceneEditor::init(D3SceneContainer *sceneContainer) {
   m_sceneContainer   = sceneContainer;
-  CLightDlg    *dlg1 = new CLightDlg(); TRACE_NEW(dlg1);
+  CLightDlg    *dlg1 = new CLightDlg();    TRACE_NEW(dlg1);
   CMaterialDlg *dlg2 = new CMaterialDlg(); TRACE_NEW(dlg2);
   m_propertyDialogMap.addDialog(dlg1).addDialog(dlg2).addPropertyChangeListener(this);
   const UINT count = sceneContainer->get3DWindowCount();
   for(UINT i = 0; i < count; i++) {
-    getScene().addCamera(sceneContainer->get3DWindow(i));
+    SCENE.addCamera(sceneContainer->get3DWindow(i));
   }
   m_currentControl = CONTROL_IDLE;
   selectCAM((count >= 1) ? 0 : -1);
-  getScene().addPropertyChangeListener(this);
+  SCENE.addPropertyChangeListener(this);
   setFlag(SE_INITDONE);
 }
 
 void D3SceneEditor::close() {
-  getScene().removePropertyChangeListener(this);
+  SCENE.removePropertyChangeListener(this);
   m_propertyDialogMap.removeAllDialogs();
-  getScene().removeVisual(m_coordinateSystem);
+  SCENE.removeVisual(m_coordinateSystem);
   SAFEDELETE(m_coordinateSystem);
-  getScene().close();
+  SCENE.close();
   clrFlag(SE_INITDONE);
 }
 
@@ -112,33 +113,33 @@ void D3SceneEditor::handlePropertyChanged(const PropertyContainer *source, int i
   if(!isSet(SE_PROPCHANGES)) {
     return;
   }
-  if(source == &getScene()) {
+  if(source == getScene()) {
     switch(id) {
     case SP_MATERIALPARAMETERS    :
     case SP_LIGHTPARAMETERS       :
     case SP_RIGHTHANDED           :
-      renderActive(SE_RENDERALL);
+      renderActiveCameras(SC_RENDERALL);
       break;
     case SP_VISUALCOUNT           :
       { const UINT oldCount = *(UINT*)oldValue, newCount = *(UINT*)newValue;
         if(newCount < oldCount) {
-          if(!getScene().isVisual(m_currentObj)) {
+          if(!SCENE.isVisual(m_currentObj)) {
             resetControl();
           }
         } else {
-          setControl(CONTROL_IDLE, getScene().getLastVisual());
+          setControl(CONTROL_IDLE, SCENE.getLastVisual());
         }
-        if(!m_centerOfRotation.isEmpty() && !getScene().isVisual(m_centerOfRotation.m_obj)) {
+        if(!m_centerOfRotation.isEmpty() && !SCENE.isVisual(m_centerOfRotation.m_obj)) {
           m_centerOfRotation.reset();
         }
-        renderActive(SE_RENDERALL);
+        renderActiveCameras(SC_RENDERALL);
       }
       break;
     case SP_ANIMATIONFRAMEINDEX   :
-      renderActive(SE_RENDER3D);
+      renderActiveCameras(SC_RENDER3D);
       break;
     case SP_AMBIENTCOLOR          :
-      renderActive(SE_RENDERALL | SE_RENDERNOW);
+      renderActiveCameras(SC_RENDERALL | SC_RENDERNOW);
       break;
     case SP_LIGHTCOUNT            :
       { const UINT oldCount = *(UINT*)oldValue, newCount = *(UINT*)newValue;
@@ -146,7 +147,7 @@ void D3SceneEditor::handlePropertyChanged(const PropertyContainer *source, int i
           D3Light light;
           if((m_propertyDialogMap.getVisiblePropertyId() == SP_LIGHTPARAMETERS)
           &&  m_propertyDialogMap.getVisibleProperty(light)
-          && (!getScene().isLightDefined(light.getIndex())))
+          && (!SCENE.isLightDefined(light.getIndex())))
           {
             mapDialogHide();
           }
@@ -159,7 +160,7 @@ void D3SceneEditor::handlePropertyChanged(const PropertyContainer *source, int i
           D3Material material;
           if((m_propertyDialogMap.getVisiblePropertyId() == SP_MATERIALPARAMETERS)
           &&  m_propertyDialogMap.getVisibleProperty(material)
-          && (!getScene().isMaterialDefined(material.getId())))
+          && (!SCENE.isMaterialDefined(material.getId())))
           {
             mapDialogHide();
           }
@@ -172,10 +173,10 @@ void D3SceneEditor::handlePropertyChanged(const PropertyContainer *source, int i
     case CAM_VIEW                 :  // D3DXMATRIX
     case CAM_PROJECTION           :  // D3DXMATRIX
     case CAM_LIGHTCONTROLSVISIBLE :  // BitSet
-      renderSelected(SE_RENDERALL);
+      renderSelectedCamera(SC_RENDERALL);
       break;
     case CAM_BACKGROUNDCOLOR      :  // D3DCOLOR
-      renderSelected(SE_RENDERALL|SE_RENDERNOW);
+      renderSelectedCamera(SC_RENDERALL|SC_RENDERNOW);
       break;
     }
   } else if(source == &m_propertyDialogMap) {
@@ -191,16 +192,16 @@ void D3SceneEditor::handlePropertyChanged(const PropertyContainer *source, int i
       { switch(m_propertyDialogMap.getVisiblePropertyId()) {
         case SP_LIGHTPARAMETERS   :
           { const D3Light &newLight = *(D3Light*)newValue;
-            D3Light        tmp      = getScene().getLight(newLight.getIndex()); // to keep pos and direction as they are
+            D3Light        tmp      = SCENE.getLight(newLight.getIndex()); // to keep pos and direction as they are
             if(tmp.getIndex() != newLight.getIndex()) {
               showWarning(_T("%s:Light %d is undefined"), __TFUNCTION__,newLight.getIndex());
             } else {
-              getScene().setLight(CLightDlg::copyModifiableValues(tmp, newLight));
+              SCENE.setLight(CLightDlg::copyModifiableValues(tmp, newLight));
             }
           }
           break;
         case SP_MATERIALPARAMETERS:
-          getScene().setMaterial(*(D3Material*)newValue);
+          SCENE.setMaterial(*(D3Material*)newValue);
           break;
         }
       }
@@ -212,7 +213,7 @@ void D3SceneEditor::handlePropertyChanged(const PropertyContainer *source, int i
       sCAM.setBackgroundColor(*(D3DCOLOR*)newValue);
       break;
     case SP_AMBIENTCOLOR          :
-      getScene().setAmbientColor(*(D3DCOLOR*)newValue);
+      SCENE.setAmbientColor(*(D3DCOLOR*)newValue);
       break;
     }
   }
@@ -244,6 +245,7 @@ void D3SceneEditor::OnLButtonDown(UINT nFlags, CPoint point) {
         case SOTYPE_VISUALOBJECT  :
         case SOTYPE_ANIMATEDOBJECT:
           setControl(CONTROL_OBJECT_POS, pickedObj);
+          pickedObj->OnLButtonDown(nFlags, point);
           break;
         case SOTYPE_LIGHTCONTROL  :
           setControl(CONTROL_LIGHT, pickedObj);
@@ -256,6 +258,11 @@ void D3SceneEditor::OnLButtonDown(UINT nFlags, CPoint point) {
 }
 
 void D3SceneEditor::OnLButtonUp(UINT nFlags, CPoint point) {
+  D3SceneObjectVisual *visual = getCurrentVisual();
+  if(visual && visual->OnLButtonUp(nFlags, point)) {
+    return;
+  }
+
   switch(getCurrentControl()) {
   case CONTROL_SPOTLIGHTPOINT:
     setControl(CONTROL_IDLE, m_currentObj);
@@ -269,19 +276,23 @@ void D3SceneEditor::OnLButtonUp(UINT nFlags, CPoint point) {
   }
 }
 
-void D3SceneEditor::OnContextMenu(HWND pwnd, CPoint point) {
-  m_lastMouse = sCAM.screenToWin(point);
+void D3SceneEditor::OnContextMenu(HWND pwnd, MSG *pMsg) {
+  m_lastMouse = sCAM.screenToWin(pMsg->pt);
   D3SceneObjectVisual *pickedObj = getPickedVisual(m_lastMouse, OBJMASK_ALL, m_pickedRay,m_pickedInfo);
   if(pickedObj == NULL) {
     m_pickedInfo.clear();
-    OnContextMenuBackground(point);
+    OnContextMenuBackground(pMsg->pt);
   } else {
     setControl(CONTROL_IDLE, pickedObj);
-    OnContextMenuObj(point);
+    OnContextMenuObj(pMsg->pt);
   }
 }
 
 void D3SceneEditor::OnMouseMove(UINT nFlags, CPoint point) {
+  D3SceneObjectVisual *visual = getCurrentVisual();
+  if(visual && visual->OnMouseMove(nFlags, point)) {
+    return;
+  }
   if(!(nFlags & MK_LBUTTON)) {
     return;
   }
@@ -303,10 +314,18 @@ void D3SceneEditor::OnMouseMove(UINT nFlags, CPoint point) {
 }
 
 void D3SceneEditor::OnLButtonDblClk(UINT nFlags, CPoint point) {
+  D3SceneObjectVisual *visual = getCurrentVisual();
+  if(visual && visual->OnLButtonDblClk(nFlags, point)) {
+    return;
+  }
 }
 
 // pt in window-coordinates
 BOOL D3SceneEditor::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) {
+  D3SceneObjectVisual *visual = getCurrentVisual();
+  if(visual && visual->OnMouseWheel(nFlags, zDelta, pt)) {
+    return TRUE;
+  }
   switch(getCurrentControl()) {
   case CONTROL_CAMERA_WALK           :
     OnMouseWheelCameraWalk(          nFlags, zDelta, pt);
@@ -338,7 +357,7 @@ HWND D3SceneEditor::getCurrentHwnd() const {
 }
 
 int D3SceneEditor::findCameraIndex(CPoint p) const {
-  return getScene().getCameraArray().findCameraIndex(p);
+  return SCENE.getCameraArray().findCameraIndex(p);
 }
 
 bool D3SceneEditor::selectCAM(int index) {
@@ -347,7 +366,7 @@ bool D3SceneEditor::selectCAM(int index) {
       sCAM.removePropertyChangeListener(this);
     }
     if(index >= 0) {
-      m_selectedCamera = getScene().getCameraArray()[index];
+      m_selectedCamera = SCENE.getCameraArray()[index];
     } else {
       m_selectedCamera = NULL;
       m_pickedRay.clear();
@@ -380,7 +399,7 @@ BOOL D3SceneEditor::PreTranslateMessage(MSG *pMsg) {
   case WM_KEYDOWN:
     switch(pMsg->wParam) {
     case VK_ESCAPE:
-      setEnabled(false).setEnabled(true,SE_RENDERINFO).renderActive(SE_RENDERALL);
+      setEnabled(false).setEnabled(true,SC_RENDERINFO).renderActiveCameras(SC_RENDERALL);
       return true;
     }
     break;
@@ -410,7 +429,7 @@ BOOL D3SceneEditor::PreTranslateMessage(MSG *pMsg) {
     break;
   case WM_RBUTTONUP:
     if(selectCAM(pMsg->pt)) {
-      OnContextMenu(m_sceneContainer->getMessageWindow(), pMsg->pt);
+      OnContextMenu(m_sceneContainer->getMessageWindow(), pMsg);
       return true;
     }
     break;
@@ -550,12 +569,12 @@ void D3SceneEditor::setCurrentObjPos(const D3DXVECTOR3 &pos) {
   if(obj == NULL) return;
   switch(obj->getType()) {
   case SOTYPE_LIGHTCONTROL  :
-    getScene().setLightPosition(getCurrentLightControl()->getLightIndex(), pos);
+    SCENE.setLightPosition(getCurrentLightControl()->getLightIndex(), pos);
     // continue case
   case SOTYPE_VISUALOBJECT  :
   case SOTYPE_ANIMATEDOBJECT:
     obj->getWorld() = D3World(*obj).setPos(pos);
-    renderActive(SE_RENDERALL);
+    renderActiveCameras(SC_RENDERALL);
     break;
   default                   :
     throwInvalidArgumentException(__TFUNCTION__, _T("type=%d"), obj->getType());
@@ -566,7 +585,7 @@ void D3SceneEditor::setCurrentVisualWorld(const D3DXMATRIX &world) {
   D3SceneObjectVisual *obj = getCurrentVisual();
   if(obj) {
     obj->getWorld() = world;
-    renderActive(SE_RENDERALL);
+    renderActiveCameras(SC_RENDERALL);
   }
 }
 
@@ -811,7 +830,7 @@ void D3SceneEditor::OnMouseMoveLightSpot(UINT nFlags, CPoint pt) {
     { const float angle1 = (float)(pt.x - m_lastMouse.x) / 100.0f;
       const float angle2 = (float)(pt.y - m_lastMouse.y) / 100.0f;
       const D3DXVECTOR3 newDir = rotate(rotate(dir,sCAM.getUp(),angle1), sCAM.getRight(),angle2);
-      getScene().setLightDirection(lc->getLightIndex(), newDir);
+      SCENE.setLightDirection(lc->getLightIndex(), newDir);
     }
     break;
   case MK_CTRLSHIFT:
@@ -837,16 +856,16 @@ void D3SceneEditor::OnMouseWheelLightDirectional(UINT nFlags, short zDelta, CPoi
   switch(nFlags & MK_CTRLSHIFT) {
   case 0           :
     ctrl.setSphereRadius(ctrl.getSphereRadius() * (1.0f-0.04f*signDelta));
-    renderActive(SE_RENDERALL);
+    renderActiveCameras(SC_RENDERALL);
     break;
   case MK_CONTROL  :
-    getScene().setLightDirection(ctrl.getLightIndex(), rotate(dir, sCAM.getRight(), -0.06f*signDelta));
+    SCENE.setLightDirection(ctrl.getLightIndex(), rotate(dir, sCAM.getRight(), -0.06f*signDelta));
     break;
   case MK_SHIFT    :
-    getScene().setLightDirection(ctrl.getLightIndex(), rotate(dir, sCAM.getUp(),    -0.06f*signDelta));
+    SCENE.setLightDirection(ctrl.getLightIndex(), rotate(dir, sCAM.getUp(),    -0.06f*signDelta));
     break;
   case MK_CTRLSHIFT:
-    getScene().setLightDirection(ctrl.getLightIndex(), rotate(dir, sCAM.getDir(),    0.06f*signDelta));
+    SCENE.setLightDirection(ctrl.getLightIndex(), rotate(dir, sCAM.getDir(),    0.06f*signDelta));
     break;
   }
 }
@@ -858,13 +877,13 @@ void D3SceneEditor::OnMouseWheelLightPoint(UINT nFlags, short zDelta, CPoint pt)
   const D3DXVECTOR3    pos  = ctrl.getLight().Position;
   switch(nFlags & MK_CTRLSHIFT) {
   case 0           :
-    getScene().setLightPosition(ctrl.getLightIndex(), pos + sCAM.getDir()   * 0.04f*signDelta);
+    SCENE.setLightPosition(ctrl.getLightIndex(), pos + sCAM.getDir()   * 0.04f*signDelta);
     break;
   case MK_CONTROL  :
-    getScene().setLightPosition(ctrl.getLightIndex(), pos + sCAM.getUp()    * 0.04f*signDelta);
+    SCENE.setLightPosition(ctrl.getLightIndex(), pos + sCAM.getUp()    * 0.04f*signDelta);
     break;
   case MK_SHIFT    :
-    getScene().setLightPosition(ctrl.getLightIndex(), pos + sCAM.getRight() * 0.04f*signDelta);
+    SCENE.setLightPosition(ctrl.getLightIndex(), pos + sCAM.getRight() * 0.04f*signDelta);
     break;
   case MK_CTRLSHIFT:
     break;
@@ -880,16 +899,16 @@ void D3SceneEditor::OnMouseWheelLightSpot(UINT nFlags, short zDelta, CPoint pt) 
   const D3DXVECTOR3  dir   = param.Direction;
   switch(nFlags & MK_CTRLSHIFT) {
   case 0           :
-    getScene().setLightPosition( ctrl.getLightIndex(), pos + sCAM.getUp() * 0.04f * signDelta);
+    SCENE.setLightPosition( ctrl.getLightIndex(), pos + sCAM.getUp() * 0.04f * signDelta);
     break;
   case MK_CONTROL  :
-    getScene().setLightDirection(ctrl.getLightIndex(), rotate(dir, sCAM.getRight(), -0.06f * signDelta));
+    SCENE.setLightDirection(ctrl.getLightIndex(), rotate(dir, sCAM.getRight(), -0.06f * signDelta));
     break;
   case MK_SHIFT    :
-    getScene().setLightPosition( ctrl.getLightIndex(), pos + sCAM.getRight() * 0.04f * signDelta);
+    SCENE.setLightPosition( ctrl.getLightIndex(), pos + sCAM.getRight() * 0.04f * signDelta);
     break;
   case MK_CTRLSHIFT:
-    getScene().setLightDirection(ctrl.getLightIndex(), rotate(dir, sCAM.getUp(), 0.06f * signDelta));
+    SCENE.setLightDirection(ctrl.getLightIndex(), rotate(dir, sCAM.getUp(), 0.06f * signDelta));
     break;
   }
 }
@@ -911,7 +930,7 @@ void D3SceneEditor::OnMouseWheelLightSpotAngle(UINT nFlags, short zDelta, CPoint
   default          :
     return;
   }
-  getScene().setLight(light);
+  SCENE.setLight(light);
 }
 // ------------------------------------------------------------------------------------------------------------
 
@@ -933,7 +952,7 @@ void D3SceneEditor::addLight(D3DLIGHTTYPE type) {
     break;
   }
   try {
-    sCAM.setLightControlVisible(getScene().addLight(lp), true);
+    sCAM.setLightControlVisible(SCENE.addLight(lp), true);
   } catch(Exception e) {
     showException(e);
   }
@@ -977,19 +996,19 @@ const D3LightControl *D3SceneEditor::getCurrentLightControl() const {
 }
 
 void D3SceneEditor::setAllLightControlsVisible(bool visible) {
-  sCAM.setLightControlsVisible(visible ? getScene().getLightsDefined() : BitSet(10));
+  sCAM.setLightControlsVisible(visible ? SCENE.getLightsDefined() : BitSet(10));
 }
 
 void D3SceneEditor::setLightControlRenderEffect(bool enabled) {
   if(enabled != D3LightControl::isRenderEffectEnabled()) {
     D3LightControl::enableRenderEffect(enabled);
-    renderActive(SE_RENDER3D);
+    renderActiveCameras(SC_RENDER3D);
   }
 }
 
 void D3SceneEditor::setSpecularEnable(bool enabled) {
-  getScene().setSpecularEnable(enabled);
-  renderActive(SE_RENDER3D);
+  SCENE.setSpecularEnable(enabled);
+  renderActiveCameras(SC_RENDER3D);
 }
 
 void D3SceneEditor::setSpotToPointAt(CPoint point) {
@@ -1004,7 +1023,7 @@ void D3SceneEditor::setSpotToPointAt(CPoint point) {
   } else {
     D3Light param = lc->getLight();
     param.Direction = unitVector(m_pickedInfo.m_hitPoint - param.Position);
-    getScene().setLight(param);
+    SCENE.setLight(param);
   }
 }
 
@@ -1057,11 +1076,11 @@ void D3SceneEditor::OnContextMenuBackground(CPoint point) {
   if(visibleLightCount == 0) {
     removeMenuItem(menu,ID_LIGHT_HIDECONTROLS);
   }
-  if(visibleLightCount == getScene().getLightCount()) {
+  if(visibleLightCount == SCENE.getLightCount()) {
     removeMenuItem(menu, ID_LIGHT_SHOWCONTROLS);
   }
-  const LightArray lights = getScene().getAllLights();
-  BitSet definedLights(getScene().getMaxLightCount());
+  const LightArray lights = SCENE.getAllLights();
+  BitSet definedLights(SCENE.getMaxLightCount());
   for(size_t i = 0; i < lights.size(); i++) {
     const D3Light &l = lights[i];
     definedLights.add(l.getIndex());
@@ -1077,10 +1096,10 @@ void D3SceneEditor::OnContextMenuBackground(CPoint point) {
   removeMenuItem(menu, isCoordinateSystemVisible()
                       ?ID_SHOWCOORDINATESYSTEM
                       :ID_HIDECOORDINATESYSTEM);
-  removeMenuItem(menu, getScene().getSpecularEnable()
+  removeMenuItem(menu, SCENE.getSpecularEnable()
                       ?ID_ENABLE_SPECULARHIGHLIGHT
                       :ID_DISABLE_SPECULARHIGHLIGHT);
-  removeMenuItem(menu, getScene().getRightHanded()
+  removeMenuItem(menu, SCENE.getRightHanded()
                       ?ID_RIGHTHANDED
                       :ID_LEFTHANDED);
 
@@ -1295,7 +1314,7 @@ void D3SceneEditor::OnCameraResetProjection()  { sCAM.resetProjection();  }
 void D3SceneEditor::OnCameraResetAll()         { sCAM.resetAll();         }
 
 void D3SceneEditor::SetRightHanded(bool rightHanded) {
-  getScene().setRightHanded(rightHanded);
+  SCENE.setRightHanded(rightHanded);
 }
 
 typedef enum {
@@ -1363,9 +1382,9 @@ void D3SceneEditor::OnMouseWheelAnimationSpeed(UINT nFlags, short zDelta, CPoint
 void D3SceneEditor::OnObjectRemove() {
   if(!hasObj()) return;
   D3SceneObjectVisual *obj = m_currentObj;
-  getScene().removeVisual(m_currentObj);
+  SCENE.removeVisual(m_currentObj);
   SAFEDELETE(obj);
-  renderActive(SE_RENDERALL);
+  renderActiveCameras(SC_RENDERALL);
 }
 
 void D3SceneEditor::OnObjectSetCenterOfRotation() {
@@ -1379,8 +1398,8 @@ void D3SceneEditor::OnObjectResetCenterOfRotation() {
 }
 
 void D3SceneEditor::setLightEnabled(bool enabled) {
-  getScene().setLightEnabled(getCurrentLightControl()->getLightIndex(), enabled);
-  renderActive(SE_RENDERALL);
+  SCENE.setLightEnabled(getCurrentLightControl()->getLightIndex(), enabled);
+  renderActiveCameras(SC_RENDERALL);
 }
 
 void D3SceneEditor::OnLightAdjustColors() {
@@ -1401,25 +1420,25 @@ void D3SceneEditor::OnLightControlHide() {
   D3LightControl *lc = getCurrentLightControl();
   if(lc == NULL) return;
   sCAM.setLightControlVisible(lc->getLightIndex(), false);
-  resetControl().renderActive(SE_RENDERALL);
+  resetControl().renderActiveCameras(SC_RENDERALL);
 }
 
 void D3SceneEditor::OnLightRemove() {
   D3LightControl *lc = getCurrentLightControl();
   if(lc == NULL) return;
-  getScene().removeLight(lc->getLightIndex());
-  resetControl().renderActive(SE_RENDERALL);
+  SCENE.removeLight(lc->getLightIndex());
+  resetControl().renderActiveCameras(SC_RENDERALL);
 }
 
 void D3SceneEditor::OnSceneEditAmbientLight() {
   resetControl();
-  const D3DCOLOR oldColor = getScene().getAmbientColor();
+  const D3DCOLOR oldColor = SCENE.getAmbientColor();
   CColorDlg dlg(_T("Ambient color"), SP_AMBIENTCOLOR, oldColor);
   dlg.addPropertyChangeListener(this);
   selectPropertyDialog(&dlg, CONTROL_AMBIENTLIGHTCOLOR);
   if(dlg.DoModal() != IDOK) {
-    getScene().setAmbientColor(oldColor);
-    renderActive(SE_RENDERALL);
+    SCENE.setAmbientColor(oldColor);
+    renderActiveCameras(SC_RENDERALL);
   }
   unselectPropertyDialog();
 }
@@ -1436,18 +1455,18 @@ void D3SceneEditor::OnCameraEditBackgroundColor() {
   unselectPropertyDialog();
 }
 
-void D3SceneEditor::OnObjectFillmodePoint()     { getCurrentObj()->setFillMode(D3DFILL_POINT     ); renderActive(SE_RENDERALL); }
-void D3SceneEditor::OnObjectFillmodeWireframe() { getCurrentObj()->setFillMode(D3DFILL_WIREFRAME ); renderActive(SE_RENDERALL); }
-void D3SceneEditor::OnObjectFillmodeSolid()     { getCurrentObj()->setFillMode(D3DFILL_SOLID     ); renderActive(SE_RENDERALL); }
-void D3SceneEditor::OnObjectShadingFlat()       { getCurrentObj()->setShadeMode(D3DSHADE_FLAT    ); renderActive(SE_RENDERALL); }
-void D3SceneEditor::OnObjectShadingGouraud()    { getCurrentObj()->setShadeMode(D3DSHADE_GOURAUD ); renderActive(SE_RENDERALL); }
-void D3SceneEditor::OnObjectShadingPhong()      { getCurrentObj()->setShadeMode(D3DSHADE_PHONG   ); renderActive(SE_RENDERALL); }
+void D3SceneEditor::OnObjectFillmodePoint()     { getCurrentObj()->setFillMode(D3DFILL_POINT     ); renderActiveCameras(SC_RENDERALL); }
+void D3SceneEditor::OnObjectFillmodeWireframe() { getCurrentObj()->setFillMode(D3DFILL_WIREFRAME ); renderActiveCameras(SC_RENDERALL); }
+void D3SceneEditor::OnObjectFillmodeSolid()     { getCurrentObj()->setFillMode(D3DFILL_SOLID     ); renderActiveCameras(SC_RENDERALL); }
+void D3SceneEditor::OnObjectShadingFlat()       { getCurrentObj()->setShadeMode(D3DSHADE_FLAT    ); renderActiveCameras(SC_RENDERALL); }
+void D3SceneEditor::OnObjectShadingGouraud()    { getCurrentObj()->setShadeMode(D3DSHADE_GOURAUD ); renderActiveCameras(SC_RENDERALL); }
+void D3SceneEditor::OnObjectShadingPhong()      { getCurrentObj()->setShadeMode(D3DSHADE_PHONG   ); renderActiveCameras(SC_RENDERALL); }
 
 void D3SceneEditor::setCoordinateSystemVisible(bool visible) {
   if(visible) {
     if(m_coordinateSystem == NULL) {
-      m_coordinateSystem = new D3SceneObjectCoordinateSystem(getScene()); TRACE_NEW(m_coordinateSystem);
-      getScene().addVisual(m_coordinateSystem);
+      m_coordinateSystem = new D3SceneObjectCoordinateSystem(SCENE); TRACE_NEW(m_coordinateSystem);
+      SCENE.addVisual(m_coordinateSystem);
     } else {
       m_coordinateSystem->setVisible(true);
     }
@@ -1456,7 +1475,7 @@ void D3SceneEditor::setCoordinateSystemVisible(bool visible) {
       m_coordinateSystem->setVisible(false);
     }
   }
-  renderActive(SE_RENDER3D);
+  renderActiveCameras(SC_RENDER3D);
 }
 
 static const TCHAR *extensions = _T("Scene-files (*.scn)\0*.scn\0\0");
@@ -1468,12 +1487,11 @@ void D3SceneEditor::OnSceneSaveParameters() {
   if(dlg.DoModal() != IDOK) {
     return;
   }
-
   if(_tcsclen(dlg.m_ofn.lpstrFile) == 0) {
     return;
   }
   try {
-    getScene().save(dlg.m_ofn.lpstrFile);
+    SCENE.save(dlg.m_ofn.lpstrFile);
     m_paramFileName = dlg.m_ofn.lpstrFile;
   } catch(Exception e) {
     showException(e);
@@ -1492,8 +1510,8 @@ void D3SceneEditor::OnSceneLoadParameters() {
     return;
   }
   try {
-    getScene().load(dlg.m_ofn.lpstrFile);
-    renderActive(SE_RENDERALL);
+    SCENE.load(dlg.m_ofn.lpstrFile);
+    renderActiveCameras(SC_RENDERALL);
     m_paramFileName = dlg.m_ofn.lpstrFile;
   } catch(Exception e) {
     showException(e);

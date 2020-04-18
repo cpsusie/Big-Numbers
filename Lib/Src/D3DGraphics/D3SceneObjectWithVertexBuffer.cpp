@@ -54,3 +54,9 @@ String D3SceneObjectWithVertexBuffer::toString() const {
                ,indentString(::toString(m_vertexBuffer), 2).cstr()
   );
 }
+
+String D3SceneObjectWithVertexBuffer::getInfoString() const {
+  return format(_T("%s\nVertexBuffer:\n%s")
+               ,__super::getInfoString()
+               ,::toString(m_vertexBuffer, FORMAT_BUFFERDESC));
+}

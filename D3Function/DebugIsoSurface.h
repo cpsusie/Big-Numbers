@@ -9,6 +9,7 @@
 
 class Debugger;
 class D3SceneContainer;
+class D3SceneEditor;
 
 #define MESH_VISIBLE   0x01
 #define OCTA_VISIBLE   0x02
@@ -158,6 +159,7 @@ public:
     return m_faceCount;
   }
   D3SceneObjectVisual *createMeshObject() const;
+  D3SceneObjectVisual *createFinalMeshObject(D3SceneEditor &editor) const;
   const Octagon &getCurrentOcta() const {
     return m_currentOcta;
   }

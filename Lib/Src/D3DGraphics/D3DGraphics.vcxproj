@@ -771,6 +771,7 @@
     <ClCompile Include="D3Light.cpp" />
     <ClCompile Include="D3Quaternion.cpp" />
     <ClCompile Include="D3Ray.cpp" />
+    <ClCompile Include="D3SceneContainer.cpp" />
     <ClCompile Include="D3SceneEditorPickedInfo.cpp" />
     <ClCompile Include="D3SceneObjectAnimatedMesh.cpp" />
     <ClCompile Include="D3PickedInfo.cpp" />

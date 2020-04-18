@@ -288,6 +288,8 @@ public:
   }
 };
 
+typedef CompactHashMap<Point3DKey, HashedCubeCorner> HashedCubeCornerMap;
+
 class TriangleStrip {
 public:
   UINT m_vertexId[10];
@@ -364,6 +366,12 @@ public:
   inline StackedCube(int i, int j, int k) : m_key(i,j,k), m_index(-1), m_index0(-1) {
     memset(m_corners, 0, sizeof(m_corners));
   }
+  StackedCube &clear() {
+    memset(this, 0, sizeof(StackedCube));
+    m_index = m_index0 = -1;
+    return *this;
+  }
+
   inline StackedCube &resetIndex() {
     m_index0 = m_index;
     m_index  = -1;
@@ -372,6 +380,9 @@ public:
   inline UINT getIndex() const {
     if(m_index < 0) m_index = calculateIndex();
     return m_index;
+  }
+  inline int getIndex0() const {
+    return m_index0;
   }
   inline bool intersectSurface() const {
     const UINT index = getIndex();
@@ -393,7 +404,8 @@ public:
 #ifdef VALIDATE_CUBES
   void validate() const;
 #endif // VALIDATE_CUBES
-
+  // return *this
+  StackedCube &copy(const StackedCube &src, const HashedCubeCornerMap &cornerMap);
   String toString() const;
 };
 
@@ -516,41 +528,95 @@ class PolygonizerCubeArrayTable {
 private:
   static const BYTE  s_isosurfaceLookup[];
   CompactUshortArray m_vlistStart; // index by cubes index and initialized in constructor
+  inline const BYTE *lookup(UINT index) const {
+    return s_isosurfaceLookup + m_vlistStart[index];
+  }
 public:
   PolygonizerCubeArrayTable();
   inline SimplexArray get(UINT index) const {
-    return SimplexArray(s_isosurfaceLookup + m_vlistStart[index]);
+    return SimplexArray(lookup(index));
   }
 };
 
-class IsoSurfacePolygonizer {
-private:
+class PolygonizerBase {
+protected:
   static const PolygonizerCubeArrayTable       s_cubetable;
+  // Cube size
+  double                                       m_cellSize;
+  // Start point on surface
+  Point3D                                      m_start;
+  CompactArray<StackedCube>                    m_intersectingCubeTable;
+  // Surface vertices
+  IsoSurfaceVertexArray                        m_vertexArray;
+  // Corners of cubes
+  HashedCubeCornerMap                          m_cornerMap;
+  // Edge -> index into m_vertexArray
+  CompactHashMap<CubeEdgeHashKey, UINT>        m_edgeMap;
+  // Cubes done so far
+  CompactHashSet<Point3DKey>                   m_cubesDoneSet;
+  CompactArray<Face3>                          m_faceArray;
+  PolygonizerBase();
+  PolygonizerBase &copy(const PolygonizerBase &src);
+  PolygonizerBase &cleanup();
+public:
+  PolygonizerBase(           const PolygonizerBase &src);
+  PolygonizerBase &operator=(const PolygonizerBase &src);
+  virtual ~PolygonizerBase();
+  inline double getCellSize() const {
+    return m_cellSize;
+  }
+  inline const Point3D &getStartPoint() const {
+    return m_start;
+  }
+  inline const CompactArray<StackedCube> &getCubeArray() const {
+    return m_intersectingCubeTable;
+  }
+  inline const IsoSurfaceVertexArray &getVertexArray() const {
+    return m_vertexArray;
+  }
+  inline const HashedCubeCornerMap &getCornerMap() const {
+    return m_cornerMap;
+  }
+  inline const CompactHashMap<CubeEdgeHashKey, UINT> &getEdgeMap() const {
+    return m_edgeMap;
+  }
+  inline const CompactArray<Face3> &getFaceArray() const {
+    return m_faceArray;
+  }
+  Point3D                 getCornerPoint(int i, int j, int k) const;
+  inline Point3D          getCornerPoint(const Point3DKey &key) const {
+    return getCornerPoint(key.i, key.j, key.k);
+  }
+#ifdef DUMP_CORNERMAP
+  void                    dumpCornerMap()   const;
+#endif
+#ifdef DUMP_EDGEMAP
+  void                    dumpEdgeMap()     const;
+#endif
+#ifdef DUMP_VERTEXARRAY
+  void                    dumpVertexArray() const;
+#endif
+#ifdef DUMP_FACEARRAY
+  void                    dumpFaceArray()   const;
+#endif
+};
+
+class IsoSurfacePolygonizer : public PolygonizerBase {
+private:
   // Implicit surface function
   IsoSurfaceEvaluator                         &m_eval;
-  // Cube size, normal delta
-  double                                       m_cellSize, m_delta;
+  // Normal delta
+  double                                       m_delta;
   // Snap edge-vertex if distance from corner < m_maxSnapDistance. m_lambda = ]0..0.3]
   double                                       m_lambda, m_maxSnapDistance; // m_maxSnapDistance = m_cellSize * m_lambda
   // Bounding box. surface will be contained in this
   Cube3D                                       m_boundingBox;
-  // Start point on surface
-  Point3D                                      m_start;
   // Use tetrahedral decomposition
   bool                                         m_tetrahedralMode;
   bool                                         m_tetraOptimize4;
   // Active cubes
   CompactStack<StackedCube>                    m_cubeStack;
-  CompactArray<StackedCube>                    m_intersectingCubeTable;
-  // Surface vertices
-  IsoSurfaceVertexArray                        m_vertexArray;
-  // Cubes done so far
-  CompactHashSet<Point3DKey>                   m_cubesDoneSet;
-  // Corners of cubes
-  CompactHashMap<Point3DKey, HashedCubeCorner> m_cornerMap;
-  // Edge -> index into m_vertexArray
-  CompactHashMap<CubeEdgeHashKey, UINT>        m_edgeMap;
-  CompactArray<Face3>                          m_face3Buffer, m_faceArray;
+  CompactArray<Face3>                          m_face3Buffer;
   PolygonizerStatistics                        m_statistics;
   D3DCOLOR                                     m_color;
   JavaRandom                                   m_rnd;
@@ -573,7 +639,7 @@ private:
   bool                doCubeFace(const StackedCube &cube, CubeFace face);
   bool                addToDoneSet(const Point3DKey &key);
   void                testFace (int i, int j, int k, const StackedCube &oldCube, CubeFace face, CubeCorner c1, CubeCorner c2, CubeCorner c3, CubeCorner c4);
-  void                resetTables();
+  void                cleanup();
 
   inline double       evaluate(const Point3D &p) {
     m_statistics.m_evalCount++;
@@ -622,17 +688,11 @@ private:
   Point3D                 getNormal(const Point3D &point);
   const HashedCubeCorner *getCorner(int i, int j, int k);
 
-  inline Point3D          getCornerPoint(const Point3DKey &key) const {
-    return getCornerPoint(key.i,key.j,key.k);
-  }
-  Point3D                 getCornerPoint(int i, int j, int k) const;
   Point3D                 convergeStartPoint(const Point3DWithValue &p1, const Point3DWithValue &p2, int itCount);
   Point3D                 converge(          const Point3DWithValue &p1, const Point3DWithValue &p2, int itCount = 0);
   void                    saveStatistics(double startTime);
-  void                    dumpCornerMap()   const;
-  void                    dumpEdgeMap()     const;
-  void                    dumpVertexArray() const;
-  void                    dumpFaceArray()   const;
+  IsoSurfacePolygonizer(           const IsoSurfacePolygonizer &src); // Not implemented. not cloneable
+  IsoSurfacePolygonizer &operator=(const IsoSurfacePolygonizer &src); // Not implemented. not cloneable
 public:
   IsoSurfacePolygonizer(IsoSurfaceEvaluator &eval);
   ~IsoSurfacePolygonizer();
@@ -651,9 +711,6 @@ public:
                  );
   inline const PolygonizerStatistics &getStatistics() const {
     return m_statistics;
-  }
-  inline const IsoSurfaceVertexArray &getVertexArray() const {
-    return m_vertexArray;
   }
 };
 
