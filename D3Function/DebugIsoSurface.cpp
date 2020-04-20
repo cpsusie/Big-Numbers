@@ -114,11 +114,13 @@ D3Cube OctaObject::createCube(float cellSize) {
 }
 
 void OctaObject::setOctagon(const Octagon &octa) {
-  m_cube   = octa.getCube();
-  m_center = m_cube.getCenter();
-  const UINT n = octa.getCornerCount();
-  for(UINT i = 0; i < n; i++) {
-    m_cornerLabel[i] = octa.getHashedCorner(i).m_label;
+  if(!octa.isEmpty()) {
+    m_cube = *octa.getCube();
+    m_center = m_cube.getCenter();
+    const UINT n = octa.getCornerCount();
+    for(UINT i = 0; i < n; i++) {
+      m_cornerLabel[i] = m_cube.m_corners[i]->m_label;
+    }
   }
 }
 
@@ -135,7 +137,7 @@ void OctaObject::draw() {
 }
 
 String OctaObject::getInfoString() const {
-  return m_cube.toString();
+  return m_cube.toString(3);
 }
 
 #define NEGATIVECOLOR D3DCOLOR_XRGB(120, 25, 30)
@@ -458,9 +460,10 @@ DebugMeshObject::~DebugMeshObject() {
 class FinalMeshObject : public DebugMeshObject {
 private:
   OctaObject           *m_octaObject;
+  int                   m_cubeIndex;
   D3SceneEditor        &m_editor;
   const PolygonizerBase m_polygonizer;
-  const StackedCube *findCube(CPoint point) const;
+  int findCubeIndex(CPoint point) const;
 public:
   FinalMeshObject(D3SceneEditor &editor, LPD3DXMESH m, const PolygonizerBase &polygonizer);
   ~FinalMeshObject();
@@ -478,6 +481,7 @@ FinalMeshObject::FinalMeshObject(D3SceneEditor &editor, LPD3DXMESH m, const Poly
 , m_octaObject(NULL)
 , m_editor(editor)
 , m_polygonizer(polygonizer)
+, m_cubeIndex(-1)
 {
 }
 
@@ -487,19 +491,19 @@ FinalMeshObject::~FinalMeshObject() {
 
 bool FinalMeshObject::OnLButtonDown(UINT nFlags, CPoint point) {
   if(nFlags != 1) return false;
-  const StackedCube *cube = findCube(point);
-  if(cube) {
+  m_cubeIndex = findCubeIndex(point);
+  if(m_cubeIndex >= 0) {
     if(m_octaObject == NULL) {
       m_octaObject = new OctaObject(this, (float)m_polygonizer.getCellSize());
     }
-    m_octaObject->setOctagon(Octagon(*cube));
+    m_octaObject->setOctagon(Octagon(&m_polygonizer, m_cubeIndex));
     m_editor.renderActiveCameras(SC_RENDERALL);
     return true;
   }
   return false;
 }
 
-const StackedCube *FinalMeshObject::findCube(CPoint point) const {
+int FinalMeshObject::findCubeIndex(CPoint point) const {
   if(m_editor.getCurrentVisual() == this) {
     const D3DXVECTOR3 mp = m_editor.getPickedInfo().m_info.getMeshPoint();
     Point3D mp3(mp.x,mp.y,mp.z);
@@ -508,11 +512,11 @@ const StackedCube *FinalMeshObject::findCube(CPoint point) const {
     for(size_t i = 0; i < n; i++) {
       const StackedCube &cube = table[i];
       if(cube.contains(mp3)) {
-        return &cube;
+        return (int)i;
       }
     }
   }
-  return NULL;
+  return -1;
 }
 
 void FinalMeshObject::draw() {
@@ -526,6 +530,7 @@ String FinalMeshObject::getInfoString() const {
   String result = __super::getInfoString();
   if(m_octaObject) {
     result += _T("\n");
+    result = format(_T("CubeIndex:%d, "), m_cubeIndex);
     result += m_octaObject->getInfoString();
   }
   return result;
@@ -755,13 +760,13 @@ String DebugIsoSurface::toString() const {
     return format(_T("%s\nflags:%s\nVertices:%s\n")
                  ,m_currentTetra.toString().cstr()
                  ,flagsToString(m_flags).cstr()
-                 ,m_visibleVertexArray.toString().cstr()
+                 ,m_visibleVertexArray.toString(_T("\n")).cstr()
                  );
   } else {
     return format(_T("%s\nFlags:%s\nVertices:%s\n")
-                 ,m_currentOcta.toString().cstr()
+                 ,m_currentOcta.toString(3).cstr()
                  ,flagsToString(m_flags).cstr()
-                 ,m_visibleVertexArray.toString().cstr()
+                 ,m_visibleVertexArray.toString(_T("\n")).cstr()
                  );
   }
 }

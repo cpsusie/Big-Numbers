@@ -30,7 +30,7 @@ typedef enum {
  ,FFACE // far    direction : +z, +k
 } CubeFace;
 
-String toString(CubeCorner cb);
+String cubeCornerToString(CubeCorner cb);
 
 // the LBN corner of cube (i, j, k), corresponds with location
 // (start.x+(i-.5)*size, start.y+(j-.5)*size, start.z+(k-.5)*size)

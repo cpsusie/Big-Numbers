@@ -738,9 +738,9 @@ void CMainFrame::OnDebugStopDebugging() {
 
 void CMainFrame::OnDebugToggleBreakOnPrevCube() {
   if(isDebuggerPaused()) {
-    const int octaCounter = m_debugger->getOctaCounter();
-    if(octaCounter == 0) return;
-    const UINT breakPoint = octaCounter - 1;
+    const int octaIndex = m_debugger->getOctaIndex();
+    if(octaIndex <= 0) return;
+    const UINT breakPoint = octaIndex - 1;
     if(m_octaBreakPoints.getCapacity() <= breakPoint) {
       m_octaBreakPoints.setCapacity(2 * breakPoint);
     }
@@ -883,7 +883,6 @@ LRESULT CMainFrame::OnMsgDebuggerStateChanged(WPARAM wp, LPARAM lp) {
   return 0;
 }
 
-
 void CMainFrame::updateDebugInfo() {
   m_debugInfo = format(_T("Debugger State:%-8s"), getDebuggerStateName().cstr());
   if(isDebuggerPaused()) {
@@ -892,10 +891,10 @@ void CMainFrame::updateDebugInfo() {
       m_debugInfo += format(_T("\nError:%s"), m_debugger->getErrorMsg().cstr());
     }
     if(m_hasCubeCenter) {
-      m_debugInfo += format(_T("\nCubeCenter:(%s), CubeCount:%4u, LookupIndex:%4u, camDistance:%f")
+      m_debugInfo += format(_T("\nCubeCenter:%s, OctaIndex:%4u, LookupIndex:%4u, camDistance:%f")
                            ,toString(m_cubeCenter, 4).cstr()
-                           ,m_debugger->getOctaCounter()
-                           ,m_debugger->getDebugSurface().getCurrentOcta().getCube().getIndex()
+                           ,m_debugger->getOctaIndex()
+                           ,m_debugger->getDebugSurface().getCurrentOcta().getCube()->getIndex()
                            ,m_currentCamDistance);
     }
     if(!m_octaBreakPoints.isEmpty()) {
@@ -912,7 +911,6 @@ void CMainFrame::updateDebugInfo() {
     }
   }
 }
-
 #endif // DEBUG_POLYGONIZER
 
 void CMainFrame::updateMemoryInfo() {

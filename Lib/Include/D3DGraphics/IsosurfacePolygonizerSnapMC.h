@@ -4,6 +4,7 @@
 #include <CompactArray.h>
 #include <CompactHashSet.h>
 #include <CompactHashMap.h>
+#include <TinyBitSet.h>
 #include <Random.h>
 #include <Math/Cube3D.h>
 #include <DebugLog.h>
@@ -30,7 +31,7 @@ typedef enum {
  ,TFACE // top    LTN, LTF, RTF, RTN  direction: +z, +k
 } CubeFace;
 
-String toString(CubeCorner cb);
+String cubeCornerToString(CubeCorner cb);
 
 // the LBN corner of cube (i, k, j), corresponds with location
 // (start.x+(i-.5)*size, start.y+(j-.5)*size, start.z+(k-.5)*size)
@@ -52,28 +53,32 @@ typedef enum {
  ,NN    // No edge
 } CubeEdge;
 
+String cubeEdgeToString(CubeEdge ce);
+
 typedef enum {
-  CVLBN   // corner vertex 0
- ,CVRBN   // corner vertex 1
- ,CVLBF   // corner vertex 2
- ,CVRBF   // corner vertex 3
- ,CVLTN   // corner vertex 4
- ,CVRTN   // corner vertex 5
- ,CVLTF   // corner vertex 6
- ,CVRTF   // corner vertex 7
- ,EVBN    // edge vertex   8   midpoint edge BN
- ,EVLB    // edge vertex   9   midpoint edge LB
- ,EVRB    // edge vertex   10  midpoint edge RB
- ,EVBF    // edge vertex   11  midpoint edge BF
- ,EVLN    // edge vertex   12  midpoint edge LN
- ,EVRN    // edge vertex   13  midpoint edge RN
- ,EVLF    // edge vertex   14  midpoint edge LF
- ,EVRF    // edge vertex   15  midpoint edge RF
- ,EVTN    // edge vertex   16  midpoint edge TN
- ,EVLT    // edge vertex   17  midpoint edge LT
- ,EVRT    // edge vertex   18  midpoint edge RN
- ,EVTF    // edge vertex   19  midpoint edge TF
+  IVLBN   // corner vertex 0
+ ,IVRBN   // corner vertex 1
+ ,IVLBF   // corner vertex 2
+ ,IVRBF   // corner vertex 3
+ ,IVLTN   // corner vertex 4
+ ,IVRTN   // corner vertex 5
+ ,IVLTF   // corner vertex 6
+ ,IVRTF   // corner vertex 7
+ ,IVBN    // edge vertex   8   midpoint edge BN
+ ,IVLB    // edge vertex   9   midpoint edge LB
+ ,IVRB    // edge vertex   10  midpoint edge RB
+ ,IVBF    // edge vertex   11  midpoint edge BF
+ ,IVLN    // edge vertex   12  midpoint edge LN
+ ,IVRN    // edge vertex   13  midpoint edge RN
+ ,IVLF    // edge vertex   14  midpoint edge LF
+ ,IVRF    // edge vertex   15  midpoint edge RF
+ ,IVTN    // edge vertex   16  midpoint edge TN
+ ,IVLT    // edge vertex   17  midpoint edge LT
+ ,IVRT    // edge vertex   18  midpoint edge RN
+ ,IVTF    // edge vertex   19  midpoint edge TF
 } IsoVertex;
+
+String ivToString(IsoVertex iv);
 
 inline bool isCubeCorner(IsoVertex iv) {
   return iv < 8;
@@ -83,13 +88,13 @@ inline bool isCubeEdge(IsoVertex iv) {
   return iv >= 8;
 }
 
-// assume iv = [CVLBN..CVRTF] i.e. < 8
+// assume iv = [IVLBN..IVRTF] i.e. < 8
 inline CubeCorner isoVertexToCubeCorner(IsoVertex iv) {
   assert(isCubeCorner(iv));
   return (CubeCorner)iv;
 }
 
-// assume iv = [EVBN..EVTF] i.e. >= 8
+// assume iv = [IVBN..IVTF] i.e. >= 8
 inline CubeEdge isoVertexToCubeEdge(IsoVertex iv) {
   assert(isCubeEdge(iv));
   return (CubeEdge)(iv - 8);
@@ -128,10 +133,7 @@ public:
   inline bool isPositive() const {
     return m_label == V_POSITIVE;
   }
-  inline String toString(int precision=6) const {
-    return format(_T("P:(%+.*le,%+.*le,%+.*le), V:%+.*le (%c)")
-                 ,precision,x,precision,y,precision,z,precision,m_value, getLabelChar(m_label));
-  }
+  String toString(int precision = 6) const;
 };
 
 inline bool hasOppositeSign(const Point3DWithValue &p1, const Point3DWithValue &p2) {
@@ -165,9 +167,7 @@ public:
     m_i1 = m_i2 = m_i3 = 0;
     m_color = 0;
   }
-  inline String toString() const {
-    return format(_T("(%5u,%5u,%5u)"),m_i1,m_i2,m_i3);
-  }
+  String toString() const;
 };
 
 // Surface vertex
@@ -184,11 +184,7 @@ public:
     m_normal   = normal;
     return *this;
   }
-  String toString(int precision=6) const {
-    return format(_T("P:(%+.*le,%+.*le,%+.*le), N:(%+.*le,%+.*le,%+.*le)")
-                 ,precision,m_position.x,precision,m_position.y,precision,m_position.z
-                 ,precision,m_normal.x  ,precision,m_normal.y  ,precision,m_normal.z);
-  }
+  String toString(int precision = 6) const;
 };
 
 typedef CompactArray<IsoSurfaceVertex> IsoSurfaceVertexArray;
@@ -208,11 +204,9 @@ public:
   inline bool operator!=(const Point3DKey &key) const {
     return !(*this == key);
   }
-  inline String toString() const {
-    return format(_T("(% 5d,% 5d,% 5d)"), i, j, k);
-  }
   static int    compare( const Point3DKey &k1, const Point3DKey &k2);
   static double distance(const Point3DKey &k1, const Point3DKey &k2);
+  String toString() const;
 };
 
 //#define DUMP_STATISTICS
@@ -234,7 +228,10 @@ private:
 public:
   inline CubeEdgeHashKey() {
   }
-  inline CubeEdgeHashKey(const Point3DKey &key1, const Point3DKey &key2) : m_key1(key1), m_key2(key2) {
+  inline CubeEdgeHashKey(const Point3DKey &key1, const Point3DKey &key2)
+    : m_key1(key1)
+    , m_key2(key2)
+  {
     checkAndSwap();
   }
   inline ULONG hashCode() const {
@@ -243,15 +240,13 @@ public:
   inline bool operator==(const CubeEdgeHashKey &k) const {
     return (m_key1 == k.m_key1) && (m_key2 == k.m_key2);
   }
-  String toString() const {
-    return format(_T("EdgeKey:(%s,%s)"), m_key1.toString().cstr(), m_key2.toString().cstr());
-  }
   inline const Point3DKey &getKey1() const {
     return m_key1;
   }
   inline const Point3DKey &getKey2() const {
     return m_key2;
   }
+  String toString() const;
 };
 
 // Corner of a cube
@@ -280,12 +275,7 @@ public:
     return m_shortestSnapDistance;
   }
   void setSnapDistance(double dist, int vertexIndex = -1) const;
-  inline String toString() const {
-    return format(_T("CubeCorner:(Key:%s, %s)")
-                 ,m_key.toString().cstr()
-                 ,__super::toString().cstr()
-                 );
-  }
+  String toString(int precision = 6) const;
 };
 
 typedef CompactHashMap<Point3DKey, HashedCubeCorner> HashedCubeCornerMap;
@@ -315,13 +305,20 @@ public:
 };
 
 class Simplex {
-public:
-  IsoVertex m_v[3];
+  friend class SimplexArray;
+private:
+  union {
+    BYTE   m_v[3];
+    UINT   m_data;
+  };
   inline Simplex(const BYTE *vp) {
-    m_v[0] = (IsoVertex)(*(vp++) & 0x1f);
-    m_v[1] = (IsoVertex)*(vp++);
-    m_v[2] = (IsoVertex)*(vp++);
+    m_data = (*(UINT*)vp) & 0x001f1f1f;
   }
+public:
+  inline IsoVertex operator[](BYTE index) const {
+    return (IsoVertex)m_v[index];
+  }
+  String toString() const;
 };
 
 class SimplexArray {
@@ -341,11 +338,22 @@ public:
     return size() == 0;
   }
   inline Simplex operator[](UINT i) const {
+#ifdef _DEBUG
     if(i >= size()) {
       throwInvalidArgumentException(__TFUNCTION__, _T("index %u out of range, size=%u"), i, size());
     }
+#endif
     return Simplex(m_triangles + 3 * i);
   }
+  String toString() const;
+};
+
+class SnappedCornerSet : public BitSet8 {
+public:
+  inline void add(CubeCorner cb) {
+    __super::add(cb);
+  }
+  String toString() const;
 };
 
 // Partitioning cell (cube)
@@ -361,9 +369,15 @@ public:
   Point3DKey              m_key;
   // Eight corners, each one in m_cornerMap
   const HashedCubeCorner *m_corners[8];
-  inline StackedCube() : m_index(-1), m_index0(-1) {
+  SnappedCornerSet        m_snappedCornerSet;
+  inline StackedCube()
+    : m_index(-1), m_index0(-1)
+  {
   }
-  inline StackedCube(int i, int j, int k) : m_key(i,j,k), m_index(-1), m_index0(-1) {
+  inline StackedCube(int i, int j, int k)
+    : m_key(i,j,k)
+    , m_index(-1), m_index0(-1)
+  {
     memset(m_corners, 0, sizeof(m_corners));
   }
   StackedCube &clear() {
@@ -372,6 +386,7 @@ public:
     return *this;
   }
 
+  static SimplexArray getSimplexArray(UINT index);
   inline StackedCube &resetIndex() {
     m_index0 = m_index;
     m_index  = -1;
@@ -406,82 +421,12 @@ public:
 #endif // VALIDATE_CUBES
   // return *this
   StackedCube &copy(const StackedCube &src, const HashedCubeCornerMap &cornerMap);
-  String toString() const;
+  String toString(int precision = 6) const;
 };
 
 #ifdef DEBUG_POLYGONIZER
-class Octagon {
-private:
-  const StackedCube *m_cube;
-public:
-  inline Octagon() : m_cube(NULL) {
-  }
-  inline Octagon(const StackedCube &cube) : m_cube(&cube) {
-  }
-  inline const StackedCube &getCube() const {
-    return *m_cube;
-  }
-  inline const D3DXVECTOR3 getCenter() const {
-    return Point3DP(getCube().getCenter());
-  }
-  inline UINT getCornerCount() const {
-    return 8;
-  }
-  inline const HashedCubeCorner &getHashedCorner(UINT index) const {
-    return *getCube().m_corners[index];
-  }
-  inline bool isEmpty() const {
-    return m_cube == NULL;
-  }
-  String toString() const {
-    return isEmpty() ? _T("Octa:---")
-                     : format(_T("Octa:%s"), m_cube->toString().cstr());
-  }
-};
-
-class Tetrahedron {
-private:
-  CubeCorner m_corner[4];
-public:
-  inline Tetrahedron() {
-    m_corner[0] = m_corner[1] = m_corner[2] = m_corner[3] = LBN;
-  }
-  inline Tetrahedron(CubeCorner c1, CubeCorner c2, CubeCorner c3, CubeCorner c4) {
-    m_corner[0] = c1;  m_corner[1] = c2; m_corner[2] = c3; m_corner[3] = c4;
-  }
-  CubeCorner getCorner(UINT index) const {
-    return m_corner[index];
-  }
-  inline UINT getCornerCount() const {
-    return 4;
-  }
-  inline bool isEmpty() const {
-    return m_corner[0] == m_corner[1];
-  }
-  inline bool operator==(const Tetrahedron &t) const {
-    return memcmp(m_corner, t.m_corner, sizeof(m_corner)) == 0;
-  }
-  inline bool operator!=(const Tetrahedron &t) const {
-    return !(*this == t);
-  }
-  ULONG hashCode() const {
-    ULONG c = m_corner[0];
-    for(int i = 1; i < 4; i++) {
-      c *= 13;
-      c += m_corner[i];
-    }
-    return c;
-  }
-  String toString() const {
-    return isEmpty() ? _T("Tetra:---")
-                     : format(_T("Tetra:Corners:[%s,%s,%s,%s]")
-                             ,::toString(m_corner[0]).cstr()
-                             ,::toString(m_corner[1]).cstr()
-                             ,::toString(m_corner[2]).cstr()
-                             ,::toString(m_corner[3]).cstr());
-  }
-};
-
+class Octagon;
+class Tetrahedron;
 #endif // DEBUG_POLYGONIZER
 
 class IsoSurfaceEvaluator {
@@ -583,6 +528,9 @@ public:
   inline const CompactArray<Face3> &getFaceArray() const {
     return m_faceArray;
   }
+  static const PolygonizerCubeArrayTable &getExtendedLookupTable() {
+    return s_cubetable;
+  }
   Point3D                 getCornerPoint(int i, int j, int k) const;
   inline Point3D          getCornerPoint(const Point3DKey &key) const {
     return getCornerPoint(key.i, key.j, key.k);
@@ -600,6 +548,87 @@ public:
   void                    dumpFaceArray()   const;
 #endif
 };
+
+#ifdef DEBUG_POLYGONIZER
+class Octagon {
+private:
+  const PolygonizerBase *m_polygonizer;
+  UINT                   m_cubeIndex;
+public:
+  inline Octagon() : m_polygonizer(NULL), m_cubeIndex(0) {
+  }
+  inline Octagon(const PolygonizerBase *polygonizer, UINT cubeIndex)
+    : m_polygonizer(polygonizer)
+    , m_cubeIndex(cubeIndex)
+  {
+  }
+  inline int getCubeIndex() const {
+    return isEmpty() ? -1 : m_cubeIndex;
+  }
+  const StackedCube *getCube() const {
+    return isEmpty() ? NULL : &(m_polygonizer->getCubeArray()[m_cubeIndex]);
+  }
+  const HashedCubeCorner *getHashedCorner(UINT index) const {
+    return isEmpty() ? NULL : getCube()->m_corners[index];
+  }
+  const D3DXVECTOR3 getCenter() const {
+    return isEmpty() ? D3DXORIGIN : getCube()->getCenter();
+  }
+  inline UINT getCornerCount() const {
+    return 8;
+  }
+  inline bool isEmpty() const {
+    return m_polygonizer == NULL;
+  }
+  String toString(int precision = 6) const {
+    return isEmpty() ? _T("Octa:---")
+                     : format(_T("Octa:%s"), getCube()->toString(precision).cstr());
+  }
+};
+
+class Tetrahedron {
+private:
+  CubeCorner m_corner[4];
+public:
+  inline Tetrahedron() {
+    m_corner[0] = m_corner[1] = m_corner[2] = m_corner[3] = LBN;
+  }
+  inline Tetrahedron(CubeCorner c1, CubeCorner c2, CubeCorner c3, CubeCorner c4) {
+    m_corner[0] = c1;  m_corner[1] = c2; m_corner[2] = c3; m_corner[3] = c4;
+  }
+  CubeCorner getCorner(UINT index) const {
+    return m_corner[index];
+  }
+  inline UINT getCornerCount() const {
+    return 4;
+  }
+  inline bool isEmpty() const {
+    return m_corner[0] == m_corner[1];
+  }
+  inline bool operator==(const Tetrahedron &t) const {
+    return memcmp(m_corner, t.m_corner, sizeof(m_corner)) == 0;
+  }
+  inline bool operator!=(const Tetrahedron &t) const {
+    return !(*this == t);
+  }
+  ULONG hashCode() const {
+    ULONG c = m_corner[0];
+    for(int i = 1; i < 4; i++) {
+      c *= 13;
+      c += m_corner[i];
+    }
+    return c;
+  }
+  String toString() const {
+    return isEmpty() ? _T("Tetra:---")
+                     : format(_T("Tetra:Corners:[%s,%s,%s,%s]")
+                             ,cubeCornerToString(m_corner[0]).cstr()
+                             ,cubeCornerToString(m_corner[1]).cstr()
+                             ,cubeCornerToString(m_corner[2]).cstr()
+                             ,cubeCornerToString(m_corner[3]).cstr());
+  }
+};
+#endif // DEBUG_POLYGONIZER
 
 class IsoSurfacePolygonizer : public PolygonizerBase {
 private:
@@ -634,8 +663,8 @@ private:
   }
 
   void                doTetra(   const HashedCubeCorner &a, const HashedCubeCorner &b, const HashedCubeCorner &c, const HashedCubeCorner &d);
-  void                doCube1(   const StackedCube &cube);
-  void                doCube2(   const StackedCube &cube);
+  void                doCube1(         StackedCube &cube);
+  void                doCube2(         size_t index);
   bool                doCubeFace(const StackedCube &cube, CubeFace face);
   bool                addToDoneSet(const Point3DKey &key);
   void                testFace (int i, int j, int k, const StackedCube &oldCube, CubeFace face, CubeCorner c1, CubeCorner c2, CubeCorner c3, CubeCorner c4);
@@ -683,8 +712,8 @@ private:
     return m_cubeStack.pop();
   }
   void                    pushCube(const StackedCube &cube);
-  UINT                    getCubeEdgeVertexId(const StackedCube &cube, CubeEdge edge);
-  UINT                    getVertexId(       const HashedCubeCorner &c1, const HashedCubeCorner &c2, BYTE coordIndex=-1);
+  UINT                    getCubeEdgeVertexId(StackedCube &cube, CubeEdge edge);
+  UINT                    getVertexId(       const HashedCubeCorner &c0, const HashedCubeCorner &c1, BYTE coordIndex, BYTE &snapIndex);
   Point3D                 getNormal(const Point3D &point);
   const HashedCubeCorner *getCorner(int i, int j, int k);
 

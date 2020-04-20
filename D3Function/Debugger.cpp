@@ -10,8 +10,8 @@
 Debugger::Debugger(D3SceneContainer *sc, const IsoSurfaceParameters &param)
 : m_flags(FL_BREAKONNEXTFACE)
 , m_state(DEBUGGER_CREATED)
-, m_octaCounter(0)
 , m_octaBreakPoints(10000)
+, m_octaIndex(-1)
 {
   m_surface = new DebugIsoSurface(this,*sc,param); TRACE_NEW(m_surface);
 }
@@ -22,10 +22,13 @@ Debugger::~Debugger() {
 }
 
 bool Debugger::hasOctaBreakPointsAboveCounter(const BitSet &s) const {
-  if(s.getCapacity() <= m_octaCounter) {
+  if((intptr_t)s.getCapacity() <= m_octaIndex) {
     return false;
+  } else if(m_octaIndex < 0) {
+    return !s.isEmpty();
+  } else {
+    return !BitSet(s).remove(0, m_octaIndex).isEmpty();
   }
-  return !BitSet(s).remove(0, m_octaCounter).isEmpty();
 }
 
 void Debugger::singleStep(BYTE breakFlags, const BitSet &octaBreakPoints) {
@@ -33,7 +36,7 @@ void Debugger::singleStep(BYTE breakFlags, const BitSet &octaBreakPoints) {
   if(breakFlags & FL_BREAKONNEXTOCTA) {
     breakFlags &= ~FL_BREAKONNEXTOCTA;
     breakFlags |= FL_BREAKONOCTAINDEX;
-    const UINT   nextOctaBreak = m_octaCounter + 1;
+    const UINT   nextOctaBreak = m_octaIndex + 1;
     const size_t minCapacity   = nextOctaBreak + 1;
     if(m_octaBreakPoints.getCapacity() < minCapacity) {
       m_octaBreakPoints.setCapacity(2 * minCapacity);
@@ -79,8 +82,8 @@ void Debugger::handleStep(StepType type) {
   if(m_flags) {
     switch(type) {
     case NEW_OCTA:
-      m_octaCounter++;
-      if(isSet(FL_BREAKONOCTAINDEX) && m_octaBreakPoints.contains(m_octaCounter)) {
+      m_octaIndex = m_surface->getCurrentOcta().getCubeIndex();
+      if(isSet(FL_BREAKONOCTAINDEX) && m_octaBreakPoints.contains(m_octaIndex)) {
         m_surface->updateSceneObject(MESH_VISIBLE | OCTA_VISIBLE);
         suspend();
       }

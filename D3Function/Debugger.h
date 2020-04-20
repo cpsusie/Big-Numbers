@@ -34,7 +34,7 @@ class Debugger : public InterruptableRunnable, public PropertyContainer {
 private:
   FLAGTRAITS(Debugger, BYTE, m_flags)
   BitSet                m_octaBreakPoints;
-  UINT                  m_octaCounter;
+  int                   m_octaIndex;
   DebuggerState         m_state;
   DebugIsoSurface      *m_surface;
   inline Debugger &checkTerminated() {
@@ -67,12 +67,12 @@ public:
     return getStateName(getState());
   }
   static String getStateName(DebuggerState state);
-  inline UINT getOctaCounter() const {
-    return m_octaCounter;
-  }
   D3SceneObjectVisual *getSceneObject();
   const DebugIsoSurface &getDebugSurface() const {
     return *m_surface;
+  }
+  inline int getOctaIndex() const {
+    return m_octaIndex;
   }
 };
 
