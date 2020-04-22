@@ -68,6 +68,8 @@ void DecompressFilter::fillOutputBuffer() {
     }
     if(zStreamp->avail_in > 0) {
       decompress();
+    } else {
+      m_eoz = true;
     }
     if(zStreamp->avail_out < MAX_BUFFERSIZE) {
       getDecompressedData();
