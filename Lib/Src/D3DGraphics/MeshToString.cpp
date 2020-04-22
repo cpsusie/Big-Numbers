@@ -10,7 +10,7 @@ String toString(LPD3DXMESH mesh, BYTE flags) {
   }
   String result;
   if(flags & FORMAT_VERTEXBUFFER) {
-    LPDIRECT3DVERTEXBUFFER vertexBuffer;
+    LPDIRECT3DVERTEXBUFFER vertexBuffer = NULL;
     try {
       V(mesh->GetVertexBuffer(&vertexBuffer)); TRACE_REFCOUNT(vertexBuffer);
       if(multiLines) result += _T("VertexBuffer:\n");
@@ -23,7 +23,7 @@ String toString(LPD3DXMESH mesh, BYTE flags) {
     }
   }
   if(flags & FORMAT_INDEXBUFFER) {
-    LPDIRECT3DINDEXBUFFER  indexBuffer;
+    LPDIRECT3DINDEXBUFFER indexBuffer = NULL;
     try {
       V(mesh->GetIndexBuffer(&indexBuffer)); TRACE_REFCOUNT(indexBuffer);
       if((result.length() > 0) && !multiLines) result += " ";

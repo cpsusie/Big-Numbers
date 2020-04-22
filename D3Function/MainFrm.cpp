@@ -88,7 +88,12 @@ static UINT indicators[] = {
 
 #define REPAINT() Invalidate(FALSE)
 
-CMainFrame::CMainFrame() : m_octaBreakPoints(100), m_breakPointsEnabled(true) {
+CMainFrame::CMainFrame()
+#ifdef DEBUG_POLYGONIZER
+: m_octaBreakPoints(100)
+, m_breakPointsEnabled(true)
+#endif // DEBUG_POLYGONIZER
+{
   m_statusPanesVisible     = true;
   m_timerRunning           = false;
   m_destroyCalled          = false;
@@ -636,6 +641,9 @@ void CMainFrame::OnDebugStepTetra() {}
 void CMainFrame::OnDebugStepFace() {}
 void CMainFrame::OnDebugStepVertex() {}
 void CMainFrame::OnDebugStopDebugging() {}
+void CMainFrame::OnDebugToggleBreakOnPrevCube() {}
+void CMainFrame::OnDebugDisableAllBreakPoints() {}
+void CMainFrame::OnDebugClearAllBreakPoints() {}
 void CMainFrame::OnDebugAutoFocusCurrentCube() {}
 void CMainFrame::OnDebugAdjustCam45Up() {}
 void CMainFrame::OnDebugAdjustCam45Down() {}
