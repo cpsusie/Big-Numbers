@@ -814,8 +814,16 @@ void write_cpp(ostream &out, const IJKTABLE::ISOSURFACE_TABLE &table) {
     fixedarray<int> vertex_sign(numv);
     IJKTABLE::convert2base(it, 3, vertex_sign, numv);
     string comment;
+    char signCount[3];
+    char zeroCorners[3], zcCount = 0;
+    signCount[0] = signCount[1] = signCount[2] = 0;
     for(uint d = numv; d--;) {
-      comment += signstr[vertex_sign[d]];
+      const char sign = signstr[vertex_sign[d]];
+      comment += sign;
+      signCount[vertex_sign[d]]++;
+      if((sign == '=') && (zcCount < 3)) {
+        zeroCorners[zcCount++] = d;
+      }
     }
     for(uint d = 0; d < vertex_sign.size(); d++) {
       vertex_sign[d]--;
@@ -826,20 +834,33 @@ void write_cpp(ostream &out, const IJKTABLE::ISOSURFACE_TABLE &table) {
       out << "  0";
       len = 3;
     } else {
+      vector<Face3> faces;
       for(uint js = 0; js < nums; js++) {
-        Face3 f(table.SimplexVertex(it, js, 0), table.SimplexVertex(it, js, 1), table.SimplexVertex(it, js, 2));
+        faces.push_back(Face3(table.SimplexVertex(it, js, 0)
+                             ,table.SimplexVertex(it, js, 1)
+                             ,table.SimplexVertex(it, js, 2)));
+      }
+      if((nums == 1) && (signCount[1] == 3) && (signCount[0] == 1)) {
+        Face3 f(zeroCorners[0]
+               ,zeroCorners[1]
+               ,zeroCorners[2]);
+        faces.push_back(f);
+      }
+      const uint faceCount = (uint)faces.size();
+      for(uint js = 0; js < faceCount; js++) {
+        Face3 &f = faces[js];
         if(!cd.checkOrientation(f, vertex_sign)) {
           f.reverseOrientation();
         }
         if(js == 0) {
-          f.i0 |= (nums << 5);
+          f.i0 |= (faceCount << 5);
           out.width(3);
         } else {
           out << ",";
         }
         out << f;
       }
-      len = 3 * nums*numvertices;
+      len = 3 * faceCount * numvertices;
     }
     out.width(63 - len); out << "// ";
     out.width(4); out << it << " " << comment << endl;
