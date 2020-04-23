@@ -39,6 +39,7 @@ D3DXQUATERNION createOrientation( const D3DXVECTOR3 &dir , int unitIndex=0);
 D3DXQUATERNION createOrientation( const D3DXVECTOR3 &dir , const D3DXVECTOR3 &up);
 // return quarternion that rotates from into to
 D3DXQUATERNION createRotation(    const D3DXVECTOR3 &from, const D3DXVECTOR3 &to);
+// angle in radians
 D3DXQUATERNION createRotation(    const D3DXVECTOR3 &axis, float angle);
 void           getDirUp(          const D3DXQUATERNION &q, D3DXVECTOR3 &dir, D3DXVECTOR3 &up);
 float          det(               const D3DXMATRIX  &m);
