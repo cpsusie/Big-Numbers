@@ -5,6 +5,7 @@
 #include <Math/Expression/ExpressionWrapper.h>
 #include <D3DGraphics/IsoSurface.h>
 #include <D3DGraphics/IsosurfacePolygonizer.h>
+#include <D3DGraphics/D3SceneObjectWireFrameBox.h>
 #include <D3DGraphics/MeshBuilder.h>
 
 class Debugger;
@@ -17,9 +18,62 @@ class D3SceneEditor;
 #define FACES_VISIBLE  0x08
 #define VERTEX_VISIBLE 0x10
 
+class CornerMarkObject;
+
+class OctaObject : public D3SceneObjectWireFrameBox {
+private:
+  CornerMarkObject *m_cornerMark;
+  D3DXVECTOR3       m_cornerCenterArray[8]; // relative to m_center
+  const float       m_cellSize;
+  int               m_materialId;
+  StackedCube       m_cube;
+  D3DXVECTOR3       m_center;
+  GridLabel         m_cornerLabel[8];
+  static D3Cube createCube(float cellSize);
+public:
+  OctaObject(D3SceneObjectVisual *parent, float cellSize);
+  ~OctaObject();
+  void setOctagon(const Octagon &octa);
+  inline const D3DXVECTOR3 &getCornerCenter(UINT index) const {
+    return m_cornerCenterArray[index];
+  }
+  inline const D3DXVECTOR3 *getCornerCenterArray() const {
+    return m_cornerCenterArray;
+  }
+  inline GridLabel getCornerLabel(UINT index) const {
+    return m_cornerLabel[index];
+  }
+  inline const D3DXVECTOR3 &getCenter() const {
+    return m_center;
+  }
+  int getMaterialId() const {
+    return m_materialId;
+  }
+  inline float getCellSize() const {
+    return m_cellSize;
+  }
+  D3DXMATRIX &getWorld();
+  void draw();
+  String getInfoString() const;
+
+};
+
+class DebugMeshObject : public D3SceneObjectWithMesh {
+private:
+  int m_materialId;
+public:
+  DebugMeshObject(D3Scene &scene, LPD3DXMESH m);
+  ~DebugMeshObject();
+  int getMaterialId() const {
+    return m_materialId;
+  }
+};
+
 class DebugSceneobject : public D3SceneObjectVisual {
 private:
-  D3SceneObjectVisual  *m_meshObject, *m_octaObject, *m_tetraObject, *m_facesObject, *m_vertexObject;
+  DebugMeshObject      *m_meshObject;
+  OctaObject           *m_octaObject;
+  D3SceneObjectVisual   *m_tetraObject, *m_facesObject, *m_vertexObject;
   D3DFILLMODE           m_fillMode;
   D3DSHADEMODE          m_shadeMode;
   BYTE                  m_visibleParts;
@@ -31,14 +85,14 @@ private:
 public:
   DebugSceneobject(D3Scene &scene);
   ~DebugSceneobject();
-  void initOctaTetraVertex(D3SceneObjectVisual *octaObject, D3SceneObjectVisual *tetraObject, D3SceneObjectVisual *vertexObject);
-  void setMeshObject(              D3SceneObjectVisual *obj);
+  void initOctaTetraVertex(OctaObject *octaObject, D3SceneObjectVisual *tetraObject, D3SceneObjectVisual *vertexObject);
+  void setMeshObject(              DebugMeshObject *obj);
   void setFacesObject(             D3SceneObjectVisual *obj);
   void draw();
   LPD3DXMESH getMesh() const {
     return m_meshObject ? m_meshObject->getMesh() : NULL;
   }
-  inline D3SceneObjectVisual *getOctaObject() const {
+  inline OctaObject          *getOctaObject() const {
     return m_octaObject;
   }
   inline D3SceneObjectVisual *getTetraObject() const {
@@ -84,6 +138,8 @@ typedef enum {
 #define HAS_TETRA  0x02
 #define HAS_FACE   0x04
 #define HAS_VERTEX 0x08
+
+class FinalDebugIsoSurface;
 
 class DebugIsoSurface : public IsoSurfaceEvaluator {
 private:
@@ -158,8 +214,8 @@ public:
   inline int getFaceCount() const {
     return m_faceCount;
   }
-  D3SceneObjectVisual *createMeshObject() const;
-  D3SceneObjectVisual *createFinalMeshObject(D3SceneEditor &editor) const;
+  DebugMeshObject      *createMeshObject() const;
+  FinalDebugIsoSurface *createFinalDebugIsoSurface(D3SceneEditor &editor) const;
   const Octagon &getCurrentOcta() const {
     return m_currentOcta;
   }
@@ -173,6 +229,34 @@ public:
     return m_polygonizer;
   }
   String toString() const;
+};
+
+typedef enum {
+  FDIS_CUBEINDEX
+} FinalDebugIsoSurfaceProperties;
+
+class FinalDebugIsoSurface : public DebugMeshObject, public PropertyContainer {
+private:
+  OctaObject           *m_octaObject;
+  int                   m_cubeIndex;
+  D3SceneEditor        &m_editor;
+  const PolygonizerBase m_polygonizer;
+  int findCubeIndex(CPoint point) const;
+public:
+  FinalDebugIsoSurface(D3SceneEditor &editor, LPD3DXMESH m, const PolygonizerBase &polygonizer);
+  ~FinalDebugIsoSurface();
+  bool OnLButtonDown(UINT nFlags, CPoint point);
+  inline const PolygonizerBase &getPolygonizer() const {
+    return m_polygonizer;
+  }
+  inline int getSelectedCubeIndex() const {
+    return m_cubeIndex;
+  }
+  inline bool hasSelectedCube() const {
+    return getSelectedCubeIndex() >= 0;
+  }
+  void draw();
+  String getInfoString() const;
 };
 
 #endif // DEBUG_POLYGONIZER

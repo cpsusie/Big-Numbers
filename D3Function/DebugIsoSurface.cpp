@@ -10,45 +10,6 @@
 #include "DebugIsoSurface.h"
 
 // ------------------------------------------------------------ Octa Object ----------------------------------------------
-class CornerMarkObject;
-
-class OctaObject : public D3SceneObjectWireFrameBox {
-private:
-  CornerMarkObject *m_cornerMark;
-  D3DXVECTOR3       m_cornerCenterArray[8]; // relative to m_center
-  const float       m_cellSize;
-  int               m_materialId;
-  StackedCube       m_cube;
-  D3DXVECTOR3       m_center;
-  GridLabel         m_cornerLabel[8];
-  static D3Cube createCube(float cellSize);
-public:
-  OctaObject(D3SceneObjectVisual *parent, float cellSize);
-  ~OctaObject();
-  void setOctagon(const Octagon &octa);
-  inline const D3DXVECTOR3 &getCornerCenter(UINT index) const {
-    return m_cornerCenterArray[index];
-  }
-  inline const D3DXVECTOR3 *getCornerCenterArray() const {
-    return m_cornerCenterArray;
-  }
-  inline GridLabel getCornerLabel(UINT index) const {
-    return m_cornerLabel[index];
-  }
-  inline const D3DXVECTOR3 &getCenter() const {
-    return m_center;
-  }
-  int getMaterialId() const {
-    return m_materialId;
-  }
-  inline float getCellSize() const {
-    return m_cellSize;
-  }
-  D3DXMATRIX &getWorld();
-  void draw();
-  String getInfoString() const;
-
-};
 
 class CornerMarkObject : public D3SceneObjectSolidBox {
 private:
@@ -435,16 +396,6 @@ D3DXMATRIX &NormalArrowObject::getWorld() {
 }
 
 // ---------------------------------------- DebugMeshObject -----------------------------------------
-class DebugMeshObject : public D3SceneObjectWithMesh {
-private:
-  int m_materialId;
-public:
-  DebugMeshObject(D3Scene &scene, LPD3DXMESH m);
-  ~DebugMeshObject();
-  int getMaterialId() const {
-    return m_materialId;
-  }
-};
 
 DebugMeshObject::DebugMeshObject(D3Scene &scene, LPD3DXMESH m)
 : D3SceneObjectWithMesh(scene, m)
@@ -456,87 +407,7 @@ DebugMeshObject::~DebugMeshObject() {
   getScene().removeMaterial(m_materialId);
 }
 
-// ---------------------------------------- FinalMeshObject -----------------------------------------
-class FinalMeshObject : public DebugMeshObject {
-private:
-  OctaObject           *m_octaObject;
-  int                   m_cubeIndex;
-  D3SceneEditor        &m_editor;
-  const PolygonizerBase m_polygonizer;
-  int findCubeIndex(CPoint point) const;
-public:
-  FinalMeshObject(D3SceneEditor &editor, LPD3DXMESH m, const PolygonizerBase &polygonizer);
-  ~FinalMeshObject();
-  bool OnLButtonDown(UINT nFlags, CPoint point);
-  inline const PolygonizerBase &getPolygonizer() const {
-    return m_polygonizer;
-  }
-  void draw();
-  String getInfoString() const;
-
-};
-
-FinalMeshObject::FinalMeshObject(D3SceneEditor &editor, LPD3DXMESH m, const PolygonizerBase &polygonizer)
-: DebugMeshObject(*editor.getScene(), m)
-, m_octaObject(NULL)
-, m_editor(editor)
-, m_polygonizer(polygonizer)
-, m_cubeIndex(-1)
-{
-}
-
-FinalMeshObject::~FinalMeshObject() {
-  SAFEDELETE(m_octaObject);
-}
-
-bool FinalMeshObject::OnLButtonDown(UINT nFlags, CPoint point) {
-  if(nFlags != 1) return false;
-  m_cubeIndex = findCubeIndex(point);
-  if(m_cubeIndex >= 0) {
-    if(m_octaObject == NULL) {
-      m_octaObject = new OctaObject(this, (float)m_polygonizer.getCellSize());
-    }
-    m_octaObject->setOctagon(Octagon(&m_polygonizer, m_cubeIndex));
-    m_editor.renderActiveCameras(SC_RENDERALL);
-    return true;
-  }
-  return false;
-}
-
-int FinalMeshObject::findCubeIndex(CPoint point) const {
-  if(m_editor.getCurrentVisual() == this) {
-    const D3DXVECTOR3 mp = m_editor.getPickedInfo().m_info.getMeshPoint();
-    Point3D mp3(mp.x,mp.y,mp.z);
-    const CompactArray<StackedCube> &table = m_polygonizer.getCubeArray();
-    const size_t n = table.size();
-    for(size_t i = 0; i < n; i++) {
-      const StackedCube &cube = table[i];
-      if(cube.contains(mp3)) {
-        return (int)i;
-      }
-    }
-  }
-  return -1;
-}
-
-void FinalMeshObject::draw() {
-  __super::draw();
-  if(m_octaObject) {
-    m_octaObject->draw();
-  }
-}
-
-String FinalMeshObject::getInfoString() const {
-  String result = __super::getInfoString();
-  if(m_octaObject) {
-    result += _T("\n");
-    result = format(_T("CubeIndex:%d, "), m_cubeIndex);
-    result += m_octaObject->getInfoString();
-  }
-  return result;
-}
-
-// --------------------------------------- DebugIsoSurface -------------------------------------------
+// ---------------------------------------- DebugIsoSurface -----------------------------------------
 
 DebugIsoSurface::DebugIsoSurface(Debugger *debugger, D3SceneContainer &sc, const IsoSurfaceParameters &param)
   : m_debugger(*debugger)
@@ -676,8 +547,7 @@ void DebugIsoSurface::markCurrentVertex(const IsoSurfaceVertex &v) {
   m_debugger.handleStep(NEW_VERTEX);
 }
 
-// ---------------------------------------- DebugIsoSurface -----------------------------------------
-D3SceneObjectVisual *DebugIsoSurface::createMeshObject() const {
+DebugMeshObject *DebugIsoSurface::createMeshObject() const {
   D3Scene         &scene = m_sc.getScene();
   DebugMeshObject *obj = new DebugMeshObject(scene, m_mb.createMesh(scene, m_param.m_doubleSided)); TRACE_NEW(obj);
   obj->setFillMode(m_sceneObject.getFillMode());
@@ -685,9 +555,9 @@ D3SceneObjectVisual *DebugIsoSurface::createMeshObject() const {
   return obj;
 }
 
-D3SceneObjectVisual *DebugIsoSurface::createFinalMeshObject(D3SceneEditor &editor) const {
+FinalDebugIsoSurface *DebugIsoSurface::createFinalDebugIsoSurface(D3SceneEditor &editor) const {
   D3Scene         &scene = *editor.getScene();
-  FinalMeshObject *obj = new FinalMeshObject(editor, m_mb.createMesh(scene, m_param.m_doubleSided), *m_polygonizer); TRACE_NEW(obj);
+  FinalDebugIsoSurface *obj = new FinalDebugIsoSurface(editor, m_mb.createMesh(scene, m_param.m_doubleSided), *m_polygonizer); TRACE_NEW(obj);
   obj->setFillMode( m_sceneObject.getFillMode());
   obj->setShadeMode(m_sceneObject.getShadeMode());
   return obj;
@@ -769,6 +639,68 @@ String DebugIsoSurface::toString() const {
                  ,m_visibleVertexArray.toString(_T("\n")).cstr()
                  );
   }
+}
+
+// ---------------------------------------- FinalDebugIsoSurface -----------------------------------------
+
+FinalDebugIsoSurface::FinalDebugIsoSurface(D3SceneEditor &editor, LPD3DXMESH m, const PolygonizerBase &polygonizer)
+: DebugMeshObject(*editor.getScene(), m)
+, m_octaObject(NULL)
+, m_editor(editor)
+, m_polygonizer(polygonizer)
+, m_cubeIndex(-1)
+{
+}
+
+FinalDebugIsoSurface::~FinalDebugIsoSurface() {
+  SAFEDELETE(m_octaObject);
+}
+
+bool FinalDebugIsoSurface::OnLButtonDown(UINT nFlags, CPoint point) {
+  if(nFlags != 1) return false;
+  const int cubeIndex = findCubeIndex(point);
+  if(cubeIndex >= 0) {
+    if(m_octaObject == NULL) {
+      m_octaObject = new OctaObject(this, (float)m_polygonizer.getCellSize());
+    }
+    m_octaObject->setOctagon(Octagon(&m_polygonizer, cubeIndex));
+    m_editor.renderActiveCameras(SC_RENDERALL);
+  }
+  setProperty(FDIS_CUBEINDEX, m_cubeIndex, cubeIndex);
+  return cubeIndex >= 0;
+}
+
+int FinalDebugIsoSurface::findCubeIndex(CPoint point) const {
+  if(m_editor.getCurrentVisual() == this) {
+    const D3DXVECTOR3 mp = m_editor.getPickedInfo().m_info.getMeshPoint();
+    Point3D mp3(mp.x,mp.y,mp.z);
+    const CompactArray<StackedCube> &table = m_polygonizer.getCubeArray();
+    const size_t n = table.size();
+    for(size_t i = 0; i < n; i++) {
+      const StackedCube &cube = table[i];
+      if(cube.contains(mp3)) {
+        return (int)i;
+      }
+    }
+  }
+  return -1;
+}
+
+void FinalDebugIsoSurface::draw() {
+  __super::draw();
+  if(m_octaObject) {
+    m_octaObject->draw();
+  }
+}
+
+String FinalDebugIsoSurface::getInfoString() const {
+  String result = __super::getInfoString();
+  if(m_octaObject) {
+    result += _T("\n");
+    result = format(_T("CubeIndex:%d, "), m_cubeIndex);
+    result += m_octaObject->getInfoString();
+  }
+  return result;
 }
 
 #endif // DEBUG_POLYGONIZER

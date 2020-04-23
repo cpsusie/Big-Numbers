@@ -74,6 +74,7 @@ private:
   float                       m_currentCamDistance;
   bool                        m_hasIsoSurfaceParam;
   bool                        m_hasCubeCenter;
+  bool                        m_hasFinalDebugIsoSurface;
   D3DXVECTOR3                 m_cubeCenter;
   BitSet                      m_octaBreakPoints;
   bool                        m_breakPointsEnabled;
@@ -104,8 +105,8 @@ private:
   inline String getDebuggerStateName() const {
     return hasDebugger() ? m_debugger->getStateName() : _T("No debugger");
   }
-  void debugAdjustCamDir(const D3DXVECTOR3 &newDir, const D3DXVECTOR3 &newUp);
-
+  void resetDebugAutoFocusCamera(bool resetViewAngleAndDistance);
+  void debugRotateFocusCam(const D3DXVECTOR3 &axis, float rad);
   inline void createDebugLight() {
     m_debugLightIndex = m_scene.addLight(D3Light::createDefaultLight());
   }
@@ -120,12 +121,18 @@ private:
   }
   void adjustDebugLightDir();
   void updateDebugInfo();
+  inline bool hasFinalDebugIsoSurface() const {
+    return m_hasFinalDebugIsoSurface;
+  }
+  inline FinalDebugIsoSurface *getFinalDebugIsoSurface() const {
+    return hasFinalDebugIsoSurface() ? (FinalDebugIsoSurface*)getCalculatedObject() : NULL;
+  }
+
 #endif // DEBUG_POLYGONIZER
 
   void OnFileOpen(int id);
   void onFileMruFile(int index);
   void updateLoadOptionsMenu();
-  void updateCheckedMenuItems();
   void loadOptions(int id);
   void saveRelativeHeight();
   void setRelativeHeight(int cy);
@@ -253,7 +260,8 @@ public:
     afx_msg void OnDebugAdjustCam45Down();
     afx_msg void OnDebugAdjustCam45Left();
     afx_msg void OnDebugAdjustCam45Right();
-    afx_msg void OnDebugMarkCube();
+    afx_msg void OnDebugAdjustCamReset();
+    afx_msg void OnDebugAdjustCamResetAll();
     afx_msg void OnResetPositions();
     afx_msg void OnOptionsSaveOptions();
     afx_msg void OnOptionsLoadOptions1();

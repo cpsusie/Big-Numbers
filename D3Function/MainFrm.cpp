@@ -22,6 +22,7 @@ IMPLEMENT_DYNCREATE(CMainFrame, CFrameWnd)
 
 BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
   ON_WM_CREATE()
+  ON_WM_DESTROY()
   ON_WM_SIZE()
   ON_WM_SHOWWINDOW()
   ON_WM_TIMER()
@@ -59,7 +60,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
   ON_COMMAND(ID_DEBUG_ADJUSTCAM_45DOWN     , OnDebugAdjustCam45Down      )
   ON_COMMAND(ID_DEBUG_ADJUSTCAM_45LEFT     , OnDebugAdjustCam45Left      )
   ON_COMMAND(ID_DEBUG_ADJUSTCAM_45RIGHT    , OnDebugAdjustCam45Right     )
-  ON_COMMAND(ID_DEBUG_MARKCUBE             , OnDebugMarkCube             )
+  ON_COMMAND(ID_DEBUG_ADJUSTCAM_RESET      , OnDebugAdjustCamReset       )
+  ON_COMMAND(ID_DEBUG_ADJUSTCAM_RESETALL   , OnDebugAdjustCamResetAll    )
   ON_COMMAND(ID_RESETPOSITIONS             , OnResetPositions            )
   ON_COMMAND(ID_OPTIONS_SAVEOPTIONS        , OnOptionsSaveOptions        )
   ON_COMMAND(ID_OPTIONS_LOADOPTIONS1       , OnOptionsLoadOptions1       )
@@ -75,7 +77,6 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
   ON_MESSAGE(ID_MSG_RENDER                 , OnMsgRender                 )
   ON_MESSAGE(ID_MSG_DEBUGGERSTATECHANGED   , OnMsgDebuggerStateChanged   )
   ON_MESSAGE(ID_MSG_KILLDEBUGGER           , OnMsgKillDebugger           )
-  ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
 static UINT indicators[] = {
@@ -90,19 +91,17 @@ static UINT indicators[] = {
 
 CMainFrame::CMainFrame()
 #ifdef DEBUG_POLYGONIZER
-: m_octaBreakPoints(100)
-, m_breakPointsEnabled(true)
+: m_debugger(               NULL )
+, m_hasIsoSurfaceParam(     false)
+, m_hasFinalDebugIsoSurface(false)
+, m_octaBreakPoints(        100  )
+, m_breakPointsEnabled(     true )
+, m_debugLightIndex(        -1   )
 #endif // DEBUG_POLYGONIZER
 {
   m_statusPanesVisible     = true;
   m_timerRunning           = false;
   m_destroyCalled          = false;
-
-#ifdef DEBUG_POLYGONIZER
-  m_debugger           = NULL;
-  m_debugLightIndex    = -1;
-  m_hasIsoSurfaceParam = false;
-#endif // DEBUG_POLYGONIZER
 }
 
 CMainFrame::~CMainFrame() {
@@ -453,6 +452,9 @@ void CMainFrame::deleteCalculatedObject() {
   if(oldObj) {
     m_scene.removeVisual(oldObj);
     SAFEDELETE(oldObj);
+#ifdef DEBUG_POLYGONIZER
+    m_hasFinalDebugIsoSurface = false;
+#endif // DEBUG_POLYGONIZER
   }
 }
 
@@ -601,35 +603,39 @@ LRESULT CMainFrame::OnMsgRender(WPARAM wp, LPARAM lp) {
 
 void CMainFrame::ajourDebuggerMenu() {
 #ifndef DEBUG_POLYGONIZER
-  const bool enableStart = false;
-  const bool enable1     = false;
-  const bool enable2     = false;
-  const bool enable3     = false;
+  const bool enableStart       = false;
+  const bool debuggerPaused    = false;
+  const bool enableGo          = false;
+  const bool enableBreak       = false;
+  const bool enable2           = false;
+  const bool enableAdjustCam   = false;
 #else
-  const bool enableStart = !hasDebugger() && m_hasIsoSurfaceParam;
-  const bool enable1     = isDebuggerPaused();
-  const bool enable2     = hasDebugger();
-  const bool enable3     = enable1 && isMenuItemChecked(this, ID_DEBUG_AUTOFOCUSCURRENTCUBE) && m_hasCubeCenter;
+  const bool enableStart       = !hasDebugger() && m_hasIsoSurfaceParam;
+  const bool debuggerPaused    = isDebuggerPaused();
+  const bool enableGo          = enableStart || debuggerPaused;
+  const bool enableBreak       = debuggerPaused || (hasFinalDebugIsoSurface() && getFinalDebugIsoSurface()->hasSelectedCube());
+  const bool hasdebugger       = hasDebugger();
+  const bool enableAdjustCam   = debuggerPaused && isMenuItemChecked(this, ID_DEBUG_AUTOFOCUSCURRENTCUBE) && m_hasCubeCenter;
 #endif // DEBUG_POLYGONIZER
 
-  enableSubMenuContainingId(this, ID_DEBUG_STEPCUBE, enableStart || enable1 || enable2);
+  enableSubMenuContainingId(this, ID_DEBUG_GO, enableGo || debuggerPaused || enableBreak || hasdebugger || enableAdjustCam);
   if(enableStart) {
     setMenuItemText(this, ID_DEBUG_GO, _T("Start debugging\tF5"));
-  } else if(enable1) {
+  } else if(debuggerPaused) {
     setMenuItemText(this, ID_DEBUG_GO, _T("Go\tF5"));
   }
 
-  enableMenuItem(this, ID_DEBUG_GO                   , enableStart || enable1);
-  enableMenuItem(this, ID_DEBUG_STEPCUBE             , enable1);
-  enableMenuItem(this, ID_DEBUG_STEPTETRA            , enable1);
-  enableMenuItem(this, ID_DEBUG_STEPFACE             , enable1);
-  enableMenuItem(this, ID_DEBUG_STEPVERTEX           , enable1);
-  enableMenuItem(this, ID_DEBUG_TOGGLEBREAKONPREVCUBE, enable1);
-  enableMenuItem(this, ID_DEBUG_DISABLEALLBREAKPOINTS, enable1);
-  enableMenuItem(this, ID_DEBUG_CLEARALLBREAKPOINTS  , enable1);
-  enableMenuItem(this, ID_DEBUG_AUTOFOCUSCURRENTCUBE , enable1);
-  enableMenuItem(this, ID_DEBUG_STOPDEBUGGING        , enable2);
-  enableSubMenuContainingId(this, ID_DEBUG_ADJUSTCAM_45UP, enable3);
+  enableMenuItem(           this, ID_DEBUG_GO                   , enableGo         );
+  enableMenuItem(           this, ID_DEBUG_STEPCUBE             , debuggerPaused   );
+  enableMenuItem(           this, ID_DEBUG_STEPTETRA            , debuggerPaused   );
+  enableMenuItem(           this, ID_DEBUG_STEPFACE             , debuggerPaused   );
+  enableMenuItem(           this, ID_DEBUG_STEPVERTEX           , debuggerPaused   );
+  enableMenuItem(           this, ID_DEBUG_TOGGLEBREAKONPREVCUBE, enableBreak      );
+  enableMenuItem(           this, ID_DEBUG_DISABLEALLBREAKPOINTS, enableBreak      );
+  enableMenuItem(           this, ID_DEBUG_CLEARALLBREAKPOINTS  , enableBreak      );
+  enableMenuItem(           this, ID_DEBUG_AUTOFOCUSCURRENTCUBE , debuggerPaused   );
+  enableMenuItem(           this, ID_DEBUG_STOPDEBUGGING        , hasdebugger      );
+  enableSubMenuContainingId(this, ID_DEBUG_ADJUSTCAM_45UP       , enableAdjustCam  );
 }
 
 #ifndef DEBUG_POLYGONIZER
@@ -649,7 +655,9 @@ void CMainFrame::OnDebugAdjustCam45Up() {}
 void CMainFrame::OnDebugAdjustCam45Down() {}
 void CMainFrame::OnDebugAdjustCam45Left() {}
 void CMainFrame::OnDebugAdjustCam45Right() {}
-void CMainFrame::OnDebugMarkCube() {}
+void CMainFrame::OnDebugAdjustCamReset() {}
+void CMainFrame::OnDebugAdjustCamResetAll() {}
+
 
 LRESULT CMainFrame::OnMsgKillDebugger(WPARAM wp, LPARAM lp) { return 0; }
 LRESULT CMainFrame::OnMsgDebuggerStateChanged(WPARAM wp, LPARAM lp) { return 0; }
@@ -658,7 +666,7 @@ LRESULT CMainFrame::OnMsgDebuggerStateChanged(WPARAM wp, LPARAM lp) { return 0; 
 void CMainFrame::startDebugging() {
   setCalculatedObject(NULL);
   m_hasCubeCenter      = false;
-  m_currentCamDistance = 0.25;
+  resetDebugAutoFocusCamera(true);
   try {
     killDebugger(false);
     m_debugger = new Debugger(this, m_isoSurfaceParam);
@@ -691,8 +699,10 @@ void CMainFrame::killDebugger(bool showCreateSurface) {
   if(allOk && showCreateSurface) {
     const DebugIsoSurface &surface = m_debugger->getDebugSurface();
     if(surface.getFaceCount()) {
-      D3SceneObjectVisual *obj = surface.createFinalMeshObject(m_editor);
+      FinalDebugIsoSurface *obj = surface.createFinalDebugIsoSurface(m_editor);
       setCalculatedObject(obj, &m_isoSurfaceParam);
+      obj->addPropertyChangeListener(this);
+      m_hasFinalDebugIsoSurface = true;
     }
   }
   SAFEDELETE(m_debugger);
@@ -709,17 +719,25 @@ void CMainFrame::killDebugger(bool showCreateSurface) {
 }
 
 void CMainFrame::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
-  switch (id) {
-  case DEBUGGER_STATE:
-    { const DebuggerState oldState = *(DebuggerState*)oldValue;
-      const DebuggerState newState = *(DebuggerState*)newValue;
-      m_editor.setEnabled(newState != DEBUGGER_RUNNING);
-      SendMessage(ID_MSG_DEBUGGERSTATECHANGED, oldState, newState);
+  if(source == m_debugger) {
+    switch (id) {
+    case DEBUGGER_STATE:
+      { const DebuggerState oldState = *(DebuggerState*)oldValue;
+        const DebuggerState newState = *(DebuggerState*)newValue;
+        m_editor.setEnabled(newState != DEBUGGER_RUNNING);
+        SendMessage(ID_MSG_DEBUGGERSTATECHANGED, oldState, newState);
+      }
+      break;
+    default:
+      showError(_T("%s:Unknown property:%d"), __TFUNCTION__, id);
+      break;
     }
-    break;
-  default:
-    showError(_T("%s:Unknown property:%d"), __TFUNCTION__, id);
-    break;
+  } else if(source == getFinalDebugIsoSurface()) {
+    switch(id) {
+    case FDIS_CUBEINDEX:
+      ajourDebuggerMenu();
+      break;
+    }
   }
 }
 
@@ -789,55 +807,57 @@ void CMainFrame::adjustDebugLightDir() {
   m_scene.setLightDirection(m_debugLightIndex, lightDir);
 }
 
-void CMainFrame::debugAdjustCamDir(const D3DXVECTOR3 &newDir, const D3DXVECTOR3 &newUp) {
+void CMainFrame::resetDebugAutoFocusCamera(bool resetViewAngleAndDistance) {
   CHECKHASCAM();
-  D3World cw = sCAM()->getD3World();
-  cw.setPos(m_cubeCenter - newDir).setOrientation(createOrientation(newDir, newUp));
-  sCAM()->setD3World(cw);
-  adjustDebugLightDir();
+  if(resetViewAngleAndDistance) {
+    m_currentCamDistance = 0.25;
+    sCAM()->setViewAngle(0.2864f);
+  }
+  D3World w = sCAM()->getD3World();
+  w.resetOrientation();
+  if(m_hasCubeCenter) {
+    w.setPos(m_cubeCenter - m_currentCamDistance * w.getDir());
+  }
+  sCAM()->setD3World(w);
+  m_editor.OnControlCameraProjection();
+}
+
+void CMainFrame::debugRotateFocusCam(const D3DXVECTOR3 &axis, float rad) {
+  D3World w = sCAM()->getD3World();
+  sCAM()->setD3World(w.setOrientation(w.getOrientation() * createRotation(axis, rad), m_cubeCenter));
 }
 
 #define DBG_CAMADJANGLE (D3DX_PI / 8)
 void CMainFrame::OnDebugAdjustCam45Up() {
   CHECKHASCAM();
-  const D3World    &cw  = sCAM()->getD3World();
-  const D3DXVECTOR3 dir = m_cubeCenter - cw.getPos();
-  const D3DXVECTOR3 up  = cw.getUp();
-  const D3DXVECTOR3 r   = cw.getRight();
-  debugAdjustCamDir(rotate(dir, r, -DBG_CAMADJANGLE), rotate(up, r, -DBG_CAMADJANGLE));
+  debugRotateFocusCam(sCAM()->getRight(), -DBG_CAMADJANGLE);
 }
 
 void CMainFrame::OnDebugAdjustCam45Down() {
   CHECKHASCAM();
-  const D3World    &cw  = sCAM()->getD3World();
-  const D3DXVECTOR3 dir = m_cubeCenter - cw.getPos();
-  const D3DXVECTOR3 up  = cw.getUp();
-  const D3DXVECTOR3 r   = cw.getRight();
-  debugAdjustCamDir(rotate(dir, r, DBG_CAMADJANGLE), rotate(up, r, DBG_CAMADJANGLE));
+  debugRotateFocusCam(sCAM()->getRight(), DBG_CAMADJANGLE);
 }
 
 void CMainFrame::OnDebugAdjustCam45Left() {
   CHECKHASCAM();
-  const D3World    &cw  = sCAM()->getD3World();
-  const D3DXVECTOR3 dir = m_cubeCenter - cw.getPos();
-  const D3DXVECTOR3 up  = cw.getUp();
-  debugAdjustCamDir(rotate(dir, up, -DBG_CAMADJANGLE), up);
+  debugRotateFocusCam(sCAM()->getUp(), -DBG_CAMADJANGLE);
 }
 
 void CMainFrame::OnDebugAdjustCam45Right() {
   CHECKHASCAM();
-  const D3World    &cw  = sCAM()->getD3World();
-  const D3DXVECTOR3 dir = m_cubeCenter - cw.getPos();
-  const D3DXVECTOR3 up  = cw.getUp();
-  debugAdjustCamDir(rotate(dir, up, DBG_CAMADJANGLE), up);
+  debugRotateFocusCam(sCAM()->getUp(), DBG_CAMADJANGLE);
+}
+
+void CMainFrame::OnDebugAdjustCamReset() {
+  resetDebugAutoFocusCamera(false);
+}
+
+void CMainFrame::OnDebugAdjustCamResetAll() {
+  resetDebugAutoFocusCamera(true);
 }
 
 bool CMainFrame::isAutoFocusCurrentCubeChecked() const {
   return isMenuItemChecked(this, ID_DEBUG_AUTOFOCUSCURRENTCUBE);
-}
-
-void CMainFrame::OnDebugMarkCube() {
-  // TODO: Add your command handler code here
 }
 
 LRESULT CMainFrame::OnMsgKillDebugger(WPARAM wp, LPARAM lp) {
