@@ -37,14 +37,8 @@ void DebugSceneobject::initOctaTetraVertex(OctaObject          *octaObject
 }
 
 void DebugSceneobject::setMeshObject(DebugMeshObject *obj) {
-  D3DXMATRIX oldWorld;
-  const bool oldExist = m_meshObject != NULL;
-  if(oldExist) oldWorld = m_meshObject->getWorld();
   deleteMeshObject();
   m_meshObject = obj;
-  if(oldExist && m_meshObject) {
-    m_meshObject->getWorld() = oldWorld;
-  }
 }
 
 void DebugSceneobject::setFacesObject(D3SceneObjectVisual *obj) {

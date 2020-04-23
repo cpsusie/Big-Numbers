@@ -61,19 +61,22 @@ public:
 class DebugMeshObject : public D3SceneObjectWithMesh {
 private:
   int m_materialId;
+  void initMaterial();
 public:
+  DebugMeshObject(D3SceneObjectVisual *parent, LPD3DXMESH m);
   DebugMeshObject(D3Scene &scene, LPD3DXMESH m);
   ~DebugMeshObject();
   int getMaterialId() const {
     return m_materialId;
   }
+  D3DXMATRIX &getWorld();
 };
 
 class DebugSceneobject : public D3SceneObjectVisual {
 private:
   DebugMeshObject      *m_meshObject;
   OctaObject           *m_octaObject;
-  D3SceneObjectVisual   *m_tetraObject, *m_facesObject, *m_vertexObject;
+  D3SceneObjectVisual  *m_tetraObject, *m_facesObject, *m_vertexObject;
   D3DFILLMODE           m_fillMode;
   D3DSHADEMODE          m_shadeMode;
   BYTE                  m_visibleParts;
@@ -214,7 +217,7 @@ public:
   inline int getFaceCount() const {
     return m_faceCount;
   }
-  DebugMeshObject      *createMeshObject() const;
+  DebugMeshObject      *createMeshObject();
   FinalDebugIsoSurface *createFinalDebugIsoSurface(D3SceneEditor &editor) const;
   const Octagon &getCurrentOcta() const {
     return m_currentOcta;

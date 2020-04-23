@@ -253,10 +253,13 @@ private:
   CompactArray<Line3D> createLineArray(CompactArray<Face3> &faceArray, const IsoSurfaceVertexArray &va) const;
 public:
   FacesObject(DebugIsoSurface *dbgObject, CompactArray<Face3> &faceArray);
+  D3DXMATRIX &getWorld() {
+    return m_parent->getWorld();
+  }
 };
 
 FacesObject::FacesObject(DebugIsoSurface *dbgObject, CompactArray<Face3> &faceArray)
-: D3SceneObjectVisual(dbgObject->getScene(), _T("FaceObject"))
+: D3SceneObjectVisual(dbgObject->getSceneObject(), _T("FaceObject"))
 {
   if(faceArray.isEmpty()) return;
   const IsoSurfaceVertexArray &va = dbgObject->getVertexArray();
@@ -314,11 +317,11 @@ private:
   IsoSurfaceVertexArray     m_vertexArray;
   size_t                    m_positionIndex;
   int                       m_materialId;
-  D3World                   m_octaWorld;
+  D3World                   m_parentWorld;
   NormalArrowObject        *m_normalObject;
   CompactArray<Line3D> createLineArray(float lineLength) const;
 public:
-  VertexObject(OctaObject *octaObject);
+  VertexObject(D3SceneObjectVisual *parent, float cellSize);
   ~VertexObject();
   void setSurfaceVertexArray(const IsoSurfaceVertexArray &a);
   int getMaterialId() const {
@@ -327,17 +330,16 @@ public:
   const IsoSurfaceVertex &getCurrentVertex() const {
     return m_vertexArray[m_positionIndex];
   }
-  D3DXMATRIX &getWorld() {
-    return m_world = D3World(m_octaWorld).setPos(rotate(getCurrentVertex().m_position, m_octaWorld.getOrientation()));
-  }
+  D3DXMATRIX &getWorld();
   void draw();
 };
 
-VertexObject::VertexObject(OctaObject *octaObject) 
-: D3SceneObjectLineArray(octaObject, createLineArray(octaObject->getCellSize() / 25))
+
+VertexObject::VertexObject(D3SceneObjectVisual *parent, float cellSize)
+: D3SceneObjectLineArray(parent, createLineArray(cellSize / 25))
 {
   m_materialId   = getScene().addMaterialWithColor(D3D_WHITE);
-  m_normalObject = new NormalArrowObject(this, octaObject->getCellSize() / 3); TRACE_NEW(m_normalObject);
+  m_normalObject = new NormalArrowObject(this, cellSize / 3); TRACE_NEW(m_normalObject);
 }
 
 VertexObject::~VertexObject() {
@@ -366,11 +368,16 @@ CompactArray<Line3D> VertexObject::createLineArray(float lineLength) const {
 void VertexObject::draw() {
   const size_t n = m_vertexArray.size();
   if(n == 0) return;
-  m_octaWorld = getParent()->getWorld();
+  m_parentWorld = getParent()->getWorld();
   for(m_positionIndex = 0; m_positionIndex < n; m_positionIndex++) {
     __super::draw();
     m_normalObject->draw();
   }
+}
+
+D3DXMATRIX &VertexObject::getWorld() {
+  D3World pw(m_parentWorld);
+  return m_world = pw.setPos(pw.getPos() + rotate(getCurrentVertex().m_position, pw.getOrientation()));
 }
 
 // --------------------------------------- NormalObject -------------------------------------------
@@ -391,15 +398,30 @@ NormalArrowObject::~NormalArrowObject() {
 
 D3DXMATRIX &NormalArrowObject::getWorld() {
   return m_world = D3World(m_vertexObject->getWorld())
-    .setOrientation(createOrientation(m_vertexObject->getCurrentVertex().m_normal))
-    .setScaleAll(m_scale);
+                          .setOrientation(createOrientation(m_vertexObject->getCurrentVertex().m_normal))
+                          .setScaleAll(m_scale);
 }
 
 // ---------------------------------------- DebugMeshObject -----------------------------------------
 
+DebugMeshObject::DebugMeshObject(D3SceneObjectVisual *parent, LPD3DXMESH m)
+: D3SceneObjectWithMesh(parent, m)
+{
+  initMaterial();
+}
+
 DebugMeshObject::DebugMeshObject(D3Scene &scene, LPD3DXMESH m)
 : D3SceneObjectWithMesh(scene, m)
 {
+  initMaterial();
+}
+
+D3DXMATRIX &DebugMeshObject::getWorld() {
+  D3SceneObjectVisual *parent = getParent();
+  return parent ? parent->getWorld() : m_world;
+}
+
+void DebugMeshObject::initMaterial() {
   m_materialId = getScene().addMaterialWithColor(D3D_BLACK);
 }
 
@@ -433,7 +455,7 @@ DebugIsoSurface::DebugIsoSurface(Debugger *debugger, D3SceneContainer &sc, const
 {
   OctaObject   *octaObject   = new OctaObject(&m_sceneObject, (float)param.m_cellSize);
   TetraObject  *tetraObject  = new TetraObject( octaObject);
-  VertexObject *vertexObject = new VertexObject(octaObject);
+  VertexObject *vertexObject = new VertexObject(&m_sceneObject, (float)param.m_cellSize);
   m_sceneObject.initOctaTetraVertex(octaObject, tetraObject, vertexObject);
 
   m_xp = m_exprWrapper.getVariableByName(_T("x"));
@@ -547,9 +569,9 @@ void DebugIsoSurface::markCurrentVertex(const IsoSurfaceVertex &v) {
   m_debugger.handleStep(NEW_VERTEX);
 }
 
-DebugMeshObject *DebugIsoSurface::createMeshObject() const {
+DebugMeshObject *DebugIsoSurface::createMeshObject() {
   D3Scene         &scene = m_sc.getScene();
-  DebugMeshObject *obj = new DebugMeshObject(scene, m_mb.createMesh(scene, m_param.m_doubleSided)); TRACE_NEW(obj);
+  DebugMeshObject *obj = new DebugMeshObject(&m_sceneObject, m_mb.createMesh(scene, m_param.m_doubleSided)); TRACE_NEW(obj);
   obj->setFillMode(m_sceneObject.getFillMode());
   obj->setShadeMode(m_sceneObject.getShadeMode());
   return obj;

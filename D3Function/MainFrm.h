@@ -89,6 +89,7 @@ private:
   inline bool hasCamera() const {
     return m_editor.getSelectedCAM() != NULL;
   }
+  D3Camera *dbgCAM();
   inline bool isDebuggerState(DebuggerState state) const {
     return hasDebugger() && (m_debugger->getState() == state);
   }
@@ -97,6 +98,17 @@ private:
   }
   inline void OnDebugStep(BYTE breakFlags) {
     if(isDebuggerPaused()) m_debugger->singleStep(breakFlags, m_octaBreakPoints);
+  }
+  inline bool canUpdateBreakpoints() const {
+    return isDebuggerPaused() || hasFinalDebugIsoSurface();
+  }
+  void setOctaBreakpoint(   size_t index, bool on);
+  void toggleOctaBreakpoint(size_t index);
+  bool hasOctaBreakPoint(   size_t index) const;
+  void clearAllOctaBreakpoints();
+  void enableOctaBreakpoints(bool enable);
+  bool isOctaBreakpointsEnabled() const {
+    return m_breakPointsEnabled;
   }
   bool isAutoFocusCurrentCubeChecked() const;
 
@@ -156,7 +168,7 @@ private:
 
   void startDebugging();
   void stopDebugging();
-  void ajourDebuggerMenu();
+  void ajourDebugMenu();
 public:
 
   D3Scene &getScene() {
