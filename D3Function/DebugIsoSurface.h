@@ -92,12 +92,6 @@ private:
   D3DXVECTOR3 getCubeCenter() const;
   void resetCameraFocus(bool resetViewAngleAndDistance);
   void debugRotateFocusCam(const D3DXVECTOR3 &axis, float rad);
-  void OnDebugAdjustCam45Up();
-  void OnDebugAdjustCam45Down();
-  void OnDebugAdjustCam45Left();
-  void OnDebugAdjustCam45Right();
-  void OnDebugAdjustCamReset();
-  void OnDebugAdjustCamResetAll();
   D3Camera *dbgCAM();
 public:
   DebugSceneobject(D3Scene &scene);

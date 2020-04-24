@@ -110,28 +110,19 @@ void DebugSceneobject::resetCameraFocus(bool resetViewAngleAndDistance) {
 }
 
 #define DBG_CAMADJANGLE (D3DX_PI / 8)
-void DebugSceneobject::OnDebugAdjustCam45Up() {
-  debugRotateFocusCam(dbgCAM()->getRight(), -DBG_CAMADJANGLE);
-}
-void DebugSceneobject::OnDebugAdjustCam45Down() {
-  debugRotateFocusCam(dbgCAM()->getRight(), DBG_CAMADJANGLE);
-}
-void DebugSceneobject::OnDebugAdjustCam45Left() {
-  debugRotateFocusCam(dbgCAM()->getUp(), -DBG_CAMADJANGLE);
-}
-void DebugSceneobject::OnDebugAdjustCam45Right() {
-  debugRotateFocusCam(dbgCAM()->getUp(), DBG_CAMADJANGLE);
-}
-void DebugSceneobject::OnDebugAdjustCamReset()    { resetCameraFocus(false); }
-void DebugSceneobject::OnDebugAdjustCamResetAll() { resetCameraFocus(true ); }
 
 bool DebugSceneobject::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) {
   switch(nChar) {
-  case VK_UP   : OnDebugAdjustCam45Up();    return true;
-  case VK_DOWN : OnDebugAdjustCam45Down();  return true;
-  case VK_LEFT : OnDebugAdjustCam45Left();  return true;
-  case VK_RIGHT: OnDebugAdjustCam45Right(); return true;
-  case VK_HOME : OnDebugAdjustCamReset();   return true;
+  case VK_UP   : debugRotateFocusCam(dbgCAM()->getRight(), -DBG_CAMADJANGLE); return true;
+  case VK_DOWN : debugRotateFocusCam(dbgCAM()->getRight(),  DBG_CAMADJANGLE); return true;
+  case VK_LEFT : debugRotateFocusCam(dbgCAM()->getUp()   , -DBG_CAMADJANGLE); return true;
+  case VK_RIGHT: debugRotateFocusCam(dbgCAM()->getUp()   ,  DBG_CAMADJANGLE); return true;
+  case VK_HOME :
+    if(ctrlKeyPressed()) {
+      resetCameraFocus(true);
+    } else {
+      resetCameraFocus(false);
+    }
     return true;
   }
   return false;
