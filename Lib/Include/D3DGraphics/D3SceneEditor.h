@@ -204,8 +204,9 @@ private:
     void OnLButtonDblClk(UINT nFlags, CPoint point);
     // pt in window-coordinates
     BOOL OnMouseWheel(   UINT nFlags, short zDelta, CPoint pt);
+    bool OnKeyDown(      UINT nChar, UINT nRepCnt, UINT nFlags);
+    bool OnKeyUp(        UINT nChar, UINT nRepCnt, UINT nFlags);
     void OnContextMenu(  HWND pwnd, MSG *pMsg);
-
     String stateFlagsToString() const;
     String getSelectedString() const;
 public:

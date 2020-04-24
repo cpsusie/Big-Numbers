@@ -352,6 +352,28 @@ BOOL D3SceneEditor::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) {
   return FALSE;
 }
 
+bool D3SceneEditor::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) {
+  D3SceneObjectVisual *visual = getCurrentVisual();
+  if(visual && visual->OnKeyDown(nChar, nRepCnt, nFlags)) {
+    return TRUE;
+  }
+  switch(nChar) {
+  case VK_ESCAPE:
+    setEnabled(false).setEnabled(true, SC_RENDERINFO).renderActiveCameras(SC_RENDERALL);
+    return true;
+  default:
+    return false;
+  }
+}
+
+bool D3SceneEditor::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags) {
+  D3SceneObjectVisual *visual = getCurrentVisual();
+  if(visual && visual->OnKeyUp(nChar, nRepCnt, nFlags)) {
+    return TRUE;
+  }
+  return false;
+}
+
 HWND D3SceneEditor::getCurrentHwnd() const {
   return hasCAM() ? sCAM.getHwnd() : (HWND)INVALID_HANDLE_VALUE;
 }
@@ -397,12 +419,9 @@ BOOL D3SceneEditor::PreTranslateMessage(MSG *pMsg) {
   if(!isEnabled()) return false;
   switch(pMsg->message) {
   case WM_KEYDOWN:
-    switch(pMsg->wParam) {
-    case VK_ESCAPE:
-      setEnabled(false).setEnabled(true,SC_RENDERINFO).renderActiveCameras(SC_RENDERALL);
-      return true;
-    }
-    break;
+    return OnKeyDown((UINT)pMsg->wParam, (UINT)(pMsg->lParam & 0xffff), (UINT)(pMsg->lParam>>16));
+  case WM_KEYUP  :
+    return OnKeyUp((UINT)pMsg->wParam, (UINT)(pMsg->lParam & 0xffff), (UINT)(pMsg->lParam >> 16));
   case WM_LBUTTONDOWN:
     if(selectCAM(pMsg->pt)) {
       OnLButtonDown((UINT)pMsg->wParam, sCAM.screenToWin(pMsg->pt));
