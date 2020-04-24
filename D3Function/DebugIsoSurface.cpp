@@ -692,6 +692,17 @@ bool FinalDebugIsoSurface::OnLButtonDown(UINT nFlags, CPoint point) {
   return cubeIndex >= 0;
 }
 
+bool FinalDebugIsoSurface::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) {
+  switch(nChar) {
+  case VK_UP   :
+  case VK_DOWN :
+  case VK_LEFT :
+  case VK_RIGHT:
+    return true;
+  }
+  return false;
+}
+
 int FinalDebugIsoSurface::findCubeIndex(CPoint point) const {
   if(m_editor.getCurrentVisual() == this) {
     const D3DXVECTOR3 mp = m_editor.getPickedInfo().m_info.getMeshPoint();

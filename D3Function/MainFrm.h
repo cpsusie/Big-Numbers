@@ -110,7 +110,6 @@ private:
   bool isOctaBreakpointsEnabled() const {
     return m_breakPointsEnabled;
   }
-  bool isAutoFocusCurrentCubeChecked() const;
 
   void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
 
@@ -267,13 +266,6 @@ public:
     afx_msg void OnDebugToggleBreakOnPrevCube();
     afx_msg void OnDebugDisableAllBreakPoints();
     afx_msg void OnDebugClearAllBreakPoints();
-    afx_msg void OnDebugAutoFocusCurrentCube();
-    afx_msg void OnDebugAdjustCam45Up();
-    afx_msg void OnDebugAdjustCam45Down();
-    afx_msg void OnDebugAdjustCam45Left();
-    afx_msg void OnDebugAdjustCam45Right();
-    afx_msg void OnDebugAdjustCamReset();
-    afx_msg void OnDebugAdjustCamResetAll();
     afx_msg void OnResetPositions();
     afx_msg void OnOptionsSaveOptions();
     afx_msg void OnOptionsLoadOptions1();

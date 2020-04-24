@@ -1,7 +1,7 @@
 #include "stdafx.h"
+#include <D3DGraphics/D3Camera.h>
 
 #ifdef DEBUG_POLYGONIZER
-
 #include "Debugger.h"
 #include "DebugIsoSurface.h"
 // --------------------------------------------- DebugSceneobject -------------------------------------
@@ -17,6 +17,7 @@ DebugSceneobject::DebugSceneobject(D3Scene &scene)
   , m_fillMode(    D3DFILL_WIREFRAME)
   , m_shadeMode(   D3DSHADE_FLAT)
 {
+  resetCameraFocus(true);
 }
 
 DebugSceneobject::~DebugSceneobject() {
@@ -70,5 +71,70 @@ void DebugSceneobject::deleteOctaObject()   { SAFEDELETE(m_octaObject   ); }
 void DebugSceneobject::deleteTetraObject()  { SAFEDELETE(m_tetraObject  ); }
 void DebugSceneobject::deleteFacesObject()  { SAFEDELETE(m_facesObject  ); }
 void DebugSceneobject::deleteVertexObject() { SAFEDELETE(m_vertexObject ); }
+
+D3Camera *DebugSceneobject::dbgCAM() {
+  return getScene().getCameraArray()[0];
+}
+
+void DebugSceneobject::debugRotateFocusCam(const D3DXVECTOR3 &axis, float rad) {
+  D3World w = dbgCAM()->getD3World();
+  dbgCAM()->setD3World(w.setOrientation(w.getOrientation() * createRotation(axis, rad), getCubeCenter()));
+}
+
+bool DebugSceneobject::hasCubeCenter() const {
+  return (m_visibleParts & OCTA_VISIBLE) != 0;
+}
+
+D3DXVECTOR3 DebugSceneobject::getCubeCenter() const {
+  if(hasCubeCenter()) {
+    D3DXVECTOR3 c = m_octaObject->getCenter();
+    return c;
+//    D3DXMATRIX  m = m_octaObject->getWorld();
+//    return inverse(m) * c;
+  } else {
+    return D3DXORIGIN;
+  }
+}
+
+void DebugSceneobject::resetCameraFocus(bool resetViewAngleAndDistance) {
+  if(resetViewAngleAndDistance) {
+    m_currentCamDistance = 0.25;
+    dbgCAM()->setViewAngle(0.2864f);
+  }
+  D3World w = dbgCAM()->getD3World();
+  w.resetOrientation();
+  if(hasCubeCenter()) {
+    w.setPos(getCubeCenter() - m_currentCamDistance * w.getDir());
+  }
+  dbgCAM()->setD3World(w);
+}
+
+#define DBG_CAMADJANGLE (D3DX_PI / 8)
+void DebugSceneobject::OnDebugAdjustCam45Up() {
+  debugRotateFocusCam(dbgCAM()->getRight(), -DBG_CAMADJANGLE);
+}
+void DebugSceneobject::OnDebugAdjustCam45Down() {
+  debugRotateFocusCam(dbgCAM()->getRight(), DBG_CAMADJANGLE);
+}
+void DebugSceneobject::OnDebugAdjustCam45Left() {
+  debugRotateFocusCam(dbgCAM()->getUp(), -DBG_CAMADJANGLE);
+}
+void DebugSceneobject::OnDebugAdjustCam45Right() {
+  debugRotateFocusCam(dbgCAM()->getUp(), DBG_CAMADJANGLE);
+}
+void DebugSceneobject::OnDebugAdjustCamReset()    { resetCameraFocus(false); }
+void DebugSceneobject::OnDebugAdjustCamResetAll() { resetCameraFocus(true ); }
+
+bool DebugSceneobject::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) {
+  switch(nChar) {
+  case VK_UP   : OnDebugAdjustCam45Up();    return true;
+  case VK_DOWN : OnDebugAdjustCam45Down();  return true;
+  case VK_LEFT : OnDebugAdjustCam45Left();  return true;
+  case VK_RIGHT: OnDebugAdjustCam45Right(); return true;
+  case VK_HOME : OnDebugAdjustCamReset();   return true;
+    return true;
+  }
+  return false;
+}
 
 #endif // DEBUG_POLYGONIZER

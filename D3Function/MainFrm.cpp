@@ -55,13 +55,6 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
   ON_COMMAND(ID_DEBUG_TOGGLEBREAKONPREVCUBE, OnDebugToggleBreakOnPrevCube)
   ON_COMMAND(ID_DEBUG_DISABLEALLBREAKPOINTS, OnDebugDisableAllBreakPoints)
   ON_COMMAND(ID_DEBUG_CLEARALLBREAKPOINTS  , OnDebugClearAllBreakPoints  )
-  ON_COMMAND(ID_DEBUG_AUTOFOCUSCURRENTCUBE , OnDebugAutoFocusCurrentCube )
-  ON_COMMAND(ID_DEBUG_ADJUSTCAM_45UP       , OnDebugAdjustCam45Up        )
-  ON_COMMAND(ID_DEBUG_ADJUSTCAM_45DOWN     , OnDebugAdjustCam45Down      )
-  ON_COMMAND(ID_DEBUG_ADJUSTCAM_45LEFT     , OnDebugAdjustCam45Left      )
-  ON_COMMAND(ID_DEBUG_ADJUSTCAM_45RIGHT    , OnDebugAdjustCam45Right     )
-  ON_COMMAND(ID_DEBUG_ADJUSTCAM_RESET      , OnDebugAdjustCamReset       )
-  ON_COMMAND(ID_DEBUG_ADJUSTCAM_RESETALL   , OnDebugAdjustCamResetAll    )
   ON_COMMAND(ID_RESETPOSITIONS             , OnResetPositions            )
   ON_COMMAND(ID_OPTIONS_SAVEOPTIONS        , OnOptionsSaveOptions        )
   ON_COMMAND(ID_OPTIONS_LOADOPTIONS1       , OnOptionsLoadOptions1       )
@@ -608,7 +601,6 @@ typedef struct {
   UINT m_enableGo          : 1;
   UINT m_enableBreak       : 1;
   UINT m_enableToggleBreak : 1;
-  UINT m_enableAdjustCam   : 1;
 } _DebugMenuFlags;
 
 class DebugMenuFlags {
@@ -623,7 +615,7 @@ public:
     return m_flags.m_enableStart || m_flags.m_debuggerPaused;
   }
   inline bool enableDebugMenu() const {
-    return enableGo() || enableBreakpoints()  || m_flags.m_hasDebugger || m_flags.m_enableAdjustCam;
+    return enableGo() || enableBreakpoints()  || m_flags.m_hasDebugger;
   }
   inline bool enableBreakpoints() const {
     return m_flags.m_enableToggleBreak || m_flags.m_enableBreak;
@@ -645,7 +637,6 @@ void CMainFrame::ajourDebugMenu() {
   FLAGS.m_debuggerPaused    = isDebuggerPaused();
   FLAGS.m_enableBreak       = FLAGS.m_debuggerPaused || hasFinalDebugIsoSurface();
   FLAGS.m_enableToggleBreak = FLAGS.m_debuggerPaused || (hasFinalDebugIsoSurface() && getFinalDebugIsoSurface()->hasSelectedCube());
-  FLAGS.m_enableAdjustCam   = FLAGS.m_debuggerPaused && isMenuItemChecked(this, ID_DEBUG_AUTOFOCUSCURRENTCUBE) && m_hasCubeCenter;
 #endif // DEBUG_POLYGONIZER
 
   enableSubMenuContainingId(this, ID_DEBUG_GO, menuFlags.enableDebugMenu());
@@ -663,9 +654,7 @@ void CMainFrame::ajourDebugMenu() {
   enableMenuItem(           this, ID_DEBUG_TOGGLEBREAKONPREVCUBE, FLAGS.m_enableToggleBreak     );
   enableMenuItem(           this, ID_DEBUG_DISABLEALLBREAKPOINTS, FLAGS.m_enableBreak           );
   enableMenuItem(           this, ID_DEBUG_CLEARALLBREAKPOINTS  , FLAGS.m_enableBreak           );
-  enableMenuItem(           this, ID_DEBUG_AUTOFOCUSCURRENTCUBE , FLAGS.m_debuggerPaused        );
   enableMenuItem(           this, ID_DEBUG_STOPDEBUGGING        , menuFlags.enableStopDebugger());
-  enableSubMenuContainingId(this, ID_DEBUG_ADJUSTCAM_45UP       , FLAGS.m_enableAdjustCam       );
 }
 
 #ifndef DEBUG_POLYGONIZER
@@ -681,12 +670,6 @@ void CMainFrame::OnDebugToggleBreakOnPrevCube() {}
 void CMainFrame::OnDebugDisableAllBreakPoints() {}
 void CMainFrame::OnDebugClearAllBreakPoints() {}
 void CMainFrame::OnDebugAutoFocusCurrentCube() {}
-void CMainFrame::OnDebugAdjustCam45Up() {}
-void CMainFrame::OnDebugAdjustCam45Down() {}
-void CMainFrame::OnDebugAdjustCam45Left() {}
-void CMainFrame::OnDebugAdjustCam45Right() {}
-void CMainFrame::OnDebugAdjustCamReset() {}
-void CMainFrame::OnDebugAdjustCamResetAll() {}
 
 
 LRESULT CMainFrame::OnMsgKillDebugger(WPARAM wp, LPARAM lp) { return 0; }
@@ -711,7 +694,6 @@ void CMainFrame::startDebugging() {
     m_debugger = new Debugger(this, m_isoSurfaceParam);
     m_debugger->addPropertyChangeListener(this);
     createDebugLight();
-    checkMenuItem(this, ID_DEBUG_AUTOFOCUSCURRENTCUBE, true);
     ajourDebugMenu();
     m_editor.getSelectedCAM()->setViewAngle(0.2864f);
     m_editor.OnControlCameraWalk();
@@ -820,10 +802,6 @@ void CMainFrame::OnDebugClearAllBreakPoints() {
   clearAllOctaBreakpoints();
 }
 
-void CMainFrame::OnDebugAutoFocusCurrentCube() {
-  enableSubMenuContainingId(this, ID_DEBUG_ADJUSTCAM_45UP, toggleMenuItem(this, ID_DEBUG_AUTOFOCUSCURRENTCUBE) && m_hasCubeCenter);
-}
-
 void CMainFrame::adjustDebugLightDir() {
   if(!hasDebugLight()) return;
   CHECKHASCAM();
@@ -846,36 +824,6 @@ void CMainFrame::resetDebugAutoFocusCamera(bool resetViewAngleAndDistance) {
   }
   dbgCAM()->setD3World(w);
   m_editor.OnControlCameraProjection();
-}
-
-void CMainFrame::debugRotateFocusCam(const D3DXVECTOR3 &axis, float rad) {
-  D3World w = dbgCAM()->getD3World();
-  dbgCAM()->setD3World(w.setOrientation(w.getOrientation() * createRotation(axis, rad), m_cubeCenter));
-}
-
-#define DBG_CAMADJANGLE (D3DX_PI / 8)
-void CMainFrame::OnDebugAdjustCam45Up() {
-  debugRotateFocusCam(dbgCAM()->getRight(), -DBG_CAMADJANGLE);
-}
-
-void CMainFrame::OnDebugAdjustCam45Down() {
-  debugRotateFocusCam(dbgCAM()->getRight(), DBG_CAMADJANGLE);
-}
-
-void CMainFrame::OnDebugAdjustCam45Left() {
-  debugRotateFocusCam(dbgCAM()->getUp(), -DBG_CAMADJANGLE);
-}
-
-void CMainFrame::OnDebugAdjustCam45Right() {
-  debugRotateFocusCam(dbgCAM()->getUp(), DBG_CAMADJANGLE);
-}
-
-void CMainFrame::OnDebugAdjustCamReset() {
-  resetDebugAutoFocusCamera(false);
-}
-
-void CMainFrame::OnDebugAdjustCamResetAll() {
-  resetDebugAutoFocusCamera(true);
 }
 
 void CMainFrame::setOctaBreakpoint(size_t index, bool on) {
@@ -920,10 +868,6 @@ void CMainFrame::enableOctaBreakpoints(bool enable) {
   }
 }
 
-bool CMainFrame::isAutoFocusCurrentCubeChecked() const {
-  return isMenuItemChecked(this, ID_DEBUG_AUTOFOCUSCURRENTCUBE);
-}
-
 LRESULT CMainFrame::OnMsgKillDebugger(WPARAM wp, LPARAM lp) {
   killDebugger(true);
   return 0;
@@ -948,19 +892,17 @@ LRESULT CMainFrame::OnMsgDebuggerStateChanged(WPARAM wp, LPARAM lp) {
       { D3SceneObjectVisual *obj = m_debugger->getSceneObject();
         m_scene.addVisual(obj);
         m_hasCubeCenter = false;
-        if(isAutoFocusCurrentCubeChecked()) {
-          const DebugIsoSurface  &surf = m_debugger->getDebugSurface();
-          if(surf.hasCurrentOcta()) {
-            const Octagon               &octa = surf.getCurrentOcta();
-            const IsoSurfacePolygonizer *poly = surf.getPolygonizer();
-            m_cubeCenter    = octa.getCenter();
-            m_hasCubeCenter = true;
-            D3Camera *cam   = dbgCAM();
-            D3World   w     = cam->getD3World();
-            cam->setD3World(w.setPos(m_cubeCenter - m_currentCamDistance * w.getDir()));
-            adjustDebugLightDir();
-            show3DInfo(INFO_ALL);
-          }
+        const DebugIsoSurface  &surf = m_debugger->getDebugSurface();
+        if(surf.hasCurrentOcta()) {
+          const Octagon               &octa = surf.getCurrentOcta();
+          const IsoSurfacePolygonizer *poly = surf.getPolygonizer();
+          m_cubeCenter    = octa.getCenter();
+          m_hasCubeCenter = true;
+          D3Camera *cam   = dbgCAM();
+          D3World   w     = cam->getD3World();
+          cam->setD3World(w.setPos(m_cubeCenter - m_currentCamDistance * w.getDir()));
+          adjustDebugLightDir();
+          show3DInfo(INFO_ALL);
         }
       }
       break;

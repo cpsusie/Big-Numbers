@@ -80,17 +80,32 @@ private:
   D3DFILLMODE           m_fillMode;
   D3DSHADEMODE          m_shadeMode;
   BYTE                  m_visibleParts;
+  float                 m_currentCamDistance;
+
   void deleteMeshObject();
   void deleteOctaObject();
   void deleteTetraObject();
   void deleteFacesObject();
   void deleteVertexObject();
+
+  bool hasCubeCenter() const;
+  D3DXVECTOR3 getCubeCenter() const;
+  void resetCameraFocus(bool resetViewAngleAndDistance);
+  void debugRotateFocusCam(const D3DXVECTOR3 &axis, float rad);
+  void OnDebugAdjustCam45Up();
+  void OnDebugAdjustCam45Down();
+  void OnDebugAdjustCam45Left();
+  void OnDebugAdjustCam45Right();
+  void OnDebugAdjustCamReset();
+  void OnDebugAdjustCamResetAll();
+  D3Camera *dbgCAM();
 public:
   DebugSceneobject(D3Scene &scene);
   ~DebugSceneobject();
   void initOctaTetraVertex(OctaObject *octaObject, D3SceneObjectVisual *tetraObject, D3SceneObjectVisual *vertexObject);
   void setMeshObject(              DebugMeshObject *obj);
   void setFacesObject(             D3SceneObjectVisual *obj);
+  bool OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
   void draw();
   LPD3DXMESH getMesh() const {
     return m_meshObject ? m_meshObject->getMesh() : NULL;
@@ -249,6 +264,8 @@ public:
   FinalDebugIsoSurface(D3SceneEditor &editor, LPD3DXMESH m, const PolygonizerBase &polygonizer);
   ~FinalDebugIsoSurface();
   bool OnLButtonDown(UINT nFlags, CPoint point);
+  bool OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
+
   inline const PolygonizerBase &getPolygonizer() const {
     return m_polygonizer;
   }
