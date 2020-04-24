@@ -12,6 +12,13 @@ class Debugger;
 class D3SceneContainer;
 class D3SceneEditor;
 
+typedef enum {
+  DEBUGGER_CREATED
+ ,DEBUGGER_RUNNING
+ ,DEBUGGER_PAUSED
+ ,DEBUGGER_TERMINATED
+} DebuggerState;
+
 #define MESH_VISIBLE   0x01
 #define OCTA_VISIBLE   0x02
 #define TETRA_VISIBLE  0x04
@@ -81,6 +88,7 @@ private:
   D3DSHADEMODE          m_shadeMode;
   BYTE                  m_visibleParts;
   float                 m_currentCamDistance;
+  int                   m_debugLightIndex;
 
   void deleteMeshObject();
   void deleteOctaObject();
@@ -88,11 +96,13 @@ private:
   void deleteFacesObject();
   void deleteVertexObject();
 
-  bool hasCubeCenter() const;
-  D3DXVECTOR3 getCubeCenter() const;
   void resetCameraFocus(bool resetViewAngleAndDistance);
   void debugRotateFocusCam(const D3DXVECTOR3 &axis, float rad);
-  D3Camera *dbgCAM();
+  void createDebugLight();
+  void destroyDebugLight();
+  bool hasDebugLight() const;
+  void adjustDebugLightDir();
+
 public:
   DebugSceneobject(D3Scene &scene);
   ~DebugSceneobject();
@@ -101,6 +111,14 @@ public:
   void setFacesObject(             D3SceneObjectVisual *obj);
   bool OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
   void draw();
+  D3Camera   *dbgCAM();
+  bool        hasCubeCenter() const;
+  D3DXVECTOR3 getCubeCenter() const;
+  void        updateCamDistance();
+  void        handleDebuggerPaused();
+  inline float getCamDistance() const {
+    return m_currentCamDistance;
+  }
   LPD3DXMESH getMesh() const {
     return m_meshObject ? m_meshObject->getMesh() : NULL;
   }
@@ -153,7 +171,7 @@ typedef enum {
 
 class FinalDebugIsoSurface;
 
-class DebugIsoSurface : public IsoSurfaceEvaluator {
+class DebugIsoSurface : public IsoSurfaceEvaluator, public PropertyChangeListener {
 private:
   Debugger                             &m_debugger;
   D3SceneContainer                     &m_sc;
@@ -179,12 +197,12 @@ private:
   CompactArray<Face3>                   m_currentFaceArray;
   IsoSurfaceVertexArray                 m_visibleVertexArray;
   D3SceneObjectVisual *createFacesObject();
-
   void           updateMeshObject();
   void           updateOctaObject();
   void           updateTetraObject();
   void           updateFacesObject();
   void           updateVertexObject();
+
   inline void    clearCurrentFaceArray() {
     m_currentFaceArray.clear(-1);
   }
@@ -199,6 +217,13 @@ private:
     m_flags &= ~f;
     return *this;
   }
+  inline D3Scene &getScene() {
+    return m_sceneObject.getScene();
+  }
+  inline D3Camera *dbgCAM() {
+    return m_sceneObject.dbgCAM();
+  }
+  void debuggerStateChanged(DebuggerState oldState, DebuggerState newState);
 public:
   DebugIsoSurface(Debugger *debugger, D3SceneContainer &sc, const IsoSurfaceParameters &param);
   ~DebugIsoSurface();
@@ -211,8 +236,9 @@ public:
   void   markCurrentFace(  const Face3            &fave  );
   void   markCurrentVertex(const IsoSurfaceVertex &vertex);
   String getInfoMessage() const;
+  void   asyncKillDebugger();
+  void   handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
 
-  D3Scene &getScene();
   inline float getCellSize() const {
     return (float)m_param.m_cellSize;
   }
@@ -241,6 +267,7 @@ public:
     return m_polygonizer;
   }
   String toString() const;
+  String getInfoString() const;
 };
 
 typedef enum {

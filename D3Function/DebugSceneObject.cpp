@@ -16,11 +16,14 @@ DebugSceneobject::DebugSceneobject(D3Scene &scene)
   , m_visibleParts(0)
   , m_fillMode(    D3DFILL_WIREFRAME)
   , m_shadeMode(   D3DSHADE_FLAT)
+  , m_debugLightIndex(-1)
 {
   resetCameraFocus(true);
+  createDebugLight();
 }
 
 DebugSceneobject::~DebugSceneobject() {
+  destroyDebugLight();
   deleteMeshObject();
   deleteOctaObject();
   deleteTetraObject();
@@ -81,18 +84,49 @@ void DebugSceneobject::debugRotateFocusCam(const D3DXVECTOR3 &axis, float rad) {
   dbgCAM()->setD3World(w.setOrientation(w.getOrientation() * createRotation(axis, rad), getCubeCenter()));
 }
 
+void DebugSceneobject::createDebugLight() {
+  m_debugLightIndex = getScene().addLight(D3Light::createDefaultLight());
+}
+
+void DebugSceneobject::destroyDebugLight() {
+  if(hasDebugLight()) {
+    getScene().removeLight(m_debugLightIndex);
+    m_debugLightIndex = -1;
+  }
+}
+bool DebugSceneobject::hasDebugLight() const {
+  return (m_debugLightIndex >= 0) && getScene().isLightDefined(m_debugLightIndex);
+}
+
+void DebugSceneobject::adjustDebugLightDir() {
+  if(!hasDebugLight()) return;
+  const D3World     cw = dbgCAM()->getD3World();
+  const D3DXVECTOR3 dir = getCubeCenter() - cw.getPos();
+  const D3DXVECTOR3 up = cw.getUp();
+  const D3DXVECTOR3 lightDir = rotate(dir, up, D3DX_PI / 4);
+  getScene().setLightDirection(m_debugLightIndex, lightDir);
+}
+
 bool DebugSceneobject::hasCubeCenter() const {
   return (m_visibleParts & OCTA_VISIBLE) != 0;
 }
 
 D3DXVECTOR3 DebugSceneobject::getCubeCenter() const {
+  return hasCubeCenter() ? m_octaObject->getCenter() : D3DXORIGIN;
+}
+
+void DebugSceneobject::updateCamDistance() {
   if(hasCubeCenter()) {
-    D3DXVECTOR3 c = m_octaObject->getCenter();
-    return c;
-//    D3DXMATRIX  m = m_octaObject->getWorld();
-//    return inverse(m) * c;
-  } else {
-    return D3DXORIGIN;
+    m_currentCamDistance = length(dbgCAM()->getPos() - getCubeCenter());
+  }
+}
+
+void DebugSceneobject::handleDebuggerPaused() {
+  if(hasCubeCenter()) {
+    D3Camera *cam = dbgCAM();
+    D3World   w   = cam->getD3World();
+    cam->setD3World(w.setPos(getCubeCenter() - m_currentCamDistance * w.getDir()));
+    adjustDebugLightDir();
   }
 }
 

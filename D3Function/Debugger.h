@@ -23,13 +23,6 @@ typedef enum {
   DEBUGGER_STATE
 } DebuggerProperties;
 
-typedef enum {
-  DEBUGGER_CREATED
- ,DEBUGGER_RUNNING
- ,DEBUGGER_PAUSED
- ,DEBUGGER_TERMINATED
-} DebuggerState;
-
 class Debugger : public InterruptableRunnable, public PropertyContainer {
 private:
   FLAGTRAITS(Debugger, BYTE, m_flags)

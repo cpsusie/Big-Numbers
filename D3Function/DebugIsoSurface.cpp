@@ -3,9 +3,12 @@
 #ifdef DEBUG_POLYGONIZER
 
 #include <D3DGraphics/D3Cube.h>
+#include <D3DGraphics/D3Camera.h>
 #include <D3DGraphics/D3SceneObjectWireFrameBox.h>
 #include <D3DGraphics/D3SceneObjectLineArrow.h>
 #include <D3DGraphics/D3SceneObjectSolidBox.h>
+#include "D3Function.h"
+#include "MainFrm.h"
 #include "Debugger.h"
 #include "DebugIsoSurface.h"
 
@@ -453,6 +456,8 @@ DebugIsoSurface::DebugIsoSurface(Debugger *debugger, D3SceneContainer &sc, const
   , m_visibleVertexArraySizeObj(0)
   , m_sceneObject(sc.getScene())
 {
+  m_debugger.addPropertyChangeListener(this);
+
   OctaObject   *octaObject   = new OctaObject(&m_sceneObject, (float)param.m_cellSize);
   TetraObject  *tetraObject  = new TetraObject( octaObject);
   VertexObject *vertexObject = new VertexObject(&m_sceneObject, (float)param.m_cellSize);
@@ -464,6 +469,7 @@ DebugIsoSurface::DebugIsoSurface(Debugger *debugger, D3SceneContainer &sc, const
 }
 
 DebugIsoSurface::~DebugIsoSurface() {
+  m_debugger.removePropertyChangeListener(this);
   SAFEDELETE(m_polygonizer)
 }
 
@@ -491,10 +497,6 @@ void DebugIsoSurface::createData() {
 
 String DebugIsoSurface::getInfoMessage() const {
   return m_statistics.toString();
-}
-
-D3Scene &DebugIsoSurface::getScene() {
-  return m_sc.getScene();
 }
 
 double DebugIsoSurface::evaluate(const Point3D &p) {
@@ -660,6 +662,70 @@ String DebugIsoSurface::toString() const {
                  ,flagsToString(m_flags).cstr()
                  ,m_visibleVertexArray.toString(_T("\n")).cstr()
                  );
+  }
+}
+
+String DebugIsoSurface::getInfoString() const {
+  String result;
+  if(hasCurrentOcta()) {
+    result += format(_T("\nCubeCenter:%s, OctaIndex:%4u, LookupIndex:%4u, camDistance:%f")
+                    ,::toString(m_sceneObject.getCubeCenter(), 4).cstr()
+                    ,m_debugger.getOctaIndex()
+                    ,getCurrentOcta().getCube()->getIndex()
+                    ,m_sceneObject.getCamDistance());
+  }
+  const IsoSurfacePolygonizer *poly = getPolygonizer();
+  if(poly) {
+    const PolygonizerStatistics &stat = poly->getStatistics();
+    result += format(_T("\n%s\nCubeCalls:%5u, tetraCals:%5u")
+                    ,toString().cstr()
+                    ,stat.m_doCubeCalls, stat.m_doTetraCalls);
+  }
+  return result;
+}
+
+void DebugIsoSurface::asyncKillDebugger() {
+  theApp.getMainFrame()->PostMessage(ID_MSG_KILLDEBUGGER);
+}
+
+void DebugIsoSurface::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
+  if(source == &m_debugger) {
+    switch(id) {
+    case DEBUGGER_STATE:
+      { const DebuggerState oldState = *(DebuggerState*)oldValue;
+        const DebuggerState newState = *(DebuggerState*)newValue;
+        debuggerStateChanged(oldState, newState);
+      }
+      break;
+    default:
+      showError(_T("%s:Unknown property:%d"), __TFUNCTION__, id);
+      break;
+    }
+  }
+}
+
+void DebugIsoSurface::debuggerStateChanged(DebuggerState oldState, DebuggerState newState) {
+  try {
+    switch(newState) {
+    case DEBUGGER_RUNNING:
+      if((oldState == DEBUGGER_PAUSED) && m_sceneObject.hasCubeCenter()) {
+        m_sceneObject.updateCamDistance();
+      }
+      getScene().removeVisual(&m_sceneObject);
+      break;
+    case DEBUGGER_PAUSED:
+      { getScene().addVisual(&m_sceneObject);
+        if(hasCurrentOcta()) {
+          m_sceneObject.handleDebuggerPaused();
+        }
+      }
+    break;
+    case DEBUGGER_TERMINATED:
+      asyncKillDebugger();
+      break;
+    }
+  } catch(Exception e) {
+    showException(e);
   }
 }
 

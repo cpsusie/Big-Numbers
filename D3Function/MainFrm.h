@@ -47,9 +47,6 @@ public:
 class CMainFrame : public CFrameWnd
                  , public OptionsUpdater
                  , public D3SceneContainer
-#ifdef DEBUG_POLYGONIZER
-                 , public PropertyChangeListener
-#endif // DEBUG_POLYGONIZER
 {
 private:
   friend class C3DSceneView;
@@ -71,18 +68,13 @@ private:
 
 #ifdef DEBUG_POLYGONIZER
   Debugger                   *m_debugger;
-  float                       m_currentCamDistance;
   bool                        m_hasIsoSurfaceParam;
-  bool                        m_hasCubeCenter;
   bool                        m_hasFinalDebugIsoSurface;
-  D3DXVECTOR3                 m_cubeCenter;
   BitSet                      m_octaBreakPoints;
   bool                        m_breakPointsEnabled;
-  int                         m_debugLightIndex;
   String                      m_debugInfo;
 
   void killDebugger(bool showCreateSurface);
-  void asyncKillDebugger();
   inline bool hasDebugger() const {
     return m_debugger != NULL;
   }
@@ -111,26 +103,9 @@ private:
     return m_breakPointsEnabled;
   }
 
-  void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
-
   inline String getDebuggerStateName() const {
     return hasDebugger() ? m_debugger->getStateName() : _T("No debugger");
   }
-  void resetDebugAutoFocusCamera(bool resetViewAngleAndDistance);
-  void debugRotateFocusCam(const D3DXVECTOR3 &axis, float rad);
-  inline void createDebugLight() {
-    m_debugLightIndex = m_scene.addLight(D3Light::createDefaultLight());
-  }
-  inline void destroyDebugLight() {
-    if(hasDebugLight()) {
-      m_scene.removeLight(m_debugLightIndex);
-      m_debugLightIndex = -1;
-    }
-  }
-  inline bool hasDebugLight() const {
-    return (m_debugLightIndex >= 0) && m_scene.isLightDefined(m_debugLightIndex);
-  }
-  void adjustDebugLightDir();
   void updateDebugInfo();
   inline bool hasFinalDebugIsoSurface() const {
     return m_hasFinalDebugIsoSurface;
@@ -279,6 +254,5 @@ public:
     afx_msg void OnOptionsLoadOptions9();
     afx_msg void OnOptionsOrganizeOptions();
     afx_msg LRESULT OnMsgRender(              WPARAM wp, LPARAM lp);
-    afx_msg LRESULT OnMsgDebuggerStateChanged(WPARAM wp, LPARAM lp);
     afx_msg LRESULT OnMsgKillDebugger(        WPARAM wp, LPARAM lp);
 };

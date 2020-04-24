@@ -68,7 +68,6 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
   ON_COMMAND(ID_OPTIONS_LOADOPTIONS9       , OnOptionsLoadOptions9       )
   ON_COMMAND(ID_OPTIONS_ORGANIZEOPTIONS    , OnOptionsOrganizeOptions    )
   ON_MESSAGE(ID_MSG_RENDER                 , OnMsgRender                 )
-  ON_MESSAGE(ID_MSG_DEBUGGERSTATECHANGED   , OnMsgDebuggerStateChanged   )
   ON_MESSAGE(ID_MSG_KILLDEBUGGER           , OnMsgKillDebugger           )
 END_MESSAGE_MAP()
 
@@ -89,7 +88,6 @@ CMainFrame::CMainFrame()
 , m_hasFinalDebugIsoSurface(false)
 , m_octaBreakPoints(        100  )
 , m_breakPointsEnabled(     true )
-, m_debugLightIndex(        -1   )
 #endif // DEBUG_POLYGONIZER
 {
   m_statusPanesVisible     = true;
@@ -591,6 +589,7 @@ LRESULT CMainFrame::OnMsgRender(WPARAM wp, LPARAM lp) {
       show3DInfo(INFO_EDIT);
     }
   }
+  ajourDebugMenu();
   return 0;
 }
 
@@ -671,9 +670,7 @@ void CMainFrame::OnDebugDisableAllBreakPoints() {}
 void CMainFrame::OnDebugClearAllBreakPoints() {}
 void CMainFrame::OnDebugAutoFocusCurrentCube() {}
 
-
 LRESULT CMainFrame::OnMsgKillDebugger(WPARAM wp, LPARAM lp) { return 0; }
-LRESULT CMainFrame::OnMsgDebuggerStateChanged(WPARAM wp, LPARAM lp) { return 0; }
 #else
 
 D3Camera *CMainFrame::dbgCAM() {
@@ -687,15 +684,9 @@ D3Camera *CMainFrame::dbgCAM() {
 
 void CMainFrame::startDebugging() {
   setCalculatedObject(NULL);
-  m_hasCubeCenter      = false;
-  resetDebugAutoFocusCamera(true);
   try {
     killDebugger(false);
     m_debugger = new Debugger(this, m_isoSurfaceParam);
-    m_debugger->addPropertyChangeListener(this);
-    createDebugLight();
-    ajourDebugMenu();
-    m_editor.getSelectedCAM()->setViewAngle(0.2864f);
     m_editor.OnControlCameraWalk();
     ThreadPool::executeNoWait(*m_debugger);
     show3DInfo(INFO_MEM);
@@ -708,56 +699,25 @@ void CMainFrame::stopDebugging() {
   killDebugger(false);
 }
 
-void CMainFrame::asyncKillDebugger() {
-  PostMessage(ID_MSG_KILLDEBUGGER);
-}
-
 void CMainFrame::killDebugger(bool showCreateSurface) {
   if(!hasDebugger()) return;
   m_scene.removeAllVisuals();
-  m_debugger->removePropertyChangeListener(this);
   const bool allOk = m_debugger->isOk();
   if(allOk && showCreateSurface) {
     const DebugIsoSurface &surface = m_debugger->getDebugSurface();
     if(surface.getFaceCount()) {
       FinalDebugIsoSurface *obj = surface.createFinalDebugIsoSurface(m_editor);
       setCalculatedObject(obj, &m_isoSurfaceParam);
-      obj->addPropertyChangeListener(this);
       m_hasFinalDebugIsoSurface = true;
     }
   }
   SAFEDELETE(m_debugger);
-  destroyDebugLight();
   if(!m_destroyCalled) {
-    ajourDebugMenu();
     show3DInfo(INFO_ALL);
     if(allOk) {
       showInformation(_T("%s"), _T("Polygonizing surface done"));
     } else {
       showError(_T("%s"), m_debugger->getErrorMsg().cstr());
-    }
-  }
-}
-
-void CMainFrame::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
-  if(source == m_debugger) {
-    switch (id) {
-    case DEBUGGER_STATE:
-      { const DebuggerState oldState = *(DebuggerState*)oldValue;
-        const DebuggerState newState = *(DebuggerState*)newValue;
-        m_editor.setEnabled(newState != DEBUGGER_RUNNING);
-        SendMessage(ID_MSG_DEBUGGERSTATECHANGED, oldState, newState);
-      }
-      break;
-    default:
-      showError(_T("%s:Unknown property:%d"), __TFUNCTION__, id);
-      break;
-    }
-  } else if(source == getFinalDebugIsoSurface()) {
-    switch(id) {
-    case FDIS_CUBEINDEX:
-      ajourDebugMenu();
-      break;
     }
   }
 }
@@ -800,30 +760,6 @@ void CMainFrame::OnDebugDisableAllBreakPoints() {
 
 void CMainFrame::OnDebugClearAllBreakPoints() {
   clearAllOctaBreakpoints();
-}
-
-void CMainFrame::adjustDebugLightDir() {
-  if(!hasDebugLight()) return;
-  CHECKHASCAM();
-  const D3World     cw       = dbgCAM()->getD3World();
-  const D3DXVECTOR3 dir      = m_cubeCenter - cw.getPos();
-  const D3DXVECTOR3 up       = cw.getUp();
-  const D3DXVECTOR3 lightDir = rotate(dir, up, D3DX_PI / 4);
-  m_scene.setLightDirection(m_debugLightIndex, lightDir);
-}
-
-void CMainFrame::resetDebugAutoFocusCamera(bool resetViewAngleAndDistance) {
-  if(resetViewAngleAndDistance) {
-    m_currentCamDistance = 0.25;
-    dbgCAM()->setViewAngle(0.2864f);
-  }
-  D3World w = dbgCAM()->getD3World();
-  w.resetOrientation();
-  if(m_hasCubeCenter) {
-    w.setPos(m_cubeCenter - m_currentCamDistance * w.getDir());
-  }
-  dbgCAM()->setD3World(w);
-  m_editor.OnControlCameraProjection();
 }
 
 void CMainFrame::setOctaBreakpoint(size_t index, bool on) {
@@ -873,50 +809,6 @@ LRESULT CMainFrame::OnMsgKillDebugger(WPARAM wp, LPARAM lp) {
   return 0;
 }
 
-LRESULT CMainFrame::OnMsgDebuggerStateChanged(WPARAM wp, LPARAM lp) {
-  try {
-    show3DInfo(0);
-    const DebuggerState oldState = (DebuggerState)wp, newState = (DebuggerState)lp;
-    switch(newState) {
-    case DEBUGGER_RUNNING:
-      { if((oldState == DEBUGGER_PAUSED) && m_hasCubeCenter && hasCamera()) {
-          m_currentCamDistance = length(dbgCAM()->getPos() - m_cubeCenter);
-        }
-        D3SceneObjectVisual *obj = m_debugger->getSceneObject();
-        if(obj) {
-          m_scene.removeVisual(obj);
-        }
-      }
-      break;
-    case DEBUGGER_PAUSED:
-      { D3SceneObjectVisual *obj = m_debugger->getSceneObject();
-        m_scene.addVisual(obj);
-        m_hasCubeCenter = false;
-        const DebugIsoSurface  &surf = m_debugger->getDebugSurface();
-        if(surf.hasCurrentOcta()) {
-          const Octagon               &octa = surf.getCurrentOcta();
-          const IsoSurfacePolygonizer *poly = surf.getPolygonizer();
-          m_cubeCenter    = octa.getCenter();
-          m_hasCubeCenter = true;
-          D3Camera *cam   = dbgCAM();
-          D3World   w     = cam->getD3World();
-          cam->setD3World(w.setPos(m_cubeCenter - m_currentCamDistance * w.getDir()));
-          adjustDebugLightDir();
-          show3DInfo(INFO_ALL);
-        }
-      }
-      break;
-    case DEBUGGER_TERMINATED:
-      asyncKillDebugger();
-      break;
-    }
-    ajourDebugMenu();
-  } catch (Exception e) {
-    showException(e);
-  }
-  return 0;
-}
-
 void CMainFrame::updateDebugInfo() {
   m_debugInfo = format(_T("Debugger State:%-8s"), getDebuggerStateName().cstr());
   if(!m_octaBreakPoints.isEmpty()) {
@@ -929,21 +821,7 @@ void CMainFrame::updateDebugInfo() {
     if(!m_debugger->isOk()) {
       m_debugInfo += format(_T("\nError:%s"), m_debugger->getErrorMsg().cstr());
     }
-    if(m_hasCubeCenter) {
-      m_debugInfo += format(_T("\nCubeCenter:%s, OctaIndex:%4u, LookupIndex:%4u, camDistance:%f")
-                           ,toString(m_cubeCenter, 4).cstr()
-                           ,m_debugger->getOctaIndex()
-                           ,m_debugger->getDebugSurface().getCurrentOcta().getCube()->getIndex()
-                           ,m_currentCamDistance);
-    }
-    const DebugIsoSurface       &surf = m_debugger->getDebugSurface();
-    const IsoSurfacePolygonizer *poly = surf.getPolygonizer();
-    if(poly) {
-      const PolygonizerStatistics &stat = poly->getStatistics();
-      m_debugInfo += format(_T("\n%s\nCubeCalls:%5u, tetraCals:%5u")
-                           ,surf.toString().cstr()
-                           ,stat.m_doCubeCalls, stat.m_doTetraCalls);
-    }
+    m_debugInfo += m_debugger->getDebugSurface().getInfoString();
   }
 }
 #endif // DEBUG_POLYGONIZER
@@ -1089,7 +967,6 @@ void CMainFrame::onFileMruFile(int index) {
       return;
     }
     Invalidate(FALSE);
-    //view->refreshBoth();
   } catch(Exception e) {
     showException(e);
   }

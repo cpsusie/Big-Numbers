@@ -114,7 +114,6 @@
 #define ID_OPTIONS_LOADOPTIONS9         33119
 #define ID_OPTIONS_ORGANIZEOPTIONS      33120
 #define ID_MSG_RENDER                   33202
-#define ID_MSG_DEBUGGERSTATECHANGED     33203
 #define ID_MSG_KILLDEBUGGER             33204
 #define ID_GOTO_EXPR                    33500
 #define ID_GOTO_EXPRX                   33501
