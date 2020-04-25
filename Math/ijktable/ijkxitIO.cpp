@@ -815,38 +815,52 @@ void write_cpp(ostream &out, const IJKTABLE::ISOSURFACE_TABLE &table) {
     IJKTABLE::convert2base(it, 3, vertex_sign, numv);
     string comment;
     char signCount[3];
-    char zeroCorners[3], zcCount = 0;
+    char zeroCorners[8], zcCount = 0;
     signCount[0] = signCount[1] = signCount[2] = 0;
     for(uint d = numv; d--;) {
       const char sign = signstr[vertex_sign[d]];
       comment += sign;
       signCount[vertex_sign[d]]++;
-      if((sign == '=') && (zcCount < 3)) {
+      if((sign == '=') && (zcCount < 4)) {
         zeroCorners[zcCount++] = d;
       }
     }
     for(uint d = 0; d < vertex_sign.size(); d++) {
       vertex_sign[d]--;
     }
+    vector<Face3> faces;
+    for(uint js = 0; js < nums; js++) {
+      faces.push_back(Face3(table.SimplexVertex(it, js, 0)
+                           ,table.SimplexVertex(it, js, 1)
+                           ,table.SimplexVertex(it, js, 2)));
+    }
+    switch(nums) {
+    case 0:
+      if((signCount[1] == 4) && (signCount[0] == 0)) { // 4 =, 0 -, 4 +
+        faces.push_back(Face3(zeroCorners[0]
+                              ,zeroCorners[1]
+                              ,zeroCorners[2]));
+        faces.push_back(Face3(zeroCorners[1]
+                              ,zeroCorners[2]
+                              ,zeroCorners[3]));
+      }
+      break;
+
+    case 1:
+      if((signCount[1] == 3) && (signCount[0] == 1)) { // 3 =, 1 -, 4 +
+        faces.push_back(Face3(zeroCorners[0]
+                              ,zeroCorners[1]
+                              ,zeroCorners[2]));
+      }
+      break;
+    }
+    const uint faceCount = (uint)faces.size();
     int len;
     out << linePrefix;
-    if(nums == 0) {
+    if(faceCount == 0) {
       out << "  0";
       len = 3;
     } else {
-      vector<Face3> faces;
-      for(uint js = 0; js < nums; js++) {
-        faces.push_back(Face3(table.SimplexVertex(it, js, 0)
-                             ,table.SimplexVertex(it, js, 1)
-                             ,table.SimplexVertex(it, js, 2)));
-      }
-      if((nums == 1) && (signCount[1] == 3) && (signCount[0] == 1)) {
-        Face3 f(zeroCorners[0]
-               ,zeroCorners[1]
-               ,zeroCorners[2]);
-        faces.push_back(f);
-      }
-      const uint faceCount = (uint)faces.size();
       for(uint js = 0; js < faceCount; js++) {
         Face3 &f = faces[js];
         if(!cd.checkOrientation(f, vertex_sign)) {
