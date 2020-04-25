@@ -6,8 +6,9 @@
 #include "DebugIsoSurface.h"
 // --------------------------------------------- DebugSceneobject -------------------------------------
 
-DebugSceneobject::DebugSceneobject(D3Scene &scene)
+DebugSceneobject::DebugSceneobject(D3Scene &scene, Debugger &debugger)
   : D3SceneObjectVisual( scene, _T("Debug Polygonizer"))
+  , m_debugger(debugger)
   , m_meshObject(  NULL)
   , m_octaObject(  NULL)
   , m_tetraObject( NULL)
@@ -75,7 +76,7 @@ void DebugSceneobject::deleteTetraObject()  { SAFEDELETE(m_tetraObject  ); }
 void DebugSceneobject::deleteFacesObject()  { SAFEDELETE(m_facesObject  ); }
 void DebugSceneobject::deleteVertexObject() { SAFEDELETE(m_vertexObject ); }
 
-D3Camera *DebugSceneobject::dbgCAM() {
+D3Camera *DebugSceneobject::dbgCAM() const {
   return getScene().getCameraArray()[0];
 }
 
@@ -122,11 +123,22 @@ void DebugSceneobject::updateCamDistance() {
   }
 }
 
+D3DXVECTOR3 DebugSceneobject::getCubeCamVector() const {
+  const DebugIsoSurface &surf = m_debugger.getDebugSurface();
+  if(surf.hasFaceNormal()) {
+    return surf.getCurrentFaceNormal();
+  } else {
+    const D3World  &w = dbgCAM()->getD3World();
+    return -w.getDir();
+  }
+}
+
 void DebugSceneobject::handleDebuggerPaused() {
   if(hasCubeCenter()) {
-    D3Camera *cam = dbgCAM();
-    D3World   w   = cam->getD3World();
-    cam->setD3World(w.setPos(getCubeCenter() - m_currentCamDistance * w.getDir()));
+    const D3DXVECTOR3 cc  = getCubeCenter();
+    D3Camera         *cam = dbgCAM();
+    D3World           w   = cam->getD3World();
+    cam->setD3World(w.setPos(cc + m_currentCamDistance * getCubeCamVector())).setLookAt(cc);
     adjustDebugLightDir();
   }
 }
@@ -137,12 +149,12 @@ void DebugSceneobject::resetCameraFocus(bool resetViewAngleAndDistance) {
     m_currentCamDistance = 0.25;
     cam->setViewAngle(0.2864f);
   }
-  D3World w = cam->getD3World();
-  w.resetOrientation();
   if(hasCubeCenter()) {
-    w.setPos(getCubeCenter() - m_currentCamDistance * w.getDir());
+    handleDebuggerPaused();
+  } else {
+    D3World w = cam->getD3World();
+    cam->setD3World(w.resetOrientation());
   }
-  cam->setD3World(w);
 }
 
 #define DBG_CAMADJANGLE (D3DX_PI / 8)

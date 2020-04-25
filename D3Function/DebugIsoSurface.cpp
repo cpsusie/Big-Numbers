@@ -454,7 +454,7 @@ DebugIsoSurface::DebugIsoSurface(Debugger *debugger, D3SceneContainer &sc, const
   , m_vertexCount(              0)
   , m_vertexCountObj(           0)
   , m_visibleVertexArraySizeObj(0)
-  , m_sceneObject(sc.getScene())
+  , m_sceneObject(sc.getScene(), *debugger)
 {
   m_debugger.addPropertyChangeListener(this);
 
@@ -536,29 +536,30 @@ void DebugIsoSurface::updateSceneObject(BYTE visibleParts) {
 void DebugIsoSurface::markCurrentOcta(const Octagon &octa) {
   m_octaCount++;
   m_currentOcta = octa;
-  m_flags = HAS_OCTA;
-  clearVisibleVertexArray();
-  clearCurrentFaceArray();
+  clrFlag(HAS_TETRA | HAS_FACE | HAS_VERTEX).setFlag(HAS_OCTA).clearVisibleVertexArray().clearCurrentFaceArray();
   m_debugger.handleStep(NEW_OCTA);
 }
 
 void DebugIsoSurface::markCurrentTetra(const Tetrahedron &tetra) {
   m_tetraCount++;
   m_currentTetra = tetra;
-  setFlag(HAS_TETRA).clrFlag(HAS_VERTEX);
-  clearVisibleVertexArray();
+  clrFlag(HAS_VERTEX).setFlag(HAS_TETRA).clearVisibleVertexArray();
   m_debugger.handleStep(NEW_TETRA);
 }
 
 void DebugIsoSurface::markCurrentFace(const Face3 &f) {
   m_visibleFaceCount++;
   m_currentFaceArray.add(f);
-  setFlag(HAS_FACE).clrFlag(HAS_VERTEX);
+  clrFlag(HAS_VERTEX).setFlag(HAS_FACE);
   m_debugger.handleStep(NEW_FACE);
 }
 
 void DebugIsoSurface::markCurrentVertex(const IsoSurfaceVertex &v) {
   m_vertexCount++;
+  if(!isSet(HAS_FACE | HAS_VERTEX)) {
+    m_currentFaceNormal = v.m_normal;
+    setFlag(HAS_NORMAL);
+  }
   setFlag(HAS_VERTEX);
   if(m_visibleVertexArray.size() == 3) {
     m_visibleVertexArray.clear(-1);

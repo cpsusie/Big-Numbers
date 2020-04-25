@@ -63,7 +63,6 @@ public:
   D3DXMATRIX &getWorld();
   void draw();
   String getInfoString() const;
-
 };
 
 class DebugMeshObject : public D3SceneObjectWithMesh {
@@ -82,6 +81,7 @@ public:
 
 class DebugSceneobject : public D3SceneObjectVisual {
 private:
+  Debugger             &m_debugger;
   DebugMeshObject      *m_meshObject;
   OctaObject           *m_octaObject;
   D3SceneObjectVisual  *m_tetraObject, *m_facesObject, *m_vertexObject;
@@ -106,15 +106,16 @@ private:
   inline bool isSet(BYTE part) const {
     return (m_visibleParts & part) != 0;
   }
+  D3DXVECTOR3 getCubeCamVector() const;
 public:
-  DebugSceneobject(D3Scene &scene);
+  DebugSceneobject(D3Scene &scene, Debugger &debugger);
   ~DebugSceneobject();
   void initOctaTetraVertex(OctaObject *octaObject, D3SceneObjectVisual *tetraObject, D3SceneObjectVisual *vertexObject);
-  void setMeshObject(              DebugMeshObject *obj);
-  void setFacesObject(             D3SceneObjectVisual *obj);
+  void setMeshObject(      DebugMeshObject     *obj);
+  void setFacesObject(     D3SceneObjectVisual *obj);
   bool OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
   void draw();
-  D3Camera   *dbgCAM();
+  D3Camera   *dbgCAM() const;
   bool        hasCubeCenter() const;
   D3DXVECTOR3 getCubeCenter() const;
   void        updateCamDistance();
@@ -171,6 +172,7 @@ typedef enum {
 #define HAS_TETRA  0x02
 #define HAS_FACE   0x04
 #define HAS_VERTEX 0x08
+#define HAS_NORMAL 0x10
 
 class FinalDebugIsoSurface;
 
@@ -185,6 +187,7 @@ private:
   bool                                  m_reverseSign;
   Real                                 *m_xp, *m_yp, *m_zp;
   DWORD                                 m_faceCount, m_lastFaceCount, m_lastVertexCount;
+  D3DXVECTOR3                           m_currentFaceNormal;
 
   FLAGTRAITS(DebugIsoSurface, BYTE,m_flags);
   mutable DWORD                         m_octaCount  , m_octaCountObj;
@@ -200,22 +203,24 @@ private:
   CompactArray<Face3>                   m_currentFaceArray;
   IsoSurfaceVertexArray                 m_visibleVertexArray;
   D3SceneObjectVisual *createFacesObject();
-  void           updateMeshObject();
-  void           updateOctaObject();
-  void           updateTetraObject();
-  void           updateFacesObject();
-  void           updateVertexObject();
+  void             updateMeshObject();
+  void             updateOctaObject();
+  void             updateTetraObject();
+  void             updateFacesObject();
+  void             updateVertexObject();
 
-  inline void    clearCurrentFaceArray() {
+  inline DebugIsoSurface &clearCurrentFaceArray() {
     m_currentFaceArray.clear(-1);
+    return *this;
   }
-  inline void    clearVisibleVertexArray() {
+  inline DebugIsoSurface &clearVisibleVertexArray() {
     m_visibleVertexArray.clear(-1);
+    return *this;
   }
-  inline D3Scene &getScene() {
+  inline D3Scene  &getScene() const {
     return m_sceneObject.getScene();
   }
-  inline D3Camera *dbgCAM() {
+  inline D3Camera *dbgCAM() const {
     return m_sceneObject.dbgCAM();
   }
   void debuggerStateChanged(DebuggerState oldState, DebuggerState newState);
@@ -248,7 +253,7 @@ public:
   }
   DebugMeshObject      *createMeshObject();
   FinalDebugIsoSurface *createFinalDebugIsoSurface(D3SceneEditor &editor) const;
-  const Octagon &getCurrentOcta() const {
+  inline const Octagon &getCurrentOcta() const {
     return m_currentOcta;
   }
   inline bool hasCurrentOcta() const {
@@ -257,8 +262,14 @@ public:
   inline bool hasVisibleVertexArray() const {
     return m_visibleVertexArray.size() > 0;
   }
-  const IsoSurfacePolygonizer *getPolygonizer() const {
+  inline const IsoSurfacePolygonizer *getPolygonizer() const {
     return m_polygonizer;
+  }
+  inline const D3DXVECTOR3 &getCurrentFaceNormal() const {
+    return m_currentFaceNormal;
+  }
+  inline bool hasFaceNormal() const {
+    return isSet(HAS_NORMAL);
   }
   String toString() const;
   String getInfoString() const;
