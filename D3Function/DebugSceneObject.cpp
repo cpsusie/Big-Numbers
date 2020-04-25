@@ -13,9 +13,9 @@ DebugSceneobject::DebugSceneobject(D3Scene &scene)
   , m_tetraObject( NULL)
   , m_facesObject( NULL)
   , m_vertexObject(NULL)
-  , m_visibleParts(0)
+  , m_visibleParts(0   )
   , m_fillMode(    D3DFILL_WIREFRAME)
-  , m_shadeMode(   D3DSHADE_FLAT)
+  , m_shadeMode(   D3DSHADE_FLAT    )
   , m_debugLightIndex(-1)
 {
   resetCameraFocus(true);
@@ -51,20 +51,20 @@ void DebugSceneobject::setFacesObject(D3SceneObjectVisual *obj) {
 }
 
 void DebugSceneobject::draw() {
-  if((m_visibleParts & MESH_VISIBLE   ) && m_meshObject   ) {
+  if(isSet(MESH_VISIBLE) && m_meshObject  ) {
     m_meshObject->draw();
-    if((m_visibleParts & OCTA_VISIBLE) && m_octaObject) {
+    if(isSet(OCTA_VISIBLE) && m_octaObject) {
       m_octaObject->draw();
-      if((m_visibleParts & TETRA_VISIBLE  ) && m_tetraObject  ) m_tetraObject->draw();
-      if((m_visibleParts & FACES_VISIBLE  ) && m_facesObject  ) m_facesObject->draw();
-      if((m_visibleParts & VERTEX_VISIBLE ) && m_vertexObject ) m_vertexObject->draw();
+      if(isSet(TETRA_VISIBLE ) && m_tetraObject ) m_tetraObject->draw();
+      if(isSet(FACES_VISIBLE ) && m_facesObject ) m_facesObject->draw();
+      if(isSet(VERTEX_VISIBLE) && m_vertexObject) m_vertexObject->draw();
     }
   }
 }
 
 void DebugSceneobject::deleteMeshObject() {
   if(m_meshObject) {
-    m_fillMode = m_meshObject->getFillMode();
+    m_fillMode  = m_meshObject->getFillMode();
     m_shadeMode = m_meshObject->getShadeMode();
     SAFEDELETE(m_meshObject);
   }
@@ -80,8 +80,9 @@ D3Camera *DebugSceneobject::dbgCAM() {
 }
 
 void DebugSceneobject::debugRotateFocusCam(const D3DXVECTOR3 &axis, float rad) {
-  D3World w = dbgCAM()->getD3World();
-  dbgCAM()->setD3World(w.setOrientation(w.getOrientation() * createRotation(axis, rad), getCubeCenter()));
+  D3Camera *cam = dbgCAM();
+  D3World   w   = cam->getD3World();
+  cam->setD3World(w.setOrientation(w.getOrientation() * createRotation(axis, rad), getCubeCenter()));
 }
 
 void DebugSceneobject::createDebugLight() {
@@ -100,15 +101,15 @@ bool DebugSceneobject::hasDebugLight() const {
 
 void DebugSceneobject::adjustDebugLightDir() {
   if(!hasDebugLight()) return;
-  const D3World     cw = dbgCAM()->getD3World();
-  const D3DXVECTOR3 dir = getCubeCenter() - cw.getPos();
-  const D3DXVECTOR3 up = cw.getUp();
+  const D3World    &cw       = dbgCAM()->getD3World();
+  const D3DXVECTOR3 dir      = getCubeCenter() - cw.getPos();
+  const D3DXVECTOR3 up       = cw.getUp();
   const D3DXVECTOR3 lightDir = rotate(dir, up, D3DX_PI / 4);
   getScene().setLightDirection(m_debugLightIndex, lightDir);
 }
 
 bool DebugSceneobject::hasCubeCenter() const {
-  return (m_visibleParts & OCTA_VISIBLE) != 0;
+  return isSet(OCTA_VISIBLE);
 }
 
 D3DXVECTOR3 DebugSceneobject::getCubeCenter() const {
@@ -131,16 +132,17 @@ void DebugSceneobject::handleDebuggerPaused() {
 }
 
 void DebugSceneobject::resetCameraFocus(bool resetViewAngleAndDistance) {
+  D3Camera *cam = dbgCAM();
   if(resetViewAngleAndDistance) {
     m_currentCamDistance = 0.25;
-    dbgCAM()->setViewAngle(0.2864f);
+    cam->setViewAngle(0.2864f);
   }
-  D3World w = dbgCAM()->getD3World();
+  D3World w = cam->getD3World();
   w.resetOrientation();
   if(hasCubeCenter()) {
     w.setPos(getCubeCenter() - m_currentCamDistance * w.getDir());
   }
-  dbgCAM()->setD3World(w);
+  cam->setD3World(w);
 }
 
 #define DBG_CAMADJANGLE (D3DX_PI / 8)

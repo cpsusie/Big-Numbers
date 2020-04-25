@@ -2,6 +2,7 @@
 
 #ifdef DEBUG_POLYGONIZER
 
+#include <FlagTraits.h>
 #include <Math/Expression/ExpressionWrapper.h>
 #include <D3DGraphics/IsoSurface.h>
 #include <D3DGraphics/IsosurfacePolygonizer.h>
@@ -102,7 +103,9 @@ private:
   void destroyDebugLight();
   bool hasDebugLight() const;
   void adjustDebugLightDir();
-
+  inline bool isSet(BYTE part) const {
+    return (m_visibleParts & part) != 0;
+  }
 public:
   DebugSceneobject(D3Scene &scene);
   ~DebugSceneobject();
@@ -183,7 +186,7 @@ private:
   Real                                 *m_xp, *m_yp, *m_zp;
   DWORD                                 m_faceCount, m_lastFaceCount, m_lastVertexCount;
 
-  BYTE                                  m_flags;
+  FLAGTRAITS(DebugIsoSurface, BYTE,m_flags);
   mutable DWORD                         m_octaCount  , m_octaCountObj;
   mutable DWORD                         m_tetraCount , m_tetraCountObj;
   mutable DWORD                         m_visibleFaceCount, m_visibleFaceCountObj;
@@ -209,14 +212,6 @@ private:
   inline void    clearVisibleVertexArray() {
     m_visibleVertexArray.clear(-1);
   }
-  inline DebugIsoSurface &setFlags(BYTE f) {
-    m_flags |= f;
-    return *this;
-  }
-  inline DebugIsoSurface &clrFlags(BYTE f) {
-    m_flags &= ~f;
-    return *this;
-  }
   inline D3Scene &getScene() {
     return m_sceneObject.getScene();
   }
@@ -235,7 +230,6 @@ public:
   void   markCurrentTetra( const Tetrahedron      &tetra );
   void   markCurrentFace(  const Face3            &fave  );
   void   markCurrentVertex(const IsoSurfaceVertex &vertex);
-  String getInfoMessage() const;
   void   asyncKillDebugger();
   void   handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
 
@@ -258,7 +252,7 @@ public:
     return m_currentOcta;
   }
   inline bool hasCurrentOcta() const {
-    return (m_flags & HAS_OCTA) != 0;
+    return isSet(HAS_OCTA);
   }
   inline bool hasVisibleVertexArray() const {
     return m_visibleVertexArray.size() > 0;

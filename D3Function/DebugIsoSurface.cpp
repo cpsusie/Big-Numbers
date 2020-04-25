@@ -495,10 +495,6 @@ void DebugIsoSurface::createData() {
   m_statistics = m_polygonizer->getStatistics();
 }
 
-String DebugIsoSurface::getInfoMessage() const {
-  return m_statistics.toString();
-}
-
 double DebugIsoSurface::evaluate(const Point3D &p) {
   *m_xp = p.x;
   *m_yp = p.y;
@@ -549,7 +545,7 @@ void DebugIsoSurface::markCurrentOcta(const Octagon &octa) {
 void DebugIsoSurface::markCurrentTetra(const Tetrahedron &tetra) {
   m_tetraCount++;
   m_currentTetra = tetra;
-  setFlags(HAS_TETRA).clrFlags(HAS_VERTEX);
+  setFlag(HAS_TETRA).clrFlag(HAS_VERTEX);
   clearVisibleVertexArray();
   m_debugger.handleStep(NEW_TETRA);
 }
@@ -557,13 +553,13 @@ void DebugIsoSurface::markCurrentTetra(const Tetrahedron &tetra) {
 void DebugIsoSurface::markCurrentFace(const Face3 &f) {
   m_visibleFaceCount++;
   m_currentFaceArray.add(f);
-  setFlags(HAS_FACE).clrFlags(HAS_VERTEX);
+  setFlag(HAS_FACE).clrFlag(HAS_VERTEX);
   m_debugger.handleStep(NEW_FACE);
 }
 
 void DebugIsoSurface::markCurrentVertex(const IsoSurfaceVertex &v) {
   m_vertexCount++;
-  setFlags(HAS_VERTEX);
+  setFlag(HAS_VERTEX);
   if(m_visibleVertexArray.size() == 3) {
     m_visibleVertexArray.clear(-1);
   }
@@ -600,7 +596,7 @@ void DebugIsoSurface::updateMeshObject() {
 }
 
 void DebugIsoSurface::updateOctaObject() {
-  if((m_flags & HAS_OCTA) == 0) {
+  if(!isSet(HAS_OCTA)) {
     m_octaCountObj = 0;
   } else if(m_octaCount > m_octaCountObj) {
     ((OctaObject*)m_sceneObject.getOctaObject())->setOctagon(m_currentOcta);
@@ -610,7 +606,7 @@ void DebugIsoSurface::updateOctaObject() {
 
 void DebugIsoSurface::updateTetraObject() {
   if(m_param.m_tetrahedral) {
-    if((m_flags & HAS_TETRA) == 0) {
+    if(!isSet(HAS_TETRA)) {
       m_tetraCountObj = 0;
     } else if(m_tetraCount > m_tetraCountObj) {
       ((TetraObject*)m_sceneObject.getTetraObject())->setTetrahedron(m_currentTetra);
@@ -620,7 +616,7 @@ void DebugIsoSurface::updateTetraObject() {
 }
 
 void DebugIsoSurface::updateFacesObject() {
-  if((m_flags & HAS_FACE) == 0) {
+  if(!isSet(HAS_FACE)) {
     m_sceneObject.setFacesObject(NULL);
     m_visibleFaceCountObj = 0;
   } else if(m_visibleFaceCount > m_visibleFaceCountObj) {
@@ -630,7 +626,7 @@ void DebugIsoSurface::updateFacesObject() {
 }
 
 void DebugIsoSurface::updateVertexObject() {
-  if((m_flags & HAS_VERTEX) == 0) {
+  if(!isSet(HAS_VERTEX)) {
     m_visibleVertexArraySizeObj = 0;
   } else if(m_visibleVertexArray.size() != m_visibleVertexArraySizeObj) {
     ((VertexObject*)m_sceneObject.getVertexObject())->setSurfaceVertexArray(m_visibleVertexArray);
@@ -642,9 +638,9 @@ static String flagsToString(BYTE flags) {
   String result;
   const TCHAR *delim = NULL;
 #define ADDFLAG(f) if(flags & HAS_##f) { if(delim) result += delim; else delim = _T(" "); result += _T(#f); }
-  ADDFLAG(OCTA);
-  ADDFLAG(TETRA);
-  ADDFLAG(FACE);
+  ADDFLAG(OCTA  );
+  ADDFLAG(TETRA );
+  ADDFLAG(FACE  );
   ADDFLAG(VERTEX);
   return result;
 }
