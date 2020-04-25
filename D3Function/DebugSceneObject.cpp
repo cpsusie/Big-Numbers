@@ -1,7 +1,7 @@
 #include "stdafx.h"
-#include <D3DGraphics/D3Camera.h>
 
-#ifdef DEBUG_POLYGONIZER
+#ifdef ISODEBUGGER
+#include <D3DGraphics/D3Camera.h>
 #include "Debugger.h"
 #include "DebugIsoSurface.h"
 // --------------------------------------------- DebugSceneobject -------------------------------------
@@ -164,4 +164,4 @@ bool DebugSceneobject::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) {
   return false;
 }
 
-#endif // DEBUG_POLYGONIZER
+#endif // ISODEBUGGER

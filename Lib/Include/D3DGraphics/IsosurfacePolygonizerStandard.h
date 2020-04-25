@@ -154,7 +154,7 @@ public:
 //#define DUMP_FACEARRAY
 //#define VALIDATE_OPPOSITESIGN
 //#define VALIDATE_PUTFACE
-//#define DEBUG_POLYGONIZER // shoud be defined in compile-options, to make it defined in D3FunctionPlotter too
+//#define ISODEBUGGER // shoud be defined in compile-options, to make it defined in D3FunctionPlotter too
 
 class CubeEdgeHashKey {
 private:
@@ -266,7 +266,7 @@ public:
   String toString() const;
 };
 
-#ifdef DEBUG_POLYGONIZER
+#ifdef ISODEBUGGER
 class Octagon {
 private:
   const StackedCube *m_cube;
@@ -339,7 +339,7 @@ public:
   }
 };
 
-#endif // DEBUG_POLYGONIZER
+#endif // ISODEBUGGER
 
 class IsoSurfaceEvaluator {
 public:
@@ -347,7 +347,7 @@ public:
   virtual void   receiveFace(const Face3 &face) = 0;
   virtual void   receiveDebugVertices(int id,...) {
   }
-#ifdef DEBUG_POLYGONIZER
+#ifdef ISODEBUGGER
   virtual void   markCurrentOcta(  const Octagon          &octa  ) {
   }
   virtual void   markCurrentTetra( const Tetrahedron      &tetra ) {
@@ -356,7 +356,7 @@ public:
   }
   virtual void   markCurrentVertex(const IsoSurfaceVertex &vertex) {
   }
-#endif // DEBUG_POLYGONIZER
+#endif // ISODEBUGGER
 };
 
 class PolygonizerStatistics {
@@ -459,9 +459,9 @@ private:
   bool                putInitialCube();
   void                addSurfaceVertices(const StackedCube &cube);
   inline void         doTetra(const StackedCube &cube, CubeCorner c1, CubeCorner c2, CubeCorner c3, CubeCorner c4) {
-#ifdef DEBUG_POLYGONIZER
+#ifdef ISODEBUGGER
     m_eval.markCurrentTetra(Tetrahedron(c1,c2,c3,c4));
-#endif // DEBUG_POLYGONIZER
+#endif // ISODEBUGGER
     doTetra(*cube.m_corners[c1], *cube.m_corners[c2], *cube.m_corners[c3], *cube.m_corners[c4]);
   }
 
@@ -483,9 +483,9 @@ private:
 #endif
     const Face3 f(i1, i2, i3, m_color);
     m_face3Buffer.add(f);
-#ifdef DEBUG_POLYGONIZER
+#ifdef ISODEBUGGER
     m_eval.markCurrentFace(f);
-#endif // DEBUG_POLYGONIZER
+#endif // ISODEBUGGER
   }
   inline void         putFace3R(UINT i1, UINT i2, UINT i3) {
 #ifdef VALIDATE_PUTFACE

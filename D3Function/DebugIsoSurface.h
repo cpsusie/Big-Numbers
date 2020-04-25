@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef DEBUG_POLYGONIZER
+#ifdef ISODEBUGGER
 
 #include <FlagTraits.h>
 #include <Math/Expression/ExpressionWrapper.h>
@@ -294,4 +294,4 @@ public:
   String getInfoString() const;
 };
 
-#endif // DEBUG_POLYGONIZER
+#endif // ISODEBUGGER

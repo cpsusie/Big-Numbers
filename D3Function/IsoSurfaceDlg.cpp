@@ -145,9 +145,9 @@ bool CIsoSurfaceDlg::validate() {
     showWarning(_T("Size must be > 0"));
     return false;
   }
-  if((m_lambda <= 0) || (m_lambda > 0.45)) {
+  if((m_lambda < 0) || (m_lambda > 0.45)) {
     OnGotoLambda();
-    showWarning(_T("Lambda must be > 0, <= 0.45"));
+    showWarning(_T("Lambda must be >= 0, <= 0.45"));
     return false;
   }
   if(!validateInterval(IDC_EDIT_XFROM, IDC_EDIT_XTO)) {
@@ -186,11 +186,11 @@ void CIsoSurfaceDlg::enableTimeFields() {
   GetDlgItem(IDC_EDIT_TIMETO        )->EnableWindow(enable);
   GetDlgItem(IDC_EDIT_FRAMECOUNT    )->EnableWindow(enable);
   setWindowText(this, IDC_STATIC_FUNCTION, enable ? _T("&S(t,x,y,z) =") : _T("&S(x,y,z) ="));
-#ifndef DEBUG_POLYGONIZER
+#ifndef ISODEBUGGER
   const bool enableDebugPolygonizer = false;
 #else
   const bool enableDebugPolygonizer = !enable;
-#endif // DEBUG_POLYGONIZER
+#endif // ISODEBUGGER
 
   GetDlgItem(IDC_CHECK_DEBUGPOLYGONIZER)->EnableWindow(enableDebugPolygonizer);
   if(!enableDebugPolygonizer) {

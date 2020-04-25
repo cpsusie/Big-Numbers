@@ -35,12 +35,12 @@ public:
 #define INFO_EDIT  0x01
 #define INFO_MEM   0x02
 
-#ifdef DEBUG_POLYGONIZER
+#ifdef ISODEBUGGER
 #define INFO_DEBUG 0x04
 #include "Debugger.h"
 #else
 #define INFO_DEBUG 0
-#endif // DEBUG_POLYGONIZER
+#endif // ISODEBUGGER
 
 #define INFO_ALL  (INFO_EDIT|INFO_MEM|INFO_DEBUG)
 
@@ -66,7 +66,7 @@ private:
   IsoSurfaceParameters            m_isoSurfaceParam;
   String                          m_memoryInfo, m_editorInfo;
 
-#ifdef DEBUG_POLYGONIZER
+#ifdef ISODEBUGGER
   Debugger                   *m_debugger;
   bool                        m_hasIsoSurfaceParam;
   bool                        m_hasFinalDebugIsoSurface;
@@ -113,8 +113,7 @@ private:
   inline FinalDebugIsoSurface *getFinalDebugIsoSurface() const {
     return hasFinalDebugIsoSurface() ? (FinalDebugIsoSurface*)getCalculatedObject() : NULL;
   }
-
-#endif // DEBUG_POLYGONIZER
+#endif // ISODEBUGGER
 
   void OnFileOpen(int id);
   void onFileMruFile(int index);

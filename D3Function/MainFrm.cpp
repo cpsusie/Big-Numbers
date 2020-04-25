@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include <ProcessTools.h>
-#ifdef DEBUG_POLYGONIZER
+#ifdef ISODEBUGGER
 #include <ThreadPool.h>
-#endif
+#endif // ISODEBUGGER
 #include <D3DGraphics/MeshCreators.h>
 #include <D3DGraphics/D3SceneEditor.h>
 #include <D3DGraphics/D3Camera.h>
@@ -82,13 +82,13 @@ static UINT indicators[] = {
 #define REPAINT() Invalidate(FALSE)
 
 CMainFrame::CMainFrame()
-#ifdef DEBUG_POLYGONIZER
+#ifdef ISODEBUGGER
 : m_debugger(               NULL )
 , m_hasIsoSurfaceParam(     false)
 , m_hasFinalDebugIsoSurface(false)
 , m_octaBreakPoints(        100  )
 , m_breakPointsEnabled(     true )
-#endif // DEBUG_POLYGONIZER
+#endif // ISODEBUGGER
 {
   m_statusPanesVisible     = true;
   m_timerRunning           = false;
@@ -443,9 +443,9 @@ void CMainFrame::deleteCalculatedObject() {
   if(oldObj) {
     m_scene.removeVisual(oldObj);
     SAFEDELETE(oldObj);
-#ifdef DEBUG_POLYGONIZER
+#ifdef ISODEBUGGER
     m_hasFinalDebugIsoSurface = false;
-#endif // DEBUG_POLYGONIZER
+#endif // ISODEBUGGER
   }
 }
 
@@ -629,22 +629,22 @@ public:
 
 void CMainFrame::ajourDebugMenu() {
   DebugMenuFlags menuFlags;
-#ifdef DEBUG_POLYGONIZER
+#ifdef ISODEBUGGER
 #define FLAGS menuFlags.m_flags
   FLAGS.m_enableStart       = !hasDebugger() && m_hasIsoSurfaceParam;
   FLAGS.m_hasDebugger       = hasDebugger();
   FLAGS.m_debuggerPaused    = isDebuggerPaused();
   FLAGS.m_enableBreak       = FLAGS.m_debuggerPaused || hasFinalDebugIsoSurface();
   FLAGS.m_enableToggleBreak = FLAGS.m_debuggerPaused || (hasFinalDebugIsoSurface() && getFinalDebugIsoSurface()->hasSelectedCube());
-#endif // DEBUG_POLYGONIZER
+#endif // ISODEBUGGER
 
   enableSubMenuContainingId(this, ID_DEBUG_GO, menuFlags.enableDebugMenu());
+#ifdef ISODEBUGGER
   if(FLAGS.m_enableStart) {
     setMenuItemText(this, ID_DEBUG_GO, _T("Start debugging\tF5"));
   } else if(FLAGS.m_debuggerPaused) {
     setMenuItemText(this, ID_DEBUG_GO, _T("Go\tF5"));
   }
-
   enableMenuItem(           this, ID_DEBUG_GO                   , menuFlags.enableGo()          );
   enableMenuItem(           this, ID_DEBUG_STEPCUBE             , menuFlags.enableStep()        );
   enableMenuItem(           this, ID_DEBUG_STEPTETRA            , menuFlags.enableStep()        );
@@ -654,9 +654,10 @@ void CMainFrame::ajourDebugMenu() {
   enableMenuItem(           this, ID_DEBUG_DISABLEALLBREAKPOINTS, FLAGS.m_enableBreak           );
   enableMenuItem(           this, ID_DEBUG_CLEARALLBREAKPOINTS  , FLAGS.m_enableBreak           );
   enableMenuItem(           this, ID_DEBUG_STOPDEBUGGING        , menuFlags.enableStopDebugger());
+#endif // ISODEBUGGER
 }
 
-#ifndef DEBUG_POLYGONIZER
+#ifndef ISODEBUGGER
 void CMainFrame::startDebugging() {}
 void CMainFrame::stopDebugging() {}
 void CMainFrame::OnDebugGo() {}
@@ -668,7 +669,6 @@ void CMainFrame::OnDebugStopDebugging() {}
 void CMainFrame::OnDebugToggleBreakOnPrevCube() {}
 void CMainFrame::OnDebugDisableAllBreakPoints() {}
 void CMainFrame::OnDebugClearAllBreakPoints() {}
-void CMainFrame::OnDebugAutoFocusCurrentCube() {}
 
 LRESULT CMainFrame::OnMsgKillDebugger(WPARAM wp, LPARAM lp) { return 0; }
 #else
@@ -824,7 +824,7 @@ void CMainFrame::updateDebugInfo() {
     m_debugInfo += m_debugger->getDebugSurface().getInfoString();
   }
 }
-#endif // DEBUG_POLYGONIZER
+#endif // ISODEBUGGER
 
 void CMainFrame::updateMemoryInfo() {
   const PROCESS_MEMORY_COUNTERS mem = getProcessMemoryUsage();
@@ -844,7 +844,7 @@ void CMainFrame::show3DInfo(BYTE flags) {
   if(!isInfoPanelVisible()) return;
   if(flags & INFO_MEM  ) updateMemoryInfo();
   if(flags & INFO_EDIT ) updateEditorInfo();
-#ifndef DEBUG_POLYGONIZER
+#ifndef ISODEBUGGER
   showInfo(_T("%s\n%s"), m_memoryInfo.cstr(), m_editorInfo.cstr());
 #else
   if(flags & INFO_DEBUG) updateDebugInfo();
@@ -853,7 +853,7 @@ void CMainFrame::show3DInfo(BYTE flags) {
           ,renderSceneCount, renderInfoCount
           ,m_editorInfo.cstr()
           ,m_debugInfo.cstr());
-#endif //  DEBUG_POLYGONIZER
+#endif //  ISODEBUGGER
 }
 
 void CMainFrame::showInfo(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
@@ -900,7 +900,7 @@ void CMainFrame::OnFileIsoSurface() {
       return;
     }
     m_isoSurfaceParam = dlg.getData();
-#ifndef DEBUG_POLYGONIZER
+#ifndef ISODEBUGGER
     setCalculatedObject(m_isoSurfaceParam);
     REPAINT();
 #else
@@ -911,7 +911,7 @@ void CMainFrame::OnFileIsoSurface() {
       setCalculatedObject(m_isoSurfaceParam);
       REPAINT();
     }
-#endif // DEBUG_POLYGONIZER
+#endif // ISODEBUGGER
   } catch(Exception e) {
     showException(e);
   }

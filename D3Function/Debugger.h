@@ -1,10 +1,6 @@
 #pragma once
 
-#ifdef DEBUG_POLYGONIZER
-
-#ifndef _DEBUG
-#error "Must compile with _DEBUG"
-#endif
+#ifdef ISODEBUGGER
 
 #include <InterruptableRunnable.h>
 #include <PropertyContainer.h>
@@ -69,4 +65,4 @@ public:
   }
 };
 
-#endif // DEBUG_POLYGONIZER
+#endif // ISODEBUGGER

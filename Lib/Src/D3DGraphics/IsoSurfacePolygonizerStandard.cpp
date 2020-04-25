@@ -92,9 +92,9 @@ void IsoSurfacePolygonizer::polygonize(const Point3D &start
   m_edgeMap.setCapacity(     HASHSIZE);
   while(hasActiveCubes()) { // process active cubes until none left
     const StackedCube cube = getActiveCube();
-#ifdef DEBUG_POLYGONIZER
+#ifdef ISODEBUGGER
     m_eval.markCurrentOcta(cube);
-#endif // DEBUG_POLYGONIZER
+#endif // ISODEBUGGER
     addSurfaceVertices(cube);
 
     // test six face directions, maybe add to stack:
@@ -295,20 +295,20 @@ void IsoSurfacePolygonizer::flushFaceBuffer() {
     const Face3 &f      = m_face3Buffer[i];
     const UINT   findex = (UINT)m_faceArray.size();
     m_faceArray.add(f);
-#ifdef DEBUG_POLYGONIZER
+#ifdef ISODEBUGGER
     m_eval.receiveFace(f);
-#endif // DEBUG_POLYGONIZER
+#endif // ISODEBUGGER
   }
   clearFaceBuffer();
 }
 
 void IsoSurfacePolygonizer::flushFaceArray() {
-#ifndef DEBUG_POLYGONIZER
+#ifndef ISODEBUGGER
   const size_t n = m_faceArray.size();
   for(size_t i = 0;i < n; i++) {
     m_eval.receiveFace(m_faceArray[i]);
   }
-#endif // DEBUG_POLYGONIZER
+#endif // ISODEBUGGER
 }
 
 void IsoSurfacePolygonizer::resetTables() {
@@ -473,9 +473,9 @@ UINT IsoSurfacePolygonizer::getVertexId(const HashedCubeCorner &c1, const Hashed
   const UINT *p = m_edgeMap.get(edgeKey);
   if(p != NULL) {
     m_statistics.m_edgeHits++;
-#ifdef DEBUG_POLYGONIZER
+#ifdef ISODEBUGGER
     m_eval.markCurrentVertex(m_vertexArray[*p]);
-#endif // DEBUG_POLYGONIZER
+#endif // ISODEBUGGER
     return *p; // previously computed
   }
 
@@ -486,9 +486,9 @@ UINT IsoSurfacePolygonizer::getVertexId(const HashedCubeCorner &c1, const Hashed
   const UINT result = (UINT)m_vertexArray.size();
   m_vertexArray.add(vertex);
   m_edgeMap.put(edgeKey, result);
-#ifdef DEBUG_POLYGONIZER
+#ifdef ISODEBUGGER
   m_eval.markCurrentVertex(m_vertexArray[result]);
-#endif // DEBUG_POLYGONIZER
+#endif // ISODEBUGGER
   return result;
 }
 

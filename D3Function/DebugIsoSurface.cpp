@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#ifdef DEBUG_POLYGONIZER
+#ifdef ISODEBUGGER
 
 #include <D3DGraphics/D3Cube.h>
 #include <D3DGraphics/D3Camera.h>
@@ -798,4 +798,4 @@ String FinalDebugIsoSurface::getInfoString() const {
   return result;
 }
 
-#endif // DEBUG_POLYGONIZER
+#endif // ISODEBUGGER

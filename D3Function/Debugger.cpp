@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#ifdef DEBUG_POLYGONIZER
+#ifdef ISODEBUGGER
 
 #include <Thread.h>
 #include "DebugIsoSurface.h"
@@ -138,4 +138,4 @@ String Debugger::getStateName(DebuggerState state) { // static
 #undef CASESTR
 }
 
-#endif // DEBUG_POLYGONIZER
+#endif // ISODEBUGGER

@@ -159,10 +159,13 @@ public:
     : m_i1(i1), m_i2(i2), m_i3(i3), m_color(color)
   {
   }
+#ifdef VALIDATE_PUTFACE
   Face3 &reverseOrientation() {
     std::swap(m_i1, m_i2);
     return *this;
   }
+#endif // VALIDATE_PUTFACE
+
   inline void reset() {
     m_i1 = m_i2 = m_i3 = 0;
     m_color = 0;
@@ -216,10 +219,10 @@ public:
 //#define DUMP_EDGEMAP
 //#define DUMP_VERTEXARRAY
 //#define DUMP_FACEARRAY
-#define VALIDATE_OPPOSITESIGN
+//#define VALIDATE_OPPOSITESIGN
 //#define VALIDATE_PUTFACE
 //#define VALIDATE_CUBES
-//#define DEBUG_POLYGONIZER // should be defined in compile-options, to make it defined in D3FunctionPlotter too
+//#define ISODEBUGGER // should be defined in compile-options, to make it defined in D3FunctionPlotter too
 
 class CubeEdgeHashKey {
 private:
@@ -348,14 +351,6 @@ public:
   String toString() const;
 };
 
-class SnappedCornerSet : public BitSet8 {
-public:
-  inline void add(CubeCorner cb) {
-    __super::add(cb);
-  }
-  String toString() const;
-};
-
 // Partitioning cell (cube)
 class StackedCube {
 private:
@@ -369,7 +364,6 @@ public:
   Point3DKey              m_key;
   // Eight corners, each one in m_cornerMap
   const HashedCubeCorner *m_corners[8];
-  SnappedCornerSet        m_snappedCornerSet;
   inline StackedCube()
     : m_index(-1), m_index0(-1)
   {
@@ -424,10 +418,10 @@ public:
   String toString(int precision = 6) const;
 };
 
-#ifdef DEBUG_POLYGONIZER
+#ifdef ISODEBUGGER
 class Octagon;
 class Tetrahedron;
-#endif // DEBUG_POLYGONIZER
+#endif // ISODEBUGGER
 
 class IsoSurfaceEvaluator {
 public:
@@ -435,7 +429,7 @@ public:
   virtual void   receiveFace(const Face3 &face) = 0;
   virtual void   receiveDebugVertices(int id,...) {
   }
-#ifdef DEBUG_POLYGONIZER
+#ifdef ISODEBUGGER
   virtual void   markCurrentOcta(  const Octagon          &octa  ) {
   }
   virtual void   markCurrentTetra( const Tetrahedron      &tetra ) {
@@ -444,7 +438,7 @@ public:
   }
   virtual void   markCurrentVertex(const IsoSurfaceVertex &vertex) {
   }
-#endif // DEBUG_POLYGONIZER
+#endif // ISODEBUGGER
 };
 
 class PolygonizerStatistics {
@@ -549,7 +543,7 @@ public:
 #endif
 };
 
-#ifdef DEBUG_POLYGONIZER
+#ifdef ISODEBUGGER
 class Octagon {
 private:
   const PolygonizerBase *m_polygonizer;
@@ -580,10 +574,7 @@ public:
   inline bool isEmpty() const {
     return m_polygonizer == NULL;
   }
-  String toString(int precision = 6) const {
-    return isEmpty() ? _T("Octa:---")
-                     : format(_T("Octa:%s"), getCube()->toString(precision).cstr());
-  }
+  String toString(int precision = 6) const;
 };
 
 class Tetrahedron {
@@ -619,16 +610,9 @@ public:
     }
     return c;
   }
-  String toString() const {
-    return isEmpty() ? _T("Tetra:---")
-                     : format(_T("Tetra:Corners:[%s,%s,%s,%s]")
-                             ,cubeCornerToString(m_corner[0]).cstr()
-                             ,cubeCornerToString(m_corner[1]).cstr()
-                             ,cubeCornerToString(m_corner[2]).cstr()
-                             ,cubeCornerToString(m_corner[3]).cstr());
-  }
+  String toString() const;
 };
-#endif // DEBUG_POLYGONIZER
+#endif // ISODEBUGGER
 
 class IsoSurfacePolygonizer : public PolygonizerBase {
 private:
@@ -656,16 +640,15 @@ private:
   bool                putInitialCube();
   void                addSurfaceVertices(const StackedCube &cube);
   inline void         doTetra(const StackedCube &cube, CubeCorner c1, CubeCorner c2, CubeCorner c3, CubeCorner c4) {
-#ifdef DEBUG_POLYGONIZER
+#ifdef ISODEBUGGER
     m_eval.markCurrentTetra(Tetrahedron(c1,c2,c3,c4));
-#endif // DEBUG_POLYGONIZER
+#endif // ISODEBUGGER
     doTetra(*cube.m_corners[c1], *cube.m_corners[c2], *cube.m_corners[c3], *cube.m_corners[c4]);
   }
 
   void                doTetra(   const HashedCubeCorner &a, const HashedCubeCorner &b, const HashedCubeCorner &c, const HashedCubeCorner &d);
   void                doCube1(         StackedCube &cube);
   void                doCube2(         size_t index);
-  bool                doCubeFace(const StackedCube &cube, CubeFace face);
   bool                addToDoneSet(const Point3DKey &key);
   void                testFace (int i, int j, int k, const StackedCube &oldCube, CubeFace face, CubeCorner c1, CubeCorner c2, CubeCorner c3, CubeCorner c4);
   void                cleanup();
@@ -674,21 +657,27 @@ private:
     m_statistics.m_evalCount++;
     return m_eval.evaluate(p);
   }
+#ifdef VALIDATE_PUTFACE
   bool checkOrientation(const Face3 &f) const;
+#endif //  VALIDATE_PUTFACE
+
   inline void         putFace3(UINT i1, UINT i2, UINT i3) {
 #ifdef VALIDATE_PUTFACE
     if(i1 >= m_vertexArray.size() || i2 >= m_vertexArray.size() || i3 >= m_vertexArray.size()) {
       throwException(_T("Invalid face(%u,%d,%d). vertexArray.size==%u"), i1,i2,i3, m_vertexArray.size());
     }
-#endif
     Face3 f(i1, i2, i3, m_color);
     if(!checkOrientation(f)) {
+      showWarning(_T("Face have wrong oriention"));
       f.reverseOrientation();
     }
+#else
+    Face3 f(i1, i2, i3, m_color);
+#endif // VALIDATE_PUTFACE
     m_face3Buffer.add(f);
-#ifdef DEBUG_POLYGONIZER
+#ifdef ISODEBUGGER
     m_eval.markCurrentFace(f);
-#endif // DEBUG_POLYGONIZER
+#endif // ISODEBUGGER
   }
   inline void         putFace3R(UINT i1, UINT i2, UINT i3) {
 #ifdef VALIDATE_PUTFACE
@@ -713,7 +702,7 @@ private:
   }
   void                    pushCube(const StackedCube &cube);
   UINT                    getCubeEdgeVertexId(StackedCube &cube, CubeEdge edge);
-  UINT                    getVertexId(       const HashedCubeCorner &c0, const HashedCubeCorner &c1, BYTE coordIndex, BYTE &snapIndex);
+  UINT                    getVertexId(       const HashedCubeCorner &c0, const HashedCubeCorner &c1, BYTE coordIndex);
   Point3D                 getNormal(const Point3D &point);
   const HashedCubeCorner *getCorner(int i, int j, int k);
 
