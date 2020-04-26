@@ -47,7 +47,7 @@ public:
 class Decompressor : public InterruptableRunnable, public ByteCounter {
 private:
   DecompressJobQueue   &m_jobQueue;
-  mutable FastSemaphore m_gate, m_terminated;
+  mutable FastSemaphore m_gate;
   DecompressSingleJob   m_currentJob;
   String                m_currentMsg;
   UINT64                m_byteCounterStart, m_currentFileSize;
@@ -62,7 +62,6 @@ private:
   }
 public:
   Decompressor(DecompressJobQueue &jobQueue);
-  ~Decompressor();
   inline USHORT getSubProgress() {
     return (USHORT)PERCENT(getCount() - m_byteCounterStart, m_currentFileSize);
   }
@@ -79,7 +78,7 @@ public:
   UINT getMaxChunkSize() const {
     return 100000;
   }
-  UINT run();
+  UINT safeRun();
 };
 
 Decompressor::Decompressor(DecompressJobQueue &jobQueue) : m_jobQueue(jobQueue) {
@@ -87,34 +86,22 @@ Decompressor::Decompressor(DecompressJobQueue &jobQueue) : m_jobQueue(jobQueue) 
   setCurrentFileSize();
 }
 
-Decompressor::~Decompressor() {
-  setInterrupted();
-  m_terminated.wait();
-}
-
-UINT Decompressor::run() {
-  try {
-    m_terminated.wait();
-    for(;;) {
-      checkInterruptAndSuspendFlags();
-      try {
-        m_currentJob = m_jobQueue.get(500);
-      } catch(...) {
-        if(!m_jobQueue.isEmpty()) continue;
-        break;
-      }
-      checkInterruptAndSuspendFlags();
-      setCurrentMessage(m_currentJob.getTablebase()->getName());
-      setCurrentFileSize();
-      m_currentJob.getTablebase()->decompress(this);
-      verbose(_T("\n"));
+UINT Decompressor::safeRun() {
+  for(;;) {
+    checkInterruptAndSuspendFlags();
+    try {
+      m_currentJob = m_jobQueue.get(500);
+    } catch(...) {
+      if(!m_jobQueue.isEmpty()) continue;
+      break;
     }
-    setCurrentMessage(_T("Done"));
-  } catch(...) {
-    // do nothing
+    checkInterruptAndSuspendFlags();
+    setCurrentMessage(m_currentJob.getTablebase()->getName());
+    setCurrentFileSize();
+    m_currentJob.getTablebase()->decompress(this);
+    verbose(_T("\n"));
   }
-  setTerminated();
-  m_terminated.notify();
+  setCurrentMessage(_T("Done"));
   return 0;
 }
 
@@ -157,7 +144,7 @@ public:
          | IR_INTERRUPTABLE   | IR_SUSPENDABLE
          | IR_SHOWPROGRESSMSG | IR_SHOWTIMEESTIMATE;
   }
-  UINT run();
+  UINT safeRun();
 };
 
 DecompressJob::DecompressJob(const EndGameTablebaseList &list) : m_jobQueue(list) {
@@ -186,7 +173,7 @@ DecompressJob::~DecompressJob() {
 
 bool DecompressJob::anyDecompressorsActive() const {
   for(size_t i = 0; i < m_decompArray.size(); i++) {
-    if(!m_decompArray[i]->isTerminated()) {
+    if(!m_decompArray[i]->isJobDone()) {
       return true;
     }
   }
@@ -237,7 +224,7 @@ void DecompressJob::waitUntilAllTerminated() {
   }
 }
 
-UINT DecompressJob::run() {
+UINT DecompressJob::safeRun() {
   for(size_t i = 0; i < m_decompArray.size(); i++) {
     ThreadPool::executeNoWait(*m_decompArray[i]);
   }
