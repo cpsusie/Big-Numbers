@@ -866,6 +866,9 @@
     <ClCompile Include="GenericDebugger.cpp">
       <Filter>Source Files\Debugging and Exceptions</Filter>
     </ClCompile>
+    <ClCompile Include="LinearIterator.cpp">
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -1283,6 +1286,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\GenericDebugger.h">
       <Filter>Header Files\Debugging and Exceptions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\LinearIterator.h">
+      <Filter>Header Files\Math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

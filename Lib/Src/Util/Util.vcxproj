@@ -829,6 +829,7 @@
     <ClInclude Include="..\..\Include\Iterator.h" />
     <ClInclude Include="..\..\Include\KMPAutomate.h" />
     <ClInclude Include="..\..\Include\Language.h" />
+    <ClInclude Include="..\..\Include\LinearIterator.h" />
     <ClInclude Include="..\..\Include\LineTracer.h" />
     <ClInclude Include="..\..\Include\LinkedList.h" />
     <ClInclude Include="..\..\Include\LRparser.h" />
@@ -1034,6 +1035,7 @@
     <ClCompile Include="Language.cpp" />
     <ClCompile Include="LexFileStream.cpp" />
     <ClCompile Include="LexStringStream.cpp" />
+    <ClCompile Include="LinearIterator.cpp" />
     <ClCompile Include="LineTracer.cpp" />
     <ClCompile Include="ListBox.cpp" />
     <ClCompile Include="ListImpl.cpp" />
