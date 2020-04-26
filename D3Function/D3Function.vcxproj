@@ -651,7 +651,6 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="BreakPointContainer.h" />
     <ClInclude Include="Debugger.h" />
     <ClInclude Include="DebugIsoSurface.h" />
     <ClInclude Include="EnterOptionsNameDlg.h" />
@@ -671,7 +670,6 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BreakPointContainer.cpp" />
     <ClCompile Include="Debugger.cpp" />
     <ClCompile Include="DebugIsoSurface.cpp" />
     <ClCompile Include="DebugSceneObject.cpp" />

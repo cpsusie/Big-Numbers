@@ -66,9 +66,6 @@
     <ClInclude Include="SplitView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="BreakPointContainer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MainFrm.cpp">
@@ -117,9 +114,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SplitView.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="BreakPointContainer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

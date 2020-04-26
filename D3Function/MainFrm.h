@@ -67,12 +67,12 @@ private:
   String                          m_memoryInfo, m_editorInfo;
 
 #ifdef ISODEBUGGER
-  Debugger                   *m_debugger;
-  bool                        m_hasIsoSurfaceParam;
-  bool                        m_hasFinalDebugIsoSurface;
-  BitSet                      m_octaBreakPoints;
-  bool                        m_breakPointsEnabled;
-  String                      m_debugInfo;
+  Debugger                       *m_debugger;
+  bool                            m_hasIsoSurfaceParam;
+  bool                            m_hasFinalDebugIsoSurface;
+  BitSet                          m_octaBreakPoints;
+  bool                            m_breakPointsEnabled;
+  String                          m_debugInfo;
 
   void killDebugger(bool showCreateSurface);
   inline bool hasDebugger() const {
