@@ -1,6 +1,9 @@
 #pragma once
 
 #include <PropertyContainer.h>
+#include <FastSemaphore.h>
+#include <Iterator.h>
+#include <FlagTraits.h>
 #include <MFCUtil/ColorSpace.h>
 #include "D3World.h"
 #include "D3Ray.h"
@@ -21,7 +24,9 @@ typedef enum {
 
 
 class D3Camera : public D3SceneObject, public PropertyContainer {
+  friend class D3CameraSlideAnimator;
 private:
+  FastSemaphore           m_renderLock;
   HWND                    m_hwnd;
   bool                    m_rightHanded;
   D3DCOLOR                m_backgroundColor;
@@ -43,6 +48,12 @@ private:
   D3Camera(           const D3Camera &src); // not implemented
   D3Camera &operator=(const D3Camera &src); // not implemented
   D3Camera(const D3Camera *src, HWND hwnd);
+  // call m_scene.render(*this)
+  void doRender();
+  // disable notifations and call m_renderLock.wait();
+  void beginAnimate();
+  // enable notifications and call m_renderLock.notify();
+  void endAnimate();
 public:
   D3Camera(D3Scene &scene, HWND hwnd);
   D3Camera *clone(HWND hwnd) const;
@@ -160,7 +171,28 @@ public:
   D3Ray getPickedRay(const CPoint &point) const;
   // Point in window-coordinates (m_hwnd)
   D3SceneObjectVisual *getPickedVisual(const CPoint &p, long mask = -1, D3DXVECTOR3 *hitPoint = NULL, D3Ray *ray = NULL, float *dist = NULL, D3PickedInfo *info = NULL) const;
-  // call m_scene.render(*this)
+  // call m_renderLock.wait(), doRender(), m_renderLock.notify();
+  // if any exception occur, m_renderLock.notify() is called, and exception if rethrown
   void render();
   String toString() const;
+};
+
+typedef enum {
+  CAMSLIDE_LINEAR
+ ,CAMSLIDE_SIGMOID
+} CameraSlideType;
+
+class D3CameraSlideAnimator {
+  const D3World     m_oldWorld        , m_newWorld;
+  const float       m_oldVewAngle     , m_newViewAngle;
+  const float       m_oldNearViewPlane, m_newNearViewPlane;
+  RGBColor          m_oldBackground   , m_newBackground;
+  FLAGTRAITS(D3CameraSlideAnimator, BYTE, m_flags);
+  Iterator<double> *m_iterator;
+  D3Camera         &m_cam;
+public:
+  D3CameraSlideAnimator(D3Camera &cam, const D3World &newWorld, float newViewAngle = 0, float newNearViewPlane = 0);
+  ~D3CameraSlideAnimator();
+  D3CameraSlideAnimator &changeToBackground(const D3DCOLOR newBackgroundColor);
+  D3CameraSlideAnimator &animate(UINT msec, UINT steps = 20, CameraSlideType type = CAMSLIDE_LINEAR);
 };

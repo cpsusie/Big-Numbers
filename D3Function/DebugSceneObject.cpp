@@ -133,12 +133,28 @@ D3DXVECTOR3 DebugSceneobject::getCubeCamVector() const {
   }
 }
 
+
+void DebugSceneobject::moveCamToNewCubeCenter() {
+  const D3DXVECTOR3 cc = getCubeCenter();
+  D3Camera         *cam = dbgCAM();
+  D3World           w = cam->getD3World();
+  w.setPos(cc + m_currentCamDistance * getCubeCamVector()).setLookAt(cc);
+  D3CameraSlideAnimator animator(*cam, w);
+  animator.animate(200, 10);
+}
+
+#define SLIDECAMERA
+
 void DebugSceneobject::handleDebuggerPaused() {
   if(hasCubeCenter()) {
+#ifndef SLIDECAMERA
     const D3DXVECTOR3 cc  = getCubeCenter();
     D3Camera         *cam = dbgCAM();
     D3World           w   = cam->getD3World();
     cam->setD3World(w.setPos(cc + m_currentCamDistance * getCubeCamVector())).setLookAt(cc);
+#else
+    moveCamToNewCubeCenter();
+#endif // SLIDECAMERA
     adjustDebugLightDir();
   }
 }

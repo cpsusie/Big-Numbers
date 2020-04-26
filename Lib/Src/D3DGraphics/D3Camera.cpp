@@ -221,7 +221,7 @@ D3Camera &D3Camera::setLookAt(const D3DXVECTOR3 &point) {
 }
 
 D3Camera &D3Camera::setLookAt(const D3DXVECTOR3 &pos, const D3DXVECTOR3 &lookAt, const D3DXVECTOR3 &up) {
-  return setD3World(D3World().setPos(pos).setOrientation(createOrientation(lookAt - pos, up)));
+  return setD3World(D3World().setLookAt(pos, lookAt, up));
 }
 
 D3Ray D3Camera::getPickedRay(const CPoint &point) const {
@@ -243,8 +243,29 @@ D3SceneObjectVisual *D3Camera::getPickedVisual(const CPoint &p, long mask, D3DXV
   return getScene().getPickedVisual(*this, pickedRay, mask, hitPoint, dist, info);
 }
 
-void D3Camera::render() {
+void D3Camera::doRender() {
   getScene().render(*this);
+}
+
+void D3Camera::render() {
+  m_renderLock.wait();
+  try {
+    doRender();
+    m_renderLock.notify();
+  } catch(...) {
+    m_renderLock.notify();
+    throw;
+  }
+}
+
+void D3Camera::beginAnimate() {
+  m_renderLock.wait();
+  setNotifyEnable(false);
+}
+
+void D3Camera::endAnimate() {
+  setNotifyEnable(true);
+  m_renderLock.notify();
 }
 
 String D3Camera::toString() const {

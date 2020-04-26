@@ -88,6 +88,11 @@ public:
   inline const D3DXQUATERNION &getOrientation() const {
     return m_q;
   }
+  inline D3World &setLookAt(const D3DXVECTOR3 &point) {
+    return setLookAt(getPos(), point, getUp());
+  }
+  D3World &setLookAt(const D3DXVECTOR3 &pos, const D3DXVECTOR3 &lookAt, const D3DXVECTOR3 &up);
+
   D3DXMATRIX &createViewMatrix(D3DXMATRIX &dst, bool rightHanded) const;
   String toString(int dec = 3) const;
 };

@@ -347,13 +347,18 @@ UINT D3Scene::getTextureCoordCount() const {
 void D3Scene::render(const D3Camera &camera) {
   D3Device &device = getDevice();
   device.setAmbientColor(m_ambientColor).beginRender(camera);
-  for(D3VisualIterator it = getVisualIterator(); it.hasNext();) {
-    D3SceneObjectVisual *obj = it.next();
-    if(obj->isVisible()) {
-      obj->draw();
+  try {
+    for(D3VisualIterator it = getVisualIterator(); it.hasNext();) {
+      D3SceneObjectVisual *obj = it.next();
+      if(obj->isVisible()) {
+        obj->draw();
+      }
     }
+    device.endRender();
+  } catch(...) {
+    device.endRender();
+    throw;
   }
-  device.endRender();
 }
 
 void D3Scene::render(CameraSet cameraSet) {

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <PropertyContainer.h>
+#include <FastSemaphore.h>
 #include <MFCUtil/ColorSpace.h>
 #include "D3DeviceRenderState.h"
 #include "D3Material.h"
@@ -14,6 +15,7 @@ private:
   LPDIRECT3DDEVICE m_device;
   D3DCAPS          m_deviceCaps;
   D3Material       m_material;
+  FastSemaphore    m_renderLock;
   // only set in scene.render
   const D3Camera  *m_currentCamera;
   template<typename T> void setDevRenderState(D3DRENDERSTATETYPE id, T value) {
@@ -39,10 +41,14 @@ public:
     return *this;
   }
 
-  // call device.Clear(camera.backgroundColor),setup view- and projMatrix corresponding to camera, device->BeginScene()
-  // and setCurrentCamera(&camera);
+  // Call m_renderLock.wait(), to get exclusive access to device
+  // Then call setCurrentCamera(&camera).device.Clear(camera.backgroundColor),
+  // setup view- and projMatrix corresponding to camera, device->BeginScene()
+  // if any exception occur, setCurrentCamera(NULL).m_renderLock.notify() is called, to prevent deadlock,
+  // and exception is rethrown
   void beginRender(const D3Camera &camera);
-  // call device->EndScene()M Present(NULL,NULL,currentCamera.getHwnd(), and setCurrentCamera(NULL);
+  // Call device->EndScene(); Present(NULL,NULL,currentCamera.getHwnd(), and setCurrentCamera(NULL);
+  // If any exception occur, setCurrentCamera(NULL).m_renderLock.notify() is called, and exception is rethrown
   void endRender();
   const D3DCAPS &getDeviceCaps() const {
     return m_deviceCaps;

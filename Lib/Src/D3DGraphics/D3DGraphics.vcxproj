@@ -892,6 +892,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="D3CameraArray.cpp" />
+    <ClCompile Include="D3CameraslideAnimator.cpp" />
     <ClCompile Include="D3Device.cpp" />
     <ClCompile Include="D3Light.cpp" />
     <ClCompile Include="D3Quaternion.cpp" />

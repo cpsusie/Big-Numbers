@@ -107,6 +107,7 @@ private:
     return (m_visibleParts & part) != 0;
   }
   D3DXVECTOR3 getCubeCamVector() const;
+  void        moveCamToNewCubeCenter();
 public:
   DebugSceneobject(D3Scene &scene, Debugger &debugger);
   ~DebugSceneobject();

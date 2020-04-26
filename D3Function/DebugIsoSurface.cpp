@@ -487,7 +487,6 @@ void DebugIsoSurface::createData() {
                            ,m_param.m_boundingBox
                            ,m_param.m_tetrahedral
                            ,m_param.m_tetraOptimize4
-//                           ,m_param.m_adaptiveCellSize
                            );
   if(m_faceCount == 0) {
     throwException(_T("No polygons generated. Cannot create object"));

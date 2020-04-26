@@ -5,6 +5,11 @@ D3DXMATRIX &D3World::createViewMatrix(D3DXMATRIX &dst, bool rightHanded) const {
   return D3DXMatrixLookAt(dst, m_pos, m_pos + getDir(), getUp(), rightHanded);
 }
 
+D3World &D3World::setLookAt(const D3DXVECTOR3 &pos, const D3DXVECTOR3 &lookAt, const D3DXVECTOR3 &up) {
+  const D3DXVECTOR3 dir = lookAt - pos, Up = up;;
+  return setPos(pos).setOrientation(createOrientation(dir, Up));
+}
+
 D3World &D3World::setOrientation(const D3DXQUATERNION &q, const D3DXVECTOR3 &centerOfRotation) {
   const D3DXMATRIX  w     = *this;
   const D3DXVECTOR3 c     = inverse(w) * centerOfRotation;
