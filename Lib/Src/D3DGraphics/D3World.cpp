@@ -12,6 +12,12 @@ D3World &D3World::setOrientation(const D3DXQUATERNION &q, const D3DXVECTOR3 &cen
   return setPos(getPos() + centerOfRotation - newcr);
 }
 
+bool operator==(const D3World &w1, const D3World &w2) {
+  return w1.getPos()         == w2.getPos()
+      && w1.getOrientation() == w2.getOrientation()
+      && w1.getScale()       == w2.getScale();
+}
+
 String D3World::toString(int dec) const {
   return format(_T("Pos:%s, Scale:%s\nOrientation:%s (D:%s, U:%s, R:%s)")
                 ,::toString(m_pos     , dec).cstr()

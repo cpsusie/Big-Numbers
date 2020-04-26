@@ -91,3 +91,8 @@ public:
   D3DXMATRIX &createViewMatrix(D3DXMATRIX &dst, bool rightHanded) const;
   String toString(int dec = 3) const;
 };
+
+bool operator==(const D3World &w1, const D3World &w2);
+inline bool operator!=(const D3World &w1, const D3World &w2) {
+  return !(w1 == w2);
+}
