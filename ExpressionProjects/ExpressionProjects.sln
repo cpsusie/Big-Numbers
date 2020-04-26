@@ -74,8 +74,8 @@ Global
 		{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}.IsoDebuggerDebug|x86.Build.0 = IsoDebuggerDebug|Win32
 		{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}.IsoDebuggerRelease|x64.ActiveCfg = IsoDebuggerRelease|x64
 		{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}.IsoDebuggerRelease|x64.Build.0 = IsoDebuggerRelease|x64
-		{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}.IsoDebuggerRelease|x86.ActiveCfg = Release|Win32
-		{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}.IsoDebuggerRelease|x86.Build.0 = Release|Win32
+		{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}.IsoDebuggerRelease|x86.ActiveCfg = IsoDebuggerRelease|Win32
+		{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}.IsoDebuggerRelease|x86.Build.0 = IsoDebuggerRelease|Win32
 		{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}.LDDebug|x64.ActiveCfg = Debug|x64
 		{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}.LDDebug|x64.Build.0 = Debug|x64
 		{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}.LDDebug|x86.ActiveCfg = Debug|Win32
@@ -338,8 +338,8 @@ Global
 		{A90057E9-13D7-4E6F-8C02-0B355A71C134}.IsoDebuggerDebug|x86.Build.0 = IsoDebuggerDebug|Win32
 		{A90057E9-13D7-4E6F-8C02-0B355A71C134}.IsoDebuggerRelease|x64.ActiveCfg = IsoDebuggerRelease|x64
 		{A90057E9-13D7-4E6F-8C02-0B355A71C134}.IsoDebuggerRelease|x64.Build.0 = IsoDebuggerRelease|x64
-		{A90057E9-13D7-4E6F-8C02-0B355A71C134}.IsoDebuggerRelease|x86.ActiveCfg = Release|Win32
-		{A90057E9-13D7-4E6F-8C02-0B355A71C134}.IsoDebuggerRelease|x86.Build.0 = Release|Win32
+		{A90057E9-13D7-4E6F-8C02-0B355A71C134}.IsoDebuggerRelease|x86.ActiveCfg = IsoDebuggerRelease|Win32
+		{A90057E9-13D7-4E6F-8C02-0B355A71C134}.IsoDebuggerRelease|x86.Build.0 = IsoDebuggerRelease|Win32
 		{A90057E9-13D7-4E6F-8C02-0B355A71C134}.LDDebug|x64.ActiveCfg = Debug|x64
 		{A90057E9-13D7-4E6F-8C02-0B355A71C134}.LDDebug|x64.Build.0 = Debug|x64
 		{A90057E9-13D7-4E6F-8C02-0B355A71C134}.LDDebug|x86.ActiveCfg = Debug|Win32
