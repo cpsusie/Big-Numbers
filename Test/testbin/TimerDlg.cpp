@@ -11,7 +11,7 @@ CTimerDlg::CTimerDlg(UINT timerInterval, CWnd *pParent) : CDialog(CTimerDlg::IDD
 }
 
 void CTimerDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
   DDX_Text(pDX, IDC_EDITTIMERINTERVAL, m_timerInterval);
   DDV_MinMaxUInt(pDX, m_timerInterval, 1, 10000);
 }
@@ -22,11 +22,11 @@ END_MESSAGE_MAP()
 
 void CTimerDlg::OnOK() {
   UpdateData();
-  CDialog::OnOK();
+  __super::OnOK();
 }
 
 BOOL CTimerDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   UpdateData(false);
   gotoEditBox(this, IDC_EDITTIMERINTERVAL);
   return FALSE;
