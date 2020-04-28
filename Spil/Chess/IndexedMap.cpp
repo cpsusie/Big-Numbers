@@ -291,7 +291,7 @@ public:
   }
 
   inline double getMilliSecondsUsed() const {
-    return diff(m_startTime, Timestamp(), TMILLISECOND);
+    return Timestamp::diff(m_startTime, Timestamp(), TMILLISECOND);
   }
 
   inline double getMilliSecondsRemaining() const {

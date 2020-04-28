@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include <io.h>
 #include <ByteFile.h>
+#include <Thread.h>
 #include <CompressFilter.h>
 #include "EndGameTablebase.h"
 

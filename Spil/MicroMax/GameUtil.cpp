@@ -11,7 +11,7 @@ void SearchStatistic::startSearch(bool verbose) {
 }
 
 double SearchStatistic::getTimeUsed() const {
-  return diff(m_searchStartTime, Timestamp(), TMILLISECOND);
+  return Timestamp::diff(m_searchStartTime, Timestamp(), TMILLISECOND);
 }
 
 TCHAR *HashElement::getVariantStr(TCHAR *dst) const {

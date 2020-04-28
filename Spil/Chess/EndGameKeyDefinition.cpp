@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <PriorityQueue.h>
+#include <ProcessTools.h>
 #include "EndGameKeyDefinition.h"
 #include "EndGameKeyCodec.h"
 

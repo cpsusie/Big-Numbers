@@ -472,7 +472,7 @@ public:
   TimeUsagePrinter(EndGameTablebase *tablebase, const String &label = _T("Used time")) : m_tablebase(*tablebase), m_label(label) {
   }
   ~TimeUsagePrinter() {
-    m_tablebase.verbose(_T("%s:%s\n"), m_label.cstr(), secondsToString(diff(m_startTime, Timestamp(), TMILLISECOND), false).cstr());
+    m_tablebase.verbose(_T("%s:%s\n"), m_label.cstr(), secondsToString(Timestamp::diff(m_startTime, Timestamp(), TMILLISECOND), false).cstr());
   }
 };
 

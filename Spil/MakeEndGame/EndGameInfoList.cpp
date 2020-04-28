@@ -29,8 +29,14 @@ UINT EndGameInfo::getMaxVariant() const {
 #define RAWSIZEWIDTH  14
 #define COMPSIZEWIDTH 14
 #define COMPPCTWIDTH   5
-static const String   timestampFormat = _T("dd.MM.yy hh:mm");
-#define TIMESTAMPWIDTH ((int)timestampFormat.length())
+static const TCHAR *timestampFormat = _T("dd.MM.yy hh:mm");
+static inline int getTimestampWidth() {
+  static int w = 0;
+  if(w == 0) w = wcslen(timestampFormat);
+  return w;
+}
+
+#define TIMESTAMPWIDTH getTimestampWidth()
 
 String EndGameInfoList::getHeaderString(TablebaseInfoStringFormat f) const {
   switch(f) {

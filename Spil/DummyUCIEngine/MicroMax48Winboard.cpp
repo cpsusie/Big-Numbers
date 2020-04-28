@@ -125,7 +125,7 @@ public:
   void waitWhileSearchBusy();
 };
 
-MoveFinder::MoveFinder(InputThread &input) : m_input(input), m_timer(1) {
+MoveFinder::MoveFinder(InputThread &input) : Thread(_T("MoveFinder")), m_input(input), m_timer(1) {
   setDemon(true);
   m_busy = false;
 #ifndef _DEBUG

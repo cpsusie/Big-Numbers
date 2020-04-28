@@ -167,7 +167,7 @@ String TablebaseInfo::getColumnHeaders(TablebaseInfoStringFormat f, const String
 String TablebaseInfo::toString(TablebaseInfoStringFormat f, bool plies) const {
   switch(f) {
   case TBIFORMAT_PRINT_ALL      :
-    { const String timestampFormat = _T("dd.MM.yy hh:mm");
+    { const TCHAR *timestampFormat = _T("dd.MM.yy hh:mm");
       return format(_T("Version                    :%s\n"
                        "Index capacity             :%11s\n"
                        "Total positions            :%11s\n"
