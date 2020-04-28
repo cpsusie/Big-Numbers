@@ -131,7 +131,7 @@ void DiffDoc::readTextFile(DiffFilter &filter, LineArray &la, InterruptableRunna
     }
   }
   TCHAR zterminator = 0;
-  content.append((BYTE*)&zterminator, sizeof(zterminator));
+  content.add((BYTE*)&zterminator, sizeof(zterminator));
 
   String buf = content.converToString();
   content.clear();
