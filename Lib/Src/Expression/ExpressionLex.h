@@ -2,7 +2,7 @@
 #pragma once
 #include <Scanner.h>
 
-#line 4 "C:\\mytools2015\\Lib\\Src\\Expression\\Expression.lex"
+#line 4 "C:\\Mytools2015\\Lib\\Src\\Expression\\Expression.lex"
 #include <LRParser.h>
 
 namespace Expr {

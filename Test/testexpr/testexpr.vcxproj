@@ -39,7 +39,7 @@
     <ProjectGuid>{9C7F1744-1E47-4FFE-A47E-E8BB593F6AA7}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>TestExpr</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
     <ProjectName>TestExpr</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

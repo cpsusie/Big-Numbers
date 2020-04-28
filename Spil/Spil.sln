@@ -23,6 +23,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OneOrTwo", "OneOrTwo\OneOrT
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Reversi", "reversi\reversi.vcxproj", "{D10F02A2-A637-400A-A669-BBE0C46F6B60}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DA57B57F-CFF3-4620-87AE-69D3598B492D} = {DA57B57F-CFF3-4620-87AE-69D3598B492D}
+		{EC9661C7-AA70-418D-BC1C-4F9A87837BFD} = {EC9661C7-AA70-418D-BC1C-4F9A87837BFD}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Sudoku", "sudoku\sudoku.vcxproj", "{0AC09061-ED8B-4F10-B3F5-8FFB5EE8087D}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -31,6 +35,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Sudoku", "sudoku\sudoku.vcx
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Think", "think\think.vcxproj", "{DFE4D908-CB80-4778-AC4C-3E5A79E33554}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DA57B57F-CFF3-4620-87AE-69D3598B492D} = {DA57B57F-CFF3-4620-87AE-69D3598B492D}
+		{EC9661C7-AA70-418D-BC1C-4F9A87837BFD} = {EC9661C7-AA70-418D-BC1C-4F9A87837BFD}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Turist", "TURIST\turist.vcxproj", "{8CC06489-C9F2-4DDE-A54C-447B48BAC9F7}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -53,6 +61,10 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Math", "..\Lib\Src\Math\Math.vcxproj", "{0D1324F1-16AC-4245-9A51-8BF3B09A6C5F}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MazeApp", "Maze\MazeApp.vcxproj", "{F289C808-B0A4-4F11-83DA-344E2CF88113}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DA57B57F-CFF3-4620-87AE-69D3598B492D} = {DA57B57F-CFF3-4620-87AE-69D3598B492D}
+		{EC9661C7-AA70-418D-BC1C-4F9A87837BFD} = {EC9661C7-AA70-418D-BC1C-4F9A87837BFD}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "30", "30\30.vcxproj", "{E836A9F9-E3DB-49CC-B57C-868E4721A0A3}"
 EndProject

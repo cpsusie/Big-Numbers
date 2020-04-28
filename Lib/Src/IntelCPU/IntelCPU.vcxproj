@@ -45,7 +45,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{AB106985-7539-4131-A4C5-C0D0318022D1}</ProjectGuid>
     <RootNamespace>IntelCPU</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
     <Keyword>MFCDLLProj</Keyword>
     <ProjectName>
     </ProjectName>

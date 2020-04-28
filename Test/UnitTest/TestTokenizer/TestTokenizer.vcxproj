@@ -22,7 +22,7 @@
     <ProjectGuid>{095C28A7-55E5-4AD7-9C11-344915D71469}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>TestTokenizer</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
