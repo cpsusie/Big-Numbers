@@ -2084,6 +2084,10 @@ inline int sign(const _int128 &v) {
   return v.isNegative() ? -1 : v.isZero() ? 0 : 1;
 }
 
+inline _int128 abs(const _int128 &v) {
+  return v.isNegative() ? -v : v;
+}
+
 template<> class std::numeric_limits<_int128>
     : public _Num_int_base
 {	// limits for type _int128
