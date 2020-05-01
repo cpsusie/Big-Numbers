@@ -22,7 +22,7 @@
     <SccProjectName />
     <SccLocalPath />
     <ProjectGuid>{247A7DBC-7682-498F-B647-C8D7B14EAC81}</ProjectGuid>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
     <ProjectName>SqlServ</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
