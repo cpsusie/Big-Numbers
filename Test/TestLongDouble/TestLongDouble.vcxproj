@@ -22,7 +22,7 @@
     <ProjectGuid>{291A9077-A853-49C7-9C10-C022E991AFCC}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>TestLongDouble</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
