@@ -21,6 +21,7 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestCollection", "TestCollection\TestCollection.vcxproj", "{DD51794B-33F7-4D66-8F59-C435C12E0C4B}"
 	ProjectSection(ProjectDependencies) = postProject
 		{DA57B57F-CFF3-4620-87AE-69D3598B492D} = {DA57B57F-CFF3-4620-87AE-69D3598B492D}
+		{0D1324F1-16AC-4245-9A51-8BF3B09A6C5F} = {0D1324F1-16AC-4245-9A51-8BF3B09A6C5F}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestCompressFilter", "TestCompressFilter\TestCompressFilter.vcxproj", "{187D2ADA-8E3F-4AD0-9879-F895F5F16585}"
@@ -203,6 +204,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestCompactHashMap", "TestC
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestPolynomial", "TestPolynomial\TestPolynomial.vcxproj", "{C45A56EB-FF2F-4019-8534-4A278D464181}"
+	ProjectSection(ProjectDependencies) = postProject
+		{0D1324F1-16AC-4245-9A51-8BF3B09A6C5F} = {0D1324F1-16AC-4245-9A51-8BF3B09A6C5F}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestStatistic", "TestStatistic\TestStatistic.vcxproj", "{32509D9B-E7FC-4525-9715-9A103D9279B9}"
 	ProjectSection(ProjectDependencies) = postProject
