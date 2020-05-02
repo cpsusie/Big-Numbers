@@ -32,7 +32,7 @@ UINT EndGameInfo::getMaxVariant() const {
 static const TCHAR *timestampFormat = _T("dd.MM.yy hh:mm");
 static inline int getTimestampWidth() {
   static int w = 0;
-  if(w == 0) w = wcslen(timestampFormat);
+  if(w == 0) w = (int)wcslen(timestampFormat);
   return w;
 }
 
