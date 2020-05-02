@@ -576,8 +576,8 @@ DebugMeshObject *DebugIsoSurface::createMeshObject() {
 }
 
 FinalDebugIsoSurface *DebugIsoSurface::createFinalDebugIsoSurface(D3SceneEditor &editor) const {
-  D3Scene         &scene = *editor.getScene();
-  FinalDebugIsoSurface *obj = new FinalDebugIsoSurface(editor, m_mb.createMesh(scene, m_param.m_doubleSided), *m_polygonizer); TRACE_NEW(obj);
+  D3Scene              &scene = *editor.getScene();
+  FinalDebugIsoSurface *obj   = new FinalDebugIsoSurface(editor, m_mb.createMesh(scene, m_param.m_doubleSided), *m_polygonizer); TRACE_NEW(obj);
   obj->setFillMode( m_sceneObject.getFillMode());
   obj->setShadeMode(m_sceneObject.getShadeMode());
   return obj;
