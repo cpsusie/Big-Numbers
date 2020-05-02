@@ -1,5 +1,7 @@
 #pragma once
 
+// see https://vorbrodt.blog/2019/02/05/fast-semaphore/
+
 #include <mutex>
 #include <atomic>
 #include <condition_variable>
@@ -38,18 +40,30 @@ public:
   }
 
   void notify() {
+    const int count = m_count.fetch_add(1, std::memory_order_release);
+    if(count < 0) {
+      m_slowSemaphore.notify();
+    }
+/*
     std::atomic_thread_fence(std::memory_order_release);
     const int count = m_count.fetch_add(1, std::memory_order_relaxed);
     if(count < 0) {
       m_slowSemaphore.notify();
     }
+*/
   }
 
   void wait() {
+    const int count = m_count.fetch_sub(1, std::memory_order_acquire);
+    if(count < 1) {
+      m_slowSemaphore.wait();
+    }
+/*
     const int count = m_count.fetch_sub(1, std::memory_order_relaxed);
     if(count < 1) {
       m_slowSemaphore.wait();
     }
     std::atomic_thread_fence(std::memory_order_acquire);
+*/
   }
 };
