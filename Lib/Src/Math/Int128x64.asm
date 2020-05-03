@@ -70,7 +70,7 @@ int128div PROC
     mov         r8, rcx                        ; r8  = &dst
     mov         r9, rdx                        ; r9  = &x
     xor         edi, edi                       ; edi = 0
-    mov         rax, qword ptr[r8+8]           ;
+    mov         rax, qword ptr[r8+8]           ; rax = dst.hi
     or          rax, rax                       ;
     jge         DSTPOSITIVE                    ; if(dst<0) {
     inc         edi                            ;   edi++
@@ -94,7 +94,7 @@ DSTPOSITIVE:                                   ; Assume dst>=0, edi==[original d
 UIDIV:                                         ; Assume dst>=0, rax==x.hi, x>0, edi==0 <=> #negative arguments is even
     or          rax, rax                       ;
     jne         L1                             ; if(x.hi==0) {
-    mov         rcx, qword ptr[r9]             ;   rcx     = x.lo
+    mov         rcx, qword ptr[r9]             ;   rcx     = x.lo (==x)
     mov         rax, qword ptr[r8+8]           ;   rax     = dst.hi
     xor         rdx, rdx                       ;   rax:rdx = dst.hi:0
     div         rcx                            ;   rax:rdx = (dst.hi / x):(dst.hi % x)
@@ -103,7 +103,7 @@ UIDIV:                                         ; Assume dst>=0, rax==x.hi, x>0, 
     div         rcx                            ;   rax     = q.lo, rdx==(dst % x)(ignore)
     mov         rdx, rbx                       ;   rdx:rax==|quotient|
     jmp         L5                             ; }
-L1: bsr         rcx, rax                       ; Assume rax==x.hi. x(signed)>0 => x.hi.bit[63]==0 => rcx<63
+L1: bsr         rcx, rax                       ; Assume rax==x.hi, x(signed)>0 => x.hi.bit[63]==0 => rcx<63
     inc         cl                             ; cl = #positions to shift both operands, to make x.hi==0 (cl<64)
     mov         rbx, qword ptr[r9]             ; rax:rbx==x
     shrd        rbx, rax, cl                   ; rshift x cl positions, x.hi==0
@@ -112,8 +112,8 @@ L1: bsr         rcx, rax                       ; Assume rax==x.hi. x(signed)>0 =
     shrd        rax, rdx, cl                   ; rshift dst cl positions, filling open bitpositions with 0
     shr         rdx, cl                        ;
                                                ; Assume rdx:rax==dst shifted, rbx==(x shifted).lo (x.hi==0)
-    div         rbx                            ; rax = q. rdx = remainder(ignore)
-    mov         rsi, rax                       ; rsi = q.(quotient==q or q-1) q.hi==0
+    div         rbx                            ; rax = q, rdx = remainder(ignore)
+    mov         rsi, rax                       ; rsi = q, (quotient==q or q-1), q.hi==0
     mul         qword ptr[r9+8]                ; rdx:rax = q * x.hi
     mov         rcx, rax                       ; rcx = (q*x.hi).lo
     mov         rax, qword ptr[r9]             ; rax = x.lo
@@ -133,7 +133,7 @@ L5: or          edi, edi                       ; set sign of dst occording to no
     neg         rdx                            ;   quotient = -quotient
     neg         rax                            ;
     sbb         rdx, 0                         ; }
-L2: pop         rsi                            ; restore stack
+L2: pop         rsi                            ; Assume rdx:rax==quotient, restore stack
     pop         rdi                            ;
     pop         rbx                            ;
     mov         qword ptr[r8], rax             ; save quotient in dst
@@ -145,10 +145,10 @@ int128div ENDP
 int128rem PROC
     push        rbx                            ;
     push        rdi                            ;
-    mov         r8, rcx                        ; r8 = &dst
-    mov         r9, rdx                        ; r9 = &x
-    xor         edi, edi                       ;
-    mov         rax, qword ptr[r8+8]           ; rax==dst.hi
+    mov         r8, rcx                        ; r8  = &dst
+    mov         r9, rdx                        ; r9  = &x
+    xor         edi, edi                       ; edi = 0
+    mov         rax, qword ptr[r8+8]           ; rax = dst.hi
     or          rax, rax                       ;
     jge         DSTPOSITIVE                    ; if(dst<0) {
     inc         edi                            ;   edi++
@@ -171,7 +171,7 @@ DSTPOSITIVE:                                   ; Assume dst>=0, edi==[original d
 UIREM:                                         ; Assume dst>=0, rax==x.hi, x>0, edi==[original dst<0]. Dont care about orignal sign of x
     or          rax, rax                       ;
     jne         L1                             ; if(x.hi==0) {
-    mov         rcx, qword ptr[r9]             ;   rcx     = x.lo
+    mov         rcx, qword ptr[r9]             ;   rcx     = x.lo (==x)
     mov         rax, qword ptr[r8+8]           ;   rax     = dst.hi
     xor         rdx, rdx                       ;   rax:rdx = dst.hi:0
     div         rcx                            ;   rax:rdx = (dst.hi / x):(dst.hi % x)
@@ -313,18 +313,18 @@ int128cmp ENDP
 uint128div PROC
     push        rbx                            ; same as signed division without sign check on arguments
     push        rsi                            ;
-    mov         r8, rcx                        ; r8 = &dst
-    mov         r9, rdx                        ; r9 = &x
+    mov         r8, rcx                        ; r8  = &dst
+    mov         r9, rdx                        ; r9  = &x
     mov         rax, qword ptr[r9+8]           ; rax = x.hi
     or          rax, rax                       ;
     jne         L1                             ; if(x.hi==0) {
-    mov         rcx, qword ptr[r9]             ;   rcx     = x.lo
+    mov         rcx, qword ptr[r9]             ;   rcx     = x.lo (==x)
     mov         rax, qword ptr[r8+8]           ;   rax     = dst.hi
     xor         rdx, rdx                       ;   rax:rdx = dst.hi:0
     div         rcx                            ;   rax:rdx = (dst.hi / x):(dst.hi % x)
     mov         rbx, rax                       ;   rbx     = q.hi
     mov         rax, qword ptr[r8]             ;   rdx:rax = (dst.hi % x):dst.lo
-    div         rcx                            ;   rax:rdx = q.lo:(dst % x...ignore)
+    div         rcx                            ;   rax     = q.lo, rdx==(dst % x)(ignore)
     mov         rdx, rbx                       ;   rdx:rax = quotient
     jmp         L2                             ; }
 L1: bsr         rcx, rax                       ; Assume rax==x.hi
@@ -374,7 +374,7 @@ uint128rem PROC
     mov         rax, qword ptr[r9+8]           ; rax = x.hi
     or          rax, rax                       ;
     jne         L1                             ; if(x.hi==0) {
-    mov         rcx, qword ptr[r9]             ;   rcx     = x.lo
+    mov         rcx, qword ptr[r9]             ;   rcx     = x.lo (==x)
     mov         rax, qword ptr[r8+8]           ;   rax     = dst.hi
     xor         rdx, rdx                       ;   rax:rdx = dst.hi:0
     div         rcx                            ;   rax:rdx = (dst.hi / x):(dst.hi % x)
@@ -439,7 +439,7 @@ uint128quotrem PROC
     mov         rax, qword ptr[r9+8]           ; rax = denom.hi
     or          rax, rax                       ;
     jne         L1                             ; if(denom.hi==0) {
-    mov         rcx, qword ptr[r9]             ;   rcx     = denom.lo
+    mov         rcx, qword ptr[r9]             ;   rcx     = denom.lo (==denom)
     mov         rax, qword ptr[r8+8]           ;   rax     = numer.hi
     xor         rdx, rdx                       ;   rax:rdx = numer.hi:0
     div         rcx                            ;   rax     = q.hi. rdx = remainder.hi
