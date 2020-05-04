@@ -97,6 +97,59 @@ BEGIN
     0, 0, 100, 100
 END
 
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_FUNC2DSURFACE ACCELERATORS
+BEGIN
+    "E",            ID_EDIT_FINDMATCHINGPARENTESIS, VIRTKEY, CONTROL, NOINVERT
+    "Z",            ID_GOTO_EXPR,           VIRTKEY, ALT, NOINVERT
+    "X",            ID_GOTO_XINTERVAL,      VIRTKEY, ALT, NOINVERT
+    "Y",            ID_GOTO_YINTERVAL,      VIRTKEY, ALT, NOINVERT
+    "T",            ID_GOTO_TIMEINTERVAL,   VIRTKEY, ALT, NOINVERT
+    "N",            ID_GOTO_POINTCOUNT,     VIRTKEY, ALT, NOINVERT
+    "R",            ID_GOTO_FRAMECOUNT,     VIRTKEY, ALT, NOINVERT
+    "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL, NOINVERT
+    "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL, NOINVERT
+    "A",            ID_FILE_SAVE_AS,        VIRTKEY, CONTROL, NOINVERT
+END
+
+IDR_PARAMETRICSURFACE ACCELERATORS
+BEGIN
+    "E",            ID_EDIT_FINDMATCHINGPARENTESIS, VIRTKEY, CONTROL, NOINVERT
+    "X",            ID_GOTO_EXPRX,          VIRTKEY, ALT, NOINVERT
+    "Y",            ID_GOTO_EXPRY,          VIRTKEY, ALT, NOINVERT
+    "Z",            ID_GOTO_EXPRZ,          VIRTKEY, ALT, NOINVERT
+    "T",            ID_GOTO_TINTERVAL,      VIRTKEY, ALT, NOINVERT
+    "S",            ID_GOTO_SINTERVAL,      VIRTKEY, ALT, NOINVERT
+    "V",            ID_GOTO_TIMEINTERVAL,   VIRTKEY, ALT, NOINVERT
+    "N",            ID_GOTO_TSTEPCOUNT,     VIRTKEY, ALT, NOINVERT
+    "O",            ID_GOTO_SSTEPCOUNT,     VIRTKEY, ALT, NOINVERT
+    "R",            ID_GOTO_FRAMECOUNT,     VIRTKEY, ALT, NOINVERT
+    "C",            ID_GOTO_COMMON,         VIRTKEY, ALT, NOINVERT
+    "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL, NOINVERT
+    "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL, NOINVERT
+    "A",            ID_FILE_SAVE_AS,        VIRTKEY, CONTROL, NOINVERT
+END
+
+IDR_ISOSURFACE ACCELERATORS
+BEGIN
+    "E",            ID_EDIT_FINDMATCHINGPARENTESIS, VIRTKEY, CONTROL, NOINVERT
+    "S",            ID_GOTO_EXPR,           VIRTKEY, ALT, NOINVERT
+    "C",            ID_GOTO_CELLSIZE,       VIRTKEY, ALT, NOINVERT
+    "X",            ID_GOTO_XINTERVAL,      VIRTKEY, ALT, NOINVERT
+    "Y",            ID_GOTO_YINTERVAL,      VIRTKEY, ALT, NOINVERT
+    "Z",            ID_GOTO_ZINTERVAL,      VIRTKEY, ALT, NOINVERT
+    "T",            ID_GOTO_TIMEINTERVAL,   VIRTKEY, ALT, NOINVERT
+    "R",            ID_GOTO_FRAMECOUNT,     VIRTKEY, ALT, NOINVERT
+    "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL, NOINVERT
+    "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL, NOINVERT
+    "A",            ID_FILE_SAVE_AS,        VIRTKEY, CONTROL, NOINVERT
+END
+
 #endif    // Danish (Denmark) resources
 /////////////////////////////////////////////////////////////////////////////
 
