@@ -294,6 +294,7 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="TrainerJob.cpp" />
     <ClCompile Include="WordBPN.cpp" />
     <ClCompile Include="WordSepGraph.cpp" />
     <ClCompile Include="WordSepGraphDlg.cpp" />
@@ -303,6 +304,7 @@
     <ClInclude Include="Resource.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="TrainerJob.h" />
     <ClInclude Include="WordBPN.h" />
     <ClInclude Include="WordSepGraph.h" />
     <ClInclude Include="WordSepGraphDlg.h" />

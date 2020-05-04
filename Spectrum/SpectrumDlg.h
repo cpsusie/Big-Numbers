@@ -2,7 +2,7 @@
 
 #include <MFCUtil/CoordinateSystem/CoordinateSystem.h>
 #include <MFCUtil/MMCapture.h>
-#include <Semaphore.h>
+#include <FastSemaphore.h>
 
 class CSpectrumDlg : public CDialog, public CaptureReceiver {
 private:
@@ -12,7 +12,7 @@ private:
     MMCapture        *m_capture;
     unsigned int      m_beepFrequence;
     bool              m_firstSample;
-    Semaphore         m_sampleDone;
+    FastSemaphore     m_sampleDone;
     bool              m_handlingEvent;
 public:
     CSpectrumDlg(CWnd *pParent = NULL);

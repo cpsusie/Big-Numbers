@@ -6,7 +6,7 @@
 template <class T> class SyncQueue : private QueueList<T> {
 private:
   mutable FastSemaphore m_gate;
-  FastSemaphore         m_emptySem;
+  TimedSemaphore        m_emptySem;
 public:
   SyncQueue() : m_emptySem(0) {
   }
@@ -18,14 +18,16 @@ public:
     m_gate.notify(); // open gate
   }
 
-  T get() {
+  T get(int milliseconds = -1) {
     for(;;) {
       m_gate.wait();
       if(!isEmpty()) {
         break;
       }
       m_gate.notify(); // open gate
-      m_emptySem.wait();
+      if(!m_emptySem.wait(milliseconds)) { //wait=false => timeout
+        throwTimeoutException(_T("timeout"));
+      }
     }
     T result = __super::get();
     m_gate.notify(); // open gate

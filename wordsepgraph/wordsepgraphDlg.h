@@ -1,25 +1,7 @@
 #pragma once
 
-#include "WordBpn.h"
-#include <Semaphore.h>
-#include <Thread.h>
 #include <MFCUtil/LayoutManager.h>
-
-class TrainigThread : public Thread {
-  Semaphore         m_sem;
-  String            m_msg;
-  bool              m_terminate;
-  WordBpn           m_trainingNetwork;
-  bool              m_done;
-  void updateMessage(_In_z_ _Printf_format_string_ TCHAR const * const format, ...);
-public:
-  TrainigThread(const WordBpn &n);
-  UINT run();
-  String getMessage();
-  void terminate()       { m_terminate = true;       }
-  bool isDone()    const { return m_done;            }
-  WordBpn getBpn() const { return m_trainingNetwork; }
-};
+#include "TrainerJob.h"
 
 class CWordsepgraphDlg : public CDialog {
 private:
@@ -29,7 +11,7 @@ private:
 
     CFont               m_printFont;
     int                 m_threadPriority;
-    TrainigThread      *m_trainerThread;
+    TrainerJob         *m_trainerJob;
     WordBpn             m_network;
     bool                m_timerIsRunning;
 
