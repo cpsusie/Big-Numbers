@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Thread.h>
+#include <Semaphore.h>
 #include <SynchronizedQueue.h>
 
 typedef SynchronizedQueue<String> MessageQueue;

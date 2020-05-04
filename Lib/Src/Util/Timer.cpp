@@ -2,7 +2,6 @@
 #include <Date.h>
 #include <ThreadPool.h>
 #include <Thread.h>
-#include <Semaphore.h>
 #include <SafeRunnable.h>
 #include <DebugLog.h>
 #include <Timer.h>
@@ -18,7 +17,7 @@
 class _TimerJob : public SafeRunnable {
 private:
   Timer            &m_timer;
-  Semaphore         m_timeout;
+  TimedSemaphore    m_timeout;
   Timestamp         m_lastTimeout;
   UINT              m_changePendingmsec; // msec
   TimeoutHandler   &m_handler;

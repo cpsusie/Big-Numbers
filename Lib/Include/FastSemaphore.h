@@ -44,13 +44,6 @@ public:
     if(count < 0) {
       m_slowSemaphore.notify();
     }
-/*
-    std::atomic_thread_fence(std::memory_order_release);
-    const int count = m_count.fetch_add(1, std::memory_order_relaxed);
-    if(count < 0) {
-      m_slowSemaphore.notify();
-    }
-*/
   }
 
   void wait() {
@@ -58,12 +51,37 @@ public:
     if(count < 1) {
       m_slowSemaphore.wait();
     }
-/*
-    const int count = m_count.fetch_sub(1, std::memory_order_relaxed);
-    if(count < 1) {
-      m_slowSemaphore.wait();
+  }
+};
+
+class TimedSemaphore {
+private:
+  std::atomic<int> m_count;
+  std::timed_mutex m_tmutex;
+public:
+  TimedSemaphore(int count = 1) noexcept : m_count(count) {
+    m_tmutex.lock();
+  }
+
+  void notify() noexcept {
+    const int count = m_count.fetch_add(1, std::memory_order_release);
+    if(count < 0) {
+      m_tmutex.unlock();
     }
-    std::atomic_thread_fence(std::memory_order_acquire);
-*/
+  }
+
+  bool wait(int msec = -1) noexcept {
+    const int count = m_count.fetch_sub(1, std::memory_order_acquire);
+    if(count >= 1) {
+      return true;
+    } else if(msec < 0) {
+      m_tmutex.lock();
+      return true;
+    } else if(m_tmutex.try_lock_for(std::chrono::milliseconds(msec))) {
+      return true;
+    } else {
+      m_count++;
+      return false;
+    }
   }
 };

@@ -1,13 +1,12 @@
 #pragma once
 
-#include "Semaphore.h"
 #include "FastSemaphore.h"
 #include "QueueList.h"
 
 template <typename T> class SynchronizedQueue : private QueueList<T> {
 private:
   mutable FastSemaphore m_lock;
-  Semaphore             m_emptySem;
+  TimedSemaphore        m_emptySem;
 public:
   SynchronizedQueue() : m_emptySem(0) {
   }
@@ -19,7 +18,7 @@ public:
     m_lock.notify(); // open gate
   }
 
-  T get(int milliseconds=INFINITE) {
+  T get(int milliseconds = -1) {
     for(;;) {
       m_lock.wait();
       if(!isEmpty()) {

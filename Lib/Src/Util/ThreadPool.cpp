@@ -1,6 +1,7 @@
 #include "pch.h"
 #include <CPUInfo.h>
 #include "ThreadPoolInternal.h"
+#include <InterruptableRunnable.h>
 
 #ifdef TRACE_THREADPOOL
 void threadPoolTrace(const TCHAR *function, const TCHAR *format, ...) {
@@ -63,42 +64,26 @@ void ThreadPool::removeListener(PropertyChangeListener *listener) { // static
   instance.notify(); // open gate for other threads
 }
 
-class PoolLogger : public Runnable {
-  bool          m_stopped, m_killed;
-  Semaphore     m_start;
-  FastSemaphore m_terminated;
+class PoolLogger : public InterruptableRunnable {
+private:
+  TimedSemaphore m_log;
 public:
-  PoolLogger() : m_start(0), m_stopped(true), m_killed(false), m_terminated(0) {
+  PoolLogger() : m_log(0) {
   }
-  void startLogging() {
-    if(m_stopped) {
-      m_stopped = false;
-      m_start.notify();
-    }
+  void setInterrupted() {
+    __super::setInterrupted();
+    m_log.notify();
   }
-  inline void stopLogging() {
-    m_stopped = true;
-  }
-  inline void killLogging() {
-    m_killed = true;
-    startLogging();
-    m_terminated.wait();
-  }
-  UINT run();
+  UINT safeRun();
 };
 
-UINT PoolLogger::run() {
+UINT PoolLogger::safeRun() {
   for(;;) {
-    const int timeout = m_stopped ? INFINITE : 2000;
-    m_start.wait(timeout);
-    if(m_killed) break;
-    if(m_stopped) {
-      continue;
-    }
+    handleInterruptOrSuspend();
+    m_log.wait(2000);
+    handleInterruptOrSuspend();
     THREADPOOL_TRACE("%s\n", ThreadPool::getInstance().toString().cstr());
-    if(m_killed) break;
   }
-  m_terminated.notify();
   return 0;
 }
 
@@ -246,21 +231,23 @@ void ThreadPool::startLogging() {
 
   if(m_logger == NULL) {
     m_logger = new PoolLogger(); TRACE_NEW(instance.m_logger);
+    executeNoWait(*m_logger);
+  } else {
+    m_logger->resume();
   }
   notify();
-  executeNoWait(*m_logger);
 }
 
 void ThreadPool::stopLogging() {
   wait();
   if(m_logger != NULL) {
-    m_logger->stopLogging();
+    m_logger->setSuspended();
   }
   notify();
 }
 
 void ThreadPool::killLogger() { // not static. no wait/notify.....we are called from propertyCahngeListener which has a lock on this
   if(m_logger) {
-    m_logger->killLogging();
+    m_logger->setInterrupted();
   }
 }

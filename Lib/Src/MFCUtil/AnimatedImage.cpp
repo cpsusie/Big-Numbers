@@ -5,7 +5,6 @@
 #include <ThreadPool.h>
 #include <Thread.h>
 #include <InterruptableRunnable.h>
-#include <Semaphore.h>
 #include <MFCUtil/PixRect.h>
 #include <MFCUtil/AnimatedImage.h>
 #include <..\..\GifLib\giflib-5.1.1\lib\gif_lib.h>
@@ -22,7 +21,7 @@ class Animator : private InterruptableRunnable {
 private:
   AnimatedImage &m_owner;
   String         m_description;
-  Semaphore      m_delaySem;
+  TimedSemaphore m_delaySem;
   FastSemaphore  m_animatorStopped;
   AnimatorState  m_state;
   CPoint         m_point;

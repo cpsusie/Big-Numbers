@@ -4,7 +4,7 @@
 
 #pragma comment(lib, "winmm.lib")
 
-#define VFWLIBROOT "c:/Program Files (x86)/Windows Kits/10/Lib/10.0.17134.0/um/"
+#define VFWLIBROOT "c:/Program Files (x86)/Windows Kits/10/Lib/10.0.17763.0/um/"
 
 #ifdef IS32BIT
 #define VFWLIB VFWLIBROOT "x86/"
