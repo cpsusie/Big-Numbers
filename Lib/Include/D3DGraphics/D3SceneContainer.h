@@ -43,8 +43,12 @@ public:
   D3SceneContainer() : m_renderLevel(0), m_accumulatedRenderFlags(0) {
   }
   virtual D3Scene   &getScene() = 0;
+  // Should return how many 3D-windows (cameras) to create
   virtual UINT       get3DWindowCount() const = 0;
+  // Should return the window to receieve messages (from contextmenu)
   virtual HWND       getMessageWindow() const = 0;
+  // Assume index = [0..get3DWindowCount()-1].
+  // Should return the 3D-window with the given indexed
   virtual HWND       get3DWindow(UINT index) const = 0;
   virtual void       modifyContextMenu(HMENU menu) {
   }
