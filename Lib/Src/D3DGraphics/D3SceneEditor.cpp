@@ -60,12 +60,14 @@ void D3SceneEditor::init(D3SceneContainer *sceneContainer) {
 }
 
 void D3SceneEditor::close() {
-  SCENE.removePropertyChangeListener(this);
-  m_propertyDialogMap.removeAllDialogs();
-  SCENE.removeVisual(m_coordinateSystem);
-  SAFEDELETE(m_coordinateSystem);
-  SCENE.close();
-  clrFlag(SE_INITDONE);
+  if(isInitDone()) {
+    SCENE.removePropertyChangeListener(this);
+    m_propertyDialogMap.removeAllDialogs();
+    SCENE.removeVisual(m_coordinateSystem);
+    SAFEDELETE(m_coordinateSystem);
+    SCENE.close();
+    clrFlag(SE_INITDONE);
+  }
 }
 
 D3SceneEditor &D3SceneEditor::setEnabled(bool enabled, BYTE flags) {
