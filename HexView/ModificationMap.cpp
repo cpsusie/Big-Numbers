@@ -56,7 +56,7 @@ void ModificationMap::applyModifications(UpdatableByteContainer &ubc) {
   __int64 seqStartAddr = e.getKey();
   __int64 lastAddr     = seqStartAddr;
   ByteArray byteSequence;
-  byteSequence.append(e.getValue().getTo());
+  byteSequence.add(e.getValue().getTo());
   while(it.hasNext()) {
     Entry<__int64, BytePair> &e1 = it.next();
     const __int64 addr = e1.getKey();
@@ -65,7 +65,7 @@ void ModificationMap::applyModifications(UpdatableByteContainer &ubc) {
       byteSequence.clear();
       seqStartAddr = addr;
     }
-    byteSequence.append(e1.getValue().getTo());
+    byteSequence.add(e1.getValue().getTo());
     lastAddr = addr;
   }
   ubc.putBytes(seqStartAddr, byteSequence); // byteSequence is NOT empty

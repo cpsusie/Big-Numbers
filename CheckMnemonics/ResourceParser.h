@@ -3,7 +3,7 @@
 
 #include <LRparser.h>
 
-#line 3 "C:\\mytools2015\\CheckMnemonics\\Resource.y"
+#line 3 "C:\\Mytools2015\\CheckMnemonics\\Resource.y"
 #include "ResourceSymbol.h"
 #include "ResourceLex.h"
 #include "ParserTree.h"

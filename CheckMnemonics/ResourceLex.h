@@ -2,7 +2,7 @@
 #pragma once
 #include <Scanner.h>
 
-#line 2 "C:\\mytools2015\\CheckMnemonics\\Resource.lex"
+#line 2 "C:\\Mytools2015\\CheckMnemonics\\Resource.lex"
 #pragma once
 
  /* This part goes to the ResourceLex.h file */

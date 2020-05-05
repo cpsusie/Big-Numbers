@@ -172,7 +172,7 @@ void SearchPattern::convert(const String &pattern) {
   const TCHAR *cp = pattern.cstr();
   clear();
   while(*cp) {
-    append(escape(cp));
+    add(escape(cp));
   }
 }
 

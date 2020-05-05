@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <MathUtil.h>
 
 static void printExpressionList(double x, Array<Expression> &expressionList) {
   for(size_t v = 0; v < expressionList.size(); v++) {
@@ -43,10 +44,11 @@ int main(int argc, char **argv) {
     for(cp++; *cp; cp++) {
       switch(*cp) {
       case 'e':
-        { Expression e;
-          e.compile(cp+1,true);
+        { Expression  e;
+          StringArray errors;
+          e.compile(cp+1,errors,true);
           if(!e.isOk()) {
-            e.listErrors(stderr);
+            _ftprintf(stderr, _T("%s"), errors.toString(_T("\n")).cstr());
             exit(-1);
           }
           expressionList.add(e);
@@ -96,15 +98,15 @@ int main(int argc, char **argv) {
   if(count == 1) {
     printExpressionList((xStart+xEnd)/2, expressionList);
   } else if(useExponentielSteps) {
-    double t = dsign(xEnd-xStart);
-    const double startMt = xStart-t;
+    double       t          = dsign(xEnd-xStart);
+    const double startMt    = xStart-t;
     const double stepFactor = root(fabs(xEnd-startMt),dmax(1,(int)count-1)); // >= 0
     for(UINT i = 1; i <= count; i++, t *= stepFactor) {
       printExpressionList((i<count)?(startMt+t):xEnd, expressionList);
     }
   } else {
     const double step = (xEnd-xStart) / (count-1);
-    double x = xStart;
+    double       x    = xStart;
     for(UINT i = 1; i <= count; i++, x += step) {
       printExpressionList((i<count)?x:xEnd, expressionList);
     }

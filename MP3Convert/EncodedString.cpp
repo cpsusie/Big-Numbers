@@ -70,7 +70,7 @@ String EncodedString::toString(bool hexdump) const {
       for(wchar_t *cp = (wchar_t*)tmp.getData(); cp < endp; cp++) {
         *cp = _byteswap_ushort(*cp);
       }
-      tmp.appendZeroes(2);
+      tmp.addZeroes(2);
       result = (wchar_t*)tmp.getData();
 /*
     { std::u16string utf16 = (char16_t*)getData();

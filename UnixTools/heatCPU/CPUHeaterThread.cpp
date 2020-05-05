@@ -4,7 +4,7 @@
 
 #define BUFFERSIZE (1024*1024)
 
-CPUHeaterThread::CPUHeaterThread() {
+CPUHeaterThread::CPUHeaterThread() : Thread("HeaterThread") {
   setDemon(true);
   m_wantedCPULoad = 0;
   m_lastCPULoad   = 1;
@@ -44,9 +44,8 @@ unsigned int CPUHeaterThread::run() {
 }
 
 void CPUHeaterThread::infiniteLoop() {
-
   double sleepTime = 1;
-  setPriority(THREAD_PRIORITY_IDLE);
+  setPriority(PRIORITY_IDLE);
   setPriorityBoost(true);
 /*
   unsigned long loopCounts = 20000000;

@@ -264,7 +264,7 @@ static void setTextFrameValue(ID3_Frame &frame, const EncodedString &es) {
   ID3_Field *txtfld = frame.GetField(ID3FN_TEXT);
   txtfld->SetEncoding(es.getEncoding());
   ByteArray tmp(es);
-  tmp.appendZeroes(2);
+  tmp.addZeroes(2);
   if(es.getEncoding() == ID3TE_ISO8859_1) {
     txtfld->Set((char*)tmp.getData());
   } else {

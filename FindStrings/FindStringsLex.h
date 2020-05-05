@@ -2,7 +2,7 @@
 #pragma once
 #include <Scanner.h>
 
-#line 2 "C:\\mytools2015\\FindStrings\\FindStrings.lex"
+#line 2 "C:\\Mytools2015\\FindStrings\\FindStrings.lex"
 #pragma once
 
  /* This part goes to the h file */

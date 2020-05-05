@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include <process.h>
+#include <ProcessTools.h>
 #include <FileNameSplitter.h>
 #include "heatCPUDlg.h"
 #include <ByteFile.h>
@@ -10,34 +10,25 @@
 
 class CAboutDlg : public CDialog {
 public:
-    CAboutDlg();
+  enum { IDD = IDD_ABOUTBOX };
 
-    enum { IDD = IDD_ABOUTBOX };
-
-    protected:
-    virtual void DoDataExchange(CDataExchange *pDX);
+  CAboutDlg() : CDialog(IDD) {
+  }
 
 protected:
-    DECLARE_MESSAGE_MAP()
+  DECLARE_MESSAGE_MAP()
 };
-
-CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
-}
-
-void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-    __super::DoDataExchange(pDX);
-}
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
 CHeatCPUDlg::CHeatCPUDlg(CWnd *pParent) : CDialog(CHeatCPUDlg::IDD, pParent) {
-    m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
-    m_timerIsRunning = false;
+  m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
+  m_timerIsRunning = false;
 }
 
 void CHeatCPUDlg::DoDataExchange(CDataExchange *pDX) {
-    __super::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CHeatCPUDlg, CDialog)
@@ -74,8 +65,8 @@ BOOL CHeatCPUDlg::OnInitDialog() {
   SetIcon(m_hIcon, FALSE);
 
 #define SLIDERMAX 100
-  SetPriorityClass(GetCurrentProcess(), IDLE_PRIORITY_CLASS);
-  SetThreadPriorityBoost(GetCurrentThread(), TRUE);
+  setPriorityClass(PRCLASS_IDLE);
+  setThreadPriorityBoost(true);
 
   getSliderCtrl()->SetRange(0, SLIDERMAX);
   setCPULoad(m_options.m_cpuLoad);
@@ -210,7 +201,7 @@ void CHeatCPUDlg::OnLButtonDown(UINT nFlags, CPoint point) {
 
 void CHeatCPUDlg::OnTimer(UINT_PTR nIDEvent) {
   Timestamp now;
-  if(diff(m_lastTimerEvent, now, TSECOND) > 10) {
+  if(Timestamp::diff(m_lastTimerEvent, now, TSECOND) > 10) {
     refreshAfterShutdown();
   }
   __super::OnTimer(nIDEvent);

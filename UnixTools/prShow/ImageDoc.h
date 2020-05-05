@@ -1,5 +1,6 @@
 #pragma once
 
+#include <MFCUtil/PixRectDevice.h>
 #include <MFCUtil/PixRect.h>
 
 class CImageDoc : public CDocument {

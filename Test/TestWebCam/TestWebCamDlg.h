@@ -6,12 +6,12 @@
 
 class CTestWebCamDlg : public CDialog, public CaptureReceiver {
 private:
-  HICON      m_hIcon;
-  bool       m_timerIsRunning;
-  bool       m_edgeDetectionOn;
-  PixRect   *m_lastImage;
-  MMCapture *m_capture;
-  Semaphore  m_gate;
+  HICON         m_hIcon;
+  bool          m_timerIsRunning;
+  bool          m_edgeDetectionOn;
+  PixRect      *m_lastImage;
+  MMCapture    *m_capture;
+  FastSemaphore m_gate;
 public:
   CTestWebCamDlg(CWnd *pParent = NULL);   // standard constructor
   HWND getWindow() {

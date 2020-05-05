@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <conio.h>
+#include <InputValue.h>
 
 #define NROWS        7
 #define CARDSPERROW  4

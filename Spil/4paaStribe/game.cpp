@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <Thread.h>
 #include "Game.h"
 
 long               Game::m_evalCount;

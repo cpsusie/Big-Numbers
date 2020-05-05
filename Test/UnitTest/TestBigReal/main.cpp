@@ -318,21 +318,15 @@ int _tmain(int argc, TCHAR **argv) {
       }
     }
 
-     DigitMonitor digitMonitor;
+    DigitMonitor digitMonitor;
 
     if(highPriority) {
-      ThreadPool::setPriority(THREAD_PRIORITY_ABOVE_NORMAL);
+      ThreadPool::setPriority(PRIORITY_ABOVE_NORMAL);
       ThreadPool::setPriorityBoost(true);
 
-      if(!SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL)) {
-        throwLastErrorOnSysCallException(_T("SetThreadPriority"));
-      }
-      if(!SetPriorityClass(GetCurrentProcess(), ABOVE_NORMAL_PRIORITY_CLASS)) {
-        throwLastErrorOnSysCallException(_T("SetPriorityClass"));
-      }
-      if(!SetThreadPriorityBoost(GetCurrentThread(), TRUE)) {
-        throwLastErrorOnSysCallException(_T("SetThreadPriorityBoost"));
-      }
+      setThreadPriority(PRIORITY_ABOVE_NORMAL);
+      setPriorityClass(PRCLASS_ABOVE_NORMAL);
+      setThreadPriorityBoost(true);
     }
     if (startDigitMonitor) {
       digitMonitor.start();

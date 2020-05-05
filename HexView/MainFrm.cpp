@@ -407,7 +407,7 @@ void CMainFrame::OnEditCopy() {
         return;
       }
     }
-    const String s = (char*)selectedBytes.append('\0').getData();
+    const String s = (char*)selectedBytes.add('\0').getData();
 
     putClipboard(m_hWnd, s);
   } catch(Exception e) {

@@ -3,7 +3,9 @@
 #include "PathFinder.h"
 #include "resource.h"
 
-PathFinder::PathFinder(Maze *maze, CDialog *dialog, CDC &workDC, bool keepTrack, bool slow, int choiceStrategy) {
+PathFinder::PathFinder(Maze *maze, CDialog *dialog, CDC &workDC, bool keepTrack, bool slow, int choiceStrategy)
+  : Thread(_T("PathFinder"))
+{
   m_maze           = maze;
   m_slow           = slow;
   m_choiceStrategy = choiceStrategy;

@@ -31,9 +31,7 @@ void DataArray::reset() {
   const size_t nBytes = n * m_param.m_elementSize;
   clear(nBytes);
   const BYTE zero = 0;
-  for(size_t i = 0; i < nBytes; i++) {
-    append(zero);
-  }
+  addZeroes(nBytes);
 }
 
 void DataArray::init() {

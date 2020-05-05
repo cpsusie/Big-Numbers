@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <MyUtil.h>
+#include <ProcessTools.h>
 #include <io.h>
 #include <signal.h>
 #include "bfsort.h"
