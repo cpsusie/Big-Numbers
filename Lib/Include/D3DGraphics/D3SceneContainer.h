@@ -36,11 +36,11 @@ public:
 class D3SceneContainer {
 private:
   BYTE      m_renderLevel;
-  CameraSet m_accumulatedCameraSet;
-  BYTE      m_accumulatedRenderFlags;
+  CameraSet m_accCameraSet;
+  BYTE      m_accRenderFlags;
 
 public:
-  D3SceneContainer() : m_renderLevel(0), m_accumulatedRenderFlags(0) {
+  D3SceneContainer() : m_renderLevel(0), m_accRenderFlags(0) {
   }
   virtual D3Scene   &getScene() = 0;
   // Should return how many 3D-windows (cameras) to create
@@ -67,11 +67,18 @@ public:
   inline CSize       getWinSize(UINT index) const {
     return getClientRect(get3DWindow(index)).Size();
   }
+  // incrLevel/decrLevel works in stack-like manor. All calls to render(...) will be accumulated
+  // in (m_accCamraSet,m_accRenderFlags) as long as m_renderLevel > 0.
+  // When m_renderLevel is decremented to 0, doRender(m_accRenderFlags,m_accCameraSet) is called (like flushing)
+  // and m_accRenderFlags,m_accCameraSet are both reset, to begin a new cycle
+  // NB:If a call to render with bit SC_RENDERNOW set, doRender is called immediately with the same arguments
+  // leaving m_accCameraSet,m_accRenderFlags unchanged
   inline void        incrLevel() {
     m_renderLevel++;
   }
   void               decrLevel();
   // renderFlags is any combination of SC_RENDER*
   void               render(  BYTE renderFlags, CameraSet cameraSet);
+  // Default behavior: if(renderFlags & SC_RENDER3D) getScene().render(cameraSet);
   virtual void       doRender(BYTE renderFlags, CameraSet cameraSet);
 };

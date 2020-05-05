@@ -4,8 +4,8 @@
 
 void D3SceneContainer::decrLevel() {
   if(--m_renderLevel == 0) {
-    if(m_accumulatedRenderFlags || !m_accumulatedCameraSet.isEmpty()) {
-      render(m_accumulatedRenderFlags, m_accumulatedCameraSet);
+    if(m_accRenderFlags || !m_accCameraSet.isEmpty()) {
+      render(m_accRenderFlags, m_accCameraSet);
     }
   }
 }
@@ -16,12 +16,12 @@ void D3SceneContainer::render(BYTE renderFlags, CameraSet cameraSet) {
     return;
   }
   if(m_renderLevel > 0) {
-    m_accumulatedRenderFlags |= renderFlags;
-    m_accumulatedCameraSet   |= cameraSet;
+    m_accRenderFlags |= renderFlags;
+    m_accCameraSet   |= cameraSet;
   } else {
     doRender(renderFlags, cameraSet);
-    m_accumulatedRenderFlags = 0;
-    m_accumulatedCameraSet.clear();
+    m_accRenderFlags = 0;
+    m_accCameraSet.clear();
   }
 }
 
