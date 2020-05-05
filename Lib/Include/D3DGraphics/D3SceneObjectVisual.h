@@ -31,7 +31,7 @@ public:
   virtual SceneObjectType getType() const {
     return SOTYPE_VISUALOBJECT;
   }
-  bool isVisible() const {
+  bool isVisible() const { // virtual from __super
     return true;
   }
   D3SceneObjectVisual *getParent() const {
