@@ -29,6 +29,9 @@ public:
   inline D3DXVECTOR3 getMax() const {
     return D3DXVECTOR3(Right(),Top(),Far());
   }
+  inline D3DXVECTOR3 getCenter() const {
+    return Point3DP(center());
+  }
   D3Cube operator+(const D3DXVECTOR3 &p) const {
     return D3Cube(getMin() + p, size());
   }
