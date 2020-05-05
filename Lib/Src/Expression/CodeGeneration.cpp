@@ -249,7 +249,7 @@ void CodeGeneration::changeShortJumpToNearJump(JumpFixup &jf) {
 }
 
 void CodeGeneration::insertZeroes(UINT pos, UINT count) {
-  m_code.insertZeroes(pos, count);
+  m_code.addZeroes(pos, count);
   for(size_t i = 0; i < m_jumpFixups.size(); i++) {
     JumpFixup &jf1 = m_jumpFixups[i];
     if(jf1.m_instructionPos > pos) jf1.m_instructionPos += count;

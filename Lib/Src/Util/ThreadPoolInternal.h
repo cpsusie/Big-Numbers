@@ -1,8 +1,8 @@
 #pragma once
 
-#include <ThreadPool.h>
 #include <ResourcePoolTemplate.h>
 #include <Thread.h>
+#include <ThreadPool.h>
 #include <FlagTraits.h>
 #include <SynchronizedQueue.h>
 
@@ -76,7 +76,7 @@ class PoolThreadPool : public ResourcePoolTemplate<ThreadPoolThread> {
   friend class ThreadPoolThread;
 private:
   ThreadPool       &m_threadPool;
-  int               m_threadPriority;
+  ThreadPriority    m_threadPriority;
   bool              m_disablePriorityBoost;
   FastSemaphore     m_lock, m_activeIs0;
   int               m_activeCount;
@@ -115,7 +115,7 @@ public:
     , ResourcePoolTemplate<ThreadPoolThread>("PoolThread")
     , m_activeCount(0)
   {
-    m_threadPriority       = THREAD_PRIORITY_NORMAL;
+    m_threadPriority       = PRIORITY_NORMAL;
     m_disablePriorityBoost = false;
   }
   ~PoolThreadPool() {
@@ -135,7 +135,7 @@ public:
     }
     THREADPOOL_LEAVE;
   }
-  void setPriority(int priority) {
+  void setPriority(ThreadPriority priority) {
     if(priority == m_threadPriority) {
       return;
     }
@@ -144,7 +144,7 @@ public:
       get(i).setPriority(priority);
     }
   }
-  int getPriority() const {
+  ThreadPriority getPriority() const {
     return m_threadPriority;
   }
   void setPriorityBoost(bool disablePriorityBoost) {

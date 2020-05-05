@@ -2,6 +2,7 @@
 
 #include "MyUtil.h"
 #include "Runnable.h"
+#include "ThreadBase.h"
 #include "FastSemaphore.h"
 #include "PropertyContainer.h"
 
@@ -13,43 +14,17 @@
 
 class Thread;
 
-HANDLE getCurrentThreadHandle(); // call DuplicateHandle(GetCurrentThread())
-                                 // returned Handle should be closed with CloseHandle()
-                                 // after use. Throw Exception on failure
+typedef enum {
+  THR_BLOCKNEWTHREADS  // bool // Thread::remove/addListener is blocked and should NOT be called on this notification
+ ,THR_THREADSRUNNING   // bool
+} ThreadMapProperty;
 
-// if hThread is not specified, currentThreadHandle is used
-void   setThreadDescription(const String &description, HANDLE hThread = INVALID_HANDLE_VALUE);
-// if hThread is not specified, currentThreadHandle is used
-String getThreadDescription(HANDLE hThread = INVALID_HANDLE_VALUE);
-
-#ifdef _DEBUG
-#define SETTHREADDESCRIPTION(description, ...) setThreadDescription(description, __VA_ARGS__)
-#else
-#define SETTHREADDESCRIPTION(description, ...)
-#endif // _DEBUG
-
-// microseconds. if thread  == INVALID_HANDLE_VALUE, return time for current Thread
-double getThreadTime(HANDLE hThread = INVALID_HANDLE_VALUE);
 
 class UncaughtExceptionHandler {
 public:
   virtual void uncaughtException(Thread &thread, Exception &e) = 0;
 };
 
-typedef enum {
-  THR_BLOCKNEWTHREADS  // bool // Thread::remove/addListener is blocked and should NOT be called on this notification
- ,THR_THREADSRUNNING   // bool
-} ThreadMapProperty;
-
-/* Threadpriorities defined in winbase.h
- *  THREAD_PRIORITY_IDLE
- *  THREAD_PRIORITY_LOWEST
- *  THREAD_PRIORITY_BELOW_NORMAL
- *  THREAD_PRIORITY_NORMAL
- *  THREAD_PRIORITY_ABOVE_NORMAL
- *  THREAD_PRIORITY_TIME_CRITICAL
- *  THREAD_PRIORITY_HIGHEST
- */
 class Thread : public Runnable {
   friend class         ThreadMap;
   friend class         ThreadPool;
@@ -77,19 +52,41 @@ public:
   Thread(const String &description, Runnable &target, size_t stackSize = 0); // stacksize = 0, makes createThread use the default stacksize
   Thread(const String &description                  , size_t stackSize = 0); // do
   virtual ~Thread();
-  void setPriority(int priority);
-  int  getPriority() const;
-  void setPriorityBoost(bool disablePriorityBoost);
-  bool getPriorityBoost() const;
-  bool stillActive() const;
+  inline void setPriority(ThreadPriority priority) {
+    setThreadPriority(priority, m_threadHandle);
+  }
+  inline ThreadPriority getPriority() const {
+    return getThreadPriority(m_threadHandle);
+  }
+  inline void setPriorityBoost(bool disablePriorityBoost) {
+    setThreadPriorityBoost(disablePriorityBoost, m_threadHandle);
+  }
+  inline bool getPriorityBoost() const {
+    return getThreadPriorityBoost(m_threadHandle);
+  }
+  inline bool stillActive() const {
+    return getExitCode() == STILL_ACTIVE;
+  }
   inline DWORD getThreadId() const {
     return m_threadId;
   }
-  void   setDescription(const String &description);
-  String getDescription() const;
-  double getThreadTime(); // microseconds
-  void   setAffinityMask(DWORD mask);
-  void   setIdealProcessor(DWORD cpu);
+  inline void setDescription(const String &description) {
+    setThreadDescription(description, m_threadHandle);
+  }
+  inline String getDescription() const {
+    return getThreadDescription(m_threadHandle);
+  }
+   // microseconds
+  inline double getThreadTime() const {
+    return ::getThreadTime(m_threadHandle);
+  }
+
+  inline void setAffinityMask(DWORD mask) {
+    setThreadAffinityMask(mask, m_threadHandle);
+  }
+  inline void setIdealProcessor(DWORD cpu) {
+    setThreadIdealProcessor(cpu, m_threadHandle);
+  }
   void   suspend();
   void   resume();
   inline void start() {
@@ -102,7 +99,9 @@ public:
   inline bool isDemon() const {
     return m_isDemon;
   }
-  ULONG getExitCode() const;
+  inline ULONG getExitCode() const {
+    return getThreadExitCode(m_threadHandle);
+  }
 
   static void setDefaultUncaughtExceptionHandler(UncaughtExceptionHandler &eh) {
     s_defaultUncaughtExceptionHandler = &eh;

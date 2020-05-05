@@ -280,14 +280,6 @@ void Thread::handleUncaughtException(Exception &e) {
   }
 }
 
-void Thread::setDescription(const String &description) {
-  setThreadDescription(description, m_threadHandle);
-}
-
-String Thread::getDescription() const {
-  return getThreadDescription(m_threadHandle);
-}
-
 void Thread::setDemon(bool on) {
   if(on) {
     int fisk = 1;
@@ -313,58 +305,6 @@ void Thread::addListener(PropertyChangeListener *listener) { // static
 
 void Thread::removeListener(PropertyChangeListener *listener) { // static
   getMap().removeListener(listener);
-}
-
-ULONG Thread::getExitCode() const {
-  DWORD exitCode = 0;
-  if(!GetExitCodeThread(m_threadHandle,&exitCode)) {
-    throwLastErrorOnSysCallException(__TFUNCTION__);
-  }
-  return exitCode;
-}
-
-bool Thread::stillActive() const {
-  return getExitCode() == STILL_ACTIVE;
-}
-
-void Thread::setPriority(int priority) {
-  if(!SetThreadPriority(m_threadHandle,priority)) {
-    throwLastErrorOnSysCallException(__TFUNCTION__);
-  }
-}
-
-int Thread::getPriority() const {
-  return GetThreadPriority(m_threadHandle);
-}
-
-void Thread::setPriorityBoost(bool disablePriorityBoost) {
-  if(!SetThreadPriorityBoost(m_threadHandle, disablePriorityBoost)) {
-    throwLastErrorOnSysCallException(__TFUNCTION__);
-  }
-}
-
-bool Thread::getPriorityBoost() const {
-  BOOL boostDisabled;
-  if(GetThreadPriorityBoost(m_threadHandle, &boostDisabled)) {
-    throwLastErrorOnSysCallException(__TFUNCTION__);
-  }
-  return boostDisabled ? true : false;
-}
-
-void Thread::setAffinityMask(DWORD mask) {
-  if(!SetThreadAffinityMask(m_threadHandle,mask)) {
-    throwLastErrorOnSysCallException(__TFUNCTION__);
-  }
-}
-
-void Thread::setIdealProcessor(DWORD cpu) {
-  if(SetThreadIdealProcessor(m_threadHandle,cpu) == (DWORD)-1) {
-    throwLastErrorOnSysCallException(__TFUNCTION__);
-  }
-}
-
-double Thread::getThreadTime() {
-  return ::getThreadTime(m_threadHandle);
 }
 
 Thread *Thread::getThreadById(DWORD threadId) { // static

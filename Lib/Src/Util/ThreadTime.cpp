@@ -1,5 +1,5 @@
 #include "pch.h"
-#include <Thread.h>
+#include <ThreadBase.h>
 #include <Date.h>
 
 double getThreadTime(HANDLE hThread) {

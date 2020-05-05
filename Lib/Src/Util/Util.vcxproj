@@ -890,6 +890,7 @@
     <ClInclude Include="..\..\Include\TextRect.h" />
     <ClInclude Include="..\..\Include\TextWin.h" />
     <ClInclude Include="..\..\Include\Thread.h" />
+    <ClInclude Include="..\..\Include\ThreadBase.h" />
     <ClInclude Include="..\..\Include\ThreadPool.h" />
     <ClInclude Include="..\..\Include\TimeEstimator.h" />
     <ClInclude Include="..\..\Include\TimeMeasure.h" />
@@ -1013,8 +1014,13 @@
     <ClCompile Include="GetSize.cpp" />
     <ClCompile Include="GetSystemTime.cpp" />
     <ClCompile Include="GetTestFileName.cpp" />
-    <ClCompile Include="GetThreadDescription.cpp" />
-    <ClCompile Include="GetThreadTime.cpp" />
+    <ClCompile Include="PriorityClass.cpp" />
+    <ClCompile Include="ThreadAffinityMask.cpp" />
+    <ClCompile Include="ThreadDescription.cpp" />
+    <ClCompile Include="ThreadExitCode.cpp" />
+    <ClCompile Include="ThreadIdealProcessor.cpp" />
+    <ClCompile Include="ThreadPriorityBoost.cpp" />
+    <ClCompile Include="ThreadTime.cpp" />
     <ClCompile Include="GetUserName.cpp" />
     <ClCompile Include="guid.cpp" />
     <ClCompile Include="HashMapImpl.cpp" />
@@ -1161,6 +1167,7 @@
     <ClCompile Include="Thread.cpp" />
     <ClCompile Include="ThreadPool.cpp" />
     <ClCompile Include="ThreadPoolThread.cpp" />
+    <ClCompile Include="ThreadPriority.cpp" />
     <ClCompile Include="Time.cpp" />
     <ClCompile Include="TimeEstimator.cpp" />
     <ClCompile Include="TimeMeasure.cpp" />

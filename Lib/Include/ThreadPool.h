@@ -4,8 +4,9 @@
 #include "Runnable.h"
 #include "Singleton.h"
 #include "FastSemaphore.h"
-#include <PropertyContainer.h>
+#include "PropertyContainer.h"
 #include "CompactStack.h"
+#include "ThreadBase.h"
 
 class PoolThreadPool;
 class ResultQueuePool;
@@ -42,7 +43,6 @@ private:
   }
   inline void wait()   const { m_gate.wait();   }
   inline void notify() const { m_gate.notify(); }
-  static void *poolRequest(int request);
 public:
   static void executeNoWait(          Runnable      &job);  // Execute job without blocking. Uncaught exceptions are lost.
   static void executeInParallelNoWait(RunnableArray &jobs); // Execute all jobs without blocking. Uncaught exceptions are lost.
@@ -57,7 +57,7 @@ public:
   String toString() const; // for debug
   void   startLogging();
   void   stopLogging();
-  static void   setPriority(int priority); // Sets the priority for all running and future running threads
+  static void   setPriority(ThreadPriority priority); // Sets the priority for all running and future running threads
   // Default is THREAD_PRIORITY_BELOW_NORMAL
   // THREAD_PRIORITY_IDLE,-PRIORITY_LOWEST,-PRIORITY_BELOW_NORMAL,-PRIORITY_NORMAL,-PRIORITY_ABOVE_NORMAL
 

@@ -118,7 +118,7 @@ ThreadPool::~ThreadPool() {
   THREADPOOL_LEAVE;
 }
 
-void ThreadPool::setPriority(int priority) { // static
+void ThreadPool::setPriority(ThreadPriority priority) { // static
   ThreadPool &instance = getInstance();
   instance.wait();
   PoolThreadPool &pool = instance.getTPool();

@@ -839,16 +839,10 @@
     <ClCompile Include="InputPassword.cpp">
       <Filter>Source Files\Console</Filter>
     </ClCompile>
-    <ClCompile Include="GetThreadDescription.cpp">
-      <Filter>Source Files\Process</Filter>
-    </ClCompile>
     <ClCompile Include="GetProcessTime.cpp">
       <Filter>Source Files\Process</Filter>
     </ClCompile>
     <ClCompile Include="GetSystemTime.cpp">
-      <Filter>Source Files\Process</Filter>
-    </ClCompile>
-    <ClCompile Include="GetThreadTime.cpp">
       <Filter>Source Files\Process</Filter>
     </ClCompile>
     <ClCompile Include="FileTimeToTotalTime.cpp">
@@ -868,6 +862,30 @@
     </ClCompile>
     <ClCompile Include="LinearIterator.cpp">
       <Filter>Source Files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="ThreadPriority.cpp">
+      <Filter>Source Files\Process</Filter>
+    </ClCompile>
+    <ClCompile Include="ThreadDescription.cpp">
+      <Filter>Source Files\Process</Filter>
+    </ClCompile>
+    <ClCompile Include="ThreadTime.cpp">
+      <Filter>Source Files\Process</Filter>
+    </ClCompile>
+    <ClCompile Include="ThreadPriorityBoost.cpp">
+      <Filter>Source Files\Process</Filter>
+    </ClCompile>
+    <ClCompile Include="ThreadAffinityMask.cpp">
+      <Filter>Source Files\Process</Filter>
+    </ClCompile>
+    <ClCompile Include="ThreadIdealProcessor.cpp">
+      <Filter>Source Files\Process</Filter>
+    </ClCompile>
+    <ClCompile Include="ThreadExitCode.cpp">
+      <Filter>Source Files\Process</Filter>
+    </ClCompile>
+    <ClCompile Include="PriorityClass.cpp">
+      <Filter>Source Files\Process</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1289,6 +1307,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\LinearIterator.h">
       <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\ThreadBase.h">
+      <Filter>Header Files\Process</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

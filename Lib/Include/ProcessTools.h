@@ -62,5 +62,14 @@ public:
   }
 };
 
-#define BELOW_NORMAL_PRIORITY_CLASS       0x00004000
-#define ABOVE_NORMAL_PRIORITY_CLASS       0x00008000
+typedef enum {
+  PRCLASS_IDLE          = IDLE_PRIORITY_CLASS
+ ,PRCLASS_BELOW_NORMAL  = BELOW_NORMAL_PRIORITY_CLASS
+ ,PRCLASS_NORMAL        = NORMAL_PRIORITY_CLASS
+ ,PRCLASS_ABOVE_NORMAL  = ABOVE_NORMAL_PRIORITY_CLASS
+ ,PRCLASS_HIGH_PRIORITY = HIGH_PRIORITY_CLASS
+ ,PRCLASS_REALTIME      = REALTIME_PRIORITY_CLASS
+} PriorityClass;
+
+void          setPriorityClass(PriorityClass prClass, HANDLE hProcess = NULL);
+PriorityClass getPriorityClass(                       HANDLE hProcess = NULL);

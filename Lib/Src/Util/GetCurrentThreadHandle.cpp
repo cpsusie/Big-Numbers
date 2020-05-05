@@ -1,5 +1,5 @@
 #include "pch.h"
-#include <Thread.h>
+#include <ThreadBase.h>
 
  // call DuplicateHAndle(GetCurrentThread())
  // returned Handle should be closed with CloseHandle

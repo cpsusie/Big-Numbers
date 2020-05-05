@@ -31,42 +31,55 @@ public:
   ByteArray  operator+( const ByteArray &d) const;
   ByteArray &operator+=(const ByteArray &d);
   inline ByteArray &operator+=(BYTE byte) {
-    return add(byte);
+    return add(size(), byte);
   }
-
-  // return this, if newCapcity == -1 it will not be changed
+  // Return this, if newCapcity == -1 it will not be changed
   ByteArray &clear(intptr_t newCapacity = 0);
-  ByteArray &addAll( const ByteArray &d);
-  ByteArray &add( const BYTE *data, size_t size);
-  // return this
-  inline ByteArray &add(BYTE byte) {
-    return addConstant(byte, 1);
+  inline ByteArray &addAll(const ByteArray &a) {
+    return add(size(), a.m_data, a.size());
   }
-  // return this
-  inline ByteArray &addZeroes(size_t count) {
-    return addConstant(0, count);
-  }
-  // return this
-  inline ByteArray &insertZeroes(size_t index, size_t count) {
-    return insertConstant(index, 0, count);
-  }
-  // return this
-  inline ByteArray &addConstant(BYTE b, size_t count) {
-    return insertConstant(size(), b, count);
+  // Insert data[0..size-1] from position index, setting new arraysize to oldsize+size
+  // Assume index <= size
+  // Return this
+  ByteArray &add(size_t index, const BYTE *data, size_t size);
+  // Append data[0..size-1] to array, setting new arraysize to oldsize+size
+  // Return this
+  inline ByteArray &add(const BYTE *data, size_t size) {
+    return add(m_size, data, size);
   }
 
   // return this
-  ByteArray &insertConstant(size_t index, BYTE c, size_t count);
-  // return this
+  ByteArray &add(size_t index, BYTE c, size_t count = 1);
+  // Insert count bytes (value=b) from position index
+  // Assume index <= size
+  // Return this
+  inline ByteArray &add(BYTE b, size_t count = 1) {
+    return add(size(), b, count);
+  }
+  // Insert count zeroes from position index
+  // Assume index <= size
+  // Return this
+  inline ByteArray &addZeroes(size_t index, size_t count) {
+    return add(index, (BYTE)0, count);
+  }
+  // Append count zeroes
+  // Return this
+  inline ByteArray &addZeroes(size_t count) {
+    return addZeroes(size(), count);
+  }
+  // Set content array to data[0..size-1]. old content is discarded
+  // Return this
   ByteArray &setData(const BYTE *data, size_t size);
-  // return this. Assume index + count <= size
+  // Overwrite a[index..index+size-1] with data.
+  // Return this.
+  // Assume index + count <= size
   ByteArray &setBytes(size_t index, const BYTE *data, size_t count);
   // return this
   ByteArray &remove(size_t index, size_t count);
 
   inline size_t size() const {
     return m_size;
-  }
+  }  // return this
 
   inline bool isEmpty() const {
     return m_size == 0;

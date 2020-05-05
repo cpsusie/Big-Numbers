@@ -60,34 +60,42 @@ ByteArray &ByteArray::clear(intptr_t newCapacity) {
   return *this;
 }
 
-ByteArray &ByteArray::addAll(const ByteArray &d) {
-  return add(d.m_data, d.size());
-}
-
-ByteArray &ByteArray::add(const BYTE *data, size_t size) {
-  if(size) {
-    const size_t newSize = m_size + size;
-    if(newSize > m_capacity) {     // Careful here!!! data and m_data might overlap!!
-      const size_t newCapacity = getCapacityCeil(2 * newSize); // > 0
-      BYTE *newData = allocateBytes(newCapacity);
-      if(m_size > 0) {
-        memcpy(newData, m_data, m_size);
-      }
-      memcpy(newData + m_size, data, size);
-      if(m_data != NULL) { // Now we can safely delete m_data.
-        deallocateBytes(m_data);
-      }
-      m_data     = newData;
-      m_capacity = newCapacity;
-    } else {
-      memcpy(m_data+m_size, data, size);
-    }
-    m_size = newSize;
+ByteArray &ByteArray::add(size_t index, const BYTE *data, size_t size) {
+  if(size == 0) {
+    return *this;
   }
+  if(index > m_size) {
+    indexError(__TFUNCTION__, index);
+  }
+  const size_t newSize = m_size + size;
+  if((newSize <= m_capacity) && (index == m_size)) {
+    memcpy(m_data + m_size, data, size); // simple append
+  } else {  // Careful here!!! data and m_data might overlap!!
+    const size_t newCapacity = getCapacityCeil(2 * newSize); // > 0
+    BYTE        *newData     = allocateBytes(newCapacity), *dst = newData;
+    if(index < m_size) {
+      if(index) {
+        memcpy(dst, m_data, index); dst += index; // copy first part of old content
+      }
+      memcpy(dst, data, size); dst += size; // copy data
+      memcpy(dst, m_data + index, m_size - index); // copy tail of old content
+    } else {
+      if(m_size > 0) {
+        memcpy(dst, m_data, m_size); dst += m_size;
+      }
+      memcpy(dst, data, size);
+    }
+    if(m_data != NULL) { // Now we can safely delete m_data.
+      deallocateBytes(m_data);
+    }
+    m_data     = newData;
+    m_capacity = newCapacity;
+  }
+  m_size = newSize;
   return *this;
 }
 
-ByteArray &ByteArray::insertConstant(size_t index, BYTE b, size_t count) {
+ByteArray &ByteArray::add(size_t index, BYTE b, size_t count) {
   if(count == 0) {
     return *this;
   }
@@ -95,7 +103,7 @@ ByteArray &ByteArray::insertConstant(size_t index, BYTE b, size_t count) {
   const size_t newSize = m_size + count;
   if(newSize > m_capacity) {
     const size_t newCapacity = getCapacityCeil(2 * newSize);
-    BYTE *newData = allocateBytes(newCapacity);
+    BYTE        *newData     = allocateBytes(newCapacity);
     if(index > 0) {
       memcpy(newData, m_data, index);
     }
@@ -105,7 +113,7 @@ ByteArray &ByteArray::insertConstant(size_t index, BYTE b, size_t count) {
     if(m_data != NULL) {
       deallocateBytes(m_data);
     }
-    m_data = newData;
+    m_data     = newData;
     m_capacity = newCapacity;
   } else if(index < m_size) {
     memmove(m_data+index+count, m_data+index, m_size-index);

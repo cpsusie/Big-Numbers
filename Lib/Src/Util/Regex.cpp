@@ -675,7 +675,7 @@ int Regex::compareStrings(const TCHAR *s1, const TCHAR *s2, size_t length) const
 // --------------------------------- Code generation -------------------------------------
 
 void Regex::insertZeroes(UINT addr, UINT count) {
-  m_buffer.insertZeroes(addr, count);
+  m_buffer.addZeroes(addr, count);
   m_insertHandler->insertBytes(addr, count);
 }
 
