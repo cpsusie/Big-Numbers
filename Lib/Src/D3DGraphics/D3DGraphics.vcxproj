@@ -925,6 +925,7 @@
     <ClCompile Include="D3SceneObjectWireFrameBox.cpp" />
     <ClCompile Include="D3SceneObjectVisual.cpp" />
     <ClCompile Include="D3SceneEditorSplitWindow.cpp" />
+    <ClCompile Include="D3ToSize.cpp" />
     <ClCompile Include="D3World.cpp" />
     <ClCompile Include="Face.cpp" />
     <ClCompile Include="IsoSurfaceSnapMCLookupTable.cpp" />

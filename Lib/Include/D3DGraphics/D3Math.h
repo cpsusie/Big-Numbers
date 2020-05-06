@@ -226,8 +226,8 @@ public:
   FVF_TRAITS(VertexNormalDiffuseTex1,A,A,A,A)
 };
 
-int    FVFToSize(   DWORD     fvf);
-int    formatToSize(D3DFORMAT f  );
+UINT FVFToSize(   DWORD     fvf);
+UINT formatToSize(D3DFORMAT f  );
 
 class Line3D {
 public:

@@ -227,15 +227,6 @@ String vertexToString(const char *v, DWORD fvf, int dec) {
   return result;
 }
 
-int formatToSize(D3DFORMAT f) {
-  switch(f) {
-  case D3DFMT_INDEX16: return sizeof(short);
-  case D3DFMT_INDEX32: return sizeof(long );
-  default            : throwInvalidArgumentException(__TFUNCTION__, _T("f=%d"), f);
-                       return 1;
-  }
-}
-
 String toString(const D3DVERTEXBUFFER_DESC &desc, bool multiLines) {
   const TCHAR *formatStr = multiLines
     ? _T("Type  :%s\n"

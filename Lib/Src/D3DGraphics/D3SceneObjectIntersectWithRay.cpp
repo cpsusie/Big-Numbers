@@ -51,7 +51,7 @@ bool D3SceneObjectVisual::intersectsWithRay(const D3Ray &ray, float &dist, D3Pic
         V(mesh->GetVertexBuffer(&vertexBuffer));
         D3DVERTEXBUFFER_DESC vtxdesc;
         V(vertexBuffer->GetDesc(&vtxdesc));
-        const size_t itemSize = FVFToSize(vtxdesc.FVF);
+        const UINT itemSize = FVFToSize(vtxdesc.FVF);
         V(vertexBuffer->Lock(0, 0, &vertexItems, D3DLOCK_READONLY));
 
         for(UINT h = 0; h < hitCount; h++) {

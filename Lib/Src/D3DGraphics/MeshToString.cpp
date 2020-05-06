@@ -47,7 +47,7 @@ String toString(LPDIRECT3DVERTEXBUFFER vertexBuffer, BYTE flags) {
   String result;
   D3DVERTEXBUFFER_DESC desc;
   V(vertexBuffer->GetDesc(&desc));
-  const int itemSize = FVFToSize(desc.FVF);
+  const UINT itemSize = FVFToSize(desc.FVF);
   if(flags & FORMAT_BUFFERDESC) {
     if(multiLines) {
       result = format(_T("Description:\n%s"
@@ -87,7 +87,7 @@ String toString(LPDIRECT3DINDEXBUFFER indexBuffer, BYTE flags) {
   String result;
   D3DINDEXBUFFER_DESC desc;
   V(indexBuffer->GetDesc(&desc));
-  const int itemSize  = formatToSize(desc.Format);
+  const UINT itemSize = formatToSize(desc.Format);
   const int itemCount = desc.Size/itemSize;
   if(flags & FORMAT_BUFFERDESC) {
     if(multiLines) {
