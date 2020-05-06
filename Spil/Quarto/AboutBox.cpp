@@ -5,11 +5,7 @@
 #define new DEBUG_NEW
 #endif
 
-CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
-}
-
-void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-    __super::DoDataExchange(pDX);
+CAboutDlg::CAboutDlg() : CDialog(IDD) {
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
