@@ -773,16 +773,12 @@ void D3SceneEditor::OnMouseWheelCameraProjection(UINT nFlags, short zDelta, CPoi
 
 void D3SceneEditor::walkWithCamera(float dist, float angle) {
   D3World cw = sCAM.getD3World();
-  cw.setPos(cw.getPos() + cw.getDir()*dist)
-    .setOrientation(cw.getOrientation()*createRotation(cw.getUp(), angle));
-  sCAM.setD3World(cw);
+  sCAM.setD3World(cw.setPos(cw.getPos() + cw.getDir()*dist).rotate(createRotation(cw.getUp(), angle)));
 }
 
 void D3SceneEditor::sidewalkWithCamera(float upDist, float rightDist) {
   const D3World &cw = sCAM.getD3World();
-  sCAM.setPos(cw.getPos()
-            + cw.getUp()    * upDist
-            + cw.getRight() * rightDist);
+  sCAM.setPos(cw.getPos() + cw.getUp()*upDist + cw.getRight()*rightDist);
 }
 
 void D3SceneEditor::moveCamera(const D3DXVECTOR3 &dir, float dist) {
@@ -791,13 +787,13 @@ void D3SceneEditor::moveCamera(const D3DXVECTOR3 &dir, float dist) {
 }
 
 void D3SceneEditor::rotateCameraUpDown(float angle) {
-  const D3World &cw = sCAM.getD3World();
-  sCAM.setOrientation(cw.getOrientation() * createRotation(cw.getRight(), angle));
+  D3World cw = sCAM.getD3World();
+  sCAM.setD3World(cw.rotate(createRotation(cw.getRight(), angle)));
 }
 
 void D3SceneEditor::rotateCameraLeftRight(float angle) {
-  const D3World &cw = sCAM.getD3World();
-  sCAM.setOrientation(cw.getOrientation() * createRotation(cw.getDir(), angle));
+  D3World cw = sCAM.getD3World();
+  sCAM.setD3World(cw.rotate(createRotation(cw.getDir(), angle)));
 }
 
 // ------------------------------------- controlling lights -----------------------------------------
