@@ -73,6 +73,9 @@ public:
   virtual D3DSHADEMODE getShadeMode() const {
     return D3DSHADE_GOURAUD;
   }
+  virtual bool getLightingEnable() const {
+    return true;
+  }
   const D3Material &getMaterial() const;
   inline bool hasMaterial() const {
     return getMaterialId() >= 0;

@@ -70,7 +70,7 @@ void D3SceneObjectWithMesh::draw() {
     device.setWorldMatrix(getWorld())
           .setFillMode(getFillMode())
           .setShadeMode(getShadeMode())
-          .setLightingEnable(true);
+          .setLightingEnable(getLightingEnable());
     drawSubset(0);
   }
   __super::draw();

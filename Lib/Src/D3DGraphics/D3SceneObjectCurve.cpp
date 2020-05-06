@@ -28,7 +28,8 @@ void D3SceneObjectCurve::draw() {
       getDevice().setMaterial(getMaterial());
     }
     setStreamSource().setWorldMatrix(getWorld())
-                           .setLightingEnable(true).drawPrimitive(D3DPT_LINESTRIP, 0, m_primitiveCount);
+                     .setLightingEnable(getLightingEnable())
+                     .drawPrimitive(D3DPT_LINESTRIP, 0, m_primitiveCount);
   }
   __super::draw();
 

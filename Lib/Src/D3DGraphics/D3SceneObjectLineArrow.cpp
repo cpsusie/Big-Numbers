@@ -55,9 +55,9 @@ void D3SceneObjectLineArrow::draw() {
       getDevice().setMaterial(getMaterial());
     }
     setStreamSource().setWorldMatrix(getWorld())
-                     .setFillMode(D3DFILL_SOLID)
-                     .setShadeMode(D3DSHADE_GOURAUD)
-                     .setLightingEnable(true)
+                     .setFillMode(getFillMode())
+                     .setShadeMode(getShadeMode())
+                     .setLightingEnable(getLightingEnable())
                      .drawPrimitive(D3DPT_LINELIST, 0, 1)
                      .drawPrimitive(D3DPT_TRIANGLEFAN, 1, FANCOUNT)
                      .drawPrimitive(D3DPT_TRIANGLEFAN, FANCOUNT + 3, FANCOUNT);

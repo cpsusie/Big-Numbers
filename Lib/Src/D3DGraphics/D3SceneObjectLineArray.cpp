@@ -50,7 +50,7 @@ void D3SceneObjectLineArray::draw() {
       getDevice().setMaterial(getMaterial());
     }
     setStreamSource().setWorldMatrix(getWorld())
-                     .setLightingEnable(true)
+                     .setLightingEnable(getLightingEnable())
                      .drawPrimitive(D3DPT_LINELIST, 0, m_primitiveCount);
   }
   __super::draw();

@@ -40,7 +40,7 @@ void D3SceneObjectCurveArray::draw() {
     if(hasMaterial()) {
       device.setMaterial(getMaterial());
     }
-    setStreamSource().setLightingEnable(true);
+    setStreamSource().setLightingEnable(getLightingEnable());
     int startIndex = 0;
     for(size_t i = 0; i < m_curveSize.size(); i++) {
       const int vertexCount = m_curveSize[i];
