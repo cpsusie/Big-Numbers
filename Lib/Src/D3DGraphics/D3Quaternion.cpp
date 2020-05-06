@@ -27,10 +27,11 @@ D3DXQUATERNION createOrientation(const D3DXVECTOR3 &dir, int unitIndex) {
 #define verify(exp) (void)((exp) || (showError(_T("%s line %d:%s"), __TFUNCTION__, __LINE__, _T(#exp)), 0))
 #endif
 
-D3DXQUATERNION createOrientation(const D3DXVECTOR3 &dir, const D3DXVECTOR3 &up) {
+D3DXQUATERNION createOrientation(const D3DXVECTOR3 &dir, const D3DXVECTOR3 &up) { // TODO
   const D3DXVECTOR3    udir    = unitVector(dir);
   const D3DXQUATERNION q1      = createOrientation(udir);
   const D3DXVECTOR3    uup     = unitVector(up - (udir*up) * udir);  // uup and udir are ortonormal, uupp.length=1, span(dir,up) = span(udir,uup)
+
   const D3DXQUATERNION q2      = createRotation(rotate(E[2], q1), uup);
   const D3DXQUATERNION result  = q1*q2;
 /*
@@ -57,7 +58,7 @@ D3DXQUATERNION createOrientation(const D3DXVECTOR3 &dir, const D3DXVECTOR3 &up) 
   return result;
 }
 
-D3DXQUATERNION createRotation(const D3DXVECTOR3 &from, const D3DXVECTOR3 &to) {
+D3DXQUATERNION createRotation(const D3DXVECTOR3 &from, const D3DXVECTOR3 &to) { // TODO
   const float    phi = angle(from, to);
   D3DXQUATERNION q;
   if(phi == 0) {

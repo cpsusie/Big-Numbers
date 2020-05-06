@@ -1,6 +1,26 @@
 #include "pch.h"
 #include <D3DGraphics/D3World.h>
 
+D3World &D3World::resetPos() {
+  return setPos(D3DXORIGIN);
+}
+
+D3DXVECTOR3 D3World::getDir() const {
+  return ::rotate(E[0], m_q);
+}
+
+D3DXVECTOR3 D3World::getUp() const {
+  return ::rotate(E[2], m_q);
+}
+
+D3DXVECTOR3 D3World::getRight() const {
+  return cross(getDir(), getUp());
+}
+
+D3DXVECTOR3 D3World::getLeft() const {
+  return cross(getUp(), getDir());
+}
+
 D3DXMATRIX &D3World::createViewMatrix(D3DXMATRIX &dst, bool rightHanded) const {
   return D3DXMatrixLookAt(dst, m_pos, m_pos + getDir(), getUp(), rightHanded);
 }
@@ -15,6 +35,14 @@ D3World &D3World::setOrientation(const D3DXQUATERNION &q, const D3DXVECTOR3 &cen
   const D3DXVECTOR3 c     = inverse(w) * centerOfRotation;
   const D3DXVECTOR3 newcr = setOrientation(q) * c;
   return setPos(getPos() + centerOfRotation - newcr);
+}
+
+D3World &D3World::rotate(const D3DXQUATERNION &rot) {
+  return setOrientation(getOrientation()*rot);
+}
+
+D3World &D3World::rotate(const D3DXQUATERNION &rot, const D3DXVECTOR3 &centerOfRotation) {
+  return setOrientation(getOrientation()*rot, centerOfRotation);
 }
 
 bool operator==(const D3World &w1, const D3World &w2) {

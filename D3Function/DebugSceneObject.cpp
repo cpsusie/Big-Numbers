@@ -83,7 +83,7 @@ D3Camera *DebugSceneobject::dbgCAM() const {
 void DebugSceneobject::debugRotateFocusCam(const D3DXVECTOR3 &axis, float rad) {
   D3Camera *cam = dbgCAM();
   D3World   w   = cam->getD3World();
-  cam->setD3World(w.setOrientation(w.getOrientation() * createRotation(axis, rad), getCubeCenter()));
+  cam->setD3World(w.rotate(createRotation(axis, rad), getCubeCenter()));
 }
 
 void DebugSceneobject::createDebugLight() {

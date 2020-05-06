@@ -34,9 +34,7 @@ public:
   inline D3World &reset() {
     return resetPos().resetOrientation().resetScale();
   }
-  inline D3World &resetPos() {
-    return setPos(D3DXORIGIN);
-  }
+  D3World &resetPos();
   inline D3World &resetOrientation() {
     D3DXQuaternionIdentity(&m_q);
     return *this;
@@ -72,22 +70,16 @@ public:
     return *this;
   }
   // centerOfRotation in world space
-  D3World &setOrientation(const D3DXQUATERNION &q, const D3DXVECTOR3 &centerOfRotation);
-  inline D3DXVECTOR3 getDir() const {
-    return rotate(E[0], m_q);
-  }
-  inline D3DXVECTOR3 getUp() const {
-    return rotate(E[2], m_q);
-  }
-  inline D3DXVECTOR3 getRight() const {
-    return cross(getDir(), getUp());
-  }
-  inline D3DXVECTOR3 getLeft() const {
-    return cross(getUp(), getDir());
-  }
+  D3World    &setOrientation(const D3DXQUATERNION &q, const D3DXVECTOR3 &centerOfRotation);
   inline const D3DXQUATERNION &getOrientation() const {
     return m_q;
   }
+  D3DXVECTOR3 getDir() const;
+  D3DXVECTOR3 getUp()  const;
+  D3DXVECTOR3 getRight() const;
+  D3DXVECTOR3 getLeft() const;
+  D3World &rotate(const D3DXQUATERNION &rot);
+  D3World &rotate(const D3DXQUATERNION &rot, const D3DXVECTOR3 &centerOfRotation);
   inline D3World &setLookAt(const D3DXVECTOR3 &point) {
     return setLookAt(getPos(), point, getUp());
   }
