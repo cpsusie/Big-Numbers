@@ -41,9 +41,17 @@ public:
   }
 };
 
+inline bool operator==(const Field &f1, const Field &f2) {
+  return (f1.m_row == f2.m_row) && (f1.m_col == f2.m_col);
+}
+
+inline bool operator!=(const Field &f1, const Field &f2) {
+  return !(f1 == f2);
+}
+
 typedef CompactArray<Field> FieldArray;
 
-#define NOBRICK -1
+#define NOBRICK ((char)-1)
 
 class Move {
 public:

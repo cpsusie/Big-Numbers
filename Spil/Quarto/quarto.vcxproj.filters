@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AboutBox.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="StdAfx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -38,9 +35,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AboutBox.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>

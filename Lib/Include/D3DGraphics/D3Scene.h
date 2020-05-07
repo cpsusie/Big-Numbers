@@ -146,6 +146,7 @@ public:
   D3Light  getLight(      UINT lightIndex) const;
   // Return Array of defined lights
   LightArray          getAllLights() const;
+  void                setAllLights(const LightArray &a);
   inline D3DLIGHTTYPE getLightType(UINT lightIndex) const {
     return getLight(lightIndex).Type;
   }
@@ -195,9 +196,13 @@ public:
   void setMaterial(const D3Material  &material);
   // notify listeners by notification id=SP_MATERIALCOUNT
   UINT addMaterial(const D3DMATERIAL &material);
+  // notify listeners by notification id=SP_MATERIALCOUNT
+  void setAllMaterials(const MaterialMap &materialMap);
   // add a material with the specified diffuse and emissive color, and return it's id
   // uses D3Material::createMaterialWithColor
   UINT addMaterialWithColor(D3DCOLOR color);
+  // notify listeners by notification id=SP_MATERIALCOUNT
+  void removeAllMaterials();
   // notify listeners by notification id=SP_MATERIALCOUNT
   void removeMaterial(UINT materialId);
   // assume lcMaterial is defined. Dont notify listeners about change in material

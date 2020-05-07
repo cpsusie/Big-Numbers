@@ -231,6 +231,18 @@ LightArray D3Scene::getAllLights() const {
   return result;
 }
 
+void D3Scene::setAllLights(const LightArray &a) {
+  const bool notifyEnable = setNotifyEnable(false);
+  removeAllLights();
+  const UINT count = (UINT)a.size();
+  for(UINT i = 0; i < count; i++) {
+    const D3Light &l = a[i];
+    m_lightsDefined.add(l.getIndex());
+    setLight(l);
+  }
+  setNotifyEnable(notifyEnable);
+}
+
 UINT D3Scene::getFirstFreeLightIndex() const {
   const UINT maxLightCount = getMaxLightCount();
   for(UINT i = 0; i < maxLightCount; i++) {
@@ -279,6 +291,13 @@ UINT D3Scene::addMaterial(const D3DMATERIAL &material) {
   return id;
 }
 
+void D3Scene::setAllMaterials(const MaterialMap &materialMap) {
+  const UINT oldCount = getMaterialCount();
+  m_materialMap = materialMap;
+  const UINT newCount = oldCount+1;
+  notifyPropertyChanged(SP_MATERIALCOUNT, &oldCount, &newCount);
+}
+
 UINT D3Scene::addMaterialWithColor(D3DCOLOR color) {
   return addMaterial(D3Material::createMaterialWithColor(color));
 }
@@ -295,10 +314,18 @@ void D3Scene::removeMaterial(UINT materialId) {
   if((materialId == 0) || (!isMaterialDefined(materialId))) { // cannot remove material 0
     return;
   }
-  const int oldCount = getMaterialCount();
+  const UINT oldCount = getMaterialCount();
   m_materialMap.remove(materialId);
-  const int newCount = getMaterialCount();
+  const UINT newCount = getMaterialCount();
   notifyPropertyChanged(SP_MATERIALCOUNT, &oldCount, &newCount);
+}
+
+void D3Scene::removeAllMaterials() {
+  const UINT oldCount = getMaterialCount();
+  m_materialMap.clear();
+  const UINT newCount = getMaterialCount();
+  notifyPropertyChanged(SP_MATERIALCOUNT, &oldCount, &newCount);
+
 }
 
 void D3Scene::setMaterial(const D3Material &material) {

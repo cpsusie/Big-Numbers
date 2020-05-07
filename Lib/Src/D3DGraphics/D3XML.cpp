@@ -1,6 +1,12 @@
 #include "pch.h"
+#include <XMLUtil.h>
+#include <MFCUtil/2DXML.h>
 #include <D3DGraphics/D3XML.h>
 #include <D3DGraphics/D3ToString.h>
+#include <D3DGraphics/D3World.h>
+#include <D3DGraphics/D3Camera.h>
+#include <D3DGraphics/D3CameraArray.h>
+#include <D3DGraphics/D3Scene.h>
 
 void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3DXVECTOR3 &v) {
   XMLNodePtr n = doc.createNode(parent, tag);
@@ -27,6 +33,22 @@ void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, D3DVECTOR &v) {
   doc.getValue(n, _T("x"), v.x);
   doc.getValue(n, _T("y"), v.y);
   doc.getValue(n, _T("z"), v.z);
+}
+
+void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3DXQUATERNION &q) {
+  XMLNodePtr n = doc.createNode(parent, tag);
+  doc.setValue(n, _T("x"), q.x);
+  doc.setValue(n, _T("y"), q.y);
+  doc.setValue(n, _T("z"), q.z);
+  doc.setValue(n, _T("w"), q.w);
+}
+
+void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, D3DXQUATERNION &q) {
+  XMLNodePtr n = doc.getChild(parent, tag);
+  doc.getValue(n, _T("x"), q.x);
+  doc.getValue(n, _T("y"), q.y);
+  doc.getValue(n, _T("z"), q.z);
+  doc.getValue(n, _T("w"), q.w);
 }
 
 void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3DCOLORVALUE &v) {
@@ -196,4 +218,109 @@ void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, LightArray &v) {
     getValue(doc, n, idStr.cstr(), light);
     v.add(light);
   }
+}
+
+void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3World &w) {
+  XMLNodePtr n = doc.createNode(parent, tag);
+  setValue(doc, n, _T("pos"        ), w.getPos()        );
+  setValue(doc, n, _T("orientation"), w.getOrientation());
+  setValue(doc, n, _T("scale"      ), w.getScale()      );
+}
+
+void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, D3World &w) {
+  XMLNodePtr     n = doc.getChild(parent, tag);
+  D3DXVECTOR3    pos, scale;
+  D3DXQUATERNION q;
+  getValue(doc, n, _T("pos"        ), pos  );
+  getValue(doc, n, _T("orientation"), q    );
+  getValue(doc, n, _T("scale"      ), scale);
+  w.setPos(pos).setOrientation(q).setScale(scale);
+}
+
+void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3Camera &c) {
+  XMLNodePtr n = doc.createNode(parent, tag);
+  doc.setValue( n, _T("righthanded"    ), c.getRightHanded()         );
+  doc.setValue( n, _T("nearviewplane"  ), c.getNearViewPlane()       );
+  doc.setValue( n, _T("viewangle"      ), c.getViewAngle()           );
+  setValue(doc, n, _T("winsize"        ), c.getWinSize()             );
+  setValue(doc, n, _T("world"          ), c.getD3World()             );
+  setValue(doc, n, _T("backgroundcolor"), c.getBackgroundColor()     );
+  setValue(doc, n, _T("visiblelights"  ), c.getLightControlsVisible());
+}
+
+void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, D3Camera &c) {
+  bool       rightHanded;
+  float      nearViewPlane, viewAngle;
+  CSize      winSize;
+  D3World    world;
+  D3PCOLOR   backgroundColor;
+  BitSet     lightControlsVisible(10);
+  XMLNodePtr n = doc.getChild(parent, tag);
+
+  doc.getValue( n, _T("righthanded"    ), rightHanded         );
+  doc.getValue( n, _T("nearviewplane"  ), nearViewPlane       );
+  doc.getValue( n, _T("viewangle"      ), viewAngle           );
+  getValue(doc, n, _T("winsize"        ), winSize             );
+  getValue(doc, n, _T("world"          ), world               );
+  getValue(doc, n, _T("backgroundcolor"), backgroundColor     );
+  getValue(doc, n, _T("visiblelights"  ), lightControlsVisible);
+
+  c.setRightHanded(  rightHanded  );
+  c.setNearViewPlane(nearViewPlane);
+  c.setViewAngle(    viewAngle    );
+  setWindowSize(c.getHwnd(), winSize);
+  c.setD3World(world);
+  c.setBackgroundColor(backgroundColor);
+  c.setLightControlsVisible(lightControlsVisible);
+}
+
+void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3CameraArray &a) {
+  XMLNodePtr n = doc.createNode(parent, tag);
+  const UINT count = (UINT)a.size();
+  doc.setValue(n, _T("count"), count);
+  for(UINT i = 0; i < count; i++) {
+    const String id = format(_T("cam%u"), i);
+    setValue(doc, n, id.cstr(), *a[i]);
+  }
+}
+
+void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, D3CameraArray &a) {
+  XMLNodePtr n = doc.getChild(parent, tag);
+  UINT count;
+  doc.getValue(n, _T("count"), count);
+  if(count != a.size()) {
+    throwInvalidArgumentException(__TFUNCTION__, _T("a.size()=%zu, xmldoc.count=%u"), a.size(), count);
+  }
+  if(count == 0) return;
+  
+  for(XMLNodePtr child = doc.getChild(n, _T("cam0")); child; child = child->nextSibling) {
+    const String idStr = (wchar_t*)child->nodeName;
+    UINT  id;
+    _stscanf(idStr.cstr(), _T("cam%u"), &id);
+    D3Camera *cam = a[id];
+    getValue(doc, n, idStr.cstr(), *cam);
+  }
+}
+
+void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3Scene &s) {
+  XMLNodePtr n = doc.createNode(parent, tag);
+  setValue(doc, n, _T("ambientcolor"), s.getAmbientColor());
+  setValue(doc, n, _T("materials"   ), s.getAllMaterials());
+  setValue(doc, n, _T("lights"      ), s.getAllLights()   );
+  setValue(doc, n, _T("cameras"     ), s.getCameraArray() );
+}
+
+void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, D3Scene &s) {
+  XMLNodePtr  n = doc.getChild(parent, tag);
+  D3PCOLOR    ambientColor;
+  MaterialMap materialMap;
+  LightArray  lightArray;
+  getValue(doc, n, _T("ambientcolor"), ambientColor);
+  s.setAmbientColor(ambientColor);
+  getValue(doc, n, _T("materials"   ), materialMap );
+  s.setAllMaterials(materialMap);
+  getValue(doc, n, _T("lights"      ), lightArray  );
+  s.setAllLights(lightArray);
+  getValue(doc, n, _T("cameras"     ), (D3CameraArray&)s.getCameraArray() );
+  
 }

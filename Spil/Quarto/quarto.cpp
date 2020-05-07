@@ -6,7 +6,6 @@
 #endif
 
 BEGIN_MESSAGE_MAP(CQuartoApp, CWinApp)
-	ON_COMMAND(ID_HELP, OnHelp)
 END_MESSAGE_MAP()
 
 CQuartoApp::CQuartoApp() {

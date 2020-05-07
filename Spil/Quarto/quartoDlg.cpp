@@ -1,33 +1,55 @@
 #include "stdafx.h"
+#include "stdafx.h"
 #include <Random.h>
-#include <D3DGraphics/MeshBuilder.h>
-#include <D3DGraphics/D3CoordinateSystem.h>
 #include <D3DGraphics/D3Math.h>
+#include <D3DGraphics/MeshBuilder.h>
+#include <D3DGraphics/D3Camera.h>
 #include "QuartoDlg.h"
-#include "AboutBox.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
-DECLARE_THISFILE;
-
-CQuartoDlg::CQuartoDlg(CWnd *pParent) : CDialog(CQuartoDlg::IDD, pParent) {
+CQuartoDlg::CQuartoDlg(CWnd *pParent) : CDialog(IDD, pParent) {
   m_hIcon           = theApp.LoadIcon(IDR_MAINFRAME);
   m_startPlayer     = HUMAN_PLAYER;
+  m_state           = DLG_IDLE;
+  m_timerRunning    = false;
 }
 
-void CQuartoDlg::DoDataExchange(CDataExchange *pDX) {
-  __super::DoDataExchange(pDX);
+class CAboutDlg : public CDialog {
+public:
+  enum { IDD = IDD_ABOUTBOX };
+  CAboutDlg(CQuartoDlg *parent) : CDialog(IDD, parent) {
+  }
+  afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+protected:
+  DECLARE_MESSAGE_MAP()
+};
+
+BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
+  ON_WM_LBUTTONDOWN()
+END_MESSAGE_MAP()
+
+void CAboutDlg::OnLButtonDown(UINT nFlags, CPoint point) {
+  const CRect r = getRelativeClientRect(this, IDC_STATICABOUTICON);
+  if((nFlags&MK_CONTROL) && r.PtInRect(point)) {
+    GetParent()->PostMessage(ID_MSG_TOGGLE_EDITMODE);
+  }
+  __super::OnLButtonDown(nFlags, point);
+}
+
+void CQuartoDlg::OnHelpAbout() {
+  CAboutDlg(this).DoModal();
 }
 
 BEGIN_MESSAGE_MAP(CQuartoDlg, CDialog)
     ON_WM_QUERYDRAGICON()
     ON_WM_SYSCOMMAND()
     ON_WM_PAINT()
+    ON_WM_TIMER()
     ON_WM_CLOSE()
     ON_WM_LBUTTONDOWN()
-    ON_WM_RBUTTONDBLCLK()
     ON_COMMAND(ID_FILE_NEW              , OnFileNew             )
     ON_COMMAND(ID_FILE_OPEN             , OnFileOpen            )
     ON_COMMAND(ID_FILE_SAVE             , OnFileSave            )
@@ -39,9 +61,11 @@ BEGIN_MESSAGE_MAP(CQuartoDlg, CDialog)
     ON_COMMAND(ID_OPTIONS_LEVEL_BEGINNER, OnOptionsLevelBeginner)
     ON_COMMAND(ID_OPTIONS_LEVEL_EXPERT  , OnOptionsLevelExpert  )
     ON_COMMAND(ID_OPTIONS_COLOREDGAME   , OnOptionsColoredGame  )
-    ON_COMMAND(ID_HELP_ABOUTQUARTO      , OnHelpAboutquarto     )
     ON_COMMAND(ID_DUMP_SETUP            , OnDumpSetup           )
+    ON_COMMAND(ID_HELP_ABOUT            , OnHelpAbout           )
     ON_MESSAGE(ID_MSG_RENDER            , OnMsgRender           )
+    ON_MESSAGE(ID_MSG_TOGGLE_EDITMODE   , OnMsgToggleEditMode   )
+
 END_MESSAGE_MAP()
 
 HCURSOR CQuartoDlg::OnQueryDragIcon() {
@@ -50,7 +74,7 @@ HCURSOR CQuartoDlg::OnQueryDragIcon() {
 
 void CQuartoDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   if((nID & 0xFFF0) == IDM_ABOUTBOX)    {
-    CAboutDlg().DoModal();
+    OnHelpAbout();
   } else {
     __super::OnSysCommand(nID, lParam);
   }
@@ -75,12 +99,13 @@ BOOL CQuartoDlg::OnInitDialog() {
   SetIcon(m_hIcon, TRUE );
   SetIcon(m_hIcon, FALSE);
 
-  m_scene.init(get3DWindow()->m_hWnd);
+  m_scene.initDevice(*this);
   m_editor.init(this);
 
   try {
     randomize();
     m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_MAINFRAME));
+    setWindowSize(this, CSize(947, 614));
     createScene();
     OnFileNew();
   } catch(Exception e) {
@@ -91,6 +116,12 @@ BOOL CQuartoDlg::OnInitDialog() {
 }
 
 #define BACKGROUNDCOLOR RGB(153,217,234)
+#define sCAM() m_editor.getSelectedCAM()
+
+void CQuartoDlg::unInitDialog() {
+  destroyScene();
+  m_editor.close();
+}
 
 void CQuartoDlg::OnPaint() {
   if(IsIconic()) {
@@ -107,16 +138,24 @@ void CQuartoDlg::OnPaint() {
     dc.DrawIcon(x, y, m_hIcon);
   } else {
     __super::OnPaint();
-    render(RENDER_ALL);
+    render(SC_RENDERALL);
+  }
+}
+
+void CQuartoDlg::doRender(BYTE renderFlags, CameraSet cameraSet) {
+  if(renderFlags & SC_RENDERNOW) {
+    OnMsgRender(renderFlags, cameraSet);
+  } else {
+    PostMessage(ID_MSG_RENDER, renderFlags, cameraSet);
   }
 }
 
 LRESULT CQuartoDlg::OnMsgRender(WPARAM wp, LPARAM lp) {
-  BYTE flags = (BYTE)wp;
-  if(flags & RENDER_3D) {
-    m_scene.render();
+  if(wp & SC_RENDER3D) {
+    CameraSet cameraSet(lp);
+    __super::doRender((BYTE)wp, cameraSet);
   }
-  if(flags & RENDER_INFO) {
+  if(wp & SC_RENDERINFO) {
     if(m_editor.isEnabled()) {
       showEditorInfo();
     }
@@ -124,56 +163,154 @@ LRESULT CQuartoDlg::OnMsgRender(WPARAM wp, LPARAM lp) {
   return 0;
 }
 
+LRESULT CQuartoDlg::OnMsgToggleEditMode(WPARAM wp, LPARAM lp) {
+  setEditMode(!m_editor.isEnabled());
+  render(SC_RENDERALL);
+  return 0;
+}
+
+void CQuartoDlg::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
+  if(source == m_boardObject) {
+    switch(id) {
+    case GB_CURRENTFIELD:
+    case GB_CURRENTBRICK:
+    case GB_BRICKPOSITIONS:
+      render(SC_RENDERALL);
+    }
+  } else if(source == sCAM()) {
+    switch(id) {
+    case CAM_VIEW:
+    case CAM_BACKGROUNDCOLOR:
+      render(SC_RENDERALL);
+      break;
+    }
+  }
+}
+
+void CQuartoDlg::startTimer(DialogState state, int msec) {
+  m_state = state;
+  startTimer(msec);
+}
+
+void CQuartoDlg::startTimer(int msec) {
+  if(!m_timerRunning) {
+    if(SetTimer(1, msec, NULL) == 1) {
+      m_timerRunning = true;
+    }
+  }
+}
+
+void CQuartoDlg::stopTimer() {
+  if(m_timerRunning) {
+    KillTimer(1);
+    m_timerRunning = false;
+  }
+}
+
+void CQuartoDlg::OnTimer(UINT_PTR nIDEvent) {
+  __super::OnTimer(nIDEvent);
+  switch(m_state) {
+  case DLG_IDLE        :
+    stopTimer();
+    break;
+  case DLG_ONTIMERDOUSERMOVE:
+    { const Move move(getSelectedField(), getSelectedBrick());
+      executeMove(move);
+      if(m_game.isGameOver()) {
+        m_state = DLG_ONTIMERSHOWRESULT;
+      } else {
+        m_state = DLG_ONTIMERDOCOMPUTERMOVE;
+      }
+    }
+    break;
+  case DLG_ONTIMERDOCOMPUTERMOVE:
+    executeMove(findMove());
+    if(m_game.isGameOver()) {
+      m_state = DLG_ONTIMERSHOWRESULT;
+    } else {
+      m_state = DLG_IDLE;
+    }
+    break;
+  case DLG_ONTIMERSHOWRESULT:
+    stopTimer();
+    endGame();
+    break;
+  }
+}
+
 BOOL CQuartoDlg::PreTranslateMessage(MSG *pMsg) {
+  D3Camera *cam;
+  if((pMsg->message == WM_MOUSEMOVE) && ((cam = m_scene.getPickedCamera(pMsg->pt)) != NULL)) {
+//    m_wndStatusBar.SetPaneText(0, toString(cam->screenToWin(pMsg->pt)).cstr());
+  }
+  const bool levelIncremented = pMsg->message != ID_MSG_RENDER;
+  if(levelIncremented) incrLevel();
+  BOOL result;
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
-    return true;
+    result = true;
+  } else if(m_editor.PreTranslateMessage(pMsg)) {
+    result = true;
+  } else {
+    result = __super::PreTranslateMessage(pMsg);
   }
-  if(m_editor.PreTranslateMessage(pMsg)) {
-    return true;
-  }
-  return __super::PreTranslateMessage(pMsg);
+  if(levelIncremented) decrLevel();
+  return result;
 }
 
 void CQuartoDlg::createScene() {
   createBoard();
-  resetCamera();
   createLight();
+  resetCamera();
+  sCAM()->addPropertyChangeListener(this);
+}
+
+void CQuartoDlg::destroyScene() {
+  sCAM()->removePropertyChangeListener(this);
+  destroyLight();
+  destroyBoard();
 }
 
 void CQuartoDlg::createBoard() {
-  m_boardObject = new GameBoardObject(m_scene);
-  m_scene.addSceneObject(m_boardObject);
+  m_boardObject = new GameBoardObject(m_scene); TRACE_NEW(m_boardObject);
+  m_scene.addVisual(m_boardObject);
+  m_boardObject->addPropertyChangeListener(this);
+}
+
+void CQuartoDlg::destroyBoard() {
+  m_boardObject->removePropertyChangeListener(this);
+  m_scene.removeVisual(m_boardObject);
+  SAFEDELETE(m_boardObject);
 }
 
 void CQuartoDlg::createLight() {
-  D3DLIGHT light = D3Scene::getDefaultLight();
+  D3Camera *cam = sCAM();
+
+  D3DLIGHT light    = D3Light::createDefaultLight(D3DLIGHT_DIRECTIONAL);
   light.Diffuse     = colorToColorValue(D3D_WHITE);
   light.Specular    = colorToColorValue(D3D_WHITE);
   light.Ambient     = colorToColorValue(D3D_WHITE);
-  light.Direction   = m_scene.getCameraUp();
-  light.Direction.y *= -1;
-  m_scene.addLight(light);
+  light.Direction   = cam->getUp();
+  light.Direction.z *= -1;
+  m_lightIndex[0]   = m_scene.addLight(light);
 
-  light.Direction   = m_scene.getCameraDir();
-  m_scene.addLight(light);
+  light.Direction   = cam->getDir();
+  m_lightIndex[1]   = m_scene.addLight(light);
+}
+
+void CQuartoDlg::destroyLight() {
+  m_scene.removeLight(m_lightIndex[1]);
+  m_scene.removeLight(m_lightIndex[0]);
 }
 
 void CQuartoDlg::resetCamera() {
-  m_scene.setCameraPos(D3DXVECTOR3(-1.325f, 8.512f, -16.106f));
-  D3DXVECTOR3 camDir = unitVector(D3DXVECTOR3(0, -0.455f, 0.891f));
-  D3DXVECTOR3 camUp(0,0.891f,0.455f);
-  camUp -= camDir * (camDir*camUp);
-  camUp = unitVector(camUp);
-//  float s = camDir * camUp;
-
-  m_scene.setCameraOrientation(camDir,camUp);
-  setWindowSize(this, CSize(947, 614));
+  setCameraPosition(D3DXVECTOR3(-1.325f, -16.106f, 8.512f));
 }
 
 // always look directly to center of board
 void CQuartoDlg::setCameraPosition(const D3DXVECTOR3 &pos) {
-  m_scene.setCameraPos(pos);
-  m_scene.setCameraLookAt(m_boardObject->getPos());
+  D3Camera *cam = sCAM();
+  D3World bw(m_boardObject->getWorld());
+  cam->setLookAt(pos, bw.getPos(),D3DXVECTOR3(0,0,1));
 }
 
 void CQuartoDlg::selectField(const Field &f) {
@@ -200,26 +337,24 @@ void CQuartoDlg::unmarkCurrentBrick() {
   m_boardObject->unmarkCurrentBrick();
 }
 
-CPoint CQuartoDlg::get3DPanelPoint(CPoint point, bool screenRelative) const {
-  if(!screenRelative) {
-    ClientToScreen(&point);
-  }
-  ((CQuartoDlg*)this)->get3DWindow()->ScreenToClient(&point);
+CPoint CQuartoDlg::get3DPanelPoint(CPoint point) const {
+  ClientToScreen(&point);
+  GetDlgItem(IDC_STATICGAMEWINDOW)->ScreenToClient(&point);
   return point;
 }
 
 void CQuartoDlg::OnLButtonDown(UINT nFlags, CPoint point) {
   __super::OnLButtonDown(nFlags, point);
-  point = get3DPanelPoint(point, false);
+  if(m_state != DLG_IDLE) return;
   if(m_game.isGameOver() || (m_game.getPlayerInTurn() != HUMAN_PLAYER)) {
     return;
   }
+  point = get3DPanelPoint(point);
   const int b = getBrickFromPoint(point);
   if(b != NOBRICK) {
     if(m_game.isSelectableBrick(b)) {
       selectBrick(b);
       selectField(NOFIELD);
-      render(RENDER_3D);
       return;
     }
   }
@@ -228,7 +363,6 @@ void CQuartoDlg::OnLButtonDown(UINT nFlags, CPoint point) {
 #ifdef _DEBUG
     if(nFlags & MK_CONTROL) {
       selectField(f);
-      render(RENDER_3D);
       return;
     }
 #endif
@@ -236,38 +370,16 @@ void CQuartoDlg::OnLButtonDown(UINT nFlags, CPoint point) {
       return;
     }
     selectField(f);
-    m_scene.render();
-
-    Sleep(500);
-    const Move move(getSelectedField(), getSelectedBrick());
-    executeMove(move);
-
-    if(m_game.isGameOver()) {
-      endGame();
-      return;
-    }
-    Sleep(500);
-    executeMove(findMove());
-    if(m_game.isGameOver()) {
-      endGame();
-    }
+    startTimer(DLG_ONTIMERDOUSERMOVE);
   }
-}
-
-void CQuartoDlg::OnRButtonDblClk(UINT nFlags, CPoint point) {
-  if ((nFlags&MK_CONTROL) && (nFlags&MK_SHIFT)) {
-    setEditMode(!m_editor.isEnabled());
-    render(RENDER_3D);
-  }
-  __super::OnRButtonDblClk(nFlags, point);
 }
 
 int CQuartoDlg::getBrickFromPoint(const CPoint &p) const {
-  return m_boardObject->getBrickFromPoint(p);
+  return m_boardObject->getBrickFromPoint(p, sCAM());
 }
 
 Field CQuartoDlg::getFieldFromPoint(const CPoint &p) const {
-  return m_boardObject->getFieldFromPoint(p);
+  return m_boardObject->getFieldFromPoint(p,sCAM());
 }
 
 void CQuartoDlg::showEditorInfo() {
@@ -280,8 +392,9 @@ void CQuartoDlg::OnFileNew() {
 
   if(m_game.getPlayerInTurn() == HUMAN_PLAYER) {
     Invalidate();
+    m_state = DLG_IDLE;
   } else {
-    executeMove(findMove());
+    startTimer(DLG_ONTIMERDOCOMPUTERMOVE, 500);
   }
 }
 
@@ -305,7 +418,6 @@ void CQuartoDlg::OnFileOpen() {
     fclose(f); f = NULL;
     resetScene();
     setGameName(dlg.m_ofn.lpstrFile);
-    render(RENDER_3D);
   } catch(Exception e) {
     if(f != NULL) {
       fclose(f);
@@ -362,7 +474,8 @@ void CQuartoDlg::OnClose() {
 }
 
 void CQuartoDlg::OnFileExit() {
-  m_editor.close();
+  stopTimer();
+  unInitDialog();
   EndDialog(IDOK);
 }
 
@@ -370,7 +483,6 @@ void CQuartoDlg::newGame(bool colored, Player startPlayer, const String &name) {
   m_game.newGame(colored, startPlayer);
   resetScene();
   setGameName(name);
-  render(RENDER_3D);
 }
 
 void CQuartoDlg::executeMove(const Move &m) {
@@ -378,7 +490,6 @@ void CQuartoDlg::executeMove(const Move &m) {
   updateGraphicsDoingMove(m);
   selectField(NOFIELD);
   selectBrick(NOBRICK);
-  m_scene.render();
 }
 
 void CQuartoDlg::endGame() {
@@ -439,7 +550,7 @@ void CQuartoDlg::flashWinnerBlocks() {
   }
   for(int i = 0; i < 8; i++) {
     m_boardObject->setBricksVisible(bset,(i&1)!=0);
-    m_scene.render();
+    render(SC_RENDER3D|SC_RENDERNOW);
     Sleep(400);
   }
 }
@@ -468,29 +579,22 @@ void CQuartoDlg::showInfo(_In_z_ _Printf_format_string_ TCHAR const * const form
   setWindowText(this, IDC_GAMEINFO, s);
 }
 
-void CQuartoDlg::OnViewLeft() {
-  turnBoard(-90);
-}
-
-void CQuartoDlg::OnViewRight() {
-  turnBoard(90);
-}
+void CQuartoDlg::OnViewLeft()  { turnBoard(-90); }
+void CQuartoDlg::OnViewRight() { turnBoard( 90); }
 
 void CQuartoDlg::turnBoard(int degree) {
-  const D3DXVECTOR3     &axis    = m_boardObject->getUp();
-  const D3DXVECTOR3     &origo   = m_boardObject->getPos();
-  D3PosDirUpScale        camPDUS = m_scene.getCameraPDUS();
-  const D3DXMATRIX       m       = createRotationMatrix(axis, GRAD2RAD(degree));
-  const D3DXVECTOR3      newPos  = m * (camPDUS.getPos()-origo) + origo;
-  const D3DXVECTOR3      newDir  = m * camPDUS.getDir();
-  const D3DXVECTOR3      newUp   = m * camPDUS.getUp();
-  m_scene.setCameraPDUS(camPDUS.setPos(newPos).setOrientation(newDir, newUp));
-  render(RENDER_3D);
+  D3Camera *cam = sCAM();
+  D3World bw(m_boardObject->getWorld());
+  D3World cw(cam->getD3World());
+  const D3DXVECTOR3     &axis    = bw.getUp();
+  const D3DXQUATERNION   rot     = createRotation(axis, radians(degree));
+  const D3DXVECTOR3      bPos    = bw.getPos(), cPos = cw.getPos();
+  const D3DXVECTOR3      centerOfRotation(bPos.x, bPos.y, cPos.z);
+  cam->setD3World(cw.rotate(rot, centerOfRotation));
 }
 
 void CQuartoDlg::OnViewResetView() {
   resetCamera();
-  render(RENDER_3D);
 }
 
 void CQuartoDlg::OnOptionsLevelExpert() {
@@ -508,23 +612,18 @@ void CQuartoDlg::OnOptionsColoredGame() {
   OnFileNew();
 }
 
-void CQuartoDlg::OnHelpAboutquarto() {
-  CAboutDlg().DoModal();
-}
-
 void CQuartoDlg::OnDumpSetup() {
-  const CSize winSize = getWindowSize(this);
-  D3DXVECTOR3 camPos  = m_scene.getCameraPos();
-  D3DXVECTOR3 dir     = m_scene.getCameraDir();
-  D3DXVECTOR3 up      = m_scene.getCameraUp();
+  const CSize    winSize = getWindowSize(this);
+  const D3World &cw      = sCAM()->getD3World();
+  const D3World  bw      = m_boardObject->getWorld();
   const String msg = format(_T("WinSize:(%d,%d)\r\nCameara:(Pos:%s,Dir:%s,Up:%s)\r\nBoard:(Pos:%s,Dir:%s,Up:%s)")
                            , winSize.cx, winSize.cy
-                           , toString(camPos, 3).cstr()
-                           , toString(dir   , 3).cstr()
-                           , toString(up    , 3).cstr()
-                           , toString(m_boardObject->getPos()).cstr()
-                           , toString(m_boardObject->getDir()).cstr()
-                           , toString(m_boardObject->getUp() ).cstr()
+                           , toString(cw.getPos(), 3).cstr()
+                           , toString(cw.getDir(), 3).cstr()
+                           , toString(cw.getUp() , 3).cstr()
+                           , toString(bw.getPos()   ).cstr()
+                           , toString(bw.getDir()   ).cstr()
+                           , toString(bw.getUp()    ).cstr()
                            );
   showInformation(msg);
 }

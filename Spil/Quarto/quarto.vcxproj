@@ -270,7 +270,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="AboutBox.cpp" />
     <ClCompile Include="BrickObject.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameBoardObject.cpp" />
@@ -288,7 +287,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AboutBox.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GraphicObjects.h" />
     <ClInclude Include="Quarto.h" />

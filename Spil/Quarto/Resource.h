@@ -7,11 +7,11 @@
 #define IDS_ABOUTBOX                    101
 #define IDD_DIALOGQUARTO                102
 #define IDR_MAINFRAME                   128
-#define IDB_BOARDBITMAP                 130
-#define IDB_BLACKFIELDBITMAP            168
-#define IDB_WHITEFIELDBITMAP            169
-#define IDB_GREENFIELDBITMAP            170
-#define IDB_BOARDSIDEBITMAP             171
+#define IDB_BOARDBITMAP                 129
+#define IDB_BLACKFIELDBITMAP            130
+#define IDB_WHITEFIELDBITMAP            131
+#define IDB_GREENFIELDBITMAP            132
+#define IDB_BOARDSIDEBITMAP             133
 #define IDC_GAMEINFO                    1000
 #define IDC_STATICGAMEWINDOW            1001
 #define IDC_BUTTON_DUMMY                1020
@@ -24,16 +24,17 @@
 #define ID_OPTIONS_LEVEL_BEGINNER       32790
 #define ID_OPTIONS_LEVEL_EXPERT         32791
 #define ID_OPTIONS_COLOREDGAME          32792
-#define ID_HELP_ABOUTQUARTO             32793
-#define ID_DUMP_SETUP                   32794
-#define ID_MSG_RENDER                   32795
+#define ID_HELP_ABOUT                   32800
+#define ID_DUMP_SETUP                   32801
+#define ID_MSG_RENDER                   32900
+#define ID_MSG_TOGGLE_EDITMODE          32901
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        174
-#define _APS_NEXT_COMMAND_VALUE         32801
+#define _APS_NEXT_COMMAND_VALUE         32802
 #define _APS_NEXT_CONTROL_VALUE         1025
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

@@ -1,8 +1,9 @@
 #include "stdafx.h"
+#include <D3DGraphics/D3Device.h>
+#include <D3DGraphics/D3Cube.h>
+#include <D3DGraphics/D3SceneObjectWireFrameBox.h>
 #include <D3DGraphics/Profile.h>
 #include "GraphicObjects.h"
-
-DECLARE_THISFILE;
 
 static const Point2D smallProfileNoTop[] = {
   Point2D( 0    ,0   )
@@ -78,8 +79,8 @@ LPD3DXMESH BrickObject::createMesh(AbstractMeshFactory &amf, BYTE attr) { // sta
 
   ProfileRotationParameters param;
   param.m_alignx     = 0;
-  param.m_aligny     = 1;
-  param.m_rotateAxis = 1;
+  param.m_aligny     = 2;
+  param.m_rotateAxis = 2;
   param.m_rad        = 2*M_PI;
   param.m_edgeCount  = ISSQUARE(attr) ? 4 : 20;
   param.m_smoothness = ISSQUARE(attr) ? 0 : ROTATESMOOTH;
@@ -87,42 +88,51 @@ LPD3DXMESH BrickObject::createMesh(AbstractMeshFactory &amf, BYTE attr) { // sta
   return rotateProfile(amf, profile, param, true);
 }
 
-class BrickMarker : public D3WireFrameBox {
-private:
-  D3PosDirUpScale &m_pdus;
+class BrickMarker : public D3SceneObjectWireFrameBox {
 public:
-  BrickMarker(D3Scene &scene, const D3DXCube3 &box, D3PosDirUpScale &pdus)
-    : D3WireFrameBox(scene, box)
-    , m_pdus(pdus)
-  {}
-  D3PosDirUpScale getPDUS() const {
-    return m_pdus;
+  BrickMarker(BrickObject *parent) 
+    : D3SceneObjectWireFrameBox(parent
+                               ,::getBoundingBox(parent->getMesh())
+                               ,format(_T("%s(Marker)"),parent->getName().cstr()))
+  {
+  }
+  D3DXMATRIX &getWorld() {
+    return getParent()->getWorld();
   }
 };
 
-BrickObject::BrickObject(D3Scene &scene, BYTE attr)
-: SceneObjectWithMesh(scene, createMesh(scene, attr))
+BrickObject::BrickObject(GameBoardObject *board, BYTE attr)
+: D3SceneObjectWithMesh(board
+                       ,createMesh(board->getScene(), attr)
+                       ,format(_T("Brick(%d):%s"),attr,Brick::toString(attr).cstr())
+                       )
 , m_attr(attr)
 , m_marked(false)
 {
-  m_brickMarker = new BrickMarker(scene, getBoundingBox(getMesh()), m_pdus);
-  setName(format(_T("Brick(%d):%s")
-                ,attr
-                ,Brick::toString(attr).cstr()
-                )
-         );
+  m_brickMarker = new BrickMarker(this); TRACE_NEW(m_brickMarker);
 }
 
+
 BrickObject::~BrickObject() {
-  delete m_brickMarker;
+  SAFEDELETE(m_brickMarker);
+}
+
+GameBoardObject &BrickObject::getBoard() const {
+  return *(GameBoardObject*)getParent();
+}
+
+int BrickObject::getMaterialId() const {
+  return getBoard().getBrickMaterialId(ISBLACK(m_attr));
+}
+
+D3DXMATRIX &BrickObject::getWorld() {
+  D3World w(getParent()->getWorld());
+  return m_world = w.setPos(w.getPos() + rotate(m_pos, w.getOrientation()));
 }
 
 void BrickObject::draw() {
-  getScene().setLightingEnable(true)
-            .setSpecularEnable(true);
-  setSceneMaterial();
-  setFillAndShadeMode();
-  drawSubset(0);
+  getDevice().setSpecularEnable(true);
+  __super::draw();
   if(m_marked) {
     m_brickMarker->draw();
   }
@@ -130,8 +140,8 @@ void BrickObject::draw() {
 
 #ifdef _DEBUG
 String BrickObject::toString() const {
-  return format(_T("%s\nPDUS:\n%s")
+  return format(_T("%s\nWorld:\n%s")
                ,getName().cstr()
-               ,indentString(((BrickObject*)this)->getPDUS().toString(),2).cstr());
+               ,indentString(((D3World)(*this)).toString(),2).cstr());
 }
 #endif

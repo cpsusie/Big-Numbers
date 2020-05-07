@@ -1,6 +1,7 @@
 #pragma once
 
 #include <D3DGraphics/D3Scene.h>
+#include <D3DGraphics/D3SceneObjectWithMesh.h>
 #include <D3DGraphics/MeshBuilder.h>
 
 #define BOARDHEIGHT 0.8f
@@ -8,19 +9,28 @@
 #define HALFSIZE    (BOARDSIZE/2)
 #define GAMECOLOR   D3DCOLOR_XRGB(235,235,122)
 
-class BordObjectWithTexture : public SceneObjectWithMesh {
+class GameBoardObject;
+
+class BoardObjectWithTexture : public D3SceneObjectWithMesh {
 protected:
-  void drawWithTexture(LPDIRECT3DTEXTURE texture);
+  virtual LPDIRECT3DTEXTURE getTexture() = NULL;
 public:
-  BordObjectWithTexture(D3Scene &scene, LPD3DXMESH mesh)
-    : SceneObjectWithMesh(scene, mesh)
-  {}
-  int getMaterialIndex() const {
-    return -1;
+  BoardObjectWithTexture(D3Scene &scene, LPD3DXMESH mesh) : D3SceneObjectWithMesh(scene, mesh) {
   }
+  BoardObjectWithTexture(D3SceneObjectVisual *parent, LPD3DXMESH mesh) : D3SceneObjectWithMesh(parent, mesh) {
+  }
+  bool getLightingEnable() const {
+    return false;
+  }
+  D3DXMATRIX &getWorld() {
+    D3SceneObjectVisual *parent = getParent();
+    return parent ? getParent()->getWorld() : __super::getWorld();
+  }
+
+  void draw();
 };
 
-class BoardFieldObject : public BordObjectWithTexture {
+class BoardFieldObject : public BoardObjectWithTexture {
 private:
 #ifdef _DEBUG
   LPDIRECT3DTEXTURE        m_texture[2]; // 0=unmarked,1=marked
@@ -35,10 +45,7 @@ private:
   LPDIRECT3DTEXTURE getTexture(bool marked);
   static LPD3DXMESH createMesh(AbstractMeshFactory &amf, int row, int col);
 public:
-  BoardFieldObject(D3Scene &scene, int row, int col);
-  D3PosDirUpScale getPDUS() const {
-    return D3Scene::getOrigo();
-  }
+  BoardFieldObject(D3SceneObjectVisual *parent, int row, int col);
   inline void setSelected(bool selected) {
     m_selected = selected;
 #ifdef _DEBUG
@@ -48,66 +55,91 @@ public:
   inline const D3DXVECTOR3 &getCenter() const {
     return m_center;
   }
-  void draw() {
-    drawWithTexture(getTexture(m_selected));
+  LPDIRECT3DTEXTURE getTexture() {
+    return getTexture(m_selected);
   }
+
 #ifdef _DEBUG
   String toString() const;
 #endif
 };
 
-class BrickObject : public SceneObjectWithMesh {
+class BrickObject : public D3SceneObjectWithMesh {
 private:
-  const BYTE          m_attr;
-  D3PosDirUpScale     m_pdus;
-  D3SceneObject      *m_brickMarker;
-  bool                m_marked;
-  static LPD3DXMESH   createMesh(AbstractMeshFactory &amf, BYTE attr);
+  const BYTE           m_attr;
+  D3SceneObjectVisual *m_brickMarker;
+  D3DXVECTOR3          m_pos; // relative to m_parent (board)
+  bool                 m_marked;
+  bool                 m_visible;
+  static LPD3DXMESH    createMesh(AbstractMeshFactory &amf, BYTE attr);
+  GameBoardObject     &getBoard() const;
 public:
-  BrickObject(D3Scene &scene, BYTE attr);
+  BrickObject(GameBoardObject *board, BYTE attr);
   ~BrickObject();
-  D3PosDirUpScale &getPDUS() {
-    return m_pdus;
+
+  void setPos(const D3DXVECTOR3 &pos) {
+    m_pos = pos;
   }
-#ifdef _DEBUG
-  inline void setPos(const D3DXVECTOR3 &pos) {
-    m_pdus.setPos(pos);
-    debugLog(_T("New position(%s) %s\nPDUS:\n%s")
-            ,getName().cstr()
-            ,::toString(pos).cstr()
-            ,indentString(getPDUS().toString(),2).cstr());
+  inline const D3DXVECTOR3 &getPos() const {
+    return m_pos;
   }
-#endif
   inline void setMarked(bool marked) {
     m_marked = marked;
 #ifdef _DEBUG
-    if (marked) debugLog(_T("Mark %s\n"), toString().cstr());
+    if(marked) debugLog(_T("Mark %s\n"), toString().cstr());
 #endif
   }
-  int getMaterialIndex() const {
-    return ISBLACK(m_attr) ? 1:2;
+  bool isVisible() const {
+    return m_visible;
   }
+  inline void setVisible(bool visible) {
+    m_visible = visible;
+  }
+  int getMaterialId() const;
+  D3DXMATRIX &getWorld();
   void draw();
 #ifdef _DEBUG
   String toString() const;
 #endif
 };
 
-class GameBoardObject : public BordObjectWithTexture {
+typedef enum {
+  GB_CURRENTFIELD   // Field
+ ,GB_CURRENTBRICK   // char
+ ,GB_BRICKPOSITIONS // BrickPositions
+} GameBordProperties;
+
+class BrickPositions {
+public:
+  D3DXVECTOR3 m_pos[FIELDCOUNT];
+};
+
+inline bool operator==(const BrickPositions &b1, const BrickPositions &b2) {
+  return memcmp(&b1, &b2, sizeof(BrickPositions)) == 0;
+}
+inline bool operator!=(const BrickPositions &b1, const BrickPositions &b2) {
+  return !(b1 == b2);
+}
+
+class GameBoardObject : public BoardObjectWithTexture, public PropertyContainer {
 private:
-  static const float s_vertexXPos[], s_vertexYPos[];
-  static float       s_xgridLines[5], s_ygridLines[5];
-  LPDIRECT3DTEXTURE  m_boardTexture;
-  D3SceneObject     *m_boardSideObject;
-  BoardFieldObject  *m_fieldObject[ROWCOUNT][COLCOUNT];
-  BrickObject       *m_brickObject[FIELDCOUNT];
-  Field              m_currentField;
-  char               m_currentBrick;
+  static const float   s_vertexXPos[], s_vertexYPos[];
+  static float         s_xgridLines[5], s_ygridLines[5];
+  LPDIRECT3DTEXTURE    m_boardTexture;
+  D3SceneObjectVisual *m_boardSideObject;
+  BoardFieldObject    *m_fieldObject[ROWCOUNT][COLCOUNT];
+  BrickObject         *m_brickObject[FIELDCOUNT];
+  Field                m_currentField;
+  UINT                 m_brickMaterialId[2];
+  char                 m_currentBrick;
+  BrickPositions       m_brickPositions;
   static LPD3DXMESH createMesh(AbstractMeshFactory &amf);
   void addBrickMaterials();
   friend class BoardFieldObject ;
   void setCurrentFieldSelected(bool selected);
   void setCurrentBrickSelected(bool selected);
+  void getBrickPositions(BrickPositions &bp) const;
+  void notifyIfBrickPosisionChanged();
 public:
   GameBoardObject(D3Scene &scene);
   ~GameBoardObject();
@@ -133,9 +165,12 @@ public:
   inline char getCurrentBrick() const {
     return m_currentBrick;
   }
-  int   getBrickFromPoint(const CPoint &p) const;
-  Field getFieldFromPoint(const CPoint &p) const;
-  void draw();
+  int   getBrickFromPoint(const CPoint &p, const D3Camera *camera) const;
+  Field getFieldFromPoint(const CPoint &p, const D3Camera *camera) const;
+  LPDIRECT3DTEXTURE getTexture() {
+    return m_boardTexture;
+  }
+  UINT getBrickMaterialId(bool black);
 #ifdef _DEBUG
   String toString() const;
 #endif

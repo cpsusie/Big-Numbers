@@ -24,6 +24,8 @@ void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3DXVECTOR
 void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag,       D3DXVECTOR3 &v   );
 void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3DVECTOR   &v   );
 void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag,       D3DVECTOR   &v   );
+void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3DXQUATERNION &q);
+void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag,       D3DXQUATERNION &q);
 
 template<typename T> void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const Cube3DTemplate<T> &cube) {
   XMLNodePtr n = doc.createNode(parent, tag);
@@ -53,3 +55,20 @@ void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3Light   
 void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, D3Light             &v);
 void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const LightArray    &v);
 void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, LightArray          &v);
+
+class D3World;
+class D3Camera;
+class D3CameraArray;
+class D3Scene;
+
+void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3World       &w);
+void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag,       D3World       &w);
+
+void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3Camera      &c);
+void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag,       D3Camera      &c);
+
+void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3CameraArray &a);
+void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag,       D3CameraArray &a);
+
+void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3Scene       &s);
+void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag,       D3Scene       &s);
