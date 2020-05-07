@@ -296,6 +296,14 @@ unsigned __int64 Tokenizer::getUint64(bool hex) {
   return result;
 }
 
+size_t Tokenizer::getSizet(bool hex) {
+#ifdef IS64BIT
+  return getUint64(hex);
+#else
+  return getUint(hex);
+#endif // IS64BIT
+}
+
 bool Tokenizer::getBool() { // expect "true" or "false"
   String s = next();
   return strToBool(s.cstr());

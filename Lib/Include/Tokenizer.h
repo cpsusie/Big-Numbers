@@ -61,6 +61,7 @@ public:
   UINT             getUint(  bool hex = false);
   __int64          getInt64( bool hex = false);
   unsigned __int64 getUint64(bool hex = false);
+  size_t           getSizet( bool hex = false);
   bool             getBool(); // expect "true" or "false"
   // assume *cp == '"', beginning of C-string, scan c-string, returning pointer to TCHAR following terminating "
   // throws exception if invalid escape sequence,newline or not terminated string
