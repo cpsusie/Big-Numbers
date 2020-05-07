@@ -1,7 +1,20 @@
 #pragma once
 
 #include "XmlDoc.h"
+#include "MathUtil.h"
 #include "NumberInterval.h"
+
+inline void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, BYTE  b) {
+  doc.setValue(parent, tag, (UINT)b);
+}
+
+inline void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, BYTE &b) {
+  UINT tmp;
+  doc.getValue(parent, tag, tmp);
+  assert(isUchar(tmp));
+  b = (BYTE)tmp;
+}
+
 
 template<typename T> void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const NumberInterval<T> &interval) {
   XMLNodePtr n = doc.createNode(parent, tag);
@@ -17,3 +30,6 @@ template<typename T> void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *
   interval.setFrom(from);
   interval.setTo(to);
 }
+
+void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const BitSet &set);
+void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag,       BitSet &set);

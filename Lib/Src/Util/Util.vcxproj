@@ -933,6 +933,7 @@
     <ClCompile Include="BitMatrix.cpp" />
     <ClCompile Include="BitOutputStream.cpp" />
     <ClCompile Include="BitSet.cpp" />
+    <ClCompile Include="BitSetXml.cpp" />
     <ClCompile Include="Double64Str.cpp" />
     <ClCompile Include="FileBitSet.cpp" />
     <ClCompile Include="FileBitSetIndex.cpp" />
