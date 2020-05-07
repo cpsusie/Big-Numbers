@@ -35,3 +35,8 @@ template<typename T> void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *
   doc.getValue(n, _T("w"), r.m_w);
   doc.getValue(n, _T("h"), r.m_h);
 }
+
+class D3PCOLOR;
+
+void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3PCOLOR      &v);
+void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, D3PCOLOR            &v);

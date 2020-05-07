@@ -5,7 +5,8 @@
 
 class D3PCOLOR {
 public:
-  const D3DCOLOR m_color;
+  D3DCOLOR m_color;
+  inline D3PCOLOR() {}
   inline D3PCOLOR(D3DCOLOR c) : m_color(c) {}
   inline operator D3DCOLOR() const { return m_color; }
   String toString(bool showAlpha=false) const;

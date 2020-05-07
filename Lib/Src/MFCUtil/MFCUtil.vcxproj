@@ -687,6 +687,7 @@
     <ClCompile Include="CoordinateSystem\SystemPainter.cpp" />
     <ClCompile Include="CreateView.cpp" />
     <ClCompile Include="CursorTools.cpp" />
+    <ClCompile Include="D3PColorXml.cpp" />
     <ClCompile Include="DirectXErrorMsg.cpp" />
     <ClCompile Include="DeleteButton.cpp" />
     <ClCompile Include="DirectXDeviceFactory.cpp" />
