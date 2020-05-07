@@ -12,7 +12,7 @@ void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, BitSet &set) {
   UINT64 capacity;
   doc.getValue(n, _T("capacity"), capacity);
   CHECKUINT64ISVALIDSIZET(capacity);
-  set.clear().setCapacity(capacity);
+  set.clear().setCapacity((size_t)capacity);
   String s;
   doc.getValue(n, _T("set"     ), s);
   String delim = _T("(,)");
