@@ -117,6 +117,9 @@ public:
     _BS_ATOM(m_p,i) |= _BS_ATOMBIT(i);
     return *this;
   }
+  inline BitSet &setIsMember(size_t i, bool isMember) {
+    return isMember ? add(i) : remove(i);
+  }
   // Remove interval [a;b] from set
   BitSet  &remove(  size_t a, size_t b);
   // Insert interval [a;b] into set
