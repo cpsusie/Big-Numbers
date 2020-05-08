@@ -142,7 +142,7 @@ public:
 // --------------------------- D3Light ----------------------------
 
   // notify listeners with notification id=SP_LIGHTPARAMETERS
-  void     setLight(      const D3Light &param);
+  void     setLight(      const D3Light &param, bool force = false);
   D3Light  getLight(      UINT lightIndex) const;
   // Return Array of defined lights
   LightArray          getAllLights() const;
@@ -236,12 +236,7 @@ public:
   void load(const String &fileName);
   void save(         XMLDoc &doc) const;
   void load(         XMLDoc &doc);
-  void saveLights(   XMLDoc &doc, XMLNodePtr parent) const;
-  void loadLights(   XMLDoc &doc, XMLNodePtr parent);
-  void saveMaterials(XMLDoc &doc, XMLNodePtr parent) const;
-  void loadMaterials(XMLDoc &doc, XMLNodePtr parent);
 };
 
 LPD3DXMESH        createMeshFromVertexFile(     AbstractMeshFactory &amf, const String &fileName, bool doubleSided);
 LPD3DXMESH        createMeshFromObjFile(        AbstractMeshFactory &amf, const String &fileName, bool doubleSided);
-//LPD3DXMESH     createMeshMarchingCube(     LPDIRECT3DDEVICE device, const IsoSurfaceParameters        &param);

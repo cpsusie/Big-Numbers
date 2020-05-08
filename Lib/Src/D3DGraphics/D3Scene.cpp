@@ -149,7 +149,7 @@ void D3Scene::removeLight(UINT lightIndex) {
   destroyLightControl(lightIndex);
   const UINT oldCount = getLightCount();
   m_lightsDefined.remove(lightIndex);
-  getDevice().enableLight(lightIndex, FALSE);
+  getDevice().enableLight(lightIndex, false);
   const UINT newCount = oldCount - 1;
   notifyPropertyChanged(SP_LIGHTCOUNT, &oldCount, &newCount);
 }
@@ -182,21 +182,23 @@ void D3Scene::setLightPosition(UINT lightIndex, const D3DXVECTOR3 &pos) {
   setLight(getLight(lightIndex).setPosition(pos));
 }
 
-void D3Scene::setLight(const D3Light &param) {
+void D3Scene::setLight(const D3Light &param, bool force) {
   const int index = param.getIndex();
-  if(!isLightDefined(index)) {
-    showWarning(_T("%s:Light %d is undefined"),__TFUNCTION__, index);
-    return;
-  }
-  const D3Light oldLp = getLight(index);
-  if(param == oldLp) return;
-  getDevice().setLight(param);
-  if(param.isEnabled() != oldLp.isEnabled()) {
-    if(param.isEnabled()) {
-      m_lightsEnabled.add(index);
-    } else {
-      m_lightsEnabled.remove(index);
+  D3Light oldLp;
+  if(force) {
+    m_lightsDefined.add(index);
+    m_lightsEnabled.setIsMember(index,param.isEnabled());
+    getDevice().setLight(param);
+    oldLp.setUndefined();
+  } else {
+    if(!isLightDefined(index)) {
+      showWarning(_T("%s:Light %d is undefined"),__TFUNCTION__, index);
+      return;
     }
+    oldLp = getLight(index);
+    if(param == oldLp) return;
+    getDevice().setLight(param);
+    m_lightsEnabled.setIsMember(index,param.isEnabled());
   }
   notifyPropertyChanged(SP_LIGHTPARAMETERS, &oldLp, &param);
 }
@@ -237,8 +239,7 @@ void D3Scene::setAllLights(const LightArray &a) {
   const UINT count = (UINT)a.size();
   for(UINT i = 0; i < count; i++) {
     const D3Light &l = a[i];
-    m_lightsDefined.add(l.getIndex());
-    setLight(l);
+    setLight(l, true);
   }
   setNotifyEnable(notifyEnable);
 }
