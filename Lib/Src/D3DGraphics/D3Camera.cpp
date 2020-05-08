@@ -66,9 +66,9 @@ D3Camera &D3Camera::setHwnd(HWND hwnd) {
   HWND old = m_hwnd;
   m_hwnd = hwnd;
   if(IsWindow(m_hwnd)) {
-    const bool prop = setNotifyEnable(false);
+    const bool notifyEnable = setNotifyEnable(false);
     setProjMatrix();
-    setNotifyEnable(prop);
+    setNotifyEnable(notifyEnable);
   }
   notifyPropertyChanged(CAM_WINDOW, &old, &m_hwnd);
   return *this;
@@ -89,7 +89,7 @@ D3Camera &D3Camera::setLightControlsVisible(const BitSet &set) {
   const BitSet oldSet = getLightControlsVisible();
   BitSet newSet = set & getScene().getLightsDefined();
   if(newSet != oldSet) {
-    setNotifyEnable(false);
+    const bool notifyEnable = setNotifyEnable(false);
     BitSet missing = newSet - oldSet;
     if(!missing.isEmpty()) {
       for(Iterator<size_t> it = missing.getIterator(); it.hasNext();) {
@@ -102,7 +102,7 @@ D3Camera &D3Camera::setLightControlsVisible(const BitSet &set) {
         setLightControlVisible((UINT)it.next(), false);
       }
     }
-    setNotifyEnable(true);
+    setNotifyEnable(notifyEnable);
     notifyPropertyChanged(CAM_LIGHTCONTROLSVISIBLE, &oldSet, &getLightControlsVisible());
   }
   return *this;
