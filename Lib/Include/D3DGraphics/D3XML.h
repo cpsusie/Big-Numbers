@@ -20,10 +20,10 @@ template<typename T> void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *
   doc.getValue(n, _T("z"), p.z);
 }
 
-void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3DXVECTOR3 &v   );
-void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag,       D3DXVECTOR3 &v   );
-void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3DVECTOR   &v   );
-void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag,       D3DVECTOR   &v   );
+void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3DXVECTOR3    &v);
+void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag,       D3DXVECTOR3    &v);
+void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3DVECTOR      &v);
+void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag,       D3DVECTOR      &v);
 void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3DXQUATERNION &q);
 void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag,       D3DXQUATERNION &q);
 
@@ -46,15 +46,15 @@ void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, D3DCOLORVALUE   
 
 void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3DMATERIAL   &v);
 void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, D3DMATERIAL         &v);
-void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const MaterialMap   &v);
-void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, MaterialMap         &v);
+void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const MaterialMap   &map);
+void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, MaterialMap         &map);
 
 void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3DLIGHT      &v);
 void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, D3DLIGHT            &v);
 void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3Light       &v);
 void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, D3Light             &v);
-void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const LightArray    &v);
-void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, LightArray          &v);
+void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const LightArray    &a);
+void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, LightArray          &a);
 
 class D3World;
 class D3Camera;

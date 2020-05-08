@@ -78,6 +78,7 @@ void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3DMATERIA
 
 void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, D3DMATERIAL &v) {
   XMLNodePtr n = doc.getChild(parent, tag);
+  memset(&v, 0, sizeof(D3DMATERIAL));
   getValue(doc, n, _T("diffuse"  ), v.Diffuse  );
   getValue(doc, n, _T("ambient"  ), v.Ambient  );
   getValue(doc, n, _T("specular" ), v.Specular );
@@ -85,18 +86,18 @@ void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, D3DMATERIAL &v) 
   doc.getValue( n, _T("power"    ), v.Power    );
 }
 
-void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const MaterialMap &v) {
+void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const MaterialMap &map) {
   XMLNodePtr n = doc.createNode(parent, tag);
-  for(Iterator<Entry<CompactUIntKeyType, D3Material> > it = v.getEntryIterator(); it.hasNext();) {
+  for(Iterator<Entry<CompactUIntKeyType, D3Material> > it = map.getEntryIterator(); it.hasNext();) {
     const Entry<CompactUIntKeyType, D3Material> &e = it.next();
     String id = format(_T("id%d"), e.getKey());
     setValue(doc, n, id.cstr(), e.getValue());
   }
 }
 
-void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, MaterialMap &v) {
+void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, MaterialMap &map) {
   XMLNodePtr n = doc.getChild(parent, tag);
-  v.clear();
+  map.clear();
   for(XMLNodePtr child = n->firstChild; child; child = child->nextSibling) {
     const String idStr = (wchar_t*)child->nodeName;
     const UINT   id    = _wtoi(idStr.cstr()+2);
@@ -104,7 +105,7 @@ void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, MaterialMap &v) 
     getValue(doc, n, idStr.cstr(), d3m);
     D3Material   mat(id);
     mat = d3m;
-    v.put(id, mat);
+    map.put(id, mat);
   }
 }
 
@@ -156,6 +157,8 @@ void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, D3DLIGHT &v) {
   XMLNodePtr n = doc.getChild(parent, tag);
   String typeStr;
   doc.getValue( n, _T("type"     ), typeStr         );
+  memset(&v, 0, sizeof(D3DLIGHT));
+
   v.Type = strToLightType(typeStr);
 
   getValue(doc, n, _T("diffuse"  ), v.Diffuse       );
@@ -201,22 +204,25 @@ void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, D3Light &v) {
   getValue(doc, n, _T("parameters"), (D3DLIGHT&)v);
 }
 
-void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const LightArray &v) {
+void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const LightArray &a) {
   XMLNodePtr n = doc.createNode(parent, tag);
-  for(size_t i = 0; i < v.size(); i++) {
-    String tagName = format(_T("index%zu"), i);
-    setValue(doc, n, tagName.cstr(), v[i]);
+  for(size_t i = 0; i < a.size(); i++) {
+    const D3Light &light = a[i];
+    String tagName = format(_T("index%d"), light.getIndex());
+    setValue(doc, n, tagName.cstr(), light);
   }
 }
 
-void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, LightArray &v) {
+void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, LightArray &a) {
   XMLNodePtr n = doc.getChild(parent, tag);
-  v.clear(-1);
+  a.clear(-1);
   for(XMLNodePtr child = n->firstChild; child; child = child->nextSibling) {
     const String idStr = (wchar_t*)child->nodeName;
-    D3Light light((UINT)v.size());
+    int index;
+    _stscanf(idStr.cstr(), _T("index%d"), &index);
+    D3Light light(index);
     getValue(doc, n, idStr.cstr(), light);
-    v.add(light);
+    a.add(light);
   }
 }
 
