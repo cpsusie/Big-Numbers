@@ -11,11 +11,11 @@ class ParametricSurface : public FunctionTemplate<Point2D, Point3D> {
 float       operator*(            const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2);
 float       length(               const D3DXVECTOR3 &v);
 float       angle(                const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2);
-// i = [0..2] giving ((1,0,0) or (0,1,0) or (0,0,1)
 D3DXMATRIX &D3DXMatrixPerspectiveFov(D3DXMATRIX &mat , FLOAT              angel, FLOAT            apsect, FLOAT zn, FLOAT    fn, bool rightHanded);
 D3DXMATRIX &D3DXMatrixLookAt(        D3DXMATRIX &view, const D3DXVECTOR3 &eye, const D3DXVECTOR3 &lookAt, const D3DXVECTOR3 &up, bool rightHanded);
 D3DXVECTOR3 unitVector(           const D3DXVECTOR3 &v);
 extern D3DXVECTOR3 E[3];
+// i = [0..2] giving ((1,0,0) or (0,1,0) or (0,0,1)
 D3DXVECTOR3 createUnitVector(UINT i);
 D3DXVECTOR3 rotate(               const D3DXVECTOR3 &v, const D3DXVECTOR3 &axis, float rad);
 D3DXVECTOR3 rotate(               const D3DXVECTOR3 &v, const D3DXQUATERNION &q);
