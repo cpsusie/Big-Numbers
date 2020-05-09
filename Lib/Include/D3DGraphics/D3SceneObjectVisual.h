@@ -24,6 +24,7 @@ protected:
   inline D3SceneObjectVisual *getChild(UINT index) const {
     return m_children[index];
   }
+
 public:
   D3SceneObjectVisual(D3Scene             &scene , const String &name=_T("VisualObject"));
   D3SceneObjectVisual(D3SceneObjectVisual *parent, const String &name=EMPTYSTRING);
@@ -43,13 +44,6 @@ public:
   }
   inline bool hasMesh() const {
     return getMesh() != NULL;
-  }
-
-  virtual int getMaterialId() const {
-    return -1;
-  }
-  virtual String toString() const {
-    return getName();
   }
   inline void *getUserData() {
     return m_userData;
@@ -76,10 +70,15 @@ public:
   virtual bool getLightingEnable() const {
     return true;
   }
+  virtual int getMaterialId() const {
+    return -1;
+  }
   const D3Material &getMaterial() const;
   inline bool hasMaterial() const {
     return getMaterialId() >= 0;
   }
+  D3Device &setDeviceMaterialIfExist() const;
+
   void resetWorld() {
     getWorld() = D3World();
   }
@@ -99,6 +98,9 @@ public:
   }
   inline void setName(const String &name) {
     m_name = name;
+  }
+  virtual String toString() const {
+    return getName();
   }
   virtual String getInfoString() const;
 };

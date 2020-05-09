@@ -46,9 +46,7 @@ void D3SceneObjectLineArray::initBuffer(const Line3D *lines, UINT n) {
 
 void D3SceneObjectLineArray::draw() {
   if(hasVertexBuffer()) {
-    if(hasMaterial()) {
-      getDevice().setMaterial(getMaterial());
-    }
+    setDeviceMaterialIfExist();
     setStreamSource().setWorldMatrix(getWorld())
                      .setLightingEnable(getLightingEnable())
                      .drawPrimitive(D3DPT_LINELIST, 0, m_primitiveCount);

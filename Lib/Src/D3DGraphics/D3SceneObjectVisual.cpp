@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <D3DGraphics/D3Device.h>
 #include <D3DGraphics/D3Scene.h>
 #include <D3DGraphics/D3ToString.h>
 #include <D3DGraphics/D3SceneObjectVisual.h>
@@ -43,6 +44,15 @@ UINT D3SceneObjectVisual::addChild(D3SceneObjectVisual *child) {
 
 const D3Material &D3SceneObjectVisual::getMaterial() const {
   return getScene().getMaterial(getMaterialId());
+}
+
+D3Device &D3SceneObjectVisual::setDeviceMaterialIfExist() const {
+  D3Device &device     = getDevice();
+  const int materialId = getMaterialId();
+  if(materialId >= 0) {
+    device.setMaterial(getScene().getMaterial(materialId));
+  }
+  return device;
 }
 
 void D3SceneObjectVisual::draw() {

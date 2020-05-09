@@ -51,9 +51,7 @@ void D3SceneObjectLineArrow::init(const Vertex &from, const Vertex &to) {
 
 void D3SceneObjectLineArrow::draw() {
   if(hasVertexBuffer()) {
-    if(hasMaterial()) {
-      getDevice().setMaterial(getMaterial());
-    }
+    setDeviceMaterialIfExist();
     setStreamSource().setWorldMatrix(getWorld())
                      .setFillMode(getFillMode())
                      .setShadeMode(getShadeMode())

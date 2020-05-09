@@ -24,9 +24,7 @@ void D3SceneObjectCurve::init(const VertexArray &points) {
 
 void D3SceneObjectCurve::draw() {
   if(hasVertexBuffer()) {
-    if(hasMaterial()) {
-      getDevice().setMaterial(getMaterial());
-    }
+    setDeviceMaterialIfExist();
     setStreamSource().setWorldMatrix(getWorld())
                      .setLightingEnable(getLightingEnable())
                      .drawPrimitive(D3DPT_LINESTRIP, 0, m_primitiveCount);

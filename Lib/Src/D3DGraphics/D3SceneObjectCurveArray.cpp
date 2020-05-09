@@ -36,10 +36,7 @@ void D3SceneObjectCurveArray::init(const CurveArray &curves) {
 
 void D3SceneObjectCurveArray::draw() {
   if(hasVertexBuffer()) {
-    D3Device &device = getDevice();
-    if(hasMaterial()) {
-      device.setMaterial(getMaterial());
-    }
+    D3Device &device = setDeviceMaterialIfExist();
     setStreamSource().setLightingEnable(getLightingEnable());
     int startIndex = 0;
     for(size_t i = 0; i < m_curveSize.size(); i++) {

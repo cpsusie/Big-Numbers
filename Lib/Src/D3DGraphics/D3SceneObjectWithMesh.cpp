@@ -63,10 +63,7 @@ D3Cube D3SceneObjectWithMesh::getBoundingBox() const {
 
 void D3SceneObjectWithMesh::draw() {
   if(hasMesh()) {
-    D3Device &device = getDevice();
-    if(hasMaterial()) {
-      device.setMaterial(getMaterial());
-    }
+    D3Device &device = setDeviceMaterialIfExist();
     device.setWorldMatrix(getWorld())
           .setFillMode(getFillMode())
           .setShadeMode(getShadeMode())
