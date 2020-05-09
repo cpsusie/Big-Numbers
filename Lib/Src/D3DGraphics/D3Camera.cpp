@@ -23,10 +23,10 @@ D3Camera::D3Camera(const D3Camera *src, HWND hwnd)
   m_backgroundColor = src->getBackgroundColor();
   m_viewAngle       = src->getViewAngle();
   m_nearViewPlane   = src->getNearViewPlane();
+  m_farViewPlane    = src->getFarViewPlane();
   m_world           = src->m_world;
 
-  setViewMatrix();
-  setProjMatrix();
+  setViewMatrix().setProjMatrix();
   setNotifyEnable(true);
 }
 
@@ -47,10 +47,7 @@ D3Camera &D3Camera::initWorld() {
 }
 
 D3Camera &D3Camera::initProjection() {
-  m_viewAngle     = getDefaultViewAngle();
-  m_nearViewPlane = getDefaultNearViewPlane();
-  createProjMatrix(m_projMatrix);
-  return *this;
+  return resetProjection();
 }
 
 void D3Camera::OnSize() {
@@ -145,7 +142,7 @@ D3Camera &D3Camera::setViewMatrix() {
 
 D3DXMATRIX &D3Camera::createProjMatrix(D3DXMATRIX &m) const {
   const CSize size = getWinSize();
-  D3DXMatrixPerspectiveFov(m, m_viewAngle, (float)size.cx / size.cy, m_nearViewPlane, 200.0f, getRightHanded());
+  D3DXMatrixPerspectiveFov(m, m_viewAngle, (float)size.cx / size.cy, m_nearViewPlane, m_farViewPlane, getRightHanded());
   return m;
 }
 
@@ -169,11 +166,18 @@ D3Camera &D3Camera::setNearViewPlane(float zn) {
   return *this;
 }
 
+D3Camera &D3Camera::setFarViewPlane(float fn) {
+  if(fn > 0) {
+    m_farViewPlane = fn;
+    setProjMatrix();
+  }
+  return *this;
+}
+
 D3Camera &D3Camera::setRightHanded(bool rightHanded) {
   if(rightHanded != m_rightHanded) {
     m_rightHanded = rightHanded;
-    setProjMatrix();
-    setViewMatrix();
+    setProjMatrix().setViewMatrix();
   }
   return *this;
 }
@@ -195,6 +199,7 @@ D3Camera &D3Camera::resetOrientation() {
 D3Camera &D3Camera::resetProjection() {
   m_viewAngle     = getDefaultViewAngle();
   m_nearViewPlane = getDefaultNearViewPlane();
+  m_farViewPlane  = getDefaultFarViewPlane();
   return setProjMatrix();
 }
 

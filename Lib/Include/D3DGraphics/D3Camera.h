@@ -32,7 +32,7 @@ private:
   D3DCOLOR                m_backgroundColor;
   mutable BitSet          m_visibleLightControlSet;
   float                   m_viewAngle;
-  float                   m_nearViewPlane;
+  float                   m_nearViewPlane, m_farViewPlane;
   D3World                 m_world;
   D3DXMATRIX              m_projMatrix, m_viewMatrix;
 
@@ -107,6 +107,10 @@ public:
   inline float getNearViewPlane() const {
     return m_nearViewPlane;
   }
+  D3Camera &setFarViewPlane(float fn);
+  inline float getFarViewPlane() const {
+    return m_farViewPlane;
+  }
 
   D3Camera &setRightHanded(bool rightHanded);
   inline bool getRightHanded() const {
@@ -139,6 +143,9 @@ public:
   // default new view Plane (=0.1)
   static inline float getDefaultNearViewPlane() {
     return 0.1f;
+  }
+  static inline float getDefaultFarViewPlane() {
+    return 200.0f;
   }
   static inline D3DXVECTOR3 getDefaultPos() {
     return D3DXVECTOR3(0, -5, 0);
