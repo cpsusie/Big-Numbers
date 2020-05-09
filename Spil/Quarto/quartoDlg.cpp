@@ -246,9 +246,9 @@ BOOL CQuartoDlg::PreTranslateMessage(MSG *pMsg) {
   const bool levelIncremented = pMsg->message != ID_MSG_RENDER;
   if(levelIncremented) incrLevel();
   BOOL result;
-  if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
+  if(m_editor.PreTranslateMessage(pMsg)) {
     result = true;
-  } else if(m_editor.PreTranslateMessage(pMsg)) {
+  } else if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
     result = true;
   } else {
     result = __super::PreTranslateMessage(pMsg);

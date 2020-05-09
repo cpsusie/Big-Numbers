@@ -3,6 +3,8 @@
 
 D3Cube getBoundingBox(LPD3DXMESH mesh) {
   LPDIRECT3DVERTEXBUFFER vertexBuffer;
-  V(mesh->GetVertexBuffer(&vertexBuffer));
-  return getBoundingBox(vertexBuffer);
+  V(mesh->GetVertexBuffer(&vertexBuffer)); TRACE_REFCOUNT(vertexBuffer);
+  const D3Cube result = getBoundingBox(vertexBuffer);
+  SAFERELEASE(vertexBuffer);
+  return result;
 }

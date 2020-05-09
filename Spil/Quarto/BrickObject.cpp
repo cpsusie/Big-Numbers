@@ -47,7 +47,7 @@ static Profile createProfile(const Point2DArray &points) {
     curve.addPoint(points[i]);
   }
   polygon.addCurve(curve);
-  polygon.reverseOrder();
+//  polygon.reverseOrder();
   result.addPolygon(polygon);
 
   return result;
@@ -96,6 +96,9 @@ public:
                                ,format(_T("%s(Marker)"),parent->getName().cstr()))
   {
   }
+  int getMaterialId() const {
+    return GameBoardObject::getMarkerMaterialId();
+  }
   D3DXMATRIX &getWorld() {
     return getParent()->getWorld();
   }
@@ -108,6 +111,7 @@ BrickObject::BrickObject(GameBoardObject *board, BYTE attr)
                        )
 , m_attr(attr)
 , m_marked(false)
+, m_visible(true)
 {
   m_brickMarker = new BrickMarker(this); TRACE_NEW(m_brickMarker);
 }

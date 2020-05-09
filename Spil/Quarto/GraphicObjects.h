@@ -19,6 +19,8 @@ public:
   }
   BoardObjectWithTexture(D3SceneObjectVisual *parent, LPD3DXMESH mesh) : D3SceneObjectWithMesh(parent, mesh) {
   }
+  ~BoardObjectWithTexture() {
+  }
   bool getLightingEnable() const {
     return false;
   }
@@ -33,19 +35,27 @@ public:
 class BoardFieldObject : public BoardObjectWithTexture {
 private:
 #ifdef _DEBUG
-  LPDIRECT3DTEXTURE        m_texture[2]; // 0=unmarked,1=marked
+  LPDIRECT3DTEXTURE m_texture[2]; // 0=unmarked,1=marked
   LPDIRECT3DTEXTURE createTexture(bool marked);
   static CFont     *getFont();
 #else
   static LPDIRECT3DTEXTURE s_texture[3]; // 0=white,1=black,2=marked
+  static BYTE              s_fieldCount;
+  void incrFieldcount() {
+    s_fieldCount++;
+  }
+  void decrFieldCount();
 #endif
+  void                     destroyTexture();
   D3DXVECTOR3              m_center;
   bool                     m_selected;
   Field                    m_field;
+
   LPDIRECT3DTEXTURE getTexture(bool marked);
   static LPD3DXMESH createMesh(AbstractMeshFactory &amf, int row, int col);
 public:
   BoardFieldObject(D3SceneObjectVisual *parent, int row, int col);
+  ~BoardFieldObject();
   inline void setSelected(bool selected) {
     m_selected = selected;
 #ifdef _DEBUG
@@ -125,6 +135,7 @@ class GameBoardObject : public BoardObjectWithTexture, public PropertyContainer 
 private:
   static const float   s_vertexXPos[], s_vertexYPos[];
   static float         s_xgridLines[5], s_ygridLines[5];
+  static int           s_markerMaterialId;
   LPDIRECT3DTEXTURE    m_boardTexture;
   D3SceneObjectVisual *m_boardSideObject;
   BoardFieldObject    *m_fieldObject[ROWCOUNT][COLCOUNT];
@@ -135,7 +146,10 @@ private:
   BrickPositions       m_brickPositions;
   static LPD3DXMESH createMesh(AbstractMeshFactory &amf);
   void addBrickMaterials();
-  friend class BoardFieldObject ;
+  void removeBrickMaterials();
+  void destroyFieldObjets();
+  void destroyBrickObjects();
+  friend class BoardFieldObject;
   void setCurrentFieldSelected(bool selected);
   void setCurrentBrickSelected(bool selected);
   void getBrickPositions(BrickPositions &bp) const;
@@ -171,6 +185,10 @@ public:
     return m_boardTexture;
   }
   UINT getBrickMaterialId(bool black);
+  static inline UINT getMarkerMaterialId() {
+    return s_markerMaterialId;
+  }
+  void draw();
 #ifdef _DEBUG
   String toString() const;
 #endif

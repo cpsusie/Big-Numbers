@@ -31,7 +31,7 @@ D3Camera::D3Camera(const D3Camera *src, HWND hwnd)
 }
 
 D3Camera *D3Camera::clone(HWND hwnd) const {
-  return new D3Camera(this, hwnd);
+  return new D3Camera(this, hwnd); // no TRACE_NEW here
 }
 
 D3Camera::~D3Camera() {

@@ -44,7 +44,14 @@ LPDIRECT3DTEXTURE BoardFieldObject::s_texture[3] = {
  ,NULL
  ,NULL
 };
-#endif
+BYTE BoardFieldObject::s_fieldCount = 0;
+void BoardFieldObject::decrFieldCount() {
+  if(--s_fieldCount) {
+    destroyTexture();
+  }
+}
+
+#endif // _DEBUG
 
 BoardFieldObject::BoardFieldObject(D3SceneObjectVisual *parent, int row, int col)
 : BoardObjectWithTexture(parent, createMesh(parent->getScene(), row, col))
@@ -53,11 +60,21 @@ BoardFieldObject::BoardFieldObject(D3SceneObjectVisual *parent, int row, int col
   m_selected    = false;
   m_center      = getBoundingBox().getCenter();
 
-#ifdef _DEBUG
+#ifndef _DEBUG
+  incrFieldcount();
+#else
   m_texture[0] = createTexture(false);
   m_texture[1] = createTexture(true );
   setName(format(_T("Field(%d,%d) Center:%s"), row,col, ::toString(m_center).cstr()));
-#endif
+#endif // _DEBUG
+}
+
+BoardFieldObject::~BoardFieldObject() {
+#ifndef _DEBUG
+  decrFieldCount();
+#else
+  destroyTexture();
+#endif // _DEBUG
 }
 
 LPD3DXMESH BoardFieldObject::createMesh(AbstractMeshFactory &amf, int row, int col) {
@@ -124,15 +141,27 @@ LPDIRECT3DTEXTURE BoardFieldObject::createTexture(bool marked) {
 #endif
 
 LPDIRECT3DTEXTURE BoardFieldObject::getTexture(bool marked) {
-#ifdef _DEBUG
-  return m_texture[marked?1:0];
-#else
+#ifndef _DEBUG
   const int index = GETFIELDRESINDEX(m_field,marked);
   if(s_texture[index] == NULL) {
     s_texture[index] = getScene().loadTextureFromBitmapResource(GETFIELDRESID(m_field,marked));
   }
   return s_texture[index];
-#endif
+#else
+  return m_texture[marked?1:0];
+#endif // _DEBUG
+}
+
+void BoardFieldObject::destroyTexture() {
+#ifndef _DEBUG
+  for(UINT i = 0; i < ARRAYSIZE(s_texture); i++) {
+    SAFERELEASE(s_texture[i]);
+  }
+#else
+  for(UINT i = 0; i < ARRAYSIZE(m_texture); i++) {
+    SAFERELEASE(m_texture[i])
+  }
+#endif // _DEBUG
 }
 
 #ifdef _DEBUG
@@ -166,7 +195,7 @@ BoardSideObject::BoardSideObject(D3SceneObjectVisual *parent)
 }
 
 BoardSideObject::~BoardSideObject() {
-  m_boardSideTexture->Release();
+  SAFERELEASE(m_boardSideTexture);
 }
 
 LPD3DXMESH BoardSideObject::createMesh(AbstractMeshFactory &amf) { // static
@@ -242,31 +271,61 @@ LPD3DXMESH GameBoardObject::createMesh(AbstractMeshFactory &amf) { // static
   }
 }
 
+int GameBoardObject::s_markerMaterialId = -1;
+
 GameBoardObject::GameBoardObject(D3Scene &scene)
 : BoardObjectWithTexture(scene, createMesh(scene))
 {
   setName(_T("Board"));
   m_boardTexture     = scene.loadTextureFromBitmapResource(IDB_BOARDBITMAP);
-  addChild(new BoardSideObject(this));
+  D3SceneObjectVisual *so = new BoardSideObject(this); TRACE_NEW(so);
+  addChild(so);
+
   for(int r = 0; r < ROWCOUNT; r++) {
     for(int c = 0; c < COLCOUNT; c++) {
-      BoardFieldObject *f = new BoardFieldObject(this, r, c);
+      BoardFieldObject *f = new BoardFieldObject(this, r, c); TRACE_NEW(f);
       m_fieldObject[r][c] = f;
-      scene.addVisual(f); // to make if pickable
-      addChild(f);        // to draw with __super::draw()
+      scene.addVisual(f); // to make it pickable
+//    addChild(f);        // NOT this....coz draw by camera::draw, as its a visual added to scene
+                          // draw by GameboardObject::draw()
     }
   }
+
   addBrickMaterials();
+  s_markerMaterialId = getScene().addMaterialWithColor(D3D_WHITE);
   for(BYTE attr = 0; attr < ARRAYSIZE(m_brickObject); attr++) {
-    BrickObject *b = new BrickObject(this, attr);
+    BrickObject *b = new BrickObject(this, attr); TRACE_NEW(b);
     m_brickObject[attr] = b;
     scene.addVisual(b); // to make if pickable
-    addChild(b);
+//  addChild(b); // NOT this...same reason asBoardFieldObject
   }
   resetBrickPositions(false);
   getBrickPositions(m_brickPositions);
   m_currentField = NOFIELD;
   m_currentBrick = NOBRICK;
+}
+
+GameBoardObject::~GameBoardObject() {
+  getScene().removeAllVisuals();
+  SAFERELEASE(m_boardTexture);
+  destroyFieldObjets();
+  removeBrickMaterials();
+  destroyBrickObjects();
+  getScene().removeMaterial(s_markerMaterialId); s_markerMaterialId = -1;
+
+}
+
+void GameBoardObject::destroyFieldObjets() {
+  for(int r = 0; r < ROWCOUNT; r++) {
+    for(int c = 0; c < COLCOUNT; c++) {
+      SAFEDELETE(m_fieldObject[r][c]);
+    }
+  }
+}
+void GameBoardObject::destroyBrickObjects() {
+  for(BYTE attr = 0; attr < ARRAYSIZE(m_brickObject); attr++) {
+    SAFEDELETE(m_brickObject[attr]);
+  }
 }
 
 #define MATERIAL_DIFFUSE_BLACK D3DCOLOR_XRGB(66,56,196)
@@ -284,9 +343,7 @@ void GameBoardObject::addBrickMaterials() {
   }
 }
 
-GameBoardObject::~GameBoardObject() {
-  getScene().removeAllVisuals();
-  if(m_boardTexture) m_boardTexture->Release();
+void GameBoardObject::removeBrickMaterials() {
   for(int i = 0; i < ARRAYSIZE(m_brickMaterialId); i++) {
     getScene().removeMaterial(m_brickMaterialId[i]);
   }
@@ -394,6 +451,21 @@ Field GameBoardObject::getFieldFromPoint(const CPoint &p, const D3Camera *camera
     }
   }
   return NOFIELD;
+}
+
+void GameBoardObject::draw() {
+  __super::draw();
+/*
+  for(int r = 0; r < ROWCOUNT; r++) {
+    for(int c = 0; c < COLCOUNT; c++) {
+      m_fieldObject[r][c]->draw();
+    }
+  }
+*/
+  getDevice().setTexture(0, NULL);
+  for(BYTE attr = 0; attr < ARRAYSIZE(m_brickObject); attr++) {
+    m_brickObject[attr]->draw();
+  }
 }
 
 #ifdef _DEBUG

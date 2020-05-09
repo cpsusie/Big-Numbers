@@ -27,14 +27,14 @@ bool D3SceneObjectVisual::intersectsWithRay(const D3Ray &ray, float &dist, D3Pic
     LPD3DXBUFFER infoBuffer;
     DWORD        hitCount;
     V(D3DXIntersect(mesh
-                  , &mray.m_orig
-                  , &mray.m_dir
-                  , &hit
-                  , &faceIndex
-                  , &U, &V
-                  , &dist
-                  , &infoBuffer
-                  , &hitCount
+                   ,&mray.m_orig
+                   ,&mray.m_dir
+                   ,&hit
+                   ,&faceIndex
+                   ,&U, &V
+                   ,&dist
+                   ,&infoBuffer
+                   ,&hitCount
     ));
     if(hitCount > 0) {
       D3DXINTERSECTINFO *infoArray = (D3DXINTERSECTINFO*)infoBuffer->GetBufferPointer();
@@ -43,12 +43,12 @@ bool D3SceneObjectVisual::intersectsWithRay(const D3Ray &ray, float &dist, D3Pic
       LPDIRECT3DVERTEXBUFFER vertexBuffer;
       void *indexItems = NULL, *vertexItems = NULL;
       try {
-        V(mesh->GetIndexBuffer(&indexBuffer));
+        V(mesh->GetIndexBuffer(&indexBuffer)); TRACE_REFCOUNT(indexBuffer);
         D3DINDEXBUFFER_DESC inxdesc;
         V(indexBuffer->GetDesc(&inxdesc));
         const bool use32Bit = inxdesc.Format == D3DFMT_INDEX32;
         V(indexBuffer->Lock(0, 0, &indexItems, D3DLOCK_READONLY));
-        V(mesh->GetVertexBuffer(&vertexBuffer));
+        V(mesh->GetVertexBuffer(&vertexBuffer)); TRACE_REFCOUNT(vertexBuffer);
         D3DVERTEXBUFFER_DESC vtxdesc;
         V(vertexBuffer->GetDesc(&vtxdesc));
         const UINT itemSize = FVFToSize(vtxdesc.FVF);
@@ -83,9 +83,13 @@ bool D3SceneObjectVisual::intersectsWithRay(const D3Ray &ray, float &dist, D3Pic
         }
         V(indexBuffer->Unlock());  indexItems = NULL;
         V(vertexBuffer->Unlock()); vertexItems = NULL;
+        SAFERELEASE(vertexBuffer);
+        SAFERELEASE(indexBuffer);
       } catch(...) {
         if(indexItems  != NULL) indexBuffer->Unlock();
         if(vertexItems != NULL) vertexBuffer->Unlock();
+        SAFERELEASE(vertexBuffer);
+        SAFERELEASE(indexBuffer);
         throw;
       }
     }
