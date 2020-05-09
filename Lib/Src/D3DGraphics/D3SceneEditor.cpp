@@ -768,6 +768,9 @@ void D3SceneEditor::OnMouseWheelCameraProjection(UINT nFlags, short zDelta, CPoi
   case MK_CONTROL  :
     sCAM.setNearViewPlane(sCAM.getNearViewPlane() * (1 + 0.05f*signDelta));
     break;
+  case MK_SHIFT:
+    sCAM.setFarViewPlane(sCAM.getFarViewPlane() * (1 + 0.05f*signDelta));
+    break;
   }
 }
 

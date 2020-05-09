@@ -275,9 +275,10 @@ void D3Camera::endAnimate() {
 
 String D3Camera::toString() const {
   const CSize size = getWinSize();
-  return format(_T("View angle:%.2lf, Near view:%.3lf, WinSize:(%3d,%3d)")
+  return format(_T("View angle:%.2lf, Near/Far view:(%.3f,%.3f), WinSize:%s")
                , degrees(getViewAngle())
                , getNearViewPlane()
-               , size.cx,size.cy
+               , getFarViewPlane()
+               , ::toString(size).cstr()
                );
 }

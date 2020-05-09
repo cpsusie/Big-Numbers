@@ -247,6 +247,7 @@ void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3Camera &
   XMLNodePtr n = doc.createNode(parent, tag);
   doc.setValue( n, _T("righthanded"    ), c.getRightHanded()         );
   doc.setValue( n, _T("nearviewplane"  ), c.getNearViewPlane()       );
+  doc.setValue( n, _T("farviewplane"  ) , c.getFarViewPlane()        );
   doc.setValue( n, _T("viewangle"      ), c.getViewAngle()           );
   setValue(doc, n, _T("winsize"        ), c.getWinSize()             );
   setValue(doc, n, _T("world"          ), c.getD3World()             );
@@ -256,7 +257,7 @@ void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3Camera &
 
 void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, D3Camera &c) {
   bool       rightHanded;
-  float      nearViewPlane, viewAngle;
+  float      nearViewPlane, farViewPlane, viewAngle;
   CSize      winSize;
   D3World    world;
   D3PCOLOR   backgroundColor;
@@ -265,6 +266,7 @@ void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, D3Camera &c) {
 
   doc.getValue( n, _T("righthanded"    ), rightHanded         );
   doc.getValue( n, _T("nearviewplane"  ), nearViewPlane       );
+  doc.getValue( n, _T("farviewplane"   ), farViewPlane        );
   doc.getValue( n, _T("viewangle"      ), viewAngle           );
   getValue(doc, n, _T("winsize"        ), winSize             );
   getValue(doc, n, _T("world"          ), world               );
@@ -273,6 +275,7 @@ void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, D3Camera &c) {
 
   c.setRightHanded(  rightHanded  );
   c.setNearViewPlane(nearViewPlane);
+  c.setFarViewPlane( farViewPlane );
   c.setViewAngle(    viewAngle    );
   setWindowSize(c.getHwnd(), winSize);
   c.setD3World(world);
