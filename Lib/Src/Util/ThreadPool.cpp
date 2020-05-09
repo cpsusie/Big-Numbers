@@ -230,7 +230,7 @@ void ThreadPool::startLogging() {
   wait();
 
   if(m_logger == NULL) {
-    m_logger = new PoolLogger(); TRACE_NEW(instance.m_logger);
+    m_logger = new PoolLogger(); TRACE_NEW(m_logger);
     executeNoWait(*m_logger);
   } else {
     m_logger->resume();

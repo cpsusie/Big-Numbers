@@ -1,7 +1,6 @@
 #pragma once
 
 #include "FastSemaphore.h"
-#include "CompactStack.h"
 
 typedef enum {
   SINGLETON_NOTCREATED
