@@ -66,7 +66,8 @@ inline float dist(const D3DXVECTOR3 &p1, const D3DXVECTOR3 &p2) {
   }                                                                                                                                 \
   inline Vertex operator-() const                        { return Vertex(     -x,-y,-z); }                                          \
   inline operator D3DXVECTOR3() const                    { return D3DXVECTOR3( x, y, z); }                                          \
-  inline operator Point3D()     const                    { return Point3D(     x, y, z); }
+  inline operator Point3D()     const                    { return Point3D(     x, y, z); }                                          \
+  inline const D3DXVECTOR3 &getPos() const { return *(D3DXVECTOR3*)(void*)&x; }
 
 #define A_NORMAL_TRAITS(className)                                                                                                  \
   template<typename TX,typename TY,typename TZ> className &setNormal(const TX &_x, const TX &_y, const TX &_z) {                    \
@@ -75,7 +76,8 @@ inline float dist(const D3DXVECTOR3 &p1, const D3DXVECTOR3 &p2) {
   template<typename TV> className &setNormal(const TV &n) {                                                                         \
     nx = (float)n.x; ny = (float)n.y; nz = (float)n.z; return *this;                                                                \
   }                                                                                                                                 \
-  inline className &reverseNormal() { nx = -nx; ny = -ny; nz = -nz; return *this; }
+  inline className &reverseNormal() { nx = -nx; ny = -ny; nz = -nz; return *this; }                                                 \
+  inline const D3DXVECTOR3 &getNormal() const { return *(D3DXVECTOR3*)(void*)&nx; }
 
 #define E_NORMAL_TRAITS(className)                                                                                                  \
   template<typename TX,typename TY,typename TZ> className &setNormal(const TX &_x, const TX &_y, const TX &_z) { return *this; }    \
