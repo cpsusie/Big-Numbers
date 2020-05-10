@@ -471,6 +471,8 @@ BOOL D3SceneEditor::PreTranslateMessage(MSG *pMsg) {
     case ID_OBJECT_RESETALL               : OnObjectResetAll()                  ; return true;
     case ID_OBJECT_ADJUSTMATERIAL         : OnObjectEditMaterial()              ; return true;
     case ID_OBJECT_SHOWDATA               : OnObjectShowData()                  ; return true;
+    case ID_OBJECT_SHOWNORMALS            : OnObjectShowNormals(true)           ; return true;
+    case ID_OBJECT_HIDENORMALS            : OnObjectShowNormals(false)          ; return true;
     case ID_OBJECT_REMOVE                 : OnObjectRemove()                    ; return true;
     case ID_OBJECT_SETCENTEROFROTATION    : OnObjectSetCenterOfRotation()       ; return true;
     case ID_OBJECT_RESETCENTEROFROTATION  : OnObjectResetCenterOfRotation()     ; return true;
@@ -1191,6 +1193,14 @@ void D3SceneEditor::OnContextMenuVisualObj(CPoint point) {
     case D3DSHADE_PHONG     : removeMenuItem(menu, ID_OBJECT_SHADING_PHONG   ); break;
     }
   }
+  if(!getCurrentObj()->hasNormals()) {
+    removeMenuItem(menu, ID_OBJECT_SHOWNORMALS);
+    removeMenuItem(menu, ID_OBJECT_HIDENORMALS);
+  } else if(getCurrentObj()->isNormalsVisible()) {
+    removeMenuItem(menu, ID_OBJECT_SHOWNORMALS);
+  } else {
+    removeMenuItem(menu, ID_OBJECT_HIDENORMALS);
+  }
   getCurrentObj()->modifyContextMenu(*menu.GetSubMenu(0));
   showContextMenu(menu, point);
 }
@@ -1325,6 +1335,15 @@ static void showText(const String &str) {
 void D3SceneEditor::OnObjectShowData() {
   if(hasObj() && getCurrentObj()->hasMesh()) {
     showText(::toString(getCurrentObj()->getMesh()));
+  }
+}
+
+void D3SceneEditor::OnObjectShowNormals(bool show) {
+  if(hasObj() && getCurrentObj()->hasNormals()) {
+    if(show != getCurrentObj()->isNormalsVisible()) {
+      getCurrentObj()->setNormalsVisible(show);
+      renderActiveCameras(SC_RENDERALL);
+    }
   }
 }
 

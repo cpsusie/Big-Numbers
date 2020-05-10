@@ -170,6 +170,7 @@ private:
     void OnObjectCreateCube();
     void OnObjectEditMaterial();
     void OnObjectShowData();
+    void OnObjectShowNormals(bool show);
     void OnObjectResetPosition();
     void OnObjectResetScale();
     void OnObjectResetOrientation();

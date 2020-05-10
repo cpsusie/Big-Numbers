@@ -235,6 +235,8 @@ BEGIN
         END
         MENUITEM "Material...",                 ID_OBJECT_ADJUSTMATERIAL
         MENUITEM "Show data",                   ID_OBJECT_SHOWDATA
+        MENUITEM "Show Normals",                ID_OBJECT_SHOWNORMALS
+        MENUITEM "Hide Normals",                ID_OBJECT_HIDENORMALS
         MENUITEM SEPARATOR
         POPUP "Animation"
         BEGIN

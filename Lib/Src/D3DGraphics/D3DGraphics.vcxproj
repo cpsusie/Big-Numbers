@@ -916,6 +916,7 @@
     <ClCompile Include="D3SceneObjectPickArrow.cpp" />
     <ClCompile Include="D3SceneObjectPoint.cpp" />
     <ClCompile Include="D3SceneObjectSolidBox.cpp" />
+    <ClCompile Include="D3SceneObjectVisualNormals.cpp" />
     <ClCompile Include="D3SceneObjectWithIndexBuffer.cpp" />
     <ClCompile Include="D3SceneObjectWithMesh.cpp" />
     <ClCompile Include="D3SceneObjectWithVertexBuffer.cpp" />
@@ -1008,6 +1009,7 @@
     <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectPickArrow.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectPoint.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectSolidBox.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectVisualNormals.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectWireFrameBox.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectWithIndexBuffer.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectWithMesh.h" />

@@ -35,11 +35,8 @@ public:
   D3SceneObjectWithVertexBuffer(D3SceneObjectVisual *parent, const String &name = _T("ObjectWithVertexBuffer"));
   ~D3SceneObjectWithVertexBuffer();
 
-  inline LPDIRECT3DVERTEXBUFFER &getVertexBuffer() {
+  LPDIRECT3DVERTEXBUFFER getVertexBuffer() const {
     return m_vertexBuffer;
-  }
-  inline bool hasVertexBuffer() const {
-    return m_vertexBuffer != NULL;
   }
   D3Cube getBoundingBox() const;
   String toString() const;

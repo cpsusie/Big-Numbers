@@ -21,10 +21,12 @@ protected:
   D3DXMATRIX           m_world;
   // Return index of the child in m_children. can be used as parameter to getChild(UINT index)
   UINT addChild(D3SceneObjectVisual *child);
+  void removeChild(UINT index);
   inline D3SceneObjectVisual *getChild(UINT index) const {
     return m_children[index];
   }
-
+  // return index of first child with the specified type, or -1, if none exist
+  int findChildByType(SceneObjectType type) const;
 public:
   D3SceneObjectVisual(D3Scene             &scene , const String &name=_T("VisualObject"));
   D3SceneObjectVisual(D3SceneObjectVisual *parent, const String &name=EMPTYSTRING);
@@ -45,6 +47,15 @@ public:
   inline bool hasMesh() const {
     return getMesh() != NULL;
   }
+  virtual LPDIRECT3DVERTEXBUFFER getVertexBuffer() const {
+    return NULL;
+  }
+  inline bool hasVertexBuffer() const {
+    return getVertexBuffer() != NULL;
+  }
+  virtual bool hasNormals() const;
+  bool isNormalsVisible() const;
+  void setNormalsVisible(bool visible);
   inline void *getUserData() {
     return m_userData;
   }
