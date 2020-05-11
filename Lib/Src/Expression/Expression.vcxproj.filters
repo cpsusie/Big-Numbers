@@ -86,6 +86,12 @@
     <ClInclude Include="CodeGenerator.h">
       <Filter>Source Files\MachineCode</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Expression\ExpressionFunction2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Expression\ExpressionFunction3D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Expression.cpp">
@@ -261,6 +267,12 @@
       <Filter>Source Files\MachineCode</Filter>
     </ClCompile>
     <ClCompile Include="ExpressionCompile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ExpressionFunction2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ExpressionFunction3D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

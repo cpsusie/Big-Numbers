@@ -842,6 +842,8 @@
   <ItemGroup>
     <ClInclude Include="..\..\Include\Math\Expression\Expression.h" />
     <ClInclude Include="..\..\Include\Math\Expression\ExpressionFunction.h" />
+    <ClInclude Include="..\..\Include\Math\Expression\ExpressionFunction2D.h" />
+    <ClInclude Include="..\..\Include\Math\Expression\ExpressionFunction3D.h" />
     <ClInclude Include="..\..\Include\Math\Expression\ExpressionNode.h" />
     <ClInclude Include="..\..\Include\Math\Expression\ExpressionSymbol.h" />
     <ClInclude Include="..\..\Include\Math\Expression\ExpressionWrapper.h" />
@@ -870,6 +872,8 @@
     <ClCompile Include="Expression.cpp" />
     <ClCompile Include="ExpressionAction.cpp" />
     <ClCompile Include="ExpressionCompile.cpp" />
+    <ClCompile Include="ExpressionFunction2D.cpp" />
+    <ClCompile Include="ExpressionFunction3D.cpp" />
     <ClCompile Include="ExpressionNodeAddent.cpp" />
     <ClCompile Include="CodeGenerator.cpp" />
     <ClCompile Include="ExpressionDerive.cpp" />

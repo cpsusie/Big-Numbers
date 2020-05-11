@@ -11,14 +11,14 @@ ExpressionFunction::ExpressionFunction(ExpressionFunction &src)
 : m_expr(   src.m_expr      )
 , m_varName(src.getVarName())
 {
-  initx();
+  setVariables();
 }
 
 ExpressionFunction &ExpressionFunction::operator=(ExpressionFunction &src) {
   cleanup();
   m_expr    = src.m_expr;
   m_varName = src.getVarName();
-  initx();
+  setVariables();
   return *this;
 }
 
@@ -33,22 +33,25 @@ void ExpressionFunction::compile(const String &expr, const String &name, Trigono
     throwException(_T("Returntype of expression not real"));
   }
   m_varName = name;
-  initx();
+  setVariables();
 }
 
-void ExpressionFunction::initx() {
+Real *ExpressionFunction::getVariableByName(const String &name) {
+  const Expr::ExpressionVariable *var = m_expr.getVariable(name);
+  return (var == NULL) ? &m_dummy : &m_expr.getValueRef(*var);
+}
+
+void ExpressionFunction::setVariables() {
   if(m_expr.hasSyntaxTree()) {
-    const ExpressionVariable *xvp = m_expr.getVariable(m_varName);
-    m_x = xvp ? &m_expr.getValueRef(*xvp) : &m_dummyX;
+    m_x = getVariableByName(_T("x"));
   } else {
-    m_x = &m_dummyX;
+    initVariables();
   }
 }
 
 void ExpressionFunction::cleanup() {
-  m_varName = EMPTYSTRING;
-  m_x       = &m_dummyX;
   m_expr.clear();
+  initVariables();
 }
 
 Real ExpressionFunction::operator()(const Real &x) {
