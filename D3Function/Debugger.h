@@ -33,7 +33,7 @@ private:
   void suspend();
   bool hasOctaBreakPointsAboveCounter(const BitSet &s) const;
 public:
-  Debugger(D3SceneContainer *sc, const IsoSurfaceParameters &param);
+  Debugger(D3SceneContainer *sc, const ExprIsoSurfaceParameters &param);
   ~Debugger();
   void singleStep(BYTE breakFlags, const BitSet &octaBreakPoints);
   inline void go(const BitSet &octaBreakPoints) {

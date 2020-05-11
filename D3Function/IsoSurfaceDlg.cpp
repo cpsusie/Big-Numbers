@@ -25,8 +25,8 @@ static char *blob3      = "s1=1/max(sqr(x+1)+sqr(y  )+sqr(z  ),0.00001);"
 
 */
 
-CIsoSurfaceDlg::CIsoSurfaceDlg(const IsoSurfaceParameters &param, CWnd *pParent /*=NULL*/)
-: SaveLoadExprDialog<IsoSurfaceParameters>(IDD, pParent, param, _T("implicit surface"), _T("imp"))
+CIsoSurfaceDlg::CIsoSurfaceDlg(const ExprIsoSurfaceParameters &param, CWnd *pParent /*=NULL*/)
+: SaveLoadExprDialog<ExprIsoSurfaceParameters>(IDD, pParent, param, _T("implicit surface"), _T("imp"))
 , m_createListFile(FALSE)
 {
   m_debugPolygonizer = false;
@@ -219,7 +219,7 @@ void CIsoSurfaceDlg::OnGotoTimeInterval()           { gotoEditBox(this, IDC_EDIT
 void CIsoSurfaceDlg::OnGotoFrameCount()             { gotoEditBox(this, IDC_EDIT_FRAMECOUNT);      }
 void CIsoSurfaceDlg::OnButtonHelp()                 { handleExprHelpButtonClick(IDC_BUTTON_HELP);  }
 
-void CIsoSurfaceDlg::paramToWin(const IsoSurfaceParameters &param) {
+void CIsoSurfaceDlg::paramToWin(const ExprIsoSurfaceParameters &param) {
   m_expr             = param.m_expr.cstr();
   m_cellSize         = param.m_cellSize;
   m_lambda           = param.m_lambda;
@@ -241,7 +241,7 @@ void CIsoSurfaceDlg::paramToWin(const IsoSurfaceParameters &param) {
   enableCheckBoxTetraOptimize4();
 }
 
-bool CIsoSurfaceDlg::winToParam(IsoSurfaceParameters &param) {
+bool CIsoSurfaceDlg::winToParam(ExprIsoSurfaceParameters &param) {
   if(!__super::winToParam(param)) return false;
   param.m_expr             = m_expr;
   param.m_cellSize         = m_cellSize;

@@ -1,19 +1,8 @@
 #include "pch.h"
 #include <XMLUtil.h>
-#include <D3DGraphics/Function2DSurface.h>
+#include <D3DGraphics/ExprFunction2DSurfaceParameters.h>
 
-Function2DSurfaceParameters::Function2DSurfaceParameters() {
-  m_xInterval     = DoubleInterval(-10,10);
-  m_yInterval     = DoubleInterval(-10,10);
-  m_pointCount    = 10;
-  m_machineCode   = true;
-  m_doubleSided   = true;
-  m_includeTime   = false;
-  m_timeInterval  = DoubleInterval(0,10);
-  m_frameCount    = 20;
-}
-
-void Function2DSurfaceParameters::putDataToDoc(XMLDoc &doc) {
+void ExprFunction2DSurfaceParameters::putDataToDoc(XMLDoc &doc) {
   XMLNodePtr root = doc.createRoot(_T("Function2DSurface"));
   doc.setValue( root, _T("expr"       ), m_expr       );
   setValue(doc, root, _T("xinterval"  ), m_xInterval  );
@@ -28,7 +17,7 @@ void Function2DSurfaceParameters::putDataToDoc(XMLDoc &doc) {
   }
 }
 
-void Function2DSurfaceParameters::getDataFromDoc(XMLDoc &doc) {
+void ExprFunction2DSurfaceParameters::getDataFromDoc(XMLDoc &doc) {
   XMLNodePtr root = doc.getRoot();
   checkTag(root, _T("Function2DSurface"));
   doc.getValueLF(root, _T("expr"       ), m_expr       );

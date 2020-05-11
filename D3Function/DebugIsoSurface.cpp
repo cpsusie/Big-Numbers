@@ -434,7 +434,7 @@ DebugMeshObject::~DebugMeshObject() {
 
 // ---------------------------------------- DebugIsoSurface -----------------------------------------
 
-DebugIsoSurface::DebugIsoSurface(Debugger *debugger, D3SceneContainer &sc, const IsoSurfaceParameters &param)
+DebugIsoSurface::DebugIsoSurface(Debugger *debugger, D3SceneContainer &sc, const ExprIsoSurfaceParameters &param)
   : m_debugger(*debugger)
   , m_sc(sc)
   , m_param(param)

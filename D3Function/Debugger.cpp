@@ -7,7 +7,7 @@
 #include "Mainfrm.h"
 #include "Debugger.h"
 
-Debugger::Debugger(D3SceneContainer *sc, const IsoSurfaceParameters &param)
+Debugger::Debugger(D3SceneContainer *sc, const ExprIsoSurfaceParameters &param)
 : m_flags(FL_BREAKONNEXTFACE)
 , m_state(DEBUGGER_CREATED)
 , m_octaBreakPoints(10000)

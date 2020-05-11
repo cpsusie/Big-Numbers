@@ -1,8 +1,8 @@
 #pragma once
 
-#include <D3DGraphics/Function2DSurface.h>
+#include <D3DGraphics/ExprFunction2DSurfaceParameters.h>
 #include <D3DGraphics/ParametricSurface.h>
-#include <D3DGraphics/IsoSurface.h>
+#include <D3DGraphics/ExprIsoSurfaceParameters.h>
 #include "D3DGraphics/D3SceneObjectCoordinateSystem.h"
 #include "D3DGraphics/D3SceneEditor.h"
 #include "D3FunctionDoc.h"
@@ -61,9 +61,9 @@ private:
   double                          m_relativeHeight;
   D3Scene                         m_scene;
   D3SceneEditor                   m_editor;
-  Function2DSurfaceParameters     m_function2DSurfaceParam;
+  ExprFunction2DSurfaceParameters m_function2DSurfaceParam;
   ParametricSurfaceParameters     m_parametricSurfaceParam;
-  IsoSurfaceParameters            m_isoSurfaceParam;
+  ExprIsoSurfaceParameters        m_isoSurfaceParam;
   String                          m_memoryInfo, m_editorInfo;
 
 #ifdef ISODEBUGGER
@@ -133,9 +133,9 @@ private:
   void createInitialObject();
   void createSaddle();
   void deleteCalculatedObject();
-  void setCalculatedObject(Function2DSurfaceParameters &param);
-  void setCalculatedObject(ParametricSurfaceParameters &param);
-  void setCalculatedObject(IsoSurfaceParameters        &param);
+  void setCalculatedObject(ExprFunction2DSurfaceParameters &param);
+  void setCalculatedObject(ParametricSurfaceParameters     &param);
+  void setCalculatedObject(ExprIsoSurfaceParameters        &param);
   void setCalculatedObject(D3SceneObjectVisual *obj, PersistentData *param = NULL);
   D3SceneObjectVisual *getCalculatedObject() const;
 

@@ -1,9 +1,9 @@
 #pragma once
 
 #include <MFCUtil/ExprDialog.h>
-#include <D3DGraphics/Function2DSurface.h>
+#include <D3DGraphics/ExprFunction2DSurfaceParameters.h>
 
-class CFunction2DSurfaceDlg : public SaveLoadExprDialog<Function2DSurfaceParameters> {
+class CFunction2DSurfaceDlg : public SaveLoadExprDialog<ExprFunction2DSurfaceParameters> {
 private:
   CString m_expr;
   double  m_xfrom;
@@ -21,11 +21,11 @@ private:
 
   String getListFileName() const;
   bool   validate();
-  void   paramToWin(const Function2DSurfaceParameters &param);
-  bool   winToParam(      Function2DSurfaceParameters &param);
+  void   paramToWin(const ExprFunction2DSurfaceParameters &param);
+  bool   winToParam(      ExprFunction2DSurfaceParameters &param);
   void   enableTimeFields();
 public:
-  CFunction2DSurfaceDlg(const Function2DSurfaceParameters &param, CWnd *pParent = NULL);
+  CFunction2DSurfaceDlg(const ExprFunction2DSurfaceParameters &param, CWnd *pParent = NULL);
 
   enum { IDD = IDR_FUNC2DSURFACE };
 

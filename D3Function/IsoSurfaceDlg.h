@@ -1,9 +1,9 @@
 #pragma once
 
 #include <MFCUtil/ExprDialog.h>
-#include <D3DGraphics/IsoSurface.h>
+#include <D3DGraphics/ExprIsoSurfaceParameters.h>
 
-class CIsoSurfaceDlg : public SaveLoadExprDialog<IsoSurfaceParameters> {
+class CIsoSurfaceDlg : public SaveLoadExprDialog<ExprIsoSurfaceParameters> {
 private:
   CString m_expr;
   double  m_cellSize;
@@ -30,8 +30,8 @@ private:
 
   String getListFileName() const;
   bool validate();
-  void paramToWin(const IsoSurfaceParameters &param);
-  bool winToParam(      IsoSurfaceParameters &param);
+  void paramToWin(const ExprIsoSurfaceParameters &param);
+  bool winToParam(      ExprIsoSurfaceParameters &param);
   void enableCheckBoxOrigin();
   void enableTimeFields();
   void enableCheckBoxTetraOptimize4();
@@ -60,7 +60,7 @@ private:
     return DoubleInterval(m_timefrom, m_timeto);
   }
 public:
-  CIsoSurfaceDlg(const IsoSurfaceParameters &param, CWnd *pParent = NULL);
+  CIsoSurfaceDlg(const ExprIsoSurfaceParameters &param, CWnd *pParent = NULL);
 
 #ifdef ISODEBUGGER
   inline bool getDebugPolygonizer() const {

@@ -280,7 +280,7 @@ public:
   }
 };
 
-void CD3FunctionPlotterDlg::setCalculatedObject(Function2DSurfaceParameters &param) {
+void CD3FunctionPlotterDlg::setCalculatedObject(ExprFunction2DSurfaceParameters &param) {
   if(param.m_includeTime) {
     D3AnimatedFunctionSurface *obj = new D3AnimatedFunctionSurface(m_scene, createMeshArray(this, m_scene, param)); TRACE_NEW(obj);
     setCalculatedObject(obj, &param);

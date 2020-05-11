@@ -1,7 +1,6 @@
 #include "pch.h"
-#include <Math/Expression/ExpressionWrapper.h>
 #include <D3DGraphics/MeshBuilder.h>
-#include <D3DGraphics/Function2DSurface.h>
+#include <D3DGraphics/Function2DSurfaceParameters.h>
 #include "D3DGraphics/MeshArrayJobMonitor.h"
 
 class Function2DPoint {
@@ -78,38 +77,39 @@ LPD3DXMESH createMeshFrom2DFunction(AbstractMeshFactory &amf, Function2D &f, con
   return mb.createMesh(amf, doubleSided);
 }
 
-LPD3DXMESH createMesh(AbstractMeshFactory &amf, const Function2DSurfaceParameters &param) {
+LPD3DXMESH createMesh(AbstractMeshFactory &amf, const Function2DSurfaceParameters &param, Function2D &f) {
   if(param.m_includeTime) {
     throwInvalidArgumentException(__TFUNCTION__, _T("param.includeTime=true"));
   }
-  ExpressionWrapper f(param.m_expr, param.m_machineCode);
   return createMeshFrom2DFunction(amf, f, param.getXInterval(), param.getYInterval(), param.m_pointCount, param.m_pointCount, param.m_doubleSided);
 }
 
 class VariableFunction2DMeshCreator : public AbstractVariableMeshCreator {
 private:
-  AbstractMeshFactory               &m_amf;
-  const Function2DSurfaceParameters &m_param;
-  mutable ExpressionWrapper          m_expr;
+  AbstractMeshFactory                   &m_amf;
+  const Function2DSurfaceParameters     &m_param;
+  FunctionWithTimeTemplate<Function2D>  *m_f;
 public:
-  VariableFunction2DMeshCreator(AbstractMeshFactory &amf, const Function2DSurfaceParameters &param);
+  VariableFunction2DMeshCreator(AbstractMeshFactory &amf, const Function2DSurfaceParameters &param, FunctionWithTimeTemplate<Function2D> &f);
+  ~VariableFunction2DMeshCreator();
   LPD3DXMESH createMesh(double time, InterruptableRunnable *ir) const;
 };
 
-VariableFunction2DMeshCreator::VariableFunction2DMeshCreator(AbstractMeshFactory &amf, const Function2DSurfaceParameters &param)
+VariableFunction2DMeshCreator::VariableFunction2DMeshCreator(AbstractMeshFactory &amf, const Function2DSurfaceParameters &param, FunctionWithTimeTemplate<Function2D> &f)
 : m_amf(amf)
 , m_param(param)
+, m_f(f.clone())
 {
-  m_expr.compile(m_param.m_expr, m_param.m_machineCode);
-  if(!m_expr.ok()) {
-    throwException(_T("%s"), m_expr.getErrorMessage().cstr());
-  }
+}
+
+VariableFunction2DMeshCreator::~VariableFunction2DMeshCreator() {
+  SAFEDELETE(m_f);
 }
 
 LPD3DXMESH VariableFunction2DMeshCreator::createMesh(double time, InterruptableRunnable *ir) const {
-  m_expr.setT(time);
+  m_f->setTime(time);
   return createMeshFrom2DFunction(m_amf
-                                 ,m_expr
+                                 ,*m_f
                                  ,m_param.getXInterval()
                                  ,m_param.getYInterval()
                                  ,m_param.m_pointCount
@@ -120,12 +120,14 @@ LPD3DXMESH VariableFunction2DMeshCreator::createMesh(double time, InterruptableR
 
 class Function2DMeshArrayJobParameter : public AbstractMeshArrayJobParameter {
 private:
-  AbstractMeshFactory               &m_amf;
-  const Function2DSurfaceParameters &m_param;
+  AbstractMeshFactory                  &m_amf;
+  const Function2DSurfaceParameters    &m_param;
+  FunctionWithTimeTemplate<Function2D> &m_f;
 public:
-  Function2DMeshArrayJobParameter(AbstractMeshFactory &amf, const Function2DSurfaceParameters &param)
-    : m_amf(amf)
+  Function2DMeshArrayJobParameter(AbstractMeshFactory &amf, const Function2DSurfaceParameters &param, FunctionWithTimeTemplate<Function2D> &f)
+    : m_amf(  amf  )
     , m_param(param)
+    , m_f(    f    )
   {
   }
   const DoubleInterval &getTimeInterval() const {
@@ -135,14 +137,14 @@ public:
     return m_param.m_frameCount;
   }
   AbstractVariableMeshCreator *fetchMeshCreator() const {
-    VariableFunction2DMeshCreator *result = new VariableFunction2DMeshCreator(m_amf, m_param); TRACE_NEW(result);
+    VariableFunction2DMeshCreator *result = new VariableFunction2DMeshCreator(m_amf, m_param, m_f); TRACE_NEW(result);
     return result;
   }
 };
 
-MeshArray createMeshArray(CWnd *wnd, AbstractMeshFactory &amf, const Function2DSurfaceParameters &param) {
+MeshArray createMeshArray(CWnd *wnd, AbstractMeshFactory &amf, const Function2DSurfaceParameters &param, FunctionWithTimeTemplate<Function2D> &f) {
   if(!param.m_includeTime) {
     throwInvalidArgumentException(__TFUNCTION__, _T("param.includeTime=false"));
   }
-  return Function2DMeshArrayJobParameter(amf, param).createMeshArray(wnd);
+  return Function2DMeshArrayJobParameter(amf, param, f).createMeshArray(wnd);
 }

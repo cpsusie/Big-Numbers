@@ -6,8 +6,8 @@
 #define new DEBUG_NEW
 #endif
 
-CFunction2DSurfaceDlg::CFunction2DSurfaceDlg(const Function2DSurfaceParameters &param, CWnd *pParent)
-: SaveLoadExprDialog<Function2DSurfaceParameters>(IDD, pParent, param, _T("expression"), _T("exp"))
+CFunction2DSurfaceDlg::CFunction2DSurfaceDlg(const ExprFunction2DSurfaceParameters &param, CWnd *pParent)
+: SaveLoadExprDialog<ExprFunction2DSurfaceParameters>(IDD, pParent, param, _T("expression"), _T("exp"))
 , m_createListFile(FALSE)
 {
 }
@@ -165,7 +165,7 @@ void CFunction2DSurfaceDlg::OnButtonHelp() {
   handleExprHelpButtonClick(IDC_BUTTON_HELP);
 }
 
-void CFunction2DSurfaceDlg::paramToWin(const Function2DSurfaceParameters &param) {
+void CFunction2DSurfaceDlg::paramToWin(const ExprFunction2DSurfaceParameters &param) {
   m_expr          = param.m_expr.cstr();
   m_xfrom         = param.getXInterval().getMin();
   m_xto           = param.getXInterval().getMax();
@@ -182,7 +182,7 @@ void CFunction2DSurfaceDlg::paramToWin(const Function2DSurfaceParameters &param)
   enableTimeFields();
 }
 
-bool CFunction2DSurfaceDlg::winToParam(Function2DSurfaceParameters &param) {
+bool CFunction2DSurfaceDlg::winToParam(ExprFunction2DSurfaceParameters &param) {
   if(!__super::winToParam(param)) return false;
   param.m_expr        = m_expr;
   param.m_xInterval.setFrom(   m_xfrom   );

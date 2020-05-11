@@ -1,24 +1,9 @@
 #include "pch.h"
 #include <XMLUtil.h>
 #include <D3DGraphics/D3XML.h>
-#include "D3DGraphics/IsoSurface.h"
+#include <D3DGraphics/ExprIsoSurfaceParameters.h>
 
-IsoSurfaceParameters::IsoSurfaceParameters() {
-  m_cellSize         = 0.25;
-  m_lambda           = 0.25;
-  m_boundingBox      = Cube3D(Point3D(-5,-5,-5), Point3D( 5, 5, 5));
-  m_tetrahedral      = true;
-  m_tetraOptimize4   = false;
-  m_adaptiveCellSize = false;
-  m_originOutside    = false;
-  m_machineCode      = true;
-  m_doubleSided      = false;
-  m_includeTime      = false;
-  m_timeInterval     = DoubleInterval(0,10);
-  m_frameCount       = 20;
-}
-
-void IsoSurfaceParameters::putDataToDoc(XMLDoc &doc) {
+void ExprIsoSurfaceParameters::putDataToDoc(XMLDoc &doc) {
   XMLNodePtr root = doc.createRoot(_T("IsoSurface"));
   doc.setValue(  root, _T("expr"              ), m_expr            );
   doc.setValue(  root, _T("cellsize"          ), m_cellSize        );
@@ -37,7 +22,7 @@ void IsoSurfaceParameters::putDataToDoc(XMLDoc &doc) {
   }
 }
 
-void IsoSurfaceParameters::getDataFromDoc(XMLDoc &doc) {
+void ExprIsoSurfaceParameters::getDataFromDoc(XMLDoc &doc) {
   XMLNodePtr root = doc.getRoot();
   checkTag(root, _T("IsoSurface"));
   doc.getValueLF(root, _T("expr"              ), m_expr            );

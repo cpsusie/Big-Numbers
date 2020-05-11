@@ -427,8 +427,6 @@ class IsoSurfaceEvaluator {
 public:
   virtual double evaluate(const Point3D &p) = 0;
   virtual void   receiveFace(const Face3 &face) = 0;
-  virtual void   receiveDebugVertices(int id,...) {
-  }
 #ifdef ISODEBUGGER
   virtual void   markCurrentOcta(  const Octagon          &octa  ) {
   }

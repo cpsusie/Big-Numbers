@@ -181,7 +181,7 @@ class DebugIsoSurface : public IsoSurfaceEvaluator, public PropertyChangeListene
 private:
   Debugger                             &m_debugger;
   D3SceneContainer                     &m_sc;
-  IsoSurfaceParameters                  m_param;
+  ExprIsoSurfaceParameters              m_param;
   ExpressionWrapper                     m_exprWrapper;
   IsoSurfacePolygonizer                *m_polygonizer;
   PolygonizerStatistics                 m_statistics;
@@ -226,7 +226,7 @@ private:
   }
   void debuggerStateChanged(DebuggerState oldState, DebuggerState newState);
 public:
-  DebugIsoSurface(Debugger *debugger, D3SceneContainer &sc, const IsoSurfaceParameters &param);
+  DebugIsoSurface(Debugger *debugger, D3SceneContainer &sc, const ExprIsoSurfaceParameters &param);
   ~DebugIsoSurface();
   void   createData();
   double evaluate(const Point3D &p);

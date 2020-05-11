@@ -405,7 +405,7 @@ public:
   }
 };
 
-void CMainFrame::setCalculatedObject(Function2DSurfaceParameters &param) {
+void CMainFrame::setCalculatedObject(ExprFunction2DSurfaceParameters &param) {
   stopDebugging();
   if(param.m_includeTime) {
     D3AnimatedFunctionSurface *obj = new D3AnimatedFunctionSurface(m_scene, createMeshArray(this, m_scene, param)); TRACE_NEW(obj);
@@ -427,7 +427,7 @@ void CMainFrame::setCalculatedObject(ParametricSurfaceParameters &param) {
   }
 }
 
-void CMainFrame::setCalculatedObject(IsoSurfaceParameters &param) {
+void CMainFrame::setCalculatedObject(ExprIsoSurfaceParameters &param) {
   stopDebugging();
   if(param.m_includeTime) {
     D3AnimatedFunctionSurface *obj = new D3AnimatedFunctionSurface(m_scene, createMeshArray(this, m_scene, param)); TRACE_NEW(obj);
