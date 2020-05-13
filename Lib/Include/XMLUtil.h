@@ -23,7 +23,7 @@ template<typename T> void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *
 }
 
 template<typename T> void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, NumberInterval<T> &interval) {
-  XMLNodePtr n = PersistentData::getChild(doc, parent, tag);
+  XMLNodePtr n = doc.getChild(parent, tag);
   T from, to;
   doc.getValue(n, _T("from"), from);
   doc.getValue(n, _T("to")  , to  );
