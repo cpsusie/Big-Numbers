@@ -1,19 +1,17 @@
 #include "stdafx.h"
-#include <FileNameSplitter.h>
-#include "ParametricSurfaceDlg.h"
+#include "ParametricR2R3SurfaceParametersDlg.h"
 
-CParametricSurfaceDlg::CParametricSurfaceDlg(const ParametricSurfaceParameters &param, CWnd *pParent /*=NULL*/)
-: SaveLoadExprDialog<ParametricSurfaceParameters>(IDD, pParent, param,_T("Parametric Surface"), _T("par"))
+CParametricR2R3SurfaceParametersDlg::CParametricR2R3SurfaceParametersDlg(const ExprParametricR2R3SurfaceParameters &param, CWnd *pParent /*=NULL*/)
+: SaveLoadExprWithAnimationDialog(IDD, pParent, param,_T("Parametric Surface"), _T("par"))
 , m_sStepCount(0)
 , m_tStepCount(0)
-, m_createListFile(FALSE)
 {
 }
 
-CParametricSurfaceDlg::~CParametricSurfaceDlg() {
+CParametricR2R3SurfaceParametersDlg::~CParametricR2R3SurfaceParametersDlg() {
 }
 
-void CParametricSurfaceDlg::DoDataExchange(CDataExchange *pDX) {
+void CParametricR2R3SurfaceParametersDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
   DDX_Text( pDX, IDC_EDITCOMMON         , m_commonText    );
   DDX_Text( pDX, IDC_EDIT_EXPRX         , m_exprX         );
@@ -23,21 +21,14 @@ void CParametricSurfaceDlg::DoDataExchange(CDataExchange *pDX) {
   DDX_Text( pDX, IDC_EDIT_TTO           , m_tto           );
   DDX_Text( pDX, IDC_EDIT_SFROM         , m_sfrom         );
   DDX_Text( pDX, IDC_EDIT_STO           , m_sto           );
-  DDX_Check(pDX, IDC_CHECK_INCLUDETIME  , m_includeTime   );
   DDX_Check(pDX, IDC_CHECK_DOUBLESIDED  , m_doubleSided   );
-  DDX_Text( pDX, IDC_EDIT_TIMEFROM      , m_timefrom      );
-  DDX_Text( pDX, IDC_EDIT_TIMETO        , m_timeto        );
   DDX_Text( pDX, IDC_EDIT_TSTEPCOUNT    , m_tStepCount    );
   DDV_MinMaxUInt(pDX, m_tStepCount      , 1, 200          );
   DDX_Text( pDX, IDC_EDIT_SSTEPCOUNT    , m_sStepCount    );
   DDV_MinMaxUInt(pDX, m_sStepCount      , 1, 200          );
-  DDX_Text( pDX, IDC_EDIT_FRAMECOUNT    , m_frameCount    );
-  DDV_MinMaxUInt(pDX, m_frameCount      , 1, 300          );
-  DDX_Check(pDX, IDC_CHECK_MACHINECODE  , m_machineCode   );
-  DDX_Check(pDX, IDC_CHECKCREATELISTFILE, m_createListFile);
 }
 
-BEGIN_MESSAGE_MAP(CParametricSurfaceDlg, CDialog)
+BEGIN_MESSAGE_MAP(CParametricR2R3SurfaceParametersDlg, CDialog)
   ON_WM_SIZE()
   ON_COMMAND(ID_FILE_OPEN                  , OnFileOpen                       )
   ON_COMMAND(ID_FILE_SAVE                  , OnFileSave                       )
@@ -60,7 +51,7 @@ BEGIN_MESSAGE_MAP(CParametricSurfaceDlg, CDialog)
   ON_BN_CLICKED(IDC_CHECK_MACHINECODE      , OnCheckMachineCode               )
 END_MESSAGE_MAP()
 
-BOOL CParametricSurfaceDlg::OnInitDialog() {
+BOOL CParametricR2R3SurfaceParametersDlg::OnInitDialog() {
   __super::OnInitDialog();
 
   createExprHelpButton(IDC_BUTTON_HELPX, IDC_EDIT_EXPRX);
@@ -108,15 +99,9 @@ BOOL CParametricSurfaceDlg::OnInitDialog() {
   return FALSE;  // return TRUE  unless you set the focus to a control
 }
 
-String CParametricSurfaceDlg::getListFileName() const {
-  if (!m_createListFile) return __super::getListFileName();
-  return FileNameSplitter(getData().getName()).setExtension(_T("lst")).getFullPath();
-}
-
 #define MAXPOINTCOUNT 200
-#define MAXFRAMECOUNT 300
 
-bool CParametricSurfaceDlg::validate() {
+bool CParametricR2R3SurfaceParametersDlg::validate() {
   if(!validateAllExpr()) {
     return false;
   }
@@ -132,123 +117,82 @@ bool CParametricSurfaceDlg::validate() {
   if(!validateMinMax(IDC_EDIT_SSTEPCOUNT, 1, MAXPOINTCOUNT)) {
     return false;
   }
-
-  if(m_includeTime) {
-    if(!validateMinMax(IDC_EDIT_FRAMECOUNT, 1, MAXFRAMECOUNT)) {
-      return false;
-    }
-    if(!validateInterval(IDC_EDIT_TIMEFROM, IDC_EDIT_TIMETO)) {
-      return false;
-    }
-  }
-  return true;
+  return __super::validate();
 }
 
-void CParametricSurfaceDlg::OnCheckMachineCode() {
-  GetDlgItem(IDC_CHECKCREATELISTFILE)->EnableWindow(IsDlgButtonChecked(IDC_CHECK_MACHINECODE));
+void CParametricR2R3SurfaceParametersDlg::enableTimeFields() {
+  __super::enableTimeFields();
+  setWindowText(this, IDC_STATIC_FUNCTIONX, m_includeTime ? _T("&X(time,t,s) =") : _T("&X(t,s) ="));
+  setWindowText(this, IDC_STATIC_FUNCTIONY, m_includeTime ? _T("&Y(time,t,s) =") : _T("&Y(t,s) ="));
+  setWindowText(this, IDC_STATIC_FUNCTIONZ, m_includeTime ? _T("&Z(time,t,s) =") : _T("&Z(t,s) ="));
 }
 
-void CParametricSurfaceDlg::OnCheckIncludeTime() {
-  UpdateData(TRUE);
-  enableTimeFields();
-}
-
-void CParametricSurfaceDlg::enableTimeFields() {
-  const BOOL enable = IsDlgButtonChecked(IDC_CHECK_INCLUDETIME);
-  GetDlgItem(IDC_STATIC_TIMEINTERVAL)->EnableWindow(enable);
-  GetDlgItem(IDC_EDIT_TIMEFROM      )->EnableWindow(enable);
-  GetDlgItem(IDC_EDIT_TIMETO        )->EnableWindow(enable);
-  GetDlgItem(IDC_EDIT_FRAMECOUNT    )->EnableWindow(enable);
-  setWindowText(this, IDC_STATIC_FUNCTIONX, enable ? _T("&X(time,t,s) =") : _T("&X(t,s) ="));
-  setWindowText(this, IDC_STATIC_FUNCTIONY, enable ? _T("&Y(time,t,s) =") : _T("&Y(t,s) ="));
-  setWindowText(this, IDC_STATIC_FUNCTIONZ, enable ? _T("&Z(time,t,s) =") : _T("&Z(t,s) ="));
-}
-
-void CParametricSurfaceDlg::OnEditFindMatchingParentesis() {
+void CParametricR2R3SurfaceParametersDlg::OnEditFindMatchingParentesis() {
   gotoMatchingParentesis();
 }
 
-void CParametricSurfaceDlg::OnGotoCommon() {
+void CParametricR2R3SurfaceParametersDlg::OnGotoCommon() {
   gotoExpr(IDC_EDITCOMMON);
 }
-void CParametricSurfaceDlg::OnGotoExprX() {
+void CParametricR2R3SurfaceParametersDlg::OnGotoExprX() {
   gotoExprX();
 }
-void CParametricSurfaceDlg::OnGotoExprY() {
+void CParametricR2R3SurfaceParametersDlg::OnGotoExprY() {
   gotoExprY();
 }
-void CParametricSurfaceDlg::OnGotoExprZ() {
+void CParametricR2R3SurfaceParametersDlg::OnGotoExprZ() {
   gotoExprZ();
 }
-void CParametricSurfaceDlg::OnGotoTInterval() {
+void CParametricR2R3SurfaceParametersDlg::OnGotoTInterval() {
   gotoEditBox(this, IDC_EDIT_TFROM);
 }
-void CParametricSurfaceDlg::OnGotoSInterval() {
+void CParametricR2R3SurfaceParametersDlg::OnGotoSInterval() {
   gotoEditBox(this, IDC_EDIT_SFROM);
 }
-void CParametricSurfaceDlg::OnGotoTStepCount() {
+void CParametricR2R3SurfaceParametersDlg::OnGotoTStepCount() {
   gotoEditBox(this, IDC_EDIT_TSTEPCOUNT);
 }
-void CParametricSurfaceDlg::OnGotoSStepCount() {
+void CParametricR2R3SurfaceParametersDlg::OnGotoSStepCount() {
   gotoEditBox(this, IDC_EDIT_SSTEPCOUNT);
 }
-void CParametricSurfaceDlg::OnGotoTimeInterval() {
-  gotoEditBox(this, IDC_EDIT_TIMEFROM);
-}
-void CParametricSurfaceDlg::OnGotoFrameCount() {
-  gotoEditBox(this, IDC_EDIT_FRAMECOUNT);
-}
 
-void CParametricSurfaceDlg::OnButtonHelpX() {
+void CParametricR2R3SurfaceParametersDlg::OnButtonHelpX() {
   handleExprHelpButtonClick(IDC_BUTTON_HELPX);
 }
 
-void CParametricSurfaceDlg::OnButtonHelpY() {
+void CParametricR2R3SurfaceParametersDlg::OnButtonHelpY() {
   handleExprHelpButtonClick(IDC_BUTTON_HELPY);
 }
 
-void CParametricSurfaceDlg::OnButtonHelpZ() {
+void CParametricR2R3SurfaceParametersDlg::OnButtonHelpZ() {
   handleExprHelpButtonClick(IDC_BUTTON_HELPZ);
 }
 
-void CParametricSurfaceDlg::paramToWin(const ParametricSurfaceParameters &param) {
-  m_commonText    = param.m_commonText.cstr();
-  m_exprX         = param.m_exprX.cstr();
-  m_exprY         = param.m_exprY.cstr();
-  m_exprZ         = param.m_exprZ.cstr();
+void CParametricR2R3SurfaceParametersDlg::paramToWin(const ExprParametricR2R3SurfaceParameters &param) {
+  const Expr3 &e = param.m_expr;
+  m_commonText    = e.getCommonText().cstr();
+  m_exprX         = e.getRawText(0).cstr();
+  m_exprY         = e.getRawText(1).cstr();
+  m_exprZ         = e.getRawText(2).cstr();
   m_tfrom         = param.getTInterval().getMin();
   m_tto           = param.getTInterval().getMax();
   m_sfrom         = param.getSInterval().getMin();
   m_sto           = param.getSInterval().getMax();
-  m_timefrom      = param.getTimeInterval().getMin();
-  m_timeto        = param.getTimeInterval().getMax();
   m_tStepCount    = param.m_tStepCount;
   m_sStepCount    = param.m_sStepCount;
-  m_frameCount    = param.m_frameCount;
-  m_machineCode   = param.m_machineCode ? TRUE : FALSE;
-  m_includeTime   = param.m_includeTime ? TRUE : FALSE;
   m_doubleSided   = param.m_doubleSided ? TRUE : FALSE;
   __super::paramToWin(param);
-  enableTimeFields();
 }
 
-bool CParametricSurfaceDlg::winToParam(ParametricSurfaceParameters &param) {
+bool CParametricR2R3SurfaceParametersDlg::winToParam(ExprParametricR2R3SurfaceParameters &param) {
   if(!__super::winToParam(param)) return false;
-  param.m_commonText  = m_commonText;
-  param.m_exprX       = m_exprX;
-  param.m_exprY       = m_exprY;
-  param.m_exprZ       = m_exprZ;
+  param.m_expr = Expr3((LPCTSTR)m_exprX,(LPCTSTR)m_exprY,(LPCTSTR)m_exprZ, (LPCTSTR)m_commonText);
   param.m_tInterval.setFrom(   m_tfrom);
   param.m_tInterval.setTo(     m_tto);
   param.m_sInterval.setFrom(   m_sfrom);
   param.m_sInterval.setTo(     m_sto);
-  param.m_timeInterval.setFrom(m_timefrom);
-  param.m_timeInterval.setTo(  m_timeto);
   param.m_tStepCount  = m_tStepCount;
   param.m_sStepCount  = m_sStepCount;
-  param.m_frameCount  = m_frameCount;
-  param.m_machineCode = m_machineCode ? true : false;
-  param.m_includeTime = m_includeTime ? true : false;
   param.m_doubleSided = m_doubleSided ? true : false;
   return true;
 }

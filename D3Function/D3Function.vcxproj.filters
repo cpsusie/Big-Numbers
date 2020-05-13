@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\Dialogs">
+      <UniqueIdentifier>{784193f6-5e03-4648-8a1a-70d3c98aba85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Dialogs">
+      <UniqueIdentifier>{a5c210f4-a4e1-4d61-b84e-389606565c30}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainFrm.h">
@@ -36,25 +42,10 @@
     <ClInclude Include="Options.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="EnterOptionsNameDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="OptionsOrganizerDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="D3SceneView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="InfoView.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Function2DSurfaceDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="IsoSurfaceDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ParametricSurfaceDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Debugger.h">
@@ -65,6 +56,24 @@
     </ClInclude>
     <ClInclude Include="SplitView.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EnterOptionsNameDlg.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="FunctionR2R1SurfaceParametersDlg.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="IsoSurfaceParametersDlg.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="ParametricR2R3SurfaceParametersDlg.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="OptionsOrganizerDlg.h">
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="SaveLoadExprWithAnimationDialog.h">
+      <Filter>Header Files\Dialogs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -83,25 +92,10 @@
     <ClCompile Include="Options.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="EnterOptionsNameDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OptionsOrganizerDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="D3SceneView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="InfoView.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Function2DSurfaceDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="IsoSurfaceDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ParametricSurfaceDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="DebugIsoSurface.cpp">
@@ -115,6 +109,21 @@
     </ClCompile>
     <ClCompile Include="SplitView.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EnterOptionsNameDlg.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="FunctionR2R1SurfaceParametersDlg.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="IsoSurfaceParametersDlg.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="OptionsOrganizerDlg.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="ParametricR2R3SurfaceParametersDlg.cpp">
+      <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

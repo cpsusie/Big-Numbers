@@ -5,7 +5,7 @@
 
 namespace Expr {
 
-class ExpressionFunction2D : public FunctionWithTimeTemplate<Function2D> {
+class ExpressionFunctionR2R1 : public FunctionWithTimeTemplate<FunctionR2R1> {
 private:
   Expression m_expr;
   Real       m_dummy,*m_x,*m_y,*m_t;
@@ -17,13 +17,13 @@ private:
   void cleanup();
   Real *getVariableByName(const String &name);
 public:
-  ExpressionFunction2D() {
+  ExpressionFunctionR2R1() {
     initVariables();
   }
   // throws Exception on compile-error
-  ExpressionFunction2D(const String &expr, TrigonometricMode mode = RADIANS, bool machineCode = true);
-  ExpressionFunction2D(           const ExpressionFunction2D &src);
-  ExpressionFunction2D &operator=(const ExpressionFunction2D &src);
+  ExpressionFunctionR2R1(const String &expr, TrigonometricMode mode = RADIANS, bool machineCode = true);
+  ExpressionFunctionR2R1(           const ExpressionFunctionR2R1 &src);
+  ExpressionFunctionR2R1 &operator=(const ExpressionFunctionR2R1 &src);
 
   // throws Exception on compile-error
   void compile(const String &expr, TrigonometricMode mode = RADIANS, bool machineCode = true);
@@ -31,7 +31,7 @@ public:
   Real operator()(const Point2D &p);
   void        setTime(const Real &time);
   const Real &getTime() const;
-  FunctionWithTimeTemplate<Function2D> *clone() const;
+  FunctionWithTimeTemplate<FunctionR2R1> *clone() const;
 };
 
 }; // namespace Expr

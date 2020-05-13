@@ -4,6 +4,8 @@
 #include "IsoSurfaceParameters.h"
 
 class ExprIsoSurfaceParameters : public IsoSurfaceParameters, public PersistentData {
+private:
+  void getDataFromDocOld(XMLDoc &doc);
 public:
   String m_expr;
   bool   m_machineCode;

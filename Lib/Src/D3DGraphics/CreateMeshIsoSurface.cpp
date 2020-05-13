@@ -1,7 +1,43 @@
 #include "pch.h"
-#include <D3DGraphics/MeshCreators.h>
+#include <InterruptableRunnable.h>
+#include <D3DGraphics/IsoSurfaceParameters.h>
+#include <D3DGraphics/IsosurfacePolygonizer.h>
+#include <D3DGraphics/MeshBuilder.h>
 #include <D3DGraphics/MeshArrayJobMonitor.h>
-#include "InterruptableIsoSurfaceEvaluator.h"
+#include <D3DGraphics/MeshCreators.h>
+
+class InterruptableIsoSurfaceEvaluator : public IsoSurfaceEvaluator {
+private:
+  IsoSurfaceParameters          m_param;
+  FunctionR3R1                 *m_f;
+  void checkUserAction() const {
+    if(m_interruptable) {
+      m_interruptable->checkInterruptAndSuspendFlags();
+    }
+  }
+protected:
+  bool                          m_reverseSign;
+  size_t                        m_lastVertexCount;
+  MeshBuilder                   m_mb;
+  PolygonizerStatistics         m_statistics;
+  const IsoSurfaceVertexArray  *m_vertexArray;
+  InterruptableRunnable        *m_interruptable;
+public:
+  InterruptableIsoSurfaceEvaluator(const IsoSurfaceParameters &param);
+  InterruptableIsoSurfaceEvaluator &createData(FunctionR3R1 &f, InterruptableRunnable *ir = NULL);
+  InterruptableIsoSurfaceEvaluator &createData(FunctionWithTimeTemplate<FunctionR3R1> &f, const Real &time, InterruptableRunnable *ir = NULL);
+  double evaluate(const Point3D &p);
+  void   receiveFace(const Face3 &face);
+  String getInfoMessage() const {
+    return m_statistics.toString();
+  }
+  const IsoSurfaceParameters &getParam() const {
+    return m_param;
+  }
+  const MeshBuilder &getMeshbuilder() const {
+    return m_mb;
+  }
+};
 
 InterruptableIsoSurfaceEvaluator::InterruptableIsoSurfaceEvaluator(const IsoSurfaceParameters &param)
 : m_param(        param)
@@ -11,7 +47,7 @@ InterruptableIsoSurfaceEvaluator::InterruptableIsoSurfaceEvaluator(const IsoSurf
 {
 }
 
-InterruptableIsoSurfaceEvaluator &InterruptableIsoSurfaceEvaluator::createData(Function3D &f, InterruptableRunnable *ir) {
+InterruptableIsoSurfaceEvaluator &InterruptableIsoSurfaceEvaluator::createData(FunctionR3R1 &f, InterruptableRunnable *ir) {
   m_f             = &f;
   m_interruptable = ir;
   try {
@@ -48,7 +84,7 @@ InterruptableIsoSurfaceEvaluator &InterruptableIsoSurfaceEvaluator::createData(F
   return *this;
 }
 
-InterruptableIsoSurfaceEvaluator &InterruptableIsoSurfaceEvaluator::createData(FunctionWithTimeTemplate<Function3D> &f, const Real &time, InterruptableRunnable *ir) {
+InterruptableIsoSurfaceEvaluator &InterruptableIsoSurfaceEvaluator::createData(FunctionWithTimeTemplate<FunctionR3R1> &f, const Real &time, InterruptableRunnable *ir) {
   f.setTime(time);
   return createData(f, ir);
 }
@@ -74,20 +110,18 @@ void InterruptableIsoSurfaceEvaluator::receiveFace(const Face3 &face) {
   f.addVertexNormalIndex(face.m_i3, face.m_i3);
 }
 
-LPD3DXMESH createMesh(AbstractMeshFactory &amf, const IsoSurfaceParameters &param, Function3D &f) {
-  if(param.m_includeTime) {
-    throwInvalidArgumentException(__TFUNCTION__, _T("param.includeTime=true"));
-  }
+LPD3DXMESH createMesh(AbstractMeshFactory &amf, const IsoSurfaceParameters &param, FunctionR3R1 &f) {
+  checkIsAnimation(__TFUNCTION__, param, false);
   return InterruptableIsoSurfaceEvaluator(param).createData(f, NULL).getMeshbuilder().createMesh(amf, param.m_doubleSided);
 }
 
 class VariableIsoSurfaceMeshCreator : public AbstractVariableMeshCreator {
 private:
-  AbstractMeshFactory                  &m_amf;
-  const IsoSurfaceParameters           &m_param;
-  FunctionWithTimeTemplate<Function3D> *m_f;
+  AbstractMeshFactory                    &m_amf;
+  const IsoSurfaceParameters             &m_param;
+  FunctionWithTimeTemplate<FunctionR3R1> *m_f;
 public:
-  VariableIsoSurfaceMeshCreator(AbstractMeshFactory &amf, const IsoSurfaceParameters &param, FunctionWithTimeTemplate<Function3D> &f)
+  VariableIsoSurfaceMeshCreator(AbstractMeshFactory &amf, const IsoSurfaceParameters &param, FunctionWithTimeTemplate<FunctionR3R1> &f)
   : m_amf(  amf      )
   , m_param(param    )
   , m_f(    f.clone())
@@ -110,21 +144,21 @@ LPD3DXMESH VariableIsoSurfaceMeshCreator::createMesh(double time, InterruptableR
 
 class IsoSurfaceMeshArrayJobParameter : public AbstractMeshArrayJobParameter {
 private:
-  AbstractMeshFactory                  &m_amf;
-  const IsoSurfaceParameters           &m_param;
-  FunctionWithTimeTemplate<Function3D> &m_f;
+  AbstractMeshFactory                    &m_amf;
+  const IsoSurfaceParameters             &m_param;
+  FunctionWithTimeTemplate<FunctionR3R1> &m_f;
 public:
-  IsoSurfaceMeshArrayJobParameter(AbstractMeshFactory &amf, const IsoSurfaceParameters &param, FunctionWithTimeTemplate<Function3D> &f)
+  IsoSurfaceMeshArrayJobParameter(AbstractMeshFactory &amf, const IsoSurfaceParameters &param, FunctionWithTimeTemplate<FunctionR3R1> &f)
     : m_amf(amf)
     , m_param(param)
     , m_f(f)
   {
   }
   const DoubleInterval &getTimeInterval() const {
-    return m_param.getTimeInterval();
+    return m_param.m_animation.getTimeInterval();
   }
   UINT getFrameCount() const {
-    return m_param.m_frameCount;
+    return m_param.m_animation.getFrameCount();
   }
   AbstractVariableMeshCreator *fetchMeshCreator() const {
     VariableIsoSurfaceMeshCreator *result = new VariableIsoSurfaceMeshCreator(m_amf, m_param, m_f); TRACE_NEW(result);
@@ -132,9 +166,7 @@ public:
   }
 };
 
-MeshArray createMeshArray(CWnd *wnd, AbstractMeshFactory &amf, const IsoSurfaceParameters &param, FunctionWithTimeTemplate<Function3D> &f) {
-  if(!param.m_includeTime) {
-    throwInvalidArgumentException(__TFUNCTION__, _T("param.includeTime=false"));
-  }
+MeshArray createMeshArray(CWnd *wnd, AbstractMeshFactory &amf, const IsoSurfaceParameters &param, FunctionWithTimeTemplate<FunctionR3R1> &f) {
+  checkIsAnimation(__TFUNCTION__, param, true);
   return IsoSurfaceMeshArrayJobParameter(amf, param, f).createMeshArray(wnd);
 }

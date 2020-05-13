@@ -1,6 +1,5 @@
 #include "stdafx.h"
-#include <FileNameSplitter.h>
-#include "IsoSurfaceDlg.h"
+#include "IsoSurfaceParametersDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -25,14 +24,13 @@ static char *blob3      = "s1=1/max(sqr(x+1)+sqr(y  )+sqr(z  ),0.00001);"
 
 */
 
-CIsoSurfaceDlg::CIsoSurfaceDlg(const ExprIsoSurfaceParameters &param, CWnd *pParent /*=NULL*/)
-: SaveLoadExprDialog<ExprIsoSurfaceParameters>(IDD, pParent, param, _T("implicit surface"), _T("imp"))
-, m_createListFile(FALSE)
+CIsoSurfaceParametersDlg::CIsoSurfaceParametersDlg(const ExprIsoSurfaceParameters &param, CWnd *pParent /*=NULL*/)
+: SaveLoadExprWithAnimationDialog(IDD, pParent, param, _T("implicit surface"), _T("imp"))
 {
   m_debugPolygonizer = false;
 }
 
-void CIsoSurfaceDlg::DoDataExchange(CDataExchange *pDX) {
+void CIsoSurfaceParametersDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
   DDX_Text(pDX, IDC_EDIT_EXPR, m_expr);
   DDX_Text(pDX, IDC_EDIT_CELLSIZE, m_cellSize);
@@ -41,15 +39,8 @@ void CIsoSurfaceDlg::DoDataExchange(CDataExchange *pDX) {
   DDX_Check(pDX, IDC_CHECK_TETRAOPTIMIZE4, m_tetraOptimize4);
   DDX_Check(pDX, IDC_CHECK_ADAPTIVECELLSIZE, m_adaptiveCellSize);
   DDX_Check(pDX, IDC_CHECK_ORIGINOUTSIDE, m_originOutside);
-  DDX_Check(pDX, IDC_CHECK_MACHINECODE, m_machineCode);
-  DDX_Check(pDX, IDC_CHECKCREATELISTFILE, m_createListFile);
   DDX_Check(pDX, IDC_CHECK_DEBUGPOLYGONIZER, m_debugPolygonizer);
   DDX_Check(pDX, IDC_CHECK_DOUBLESIDED, m_doubleSided);
-  DDX_Check(pDX, IDC_CHECK_INCLUDETIME, m_includeTime);
-  DDX_Text(pDX, IDC_EDIT_FRAMECOUNT, m_frameCount);
-  DDV_MinMaxUInt(pDX, m_frameCount, 1, 300);
-  DDX_Text(pDX, IDC_EDIT_TIMEFROM, m_timefrom);
-  DDX_Text(pDX, IDC_EDIT_TIMETO, m_timeto);
   DDX_Text(pDX, IDC_EDIT_XFROM, m_xfrom);
   DDX_Text(pDX, IDC_EDIT_XTO, m_xto);
   DDX_Text(pDX, IDC_EDIT_YFROM, m_yfrom);
@@ -58,7 +49,7 @@ void CIsoSurfaceDlg::DoDataExchange(CDataExchange *pDX) {
   DDX_Text(pDX, IDC_EDIT_ZTO, m_zto);
 }
 
-BEGIN_MESSAGE_MAP(CIsoSurfaceDlg, CDialog)
+BEGIN_MESSAGE_MAP(CIsoSurfaceParametersDlg, CDialog)
   ON_WM_SIZE()
   ON_COMMAND(ID_FILE_OPEN                  , OnFileOpen                  )
   ON_COMMAND(ID_FILE_SAVE                  , OnFileSave                  )
@@ -78,7 +69,7 @@ BEGIN_MESSAGE_MAP(CIsoSurfaceDlg, CDialog)
   ON_BN_CLICKED(IDC_CHECK_MACHINECODE      , OnCheckMachineCode          )
 END_MESSAGE_MAP()
 
-BOOL CIsoSurfaceDlg::OnInitDialog() {
+BOOL CIsoSurfaceParametersDlg::OnInitDialog() {
   __super::OnInitDialog();
 
   createExprHelpButton(IDC_BUTTON_HELP, IDC_EDIT_EXPR);
@@ -131,12 +122,7 @@ BOOL CIsoSurfaceDlg::OnInitDialog() {
 
 #define MAXFRAMECOUNT 300
 
-String CIsoSurfaceDlg::getListFileName() const {
-  if(!m_createListFile) return __super::getListFileName();
-  return FileNameSplitter(getData().getName()).setExtension(_T("lst")).getFullPath();
-}
-
-bool CIsoSurfaceDlg::validate() {
+bool CIsoSurfaceParametersDlg::validate() {
   if(!validateAllExpr()) {
     return false;
   }
@@ -159,33 +145,12 @@ bool CIsoSurfaceDlg::validate() {
   if(!validateInterval(IDC_EDIT_ZFROM, IDC_EDIT_ZTO)) {
     return false;
   }
-  if(m_includeTime) {
-    if(!validateMinMax(IDC_EDIT_FRAMECOUNT, 1, MAXFRAMECOUNT)) {
-      return false;
-    }
-    if(!validateInterval(IDC_EDIT_TIMEFROM, IDC_EDIT_TIMETO)) {
-      return false;
-    }
-  }
-  return true;
+  return __super::validate();
 }
 
-void CIsoSurfaceDlg::OnCheckMachineCode() {
-  GetDlgItem(IDC_CHECKCREATELISTFILE)->EnableWindow(IsDlgButtonChecked(IDC_CHECK_MACHINECODE));
-}
-
-void CIsoSurfaceDlg::OnCheckIncludeTime() {
-  UpdateData(TRUE);
-  enableTimeFields();
-}
-
-void CIsoSurfaceDlg::enableTimeFields() {
-  const BOOL enable = IsDlgButtonChecked(IDC_CHECK_INCLUDETIME);
-  GetDlgItem(IDC_STATIC_TIMEINTERVAL)->EnableWindow(enable);
-  GetDlgItem(IDC_EDIT_TIMEFROM      )->EnableWindow(enable);
-  GetDlgItem(IDC_EDIT_TIMETO        )->EnableWindow(enable);
-  GetDlgItem(IDC_EDIT_FRAMECOUNT    )->EnableWindow(enable);
-  setWindowText(this, IDC_STATIC_FUNCTION, enable ? _T("&S(t,x,y,z) =") : _T("&S(x,y,z) ="));
+void CIsoSurfaceParametersDlg::enableTimeFields() {
+  __super::enableTimeFields();
+  setWindowText(this, IDC_STATIC_FUNCTION, m_includeTime ? _T("&S(t,x,y,z) =") : _T("&S(x,y,z) ="));
 #ifndef ISODEBUGGER
   const bool enableDebugPolygonizer = false;
 #else
@@ -199,27 +164,25 @@ void CIsoSurfaceDlg::enableTimeFields() {
   }
 }
 
-void CIsoSurfaceDlg::enableCheckBoxOrigin() {
+void CIsoSurfaceParametersDlg::enableCheckBoxOrigin() {
   GetDlgItem(IDC_CHECK_ORIGINOUTSIDE)->EnableWindow(!IsDlgButtonChecked(IDC_CHECK_DOUBLESIDED));
 }
-void CIsoSurfaceDlg::enableCheckBoxTetraOptimize4() {
+void CIsoSurfaceParametersDlg::enableCheckBoxTetraOptimize4() {
   GetDlgItem(IDC_CHECK_TETRAOPTIMIZE4)->EnableWindow(IsDlgButtonChecked(IDC_CHECK_TETRAHEDRAL));
 }
 
-void CIsoSurfaceDlg::OnCheckDoubleSided()           { enableCheckBoxOrigin();                      }
-void CIsoSurfaceDlg::OnCheckTetrahedral()           { enableCheckBoxTetraOptimize4();              }
-void CIsoSurfaceDlg::OnEditFindMatchingParentesis() { gotoMatchingParentesis();                    }
-void CIsoSurfaceDlg::OnGotoExpr()                   { gotoExpr(IDC_EDIT_EXPR);                     }
-void CIsoSurfaceDlg::OnGotoCellSize()               { gotoEditBox(this, IDC_EDIT_CELLSIZE);        }
-void CIsoSurfaceDlg::OnGotoLambda()                 { gotoEditBox(this, IDC_EDIT_LAMBDA  );        }
-void CIsoSurfaceDlg::OnGotoXInterval()              { gotoEditBox(this, IDC_EDIT_XFROM   );           }
-void CIsoSurfaceDlg::OnGotoYInterval()              { gotoEditBox(this, IDC_EDIT_YFROM   );           }
-void CIsoSurfaceDlg::OnGotoZInterval()              { gotoEditBox(this, IDC_EDIT_ZFROM   );           }
-void CIsoSurfaceDlg::OnGotoTimeInterval()           { gotoEditBox(this, IDC_EDIT_TIMEFROM);        }
-void CIsoSurfaceDlg::OnGotoFrameCount()             { gotoEditBox(this, IDC_EDIT_FRAMECOUNT);      }
-void CIsoSurfaceDlg::OnButtonHelp()                 { handleExprHelpButtonClick(IDC_BUTTON_HELP);  }
+void CIsoSurfaceParametersDlg::OnCheckDoubleSided()           { enableCheckBoxOrigin();                      }
+void CIsoSurfaceParametersDlg::OnCheckTetrahedral()           { enableCheckBoxTetraOptimize4();              }
+void CIsoSurfaceParametersDlg::OnEditFindMatchingParentesis() { gotoMatchingParentesis();                    }
+void CIsoSurfaceParametersDlg::OnGotoExpr()                   { gotoExpr(IDC_EDIT_EXPR);                     }
+void CIsoSurfaceParametersDlg::OnGotoCellSize()               { gotoEditBox(this, IDC_EDIT_CELLSIZE);        }
+void CIsoSurfaceParametersDlg::OnGotoLambda()                 { gotoEditBox(this, IDC_EDIT_LAMBDA  );        }
+void CIsoSurfaceParametersDlg::OnGotoXInterval()              { gotoEditBox(this, IDC_EDIT_XFROM   );        }
+void CIsoSurfaceParametersDlg::OnGotoYInterval()              { gotoEditBox(this, IDC_EDIT_YFROM   );        }
+void CIsoSurfaceParametersDlg::OnGotoZInterval()              { gotoEditBox(this, IDC_EDIT_ZFROM   );        }
+void CIsoSurfaceParametersDlg::OnButtonHelp()                 { handleExprHelpButtonClick(IDC_BUTTON_HELP);  }
 
-void CIsoSurfaceDlg::paramToWin(const ExprIsoSurfaceParameters &param) {
+void CIsoSurfaceParametersDlg::paramToWin(const ExprIsoSurfaceParameters &param) {
   m_expr             = param.m_expr.cstr();
   m_cellSize         = param.m_cellSize;
   m_lambda           = param.m_lambda;
@@ -231,17 +194,12 @@ void CIsoSurfaceDlg::paramToWin(const ExprIsoSurfaceParameters &param) {
   m_adaptiveCellSize = param.m_adaptiveCellSize ? TRUE : FALSE;
   m_doubleSided      = param.m_doubleSided      ? TRUE : FALSE;
   m_originOutside    = param.m_originOutside    ? TRUE : FALSE;
-  m_machineCode      = param.m_machineCode      ? TRUE : FALSE;
-  m_includeTime      = param.m_includeTime      ? TRUE : FALSE;
-  m_frameCount       = param.m_frameCount;
-  setTimeInterval(param.getTimeInterval());
   __super::paramToWin(param);
   enableCheckBoxOrigin();
-  enableTimeFields();
   enableCheckBoxTetraOptimize4();
 }
 
-bool CIsoSurfaceDlg::winToParam(ExprIsoSurfaceParameters &param) {
+bool CIsoSurfaceParametersDlg::winToParam(ExprIsoSurfaceParameters &param) {
   if(!__super::winToParam(param)) return false;
   param.m_expr             = m_expr;
   param.m_cellSize         = m_cellSize;
@@ -252,9 +210,5 @@ bool CIsoSurfaceDlg::winToParam(ExprIsoSurfaceParameters &param) {
   param.m_adaptiveCellSize = m_adaptiveCellSize ? true : false;
   param.m_doubleSided      = m_doubleSided      ? true : false;
   param.m_originOutside    = m_originOutside    ? true : false;
-  param.m_machineCode      = m_machineCode      ? true : false;
-  param.m_includeTime      = m_includeTime      ? true : false;
-  param.m_frameCount       = m_frameCount;
-  param.m_timeInterval     = getTimeInterval();
   return true;
 }

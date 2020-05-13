@@ -2,8 +2,7 @@
 #include <D3DGraphics/IsoSurfaceParameters.h>
 #include <D3DGraphics/MeshCreators.h>
 
-
-class SphereIsoFunction : public Function3D {
+class SphereIsoFunction : public FunctionR3R1 {
 private:
   Real m_r2;
 public:

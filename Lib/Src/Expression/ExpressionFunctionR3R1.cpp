@@ -1,26 +1,26 @@
 #include "pch.h"
-#include <Math/Expression/ExpressionFunction3D.h>
+#include <Math/Expression/ExpressionFunctionR3R1.h>
 
 namespace Expr {
 
-ExpressionFunction3D::ExpressionFunction3D(const String &expr, TrigonometricMode mode, bool machineCode) {
+ExpressionFunctionR3R1::ExpressionFunctionR3R1(const String &expr, TrigonometricMode mode, bool machineCode) {
   compile(expr, mode, machineCode);
 }
 
-ExpressionFunction3D::ExpressionFunction3D(const ExpressionFunction3D &src)
+ExpressionFunctionR3R1::ExpressionFunctionR3R1(const ExpressionFunctionR3R1 &src)
 : m_expr(src.m_expr)
 {
   setVariables();
 }
 
-ExpressionFunction3D &ExpressionFunction3D::operator=(const ExpressionFunction3D &src) {
+ExpressionFunctionR3R1 &ExpressionFunctionR3R1::operator=(const ExpressionFunctionR3R1 &src) {
   cleanup();
   m_expr = src.m_expr;
   setVariables();
   return *this;
 }
 
-void ExpressionFunction3D::compile(const String &expr, TrigonometricMode mode, bool machineCode) {
+void ExpressionFunctionR3R1::compile(const String &expr, TrigonometricMode mode, bool machineCode) {
   cleanup();
   StringArray errors;
   m_expr.setTrigonometricMode(mode);
@@ -33,12 +33,12 @@ void ExpressionFunction3D::compile(const String &expr, TrigonometricMode mode, b
   setVariables();
 }
 
-Real *ExpressionFunction3D::getVariableByName(const String &name) {
+Real *ExpressionFunctionR3R1::getVariableByName(const String &name) {
   const Expr::ExpressionVariable *var = m_expr.getVariable(name);
   return (var == NULL) ? &m_dummy : &m_expr.getValueRef(*var);
 }
 
-void ExpressionFunction3D::setVariables() {
+void ExpressionFunctionR3R1::setVariables() {
   if(m_expr.hasSyntaxTree()) {
     m_x = getVariableByName(_T("x"));
     m_y = getVariableByName(_T("y"));
@@ -49,35 +49,35 @@ void ExpressionFunction3D::setVariables() {
   }
 }
 
-void ExpressionFunction3D::cleanup() {
+void ExpressionFunctionR3R1::cleanup() {
   m_expr.clear();
   initVariables();
 }
 
-Real ExpressionFunction3D::operator()(const Real &x, const Real &y, const Real &z) {
+Real ExpressionFunctionR3R1::operator()(const Real &x, const Real &y, const Real &z) {
   *m_x = x;
   *m_y = y;
   *m_z = z;
   return m_expr.evaluate();
 }
 
-Real ExpressionFunction3D::operator()(const Point3D &p) {
+Real ExpressionFunctionR3R1::operator()(const Point3D &p) {
   *m_x = p.x;
   *m_y = p.y;
   *m_z = p.z;
   return m_expr.evaluate();
 }
 
-void ExpressionFunction3D::setTime(const Real &time) {
+void ExpressionFunctionR3R1::setTime(const Real &time) {
   *m_t = time;
 }
 
-const Real &ExpressionFunction3D::getTime() const {
+const Real &ExpressionFunctionR3R1::getTime() const {
   return *m_t;
 }
 
-FunctionWithTimeTemplate<Function3D> *ExpressionFunction3D::clone() const {
-  return new ExpressionFunction3D(*this);
+FunctionWithTimeTemplate<FunctionR3R1> *ExpressionFunctionR3R1::clone() const {
+  return new ExpressionFunctionR3R1(*this);
 }
 
 }; // namespace Expr

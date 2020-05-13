@@ -10,7 +10,5 @@ IsoSurfaceParameters::IsoSurfaceParameters() {
   m_adaptiveCellSize = false;
   m_originOutside    = false;
   m_doubleSided      = false;
-  m_includeTime      = false;
-  m_timeInterval     = DoubleInterval(0,10);
-  m_frameCount       = 20;
+  m_animation.reset();
 }

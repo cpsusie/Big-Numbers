@@ -2,7 +2,7 @@
 
 #include "Point2D.h"
 
-class MoveTransformation : public Point2DFunction {
+class MoveTransformation : public FunctionR2R2 {
 private:
   Point2D m_dp;
 public:
@@ -10,7 +10,7 @@ public:
   Point2D operator()(const Point2D &p);
 };
 
-class RectAreaTransformation : public Point2DFunction {
+class RectAreaTransformation : public FunctionR2R2 {
 private:
   Point2D m_origin, m_u1, m_u2;
   double m_det;
@@ -40,7 +40,7 @@ public:
   Point2D operator()(const Point2D &p);
 };
 
-class RotateTransformation : public Point2DFunction {
+class RotateTransformation : public FunctionR2R2 {
 private:
   Point2D m_center;
   double m_theta;
@@ -49,7 +49,7 @@ public:
   Point2D operator()(const Point2D &p);
 };
 
-class MirrorTransformation : public Point2DFunction {
+class MirrorTransformation : public FunctionR2R2 {
 private:
   Point2D m_p1, m_p2;
 public:

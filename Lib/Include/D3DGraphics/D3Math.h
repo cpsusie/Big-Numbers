@@ -5,9 +5,6 @@
 #include <Math/Point2D.h>
 #include "Math/Point3D.h"
 
-class ParametricSurface : public FunctionTemplate<Point2D, Point3D> {
-};
-
 float       operator*(            const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2);
 float       length(               const D3DXVECTOR3 &v);
 float       angle(                const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2);
@@ -268,8 +265,8 @@ public:
 };
 
 typedef enum {
-  PP_2DFUNCTION
- ,PP_PARAMETRICSURFACE
+  PP_FUNCTIONR2R1SURFACE
+ ,PP_PARAMETRICR2R3SURFACE
  ,PP_ISOSURFACE
  ,PP_ISOCURVE
 } PersistentDataType;

@@ -5,7 +5,7 @@
 #include <Math/Expression/Expression.h>
 
 // this class is only here to avoid nameclashes between MFC and mytools
-class ExpressionWrapper : public Function2D, public Function3D {
+class ExpressionWrapper : public FunctionR2R1, public FunctionR3R1 {
 private:
   static Real s_dummy;
   Expr::Expression *m_expr; // real expression-evaluater

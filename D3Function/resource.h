@@ -8,8 +8,8 @@
 #define IDS_ABOUTBOX                    101
 #define IDR_MAINFRAME                   128
 #define IDD_D3FUNCTIONVIEW              129
-#define IDR_FUNC2DSURFACE               130
-#define IDR_PARAMETRICSURFACE           131
+#define IDR_FUNCTIONR2R1SURFACE         130
+#define IDR_PARAMETRICR2R3SURFACE       131
 #define IDR_ISOSURFACE                  132
 #define IDD_DIALOGENTEROPTIONSNAME      134
 #define IDD_DIALOGORGANIZEOPTIONS       135

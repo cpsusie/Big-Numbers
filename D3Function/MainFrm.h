@@ -1,7 +1,7 @@
 #pragma once
 
-#include <D3DGraphics/ExprFunction2DSurfaceParameters.h>
-#include <D3DGraphics/ParametricSurface.h>
+#include <D3DGraphics/ExprFunctionR2R1SurfaceParameters.h>
+#include <D3DGraphics/ExprParametricR2R3SurfaceParameters.h>
 #include <D3DGraphics/ExprIsoSurfaceParameters.h>
 #include "D3DGraphics/D3SceneObjectCoordinateSystem.h"
 #include "D3DGraphics/D3SceneEditor.h"
@@ -50,21 +50,21 @@ class CMainFrame : public CFrameWnd
 {
 private:
   friend class C3DSceneView;
-  bool                            m_statusPanesVisible;
-  CStatusBar                      m_wndStatusBar;
-  CToolBar                        m_wndToolBar;
-  HACCEL                          m_accelTable;
-  CD3FunctionSplitterWnd          m_wndSplitter;
-  CompactArray<StatusBarPaneInfo> m_paneInfo;
-  bool                            m_timerRunning;
-  bool                            m_destroyCalled;
-  double                          m_relativeHeight;
-  D3Scene                         m_scene;
-  D3SceneEditor                   m_editor;
-  ExprFunction2DSurfaceParameters m_function2DSurfaceParam;
-  ParametricSurfaceParameters     m_parametricSurfaceParam;
-  ExprIsoSurfaceParameters        m_isoSurfaceParam;
-  String                          m_memoryInfo, m_editorInfo;
+  bool                                m_statusPanesVisible;
+  CStatusBar                          m_wndStatusBar;
+  CToolBar                            m_wndToolBar;
+  HACCEL                              m_accelTable;
+  CD3FunctionSplitterWnd              m_wndSplitter;
+  CompactArray<StatusBarPaneInfo>     m_paneInfo;
+  bool                                m_timerRunning;
+  bool                                m_destroyCalled;
+  double                              m_relativeHeight;
+  D3Scene                             m_scene;
+  D3SceneEditor                       m_editor;
+  ExprFunctionR2R1SurfaceParameters   m_functionR2R1SurfaceParam;
+  ExprParametricR2R3SurfaceParameters m_parametricR2R3SurfaceParam;
+  ExprIsoSurfaceParameters            m_isoSurfaceParam;
+  String                              m_memoryInfo, m_editorInfo;
 
 #ifdef ISODEBUGGER
   Debugger                       *m_debugger;
@@ -133,9 +133,9 @@ private:
   void createInitialObject();
   void createSaddle();
   void deleteCalculatedObject();
-  void setCalculatedObject(ExprFunction2DSurfaceParameters &param);
-  void setCalculatedObject(ParametricSurfaceParameters     &param);
-  void setCalculatedObject(ExprIsoSurfaceParameters        &param);
+  void setCalculatedObject(ExprFunctionR2R1SurfaceParameters   &param);
+  void setCalculatedObject(ExprParametricR2R3SurfaceParameters &param);
+  void setCalculatedObject(ExprIsoSurfaceParameters            &param);
   void setCalculatedObject(D3SceneObjectVisual *obj, PersistentData *param = NULL);
   D3SceneObjectVisual *getCalculatedObject() const;
 

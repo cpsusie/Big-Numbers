@@ -1,26 +1,26 @@
 #include "pch.h"
-#include <Math/Expression/ExpressionFunction2D.h>
+#include <Math/Expression/ExpressionFunctionR2R1.h>
 
 namespace Expr {
 
-ExpressionFunction2D::ExpressionFunction2D(const String &expr, TrigonometricMode mode, bool machineCode) {
+ExpressionFunctionR2R1::ExpressionFunctionR2R1(const String &expr, TrigonometricMode mode, bool machineCode) {
   compile(expr, mode, machineCode);
 }
 
-ExpressionFunction2D::ExpressionFunction2D(const ExpressionFunction2D &src)
+ExpressionFunctionR2R1::ExpressionFunctionR2R1(const ExpressionFunctionR2R1 &src)
 : m_expr(src.m_expr)
 {
   setVariables();
 }
 
-ExpressionFunction2D &ExpressionFunction2D::operator=(const ExpressionFunction2D &src) {
+ExpressionFunctionR2R1 &ExpressionFunctionR2R1::operator=(const ExpressionFunctionR2R1 &src) {
   cleanup();
   m_expr = src.m_expr;
   setVariables();
   return *this;
 }
 
-void ExpressionFunction2D::compile(const String &expr, TrigonometricMode mode, bool machineCode) {
+void ExpressionFunctionR2R1::compile(const String &expr, TrigonometricMode mode, bool machineCode) {
   cleanup();
   StringArray errors;
   m_expr.setTrigonometricMode(mode);
@@ -33,12 +33,12 @@ void ExpressionFunction2D::compile(const String &expr, TrigonometricMode mode, b
   setVariables();
 }
 
-Real *ExpressionFunction2D::getVariableByName(const String &name) {
+Real *ExpressionFunctionR2R1::getVariableByName(const String &name) {
   const Expr::ExpressionVariable *var = m_expr.getVariable(name);
   return (var == NULL) ? &m_dummy : &m_expr.getValueRef(*var);
 }
 
-void ExpressionFunction2D::setVariables() {
+void ExpressionFunctionR2R1::setVariables() {
   if(m_expr.hasSyntaxTree()) {
     m_x = getVariableByName(_T("x"));
     m_y = getVariableByName(_T("y"));
@@ -48,33 +48,33 @@ void ExpressionFunction2D::setVariables() {
   }
 }
 
-void ExpressionFunction2D::cleanup() {
+void ExpressionFunctionR2R1::cleanup() {
   m_expr.clear();
   initVariables();
 }
 
-Real ExpressionFunction2D::operator()(const Real &x, const Real &y) {
+Real ExpressionFunctionR2R1::operator()(const Real &x, const Real &y) {
   *m_x = x;
   *m_y = y;
   return m_expr.evaluate();
 }
 
-Real ExpressionFunction2D::operator()(const Point2D &p) {
+Real ExpressionFunctionR2R1::operator()(const Point2D &p) {
   *m_x = p.x;
   *m_y = p.y;
   return m_expr.evaluate();
 }
 
-void ExpressionFunction2D::setTime(const Real &time) {
+void ExpressionFunctionR2R1::setTime(const Real &time) {
   *m_t = time;
 }
 
-const Real &ExpressionFunction2D::getTime() const {
+const Real &ExpressionFunctionR2R1::getTime() const {
   return *m_t;
 }
 
-FunctionWithTimeTemplate<Function2D> *ExpressionFunction2D::clone() const {
-  return new ExpressionFunction2D(*this);
+FunctionWithTimeTemplate<FunctionR2R1> *ExpressionFunctionR2R1::clone() const {
+  return new ExpressionFunctionR2R1(*this);
 }
 
 }; // namespace Expr

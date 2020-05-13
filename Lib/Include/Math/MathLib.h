@@ -9,7 +9,9 @@ public:
   }
 };
 
-typedef FunctionTemplate<Real,Real>         Function;
+typedef FunctionTemplate<Real,Real>         FunctionR1R1;
+
+typedef FunctionR1R1 Function;
 
 CompactRealArray findZeroes(  Function &f, const RealInterval &interval);
 

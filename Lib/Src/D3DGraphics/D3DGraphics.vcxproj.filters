@@ -38,9 +38,6 @@
     <ClCompile Include="D3ToString.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ParametricSurface.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="LightDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -204,9 +201,6 @@
     <ClCompile Include="RotateProfile.cpp">
       <Filter>Source Files\Mesh</Filter>
     </ClCompile>
-    <ClCompile Include="ParametricSurfaceMeshBuilder.cpp">
-      <Filter>Source Files\Mesh</Filter>
-    </ClCompile>
     <ClCompile Include="VertexFileSurfaceMeshBuilder.cpp">
       <Filter>Source Files\Mesh</Filter>
     </ClCompile>
@@ -246,36 +240,48 @@
     <ClCompile Include="SphereMesh.cpp">
       <Filter>Source Files\Mesh</Filter>
     </ClCompile>
-    <ClCompile Include="InterruptableIsoSurfaceEvaluator.cpp">
-      <Filter>Source Files\Mesh</Filter>
-    </ClCompile>
     <ClCompile Include="ExprIsoSurfaceParameters.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="IsoSurfaceParameters.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Function2DSurfaceParameters.cpp">
+    <ClCompile Include="FunctionR2R1SurfaceParameters.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ExprFunction2DSurfaceParameters.cpp">
+    <ClCompile Include="ExprFunctionR2R1SurfaceParameters.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ExprIsoSurfaceMeshBuilder.cpp">
+    <ClCompile Include="ParametricR2R3SurfaceParameters.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ExprParametricR2R3SurfaceParameters.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshAnimationData.cpp">
       <Filter>Source Files\Mesh</Filter>
     </ClCompile>
-    <ClCompile Include="ExprFunction2DSurfaceMeshBuilder.cpp">
+    <ClCompile Include="CreateMeshExprFunctionR2R1Surface.cpp">
       <Filter>Source Files\Mesh</Filter>
     </ClCompile>
-    <ClCompile Include="InterruptableFunction2DSurfaceMeshBuilder.cpp">
+    <ClCompile Include="CreateMeshExprIsoSurface.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="CreateMeshFunctionR2R1Surface.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="CreateMeshIsoSurface.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="CreateMeshParametricR2R3Surface.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="CreateMeshExprParametricR2R3Surface.cpp">
       <Filter>Source Files\Mesh</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\D3DGraphics\D3Scene.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\D3DGraphics\ParametricSurface.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\D3DGraphics\PragmaLib.h">
@@ -433,23 +439,26 @@
     <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectVisualNormals.h">
       <Filter>Header Files\Visual Objects</Filter>
     </ClInclude>
-    <ClInclude Include="InterruptableIsoSurfaceEvaluator.h">
-      <Filter>Source Files\Mesh</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\D3DGraphics\IsoSurfaceParameters.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\D3DGraphics\ExprIsoSurfaceParameters.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\D3DGraphics\Function2DSurfaceParameters.h">
+    <ClInclude Include="..\..\Include\D3DGraphics\FunctionR2R1SurfaceParameters.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\D3DGraphics\ExprFunction2DSurfaceParameters.h">
+    <ClInclude Include="..\..\Include\D3DGraphics\ExprFunctionR2R1SurfaceParameters.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="InterruptableFunction2DSurfaceMeshBuilder.h">
-      <Filter>Source Files\Mesh</Filter>
+    <ClInclude Include="..\..\Include\D3DGraphics\ExprParametricR2R3SurfaceParameters.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\ParametricR2R3SurfaceParameters.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\MeshAnimationData.h">
+      <Filter>Header Files\Mesh</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

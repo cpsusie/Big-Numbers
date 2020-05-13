@@ -6,9 +6,9 @@
 #include <D3DGraphics/MeshCreators.h>
 #include <D3DGraphics/D3SceneEditor.h>
 #include <D3DGraphics/D3Camera.h>
-#include "Function2DSurfaceDlg.h"
-#include "ParametricSurfaceDlg.h"
-#include "IsoSurfaceDlg.h"
+#include "FunctionR2R1SurfaceParametersDlg.h"
+#include "ParametricR2R3SurfaceParametersDlg.h"
+#include "IsoSurfaceParametersDlg.h"
 #include "MainFrm.h"
 #include "SplitView.h"
 #include "EnterOptionsNameDlg.h"
@@ -357,16 +357,16 @@ void CMainFrame::createInitialObject() {
 }
 
 void CMainFrame::createSaddle() {
-  m_function2DSurfaceParam.setName(_T("Saddle"));
-  m_function2DSurfaceParam.m_expr = _T("(x*x-y*y)/2");
-  m_function2DSurfaceParam.m_xInterval = DoubleInterval(-1, 1);
-  m_function2DSurfaceParam.m_yInterval = DoubleInterval(-1, 1);
-  m_function2DSurfaceParam.m_pointCount = 20;
-  m_function2DSurfaceParam.m_includeTime = false;
-  m_function2DSurfaceParam.m_machineCode = true;
-  m_function2DSurfaceParam.m_doubleSided = true;
+  m_functionR2R1SurfaceParam.setName(_T("Saddle"));
+  m_functionR2R1SurfaceParam.m_expr        = _T("(x*x-y*y)/2");
+  m_functionR2R1SurfaceParam.m_xInterval   = DoubleInterval(-1, 1);
+  m_functionR2R1SurfaceParam.m_yInterval   = DoubleInterval(-1, 1);
+  m_functionR2R1SurfaceParam.m_pointCount  = 20;
+  m_functionR2R1SurfaceParam.m_machineCode = true;
+  m_functionR2R1SurfaceParam.m_doubleSided = true;
+  m_functionR2R1SurfaceParam.m_animation.reset();
 
-  setCalculatedObject(m_function2DSurfaceParam);
+  setCalculatedObject(m_functionR2R1SurfaceParam);
 }
 
 class D3AnimatedFunctionSurface : public D3SceneObjectAnimatedMesh {
@@ -405,9 +405,9 @@ public:
   }
 };
 
-void CMainFrame::setCalculatedObject(ExprFunction2DSurfaceParameters &param) {
+void CMainFrame::setCalculatedObject(ExprFunctionR2R1SurfaceParameters &param) {
   stopDebugging();
-  if(param.m_includeTime) {
+  if(param.isAnimated()) {
     D3AnimatedFunctionSurface *obj = new D3AnimatedFunctionSurface(m_scene, createMeshArray(this, m_scene, param)); TRACE_NEW(obj);
     setCalculatedObject(obj, &param);
   } else {
@@ -416,9 +416,9 @@ void CMainFrame::setCalculatedObject(ExprFunction2DSurfaceParameters &param) {
   }
 }
 
-void CMainFrame::setCalculatedObject(ParametricSurfaceParameters &param) {
+void CMainFrame::setCalculatedObject(ExprParametricR2R3SurfaceParameters &param) {
   stopDebugging();
-  if(param.m_includeTime) {
+  if(param.isAnimated()) {
     D3AnimatedFunctionSurface *obj = new D3AnimatedFunctionSurface(m_scene, createMeshArray(this, m_scene, param)); TRACE_NEW(obj);
     setCalculatedObject(obj, &param);
   } else {
@@ -429,7 +429,7 @@ void CMainFrame::setCalculatedObject(ParametricSurfaceParameters &param) {
 
 void CMainFrame::setCalculatedObject(ExprIsoSurfaceParameters &param) {
   stopDebugging();
-  if(param.m_includeTime) {
+  if(param.isAnimated()) {
     D3AnimatedFunctionSurface *obj = new D3AnimatedFunctionSurface(m_scene, createMeshArray(this, m_scene, param)); TRACE_NEW(obj);
     setCalculatedObject(obj, &param);
   } else {
@@ -867,12 +867,12 @@ void CMainFrame::showInfo(_In_z_ _Printf_format_string_ TCHAR const * const form
 
 void CMainFrame::OnFileFunctionSurface() {
   try {
-    CFunction2DSurfaceDlg dlg(m_function2DSurfaceParam);
+    CExprFunctionR2R1SurfaceParametersDlg dlg(m_functionR2R1SurfaceParam);
     if(dlg.DoModal() != IDOK) {
       return;
     }
-    m_function2DSurfaceParam = dlg.getData();
-    setCalculatedObject(m_function2DSurfaceParam);
+    m_functionR2R1SurfaceParam = dlg.getData();
+    setCalculatedObject(m_functionR2R1SurfaceParam);
     REPAINT();
   } catch(Exception e) {
     showException(e);
@@ -881,12 +881,12 @@ void CMainFrame::OnFileFunctionSurface() {
 
 void CMainFrame::OnFileParametricSurface() {
   try {
-    CParametricSurfaceDlg dlg(m_parametricSurfaceParam);
+    CParametricR2R3SurfaceParametersDlg dlg(m_parametricR2R3SurfaceParam);
     if(dlg.DoModal() != IDOK) {
       return;
     }
-    m_parametricSurfaceParam = dlg.getData();
-    setCalculatedObject(m_parametricSurfaceParam);
+    m_parametricR2R3SurfaceParam = dlg.getData();
+    setCalculatedObject(m_parametricR2R3SurfaceParam);
     REPAINT();
   } catch(Exception e) {
     showException(e);
@@ -895,7 +895,7 @@ void CMainFrame::OnFileParametricSurface() {
 
 void CMainFrame::OnFileIsoSurface() {
   try {
-    CIsoSurfaceDlg dlg(m_isoSurfaceParam);
+    CIsoSurfaceParametersDlg dlg(m_isoSurfaceParam);
     if(dlg.DoModal() != IDOK) {
       return;
     }
@@ -922,10 +922,10 @@ void CMainFrame::OnObjectEditFunction() {
   if(!calcObj) return;
   PersistentData *param = (PersistentData*)calcObj->getUserData();
   switch (param->getType()) {
-  case PP_2DFUNCTION:
+  case PP_FUNCTIONR2R1SURFACE:
     OnFileFunctionSurface();
     break;
-  case PP_PARAMETRICSURFACE:
+  case PP_PARAMETRICR2R3SURFACE:
     OnFileParametricSurface();
     break;
   case PP_ISOSURFACE:

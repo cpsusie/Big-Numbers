@@ -891,6 +891,7 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CreateMeshExprParametricR2R3Surface.cpp" />
     <ClCompile Include="D3CameraArray.cpp" />
     <ClCompile Include="D3CameraslideAnimator.cpp" />
     <ClCompile Include="D3Device.cpp" />
@@ -928,10 +929,11 @@
     <ClCompile Include="D3SceneEditorSplitWindow.cpp" />
     <ClCompile Include="D3ToSize.cpp" />
     <ClCompile Include="D3World.cpp" />
-    <ClCompile Include="ExprFunction2DSurfaceParameters.cpp" />
+    <ClCompile Include="ExprFunctionR2R1SurfaceParameters.cpp" />
+    <ClCompile Include="ExprParametricR2R3SurfaceParameters.cpp" />
     <ClCompile Include="Face.cpp" />
-    <ClCompile Include="InterruptableFunction2DSurfaceMeshBuilder.cpp" />
-    <ClCompile Include="InterruptableIsoSurfaceEvaluator.cpp" />
+    <ClCompile Include="CreateMeshFunctionR2R1Surface.cpp" />
+    <ClCompile Include="CreateMeshIsoSurface.cpp" />
     <ClCompile Include="IsoSurfaceSnapMCLookupTable.cpp" />
     <ClCompile Include="FVF.cpp" />
     <ClCompile Include="IsoCurve.cpp" />
@@ -939,6 +941,7 @@
     <ClCompile Include="LightDlg.cpp" />
     <ClCompile Include="D3Material.cpp" />
     <ClCompile Include="MaterialDlg.cpp" />
+    <ClCompile Include="MeshAnimationData.cpp" />
     <ClCompile Include="MeshBuilderToString.cpp" />
     <ClCompile Include="MeshToBoundingBox.cpp" />
     <ClCompile Include="MeshToString.cpp" />
@@ -950,14 +953,14 @@
     <ClCompile Include="D3SceneIO.cpp" />
     <ClCompile Include="D3AbstractTextureFactory.cpp" />
     <ClCompile Include="D3ToString.cpp" />
-    <ClCompile Include="Function2DSurfaceParameters.cpp" />
-    <ClCompile Include="ExprFunction2DSurfaceMeshBuilder.cpp" />
+    <ClCompile Include="FunctionR2R1SurfaceParameters.cpp" />
+    <ClCompile Include="CreateMeshExprFunctionR2R1Surface.cpp" />
     <ClCompile Include="ExprIsoSurfaceParameters.cpp" />
-    <ClCompile Include="ExprIsoSurfaceMeshBuilder.cpp" />
+    <ClCompile Include="CreateMeshExprIsoSurface.cpp" />
     <ClCompile Include="MeshArray.cpp" />
     <ClCompile Include="MeshArrayJobMonitor.cpp" />
-    <ClCompile Include="ParametricSurface.cpp" />
-    <ClCompile Include="ParametricSurfaceMeshBuilder.cpp" />
+    <ClCompile Include="ParametricR2R3SurfaceParameters.cpp" />
+    <ClCompile Include="CreateMeshParametricR2R3Surface.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='IsoDebuggerDebug|Win32'">Create</PrecompiledHeader>
@@ -1026,9 +1029,10 @@
     <ClInclude Include="..\..\Include\D3DGraphics\D3Transformation.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectVisual.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3World.h" />
-    <ClInclude Include="..\..\Include\D3DGraphics\ExprFunction2DSurfaceParameters.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\ExprFunctionR2R1SurfaceParameters.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\ExprIsoSurfaceParameters.h" />
-    <ClInclude Include="..\..\Include\D3DGraphics\Function2DSurfaceParameters.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\ExprParametricR2R3SurfaceParameters.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\FunctionR2R1SurfaceParameters.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\IsoCurve.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\IsoSurfaceParameters.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\IsosurfacePolygonizer.h" />
@@ -1037,17 +1041,16 @@
     <ClInclude Include="..\..\Include\D3DGraphics\LightDlg.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3Material.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\MaterialDlg.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\MeshAnimationData.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\MeshArray.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\MeshArrayJobMonitor.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\MeshBuilder.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\MeshCreators.h" />
-    <ClInclude Include="..\..\Include\D3DGraphics\ParametricSurface.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3XML.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\ParametricR2R3SurfaceParameters.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\PragmaLib.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\Profile.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\resource.h" />
-    <ClInclude Include="InterruptableFunction2DSurfaceMeshBuilder.h" />
-    <ClInclude Include="InterruptableIsoSurfaceEvaluator.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>

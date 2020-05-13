@@ -338,8 +338,8 @@ public:
   virtual void apply(const Point2D &p) = 0;
 };
 
-typedef FunctionTemplate<Point2D, Point2D> Point2DFunction;
-typedef FunctionTemplate<Point2D, Real>    Function2D;
+typedef FunctionTemplate<Point2D, Point2D> FunctionR2R2;
+typedef FunctionTemplate<Point2D, Real>    FunctionR2R1;
 
 
 RealPoint2D findExtremum(Function &f, const RealInterval &interval, bool maximum);

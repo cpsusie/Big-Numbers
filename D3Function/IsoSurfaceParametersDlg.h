@@ -1,9 +1,9 @@
 #pragma once
 
-#include <MFCUtil/ExprDialog.h>
+#include "SaveLoadExprWithAnimationDialog.h"
 #include <D3DGraphics/ExprIsoSurfaceParameters.h>
 
-class CIsoSurfaceDlg : public SaveLoadExprDialog<ExprIsoSurfaceParameters> {
+class CIsoSurfaceParametersDlg : public SaveLoadExprWithAnimationDialog<ExprIsoSurfaceParameters> {
 private:
   CString m_expr;
   double  m_cellSize;
@@ -13,14 +13,8 @@ private:
   BOOL    m_tetraOptimize4;
   BOOL    m_adaptiveCellSize;
   BOOL    m_originOutside;
-  BOOL    m_machineCode;
-  BOOL    m_createListFile;
   BOOL    m_debugPolygonizer;
   BOOL    m_doubleSided;
-  BOOL    m_includeTime;
-  UINT    m_frameCount;
-  double  m_timefrom;
-  double  m_timeto;
   double  m_xfrom;
   double  m_xto;
   double  m_yfrom;
@@ -28,7 +22,6 @@ private:
   double  m_zfrom;
   double  m_zto;
 
-  String getListFileName() const;
   bool validate();
   void paramToWin(const ExprIsoSurfaceParameters &param);
   bool winToParam(      ExprIsoSurfaceParameters &param);
@@ -44,9 +37,6 @@ private:
   inline void setZInterval(const DoubleInterval &interval) {
     m_zfrom = interval.getMin(); m_zto = interval.getMax();
   }
-  inline void setTimeInterval(const DoubleInterval &interval) {
-    m_timefrom = interval.getMin(); m_timeto = interval.getMax();
-  }
   inline DoubleInterval getXInterval() const {
     return DoubleInterval(m_xfrom, m_xto);
   }
@@ -56,11 +46,8 @@ private:
   inline DoubleInterval getZInterval() const {
     return DoubleInterval(m_zfrom, m_zto);
   }
-  inline DoubleInterval getTimeInterval() const {
-    return DoubleInterval(m_timefrom, m_timeto);
-  }
 public:
-  CIsoSurfaceDlg(const ExprIsoSurfaceParameters &param, CWnd *pParent = NULL);
+  CIsoSurfaceParametersDlg(const ExprIsoSurfaceParameters &param, CWnd *pParent = NULL);
 
 #ifdef ISODEBUGGER
   inline bool getDebugPolygonizer() const {
@@ -71,21 +58,17 @@ public:
   enum { IDD = IDR_ISOSURFACE };
 
 protected:
-    virtual void DoDataExchange(CDataExchange *pDX);
-    afx_msg BOOL OnInitDialog();
-    afx_msg void OnEditFindMatchingParentesis();
-    afx_msg void OnGotoExpr();
-    afx_msg void OnGotoCellSize();
-    afx_msg void OnGotoLambda();
-    afx_msg void OnGotoXInterval();
-    afx_msg void OnGotoYInterval();
-    afx_msg void OnGotoZInterval();
-    afx_msg void OnGotoTimeInterval();
-    afx_msg void OnGotoFrameCount();
-    afx_msg void OnCheckDoubleSided();
-    afx_msg void OnCheckIncludeTime();
-    afx_msg void OnCheckMachineCode();
-    afx_msg void OnCheckTetrahedral();
-    afx_msg void OnButtonHelp();
-    DECLARE_MESSAGE_MAP()
+  virtual void DoDataExchange(CDataExchange *pDX);
+  afx_msg BOOL OnInitDialog();
+  afx_msg void OnEditFindMatchingParentesis();
+  afx_msg void OnGotoExpr();
+  afx_msg void OnGotoCellSize();
+  afx_msg void OnGotoLambda();
+  afx_msg void OnGotoXInterval();
+  afx_msg void OnGotoYInterval();
+  afx_msg void OnGotoZInterval();
+  afx_msg void OnCheckDoubleSided();
+  afx_msg void OnCheckTetrahedral();
+  afx_msg void OnButtonHelp();
+  DECLARE_MESSAGE_MAP()
 };
