@@ -275,6 +275,16 @@ bool setWindowPosition(CWnd *wnd, const CPoint &point) {
   return wnd->SetWindowPlacement(&wpl) ? true : false;
 }
 
+void enableWindowList(HWND hwnd, bool enable, ...) {
+  va_list argptr;
+  va_start(argptr, enable);
+  for(int id = va_arg(argptr, int); id > 0; id = va_arg(argptr, int)) {
+    HWND child = GetDlgItem(hwnd, id);
+    if(child == NULL) return;
+    EnableWindow(child, enable);
+  }
+}
+
 int getFocusCtrlId(const CWnd *wnd) {
   CWnd *ctrl = wnd->GetFocus();
   return ctrl ? ctrl->GetDlgCtrlID() : -1;

@@ -126,6 +126,8 @@ String getWindowText(        const CWnd *wnd);
 String getWindowText(        const CWnd *wnd, int id);
 void   setWindowText(              CWnd *wnd,         const String &str);
 void   setWindowText(              CWnd *wnd, int id, const String &str);
+// ... is a list of resid (int). terminate list with 0
+void   enableWindowList(           HWND hwnd, bool enable, ...);
 
 int    getFocusCtrlId(       const CWnd *wnd);
 // assume id is CEdit
