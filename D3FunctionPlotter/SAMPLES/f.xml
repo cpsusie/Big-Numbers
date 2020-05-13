@@ -1,6 +1,0 @@
-<Function2DSurface><expr>// Flying carpet
-a = cos((y-t)/10*pi);
-b = 2-(y/4)^2;
-c = (y/4)^2-2;
-
-poly[a,b,c](x)/30</expr><xinterval><from>-1.000000000000000e+01</from><to>1.000000000000000e+01</to></xinterval><yinterval><from>-1.000000000000000e+01</from><to>1.000000000000000e+01</to></yinterval><pointcount>40</pointcount><machinecode>1</machinecode><doublesided>1</doublesided><includetime>1</includetime><timeinterval><from>0.000000000000000e+00</from><to>2.000000000000000e+01</to></timeinterval><framecount>60</framecount></Function2DSurface>
