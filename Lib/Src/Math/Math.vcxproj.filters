@@ -406,6 +406,9 @@
     <ClInclude Include="..\..\Include\Math\BigReal\MRisprime.h">
       <Filter>Header Files\BigReal</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Point2D3D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="FPU.inc">

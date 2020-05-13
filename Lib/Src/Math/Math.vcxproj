@@ -1265,6 +1265,7 @@
     <ClInclude Include="..\..\Include\Math\Matrix.h" />
     <ClInclude Include="..\..\Include\Math\Number.h" />
     <ClInclude Include="..\..\Include\Math\Point2D.h" />
+    <ClInclude Include="..\..\Include\Math\Point2D3D.h" />
     <ClInclude Include="..\..\Include\Math\Point2DTransformations.h" />
     <ClInclude Include="..\..\Include\Math\Point3D.h" />
     <ClInclude Include="..\..\Include\Math\Polygon2D.h" />
