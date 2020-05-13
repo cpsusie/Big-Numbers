@@ -7,6 +7,7 @@
 #include <D3DGraphics/D3Camera.h>
 #include <D3DGraphics/D3CameraArray.h>
 #include <D3DGraphics/D3Scene.h>
+#include <D3DGraphics/MeshAnimationData.h>
 
 void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3DXVECTOR3 &v) {
   XMLNodePtr n = doc.createNode(parent, tag);
@@ -331,5 +332,23 @@ void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, D3Scene &s) {
   getValue(doc, n, _T("lights"      ), lightArray  );
   s.setAllLights(lightArray);
   getValue(doc, n, _T("cameras"     ), (D3CameraArray&)s.getCameraArray() );
-  
+}
+
+void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const MeshAnimationData &d) {
+  XMLNodePtr n = doc.createNode(parent, tag);
+  doc.setValue(  n, _T("includetime"       ), d.m_includeTime     );
+  if(d.m_includeTime) {
+    setValue(doc, n, _T("timeinterval"     ), d.m_timeInterval    );
+    doc.setValue( n, _T("framecount"       ), d.m_frameCount      );
+  }
+}
+
+void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, MeshAnimationData &d) {
+  XMLNodePtr  n = doc.getChild(parent, tag);
+  d.reset();
+  doc.getValue(  n, _T("includetime"       ), d.m_includeTime     );
+  if(d.m_includeTime) {
+    getValue(doc, n, _T("timeinterval"     ), d.m_timeInterval    );
+    doc.getValue( n, _T("framecount"       ), d.m_frameCount      );
+  }
 }

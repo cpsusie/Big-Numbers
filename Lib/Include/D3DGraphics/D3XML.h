@@ -1,6 +1,6 @@
 #pragma once
 
-#include <XMLDoc.h>
+#include <XMLUtil.h>
 #include <Math/Cube3D.h>
 #include "D3Material.h"
 #include "D3Light.h"
@@ -60,6 +60,7 @@ class D3World;
 class D3Camera;
 class D3CameraArray;
 class D3Scene;
+class MeshAnimationData;
 
 void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3World       &w);
 void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag,       D3World       &w);
@@ -72,3 +73,6 @@ void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag,       D3CameraAr
 
 void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3Scene       &s);
 void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag,       D3Scene       &s);
+
+void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const MeshAnimationData &d);
+void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag,       MeshAnimationData &d);
