@@ -273,7 +273,7 @@ void XMLDoc::setValue(const XMLNodePtr     &node,     const TCHAR *tagName, cons
   setValue(node,tagName,value.cstr(),force);
 }
 
-void XMLDoc::setValue(const XMLNodePtr     &node,     const TCHAR *tagName, const TCHAR *value, bool force) {
+void XMLDoc::setValue(const XMLNodePtr     &node,     const TCHAR *tagName, const TCHAR     *value, bool force) {
   setText(force ? createNode(node,tagName,force) : findChild(node,tagName), value);
 }
 
@@ -305,14 +305,24 @@ void XMLDoc::setValue(const XMLNodePtr     &node,     const TCHAR *tagName, UINT
 void XMLDoc::setValue(const XMLNodePtr     &node,     const TCHAR *tagName, float            value, bool force) {
   if(     isInt64( value)) setValue(node,tagName,getInt64( value),force);
   else if(isUint64(value)) setValue(node,tagName,getUint64(value),force);
-  else                     setValue(node,tagName,toString( value,7,0,ios::scientific).cstr(),force);
+  else {
+    wstringstream str;
+    str.precision(7);
+    str << value;
+    setValue(node, tagName, str.str().c_str(), force);
+  }
 }
 
 void XMLDoc::setValue(const XMLNodePtr     &node,     const TCHAR *tagName, double           value, bool force) {
   if(     isInt64( value)) setValue(node,tagName,getInt64( value),force);
   else if(isUint64(value)) setValue(node,tagName,getUint64(value),force);
   else if(isFloat( value)) setValue(node,tagName,getFloat( value),force);
-  else                     setValue(node,tagName,toString( value,15,0,ios::scientific).cstr(),force);
+  else {
+    wstringstream str;
+    str.precision(15);
+    str << value;
+    setValue(node, tagName, str.str().c_str(), force);
+  }
 }
 
 void XMLDoc::setValue(const XMLNodePtr     &node,     const TCHAR *tagName, const Date      &value, bool force) {
