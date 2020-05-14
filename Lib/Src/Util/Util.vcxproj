@@ -820,11 +820,6 @@
     <ClInclude Include="..\..\Include\HashSet.h" />
     <ClInclude Include="..\..\Include\InputThread.h" />
     <ClInclude Include="..\..\Include\InputValue.h" />
-    <ClInclude Include="..\..\Include\IntelCPU\ExecutableByteArray.h" />
-    <ClInclude Include="..\..\Include\IntelCPU\Opcode.h" />
-    <ClInclude Include="..\..\Include\IntelCPU\PragmaLib.h" />
-    <ClInclude Include="..\..\Include\IntelCPU\Registers.h" />
-    <ClInclude Include="..\..\Include\IntelCPU\targetver.h" />
     <ClInclude Include="..\..\Include\InterruptableRunnable.h" />
     <ClInclude Include="..\..\Include\Iterator.h" />
     <ClInclude Include="..\..\Include\KMPAutomate.h" />

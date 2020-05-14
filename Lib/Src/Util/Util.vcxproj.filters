@@ -83,9 +83,6 @@
     <Filter Include="Source Files\Stream\RegexIStream">
       <UniqueIdentifier>{e245533d-91a4-4fbb-8cc5-da720882740f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\IntelCPU">
-      <UniqueIdentifier>{476207fd-29d5-4be2-9d62-c2adda0335c2}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="access.cpp">
@@ -1274,21 +1271,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\AbstractFilterArrayIterator.h">
       <Filter>Header Files\Collection</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\IntelCPU\Opcode.h">
-      <Filter>Header Files\IntelCPU</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\IntelCPU\Registers.h">
-      <Filter>Header Files\IntelCPU</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\IntelCPU\ExecutableByteArray.h">
-      <Filter>Header Files\IntelCPU</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\IntelCPU\PragmaLib.h">
-      <Filter>Header Files\IntelCPU</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\IntelCPU\targetver.h">
-      <Filter>Header Files\IntelCPU</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\InputValue.h">
       <Filter>Header Files\Console</Filter>
