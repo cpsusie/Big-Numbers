@@ -3,18 +3,18 @@
 
 namespace Expr {
 
-ExpressionFunctionR2R3::ExpressionFunctionR2R3(const Expr3 &expr, TrigonometricMode mode, bool machineCode) {
-  compile(expr, mode, machineCode);
+ExpressionFunctionR2R3::ExpressionFunctionR2R3(const Expr3 &expr, TrigonometricMode mode, bool machineCode, const String &names) {
+  compile(expr, mode, machineCode, names);
 }
 
-void ExpressionFunctionR2R3::compile(const Expr3 &expr, TrigonometricMode mode, bool machineCode) {
+void ExpressionFunctionR2R3::compile(const Expr3 &expr, TrigonometricMode mode, bool machineCode, const String &names) {
   for(int i = 0; i < 3; i++) {
-    m_expr[i].compile(expr.getExprText(i), mode, machineCode);
+    m_expr[i].compile(expr.getExprText(i), mode, machineCode, names);
   }
 }
 
-Point3D ExpressionFunctionR2R3::operator()(const Real &s, const Real &t) {
-  return Point3D(m_expr[0](s, t), m_expr[1](s, t), m_expr[2](s, t));
+Point3D ExpressionFunctionR2R3::operator()(const Real &t, const Real &s) {
+  return Point3D(m_expr[0](t,s), m_expr[1](t,s), m_expr[2](t,s));
 }
 
 Point3D ExpressionFunctionR2R3::operator()(const Point2D &p) {

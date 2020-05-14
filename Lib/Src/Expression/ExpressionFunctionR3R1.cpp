@@ -3,24 +3,26 @@
 
 namespace Expr {
 
-ExpressionFunctionR3R1::ExpressionFunctionR3R1(const String &expr, TrigonometricMode mode, bool machineCode) {
-  compile(expr, mode, machineCode);
+ExpressionFunctionR3R1::ExpressionFunctionR3R1(const String &expr, TrigonometricMode mode, bool machineCode, const String &names) {
+  compile(expr, mode, machineCode, names);
 }
 
 ExpressionFunctionR3R1::ExpressionFunctionR3R1(const ExpressionFunctionR3R1 &src)
-: m_expr(src.m_expr)
+: m_expr( src.m_expr)
+, m_names(src.m_names)
 {
   setVariables();
 }
 
 ExpressionFunctionR3R1 &ExpressionFunctionR3R1::operator=(const ExpressionFunctionR3R1 &src) {
   cleanup();
-  m_expr = src.m_expr;
+  m_expr  = src.m_expr;
+  m_names = src.m_names;
   setVariables();
   return *this;
 }
 
-void ExpressionFunctionR3R1::compile(const String &expr, TrigonometricMode mode, bool machineCode) {
+void ExpressionFunctionR3R1::compile(const String &expr, TrigonometricMode mode, bool machineCode, const String &names) {
   cleanup();
   StringArray errors;
   m_expr.setTrigonometricMode(mode);
@@ -30,6 +32,7 @@ void ExpressionFunctionR3R1::compile(const String &expr, TrigonometricMode mode,
   if(m_expr.getReturnType() != EXPR_RETURN_FLOAT) {
     throwException(_T("Returntype of expression not real"));
   }
+  m_names = names;
   setVariables();
 }
 
@@ -40,10 +43,11 @@ Real *ExpressionFunctionR3R1::getVariableByName(const String &name) {
 
 void ExpressionFunctionR3R1::setVariables() {
   if(m_expr.hasSyntaxTree()) {
-    m_x = getVariableByName(_T("x"));
-    m_y = getVariableByName(_T("y"));
-    m_z = getVariableByName(_T("z"));
-    m_t = getVariableByName(_T("t"));
+    UINT i = 0;
+    for(Tokenizer tok(m_names.cstr(), _T(",")); tok.hasNext() && i < ARRAYSIZE(m_var); i++) {
+      const String varName = tok.next();
+      m_var[i] = getVariableByName(varName);
+    }
   } else {
     initVariables();
   }
@@ -51,29 +55,30 @@ void ExpressionFunctionR3R1::setVariables() {
 
 void ExpressionFunctionR3R1::cleanup() {
   m_expr.clear();
+  m_names = EMPTYSTRING;
   initVariables();
 }
 
 Real ExpressionFunctionR3R1::operator()(const Real &x, const Real &y, const Real &z) {
-  *m_x = x;
-  *m_y = y;
-  *m_z = z;
+  *m_var[0] = x;
+  *m_var[1] = y;
+  *m_var[2] = z;
   return m_expr.evaluate();
 }
 
 Real ExpressionFunctionR3R1::operator()(const Point3D &p) {
-  *m_x = p.x;
-  *m_y = p.y;
-  *m_z = p.z;
+  *m_var[0] = p.x;
+  *m_var[1] = p.y;
+  *m_var[2] = p.z;
   return m_expr.evaluate();
 }
 
 void ExpressionFunctionR3R1::setTime(const Real &time) {
-  *m_t = time;
+  *m_var[3] = time;
 }
 
 const Real &ExpressionFunctionR3R1::getTime() const {
-  return *m_t;
+  return *m_var[3];
 }
 
 FunctionWithTimeTemplate<FunctionR3R1> *ExpressionFunctionR3R1::clone() const {

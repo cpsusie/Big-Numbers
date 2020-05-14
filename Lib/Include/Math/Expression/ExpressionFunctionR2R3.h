@@ -31,11 +31,11 @@ public:
   ExpressionFunctionR2R3() {
   }
   // throws Exception on compile-error
-  ExpressionFunctionR2R3(const Expr3 &expr, TrigonometricMode mode = RADIANS, bool machineCode = true);
+  ExpressionFunctionR2R3(const Expr3 &expr, TrigonometricMode mode = RADIANS, bool machineCode = true, const String &names=_T("t,s,time"));
 
   // throws Exception on compile-error
-  void compile(const Expr3 &expr, TrigonometricMode mode = RADIANS, bool machineCode = true);
-  Point3D operator()(const Real &s, const Real &t);
+  void compile(const Expr3 &expr, TrigonometricMode mode = RADIANS, bool machineCode = true, const String &names=_T("t,s,time"));
+  Point3D operator()(const Real &t, const Real &s);
   Point3D operator()(const Point2D &p);
   void        setTime(const Real &time);
   const Real &getTime() const;

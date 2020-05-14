@@ -3,26 +3,26 @@
 
 namespace Expr {
 
-ExpressionFunction::ExpressionFunction(const String &expr, const String &name, TrigonometricMode mode, bool machineCode) {
-  compile(expr, name, mode, machineCode);
+ExpressionFunction::ExpressionFunction(const String &expr, TrigonometricMode mode, bool machineCode, const String &name) {
+  compile(expr, mode, machineCode, name);
 }
 
 ExpressionFunction::ExpressionFunction(ExpressionFunction &src)
-: m_expr(   src.m_expr      )
-, m_varName(src.getVarName())
+: m_expr(src.m_expr)
+, m_name(src.m_name)
 {
   setVariables();
 }
 
 ExpressionFunction &ExpressionFunction::operator=(ExpressionFunction &src) {
   cleanup();
-  m_expr    = src.m_expr;
-  m_varName = src.getVarName();
+  m_expr = src.m_expr;
+  m_name = src.m_name;
   setVariables();
   return *this;
 }
 
-void ExpressionFunction::compile(const String &expr, const String &name, TrigonometricMode mode, bool machineCode) {
+void ExpressionFunction::compile(const String &expr, TrigonometricMode mode, bool machineCode, const String &name) {
   cleanup();
   StringArray errors;
   m_expr.setTrigonometricMode(mode);
@@ -32,7 +32,7 @@ void ExpressionFunction::compile(const String &expr, const String &name, Trigono
   if(m_expr.getReturnType() != EXPR_RETURN_FLOAT) {
     throwException(_T("Returntype of expression not real"));
   }
-  m_varName = name;
+  m_name = name;
   setVariables();
 }
 
@@ -43,7 +43,7 @@ Real *ExpressionFunction::getVariableByName(const String &name) {
 
 void ExpressionFunction::setVariables() {
   if(m_expr.hasSyntaxTree()) {
-    m_x = getVariableByName(_T("x"));
+    m_var = getVariableByName(m_name);
   } else {
     initVariables();
   }
@@ -51,11 +51,12 @@ void ExpressionFunction::setVariables() {
 
 void ExpressionFunction::cleanup() {
   m_expr.clear();
+  m_name = EMPTYSTRING;
   initVariables();
 }
 
 Real ExpressionFunction::operator()(const Real &x) {
-  *m_x = x;
+  *m_var = x;
   return m_expr.evaluate();
 }
 

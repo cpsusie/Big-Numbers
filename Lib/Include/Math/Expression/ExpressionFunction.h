@@ -8,11 +8,11 @@ namespace Expr {
 class ExpressionFunction : public Function {
 private:
   Expression           m_expr;
-  String               m_varName;
-  Real                 m_dummy, *m_x;
+  String               m_name;
+  Real                 m_dummy, *m_var;
 
   inline void initVariables() {
-    m_x = &m_dummy;
+    m_var = &m_dummy;
   }
 
   void setVariables();
@@ -20,18 +20,18 @@ private:
   Real *getVariableByName(const String &name);
 public:
   ExpressionFunction() {
-    m_x = &m_dummy;
+    initVariables();
   }
   // throws Exception on compile-error
-  ExpressionFunction(const String &expr, const String &name, TrigonometricMode mode = RADIANS, bool machineCode = true);
-  ExpressionFunction(ExpressionFunction &src);
+  ExpressionFunction(const String &expr, TrigonometricMode mode = RADIANS, bool machineCode = true, const String &name=_T("x"));
+  ExpressionFunction(           ExpressionFunction &src);
   ExpressionFunction &operator=(ExpressionFunction &src);
 
   // throws Exception on compile-error
-  void compile(const String &expr, const String &name, TrigonometricMode mode = RADIANS, bool machineCode=true);
+  void compile(const String &expr, TrigonometricMode mode = RADIANS, bool machineCode=true, const String &name=_T("x"));
   Real operator()(const Real &x);
   const String getVarName() const {
-    return m_varName;
+    return m_name;
   }
 };
 
