@@ -900,6 +900,8 @@
     <ClCompile Include="D3Ray.cpp" />
     <ClCompile Include="D3SceneContainer.cpp" />
     <ClCompile Include="D3SceneEditorPickedInfo.cpp" />
+    <ClCompile Include="D3SceneLightArray.cpp" />
+    <ClCompile Include="D3SceneMaterialMap.cpp" />
     <ClCompile Include="D3SceneObjectAnimatedMesh.cpp" />
     <ClCompile Include="D3PickedInfo.cpp" />
     <ClCompile Include="D3CompileEffect.cpp" />

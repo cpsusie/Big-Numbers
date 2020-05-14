@@ -11,13 +11,15 @@ inline void putWindowBesideMainWindow(CWnd *wnd) {
 class PropertyDialog : public CDialog, public PropertyContainer {
 private:
   const int m_propertyId;
+  bool      m_hasBeenVisible;
   bool      m_visible; // when changed, notification with id = m_propertyId+PROPDLG_VISIBLE_OFFSET (bool) is sent to listeners
   bool      m_showWinActive;
 protected:
   PropertyDialog(int resId, int propertyId, CWnd *pParent) : CDialog(resId, pParent), m_propertyId(propertyId) {
     setNotifyEnable(false);
-    m_visible       = false;
-    m_showWinActive = false; // to prevent infinte recursion
+    m_hasBeenVisible = false;
+    m_visible        = false;
+    m_showWinActive  = false; // to prevent infinite recursion
   }
   void setVisible(bool visible);
   void OnShowWindow(BOOL bShow, UINT nStatus);

@@ -10,7 +10,6 @@ CColorDlg::CColorDlg(const String &caption, int propertyId, D3DCOLOR color, CWnd
 , m_caption(caption)
 {
   setStartValue(color);
-
 }
 
 void CColorDlg::DoDataExchange(CDataExchange *pDX) {

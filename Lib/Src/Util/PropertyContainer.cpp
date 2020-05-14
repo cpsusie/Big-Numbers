@@ -19,3 +19,9 @@ void PropertyContainer::removePropertyChangeListener(PropertyChangeListener * co
     m_listeners.remove(index);
   }
 }
+
+bool PropertyContainer::setNotifyEnable(bool enable) {
+  const bool old = m_notifyEnable;
+  m_notifyEnable = enable;
+  return old;
+}

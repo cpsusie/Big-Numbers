@@ -18,9 +18,11 @@ private:
   // If < 0, material is undefined
   int m_id;
 public:
-  inline D3Material() : m_id(-1) {
+  inline D3Material() {
+    setUndefined();
   }
-  inline explicit D3Material(int id) : m_id(id) {
+  inline explicit D3Material(UINT id) {
+    setUndefined().m_id = id;
   }
   inline D3Material &operator=(const D3DMATERIAL &m) {
     *((D3DMATERIAL*)this) = m;
@@ -48,7 +50,12 @@ public:
   String toString(int dec=3) const;
 };
 
-typedef CompactUIntHashMap<D3Material> MaterialMap;
-inline int materialCmp(const D3Material &m1, const D3Material &m2) {
-  return m1.getId() - m2.getId();
+inline bool operator==(const D3Material &m1, const D3Material &m2) {
+  return memcmp(&m1, &m2, sizeof(D3Material)) == 0;
 }
+
+inline bool operator!=(const D3Material &m1, const D3Material &m2) {
+  return !(m1 == m2);
+}
+
+typedef CompactUIntHashMap<D3Material> MaterialMap;

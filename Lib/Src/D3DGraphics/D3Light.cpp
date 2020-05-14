@@ -3,16 +3,17 @@
 
 D3Light &D3Light::setDefault(D3DLIGHTTYPE type) {
   switch(type) {
-  case D3DLIGHT_DIRECTIONAL    : setDefaultDirectional(); break;
-  case D3DLIGHT_POINT          : setDefaultPoint();       break;
-  case D3DLIGHT_SPOT           : setDefaultSpot();        break;
-  default                      : setUndefined();          break;
+  case D3DLIGHT_DIRECTIONAL : setDefaultDirectional(); break;
+  case D3DLIGHT_POINT       : setDefaultPoint();       break;
+  case D3DLIGHT_SPOT        : setDefaultSpot();        break;
+  default                   : setUndefined();          break;
   }
   return *this;
 }
 
 D3Light &D3Light::setDefaultDirectional() {
-  ZeroMemory(this, sizeof(D3Light));
+  memset(this, 0, sizeof(D3Light));
+  m_index      = -1;
   Type         = D3DLIGHT_DIRECTIONAL;
   m_enabled    = true;
   setDefaultColors();
@@ -21,7 +22,8 @@ D3Light &D3Light::setDefaultDirectional() {
 }
 
 D3Light &D3Light::setDefaultPoint() {
-  ZeroMemory(this, sizeof(D3Light));
+  memset(this, 0, sizeof(D3Light));
+  m_index      = -1;
   Type         = D3DLIGHT_POINT;
   m_enabled    = true;
   setDefaultColors();
@@ -32,7 +34,8 @@ D3Light &D3Light::setDefaultPoint() {
 }
 
 D3Light &D3Light::setDefaultSpot() {
-  ZeroMemory(this, sizeof(D3Light));
+  memset(this, 0, sizeof(D3Light));
+  m_index      = -1;
   Type         = D3DLIGHT_SPOT;
   m_enabled    = true;
   setDefaultColors();

@@ -31,9 +31,7 @@ protected:
   void setProperty(int id, String &v, const TCHAR *newValue) {
     setProperty<String>(id, v, String(newValue));
   }
-  inline bool setNotifyEnable(bool enable) {
-    const bool old = m_notifyEnable; m_notifyEnable = enable; return old;
-  }
+  bool setNotifyEnable(bool enable);
   inline bool getNotifyEnable() const {
     return m_notifyEnable;
   }

@@ -14,7 +14,8 @@ private:
   D3Light &setDefaultSpot();
 
 public:
-  inline D3Light() : m_index(-1) {
+  inline D3Light() {
+    setUndefined();
   }
   explicit inline D3Light(int index) : m_index(index) {
   }

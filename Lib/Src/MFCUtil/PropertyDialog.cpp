@@ -13,6 +13,10 @@ void PropertyDialog::OnShowWindow(BOOL bShow, UINT nStatus) {
     if(bShow) {
       resetControls();
       reposition();
+      if(!m_hasBeenVisible) {
+        m_hasBeenVisible = true;
+        setNotifyEnable(true);
+      }
       setVisible(true);
     } else {
       setVisible(false);
