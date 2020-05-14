@@ -453,21 +453,6 @@ Field GameBoardObject::getFieldFromPoint(const CPoint &p, const D3Camera *camera
   return NOFIELD;
 }
 
-void GameBoardObject::draw() {
-  __super::draw();
-/*
-  for(int r = 0; r < ROWCOUNT; r++) {
-    for(int c = 0; c < COLCOUNT; c++) {
-      m_fieldObject[r][c]->draw();
-    }
-  }
-*/
-  getDevice().setTexture(0, NULL);
-  for(BYTE attr = 0; attr < ARRAYSIZE(m_brickObject); attr++) {
-    m_brickObject[attr]->draw();
-  }
-}
-
 #ifdef _DEBUG
 String GameBoardObject::toString() const {
   return format(_T("%s BoundingBox:%s")

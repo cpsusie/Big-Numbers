@@ -135,7 +135,7 @@ D3DXMATRIX &BrickObject::getWorld() {
 }
 
 void BrickObject::draw() {
-  getDevice().setSpecularEnable(true);
+  getDevice().setSpecularEnable(true).setTexture(0, NULL);
   __super::draw();
   if(m_marked) {
     m_brickMarker->draw();

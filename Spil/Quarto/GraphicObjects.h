@@ -188,7 +188,6 @@ public:
   static inline UINT getMarkerMaterialId() {
     return s_markerMaterialId;
   }
-  void draw();
 #ifdef _DEBUG
   String toString() const;
 #endif
