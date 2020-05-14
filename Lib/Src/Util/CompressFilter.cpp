@@ -17,7 +17,7 @@ CompressFilter::CompressFilter(ByteOutputStream &dst, CompressionLevel level) : 
 
   const int err = deflateInit(zStream, (int)level);
   if(err != Z_OK) {
-    delete zStream;
+    SAFEDELETE(zStream);
     throwException(_T("%s:deflateInit:returncode=%d"), __TFUNCTION__, err);
   }
   m_zStreamp  = zStream;
