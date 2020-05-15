@@ -1,5 +1,6 @@
 #include "pch.h"
 #include <D3DGraphics/MeshBuilder.h>
+#include <D3DGraphics/D3Device.h>
 #include <D3DGraphics/D3Scene.h>
 #include <D3DGraphics/D3SceneObjectSolidBox.h>
 
@@ -46,5 +47,5 @@ void D3SceneObjectSolidBox::init(const Vertex &p1, const Vertex &p2) {
   mb.addSquareFace(rbf, rtf, rtn, rbn);                // right side
   mb.addSquareFace(rbn, rtn, ltn, lbn);                // front side
 
-  m_mesh = mb.createMesh(getScene(), false);
+  m_mesh = mb.createMesh(getDevice(), false);
 }

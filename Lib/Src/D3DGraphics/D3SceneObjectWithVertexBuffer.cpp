@@ -5,16 +5,16 @@
 
 D3SceneObjectWithVertexBuffer::D3SceneObjectWithVertexBuffer(D3Scene &scene, const String &name)
 : D3SceneObjectVisual(scene, name)
+, m_vertexBuffer(NULL)
+, m_primitiveCount(0)
 {
-  m_vertexBuffer   = NULL;
-  m_primitiveCount = 0;
 }
 
 D3SceneObjectWithVertexBuffer::D3SceneObjectWithVertexBuffer(D3SceneObjectVisual *parent, const String &name)
 : D3SceneObjectVisual(parent, name)
+, m_vertexBuffer(NULL)
+, m_primitiveCount(0)
 {
-  m_vertexBuffer   = NULL;
-  m_primitiveCount = 0;
 }
 
 D3SceneObjectWithVertexBuffer::~D3SceneObjectWithVertexBuffer() {
@@ -42,6 +42,12 @@ D3Device &D3SceneObjectWithVertexBuffer::setStreamSource() {
   D3Device &device = getDevice();
   device.setStreamSource(m_vertexBuffer, m_vertexSize, m_fvf);
   return device;
+}
+
+D3DVERTEXBUFFER_DESC D3SceneObjectWithVertexBuffer::getDesc() const {
+  D3DVERTEXBUFFER_DESC desc;
+  V(m_vertexBuffer->GetDesc(&desc));
+  return desc;
 }
 
 D3Cube D3SceneObjectWithVertexBuffer::getBoundingBox() const {

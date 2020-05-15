@@ -45,7 +45,7 @@ void D3Scene::close() {
 }
 
 LPDIRECT3DDEVICE D3Scene::getDirectDevice() const {
-  return getDevice();
+  return getDevice().getDirectDevice();
 }
 
 D3Camera &D3Scene::addCamera(HWND hwnd, D3Camera *src) {
@@ -129,24 +129,6 @@ void D3Scene::render(CameraSet cameraSet) {
   for(Iterator<UINT> it = cameraSet.getIterator(); it.hasNext();) {
     render(*m_cameraArray[it.next()]);
   }
-}
-
-LPDIRECT3DINDEXBUFFER D3Scene::allocateIndexBuffer(bool int32, UINT count, UINT *bufferSize) {
-  const int itemSize = int32 ? sizeof(long) : sizeof(short);
-  UINT tmp;
-  UINT &totalSize    = bufferSize ? *bufferSize : tmp;
-  totalSize = itemSize*count;
-  LPDIRECT3DINDEXBUFFER result;
-  V(getDirectDevice()->CreateIndexBuffer(totalSize, 0, int32 ? D3DFMT_INDEX32 : D3DFMT_INDEX16, D3DPOOL_DEFAULT, &result, NULL));
-  TRACE_CREATE(result);
-  return result;
-}
-
-LPD3DXMESH D3Scene::allocateMesh(DWORD fvf , UINT faceCount, UINT vertexCount, DWORD options) {
-  LPD3DXMESH result;
-  V(D3DXCreateMeshFVF(faceCount, vertexCount, options, fvf, getDevice(), &result));
-  TRACE_CREATE(result);
-  return result;
 }
 
 void D3Scene::addVisual(D3SceneObjectVisual *obj) {

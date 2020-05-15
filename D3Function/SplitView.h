@@ -50,6 +50,8 @@ public:
   CWnd *findNeighbor(CWnd *wnd) const;
 };
 
+class CD3FunctionDoc;
+
 class CSplitView : public CView {
 private:
   SplitViewSplitter m_splitter;

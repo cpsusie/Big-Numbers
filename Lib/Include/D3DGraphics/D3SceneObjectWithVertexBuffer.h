@@ -29,15 +29,15 @@ protected:
   D3SceneObjectWithVertexBuffer &lockVertexArray(void **a, UINT nbytes);
   D3SceneObjectWithVertexBuffer &unlockVertexArray();
   D3Device &setStreamSource();
-
-public:
   D3SceneObjectWithVertexBuffer(D3Scene             &scene , const String &name = _T("ObjectWithVertexBuffer"));
   D3SceneObjectWithVertexBuffer(D3SceneObjectVisual *parent, const String &name = _T("ObjectWithVertexBuffer"));
   ~D3SceneObjectWithVertexBuffer();
 
+public:
   LPDIRECT3DVERTEXBUFFER getVertexBuffer() const {
     return m_vertexBuffer;
   }
+  D3DVERTEXBUFFER_DESC getDesc() const;
   D3Cube getBoundingBox() const;
   String toString() const;
   String getInfoString() const;

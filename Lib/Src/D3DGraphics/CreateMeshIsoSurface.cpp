@@ -73,6 +73,7 @@ InterruptableIsoSurfaceEvaluator &InterruptableIsoSurfaceEvaluator::createData(F
 
     m_statistics = polygonizer.getStatistics();
     m_mb.validate();
+    m_mb.optimize();
     m_vertexArray = NULL;
   //  m_mb.dump();
   //  m_mb.optimize();

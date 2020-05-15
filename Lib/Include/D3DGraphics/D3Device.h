@@ -4,12 +4,17 @@
 #include <FastSemaphore.h>
 #include <MFCUtil/ColorSpace.h>
 #include "D3DeviceRenderState.h"
+#include "D3AbstractTextureFactory.h"
+#include "D3AbstractMeshFactory.h"
 #include "D3Material.h"
 
 class D3Light;
 class D3Camera;
 
-class D3Device : public D3DeviceRenderState {
+class D3Device : public D3DeviceRenderState
+               , public AbstractMeshFactory
+               , public AbstractTextureFactory
+{
 private:
   HWND             m_hwnd;
   LPDIRECT3DDEVICE m_device;
@@ -27,7 +32,7 @@ public:
   D3Device(HWND hwnd);
   ~D3Device();
 
-  inline operator LPDIRECT3DDEVICE() {
+  LPDIRECT3DDEVICE getDirectDevice() const {
     return m_device;
   }
   inline HWND getHwnd() const {
@@ -272,4 +277,7 @@ public:
     V(m_device->CreateVertexBuffer(totalSize, 0, VertexType::FVF_Flags, D3DPOOL_DEFAULT, &result, NULL)); TRACE_CREATE(result);
     return result;
   }
+  LPDIRECT3DINDEXBUFFER   allocateIndexBuffer( bool int32, UINT count, UINT *bufferSize = NULL);
+  LPD3DXMESH              allocateMesh(        DWORD fvf , UINT faceCount, UINT vertexCount, DWORD options);
+
 };

@@ -9,8 +9,6 @@
 #include "D3Math.h"
 #include "D3CameraArray.h"
 #include "D3SceneObjectVisual.h"
-#include "D3AbstractTextureFactory.h"
-#include "D3AbstractMeshFactory.h"
 #include "D3Light.h"
 #include "D3Material.h"
 
@@ -43,10 +41,7 @@ typedef Iterator<D3SceneObjectVisual*> D3VisualIterator;
 // call SAFERELEASE(effect); on the returned value when finished use
 LPD3DXEFFECT compileEffect(LPDIRECT3DDEVICE device, const String &srcText, StringArray &errorMsg);
 
-class D3Scene : public PropertyContainer
-              , public AbstractMeshFactory
-              , public AbstractTextureFactory
-{
+class D3Scene : public PropertyContainer {
 private:
   friend class D3SceneObjectIterator;
   friend class D3Camera;
@@ -230,13 +225,8 @@ public:
   D3SceneObjectVisual *getPickedVisual(const CPoint &p  , long mask = OBJMASK_ALL, D3DXVECTOR3 *hitPoint = NULL, D3Ray *ray  = NULL, float *dist = NULL, D3PickedInfo *info = NULL) const;
   D3SceneObjectVisual *getPickedVisual(const D3Camera &camera, const D3Ray  &ray, long mask = OBJMASK_ALL, D3DXVECTOR3 *hitPoint = NULL, float *dist = NULL, D3PickedInfo *info = NULL) const;
 
-  LPDIRECT3DINDEXBUFFER   allocateIndexBuffer( bool int32, UINT count, UINT *bufferSize = NULL);
-  LPD3DXMESH              allocateMesh(        DWORD fvf , UINT faceCount, UINT vertexCount, DWORD options);
   void save(const String &fileName) const;
   void load(const String &fileName);
   void save(         XMLDoc &doc) const;
   void load(         XMLDoc &doc);
 };
-
-LPD3DXMESH        createMeshFromVertexFile(     AbstractMeshFactory &amf, const String &fileName, bool doubleSided);
-LPD3DXMESH        createMeshFromObjFile(        AbstractMeshFactory &amf, const String &fileName, bool doubleSided);

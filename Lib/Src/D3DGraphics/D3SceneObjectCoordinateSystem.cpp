@@ -115,7 +115,7 @@ CompactArray<Line3D> VerticalAxisLineObject::createLineArray() {
 class VerticalAxisMeshObject : public D3SceneObjectWithMesh {
 private:
   int m_materialId;
-  static LPD3DXMESH createMesh(D3Scene &scene);
+  static LPD3DXMESH createMesh(D3Device &device);
   D3DXVECTOR3 findCornerNearestCam() const;
 public:
   VerticalAxisMeshObject(D3SceneObjectVisual *parent);
@@ -127,7 +127,7 @@ public:
 };
 
 VerticalAxisMeshObject::VerticalAxisMeshObject(D3SceneObjectVisual *parent)
-: D3SceneObjectWithMesh(parent, createMesh(parent->getScene()), _T("VerticalAxisMeshObject"))
+: D3SceneObjectWithMesh(parent, createMesh(parent->getDevice()), _T("VerticalAxisMeshObject"))
 {
   D3Scene &s = getScene();
   addChild(new VerticalAxisLineObject(this));
@@ -140,13 +140,13 @@ VerticalAxisMeshObject::~VerticalAxisMeshObject() {
   getScene().removeMaterial(m_materialId);
 }
 
-LPD3DXMESH VerticalAxisMeshObject::createMesh(D3Scene &scene) { // static
+LPD3DXMESH VerticalAxisMeshObject::createMesh(D3Device &device) { // static
   MeshBuilder mb;
   const int c1 = mb.addVertex(D3DXORIGIN);
   const int c2 = mb.addVertex(0.1f, 0, 0);
   const int c3 = mb.addVertex(0.1f, 0, 2);
   const int c4 = mb.addVertex(0   , 0, 2);
-  return mb.addSquareFace(c1, c2, c3, c4).createMesh(scene, true);
+  return mb.addSquareFace(c1, c2, c3, c4).createMesh(device, true);
 }
 
 static const D3DXVECTOR3 bottomCorners[] = {
@@ -179,7 +179,7 @@ D3DXMATRIX &VerticalAxisMeshObject::getWorld() {
 class D3CoordinateSystemFrameObject : public D3SceneObjectWithMesh {
 private:
   UINT m_materialId;
-  static LPD3DXMESH createFrameMesh(D3Scene &scene, const D3Cube &cube);
+  static LPD3DXMESH createFrameMesh(D3Device &device, const D3Cube &cube);
 public:
   D3CoordinateSystemFrameObject(D3SceneObjectVisual *parent, const D3Cube &cube);
   ~D3CoordinateSystemFrameObject();
@@ -191,18 +191,18 @@ public:
   }
 };
 
-LPD3DXMESH D3CoordinateSystemFrameObject::createFrameMesh(D3Scene &scene, const D3Cube &cube) {
+LPD3DXMESH D3CoordinateSystemFrameObject::createFrameMesh(D3Device &device, const D3Cube &cube) { // static
   MeshBuilder mb;
   const D3DXVECTOR3 p1 = cube.getMin(), p2 = cube.getMax();
   const int c1 = mb.addVertex(p1.x, p1.y, p1.z);
   const int c2 = mb.addVertex(p1.x, p2.y, p1.z);
   const int c3 = mb.addVertex(p2.x, p2.y, p1.z);
   const int c4 = mb.addVertex(p2.x, p1.y, p1.z);
-  return mb.addSquareFace(c1, c2, c3, c4).createMesh(scene, true);
+  return mb.addSquareFace(c1, c2, c3, c4).createMesh(device, true);
 }
 
 D3CoordinateSystemFrameObject::D3CoordinateSystemFrameObject(D3SceneObjectVisual *parent, const D3Cube &cube)
-: D3SceneObjectWithMesh(parent, createFrameMesh(parent->getScene(), cube), _T("FrameObject"))
+: D3SceneObjectWithMesh(parent, createFrameMesh(parent->getDevice(), cube), _T("FrameObject"))
 {
   D3Scene &s = getScene();
   m_materialId = s.addMaterial(D3Material::createDefaultMaterial());

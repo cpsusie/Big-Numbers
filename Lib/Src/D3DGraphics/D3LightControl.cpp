@@ -120,7 +120,7 @@ D3Light D3LightControl::getLight() const { // public
 }
 
 LPD3DXMESH D3LightControl::getMesh() const {
-  return ::getMesh(getScene(), getLightType());
+  return ::getMesh(getDevice(), getLightType());
 }
 
 void D3LightControl::createMaterial() { // protected

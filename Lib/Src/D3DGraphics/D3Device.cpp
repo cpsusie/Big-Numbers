@@ -79,3 +79,20 @@ D3DLIGHT D3Device::getLight(UINT lightIndex) const {
   V(m_device->GetLight(lightIndex, &lp));
   return lp;
 }
+
+LPDIRECT3DINDEXBUFFER D3Device::allocateIndexBuffer(bool int32, UINT count, UINT *bufferSize) {
+  const int itemSize   = int32 ? sizeof(long) : sizeof(short);
+  UINT tmp, &totalSize = bufferSize ? *bufferSize : tmp;
+  totalSize = itemSize * count;
+  LPDIRECT3DINDEXBUFFER result;
+  V(m_device->CreateIndexBuffer(totalSize, 0, int32 ? D3DFMT_INDEX32 : D3DFMT_INDEX16, D3DPOOL_DEFAULT, &result, NULL));
+  TRACE_CREATE(result);
+  return result;
+}
+
+LPD3DXMESH D3Device::allocateMesh(DWORD fvf , UINT faceCount, UINT vertexCount, DWORD options) {
+  LPD3DXMESH result;
+  V(D3DXCreateMeshFVF(faceCount, vertexCount, options, fvf, m_device, &result));
+  TRACE_CREATE(result);
+  return result;
+}

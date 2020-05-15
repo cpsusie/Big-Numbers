@@ -30,7 +30,7 @@ D3SceneObjectWithMesh::~D3SceneObjectWithMesh() {
 
 void D3SceneObjectWithMesh::createMesh(DWORD faceCount, DWORD vertexCount, DWORD fvf) {
   releaseMesh();
-  m_mesh = getScene().allocateMesh(fvf, faceCount, vertexCount, D3DXMESH_SYSTEMMEM);
+  m_mesh = getDevice().allocateMesh(fvf, faceCount, vertexCount, D3DXMESH_SYSTEMMEM);
 }
 
 void D3SceneObjectWithMesh::releaseMesh() {

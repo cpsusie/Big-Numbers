@@ -651,6 +651,7 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="D3FunctionSurface.h" />
     <ClInclude Include="Debugger.h" />
     <ClInclude Include="DebugIsoSurface.h" />
     <ClInclude Include="EnterOptionsNameDlg.h" />

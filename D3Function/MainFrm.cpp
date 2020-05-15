@@ -9,10 +9,11 @@
 #include "FunctionR2R1SurfaceParametersDlg.h"
 #include "ParametricR2R3SurfaceParametersDlg.h"
 #include "IsoSurfaceParametersDlg.h"
-#include "MainFrm.h"
+#include "D3FunctionSurface.h"
 #include "SplitView.h"
 #include "EnterOptionsNameDlg.h"
 #include "OptionsOrganizerDlg.h"
+#include "MainFrm.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -367,75 +368,6 @@ void CMainFrame::createSaddle() {
   m_functionR2R1SurfaceParam.m_animation.reset();
 
   setCalculatedObject(m_functionR2R1SurfaceParam);
-}
-
-class D3AnimatedFunctionSurface : public D3SceneObjectAnimatedMesh {
-private:
-  int m_materialId;
-public:
-  D3AnimatedFunctionSurface(D3Scene &scene, const MeshArray &ma) : D3SceneObjectAnimatedMesh(scene, ma) {
-    m_materialId = scene.addMaterial(D3Material::createDefaultMaterial());
-  }
-  ~D3AnimatedFunctionSurface() {
-    getScene().removeMaterial(m_materialId);
-  }
-  void modifyContextMenu(HMENU menu) {
-    appendMenuItem(menu, _T("Edit function"), ID_OBJECT_EDITFUNCTION);
-  }
-  int getMaterialId() const {
-    return m_materialId;
-  }
-};
-
-class D3FunctionSurface : public D3SceneObjectWithMesh {
-private:
-  int m_materialId;
-public:
-  D3FunctionSurface(D3Scene &scene, LPD3DXMESH mesh) : D3SceneObjectWithMesh(scene, mesh) {
-    m_materialId = scene.addMaterial(D3Material::createDefaultMaterial());
-  }
-  ~D3FunctionSurface() {
-    getScene().removeMaterial(m_materialId);
-  }
-  void modifyContextMenu(HMENU menu) {
-    appendMenuItem(menu, _T("Edit function"), ID_OBJECT_EDITFUNCTION);
-  }
-  int getMaterialId() const {
-    return m_materialId;
-  }
-};
-
-void CMainFrame::setCalculatedObject(ExprFunctionR2R1SurfaceParameters &param) {
-  stopDebugging();
-  if(param.isAnimated()) {
-    D3AnimatedFunctionSurface *obj = new D3AnimatedFunctionSurface(m_scene, createMeshArray(this, m_scene, param)); TRACE_NEW(obj);
-    setCalculatedObject(obj, &param);
-  } else {
-    D3FunctionSurface *obj = new D3FunctionSurface(m_scene, createMesh(m_scene, param)); TRACE_NEW(obj);
-    setCalculatedObject(obj, &param);
-  }
-}
-
-void CMainFrame::setCalculatedObject(ExprParametricR2R3SurfaceParameters &param) {
-  stopDebugging();
-  if(param.isAnimated()) {
-    D3AnimatedFunctionSurface *obj = new D3AnimatedFunctionSurface(m_scene, createMeshArray(this, m_scene, param)); TRACE_NEW(obj);
-    setCalculatedObject(obj, &param);
-  } else {
-    D3FunctionSurface *obj = new D3FunctionSurface(m_scene, createMesh(m_scene, param)); TRACE_NEW(obj);
-    setCalculatedObject(obj, &param);
-  }
-}
-
-void CMainFrame::setCalculatedObject(ExprIsoSurfaceParameters &param) {
-  stopDebugging();
-  if(param.isAnimated()) {
-    D3AnimatedFunctionSurface *obj = new D3AnimatedFunctionSurface(m_scene, createMeshArray(this, m_scene, param)); TRACE_NEW(obj);
-    setCalculatedObject(obj, &param);
-  } else {
-    D3FunctionSurface *obj = new D3FunctionSurface(m_scene, createMesh(m_scene, param)); TRACE_NEW(obj);
-    setCalculatedObject(obj, &param);
-  }
 }
 
 void CMainFrame::deleteCalculatedObject() {

@@ -133,10 +133,19 @@ private:
   void createInitialObject();
   void createSaddle();
   void deleteCalculatedObject();
-  void setCalculatedObject(ExprFunctionR2R1SurfaceParameters   &param);
-  void setCalculatedObject(ExprParametricR2R3SurfaceParameters &param);
-  void setCalculatedObject(ExprIsoSurfaceParameters            &param);
   void setCalculatedObject(D3SceneObjectVisual *obj, PersistentData *param = NULL);
+
+  template<typename T> void setCalculatedObject(T &param) {
+    stopDebugging();
+    if(param.isAnimated()) {
+      D3AnimatedFunctionSurface *obj = createAnimatedSurface(this, m_scene, param);
+      setCalculatedObject(obj, &param);
+    } else {
+      D3FunctionSurface *obj = createSurface(m_scene, param);
+      setCalculatedObject(obj, &param);
+    }
+  }
+
   D3SceneObjectVisual *getCalculatedObject() const;
 
   void startDebugging();

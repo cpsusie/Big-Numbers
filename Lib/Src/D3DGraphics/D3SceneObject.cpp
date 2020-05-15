@@ -7,5 +7,5 @@ D3Device &D3SceneObject::getDevice() const {
   return getScene().getDevice();
 }
 LPDIRECT3DDEVICE D3SceneObject::getDirectDevice() const {
-  return getDevice();
+  return getScene().getDirectDevice();
 }

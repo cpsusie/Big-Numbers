@@ -2,13 +2,14 @@
 
 #include "D3SceneObjectWithVertexBuffer.h"
 
-class D3SceneObjectVisualNormals : public D3SceneObjectWithVertexBuffer {
+class D3SceneObjectVisualNormals : public D3SceneObjectVisual {
 private:
-  UINT m_normalCount;
-  void addArrowVertices(VertexNormal *dst, const VertexNormal &src) const;
+  D3SceneObjectVisual *m_normalsObject;
   void createNormalsObject(LPDIRECT3DVERTEXBUFFER vertexBuffer);
+  void destroyNormalsObject();
 public:
   D3SceneObjectVisualNormals(D3SceneObjectVisual *parent);
+  ~D3SceneObjectVisualNormals();
 
   D3DXMATRIX &getWorld() {
     return getParent()->getWorld();
