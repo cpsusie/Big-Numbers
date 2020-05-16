@@ -4,7 +4,7 @@
 
 #include <FlagTraits.h>
 #include <Math/Expression/ExpressionWrapper.h>
-#include <D3DGraphics/IsoSurface.h>
+#include <D3DGraphics/ExprIsoSurfaceParameters.h>
 #include <D3DGraphics/IsosurfacePolygonizer.h>
 #include <D3DGraphics/D3SceneObjectWireFrameBox.h>
 #include <D3DGraphics/MeshBuilder.h>

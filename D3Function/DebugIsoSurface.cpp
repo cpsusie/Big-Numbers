@@ -2,6 +2,7 @@
 
 #ifdef ISODEBUGGER
 
+#include <D3DGraphics/D3Device.h>
 #include <D3DGraphics/D3Cube.h>
 #include <D3DGraphics/D3Camera.h>
 #include <D3DGraphics/D3SceneObjectWireFrameBox.h>
@@ -568,16 +569,16 @@ void DebugIsoSurface::markCurrentVertex(const IsoSurfaceVertex &v) {
 }
 
 DebugMeshObject *DebugIsoSurface::createMeshObject() {
-  D3Scene         &scene = m_sc.getScene();
-  DebugMeshObject *obj = new DebugMeshObject(&m_sceneObject, m_mb.createMesh(scene, m_param.m_doubleSided)); TRACE_NEW(obj);
+  D3Device        &device = m_sc.getScene().getDevice();
+  DebugMeshObject *obj    = new DebugMeshObject(&m_sceneObject, m_mb.createMesh(device, m_param.m_doubleSided)); TRACE_NEW(obj);
   obj->setFillMode(m_sceneObject.getFillMode());
   obj->setShadeMode(m_sceneObject.getShadeMode());
   return obj;
 }
 
 FinalDebugIsoSurface *DebugIsoSurface::createFinalDebugIsoSurface(D3SceneEditor &editor) const {
-  D3Scene              &scene = *editor.getScene();
-  FinalDebugIsoSurface *obj   = new FinalDebugIsoSurface(editor, m_mb.createMesh(scene, m_param.m_doubleSided), *m_polygonizer); TRACE_NEW(obj);
+  D3Device             &device = m_sc.getScene().getDevice();
+  FinalDebugIsoSurface *obj    = new FinalDebugIsoSurface(editor, m_mb.createMesh(device, m_param.m_doubleSided), *m_polygonizer); TRACE_NEW(obj);
   obj->setFillMode( m_sceneObject.getFillMode());
   obj->setShadeMode(m_sceneObject.getShadeMode());
   return obj;

@@ -154,7 +154,7 @@ void CIsoSurfaceParametersDlg::enableTimeFields() {
 #ifndef ISODEBUGGER
   const bool enableDebugPolygonizer = false;
 #else
-  const bool enableDebugPolygonizer = !enable;
+  const bool enableDebugPolygonizer = !m_includeTime;
 #endif // ISODEBUGGER
 
   GetDlgItem(IDC_CHECK_DEBUGPOLYGONIZER)->EnableWindow(enableDebugPolygonizer);
