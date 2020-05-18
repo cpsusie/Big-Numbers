@@ -1329,7 +1329,7 @@ static void showText(const String &str) {
   FILE *f = MKFOPEN(fileName, _T("w"));
   _ftprintf(f, _T("%s"), str.cstr());
   fclose(f);
-  ExternProcess::run(false, _T("c:\\windows\\system32\\notepad.exe"), fileName.cstr(), NULL);
+  ExternProcess::runNoWait(_T("c:\\windows\\system32\\notepad.exe"), fileName.cstr(), NULL);
 }
 
 void D3SceneEditor::OnObjectShowData() {
