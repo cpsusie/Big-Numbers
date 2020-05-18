@@ -28,12 +28,14 @@ private:
   // No wait. Can communicate with process' stdin/stdout by send/receive
   void start(                  bool silent, const ArgArray &argv);
 
+  // no wait for termination. no return code
+  static void runSpawnNoWait(   const String &program, const TCHAR * const *argv);
   // Wait for termination. Return exit-code
-  static int runSpawn(         const String &program, const TCHAR * const *argv);
+  static int  runSpawn(         const String &program, const TCHAR * const *argv);
   // Wait for termination. Return exit-code
-  static int runCreateProcess( const String &program, const String &commandLine);
+  static int  runCreateProcess( const String &program, const String &commandLine);
   // Wait for termination. Return exit-code
-  static int run(              bool silent, const ArgArray &argv);
+  static int  run(              bool silent, const ArgArray &argv);
 
   void cleanup();
 
@@ -70,6 +72,11 @@ public:
   // Cannot use String &, because va_start will fail
   // Terminate argumentlist with NULL
   static int  run(bool silent, const String program, ...);
+  // Start process, no wait for termination. no communication possible. the started program is on its own
+  // throw exception if program could not be started
+  // Cannot use String &, because va_start will fail
+  // Terminate argumentlist with NULL
+  static void runNoWait(const String program, ...);
 
   // Works only together with vstart, start.
   void stop();

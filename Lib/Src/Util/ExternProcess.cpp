@@ -318,6 +318,14 @@ int ExternProcess::runSpawn(const String &program, const TCHAR * const *argv) { 
   return exitCode;
 }
 
+void ExternProcess::runSpawnNoWait(const String &program, const TCHAR * const *argv) { // static
+  HANDLE processHandle = (HANDLE)_tspawnv(_P_NOWAIT, program.cstr(), argv);
+  if(processHandle == INVALID_HANDLE_VALUE) {
+    throwErrNoOnSysCallException(__TFUNCTION__);
+  }
+  CloseHandle(processHandle);
+}
+
 int ExternProcess::runCreateProcess(const String &program, const String &commandLine) { // static
   STARTUPINFO startupInfo;
   memset(&startupInfo, 0, sizeof(startupInfo));
@@ -363,4 +371,12 @@ int ExternProcess::run(bool silent, const String program, ...) { // static
   ArgArray argv(program, argptr);
   va_end(argptr);
   return run(silent, argv);
+}
+
+void ExternProcess::runNoWait(const String program, ...) { // static
+  va_list argptr;
+  va_start(argptr, program);
+  ArgArray argv(program, argptr);
+  va_end(argptr);
+  runSpawnNoWait(program, argv.getBuffer());
 }
