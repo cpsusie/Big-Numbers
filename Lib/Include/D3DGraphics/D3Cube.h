@@ -38,6 +38,12 @@ public:
   D3Cube operator-(const D3DXVECTOR3 &p) const {
     return D3Cube(getMin() - p, size());
   }
+  // union cube
+  D3Cube operator+(const D3Cube &c) const {
+    return D3Cube(min(getMinX(),c.getMinX()),min(getMinY(),c.getMinY()),min(getMinZ(),c.getMinZ())
+                 ,max(getMaxX(),c.getMaxX()),max(getMaxY(),c.getMaxY()),max(getMaxZ(),c.getMaxZ())
+                 );
+  }
 
   static D3Cube getSquareCube(const D3DXVECTOR3 &center, float sideLength) {
     if(sideLength < 0) sideLength = -sideLength;
@@ -52,4 +58,30 @@ public:
 
 
 D3Cube getBoundingBox(LPDIRECT3DVERTEXBUFFER vertexBuffer);
-D3Cube getBoundingBox(LPD3DXMESH             mesh);
+D3Cube getBoundingBox(LPD3DXMESH             mesh        );
+
+template<typename V> D3Cube getBoundingBox(const CompactArray<V> &a) {
+  const size_t n = a.size();
+  if(n == 0) return D3Cube();
+  const V *vp = a.getBuffer(), *endp = vp + n;
+  D3DXVECTOR3 pmin = vp->getPos(), pmax = pmin;
+  while(++vp < endp) {
+    const D3DXVECTOR3 &v = vp->getPos();
+    if(v.x < pmin.x) {
+      pmin.x = v.x;
+    } else if(v.x > pmax.x) {
+      pmax.x = v.x;
+    }
+    if(v.y < pmin.y) {
+      pmin.y = v.y;
+    } else if(v.y > pmax.y) {
+      pmax.y = v.y;
+    }
+    if(v.z < pmin.z) {
+      pmin.z = v.z;
+    } else if(v.z > pmax.z) {
+      pmax.z = v.z;
+    }
+  }
+  return D3Cube(pmin,pmax);
+}
