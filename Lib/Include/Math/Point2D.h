@@ -12,36 +12,40 @@ public:
   inline Size2DTemplate() {
     cx = cy = 0;
   }
-  inline Size2DTemplate(const T &_cx, const T&_cy) : cx(_cx), cy(_cy) {
+  template<typename S> Size2DTemplate(const Size2DTemplate<S> &s) : cx((T)s.cx), cy((T)s.cy) {
   }
-  inline Size2DTemplate operator-(const Size2DTemplate &s) const {
-    return Size2DTemplate(cx-s.cx, cy-s.cy);
+  template<typename X, typename Y> Size2DTemplate(const X &_cx, const Y &_cy) : cx((T)_cx), cy((T)_cy) {
   }
-  inline Size2DTemplate operator+(const Size2DTemplate &s) const {
-    return Size2DTemplateSize2D(cx+s.cx, cy+s.cy);
-  }
-  friend inline Size2DTemplate operator*(const T &factor, const Size2DTemplate &s) {
-    return Size2DTemplate(factor*s.cx, factor*s.cy);
-  }
-  inline Size2DTemplate operator*(const T &factor) const {
-    return Size2DTemplate(cx*factor, cy*factor);
-  }
-  inline Size2DTemplate operator/(const T &factor) const {
-    return Size2DTemplate(cx/factor, cy/factor);
-  }
-  inline Size2DTemplate &operator*=(const T &factor) {
-    cx *= factor;
-    cy *= factor;
+  template<typename S> Size2DTemplate<T> &operator=(const Size2DTemplate<S> &s) {
+    cx = (T)s.cx;
+    cy = (T)s.cy;
     return *this;
   }
-  inline Size2DTemplate &operator/=(const T &factor) {
-    cx /= factor;
-    cy /= factor;
+  template<typename S> Size2DTemplate<T> operator-(const Size2DTemplate<S> &s) const {
+    return Size2DTemplate<T>(cx-s.cx, cy-s.cy);
+  }
+  template<typename S> Size2DTemplate<T> operator+(const Size2DTemplate<S> &s) const {
+    return Size2DTemplate<T>(cx+s.cx, cy+s.cy);
+  }
+  template<typename S> Size2DTemplate<T> operator*(const S &factor) const {
+    return Size2DTemplate<T>(cx*factor, cy*factor);
+  }
+  template<typename S> Size2DTemplate<T> operator/(const S &factor) const {
+    return Size2DTemplate<T>(cx/factor, cy/factor);
+  }
+  template<typename S> Size2DTemplate<T> &operator*=(const S &factor) {
+    cx *= (T)factor;
+    cy *= (T)factor;
+    return *this;
+  }
+  template<typename S> Size2DTemplate<T> &operator/=(const S &factor) {
+    cx /= (T)factor;
+    cy /= (T)factor;
     return *this;
   }
 
   inline T length() const {
-    return sqrt(cx*cx + cy*cy);
+    return (T)sqrt(cx*cx + cy*cy);
   }
   inline T area() const {
     return cx*cy;
@@ -65,6 +69,10 @@ public:
   }
 };
 
+template<typename T, typename S> Size2DTemplate<S> operator*(const T &factor, const Size2DTemplate<S> &s) {
+  return s * f;
+}
+
 typedef Size2DTemplate<float >   FloatSize2D;
 typedef Size2DTemplate<double>   Size2D;
 typedef Size2DTemplate<Double80> D80Size2D;
@@ -77,7 +85,16 @@ public:
     x = y = 0;
   }
 
-  inline Point2DTemplate(const T &_x, const T &_y) : x(_x), y(_y) {
+  template<typename S> Point2DTemplate(const Point2DTemplate<S> &p) : x((T)p.x), y((T)p.y) {
+  }
+  template<typename X, typename Y> Point2DTemplate(const X &_x, const Y &_y) : x((T)_x), y((T)_y) {
+  }
+  template<typename S> inline Point2DTemplate(const Size2DTemplate<S> &s) : x((T)s.cx), y((T)s.cy) {
+  }
+  template<typename S> Point2DTemplate<T> &operator=(const Point2DTemplate<S> &p) {
+    x = (T)p.x;
+    y = (T)p.y;
+    return *this;
   }
 
   explicit Point2DTemplate(const String &s) {
@@ -117,77 +134,75 @@ public:
     y = _y;
   }
 
-  inline Point2DTemplate(const Size2DTemplate<T> &s) : x(s.cx), y(s.cy) {
-  }
 //  Point2D(const POINTFX &p);
 
   inline Point2DTemplate operator-() const {
     return Point2DTemplate(-x, -y);
   }
-  inline Point2DTemplate operator+(const Point2DTemplate &p) const {
-    return Point2DTemplate(x+p.x, y+p.y);
+  template<typename S> Point2DTemplate<T> operator+(const Point2DTemplate<S> &p) const {
+    return Point2DTemplate<T>(x+p.x, y+p.y);
   }
-  inline Point2DTemplate operator-(const Point2DTemplate &p) const {
-    return Point2DTemplate(x-p.x, y-p.y);
+  template<typename S> Point2DTemplate<T> operator-(const Point2DTemplate<S> &p) const {
+    return Point2DTemplate<T>(x-p.x, y-p.y);
   }
-  inline Point2DTemplate operator+(const Size2D &s) const {
-    return Point2DTemplate(x+s.cx, y+s.cy);
+  template<typename S> Point2DTemplate<T> operator+(const Size2DTemplate<S> &s) const {
+    return Point2DTemplate<T>(x+s.cx, y+s.cy);
   }
-  inline Point2DTemplate operator-(const Size2D &s) const {
-    return Point2DTemplate(x-s.cx, y-s.cy);
+  template<typename S> Point2DTemplate operator-(const Size2DTemplate<S> &s) const {
+    return Point2DTemplate<T>(x-s.cx, y-s.cy);
   }
 
-  inline Point2DTemplate operator%(const Point2DTemplate &p) const { // x+=p1.x, y-=p1.y
-    return Point2DTemplate(x+p.x, y-p.y);
+  template<typename S> Point2DTemplate<T> operator%(const Point2DTemplate<S> &p) const { // x+=p1.x, y-=p1.y
+    return Point2DTemplate<T>(x+p.x, y-p.y);
   }
-  inline Point2DTemplate operator*(const T &factor) const {
+  template<typename S> Point2DTemplate operator*(const S &factor) const {
     return Point2DTemplate(x*factor, y*factor);
   }
-  inline Point2DTemplate operator/(const T &factor) const {
+  template<typename S> Point2DTemplate operator/(const S &factor) const {
     return Point2DTemplate(x/factor, y/factor);
   }
 
-  inline T operator*(const Point2DTemplate &p) const {
-    return x*p.x + y*p.y;
+  template<typename S> T operator*(const Point2DTemplate<S> &p) const {
+    return (T)(x*p.x + y*p.y);
   }
-  inline Point2DTemplate &operator+=(const Point2DTemplate &p) {
-    x += p.x;
-    y += p.y;
+  template<typename S> Point2DTemplate<T> &operator+=(const Point2DTemplate<S> &p) {
+    x += (T)p.x;
+    y += (T)p.y;
     return *this;
   }
-  inline Point2DTemplate &operator-=(const Point2DTemplate &p) {
-    x -= p.x;
-    y -= p.y;
+  template<typename S> Point2DTemplate<T> &operator-=(const Point2DTemplate<S> &p) {
+    x -= (T)p.x;
+    y -= (T)p.y;
     return *this;
   }
-  inline Point2DTemplate &operator+=(const Size2D &s) {
-    x += s.cx;
-    y += s.cy;
+  template<typename S> Point2DTemplate<T> &operator+=(const Size2DTemplate<S> &s) {
+    x += (T)s.cx;
+    y += (T)s.cy;
     return *this;
   }
-  inline Point2DTemplate &operator-=(const Size2D &s) {
-    x -= s.cx;
-    y -= s.cy;
+  template<typename S> Point2DTemplate<T> &operator-=(const Size2DTemplate<S> &s) {
+    x -= (T)s.cx;
+    y -= (T)s.cy;
     return *this;
   }
-  inline Point2DTemplate &operator*=(const T &factor) {
-    x *= factor;
-    y *= factor;
+  template<typename S> Point2DTemplate<T> &operator*=(const S &factor) {
+    x *= (T)factor;
+    y *= (T)factor;
     return *this;
   }
-  inline Point2DTemplate &operator/=(const T &factor) {
-    x /= factor;
-    y /= factor;
+  template<typename S> Point2DTemplate<T> &operator/=(const S &factor) {
+    x /= (T)factor;
+    y /= (T)factor;
     return *this;
   }
-  Point2DTemplate rotate(const T &rad) const {
-    const T cs = cos(rad);
-    const T sn = sin(rad);
-    return Point2DTemplate(cs * x + -sn * y, sn * x + cs * y);
+  template<typename S> Point2DTemplate<T> rotate(const S &rad) const {
+    const S cs = cos(rad);
+    const S sn = sin(rad);
+    return Point2DTemplate<T>(cs * x + -sn * y, sn * x + cs * y);
   }
 
   inline T length() const {
-    return sqrt(x*x + y*y);
+    return (T)sqrt(x*x + y*y);
   }
 
   inline Point2DTemplate &normalize() {
@@ -240,7 +255,7 @@ typedef Line2DTemplate<Double80> D80Line2D;
 typedef Line2DTemplate<Real>     RealLine2D;
 
 template<typename T> T distance(const Point2DTemplate<T> &p1, const Point2DTemplate<T> &p2) {
-  return sqrt(sqr(p1.x - p2.x) + sqr(p1.y - p2.y));
+  return (T)sqrt(sqr(p1.x - p2.x) + sqr(p1.y - p2.y));
 }
 
 template<typename T> Point2DTemplate<T> pointOfIntersection(const Line2DTemplate<T> &line1, const Line2DTemplate<T> &line2, bool &intersect) {

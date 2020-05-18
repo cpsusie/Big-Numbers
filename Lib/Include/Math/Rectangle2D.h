@@ -123,11 +123,26 @@ template<typename T> Rectangle2DTemplate<T> getUnion(const Rectangle2DTemplate<T
   return Rectangle2DTemplate<T>(minX,minY, maxX-minX,maxY-minY);
 }
 
-template<typename T> class Point2DArrayTemplate : public CompactArray<Point2DTemplate<T> > {
+template<typename T> class Point2DTemplateArray : public CompactArray<Point2DTemplate<T> > {
 public:
-  Point2DArrayTemplate() {
+  Point2DTemplateArray() {
   }
-  explicit Point2DArrayTemplate(size_t capacity) : CompactArray<Point2DTemplate<T> >(capacity) {
+  explicit Point2DTemplateArray(size_t capacity) : CompactArray(capacity) {
+  }
+  template<typename S> Point2DTemplateArray(const Point2DTemplateArray<S> &src) : CompactArray(src.size) {
+    const size_t n = src.size();
+    for(const Point2DTemplate<S> *srcp = src.getBuffer(); *endp = srcp + n, srcp < endp;) {
+      add(Point2DTemplate<T>(*(srcp++)));
+    }
+  }
+  template<typename S> Point2DTemplateArray<T> &operator=(const Point2DTemplateArray<S> &src) {
+    const size_t n = src.size();
+    clear(n);
+    if(n == 0) return *this;
+    for(const Point2DTemplate<S> *srcp = src.getBuffer(), *endp = srcp + n; srcp < endp;) {
+      add(Point2DTemplate<T>(*(srcp++)));
+    }
+    return *this;
   }
   Rectangle2DTemplate<T> getBoundingBox() const {
     if(size() == 0) {
@@ -145,10 +160,10 @@ public:
   }
 };
 
-typedef Point2DArrayTemplate<float   > FloatPoint2DArray;
-typedef Point2DArrayTemplate<double  > Point2DArray;
-typedef Point2DArrayTemplate<Double80> D80Point2DArray;
-typedef Point2DArrayTemplate<Real>     RealPoint2DArray;
+typedef Point2DTemplateArray<float   > FloatPoint2DArray;
+typedef Point2DTemplateArray<double  > Point2DArray;
+typedef Point2DTemplateArray<Double80> D80Point2DArray;
+typedef Point2DTemplateArray<Real>     RealPoint2DArray;
 
 template<typename T> class Point2DRefArrayTemplate : public CompactArray<Point2DTemplate<T>*> {
 public:
