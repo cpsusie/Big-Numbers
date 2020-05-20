@@ -16,11 +16,6 @@ D3DXMATRIX createScaleMatrix(const D3DXVECTOR3 &s) {
   return *D3DXMatrixScaling(&m, s.x, s.y, s.z);
 }
 
-D3DXMATRIX createRotationMatrix(const D3DXVECTOR3 &axes, float rad) {
-  D3DXMATRIX matRot;
-  return *D3DXMatrixRotationAxis(&matRot, &axes, rad);
-}
-
 D3DXVECTOR3 rotate(const D3DXVECTOR3 &v, const D3DXVECTOR3 &axes, float rad) {
   D3DXMATRIX matRot;
   return *D3DXMatrixRotationAxis(&matRot, &axes, rad) * v;
@@ -38,11 +33,8 @@ D3DXMATRIX &D3DXMatrixLookAt(D3DXMATRIX &view, const D3DXVECTOR3 &eye, const D3D
        : *D3DXMatrixLookAtLH(&view, &eye, &lookAt, &up);
 }
 
-static D3DXVECTOR3 randomUnitVector() {
-  D3DXVECTOR3 v;
-  v.x = (float)rand() / RAND_MAX;
-  v.y = (float)rand() / RAND_MAX;
-  v.z = (float)rand() / RAND_MAX;
+D3DXVECTOR3 randUnitVector(RandomGenerator &rnd) {
+  D3DXVECTOR3 v(rnd.nextFloat(-1, 1), rnd.nextFloat(-1, 1), rnd.nextFloat(-1, 1));
   return unitVector(v);
 }
 
@@ -98,7 +90,7 @@ D3DXVECTOR3 createUnitVector(UINT i) {
 D3DXVECTOR3 ortonormalVector(const D3DXVECTOR3 &v) {
   const D3DXVECTOR3 tmp = unitVector(v);
   for(;;) {
-    D3DXVECTOR3 Y = randomUnitVector();
+    D3DXVECTOR3 Y = randUnitVector();
     Y -= tmp * (Y * tmp); // make Y perpendicular to X
     const float l = length(Y);
     if(l != 0) {
@@ -121,22 +113,10 @@ float det(const D3DXMATRIX &m) {
   return D3DXMatrixDeterminant(&m);
 }
 
-/*
-D3DXVECTOR3 myMultiply(const D3DXMATRIX &m, const D3DXVECTOR3 &v) {
-  D3DXVECTOR3 r;
-  r.x = m._11 * v.x + m._12 * v.y + m._13 * v.z;
-  r.y = m._21 * v.x + m._22 * v.y + m._23 * v.z;
-  r.z = m._31 * v.x + m._32 * v.y + m._33 * v.z;
-  return r;
-}
-*/
-
 D3DXVECTOR3 operator*(const D3DXMATRIX &m, const D3DXVECTOR3 &v) {
   D3DXVECTOR4 v4;
   D3DXVec3Transform(&v4, &v, &m);
   return D3DXVECTOR3(v4.x,v4.y,v4.z);
-
-//  D3DXVECTOR3 result1 = myMultiply(m,v);
 }
 
 D3DXVECTOR3 operator*(const D3DXVECTOR3 &v, const D3DXMATRIX &m) {
@@ -175,5 +155,3 @@ String toString(const D3DXMATRIX &m, int dec) {
   }
   return result;
 }
-
-

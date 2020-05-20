@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Random.h>
 #include <MFCUtil/DirectXDeviceFactory.h>
 #include <Math/MathLib.h>
 #include <Math/Point2D.h>
@@ -18,7 +19,7 @@ D3DXVECTOR3 rotate(               const D3DXVECTOR3 &v, const D3DXVECTOR3 &axis,
 D3DXVECTOR3 rotate(               const D3DXVECTOR3 &v, const D3DXQUATERNION &q);
 
 D3DXVECTOR3 cross(                const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2);
-D3DXVECTOR3 randomUnitVector();
+D3DXVECTOR3 randUnitVector(       RandomGenerator   &rnd = *RandomGenerator::s_stdGenerator);
 D3DXVECTOR3 ortonormalVector(     const D3DXVECTOR3 &v);
 String      toString(             const D3DXVECTOR3 &v, int dec = 3);
 String      toString(             const D3DXVECTOR4 &v, int dec = 3);
@@ -28,7 +29,6 @@ D3DXMATRIX  inverse(              const D3DXMATRIX  &m);
 D3DXMATRIX  createIdentityMatrix();
 D3DXMATRIX  createTranslateMatrix(const D3DXVECTOR3 &v);
 D3DXMATRIX  createScaleMatrix(    const D3DXVECTOR3 &s);
-D3DXMATRIX  createRotationMatrix( const D3DXVECTOR3 &axis, float rad);
 D3DXVECTOR3 operator*(            const D3DXMATRIX  &m   , const D3DXVECTOR3 &v);
 D3DXVECTOR3 operator*(            const D3DXVECTOR3 &v   , const D3DXMATRIX  &m);
 // return quarternion that rotates unit-vector[unitIndex] pointing into dir
@@ -157,6 +157,18 @@ public:
     FVF_Flags = D3DFVF_XYZ | D3DFVF_NORMAL
   };
 
+  inline VertexNormal() {
+  }
+  template<typename P, typename N> VertexNormal(const Point3DTemplate<P> &pos, const Point3DTemplate<N> &normal)
+    :  x((float)pos.x   ),  y((float)pos.y   ),  z((float)pos.z   )
+    , nx((float)normal.x), ny((float)normal.y), nz((float)normal.z)
+  {
+  }
+  inline VertexNormal(const D3DXVECTOR3 &pos, const D3DXVECTOR3 &normal)
+    :  x(pos.x   ),  y(pos.y   ),  z(pos.z   )
+    , nx(normal.x), ny(normal.y), nz(normal.z)
+  {
+  }
   FVF_TRAITS(VertexNormal,A,A,E,E)
 };
 
@@ -231,10 +243,12 @@ UINT formatToSize(D3DFORMAT f  );
 class Line3D {
 public:
   Vertex m_p1, m_p2;
-  inline Line3D() {}
+  inline Line3D() {
+  }
   inline Line3D(const Vertex &p1, const Vertex &p2) : m_p1(p1), m_p2(p2) {
   }
-  inline Line3D(const Point3D &p1, const Point3D &p2) : m_p1(p1), m_p2(p2) {
+  template<typename P1, typename P2> Line3D(const Point3DTemplate<P1> &p1, const Point3DTemplate<P2> &p2)
+    : m_p1(p1), m_p2(p2) {
   }
 };
 
