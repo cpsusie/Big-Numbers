@@ -28,21 +28,3 @@ String PolygonCurve::toString() const {
   }
   return result;
 }
-
-String PolygonCurve::toXML() {
-  String type;
-  switch(m_type) {
-  case TT_PRIM_LINE   : type = _T("line"   ); break;
-  case TT_PRIM_QSPLINE: type = _T("qspline"); break;
-  case TT_PRIM_CSPLINE: type = _T("cspline"); break;
-  }
-  String result = _T("<polygoncurve>\n");
-  result += _T("  <type>") + type + _T("</type>\n");
-
-  for(size_t i = 0; i < m_points.size(); i++) {
-    result += _T("  ") + m_points[i].toXML();
-  }
-  result += _T("</polygoncurve>\n");
-  return result;
-}
-

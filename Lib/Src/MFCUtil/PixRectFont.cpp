@@ -33,16 +33,6 @@ String GlyphPolygon::toString() const {
   return result;
 }
 
-String GlyphPolygon::toXML() {
-  String result = _T("<glyphpolygon>\n");
-  result += _T("<start>") + m_start.toXML() + _T("</start>");
-  for(size_t p = 0; p < m_polygonCurveArray.size(); p++) {
-    result += m_polygonCurveArray[p].toXML();
-  }
-  result += _T("</glyphpolygon>\n");
-  return result;
-}
-
 // ------------------------------------ GlyphData ------------------------------
 
 GlyphData::GlyphData(PixRectDevice &device, HDC hdc, _TUCHAR ch, const MAT2 &m) : m_glyphCurveData(hdc, ch, m) {
@@ -163,15 +153,6 @@ String GlyphCurveData::toString() const {
   for(size_t i = 0; i < m_glyphPolygonArray.size(); i++) {
     result += m_glyphPolygonArray[i].toString();
   }
-  return result;
-}
-
-String GlyphCurveData::toXML() {
-  String result = _T("<glyphcurvedata>");
-  for(size_t i = 0; i < m_glyphPolygonArray.size(); i++) {
-    result += m_glyphPolygonArray[i].toXML();
-  }
-  result += _T("</glyphcurvedata>");
   return result;
 }
 

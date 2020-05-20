@@ -732,6 +732,7 @@
     <ClCompile Include="PixRectFill.cpp" />
     <ClCompile Include="PixRectFilter.cpp" />
     <ClCompile Include="PixRectFont.cpp" />
+    <ClCompile Include="PixRectFontXML.cpp" />
     <ClCompile Include="PixRectIO.cpp" />
     <ClCompile Include="PixRectOperators.cpp" />
     <ClCompile Include="PixRectRotate.cpp" />
@@ -845,7 +846,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <Natvis Include="NatvisFile.natvis" />
+    <Natvis Include="MFCUtil.natvis" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\DeleteButton.bmp" />

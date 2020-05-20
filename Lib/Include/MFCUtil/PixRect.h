@@ -463,6 +463,9 @@ public:
   Point2D             m_start;
   Array<PolygonCurve> m_polygonCurveArray;
 
+  GlyphPolygon() {
+  }
+
   GlyphPolygon(const Point2DP &start) {
     m_start = start;
   }
@@ -473,21 +476,21 @@ public:
 
   Rectangle2D getBoundingBox() const;
   Point2DArray getAllPoints() const;
+  inline const Array<PolygonCurve> &getCurveArray() const {
+    return m_polygonCurveArray;
+  }
   void move(const Point2DP &dp);
   String toString() const;
-  String toXML();
 };
 
 class GlyphCurveData {
-private:
-  Array<GlyphPolygon> m_glyphPolygonArray;
 public:
+  Array<GlyphPolygon> m_glyphPolygonArray;
 
   GlyphCurveData(HDC hdc, _TUCHAR ch, const MAT2 &m);
   GlyphCurveData();
 
   String toString() const;
-  String toXML();
   Rectangle2D getBoundingBox() const;
   Point2DArray getAllPoints() const;
   Point2DArray getLinePoints() const;

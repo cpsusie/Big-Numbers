@@ -358,6 +358,9 @@
     <ClCompile Include="D3PColorXml.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PixRectFontXML.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\MFCUtil\Viewport2D.h">
@@ -562,9 +565,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Natvis Include="NatvisFile.natvis" />
-  </ItemGroup>
-  <ItemGroup>
     <Image Include="res\FolderImages.bmp">
       <Filter>Resource Files</Filter>
     </Image>
@@ -582,5 +582,8 @@
     <ResourceCompile Include="..\..\Include\MFCUtil\MFCUtil.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="MFCUtil.natvis" />
   </ItemGroup>
 </Project>
