@@ -9,8 +9,13 @@ public:
   T m_x, m_y, m_w, m_h;
   inline Rectangle2DTemplate() : m_x(0), m_y(0), m_w(0), m_h(0) {
   }
-  inline Rectangle2DTemplate(const T &x, const T &y, const T &w, const T &h)
-    : m_x(x), m_y(y), m_w(w), m_h(h)
+  template<typename X, typename Y, typename W, typename H> Rectangle2DTemplate(const X &x, const Y &y, const W &w, const H &h)
+    : m_x((T)x), m_y((T)y), m_w((T)w), m_h((T)h)
+  {
+  }
+  template<typename R> Rectangle2DTemplate(const Rectangle2DTemplate<R> &src)
+    : m_x((T)src.m_x), m_y((T)src.m_y)
+    , m_w((T)src.m_w), m_h((T)src.m_h)
   {
   }
   template<typename T1, typename T2> Rectangle2DTemplate(const Point2DTemplate<T1> &topLeft, const Point2DTemplate<T2> &bottomRight)
@@ -18,7 +23,7 @@ public:
     , m_w((T)bottomRight.x-(T)topLeft.x), m_h((T)bottomRight.y-(T)topLeft.y)
   {
   }
-  template<typename T1, typename T2> Rectangle2DTemplate(const Point2DTemplate<T1> &p, const Size2DTemplate<T2> &size)
+  template<typename P, typename S> Rectangle2DTemplate(const Point2DTemplate<P> &p, const Size2DTemplate<S> &size)
     : m_x((T)p.x    ), m_y((T)p.y    )
     , m_w((T)size.cx), m_h((T)size.cy)
   {
@@ -74,7 +79,7 @@ public:
   inline NumberInterval<T> getYInterval() const {
     return NumberInterval<T>(getMinY(), getMaxY());
   }
-  template<typename TP> bool contains(const Point2DTemplate<TP> &p) const {
+  template<typename P> bool contains(const Point2DTemplate<P> &p) const {
     return (getMinX() <= (T)p.x) && ((T)p.x <= getMaxX()) && (getMinY() <= (T)p.y) && ((T)p.y <= getMaxY());
   }
   template<typename TP> Rectangle2DTemplate &operator+=(const Point2DTemplate<TP> &dp) {

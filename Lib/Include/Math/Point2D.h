@@ -12,9 +12,13 @@ public:
   inline Size2DTemplate() {
     cx = cy = 0;
   }
-  template<typename S> Size2DTemplate(const Size2DTemplate<S> &s) : cx((T)s.cx), cy((T)s.cy) {
+  template<typename S> Size2DTemplate(const Size2DTemplate<S> &s)
+    : cx((T)s.cx), cy((T)s.cy)
+  {
   }
-  template<typename X, typename Y> Size2DTemplate(const X &_cx, const Y &_cy) : cx((T)_cx), cy((T)_cy) {
+  template<typename X, typename Y> Size2DTemplate(const X &_cx, const Y &_cy)
+    : cx((T)_cx), cy((T)_cy)
+  {
   }
   template<typename S> Size2DTemplate<T> &operator=(const Size2DTemplate<S> &s) {
     cx = (T)s.cx;
@@ -34,13 +38,15 @@ public:
     return Size2DTemplate<T>(cx/factor, cy/factor);
   }
   template<typename S> Size2DTemplate<T> &operator*=(const S &factor) {
-    cx *= (T)factor;
-    cy *= (T)factor;
+    const T tmp = (T)factor;
+    cx *= tmp;
+    cy *= tmp;
     return *this;
   }
   template<typename S> Size2DTemplate<T> &operator/=(const S &factor) {
-    cx /= (T)factor;
-    cy /= (T)factor;
+    const T tmp = (T)factor;
+    cx /= tmp;
+    cy /= tmp;
     return *this;
   }
 
@@ -85,11 +91,17 @@ public:
     x = y = 0;
   }
 
-  template<typename S> Point2DTemplate(const Point2DTemplate<S> &p) : x((T)p.x), y((T)p.y) {
+  template<typename S> Point2DTemplate(const Point2DTemplate<S> &p)
+    : x((T)p.x), y((T)p.y)
+  {
   }
-  template<typename X, typename Y> Point2DTemplate(const X &_x, const Y &_y) : x((T)_x), y((T)_y) {
+  template<typename X, typename Y> Point2DTemplate(const X &_x, const Y &_y)
+    : x((T)_x), y((T)_y)
+  {
   }
-  template<typename S> inline Point2DTemplate(const Size2DTemplate<S> &s) : x((T)s.cx), y((T)s.cy) {
+  template<typename S> inline Point2DTemplate(const Size2DTemplate<S> &s)
+    : x((T)s.cx), y((T)s.cy)
+  {
   }
   template<typename S> Point2DTemplate<T> &operator=(const Point2DTemplate<S> &p) {
     x = (T)p.x;
@@ -136,8 +148,8 @@ public:
 
 //  Point2D(const POINTFX &p);
 
-  inline Point2DTemplate operator-() const {
-    return Point2DTemplate(-x, -y);
+  inline Point2DTemplate<T> operator-() const {
+    return Point2DTemplate<T>(-x, -y);
   }
   template<typename S> Point2DTemplate<T> operator+(const Point2DTemplate<S> &p) const {
     return Point2DTemplate<T>(x+p.x, y+p.y);
@@ -186,13 +198,15 @@ public:
     return *this;
   }
   template<typename S> Point2DTemplate<T> &operator*=(const S &factor) {
-    x *= (T)factor;
-    y *= (T)factor;
+    const T tmp = (T)factor;
+    x *= tmp;
+    y *= tmp;
     return *this;
   }
   template<typename S> Point2DTemplate<T> &operator/=(const S &factor) {
-    x /= (T)factor;
-    y /= (T)factor;
+    const T tmp = (T)factor;
+    x /= tmp;
+    y /= tmp;
     return *this;
   }
   template<typename S> Point2DTemplate<T> rotate(const S &rad) const {
@@ -205,14 +219,16 @@ public:
     return (T)sqrt(x*x + y*y);
   }
 
-  inline Point2DTemplate &normalize() {
+  inline Point2DTemplate<T> &normalize() {
     const T l = length();
     if(l != 0) {
       *this /= l;
     }
     return *this;
   }
-
+  template<typename S> T distance(const Point2DTemplate<S> &p) const {
+    return (*this - p).length();
+  }
   inline bool operator==(const Point2DTemplate &p) const {
     return (x==p.x) && (y==p.y);
   }
@@ -228,11 +244,15 @@ public:
   inline String toString(int precision = 3) const {
     return format(_T("(%s,%s)"), ::toString(x, precision).cstr(), ::toString(y, precision).cstr());
   }
-  String toXML() const {
-    return format(_T("<point>\n<x>%s</x>\n<y>%s</y>\n</point>\n")
-                 ,::toString(x).cstr(),::toString(y).cstr());
-  }
 };
+
+template<typename T, typename P> Point2DTemplate<P> operator*(const T &factor, const Point2DTemplate<P> &p) {
+  return p * f;
+}
+
+template<typename T1, typename T2> T1 distance(const Point2DTemplate<T1> &p1, const Point2DTemplate<T2> &p2) {
+  return p1.distance(p2);
+}
 
 typedef Point2DTemplate<float >   FloatPoint2D;
 typedef Point2DTemplate<double>   Point2D;
@@ -253,10 +273,6 @@ typedef Line2DTemplate<float >   FloatLine2D;
 typedef Line2DTemplate<double>   Line2D;
 typedef Line2DTemplate<Double80> D80Line2D;
 typedef Line2DTemplate<Real>     RealLine2D;
-
-template<typename T> T distance(const Point2DTemplate<T> &p1, const Point2DTemplate<T> &p2) {
-  return (T)sqrt(sqr(p1.x - p2.x) + sqr(p1.y - p2.y));
-}
 
 template<typename T> Point2DTemplate<T> pointOfIntersection(const Line2DTemplate<T> &line1, const Line2DTemplate<T> &line2, bool &intersect) {
   const T A11 = line1.m_p1.y       - line1.m_p2.y;
