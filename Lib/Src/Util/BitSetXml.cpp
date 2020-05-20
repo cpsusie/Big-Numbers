@@ -1,14 +1,12 @@
 #include "pch.h"
 #include <XMLUtil.h>
 
-void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const BitSet &set) {
-  XMLNodePtr n = doc.createNode(parent, tag);
+void setValue(XMLDoc &doc, XMLNodePtr n, const BitSet &set) {
   doc.setValue(n, _T("capacity"), set.getCapacity());
   doc.setValue(n, _T("set"     ), set.toString()   );
 }
 
-void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, BitSet &set) {
-  XMLNodePtr n = doc.getChild(parent, tag);
+void getValue(XMLDoc &doc, XMLNodePtr n, BitSet &set) {
   UINT64 capacity;
   doc.getValue(n, _T("capacity"), capacity);
   CHECKUINT64ISVALIDSIZET(capacity);

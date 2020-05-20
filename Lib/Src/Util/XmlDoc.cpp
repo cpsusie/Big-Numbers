@@ -242,31 +242,6 @@ XMLNodePtr XMLDoc::findNode(const XMLNodePtr &node, const TCHAR *nodeName) {
   return result;
 }
 
-String XMLDoc::getText(const XMLNodePtr &node) {
-  return (TCHAR*)findText(node)->text;
-}
-
-XMLNodePtr XMLDoc::findText(const XMLNodePtr &node) {
-  for(XMLNodePtr p = node->firstChild; p != NULL; p = p->nextSibling) {
-    if(p->nodeType == NODE_TEXT) {
-      return p;
-    }
-  }
-  return NULL;
-}
-
-void XMLDoc::setText(const XMLNodePtr &node, const TCHAR *value) {
-  if(node == NULL) {
-    return;
-  }
-  XMLNodePtr Text = findText(node);
-  if(Text == NULL) {
-    node->appendChild(m_doc->createTextNode(value));
-  } else {
-    Text->nodeValue = value;
-  }
-}
-
 // ---------------------------------------------------------------------------------------------------
 
 void XMLDoc::setValue(const XMLNodePtr     &node,     const TCHAR *tagName, const String    &value, bool force) {
@@ -274,7 +249,7 @@ void XMLDoc::setValue(const XMLNodePtr     &node,     const TCHAR *tagName, cons
 }
 
 void XMLDoc::setValue(const XMLNodePtr     &node,     const TCHAR *tagName, const TCHAR     *value, bool force) {
-  setText(force ? createNode(node,tagName,force) : findChild(node,tagName), value);
+  setNodeText(force ? createNode(node,tagName,force) : findChild(node,tagName), value);
 }
 
 void XMLDoc::setValue(const XMLNodePtr     &node,     const TCHAR *tagName, int              value, bool force) {
@@ -338,20 +313,48 @@ void XMLDoc::setValue(const XMLNodePtr     &node,     const TCHAR *tagName, bool
 }
 // ---------------------------------------------------------------------------------------------------
 
-void XMLDoc::getValue(const XMLNodePtr     &node,     const TCHAR *tagName, String      &value, int instans) {
-  VARIANT NodeValue = getVariant(node,tagName,instans);
-
-  switch(NodeValue.vt) {
+String &XMLDoc::variantToString(String &dst, const VARIANT &var) { // static
+  switch(var.vt) {
   case VT_BSTR:
-    { _bstr_t b = NodeValue.bstrVal;
-      value = (TCHAR*)b;
-      value.trim();
+    { _bstr_t b = var.bstrVal;
+      dst = (TCHAR*)b;
+      dst.trim();
     }
     break;
 
   default:
-    value=EMPTYSTRING;
+    dst=EMPTYSTRING;
     break;
+  }
+  return dst;
+}
+
+void XMLDoc::getValue(const XMLNodePtr     &node,     const TCHAR *tagName, String      &value, int instans) {
+  variantToString(value, getVariant(node,tagName,instans));
+}
+
+String &XMLDoc::getNodeText(const XMLNodePtr &node, String &value) {
+  return variantToString(value, getVariant(node));
+}
+
+XMLNodePtr XMLDoc::findTextNode(const XMLNodePtr &node) {
+  for(XMLNodePtr p = node->firstChild; p != NULL; p = p->nextSibling) {
+    if(p->nodeType == NODE_TEXT) {
+      return p;
+    }
+  }
+  return NULL;
+}
+
+void XMLDoc::setNodeText(const XMLNodePtr &node, const TCHAR *value) {
+  if(node == NULL) {
+    return;
+  }
+  XMLNodePtr textNode = findTextNode(node);
+  if(textNode == NULL) {
+    node->appendChild(m_doc->createTextNode(value));
+  } else {
+    textNode->nodeValue = value;
   }
 }
 
@@ -439,6 +442,22 @@ void XMLDoc::getValue(const XMLNodePtr &node, const TCHAR *tagName, bool        
 
 VARIANT XMLDoc::getVariant(const TCHAR *nodeName, const TCHAR *tagName, int instans) {
   return getVariant(findNode(nodeName),tagName,instans);
+}
+
+VARIANT XMLDoc::getVariant(const XMLNodePtr &node) {
+  VARIANT result;
+  result.vt = NULL;
+  XMLNodeType type;
+  node->get_nodeType(&type);
+  switch(type) {
+  case NODE_TEXT  :
+    node->get_nodeValue(&result);
+    break;
+  case NODE_ELEMENT:
+    findTextNode(node)->get_nodeValue(&result);
+    break;
+  }
+  return result;
 }
 
 VARIANT XMLDoc::getVariant(const XMLNodePtr &node, const TCHAR *tagName, int instans) {
