@@ -126,6 +126,10 @@ static void throwDateOverflow() {
   throwException(_T("Date becomes to big. Last date is %s"), Date::getMaxDate().toString().cstr());
 }
 
+static void throwInvalidTimeComponent(const TCHAR *method, TimeComponent c) {
+  throwInvalidArgumentException(method, _T("c=%d"), c);
+}
+
 void Date::checkFactor(INT64 factor) {
   if(factor < getMinFactor()) {
     throwDateUnderflow();
@@ -181,10 +185,6 @@ Date Date::operator--(int) {
   const Date result = *this;
   *this -= 1;
   return result;
-}
-
-static void throwInvalidTimeComponent(const TCHAR *function, TimeComponent c) {
-  throwException(_T("%s:Invalid timeComponent (=%d)."), function, c);
 }
 
 Date &Date::add(TimeComponent c, int count) {
@@ -435,78 +435,3 @@ int Date::getDaysInMonth(int year, int month) { // static
   }
 }
 
-// se "Beginning ATL COM programming" s. 78
-Date Date::getEaster(int year) { // static
-  if(year < 326 || year > 9999) {
-    throwException(_T("Easter not defined for year=%d. Year must be in the range [326..9999]"), year);
-  }
-
-  short first = year / 100;
-  short div19 = year % 19;
-
-  short temp = (first - 15) / 2 + ((first > 26) ? -1 : 0) +
-    ((first > 38) ? -1 : 0) + 202 - 11 * div19;
-
-  if(first == 21 || first == 24 || first == 25 ||
-     first == 33 || first == 36 || first == 37)
-     temp += -1;
-
-  temp %= 30;
-
-  short ta = temp + ((temp == 29) ? -1 : 0) +
-           ((temp == 28 && div19 > 10) ? -1 : 0) + 21;
-
-  short tb = (ta - 19) % 7;
-  temp = (40 - first) % 4;
-  short tc = temp - ((temp > 1) ? -1 : 0) - ((temp == 3) ? -1 : 0);
-  temp = year % 100;
-  short td = (temp + temp / 4) % 7;
-  short te = ((20 - tb - tc - td) % 7) + 1;
-
-  int day = ta + te;
-  int month;
-
-  if(day > 61) {
-    day -= 61;
-    month = 5;
-  } else if(day > 31) {
-    day -= 31;
-    month = 4;
-  } else {
-    month = 3;
-  }
-  return Date(day, month, year);
-}
-
-#define CASECH(ch, comp) case ch: {                         \
-  int count = 1, scale = 10;                                \
-  for(cp++; *cp == ch; cp++) {                              \
-    count++;                                                \
-    scale *= 10;                                            \
-  }                                                         \
-  String tmp = ::format(_T("%0*d"), count, (comp) % scale); \
-  _tcscpy(t, tmp.cstr());                                   \
-  t += tmp.length();                                        \
-}                                                           \
-break
-
-TCHAR *Date::tostr(TCHAR *dst, const TCHAR *format) const {
-  int year, month, day;
-  getDMY(day, month, year);
-  TCHAR *t  = dst;
-  for(const TCHAR *cp = format; *cp;) {
-    switch(*cp) {
-    CASECH(_T('y'), year          );
-    CASECH(_T('M'), month         );
-    CASECH(_T('w'), getWeek()     );
-    CASECH(_T('d'), day           );
-    CASECH(_T('D'), getDayOfYear());
-
-    default :
-      *(t++) = *(cp++);
-      break;
-    }
-  }
-  *t = 0;
-  return dst;
-}

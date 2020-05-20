@@ -887,6 +887,18 @@
     <ClCompile Include="BitSetXml.cpp">
       <Filter>Source Files\Collection</Filter>
     </ClCompile>
+    <ClCompile Include="DateStr.cpp">
+      <Filter>Source Files\Date</Filter>
+    </ClCompile>
+    <ClCompile Include="TimestampStr.cpp">
+      <Filter>Source Files\Date</Filter>
+    </ClCompile>
+    <ClCompile Include="TimeStr.cpp">
+      <Filter>Source Files\Date</Filter>
+    </ClCompile>
+    <ClCompile Include="DateEaster.cpp">
+      <Filter>Source Files\Date</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />

@@ -929,6 +929,8 @@
     <ClCompile Include="BitOutputStream.cpp" />
     <ClCompile Include="BitSet.cpp" />
     <ClCompile Include="BitSetXml.cpp" />
+    <ClCompile Include="DateEaster.cpp" />
+    <ClCompile Include="DateStr.cpp" />
     <ClCompile Include="Double64Str.cpp" />
     <ClCompile Include="FileBitSet.cpp" />
     <ClCompile Include="FileBitSetIndex.cpp" />
@@ -1169,6 +1171,8 @@
     <ClCompile Include="TimeMeasure.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Timestamp.cpp" />
+    <ClCompile Include="TimestampStr.cpp" />
+    <ClCompile Include="TimeStr.cpp" />
     <ClCompile Include="ToAscii.cpp" />
     <ClCompile Include="Tokenizer.cpp" />
     <ClCompile Include="pch.cpp">

@@ -16,13 +16,17 @@ bool Time::timeValidate(int hour, int minute, int second, int millisecond) { // 
 
 Time::Time(int hour, int minute, int second, int millisecond) {
   if(!timeValidate(hour, minute, second, millisecond)) {
-    throwException(_T("Time::Invalid time:%02d:%02d:%02d.%d"), hour, minute, second, millisecond);
+    throwInvalidArgumentException(__TFUNCTION__,_T("hour=%02d,min=%02d,sec=%02d,msec=%d"), hour, minute, second, millisecond);
   }
   m_factor = getFactor(hour, minute, second, millisecond);
 }
 
 void Time::throwInvalidFactor(INT64 factor) { // static
-  throwException(_T("Time::Invalid factor:%I64d. Must be in the range [0..%d["), factor, getMaxFactor());
+  throwInvalidArgumentException(__TFUNCTION__,_T("factor=%I64d. Must be in the range [0..%d["), factor, getMaxFactor());
+}
+
+static void throwInvalidTimeComponent(const TCHAR *method, TimeComponent c) {
+  throwInvalidArgumentException(method, _T("c=%d"), c);
 }
 
 void Time::init(const TCHAR *src) {
@@ -65,10 +69,6 @@ Time Time::operator--(int) {
   const Time result = *this;
   *this -= 1;
   return result;
-}
-
-static void throwInvalidTimeComponent(const TCHAR *function, TimeComponent c) {
-  throwException(_T("%s:Invalid TimeComponent (=%d)"), function, c);
 }
 
 Time &Time::add(TimeComponent c, int count) {
@@ -145,34 +145,3 @@ void Time::getHMS(int &hour, int &minute, int &second, int &millisecond) const {
   millisecond = getMilliSecond();
 }
 
-#define CASECH(ch, comp) case ch: {                          \
-  int count = 1, scale = 10;                                 \
-  for(cp++; *cp == ch; cp++) {                               \
-    count++;                                                 \
-    scale *= 10;                                             \
-  }                                                          \
-  String tmp = ::format(_T("%0*d"), count, (comp) % scale);  \
-  _tcscpy(t, tmp.cstr());                                    \
-  t += tmp.length();                                         \
-}                                                            \
-break
-
-TCHAR *Time::tostr(TCHAR *dst, const TCHAR *format) const {
-  int hour, minute, second, millisecond;
-  getHMS(hour, minute, second, millisecond);
-  TCHAR *t = dst;
-  for(const TCHAR *cp = format; *cp;) {
-    switch(*cp) {
-    CASECH('h', hour       );
-    CASECH('m', minute     );
-    CASECH('s', second     );
-    CASECH('S', millisecond);
-
-    default :
-      *(t++) = *(cp++);
-      break;
-    }
-  }
-  *t = 0;
-  return dst;
-}
