@@ -1,20 +1,25 @@
 #pragma once
 
+#include <FlagTraits.h>
 #include <MFCUtil/ShapeFunctions.h>
-#include <MFCUtil/PolygonCurve.h>
 #include "D3Math.h"
 #include "MeshBuilder.h"
 
+#define PRROT_ROTATESMOOTH      0x01
+#define PRROT_NORMALSMOOTH      0x02
+#define PRROT_INVERTORIENTATION 0x04
+#define PRROT_INVERTNORMALS     0x08
+#define PRROT_USECOLOR          0x10
+
 class ProfileRotationParameters {
 public:
-  ProfileRotationParameters(int rotateAxis=0, int alignx=0, int aligny=1, double rad=2*D3DX_PI, int edgeCount=20, int smoothness=0, bool useColor=false, D3DCOLOR color=0);
+  ProfileRotationParameters(int rotateAxis=0, int alignx=0, int aligny=1, double rad=2*D3DX_PI, int edgeCount=20, BYTE flags=0, D3DCOLOR color=0);
   int      m_rotateAxis;
   int      m_alignx;
   int      m_aligny;
   double   m_rad;
   int      m_edgeCount;
-  int      m_smoothness;
-  bool     m_useColor;
+  FLAGTRAITS(ProfileRotationParameters, BYTE, m_flags);
   D3DCOLOR m_color;
 };
 
@@ -29,8 +34,69 @@ bool operator!=(const ProfileRotationParameters &p1, const ProfileRotationParame
 bool operator==(const ProfileStretchParameters  &p1, const ProfileStretchParameters  &p2);
 bool operator!=(const ProfileStretchParameters  &p1, const ProfileStretchParameters  &p2);
 
-#define ROTATESMOOTH 1
-#define NORMALSMOOTH 2
+template<typename T> class Vertex2DTemplate {
+public:
+  Point2DTemplate<T> m_pos;
+  Point2DTemplate<T> m_normal;
+  Vertex2DTemplate() {
+  }
+  template<typename V> Vertex2DTemplate(const Vertex2DTemplate<V> &v) : m_pos(v.pos), m_normal(v.normal) {
+  }
+  template<typename P, typename N> Vertex2DTemplate(const Point2DTemplate<P> &pos, const Point2DTemplate<N> &normal) : m_pos(pos), m_normal(normal) {
+  }
+  template<typename V> Vertex2DTemplate<T> &operator=(const Vertex2DTemplate<V> &v) {
+    return setPos(v.pos).setNormal(v.m_normal);
+  }
+  template<typename P> Vertex2DTemplate<T> &setPos(Point2DTemplate<P> &pos) {
+    m_pos = pos;
+    return *this;
+  }
+  template<typename N> Vertex2DTemplate<T> &setNormal(Point2DTemplate<N> &normal) {
+    m_normal = normal;
+    return *this;
+  }
+  Vertex2DTemplate<T> &invertNormal() {
+    m_normal = -m_normal;
+    return *this;
+  }
+};
+
+template<typename T> class Vertex2DTemplateArray : public CompactArray<Vertex2DTemplate<T> > {
+public:
+  Vertex2DTemplateArray() {
+  }
+  explicit Vertex2DTemplateArray(size_t capacity) : CompactArray(capacity) {
+  }
+
+  template<typename S> Vertex2DTemplateArray(const Vertex2DTemplateArray<S> &src) : CompactArray(src.size) {
+    const size_t n = src.size();
+    for(const Vertex2DTemplate<S> *srcp = src.getBuffer(); *endp = srcp + n, srcp < endp;) {
+      add(Vertex2DTemplate<T>(*(srcp++)));
+    }
+  }
+  template<typename S> Vertex2DTemplateArray<T> &operator=(const Vertex2DTemplateArray<S> &src) {
+    const size_t n = src.size();
+    clear(n);
+    if(n == 0) return *this;
+    for(const Vertex2DTemplate<S> *srcp = src.getBuffer(), *endp = srcp + n; srcp < endp;) {
+      add(Vertex2DTemplate<T>(*(srcp++)));
+    }
+    return *this;
+  }
+  Vertex2DTemplateArray<T> &invertNormals() {
+    const size_t n = size();
+    if(n == 0) return *this;
+    for(Vertex2DTemplate<T> *vp = &first(), *endp = vp + n; vp < endp;) {
+      (vp++)->invertNormal();
+    }
+    return *this;
+  }
+};
+
+typedef Vertex2DTemplate<float>      Vertex2D;
+typedef Vertex2DTemplateArray<float> Vertex2DArray;
+
+class PolygonCurve;
 
 class ProfileCurve {
 public:
@@ -38,11 +104,12 @@ public:
   short          m_type;
   Point2DArray   m_points;
 
-  inline ProfileCurve(short type) {
+  inline ProfileCurve(short type=0) {
     m_type = type;
   }
 
   ProfileCurve(const PolygonCurve &src);
+  operator PolygonCurve() const;
 
   inline ProfileCurve &addPoint(const Point2D &p) {
     m_points.add(p); return *this;
@@ -64,7 +131,6 @@ public:
   CompactArray<Point2D*> getAllPointsRef();
   void move(const Point2D &dp);
   String toString() const;
-  String toXML();
 };
 
 class ProfilePolygon {
@@ -79,15 +145,16 @@ public:
     m_curveArray.add(curve);
   }
 
-  Rectangle2D     getBoundingBox() const;
-  Point2DArray    getAllPoints() const;
+  Rectangle2D          getBoundingBox() const;
+  Point2DArray         getAllPoints() const;
   CompactArray<Point2D*> getAllPointsRef();
-  Point2DArray    getCurvePoints() const;
-  // Return noOfLines normals
-  Point2DArray    getFlatNormals() const;
+  Point2DArray         getCurvePoints() const;
+  Vertex2DArray        getFlatVertexArray() const;
   // Return noOfPoints normals
-  Point2DArray    getSmoothNormals() const;
-
+  Vertex2DArray        getSmoothVertexArray() const;
+  inline Vertex2DArray getAllVertices(bool smoothNormals) const {
+    return smoothNormals ? getSmoothVertexArray() : getFlatVertexArray();
+  }
   inline ProfileCurve &getLastCurve() {
     return m_curveArray.last();
   }
@@ -110,7 +177,6 @@ public:
   void apply(CurveOperator &op) const;
 
   String toString() const;
-  String toXML();
 };
 
 class Profile {
@@ -123,7 +189,6 @@ public:
   Profile() {
     init();
   }
-  Profile(const String &xml, const String &name="");
   bool hasDefaultName() const;
   String getDisplayName() const;
 
@@ -143,20 +208,18 @@ public:
   CompactArray<Point2D*> getAllPointsRef();
   Point2DArray    getCurvePoints() const;
   // Return noOfLines normals
-  Point2DArray    getFlatNormals() const;
+  Vertex2DArray   getFlatVertexArray() const;
   // Return noOfPoints normals
-  Point2DArray    getSmoothNormals() const;
+  Vertex2DArray   getSmoothVertexArray() const;
+  inline Vertex2DArray getAllVertices(bool smoothNormals) const {
+    return smoothNormals ? getSmoothVertexArray() : getFlatVertexArray();
+  }
+
   bool canConnect(const Point2D *p1, const Point2D *p2) const;
   void connect(const Point2D *p1, const Point2D *p2);
   void move(const Point2D &dp);
   void apply(CurveOperator &op) const;
   String toString() const;
-  String toXML();
-  void parseXML(const String &xml);
-  void read( FILE *f);
-  void write(FILE *f);
-  void load(const String &fileName);
-  void save(const String &fileName);
 };
 
 bool operator==(const ProfileCurve   &p1, const ProfileCurve   &p2);

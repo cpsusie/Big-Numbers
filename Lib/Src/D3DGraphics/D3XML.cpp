@@ -9,67 +9,58 @@
 #include <D3DGraphics/D3Scene.h>
 #include <D3DGraphics/MeshAnimationData.h>
 
-void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3DXVECTOR3 &v) {
-  XMLNodePtr n = doc.createNode(parent, tag);
+void setValue(XMLDoc &doc, XMLNodePtr n, const D3DXVECTOR3 &v) {
   doc.setValue(n, _T("x"), v.x);
   doc.setValue(n, _T("y"), v.y);
   doc.setValue(n, _T("z"), v.z);
 }
 
-void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, D3DXVECTOR3 &v) {
-  XMLNodePtr n = doc.getChild(parent, tag);
+void getValue(XMLDoc &doc, XMLNodePtr n, D3DXVECTOR3 &v) {
   doc.getValue(n, _T("x"), v.x);
   doc.getValue(n, _T("y"), v.y);
   doc.getValue(n, _T("z"), v.z);
 }
 
-void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3DVECTOR &v) {
-  XMLNodePtr n = doc.createNode(parent, tag);
+void setValue(XMLDoc &doc, XMLNodePtr n, const D3DVECTOR &v) {
   doc.setValue(n, _T("x"), v.x);
   doc.setValue(n, _T("y"), v.y);
   doc.setValue(n, _T("z"), v.z);
 }
-void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, D3DVECTOR &v) {
-  XMLNodePtr n = doc.getChild(parent, tag);
+void getValue(XMLDoc &doc, XMLNodePtr n, D3DVECTOR &v) {
   doc.getValue(n, _T("x"), v.x);
   doc.getValue(n, _T("y"), v.y);
   doc.getValue(n, _T("z"), v.z);
 }
 
-void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3DXQUATERNION &q) {
-  XMLNodePtr n = doc.createNode(parent, tag);
+void setValue(XMLDoc &doc, XMLNodePtr n, const D3DXQUATERNION &q) {
   doc.setValue(n, _T("x"), q.x);
   doc.setValue(n, _T("y"), q.y);
   doc.setValue(n, _T("z"), q.z);
   doc.setValue(n, _T("w"), q.w);
 }
 
-void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, D3DXQUATERNION &q) {
-  XMLNodePtr n = doc.getChild(parent, tag);
+void getValue(XMLDoc &doc, XMLNodePtr n, D3DXQUATERNION &q) {
   doc.getValue(n, _T("x"), q.x);
   doc.getValue(n, _T("y"), q.y);
   doc.getValue(n, _T("z"), q.z);
   doc.getValue(n, _T("w"), q.w);
 }
 
-void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3DCOLORVALUE &v) {
-  XMLNodePtr n = doc.createNode(parent, tag);
+void setValue(XMLDoc &doc, XMLNodePtr n, const D3DCOLORVALUE &v) {
   doc.setValue(n, _T("r"      ), v.r        );
   doc.setValue(n, _T("g"      ), v.g        );
   doc.setValue(n, _T("b"      ), v.b        );
   doc.setValue(n, _T("a"      ), v.a        );
 }
 
-void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, D3DCOLORVALUE &v) {
-  XMLNodePtr n = doc.getChild(parent, tag);
+void getValue(XMLDoc &doc, XMLNodePtr n, D3DCOLORVALUE &v) {
   doc.getValue(n, _T("r"      ), v.r        );
   doc.getValue(n, _T("g"      ), v.g        );
   doc.getValue(n, _T("b"      ), v.b        );
   doc.getValue(n, _T("a"      ), v.a        );
 }
 
-void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3DMATERIAL &v) {
-  XMLNodePtr n = doc.createNode(parent, tag);
+void setValue(XMLDoc &doc, XMLNodePtr n, const D3DMATERIAL &v) {
   setValue(doc, n, _T("diffuse"  ), v.Diffuse  );
   setValue(doc, n, _T("ambient"  ), v.Ambient  );
   setValue(doc, n, _T("specular" ), v.Specular );
@@ -77,8 +68,7 @@ void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3DMATERIA
   doc.setValue( n, _T("power"    ), v.Power    );
 }
 
-void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, D3DMATERIAL &v) {
-  XMLNodePtr n = doc.getChild(parent, tag);
+void getValue(XMLDoc &doc, XMLNodePtr n, D3DMATERIAL &v) {
   memset(&v, 0, sizeof(D3DMATERIAL));
   getValue(doc, n, _T("diffuse"  ), v.Diffuse  );
   getValue(doc, n, _T("ambient"  ), v.Ambient  );
@@ -87,31 +77,15 @@ void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, D3DMATERIAL &v) 
   doc.getValue( n, _T("power"    ), v.Power    );
 }
 
-void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const MaterialMap &map) {
-  XMLNodePtr n = doc.createNode(parent, tag);
-  for(Iterator<Entry<CompactUIntKeyType, D3Material> > it = map.getEntryIterator(); it.hasNext();) {
-    const Entry<CompactUIntKeyType, D3Material> &e = it.next();
-    String id = format(_T("id%d"), e.getKey());
-    setValue(doc, n, id.cstr(), e.getValue());
-  }
+void setValue(XMLDoc &doc, XMLNodePtr n, const MaterialMap &map) {
+  setValue<MaterialMap, CompactUIntKeyType, D3Material>(doc, n, map);
 }
 
-void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, MaterialMap &map) {
-  XMLNodePtr n = doc.getChild(parent, tag);
-  map.clear();
-  for(XMLNodePtr child = n->firstChild; child; child = child->nextSibling) {
-    const String idStr = (wchar_t*)child->nodeName;
-    const UINT   id    = _wtoi(idStr.cstr()+2);
-    D3DMATERIAL  d3m;
-    getValue(doc, n, idStr.cstr(), d3m);
-    D3Material   mat(id);
-    mat = d3m;
-    map.put(id, mat);
-  }
+void getValue(XMLDoc &doc, XMLNodePtr n, MaterialMap &map) {
+  getValue<MaterialMap, CompactUIntKeyType, D3Material>(doc, n, map);
 }
 
-void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3DLIGHT &v) {
-  XMLNodePtr n = doc.createNode(parent, tag);
+void setValue(XMLDoc &doc, XMLNodePtr n, const D3DLIGHT &v) {
   doc.setValue( n, _T("type"     ), toString(v.Type));
   setValue(doc, n, _T("diffuse"  ), v.Diffuse       );
   setValue(doc, n, _T("ambient"  ), v.Ambient       );
@@ -154,8 +128,7 @@ static D3DLIGHTTYPE strToLightType(const String &str) {
   return D3DLIGHT_DIRECTIONAL;
 }
 
-void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, D3DLIGHT &v) {
-  XMLNodePtr n = doc.getChild(parent, tag);
+void getValue(XMLDoc &doc, XMLNodePtr n, D3DLIGHT &v) {
   String typeStr;
   doc.getValue( n, _T("type"     ), typeStr         );
   memset(&v, 0, sizeof(D3DLIGHT));
@@ -191,51 +164,37 @@ void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, D3DLIGHT &v) {
   }
 }
 
-void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3Light &v) {
-  XMLNodePtr n = doc.createNode(parent, tag);
-  doc.setValue(n, _T("enabled"), v.isEnabled());
+void setValue(XMLDoc &doc, XMLNodePtr n, const D3Light &v) {
+  doc.setValue( n, _T("index"  ), v.getIndex());
+  doc.setValue( n, _T("enabled"), v.isEnabled());
   setValue(doc, n, _T("parameters"), (D3DLIGHT&)v);
 }
 
-void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, D3Light &v) {
-  XMLNodePtr n = doc.getChild(parent, tag);
+void getValue(XMLDoc &doc, XMLNodePtr n, D3Light &v) {
+  int  index;
   bool enabled;
+  doc.getValue(n, _T("index"  ), index);
   doc.getValue(n, _T("enabled"), enabled);
+  v = D3Light(index);
   v.setEnabled(enabled);
   getValue(doc, n, _T("parameters"), (D3DLIGHT&)v);
 }
 
-void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const LightArray &a) {
-  XMLNodePtr n = doc.createNode(parent, tag);
-  for(size_t i = 0; i < a.size(); i++) {
-    const D3Light &light = a[i];
-    String tagName = format(_T("index%d"), light.getIndex());
-    setValue(doc, n, tagName.cstr(), light);
-  }
+void setValue(XMLDoc &doc, XMLNodePtr n, const LightArray &a) {
+  setValue<LightArray, D3Light>(doc, n, a);
 }
 
-void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, LightArray &a) {
-  XMLNodePtr n = doc.getChild(parent, tag);
-  a.clear(-1);
-  for(XMLNodePtr child = n->firstChild; child; child = child->nextSibling) {
-    const String idStr = (wchar_t*)child->nodeName;
-    int index;
-    _stscanf(idStr.cstr(), _T("index%d"), &index);
-    D3Light light(index);
-    getValue(doc, n, idStr.cstr(), light);
-    a.add(light);
-  }
+void getValue(XMLDoc &doc, XMLNodePtr n, LightArray &a) {
+  getValue<LightArray, D3Light>(doc, n, a);
 }
 
-void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3World &w) {
-  XMLNodePtr n = doc.createNode(parent, tag);
+void setValue(XMLDoc &doc, XMLNodePtr n, const D3World &w) {
   setValue(doc, n, _T("pos"        ), w.getPos()        );
   setValue(doc, n, _T("orientation"), w.getOrientation());
   setValue(doc, n, _T("scale"      ), w.getScale()      );
 }
 
-void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, D3World &w) {
-  XMLNodePtr     n = doc.getChild(parent, tag);
+void getValue(XMLDoc &doc, XMLNodePtr n, D3World &w) {
   D3DXVECTOR3    pos, scale;
   D3DXQUATERNION q;
   getValue(doc, n, _T("pos"        ), pos  );
@@ -244,8 +203,7 @@ void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, D3World &w) {
   w.setPos(pos).setOrientation(q).setScale(scale);
 }
 
-void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3Camera &c) {
-  XMLNodePtr n = doc.createNode(parent, tag);
+void setValue(XMLDoc &doc, XMLNodePtr n, const D3Camera &c) {
   doc.setValue( n, _T("righthanded"    ), c.getRightHanded()         );
   doc.setValue( n, _T("nearviewplane"  ), c.getNearViewPlane()       );
   doc.setValue( n, _T("farviewplane"  ) , c.getFarViewPlane()        );
@@ -256,14 +214,13 @@ void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3Camera &
   setValue(doc, n, _T("visiblelights"  ), c.getLightControlsVisible());
 }
 
-void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, D3Camera &c) {
+void getValue(XMLDoc &doc, XMLNodePtr n, D3Camera &c) {
   bool       rightHanded;
   float      nearViewPlane, farViewPlane, viewAngle;
   CSize      winSize;
   D3World    world;
   D3PCOLOR   backgroundColor;
   BitSet     lightControlsVisible(10);
-  XMLNodePtr n = doc.getChild(parent, tag);
 
   doc.getValue( n, _T("righthanded"    ), rightHanded         );
   doc.getValue( n, _T("nearviewplane"  ), nearViewPlane       );
@@ -284,8 +241,7 @@ void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, D3Camera &c) {
   c.setLightControlsVisible(lightControlsVisible);
 }
 
-void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3CameraArray &a) {
-  XMLNodePtr n = doc.createNode(parent, tag);
+void setValue(XMLDoc &doc, XMLNodePtr n, const D3CameraArray &a) {
   const UINT count = (UINT)a.size();
   doc.setValue(n, _T("count"), count);
   for(UINT i = 0; i < count; i++) {
@@ -294,8 +250,7 @@ void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3CameraAr
   }
 }
 
-void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, D3CameraArray &a) {
-  XMLNodePtr n = doc.getChild(parent, tag);
+void getValue(XMLDoc &doc, XMLNodePtr n, D3CameraArray &a) {
   UINT count;
   doc.getValue(n, _T("count"), count);
   if(count != a.size()) {
@@ -312,16 +267,14 @@ void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, D3CameraArray &a
   }
 }
 
-void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const D3Scene &s) {
-  XMLNodePtr n = doc.createNode(parent, tag);
+void setValue(XMLDoc &doc, XMLNodePtr n, const D3Scene &s) {
   setValue(doc, n, _T("ambientcolor"), s.getAmbientColor());
   setValue(doc, n, _T("materials"   ), s.getAllMaterials());
   setValue(doc, n, _T("lights"      ), s.getAllLights()   );
   setValue(doc, n, _T("cameras"     ), s.getCameraArray() );
 }
 
-void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, D3Scene &s) {
-  XMLNodePtr  n = doc.getChild(parent, tag);
+void getValue(XMLDoc &doc, XMLNodePtr n, D3Scene &s) {
   D3PCOLOR    ambientColor;
   MaterialMap materialMap;
   LightArray  lightArray;
@@ -334,8 +287,7 @@ void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, D3Scene &s) {
   getValue(doc, n, _T("cameras"     ), (D3CameraArray&)s.getCameraArray() );
 }
 
-void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const MeshAnimationData &d) {
-  XMLNodePtr n = doc.createNode(parent, tag);
+void setValue(XMLDoc &doc, XMLNodePtr n, const MeshAnimationData &d) {
   doc.setValue(  n, _T("includetime"       ), d.m_includeTime     );
   if(d.m_includeTime) {
     setValue(doc, n, _T("timeinterval"     ), d.m_timeInterval    );
@@ -343,8 +295,7 @@ void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const MeshAnimat
   }
 }
 
-void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, MeshAnimationData &d) {
-  XMLNodePtr  n = doc.getChild(parent, tag);
+void getValue(XMLDoc &doc, XMLNodePtr n, MeshAnimationData &d) {
   d.reset();
   doc.getValue(  n, _T("includetime"       ), d.m_includeTime     );
   if(d.m_includeTime) {

@@ -1,17 +1,31 @@
 #include "pch.h"
-#include <XMLDoc.h>
 #include <FileNameSplitter.h>
-#include <D3DGraphics/Profile.h>
+#include <MFCUtil/PolygonCurve.h>
 #include <MFCUtil/ShapeFunctions.h>
+#include <D3DGraphics/Profile.h>
+
+static Point2D findNormal(const Point2D &from, const Point2D &to) {
+  Point2D tmp = unit(to - from);
+  return Point2D(-tmp.y,tmp.x);
+}
+
+class FlatVertexGenerator : public CurveOperator {
+private:
+  Vertex2DArray m_result;
+public:
+  void line(const Point2D &from, const Point2D &to);
+  Vertex2DArray getResult() const {
+    return m_result;
+  }
+};
+
+void FlatVertexGenerator::line(const Point2D &from, const Point2D &to) {
+  const Point2D normal = findNormal(from, to);
+  m_result.add(Vertex2D(from,normal));
+  m_result.add(Vertex2D(to  ,normal));
+}
 
 // ------------------------------------ ProfileCurve ------------------------------
-
-Point2D createPoint2D(XMLDoc &xmldoc, XMLNodePtr node) {
-  Point2D result;
-  xmldoc.getValue(node,_T("x"),result.x);
-  xmldoc.getValue(node,_T("y"),result.y);
-  return result;
-}
 
 ProfileCurve::ProfileCurve(const PolygonCurve &src) {
   m_type = src.getType();
@@ -19,6 +33,13 @@ ProfileCurve::ProfileCurve(const PolygonCurve &src) {
   for(size_t i = 0; i < pa.size(); i++) {
     addPoint(pa[i]);
   }
+}
+
+ProfileCurve::operator PolygonCurve() const {
+  PolygonCurve result;
+  result.m_type   = m_type;
+  result.m_points = m_points;
+  return result;
 }
 
 void ProfileCurve::move(const Point2D &dp) {
@@ -59,43 +80,6 @@ String ProfileCurve::toString() const {
   TCHAR *delim = EMPTYSTRING;
   for(size_t i = 0; i < m_points.size(); i++, delim = _T("        ")) {
     result += format(_T("%s%s\n"), delim, m_points[i].toString().cstr());
-  }
-  return result;
-}
-
-String ProfileCurve::toXML() {
-  String type;
-  switch(m_type) {
-  case TT_PRIM_LINE   : type = _T("line"   ); break;
-  case TT_PRIM_QSPLINE: type = _T("qspline"); break;
-  case TT_PRIM_CSPLINE: type = _T("cspline"); break;
-  }
-  String result = _T("<profilecurve>\n");
-  result += _T("  <type>") + type + _T("</type>\n");
-
-  for(size_t i = 0; i < m_points.size(); i++) {
-    result += _T("  ") + m_points[i].toXML();
-  }
-  result += _T("</profilecurve>\n");
-  return result;
-}
-
-static ProfileCurve createProfileCurve(XMLDoc &xmldoc, XMLNodePtr &node) {
-  String type;
-  xmldoc.getValue(node,_T("type"),type);
-  ProfileCurve result(TT_PRIM_LINE);
-  if(type == _T("line")) {
-    result.m_type = TT_PRIM_LINE;
-  } else if(type == _T("qspline")) {
-    result.m_type = TT_PRIM_QSPLINE;
-  } else if(type == _T("cspline")) {
-    result.m_type = TT_PRIM_CSPLINE;
-  } else {
-    throwException(_T("Illegal polygonCurveType:%s"), type.cstr());
-  }
-
-  for(XMLNodePtr c = xmldoc.findChild(node,_T("point")); c != NULL; c = c->nextSibling) {
-    result.m_points.add(createPoint2D(xmldoc,c));
   }
   return result;
 }
@@ -150,6 +134,36 @@ Point2DArray ProfilePolygon::getCurvePoints() const {
   return collector.m_result;
 }
 
+Vertex2DArray ProfilePolygon::getFlatVertexArray() const {
+  FlatVertexGenerator vg;
+  apply(vg);
+  return vg.getResult();
+}
+
+Vertex2DArray ProfilePolygon::getSmoothVertexArray() const { // return noOfPoints normals
+  const Point2DArray pa = getCurvePoints();
+  const size_t       n  = pa.size();
+  const Point2D     &p0 = pa[0], &pl = pa.last();
+
+  Vertex2DArray result;
+  if(m_closed) {
+    result.add(Vertex2D(p0, unit(findNormal(pl,p0) + findNormal(p0,pa[1]))));
+  } else {
+    result.add(Vertex2D(p0, findNormal(p0,pa[1])));
+  }
+  for(size_t j = 1; j < n-1; j++) {
+    result.add(Vertex2D(pa[j],unit(findNormal(pa[j-1],pa[j]) + findNormal(pa[j],pa[j+1]))));
+  }
+  if(n >= 2) {
+    if(m_closed) {
+      result.add(Vertex2D(pl, unit(findNormal(pa[n-2],pl) + findNormal(pl,p0))));
+    } else {
+      result.add(Vertex2D(pl, findNormal(pa[n-2],pl)));
+    }
+  }
+  return result;
+}
+
 Rectangle2D ProfilePolygon::getBoundingBox() const {
   return getAllPoints().getBoundingBox();
 }
@@ -198,31 +212,6 @@ String ProfilePolygon::toString() const {
   return result;
 }
 
-String ProfilePolygon::toXML() {
-  String result = _T("<profilepolygon>\n");
-  result += format(_T("<closed>%d</closed>\n"), m_closed?1:0);
-  result += _T("<start>") + m_start.toXML() + _T("</start>");
-  for(size_t p = 0; p < m_curveArray.size(); p++) {
-    result += m_curveArray[p].toXML();
-  }
-  result += _T("</profilepolygon>\n");
-  return result;
-}
-
-static ProfilePolygon createProfilePolygon(XMLDoc &xmldoc, XMLNodePtr &node) {
-  ProfilePolygon result;
-  xmldoc.getValue(node,_T("closed"),result.m_closed);
-  XMLNodePtr startNode = xmldoc.findChild(node,_T("start"));
-  if(startNode == NULL) {
-    throwException(_T("Missing tag <start>"));
-  }
-  result.m_start = createPoint2D(xmldoc,xmldoc.findChild(startNode, _T("point")));
-  for(XMLNodePtr c = xmldoc.findChild(node,_T("profilecurve")); c != NULL; c = c->nextSibling) {
-    result.addCurve(createProfileCurve(xmldoc,c));
-  }
-  return result;
-}
-
 bool operator==(const ProfilePolygon &p1, const ProfilePolygon &p2) {
   return p1.m_start == p2.m_start
       && p1.m_closed == p2.m_closed
@@ -233,14 +222,6 @@ bool operator!=(const ProfilePolygon &p1, const ProfilePolygon &p2) {
   return !(p1==p2);
 }
 // ------------------------------------ Profile ------------------------------
-
-Profile::Profile(const String &xml, const String &name) {
-  init();
-  if(name.length() > 0) {
-    m_name = name;
-  }
-  parseXML(xml);
-}
 
 Point2DArray Profile::getAllPoints() const {
   Point2DArray result;
@@ -408,24 +389,6 @@ LPDIRECT3DRMMESHBUILDER Profile::createSkeleton(C3D &d3) {
 }
 */
 
-void Profile::parseXML(const String &xml) {
-  XMLDoc xmldoc;
-  xmldoc.loadFromString(xml);
-  m_polygonArray.clear();
-  for(XMLNodePtr c = xmldoc.findChild(xmldoc.getRoot(),_T("profilepolygon")); c != NULL; c = c->nextSibling) {
-    addPolygon(createProfilePolygon(xmldoc,c));
-  }
-}
-
-String Profile::toXML() {
-  String result = _T("<profile>");
-  for(size_t i = 0; i < m_polygonArray.size(); i++) {
-    result += m_polygonArray[i].toXML();
-  }
-  result += _T("</profile>");
-  return result;
-}
-
 String Profile::toString() const {
   String result;
   for(size_t i = 0; i < m_polygonArray.size(); i++) {
@@ -457,38 +420,6 @@ String Profile::getDisplayName() const {
   return FileNameSplitter(m_name).getFileName();
 }
 
-void Profile::read(FILE *f) {
-  parseXML(readTextFile(f));
-}
-
-void Profile::write(FILE *f) {
-  _ftprintf(f,_T("%s"), toXML().cstr());
-}
-
-void Profile::load(const String &fileName) {
-  FILE *f = FOPEN(fileName, _T("r"));
-  try {
-    read(f);
-    m_name = fileName;
-    fclose(f);
-  } catch(...) {
-    fclose(f);
-    throw;
-  }
-}
-
-void Profile::save(const String &fileName) {
-  FILE *f = FOPEN(fileName, _T("w"));
-  try {
-    write(f);
-    m_name = fileName;
-    fclose(f);
-  } catch(...) {
-    fclose(f);
-    throw;
-  }
-}
-
 bool operator==(const Profile &p1, const Profile &p2) {
   return (p1.m_name == p2.m_name) && (p1.m_polygonArray == p2.m_polygonArray);
 }
@@ -497,61 +428,17 @@ bool operator!=(const Profile &p1, const Profile &p2) {
   return !(p1==p2);
 }
 
-static Point2D findNormal(const Point2D &from, const Point2D &to) {
-  Point2D tmp = unit(to - from);
-  return Point2D(-tmp.y,tmp.x);
-}
-
-class FlatNormalGenerator : public CurveOperator {
-private:
-  Point2DArray m_result;
-public:
-  void line(const Point2D &from, const Point2D &to);
-  Point2DArray getResult() const { return m_result; }
-};
-
-void FlatNormalGenerator::line(const Point2D &from, const Point2D &to) {
-  m_result.add(findNormal(from, to));
-}
-
-Point2DArray ProfilePolygon::getFlatNormals() const { // return noOfLines normals
-  FlatNormalGenerator normalGenerator;
+Vertex2DArray Profile::getFlatVertexArray() const {
+  FlatVertexGenerator normalGenerator;
   apply(normalGenerator);
   return normalGenerator.getResult();
 }
 
-Point2DArray Profile::getFlatNormals() const { // return noOfLines normals
-  FlatNormalGenerator normalGenerator;
-  apply(normalGenerator);
-  return normalGenerator.getResult();
-}
-
-Point2DArray ProfilePolygon::getSmoothNormals() const { // return noOfPoints normals
-  Point2DArray points = getCurvePoints();
-  Point2DArray result;
-  if(m_closed) {
-    result.add(unit(findNormal(points.last(),points[0])+findNormal(points[0],points[1])));
-  } else {
-    result.add(findNormal(points[0],points[1]));
-  }
-  for(size_t j = 1; j < points.size()-1; j++) {
-    result.add(unit(findNormal(points[j-1],points[j]) + findNormal(points[j],points[j+1])));
-  }
-  if(points.size() >= 2) {
-    if(m_closed) {
-      result.add(unit(findNormal(points[points.size()-2],points.last()) + findNormal(points.last(),points[0])));
-    } else {
-      result.add(findNormal(points[points.size()-2],points.last()));
-    }
-  }
-  return result;
-}
-
-Point2DArray Profile::getSmoothNormals() const { // return noOfPoints normals
-  Point2DArray result;
+Vertex2DArray Profile::getSmoothVertexArray() const {
+  Vertex2DArray result;
   for(size_t i = 0; i < m_polygonArray.size(); i++) {
     const ProfilePolygon &pp = m_polygonArray[i];
-    result.addAll(pp.getSmoothNormals());
+    result.addAll(pp.getSmoothVertexArray());
   }
   return result;
 }
@@ -563,7 +450,7 @@ bool operator==(const ProfileRotationParameters &p1, const ProfileRotationParame
       && p1.m_edgeCount  == p2.m_edgeCount
       && p1.m_rad        == p2.m_rad
       && p1.m_rotateAxis == p2.m_rotateAxis
-      && p1.m_smoothness == p2.m_smoothness;
+      && p1.m_flags      == p2.m_flags;
 }
 
 bool operator!=(const ProfileRotationParameters &p1, const ProfileRotationParameters &p2) {
