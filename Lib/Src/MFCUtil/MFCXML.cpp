@@ -1,5 +1,5 @@
 #include "pch.h"
-#include <MFCUtil/2DXML.h>
+#include <MFCUtil/MFCXML.h>
 
 void setValue(XMLDoc &doc, XMLNodePtr n, const CPoint      &p) {
   doc.setValue(n, _T("x"), p.x);

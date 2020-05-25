@@ -3,28 +3,29 @@
 
 // ------------------------------------ PolygonCurve ------------------------------
 
-void PolygonCurve::move(const Point2D &dp) {
-  for(size_t i = 0; i < m_points.size(); i++) {
-    m_points[i] += dp;
+const PolygonCurveTypeName _PolygonCurveTypeName::s_typeNames[4] = {
+  TT_PRIM_LINE   , _T("line"   )
+ ,TT_PRIM_QSPLINE, _T("qspline")
+ ,TT_PRIM_CSPLINE, _T("cspline")
+ ,0              , EMPTYSTRING
+};
+
+const TCHAR *_PolygonCurveTypeName::typeToStr(short type)  { // static
+  for(PolygonCurveTypeName pct : s_typeNames) {
+    if(pct.m_type == type) {
+      return pct.m_name;
+    }
   }
+  throwInvalidArgumentException(__TFUNCTION__, _T("type=%d"), type);
+  return NULL;
 }
 
-Rectangle2D PolygonCurve::getBoundingBox() const {
-  return m_points.getBoundingBox();
-}
-
-String PolygonCurve::toString() const {
-  String result;
-  switch(m_type) {
-  case TT_PRIM_LINE   : result = _T("line   :"); break;
-  case TT_PRIM_QSPLINE: result = _T("qspline:"); break;
-  case TT_PRIM_CSPLINE: result = _T("cspline:"); break;
-  default             : result = format(_T("unknown type:%d:"), m_type); break;
+short _PolygonCurveTypeName::strToType(const TCHAR *str) { // static
+  for(PolygonCurveTypeName ct : s_typeNames) {
+    if(_tcsicmp(ct.m_name,str) == 0) {
+      return ct.m_type;
+    }
   }
-
-  const TCHAR *delim = EMPTYSTRING;
-  for(size_t i = 0; i < m_points.size(); i++, delim = _T("        ")) {
-    result += format(_T("%s%s\n"), delim, m_points[i].toString().cstr());
-  }
-  return result;
+  throwInvalidArgumentException(__TFUNCTION__, _T("str=%s"), str);
+  return 0;
 }

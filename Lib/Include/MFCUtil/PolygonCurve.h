@@ -2,25 +2,61 @@
 
 #include <Math/Rectangle2D.h>
 
-class PolygonCurve {
+typedef struct {
+  const short  m_type;
+  const TCHAR *m_name;
+} PolygonCurveTypeName;
+
+class _PolygonCurveTypeName {
+private:
+  static const PolygonCurveTypeName s_typeNames[4];
 public:
-  short          m_type; // TT_PRIM_LINE, TT_PRIM_QSPLINE or TT_PRIM_CSPLINE
-  Point2DArray   m_points;
-  void addPoint(const Point2D &p) {
+  // throws exception if type not in {0,TT_PRIM_LINE, TT_PRIM_QSPLINE, TT_PRIM_CSPLINE}. type==0 returns ""
+  static const TCHAR *typeToStr(short        type);
+  // throws exception if str not in {"","line","qspline", "cspline"} (comparing ignore case) str=="" return 0
+  static short        strToType(const TCHAR *str );
+};
+
+template<typename T> class PolygonCurveTemplate : public _PolygonCurveTypeName {
+public:
+  short                   m_type; // TT_PRIM_LINE, TT_PRIM_QSPLINE or TT_PRIM_CSPLINE
+  Point2DTemplateArray<T> m_points;
+  template<typename P> void addPoint(const Point2DTemplate<P> &p) {
     m_points.add(p);
   }
 
-  PolygonCurve(short type=0) {
+  PolygonCurveTemplate(short type=0) {
     m_type = type;
   }
+  template<typename P> PolygonCurveTemplate(const PolygonCurveTemplate<P> &src)
+    : m_type(src.m_type)
+    , m_points(src.m_points)
+  {
+  }
 
-  Rectangle2D getBoundingBox() const;
-  inline const Point2DArray &getAllPoints() const {
+  Rectangle2DTemplate<T> getBoundingBox() const {
+    return m_points.getBoundingBox();
+  }
+  inline const Point2DTemplateArray<T> &getAllPoints() const {
     return m_points;
   }
-  void move(const Point2D &dp);
+  template<typename P> void move(const Point2DTemplate<P> &dp) {
+    for(size_t i = 0; i < m_points.size(); i++) {
+      m_points[i] += dp;
+    }
+  }
   inline short getType() const {
     return m_type;
   }
-  String toString() const;
+  String toString() const {
+    return format(_T("%s\n"), typeToStr(m_type)) + indentString(m_points.toString(_T("\n")),4);
+  }
+};
+
+class PolygonCurve : public PolygonCurveTemplate<double> {
+public:
+  PolygonCurve(short type=0) : PolygonCurveTemplate(type) {
+  }
+  template<typename P> PolygonCurve(const PolygonCurveTemplate<P> &src) : PolygonCurveTemplate<double>(src) {
+  }
 };

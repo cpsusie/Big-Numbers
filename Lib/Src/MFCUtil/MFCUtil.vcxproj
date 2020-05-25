@@ -651,7 +651,11 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="2DXML.cpp" />
+    <ClCompile Include="AnimationParameters.cpp" />
+    <ClCompile Include="AnimationParamXML.cpp" />
+    <ClCompile Include="D3DColorValueXML.cpp" />
+    <ClCompile Include="IsoCurveParameters.cpp" />
+    <ClCompile Include="MFCXML.cpp" />
     <ClCompile Include="AlphaBlend.cpp" />
     <ClCompile Include="AnimatedImage.cpp" />
     <ClCompile Include="AviFile.cpp" />
@@ -776,7 +780,10 @@
     <ClCompile Include="WinTools.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Include\MFCUtil\2DXML.h" />
+    <ClInclude Include="..\..\Include\MFCUtil\AnimationParameters.h" />
+    <ClInclude Include="..\..\Include\MFCUtil\FunctionImageParamPersistentData.h" />
+    <ClInclude Include="..\..\Include\MFCUtil\IsoCurveParameters.h" />
+    <ClInclude Include="..\..\Include\MFCUtil\MFCXml.h" />
     <ClInclude Include="..\..\Include\MFCUtil\AbstractMouseHandler.h" />
     <ClInclude Include="..\..\Include\MFCUtil\AnimatedImage.h" />
     <ClInclude Include="..\..\Include\MFCUtil\Avifile.h" />
