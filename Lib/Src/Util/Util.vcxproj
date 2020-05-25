@@ -846,7 +846,7 @@
     <ClInclude Include="..\..\Include\ObjectManager.h" />
     <ClInclude Include="..\..\Include\PackedArray.h" />
     <ClInclude Include="..\..\Include\Packer.h" />
-    <ClInclude Include="..\..\Include\PersistentData.h" />
+    <ClInclude Include="..\..\Include\PersistentDataTemplate.h" />
     <ClInclude Include="..\..\Include\PragmaLib.h" />
     <ClInclude Include="..\..\Include\PrimitiveToString.h" />
     <ClInclude Include="..\..\Include\PriorityQueue.h" />
@@ -894,12 +894,14 @@
     <ClInclude Include="..\..\Include\Tokenizer.h" />
     <ClInclude Include="..\..\Include\TreeMap.h" />
     <ClInclude Include="..\..\Include\TreeSet.h" />
+    <ClInclude Include="..\..\Include\TypeContainerTemplate.h" />
     <ClInclude Include="..\..\Include\Unicode.h" />
     <ClInclude Include="..\..\Include\UnitTestTraits.h" />
     <ClInclude Include="..\..\Include\VectorTemplate.h" />
     <ClInclude Include="..\..\Include\WildCardRegex.h" />
     <ClInclude Include="..\..\Include\XmlDoc.h" />
     <ClInclude Include="..\..\Include\XMLUtil.h" />
+    <ClInclude Include="DateTimeStreamScanner.h" />
     <ClInclude Include="pch.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">false</ExcludedFromBuild>
@@ -929,8 +931,13 @@
     <ClCompile Include="BitOutputStream.cpp" />
     <ClCompile Include="BitSet.cpp" />
     <ClCompile Include="BitSetXml.cpp" />
+    <ClCompile Include="Date.cpp" />
     <ClCompile Include="DateEaster.cpp" />
+    <ClCompile Include="DateIO.cpp" />
     <ClCompile Include="DateStr.cpp" />
+    <ClCompile Include="DateStreamScanner.cpp" />
+    <ClCompile Include="DatewIO.cpp" />
+    <ClCompile Include="DebugLog.cpp" />
     <ClCompile Include="Double64Str.cpp" />
     <ClCompile Include="FileBitSet.cpp" />
     <ClCompile Include="FileBitSetIndex.cpp" />
@@ -960,8 +967,6 @@
     <ClCompile Include="CountedByteInputStream.cpp" />
     <ClCompile Include="CountedByteOutputStream.cpp" />
     <ClCompile Include="CPUInfo.cpp" />
-    <ClCompile Include="Date.cpp" />
-    <ClCompile Include="DebugLog.cpp" />
     <ClCompile Include="DecompressFilter.cpp" />
     <ClCompile Include="Dialog.cpp" />
     <ClCompile Include="DialogField.cpp" />
@@ -1168,10 +1173,14 @@
     <ClCompile Include="ThreadPriority.cpp" />
     <ClCompile Include="Time.cpp" />
     <ClCompile Include="TimeEstimator.cpp" />
+    <ClCompile Include="TimeIO.cpp" />
     <ClCompile Include="TimeMeasure.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Timestamp.cpp" />
+    <ClCompile Include="TimestampIO.cpp" />
     <ClCompile Include="TimestampStr.cpp" />
+    <ClCompile Include="TimestampStreamScanner.cpp" />
+    <ClCompile Include="TimestampwIO.cpp" />
     <ClCompile Include="TimeStr.cpp" />
     <ClCompile Include="ToAscii.cpp" />
     <ClCompile Include="Tokenizer.cpp" />

@@ -624,5 +624,84 @@ namespace TestDate {
       s = timestamp.toString();
     }
 
+    TEST_METHOD(DateStream) {
+      CompactArray<Date> a;
+      const TCHAR *dateFormats[] = {
+        ddMMyy            // "dd.MM.yy"
+       ,ddMMyyyy          // "dd.MM.yyyy"
+      };
+      CompactArray<Date> allTimes;
+      Date d = Date(30, 4, 1583);
+      for(int i = 0; i < 200; i++) {
+        allTimes.add(d);
+        d.add(TMONTH,7).add(TDAYOFMONTH, 5);
+      }
+      for(size_t i = 0; i < ARRAYSIZE(dateFormats); i++) {
+        CompactArray<Date> testArray;
+        String             testString;
+        const TCHAR *form = dateFormats[i];
+        for(size_t t = 0; t < allTimes.size(); t++) {
+          const Date   &d = allTimes[t];
+          const String  dStr = d.toString(form);
+          const Date    fd(dStr);
+          testArray.add(fd);
+          if(t) testString += _T(" ");
+          testString += dStr;
+        }
+
+        std::wistringstream istr(testString.cstr());
+
+        for(size_t t = 0; !istr.eof(); t++) {
+          verify(t < testArray.size());
+          const Date &expected = testArray[t];
+          Date        d;
+          istr >> d;
+          verify(d == expected);
+        }
+      }
+    }
+
+    TEST_METHOD(TimestampStream) {
+      const TCHAR *tsFormats[] = {
+        ddMMyy            // "dd.MM.yy"
+       ,ddMMyyyy          // "dd.MM.yyyy"
+       ,ddMMyyhhmm        // "dd.MM.yy hh:mm"
+       ,ddMMyyhhmmss      // "dd.MM.yy hh:mm:ss"
+       ,ddMMyyhhmmssSSS   // "dd.MM.yy hh:mm:ss:SSS"
+       ,ddMMyyyyhhmm      // "dd.MM.yyyy hh:mm"
+       ,ddMMyyyyhhmmss    // "dd.MM.yyyy hh:mm:ss"
+       ,ddMMyyyyhhmmssSSS // "dd.MM.yyyy hh:mm:ss:SSS"
+      };
+      CompactArray<Timestamp> allTimes;
+      Timestamp ts = Date(30, 4, 1583);
+      for(int i = 0; i < 100; i++) {
+        allTimes.add(ts);
+        ts.add(TDAYOFMONTH, 5).add(THOUR, 9).add(TSECOND, 5082).add(TMILLISECOND,219);
+      }
+      for(size_t i = 0; i < ARRAYSIZE(tsFormats); i++) {
+        CompactArray<Timestamp> testArray;
+        String                  testString;
+        const TCHAR *form = tsFormats[i];
+        for(size_t t = 0; t < allTimes.size(); t++) {
+          const Timestamp &ts = allTimes[t];
+          const String     tsStr = ts.toString(form);
+          const Timestamp  fts(tsStr);
+          testArray.add(fts);
+          if(t) testString += _T(" ");
+          testString += tsStr;
+        }
+
+        std::wistringstream istr(testString.cstr());
+
+        for(size_t t = 0; !istr.eof(); t++) {
+          verify(t < testArray.size());
+          const Timestamp &expected = testArray[t];
+          Timestamp        ts;
+          istr >> ts;
+          verify(ts == expected);
+        }
+      }
+    }
+
   }; // class
 } // namespace

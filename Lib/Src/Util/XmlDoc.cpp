@@ -242,6 +242,12 @@ XMLNodePtr XMLDoc::findNode(const XMLNodePtr &node, const TCHAR *nodeName) {
   return result;
 }
 
+void XMLDoc::checkTag(XMLNodePtr &node, const TCHAR *expectedTag) { // static
+  if(_tcsicmp(node->nodeName, expectedTag) != 0) {
+    throwException(_T("nodename:%s. Expected name:%s"), (TCHAR*)node->nodeName, expectedTag);
+  }
+}
+
 // ---------------------------------------------------------------------------------------------------
 
 void XMLDoc::setValue(const XMLNodePtr     &node,     const TCHAR *tagName, const String    &value, bool force) {

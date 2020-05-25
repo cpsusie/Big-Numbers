@@ -13,7 +13,7 @@
 }                                                           \
 break
 
-TCHAR *Date::tostr(TCHAR *dst, const TCHAR *format) const {
+TCHAR *Date::_tostr(TCHAR *dst, const TCHAR *format) const {
   int year, month, day;
   getDMY(day, month, year);
   TCHAR *t  = dst;

@@ -397,9 +397,6 @@
     <ClCompile Include="ByteFileArray.cpp">
       <Filter>Source Files\Collection</Filter>
     </ClCompile>
-    <ClCompile Include="Date.cpp">
-      <Filter>Source Files\Date</Filter>
-    </ClCompile>
     <ClCompile Include="Time.cpp">
       <Filter>Source Files\Date</Filter>
     </ClCompile>
@@ -407,9 +404,6 @@
       <Filter>Source Files\Date</Filter>
     </ClCompile>
     <ClCompile Include="CallCounter.cpp">
-      <Filter>Source Files\Debugging and Exceptions</Filter>
-    </ClCompile>
-    <ClCompile Include="DebugLog.cpp">
       <Filter>Source Files\Debugging and Exceptions</Filter>
     </ClCompile>
     <ClCompile Include="ErrorText.cpp">
@@ -887,16 +881,43 @@
     <ClCompile Include="BitSetXml.cpp">
       <Filter>Source Files\Collection</Filter>
     </ClCompile>
+    <ClCompile Include="TimeStr.cpp">
+      <Filter>Source Files\Date</Filter>
+    </ClCompile>
+    <ClCompile Include="DateEaster.cpp">
+      <Filter>Source Files\Date</Filter>
+    </ClCompile>
+    <ClCompile Include="DateIO.cpp">
+      <Filter>Source Files\Date</Filter>
+    </ClCompile>
+    <ClCompile Include="TimeIO.cpp">
+      <Filter>Source Files\Date</Filter>
+    </ClCompile>
+    <ClCompile Include="TimestampIO.cpp">
+      <Filter>Source Files\Date</Filter>
+    </ClCompile>
+    <ClCompile Include="Date.cpp">
+      <Filter>Source Files\Date</Filter>
+    </ClCompile>
     <ClCompile Include="DateStr.cpp">
       <Filter>Source Files\Date</Filter>
     </ClCompile>
     <ClCompile Include="TimestampStr.cpp">
       <Filter>Source Files\Date</Filter>
     </ClCompile>
-    <ClCompile Include="TimeStr.cpp">
+    <ClCompile Include="DebugLog.cpp">
+      <Filter>Source Files\Debugging and Exceptions</Filter>
+    </ClCompile>
+    <ClCompile Include="DateStreamScanner.cpp">
       <Filter>Source Files\Date</Filter>
     </ClCompile>
-    <ClCompile Include="DateEaster.cpp">
+    <ClCompile Include="DatewIO.cpp">
+      <Filter>Source Files\Date</Filter>
+    </ClCompile>
+    <ClCompile Include="TimestampStreamScanner.cpp">
+      <Filter>Source Files\Date</Filter>
+    </ClCompile>
+    <ClCompile Include="TimestampwIO.cpp">
       <Filter>Source Files\Date</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1142,9 +1163,6 @@
     <ClInclude Include="..\..\Include\MP3Player.h">
       <Filter>Header Files\Misc</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\PersistentData.h">
-      <Filter>Header Files\String</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\SynchronizedQueue.h">
       <Filter>Header Files\Process</Filter>
     </ClInclude>
@@ -1307,6 +1325,15 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\ThreadBase.h">
       <Filter>Header Files\Process</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\TypeContainerTemplate.h">
+      <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\PersistentDataTemplate.h">
+      <Filter>Header Files\String</Filter>
+    </ClInclude>
+    <ClInclude Include="DateTimeStreamScanner.h">
+      <Filter>Source Files\Date</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

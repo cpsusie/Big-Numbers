@@ -13,7 +13,7 @@
 }                                                           \
 break
 
-TCHAR *Timestamp::tostr(TCHAR *dst, const TCHAR *format) const {
+TCHAR *Timestamp::_tostr(TCHAR *dst, const TCHAR *format) const {
   int year, month, day, hour, minute, second, millisecond;
   getDMY(day, month, year);
   getHMS(hour, minute, second, millisecond);

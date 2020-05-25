@@ -175,10 +175,15 @@ public:
     return getMaxDate().m_factor;
   }
 
-  TCHAR *tostr(TCHAR *dst, const TCHAR *format = ddMMyyyy) const;
+  TCHAR *_tostr(TCHAR *dst, const TCHAR *format = ddMMyyyy) const;
+
+  template<typename T> T *tostr(T *dst, const TCHAR *format = ddMMyyyy) const {
+    TCHAR tmp[1024];
+    return strCpy(dst, _tostr(tmp, format));
+  }
   inline String toString(const TCHAR *format = ddMMyyyy) const {
     TCHAR tmp[1024];
-    return tostr(tmp, format);
+    return _tostr(tmp, format);
   }
   friend class Timestamp;
   friend inline Packer &operator<<(Packer &p, const Date &d) {
@@ -188,6 +193,12 @@ public:
     return p >> d.m_factor;
   }
 };
+
+std::istream  &operator>>(std::istream  &in ,       Date &d);
+std::ostream  &operator<<(std::ostream  &out, const Date &d);
+
+std::wistream &operator>>(std::wistream &in ,       Date &d);
+std::wostream &operator<<(std::wostream &out, const Date &d);
 
 class Time {
 private:
@@ -312,6 +323,12 @@ public:
     return p >> t.m_factor;
   }
 };
+
+std::istream  &operator>>(std::istream  &in ,       Time &t);
+std::ostream  &operator<<(std::ostream  &out, const Time &t);
+
+std::wistream &operator>>(std::wistream &in ,       Time &t);
+std::wostream &operator<<(std::wostream &out, const Time &t);
 
 class Timestamp {
 private:
@@ -476,10 +493,16 @@ public:
     return getMaxTimestamp().m_factor;
   }
 
-  TCHAR *tostr(TCHAR *dst, const TCHAR *dateFormat = ddMMyyyyhhmm) const;
+  TCHAR *_tostr(TCHAR *dst, const TCHAR *format = ddMMyyyyhhmm) const;
+
+  template<typename T> T *tostr(T *dst, const TCHAR *format = ddMMyyyyhhmm) const {
+    TCHAR tmp[1024];
+    return strCpy(dst, _tostr(tmp, format));
+  }
+
   inline String toString(const TCHAR *format = ddMMyyyyhhmm) const {
     TCHAR tmp[1024];
-    return tostr(tmp, format);
+    return _tostr(tmp, format);
   }
   static String cctime(); // cctime(getSystemTime());
   static String cctime(time_t tt);
@@ -491,6 +514,12 @@ public:
     return p >> ts.m_factor;
   }
 };
+
+std::istream  &operator>>(std::istream  &in ,       Timestamp &t);
+std::ostream  &operator<<(std::ostream  &out, const Timestamp &t);
+
+std::wistream &operator>>(std::wistream &in ,       Timestamp &t);
+std::wostream &operator<<(std::wostream &out, const Timestamp &t);
 
 double getSystemTime();
 double fileTimeToTotalTime(const FILETIME &kernelTime, const FILETIME &userTime);

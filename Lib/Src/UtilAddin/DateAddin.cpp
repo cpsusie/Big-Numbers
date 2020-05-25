@@ -5,14 +5,11 @@ ADDIN_API HRESULT WINAPI AddIn_Date(DWORD dwAddress, DEBUGHELPER *pHelper, int n
   try {
     Date d;
     pHelper->getRealObject(&d, sizeof(d));
-    TCHAR str[30];
+    char str[30];
     d.tostr(str);
-    USES_CONVERSION;
-    const char *cp = T2A(str);
-    strncpy(pResult, cp, maxResult);
+    strncpy(pResult, str, maxResult);
     return S_OK;
-  }
-  catch(...) {
+  } catch(...) {
     strcpy(pResult, "");
     return S_OK;
   }
@@ -28,8 +25,7 @@ ADDIN_API HRESULT WINAPI AddIn_Time(DWORD dwAddress, DEBUGHELPER *pHelper, int n
     const char *cp = T2A(str);
     strncpy(pResult, cp, maxResult);
     return S_OK;
-  }
-  catch(...) {
+  } catch(...) {
     strcpy(pResult, "");
     return S_OK;
   }

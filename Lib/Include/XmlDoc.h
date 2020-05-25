@@ -101,6 +101,9 @@ public:
     setValue(findNode(nodeName),tagName,value,force);
   }
 
+  // throws Exception if node hasn't the expected tag
+  static void checkTag(     XMLNodePtr &node, const TCHAR *expectedTag);
+
   void    setNodeText(const XMLNodePtr &node, const TCHAR *value) ;
   String &getNodeText(const XMLNodePtr &node,       String &value);
 
@@ -124,8 +127,8 @@ inline void setValue(  XMLDoc &doc, const XMLNodePtr &n, INT64            value)
 inline void setValue(  XMLDoc &doc, const XMLNodePtr &n, UINT64           value) { doc.setValueTemplate(n,value); }
 inline void setValue(  XMLDoc &doc, const XMLNodePtr &n, float            value) { doc.setValueTemplate(n,value); }
 inline void setValue(  XMLDoc &doc, const XMLNodePtr &n, double           value) { doc.setValueTemplate(n,value); }
-//inline void setValue(  XMLDoc &doc, const XMLNodePtr &n, const Date      &value) { doc.setValueTemplate(n,value); }
-//inline void setValue(  XMLDoc &doc, const XMLNodePtr &n, const Timestamp &value) { doc.setValueTemplate(n,value); }
+inline void setValue(  XMLDoc &doc, const XMLNodePtr &n, const Date      &value) { doc.setValueTemplate(n,value); }
+inline void setValue(  XMLDoc &doc, const XMLNodePtr &n, const Timestamp &value) { doc.setValueTemplate(n,value); }
 inline void setValue(  XMLDoc &doc, const XMLNodePtr &n, bool             value) { doc.setValueTemplate(n,value); }
 inline void getValue(  XMLDoc &doc, const XMLNodePtr &n, String          &value) { doc.setValueTemplate(n,value); }
 inline void getValueLF(XMLDoc &doc, const XMLNodePtr &n, String          &value) { doc.getValueTemplate(n,value); }
@@ -137,8 +140,8 @@ inline void getValue(  XMLDoc &doc, const XMLNodePtr &n, INT64           &value)
 inline void getValue(  XMLDoc &doc, const XMLNodePtr &n, UINT64          &value) { doc.getValueTemplate(n,value); }
 inline void getValue(  XMLDoc &doc, const XMLNodePtr &n, float           &value) { doc.getValueTemplate(n,value); }
 inline void getValue(  XMLDoc &doc, const XMLNodePtr &n, double          &value) { doc.getValueTemplate(n,value); }
-//inline void getValue(  XMLDoc &doc, const XMLNodePtr &n, Date            &value) { doc.getValueTemplate(n,value); }
-//inline void getValue(  XMLDoc &doc, const XMLNodePtr &n, Timestamp       &value) { doc.getValueTemplate(n,value); }
+inline void getValue(  XMLDoc &doc, const XMLNodePtr &n, Date            &value) { doc.getValueTemplate(n,value); }
+inline void getValue(  XMLDoc &doc, const XMLNodePtr &n, Timestamp       &value) { doc.getValueTemplate(n,value); }
 inline void getValue(  XMLDoc &doc, const XMLNodePtr &n, bool            &value) { doc.getValueTemplate(n,value); }
 
 template<typename T> void setValue(XMLDoc &doc, XMLNodePtr n, const CompactKeyType<T> &v) {

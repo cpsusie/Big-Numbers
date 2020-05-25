@@ -1,23 +1,19 @@
 #pragma once
 
-#include <XmlDoc.h>
+#include "TypeContainerTemplate.h"
 
-class PersistentData {
+class XMLDoc;
+
+class _PersistentData {
 private:
   String m_name;
 protected:
   static const TCHAR *s_defaultName; // = "Untitled"
 public:
-  PersistentData() : m_name(s_defaultName) {
+  _PersistentData() : m_name(s_defaultName) {
   }
-  virtual ~PersistentData() {
+  virtual ~_PersistentData() {
   }
-  void load(const String &fileName);
-  void save(const String &fileName);
-  static void           checkTag(XMLNodePtr node, const TCHAR *expectedTag);
-  static XMLNodePtr     getChild(XMLDoc &doc, XMLNodePtr n, const TCHAR *tag);
-  virtual void putDataToDoc(XMLDoc &doc) = 0;
-  virtual void getDataFromDoc(XMLDoc &doc) = 0;
   inline const String &getName() const {
     return m_name;
   }
@@ -34,5 +30,11 @@ public:
     return m_name == s_defaultName;
   }
   String getDisplayName() const;
-  virtual int getType() const = 0;
+  void load(const String &fileName);
+  void save(const String &fileName);
+  virtual void putDataToDoc(XMLDoc &doc) = 0;
+  virtual void getDataFromDoc(XMLDoc &doc) = 0;
+};
+
+template<typename T> class PersistentDataTemplate : public _PersistentData, public TypeContainerTemplate<T> {
 };
