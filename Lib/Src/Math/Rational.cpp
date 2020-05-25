@@ -623,7 +623,7 @@ bool Rational::isRational(const Double80 &x, Rational *r) { // static
   }
 }
 
-bool Rational::isRationalPow(const Rational &base, const Rational &e, Rational *r) {
+bool Rational::isRationalPow(const Rational &base, const Rational &e, Rational *r) { // static
   try {
     if(base.isZero()) {
       if(!e.isPositive()) {

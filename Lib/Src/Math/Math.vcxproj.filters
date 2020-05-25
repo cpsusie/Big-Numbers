@@ -257,6 +257,12 @@
     <ClCompile Include="ComplexVector.cpp">
       <Filter>Source Files\Matrix</Filter>
     </ClCompile>
+    <ClCompile Include="TrigonometricXML.cpp">
+      <Filter>Source Files\Functions</Filter>
+    </ClCompile>
+    <ClCompile Include="TrigonometricMode.cpp">
+      <Filter>Source Files\Functions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Triangle\ReadMe.txt">
@@ -407,6 +413,12 @@
       <Filter>Header Files\BigReal</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\Math\Point2D3D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\MathXML.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\TrigonometricMode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

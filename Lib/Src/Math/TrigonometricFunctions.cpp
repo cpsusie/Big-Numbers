@@ -146,25 +146,3 @@ Real asec(const Real &x, TrigonometricMode mode) {
                 return 0;
   }
 }
-
-String toString(TrigonometricMode mode) {
-  switch(mode) {
-  case RADIANS: return _T("Radians");
-  case DEGREES: return _T("Degrees");
-  case GRADS  : return _T("Grads"  );
-  default     : return _T("Radians");
-  }
-}
-
-TrigonometricMode getTrigonometricModeFromString(const String &str) {
-  if(str.equalsIgnoreCase(_T("radians"))) {
-    return RADIANS;
-  } else if(str.equalsIgnoreCase(_T("degrees"))) {
-    return DEGREES;
-  } else if(str.equalsIgnoreCase(_T("grads"))) {
-    return GRADS;
-  } else {
-    return RADIANS;
-  }
-}
-

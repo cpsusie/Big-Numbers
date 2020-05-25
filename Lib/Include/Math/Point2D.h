@@ -210,8 +210,8 @@ public:
     return *this;
   }
   template<typename S> Point2DTemplate<T> rotate(const S &rad) const {
-    const S cs = cos(rad);
-    const S sn = sin(rad);
+    const T cs = (T)cos(rad);
+    const T sn = (T)sin(rad);
     return Point2DTemplate<T>(cs * x + -sn * y, sn * x + cs * y);
   }
 

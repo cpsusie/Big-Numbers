@@ -1229,6 +1229,8 @@
     <ClCompile Include="TrigonometricFunctions.cpp" />
     <ClCompile Include="TrigonometricFunctionsD.cpp" />
     <ClCompile Include="TrigonometricFunctionsG.cpp" />
+    <ClCompile Include="TrigonometricMode.cpp" />
+    <ClCompile Include="TrigonometricXML.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="Math.natvis">
@@ -1262,6 +1264,7 @@
     <ClInclude Include="..\..\Include\Math\LUMatrixTemplate.h" />
     <ClInclude Include="..\..\Include\Math\MathException.h" />
     <ClInclude Include="..\..\Include\Math\MathLib.h" />
+    <ClInclude Include="..\..\Include\Math\MathXML.h" />
     <ClInclude Include="..\..\Include\Math\Matrix.h" />
     <ClInclude Include="..\..\Include\Math\Number.h" />
     <ClInclude Include="..\..\Include\Math\Point2D.h" />
@@ -1282,6 +1285,7 @@
     <ClInclude Include="..\..\Include\Math\Statistic.h" />
     <ClInclude Include="..\..\Include\Math\Transformation.h" />
     <ClInclude Include="..\..\Include\Math\Triangle\Triangle.h" />
+    <ClInclude Include="..\..\Include\Math\TrigonometricMode.h" />
     <ClInclude Include="MemoryPool.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="targetver.h" />

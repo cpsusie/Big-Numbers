@@ -3,6 +3,7 @@
 #include <Unicode.h>
 #include <CompactArray.h>
 #include <NumberInterval.h>
+#include "TrigonometricMode.h"
 
 //#define LONGDOUBLE // defined in configurations "Debug long double" and "Release long double"
 #ifdef LONGDOUBLE
@@ -19,15 +20,6 @@
 
 typedef CompactArray<Real>   CompactRealArray;
 typedef NumberInterval<Real> RealInterval;
-
-typedef enum {
-  RADIANS
- ,DEGREES
- ,GRADS
-} TrigonometricMode;
-
-String            toString(TrigonometricMode mode);
-TrigonometricMode getTrigonometricModeFromString(const String &str);
 
 template<typename T> T csc(T x) {
   return 1.0 / sin(x);
