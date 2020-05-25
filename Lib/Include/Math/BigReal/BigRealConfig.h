@@ -11,8 +11,10 @@
 // Define this to keep track of invariant for DigitPools, and fetched lists of Digits
 //#define CHECK_DIGITPOOLINVARIANT
 
-// Define this to count the number of fetchDigit on DigitPools
-//#define COUNT_DIGITPOOLFETCHDIGIT
+// Define this to count the number of fetchDigit on DigitPools.
+// if COUNT_DIGITPOOLFETCHDIGIT == 1, the number of allocated pages and digits will be logged (debugLog), when digitpool is deleted
+// if COUNT_DIGITPOOLFETCHDIGIT == 2, the total number of calls to fetchDigit + fetchDigitList to each digitpool will also be logged
+//#define COUNT_DIGITPOOLFETCHDIGIT 2
 
 // If this is defined, product wil trace recursive calls when multiplying long BigReals
 // which will slow down the program (testBigReal) by a factor 20!!

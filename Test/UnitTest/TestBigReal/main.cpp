@@ -181,7 +181,7 @@ public:
 
 void SpecialTestClass::runTest() {
 
-  DigitPool::setDumpWhenDestroyed(true);
+//  DigitPool::setDumpWhenDestroyed(true);
 
 //  testAPCSum();
 //  return;

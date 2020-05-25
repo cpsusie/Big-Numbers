@@ -40,7 +40,6 @@ class DigitPool : public BigRealResource, public AbstractVectorAllocator<BigReal
 private:
   // Holds the total number of allocated DigitPages in all digitpools
   static std::atomic<UINT> s_totalAllocatedPageCount;
-  static bool              s_dumpCountWhenDestroyed;
   const String             m_origName;
   String                   m_name;
   // Holds the number of allocated pages in this digitPool, (number of allocated digits = m_allocatedPageCount*DIGITPAGESIZE
@@ -57,7 +56,7 @@ private:
   std::atomic<UINT>        m_refCount;
   UINT                     m_refCountOnFetch;
 
-#ifdef COUNT_DIGITPOOLFETCHDIGIT
+#if COUNT_DIGITPOOLFETCHDIGIT == 2
   UINT                     m_requestCount;
 #endif // COUNT_DIGITPOOLFETCHDIGIT
 
@@ -112,9 +111,6 @@ public:
   }
   inline BYTE getInitFlags() const {
     return m_initFlags;
-  }
-  static void setDumpWhenDestroyed(bool dump) {
-    s_dumpCountWhenDestroyed = dump;
   }
   // Default implementation does NOT guarantee exclusive access to freelist, and will, if shared between threads,
   // cause data-race...sooner or later

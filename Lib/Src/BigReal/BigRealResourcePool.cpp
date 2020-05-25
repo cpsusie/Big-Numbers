@@ -9,13 +9,6 @@
 
 const BR2DigitType BigReal::s_BIGREALBASEBR2 = BIGREALBASE;
 
-std::atomic<UINT>  DigitPool::s_totalAllocatedPageCount;
-#ifndef COUNT_DIGITPOOLFETCHDIGIT
-bool               DigitPool::s_dumpCountWhenDestroyed  = false;
-#else
-bool               DigitPool::s_dumpCountWhenDestroyed  = true;
-#endif // COUNT_DIGITPOOLFETCHDIGIT
-
 DigitPool         *BigReal::s_defaultDigitPool = BigRealResourcePool::getDefaultDigitPool();
 DigitPool         *BigReal::s_constDigitPool   = BigRealResourcePool::getConstDigitPool();
 

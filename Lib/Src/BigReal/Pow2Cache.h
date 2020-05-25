@@ -55,3 +55,5 @@ public:
   // return the one and only instance of Pow2Cache, with a lock
   static Pow2Cache &getInstance();
 };
+
+typedef Entry<Pow2ArgumentKey, const BigReal*> Pow2CacheEntry;

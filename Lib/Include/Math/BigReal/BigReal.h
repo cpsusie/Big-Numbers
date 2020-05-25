@@ -749,7 +749,6 @@ public:
   static bool pow2CacheHasFile();
   static bool pow2CacheChanged();
   static void pow2CacheDump();
-
   // Assume x._isfinite() && y._isfinite().
   // Return sign(x-y) (+/-1,0)
   static int compare(         const BigReal &x,  const BigReal &y);

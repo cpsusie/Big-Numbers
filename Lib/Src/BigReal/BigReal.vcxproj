@@ -755,6 +755,7 @@
     <ClCompile Include="InputBigReal.cpp" />
     <ClCompile Include="Ln.cpp" />
     <ClCompile Include="MRisprime.cpp" />
+    <ClCompile Include="Pow2CacheDump.cpp" />
     <ClCompile Include="SubProdRunnable.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

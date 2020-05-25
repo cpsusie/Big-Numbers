@@ -2,6 +2,8 @@
 #include <float.h>
 #include <DebugLog.h>
 
+std::atomic<UINT>  DigitPool::s_totalAllocatedPageCount;
+
 DigitPool::DigitPool(int id, const String &name, size_t intialDigitCount)
 : BigRealResource(id)
 , m_origName(name)
@@ -11,7 +13,7 @@ DigitPool::DigitPool(int id, const String &name, size_t intialDigitCount)
 , m_freeDigits(NULL)
 , m_initFlags(BR_MUTABLE)          // so that constants allocated
 , m_refCount(0)
-#ifdef COUNT_DIGITPOOLFETCHDIGIT
+#if COUNT_DIGITPOOLFETCHDIGIT == 2
 , m_requestCount(0)
 #endif // COUNT_DIGITPOOLFETCHDIGIT
 , m_continueCalculation(true)
@@ -60,15 +62,13 @@ DigitPool::~DigitPool() {
   if(pageCount) {
     s_totalAllocatedPageCount -= count;
   }
-  if(s_dumpCountWhenDestroyed) {
-#ifndef COUNT_DIGITPOOLFETCHDIGIT
-    debugLog(_T("DigitPool(%3u):%-20s:PageCount:%4d, DigitCount:%10s\n")
-            ,getId(), getName().cstr(), count, format1000((INT64)count*DIGITPAGESIZE).cstr());
-#else
-    debugLog(_T("DigitPool(%3u):%-20s:PageCount:%4d, DigitCount:%10s, RequestCount:%15s\n")
-            ,getId(), getName().cstr(), count, format1000((INT64)count*DIGITPAGESIZE).cstr(), format1000(m_requestCount).cstr());
+#if COUNT_DIGITPOOLFETCHDIGIT == 1
+  debugLog(_T("DigitPool(%3u):%-20s:PageCount:%4d, DigitCount:%10s\n")
+          ,getId(), getName().cstr(), count, format1000((INT64)count*DIGITPAGESIZE).cstr());
+#elif COUNT_DIGITPOOLFETCHDIGIT == 2
+  debugLog(_T("DigitPool(%3u):%-20s:PageCount:%4d, DigitCount:%10s, RequestCount:%15s\n")
+          ,getId(), getName().cstr(), count, format1000((INT64)count*DIGITPAGESIZE).cstr(), format1000(m_requestCount).cstr());
 #endif // COUNT_DIGITPOOLFETCHDIGIT
-  }
 }
 
 #ifdef CHECK_DIGITPOOLINVARIANT
@@ -84,11 +84,11 @@ DigitPool::~DigitPool() {
 #endif // CHECK_DIGITPOOLINVARIANT
 
 Digit *DigitPool::fetchDigit() {
-  ENTER;
+  ENTER
   if(m_freeDigits == NULL) allocatePage();
   Digit *p     = m_freeDigits;
   m_freeDigits = p->next;
-#ifdef COUNT_DIGITPOOLFETCHDIGIT
+#if COUNT_DIGITPOOLFETCHDIGIT == 2
   m_requestCount++;
 #endif // COUNT_DIGITPOOLFETCHDIGIT
   LEAVE
@@ -110,7 +110,7 @@ Digit *DigitPool::fetchDigitList(size_t count) {
   }
   m_freeDigits = last->next;
   head->prev = last;
-#ifdef COUNT_DIGITPOOLFETCHDIGIT
+#if COUNT_DIGITPOOLFETCHDIGIT == 2
   m_requestCount++;
 #endif // COUNT_DIGITPOOLFETCHDIGIT
   CHECKISLIST(head)
@@ -134,7 +134,7 @@ Digit *DigitPool::fetchDigitList(size_t count, BRDigitType n) {
   }
   m_freeDigits = last->next;
   head->prev = last;
-#ifdef COUNT_DIGITPOOLFETCHDIGIT
+#if COUNT_DIGITPOOLFETCHDIGIT == 2
   m_requestCount++;
 #endif // COUNT_DIGITPOOLFETCHDIGIT
   CHECKISLIST(head)
