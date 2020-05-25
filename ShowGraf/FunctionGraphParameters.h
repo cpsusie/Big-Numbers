@@ -9,7 +9,7 @@ private:
   DoubleInterval    m_interval;
   UINT              m_steps;
 public:
-  FunctionGraphParameters(const String &name=s_defaultName, COLORREF color=BLACK, UINT rollAvgSize=0, GraphStyle style=GSCURVE, TrigonometricMode trigonometricMode=RADIANS);
+  FunctionGraphParameters(const String &name=s_defaultName, COLORREF color=BLACK, const RollingAvg &rollingAvg=RollingAvg::s_default, GraphStyle style=GSCURVE, TrigonometricMode trigonometricMode=RADIANS);
   virtual GraphParameters *clone() const {
     return new FunctionGraphParameters(*this);
   }
@@ -42,7 +42,7 @@ public:
   inline UINT getSteps() const {
     return m_steps;
   }
-  int getType() const {
+  GraphType getType() const {
     return FUNCTIONGRAPH;
   }
 };

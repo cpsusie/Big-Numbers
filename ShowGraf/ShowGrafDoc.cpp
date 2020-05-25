@@ -41,8 +41,7 @@ InitialOptions::InitialOptions() {
   m_onePerLine       = false;
   m_rangeSpecified   = false;
   m_explicitRange.init(-10,10,-10,10);
-  m_rollAvg          = false;
-  m_rollAvgSize      = 10;
+  m_rollingAvg       = RollingAvg::s_default;
 }
 
 void CShowGrafDoc::init() {
@@ -87,12 +86,12 @@ void CShowGrafDoc::init() {
         continue;
 
       case 'r':
-        m_options.m_rollAvg = true;
-        if(_stscanf(cp+1,_T("%d"), &m_options.m_rollAvgSize) == 1) {
-          if((m_options.m_rollAvgSize < 1) || (m_options.m_rollAvgSize > 10000)) {
-            usage();
+        { m_options.m_rollingAvg.setEnabled(true);
+          UINT queueSize;
+          if(_stscanf(cp + 1, _T("%u"), &queueSize) == 1) {
+            m_options.m_rollingAvg.setQueueSize(queueSize);
+            break;
           }
-          break;
         }
         continue;
       case 'I':
@@ -205,7 +204,7 @@ bool CShowGrafDoc::addInitialDataGraph(const String &name, COLORREF color) {
                            ,AXISOPT(y).m_relativeToFirst
                            ,*AXISOPT(x).m_reader
                            ,*AXISOPT(y).m_reader
-                           ,m_options.m_rollAvg ? m_options.m_rollAvgSize : 0
+                           ,m_options.m_rollingAvg
                            ,m_options.m_graphStyle);
   Graph *g = new DataGraph(getSystem(), param); TRACE_NEW(g);
   if(!g->isEmpty()) {
@@ -349,14 +348,9 @@ void CShowGrafDoc::addDiffEquationGraph(const DiffEquationGraphParameters &param
   initScaleIfSingleGraph();
 }
 
-void CShowGrafDoc::setRollAvg(bool on) {
-  m_options.m_rollAvg = on;
-  m_graphArray.setRollAvgSize(on ? m_options.m_rollAvgSize : 0);
-}
-
-void CShowGrafDoc::setRollAvgSize(UINT size) {
-  m_options.m_rollAvgSize = size;
-  setRollAvg(true);
+void CShowGrafDoc::setRollingAvg(const RollingAvg &rollingAvg) {
+  m_options.m_rollingAvg = rollingAvg;
+  m_graphArray.setRollingAvg(m_options.m_rollingAvg);
 }
 
 #ifdef _DEBUG

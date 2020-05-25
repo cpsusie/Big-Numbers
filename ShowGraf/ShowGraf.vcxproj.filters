@@ -153,9 +153,6 @@
     <ClCompile Include="FunctionFitter.cpp">
       <Filter>Source Files\CustomFit</Filter>
     </ClCompile>
-    <ClCompile Include="RollAvgSizeDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="DiffEquationEdit.cpp">
       <Filter>Source Files\DiffEquationGraph</Filter>
     </ClCompile>
@@ -187,6 +184,15 @@
       <Filter>Source Files\Graph</Filter>
     </ClCompile>
     <ClCompile Include="GraphExtremaResult.cpp">
+      <Filter>Source Files\Graph</Filter>
+    </ClCompile>
+    <ClCompile Include="RollingAvgDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphXML.cpp">
+      <Filter>Source Files\Graph</Filter>
+    </ClCompile>
+    <ClCompile Include="RollingAvg.cpp">
       <Filter>Source Files\Graph</Filter>
     </ClCompile>
   </ItemGroup>
@@ -281,9 +287,6 @@
     <ClInclude Include="FunctionFitter.h">
       <Filter>Source Files\CustomFit\Include</Filter>
     </ClInclude>
-    <ClInclude Include="RollAvgSizeDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="DiffEquationEdit.h">
       <Filter>Source Files\DiffEquationGraph\Include</Filter>
     </ClInclude>
@@ -324,6 +327,15 @@
       <Filter>Source Files\Graph\Include</Filter>
     </ClInclude>
     <ClInclude Include="GraphExtremaResult.h">
+      <Filter>Source Files\Graph\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="RollingAvgDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphXML.h">
+      <Filter>Source Files\Graph\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="RollingAvg.h">
       <Filter>Source Files\Graph\Include</Filter>
     </ClInclude>
   </ItemGroup>

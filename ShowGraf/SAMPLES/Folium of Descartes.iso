@@ -1,2 +1,2 @@
 <IsoCurve><expr>a=2;
-x^3+y^3 - 3*a*x*y</expr><boundingbox><x>-10</x><y>-10</y><w>20</w><h>20</h></boundingbox><cellsize>1.000000000000000e-01</cellsize><trigo>radians</trigo><style>curve</style><color>000000ff</color><rollsize>0</rollsize></IsoCurve>
+x^3+y^3 - 3*a*x*y</expr><boundingbox><x>-10</x><y>-10</y><w>20</w><h>20</h></boundingbox><cellsize>0.1</cellsize><trigo>radians</trigo><style>curve</style><color>000000ff</color><rollingavg><enable>0</enable><queuesize>10</queuesize></rollingavg></IsoCurve>

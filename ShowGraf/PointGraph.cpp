@@ -21,13 +21,13 @@ const Point2DArray &PointGraph::getProcessedData() const {
     return m_processedData;
   }
 
-  if(getParam().getRollAvgSize() <= 1) {
+  if(!getParam().getRollingAvg().isEnabled()) {
     m_processedData = m_pointArray;
   } else {
     m_processedData.clear();
     QueueList<double> queue;
     double sum = 0;
-    const size_t maxQueueSize = getParam().getRollAvgSize();
+    const size_t maxQueueSize = getParam().getRollingAvg().getQueueSize();
     const size_t n            = m_pointArray.size();
     for(size_t i = 0; i < n; i++) {
       if(queue.size() == maxQueueSize) {
@@ -100,8 +100,8 @@ double PointGraph::distance(const CPoint &p) const {
   return 0;
 }
 
-void PointGraph::setRollAvgSize(UINT size) {
-  if(getParam().setRollAvgSize(size) != size) {
+void PointGraph::setRollingAvg(const RollingAvg &rollingAvg) {
+  if(getParam().setRollingAvg(rollingAvg) != rollingAvg) {
     m_dataProcessed = false;
   }
 }

@@ -97,7 +97,7 @@ public:
   inline double getMaxError() const {
     return m_maxError;
   }
-  int getType() const {
+  GraphType getType() const {
     return DIFFEQUATIONGRAPH;
   }
 };

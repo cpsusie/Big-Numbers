@@ -163,7 +163,7 @@ void CShowGrafView::OnDraw(CDC *pDC) {
       enableMenuItem(ID_BOTH_SCALE_NORMALDIST     , xnormDistEnabled && ynormDistEnabled);
       checkMenuItem( ID_VIEW_RETAINASPECTRATIO    , m_coordinateSystem.isRetainingAspectRatio());
       enableMenuItem(ID_VIEW_RETAINASPECTRATIO    , m_coordinateSystem.canRetainAspectRatio()  );
-      checkMenuItem( ID_VIEW_ROLLAVG              , getDoc()->getRollAvg()                     );
+      checkMenuItem( ID_VIEW_ROLLINGAVG           , getDoc()->getRollingAvg().isEnabled()      );
     }
   } catch(Exception e) {
     showException(e);

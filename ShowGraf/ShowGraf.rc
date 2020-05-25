@@ -100,15 +100,18 @@ BEGIN
     CONTROL         "",IDC_BUTTONCOLOR,"MfcColorButton",WS_TABSTOP,104,15,30,12
 END
 
-IDD_ROLLAVGSIZE_DIALOG DIALOGEX 0, 0, 250, 62
+IDD_ROLLINGAVG_DIALOG DIALOGEX 0, 0, 261, 68
 STYLE DS_SETFONT | DS_MODALFRAME | DS_NOIDLEMSG | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Rolling average queuesize"
+CAPTION "Rolling average"
 FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
-    EDITTEXT        IDC_EDITROLLAVGSIZE,116,16,52,14
-    DEFPUSHBUTTON   "OK",IDOK,139,41,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,193,41,50,14
-    LTEXT           "Rolling average queuesize::",IDC_STATIC,16,18,89,11
+    CONTROL         "&Enable rolling average",IDC_CHECKENABLEROLLINGAVG,
+                    "Button",BS_AUTOCHECKBOX | BS_LEFTTEXT | WS_TABSTOP,12,8,102,12
+    EDITTEXT        IDC_EDITROLLINGQUEUESIZE,106,29,40,14,ES_RIGHT | ES_NUMBER
+    CONTROL         "",IDC_EDITROLLINGQUEUESIZESPIN,"msctls_updown32",UDS_ALIGNRIGHT | UDS_ARROWKEYS,146,29,11,14
+    DEFPUSHBUTTON   "OK",IDOK,155,52,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,209,52,50,14
+    LTEXT           "Rolling average &queuesize:",IDC_STATIC,12,31,90,11
 END
 
 IDR_FUNCTION DIALOGEX 0, 0, 357, 162
@@ -465,7 +468,7 @@ BEGIN
     0, 100, 0, 0
 END
 
-IDD_ROLLAVGSIZE_DIALOG AFX_DIALOG_LAYOUT
+IDD_ROLLINGAVG_DIALOG AFX_DIALOG_LAYOUT
 BEGIN
     0
 END
@@ -518,12 +521,12 @@ BEGIN
         BOTTOMMARGIN, 62
     END
 
-    IDD_ROLLAVGSIZE_DIALOG, DIALOG
+    IDD_ROLLINGAVG_DIALOG, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 243
+        RIGHTMARGIN, 254
         TOPMARGIN, 7
-        BOTTOMMARGIN, 55
+        BOTTOMMARGIN, 61
     END
 
     IDR_FUNCTION, DIALOG
@@ -773,8 +776,7 @@ BEGIN
         MENUITEM "&Interval...\tCtrl+I",        ID_VIEW_INTERVAL
         MENUITEM "Retain aspectratio",          ID_VIEW_RETAINASPECTRATIO
         MENUITEM SEPARATOR
-        MENUITEM "&Rolling average",            ID_VIEW_ROLLAVG
-        MENUITEM "Set rollingsi&ze...",         ID_VIEW_SETROLLAVGSIZE
+        MENUITEM "&Rolling average...",         ID_VIEW_ROLLINGAVG
         MENUITEM SEPARATOR
         MENUITEM "Refresh files\tCtrl+R",       ID_VIEW_REFRESHFILES
         MENUITEM SEPARATOR
@@ -1077,6 +1079,7 @@ END
 STRINGTABLE
 BEGIN
     ID_VIEW_INTERVAL        "Edit the interval of X- and Y-axes"
+    ID_VIEW_ROLLINGAVG      "Show rolling average of the data"
     ID_VIEW_REFRESHFILES    "Read datafiles again"
 END
 
@@ -1108,12 +1111,6 @@ END
 STRINGTABLE
 BEGIN
     ID_BOTH_SHOWGRIDLINES   "Paint grid in the coordinatesystem"
-END
-
-STRINGTABLE
-BEGIN
-    ID_VIEW_ROLLAVG         "Show rolling average of the data"
-    ID_VIEW_SETROLLAVGSIZE  "Set size of the rolling average buffer"
 END
 
 #endif    // English (United States) resources

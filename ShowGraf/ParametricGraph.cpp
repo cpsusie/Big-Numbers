@@ -11,8 +11,8 @@ ParametricGraph::ParametricGraph(CCoordinateSystem &system, const ParametricGrap
 void ParametricGraph::calculate() {
   clear();
   const ParametricGraphParameters &param = (ParametricGraphParameters&)getParam();
-  ExpressionFunction Xt(param.getExprXText(true), _T("t"), param.getTrigonometricMode());
-  ExpressionFunction Yt(param.getExprYText(true), _T("t"), param.getTrigonometricMode());
+  ExpressionFunction Xt(param.getExprXText(true), param.getTrigonometricMode(), true, _T("t"));
+  ExpressionFunction Yt(param.getExprYText(true), param.getTrigonometricMode(), true, _T("t"));
   const UINT         stepCount = param.getSteps();
   double             step      = fabs(param.getInterval().getLength() / stepCount);
   Real               t         = param.getInterval().getMin();

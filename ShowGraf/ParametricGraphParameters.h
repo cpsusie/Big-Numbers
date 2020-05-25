@@ -8,7 +8,7 @@ private:
   DoubleInterval    m_interval;
   UINT              m_steps;
 public:
-  ParametricGraphParameters(const String &name=s_defaultName, COLORREF color=BLACK, UINT rollAvgSize=0, GraphStyle style=GSCURVE, TrigonometricMode trigonometricMode=RADIANS);
+  ParametricGraphParameters(const String &name=s_defaultName, COLORREF color=BLACK, const RollingAvg &rollingAvg=RollingAvg::s_default, GraphStyle style=GSCURVE, TrigonometricMode trigonometricMode=RADIANS);
   virtual GraphParameters *clone() const {
     return new ParametricGraphParameters(*this);
   }
@@ -55,7 +55,7 @@ public:
   inline UINT getSteps() const {
     return m_steps;
   }
-  int getType() const {
+  GraphType getType() const {
     return PARAMETRICGRAPH;
   }
 };

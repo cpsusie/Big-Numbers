@@ -106,7 +106,7 @@ public:
   void paintPointArray(  CDC &dc, CFont &font) const;
   void unpaintPointArray(CDC &dc);
   void setStyle(GraphStyle style);
-  void setRollAvgSize(UINT size);
+  void setRollingAvg(const RollingAvg &rollingAvg);
   void setTrigoMode(TrigonometricMode mode);
 
   bool ok() const {

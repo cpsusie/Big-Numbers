@@ -4,8 +4,8 @@
 
 class PointGraphParameters : public GraphParameters {
 public:
-  PointGraphParameters(const String &name, COLORREF color, UINT rollAvgSize, GraphStyle style)
-    : GraphParameters(name, color, rollAvgSize, style)
+  PointGraphParameters(const String &name, COLORREF color, const RollingAvg &rollingAvg, GraphStyle style)
+    : GraphParameters(name, color, rollingAvg, style)
   {
   }
   virtual GraphParameters *clone() const {
@@ -17,7 +17,7 @@ public:
   void getDataFromDoc(XMLDoc &doc) {
     throwUnsupportedOperationException(__TFUNCTION__);
   }
-  int getType() const {
+  GraphType getType() const {
     return POINTGRAPH;
   }
 };

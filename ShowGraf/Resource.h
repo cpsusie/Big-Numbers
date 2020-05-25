@@ -18,7 +18,7 @@
 #define IDD_DEGREE_DIALOG               136
 #define IDR_CUSTOMFIT                   137
 #define IDR_INTERVAL                    138
-#define IDD_ROLLAVGSIZE_DIALOG          139
+#define IDD_ROLLINGAVG_DIALOG           139
 #define IDR_MENUSELECTGRAF              150
 #define IDC_SYSTEMPANEL                 1001
 #define IDC_BUTTONPANEL                 1002
@@ -31,14 +31,16 @@
 #define IDC_STATICYINTERVAL             1017
 #define IDC_STATICDASH2                 1018
 #define IDC_EDITSTEPS                   1019
-#define IDC_EDITROLLAVGSIZE             1020
-#define IDC_EDITEXPR                    1021
-#define IDC_EDITXFROM                   1022
-#define IDC_EDITXTO                     1023
-#define IDC_EDITYFROM                   1024
-#define IDC_EDITYTO                     1025
-#define IDC_EDITNAME                    1026
-#define IDC_STATICEPS                   1069
+#define IDC_CHECKENABLEROLLINGAVG       1020
+#define IDC_EDITROLLINGQUEUESIZE        1021
+#define IDC_EDITROLLINGQUEUESIZESPIN    1022
+#define IDC_EDITEXPR                    1030
+#define IDC_EDITXFROM                   1040
+#define IDC_EDITXTO                     1041
+#define IDC_EDITYFROM                   1042
+#define IDC_EDITYTO                     1043
+#define IDC_EDITNAME                    1044
+#define IDC_STATICEPS                   1060
 #define IDC_EDITCELLSIZE                1070
 #define IDC_EDITMAXERROR                1071
 #define IDC_BUTTONADDEQ                 1072
@@ -71,8 +73,6 @@
 #define IDC_BUTTON_HELPY                1112
 #define ID_FILE_SAVEAS                  32771
 #define ID_FILE_EXIT                    32772
-#define ID_VIEW_ROLLAVG                 32782
-#define ID_VIEW_SETROLLAVGSIZE          32783
 #define ID_EDIT_FINDMATCHINGPARENTESIS  32794
 #define ID_EDIT_NEXTERROR               32795
 #define ID_EDIT_PREVERROR               32796
@@ -103,8 +103,9 @@
 #define ID_VIEW_STYLE_POINT             32842
 #define ID_VIEW_STYLE_CROSS             32843
 #define ID_VIEW_INTERVAL                32850
-#define ID_VIEW_RETAINASPECTRATIO       32851
-#define ID_VIEW_REFRESHFILES            32852
+#define ID_VIEW_ROLLINGAVG              32851
+#define ID_VIEW_RETAINASPECTRATIO       32852
+#define ID_VIEW_REFRESHFILES            32853
 #define ID_TOOLS_FIT_POLYNOMIAL         32860
 #define ID_TOOLS_FIT_EXPO_FUNCTION      32861
 #define ID_TOOLS_FIT_POTENS_FUNCTION    32862
@@ -156,8 +157,8 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        128
-#define _APS_NEXT_COMMAND_VALUE         33110
-#define _APS_NEXT_CONTROL_VALUE         1113
+#define _APS_NEXT_COMMAND_VALUE         33111
+#define _APS_NEXT_CONTROL_VALUE         1115
 #define _APS_NEXT_SYMED_VALUE           153
 #endif
 #endif

@@ -6,8 +6,8 @@ class ExprGraphParameters : public GraphParameters {
 private:
   TrigonometricMode m_trigonometricMode;
 public:
-  ExprGraphParameters(const String &name, COLORREF color, UINT rollAvgSize, GraphStyle style, TrigonometricMode trigonometricMode)
-    : GraphParameters(name, color, rollAvgSize, style)
+  ExprGraphParameters(const String &name, COLORREF color, const RollingAvg &rollingAvg, GraphStyle style, TrigonometricMode trigonometricMode)
+    : GraphParameters(name, color, rollingAvg, style)
     , m_trigonometricMode(trigonometricMode)
   {
   }
@@ -24,6 +24,3 @@ public:
     return toString(getTrigonometricMode());
   }
 };
-
-void setValue(XMLDoc &doc, XMLNodePtr n, TrigonometricMode  trigoMode);
-void getValue(XMLDoc &doc, XMLNodePtr n, TrigonometricMode &trigoMode);

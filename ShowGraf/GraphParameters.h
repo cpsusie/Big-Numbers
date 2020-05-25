@@ -1,6 +1,7 @@
 #pragma once
 
-#include <PersistentData.h>
+#include <PersistentDataTemplate.h>
+#include "RollingAvg.h"
 
 typedef enum {
   POINTGRAPH
@@ -12,21 +13,19 @@ typedef enum {
 } GraphType;
 
 typedef enum {
-  GSCURVE,
-  GSPOINT,
-  GSCROSS
+  GSCURVE
+ ,GSPOINT
+ ,GSCROSS
 } GraphStyle;
 
-void setValue(XMLDoc &doc, XMLNodePtr n, GraphStyle         style    );
-void getValue(XMLDoc &doc, XMLNodePtr n, GraphStyle        &style    );
-
-class GraphParameters : public PersistentData {
+class GraphParameters : public PersistentDataTemplate<GraphType> {
 private:
-  COLORREF   m_color;
-  UINT       m_rollAvgSize;
-  GraphStyle m_style;
+  COLORREF    m_color;
+  RollingAvg  m_rollingAvg;
+  GraphStyle  m_style;
+  void getDataFromDocOld(XMLDoc &doc);
 public:
-  GraphParameters(const String &name, COLORREF color, UINT rollAvgSize, GraphStyle style);
+  GraphParameters(const String &name, COLORREF color, const RollingAvg &rollingAvg, GraphStyle style);
   virtual GraphParameters *clone() const = 0;
   // return old color
   inline COLORREF setColor(COLORREF color) {
@@ -43,16 +42,17 @@ public:
     return m_style;
   }
 
-  // return old Rolling Average Size
-  inline UINT setRollAvgSize(UINT size) {
-    const UINT oldSize = m_rollAvgSize; m_rollAvgSize = size; return oldSize;
+  // return old Rolling Average
+  inline RollingAvg setRollingAvg(const RollingAvg &rollingAvg) {
+    const RollingAvg old = m_rollingAvg; m_rollingAvg = rollingAvg; return old;
   }
-  inline UINT getRollAvgSize() const {
-    return m_rollAvgSize;
+  inline const RollingAvg &getRollingAvg() const {
+    return m_rollingAvg;
   }
 
   void putDataToDoc(  XMLDoc &doc);
   void getDataFromDoc(XMLDoc &doc);
+
   static const TCHAR      *graphStyleToStr(GraphStyle style);
   static GraphStyle        graphStyleFromString(const String &s);
   const TCHAR *getGraphStyleStr() const {

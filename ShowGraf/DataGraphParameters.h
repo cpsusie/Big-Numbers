@@ -1,5 +1,6 @@
 #pragma once
 
+#include <FlagTraits.h>
 #include "GraphParameters.h"
 
 typedef double(*StringConverter)(const TCHAR *);
@@ -30,11 +31,20 @@ public:
 class DataGraphParameters : public GraphParameters {
 private:
   String      m_fileName;
-  BYTE        m_flags;
+  FLAGTRAITS(DataGraphParameters, BYTE, m_flags);
   DataReader &m_xReader;
   DataReader &m_yReader;
 public:
-  DataGraphParameters(const String &name, COLORREF color, bool onePerLine, bool ignoreErrors, bool xRelativeToFirst, bool yRelativeToFirst, DataReader &xReader, DataReader &yReader, UINT rollAvgSize, GraphStyle style);
+  DataGraphParameters(const String     &name
+                     ,COLORREF          color
+                     ,bool              onePerLine
+                     ,bool              ignoreErrors
+                     ,bool              xRelativeToFirst
+                     ,bool              yRelativeToFirst
+                     ,DataReader       &xReader
+                     ,DataReader       &yReader
+                     ,const RollingAvg &rollingAvg
+                     ,GraphStyle        style);
   const String &getFileName() const {
     return m_fileName;
   }
@@ -42,16 +52,16 @@ public:
     return m_flags;
   }
   inline bool getOnePerLine() const {
-    return m_flags & DGP_ONEPERLINE;
+    return isSet(DGP_ONEPERLINE);
   }
   inline bool getIgnoreErrors() const {
-    return m_flags & DGP_IGNOREERRORS;
+    return isSet(DGP_IGNOREERRORS);
   }
   inline bool getRelativeToFirstX() const {
-    return m_flags & DGP_RELATIVETOFIRSTX;
+    return isSet(DGP_RELATIVETOFIRSTX);
   }
   inline bool getRelativeToFirstY() const {
-    return m_flags & DGP_RELATIVETOFIRSTY;
+    return isSet(DGP_RELATIVETOFIRSTY);
   }
   inline double convertX(const TCHAR *s) const {
     return m_xReader.convertString(s);
@@ -72,7 +82,7 @@ public:
     throwUnsupportedOperationException(__TFUNCTION__);
   }
 
-  int getType() const {
+  GraphType getType() const {
     return DATAGRAPH;
   }
 };

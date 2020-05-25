@@ -443,6 +443,7 @@
     <ClCompile Include="GraphExtremaResult.cpp" />
     <ClCompile Include="GraphItem.cpp" />
     <ClCompile Include="GraphParameters.cpp" />
+    <ClCompile Include="GraphXML.cpp" />
     <ClCompile Include="GraphZeroResult.cpp" />
     <ClCompile Include="IntervalDlg.cpp" />
     <ClCompile Include="IsoCurveFinder.cpp" />
@@ -457,7 +458,8 @@
     <ClCompile Include="ParametricGraphDlg.cpp" />
     <ClCompile Include="ParametricGraphParameters.cpp" />
     <ClCompile Include="PointGraph.cpp" />
-    <ClCompile Include="RollAvgSizeDlg.cpp" />
+    <ClCompile Include="RollingAvg.cpp" />
+    <ClCompile Include="RollingAvgDlg.cpp" />
     <ClCompile Include="ShowGraf.cpp" />
     <ClCompile Include="ShowGrafDoc.cpp" />
     <ClCompile Include="ShowGrafView.cpp" />
@@ -503,6 +505,7 @@
     <ClInclude Include="GraphExtremaResult.h" />
     <ClInclude Include="GraphItem.h" />
     <ClInclude Include="GraphParameters.h" />
+    <ClInclude Include="GraphXML.h" />
     <ClInclude Include="GraphZeroResult.h" />
     <ClInclude Include="IntervalDlg.h" />
     <ClInclude Include="IsoCurveFinder.h" />
@@ -519,7 +522,8 @@
     <ClInclude Include="PointGraph.h" />
     <ClInclude Include="PointGraphParameters.h" />
     <ClInclude Include="Resource.h" />
-    <ClInclude Include="RollAvgSizeDlg.h" />
+    <ClInclude Include="RollingAvg.h" />
+    <ClInclude Include="RollingAvgDlg.h" />
     <ClInclude Include="ShowGraf.h" />
     <ClInclude Include="ShowGrafDoc.h" />
     <ClInclude Include="ShowGrafView.h" />

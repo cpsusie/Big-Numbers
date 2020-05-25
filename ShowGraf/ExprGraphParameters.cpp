@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include <Math/MathXML.h>
+#include "GraphXML.h"
 #include "ExprGraphParameters.h"
 
 void ExprGraphParameters::putDataToDoc(XMLDoc &doc) {
@@ -12,15 +14,3 @@ void ExprGraphParameters::getDataFromDoc(XMLDoc &doc) {
   getValue(doc, root, m_trigonometricMode);
   __super::getDataFromDoc(doc);
 }
-
-void setValue(XMLDoc &doc, XMLNodePtr n, TrigonometricMode trigoMode) {
-  String str = toLowerCase(toString(trigoMode));
-  doc.setValue(n, _T("trigo"), str);
-}
-
-void getValue(XMLDoc &doc, XMLNodePtr n, TrigonometricMode &trigoMode) {
-  String str;
-  doc.getValue(n, _T("trigo"), str);
-  trigoMode = getTrigonometricModeFromString(str);
-}
-

@@ -40,9 +40,9 @@ void GraphArray::setStyle(GraphStyle style) {
   }
 }
 
-void GraphArray::setRollAvgSize(UINT rollAvgSize) {
+void GraphArray::setRollingAvg(const RollingAvg &rollingAvg) {
   for(size_t i = 0; i < size(); i++) {
-    getItem(i).getGraph().setRollAvgSize(rollAvgSize);
+    getItem(i).getGraph().setRollingAvg(rollingAvg);
   }
 }
 

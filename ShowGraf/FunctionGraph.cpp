@@ -6,7 +6,7 @@ class FunctionGraphFunction : public ExpressionFunction {
 public:
   inline FunctionGraphFunction(const FunctionGraph *graph) {
     const FunctionGraphParameters &param = (FunctionGraphParameters&)graph->getParam();
-    compile(param.getExprText(), _T("x"), param.getTrigonometricMode());
+    compile(param.getExprText(), param.getTrigonometricMode(),true, _T("x"));
   }
 };
 

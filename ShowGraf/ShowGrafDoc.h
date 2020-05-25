@@ -32,8 +32,7 @@ public:
   bool              m_onePerLine;
   bool              m_rangeSpecified;
   DataRange         m_explicitRange;
-  bool              m_rollAvg;
-  UINT              m_rollAvgSize;
+  RollingAvg        m_rollingAvg;
   InitialOptions();
 };
 
@@ -81,14 +80,10 @@ public:
   TrigonometricMode  getTrigoMode() const {
     return m_options.m_trigoMode;
   }
-  void setRollAvg(bool on);
-  bool getRollAvg() const {
-    return m_options.m_rollAvg;
+  void setRollingAvg(const RollingAvg &v);
+  const RollingAvg &getRollingAvg() const {
+    return m_options.m_rollingAvg;
   }
-  void setRollAvgSize(UINT value);
-  UINT  getRollAvgSize() const {
-    return m_options.m_rollAvgSize;
-  };
   void addArgvGraphs();
   void addGraphFromFile(    const String &fileName);
   void readDataFile(        const String &fileName);

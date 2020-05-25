@@ -6,7 +6,7 @@
 #include "IsoCurveGraphDlg.h"
 #include "DiffEquationGraphDlg.h"
 #include "IntervalDlg.h"
-#include "RollAvgSizeDlg.h"
+#include "RollingAvgDlg.h"
 #include "MouseTool.h"
 
 #ifdef _DEBUG
@@ -63,8 +63,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
   ON_COMMAND(ID_VIEW_STYLE_CROSS               , OnViewStyleCross              )
   ON_COMMAND(ID_VIEW_INTERVAL                  , OnViewInterval                )
   ON_COMMAND(ID_VIEW_RETAINASPECTRATIO         , OnViewRetainAspectRatio       )
-  ON_COMMAND(ID_VIEW_ROLLAVG                   , OnViewRollAvg                 )
-  ON_COMMAND(ID_VIEW_SETROLLAVGSIZE            , OnViewSetRollAvgSize          )
+  ON_COMMAND(ID_VIEW_ROLLINGAVG                , OnViewRollingAvg              )
   ON_COMMAND(ID_VIEW_REFRESHFILES              , OnViewRefreshFiles            )
   ON_COMMAND(ID_TOOLS_FIT_POLYNOMIAL           , OnToolsFitPolynomial          )
   ON_COMMAND(ID_TOOLS_FIT_EXPO_FUNCTION        , OnToolsFitExpoFunction        )
@@ -200,7 +199,7 @@ void CMainFrame::activateInitialOptions() {
   setShowGridLines( options.m_axisOptions[XAXIS_INDEX].m_showGridLines , options.m_axisOptions[YAXIS_INDEX].m_showGridLines );
   setTrigoMode(     options.m_trigoMode     );
   setIgnoreErrors(  options.m_ignoreErrors  );
-  setRollAvg(       options.m_rollAvg       );
+  setRollingAvg(    options.m_rollingAvg    );
   getView()->initScale();
   popLevel();
 }
@@ -625,21 +624,15 @@ void CMainFrame::OnViewRetainAspectRatio() {
   popLevel();
 }
 
-void CMainFrame::setRollAvg(bool on) {
-  checkMenuItem(this, ID_VIEW_ROLLAVG, on);
+void CMainFrame::setRollingAvg(const RollingAvg &rollingAvg) {
+  checkMenuItem(this, ID_VIEW_ROLLINGAVG, rollingAvg.isEnabled());
 }
 
-void CMainFrame::OnViewRollAvg() {
-  pushLevel();
-  getDoc()->setRollAvg(toggleMenuItem(this, ID_VIEW_ROLLAVG));
-  popLevel();
-}
-
-void CMainFrame::OnViewSetRollAvgSize() {
-  RollAvgSizeDlg dlg(getDoc()->getRollAvgSize());
+void CMainFrame::OnViewRollingAvg() {
+  CRollingAvgDlg dlg(getDoc()->getRollingAvg());
   if(dlg.DoModal() == IDOK) {
     pushLevel();
-    getDoc()->setRollAvgSize(dlg.m_rollAvgSize);
+    getDoc()->setRollingAvg(dlg.getRollingAvg());
     popLevel();
   }
 }

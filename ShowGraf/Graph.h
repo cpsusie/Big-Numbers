@@ -53,7 +53,7 @@ public:
   virtual void    setStyle(GraphStyle style) {
     m_param->setGraphStyle(style);
   }
-  virtual void setRollAvgSize(UINT size) {
+  virtual void setRollingAvg(const RollingAvg &rollingAvg) {
   }
   virtual bool isPointGraph() const = 0;
   virtual void setVisible(bool visible) {

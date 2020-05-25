@@ -8,17 +8,17 @@ static String lastComponent(const String &fname) {
   return FileNameSplitter(fname).getFileName();
 }
 
-DataGraphParameters::DataGraphParameters(const String &name
-                                        ,COLORREF      color
-                                        ,bool          onePerLine
-                                        ,bool          ignoreErrors
-                                        ,bool          xRelativeToFirst
-                                        ,bool          yRelativeToFirst
-                                        ,DataReader   &xReader
-                                        ,DataReader   &yReader
-                                        ,UINT          rollAvgSize
-                                        ,GraphStyle    style)
-: GraphParameters(lastComponent(name),color,rollAvgSize,style)
+DataGraphParameters::DataGraphParameters(const String     &name
+                                        ,COLORREF          color
+                                        ,bool              onePerLine
+                                        ,bool              ignoreErrors
+                                        ,bool              xRelativeToFirst
+                                        ,bool              yRelativeToFirst
+                                        ,DataReader       &xReader
+                                        ,DataReader       &yReader
+                                        ,const RollingAvg &rollingAvg
+                                        ,GraphStyle        style)
+: GraphParameters(lastComponent(name),color,rollingAvg,style)
 , m_xReader(xReader)
 , m_yReader(yReader)
 {

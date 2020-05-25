@@ -74,7 +74,7 @@ void DiffEquationGraph::calculate() {
     const EquationAttributes      &attr  = param.getEquationAttribute(  index);
     const DiffEquationDescription &desc  = param.getEquationDescription(index);
     vectorGraphMap.add(index+1); // v[0] is x, so add 1 to get mapping right
-    m_pointGraphArray.add(new PointGraph(getSystem(), new PointGraphParameters(desc.getName(), attr.getColor(), 1, param.getGraphStyle())));
+    m_pointGraphArray.add(new PointGraph(getSystem(), new PointGraphParameters(desc.getName(), attr.getColor(), RollingAvg::s_default, param.getGraphStyle())));
     TRACE_NEW(m_pointGraphArray.last());
   }
   DiffEquationHandler handler(*this, vectorGraphMap);

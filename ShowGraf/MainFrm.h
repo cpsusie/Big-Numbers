@@ -43,7 +43,7 @@ public:
   virtual ~CMainFrame();
   void              updatePositionText(const String &str);
   void              activateInitialOptions();
-  void              setRollAvg(bool on);
+  void              setRollingAvg(const RollingAvg &rollingAvg);
   void              setAxisType(      AxisIndex axis, AxisType type);
   AxisType          getAxisType(      AxisIndex axis) const;
   bool              getShowValues(    AxisIndex axis) const;
@@ -134,8 +134,7 @@ protected:
   afx_msg void OnViewStyleCross();
   afx_msg void OnViewInterval();
   afx_msg void OnViewRetainAspectRatio();
-  afx_msg void OnViewRollAvg();
-  afx_msg void OnViewSetRollAvgSize();
+  afx_msg void OnViewRollingAvg();
   afx_msg void OnViewRefreshFiles();
   afx_msg void OnFindZeroes();
   afx_msg void OnFindMinimum();

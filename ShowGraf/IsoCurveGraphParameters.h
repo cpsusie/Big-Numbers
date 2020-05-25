@@ -38,7 +38,7 @@ public:
   inline double setCellSize(double cellSize) {
     const double oldCellSize = m_cellSize; m_cellSize = cellSize; return oldCellSize;
   }
-  int getType() const {
+  GraphType getType() const {
     return ISOCURVEGRAPH;
   }
 };

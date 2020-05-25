@@ -1,9 +1,11 @@
 #include "stdafx.h"
 #include <XMLUtil.h>
+#include <Math/MathXML.h>
+#include "GraphXML.h"
 #include "DiffEquationGraph.h"
 
 DiffEquationGraphParameters::DiffEquationGraphParameters(const String &name, GraphStyle style, TrigonometricMode trigonometricMode)
-  : ExprGraphParameters(name, 0, 1, style,trigonometricMode) {
+  : ExprGraphParameters(name, 0, RollingAvg::s_default, style,trigonometricMode) {
   m_interval          = DoubleInterval(0, 1);
   m_maxError          = 0.1;
 }
@@ -16,7 +18,7 @@ static void setValue(XMLDoc &doc, XMLNodePtr parent, const EquationAttributes &a
 }
 
 static void getValue(XMLDoc &doc, XMLNodePtr parent, EquationAttributes &attr) {
-  XMLNodePtr n = PersistentData::getChild(doc, parent, _T("attr"));
+  XMLNodePtr n = doc.getChild(parent, _T("attr"));
   Real     startValue;
   COLORREF color;
   bool     visible;
@@ -58,7 +60,7 @@ void DiffEquationGraphParameters::putDataToDoc(XMLDoc &doc) {
 void DiffEquationGraphParameters::getDataFromDoc(XMLDoc &doc) {
   UINT dim;
   XMLNodePtr root = doc.getRoot();
-  checkTag(     root, _T("DiffEquation"));
+  XMLDoc::checkTag(     root, _T("DiffEquation"));
   getValue(doc, root, _T("interval" ), m_interval         );
   doc.getValue( root, _T("eps"      ), m_maxError         );
   GraphStyle graphStyle;
@@ -75,9 +77,9 @@ void DiffEquationGraphParameters::getDataFromDoc(XMLDoc &doc) {
   m_equationDescArray.setCommonText(commonText);
 
   removeAllEquations();
-  XMLNodePtr eqListNode = getChild(doc, root, _T("equations"));
+  XMLNodePtr eqListNode = doc.getChild(root, _T("equations"));
   for(UINT i = 0; i < dim; i++) {
-    XMLNodePtr eq = getChild(doc, eqListNode, format(_T("eq%u"),i).cstr());
+    XMLNodePtr eq = doc.getChild(eqListNode, format(_T("eq%u"),i).cstr());
     String name, expr;
     doc.getValue(  eq, _T("name"), name);
     doc.getValueLF(eq, _T("expr"), expr);

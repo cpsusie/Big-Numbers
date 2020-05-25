@@ -32,8 +32,8 @@ public:
     return m_pointArray;
   }
   void    setDataPoints(const Point2DArray &a);
-  void    setRollAvgSize(UINT size);
-  double  distance(const CPoint &p) const;
+  void    setRollingAvg(const RollingAvg   &rollingAvg);
+  double  distance(     const CPoint       &p) const;
   double  getSmallestPositiveX() const;
   double  getSmallestPositiveY() const;
   inline bool isPointGraph() const {

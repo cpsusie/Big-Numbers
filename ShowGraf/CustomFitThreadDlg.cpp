@@ -217,7 +217,7 @@ void CCustomFitThreadDlg::OnOK() {
     return;
   }
 
-  m_param            = FunctionGraphParameters((LPCTSTR)m_name,getColor(),0,GSCURVE);
+  m_param            = FunctionGraphParameters((LPCTSTR)m_name,getColor(),RollingAvg::s_default,GSCURVE);
   m_param.setInteval(getXInterval());
   m_param.setExprText(m_functionFitter->toString());
 
