@@ -189,7 +189,9 @@ namespace TestNumber {
         ErrorMatrix MmaxErrorSub('-',4e-7  ,0      ,0,1.2e-16);
         ErrorMatrix MmaxErrorMul('*',1.4e-6,1.1e-16,0,1.3e-19);
         ErrorMatrix MmaxErrorDiv('/',5.6e-7,1.1e-16,0,1.1e-19);
-  //      CountMatrix combiCountAdd('+'), combiCountSub('-'), combiCountMul('*'), combiCountDiv('/');
+#ifdef _DEBUG
+        CountMatrix combiCountAdd('+'), combiCountSub('-'), combiCountMul('*'), combiCountDiv('/');
+#endif
         for(int i = 0; i < 10000; i++) {
           /*
           if(i % 100 == 99) {
@@ -197,12 +199,12 @@ namespace TestNumber {
           }
           */
           Number n1(randNumber(RANDOM_NUMBERTYPE, rnd)), n2(randNumber(RANDOM_NUMBERTYPE, rnd));
-  /*
+#ifdef _DEBUG
           OperandResultTypeCount &opCountAdd = combiCountAdd(n1.getType(), n2.getType());
           OperandResultTypeCount &opCountSub = combiCountSub(n1.getType(), n2.getType());
           OperandResultTypeCount &opCountMul = combiCountMul(n1.getType(), n2.getType());
           OperandResultTypeCount &opCountDiv = combiCountDiv(n1.getType(), n2.getType());
-  */
+#endif
           Double80 &maxErrorAdd = MmaxErrorAdd(n1.getType(), n2.getType());
           Double80 &maxErrorSub = MmaxErrorSub(n1.getType(), n2.getType());
           Double80 &maxErrorMul = MmaxErrorMul(n1.getType(), n2.getType());
@@ -229,21 +231,26 @@ namespace TestNumber {
           Double80 dBinResult, relError;
 
           VERIFYOP(+, maxErrorAdd) // 1e-13
-  //        opCountAdd.m_resultType[nBinResult.getType()]++;
-  //        opCountAdd.m_counter++;
-
+#ifdef _DEBUG
+          opCountAdd.m_resultType[nBinResult.getType()]++;
+          opCountAdd.m_counter++;
+#endif
           VERIFYOP(-, maxErrorSub)
-  //        opCountSub.m_resultType[nBinResult.getType()]++;
-  //        opCountSub.m_counter++;
-
+#ifdef _DEBUG
+          opCountSub.m_resultType[nBinResult.getType()]++;
+          opCountSub.m_counter++;
+#endif
           VERIFYOP(*, maxErrorMul) // 1e-14
-  //        opCountMul.m_resultType[nBinResult.getType()]++;
-  //        opCountMul.m_counter++;
-
+#ifdef _DEBUG
+          opCountMul.m_resultType[nBinResult.getType()]++;
+          opCountMul.m_counter++;
+#endif
           if(!n2.isZero()) {
             VERIFYOP(/ , maxErrorDiv) // 3e-9
-  //          opCountDiv.m_resultType[nBinResult.getType()]++;
-  //          opCountDiv.m_counter++;
+#ifdef _DEBUG
+            opCountDiv.m_resultType[nBinResult.getType()]++;
+            opCountDiv.m_counter++;
+#endif
           }
 
           const int      expo = n1.isZero() ? randInt(0, 4) : randInt(-3, 3);
@@ -284,10 +291,10 @@ namespace TestNumber {
         INFO(_T("%s"), combiCountMul.toString().cstr());
         INFO(_T("%s"), combiCountDiv.toString().cstr());
 
-        } catch(Exception e) {
-          OUTPUT(_T("%s"), e.what());
-          verify(false);
-        }
+      } catch(Exception e) {
+        OUTPUT(_T("%s"), e.what());
+        verify(false);
+      }
     }
 
     static Number testNumberToFromStr(const Number &n) {

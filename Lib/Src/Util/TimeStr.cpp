@@ -13,7 +13,7 @@
 }                                                            \
 break
 
-TCHAR *Time::tostr(TCHAR *dst, const TCHAR *format) const {
+TCHAR *Time::_tostr(TCHAR *dst, const TCHAR *format) const {
   int hour, minute, second, millisecond;
   getHMS(hour, minute, second, millisecond);
   TCHAR *t = dst;

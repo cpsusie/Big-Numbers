@@ -43,6 +43,45 @@ template<typename OStreamType> OStreamType &putDate(OStreamType &out, const Date
 
 // -------------------------------------------------------------------------------------------------------
 
+class TimeStreamScanner : public RegexIStream {
+private:
+  static StringArray getRegexLines();
+  TimeStreamScanner() : RegexIStream(getRegexLines()) {
+  }
+public:
+  static const RegexIStream &getInstance() {
+    static TimeStreamScanner s_instance;
+    return s_instance;
+  }
+};
+
+template<typename IStreamType, typename CharType> IStreamType &getTime(IStreamType &in, Time &t) {
+  IStreamScanner<IStreamType, CharType> scanner(in);
+
+  const RegexIStream &regex = TimeStreamScanner::getInstance();
+  String buf;
+  if(regex.match(in, &buf) < 0) {
+    scanner.endScan(false);
+    return in;
+  }
+  try {
+    t = Time(buf);
+  } catch(...) {
+    scanner.endScan(false);
+    throw;
+  }
+  scanner.endScan();
+  return in;
+};
+
+template<typename OStreamType> OStreamType &putTime(OStreamType &out, const Time &t) {
+  char tmp[100];
+  out << t.tostr(tmp, hhmmssSSS);
+  return out;
+}
+
+// -------------------------------------------------------------------------------------------------------
+
 class TimestampStreamScanner : public RegexIStream {
 private:
   static StringArray getRegexLines();

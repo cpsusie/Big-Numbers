@@ -151,8 +151,8 @@ SubNFA PatternParser::term() {
   //                     | DOT
   //                     | LB optComplement optCharClass RB
   //                     | NORMALCHAR
-  //                     | WORDCHAR    :
-  //                     | NONWORDCHAR :
+  //                     | WORDCHAR
+  //                     | NONWORDCHAR
   //
   // optCharClass       -> charClass
   //                     | epsilon
@@ -242,6 +242,8 @@ void PatternParser::charClass(CharacterSet &set) {
   //
   // ccl                 | character
   //                     | character DASH character
+  // character          -> any, except ]-/ which should be specified as /] /- and // respectively. / followed by any char is just '/'
+  // characters inside charclass are treated different than outside charclass. characters like . ? + * are just normal characters inside charclass
   while(!match(_EOL) && !match(RB)) {
     switch(m_token) {
     case NORMALCHAR:

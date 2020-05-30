@@ -636,28 +636,71 @@ namespace TestDate {
         allTimes.add(d);
         d.add(TMONTH,7).add(TDAYOFMONTH, 5);
       }
-      for(size_t i = 0; i < ARRAYSIZE(dateFormats); i++) {
-        CompactArray<Date> testArray;
-        String             testString;
-        const TCHAR *form = dateFormats[i];
-        for(size_t t = 0; t < allTimes.size(); t++) {
-          const Date   &d = allTimes[t];
-          const String  dStr = d.toString(form);
-          const Date    fd(dStr);
-          testArray.add(fd);
-          if(t) testString += _T(" ");
-          testString += dStr;
+      try {
+        for(size_t i = 0; i < ARRAYSIZE(dateFormats); i++) {
+          CompactArray<Date> testArray;
+          String             testString;
+          const TCHAR *form = dateFormats[i];
+          for(size_t t = 0; t < allTimes.size(); t++) {
+            const Date   &d = allTimes[t];
+            const String  dStr = d.toString(form);
+            const Date    fd(dStr);
+            testArray.add(fd);
+            if(t) testString += _T(" ");
+            testString += dStr;
+          }
+          std::wistringstream istr(testString.cstr());
+          for(size_t t = 0; !istr.eof(); t++) {
+            verify(t < testArray.size());
+            const Date &expected = testArray[t];
+            Date        d;
+            istr >> d;
+            verify(d == expected);
+          }
         }
+      } catch(Exception e) {
+        OUTPUT(_T("Exception:%s"), e.what());
+        verify(false);
+      }
+    }
 
-        std::wistringstream istr(testString.cstr());
-
-        for(size_t t = 0; !istr.eof(); t++) {
-          verify(t < testArray.size());
-          const Date &expected = testArray[t];
-          Date        d;
-          istr >> d;
-          verify(d == expected);
+    TEST_METHOD(TimeStream) {
+      const TCHAR *timeFormats[] = {
+        hhmm              // _T("hh:mm");
+       ,hhmmss            // _T("hh:mm:ss");
+       ,hhmmssSSS         // _T("hh:mm:ss:SSS");
+      };
+      CompactArray<Time> allTimes;
+      Time t = Time(0, 0, 0);
+      for(int i = 0; i < 100; i++) {
+        allTimes.add(t);
+        t.add(TSECOND, 859).add(TMILLISECOND,29);
+      }
+      try {
+        for(size_t i = 0; i < ARRAYSIZE(timeFormats); i++) {
+          const TCHAR       *form = timeFormats[i];
+          CompactArray<Time> testArray;
+          String             testString;
+          for(size_t t = 0; t < allTimes.size(); t++) {
+            const Time      &time = allTimes[t];
+            const String     timeStr = time.toString(form);
+            const Time       ftime(timeStr);
+            testArray.add(ftime);
+            if(t) testString += _T(" ");
+            testString += timeStr;
+          }
+          std::wistringstream istr(testString.cstr());
+          for(size_t t = 0; !istr.eof(); t++) {
+            verify(t < testArray.size());
+            const Time &expected = testArray[t];
+            Time        time;
+            istr >> time;
+            verify(time == expected);
+          }
         }
+      } catch(Exception e) {
+        OUTPUT(_T("Exception:%s"), e.what());
+        verify(false);
       }
     }
 
@@ -678,30 +721,34 @@ namespace TestDate {
         allTimes.add(ts);
         ts.add(TDAYOFMONTH, 5).add(THOUR, 9).add(TSECOND, 5082).add(TMILLISECOND,219);
       }
-      for(size_t i = 0; i < ARRAYSIZE(tsFormats); i++) {
-        CompactArray<Timestamp> testArray;
-        String                  testString;
-        const TCHAR *form = tsFormats[i];
-        for(size_t t = 0; t < allTimes.size(); t++) {
-          const Timestamp &ts = allTimes[t];
-          const String     tsStr = ts.toString(form);
-          const Timestamp  fts(tsStr);
-          testArray.add(fts);
-          if(t) testString += _T(" ");
-          testString += tsStr;
+      try {
+        for(size_t i = 0; i < ARRAYSIZE(tsFormats); i++) {
+          const TCHAR            *form = tsFormats[i];
+          CompactArray<Timestamp> testArray;
+          String                  testString;
+          for(size_t t = 0; t < allTimes.size(); t++) {
+            const Timestamp &ts = allTimes[t];
+            const String     tsStr = ts.toString(form);
+            const Timestamp  fts(tsStr);
+            testArray.add(fts);
+            if(t) testString += _T(",");
+            testString += tsStr;
+          }
+          std::wistringstream istr(testString.cstr());
+          for(size_t t = 0; !istr.eof(); t++) {
+            verify(t < testArray.size());
+            const Timestamp &expected = testArray[t];
+            TCHAR            commaChar;
+            Timestamp        ts;
+            if(istr.peek() == ',') istr >> commaChar;
+            istr >> ts;
+            verify(ts == expected);
+          }
         }
-
-        std::wistringstream istr(testString.cstr());
-
-        for(size_t t = 0; !istr.eof(); t++) {
-          verify(t < testArray.size());
-          const Timestamp &expected = testArray[t];
-          Timestamp        ts;
-          istr >> ts;
-          verify(ts == expected);
-        }
+      } catch(Exception e) {
+        OUTPUT(_T("Exception:%s"), e.what());
+        verify(false);
       }
     }
-
   }; // class
 } // namespace

@@ -310,10 +310,15 @@ public:
     return getMaxTime().m_factor + 1;
   }
 
-  TCHAR *tostr(TCHAR *dst, const TCHAR *format = hhmm) const;
+  TCHAR *_tostr(TCHAR *dst, const TCHAR *format = hhmm) const;
+  template<typename T> T *tostr(T *dst, const TCHAR *format = hhmm) const {
+    TCHAR tmp[1024];
+    return strCpy(dst, _tostr(tmp, format));
+  }
+
   inline String toString(const TCHAR *format = hhmm) const {
     TCHAR tmp[1024];
-    return tostr(tmp, format);
+    return _tostr(tmp, format);
   }
   friend class Timestamp;
   friend inline Packer &operator<<(Packer &p, const Time &t) {

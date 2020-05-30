@@ -6,8 +6,7 @@ ADDIN_API HRESULT WINAPI AddIn_Date(DWORD dwAddress, DEBUGHELPER *pHelper, int n
     Date d;
     pHelper->getRealObject(&d, sizeof(d));
     char str[30];
-    d.tostr(str);
-    strncpy(pResult, str, maxResult);
+    strncpy(pResult, d.tostr(str), maxResult);
     return S_OK;
   } catch(...) {
     strcpy(pResult, "");
@@ -19,11 +18,10 @@ ADDIN_API HRESULT WINAPI AddIn_Time(DWORD dwAddress, DEBUGHELPER *pHelper, int n
   try {
     Time t;
     pHelper->getRealObject(&t, sizeof(t));
-    TCHAR str[30];
-    t.tostr(str);
-    USES_CONVERSION;
-    const char *cp = T2A(str);
-    strncpy(pResult, cp, maxResult);
+    const int sec  = t.getSecond(), msec = t.getMilliSecond();
+    char str[50];
+    const TCHAR *format = msec ? hhmmssSSS : sec ? hhmmss : hhmm;
+    strncpy(pResult, t.tostr(str, format), maxResult);
     return S_OK;
   } catch(...) {
     strcpy(pResult, "");
@@ -35,11 +33,8 @@ ADDIN_API HRESULT WINAPI AddIn_Timestamp(DWORD dwAddress, DEBUGHELPER *pHelper, 
   try {
     Timestamp t;
     pHelper->getRealObject(&t, sizeof(t));
-    TCHAR str[50];
-    t.tostr(str, ddMMyyyyhhmmssSSS);
-    USES_CONVERSION;
-    const char *cp = T2A(str);
-    strncpy(pResult, cp, maxResult);
+    char str[100];
+    strncpy(pResult, t.tostr(str, ddMMyyyyhhmmssSSS), maxResult);
     return S_OK;
   } catch(...) {
     strcpy(pResult, "");
