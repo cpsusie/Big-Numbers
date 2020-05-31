@@ -4,14 +4,14 @@
 #include <MFCUtil/MFCXML.h>
 
 void setValue(XMLDoc &doc, XMLNodePtr n, const PolygonCurve &v) {
-  doc.setValue(n, _T("type"), _PolygonCurveTypeName::typeToStr(v.getType()));
+  setValue(doc, n, _T("type"), _PolygonCurveTypeName::typeToStr(v.getType()));
   XMLNodePtr plist = doc.createNode(n, _T("points"));
   setValue<Point2DArray,Point2D>(doc, plist, v.getAllPoints());
 }
 
 void getValue(XMLDoc &doc, XMLNodePtr n, PolygonCurve &v) {
   String typeStr;
-  doc.getValue(n, _T("type"), typeStr);
+  getValue(doc, n, _T("type"), typeStr);
   v.m_type = _PolygonCurveTypeName::strToType(typeStr.cstr());
   XMLNodePtr plist = doc.getChild(n, _T("points"));
   getValue<Point2DArray,Point2D>(doc, plist, v.m_points);
