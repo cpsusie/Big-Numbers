@@ -83,6 +83,9 @@
     <Filter Include="Source Files\Stream\RegexIStream">
       <UniqueIdentifier>{e245533d-91a4-4fbb-8cc5-da720882740f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\XmlDoc">
+      <UniqueIdentifier>{2bff1ccb-4b98-4170-b209-09fec1ed464a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="access.cpp">
@@ -489,9 +492,6 @@
     </ClCompile>
     <ClCompile Include="QuickSort.cpp">
       <Filter>Source Files\Misc</Filter>
-    </ClCompile>
-    <ClCompile Include="XmlDoc.cpp">
-      <Filter>Source Files\String</Filter>
     </ClCompile>
     <ClCompile Include="BSTRToString.cpp">
       <Filter>Source Files\String</Filter>
@@ -918,6 +918,39 @@
       <Filter>Source Files\Date</Filter>
     </ClCompile>
     <ClCompile Include="TimestampwIO.cpp">
+      <Filter>Source Files\Date</Filter>
+    </ClCompile>
+    <ClCompile Include="XmlDoc.cpp">
+      <Filter>Source Files\XmlDoc</Filter>
+    </ClCompile>
+    <ClCompile Include="XmlDocBool.cpp">
+      <Filter>Source Files\XmlDoc</Filter>
+    </ClCompile>
+    <ClCompile Include="XmlDocChar.cpp">
+      <Filter>Source Files\XmlDoc</Filter>
+    </ClCompile>
+    <ClCompile Include="XmlDocIO.cpp">
+      <Filter>Source Files\XmlDoc</Filter>
+    </ClCompile>
+    <ClCompile Include="XmlDocLF.cpp">
+      <Filter>Source Files\XmlDoc</Filter>
+    </ClCompile>
+    <ClCompile Include="XmlDocShort.cpp">
+      <Filter>Source Files\XmlDoc</Filter>
+    </ClCompile>
+    <ClCompile Include="TimewIO.cpp">
+      <Filter>Source Files\Date</Filter>
+    </ClCompile>
+    <ClCompile Include="TimeStreamScanner.cpp">
+      <Filter>Source Files\Date</Filter>
+    </ClCompile>
+    <ClCompile Include="DateXml.cpp">
+      <Filter>Source Files\Date</Filter>
+    </ClCompile>
+    <ClCompile Include="TimestampXml.cpp">
+      <Filter>Source Files\Date</Filter>
+    </ClCompile>
+    <ClCompile Include="TimeXml.cpp">
       <Filter>Source Files\Date</Filter>
     </ClCompile>
   </ItemGroup>

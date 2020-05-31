@@ -937,6 +937,7 @@
     <ClCompile Include="DateStr.cpp" />
     <ClCompile Include="DateStreamScanner.cpp" />
     <ClCompile Include="DatewIO.cpp" />
+    <ClCompile Include="DateXml.cpp" />
     <ClCompile Include="DebugLog.cpp" />
     <ClCompile Include="Double64Str.cpp" />
     <ClCompile Include="FileBitSet.cpp" />
@@ -1181,7 +1182,11 @@
     <ClCompile Include="TimestampStr.cpp" />
     <ClCompile Include="TimestampStreamScanner.cpp" />
     <ClCompile Include="TimestampwIO.cpp" />
+    <ClCompile Include="TimestampXml.cpp" />
     <ClCompile Include="TimeStr.cpp" />
+    <ClCompile Include="TimeStreamScanner.cpp" />
+    <ClCompile Include="TimewIO.cpp" />
+    <ClCompile Include="TimeXml.cpp" />
     <ClCompile Include="ToAscii.cpp" />
     <ClCompile Include="Tokenizer.cpp" />
     <ClCompile Include="pch.cpp">
@@ -1207,6 +1212,11 @@
     <ClCompile Include="xfree.cpp" />
     <ClCompile Include="xmalloc.cpp" />
     <ClCompile Include="XmlDoc.cpp" />
+    <ClCompile Include="XmlDocBool.cpp" />
+    <ClCompile Include="XmlDocChar.cpp" />
+    <ClCompile Include="XmlDocIO.cpp" />
+    <ClCompile Include="XmlDocLF.cpp" />
+    <ClCompile Include="XmlDocShort.cpp" />
     <ClCompile Include="xrealloc.cpp" />
     <ClCompile Include="xstrdup.cpp" />
   </ItemGroup>

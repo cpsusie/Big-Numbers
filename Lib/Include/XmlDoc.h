@@ -1,9 +1,6 @@
 #pragma once
 
-#include "Date.h"
 #include "CompactKeyType.h"
-#include <comdef.h>
-#include <atlconv.h>
 
 #pragma warning(disable:4192)
 
@@ -18,16 +15,13 @@ typedef MSXML2::DOMNodeType          XMLNodeType;
 class XMLDoc {
 private:
   XMLDocPtr m_doc;
-  VARIANT    getVariant(  const TCHAR      *nodeName, const TCHAR *tagName, int instans=0);
   VARIANT    getVariant(  const XMLNodePtr &node);
-  VARIANT    getVariant(  const XMLNodePtr &node    , const TCHAR *tagName, int instans=0);
   XMLNodePtr findTextNode(const XMLNodePtr &node);
   XMLDocPtr getDocument() {
     return m_doc;
   }
-  void checkResult(HRESULT hr, int line);
+  void checkResult(HRESULT hr, const TCHAR *fileName, int line);
   void checkLoad();
-  void recursiveDelete(XMLNodePtr &node);
   void loadFromFile(const TCHAR *filename);
   void saveToFile(  const TCHAR *filename);
   static String &variantToString(String &dst, const VARIANT &var);
@@ -53,96 +47,66 @@ public:
   XMLNodePtr createNode(const XMLNodePtr &parent, const TCHAR *nodeName, bool force=true);
   XMLNodePtr createRoot(const TCHAR *rootName);
   XMLNodePtr getRoot();
-
-  void getValue(  const XMLNodePtr &node  , const TCHAR *tagName, String          &value, int  instans=0);
-  void getValueLF(const XMLNodePtr &node  , const TCHAR *tagName, String          &value, int  instans=0);
-  void getValue(  const XMLNodePtr &node  , const TCHAR *tagName, int             &value, int  instans=0);
-  void getValue(  const XMLNodePtr &node  , const TCHAR *tagName, UINT            &value, int  instans=0);
-  void getValue(  const XMLNodePtr &node  , const TCHAR *tagName, long            &value, int  instans=0);
-  void getValue(  const XMLNodePtr &node  , const TCHAR *tagName, ULONG           &value, int  instans=0);
-  void getValue(  const XMLNodePtr &node  , const TCHAR *tagName, INT64           &value, int  instans=0);
-  void getValue(  const XMLNodePtr &node  , const TCHAR *tagName, UINT64          &value, int  instans=0);
-  void getValue(  const XMLNodePtr &node  , const TCHAR *tagName, float           &value, int  instans=0);
-  void getValue(  const XMLNodePtr &node  , const TCHAR *tagName, double          &value, int  instans=0);
-  void getValue(  const XMLNodePtr &node  , const TCHAR *tagName, Date            &value, int  instans=0);
-  void getValue(  const XMLNodePtr &node  , const TCHAR *tagName, Timestamp       &value, int  instans=0);
-  void getValue(  const XMLNodePtr &node  , const TCHAR *tagName, bool            &value, int  instans=0);
-
-  template<typename T> T getValueOrDefault(const XMLNodePtr &node, const TCHAR *tagName, const T &defaultValue, int instans = 0) {
-    if(findChild(node, tagName, instans) == NULL) {
-      return defaultValue;
-    }
-    T v;
-    getValue(node, tagName, v, instans);
-    return v;
-  }
-
-  void setValue(const XMLNodePtr &node    , const TCHAR *tagName, const String    &value, bool force=true);
-  void setValue(const XMLNodePtr &node    , const TCHAR *tagName, const TCHAR     *value, bool force=true);
-  void setValue(const XMLNodePtr &node    , const TCHAR *tagName, int              value, bool force=true);
-  void setValue(const XMLNodePtr &node    , const TCHAR *tagName, UINT             value, bool force=true);
-  void setValue(const XMLNodePtr &node    , const TCHAR *tagName, long             value, bool force=true);
-  void setValue(const XMLNodePtr &node    , const TCHAR *tagName, ULONG            value, bool force=true);
-  void setValue(const XMLNodePtr &node    , const TCHAR *tagName, INT64            value, bool force=true);
-  void setValue(const XMLNodePtr &node    , const TCHAR *tagName, UINT64           value, bool force=true);
-  void setValue(const XMLNodePtr &node    , const TCHAR *tagName, float            value, bool force=true);
-  void setValue(const XMLNodePtr &node    , const TCHAR *tagName, double           value, bool force=true);
-  void setValue(const XMLNodePtr &node    , const TCHAR *tagName, const Date      &value, bool force=true);
-  void setValue(const XMLNodePtr &node    , const TCHAR *tagName, const Timestamp &value, bool force=true);
-  void setValue(const XMLNodePtr &node    , const TCHAR *tagName, bool             value, bool force=true);
-
-  inline void getValueLF(const TCHAR *nodeName, const TCHAR *tagName, String  &value, int  instans = 0) {
-    getValueLF(findNode(nodeName), tagName, value, instans);
-  }
-  template<typename T> void getValue(const TCHAR *nodeName, const TCHAR *tagName, T &value, int  instans = 0) {
-    getValue(findNode(nodeName), tagName, value, instans);
-  }
-  template<typename T> void setValue(const TCHAR *nodeName, const TCHAR *tagName, const T &value, bool force = true) {
-    setValue(findNode(nodeName),tagName,value,force);
-  }
-
   // throws Exception if node hasn't the expected tag
   static void checkTag(     XMLNodePtr &node, const TCHAR *expectedTag);
 
   void    setNodeText(const XMLNodePtr &node, const TCHAR *value) ;
   String &getNodeText(const XMLNodePtr &node,       String &value);
 
-  template<typename T> T &getValueTemplate(const XMLNodePtr &node, T &v) {
+  template<typename T> T &getNodeValue(const XMLNodePtr &node, T &v) {
     String s;
     std::wstringstream(getNodeText(node,s).cstr()) >> v;
     return v;
   }
-  template<typename T> void setValueTemplate(const XMLNodePtr &node, const T &v) {
+  template<typename T> void setNodeValue(const XMLNodePtr &node, const T &v) {
     setNodeText(node, (std::wstringstream() << v).str().c_str());
+  }
+  template<typename T> T &getNodeValue(const XMLNodePtr &node, T &v, bool hex) {
+    String s;
+    std::wstringstream wstr(getNodeText(node, s).cstr());
+    if(hex) wstr.setf(std::ios::hex | std::ios::showbase);
+    wstr >> v;
+    return v;
+  }
+  template<typename T> void setNodeValue(const XMLNodePtr &node, const T &v, bool hex) {
+    std::wstringstream wstr;
+    if(hex) wstr.setf(std::ios::hex | std::ios::showbase);
+    wstr << v;
+    setNodeText(node, wstr.str().c_str());
   }
 };
 
-inline void setValue(  XMLDoc &doc, const XMLNodePtr &n, const String    &value) { doc.setValueTemplate(n,value); }
-inline void setValue(  XMLDoc &doc, const XMLNodePtr &n, const TCHAR     *value) { doc.setValueTemplate(n,value); }
-inline void setValue(  XMLDoc &doc, const XMLNodePtr &n, int              value) { doc.setValueTemplate(n,value); }
-inline void setValue(  XMLDoc &doc, const XMLNodePtr &n, UINT             value) { doc.setValueTemplate(n,value); }
-inline void setValue(  XMLDoc &doc, const XMLNodePtr &n, long             value) { doc.setValueTemplate(n,value); }
-inline void setValue(  XMLDoc &doc, const XMLNodePtr &n, ULONG            value) { doc.setValueTemplate(n,value); }
-inline void setValue(  XMLDoc &doc, const XMLNodePtr &n, INT64            value) { doc.setValueTemplate(n,value); }
-inline void setValue(  XMLDoc &doc, const XMLNodePtr &n, UINT64           value) { doc.setValueTemplate(n,value); }
-inline void setValue(  XMLDoc &doc, const XMLNodePtr &n, float            value) { doc.setValueTemplate(n,value); }
-inline void setValue(  XMLDoc &doc, const XMLNodePtr &n, double           value) { doc.setValueTemplate(n,value); }
-inline void setValue(  XMLDoc &doc, const XMLNodePtr &n, const Date      &value) { doc.setValueTemplate(n,value); }
-inline void setValue(  XMLDoc &doc, const XMLNodePtr &n, const Timestamp &value) { doc.setValueTemplate(n,value); }
-inline void setValue(  XMLDoc &doc, const XMLNodePtr &n, bool             value) { doc.setValueTemplate(n,value); }
-inline void getValue(  XMLDoc &doc, const XMLNodePtr &n, String          &value) { doc.setValueTemplate(n,value); }
-inline void getValueLF(XMLDoc &doc, const XMLNodePtr &n, String          &value) { doc.getValueTemplate(n,value); }
-inline void getValue(  XMLDoc &doc, const XMLNodePtr &n, int             &value) { doc.getValueTemplate(n,value); }
-inline void getValue(  XMLDoc &doc, const XMLNodePtr &n, UINT            &value) { doc.getValueTemplate(n,value); }
-inline void getValue(  XMLDoc &doc, const XMLNodePtr &n, long            &value) { doc.getValueTemplate(n,value); }
-inline void getValue(  XMLDoc &doc, const XMLNodePtr &n, ULONG           &value) { doc.getValueTemplate(n,value); }
-inline void getValue(  XMLDoc &doc, const XMLNodePtr &n, INT64           &value) { doc.getValueTemplate(n,value); }
-inline void getValue(  XMLDoc &doc, const XMLNodePtr &n, UINT64          &value) { doc.getValueTemplate(n,value); }
-inline void getValue(  XMLDoc &doc, const XMLNodePtr &n, float           &value) { doc.getValueTemplate(n,value); }
-inline void getValue(  XMLDoc &doc, const XMLNodePtr &n, double          &value) { doc.getValueTemplate(n,value); }
-inline void getValue(  XMLDoc &doc, const XMLNodePtr &n, Date            &value) { doc.getValueTemplate(n,value); }
-inline void getValue(  XMLDoc &doc, const XMLNodePtr &n, Timestamp       &value) { doc.getValueTemplate(n,value); }
-inline void getValue(  XMLDoc &doc, const XMLNodePtr &n, bool            &value) { doc.getValueTemplate(n,value); }
+inline void setValue(  XMLDoc &doc, const XMLNodePtr &n, const String    &value                  ) { doc.setNodeValue(n, value     ); }
+inline void setValue(  XMLDoc &doc, const XMLNodePtr &n, const TCHAR     *value                  ) { doc.setNodeValue(n, value     ); }
+inline void setValue(  XMLDoc &doc, const XMLNodePtr &n, int              value, bool hex = false) { doc.setNodeValue(n, value, hex); }
+inline void setValue(  XMLDoc &doc, const XMLNodePtr &n, UINT             value, bool hex = false) { doc.setNodeValue(n, value, hex); }
+inline void setValue(  XMLDoc &doc, const XMLNodePtr &n, long             value, bool hex = false) { doc.setNodeValue(n, value, hex); }
+inline void setValue(  XMLDoc &doc, const XMLNodePtr &n, ULONG            value, bool hex = false) { doc.setNodeValue(n, value, hex); }
+inline void setValue(  XMLDoc &doc, const XMLNodePtr &n, INT64            value, bool hex = false) { doc.setNodeValue(n, value, hex); }
+inline void setValue(  XMLDoc &doc, const XMLNodePtr &n, UINT64           value, bool hex = false) { doc.setNodeValue(n, value, hex); }
+inline void setValue(  XMLDoc &doc, const XMLNodePtr &n, float            value                  ) { doc.setNodeValue(n, value     ); }
+inline void setValue(  XMLDoc &doc, const XMLNodePtr &n, double           value                  ) { doc.setNodeValue(n, value     ); }
+
+inline void getValue(  XMLDoc &doc, const XMLNodePtr &n, String          &value                  ) { doc.getNodeText( n, value     ); }
+inline void getValueLF(XMLDoc &doc, const XMLNodePtr &n, String          &value                  ) { doc.getNodeText( n, value).replace('\n',_T("\r\n")); }
+inline void getValue(  XMLDoc &doc, const XMLNodePtr &n, int             &value, bool hex = false) { doc.getNodeValue(n, value, hex); }
+inline void getValue(  XMLDoc &doc, const XMLNodePtr &n, UINT            &value, bool hex = false) { doc.getNodeValue(n, value, hex); }
+inline void getValue(  XMLDoc &doc, const XMLNodePtr &n, long            &value, bool hex = false) { doc.getNodeValue(n, value, hex); }
+inline void getValue(  XMLDoc &doc, const XMLNodePtr &n, ULONG           &value, bool hex = false) { doc.getNodeValue(n, value, hex); }
+inline void getValue(  XMLDoc &doc, const XMLNodePtr &n, INT64           &value, bool hex = false) { doc.getNodeValue(n, value, hex); }
+inline void getValue(  XMLDoc &doc, const XMLNodePtr &n, UINT64          &value, bool hex = false) { doc.getNodeValue(n, value, hex); }
+inline void getValue(  XMLDoc &doc, const XMLNodePtr &n, float           &value                  ) { doc.getNodeValue(n, value     ); }
+inline void getValue(  XMLDoc &doc, const XMLNodePtr &n, double          &value                  ) { doc.getNodeValue(n, value     ); }
+void setValue(XMLDoc &doc, const XMLNodePtr &n, char    c, bool hex = false);
+void getValue(XMLDoc &doc, const XMLNodePtr &n, char   &c, bool hex = false);
+void setValue(XMLDoc &doc, const XMLNodePtr &n, BYTE    b, bool hex = false);
+void getValue(XMLDoc &doc, const XMLNodePtr &n, BYTE   &b, bool hex = false);
+void setValue(XMLDoc &doc, const XMLNodePtr &n, short   s, bool hex = false);
+void getValue(XMLDoc &doc, const XMLNodePtr &n, short  &s, bool hex = false);
+void setValue(XMLDoc &doc, const XMLNodePtr &n, USHORT  s, bool hex = false);
+void getValue(XMLDoc &doc, const XMLNodePtr &n, USHORT &s, bool hex = false);
+void setValue(XMLDoc &doc, const XMLNodePtr &n, bool    value);
+void getValue(XMLDoc &doc, const XMLNodePtr &n, bool   &value);
 
 template<typename T> void setValue(XMLDoc &doc, XMLNodePtr n, const CompactKeyType<T> &v) {
   setValue(doc, n, (T)v);
@@ -164,6 +128,28 @@ template<typename T> void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *
 template<typename T> void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, T &v) {
   XMLNodePtr n = doc.getChild(parent, tag);
   getValue(doc, n, v);
+}
+
+template<typename T> void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const T &v, bool hex) {
+  XMLNodePtr n = doc.createNode(parent, tag);
+  setValue(doc, n, v, hex);
+}
+
+template<typename T> void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, T &v, bool hex) {
+  XMLNodePtr n = doc.getChild(parent, tag);
+  getValue(doc, n, v, hex);
+}
+
+void getValueLF(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, String &v);
+void getValueLF(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, String &v, const String &defaultValue);
+
+template<typename T, typename D> void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, T &v, const D &defaultValue) {
+  XMLNodePtr n = doc.findChild(parent, tag);
+  if(n) {
+    getValue(doc, n, v);
+  } else {
+    v = (T)defaultValue;
+  }
 }
 
 template<typename T> void setValue(XMLDoc &doc, XMLNodePtr n, const Iterator<T> &it) {
