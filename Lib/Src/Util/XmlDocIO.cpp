@@ -1,5 +1,8 @@
 #include "pch.h"
 #include <MyUtil.h>
+#include <comutil.h>
+#include <comdef.h>
+#include <comdefsp.h>
 #include <XMLDoc.h>
 
 #define V(f) checkResult(f, __TFILE__, __LINE__)
@@ -36,49 +39,50 @@ void XMLDoc::loadFromFile(const TCHAR *fileName) {
   checkLoad();
 }
 
+#define NEWVERSION
+
+#ifdef NEWVERSION
+
+// see https://stackoverflow.com/questions/164575/msxml-from-c-pretty-print-indent-newly-created-documents/36982487#36982487
+
+#import "msado15.dll" rename("EOF", "EndOfFile")  // requires: /I $(CommonProgramFiles)\System\ado
+
+void XMLDoc::prettyWriteXmlDocument(MSXML2::IXMLDOMDocument *xmlDoc, IStream *stream) { // static
+  MSXML2::IMXWriterPtr writer(__uuidof(MSXML2::MXXMLWriter60));
+  writer->encoding   = L"utf-8";
+  writer->indent     = _variant_t(true);
+  writer->standalone = _variant_t(true);
+  writer->output     = stream;
+
+  MSXML2::ISAXXMLReaderPtr saxReader(__uuidof(MSXML2::SAXXMLReader60));
+  saxReader->putContentHandler(MSXML2::ISAXContentHandlerPtr(writer));
+  saxReader->putProperty(PUSHORT(L"http://xml.org/sax/properties/lexical-handler"), writer.GetInterfacePtr());
+  saxReader->parse(xmlDoc);
+}
+
+void XMLDoc::prettySaveXmlDocument(MSXML2::IXMLDOMDocument *xmlDoc, const wchar_t *filePath) { // static
+  ADODB::_StreamPtr stream(__uuidof(ADODB::Stream));
+  stream->Type = ADODB::adTypeBinary;
+  stream->Open(vtMissing, ADODB::adModeUnknown, ADODB::adOpenStreamUnspecified, _bstr_t(), _bstr_t());
+  prettyWriteXmlDocument(xmlDoc, IStreamPtr(stream));
+  stream->SaveToFile(filePath, ADODB::adSaveCreateOverWrite);
+}
+
+#endif
+
 void XMLDoc::saveToFile(const TCHAR *fileName) {
-//  LogTrace("SaveToFile<%s>",fileName);
-  m_doc->put_async(VARIANT_FALSE);
 #ifndef NEWVERSION
+  m_doc->put_async(VARIANT_FALSE);
   USES_CONVERSION;
   const char *fileNameA = T2A(fileName);
   _variant_t vName(fileNameA);
   V(m_doc->save(vName));
 #else
-  m_doc->PutpreserveWhiteSpace(VARIANT_FALSE);
-  MSXML2::IMXWriterPtr writer;
-  V(writer.CreateInstance(MSXML2::CLSID_MXXMLWriter60));
-  writer->Putindent(VARIANT_TRUE);
-  MSXML2::ISAXContentHandler *contentHandler;
-  MSXML2::ISAXErrorHandler   *errorHandler;
-  MSXML2::ISAXDTDHandler     *dtdHandler;
-  MSXML2::ISAXDeclHandler    *declHandler;
-  MSXML2::ISAXLexicalHandler *lexHandler;
-  V(writer.QueryInterface(MSXML2::IID_ISAXErrorHandler  , &contentHandler));
-  V(writer.QueryInterface(MSXML2::IID_ISAXErrorHandler  , &errorHandler  ));
-  V(writer.QueryInterface(MSXML2::IID_ISAXDTDHandler    , &dtdHandler    ));
-  V(writer.QueryInterface(MSXML2::IID_ISAXDeclHandler   , &declHandler   ));
-  V(writer.QueryInterface(MSXML2::IID_ISAXLexicalHandler, &lexHandler    ));
-
-  MSXML2::ISAXXMLReaderPtr saxReader;
-  V(saxReader.CreateInstance(MSXML2::CLSID_SAXXMLReader60));
-  V(saxReader->putContentHandler(contentHandler));
-  V(saxReader->putErrorHandler(  errorHandler  ));
-  V(saxReader->putDTDHandler(    dtdHandler    ));
-  V(saxReader->putProperty((USHORT*)L"http://xml.org/sax/properties/declaration-handler", declHandler));
-  V(saxReader->putProperty((USHORT*)L"http://xml.org/sax/properties/lexical-handler"    , lexHandler ));
-
-  IStream *iStream = NULL;
-  V(StgCreateStorageEx(fileName, STGM_CREATE | STGM_READWRITE | STGM_SHARE_EXCLUSIVE, STGFMT_STORAGE, 0, NULL, NULL, IID_IStream, (void**)&iStream));
-  ISequentialStream *seqStreamPtr;
-  V(iStream->QueryInterface(IID_ISequentialStream, (void**)&seqStreamPtr));
-
-  writer->Putoutput(&seqStreamPtr);
-  IDispatch *writerDispatchPtr;
-  V(writer.QueryInterface(IID_IDispatch, &writerDispatchPtr));
-  _variant_t wrv = writerDispatchPtr;
-  V(m_doc->save(wrv));
-  V(writer->flush());
+  try {
+    prettySaveXmlDocument(m_doc, fileName);
+  } catch(_com_error &e) {
+    throw Exception(BSTRToString(e.Description()));
+  }
 #endif // NEWVERSION
 }
 

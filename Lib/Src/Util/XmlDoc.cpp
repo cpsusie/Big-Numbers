@@ -4,7 +4,7 @@
 #include <Tokenizer.h>
 #include <XMLDoc.h>
 
-void XMLDoc::checkResult(HRESULT hr, const TCHAR *fileName, int line) {
+void XMLDoc::checkResult(HRESULT hr, const TCHAR *fileName, int line) { // static
   if(FAILED(hr)) {
     throwException(_T("%s line %d:%s"), fileName, line, getErrorText(hr).cstr());
   }
@@ -184,7 +184,11 @@ VARIANT XMLDoc::getVariant(const XMLNodePtr &node) {
     node->get_nodeValue(&result);
     break;
   case NODE_ELEMENT:
-    findTextNode(node)->get_nodeValue(&result);
+    { XMLNodePtr textNode = findTextNode(node);
+      if(textNode) {
+        textNode->get_nodeValue(&result);
+      }
+    }
     break;
   }
   return result;

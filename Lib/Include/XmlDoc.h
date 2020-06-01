@@ -20,10 +20,13 @@ private:
   XMLDocPtr getDocument() {
     return m_doc;
   }
-  void checkResult(HRESULT hr, const TCHAR *fileName, int line);
+  static void checkResult(HRESULT hr, const TCHAR *fileName, int line);
   void checkLoad();
   void loadFromFile(const TCHAR *filename);
   void saveToFile(  const TCHAR *filename);
+  static void prettyWriteXmlDocument(MSXML2::IXMLDOMDocument *xmlDoc, IStream *stream);
+  static void prettySaveXmlDocument(MSXML2::IXMLDOMDocument *xmlDoc, const wchar_t *filePath);
+
   static String &variantToString(String &dst, const VARIANT &var);
 public:
   void setDocument(XMLDocPtr doc);
@@ -64,13 +67,19 @@ public:
   template<typename T> T &getNodeValue(const XMLNodePtr &node, T &v, bool hex) {
     String s;
     std::wstringstream wstr(getNodeText(node, s).cstr());
-    if(hex) wstr.setf(std::ios::hex | std::ios::showbase);
+    if(hex) {
+      wstr.setf(std::ios::hex, std::ios::basefield);
+    }
     wstr >> v;
     return v;
   }
   template<typename T> void setNodeValue(const XMLNodePtr &node, const T &v, bool hex) {
     std::wstringstream wstr;
-    if(hex) wstr.setf(std::ios::hex | std::ios::showbase);
+    if(hex) {
+      wstr.setf(std::ios::hex, std::ios::basefield);
+      wstr.setf(std::ios::showbase);
+    }
+
     wstr << v;
     setNodeText(node, wstr.str().c_str());
   }
