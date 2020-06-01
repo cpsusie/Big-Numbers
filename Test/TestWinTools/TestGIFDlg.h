@@ -20,8 +20,8 @@ protected:
     virtual BOOL OnInitDialog();
     afx_msg void OnSize(UINT nType, int cx, int cy);
     afx_msg void OnButtonLoadGif();
-    afx_msg void OnButtonLoadResouce();
-    afx_msg void OnButtonLoadResroucEerror();
+    afx_msg void OnButtonLoadResource();
+    afx_msg void OnButtonLoadResourceError();
     afx_msg void OnButtonStart();
     afx_msg void OnButtonStop();
     afx_msg void OnButtonUnload();

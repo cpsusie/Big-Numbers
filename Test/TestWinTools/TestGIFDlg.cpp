@@ -15,8 +15,8 @@ void CTestGIFDlg::DoDataExchange(CDataExchange *pDX) {
 BEGIN_MESSAGE_MAP(CTestGIFDlg, CDialog)
     ON_WM_SIZE()
     ON_BN_CLICKED(IDC_BUTTON_LOADGIF          , OnButtonLoadGif          )
-    ON_BN_CLICKED(IDC_BUTTON_LOADRESROUCE     , OnButtonLoadResouce      )
-    ON_BN_CLICKED(IDC_BUTTON_LOADRESROUCEERROR, OnButtonLoadResroucEerror)
+    ON_BN_CLICKED(IDC_BUTTON_LOADRESOURCE     , OnButtonLoadResource     )
+    ON_BN_CLICKED(IDC_BUTTON_LOADRESOURCEERROR, OnButtonLoadResourceError)
     ON_BN_CLICKED(IDC_BUTTON_START            , OnButtonStart            )
     ON_BN_CLICKED(IDC_BUTTON_STOP             , OnButtonStop             )
     ON_BN_CLICKED(IDC_BUTTON_UNLOAD           , OnButtonUnload           )
@@ -36,8 +36,8 @@ BOOL CTestGIFDlg::OnInitDialog() {
     m_layoutManager.OnInitDialog(this);
     m_layoutManager.addControl(IDC_STATIC_GIFAREA          , RELATIVE_SIZE );
     m_layoutManager.addControl(IDC_BUTTON_LOADGIF          , RELATIVE_X_POS);
-    m_layoutManager.addControl(IDC_BUTTON_LOADRESROUCE     , RELATIVE_X_POS);
-    m_layoutManager.addControl(IDC_BUTTON_LOADRESROUCEERROR, RELATIVE_X_POS);
+    m_layoutManager.addControl(IDC_BUTTON_LOADRESOURCE     , RELATIVE_X_POS);
+    m_layoutManager.addControl(IDC_BUTTON_LOADRESOURCEERROR, RELATIVE_X_POS);
     m_layoutManager.addControl(IDC_BUTTON_START            , RELATIVE_X_POS);
     m_layoutManager.addControl(IDC_BUTTON_STOP             , RELATIVE_X_POS);
     m_layoutManager.addControl(IDC_BUTTON_PAINTALL         , RELATIVE_X_POS);
@@ -75,11 +75,11 @@ void CTestGIFDlg::OnButtonLoadGif() {
   }
 }
 
-void CTestGIFDlg::OnButtonLoadResouce() {
+void CTestGIFDlg::OnButtonLoadResource() {
   loadGifResource(IDR_GIFLOEBER);
 }
 
-void CTestGIFDlg::OnButtonLoadResroucEerror() {
+void CTestGIFDlg::OnButtonLoadResourceError() {
   loadGifResource(IDR_GIFLOEBER+1);
 }
 
