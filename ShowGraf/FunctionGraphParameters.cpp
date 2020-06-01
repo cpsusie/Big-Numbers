@@ -9,18 +9,18 @@ FunctionGraphParameters::FunctionGraphParameters(const String &name, COLORREF co
 }
 
 void FunctionGraphParameters::putDataToDoc(XMLDoc &doc) {
-  XMLNodePtr        root = doc.createRoot(_T("Function"));
-  doc.setValue(     root, _T("expr"       ), m_expr             );
-  setValue(    doc, root, _T("interval"   ), m_interval         );
-  doc.setValue(     root, _T("steps"      ), m_steps            );
+  XMLNodePtr    root = doc.createRoot(_T("Function"));
+  setValue(doc, root, _T("expr"       ), m_expr             );
+  setValue(doc, root, _T("interval"   ), m_interval         );
+  setValue(doc, root, _T("steps"      ), m_steps            );
   __super::putDataToDoc(doc);
 }
 
 void FunctionGraphParameters::getDataFromDoc(XMLDoc &doc) {
   XMLNodePtr        root = doc.getRoot();
   XMLDoc::checkTag( root, _T("Function"));
-  doc.getValueLF(   root, _T("expr"      ), m_expr             );
-  getValue(    doc, root, _T("interval"  ), m_interval         );
-  doc.getValue(     root, _T("steps"     ), m_steps            );
+  getValueLF(  doc, root, _T("expr"      ), m_expr          );
+  getValue(    doc, root, _T("interval"  ), m_interval      );
+  getValue(    doc, root, _T("steps"     ), m_steps         );
   __super::getDataFromDoc(doc);
 }

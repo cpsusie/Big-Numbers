@@ -10,17 +10,17 @@ IsoCurveGraphParameters::IsoCurveGraphParameters(const String &name, COLORREF co
 
 void IsoCurveGraphParameters::putDataToDoc(XMLDoc &doc) {
   XMLNodePtr        root = doc.createRoot(_T("IsoCurve"));
-  doc.setValue(     root, _T("expr"       ), m_expr             );
+  setValue(    doc, root, _T("expr"       ), m_expr             );
   setValue(    doc, root, _T("boundingbox"), m_boundingBox      );
-  doc.setValue(     root, _T("cellsize"   ), m_cellSize         );
+  setValue(    doc, root, _T("cellsize"   ), m_cellSize         );
   __super::putDataToDoc(doc);
 }
 
 void IsoCurveGraphParameters::getDataFromDoc(XMLDoc &doc) {
   XMLNodePtr        root = doc.getRoot();
   XMLDoc::checkTag( root, _T("IsoCurve"));
-  doc.getValueLF(   root, _T("expr"       ), m_expr             );
+  getValueLF(  doc, root, _T("expr"       ), m_expr             );
   getValue(    doc, root, _T("boundingbox"), m_boundingBox      );
-  doc.getValue(     root, _T("cellsize"   ), m_cellSize         );
+  getValue(    doc, root, _T("cellsize"   ), m_cellSize         );
   __super::getDataFromDoc(doc);
 }

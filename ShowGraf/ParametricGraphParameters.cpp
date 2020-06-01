@@ -9,26 +9,22 @@ ParametricGraphParameters::ParametricGraphParameters(const String &name, COLORRE
 }
 
 void ParametricGraphParameters::putDataToDoc(XMLDoc &doc) {
-  XMLNodePtr    root = doc.createRoot(_T("ParametricCurve"));
-  doc.setValue( root, _T("common"    ), m_commonText       );
-  doc.setValue( root, _T("exprx"     ), m_exprX            );
-  doc.setValue( root, _T("expry"     ), m_exprY            );
-  setValue(doc, root, _T("interval"  ), m_interval         );
-  doc.setValue( root, _T("steps"     ), m_steps            );
+  XMLNodePtr      root = doc.createRoot(_T("ParametricCurve")  );
+  setValue(  doc, root, _T("common"    ), m_commonText         );
+  setValue(  doc, root, _T("exprx"     ), m_exprX              );
+  setValue(  doc, root, _T("expry"     ), m_exprY              );
+  setValue(  doc, root, _T("interval"  ), m_interval           );
+  setValue(  doc, root, _T("steps"     ), m_steps              );
   __super::putDataToDoc(doc);
 }
 
 void ParametricGraphParameters::getDataFromDoc(XMLDoc &doc) {
   XMLNodePtr       root = doc.getRoot();
   XMLDoc::checkTag(root, _T("ParametricCurve"));
-  if(doc.findChild(root, _T("common")) != NULL) {
-    doc.getValueLF(root, _T("common"), m_commonText);
-  } else {
-    m_commonText = EMPTYSTRING;
-  }
-  doc.getValue( root, _T("exprx"     ), m_exprX            );
-  doc.getValue( root, _T("expry"     ), m_exprY            );
-  getValue(doc, root, _T("interval"  ), m_interval         );
-  doc.getValue( root, _T("steps"     ), m_steps            );
+  getValueLF(doc, root, _T("common"), m_commonText, EMPTYSTRING);
+  getValue(  doc, root, _T("exprx"     ), m_exprX              );
+  getValue(  doc, root, _T("expry"     ), m_exprY              );
+  getValue(  doc, root, _T("interval"  ), m_interval           );
+  getValue(  doc, root, _T("steps"     ), m_steps              );
   __super::getDataFromDoc(doc);
 }

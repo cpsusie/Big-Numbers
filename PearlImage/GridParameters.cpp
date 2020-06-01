@@ -1,7 +1,7 @@
 #include "stdafx.h"
-#include <MFCUtil/ColorSpace.h>
-#include <MFCUtil/2DXML.h>
 #include <CompactHashMap.h>
+#include <Math/MathXML.h>
+#include <MFCUtil/MFCXml.h>
 #include "GridParameters.h"
 #include <MedianCut.h>
 
@@ -123,22 +123,22 @@ CSize GridParameters::findCellCount(const CSize &imageSize) const {
 
 void GridParameters::putDataToDoc(XMLDoc &doc) {
   XMLNodePtr root = doc.createRoot(_T("PearlGrid"));
-  doc.setValue( root, _T("cellsize"  ), m_cellSize     );
+  setValue(doc, root, _T("cellsize"  ), m_cellSize     );
   setValue(doc, root, _T("cellcount" ), m_cellCount    );
-  doc.setValue( root, _T("colorcount"), m_colorCount   );
-  doc.setValue( root, _T("cellsizeMM"), m_cellSizeMM   );
-  doc.setValue( root, _T("imagefile" ), m_imageFileName);
-  doc.setValue( root, _T("imagetime" ), m_fileTime     );
+  setValue(doc, root, _T("colorcount"), m_colorCount   );
+  setValue(doc, root, _T("cellsizeMM"), m_cellSizeMM   );
+  setValue(doc, root, _T("imagefile" ), m_imageFileName);
+  setValue(doc, root, _T("imagetime" ), m_fileTime     );
 }
 
 void GridParameters::getDataFromDoc(XMLDoc &doc) {
   XMLNodePtr root = doc.getRoot();
-  doc.getValue( root, _T("cellsize"  ), m_cellSize     );
+  getValue(doc, root, _T("cellsize"  ), m_cellSize     );
   getValue(doc, root, _T("cellcount" ), m_cellCount    );
-  doc.getValue( root, _T("colorcount"), m_colorCount   );
-  doc.getValue( root, _T("cellsizeMM"), m_cellSizeMM   );
-  doc.getValue( root, _T("imagefile" ), m_imageFileName);
-  doc.getValue( root, _T("imagetime" ), m_fileTime     );
+  getValue(doc, root, _T("colorcount"), m_colorCount   );
+  getValue(doc, root, _T("cellsizeMM"), m_cellSizeMM   );
+  getValue(doc, root, _T("imagefile" ), m_imageFileName);
+  getValue(doc, root, _T("imagetime" ), m_fileTime     );
 }
 
 void GridParameters::setFileTime() {
@@ -148,7 +148,7 @@ void GridParameters::setFileTime() {
 
 void GridParameters::checkFileTime() const {
   const struct _stat64 st = STAT64(m_imageFileName);
-  if (m_fileTime != st.st_mtime) {
+  if(m_fileTime != st.st_mtime) {
     throwException(_T("Timestamp mismatch on image file %s"), m_imageFileName.cstr());
   }
 }

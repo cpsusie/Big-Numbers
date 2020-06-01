@@ -1,6 +1,6 @@
 #pragma once
 
-#include <PersistentData.h>
+#include <PersistentDataTemplate.h>
 #include <MatrixTemplate.h>
 
 class CellSpec {
@@ -39,7 +39,7 @@ public:
   String toString() const;
 };
 
-class GridParameters : public PersistentData {
+class GridParameters : public PersistentDataTemplate<int> {
 public:
   double  m_cellSize;   // in pixels
   CSize   m_cellCount;
