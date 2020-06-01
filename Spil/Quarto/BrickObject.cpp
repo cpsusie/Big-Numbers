@@ -78,14 +78,13 @@ LPD3DXMESH BrickObject::createMesh(AbstractMeshFactory &amf, BYTE attr) { // sta
   }
 
   ProfileRotationParameters param;
-  param.m_alignx     = 0;
-  param.m_aligny     = 2;
-  param.m_rotateAxis = 2;
-  param.m_rad        = 2*M_PI;
-  param.m_edgeCount  = ISSQUARE(attr) ? 4 : 20;
-  param.m_smoothness = ISSQUARE(attr) ? 0 : ROTATESMOOTH;
-
-  return rotateProfile(amf, profile, param, true);
+  param.m_rotateAxisAlignsTo = 'y';
+  param.m_rotateAxis         = 'z';
+  param.m_rad                = (float)(2*M_PI);
+  param.m_edgeCount          = ISSQUARE(attr) ? 4 : 20;
+  if(!ISSQUARE(attr)) param.setFlag(PRROT_ROTATESMOOTH);
+  param.setFlag(PRROT_INVERTNORMALS);
+  return rotateProfile(amf, profile, param, false);
 }
 
 class BrickMarker : public D3SceneObjectWireFrameBox {
@@ -106,7 +105,7 @@ public:
 
 BrickObject::BrickObject(GameBoardObject *board, BYTE attr)
 : D3SceneObjectWithMesh(board
-                       ,createMesh(board->getScene(), attr)
+                       ,createMesh(board->getDevice(), attr)
                        ,format(_T("Brick(%d):%s"),attr,Brick::toString(attr).cstr())
                        )
 , m_attr(attr)

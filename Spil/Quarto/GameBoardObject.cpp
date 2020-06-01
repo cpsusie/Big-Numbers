@@ -54,7 +54,7 @@ void BoardFieldObject::decrFieldCount() {
 #endif // _DEBUG
 
 BoardFieldObject::BoardFieldObject(D3SceneObjectVisual *parent, int row, int col)
-: BoardObjectWithTexture(parent, createMesh(parent->getScene(), row, col))
+: BoardObjectWithTexture(parent, createMesh(parent->getDevice(), row, col))
 , m_field(row,col)
 {
   m_selected    = false;
@@ -136,7 +136,7 @@ LPDIRECT3DTEXTURE BoardFieldObject::createTexture(bool marked) {
                               ,*getFont()
                               ,ISWHITEFIELD(m_field)?BLACK:WHITE);
   DeleteDC(bmDC);
-  return getScene().getTextureFromBitmap(bm);
+  return getDevice().getTextureFromBitmap(bm);
 }
 #endif
 
@@ -144,7 +144,7 @@ LPDIRECT3DTEXTURE BoardFieldObject::getTexture(bool marked) {
 #ifndef _DEBUG
   const int index = GETFIELDRESINDEX(m_field,marked);
   if(s_texture[index] == NULL) {
-    s_texture[index] = getScene().loadTextureFromBitmapResource(GETFIELDRESID(m_field,marked));
+    s_texture[index] = getDevice().loadTextureFromBitmapResource(GETFIELDRESID(m_field,marked));
   }
   return s_texture[index];
 #else
@@ -189,9 +189,9 @@ public:
 };
 
 BoardSideObject::BoardSideObject(D3SceneObjectVisual *parent)
-: BoardObjectWithTexture(parent, createMesh(parent->getScene()))
+: BoardObjectWithTexture(parent, createMesh(parent->getDevice()))
 {
-  m_boardSideTexture = getScene().loadTextureFromBitmapResource(IDB_BOARDSIDEBITMAP);
+  m_boardSideTexture = getDevice().loadTextureFromBitmapResource(IDB_BOARDSIDEBITMAP);
 }
 
 BoardSideObject::~BoardSideObject() {
@@ -274,10 +274,10 @@ LPD3DXMESH GameBoardObject::createMesh(AbstractMeshFactory &amf) { // static
 int GameBoardObject::s_markerMaterialId = -1;
 
 GameBoardObject::GameBoardObject(D3Scene &scene)
-: BoardObjectWithTexture(scene, createMesh(scene))
+: BoardObjectWithTexture(scene, createMesh(scene.getDevice()))
 {
   setName(_T("Board"));
-  m_boardTexture     = scene.loadTextureFromBitmapResource(IDB_BOARDBITMAP);
+  m_boardTexture     = getDevice().loadTextureFromBitmapResource(IDB_BOARDBITMAP);
   D3SceneObjectVisual *so = new BoardSideObject(this); TRACE_NEW(so);
   addChild(so);
 

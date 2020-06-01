@@ -99,13 +99,9 @@ BOOL CQuartoDlg::OnInitDialog() {
   SetIcon(m_hIcon, TRUE );
   SetIcon(m_hIcon, FALSE);
 
-  m_scene.initDevice(*this);
-  m_editor.init(this);
-
   try {
     randomize();
     m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_MAINFRAME));
-    setWindowSize(this, CSize(947, 614));
     createScene();
     OnFileNew();
   } catch(Exception e) {
@@ -120,7 +116,55 @@ BOOL CQuartoDlg::OnInitDialog() {
 
 void CQuartoDlg::unInitDialog() {
   destroyScene();
+}
+
+void CQuartoDlg::createScene() {
+  setWindowSize(this, CSize(947, 614));
+  m_scene.initDevice(*this);
+  m_editor.init(this);
+  createBoard();
+  createLight();
+  resetCamera();
+  sCAM()->addPropertyChangeListener(this);
+}
+
+void CQuartoDlg::destroyScene() {
+  sCAM()->removePropertyChangeListener(this);
+  destroyLight();
+  destroyBoard();
   m_editor.close();
+}
+
+void CQuartoDlg::createBoard() {
+  m_boardObject = new GameBoardObject(m_scene); TRACE_NEW(m_boardObject);
+  m_scene.addVisual(m_boardObject);
+  m_boardObject->addPropertyChangeListener(this);
+}
+
+void CQuartoDlg::destroyBoard() {
+  m_boardObject->removePropertyChangeListener(this);
+  m_scene.removeVisual(m_boardObject);
+  SAFEDELETE(m_boardObject);
+}
+
+void CQuartoDlg::createLight() {
+  D3Camera *cam = sCAM();
+
+  D3DLIGHT light    = D3Light::createDefaultLight(D3DLIGHT_DIRECTIONAL);
+  light.Diffuse     = colorToColorValue(D3D_WHITE);
+  light.Specular    = colorToColorValue(D3D_WHITE);
+  light.Ambient     = colorToColorValue(D3D_WHITE);
+  light.Direction   = cam->getUp();
+  light.Direction.z *= -1;
+  m_lightIndex[0]   = m_scene.addLight(light);
+
+  light.Direction   = cam->getDir();
+  m_lightIndex[1]   = m_scene.addLight(light);
+}
+
+void CQuartoDlg::destroyLight() {
+  m_scene.removeLight(m_lightIndex[1]);
+  m_scene.removeLight(m_lightIndex[0]);
 }
 
 void CQuartoDlg::OnPaint() {
@@ -255,51 +299,6 @@ BOOL CQuartoDlg::PreTranslateMessage(MSG *pMsg) {
   }
   if(levelIncremented) decrLevel();
   return result;
-}
-
-void CQuartoDlg::createScene() {
-  createBoard();
-  createLight();
-  resetCamera();
-  sCAM()->addPropertyChangeListener(this);
-}
-
-void CQuartoDlg::destroyScene() {
-  sCAM()->removePropertyChangeListener(this);
-  destroyLight();
-  destroyBoard();
-}
-
-void CQuartoDlg::createBoard() {
-  m_boardObject = new GameBoardObject(m_scene); TRACE_NEW(m_boardObject);
-  m_scene.addVisual(m_boardObject);
-  m_boardObject->addPropertyChangeListener(this);
-}
-
-void CQuartoDlg::destroyBoard() {
-  m_boardObject->removePropertyChangeListener(this);
-  m_scene.removeVisual(m_boardObject);
-  SAFEDELETE(m_boardObject);
-}
-
-void CQuartoDlg::createLight() {
-  D3Camera *cam = sCAM();
-
-  D3DLIGHT light    = D3Light::createDefaultLight(D3DLIGHT_DIRECTIONAL);
-  light.Diffuse     = colorToColorValue(D3D_WHITE);
-  light.Specular    = colorToColorValue(D3D_WHITE);
-  light.Ambient     = colorToColorValue(D3D_WHITE);
-  light.Direction   = cam->getUp();
-  light.Direction.z *= -1;
-  m_lightIndex[0]   = m_scene.addLight(light);
-
-  light.Direction   = cam->getDir();
-  m_lightIndex[1]   = m_scene.addLight(light);
-}
-
-void CQuartoDlg::destroyLight() {
-  m_scene.removeLight(m_lightIndex[1]);
-  m_scene.removeLight(m_lightIndex[0]);
 }
 
 void CQuartoDlg::resetCamera() {
