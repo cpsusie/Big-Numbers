@@ -59,6 +59,22 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
+// Bitmap
+//
+
+IDB_CIRCLEARROWBITMAP   BITMAP                  "res\\CircleArrow.bmp"
+
+IDB_LEFTRIGHTARROWBITMAP BITMAP                  "res\\LeftRightArrow.bmp"
+
+IDB_BLACKSQUAREBITMAP   BITMAP                  "res\\BlackSquare.bmp"
+
+IDB_ROTATECORNERBITMAP  BITMAP                  "res\\RotateCorner.bmp"
+
+IDB_TESTBITMAP          BITMAP                  "res\\bitmap1.bmp"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
 // Dialog
 //
 
@@ -160,6 +176,14 @@ END
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDR_MAINFRAME           BITMAP                  "res\\Toolbar.bmp"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -291,6 +315,41 @@ BEGIN
     GROUPBOX        "Bounding box",IDC_STATIC_BOUNDINGBOX,12,193,142,73,BS_CENTER,WS_EX_CLIENTEDGE | WS_EX_STATICEDGE
 END
 
+IDR_PROFILE DIALOGEX 0, 0, 800, 447
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Profile"
+MENU IDR_PROFILE
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    CONTROL         "Rotate",IDC_RADIO_ROTATE,"Button",BS_AUTORADIOBUTTON | WS_GROUP,665,10,39,10
+    CONTROL         "Stretch",IDC_RADIO_STRETCH,"Button",BS_AUTORADIOBUTTON,665,26,39,10
+    EDITTEXT        IDC_EDIT_DEGREES,502,284,28,15,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_EDGECOUNT,574,284,28,15,ES_AUTOHSCROLL
+    CONTROL         "Rotation",IDC_CHECK_ROTATESMOOTH,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,588,324,68,13
+    CONTROL         "Normals",IDC_CHECK_NORMALSMOOTH,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,588,350,68,15
+    DEFPUSHBUTTON   "OK",IDOK,722,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,722,24,50,14
+    CONTROL         "",IDC_STATIC_PROFILEIMAGE2D,"Static",SS_WHITEFRAME | SS_SUNKEN | WS_BORDER,7,7,440,413
+    LTEXT           "",IDC_STATIC_INFO,7,424,169,16,SS_SUNKEN | WS_BORDER
+    CONTROL         "",IDC_STATIC_PROFILEIMAGE3D,"Static",SS_WHITEFRAME | SS_SUNKEN,451,51,321,217
+    GROUPBOX        "Rotate parameters",IDC_STATIC,453,271,233,169
+    LTEXT           "Step count",IDC_STATIC,533,286,37,12,SS_CENTERIMAGE
+    LTEXT           "Degrees",IDC_STATIC,471,286,26,12,SS_CENTERIMAGE
+    GROUPBOX        "Smoothness",IDC_STATIC,578,311,95,63
+    GROUPBOX        "Rotation",IDC_STATIC,467,311,109,63,WS_GROUP
+    PUSHBUTTON      "Refresh",IDC_BUTTON_REFRESH,600,17,50,14
+    CONTROL         "",IDC_STATIC_DEBUG3DFRAME,"Static",SS_WHITEFRAME | SS_SUNKEN,689,276,110,85
+    CONTROL         "Slider1",IDC_SLIDER_DEGREE,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,473,400,136,12
+    LTEXT           "",IDC_STATIC_DEGREE,619,400,40,12,SS_SUNKEN
+    CONTROL         "Double sided",IDC_CHECKDOUBLESIDED,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,611,283,60,18
+    COMBOBOX        IDC_COMBOROTATEAXIS,533,324,36,30,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "3D rotation axis:",IDC_STATIC,474,324,51,15,SS_CENTERIMAGE
+    COMBOBOX        IDC_COMBOROTATEAXISALIGNSTO,533,351,36,30,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "2D axis rotated:",IDC_STATIC,474,349,51,15,SS_CENTERIMAGE
+    CONTROL         "",IDC_MFCCOLORBUTTON,"MfcColorButton",WS_TABSTOP,533,378,30,12
+    CONTROL         "&Use Color",IDC_CHECK_USECOLOR,"Button",BS_AUTOCHECKBOX | BS_LEFTTEXT | WS_TABSTOP,474,378,54,13
+END
+
 IDD_ABOUTBOX DIALOGEX 0, 0, 235, 55
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About D3Function"
@@ -360,6 +419,10 @@ BEGIN
         BOTTOMMARGIN, 334
     END
 
+    IDR_PROFILE, DIALOG
+    BEGIN
+    END
+
     IDD_ABOUTBOX, DIALOG
     BEGIN
         LEFTMARGIN, 7
@@ -401,27 +464,9 @@ BEGIN
     0
 END
 
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Bitmap
-//
-
-IDR_MAINFRAME           BITMAP                  "res\\Toolbar.bmp"
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Toolbar
-//
-
-IDR_MAINFRAME TOOLBAR 22, 22
+IDR_PROFILE AFX_DIALOG_LAYOUT
 BEGIN
-    BUTTON      ID_FILE_FUNCTIONSURFACE
-    BUTTON      ID_FILE_PARAMETRICSURFACE
-    BUTTON      ID_FILE_ISOSURFACE
-    SEPARATOR
-    BUTTON      ID_VIEW_SHOW3DINFO
+    0
 END
 
 
@@ -454,6 +499,39 @@ BEGIN
     "9",            ID_OPTIONS_LOADOPTIONS9, VIRTKEY, CONTROL, NOINVERT
 END
 
+IDR_PROFILE ACCELERATORS
+BEGIN
+    "A",            ID_FILE_SAVE_AS,        VIRTKEY, CONTROL, NOINVERT
+    "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
+    "F",            ID_FILE_SELECTFROMFONT, VIRTKEY, CONTROL, NOINVERT
+    "H",            ID_EDIT_MIRROR_HORIZONTAL, VIRTKEY, CONTROL, NOINVERT
+    "I",            ID_EDIT_INVERTNORMALS,  VIRTKEY, CONTROL, NOINVERT
+    "M",            ID_EDIT_CONNECT,        VIRTKEY, CONTROL, NOINVERT
+    "N",            ID_FILE_NEW,            VIRTKEY, CONTROL, NOINVERT
+    "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL, NOINVERT
+    "P",            ID_VIEW_SHOWPOINTS,     VIRTKEY, SHIFT, NOINVERT
+    "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL, NOINVERT
+    "T",            ID_EDIT_MIRROR_VERTICAL, VIRTKEY, CONTROL, NOINVERT
+    "V",            ID_EDIT_PASTE,          VIRTKEY, CONTROL, NOINVERT
+    VK_DELETE,      ID_EDIT_DELETE,         VIRTKEY, NOINVERT
+    "X",            ID_EDIT_CUT,            VIRTKEY, CONTROL, NOINVERT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Toolbar
+//
+
+IDR_MAINFRAME TOOLBAR 22, 22
+BEGIN
+    BUTTON      ID_FILE_FUNCTIONSURFACE
+    BUTTON      ID_FILE_PARAMETRICSURFACE
+    BUTTON      ID_FILE_ISOSURFACE
+    SEPARATOR
+    BUTTON      ID_VIEW_SHOW3DINFO
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -467,6 +545,7 @@ BEGIN
         MENUITEM "&Function Surface...\tCtrl+F", ID_FILE_FUNCTIONSURFACE
         MENUITEM "Para&metric Surface...\tCtrl+M", ID_FILE_PARAMETRICSURFACE
         MENUITEM "&Isosurface..\tCtrl+I",       ID_FILE_ISOSURFACE
+        MENUITEM "&Profile surface...\tCtrl+P", ID_FILE_PROFILESURFACE
         MENUITEM SEPARATOR
         MENUITEM "&Read 3D points from file...\tCtrl+R", ID_FILE_READ3DPOINTSFROMFILE
         MENUITEM "Read obj-file...\tCtrl+O",    ID_FILE_READOBJFILE
@@ -549,6 +628,51 @@ BEGIN
     END
 END
 
+IDR_PROFILE MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "New...\tCtrl+N",              ID_FILE_NEW
+        MENUITEM "&Open...\tCtrl+O",            ID_FILE_OPEN
+        MENUITEM SEPARATOR
+        MENUITEM "Save\tCtrl+S",                ID_FILE_SAVE
+        MENUITEM "Save &As...\tCtrl+A",         ID_FILE_SAVE_AS
+        MENUITEM SEPARATOR
+        MENUITEM "Select from &font...\tCtrl+F", ID_FILE_SELECTFROMFONT
+    END
+    POPUP "&Edit"
+    BEGIN
+        MENUITEM "Cu&t\tCtrl+X",                ID_EDIT_CUT
+        MENUITEM "&Copy\tCtrl+C",               ID_EDIT_COPY
+        MENUITEM "&Paste\tCtrl+V",              ID_EDIT_PASTE
+        MENUITEM "&Delete\tDel",                ID_EDIT_DELETE
+        MENUITEM SEPARATOR
+        MENUITEM "Connect\tCtrl+M",             ID_EDIT_CONNECT
+        MENUITEM "&Invert normals\tCtrl+I",     ID_EDIT_INVERTNORMALS
+        POPUP "Mirror"
+        BEGIN
+            MENUITEM "&Horizontal\tCtrl+H",         ID_EDIT_MIRROR_HORIZONTAL
+            MENUITEM "Ver&tical\tCtrl+T",           ID_EDIT_MIRROR_VERTICAL
+        END
+    END
+    POPUP "View"
+    BEGIN
+        MENUITEM "Show &points\tShift+P",       ID_VIEW_SHOWPOINTS
+        MENUITEM "Show normals",                ID_VIEW_SHOWNORMALS
+        MENUITEM SEPARATOR
+        MENUITEM "Auto update 3D",              ID_VIEW_AUTO_UPDATE_3D, CHECKED
+    END
+    POPUP "&Tools"
+    BEGIN
+        MENUITEM "&Line",                       ID_TOOLS_LINE
+        MENUITEM "Be&zierCurve",                ID_TOOLS_BEZIERCURVE
+        MENUITEM "&Rectangle",                  ID_TOOLS_RECTANGLE
+        MENUITEM "Pol&ygon",                    ID_TOOLS_POLYGON
+        MENUITEM "&Ellipse",                    ID_TOOLS_ELLIPSE
+        MENUITEM "&Select",                     ID_TOOLS_SELECT
+    END
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -558,6 +682,40 @@ END
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDR_MAINFRAME           ICON                    "res\\D3Function.ico"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDR_PROFILE DLGINIT
+BEGIN
+    IDC_COMBOROTATEAXIS, 0x403, 2, 0
+0x0078, 
+    IDC_COMBOROTATEAXIS, 0x403, 2, 0
+0x0079, 
+    IDC_COMBOROTATEAXIS, 0x403, 2, 0
+0x007a, 
+    IDC_COMBOROTATEAXISALIGNSTO, 0x403, 2, 0
+0x0078, 
+    IDC_COMBOROTATEAXISALIGNSTO, 0x403, 2, 0
+0x0079, 
+    IDC_MFCCOLORBUTTON, 0x37c, 215, 0
+0x4d3c, 0x4346, 0x6f43, 0x6f6c, 0x4272, 0x7475, 0x6f74, 0x5f6e, 0x6e45, 
+0x6261, 0x656c, 0x744f, 0x6568, 0x4272, 0x7475, 0x6f74, 0x3e6e, 0x5254, 
+0x4555, 0x2f3c, 0x464d, 0x4343, 0x6c6f, 0x726f, 0x7542, 0x7474, 0x6e6f, 
+0x455f, 0x616e, 0x6c62, 0x4f65, 0x6874, 0x7265, 0x7542, 0x7474, 0x6e6f, 
+0x3c3e, 0x464d, 0x4343, 0x6c6f, 0x726f, 0x7542, 0x7474, 0x6e6f, 0x455f, 
+0x616e, 0x6c62, 0x4165, 0x7475, 0x6d6f, 0x7461, 0x6369, 0x7542, 0x7474, 
+0x6e6f, 0x463e, 0x4c41, 0x4553, 0x2f3c, 0x464d, 0x4343, 0x6c6f, 0x726f, 
+0x7542, 0x7474, 0x6e6f, 0x455f, 0x616e, 0x6c62, 0x4165, 0x7475, 0x6d6f, 
+0x7461, 0x6369, 0x7542, 0x7474, 0x6e6f, 0x3c3e, 0x464d, 0x4343, 0x6c6f, 
+0x726f, 0x7542, 0x7474, 0x6e6f, 0x435f, 0x6c6f, 0x6d75, 0x736e, 0x6f43, 
+0x6e75, 0x3e74, 0x3c35, 0x4d2f, 0x4346, 0x6f43, 0x6f6c, 0x4272, 0x7475, 
+0x6f74, 0x5f6e, 0x6f43, 0x756c, 0x6e6d, 0x4373, 0x756f, 0x746e, "\076" 
+    0
+END
 
 
 /////////////////////////////////////////////////////////////////////////////

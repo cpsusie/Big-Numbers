@@ -44,7 +44,7 @@ protected:
   }
 
   void paramToWin(const T &param) {
-    const MeshAnimationData &d = param.m_animation;
+    const AnimationParameters &d = param.m_animation;
     m_includeTime   = d.m_includeTime ? TRUE : FALSE;
     m_frameCount    = d.m_frameCount;
     m_timefrom      = d.getTimeInterval().getMin();
@@ -57,7 +57,7 @@ protected:
 
   bool winToParam(T &param) {
     if(!__super::winToParam(param)) return false;
-    MeshAnimationData &d = param.m_animation;
+    AnimationParameters &d = param.m_animation;
     d.m_includeTime = m_includeTime ? true : false;
     d.m_frameCount  = m_frameCount;
     d.m_timeInterval.setFrom(m_timefrom);

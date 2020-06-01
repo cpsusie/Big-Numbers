@@ -1,0 +1,622 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Danish (Denmark) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DAN)
+LANGUAGE LANG_DANISH, SUBLANG_DEFAULT
+#pragma code_page(1252)
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\D3FunctionPlotter.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\D3FunctionPlotter.ico"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOG 0, 0, 235, 55
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About D3FunctionPlotter"
+FONT 8, "MS Sans Serif"
+BEGIN
+    ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
+    LTEXT           "D3FunctionPlotter Version 1.0",IDC_STATIC,40,10,119,8,SS_NOPREFIX
+    LTEXT           "Copyright (C) 2015",IDC_STATIC,40,25,119,8
+    DEFPUSHBUTTON   "OK",IDOK,178,7,50,14,WS_GROUP
+END
+
+IDR_MAINFRAME DIALOGEX 0, 0, 543, 422
+STYLE DS_SETFONT | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "D3FunctionPlotter"
+MENU IDR_MAINFRAME
+FONT 8, "Courier New", 400, 0, 0x0
+BEGIN
+    PUSHBUTTON      "To make Menu Alt-keys wormk",IDC_BUTTON_DUMMY,459,7,77,30,NOT WS_VISIBLE
+    CONTROL         "",IDC_STATIC_3DPANEL,"Static",SS_BLACKFRAME | SS_SUNKEN | WS_BORDER,7,7,529,315
+    EDITTEXT        IDC_EDIT_INFOPANEL,7,321,529,94,ES_MULTILINE | ES_READONLY | WS_VSCROLL | NOT WS_TABSTOP,WS_EX_STATICEDGE
+END
+
+IDR_FUNC2DSURFACE DIALOGEX 0, 0, 379, 239
+STYLE DS_SETFONT | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "Function expression"
+MENU IDR_FUNC2DSURFACE
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    EDITTEXT        IDC_EDIT_EXPR,56,7,316,104,ES_MULTILINE | ES_WANTRETURN | WS_VSCROLL | WS_GROUP
+    EDITTEXT        IDC_EDIT_XFROM,76,124,45,14,ES_AUTOHSCROLL,WS_EX_CLIENTEDGE
+    EDITTEXT        IDC_EDIT_XTO,134,124,45,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_POINTS,241,123,31,15,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_YFROM,76,141,45,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_YTO,134,141,45,14,ES_AUTOHSCROLL
+    CONTROL         "Compile to &machinecode (faster evaluation)",IDC_CHECK_MACHINECODE,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,19,158,163,12
+    CONTROL         "Create &listfile",IDC_CHECKCREATELISTFILE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,191,158,95,12
+    CONTROL         "&Animated function",IDC_CHECK_INCLUDETIME,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,19,173,163,12
+    CONTROL         "Show &both sides",IDC_CHECK_DOUBLESIDED,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,191,173,95,12
+    EDITTEXT        IDC_EDIT_TIMEFROM,76,188,45,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_TIMETO,134,188,45,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_FRAMECOUNT,241,188,31,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "&Plot",IDOK,265,218,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,322,218,50,14
+    PUSHBUTTON      "help",IDC_BUTTON_HELP,37,7,16,14
+    LTEXT           "&X-interval:",IDC_STATIC_XINTERVAL,19,124,45,14,SS_CENTERIMAGE
+    LTEXT           "&Y-interval:",IDC_STATIC_YINTERVAL,19,141,45,14,SS_CENTERIMAGE
+    CTEXT           "&z = F(x,y) =",IDC_STATIC_FUNCTION,7,57,46,14,SS_CENTERIMAGE
+    LTEXT           "-",IDC_STATIC_DASH2,125,144,8,8
+    LTEXT           "-",IDC_STATIC_DASH1,125,127,8,14
+    LTEXT           "&No of points:",IDC_STATIC_POINTCOUNT,191,123,43,15,SS_CENTERIMAGE
+    LTEXT           "&Time-interval:",IDC_STATIC_TIMEINTERVAL,19,188,45,14,SS_CENTERIMAGE
+    LTEXT           "No of f&rames:",IDC_STATIC_FRAMECOUNT,191,188,45,14,SS_CENTERIMAGE
+    LTEXT           "-",IDC_STATIC_DASH3,125,191,8,8,SS_CENTERIMAGE
+END
+
+IDR_ISOSURFACE DIALOGEX 0, 0, 409, 341
+STYLE DS_SETFONT | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "Isosurface"
+MENU IDR_ISOSURFACE
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    EDITTEXT        IDC_EDIT_EXPR,50,10,328,105,ES_MULTILINE | ES_WANTRETURN | WS_VSCROLL | WS_GROUP
+    EDITTEXT        IDC_EDIT_CELLSIZE,61,131,40,14,ES_AUTOHSCROLL
+    CONTROL         "Tetra&hedral decomposition",IDC_CHECK_TETRAHEDRAL,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,117,131,97,14
+    CONTROL         "Optimize squares",IDC_CHECK_TETRAOPTIMIZE4,"Button",BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP,250,131,90,14
+    CONTROL         "Show &both sides",IDC_CHECK_DOUBLESIDED,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,117,145,97,14
+    CONTROL         "&Origin outside surface",IDC_CHECK_ORIGINOUTSIDE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,250,145,90,14
+    CONTROL         "Compile to &machinecode",IDC_CHECK_MACHINECODE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,117,159,97,14
+    CONTROL         "Create &listfile",IDC_CHECKCREATELISTFILE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,250,159,90,14
+    CONTROL         "Ada&ptive cellsize",IDC_CHECK_ADAPTIVECELLSIZE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,117,173,97,14
+    CONTROL         "&Debug polygonizer",IDC_CHECK_DEBUGPOLYGONIZER,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,250,173,90,14
+    EDITTEXT        IDC_EDIT_XFROM,31,206,40,15,ES_AUTOHSCROLL,WS_EX_CLIENTEDGE
+    EDITTEXT        IDC_EDIT_XTO,89,207,40,15,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_YFROM,31,226,40,15,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_YTO,89,226,40,15,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_ZFROM,31,245,40,15,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_ZTO,89,245,40,15,ES_AUTOHSCROLL
+    CONTROL         "&Animated surface",IDC_CHECK_INCLUDETIME,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,17,277,163,12
+    EDITTEXT        IDC_EDIT_TIMEFROM,74,298,45,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_TIMETO,132,298,45,14,ES_AUTOHSCROLL
+    LTEXT           "No of f&rames:",IDC_STATIC_FRAMECOUNT,187,298,55,14,SS_CENTERIMAGE
+    EDITTEXT        IDC_EDIT_FRAMECOUNT,254,298,31,14,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,295,320,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,352,320,50,14
+    PUSHBUTTON      "help",IDC_BUTTON_HELP,30,10,16,14
+    CTEXT           "&S(x,y,z) = ",IDC_STATIC_FUNCTION,13,55,33,11,SS_CENTERIMAGE
+    LTEXT           "= 0",IDC_STATIC_EQUAL_ZERO,380,55,12,10,SS_CENTERIMAGE
+    LTEXT           "&Cell sze",IDC_STATIC_CELLSIZE,13,131,33,14,SS_CENTERIMAGE | WS_TABSTOP
+    LTEXT           "&Time-interval:",IDC_STATIC_TIMEINTERVAL,17,298,49,14,SS_CENTERIMAGE
+    LTEXT           "-",IDC_STATIC_DASH4,123,298,8,14,SS_CENTERIMAGE
+    LTEXT           "&X:",IDC_STATIC_XINTERVAL,19,207,8,15,SS_CENTERIMAGE
+    LTEXT           "-",IDC_STATIC_DASH1,78,209,8,10,SS_CENTERIMAGE
+    LTEXT           "&Y:",IDC_STATIC_YINTERVAL,19,226,8,15,SS_CENTERIMAGE
+    LTEXT           "-",IDC_STATIC_DASH2,78,228,8,10,SS_CENTERIMAGE
+    LTEXT           "&Z:",IDC_STATIC_ZINTERVAL,19,245,8,15,SS_CENTERIMAGE
+    LTEXT           "-",IDC_STATIC_DASH3,78,247,8,10,SS_CENTERIMAGE
+    GROUPBOX        "Bounding box",IDC_STATIC_BOUNDINGBOX,12,193,142,73,BS_CENTER,WS_EX_CLIENTEDGE | WS_EX_STATICEDGE
+END
+
+IDR_PROFILE DIALOG 0, 0, 800, 447
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Profile"
+MENU IDR_PROFILE
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "Rotate",IDC_RADIO_ROTATE,"Button",BS_AUTORADIOBUTTON | WS_GROUP,665,10,39,10
+    CONTROL         "Stretch",IDC_RADIO_STRETCH,"Button",BS_AUTORADIOBUTTON,665,26,39,10
+    EDITTEXT        IDC_EDIT_DEGREES,507,283,28,15,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_EDGECOUNT,618,283,28,15,ES_AUTOHSCROLL
+    CONTROL         "X-axis",IDC_RADIO_ROTATEXAXIS,"Button",BS_AUTORADIOBUTTON | WS_GROUP,479,324,68,12
+    CONTROL         "Y-axis",IDC_RADIO_ROTATEYAXIS,"Button",BS_AUTORADIOBUTTON,479,337,68,12
+    CONTROL         "Rotation",IDC_CHECK_ROTATESMOOTH,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,590,324,68,13
+    CONTROL         "Normals",IDC_CHECK_NORMALSMOOTH,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,590,350,68,15
+    DEFPUSHBUTTON   "OK",IDOK,722,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,722,24,50,14
+    CONTROL         "",IDC_STATIC_PROFILEIMAGE2D,"Static",SS_WHITEFRAME | SS_SUNKEN | WS_BORDER,7,7,440,413
+    LTEXT           "",IDC_STATIC_INFO,7,424,169,16,SS_SUNKEN | WS_BORDER
+    CONTROL         "",IDC_STATIC_PROFILEIMAGE3D,"Static",SS_WHITEFRAME | SS_SUNKEN,451,51,321,217
+    GROUPBOX        "Rotate parameters",IDC_STATIC,453,271,233,169
+    LTEXT           "Step count",IDC_STATIC,577,286,37,12
+    LTEXT           "Degrees",IDC_STATIC,471,286,26,12
+    GROUPBOX        "Smoothness",IDC_STATIC,578,311,95,63
+    GROUPBOX        "Rotation axis",IDC_STATIC,467,311,95,63,WS_GROUP
+    PUSHBUTTON      "Refresh",IDC_BUTTON_REFRESH,600,17,50,14
+    CONTROL         "",IDC_STATIC_DEBUG3DFRAME,"Static",SS_WHITEFRAME | SS_SUNKEN,689,276,110,85
+    CONTROL         "Slider1",IDC_SLIDER_DEGREE,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,473,388,136,12
+    LTEXT           "",IDC_STATIC_DEGREE,619,388,40,12,SS_SUNKEN
+END
+
+IDR_PARAMETRICSURFACE DIALOGEX 0, 0, 469, 330
+STYLE DS_SETFONT | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "Parametric Surfacce"
+MENU IDR_PARAMETRICSURFACE
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    EDITTEXT        IDC_EDIT_EXPRX,56,57,406,41,ES_MULTILINE | ES_WANTRETURN | WS_VSCROLL | WS_GROUP
+    EDITTEXT        IDC_EDIT_EXPRY,56,100,406,41,ES_MULTILINE | ES_WANTRETURN | WS_VSCROLL | WS_GROUP
+    EDITTEXT        IDC_EDIT_EXPRZ,56,144,406,41,ES_MULTILINE | ES_WANTRETURN | WS_VSCROLL | WS_GROUP
+    EDITTEXT        IDC_EDIT_TFROM,65,203,45,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_TTO,123,203,45,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_TSTEPCOUNT,239,203,31,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_SFROM,65,224,45,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_STO,123,224,45,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_SSTEPCOUNT,239,224,31,14,ES_AUTOHSCROLL
+    CONTROL         "Show &both sides",IDC_CHECK_DOUBLESIDED,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,241,95,12
+    CONTROL         "Compile to &machinecode (faster evaluation)",IDC_CHECK_MACHINECODE,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,257,156,12
+    CONTROL         "Create &listfile",IDC_CHECKCREATELISTFILE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,183,257,111,14
+    CONTROL         "&Animated function",IDC_CHECK_INCLUDETIME,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,273,163,12
+    EDITTEXT        IDC_EDIT_TIMEFROM,86,293,45,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_TIMETO,144,293,45,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_FRAMECOUNT,251,293,31,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "&Plot",IDOK,356,309,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,412,309,50,14
+    PUSHBUTTON      "help",IDC_BUTTON_HELPX,36,57,16,14
+    PUSHBUTTON      "help",IDC_BUTTON_HELPY,36,100,16,14
+    PUSHBUTTON      "help",IDC_BUTTON_HELPZ,36,144,16,14
+    LTEXT           "&T-interval:",IDC_STATIC_TINTERVAL,16,203,39,14,SS_CENTERIMAGE
+    LTEXT           "&S-interval:",IDC_STATIC_SINTERVAL,16,224,39,14,SS_CENTERIMAGE
+    CTEXT           "&X(t,s) =",IDC_STATIC_FUNCTIONX,9,74,41,14,SS_CENTERIMAGE
+    LTEXT           "-",IDC_STATIC_DASH2,114,224,8,14,SS_CENTERIMAGE
+    LTEXT           "-",IDC_STATIC_DASH1,114,203,8,14,SS_CENTERIMAGE
+    LTEXT           "&No of T-steps:",IDC_STATIC_TSTEPCOUNT,183,203,49,14,SS_CENTERIMAGE
+    LTEXT           "Time-inter&val:",IDC_STATIC_TIMEINTERVAL,29,293,45,14,SS_CENTERIMAGE
+    LTEXT           "No of f&rames:",IDC_STATIC_FRAMECOUNT,201,293,45,14,SS_CENTERIMAGE
+    LTEXT           "-",IDC_STATIC_DASH3,135,293,8,14,SS_CENTERIMAGE
+    CTEXT           "&Y(t,s) =",IDC_STATIC_FUNCTIONY,9,117,41,14,SS_CENTERIMAGE
+    CTEXT           "&Z(t,s) =",IDC_STATIC_FUNCTIONZ,9,161,41,14,SS_CENTERIMAGE
+    LTEXT           "N&o of S-steps:",IDC_STATIC_SSTEPCOUNT,183,224,49,14,SS_CENTERIMAGE
+    EDITTEXT        IDC_EDITCOMMON,56,7,406,41,ES_MULTILINE | ES_WANTRETURN | WS_VSCROLL | WS_GROUP
+    CTEXT           "&Common:",IDC_STATICCOMMON,9,23,41,14,SS_CENTERIMAGE
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 228
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 48
+    END
+
+    IDR_MAINFRAME, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 536
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 415
+    END
+
+    IDR_FUNC2DSURFACE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 372
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 232
+    END
+
+    IDR_ISOSURFACE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 402
+        TOPMARGIN, 10
+        BOTTOMMARGIN, 334
+    END
+
+    IDR_PARAMETRICSURFACE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 462
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 323
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MAINFRAME MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&Save state\tCtrl+S",         ID_FILE_SAVESTATE
+        MENUITEM "&Load state\tCtrl+L",         ID_FILE_LOADSTATE
+        MENUITEM SEPARATOR
+        MENUITEM "&Function Surface...\tCtrl+F", ID_FILE_FUNCTIONSURFACE
+        MENUITEM "Para&metric Surface...\tCtrl+M", ID_FILE_PARAMETRICSURFACE
+        MENUITEM "&Isosurface..\tCtrl+I",       ID_FILE_ISOSURFACE
+        MENUITEM "&Profile surface...\tCtrl+P", ID_FILE_PROFILESURFACE
+        MENUITEM SEPARATOR
+        MENUITEM "&Read 3D points from file...\tCtrl+R", ID_FILE_READ3DPOINTSFROMFILE
+        MENUITEM "Read obj-file...\tCtrl+O",    ID_FILE_READOBJFILE
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit",                       ID_FILE_EXIT
+    END
+    POPUP "&View"
+    BEGIN
+        MENUITEM "Show 3d &info\tI",            ID_VIEW_SHOW3DINFO
+    END
+END
+
+IDR_FUNC2DSURFACE MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&Open...\tCtrl+O",            ID_FILE_OPEN
+        MENUITEM SEPARATOR
+        MENUITEM "&Save\tCtrl+S",               ID_FILE_SAVE
+        MENUITEM "Save &As...\tCtrl+A",         ID_FILE_SAVE_AS
+    END
+    POPUP "&Edit"
+    BEGIN
+        MENUITEM "Find matching parenthesis\tCtrl+E", ID_EDIT_FINDMATCHINGPARENTESIS
+    END
+END
+
+IDR_ISOSURFACE MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&Open...\tCtrl+O",            ID_FILE_OPEN
+        MENUITEM SEPARATOR
+        MENUITEM "&Save\tCtrl+S",               ID_FILE_SAVE
+        MENUITEM "Save &As...\tCtrl+A",         ID_FILE_SAVE_AS
+    END
+    POPUP "&Edit"
+    BEGIN
+        MENUITEM "Find matching parenthesis\tCtrl+E", ID_EDIT_FINDMATCHINGPARENTESIS
+    END
+END
+
+IDR_PROFILE MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "New...\tCtrl+N",              ID_FILE_NEW
+        MENUITEM "&Open...\tCtrl+O",            ID_FILE_OPEN
+        MENUITEM SEPARATOR
+        MENUITEM "Save\tCtrl+S",                ID_FILE_SAVE
+        MENUITEM "Save &As...\tCtrl+A",         ID_FILE_SAVE_AS
+        MENUITEM SEPARATOR
+        MENUITEM "Select from &font...\tCtrl+F", ID_FILE_SELECTFROMFONT
+    END
+    POPUP "&Edit"
+    BEGIN
+        MENUITEM "Cu&t\tCtrl+X",                ID_EDIT_CUT
+        MENUITEM "&Copy\tCtrl+C",               ID_EDIT_COPY
+        MENUITEM "&Paste\tCtrl+V",              ID_EDIT_PASTE
+        MENUITEM "&Delete\tDel",                ID_EDIT_DELETE
+        MENUITEM SEPARATOR
+        MENUITEM "Connect\tCtrl+M",             ID_EDIT_CONNECT
+        MENUITEM "&Invert normals\tCtrl+I",     ID_EDIT_INVERTNORMALS
+        POPUP "Mirror"
+        BEGIN
+            MENUITEM "&Horizontal\tCtrl+H",         ID_EDIT_MIRROR_HORIZONTAL
+            MENUITEM "Ver&tical\tCtrl+T",           ID_EDIT_MIRROR_VERTICAL
+        END
+    END
+    POPUP "View"
+    BEGIN
+        MENUITEM "Show &points\tShift+P",       ID_VIEW_SHOWPOINTS
+        MENUITEM "Show normals",                ID_VIEW_SHOWNORMALS
+        MENUITEM SEPARATOR
+        MENUITEM "Auto update 3D",              ID_VIEW_AUTO_UPDATE_3D, CHECKED
+    END
+    POPUP "&Tools"
+    BEGIN
+        MENUITEM "&Line",                       ID_TOOLS_LINE
+        MENUITEM "Be&zierCurve",                ID_TOOLS_BEZIERCURVE
+        MENUITEM "&Rectangle",                  ID_TOOLS_RECTANGLE
+        MENUITEM "Pol&ygon",                    ID_TOOLS_POLYGON
+        MENUITEM "&Ellipse",                    ID_TOOLS_ELLIPSE
+        MENUITEM "&Select",                     ID_TOOLS_SELECT
+    END
+END
+
+IDR_PARAMETRICSURFACE MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&Open...\tCtrl+O",            ID_FILE_OPEN
+        MENUITEM SEPARATOR
+        MENUITEM "&Save\tCtrl+S",               ID_FILE_SAVE
+        MENUITEM "Save &As...\tCtrl+A",         ID_FILE_SAVE_AS
+    END
+    POPUP "&Edit"
+    BEGIN
+        MENUITEM "Find matching parenthesis\tCtrl+E", ID_EDIT_FINDMATCHINGPARENTESIS
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904B0"
+        BEGIN
+            VALUE "FileDescription", "D3FunctionPlotter MFC Application"
+            VALUE "FileVersion", "1, 0, 0, 1"
+            VALUE "InternalName", "D3FunctionPlotter"
+            VALUE "LegalCopyright", "Copyright (C) 2015"
+            VALUE "OriginalFilename", "D3FunctionPlotter.EXE"
+            VALUE "ProductName", "D3FunctionPlotter Application"
+            VALUE "ProductVersion", "1, 0, 0, 1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_MAINFRAME ACCELERATORS
+BEGIN
+    "F",            ID_FILE_FUNCTIONSURFACE, VIRTKEY, CONTROL, NOINVERT
+    "I",            ID_FILE_ISOSURFACE,     VIRTKEY, CONTROL, NOINVERT
+    "L",            ID_FILE_LOADSTATE,      VIRTKEY, CONTROL, NOINVERT
+    "M",            ID_FILE_PARAMETRICSURFACE, VIRTKEY, CONTROL, NOINVERT
+    "P",            ID_FILE_PROFILESURFACE, VIRTKEY, CONTROL, NOINVERT
+    "R",            ID_FILE_READ3DPOINTSFROMFILE, VIRTKEY, CONTROL, NOINVERT
+    "O",            ID_FILE_READOBJFILE,    VIRTKEY, CONTROL, NOINVERT
+    "S",            ID_FILE_SAVESTATE,      VIRTKEY, CONTROL, NOINVERT
+    "I",            ID_VIEW_SHOW3DINFO,     VIRTKEY, NOINVERT
+END
+
+IDR_FUNC2DSURFACE ACCELERATORS
+BEGIN
+    "E",            ID_EDIT_FINDMATCHINGPARENTESIS, VIRTKEY, CONTROL, NOINVERT
+    "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL, NOINVERT
+    "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL, NOINVERT
+    "A",            ID_FILE_SAVE_AS,        VIRTKEY, CONTROL, NOINVERT
+    "Z",            ID_GOTO_EXPR,           VIRTKEY, ALT, NOINVERT
+    "N",            ID_GOTO_POINTCOUNT,     VIRTKEY, ALT, NOINVERT
+    "R",            ID_GOTO_FRAMECOUNT,     VIRTKEY, ALT, NOINVERT
+    "T",            ID_GOTO_TIMEINTERVAL,   VIRTKEY, ALT, NOINVERT
+    "X",            ID_GOTO_XINTERVAL,      VIRTKEY, ALT, NOINVERT
+    "Y",            ID_GOTO_YINTERVAL,      VIRTKEY, ALT, NOINVERT
+END
+
+IDR_ISOSURFACE ACCELERATORS
+BEGIN
+    "E",            ID_EDIT_FINDMATCHINGPARENTESIS, VIRTKEY, CONTROL, NOINVERT
+    "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL, NOINVERT
+    "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL, NOINVERT
+    "A",            ID_FILE_SAVE_AS,        VIRTKEY, CONTROL, NOINVERT
+    "S",            ID_GOTO_EXPR,           VIRTKEY, ALT, NOINVERT
+    "R",            ID_GOTO_FRAMECOUNT,     VIRTKEY, ALT, NOINVERT
+    "C",            ID_GOTO_CELLSIZE,       VIRTKEY, ALT, NOINVERT
+    "T",            ID_GOTO_TIMEINTERVAL,   VIRTKEY, ALT, NOINVERT
+    "X",            ID_GOTO_XINTERVAL,      VIRTKEY, ALT, NOINVERT
+    "Y",            ID_GOTO_YINTERVAL,      VIRTKEY, ALT, NOINVERT
+    "Z",            ID_GOTO_ZINTERVAL,      VIRTKEY, ALT, NOINVERT
+END
+
+IDR_PROFILE ACCELERATORS
+BEGIN
+    "A",            ID_FILE_SAVE_AS,        VIRTKEY, CONTROL, NOINVERT
+    "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
+    "F",            ID_FILE_SELECTFROMFONT, VIRTKEY, CONTROL, NOINVERT
+    "H",            ID_EDIT_MIRROR_HORIZONTAL, VIRTKEY, CONTROL, NOINVERT
+    "I",            ID_EDIT_INVERTNORMALS,  VIRTKEY, CONTROL, NOINVERT
+    "M",            ID_EDIT_CONNECT,        VIRTKEY, CONTROL, NOINVERT
+    "N",            ID_FILE_NEW,            VIRTKEY, CONTROL, NOINVERT
+    "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL, NOINVERT
+    "P",            ID_VIEW_SHOWPOINTS,     VIRTKEY, SHIFT, NOINVERT
+    "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL, NOINVERT
+    "T",            ID_EDIT_MIRROR_VERTICAL, VIRTKEY, CONTROL, NOINVERT
+    "V",            ID_EDIT_PASTE,          VIRTKEY, CONTROL, NOINVERT
+    VK_DELETE,      ID_EDIT_DELETE,         VIRTKEY, NOINVERT
+    "X",            ID_EDIT_CUT,            VIRTKEY, CONTROL, NOINVERT
+END
+
+IDR_PARAMETRICSURFACE ACCELERATORS
+BEGIN
+    "E",            ID_EDIT_FINDMATCHINGPARENTESIS, VIRTKEY, CONTROL, NOINVERT
+    "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL, NOINVERT
+    "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL, NOINVERT
+    "A",            ID_FILE_SAVE_AS,        VIRTKEY, CONTROL, NOINVERT
+    "X",            ID_GOTO_EXPRX,          VIRTKEY, ALT, NOINVERT
+    "Y",            ID_GOTO_EXPRY,          VIRTKEY, ALT, NOINVERT
+    "Z",            ID_GOTO_EXPRZ,          VIRTKEY, ALT, NOINVERT
+    "R",            ID_GOTO_FRAMECOUNT,     VIRTKEY, ALT, NOINVERT
+    "S",            ID_GOTO_SINTERVAL,      VIRTKEY, ALT, NOINVERT
+    "O",            ID_GOTO_SSTEPCOUNT,     VIRTKEY, ALT, NOINVERT
+    "V",            ID_GOTO_TIMEINTERVAL,   VIRTKEY, ALT, NOINVERT
+    "T",            ID_GOTO_TINTERVAL,      VIRTKEY, ALT, NOINVERT
+    "N",            ID_GOTO_TSTEPCOUNT,     VIRTKEY, ALT, NOINVERT
+    "C",            ID_GOTO_COMMON,         VIRTKEY, ALT, NOINVERT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_CIRCLEARROWBITMAP   BITMAP                  "res\\CircleArrow.bmp"
+
+IDB_LEFTRIGHTARROWBITMAP BITMAP                  "res\\LeftRightArrow.bmp"
+
+IDB_BLACKSQUAREBITMAP   BITMAP                  "res\\BlackSquare.bmp"
+
+IDB_ROTATECORNERBITMAP  BITMAP                  "res\\RotateCorner.bmp"
+
+IDB_TESTBITMAP          BITMAP                  "res\\bitmap1.bmp"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDR_PARAMETRICSURFACE AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDR_FUNC2DSURFACE AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDR_ISOSURFACE AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDR_MAINFRAME AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_ABOUTBOX            "&About D3FunctionPlotter..."
+END
+
+#endif    // Danish (Denmark) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif //_WIN32
+#include "res\D3FunctionPlotter.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"         // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

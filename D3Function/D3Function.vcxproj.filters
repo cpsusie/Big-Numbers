@@ -19,6 +19,15 @@
     <Filter Include="Header Files\Dialogs">
       <UniqueIdentifier>{a5c210f4-a4e1-4d61-b84e-389606565c30}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Dialogs\ProfileEditor">
+      <UniqueIdentifier>{5636e8d4-8ba6-463e-a632-64e70897aa77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Dialogs\ProfileEditor\Header Files">
+      <UniqueIdentifier>{e7a79560-1829-42a4-8287-e64df9ed714d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Dialogs\ProfileEditor\Source Files">
+      <UniqueIdentifier>{50e24d18-cd7c-4b34-a941-6ecfb4b85327}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainFrm.h">
@@ -78,6 +87,18 @@
     <ClInclude Include="D3FunctionSurface.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DrawTool.h">
+      <Filter>Source Files\Dialogs\ProfileEditor\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ProfileDlg.h">
+      <Filter>Source Files\Dialogs\ProfileEditor\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ProfilePainter.h">
+      <Filter>Source Files\Dialogs\ProfileEditor\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D3ProfileObjectWithColor.h">
+      <Filter>Source Files\Dialogs\ProfileEditor\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MainFrm.cpp">
@@ -128,6 +149,30 @@
     <ClCompile Include="ParametricR2R3SurfaceParametersDlg.cpp">
       <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
+    <ClCompile Include="TurnableRect.cpp">
+      <Filter>Source Files\Dialogs\ProfileEditor\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BitmapCache.cpp">
+      <Filter>Source Files\Dialogs\ProfileEditor\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BitmapRotate.cpp">
+      <Filter>Source Files\Dialogs\ProfileEditor\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DrawTool.cpp">
+      <Filter>Source Files\Dialogs\ProfileEditor\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ProfileDlg.cpp">
+      <Filter>Source Files\Dialogs\ProfileEditor\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ProfilePainter.cpp">
+      <Filter>Source Files\Dialogs\ProfileEditor\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SelectAndLoadProfile.cpp">
+      <Filter>Source Files\Dialogs\ProfileEditor\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D3ProfileObjectWithColor.cpp">
+      <Filter>Source Files\Dialogs\ProfileEditor\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="D3Function.rc">
@@ -144,6 +189,21 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\D3Function.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\CircleArrow.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\LeftRightArrow.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\BlackSquare.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\RotateCorner.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\bitmap1.bmp">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

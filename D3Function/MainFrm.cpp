@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <Date.h>
 #include <ProcessTools.h>
 #ifdef ISODEBUGGER
 #include <ThreadPool.h>
@@ -9,6 +10,7 @@
 #include "FunctionR2R1SurfaceParametersDlg.h"
 #include "ParametricR2R3SurfaceParametersDlg.h"
 #include "IsoSurfaceParametersDlg.h"
+#include "ProfileDlg.h"
 #include "D3FunctionSurface.h"
 #include "SplitView.h"
 #include "EnterOptionsNameDlg.h"
@@ -46,6 +48,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
   ON_COMMAND(ID_FILE_FUNCTIONSURFACE       , OnFileFunctionSurface       )
   ON_COMMAND(ID_FILE_PARAMETRICSURFACE     , OnFileParametricSurface     )
   ON_COMMAND(ID_FILE_ISOSURFACE            , OnFileIsoSurface            )
+  ON_COMMAND(ID_FILE_PROFILESURFACE        , OnFileProfileSurface        )
   ON_COMMAND(ID_OBJECT_EDITFUNCTION        , OnObjectEditFunction        )
   ON_COMMAND(ID_DEBUG_GO                   , OnDebugGo                   )
   ON_COMMAND(ID_DEBUG_STEPCUBE             , OnDebugStepCube             )
@@ -381,7 +384,7 @@ void CMainFrame::deleteCalculatedObject() {
   }
 }
 
-void CMainFrame::setCalculatedObject(D3SceneObjectVisual *obj, PersistentData *param) {
+void CMainFrame::setCalculatedObject(D3SceneObjectVisual *obj, FunctionImageParamPersistentData *param) {
   deleteCalculatedObject();
   if(obj) {
     obj->setUserData(param);
@@ -849,18 +852,27 @@ void CMainFrame::OnFileIsoSurface() {
   }
 }
 
+void CMainFrame::OnFileProfileSurface() {
+  try {
+    CProfileDlg dlg;
+    dlg.DoModal();
+  } catch(Exception e) {
+    showException(e);
+  }
+}
+
 void CMainFrame::OnObjectEditFunction() {
   D3SceneObjectVisual *calcObj = getCalculatedObject();
   if(!calcObj) return;
-  PersistentData *param = (PersistentData*)calcObj->getUserData();
-  switch (param->getType()) {
-  case PP_FUNCTIONR2R1SURFACE:
+  FunctionImageParamPersistentData *param = (FunctionImageParamPersistentData*)calcObj->getUserData();
+  switch(param->getType()) {
+  case TYPE_FUNCTIONR2R1SURFACE:
     OnFileFunctionSurface();
     break;
-  case PP_PARAMETRICR2R3SURFACE:
+  case TYPE_PARAMETRICR2R3SURFACE:
     OnFileParametricSurface();
     break;
-  case PP_ISOSURFACE:
+  case TYPE_ISOSURFACE:
     OnFileIsoSurface();
     break;
   default:

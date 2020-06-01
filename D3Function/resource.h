@@ -8,12 +8,18 @@
 #define IDS_ABOUTBOX                    101
 #define IDR_MAINFRAME                   128
 #define IDD_D3FUNCTIONVIEW              129
-#define IDR_FUNCTIONR2R1SURFACE         130
-#define IDR_PARAMETRICR2R3SURFACE       131
-#define IDR_ISOSURFACE                  132
-#define IDD_DIALOGENTEROPTIONSNAME      134
-#define IDD_DIALOGORGANIZEOPTIONS       135
-#define IDD_INFOVIEW                    208
+#define IDD_INFOVIEW                    130
+#define IDR_FUNCTIONR2R1SURFACE         140
+#define IDR_PARAMETRICR2R3SURFACE       141
+#define IDR_ISOSURFACE                  142
+#define IDD_DIALOGENTEROPTIONSNAME      150
+#define IDD_DIALOGORGANIZEOPTIONS       151
+#define IDR_PROFILE                     152
+#define IDB_TESTBITMAP                  200
+#define IDB_CIRCLEARROWBITMAP           201
+#define IDB_LEFTRIGHTARROWBITMAP        202
+#define IDB_BLACKSQUAREBITMAP           203
+#define IDB_ROTATECORNERBITMAP          204
 #define IDC_STATIC_FUNCTION             1070
 #define IDC_EDIT_EXPR                   1071
 #define IDC_STATIC_XINTERVAL            1072
@@ -73,20 +79,39 @@
 #define IDC_EDIT_TSTEPCOUNT             1214
 #define IDC_STATIC_SSTEPCOUNT           1215
 #define IDC_EDIT_SSTEPCOUNT             1216
-#define IDC_COMBOOPTIONSNAME            1230
-#define IDC_LISTOPTIONNAMES             1231
-#define IDC_BUTTONRENAME                1232
-#define IDC_BUTTONDELETE                1233
-#define IDC_BUTTONMOVEUP                1234
-#define IDC_EDIT_INFOBOX                1234
-#define IDC_BUTTONMOVEDOWN              1235
+#define IDC_STATIC_DEBUG3DFRAME         1220
+#define IDC_STATIC_INFO                 1221
+#define IDC_EDIT_EDGECOUNT              1222
+#define IDC_EDIT_DEGREES                1223
+#define IDC_SLIDER_DEGREE               1224
+#define IDC_STATIC_DEGREE               1225
+#define IDC_RADIO_ROTATE                1226
+#define IDC_RADIO_STRETCH               1227
+#define IDC_CHECK_ROTATESMOOTH          1228
+#define IDC_CHECK_NORMALSMOOTH          1229
+#define IDC_BUTTON_REFRESH              1230
+#define IDC_STATIC_PROFILEIMAGE2D       1233
+#define IDC_STATIC_PROFILEIMAGE3D       1234
+#define IDC_CHECKDOUBLESIDED            1235
+#define IDC_COMBOROTATEAXIS             1236
+#define IDC_COMBOROTATEAXISALIGNSTO     1237
+#define IDC_CHECK_USECOLOR              1238
+#define IDC_MFCCOLORBUTTON              1239
+#define IDC_COMBOOPTIONSNAME            1240
+#define IDC_LISTOPTIONNAMES             1241
+#define IDC_BUTTONRENAME                1250
+#define IDC_BUTTONDELETE                1251
+#define IDC_BUTTONMOVEUP                1252
+#define IDC_EDIT_INFOBOX                1253
+#define IDC_BUTTONMOVEDOWN              1254
 #define ID_INDICATOR_POSITION           32771
 #define ID_INDICATOR_DEBUG              32772
 #define ID_FILE_FUNCTIONSURFACE         32802
 #define ID_FILE_PARAMETRICSURFACE       32803
 #define ID_FILE_ISOSURFACE              32804
-#define ID_FILE_READ3DPOINTSFROMFILE    32805
-#define ID_FILE_READOBJFILE             32806
+#define ID_FILE_PROFILESURFACE          32805
+#define ID_FILE_READ3DPOINTSFROMFILE    32806
+#define ID_FILE_READOBJFILE             32807
 #define ID_FILE_EXIT                    32820
 #define ID_VIEW_SHOW3DINFO              32900
 #define ID_EDIT_FINDMATCHINGPARENTESIS  32900
@@ -131,14 +156,29 @@
 #define ID_GOTO_SSTEPCOUNT              33513
 #define ID_GOTO_FRAMECOUNT              33514
 #define ID_GOTO_COMMON                  33515
+#define ID_FILE_SELECTFROMFONT          33530
+#define ID_EDIT_DELETE                  33531
+#define ID_EDIT_CONNECT                 33532
+#define ID_EDIT_INVERTNORMALS           33533
+#define ID_EDIT_MIRROR_HORIZONTAL       33534
+#define ID_EDIT_MIRROR_VERTICAL         33535
+#define ID_VIEW_SHOWPOINTS              33536
+#define ID_VIEW_SHOWNORMALS             33537
+#define ID_VIEW_AUTO_UPDATE_3D          33538
+#define ID_TOOLS_LINE                   33539
+#define ID_TOOLS_BEZIERCURVE            33540
+#define ID_TOOLS_RECTANGLE              33541
+#define ID_TOOLS_POLYGON                33542
+#define ID_TOOLS_ELLIPSE                33543
+#define ID_TOOLS_SELECT                 33544
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        211
+#define _APS_NEXT_RESOURCE_VALUE        213
 #define _APS_NEXT_COMMAND_VALUE         33341
-#define _APS_NEXT_CONTROL_VALUE         1235
+#define _APS_NEXT_CONTROL_VALUE         1239
 #define _APS_NEXT_SYMED_VALUE           103
 #endif
 #endif

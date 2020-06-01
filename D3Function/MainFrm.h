@@ -133,7 +133,7 @@ private:
   void createInitialObject();
   void createSaddle();
   void deleteCalculatedObject();
-  void setCalculatedObject(D3SceneObjectVisual *obj, PersistentData *param = NULL);
+  void setCalculatedObject(D3SceneObjectVisual *obj, FunctionImageParamPersistentData *param = NULL);
 
   template<typename T> void setCalculatedObject(T &param) {
     stopDebugging();
@@ -222,6 +222,7 @@ public:
     afx_msg void OnFileFunctionSurface();
     afx_msg void OnFileParametricSurface();
     afx_msg void OnFileIsoSurface();
+    afx_msg void OnFileProfileSurface();
     afx_msg void OnObjectEditFunction();
     afx_msg void OnFilePrintPreview();
     afx_msg void OnFileMruFile1();
