@@ -174,7 +174,8 @@ public:
     return m_textureVertexArray;
   }
 
-  void optimize();
+  // return this;
+  MeshBuilder &optimize();
   D3Cube getBoundingBox() const;
   LPD3DXMESH createMesh(AbstractMeshFactory &amf, bool doubleSided) const;
   void parseWavefrontObjFile(FILE *f);

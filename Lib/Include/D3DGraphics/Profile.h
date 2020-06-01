@@ -3,24 +3,26 @@
 #include <FlagTraits.h>
 #include <MFCUtil/ShapeFunctions.h>
 #include "D3Math.h"
-#include "MeshBuilder.h"
+#include "D3AbstractMeshFactory.h"
 
 #define PRROT_ROTATESMOOTH      0x01
 #define PRROT_NORMALSMOOTH      0x02
-#define PRROT_INVERTORIENTATION 0x04
-#define PRROT_INVERTNORMALS     0x08
-#define PRROT_USECOLOR          0x10
+#define PRROT_INVERTNORMALS     0x04
+#define PRROT_USECOLOR          0x08
 
 class ProfileRotationParameters {
 public:
-  ProfileRotationParameters(int rotateAxis=0, int alignx=0, int aligny=1, double rad=2*D3DX_PI, int edgeCount=20, BYTE flags=0, D3DCOLOR color=0);
-  int      m_rotateAxis;
-  int      m_alignx;
-  int      m_aligny;
-  double   m_rad;
-  int      m_edgeCount;
+  ProfileRotationParameters(char rotateAxis='x', char rotateAxisAlignsTo='x', float rad=D3DX_PI*2.0f, unsigned int edgeCount=20, BYTE flags=0, D3DCOLOR color=0);
+  void checkIsValid() const; // throws Exception if not valid
+  char         m_rotateAxis;         // ['x','y','z'] - rotationaxis in 3D space
+  char         m_rotateAxisAlignsTo; // ['x','y']     - axis in 2D space aligned with rotateAxis
+  float        m_rad;
+  unsigned int m_edgeCount;
   FLAGTRAITS(ProfileRotationParameters, BYTE, m_flags);
-  D3DCOLOR m_color;
+  D3DCOLOR     m_color;
+  inline BYTE getRotateAxisIndex() const {
+    return m_rotateAxis - 'x';
+  }
 };
 
 class ProfileStretchParameters {
@@ -126,8 +128,14 @@ public:
   inline bool isEmpty() const {
     return m_points.isEmpty();
   }
+  // return true if empty after removing last point
+  inline bool removeLastPoint() {
+    if(isEmpty()) return true;
+    m_points.removeLast();
+    return m_points.isEmpty();
+  }
   Rectangle2D getBoundingBox() const;
-  Point2DArray getAllPoints() const;
+  const Point2DArray &getAllPoints() const;
   CompactArray<Point2D*> getAllPointsRef();
   void move(const Point2D &dp);
   String toString() const;
@@ -171,6 +179,9 @@ public:
     return getLastCurve().getLastPoint();
   }
 
+  inline void removeLastPoint() {
+    getLastCurve().removeLastPoint();
+  }
   bool isEmpty() const;
   void move(const Point2D &dp);
   void reverseOrder();

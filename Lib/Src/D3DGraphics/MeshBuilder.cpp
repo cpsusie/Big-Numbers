@@ -437,7 +437,7 @@ inline bool operator==(const TmpVNTI &tv1, const TmpVNTI &tv2) {
   return tmpVertexCmp(tv1, tv2) == 0;
 }
 
-void MeshBuilder::optimize() {
+MeshBuilder &MeshBuilder::optimize() {
   const int             faceCount = (int)m_faceArray.size();
   CompactArray<TmpVNTI> tmpArray;
   for(int f = 0; f < faceCount; f++) {
@@ -473,6 +473,7 @@ void MeshBuilder::optimize() {
     }
     pruneUnused();
   }
+  return *this;
 }
 
 void MeshBuilder::pruneUnused() {

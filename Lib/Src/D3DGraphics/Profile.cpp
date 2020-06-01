@@ -14,7 +14,7 @@ private:
   Vertex2DArray m_result;
 public:
   void line(const Point2D &from, const Point2D &to);
-  Vertex2DArray getResult() const {
+  const Vertex2DArray &getResult() const {
     return m_result;
   }
 };
@@ -28,11 +28,8 @@ void FlatVertexGenerator::line(const Point2D &from, const Point2D &to) {
 // ------------------------------------ ProfileCurve ------------------------------
 
 ProfileCurve::ProfileCurve(const PolygonCurve &src) {
-  m_type = src.getType();
-  const Point2DArray &pa = src.getAllPoints();
-  for(size_t i = 0; i < pa.size(); i++) {
-    addPoint(pa[i]);
-  }
+  m_type   = src.getType();
+  m_points = src.getAllPoints();
 }
 
 ProfileCurve::operator PolygonCurve() const {
@@ -48,16 +45,12 @@ void ProfileCurve::move(const Point2D &dp) {
   }
 }
 
-Point2DArray ProfileCurve::getAllPoints() const {
-  Point2DArray result;
-  for(size_t i = 0; i < m_points.size(); i++) {
-    result.add(m_points[i]);
-  }
-  return result;
+const Point2DArray &ProfileCurve::getAllPoints() const {
+  return m_points;
 }
 
 CompactArray<Point2D*> ProfileCurve::getAllPointsRef() {
-  CompactArray<Point2D*> result;
+  CompactArray<Point2D*> result(m_points.size());
   for(size_t i = 0; i < m_points.size(); i++) {
     result.add(&m_points[i]);
   }
@@ -65,23 +58,11 @@ CompactArray<Point2D*> ProfileCurve::getAllPointsRef() {
 }
 
 Rectangle2D ProfileCurve::getBoundingBox() const {
-  return getAllPoints().getBoundingBox();
+  return m_points.getBoundingBox();
 }
 
 String ProfileCurve::toString() const {
-  String result;
-  switch(m_type) {
-  case TT_PRIM_LINE   : result = _T("line   :"); break;
-  case TT_PRIM_QSPLINE: result = _T("qspline:"); break;
-  case TT_PRIM_CSPLINE: result = _T("cspline:"); break;
-  default             : result = format(_T("unknown type:%d:"), m_type); break;
-  }
-
-  TCHAR *delim = EMPTYSTRING;
-  for(size_t i = 0; i < m_points.size(); i++, delim = _T("        ")) {
-    result += format(_T("%s%s\n"), delim, m_points[i].toString().cstr());
-  }
-  return result;
+  return ((PolygonCurve*)(this))->toString();
 }
 
 bool operator==(const ProfileCurve   &p1, const ProfileCurve   &p2) {
@@ -444,13 +425,12 @@ Vertex2DArray Profile::getSmoothVertexArray() const {
 }
 
 bool operator==(const ProfileRotationParameters &p1, const ProfileRotationParameters &p2) {
-  return p1.m_rotateAxis == p2.m_rotateAxis
-      && p1.m_alignx     == p2.m_alignx
-      && p1.m_aligny     == p2.m_aligny
-      && p1.m_edgeCount  == p2.m_edgeCount
-      && p1.m_rad        == p2.m_rad
-      && p1.m_rotateAxis == p2.m_rotateAxis
-      && p1.m_flags      == p2.m_flags;
+  return p1.m_rotateAxis         == p2.m_rotateAxis
+      && p1.m_rotateAxisAlignsTo == p2.m_rotateAxisAlignsTo
+      && p1.m_edgeCount          == p2.m_edgeCount
+      && p1.m_rad                == p2.m_rad
+      && p1.m_flags              == p2.m_flags
+      && p1.m_color              == p2.m_color;
 }
 
 bool operator!=(const ProfileRotationParameters &p1, const ProfileRotationParameters &p2) {

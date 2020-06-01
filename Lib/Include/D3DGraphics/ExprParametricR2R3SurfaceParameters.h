@@ -1,12 +1,12 @@
 #pragma once
 
-#include <PersistentData.h>
+#include "D3FunctionParamPersistentData.h"
 #include "ParametricR2R3SurfaceParameters.h"
 #include <Math/Expression/ExpressionFunctionR2R3.h>
 
 using namespace Expr;
 
-class ExprParametricR2R3SurfaceParameters : public ParametricR2R3SurfaceParameters, public PersistentData {
+class ExprParametricR2R3SurfaceParameters : public ParametricR2R3SurfaceParameters, public FunctionImageParamPersistentData {
 private:
   void getDataFromDocOld(XMLDoc &doc);
 public:
@@ -17,8 +17,9 @@ public:
   }
   void putDataToDoc(  XMLDoc &doc);
   void getDataFromDoc(XMLDoc &doc);
-  int getType() const {
-    return PP_PARAMETRICR2R3SURFACE;
+
+  FunctionDomainRangeType getType() const {
+    return TYPE_PARAMETRICR2R3SURFACE;
   }
 };
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <FlagTraits.h>
+#include <CompactStack.h>
 #include <MFCUtil/WinTools.h>
 #include <MFCUtil/PropertyDialogMap.h>
 #include "D3SceneObject.h"
@@ -44,20 +45,21 @@ class D3SceneObjectAnimatedMesh;
 
 class D3SceneEditor : public PropertyChangeListener {
 private:
-    D3SceneContainer              *m_sceneContainer;
-    D3EditorControl                m_currentControl;
-    D3Camera                      *m_selectedCamera;
-    int                            m_selectedCameraIndex;
-    D3SceneObjectVisual           *m_currentObj;
-    D3SceneObjectCoordinateSystem *m_coordinateSystem;
-    PropertyDialogMap              m_propertyDialogMap;
-    PropertyDialog                *m_currentPropertyDialog;
-    FLAGTRAITS(D3SceneEditor, UINT, m_stateFlags)
-    CPoint                         m_lastMouse;
-    D3SceneObjectPoint             m_centerOfRotation;
-    D3Ray                          m_pickedRay;   // in world space
-    D3SceneEditorPickedInfo        m_pickedInfo;
-    String                         m_paramFileName;
+    D3SceneContainer               *m_sceneContainer;
+    D3EditorControl                 m_currentControl;
+    D3Camera                       *m_selectedCamera;
+    int                             m_selectedCameraIndex;
+    D3SceneObjectVisual            *m_currentObj;
+    D3SceneObjectCoordinateSystem  *m_coordinateSystem;
+    PropertyDialogMap               m_propertyDialogMap;
+    PropertyDialog                 *m_currentPropertyDialog;
+    FLAGTRAITS(D3SceneEditor, UINT, m_stateFlags);
+    CompactStack<UINT>              m_stateFlagsStack;
+    CPoint                          m_lastMouse;
+    D3SceneObjectPoint              m_centerOfRotation;
+    D3Ray                           m_pickedRay;   // in world space
+    D3SceneEditorPickedInfo         m_pickedInfo;
+    String                          m_paramFileName;
 
     HWND              getCurrentHwnd() const;
     int               findCameraIndex(CPoint p) const;
@@ -223,6 +225,13 @@ public:
     D3SceneEditor &setEnabled(bool enabled, BYTE flags = SE_ALL);
     inline bool isEnabled() const {
       return isSet(SE_ENABLED);
+    }
+    inline D3SceneEditor &pushStateFlags(bool enabled = false, BYTE flags = SE_ALL) {
+      m_stateFlagsStack.push(m_stateFlags);
+      return setEnabled(enabled, flags);
+    }
+    inline D3SceneEditor &popStateFlags() {
+      return setEnabled(true, m_stateFlagsStack.pop());
     }
     inline bool hasSceneContainer() const {
       return m_sceneContainer != NULL;

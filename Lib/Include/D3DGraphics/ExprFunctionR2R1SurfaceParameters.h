@@ -1,9 +1,9 @@
 #pragma once
 
-#include <PersistentData.h>
+#include "D3FunctionParamPersistentData.h"
 #include "FunctionR2R1SurfaceParameters.h"
 
-class ExprFunctionR2R1SurfaceParameters : public FunctionR2R1SurfaceParameters, public PersistentData {
+class ExprFunctionR2R1SurfaceParameters : public FunctionR2R1SurfaceParameters, public FunctionImageParamPersistentData {
 private:
   void getDataFromDocOld(XMLDoc &doc);
 public:
@@ -14,8 +14,8 @@ public:
   }
   void putDataToDoc(  XMLDoc &doc);
   void getDataFromDoc(XMLDoc &doc);
-  int getType() const {
-    return PP_FUNCTIONR2R1SURFACE;
+  FunctionDomainRangeType getType() const {
+    return TYPE_FUNCTIONR2R1SURFACE;
   }
 };
 

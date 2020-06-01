@@ -278,12 +278,4 @@ public:
   }
 };
 
-typedef enum {
-  PP_FUNCTIONR2R1SURFACE
- ,PP_PARAMETRICR2R3SURFACE
- ,PP_ISOSURFACE
- ,PP_ISOCURVE
-} PersistentDataType;
-
-
 #include "PragmaLib.h"

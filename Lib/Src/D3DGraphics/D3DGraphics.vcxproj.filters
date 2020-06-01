@@ -50,9 +50,6 @@
     <ClCompile Include="FVF.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="IsoCurve.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="D3SceneObjectIterator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -258,9 +255,6 @@
     <ClCompile Include="ExprParametricR2R3SurfaceParameters.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MeshAnimationData.cpp">
-      <Filter>Source Files\Mesh</Filter>
-    </ClCompile>
     <ClCompile Include="CreateMeshExprFunctionR2R1Surface.cpp">
       <Filter>Source Files\Mesh</Filter>
     </ClCompile>
@@ -285,6 +279,9 @@
     <ClCompile Include="D3SceneLightArray.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ProfileXML.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\D3DGraphics\D3Scene.h">
@@ -306,9 +303,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\D3DGraphics\D3ToString.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\D3DGraphics\IsoCurve.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="pch.h" />
@@ -463,8 +457,8 @@
     <ClInclude Include="..\..\Include\D3DGraphics\ParametricR2R3SurfaceParameters.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\D3DGraphics\MeshAnimationData.h">
-      <Filter>Header Files\Mesh</Filter>
+    <ClInclude Include="..\..\Include\D3DGraphics\D3FunctionParamPersistentData.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

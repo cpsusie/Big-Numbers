@@ -938,12 +938,10 @@
     <ClCompile Include="CreateMeshIsoSurface.cpp" />
     <ClCompile Include="IsoSurfaceSnapMCLookupTable.cpp" />
     <ClCompile Include="FVF.cpp" />
-    <ClCompile Include="IsoCurve.cpp" />
     <ClCompile Include="IsoSurfacePolygonizerSnapMC.cpp" />
     <ClCompile Include="LightDlg.cpp" />
     <ClCompile Include="D3Material.cpp" />
     <ClCompile Include="MaterialDlg.cpp" />
-    <ClCompile Include="MeshAnimationData.cpp" />
     <ClCompile Include="MeshBuilderToString.cpp" />
     <ClCompile Include="MeshToBoundingBox.cpp" />
     <ClCompile Include="MeshToString.cpp" />
@@ -986,6 +984,7 @@
     <ClCompile Include="D3XML.cpp" />
     <ClCompile Include="Profile.cpp" />
     <ClCompile Include="IsoSurfaceParameters.cpp" />
+    <ClCompile Include="ProfileXML.cpp" />
     <ClCompile Include="RotateProfile.cpp" />
     <ClCompile Include="SphereMesh.cpp" />
     <ClCompile Include="VertexBufferToBoundingBox.cpp" />
@@ -998,6 +997,7 @@
     <ClInclude Include="..\..\Include\D3DGraphics\D3CameraArray.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3DeviceRenderState.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3Cube.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\D3FunctionParamPersistentData.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3Light.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3PickedInfo.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3Ray.h" />
@@ -1035,7 +1035,6 @@
     <ClInclude Include="..\..\Include\D3DGraphics\ExprIsoSurfaceParameters.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\ExprParametricR2R3SurfaceParameters.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\FunctionR2R1SurfaceParameters.h" />
-    <ClInclude Include="..\..\Include\D3DGraphics\IsoCurve.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\IsoSurfaceParameters.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\IsosurfacePolygonizer.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\IsosurfacePolygonizerStandard.h" />
@@ -1043,7 +1042,6 @@
     <ClInclude Include="..\..\Include\D3DGraphics\LightDlg.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3Material.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\MaterialDlg.h" />
-    <ClInclude Include="..\..\Include\D3DGraphics\MeshAnimationData.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\MeshArray.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\MeshArrayJobMonitor.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\MeshBuilder.h" />

@@ -1,9 +1,9 @@
 #pragma once
 
-#include <PersistentData.h>
+#include "D3FunctionParamPersistentData.h"
 #include "IsoSurfaceParameters.h"
 
-class ExprIsoSurfaceParameters : public IsoSurfaceParameters, public PersistentData {
+class ExprIsoSurfaceParameters : public IsoSurfaceParameters, public FunctionImageParamPersistentData {
 private:
   void getDataFromDocOld(XMLDoc &doc);
 public:
@@ -16,7 +16,7 @@ public:
   void putDataToDoc(XMLDoc &doc);
   void getDataFromDoc(XMLDoc &doc);
 
-  int getType() const {
-    return PP_ISOSURFACE;
+  FunctionDomainRangeType getType() const {
+    return TYPE_ISOSURFACE;
   }
 };

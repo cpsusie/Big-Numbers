@@ -28,10 +28,12 @@ public:
   }
 };
 
-#define SC_RENDER3D           0x0001
-#define SC_RENDERINFO         0x0002
-#define SC_RENDERNOW          0x0004
-#define SC_RENDERALL          (SC_RENDER3D | SC_RENDERINFO)
+#define SC_RENDER3D           0x01
+#define SC_RENDERINFO         0x02
+#define SC_RENDERNOW          0x04
+#define SC_RENDERALL          (0xff&(~SC_RENDERNOW))
+#define SC_RENDERUSER(attr)   ((attr)<<3)
+#define SC_RENDERUSERMASK     0xf10
 
 class D3SceneContainer {
 private:

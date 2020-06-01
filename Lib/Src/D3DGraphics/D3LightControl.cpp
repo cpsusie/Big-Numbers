@@ -46,46 +46,33 @@ static LPD3DXMESH &optimizeMesh(LPD3DXMESH &mesh) {
 }
 
 static const Point2D directionalMeshProfilePoints[] = {
-  Point2D(0   , 0)
+  Point2D( 0   , 0   )
  ,Point2D(-0.47, 0.25)
- ,Point2D(-0.47, 0.1)
- ,Point2D(-1   , 0.1)
- ,Point2D(-1   ,   0)
+ ,Point2D(-0.47, 0.1 )
+ ,Point2D(-1   , 0.1 )
+ ,Point2D(-1   ,   0 )
 };
 
 static LPD3DXMESH createDirectionalMesh(AbstractMeshFactory &factory) {
   Profile prof;
   prof.addLineStrip(directionalMeshProfilePoints, ARRAYSIZE(directionalMeshProfilePoints));
-  ProfileRotationParameters param;
-  param.m_alignx     = 0;
-  param.m_aligny     = 1;
-  param.m_rad        = radians(360);
-  param.m_edgeCount  = 20;
-  param.m_smoothness = ROTATESMOOTH;
-  param.m_rotateAxis = 0;
+  ProfileRotationParameters param('x','x',radians(360),20,PRROT_ROTATESMOOTH|PRROT_INVERTNORMALS);
   return rotateProfile(factory, prof, param, false);
 }
 
 static const Point2D spotMeshProfilePoints[] = {
-  Point2D(0   , 0)
- ,Point2D(0   , 0.17)
+  Point2D( 0   , 0   )
+ ,Point2D( 0   , 0.17)
  ,Point2D(-0.25, 0.13)
- ,Point2D(-0.3 , 0.1)
- ,Point2D(-1.0 , 0.1)
- ,Point2D(-1.0 , 0)
+ ,Point2D(-0.3 , 0.1 )
+ ,Point2D(-1.0 , 0.1 )
+ ,Point2D(-1.0 , 0   )
 };
 
 static LPD3DXMESH createSpotMesh(AbstractMeshFactory &factory) {
   Profile prof;
   prof.addLineStrip(spotMeshProfilePoints, ARRAYSIZE(spotMeshProfilePoints));
-
-  ProfileRotationParameters param;
-  param.m_alignx     = 0;
-  param.m_aligny     = 1;
-  param.m_rad        = radians(360);
-  param.m_edgeCount  = 20;
-  param.m_smoothness = ROTATESMOOTH | NORMALSMOOTH;
-  param.m_rotateAxis = 0;
+  ProfileRotationParameters param('x','x',radians(360),20,PRROT_ROTATESMOOTH|PRROT_NORMALSMOOTH|PRROT_INVERTNORMALS);
   return rotateProfile(factory, prof, param, false);
 }
 
