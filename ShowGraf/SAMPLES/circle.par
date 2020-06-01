@@ -1,1 +1,18 @@
-<ParametricCurve><common>r = 4;</common><exprx>r*cos(t)</exprx><expry>r*sin(t)</expry><interval><from>0</from><to>6.29</to></interval><steps>500</steps><trigo>radians</trigo><style>curve</style><color>00d67f29</color><rollingavg><enable>0</enable><queuesize>10</queuesize></rollingavg></ParametricCurve>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<ParametricCurve>
+	<common>r = 4;</common>
+	<exprx>r*cos(t)</exprx>
+	<expry>r*sin(t)</expry>
+	<interval>
+		<from>0</from>
+		<to>6.29</to>
+	</interval>
+	<steps>500</steps>
+	<trigo>radians</trigo>
+	<style>curve</style>
+	<color>0xd67f29</color>
+	<rollingavg>
+		<enable>false</enable>
+		<queuesize>10</queuesize>
+	</rollingavg>
+</ParametricCurve>

@@ -1,5 +1,36 @@
-<IsoSurface><expr>x1 = cos(t) * y + sin(t) * z;
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<IsoSurface>
+	<expr>x1 = cos(t) * y + sin(t) * z;
 y1 = cos(t) * x - sin(t) * z;
 z1 = cos(t) * x + sin(t) * y;
 
-1-(x1*x1*y1*y1)^2-(y1*y1*z1*z1)^2-(x1*x1*z1*z1)^2</expr><cellsize>1.500000000000000e-01</cellsize><lambda>2.5000000e-01</lambda><boundingbox><lbn><x>-10</x><y>-10</y><z>-10</z></lbn><rtf><x>10</x><y>10</y><z>10</z></rtf></boundingbox><tetrahedral>0</tetrahedral><tetraoptimize4>0</tetraoptimize4><adaptivecellsize>0</adaptivecellsize><originoutside>0</originoutside><machinecode>1</machinecode><doublesided>1</doublesided><animation><includetime>1</includetime><timeinterval><from>1</from><to>6.283185000000000e+00</to></timeinterval><framecount>50</framecount></animation></IsoSurface>
+1-(x1*x1*y1*y1)^2-(y1*y1*z1*z1)^2-(x1*x1*z1*z1)^2</expr>
+	<cellsize>0.15</cellsize>
+	<lambda>0.25</lambda>
+	<boundingbox>
+		<lbn>
+			<x>-10</x>
+			<y>-10</y>
+			<z>-10</z>
+		</lbn>
+		<rtf>
+			<x>10</x>
+			<y>10</y>
+			<z>10</z>
+		</rtf>
+	</boundingbox>
+	<tetrahedral>false</tetrahedral>
+	<tetraoptimize4>false</tetraoptimize4>
+	<adaptivecellsize>false</adaptivecellsize>
+	<originoutside>false</originoutside>
+	<machinecode>true</machinecode>
+	<doublesided>true</doublesided>
+	<animation>
+		<includetime>true</includetime>
+		<timeinterval>
+			<from>1</from>
+			<to>6.28318</to>
+		</timeinterval>
+		<framecount>50</framecount>
+	</animation>
+</IsoSurface>

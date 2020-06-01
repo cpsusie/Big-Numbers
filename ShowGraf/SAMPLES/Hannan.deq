@@ -1,1 +1,41 @@
-<DiffEquation><interval><from>0.000000000000000e+00</from><to>5.000000000000000e+02</to></interval><eps>1.000000000000000e-01</eps><style>curve</style><trigo>radians</trigo><dim>3</dim><common>N=66000; a=0.1; g=0.02;</common><equations><eq0><name>S</name><expr>-a/N*S*I</expr><attr><start>6.598400000000000e+04</start><color>00808000</color><visible>1</visible></attr></eq0><eq1><name>I</name><expr>a/N*S*I - g*I</expr><attr><start>1.600000000000000e+01</start><color>000000ff</color><visible>1</visible></attr></eq1><eq2><name>R</name><expr>g*I</expr><attr><start>0.000000000000000e+00</start><color>00000000</color><visible>1</visible></attr></eq2></equations></DiffEquation>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<DiffEquation>
+	<interval>
+		<from>0</from>
+		<to>500</to>
+	</interval>
+	<eps>0.1</eps>
+	<style>curve</style>
+	<trigo>radians</trigo>
+	<dim>3</dim>
+	<common>N=66000; a=0.1; g=0.02;</common>
+	<equations>
+		<eq0>
+			<name>S</name>
+			<expr>-a/N*S*I</expr>
+			<attr>
+				<start>65984</start>
+				<color>0x808000</color>
+				<visible>true</visible>
+			</attr>
+		</eq0>
+		<eq1>
+			<name>I</name>
+			<expr>a/N*S*I - g*I</expr>
+			<attr>
+				<start>16</start>
+				<color>0xff</color>
+				<visible>true</visible>
+			</attr>
+		</eq1>
+		<eq2>
+			<name>R</name>
+			<expr>g*I</expr>
+			<attr>
+				<start>0</start>
+				<color>0</color>
+				<visible>true</visible>
+			</attr>
+		</eq2>
+	</equations>
+</DiffEquation>
