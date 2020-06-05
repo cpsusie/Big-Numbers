@@ -653,8 +653,12 @@
   <ItemGroup>
     <ClCompile Include="AnimationParameters.cpp" />
     <ClCompile Include="AnimationParamXML.cpp" />
+    <ClCompile Include="D3DColorValueStr.cpp" />
     <ClCompile Include="D3DColorValueXML.cpp" />
+    <ClCompile Include="D3PColor.cpp" />
     <ClCompile Include="IsoCurveParameters.cpp" />
+    <ClCompile Include="LSHColor.cpp" />
+    <ClCompile Include="LumaChromeColor.cpp" />
     <ClCompile Include="MFCXML.cpp" />
     <ClCompile Include="AlphaBlend.cpp" />
     <ClCompile Include="AnimatedImage.cpp" />
@@ -751,6 +755,7 @@
     <ClCompile Include="PropertyDialog.cpp" />
     <ClCompile Include="PropertyDialogThread.cpp" />
     <ClCompile Include="PropertyDialogMap.cpp" />
+    <ClCompile Include="RGBColor.cpp" />
     <ClCompile Include="SelectDirDlg.cpp" />
     <ClCompile Include="SelectMultipleFileNames.cpp" />
     <ClCompile Include="SetControlText.cpp" />

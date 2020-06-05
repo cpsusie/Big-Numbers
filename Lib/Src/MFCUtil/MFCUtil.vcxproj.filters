@@ -25,6 +25,9 @@
     <Filter Include="Source Files\EditListCtrl">
       <UniqueIdentifier>{5ebfe9d4-c309-475d-8ac8-0584259ee417}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\ColorSpace">
+      <UniqueIdentifier>{afdfcdaf-2a88-472a-9abd-a45e3acd64c4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Viewport2D.cpp">
@@ -136,9 +139,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="WinTools.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ColorSpace.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Picture.cpp">
@@ -280,9 +280,6 @@
     <ClCompile Include="ExprDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CIEColorSpace.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="PixRectDevice.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -352,16 +349,10 @@
     <ClCompile Include="DirectXErrorMsg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D3PColorXml.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="PixRectFontXML.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MFCXML.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="D3DColorValueXML.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="AnimationParameters.cpp">
@@ -372,6 +363,33 @@
     </ClCompile>
     <ClCompile Include="IsoCurveParameters.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CIEColorSpace.cpp">
+      <Filter>Source Files\ColorSpace</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorSpace.cpp">
+      <Filter>Source Files\ColorSpace</Filter>
+    </ClCompile>
+    <ClCompile Include="D3DColorValueStr.cpp">
+      <Filter>Source Files\ColorSpace</Filter>
+    </ClCompile>
+    <ClCompile Include="D3DColorValueXML.cpp">
+      <Filter>Source Files\ColorSpace</Filter>
+    </ClCompile>
+    <ClCompile Include="D3PColor.cpp">
+      <Filter>Source Files\ColorSpace</Filter>
+    </ClCompile>
+    <ClCompile Include="D3PColorXml.cpp">
+      <Filter>Source Files\ColorSpace</Filter>
+    </ClCompile>
+    <ClCompile Include="LSHColor.cpp">
+      <Filter>Source Files\ColorSpace</Filter>
+    </ClCompile>
+    <ClCompile Include="LumaChromeColor.cpp">
+      <Filter>Source Files\ColorSpace</Filter>
+    </ClCompile>
+    <ClCompile Include="RGBColor.cpp">
+      <Filter>Source Files\ColorSpace</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

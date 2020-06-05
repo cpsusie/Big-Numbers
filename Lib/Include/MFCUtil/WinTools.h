@@ -145,16 +145,17 @@ CView *_createView(CFrameWnd *frameWnd, CWnd *parent, CRuntimeClass *viewClass, 
 #define createView(frameWnd, parent, ViewType, rect) (ViewType*)_createView(frameWnd, parent, RUNTIME_CLASS(ViewType), rect)
 
 // assume id is CEdit
-template<typename T> bool getEditValue(CWnd *wnd, int id, T &v) {
+template<typename T> bool getEditValue(CWnd *wnd, int id, T &v, bool verbose = true) {
   const String str = getWindowText(wnd, id);
   std::wstringstream stream(str.cstr());
   stream >> v;
-  if(!stream) {
+  if(stream) {
+    return true;
+  } else if(verbose) {
     gotoEditBox(wnd, id);
     showWarning(_T("Invalid input"));
-    return false;
   }
-  return true;
+  return false;
 }
 template<typename T> void setEditValue(CWnd *wnd, int id, const T &v) {
   std::wstringstream stream;

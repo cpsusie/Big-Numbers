@@ -9,8 +9,12 @@ public:
   inline D3PCOLOR() {}
   inline D3PCOLOR(D3DCOLOR c) : m_color(c) {}
   inline operator D3DCOLOR() const { return m_color; }
-  String toString(bool showAlpha=false) const;
+  String toString(bool showAlpha = false) const;
 };
+
+inline String toString(D3PCOLOR c, bool showAlpha=false) {
+  return c.toString(showAlpha);
+}
 
 // COLORREF has layout 0x00bbggrr  (lower to the right)
 // D3DCOLOR has layout 0xaarrggbb  (    ---- ""------ )
@@ -64,6 +68,13 @@ public:
                    ,c1.m_green*fc1 + c2.m_green*fc2
                    ,c1.m_blue *fc1 + c2.m_blue *fc2);
   }
+  static RGBColor deSaturateColor(const RGBColor &c, float saturation); // invers of saturateColor
+  static RGBColor deLuminateColor(const RGBColor &c, float lumination); // invers of luminateColor
+  float findHue() const;
+  RGBColor &luminateColor(float lumination); // return *this
+  RGBColor &getBaseColor( float hue       ); // return *this
+  RGBColor &saturateColor(float saturation); // return *this
+
 };
 
 class sRGBColor {
@@ -108,6 +119,8 @@ D3DCOLORVALUE   colorToColorValue(D3DCOLOR c);
 inline D3DCOLOR colorValueToD3DColor(const D3DCOLORVALUE &cv) {
   return D3DCOLOR_COLORVALUE(cv.r, cv.g, cv.b, cv.a);
 }
+
+String toString(const D3DCOLORVALUE &c,bool showAlpha=false);
 
 class ColorComparator {
 public:
