@@ -9,6 +9,21 @@
 #include "ProfileDlg.h"
 //#include "SelectGlyphDialog.h"
 
+class ValidationException : public Exception {
+public:
+  int m_field;
+  ValidationException(int field, const String &msg) : Exception(msg), m_field(field) {
+  }
+};
+
+void throwValidateException(int field, const TCHAR *format, ...) {
+  va_list argptr;
+  va_start(argptr, format);
+  const String msg = vformat(format, argptr);
+  va_end(argptr);
+  throw ValidationException(field, msg);
+}
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -19,9 +34,8 @@ CProfileDlg::CProfileDlg(CWnd *pParent) : CDialog(IDD, pParent) {
   m_visual           = NULL;
   m_viewport         = NULL;
   m_currentDrawTool  = NULL;
+  m_exceptionRaised  = false;
   m_lastSavedProfile = m_profile;
-  ProfileRotationParameters param;
-  rotateParamToWin(param);
 }
 
 CProfileDlg::~CProfileDlg() {
@@ -37,17 +51,15 @@ CProfileDlg::~CProfileDlg() {
 
 void CProfileDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
-  DDX_Text(pDX, IDC_EDIT_DEGREES, m_degree);
+  DDX_Text(pDX, IDC_EDIT_DEGREES, m_degrees);
   DDX_Check(pDX, IDC_CHECK_NORMALSMOOTH, m_normalSmooth);
   DDX_Check(pDX, IDC_CHECK_ROTATESMOOTH, m_rotateSmooth);
   DDX_Text(pDX, IDC_EDIT_EDGECOUNT, m_edgeCount);
-  DDV_MinMaxInt(pDX, m_edgeCount, 1, 100);
   DDX_Radio(pDX, IDC_RADIO_ROTATE, m_3dmode);
   DDX_Check(pDX, IDC_CHECKDOUBLESIDED, m_doubleSided);
   DDX_CBString(pDX, IDC_COMBOROTATEAXIS, m_rotateAxis);
   DDX_CBString(pDX, IDC_COMBOROTATEAXISALIGNSTO, m_rotateAxisAlignsTo);
   DDX_Check(pDX, IDC_CHECK_USECOLOR, m_useColor);
-  DDX_Text(pDX, IDC_MFCCOLORBUTTON, m_color);
 }
 
 BEGIN_MESSAGE_MAP(CProfileDlg, CDialog)
@@ -59,42 +71,46 @@ BEGIN_MESSAGE_MAP(CProfileDlg, CDialog)
   ON_WM_LBUTTONDBLCLK()
   ON_WM_MOUSEWHEEL()
   ON_WM_HSCROLL()
-  ON_COMMAND(     ID_FILE_NEW                , OnFileNew                  )
-  ON_COMMAND(     ID_FILE_OPEN               , OnFileOpen                 )
-  ON_COMMAND(     ID_FILE_SAVE               , OnFileSave                 )
-  ON_COMMAND(     ID_FILE_SAVE_AS            , OnFileSaveAs               )
-  ON_COMMAND(     ID_FILE_SELECTFROMFONT     , OnFileSelectFromFont       )
-  ON_COMMAND(     ID_EDIT_CUT                , OnEditCut                  )
-  ON_COMMAND(     ID_EDIT_COPY               , OnEditCopy                 )
-  ON_COMMAND(     ID_EDIT_PASTE              , OnEditPaste                )
-  ON_COMMAND(     ID_EDIT_DELETE             , OnEditDelete               )
-  ON_COMMAND(     ID_EDIT_CONNECT            , OnEditConnect              )
-  ON_COMMAND(     ID_EDIT_INVERTNORMALS      , OnEditInvertnormals        )
-  ON_COMMAND(     ID_EDIT_MIRROR_HORIZONTAL  , OnEditMirrorHorizontal     )
-  ON_COMMAND(     ID_EDIT_MIRROR_VERTICAL    , OnEditMirrorVertical       )
-  ON_COMMAND(     ID_VIEW_SHOWPOINTS         , OnViewShowPoints           )
-  ON_COMMAND(     ID_VIEW_SHOWNORMALS        , OnViewShowNormals          )
-  ON_COMMAND(     ID_VIEW_AUTO_UPDATE_3D     , OnViewAutoUpdate3D         )
-  ON_COMMAND(     ID_TOOLS_LINE              , OnToolsLine                )
-  ON_COMMAND(     ID_TOOLS_BEZIERCURVE       , OnToolsBezierCurve         )
-  ON_COMMAND(     ID_TOOLS_RECTANGLE         , OnToolsRectangle           )
-  ON_COMMAND(     ID_TOOLS_POLYGON           , OnToolsPolygon             )
-  ON_COMMAND(     ID_TOOLS_ELLIPSE           , OnToolsEllipse             )
-  ON_COMMAND(     ID_TOOLS_SELECT            , OnToolsSelect              )
-  ON_BN_CLICKED(  IDC_RADIO_ROTATE           , OnRadioRotate              )
-  ON_BN_CLICKED(  IDC_RADIO_STRETCH          , OnRadioStretch             )
-  ON_BN_CLICKED(  IDC_CHECKDOUBLESIDED       , OnCheckDoubleSided         )
-  ON_BN_CLICKED(  IDC_BUTTON_REFRESH         , OnButtonRefresh            )
-  ON_BN_CLICKED(  IDC_CHECK_ROTATESMOOTH     , OnCheckRotateSmooth        )
-  ON_BN_CLICKED(  IDC_CHECK_NORMALSMOOTH     , OnCheckNormalSmooth        )
-  ON_EN_SETFOCUS( IDC_EDIT_DEGREES           , OnSetfocusEditDegrees      )
-  ON_EN_KILLFOCUS(IDC_EDIT_DEGREES           , OnKillfocusEditDegrees     )
-  ON_EN_KILLFOCUS(IDC_EDIT_EDGECOUNT         , OnKillfocusEditEdgeCount   )
-  ON_EN_SETFOCUS( IDC_EDIT_EDGECOUNT         , OnSetfocusEditEdgeCount    )
-//    ON_CBN_SELENDOK(IDC_COMBOROTATEAXIS        , OnCbnSelendokComboRotateAxis)
-//    ON_CBN_SELENDOK(IDC_COMBOROTATEAXISALIGNSTO, OnCbnSelendokComboRotateAxisAlignsTo)
-  ON_BN_CLICKED(  IDC_CHECK_USECOLOR         , OnBnClickedCheckUseColor   )
-  ON_MESSAGE(     ID_MSG_RENDER              , OnMsgRender                )
+  ON_WM_SIZE()
+  ON_COMMAND(      ID_FILE_NEW                , OnFileNew                            )
+  ON_COMMAND(      ID_FILE_OPEN               , OnFileOpen                           )
+  ON_COMMAND(      ID_FILE_SAVE               , OnFileSave                           )
+  ON_COMMAND(      ID_FILE_SAVE_AS            , OnFileSaveAs                         )
+  ON_COMMAND(      ID_FILE_SELECTFROMFONT     , OnFileSelectFromFont                 )
+  ON_COMMAND(      ID_EDIT_CUT                , OnEditCut                            )
+  ON_COMMAND(      ID_EDIT_COPY               , OnEditCopy                           )
+  ON_COMMAND(      ID_EDIT_PASTE              , OnEditPaste                          )
+  ON_COMMAND(      ID_EDIT_DELETE             , OnEditDelete                         )
+  ON_COMMAND(      ID_EDIT_CONNECT            , OnEditConnect                        )
+  ON_COMMAND(      ID_EDIT_INVERTNORMALS      , OnEditInvertnormals                  )
+  ON_COMMAND(      ID_EDIT_MIRROR_HORIZONTAL  , OnEditMirrorHorizontal               )
+  ON_COMMAND(      ID_EDIT_MIRROR_VERTICAL    , OnEditMirrorVertical                 )
+  ON_COMMAND(      ID_VIEW_SHOWPOINTS         , OnViewShowPoints                     )
+  ON_COMMAND(      ID_VIEW_SHOWNORMALS        , OnViewShowNormals                    )
+  ON_COMMAND(      ID_VIEW_AUTO_UPDATE_3D     , OnViewAutoUpdate3D                   )
+  ON_COMMAND(      ID_TOOLS_LINE              , OnToolsLine                          )
+  ON_COMMAND(      ID_TOOLS_BEZIERCURVE       , OnToolsBezierCurve                   )
+  ON_COMMAND(      ID_TOOLS_RECTANGLE         , OnToolsRectangle                     )
+  ON_COMMAND(      ID_TOOLS_POLYGON           , OnToolsPolygon                       )
+  ON_COMMAND(      ID_TOOLS_ELLIPSE           , OnToolsEllipse                       )
+  ON_COMMAND(      ID_TOOLS_SELECT            , OnToolsSelect                        )
+  ON_BN_CLICKED(   IDC_RADIO_ROTATE           , OnRadioRotate                        )
+  ON_BN_CLICKED(   IDC_RADIO_STRETCH          , OnRadioStretch                       )
+  ON_BN_CLICKED(   IDC_CHECKDOUBLESIDED       , OnCheckDoubleSided                   )
+  ON_BN_CLICKED(   IDC_BUTTON_REFRESH         , OnButtonRefresh                      )
+  ON_BN_CLICKED(   IDC_CHECK_ROTATESMOOTH     , OnCheckRotateSmooth                  )
+  ON_BN_CLICKED(   IDC_CHECK_NORMALSMOOTH     , OnCheckNormalSmooth                  )
+  ON_EN_SETFOCUS(  IDC_EDIT_DEGREES           , OnSetfocusEditDegrees                )
+  ON_EN_KILLFOCUS( IDC_EDIT_DEGREES           , OnKillfocusEditDegrees               )
+  ON_EN_KILLFOCUS( IDC_EDIT_EDGECOUNT         , OnKillfocusEditEdgeCount             )
+  ON_EN_SETFOCUS(  IDC_EDIT_EDGECOUNT         , OnSetfocusEditEdgeCount              )
+  ON_BN_CLICKED(   IDC_CHECK_USECOLOR         , OnBnClickedCheckUseColor             )
+  ON_EN_CHANGE(    IDC_EDIT_EDGECOUNT         , OnEnChangeEditEdgeCount              )
+  ON_EN_CHANGE(    IDC_EDIT_DEGREES           , OnEnChangeEditDegrees                )
+  ON_BN_CLICKED(   IDC_MFCCOLORBUTTON         , OnBnClickedMFCColorButton            )
+  ON_CBN_SELCHANGE(IDC_COMBOROTATEAXIS        , OnCbnSelchangeComboRotateAxis        )
+  ON_CBN_SELCHANGE(IDC_COMBOROTATEAXISALIGNSTO, OnCbnSelchangeComboRotateAxisAlignsTo)
+  ON_MESSAGE(      ID_MSG_RENDER              , OnMsgRender                          )
 END_MESSAGE_MAP()
 
 static LOGFONT makeDefaultFont() {
@@ -132,6 +148,9 @@ BOOL CProfileDlg::OnInitDialog() {
   slider->SetRange(0,360);
   m_testBitmap.LoadBitmap(IDB_TESTBITMAP);
   showSliderPos();
+  ProfileRotationParameters param;
+  rotateParamToWin(param);
+  UpdateData(false);
   return FALSE;
 }
 
@@ -193,8 +212,20 @@ void CProfileDlg::resetView() {
   render(SC_RENDERALL);
 }
 
-void CProfileDlg::updateAndRender3D() {
-  UpdateData();
+void CProfileDlg::repaintAll() {
+  repaintProfile();
+  renderAll();
+}
+
+void CProfileDlg::repaintProfile() {
+  m_currentDrawTool->repaintProfile();
+}
+
+void CProfileDlg::renderAll() {
+  render(SC_RENDER2D | SC_RENDER3D);
+}
+
+void CProfileDlg::render3D() {
   render(SC_RENDER3D);
 }
 
@@ -212,27 +243,39 @@ void CProfileDlg::doRender(BYTE renderFlags, CameraSet cameraSet) {
 
 static UINT render2DCount = 0, render3DCount = 0;
 LRESULT CProfileDlg::OnMsgRender(WPARAM wp, LPARAM lp) {
-  if(wp & SC_RENDER2D) {
-    render2DCount++;
-    CClientDC dc(GetDlgItem(IDC_STATIC_PROFILEIMAGE2D));
-    dc.BitBlt(0,0,m_workRect.Width(),m_workRect.Height(),&m_workDC,0,0,SRCCOPY);
-    if(needUpdate3DObject()) {
-      create3DObject();
-      saveCurrentProfVars();
+  try {
+    if(wp & SC_RENDER2D) {
+      render2DCount++;
+      checkWorkRectSize();
+      CClientDC dc(GetDlgItem(IDC_STATIC_PROFILEIMAGE2D));
+      dc.BitBlt(0, 0, m_workRect.Width(), m_workRect.Height(), &m_workDC, 0, 0, SRCCOPY);
       wp |= SC_RENDER3D;
     }
-  }
-  if(wp & SC_RENDER3D) {
-    if(!(wp & SC_RENDER2D) && needUpdate3DObject()) {
-      create3DObject();
-      saveCurrentProfVars();
+    if(wp & SC_RENDER3D) {
+      if(needUpdate3DObject()) {
+        create3DObject();
+        saveCurrentProfVars();
+      }
+      CameraSet cameraSet(lp);
+      __super::doRender((BYTE)wp, cameraSet);
+      enableWindowItems();
+      render3DCount++;
+      if(m_exceptionRaised) {
+        clearException();
+      }
     }
-    CameraSet cameraSet(lp);
-    __super::doRender((BYTE)wp, cameraSet);
-    render3DCount++;
+  } catch(Exception e) {
+    raiseException(e);
+    disableAll();
   }
-  enableWindowItems();
   return 0;
+}
+
+void CProfileDlg::checkWorkRectSize() {
+  if(getClientRect(this, IDC_STATIC_PROFILEIMAGE2D).Size() != m_workRect.Size()) {
+    createWorkBitmap();
+    repaintProfile();
+  }
 }
 
 void CProfileDlg::enableWindowItems() {
@@ -243,7 +286,19 @@ void CProfileDlg::enableWindowItems() {
   enableMenuItem(this,ID_EDIT_DELETE           ,m_currentDrawTool->canDelete());
   enableMenuItem(this,ID_EDIT_COPY             ,m_currentDrawTool->canCopy());
   enableMenuItem(this,ID_EDIT_CUT              ,m_currentDrawTool->canCut());
-  GetDlgItem(IDC_MFCCOLORBUTTON)->EnableWindow(m_useColor);
+  getColorButton()->EnableWindow(m_useColor);
+}
+
+void CProfileDlg::disableAll() {
+  enableWindowList(*this, false
+                  ,ID_EDIT_CONNECT
+                  ,ID_EDIT_INVERTNORMALS
+                  ,ID_EDIT_MIRROR_HORIZONTAL
+                  ,ID_EDIT_MIRROR_VERTICAL
+                  ,ID_EDIT_DELETE
+                  ,ID_EDIT_COPY
+                  ,ID_EDIT_CUT
+                  ,0);
 }
 
 void CProfileDlg::stretchProfile() {
@@ -258,6 +313,7 @@ void CProfileDlg::stretchProfile() {
 }
 
 ProfileDialogVariables &CProfileDlg::getAllProfVars(ProfileDialogVariables &profVars) {
+  validateAndUpdate();
   profVars.m_3dmode      = m_3dmode;
   profVars.m_doubleSided = m_doubleSided;
   rotateWinToParam(profVars.m_rotationParameters);
@@ -281,15 +337,11 @@ bool CProfileDlg::needUpdate3DObject() {
 }
 
 void CProfileDlg::create3DObject() {
-  try {
-    D3SceneObjectVisual *visual = NULL;
-    if(!m_profile.isEmpty()) {
-      visual = new D3ProfileObjectWithColor(this); TRACE_NEW(visual);
-    }
-    setVisual(visual);
-  } catch(Exception e) {
-    showException(e);
+  D3SceneObjectVisual *visual = NULL;
+  if(!m_profile.isEmpty()) {
+    visual = new D3ProfileObjectWithColor(this); TRACE_NEW(visual);
   }
+  setVisual(visual);
 }
 
 void CProfileDlg::setVisual(D3SceneObjectVisual *visual) {
@@ -317,15 +369,16 @@ void CProfileDlg::rotateParamToWin(const ProfileRotationParameters &param) {
   m_normalSmooth       = param.isSet(PRROT_NORMALSMOOTH);
   m_rotateSmooth       = param.isSet(PRROT_ROTATESMOOTH);
   m_useColor           = param.isSet(PRROT_USECOLOR    );
-  m_degree             = RAD2GRAD(param.m_rad);
+  m_degrees            = degrees(param.m_rad);
   m_edgeCount          = param.m_edgeCount;
   m_rotateAxis         = format(_T("%c"), param.m_rotateAxis).cstr();
   m_rotateAxisAlignsTo = format(_T("%c"), param.m_rotateAxisAlignsTo).cstr();
-  m_color              = D3DCOLOR2COLORREF(param.m_color);
+  COLORREF mfcColor    = D3DCOLOR2COLORREF(param.m_color);
+  getColorButton()->SetColor(mfcColor);
 }
 
 void CProfileDlg::rotateWinToParam(ProfileRotationParameters &param) {
-  UpdateData();
+  validateAndUpdate();
   param.m_flags              = 0;
   if(m_normalSmooth) {
     param.setFlag(PRROT_NORMALSMOOTH);
@@ -336,11 +389,16 @@ void CProfileDlg::rotateWinToParam(ProfileRotationParameters &param) {
   if(m_useColor) {
     param.setFlag(PRROT_USECOLOR);
   }
-  param.m_rad                = (float)GRAD2RAD(m_degree);
+  param.m_rad                = radians(m_degrees);
   param.m_edgeCount          = m_edgeCount;
   param.m_rotateAxis         = (char)m_rotateAxis.GetAt(0);
   param.m_rotateAxisAlignsTo = (char)m_rotateAxisAlignsTo.GetAt(0);
-  param.m_color              = COLORREF2D3DCOLOR(m_color);
+  COLORREF mfcColor          = getColorButton()->GetColor();
+  param.m_color              = COLORREF2D3DCOLOR(mfcColor);
+}
+
+CMFCColorButton *CProfileDlg::getColorButton() const {
+  return (CMFCColorButton*)GetDlgItem(IDC_MFCCOLORBUTTON);
 }
 
 ProfileRotationParameters CProfileDlg::getRotateParameters() const {
@@ -363,26 +421,68 @@ void CProfileDlg::setProfileName(const String &name) {
   SetWindowText(name.cstr());
 }
 
-bool CProfileDlg::validate() {
-  return true;
+void CProfileDlg::validateAndUpdate() {
+  validate();
+  UpdateData();
+}
+
+void CProfileDlg::validate() {
+  if(!getEditValue(this, IDC_EDIT_DEGREES, m_degrees, false)
+    || (m_degrees <= 0) || (m_degrees > 360)) {
+    throwValidateException(IDC_EDIT_DEGREES,_T("Degrees must be in ]0..360]"));
+  }
+  if(!getEditValue(this, IDC_EDIT_EDGECOUNT, m_edgeCount, false)
+    || (m_edgeCount <= 2) || (m_edgeCount > 100)) {
+    throwValidateException(IDC_EDIT_EDGECOUNT, _T("Edge count must be in [2..100]"));
+  }
+}
+
+void CProfileDlg::showValidateError(const ValidationException &e) {
+  gotoEditBox(this, e.m_field);
+  showWarning(e.what());
+}
+
+void CProfileDlg::clearException() {
+  m_exceptionRaised = false;
+  setWindowText(this, IDC_STATIC_INFO, EMPTYSTRING);
+}
+
+void CProfileDlg::raiseException(const Exception &e) {
+  m_exceptionRaised = true;
+  setWindowText(this, IDC_STATIC_INFO, e.what());
+}
+
+void CProfileDlg::showMousePosition(const CPoint &p) {
+  if(!m_exceptionRaised) {
+    const Point2D fp = m_viewport->backwardTransform(p);
+    setWindowText(this, IDC_STATIC_INFO, format(_T("%.2lf,%.2lf"), fp.x, fp.y));
+  }
 }
 
 void CProfileDlg::OnFileSave() {
-  if(!validate()) {
-    return;
-  }
-  if(!m_profile.hasDefaultName()) {
-    saveAs();
-  } else {
-    save(m_profile.m_name);
+  try {
+    validateAndUpdate();
+    if(!m_profile.hasDefaultName()) {
+      saveAs();
+    } else {
+      save(m_profile.m_name);
+    }
+  } catch(ValidationException e) {
+    showValidateError(e);
+  } catch(Exception e) {
+    showWarning(_T("%s"), e.what());
   }
 }
 
 void CProfileDlg::OnFileSaveAs() {
-  if(!validate()) {
-    return;
+  try {
+    validateAndUpdate();
+    saveAs();
+  } catch(ValidationException e) {
+    showValidateError(e);
+  } catch(Exception e) {
+    showWarning(_T("%s"), e.what());
   }
-  saveAs();
 }
 
 void CProfileDlg::saveAs() {
@@ -534,38 +634,38 @@ void CProfileDlg::OnEditPaste() {
 }
 
 void CProfileDlg::OnEditConnect() {
-  m_currentDrawTool->connect().repaintScreen();
+  m_currentDrawTool->connect();
+  repaintAll();
 }
 
 void CProfileDlg::OnEditInvertnormals() {
-  m_currentDrawTool->invertNormals().repaintScreen();
+  m_currentDrawTool->invertNormals();
+  repaintAll();
 }
 
 void CProfileDlg::OnEditMirrorHorizontal() {
-  m_currentDrawTool->mirror(true).repaintScreen();
+  m_currentDrawTool->mirror(true);
+  repaintAll();
 }
 
 void CProfileDlg::OnEditMirrorVertical() {
-  m_currentDrawTool->mirror(false).repaintScreen();
+  m_currentDrawTool->mirror(false);
+  repaintAll();
 }
 
 void CProfileDlg::OnViewShowPoints() {
   toggleMenuItem(this,ID_VIEW_SHOWPOINTS);
-  m_currentDrawTool->repaintProfile().repaintScreen();
+  repaintAll();
 }
 
 void CProfileDlg::OnViewShowNormals() {
   toggleMenuItem(this,ID_VIEW_SHOWNORMALS);
-  m_currentDrawTool->repaintProfile().repaintScreen();
+  repaintAll();
 }
 
 void CProfileDlg::OnViewAutoUpdate3D() {
   toggleMenuItem(this,ID_VIEW_AUTO_UPDATE_3D);
   render(SC_RENDER3D);
-}
-
-void CProfileDlg::repaintViewport() {
-  render(SC_RENDER2D | SC_RENDER3D);
 }
 
 NormalsMode CProfileDlg::getNormalsMode() {
@@ -745,11 +845,6 @@ BOOL CProfileDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) {
   return __super::OnMouseWheel(nFlags, zDelta, pt);
 }
 
-void CProfileDlg::showMousePosition(const CPoint &p) {
-  Point2D fp = m_viewport->backwardTransform(p);
-  setWindowText(this, IDC_STATIC_INFO,format(_T("%.2lf,%.2lf"),fp.x,fp.y));
-}
-
 void CProfileDlg::OnCancel() {
   if(!dirtyCheck()) return;
   __super::OnCancel();
@@ -760,21 +855,21 @@ void CProfileDlg::OnOK() {
   __super::OnOK();
 }
 
-void CProfileDlg::OnCheckDoubleSided()                   { updateAndRender3D(); }
-void CProfileDlg::OnCheckRotateSmooth()                  { updateAndRender3D(); }
-
-void CProfileDlg::OnCheckNormalSmooth()                  {
-  UpdateData();
-  m_currentDrawTool->repaintProfile().repaintScreen();
+void CProfileDlg::OnSize(UINT nType, int cx, int cy) {
+  __super::OnSize(nType, cx, cy);
+  renderAll();
 }
 
-void CProfileDlg::OnCbnSelendokComboRotateAxisAlignsTo() { updateAndRender3D(); }
-void CProfileDlg::OnCbnSelendokComboRotateAxis()         { updateAndRender3D(); }
-void CProfileDlg::OnButtonRefresh()                      { updateAndRender3D(); }
-
-void CProfileDlg::OnBnClickedCheckUseColor() {
-  updateAndRender3D();
-}
+void CProfileDlg::OnCheckDoubleSided()                    { render3D();   }
+void CProfileDlg::OnCheckRotateSmooth()                   { render3D();   }
+void CProfileDlg::OnEnChangeEditEdgeCount()               { render3D();   }
+void CProfileDlg::OnEnChangeEditDegrees()                 { render3D();   }
+void CProfileDlg::OnCbnSelchangeComboRotateAxis()         { render3D();   }
+void CProfileDlg::OnCbnSelchangeComboRotateAxisAlignsTo() { render3D();   }
+void CProfileDlg::OnCheckNormalSmooth()                   { repaintAll(); }
+void CProfileDlg::OnButtonRefresh()                       { render3D();   }
+void CProfileDlg::OnBnClickedCheckUseColor()              { render3D();   }
+void CProfileDlg::OnBnClickedMFCColorButton()             { render3D();   }
 
 void CProfileDlg::OnRadioRotate() {
   m_currentControl = IDC_RADIO_ROTATE;

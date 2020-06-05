@@ -154,7 +154,7 @@ void CD3FunctionSplitterWnd::RecalcLayout() {
   if(m_splitPointMoved) {
     CMainFrame *mf = theApp.getMainFrame();
     mf->saveRelativeHeight();
-    mf->getEditor().setEnabled(true);
+    mf->getEditor().popStateFlags(); // setEnabled(true);
     if(mf->isInfoPanelVisible()) {
       mf->startTimer();
     } else {
@@ -167,7 +167,7 @@ void CD3FunctionSplitterWnd::RecalcLayout() {
 
 void CD3FunctionSplitterWnd::OnInvertTracker(const CRect &rect) {
   __super::OnInvertTracker(rect);
-  theApp.getMainFrame()->getEditor().setEnabled(false, SE_ENABLED | SE_PROPCHANGES | SE_RENDER);
+  theApp.getMainFrame()->getEditor().pushStateFlags(false, SE_ENABLED | SE_PROPCHANGES | SE_RENDER);
   m_splitPointMoved = true;
 }
 
@@ -948,6 +948,9 @@ void CMainFrame::OnOptionsLoadOptions8() { loadOptions(8); }
 void CMainFrame::OnOptionsLoadOptions9() { loadOptions(9); }
 
 BOOL CMainFrame::PreTranslateMessage(MSG *pMsg) {
+  if(GetActiveWindow() != this) {
+    return false;
+  }
   D3Camera *cam;
   if((pMsg->message == WM_MOUSEMOVE) && ((cam = m_scene.getPickedCamera(pMsg->pt)) != NULL)) {
     m_wndStatusBar.SetPaneText(0, toString(cam->screenToWin(pMsg->pt)).cstr());

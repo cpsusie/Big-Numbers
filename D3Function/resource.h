@@ -36,19 +36,24 @@
 #define IDC_EDIT_ZTO                    1083
 #define IDC_STATIC_POINTCOUNT           1090
 #define IDC_EDIT_POINTS                 1091
-#define IDC_STATIC_EQUAL_ZERO           1093
-#define IDC_STATIC_CELLSIZE             1094
-#define IDC_EDIT_CELLSIZE               1095
-#define IDC_STATIC_LAMBDA               1096
-#define IDC_EDIT_LAMBDA                 1097
-#define IDC_CHECK_TETRAHEDRAL           1098
-#define IDC_CHECK_TETRAOPTIMIZE4        1099
-#define IDC_CHECK_ORIGINOUTSIDE         1100
-#define IDC_CHECK_ADAPTIVECELLSIZE      1101
-#define IDC_CHECK_DEBUGPOLYGONIZER      1102
+#define IDC_STATIC_EQUAL_ZERO           1092
+#define IDC_STATIC_TEXTUREFILENAME      1093
+#define IDC_EDIT_TEXTUREFILENAME        1094
+#define IDC_BUTTON_BROWSETEXTURE        1095
+#define IDC_STATIC_CELLSIZE             1096
+#define IDC_EDIT_CELLSIZE               1097
+#define IDC_STATIC_LAMBDA               1098
+#define IDC_EDIT_LAMBDA                 1099
+#define IDC_CHECK_TETRAHEDRAL           1100
+#define IDC_CHECK_TETRAOPTIMIZE4        1101
+#define IDC_CHECK_ORIGINOUTSIDE         1102
+#define IDC_CHECK_ADAPTIVECELLSIZE      1103
+#define IDC_CHECK_DEBUGPOLYGONIZER      1104
 #define IDC_CHECK_DOUBLESIDED           1110
 #define IDC_CHECK_MACHINECODE           1111
-#define IDC_CHECKCREATELISTFILE         1112
+#define IDC_CHECK_CREATELISTFILE        1112
+#define IDC_CHECK_CALCULATENORMALS      1113
+#define IDC_CHECK_HASTEXTURE            1114
 #define IDC_CHECK_INCLUDETIME           1120
 #define IDC_STATIC_TIMEINTERVAL         1121
 #define IDC_EDIT_TIMEFROM               1122
@@ -176,9 +181,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        213
-#define _APS_NEXT_COMMAND_VALUE         33341
-#define _APS_NEXT_CONTROL_VALUE         1239
+#define _APS_NEXT_RESOURCE_VALUE        214
+#define _APS_NEXT_COMMAND_VALUE         33343
+#define _APS_NEXT_CONTROL_VALUE         1240
 #define _APS_NEXT_SYMED_VALUE           103
 #endif
 #endif

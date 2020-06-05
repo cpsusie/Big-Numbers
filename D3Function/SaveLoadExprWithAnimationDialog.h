@@ -68,13 +68,13 @@ protected:
 
   void DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
-    DDX_Check(pDX, IDC_CHECK_INCLUDETIME  , m_includeTime   );
-    DDX_Text( pDX, IDC_EDIT_TIMEFROM      , m_timefrom      );
-    DDX_Text( pDX, IDC_EDIT_TIMETO        , m_timeto        );
-    DDX_Text( pDX, IDC_EDIT_FRAMECOUNT    , m_frameCount    );
-    DDV_MinMaxUInt(pDX, m_frameCount      , 1, 300          );
-    DDX_Check(pDX, IDC_CHECK_MACHINECODE  , m_machineCode   );
-    DDX_Check(pDX, IDC_CHECKCREATELISTFILE, m_createListFile);
+    DDX_Check(pDX, IDC_CHECK_INCLUDETIME   , m_includeTime   );
+    DDX_Text( pDX, IDC_EDIT_TIMEFROM       , m_timefrom      );
+    DDX_Text( pDX, IDC_EDIT_TIMETO         , m_timeto        );
+    DDX_Text( pDX, IDC_EDIT_FRAMECOUNT     , m_frameCount    );
+    DDV_MinMaxUInt(pDX, m_frameCount       , 1, 300          );
+    DDX_Check(pDX, IDC_CHECK_MACHINECODE   , m_machineCode   );
+    DDX_Check(pDX, IDC_CHECK_CREATELISTFILE, m_createListFile);
   }
   void OnGotoTimeInterval() {
     gotoEditBox(this, IDC_EDIT_TIMEFROM);
@@ -95,15 +95,16 @@ protected:
   void enableCreateListFile() {
     if(!m_machineCode) {
       m_createListFile = false;
-      CheckDlgButton(IDC_CHECKCREATELISTFILE, BST_UNCHECKED);
+      CheckDlgButton(IDC_CHECK_CREATELISTFILE, BST_UNCHECKED);
     }
-    GetDlgItem(IDC_CHECKCREATELISTFILE)->EnableWindow(m_machineCode);
+    GetDlgItem(IDC_CHECK_CREATELISTFILE)->EnableWindow(m_machineCode);
   }
   virtual void enableTimeFields() {
     enableWindowList(*this, m_includeTime
                     ,IDC_STATIC_TIMEINTERVAL, IDC_EDIT_TIMEFROM
                     ,IDC_EDIT_TIMETO        , IDC_STATIC_FRAMECOUNT
                     ,IDC_EDIT_FRAMECOUNT
+                    ,0
                     );
   }
 };

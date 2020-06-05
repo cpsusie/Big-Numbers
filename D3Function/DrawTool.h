@@ -163,7 +163,8 @@ public:
   void initState() { m_state = IDLE; }
   DrawTool &unselectAll();
   DrawTool &repaintProfile();
-  DrawTool &repaintScreen() { m_container.repaintViewport(); return *this; }
+  DrawTool &repaintScreen();
+  DrawTool &repaintAll();
 };
 
 class NullTool : public DrawTool {

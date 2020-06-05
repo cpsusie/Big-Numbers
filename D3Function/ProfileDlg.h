@@ -20,6 +20,8 @@ inline bool operator!=(const ProfileDialogVariables &v1, const ProfileDialogVari
   return !(v1 == v2);
 }
 
+class ValidationException;
+
 class CProfileDlg : public CDialog
                   , public ViewportContainer
                   , public D3SceneContainer
@@ -34,6 +36,7 @@ private:
   D3SceneEditor             m_editor;
   D3SceneObjectVisual      *m_visual;
   Viewport2D               *m_viewport;
+  bool                      m_exceptionRaised;
   DrawTool                 *m_currentDrawTool;
   int                       m_currentControl;
   Profile                   m_profile        , m_lastSavedProfile;
@@ -42,15 +45,15 @@ private:
 
   int       m_3dmode;
   BOOL      m_doubleSided;
-  double    m_degree;
+  float     m_degrees;
   BOOL      m_normalSmooth;
   BOOL      m_rotateSmooth;
   int       m_edgeCount;
   CString   m_rotateAxis;
   CString   m_rotateAxisAlignsTo;
   BOOL      m_useColor;
-  COLORREF  m_color;
 
+  CMFCColorButton *getColorButton() const;
   void rotateParamToWin(const ProfileRotationParameters &param);
   void rotateWinToParam(      ProfileRotationParameters &param);
   ProfileDialogVariables &getAllProfVars(ProfileDialogVariables &profVars);
@@ -66,8 +69,17 @@ private:
   void create3DObject();
   void destroy3DObject();
   void stretchProfile();
-  void updateAndRender3D();
+  void repaintProfile();
+  void repaintAll();
+  void showValidateError( const ValidationException &e);
+  void clearException();
+  void raiseException(const Exception &e);
+  void validate();
+  void validateAndUpdate();
+  void renderAll();
+  void render3D();
   void enableWindowItems();
+  void disableAll();
   void resetView();
   void render(BYTE renderFlags);
   void saveAs();
@@ -96,7 +108,8 @@ public:
     return m_profile;
   }
 
-  void        repaintViewport();
+  void        checkWorkRectSize();
+  void        repaintViewport() { renderAll(); }
   NormalsMode getNormalsMode();
   bool        getShowPoints();
   void        setMousePosition(const Point2D &p);
@@ -126,61 +139,63 @@ public:
   ProfileRotationParameters getRotateParameters()  const;
   ProfileStretchParameters  getStretchParameters() const;
   bool        isDoubleSided() const;
-  bool        validate();
-
   enum { IDD = IDR_PROFILE };
 
 public:
-    virtual BOOL PreTranslateMessage(MSG *pMsg);
-    virtual void DoDataExchange(CDataExchange *pDX);
-    virtual BOOL OnInitDialog();
-    virtual void OnCancel();
-    virtual void OnOK();
-    afx_msg void OnLButtonDown(  UINT nFlags, CPoint point);
-    afx_msg void OnLButtonUp(    UINT nFlags, CPoint point);
-    afx_msg void OnMouseMove(    UINT nFlags, CPoint point);
-    afx_msg void OnRButtonDown(  UINT nFlags, CPoint point);
-    afx_msg void OnRButtonUp(    UINT nFlags, CPoint point);
-    afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
-    afx_msg BOOL OnMouseWheel(   UINT nFlags, short zDelta, CPoint pt);
-    afx_msg void OnHScroll(      UINT nSBCode, UINT nPos, CScrollBar *pScrollBar);
-    afx_msg void OnFileNew();
-    afx_msg void OnFileOpen();
-    afx_msg void OnFileSave();
-    afx_msg void OnFileSaveAs();
-    afx_msg void OnFileSelectFromFont();
-    afx_msg void OnEditCut();
-    afx_msg void OnEditCopy();
-    afx_msg void OnEditPaste();
-    afx_msg void OnEditDelete();
-    afx_msg void OnEditConnect();
-    afx_msg void OnEditInvertnormals();
-    afx_msg void OnEditMirrorHorizontal();
-    afx_msg void OnEditMirrorVertical();
-    afx_msg void OnViewShowPoints();
-    afx_msg void OnViewShowNormals();
-    afx_msg void OnViewAutoUpdate3D();
-    afx_msg void OnToolsLine();
-    afx_msg void OnToolsBezierCurve();
-    afx_msg void OnToolsRectangle();
-    afx_msg void OnToolsPolygon();
-    afx_msg void OnToolsEllipse();
-    afx_msg void OnToolsSelect();
-    afx_msg void OnRadioRotate();
-    afx_msg void OnRadioStretch();
-    afx_msg void OnButtonRefresh();
-    afx_msg void OnCheckDoubleSided();
-    afx_msg void OnCheckRotateSmooth();
-    afx_msg void OnCheckNormalSmooth();
-    afx_msg void OnSetfocusEditDegrees();
-    afx_msg void OnKillfocusEditDegrees();
-    afx_msg void OnKillfocusEditEdgeCount();
-    afx_msg void OnSetfocusEditEdgeCount();
-    afx_msg void OnCbnSelendokComboRotateAxisAlignsTo();
-    afx_msg void OnCbnSelendokComboRotateAxis();
-    afx_msg void OnBnClickedCheckUseColor();
-    afx_msg LRESULT OnMsgRender(              WPARAM wp, LPARAM lp);
-    DECLARE_MESSAGE_MAP()
+  virtual BOOL PreTranslateMessage(MSG *pMsg);
+  virtual void DoDataExchange(CDataExchange *pDX);
+  virtual BOOL OnInitDialog();
+  virtual void OnCancel();
+  virtual void OnOK();
+  afx_msg void OnSize(UINT nType, int cx, int cy);
+  afx_msg void OnLButtonDown(  UINT nFlags, CPoint point);
+  afx_msg void OnLButtonUp(    UINT nFlags, CPoint point);
+  afx_msg void OnMouseMove(    UINT nFlags, CPoint point);
+  afx_msg void OnRButtonDown(  UINT nFlags, CPoint point);
+  afx_msg void OnRButtonUp(    UINT nFlags, CPoint point);
+  afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
+  afx_msg BOOL OnMouseWheel(   UINT nFlags, short zDelta, CPoint pt);
+  afx_msg void OnHScroll(      UINT nSBCode, UINT nPos, CScrollBar *pScrollBar);
+  afx_msg void OnFileNew();
+  afx_msg void OnFileOpen();
+  afx_msg void OnFileSave();
+  afx_msg void OnFileSaveAs();
+  afx_msg void OnFileSelectFromFont();
+  afx_msg void OnEditCut();
+  afx_msg void OnEditCopy();
+  afx_msg void OnEditPaste();
+  afx_msg void OnEditDelete();
+  afx_msg void OnEditConnect();
+  afx_msg void OnEditInvertnormals();
+  afx_msg void OnEditMirrorHorizontal();
+  afx_msg void OnEditMirrorVertical();
+  afx_msg void OnViewShowPoints();
+  afx_msg void OnViewShowNormals();
+  afx_msg void OnViewAutoUpdate3D();
+  afx_msg void OnToolsLine();
+  afx_msg void OnToolsBezierCurve();
+  afx_msg void OnToolsRectangle();
+  afx_msg void OnToolsPolygon();
+  afx_msg void OnToolsEllipse();
+  afx_msg void OnToolsSelect();
+  afx_msg void OnRadioRotate();
+  afx_msg void OnRadioStretch();
+  afx_msg void OnButtonRefresh();
+  afx_msg void OnCheckDoubleSided();
+  afx_msg void OnCheckRotateSmooth();
+  afx_msg void OnCheckNormalSmooth();
+  afx_msg void OnSetfocusEditDegrees();
+  afx_msg void OnKillfocusEditDegrees();
+  afx_msg void OnKillfocusEditEdgeCount();
+  afx_msg void OnSetfocusEditEdgeCount();
+  afx_msg void OnEnChangeEditEdgeCount();
+  afx_msg void OnEnChangeEditDegrees();
+  afx_msg void OnCbnSelchangeComboRotateAxis();
+  afx_msg void OnCbnSelchangeComboRotateAxisAlignsTo();
+  afx_msg void OnBnClickedCheckUseColor();
+  afx_msg void OnBnClickedMFCColorButton();
+  afx_msg LRESULT OnMsgRender(              WPARAM wp, LPARAM lp);
+  DECLARE_MESSAGE_MAP()
 };
 
 Profile *selectAndLoadProfile();

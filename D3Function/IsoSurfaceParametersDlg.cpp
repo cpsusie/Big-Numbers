@@ -88,7 +88,7 @@ BOOL CIsoSurfaceParametersDlg::OnInitDialog() {
   m_layoutManager.addControl(IDC_CHECK_DOUBLESIDED     , RELATIVE_Y_POS         );
   m_layoutManager.addControl(IDC_CHECK_ORIGINOUTSIDE   , RELATIVE_Y_POS         );
   m_layoutManager.addControl(IDC_CHECK_MACHINECODE     , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_CHECKCREATELISTFILE   , RELATIVE_Y_POS         );
+  m_layoutManager.addControl(IDC_CHECK_CREATELISTFILE  , RELATIVE_Y_POS         );
   m_layoutManager.addControl(IDC_CHECK_DEBUGPOLYGONIZER, RELATIVE_Y_POS         );
   m_layoutManager.addControl(IDC_CHECK_INCLUDETIME     , RELATIVE_Y_POS         );
   m_layoutManager.addControl(IDC_CHECK_DOUBLESIDED     , RELATIVE_Y_POS         );

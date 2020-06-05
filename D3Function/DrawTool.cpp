@@ -214,6 +214,15 @@ DrawTool &DrawTool::repaintProfile() {
   // dont call repaintScreen here.
 }
 
+DrawTool &DrawTool::repaintScreen() {
+  m_container.repaintViewport();
+  return *this;
+}
+
+DrawTool &DrawTool::repaintAll() {
+  return repaintProfile().repaintScreen();
+}
+
 DrawTool &DrawTool::drawState() {
   m_container.getViewport().getDC()->TextOut(10,10,stateString(m_state));
   Viewport2D &vp = m_container.getViewport();
@@ -301,7 +310,7 @@ DrawTool &DrawTool::deleteSelected() {
   for(size_t i = 0; i < m_polygonSet.size(); i++) {
     profile.m_polygonArray.remove(*m_polygonSet[i]);
   }
-  return unselectAll().repaintProfile();
+  return unselectAll().repaintAll();
 }
 
 bool DrawTool::canCopy() {
@@ -360,7 +369,7 @@ DrawTool &DrawTool::connect() {
     return *this;
   }
   m_container.getProfile().connect(m_selectedPoints[0],m_selectedPoints[1]);
-  return unselectAll().repaintProfile();
+  return unselectAll().repaintAll();
 }
 
 bool DrawTool::canInvertNormals() const {
@@ -373,14 +382,14 @@ bool DrawTool::canMirror() const {
 
 DrawTool &DrawTool::invertNormals() {
   m_polygonSet.invertNormals();
-  return repaintProfile();
+  return repaintAll();
 }
 
 DrawTool &DrawTool::mirror(bool horizontal) {
   if(!canMirror()) return *this;
 
   m_polygonSet.mirror(horizontal);
-  return repaintProfile();
+  return repaintAll();
 }
 
 bool LineTool::OnLButtonDown(UINT nFlags, CPoint point) {
@@ -391,17 +400,14 @@ bool LineTool::OnLButtonDown(UINT nFlags, CPoint point) {
   m_p0 = &gp.m_start;
   m_p1 = &gp.m_curveArray.last().m_points.last();
   unselectAll();
-  select(&gp);
-  repaintProfile();
-  repaintScreen();
+  select(&gp).repaintAll();
   return true;
 }
 
 bool LineTool::OnMouseMove(UINT nFlags, CPoint point) {
   if(nFlags & MK_LBUTTON && m_p1 != NULL) {
     *m_p1 = m_container.getViewport().backwardTransform(point);
-    repaintProfile();
-    repaintScreen();
+    repaintAll();
     return true;
   }
   return false;
@@ -432,8 +438,7 @@ bool BezierCurveTool::OnLButtonDown(  UINT nFlags, CPoint point) {
 
   unselectAll();
   select(&profile.m_polygonArray.last());
-  repaintProfile();
-  repaintScreen();
+  repaintAll();
   return true;
 }
 
@@ -467,8 +472,7 @@ bool RectangleTool::OnLButtonDown(UINT nFlags, CPoint point) {
 
   unselectAll();
   select(&gp);
-  repaintProfile();
-  repaintScreen();
+  repaintAll();
   return true;
 }
 
@@ -478,8 +482,7 @@ bool RectangleTool::OnMouseMove(UINT nFlags, CPoint point) {
     m_ur->x = p.x;
     *m_lr = p;
     m_ll->y = p.y;
-    repaintProfile();
-    repaintScreen();
+    repaintAll();
     return true;
   }
   return false;
@@ -504,8 +507,7 @@ bool PolygonTool::OnLButtonDown(UINT nFlags, CPoint point) {
     m_pp = &profile.getLastPolygon();
   } else {
     m_pp->getLastCurve().addPoint(p);
-    repaintProfile();
-    repaintScreen();
+    repaintAll();
   }
   return true;
 }
@@ -516,8 +518,7 @@ bool PolygonTool::OnLButtonDblClk(UINT nFlags, CPoint point) {
     m_pp->removeLastPoint();
   }
   m_pp = NULL;
-  repaintProfile();
-  repaintScreen();
+  repaintAll();
   return true;
 }
 
@@ -525,8 +526,7 @@ bool PolygonTool::OnMouseMove(UINT nFlags, CPoint point) {
   Point2D p = m_container.getViewport().backwardTransform(point);
   if(m_pp != NULL) {
     m_pp->getLastPoint() = p;
-    repaintProfile();
-    repaintScreen();
+    repaintAll();
     return true;
   }
   return false;
@@ -677,13 +677,11 @@ bool SelectTool::OnLButtonDown(UINT nFlags, CPoint point) {
       } else {
         m_state = IDLE;
       }
-      repaintProfile();
-      repaintScreen();
+      repaintAll();
     } else if(m_polygonSet.pointInRect(m_container.getViewport().backwardTransform(point)) || m_polygonSet.pointOnMarkRect(point)) {
 //      m_polygonSet.evaluateBox();
       m_state = MOVING;
-      repaintProfile();
-      repaintScreen();
+      repaintAll();
     } else { // click outside everything
       unselectAll();
       m_state = DRAGGING;
@@ -697,16 +695,14 @@ bool SelectTool::OnLButtonDown(UINT nFlags, CPoint point) {
     if(!m_polygonSet.pointOnMarkRect(point)) {
       m_state = IDLE;
     }
-    repaintProfile();
-    repaintScreen();
+    repaintAll();
     break;
 
   case ROTATING   :
     if(!m_polygonSet.pointOnMarkRect(point)) {
       m_state = IDLE;
     }
-    repaintProfile();
-    repaintScreen();
+    repaintAll();
     break;
 
   case DRAGGING   :
@@ -724,22 +720,19 @@ bool SelectTool::OnLButtonDblClk(UINT nFlags, CPoint point) {
   case MOVING     :
     if(m_polygonSet.pointOnMarkRect(point)) {
       m_state = STRETCHING;
-      repaintProfile();
-      repaintScreen();
+      repaintAll();
     }
     break;
   case STRETCHING :
     if(m_polygonSet.pointOnMarkRect(point)) {
       m_state = ROTATING;
-      repaintProfile();
-      repaintScreen();
+      repaintAll();
     }
     break;
   case ROTATING   :
     if(m_polygonSet.pointOnMarkRect(point)) {
       m_state = MOVING;
-      repaintProfile();
-      repaintScreen();
+      repaintAll();
     }
     break;
 
@@ -761,8 +754,7 @@ bool SelectTool::OnLButtonUp(UINT nFlags, CPoint point) {
     m_state = m_polygonSet.isEmpty() ? IDLE : MOVING;
     endDragRect();
     m_polygonSet.evaluateBox();
-    repaintProfile();
-    repaintScreen();
+    repaintAll();
     break;
   }
   return true;
@@ -792,8 +784,7 @@ bool SelectTool::OnRButtonDown(UINT nFlags, CPoint point) {
       if(!m_selectedPoints.isEmpty()) {
         m_state = MOVING;
       }
-      repaintProfile();
-      repaintScreen();
+      repaintAll();
     } else {
       m_state = DRAGGING;
       unselectAll();
@@ -820,8 +811,7 @@ bool SelectTool::OnRButtonUp(UINT nFlags, CPoint point) {
     selectPointsInRect(m_container.getViewport().backwardTransform(m_dragRect));
     endDragRect();
     m_state = m_selectedPoints.isEmpty() ? IDLE : MOVING;
-    repaintProfile();
-    repaintScreen();
+    repaintAll();
     break;
   }
   return true;
@@ -840,28 +830,24 @@ bool SelectTool::OnMouseMove(UINT nFlags, CPoint point) {
   case MOVING     :
     if(nFlags & MK_LBUTTON && !m_polygonSet.isEmpty()) {
       m_polygonSet.move(dp);
-      repaintProfile();
-      repaintScreen();
+      repaintAll();
     } else if(nFlags & MK_RBUTTON && !m_selectedPoints.isEmpty()) {
       moveSelectedPoints(dp);
-      repaintProfile();
-      repaintScreen();
+      repaintAll();
     }
     break;
   case STRETCHING :
     if(nFlags & MK_LBUTTON) {
       m_polygonSet.stretch(dp);
       adjustMousePosition();
-      repaintProfile();
-      repaintScreen();
+      repaintAll();
     }
     break;
   case ROTATING   :
     if(nFlags & MK_LBUTTON) {
       m_polygonSet.rotate(dp);
       adjustMousePosition();
-      repaintProfile();
-      repaintScreen();
+      repaintAll();
     }
     break;
   case DRAGGING   :

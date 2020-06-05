@@ -83,7 +83,7 @@ BOOL CParametricR2R3SurfaceParametersDlg::OnInitDialog() {
   m_layoutManager.addControl(IDC_STATIC_SSTEPCOUNT   , RELATIVE_Y_POS       );
   m_layoutManager.addControl(IDC_EDIT_SSTEPCOUNT     , RELATIVE_Y_POS       );
   m_layoutManager.addControl(IDC_CHECK_MACHINECODE   , RELATIVE_Y_POS       );
-  m_layoutManager.addControl(IDC_CHECKCREATELISTFILE , RELATIVE_Y_POS       );
+  m_layoutManager.addControl(IDC_CHECK_CREATELISTFILE, RELATIVE_Y_POS       );
   m_layoutManager.addControl(IDC_CHECK_INCLUDETIME   , RELATIVE_Y_POS       );
   m_layoutManager.addControl(IDC_CHECK_DOUBLESIDED   , RELATIVE_Y_POS       );
   m_layoutManager.addControl(IDC_STATIC_TIMEINTERVAL , RELATIVE_Y_POS       );

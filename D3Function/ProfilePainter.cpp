@@ -6,7 +6,7 @@
 
 class ProfilePainter : public CurveOperator {
   Viewport2D &m_vp;
-  CPen      m_pen;
+  CPen        m_pen;
 public:
   void line(const Point2D &from, const Point2D &to);
   ProfilePainter(Viewport2D &vp, COLORREF color);
