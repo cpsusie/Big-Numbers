@@ -59,9 +59,6 @@ protected:
     releaseIndexBuffer();
   }
 
-  inline bool hasIndexBuffer() const {
-    return m_indexBuffer != NULL;
-  }
   D3Device &setIndices(D3Device &device);
 public:
   LPDIRECT3DINDEXBUFFER getIndexBuffer() const {

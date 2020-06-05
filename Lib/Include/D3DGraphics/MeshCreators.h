@@ -12,7 +12,8 @@ class ExprParametricR2R3SurfaceParameters;
 class IsoSurfaceParameters;
 class ExprIsoSurfaceParameters;
 
-LPD3DXMESH     createMeshFrom2DFunction(  AbstractMeshFactory &amf, FunctionR2R1 &f, const DoubleInterval &xInterval, const DoubleInterval &yInterval, UINT nx, UINT ny, bool doubleSided);
+// fvf should be any combination of D3DFVF_XYZ, D3DFVF_NORMAL, D3DFVF_TEX1. D3DFVF_XYZ always set
+LPD3DXMESH     createMeshFrom2DFunction(  AbstractMeshFactory &amf, FunctionR2R1 &f, const DoubleInterval &xInterval, const DoubleInterval &yInterval, UINT nx, UINT ny, bool doubleSided, DWORD fvf = D3DFVF_XYZ | D3DFVF_NORMAL);
 LPD3DXMESH     createMesh(                AbstractMeshFactory &amf, const FunctionR2R1SurfaceParameters       &param, FunctionR2R1                           &f);
 MeshArray      createMeshArray(CWnd *wnd, AbstractMeshFactory &amf, const FunctionR2R1SurfaceParameters       &param, FunctionWithTimeTemplate<FunctionR2R1> &f);
 LPD3DXMESH     createMesh(                AbstractMeshFactory &amf, const ExprFunctionR2R1SurfaceParameters   &param);

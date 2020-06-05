@@ -27,15 +27,27 @@
     <Filter Include="Source Files\Mesh">
       <UniqueIdentifier>{f3d9b821-27e6-45eb-a621-ba2f3843a1e6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\D3StringConversion">
+      <UniqueIdentifier>{dfc6a17e-04e3-4f89-895d-97b52fafe21a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\D3StringConversion\D3XML">
+      <UniqueIdentifier>{91973b4d-9e0f-485c-9d39-354ea1065f44}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\D3StringConversion\D3XML\SurfaceParameters">
+      <UniqueIdentifier>{48da04e0-d6fc-497b-8b91-5bf7f37f1c24}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\D3StringConversion">
+      <UniqueIdentifier>{1b610019-3e2b-4532-a9d0-c14d46453ac2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\D3StringConversion\D3XML">
+      <UniqueIdentifier>{af167c26-06b5-4a86-be48-a7af72fe8971}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\D3StringConversion\D3XML\SurfaceParameters">
+      <UniqueIdentifier>{fd1a5022-a6f3-4259-a9be-c06e766d4390}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="D3Scene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="D3SceneIO.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="D3ToString.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="LightDlg.cpp">
@@ -47,20 +59,11 @@
     <ClCompile Include="D3SceneEditor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FVF.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="D3SceneObjectIterator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="VertexBufferToBoundingBox.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="D3SceneEditorToString.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="D3XML.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="D3CompileEffect.cpp">
@@ -180,13 +183,7 @@
     <ClCompile Include="MeshBuilder.cpp">
       <Filter>Source Files\Mesh</Filter>
     </ClCompile>
-    <ClCompile Include="MeshBuilderToString.cpp">
-      <Filter>Source Files\Mesh</Filter>
-    </ClCompile>
     <ClCompile Include="MeshToBoundingBox.cpp">
-      <Filter>Source Files\Mesh</Filter>
-    </ClCompile>
-    <ClCompile Include="MeshToString.cpp">
       <Filter>Source Files\Mesh</Filter>
     </ClCompile>
     <ClCompile Include="VertexNormalTextureIndex.cpp">
@@ -237,24 +234,6 @@
     <ClCompile Include="SphereMesh.cpp">
       <Filter>Source Files\Mesh</Filter>
     </ClCompile>
-    <ClCompile Include="ExprIsoSurfaceParameters.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="IsoSurfaceParameters.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FunctionR2R1SurfaceParameters.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ExprFunctionR2R1SurfaceParameters.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ParametricR2R3SurfaceParameters.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ExprParametricR2R3SurfaceParameters.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CreateMeshExprFunctionR2R1Surface.cpp">
       <Filter>Source Files\Mesh</Filter>
     </ClCompile>
@@ -279,8 +258,122 @@
     <ClCompile Include="D3SceneLightArray.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ExprFunctionR2R1SurfaceParameters.cpp">
+      <Filter>Source Files\D3StringConversion\D3XML\SurfaceParameters</Filter>
+    </ClCompile>
+    <ClCompile Include="ExprIsoSurfaceParameters.cpp">
+      <Filter>Source Files\D3StringConversion\D3XML\SurfaceParameters</Filter>
+    </ClCompile>
+    <ClCompile Include="ExprParametricR2R3SurfaceParameters.cpp">
+      <Filter>Source Files\D3StringConversion\D3XML\SurfaceParameters</Filter>
+    </ClCompile>
+    <ClCompile Include="FunctionR2R1SurfaceParameters.cpp">
+      <Filter>Source Files\D3StringConversion\D3XML\SurfaceParameters</Filter>
+    </ClCompile>
+    <ClCompile Include="IsoSurfaceParameters.cpp">
+      <Filter>Source Files\D3StringConversion\D3XML\SurfaceParameters</Filter>
+    </ClCompile>
+    <ClCompile Include="ParametricR2R3SurfaceParameters.cpp">
+      <Filter>Source Files\D3StringConversion\D3XML\SurfaceParameters</Filter>
+    </ClCompile>
+    <ClCompile Include="D3SurfaceVertexParameters.cpp">
+      <Filter>Source Files\D3StringConversion\D3XML\SurfaceParameters</Filter>
+    </ClCompile>
+    <ClCompile Include="FVFStr.cpp">
+      <Filter>Source Files\D3StringConversion</Filter>
+    </ClCompile>
+    <ClCompile Include="D3SceneEditorToString.cpp">
+      <Filter>Source Files\D3StringConversion</Filter>
+    </ClCompile>
+    <ClCompile Include="LightTypeStr.cpp">
+      <Filter>Source Files\D3StringConversion</Filter>
+    </ClCompile>
+    <ClCompile Include="FillModeStr.cpp">
+      <Filter>Source Files\D3StringConversion</Filter>
+    </ClCompile>
+    <ClCompile Include="ShadeModeStr.cpp">
+      <Filter>Source Files\D3StringConversion</Filter>
+    </ClCompile>
+    <ClCompile Include="FormatStr.cpp">
+      <Filter>Source Files\D3StringConversion</Filter>
+    </ClCompile>
+    <ClCompile Include="PoolStr.cpp">
+      <Filter>Source Files\D3StringConversion</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceTypeStr.cpp">
+      <Filter>Source Files\D3StringConversion</Filter>
+    </ClCompile>
+    <ClCompile Include="UsageStr.cpp">
+      <Filter>Source Files\D3StringConversion</Filter>
+    </ClCompile>
+    <ClCompile Include="VertexStr.cpp">
+      <Filter>Source Files\D3StringConversion</Filter>
+    </ClCompile>
+    <ClCompile Include="D3IndexBufferDescStr.cpp">
+      <Filter>Source Files\D3StringConversion</Filter>
+    </ClCompile>
+    <ClCompile Include="D3DisplayModeStr.cpp">
+      <Filter>Source Files\D3StringConversion</Filter>
+    </ClCompile>
+    <ClCompile Include="D3VertexBufferDescStr.cpp">
+      <Filter>Source Files\D3StringConversion</Filter>
+    </ClCompile>
+    <ClCompile Include="HandednessStr.cpp">
+      <Filter>Source Files\D3StringConversion</Filter>
+    </ClCompile>
+    <ClCompile Include="D3CameraXML.cpp">
+      <Filter>Source Files\D3StringConversion\D3XML</Filter>
+    </ClCompile>
+    <ClCompile Include="D3LightXML.cpp">
+      <Filter>Source Files\D3StringConversion\D3XML</Filter>
+    </ClCompile>
+    <ClCompile Include="D3MaterialXML.cpp">
+      <Filter>Source Files\D3StringConversion\D3XML</Filter>
+    </ClCompile>
+    <ClCompile Include="D3MathXML.cpp">
+      <Filter>Source Files\D3StringConversion\D3XML</Filter>
+    </ClCompile>
+    <ClCompile Include="D3SceneObjectVisualXML.cpp">
+      <Filter>Source Files\D3StringConversion\D3XML</Filter>
+    </ClCompile>
+    <ClCompile Include="D3WorldXML.cpp">
+      <Filter>Source Files\D3StringConversion\D3XML</Filter>
+    </ClCompile>
+    <ClCompile Include="D3VertexBufferDescXML.cpp">
+      <Filter>Source Files\D3StringConversion\D3XML</Filter>
+    </ClCompile>
+    <ClCompile Include="D3SceneXML.cpp">
+      <Filter>Source Files\D3StringConversion\D3XML</Filter>
+    </ClCompile>
+    <ClCompile Include="D3SceneIO.cpp">
+      <Filter>Source Files\D3StringConversion\D3XML</Filter>
+    </ClCompile>
     <ClCompile Include="ProfileXML.cpp">
-      <Filter>Source Files\Mesh</Filter>
+      <Filter>Source Files\D3StringConversion\D3XML</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshBuilderToString.cpp">
+      <Filter>Source Files\D3StringConversion</Filter>
+    </ClCompile>
+    <ClCompile Include="D3IndexBufferDescXML.cpp">
+      <Filter>Source Files\D3StringConversion\D3XML</Filter>
+    </ClCompile>
+    <ClCompile Include="D3IndexBufferStr.cpp">
+      <Filter>Source Files\D3StringConversion</Filter>
+    </ClCompile>
+    <ClCompile Include="D3VertexBufferStr.cpp">
+      <Filter>Source Files\D3StringConversion</Filter>
+    </ClCompile>
+    <ClCompile Include="D3MeshToString.cpp">
+      <Filter>Source Files\D3StringConversion</Filter>
+    </ClCompile>
+    <ClCompile Include="D3IndexBufferXML.cpp">
+      <Filter>Source Files\D3StringConversion\D3XML</Filter>
+    </ClCompile>
+    <ClCompile Include="D3MeshXML.cpp">
+      <Filter>Source Files\D3StringConversion\D3XML</Filter>
+    </ClCompile>
+    <ClCompile Include="D3VertexBufferXML.cpp">
+      <Filter>Source Files\D3StringConversion\D3XML</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -302,14 +395,8 @@
     <ClInclude Include="..\..\Include\D3DGraphics\D3SceneEditor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\D3DGraphics\D3ToString.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="pch.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="..\..\Include\D3DGraphics\D3XML.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\D3DGraphics\D3PickedInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -439,26 +526,38 @@
     <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectVisualNormals.h">
       <Filter>Header Files\Visual Objects</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\D3DGraphics\IsoSurfaceParameters.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\D3DGraphics\ExprIsoSurfaceParameters.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\D3DGraphics\FunctionR2R1SurfaceParameters.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\Include\D3DGraphics\D3FunctionParamPersistentData.h">
+      <Filter>Header Files\D3StringConversion\D3XML\SurfaceParameters</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\D3DGraphics\ExprFunctionR2R1SurfaceParameters.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\D3StringConversion\D3XML\SurfaceParameters</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\D3SurfaceVertexParameters.h">
+      <Filter>Header Files\D3StringConversion\D3XML\SurfaceParameters</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\ExprIsoSurfaceParameters.h">
+      <Filter>Header Files\D3StringConversion\D3XML\SurfaceParameters</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\D3DGraphics\ExprParametricR2R3SurfaceParameters.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\D3StringConversion\D3XML\SurfaceParameters</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\FunctionR2R1SurfaceParameters.h">
+      <Filter>Header Files\D3StringConversion\D3XML\SurfaceParameters</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\IsoSurfaceParameters.h">
+      <Filter>Header Files\D3StringConversion\D3XML\SurfaceParameters</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\D3DGraphics\ParametricR2R3SurfaceParameters.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\D3StringConversion\D3XML\SurfaceParameters</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\D3DGraphics\D3FunctionParamPersistentData.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="D3NameLookupTemplate.h">
+      <Filter>Source Files\D3StringConversion</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\D3ToString.h">
+      <Filter>Header Files\D3StringConversion</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\D3XML.h">
+      <Filter>Header Files\D3StringConversion\D3XML</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

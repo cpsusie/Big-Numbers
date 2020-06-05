@@ -7,7 +7,7 @@ class D3SceneObjectVisual;
 class D3SceneObjectPoint {
 public:
   D3SceneObjectVisual *m_obj;       // which object does m_pos refer to
-  D3DXVECTOR3           m_meshPoint; // relative to mesh (0,0,0)
+  D3DXVECTOR3          m_meshPoint; // relative to mesh (0,0,0)
   D3SceneObjectPoint() {
     reset();
   }

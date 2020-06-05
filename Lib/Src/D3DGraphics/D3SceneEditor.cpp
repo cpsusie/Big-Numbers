@@ -404,9 +404,7 @@ bool D3SceneEditor::selectCAM(int index) {
 }
 
 bool D3SceneEditor::selectCAM(CPoint point) {
-  const int cameraIndex = findCameraIndex(point);
-  if(cameraIndex < 0) return false;
-  return selectCAM(cameraIndex);
+  return selectCAM(findCameraIndex(point));
 }
 
 bool D3SceneEditor::isSameCAM(CPoint point) const {
@@ -418,7 +416,9 @@ bool D3SceneEditor::isCoordinateSystemVisible() const {
 }
 
 BOOL D3SceneEditor::PreTranslateMessage(MSG *pMsg) {
-  if(!isEnabled()) return false;
+  if(!isEnabled() || (m_sceneContainer->getMessageWindow() != GetActiveWindow())) {
+    return false;
+  }
   switch(pMsg->message) {
   case WM_KEYDOWN:
     return OnKeyDown((UINT)pMsg->wParam, (UINT)(pMsg->lParam & 0xffff), (UINT)(pMsg->lParam>>16));

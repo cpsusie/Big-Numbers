@@ -44,19 +44,38 @@ public:
   virtual LPD3DXMESH getMesh() const {
     return NULL;
   }
-  inline bool hasMesh() const {
-    return getMesh() != NULL;
-  }
   virtual LPDIRECT3DVERTEXBUFFER getVertexBuffer() const {
     return NULL;
+  }
+  virtual LPDIRECT3DINDEXBUFFER getIndexBuffer() const {
+    return NULL;
+  }
+  inline bool hasMesh() const {
+    return getMesh() != NULL;
   }
   inline bool hasVertexBuffer() const {
     return getVertexBuffer() != NULL;
   }
-  virtual bool hasNormals() const;
-  bool isNormalsVisible() const;
-  void setNormalsVisible(bool visible);
-  inline void *getUserData() {
+  inline bool hasIndexBuffer() const {
+    return getIndexBuffer() != NULL;
+  }
+
+  D3DVERTEXBUFFER_DESC getVertexBufferDesc() const;
+  DWORD                getFVF() const;
+  virtual bool         hasTextureCoordinates() const;
+  virtual int          getTextureId() const {
+    return -1;
+  }
+  LPDIRECT3DTEXTURE    getTexture() const;
+  inline bool          hasTexture() const {
+    return getTextureId() >= 0;
+  }
+  D3Device            &setDeviceTextureIfExist() const;
+
+  virtual bool         hasNormals() const;
+  bool                 isNormalsVisible() const;
+  void                 setNormalsVisible(bool visible);
+  inline void         *getUserData() {
     return m_userData;
   }
   inline void setUserData(void *p) {

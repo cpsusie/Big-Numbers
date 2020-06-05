@@ -38,6 +38,8 @@ typedef enum {
 
 typedef Iterator<D3SceneObjectVisual*> D3VisualIterator;
 
+typedef CompactUIntHashMap<LPDIRECT3DTEXTURE> TextureMap;
+
 // call SAFERELEASE(effect); on the returned value when finished use
 LPD3DXEFFECT compileEffect(LPDIRECT3DDEVICE device, const String &srcText, StringArray &errorMsg);
 
@@ -52,6 +54,7 @@ private:
   BitSet           m_lightsEnabled, m_lightsDefined;
   D3Material       m_undefinedMaterial;
   MaterialMap      m_materialMap;
+  TextureMap       m_textureMap;
   D3VisualArray    m_visualArray;
   D3CameraArray    m_cameraArray;
 
@@ -214,6 +217,16 @@ public:
 
   UINT getTextureCoordCount() const;
 
+  UINT addTexture(LPDIRECT3DTEXTURE texture);
+  void removeTexture(UINT textureId);
+  void removeAllTextures();
+  LPDIRECT3DTEXTURE getTexture(UINT textureId) const {
+    LPDIRECT3DTEXTURE *t = m_textureMap.get(textureId);
+    return (t != NULL) ? *t : NULL;
+  }
+  inline bool isTextureDefined(UINT textureId) const {
+    return m_textureMap.get(textureId) != NULL;
+  }
   // p in screen-coordinates
   // Return the camera which uses device with HWND at the given point, or NULL if none
   D3Camera            *getPickedCamera(const CPoint &p) const;

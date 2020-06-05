@@ -894,8 +894,18 @@
     <ClCompile Include="CreateMeshExprParametricR2R3Surface.cpp" />
     <ClCompile Include="D3CameraArray.cpp" />
     <ClCompile Include="D3CameraslideAnimator.cpp" />
+    <ClCompile Include="D3CameraXML.cpp" />
     <ClCompile Include="D3Device.cpp" />
+    <ClCompile Include="D3DisplayModeStr.cpp" />
+    <ClCompile Include="D3IndexBufferDescStr.cpp" />
+    <ClCompile Include="D3IndexBufferDescXML.cpp" />
+    <ClCompile Include="D3IndexBufferStr.cpp" />
+    <ClCompile Include="D3IndexBufferXML.cpp" />
     <ClCompile Include="D3Light.cpp" />
+    <ClCompile Include="D3LightXML.cpp" />
+    <ClCompile Include="D3MaterialXML.cpp" />
+    <ClCompile Include="D3MathXML.cpp" />
+    <ClCompile Include="D3MeshXML.cpp" />
     <ClCompile Include="D3Quaternion.cpp" />
     <ClCompile Include="D3Ray.cpp" />
     <ClCompile Include="D3SceneContainer.cpp" />
@@ -920,6 +930,7 @@
     <ClCompile Include="D3SceneObjectPoint.cpp" />
     <ClCompile Include="D3SceneObjectSolidBox.cpp" />
     <ClCompile Include="D3SceneObjectVisualNormals.cpp" />
+    <ClCompile Include="D3SceneObjectVisualXML.cpp" />
     <ClCompile Include="D3SceneObjectWithIndexBuffer.cpp" />
     <ClCompile Include="D3SceneObjectWithMesh.cpp" />
     <ClCompile Include="D3SceneObjectWithVertexBuffer.cpp" />
@@ -929,22 +940,31 @@
     <ClCompile Include="D3SceneObjectWireFrameBox.cpp" />
     <ClCompile Include="D3SceneObjectVisual.cpp" />
     <ClCompile Include="D3SceneEditorSplitWindow.cpp" />
+    <ClCompile Include="D3SurfaceVertexParameters.cpp" />
     <ClCompile Include="D3ToSize.cpp" />
+    <ClCompile Include="D3VertexBufferDescXML.cpp" />
+    <ClCompile Include="D3VertexBufferDescStr.cpp" />
+    <ClCompile Include="D3VertexBufferStr.cpp" />
+    <ClCompile Include="D3VertexBufferXML.cpp" />
     <ClCompile Include="D3World.cpp" />
+    <ClCompile Include="D3WorldXML.cpp" />
     <ClCompile Include="ExprFunctionR2R1SurfaceParameters.cpp" />
     <ClCompile Include="ExprParametricR2R3SurfaceParameters.cpp" />
     <ClCompile Include="Face.cpp" />
     <ClCompile Include="CreateMeshFunctionR2R1Surface.cpp" />
     <ClCompile Include="CreateMeshIsoSurface.cpp" />
+    <ClCompile Include="FillModeStr.cpp" />
+    <ClCompile Include="FormatStr.cpp" />
     <ClCompile Include="IsoSurfaceSnapMCLookupTable.cpp" />
-    <ClCompile Include="FVF.cpp" />
+    <ClCompile Include="FVFStr.cpp" />
     <ClCompile Include="IsoSurfacePolygonizerSnapMC.cpp" />
     <ClCompile Include="LightDlg.cpp" />
     <ClCompile Include="D3Material.cpp" />
+    <ClCompile Include="LightTypeStr.cpp" />
     <ClCompile Include="MaterialDlg.cpp" />
     <ClCompile Include="MeshBuilderToString.cpp" />
     <ClCompile Include="MeshToBoundingBox.cpp" />
-    <ClCompile Include="MeshToString.cpp" />
+    <ClCompile Include="D3MeshToString.cpp" />
     <ClCompile Include="D3LightControl.cpp" />
     <ClCompile Include="D3LightControlDirectional.cpp" />
     <ClCompile Include="D3LightControlPoint.cpp" />
@@ -952,7 +972,7 @@
     <ClCompile Include="D3Scene.cpp" />
     <ClCompile Include="D3SceneIO.cpp" />
     <ClCompile Include="D3AbstractTextureFactory.cpp" />
-    <ClCompile Include="D3ToString.cpp" />
+    <ClCompile Include="HandednessStr.cpp" />
     <ClCompile Include="FunctionR2R1SurfaceParameters.cpp" />
     <ClCompile Include="CreateMeshExprFunctionR2R1Surface.cpp" />
     <ClCompile Include="ExprIsoSurfaceParameters.cpp" />
@@ -981,15 +1001,20 @@
     <ClCompile Include="D3Spherical.cpp" />
     <ClCompile Include="IsoSurfacePolygonizerStandard.cpp" />
     <ClCompile Include="MeshBuilder.cpp" />
-    <ClCompile Include="D3XML.cpp" />
+    <ClCompile Include="D3SceneXML.cpp" />
+    <ClCompile Include="PoolStr.cpp" />
     <ClCompile Include="Profile.cpp" />
     <ClCompile Include="IsoSurfaceParameters.cpp" />
     <ClCompile Include="ProfileXML.cpp" />
+    <ClCompile Include="ResourceTypeStr.cpp" />
     <ClCompile Include="RotateProfile.cpp" />
+    <ClCompile Include="ShadeModeStr.cpp" />
     <ClCompile Include="SphereMesh.cpp" />
+    <ClCompile Include="UsageStr.cpp" />
     <ClCompile Include="VertexBufferToBoundingBox.cpp" />
     <ClCompile Include="VertexFileSurfaceMeshBuilder.cpp" />
     <ClCompile Include="VertexNormalTextureIndex.cpp" />
+    <ClCompile Include="VertexStr.cpp" />
     <ClCompile Include="WavefrontObjFileMeshBuilder.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -1027,6 +1052,7 @@
     <ClInclude Include="..\..\Include\D3DGraphics\D3SelectedCube.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3AbstractTextureFactory.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3Spherical.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\D3SurfaceVertexParameters.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3ToString.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3Transformation.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectVisual.h" />
@@ -1051,6 +1077,7 @@
     <ClInclude Include="..\..\Include\D3DGraphics\PragmaLib.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\Profile.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\resource.h" />
+    <ClInclude Include="D3NameLookupTemplate.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>

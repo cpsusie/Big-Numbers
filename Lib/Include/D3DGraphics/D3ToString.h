@@ -12,21 +12,27 @@ inline String toString(const D3Light                &light, int dec=3) {
 inline String toString(const D3Material             &material, int dec = 3) {
   return material.toString(dec);
 }
-String toString(      D3DLIGHTTYPE          type     );
-String toString(      D3DFILLMODE           mode     );
-String toString(      D3DSHADEMODE          mode     );
-String toString(      D3DFORMAT             f        );
-String toString(      D3DPOOL               pool     );
-String toString(      D3DRESOURCETYPE       type     );
-String usageToString( DWORD                 usage    );
-String FVFToString(   DWORD                 fvf      );
-String toString(const D3DDISPLAYMODE       &mode     );
+String          lightTypeToString(     D3DLIGHTTYPE          type     );
+D3DLIGHTTYPE    lightTypeFromString(   const String         &str      );
+String          fillModeToString(      D3DFILLMODE           mode     );
+D3DFILLMODE     fillModeFromString(    const String         &str      );
+String          shadeModeToString(     D3DSHADEMODE          mode     );
+D3DSHADEMODE    shadeModeFromString(   const String         &str      );
+String          formatToString(        D3DFORMAT             format   );
+D3DFORMAT       formatFromString(      const String         &str      );
+String          poolToString(          D3DPOOL               pool     );
+D3DPOOL         poolFromString(        const String         &str      );
+String          resourceTypeToString(  D3DRESOURCETYPE       type     );
+D3DRESOURCETYPE resourceTypeFromString(const String         &str      );
+String          usageToString(         DWORD                 usage    );
+DWORD           usageFromString(       const String         &str      );
+String          FVFToString(           DWORD                 fvf      );
+DWORD           FVFFromString(         const String         &str      );
+String          toString(              const D3DDISPLAYMODE &mode     );
+String          handednessToString(    bool                  rightHanded);
+// return true if str == "righthanded", false if str == lefthanded, else throw
+bool            handednessFromString(  const String          &str     );
 
-inline String toString(D3PCOLOR             c        ,bool showAlpha=false) {
-  return c.toString(showAlpha);
-}
-
-String toString(const D3DCOLORVALUE        &c        ,bool showAlpha=false);
 String toString(const D3DVERTEXBUFFER_DESC &desc     ,bool multiLines=true);
 String toString(const D3DINDEXBUFFER_DESC  &desc     ,bool multiLines=true);
 
@@ -42,5 +48,4 @@ String toString(LPD3DXMESH             mesh        , BYTE flags = FORMAT_BUFFERA
 String toString(LPDIRECT3DVERTEXBUFFER vertexBuffer, BYTE flags = FORMAT_BUFFERALL);
 String toString(LPDIRECT3DINDEXBUFFER  indexBuffer , BYTE flags = FORMAT_BUFFERALL);
 
-String handednessToString(bool rightHanded);
 String vertexToString(const char *v, DWORD FVF  , int dec=3);

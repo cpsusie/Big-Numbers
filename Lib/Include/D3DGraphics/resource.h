@@ -112,13 +112,15 @@
 #define ID_SELECT_LIGHT20               34240
 #define ID_SCENE_SAVEPARAMETERS         34250
 #define ID_SCENE_LOADPARAMETERS         34251
+#define ID_VISUALOBJECTCONTEXTMENU_TEXTURE 34296
+#define ID_OBJECT_TEXTURE               34297
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        713
-#define _APS_NEXT_COMMAND_VALUE         34296
+#define _APS_NEXT_COMMAND_VALUE         34298
 #define _APS_NEXT_CONTROL_VALUE         6041
 #define _APS_NEXT_SYMED_VALUE           103
 #endif

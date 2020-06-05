@@ -59,6 +59,23 @@ int D3SceneObjectVisual::findChildByType(SceneObjectType type) const {
   return -1;
 }
 
+LPDIRECT3DTEXTURE D3SceneObjectVisual::getTexture() const {
+  return getScene().getTexture(getTextureId());
+}
+
+D3Device &D3SceneObjectVisual::setDeviceTextureIfExist() const {
+  D3Device &device     = getDevice();
+  const int textureId  = getTextureId();
+  if((textureId >= 0) && hasTextureCoordinates()) {
+    getDevice().setSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR)
+               .setSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR)
+               .setTexture(     0, getScene().getTexture(textureId))
+               .setAlphaBlendEnable(false)
+               .setZEnable(         D3DZB_TRUE);
+  }
+  return device;
+}
+
 const D3Material &D3SceneObjectVisual::getMaterial() const {
   return getScene().getMaterial(getMaterialId());
 }
@@ -72,27 +89,37 @@ D3Device &D3SceneObjectVisual::setDeviceMaterialIfExist() const {
   return device;
 }
 
-#define NORMALFVFFLAGS (D3DFVF_XYZ | D3DFVF_NORMAL)
+#define NORMALFVFFLAGS  (D3DFVF_XYZ | D3DFVF_NORMAL)
+#define TEXTUREFVFFLAGS (D3DFVF_XYZ | D3DFVF_TEX1)
 
-bool D3SceneObjectVisual::hasNormals() const {
+DWORD D3SceneObjectVisual::getFVF() const {
+  return getVertexBufferDesc().FVF;
+}
+
+D3DVERTEXBUFFER_DESC D3SceneObjectVisual::getVertexBufferDesc() const {
+  D3DVERTEXBUFFER_DESC desc;
   if(hasMesh()) {
     LPD3DXMESH mesh = getMesh();
     LPDIRECT3DVERTEXBUFFER vb;
     V(mesh->GetVertexBuffer(&vb)); TRACE_CREATE(vb);
-    D3DVERTEXBUFFER_DESC desc;
     V(vb->GetDesc(&desc));
     SAFERELEASE(vb);
-    return (desc.FVF & NORMALFVFFLAGS) == NORMALFVFFLAGS;
   } else if(hasVertexBuffer()) {
     LPDIRECT3DVERTEXBUFFER vb = getVertexBuffer();
-    D3DVERTEXBUFFER_DESC desc;
     V(vb->GetDesc(&desc));
-    return (desc.FVF & NORMALFVFFLAGS) == NORMALFVFFLAGS;
   } else {
-    return false;
+    memset(&desc, 0, sizeof(desc));
   }
+  return desc;
 }
 
+bool D3SceneObjectVisual::hasNormals() const {
+  return (getFVF() & NORMALFVFFLAGS) == NORMALFVFFLAGS;
+}
+
+bool D3SceneObjectVisual::hasTextureCoordinates() const {
+  return (getFVF() & TEXTUREFVFFLAGS) == TEXTUREFVFFLAGS;
+}
 
 bool D3SceneObjectVisual::isNormalsVisible() const {
   int index;

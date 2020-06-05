@@ -5,7 +5,8 @@
 
 class ExprFunctionR2R1SurfaceParameters : public FunctionR2R1SurfaceParameters, public FunctionImageParamPersistentData {
 private:
-  void getDataFromDocOld(XMLDoc &doc);
+  void getDataFromDocOld1(XMLDoc &doc);
+  void getDataFromDocOld2(XMLDoc &doc);
 public:
   String         m_expr;
   bool           m_machineCode;

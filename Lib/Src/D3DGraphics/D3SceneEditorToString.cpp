@@ -10,9 +10,13 @@
 
 #define SCENE  (*getScene())
 
+#if defined(caseStr)
+#undef caseStr
+#endif
+#define caseStr(s) case CONTROL_##s: return _T(#s);
+
 String toString(D3EditorControl control) {
   switch(control) {
-#define caseStr(s) case CONTROL_##s: return _T(#s);
   caseStr(IDLE                   )
   caseStr(CAMERA_WALK            )
   caseStr(CAMERA_PROJECTION      )

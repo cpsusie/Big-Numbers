@@ -2,18 +2,20 @@
 #include <D3DGraphics/MeshBuilder.h>
 #include <D3DGraphics/FunctionR2R1SurfaceParameters.h>
 #include <D3DGraphics/MeshArrayJobMonitor.h>
+#include <D3DGraphics/D3ToString.h>
 #include <D3DGraphics/MeshCreators.h>
 
 class Function2DPoint {
 public:
   Vertex m_p;
   Vertex m_n;
-  Function2DPoint(FunctionR2R1 &f, const Point2D &p);
+  Function2DPoint(FunctionR2R1 &f, const Point2D &p, bool calculateNormal);
 };
 
-Function2DPoint::Function2DPoint(FunctionR2R1 &f, const Point2D &p) {
+Function2DPoint::Function2DPoint(FunctionR2R1 &f, const Point2D &p, bool calculateNormal) {
   const double z = f(p);
   m_p = Vertex(p.x, p.y, z);
+  if(!calculateNormal) return;
 #define EPS 1e-5
   Point2D px,py;
 
@@ -46,32 +48,76 @@ static void findMax16BitMeshVertexCount(LPDIRECT3DDEVICE device) {
 }
 #endif
 
-LPD3DXMESH createMeshFrom2DFunction(AbstractMeshFactory &amf, FunctionR2R1 &f, const DoubleInterval &xInterval, const DoubleInterval &yInterval, unsigned int nx, unsigned int ny, bool doubleSided) {
+#define MF_DOUBLESIDED 0x01
+
+class TexturePoints : public CompactFloatArray {
+public:
+  TexturePoints(UINT n);
+};
+
+TexturePoints::TexturePoints(UINT n) : CompactFloatArray(n) {
+  const float dx = 1.0f / (n - 1);
+  float       x = 0;
+  for(UINT j = 0; j < n; j++, x += dx) {
+    add(x);
+  }
+  last() = 1;
+}
+
+LPD3DXMESH createMeshFrom2DFunction(AbstractMeshFactory &amf, FunctionR2R1 &f, const DoubleInterval &xInterval, const DoubleInterval &yInterval, UINT nx, UINT ny, bool doubleSided, DWORD fvf) {
   nx = max(nx, 2);
   ny = max(ny, 2);
 
-  MeshBuilder mb;
+  MeshBuilder   mb;
   mb.clear((nx+1)*(ny+1));
-  const double  stepx = xInterval.getLength() / (nx-1);
-  const double  stepy = yInterval.getLength() / (ny-1);
-  Point2D p;
-  p.x = xInterval.getFrom();
-  for(UINT i = 0; i < nx; i++, p.x += stepx) {
-    p.y = yInterval.getFrom();
-    for(UINT j = 0; j < ny; j++, p.y += stepy) {
-      Function2DPoint fp(f,p);
+  const double  stepx      = xInterval.getLength() / (nx-1);
+  const double  stepy      = yInterval.getLength() / (ny-1);
+  const bool    hasNormals = fvf & D3DFVF_NORMAL;
+  const bool    hasTexture = fvf & D3DFVF_TEX1;
+  const TexturePoints uPoints(nx), vPoints(ny);
+  const float *uValues = hasTexture ? uPoints.getBuffer() : NULL, *vValues = hasTexture ? vPoints.getBuffer() : NULL;
+  // (u ~ x, v ~ y)
+  Point2D p(xInterval.getFrom(), yInterval.getFrom());
+  for(UINT i = 0; i < ny; i++, p.y += stepy) {
+    p.x = xInterval.getFrom();
+    for(UINT j = 0; j < nx; j++, p.x += stepx) {
+      Function2DPoint fp(f, p, hasNormals);
       mb.addVertex(fp.m_p);
-      mb.addNormal(fp.m_n);
+      if(hasNormals) {
+        mb.addNormal(fp.m_n);
+      }
+      if(hasTexture) {
+        mb.addTextureVertex(uValues[j],vValues[i]);
+      }
     }
   }
-  for(UINT i = 1; i < nx; i++) {
-    ULONG index = (i-1)*ny;
-    for(UINT j = 1; j < ny; j++, index++) {
-      Face &face = mb.addFace();
-      face.addVertexNormalIndex(index     , index     );
-      face.addVertexNormalIndex(index+1   , index+1   );
-      face.addVertexNormalIndex(index+1+ny, index+1+ny);
-      face.addVertexNormalIndex(index  +ny, index  +ny);
+  for(UINT i = 1; i < ny; i++) {
+    ULONG inx = (i-1)*nx, inxnx = inx+nx;
+    for(const ULONG lastinx = inxnx-1; inx<lastinx; inx++, inxnx++) {
+      Face &face = mb.addFace((size_t)4);
+      switch(fvf & (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX1)) {
+      case (D3DFVF_XYZ | D3DFVF_NORMAL):
+        face.addVertexNormalIndex(inx    , inx    );
+        face.addVertexNormalIndex(inxnx  , inxnx  );
+        face.addVertexNormalIndex(inxnx+1, inxnx+1);
+        face.addVertexNormalIndex(inx  +1, inx  +1);
+        break;
+      case (D3DFVF_XYZ | D3DFVF_TEX1):
+        face.addVertexTextureIndex(inx    , inx    );
+        face.addVertexTextureIndex(inxnx  , inxnx  );
+        face.addVertexTextureIndex(inxnx+1, inxnx+1);
+        face.addVertexTextureIndex(inx  +1, inx  +1);
+        break;
+      case (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX1):
+        face.addVertexNormalTextureIndex(inx    , inx    , inx   );
+        face.addVertexNormalTextureIndex(inxnx  , inxnx  , inxnx );
+        face.addVertexNormalTextureIndex(inxnx+1, inxnx+1,inxnx+1);
+        face.addVertexNormalTextureIndex(inx  +1, inx  +1,inxnx+1);
+        break;
+      default:
+        throwInvalidArgumentException(__TFUNCTION__, _T("fvf=%s"), FVFToString(fvf).cstr());
+        break;
+      }
     }
   }
 //  debugLog(_T("%s\n"), mb.toString().cstr());
@@ -80,7 +126,13 @@ LPD3DXMESH createMeshFrom2DFunction(AbstractMeshFactory &amf, FunctionR2R1 &f, c
 
 LPD3DXMESH createMesh(AbstractMeshFactory &amf, const FunctionR2R1SurfaceParameters &param, FunctionR2R1 &f) {
   checkIsAnimation(__TFUNCTION__, param, false);
-  return createMeshFrom2DFunction(amf, f, param.getXInterval(), param.getYInterval(), param.m_pointCount, param.m_pointCount, param.m_doubleSided);
+  return createMeshFrom2DFunction(amf, f
+                                 ,param.getXInterval()
+                                 ,param.getYInterval()
+                                 ,param.m_pointCount, param.m_pointCount
+                                 ,param.m_doubleSided
+                                 ,param.m_vertexParameters.getFVF()
+                                 );
 }
 
 class VariableFunction2DMeshCreator : public AbstractVariableMeshCreator {
