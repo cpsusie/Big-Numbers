@@ -2,7 +2,7 @@
 #include "Mainfrm.h"
 #include "InfoView.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -34,7 +34,7 @@ void CInfoView::OnBeginPrinting(CDC* /*pDC*/, CPrintInfo* /*pInfo*/) {
 }
 void CInfoView::OnEndPrinting(CDC* /*pDC*/, CPrintInfo* /*pInfo*/) {
 }
-#ifdef _DEBUG
+#if defined(_DEBUG)
 void CInfoView::AssertValid() const {
   __super::AssertValid();
 }

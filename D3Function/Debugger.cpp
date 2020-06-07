@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#ifdef ISODEBUGGER
+#if defined(ISODEBUGGER)
 
 #include <Thread.h>
 #include "DebugIsoSurface.h"

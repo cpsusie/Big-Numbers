@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#ifdef ISODEBUGGER
+#if defined(ISODEBUGGER)
 #include <D3DGraphics/D3Camera.h>
 #include "Debugger.h"
 #include "DebugIsoSurface.h"
@@ -147,7 +147,7 @@ void DebugSceneobject::moveCamToNewCubeCenter() {
 
 void DebugSceneobject::handleDebuggerPaused() {
   if(hasCubeCenter()) {
-#ifndef SLIDECAMERA
+#if !defined(SLIDECAMERA)
     const D3DXVECTOR3 cc  = getCubeCenter();
     D3Camera         *cam = dbgCAM();
     D3World           w   = cam->getD3World();

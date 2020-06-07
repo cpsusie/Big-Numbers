@@ -1,7 +1,10 @@
 #include "stdafx.h"
 #include <Date.h>
 #include <ProcessTools.h>
-#ifdef ISODEBUGGER
+#if defined(_DEBUG)
+#include <DebugLog.h>
+#endif
+#if defined(ISODEBUGGER)
 #include <ThreadPool.h>
 #endif // ISODEBUGGER
 #include <D3DGraphics/MeshCreators.h>
@@ -17,7 +20,7 @@
 #include "OptionsOrganizerDlg.h"
 #include "MainFrm.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -86,7 +89,7 @@ static UINT indicators[] = {
 #define REPAINT() Invalidate(FALSE)
 
 CMainFrame::CMainFrame()
-#ifdef ISODEBUGGER
+#if defined(ISODEBUGGER)
 : m_debugger(               NULL )
 , m_hasIsoSurfaceParam(     false)
 , m_hasFinalDebugIsoSurface(false)
@@ -147,6 +150,13 @@ BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT /*lpcs*/, CCreateContext *pContex
   return TRUE;
 }
 
+D3SceneEditor &CD3FunctionSplitterWnd::getEditor() const {
+  if(m_editor == NULL) {
+    m_editor = &theApp.getMainFrame()->getEditor();
+  }
+  return *m_editor;
+}
+
 void CD3FunctionSplitterWnd::RecalcLayout() {
   CInfoView *infoView = (CInfoView*)GetPane(1, 0);
   infoView->enableScroll(false);
@@ -154,7 +164,8 @@ void CD3FunctionSplitterWnd::RecalcLayout() {
   if(m_splitPointMoved) {
     CMainFrame *mf = theApp.getMainFrame();
     mf->saveRelativeHeight();
-    mf->getEditor().popStateFlags(); // setEnabled(true);
+    D3SceneEditor &editor = getEditor();
+    mf->getEditor().popAllStateFlags(); // setEnabled(true);
     if(mf->isInfoPanelVisible()) {
       mf->startTimer();
     } else {
@@ -167,11 +178,14 @@ void CD3FunctionSplitterWnd::RecalcLayout() {
 
 void CD3FunctionSplitterWnd::OnInvertTracker(const CRect &rect) {
   __super::OnInvertTracker(rect);
-  theApp.getMainFrame()->getEditor().pushStateFlags(false, SE_ENABLED | SE_PROPCHANGES | SE_RENDER);
+  D3SceneEditor &editor = getEditor();
+  if(editor.isFlagsStackEmpty()) {
+    editor.pushStateFlags(false, SE_ENABLED | SE_PROPCHANGES | SE_RENDER);
+  }
   m_splitPointMoved = true;
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 void CMainFrame::AssertValid() const {
   __super::AssertValid();
 }
@@ -378,7 +392,7 @@ void CMainFrame::deleteCalculatedObject() {
   if(oldObj) {
     m_scene.removeVisual(oldObj);
     SAFEDELETE(oldObj);
-#ifdef ISODEBUGGER
+#if defined(ISODEBUGGER)
     m_hasFinalDebugIsoSurface = false;
 #endif // ISODEBUGGER
   }
@@ -564,7 +578,7 @@ public:
 
 void CMainFrame::ajourDebugMenu() {
   DebugMenuFlags menuFlags;
-#ifdef ISODEBUGGER
+#if defined(ISODEBUGGER)
 #define FLAGS menuFlags.m_flags
   FLAGS.m_enableStart       = !hasDebugger() && m_hasIsoSurfaceParam;
   FLAGS.m_hasDebugger       = hasDebugger();
@@ -574,7 +588,7 @@ void CMainFrame::ajourDebugMenu() {
 #endif // ISODEBUGGER
 
   enableSubMenuContainingId(this, ID_DEBUG_GO, menuFlags.enableDebugMenu());
-#ifdef ISODEBUGGER
+#if defined(ISODEBUGGER)
   if(FLAGS.m_enableStart) {
     setMenuItemText(this, ID_DEBUG_GO, _T("Start debugging\tF5"));
   } else if(FLAGS.m_debuggerPaused) {
@@ -592,7 +606,7 @@ void CMainFrame::ajourDebugMenu() {
 #endif // ISODEBUGGER
 }
 
-#ifndef ISODEBUGGER
+#if !defined(ISODEBUGGER)
 void CMainFrame::startDebugging() {}
 void CMainFrame::stopDebugging() {}
 void CMainFrame::OnDebugGo() {}
@@ -764,11 +778,13 @@ void CMainFrame::updateDebugInfo() {
 void CMainFrame::updateMemoryInfo() {
   const PROCESS_MEMORY_COUNTERS mem = getProcessMemoryUsage();
   const ResourceCounters        res = getProcessResources();
-  m_memoryInfo = format(_T("Time:%s Memory:%13s User-obj:%4d GDI-obj:%4d")
+  m_memoryInfo = format(_T("Time:%s Memory:%13s User-obj:%4d GDI-obj:%4d %s")
                        ,Timestamp().toString(hhmmss).cstr()
                        ,format1000(mem.WorkingSetSize).cstr()
                        ,res.m_userObjectCount
-                       ,res.m_gdiObjectCount);
+                       ,res.m_gdiObjectCount
+                       ,m_editor.stateFlagsToString().cstr()
+                       );
 }
 
 void CMainFrame::updateEditorInfo() {
@@ -779,7 +795,7 @@ void CMainFrame::show3DInfo(BYTE flags) {
   if(!isInfoPanelVisible()) return;
   if(flags & INFO_MEM  ) updateMemoryInfo();
   if(flags & INFO_EDIT ) updateEditorInfo();
-#ifndef ISODEBUGGER
+#if !defined(ISODEBUGGER)
   showInfo(_T("%s\n%s"), m_memoryInfo.cstr(), m_editorInfo.cstr());
 #else
   if(flags & INFO_DEBUG) updateDebugInfo();
@@ -802,7 +818,7 @@ void CMainFrame::showInfo(_In_z_ _Printf_format_string_ TCHAR const * const form
 
 void CMainFrame::OnFileFunctionSurface() {
   try {
-    CExprFunctionR2R1SurfaceParametersDlg dlg(m_functionR2R1SurfaceParam);
+    CExprFunctionR2R1SurfaceParametersDlg dlg(m_functionR2R1SurfaceParam, m_scene.getDevice());
     if(dlg.DoModal() != IDOK) {
       return;
     }
@@ -835,7 +851,7 @@ void CMainFrame::OnFileIsoSurface() {
       return;
     }
     m_isoSurfaceParam = dlg.getData();
-#ifndef ISODEBUGGER
+#if !defined(ISODEBUGGER)
     setCalculatedObject(m_isoSurfaceParam);
     REPAINT();
 #else

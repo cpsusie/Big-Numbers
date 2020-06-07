@@ -3,7 +3,7 @@
 #include "D3Function.h"
 #include "D3FunctionDoc.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -41,7 +41,7 @@ void CD3FunctionDoc::Serialize(CArchive& ar) {
   }
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 void CD3FunctionDoc::AssertValid() const {
   __super::AssertValid();
 }

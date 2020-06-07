@@ -5,7 +5,7 @@
 #include "D3FunctionDoc.h"
 #include "D3SceneView.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -53,7 +53,7 @@ void C3DSceneView::OnBeginPrinting(CDC* /*pDC*/, CPrintInfo* /*pInfo*/) {
 void C3DSceneView::OnEndPrinting(CDC* /*pDC*/, CPrintInfo* /*pInfo*/) {
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 void C3DSceneView::AssertValid() const {
   __super::AssertValid();
 }

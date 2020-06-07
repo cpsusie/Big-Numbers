@@ -24,7 +24,7 @@ public:
     m_scrollEnabled = enabled;
   }
   virtual ~CInfoView();
-#ifdef _DEBUG
+#if defined(_DEBUG)
   virtual void AssertValid() const;
   virtual void Dump(CDumpContext& dc) const;
 #endif
@@ -39,7 +39,7 @@ public:
   afx_msg void OnEnVscrollEditInfoBox();
 };
 
-#ifndef _DEBUG  // debug version in CInfoView.cpp
+#if !defined(_DEBUG) // debug version in CInfoView.cpp
 inline CD3FunctionDoc *CInfoView::GetDocument() {
   return (CD3FunctionDoc*)m_pDocument;
 }

@@ -24,7 +24,7 @@ void throwValidateException(int field, const TCHAR *format, ...) {
   throw ValidationException(field, msg);
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -486,7 +486,7 @@ void CProfileDlg::OnFileSaveAs() {
 }
 
 void CProfileDlg::saveAs() {
-#ifndef __TODO__
+#if !defined(__TODO__)
   showWarning(_T("%s:Function not implemented"), __TFUNCTION__);
 #else
   CString objName = m_profile.m_name.cstr();
@@ -501,7 +501,7 @@ void CProfileDlg::saveAs() {
 }
 
 void CProfileDlg::save(const String &fileName) {
-#ifndef __TODO__
+#if !defined(__TODO__)
   showWarning(_T("%s:Function not implemented"), __TFUNCTION__);
 #else
   FILE *file = NULL;

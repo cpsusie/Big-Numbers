@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "IsoSurfaceParametersDlg.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -151,7 +151,7 @@ bool CIsoSurfaceParametersDlg::validate() {
 void CIsoSurfaceParametersDlg::enableTimeFields() {
   __super::enableTimeFields();
   setWindowText(this, IDC_STATIC_FUNCTION, m_includeTime ? _T("&S(t,x,y,z) =") : _T("&S(x,y,z) ="));
-#ifndef ISODEBUGGER
+#if !defined(ISODEBUGGER)
   const bool enableDebugPolygonizer = false;
 #else
   const bool enableDebugPolygonizer = !m_includeTime;

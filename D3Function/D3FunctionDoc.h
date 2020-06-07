@@ -11,7 +11,7 @@ public:
   virtual BOOL OnNewDocument();
   virtual void Serialize(CArchive& ar);
   virtual ~CD3FunctionDoc();
-#ifdef _DEBUG
+#if defined(_DEBUG)
   virtual void AssertValid() const;
   virtual void Dump(CDumpContext& dc) const;
 #endif

@@ -4,7 +4,7 @@
 const TCHAR *profileFileExtensions = _T("Profile-files (*.prf)\0*.prf\0All files (*.*)\0*.*\0\0");
 
 Profile *selectAndLoadProfile() {
-#ifndef __TODO__
+#if !defined(__TODO__)
   showWarning(_T("%s:Function not implemented"), __TFUNCTION__);
   return NULL;
 #else

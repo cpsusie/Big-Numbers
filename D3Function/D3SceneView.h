@@ -24,7 +24,7 @@ public:
   C3DSceneView();
   virtual ~C3DSceneView();
   CD3FunctionDoc  *GetDocument();
-#ifdef _DEBUG
+#if defined(_DEBUG)
   virtual void AssertValid() const;
   virtual void Dump(CDumpContext& dc) const;
 #endif
@@ -50,7 +50,7 @@ public:
   afx_msg void OnDestroy();
 };
 
-#ifndef _DEBUG  // debug version in D3FunctionView.cpp
+#if !defined(_DEBUG) // debug version in D3FunctionView.cpp
 inline CD3FunctionDoc* C3DSceneView::GetDocument()
    { return (CD3FunctionDoc*)m_pDocument; }
 #endif

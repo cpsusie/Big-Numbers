@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef ISODEBUGGER
+#if defined(ISODEBUGGER)
 
 #include <FlagTraits.h>
 #include <Math/Expression/ExpressionWrapper.h>

@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#ifdef ISODEBUGGER
+#if defined(ISODEBUGGER)
 
 #include <D3DGraphics/D3Device.h>
 #include <D3DGraphics/D3Cube.h>
@@ -18,7 +18,7 @@
 class CornerMarkObject : public D3SceneObjectSolidBox {
 private:
   OctaObject &m_octaObject;
-#ifdef USE_SNAPMC
+#if defined(USE_SNAPMC)
   int         m_materialId[3];
 #else
   int         m_materialId[2];
@@ -45,7 +45,8 @@ OctaObject::OctaObject(D3SceneObjectVisual *parent, float cellSize)
 
   const D3Cube      cube = createCube(cellSize);
   const D3DXVECTOR3 lbn  = cube.getMin(), rtf = cube.getMax();
-#ifdef USE_SNAPMC // x={left,right}, y={near,far}, z={bottom,top}
+#if defined(USE_SNAPMC)
+  // x={left,right}, y={near,far}, z={bottom,top}
   m_cornerCenterArray[LBN] = D3DXVECTOR3(lbn.x, lbn.y, lbn.z); // left  bottom near corner
   m_cornerCenterArray[LBF] = D3DXVECTOR3(lbn.x, rtf.y, lbn.z); // left  bottom far  corner
   m_cornerCenterArray[LTN] = D3DXVECTOR3(lbn.x, lbn.y, rtf.z); // left  top    near corner
@@ -113,7 +114,7 @@ CornerMarkObject::CornerMarkObject(OctaObject *parent)
 : D3SceneObjectSolidBox(parent, createCube(parent->getCellSize() / 10), _T("CornerMark"))
 , m_octaObject(*parent)
 {
-#ifdef USE_SNAPMC
+#if defined(USE_SNAPMC)
   m_materialId[V_NEGATIVE] = getScene().addMaterialWithColor(NEGATIVECOLOR);
   m_materialId[V_ZERO    ] = getScene().addMaterialWithColor(ZEROCOLOR    );
   m_materialId[V_POSITIVE] = getScene().addMaterialWithColor(POSITIVECOLOR);

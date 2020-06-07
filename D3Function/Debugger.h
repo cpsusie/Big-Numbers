@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef ISODEBUGGER
+#if defined(ISODEBUGGER)
 
 #include <InterruptableRunnable.h>
 #include <PropertyContainer.h>

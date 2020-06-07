@@ -318,7 +318,7 @@ bool DrawTool::canCopy() {
 }
 
 DrawTool &DrawTool::copySelected() {
-#ifndef __TODO__
+#if !defined(__TODO__)
   showWarning(_T("%s:Function not implemented"), __TFUNCTION__);
 #else
   Profile copy;
@@ -339,7 +339,7 @@ DrawTool &DrawTool::cutSelected() {
 }
 
 DrawTool &DrawTool::paste() {
-#ifndef __TODO__
+#if !defined(__TODO__)
   showWarning(_T("%s:Function not implemented"), __TFUNCTION__);
 #else
   const String str = getClipboardText();

@@ -70,7 +70,7 @@ public:
   CSplitView();
   virtual ~CSplitView();
   CD3FunctionDoc *GetDocument();
-#ifdef _DEBUG
+#if defined(_DEBUG)
   virtual void AssertValid() const;
   virtual void Dump(CDumpContext& dc) const;
 #endif
@@ -85,7 +85,7 @@ public:
   virtual void OnEndPrinting(CDC *pDC, CPrintInfo *pInfo);
 };
 
-#ifndef _DEBUG  // debug version in D3FunctionView.cpp
+#if !defined(_DEBUG) // debug version in D3FunctionView.cpp
 inline CD3FunctionDoc* CSplitView::GetDocument()
 {
   return (CD3FunctionDoc*)m_pDocument;

@@ -4,7 +4,7 @@
 #include "D3FunctionDoc.h"
 #include "SplitView.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -69,7 +69,7 @@ void CSplitView::OnBeginPrinting(CDC* /*pDC*/, CPrintInfo* /*pInfo*/) {
 void CSplitView::OnEndPrinting(CDC* /*pDC*/, CPrintInfo* /*pInfo*/) {
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 void CSplitView::AssertValid() const {
   __super::AssertValid();
 }
