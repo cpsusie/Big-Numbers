@@ -276,9 +276,6 @@
     <ClCompile Include="ParametricR2R3SurfaceParameters.cpp">
       <Filter>Source Files\D3StringConversion\D3XML\SurfaceParameters</Filter>
     </ClCompile>
-    <ClCompile Include="D3SurfaceVertexParameters.cpp">
-      <Filter>Source Files\D3StringConversion\D3XML\SurfaceParameters</Filter>
-    </ClCompile>
     <ClCompile Include="FVFStr.cpp">
       <Filter>Source Files\D3StringConversion</Filter>
     </ClCompile>
@@ -373,6 +370,21 @@
       <Filter>Source Files\D3StringConversion\D3XML</Filter>
     </ClCompile>
     <ClCompile Include="D3VertexBufferXML.cpp">
+      <Filter>Source Files\D3StringConversion\D3XML</Filter>
+    </ClCompile>
+    <ClCompile Include="D3SceneTextureMap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D3SurfaceCommonParameters.cpp">
+      <Filter>Source Files\D3StringConversion\D3XML\SurfaceParameters</Filter>
+    </ClCompile>
+    <ClCompile Include="SelectAndValidateTextureFile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SelectAndLoadProfile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D3SurfaceCommonParametersXML.cpp">
       <Filter>Source Files\D3StringConversion\D3XML</Filter>
     </ClCompile>
   </ItemGroup>
@@ -532,9 +544,6 @@
     <ClInclude Include="..\..\Include\D3DGraphics\ExprFunctionR2R1SurfaceParameters.h">
       <Filter>Header Files\D3StringConversion\D3XML\SurfaceParameters</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\D3DGraphics\D3SurfaceVertexParameters.h">
-      <Filter>Header Files\D3StringConversion\D3XML\SurfaceParameters</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\D3DGraphics\ExprIsoSurfaceParameters.h">
       <Filter>Header Files\D3StringConversion\D3XML\SurfaceParameters</Filter>
     </ClInclude>
@@ -558,6 +567,12 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\D3DGraphics\D3XML.h">
       <Filter>Header Files\D3StringConversion\D3XML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\D3Texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\D3SurfaceCommonParameters.h">
+      <Filter>Header Files\D3StringConversion\D3XML\SurfaceParameters</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

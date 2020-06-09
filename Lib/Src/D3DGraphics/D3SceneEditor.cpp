@@ -89,6 +89,22 @@ D3SceneEditor &D3SceneEditor::setEnabled(bool enabled, BYTE flags) {
   return *this;
 }
 
+D3SceneEditor &D3SceneEditor::pushStateFlags(bool enabled, BYTE flags) {
+  m_stateFlagsStack.push(m_stateFlags);
+  return setEnabled(enabled, flags);
+}
+
+D3SceneEditor &D3SceneEditor::popStateFlags() {
+  return setEnabled(true, m_stateFlagsStack.pop());
+}
+
+D3SceneEditor &D3SceneEditor::popAllStateFlags() {
+  while(!m_stateFlagsStack.isEmpty()) {
+    popStateFlags();
+  }
+  return *this;
+}
+
 #define MK_CTRLSHIFT (MK_CONTROL | MK_SHIFT)
 
 static USHORT getCtrlShiftState() {

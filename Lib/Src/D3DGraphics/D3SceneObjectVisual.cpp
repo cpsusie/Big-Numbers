@@ -60,7 +60,7 @@ int D3SceneObjectVisual::findChildByType(SceneObjectType type) const {
 }
 
 LPDIRECT3DTEXTURE D3SceneObjectVisual::getTexture() const {
-  return getScene().getTexture(getTextureId());
+  return getScene().getTexture(getTextureId()).getImage();
 }
 
 D3Device &D3SceneObjectVisual::setDeviceTextureIfExist() const {
@@ -69,7 +69,7 @@ D3Device &D3SceneObjectVisual::setDeviceTextureIfExist() const {
   if((textureId >= 0) && hasTextureCoordinates()) {
     getDevice().setSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR)
                .setSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR)
-               .setTexture(     0, getScene().getTexture(textureId))
+               .setTexture(     0, getTexture())
                .setAlphaBlendEnable(false)
                .setZEnable(         D3DZB_TRUE);
   }

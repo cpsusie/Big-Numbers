@@ -227,8 +227,8 @@ public:
   }
 
   bool canConnect(const Point2D *p1, const Point2D *p2) const;
-  void connect(const Point2D *p1, const Point2D *p2);
-  void move(const Point2D &dp);
+  void connect(   const Point2D *p1, const Point2D *p2);
+  void move(      const Point2D &dp);
   void apply(CurveOperator &op) const;
   String toString() const;
 };
@@ -241,3 +241,4 @@ bool operator==(const Profile        &p1, const Profile        &p2);
 bool operator!=(const Profile        &p1, const Profile        &p2);
 
 LPD3DXMESH rotateProfile(AbstractMeshFactory &amf, const Profile &profile, const ProfileRotationParameters &param, bool doubleSided);
+Profile   *selectAndLoadProfile();

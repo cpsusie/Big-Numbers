@@ -11,6 +11,7 @@
 #include "D3SceneObjectVisual.h"
 #include "D3Light.h"
 #include "D3Material.h"
+#include "D3Texture.h"
 
 class D3Device;
 class D3LightControl;
@@ -24,6 +25,8 @@ typedef enum {
  ,SP_LIGHTCOUNT                // UINT
  ,SP_MATERIALPARAMETERS        // D3Material
  ,SP_MATERIALCOUNT             // UINT
+ ,SP_TEXTUREIMAGE              // D3Texture
+ ,SP_TEXTURECOUNT              // UINT
  ,SP_CAMERACOUNT               // UINT
  ,SP_VISUALCOUNT               // UINT
  ,SP_ANIMATIONFRAMEINDEX       // int
@@ -37,8 +40,6 @@ typedef enum {
 #define OBJMASK_ALL            (-1)
 
 typedef Iterator<D3SceneObjectVisual*> D3VisualIterator;
-
-typedef CompactUIntHashMap<LPDIRECT3DTEXTURE> TextureMap;
 
 // call SAFERELEASE(effect); on the returned value when finished use
 LPD3DXEFFECT compileEffect(LPDIRECT3DDEVICE device, const String &srcText, StringArray &errorMsg);
@@ -54,6 +55,7 @@ private:
   BitSet           m_lightsEnabled, m_lightsDefined;
   D3Material       m_undefinedMaterial;
   MaterialMap      m_materialMap;
+  D3Texture        m_undefinedTexture;
   TextureMap       m_textureMap;
   D3VisualArray    m_visualArray;
   D3CameraArray    m_cameraArray;
@@ -63,6 +65,7 @@ private:
   // throw exception if no more lights available
   UINT getFirstFreeLightIndex() const;
   UINT getFirstFreeMaterialId() const;
+  UINT getFirstFreeTextureId() const;
   D3LightControl *findLightControlByLightIndex(int lightIndex);
   D3LightControl *addLightControl(    UINT lightIndex);
   // Remove the lightControl associated with the given lightIndex from the scene, if its allocated,
@@ -190,7 +193,7 @@ public:
   const MaterialMap &getAllMaterials() const {
     return m_materialMap;
   }
-  // notify listeners with either SP_MATERIALPARAMETERS or SP_MATERIALCOUNT incase of new material
+  // notify listeners with either SP_MATERIALPARAMETERS or SP_MATERIALCOUNT in case of new material
   void setMaterial(const D3Material  &material);
   // notify listeners by notification id=SP_MATERIALCOUNT
   UINT addMaterial(const D3DMATERIAL &material);
@@ -218,14 +221,20 @@ public:
   UINT getTextureCoordCount() const;
 
   UINT addTexture(LPDIRECT3DTEXTURE texture);
+  // notify listeners with either SP_TEXTUREIMAGE or SP_TEXTURECOUNT in case of new texture
+  void setTexture(const D3Texture &texture);
+  void setAllTextures(const TextureMap &textureMap);
   void removeTexture(UINT textureId);
   void removeAllTextures();
-  LPDIRECT3DTEXTURE getTexture(UINT textureId) const {
-    LPDIRECT3DTEXTURE *t = m_textureMap.get(textureId);
-    return (t != NULL) ? *t : NULL;
+  const D3Texture &getTexture(UINT textureId) const {
+    D3Texture *t = m_textureMap.get(textureId);
+    return (t != NULL) ? *t : m_undefinedTexture;
   }
   inline bool isTextureDefined(UINT textureId) const {
     return m_textureMap.get(textureId) != NULL;
+  }
+  inline UINT getTextureCount() const {
+    return (UINT)m_textureMap.size();
   }
   // p in screen-coordinates
   // Return the camera which uses device with HWND at the given point, or NULL if none

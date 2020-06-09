@@ -69,10 +69,10 @@ void getValue(XMLDoc &doc, XMLNodePtr n,       Profile                   &v);
 void setValue(XMLDoc &doc, XMLNodePtr n, const ProfileRotationParameters &v);
 void getValue(XMLDoc &doc, XMLNodePtr n,       ProfileRotationParameters &v);
 
-class D3SurfaceVertexParameters;
+class D3SurfaceCommonParameters;
 
-void setValue(XMLDoc &doc, XMLNodePtr n, const D3SurfaceVertexParameters &v);
-void getValue(XMLDoc &doc, XMLNodePtr n,       D3SurfaceVertexParameters &v);
+void setValue(XMLDoc &doc, XMLNodePtr n, const D3SurfaceCommonParameters &v);
+void getValue(XMLDoc &doc, XMLNodePtr n,       D3SurfaceCommonParameters &v);
 
 struct _D3DVERTEXBUFFER_DESC;
 struct _D3DINDEXBUFFER_DESC;

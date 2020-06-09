@@ -936,11 +936,13 @@
     <ClCompile Include="D3SceneObjectWithVertexBuffer.cpp" />
     <ClCompile Include="D3DeviceRenderState.cpp" />
     <ClCompile Include="D3ScenePickedObject.cpp" />
+    <ClCompile Include="D3SceneTextureMap.cpp" />
     <ClCompile Include="D3SelectedCube.cpp" />
     <ClCompile Include="D3SceneObjectWireFrameBox.cpp" />
     <ClCompile Include="D3SceneObjectVisual.cpp" />
     <ClCompile Include="D3SceneEditorSplitWindow.cpp" />
-    <ClCompile Include="D3SurfaceVertexParameters.cpp" />
+    <ClCompile Include="D3SurfaceCommonParameters.cpp" />
+    <ClCompile Include="D3SurfaceCommonParametersXML.cpp" />
     <ClCompile Include="D3ToSize.cpp" />
     <ClCompile Include="D3VertexBufferDescXML.cpp" />
     <ClCompile Include="D3VertexBufferDescStr.cpp" />
@@ -1008,6 +1010,8 @@
     <ClCompile Include="ProfileXML.cpp" />
     <ClCompile Include="ResourceTypeStr.cpp" />
     <ClCompile Include="RotateProfile.cpp" />
+    <ClCompile Include="SelectAndLoadProfile.cpp" />
+    <ClCompile Include="SelectAndValidateTextureFile.cpp" />
     <ClCompile Include="ShadeModeStr.cpp" />
     <ClCompile Include="SphereMesh.cpp" />
     <ClCompile Include="UsageStr.cpp" />
@@ -1052,7 +1056,8 @@
     <ClInclude Include="..\..\Include\D3DGraphics\D3SelectedCube.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3AbstractTextureFactory.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3Spherical.h" />
-    <ClInclude Include="..\..\Include\D3DGraphics\D3SurfaceVertexParameters.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\D3SurfaceCommonParameters.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\D3Texture.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3ToString.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3Transformation.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectVisual.h" />

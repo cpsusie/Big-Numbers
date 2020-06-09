@@ -9,6 +9,4 @@ IsoSurfaceParameters::IsoSurfaceParameters() {
   m_tetraOptimize4   = false;
   m_adaptiveCellSize = false;
   m_originOutside    = false;
-  m_doubleSided      = false;
-  m_animation.reset();
 }

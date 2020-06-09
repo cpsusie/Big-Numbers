@@ -210,8 +210,6 @@ private:
     bool OnKeyDown(      UINT nChar, UINT nRepCnt, UINT nFlags);
     bool OnKeyUp(        UINT nChar, UINT nRepCnt, UINT nFlags);
     void OnContextMenu(  HWND pwnd, MSG *pMsg);
-    String stateFlagsToString() const;
-    String getSelectedString() const;
 public:
     D3SceneEditor();
     ~D3SceneEditor();
@@ -226,12 +224,12 @@ public:
     inline bool isEnabled() const {
       return isSet(SE_ENABLED);
     }
-    inline D3SceneEditor &pushStateFlags(bool enabled = false, BYTE flags = SE_ALL) {
-      m_stateFlagsStack.push(m_stateFlags);
-      return setEnabled(enabled, flags);
-    }
-    inline D3SceneEditor &popStateFlags() {
-      return setEnabled(true, m_stateFlagsStack.pop());
+
+    D3SceneEditor &pushStateFlags(bool enabled = false, BYTE flags = SE_ALL);
+    D3SceneEditor &popStateFlags();
+    D3SceneEditor &popAllStateFlags();
+    inline bool isFlagsStackEmpty() const {
+      return m_stateFlagsStack.isEmpty();
     }
     inline bool hasSceneContainer() const {
       return m_sceneContainer != NULL;
@@ -296,5 +294,7 @@ public:
     }
     bool isCoordinateSystemVisible() const;
     BOOL PreTranslateMessage(MSG *pMsg);
+    String stateFlagsToString() const;
+    String getSelectedString() const;
     String toString() const;
 };

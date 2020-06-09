@@ -34,17 +34,21 @@ String toString(D3EditorControl control) {
   }
 }
 
+#if defined(addFlag)
+#undef addFlag
+#endif
+#define addFlag(f) { if(isSet(SE_##f)) { if(delim) result += delim; else delim=_T(","); result += _T(#f); } }
 String D3SceneEditor::stateFlagsToString() const {
   const TCHAR *delim = NULL;
   String result = _T("(");
-#define ADDFLAG(f) { if(isSet(SE_##f)) { if(delim) result += delim; else delim=_T(","); result += _T(#f); } }
-  ADDFLAG(INITDONE     );
-  ADDFLAG(ENABLED      );
-  ADDFLAG(PROPCHANGES  );
-  ADDFLAG(RENDER       );
-  ADDFLAG(LIGHTCONTROLS);
-  ADDFLAG(MOUSEVISIBLE );
+  addFlag(INITDONE     );
+  addFlag(ENABLED      );
+  addFlag(PROPCHANGES  );
+  addFlag(RENDER       );
+  addFlag(LIGHTCONTROLS);
+  addFlag(MOUSEVISIBLE );
   result += _T(")");
+  result += format(_T(", stacksize:%u"), m_stateFlagsStack.getHeight());
   return result;
 }
 

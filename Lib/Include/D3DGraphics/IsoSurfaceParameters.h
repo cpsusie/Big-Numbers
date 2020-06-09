@@ -1,9 +1,9 @@
 #pragma once
 
-#include <MFCUtil/AnimationParameters.h>
+#include <D3DGraphics/D3SurfaceCommonParameters.h>
 #include <D3DGraphics/D3Cube.h>
 
-class IsoSurfaceParameters {
+class IsoSurfaceParameters : public D3SurfaceCommonParameters {
 public:
   double              m_cellSize;
   double              m_lambda;
@@ -12,11 +12,5 @@ public:
   bool                m_tetraOptimize4;
   bool                m_adaptiveCellSize;
   bool                m_originOutside;
-  bool                m_doubleSided;
-  AnimationParameters m_animation;
   IsoSurfaceParameters();
-  inline bool isAnimated() const {
-    return m_animation.includeTime();
-  }
-
 };

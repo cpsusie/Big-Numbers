@@ -53,3 +53,12 @@ LPDIRECT3DTEXTURE AbstractTextureFactory::loadTextureFromBitmapResource(LPDIRECT
   bm.LoadBitmap(id);
   return getTextureFromBitmap(device, bm);
 }
+
+bool AbstractTextureFactory::validateTextureFile(const String &textureFileName) const {
+  LPDIRECT3DTEXTURE tt = loadTextureFromFile(textureFileName);
+  if(tt == NULL) {
+    return false;
+  }
+  SAFERELEASE(tt);
+  return true;
+}

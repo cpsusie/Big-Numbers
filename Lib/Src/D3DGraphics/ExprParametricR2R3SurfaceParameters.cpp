@@ -29,8 +29,7 @@ void ExprParametricR2R3SurfaceParameters::putDataToDoc(XMLDoc &doc) {
   setValue(doc,  root, _T("tstepcount"        ), m_tStepCount      );
   setValue(doc,  root, _T("sstepcount"        ), m_sStepCount      );
   setValue(doc,  root, _T("machinecode"       ), m_machineCode     );
-  setValue(doc,  root, _T("doublesided"       ), m_doubleSided     );
-  setValue(doc,  root, _T("animation"         ), m_animation       );
+  setValue(doc,  root, _T("common"            ), *(D3SurfaceCommonParameters*)this);
 }
 
 void ExprParametricR2R3SurfaceParameters::getDataFromDoc(XMLDoc &doc) {
@@ -43,8 +42,7 @@ void ExprParametricR2R3SurfaceParameters::getDataFromDoc(XMLDoc &doc) {
     getValue(doc,    root, _T("tstepcount"        ), m_tStepCount      );
     getValue(doc,    root, _T("sstepcount"        ), m_sStepCount      );
     getValue(doc,    root, _T("machinecode"       ), m_machineCode     );
-    getValue(doc,    root, _T("doublesided"       ), m_doubleSided     );
-    getValue(doc,    root, _T("animation"         ), m_animation       );
+    getValue(doc,    root, _T("common"            ), *(D3SurfaceCommonParameters*)this);
   } catch(...) {
     getDataFromDocOld(doc);
   }
@@ -64,10 +62,4 @@ void ExprParametricR2R3SurfaceParameters::getDataFromDocOld(XMLDoc &doc) {
   getValue(doc,  root, _T("tstepcount"        ), m_tStepCount          );
   getValue(doc,  root, _T("sstepcount"        ), m_sStepCount          );
   getValue(doc,  root, _T("machinecode"       ), m_machineCode         );
-  getValue(doc,  root, _T("doublesided"       ), m_doubleSided         );
-  getValue(doc,  root, _T("includetime"       ), m_animation.m_includeTime     );
-  if(m_animation.m_includeTime) {
-    getValue(doc,  root, _T("timeinterval"      ), m_animation.m_timeInterval  );
-    getValue(doc,  root, _T("framecount"        ), m_animation.m_frameCount    );
-  }
 }

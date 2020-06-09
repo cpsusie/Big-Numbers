@@ -131,7 +131,7 @@ LPD3DXMESH createMesh(AbstractMeshFactory &amf, const FunctionR2R1SurfaceParamet
                                  ,param.getYInterval()
                                  ,param.m_pointCount, param.m_pointCount
                                  ,param.m_doubleSided
-                                 ,param.m_vertexParameters.getFVF()
+                                 ,param.getFVF()
                                  );
 }
 
