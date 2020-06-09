@@ -163,8 +163,73 @@ template<typename T> void setEditValue(CWnd *wnd, int id, const T &v) {
   setWindowText(wnd, id, stream.str().c_str());
 }
 
-CompactIntArray getTabOrder(CWnd *wnd);
-void            setTabOrder(CWnd *wnd, const CompactIntArray &tabOrderArray);
+void getTabOrder(HWND  dlg,       CompactUintArray &tabOrder);
+void setTabOrder(HWND  dlg, const CompactUintArray &tabOrder);
+
+class ChildWindowArray : public CompactUintArray {
+private:
+  friend BOOL CALLBACK childWindowArrayEnumerationProc(_In_ HWND wnd, _In_ LPARAM lParam);
+  HWND m_parent;
+  bool m_recursive;
+public:
+  ChildWindowArray() : m_parent(NULL) {
+  }
+  // Create a list of ctrlId's of the child-windows (recursive or non recursive) of the specified parent-window
+  ChildWindowArray(HWND parent, bool recursive=false) {
+    enumerateChildren(parent, recursive);
+  }
+  ChildWindowArray(CWnd *parent, bool recursive=false) {
+    enumerateChildren(*parent, recursive);
+  }
+  void enumerateChildren(HWND parent, bool recursive=false);
+
+  // Return index in array of child or -1 if not found
+  int getChildIndex(HWND child) const;
+  // Return index in array of ctrlId or -1 if not found
+  inline int getChildIndex(UINT ctrlId) const {
+    return (int)getFirstIndex(ctrlId);
+  }
+  inline HWND getParent() const {
+    return m_parent;
+  }
+};
+
+class TabOrder : public ChildWindowArray {
+public:
+  inline TabOrder() {
+  }
+  inline TabOrder(CWnd *dlg) {
+    saveTabOrder(*dlg);
+  }
+  inline TabOrder(HWND dlg) {
+    saveTabOrder(dlg);
+  }
+  void saveTabOrder(HWND wnd) {
+    enumerateChildren(wnd, false);
+  }
+  void restoreTabOrder() const {
+    setTabOrder(getParent(), *this);
+  };
+};
+
+/*
+class Layout {
+private:
+  TabOrder m_tabOrder;
+  CWnd    *m_dlg;
+  int      m_ctrlId;
+  bool     m_useLayout;
+
+  Layout &enableDynamicLayout(bool enable);
+  bool    hasDynamicLayout() const;
+public:
+  inline Layout(CWnd *dlg, int ctrlId) {
+    saveLayout(dlg, ctrlId);
+  }
+  void saveLayout(CWnd *dlg, int ctrlId);
+  void restoreLayout();
+};
+*/
 
 void   setWindowCursor(     HWND  wnd, const TCHAR *name);
 void   setWindowCursor(     HWND  wnd, int resId);

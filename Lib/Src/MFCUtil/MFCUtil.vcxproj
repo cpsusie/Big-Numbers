@@ -653,10 +653,12 @@
   <ItemGroup>
     <ClCompile Include="AnimationParameters.cpp" />
     <ClCompile Include="AnimationParamXML.cpp" />
+    <ClCompile Include="ChildWindowArray.cpp" />
     <ClCompile Include="D3DColorValueStr.cpp" />
     <ClCompile Include="D3DColorValueXML.cpp" />
     <ClCompile Include="D3PColor.cpp" />
     <ClCompile Include="IsoCurveParameters.cpp" />
+    <ClCompile Include="Layout.cpp" />
     <ClCompile Include="LSHColor.cpp" />
     <ClCompile Include="LumaChromeColor.cpp" />
     <ClCompile Include="MFCXML.cpp" />
@@ -711,7 +713,7 @@
     <ClCompile Include="FileSrc.cpp" />
     <ClCompile Include="Fixed.cpp" />
     <ClCompile Include="GetMessageName.cpp" />
-    <ClCompile Include="GetTabOrderArray.cpp" />
+    <ClCompile Include="TabOrder.cpp" />
     <ClCompile Include="GifCtrl.cpp" />
     <ClCompile Include="GotoMatchingParanthes.cpp" />
     <ClCompile Include="HWNDTools.cpp" />

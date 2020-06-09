@@ -109,12 +109,28 @@ void CExprDialog::showExprError(const String &msg, int id) {
   }
 }
 
+CExprDialog &CExprDialog::enableDynamicLayoutHelper(bool enable) {
+  if(enable && IsDynamicLayoutEnabled()) {
+    return *this;
+  }
+  EnableDynamicLayout(enable ? TRUE : FALSE);
+  if(enable) {
+    LoadDynamicLayoutResource(m_lpszTemplateName);
+  }
+  return *this;
+}
+
+bool CExprDialog::hasDynamicLayout(int ctrlId) const {
+  return IsDynamicLayoutEnabled() && ((CExprDialog*)this)->GetDynamicLayout()->HasItem(*GetDlgItem(ctrlId));
+}
+
 void CExprDialog::createExprHelpButton(int buttonId, int exprEditId) {
   if(m_helpButtonCount >= MAXHELPBUTTONS) {
     showWarning(_T("Too many expr-helpbuttons. Max=%d"), MAXHELPBUTTONS);
     return;
   }
-  CButton *but  = (CButton*)GetDlgItem(buttonId  );
+  CButton           *but            = (CButton*)GetDlgItem(buttonId  );
+
   CEdit   *edit = (CEdit  *)GetDlgItem(exprEditId);
   if(but == NULL) {
     showWarning(_T("Button %d doesn't exist"), buttonId);
@@ -124,12 +140,17 @@ void CExprDialog::createExprHelpButton(int buttonId, int exprEditId) {
     showWarning(_T("EditBox %d doesn't exist"), exprEditId);
     return;
   }
-  const CPoint bp = getWindowPosition(this, buttonId);
-
+  const CPoint   bp        = getWindowPosition(this, buttonId);
+  const bool     useLayout = hasDynamicLayout(buttonId);
+  const TabOrder tabOrder(this);
   but->DestroyWindow();
   setExprFont(exprEditId);
   m_helpButton[m_helpButtonCount++].Create(this, OBMIMAGE(RGARROW), bp, buttonId);
+  tabOrder.restoreTabOrder();
   m_helpButtonMap.put(buttonId, exprEditId);
+  if(useLayout) {
+    enableDynamicLayoutHelper(false).enableDynamicLayoutHelper(true);
+  }
 }
 
 void CExprDialog::handleExprHelpButtonClick(int buttonId) {

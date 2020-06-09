@@ -30,7 +30,7 @@ void CComboBoxWithHistory::substituteControl(CWnd *parent, int id, const String 
   if(font == NULL) {
     font = parent->GetFont();
   }
-  const CompactIntArray tabOrder = getTabOrder(parent);
+  const TabOrder tabOrder(parent);
 
   oldCtrl->DestroyWindow();
 
@@ -38,7 +38,7 @@ void CComboBoxWithHistory::substituteControl(CWnd *parent, int id, const String 
     showError(_T("%s:Create failed"), method);
     return;
   }
-  setTabOrder(parent, tabOrder);
+  tabOrder.restoreTabOrder();
 
   ModifyStyleEx(0, exStyle);
   SetFont(font);

@@ -66,9 +66,6 @@
     <ClCompile Include="GetMessageName.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GetTabOrderArray.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="IconInfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -390,6 +387,15 @@
     </ClCompile>
     <ClCompile Include="RGBColor.cpp">
       <Filter>Source Files\ColorSpace</Filter>
+    </ClCompile>
+    <ClCompile Include="TabOrder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ChildWindowArray.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Layout.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

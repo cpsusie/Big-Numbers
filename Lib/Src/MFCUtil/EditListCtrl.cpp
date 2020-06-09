@@ -79,7 +79,7 @@ void CEditListCtrl::substituteControl(CWnd *wnd, int id, CTableModel &model) {
     return;
   }
 
-  const CompactIntArray origTabOrder = getTabOrder(wnd);
+  const TabOrder origTabOrder(wnd);
 
   DWORD       style   = ctrl->GetStyle();
   DWORD       exStyle = ctrl->GetExStyle();
@@ -96,7 +96,7 @@ void CEditListCtrl::substituteControl(CWnd *wnd, int id, CTableModel &model) {
     return;
   }
 
-  setTabOrder(wnd, origTabOrder);
+  origTabOrder.restoreTabOrder();
 
   ModifyStyleEx(0, exStyle);
   SetExtendedStyle(LVS_EX_GRIDLINES | LVS_EX_HEADERDRAGDROP);

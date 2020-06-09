@@ -32,7 +32,6 @@ private:
   void substituteSelectedText(int ctrlId, const String &s);
 
 protected:
-  SimpleLayoutManager m_layoutManager;
 
   CExprDialog(int resId, CWnd *pParent) : CDialog(resId, pParent) {
     m_helpButtonCount = 0;
@@ -69,7 +68,8 @@ protected:
   inline void gotoMatchingParentesis() {
     ::gotoMatchingParanthes(this, getFocusCtrlId(this));
   }
-
+  CExprDialog &enableDynamicLayoutHelper(bool enable);
+  bool hasDynamicLayout(int ctrlId) const;
   bool validateAllExpr();
   bool validateExpr(int id);
   bool validateInterval(int fromId, int toId);
@@ -84,11 +84,6 @@ protected:
     return EMPTYSTRING;
   }
   virtual void addToRecent(const String &fileName) {
-  }
-
-  void OnSize(UINT nType, int cx, int cy) {
-    __super::OnSize(nType, cx, cy);
-    m_layoutManager.OnSize(nType, cx, cy);
   }
 
   BOOL PreTranslateMessage(MSG *pMsg);
