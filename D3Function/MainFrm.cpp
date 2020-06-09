@@ -832,7 +832,7 @@ void CMainFrame::OnFileFunctionSurface() {
 
 void CMainFrame::OnFileParametricSurface() {
   try {
-    CParametricR2R3SurfaceParametersDlg dlg(m_parametricR2R3SurfaceParam);
+    CParametricR2R3SurfaceParametersDlg dlg(m_parametricR2R3SurfaceParam, m_scene.getDevice());
     if(dlg.DoModal() != IDOK) {
       return;
     }
@@ -846,7 +846,7 @@ void CMainFrame::OnFileParametricSurface() {
 
 void CMainFrame::OnFileIsoSurface() {
   try {
-    CIsoSurfaceParametersDlg dlg(m_isoSurfaceParam);
+    CIsoSurfaceParametersDlg dlg(m_isoSurfaceParam, m_scene.getDevice());
     if(dlg.DoModal() != IDOK) {
       return;
     }

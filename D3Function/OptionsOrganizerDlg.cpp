@@ -62,7 +62,7 @@ void COptionsOrganizerDlg::OnItemChangedList(NMHDR *pNMHDR, LRESULT *pResult) {
 }
 
 void COptionsOrganizerDlg::OnEndLabelEditList(NMHDR *pNMHDR, LRESULT *pResult) {
-  LV_DISPINFO* pDispInfo = (LV_DISPINFO*)pNMHDR;
+  LV_DISPINFO *pDispInfo = (LV_DISPINFO*)pNMHDR;
 
   LVITEM &lv = pDispInfo->item;
   const TCHAR *str = lv.pszText;

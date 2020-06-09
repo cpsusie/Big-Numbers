@@ -21,9 +21,11 @@ class SplitViewSplitter;
 
 class CD3FunctionSplitterWnd : public CSplitterWnd {
 private:
-  bool m_splitPointMoved;
+  bool                   m_splitPointMoved;
+  mutable D3SceneEditor *m_editor;
+  D3SceneEditor &getEditor() const;
 public:
-  CD3FunctionSplitterWnd() : m_splitPointMoved(false) {
+  CD3FunctionSplitterWnd() : m_splitPointMoved(false), m_editor(NULL) {
   }
   void RecalcLayout();
   void OnInvertTracker(const CRect& rect);
@@ -35,7 +37,7 @@ public:
 #define INFO_EDIT  0x01
 #define INFO_MEM   0x02
 
-#ifdef ISODEBUGGER
+#if defined(ISODEBUGGER)
 #define INFO_DEBUG 0x04
 #include "Debugger.h"
 #else
@@ -66,7 +68,7 @@ private:
   ExprIsoSurfaceParameters            m_isoSurfaceParam;
   String                              m_memoryInfo, m_editorInfo;
 
-#ifdef ISODEBUGGER
+#if defined(ISODEBUGGER)
   Debugger                       *m_debugger;
   bool                            m_hasIsoSurfaceParam;
   bool                            m_hasFinalDebugIsoSurface;
@@ -205,7 +207,7 @@ public:
     return (CD3FunctionDoc*)GetActiveDocument();
   }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
   virtual void AssertValid() const;
   virtual void Dump(CDumpContext& dc) const;
 #endif

@@ -24,98 +24,47 @@ static char *blob3      = "s1=1/max(sqr(x+1)+sqr(y  )+sqr(z  ),0.00001);"
 
 */
 
-CIsoSurfaceParametersDlg::CIsoSurfaceParametersDlg(const ExprIsoSurfaceParameters &param, CWnd *pParent /*=NULL*/)
-: SaveLoadExprWithAnimationDialog(IDD, pParent, param, _T("implicit surface"), _T("imp"))
+CIsoSurfaceParametersDlg::CIsoSurfaceParametersDlg(const ExprIsoSurfaceParameters &param, AbstractTextureFactory &atf, CWnd *pParent /*=NULL*/)
+: SaveLoadExprWithCommonParametersDialog(IDD, pParent, param, atf, _T("implicit surface"), _T("imp"))
 {
   m_debugPolygonizer = false;
 }
 
 void CIsoSurfaceParametersDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
-  DDX_Text(pDX, IDC_EDIT_EXPR, m_expr);
-  DDX_Text(pDX, IDC_EDIT_CELLSIZE, m_cellSize);
-  DDX_Text(pDX, IDC_EDIT_LAMBDA, m_lambda);
-  DDX_Check(pDX, IDC_CHECK_TETRAHEDRAL, m_tetrahedral);
-  DDX_Check(pDX, IDC_CHECK_TETRAOPTIMIZE4, m_tetraOptimize4);
+  DDX_Text( pDX, IDC_EDIT_EXPR             , m_expr            );
+  DDX_Text( pDX, IDC_EDIT_CELLSIZE         , m_cellSize        );
+  DDX_Text( pDX, IDC_EDIT_LAMBDA           , m_lambda          );
+  DDX_Check(pDX, IDC_CHECK_TETRAHEDRAL     , m_tetrahedral     );
+  DDX_Check(pDX, IDC_CHECK_TETRAOPTIMIZE4  , m_tetraOptimize4  );
   DDX_Check(pDX, IDC_CHECK_ADAPTIVECELLSIZE, m_adaptiveCellSize);
-  DDX_Check(pDX, IDC_CHECK_ORIGINOUTSIDE, m_originOutside);
+  DDX_Check(pDX, IDC_CHECK_ORIGINOUTSIDE   , m_originOutside   );
   DDX_Check(pDX, IDC_CHECK_DEBUGPOLYGONIZER, m_debugPolygonizer);
-  DDX_Check(pDX, IDC_CHECK_DOUBLESIDED, m_doubleSided);
-  DDX_Text(pDX, IDC_EDIT_XFROM, m_xfrom);
-  DDX_Text(pDX, IDC_EDIT_XTO, m_xto);
-  DDX_Text(pDX, IDC_EDIT_YFROM, m_yfrom);
-  DDX_Text(pDX, IDC_EDIT_YTO, m_yto);
-  DDX_Text(pDX, IDC_EDIT_ZFROM, m_zfrom);
-  DDX_Text(pDX, IDC_EDIT_ZTO, m_zto);
+  DDX_Text( pDX, IDC_EDIT_XFROM            , m_xfrom           );
+  DDX_Text( pDX, IDC_EDIT_XTO              , m_xto             );
+  DDX_Text( pDX, IDC_EDIT_YFROM            , m_yfrom           );
+  DDX_Text( pDX, IDC_EDIT_YTO              , m_yto             );
+  DDX_Text( pDX, IDC_EDIT_ZFROM            , m_zfrom           );
+  DDX_Text( pDX, IDC_EDIT_ZTO              , m_zto             );
 }
 
 BEGIN_MESSAGE_MAP(CIsoSurfaceParametersDlg, CDialog)
-  ON_WM_SIZE()
-  ON_COMMAND(ID_FILE_OPEN                  , OnFileOpen                  )
-  ON_COMMAND(ID_FILE_SAVE                  , OnFileSave                  )
-  ON_COMMAND(ID_FILE_SAVE_AS               , OnFileSaveAs                )
-  ON_COMMAND(ID_EDIT_FINDMATCHINGPARENTESIS, OnEditFindMatchingParentesis)
-  ON_COMMAND(ID_GOTO_EXPR                  , OnGotoExpr                  )
-  ON_COMMAND(ID_GOTO_CELLSIZE              , OnGotoCellSize              )
-  ON_COMMAND(ID_GOTO_XINTERVAL             , OnGotoXInterval             )
-  ON_COMMAND(ID_GOTO_YINTERVAL             , OnGotoYInterval             )
-  ON_COMMAND(ID_GOTO_ZINTERVAL             , OnGotoZInterval             )
-  ON_COMMAND(ID_GOTO_TIMEINTERVAL          , OnGotoTimeInterval          )
-  ON_COMMAND(ID_GOTO_FRAMECOUNT            , OnGotoFrameCount            )
-  ON_BN_CLICKED(IDC_BUTTON_HELP            , OnButtonHelp                )
-  ON_BN_CLICKED(IDC_CHECK_DOUBLESIDED      , OnCheckDoubleSided          )
-  ON_BN_CLICKED(IDC_CHECK_INCLUDETIME      , OnCheckIncludeTime          )
-  ON_BN_CLICKED(IDC_CHECK_TETRAHEDRAL      , OnCheckTetrahedral          )
-  ON_BN_CLICKED(IDC_CHECK_MACHINECODE      , OnCheckMachineCode          )
+  ON_COMMAND(ID_FILE_OPEN                  , OnFileOpen                       )
+  ON_COMMAND(ID_FILE_SAVE                  , OnFileSave                       )
+  ON_COMMAND(ID_FILE_SAVE_AS               , OnFileSaveAs                     )
+  ON_COMMAND(ID_EDIT_FINDMATCHINGPARENTESIS, OnEditFindMatchingParentesis     )
+  ON_BN_CLICKED(IDC_BUTTON_HELP            , OnButtonHelp                     )
+  ON_BN_CLICKED(IDC_CHECK_MACHINECODE      , OnBnClickedCheckMachineCode      )
+  ON_BN_CLICKED(IDC_CHECK_DOUBLESIDED      , OnBnClickedCheckDoubleSided      )
+  ON_BN_CLICKED(IDC_CHECK_TETRAHEDRAL      , OnBnClickedCheckTetrahedral      )
+  ON_BN_CLICKED(IDC_CHECK_HASTEXTURE       , OnBnClickedCheckHasTexture       )
+  ON_BN_CLICKED(IDC_BUTTON_BROWSETEXTURE   , OnBnClickedButtonBrowseTexture   )
+  ON_BN_CLICKED(IDC_CHECK_INCLUDETIME      , OnBnClickedCheckIncludeTime      )
 END_MESSAGE_MAP()
 
 BOOL CIsoSurfaceParametersDlg::OnInitDialog() {
   __super::OnInitDialog();
-
   createExprHelpButton(IDC_BUTTON_HELP, IDC_EDIT_EXPR);
-
-  m_layoutManager.OnInitDialog(this);
-  m_layoutManager.addControl(IDC_EDIT_EXPR             , RELATIVE_SIZE          );
-  m_layoutManager.addControl(IDC_STATIC_FUNCTION       , PCT_RELATIVE_Y_CENTER  );
-  m_layoutManager.addControl(IDC_STATIC_EQUAL_ZERO     , PCT_RELATIVE_Y_CENTER | RELATIVE_X_POS);
-  m_layoutManager.addControl(IDC_STATIC_CELLSIZE       , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_EDIT_CELLSIZE         , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_STATIC_LAMBDA         , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_EDIT_LAMBDA           , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_CHECK_TETRAHEDRAL     , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_CHECK_TETRAOPTIMIZE4  , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_CHECK_ADAPTIVECELLSIZE, RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_CHECK_DOUBLESIDED     , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_CHECK_ORIGINOUTSIDE   , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_CHECK_MACHINECODE     , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_CHECK_CREATELISTFILE  , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_CHECK_DEBUGPOLYGONIZER, RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_CHECK_INCLUDETIME     , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_CHECK_DOUBLESIDED     , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_STATIC_BOUNDINGBOX    , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_STATIC_XINTERVAL      , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_EDIT_XFROM            , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_STATIC_DASH1          , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_EDIT_XTO              , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_STATIC_YINTERVAL      , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_EDIT_YFROM            , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_STATIC_DASH2          , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_EDIT_YTO              , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_STATIC_ZINTERVAL      , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_EDIT_ZFROM            , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_STATIC_DASH3          , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_EDIT_ZTO              , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_STATIC_TIMEINTERVAL   , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_EDIT_TIMEFROM         , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_STATIC_DASH4          , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_EDIT_TIMETO           , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_STATIC_FRAMECOUNT     , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDC_EDIT_FRAMECOUNT       , RELATIVE_Y_POS         );
-  m_layoutManager.addControl(IDOK                      , RELATIVE_POSITION      );
-  m_layoutManager.addControl(IDCANCEL                  , RELATIVE_POSITION      );
-
-  enableTimeFields();
-
   gotoEditBox(this, IDC_EDIT_EXPR);
   return FALSE;
 }
@@ -127,12 +76,12 @@ bool CIsoSurfaceParametersDlg::validate() {
     return false;
   }
   if(m_cellSize <= 0) {
-    OnGotoCellSize();
+    gotoEditBox(this, IDC_EDIT_CELLSIZE);
     showWarning(_T("Size must be > 0"));
     return false;
   }
   if((m_lambda < 0) || (m_lambda > 0.45)) {
-    OnGotoLambda();
+    gotoEditBox(this, IDC_EDIT_LAMBDA);
     showWarning(_T("Lambda must be >= 0, <= 0.45"));
     return false;
   }
@@ -171,15 +120,9 @@ void CIsoSurfaceParametersDlg::enableCheckBoxTetraOptimize4() {
   GetDlgItem(IDC_CHECK_TETRAOPTIMIZE4)->EnableWindow(IsDlgButtonChecked(IDC_CHECK_TETRAHEDRAL));
 }
 
-void CIsoSurfaceParametersDlg::OnCheckDoubleSided()           { enableCheckBoxOrigin();                      }
-void CIsoSurfaceParametersDlg::OnCheckTetrahedral()           { enableCheckBoxTetraOptimize4();              }
+void CIsoSurfaceParametersDlg::OnBnClickedCheckDoubleSided()  { enableCheckBoxOrigin();                      }
+void CIsoSurfaceParametersDlg::OnBnClickedCheckTetrahedral()  { enableCheckBoxTetraOptimize4();              }
 void CIsoSurfaceParametersDlg::OnEditFindMatchingParentesis() { gotoMatchingParentesis();                    }
-void CIsoSurfaceParametersDlg::OnGotoExpr()                   { gotoExpr(IDC_EDIT_EXPR);                     }
-void CIsoSurfaceParametersDlg::OnGotoCellSize()               { gotoEditBox(this, IDC_EDIT_CELLSIZE);        }
-void CIsoSurfaceParametersDlg::OnGotoLambda()                 { gotoEditBox(this, IDC_EDIT_LAMBDA  );        }
-void CIsoSurfaceParametersDlg::OnGotoXInterval()              { gotoEditBox(this, IDC_EDIT_XFROM   );        }
-void CIsoSurfaceParametersDlg::OnGotoYInterval()              { gotoEditBox(this, IDC_EDIT_YFROM   );        }
-void CIsoSurfaceParametersDlg::OnGotoZInterval()              { gotoEditBox(this, IDC_EDIT_ZFROM   );        }
 void CIsoSurfaceParametersDlg::OnButtonHelp()                 { handleExprHelpButtonClick(IDC_BUTTON_HELP);  }
 
 void CIsoSurfaceParametersDlg::paramToWin(const ExprIsoSurfaceParameters &param) {
@@ -192,7 +135,6 @@ void CIsoSurfaceParametersDlg::paramToWin(const ExprIsoSurfaceParameters &param)
   m_tetrahedral      = param.m_tetrahedral      ? TRUE : FALSE;
   m_tetraOptimize4   = param.m_tetraOptimize4   ? TRUE : FALSE;
   m_adaptiveCellSize = param.m_adaptiveCellSize ? TRUE : FALSE;
-  m_doubleSided      = param.m_doubleSided      ? TRUE : FALSE;
   m_originOutside    = param.m_originOutside    ? TRUE : FALSE;
   __super::paramToWin(param);
   enableCheckBoxOrigin();
@@ -208,7 +150,6 @@ bool CIsoSurfaceParametersDlg::winToParam(ExprIsoSurfaceParameters &param) {
   param.m_tetrahedral      = m_tetrahedral      ? true : false;
   param.m_tetraOptimize4   = m_tetraOptimize4   ? true : false;
   param.m_adaptiveCellSize = m_adaptiveCellSize ? true : false;
-  param.m_doubleSided      = m_doubleSided      ? true : false;
   param.m_originOutside    = m_originOutside    ? true : false;
   return true;
 }

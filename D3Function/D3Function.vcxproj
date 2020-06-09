@@ -670,7 +670,7 @@
     <ClInclude Include="D3Function.h" />
     <ClInclude Include="D3FunctionDoc.h" />
     <ClInclude Include="D3SceneView.h" />
-    <ClInclude Include="SaveLoadExprWithAnimationDialog.h" />
+    <ClInclude Include="SaveLoadExprWithCommonParametersDialog.h" />
     <ClInclude Include="SplitView.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -693,7 +693,6 @@
     <ClCompile Include="ParametricR2R3SurfaceParametersDlg.cpp" />
     <ClCompile Include="ProfileDlg.cpp" />
     <ClCompile Include="ProfilePainter.cpp" />
-    <ClCompile Include="SelectAndLoadProfile.cpp" />
     <ClCompile Include="SplitView.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

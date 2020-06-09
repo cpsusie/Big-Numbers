@@ -1,9 +1,9 @@
 #pragma once
 
-#include "SaveLoadExprWithAnimationDialog.h"
+#include "SaveLoadExprWithCommonParametersDialog.h"
 #include <D3DGraphics/ExprIsoSurfaceParameters.h>
 
-class CIsoSurfaceParametersDlg : public SaveLoadExprWithAnimationDialog<ExprIsoSurfaceParameters> {
+class CIsoSurfaceParametersDlg : public SaveLoadExprWithCommonParametersDialog<ExprIsoSurfaceParameters> {
 private:
   CString m_expr;
   double  m_cellSize;
@@ -14,7 +14,6 @@ private:
   BOOL    m_adaptiveCellSize;
   BOOL    m_originOutside;
   BOOL    m_debugPolygonizer;
-  BOOL    m_doubleSided;
   double  m_xfrom;
   double  m_xto;
   double  m_yfrom;
@@ -47,7 +46,7 @@ private:
     return DoubleInterval(m_zfrom, m_zto);
   }
 public:
-  CIsoSurfaceParametersDlg(const ExprIsoSurfaceParameters &param, CWnd *pParent = NULL);
+  CIsoSurfaceParametersDlg(const ExprIsoSurfaceParameters &param, AbstractTextureFactory &atf, CWnd *pParent = NULL);
 
 #if defined(ISODEBUGGER)
   inline bool getDebugPolygonizer() const {
@@ -61,14 +60,8 @@ protected:
   virtual void DoDataExchange(CDataExchange *pDX);
   afx_msg BOOL OnInitDialog();
   afx_msg void OnEditFindMatchingParentesis();
-  afx_msg void OnGotoExpr();
-  afx_msg void OnGotoCellSize();
-  afx_msg void OnGotoLambda();
-  afx_msg void OnGotoXInterval();
-  afx_msg void OnGotoYInterval();
-  afx_msg void OnGotoZInterval();
-  afx_msg void OnCheckDoubleSided();
-  afx_msg void OnCheckTetrahedral();
+  afx_msg void OnBnClickedCheckDoubleSided();
+  afx_msg void OnBnClickedCheckTetrahedral();
   afx_msg void OnButtonHelp();
   DECLARE_MESSAGE_MAP()
 };

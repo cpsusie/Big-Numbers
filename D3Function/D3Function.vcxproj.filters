@@ -81,9 +81,6 @@
     <ClInclude Include="OptionsOrganizerDlg.h">
       <Filter>Header Files\Dialogs</Filter>
     </ClInclude>
-    <ClInclude Include="SaveLoadExprWithAnimationDialog.h">
-      <Filter>Header Files\Dialogs</Filter>
-    </ClInclude>
     <ClInclude Include="D3FunctionSurface.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -98,6 +95,9 @@
     </ClInclude>
     <ClInclude Include="D3ProfileObjectWithColor.h">
       <Filter>Source Files\Dialogs\ProfileEditor\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SaveLoadExprWithCommonParametersDialog.h">
+      <Filter>Header Files\Dialogs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -165,9 +165,6 @@
       <Filter>Source Files\Dialogs\ProfileEditor\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ProfilePainter.cpp">
-      <Filter>Source Files\Dialogs\ProfileEditor\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SelectAndLoadProfile.cpp">
       <Filter>Source Files\Dialogs\ProfileEditor\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="D3ProfileObjectWithColor.cpp">
