@@ -583,8 +583,20 @@ public:
     }
   };
 
-  Iterator<T> getIterator() {
+  inline Iterator<T> getIterator() {
     return Iterator<T>(new CompactArrayIterator(this));
+  }
+  inline T *begin() {
+    return isEmpty() ? NULL : &first();
+  }
+  inline T *end() {
+    return isEmpty() ? NULL : (&first() + size());
+  }
+  inline const T *begin() const {
+    return isEmpty() ? NULL : &first();
+  }
+  inline const T *end() const {
+    return isEmpty() ? NULL : (&first() + size());
   }
 };
 
@@ -594,8 +606,8 @@ template<typename S, typename T, class D=StreamDelimiter> S &operator<<(S &out, 
   const size_t n        = a.size();
   out << elemSize << delimiter << n << delimiter;
   if(n) {
-    for(const T *e = a.getBuffer(), *end = &a.last();  e <= end;) {
-      out << *(e++) << delimiter;
+    for(T e : a) {
+      out << e << delimiter;
     }
   }
   return out;
