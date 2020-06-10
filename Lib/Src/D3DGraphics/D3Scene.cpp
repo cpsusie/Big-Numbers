@@ -88,8 +88,8 @@ void D3Scene::setRightHanded(bool rightHanded) {
   if(rightHanded != oldValue) {
     const bool notifyEnable = setNotifyEnable(false);
     m_rightHanded = rightHanded;
-    for(Iterator<D3Camera*> it = m_cameraArray.getIterator(); it.hasNext();) {
-      it.next()->setRightHanded(rightHanded);
+    for(D3Camera *cam : m_cameraArray) {
+      cam->setRightHanded(rightHanded);
     }
     setNotifyEnable(notifyEnable);
     notifyPropertyChanged(SP_RIGHTHANDED, &oldValue, &rightHanded);
@@ -111,8 +111,7 @@ void D3Scene::render(const D3Camera &camera) {
   D3Device &device = getDevice();
   device.setAmbientColor(m_ambientColor).beginRender(camera);
   try {
-    for(D3VisualIterator it = getVisualIterator(); it.hasNext();) {
-      D3SceneObjectVisual *obj = it.next();
+    for(D3SceneObjectVisual *obj : m_visualArray) {
       if(obj->isVisible()) {
         obj->draw();
       }

@@ -13,8 +13,7 @@ void testAPCSum(TestStatistic &stat) {
 
   stat.setTotalTestCount(totalTestCount);
 
-  for(int biasIndex = 0; biasIndex < biasCount; biasIndex++) {
-    const char bias = legalBias[biasIndex];
+  for(char bias : legalBias) {
     for(int length = 1; length < MAXLENGTH; length++) {
       for(int xScale = MINSCALE; xScale <= MAXSCALE; xScale += SCALESTEP) {
         for(int yScale = MINSCALE; yScale <= MAXSCALE; yScale += SCALESTEP) {
@@ -99,8 +98,7 @@ void testAPCProd(TestStatistic &stat) {
 
   stat.setTotalTestCount(totalTestCount);
 
-  for(int biasIndex = 0; biasIndex < biasCount; biasIndex++) {
-    const char bias = legalBias[biasIndex];
+  for(char bias : legalBias) {
     for(int length = 1; length < MAXLENGTH; length++) {
       for(int xScale = MINSCALE; xScale <= MAXSCALE; xScale += SCALESTEP) {
         for(int yScale = MINSCALE; yScale <= MAXSCALE; yScale += SCALESTEP ) {
@@ -148,8 +146,7 @@ void testAPCQuot(TestStatistic &stat) {
 
   stat.setTotalTestCount(totalTestCount);
 
-  for(int biasIndex = 0; biasIndex < biasCount; biasIndex++) {
-    const char bias = legalBias[biasIndex];
+  for(char bias : legalBias) {
     for(int length = 1; length < MAXLENGTH; length++) {
       for(int xScale = MINSCALE; xScale < MAXSCALE; xScale += SCALESTEP) {
         for(int yScale = MINSCALE; yScale < MAXSCALE; yScale += SCALESTEP) {
@@ -200,8 +197,7 @@ void testAPCPow(TestStatistic &stat) {
 
   stat.setTotalTestCount(totalTestCount);
 
-  for(int biasIndex = 0; biasIndex < biasCount; biasIndex++) {
-    const char bias = legalBias[biasIndex];
+  for(char bias : legalBias) {
     for(int length = 4; length < MAXLENGTH; length += lengthStep) {
       for(BigInt y = minY; y < maxY; y++) {
         for(int xScale = MINSCALE; xScale < MAXSCALE; xScale += SCALESTEP) {

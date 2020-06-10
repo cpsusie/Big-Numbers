@@ -246,6 +246,14 @@ public:
   }
 };
 
+template<typename T1, typename T2> Point2DTemplate<T1> Min(const Point2DTemplate<T1> &p1, const Point2DTemplate<T2> &p2) {
+  return Point2DTemplate<T1>(min((T1)p1.x, (T1)p2.x), min((T1)p1.y, (T1)p2.y));
+}
+
+template<typename T1, typename T2> Point2DTemplate<T1> Max(const Point2DTemplate<T1> &p1, const Point2DTemplate<T2> &p2) {
+  return Point2DTemplate<T1>(max((T1)p1.x, (T1)p2.x), max((T1)p1.y, (T1)p2.y));
+}
+
 template<typename T, typename P> Point2DTemplate<P> operator*(const T &factor, const Point2DTemplate<P> &p) {
   return p * f;
 }

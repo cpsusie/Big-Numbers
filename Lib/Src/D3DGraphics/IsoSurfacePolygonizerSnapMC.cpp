@@ -426,9 +426,7 @@ void IsoSurfacePolygonizer::putTriangleStripR(const TriangleStrip &ts) {
 }
 
 void IsoSurfacePolygonizer::flushFaceBuffer() {
-  for(size_t i = 0; i < m_face3Buffer.size(); i++) {
-    const Face3 &f      = m_face3Buffer[i];
-    const UINT   findex = (UINT)m_faceArray.size();
+  for(const Face3 f : m_face3Buffer) {
     m_faceArray.add(f);
 #ifdef ISODEBUGGER
     m_eval.receiveFace(f);
@@ -439,9 +437,8 @@ void IsoSurfacePolygonizer::flushFaceBuffer() {
 
 void IsoSurfacePolygonizer::flushFaceArray() {
 #ifndef ISODEBUGGER
-  const size_t n = m_faceArray.size();
-  for(size_t i = 0;i < n; i++) {
-    m_eval.receiveFace(m_faceArray[i]);
+  for(const Face3 f : m_faceArray) {
+    m_eval.receiveFace(f);
   }
 #endif // ISODEBUGGER
 }

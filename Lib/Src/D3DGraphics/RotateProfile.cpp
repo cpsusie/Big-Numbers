@@ -136,10 +136,9 @@ public:
   explicit VertexNormalIndexArray(size_t capacity = 0) : CompactArray(capacity) {
   }
   VertexNormalIndexArray(const CompactArray<VertexNormal> &src) {
-    const size_t n = src.size();
-    setCapacity(n);
-    for(const VertexNormal *srcp = src.getBuffer(), *endp = srcp + n; srcp < endp;) {
-      add(*(srcp++));
+    setCapacity(src.size());
+    for(const VertexNormal v : src) {
+      add(v);
     }
   }
 };
@@ -156,18 +155,16 @@ public:
 };
 
 D3DXVECTOR3 VertexNormalIndexPArray::sumAllNormals() const {
-  D3DXVECTOR3 s = (*this)[0]->getNormal();
-  for(UINT i = 1; i < size(); i++) {
-    s += (*this)[i]->getNormal();
+  D3DXVECTOR3 s(0, 0, 0);
+  for(VertexNormalWithIndex *vp : *this) {
+    s += vp->getNormal();
   }
   return s;
 }
 
 CompactArray<VertexNormal> rotate(const CompactArray<VertexNormal> &a, D3DXQUATERNION &rot) {
-  const size_t n = a.size();
-  CompactArray<VertexNormal> result(n);
-  for(size_t i = 0; i < n; i++) {
-    const VertexNormal &v = a[i];
+  CompactArray<VertexNormal> result(a.size());
+  for(const VertexNormal v : a) {
     result.add(VertexNormal().setPos(rotate(v.getPos(), rot)).setNormal(rotate(v.getNormal(),rot)));
   }
   return result;
@@ -178,7 +175,7 @@ D3Cube getBoundingBox(const Array<VertexNormalIndexArray> &a) {
   if(n == 0) return D3Cube();
   D3Cube result = getBoundingBox(a[0]);
   for(size_t i = 1; i < n; i++) {
-    result = result + getBoundingBox(a[i]);
+    result += getBoundingBox(a[i]);
   }
   return result;
 }

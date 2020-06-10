@@ -1119,8 +1119,7 @@ void D3SceneEditor::OnContextMenuBackground(CPoint point) {
   }
   const LightArray lights = SCENE.getAllLights();
   BitSet definedLights(SCENE.getMaxLightCount());
-  for(size_t i = 0; i < lights.size(); i++) {
-    const D3Light &l = lights[i];
+  for(D3Light l : lights) {
     definedLights.add(l.getIndex());
     setMenuItemText(menu, ID_SELECT_LIGHT0 + l.getIndex(), lightMenuText(l));
   }

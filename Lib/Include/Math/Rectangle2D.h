@@ -120,12 +120,10 @@ typedef Rectangle2DTemplate<double  > Rectangle2D;
 typedef Rectangle2DTemplate<Double80> D80Rectangle2D;
 typedef Rectangle2DTemplate<Real    > RealRectangle2D;
 
-template<typename T> Rectangle2DTemplate<T> getUnion(const Rectangle2DTemplate<T> &r1, const Rectangle2DTemplate<T> &r2) {
-  const T minX = min(r1.getMinX(), r2.getMinX());
-  const T minY = min(r1.getMinY(), r2.getMinY());
-  const T maxX = max(r1.getMaxX(), r2.getMaxX());
-  const T maxY = max(r1.getMaxY(), r2.getMaxY());
-  return Rectangle2DTemplate<T>(minX,minY, maxX-minX,maxY-minY);
+template<typename T1, typename T2> Rectangle2DTemplate<T1> getUnion(const Rectangle2DTemplate<T1> &r1, const Rectangle2DTemplate<T2> &r2) {
+  const T1 minX = min(r1.getMinX(), r2.getMinX()), maxX = max(r1.getMaxX(), r2.getMaxX());
+  const T1 minY = min(r1.getMinY(), r2.getMinY()), maxY = max(r1.getMaxY(), r2.getMaxY());
+  return Rectangle2DTemplate<T1>(minX, minY, maxX - minX, maxY - minY);
 }
 
 template<typename T> class Point2DTemplateArray : public CompactArray<Point2DTemplate<T> > {
@@ -136,16 +134,17 @@ public:
   }
   template<typename S> Point2DTemplateArray(const Point2DTemplateArray<S> &src) : CompactArray(src.size) {
     const size_t n = src.size();
-    for(const Point2DTemplate<S> *srcp = src.getBuffer(); *endp = srcp + n, srcp < endp;) {
-      add(Point2DTemplate<T>(*(srcp++)));
+    for(const Point2DTemplate<S> p : src) {
+      add(Point2DTemplate<T>(p));
     }
   }
   template<typename S> Point2DTemplateArray<T> &operator=(const Point2DTemplateArray<S> &src) {
-    const size_t n = src.size();
-    clear(n);
-    if(n == 0) return *this;
-    for(const Point2DTemplate<S> *srcp = src.getBuffer(), *endp = srcp + n; srcp < endp;) {
-      add(Point2DTemplate<T>(*(srcp++)));
+    if((void*)&src == (void*)this) {
+      return *this;
+    }
+    clear(src.size());
+    for(const Point2DTemplate<S> p : src) {
+      add(Point2DTemplate<T>(p));
     }
     return *this;
   }

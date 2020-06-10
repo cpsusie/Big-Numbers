@@ -243,8 +243,8 @@ public:
 
   bool removeAll(const CompactArray<K> &a) {
     const size_t n = size();
-    for(size_t i = 0; i < a.size(); i++) {
-      remove(a[i]);
+    for(K key : a) {
+      remove(key);
     }
     return size() != n;
   }

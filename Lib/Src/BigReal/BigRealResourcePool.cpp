@@ -82,8 +82,8 @@ BigRealResourcePool::BigRealResourcePool(SingletonFactory *factory)
   m_lockedDigitPoolPool = new LockedDigitPoolPool; TRACE_NEW(m_lockedDigitPoolPool);
 
   DigitPoolArray a;
-  for(UINT i = 0; i < 8       ; i++) a.add(m_digitPoolPool->fetchResource());
-  for(UINT i = 0; i < a.size(); i++) m_digitPoolPool->releaseResource(a[i]);
+  for(UINT i = 0; i < 8; i++) a.add(m_digitPoolPool->fetchResource());
+  for(DigitPool *dp : a) m_digitPoolPool->releaseResource(dp);
   a.clear(-1);
   for(UINT i = 0; i < 1       ; i++) a.add(m_lockedDigitPoolPool->fetchResource());
   for(UINT i = 0; i < a.size(); i++) m_lockedDigitPoolPool->releaseResource((DigitPoolWithLock*)a[i]);

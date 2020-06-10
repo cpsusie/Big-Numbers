@@ -182,16 +182,14 @@ void ThreadMap::killDemonThreads() {
     }
   }
   int terminateCount = 0;
-  const size_t n = demonArray.size();
-  for(size_t i = 0; i < n; i++) {
-    Thread *t = demonArray[i];
-    THREAD_TRACE("Terminating demonthread(%d)", t->getThreadId());
-    if(TerminateThread(t->m_threadHandle, 0)) {
+  for(Thread *thr : demonArray) {
+    THREAD_TRACE("Terminating demonthread(%d)", thr->getThreadId());
+    if(TerminateThread(thr->m_threadHandle, 0)) {
       decrActiveCount();
       terminateCount++;
     }
   }
-  if(terminateCount != n) {
+  if(terminateCount != demonArray.size()) {
     THREAD_TRACE("Cannot terminate all demon threads");
   }
   m_lock.notify();

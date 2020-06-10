@@ -20,5 +20,4 @@ String shadeModeToString(D3DSHADEMODE mode) {
 D3DSHADEMODE shadeModeFromString(const String &str) {
   static const D3DSHADEMODE table[] = { D3DSHADE_FLAT, D3DSHADE_GOURAUD, D3DSHADE_PHONG   };
   return linearStringSearch(str, table, ARRAYSIZE(table), shadeModeToString);
-
 }

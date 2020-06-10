@@ -18,7 +18,7 @@ public:
   {
   }
   template<typename C> Cube3DTemplate(const Cube3DTemplate<C> &src)
-    : m_lbn(src.m_lbnLBN())
+    : m_lbn(src.LBN())
     , m_size(src.size())
   {
   }
@@ -138,18 +138,18 @@ public:
     return (getMinX() <= (T)p.x) && ((T)p.x <= getMaxX()) && (getMinY() <= (T)p.y) && ((T)p.y <= getMaxY()) && (getMinZ() <= (T)p.z) && ((T)p.z <= getMaxZ());
   }
 
-  template<typename TP> Cube3DTemplate &operator+=(const Point3DTemplate<TP> &dp) {
+  template<typename TP> Cube3DTemplate<T> &operator+=(const Point3DTemplate<TP> &dp) {
     m_lbn += dp;
     return *this;
   }
-  template<typename TP> Cube3DTemplate &operator-=(const Point3DTemplate<TP> &dp) {
+  template<typename TP> Cube3DTemplate<T> &operator-=(const Point3DTemplate<TP> &dp) {
     m_lbn -= dp;
     return *this;
   }
-  template<typename TP> Cube3DTemplate operator+(const Point3DTemplate<TP> &dp) {
+  template<typename TP> Cube3DTemplate<T> operator+(const Point3DTemplate<TP> &dp) {
     return Cube3DTemplate(LBN() + dp, size());
   }
-  template<typename TP> Cube3DTemplate operator-(const Point3DTemplate<TP> &dp) {
+  template<typename TP> Cube3DTemplate<T> operator-(const Point3DTemplate<TP> &dp) {
     return Cube3DTemplate(LBN() - dp, size());
   }
   inline bool operator==(const Cube3DTemplate &c) const {
@@ -166,14 +166,11 @@ public:
   }
 };
 
-template<typename T> Cube3DTemplate<T> getUnion(const Cube3DTemplate<T> &c1, const Cube3DTemplate<T> &c2) {
-  const T minX = min(c1.getMinX(), c2.getMinX());
-  const T minY = min(c1.getMinY(), c2.getMinY());
-  const T minZ = min(c1.getMinZ(), c2.getMinZ());
-  const T maxX = max(c1.getMaxX(), c2.getMaxX());
-  const T maxY = max(c1.getMaxY(), c2.getMaxY());
-  const T maxZ = max(c1.getMaxZ(), c2.getMaxZ());
-  return Cube3DTemplate<T>(minX,minY,minZ, maxX-minX,maxY-minY,maxZ-minZ);
+template<typename T1, typename T2> Cube3DTemplate<T1> getUnion(const Cube3DTemplate<T1> &c1, const Cube3DTemplate<T2> &c2) {
+  const T1 minX = min(c1.getMinX(), c2.getMinX()), maxX = max(c1.getMaxX(), c2.getMaxX());
+  const T1 minY = min(c1.getMinY(), c2.getMinY()), maxY = max(c1.getMaxY(), c2.getMaxY());
+  const T1 minZ = min(c1.getMinZ(), c2.getMinZ()), maxZ = max(c1.getMaxZ(), c2.getMaxZ());
+  return Cube3DTemplate<T1>(minX, minY, minZ, maxX - minX, maxY - minY, maxZ - minZ);
 }
 
 typedef Cube3DTemplate<double> Cube3D;

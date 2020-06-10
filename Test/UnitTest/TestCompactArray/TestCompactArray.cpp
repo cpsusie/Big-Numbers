@@ -366,6 +366,30 @@ namespace TestCompactArray {
       }
     }
 
+    TEST_METHOD(CompactArrayTestEnhancedForLoop) {
+      CompactIntArray a, b;
+      for(int i = 0; i < 20; i++) {
+        a.add(i);
+      }
+      const CompactIntArray ca = a;
+      for(int v : a) {
+        b.add(v);
+      }
+      verify(b == a);
+      b.clear();
+      for(int v : ca) {
+        b.add(v);
+      }
+      verify(b == ca);
+      a.clear();
+      b.clear();
+      for(int v : a) {
+        b.add(v);
+      }
+      verify(b == a);
+
+    }
+
     TEST_METHOD(CompactArrayIterator) {
       CompactIntArray a;
 

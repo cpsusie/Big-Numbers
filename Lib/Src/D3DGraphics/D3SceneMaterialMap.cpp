@@ -47,7 +47,6 @@ void D3Scene::removeAllMaterials() {
   m_materialMap.clear();
   const UINT newCount = getMaterialCount();
   notifyPropertyChanged(SP_MATERIALCOUNT, &oldCount, &newCount);
-
 }
 
 void D3Scene::setMaterial(const D3Material &material) {
@@ -83,12 +82,5 @@ String D3Scene::getMaterialString() const {
     Entry<CompactUIntKeyType, D3Material> &e = it.next();
     matArray.add(e.getValue());
   }
-  matArray.sort(materialIdCmp);
-  const size_t n = matArray.size();
-  String result;
-  for(size_t i = 0; i < n; i++) {
-    if(i > 0) result += _T("\n");
-    result += matArray[i].toString();
-  }
-  return result;
+  return matArray.sort(materialIdCmp).toString(_T("\n"));
 }

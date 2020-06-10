@@ -46,6 +46,10 @@ public:
   D3Cube operator+(const D3Cube &c) const {
     return getUnion(*this, c);
   }
+  D3Cube &operator+=(const D3Cube &c) {
+    *this = getUnion(*this, c);
+    return *this;
+  }
 
   static D3Cube getSquareCube(const D3DXVECTOR3 &center, float sideLength) {
     if(sideLength < 0) sideLength = -sideLength;
@@ -57,7 +61,6 @@ public:
     return D3Cube(D3DXVECTOR3(-1, -1, -1), D3DXVECTOR3(1,1,1));
   }
 };
-
 
 D3Cube getBoundingBox(LPDIRECT3DVERTEXBUFFER vertexBuffer);
 D3Cube getBoundingBox(LPD3DXMESH             mesh        );

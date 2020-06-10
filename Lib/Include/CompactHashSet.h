@@ -246,16 +246,16 @@ public:
 
   bool addAll(const CompactArray<K> &a) {
     const size_t n = size();
-    for(size_t i = 0; i < a.size(); i++) {
-      add(a[i]);
+    for(K e : a) {
+      add(e);
     }
     return size() != n;
   }
 
   bool removeAll(const CompactArray<K> &a) {
     const size_t n = size();
-    for(size_t i = 0; i < a.size(); i++) {
-      remove(a[i]);
+    for(K e : a) {
+      remove(e);
     }
     return size() != n;
   }

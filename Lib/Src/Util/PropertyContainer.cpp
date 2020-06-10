@@ -2,8 +2,8 @@
 #include <PropertyContainer.h>
 
 void PropertyContainer::alwaysNotifyPropertyChanged(int id, const void *oldValue, const void *newValue) const {
-  for(size_t i = 0; i < m_listeners.size(); i++) {
-    m_listeners[i]->handlePropertyChanged(this, id, oldValue, newValue);
+  for(PropertyChangeListener *l : m_listeners) {
+    l->handlePropertyChanged(this, id, oldValue, newValue);
   }
 }
 

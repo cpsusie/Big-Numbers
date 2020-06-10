@@ -33,8 +33,8 @@ void D3Scene::destroyLightControl(UINT lightIndex) {
 
 void D3Scene::destroyAllLightControls() {
   LightArray la = getAllLights();
-  for(Iterator<D3Light> it = la.getIterator(); it.hasNext();) {
-    destroyLightControl(it.next().getIndex());
+  for(D3Light l : la) {
+    destroyLightControl(l.getIndex());
   }
 }
 
@@ -144,9 +144,7 @@ LightArray D3Scene::getAllLights() const {
 void D3Scene::setAllLights(const LightArray &a) {
   const bool notifyEnable = setNotifyEnable(false);
   removeAllLights();
-  const UINT count = (UINT)a.size();
-  for(UINT i = 0; i < count; i++) {
-    const D3Light &l = a[i];
+  for(D3Light l : a) {
     setLight(l, true);
   }
   setNotifyEnable(notifyEnable);
@@ -171,11 +169,10 @@ String D3Scene::getLightString(UINT lightIndex) const {
 
 String D3Scene::getLightString() const {
   String result;
-  LightArray allLights = getAllLights();
-  for(Iterator<D3Light> it = allLights.getIterator(); it.hasNext(); ) {
-    const D3Light &light = it.next();
+  const LightArray allLights = getAllLights();
+  for(const D3Light l : allLights) {
     if(result.length()) result += _T("\n");
-    result += light.toString();
+    result += l.toString();
   }
   return result;
 }

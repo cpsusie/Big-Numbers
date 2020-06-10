@@ -107,8 +107,8 @@ void TesterJob::shuffleTestOrder() { // static
     testArray.add(s_testQueue.get());
   }
   testArray.shuffle();
-  for(size_t i = 0; i < testArray.size(); i++) {
-    s_testQueue.put(testArray[i]);
+  for(AbstractFunctionTest *t : testArray) {
+    s_testQueue.put(t);
   }
   testArray.clear();
   s_lock.notify();

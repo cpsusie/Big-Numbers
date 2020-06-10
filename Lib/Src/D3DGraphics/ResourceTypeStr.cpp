@@ -25,18 +25,12 @@ String resourceTypeToString(D3DRESOURCETYPE type) {
   return EMPTYSTRING;
 }
 
-static const NameValue<D3DRESOURCETYPE> typeNames[] = {
-  NV(SURFACE            )
- ,NV(VOLUME             )
- ,NV(TEXTURE            )
- ,NV(VOLUMETEXTURE      )
- ,NV(CUBETEXTURE        )
- ,NV(VERTEXBUFFER       )
- ,NV(INDEXBUFFER        )
-};
-
-DefineNameLookupClass(D3DRESOURCETYPE, typeNames,Type);
-
 D3DRESOURCETYPE resourceTypeFromString(const String &str) {
-  return TypeLookupTable::getInstance().lookupName(str);
+  static const D3DRESOURCETYPE table[] = {
+    D3DRTYPE_VERTEXBUFFER, D3DRTYPE_INDEXBUFFER
+   ,D3DRTYPE_TEXTURE     , D3DRTYPE_SURFACE
+   ,D3DRTYPE_VOLUME      , D3DRTYPE_VOLUMETEXTURE
+   ,D3DRTYPE_CUBETEXTURE
+  };
+  return linearStringSearch(str, table, ARRAYSIZE(table), resourceTypeToString);
 }
