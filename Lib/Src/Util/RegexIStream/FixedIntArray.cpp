@@ -40,22 +40,28 @@ String FixedIntArray::toString(UINT maxPerLine) const {
 }
 
 template<typename T> class FixedIntArrayTemplate : public FixedIntArray {
-private:
-  T   *m_buffer;
-  int  m_minValue;
-  FixedIntArrayTemplate(const FixedIntArrayTemplate<T> &src) : FixedIntArray(src) {
-    m_minValue = src.m_minValue;
+protected:
+  T *m_buffer;
+  inline void allocateBuffer() {
     m_buffer = new T[m_size]; TRACE_NEW(m_buffer);
+  }
+  inline void deallocateBuffer() {
+    SAFEDELETE(m_buffer);
+  }
+
+  FixedIntArrayTemplate(const FixedIntArrayTemplate<T> &src) : FixedIntArray(src) {
+    allocateBuffer();
     memcpy(m_buffer, src.m_buffer, sizeof(T)*size());
   }
+  FixedIntArrayTemplate(const CompactIntArray &values) : FixedIntArray((UINT)values.size(), sizeof(T)) {
+    allocateBuffer();
+  }
 public:
-  FixedIntArrayTemplate(const CompactIntArray &values, const IntInterval &range)
-    : FixedIntArray((UINT)values.size(), sizeof(T)) {
-    m_minValue = range.getFrom();
-    m_buffer = new T[m_size]; TRACE_NEW(m_buffer);
+  FixedIntArrayTemplate(const CompactIntArray &values, const IntInterval &range) : FixedIntArray((UINT)values.size(), sizeof(T)) {
+    allocateBuffer();
     UINT index = 0;
     for(int v : values) {
-      m_buffer[index++] = (T)(v - m_minValue);
+      m_buffer[index++] = (T)v;
     }
   }
   size_t getMemoryUsage() const { // in bytes
@@ -66,21 +72,46 @@ public:
   }
   int operator[](UINT index) const {
     assert(index < m_size);
-    return m_minValue + m_buffer[index];
-  }
-  inline const T *begin() const {
-    return m_buffer;
-  }
-  inline const T *end() const {
-    return m_buffer + m_size;
+    return m_buffer[index];
   }
   UINT countNonZeroes() const {
     UINT count = 0;
-    for(const T v : *this) if(v) count++;
+    const UINT sz = size();
+    for(UINT i = 0; i < sz; i++) {
+      if((*this)[i] != 0) {
+        count++;
+      }
+    }
     return count;
   }
   ~FixedIntArrayTemplate() {
-    SAFEDELETE(m_buffer);
+    deallocateBuffer();
+  }
+};
+
+template<typename T> class BiasedFixedIntArrayTemplate : public FixedIntArrayTemplate<T> {
+private:
+  int m_minValue;
+  BiasedFixedIntArrayTemplate(const BiasedFixedIntArrayTemplate<T> &src) : FixedIntArrayTemplate(src) {
+    m_minValue = src.m_minValue;
+  }
+public:
+  BiasedFixedIntArrayTemplate(const CompactIntArray &values, const IntInterval &range) : FixedIntArrayTemplate(values) {
+    m_minValue = range.getFrom();
+    UINT index = 0;
+    for(int v : values) {
+      m_buffer[index++] = (T)(v - m_minValue);
+    }
+  }
+  size_t getMemoryUsage() const { // in bytes
+    return sizeof(BiasedFixedIntArrayTemplate) + getBufferBytes();
+  }
+  FixedIntArray *clone() const {
+    return new BiasedFixedIntArrayTemplate<T>(*this);
+  }
+  int operator[](UINT index) const {
+    assert(index < m_size);
+    return m_minValue + m_buffer[index];
   }
 };
 
@@ -89,10 +120,18 @@ FixedIntArray *FixedIntArray::allocateFixedArray(const CompactIntArray &values) 
   const IntInterval range       = getRange(values);
   const UINT        rangeLength = range.getLength();
   if(rangeLength <= UCHAR_MAX) {
-    return new FixedIntArrayTemplate<char >(values, range);
+    if(IntInterval(CHAR_MIN,CHAR_MAX).contains(range)) {
+      return new FixedIntArrayTemplate<CHAR>(values, range);
+    } else {
+      return new BiasedFixedIntArrayTemplate<UCHAR>(values, range);
+    }
   } else if(rangeLength < USHRT_MAX) {
-    return new FixedIntArrayTemplate<short>(values, range);
+    if(IntInterval(SHRT_MIN,SHRT_MAX).contains(range)) {
+      return new FixedIntArrayTemplate<SHORT>(values, range);
+    } else {
+      return new BiasedFixedIntArrayTemplate<USHORT>(values, range);
+    }
   } else {
-    return new FixedIntArrayTemplate<int  >(values, range);
+    return new FixedIntArrayTemplate<INT>(values, range);
   }
 }
