@@ -73,6 +73,10 @@ public:
   // T must be enumerable (e1 + 1 == e2 must be defined for T e1,e2)
   String rangesToString(AbstractStringifier<T> &sf, const TCHAR *delimiter = _T(",")) {
 
+#if defined(_FLUSHRANGE)
+#undef _FLUSHRANGE
+#endif
+
 #define _FLUSHRANGE()                                                                     \
     { if(delim) result += delim; else delim = delimiter;                                  \
       if(first == last) {                                                                 \
@@ -105,4 +109,5 @@ public:
     result += _T("]");
     return result;
   }
+#undef _FLUSHRANGE
 };
