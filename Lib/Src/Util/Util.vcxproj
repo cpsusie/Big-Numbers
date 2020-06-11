@@ -908,6 +908,7 @@
     </ClInclude>
     <ClInclude Include="RegexIStream\DFA.h" />
     <ClInclude Include="RegexIStream\DFARegex.h" />
+    <ClInclude Include="RegexIStream\FixedIntArray.h" />
     <ClInclude Include="RegexIStream\NFA.h" />
     <ClInclude Include="RegexIStream\NFAState.h" />
     <ClInclude Include="RegexIStream\PatternParser.h" />
@@ -1018,7 +1019,10 @@
     <ClCompile Include="GetSize.cpp" />
     <ClCompile Include="GetSystemTime.cpp" />
     <ClCompile Include="GetTestFileName.cpp" />
+    <ClCompile Include="MarginFile.cpp" />
     <ClCompile Include="PriorityClass.cpp" />
+    <ClCompile Include="RegexIStream\DFADumpStates.cpp" />
+    <ClCompile Include="RegexIStream\FixedIntArray.cpp" />
     <ClCompile Include="ThreadAffinityMask.cpp" />
     <ClCompile Include="ThreadDescription.cpp" />
     <ClCompile Include="ThreadExitCode.cpp" />
@@ -1053,7 +1057,6 @@
     <ClCompile Include="LRparser.cpp" />
     <ClCompile Include="lucase.cpp" />
     <ClCompile Include="Map.cpp" />
-    <ClCompile Include="MarginFile.cpp" />
     <ClCompile Include="MatchParanthes.cpp" />
     <ClCompile Include="MD5.cpp" />
     <ClCompile Include="MedianCut.cpp" />

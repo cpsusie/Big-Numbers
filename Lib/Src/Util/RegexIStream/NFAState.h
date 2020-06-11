@@ -93,7 +93,7 @@ public:
   static int compareById(NFAState * const &s1, NFAState * const &s2);
 };
 
-class NFAStatePool : public HeapObjectPool<NFAState> {
+class NFAStatePool : public HeapObjectPool<NFAState,1000> {
 public:
   NFAState *fetch(int edge = EDGE_EPSILON);
   void      release(NFAState *s);

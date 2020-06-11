@@ -568,9 +568,6 @@
     <ClCompile Include="Sleep.cpp">
       <Filter>Source Files\Process</Filter>
     </ClCompile>
-    <ClCompile Include="MarginFile.cpp">
-      <Filter>Source Files\Stream</Filter>
-    </ClCompile>
     <ClCompile Include="TeeOutputStream.cpp">
       <Filter>Source Files\Stream</Filter>
     </ClCompile>
@@ -953,6 +950,15 @@
     <ClCompile Include="TimeXml.cpp">
       <Filter>Source Files\Date</Filter>
     </ClCompile>
+    <ClCompile Include="RegexIStream\DFADumpStates.cpp">
+      <Filter>Source Files\Stream\RegexIStream</Filter>
+    </ClCompile>
+    <ClCompile Include="MarginFile.cpp">
+      <Filter>Source Files\Stream</Filter>
+    </ClCompile>
+    <ClCompile Include="RegexIStream\FixedIntArray.cpp">
+      <Filter>Source Files\Stream\RegexIStream</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -1047,9 +1053,6 @@
       <Filter>Header Files\Stream</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\CountedByteStream.h">
-      <Filter>Header Files\Stream</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\MarginFile.h">
       <Filter>Header Files\Stream</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\SocketStream.h">
@@ -1367,6 +1370,12 @@
     </ClInclude>
     <ClInclude Include="DateTimeStreamScanner.h">
       <Filter>Source Files\Date</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\MarginFile.h">
+      <Filter>Header Files\Stream</Filter>
+    </ClInclude>
+    <ClInclude Include="RegexIStream\FixedIntArray.h">
+      <Filter>Source Files\Stream\RegexIStream</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

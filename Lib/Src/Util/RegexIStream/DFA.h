@@ -27,10 +27,17 @@ public:
     initTransisition();
     m_acceptIndex = acceptIndex;
   }
+  inline bool isAcceptState() const {
+    return m_acceptIndex >= 0;
+  }
+#if defined(_DEBUG)
+  String toString() const;
+#endif // _DEBUG
 };
 
 #define FAILURE -1                   // if no transition on c, then m_transition[c] = FAILURE
 
+class TmpDFATables;
 class DFA {
 private:
   const NFA      &m_NFA;
@@ -51,11 +58,14 @@ private:
   void fixupTransitions();
   void minimize();
   bool columnsEqual(size_t col1, size_t col2) const;
-  bool rowsEqual(size_t row1, size_t row2) const;
-  void reduce(DFATables &tables, BitSet &rowSave, BitSet &columnSave) const;
-  void getTransitionMatrix(DFATables &tables, const BitSet &rowSave, const BitSet &columnSave) const;
-  void getAcceptTable(DFATables &tables) const;
+  bool rowsEqual(   size_t row1, size_t row2) const;
+  void reduce(             TmpDFATables &tables,       BitSet &rowSave,       BitSet &columnSave) const;
+  void getTransitionMatrix(TmpDFATables &tables, const BitSet &rowSave, const BitSet &columnSave) const;
+  void getAcceptTable(     TmpDFATables &tables) const;
 public:
   DFA(const NFA &nfa);
   void getDFATables(DFATables &tables) const;
+#if defined(_DEBUG)
+  void dumpStates() const;
+#endif
 };

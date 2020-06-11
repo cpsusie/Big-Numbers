@@ -2,25 +2,38 @@
 #include "PatternParser.h"
 #include "DFA.h"
 #include "DFARegex.h"
-
-//#define DUMP_TABLES
-
-#ifdef  DUMP_TABLES
+#if defined(_DEBUG)
 #include <DebugLog.h>
 #endif
 
-DFARegex::DFARegex(const StringArray &pattern, bool ignoreCase)
-: m_ignoreCase(ignoreCase)
+DFARegex::DFARegex(const StringArray &pattern, BYTE flags)
+: m_flags(flags)
 {
   compilePattern(pattern);
 }
+
+#if defined(_DEBUG)
+static String getIndexedPatternString(const StringArray &pattern) {
+  String result;
+  const size_t n = pattern.size();
+  for(size_t i = 0; i < n; i++) {
+    result += format(_T("[%2zu]:\"%s\"\n"), i, pattern[i].cstr());
+  }
+  return result;
+}
+#endif // _DEBUG
 
 void DFARegex::compilePattern(const StringArray &pattern) {
   NFAStatePool statePool;
   NFA          nfa(statePool);
   try {
-    PatternParser parser(pattern, nfa, m_ignoreCase);
-    DFA           dfa(nfa);
+    PatternParser parser(pattern, nfa, getIgnoreCase());
+    const DFA     dfa(nfa);
+#if defined(_DEBUG)
+    if(getDumpStates()) {
+      dfa.dumpStates();
+    }
+#endif // _DEBUG
     dfa.getDFATables(m_tables);
     if((!m_tables.isEmpty()) && m_tables.isAcceptState(0)) {
       throwInvalidArgumentException(__TFUNCTION__, _T("Pattern %s will accept empty string"), pattern.toString().cstr());
@@ -28,10 +41,11 @@ void DFARegex::compilePattern(const StringArray &pattern) {
     nfa.clear();
     statePool.releaseAll();
 
-#ifdef DUMP_TABLES
-    debugLog(_T("%s\nPattern:\n%s\nTables:\n%s\n"), __TFUNCTION__, pattern.toString(_T("\n")).cstr(), m_tables.toString().cstr());
-#endif //  DUMP_TABLES
-
+#if defined(_DEBUG)
+    if(getDumpStates()) {
+      debugLog(_T("%s\nPattern:\n%s\nTables:\n%s\n"), __TFUNCTION__, getIndexedPatternString(pattern).cstr(), m_tables.toString().cstr());
+    }
+#endif // _DEBUG
   } catch(...) {
     nfa.clear();
     statePool.releaseAll();
@@ -87,14 +101,16 @@ public:
 
 // matchedString might be NULL
 int DFARegex::match(istream &in, String *matchedString) const {
-  return DFARegexT<istream, char>().match(m_tables, m_ignoreCase, in, matchedString);
+  return DFARegexT<istream, char>().match(m_tables, getIgnoreCase(), in, matchedString);
 }
 
 // matchedString might be NULL
 int DFARegex::match(wistream &in, String *matchedString) const {
-  return DFARegexT<wistream, wchar_t>().match(m_tables, m_ignoreCase, in, matchedString);
+  return DFARegexT<wistream, wchar_t>().match(m_tables, getIgnoreCase(), in, matchedString);
 }
 
+#if defined(_DEBUG)
 String DFARegex::toString() const {
-  return format(_T("IgnoreCase:%s\n:%s"), boolToStr(m_ignoreCase), m_tables.toString().cstr());
+  return format(_T("IgnoreCase:%s\n:%s"), boolToStr(getIgnoreCase()), m_tables.toString().cstr());
 }
+#endif // _DEBUG

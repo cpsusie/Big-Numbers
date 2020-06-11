@@ -13,10 +13,17 @@ private:
 public:
   RegexIStream() : m_regex(NULL) {
   }
+#if defined(_DEBUG)
+  RegexIStream(const StringArray &pattern, bool ignoreCase = false, bool dumpStates = true) : m_regex(NULL) {
+    compilePattern(pattern, ignoreCase,dumpStates);
+  }
+  void compilePattern(const StringArray &pattern, bool ignoreCase = false, bool dumpStates = true);
+#else
+  void compilePattern(const StringArray &pattern, bool ignoreCase = false);
   RegexIStream(const StringArray &pattern, bool ignoreCase = false) : m_regex(NULL) {
     compilePattern(pattern, ignoreCase);
   }
-  void compilePattern(const StringArray &pattern, bool ignoreCase = false);
+#endif // _DEBUG
   virtual ~RegexIStream() {
     cleanup();
   }
@@ -25,5 +32,7 @@ public:
   }
   int match(std::istream  &in, String *matchedString = NULL) const;
   int match(std::wistream &in, String *matchedString = NULL) const;
+#if defined(_DEBUG)
   String toString() const;
+#endif // _DEBUG
 };
