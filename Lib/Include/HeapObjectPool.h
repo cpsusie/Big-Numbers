@@ -1,12 +1,12 @@
 #pragma once
 
 // Assume T has a public field T *m_next
-template<typename T> class HeapObjectPool {
+template<typename T, UINT pageSize=20000> class HeapObjectPool {
 private:
   class HeapObjectPage {
   private:
     HeapObjectPage *m_nextPage;
-    T               m_object[20000];
+    T               m_object[pageSize];
 
   public:
     HeapObjectPage(HeapObjectPage *nextPage) {
