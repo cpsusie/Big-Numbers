@@ -10,21 +10,30 @@ MarginFile::MarginFile(const String &name) {
   }
 }
 
-void MarginFile::open(const String &name) {
-  if(name == _T("stdout")) {
-    open(stdout,name,name,false);
-  } else if(name == _T("stderr")) {
-    open(stderr,name,name,false);
-  } else {
-    open(MKFOPEN(name,_T("w")),name, FileNameSplitter(name).getAbsolutePath(), true);
-  }
+MarginFile::MarginFile(tostream &output, const String &name) {
+  init();
+  setOutput(output, name, FileNameSplitter(name).getAbsolutePath(), false);
 }
 
-void MarginFile::open(FILE *file, const String &name, const String &absolutName, bool openedByMe) {
+void MarginFile::open(const String &name) {
   if(isOpen()) {
     throwException(_T("%s:(%s) - Already open"), __TFUNCTION__, name.cstr());
   }
-  m_file             = file;
+  if(name == _T("stdout")) {
+    setOutput(tcout,name,name,false);
+  } else if(name == _T("stderr")) {
+    setOutput(tcerr,name,name,false);
+  } else {
+    FILE *tmp = MKFOPEN(name, _T("w")); // throws exception
+    fclose(tmp);
+    tofstream *output = new tofstream(name.cstr(), std::ofstream::out); TRACE_NEW(output)
+    setOutput(*output,name, FileNameSplitter(name).getAbsolutePath(), true);
+  }
+}
+
+void MarginFile::setOutput(tostream &output, const String &name, const String &absolutName, bool openedByMe) {
+  assert(!isOpen());
+  m_output           = &output;
   m_name             = name;
   m_absolutName      = absolutName;
   m_openedByMe       = openedByMe;
@@ -37,7 +46,7 @@ void MarginFile::open(FILE *file, const String &name, const String &absolutName,
 void  MarginFile::init() {
   m_name             = EMPTYSTRING;
   m_absolutName      = EMPTYSTRING;
-  m_file             = NULL;
+  m_output           = NULL;
   m_openedByMe       = false;
   m_trimRight        = false;
   m_lineNumber       = 1;
@@ -55,12 +64,14 @@ void MarginFile::close() {
   if(!isOpen()) {
     return;
   }
-
   if(m_currentLine.length() > 0) {
     flushLine();
   }
-  if(m_file && m_openedByMe) {
-    fclose(m_file);
+  m_output->flush();
+  if(m_openedByMe) {
+    SAFEDELETE(m_output);
+  } else {
+    m_output = NULL;
   }
   SAFEDELETEARRAY(m_formatBuffer);
   init();
@@ -74,16 +85,16 @@ void MarginFile::flushLine() {
   if(m_trimRight) {
     m_currentLine.trimRight();
   }
+  m_output->setf(std::ios::left, std::ios::adjustfield);
   if(m_currentLine.length()) {
-    _fputts(m_currentLine.cstr(), m_file);
+    *m_output << m_currentLine.cstr();
   }
-  _fputtc(_T('\n'), m_file);
+  *m_output << _T('\n');
   m_lineNumber++;
   m_currentLine = EMPTYSTRING;
 }
 
 void MarginFile::putch(TCHAR ch) {
-  if(m_file == NULL) return;
   if(m_currentLine.length() == 0) indent();
   switch(ch) {
   case _T('\n'):
@@ -97,7 +108,6 @@ void MarginFile::putch(TCHAR ch) {
 }
 
 void MarginFile::puts(const TCHAR *s) {
-  if(m_file == NULL) return;
   for(;*s; s++) {
     putch(*s);
   }
