@@ -75,8 +75,12 @@ void pause(_In_z_ _Printf_format_string_ TCHAR const * const format, ...);
 #define PAUSE() pause(_T("%s line %d"), __TFILE__, __LINE__)
 
 bool keyPressed(int vk);
-bool shiftKeyPressed();
-bool ctrlKeyPressed();
+inline bool shiftKeyPressed() {
+  return keyPressed(VK_SHIFT);
+}
+inline bool ctrlKeyPressed() {
+  return keyPressed(VK_CONTROL);
+}
 unsigned char toAscii(UINT virtualCode);
 // read password   from console
 String  inputPassword(_In_z_ _Printf_format_string_ TCHAR const * const format, ...);
