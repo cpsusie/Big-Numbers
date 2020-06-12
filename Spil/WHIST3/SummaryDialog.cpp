@@ -3,7 +3,7 @@
 #include "whist3.h"
 #include "SummaryDialog.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 

@@ -141,7 +141,7 @@ void BrickObject::draw() {
   }
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 String BrickObject::toString() const {
   return format(_T("%s\nWorld:\n%s")
                ,getName().cstr()

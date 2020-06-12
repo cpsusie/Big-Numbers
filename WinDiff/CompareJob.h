@@ -11,7 +11,7 @@ public:
   double       m_timeUnits;
   const TCHAR *m_msg;
 
-#ifdef MEASURE_STEPTIME
+#if defined(MEASURE_STEPTIME)
   Timestamp   m_startTime;
   Timestamp   m_endTime;
   double getMeasuredTime() const {

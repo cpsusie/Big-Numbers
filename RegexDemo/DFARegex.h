@@ -42,12 +42,12 @@ public:
   inline int nextState(int state, _TUCHAR c) const {
     return transition(m_stateMap[state], m_charMap[c]);
   }
-#ifdef _DEBUG
+#if defined(_DEBUG)
   String toString() const;
 #endif
 };
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 
 class _DFARegexCompilerState {
 public:
@@ -170,7 +170,7 @@ private:
                   ,intptr_t         startPos
                   ,intptr_t         range) const;
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
   String                          m_codeText;
   mutable bool                    m_codeDirty;
   mutable UINT                    m_cycleCount;
@@ -211,7 +211,7 @@ public:
     return m_hasCompiled;
   }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
   DFARegexStepHandler *setHandler(DFARegexStepHandler *handler);
   CharacterFormater   *setCharacterFormater(CharacterFormater *formater);
   const String &toString() const;

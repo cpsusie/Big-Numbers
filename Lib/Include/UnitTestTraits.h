@@ -6,7 +6,7 @@ static void myVerify(bool b, TCHAR *str) {
   }
 }
 
-#ifdef verify
+#if defined(verify)
 #undef verify
 #endif
 #define verify(expr) myVerify(expr, _T(#expr))
@@ -19,7 +19,7 @@ void OUTPUT(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   Logger::WriteMessage(msg.cstr());
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define INFO(...) OUTPUT(__VA_ARGS__)
 #else
 #define INFO(...)

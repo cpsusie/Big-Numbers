@@ -8,11 +8,11 @@
 #pragma warning(disable : 4073)
 #pragma init_seg(lib)
 
-#ifdef assert
+#if defined(assert)
 #undef assert
 #endif
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define assert(exp) (void)( (exp) || (xassert(__TFILE__, __LINE__, _T(#exp)), 0) )
 #else
 #define assert(exp)

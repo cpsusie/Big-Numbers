@@ -62,7 +62,7 @@ void Piece::setType(PieceType pieceType) {
   m_moveTable          = getMoveTable(              m_pieceKey);
   m_attackAttribute    = getAttackAttribute(        m_pieceKey);
   m_doMove             = Game::getMoveFunction(     pieceType );
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
   m_materialValue      = getMaterialValue(          pieceType );
 #else
   m_doBackMove         = Game::getBackMoveFunction( pieceType );
@@ -72,12 +72,12 @@ void Piece::setType(PieceType pieceType) {
 
 void Piece::setType(PieceType pieceType, int pos) {
   setType(pieceType);
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
   initBishopMask(pos);
 #endif
 }
 
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
 void Piece::initBishopMask(int pos) {
   m_bishopFlag = (getFieldColor(pos) == WHITEFIELD) ? WHITEFIELD_BISHOP : BLACKFIELD_BISHOP;
 }

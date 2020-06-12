@@ -997,7 +997,7 @@ void testGetFirst64(TestStatistic &stat) {
   stat.setEndMessageToOk();
 }
 
-#ifdef IS64BIT
+#if defined(IS64BIT)
 void testGetFirst128(TestStatistic &stat) {
   DigitPool *pool = stat.getDigitPool();
 

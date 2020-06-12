@@ -28,7 +28,7 @@ const int *MoveTable::pawnPositionScore[2] = {
 };
 
 void Game::updateGameMovePawn(const Move &m) {
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
   m_lastCaptureOrPawnMove = m_stackSize;
 #endif
 
@@ -50,7 +50,7 @@ void Game::updateGameMovePawn(const Move &m) {
   }
 }
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 void Game::updateGameBackMovePawn(const Move &m) {
   const Move m1 = m.makeBackMove();
   const FieldInfo &fromInfo = s_fieldInfo[m1.m_from];
@@ -122,7 +122,7 @@ void Game::updateGameCapturePawn(const Move &m) {
   case WHITEPLAYER: UPDATE_WHITEPAWNATTACKS(s_fieldInfo[pawn->m_position], -1); break;
   case BLACKPLAYER: UPDATE_BLACKPAWNATTACKS(s_fieldInfo[pawn->m_position], -1); break;
   }
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
   pawn->m_playerState.decrementPawnCount(GETCOL(pawn->m_position));
   pawn->m_playerState.m_positionalScore -= MoveTable::pawnPositionScore[pawn->getPlayer()][pawn->m_position];
 #endif
@@ -241,7 +241,7 @@ void Game::setPawn(const Move &m) {
       }
       SET_PIECE(m.m_to, m.m_piece);
       UPDATE_BLACKPAWNATTACKS(toInfo, 1);
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
       m_playerState[BLACKPLAYER].m_positionalScore += blackPawnPositionScore[m.m_to] - blackPawnPositionScore[m.m_from];
 #endif
     }
@@ -257,7 +257,7 @@ void Game::setPawn(const Move &m) {
       }
       SET_PIECE(m.m_to, m.m_piece);
       UPDATE_WHITEPAWNATTACKS(toInfo, 1);
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
       m_playerState[WHITEPLAYER].m_positionalScore += whitePawnPositionScore[m.m_to] - whitePawnPositionScore[m.m_from];
 #endif
     }
@@ -273,7 +273,7 @@ void Game::setPawn(const Move &m) {
         LDA_DOWNDIAG1(blackState,m.m_to) = 1;
       }
       UPDATE_BLACKPAWNATTACKS(toInfo, 1);
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
       blackState.decrementPawnCount(GETCOL(m.m_from));
       blackState.incrementPawnCount(GETCOL(m.m_to  ));
       blackState.m_positionalScore += blackPawnPositionScore[m.m_to] - blackPawnPositionScore[m.m_from];
@@ -291,7 +291,7 @@ void Game::setPawn(const Move &m) {
         LDA_DOWNDIAG2(blackState,m.m_to) = 1;
       }
       UPDATE_BLACKPAWNATTACKS(toInfo, 1);
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
       blackState.decrementPawnCount(GETCOL(m.m_from));
       blackState.incrementPawnCount(GETCOL(m.m_to  ));
       blackState.m_positionalScore += blackPawnPositionScore[m.m_to] - blackPawnPositionScore[m.m_from];
@@ -309,7 +309,7 @@ void Game::setPawn(const Move &m) {
         LDA_UPDIAG1(blackState,m.m_to) = 1;
       }
       UPDATE_WHITEPAWNATTACKS(toInfo, 1);
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
       whiteState.decrementPawnCount(GETCOL(m.m_from));
       whiteState.incrementPawnCount(GETCOL(m.m_to  ));
       whiteState.m_positionalScore += whitePawnPositionScore[m.m_to] - whitePawnPositionScore[m.m_from];
@@ -327,7 +327,7 @@ void Game::setPawn(const Move &m) {
         LDA_UPDIAG2(blackState,m.m_to) = 1;
       }
       UPDATE_WHITEPAWNATTACKS(toInfo, 1);
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
       whiteState.decrementPawnCount(GETCOL(m.m_from));
       whiteState.incrementPawnCount(GETCOL(m.m_to  ));
       whiteState.m_positionalScore += whitePawnPositionScore[m.m_to] - whitePawnPositionScore[m.m_from];
@@ -469,7 +469,7 @@ void Game::blackPawnWalkForward(const FieldInfo &toInfo, int from) {
   }
 }
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 void Game::whitePawnWalkBackward(const FieldInfo &toInfo, int from) {
   blackPawnWalkForward(toInfo, from);
 }
@@ -497,7 +497,7 @@ void Game::updateGameEP(const Move &m) { // En passant updates. Quite special mo
   SET_EMPTYFIELD(m.m_from                 );
   SET_EMPTYFIELD(epMove.m_capturedPosition);
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
   const TCHAR *fromName      = getFieldName(m.m_from);
   const TCHAR *toName        = getFieldName(m.m_to  );
   const TCHAR *capturedField = getFieldName(epMove.m_capturedPosition);
@@ -551,7 +551,7 @@ void Game::updateGameEP(const Move &m) { // En passant updates. Quite special mo
         ATT_DOWNDIAG1(        whiteToInfo   ) = 1;
       }
 
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
       blackState.decrementPawnCount(epMove.m_fromInfo.m_col);
       blackState.incrementPawnCount(epMove.m_toInfo.m_col  );
       blackState.m_positionalScore += blackPawnPositionScore[m.m_to] - blackPawnPositionScore[m.m_from];
@@ -603,7 +603,7 @@ void Game::updateGameEP(const Move &m) { // En passant updates. Quite special mo
         ATT_DOWNDIAG2(        whiteToInfo   ) = 1;
       }
 
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
       blackState.decrementPawnCount(epMove.m_fromInfo.m_col);
       blackState.incrementPawnCount(epMove.m_toInfo.m_col  );
       blackState.m_positionalScore += blackPawnPositionScore[m.m_to] - blackPawnPositionScore[m.m_from];
@@ -655,7 +655,7 @@ void Game::updateGameEP(const Move &m) { // En passant updates. Quite special mo
         ATT_UPDIAG1(          blackToInfo   ) = 1;
       }
 
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
       whiteState.decrementPawnCount(epMove.m_fromInfo.m_col);
       whiteState.incrementPawnCount(epMove.m_toInfo.m_col  );
       whiteState.m_positionalScore += whitePawnPositionScore[m.m_to] - whitePawnPositionScore[m.m_from];
@@ -707,7 +707,7 @@ void Game::updateGameEP(const Move &m) { // En passant updates. Quite special mo
         ATT_UPDIAG2(          blackToInfo   ) = 1;
       }
 
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
       whiteState.decrementPawnCount(epMove.m_fromInfo.m_col);
       whiteState.incrementPawnCount(epMove.m_toInfo.m_col  );
       whiteState.m_positionalScore += whitePawnPositionScore[m.m_to] - whitePawnPositionScore[m.m_from];
@@ -734,7 +734,7 @@ void Game::updateGamePromotion(const Move &m) {
   Piece       *pawn  = m.m_piece;
   PlayerState &state = pawn->m_playerState;
 
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
   state.m_totalMaterial -= pawn->m_materialValue;
 #endif
 
@@ -774,7 +774,7 @@ void Game::updateGamePromotion(const Move &m) {
         pawnCaptureAndPromote(m);
         setCapturingPromotedLDA(m, Bishop);
       }
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
       if(state.m_bishopFlags != BISHOPPAIR) {
         if((state.m_bishopFlags |= pawn->m_bishopFlag) == BISHOPPAIR) {
           state.m_positionalScore += BISHOPPAIRBONUS;
@@ -808,7 +808,7 @@ void Game::updateGamePromotion(const Move &m) {
     throwException(_T("Illegal promotionType:(=%d)"), promoteTo);
   }
 
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
   state.m_totalMaterial += pawn->m_materialValue;
   state.decrementPawnCount(GETCOL(m.m_from));
 #endif

@@ -2,7 +2,7 @@
 #include <MFCUtil/ProgressWindow.h>
 #include "SaveAsjob.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -255,7 +255,7 @@ bool CHexViewDoc::canRedo() const {
   return !isReadOnly() && (m_historyIndex < getHistorySize());
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 void CHexViewDoc::checkInvariant(int line) const {
   if(m_historyIndex < 0 || m_historyIndex > getHistorySize()) {
     throwException(_T("Broken invariant in %s, line %d:index=%d, historySize=%d"), __FILE__, line, m_historyIndex, getHistorySize());
@@ -269,7 +269,7 @@ void CHexViewDoc::Serialize(CArchive& ar) {
   }
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 void CHexViewDoc::AssertValid() const {
   CDocument::AssertValid();
 }

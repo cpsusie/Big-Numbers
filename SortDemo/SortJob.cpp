@@ -99,7 +99,7 @@ SortJob::~SortJob() {
 UINT SortJob::run() {
   m_terminated.wait();
   m_thread = Thread::getCurrentThread();
-#ifdef _DEBUG
+#if defined(_DEBUG)
   m_thread->setDescription(m_wnd.m_sortMethod.getName());
 #endif
   m_wnd.waitForResume(STATE_IDLE);

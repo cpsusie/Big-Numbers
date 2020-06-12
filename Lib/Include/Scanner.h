@@ -16,7 +16,7 @@ public:
   virtual intptr_t getChars(_TUCHAR *dst, size_t n)   = NULL;
 };
 
-#ifdef UNICODE
+#if defined(UNICODE)
 
 #include "TextFormatDetecter.h"
 
@@ -77,7 +77,7 @@ private:
   FILE        *m_f;
   int          m_oldMode;
 
-#ifdef UNICODE
+#if defined(UNICODE)
   ByteQueue    m_rawQueue;
   CharQueue    m_convertedQueue;
 #endif

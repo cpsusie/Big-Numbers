@@ -82,7 +82,7 @@ void Lcs::stopAndThrow() {
   throwException(_T("Lcs interrupted"));
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 void Lcs::dumpThreshLinks() const {
   debugLog(_T("Tresh and Links\n"));
   for(size_t i = 0; i < m_n; i++) {

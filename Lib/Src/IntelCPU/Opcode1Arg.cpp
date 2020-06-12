@@ -21,7 +21,7 @@ InstructionBase Opcode1ArgNoMode::operator()(const InstructionOperand &op) const
   return __super::operator()(op);
 }
 
-#ifdef IS32BIT
+#if defined(IS32BIT)
 InstructionBase OpcodeIncDec::operator()(const InstructionOperand &op) const {
   if(op.isRegister() && (op.getSize() == REGSIZE_DWORD)) {
     return m_reg32Code(op);

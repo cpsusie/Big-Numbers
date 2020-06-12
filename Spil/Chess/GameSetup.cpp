@@ -54,7 +54,7 @@ PieceKey Game::setPieceAtPosition(PieceKey key, int pos) {
 }
 
 PieceKey Game::setPieceAtPosition(PieceType pieceType, Player player, int pos) {
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
   checkSetupMode(true);
   validateAddPieceAtPosition(pieceType, player, pos, false);
 #endif
@@ -226,7 +226,7 @@ void Game::initState(bool validate, const GameKey *key) {
   } else {
     initGameKey();
   }
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
   setGameResult();
 #endif
 }
@@ -345,7 +345,7 @@ void Game::initAttackCounters(bool validate) {
           throwUserException(IDS_MSG_s_KING_ATTACKED_LOWER_UPPER_DIAGONAL_s, kingStr.cstr(), impossibleStr.cstr());
         }
 
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
         if(rowAttacks && colAttacks) {
           // Can only happen, if attacked by a newly promoted pawn (promoted to a queen og rook),
           // that has just captured a piece beside the king !

@@ -4,9 +4,9 @@
 #include <CompressFilter.h>
 #include "EndGameTablebase.h"
 
-#ifdef NEWCOMPRESSION
+#if defined(NEWCOMPRESSION)
 
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
 
 void EndGameTablebase::decompress(ByteInputStream &s) const {
   BigEndianInputStream bes(s);
@@ -169,7 +169,7 @@ MoveResultArray &EndGameTablebase::getAllMoves(const GameKey &gameKey, MoveResul
     case EG_BLACKWIN :
       { const EndGameResult succResult(status, pliesToEnd);
         a.add(MoveWithResult(m, succResult));
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
         if(m.getType() == PROMOTION) {
           const EndGameResult keyResult = getKeyResult(transformGameKey(gameKey));
           if(  (succResult.getStatus()         == keyResult.getStatus())
@@ -191,7 +191,7 @@ MoveResultArray &EndGameTablebase::getAllMoves(const GameKey &gameKey, MoveResul
         }
       } else {
         const EndGameKey    succKey = transformGameKey(game.getKey());
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
         const EndGameResult egr     = m_positionIndex.get(succKey);
         if(!egr.isDefined()) {
           a.add(MoveWithResult(m, EGR_DRAW));
@@ -220,7 +220,7 @@ MoveResultArray &EndGameTablebase::getAllMoves(const GameKey &gameKey, MoveResul
 }
 
 
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
 MoveResult2Array &EndGameTablebase::getAllMoves(const GameKey &gameKey, MoveResult2Array &a) const {
   assert(gameKey.getPositionSignature() == m_keydef.getPositionSignature());
 

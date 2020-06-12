@@ -108,7 +108,7 @@ String Board::getGameResultString(GameResult result) { // static
   }
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 
 String Board::toString(int computerSide, bool detailed) {   // static
   return s_bc.toString(getHistorySize(), computerSide, detailed);
@@ -237,7 +237,7 @@ void reply(const TCHAR *format,...) {
   va_list argptr;
   va_start(argptr, format);
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
   if(!isatty(stdout)) {
     const String msg = vformat(format, argptr);
     if(isManyLines(msg)) {

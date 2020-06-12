@@ -32,7 +32,7 @@ void CalculatorPool::startCalculators(UINT count) {
 
   killAllInternal();
 
-#ifdef SAVE_CALCULATORINFO
+#if defined(SAVE_CALCULATORINFO)
   m_infoArray.clear();
 #endif
 
@@ -291,7 +291,7 @@ String CalculatorPool::getStatesString() const {
   return result;
 }
 
-#ifdef SAVE_CALCULATORINFO
+#if defined(SAVE_CALCULATORINFO)
 void CalculatorPool::addCalculatorInfo(const CalculatorInfo &info) {
   m_gate.wait();
   m_infoArray.add(info);

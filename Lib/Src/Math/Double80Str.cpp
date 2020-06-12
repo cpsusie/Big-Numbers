@@ -322,7 +322,7 @@ template<typename CharType> CharType *_d80tostr(CharType *dst, const Double80 &x
     expo10 = Double80::getExpo10(x) - DBL80_DIG + 1;
     normalizeValue(m, expo10);
     // Assertion: _UI64_MAX/10 < m <= _UI64_MAX and x = (negative?-1:1) * m * 10^(expo10-DBL80_DIG)
-#ifdef _DEBUG
+#if defined(_DEBUG)
     if((m <= d80Maxui64q10) || (m > _UI64_MAX)) {
       int fisk = 1;
     }

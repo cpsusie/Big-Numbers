@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "GrabXmlDlg.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -64,7 +64,7 @@ BOOL CGrabXmlApp::InitInstance() {
     delete pShellManager;
   }
 
-#ifndef _AFXDLL
+#if !defined(_AFXDLL)
   ControlBarCleanUp();
 #endif
 

@@ -273,7 +273,7 @@ void DFA::minimize() {
   fixupTransitions();
 }
 
-#ifndef USE_COMPACT_DFAFORMAT
+#if !defined(USE_COMPACT_DFAFORMAT)
 
 void DFAstate::print(MarginFile &f) const {
   if(m_accept == NULL) {

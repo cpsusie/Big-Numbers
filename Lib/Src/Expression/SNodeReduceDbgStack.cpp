@@ -5,7 +5,7 @@
 
 namespace Expr {
 
-#ifdef TRACE_REDUCTION_CALLSTACK
+#if defined(TRACE_REDUCTION_CALLSTACK)
 
 void ReductionStack ::push(const TCHAR *method, const String &s, const ExpressionNode *n) {
   const ReductionStackElement *oldTop    = topPointer();

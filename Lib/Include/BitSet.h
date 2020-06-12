@@ -3,7 +3,7 @@
 #include <intrin.h>
 #include "CompactArray.h"
 
-#ifdef IS32BIT
+#if defined(IS32BIT)
 #define BITSET_ASM_OPTIMIZED
 #endif
 
@@ -20,7 +20,7 @@ public:
 #define _BS_ATOMBIT(i)      ((BitSet::Atom)1 << ((i)%_BS_BITSINATOM))
 #define _BS_MASKATOM(i)     BitSet::s_mask[i]
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define BS_CHECKINDEX(i) \
   if(i >= m_capacity) throwIndexOutOfRange(__TFUNCTION__, i, EMPTYSTRING)
 #else

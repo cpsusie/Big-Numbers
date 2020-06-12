@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "GameEditHistory.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define CHECKINVARIANT(onEnter) checkInvariant(__TFUNCTION__,onEnter)
 #define TRACESTATE()            printState(__TFUNCTION__)
 #define ENTER true
@@ -100,7 +100,7 @@ bool GameEditHistory::canRedo() const {
 
 // ------------------------------------------ private ------------------------------------------------
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
   // Invariant: (0 < m_historySize()) && (0 <= m_index < m_history.size())
   //        &&  m_history[i-1] != m_history[i], i = [1..m_history.size()-1]
   // index < m_history.size()-1 => m_game.key() == m_history[m_index]

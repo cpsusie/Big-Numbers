@@ -29,7 +29,7 @@ inline int regSizeCmp(RegSize s1, RegSize s2) {
 
 #define USE_DEBUGSTR
 
-#ifdef USE_DEBUGSTR
+#if defined(USE_DEBUGSTR)
 #define SETDEBUGSTR() { if(getDebuggerPresent()) m_debugStr = toString(); }
 #define DECLAREDEBUGSTR  protected: String m_debugStr
 #else
@@ -58,7 +58,7 @@ String toString(RegType regType);
 String toString(RegSize regSize);
 BYTE regSizeToByteCount(RegSize regSize);
 
-#ifdef IS32BIT
+#if defined(IS32BIT)
 #define INDEX_REGSIZE          REGSIZE_DWORD
 #define MAX_GPREGISTER_INDEX   7
 #define MAX_XMMREGISTER_INDEX  7
@@ -109,7 +109,7 @@ public:
   inline bool isByte() const {
     return getSize() == REGSIZE_BYTE;
   }
-#ifdef IS32BIT
+#if defined(IS32BIT)
 
 #define IS_REXCOMPATIBLE(reg,rexBytePresent) true
 #define REXBYTEUSAGECMP(reg1,reg2) 0
@@ -187,19 +187,19 @@ int registerCmp(const Register &reg1, const Register &reg2);
 class GPRegister : public Register {
 private:
   const RegSize      m_size; // = REGSIZE_BYTE, _WORD, _DWORD, _QWORD
-#ifdef IS64BIT
+#if defined(IS64BIT)
   const RexByteUsage m_rexByteUsage;
 #endif // IS64BIT
 public:
   inline GPRegister(RegSize size
                    ,BYTE index
-#ifdef IS64BIT
+#if defined(IS64BIT)
                    ,RexByteUsage rexByteUsage=REX_DONTCARE
 #endif // IS64BIT
                    )
     : Register(index)
     , m_size(size)
-#ifdef IS64BIT
+#if defined(IS64BIT)
     , m_rexByteUsage(rexByteUsage)
 #endif // IS64BIT
   {
@@ -211,7 +211,7 @@ public:
   RegSize getSize()  const {
     return m_size;
   }
-#ifdef IS64BIT
+#if defined(IS64BIT)
   bool    isREXCompatible(bool rexBytePresent) const;
   RexByteUsage getRexByteUsage() const {
     return m_rexByteUsage;
@@ -226,7 +226,7 @@ class IndexRegister : public GPRegister {
 public:
   inline IndexRegister(BYTE index)
     : GPRegister(INDEX_REGSIZE,index
-#ifdef IS64BIT
+#if defined(IS64BIT)
                 ,(INDEX_REGSIZE==REGSIZE_QWORD)?REX_REQUIRED:REX_DONTCARE
 #endif
                 )
@@ -285,14 +285,14 @@ inline int registerCmp(const SegmentRegister &reg1, const SegmentRegister &reg2)
 
 // 8 bit registers
 extern const GPRegister    AL,CL,DL,BL,AH,CH,DH,BH;
-#ifdef IS64BIT
+#if defined(IS64BIT)
 extern const GPRegister    SPL,BPL,SIL,DIL;
 #endif
 
 // 16 bit registers
 extern const GPRegister    AX,CX,DX,BX,SP,BP,SI,DI;
 
-#ifdef IS32BIT
+#if defined(IS32BIT)
 // 32 bit registers
 extern const IndexRegister EAX ,ECX ,EDX ,EBX ,ESP ,EBP ,ESI ,EDI;
 #else // IS64BIT
@@ -318,12 +318,12 @@ const FPURegister &ST(BYTE index);
 
 extern const XMMRegister XMM0,XMM1,XMM2,XMM3,XMM4,XMM5,XMM6,XMM7;
 
-#ifdef IS64BIT
+#if defined(IS64BIT)
 extern const XMMRegister XMM8,XMM9,XMM10,XMM11,XMM12,XMM13,XMM14,XMM15;
 #endif // IS64BIT
 
 // Segment registers (16-bit)
-#ifdef IS32BIT
+#if defined(IS32BIT)
 extern const SegmentRegister ES,CS,SS,DS,FS,GS;
 #else // IS64BIT
 extern const SegmentRegister FS,GS;

@@ -3,14 +3,14 @@
 
 //#define DEBUGLEX
 
-#ifdef ENTERFUNC
+#if defined(ENTERFUNC)
 #undef ENTERFUNC
 #endif
-#ifdef LEAVEFUNC
+#if defined(LEAVEFUNC)
 #undef LEAVEFUNC
 #endif
 
-#ifdef DEBUGLEX
+#if defined(DEBUGLEX)
 
 void NFAparser::enter(const TCHAR *function) {
   String input = m_scanner.getInput();
@@ -55,7 +55,7 @@ void NFAparser::leave(const TCHAR *function) {
 #endif
 
 
-#ifdef _WIN32
+#if defined(_WIN32)
 #pragma message("NB -------------------- In Windows newline include \\r and \\n -------------------")
 #else
 #pragma message("NB -------------------- Newline include \\n -------------------")
@@ -251,7 +251,7 @@ void NFAparser::term(NFAstate *&startp, NFAstate *&endp) {
 
       if(match(DOT)) { // . (DOT) matches everything except '\n' (for Windows also '\r')
         chClass.add('\n');
-#ifdef _WIN32
+#if defined(_WIN32)
         chClass.add('\r');
 #endif
         chClass.invert();
@@ -269,7 +269,7 @@ void NFAparser::term(NFAstate *&startp, NFAstate *&endp) {
         }
         if(complementCharClass) {
           chClass.add('\n'); // This will exclude '\n' if not specified in input
-#ifdef _WIN32
+#if defined(_WIN32)
           chClass.add('\r'); // and \r
 #endif
           chClass.invert();
@@ -401,7 +401,7 @@ NFAstate *NFAparser::rule() {
     end->m_edge    = EDGE_CHCLASS;
     end->m_charClass = new BitSet(MAX_CHARS);
     end->m_charClass->add('\n');
-#ifdef _WIN32
+#if defined(_WIN32)
     end->m_charClass->add('\r');
 #endif
     end     = end->m_next1 ;

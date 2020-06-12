@@ -209,7 +209,7 @@ void IsoMesherMC::generateFaces(Point corners[8], int index) {
     const Point &p2 = points[i1];
     const Point &p3 = points[i2];
 
-#ifdef USE_MATERIAL
+#if defined(USE_MATERIAL)
     Material mat1 = m_iso.fMaterial(*p1.v, p1.density);
     Material mat2 = m_iso.fMaterial(*p2.v, p1.density);
     Material mat3 = m_iso.fMaterial(*p3.v, p1.density);

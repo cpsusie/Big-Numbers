@@ -257,7 +257,7 @@ void BigRealTestClass::measureQuot() {
 
       TimeUsageMethod l32( _T("L32" ),measureTime(MeasureBinaryOperator(QUOTLINEAR32 , xArray, yArray, f)));
       TimeUsageMethod l64( _T("L64" ),measureTime(MeasureBinaryOperator(QUOTLINEAR64 , xArray, yArray, f)));
-#ifdef IS64BIT
+#if defined(IS64BIT)
       TimeUsageMethod l128(_T("L128"),measureTime(MeasureBinaryOperator(QUOTLINEAR128, xArray, yArray, f)));
 #else
       TimeUsageMethod l128(_T("L128 (undefined)"), 1);
@@ -360,7 +360,7 @@ void BigRealTestClass::measureQuotRemainder() {
     QRTime[0] = oldQR.m_timeUsage;
     QRTime[1] = newQR64.m_timeUsage;
 
-#ifdef IS64BIT
+#if defined(IS64BIT)
     TimeUsageMethod newQR128(_T("newQR128"), measureTime(MeasureBinaryOperator(OPERATOR_MOD128, xArray, yArray, f), MEASURE_REALTIME));
     QRTime[2] = newQR128.m_timeUsage;
 #endif
@@ -373,7 +373,7 @@ void BigRealTestClass::measureQuotRemainder() {
                    << udparam(4)  << QRTime[1]
                    << endl;
 
-#ifdef IS64BIT
+#if defined(IS64BIT)
     newData128File << iparam(10)  << y.getLength()  << _T(" ")
                    << udparam(4)  << QRTime[2]
                    << endl;
@@ -404,7 +404,7 @@ void BigRealTestClass::testQuotRemainder() {
 
 #define TRYLOOP
 
-#ifdef TRYLOOP
+#if defined(TRYLOOP)
 
   FILE *ErrorFile1 = FOPEN(_T("c:\\temp\\QR1Errors.txt"), _T("w"));
   FILE *OKFile1    = FOPEN(_T("c:\\temp\\QR1Ok.txt"    ), _T("w"));
@@ -436,7 +436,7 @@ void BigRealTestClass::testQuotRemainder() {
       const bool qerror64 = quotient64  != quotient;
       const bool rerror64 = remainder64 != remainder;
 
-#ifdef IS64BIT
+#if defined(IS64BIT)
       BigInt             quotient128(pool);
       FullFormatBigReal  remainder128(pool);
       quotRemainder128(x, y, &quotient128, &remainder128);
@@ -476,7 +476,7 @@ void BigRealTestClass::testQuotRemainder() {
         , (rerror64 ? format(_T("rdiff:%s\n"), toString(rdiff64).cstr()).cstr() : EMPTYSTRING)
       );
 
-#ifdef IS64BIT
+#if defined(IS64BIT)
       if (qerror128 || rerror128) {
         f = ErrorFile2;
         qdiff128 = quotient128  - quotient;
@@ -647,7 +647,7 @@ void BigRealTestClass::testBigRealStream() {
   verify(b == a);
 }
 
-#ifdef __NEVER__
+#if defined(__NEVER__)
 void BigRealTestClass::testCopy() {
   for(int length = 1; length < 10; length++) {
     FullFormatBigReal src = e(randBigReal(10+4*length),length*2);
@@ -710,7 +710,7 @@ void BigRealTestClass::testCopyAllDigits() {
 void BigRealTestClass::testTruncRound() {
   DigitPool *pool = getDigitPool();
 
-#ifdef INTERACTIVE
+#if defined(INTERACTIVE)
   for(;;) {
     const FullFormatBigReal x         = inputBigReal(*pool, _T("Enter x:"));
     const int               digits    = inputValue<int>(_T("Enter digits:"));
@@ -800,7 +800,7 @@ void BigRealTestClass::testTruncRound() {
 void BigRealTestClass::testCopyrTrunc() {
   DigitPool *pool = getDigitPool();
 
-#ifdef INTERACTIVE
+#if defined(INTERACTIVE)
   for(;;) {
     const FullFormatBigReal x         = inputBigReal(*pool, _T("Enter x:"));
     const int               digits    = inputValue<int>(_T("Enter digits:"));
@@ -975,7 +975,7 @@ void BigRealTestClass::testGetDecimalDigitCount64() {
   }
 }
 
-#ifdef HAS_LOOP_DIGITCOUNT
+#if defined(HAS_LOOP_DIGITCOUNT)
 typedef int (*DigitCounterFunction)(UINT64);
 
 class MeasureGetDigitCount : public MeasurableFunction {
@@ -1046,7 +1046,7 @@ void MeasureBinaryOperator::f() {
   case OPERATOR_MOD      : m_result = X % Y; break;
   case OPERATOR_MOD64    : m_result = modulusOperator64( X,Y); break;
 
-#ifdef IS64BIT
+#if defined(IS64BIT)
   case QUOTLINEAR128     : m_result = BigReal::quotLinear128(X,Y,m_f, m_pool); break;
   case QUOTREMAINDER128  :            quotRemainder128(      X,Y, &m_intResult, &m_remainder); break;
   case OPERATOR_MOD128   : m_result = modulusOperator128(X,Y); break;

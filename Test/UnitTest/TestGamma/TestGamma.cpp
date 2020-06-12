@@ -32,7 +32,7 @@ namespace TestGamma {
         const BigReal Y    = rFactorial(X, 20);
         const double  refy = getDouble(Y);
         const double  e    = fabs(y - refy);
-#ifdef LIST_DATA
+#if defined(LIST_DATA)
         if(e > maxError) {
           maxError = e;
         }
@@ -51,7 +51,7 @@ namespace TestGamma {
         const BigReal Y    = rFactorial(X, 20);
         const double  refy = getDouble(Y);
         const double  e    = fabs(y - refy);
-#ifdef LIST_DATA
+#if defined(LIST_DATA)
         if(e > maxError) {
           maxError = e;
         }
@@ -68,7 +68,7 @@ namespace TestGamma {
         const double y1 = log(gamma(x));
         const double y2 = lnGamma(x);
         const double e  = fabs(y1 - y2);
-#ifdef LIST_DATA
+#if defined(LIST_DATA)
         if(e > maxError) {
           maxError = e;
         }
@@ -89,7 +89,7 @@ namespace TestGamma {
         const BigReal  Y    = rFactorial(X, 26);
         const Double80 refy = getDouble80(Y);
         const Double80 e    = fabs(y - refy);
-#ifdef LIST_DATA
+#if defined(LIST_DATA)
         if(e > maxError) {
           maxError = e;
         }
@@ -108,7 +108,7 @@ namespace TestGamma {
         const BigReal  Y    = rFactorial(X, 26);
         const Double80 refy = getDouble80(Y);
         const Double80 e    = fabs(y - refy);
-#ifdef LIST_DATA
+#if defined(LIST_DATA)
         if(e > maxError) {
           maxError = e;
         }
@@ -125,7 +125,7 @@ namespace TestGamma {
         const Double80 y1 = log(gamma(x));
         const Double80 y2 = lnGamma(x);
         const Double80 e  = fabs(y1 - y2);
-#ifdef LIST_DATA
+#if defined(LIST_DATA)
         if(e > maxError) {
           maxError = e;
         }

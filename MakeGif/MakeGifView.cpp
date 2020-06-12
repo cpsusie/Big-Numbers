@@ -3,7 +3,7 @@
 #include "MakeGifView.h"
 #include "MainFrm.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -55,7 +55,7 @@ void CMakeGifView::drawImgPanel(const PixRectArray *prArray) {
   prArray->paintAll(dc, cl);
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 void CMakeGifView::AssertValid() const {
   __super::AssertValid();
 }

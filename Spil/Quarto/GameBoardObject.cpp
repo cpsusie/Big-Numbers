@@ -38,7 +38,7 @@ float GameBoardObject::s_ygridLines[5];
 #define EDGE0INDEX 1
 #define EDGE4INDEX 5
 
-#ifndef _DEBUG
+#if !defined(_DEBUG)
 LPDIRECT3DTEXTURE BoardFieldObject::s_texture[3] = {
   NULL
  ,NULL
@@ -60,7 +60,7 @@ BoardFieldObject::BoardFieldObject(D3SceneObjectVisual *parent, int row, int col
   m_selected    = false;
   m_center      = getBoundingBox().getCenter();
 
-#ifndef _DEBUG
+#if !defined(_DEBUG)
   incrFieldcount();
 #else
   m_texture[0] = createTexture(false);
@@ -70,7 +70,7 @@ BoardFieldObject::BoardFieldObject(D3SceneObjectVisual *parent, int row, int col
 }
 
 BoardFieldObject::~BoardFieldObject() {
-#ifndef _DEBUG
+#if !defined(_DEBUG)
   decrFieldCount();
 #else
   destroyTexture();
@@ -108,7 +108,7 @@ static int fieldResId[] = {
 #define GETFIELDRESINDEX(f,marked) ((marked)?2:ISWHITEFIELD(f)?0:1)
 #define GETFIELDRESID(   f,marked) fieldResId[GETFIELDRESINDEX(f,marked)]
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 CFont *BoardFieldObject::getFont() { // static
   static CFont font;
   if(font.m_hObject==NULL) {
@@ -141,7 +141,7 @@ LPDIRECT3DTEXTURE BoardFieldObject::createTexture(bool marked) {
 #endif
 
 LPDIRECT3DTEXTURE BoardFieldObject::getTexture(bool marked) {
-#ifndef _DEBUG
+#if !defined(_DEBUG)
   const int index = GETFIELDRESINDEX(m_field,marked);
   if(s_texture[index] == NULL) {
     s_texture[index] = getDevice().loadTextureFromBitmapResource(GETFIELDRESID(m_field,marked));
@@ -153,7 +153,7 @@ LPDIRECT3DTEXTURE BoardFieldObject::getTexture(bool marked) {
 }
 
 void BoardFieldObject::destroyTexture() {
-#ifndef _DEBUG
+#if !defined(_DEBUG)
   for(UINT i = 0; i < ARRAYSIZE(s_texture); i++) {
     SAFERELEASE(s_texture[i]);
   }
@@ -164,7 +164,7 @@ void BoardFieldObject::destroyTexture() {
 #endif // _DEBUG
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 String BoardFieldObject::toString() const {
   return getName() + _T("\n")
        + indentString(format(_T("World:\n%s")
@@ -453,7 +453,7 @@ Field GameBoardObject::getFieldFromPoint(const CPoint &p, const D3Camera *camera
   return NOFIELD;
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 String GameBoardObject::toString() const {
   return format(_T("%s BoundingBox:%s")
                 ,getName().cstr()

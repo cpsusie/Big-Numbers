@@ -159,7 +159,7 @@ public:
     : m_i1(i1), m_i2(i2), m_i3(i3), m_color(color)
   {
   }
-#ifdef VALIDATE_PUTFACE
+#if defined(VALIDATE_PUTFACE)
   Face3 &reverseOrientation() {
     std::swap(m_i1, m_i2);
     return *this;
@@ -341,7 +341,7 @@ public:
     return size() == 0;
   }
   inline Simplex operator[](UINT i) const {
-#ifdef _DEBUG
+#if defined(_DEBUG)
     if(i >= size()) {
       throwInvalidArgumentException(__TFUNCTION__, _T("index %u out of range, size=%u"), i, size());
     }
@@ -356,7 +356,7 @@ class StackedCube {
 private:
   mutable int m_index, m_index0;
   UINT calculateIndex() const;
-#ifdef VALIDATE_CUBES
+#if defined(VALIDATE_CUBES)
   void verifyCubeConstraint(int line, const TCHAR *expr) const;
 #endif // VALIDATE_CUBES
 public:
@@ -410,7 +410,7 @@ public:
     return (*m_corners[LBN] + *m_corners[RTF])/2;
   }
   SimplexArray has4ZeroCorners(CubeFace cf) const;
-#ifdef VALIDATE_CUBES
+#if defined(VALIDATE_CUBES)
   void validate() const;
 #endif // VALIDATE_CUBES
   // return *this
@@ -418,7 +418,7 @@ public:
   String toString(int precision = 6) const;
 };
 
-#ifdef ISODEBUGGER
+#if defined(ISODEBUGGER)
 class Octagon;
 class Tetrahedron;
 #endif // ISODEBUGGER
@@ -427,7 +427,7 @@ class IsoSurfaceEvaluator {
 public:
   virtual double evaluate(const Point3D &p) = 0;
   virtual void   receiveFace(const Face3 &face) = 0;
-#ifdef ISODEBUGGER
+#if defined(ISODEBUGGER)
   virtual void   markCurrentOcta(  const Octagon          &octa  ) {
   }
   virtual void   markCurrentTetra( const Tetrahedron      &tetra ) {
@@ -527,21 +527,21 @@ public:
   inline Point3D          getCornerPoint(const Point3DKey &key) const {
     return getCornerPoint(key.i, key.j, key.k);
   }
-#ifdef DUMP_CORNERMAP
+#if defined(DUMP_CORNERMAP)
   void                    dumpCornerMap()   const;
 #endif
-#ifdef DUMP_EDGEMAP
+#if defined(DUMP_EDGEMAP)
   void                    dumpEdgeMap()     const;
 #endif
-#ifdef DUMP_VERTEXARRAY
+#if defined(DUMP_VERTEXARRAY)
   void                    dumpVertexArray() const;
 #endif
-#ifdef DUMP_FACEARRAY
+#if defined(DUMP_FACEARRAY)
   void                    dumpFaceArray()   const;
 #endif
 };
 
-#ifdef ISODEBUGGER
+#if defined(ISODEBUGGER)
 class Octagon {
 private:
   const PolygonizerBase *m_polygonizer;
@@ -638,7 +638,7 @@ private:
   bool                putInitialCube();
   void                addSurfaceVertices(const StackedCube &cube);
   inline void         doTetra(const StackedCube &cube, CubeCorner c1, CubeCorner c2, CubeCorner c3, CubeCorner c4) {
-#ifdef ISODEBUGGER
+#if defined(ISODEBUGGER)
     m_eval.markCurrentTetra(Tetrahedron(c1,c2,c3,c4));
 #endif // ISODEBUGGER
     doTetra(*cube.m_corners[c1], *cube.m_corners[c2], *cube.m_corners[c3], *cube.m_corners[c4]);
@@ -655,12 +655,12 @@ private:
     m_statistics.m_evalCount++;
     return m_eval.evaluate(p);
   }
-#ifdef VALIDATE_PUTFACE
+#if defined(VALIDATE_PUTFACE)
   bool checkOrientation(const Face3 &f) const;
 #endif //  VALIDATE_PUTFACE
 
   inline void         putFace3(UINT i1, UINT i2, UINT i3) {
-#ifdef VALIDATE_PUTFACE
+#if defined(VALIDATE_PUTFACE)
     if(i1 >= m_vertexArray.size() || i2 >= m_vertexArray.size() || i3 >= m_vertexArray.size()) {
       throwException(_T("Invalid face(%u,%d,%d). vertexArray.size==%u"), i1,i2,i3, m_vertexArray.size());
     }
@@ -673,12 +673,12 @@ private:
     Face3 f(i1, i2, i3, m_color);
 #endif // VALIDATE_PUTFACE
     m_face3Buffer.add(f);
-#ifdef ISODEBUGGER
+#if defined(ISODEBUGGER)
     m_eval.markCurrentFace(f);
 #endif // ISODEBUGGER
   }
   inline void         putFace3R(UINT i1, UINT i2, UINT i3) {
-#ifdef VALIDATE_PUTFACE
+#if defined(VALIDATE_PUTFACE)
     if(i1 >= m_vertexArray.size() || i2 >= m_vertexArray.size() || i3 >= m_vertexArray.size()) {
       throwException(_T("Invalid face(%u,%d,%d). vertexArray.size==%u"), i1,i2,i3, m_vertexArray.size());
     }

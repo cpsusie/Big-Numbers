@@ -75,7 +75,7 @@ typedef enum {
 } RegexOPCode;
 
 
-#ifdef UNICODE
+#if defined(UNICODE)
 #define MAXCHARSETSIZE 0x10000
 #else
 #define MAXCHARSETSIZE 0x100
@@ -182,12 +182,12 @@ public:
     const UINT index = ch - m_minChar;
     return (m_bitSet[index/8] & (1<<(index%8))) != 0;
   }
-#ifdef _DEBUG
+#if defined(_DEBUG)
   operator BitSet() const;
 #endif
 };
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 _CharSet::operator BitSet() const {
   BitSet result(m_maxChar+1);
   for(int i = m_minChar; i <= m_maxChar; i++) {
@@ -212,7 +212,7 @@ public:
     return contains(ch) ^ m_invertingSet;
   }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
   inline String toString() const {
     return charBitSetToString(*m_charSet);
   }
@@ -261,7 +261,7 @@ public:
   void append(ByteArray &buffer) const;
   static int compare(const ByteBitSet &s1, const ByteBitSet &s2);
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
   operator BitSet() const;
 #endif
 };
@@ -343,7 +343,7 @@ int ByteBitSet::compare(const ByteBitSet &s1, const ByteBitSet &s2) { // static
   return memcmp(s1.m_bitSet, s2.m_bitSet, sizeof(s1.m_bitSet));
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 ByteBitSet::operator BitSet() const {
   if(isEmpty()) {
     return BitSet(8);
@@ -363,7 +363,7 @@ public:
   CharSetMap() : TreeMap<ByteBitSet, CompactIntArray>(ByteBitSet::compare) {
   }
   void incrAddresses(UINT addr, UINT incr);
-#ifdef _DEBUG
+#if defined(_DEBUG)
   String toString() const;
 #endif
 };
@@ -380,7 +380,7 @@ void CharSetMap::incrAddresses(UINT addr, UINT incr) { // called when instructio
   }
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 String CharSetMap::toString() const {
   String result;
   int count = 0;
@@ -403,12 +403,12 @@ public:
     : m_regno(regno)
     , m_level(level)
     , m_addressStartMemory(addressStartMemory) {
-#ifdef _DEBUG
+#if defined(_DEBUG)
      m_addressStopMemory = 0;
 #endif
   }
   void incrAddresses(UINT addr, UINT incr);
-#ifdef _DEBUG
+#if defined(_DEBUG)
   String toString() const {
     return format(_T("R:%d L:%d, [%d-%d]\n"), m_regno, m_level, m_addressStartMemory, m_addressStopMemory);
   }
@@ -575,7 +575,7 @@ Regex::Regex(const TCHAR *pattern, const TCHAR *translateTable) : m_fastMap(MAXC
   compilePattern(pattern, translateTable);
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 
 #define DBG_clear()                               m_PCToLineArray.clear()
 #define DBG_INSERT(                addr, index)   m_PCToLineArray.add(addr, index)
@@ -758,13 +758,13 @@ public:
   int               m_lastStart;
   int               m_beginAlternative;
   int               m_LCCharIndex;
-#ifdef _DEBUG
+#if defined(_DEBUG)
   int               m_dbgStartAlternative;
 #endif
   CompactShortArray m_jumpFixups;
   inline ParStackElement() : m_regno(1), m_lastStart(-1), m_beginAlternative(0)
   {
-#ifdef _DEBUG
+#if defined(_DEBUG)
     m_dbgStartAlternative = 0;
 #endif
   }
@@ -773,7 +773,7 @@ public:
     return m_lastStart >= 0;
   }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
   inline String toString() const {
     return format(_T("%d,%d,%d,dbgAlt:%d, Fixups:%s")
           ,m_regno, m_lastStart, m_beginAlternative
@@ -1409,7 +1409,7 @@ Return:
 
 // --------------------------------- search ---------------------------------------------------
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define DBG_resetCycleCount()   m_cycleCount = 0
 #define DBG_incrCycleCount()    m_cycleCount++
 #else
@@ -1882,7 +1882,7 @@ _RegexMatchState::_RegexMatchState(const Regex *regex, _RegexCounterTable &count
 , m_ipEnd(regex->getCodeStart() + regex->getCodeSize())
 , m_counterTable(counterTable)
 {
-#ifdef _DEBUG
+#if defined(_DEBUG)
   for(BYTE i = 0; i < RE_MAXCOUNTER; i++) { // no need to do this when not debugging. instruction resetCounter will do it anyway
     resetCounter(i);
   }
@@ -1927,7 +1927,7 @@ void _RegexMatchState::doMaybePopAndJump() {
   const BitSet   loopFirstSet   = m_regex.first(startLoop  , endLoop  );
   const BitSet   followSet      = m_regex.first(startFollow, endFollow);
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
   debugLog(_T("loopFirstSet(%d-%d):%s\nfollowSet(%d,%d):%s\n")
    ,startLoop  , endLoop  , charBitSetToString(loopFirstSet  ).cstr()
    ,startFollow, endFollow, charBitSetToString(followSet     ).cstr()
@@ -2026,7 +2026,7 @@ String RegexRegisters::toString(const String &text) const {
   return result;
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 
 RegexStepHandler *Regex::setHandler(RegexStepHandler *handler) {
   RegexStepHandler *old = m_stepHandler;

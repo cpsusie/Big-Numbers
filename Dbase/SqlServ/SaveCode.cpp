@@ -27,7 +27,7 @@ void sqlSaveCode( Database            &db       ,
   if(codelookup(db, programid.m_fileName, nr))
     db.sysTabCodeDelete(codekey);
 
-#ifdef DEBUGMODULE
+#if defined(DEBUGMODULE)
 _tprintf(_T("now saving code for <%s> <%s> nr:%d totalsize:%d\n"),
       programid.filename,programid.Timestamp,nr,vc.totalSize());
 //PAUSE();
@@ -52,7 +52,7 @@ void sqlLoadCode(  const Database            &db        ,
 
   bool found = indexfile.searchMin( RELOP_EQ, key, 2);
 
-#ifdef DEBUGMODULE
+#if defined(DEBUGMODULE)
   _tprintf(_T("loading code for <%s>,%d\n"),programid.filename,nr);
 #endif
 

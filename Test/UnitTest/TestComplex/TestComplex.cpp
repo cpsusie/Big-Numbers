@@ -41,7 +41,7 @@ namespace TestComplex {
 
     TEST_METHOD(BasicOperations) {
 //      FPU::init();
-#ifdef LONGDOUBLE
+#if defined(LONGDOUBLE)
         FPU::setPrecisionMode(FPU_HIGH_PRECISION);
 #else
 //      FPU::setPrecisionMode(FPU_NORMAL_PRECISION);
@@ -137,7 +137,7 @@ namespace TestComplex {
 
     TEST_METHOD(TestRoots) {
       JavaRandom rnd(20);
-#ifdef LONGDOUBLE
+#if defined(LONGDOUBLE)
       const Real tolerance = 4e-17;
 #else
       const Real tolerance = 2e-14;

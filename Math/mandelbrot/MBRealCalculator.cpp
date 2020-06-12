@@ -5,9 +5,9 @@
 
 #define ASMOPTIMIZED
 
-#ifdef ASMOPTIMIZED
+#if defined(ASMOPTIMIZED)
 
-#ifdef IS64BIT
+#if defined(IS64BIT)
 
 extern "C" {
 void load4();
@@ -246,7 +246,7 @@ UINT MBRealCalculator::run() {
     }
     DEBUGLOG(_T("calc(%d) done\n"), getId());
   } catch(bool) {
-#ifdef SAVE_CALCULATORINFO
+#if defined(SAVE_CALCULATORINFO)
     DEBUGLOG(_T("calc(%d) killed in phase %s\n"), getId(), m_phase);
 #else
     DEBUGLOG(_T("calc(%d) killed\n"), getId());
@@ -279,7 +279,7 @@ CellCountAccessor *MBRealCalculator::followBlackEdge(const CPoint &p, CellCountA
     edgeSet.add(p);
     cca->setCount(p, maxCount); m_doneCount++;
 
-  #ifdef SAVE_CALCULATORINFO
+  #if defined(SAVE_CALCULATORINFO)
     m_info = new CalculatorInfo(getId(), rect);
   #endif
   //  DEBUGLOG(_T("Follow black edge starting at (%d,%d)\n"), p.x,p.y);
@@ -327,7 +327,7 @@ CellCountAccessor *MBRealCalculator::followBlackEdge(const CPoint &p, CellCountA
           DEBUGLOG(_T("dir == NODIR and has innerpoints\n"));
           innerSet -= edgeSet;
         }
-  #ifdef SAVE_CALCULATORINFO
+  #if defined(SAVE_CALCULATORINFO)
         m_info->setEdgeAndInnerSet(edgeSet, innerSet);
         addInfoToPool();
   #endif
@@ -358,7 +358,7 @@ CellCountAccessor *MBRealCalculator::followBlackEdge(const CPoint &p, CellCountA
       cca = fillInnerArea(innerSet, cca, maxCount);
     }
 
-  #ifdef SAVE_CALCULATORINFO
+  #if defined(SAVE_CALCULATORINFO)
     if(!edgeIsSubtracted) {
       innerSet -= edgeSet; edgeIsSubtracted = true;
     }

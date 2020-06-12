@@ -1,6 +1,6 @@
 #pragma once
 
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
 
 #include <PropertyContainer.h>
 #include "Externengine.h"

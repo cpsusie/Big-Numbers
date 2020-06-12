@@ -55,7 +55,7 @@ void ByteFile::close() {
 }
 
 void ByteFile::putByte(BYTE c) {
-#ifdef _DEBUG
+#if defined(_DEBUG)
   if(m_mode != WRITEMODE) {
     throwException(_T("%s:File is readonly"), __TFUNCTION__);
   }
@@ -66,7 +66,7 @@ void ByteFile::putByte(BYTE c) {
 }
 
 int ByteFile::getByte() {
-#ifdef _DEBUG
+#if defined(_DEBUG)
   if(m_mode != READMODE) {
     throwException(_T("%s:File is writeonly"), __TFUNCTION__);
   }
@@ -75,7 +75,7 @@ int ByteFile::getByte() {
 }
 
 void ByteFile::putBytes(const BYTE *src, size_t n) {
-#ifdef _DEBUG
+#if defined(_DEBUG)
   if(m_mode != WRITEMODE) {
     throwException(_T("%s:File is readonly"), __TFUNCTION__);
   }
@@ -84,7 +84,7 @@ void ByteFile::putBytes(const BYTE *src, size_t n) {
 }
 
 intptr_t ByteFile::getBytes(BYTE *dst, size_t n) {
-#ifdef _DEBUG
+#if defined(_DEBUG)
   if(m_mode != READMODE) {
     throwException(_T("%s:File is writeonly"), __TFUNCTION__);
   }

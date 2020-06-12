@@ -40,7 +40,7 @@ private:
   const IndexRegister *m_base,*m_inx;
   const BYTE           m_shift;
   const intptr_t       m_offset;
-#ifdef IS32BIT
+#if defined(IS32BIT)
 #define SETNEEDREXBYTE(base,inx)
 #else // IS64BIT
 
@@ -105,7 +105,7 @@ public:
   inline bool                 hasShift()  const { return m_shift >= 1;   }
   inline bool                 hasOffset() const { return m_offset != 0;  }
 
-#ifdef IS64BIT
+#if defined(IS64BIT)
   inline bool                 needREXByte() const {
     return m_needREXByte;
   }
@@ -283,7 +283,7 @@ public:
     return dummy;
   }
 
-#ifdef IS64BIT
+#if defined(IS64BIT)
   virtual bool  needREXByte() const {
     return (getType() == REGISTER) ? m_reg->needREXByte() : false;
   }
@@ -330,7 +330,7 @@ public:
     return Register::sizeContainsSrcSize(getSize(), immSize);
   }
 
-#ifdef IS64BIT
+#if defined(IS64BIT)
   bool needREXByte() const {
     return m_mr.needREXByte();
   }
@@ -356,7 +356,7 @@ public:
   }
   MemoryPtr(const SegmentRegister &segReg, size_t addr) : MemoryOperand(size, addr, &segReg) {
   }
-#ifdef IS64BIT
+#if defined(IS64BIT)
   MemoryPtr(size_t addr) : MemoryOperand(size, addr) {
   }
 #endif // IS64BIT
@@ -411,7 +411,7 @@ public:
 #define BYTEGPR_ALLOWED        0x00000020
 #define WORDGPR_ALLOWED        0x00000040
 #define DWORDGPR_ALLOWED       0x00000080
-#ifdef IS32BIT
+#if defined(IS32BIT)
 #define QWORDGPR_ALLOWED       0
 #else // IS64BIT
 #define QWORDGPR_ALLOWED       0x00000100
@@ -427,7 +427,7 @@ public:
 #define IMM8_ALLOWED           0x00020000
 #define IMM16_ALLOWED          0x00040000
 #define IMM32_ALLOWED          0x00080000
-#ifdef IS32BIT
+#if defined(IS32BIT)
 #define IMM64_ALLOWED          0
 #else  // IS64BIT
 #define IMM64_ALLOWED          0x00100000
@@ -437,7 +437,7 @@ public:
 #define HAS_BYTE_SIZEBIT       0x00400000
 #define HAS_IMM_XBIT           0x00800000
 #define HAS_WORDPREFIX         0x01000000
-#ifdef IS32BIT
+#if defined(IS32BIT)
 #define HAS_REXWBIT            0x00000000
 #else  // IS64BIT
 #define HAS_REXWBIT            0x02000000
@@ -452,7 +452,7 @@ public:
 #define IMMEDIATEVALUE_ALLOWED      (IMM8_ALLOWED | IMM16_ALLOWED | IMM32_ALLOWED)
 
 
-#ifdef IS32BIT
+#if defined(IS32BIT)
 #define NONBYTE_GPRPTR_ALLOWED      (WORDPTR_ALLOWED      | DWORDPTR_ALLOWED)
 #define INDEXGPR_ALLOWED             DWORDGPR_ALLOWED
 #define INDEXPTR_ALLOWED             DWORDPTR_ALLOWED
@@ -501,7 +501,7 @@ private:
   // Number of operands
   const UINT   m_opCount   : 3;
 
-#ifdef IS64BIT
+#if defined(IS64BIT)
   bool validateIsRexCompatible1(const Register &reg1, const Register &reg2, bool throwOnError) const;
 #endif // IS64BIT
   void checkExtension(BYTE extension) const;
@@ -548,7 +548,7 @@ protected:
       throwInvalidArgumentException(__TFUNCTION__, _T("index=%u. Valid range=[1..%u]"),index,getMaxOpCount());
     }
   }
-#ifdef IS32BIT
+#if defined(IS32BIT)
   inline bool validateIsRexCompatible(   const Register           &reg , const InstructionOperand &op  , bool throwOnError) const {
     return true;
   }
@@ -879,7 +879,7 @@ public:
   InstructionBase operator()(const InstructionOperand &op) const;
 };
 
-#ifdef IS32BIT
+#if defined(IS32BIT)
 class OpcodeIncDec : public Opcode1Arg {
 private:
   const Opcode1ArgNoMode m_reg32Code;
@@ -1160,7 +1160,7 @@ extern Opcode0Arg        STI;                              // Set   interrupt fl
 extern Opcode0Arg        CLD;                              // Clear direction flag DF = 0
 extern Opcode0Arg        STD;                              // Set   direction flag DF = 1
 
-#ifdef IS64BIT
+#if defined(IS64BIT)
 extern Opcode0Arg        CLGI;                             // Clear Global Interrupt Flag
 extern Opcode0Arg        STGI;                             // Set Global Interrupt Flag
 #endif // IS64BIT
@@ -1170,7 +1170,7 @@ extern Opcode0Arg        POPF;                             // Pop  FLAGS registe
 extern Opcode0Arg        SAHF;                             // Store AH into FLAGS
 extern Opcode0Arg        LAHF;                             // Load FLAGS into AH register
 
-#ifdef IS32BIT
+#if defined(IS32BIT)
 extern Opcode0Arg        PUSHAD;                           // Push all double-word (32-bit) registers onto stack
 extern Opcode0Arg        POPAD;                            // Pop  all double-word (32-bit) registers from stack
 extern Opcode0Arg        PUSHFD;                           // Push EFLAGS register onto stack { sp-=4, *sp = EFLAGS; }
@@ -1278,7 +1278,7 @@ extern OpcodeJcc         JG;                               // JG(rel8/32). Jump 
 #define                  JNG            JLE                // JNG(rel8/32). Jump if not greater (signed)
 #define                  JNLE           JG                 // JNLE(rel8/32). Jump if not less or equal (signed)
 
-#ifdef IS32BIT
+#if defined(IS32BIT)
 extern Opcode1Arg        JCXZ;                             // JCXZ(rel8). Jump if CX  register is 0. 1 byte PC relative offset
 extern Opcode1Arg        JECXZ;                            // JECXZ(rel8). Jump if ECX register is 0. 1 byte PC relative offset
 #else // IS64BIT
@@ -1362,7 +1362,7 @@ extern Opcode0Arg        CDQ;                              // Convert dword to q
 extern Opcode0Arg        CBW;                              // Convert byte to word. Sign extend AL into AX. Copy sign (bit 7) of AL into higher 8 bits of AX
 extern Opcode0Arg        CWD;                              // Convert word to dword. Sign extend AX into DX:AX. Copy sign (bit 15) of AX into every bit of DX
 
-#ifdef IS64BIT
+#if defined(IS64BIT)
 extern Opcode0Arg        CDQE;                             // Convert dword to qword. Sign extend EAX into RAX. Copy sign (bit 31) of EAX into higher 32 bits of RAX
 extern Opcode0Arg        CQO;                              // Convert qword to oword. Sign extend RAX into RDX:RAX. Copy sign (bit 63) of RAX into every bit of RDX
 #endif // IS64BIT
@@ -1390,7 +1390,7 @@ extern StringInstruction STOSD;
 extern StringInstruction LODSD;
 extern StringInstruction SCASD;
 
-#ifdef IS64BIT
+#if defined(IS64BIT)
 // Same as MOVSB...,but with QWORD, and AL -> RAX, SI->RSI,DI->RDI
 extern StringInstruction MOVSQ;
 extern StringInstruction CMPSQ;

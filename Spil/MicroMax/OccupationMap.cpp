@@ -30,7 +30,7 @@ String PlayerOccupationMap::toString() const {
   return result;
 }
 
-#ifdef __USETABLECONVERSION
+#if defined(__USETABLECONVERSION)
 
 const char PlayerOccupationMap::posToIndex[120] = {
     0, 1, 2, 3, 4, 5, 6, 7,-1,-1,-1,-1,-1,-1,-1,-1

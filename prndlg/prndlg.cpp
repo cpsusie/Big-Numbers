@@ -2,7 +2,7 @@
 #include "prndlg.h"
 #include "prndlgDlg.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 

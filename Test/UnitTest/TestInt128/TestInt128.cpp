@@ -866,7 +866,7 @@ namespace TestInt128 {
     }
 
 #define USE_INT64_AS_INTTYPE
-#ifdef USE_INT64_AS_INTTYPE
+#if defined(USE_INT64_AS_INTTYPE)
 
     typedef INT64           _inttype;
     typedef UINT64          _uinttype;
@@ -904,7 +904,7 @@ namespace TestInt128 {
 
 #endif // USE_INT64_AS_INTTYPE
 
-#ifdef _UNICODE
+#if defined(_UNICODE)
 
 #define _itypetot       _itypetow
 #define _uitypetot      _uitypetow
@@ -1092,7 +1092,7 @@ namespace TestInt128 {
       }
     }
 
-#ifdef USE_INT64_AS_INTTYPE
+#if defined(USE_INT64_AS_INTTYPE)
 #pragma warning(disable : 4307) // integral constant overflow on __int64
 #endif
 
@@ -1131,7 +1131,7 @@ namespace TestInt128 {
       }
     }
 
-#ifdef USE_INT64_AS_INTTYPE
+#if defined(USE_INT64_AS_INTTYPE)
 #define OPENERRORLOG()                                                                                \
   FILE *_errorLog = MKFOPEN(getTestFileName(__TFUNCTION__,_T("txt")),_T("w"));                        \
   UINT _lastFormatCounterDumped = -1

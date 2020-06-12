@@ -16,7 +16,7 @@ protected:
   struct Cube {
     int        index;
     MeshPoint *meshPoint;
-#ifdef USE_MATERIAL
+#if defined(USE_MATERIAL)
     Material   mat;
 #endif
   };

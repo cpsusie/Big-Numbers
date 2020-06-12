@@ -103,7 +103,7 @@ public:
 
   void save(ByteOutputStream &s) const;
   void load(ByteInputStream  &s);
-#ifdef _DEBUG
+#if defined(_DEBUG)
   void dump() const;
 #endif
 };

@@ -5,7 +5,7 @@
 #include "resource.h"
 #include <MFCUtil/WinTools.h>
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -13,7 +13,7 @@ class CAboutDlg : public CDialogEx {
 public:
   CAboutDlg();
 
-#ifdef AFX_DESIGN_TIME
+#if defined(AFX_DESIGN_TIME)
   enum { IDD = IDD_ABOUTBOX };
 #endif
 

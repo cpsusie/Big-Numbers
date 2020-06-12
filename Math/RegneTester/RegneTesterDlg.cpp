@@ -8,7 +8,7 @@
 #include "PasswordDlg.h"
 #include "OptionsDlg.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -161,7 +161,7 @@ void CRegneTesterDlg::OnFileIndstillinger() {
 }
 
 void CRegneTesterDlg::OnFileAfslut() {
-#ifndef _DEBUG
+#if !defined(_DEBUG)
   if(m_options.m_password.length() == 0) {
     if(MessageBox(_T("Ingen indstillinger gemt"), _T("Advarsel"), MB_ICONWARNING | MB_OKCANCEL) == IDCANCEL) {
       return;

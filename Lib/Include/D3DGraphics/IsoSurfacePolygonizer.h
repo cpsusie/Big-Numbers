@@ -2,7 +2,7 @@
 
 #define USE_SNAPMC
 
-#ifndef USE_SNAPMC
+#if !defined(USE_SNAPMC)
 #include <D3DGraphics/IsoSurfacePolygonizerStandard.h>
 using namespace ISOSURFACE_POLYGONIZER_STANDARD;
 #else

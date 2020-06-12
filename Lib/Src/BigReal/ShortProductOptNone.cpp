@@ -1,12 +1,12 @@
 #include "pch.h"
 
-#ifdef IS32BIT
+#if defined(IS32BIT)
 #define ASM_OPTIMIZED
 #endif
 
 #if(SP_OPT_METHOD == SP_OPT_NONE)
 
-#ifdef IS64BIT
+#if defined(IS64BIT)
 #error SP_OPT_BY_NONE cannot be used in x64-mode
 #endif
 
@@ -68,7 +68,7 @@ BigReal &BigReal::baseB(const BigReal &x) {
 //_tprintf(_T("baseB:")); dump(); _tprintf(_T("\n"));
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 BigReal &BigReal::shortProductNoZeroCheckDebug(const BigReal &x, const BigReal &y, UINT loopCount) { // return *this
 #else
 BigReal &BigReal::shortProductNoZeroCheck(     const BigReal &x, const BigReal &y, UINT loopCount) { // return *this
@@ -102,7 +102,7 @@ BigReal &BigReal::shortProductNoZeroCheck(     const BigReal &x, const BigReal &
   int loopCounter = loopCount;
   for(Digit *xk = xb.m_first, *yk = yb.m_first;;) {
 
-#ifndef ASM_OPTIMIZED
+#if !defined(ASM_OPTIMIZED)
     BR2DigitType tmp(0);
     for(Digit *xp = xk, *yp = yk; xp && yp; xp = xp->next, yp = yp->prev) {
 //      _tprintf(_T("    multiply %2d * %2d = %d\n"),xp->n,yp->n,xp->n*yp->n);

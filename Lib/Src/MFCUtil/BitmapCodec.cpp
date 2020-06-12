@@ -14,7 +14,7 @@ void encodeBitmap(HBITMAP bm, ByteOutputStream &out, PLPicEncoder &encoder) {
   encoder.SaveBmp(&winBmp, &sink);
 }
 //#define TEST_DECODEBITMAP
-#ifdef TEST_DECODEBITMAP
+#if defined(TEST_DECODEBITMAP)
 #include <MFCUtil/PixRect.h>
 
 static void showAlphaBitmap(HDC dst, const CPoint &p, HBITMAP bm) {
@@ -112,7 +112,7 @@ HBITMAP decodeToBitmap(const ByteArray &bytes, PLPicDecoder &decoder, bool &hasA
       DeleteDC(dc);
       hasAlpha = winBmp.HasAlpha();
 
-#ifdef TEST_DECODEBITMAP
+#if defined(TEST_DECODEBITMAP)
       HDC screenDC = getScreenDC();
       if(hasAlpha) {
         showAlphaBitmap(screenDC, CPoint(100,100), bitmap);

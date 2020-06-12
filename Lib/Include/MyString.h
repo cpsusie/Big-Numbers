@@ -16,7 +16,7 @@
 #define DECLARECLASSNAME            static TCHAR const* const s_className
 #define DEFINECLASSNAME(className)  TCHAR const* const className::s_className = _T(#className)
 
-#ifndef UNICODE
+#if !defined(UNICODE)
 
 #define USES_ACONVERSION
 #define USES_WCONVERSION USES_CONVERSION

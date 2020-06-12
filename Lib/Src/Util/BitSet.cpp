@@ -4,8 +4,8 @@
 #include <CommonHashFunctions.h>
 #include <BitSet.h>
 
-#ifdef IS64BIT
-#ifdef BITSET_ASM_OPTIMIZED
+#if defined(IS64BIT)
+#if defined(BITSET_ASM_OPTIMIZED)
 extern "C" {
   bool bitSetIsEmpty(const void *p, size_t atomCount);
 };
@@ -259,7 +259,7 @@ size_t BitSet::getCount(size_t from, size_t to) const {
 
 bool BitSet::isEmpty() const {
   const Atom *p = m_p;
-#ifndef BITSET_ASM_OPTIMIZED
+#if !defined(BITSET_ASM_OPTIMIZED)
   for(const Atom *endp = p + _BS_ATOMCOUNT(m_capacity); p < endp;) {
     if(*(p++)) {
       return false;
@@ -269,7 +269,7 @@ bool BitSet::isEmpty() const {
 
 #else // BITSET_ASM_OPTIMIZED
   size_t atomCount = getAtomCount();
-#ifdef IS32BIT
+#if defined(IS32BIT)
   __asm {
     pushf
     mov ecx, atomCount

@@ -25,7 +25,7 @@ void CExpressionTreeCtrl::substituteControl(CWnd *parent, int id) {
     return;
   }
 
-  const CompactIntArray origTabOrder = getTabOrder(parent);
+  TabOrder tabs(parent);
 
   DWORD       style   = ctrl->GetStyle();
   DWORD       exStyle = ctrl->GetExStyle();
@@ -40,7 +40,7 @@ void CExpressionTreeCtrl::substituteControl(CWnd *parent, int id) {
     showError(_T("%s::Create failed"), method);
     return;
   }
-  setTabOrder(parent, origTabOrder);
+  tabs.restoreTabOrder();
   ModifyStyleEx(0, exStyle);
   SetFont(font);
 }

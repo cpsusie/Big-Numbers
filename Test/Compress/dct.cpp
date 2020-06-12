@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#ifdef _USE_DCT
+#if defined(_USE_DCT)
 
 #include <Math.h>
 #include <CountedByteStream.h>
@@ -274,13 +274,13 @@ void DCT::writeImage(PixRect *p, ByteOutputStream &output, BYTE quality) {
         int outputArray[DCTBlockSize][DCTBlockSize];
         forwardDCT(block.m_pixels,outputArray);
 
-#ifdef DEBUGMODULE
+#if defined(DEBUGMODULE)
         block.dump(part,row,col);
         dump(format("Before quantify (%d,%d,%d)", part,row,col),outputArray);
 #endif
         quantify(outputArray);
 
-#ifdef DEBUGMODULE
+#if defined(DEBUGMODULE)
         dump(format("After quantify (%d,%d,%d)", part,row,col),outputArray);
 #endif
 
@@ -310,7 +310,7 @@ PixRect *DCT::readImage(ByteInputStream &input) {
         int inputArray[DCTBlockSize][DCTBlockSize];
         readDCTData(in,inputArray);
 
-#ifdef DEBUGMODULE
+#if defined(DEBUGMODULE)
         dump(format("Before dequantify (%d,%d,%d)", part,row,col), inputArray);
 #endif
         dequantify(inputArray);
@@ -318,7 +318,7 @@ PixRect *DCT::readImage(ByteInputStream &input) {
         PixelBlock block;
         inverseDCT(inputArray,block.m_pixels);
 
-#ifdef DEBUGMODULE
+#if defined(DEBUGMODULE)
         dump(format("After dequantify (%d,%d,%d)", part,row,col), inputArray);
         block.dump(part,row,col);
 #endif

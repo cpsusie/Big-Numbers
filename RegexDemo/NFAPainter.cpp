@@ -3,7 +3,7 @@
 #include <Math/sigmoidIterator.h>
 #include "NFAPainter.h"
 
-#ifdef TESTGRIDMATRIX
+#if defined(TESTGRIDMATRIX)
 
 #include <DebugLog.h>
 

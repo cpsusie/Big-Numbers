@@ -36,9 +36,9 @@ private:
   void genCall2Arg(            SNode arg1, SNode arg2, BuiltInFunction2    f, const String &name DCL_DSTPARAM);
   void genCall2Arg(            SNode arg1, SNode arg2, BuiltInFunctionRef2 f, const String &name DCL_DSTPARAM);
 
-#ifdef IS64BIT
+#if defined(IS64BIT)
   bool genFLoad(               SNode n   DCL_DSTPARAM);
-#ifdef LONGDOUBLE
+#if defined(LONGDOUBLE)
 #define ALLARGS_BYREF
 #endif
 #endif
@@ -49,7 +49,7 @@ private:
   void genCall(SNode n, BuiltInFunctionRef2 f, const String &name DCL_DSTPARAM) {
     genCall2Arg(n.left(), n.right(), f, name DST_PARAM);
   }
-#ifndef ALLARGS_BYREF
+#if !defined(ALLARGS_BYREF)
   void genCall(SNode n, BuiltInFunction1 f, const String &name DCL_DSTPARAM) {
     genCall1Arg(n.left(), f, name DST_PARAM);
   }
@@ -77,7 +77,7 @@ private:
     m_code->emitFPUOpMem(op, RealPtr(getTableRef(n)));
   }
 
-#ifdef IS32BIT
+#if defined(IS32BIT)
   int      genPush(             SNode n);
   int      genPushRef(          SNode n, int index);
   int      genPushReal(         const Real           &x);

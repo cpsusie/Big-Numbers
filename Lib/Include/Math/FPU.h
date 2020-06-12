@@ -24,7 +24,7 @@ typedef enum {
 
 #define FPU_ALL_EXCEPTIONS              0x3f
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #pragma runtime_checks( "", off )
 #endif _DEBUG
 
@@ -159,7 +159,7 @@ public:
 
 #pragma pack(pop)
 
-#ifdef IS64BIT
+#if defined(IS64BIT)
 extern "C" {
 void FPUinit();
 WORD FPUgetStatusWord();
@@ -175,7 +175,7 @@ void FPUclearExceptionsNoWait();
 class FPU {
 private:
   FPU() {} // Cannot be instatiated
-#ifdef IS32BIT
+#if defined(IS32BIT)
   static inline void      FPUinit() {
     __asm {
       finit
@@ -312,7 +312,7 @@ public:
   static _se_translator_function setExceptionTranslator(_se_translator_function f);
 };
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #pragma runtime_checks( "", restore )
 #endif _DEBUG
 

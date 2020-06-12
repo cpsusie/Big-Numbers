@@ -2,7 +2,7 @@
 
 #if(SP_OPT_METHOD == SP_OPT_BY_REG32)
 
-#ifdef IS64BIT
+#if defined(IS64BIT)
 #error SP_OPT_BY_REG32 cannot be used in x64-mode
 #endif
 

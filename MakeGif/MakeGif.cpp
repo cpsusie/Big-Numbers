@@ -5,7 +5,7 @@
 #include "MakeGifDoc.h"
 #include "MakeGifView.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 

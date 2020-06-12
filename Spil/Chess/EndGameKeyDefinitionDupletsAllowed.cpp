@@ -48,7 +48,7 @@ EndGameKey EndGameKeyDefinitionDupletsAllowed::getEndGameKey(const GameKey &game
 
   PieceKey pk;
   PieceTypeCounters ptc;
-#ifdef _DEBUG
+#if defined(_DEBUG)
   int pieceCount = 0;
 #endif
   for(int pos = 0; pos < ARRAYSIZE(gameKey.m_pieceKey); pos++) {
@@ -56,7 +56,7 @@ EndGameKey EndGameKeyDefinitionDupletsAllowed::getEndGameKey(const GameKey &game
       continue;
     }
     result.setPosition(m_pieceKeyIndexMap[pk][ptc.m_counter[pk]++], pos);
-#ifdef _DEBUG
+#if defined(_DEBUG)
     pieceCount++;
 #endif
   }
@@ -65,7 +65,7 @@ EndGameKey EndGameKeyDefinitionDupletsAllowed::getEndGameKey(const GameKey &game
   return result;
 }
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 bool EndGameKeyDefinitionDupletsAllowed::keysMatch23Equal(EndGameKey k1, EndGameKey k2) {
   if(k2 == k1) return true;
   k2.swapPos(2,3);

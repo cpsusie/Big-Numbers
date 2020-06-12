@@ -135,11 +135,11 @@ BitSetWithPlus BitSetWithPlus::operator+(const BitSetWithPlus &rhs) const {
   }
   BitSet::Atom *r  = result.m_p;
   UINT carry = 0;
-#ifdef IS32BIT
+#if defined(IS32BIT)
 #define ASM_OPTIMIZED
 #endif
 
-#ifndef ASM_OPTIMIZED
+#if !defined(ASM_OPTIMIZED)
   for(size_t i = n; i--;) {
     unsigned __int64 tmp = (unsigned __int64)(*r) + *(a++) + carry;
     *(r++) = (BitSet::Atom )(tmp & 0xFFFFFFFF);
@@ -181,7 +181,7 @@ exitloop:
 }
 
 //#define DEBUG_PLUS
-#ifdef DEBUG_PLUS
+#if defined(DEBUG_PLUS)
 void test() {
   BitSetWithPlus a(64),b(64);
   a.invert();
@@ -195,7 +195,7 @@ exit(0);
 #endif
 
 void LcsBitSet::findLcs(ElementPairArray &result) {
-#ifdef DEBUG_PLUS
+#if defined(DEBUG_PLUS)
   test();
 #endif
   // step 2 initialize the TRESH Array

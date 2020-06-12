@@ -2,7 +2,7 @@
 #include <Math/Double80.h>
 #include <Math/FPU.h>
 
-#ifdef OLD_VERSION
+#if defined(OLD_VERSION)
 #define MINPOW10 std::numeric_limits<Double80>::min_exponent10
 #define MAXPOW10 std::numeric_limits<Double80>::max_exponent10
 
@@ -9960,7 +9960,7 @@ Double80 DefaultPow10Cache::pow10(int p) const {
 static DefaultPow10Cache defaultPow10Cache;
 Pow10Calculator *Double80::s_p10Calculator = &defaultPow10Cache;
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #include <DebugLog.h>
 
 static String d80ToHexDumpFormat(const Double80 &v) {

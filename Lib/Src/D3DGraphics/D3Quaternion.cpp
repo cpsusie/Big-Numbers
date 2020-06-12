@@ -19,9 +19,9 @@ D3DXQUATERNION createOrientation(const D3DXVECTOR3 &dir, int unitIndex) {
   return createRotation(E[unitIndex], dir);
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 
-#ifdef verify
+#if defined(verify)
 #undef verify
 #endif
 #define verify(exp) (void)((exp) || (showError(_T("%s line %d:%s"), __TFUNCTION__, __LINE__, _T(#exp)), 0))

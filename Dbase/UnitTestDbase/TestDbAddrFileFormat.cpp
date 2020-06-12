@@ -12,7 +12,7 @@ namespace UnitTestDbAddrFileFormat {
     public:
 
       TEST_METHOD(testDbAddrFileFormat) {
-#ifdef BIG_DBADDR
+#if defined(BIG_DBADDR)
 #define MAXADDR ((1ui64 << 48) - 1)
         DbAddrFileFormat addrff;
         KeyPageAddr addr;

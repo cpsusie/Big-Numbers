@@ -1,7 +1,7 @@
 #include "pch.h"
 #include <Math/Matrix.h>
 
-#ifdef __NEVER__
+#if defined(__NEVER__)
 
 #define Sign(u,v) ( (v)>=0.0 ? fabs(u) : -fabs(u) )
 

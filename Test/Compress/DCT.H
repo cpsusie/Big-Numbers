@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef _USE_DCT
+#if defined(_USE_DCT)
 
 #include "Compressor.h"
 #include <MFCUtil/WinTools.h>

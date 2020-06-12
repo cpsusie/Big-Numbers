@@ -3,7 +3,7 @@
 #include "PasswordDlg.h"
 #include <md5.h>
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 

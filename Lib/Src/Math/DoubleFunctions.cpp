@@ -48,7 +48,7 @@ double root(double x, double y) {
   return pow(x, 1.0/y);
 }
 
-#ifdef IS32BIT
+#if defined(IS32BIT)
 double exp10(double x) {
   if(x == 0) return 1;
 

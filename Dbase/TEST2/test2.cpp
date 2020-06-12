@@ -18,7 +18,7 @@ static char sqlapi_program_id[240] = {
 #include "stdafx.h"
 
 
-#ifdef __NEVER__
+#if defined(__NEVER__)
   EXEC SQL INCLUDE SQLCA;
 #endif
 #line 3 "C:/mytools2015/Dbase/TEST2/test2.sqc"
@@ -28,7 +28,7 @@ sqlca sqlca;
 
 
 
-#ifdef __NEVER__
+#if defined(__NEVER__)
   EXEC SQL BEGIN DECLARE SECTION;
 #endif
 #line 5 "C:/mytools2015/Dbase/TEST2/test2.sqc"
@@ -54,7 +54,7 @@ sqlca sqlca;
   static char           outstr[30];
   static char           outint;
 
-#ifdef __NEVER__
+#if defined(__NEVER__)
   EXEC SQL END   DECLARE SECTION;
 #endif
 #line 26 "C:/mytools2015/Dbase/TEST2/test2.sqc"
@@ -63,7 +63,7 @@ sqlca sqlca;
 static void selectMyTable() {
 
 
-#ifdef __NEVER__
+#if defined(__NEVER__)
   exec sql
     select
       c1
@@ -137,7 +137,7 @@ static void selectMyTable() {
 
 static void dbConnect() {
 
-#ifdef __NEVER__
+#if defined(__NEVER__)
   EXEC SQL CONNECT To :dbname user :username using :password;
 #endif
 #line 62 "C:/mytools2015/Dbase/TEST2/test2.sqc"
@@ -175,7 +175,7 @@ static void dbConnect() {
 
 static void dbDisconnect() {
 
-#ifdef __NEVER__
+#if defined(__NEVER__)
   EXEC SQL CONNECT RESET;
 #endif
 #line 72 "C:/mytools2015/Dbase/TEST2/test2.sqc"

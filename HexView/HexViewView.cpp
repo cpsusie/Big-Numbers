@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "EnterAddressDlg.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -295,7 +295,7 @@ __int64 CHexViewView::getTopLineFromTrackPosition() {
   }
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 void CHexViewView::AssertValid() const {
   CView::AssertValid();
 }

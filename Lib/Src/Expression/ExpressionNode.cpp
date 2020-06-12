@@ -47,7 +47,7 @@ String ExpressionNode::getReturnTypeName(ExpressionReturnType rt) { // static
 String PackedSyntaxNodeInfo::toString() const {
   String result;
   const TCHAR *del = NULL;
-#ifdef ADD_ATTR
+#if defined(ADD_ATTR)
 #undef ADD_ATTR
 #endif
 #define ADD_ATTR(a) if(m_##a) { if(del) result += del; else del = _T(","); result += _T(#a); }
@@ -463,7 +463,7 @@ void ExpressionNode::checkSymbol(const TCHAR *method, const ExpressionNode *n, E
   }
 }
 
-#ifdef CHECK_CONSISTENCY
+#if defined(CHECK_CONSISTENCY)
 bool ExpressionNode::isConsistentSymbolAndType() const {
   ExpressionNodeType type;
   switch(getSymbol()) {

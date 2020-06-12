@@ -1,7 +1,7 @@
 #include "pch.h"
 #include <Tokenizer.h>
 
-#ifdef UNICODE
+#if defined(UNICODE)
 #define MAXCHARVALUE 0xffff
 #else
 #define MAXCHARVALUE 0xff
@@ -297,7 +297,7 @@ unsigned __int64 Tokenizer::getUint64(bool hex) {
 }
 
 size_t Tokenizer::getSizet(bool hex) {
-#ifdef IS64BIT
+#if defined(IS64BIT)
   return getUint64(hex);
 #else
   return getUint(hex);

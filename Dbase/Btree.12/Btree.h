@@ -7,7 +7,7 @@
 
 #define BIG_DBADDR
 
-#ifdef BIG_DBADDR
+#if defined(BIG_DBADDR)
 
 typedef UINT64 DbAddr;
 typedef DbAddr KeyPageAddr;
@@ -1502,7 +1502,7 @@ public:
   }
 };
 
-#ifdef GIVE_LINK_MESSAGE
+#if defined(GIVE_LINK_MESSAGE)
 #pragma message("link with " DBASE_VERSION)
 #endif
 #pragma comment(lib, DBASE_VERSION "Btree12.lib")

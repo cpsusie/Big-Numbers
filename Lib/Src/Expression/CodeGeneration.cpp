@@ -4,7 +4,7 @@
 
 namespace Expr {
 
-#ifdef IS64BIT
+#if defined(IS64BIT)
 #define LOCALSTACKSPACE   72
 #define RESERVESTACKSPACE 40
 #endif
@@ -18,7 +18,7 @@ CodeGeneration::CodeGeneration(MachineCode *code, const CompactRealArray &valueT
   , m_lastFPUOptimizeCount(0)
 {
   m_FPUEmulator.setContainer(this);
-#ifdef IS64BIT
+#if defined(IS64BIT)
   m_functionTableStart = 0;
   resetStack(RESERVESTACKSPACE);
 #endif // IS64BIT
@@ -87,7 +87,7 @@ InstructionInfo CodeGeneration::insertLEA(UINT pos, const IndexRegister &dst, co
 }
 
 void CodeGeneration::emitFPUOpMem(const OpcodeBase &opcode, const MemoryOperand &mem) {
-#ifdef FPU_OPTIMIZE
+#if defined(FPU_OPTIMIZE)
   switch(FPUEmulator::codeLookup(opcode)) {
   case _FADD :
   case _FMUL :
@@ -281,7 +281,7 @@ InstructionBase JumpFixup::makeInstruction() const {
 void CodeGeneration::finalize() {
   finalJumpFixup();
 
-#ifdef IS64BIT
+#if defined(IS64BIT)
   if(hasCalls()) {
     emitAddStack(LOCALSTACKSPACE + RESERVESTACKSPACE);
     emit(POP,RBX);
@@ -295,7 +295,7 @@ void CodeGeneration::finalize() {
   listAll();
 }
 
-#ifdef IS32BIT
+#if defined(IS32BIT)
 void CodeGeneration::linkFunctionCalls() {
   for(size_t i = 0; i < m_callTable.size(); i++) {
     linkFunctionCall(m_callTable[i]);
@@ -368,7 +368,7 @@ UINT CodeGeneration::getFunctionRefIndex(const FunctionCall &fc) {
 // public in x86/private in x64
 UINT CodeGeneration::emitCall(const FunctionCall &fc) {
   const OpcodeCall &opcodeCALL = CALL;
-#ifdef IS32BIT
+#if defined(IS32BIT)
   const InstructionOperand arg1((intptr_t)fc.m_fp); // Call immediate addr
 #else // iIS64BIT
   // Call using reference-table added after code, and during exeution
@@ -385,8 +385,8 @@ UINT CodeGeneration::emitCall(const FunctionCall &fc) {
   return pos;
 }
 
-#ifdef IS64BIT
-#ifdef USEXMMREG
+#if defined(IS64BIT)
+#if defined(USEXMMREG)
 UINT CodeGeneration::emitCall(const FunctionCall &fc, const ExpressionDestination &dst) {
   const UINT pos = emitCall(fc);
   switch(dst.getType()) {

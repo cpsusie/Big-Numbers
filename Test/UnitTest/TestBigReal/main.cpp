@@ -5,11 +5,11 @@
 #include "TestBigReal.h"
 #include "BigRealTestClass.h"
 
-#ifdef __NEVER__
+#if defined(__NEVER__)
 
 #define INTERACTIVE_SHORTPROD
 
-#ifdef INTERACTIVE_SHORTPROD
+#if defined(INTERACTIVE_SHORTPROD)
 static void testShortProd() {
   DigitPool pool(-5);
 //  for(;;) {
@@ -216,7 +216,7 @@ void SpecialTestClass::runTest() {
 //  testGetDecimalDigitCount64();
 //  return;
 
-#ifdef HAS_LOOP_DIGITCOUNT
+#if defined(HAS_LOOP_DIGITCOUNT)
 //  measureGetDecimalDigitCount();
 //  return;
 #endif // HAS_LOOP_DIGITCOUNT
@@ -284,7 +284,7 @@ int _tmain(int argc, TCHAR **argv) {
     bool    dumpPow2Cache     = false;
     bool    stopOnError       = false;
     bool    startDigitMonitor = false;
-#ifdef _DEBUG
+#if defined(_DEBUG)
     int     threadCount       = getDebuggerPresent() ? 1 : 0;
 #else
     int     threadCount       = 0;

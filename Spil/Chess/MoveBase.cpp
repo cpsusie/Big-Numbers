@@ -51,7 +51,7 @@ bool MoveBase::isGoodMove() const {
   }
 }
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 MoveBase &MoveBase::swapFromTo() {
   if(isMove()) {
     int tmp     = m_from;

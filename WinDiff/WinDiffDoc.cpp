@@ -6,7 +6,7 @@
 #include "WinDiffDoc.h"
 #include "CompareJob.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -557,7 +557,7 @@ void CWinDiffDoc::Serialize(CArchive& ar) {
   }
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 void CWinDiffDoc::AssertValid() const {
     CDocument::AssertValid();
 }

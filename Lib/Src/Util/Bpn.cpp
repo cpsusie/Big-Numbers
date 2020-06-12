@@ -8,7 +8,7 @@
 #define DEBUG_BPN
 */
 
-#ifdef IS32BIT
+#if defined(IS32BIT)
 #define ASM_OPTIMIZED
 #endif
 
@@ -53,7 +53,7 @@ void Bpn::layerPropagate(BpnLayer *lower, BpnLayer *upper) {
     float sum = 0;
     float *weights = upper->m_weights[i];
 
-#ifndef ASM_OPTIMIZED
+#if !defined(ASM_OPTIMIZED)
     for(int j = 0; j < ninputs; j++ )
       sum += inputs[j] * weights[j];
 #else
@@ -145,7 +145,7 @@ static void layerAdjustWeights( BpnLayer *upper, BpnLayer *lower,
     float *lastdelta = upper->m_lastdelta[j];
     float tmp        = (float)learning_rate * uppererror[j];
 
-#ifndef ASM_OPTIMIZED
+#if !defined(ASM_OPTIMIZED)
     for(int k = 0; k < lowercount; k++ ) {
       lastdelta[k] *= (float)momentum;
       lastdelta[k] += inputs[k] * tmp;

@@ -160,7 +160,7 @@ SymmetricTransformation EndGameKeyDefinition4Men2Equal::getSymTransformation(End
   return getSym8Transformation4Men2Equal(key);
 }
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 
 void EndGameKeyDefinition4Men2Equal::scanPositions(EndGameKeyWithOccupiedPositions &key, int pIndex, bool allPreviousOnDiag) const {
   switch(pIndex) {

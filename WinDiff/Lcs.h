@@ -4,7 +4,7 @@
 #include <StringPool.h>
 #include "CompareJob.h"
 
-#ifdef MEASURE_STEPTIME
+#if defined(MEASURE_STEPTIME)
 
 class TimeMeasure {
 private:
@@ -104,7 +104,7 @@ class Link {
 public:
   int   m_i,m_j;
   Link *m_next;
-#ifdef _DEBUG
+#if defined(_DEBUG)
   inline String toString() const {
     return format(_T("(%d,%d)"), m_i,m_j);
   }
@@ -120,7 +120,7 @@ public:
   }
   inline ElementPair() {
   }
-#ifdef _DEBUG
+#if defined(_DEBUG)
   inline String toString() const {
     return format(_T("(%d,%d)"), m_aIndex, m_bIndex);
   }
@@ -197,7 +197,7 @@ protected:
   void            allocateTreshAndLinkArrays(size_t size);
   void            clear();
   void            stopAndThrow();
-#ifdef _DEBUG
+#if defined(_DEBUG)
   void            dumpThreshLinks() const;
 #endif // _DEBUG
 public:

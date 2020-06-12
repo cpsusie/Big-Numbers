@@ -51,7 +51,7 @@ const UINT32 SHA256::s_hash0[] = {
 };
 
 #define HASROTR
-#ifdef HASROTR
+#if defined(HASROTR)
 #define ROTR(x,n) _rotr(x, n)
 #else
 // Rotate right function ROTR^n(x) in hash algorithm.

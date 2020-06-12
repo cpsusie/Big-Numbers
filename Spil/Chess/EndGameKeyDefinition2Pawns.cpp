@@ -4,7 +4,7 @@
 EndGameKeyDefinition2Pawns::EndGameKeyDefinition2Pawns(PieceKey pk2, PieceKey pk3)
 : EndGameKeyDefinitionDupletsNotAllowed(pk2, pk3) {
   assert(pk2 != pk3);
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   setPawnOwners();
 #endif
 }
@@ -12,7 +12,7 @@ EndGameKeyDefinition2Pawns::EndGameKeyDefinition2Pawns(PieceKey pk2, PieceKey pk
 EndGameKeyDefinition2Pawns::EndGameKeyDefinition2Pawns(PieceKey pk2, PieceKey pk3, PieceKey pk4)
 : EndGameKeyDefinitionDupletsNotAllowed(pk2, pk3, pk4)
 {
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   setPawnOwners();
 #endif
 }
@@ -21,7 +21,7 @@ SymmetricTransformation EndGameKeyDefinition2Pawns::getSymTransformation(EndGame
   return getPawnSymTransformation(key);
 }
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 
 void EndGameKeyDefinition2Pawns::setPawnOwners() {
   checkIsPawn(2, true);

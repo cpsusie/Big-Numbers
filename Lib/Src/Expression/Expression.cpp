@@ -202,7 +202,7 @@ void Expression::print(FILE *f) const {
 }
 
 String Expression::getDefaultListFileName() { // static
-#ifdef LONGDOUBLE
+#if defined(LONGDOUBLE)
 #define _REALSTR_ "TB/"
 #else
 #define _REALSTR_ "QW/"

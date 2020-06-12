@@ -11,28 +11,28 @@
 //#define _TRACE_ENTERLEAVE
 #define _DEBUG_CHECKSTATE
 
-#ifdef ENTERFUNC
+#if defined(ENTERFUNC)
 #undef ENTERFUNC
 #endif
-#ifdef LEAVEFUNC
+#if defined(LEAVEFUNC)
 #undef LEAVEFUNC
 #endif
 
 #define STATESTR()  getStateName(getState())
 
-#ifdef _PRINT_DEBUGMSG
+#if defined(_PRINT_DEBUGMSG)
 #define DEBUGMSG(...) debugMsg(__VA_ARGS__)
 #else
 #define DEBUGMSG(...)
 #endif // _PRINT_DEBUGMSG
 
-#ifdef _DEBUG_CHECKSTATE
+#if defined(_DEBUG_CHECKSTATE)
 #define CHECKSTATE(s1,...) checkState(__TFUNCTION__, __LINE__, s1, __VA_ARGS__ ,-1)
 #else
 #define CHECKSTATE(s1,...)
 #endif // _DEBUG_CHECKSTATE
 
-#ifdef _TRACE_ENTERLEAVE
+#if defined(_TRACE_ENTERLEAVE)
 
 #define ENTERFUNCPARAM(...) {                    \
   debugMsg(_T("Enter %s(%s)"), __TFUNCTION__     \
@@ -67,7 +67,7 @@
   UNLOCK_LEAVE();           \
   return expr
 
-#ifdef CATCH_ALL
+#if defined(CATCH_ALL)
 #undef CATCH_ALL
 #endif
 
@@ -590,7 +590,7 @@ bool ChessPlayer::isRightNormalPlayMoveFinder(const RequestParamFindMove &param)
     return false;
   }
 
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
   if(param.getTimeLimit().m_timeout == 0) {
     return m_moveFinder->getType() == RANDOM_PLAYER;
   }
@@ -650,7 +650,7 @@ void ChessPlayer::allocateMoveFinder(const RequestParamFindMove &param) {
 // private
 AbstractMoveFinder *ChessPlayer::newMoveFinderNormalPlay(const RequestParamFindMove &param) {
   AbstractMoveFinder *amf;
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
   if(param.getTimeLimit().m_timeout == 0) {
     amf = new MoveFinderRandomPlay(getPlayer(), m_inputQueue);
   } else {

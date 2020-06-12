@@ -6,7 +6,7 @@
 #include "BigText.h"
 #include "BigTextDlg.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -95,7 +95,7 @@ BOOL CBigTextApp::InitInstance()
 		delete pShellManager;
 	}
 
-#ifndef _AFXDLL
+#if !defined(_AFXDLL)
 	ControlBarCleanUp();
 #endif
 

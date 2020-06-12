@@ -17,7 +17,7 @@ void Game::updateGameMoveRook(const Move &m) {
   piece->m_pinnedState = getPinnedState(m.m_to);
 }
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 void Game::updateGameBackMoveRook(const Move &m) {
   const Move m1 = m.makeBackMove();
   rookLeaveField(m1);

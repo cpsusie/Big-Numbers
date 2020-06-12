@@ -73,14 +73,14 @@ public:
 };
 
 
-#ifdef ENDGAME_NOKING
+#if defined(ENDGAME_NOKING)
 
 class EndGameKeyDefinitionKBNNKNoKing : public EndGameKeyDefinition5Men2Equal {
 public:
   EndGameKeyDefinitionKBNNKNoKing() : EndGameKeyDefinition5Men2Equal(WHITEBISHOP, WHITEKNIGHT) {
   }
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   void insertInitialPositions(EndGameTablebase &tablebase) const {
     tablebase.addInitPosition(WHITEPLAYER, D4, F3, A1, B8, A7);
     tablebase.addInitPosition(WHITEPLAYER, D4, F3, A2, B8, A7);
@@ -90,7 +90,7 @@ public:
 
 // Define best moves in King-Bishop-Bishop-Knight/King endgame, with no white king moves
 class EndGameKBNNK : public EndGameTablebase {
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 protected:
   bool isUsableMove(const Move &m) const {
     return m.m_piece->getKey() != WHITEKING;
@@ -139,14 +139,14 @@ public:
 };
 
 
-#ifdef ENDGAME_NOKING
+#if defined(ENDGAME_NOKING)
 
 class EndGameKeyDefinitionKNNNKNoKing : public EndGameKeyDefinition5Men3Equal {
 public:
   EndGameKeyDefinitionKNNNKNoKing() : EndGameKeyDefinition5Men3Equal(WHITEKNIGHT) {
   }
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   void insertInitialPositions(EndGameTablebase &tablebase) const {
     tablebase.addInitPosition(WHITEPLAYER, D4, F3, A8, B8, A7);
   }
@@ -154,7 +154,7 @@ public:
 };
 
 class EndGameKNNNK : public EndGameTablebase {
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 protected:
   bool isUsableMove(const Move &m) const {
     return m.m_piece->getKey() != WHITEKING;

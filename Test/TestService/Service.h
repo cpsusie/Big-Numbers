@@ -39,10 +39,10 @@
  *        For more information on SC.EXE, type SC at the command line.
  */
 
-#ifndef _SERVICE_H
+#if !defined(_SERVICE_H)
 #define _SERVICE_H
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 extern "C" {
 #endif
 
@@ -119,7 +119,7 @@ void AddToMessageLog(LPTSTR lpszMsg);
 //////////////////////////////////////////////////////////////////////////////
 
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 }
 #endif
 

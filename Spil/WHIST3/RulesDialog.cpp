@@ -2,7 +2,7 @@
 #include "whist3.h"
 #include "RulesDialog.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 

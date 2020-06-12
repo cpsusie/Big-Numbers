@@ -61,7 +61,7 @@ const RegSizeSet Register::s_wordRegCapacity( REGSIZE_BYTE, REGSIZE_WORD, -1);
 const RegSizeSet Register::s_dwordRegCapacity(REGSIZE_BYTE, REGSIZE_WORD, REGSIZE_DWORD, -1);
 const RegSizeSet Register::s_qwordRegCapacity(REGSIZE_BYTE, REGSIZE_WORD, REGSIZE_DWORD, REGSIZE_QWORD, -1);
 
-#ifdef IS64BIT
+#if defined(IS64BIT)
 bool GPRegister::isREXCompatible(bool rexBytePresent) const {
   return !rexBytePresent || (m_rexByteUsage != REX_NOTALLOWED);
 }
@@ -75,7 +75,7 @@ String GPRegister::getName() const {
     case  1: return _T("cl"  );
     case  2: return _T("dl"  );
     case  3: return _T("bl"  );
-#ifdef IS32BIT
+#if defined(IS32BIT)
     case  4: return _T("ah"  );
     case  5: return _T("ch"  );
     case  6: return _T("dh"  );
@@ -107,7 +107,7 @@ String GPRegister::getName() const {
     case  5: return _T("bp"  );
     case  6: return _T("si"  );
     case  7: return _T("di"  );
-#ifdef IS64BIT
+#if defined(IS64BIT)
     case  8:
     case  9:
     case 10:
@@ -130,7 +130,7 @@ String GPRegister::getName() const {
     case  5: return _T("ebp" );
     case  6: return _T("esi" );
     case  7: return _T("edi" );
-#ifdef IS64BIT
+#if defined(IS64BIT)
     case  8:
     case  9:
     case 10:
@@ -143,7 +143,7 @@ String GPRegister::getName() const {
 #endif // IS64BIT
     }
     break;
-#ifdef IS64BIT
+#if defined(IS64BIT)
   case REGSIZE_QWORD:
     switch(getIndex()) {
     case  0: return _T("rax" );
@@ -200,7 +200,7 @@ const GPRegister    CL(REGSIZE_BYTE,  1);
 const GPRegister    DL(REGSIZE_BYTE,  2);
 const GPRegister    BL(REGSIZE_BYTE,  3);
 
-#ifdef IS32BIT
+#if defined(IS32BIT)
 const GPRegister    AH(REGSIZE_BYTE,  4);
 const GPRegister    CH(REGSIZE_BYTE,  5);
 const GPRegister    DH(REGSIZE_BYTE,  6);
@@ -231,7 +231,7 @@ const GPRegister    BP(REGSIZE_WORD,  5);
 const GPRegister    SI(REGSIZE_WORD,  6);
 const GPRegister    DI(REGSIZE_WORD,  7);
 
-#ifdef IS32BIT
+#if defined(IS32BIT)
 
 const IndexRegister EAX(0);
 const IndexRegister ECX(1);
@@ -335,7 +335,7 @@ const XMMRegister XMM5(  5);
 const XMMRegister XMM6(  6);
 const XMMRegister XMM7(  7);
 
-#ifdef IS64BIT
+#if defined(IS64BIT)
 const XMMRegister XMM8(  8);
 const XMMRegister XMM9(  9);
 const XMMRegister XMM10(10);

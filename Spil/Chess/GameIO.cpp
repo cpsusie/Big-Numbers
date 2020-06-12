@@ -285,7 +285,7 @@ void Game::parseMove(const String &str) {
   executeMove(generateMove(from, to, promoteTo, annotation));
 }
 
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
 
 String Game::toUCIString() const {
   String result = _T("position");

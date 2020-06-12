@@ -9,7 +9,7 @@ const extern ParserTables *DummyTables;
 #include "dummysymbol.h"
 #include "dummylex.h"
 
-#ifndef YYSTYPE
+#if !defined(YYSTYPE)
 #define YYSTYPE int
 #endif
 

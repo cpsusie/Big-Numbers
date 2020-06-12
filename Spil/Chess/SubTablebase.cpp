@@ -35,7 +35,7 @@ SubTablebasePositionInfo::SubTablebasePositionInfo(const Game &game) {
   static const TCHAR *drawSignatureSet[] = {
     _T("KK"), _T("KNK"), _T("KBK")
 
-#ifdef ENDGAME_NOKING
+#if defined(ENDGAME_NOKING)
    ,_T("KQK") , _T("KRK") , _T("KPK")
    ,_T("KQKQ"), _T("KQKR"), _T("KQKB"), _T("KQKN"), _T("KQKP")
    ,_T("KRKR"), _T("KRKB"), _T("KRKN"), _T("KRKP"), _T("KRBK"), _T("KRNK"), _T("KRPK")
@@ -59,7 +59,7 @@ SubTablebasePositionInfo::SubTablebasePositionInfo(const Game &game) {
 
   m_tablebase = EndGameTablebase::getInstanceBySignature(gps, m_swapPlayers);
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 #define LOADASSUBTABLEBASE() loadPacked()
 #else
 #define LOADASSUBTABLEBASE() load()
@@ -72,7 +72,7 @@ SubTablebasePositionInfo::SubTablebasePositionInfo(const Game &game) {
     } catch(Exception e) {
       error = true;
     }
-#ifdef __AFXWIN_H__
+#if defined(__AFXWIN_H__)
     catch(CMemoryException *e) {
       error = true;
       e->Delete();
@@ -122,7 +122,7 @@ void SubTablebasePositionInfo::unload() {
   }
 }
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 bool SubTablebasePositionInfo::allKeysFound() const {
   return (m_tablebase == NULL) ? true : m_tablebase->allKeysFound();
 }

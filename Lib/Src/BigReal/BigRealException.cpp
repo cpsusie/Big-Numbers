@@ -16,7 +16,7 @@ void throwBigRealGetIntegralTypeUndefinedException(TCHAR const * const function,
   throwBigRealInvalidArgumentException(function,_T("x=%s"), toString(x).cstr());
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 void throwNotMutableException(TCHAR const * const file, int line, TCHAR const * const function, const BigReal &x, TCHAR const * const name) {
   throwBigRealException(_T("%s(%d):%s:%s not mutable. digitPool=%s, flags={%s}")
                        ,file, line,function

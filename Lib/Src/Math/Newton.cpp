@@ -21,7 +21,7 @@ Vector newton(VectorFunction &f, const Vector &x0, int maxit, Real tolerance) {
   Real v1 = y.length();
   for(int it = 0; it < maxit; it++) {
 
-#ifdef DEBUGNEWTON
+#if defined(DEBUGNEWTON)
 cout << "IT:" << it << endl;
 cout << "X :" << result << endl;
 cout << "Y :" << y << "(length=" << v1 << ")\n";
@@ -29,7 +29,7 @@ cout << "Y :" << y << "(length=" << v1 << ")\n";
 
     Matrix jacobi = getJacobi(f,result,y);
 
-#ifdef DEBUGNEWTON
+#if defined(DEBUGNEWTON)
 cout << "Jac:\n" << jacobi ;
 #endif
 
@@ -37,7 +37,7 @@ cout << "Jac:\n" << jacobi ;
 
     Vector help = lu.solve(y);
 
-#ifdef DEBUGNEWTON
+#if defined(DEBUGNEWTON)
 cout << "Help:" << help << endl;
 #endif
 
@@ -51,12 +51,12 @@ cout << "Help:" << help << endl;
       Real v2 = y.length();
       if(v2 < v1) {
 
-#ifdef DEBUGNEWTON
+#if defined(DEBUGNEWTON)
 cout << "New estimate:" << result << endl;
 #endif
 
         if(v2 < tolerance) {
-#ifdef DEBUGNEWTON
+#if defined(DEBUGNEWTON)
 cout << "IT:" << it << endl;
 cout << "X:" << result << endl;
 cout << "Y:" << y << "(length=" << v2 << ")\n";
@@ -70,11 +70,11 @@ cout << "Y:" << y << "(length=" << v2 << ")\n";
         if(i==scaletimes) {
 	      help = oldhelp;
 	      help = help * -1.0;
-#ifdef DEBUGNEWTON
+#if defined(DEBUGNEWTON)
 cout << "change direction\n";
 #endif
         }
-#ifdef DEBUGNEWTON
+#if defined(DEBUGNEWTON)
 cout << "scale down " << i << endl;
 #endif
 	      help = help * 0.5;

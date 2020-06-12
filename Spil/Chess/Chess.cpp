@@ -3,7 +3,7 @@
 #include "ChessDlg.h"
 #include <Timer.h>
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 

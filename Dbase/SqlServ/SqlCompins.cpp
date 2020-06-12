@@ -380,7 +380,7 @@ void SqlCompiler::genInsertValues(const SyntaxNode *n,              // n == inse
     m_code.appendIns1(CODETUPINSERT,0);
     m_code.appendIns0(CODETRCOMMIT);
   }
-#ifdef TRACECOMP
+#if defined(TRACECOMP)
   m_code.dump();
 #endif
 

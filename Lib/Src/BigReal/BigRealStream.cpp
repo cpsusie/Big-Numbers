@@ -5,7 +5,7 @@
 
 static TCHAR *digitToStr(TCHAR *dst, BRDigitType n, UINT width = 0) {
   TCHAR tmp[50], *d = width ? tmp : dst;
-#ifdef IS64BIT
+#if defined(IS64BIT)
   _i64tot(n, d, 10);
 #else
   _itot(n, d, 10);
@@ -129,7 +129,7 @@ void BigRealStream::formatScientific(String &dst, const BigReal &x, StreamSize p
     }
   }
   addExponentChar(dst, flags);
-#ifdef IS32BIT
+#if defined(IS32BIT)
   dst += format(_T("%+03d"), BigReal::getExpo10(nn));
 #else
   dst += format(_T("%+03lld"), BigReal::getExpo10(nn));

@@ -101,7 +101,7 @@ static void usage() {
   exit(-1);
 }
 
-#ifdef IS32BIT
+#if defined(IS32BIT)
 #define SIZETMAX _UI32_MAX
 #else
 #define SIZETMAX _UI64_MAX

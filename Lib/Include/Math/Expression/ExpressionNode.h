@@ -269,7 +269,7 @@ public:
   bool                               needParentheses(                const ExpressionNode  *parent)  const;
   UINT                               getMaxTreeDepth()                                               const;
 
-#ifdef CHECK_CONSISTENCY
+#if defined(CHECK_CONSISTENCY)
   // Return nodes visited. or throw Exception if any nodes is insoncistent
   UINT    checkIsConsistent()                                             const;
   bool    isConsistentSymbolAndType()                                     const;

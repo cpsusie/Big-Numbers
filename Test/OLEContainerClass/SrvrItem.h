@@ -15,7 +15,7 @@ public:
     virtual BOOL OnGetExtent(DVASPECT dwDrawAspect, CSize& rSize);
 
     ~COLEContainerClassSrvrItem();
-#ifdef _DEBUG
+#if defined(_DEBUG)
     virtual void AssertValid() const;
     virtual void Dump(CDumpContext &dc) const;
 #endif

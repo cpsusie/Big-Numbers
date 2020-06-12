@@ -23,7 +23,7 @@ public:
   virtual EndGamePositionStatus getPositionStatus(const Game &game, bool swapPlayers) const = 0;
   virtual EndGameResult         getPositionResult(const Game &game, bool swapPlayers) const = 0;
   virtual MoveResultArray      &getAllMoves(      const Game &game, bool swapPlayers, MoveResultArray &a) const = 0; // return a
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   virtual String loadPacked() = 0;
   virtual bool allKeysFound() const = 0;
 #endif
@@ -82,7 +82,7 @@ public:
   EndGameResult         getPositionResult(const Game &game, bool swapPlayers) const;
   MoveResultArray      &getAllMoves(      const Game &game, bool swapPlayers, MoveResultArray &a) const; // return a
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   String loadPacked();
   bool allKeysFound() const;
 #endif
@@ -118,12 +118,12 @@ public:
   inline bool isRemote() const {
     return m_tablebase ? m_tablebase->isRemote() : false;
   }
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   bool allKeysFound() const;
 #endif
 };
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 
 typedef enum {
   INSERT_INITIALPOSITIONS
@@ -164,7 +164,7 @@ public:
   }
 };
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 class EndGameTablebase : public EndGameSubTablebase, public TimeoutHandler {
 #else
 class EndGameTablebase : public EndGameSubTablebase {
@@ -175,13 +175,13 @@ private:
   mutable CompactHashMap<SubTablebaseKey, SubTablebasePositionInfo> m_subTablebaseMap;
   mutable bool                                                      m_useRemoteSubTablebase;
   int                                                               m_loadRefCount;
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
   static  FastSemaphore                                             s_loadGate;
 #endif
 
   // assume gameKey.positionSignature == keydef.positionSignature
   MoveResultArray  &getAllMoves(const GameKey &gameKey, MoveResultArray &a) const;
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
   // assume gameKey.positionSignature == keydef.positionSignature
   MoveResult2Array &getAllMoves(const GameKey &gameKey, MoveResult2Array &a) const;
 #endif // TABLEBASE_BUILDER
@@ -214,7 +214,7 @@ private:
 
   void                  load(ByteInputStream &s);
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 
   PackedIndexedMap                   *m_packedIndex;
   TablebaseInfo                       m_info;
@@ -325,7 +325,7 @@ protected:
   void                  capturedPieceTypeError(PieceType pieceType) const;       // throws Exception
   void                  moveTypeError(const Move &m) const;                      // throws Exception
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 
   virtual bool          isUsableMove(const Move &m) const;
   virtual bool          isUsableBackMove(const Move &m) const {
@@ -380,8 +380,8 @@ public:
          : PrintableMove(game, a.selectBestMove(defendStrength));
   }
 
-#ifndef TABLEBASE_BUILDER
-#ifdef NEWCOMPRESSION
+#if !defined(TABLEBASE_BUILDER)
+#if defined(NEWCOMPRESSION)
   friend class GameResultMap;
 #endif
 #endif //  TABLEBASE_BUILDER
@@ -430,7 +430,7 @@ public:
 
   TablebaseInfo         getInfo() const;
 
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
   static void           decompressAll();
   void                  decompress(ByteCounter *byteCounter = NULL) const;
   bool                  needDecompress() const;
@@ -461,7 +461,7 @@ public:
   friend class TimeUsagePrinter;
 };
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 
 class TimeUsagePrinter {
 private:

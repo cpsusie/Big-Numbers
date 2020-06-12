@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "ShowGrafDoc.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -353,7 +353,7 @@ void CShowGrafDoc::setRollingAvg(const RollingAvg &rollingAvg) {
   m_graphArray.setRollingAvg(m_options.m_rollingAvg);
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 void CShowGrafDoc::AssertValid() const {
   CDocument::AssertValid();
 }

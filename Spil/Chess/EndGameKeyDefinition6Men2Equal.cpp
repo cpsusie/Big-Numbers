@@ -232,7 +232,7 @@ SymmetricTransformation EndGameKeyDefinition6Men2Equal::getSymTransformation(End
   return getSym8Transformation6Men2Equal(key);
 }
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 
 void EndGameKeyDefinition6Men2Equal::scanPositions(EndGameKeyWithOccupiedPositions &key, int pIndex, bool allPreviousOnDiag) const {
   switch(pIndex) {

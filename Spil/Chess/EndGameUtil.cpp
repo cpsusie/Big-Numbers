@@ -27,7 +27,7 @@ void TablebaseInfo::load(ByteInputStream &s) {
   checkVersion();
 }
 
-#ifdef NEWCOMPRESSION
+#if defined(NEWCOMPRESSION)
 template<class T> BigEndianOutputStream &operator<<(BigEndianOutputStream &s, const TwoCountersTemplate<T> &c) {
   return s << c.m_count[0] << c.m_count[1];
 }
@@ -76,7 +76,7 @@ void TablebaseInfo::load(BigEndianInputStream &s) {
 #endif // NEWCOMPRESSION
 
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 static const TCHAR *POSITIONSTR     = _T("Positions");
 static const TCHAR *INDEXSIZESTR    = _T("Indexsize");
 static const TCHAR *UNDEFINEDSTR    = _T("Undefined");
@@ -323,7 +323,7 @@ void StreamProgress::handleTimeout(Timer &timer) {
   verbose(_T("%.2lf%%\b"), PERCENT(getCount(), m_total));
 }
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 
 IntervalChecker::IntervalChecker(const TCHAR *name) : m_name(name) {
   m_minValue = -1;

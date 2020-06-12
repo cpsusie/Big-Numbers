@@ -3,7 +3,7 @@
 
 class ShiftAnd {
 private:
-#ifndef UNICODE
+#if !defined(UNICODE)
 #define MASKLENGTH (0xff+1)
 #else
 #define MASKLENGTH (0xffff+1)
@@ -39,7 +39,7 @@ void ShiftAnd::compile(const String &pattern, bool ignoreCase) {
     }
   }
   m_s = (UINT64)1 << m_patternLen;
-#ifdef _TEST_CLASS
+#if defined(_TEST_CLASS)
   for(int i = 0; i < ARRAYSIZE(m_mask); i++) {
     const UINT64 mask = m_mask[i];
     if(mask != -1) {
@@ -56,12 +56,12 @@ ShiftAnd::ShiftAnd(const String &pattern, bool ignoreCase) {
 intptr_t ShiftAnd::search(const String &str) const {
   const UINT64 maskEnd  = m_s;
   UINT64       s        = ~1;
-#ifdef _TEST_CLASS
+#if defined(_TEST_CLASS)
   _tprintf(_T("m_s:%s\n"), sprintbin(maskEnd).cstr());
 #endif
   for(const _TUCHAR *cp = str.cstr(), *last = cp + str.length(); cp < last;) {
     s = (s | m_mask[*(cp++)]) << 1;
-#ifdef _TEST_CLASS
+#if defined(_TEST_CLASS)
     _tprintf(_T("c:%c:%s\n"), *(cp-1), sprintbin(s).cstr());
 #endif
     if((s & maskEnd) == 0) {
@@ -79,7 +79,7 @@ intptr_t ShiftAnd::searchApprox(const String &str, UINT maxErrors) const {
   CompactArray<UINT64> s;
   s.add(0,(UINT64)~1,maxErrors+1);
   UINT64 *sfirst = &s.first(), *slast = &s.last();
-#ifdef _TEST_CLASS
+#if defined(_TEST_CLASS)
   _tprintf(_T("m_s:%s\n"), sprintbin(maskEnd).cstr());
 #endif
   for(const _TUCHAR *cp = str.cstr(), *last = cp + str.length(); cp < last;) {
@@ -93,7 +93,7 @@ intptr_t ShiftAnd::searchApprox(const String &str, UINT maxErrors) const {
       *sp = (olds & (tmp | mask)) << 1;
       olds = tmp;
     }
-#ifdef _TEST_CLASS
+#if defined(_TEST_CLASS)
     for(sp = sfirst; sp <= slast; sp++) {
       _tprintf(_T("c:%c:%s\n"), *(cp-1), sprintbin(*sp).cstr());
     }

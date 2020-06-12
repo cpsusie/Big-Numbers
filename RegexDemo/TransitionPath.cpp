@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "DFAPainter.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 
 String toString(const GridElement &ge) {
   return ge.isOccupied() ? _T("1") : _T("0");

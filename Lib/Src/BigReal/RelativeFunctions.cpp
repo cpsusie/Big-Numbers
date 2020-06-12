@@ -49,7 +49,7 @@ public:
 
 static const rExpConstants REXPC;
 
-#ifdef IS32BIT
+#if defined(IS32BIT)
 #define CD_MAX INT_MAX
 #define CD_MIN INT_MIN
 #else

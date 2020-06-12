@@ -1,6 +1,6 @@
 #include "pch.h"
 
-#ifdef IS64BIT
+#if defined(IS64BIT)
 
 #define MAXDIGITS_INT128     38
 #define MAXDIGITS_DIVISOR128 ((MAXDIGITS_INT128+1)/2)

@@ -238,7 +238,7 @@ void Image::paint(Image &dst, const CPoint &dstp, double rotation) const {
   if(rotation == 0) {
     CRect r(ORIGIN, m_size);
     if(m_hasTransparentPixels) {
-#ifdef DOALPHABLEND
+#if defined(DOALPHABLEND)
       IDirect3DTexture9 *texture = createTexture(m_size, D3DFMT_A8R8G8B8);
       copySurfaceToTexture(texture, m_surface);
 
@@ -397,7 +397,7 @@ String getD3DErrorMsg(HRESULT hr) {
   }
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 
 void checkD3DResult(TCHAR *fileName, int line, HRESULT hr) {
   if(hr != D3D_OK) {

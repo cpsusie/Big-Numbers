@@ -11,7 +11,7 @@ public:
 
 // Define best moves in King-Knight-Pawn/King endgame
 class EndGameKNPK : public EndGameTablebase {
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 protected:
   bool isUsableMove(const Move &m) const;
 #endif
@@ -25,7 +25,7 @@ public:
 
 // Define best moves in King-Pawn/King-Bishop endgame
 class EndGameKPKB : public EndGameTablebase {
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 protected:
   bool isUsableMove(const Move &m) const;
 #endif
@@ -39,7 +39,7 @@ public:
 
 // Define best moves in King-Pawn/King-Knight endgame
 class EndGameKPKN : public EndGameTablebase {
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 protected:
   bool isUsableMove(const Move &m) const;
 #endif
@@ -53,7 +53,7 @@ public:
 
 // Define best moves in King-Pawn/King-Pawn endgame
 class EndGameKPKP : public EndGameTablebase {
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 protected:
   bool isUsableMove(const Move &m) const;
 #endif
@@ -67,7 +67,7 @@ public:
 
 // Define best moves in King-Pawn-Pawn/King endgame
 class EndGameKPPK : public EndGameTablebase {
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 protected:
   bool isUsableMove(const Move &m) const;
 #endif

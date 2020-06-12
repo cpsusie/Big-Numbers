@@ -2,7 +2,7 @@
 
 //#define __USETABLECONVERSION
 
-#ifdef __USETABLECONVERSION
+#if defined(__USETABLECONVERSION)
 
 #define POSTOINDEX(p) PlayerOccupationMap::posToIndex[p]
 #define INDEXTOPOS(i) PlayerOccupationMap::indexToPos[i]
@@ -25,7 +25,7 @@ private:
     m_set &= ~((UINT64)1<<index);
   }
 public:
-#ifdef __USETABLECONVERSION
+#if defined(__USETABLECONVERSION)
   static const char posToIndex[120], indexToPos[64];
 #endif
   inline void add(BYTE pos) {
@@ -51,14 +51,14 @@ private:
   const UINT        *m_set; // dont change layout of this class. see asm-code below
   int                m_start, m_next;
   bool               m_hasNext;
-#ifdef _DEBUG
+#if defined(_DEBUG)
   const PlayerOccupationMap &m_map; // must be last
 #endif
 
 public:
   inline PieceIterator(const PlayerOccupationMap &map, int startPos)
     : m_set((UINT*)&map.m_set)
-#ifdef _DEBUG
+#if defined(_DEBUG)
     , m_map(map)
 #endif
   {

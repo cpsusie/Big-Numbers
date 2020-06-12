@@ -2,7 +2,7 @@
 #include <InputValue.h>
 #include "SqlRegex.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 void SqlRegex::testSqlRegex() {
   for(;;) {
     String pattern = inputValue<String>(_T("Enter pattern:"));

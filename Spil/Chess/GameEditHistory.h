@@ -37,7 +37,7 @@ private:
   }
   Game &setGame(const Game &game);
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
   void checkInvariant(const TCHAR *method, bool enter) const;
 #endif
 
@@ -60,7 +60,7 @@ public:
   bool canUndo() const;
   bool canRedo() const;
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
   void printState(const TCHAR *method) const;
 #endif
 };

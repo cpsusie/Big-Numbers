@@ -58,12 +58,12 @@ namespace TestBigArray {
     }
 
     void list() const;
-#ifdef _DEBUG
+#if defined(_DEBUG)
     void show() const;
 #endif
   };
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
   void TestArray::show() const {
     _tprintf(_T("\n"));
     //  list();
@@ -75,7 +75,7 @@ namespace TestBigArray {
   void TestArray::add(int value) {
     m_bigArray.add(BigElement(value));
     m_refArray.add(value);
-#ifdef _DEBUG
+#if defined(_DEBUG)
     check(_T("add"));
     show();
 #endif
@@ -84,7 +84,7 @@ namespace TestBigArray {
   void TestArray::set(size_t index, int value) {
     m_bigArray[index] = BigElement(value);
     m_refArray[index] = value;
-#ifdef _DEBUG
+#if defined(_DEBUG)
     check(_T("set"));
     show();
 #endif
@@ -93,7 +93,7 @@ namespace TestBigArray {
   void TestArray::remove(size_t index, size_t count) {
     m_bigArray.remove(index, count);
     m_refArray.remove(index, count);
-#ifdef _DEBUG
+#if defined(_DEBUG)
     check(_T("remove"));
     show();
 #endif
@@ -102,14 +102,14 @@ namespace TestBigArray {
   void TestArray::clear() {
     m_bigArray.clear();
     m_refArray.clear();
-#ifdef _DEBUG
+#if defined(_DEBUG)
     check(_T("clear"));
     show();
 #endif
   }
 
   void TestArray::check(const TCHAR *function) const {
-#ifdef _DEBUG
+#if defined(_DEBUG)
     Console::setCursorPos(0, 20);
     Console::clearLine(20);
 #endif
@@ -131,7 +131,7 @@ namespace TestBigArray {
                                  , e.toString().cstr()
                                  );
         OUTPUT(_T("%s"), msg.cstr());
-#ifdef _DEBUG
+#if defined(_DEBUG)
         //      show();
         pause();
 #endif
@@ -160,7 +160,7 @@ namespace TestBigArray {
         try {
           TestArray ba;
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define COUNT 20
 #else
 #define COUNT 108000

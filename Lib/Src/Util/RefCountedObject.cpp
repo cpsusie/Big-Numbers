@@ -1,7 +1,7 @@
 #include "pch.h"
 #include <RefCountedObject.h>
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 
 #include <DebugLog.h>
 

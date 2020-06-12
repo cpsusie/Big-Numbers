@@ -32,7 +32,7 @@ static void testConversions(BYTE flags = CONV_ALL) {
 
 static void testGetFirst32()           { TesterJob::addFunctionTest(new RawFunctionTest(_T("getFirst32"          ), testGetFirst32));           }
 static void testGetFirst64()           { TesterJob::addFunctionTest(new RawFunctionTest(_T("getFirst64"          ), testGetFirst64));           }
-#ifdef IS64BIT
+#if defined(IS64BIT)
 static void testGetFirst128()          { TesterJob::addFunctionTest(new RawFunctionTest(_T("getFirst128"         ), testGetFirst128));          }
 #endif
 static void testGetDecimalDigitCount() { TesterJob::addFunctionTest(new RawFunctionTest(_T("getDecimalDigitCount"), testGetDecimalDigitCount)); }
@@ -62,7 +62,7 @@ static inline Double80 quot(const Double80 &x, const Double80 &y) { return x / y
 void testGetFirst() {
   testGetFirst32();
   testGetFirst64();
-#ifdef IS64BIT
+#if defined(IS64BIT)
   testGetFirst128();
 #endif
 }
@@ -282,7 +282,7 @@ static double getPiTimeEstimate(int decimals) {
 }
 
 static void initConsole() {
-#ifdef _DEBUG
+#if defined(_DEBUG)
   tcout << _T("debuggerPresent:") << getDebuggerPresent() << endl;
 #endif
   int winW, winH;
@@ -322,7 +322,7 @@ void testBigReal(int threadCount, bool stopOnError) {
   testGetFirst();
   testMultDivBy2();
 
-#ifdef TEST_ALL
+#if defined(TEST_ALL)
   testConstructors();
   testConversions();
 
@@ -340,7 +340,7 @@ void testBigReal(int threadCount, bool stopOnError) {
   testQuot();
   testQuot3();
 
-#ifdef TEST_ALL
+#if defined(TEST_ALL)
   testAssignOperators();
   testQuotLinear32();
   testQuotLinear64();

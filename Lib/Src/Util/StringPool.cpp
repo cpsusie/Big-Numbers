@@ -226,7 +226,7 @@ void StringPool::load(ByteInputStream &s) {
   m_textData.load(s);
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 
 #include <DebugLog.h>
 

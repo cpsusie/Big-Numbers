@@ -1,6 +1,6 @@
 #pragma once
 
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
 
 #include <ExternProcess.h>
 #include <InputThread.h>
@@ -158,7 +158,7 @@ private:
 
   // timeout in milliseconds. If INFINTE, thread is blocked until input arrives
   String getLine(int timeout = INFINITE); // throw TimeoutException on timeout
-#ifdef _DEBUG
+#if defined(_DEBUG)
   void send(_In_z_ _Printf_format_string_ TCHAR const * const format,...) const;
 #endif
   void   setDebug(bool on);

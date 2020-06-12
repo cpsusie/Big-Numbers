@@ -1,6 +1,6 @@
 #pragma once
 
-#ifndef _DEBUG
+#if !defined(_DEBUG)
 #error "Must compile with _DEBUG"
 #endif
 

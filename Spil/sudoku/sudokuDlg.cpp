@@ -6,7 +6,7 @@
 #include "SelectGameDlg.h"
 #include "LevelDlg.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 

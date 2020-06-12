@@ -14,7 +14,7 @@ CompareJob::CompareJob(CWinDiffDoc *doc, bool recompare)
   addStep(0,EMPTYSTRING);
 }
 
-#ifdef MEASURE_STEPTIME
+#if defined(MEASURE_STEPTIME)
 static double getTotalTime(const CompactArray<_ProgressStep>  &a) {
   double sum = 0;
   for(int i = 1; i < a.size(); i++) {
@@ -25,7 +25,7 @@ static double getTotalTime(const CompactArray<_ProgressStep>  &a) {
 #endif
 
 CompareJob::~CompareJob() {
-#ifdef MEASURE_STEPTIME
+#if defined(MEASURE_STEPTIME)
   Timestamp now;
   m_stepArray[m_currentStep].m_endTime = now;
   const double totalTime = getTotalTime(m_stepArray);
@@ -48,7 +48,7 @@ String CompareJob::getProgressMessage(UINT index) {
 
 void CompareJob::updateProgressMessage() {
   m_gate.wait();
-#ifdef MEASURE_STEPTIME
+#if defined(MEASURE_STEPTIME)
   m_progressMessage = format(_T("Step %2d/%2d (q=%.1lf%%:%s")
                             ,m_currentStep, m_stepArray.size()-1
                             ,m_q*100
@@ -64,14 +64,14 @@ void CompareJob::incrProgress() {
   if(m_currentStep >= m_stepArray.size()) {
     return;
   }
-#ifdef MEASURE_STEPTIME
+#if defined(MEASURE_STEPTIME)
   const Timestamp now;
   m_stepArray[m_currentStep].m_endTime = now;
 #endif
 
   m_timeUnitsDone += m_stepArray[m_currentStep++].m_timeUnits;
 
-#ifdef MEASURE_STEPTIME
+#if defined(MEASURE_STEPTIME)
   m_stepArray[m_currentStep].m_startTime = now;
 #endif
 

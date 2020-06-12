@@ -4,7 +4,7 @@
 
 /* DEBUG_ARRAYIMPL-klasse til optælling af kald til ArrayImpl */
 //#define DEBUG_ARRAYIMPL
-#ifdef DEBUG_ARRAYIMPL
+#if defined(DEBUG_ARRAYIMPL)
 
 class AutoCounter {
 public:
@@ -50,7 +50,7 @@ void ArrayImpl::setCapacity(size_t capacity) {
     SAFEDELETEARRAY(m_elem);
     m_elem = newBuffer;
 
-#ifdef DEBUG_ARRAYIMPL
+#if defined(DEBUG_ARRAYIMPL)
     if(capacity > m_capacity)
       resizeUpCounter++;
     else
@@ -71,7 +71,7 @@ void ArrayImpl::init(const AbstractObjectManager &objectManager, size_t size, si
 
 //  memset(m_elem,0,m_capacity * sizeof(m_elem[0]));
   m_size = size;
-#ifdef DEBUG_ARRAYIMPL
+#if defined(DEBUG_ARRAYIMPL)
   initcounter++;
 #endif
 }
@@ -81,7 +81,7 @@ ArrayImpl::~ArrayImpl() {
   SAFEDELETE(m_objectManager);
   SAFEDELETEARRAY(m_elem);
 
-#ifdef DEBUG_ARRAYIMPL
+#if defined(DEBUG_ARRAYIMPL)
   descounter++;
 #endif
 }

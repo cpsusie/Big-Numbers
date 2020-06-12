@@ -375,7 +375,7 @@ public:
   static int getMethodCount();
 };
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 bool debugCheckOrder(const TCHAR *fileName, int line, void *base, int n, char *p1, char *p2);
 #define CHECKORDER(p1,p2) debugCheckOrder(__FILE__,__LINE__, base, nelem, p1, p2)
 #else

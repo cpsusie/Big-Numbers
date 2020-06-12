@@ -200,7 +200,7 @@ void VirtualMachine::checkRange(double minvalue, double maxvalue) {
   }
 }
 
-#ifdef __NEVER__
+#if defined(__NEVER__)
 static void checkhostvartype(sqlapi_varlist &hostvar, DbFieldType expectedtype) {
   /* It should be checked, that the hostvar-type is the same as in the
      SqlApiBindStmt. The user, could have changed the type, in the file generated

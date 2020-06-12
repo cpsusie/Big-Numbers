@@ -10,7 +10,7 @@
 #include "ProfileDlg.h"
 #include "D3FunctionPlotterDlg.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -101,12 +101,12 @@ BOOL CD3FunctionPlotterDlg::OnInitDialog() {
 
   String title = getWindowText(this);
   String architecture, compileMode;
-#ifdef IS32BIT
+#if defined(IS32BIT)
   architecture = _T("x86");
 #else
   architecture = _T("x64");
 #endif // IS32BIT
-#ifdef _DEBUG
+#if defined(_DEBUG)
   compileMode = _T("Debug");
 #else
   compileMode = _T("Release");

@@ -2,7 +2,7 @@
 
 //#define USE_COMPACTSTACK
 
-#ifdef USE_COMPACTSTACK
+#if defined(USE_COMPACTSTACK)
 #include <CompactStack.h>
 #else
 #include <Stack.h>
@@ -55,7 +55,7 @@ private:
   char                      m_colh[BOARDWIDTH];
   static long               m_evalCount;
   static double             m_evaluationTime;
-#ifdef USE_COMPACTSTACK
+#if defined(USE_COMPACTSTACK)
   static CompactStack<Game> m_gameStack;
 #else
   static Stack<Game>        m_gameStack;

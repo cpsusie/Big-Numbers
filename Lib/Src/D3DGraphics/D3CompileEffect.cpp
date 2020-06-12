@@ -5,7 +5,7 @@ LPD3DXEFFECT compileEffect(LPDIRECT3DDEVICE device, const String &srcText, Strin
   LPD3DXEFFECT effect         = NULL;
   LPD3DXBUFFER compilerErrors = NULL;
   DWORD        flags          = D3DXFX_NOT_CLONEABLE;
-#ifdef D3DXFX_LARGEADDRESS_HANDLE
+#if defined(D3DXFX_LARGEADDRESS_HANDLE)
   flags |= D3DXFX_LARGEADDRESSAWARE;
 #endif
   USES_CONVERSION;

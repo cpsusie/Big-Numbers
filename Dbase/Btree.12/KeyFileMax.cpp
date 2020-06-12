@@ -18,7 +18,7 @@ bool KeyFile::pageSearchMaxLE(KeyPageAddr addr, KeyType &key, UINT fieldCount) {
 
   const int i = page.searchMaxIndex(key, m_keydef, fieldCount);
 
-#ifdef DEBUG
+#if defined(DEBUG)
   _tprintf(_T("maxle:page %s i:%d\n"),toString(addr).cstr(),i);
 #endif
 
@@ -45,7 +45,7 @@ bool KeyFile::pageSearchMaxLT(KeyPageAddr addr, KeyType &key, UINT fieldCount) {
   int i = page.searchMinIndex(key, m_keydef, fieldCount);
   if(i > 0) i--;
 
-#ifdef DEBUG
+#if defined(DEBUG)
   _tprintf(_T("maxlt:page %s:%d\n"),toString(addr).cstr(),i);
 #endif
 

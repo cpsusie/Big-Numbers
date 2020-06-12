@@ -8,7 +8,7 @@
 class Complex {
 public:
   Real re, im;
-#ifdef LONGDOUBLE
+#if defined(LONGDOUBLE)
   inline Complex(double _re, double _im = 0) : re(_re), im(_im) {
   }
 #endif
@@ -147,7 +147,7 @@ String toString(const Complex &c, StreamSize precision=6, StreamSize width=0, Fo
 Complex strtoc(const char    *s, char    **end);
 Complex wcstoc(const wchar_t *s, wchar_t **end);
 
-#ifdef _UNICODE
+#if defined(_UNICODE)
 #define _tcstoc wcstoc
 #else
 #define _tcstoc strtoc

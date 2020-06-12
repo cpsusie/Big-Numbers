@@ -1664,7 +1664,7 @@ bool TextView::attributeMatch(const FindParameters &param, int index) const {
 
 // --------------------------------- debug functions -----------------------------------
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 
 String LineSegments ::toString() const {
   if(m_segments) {

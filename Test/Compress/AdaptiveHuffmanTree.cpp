@@ -15,7 +15,7 @@ void AdaptivHuffmanTree::compress(ResetableByteInputStream &input, ByteOutputStr
   BitOutputStream          out(outc);
 
   int c;
-#ifdef DEBUGMODULE
+#if defined(DEBUGMODULE)
   dump();
 #endif
   while((c = in.getByte()) != EOF) {
@@ -23,7 +23,7 @@ void AdaptivHuffmanTree::compress(ResetableByteInputStream &input, ByteOutputStr
     encode(out,c);
     updateModel(c);
 
-#ifdef DEBUGMODULE
+#if defined(DEBUGMODULE)
   dump();
 #endif
 //    check();

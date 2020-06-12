@@ -20,7 +20,7 @@ public:
 
 // Define best moves in King-Pawn/King endgame
 class EndGameKPK : public EndGameTablebase {
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 protected:
   bool isUsableMove(const Move &m) const;
 #endif

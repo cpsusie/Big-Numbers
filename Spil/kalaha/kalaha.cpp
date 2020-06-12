@@ -296,7 +296,7 @@ static int maximize( int c_min, int depth ) {
 
       do_move(p);
 
-#ifdef DEBUG
+#if defined(DEBUG)
 message( depth,depth,"%*.*sA[%2d]%d %2d\n", depth, depth, " ", c_min, p, v );
 #endif
 
@@ -311,7 +311,7 @@ message( depth,depth,"%*.*sA[%2d]%d %2d\n", depth, depth, " ", c_min, p, v );
 
         done = TRUE;
 
-#ifdef DEBUG
+#if defined(DEBUG)
 message( depth,depth,"%*.*sA-Cut[%2d]C%d %2d\n", depth, depth, "-", c_min, p, v );
 #endif
 
@@ -351,7 +351,7 @@ static int minimize( int c_max, int depth ) {
 
       do_move(p);
 
-#ifdef DEBUG
+#if defined(DEBUG)
 message( depth,depth,"%*.*sB[%2d]%d %2d\n", depth, depth, " ", c_max, p, v );
 #endif
 
@@ -365,7 +365,7 @@ message( depth,depth,"%*.*sB[%2d]%d %2d\n", depth, depth, " ", c_max, p, v );
 
         done = TRUE;
 
-#ifdef DEBUG
+#if defined(DEBUG)
 message( depth,depth,"%*.*sB-Cut[%2d]C%d %2d\n", depth, depth, "-", c_max, p, v );
 #endif
 

@@ -88,7 +88,7 @@ int DataFile::freeKeyCmpIns( const FreeKey &key1, const FreeKey &key2) const {
 //#define FREEPAGE_ITEMCOUNT(page) (page).m
 //#define FREEPAGE_P0(page)        (page).p0
 
-#ifdef DEBUG_FREELIST
+#if defined(DEBUG_FREELIST)
 
 void DataFile::listFreeList() {
   _tprintf(_T("freelist:("));
@@ -120,7 +120,7 @@ DbAddr DataFile::dataFetchFreePage() {
       return DB_NULLADDR;
     }
   }
-#ifdef DEBUG_FREELIST
+#if defined(DEBUG_FREELIST)
   _tprintf(_T("fetched FreePage addr %s"),toString(addr).cstr());
   listFreeList();
 #endif
@@ -134,7 +134,7 @@ void DataFile::dataReleaseFreePage(DbAddr addr) {
   page.setChild(0,getFreeList());
   write(addr, &page, sizeof(page)); // page has been logged
   m_dh.m_freeList = addr;
-#ifdef DEBUG_FREELIST
+#if defined(DEBUG_FREELIST)
   _tprintf(_T("released FreePage addr %s "),toString(addr).cstr());
   listFreeList();
 #endif

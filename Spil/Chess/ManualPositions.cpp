@@ -2,7 +2,7 @@
 #include <io.h>
 #include "EndGameUtil.h"
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 
 String AllManualPositions::getFileName() { // static
   return getResourceFileName(_T("ManualPositions.txt"));

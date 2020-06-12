@@ -15,7 +15,7 @@ public:
   FileContent &save(const String     &fileName);  // return this
   FileContent &save(FILE             *f       );  // return this
   FileContent &save(ByteOutputStream &out     );  // return this
-#ifdef UNICODE
+#if defined(UNICODE)
   String converToString(UINT codePage = CP_UTF8) const;
 #else
   String converToString() const;

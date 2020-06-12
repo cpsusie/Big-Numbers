@@ -1,6 +1,6 @@
 #include "pch.h"
 
-#ifdef __NEVER__
+#if defined(__NEVER__)
 
 BigReal &BigReal::shortProductNoZeroCheck(const BigReal &x, const BigReal &y, size_t loopCount) { // version 1
   return (s_useShortProdReferenceVersion) ? shortProductNoZeroCheckReference(x, y,loopCount) : shortProductNoZeroCheckDebug(x, y, loopCount);

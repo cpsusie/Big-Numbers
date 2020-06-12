@@ -2,7 +2,7 @@
 #include "CaptureDoc.h"
 #include "CaptureView.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -81,7 +81,7 @@ void CCaptureView::OnEndPrinting(CDC *pDC, CPrintInfo *pInfo) {
   m_printInfo = NULL;
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 void CCaptureView::AssertValid() const {
   CScrollView::AssertValid();
 }

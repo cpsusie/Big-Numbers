@@ -7,7 +7,7 @@
 #include "WinDiffDoc.h"
 #include "WinDiffView.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -134,7 +134,7 @@ void CWinDiffApp::addToRecentFileList(LPCTSTR lpszPathName) {
     // Call the base class
     __super::AddToRecentFileList(lpszPathName);
   } catch (CException *e) {
-#ifdef _DEBUG
+#if defined(_DEBUG)
     TCHAR strCause[1000];
     e->GetErrorMessage(strCause, ARRAYSIZE(strCause));
     debugLog(_T("Exception in %s: %s.  -- Ignoring\n"), __TFUNCTION__, strCause);

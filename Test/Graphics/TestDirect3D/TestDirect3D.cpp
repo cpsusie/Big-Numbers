@@ -2,7 +2,7 @@
 #include "TestDirect3D.h"
 #include "TestDirect3DDlg.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 

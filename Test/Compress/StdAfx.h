@@ -1,6 +1,6 @@
 #pragma once
 
-#ifndef VC_EXTRALEAN
+#if !defined(VC_EXTRALEAN)
 #define VC_EXTRALEAN            // Exclude rarely-used stuff from Windows headers
 #endif
 

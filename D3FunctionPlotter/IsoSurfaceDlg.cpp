@@ -2,7 +2,7 @@
 #include <FileNameSplitter.h>
 #include "IsoSurfaceDlg.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -178,7 +178,7 @@ void CIsoSurfaceDlg::enableTimeFields() {
   GetDlgItem(IDC_EDIT_TIMETO        )->EnableWindow(enable);
   GetDlgItem(IDC_EDIT_FRAMECOUNT    )->EnableWindow(enable);
   setWindowText(this, IDC_STATIC_FUNCTION, enable ? _T("&S(t,x,y,z) =") : _T("&S(x,y,z) ="));
-#ifndef DEBUG_POLYGONIZER
+#if !defined(DEBUG_POLYGONIZER)
   const bool enableDebugPolygonizer = false;
 #else
   const bool enableDebugPolygonizer = !enable;

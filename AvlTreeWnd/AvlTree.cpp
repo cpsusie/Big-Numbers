@@ -666,7 +666,7 @@ void AvlTree::animateTransition() {
       }
     }
 
-#ifdef __NEVER
+#if defined(__NEVER)
     double startTime = getProcessTime();
 #endif
 
@@ -675,7 +675,7 @@ void AvlTree::animateTransition() {
       Sleep((DWORD)sleepTime);
     }
 
-#ifdef __NEVER
+#if defined(__NEVER)
     const double loopTime = (getProcessTime() - startTime) / 1000000;
     m_avlGraphics->getWindow()->MessageBox(
                format(_T("size:%d, loopTime:%6.2lf sec, #loops:%d, loopTime/#loops = painttime pr. picture:%6.2lf msec")

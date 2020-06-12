@@ -47,7 +47,7 @@ private:
   CDC              m_workDC;
   CBitmap          m_workBitmap;
   CRect            m_workRect;
-#ifdef _DEBUG
+#if defined(_DEBUG)
   String           m_debugString;
 #endif
   void createWorkDC(const CSize &size);
@@ -154,7 +154,7 @@ public:
   }
   CHexViewView &resetDigitIndex();
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
   const String &getDebugString() const {
     return m_debugString;
   }
@@ -166,7 +166,7 @@ public:
 
 public:
   virtual ~CHexViewView();
-#ifdef _DEBUG
+#if defined(_DEBUG)
   virtual void AssertValid() const;
   virtual void Dump(CDumpContext& dc) const;
 #endif
@@ -183,7 +183,7 @@ protected:
     DECLARE_MESSAGE_MAP()
 };
 
-#ifndef _DEBUG  // debug version in hexviewView.cpp
+#if !defined(_DEBUG  )// debug version in hexviewView.cpp
 inline CHexViewDoc *CHexViewView::GetDocument()
    { return (CHexViewDoc*)m_pDocument; }
 #endif

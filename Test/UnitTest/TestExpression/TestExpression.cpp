@@ -66,7 +66,7 @@ namespace TestExpression {
 
 //#define GENERATE_LISTFILES
 
-#ifdef GENERATE_LISTFILES
+#if defined(GENERATE_LISTFILES)
 #define COND_MKFOPEN(...) MKFOPEN(__VA_ARGS__)
 #define FPRINTF(...) _ftprintf(__VA_ARGS__)
 #else
@@ -168,7 +168,7 @@ namespace TestExpression {
     TEST_METHOD(ExpressionTestEvaluate) {
       ExpressionTest::startEvaluateTest(OUTPUT);
       FPU::init();
-#ifdef TRACE_MEMORY
+#if defined(TRACE_MEMORY)
 //redirectDebugLog();
 #endif
       try {
@@ -177,7 +177,7 @@ namespace TestExpression {
         for(UINT i = 0; i < n; i++) {
           ExpressionTest &test = *testArray[i];
           const String    expr = test.getExpr();
-#ifdef TRACE_MEMORY
+#if defined(TRACE_MEMORY)
           debugLog(_T("testcase %3d:<%-50s>\n"),i,expr.cstr());
 #endif
           INFO(_T("Test[%d]:%s"), i, expr.cstr());
@@ -521,7 +521,7 @@ namespace TestExpression {
       }
     }
 
-#ifdef TEST_DERIVATIVES
+#if defined(TEST_DERIVATIVES)
     TEST_METHOD(ExpressionTestDerive) {
       ExpressionTest::startDeriveTest(OUTPUT);
       FPU::init();
@@ -570,7 +570,7 @@ namespace TestExpression {
             Real       relDiff            = 0;
 
 #define USE_ABSERROR
-#ifdef USE_ABSERROR
+#if defined(USE_ABSERROR)
 #define CALCERROR(x,x0) fabs((x)-(x0))
 #else
 #define CALCERROR(x,x0) relativeDiff(x,x0)

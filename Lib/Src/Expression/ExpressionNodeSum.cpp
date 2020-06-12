@@ -7,7 +7,7 @@ namespace Expr {
 ExpressionNodeSum::ExpressionNodeSum(ParserTree *tree, const AddentArray &addentArray)
 : ExpressionNodeTree(tree, SUM, addentArray) {
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
   validateNodeArray(addentArray);
 #endif // _DEBUG
 

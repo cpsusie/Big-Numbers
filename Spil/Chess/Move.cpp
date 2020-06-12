@@ -19,7 +19,7 @@ Move &Move::setNoMove() {
   return *this;
 }
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 Move Move::makeBackMove() const {
   Move result(*this);
   result.swapFromTo();

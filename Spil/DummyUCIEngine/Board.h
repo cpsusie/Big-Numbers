@@ -81,7 +81,7 @@ typedef enum {
  ,GR_FIFTYMOVES
 } GameResult;
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 const TCHAR *getSideStr(int side);          // white,black
 const TCHAR *getPieceName( char pieceType); // king,queen,rook,...
 String       getPieceName1(char piece);     // white king, white queen...black king,black queen...
@@ -169,12 +169,12 @@ public:
   }
 };
 
-#ifdef USE_KNIGHTBONUS
+#if defined(USE_KNIGHTBONUS)
 
 class PlayerConfig {
 private:
   static char knightBonus[7][7];
-#ifdef _DEBUG
+#if defined(_DEBUG)
   static int _knightBonus(int pos, int king) {
     const int score = knightBonus[abs(GETROW(pos)-GETROW(king))][abs(GETCOL(pos)-GETCOL(king))];
     char str1[4],str2[4];
@@ -253,7 +253,7 @@ public:
     index = S;
   }
   static void ajourKnightBonusTable(int R);
-#ifdef _DEBUG
+#if defined(_DEBUG)
   String toString() const;
 #endif
 };
@@ -279,7 +279,7 @@ public:
   int           m_fiftyMoves, m_startMoveNumber;
   OccupationMap m_occupationMap;
 
-#ifdef USE_KNIGHTBONUS
+#if defined(USE_KNIGHTBONUS)
   PlayerConfig  m_player[2];
 #endif
 
@@ -297,7 +297,7 @@ public:
   void setupStartBoard();
   void setupBoard(Tokenizer &tok);
   void initOccupationMap();
-#ifdef USE_KNIGHTBONUS
+#if defined(USE_KNIGHTBONUS)
   void ajourKnightBonusTable() {
     PlayerConfig::ajourKnightBonusTable(m_R);
   };
@@ -313,7 +313,7 @@ public:
   }
 
   String getFENString(int historySize = 0) const;
-#ifdef _DEBUG
+#if defined(_DEBUG)
   void validate() const;
   String toString(int historySize = 0, int computerSide=BLACK, bool detailed=true) const;
 #endif
@@ -430,7 +430,7 @@ public:
   static inline const SearchStatistic &getSearchStatistic() {
     return s_searchStatistic;
   }
-#ifdef _DEBUG
+#if defined(_DEBUG)
   static void validate() {
     s_bc.validate();
   }

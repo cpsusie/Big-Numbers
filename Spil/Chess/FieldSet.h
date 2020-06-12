@@ -9,7 +9,7 @@ public:
   }
   explicit FieldSet(int f,...); // terminate with -1
   String toString() const;
-#ifdef _DEBUG
+#if defined(_DEBUG)
   void dump() const;
 #endif _DEBUG
 };

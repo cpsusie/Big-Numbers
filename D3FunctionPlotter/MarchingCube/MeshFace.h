@@ -11,12 +11,12 @@ public:
   const D3DXVECTOR3 *m_v[3];
   D3DXVECTOR3        m_planeNormal;
 
-#ifdef USE_MATERIAL
+#if defined(USE_MATERIAL)
   Material      m_mat;
 #endif
 
 public:
-#ifdef USE_MATERIAL
+#if defined(USE_MATERIAL)
   /* Constructs a mesh face as a triangle bound by the three vertices
    * v0, v1 and v2, and having material mat.
    */

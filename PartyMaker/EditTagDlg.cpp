@@ -5,7 +5,7 @@
 #include "SelectAttributeDlg.h"
 #include "mp3tag.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -95,7 +95,7 @@ BOOL CEditTagDlg::OnInitDialog() {
 
   CComboBox *genreCombo = getGenreCombo();
 
-#ifdef HAS_ID3TAGS
+#if defined(HAS_ID3TAGS)
   for(int i = 0; i < ID3_NR_OF_V1_GENRES; i++) {
     genreCombo->AddString(ID3_V1GENRE2DESCRIPTION(i));
   }
@@ -334,7 +334,7 @@ BOOL CEditTagDlg::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT *pResult) {
   if(ctrlId == IDC_ATTRIBUTELIST) {
     NMHEADER *pnmhdr = (NMHEADER*)lParam;
     int code = pnmhdr->hdr.code;
-#ifdef _DEBUG
+#if defined(_DEBUG)
     CClientDC dc(this);
     dc.TextOut(80,10,format(_T("code:%d     "), code).cstr());
 #endif

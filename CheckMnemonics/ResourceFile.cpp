@@ -48,7 +48,7 @@ ResourceFile::ResourceFile(const String &fileName) {
     if(!isOk()) {
       m_errors.addAll(tree.getErrors());
     }
-#ifdef DUMPTREE
+#if defined(DUMPTREE)
     tree.dumpTree(_T("c:\\temp\\checkMnemonicsTree.txt"));
 #endif
     if(isOk()) {

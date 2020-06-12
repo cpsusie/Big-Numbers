@@ -22,7 +22,7 @@ void   setThreadDescription(const String &description, HANDLE hThread = INVALID_
 // if hThread is not specified, currentThreadHandle is used
 String getThreadDescription(HANDLE hThread = INVALID_HANDLE_VALUE);
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define SETTHREADDESCRIPTION(description, ...) setThreadDescription(description, __VA_ARGS__)
 #else
 #define SETTHREADDESCRIPTION(description, ...)

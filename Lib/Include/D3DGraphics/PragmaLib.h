@@ -2,10 +2,10 @@
 
 #include <Config.h>
 
-#ifndef ISODEBUGGER
+#if !defined(ISODEBUGGER)
 #define D3TM_LIB_VERSION TM_LIB_VERSION
 #else // ISODEBUGGER
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define _D3CONFIGURATION_ "IsoDebuggerDebug/"
 #else // _DEBUG
 #define _D3CONFIGURATION_ "IsoDebuggerRelease/"
@@ -15,7 +15,7 @@
 
 #define D3DGRAPHICS_TM_LIB_VERSION D3TM_LIB_VERSION
 
-#ifdef GIVE_LINK_MESSAGE
+#if defined(GIVE_LINK_MESSAGE)
 #pragma message("link with " D3DGRAPHICS_TM_LIB_VERSION)
 #endif
 

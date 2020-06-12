@@ -6,7 +6,7 @@
 #include "TrigonometricMode.h"
 
 //#define LONGDOUBLE // defined in configurations "Debug long double" and "Release long double"
-#ifdef LONGDOUBLE
+#if defined(LONGDOUBLE)
 
 #include "Double80.h"
 #define Real Double80
@@ -103,7 +103,7 @@ template<typename T> T binomial(T n, T k) {
   return  factorial(n) / (factorial(k)* factorial(n - k));
 }
 
-#ifndef LONGDOUBLE
+#if !defined(LONGDOUBLE)
 #define REAL_PI          M_PI
 #define randReal         randDouble
 #define randGaussianReal randGaussian
@@ -121,7 +121,7 @@ inline Real getRealNaN() {
   return std::numeric_limits<Real>::quiet_NaN();
 }
 
-#ifndef LONGDOUBLE
+#if !defined(LONGDOUBLE)
 #define strtor strtod
 #define wcstor wcstod
 #else // LONGDOUBLE
@@ -129,7 +129,7 @@ inline Real getRealNaN() {
 #define wcstor wcstod80
 #endif // LONGDOUBLE
 
-#ifdef _UNICODE
+#if defined(_UNICODE)
 #define _tcstor wcstor
 #else
 #define _tcstor strtor

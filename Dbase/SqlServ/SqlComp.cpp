@@ -2,7 +2,7 @@
 
 void xstopcomp(const SyntaxNode *n, TCHAR *file, int line) {
   _tprintf(_T("----------------------------\n"));
-#ifdef TRACECOMP
+#if defined(TRACECOMP)
   dumpSyntaxTree(n);
 #endif
   throwSqlError(SQL_FATAL_ERROR,_T("comp stop in %s:%d"),file,line);
@@ -657,7 +657,7 @@ SqlCompiler::SqlCompiler(const Database            &db,
 {
   parse();
 
-#ifdef TRACECOMP
+#if defined(TRACECOMP)
   if(ok()) {
     dumpSyntaxTree(m_root);
     _tprintf(_T("tree:%s\n"),m_root->toString().cstr());
@@ -668,7 +668,7 @@ SqlCompiler::SqlCompiler(const Database            &db,
   if(ok()) m_code.appendDataToCode();
   dumpSyntaxTree(m_root);
 
-#ifdef TRACECOMP
+#if defined(TRACECOMP)
   if(ok()) {
     FILE *mm = fopen(_T("c:\\temp\\testcode.txt"),_T("a"));
 	  if(mm != NULL) {

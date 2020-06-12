@@ -5,7 +5,7 @@
 #include <MyUtil.h>
 #include "WinDiff.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #include <DebugLog.h>
 #endif _DEBUG
 

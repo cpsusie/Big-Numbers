@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#ifdef IS64BIT
+#if defined(IS64BIT)
 
 extern "C" void _swap(void *p1, void *p2, size_t w);
 #else

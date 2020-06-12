@@ -243,7 +243,7 @@ public:
   // for marking lastAcceptState as blinking
   static bool markState( HDC hdc, int state, bool marked);
   void shiftCurrentToNew();
-#ifdef _DEBUG
+#if defined(_DEBUG)
   static void startBlinking(CWnd *wnd, int state);
   static void stopBlinking();
   static void setBlinkersVisible(bool visible);

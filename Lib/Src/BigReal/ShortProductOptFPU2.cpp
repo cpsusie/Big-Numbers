@@ -2,7 +2,7 @@
 
 #if(SP_OPT_METHOD == SP_OPT_BY_FPU2)
 
-#ifdef IS64BIT
+#if defined(IS64BIT)
 #error SP_OPT_BY_FPU2 cannot be used in x64-mode
 #endif
 
@@ -10,7 +10,7 @@
 #error For SP_OPT_METHOD == SP_OPT_BY_FPU2 BIGREALBASE must be 100000000
 #endif
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 BigReal &BigReal::shortProductNoZeroCheckDebug(const BigReal &x, const BigReal &y, UINT loopCount) { // return *this
 #else
 BigReal &BigReal::shortProductNoZeroCheck(     const BigReal &x, const BigReal &y, UINT loopCount) { // return *this

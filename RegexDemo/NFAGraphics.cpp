@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "NFAPainter.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 
 void NFAPaint(CWnd *wnd, CDC &dc) {
   NFAPainter np(getClientRect(wnd).Size());

@@ -3,7 +3,7 @@
 BigReal fmod(const BigReal &x, const BigReal &y, DigitPool *digitPool) {
   _SELECTDIGITPOOL(x);
   BigReal remainder(pool);
-#ifdef IS32BIT
+#if defined(IS32BIT)
   quotRemainder(x, y, NULL, &remainder);
 #else
   quotRemainder128(x, y, NULL, &remainder);
@@ -38,7 +38,7 @@ BigReal quot(const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *di
   if(BigReal::compareAbs(x,y) == 0) {
     return BigReal(sign(x) * sign(y), pool);
   }
-#ifdef IS32BIT
+#if defined(IS32BIT)
   return BigReal::quotLinear64(x,y,f, pool);
 #else
   return BigReal::quotLinear128(x,y,f, pool);

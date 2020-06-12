@@ -3,7 +3,7 @@
 #define _0 pool->_0()
 #define _1 pool->_1()
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define APCAdjust(bias) adjustAPCResult(bias, __TFUNCTION__)
 #define THROWINVALIDBIAS(bias) throwInvalidBias(function,bias)
 static void throwInvalidBias(const TCHAR *function, char bias) {
@@ -120,7 +120,7 @@ BigReal BigReal::apcPow(const char bias, const BigReal &x, const BigInt &y, Digi
   }
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 BigReal &BigReal::adjustAPCResult(const char bias, const TCHAR *function) {
 #else
 BigReal &BigReal::adjustAPCResult(const char bias) {

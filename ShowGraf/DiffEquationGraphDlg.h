@@ -52,7 +52,7 @@ private:
   }
   CRect getUnionRect(const int *ids, int n);
   int   getMaxHeight(const int *ids, int n);
-  void  adjustTabOrder(const CompactIntArray &oldTabOrder);
+  void  adjustTabOrder(const TabOrder &tabs);
   bool  validate();
   void  showErrors(const CompilerErrorList &errorList);
   void  clearErrorList();

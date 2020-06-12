@@ -183,7 +183,7 @@ void ArithmeticCoder::inputCounts(BitInputStream &input) {
     last = input.getByte();
   }
   buildTotals(scaledCounts);
-#ifdef USE_FAST_SYMBOL_CONVERSION
+#if defined(USE_FAST_SYMBOL_CONVERSION)
   buildTotalsMap();
 #endif
 }
@@ -203,7 +203,7 @@ void ArithmeticCoder::flushEncoder(BitOutputStream &out) {
 }
 
 
-#ifdef USE_FAST_SYMBOL_CONVERSION
+#if defined(USE_FAST_SYMBOL_CONVERSION)
 
 void  ArithmeticCoder::buildTotalsMap() {
   m_totalsMap = new USHORT[0x10000];

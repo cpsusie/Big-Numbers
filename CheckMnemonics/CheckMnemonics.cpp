@@ -24,13 +24,13 @@ public:
 };
 
 void ResourceChecker::checkResources(const String &fileName) {
-#ifdef DUMPSYMBOLS
+#if defined(DUMPSYMBOLS)
   FILE *log = NULL;
 #endif
 
   try {
 
-#ifdef DUMPSYMBOLS
+#if defined(DUMPSYMBOLS)
     log = MKFOPEN(_T("c:\\temp\\checkMnemonics.txt"), _T("w"));
 #endif
     if(m_verbose) {
@@ -44,7 +44,7 @@ void ResourceChecker::checkResources(const String &fileName) {
     }
     if(!rf.isEmpty()) {
 
-#ifdef DUMPSYMBOLS
+#if defined(DUMPSYMBOLS)
       _ftprintf(log, _T("%s\n"), rf.toString().cstr());
 #endif
       rf.analyze();
@@ -54,12 +54,12 @@ void ResourceChecker::checkResources(const String &fileName) {
       }
     }
 
-#ifdef DUMPSYMBOLS
+#if defined(DUMPSYMBOLS)
     fclose(log);
 #endif
 
   } catch(Exception e) {
-#ifdef DUMPSYMBOLS
+#if defined(DUMPSYMBOLS)
     if(log) {
       fclose(log);
     }

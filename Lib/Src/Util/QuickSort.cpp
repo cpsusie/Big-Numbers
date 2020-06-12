@@ -122,11 +122,11 @@ static void quicksortNoRecursionAnyWidth(void *base, size_t nelem, size_t width,
 
 #pragma check_stack(off)
 
-#ifdef EPTR
+#if defined(EPTR)
 #undef EPTR
 #endif
 #define EPTR(n)    base+(n)
-#ifdef swap
+#if defined(swap)
 #undef swap
 #endif
 #define swap(p1,p2) { const T tmp = *p1; *p1 = *p2; *p2 = tmp; }

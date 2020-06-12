@@ -17,7 +17,7 @@ namespace TestStringSearch {
       int          ret;
 
       m_strSearch->compilePattern(pattern.cstr(), pattern.length(), true, ignoreCase ? String::upperCaseTranslate : NULL);
-  #ifdef _DEBUG
+  #if defined(_DEBUG)
       OUTPUT(_T("Pattern:<%s>%s"), pattern.cstr(), ignoreCase ? _T(" Ignore case") : EMPTYSTRING);
   #endif
       StringSearchAlgorithm<TCHAR> *a1 = m_strSearch->clone();
@@ -32,7 +32,7 @@ namespace TestStringSearch {
         throwException(_T("target has changed: <%s> -> <%s>"), saveTarget.cstr(), target.cstr());
       }
       SAFEDELETE(a1);
-  #ifdef _DEBUG
+  #if defined(_DEBUG)
       OUTPUT(_T("--------------------"));
   #endif
     }
@@ -67,7 +67,7 @@ namespace TestStringSearch {
         try {
           SearchTester(BMAutomate()).doTest();
         } catch (Exception e) {
-#ifdef _DEBUG
+#if defined(_DEBUG)
           OUTPUT(_T("Exception:%s"), e.what());
 #endif
           verify(false);
@@ -78,7 +78,7 @@ namespace TestStringSearch {
         try {
           SearchTester(KMPAutomate()).doTest();
         } catch (Exception e) {
-#ifdef _DEBUG
+#if defined(_DEBUG)
           OUTPUT(_T("Exception:%s"), e.what());
 #endif
           verify(false);

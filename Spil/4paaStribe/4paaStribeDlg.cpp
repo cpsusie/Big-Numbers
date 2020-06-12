@@ -2,7 +2,7 @@
 #include "4PaaStribe.h"
 #include "4PaaStribeDlg.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 

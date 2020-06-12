@@ -4,7 +4,7 @@
 #define TR_WTEXT 02 // text is treated as wchar_t
 #define TR_ATTR  04
 
-#ifdef UNICODE
+#if defined(UNICODE)
 #define TR_TEXT  TR_WTEXT
 #else
 #define TR_TEXT  TR_ATEXT
@@ -45,7 +45,7 @@ public:
   virtual void putRect(const CHAR_INFO *src, int op, int l, int t, int w, int h) = 0;       // src is w*h long
 };
 
-#ifdef UNICODE
+#if defined(UNICODE)
 #define CHARINFOTCHAR(charInfo) ((charInfo).Char.UnicodeChar)
 #else
 #define CHARINFOTCHAR(charInfo) ((charInfo).Char.AsciiChar)
@@ -68,7 +68,7 @@ public:
   int  atext(  int x, int y, WORD color, const char    *text);
   int  wtext(  int x, int y, WORD color, const wchar_t *text);
   inline int  text(   int x, int y, WORD color, const TCHAR   *text) {
-#ifdef UNICODE
+#if defined(UNICODE)
     return wtext(x,y,color,text);
 #else
     return atext(x,y,color,text);

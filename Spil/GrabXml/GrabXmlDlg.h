@@ -19,7 +19,7 @@ private:
 public:
   CGrabXmlDlg(CWnd *pParent = NULL);    // standard constructor
 
-#ifdef AFX_DESIGN_TIME
+#if defined(AFX_DESIGN_TIME)
   enum { IDD = IDD_GRABXML_DIALOG };
 #endif
 

@@ -614,7 +614,7 @@ int KeyFileDefinition::keynCmp(const KeyType &key1, const KeyType &key2, UINT fi
       break;
 
     case DBTYPE_DBADDR  :
-#ifdef BIG_DBADDR
+#if defined(BIG_DBADDR)
       { int c = memcmp(getFieldAddr(key1,i), getFieldAddr(key2,i),DBADDRSIZE); // Dont care about the numeric value of the addresses.
                                                                                // As long as memcmp gives the same result when comparing the
                                                                                // same 2 addresses, the tree will consistent.

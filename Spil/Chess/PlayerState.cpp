@@ -61,7 +61,7 @@ void PlayerState::clear() {
 
   memset(m_attackTable,0, sizeof(m_attackTable));
   m_checkingSDAPosition = -1;
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
   m_bishopFlags         = 0;
 #endif
   m_kingAttackState     = 0;
@@ -70,7 +70,7 @@ void PlayerState::clear() {
 
 PlayerState &PlayerState::makeLinks() {
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 
   Piece *next = NULL;
   for(int i = ARRAYSIZE(m_pieces); i--;) {
@@ -219,7 +219,7 @@ Piece *PlayerState::findUnusedPiece(PieceType pieceType) {
   return NULL;
 }
 
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
 
 ScoreEvaluator PlayerState::getScoreFunction() const {
   switch(getPieceCountOnBoard()) {
@@ -535,7 +535,7 @@ void PlayerState::validateAddPieceAtPosition(PieceType pieceType, int pos, bool 
   }
 }
 
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
 String PlayerStateToPush::pawnCountToString() const {
   String tmp;
   for(int i = 0; i < ARRAYSIZE(m_pawnCount); i++) {
@@ -613,7 +613,7 @@ void PlayerState::setKingAttackState() {
   }
 }
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 bool PlayerState::setKingAttackStateBackMove() {
   const FieldAttacks attacks = m_king->m_enemyState.m_attackTable[m_king->m_position];
   if(!attacks.m_isAttacked) {

@@ -67,7 +67,7 @@ void argvExpand(int &argc, char **&argv) {
   expandArgv(argc, argv);
 }
 
-#ifdef TEST
+#if defined(TEST)
 
 int _tmain(int argc, TCHAR **argv) {
   argvExpand(argc, argv);

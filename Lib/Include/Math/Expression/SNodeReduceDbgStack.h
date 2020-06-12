@@ -1,10 +1,10 @@
 #pragma once
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define USE_DEBUGSTRING
 #endif // _DEBUG
 
-#ifdef USE_DEBUGSTRING
+#if defined(USE_DEBUGSTRING)
 class UpdateableDebugStr {
 private:
   BYTE m_count;
@@ -36,11 +36,11 @@ public:
 #define ENABLEDEBUGSTRING( a)
 #endif  // USE_DEBUGSTRING
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define TRACE_REDUCTION_CALLSTACK
 #endif
 
-#ifdef TRACE_REDUCTION_CALLSTACK
+#if defined(TRACE_REDUCTION_CALLSTACK)
 
 #include <Stack.h>
 #include <PropertyContainer.h>

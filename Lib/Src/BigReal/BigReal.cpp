@@ -17,7 +17,7 @@ void BigReal::insertDigit(BRDigitType n) {
 // Assume _isnormal() && (count > 0). ie m_first != NULL (and m_last != NULL)
 void BigReal::insertZeroDigits(size_t count) {
   assert((count > 0) && !_isnormal());
-#ifdef USE_FETCHDIGITLIST
+#if defined(USE_FETCHDIGITLIST)
   if(count == 1) {
     Digit *p = newDigit();
     p->n     = 0;
@@ -65,7 +65,7 @@ void BigReal::insertAfter(Digit *p, BRDigitType n) {
 // Assume (count > 0) && p is a digit in digit-list of this.
 void BigReal::insertZeroDigitsAfter(Digit *p, size_t count) {
   assert((count > 0) && (p != NULL));
-#ifdef USE_FETCHDIGITLIST
+#if defined(USE_FETCHDIGITLIST)
   Digit *head = m_digitPool.fetchDigitList(count, 0), *last = head->prev, *q = p->next;
   if(last->next = q) q->prev = last; else m_last = last;
   (p->next = head)->prev = p;
@@ -97,7 +97,7 @@ void BigReal::insertZeroDigitsAfter(Digit *p, size_t count) {
 // Assume (count > 0) && p is a digit in digit-list of this.
 void BigReal::insertBorrowDigitsAfter(Digit *p, size_t count) {
   assert((count > 0) && (p != NULL));
-#ifdef USE_FETCHDIGITLIST
+#if defined(USE_FETCHDIGITLIST)
   Digit *head = m_digitPool.fetchDigitList(count, BIGREALBASE - 1), *last = head->prev, *q = p->next;
   if(last->next = q) q->prev = last; else m_last = last;
   (p->next = head)->prev = p;
@@ -159,7 +159,7 @@ void BigReal::trimTail() {
 
 BigReal &BigReal::copyDigits(const BigReal &src, size_t length) {
   assert(src._isnormal() && (m_first == NULL) && (m_last == NULL) && (length <= src.getLength()) && (length > 0));
-#ifdef USE_FETCHDIGITLIST
+#if defined(USE_FETCHDIGITLIST)
   Digit *dd = m_digitPool.fetchDigitList(length);
   (m_last   = dd->prev)->next = NULL;
   (m_first  = dd)->prev = NULL;
@@ -192,7 +192,7 @@ BigReal &BigReal::copyDigits(const BigReal &src, size_t length) {
 // Assume !_inormal() && src._isnormal()
 BigReal &BigReal::copyAllDigits(const BigReal &src) {
   assert(!_isnormal() && src._isnormal());
-#ifdef USE_FETCHDIGITLIST
+#if defined(USE_FETCHDIGITLIST)
   Digit *dd = m_digitPool.fetchDigitList(src.getLength());
   (m_last   = dd->prev)->next = NULL;
   (m_first  = dd)->prev = NULL;

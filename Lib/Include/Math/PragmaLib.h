@@ -2,7 +2,7 @@
 
 #include <Config.h>
 
-#ifdef LONGDOUBLE
+#if defined(LONGDOUBLE)
 #pragma comment(lib,TM_LIB_VERSION "LDMath.lib")
 #else
 #pragma comment(lib,TM_LIB_VERSION "Math.lib")

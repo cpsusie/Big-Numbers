@@ -27,7 +27,7 @@ void CellMaze::reduceCellMatrix() {
       }
     }
   }
-#ifdef _DEBUG
+#if defined(_DEBUG)
   debugLog(_T("reduceCellMatrix:Size:(%d,%d)")
           ,(int)m_cell.getRowCount(), (int)m_cell.getColumnCount()
           );
@@ -35,7 +35,7 @@ void CellMaze::reduceCellMatrix() {
 
   m_cell.setDimension(maxRow+1,maxColumn+1);
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
   debugLog(_T("->(%d,%d)\n")
           ,(int)m_cell.getRowCount(), (int)m_cell.getColumnCount()
           );
@@ -81,7 +81,7 @@ void CellMaze::reduceWallMatrix1(MazeWallMatrix &m) {
     }
   }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
   debugLog(_T("reduceWallMatrix1:%s. Size:(%d,%d)")
           ,m.getName().cstr()
           ,(int)m.getRowCount(), (int)m.getColumnCount()
@@ -90,7 +90,7 @@ void CellMaze::reduceWallMatrix1(MazeWallMatrix &m) {
 
   m.setDimension(min(m.getRowCount(), maxr+1), min(m.getColumnCount(), maxc+1));
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
   debugLog(_T("->(%d,%d)\n")
           ,(int)m.getRowCount(), (int)m.getColumnCount()
           );

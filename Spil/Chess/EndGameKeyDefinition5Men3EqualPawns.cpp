@@ -19,7 +19,7 @@ static EndGamePosIndex rangeStartTable[23];
 EndGameKeyDefinition5Men3EqualPawns::EndGameKeyDefinition5Men3EqualPawns(PieceKey pk234)
 : EndGameKeyDefinitionDupletsAllowed(pk234, pk234)
 {
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   setPawnsOwner();
 #endif
 
@@ -45,7 +45,7 @@ EndGameKeyDefinition5Men3EqualPawns::EndGameKeyDefinition5Men3EqualPawns(PieceKe
 */
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 
 static EndGamePosIndex encodeNoFlip(EndGameKey key) {
   int pi2 = EndGameKeyDefinition::s_pawnPosToIndex[key.getPosition(2)];
@@ -179,7 +179,7 @@ SymmetricTransformation EndGameKeyDefinition5Men3EqualPawns::getSymTransformatio
   return get5Men3EqualPawnsSymTransformation(key);
 }
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 
 void EndGameKeyDefinition5Men3EqualPawns::setPawnsOwner() {
   checkIsPawn(2, true);

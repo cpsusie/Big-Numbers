@@ -4,7 +4,7 @@
 
 /* DEBUG-klasse til optælling af kald til ListImpl */
 //#define DEBUG_LISTIMPL
-#ifdef DEBUG_LISTIMPL
+#if defined(DEBUG_LISTIMPL)
 
 class AutoCounter {
 public:
@@ -29,7 +29,7 @@ void ListImpl::init(AbstractObjectManager &objectManager) {
   m_first         = m_last = NULL;
   m_size          = 0;
   m_updateCount   = 0;
-#ifdef DEBUG_LISTIMPL
+#if defined(DEBUG_LISTIMPL)
   initcounter++;
 #endif
 }
@@ -38,7 +38,7 @@ ListImpl::~ListImpl() {
   clear();
   m_nodePool.releaseAll();
   SAFEDELETE(m_objectManager);
-#ifdef DEBUG_LISTIMPL
+#if defined(DEBUG_LISTIMPL)
   descounter++;
 #endif
 }

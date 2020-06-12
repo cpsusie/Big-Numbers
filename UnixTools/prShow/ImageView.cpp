@@ -4,7 +4,7 @@
 #include "ImageDoc.h"
 #include "ImageView.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -88,7 +88,7 @@ void CImageView::OnEndPrinting(CDC *pDC, CPrintInfo *pInfo) {
   m_printInfo = NULL;
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 void CImageView::AssertValid() const {
   CView::AssertValid();
 }

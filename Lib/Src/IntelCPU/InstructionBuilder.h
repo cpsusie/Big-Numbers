@@ -55,18 +55,18 @@ private:
   const BYTE   m_directionMask;
   // is MOD-REG-R/M byte added
   bool         m_modeByteCreated;
-#ifdef IS64BIT
+#if defined(IS64BIT)
   // See RexByte.h
   bool         m_hasRexByte;
   BYTE         m_rexByteIndex;
 #endif
-#ifdef _DEBUG
+#if defined(_DEBUG)
   const String m_debugStr;
 #endif // _DEBUG
   inline void init() {
     m_opcodePos       = 0;
     m_modeByteCreated = false;
-#ifdef IS64BIT
+#if defined(IS64BIT)
     m_hasRexByte      = false;
     m_rexByteIndex    = 0;
 #endif
@@ -176,13 +176,13 @@ public:
     return add(ins.getBytes(),ins.size());
   }
   inline bool hasRexByte() const {
-#ifdef IS32BIT
+#if defined(IS32BIT)
     return false;
 #else
     return m_hasRexByte;
 #endif
   }
-#ifdef IS64BIT
+#if defined(IS64BIT)
   // See RexByte.h
   InstructionBuilder &setRexBits(BYTE bits);
 #endif // IS64BIT
@@ -191,7 +191,7 @@ public:
     if(!hasWordSizePrefix()) {
       return *this;
     }
-#ifdef IS64BIT
+#if defined(IS64BIT)
     m_rexByteIndex++;
 #endif
     return prefix(0x66);

@@ -233,7 +233,7 @@ EndGameTablebase &EndGameTablebase::getInstanceByName(const String &name) { // s
 
 //#define LIST_MAPCAPACITY
 
-#ifdef TEST_HASHFACTOR
+#if defined(TEST_HASHFACTOR)
 
 #define LIST_MAPCAPACITY
 
@@ -263,7 +263,7 @@ public:
 class SignatureTablebaseMap : public CompactHashMap<PositionSignature, TablebaseWithSwap> {
 private:
 
-#ifdef LIST_MAPCAPACITY
+#if defined(LIST_MAPCAPACITY)
   void dump() const;
 #define DUMP() dump()
 #else
@@ -272,7 +272,7 @@ private:
 
   void init(int capacity);
 public:
-#ifndef TEST_HASHFACTOR
+#if !defined(TEST_HASHFACTOR)
   SignatureTablebaseMap() {
     init(707);
   }
@@ -297,7 +297,7 @@ void SignatureTablebaseMap::init(int capacity) {
   DUMP();
 }
 
-#ifdef TEST_HASHFACTOR
+#if defined(TEST_HASHFACTOR)
 SignatureTablebaseMap::SignatureTablebaseMap() {
   randomize();
   for(int t = 1; t < 300; t++) {
@@ -310,7 +310,7 @@ SignatureTablebaseMap::SignatureTablebaseMap() {
 }
 #endif
 
-#ifdef LIST_MAPCAPACITY
+#if defined(LIST_MAPCAPACITY)
 void SignatureTablebaseMap::dump() const {
   const int mcl = getMaxChainLength();
   if(mcl == 1) {

@@ -6,7 +6,7 @@
 #include <MFCUtil/resource.h>
 #include "EndGameTablebase.h"
 
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
 
 class DecompressSingleJob {
 private:
@@ -150,7 +150,7 @@ public:
 DecompressJob::DecompressJob(const EndGameTablebaseList &list) : m_jobQueue(list) {
   setSelectedLanguageForThread();
   m_startSumFileSize = m_jobQueue.getSumFileSize();
-#ifdef _DEBUG
+#if defined(_DEBUG)
   const int cpuCount = 1;
 #else
   const int cpuCount = getProcessorCount();

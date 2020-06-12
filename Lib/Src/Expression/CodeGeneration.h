@@ -12,19 +12,19 @@ namespace Expr {
 
 #define FPU_OPTIMIZE
 
-#ifdef IS64BIT
-#ifndef LONGDOUBLE
+#if defined(IS64BIT)
+#if !defined(LONGDOUBLE)
 #define USEXMMREG 1
 #endif // LONGDOUBLE
 #endif
 
-#ifdef IS64BIT
+#if defined(IS64BIT)
 typedef enum {
   RESULT_IN_FPU
  ,RESULT_IN_ADDRRDI
  ,RESULT_ON_STACK
  ,RESULT_IN_VALUETABLE
-#ifdef USEXMMREG
+#if defined(USEXMMREG)
  ,RESULT_IN_XMM  // XMM-register cannot be used for 80-bit floating points
 #endif // USEXMMREG
 } ExpressionDestinationType;
@@ -41,7 +41,7 @@ public:
     : m_type(type), m_offset(offset)
   {
   }
-#ifdef USEXMMREG
+#if defined(USEXMMREG)
   ExpressionDestination(const XMMRegister &xmmReg)
     : m_type(RESULT_IN_XMM)
     , m_register(&xmmReg)
@@ -59,7 +59,7 @@ public:
     assert(m_type == RESULT_IN_VALUETABLE);
     return m_offset;
   }
-#ifdef USEXMMREG
+#if defined(USEXMMREG)
   inline const XMMRegister &getXMMReg() const {
     assert(m_type == RESULT_IN_XMM);
     return *m_register;
@@ -71,7 +71,7 @@ public:
 #define DST_ADDRRDI             ,ExpressionDestination(RESULT_IN_ADDRRDI   , -1     )
 #define DST_ONSTACK(offs1)      ,ExpressionDestination(RESULT_ON_STACK     , offs1  )
 #define DST_INVALUETABLE(index) ,ExpressionDestination(RESULT_IN_VALUETABLE, index  )
-#ifdef USEXMMREG
+#if defined(USEXMMREG)
 #define DST_XMM(xmmReg)         ,ExpressionDestination(xmmReg )
 #endif
 #define DCL_DSTPARAM            ,const ExpressionDestination &dst
@@ -201,19 +201,19 @@ public:
     , m_instructionSize(insSize)
   {
   }
-#ifdef IS32BIT
+#if defined(IS32BIT)
   InstructionBase makeInstruction(const MachineCode &code) const;
 #endif
   String toString() const;
 };
 
-#ifndef LONGDOUBLE
+#if !defined(LONGDOUBLE)
 #define RealPtr QWORDPtr
 #else  // LONGDOUBLE
 #define RealPtr TBYTEPtr
 #endif // LONGDOUBLE
 
-#ifdef IS32BIT
+#if defined(IS32BIT)
 #define TABLEREF_REG ESI
 #define STACK_REG    ESP
 #else  // IS64BIT
@@ -255,7 +255,7 @@ private:
   bool                                               m_listEnabled;
   int                                                m_FPUOptimizeCount, m_lastFPUOptimizeCount;
 
-#ifdef IS64BIT
+#if defined(IS64BIT)
   BYTE                              m_stackTop;
   int                               m_functionTableStart; // Offset in bytes from code[0] to first function-reference
   typedef CompactKeyType<BuiltInFunction> FunctionKey;
@@ -277,7 +277,7 @@ private:
   void changeShortJumpToNearJump(JumpFixup &jf);
   void finalJumpFixup();
   void insertZeroes(UINT pos, UINT count);
-#ifdef IS32BIT
+#if defined(IS32BIT)
   void linkFunctionCall(const FunctionCallInfo &call);
 #endif // IS32BIT
   void linkFunctionCalls();
@@ -335,7 +335,7 @@ public:
   void emitLabel(CodeLabel label);
   void emitFPUOpMem(const OpcodeBase &opcode, const MemoryOperand &mem);
 
-#ifdef IS32BIT
+#if defined(IS32BIT)
   UINT emitCall(const FunctionCall &fc);
 #else // IS64BIT
 private:
@@ -356,7 +356,7 @@ public:
   inline MemoryRef getStackRef(int offset) const {
     return STACK_REG + offset;
   }
-#ifdef USEXMMREG
+#if defined(USEXMMREG)
   inline InstructionInfo emitXMMToMem(const XMMRegister &reg, const MemoryRef &mem) {
     return emit(MOVSD1,MMWORDPtr(mem), reg);
   }
@@ -382,7 +382,7 @@ public:
   void fixupJumps(const JumpList &list, bool b);
   // if jmpTo==-1, then use m_code->size()
   CodeGeneration &fixupJump(UINT index, int jmpTo = -1);
-#ifdef IS64BIT
+#if defined(IS64BIT)
   inline void resetStack(BYTE startOffset) {
     m_stackTop = startOffset;
   }

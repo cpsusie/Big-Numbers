@@ -150,7 +150,7 @@ char    *dbltoa(char    *dst, double x);
 // dst must point to memory with at least 26 free wchar_t
 wchar_t *dbltow(wchar_t *dst, double x);
 
-#ifdef _UNICODE
+#if defined(_UNICODE)
 #define flttot flttow
 #define dbltot dbltow
 #else
@@ -183,10 +183,10 @@ extern const double M_E;
 #define PERCENT( n,total) ((total)?((double)(n)*100 /(total)):100.0 )
 #define PERMILLE(n,total) ((total)?((double)(n)*1000/(total)):1000.0)
 
-#ifndef max
+#if !defined(max)
 #define max(x, y) ((x) > (y) ? (x) : (y))
 #endif
-#ifndef min
+#if !defined(min)
 #define min(x, y) ((x) < (y) ? (x) : (y))
 #endif
 

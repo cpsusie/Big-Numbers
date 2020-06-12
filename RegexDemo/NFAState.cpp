@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "NFA.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 
 String AcceptType::toString() const {
   if(!m_acceptAttribute) {
@@ -40,7 +40,7 @@ NFAState *NFAState::fetch(int edge) {  // static
   assert(s->m_edge == EDGE_UNUSED);
   assert(!s->isMarked());
   s->setEdge(edge);
-#ifdef _DEBUG
+#if defined(_DEBUG)
   s->m_patternCharIndex = -1;
   s_allocatedStates.add(s);
 #endif
@@ -56,7 +56,7 @@ void NFAState::release(NFAState *s) {  // static
 }
 
 void NFAState::releaseAll() {          // static
-#ifdef _DEBUG
+#if defined(_DEBUG)
   s_allocatedStates.clear();
 #endif
   s_stateManager.releaseAll();
@@ -100,7 +100,7 @@ void NFAState::copy(const NFAState &src) {
     assert(src.m_edge != EDGE_CHCLASS);
     m_charClass = NULL;
   }
-#ifdef _DEBUG
+#if defined(_DEBUG)
   m_patternCharIndex = src.m_patternCharIndex;
 #endif
 }
@@ -148,7 +148,7 @@ CharacterSet &NFAState::getCharacterSet() const {
   return *m_charClass;
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 String NFAState::toString() const {
   String result = format(_T("NFA state %3d "), m_id);
 

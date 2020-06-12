@@ -2,7 +2,7 @@
 #include <CompactStack.h>
 #include <MFCUtil/PixRect.h>
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define CHECKPOINTINSIDE(x,y) checkPoint(__TFUNCTION__, x, y);
 #else
 #define CHECKPOINTINSIDE(x,y)
@@ -91,7 +91,7 @@ void PixelAccessor::fill(const CPoint &p, D3DCOLOR color, ColorComparator &cmp) 
   }
 }
 
-#ifdef __NEVER__
+#if defined(__NEVER__)
 
 #define ASM_OPTIMIZED
 
@@ -107,7 +107,7 @@ void PixelAccessor::fill(const CPoint &p, D3DCOLOR color, ColorComparator &cmp) 
 #define RGB555_MAKE(r, g, b)      ((unsigned short) (((r) << 10) | ((g) << 5) | (b)))
 
 static WORD D3DColorToShortColor(D3DCOLOR color) {
-#ifndef ASM_OPTIMIZED
+#if !defined(ASM_OPTIMIZED)
   int r = RGB_GETRED(color)   >> 3;
   int g = RGB_GETGREEN(color) >> 2;
   int b = RGB_GETBLUE(color)  >> 3;
@@ -133,7 +133,7 @@ static WORD D3DColorToShortColor(D3DCOLOR color) {
 }
 
 static D3DCOLOR shortColorToD3DColor(WORD color) {
-#ifndef ASM_OPTIMIZED
+#if !defined(ASM_OPTIMIZED)
   int r = RGB565_GETRED(color)   << 3;
   int g = RGB565_GETGREEN(color) << 2;
   int b = RGB565_GETBLUE(color)  << 3;

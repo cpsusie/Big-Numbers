@@ -39,7 +39,7 @@ public:
     inline ShowFormat getShowFormat() const {
       return m_currentShowFormat;
     }
-#ifdef _DEBUG
+#if defined(_DEBUG)
     virtual void AssertValid() const;
     virtual void Dump(CDumpContext& dc) const;
 #endif

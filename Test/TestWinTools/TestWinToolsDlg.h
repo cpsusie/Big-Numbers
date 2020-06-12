@@ -10,7 +10,7 @@ private:
 public:
     CTestWinToolsDlg(CWnd *pParent = NULL); // standard constructor
 
-#ifdef AFX_DESIGN_TIME
+#if defined(AFX_DESIGN_TIME)
     enum { IDD = IDD_TESTWINTOOLS_DIALOG };
 #endif
 

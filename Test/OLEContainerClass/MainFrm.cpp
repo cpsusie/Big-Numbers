@@ -6,7 +6,7 @@
 
 #include "MainFrm.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -85,7 +85,7 @@ BOOL CMainFrame::PreCreateWindow(CREATESTRUCT &cs)
 /////////////////////////////////////////////////////////////////////////////
 // CMainFrame diagnostics
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 void CMainFrame::AssertValid() const {
     CFrameWnd::AssertValid();
 }

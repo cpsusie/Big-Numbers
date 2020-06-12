@@ -213,14 +213,14 @@ public:
   }
 
   inline T &operator()(size_t r, size_t c) {
-#ifdef _DEBUG
+#if defined(_DEBUG)
     checkIndex(r, c);
 #endif
     return m_a[index(r,c)];
   }
 
   inline const T &operator()(size_t r, size_t c) const {
-#ifdef _DEBUG
+#if defined(_DEBUG)
     checkIndex(r, c);
 #endif
     return m_a[index(r,c)];

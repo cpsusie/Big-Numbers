@@ -1070,7 +1070,7 @@ static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, d
       verify(d80 == 1);
 
       verify(FPU::getStackHeight() == 0);
-#ifdef IS32BIT
+#if defined(IS32BIT)
       for(int i = 1; i <= 8; i++) {
         __asm {
           fld x

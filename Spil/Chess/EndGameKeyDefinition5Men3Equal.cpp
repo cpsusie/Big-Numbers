@@ -66,7 +66,7 @@ EndGameKeyDefinition5Men3Equal::EndGameKeyDefinition5Men3Equal(PieceKey pk234)
 */
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 
 #define ENCODE_KK_OFFDIAG(          key)          return encode_kk_offdiag5m3e(          key)
 #define DECODE_KK_OFFDIAG(          key, index  )        decode_kk_offdiag5m3e(          key, index)
@@ -559,7 +559,7 @@ SymmetricTransformation EndGameKeyDefinition5Men3Equal::getSymTransformation(End
   return getSym8Transformation5Men3Equal(key);
 }
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 
 void EndGameKeyDefinition5Men3Equal::scanPositions(EndGameKeyWithOccupiedPositions &key, int pIndex, bool allPreviousOnDiag) const {
   switch(pIndex) {

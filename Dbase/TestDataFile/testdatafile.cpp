@@ -54,7 +54,7 @@ DbAddr getdbaddr(TCHAR *prompt) {
     TCHAR line[100];
     _tprintf(_T("%s"),prompt); GETS(line);
     DbAddr addr;
-#ifndef BIG_DBADDR
+#if !defined(BIG_DBADDR)
     if(_stscanf(line,_T("%ld"),&addr) == 1) return addr;
 #else
     if(_stscanf(line,_T("%I64d"),&addr) == 1) return addr;

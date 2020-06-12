@@ -2,7 +2,7 @@
 #include <MyUtil.h>
 #include <MyAssert.h>
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 void xassert(const TCHAR *fileName, int line, const TCHAR *exp) {
   if(isatty(stderr)) {
     _ftprintf(stderr,_T("\n\nAssertion %s at %s line %d failed.\n"), exp, fileName, line);

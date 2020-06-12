@@ -11,7 +11,7 @@ static int myGetDecimalDigitCount(UINT64 x) {
 
 void testGetDecimalDigitCount(TestStatistic &stat) {
 
-#ifdef TESTTIME
+#if defined(TESTTIME)
   double startTime = getProcessTime();
   for(i = 1; i < BIGREALBASE; i++) {
     int ddc1 = myGetDecimalDigitCount(i);

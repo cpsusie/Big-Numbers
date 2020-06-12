@@ -31,12 +31,6 @@ BEGIN_MESSAGE_MAP(CParametricGraphDlg, CDialog)
   ON_COMMAND(   ID_FILE_SAVE                                      , OnFileSave                  )
   ON_COMMAND(   ID_FILE_SAVE_AS                                   , OnFileSaveAs                )
   ON_COMMAND(   ID_EDIT_FINDMATCHINGPARENTESIS                    , OnEditFindmatchingparentesis)
-  ON_COMMAND(   ID_GOTO_STYLE                                     , OnGotoStyle                 )
-  ON_COMMAND(   ID_GOTO_COMMON                                    , OnGotoCommon                )
-  ON_COMMAND(   ID_GOTO_EXPRX                                     , OnGotoExprX                 )
-  ON_COMMAND(   ID_GOTO_EXPRY                                     , OnGotoExprY                 )
-  ON_COMMAND(   ID_GOTO_TINTERVAL                                 , OnGotoTInterval             )
-  ON_COMMAND(   ID_GOTO_STEP                                      , OnGotoStep                  )
   ON_BN_CLICKED(IDC_BUTTON_HELPX                                  , OnButtonHelpX               )
   ON_BN_CLICKED(IDC_BUTTON_HELPY                                  , OnButtonHelpY               )
 END_MESSAGE_MAP()
@@ -47,27 +41,6 @@ BOOL CParametricGraphDlg::OnInitDialog() {
   createExprHelpButton(IDC_BUTTON_HELPX, IDC_EDITEXPRX);
   createExprHelpButton(IDC_BUTTON_HELPY, IDC_EDITEXPRY);
   setCommonExprFieldId(IDC_EDITCOMMON);
-
-  m_layoutManager.OnInitDialog(this);
-  m_layoutManager.addControl(IDOK                 , RELATIVE_POSITION    );
-  m_layoutManager.addControl(IDCANCEL             , RELATIVE_POSITION    );
-  m_layoutManager.addControl(IDC_STATICCOMMONLABEL, PCT_RELATIVE_Y_CENTER);
-  m_layoutManager.addControl(IDC_EDITCOMMON       , RELATIVE_WIDTH | RESIZE_FONT | PCT_RELATIVE_BOTTOM);
-  m_layoutManager.addControl(IDC_STATICEXPRXLABEL , PCT_RELATIVE_Y_CENTER);
-  m_layoutManager.addControl(IDC_BUTTON_HELPX     , PCT_RELATIVE_Y_CENTER);
-  m_layoutManager.addControl(IDC_EDITEXPRX        , RELATIVE_WIDTH | RESIZE_FONT | PCT_RELATIVE_TOP | PCT_RELATIVE_BOTTOM);
-  m_layoutManager.addControl(IDC_STATICEXPRYLABEL , PCT_RELATIVE_Y_CENTER);
-  m_layoutManager.addControl(IDC_BUTTON_HELPY     , PCT_RELATIVE_Y_CENTER);
-  m_layoutManager.addControl(IDC_EDITEXPRY        , RELATIVE_WIDTH | RESIZE_FONT | PCT_RELATIVE_TOP | RELATIVE_BOTTOM);
-
-  m_layoutManager.addControl(IDC_STATICTINTERVAL , RELATIVE_Y_POS);
-  m_layoutManager.addControl(IDC_EDITTFROM       , RELATIVE_Y_POS);
-  m_layoutManager.addControl(IDC_STATICDASH      , RELATIVE_Y_POS);
-  m_layoutManager.addControl(IDC_EDITTTO         , RELATIVE_Y_POS);
-  m_layoutManager.addControl(IDC_EDITTFROM       , RELATIVE_Y_POS);
-  m_layoutManager.addControl(IDC_STATICSTEPS     , RELATIVE_Y_POS);
-  m_layoutManager.addControl(IDC_EDITSTEPS       , RELATIVE_Y_POS);
-
   gotoEditBox(this, IDC_EDITEXPRX);
   return FALSE;
 }
@@ -80,29 +53,6 @@ bool CParametricGraphDlg::validate() {
     return false;
   }
   return true;
-}
-
-void CParametricGraphDlg::OnGotoCommon() {
-  gotoExpr(IDC_EDITCOMMON);
-}
-void CParametricGraphDlg::OnGotoExprX() {
-  gotoExpr(IDC_EDITEXPRX);
-}
-
-void CParametricGraphDlg::OnGotoExprY() {
-  gotoExpr(IDC_EDITEXPRY);
-}
-
-void CParametricGraphDlg::OnGotoStyle() {
-  getStyleCombo()->SetFocus();
-}
-
-void CParametricGraphDlg::OnGotoTInterval() {
-  gotoEditBox(this,IDC_EDITTFROM);
-}
-
-void CParametricGraphDlg::OnGotoStep() {
-  gotoEditBox(this,IDC_EDITSTEPS);
 }
 
 void CParametricGraphDlg::addToRecent(const String &fileName) {

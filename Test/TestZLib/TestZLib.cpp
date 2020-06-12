@@ -7,7 +7,7 @@
 
 #define ZLIB_PATH LIBROOT _PLATFORM_ _CONFIGURATION_
 
-#ifdef GIVE_LINK_MESSAGE
+#if defined(GIVE_LINK_MESSAGE)
 #pragma message("link with " ZLIB_PATH)
 #endif
 #pragma comment(lib, ZLIB_PATH "zlib.lib")

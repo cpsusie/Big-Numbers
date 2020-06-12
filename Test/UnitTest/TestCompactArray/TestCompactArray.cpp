@@ -87,7 +87,7 @@ namespace TestCompactArray {
 
   bool PrintCompactIntArray::handlePermutation(const CompactIntArray &a) {
     m_counter++;
-#ifdef _DEBUG
+#if defined(_DEBUG)
     String line = format(_T("%2d:"), m_counter);
     for(size_t i = 0; i < a.size(); i++) {
       line += format(_T("%d "), a[i]);

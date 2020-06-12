@@ -69,7 +69,7 @@ void ChessGraphics::paintFieldAttacks(HDC dc, const Game &game1, const Game &gam
   }
   for(int pos = 0; pos < 64; pos++) {
     const CPoint p = getFieldPosition(pos, true);
-#ifdef _DEBUG
+#if defined(_DEBUG)
     const TCHAR *fieldName = getFieldName(pos);
 #endif
     const FieldAttacks &whiteAttacks1 = FIELDATTACKS(  game1.getPlayerState(WHITEPLAYER), pos);
@@ -237,7 +237,7 @@ void ChessGraphics::paintStateString(HDC dc, int &line, const Game &game1, const
     line += 16;
   }
   if(m_debugFlags.m_flags.m_showFEN) {
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
     dtextOut(dc, 0, line, format(_T("FEN:%s"), m_game->toFENString().cstr()).cstr());
 #else
     dtextOut(dc, 0, line, _T("FEN:Not available in BUILDER_MODE"));
@@ -245,7 +245,7 @@ void ChessGraphics::paintStateString(HDC dc, int &line, const Game &game1, const
     line += 16;
   }
   if(m_debugFlags.m_flags.m_showLastCapture) {
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
     const String str = _T(" No last capture");
 #else
     const String str = format(_T("Plies:%3d, #plies without capt/pawn:%2d (max:%d)")
@@ -259,7 +259,7 @@ void ChessGraphics::paintStateString(HDC dc, int &line, const Game &game1, const
   }
 
   if(m_debugFlags.m_flags.m_showPositionRepeats) {
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
     const String str = _T(" No repetition count");
 #else
     const int repeats = m_game->getPositionRepeats();
@@ -278,7 +278,7 @@ void ChessGraphics::paintStateString(HDC dc, int &line, Player player, const Gam
   textFields.add(WHITE,BLACK,format(_T("%s:"), getPlayerNameEnglish(player)));
 
   if(m_debugFlags.m_flags.m_showMaterial) {
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
     textFields.add(RED, BLACK, _T(" No material"));
 #else
     const int  mat1     = game1.getMaterial(player);
@@ -300,7 +300,7 @@ void ChessGraphics::paintStateString(HDC dc, int &line, Player player, const Gam
   }
 
   if(m_debugFlags.m_flags.m_showBishopFlags) {
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
     textFields.add(RED, BLACK, _T(" No bishopflags"));
 #else
     const BishopFlags bf1 = game1.getBishopFlags(player);
@@ -315,7 +315,7 @@ void ChessGraphics::paintStateString(HDC dc, int &line, Player player, const Gam
   }
 
   if(m_debugFlags.m_flags.m_showPawnCount) {
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
     textFields.add(RED, BLACK, _T(" No pawnCount"));
 #else
     const String s1 = game1.getPawnCountToString(player);

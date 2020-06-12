@@ -40,7 +40,7 @@ public:
 
   void testFractionate();
   void testGetDecimalDigitCount64();
-#ifdef HAS_LOOP_DIGITCOUNT
+#if defined(HAS_LOOP_DIGITCOUNT)
   void measureGetDecimalDigitCount();
 #endif // HAS_LOOP_DIGITCOUNT
 };
@@ -57,7 +57,7 @@ typedef enum {
  ,QUOTREMAINDER64
  ,OPERATOR_MOD
  ,OPERATOR_MOD64
-#ifdef IS64BIT
+#if defined(IS64BIT)
  ,QUOTLINEAR128
  ,QUOTREMAINDER128
  ,OPERATOR_MOD128

@@ -7,7 +7,7 @@
 #include "CaptureAreaDialog.h"
 #include "MainFrm.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -183,7 +183,7 @@ BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs) {
 
 // CMainFrame diagnostics
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 void CMainFrame::AssertValid() const {
   __super::AssertValid();
 }
@@ -194,7 +194,7 @@ void CMainFrame::Dump(CDumpContext& dc) const {
 #endif //_DEBUG
 
 // CMainFrame message handlers
-#ifdef __NEVER__
+#if defined(__NEVER__)
 void CMainFrame::OnViewCustomize() {
   CMFCToolBarsCustomizeDialog* pDlgCust = new CMFCToolBarsCustomizeDialog(this, TRUE /* scan menus */);
   pDlgCust->EnableUserDefinedToolbars();

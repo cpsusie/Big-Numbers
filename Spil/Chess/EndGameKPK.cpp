@@ -7,7 +7,7 @@ const EndGameKeyDefinition3Men1Pawn EndGameKPK::keyDefinition(
 
 
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 
 bool EndGameKPK::isUsableMove(const Move &m) const {
   switch(m.getType()) {

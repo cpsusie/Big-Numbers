@@ -51,7 +51,7 @@ private:
   StringArray         m_nameArray;
 
   friend Packer &operator>>(Packer &p,       OpeningLibrary &l);
-#ifdef LIBRARY_BUILDER
+#if defined(LIBRARY_BUILDER)
   friend Packer &operator<<(Packer &p, const OpeningLibrary &l);
 #endif
 
@@ -62,7 +62,7 @@ private:
 public:
   OpeningLibrary();
 
-#ifdef LIBRARY_BUILDER
+#if defined(LIBRARY_BUILDER)
   void addGame(const String &name);
   void reduceEmptyStates();
   void save(   const String &name);

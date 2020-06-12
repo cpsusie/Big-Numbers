@@ -5,9 +5,9 @@
 #include <TimeEstimator.h>
 #include "IndexedMap.h"
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 
-#ifndef _DEBUG
+#if !defined(_DEBUG)
 #define GETELEMENT(key) (*this)[(size_t)m_keydef.keyToIndex(key)]
 #else // _DEBUG
 EndGamePosIndex IndexedMap::getCheckedIndex(EndGameKey key) const {

@@ -71,7 +71,7 @@ void KeyPage::init(bool leafPage) {
 #define LEAFPAGE_KEY(page,i)     ((KeyType*)&(page)->m_items[(page)->m_pageInfo.m_keySize*((i)-1)])
 
 void KeyPage::setItem(UINT i, const KeyPageItem &t) {
-#ifdef _DEBUG
+#if defined(_DEBUG)
   if(i < 1 || i > m_header.m_itemCount) {
     throwSqlError(SQL_FATAL_ERROR,_T("KeyPage::getItem:Invalid argument:%d. Itemcount=%d\n")
                                  ,i, m_header.m_itemCount);
@@ -79,7 +79,7 @@ void KeyPage::setItem(UINT i, const KeyPageItem &t) {
 #endif
 
   if(isLeafPage()) {
-#ifdef _DEBUG
+#if defined(_DEBUG)
     if(t.m_child != DB_NULLADDR) {
       throwSqlError(SQL_FATAL_ERROR,_T("KeyPage::setItem in leafpage with non-null child"));
     }
@@ -91,7 +91,7 @@ void KeyPage::setItem(UINT i, const KeyPageItem &t) {
 }
 
 KeyPageItem &KeyPage::getItem(UINT i, KeyPageItem &t) const {
-#ifdef _DEBUG
+#if defined(_DEBUG)
   if(i < 1 || i > m_header.m_itemCount) {
     throwSqlError(SQL_FATAL_ERROR,_T("KeyPage::getItem:Invalid argument:%d. Itemcount=%d\n")
                                  ,i, m_header.m_itemCount);
@@ -133,7 +133,7 @@ void KeyPage::copyItems(int from, int to, const KeyPage &src, int start) {
     return;
   }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
   if(isLeafPage() != src.isLeafPage()) {
     throwSqlError(SQL_FATAL_ERROR,_T("KeyPage::copyItems:copying items from %s to %s")
                                  ,src.getTypeStr(), getTypeStr());
@@ -156,7 +156,7 @@ void KeyPage::copyItems(int from, int to, const KeyPage &src, int start) {
 }
 
 void KeyPage::setItemCount(UINT value) {
-#ifdef _DEBUG
+#if defined(_DEBUG)
   if(value > getMaxItemCount()) {
     throwSqlError(SQL_FATAL_ERROR,_T("KeyPage::setItemCount:Invalid argument (=%d). Max. itemcount=%d")
                                  ,value, getMaxItemCount());
@@ -166,7 +166,7 @@ void KeyPage::setItemCount(UINT value) {
 }
 
 void KeyPage::itemCountIncr() {
-#ifdef _DEBUG
+#if defined(_DEBUG)
   if(isFull()) {
     throwSqlError(SQL_FATAL_ERROR,_T("KeyPage::itemCountIncr:Page is full"));
   }
@@ -175,7 +175,7 @@ void KeyPage::itemCountIncr() {
 }
 
 bool KeyPage::itemCountDecr() {
-#ifdef _DEBUG
+#if defined(_DEBUG)
   if(m_header.m_itemCount == 0) {
     throwSqlError(SQL_FATAL_ERROR,_T("KeyPage::itemCountDecr:Itemcount=0"));
   }
@@ -184,14 +184,14 @@ bool KeyPage::itemCountDecr() {
 }
 
 void KeyPage::insertItem(UINT i, const KeyPageItem &t) {
-#ifdef _DEBUG
+#if defined(_DEBUG)
   if(isFull()) {
     throwSqlError(SQL_FATAL_ERROR,_T("KeyPage::insertItem:Page is full"));
   }
 #endif
 
   if(isLeafPage()) {
-#ifdef _DEBUG
+#if defined(_DEBUG)
     if(t.m_child != DB_NULLADDR) {
       throwSqlError(SQL_FATAL_ERROR,_T("KeyPage::insertItem in leafpage with non-null-child"));
     }
@@ -211,7 +211,7 @@ void KeyPage::insertItem(UINT i, const KeyPageItem &t) {
 }
 
 bool KeyPage::removeItem(UINT i) {
-#ifdef _DEBUG
+#if defined(_DEBUG)
   if(m_header.m_itemCount == 0) {
     throwSqlError(SQL_FATAL_ERROR,_T("KeyPage::removeItem:Page is empty"));
   }
@@ -231,14 +231,14 @@ bool KeyPage::removeItem(UINT i) {
 }
 
 void KeyPage::setChild(UINT i, KeyPageAddr addr) {
-#ifdef _DEBUG
+#if defined(_DEBUG)
   if(i > getMaxItemCount()) {
     throwSqlError(SQL_FATAL_ERROR,_T("KeyPage::setChild: Invalid argument. i=%d. Max. itemCount=%d")
                                  ,i, getMaxItemCount());
   }
 #endif
   if(isLeafPage()) {
-#ifdef _DEBUG
+#if defined(_DEBUG)
     if(addr != DB_NULLADDR) {
       throwSqlError(SQL_FATAL_ERROR,_T("KeyPage::setChild to non-null in leafpage"));
     }
@@ -254,7 +254,7 @@ void KeyPage::setChild(UINT i, KeyPageAddr addr) {
 }
 
 KeyPageAddr KeyPage::getChild(UINT i) const {
-#ifdef _DEBUG
+#if defined(_DEBUG)
   if(i > getMaxItemCount()) {
     throwSqlError(SQL_FATAL_ERROR,_T("KeyPage::getChild: Invalid argument. i=%d. Max. itemCount=%d")
                                  ,i, getMaxItemCount());
@@ -274,7 +274,7 @@ void KeyPage::setNextFree(KeyPageAddr addr) {
 }
 
 KeyPageAddr KeyPage::getP0() const {
-#ifdef _DEBUG
+#if defined(_DEBUG)
   if(isLeafPage()) {
     throwSqlError(SQL_FATAL_ERROR,_T("KeyPage::getP0. Page is a leafPage"));
   }
@@ -285,7 +285,7 @@ KeyPageAddr KeyPage::getP0() const {
 }
 
 void KeyPage::setP0(const KeyPageAddr &addr) {
-#ifdef _DEBUG
+#if defined(_DEBUG)
   if(isLeafPage()) {
     throwSqlError(SQL_FATAL_ERROR,_T("KeyPage::setP0. Page is a leafPage"));
   }

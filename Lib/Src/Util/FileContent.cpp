@@ -50,7 +50,7 @@ FileContent &FileContent::save(ByteOutputStream &out) {
 }
 
 
-#ifdef UNICODE
+#if defined(UNICODE)
 
 static const int legalCodePages[] = {
   CP_ACP

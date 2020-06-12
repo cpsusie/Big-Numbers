@@ -1,7 +1,7 @@
 #include "pch.h"
 #include <MFCUtil/EditListStringCombo.h>
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 

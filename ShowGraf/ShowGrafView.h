@@ -33,7 +33,7 @@ private:
     return *m_toolStack.top();
   }
   void clearToolStack();
-#ifdef _DEBUG
+#if defined(_DEBUG)
   void dumpToolStack() const;
 #define DUMPTOOLSTACK() dumpToolStack()
 #else
@@ -116,7 +116,7 @@ public:
     virtual void OnBeginPrinting(  CDC *pDC, CPrintInfo *pInfo);
     virtual void OnEndPrinting(    CDC *pDC, CPrintInfo *pInfo);
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
   virtual void AssertValid() const;
   virtual void Dump(CDumpContext &dc) const;
 #endif

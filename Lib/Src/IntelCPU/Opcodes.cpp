@@ -14,14 +14,14 @@ DEFNAME(Opcode0Arg       ,  STI   ,0xFB    );              // Set   interrupt fl
 DEFNAME(Opcode0Arg       ,  CLD   ,0xFC    );              // Clear direction flag DF = 0
 DEFNAME(Opcode0Arg       ,  STD   ,0xFD    );              // Set   direction flag DF = 1
 
-#ifdef IS64BIT
+#if defined(IS64BIT)
 DEFNAME(Opcode0Arg       ,  CLGI  ,0x0F01DD);              // Clear Global Interrupt Flag
 DEFNAME(Opcode0Arg       ,  STGI  ,0x0F01DC);              // Set Global Interrupt Flag
 #endif // IS64BIT
 
 #define ARG0_SIZEABLE (WORDPTR_ALLOWED|QWORDPTR_ALLOWED|HAS_NONBYTE_SIZEBITS)
 
-#ifdef IS32BIT
+#if defined(IS32BIT)
 DEFNAME(Opcode0Arg       ,  PUSHFD,0x9C  ,ARG0_SIZEABLE);  // Push EFLAGS onto stack *--SP = FLAGS;
 DEFNAME(Opcode0Arg       ,  POPFD ,0x9D  ,ARG0_SIZEABLE);  // Pop  EFLAGS register from stack FLAGS = *SP++
 DEFNAME(Opcode0Arg       ,  PUSHF ,PUSHFD,REGSIZE_WORD);   // Push FLAGS  onto stack *--SP = FLAGS;
@@ -35,7 +35,7 @@ DEFNAME(Opcode0Arg       ,  POPF  ,POPFQ ,REGSIZE_WORD);   // Pop  FLAGS  regist
 
 DEFNAME(Opcode0Arg       ,  SAHF  ,0x9E);                  // Store AH into FLAGS
 DEFNAME(Opcode0Arg       ,  LAHF  ,0x9F);                  // Load FLAGS into AH register
-#ifdef IS32BIT
+#if defined(IS32BIT)
 DEFNAME(Opcode0Arg       ,  PUSHAD,0x60);                  // Push all double-word (32-bit) registers onto stack
 DEFNAME(Opcode0Arg       ,  POPAD ,0x61);                  // Pop  all double-word (32-bit) registers from stack
 #endif // IS32BIT
@@ -121,7 +121,7 @@ DEFNAME(OpcodeJcc        ,  JGE   ,0x7D);                  // Jump     if greate
 DEFNAME(OpcodeJcc        ,  JLE   ,0x7E);                  // Jump     if less or equal         (signed  )          (ZF==1 || SF!=OF)
 DEFNAME(OpcodeJcc        ,  JG    ,0x7F);                  // Jump     if greater               (signed  )          (ZF==0 && SF==OF)
 
-#ifdef IS32BIT
+#if defined(IS32BIT)
 DEFNAME(Opcode1Arg       , JCXZ   ,0x67E3,0,IMM8_ALLOWED); // Jump if CX  register is 0. 1 byte PC relative offset
 DEFNAME(Opcode1Arg       , JECXZ  ,0xE3  ,0,IMM8_ALLOWED); // Jump if ECX register is 0. 1 byte PC relative offset
 #else
@@ -180,7 +180,7 @@ DEFNAME(Opcode0Arg       ,  CDQ   ,0x99,ARG0_SIZEABLE);    // Convert dword to q
 DEFNAME(Opcode0Arg       ,  CBW   ,CWDE,REGSIZE_WORD );    // Convert byte  to word   Copy sign (bit 7)  of AL  into higher  8 bits of AX (AH)
 DEFNAME(Opcode0Arg       ,  CWD   ,CDQ ,REGSIZE_WORD );    // Convert word  to dword  Copy sign (bit 15) of AX  into every bit of DX
 
-#ifdef IS64BIT
+#if defined(IS64BIT)
 DEFNAME(Opcode0Arg       ,  CDQE  ,CWDE,REGSIZE_QWORD );   // Sign extend EAX into RAX
 DEFNAME(Opcode0Arg       ,  CQO   ,CDQ ,REGSIZE_QWORD );   // Sign extend RAX into RDX:RAX
 #endif // IS64BIT
@@ -203,7 +203,7 @@ DEFNAME(StringInstruction,  STOSD ,STOSB,REGSIZE_DWORD);
 DEFNAME(StringInstruction,  LODSD ,LODSB,REGSIZE_DWORD);
 DEFNAME(StringInstruction,  SCASD ,SCASB,REGSIZE_DWORD);
 
-#ifdef IS64BIT
+#if defined(IS64BIT)
 DEFNAME(StringInstruction,  MOVSQ ,MOVSB,REGSIZE_QWORD);
 DEFNAME(StringInstruction,  CMPSQ ,CMPSB,REGSIZE_QWORD);
 DEFNAME(StringInstruction,  STOSQ ,STOSB,REGSIZE_QWORD);

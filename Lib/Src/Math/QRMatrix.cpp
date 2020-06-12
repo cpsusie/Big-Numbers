@@ -10,7 +10,7 @@ using namespace std;
 
 //#define DEBUGMODULE 1
 
-#ifdef DEBUGMODULE
+#if defined(DEBUGMODULE)
 bool traceQR = false;
 static StreamParameters param(9,14,ios::fixed);
 #endif

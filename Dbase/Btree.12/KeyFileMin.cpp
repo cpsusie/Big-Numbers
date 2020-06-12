@@ -18,7 +18,7 @@ bool KeyFile::pageSearchMinGE(KeyPageAddr addr, KeyType &key, UINT fieldCount) {
   // first find the smallet page.item >= key
   const int i = page.searchMinIndex(key, m_keydef, fieldCount);
 
-#ifdef DEBUG
+#if defined(DEBUG)
   _tprintf(_T("minge:page %s i:%d\n"),toString(addr).cstr(),i);
 #endif
 
@@ -45,7 +45,7 @@ bool KeyFile::pageSearchMinGT(KeyPageAddr addr, KeyType &key, UINT fieldCount) {
   // first find the smallest page.item > key
   int i = page.searchMaxIndex( key, m_keydef, fieldCount);
 
-#ifdef DEBUG
+#if defined(DEBUG)
   _tprintf(_T("mingt:page %s index:%d\n"),toString(addr).cstr(),i);
 #endif
 

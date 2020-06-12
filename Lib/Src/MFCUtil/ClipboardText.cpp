@@ -2,13 +2,13 @@
 #include <shlobj.h>
 #include <MFCUtil/clipboard.h>
 
-#ifdef UNICODE
+#if defined(UNICODE)
 #define CF_TEXTFORMAT CF_UNICODETEXT
 #else
 #define CF_TEXTFORMAT CF_TEXT
 #endif
 
-#ifdef UNICODE
+#if defined(UNICODE)
 
 static String getClipboardUnicodeText() {
   OpenClipboard(NULL);
@@ -35,7 +35,7 @@ static String getClipboardAsciiText() {
 }
 
 String getClipboardText() {
-#ifdef UNICODE
+#if defined(UNICODE)
     return getClipboardUnicodeText();
 #else
   return getClipboardAsciiText();

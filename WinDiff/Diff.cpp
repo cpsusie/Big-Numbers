@@ -345,7 +345,7 @@ BEGIN_TIMEMEASURE(8, _T("Build final lines"));
   ea.clear();
   eb.clear();
 
-#ifdef DUMP_DEBUG
+#if defined(DUMP_DEBUG)
 a.dump(_T("c:\\temp\\lineArray_A_Before.txt"));
 b.dump(_T("c:\\temp\\lineArray_B_Before.txt"));
 #endif

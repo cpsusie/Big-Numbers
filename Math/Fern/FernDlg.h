@@ -6,7 +6,7 @@ typedef double AfinType[7];
 
 #define BREGNE
 
-#ifdef BREGNE
+#if defined(BREGNE)
 
 #define AFIN_COUNT 4
 #define MINX -6

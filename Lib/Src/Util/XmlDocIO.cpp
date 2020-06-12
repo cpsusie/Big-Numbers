@@ -41,7 +41,7 @@ void XMLDoc::loadFromFile(const TCHAR *fileName) {
 
 #define NEWVERSION
 
-#ifdef NEWVERSION
+#if defined(NEWVERSION)
 
 // see https://stackoverflow.com/questions/164575/msxml-from-c-pretty-print-indent-newly-created-documents/36982487#36982487
 
@@ -71,7 +71,7 @@ void XMLDoc::prettySaveXmlDocument(MSXML2::IXMLDOMDocument *xmlDoc, const wchar_
 #endif
 
 void XMLDoc::saveToFile(const TCHAR *fileName) {
-#ifndef NEWVERSION
+#if !defined(NEWVERSION)
   m_doc->put_async(VARIANT_FALSE);
   USES_CONVERSION;
   const char *fileNameA = T2A(fileName);

@@ -1,6 +1,6 @@
 #include "pch.h"
 
-#ifdef IS32BIT
+#if defined(IS32BIT)
 #define JMP_NEAR_ABSRM_FLAGS (REGTYPE_GPR_ALLOWED    | DWORDGPR_ALLOWED   | WORDGPR_ALLOWED | DWORDPTR_ALLOWED | WORDPTR_ALLOWED | HAS_WORDPREFIX)
 #define JMP_NEAR_IMM_FLAGS   (IMMEDIATEVALUE_ALLOWED | HAS_IMM_XBIT       | HAS_WORDPREFIX)
 #else // IS64BIT
@@ -15,7 +15,7 @@ OpcodeJmpImm::OpcodeJmpImm(const String &mnemonic)
 
 InstructionBase OpcodeJmpImm::operator()(const InstructionOperand &op) const {
   isValidOperand(op, true);
-#ifdef IS32BIT
+#if defined(IS32BIT)
   switch(op.getSize()) {
   case REGSIZE_BYTE :
     return InstructionBuilder(*this).setImmediateOperand(op);
@@ -75,7 +75,7 @@ InstructionBase OpcodeJcc::operator()(const InstructionOperand &op) const {
   if(op.isImmByte()) {
     return InstructionBuilder(m_shortCode).setImmediateOperand(op, REGSIZE_BYTE);
   } else {
-#ifdef IS32BIT
+#if defined(IS32BIT)
     switch(op.getSize()) {
     case REGSIZE_WORD :
 // NEVER USE THIS. it will clear high 16 bits of EIP !!

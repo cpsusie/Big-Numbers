@@ -23,7 +23,7 @@ static int findNiceStep(double range, const int *possibleStep, size_t stepCount,
   if(result == 0) {
     result = possibleStep[stepCount-1];
   }
-#ifdef _TEST
+#if defined(_TEST)
   debugLog(_T("%-20s:range:%.10le step:%d\n"), unitName, range, result);
 #endif
   return result;
@@ -32,14 +32,14 @@ static int findNiceStep(double range, const int *possibleStep, size_t stepCount,
 static int findNiceStep(double range, const TCHAR *unitName) {
   int result = (int)AbstractAxisPainter::findNiceDecimalStep(range);
   result = max(1, result);
-#ifdef _TEST
+#if defined(_TEST)
   debugLog(_T("%-20s:range:%.10le step:%d\n"), unitName, range, result);
 #endif
   return result;
 }
 
 class ScaleFactors {
-#ifdef _TEST
+#if defined(_TEST)
 private:
   void checkName(const String &str, const String &expected) const;
   void readData();
@@ -50,7 +50,7 @@ public:
   UINT   msDiv     , secDiv     , minDiv     , hrDiv                                ,monDiv       , yrDiv;
   double maxMsCount, maxSecCount, maxMinCount, maxHrCount, maxDayCount, maxWeekCount,maxMonthCount;
   ScaleFactors();
-#ifdef _TEST
+#if defined(_TEST)
   ~ScaleFactors();
   void update();
 #endif _TEST
@@ -70,7 +70,7 @@ ScaleFactors::ScaleFactors() :
 , maxDayCount(60)
 , maxWeekCount(25)
 , maxMonthCount(60)
-#ifdef _TEST
+#if defined(_TEST)
 , m_loaded(false)
 {
   update();
@@ -80,7 +80,7 @@ ScaleFactors::ScaleFactors() :
 }
 #endif _TEST
 
-#ifdef _TEST
+#if defined(_TEST)
 #define LOADUINT(field) { _ftscanf( f,_T("%s %u\n" ), tmpStr, &field); checkName(tmpStr,_T(#field)); }
 #define LOADDBL( field) { _ftscanf( f,_T("%s %le\n"), tmpStr, &field); checkName(tmpStr,_T(#field)); }
 #define DUMPUINT(field)   _ftprintf(f,_T("%-20s %u\n" ), _T(#field), field)
@@ -169,7 +169,7 @@ void DateAxisPainter::setMinMaxStep(double min, double max, double step, TimeCom
   m_timeComponent = timeComponent;
 }
 
-#ifndef _TEST
+#if !defined(_TEST)
 
 #define SETMINMAXSTEP(Min,Max,Step,tc) setMinMaxStep(Min, Max, Step, tc)
 
@@ -190,7 +190,7 @@ void DateAxisPainter::setMinMaxStep(double min, double max, double step, TimeCom
 #endif _TEST
 
 void DateAxisPainter::init() {
-#ifdef _TEST
+#if defined(_TEST)
   s_f.update();
 #endif _TEST
 
@@ -263,7 +263,7 @@ double DateAxisPainter::next(double x) const {
   return Timestamp(x).add(m_timeComponent,(int)step).getDATE();
 }
 
-#ifndef _TEST
+#if !defined(_TEST)
 #define RETURNTSTODATE(ts) return (ts).getDATE()
 #else
 #define RETURNTSTODATE(ts)                                                      \

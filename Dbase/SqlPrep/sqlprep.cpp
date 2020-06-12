@@ -316,7 +316,7 @@ void Parser::emitEnd() {
 }
 
 void Parser::emitStartComment() {
-  emit(_T("\n#ifdef __NEVER__\n"));
+  emit(_T("\n#if defined(__NEVER__)\n"));
 //  emit(_T("\n/*\n"));
 }
 
@@ -430,7 +430,7 @@ void Parser::emitSetVarWStr(int n, HostVar *var, wchar_t *str) {
 }
 
 
-#ifndef UNICODE
+#if !defined(UNICODE)
 #define emitSetVarTStr(n, var, str) emitSetVarCStr(n, var, str)
 #else
 #define emitSetVarTStr(n, var, str) emitSetVarWStr(n, var, str)

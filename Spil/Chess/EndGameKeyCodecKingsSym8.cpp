@@ -260,7 +260,7 @@ const char EndGameKeyDefinition::s_offDiagIndexToPos[56] = {
 EndGamePosIndex EndGameKeyDefinition::encodeKKSym8(EndGameKey key) { // static
   int wki = s_whiteKingPosToIndex[key.getWhiteKingPosition()];
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
   if((wki < 0)
    || POSADJACENT(key.getWhiteKingPosition(), key.getBlackKingPosition())
    || (WK_INDEX_ONDIAG(wki) && IS_ABOVEMAINDIAG1(key.getBlackKingPosition()))) {
@@ -323,7 +323,7 @@ void EndGameKeyDefinition::decodeKKSym8(EndGameKey &key, EndGamePosIndex index) 
 
 //#define _TEST_MODULE
 
-#ifdef _TEST_MODULE
+#if defined(_TEST_MODULE)
 
 static EndGamePosIndex checkKey(const EndGameKey &key) {
   const EndGamePosIndex index = EndGameKeyDefinition::encodeKKSym8(key);

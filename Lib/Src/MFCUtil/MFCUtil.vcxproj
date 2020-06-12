@@ -711,7 +711,6 @@
     <ClCompile Include="ExpressionGraphics.cpp" />
     <ClCompile Include="FileSink.cpp" />
     <ClCompile Include="FileSrc.cpp" />
-    <ClCompile Include="Fixed.cpp" />
     <ClCompile Include="GetMessageName.cpp" />
     <ClCompile Include="TabOrder.cpp" />
     <ClCompile Include="GifCtrl.cpp" />

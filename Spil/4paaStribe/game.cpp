@@ -4,7 +4,7 @@
 
 long               Game::m_evalCount;
 double             Game::m_evaluationTime;
-#ifdef USE_COMPACTSTACK
+#if defined(USE_COMPACTSTACK)
 CompactStack<Game> Game::m_gameStack;
 #else
 Stack<Game>        Game::m_gameStack;

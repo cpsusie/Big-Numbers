@@ -77,7 +77,7 @@ protected:
 
 //#define __HASHSET_CHECK_INTEGRITY
 
-#ifdef __HASHSET_CHECK_INTEGRITY
+#if defined(__HASHSET_CHECK_INTEGRITY)
   void checktable(const TCHAR *label) const;
 #endif
 public:

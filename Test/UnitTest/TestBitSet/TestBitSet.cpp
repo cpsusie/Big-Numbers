@@ -107,7 +107,7 @@ namespace TestBitSet {
     m_a = genRandomSet(m_rnd, 10000, 5000);
   }
 
-#ifdef __MEASURETIMES__
+#if defined(__MEASURETIMES__)
   class BitSetSizeTimeTester : public MeasurableFunction {
   private:
     const BitSet &m_a;
@@ -469,7 +469,7 @@ namespace TestBitSet {
 
       INFO(_T("BitSetIterator time:%.3le msec"), msec * 1000);
     }
-#ifdef __NEVER__
+#if defined(__NEVER__)
     TEST_METHOD(BitSetTestSize) {
       for(int test = 0; test < 40; test++) {
         const BitSet s(genRandomSet(test + 300));
@@ -480,7 +480,7 @@ namespace TestBitSet {
     }
 #endif
 
-#ifdef __MEASURETIMES__
+#if defined(__MEASURETIMES__)
     TEST_METHOD(BitSetMeasureSize) {
       randomize();
       for(int i = 0; i < 10; i++) {
@@ -717,7 +717,7 @@ namespace TestBitSet {
       double startTime = getThreadTime();
       for(size_t e = 0; e < capacity;) {
         bi.getIndex(e++);
-#ifdef _DEBUG
+#if defined(_DEBUG)
         if((e & 0x3ffff) == 0) {
           OUTPUT(_T("%.2lf%% Time/call:%.4lf msec"), PERCENT(e,capacity), (getThreadTime() - startTime) / e);
         }
@@ -730,7 +730,7 @@ namespace TestBitSet {
       startTime = getThreadTime();
       for(size_t e = 0; e < capacity; e++) {
         const intptr_t index = s.getIndex(e);
-#ifdef _DEBUG
+#if defined(_DEBUG)
         if((e & 0x3ffff) == 0) {
           OUTPUT(_T("%.2lf%% Time/call:%.4lf msec"), PERCENT(e,capacity), (getThreadTime() - startTime) / e);
         }

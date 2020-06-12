@@ -13,7 +13,7 @@
 #include "CsgIsosurface.h"
 #include "IsoMesher.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 //#pragma message("link with MTDebug/util.lib")
 #pragma comment(lib, "c:/MyTools/D3FunctionPlotter/MarchingCube/Debug/MarchingCube.lib")
 #else

@@ -4,7 +4,7 @@
 #include "Chess.h"
 #include "TablebaseDlg.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -96,7 +96,7 @@ void CTablebaseDlg::OnButtonPath() {
 }
 
 void CTablebaseDlg::OnButtonDecompressAll() {
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
   UpdateData();
   const String oldDbPath = EndGameKeyDefinition::getDbPath();
   EndGameKeyDefinition::setDbPath((LPCTSTR)m_tablebasePath);

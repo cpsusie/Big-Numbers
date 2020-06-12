@@ -6,7 +6,7 @@
 #include <MFCUtil/EditListStringCombo.h>
 #include <MFCUtil/EditListBooleanEditor.h>
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -39,7 +39,7 @@ BEGIN_MESSAGE_MAP(CEditListCtrl, CListCtrl)
   ON_WM_MEASUREITEM_REFLECT()
 END_MESSAGE_MAP()
 
-#ifdef __SAVE__MESSAGE_MAP
+#if defined(__SAVE__MESSAGE_MAP)
     ON_CONTROL_RANGE(  EN_SETFOCUS , FIRST_CTRL_ID, LAST_CTRL_ID, OnEditSetFocus )
     ON_CONTROL_RANGE(  EN_KILLFOCUS, FIRST_CTRL_ID, LAST_CTRL_ID, OnEditKillFocus)
     ON_CONTROL_RANGE(  BN_SETFOCUS , FIRST_CTRL_ID, LAST_CTRL_ID, OnEditSetFocus )

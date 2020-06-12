@@ -21,7 +21,7 @@ static char sqlapi_program_id[240] = {
 #include <atlconv.h>
 
 
-#ifdef __NEVER__
+#if defined(__NEVER__)
   EXEC SQL INCLUDE SQLCA;
 #endif
 #line 6 "C:/mytools2015/Dbase/SqlBind/sqlbind.sqc"
@@ -31,7 +31,7 @@ sqlca sqlca;
 
 
 
-#ifdef __NEVER__
+#if defined(__NEVER__)
   EXEC SQL BEGIN DECLARE SECTION;
 #endif
 #line 8 "C:/mytools2015/Dbase/SqlBind/sqlbind.sqc"
@@ -42,7 +42,7 @@ sqlca sqlca;
   static char password[30];
 
 
-#ifdef __NEVER__
+#if defined(__NEVER__)
   EXEC SQL END DECLARE SECTION;
 #endif
 #line 14 "C:/mytools2015/Dbase/SqlBind/sqlbind.sqc"
@@ -51,7 +51,7 @@ sqlca sqlca;
 static void dbConnect() {
 
 
-#ifdef __NEVER__
+#if defined(__NEVER__)
   EXEC SQL CONNECT TO :dbname user :username using :password;
 #endif
 #line 18 "C:/mytools2015/Dbase/SqlBind/sqlbind.sqc"
@@ -89,7 +89,7 @@ static void dbConnect() {
 
 static void dbDisconnect() {
 
-#ifdef __NEVER__
+#if defined(__NEVER__)
   EXEC SQL CONNECT RESET END-EXEC
 #endif
 #line 28 "C:/mytools2015/Dbase/SqlBind/sqlbind.sqc"

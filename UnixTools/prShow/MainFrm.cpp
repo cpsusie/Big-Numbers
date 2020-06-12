@@ -2,7 +2,7 @@
 #include "PrShow.h"
 #include "MainFrm.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -62,7 +62,7 @@ BOOL CMainFrame::PreTranslateMessage(MSG *pMsg) {
   return __super::PreTranslateMessage(pMsg);
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 void CMainFrame::AssertValid() const {
   __super::AssertValid();
 }

@@ -35,12 +35,6 @@ public:
 protected:
     virtual void DoDataExchange(CDataExchange *pDX);
     virtual BOOL OnInitDialog();
-    afx_msg void OnGotoStyle();
-    afx_msg void OnGotoCommon();
-    afx_msg void OnGotoExprX();
-    afx_msg void OnGotoExprY();
-    afx_msg void OnGotoTInterval();
-    afx_msg void OnGotoStep();
     afx_msg void OnEditFindmatchingparentesis();
     afx_msg void OnButtonHelpX();
     afx_msg void OnButtonHelpY();

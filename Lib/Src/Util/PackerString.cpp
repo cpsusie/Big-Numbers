@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "Packer.h"
 
-#ifdef UNICODE
+#if defined(UNICODE)
 #define E_STRING E_WSTR
 #else
 #define E_STRING E_STR

@@ -7,7 +7,7 @@ namespace Expr {
 ExpressionNodeProduct::ExpressionNodeProduct(ParserTree *tree, const FactorArray &factors)
 : ExpressionNodeTree(tree, PRODUCT, factors)
 {
-#ifdef _DEBUG
+#if defined(_DEBUG)
   validateFactorArray(getFactorArray());
 #endif
   getFactorArray().sort();

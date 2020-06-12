@@ -298,7 +298,7 @@ HashSetNode *HashSetImpl::findNode(const void *key) {
   return NULL;
 }
 
-#ifdef __HASHSET_CHECK_INTEGRITY
+#if defined(__HASHSET_CHECK_INTEGRITY)
 
 static int countcall = 0;
 void HashSetImpl::checktable(const TCHAR *label) const {

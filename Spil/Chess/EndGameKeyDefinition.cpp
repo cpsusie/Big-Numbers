@@ -22,7 +22,7 @@ public:
 };
 
 EndGameGlobalProperties::EndGameGlobalProperties() {
-#ifndef NEWCOMPRESSION
+#if !defined(NEWCOMPRESSION)
   m_dbPath = _T("c:\\temp\\ChessEndGames");
 #else // NEWCOMPRESSION
   m_dbPath = _T("c:\\temp\\CG1");
@@ -51,12 +51,12 @@ const TCHAR *EndGameKeyDefinition::s_metricName[] = {
 
 String EndGameKeyDefinition::getTbFileName(TablebaseFileType fileType) const {
   switch(fileType) {
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   case ALLFORWARDPOSITIONS  : return getTbFileName(getName() + _T("AllForwardPositions.dat"));
   case ALLRETROPOSITIONS    : return getTbFileName(getName() + _T("AllRetroPositions.dat"  ));
   case ALLTABLEBASE         : return getTbFileName(getName() + _T("EndGame")        + getMetricFileSuffix());
   case UNDEFINEDKEYSLOG     : return getTbFileName(getName() + _T("UndefinedKeys.txt"      ));
-#ifdef DEBUG_NEWCOMPRESSION
+#if defined(DEBUG_NEWCOMPRESSION)
   case COMPRESSEDDUMP       : return getTbFileName(getName() + _T("CompressedDump") + getMetricFileSuffix(_T(".txt")));
 #endif
 #else // !TABLEBASE_BUILDER
@@ -80,7 +80,7 @@ void EndGameKeyDefinition::removePropertyChangeListener(PropertyChangeListener *
 }
 
 
-#ifdef IS32BIT
+#if defined(IS32BIT)
 int findRange2Equal(EndGamePosIndex f, EndGamePosIndex index) {
   const double _8 = 8.0;
   unsigned short cwSave, ctrlFlags;
@@ -124,7 +124,7 @@ int findTableRange(const EndGamePosIndex *rangeTable, UINT size, EndGamePosIndex
   return r-1;
 }
 
-#ifdef __NEVER__
+#if defined(__NEVER__)
 
 // this is an alternative way to calculate the offset in the tables generated
 // by INIT_RANGETABLE3EQUAL. But it's much slower than tablelookup, at least
@@ -208,7 +208,7 @@ EndGameKeyDefinition::EndGameKeyDefinition(PieceKey pk2, PieceKey pk3, PieceKey 
 void EndGameKeyDefinition::init(PieceKey pk2, ...) {
   assert((m_totalPieceCount >= 3) && (m_totalPieceCount <= ARRAYSIZE(m_pieceKey)));
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   m_usedIndex = NULL;
 #endif
 
@@ -254,7 +254,7 @@ void EndGameKeyDefinition::init(PieceKey pk2, ...) {
   quickSort(m_orderedPieceType[BLACKPLAYER], getPieceCount(BLACKPLAYER), sizeof(PieceTypeWithIndex), PieceTypeWithIndexComparator());
 
 //#define PRINT_INFO
-#ifdef PRINT_INFO
+#if defined(PRINT_INFO)
   _tprintf(_T("EndGameKeyDefinition for %s endgame\n"), toString().cstr());
   _tprintf(_T("Total pieceCount:%d. "), m_totalPieceCount);
   _tprintf(_T("White pieceCount:%d. Black pieceCount:%d.\n"), getPieceCount(WHITEPLAYER), getPieceCount(BLACKPLAYER));
@@ -520,7 +520,7 @@ String EndGameKeyDefinition::createInitKeyString(EndGameKey key) const {
   return toUpperCase(result);
 }
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 
 EndGamePosIndex EndGameKeyDefinition::keyToIndexNew(EndGameKey key) const { // should be overridden
   throwException(_T("%s:No conversion defined"), __TFUNCTION__);
@@ -825,7 +825,7 @@ SymmetricTransformation EndGameKeyDefinition::getSym8Transformation6Men2Pairs(En
   SYM8DECISIONSWITCH(DECIDESYM8TRANSFORM6MEN2PAIRS)
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 
 static SymmetricTransformation decideSym8Transform3EqualFlipi(EndGameKey key, SymmetricTransformation trTrue, SymmetricTransformation trFalse, int i, int j, int k) {
   const int pi = EndGameKeyDefinition::s_offDiagPosToIndex[GameKey::transform(key.getPosition(i), trTrue )];
@@ -958,7 +958,7 @@ SymmetricTransformation EndGameKeyDefinition::get5Men2EqualPawnsSymTransformatio
   DECIDEPAWNSYMTRANSFORM2EQUALPAWNS(3, 4)
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 
 static SymmetricTransformation decidePawnTransform3EqualPawnsFlipi(EndGameKey key, int i, int j, int k) {
   const int pi = EndGameKeyDefinition::s_pawnPosToIndex[MIRRORCOLUMN(key.getPosition(i))];
@@ -997,7 +997,7 @@ static SymmetricTransformation decidePawnTransform3EqualPawnsFlipij(EndGameKey k
 
 #endif // _DEBUG
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 
 EndGamePosIndex _addPit(EndGamePosIndex addr, Player p) {
   addr <<= 1;
@@ -1319,7 +1319,7 @@ SymmetricTransformation EndGameKeyDefinition::get5Men3EqualPawnsSymTransformatio
   return TRANSFORM_NONE;
 }
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 
 void EndGameKeyDefinition::insertInitialPositions(EndGameTablebase &tablebase) const {
   const int wkPos = A1;
@@ -1434,7 +1434,7 @@ void EndGameKeyDefinition::doSelfCheck(bool checkSym, bool listUnused, bool orde
   selfCheckInit();
   SelfCheckStatusPrinter printStatus(this, key);
   Timer intervalPrinter(1);
-//#ifndef _DEBUG
+//#if !defined(_DEBUG)
   intervalPrinter.startTimer(1000,printStatus, true);
 //#endif
   selfCheck(key);
@@ -1481,7 +1481,7 @@ UINT64 EndGameKeyDefinition::selfCheckSummary(const SelfCheckStatusPrinter &stat
     listLongestUnusedSequence(*m_usedIndex, orderByLength);
   }
 
-#ifdef __NEVER__ // LIST_UNUSED
+#if defined(__NEVER__ )// LIST_UNUSED
   FILE *f = FOPEN(getTempFileName(toString() + _T("Unused.txt")), _T("w"));
   for(EndGamePosIndex i = m_selfCheckInfo.m_minIndex; i <= m_selfCheckInfo.m_maxIndex; i++) {
     if(m_usedIndex->contains(i)) continue;

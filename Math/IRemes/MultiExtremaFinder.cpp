@@ -5,7 +5,7 @@
 #include <Math/BigReal/BigRealResourcePool.h>
 #include "MultiExtremaFinder.h"
 
-#ifdef MULTITHREADEDEXTREMAFINDER
+#if defined(MULTITHREADEDEXTREMAFINDER)
 
 class ExtremumSearchParam {
   friend class ExtremumFinder;

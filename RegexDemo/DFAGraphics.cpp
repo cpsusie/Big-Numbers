@@ -2,7 +2,7 @@
 #include <Date.h>
 #include "DFAPainter.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 
 void DFA::paint(CWnd *wnd, CDC &dc, int currentState, int lastAcceptState) const {
   DFAPainter dp(*this, getClientRect(wnd).Size());

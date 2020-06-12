@@ -1,6 +1,6 @@
 #include "pch.h"
 
-#ifdef IS32BIT
+#if defined(IS32BIT)
 #define nextDigit nextInt
 #else
 #define nextDigit nextInt64

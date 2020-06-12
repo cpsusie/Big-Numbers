@@ -16,7 +16,7 @@ using namespace std;
 #define ELINE      3
 #define BOTTOMLINE COEFLINE + m_N + 4
 
-#ifdef LONGDOUBLE
+#if defined(LONGDOUBLE)
 #define DEFAULT_PRECISION 19
 #else
 #define DEFAULT_PRECISION 17
@@ -435,7 +435,7 @@ void Remes::genCppFunction(FILE *f) {
   genHeader(f);
   _ftprintf(f, _T("static unsigned char coefdata[] = {\n"));
   for(int i = 0; i <= m_N; i++) {
-#ifdef LONGDOUBLE
+#if defined(LONGDOUBLE)
     const double coef = getDouble(m_coef[i]);
 #else
     const double coef = m_coef[i];
@@ -482,7 +482,7 @@ void Remes::genCpp80BitFunction(FILE *f) {
     _ftprintf( f, _T("%s /* %s */\n"), i == m_N ? _T(" ") : _T(","), toString(coef).cstr());
   }
   _ftprintf( f, _T("};\n\n") );
-#ifdef LONGDOUBLE
+#if defined(LONGDOUBLE)
   TCHAR *realType = _T("Double80");
 #else
   TCHAR *realType = _T("double");

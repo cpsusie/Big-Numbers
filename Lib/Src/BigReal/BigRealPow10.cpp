@@ -90,7 +90,7 @@ int BigReal::getDecimalDigitCount(BRDigitTypex64 n) { // static
   }
 }
 
-#ifdef HAS_LOOP_DIGITCOUNT
+#if defined(HAS_LOOP_DIGITCOUNT)
 // Assume n = [1..1e19[
 int BigReal::getDecimalDigitCountLoop(BRDigitTypex64 n) { // static
   assert(n && (n < TENE19));

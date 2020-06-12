@@ -39,7 +39,7 @@ void exceptionTranslator(UINT u, EXCEPTION_POINTERS *pExp) {
 }
 
 bool getDebuggerPresent() {
-#ifndef _DEBUG
+#if !defined(_DEBUG)
   return false;
 #else
   static bool firstTime       = true;

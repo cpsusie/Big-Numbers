@@ -44,7 +44,7 @@ BigRealMatrix &operator*=(BigRealMatrix &Q, const RotationMatrix &P) {
   return Q;
 }
 
-#ifdef TEST_ROTATION
+#if defined(TEST_ROTATION)
 class RotationMatrix1 : public BigRealMatrix {
 public:
   RotationMatrix1(const BigRealMatrix &m, int row);
@@ -94,10 +94,10 @@ private:
   static const double m_minGamma;
 
   BigRealMatrix createH() const;
-#ifdef TEST_REDUCEEXACT
+#if defined(TEST_REDUCEEXACT)
   BigRealMatrix createHermiteReducingMatrix0(const BigRealMatrix &H) const;
 #endif // TEST_REDUCEEXACT
-#ifdef TEST_ORTHOGONALITY
+#if defined(TEST_ORTHOGONALITY)
   void          checkOrthogonality(          const BigRealMatrix &m) const;
 #endif // TEST_ORTHOGONALITY
   BigRealMatrix createHermiteReducingMatrix( const BigRealMatrix &H) const;
@@ -180,13 +180,13 @@ BigRealMatrix PSLQ::createH() const {
       H(row,column) = -rQuot(x[column]*x[row],d,m_digits);
     }
   }
-#ifdef TEST_ORTHOGONALITY
+#if defined(TEST_ORTHOGONALITY)
   checkOrthogonality(H);
 #endif // TEST_ORTHOGONALITY
   return H;
 }
 
-#ifdef TEST_ORTHOGONALITY
+#if defined(TEST_ORTHOGONALITY)
 void PSLQ::checkOrthogonality(const BigRealMatrix &m) const {
   tcout << _T("Checking ortogonality") << endl;
   const int columnCount = (int)m.getColumnCount();
@@ -202,7 +202,7 @@ void PSLQ::checkOrthogonality(const BigRealMatrix &m) const {
 }
 #endif // TEST_ORTHOGONALITY
 
-#ifdef TEST_REDUCEEXACT
+#if defined(TEST_REDUCEEXACT)
 // Returns NxN matrix D0 so D*H is diagonal
 BigRealMatrix PSLQ::createHermiteReducingMatrix0(const BigRealMatrix &H) const {
   BigRealMatrix D0 = BigRealMatrix::one(m_n,m_digits);
@@ -324,7 +324,7 @@ bool PSLQ::solve(UINT maxDigits) {
     AHQ.swapRows(r, r+1);
 
     if(r != m_n - 2) {   // Step 2: Corner
-#ifdef TEST_ROTATION
+#if defined(TEST_ROTATION)
       BigRealMatrix AHQTest = AHQ;
       AHQTest *= RotationMatrix1(AHQTest, r);
 #endif // TEST_ROTATION
@@ -332,7 +332,7 @@ bool PSLQ::solve(UINT maxDigits) {
     }
 
     // Step 3: Reduction
-#ifdef TEST_REDUCEEXACT
+#if defined(TEST_REDUCEEXACT)
     if(m_verbose&VERBOSE_MATRIX) {
       const BigRealMatrix D0    = createHermiteReducingMatrix0(AHQ);
       const BigRealMatrix D0AHQ = D0 * AHQ;

@@ -118,9 +118,6 @@
     <ClCompile Include="Polygon2D.cpp">
       <Filter>Source Files\Geometri</Filter>
     </ClCompile>
-    <ClCompile Include="Point2D.cpp">
-      <Filter>Source Files\Geometri</Filter>
-    </ClCompile>
     <ClCompile Include="Simplex.cpp">
       <Filter>Source Files\Matrix</Filter>
     </ClCompile>
@@ -262,6 +259,9 @@
     </ClCompile>
     <ClCompile Include="TrigonometricMode.cpp">
       <Filter>Source Files\Functions</Filter>
+    </ClCompile>
+    <ClCompile Include="Fixed.cpp">
+      <Filter>Source Files\Number Types</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -419,6 +419,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\Math\TrigonometricMode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Fixed.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

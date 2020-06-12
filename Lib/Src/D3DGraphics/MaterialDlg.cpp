@@ -2,7 +2,7 @@
 #include <MFCUtil/resource.h>
 #include <D3DGraphics/MaterialDlg.h>
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 

@@ -256,9 +256,6 @@
     <ClCompile Include="PixRectFont.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Fixed.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="PolygonCurve.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

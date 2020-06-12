@@ -10,7 +10,7 @@ FrameChars::FrameChars(_TUCHAR ul, _TUCHAR ur, _TUCHAR ll, _TUCHAR lr, _TUCHAR h
   m_vert = vert; // vertical line
 }
 
-#ifdef UNICODE
+#if defined(UNICODE)
 const FrameChars FrameChars::s_frames[] = {
   FrameChars(' ', ' ', ' ', ' ', ' ', ' ' )   // NOFRAME
  ,FrameChars(L'\u250C', L'\u2510', L'\u2514', L'\u2518', L'\u2500', L'\u2502' ) // SINGLE_FRAME

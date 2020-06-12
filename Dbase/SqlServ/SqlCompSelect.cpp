@@ -1349,7 +1349,7 @@ void SelectStmt::typeCheck() {
   if(!m_compiler.ok()) return;
   checkAggregation();
 
-#ifdef TRACECOMP
+#if defined(TRACECOMP)
   if(!m_compiler.ok()) return;
   if(m_whereClause != NULL) {
     _tprintf(_T("unreduced where <%s>:\n"),m_name.cstr());
@@ -1369,7 +1369,7 @@ void SelectStmt::typeCheck() {
   if(m_havingClause)
     m_havingClause = m_compiler.reducePredicate(m_havingClause,m_possibleHaving);
 
-#ifdef TRACECOMP
+#if defined(TRACECOMP)
   if(m_whereClause != NULL) {
     _tprintf(_T("reduced where <%s>:\n"),m_name.cstr());
     dumpSyntaxTree(m_whereClause);
@@ -1387,7 +1387,7 @@ void SelectStmt::typeCheck() {
   if(!m_compiler.ok()) return;
   findJoinSequence();
 
-#ifdef TRACECOMP
+#if defined(TRACECOMP)
   if(m_whereClause != NULL) {
     _tprintf(_T("reducedbykeypredicates where <%s>:\n"),m_name.cstr());
     dumpSyntaxTree(m_whereClause);
@@ -1405,7 +1405,7 @@ void SelectStmt::typeCheck() {
   if(m_whereClause)
     markColumnAttributes(WHERE ,m_whereClause );
 
-#ifdef TRACECOMP
+#if defined(TRACECOMP)
   for(i = 0; i < m_fromTable.size(); i++)
     m_fromTable[i]->dump();
 #endif
@@ -1873,7 +1873,7 @@ void SqlCompiler::genSelect(SyntaxNode *n) { // n == <SelectStmt>
   findHostVarIndex(n,hostVarCounter,HOSTVARSCANNERFLAG_ALLBUTINTO);
   findHostVarIndex(n,hostVarCounter,HOSTVARSCANNERFLAG_INTO      );
 
-#ifdef TRACECOMP
+#if defined(TRACECOMP)
   dumpSyntaxTree(n);
 #endif
 
@@ -1896,7 +1896,7 @@ void SqlCompiler::genSelect(SyntaxNode *n) { // n == <SelectStmt>
     m_code.appendDesc(m_selectOperators[0]->getDescription());
   }
 
-#ifdef TRACECOMP
+#if defined(TRACECOMP)
   if(ok())
     for(UINT i = 0; i < m_selectOperators.size(); i++)
       m_selectOperators[i]->dump();

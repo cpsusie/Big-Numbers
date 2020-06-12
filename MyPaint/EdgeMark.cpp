@@ -38,7 +38,7 @@ void EdgeMark::setPosition(const CPoint &p) {
   setVisible(true);
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 const TCHAR *typeToStr(EdgeMarkType type) {
   switch(type) {
 #define CASETYPE(t) case t##MARK:return _T(#t)
@@ -110,7 +110,7 @@ const EdgeMark *EdgeMarkArray::findEdgeMark(const CPoint &point) const {
   return NULL;
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 String EdgeMarkArray::toString() const {
   String result;
   for (size_t i = 0; i < size(); i++) {

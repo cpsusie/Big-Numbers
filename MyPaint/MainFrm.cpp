@@ -7,7 +7,7 @@
 #include "ApproximateFillDlg.h"
 #include "EraseToolSizedlg.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -169,7 +169,7 @@ void CMainFrame::updateTitle() {
   setWindowText(this, format(_T("%s - %dx%d"), (LPCTSTR)title, size.cx,size.cy));
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 void CMainFrame::AssertValid() const {
   __super::AssertValid();
 }

@@ -61,7 +61,7 @@ public:
     virtual void OnInitialUpdate();
     virtual void OnFinalRelease();
     virtual ~CMakeGifView();
-#ifdef _DEBUG
+#if defined(_DEBUG)
     virtual void AssertValid() const;
     virtual void Dump(CDumpContext &dc) const;
 #endif
@@ -74,7 +74,7 @@ protected:
     DECLARE_MESSAGE_MAP()
 };
 
-#ifndef _DEBUG  // debug version in MakeGifView.cpp
+#if !defined(_DEBUG  )// debug version in MakeGifView.cpp
 inline CMakeGifDoc *CMakeGifView::GetDocument()
    { return (CMakeGifDoc*)m_pDocument; }
 #endif

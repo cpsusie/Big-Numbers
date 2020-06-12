@@ -511,7 +511,7 @@ TableCursor::TableCursor(Database               &db      ,
   TableCursorKey startKey(keydef,beginKey,param.m_beginFieldCount, param.m_beginRelOp);
   TableCursorKey stopKey( keydef,endKey  ,param.m_endFieldCount  , param.m_endRelOp  );
 
-#ifdef DEBUGMODULE
+#if defined(DEBUGMODULE)
   if(beginKey) { _tprintf(_T("starttup:")); beginKey->dump(); }
   if(endKey  ) { _tprintf(_T("endKey  :")); endKey->dump();   }
   _tprintf(_T("startKey  (%d,%s):"),param.m_beginFieldCount,relOpString(param.m_beginRelOp)); startKey.dump();

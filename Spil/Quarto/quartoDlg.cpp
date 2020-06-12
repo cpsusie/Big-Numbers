@@ -6,7 +6,7 @@
 #include <D3DGraphics/D3Camera.h>
 #include "QuartoDlg.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -359,7 +359,7 @@ void CQuartoDlg::OnLButtonDown(UINT nFlags, CPoint point) {
   }
   const Field f = getFieldFromPoint(point);
   if(f.isField()) {
-#ifdef _DEBUG
+#if defined(_DEBUG)
     if(nFlags & MK_CONTROL) {
       selectField(f);
       return;

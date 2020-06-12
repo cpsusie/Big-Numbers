@@ -3,7 +3,7 @@
 #include <ByteFile.h>
 #include <CompressFilter.h>
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 
 void EndGameTablebase::compressNew(ByteOutputStream &s) {
   throwException(_T("%s:%s:Not supported"), getName().cstr(), __TFUNCTION__);
@@ -11,7 +11,7 @@ void EndGameTablebase::compressNew(ByteOutputStream &s) {
 
 void EndGameTablebase::convert() {
   throwException(_T("%s:%s:Not supported"), getName().cstr(), __TFUNCTION__);
-#ifdef __NEVER__
+#if defined(__NEVER__)
   String /*f1Src,f1Dst, f2Src,f2Dst, f3Src,f3Dst, */f4Src,f4Dst/*, f5Src,f5Dst*/ ,f6Src,f6Dst;
   try {
 /*

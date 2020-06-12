@@ -33,7 +33,7 @@ namespace UnitTestKeyPage {
         page.setChild(i,i+1);
         verify(page.getChild(i) == i+1);
       }
-    #ifdef _DEBUG
+    #if defined(_DEBUG)
       try {
         page.setItemCount(page.getMaxItemCount()+1);
         verify(false);
@@ -66,7 +66,7 @@ namespace UnitTestKeyPage {
         fields.incrAll();
       }
 
-    #ifdef _DEBUG
+    #if defined(_DEBUG)
       try {
         KeyPageItem item;
         item.m_key = fields.getKey();
@@ -85,7 +85,7 @@ namespace UnitTestKeyPage {
       item.m_child = i;
       keyPage.setItem(i,item);
 
-    #ifdef _DEBUG
+    #if defined(_DEBUG)
       try {
         keyPage.itemCountIncr();
         verify(false);
@@ -100,7 +100,7 @@ namespace UnitTestKeyPage {
         verify(itemsEqual(fields, item, itemList[i]));
       }
 
-    #ifdef _DEBUG
+    #if defined(_DEBUG)
       try {
         KeyPageItem item;
         keyPage.setItem(0, item);
@@ -151,7 +151,7 @@ namespace UnitTestKeyPage {
         verify( itemsEqual(fields,item,itemList[i]) );
       }
 
-    #ifdef _DEBUG
+    #if defined(_DEBUG)
       try {
         KeyPageItem item;
         item.m_key = fields.getKey();
@@ -192,7 +192,7 @@ namespace UnitTestKeyPage {
         keyPage.removeItem(1);
       }
 
-    #ifdef _DEBUG
+    #if defined(_DEBUG)
       try {
         keyPage.removeItem(1);
         verify(false);

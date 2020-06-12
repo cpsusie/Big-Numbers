@@ -9,7 +9,7 @@
 
 //#define TESTRANDOM // define this to test random-integers
 
-#ifdef TESTRANDOM
+#if defined(TESTRANDOM)
 
 class IntegerStat {
 public:

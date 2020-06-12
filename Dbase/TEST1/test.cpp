@@ -18,7 +18,7 @@ static char sqlapi_program_id[240] = {
 #include "stdafx.h"
 
 
-#ifdef __NEVER__
+#if defined(__NEVER__)
   EXEC SQL INCLUDE SQLCA;
 #endif
 #line 3 "C:/mytools2015/Dbase/TEST1/test.sqc"
@@ -28,7 +28,7 @@ sqlca sqlca;
 
 
 
-#ifdef __NEVER__
+#if defined(__NEVER__)
   EXEC SQL BEGIN DECLARE SECTION;
 #endif
 #line 5 "C:/mytools2015/Dbase/TEST1/test.sqc"
@@ -60,7 +60,7 @@ sqlca sqlca;
   static Date     dddd1;
   static Date     dddd2;
 
-#ifdef __NEVER__
+#if defined(__NEVER__)
   EXEC SQL END   DECLARE SECTION;
 #endif
 #line 32 "C:/mytools2015/Dbase/TEST1/test.sqc"
@@ -95,7 +95,7 @@ static void selectff() {
 
 static void selectMyTable() {
 
-#ifdef __NEVER__
+#if defined(__NEVER__)
   exec sql
     select firstcolumn
       into :firstcolumn
@@ -129,7 +129,7 @@ static void selectMyTable() {
 
 static void insertMyTable() {
 
-#ifdef __NEVER__
+#if defined(__NEVER__)
   exec sql
    insert into mytable (
       FIRSTCOLUMN
@@ -251,7 +251,7 @@ static void insertMyTable() {
 
 static void insertTabDate() {
 
-#ifdef __NEVER__
+#if defined(__NEVER__)
   exec sql
 	INSERT INTO mytable (
 	   firstcolumn
@@ -318,7 +318,7 @@ static void insertTabDate() {
 
 static void insertLilleTable() {
 
-#ifdef __NEVER__
+#if defined(__NEVER__)
   EXEC SQL
     insert into lilletable (
       firstcolumn
@@ -371,7 +371,7 @@ static void insertLilleTable() {
 
 static void selectLilleTable() {
 
-#ifdef __NEVER__
+#if defined(__NEVER__)
   EXEC SQL
     select
       " ",
@@ -424,7 +424,7 @@ static void selectLilleTable() {
 
 static void dropMyTable() {
 
-#ifdef __NEVER__
+#if defined(__NEVER__)
   exec sql
     drop table mytable
   end-exec
@@ -472,7 +472,7 @@ static void insertRowsIntoMyTable() {
 
 static void createMyTable() {
 
-#ifdef __NEVER__
+#if defined(__NEVER__)
   exec sql
     create table mytable (
       firstcolumn char(30)  not null,
@@ -511,7 +511,7 @@ static void createMyTable() {
 
 static void createLilleTable() {
 
-#ifdef __NEVER__
+#if defined(__NEVER__)
   exec sql
     drop table lilletable
   end-exec
@@ -527,7 +527,7 @@ static void createLilleTable() {
   checkSql();
 
 
-#ifdef __NEVER__
+#if defined(__NEVER__)
   exec sql
     create table lilletable (
       firstcolumn varchar(240) not null,
@@ -550,7 +550,7 @@ static void createLilleTable() {
   checkSql();
 
 
-#ifdef __NEVER__
+#if defined(__NEVER__)
   exec sql
     create index ddd on lilletable (ii,dd,firstcolumn)
   end-exec
@@ -566,7 +566,7 @@ static void createLilleTable() {
   checkSql();
 
 
-#ifdef __NEVER__
+#if defined(__NEVER__)
   exec sql
     create index fff on lilletable (dd,ii,firstcolumn)
   end-exec
@@ -609,7 +609,7 @@ static void insertRowsIntoTabdate() {
 
 static void dbConnect() {
 
-#ifdef __NEVER__
+#if defined(__NEVER__)
   EXEC SQL CONNECT TO :dbname user :username using :password;
 #endif
 #line 338 "C:/mytools2015/Dbase/TEST1/test.sqc"
@@ -643,7 +643,7 @@ static void dbConnect() {
 
 static void dbDisconnect() {
 
-#ifdef __NEVER__
+#if defined(__NEVER__)
   EXEC SQL CONNECT RESET;
 #endif
 #line 344 "C:/mytools2015/Dbase/TEST1/test.sqc"

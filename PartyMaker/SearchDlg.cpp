@@ -5,7 +5,7 @@
 #include "EditTagDlg.h"
 #include "ShowDuplicatesDlg.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 

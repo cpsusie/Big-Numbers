@@ -30,7 +30,7 @@ private:
   inline size_t getHistorySize() const {
     return m_editHistory.size();
   }
-#ifdef _DEBUG
+#if defined(_DEBUG)
   void checkInvariant(int line) const;
 #define CHECKINVARIANT checkInvariant(__LINE__)
 #else
@@ -89,7 +89,7 @@ public:
   bool canRedo() const;
 
 	virtual ~CHexViewDoc();
-#ifdef _DEBUG
+#if defined(_DEBUG)
 	virtual void AssertValid() const;
 	virtual void Dump(CDumpContext& dc) const;
 #endif

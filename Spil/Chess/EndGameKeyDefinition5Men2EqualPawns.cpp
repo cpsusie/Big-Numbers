@@ -8,7 +8,7 @@
 #define KKP2_WITH_PAWN(          key)             (KK_WITH_PAWN_2MEN(key) * P2POSCOUNT + key.getP2OffDiagIndex())
 #define KKP2_WITH_PAWN_INDEX(    key)             ADDPIT(key, KKP2_WITH_PAWN(key))
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 
 static EndGamePosIndex leftWkkP2WithPawnIndex(EndGameKey key, int pawnIndex) {
   EndGamePosIndex result = LEFTWKK_ONE_PAWN_3MEN(key, pawnIndex);
@@ -106,7 +106,7 @@ SymmetricTransformation EndGameKeyDefinition5Men2EqualPawns::getSymTransformatio
   return get5Men2EqualPawnsSymTransformation(key);
 }
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 
 void EndGameKeyDefinition5Men2EqualPawns::insertInitialPositions(EndGameTablebase &tablebase) const {
   const int wkPos = A1;

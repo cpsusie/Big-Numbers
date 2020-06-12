@@ -4,7 +4,7 @@
 #include "dx9_rectDemoDlg.h"
 #include "afxdialogex.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -13,7 +13,7 @@ public:
   CAboutDlg();
 
 // Dialog Data
-#ifdef AFX_DESIGN_TIME
+#if defined(AFX_DESIGN_TIME)
   enum { IDD = IDD_ABOUTBOX };
 #endif
 
@@ -834,7 +834,7 @@ String getD3DErrorMsg(HRESULT hr) {
   }
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 
 void checkD3DResult(TCHAR *fileName, int line, HRESULT hr) {
   if(hr != D3D_OK) {

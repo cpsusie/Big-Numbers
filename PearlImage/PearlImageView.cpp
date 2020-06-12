@@ -3,7 +3,7 @@
 #include "PearlImageDoc.h"
 #include "PearlImageView.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -95,7 +95,7 @@ void CPearlImageView::paintBackgroundAndEdge(CDC &dc) {
       m_edgeMark.paintAll(dc);
     }
 
-#ifdef __NEVER__
+#if defined(__NEVER__)
   debugLog(_T("clRect.size:(%3d,%3d) vtl:(%3d,%3d) em:%s\n")
           ,clRect.Size().cx, clRect.Size().cy
           ,vtl.x,vtl.y
@@ -159,7 +159,7 @@ void CPearlImageView::OnEndPrinting(CDC *pDC, CPrintInfo *pInfo) {
   m_printInfo = NULL;
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 void CPearlImageView::AssertValid() const {
   __super::AssertValid();
 }

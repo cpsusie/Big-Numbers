@@ -4,7 +4,7 @@
 
 EndGameKeyDefinition2EqualPawns::EndGameKeyDefinition2EqualPawns(PieceKey pk23)
 : EndGameKeyDefinitionDupletsAllowed(pk23) {
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   setPawnsOwner();
 #endif
 }
@@ -12,12 +12,12 @@ EndGameKeyDefinition2EqualPawns::EndGameKeyDefinition2EqualPawns(PieceKey pk23)
 EndGameKeyDefinition2EqualPawns::EndGameKeyDefinition2EqualPawns(PieceKey pk2, PieceKey pk34)
 : EndGameKeyDefinitionDupletsAllowed(pk2, pk34)
 {
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   setPawnsOwner();
 #endif
 }
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 void EndGameKeyDefinition2EqualPawns::setPawnsOwner() {
   switch(getPieceCount()) {
   case 4 :

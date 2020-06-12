@@ -81,7 +81,7 @@ public:
   friend class PackedArrayReverseIterator;
   friend class PackedFileArray;
 
-#ifdef _DEBUG_PACKEDARRAY
+#if defined(_DEBUG_PACKEDARRAY)
   static bool s_trace;
   void dump(bool fixedPos = false) const;
   void markPointer(const void *p, int offset = 0) const;

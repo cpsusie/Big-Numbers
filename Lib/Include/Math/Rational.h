@@ -231,7 +231,7 @@ inline double   getDouble(  const Rational &r) { return (double)r.getNumerator()
 Double80        getDouble80(const Rational &r);
 
 inline Real     getReal(    const Rational &r) {
-#ifdef LONGDOUBLE
+#if defined(LONGDOUBLE)
   return getDouble80(r);
 #else
   return getDouble(r);
@@ -325,7 +325,7 @@ inline bool operator!=(const Rational &x, const Rational &y) {
 char    *rattoa(char    *dst, const Rational &r, int radix);
 wchar_t *rattow(wchar_t *dst, const Rational &r, int radix);
 
-#ifdef _UNICODE
+#if defined(_UNICODE)
 #define _rattot rattow
 #else
 #define _rattot rattoa
@@ -336,7 +336,7 @@ String toString(const Rational &r, StreamSize precision=0, StreamSize width=0, F
 Rational strtorat(const char *s   , char    **end, int radix);
 Rational wcstorat(const wchar_t *s, wchar_t **end, int radix);
 
-#ifdef _UNICODE
+#if defined(_UNICODE)
 #define _tcstorat wcstorat
 #else
 #define _tcstorat strtorat

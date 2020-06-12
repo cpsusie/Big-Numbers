@@ -83,7 +83,7 @@ public:
   static bool keyPressed();
 };
 
-#ifdef UNICODE
+#if defined(UNICODE)
 #define KEY_EVENT_RECORD_TCHAR(keyEvent) ((keyEvent).uChar.UnicodeChar)
 #else
 #define KEY_EVENT_RECORD_TCHAR(keyEvent) ((keyEvent).uChar.AsciiChar)

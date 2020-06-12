@@ -70,7 +70,7 @@ ChessPlayerRequest::~ChessPlayerRequest() {
 void ChessPlayerRequest::addref() {
   if(m_param != NULL) {
     const int refCount = m_param->addref();
-#ifdef TEST_REFCOUNT
+#if defined(TEST_REFCOUNT)
     verbose(_T("request(%s).addRef(). refCount=%d\n"), toString().cstr(), refCount);
 #endif
   }
@@ -83,7 +83,7 @@ void ChessPlayerRequest::release() {
       SAFEDELETE(m_param);
     }
     m_param = NULL;
-#ifdef TEST_REFCOUNT
+#if defined(TEST_REFCOUNT)
     verbose(_T("request(%s).release(). refCount=%d\n"), toString().cstr(), refCount);
 #endif
   }

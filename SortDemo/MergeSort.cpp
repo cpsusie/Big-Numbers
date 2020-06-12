@@ -2,7 +2,7 @@
 
 // #define DUMPLISTALLOCATOR
 
-#ifdef DUMPLISTALLOCATOR
+#if defined(DUMPLISTALLOCATOR)
 #include <MyUtil.h>
 #endif // DUMPLISTALLOCATOR
 
@@ -30,7 +30,7 @@ private:
   ListAllocator(const ListAllocator &src);            // Not defined. Class not cloneable
   ListAllocator &operator=(const ListAllocator &src); // Not defined. Class not cloneable
 
-#ifdef DUMPLISTALLOCATOR
+#if defined(DUMPLISTALLOCATOR)
   void dumpArray();
 #endif // DUMPLISTALLOCATOR
 public:
@@ -41,7 +41,7 @@ public:
 };
 
 ListAllocator::~ListAllocator() {
-#ifdef DUMPLISTALLOCATOR
+#if defined(DUMPLISTALLOCATOR)
   dumpArray();
 #endif // DUMPLISTALLOCATOR
   for(size_t i = 0; i < m_bufferArray.size(); i++) {
@@ -50,7 +50,7 @@ ListAllocator::~ListAllocator() {
   m_bufferArray.clear();
 }
 
-#ifdef DUMPLISTALLOCATOR
+#if defined(DUMPLISTALLOCATOR)
 void ListAllocator::dumpArray() {
   FILE *f = FOPEN(_T("c:\\temp\\ListAllocator.txt"), _T("w"));
   for(size_t i = 0; i < m_bufferArray.size(); i++) {
@@ -99,11 +99,11 @@ public:
 
 #define COMBINEDSORT
 
-#ifdef COMBINEDSORT
+#if defined(COMBINEDSORT)
 
 //#define MAKEPLOT
 
-#ifdef MAKEPLOT
+#if defined(MAKEPLOT)
 int MergeMinSize = 120;
 #else
 #define MergeMinSize 300
@@ -112,7 +112,7 @@ int MergeMinSize = 120;
 #endif
 
 void MergeSortAnyWidth::sort(void *list, size_t n) {
-#ifdef COMBINEDSORT
+#if defined(COMBINEDSORT)
   if(n < MergeMinSize) {
     quickSort5OptimalPivot5(list, n, m_width, m_comparator);
     return;
@@ -173,7 +173,7 @@ public:
 };
 
 template <class T> void MergeSortClass<T>::sort(T *list, size_t n) {
-#ifdef COMBINEDSORT
+#if defined(COMBINEDSORT)
   if(n < MergeMinSize) {
     quickSort5OptimalPivot5(list, n, sizeof(T), m_comparator);
     return;
@@ -243,9 +243,9 @@ void mergeSort(void *base, size_t nelem, size_t width, AbstractComparator &compa
   }
 }
 
-#ifdef COMBINEDSORT
+#if defined(COMBINEDSORT)
 
-#ifdef MAKEPLOT
+#if defined(MAKEPLOT)
 
 class IntComparator : public AbstractComparator {
 public:

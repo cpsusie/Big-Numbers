@@ -34,7 +34,7 @@ double static getTime(TimeMeasureType timeType) {
 
 #define NEW_MEASURE_METHOD
 
-#ifdef NEW_MEASURE_METHOD
+#if defined(NEW_MEASURE_METHOD)
 static double measureThreadTime(MeasurableFunction &ftm) {
 //  UINT64 interruptTime;
 //  QueryInterruptTimePrecise(&interruptTime);
@@ -66,7 +66,7 @@ static double measureThreadTime(MeasurableFunction &ftm) {
 }
 #endif
 double measureTime(MeasurableFunction &ftm, TimeMeasureType timeType) {
-#ifdef NEW_MEASURE_METHOD
+#if defined(NEW_MEASURE_METHOD)
   switch(timeType) {
   case MEASURE_THREADTIME : return measureThreadTime( ftm);
   case MEASURE_PROCESSTIME:

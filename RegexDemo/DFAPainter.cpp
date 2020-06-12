@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "DFAPainter.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 
 // ----------------------------------------- DFATransition ----------------------------------------
 

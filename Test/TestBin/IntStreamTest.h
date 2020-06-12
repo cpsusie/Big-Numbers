@@ -4,10 +4,10 @@
 
 void testIntStream();
 
-#ifdef __NEVER__
+#if defined(__NEVER__)
 
 #define USE_INT64_AS_INTTYPE
-#ifdef USE_INT64_AS_INTTYPE
+#if defined(USE_INT64_AS_INTTYPE)
 typedef INT64           _inttype;
 typedef UINT64          _uinttype;
 #define MINIVALUE       _I64_MIN
@@ -43,7 +43,7 @@ typedef _uint128        _uinttype;
 
 #endif // USE_INT64_AS_INTTYPE
 
-#ifdef _UNICODE
+#if defined(_UNICODE)
 #define _itypetot       _itypetow
 #define _uitypetot      _uitypetow
 #define _tcstoitype     _wcstoitype

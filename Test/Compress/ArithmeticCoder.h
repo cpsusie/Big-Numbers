@@ -44,7 +44,7 @@ private:
     return m_symbolTable[ch];
   }
 
-#ifdef USE_FAST_SYMBOL_CONVERSION
+#if defined(USE_FAST_SYMBOL_CONVERSION)
   void buildTotalsMap();
 
   inline int convertSymbolToInt(UINT count, Symbol &s) const {

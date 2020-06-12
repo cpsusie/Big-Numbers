@@ -66,7 +66,7 @@ typedef enum {
  ,WHITE_CHECKMATE
  ,BLACK_CHECKMATE
  ,STALEMATE
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
  ,POSITION_REPEATED_3_TIMES
  ,NO_CAPTURE_OR_PAWNMOVE
 #endif
@@ -304,7 +304,7 @@ String         findShortestKnightRoute(          UINT from, UINT to);
 #define GET_MINUTES(s)             (((int)((s)/60))%60)
 #define GET_SECONDS(s)             (( s)%60)
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 const FieldSet &getFieldsBetween(                int pos1, int pos2                    );
 #else
 FieldSet        getFieldsBetween(                int pos1, int pos2                    );
@@ -356,7 +356,7 @@ public:
   const MoveDirection   m_direction, m_oppositeDirection;
   PositionArray         m_fields;
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
   const TCHAR           *m_debugStr;
   Direction(MoveDirection direction, PositionArray fields, const TCHAR *debugStr)
   : m_direction(direction)
@@ -395,7 +395,7 @@ public:
   const AttackAttribute m_attr;
   const int             m_pos;
   const int             m_index;
-#ifdef _DEBUG
+#if defined(_DEBUG)
   const String          m_debugStr;
   static String makeDebugString(int pos, PositionArray lower, PositionArray upper);
 #endif
@@ -406,7 +406,7 @@ public:
     , m_attr(attr)
     , m_pos(pos)
     , m_index(index)
-#ifdef _DEBUG
+#if defined(_DEBUG)
     , m_debugStr(makeDebugString(pos, lower, upper))
 #endif
   {
@@ -432,7 +432,7 @@ public:
   const FieldColor      m_fieldColor;
   const QuarterSquare   m_square;
   const TCHAR           *m_name;
-#ifdef _DEBUG
+#if defined(_DEBUG)
   const String          m_debugStr;
   static String makeDebugString(int           pos
                                ,const TCHAR   *name
@@ -544,7 +544,7 @@ public:
   inline PlayerSignature getPlayerSignature(Player player) const {
     return m_playerSignature[player];
   }
-#ifdef TEST_HASHFACTOR
+#if defined(TEST_HASHFACTOR)
   static int hashFactor;
   long hashCode() const;
 #else
@@ -620,7 +620,7 @@ private:
   PieceKey                     m_pieceKey;
   GameUpdateFunction           m_doMove, m_updateWhenCaptured;
 
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
   UINT                         m_materialValue;
   BishopFlags                  m_bishopFlag; // Only used for bishops (={WHITEFIELD_BISHOP,BLACKFIELD_BISHOP} depending on the fieldcolor)
   void initBishopMask(int pos);
@@ -739,7 +739,7 @@ public:
   MoveBase &setNoMove();
   MoveBase transform(const Game &game, bool swapPlayers) const;
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   MoveBase &swapFromTo();
 #endif
 
@@ -771,7 +771,7 @@ public:
   inline PieceType getCapturedPieceType() const {
     return m_capturedPiece ? m_capturedPiece->getType() : NoPiece;
   }
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   Move makeBackMove() const;
 #endif
 };
@@ -957,7 +957,7 @@ public:
 bool operator==(const GameKey &key1, const GameKey &key2);
 bool operator!=(const GameKey &key1, const GameKey &key2);
 
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
 
 typedef int (PlayerState::*ScoreEvaluator)() const;
 
@@ -1015,7 +1015,7 @@ public:
 //FieldSet m_attackingWhitePawnPositions, m_attackingBlackPawnPositions;
   AttackSetInfo() {}
   AttackSetInfo(const FieldInfo &info);
-#ifdef _DEBUG
+#if defined(_DEBUG)
   void dump() const;
 #endif // _DEBUG
   static void initArray();
@@ -1029,7 +1029,7 @@ public:
   int                m_checkingSDAPosition;   // Only valid for enemyState.m_kingAttackState == KING_SD_ATTACKED (Knight or Pawn)
   KingAttackState    m_kingAttackState;       // Any combination of KING_NOT_ATTACKED,KING_ATTACKED_FROM_ROW,-COLUMN,-DIAG1,-DIAG2,-KNIGHT and KING_MANY_ATTACKS
 
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
   int                m_totalMaterial;         // Sum of m_materialValue of not captured pieces belonging to player
   int                m_positionalScore;       // Sum of positional scores for not captured pieces belonging to player
   BishopFlags        m_bishopFlags;           // Any combination of WHITEFIELD_BISHOP and BLACKFIELD_BISHOP
@@ -1048,7 +1048,7 @@ class GameStackElement : public Move {
 public:
   PlayerStateToPush  m_savedState[2];         // One for each player
   GameKey            m_gameKey;
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
   UINT               m_lastCaptureOrPawnMove;
 #endif
 };
@@ -1057,7 +1057,7 @@ class PlayerState : public PlayerStateToPush {
   friend class Game;
 
 private:
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
   int evaluateNormalPlay()                   const;
   int evaluateNormalPlayWithoutCastleScore() const;
   int evaluateEndGame()                      const;
@@ -1101,7 +1101,7 @@ public:
   Piece       *findUnusedPiece(PieceType pieceType);
   const Piece *getNonKingPieceOnBoardByIndex(int n) const;                      // Returns the n'th non-king piece on board. n=[0..15]
   void         setKingAttackState();
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   bool         setKingAttackStateBackMove();
 #endif
 };
@@ -1135,7 +1135,7 @@ private:
   MoveGenerator              *m_moveGenerator[4];
   bool                        m_setupMode;
 
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
   UINT                        m_maxPliesWithoutCaptureOrPawnMove;
   UINT                        m_lastCaptureOrPawnMove;
   UINT                        m_maxPositionRepeat;
@@ -1492,7 +1492,7 @@ public:
   void unTryMove();                       // Undo move done with tryMove and restores gamestate without popping it (should be done with popState)
 
 
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
   String toUCIString() const;
   String toFENString() const;             // Current position in FEN-format
   Game &fromFENString(const String &s);

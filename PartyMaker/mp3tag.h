@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef __NEVER__
+#if defined(__NEVER__)
 
 #pragma warning(disable:4786)
 #include <fstream.h>
@@ -8,7 +8,7 @@
 #include <id3.h>
 #include <id3/tag.h>
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #pragma comment(lib,"c:/mytools/lib/MTDebug/id3lib.lib")
 #pragma comment(lib,"c:/mytools/lib/MTDebug/zlib.lib")
 #else

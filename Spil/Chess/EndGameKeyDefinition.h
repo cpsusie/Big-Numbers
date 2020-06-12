@@ -4,8 +4,8 @@
 #include <FileNameSplitter.h>
 #include "EndGameKey.h"
 
-#ifdef _DEBUG
-#ifdef NEWCOMPRESSION
+#if defined(_DEBUG)
+#if defined(NEWCOMPRESSION)
 #define DEBUG_NEWCOMPRESSION
 #endif
 #endif
@@ -62,12 +62,12 @@ public:
 };
 
 typedef enum {
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   ALLFORWARDPOSITIONS,   // needed only in makeendgame
   ALLRETROPOSITIONS  ,   // needed only in makeendgame
   ALLTABLEBASE       ,   // needed only in makeendgame
   UNDEFINEDKEYSLOG   ,   // needed only in makeendgame
-#ifdef DEBUG_NEWCOMPRESSION
+#if defined(DEBUG_NEWCOMPRESSION)
   COMPRESSEDDUMP     ,
 #endif
 #else // !TABLEBASE_BUILDER
@@ -78,7 +78,7 @@ typedef enum {
 
 typedef UINT64 EndGamePosIndex;
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 class KeyDefinitionSelfCheckInfo {
 public:
   EndGamePosIndex m_minIndex, m_maxIndex;
@@ -109,7 +109,7 @@ protected:
 
   PieceKey                  m_pieceKey[MAX_ENDGAME_PIECECOUNT];
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   mutable PositionSignature m_positionSignature;
   mutable String            m_shortName;
   mutable String            m_longName;
@@ -155,7 +155,7 @@ protected:
   static SymmetricTransformation get5Men2EqualPawnsSymTransformation( EndGameKey key);
   static SymmetricTransformation get5Men3EqualPawnsSymTransformation( EndGameKey key);
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   mutable KeyDefinitionSelfCheckInfo m_selfCheckInfo;
   mutable double                     m_checkStartTime;
   mutable BitSet                    *m_usedIndex;
@@ -209,7 +209,7 @@ public:
   int        findKeyIndexByCount(PieceKey pieceKey, int n) const;
 
   inline PieceKey   getPieceKey(        UINT i) const {
-#ifdef _DEBUG
+#if defined(_DEBUG)
     if(i >= m_totalPieceCount) {
       throwInvalidArgumentException(__TFUNCTION__, _T("index %d out of range. totalPieceCount=%d"), i, m_totalPieceCount);
     }
@@ -230,7 +230,7 @@ public:
   EndGameKey         getNormalizedKey(   EndGameKey key, EndGamePosIndex *index = NULL) const; // will return keys' index in index if != NULL
   void               validateKey(        EndGameKey key, const TCHAR *msg) const;
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   const PositionSignature  &getPositionSignature()   const;
   virtual void             insertInitialPositions(EndGameTablebase &tablebase) const;
   const String            &toString(bool longNames = false) const;
@@ -299,7 +299,7 @@ public:
   }
 };
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 
 #define DECLARE_SELFCHECK                                                                 \
   void selfCheck(EndGameKeyWithOccupiedPositions &key) const;                             \
@@ -368,7 +368,7 @@ protected:
   EndGameKeyDefinitionDupletsAllowed(PieceKey pk23);
   EndGameKeyDefinitionDupletsAllowed(PieceKey pk2, PieceKey pk34);
   EndGameKeyDefinitionDupletsAllowed(PieceKey pk2, PieceKey pk3, PieceKey pk45);
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   static bool keysMatch23Equal( EndGameKey k1, EndGameKey k2);
   static bool keysMatch34Equal( EndGameKey k1, EndGameKey k2);
   static bool keysMatch45Equal( EndGameKey k1, EndGameKey k2);
@@ -379,7 +379,7 @@ protected:
 public:
   EndGameKey getEndGameKey(const GameKey &gameKey) const;
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   bool isDupletsAllowed() const {
     return true;
   }
@@ -414,7 +414,7 @@ public:
 
 class EndGameKeyDefinition4Men2Equal : public EndGameKeyDefinitionDupletsAllowed {
 private:
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   void scanPositions(EndGameKeyWithOccupiedPositions &key, int pIndex, bool allPreviousOnDiag) const;
 #endif
 
@@ -448,7 +448,7 @@ public:
 
 class EndGameKeyDefinition5Men2Equal : public EndGameKeyDefinitionDupletsAllowed {
 private:
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   void scanPositions(EndGameKeyWithOccupiedPositions &key, int pIndex, bool allPreviousOnDiag) const;
 #endif
 
@@ -469,7 +469,7 @@ public:
 
 class EndGameKeyDefinition5Men3Equal : public EndGameKeyDefinitionDupletsAllowed {
 private:
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   void scanPositions(EndGameKeyWithOccupiedPositions &key, int pIndex, bool allPreviousOnDiag) const;
 #endif
 
@@ -503,7 +503,7 @@ public:
 
 class EndGameKeyDefinition6Men2Equal : public EndGameKeyDefinitionDupletsAllowed {
 private:
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   void scanPositions(EndGameKeyWithOccupiedPositions &key, int pIndex, bool allPreviousOnDiag) const;
 #endif
 
@@ -524,7 +524,7 @@ public:
 
 class EndGameKeyDefinition6Men2Pairs : public EndGameKeyDefinitionDupletsAllowed {
 private:
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   void scanPositions(EndGameKeyWithOccupiedPositions &key, int pIndex, bool allPreviousOnDiag) const;
 #endif
 
@@ -545,7 +545,7 @@ public:
 
 class EndGameKeyDefinition6Men3Equal : public EndGameKeyDefinitionDupletsAllowed {
 private:
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   void scanPositions(EndGameKeyWithOccupiedPositions &key, int pIndex, bool allPreviousOnDiag) const;
 #endif
 
@@ -564,7 +564,7 @@ public:
   DECLARE_KEYSEQUAL;
 };
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 class PawnOwner {
 private:
   unsigned char m_owner; // 1 bit for each pawn. 0 = WHITEPLAYER, 1 = BLACKPLAYER
@@ -582,7 +582,7 @@ public:
 #endif
 
 class EndGameKeyDefinition1Pawn : public EndGameKeyDefinitionDupletsNotAllowed {
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 private:
   PawnOwner m_pawnOwner;
   void setPawnOwner();
@@ -593,7 +593,7 @@ protected:
   EndGameKeyDefinition1Pawn(PieceKey pk2, PieceKey pk3, PieceKey pk4);
   SymmetricTransformation getSymTransformation(EndGameKey key) const;
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   Player getPawnOwner() const {
     return m_pawnOwner.getOwner(0);
   }
@@ -603,7 +603,7 @@ typedef void (EndGameKeyDefinition1Pawn::*PositionScanner1Pawn)(EndGameKeyWithOc
 
 public:
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   void insertInitialPositions(EndGameTablebase &tablebase) const;
 #endif
   DECLARE_SELFCHECK;
@@ -649,7 +649,7 @@ public:
 
 class EndGameKeyDefinition5Men1Pawn2Equal : public EndGameKeyDefinitionDupletsAllowed {
 private:
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   void scanPositions( EndGameKeyWithOccupiedPositions &key, int pIndex) const;
 #endif
 
@@ -664,7 +664,7 @@ public:
   }
   SymmetricTransformation getSymTransformation(EndGameKey key) const;
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   void insertInitialPositions(EndGameTablebase &tablebase) const;
 #endif
   DECLARE_SELFCHECK;
@@ -672,7 +672,7 @@ public:
 };
 
 class EndGameKeyDefinition2Pawns : public EndGameKeyDefinitionDupletsNotAllowed {
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 private:
   PawnOwner m_pawnOwner;
   void setPawnOwners();
@@ -683,7 +683,7 @@ protected:
   EndGameKeyDefinition2Pawns(PieceKey pk2, PieceKey pk3, PieceKey pk4);
   SymmetricTransformation getSymTransformation(EndGameKey key) const;
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   Player getPawnOwner(int index) const {
     return m_pawnOwner.getOwner(index);
   }
@@ -692,7 +692,7 @@ typedef void (EndGameKeyDefinition2Pawns::*PositionScanner2Pawns)(EndGameKeyWith
 #endif
 
 public:
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   void insertInitialPositions(EndGameTablebase &tablebase) const;
 #endif
 
@@ -700,7 +700,7 @@ public:
 };
 
 class EndGameKeyDefinition2EqualPawns : public EndGameKeyDefinitionDupletsAllowed {
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 private:
   PawnOwner m_pawnsOwner;
   void setPawnsOwner();
@@ -708,7 +708,7 @@ private:
 protected:
   EndGameKeyDefinition2EqualPawns(PieceKey pk23);
   EndGameKeyDefinition2EqualPawns(PieceKey pk2, PieceKey pk34);
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   Player getPawnsOwner() const {
     return m_pawnsOwner.getOwner(0);
   }
@@ -743,14 +743,14 @@ public:
 
 class EndGameKeyDefinition4Men2EqualPawns: public EndGameKeyDefinition2EqualPawns {
 private:
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   void scanPositions(EndGameKeyWithOccupiedPositions &key, int pIndex) const;
 #endif
 
 public:
   EndGameKeyDefinition4Men2EqualPawns(PieceKey pk23);
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   void insertInitialPositions(EndGameTablebase &tablebase) const;
 #endif
 
@@ -769,14 +769,14 @@ public:
 
 class EndGameKeyDefinition5Men2EqualPawns: public EndGameKeyDefinition2EqualPawns {
 private:
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   void scanPositions(EndGameKeyWithOccupiedPositions &key, int pIndex) const;
 #endif
 
 public:
   EndGameKeyDefinition5Men2EqualPawns(PieceKey pk2, PieceKey pk34);
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   void insertInitialPositions(EndGameTablebase &tablebase) const;
 #endif
 
@@ -794,7 +794,7 @@ public:
 };
 
 class EndGameKeyDefinition5Men3Pawns : public EndGameKeyDefinitionDupletsAllowed {
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 private:
   PawnOwner m_pawnOwner;
   void setPawnOwners();
@@ -813,7 +813,7 @@ public:
   }
   SymmetricTransformation getSymTransformation(EndGameKey key) const;
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   void insertInitialPositions(EndGameTablebase &tablebase) const;
 #endif
 
@@ -822,7 +822,7 @@ public:
 };
 
 class EndGameKeyDefinition5Men3EqualPawns : public EndGameKeyDefinitionDupletsAllowed {
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 private:
   PawnOwner m_pawnsOwner;
   void setPawnsOwner();
@@ -841,7 +841,7 @@ public:
   }
   SymmetricTransformation getSymTransformation(EndGameKey key) const;
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   void insertInitialPositions(EndGameTablebase &tablebase) const;
 #endif
 

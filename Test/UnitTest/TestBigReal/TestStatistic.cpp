@@ -77,7 +77,7 @@ TestStatistic::TestStatistic(int threadId, const String &name, DigitPool *pool, 
 void TestStatistic::init() {
   m_totalUpdateCount  = 0;
   m_testCounter       = 0;
-#ifndef _DEBUG
+#if !defined(_DEBUG)
   m_rnd.randomize();
 #endif
 

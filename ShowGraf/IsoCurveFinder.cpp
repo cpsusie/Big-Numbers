@@ -102,7 +102,7 @@ bool IsoCurveFinder::putInitialCube(const Point2D &centerPoint, const Point2DKey
 void IsoCurveFinder::pushRectangle(const StackedRectangle &rect) {
   m_rectangleStack.push(rect);
   m_statistics.m_rectCount++;
-#ifdef DUMP_CUBES
+#if defined(DUMP_CUBES)
   debugLog(_T("pushRectangle():%s"), rect.toString().cstr());
 #endif
 }
@@ -151,7 +151,7 @@ void IsoCurveFinder::doTriangle(const StackedRectangle &rectangle, RectCorner c1
 }
 
 int IsoCurveFinder::getPointId(const HashedRectCorner &c1, const HashedRectCorner &c2) {
-#ifdef VALIDATE_OPPOSITESIGN
+#if defined(VALIDATE_OPPOSITESIGN)
   if(c1.m_positive == c2.m_positive) {
     throwException(_T("getPointId:corners have same sign. c1:%s, c2:%s")
                   ,c1.toString().cstr(), c2.toString().cstr());

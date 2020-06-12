@@ -28,7 +28,7 @@ Function2DPoint::Function2DPoint(FunctionR2R1 &f, const Point2D &p, bool calcula
   m_n = Vertex(unitVector(D3DXVECTOR3((float)-dfx, (float)-dfy, 1.0f)));
 }
 
-#ifdef __NEVER__
+#if defined(__NEVER__)
 static void findMax16BitMeshVertexCount(LPDIRECT3DDEVICE device) {
   unsigned int l = 100;
   unsigned int h = 0xfffff;

@@ -11,7 +11,7 @@ void eventLogSuccess(_In_z_ _Printf_format_string_ TCHAR const * const format,..
 
 #define EVENTLOGLIB_VERSION EVENTLOGLIBROOT _PLATFORM_ _CONFIGURATION_
 
-#ifdef GIVE_LINK_MESSAGE
+#if defined(GIVE_LINK_MESSAGE)
 #pragma message("link with " LIB_VERSION)
 #endif
 #pragma comment(lib, EVENTLOGLIB_VERSION "EventLogLib.lib")

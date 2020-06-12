@@ -5,7 +5,7 @@ void Game::resetGameHistory() {
 
   m_stackSize = 0;
 
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
   memset(m_gameStack, 0, sizeof(m_gameStack[0])*m_stackCapacity);
   m_hashStack.clear();
   m_lastCaptureOrPawnMove = 0;

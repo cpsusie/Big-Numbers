@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 
 class HelperFieldSets {
 private:
@@ -443,7 +443,7 @@ bool BackMoveGenerator::isNonCapturingPromotion(int promotedPos, const FieldSet 
   return sourceFieldSet.contains(srcField);
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 
 #define PRINTF(...) verbose(__VA_ARGS__)
 #define CLEARTRACE() clearVerbose()

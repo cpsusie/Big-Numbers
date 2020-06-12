@@ -144,7 +144,7 @@ bool Game::isSingleMovePosition() const {
   return mg.firstMove(move) ? !mg.nextMove(move) : false;
 }
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 Move Game::generateBackMove(int from, int to) const {
   const Piece *piece = getPieceAtPosition(to);
   if(piece == NULL || piece->getPlayer() != CURRENTENEMY) {
@@ -166,7 +166,7 @@ Move Game::generateBackMove(int from, int to) const {
 #endif
 
 void Game::updateLinks() {
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   m_playerState[WHITEPLAYER].makeLinks();
   m_playerState[BLACKPLAYER].makeLinks();
 #else
@@ -236,7 +236,7 @@ GameResult Game::findGameResult() const {
       return STALEMATE;
     }
   }
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   return NORESULT;
 #else
   if(getPositionRepeats() >= 3) {
@@ -331,7 +331,7 @@ MoveBaseArray Game::getLegalMoves(const Piece *piece) const {
   return result;
 }
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 FieldSet Game::getLegalSourceFields(int pos) const {
   if(!isValidPosition(pos)) {
     return FieldSet();
@@ -677,7 +677,7 @@ String getGameResultToString(GameResult gameResult) {
   caseToStr(WHITE_CHECKMATE           )
   caseToStr(BLACK_CHECKMATE           )
   caseToStr(STALEMATE                 )
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
   caseToStr(POSITION_REPEATED_3_TIMES )
   caseToStr(NO_CAPTURE_OR_PAWNMOVE    )
   caseToStr(DRAW                      )
@@ -704,14 +704,14 @@ bool isValidLine(int line) {
 }
 
 const TCHAR *getFieldName(int row, int col) {
-#ifdef _DEBUG
+#if defined(_DEBUG)
   VALIDATEPOSITION(row, col);
 #endif
   return Game::s_fieldInfo[MAKE_POSITION(row, col)].m_name;
 }
 
 const TCHAR *getFieldName(int position) {
-#ifdef _DEBUG
+#if defined(_DEBUG)
   VALIDATEPOS(position);
 #endif
   return Game::s_fieldInfo[position].m_name;
@@ -800,7 +800,7 @@ String DoubleLine::toString() const {
                ,getPositionArrayToString(m_upper).cstr());
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 
 String DoubleLine::makeDebugString(int pos, PositionArray lower, PositionArray upper) { // static
   return format(_T("(%s)"), getFieldName(pos))
@@ -877,7 +877,7 @@ FieldInfo::FieldInfo(int           pos
                     , m_name(name)
 
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
                     , m_debugStr(makeDebugString(pos
                                                 ,name
                                                 ,kingAttacks

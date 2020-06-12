@@ -7,7 +7,7 @@
 #include "wordsepgraphDlg.h"
 #include "ParamDlg.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 

@@ -2,7 +2,7 @@
 #include <FileNameSplitter.h>
 #include "PearlImageDoc.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -203,7 +203,7 @@ bool CPearlImageDoc::canRedo() const {
   return m_index < getHistorySize() - 1;
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 void CPearlImageDoc::checkInvariant(int line) const {
   if(hasImage() && (m_image.m_ts < m_lastImageSave)) {
     throwException(_T("Broken in %s, line %d:lastImageChange:%s, lastImageSave:%s")
@@ -224,7 +224,7 @@ void CPearlImageDoc::Serialize(CArchive& ar) {
   }
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 void CPearlImageDoc::AssertValid() const {
   __super::AssertValid();
 }

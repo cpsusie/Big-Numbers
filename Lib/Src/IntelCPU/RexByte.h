@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef IS32BIT
+#if defined(IS32BIT)
 
 #define SETREXBITS(          bits     )
 #define SETREXBITONHIGHINX(  inx ,bit )

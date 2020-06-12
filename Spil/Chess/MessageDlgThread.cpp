@@ -2,7 +2,7 @@
 #include "MessageDlgThread.h"
 #include "MessageDlg.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 

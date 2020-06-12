@@ -75,8 +75,8 @@ private:
   DigitPool(const DigitPool &src);            // not implemented
   DigitPool &operator=(const DigitPool &src); // not implemented
 
-#ifdef USE_FETCHDIGITLIST
-#ifdef CHECK_DIGITPOOLINVARIANT
+#if defined(USE_FETCHDIGITLIST)
+#if defined(CHECK_DIGITPOOLINVARIANT)
   // The free-list of digits, maintained by DigitPool
   //                +------+   +------+   +------+   +------+   +------+
   // m_freeDigits-->| next |-->| next |-->| next |-->| next |-->| next |-->nil
@@ -117,7 +117,7 @@ public:
   // Overwritten in DigitPoolWithLock, which solves this problem
   virtual Digit *fetchDigit();
 
-#ifdef USE_FETCHDIGITLIST
+#if defined(USE_FETCHDIGITLIST)
   /** See comment for newDigit
    Returns a double linked list, L, with count digits. all undefined
    FetchDigitList(5) will return L which looks like following:
@@ -227,7 +227,7 @@ public:
     return d;
   }
 
-#ifdef USE_FETCHDIGITLIST
+#if defined(USE_FETCHDIGITLIST)
   // Return head of double linked list with count digits with undefined values. prev-pointer of head points to last digit in list
   Digit *fetchDigitList(size_t count) {
     m_lock.wait();

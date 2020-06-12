@@ -146,7 +146,7 @@ BigRealVector Remes::findInitialExtremaByInterpolation(UINT M, UINT K) {
 BigRealVector Remes::getInterpolatedExtrema(const BigRealVector &defaultExtrema, const BigRealVector &defaultSubExtrema, const BigRealVector &finalSubExtrema) const {
   InterpolationFunction interpolFunction(defaultExtrema, defaultSubExtrema, finalSubExtrema);
   const UINT dimension = (UINT)defaultExtrema.getDimension();
-#ifdef __TODO__
+#if defined(__TODO__)
   notifyPropertyChanged(INTERPOLATIONSPLINE, &dimension, (Function*)&interpolFunction); TODO. Sucks!!!
 #endif
   BigRealVector result(dimension);

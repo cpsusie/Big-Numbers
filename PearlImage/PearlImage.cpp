@@ -3,7 +3,7 @@
 #include "PearlImageDoc.h"
 #include "PearlImageView.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 

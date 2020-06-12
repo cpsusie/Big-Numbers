@@ -5,7 +5,7 @@
 #include <MathUtil.h>
 #include "MathLib.h"
 #include "Double80.h"
-
+#include "Fixed.h"
 template<typename T> class Size2DTemplate {
 public:
   T cx, cy;
@@ -146,7 +146,10 @@ public:
     y = _y;
   }
 
-//  Point2D(const POINTFX &p);
+  inline Point2DTemplate(const POINTFX &p) {
+    x = fixedToFloat(p.x);
+    y = fixedToFloat(p.y);
+  }
 
   inline Point2DTemplate<T> operator-() const {
     return Point2DTemplate<T>(-x, -y);
@@ -382,12 +385,3 @@ typedef FunctionTemplate<Point2D, Real>    FunctionR2R1;
 
 
 RealPoint2D findExtremum(Function &f, const RealInterval &interval, bool maximum);
-
-//inline float fixedToFloat(const FIXED &x) {
-//  return (float)x.value + (float)x.fract / 0x10000u;
-//}
-
-//FIXED floatToFixed(float x);
-//MAT2 rotation(float degree);
-//MAT2 getIdentity(float size = 1.0f);
-

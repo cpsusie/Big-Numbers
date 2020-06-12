@@ -9,7 +9,7 @@
 #include "RollingAvgDlg.h"
 #include "MouseTool.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -204,7 +204,7 @@ void CMainFrame::activateInitialOptions() {
   popLevel();
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 void CMainFrame::AssertValid() const {
   __super::AssertValid();
 }
@@ -1088,7 +1088,7 @@ void CMainFrame::OnSelectMenuStyleCross() {
   }
 }
 
-#ifdef __NEVER__
+#if defined(__NEVER__)
 #include <Scandir.h>
 
 template<class T> class FileConverter {

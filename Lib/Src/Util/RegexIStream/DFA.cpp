@@ -41,7 +41,7 @@ void DFA::makeTransitions() {
   for(size_t index = 0; index < m_states.size(); index++) {
     DFAState &current = m_states[index];
 
-#ifdef UNICODE
+#if defined(UNICODE)
     CharacterSet outgoingCharacters;
     for(Iterator<size_t> it = current.m_NFAset.getIterator(); it.hasNext();) {
       NFAState *nfaState = m_NFA[it.next()];

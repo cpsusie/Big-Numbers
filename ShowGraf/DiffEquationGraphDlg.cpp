@@ -31,7 +31,7 @@ BOOL CDiffEquationGraphDlg::OnInitDialog() {
   m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_DIFFEQUATION));
   m_layoutManager.OnInitDialog(this);
 
-#ifndef _DEBUG
+#if !defined(_DEBUG)
   CStatic *adjustSet = (CStatic*)GetDlgItem(IDC_STATICADJUSTSET);
   adjustSet->ShowWindow(SW_HIDE);
   CRect clRect = getClientRect(this);
@@ -51,7 +51,7 @@ BOOL CDiffEquationGraphDlg::OnInitDialog() {
   m_layoutManager.addControl(IDOK              , PCT_RELATIVE_BOTTOM | CONSTANT_HEIGHT | RELATIVE_X_POS);
   m_layoutManager.addControl(IDCANCEL          , PCT_RELATIVE_BOTTOM | CONSTANT_HEIGHT | RELATIVE_X_POS);
   m_layoutManager.addControl(IDC_LISTERRORS    , PCT_RELATIVE_TOP    | RELATIVE_BOTTOM | RELATIVE_WIDTH);
-#ifdef _DEBUG
+#if defined(_DEBUG)
   m_layoutManager.addControl(IDC_STATICADJUSTSET , RELATIVE_TOP | CONSTANT_HEIGHT | RELATIVE_WIDTH);
 #endif
 
@@ -367,10 +367,10 @@ void CDiffEquationGraphDlg::addEquation() {
       newTotalEqHeight = MINEQHEIGHT * (eqCount + 1);
     }
   }
-  const CompactIntArray oldTabOrder = getTabOrder(this);
+  TabOrder tabs(this);
   m_equationControlArray.addEquation(this, m_exprFont);
   adjustPanels(newTotalEqHeight);
-  adjustTabOrder(oldTabOrder);
+  adjustTabOrder(tabs);
   ajourCommonEnabled();
 }
 
@@ -486,18 +486,18 @@ void CDiffEquationGraphDlg::resetLowerPanelHeight() {
 }
 
 // assume equationcount >= 1
-void CDiffEquationGraphDlg::adjustTabOrder(const CompactIntArray &oldTabOrder) {
-  CompactIntArray tabOrder = oldTabOrder;
+void CDiffEquationGraphDlg::adjustTabOrder(const TabOrder &tabs) {
+  TabOrder tabOrder = tabs;
   if(tabOrder.getFirstIndex(IDC_EDITCOMMON) < 0) {
     tabOrder.add(tabOrder.getFirstIndex(IDC_COMBOSTYLE)+1, IDC_EDITCOMMON);
   }
 
   const CDiffEquationEdit *eq             = getLastEquationEdit();
-  const CompactIntArray    eqTabOrder     = eq->getTabOrderArray();
+  const CompactUintArray    eqTabOrder     = eq->getTabOrderArray();
   const intptr_t           xIntervalIndex = tabOrder.getFirstIndex(IDC_EDITXFROM);
   if(xIntervalIndex < 0) return; // actually an error
   tabOrder.add(xIntervalIndex, eqTabOrder.getBuffer(), eqTabOrder.size());
-  setTabOrder(this, tabOrder);
+  tabOrder.restoreTabOrder();
 }
 
 void CDiffEquationGraphDlg::ajourCommonEnabled() {
@@ -593,7 +593,7 @@ void CDiffEquationGraphDlg::adjustErrorPositions(const String &s, int sel, int d
 }
 
 void CDiffEquationGraphDlg::traceCurrentAdjustSet() {
-#ifdef _DEBUG
+#if defined(_DEBUG)
   String str;
   for(Iterator<size_t> it = m_currentAdjustSet.getIterator(); it.hasNext();) {
     const ErrorPosition &ep = m_errorPosArray[it.next()];

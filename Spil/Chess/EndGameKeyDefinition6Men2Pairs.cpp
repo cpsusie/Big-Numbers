@@ -71,7 +71,7 @@ EndGameKeyDefinition6Men2Pairs::EndGameKeyDefinition6Men2Pairs(PieceKey pk23, Pi
 */
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 
 static EndGamePosIndex checkAndReturn(EndGamePosIndex index, EndGamePosIndex max) {
   max--;
@@ -560,7 +560,7 @@ SymmetricTransformation EndGameKeyDefinition6Men2Pairs::getSymTransformation(End
   return getSym8Transformation6Men2Pairs(key);
 }
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 
 void EndGameKeyDefinition6Men2Pairs::scanPositions(EndGameKeyWithOccupiedPositions &key, int pIndex, bool allPreviousOnDiag) const {
   switch(pIndex) {

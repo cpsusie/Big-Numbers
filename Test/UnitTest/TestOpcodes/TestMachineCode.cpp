@@ -7,7 +7,7 @@
 
 #define TEST_MACHINECODE
 
-#ifdef TEST_MACHINECODE
+#if defined(TEST_MACHINECODE)
 
 // #define TEST_ALLGPREGISTERS  // If defined, all 24 (16*3+4=52 in x64) GPR registers will be used
                                 // If not defined, only the following GPR-register will be used
@@ -28,13 +28,13 @@
                                 // If not defined, only 1 and 8 will be used
 
 static const GPRegister r8List[] = {
-#ifndef TEST_ALLGPREGISTERS
+#if !defined(TEST_ALLGPREGISTERS)
     AL   ,CL                                 ,BH
 #else
     AL   ,CL   ,DL   ,BL   ,AH   ,CH   ,DH   ,BH
 #endif // TEST_ALLGPREGISTERS
-#ifdef IS64BIT
-#ifndef TEST_ALLGPREGISTERS
+#if defined(IS64BIT)
+#if !defined(TEST_ALLGPREGISTERS)
                            ,SPL              ,DIL
    ,R8B                                      ,R15B
 #else
@@ -45,13 +45,13 @@ static const GPRegister r8List[] = {
 };
 
 const GPRegister r16List[] = {
-#ifndef TEST_ALLGPREGISTERS
+#if !defined(TEST_ALLGPREGISTERS)
     AX                                       ,DI
 #else
     AX   ,CX   ,DX   ,BX   ,SP   ,BP   ,SI   ,DI
 #endif // TEST_ALLGPREGISTERS
-#ifdef IS64BIT
-#ifndef TEST_ALLGPREGISTERS
+#if defined(IS64BIT)
+#if !defined(TEST_ALLGPREGISTERS)
    ,R8W                                      ,R15W
 #else
    ,R8W  ,R9W  ,R10W ,R11W ,R12W ,R13W ,R14W ,R15W
@@ -60,13 +60,13 @@ const GPRegister r16List[] = {
 };
 
 const GPRegister r32List[] = {
-#ifndef TEST_ALLGPREGISTERS
+#if !defined(TEST_ALLGPREGISTERS)
     EAX                                      ,EDI
 #else
     EAX  ,ECX  ,EDX  ,EBX  ,ESP  ,EBP  ,ESI  ,EDI
 #endif // TEST_ALLGPREGISTERS
-#ifdef IS64BIT
-#ifndef TEST_ALLGPREGISTERS
+#if defined(IS64BIT)
+#if !defined(TEST_ALLGPREGISTERS)
    ,R8D                                      ,R15D
 #else  // TEST_ALLGPREGISTERS
    ,R8D  ,R9D  ,R10D ,R11D ,R12D ,R13D ,R14D ,R15D
@@ -75,14 +75,14 @@ const GPRegister r32List[] = {
 };
 
 const IndexRegister indexRegList[] = {
-#ifdef IS32BIT
-#ifndef TEST_ALLGPREGISTERS
+#if defined(IS32BIT)
+#if !defined(TEST_ALLGPREGISTERS)
     EAX                    ,ESP  ,EBP        ,EDI
 #else // TEST_ALLGPREGISTERS
     EAX  ,ECX  ,EDX  ,EBX  ,ESP  ,EBP  ,ESI  ,EDI
 #endif // TEST_ALLGPREGISTERS
 #else // IS64BIT
-#ifndef TEST_ALLGPREGISTERS
+#if !defined(TEST_ALLGPREGISTERS)
     RAX                    ,RSP  ,RBP        ,RDI
    ,R8                     ,R12  ,R13        ,R15
 #else // TEST_ALLGPREGISTERS
@@ -93,14 +93,14 @@ const IndexRegister indexRegList[] = {
 };
 
 const IndexRegister baseRegList[] = {
-#ifdef IS32BIT
-#ifndef TEST_ALLBASEREGISTERS
+#if defined(IS32BIT)
+#if !defined(TEST_ALLBASEREGISTERS)
     EAX                    ,ESP
 #else // TEST_ALLBASEREGISTERS
     EAX  ,ECX  ,EDX  ,EBX  ,ESP  ,EBP  ,ESI  ,EDI
 #endif // TEST_ALLGPREGISTERS
 #else // IS64BIT
-#ifndef TEST_ALLBASREGISTERS
+#if !defined(TEST_ALLBASREGISTERS)
     RAX                                      ,R15
 #else // TEST_ALLBASREGISTERS
     RAX  ,RCX  ,RDX  ,RBX  ,RSP  ,RBP  ,RSI  ,RDI
@@ -110,14 +110,14 @@ const IndexRegister baseRegList[] = {
 };
 
 const IndexRegister inxRegList[] = {
-#ifdef IS32BIT
-#ifndef TEST_ALLINXREGISTERS
+#if defined(IS32BIT)
+#if !defined(TEST_ALLINXREGISTERS)
     EAX                          ,EBP        ,EDI
 #else // TEST_ALLINXREGISTERS
     EAX  ,ECX  ,EDX  ,EBX  ,ESP  ,EBP  ,ESI  ,EDI
 #endif // TEST_ALLINXREGISTERS
 #else // IS64BIT
-#ifndef TEST_ALLINXREGISTERS
+#if !defined(TEST_ALLINXREGISTERS)
     RAX                          ,RBP        ,R15
 #else // TEST_ALLINXREGISTERS
     RAX  ,RCX  ,RDX  ,RBX  ,RSP  ,RBP  ,RSI  ,RDI
@@ -126,9 +126,9 @@ const IndexRegister inxRegList[] = {
 #endif // IS64BIT
 };
 
-#ifdef IS64BIT
+#if defined(IS64BIT)
 const GPRegister r64List[] = {
-#ifndef TEST_ALLGPREGISTERS
+#if !defined(TEST_ALLGPREGISTERS)
     RAX                                      ,RDI
    ,R8                                       ,R15
 #else
@@ -139,7 +139,7 @@ const GPRegister r64List[] = {
 #endif // IS64BIT
 
 const SegmentRegister segregList[] = {
-#ifdef IS32BIT
+#if defined(IS32BIT)
   ES,CS,SS,DS,FS,GS
 #else  // IS64BIT
   FS,GS
@@ -147,7 +147,7 @@ const SegmentRegister segregList[] = {
 };
 
 const FPURegister fpuregList[] = {
-#ifndef TEST_ALLFPUREGISTERS
+#if !defined(TEST_ALLFPUREGISTERS)
   ST0,                               ST7
 #else  // TEST_ALLFPUREGISTERS
   ST0, ST1, ST2, ST3, ST4, ST5, ST6, ST7
@@ -155,14 +155,14 @@ const FPURegister fpuregList[] = {
 };
 
 const XMMRegister XMMregList[] = {
-#ifndef TEST_ALLXMMREGISTERS
+#if !defined(TEST_ALLXMMREGISTERS)
   XMM0,                                   XMM7
-#ifdef IS64BIT
+#if defined(IS64BIT)
  ,XMM8,                                   XMM15
 #endif  // IS64BIT
 #else   // TEST_ALLXMMREGISTERS
   XMM0,XMM1,XMM2 ,XMM3 ,XMM4 ,XMM5 ,XMM6 ,XMM7
-#ifdef IS64BIT
+#if defined(IS64BIT)
  ,XMM8,XMM9,XMM10,XMM11,XMM12,XMM13,XMM14,XMM15
 #endif  // IS64BIT
 #endif  // TEST_ALLXMMREGISTERS
@@ -215,14 +215,14 @@ AllRegisters::AllRegisters() {
   addRegArray(r8List    , ARRAYSIZE(r8List    ));
   addRegArray(r16List   , ARRAYSIZE(r16List   ));
   addRegArray(r32List   , ARRAYSIZE(r32List   ));
-#ifdef IS64BIT
+#if defined(IS64BIT)
   addRegArray(r64List   , ARRAYSIZE(r64List   ));
 #endif
   addRegArray(fpuregList, ARRAYSIZE(fpuregList));
   addRegArray(XMMregList, ARRAYSIZE(XMMregList));
 }
 
-#ifdef IS32BIT
+#if defined(IS32BIT)
 static const int   allImmValues[] = {    0x7f, 0x7fff, 0x7fffffff, -1 };
 #else // IS64BIT
 static const INT64 allImmValues[] = {    0x7f, 0x7fff, 0x7fffffff, 0x7fffffffffffffffi64, -1 };
@@ -239,7 +239,7 @@ AllImmOperands::AllImmOperands() {
   }
 }
 
-#ifdef IS32BIT
+#if defined(IS32BIT)
 static const size_t allImmAddr[]   = { 0, 0x7fffffff };
 #else  // IS64BIT
 static const size_t allImmAddr[]   = { 0, 0x7fffffff, 0x7fffffffffffffff };
@@ -268,7 +268,7 @@ static inline int insOpCmp(const InstructionOperand * const &op1, const Instruct
   return InstructionOperand::insOpCmp(*op1,*op2);
 }
 
-#ifdef TEST_ALLSCALEFACTORS
+#if defined(TEST_ALLSCALEFACTORS)
 #define SCALE_FACTORSTEP 2
 #else  // TEST_ALLSCALEFACTORS
 #define SCALE_FACTORSTEP 8
@@ -344,7 +344,7 @@ AllStringInstructions::AllStringInstructions() {
   add(&MOVSB);  add(&CMPSB);  add(&STOSB);  add(&LODSB);  add(&SCASB);
   add(&MOVSW);  add(&CMPSW);  add(&STOSW);  add(&LODSW);  add(&SCASW);
   add(&MOVSD);  add(&CMPSD);  add(&STOSD);  add(&LODSD);  add(&SCASD);
-#ifdef IS64BIT
+#if defined(IS64BIT)
   add(&MOVSQ);  add(&CMPSQ);  add(&STOSQ);  add(&LODSQ);  add(&SCASQ);
 #endif // IS64BIT
 }
@@ -491,7 +491,7 @@ void TestMachineCode::initAllOperands() {
   debugLog(_T("All operands:\n%s"),m_allOperands.toString().cstr());
   debugLog(_T("All VOIDPtr:\n%s") ,m_allVOIDPtrOperands.toString().cstr());
   redirectDebugLog();
-#ifdef IS32BIT
+#if defined(IS32BIT)
 #define NAMEPREFIX _T("x32")
 #else // IS64BIT
 #define NAMEPREFIX _T("x64")
@@ -689,7 +689,7 @@ void TestMachineCode::testArg0Opcodes() {
   testOpcode(LAHF    );
   testOpcode(PUSHF   );
   testOpcode(POPF    );
-#ifdef IS32BIT
+#if defined(IS32BIT)
   testOpcode(PUSHFD  );
   testOpcode(POPFD   );
   testOpcode(PUSHAD  );
@@ -704,7 +704,7 @@ void TestMachineCode::testArg0Opcodes() {
   testOpcode(CWD     );
   testOpcode(CDQ     );
 
-#ifdef IS64BIT
+#if defined(IS64BIT)
   testOpcode(CDQE    );
   testOpcode(CQO     );
   testOpcode(CLGI    );
@@ -721,7 +721,7 @@ void TestMachineCode::testArg1Opcodes() {
   testOpcode(NEG     );
   testOpcode(JMP     );
   clear(true);
-#ifdef IS32BIT
+#if defined(IS32BIT)
   testOpcode(JCXZ    );
   testOpcode(JECXZ   );
 #else // IS64BIT
@@ -860,7 +860,7 @@ void TestMachineCode::testStringInstructions() {
   testOpcode(LODSD   );
   testOpcode(SCASD   );
 
-#ifdef IS64BIT
+#if defined(IS64BIT)
   testOpcode(MOVSQ   );
   testOpcode(CMPSQ   );
   testOpcode(STOSQ   );
@@ -980,16 +980,16 @@ void TestMachineCode::testXMMOpcodes() {
 #endif // TEST_MACHINECODE
 
 void generateTestSequence(vprintfFunction vpf) {
-#ifdef TEST_MACHINECODE
+#if defined(TEST_MACHINECODE)
   TestMachineCode test(vpf);
   test.testAll();
 #endif // TEST_MACHINECODE
 }
 
-#ifdef _DEBUG
-#ifdef TEST_MACHINECODE
+#if defined(_DEBUG)
+#if defined(TEST_MACHINECODE)
 
-#ifdef IS64BIT
+#if defined(IS64BIT)
 extern "C" void assemblerCode();
 #else
 
@@ -1022,7 +1022,7 @@ void assemblerCode() {
     LAHF
     PUSHF
     POPF
-  #ifdef IS32BIT
+  #if defined(IS32BIT)
     PUSHFD
     POPFD
     PUSHAD
@@ -1037,7 +1037,7 @@ void assemblerCode() {
     CWD
     CDQ
 
-  #ifdef IS64BIT
+  #if defined(IS64BIT)
     CDQE
     CQO
     CLGI
@@ -1055,8 +1055,8 @@ End:
 #endif // _DEBUG
 
 void callAssemblerCode() {
-#ifdef _DEBUG
-#ifdef TEST_MACHINECODE
+#if defined(_DEBUG)
+#if defined(TEST_MACHINECODE)
   assemblerCode();
 #endif // TEST_MACHINECODE
 #endif // _DEBUG

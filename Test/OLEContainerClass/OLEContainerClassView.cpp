@@ -5,7 +5,7 @@
 #include "OLEContainerClassDoc.h"
 #include "OLEContainerClassView.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -49,7 +49,7 @@ void COLEContainerClassView::OnCancelEditSrvr() {
     GetDocument()->OnDeactivateUI(FALSE);
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 void COLEContainerClassView::AssertValid() const {
     CView::AssertValid();
 }

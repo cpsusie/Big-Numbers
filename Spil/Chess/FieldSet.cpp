@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #include <DebugLog.h>
 #endif _DEBUG
 
@@ -24,7 +24,7 @@ String FieldSet::toString() const {
   return BitSet64::toString(&FieldStringifier());
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 void FieldSet::dump() const {
   if(isEmpty()) {
     debugLog(_T("empty\n"));

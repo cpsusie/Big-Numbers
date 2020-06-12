@@ -3,7 +3,7 @@
 #include <MFCUtil/Point2DP.h>
 #include "TestEdgeDetectionDlg.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 

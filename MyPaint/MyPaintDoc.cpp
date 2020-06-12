@@ -2,7 +2,7 @@
 #include <FileNameSplitter.h>
 #include "MyPaintDoc.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -195,7 +195,7 @@ bool CMyPaintDoc::canRedo() const {
   return m_index < getHistorySize() - 1;
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 void CMyPaintDoc::checkInvariant(int line) const {
   if(m_index < 0 || m_index > getHistorySize()) {
     throwException(_T("Broken invariant in %s, line %d:index=%d, historySize=%d"), __TFILE__, line, m_index, m_history.size());
@@ -209,7 +209,7 @@ void CMyPaintDoc::Serialize(CArchive& ar) {
   }
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 void CMyPaintDoc::AssertValid() const {
   __super::AssertValid();
 }

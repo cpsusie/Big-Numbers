@@ -103,7 +103,7 @@ const String &getSourceDir() {
 const String &getArchitecture() {
   static String architecture;
   if (architecture.length() == 0) {
-#ifdef IS32BIT
+#if defined(IS32BIT)
     architecture = _T("x86");
 #else
     architecture = _T("x64");
@@ -114,7 +114,7 @@ const String &getArchitecture() {
 
 const String &getCompileMode() {
   static String compileMode;
-#ifdef _DEBUG
+#if defined(_DEBUG)
   compileMode = _T("Debug");
 #else
   compileMode = _T("Release");

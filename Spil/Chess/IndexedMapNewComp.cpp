@@ -5,11 +5,11 @@
 #include <TimeEstimator.h>
 #include "IndexedMap.h"
 
-#ifdef NEWCOMPRESSION
+#if defined(NEWCOMPRESSION)
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 
-#ifdef DEBUG_NEWCOMPRESSION
+#if defined(DEBUG_NEWCOMPRESSION)
 void IndexedMap::listCompressedContent(const TablebaseInfo &info, String fileName) const {
   FILE *f = NULL;
   if(fileName.length() == 0) {
@@ -118,7 +118,7 @@ void IndexedMap::saveCompressed(BigEndianOutputStream &s, const TablebaseInfo &i
 
   const UINT maxMoves    = PLIESTOMOVES(maxPly);
 
-#ifdef DEBUG_NEWCOMPRESSION
+#if defined(DEBUG_NEWCOMPRESSION)
   listCompressedContent(info);
 #endif
 

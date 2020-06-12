@@ -113,7 +113,7 @@ const UINT GameOctagon::moveTable[89] = {
 bool GameOctagon::gotStatus = false;
 
 GameOctagon::GameOctagon() : AbstractGame(OCTAGON, 25, statusTable, ARRAYSIZE(moveTable), moveTable) {
-#ifndef GENERATE_WINNERTABLE_FILE
+#if !defined(GENERATE_WINNERTABLE_FILE)
   if(!gotStatus) {
     BitSet s(10);
     s.load(DecompressFilter(ByteMemoryInputStream(ByteArray().loadFromResource(IDR_OCTAGONPOSITIONSTATUS, _T("POSITIONSTATUS")))));
@@ -126,7 +126,7 @@ GameOctagon::GameOctagon() : AbstractGame(OCTAGON, 25, statusTable, ARRAYSIZE(mo
 }
 
 GameOctagon::~GameOctagon() {
-#ifdef GENERATE_WINNERTABLE_FILE
+#if defined(GENERATE_WINNERTABLE_FILE)
   for(m_board = 0; m_board < ARRAYSIZE(statusTable); m_board++) {
     const PositionStatus status = getPositionStatus();
   }

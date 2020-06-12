@@ -6,7 +6,7 @@
 #include "PrecisionDlg.h"
 #include "IRemesDlg.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -809,7 +809,7 @@ void CIRemesDlg::handleRemesProperty(const Remes &r, int id, const void *oldValu
   case MMQUOT             : // *BigReal
     break;
   case INTERPOLATIONSPLINE: // *dim, *Function
-#ifdef __TODO__
+#if defined(__TODO__)
     if(isSplineVisible()) {
       const UINT           dim = *(UINT*)oldValue;
       Function            &f   = *(Function*)newValue;
@@ -929,7 +929,7 @@ LRESULT CIRemesDlg::OnMsgClearErrorFunction(WPARAM wp, LPARAM lp) {
 }
 
 LRESULT CIRemesDlg::OnMsgUpdateInterpolation(WPARAM wp, LPARAM lp) {
-#ifdef __TODO__
+#if defined(__TODO__)
   m_gate.wait();
   if (m_coorSystemSpline.getObjectCount() == 0) {
     return 0;

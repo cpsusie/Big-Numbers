@@ -152,7 +152,7 @@ bool Game::isLongCastleAllowed() const {
   RETURN_IF_LEGAL_ENPASSANT(move, piece, dirIndex, moveIndex, to, direction)                      \
 }
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 
 // Special pawn captures with no captured piece are generated if m_game.m_generateFictivePawnCaptures = true
 // and the pawn is NOT promoted at the same time. Used in generateAllPositions, to generate positions within the same
@@ -249,7 +249,7 @@ void Game::allocateMoveGenerators() {
   m_moveGenerator[MOVEGEN_SD_CHECK    ] = new MoveGeneratorSDCheck(    *this); TRACE_NEW(m_moveGenerator[MOVEGEN_SD_CHECK    ]);
   m_moveGenerator[MOVEGEN_DOUBLE_CHECK] = new MoveGeneratorDoubleCheck(*this); TRACE_NEW(m_moveGenerator[MOVEGEN_DOUBLE_CHECK]);
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   allocateBackMoveGenerators();
 #endif
 }
@@ -259,7 +259,7 @@ void Game::deallocateMoveGenerators() {
     SAFEDELETE(m_moveGenerator[i]);
   }
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   deallocateBackMoveGenerators();
 #endif
 }

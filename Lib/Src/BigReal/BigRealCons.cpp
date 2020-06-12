@@ -122,7 +122,7 @@ BigReal &BigReal::operator=(const BigReal &x) {
   } else {                   // both x and this are normal (have digits)
     const intptr_t missing = x.getLength() - getLength();
     if(missing >= 0) {       // First copy all the digits, then append the rest if x.length > this.length
-#ifdef USE_FETCHDIGITLIST
+#if defined(USE_FETCHDIGITLIST)
       if(missing > 0) {
         Digit *head = m_digitPool.fetchDigitList(missing), *last = head->prev;
         (m_last->next = head)->prev = m_last;

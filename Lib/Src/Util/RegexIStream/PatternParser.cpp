@@ -46,7 +46,7 @@ NFAState *PatternParser::compilePattern() {
 }
 
 /*
-#ifdef _WIN32
+#if defined(_WIN32)
 #pragma message("NB -------------------- In Windows newline include \\r and \\n -------------------")
 #else
 #pragma message("NB -------------------- Newline include \\n -------------------")
@@ -188,7 +188,7 @@ SubNFA PatternParser::term() {
         if(!m_ignoreCase) charSet = m_scanner.translate(charSet);
 
         charSet.remove(NEWLINE);
-#ifdef _WIN32
+#if defined(_WIN32)
         charSet.remove(CR);
 #endif
       } else { // [...]
@@ -206,7 +206,7 @@ SubNFA PatternParser::term() {
         }
         if(complementCharClass) {
           charSet.add(NEWLINE); // This will exclude '\n' if not specified in input
-#ifdef _WIN32
+#if defined(_WIN32)
           charSet.add(CR);      // and \r
 #endif
           charSet.invert();

@@ -18,7 +18,7 @@ private:
   bool isModified() const;
   void init();
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
   void checkInvariant(int line) const;
 #define CHECKINVARIANT checkInvariant(__LINE__)
 #else
@@ -58,7 +58,7 @@ public:
   bool canRedo() const;
 
   virtual ~CMyPaintDoc();
-#ifdef _DEBUG
+#if defined(_DEBUG)
   virtual void AssertValid() const;
   virtual void Dump(CDumpContext& dc) const;
 #endif

@@ -18,7 +18,7 @@ void BitOutputStream::flush() {
 
 void BitOutputStream::putBits(ULONG code, int count) {
   if(count == 0) return;
-#ifdef _DEBUG
+#if defined(_DEBUG)
   if(count > 32) {
     throwInvalidArgumentException(__TFUNCTION__, _T("count=%d. Max=32"), count);
   }

@@ -92,7 +92,7 @@ public:
 
 // Define best moves in King-Knight-Knight/King-Pawn endgame
 class EndGameKNNKP : public EndGameTablebase {
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 protected:
   bool isUsableMove(const Move &m) const;
 #endif
@@ -124,7 +124,7 @@ public:
 
 // Define best moves in King-Knight-Pawn/King-Knight endgame
 class EndGameKNPKN : public EndGameTablebase {
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 protected:
   bool isUsableMove(const Move &m) const;
 #endif

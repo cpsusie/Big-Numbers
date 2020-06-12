@@ -36,7 +36,7 @@ TrigonometricMode CodeGenerator::getTrigonometricMode() const {
 }
 
 void CodeGenerator::genMachineCode() {
-#ifdef FPU_OPTIMIZE
+#if defined(FPU_OPTIMIZE)
   int       maxRefCount   = 0;
   const int mostUsedIndex = m_tree.getSymbolTable().findMostReferencedValueIndex(maxRefCount);
   bool      hasExtraPush  = false;
@@ -47,7 +47,7 @@ void CodeGenerator::genMachineCode() {
   }
   const ExpressionReturnType returnType = genStatementList(m_tree.getRoot());
   if(hasExtraPush) {
-#ifdef IS32BIT
+#if defined(IS32BIT)
     if(returnType == EXPR_RETURN_FLOAT) {
       m_code->emit(FXCH,ST1);
     }
@@ -99,7 +99,7 @@ void CodeGenerator::genReciprocal() {
   m_code->emit(FDIVRP,ST1);            // st1=st0/st1; pop st0 => st0=x^y
 }
 
-#ifdef IS32BIT
+#if defined(IS32BIT)
 
 void CodeGenerator::genAssignment(SNode n) {
   genExpression(n.right() DST_FPU);
@@ -123,7 +123,7 @@ bool CodeGenerator::genFLoad(SNode n, const ExpressionDestination &dst) {
   case RESULT_IN_FPU       :
     genFLD(n);
     break;
-#ifdef USEXMMREG
+#if defined(USEXMMREG)
   case RESULT_IN_XMM     :
     m_code->emitMemToXMM(dst.getXMMReg(), getTableRef(n));
     return true;
@@ -209,7 +209,7 @@ void CodeGenerator::genExpression(SNode n DCL_DSTPARAM) {
   switch(n.getSymbol()) {
   case NAME  :
   case NUMBER:
-#ifdef IS32BIT
+#if defined(IS32BIT)
     genFLD(n);
 #else // IS64BIT
     if(genFLoad(n DST_PARAM)) {
@@ -219,7 +219,7 @@ void CodeGenerator::genExpression(SNode n DCL_DSTPARAM) {
     break;
 
   case PLUS  :
-#ifdef LONGDOUBLE
+#if defined(LONGDOUBLE)
     if(n.left().getHeight() > n.right().getHeight()) {
       genExpression(n.left()  DST_FPU);
       genExpression(n.right() DST_FPU);
@@ -250,7 +250,7 @@ void CodeGenerator::genExpression(SNode n DCL_DSTPARAM) {
 #endif // LONGDOUBLE
 
   case MINUS:
-#ifdef LONGDOUBLE
+#if defined(LONGDOUBLE)
     if(n.left().getHeight() > n.right().getHeight()) {
       genExpression(n.left()  DST_FPU);
       genExpression(n.right() DST_FPU);
@@ -287,7 +287,7 @@ void CodeGenerator::genExpression(SNode n DCL_DSTPARAM) {
     break;
 
   case PROD  :
-#ifdef LONGDOUBLE
+#if defined(LONGDOUBLE)
     if(n.left().getHeight() > n.right().getHeight()) {
       genExpression(n.left()  DST_FPU);
       genExpression(n.right() DST_FPU);
@@ -318,7 +318,7 @@ void CodeGenerator::genExpression(SNode n DCL_DSTPARAM) {
 #endif // LONGDOUBLE
 
   case QUOT :
-#ifdef LONGDOUBLE
+#if defined(LONGDOUBLE)
     if(n.left().getHeight() > n.right().getHeight()) {
       genExpression(n.left()  DST_FPU);
       genExpression(n.right() DST_FPU);
@@ -478,7 +478,7 @@ void CodeGenerator::genExpression(SNode n DCL_DSTPARAM) {
     n.UNKNOWNSYMBOL();
     break;
   }
-#ifdef IS64BIT
+#if defined(IS64BIT)
 // At this point, the result is at the top in FPU-stack. Move result to dst
   switch(dst.getType()) {
   case RESULT_IN_FPU       : // do nothing
@@ -492,7 +492,7 @@ void CodeGenerator::genExpression(SNode n DCL_DSTPARAM) {
   case RESULT_IN_VALUETABLE:
     m_code->emitFSTP(m_code->getTableRef(dst.getTableIndex()));              // FPU -> m_valuetable[tableIndex]
     break;
-#ifdef USEXMMREG
+#if defined(USEXMMREG)
   case RESULT_IN_XMM       :
     m_code->emitFSTP(m_code->getStackRef(0));                                // FPU  -> *RSP
     m_code->emitMemToXMM(dst.getXMMReg(),m_code->getStackRef(0));            // *RSP -> XMM0 or XMM1
@@ -591,7 +591,7 @@ void CodeGenerator::genBoolExpression(SNode n, JumpList &jl, bool trueAtEnd) {
     { ExpressionInputSymbol symbol = n.getSymbol();
       SNode left  = n.left();
       SNode right = n.right();
-#ifdef LONGDOUBLE
+#if defined(LONGDOUBLE)
       genExpression(right DST_FPU);
       genExpression(left  DST_FPU);
       m_code->emit(FCOMPP);
@@ -680,15 +680,15 @@ static Real evaluatePolynomial(Real x, int n, const Real *coef) {
 void CodeGenerator::genCall(const FunctionCall &fc DCL_DSTPARAM) {
   m_code->emitCall(fc DST_PARAM);
 
-#ifdef IS32BIT
-#ifdef LONGDOUBLE
+#if defined(IS32BIT)
+#if defined(LONGDOUBLE)
   m_code->emitFLD(m_code->getTableRef(0)); // this is the address which was pushed for returnvalue
 #endif // LONGDOUBLE
 #endif // IS32BIT
 
 }
 
-#ifdef IS32BIT
+#if defined(IS32BIT)
 
 void CodeGenerator::genCall1Arg(SNode arg, BuiltInFunction1 f, const String &name) {
   int bytesPushed = 0;
@@ -779,7 +779,7 @@ int CodeGenerator::genPushValue(SNode n) {
   const MemoryRef mem1 = getTableRef(n);
   const MemoryRef mem2 = MemoryRef(TABLEREF_REG + (mem1.getOffset()+sizeof(DWORD)));
 
-#ifdef LONGDOUBLE
+#if defined(LONGDOUBLE)
   const MemoryRef mem3 = MemoryRef(TABLEREF_REG + (mem2.getOffset()+sizeof(DWORD)));
   m_code->emit(PUSH, DWORDPtr(mem3)); // reverse sequence, because stack grows downwards
   bytesPushed += sizeof(DWORD);
@@ -840,7 +840,7 @@ int CodeGenerator::genPushInt(int n) {
 }
 
 int CodeGenerator::genPushReturnAddr() {
-#ifdef LONGDOUBLE
+#if defined(LONGDOUBLE)
   return genPushRef(&getSymbolTable().getValueRef(0));
 #else
   return 0;
@@ -850,14 +850,14 @@ int CodeGenerator::genPushReturnAddr() {
 #else // IS64BIT
 
 static const IndexRegister int64ParamRegister[] = {
-#ifndef LONGDOUBLE
+#if !defined(LONGDOUBLE)
   RCX ,RDX ,R8 ,R9
 #else
   RDX, R8, R9
 #endif
 };
 
-#ifdef USEXMMREG
+#if defined(USEXMMREG)
 
 void CodeGenerator::genCall1Arg(SNode arg, BuiltInFunction1 f, const String &name DCL_DSTPARAM) {
   genSetParameter(arg, 0);
@@ -960,7 +960,7 @@ void CodeGenerator::genPolynomial(SNode n DCL_DSTPARAM) {
       genExpression(coef DST_INVALUETABLE(firstCoefIndex + i));
     }
   }
-#ifndef LONGDOUBLE
+#if !defined(LONGDOUBLE)
   genSetParameter(n.getArgument(), 0);
 #else
   genSetRefParameter(n.getArgument(), 0);
@@ -997,7 +997,7 @@ BYTE CodeGenerator::genSetRefParameter(SNode n, int index, bool &savedOnStack) {
   }
 }
 
-#ifdef USEXMMREG
+#if defined(USEXMMREG)
 void CodeGenerator::genSetParameter(SNode n, int index) {
   const XMMRegister &dstRegister = (index == 0) ? XMM0 : XMM1;
   if(n.isNameOrNumber()) {

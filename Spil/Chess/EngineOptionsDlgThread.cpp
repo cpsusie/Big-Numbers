@@ -1,12 +1,12 @@
 #include "stdafx.h"
 
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
 
 #include "MoveFinderExternEngine.h"
 #include "EngineOptionsDlgThread.h"
 #include "EngineOptionsDlg.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 

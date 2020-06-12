@@ -166,7 +166,7 @@ void CsgIsosurface::fNormal(const D3DXVECTOR3 &point, D3DXVECTOR3 &normal) {
   iso->fNormal(point, normal);
 }
 
-#ifdef USE_MATERIAL
+#if defined(USE_MATERIAL)
 const Material &CsgIsosurface::fMaterial(const D3DXVECTOR3 &point, float density) {
   Isosurface *iso = findIsosurface(point.x, point.y, point.z);
   return iso->fMaterial(point, density);

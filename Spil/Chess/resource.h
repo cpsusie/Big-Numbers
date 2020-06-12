@@ -525,8 +525,8 @@
 
 // Next default values for new objects
 // 
-#ifdef APSTUDIO_INVOKED
-#ifndef APSTUDIO_READONLY_SYMBOLS
+#if defined(APSTUDIO_INVOKED)
+#if !defined(APSTUDIO_READONLY_SYMBOLS)
 #define _APS_NEXT_RESOURCE_VALUE        427
 #define _APS_NEXT_COMMAND_VALUE         33310
 #define _APS_NEXT_CONTROL_VALUE         1216

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "PatternParser.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 
 #include "DFARegex.h"
 
@@ -134,7 +134,7 @@ NFAState *PatternParser::compilePattern() {
     nextToken();
 
     SubNFA end;
-#ifdef _WIN32
+#if defined(_WIN32)
     CharacterSet charSet;
     charSet.add(NEWLINE).add(CR);
     end.create2StateNFA(charSet);
@@ -158,7 +158,7 @@ NFAState *PatternParser::compilePattern() {
 }
 
 /*
-#ifdef _WIN32
+#if defined(_WIN32)
 #pragma message("NB -------------------- In Windows newline include \\r and \\n -------------------")
 #else
 #pragma message("NB -------------------- Newline include \\n -------------------")
@@ -397,7 +397,7 @@ SubNFA PatternParser::term() {
         if(m_scanner.hasTranslateTable()) charSet = m_scanner.translate(charSet);
 
         charSet.remove(NEWLINE);
-#ifdef _WIN32
+#if defined(_WIN32)
         charSet.remove(CR);
 #endif
       } else { // [...]
@@ -415,7 +415,7 @@ SubNFA PatternParser::term() {
         }
         if(complementCharClass) {
           charSet.add(NEWLINE); // This will exclude '\n' if not specified in input
-#ifdef _WIN32
+#if defined(_WIN32)
           charSet.add(CR);      // and \r
 #endif
           charSet.invert();

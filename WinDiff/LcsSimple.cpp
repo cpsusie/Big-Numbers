@@ -103,7 +103,7 @@ BEGIN_TIMEMEASURE(5, _T("Comparing"));
     }
   }
 
-#ifdef DUMPTRESHLINKS
+#if defined(DUMPTRESHLINKS)
 //  dumpThreshLinks();
 #endif // DUMPTRESHLINKS
   intptr_t k;
@@ -139,7 +139,7 @@ BEGIN_TIMEMEASURE(6, _T("Building pairs"));
       result.add(ElementPair(pairs[k]->m_i-1,pairs[k]->m_j-1));
     }
   }
-#ifdef DUMPELEMENTPAIRS
+#if defined(DUMPELEMENTPAIRS)
   redirectDebugLog();
   debugLog(_T("ElementPairArray:\n%s"), result.toString(_T("\n")).cstr());
 #endif // DUMPELEMENTPAIRS
@@ -179,14 +179,14 @@ public:
     m_cmp.setRunnable(this);
   }
   UINT safeRun() {
-#ifdef MEASURE_STEPTIME
+#if defined(MEASURE_STEPTIME)
   debugLog(_T("%s(lineCount:%s, compareCountEstimate:%s\n")
           ,__TFUNCTION__
           ,format1000(m_lineCount).cstr()
           ,format1000(m_estimateCompareCount).cstr());
 #endif
     m_a.sort(1, m_a.size()-1, m_cmp);
-#ifdef MEASURE_STEPTIME
+#if defined(MEASURE_STEPTIME)
   debugLog(_T("%s(lineCount:%s, compareCountEstimate:%s actual compareCount:%s\n")
           ,__TFUNCTION__
           ,format1000(m_lineCount).cstr()
@@ -246,13 +246,13 @@ BEGIN_TIMEMEASURE(4, _T("Finding matching lines"));
 
 END_TIMEMEASURE(  4, m_docSize[0] + m_docSize[1]);
 
-#ifdef DUMPMATCHLIST
+#if defined(DUMPMATCHLIST)
 dumpMatchList();
 #endif // DUMPMATCHLIST
   return result;
 }
 
-#ifdef DUMPMATCHLIST
+#if defined(DUMPMATCHLIST)
 void LcsSimple::dumpMatchList() const {
   redirectDebugLog();
   debugLog(_T("MatchList:\n"));

@@ -27,7 +27,7 @@ BoundingBox Isosurface::getBoundingBox(const D3DXMATRIX &combinedTrans) {
   return bbox;
 }
 
-#ifdef USE_MATERIAL
+#if defined(USE_MATERIAL)
 
 Material avg3(const Material &m1, const Material &m2, const Material &m3) {
   Material m;

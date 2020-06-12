@@ -23,7 +23,7 @@ ChessGraphics::ChessGraphics(CWnd *wnd) : m_hwnd(*wnd) {
 
   m_game                   = NULL;
   m_paintLevel             = 0;
-#ifdef _DEBUG
+#if defined(_DEBUG)
   m_maxPaintLevel          = 0;
 #endif
   m_computerPlayer         = BLACKPLAYER;
@@ -436,7 +436,7 @@ void ChessGraphics::paintKing(Player player) {
 void ChessGraphics::animateMove(const MoveBase &m) {
   MoveBase am(m);
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   if(m_debugFlags.m_flags.m_showBackMoves) {
     am.swapFromTo();
   }
@@ -710,7 +710,7 @@ CSize ChessGraphics::flushImage() {
 }
 
 void ChessGraphics::startHourGlassAnimation() {
-#ifdef __NEVER__
+#if defined(__NEVER__)
   if(!isWatchVisible()) {
     m_resources.getHourGlassAnimation().startAnimation(wnd,CPoint(UPPERLEFTCORNER.x + 8 * FIELDSIZE.cx + 40,UPPERLEFTCORNER.y - 80),true,ANIMATE_INFINITE);
   }
@@ -950,7 +950,7 @@ MoveBaseArray ChessGraphics::getLegalMoves() const {
     return result;
   }
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   if(m_debugFlags.m_flags.m_showBackMoves) {
     const Piece *piece = m_game->getPieceAtPosition(m_selectedPieceField);
     if(piece == NULL || piece->getPlayer() == m_game->getPlayerInTurn()) {
@@ -980,7 +980,7 @@ void ChessGraphics::setSelectedField(int pos) {
   if(piece == NULL) {
     return;
   }
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   if(m_debugFlags.m_flags.m_showBackMoves) {
     if(piece->getPlayer() != m_game->getPlayerInTurn()) {
       m_selectedPieceField = pos;

@@ -42,7 +42,7 @@ SocketPair::SocketPair(SOCKET rs, SOCKET ws)
 SocketPair::~SocketPair() {
   CLOSESOCKET(m_readSocket );
   CLOSESOCKET(m_writeSocket);
-#ifdef _DEBUG
+#if defined(_DEBUG)
   debugLog(_T("SocketPair deleted\n"));
 #endif
 }

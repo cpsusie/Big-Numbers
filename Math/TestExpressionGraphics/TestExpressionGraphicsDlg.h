@@ -39,7 +39,7 @@ private:
   double	                   m_x;
   CString                      m_exprText;
 
-#ifdef TRACE_REDUCTION_CALLSTACK
+#if defined(TRACE_REDUCTION_CALLSTACK)
   const ReductionStackElement *m_selectedStackElement;
   const ReductionStackElement *getSelectedStackElement(CPoint p); // p in screen coordinates
 #endif

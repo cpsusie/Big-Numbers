@@ -4,7 +4,7 @@
 #include "OLEContainerClassDoc.h"
 #include "SrvrItem.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -84,7 +84,7 @@ BOOL COLEContainerClassSrvrItem::OnDraw(CDC *pDC, CSize& rSize)
 /////////////////////////////////////////////////////////////////////////////
 // COLEContainerClassSrvrItem diagnostics
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 void COLEContainerClassSrvrItem::AssertValid() const
 {
     COleServerItem::AssertValid();

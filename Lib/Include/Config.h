@@ -4,7 +4,7 @@
 
 #define _CRT_SECURE_NO_WARNINGS 1
 
-#ifdef WINAPI_FAMILY
+#if defined(WINAPI_FAMILY)
 #undef WINAPI_FAMILY
 #endif
 
@@ -25,19 +25,19 @@
 
 #define LIBROOT "c:/mytools2015/lib/"
 
-#ifdef _M_X64
+#if defined(_M_X64)
 #define _PLATFORM_ "x64/"
 #else
 #define _PLATFORM_ "Win32/"
 #endif
 
-#ifdef TRACE_MEMORY
+#if defined(TRACE_MEMORY)
 #define _TMPREFIX_ "TraceMem"
 #else
 #define _TMPREFIX_
 #endif
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define _CONFIGURATION_ "Debug/"
 #else
 #define _CONFIGURATION_ "Release/"

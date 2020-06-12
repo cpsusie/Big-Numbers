@@ -271,7 +271,7 @@ public:
   }
 };
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 
 class EndGameKeyWithOccupiedPositions : public EndGameKey {
 private:

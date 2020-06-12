@@ -6,7 +6,7 @@
 
 //#define LAB_CONVERSION
 
-#ifdef LAB_CONVERSION
+#if defined(LAB_CONVERSION)
 
 //#define WHITEREFERENCE CIEXYZ1931Color::D65Normalized
 #define WHITEREFERENCE CIEXYZ1931Color::monitorWhite

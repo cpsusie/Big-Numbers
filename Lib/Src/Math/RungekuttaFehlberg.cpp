@@ -66,7 +66,7 @@ const Vector &RungeKuttaFehlberg::calculate(const Vector &start, Real v0end, Rea
   return m_y;
 }
 
-#ifdef TEST_MODULE
+#if defined(TEST_MODULE)
 
 class expdiff : public VectorFunction {
 public:

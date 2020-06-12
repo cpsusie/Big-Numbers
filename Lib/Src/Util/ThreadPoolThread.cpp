@@ -5,7 +5,7 @@
 #define THR_REQUESTTERMINATE 0x02
 #define THR_TERMINATED       0x04
 
-#ifdef TRACE_THREADPOOL
+#if defined(TRACE_THREADPOOL)
 static String flagsToString(BYTE flags) {
   if(flags == 0) {
     return _T("IDLE (0)");
@@ -51,7 +51,7 @@ void ThreadPoolThread::requestTerminate() {
 }
 
 UINT ThreadPoolThread::run() {
-//#ifdef _DEBUG
+//#if defined(_DEBUG)
   m_pool.incrActiveCount();
   const String oldDesc = getDescription();
 //#endif
@@ -77,7 +77,7 @@ UINT ThreadPoolThread::run() {
     }
     m_resultQueue = NULL;
     clrFlag(THR_BUSY);
-#ifdef _DEBUG
+#if defined(_DEBUG)
     setDescription(oldDesc);
 #endif
     THREADPOOL_TRACE("%s(%s) finished job %d (state=%s)\n", __TFUNCTION__, oldDesc.cstr(), m_requestCount, FLGSTR());

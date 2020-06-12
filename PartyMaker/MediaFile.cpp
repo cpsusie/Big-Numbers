@@ -6,7 +6,7 @@
 GenreMap MediaFile::m_genreMap;
 
 GenreMap::GenreMap() {
-#ifdef HAS_ID3TAGS
+#if defined(HAS_ID3TAGS)
   for(int i = 0; i < ID3_NR_OF_V1_GENRES; i++) {
     put(toLowerCase(ID3_V1GENRE2DESCRIPTION(i)),i);
   }

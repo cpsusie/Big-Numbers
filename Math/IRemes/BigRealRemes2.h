@@ -184,7 +184,7 @@ public:
 };
 
 class Remes : public PropertyContainer {
-#ifdef MULTITHREADEDEXTREMAFINDER
+#if defined(MULTITHREADEDEXTREMAFINDER)
   friend class MultiExtremaFinder;
   friend class ExtremumFinder;
   friend class ExtremumNotifier;

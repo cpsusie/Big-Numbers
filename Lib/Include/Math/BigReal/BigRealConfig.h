@@ -52,7 +52,7 @@ typedef INT64          BRExpoTypex64;
 typedef INT64          BRDigitDiffTypex64;
 
 // Basic definitions depends on registersize. 32/64-bit
-#ifdef IS32BIT
+#if defined(IS32BIT)
 
 #define BIGREAL_LOG10BASE  BIGREAL_LOG10BASEx86
 
@@ -94,7 +94,7 @@ typedef INT64          BRDigitDiffTypex64;
 // Define SP_OPT_METHOD to one of these, to select the desired optimisation of shortProduct.
 // Best performance in x86 is SP_OPT_BY_REG32. Best (and only) in x64-mode is SP_OPT_BY_REG64
 
-#ifdef IS32BIT
+#if defined(IS32BIT)
 //#define SP_OPT_METHOD  SP_OPT_NONE
 //#define SP_OPT_METHOD  SP_OPT_BY_FPU
 //#define SP_OPT_METHOD  SP_OPT_BY_FPU2
@@ -103,7 +103,7 @@ typedef INT64          BRDigitDiffTypex64;
 #define SP_OPT_METHOD SP_OPT_BY_REG64
 #endif
 
-#ifndef SP_OPT_METHOD
+#if !defined(SP_OPT_METHOD)
 
 #error Must define SP_OPT_METHOD
 

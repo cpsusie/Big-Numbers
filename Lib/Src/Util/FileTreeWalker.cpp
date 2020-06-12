@@ -38,7 +38,7 @@ static void handleDir(const String &dir, FileNameHandler &nameHandler, TCHAR **a
     traverseDir(dir, nameHandler, NULL, recurse);
   } else {
     WildCardRegex filter((const TCHAR**)argv);
-#ifdef _DEBUG
+#if defined(_DEBUG)
     filter.dump();
 #endif
     traverseDir(dir, nameHandler, &filter, recurse);

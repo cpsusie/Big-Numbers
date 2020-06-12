@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#ifdef BIG_DBADDR
+#if defined(BIG_DBADDR)
 
 #pragma warning(disable : 4073)
 #pragma init_seg(lib)

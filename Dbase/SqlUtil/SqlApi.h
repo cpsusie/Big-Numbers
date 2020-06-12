@@ -204,7 +204,7 @@ typedef enum {
  ,DBTYPE_TIMESTAMPN = 38
 } DbFieldType;
 
-#ifndef UNICODE
+#if !defined(UNICODE)
 #define DBTYPE_TSTRING  DBTYPE_CSTRING
 #define DBTYPE_TSTRINGN DBTYPE_CSTRINGN
 #else
@@ -437,7 +437,7 @@ bool sqlapi_bndstmtfread(      FILE *bndfile,       SqlApiBindStmt      &bndstmt
 
 #define DBASE_VERSION DBASELIB _PLATFORM_ _CONFIGURATION_
 
-#ifdef GIVE_LINK_MESSAGE
+#if defined(GIVE_LINK_MESSAGE)
 #pragma message("link with " DBASE_VERSION)
 #endif
 #pragma comment(lib, DBASE_VERSION "SqlUtil.lib")

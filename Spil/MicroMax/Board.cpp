@@ -22,7 +22,7 @@ int                Board::s_historySize = 0;
 
 //#define TEST_TABLETRANSLATE
 
-#ifdef TEST_TABLETRANSLATE
+#if defined(TEST_TABLETRANSLATE)
 
 class TableSet : public BitSet {
   const String m_name;
@@ -173,7 +173,7 @@ void Board::executeMove(const Move &move) {
   }
   s_boardHistory[s_historySize] = getConfig();
   s_bestMove = move;
-#ifdef _DEBUG
+#if defined(_DEBUG)
   replyMessage(_T("executeMove(%s). ybit:%s"), s_bestMove.toString().cstr(), s_bestMove.d.m_ybit?"true":"false");
 #endif
 
@@ -311,7 +311,7 @@ int Board::negamax(int side, int alfa, int beta, int e, int EP, char request, in
       UINT64            &origFromBits = playerMap.getBits(fromIndex);
       const UINT64       fromRemoved  = origFromBits & ~((UINT64)1<<fromIndex);
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
       if(!(movingPiece&side)) {
         const String fromName = getFieldName(FROM);
         if(movingPiece) {
@@ -381,7 +381,7 @@ A:                                                                              
                 if(SEARCHCENTER(capturedPieceType)) {
                   score += BoardConfig::getFieldValue(capturedSquare);
                   switch(capturedPieceType) {
-#ifdef USE_KNIGHTBONUS
+#if defined(USE_KNIGHTBONUS)
                   case KNIGHT:
                     score += bc.m_player[enemy>>4].captureKnight(capturedSquare);
                     break;
@@ -410,12 +410,12 @@ A:                                                                              
                 if(s_bc.m_R <= 30) {                                                                                      // freeze king in mid-game
                   score -= 20;
                 }
-#ifdef USE_KNIGHTBONUS
+#if defined(USE_KNIGHTBONUS)
                 score += bc.m_player[enemy>>4].moveKing(move);
 #endif
                 break;
 
-#ifdef USE_KNIGHTBONUS
+#if defined(USE_KNIGHTBONUS)
               case KNIGHT:
                 score += bc.m_player[side>>4].moveKnight(move);
                 break;
@@ -428,7 +428,7 @@ A:                                                                              
                            )
                          -(s_bc.m_R>>2);                                                                                  // end-game pawn-push bonus
                 if((TO+step+1) & S) {                                                                                     // promotion
-#ifdef _DEBUG
+#if defined(_DEBUG)
                   if(move.d.m_promoteIndex >= ARRAYSIZE(legalPromotions)) {
                     throwException(_T("promoteIndex=%d"), move.d.m_promoteIndex);
                   }
@@ -436,7 +436,7 @@ A:                                                                              
                   promoteTo = legalPromotions[++move.d.m_promoteIndex];
                   material += BoardConfig::getPieceValue(promoteTo) - 202;                                                // promotion. 202 = value(pawn) + accumulated pawnpush bons = 74 + 128
                   SQUARE(TO) = promoteTo | side | HASMOVED;                                                               // convert pawn
-#ifdef USE_KNIGHTBONUS
+#if defined(USE_KNIGHTBONUS)
                   if(promoteTo == KNIGHT) {
                     score += bc.m_player[side>>4].promoteToKnight(TO);
                   }
@@ -474,7 +474,7 @@ A:                                                                              
                   a.m_depth    = 99;
                   a.m_score    = 0;                                                                                       // lock game in hash as draw
                   s_bc.m_R     += material>>7;                                                                            // total captured material
-#ifdef USE_KNIGHTBONUS
+#if defined(USE_KNIGHTBONUS)
                   bc.ajourKnightBonusTable();
 #endif
                   if(capturedPiece || ISPAWN(movingPieceType)) {
@@ -493,7 +493,7 @@ A:                                                                              
               if(capturedPiece) {
                 SQUARE(capturedSquare) = capturedPiece;
 
-#ifdef USE_KNIGHTBONUS
+#if defined(USE_KNIGHTBONUS)
                 switch(capturedPieceType) {
                 case KNIGHT:
                   bc.m_player[enemy>>4].uncaptureKnight(capturedSquare);
@@ -503,7 +503,7 @@ A:                                                                              
               }
               switch(movingPieceType) {
               case KING:
-#ifdef USE_KNIGHTBONUS
+#if defined(USE_KNIGHTBONUS)
                 bc.m_player[enemy>>4].unmoveKing(move);
 #endif
                 if(!(G&MASK88)) {
@@ -512,7 +512,7 @@ A:                                                                              
                 }
                 break;
 
-#ifdef USE_KNIGHTBONUS
+#if defined(USE_KNIGHTBONUS)
               case KNIGHT:
                 bc.m_player[side>>4].unmoveKnight(move);
                 break;

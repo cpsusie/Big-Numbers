@@ -19,7 +19,7 @@ void Game::updateGameMoveKing(const Move &m) {
   }
 }
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 void Game::updateGameBackMoveKing(const Move &m) {
   const Move m1 = m.makeBackMove();
   kingLeaveField(m1);

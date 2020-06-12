@@ -82,14 +82,14 @@ void Pipe::init() {
   m_fd[0] = m_fd[1] = -1;
 }
 
-#ifdef ENTERFUNC
+#if defined(ENTERFUNC)
 #undef ENTERFUNC
 #endif
-#ifdef LEAVEFUNC
+#if defined(LEAVEFUNC)
 #undef LEAVEFUNC
 #endif
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define VERBOSE(msg) if(m_verbose) debugLog(_T("%*.*s%s\n"), m_level, m_level, EMPTYSTRING, msg)
 #define ENTERFUNC if(m_verbose) { VERBOSE(::format(_T("enter %s"), __TFUNCTION__).cstr()); m_level++; }
 #define LEAVEFUNC if(m_verbose) { m_level--;  VERBOSE(::format(_T("leave %s"), __TFUNCTION__).cstr()); }

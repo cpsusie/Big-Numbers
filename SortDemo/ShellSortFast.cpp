@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <memory.h>
 
-#ifdef IS32BIT
+#if defined(IS32BIT)
 #define ASM_OPTIMIZED
 #endif
 
@@ -11,7 +11,7 @@ static void shellSortAnyWidth(void *base, size_t nelem, size_t width, AbstractCo
   size_t gap;
   for(gap = 1; gap <= nelem; gap = gap * 3 + 1);
 
-#ifdef ASM_OPTIMIZED
+#if defined(ASM_OPTIMIZED)
   __asm {
     push edi
     push esi
@@ -24,7 +24,7 @@ static void shellSortAnyWidth(void *base, size_t nelem, size_t width, AbstractCo
       const size_t hw = gap*width;
       for(size_t i = gap-1; i < nelem; i++) {
         char *pi = EPTR(i);
-#ifndef ASM_OPTIMIZED
+#if !defined(ASM_OPTIMIZED)
         memcpy(tmp,pi,width);
 #else
         __asm {
@@ -36,7 +36,7 @@ static void shellSortAnyWidth(void *base, size_t nelem, size_t width, AbstractCo
 #endif
         char *tp = pi - hw;
         for(;(tp >= base) && comparator.cmp(tp,tmp) > 0; pi = tp, tp -= hw) {
-#ifndef ASM_OPTIMIZED
+#if !defined(ASM_OPTIMIZED)
           memcpy(pi,tp,width);
 #else
         __asm {
@@ -47,7 +47,7 @@ static void shellSortAnyWidth(void *base, size_t nelem, size_t width, AbstractCo
         }
 #endif
         }
-#ifndef ASM_OPTIMIZED
+#if !defined(ASM_OPTIMIZED)
         memcpy(pi,tmp,width);
 #else
         __asm {
@@ -60,7 +60,7 @@ static void shellSortAnyWidth(void *base, size_t nelem, size_t width, AbstractCo
       }
     }
 
-#ifdef ASM_OPTIMIZED
+#if defined(ASM_OPTIMIZED)
   __asm {
     pop ecx
     pop esi
@@ -71,7 +71,7 @@ static void shellSortAnyWidth(void *base, size_t nelem, size_t width, AbstractCo
     delete[] tmp;
   } catch(...) {
 
-#ifdef ASM_OPTIMIZED
+#if defined(ASM_OPTIMIZED)
   __asm {
     pop ecx
     pop esi

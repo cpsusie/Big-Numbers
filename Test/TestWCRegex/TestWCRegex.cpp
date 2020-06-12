@@ -14,7 +14,7 @@ int _tmain(int argc, TCHAR **argv) {
   }
 
   WildCardRegex wc((const TCHAR **)origargv);
-#ifdef _DEBUG
+#if defined(_DEBUG)
   _tprintf(_T("wc.dump:\n%s"), wc.toString().cstr());
 #endif
   DirList files = scandir(_T("*.*"));

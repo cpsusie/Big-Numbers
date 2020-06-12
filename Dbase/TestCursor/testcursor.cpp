@@ -18,7 +18,7 @@ static char sqlapi_program_id[240] = {
 #include "stdafx.h"
 
 
-#ifdef __NEVER__
+#if defined(__NEVER__)
   EXEC SQL INCLUDE SQLCA;
 #endif
 #line 3 "C:/mytools2015/Dbase/testcursor/testcursor.sqc"
@@ -28,7 +28,7 @@ sqlca sqlca;
 
 
 
-#ifdef __NEVER__
+#if defined(__NEVER__)
   EXEC SQL BEGIN DECLARE SECTION;
 #endif
 #line 5 "C:/mytools2015/Dbase/testcursor/testcursor.sqc"
@@ -59,7 +59,7 @@ sqlca sqlca;
   static Date           dddd1;
   static Date           dddd2;
 
-#ifdef __NEVER__
+#if defined(__NEVER__)
   EXEC SQL END DECLARE SECTION;
 #endif
 #line 31 "C:/mytools2015/Dbase/testcursor/testcursor.sqc"
@@ -78,7 +78,7 @@ static void xchecksql(TCHAR *file,int line) {
 static void openCursor() {
   dd = 12;
 
-#ifdef __NEVER__
+#if defined(__NEVER__)
   EXEC SQL
     DECLARE curs cursor for
 	  select
@@ -93,7 +93,7 @@ static void openCursor() {
 
 
 
-#ifdef __NEVER__
+#if defined(__NEVER__)
   EXEC SQL
     OPEN curs
   END-EXEC
@@ -116,7 +116,7 @@ static void openCursor() {
 
 static bool fetchcursor() {
 
-#ifdef __NEVER__
+#if defined(__NEVER__)
   EXEC SQL
     FETCH curs
 	into
@@ -150,7 +150,7 @@ static bool fetchcursor() {
 
 static void closeCursor() {
 
-#ifdef __NEVER__
+#if defined(__NEVER__)
   EXEC SQL
     CLOSE curs
   END-EXEC
@@ -166,7 +166,7 @@ static void closeCursor() {
 
 static void dbConnect() {
 
-#ifdef __NEVER__
+#if defined(__NEVER__)
   EXEC SQL CONNECT TO :dbname user :username using :password;
 #endif
 #line 79 "C:/mytools2015/Dbase/testcursor/testcursor.sqc"
@@ -200,7 +200,7 @@ static void dbConnect() {
 
 static void dbDisconnect() {
 
-#ifdef __NEVER__
+#if defined(__NEVER__)
   EXEC SQL CONNECT RESET ;
 #endif
 #line 85 "C:/mytools2015/Dbase/testcursor/testcursor.sqc"

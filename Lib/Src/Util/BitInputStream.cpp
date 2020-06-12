@@ -3,7 +3,7 @@
 
 ULONG BitInputStream::getBits(int count) {
   if(count == 0) return 0;
-#ifdef _DEBUG
+#if defined(_DEBUG)
   if(count > 32) {
     throwInvalidArgumentException(__TFUNCTION__, _T("count=%d. Max=32"), count);
   }

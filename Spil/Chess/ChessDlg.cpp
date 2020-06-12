@@ -16,7 +16,7 @@
 #include "TablebaseDlg.h"
 #include "EnterTextDlg.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -391,7 +391,7 @@ BOOL CChessDlg::OnInitDialog() {
   }
 
 //  traceThread->reposition();
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   enableMenuItem(this,ID_TEST_MOVEBACKWARDS      ,true);
   enableMenuItem(this,ID_TEST_FICTIVEPAWNCAPTURES,true);
 #endif
@@ -734,7 +734,7 @@ void CChessDlg::enableTestMenuItems() {
   const DialogMode mode = getDialogMode();
   enableMenuItem(this, ID_TEST_DEBUG             , mode == PLAYMODE );
 
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
   enableMenuItem(this, ID_TEST_MOVEBACKWARDS     , false);
 #else
   enableMenuItem(this, ID_TEST_MOVEBACKWARDS     , mode == DEBUGMODE);
@@ -964,7 +964,7 @@ LRESULT CChessDlg::OnMsgEngineChanged(WPARAM wp, LPARAM lp) {
 }
 
 LRESULT CChessDlg::OnMsgChessPlayerStateChanged(WPARAM wp, LPARAM lp) {
-#ifdef _DEBUGDLG
+#if defined(_DEBUGDLG)
   verbose(_T("%s(%d,%d)\n"), __TFUNCTION__, wp, lp);
 #endif
   const Player           player   = (Player)wp;
@@ -1035,7 +1035,7 @@ LRESULT CChessDlg::OnMsgChessPlayerMsgChanged(WPARAM wp, LPARAM lp) {
 }
 
 LRESULT CChessDlg::OnMsgRemoteStateChanged(WPARAM wp, LPARAM lp) {
-#ifdef _DEBUGDLG
+#if defined(_DEBUGDLG)
   verbose(_T("%s(%d,%d)\n"), __TFUNCTION__, wp, lp);
 #endif
   bool newRemote = lp ? true : false;
@@ -1048,7 +1048,7 @@ LRESULT CChessDlg::OnMsgRemoteStateChanged(WPARAM wp, LPARAM lp) {
 }
 
 LRESULT CChessDlg::OnMsgTraceWindowChanged(WPARAM wp, LPARAM lp) {
-#ifdef _DEBUGDLG
+#if defined(_DEBUGDLG)
   verbose(_T("%s(%d,%d)\n"), __TFUNCTION__, wp, lp);
 #endif
   const bool active = isTraceWindowVisible();
@@ -1580,7 +1580,7 @@ String CChessDlg::getGameResultToString() {
   case WHITE_CHECKMATE           : return loadString(IDS_MSG_BLACK_WIN);
   case BLACK_CHECKMATE           : return loadString(IDS_MSG_WHITE_WIN);
   case STALEMATE                 : return loadString(IDS_STALEMATE);
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
   case POSITION_REPEATED_3_TIMES : return loadString(IDS_MSG_POSITION_REPEATED_3_TIMES);
   case NO_CAPTURE_OR_PAWNMOVE    : return getFiftyMovesString();
   case DRAW                      : return format(_T("%s\n%s"), loadString(IDS_MSG_INSUFFICIENT_MATERIAL).cstr(), loadString(IDS_DRAW).cstr());
@@ -1647,7 +1647,7 @@ void CChessDlg::executeMove(const PrintableMove &m) {
                                 ,loadString(IDS_STALEMATE));
         break;
 
-  #ifndef TABLEBASE_BUILDER
+  #if !defined(TABLEBASE_BUILDER)
       case POSITION_REPEATED_3_TIMES          :
         handleEndGameForPlayMode(loadString(IDS_MSG_POSITION_REPEATED_3_TIMES), loadString(IDS_DRAW));
         break;
@@ -1691,7 +1691,7 @@ void CChessDlg::executeMove(const PrintableMove &m) {
       handleEndGameForAutoPlayMode(format(loadString(IDS_MSG_s_STALEMATE).cstr(), getPlayerName(game.getPlayerInTurn())), loadString(IDS_STALEMATE));
       break;
 
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
     case POSITION_REPEATED_3_TIMES          :
       handleEndGameForAutoPlayMode(loadString(IDS_MSG_POSITION_REPEATED_3_TIMES), loadString(IDS_DRAW));
       break;
@@ -1710,7 +1710,7 @@ void CChessDlg::executeMove(const PrintableMove &m) {
   }
 }
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 void CChessDlg::executeBackMove(const Move &m) { // always debugMode
   Game &game = getCurrentGame();
   m_graphics->unmarkAll();
@@ -1969,7 +1969,7 @@ void CChessDlg::editUndo(UndoMode mode) {
 }
 
 void CChessDlg::unExecuteLastPly() {
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   if(isMenuItemChecked(this,ID_TEST_MOVEBACKWARDS)) {
     unExecuteLastBackMove();
     return;
@@ -2005,7 +2005,7 @@ void CChessDlg::OnEditRedo() {
 }
 
 void CChessDlg::OnEditCopyFEN() {
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
   putClipboard(m_hWnd, getCurrentGame().toFENString());
 #else
   errorMessage(_T("Copy FEN not available in BUILDER_MODE"));
@@ -2374,7 +2374,7 @@ void CChessDlg::OnWhiteEngineGetState() { enginePrintState(  WHITEPLAYER); }
 void CChessDlg::OnBlackEngineGetState() { enginePrintState(  BLACKPLAYER); }
 
 void CChessDlg::engineEditSettings(Player player) {
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
   CEngineOptionsDlg dlg(player);
   if(dlg.DoModal() == IDOK) {
     getChessPlayer(player).resetMoveFinder();
@@ -2527,11 +2527,11 @@ void CChessDlg::OnEndGameTablebaseEnabled() {
 
 void CChessDlg::setGameSettings() {
   const Options &options = getOptions();
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
   getCurrentGame().setMaxPlyCountWithoutCaptureOrPawnMove(options.getMaxMovesWithoutCaptureOrPawnMove()*2);
 #endif
   EndGameKeyDefinition::setMetric(options.getEndGameTablebaseMetric());
-#ifndef NEWCOMPRESSION
+#if !defined(NEWCOMPRESSION)
   EndGameKeyDefinition::setDbPath(options.getEndGameTablebasePath());
 #endif
   checkMenuItem( this, ID_OPENINGLIBRARY_ENABLED  , options.isOpeningLibraryEnabled()  );
@@ -2624,7 +2624,7 @@ void CChessDlg::OnLButtonDownDebugMode(UINT nFlags, CPoint point) {
   const Piece *selectedPiece = m_graphics->getSelectedPiece();
   Game &game = getCurrentGame();
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   if(isMenuItemChecked(this, ID_TEST_MOVEBACKWARDS)) {
     game.setEndGameKeyDefinition();
     if(selectedPiece == NULL) {
@@ -2833,7 +2833,7 @@ void CChessDlg::OnTestMoveBackwards() {
 
 void CChessDlg::OnTestGenerateFictivePawnCaptures() {
   if(!getOptions().hasTestMenu()) return;
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   getCurrentGame().setGenerateFictivePawnCaptures(toggleMenuItem(this, ID_TEST_FICTIVEPAWNCAPTURES));
 #endif
 }
@@ -2886,7 +2886,7 @@ void CChessDlg::OnTestNormalizeEndGamePosition() {
 }
 
 void CChessDlg::setMoveBackwards(bool moveBackwards) {
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   if(!getOptions().hasTestMenu()) return;
   checkMenuItem(this,ID_TEST_MOVEBACKWARDS,moveBackwards);
   m_graphics->setShowBackMoves(moveBackwards);
@@ -2895,7 +2895,7 @@ void CChessDlg::setMoveBackwards(bool moveBackwards) {
 }
 
 void CChessDlg::OnTestSaveToExternEngine() {
-#ifdef __NEVER__
+#if defined(__NEVER__)
   const String extensions = format(_T("%s%c*.txt%c%s%c*.*%c%c")
                                    ,loadString(IDS_TEXTFILEEXTENSION).cstr() ,0, 0
                                    ,loadString(IDS_ALLFILESEXTENSION).cstr() ,0, 0

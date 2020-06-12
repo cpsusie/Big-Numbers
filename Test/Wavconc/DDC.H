@@ -6,7 +6,7 @@
 
 ============================================================================*/
 
-#ifndef __DDC_DDC_H
+#if !defined(__DDC_DDC_H)
 #define __DDC_DDC_H
 
 // If you add something to DDCRET, please add the appropriate String
@@ -40,7 +40,7 @@ typedef signed   char        INT8;
 typedef unsigned short int   UINT16;
 typedef signed   short int   INT16;
 
-#ifdef __BORLANDC__
+#if defined(__BORLANDC__)
 	#if sizeof(UINT16) != 2
 	  #error Need to fix UINT16 and INT16
 	#endif

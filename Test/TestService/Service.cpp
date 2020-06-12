@@ -340,7 +340,7 @@ void CmdDebugService(int argc, char **argv) {
     int     dwArgc;
     LPTSTR *lpszArgv;
 
-#ifdef UNICODE
+#if defined(UNICODE)
     lpszArgv = CommandLineToArgvW(GetCommandLineW(), &dwArgc );
 #else
     dwArgc   = argc;

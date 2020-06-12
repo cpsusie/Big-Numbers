@@ -5,7 +5,7 @@
 
 DEFINECLASSNAME(LexFileStream);
 
-#ifndef UNICODE
+#if !defined(UNICODE)
 
 LexFileStream::LexFileStream() {
   m_f       = stdin;

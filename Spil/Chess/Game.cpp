@@ -14,7 +14,7 @@ Game &Game::newGame(const String &name) {
   }
 
   setupStartPosition();
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
   setMaxPositionRepeat();
   setMaxPlyCountWithoutCaptureOrPawnMove();
 #endif
@@ -89,7 +89,7 @@ void Game::allocateMemory(int stackCapacity) {
   allocateStack(stackCapacity);
   m_setupMode   = false;
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   m_keydef                      = NULL;
   m_swapPlayers                 = false;
   m_generateFictivePawnCaptures = false;
@@ -127,7 +127,7 @@ Game &Game::copyFrom(const Game &src) {
   m_gameResult                       = src.m_gameResult;
   m_setupMode                        = src.m_setupMode;
 
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
   m_lastCaptureOrPawnMove            = src.m_lastCaptureOrPawnMove;
   m_maxPositionRepeat                = src.m_maxPositionRepeat;
   m_maxPliesWithoutCaptureOrPawnMove = src.m_maxPliesWithoutCaptureOrPawnMove;
@@ -185,7 +185,7 @@ GameUpdateFunction Game::getMoveFunction(PieceType pieceType) { // static
   }
 }
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 GameUpdateFunction Game::getBackMoveFunction(PieceType pieceType) { // static
   switch(pieceType) {
   case King   : return &updateGameBackMoveKing;
@@ -251,7 +251,7 @@ const Piece *Game::findFirstPieceInDirection(PositionArray dir) const {
   return NULL;
 }
 
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
 int Game::evaluateScore() const {
   return (m_playerState[WHITEPLAYER].*m_whiteScore)() - (m_playerState[BLACKPLAYER].*m_blackScore)();
 }
@@ -262,7 +262,7 @@ void Game::capturePiece(const Move &m) {
   (this->*(piece->m_updateWhenCaptured))(m);
   piece->m_onBoard = false;
 
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
   piece->m_playerState.m_totalMaterial -= piece->m_materialValue;
   m_lastCaptureOrPawnMove = m_stackSize;
 #endif
@@ -287,7 +287,7 @@ bool Game::tryMove(const Move &m) {
   (this->*(m.m_piece->m_doMove))(m);
   m_playerState[PLAYERINTURN].m_kingAttackState = KING_NOT_ATTACKED;
   m_playerState[m_gameKey.d.m_playerInTurn ^= 1].setKingAttackState();
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   return true;
 #else
   return (m_hashStack.push(m_gameKey) <= (int)m_maxPositionRepeat) && (getPlyCountWithoutCaptureOrPawnMove() <= getMaxPlyCountWithoutCaptureOrPawnMove());
@@ -298,7 +298,7 @@ bool Game::tryMove(const Move &m) {
 void Game::unTryMove() {
   const GameStackElement &top = restoreState();
 
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
   m_hashStack.pop();
 #endif
 
@@ -372,7 +372,7 @@ void Game::undoPromotion(const Move &m) {
   }
 }
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 void Game::doBackMove(const Move &m) {
   pushState();
   tryBackMove(m);
@@ -418,7 +418,7 @@ void Game::pushState() {              // push state NOT including move
   top.m_savedState[WHITEPLAYER] = m_playerState[WHITEPLAYER];
   top.m_savedState[BLACKPLAYER] = m_playerState[BLACKPLAYER];
   top.m_gameKey                 = m_gameKey;
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
   top.m_lastCaptureOrPawnMove   = m_lastCaptureOrPawnMove;
 #endif
 }
@@ -428,7 +428,7 @@ const GameStackElement &Game::restoreState() {
   ((PlayerStateToPush&)m_playerState[WHITEPLAYER]) = top.m_savedState[WHITEPLAYER];
   ((PlayerStateToPush&)m_playerState[BLACKPLAYER]) = top.m_savedState[BLACKPLAYER];
   m_gameKey                     = top.m_gameKey;
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
   m_lastCaptureOrPawnMove       = top.m_lastCaptureOrPawnMove;
 #endif
   return top;

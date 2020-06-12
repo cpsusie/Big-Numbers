@@ -3,7 +3,7 @@
 #include "Fern.h"
 #include "FernDlg.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -135,7 +135,7 @@ BEGIN_MESSAGE_MAP(CFernDlg, CDialog)
     ON_BN_CLICKED(IDC_BUTTONRESET, OnButtonReset)
 END_MESSAGE_MAP()
 
-#ifdef BREGNE
+#if defined(BREGNE)
 
 static AfinType startAfin[AFIN_COUNT] = {
   { 0.00, 0.00, 0.00, 0.16, 0.00, 0.00, 0.01 },

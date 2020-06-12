@@ -1,7 +1,6 @@
 #include "pch.h"
-#include <Math/Point2D.h>
+#include <Math/Fixed.h>
 
-#ifdef __NEVER__
 FIXED floatToFixed(float x) {
   FIXED result;
   result.value = (short)floor(x);
@@ -9,10 +8,10 @@ FIXED floatToFixed(float x) {
   return result;
 }
 
-MAT2 rotation(float degree) {
+MAT2 getMAT2Rotation(float degree) {
   MAT2 result;
-  float sn = (float)sin(GRAD2RAD(degree));
-  float cs = (float)cos(GRAD2RAD(degree));
+  const float sn = (float)sin(GRAD2RAD(degree));
+  const float cs = (float)cos(GRAD2RAD(degree));
   result.eM11 = floatToFixed(cs);
   result.eM12 = floatToFixed(-sn);
   result.eM21 = floatToFixed(sn);
@@ -20,7 +19,7 @@ MAT2 rotation(float degree) {
   return result;
 }
 
-MAT2 getIdentity(float size) {
+MAT2 getMAT2Id(float size) {
   MAT2 result;
   result.eM11 = floatToFixed(size);
   result.eM12 = floatToFixed(0);
@@ -28,9 +27,3 @@ MAT2 getIdentity(float size) {
   result.eM22 = result.eM11;
   return result;
 }
-
-Point2D::Point2D(const POINTFX &p) {
-  x = fixedToFloat(p.x);
-  y = fixedToFloat(p.y);
-}
-#endif

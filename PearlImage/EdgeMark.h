@@ -41,7 +41,7 @@ public:
   inline const CRect &getVisibleRect() const {
     return m_visibleRect;
   }
-#ifdef _DEBUG
+#if defined(_DEBUG)
   String toString() const;
 #endif
 };
@@ -58,7 +58,7 @@ public:
   }
   void paintAll(CDC &dc);
   const EdgeMark *findEdgeMark(const CPoint &point) const;
-#ifdef _DEBUG
+#if defined(_DEBUG)
   String toString() const;
 #endif
 };

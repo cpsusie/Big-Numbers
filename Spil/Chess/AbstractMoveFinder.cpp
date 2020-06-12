@@ -11,7 +11,7 @@ AbstractMoveFinder::AbstractMoveFinder(Player player, ChessPlayerRequestQueue &m
 
 void AbstractMoveFinder::initSearch(const RequestParamFindMove &param) {
   m_game = param.getGame();
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
   m_game.setMaxPositionRepeat(1);
 #endif
   m_hint = param.isHint();

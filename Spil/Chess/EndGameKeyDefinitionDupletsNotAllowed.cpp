@@ -33,7 +33,7 @@ void EndGameKeyDefinitionDupletsNotAllowed::initIndexMap() {
   }
 
 //#define PRINT_INFO
-#ifdef PRINT_INFO
+#if defined(PRINT_INFO)
   _tprintf(_T("IndexMap:\nPiece  White Black\n"));
   for(PieceType type = King; type <= Pawn; ((int&)type)++) {
     _tprintf(_T("%-6s"), getPieceTypeNameEnglish(type));
@@ -52,14 +52,14 @@ EndGameKey EndGameKeyDefinitionDupletsNotAllowed::getEndGameKey(const GameKey &g
   EndGameKey result;
   result.setPlayerInTurn(gameKey.getPlayerInTurn());
 
-#ifdef IS32BIT
+#if defined(IS32BIT)
 #define ASM_OPTIMIZED
 #endif
 
-#ifndef ASM_OPTIMIZED
+#if !defined(ASM_OPTIMIZED)
 
   PieceKey pk;
-#ifdef _DEBUG
+#if defined(_DEBUG)
   int pieceCount = 0;
 #endif
   for(int pos = 0; pos < ARRAYSIZE(gameKey.m_pieceKey); pos++) {
@@ -67,7 +67,7 @@ EndGameKey EndGameKeyDefinitionDupletsNotAllowed::getEndGameKey(const GameKey &g
       continue;
     }
     result.setPosition(m_pieceKeyIndexMap[pk], pos);
-#ifdef _DEBUG
+#if defined(_DEBUG)
     pieceCount++;
 #endif
   }

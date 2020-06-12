@@ -16,7 +16,7 @@ bool KeyCursor::handleKey(const KeyType &key) {
   if(bufferIsFull()) return false;
 
   if(!m_keydef.keynCmpRelOp(m_endRelOp, key, m_endKey, m_endFieldCount)) {
-#ifdef DEBUG
+#if defined(DEBUG)
     _tprintf(_T("stopped filescan because of end-cond. key:"));
     m_keydef.keyprintf(key);
     _tprintf(_T(" endkey:"));
@@ -90,7 +90,7 @@ void KeyCursor::bufferFill(KeyFile &file) {
   m_firstTime   = false;
   m_lastWasFull = bufferIsFull();
 
-#ifdef DEBUG
+#if defined(DEBUG)
 _tprintf(_T("fillbuffer finished:bufcount:%d   \n"),m_bufCount);
 #endif
 

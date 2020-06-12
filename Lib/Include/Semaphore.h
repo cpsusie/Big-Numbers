@@ -26,13 +26,13 @@ public:
   HANDLE getHandle() const {
     return m_sem;
   }
-#ifdef TRACESEMAPHORE
+#if defined(TRACESEMAPHORE)
   bool wait(  const TCHAR *name, const TCHAR *file, int line, const TCHAR *function, UINT timeout = INFINITE);
   void notify(const TCHAR *name, const TCHAR *file, int line, const TCHAR *function);
 #endif  // TRACESEMAPHORE
 };
 
-#ifdef TRACESEMAPHORE
+#if defined(TRACESEMAPHORE)
 #define WAIT(  sem,...) (sem).wait(  _T(#sem), __TFILE__, __LINE__, __TFUNCTION__, __VA_ARGS___)
 #define NOTIFY(sem)     (sem).notify(_T(#sem), __TFILE__, __LINE__, __TFUNCTION__)
 #else

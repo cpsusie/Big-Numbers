@@ -3,7 +3,7 @@
 #include <PackedArray.h>
 #include "EndGameUtil.h"
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 
 class EndGameEntryIterator : public Iterator<EndGameEntry> {
 private:
@@ -32,10 +32,10 @@ private:
   const EndGamePosIndex       m_indexSize; // = keydef.getIndexSize()
   void allocate();
   void rethrowException(Exception &e, EndGameKey key) const;
-#ifdef _DEBUG
+#if defined(_DEBUG)
   EndGamePosIndex getCheckedIndex(EndGameKey key) const;
 #endif
-#ifdef DEBUG_NEWCOMPRESSION
+#if defined(DEBUG_NEWCOMPRESSION)
   void            listCompressedContent(const TablebaseInfo &info, String fileName = EMPTYSTRING) const;
 #endif
 
@@ -70,7 +70,7 @@ public:
   }
 
   void convertIndex();
-#ifndef NEWCOMPRESSION
+#if !defined(NEWCOMPRESSION)
   void saveCompressed(   ByteOutputStream      &s, const TablebaseInfo &info) const;
 #else // !NEWCOMPRESSION
   void saveCompressed(   BigEndianOutputStream &s, const TablebaseInfo &info) const;
@@ -102,7 +102,7 @@ private:
   const bool                  m_getResultEnabled;
   PackedArray                 m_statusArray;
   void rethrowException(Exception &e, EndGameKey key) const;
-#ifdef _DEBUG
+#if defined(_DEBUG)
   EndGamePosIndex getCheckedIndex(EndGameKey key) const;
 #endif
   static int findBitsPerItem(UINT maxPlies);
@@ -126,7 +126,7 @@ public:
 
 #else // !TABLEBASE_BUILDER
 
-#ifndef NEWCOMPRESSION
+#if !defined(NEWCOMPRESSION)
 
 class IndexedMap {
 private:

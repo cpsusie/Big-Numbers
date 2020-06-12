@@ -5,7 +5,7 @@
 
 // --------------------------------------------- Edit functions -------------------------------------------
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define TRACESTATE() m_editHistory.printState(__TFUNCTION__)
 #else
 #define TRACESTATE()
@@ -327,7 +327,7 @@ void CChessDlg::setPiece(PieceKey key) {
 }
 
 void CChessDlg::OnEditPasteFEN() {
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
   try {
     const String text = getClipboardText();
     Game tmp;

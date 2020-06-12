@@ -4,7 +4,7 @@
 #include "ExternEngine.h"
 #include "EnginesDlg.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -117,7 +117,7 @@ void CEnginesDlg::OnButtonMoveDown() {
 }
 
 void CEnginesDlg::OnButtonAdd() {
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
   try {
     const String title      = loadString(IDS_SELECTEXEFILETITLE);
     const String extensions = format(_T("%s%c*.exe%c%s%c*.*%c%c")
@@ -165,7 +165,7 @@ void CEnginesDlg::OnButtonDelete() {
 }
 
 void CEnginesDlg::OnButtonCheck() {
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
   StringArray errors;
   String      selectedEngineName;
   const int   selected = getSelectedIndex();

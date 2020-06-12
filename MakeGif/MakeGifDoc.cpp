@@ -4,7 +4,7 @@
 #include "SavedImageArray.h"
 #include "MakeGifDoc.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -60,7 +60,7 @@ void CMakeGifDoc::Serialize(CArchive& ar) {
   }
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 void CMakeGifDoc::AssertValid() const {
   __super::AssertValid();
 }

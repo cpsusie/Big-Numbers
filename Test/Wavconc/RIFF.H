@@ -14,7 +14,7 @@
 
 #include "ddc.h"
 
-#ifndef __DDC_RIFF_H
+#if !defined(__DDC_RIFF_H)
 #define __DDC_RIFF_H
 
 #pragma pack(1)

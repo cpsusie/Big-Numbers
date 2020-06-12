@@ -11,7 +11,7 @@
 #define CR      _T('\r')
 
 // maximal character value
-#ifdef UNICODE
+#if defined(UNICODE)
 #define MAX_CHARS 0x10000
 #else
 #define MAX_CHARS 0x100

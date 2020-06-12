@@ -95,7 +95,7 @@ namespace UnitTestKeyDefinition {
       }
     }
 
-#ifdef BIG_DBADDR
+#if defined(BIG_DBADDR)
 #define TEST_DBADDR 0xf1e2d3c4b5a6ui64
 #else
 #define TEST_DBADDR 0xf1e2d3c4

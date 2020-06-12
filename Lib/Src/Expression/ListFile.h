@@ -158,7 +158,7 @@ private:
     return (m_FPUComment.length() > 0) || m_FPURegOptimized;
   }
   inline bool isTracing() const {
-#ifdef _DEBUG
+#if defined(_DEBUG)
     return isOpen() && isatty(m_f) && IsDebuggerPresent();
 #else
     return false;

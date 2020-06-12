@@ -71,7 +71,7 @@ void BezierCurve::printCurve(const Point2DArray &pa, int steps, FILE *out) { // 
 #define TEST_BINOMIALTABLE
 
 int main(int argc, char **argv) {
-#ifdef TEST_BINOMIALTABLE
+#if defined(TEST_BINOMIALTABLE)
 
 #define FIELDSIZE 8
   BinomialTable binomial;

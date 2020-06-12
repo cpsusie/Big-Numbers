@@ -34,7 +34,7 @@ public:
 
 class BoardFieldObject : public BoardObjectWithTexture {
 private:
-#ifdef _DEBUG
+#if defined(_DEBUG)
   LPDIRECT3DTEXTURE m_texture[2]; // 0=unmarked,1=marked
   LPDIRECT3DTEXTURE createTexture(bool marked);
   static CFont     *getFont();
@@ -58,7 +58,7 @@ public:
   ~BoardFieldObject();
   inline void setSelected(bool selected) {
     m_selected = selected;
-#ifdef _DEBUG
+#if defined(_DEBUG)
     if(selected) debugLog(_T("Select %s\n"), getName().cstr());
 #endif
   }
@@ -69,7 +69,7 @@ public:
     return getTexture(m_selected);
   }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
   String toString() const;
 #endif
 };
@@ -95,7 +95,7 @@ public:
   }
   inline void setMarked(bool marked) {
     m_marked = marked;
-#ifdef _DEBUG
+#if defined(_DEBUG)
     if(marked) debugLog(_T("Mark %s\n"), toString().cstr());
 #endif
   }
@@ -108,7 +108,7 @@ public:
   int getMaterialId() const;
   D3DXMATRIX &getWorld();
   void draw();
-#ifdef _DEBUG
+#if defined(_DEBUG)
   String toString() const;
 #endif
 };
@@ -188,7 +188,7 @@ public:
   static inline UINT getMarkerMaterialId() {
     return s_markerMaterialId;
   }
-#ifdef _DEBUG
+#if defined(_DEBUG)
   String toString() const;
 #endif
 };

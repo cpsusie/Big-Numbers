@@ -69,7 +69,7 @@ void SimpleLayoutManager::removeControl(int ctrlId) {
       return;
     }
   }
-#ifdef TEST_DEBUG
+#if defined(TEST_DEBUG)
   showError(_T("%s:control with id=%d not found in layoutmanager")
            ,__TFUNCTION__, ctrlId);
 #endif

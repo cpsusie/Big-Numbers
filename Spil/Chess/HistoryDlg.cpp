@@ -5,7 +5,7 @@
 #include "GameAnalyzeThread.h"
 #include "HistoryDlg.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 

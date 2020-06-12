@@ -14,7 +14,7 @@
 #include "EnterOptionsNameDlg.h"
 #include "OptionsOrganizerDlg.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -109,12 +109,12 @@ static UINT indicators[] = {
  ,ID_INDICATOR_CHANGEDLINES
  ,ID_INDICATOR_INSERTEDLINES
  ,ID_INDICATOR_POSITION
-#ifdef _DEBUG
+#if defined(_DEBUG)
  ,ID_INDICATOR_DEBUG
 #endif
 };
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 void CMainFrame::showDebugMsg(_In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   va_list argptr;
   va_start(argptr,format);
@@ -234,7 +234,7 @@ BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs) {
   return TRUE;
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 void CMainFrame::AssertValid() const {
   __super::AssertValid();
 }
@@ -400,7 +400,7 @@ void CMainFrame::refreshDoc(bool recomp) {
   view->refreshBoth();
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 
 String CMainFrame::flagsToString() {
   CWinDiffView *v0 = getDiffView(0);

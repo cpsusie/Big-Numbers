@@ -31,7 +31,7 @@
 #include <Timer.h>
 #include <FileVersion.h>
 #include <Tokenizer.h>
-#ifndef _DEBUG
+#if !defined(_DEBUG)
 #include <DebugLog.h>
 #endif
 #include "Board.h"
@@ -128,7 +128,7 @@ public:
 MoveFinder::MoveFinder(InputThread &input) : Thread(_T("MoveFinder")), m_input(input), m_timer(1) {
   setDemon(true);
   m_busy = false;
-#ifndef _DEBUG
+#if !defined(_DEBUG)
   const String fileName = format(_T("c:\\temp\\MicroMax%s.txt"), getFileVersion().cstr());
   redirectDebugLog(false, fileName.cstr());
 #endif
@@ -159,7 +159,7 @@ void MoveFinder::moveNow() {
   board.moveNow();
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 static void printState(int player = BLACK, bool detailed = true) {
   replyMessage(
      _T("Max. moves      : %d\n"
@@ -188,7 +188,7 @@ static void printState(int player = BLACK, bool detailed = true) {
 
 // Handle commands given in m_msgQueue
 UINT MoveFinder::run() {
-#ifdef _DEBUG
+#if defined(_DEBUG)
   replyMessage(_T("MoveFinderThread:Id:%d"), getThreadId());
 #endif
 // movesLeft moves have to be done within timeLeft+(movesLeft-1)*timeInc
@@ -268,7 +268,7 @@ void MoveFinder::updateTimeLeft() {
 
 static void handleUCI() {
   const FileVersion version(getModuleFileName());
-#ifdef _DEBUG
+#if defined(_DEBUG)
   reply(_T("id name Micromax %s Debug\n"), version.getFileVersion().cstr());
 #else
   reply(_T("id name Dummy Engine %s\n"), version.getFileVersion().cstr());
@@ -296,7 +296,7 @@ static bool handleStdCommands(const String &line) {
     return true;
   }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
   if(command == _T("statew") ) {
     printState(WHITE);
     return true;
@@ -341,7 +341,7 @@ void MoveFinder::replyAnswer() const {
     const UINT nodeCount   = Board::getNodeCount();
     const UINT msec        = getSearchTime();
     const UINT nodesPerSec = msec ? ((UINT64)nodeCount*1000)/msec : 0;
-#ifndef _DEBUG
+#if !defined(_DEBUG)
     debugLog(_T("%lu\n"), nodesPerSec);
 #endif
     reply(_T("bestmove %s\n"), m.toString().cstr());
@@ -358,7 +358,7 @@ int main(int argc, char **argv) {
   InputThread input;
   MoveFinder  moveFinder(input);
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
   replyMessage(_T("main:threadId:%d"), GetCurrentThreadId());
 #endif
 

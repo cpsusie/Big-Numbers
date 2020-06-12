@@ -16,7 +16,7 @@ public:
   void compile(const String &pattern);
   bool match(const String &str) const;
   bool isLike(const String &str, const String &pattern);
-#ifdef _DEBUG
+#if defined(_DEBUG)
   void dump(FILE *f=stdout) const { Regex::dump(f); }
   void testSqlRegex();
 #endif

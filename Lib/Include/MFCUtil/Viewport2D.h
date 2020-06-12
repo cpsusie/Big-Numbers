@@ -27,7 +27,7 @@ private:
   inline bool hasDC() const {
     return m_dc && m_dc->m_hDC;
   }
-#ifdef _DEBUG
+#if defined(_DEBUG)
   void noDCError(const TCHAR *method) const;
 #define CHECKHASDC() { if(!hasDC()) noDCError(__TFUNCTION__); }
 #else

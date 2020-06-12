@@ -8,7 +8,7 @@ ExpressionNodeTree::ExpressionNodeTree(ParserTree *tree, ExpressionInputSymbol s
 , m_childArray(*tree)
 {
   const int count = initChildArray(argptr);
-#ifdef _DEBUG
+#if defined(_DEBUG)
   if(count) {
     SETDEBUGSTRING();
   }
@@ -39,7 +39,7 @@ ExpressionNodeTree::ExpressionNodeTree(ParserTree *tree, ExpressionInputSymbol s
   va_start(argptr, symbol);
   const int count = initChildArray(argptr);
   va_end(argptr);
-#ifdef _DEBUG
+#if defined(_DEBUG)
   if(count) {
     SETDEBUGSTRING();
   }

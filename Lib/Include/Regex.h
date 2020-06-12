@@ -26,7 +26,7 @@ public:
   const TCHAR *m_regEnd;
   inline _RegexStateRegister() {
     m_regStart = (TCHAR*)-1; // Initialize \( and \) text positions to -1 to indicate, that no \( or \) has been seen
-#ifdef _DEBUG
+#if defined(_DEBUG)
     m_regStartSegEnd = m_regEnd = NULL;
 #endif
   }
@@ -35,12 +35,12 @@ public:
   }
   inline void clear() {
     m_regStart = (TCHAR*)-1;
-#ifdef _DEBUG
+#if defined(_DEBUG)
     m_regStartSegEnd = m_regEnd = NULL;
 #endif
   }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
   String toString(const _RegexMatchState *state) const;
 #endif
 };
@@ -75,7 +75,7 @@ public:
   inline bool hasStateRegister() const {
     return m_regno < RE_NREGS;
   }
-#ifdef _DEBUG
+#if defined(_DEBUG)
   String toString() const;
 #endif
 };
@@ -121,7 +121,7 @@ public:
   inline bool hasCounter() const {
     return m_counterIndex < RE_MAXCOUNTER;
   }
-#ifdef _DEBUG
+#if defined(_DEBUG)
   String toString(const BYTE *codeStart) const;
 #endif
 };
@@ -286,7 +286,7 @@ public:
     return m_regex;
   }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
   UINT getDBGIpElement() const;
   UINT getDBGLineNumber() const;
   UINT getDBGPatternCharIndex() const;
@@ -296,7 +296,7 @@ public:
 #endif
 };
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 class _RegexSearchState {
 public:
   const Regex   &m_regex;
@@ -386,7 +386,7 @@ private:
   // Call this each time some bytes are inserted (not appended) to adjust references to bytes into m_buffer
   _RegexByteInsertHandler   *m_insertHandler;
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
   RegexStepHandler          *m_stepHandler;
     // Built by compilePattern/toString(). Indexed by byte-index of each command in m_buffer.
     // Highorder 16 bits of each elemenet holds the line into code text returned by toString()
@@ -490,7 +490,7 @@ public:
 
   // Return help text,syntax-description terminated with NULL-pointer
   static const TCHAR **getHelpText();
-#ifdef _DEBUG
+#if defined(_DEBUG)
   RegexStepHandler *setHandler(RegexStepHandler *handler);
 
   String toString() const;

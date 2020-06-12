@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "DFA.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 
 void DFAState::getTransitionMap(DFATransitionMap &map) const {
   int           lastTransition = FAILURE;

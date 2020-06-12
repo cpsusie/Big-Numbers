@@ -9,7 +9,7 @@
 
 using namespace std;
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -480,7 +480,7 @@ void CMandelbrotDlg::OnLButtonDown(UINT nFlags, CPoint point) {
   __super::OnLButtonDown(nFlags, point);
   if(!isCalculationActive()) {
     m_mouseDownPoint = getImagePointFromMousePoint(point);
-#ifdef SAVE_CALCULATORINFO
+#if defined(SAVE_CALCULATORINFO)
     if(nFlags & MK_CONTROL) {
       const CalculatorInfo *info = m_calculatorPool->findInfo(m_mouseDownPoint);
       if(info != NULL) {
@@ -499,7 +499,7 @@ void CMandelbrotDlg::OnLButtonDown(UINT nFlags, CPoint point) {
   }
 }
 
-#ifdef SAVE_CALCULATORINFO
+#if defined(SAVE_CALCULATORINFO)
 void CMandelbrotDlg::paintPointSet(const PointSet &ps, COLORREF color) {
   CClientDC dc(m_imageWindow);
   for(Iterator<CPoint> it = ps.getIterator(); it.hasNext();) {

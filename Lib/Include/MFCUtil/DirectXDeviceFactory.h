@@ -28,7 +28,7 @@ public:
   static bool supportFormatConversion(D3DDEVTYPE deviceType, D3DFORMAT srcFormat, D3DFORMAT dstFormat, UINT adapter = D3DADAPTER_DEFAULT);
 };
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 
 void checkDirectXResult(const TCHAR *method, HRESULT hr, bool exitOnError);
 
@@ -46,7 +46,7 @@ void checkDirectXResult(HRESULT hr, bool exitOnError);
 #include "PragmaLib.h"
 
 #define DIRECTXROOTPATH  "C:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Lib/"
-#ifdef _M_X64
+#if defined(_M_X64)
 #define _DIRECTXPLATFORM_ "x64/"
 #else
 #define _DIRECTXPLATFORM_ "x86/"

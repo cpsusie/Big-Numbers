@@ -2,7 +2,7 @@
 
 #if(SP_OPT_METHOD == SP_OPT_BY_REG64)
 
-#ifdef IS32BIT
+#if defined(IS32BIT)
 #error SP_OPT_BY_REG64 cannot be used in x86-mode
 #endif
 
@@ -21,7 +21,7 @@ public:
 };
 
 #define ASM_OPTIMIZED
-#ifdef ASM_OPTIMIZED
+#if defined(ASM_OPTIMIZED)
 
 // return 1 if sum of products has been added. 0 if we need to do it in C-code. if so, the sum is returned in bigsum
 extern "C" char BigRealMultiplyColumn(const Digit *yk, const Digit *xk, SubProductSum *sps);

@@ -308,7 +308,7 @@ void ExpressionSymbolTable::incrValueRefCount(UINT valueIndex) {
 
 // #define REARRANGE_VALUETABLE Doesn't work with polynomial coefficients
 
-#ifdef REARRANGE_VALUETABLE
+#if defined(REARRANGE_VALUETABLE)
 
 class IndexRefCount {
 public:
@@ -429,7 +429,7 @@ void ExpressionSymbolTable::buildValueRefCountTable() {
     m_valueRefCountTable[e.getKey()] = e.getValue();
   }
   m_valueRefCountHashMap.clear();
-#ifdef REARRANGE_VALUETABLE
+#if defined(REARRANGE_VALUETABLE)
   ValueTableOptimizer(this).findOptimalPermutation().savePermutation();
 #endif // REARRANGE_VALUETABLE
 }

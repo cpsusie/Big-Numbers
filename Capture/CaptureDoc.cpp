@@ -2,7 +2,7 @@
 #include <FileNameSplitter.h>
 #include "CaptureDoc.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -97,7 +97,7 @@ void CCaptureDoc::Serialize(CArchive& ar) {
   }
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 void CCaptureDoc::AssertValid() const {
   CDocument::AssertValid();
 }

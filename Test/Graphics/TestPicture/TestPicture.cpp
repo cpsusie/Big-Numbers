@@ -2,7 +2,7 @@
 #include "TestPicture.h"
 #include "TestPictureDlg.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 

@@ -202,7 +202,7 @@ int DummyLex::getNextLexeme() {
 
 #include "stdafx.h"
 
-#ifdef __NEVER__
+#if defined(__NEVER__)
 
 /* This part goes to the last part of dummylex.cpp */
 

@@ -341,7 +341,7 @@ bool SNode::hasOddExponent() const {
   return m_node->hasOddExponent();
 }
 
-#ifdef CHECK_CONSISTENCY
+#if defined(CHECK_CONSISTENCY)
 void SNode::checkIsConsistent() const {
   m_node->checkIsConsistent();
 }

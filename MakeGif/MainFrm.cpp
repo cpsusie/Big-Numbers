@@ -5,7 +5,7 @@
 #include "SettingsDlg.h"
 #include "MainFrm.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -93,7 +93,7 @@ void CMainFrame::OnDestroy() {
   theApp.m_device.detach();
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 void CMainFrame::AssertValid() const {
   __super::AssertValid();
 }

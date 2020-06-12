@@ -99,7 +99,7 @@ void Viewport2D::setRetainAspectRatio(bool retainAspectRatio) {
   }
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 void Viewport2D::noDCError(const TCHAR *method) const {
   throwException(_T("%s:m_dc is NULL"), method);
 }

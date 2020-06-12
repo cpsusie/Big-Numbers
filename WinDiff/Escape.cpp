@@ -98,7 +98,7 @@ static _TUCHAR escape(const _TUCHAR *&s) {
       s--;
       break;
 
-#ifdef UNICODE
+#if defined(UNICODE)
     case _T('U'):
       { result = 0; s++; // skip u
         int i;
@@ -161,7 +161,7 @@ String expandEscape(const String &s) {
     default:
       if(*t < _T(' ')) {
         result += format(_T("\\^%c"), (*t) + _T('@'));
-#ifdef UNICODE
+#if defined(UNICODE)
       } else if(*t > 255) {
         result += format(_T("\\u%04x"), *t);
 #endif

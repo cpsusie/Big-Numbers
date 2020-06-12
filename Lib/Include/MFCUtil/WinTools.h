@@ -1,6 +1,6 @@
 #pragma once
 
-#ifndef VC_EXTRALEAN
+#if !defined(VC_EXTRALEAN)
 #define VC_EXTRALEAN        // Exclude rarely-used stuff from Windows headers
 #endif
 
@@ -20,18 +20,18 @@
 #include <afxdtctl.h>       // MFC support for Internet Explorer 4 Common Controls
 #include <afxcontrolbars.h> // MFC support for ribbons and control bars
 
-#ifndef _AFX_NO_DB_SUPPORT
+#if !defined(_AFX_NO_DB_SUPPORT)
 #include <afxdb.h>          // MFC ODBC database classes
 #endif // _AFX_NO_DB_SUPPORT
 
-#ifndef _AFX_NO_DAO_SUPPORT
+#if !defined(_AFX_NO_DAO_SUPPORT)
 #include <afxdao.h>         // MFC DAO database classes
 #endif // _AFX_NO_DAO_SUPPORT
 
-#ifndef _AFX_NO_OLE_SUPPORT
+#if !defined(_AFX_NO_OLE_SUPPORT)
 #include <afxdtctl.h>       // MFC support for Internet Explorer 4 Common Controls
 #endif
-#ifndef _AFX_NO_AFXCMN_SUPPORT
+#if !defined(_AFX_NO_AFXCMN_SUPPORT)
 #include <afxcmn.h>         // MFC support for Windows Common Controls
 #endif // _AFX_NO_AFXCMN_SUPPORT
 

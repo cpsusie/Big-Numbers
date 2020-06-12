@@ -9,7 +9,7 @@
 
 #pragma comment(lib, CHESSLIBPATH _PLATFORM_ _CHESSCONF_ "Chesslib.lib")
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -17,7 +17,7 @@ class CAboutDlg : public CDialogEx {
 public:
   CAboutDlg();
 
-#ifdef AFX_DESIGN_TIME
+#if defined(AFX_DESIGN_TIME)
   enum { IDD = IDD_ABOUTBOX };
 #endif
 

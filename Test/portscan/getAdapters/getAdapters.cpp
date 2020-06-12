@@ -59,7 +59,7 @@ void listAdaptersInfo(PIP_ADAPTER_INFO pAdapterInfo) {
         _tprintf(_T("\tDHCP Enabled: Yes\n"));
         _tprintf(_T("\t  DHCP Server: \t%s\n"), pAdapter->DhcpServer.IpAddress.String);
 
-#ifdef __GETLOCALTIME__
+#if defined(__GETLOCALTIME__)
         _tprintf("\t  Lease Obtained: ");
         /* Display local time */
         error = _localtime32_s(&newtime, (__time32_t*) &pAdapter->LeaseObtained);

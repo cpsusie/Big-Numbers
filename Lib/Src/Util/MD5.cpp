@@ -59,7 +59,7 @@ typedef unsigned short UINT16;
 
 //#define USE_MD5_MEMCPY
 
-#ifdef USE_MD5_MEMCPY
+#if defined(USE_MD5_MEMCPY)
 // Note: Replace "for loop" with standard memcpy if possible
 static void *MD5_memcpy(POINTER output, POINTER input, UINT length) {
   UINT i;
@@ -121,7 +121,7 @@ static BYTE PADDING[64] = {
 #define I(x, y, z) ((y) ^ ((x) | (~z)))
 
 #define HASROTL
-#ifdef HASROTL
+#if defined(HASROTL)
 #define ROTATE_LEFT(x,n) _rotl(x, n)
 #else
 // ROTATE_LEFT rotates x left n bits.

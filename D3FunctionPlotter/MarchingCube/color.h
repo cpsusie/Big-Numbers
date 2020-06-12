@@ -2,7 +2,7 @@
 
 namespace ThreeD {
 
-#ifdef USE_MATERIAL
+#if defined(USE_MATERIAL)
 
 class Color {
 protected:

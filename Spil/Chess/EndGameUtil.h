@@ -6,7 +6,7 @@
 #include <Timer.h>
 #include "EndGameKeyDefinition.h"
 
-#ifdef NEWCOMPRESSION
+#if defined(NEWCOMPRESSION)
 #pragma message("Compiling with NEW COMPRESSION")
 #include <BigEndianStream.h>
 #else
@@ -274,7 +274,7 @@ public:
     : m_drawReplies( replyArray.getCountWithStatus(EG_DRAW))
     , m_looseReplies(replyArray.getCountWithStatus((replyArray.getPlayerInTurn()==WHITEPLAYER)?EG_BLACKWIN:EG_WHITEWIN))
   {
-#ifdef _DEBUG
+#if defined(_DEBUG)
     if(m_drawReplies + m_looseReplies != replyArray.size()) {
       throwInvalidArgumentException(__TFUNCTION__
                                    ,_T("replyArray.size=%zu, drawReplies:%u, looseReplies:%u")
@@ -311,7 +311,7 @@ class MoveWithResult2 : public MoveWithResult {
 private:
   ReplyCount m_replyCount;
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
   void checkIsConsistent(const TCHAR *method) const {
     if(m_replyCount.getTotalReplyCount() == 0) {
       if(getResult().isWinner() || getResult().isStalemate() || getResult().isTerminalDraw()) {
@@ -368,7 +368,7 @@ public:
     return getResult().toString(playerInTurn, ply) + replyToString();
   }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #undef CHECKISCONSISTENT
 #endif
 };
@@ -511,7 +511,7 @@ public:
 #define BLACKCANWIN 0x02
 #define BOTHCANWIN  (WHITECANWIN|BLACKCANWIN)
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 typedef enum {
   TBIFORMAT_PRINT_ALL            // print 1 field a line, with newlines.
  ,TBIFORMAT_PRINT_TERMINALS      // all other formats print as columns
@@ -563,7 +563,7 @@ public:
   void clear();
   void save(ByteOutputStream      &s) const;
   void load(ByteInputStream       &s);
-#ifdef NEWCOMPRESSION
+#if defined(NEWCOMPRESSION)
   void save(BigEndianOutputStream &s) const;
   void load(BigEndianInputStream  &s);
 #endif // NEWCOMPRESSION
@@ -595,7 +595,7 @@ public:
     return s_programVersion;
   }
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   // only defined for TBIFORMAT_PRINT_COLUMNS1/2
   static int getDataStringLength(TablebaseInfoStringFormat format);
   static String getColumnHeaders(TablebaseInfoStringFormat f, const String &headerLeft, const String &headerRight, bool plies);
@@ -614,7 +614,7 @@ public:
   void handleTimeout(Timer &timer);
 };
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 
 typedef Iterator<EndGameKey>   EndGameKeyIterator;
 

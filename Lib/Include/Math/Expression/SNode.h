@@ -21,7 +21,7 @@ class ParserTree;
 // and transformation to Canon-form/Std-form/Num-form
 #define CHECK_CONSISTENCY
 
-#ifdef CHECK_CONSISTENCY
+#if defined(CHECK_CONSISTENCY)
 #define CHECKISCONSISTENT(n) (n).checkIsConsistent()
 #else
 #define CHECKISCONSISTENT(n)
@@ -63,7 +63,7 @@ public:
   String toString() const;
 };
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define DEFINEVALIDTYPES(    ...             ) static const NodeTypeSet _validNodeTypes(__VA_ARGS__)
 #define CHECKNODEPTYPE(      n,expectedType  ) ExpressionNode::checkNodeType(  __TFUNCTION__,n,expectedType   )
 #define CHECKNODEPTYPESET(   n               ) ExpressionNode::checkNodeType(  __TFUNCTION__,n,_validNodeTypes)
@@ -164,7 +164,7 @@ public:
   }
   inline SNode(ExpressionNode *node) : m_node(node) {
   }
-#ifdef _DEBUG
+#if defined(_DEBUG)
   inline SNode &operator=(const SNode &src) {
     m_node = src.m_node;
     return *this;
@@ -276,7 +276,7 @@ public:
   SNode                 base()                                 const;
   SNode                 exponent()                             const;
   bool                  hasOddExponent()                       const;
-#ifdef CHECK_CONSISTENCY
+#if defined(CHECK_CONSISTENCY)
   void                  checkIsConsistent()                    const;
 #endif // CHECK_CONSISTENCY
 

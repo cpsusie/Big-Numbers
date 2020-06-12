@@ -2,9 +2,9 @@
 #include <BitStream.h>
 #include "IndexedMap.h"
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 
 EndGamePosIndex PackedIndexedMap::getCheckedIndex(EndGameKey key) const {
   const EndGamePosIndex result = m_keydef.keyToIndex(key);

@@ -74,7 +74,7 @@ extern const char _wkD3BkI2P[55];
   }                                 \
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 
 EndGamePosIndex _addPit(                EndGamePosIndex addr, Player p);
 EndGamePosIndex _addPosIndex(           EndGamePosIndex addr, UINT count, UINT index);
@@ -243,7 +243,7 @@ void _set3OffDiagPosFlipij(EndGameKey &key, EndGamePosIndex &addr, EndGamePosInd
 
 #define ADDPLAYER(   player, addr)             (((addr) << 1) | (player))
 
-#ifndef _DEBUG
+#if !defined(_DEBUG)
 #define ADDPIT(      key   , addr)             ADDPLAYER(key.getPlayerInTurn(), addr)
 #define SETPIT(      key   , addr)             { key.setPlayerInTurn((Player)((addr) & 1)); addr >>= 1; }
 
@@ -276,7 +276,7 @@ void _set3OffDiagPosFlipij(EndGameKey &key, EndGamePosIndex &addr, EndGamePosInd
 #define SETP5_INDEX(      key,  addr   )       SETPOS_INDEX(key, addr, P5POSCOUNT, 5)
 
 #define ADDPOS_BELOWDIAG( addr, subDiagIndex)  ADDPOS_INDEX(addr, 28, subDiagIndex)
-#ifndef _DEBUG
+#if !defined(_DEBUG)
 #define SETPOS_BELOWDIAG( key , addr, pIndex)  { key.setPosition(pIndex,EndGameKeyDefinition::s_subDiagIndexToPos[(addr) % 28]); addr /= 28; }
 #else
 #define SETPOS_BELOWDIAG( key , addr, pIndex)  _setPosBelowDiag(key, addr, pIndex)
@@ -468,7 +468,7 @@ void _set3OffDiagPosFlipij(EndGameKey &key, EndGamePosIndex &addr, EndGamePosInd
 #define ONE_PAWN_4MEN(key)                     ADDP3_INDEX(ONE_PAWN_3MEN(key, 2), key.getP3OffDiagIndex())
 #define ONE_PAWN_5MEN(key)                     ADDP4_INDEX(ONE_PAWN_4MEN(key   ), key.getP4OffDiagIndex())
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define LEFTWKK_ONE_PAWN_3MEN(key, pawnIndex)  ADDPOS_INDEX(LEFTWKK_WITH_PAWN_2MEN(key), PAWN1_POSCOUNT, EndGameKeyDefinition::s_pawnPosToIndex[key.getPosition(pawnIndex)])
 #else
 #define LEFTWKK_ONE_PAWN_3MEN(key, pawnIndex)  ADDPOS_INDEX(LEFTWKK_WITH_PAWN_2MEN(key), PAWN1_POSCOUNT, EndGameKeyDefinition::s_pawnPosToIndex[key.getPosition(pawnIndex)])
@@ -527,7 +527,7 @@ void _set3OffDiagPosFlipij(EndGameKey &key, EndGamePosIndex &addr, EndGamePosInd
                             key.setPosition(p2Index,MIRRORCOLUMN(key.getPosition(p1Index)));                                        \
                             (addr) /= ((maxAddr)*PAWN1_POSCOUNT);                                                                   \
                           }
-#ifdef _DEBUG
+#if defined(_DEBUG)
 
 void _set2EqualPawnsNoFlip(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex maxAddr, int lpIndex, int hpIndex);
 void _set2EqualPawnsFlipi( EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex maxAddr, int lpIndex, int hpIndex);

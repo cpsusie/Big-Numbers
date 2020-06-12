@@ -71,7 +71,7 @@ DigitPool::~DigitPool() {
 #endif // COUNT_DIGITPOOLFETCHDIGIT
 }
 
-#ifdef CHECK_DIGITPOOLINVARIANT
+#if defined(CHECK_DIGITPOOLINVARIANT)
 #define ENTER checkInvariant(__TFUNCSIG__,true );
 #define LEAVE checkInvariant(__TFUNCSIG__,false);
 #define SAVECOUNT const size_t _origCount = count;
@@ -95,7 +95,7 @@ Digit *DigitPool::fetchDigit() {
   return p;
 }
 
-#ifdef USE_FETCHDIGITLIST
+#if defined(USE_FETCHDIGITLIST)
 Digit *DigitPool::fetchDigitList(size_t count) {
   ENTER
   SAVECOUNT
@@ -145,7 +145,7 @@ Digit *DigitPool::fetchDigitList(size_t count, BRDigitType n) {
 #endif // USE_FETCHDIGITLIST
 
 void DigitPool::deleteDigits(Digit *first, Digit *last) {
-#ifdef USE_FETCHDIGITLIST
+#if defined(USE_FETCHDIGITLIST)
   ENTER
   if(last->next = m_freeDigits)
     m_freeDigits->prev = last;
@@ -178,7 +178,7 @@ size_t DigitPool::getUsedDigitCount() const {
   return getAllocatedDigitCount() - getFreeDigitCount();
 }
 
-#ifdef CHECK_DIGITPOOLINVARIANT
+#if defined(CHECK_DIGITPOOLINVARIANT)
 void DigitPool::checkInvariant(const TCHAR *method, bool enter) const {
   size_t count = 0;
   for(const Digit *p = m_freeDigits, *last = p?p->prev:NULL; p; last = p, p = p->next, count++) {

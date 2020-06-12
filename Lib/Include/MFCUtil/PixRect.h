@@ -25,7 +25,7 @@ protected:
   PixRect          &m_pixRect;
   D3DLOCKED_RECT    m_lockedRect;
   D3DSURFACE_DESC   m_desc;
-#ifdef _DEBUG
+#if defined(_DEBUG)
   void inline checkPoint(const TCHAR *method, UINT x, UINT y) const {
     if(x >= m_desc.Width || y >= m_desc.Height) {
       throwException(_T("%s(%u,%u) outside pixRect. Size=(%u,%u)")

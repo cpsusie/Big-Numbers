@@ -8,7 +8,7 @@
 #include <iostream>
 #include <sstream>
 
-#ifdef UNICODE
+#if defined(UNICODE)
 
 #define tfilebuf    std::wfilebuf
 #define tistream    std::wistream

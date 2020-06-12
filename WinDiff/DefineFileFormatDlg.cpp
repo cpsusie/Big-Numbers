@@ -6,7 +6,7 @@
 #include "EnterFormatNameDlg.h"
 #include "FileFormatsDlg.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -622,7 +622,7 @@ void CDefineFileFormatDlg::OnDelimEscSymbolEsc()       { addDelimiter(_T("\\e") 
 void CDefineFileFormatDlg::OnDelimEscSymbolBackslash() { addDelimiter(_T("\\\\")); }
 void CDefineFileFormatDlg::OnDelimEscSymbolCtrl()      { addDelimiter(_T("\\^A")); }
 void CDefineFileFormatDlg::OnDelimEscSymbolUnicode()   {
-#ifdef UNICODE
+#if defined(UNICODE)
   addDelimiter(_T("\\u"));
 #endif
 }

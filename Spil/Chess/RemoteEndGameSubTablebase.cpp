@@ -118,7 +118,7 @@ String RemoteEndGameSubTablebase::load(ByteCounter *byteCounter) {
   return load(false);
 }
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 String RemoteEndGameSubTablebase::loadPacked() {
   return load(true);
 }
@@ -194,7 +194,7 @@ void RemoteEndGameSubTablebase::unload() {
   m_loaded = false;
 }
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 
 bool RemoteEndGameSubTablebase::allKeysFound() const {
   const RemoteTablebaseRequest requestCode = REQUEST_ALLKEYSFOUND;
@@ -276,7 +276,7 @@ void RemoteEndGameSubTablebase::remoteService(TCHAR **argv) { // static.
         }
       }
       break;
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
     case REQUEST_LOADPACKED       :
       { try {
           const String fileName = tablebase.loadPacked();

@@ -103,7 +103,7 @@ namespace TestArray {
 
   bool PrintIntArray::handlePermutation(const IntArray &a) {
     m_counter++;
-#ifdef _DEBUG
+#if defined(_DEBUG)
     String line;
     line += format(_T("%2d:"), m_counter);
     for(size_t i = 0; i < a.size(); i++) {

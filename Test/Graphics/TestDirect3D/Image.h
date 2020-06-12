@@ -52,7 +52,7 @@ public:
   }
 };
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 
 void checkD3DResult(TCHAR *fileName, int line, HRESULT hr);
 

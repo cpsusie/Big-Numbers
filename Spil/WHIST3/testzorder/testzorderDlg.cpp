@@ -6,7 +6,7 @@
 #include "testzorder.h"
 #include "testzorderDlg.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 

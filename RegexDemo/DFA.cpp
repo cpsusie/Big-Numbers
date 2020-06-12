@@ -3,7 +3,7 @@
 #include <HashMap.h>
 #include "DFA.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define DBG_addToDFALog(s)        { if(m_NFA.m_stepHandler) { m_logString += s; } }
 #define DBG_callDFAStepHandler(s) { DBG_addToDFALog(s); DBG_callCompilerHandler(m_logString, EMPTYSTRING,EMPTYSTRING,-1); }
 #define DBG_resetDFALog()           m_logString = EMPTYSTRING
@@ -52,7 +52,7 @@ void DFA::makeTransitions() {
   for(size_t index = 0; index < m_states.size(); index++) {
     DFAState &current = m_states[index];
 
-#ifdef UNICODE
+#if defined(UNICODE)
     CharacterSet outgoingCharacters;
     for(Iterator<size_t> it = current.m_NFAset.getIterator(); it.hasNext();) {
       NFAState *nfaState = m_NFA[it.next()];
@@ -285,7 +285,7 @@ void DFA::fixupTransitions() {
 }
 
 BitSet DFA::getNFASetForGroup(UINT g) const {
-#ifdef _DEBUG
+#if defined(_DEBUG)
   BitSet result(m_NFA.size());
   for(Iterator<size_t> it = ((BitSet&)m_groups[g]).getIterator(); it.hasNext();) {
     result += m_states[it.next()].m_NFAset;
@@ -296,7 +296,7 @@ BitSet DFA::getNFASetForGroup(UINT g) const {
 #endif
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 
 DFA::DFA(const DFATables &tables, const NFA &dummy) : m_NFA(dummy) {
   if (tables.isEmpty()) {

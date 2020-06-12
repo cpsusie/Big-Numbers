@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef TRACE_MEMORY
+#if defined(TRACE_MEMORY)
 
 #include "DebugLog.h"
 

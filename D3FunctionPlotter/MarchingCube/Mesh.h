@@ -92,7 +92,7 @@ public:
 
   MeshBuilder getMeshBuilder() const;
 
-#ifdef DEBUG
+#if defined(DEBUG)
   void dump(FILE *f = stdout);
   void dump(const String &fileName);
 #endif

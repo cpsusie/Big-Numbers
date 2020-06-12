@@ -2,11 +2,11 @@
 
 void xverify(const TCHAR *fileName, int line, const TCHAR *exp);
 
-#ifdef assert
+#if defined(assert)
 #undef assert
 #endif
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 void xassert(const TCHAR *fileName, int line, const TCHAR *exp);
 #define assert(exp) (void)( (exp) || (xassert(__TFILE__, __LINE__, _T(#exp)), 0) )
 #else
@@ -15,7 +15,7 @@ void xassert(const TCHAR *fileName, int line, const TCHAR *exp);
 
 #define verify(exp) (void)( (exp) || (xverify(__TFILE__, __LINE__, _T(#exp)), 0) )
 
-#ifdef DEBUG
+#if defined(DEBUG)
 #define NODEFAULT   assert(0)
 #else
 #define NODEFAULT   __assume(0)

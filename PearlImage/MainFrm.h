@@ -58,7 +58,7 @@ public:
   void showPoint(const CPoint &p);
 
   void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
-#ifdef _DEBUG
+#if defined(_DEBUG)
   virtual void AssertValid() const;
   virtual void Dump(CDumpContext& dc) const;
 #endif

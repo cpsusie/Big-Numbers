@@ -30,7 +30,7 @@ namespace TestPackedArray {
     bool checkEqual() const;
     bool checkIterators() const;
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
     void dump(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) const;
 #endif
   };
@@ -118,7 +118,7 @@ namespace TestPackedArray {
   }
 
   void TestClass::addZeroes(UINT index, UINT count) {
-#ifdef _DEBUG_PACKEDARRAY
+#if defined(_DEBUG_PACKEDARRAY)
     if(PackedArray::trace) {
       OUTPUT(_T("addZeroes(index=%d,count=%d)"), index, count);
     }
@@ -210,7 +210,7 @@ namespace TestPackedArray {
     return true;
   }
 
-#ifdef _DEBUG_PACKEDARRAY
+#if defined(_DEBUG_PACKEDARRAY)
   void TestClass::dump(_In_z_ _Printf_format_string_ TCHAR const * const formatStr, ...) const {
     va_list argptr;
     va_start(argptr, formatStr);
@@ -287,7 +287,7 @@ namespace TestPackedArray {
     //  }
     TestClass cl(bitsPerItem);
     cl.addTestElements(size, random);
-#ifdef _DEBUG
+#if defined(_DEBUG)
     TestClass clCopy = cl;
 #endif
     static int printCount = 0;
@@ -298,7 +298,7 @@ namespace TestPackedArray {
 
     cl.addZeroes(pos, count);
     if(!cl.checkEqual()) {
-#ifdef _DEBUG_PACKEDARRAY
+#if defined(_DEBUG_PACKEDARRAY)
       cl = clCopy;
       cl.dump(_T("Before insert: "));
       cl.addZeroes(pos, count);
@@ -321,7 +321,7 @@ namespace TestPackedArray {
     //  }
     TestClass cl(bitsPerItem);
     cl.addTestElements(size, random);
-#ifdef _DEBUG
+#if defined(_DEBUG)
     TestClass clCopy = cl;
 #endif
     static int printCount = 0;
@@ -332,7 +332,7 @@ namespace TestPackedArray {
 
     cl.remove(pos, count);
     if(!cl.checkEqual()) {
-#ifdef _DEBUG_PACKEDARRAY
+#if defined(_DEBUG_PACKEDARRAY)
       cl = clCopy;
       cl.dump(_T("Before remove: "));
       cl.remove(pos, count);
@@ -379,7 +379,7 @@ namespace TestPackedArray {
         verify(testRemove(bitsPerItem, size, pos, count, true));
       }
 
-#ifdef INTENSIVE_TEST
+#if defined(INTENSIVE_TEST)
       for(int bitsPerItem = 1; bitsPerItem < 32; bitsPerItem++) {
 
         OUTPUT(_T("Testing PackedArray. bitsPerItem=%d"), bitsPerItem);

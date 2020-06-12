@@ -12,8 +12,8 @@
 
 class Packer;
 
-#ifdef IS32BIT
-#ifdef _DEBUG
+#if defined(IS32BIT)
+#if defined(_DEBUG)
 extern "C" {
 void insertDigitAndIncrExpo(BigReal &v, BRDigitType n);
 }
@@ -28,7 +28,7 @@ void throwBigRealGetIntegralTypeUndefinedException(TCHAR const * const function,
 void throwNotValidException(                       TCHAR const * const file, int line, TCHAR const * const name, _In_z_ _Printf_format_string_ const TCHAR *format, ...);
 void throwBigRealException(_In_z_ _Printf_format_string_ TCHAR const * const format,...);
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 void throwNotMutableException(TCHAR const * const file, int line, TCHAR const * const function, const BigReal     &x, TCHAR const * const name);
 void throwNotMutableException(TCHAR const * const file, int line, TCHAR const * const function, const BigRational &x, TCHAR const * const name);
 #define CHECKISMUTABLE(x)                                                 \
@@ -445,7 +445,7 @@ private:
   // Assume y != 0
   // Return *this
   BigReal &approxQuot64Abs(  const BigReal &x, const UINT64            &y, BRExpoType scale);
-#ifdef IS64BIT
+#if defined(IS64BIT)
   // *this = approximately |x/y|
   // Assume y._isnormal()
   // Return *this
@@ -462,7 +462,7 @@ private:
   // Misc
   // return *this
   // Assume bias is {<,>,#}
-#ifdef _DEBUG
+#if defined(_DEBUG)
   BigReal  &adjustAPCResult(const char bias, const TCHAR *function);
 #else
   BigReal  &adjustAPCResult(const char bias);
@@ -719,7 +719,7 @@ public:
   friend void     quotRemainder(   const BigReal &x, const BigReal &y, BigInt *quotient , BigReal *remainder);
   // Calculates only quotient and/or remainder if specified
   friend void     quotRemainder64( const BigReal &x, const BigReal &y, BigInt *quotient , BigReal *remainder);
-#ifdef IS64BIT
+#if defined(IS64BIT)
   // Calculates only quotient and/or remainder if specified
   friend void     quotRemainder128(const BigReal &x, const BigReal &y, BigInt *quotient , BigReal *remainder);
 #endif
@@ -885,7 +885,7 @@ public:
   // In x86-mode: Assume n < POWER10TABLE3IZEx86 (=10)
   // in x64-mode: Assume n < POWER10TABLE3IZEx64 (=20)
   static inline BRDigitType pow10(UINT n) {
-#ifdef IS32BIT
+#if defined(IS32BIT)
     return pow10x86(n);
 #else // IS64BIT
     return pow10x64(n);
@@ -909,7 +909,7 @@ public:
     return result;
   }
 
-#ifdef HAS_LOOP_DIGITCOUNT
+#if defined(HAS_LOOP_DIGITCOUNT)
   static int     getDecimalDigitCountLoopx64(BRDigitTypex64 n);
 #endif
   // (int)(log10(x) / BIGREAL_LOG10BASE)
@@ -976,7 +976,7 @@ public:
   // Assume isNormalQuotient(x, y) and f>0.
   // x/y with |error| < f. School method. using built-in 64-bit division
   static BigReal quotLinear64( const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *digitPool);
-#ifdef IS64BIT
+#if defined(IS64BIT)
   // Assume isNormalQuotient(x, y) and f>0.
   // x/y with |error| < f. School method. using class _int128 for division
   static BigReal quotLinear128(const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *digitPool);
@@ -998,7 +998,7 @@ public:
   ULONG  getFirst32(const UINT k, BRExpoType *scale = NULL) const;
   // Return first k decimal digits of |*this|. Assume k <= 19.
   UINT64 getFirst64(const UINT k, BRExpoType *scale = NULL) const;
-#ifdef IS64BIT
+#if defined(IS64BIT)
   // Return first k decimal digits of |*this|. Assume k <= 38.
   _uint128 &getFirst128(_uint128 &dst, const UINT k, BRExpoType *scale = NULL) const;
 #endif
@@ -1206,7 +1206,7 @@ public:
   }
 };
 
-#ifdef LONGDOUBLE
+#if defined(LONGDOUBLE)
 inline Real getReal(const BigReal &x) {
   return getDouble80(x);
 }

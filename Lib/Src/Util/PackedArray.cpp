@@ -1,6 +1,6 @@
 #include "pch.h"
 
-#ifdef _DEBUG_PACKEDARRAY
+#if defined(_DEBUG_PACKEDARRAY)
 #include <Console.h>
 #endif // _DEBUG_PACKEDARRAY
 
@@ -23,7 +23,7 @@ void PackedArray::validateBitsPerItem(const TCHAR *method, UINT bitsPerItem) { /
   }
 }
 
-#ifdef _DEBUG_PACKEDARRAY
+#if defined(_DEBUG_PACKEDARRAY)
 #define DUMP() if(s_trace) { dump(true); }
 #else // _DEBUG_PACKEDARRAY
 #define DUMP()
@@ -143,7 +143,7 @@ void PackedArray::addZeroes(UINT64 index, UINT64 count) {
   const __int64 bitsToAdd  = count * m_bitsPerItem;
   const __int64 newFreeBit = m_firstFreeBit + bitsToAdd;
 
-#ifdef _DEBUG_PACKEDARRAY
+#if defined(_DEBUG_PACKEDARRAY)
   if(s_trace) {
     int fisk = 1;
   }
@@ -160,7 +160,7 @@ void PackedArray::addZeroes(UINT64 index, UINT64 count) {
     UINT         *p0          = &m_data[0];
     UINT         *basep       = p0 + bitPos/32; // first integer to copy from
 
-#ifdef _DEBUG_PACKEDARRAY
+#if defined(_DEBUG_PACKEDARRAY)
     markPointer(basep, baseOffset);
 #endif // _DEBUG_PACKEDARRAY
 
@@ -177,7 +177,7 @@ void PackedArray::addZeroes(UINT64 index, UINT64 count) {
         char     *dst         = src + bitsToAdd/8; // bitsToAdd is a positive multiplum of 8 => dst > src
         const int bytesToMove = (((char*)p0) + m_firstFreeBit/8 + ((m_firstFreeBit%8)?1:0)) - src;
 
-#ifdef _DEBUG_PACKEDARRAY
+#if defined(_DEBUG_PACKEDARRAY)
         assert(bytesToMove > 0);
         markPointer(src);
         markPointer(dst);
@@ -234,7 +234,7 @@ void PackedArray::addZeroes(UINT64 index, UINT64 count) {
         UINT              *dstp        = p0 + dstBitIndex/32; // lowest address to copy to
         int shiftL, shiftR;
 
-#ifdef _DEBUG_PACKEDARRAY
+#if defined(_DEBUG_PACKEDARRAY)
         markPointer(src, srcOffset);
         markPointer(dstp);
         markPointer(dst, dstOffset);
@@ -249,7 +249,7 @@ void PackedArray::addZeroes(UINT64 index, UINT64 count) {
         }
         if(dst == src) {
           for(;dst > dstp; dst--) {
-#ifdef _DEBUG_PACKEDARRAY
+#if defined(_DEBUG_PACKEDARRAY)
             markPointer(dst);
 #endif // _DEBUG_PACKEDARRAY
             *dst = (*(dst-1) >> shiftR) | (*dst << shiftL);
@@ -257,7 +257,7 @@ void PackedArray::addZeroes(UINT64 index, UINT64 count) {
           }
         } else { // dst > src
           if(dstOffset <= srcOffset) {
-#ifdef _DEBUG_PACKEDARRAY
+#if defined(_DEBUG_PACKEDARRAY)
             markPointer(src);
             markPointer(dst);
 #endif // _DEBUG_PACKEDARRAY
@@ -266,7 +266,7 @@ void PackedArray::addZeroes(UINT64 index, UINT64 count) {
           }
           for(;dst > dstp; src--) {
             assert(src > basep);
-#ifdef _DEBUG_PACKEDARRAY
+#if defined(_DEBUG_PACKEDARRAY)
             markPointer(src);
             markPointer(dst);
 #endif // _DEBUG_PACKEDARRAY
@@ -277,7 +277,7 @@ void PackedArray::addZeroes(UINT64 index, UINT64 count) {
 
         dstOffset = dstBitIndex % 32;
 
-#ifdef _DEBUG_PACKEDARRAY
+#if defined(_DEBUG_PACKEDARRAY)
         if(s_trace) {
           markBit(bitPos);
           markPointer(dstp, dstOffset);
@@ -332,7 +332,7 @@ void PackedArray::remove(UINT64 index, UINT64 count) {
   const __int64 bitsToRemove = count * m_bitsPerItem;
   const __int64 newFreeBit   = m_firstFreeBit - bitsToRemove;
 
-#ifdef _DEBUG_PACKEDARRAY
+#if defined(_DEBUG_PACKEDARRAY)
   if(s_trace) {
     int fisk = 1;
   }
@@ -358,7 +358,7 @@ void PackedArray::remove(UINT64 index, UINT64 count) {
         const int bytesToMove = (((char*)p0) + m_firstFreeBit/8 + ((m_firstFreeBit%8)?1:0)) - src;
         const char oldDst     = *dst;
 
-#ifdef _DEBUG_PACKEDARRAY
+#if defined(_DEBUG_PACKEDARRAY)
         assert(bytesToMove > 0);
         markPointer(src);
         markPointer(dst);
@@ -395,7 +395,7 @@ void PackedArray::remove(UINT64 index, UINT64 count) {
           shiftR = 32 - shiftL;
         }
 
-#ifdef _DEBUG_PACKEDARRAY
+#if defined(_DEBUG_PACKEDARRAY)
         markPointer(dst, dstOffset);
         markPointer(src, srcOffset);
 #endif // _DEBUG_PACKEDARRAY
@@ -415,14 +415,14 @@ void PackedArray::remove(UINT64 index, UINT64 count) {
         DUMP();
         dst++;
 
-#ifdef _DEBUG_PACKEDARRAY
+#if defined(_DEBUG_PACKEDARRAY)
         markPointer(dst);
         markPointer(src);
         markPointer(lastp);
 #endif // _DEBUG_PACKEDARRAY
         if(dst == src) {
           for(;dst < lastp; dst++) {
-#ifdef _DEBUG_PACKEDARRAY
+#if defined(_DEBUG_PACKEDARRAY)
             markPointer(dst);
 #endif // _DEBUG_PACKEDARRAY
             *dst = (*dst >> shiftR) | (*(dst+1) << shiftL);
@@ -431,7 +431,7 @@ void PackedArray::remove(UINT64 index, UINT64 count) {
           src = dst;
         } else { // dst < src
           for(;src < lastp; src++) {
-#ifdef _DEBUG_PACKEDARRAY
+#if defined(_DEBUG_PACKEDARRAY)
             markPointer(dst);
             markPointer(src);
 #endif // _DEBUG_PACKEDARRAY
@@ -442,7 +442,7 @@ void PackedArray::remove(UINT64 index, UINT64 count) {
         assert(dst <= src);
 
         if(src <= lastp) {
-#ifdef _DEBUG_PACKEDARRAY
+#if defined(_DEBUG_PACKEDARRAY)
           markPointer(dst, dstOffset);
           markPointer(src, srcOffset);
           assert((basep <= dst) && (dst <= src) && (src <= lastp));
@@ -523,7 +523,7 @@ void PackedArray::checkInvariant(const TCHAR *method) const {
   }
 }
 
-#ifdef _DEBUG_PACKEDARRAY
+#if defined(_DEBUG_PACKEDARRAY)
 
 bool PackedArray::s_trace = false;
 #define RECTTOP     50

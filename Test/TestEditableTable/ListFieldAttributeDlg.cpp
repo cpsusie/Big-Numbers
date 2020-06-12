@@ -2,7 +2,7 @@
 #include "testeditabletable.h"
 #include "ListFieldAttributeDlg.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 

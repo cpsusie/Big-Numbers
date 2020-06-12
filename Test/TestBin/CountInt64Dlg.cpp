@@ -6,7 +6,7 @@
 #include "TestIntDlg.h"
 #include "HexEditOverwrite.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 

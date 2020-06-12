@@ -111,7 +111,7 @@ static FieldSet calculateFieldsBetween(int pos1, int pos2) {
   }
 }
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 
 class FieldSetMatrix { // precalculated matrix of FieldSets to speed up things a bit when calling getFieldsBetween
 private:

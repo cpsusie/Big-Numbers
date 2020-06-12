@@ -7,7 +7,7 @@
 EndGameTablebase::EndGameTablebase(const EndGameKeyDefinition &keydef)
 : EndGameSubTablebase(keydef)
 , m_positionIndex(keydef)
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 , m_logTimer(LOG_TIMER)
 , m_verboseTimer(VERBOSE_TIMER)
 #endif
@@ -15,7 +15,7 @@ EndGameTablebase::EndGameTablebase(const EndGameKeyDefinition &keydef)
 
   m_useRemoteSubTablebase = false;
   m_loadRefCount          = 0;
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   m_packedIndex           = NULL;
   resetInitialSetupFlags();
   m_buildOk               = true;
@@ -31,7 +31,7 @@ EndGameTablebase::EndGameTablebase(const EndGameKeyDefinition &keydef)
 EndGameTablebase::~EndGameTablebase() {
 }
 
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
 FastSemaphore EndGameTablebase::s_loadGate;
 #define BEGIN_LOADUNLOAD_CRITICAL_SECTION s_loadGate.wait()
 #define END_LOADUNLOAD_CRITICAL_SECTION   s_loadGate.notify()
@@ -48,7 +48,7 @@ String EndGameTablebase::load(ByteCounter *byteCounter) {
     return EMPTYSTRING;
   }
   String result;
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   if(!tbFileExist(ALLTABLEBASE)) {
     build(true);
   } else {
@@ -85,7 +85,7 @@ void EndGameTablebase::unload() {
   unloadSubTablebases();
 }
 
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
 TablebaseInfo EndGameTablebase::getInfo() const {
   TablebaseInfo result;
   if(tbFileExist(COMPRESSEDTABLEBASE)) {
@@ -110,7 +110,7 @@ void EndGameTablebase::load(ByteInputStream &s) {
 #endif // TABLEBASE_BUILDER
 
 void EndGameTablebase::clear() {
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   m_info.clear();
   SAFEDELETE(m_packedIndex);
 #endif // TABLEBASE_BUILDER
@@ -196,7 +196,7 @@ void EndGameTablebase::moveTypeError(const Move &m) const {         // throws Ex
                 );
 }
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 #define LOGUNDEFINEDKEY                                                       \
 { const EndGameKey normalizedKey = m_keydef.getNormalizedKey(mapKey);         \
   logUndefinedPosition(normalizedKey);                                        \
@@ -214,7 +214,7 @@ EndGamePositionStatus EndGameTablebase::getPositionStatus(const Game &game, bool
   const EndGameKey              mapKey = transformGameKey(game.getKey().transform(st));
   EndGamePositionStatus         result;
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   if(m_packedIndex) {
     result = m_packedIndex->getPositionStatus(mapKey);
   } else
@@ -239,7 +239,7 @@ EndGameResult EndGameTablebase::getPositionResult(const Game &game, bool swapPla
   const EndGameKey              mapKey = transformGameKey(game.getKey().transform(st));
   EndGameResult                 result;
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   if(m_packedIndex) {
     result = m_packedIndex->getPositionResult(mapKey);
   } else

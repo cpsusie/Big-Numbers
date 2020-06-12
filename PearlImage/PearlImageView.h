@@ -107,14 +107,14 @@ public:
     afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
     afx_msg void OnMouseMove(UINT nFlags, CPoint point);
     afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
-#ifdef _DEBUG
+#if defined(_DEBUG)
     virtual void AssertValid() const;
     virtual void Dump(CDumpContext& dc) const;
 #endif
     DECLARE_MESSAGE_MAP()
 };
 
-#ifndef _DEBUG  // debug version in PearlImageView.cpp
+#if !defined(_DEBUG  )// debug version in PearlImageView.cpp
 inline CPearlImageDoc* CPearlImageView::GetDocument()
    { return (CPearlImageDoc*)m_pDocument; }
 #endif

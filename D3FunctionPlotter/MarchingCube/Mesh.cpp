@@ -267,7 +267,7 @@ void Mesh::computeVertexNormals() {
   }
 }
 
-#ifdef DEBUG
+#if defined(DEBUG)
 
 String Mesh::toString(const FacesList &faceList) { // static
   String result = "FaceList:\n";

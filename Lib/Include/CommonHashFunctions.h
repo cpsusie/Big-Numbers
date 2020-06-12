@@ -68,7 +68,7 @@ inline int uint64HashCmp(const UINT64 &n1, const UINT64 &n2) {
   return (n1 > n2) ? 1 : (n1 < n2) ? -1 : 0;
 }
 
-#ifdef IS64BIT
+#if defined(IS64BIT)
 #define sizetHash    uint64Hash
 #define sizetHashCmp uint64HashCmp
 #else

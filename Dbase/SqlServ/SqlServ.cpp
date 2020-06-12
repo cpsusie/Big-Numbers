@@ -143,7 +143,7 @@ void ClientConnection::executeConnect() {
     m_p >> dbname >> username >> password;
   else
     m_p >> dbname;
-#ifdef DEBUG_SERVER
+#if defined(DEBUG_SERVER)
   _tprintf(_T("Now connecting to <%s> user <%s> password <%s>\n")
            ,dbname,username,password);
 #endif
@@ -166,7 +166,7 @@ void ClientConnection::executeBind() {
 
   m_p >> bndstmt;
 
-#ifdef DEBUG_SERVER
+#if defined(DEBUG_SERVER)
   _tprintf(_T("Received bind request.\n<%-40.40s>\n"),bndstmt.m_stmt);
 #endif
   StringArray errmsg;
@@ -178,7 +178,7 @@ void ClientConnection::executeBind() {
         sqlSaveCode( *m_db, m_combuffer.m_programid, bndstmt.m_stmtHead.m_nr, vc);
         m_db->trcommit();
       }
-#ifdef DEBUG_SERVER
+#if defined(DEBUG_SERVER)
       vc.dump();
 #endif
     }
@@ -291,7 +291,7 @@ public:
 
 ServerThread::ServerThread(SOCKET socket) {
   m_socket = socket;
-#ifdef DEBUG_SERVER
+#if defined(DEBUG_SERVER)
   _tprintf(_T("threadid:%d\n"),getThreadId());
   resume();
 #endif
@@ -303,7 +303,7 @@ ServerThread::~ServerThread() {
 UINT ServerThread::run() {
   ClientConnection cc(m_socket);
 
-#ifdef DEBUG_SERVER
+#if defined(DEBUG_SERVER)
   _tprintf(_T("ServerThread communiate on socket %s\n"), toString((INT64)m_socket).cstr());
 #endif
   try {
@@ -348,7 +348,7 @@ UINT ServerThread::run() {
         cc.executeFetchCursor();
         break;
       case SQL_CALL_EXECUTE   :
-#ifdef DEBUG_SERVER
+#if defined(DEBUG_SERVER)
         _tprintf(_T("execute request: programid <%s,%s> apiopt:%d\n")
                 ,cc.m_combuffer.m_programid.m_fileName
                 ,cc.m_combuffer.m_programid.m_timestamp
@@ -381,7 +381,7 @@ UINT ServerThread::run() {
     cc.m_combuffer.m_ca.seterror(SQL_FATAL_ERROR,_T("Uncaught Exception in sqlserver"));
     cc.writeReply();
   }
-#ifdef DEBUG_SERVER
+#if defined(DEBUG_SERVER)
   _tprintf(_T("ServerThread termination\n"));
 #endif
   tcpClose(m_socket);
@@ -408,19 +408,19 @@ int _tmain(int argc, TCHAR *argv) {
     SOCKET listen = tcpCreate(getPort());
 
     CompactArray<ServerThread*> threads;
-#ifdef DEBUG_SERVER
+#if defined(DEBUG_SERVER)
     _tprintf(_T("Server is running. waiting for connections...\n"));
 #endif
     for(;;) {
       SOCKET s = tcpAccept(listen);
-#ifdef DEBUG_SERVER
+#if defined(DEBUG_SERVER)
       _tprintf(_T("Got a connection. Now create a serverprocess\n"));
 #endif
       threads.add(new ServerThread(s));
       for(UINT i = 0; i < threads.size(); i++) {
         ServerThread *thr = threads[i];
         if(!thr->stillActive()) {
-#ifdef DEBUG_SERVER
+#if defined(DEBUG_SERVER)
           _tprintf(_T("Removing Thread [%d]\n"),i); // her leakes et handle for hver gang !!!
 #endif
           threads.remove(i);

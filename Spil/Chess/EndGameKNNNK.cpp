@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "EndGame5MenNoPawns.h"
 
-#ifdef ENDGAME_NOKING
+#if defined(ENDGAME_NOKING)
 
 const EndGameKeyDefinitionKNNNKNoKing EndGameKNNNK::keyDefinition;
 

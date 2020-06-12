@@ -49,7 +49,7 @@ int doublecmp(double *d1, double *d2) {
 #define QSORT_PERFORM_OK
 int main(int argc, char* argv[]) {
 
-#ifdef QSORT_PERFORM_OK
+#if defined(QSORT_PERFORM_OK)
   for(int i = 0; i < MAXN;i++)
       save[i] = rand();
 #else

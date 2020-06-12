@@ -17,7 +17,7 @@ void Game::updateGameMoveBishop(const Move &m) {
   piece->m_pinnedState = getPinnedState(m.m_to);
 }
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 void Game::updateGameBackMoveBishop(const Move &m) {
   const Move m1 = m.makeBackMove();
 
@@ -44,7 +44,7 @@ void Game::updateGameCaptureBishop(const Move &m) {
   if(toInfo.m_diag2Line.m_lower) {
     CLR_LDA_DOWNDIAG2(state, toInfo);
   }
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
   if(state.m_bishopFlags == BISHOPPAIR) {
     state.m_positionalScore -= BISHOPPAIRBONUS; // no pair of bishops anymore.
   }

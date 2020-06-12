@@ -7,7 +7,7 @@
 EndGameKeyDefinition5Men3Pawns::EndGameKeyDefinition5Men3Pawns(PieceKey pk2, PieceKey pk34)
 : EndGameKeyDefinitionDupletsAllowed(pk2, pk34)
 {
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   setPawnOwners();
 #endif
 }
@@ -36,7 +36,7 @@ EndGameKey EndGameKeyDefinition5Men3Pawns::indexToKey(EndGamePosIndex index) con
   return result;
 }
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 
 void EndGameKeyDefinition5Men3Pawns::setPawnOwners() {
   for(int i = 2; i < 5; i++) {

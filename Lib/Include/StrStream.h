@@ -231,7 +231,7 @@ private:
   String             m_buf;
   mutable String     m_tmp;
   CharType           m_ch;
-#ifdef DEBUG_ISTREAMSCANNER
+#if defined(DEBUG_ISTREAMSCANNER)
   mutable String     m_stateString;
   void updateStateString() const {
     m_stateString = streamStateToString(m_in);

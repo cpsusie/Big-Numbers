@@ -3,14 +3,14 @@
 
 EndGameKeyDefinition1Pawn::EndGameKeyDefinition1Pawn(PieceKey pk2)
 : EndGameKeyDefinitionDupletsNotAllowed(pk2) {
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   setPawnOwner();
 #endif
 }
 
 EndGameKeyDefinition1Pawn::EndGameKeyDefinition1Pawn(PieceKey pk2, PieceKey pk3)
 : EndGameKeyDefinitionDupletsNotAllowed(pk2, pk3) {
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   setPawnOwner();
 #endif
 }
@@ -18,13 +18,13 @@ EndGameKeyDefinition1Pawn::EndGameKeyDefinition1Pawn(PieceKey pk2, PieceKey pk3)
 EndGameKeyDefinition1Pawn::EndGameKeyDefinition1Pawn(PieceKey pk2, PieceKey pk3, PieceKey pk4)
 : EndGameKeyDefinitionDupletsNotAllowed(pk2, pk3, pk4)
 {
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
   setPawnOwner();
 #endif
   assert(pk3 != pk4);
 }
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 void EndGameKeyDefinition1Pawn::setPawnOwner() {
   checkIsPawn(2, true);
   for(int i = 3; i < getPieceCount(); i++) {
@@ -38,7 +38,7 @@ SymmetricTransformation EndGameKeyDefinition1Pawn::getSymTransformation(EndGameK
   return getPawnSymTransformation(key);
 }
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 
 void EndGameKeyDefinition1Pawn::insertInitialPositions(EndGameTablebase &tablebase) const {
   const int wkPos = A1;

@@ -33,11 +33,6 @@ public:
 protected:
     virtual void DoDataExchange(CDataExchange *pDX);
     virtual BOOL OnInitDialog();
-    afx_msg void OnGotoStyle();
-    afx_msg void OnGotoExpr();
-    afx_msg void OnGotoXInterval();
-    afx_msg void OnGotoYInterval();
-    afx_msg void OnGotoCellSize();
     afx_msg void OnEditFindmatchingparentesis();
     afx_msg void OnButtonHelp();
     DECLARE_MESSAGE_MAP()

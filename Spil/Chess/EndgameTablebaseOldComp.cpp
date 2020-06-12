@@ -4,9 +4,9 @@
 #include <CompressFilter.h>
 #include "EndGameTablebase.h"
 
-#ifndef NEWCOMPRESSION
+#if !defined(NEWCOMPRESSION)
 
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
 
 void EndGameTablebase::decompress(ByteInputStream &s) const {
   TablebaseInfo info;
@@ -48,7 +48,7 @@ MoveResultArray &EndGameTablebase::getAllMoves(const GameKey &gameKey, MoveResul
     case EG_BLACKWIN :
       { const EndGameResult succResult(status, pliesToEnd);
         a.add(MoveWithResult(m, succResult));
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
         if(m.getType() == PROMOTION) {
           const EndGameResult keyResult = getKeyResult(transformGameKey(gameKey));
           if(  (succResult.getStatus()         == keyResult.getStatus())
@@ -86,7 +86,7 @@ MoveResultArray &EndGameTablebase::getAllMoves(const GameKey &gameKey, MoveResul
   return a;
 }
 
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
 MoveResult2Array &EndGameTablebase::getAllMoves(const GameKey &gameKey, MoveResult2Array &a) const {
   assert(gameKey.getPositionSignature() == m_keydef.getPositionSignature());
 

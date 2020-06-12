@@ -93,7 +93,7 @@ public:
   virtual BOOL OnNewDocument();
   virtual void Serialize(CArchive& ar);
   virtual ~CMakeGifDoc();
-#ifdef _DEBUG
+#if defined(_DEBUG)
   virtual void AssertValid() const;
   virtual void Dump(CDumpContext& dc) const;
 #endif

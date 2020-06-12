@@ -13,7 +13,7 @@ private:
 public:
     CGifCtrl();
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
     void trace(const char *format, ...);
 #endif
     void substituteControl(CWnd *wnd, int id);

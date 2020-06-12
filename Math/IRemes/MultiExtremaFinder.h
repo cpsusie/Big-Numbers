@@ -3,7 +3,7 @@
 #include <SynchronizedQueue.h>
 #include <Runnable.h>
 
-#ifdef MULTITHREADEDEXTREMAFINDER
+#if defined(MULTITHREADEDEXTREMAFINDER)
 
 class ExtremumSearchParam;
 class ExtremumResult;

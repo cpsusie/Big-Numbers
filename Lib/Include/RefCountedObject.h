@@ -3,7 +3,7 @@
 class RefCountedObject {
 private:
   long m_refCount;
-#ifdef _DEBUG
+#if defined(_DEBUG)
   void logCreate();
   void logRefCount();
   void logDestroy();

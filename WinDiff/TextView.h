@@ -18,7 +18,7 @@ public:
     return BitSet::setBitsCount[m_segments];
   }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
   String toString() const;
 #endif
 };
@@ -34,7 +34,7 @@ typedef enum {
 
 class ViewFlags : public BitSet8 {
 public:
-#ifdef _DEBUG
+#if defined(_DEBUG)
   String toString() const;
 #endif
 };
@@ -309,7 +309,7 @@ public:
   bool setNameFontSizePct(  int  newValue, bool repaint = true);
   bool setShow1000Separator(bool newValue, bool repaint = true);
   bool setHighLightCompareEqual(bool newValue, bool repaint = true);
-#ifdef _DEBUG
+#if defined(_DEBUG)
   inline String flagValuesToString() const {
     return m_viewFlags.toString();
   }

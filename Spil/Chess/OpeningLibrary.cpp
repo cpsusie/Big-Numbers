@@ -167,7 +167,7 @@ Packer &operator>>(Packer &p, OpeningLibrary &l) {
   return p >> l.m_nameArray >> l.m_stateArray;
 }
 
-#ifdef LIBRARY_BUILDER
+#if defined(LIBRARY_BUILDER)
 Packer &operator<<(Packer &p, const OpeningLibrary &l) {
   return p << l.m_nameArray << l.m_stateArray;
 }
@@ -395,7 +395,7 @@ StringArray OpeningLibrary::getActiveOpenings(const Game &game) const {
   }
 }
 
-#ifdef LIBRARY_BUILDER
+#if defined(LIBRARY_BUILDER)
 void OpeningLibrary::save(const String &name) {
   Packer p;
   p << *this;

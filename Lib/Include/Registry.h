@@ -3,7 +3,7 @@
 #include "StringArray.h"
 #include "Iterator.h"
 
-#ifdef DEBUG_REGISTRY
+#if defined(DEBUG_REGISTRY)
 
 void registryLog(_In_z_ _Printf_format_string_ TCHAR const * const format, ...);
 

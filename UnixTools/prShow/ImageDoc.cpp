@@ -2,7 +2,7 @@
 #include "PrShow.h"
 #include "ImageDoc.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -57,7 +57,7 @@ void CImageDoc::Serialize(CArchive& ar) {
   }
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 void CImageDoc::AssertValid() const {
   CDocument::AssertValid();
 }

@@ -10,7 +10,7 @@ private:
   Array<MatchArray>        m_tmpM;
   MatchArray             **m_matchList;
   UINT                     m_docSize[2];
-#ifdef _DEBUG
+#if defined(_DEBUG)
   void dumpMatchList() const;
 #endif // _DEBUG
   size_t findMatchList();

@@ -15,7 +15,7 @@ private:
     return (UINT)__popcnt(i);
   }
   static inline UINT getSize(UINT64 i) {
-#ifdef IS64BIT
+#if defined(IS64BIT)
     return (UINT)__popcnt64(i);
 #else
     return getSize((ULONG)i) + getSize((ULONG)(i>>32));

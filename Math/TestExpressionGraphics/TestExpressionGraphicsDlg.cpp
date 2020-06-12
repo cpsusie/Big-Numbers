@@ -13,7 +13,7 @@
 #define APSTUDIO_INVOKED
 #include "Resource.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -156,7 +156,7 @@ BOOL CTestExpressionGraphicsDlg::OnInitDialog() {
 
   theApp.m_device.attach(*this);
 
-#ifndef TRACE_REDUCTION_CALLSTACK
+#if !defined(TRACE_REDUCTION_CALLSTACK)
   enableMenuItem(this, ID_VIEW_SHOWREDUCTIONSTACK , false);
 #endif
 
@@ -263,7 +263,7 @@ void CTestExpressionGraphicsDlg::OnEditEnterParameters() {
 }
 
 void CTestExpressionGraphicsDlg::OnViewShowReductionStack() {
-#ifdef TRACE_REDUCTION_CALLSTACK
+#if defined(TRACE_REDUCTION_CALLSTACK)
   const bool showStack = toggleMenuItem(this, ID_VIEW_SHOWREDUCTIONSTACK);
 
   CWnd *stackWindow       = GetDlgItem(IDC_STATICREDUCTIONSTACK);
@@ -617,7 +617,7 @@ void CTestExpressionGraphicsDlg::paintDebugExpr() {
     m_debugExpr = &m_debugger->getDebugExpr();
     showDebugInfo(_T("%s"), m_debugger->getDebugInfo().cstr());
 
-#ifdef TRACE_REDUCTION_CALLSTACK
+#if defined(TRACE_REDUCTION_CALLSTACK)
     if(isMenuItemChecked(this, ID_VIEW_SHOWREDUCTIONSTACK)) {
       const ReductionStack &stack = m_debugger->getReductionStack();
       const String s = stack.toString();
@@ -941,7 +941,7 @@ int CTestExpressionGraphicsDlg::getWindowIdFromPoint(CPoint &p) { // assume p re
   } else if(derivedRect.PtInRect(p)) {
     mouseWinId = IDC_STATICDERIVEDIMAGE;
   } else if(stackRect.PtInRect(p)) {
-#ifdef TRACE_REDUCTION_CALLSTACK
+#if defined(TRACE_REDUCTION_CALLSTACK)
     mouseWinId = IDC_STATICREDUCTIONSTACK;
     CPoint stackPoint = p;
     ClientToScreen(&stackPoint);
@@ -976,7 +976,7 @@ bool CTestExpressionGraphicsDlg::loadMenu(CMenu &menu, int id) {
   return true;
 }
 
-#ifdef TRACE_REDUCTION_CALLSTACK
+#if defined(TRACE_REDUCTION_CALLSTACK)
 const ReductionStackElement *CTestExpressionGraphicsDlg::getSelectedStackElement(CPoint p) {
   if(!isDebuggerPaused()) return NULL;
 
@@ -1062,7 +1062,7 @@ void CTestExpressionGraphicsDlg::OnContextMenuToNumericForm() {
 }
 
 void CTestExpressionGraphicsDlg::OnContextMenuShowNodeTree() {
-#ifdef TRACE_REDUCTION_CALLSTACK
+#if defined(TRACE_REDUCTION_CALLSTACK)
   CExpressionTreeDlg dlg(m_selectedStackElement->getNode());
   dlg.DoModal();
 #endif
@@ -1123,7 +1123,7 @@ void CTestExpressionGraphicsDlg::OnDebugRun() {
 
 void CTestExpressionGraphicsDlg::OnDebugTraceReductionStep() {
   if(isDebuggerPaused()) {
-#ifdef TRACE_REDUCTION_CALLSTACK
+#if defined(TRACE_REDUCTION_CALLSTACK)
     if(isMenuItemChecked(this, ID_VIEW_SHOWREDUCTIONSTACK)) {
       m_debugger->goUntilReturn();
     } else
@@ -1149,7 +1149,7 @@ void CTestExpressionGraphicsDlg::OnDebugStop() {
 }
 
 void CTestExpressionGraphicsDlg::OnDebugClearAllBreakPoints() {
-#ifdef TRACE_REDUCTION_CALLSTACK
+#if defined(TRACE_REDUCTION_CALLSTACK)
   if(isDebuggerPaused()) {
     m_debugExpr->getTree()->clearAllBreakPoints();
   }

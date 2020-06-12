@@ -5,7 +5,7 @@
 #include <TimeEstimator.h>
 #include "IndexedMap.h"
 
-#ifndef NEWCOMPRESSION
+#if !defined(NEWCOMPRESSION)
 
 #define WRITEMOVEBITS(bitCount, shift)                                                                \
   { forEachPlayer(p) {                                                                                \
@@ -31,7 +31,7 @@
     }                                                                                                 \
   }
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 
 void IndexedMap::saveCompressed(ByteOutputStream      &s, const TablebaseInfo &info) const {
 // Saved in format used by IndexedMap::load(ByteInputStream &s) defined last in this file
@@ -315,7 +315,7 @@ void IndexedMap::decompress(ByteInputStream &s, const TablebaseInfo &info) const
   file.seek(0);
   header.save(file);
 
-#ifdef __NEVER__
+#if defined(__NEVER__)
   FILE *logFile = FOPEN(_T("c:\\temp\\decomp.txt"), _T("w"));
   int arrayIndex = 0;
   for(Iterator<UINT> it = winnerPositionSet.getIterator(); it.hasNext();) {

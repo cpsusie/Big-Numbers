@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "EnterOptionsNameDlg.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 

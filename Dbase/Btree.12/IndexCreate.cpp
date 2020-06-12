@@ -58,7 +58,7 @@ bool KeyGenerator::handleData(DataFile &dbf, DbAddr addr, RecordType &rec) {
 
   m_keydef.putRecordAddr(key,addr);
 
-#ifdef DEBUG_USXCREATE
+#if defined(DEBUG_USXCREATE)
   _tprintf(_T("Now inserting key:")); m_keydef.keyprintf(key); _tprintf(_T("\n"));
 #endif
 

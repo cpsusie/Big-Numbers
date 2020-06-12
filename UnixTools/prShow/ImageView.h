@@ -39,7 +39,7 @@ public:
 
 public:
     virtual ~CImageView();
-#ifdef _DEBUG
+#if defined(_DEBUG)
     virtual void AssertValid() const;
     virtual void Dump(CDumpContext& dc) const;
 #endif
@@ -49,7 +49,7 @@ protected:
     DECLARE_MESSAGE_MAP()
 };
 
-#ifndef _DEBUG  // debug version in ImageView.cpp
+#if !defined(_DEBUG  )// debug version in ImageView.cpp
 inline CImageDoc* CImageView::GetDocument()
    { return (CImageDoc*)m_pDocument; }
 #endif

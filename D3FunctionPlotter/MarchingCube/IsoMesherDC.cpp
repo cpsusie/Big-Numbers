@@ -222,7 +222,7 @@ void IsoMesherDC::generateVertex(Cube *cube, Point corners[8]) {
   //
 
   D3DXVECTOR3 newPointNormal(0,0,0);
-#ifdef USE_MATERIAL
+#if defined(USE_MATERIAL)
   Material newPointMat;
 
   newPointMat.diffuse    = 0.0;
@@ -252,7 +252,7 @@ void IsoMesherDC::generateVertex(Cube *cube, Point corners[8]) {
 
     newPointNormal += normal;
 
-#ifdef USE_MATERIAL
+#if defined(USE_MATERIAL)
     Material tmpMat = m_iso.fMaterial(*points[i].v, points[i].density);
     newPointMat.color      += tmpMat.color;
     newPointMat.ambient    += tmpMat.ambient;
@@ -269,7 +269,7 @@ void IsoMesherDC::generateVertex(Cube *cube, Point corners[8]) {
   cube->meshPoint         = m_mesh->addPoint(newPointV);
   cube->meshPoint->normal = unitVector(newPointNormal);
 
-#ifdef USE_MATERIAL
+#if defined(USE_MATERIAL)
   cube->mat.color      = newPointMat.color      / (float)rows;
   cube->mat.ambient    = newPointMat.ambient    / (float)rows;
   cube->mat.diffuse    = newPointMat.diffuse    / (float)rows;
@@ -319,7 +319,7 @@ bool IsoMesherDC::generateQuads(Row *rows[2]) {
         // flipping last two vertices if necessary
 
         MeshPoint *p0 = cubes[0]->meshPoint;
-#ifdef USE_MATERIAL
+#if defined(USE_MATERIAL)
         const Material &mat0 = cubes[0]->mat;
 #endif
 
@@ -336,7 +336,7 @@ bool IsoMesherDC::generateQuads(Row *rows[2]) {
           MeshPoint *p1 = cubes[ja]->meshPoint;
           MeshPoint *p2 = cubes[jb]->meshPoint;
 
-#ifdef USE_MATERIAL
+#if defined(USE_MATERIAL)
           const Material &mat1 = cubes[ja]->mat;
           const Material &mat2 = cubes[jb]->mat;
           MeshFace *face = new MeshFace(&p2->point

@@ -149,7 +149,7 @@ void IsoSurfacePolygonizer::polygonize(const Point3D &start
 
   const double startTime = getThreadTime();
 
-#ifndef _DEBUG
+#if !defined(_DEBUG)
   m_rnd.randomize();
 #endif // _DEBUG
 
@@ -202,19 +202,19 @@ void IsoSurfacePolygonizer::polygonize(const Point3D &start
   saveStatistics(startTime);
   flushFaceArray();
 
-#ifdef  DUMP_STATISTICS
+#if defined(DUMP_STATISTICS)
   debugLog(_T("%s\n"), m_statistics.toString().cstr());
 #endif
-#ifdef DUMP_CORNERMAP
+#if defined(DUMP_CORNERMAP)
   dumpCornerMap();
 #endif
-#ifdef DUMP_EDGEMAP
+#if defined(DUMP_EDGEMAP)
   dumpEdgeMap();
 #endif
-#ifdef DUMP_VERTEXARRAY
+#if defined(DUMP_VERTEXARRAY)
   dumpVertexArray();
 #endif
-#ifdef DUMP_FACEARRAY
+#if defined(DUMP_FACEARRAY)
   dumpFaceArray();
 #endif
 }
@@ -312,7 +312,7 @@ void IsoSurfacePolygonizer::doCube2(size_t index) {
   const SimplexArray sa = s_cubetable.get(cube.getIndex());
   const UINT         n  = sa.size();
 
-#ifdef ISODEBUGGER
+#if defined(ISODEBUGGER)
   m_eval.markCurrentOcta(Octagon(this, (UINT)index));
 #endif // ISODEBUGGER
 
@@ -326,7 +326,7 @@ void IsoSurfacePolygonizer::doCube2(size_t index) {
       } else {
         v[j] = cube.m_corners[isoVertexToCubeCorner(iv)]->getSnapIndex();
       }
-#ifdef ISODEBUGGER
+#if defined(ISODEBUGGER)
       m_eval.markCurrentVertex(m_vertexArray[v[j]]);
 #endif // ISODEBUGGER
     }
@@ -382,7 +382,7 @@ void IsoSurfacePolygonizer::doTetra(const HashedCubeCorner &a, const HashedCubeC
   putTriangleStrip(ts);
 }
 
-#ifdef VALIDATE_PUTFACE
+#if defined(VALIDATE_PUTFACE)
 bool IsoSurfacePolygonizer::checkOrientation(const Face3 &f) const {
   const Point3D &p1 = m_vertexArray[f.m_i1].m_position;
   const Point3D &p2 = m_vertexArray[f.m_i2].m_position;
@@ -428,7 +428,7 @@ void IsoSurfacePolygonizer::putTriangleStripR(const TriangleStrip &ts) {
 void IsoSurfacePolygonizer::flushFaceBuffer() {
   for(const Face3 f : m_face3Buffer) {
     m_faceArray.add(f);
-#ifdef ISODEBUGGER
+#if defined(ISODEBUGGER)
     m_eval.receiveFace(f);
 #endif // ISODEBUGGER
   }
@@ -436,7 +436,7 @@ void IsoSurfacePolygonizer::flushFaceBuffer() {
 }
 
 void IsoSurfacePolygonizer::flushFaceArray() {
-#ifndef ISODEBUGGER
+#if !defined(ISODEBUGGER)
   for(const Face3 f : m_faceArray) {
     m_eval.receiveFace(f);
   }
@@ -450,13 +450,13 @@ void IsoSurfacePolygonizer::cleanup() {
 }
 
 void IsoSurfacePolygonizer::pushCube(const StackedCube &cube) {
-#ifdef VALIDATE_CUBES
+#if defined(VALIDATE_CUBES)
   cube.validate();
 #endif //  VALIDATE_CUBES
 
   m_cubeStack.push(cube);
   m_statistics.m_cubeCount++;
-#ifdef DUMP_CUBES
+#if defined(DUMP_CUBES)
   debugLog(_T("pushCube():%s"), cube.toString().cstr());
 #endif
 }
@@ -553,7 +553,7 @@ UINT IsoSurfacePolygonizer::getVertexId(const HashedCubeCorner &c0, const Hashed
     m_statistics.m_edgeHits++;
     return *p; // previously computed
   }
-#ifdef VALIDATE_OPPOSITESIGN
+#if defined(VALIDATE_OPPOSITESIGN)
   if(!hasOppositeSign(c0, c1)) {
     throwException(_T("%s:Corners doesn't have opposite sign. c0:%s, c1:%s")
       , __TFUNCTION__
@@ -610,7 +610,7 @@ Point3D IsoSurfacePolygonizer::getNormal(const Point3D &point) {
 // converge: from two points of differing sign, converge to zero crossing
 // Assume sign(v1) = -sign(v2)
 Point3D IsoSurfacePolygonizer::converge(const Point3DWithValue &p1, const Point3DWithValue &p2, int itCount) {
-#ifdef _DEBUG
+#if defined(_DEBUG)
   if(!hasOppositeSign(p1, p2)) {
     throwInvalidArgumentException(__TFUNCTION__, _T("%s has same sign as %s"), p1.toString().cstr(), p2.toString().cstr());
   }
@@ -667,7 +667,7 @@ Point3D IsoSurfacePolygonizer::convergeStartPoint(const Point3DWithValue &p1, co
   }
 }
 
-#ifdef DUMP_CORNERMAP
+#if defined(DUMP_CORNERMAP)
 typedef Entry<Point3DKey, HashedCubeCorner> CornerMapEntry;
 
 static int cubeCornerCmp(const HashedCubeCorner * const &c1, const HashedCubeCorner * const &c2) {
@@ -690,7 +690,7 @@ void PolygonizerBase::dumpCornerMap() const {
 }
 #endif // DUMP_CORNERMAP
 
-#ifdef DUMP_EDGEMAP
+#if defined(DUMP_EDGEMAP)
 typedef Entry<CubeEdgeHashKey, UINT> EdgeMapEntry;
 class SortedCubeEdge : public CubeEdgeHashKey {
 public:
@@ -720,7 +720,7 @@ void PolygonizerBase::dumpEdgeMap() const {
 }
 #endif
 
-#ifdef DUMP_VERTEXARRAY
+#if defined(DUMP_VERTEXARRAY)
 void PolygonizerBase::dumpVertexArray() const {
   debugLog(_T("VertexArray\n"));
   const size_t n = m_vertexArray.size();
@@ -730,7 +730,7 @@ void PolygonizerBase::dumpVertexArray() const {
 }
 #endif // DUMP_VERTEXARRAY
 
-#ifdef DUMP_FACEARRAY
+#if defined(DUMP_FACEARRAY)
 void PolygonizerBase::dumpFaceArray() const {
   debugLog(_T("FaceArray\n"));
   const size_t n = m_faceArray.size();
@@ -904,7 +904,7 @@ SimplexArray StackedCube::getSimplexArray(UINT index) { // static
   return PolygonizerBase::getExtendedLookupTable().get(index);
 }
 
-#ifdef VALIDATE_CUBES
+#if defined(VALIDATE_CUBES)
 #define TOLERANCE 1e-10
 void StackedCube::verifyCubeConstraint(int line, const TCHAR *expr) const {
   MessageBox(0, format(_T("Verification\r\n\r\n%s\r\n\r\nat %s\r\nline %d failed.\nCube:\n%s")
@@ -914,7 +914,7 @@ void StackedCube::verifyCubeConstraint(int line, const TCHAR *expr) const {
   abort();
 }
 
-#ifdef verify
+#if defined(verify)
 #undef verify
 #endif
 #define verify(exp) (void)( (exp) || (verifyCubeConstraint(__LINE__, _T(#exp)), 0) )
@@ -1106,7 +1106,7 @@ String PolygonizerStatistics::toString() const {
               );
 }
 
-#ifdef ISODEBUGGER
+#if defined(ISODEBUGGER)
 String Octagon::toString(int precision) const {
   return isEmpty() ? _T("Octa:---")
                    : format(_T("Octa:%s"), getCube()->toString(precision).cstr());

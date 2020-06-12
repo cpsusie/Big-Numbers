@@ -125,7 +125,7 @@ String FeatureInfo::toString(bool longDescription) const {
   return result;
 }
 
-#ifdef IS32BIT
+#if defined(IS32BIT)
 
 static char *getProcessorBrandString(char *dst) {
   UINT eax_return;

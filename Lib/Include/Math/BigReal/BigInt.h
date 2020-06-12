@@ -78,7 +78,7 @@ public:
   }
 
   friend inline void quotRemainder(const BigInt &x, const BigInt &y, BigInt *quotient, BigInt *remainder) {
-#ifdef IS32BIT
+#if defined(IS32BIT)
     quotRemainder64((BigReal&)x, (BigReal&)y, quotient, remainder);
 #else
     quotRemainder128((BigReal&)x, (BigReal&)y, quotient, remainder);

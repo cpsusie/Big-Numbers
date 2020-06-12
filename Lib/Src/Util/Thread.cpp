@@ -10,7 +10,7 @@
 
 DEFINECLASSNAME(Thread);
 
-#ifdef TRACE_THREAD
+#if defined(TRACE_THREAD)
 
 #include <DebugLog.h>
 

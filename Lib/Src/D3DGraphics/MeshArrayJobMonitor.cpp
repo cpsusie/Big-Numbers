@@ -169,7 +169,7 @@ UINT MeshArrayCreator::safeRun() {
   for(UINT i = 0; i < m_frameCount; i++, t += stept) {
     m_jobMonitor.addJob(t);
   }
-#ifdef _DEBUG
+#if defined(_DEBUG)
   const int processorCount = getDebuggerPresent() ? 1 : getProcessorCount();
 #else
   const int processorCount = getProcessorCount();

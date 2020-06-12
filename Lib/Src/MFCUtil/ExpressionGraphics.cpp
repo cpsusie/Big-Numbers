@@ -221,7 +221,7 @@ AlignedTextImage::AlignedTextImage(PixRectDevice &device, FontCache &fontCache, 
   setAlignment(size.cy/2);
 
 //  horizontalLine(m_textMetric.tmHeight - m_textMetric.tmAscent + m_textMetric.tmInternalLeading , D3DCOLOR_XRGB(255,255,255));
-#ifdef SHOW_LINES
+#if defined(SHOW_LINES)
   horizontalLine(m_textMetric.tmHeight - m_textMetric.tmDescent, D3DCOLOR_XRGB(255,  20,20));
 #endif
 
@@ -1164,7 +1164,7 @@ AlignedImage *ExpressionPainter::concatImages(const ImageArray &imageList, Expre
     size.cy = max(size.cy, maxAlignment + (sz.cy - img->getAlignment()));
   }
 
-#ifdef SHOW_LINES
+#if defined(SHOW_LINES)
   for(i = 0; i < imageList.size(); i++) {
     AlignedImage *img = (AlignedImage*)imageList[i];
     D3DCOLOR color = (i&1)?D3DCOLOR_XRGB(128,128,128):D3DCOLOR_XRGB(247,25,0);

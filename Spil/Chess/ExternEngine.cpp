@@ -1,27 +1,27 @@
 #include "stdafx.h"
 #include <ThreadPool.h>
 
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
 
 #include "ExternEngine.h"
 
 //#define _PRINT_DEBUGMSG
 //#define _TRACE_ENTERLEAVE
 
-#ifdef ENTERFUNC
+#if defined(ENTERFUNC)
 #undef ENTERFUNC
 #endif
-#ifdef LEAVEFUNC
+#if defined(LEAVEFUNC)
 #undef LEAVEFUNC
 #endif
 
-#ifdef _PRINT_DEBUGMSG
+#if defined(_PRINT_DEBUGMSG)
 #define DEBUGMSG(...) debugMsg(__VA_ARGS__)
 #else
 #define DEBUGMSG(...)
 #endif // _PRINT_DEBUGMSG
 
-#ifdef _TRACE_ENTERLEAVE
+#if defined(_TRACE_ENTERLEAVE)
 
 #define ENTERFUNCPARAM(...) {                    \
   debugMsg(_T("Enter %s(%s)"),__TFUNCTION__      \
@@ -399,7 +399,7 @@ void ExternEngine::setParameterValue(const EngineOptionValue &v) {
   LEAVEFUNC();
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 void ExternEngine::send(const TCHAR *fmt,...) const {
   ENTERFUNC();
   va_list argptr;

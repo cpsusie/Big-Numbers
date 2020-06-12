@@ -1206,7 +1206,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Point2D.cpp" />
+    <ClCompile Include="Fixed.cpp" />
     <ClCompile Include="Point2DTransformations.cpp" />
     <ClCompile Include="Polygon2D.cpp" />
     <ClCompile Include="Polynomial.cpp" />
@@ -1258,6 +1258,7 @@
     <ClInclude Include="..\..\Include\Math\Double80Asmx64.h" />
     <ClInclude Include="..\..\Include\Math\Double80Asmx86.h" />
     <ClInclude Include="..\..\Include\Math\fft.h" />
+    <ClInclude Include="..\..\Include\Math\Fixed.h" />
     <ClInclude Include="..\..\Include\Math\FPU.h" />
     <ClInclude Include="..\..\Include\Math\Int128.h" />
     <ClInclude Include="..\..\Include\Math\Int128Net.h" />

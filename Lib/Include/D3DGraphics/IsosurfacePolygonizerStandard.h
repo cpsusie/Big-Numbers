@@ -259,14 +259,14 @@ public:
   inline Point3DP getCenter() const {
     return (*m_corners[LBN] + *m_corners[RTF])/2;
   }
-#ifdef VALIDATE_CUBES
+#if defined(VALIDATE_CUBES)
   void validate() const;
 #endif // VALIDATE_CUBES
 
   String toString() const;
 };
 
-#ifdef ISODEBUGGER
+#if defined(ISODEBUGGER)
 class Octagon {
 private:
   const StackedCube *m_cube;
@@ -345,7 +345,7 @@ class IsoSurfaceEvaluator {
 public:
   virtual double evaluate(const Point3D &p) = 0;
   virtual void   receiveFace(const Face3 &face) = 0;
-#ifdef ISODEBUGGER
+#if defined(ISODEBUGGER)
   virtual void   markCurrentOcta(  const Octagon          &octa  ) {
   }
   virtual void   markCurrentTetra( const Tetrahedron      &tetra ) {
@@ -384,7 +384,7 @@ private:
   const BYTE m_index;
 public:
   PolygonizerCubeArray(UINT index);
-#ifdef DUMP_CUBETABLE
+#if defined(DUMP_CUBETABLE)
   String toString() const;
 #endif
 };
@@ -396,7 +396,7 @@ private:
     for(UINT i = 0; i < ARRAYSIZE(m_table); i++) {
       m_table[i] = new PolygonizerCubeArray(i); TRACE_NEW(m_table[i]);
     }
-#ifdef DUMP_CUBETABLE
+#if defined(DUMP_CUBETABLE)
     debugLog(_T("CubeArray:\n%s"), toString().cstr());
 #endif
   }
@@ -418,7 +418,7 @@ public:
   inline const PolygonizerCubeArray &get(UINT index) const {
     return *m_table[index];
   }
-#ifdef DUMP_CUBETABLE
+#if defined(DUMP_CUBETABLE)
   String toString() const;
 #endif
 };
@@ -457,7 +457,7 @@ private:
   bool                putInitialCube();
   void                addSurfaceVertices(const StackedCube &cube);
   inline void         doTetra(const StackedCube &cube, CubeCorner c1, CubeCorner c2, CubeCorner c3, CubeCorner c4) {
-#ifdef ISODEBUGGER
+#if defined(ISODEBUGGER)
     m_eval.markCurrentTetra(Tetrahedron(c1,c2,c3,c4));
 #endif // ISODEBUGGER
     doTetra(*cube.m_corners[c1], *cube.m_corners[c2], *cube.m_corners[c3], *cube.m_corners[c4]);
@@ -474,19 +474,19 @@ private:
     return m_eval.evaluate(p);
   }
   inline void         putFace3(UINT i1, UINT i2, UINT i3) {
-#ifdef VALIDATE_PUTFACE
+#if defined(VALIDATE_PUTFACE)
     if(i1 >= m_vertexArray.size() || i2 >= m_vertexArray.size() || i3 >= m_vertexArray.size()) {
       throwException(_T("Invalid face(%u,%d,%d). vertexArray.size==%u"), i1,i2,i3, m_vertexArray.size());
     }
 #endif
     const Face3 f(i1, i2, i3, m_color);
     m_face3Buffer.add(f);
-#ifdef ISODEBUGGER
+#if defined(ISODEBUGGER)
     m_eval.markCurrentFace(f);
 #endif // ISODEBUGGER
   }
   inline void         putFace3R(UINT i1, UINT i2, UINT i3) {
-#ifdef VALIDATE_PUTFACE
+#if defined(VALIDATE_PUTFACE)
     if(i1 >= m_vertexArray.size() || i2 >= m_vertexArray.size() || i3 >= m_vertexArray.size()) {
       throwException(_T("Invalid face(%u,%d,%d). vertexArray.size==%u"), i1,i2,i3, m_vertexArray.size());
     }

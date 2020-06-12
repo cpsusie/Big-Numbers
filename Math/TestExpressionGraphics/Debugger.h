@@ -30,7 +30,7 @@ private:
   Expression           &m_expr;
   const Expression     *m_exprp;
   ParserTree           *m_treep;
-#ifdef TRACE_REDUCTION_CALLSTACK
+#if defined(TRACE_REDUCTION_CALLSTACK)
   ReductionStack       *m_reductionStack;
   UINT                  m_breakOnTopIndex;
 #endif
@@ -49,7 +49,7 @@ public:
   }
   void stopASAP();
   void kill();
-#ifdef TRACE_REDUCTION_CALLSTACK
+#if defined(TRACE_REDUCTION_CALLSTACK)
   void goUntilReturn();
   inline const ReductionStack &getReductionStack() const {
     return *m_reductionStack;

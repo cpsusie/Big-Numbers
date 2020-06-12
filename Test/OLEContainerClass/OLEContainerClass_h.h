@@ -19,19 +19,19 @@
 
 
 /* verify that the <rpcndr.h> version is high enough to compile this file*/
-#ifndef __REQUIRED_RPCNDR_H_VERSION__
+#if !defined(__REQUIRED_RPCNDR_H_VERSION__)
 #define __REQUIRED_RPCNDR_H_VERSION__ 500
 #endif
 
 #include "rpc.h"
 #include "rpcndr.h"
 
-#ifndef __RPCNDR_H_VERSION__
+#if !defined(__RPCNDR_H_VERSION__)
 #error this stub requires an updated version of <rpcndr.h>
 #endif /* __RPCNDR_H_VERSION__ */
 
 
-#ifndef __OLEContainerClass_h_h__
+#if !defined(__OLEContainerClass_h_h__)
 #define __OLEContainerClass_h_h__
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
@@ -40,17 +40,17 @@
 
 /* Forward Declarations */ 
 
-#ifndef __IOLEContainerClass_FWD_DEFINED__
+#if !defined(__IOLEContainerClass_FWD_DEFINED__)
 #define __IOLEContainerClass_FWD_DEFINED__
 typedef interface IOLEContainerClass IOLEContainerClass;
 
 #endif 	/* __IOLEContainerClass_FWD_DEFINED__ */
 
 
-#ifndef __Document_FWD_DEFINED__
+#if !defined(__Document_FWD_DEFINED__)
 #define __Document_FWD_DEFINED__
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 typedef class Document Document;
 #else
 typedef struct Document Document;
@@ -59,13 +59,13 @@ typedef struct Document Document;
 #endif 	/* __Document_FWD_DEFINED__ */
 
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 extern "C"{
 #endif 
 
 
 
-#ifndef __OLEContainerClass_LIBRARY_DEFINED__
+#if !defined(__OLEContainerClass_LIBRARY_DEFINED__)
 #define __OLEContainerClass_LIBRARY_DEFINED__
 
 /* library OLEContainerClass */
@@ -74,7 +74,7 @@ extern "C"{
 
 DEFINE_GUID(LIBID_OLEContainerClass,0xEF3288D0,0xB9C6,0x4212,0x82,0xE8,0x75,0xD5,0x4A,0x4A,0x61,0x5A);
 
-#ifndef __IOLEContainerClass_DISPINTERFACE_DEFINED__
+#if !defined(__IOLEContainerClass_DISPINTERFACE_DEFINED__)
 #define __IOLEContainerClass_DISPINTERFACE_DEFINED__
 
 /* dispinterface IOLEContainerClass */
@@ -155,7 +155,7 @@ DEFINE_GUID(DIID_IOLEContainerClass,0x2A8FCBEA,0x37C2,0x4561,0xBD,0x3F,0xE3,0x11
 
     
 
-#ifdef COBJMACROS
+#if defined(COBJMACROS)
 
 
 #define IOLEContainerClass_QueryInterface(This,riid,ppvObject)	\
@@ -191,7 +191,7 @@ DEFINE_GUID(DIID_IOLEContainerClass,0x2A8FCBEA,0x37C2,0x4561,0xBD,0x3F,0xE3,0x11
 
 DEFINE_GUID(CLSID_Document,0xA03FEFA9,0x8FC7,0x4FD3,0x97,0x29,0x18,0x07,0xC5,0x44,0x13,0x1B);
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 
 class DECLSPEC_UUID("A03FEFA9-8FC7-4FD3-9729-1807C544131B")
 Document;
@@ -202,7 +202,7 @@ Document;
 
 /* end of Additional Prototypes */
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 }
 #endif
 

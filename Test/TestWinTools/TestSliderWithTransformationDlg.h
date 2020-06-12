@@ -23,7 +23,7 @@ public:
     virtual ~CTestSliderWithTransformationDlg();
 
 // Dialog Data
-#ifdef AFX_DESIGN_TIME
+#if defined(AFX_DESIGN_TIME)
     enum { IDD = IDD_TESTSLIDER_DIALOG };
 #endif
 

@@ -184,7 +184,7 @@ inline double randGaussian(double mean, double s, RandomGenerator &rnd = *Random
   return rnd.nextGaussian(mean, s);
 }
 
-#ifdef IS64BIT
+#if defined(IS64BIT)
 #define randSizet  randInt64
 #else
 #define randSizet  randInt

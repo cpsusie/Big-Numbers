@@ -79,7 +79,7 @@ static void quickSortExNoRecursionAnyWidth(void *base, size_t nelem, size_t widt
 
 #undef EPTR
 
-#ifdef swap
+#if defined(swap)
 #undef swap
 #endif
 

@@ -5,7 +5,7 @@
 #include "testzorder.h"
 #include "testzorderDlg.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -44,7 +44,7 @@ BOOL CTestzorderApp::InitInstance()
     //  of your final executable, you should remove from the following
     //  the specific initialization routines you do not need.
 
-#ifdef _AFXDLL
+#if defined(_AFXDLL)
     Enable3dControls();         // Call this when using MFC in a shared DLL
 #else
     Enable3dControlsStatic();   // Call this when linking to MFC statically

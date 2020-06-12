@@ -5,7 +5,7 @@
 // They execute much faster, because they use 64-bit registers,
 // and division functions are coded entirely in assembler.
 
-#ifndef _M_X64
+#if !defined(_M_X64)
 
 #include <Math/Int128.h>
 

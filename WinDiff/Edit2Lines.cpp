@@ -2,7 +2,7 @@
 #include "windiff.h"
 #include "Edit2Lines.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 

@@ -52,7 +52,7 @@ void MoveFinderEndGame::findBestMove(const RequestParamFindMove &param) {
     case WHITE_CHECKMATE           :
     case BLACK_CHECKMATE           :
     case STALEMATE                 :
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
     case POSITION_REPEATED_3_TIMES :
     case NO_CAPTURE_OR_PAWNMOVE    :
     case DRAW                      :

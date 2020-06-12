@@ -15,7 +15,7 @@ InstructionBuilder::InstructionBuilder(const OpcodeBase &opcode)
   , m_extension(    opcode.getExtension())
   , m_opcodeSize(   opcode.size()        )
   , m_directionMask(findDirectionMask(opcode))
-#ifdef _DEBUG
+#if defined(_DEBUG)
   , m_debugStr(opcode.getMnemonic())
 #endif
 {
@@ -31,7 +31,7 @@ InstructionBuilder::InstructionBuilder(const InstructionBase &ins, UINT flags)
   , m_extension(    0         )
   , m_opcodeSize(   ins.size())
   , m_directionMask(0         )
-#ifdef _DEBUG
+#if defined(_DEBUG)
   , m_debugStr(ins.toString())
 #endif
 {
@@ -49,7 +49,7 @@ InstructionBuilder &InstructionBuilder::insert(BYTE index, BYTE b) {
   return *this;
 }
 
-#ifdef IS64BIT
+#if defined(IS64BIT)
 InstructionBuilder &InstructionBuilder::setRexBits(BYTE bits) {
   assert((bits&0xf0)==0);
   if(m_hasRexByte) {
@@ -326,7 +326,7 @@ InstructionBuilder &InstructionBuilder::addImmediateOperand(const InstructionOpe
       add(&v,4);
     }
     break;
-#ifdef IS64BIT
+#if defined(IS64BIT)
   case REGSIZE_QWORD:
     { assert(getFlags() & IMM64_ALLOWED);
       const INT64 v = imm.getImmInt64();

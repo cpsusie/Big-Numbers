@@ -5,7 +5,7 @@
 #include <MFCUtil/LayoutManager.h>
 #include <MFCUtil/Picture.h>
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 
 void checkD3DResult(TCHAR *fileName, int line, HRESULT hr);
 
@@ -89,7 +89,7 @@ private:
 public:
   Cdx9_rectDemoDlg(CWnd *pParent = NULL);   // standard constructor
 
-#ifdef AFX_DESIGN_TIME
+#if defined(AFX_DESIGN_TIME)
   enum { IDD = IDD_DX9_RECTDEMO_DIALOG };
 #endif
 

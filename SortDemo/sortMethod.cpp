@@ -52,7 +52,7 @@ int SortMethodId::getMethodCount() { // static
   return ARRAYSIZE(sortMethodTable);
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 bool debugCheckOrder(const TCHAR *fileName, int line, void *base, int n, char *p1, char *p2) {
   const int e1 = *(int*)p1;
   const int e2 = *(int*)p2;

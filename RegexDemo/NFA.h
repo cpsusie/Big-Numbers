@@ -17,7 +17,7 @@
 #define CR      _T('\r')
 
 // maximal character value
-#ifdef UNICODE
+#if defined(UNICODE)
 #define MAX_CHARS 0x10000
 #else
 #define MAX_CHARS 0x100
@@ -45,7 +45,7 @@ public:
     m_acceptAttribute |= anchor | ACCEPT_STATE;
   }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
   String toString() const;
 #endif
 };
@@ -67,7 +67,7 @@ public:
 
 class NFAState {
 private:
-#ifdef _DEBUG
+#if defined(_DEBUG)
   static int                     s_stateCount;
   static CharacterFormater      *s_formater;
   static CompactArray<NFAState*> s_allocatedStates;
@@ -127,7 +127,7 @@ public:
 
   static int compareById(NFAState * const &s1, NFAState * const &s2);
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
   String toString() const;
   int m_patternCharIndex;
   static String allAllocatedToString();
@@ -145,7 +145,7 @@ public:
 #endif
 };
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 
 class DFARegexStepHandler;
 
@@ -216,7 +216,7 @@ public:
   NFAState *getStart() {
     return m_start;
   }
-#ifdef _DEBUG
+#if defined(_DEBUG)
   void setCharIndex(intptr_t start, intptr_t end);
   String toString() const;
 #endif
@@ -232,7 +232,7 @@ private:
   void        addIfNotMarked(NFAState *s);
   static void unmarkAll(     NFAState *s);
 public:
-#ifdef _DEBUG
+#if defined(_DEBUG)
   DFARegexStepHandler *m_stepHandler;
   NFA(DFARegexStepHandler *stepHandler = NULL) : m_stepHandler(stepHandler) {
   }
@@ -245,13 +245,13 @@ public:
   ~NFA(); // All elements in array will be released
           // clear and remove will NOT release the elements
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
   String toString() const;
   int getMaxCharIndex() const;
 #endif
 };
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 void NFAPaint(           CWnd *wnd, CDC &dc);
 void NFAAnimateBuildStep(CWnd *wnd);
 #endif

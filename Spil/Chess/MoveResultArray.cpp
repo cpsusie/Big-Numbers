@@ -191,7 +191,7 @@ Packer &operator>>(Packer &p, MoveResultArray &a) {
   return p >> (CompactArray<MoveWithResult>&)a;
 }
 
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
 
 class MoveWithResult2Comparator : public Comparator<MoveWithResult2> {
 private:

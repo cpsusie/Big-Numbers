@@ -11,7 +11,7 @@
 
 class Double80;
 
-#ifdef IS32BIT
+#if defined(IS32BIT)
 #include "Double80Asmx86.h"
 #else // IS32BIT
 #include "Double80Asmx64.h"
@@ -20,7 +20,7 @@ class Double80;
 class Pow10Calculator {
 public:
   virtual Double80 pow10(int p) const = 0;
-#ifdef _DEBUG
+#if defined(_DEBUG)
   void dumpAll() const;
 #endif // _DEBUG
 };
@@ -527,7 +527,7 @@ char    *d80toa(char    *dst, const Double80 &x);
 // dst must point to memory with at least 26 free wchar_t
 wchar_t *d80tow(wchar_t *dst, const Double80 &x);
 
-#ifdef _UNICODE
+#if defined(_UNICODE)
 #define d80tot d80tow
 #else
 #define d80tot d80toa
@@ -545,7 +545,7 @@ inline Double80 wcstod80(const wchar_t *s, wchar_t **end) {
   return _wcstod80_l(s, end, _get_current_locale());
 }
 
-#ifdef _UNICODE
+#if defined(_UNICODE)
 #define _tcstod80_l _wcstod80_l
 #define _tcstod80    wcstod80
 #else

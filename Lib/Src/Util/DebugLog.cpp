@@ -128,7 +128,7 @@ DebugLogger &DebugLogger::redirect(bool append, const TCHAR *fileName) {
 
 String DebugLogger::generateFileName() { // static
   FileNameSplitter fileInfo(getModuleFileName());
-#ifdef UNICODE
+#if defined(UNICODE)
 #define _CHARSET_ "U"
 #else
 #define _CHARSET_

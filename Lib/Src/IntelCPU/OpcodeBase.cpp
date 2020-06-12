@@ -39,7 +39,7 @@ OpcodeBase::OpcodeBase(const String &mnemonic, UINT op, BYTE extension, BYTE opC
 {
   m_bytes = swapBytes(op, m_size);
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
   DEFINEMETHODNAME;
   checkExtension(extension);
   checkSize(m_size);
@@ -67,7 +67,7 @@ OpcodeBase::OpcodeBase(const String &mnemonic, UINT op, BYTE extension, BYTE opC
       THROWINVALIDFLAGS(_T("Cannot have both LASTOP_IMMONLY and OP2_REGONLY for 2-argument opcode %X"), op);
     }
   }
-#ifdef IS64BIT
+#if defined(IS64BIT)
   if(getFlags() & HAS_REXWBIT) {
     if(!(getFlags() & (QWORDPTR_ALLOWED | QWORDGPR_ALLOWED))) {
       THROWINVALIDFLAGS(_T("HAS_REXWBIT set for opcode %X, but qword size operands not allowed"), op);
@@ -240,7 +240,7 @@ void OpcodeBase::throwUnknownRegisterType(const TCHAR *method, RegType type) { /
   throwInvalidArgumentException(method, _T("RegisterType=%s"), ::toString(type).cstr());
 }
 
-#ifdef IS32BIT
+#if defined(IS32BIT)
 #define ERRORSTRING_1OPGPR0 _T("Operand 1 must be AL/AX/EAX. op1=%s")
 #else // IS64BIT
 #define ERRORSTRING_1OPGPR0 _T("Operand 1 must be AL/AX/EAX/RAX. op1=%s")
@@ -380,7 +380,7 @@ bool OpcodeBase::validateCompatibleSize(const InstructionOperand &op1, const Ins
   return true;
 }
 
-#ifdef IS64BIT
+#if defined(IS64BIT)
 bool OpcodeBase::validateIsRexCompatible(const Register &reg, const InstructionOperand &op, bool throwOnError) const {
   if(!reg.isREXCompatible(op.needREXByte())) {
     RAISEERROR(_T("%s not allowed together with %s (Use %s)")

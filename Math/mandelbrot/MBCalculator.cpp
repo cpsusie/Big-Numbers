@@ -14,7 +14,7 @@ MBCalculator::MBCalculator(CalculatorPool *pool, UINT id)
 , m_threadTime(0)
 {
   setWithOrbit();
-#ifdef SAVE_CALCULATORINFO
+#if defined(SAVE_CALCULATORINFO)
   m_info = NULL;
 #endif
 }
@@ -92,7 +92,7 @@ void MBCalculator::leaveFollowBlackEdge() {
   s_followBlackEdgeGate.notify();
 }
 
-#ifdef SAVE_CALCULATORINFO
+#if defined(SAVE_CALCULATORINFO)
 
 void MBCalculator::addInfoToPool() {
   m_info->addEdgeSetToBlackSet();

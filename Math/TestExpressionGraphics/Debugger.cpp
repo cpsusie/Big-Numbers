@@ -11,7 +11,7 @@ Debugger::Debugger(Expression &expr)
   m_exprp   = &m_expr;
   m_treep   = m_expr.getTree();
   m_treep->addPropertyChangeListener(this);
-#ifdef TRACE_REDUCTION_CALLSTACK
+#if defined(TRACE_REDUCTION_CALLSTACK)
   m_reductionStack = &(m_treep->getReductionStack());
   m_reductionStack->addPropertyChangeListener(this);
 #endif
@@ -20,7 +20,7 @@ Debugger::Debugger(Expression &expr)
 Debugger::~Debugger() {
   kill();
   m_treep->removePropertyChangeListener(this);
-#ifdef TRACE_REDUCTION_CALLSTACK
+#if defined(TRACE_REDUCTION_CALLSTACK)
   m_reductionStack->removePropertyChangeListener(this);
 #endif
 }
@@ -29,7 +29,7 @@ void Debugger::singleStep(BYTE breakFlags) {
   checkTerminated().clrFlag(FL_ALLBREAKFLAGS).setFlag(breakFlags).resume();
 }
 
-#ifdef TRACE_REDUCTION_CALLSTACK
+#if defined(TRACE_REDUCTION_CALLSTACK)
 void Debugger::goUntilReturn() {
   if(getState() == DEBUGGER_RUNNING) {
     return;
@@ -86,7 +86,7 @@ void Debugger::handlePropertyChanged(const PropertyContainer *source, int id, co
     }
   }
 
-#ifdef TRACE_REDUCTION_CALLSTACK
+#if defined(TRACE_REDUCTION_CALLSTACK)
   if(source == m_reductionStack) {
     switch(id) {
     case REDUCTION_STACKTOP   :

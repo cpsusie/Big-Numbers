@@ -8,7 +8,7 @@
 
 #pragma comment(lib,"wsock32.lib")
 
-#ifdef DEBUG_REGISTRY
+#if defined(DEBUG_REGISTRY)
 
 static const TCHAR *thisFile = __TFILE__;
 static FILE *logFile = NULL;

@@ -8,13 +8,13 @@
 #include <CompressFilter.h>
 #include "ResourcePoolInternal.h"
 
-#ifdef TRACEPOW2CACHE
+#if defined(TRACEPOW2CACHE)
 #define LOGPOW2CACHE(...) debugLog(__VA_ARGS__)
 #else
 #define LOGPOW2CACHE(...)
 #endif // TRACEPOW2CACHE
 
-#ifdef TRACEPOW2CACHEHIT
+#if defined(TRACEPOW2CACHEHIT)
 #include <CallCounter.h>
 static CallCounter pow2CacheHits(    _T("pow2CacheHits"    ));
 static CallCounter pow2CacheRequests(_T("pow2CacheRequests"));

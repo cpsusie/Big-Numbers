@@ -61,7 +61,7 @@ private:
 public:
   CIsoSurfaceDlg(const IsoSurfaceParameters &param, CWnd *pParent = NULL);
 
-#ifdef DEBUG_POLYGONIZER
+#if defined(DEBUG_POLYGONIZER)
   inline bool getDebugPolygonizer() const {
     return m_debugPolygonizer ? true : false;
   }

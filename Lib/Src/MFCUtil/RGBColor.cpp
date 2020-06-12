@@ -60,7 +60,7 @@ bool operator!=(const RGBColor &c1, const RGBColor &c2) {
 //#define VERSION2
 
 RGBColor &RGBColor::getBaseColor(float hue) {
-#ifdef VERSION2
+#if defined(VERSION2)
   switch((int)(hue*6)) {
   case 0 :
     m_red   = 1;

@@ -1550,7 +1550,7 @@ void EndGameKeyDefinition::decodeLeftWKKWithPawn(EndGameKey &key, EndGamePosInde
 
 //#define _TEST_MODULE
 
-#ifdef _TEST_MODULE
+#if defined(_TEST_MODULE)
 
 static EndGamePosIndex checkKKWithPawnKey(const EndGameKey &key) {
   EndGamePosIndex index = EndGameKeyDefinition::encodeKKWithPawn(key);

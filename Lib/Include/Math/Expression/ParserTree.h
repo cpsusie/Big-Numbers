@@ -120,7 +120,7 @@ private:
   ExpressionNodeBoolConst      *m_false, *m_true;
 
   DEFINEREDUCTIONSTACK;
-#ifdef TRACE_REDUCTION_CALLSTACK
+#if defined(TRACE_REDUCTION_CALLSTACK)
   inline ParserTree &getTree() {
     return *this;
   }
@@ -142,7 +142,7 @@ private:
   friend class MarkedNodeTransformer;
   friend class ExpressionPainter;
 
-#ifdef CHECK_CONSISTENCY
+#if defined(CHECK_CONSISTENCY)
   void checkIsConsistent() const;
 #endif // CHECK_CONSISTENCY
 protected:
@@ -358,7 +358,7 @@ public:
   // if(validSymbolSet != NULL, only node with symbols contained in set will be counted
   UINT getNodeCount(bool ignoreMarked, const ExpressionSymbolSet *validSymbolSet = NULL) const;
   UINT getTreeDepth() const;
-#ifdef TRACE_REDUCTION_CALLSTACK
+#if defined(TRACE_REDUCTION_CALLSTACK)
   inline ReductionStack &getReductionStack() {
     return m_reductionStack;
   }

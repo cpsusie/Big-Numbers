@@ -53,7 +53,7 @@ public:
 
 public:
     virtual ~CWinDiffView();
-#ifdef _DEBUG
+#if defined(_DEBUG)
     virtual void AssertValid() const;
     virtual void Dump(CDumpContext& dc) const;
 #endif
@@ -76,7 +76,7 @@ protected:
   DECLARE_MESSAGE_MAP()
 };
 
-#ifndef _DEBUG  // debug version in WinDiffView.cpp
+#if !defined(_DEBUG  )// debug version in WinDiffView.cpp
 inline CWinDiffDoc* CWinDiffView::GetDocument()
    { return (CWinDiffDoc*)m_pDocument; }
 #endif

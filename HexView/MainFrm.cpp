@@ -5,7 +5,7 @@
 #include "LineSizeDlg.h"
 #include "FindDlg.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -106,7 +106,7 @@ static UINT indicators[] = {
   ID_SEPARATOR           // status line indicator
  ,ID_INDICATOR_POSITION
  ,ID_INDICATOR_READONLY
-#ifdef _DEBUG
+#if defined(_DEBUG)
  ,ID_INDICATOR_DEBUG
 #endif
  ,ID_INDICATOR_CAPS
@@ -149,7 +149,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
   return 0;
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 void CMainFrame::AssertValid() const {
   __super::AssertValid();
 }
@@ -911,7 +911,7 @@ BOOL CMainFrame::PreTranslateMessage(MSG *pMsg) {
   BOOL ret = __super::PreTranslateMessage(pMsg);
   m_wndStatusBar.SetPaneText(1, format(_T("%s:%s"), getSettings().getAddrRadixShortName(), getView()->getCurrentAddrAsString().cstr()).cstr());
   m_wndStatusBar.SetPaneText(2, getDoc()->getModeString());
-#ifdef _DEBUG
+#if defined(_DEBUG)
 //  m_wndStatusBar.SetPaneText(3, getView()->getDebugString().cstr());
 #endif
   return ret;

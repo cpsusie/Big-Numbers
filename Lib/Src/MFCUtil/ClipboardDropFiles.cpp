@@ -17,7 +17,7 @@ void clipboardDropFiles(HWND hwnd, StringArray &fnames) {
     df.pt.x   = 0;
     df.pt.y   = 0;
     df.fNC    = 0;
-#ifdef _UNICODE
+#if defined(_UNICODE)
     df.fWide  = 1;
 #else
     df.fWide  = 0;

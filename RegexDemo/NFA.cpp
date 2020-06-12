@@ -2,7 +2,7 @@
 #include "NFA.h"
 
 NFA::NFA(NFAState *start) {
-#ifdef _DEBUG
+#if defined(_DEBUG)
   m_stepHandler = NULL;
 #endif
   create(start);
@@ -41,7 +41,7 @@ NFA::~NFA() {
   clear();
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 String NFA::toString() const {
   String result;
   for(size_t i = 0; i < size(); i++) {
@@ -182,7 +182,7 @@ SubNFA SubNFA::starClosure()  const {
   return result;
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 
 void SubNFA::setCharIndex(intptr_t startIndex, intptr_t endIndex) {
   if(!isEmpty()) {

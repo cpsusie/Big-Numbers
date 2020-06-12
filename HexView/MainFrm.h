@@ -48,7 +48,7 @@ public:
 
 public:
   virtual ~CMainFrame();
-#ifdef _DEBUG
+#if defined(_DEBUG)
   virtual void AssertValid() const;
   virtual void Dump(CDumpContext& dc) const;
 #endif

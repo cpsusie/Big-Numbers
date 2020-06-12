@@ -3,7 +3,7 @@
 #include "ThreadPoolInternal.h"
 #include <InterruptableRunnable.h>
 
-#ifdef TRACE_THREADPOOL
+#if defined(TRACE_THREADPOOL)
 void threadPoolTrace(const TCHAR *function, const TCHAR *format, ...) {
   va_list argptr;
   va_start(argptr, format);

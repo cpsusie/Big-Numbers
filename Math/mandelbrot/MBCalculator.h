@@ -22,7 +22,7 @@ public:
 
 //#define SAVE_CALCULATORINFO
 
-#ifdef SAVE_CALCULATORINFO
+#if defined(SAVE_CALCULATORINFO)
 
 class CalculatorInfo {
 private:
@@ -101,7 +101,7 @@ private:
   bool                  m_edgeTracing;
   MBContainer          &m_mbc;
   OrbitPoint           *m_orbitPoints;
-#ifdef SAVE_CALCULATORINFO
+#if defined(SAVE_CALCULATORINFO)
   CompactStack<TCHAR*> m_phaseStack;
   CalculatorInfo      *m_info;
   void addInfoToPool();
@@ -145,7 +145,7 @@ protected:
   inline UINT getId() const {
     return m_id;
   }
-#ifdef SAVE_CALCULATORINFO
+#if defined(SAVE_CALCULATORINFO)
   inline void pushPhase(const TCHAR *str) {
     m_phaseStack.push(str);
   }
@@ -211,7 +211,7 @@ private:
   void notifyIfChanged(CalculatorSet oldRunningSet);
   void createAllPendinglMasks();
 
-#ifdef SAVE_CALCULATORINFO
+#if defined(SAVE_CALCULATORINFO)
   Array<CalculatorInfo> m_infoArray;
 #endif
 
@@ -253,7 +253,7 @@ public:
   void killAll();
   void waitUntilNoRunning();
 
-#ifdef SAVE_CALCULATORINFO
+#if defined(SAVE_CALCULATORINFO)
   void addCalculatorInfo(const CalculatorInfo &info);
   const CalculatorInfo *findInfo(const CPoint &p) const;
 #endif

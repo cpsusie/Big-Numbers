@@ -3,7 +3,7 @@
 #include "DFA.h"
 #include "DFARegex.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #include "DFAPainter.h"
 #endif
 
@@ -21,7 +21,7 @@ DFARegex::DFARegex(const TCHAR *pattern, const TCHAR *translateTable) : m_fastMa
   compilePattern(pattern, translateTable);
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 
 #define DBG_setCodeText(s)      setCodeText(s)
 #define DBG_setMode(mode, dfa)  { m_currentMode = mode; m_currentDFA = dfa; DFAPainter::stopBlinking(); }
@@ -45,7 +45,7 @@ void DFARegex::init() {
   m_patternFound    = false;
   m_resultLength    = -1;
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
   m_codeDirty       = false;
   m_cycleCount      = 0;
   m_stepHandler     = NULL;
@@ -60,7 +60,7 @@ void DFARegex::compilePattern(const TCHAR *pattern, const TCHAR *translateTable)
 }
 
 void DFARegex::compilePattern(const String &pattern, const TCHAR *translateTable) {
-#ifdef _DEBUG
+#if defined(_DEBUG)
     NFA nfa(m_stepHandler);
 #else
     NFA nfa;
@@ -88,7 +88,7 @@ void DFARegex::compilePattern(const String &pattern, const TCHAR *translateTable
     createFastMap();
     m_hasCompiled = true;
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
     setDBGCharIndexForAcceptStates(pattern.length());
 #endif
 
@@ -120,7 +120,7 @@ void DFARegex::createFastMap() {
 
 static const TCHAR *noRegExpressionMsg  = _T("No regular expression specified");
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define DBG_resetCycleCount()   { m_cycleCount = 0; m_patternFound = false; }
 #define DBG_incrCycleCount()    m_cycleCount++
 #else
@@ -306,7 +306,7 @@ NoMatch:
 }
 
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 
 DFARegexStepHandler *DFARegex::setHandler(DFARegexStepHandler *handler) {
   DFARegexStepHandler *oldHandler = m_stepHandler;

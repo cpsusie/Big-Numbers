@@ -3,7 +3,7 @@
 
 #include "IpFrame.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -71,7 +71,7 @@ BOOL CInPlaceFrame::PreCreateWindow(CREATESTRUCT &cs) {
     return COleIPFrameWnd::PreCreateWindow(cs);
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 void CInPlaceFrame::AssertValid() const {
     COleIPFrameWnd::AssertValid();
 }

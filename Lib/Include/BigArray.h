@@ -18,7 +18,7 @@ private:
       m_lastReference = 0;
     }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
     String toString() const {
       return format(_T("(page:%lu,%s)"), m_pageIndex, m_loaded?_T("loaded "):_T("swapped"));
     }
@@ -30,7 +30,7 @@ private:
 
 #define MAX_PAGESIZE     4096
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define MEMORYPAGE_COUNT   4
 #else
 #define MEMORYPAGE_COUNT 1024
@@ -46,7 +46,7 @@ private:
   public:
     T m_element[_ELEMENTS_PER_PAGE];
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
     String toString() const {
       String result;
       const TCHAR *del = EMPTYSTRING;
@@ -94,7 +94,7 @@ private:
       return m_page->m_element[index % _ELEMENTS_PER_PAGE];
     }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
     String toString() const {
       return format(_T("(mapIndex:%5d,[%s])"), m_mapIndex, pageToString().cstr());
     }
@@ -508,7 +508,7 @@ public:
     return !(a1 == a2);
   }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
   void checkInvariant() const {
     try {
       if(m_size == 0) {

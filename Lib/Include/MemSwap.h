@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef IS64BIT
+#if defined(IS64BIT)
 
 #pragma check_stack(off)
 

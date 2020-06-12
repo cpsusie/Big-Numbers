@@ -6,7 +6,7 @@
 #include "ScaleDlg.h"
 #include "GridDlg.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -160,7 +160,7 @@ void CMainFrame::handlePropertyChanged(const PropertyContainer *source, int id, 
   }
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 void CMainFrame::AssertValid() const {
   __super::AssertValid();
 }

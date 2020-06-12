@@ -7,7 +7,7 @@ namespace Expr {
 
 typedef void *ExpressionEntryPoint;
 
-#ifdef IS64BIT
+#if defined(IS64BIT)
 extern "C" {
   void callRealResultExpression(ExpressionEntryPoint ep, const void *rsiValue, Real &result);
   int  callIntResultExpression( ExpressionEntryPoint ep, const void *rsiValue);
@@ -28,7 +28,7 @@ public:
 
   inline Real evaluateReal() const {
     Real result;
-#ifdef IS32BIT
+#if defined(IS32BIT)
     const ExpressionEntryPoint ep    = m_entryPoint;
     const void                *daddr = m_esi;
     __asm {
@@ -45,7 +45,7 @@ public:
   }
 
   inline bool evaluateBool() const {
-#ifdef IS32BIT
+#if defined(IS32BIT)
     const ExpressionEntryPoint ep    = m_entryPoint;
     const void                *daddr = m_esi;
     int result;

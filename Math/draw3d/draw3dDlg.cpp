@@ -2,7 +2,7 @@
 #include "draw3d.h"
 #include "draw3dDlg.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 

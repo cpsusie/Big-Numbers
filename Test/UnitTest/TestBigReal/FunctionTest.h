@@ -206,7 +206,7 @@ void testConstructors(              TestStatistic &stat);
 
 void testGetFirst32(                TestStatistic &stat);
 void testGetFirst64(                TestStatistic &stat);
-#ifdef IS64BIT
+#if defined(IS64BIT)
 void testGetFirst128(               TestStatistic &stat);
 #endif
 void testGetDecimalDigitCount(      TestStatistic &stat);

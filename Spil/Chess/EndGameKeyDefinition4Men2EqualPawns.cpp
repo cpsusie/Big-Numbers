@@ -75,7 +75,7 @@ SymmetricTransformation EndGameKeyDefinition4Men2EqualPawns::getSymTransformatio
   return get4Men2EqualPawnsSymTransformation(key);
 }
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 
 void EndGameKeyDefinition4Men2EqualPawns::insertInitialPositions(EndGameTablebase &tablebase) const {
   const int wkPos = A1;

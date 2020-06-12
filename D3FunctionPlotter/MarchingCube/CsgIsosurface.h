@@ -34,7 +34,7 @@ public:
                        ,float dz, int pointCount, float *densities);
   virtual void fNormal(const D3DXVECTOR3 &point, D3DXVECTOR3 &normal);
 
-#ifdef USE_MATERIAL
+#if defined(USE_MATERIAL)
   virtual const Material &fMaterial(const D3DXVECTOR3 &point, float density);
 #endif
 };

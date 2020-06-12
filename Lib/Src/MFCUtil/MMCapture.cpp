@@ -6,7 +6,7 @@
 
 #define VFWLIBROOT "c:/Program Files (x86)/Windows Kits/10/Lib/10.0.17763.0/um/"
 
-#ifdef IS32BIT
+#if defined(IS32BIT)
 #define VFWLIB VFWLIBROOT "x86/"
 #else
 #define VFWLIB VFWLIBROOT "x64/"
@@ -14,7 +14,7 @@
 
 #pragma comment(lib, VFWLIB "vfw32.lib")
 
-#ifdef V
+#if defined(V)
 #undef V
 #endif
 #define V(f) checkMMResult(__TFILE__,__LINE__,f)

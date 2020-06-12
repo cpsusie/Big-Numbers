@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef ARRAYSIZE
+#if defined(ARRAYSIZE)
 #undef ARRAYSIZE
 #endif
 

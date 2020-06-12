@@ -17,7 +17,7 @@ const int BoardConfig::s_pieceValue[8] = {
 int BoardConfig::s_fieldValue[120];
 int BoardConfig::s_accumulatedPawnPushBonus[2][120];
 
-#ifndef EXPERIMENTAL
+#if !defined(EXPERIMENTAL)
 #define CENTER_R 3.5
 #define CENTER_C 4
 #else
@@ -204,7 +204,7 @@ void BoardConfig::setupBoard(Tokenizer &tok) { // tok should contain a valid FEN
 void BoardConfig::initOccupationMap() {
   m_occupationMap.clear();
 
-#ifdef USE_KNIGHTBONUS
+#if defined(USE_KNIGHTBONUS)
   m_player[0].clear(WHITE);
   m_player[1].clear(BLACK);
 #endif
@@ -216,7 +216,7 @@ void BoardConfig::initOccupationMap() {
       if(sq) {
         const int pl = (sq>>4)&1;
         m_occupationMap.m_playerMap[pl].add(pos);
-#ifdef USE_KNIGHTBONUS
+#if defined(USE_KNIGHTBONUS)
         switch(sq&7) {
         case KING:
           m_player[pl^1].addKing(pos);
@@ -229,12 +229,12 @@ void BoardConfig::initOccupationMap() {
       }
     }
   }
-#ifdef USE_KNIGHTBONUS
+#if defined(USE_KNIGHTBONUS)
   ajourKnightBonusTable();
 #endif
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 String BoardConfig::toString(int historySize, int computerSide, bool detailed) const {
   static const char *pl       = ".?pnkbrq?P?NKBRQ";
   static const char *line     = "  +-----------------+\n";
@@ -248,7 +248,7 @@ String BoardConfig::toString(int historySize, int computerSide, bool detailed) c
                   ,getFENString(historySize/2+1).cstr()
                   );
   if(detailed) {
-#ifdef USE_KNIGHTBONUS
+#if defined(USE_KNIGHTBONUS)
     result += format("White conf:%s\nBlack conf:%s\n"
                     ,m_player[0].toString().cstr()
                     ,m_player[1].toString().cstr()
@@ -444,7 +444,7 @@ void BoardConfig::validate() const {
 
 #endif
 
-#ifdef USE_KNIGHTBONUS
+#if defined(USE_KNIGHTBONUS)
 char PlayerConfig::knightBonus[7][7];
 
 void PlayerConfig::clear(char side) {

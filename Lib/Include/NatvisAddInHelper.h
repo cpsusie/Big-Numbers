@@ -2,10 +2,10 @@
 
 #define ADDIN_API __declspec(dllexport)
 
-#ifdef _M_X64
+#if defined(_M_X64)
 #error NatvisAddin should be compiled for x86. Not x64
 #endif
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #error NatvisAddin should only bbe compiled in release mode. not debug
 #endif
 

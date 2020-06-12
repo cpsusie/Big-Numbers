@@ -39,7 +39,7 @@ String getDirectXErrorMsg(HRESULT hr) {
   }
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 
 void checkDirectXResult(const TCHAR *method, HRESULT hr, bool exitOnError) {
   if(hr != D3D_OK) {

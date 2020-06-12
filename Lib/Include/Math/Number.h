@@ -12,7 +12,7 @@ typedef enum {
  ,NUMBERTYPE_RATIONAL
 } NumberType;
 
-#ifdef LONGDOUBLE
+#if defined(LONGDOUBLE)
 #define NUMBERTYPE_REAL NUMBERTYPE_DOUBLE80
 #else
 #define NUMBERTYPE_REAL NUMBERTYPE_DOUBLE
@@ -157,7 +157,7 @@ public:
 };
 
 inline Real getReal( const Number &n) {
-#ifdef LONGDOUBLE
+#if defined(LONGDOUBLE)
   return getDouble80(n);
 #else
   return getDouble(n);
@@ -220,7 +220,7 @@ inline bool operator!=(const Number &x, const Number &y) {
 char    *numtoa(char    *dst, const Number &n);
 wchar_t *numtow(wchar_t *dst, const Number &n);
 
-#ifdef _UNICODE
+#if defined(_UNICODE)
 #define numtot numtow
 #else
 #define numtot numtoa
@@ -238,7 +238,7 @@ inline Number wcstonum(const wchar_t *s, wchar_t **end) {
   return _wcstonum_l(s, end, _get_current_locale());
 }
 
-#ifdef _UNICODE
+#if defined(_UNICODE)
 #define _tcstonum_l _wcstonum_l
 #define _tcstonum    wcstonum
 #else

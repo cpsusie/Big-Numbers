@@ -70,7 +70,7 @@ public:
 
   void activateOptions();
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
   void showDebugMsg(_In_z_ _Printf_format_string_ TCHAR const * const format,...);
   void dumpFlags();
   String flagsToString();
@@ -92,7 +92,7 @@ public:
     }
 
     void refreshDoc(bool recomp);
-#ifdef _DEBUG
+#if defined(_DEBUG)
     virtual void AssertValid() const;
     virtual void Dump(CDumpContext& dc) const;
 #endif

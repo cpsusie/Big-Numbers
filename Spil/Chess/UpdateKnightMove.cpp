@@ -15,7 +15,7 @@ void Game::updateGameMoveKnight(const Move &m) {
     UPDATE_KNIGHTATTACKS(piece->getPlayer(), s_fieldInfo[m.m_to], 1);
   }
 
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
   state.m_positionalScore += MoveTable::knightPositionScore[piece->getPlayer()][m.m_to]
                            - MoveTable::knightPositionScore[piece->getPlayer()][m.m_from];
 #endif
@@ -23,7 +23,7 @@ void Game::updateGameMoveKnight(const Move &m) {
   state.m_checkingSDAPosition = m.m_to; // Dont care if we really check the king.
 }
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 void Game::updateGameBackMoveKnight(const Move &m) {
   const Move m1 = m.makeBackMove();
   knightLeaveField(m1);
@@ -36,7 +36,7 @@ void Game::updateGameBackMoveKnight(const Move &m) {
 void Game::updateGameCaptureKnight(const Move &m) {
   const Piece *knight = m.m_capturedPiece;
   UPDATE_KNIGHTATTACKS(knight->getPlayer(), s_fieldInfo[m.m_to], -1);
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
   knight->m_playerState.m_positionalScore -= MoveTable::knightPositionScore[knight->getPlayer()][knight->m_position];
 #endif
 }

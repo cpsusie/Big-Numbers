@@ -60,7 +60,7 @@ void DFATables::clear() {
   init();
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 
 template<class T> int countNonZeroes(const T *a, size_t size) {
   int count = 0;

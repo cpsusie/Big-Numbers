@@ -1,6 +1,6 @@
 //#define _SHORTEST
 
-#ifdef _SHORTEST
+#if defined(_SHORTEST)
 
 #include <stdio.h>
 

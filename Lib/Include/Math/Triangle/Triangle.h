@@ -264,7 +264,7 @@
 
 // #define SINGLE
 
-#ifdef SINGLE
+#if defined(SINGLE)
 #define REAL float
 #else // not SINGLE
 #define REAL double
@@ -339,7 +339,7 @@ public:
   int   numberofedges;                                           // out only
 };
 
-#ifdef TRILIBRARY
+#if defined(TRILIBRARY)
 
 void triangulate(char *triswitches, TriangulateIO *in, TriangulateIO *out, TriangulateIO *vorout);
 

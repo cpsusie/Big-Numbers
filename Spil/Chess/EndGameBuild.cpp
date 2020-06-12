@@ -5,7 +5,7 @@
 #include <CompressFilter.h>
 #include "EndGameTablebase.h"
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 
 void EndGameTablebase::load(const String &fileName, ByteCounter *byteCounter) {
   try {
@@ -2021,7 +2021,7 @@ String EndGameTablebase::compress(bool convert) {
 
 void EndGameTablebase::compress(ByteOutputStream &s) {
   m_info.m_indexCapacity = m_positionIndex.size();
-#ifndef NEWCOMPRESSION
+#if !defined(NEWCOMPRESSION)
   m_info.save(s);
   m_positionIndex.saveCompressed(s, m_info);
 #else // NEWCOMPRESSION

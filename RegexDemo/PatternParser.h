@@ -2,7 +2,7 @@
 
 #include "NFA.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #include <Stack.h>
 #endif
 
@@ -104,7 +104,7 @@ private:
   PatternToken   m_token;
   NFA           &m_NFA;
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
   Stack<String>  m_callStack;
 
   String    buildCodeString() const;

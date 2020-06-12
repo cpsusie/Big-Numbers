@@ -2,7 +2,7 @@
 #include "Diff.h"
 #include "ZoomDlg.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -77,7 +77,7 @@ BOOL CZoomDlg::PreTranslateMessage(MSG *pMsg) {
 }
 
 BOOL CZoomDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) {
-#ifdef __NEVER__
+#if defined(__NEVER__)
   if (nFlags & MK_CONTROL) {
     if(zDelta > 0) {
       scrollRight();

@@ -311,7 +311,7 @@ void Remes::findExtrema() {
   resetExtremaCount();
 
   const BigReal _3(3, m_pool);
-#ifndef MULTITHREADEDEXTREMAFINDER
+#if !defined(MULTITHREADEDEXTREMAFINDER)
   int prevSign = setExtremum(0, m_domain.getFrom());
   for(UINT i = 1; i <= m_N; i++) {
     const BigReal l = rQuot(save[i-1] + _2 * save[i], _3, m_digits);

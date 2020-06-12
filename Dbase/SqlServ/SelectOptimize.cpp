@@ -2,12 +2,12 @@
 
 #define TRACEMODUL
 
-#ifdef TRACEMODUL
+#if defined(TRACEMODUL)
 #define TRACECOST
 //#define TRACEORDERCOST
 #define TRACESUBCOST
 
-#ifdef TRACECOST
+#if defined(TRACECOST)
 static long costcount;
 #endif
 
@@ -390,7 +390,7 @@ int SelectStmt::expressionMaxJoinSequence(const SyntaxNode *expr) const {
 void Predicate::dump(FILE *f) const {
   _ftprintf(f,_T("Predicate:\"%s\" %s")
              ,relopstring(m_relOpToken),m_colIndex.toStringBasicType().cstr());
-#ifdef TRACECOMP
+#if defined(TRACECOMP)
   if(m_pred != NULL) {
     dumpSyntaxTree(m_pred);
   }
@@ -432,7 +432,7 @@ void PredicateList::dump(FILE *f) const {
 
 void KeyPredicate::dump(FILE *f) const {
   _ftprintf(f,_T("fieldcount :%zd relop:'%s'\n"),m_expr.size(),relopstring(m_relOpToken));
-#ifdef TRACECOMP
+#if defined(TRACECOMP)
   for(size_t i = 0; i < m_expr.size(); i++) {
     dumpSyntaxTree(m_expr[i],f);
   }
@@ -669,7 +669,7 @@ double IndexStatistic::selectivity(PredicateList &predicateList, KeyPredicates &
     predicates.find(m_indexDef,predicateList);
   else
     predicates.init();
-#ifdef TRACECOST
+#if defined(TRACECOST)
 //  predicates.dump();
 #endif
   UINT beginKeyPredicateSize = (UINT)predicates.m_beginKeyPredicate.m_expr.size();
@@ -929,14 +929,14 @@ void SelectStmt::statementSelectivity(double &indexSelectivity, double &selectiv
     for(UINT i = 0; i < m_fromTable.size(); i++) {
       FromTable *table = m_fromTable[i];
       double tmpinxsel,tmpsel;
-#ifdef TRACECOST
+#if defined(TRACECOST)
       _tprintf(_T("table <%-15s> index:<%-15s %s>:\n")
        ,table->m_correlationName.cstr()
        ,table->getUsedIndex().m_indexDef.m_indexName.cstr()
        ,table->m_asc?_T("ASCENDING"):_T("DESCENDING"));
 #endif
       table->findTableSelectivity(m_whereClause, tmpinxsel, tmpsel);
-#ifdef TRACECOST
+#if defined(TRACECOST)
       _tprintf(_T("read (%.2lf%%,%.2lf%%) rows from %s\n"),tmpinxsel*100,tmpsel*100,m_fromTable[i]->m_correlationName.cstr());
 #endif
       indexSelectivity *= tmpinxsel;
@@ -986,7 +986,7 @@ static Monotonity changeMonotonity(Monotonity mono) {
   }
 }
 
-#ifdef TRACEORDERCOST
+#if defined(TRACEORDERCOST)
 static TCHAR *monotonityString(Monotonity mono) {
   switch(mono) {
   case MONOTONITY_ASC   : return _T("MONOTONITY_ASC");
@@ -1182,7 +1182,7 @@ static void findent(FILE *f, int level) {
 // try to match orderby with position=match, using index-columns [from..ordergivenbyindex.size()-1]
 bool MonotonityMatrix::findOrderPath(UINT match, UINT from) {
   if(match == m_orderBy.size()) {
-#ifdef TRACEORDERCOST
+#if defined(TRACEORDERCOST)
     _tprintf(_T("############# found full orderpath (a) #################\n"));
 #endif
     return true;
@@ -1197,20 +1197,20 @@ bool MonotonityMatrix::findOrderPath(UINT match, UINT from) {
     for(UINT i = match; i < m_orderBy.size(); i++)
       if(!m_stmt->isFixedExpression(m_orderBy[i].m_expr))
         return false;
-#ifdef TRACEORDERCOST
+#if defined(TRACEORDERCOST)
     _tprintf(_T("############# found full orderpath (b) #################\n"));
 #endif
     return true;
   }
   for(UINT i = from; i < n; i++) {
     OrderGivenElement &ordergiven = m_orderGivenByIndex[i];
-#ifdef TRACEORDERCOST
+#if defined(TRACEORDERCOST)
     findent(stdout,match*2); _tprintf(_T("level:%d %s\n"),match, m_orderBy[match].m_asc?_T("ASC"):_T("DESC"));
     m_stmt->m_compiler.dumpSyntaxTree(expr,stdout,match);
     findent(stdout,match*2); ordergiven.dump();
 #endif
     Monotonity mono = ordergiven.findMonotonity(expr);
-#ifdef TRACEORDERCOST
+#if defined(TRACEORDERCOST)
     _tprintf(_T(" %s\n"),monotonityString(mono));
 #endif
     switch(mono) {
@@ -1272,7 +1272,7 @@ double SelectStmt::estimateOrderByCost(double elementsSelected) {
 
 double SelectStmt::estimateCost(double &ordercost) {
   UINT i;
-#ifdef TRACECOST
+#if defined(TRACECOST)
   costcount++;
   _tprintf(_T("cost begin---------------------------------\n"));
   for(i = 0; i < m_fromTable.size(); i++) {
@@ -1311,7 +1311,7 @@ double SelectStmt::estimateCost(double &ordercost) {
         timesexecuted *= m_fromTable[j]->getTableSize() * m_fromTable[j]->m_selectivity;
       }
       timesexecuted *= m_fromTable[j]->getTableSize() * m_fromTable[j]->m_indexSelectivity;
-#ifdef TRACESUBCOST
+#if defined(TRACESUBCOST)
       _tprintf(_T("subselect <%s> (js:%d) will be executed %lg times each with a cost of %lg\n")
                ,m_subSelects[i]->m_name.cstr()
                ,subselectjoinsequence
@@ -1328,7 +1328,7 @@ double SelectStmt::estimateCost(double &ordercost) {
 
   ordercost = estimateOrderByCost(rowsSelected);
   totalcost += ordercost;
-#ifdef TRACECOST
+#if defined(TRACECOST)
   _tprintf(_T("rowsread:%lg rowsSelected:%lg ordercost:%lg total cost:%lg\n"),
     rowsread,rowsSelected,ordercost,totalcost);
   _tprintf(_T("cost end---------------------------------\n"));
@@ -1426,7 +1426,7 @@ static int joinseqcmp(FromTable * const &t1, FromTable * const &t2) {
 }
 
 void SelectStmt::findJoinSequence() {
-#ifdef TRACECOMP
+#if defined(TRACECOMP)
   _tprintf(_T("findJoinSequence for <%s>\n"),m_name.cstr());
 #endif
   if(m_compiler.ok()) {
@@ -1476,7 +1476,7 @@ void SelectStmt::findJoinSequence() {
   for(i = m_noOfFixedTables; i < m_fromTable.size(); i++)
     m_fromTable[i]->m_joinSequence = i;
   m_totalCost = -1; // negative initial value to be sure to catch the first real cost
-#ifdef TRACECOST
+#if defined(TRACECOST)
   if(m_purpose == MAINSELECT) costcount = 0;
 #endif
   if(isEmptySelect()) {
@@ -1501,8 +1501,8 @@ void SelectStmt::findJoinSequence() {
     reduceByKeyPredicates();
 
 
-#ifdef TRACEMODUL
-#ifdef TRACECOST
+#if defined(TRACEMODUL)
+#if defined(TRACECOST)
     _tprintf(_T("Best joinsequence <%s> (costcount:%ld)::\n"),m_name.cstr(),costcount);
 #else
     _tprintf(_T("Best joinsequence <%s>\n"),m_name.cstr());
@@ -1520,7 +1520,7 @@ void SelectStmt::findJoinSequence() {
     }
 #endif
   }
-#ifdef TRACEMODUL
+#if defined(TRACEMODUL)
   _tprintf(_T("total cost:%lg cost of order by:%lg\n"),m_totalCost,m_orderCost);
 #endif
 }
@@ -1547,7 +1547,7 @@ bool SelectSetOperator::isEmptySelect() const {
 }
 
 static ULONG syntaxNodeHash(const SyntaxNodeP &k ) {
-#ifdef _M_X64
+#if defined(_M_X64)
   return uint64Hash((UINT64)k);
 #else
   return ulongHash((ULONG)k);
@@ -1577,7 +1577,7 @@ void SelectStmt::reduceByKeyPredicates() {
 //  _tprintf(_T("hashsize:%d\n"),hash.count());
 
 
-#ifdef TRACECOMP
+#if defined(TRACECOMP)
   i = 0;
   for(Iterator<SyntaxNodeP> it = hash.keySet().getIterator(); it.hasNext();) {
     _tprintf(_T("pred[%zd]:%s"),i++, it.next()->toString().cstr());

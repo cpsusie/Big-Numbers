@@ -23,14 +23,14 @@ FPUOpcodeHashMap::FPUOpcodeHashMap(size_t capacity) : CompactStrHashMap(capacity
   addKey(FPREM1  ) ;addKey(FDECSTP ) ;addKey(FINCSTP ) ;addKey(FPREM   ) ;addKey(FYL2XP1 );
   addKey(FSQRT   ) ;addKey(FSINCOS ) ;addKey(FRNDINT ) ;addKey(FSCALE  ) ;addKey(FSIN    );
   addKey(FCOS    );
-#ifdef IS32BIT
-#ifndef LONGDOUBLE
+#if defined(IS32BIT)
+#if !defined(LONGDOUBLE)
   addKey(CALL);
 #endif
 #endif
 };
 
-#ifdef FINDBESTCAPACITY
+#if defined(FINDBESTCAPACITY)
 class HashmapCapcityFinder {
 public:
   HashmapCapcityFinder();

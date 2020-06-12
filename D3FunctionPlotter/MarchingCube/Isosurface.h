@@ -21,7 +21,7 @@ public:
                        ,float dz, int pointCount, float *densities) = 0;
   virtual void fNormal(const D3DXVECTOR3 &point, D3DXVECTOR3 &normal) = 0;
 
-#ifdef USE_MATERIAL
+#if defined(USE_MATERIAL)
   virtual const Material &fMaterial(const D3DXVECTOR3 &point, float density) = 0;
 #endif
 };

@@ -7,7 +7,7 @@
 #include "OLEContainerClassDoc.h"
 #include "SrvrItem.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -88,7 +88,7 @@ void COLEContainerClassDoc::Serialize(CArchive &ar) {
     }
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 void COLEContainerClassDoc::AssertValid() const {
     COleServerDoc::AssertValid();
 }

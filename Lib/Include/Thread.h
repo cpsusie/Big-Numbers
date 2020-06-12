@@ -8,7 +8,7 @@
 
 //#define TRACE_THREAD
 
-#ifdef TRACE_THREAD
+#if defined(TRACE_THREAD)
 #define TRACE_THREADPOOL
 #endif // TRACE_THREAD
 

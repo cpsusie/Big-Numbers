@@ -7,7 +7,7 @@
 // Transitions for each DFAState
 typedef int DFAtrans[MAX_CHARS];
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 typedef IntTreeMap<CharacterSet> DFATransitionMap;
 #endif
 
@@ -33,7 +33,7 @@ public:
     m_accept = accept;
   }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
   void getTransitionMap(DFATransitionMap &map) const;
   String toString(bool showNFASet=false) const;
 #endif
@@ -50,7 +50,7 @@ private:
   // Indexed by DFAState-number. Holds the index of the group, a state belongs to
   CompactIntArray m_inGroup;
   BitSet          getNFASetForGroup(UINT g) const;
-#ifdef _DEBUG
+#if defined(_DEBUG)
   String          m_logString;
   BitSet      getPatternIndexSet(UINT stateIndex, int maxPatternCharIndex) const;
 #endif
@@ -74,7 +74,7 @@ public:
   void construct();
   void getDFATables(DFATables &table) const;
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
   DFA(const DFATables &tables, const NFA &dummy);
   String toString(bool showNFASets = false, _DFADbgInfo *dbgInfo = NULL) const;
   String groupsToString() const;

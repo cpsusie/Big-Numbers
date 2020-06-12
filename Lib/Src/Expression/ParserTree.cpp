@@ -7,7 +7,7 @@ namespace Expr {
 
 using namespace std;
 
-#ifdef CHECK_CONSISTENCY
+#if defined(CHECK_CONSISTENCY)
 void ParserTree::checkIsConsistent() const {
   try {
     if(!isEmpty()) {

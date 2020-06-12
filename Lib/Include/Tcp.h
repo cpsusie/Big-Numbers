@@ -30,7 +30,7 @@ inline void throwLastWSAErrorText() {
   throw TcpException(getLastWSAErrorText());
 }
 
-#ifndef _WINSOCK2API_
+#if !defined(_WINSOCK2API_)
 
 #if __BYTE_ORDER__ != __ORDER_BIG_ENDIAN__
 

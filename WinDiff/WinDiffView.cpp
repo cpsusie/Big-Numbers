@@ -5,7 +5,7 @@
 #include <MFCUtil/Clipboard.h>
 #include "SearchMachine.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -50,7 +50,7 @@ void CWinDiffView::OnBeginPrinting(CDC* /*pDC*/, CPrintInfo* /*pInfo*/) {
 void CWinDiffView::OnEndPrinting(CDC* /*pDC*/, CPrintInfo* /*pInfo*/) {
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 void CWinDiffView::AssertValid() const {
   __super::AssertValid();
 }

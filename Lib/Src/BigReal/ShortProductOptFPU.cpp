@@ -4,11 +4,11 @@
 
 #if(SP_OPT_METHOD == SP_OPT_BY_FPU)
 
-#ifdef IS64BIT
+#if defined(IS64BIT)
 #error SP_OPT_BY_FPU cannot be used in x64-mode
 #endif
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 BigReal &BigReal::shortProductNoZeroCheckDebug(const BigReal &x, const BigReal &y, UINT loopCount) { // return *this
 #else
 BigReal &BigReal::shortProductNoZeroCheck(     const BigReal &x, const BigReal &y, UINT loopCount) { // return *this
@@ -29,7 +29,7 @@ BigReal &BigReal::shortProductNoZeroCheck(     const BigReal &x, const BigReal &
   int loopCounter = loopCount;
   for(Digit *xk = x.m_first, *yk = y.m_first;;) {
 
-#ifndef ASM_OPTIMIZED
+#if !defined(ASM_OPTIMIZED)
     Double80 tmp(0);
     for(const Digit *xp = xk, *yp = yk; xp && yp; xp = xp->next, yp = yp->prev) {
 //      _tprintf(_T("    multiply %2d * %2d = %d\n"),xp->n,yp->n,xp->n*yp->n);
@@ -81,7 +81,7 @@ End:
   return setSignByProductRule(x,y).trimZeroes();
 }
 
-#ifdef ASM_OPTIMIZED
+#if defined(ASM_OPTIMIZED)
 
 void BigReal::addFPUReg0() {
   BR2DigitType n;

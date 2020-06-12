@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#ifndef TABLEBASE_BUILDER
+#if !defined(TABLEBASE_BUILDER)
 
 #include <MFCUtil/WinTools.h>
 #include "EngineOptionsDlg.h"

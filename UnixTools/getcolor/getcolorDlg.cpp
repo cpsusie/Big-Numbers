@@ -2,7 +2,7 @@
 #include <MyUtil.h>
 #include "GetColorDlg.h"
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 

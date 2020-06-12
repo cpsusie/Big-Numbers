@@ -1,7 +1,7 @@
 #include "pch.h"
 #include <MyUtil.h>
 #include <Semaphore.h>
-#ifdef TRACESEMAPHORE
+#if defined(TRACESEMAPHORE)
 #include <Thread.h>
 #include <DebugLog.h>
 #endif  // TRACESEMAPHORE
@@ -43,7 +43,7 @@ void Semaphore::notify() {
   }
 }
 
-#ifdef TRACESEMAPHORE
+#if defined(TRACESEMAPHORE)
 
 static String getCurrentThreadIdentification() {
   try {

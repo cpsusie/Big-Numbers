@@ -5,7 +5,7 @@
 #include "ArithmeticCoder.h"
 #include "ZLibCompressor.h"
 
-#ifdef _USE_DCT
+#if defined(_USE_DCT)
 #include "DCT.h"
 #endif
 
@@ -16,7 +16,7 @@ static void usage() {
                       "      -h:Adaptiv Huffman encoding. (default)\n"
                       "      -a:Arithmetic encoding\n"
                       "      -z:zlib compression")
-#ifdef _USE_DCT
+#if defined(_USE_DCT)
                       "      -p:Picture encoding\n"
 #endif
          );
@@ -56,7 +56,7 @@ int main(int argc, char **argv) {
       case 'z':
         compressor = new ZLibCompressor();
         continue;
-#ifdef _USE_DCT
+#if defined(_USE_DCT)
       case 'p':
         compressor = new PictureCoder(Console::getWindow());
         continue;

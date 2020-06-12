@@ -34,7 +34,7 @@ namespace TestRegex {
     int ret;
 
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
     OUTPUT(_T("Pattern:<%s>%s"), pattern.cstr(), ignoreCase ? _T(" Ignore case") : EMPTYSTRING);
     OUTPUT(_T("%s\nFastMap:%s"), regex.toString().cstr(), regex.fastMapToString().cstr());
 #endif
@@ -51,7 +51,7 @@ namespace TestRegex {
     if (target != saveTarget) {
       throwException(_T("target has changed: <%s> -> <%s>"), saveTarget.cstr(), target.cstr());
     }
-#ifdef _DEBUG
+#if defined(_DEBUG)
     OUTPUT(_T("--------------------"));
 #endif
   }
@@ -201,7 +201,7 @@ namespace TestRegex {
           RegexTester tester;
           tester.doTest();
         } catch (Exception e) {
-#ifdef _DEBUG
+#if defined(_DEBUG)
           OUTPUT(_T("Exception:%s"), e.what());
 #endif
           verify(false);

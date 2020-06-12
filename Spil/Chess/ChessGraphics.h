@@ -276,7 +276,7 @@ private:
   const Game                 *m_game;
   GameKey                     m_flushedGameKey;
   BYTE                        m_paintLevel;
-#ifdef _DEBUG
+#if defined(_DEBUG)
   BYTE                        m_maxPaintLevel;
 #endif
   ChessResources              m_resources;
@@ -301,7 +301,7 @@ private:
   UINT                        m_remainingTime[2];
   DebugFlags                  m_debugFlags;
   CSize                       m_lastDebugFieldSize;
-#ifdef _DEBUG
+#if defined(_DEBUG)
   inline void checkPaintLevel() {
     if (m_paintLevel > m_maxPaintLevel) {
       m_maxPaintLevel = m_paintLevel;
@@ -312,12 +312,12 @@ private:
     if(m_paintLevel++ == 0) {
       m_resources.setClientRectSize(getClientRect(m_hwnd).Size());
     }
-#ifdef _DEBUG
+#if defined(_DEBUG)
     checkPaintLevel();
 #endif
   }
   inline void popLevel() {
-#ifdef _DEBUG
+#if defined(_DEBUG)
     if(m_paintLevel == 0) {
       showWarning(_T("%s:m_paintLevel already 0"), __TFUNCTION__);
     }

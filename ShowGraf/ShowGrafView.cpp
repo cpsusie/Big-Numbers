@@ -2,11 +2,11 @@
 #include "ShowGrafDoc.h"
 #include "ShowGrafView.h"
 #include "MouseTool.h"
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #include <DebugLog.h>
 #endif
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
@@ -129,7 +129,7 @@ void CShowGrafView::popMouseTool() {
   DUMPTOOLSTACK();
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 void CShowGrafView::dumpToolStack() const {
   String result;
   for (int i = m_toolStack.getHeight(); i--;) {
@@ -180,7 +180,7 @@ void CShowGrafView::OnBeginPrinting(CDC *pDC, CPrintInfo *pInfo) {
 void CShowGrafView::OnEndPrinting(CDC *pDC, CPrintInfo *pInfo) {
 }
 
-#ifdef _DEBUG
+#if defined(_DEBUG)
 void CShowGrafView::AssertValid() const {
   __super::AssertValid();
 }

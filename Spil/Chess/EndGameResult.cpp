@@ -32,7 +32,7 @@ EndGameResult &EndGameResult::changePliesToEnd(UINT pliesToEnd) {
   return *this;
 }
 
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
 
 #define STALEMATE_STR      _T("Stalemate")
 #define DRAW_STR           _T("Draw")
@@ -71,7 +71,7 @@ static TCHAR *pliesToStr(TCHAR *dst, int pliesToEnd, bool ply) {
   if(ply) {
     _stprintf(dst, _T("%3d %s"), pliesToEnd, (pliesToEnd==1)? PLY : PLIES);
   } else {
-#ifdef TABLEBASE_BUILDER
+#if defined(TABLEBASE_BUILDER)
     _stprintf(dst, _T("%3d")    , PLIESTOMOVES(pliesToEnd));
 #else
     const int moves = PLIESTOMOVES(pliesToEnd);

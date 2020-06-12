@@ -3,14 +3,6 @@
 #include "WinTools.h"
 #include <Math/Rectangle2D.h>
 
-inline float fixedToFloat(const FIXED &x) {
-  return (float)x.value + (float)x.fract / 0x10000u;
-}
-FIXED floatToFixed(float x);
-MAT2  getMAT2Rotation(float degree);
-MAT2  getMAT2Id(float size = 1.0f);
-
-
 class Point2DP : public Point2D {
 public:
   inline Point2DP() {
@@ -21,7 +13,7 @@ public:
   }
   inline Point2DP(const CPoint &p) : Point2D(p.x, p.y) {
   }
-  inline Point2DP(const POINTFX &p) : Point2D(fixedToFloat(p.x), fixedToFloat(p.y)) {
+  inline Point2DP(const POINTFX &p) : Point2D(p) {
   }
   inline operator CPoint() const {
     return CPoint((int)round(x), (int)round(y));
