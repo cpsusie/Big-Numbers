@@ -6,7 +6,6 @@ class CAvlTreeWndDlg : public CDialog, public AvlGraphics {
 private:
   HICON               m_hIcon;
   CString             m_currentKey;
-  SimpleLayoutManager m_layoutManager;
   AvlTree             m_testTree;
   AvlIterator        *m_itererator;
   HACCEL              m_accelTable;
@@ -24,7 +23,6 @@ public:
     virtual BOOL PreTranslateMessage(MSG *pMsg);
     virtual void DoDataExchange(CDataExchange *pDX);
     virtual BOOL OnInitDialog();
-    afx_msg void OnSize(UINT nType, int cx, int cy);
     afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
     afx_msg void OnPaint();
     afx_msg HCURSOR OnQueryDragIcon();
@@ -46,4 +44,3 @@ public:
     afx_msg void OnMenuDelete();
   DECLARE_MESSAGE_MAP()
 };
-

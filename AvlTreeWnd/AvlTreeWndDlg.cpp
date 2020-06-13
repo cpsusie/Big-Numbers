@@ -28,24 +28,23 @@ void CAvlTreeWndDlg::DoDataExchange(CDataExchange *pDX) {
 }
 
 BEGIN_MESSAGE_MAP(CAvlTreeWndDlg, CDialog)
-  ON_WM_SIZE()
   ON_WM_SYSCOMMAND()
   ON_WM_PAINT()
   ON_WM_QUERYDRAGICON()
-  ON_COMMAND(ID_EDIT_INSERT, OnEditInsert)
-  ON_COMMAND(ID_EDIT_DELETEKEY, OnEditDeletekey)
-  ON_COMMAND(ID_EDIT_SEARCHKEY, OnEditSearchkey)
-  ON_COMMAND(ID_EDIT_CLEAR, OnEditClear)
-  ON_COMMAND(ID_FILE_EXIT, OnFileExit)
-  ON_COMMAND(ID_OPTIONS_TRACE, OnOptionsTrace)
-  ON_COMMAND(ID_OPTIONS_SHOWBALANCE, OnOptionsShowbalance)
-  ON_COMMAND(ID_EDIT_INSERTMANY, OnEditInsertmany)
+  ON_WM_CLOSE()
+  ON_WM_CONTEXTMENU()
+  ON_COMMAND(ID_EDIT_INSERT             , OnEditInsert            )
+  ON_COMMAND(ID_EDIT_DELETEKEY          , OnEditDeletekey         )
+  ON_COMMAND(ID_EDIT_SEARCHKEY          , OnEditSearchkey         )
+  ON_COMMAND(ID_EDIT_CLEAR              , OnEditClear             )
+  ON_COMMAND(ID_FILE_EXIT               , OnFileExit              )
+  ON_COMMAND(ID_OPTIONS_TRACE           , OnOptionsTrace          )
+  ON_COMMAND(ID_OPTIONS_SHOWBALANCE     , OnOptionsShowbalance    )
+  ON_COMMAND(ID_EDIT_INSERTMANY         , OnEditInsertmany        )
   ON_COMMAND(ID_EDIT_FIBONACCITREE_TYPE1, OnEditFibonaccitreeType1)
   ON_COMMAND(ID_EDIT_FIBONACCITREE_TYPE2, OnEditFibonaccitreeType2)
-  ON_WM_CLOSE()
-  ON_COMMAND(ID_HELP_ABOUTAVTREE, OnHelpAboutavtree)
-  ON_WM_CONTEXTMENU()
-  ON_COMMAND(ID_MENU_DELETE, OnMenuDelete)
+  ON_COMMAND(ID_HELP_ABOUTAVTREE        , OnHelpAboutavtree       )
+  ON_COMMAND(ID_MENU_DELETE             , OnMenuDelete            )
 END_MESSAGE_MAP()
 
 BOOL CAvlTreeWndDlg::OnInitDialog() {
@@ -69,10 +68,6 @@ BOOL CAvlTreeWndDlg::OnInitDialog() {
 
   SetIcon(m_hIcon, TRUE);       // Set big icon
   SetIcon(m_hIcon, FALSE);      // Set small icon
-
-  m_layoutManager.OnInitDialog(this);
-  m_layoutManager.addControl(IDC_TREEFRAME, RELATIVE_SIZE                  );
-  m_layoutManager.addControl(IDC_MESSAGE  , RELATIVE_Y_POS | RELATIVE_WIDTH);
 
   m_testTree.setAvlGraphics(this);
   m_itererator = new AvlIterator(m_testTree);
@@ -146,11 +141,6 @@ HCURSOR CAvlTreeWndDlg::OnQueryDragIcon() {
   return (HCURSOR)m_hIcon;
 }
 
-void CAvlTreeWndDlg::OnSize(UINT nType, int cx, int cy) {
-  m_layoutManager.OnSize(nType,cx,cy);
-  __super::OnSize(nType, cx, cy);
-}
-
 BOOL CAvlTreeWndDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return true;
@@ -165,11 +155,12 @@ void CAvlTreeWndDlg::OnCancel() {
 }
 
 void CAvlTreeWndDlg::OnClose() {
-  exit(0);
+  OnFileExit();
 }
 
 void CAvlTreeWndDlg::OnFileExit() {
-  exit(0);
+  m_testTree.clear();
+  EndDialog(IDOK);
 }
 
 void CAvlTreeWndDlg::OnEditInsert() {
