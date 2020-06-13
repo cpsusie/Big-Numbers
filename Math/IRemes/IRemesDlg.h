@@ -1,6 +1,7 @@
 #pragma once
 
 #include <MFCUtil/CoordinateSystem/CoordinateSystem.h>
+#include <MFCUtil/DialogWithDynamicLayout.h>
 #include "Debugger.h"
 #include "DebugInfo.h"
 #include "ListBoxDiffMarks.h"
@@ -39,12 +40,11 @@ typedef enum {
  ,RUNMENU_PAUSED
 } RunMenuState;
 
-class CIRemesDlg : public CDialog, public PropertyChangeListener {
+class CIRemesDlg : public CDialogWithDynamicLayout, public PropertyChangeListener {
   friend class ErrorPlotter;
 private:
   HACCEL                  m_accelTable;
   HICON                   m_hIcon;
-  SimpleLayoutManager     m_layoutManager;
   RunMenuState            m_runMenuState;
   CListBoxDiffMarks       m_coefListBox;
   CCoordinateSystem       m_coorSystemError, m_coorSystemSpline;
@@ -121,7 +121,8 @@ private:
   void startErrorPlotTimer();
   void stopErrorPlotTimer();
   void setSplineVisible(bool visible);
-  bool isErrorFunctionVisible();
+  bool isShowErrorFunctionChecked();
+  bool isShowSplineChecked();
   bool isSplineVisible();
   int  getErrorPlotXPixelCount() const;
   void updateErrorPlotXRange();
@@ -144,7 +145,6 @@ public:
   afx_msg void    OnTimer(UINT_PTR nIDEvent);
   afx_msg void    OnSysCommand(UINT nID, LPARAM lParam);
   afx_msg HCURSOR OnQueryDragIcon();
-  afx_msg void    OnSize(UINT nType, int cx, int cy);
   afx_msg void    OnClose();
   afx_msg void    OnPaint();
   afx_msg void    OnFileShowMaxErrors();
@@ -166,11 +166,6 @@ public:
   afx_msg void    OnRunSingleIteration();
   afx_msg void    OnRunSingleSubIteration();
   afx_msg void    OnRunReduceToInterpolate();
-  afx_msg void    OnGotoDomain();
-  afx_msg void    OnGotoM();
-  afx_msg void    OnGotoK();
-  afx_msg void    OnGotoDigits();
-  afx_msg void    OnGotoMaxSearchEIterations();
   afx_msg void    OnHelpAboutIRemes();
   afx_msg void    OnEnKillfocusEditmFrom();
   afx_msg void    OnEnKillfocusEditkFrom();

@@ -55,7 +55,7 @@ void RationalFunction::copyData(const RationalFunction &src) {
   m_N = src.m_N;
   m_coefVectorIndex = src.m_coefVectorIndex;
   m_digits = src.m_digits;
-  m_domain = new ConstBigRealInterval(*src.m_domain);
+  m_domain = new ConstBigRealInterval(*src.m_domain); TRACE_NEW(m_domain);
   const size_t dim = src.m_coefVector.size();
   m_coefVector.setCapacity(dim);
   for (size_t i = 0; i < dim; i++) {

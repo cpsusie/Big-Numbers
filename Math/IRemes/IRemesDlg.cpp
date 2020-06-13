@@ -23,7 +23,7 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
 CIRemesDlg::CIRemesDlg(CWnd *pParent /*=NULL*/)
-: CDialog(IDD, pParent)
+: CDialogWithDynamicLayout(IDD, pParent)
 , m_name(EMPTYSTRING)
 , m_maxSearchEIterations(0)
 {
@@ -65,29 +65,29 @@ CIRemesDlg::CIRemesDlg(CWnd *pParent /*=NULL*/)
 
 void CIRemesDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
-  DDX_Text(pDX, IDC_EDITNAME, m_name);
-  DDX_Text(pDX, IDC_EDITMFROM, m_M);
+  DDX_Text(      pDX, IDC_EDITNAME, m_name);
+  DDX_Text(      pDX, IDC_EDITMFROM, m_M);
   DDV_MinMaxUInt(pDX, m_M, 1, 100);
-  DDX_Text(pDX, IDC_EDITMTO, m_MTo);
-  DDX_Text(pDX, IDC_EDITKFROM, m_K);
+  DDX_Text(      pDX, IDC_EDITMTO, m_MTo);
+  DDX_Text(      pDX, IDC_EDITKFROM, m_K);
   DDV_MinMaxUInt(pDX, m_K, 0, 100);
-  DDX_Text(pDX, IDC_EDITKTO, m_KTo);
-  DDX_Text(pDX, IDC_EDITXFROM, m_xFrom);
-  DDX_Text(pDX, IDC_EDITXTO, m_xTo);
-  DDX_Text(pDX, IDC_EDITDIGITS, m_digits);
+  DDX_Text(      pDX, IDC_EDITKTO, m_KTo);
+  DDX_Text(      pDX, IDC_EDITXFROM, m_xFrom);
+  DDX_Text(      pDX, IDC_EDITXTO, m_xTo);
+  DDX_Text(      pDX, IDC_EDITDIGITS, m_digits);
   DDV_MinMaxUInt(pDX, m_digits, 2, 200);
-  DDX_Text(pDX, IDC_EDITMAXSEARCHEITERATIONS, m_maxSearchEIterations);
+  DDX_Text(      pDX, IDC_EDITMAXSEARCHEITERATIONS, m_maxSearchEIterations);
   DDV_MinMaxUInt(pDX, m_maxSearchEIterations, 2, 20000);
-  DDX_Check(pDX, IDC_CHECKRELATIVEERROR, m_relativeError);
-  DDX_Text(pDX, IDC_EDITMAXMKSUM, m_maxMKSum);
-  DDX_Check(pDX, IDC_CHECKSKIPEXISTING, m_skipExisting);
+  DDX_Check(     pDX, IDC_CHECKRELATIVEERROR, m_relativeError);
+  DDX_Text(      pDX, IDC_EDITMAXMKSUM, m_maxMKSum);
+  DDX_Check(     pDX, IDC_CHECKSKIPEXISTING, m_skipExisting);
 }
 
 BEGIN_MESSAGE_MAP(CIRemesDlg, CDialog)
   ON_WM_SYSCOMMAND()
   ON_WM_QUERYDRAGICON()
   ON_WM_PAINT()
-  ON_WM_SIZE()
+  ON_WM_TIMER()
   ON_WM_CLOSE()
   ON_COMMAND(ID_FILE_SHOWMAXERRORS           , OnFileShowMaxErrors         )
   ON_COMMAND(ID_FILE_EXIT                    , OnFileExit                  )
@@ -107,11 +107,6 @@ BEGIN_MESSAGE_MAP(CIRemesDlg, CDialog)
   ON_COMMAND(ID_RUN_SINGLESUBITERATION       , OnRunSingleSubIteration     )
   ON_COMMAND(ID_RUN_REDUCETOINTERPOLATE      , OnRunReduceToInterpolate    )
   ON_COMMAND(ID_HELP_ABOUTIREMES             , OnHelpAboutIRemes           )
-  ON_COMMAND(ID_GOTO_DOMAIN                  , OnGotoDomain                )
-  ON_COMMAND(ID_GOTO_M                       , OnGotoM                     )
-  ON_COMMAND(ID_GOTO_K                       , OnGotoK                     )
-  ON_COMMAND(ID_GOTO_DIGITS                  , OnGotoDigits                )
-  ON_COMMAND(ID_GOTO_MAXSEARCHEITERATIONS    , OnGotoMaxSearchEIterations  )
   ON_MESSAGE(ID_MSG_DEBUGGERSTATE_CHANGED    , OnMsgDebuggerStateChanged   )
   ON_MESSAGE(ID_MSG_REMES_STATE_CHANGED      , OnMsgRemesStateChanged      )
   ON_MESSAGE(ID_MSG_COEFFICIENTS_CHANGED     , OnMsgCoefficientsChanged    )
@@ -130,7 +125,6 @@ BEGIN_MESSAGE_MAP(CIRemesDlg, CDialog)
   ON_EN_KILLFOCUS(IDC_EDITKTO                , OnEnKillfocusEditkTo        )
   ON_EN_UPDATE(IDC_EDITKTO                   , OnEnUpdateEditkTo           )
   ON_EN_UPDATE(IDC_EDITMTO                   , OnEnUpdateEditmTo           )
-  ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 void CIRemesDlg::OnSysCommand(UINT nID, LPARAM lParam) {
@@ -167,6 +161,7 @@ BOOL CIRemesDlg::OnInitDialog() {
   m_accelTable = LoadAccelerators(theApp.m_hInstance, MAKEINTRESOURCE(IDR_MAINFRAME));
 
   m_coefListBox.substituteControl(this, IDC_LISTCOEF);
+
   m_coorSystemError.substituteControl(   this, IDC_FRAME_COORSYSTEM_ERROR);
   m_coorSystemError.setRetainAspectRatio(false);
   m_coorSystemError.setDataRange(DataRange(m_xFrom, m_xTo, -1, 1), false);
@@ -177,15 +172,10 @@ BOOL CIRemesDlg::OnInitDialog() {
   m_coorSystemSpline.setDataRange(DataRange(0, 1, 0, 1), false);
   m_coorSystemSpline.setAutoScale(true, false);
 
-  setErrorFunctionVisible(isMenuItemChecked(this, ID_VIEW_SHOW_ERRORFUNCTION));
-  setSplineVisible(       isMenuItemChecked(this, ID_VIEW_SHOW_SPLINE));
+  reloadDynamicLayoutResource();
 
-  m_layoutManager.OnInitDialog(this);
-  m_layoutManager.addControl(IDC_STATICSEARCHE          ,                                                          PCT_RELATIVE_BOTTOM );
-  m_layoutManager.addControl(IDC_LISTCOEF               , PCT_RELATIVE_RIGHT                  |                    PCT_RELATIVE_BOTTOM );
-  m_layoutManager.addControl(IDC_LISTEXTRMA             , PCT_RELATIVE_LEFT  | RELATIVE_RIGHT |                    PCT_RELATIVE_BOTTOM );
-  m_layoutManager.addControl(IDC_FRAME_COORSYSTEM_ERROR , PCT_RELATIVE_RIGHT                  | PCT_RELATIVE_TOP | RELATIVE_BOTTOM     );
-  m_layoutManager.addControl(IDC_FRAME_COORSYSTEM_SPLINE, PCT_RELATIVE_LEFT  | RELATIVE_RIGHT | PCT_RELATIVE_TOP | RELATIVE_BOTTOM     );
+  setErrorFunctionVisible(isShowErrorFunctionChecked());
+  setSplineVisible(isShowSplineChecked());
 
   if(BigReal::pow2CacheHasFile()) {
     BigReal::pow2CacheLoad();
@@ -230,25 +220,40 @@ void CIRemesDlg::setErrorFunctionVisible(bool visible) {
 }
 
 void CIRemesDlg::setSplineVisible(bool visible) {
-  CRect errorRect  = getWindowRect(this, IDC_FRAME_COORSYSTEM_ERROR);
+  const bool isVisible = isSplineVisible();
+  if(visible == isVisible) {
+    return;
+  }
+  CRect errorRect = getWindowRect(this, IDC_FRAME_COORSYSTEM_ERROR);
+  CMFCDynamicLayout::SizeSettings newSizeSettings;
+  newSizeSettings.m_nYRatio = 60;
   if(visible) {
     CRect splineRect = getWindowRect(this, IDC_FRAME_COORSYSTEM_SPLINE);
     errorRect.right  = splineRect.left-1;
-    setWindowRect(this, IDC_FRAME_COORSYSTEM_ERROR, errorRect);
+//    setWindowRect(this, IDC_FRAME_COORSYSTEM_ERROR, errorRect);
     GetDlgItem(IDC_FRAME_COORSYSTEM_SPLINE)->ShowWindow(SW_SHOW);
+    newSizeSettings.m_nXRatio = 50;
   } else {
+    const CRect splineRect = getWindowRect(this, IDC_FRAME_COORSYSTEM_SPLINE);
     GetDlgItem(IDC_FRAME_COORSYSTEM_SPLINE)->ShowWindow(SW_HIDE);
-    const CRect cr = getClientRect(this);
-    errorRect.right = cr.right;
-    setWindowRect(this, IDC_FRAME_COORSYSTEM_ERROR, errorRect);
+    errorRect.right = splineRect.right;
+    newSizeSettings.m_nXRatio = 100;
+//    setWindowRect(this, IDC_FRAME_COORSYSTEM_ERROR, errorRect);
   }
+  setCtrlSize(IDC_FRAME_COORSYSTEM_ERROR, errorRect.Size(), &newSizeSettings);
+  Invalidate();
 }
 
-bool CIRemesDlg::isErrorFunctionVisible() {
+bool CIRemesDlg::isShowErrorFunctionChecked() {
   return isMenuItemChecked(this, ID_VIEW_SHOW_ERRORFUNCTION);
 }
-bool CIRemesDlg::isSplineVisible() {
+
+bool CIRemesDlg::isShowSplineChecked() {
   return isMenuItemChecked(this, ID_VIEW_SHOW_SPLINE);
+}
+
+bool CIRemesDlg::isSplineVisible() {
+  return GetDlgItem(IDC_FRAME_COORSYSTEM_SPLINE)->IsWindowVisible() ? true : false;
 }
 
 void CIRemesDlg::showDebuggerState(DebuggerState state) {
@@ -358,7 +363,7 @@ UINT ErrorPlotter::safeRun() {
 void CIRemesDlg::startErrorPlotter() {
   stopErrorPlotter();
   if(!hasRemes()) return;
-  m_errorPlotter = new ErrorPlotter(this);
+  m_errorPlotter = new ErrorPlotter(this); TRACE_NEW(m_errorPlotter)
   ThreadPool::executeNoWait(*m_errorPlotter);
 }
 void CIRemesDlg::stopErrorPlotter() {
@@ -435,11 +440,6 @@ int CIRemesDlg::getErrorPlotXPixelCount() const {
 
 void CIRemesDlg::showSearchEString(const String &s) {
   setWindowText(this, IDC_STATICSEARCHE, s);
-}
-
-void CIRemesDlg::OnSize(UINT nType, int cx, int cy) {
-  __super::OnSize(nType, cx, cy);
-  m_layoutManager.OnSize(nType, cx, cy);
 }
 
 BOOL CIRemesDlg::PreTranslateMessage(MSG *pMsg) {
@@ -707,12 +707,7 @@ void CIRemesDlg::OnRunStopDebugging() {
 void CIRemesDlg::OnRunBreak()                 { if(hasDebugger())       m_debugger->breakASAP();                 }
 void CIRemesDlg::OnRunSingleIteration()       { if(isDebuggerPaused())  m_debugger->singleStep(FL_BREAKSTEP);    }
 void CIRemesDlg::OnRunSingleSubIteration()    { if(isDebuggerPaused())  m_debugger->singleStep(FL_BREAKSUBSTEP); }
-void CIRemesDlg::OnRunReduceToInterpolate()   { if(isDebuggerRunning()) m_reduceToInterpolate = true; }
-void CIRemesDlg::OnGotoDomain()               { gotoEditBox(this, IDC_EDITXFROM               );      }
-void CIRemesDlg::OnGotoM()                    { gotoEditBox(this, IDC_EDITMFROM               );      }
-void CIRemesDlg::OnGotoK()                    { gotoEditBox(this, IDC_EDITKFROM               );      }
-void CIRemesDlg::OnGotoDigits()               { gotoEditBox(this, IDC_EDITDIGITS              );      }
-void CIRemesDlg::OnGotoMaxSearchEIterations() { gotoEditBox(this, IDC_EDITMAXSEARCHEITERATIONS);      }
+void CIRemesDlg::OnRunReduceToInterpolate()   { if(isDebuggerRunning()) m_reduceToInterpolate = true;            }
 
 void CIRemesDlg::OnEnKillfocusEditmFrom() {
   UINT mFrom, mTo;
@@ -1022,7 +1017,7 @@ void CIRemesDlg::createDebugger() {
   setSubMK(-1,-1);
   m_reduceToInterpolate = false;
 
-  m_remes               = new Remes(m_targetFunction, m_relativeError?true:false); TRACE_NEW(m_remes);
+  m_remes                = new Remes(m_targetFunction, m_relativeError?true:false); TRACE_NEW(m_remes);
   m_allowRemesProperties = true;
   m_remes->setSearchEMaxIterations(m_maxSearchEIterations);
   m_remes->setVisiblePrecisions(   m_visiblePrecisions   );

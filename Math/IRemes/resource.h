@@ -32,7 +32,17 @@
 #define IDC_STATICWARNING               1027
 #define IDC_EDIT_COEFDIGITS             1030
 #define IDC_EDIT_EXTREMADIGITS          1031
+#define IDC_STATICNAME                  1031
 #define IDC_EDIT_ERRORDIGITS            1032
+#define IDC_STATICDOMAIN                1032
+#define IDC_STATICM                     1033
+#define IDC_STATICK                     1034
+#define IDC_STATICN                     1035
+#define IDC_STATICMAXITELOOP            1036
+#define IDC_STATICDIGITS                1037
+#define IDC_STATICDASH1                 1038
+#define IDC_STATICDASH2                 1039
+#define IDC_STATICDASH3                 1040
 #define ID_FILE_SHOWMAXERRORS           32771
 #define ID_FILE_EXIT                    32772
 #define ID_VIEW_GRID                    32780
@@ -51,11 +61,6 @@
 #define ID_RUN_SINGLESUBITERATION       32796
 #define ID_RUN_REDUCETOINTERPOLATE      32797
 #define ID_HELP_ABOUTIREMES             32800
-#define ID_GOTO_DOMAIN                  32850
-#define ID_GOTO_M                       32851
-#define ID_GOTO_K                       32852
-#define ID_GOTO_DIGITS                  32853
-#define ID_GOTO_MAXSEARCHEITERATIONS    32854
 #define ID_MSG_DEBUGGERSTATE_CHANGED    32900
 #define ID_MSG_REMES_STATE_CHANGED      32910
 #define ID_MSG_COEFFICIENTS_CHANGED     32911
@@ -71,11 +76,11 @@
 
 // Next default values for new objects
 // 
-#if defined(APSTUDIO_INVOKED)
-#if !defined(APSTUDIO_READONLY_SYMBOLS)
+#ifdef APSTUDIO_INVOKED
+#ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        132
 #define _APS_NEXT_COMMAND_VALUE         32926
-#define _APS_NEXT_CONTROL_VALUE         1031
+#define _APS_NEXT_CONTROL_VALUE         1041
 #define _APS_NEXT_SYMED_VALUE           1031
 #endif
 #endif

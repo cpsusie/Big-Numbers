@@ -143,7 +143,7 @@ void MultiExtremaFinder::findAllExtrema() {
   const int pCount = getProcessorCount();
   m_jobArray.setCapacity(pCount+1);
   for(int i = 0; i < pCount; i++) {
-    ExtremumFinder *f = new ExtremumFinder(this,i); TRACE_NEW(e);
+    ExtremumFinder *f = new ExtremumFinder(this,i); TRACE_NEW(f);
     m_jobArray.add(f);
   }
   ExtremumNotifier *notifier = new ExtremumNotifier(this, m_paramQueue.size()); TRACE_NEW(notifier);
