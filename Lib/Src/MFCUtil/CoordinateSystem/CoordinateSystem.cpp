@@ -54,12 +54,14 @@ void CCoordinateSystem::substituteControl(CWnd *parent, int id) {
   if(font == NULL) {
     font = parent->GetFont();
   }
+  const TabOrder tabOrder(parent);
   ctrl->DestroyWindow();
 
   if(!Create(EMPTYSTRING, style, rect, parent, id)) {
     showError(_T("%s:Create failed"), method);
     return;
   }
+  tabOrder.restoreTabOrder();
   ModifyStyleEx(0, exStyle);
   SetFont(font, FALSE);
   RectangleTransformation &tr = m_vp.getTransformation();

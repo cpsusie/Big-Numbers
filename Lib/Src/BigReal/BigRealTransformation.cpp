@@ -26,9 +26,9 @@ void BigRealIntervalTransformation::computeTransformation() {
   m_b = toInterval.getFrom() - rProd(m_a,transFromFrom, m_digits, getDigitPool());
 }
 
-void BigRealIntervalTransformation::checkFromInterval(const BigRealInterval &interval) {
+void BigRealIntervalTransformation::checkFromInterval(const TCHAR *method, const BigRealInterval &interval) {
   if(interval.getLength().isZero()) {
-    throwException(_T("IntervalTransformation::Invalid from-interval:%s"),interval.toString().cstr());
+    throwException(_T("%s:Invalid from-interval:%s"), method, interval.toString().cstr());
   }
 }
 
@@ -39,7 +39,7 @@ BigRealIntervalTransformation::BigRealIntervalTransformation(const BigRealInterv
 , m_toInterval(  digitPool?digitPool:fromInterval.getDigitPool())
 {
   setPrecision(     precision);
-  checkFromInterval(fromInterval);
+  checkFromInterval(__TFUNCTION__, fromInterval);
   m_fromInterval = fromInterval;
   m_toInterval   = toInterval;
 }
@@ -47,14 +47,13 @@ BigRealIntervalTransformation::BigRealIntervalTransformation(const BigRealInterv
 BigRealInterval BigRealIntervalTransformation::getDefaultInterval(IntervalScale scale, DigitPool *digitPool) { // static
   switch(scale) {
   case LINEAR             : return BigRealInterval(BigReal(-10,digitPool),BigReal(10,digitPool));
-  default                 : throwInvalidArgumentException(__TFUNCTION__
-                                                          ,_T("scale (=%d)"), scale);
+  default                 : throwInvalidArgumentException(__TFUNCTION__,_T("scale (=%d)"), scale);
                             return BigRealInterval(0,10);
   }
 }
 
 const BigRealInterval &BigRealIntervalTransformation::setFromInterval(const BigRealInterval &interval) {
-  checkFromInterval(interval);
+  checkFromInterval(__TFUNCTION__, interval);
   m_fromInterval = interval;
   computeTransformation();
   return m_fromInterval;

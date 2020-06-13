@@ -1142,6 +1142,7 @@ template<typename NumberType> NumberType getNonNormalValue(int fpclass, const Nu
   case _FPCLASS_SNAN: return  std::numeric_limits<NumberType>::signaling_NaN();
   default           : NODEFAULT;
   }
+  return zero;
 }
 
 // Returns one of

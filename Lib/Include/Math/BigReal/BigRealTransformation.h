@@ -74,7 +74,7 @@ protected:
   virtual BigReal translate(       const BigReal &x) const = 0;
   virtual BigReal inverseTranslate(const BigReal &x) const = 0;
   void computeTransformation();
-  void checkFromInterval(const BigRealInterval &interval);
+  void checkFromInterval(const TCHAR *method, const BigRealInterval &interval);
 public:
   BigRealIntervalTransformation(const BigRealInterval &fromInterval, const BigRealInterval &toInterval, UINT precision=AUTOPRECISION, DigitPool *digitPool = NULL);
   // Set number of decimal digits in calculations

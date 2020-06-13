@@ -657,6 +657,7 @@
     <ClCompile Include="D3DColorValueStr.cpp" />
     <ClCompile Include="D3DColorValueXML.cpp" />
     <ClCompile Include="D3PColor.cpp" />
+    <ClCompile Include="DialogWithDynamicLayout.cpp" />
     <ClCompile Include="IsoCurveParameters.cpp" />
     <ClCompile Include="Layout.cpp" />
     <ClCompile Include="LSHColor.cpp" />
@@ -787,6 +788,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\MFCUtil\AnimationParameters.h" />
+    <ClInclude Include="..\..\Include\MFCUtil\DialogWithDynamicLayout.h" />
     <ClInclude Include="..\..\Include\MFCUtil\FunctionImageParamPersistentData.h" />
     <ClInclude Include="..\..\Include\MFCUtil\IsoCurveParameters.h" />
     <ClInclude Include="..\..\Include\MFCUtil\MFCXml.h" />

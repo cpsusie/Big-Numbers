@@ -282,6 +282,7 @@ BigReal sum(const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *dig
     default: NODEFAULT;
     }
   }
+  return pool->_0(); // shoul not come here
 }
 
 BigReal dif(const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *digitPool) {
@@ -314,6 +315,7 @@ BigReal dif(const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *dig
     default: NODEFAULT;
     }
   }
+  return pool->_0(); // shoul not come here
 }
 
 BigReal operator+(const BigReal &x, const BigReal &y) {

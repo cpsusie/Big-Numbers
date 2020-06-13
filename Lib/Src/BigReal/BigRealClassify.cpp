@@ -11,14 +11,14 @@ int _fpclass(const BigReal &x) {
   if(x.m_expo == BIGREAL_NONNORMAL) {
     switch(x.m_low) {
     case BIGREAL_ZEROLOW: return _FPCLASS_PZ;
-    case BIGREAL_INFLOW: return x.isNegative() ? _FPCLASS_NINF : _FPCLASS_PINF;
+    case BIGREAL_INFLOW : return x.isNegative() ? _FPCLASS_NINF : _FPCLASS_PINF;
     case BIGREAL_QNANLOW: return _FPCLASS_QNAN;
     default: NODEFAULT;
     }
-  }
-  else {
+  } else {
     return x.isNegative() ? _FPCLASS_NN : _FPCLASS_PN;
   }
+  return 0;
 }
 
 BigReal &BigReal::setToNonNormalFpClass(int fpclass) {
