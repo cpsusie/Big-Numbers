@@ -46,7 +46,6 @@ BEGIN_MESSAGE_MAP(CFindDlg, CDialog)
   ON_COMMAND(ID_REGSYMBOLS_GROUP           , OnRegSymbolsGroup              )
   ON_CBN_SETFOCUS(IDC_COMBOFINDWHAT        , OnSetFocusComboFindWhat        )
   ON_CBN_KILLFOCUS(IDC_COMBOFINDWHAT       , OnKillFocusComboFindWhat       )
-  ON_COMMAND(ID_GOTOFINDWHAT               , OnGotoFindWhat                 )
   ON_CBN_SELENDOK(IDC_COMBOFINDWHAT        , OnSelEndOkComboFindWhat        )
   ON_CBN_SELCHANGE(IDC_COMBOFINDWHAT       , OnSelChangeComboFindWhat       )
 END_MESSAGE_MAP()
@@ -69,8 +68,6 @@ BOOL CFindDlg::OnInitDialog() {
   } else {
     ((CButton*)GetDlgItem(IDC_RADIODOWN))->SetCheck(1);
   }
-
-  m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATORFIND));
   UpdateData(false);
   return false;
 }
@@ -188,10 +185,6 @@ void CFindDlg::OnKillFocusComboFindWhat() {
 }
 
 BOOL CFindDlg::PreTranslateMessage(MSG *pMsg) {
-  if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
-    return true;
-  }
-
   BOOL ret = __super::PreTranslateMessage(pMsg);
 
   if(m_currentControl == IDC_COMBOFINDWHAT) {

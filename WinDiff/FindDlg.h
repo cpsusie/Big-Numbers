@@ -12,7 +12,6 @@ public:
 
 class CFindDlg: public CDialog, private OptionsAccessor {
 private:
-  HACCEL               m_accelTable;
   CComboBoxWithHistory m_findWhatCombo;
   CFont                m_font;
   int                  m_selStart, m_selEnd;

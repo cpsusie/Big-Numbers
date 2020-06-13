@@ -54,12 +54,6 @@ BEGIN_MESSAGE_MAP(CDefineFileFormatDlg, CDialog)
   ON_BN_CLICKED(   IDC_CHECKMULTIPLEDELIMITERS      , OnCheckMultipleDelimiters         )
   ON_BN_CLICKED(   IDC_BUTTONDELIMITERMENU          , OnButtonDelimiterMenu             )
   ON_BN_CLICKED(   IDC_RADIOFIXEDWIDTH              , OnRadioDelimited                  )
-  ON_COMMAND(      ID_GOTOCOLUMNFROM                , OnGotoColumnFrom                  )
-  ON_COMMAND(      ID_GOTOCOLUMNTO                  , OnGotoColumnTo                    )
-  ON_COMMAND(      ID_GOTOFIELDDELIMITER            , OnGotoFieldDelimiter              )
-  ON_COMMAND(      ID_GOTOTEXTQUALIFIER             , OnGotoTextQualifier               )
-  ON_COMMAND(      ID_GOTOSAMPLE                    , OnGotoSample                      )
-  ON_COMMAND(      ID_GOTOCOLUMNLIST                , OnGotoColumnList                  )
   ON_EN_SETFOCUS(  IDC_EDITSAMPLE                   , OnSetFocusEditSample              )
   ON_EN_KILLFOCUS( IDC_EDITSAMPLE                   , OnKillFocusEditSample             )
   ON_LBN_SETFOCUS( IDC_LISTCOLUMNS                  , OnSetFocusListColumns             )
@@ -201,8 +195,8 @@ BOOL CDefineFileFormatDlg::OnInitDialog() {
   ((CListBox*)GetDlgItem(IDC_LISTCOLUMNS))->SetCurSel(0);
   ajourSample();
   ajourDeleteButton();
-  OnGotoColumnFrom();
-  m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATORCOLUMNS));
+  gotoEditBox(this, IDC_EDITFROM);
+  m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATORDEFINEFLEFORMAT));
 
   return false;
 }
@@ -218,47 +212,23 @@ BOOL CDefineFileFormatDlg::PreTranslateMessage(MSG *pMsg) {
   return ret;
 }
 
-void CDefineFileFormatDlg::OnGotoColumnFrom() {
-  GetDlgItem(IDC_EDITFROM)->SetFocus();
-}
-
-void CDefineFileFormatDlg::OnGotoColumnTo() {
-  GetDlgItem(IDC_EDITTO)->SetFocus();
-}
-
-void CDefineFileFormatDlg::OnGotoFieldDelimiter() {
-  GetDlgItem(IDC_EDITFIELDDELIMITER)->SetFocus();
-}
-
-void CDefineFileFormatDlg::OnGotoTextQualifier() {
-  GetDlgItem(IDC_EDITTEXTQUALIFIER)->SetFocus();
-}
-
-void CDefineFileFormatDlg::OnGotoSample() {
-  GetDlgItem(IDC_EDITSAMPLE)->SetFocus();
-}
-
-void CDefineFileFormatDlg::OnGotoColumnList() {
-  GetDlgItem(IDC_LISTCOLUMNS)->SetFocus();
-}
-
 bool CDefineFileFormatDlg::validate() {
   FileFormat param;
   paramFromWindow(param);
   if(param.m_delimited) {
     if(param.m_delimiters.length() == 0) {
-      OnGotoFieldDelimiter();
+      gotoEditBox(this, IDC_EDITFIELDDELIMITER);
       showWarning(_T("Must specify fielddelimiters"));
       return false;
     }
   }
   if(param.m_columns.size() == 0) {
-    OnGotoColumnFrom();
+    gotoEditBox(this, IDC_EDITFROM);
     showWarning(_T("No columns specified"));
     return false;
   }
   if((param.m_textQualifier != 0) && _tcschr(param.m_delimiters.cstr(),param.m_textQualifier) != NULL) {
-    OnGotoTextQualifier();
+    gotoEditBox(this, IDC_EDITTEXTQUALIFIER);
     showWarning(_T("The textqualifier is member of the set of fielddelimiters"));
     return false;
   }

@@ -1,14 +1,11 @@
 #pragma once
 
-#include <MFCUtil/LayoutManager.h>
 #include "WinDiffDoc.h"
 #include "Edit2Lines.h"
 
 class CZoomDlg: public CDialog, private OptionsAccessor {
 private:
   HICON               m_hIcon;
-  HACCEL              m_accelTable;
-  SimpleLayoutManager m_layoutManager;
   CFont               m_font;
   double              m_fontScale;
   CEdit2Lines         m_editBox;
@@ -34,9 +31,7 @@ public:
   virtual BOOL PreTranslateMessage(MSG *pMsg);
   virtual void DoDataExchange(CDataExchange *pDX);
   virtual BOOL OnInitDialog();
-  afx_msg void OnSize(UINT nType, int cx, int cy);
   afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
   afx_msg void OnCheckIgnorecase();
   DECLARE_MESSAGE_MAP()
 };
-

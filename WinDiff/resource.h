@@ -17,10 +17,7 @@
 #define IDR_MENUCOLUMNS                 138
 #define IDR_MENUDELIMITERESCAPESYMBOLS  139
 #define IDR_MENUREGSYMBOLS              140
-#define IDR_ACCELERATORFIND             141
-#define IDR_ACCELERATORREGEX            142
-#define IDR_ACCELERATORCOLUMNS          143
-#define IDR_ACCELERATORZOOM             144
+#define IDR_ACCELERATORDEFINEFLEFORMAT  143
 #define IDR_TOOLBARZOOM                 145
 #define IDB_ARROW                       146
 #define IDD_DIALOGENTEROPTIONSNAME      148
@@ -150,23 +147,15 @@
 #define ID_REGSYMBOLS_0OR1              32897
 #define ID_REGSYMBOLS_OR                32898
 #define ID_REGSYMBOLS_GROUP             32899
-#define ID_GOTOCOLUMNFROM               32910
-#define ID_GOTOCOLUMNTO                 32911
-#define ID_GOTOFIELDDELIMITER           32912
-#define ID_GOTOTEXTQUALIFIER            32913
-#define ID_GOTOSAMPLE                   32914
-#define ID_GOTOCOLUMNLIST               32915
-#define ID_GOTOFINDWHAT                 32916
-#define ID_GOTOREGEX                    32917
-#define ID_FORMAT_NEW                   32918
-#define ID_DUMPFLAGS                    32920
+#define ID_FORMAT_NEW                   32920
+#define ID_DUMPFLAGS                    32921
 
 // Next default values for new objects
 // 
-#if defined(APSTUDIO_INVOKED)
-#if !defined(APSTUDIO_READONLY_SYMBOLS)
+#ifdef APSTUDIO_INVOKED
+#ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        150
+#define _APS_NEXT_RESOURCE_VALUE        157
 #define _APS_NEXT_COMMAND_VALUE         32922
 #define _APS_NEXT_CONTROL_VALUE         1046
 #define _APS_NEXT_SYMED_VALUE           101

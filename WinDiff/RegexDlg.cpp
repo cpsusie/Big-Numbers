@@ -24,7 +24,6 @@ void CRegexDlg::DoDataExchange(CDataExchange *pDX) {
 BEGIN_MESSAGE_MAP(CRegexDlg, CDialog)
   ON_CBN_KILLFOCUS(IDC_COMBOREGEX             , OnKillFocusComboRegex          )
   ON_CBN_SETFOCUS(IDC_COMBOREGEX              , OnSetFocusComboRegex           )
-  ON_COMMAND(ID_GOTOREGEX                     , OnGotoRegex                    )
   ON_BN_CLICKED(IDC_BUTTONREGSYMBOLSMENU      , OnButtonRegSymbolsMenu         )
   ON_COMMAND(ID_REGSYMBOLS_ANYCHAR            , OnRegSymbolsAnyChar            )
   ON_COMMAND(ID_REGSYMBOLS_CHARINRANGE        , OnRegSymbolsCharInRange        )
@@ -48,7 +47,6 @@ BOOL CRegexDlg::OnInitDialog() {
   m_selStart       = 0;
   m_selEnd         = (int)m_param.m_regex.length();
 
-  m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATORREGEX));
   UpdateData(false);
   return false;
 }
@@ -83,10 +81,6 @@ void CRegexDlg::OnKillFocusComboRegex() {
 }
 
 BOOL CRegexDlg::PreTranslateMessage(MSG *pMsg) {
-  if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
-    return true;
-  }
-
   BOOL ret = __super::PreTranslateMessage(pMsg);
 
   if(m_currentControl == IDC_COMBOREGEX) {
@@ -96,10 +90,6 @@ BOOL CRegexDlg::PreTranslateMessage(MSG *pMsg) {
     m_selEnd   = w >> 16;
   }
   return ret;
-}
-
-void CRegexDlg::OnGotoRegex() {
-  GetDlgItem(IDC_COMBOREGEX)->SetFocus();
 }
 
 void CRegexDlg::OnButtonRegSymbolsMenu() {
@@ -145,6 +135,5 @@ void CRegexDlg::OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct) {
   if(nIDCtl == IDC_BUTTONREGSYMBOLSMENU) {
     drawTriangle(GetDlgItem(IDC_BUTTONREGSYMBOLSMENU));
   }
-
   __super::OnDrawItem(nIDCtl, lpDrawItemStruct);
 }

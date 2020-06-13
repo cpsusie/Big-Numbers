@@ -74,12 +74,6 @@ public:
     afx_msg void OnRadioDelimited();
     afx_msg void OnCheckMultipleDelimiters();
     afx_msg void OnButtonDelimiterMenu();
-    afx_msg void OnGotoColumnFrom();
-    afx_msg void OnGotoColumnTo();
-    afx_msg void OnGotoFieldDelimiter();
-    afx_msg void OnGotoTextQualifier();
-    afx_msg void OnGotoSample();
-    afx_msg void OnGotoColumnList();
     afx_msg void OnSetFocusEditSample();
     afx_msg void OnKillFocusEditSample();
     afx_msg void OnSetFocusListColumns();

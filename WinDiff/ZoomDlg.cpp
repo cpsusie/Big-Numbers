@@ -22,7 +22,6 @@ void CZoomDlg::DoDataExchange(CDataExchange *pDX) {
 }
 
 BEGIN_MESSAGE_MAP(CZoomDlg, CDialog)
-    ON_WM_SIZE()
     ON_BN_CLICKED(IDC_CHECKIGNORECASE, OnCheckIgnorecase)
 END_MESSAGE_MAP()
 
@@ -41,26 +40,10 @@ BOOL CZoomDlg::OnInitDialog() {
   m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
   SetIcon(m_hIcon, false);
   createAndSetFont( m_fontScale);
-
-  m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATORZOOM));
-  m_layoutManager.OnInitDialog(this);
-  m_layoutManager.addControl(IDC_EDIT2LINES     , RELATIVE_WIDTH | RELATIVE_HEIGHT);
-  m_layoutManager.addControl(IDC_CHECKIGNORECASE, RELATIVE_Y_POS );
-  m_layoutManager.addControl(IDOK               , PCT_RELATIVE_X_CENTER | RELATIVE_Y_POS );
-
   return TRUE;
 }
 
-void CZoomDlg::OnSize(UINT nType, int cx, int cy) {
-  __super::OnSize(nType, cx, cy);
-  m_layoutManager.OnSize(nType, cx, cy);
-}
-
 BOOL CZoomDlg::PreTranslateMessage(MSG *pMsg) {
-  if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
-    return true;
-  }
-
   switch(pMsg->message) {
   case WM_MOUSEWHEEL:
     { const short delta = (short)(pMsg->wParam >> 16);

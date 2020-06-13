@@ -5,7 +5,6 @@
 
 class CRegexDlg: public CDialog {
 private:
-  HACCEL               m_accelTable;
   CComboBoxWithHistory m_regexCombo;
 public:
   CRegexDlg(RegexFilter &param, CWnd *pParent = NULL);
@@ -29,7 +28,6 @@ public:
   virtual void OnOK();
   afx_msg void OnKillFocusComboRegex();
   afx_msg void OnSetFocusComboRegex();
-  afx_msg void OnGotoRegex();
   afx_msg void OnButtonRegSymbolsMenu();
   afx_msg void OnRegSymbolsAnyChar();
   afx_msg void OnRegSymbolsCharInRange();
