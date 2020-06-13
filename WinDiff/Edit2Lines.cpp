@@ -33,7 +33,7 @@ void CEdit2Lines::substituteControl(CWnd *parent, int id, const StrDiff &diff) {
   if(font == NULL) {
     font = parent->GetFont();
   }
-  const CompactIntArray tabOrder = getTabOrder(parent);
+  const TabOrder tabOrder(parent);
 
   oldCtrl->DestroyWindow();
 
@@ -41,8 +41,7 @@ void CEdit2Lines::substituteControl(CWnd *parent, int id, const StrDiff &diff) {
     showError(_T("%s:Create failed"), method);
     return;
   }
-  setTabOrder(parent, tabOrder);
-
+  tabOrder.restoreTabOrder();
   ModifyStyleEx(0, exStyle);
   SetFont(font);
   setWindowText(this, s);

@@ -36,14 +36,14 @@ void CListBoxDiffMarks::substituteControl(CWnd *parent, int id) {
   if(font == NULL) {
     font = parent->GetFont();
   }
-  const CompactIntArray tabOrder = getTabOrder(parent);
+  const TabOrder tabOrder(parent);
   oldCtrl->DestroyWindow();
 
   if(!Create(style, wr, parent, id)) {
     showError(_T("%s:Create failed"), method);
     return;
   }
-  setTabOrder(parent, tabOrder);
+  tabOrder.restoreTabOrder();
   ModifyStyleEx(0, exStyle);
   SetFont(font);
   m_charSize.cx = m_charSize.cy = 0;
