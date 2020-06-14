@@ -1,6 +1,7 @@
 #pragma once
 
 #include <MFCUtil/ComboBoxWithHistory.h>
+#include <MFCUtil/DialogWithDynamicLayout.h>
 #include "ExpressionTreeCtrl.h"
 
 class ExprData {
@@ -11,12 +12,13 @@ public:
   ExpressionImage      m_image;
 };
 
-class CTestTreesEqualDlg : public CDialog {
+class CTestTreesEqualDlg : public CDialogWithDynamicLayout {
 private:
   HACCEL                  m_accelTabel;
-  SimpleLayoutManager     m_layoutManager;
   ExprData                m_edata[2];
   int                     m_contextWinIndex, m_focusCtrlId;
+  CString                 m_expr1;
+  CString                 m_expr2;
 
   inline PixRectDevice &getDevice() const {
     return theApp.m_device;
@@ -32,28 +34,26 @@ private:
 public:
   CTestTreesEqualDlg(CWnd *pParent = NULL);
 
-    enum { IDD = IDD_TREESEQUAL_DIALOG };
-    CString m_expr1;
-    CString m_expr2;
+  enum { IDD = IDD_TREESEQUAL_DIALOG };
 
-    virtual BOOL PreTranslateMessage(MSG *pMsg);
-    virtual void DoDataExchange(CDataExchange *pDX);
-    afx_msg void OnPaint();
-    afx_msg void OnSize(UINT nType, int cx, int cy);
-    afx_msg void OnContextMenu(CWnd *pWnd, CPoint point);
-    afx_msg void OnTestTreesEqual();
-    afx_msg void OnTestTreesEqualMinus();
-    virtual BOOL OnInitDialog();
-    afx_msg void OnButtonCompile();
-    afx_msg void OnEditFindMatchingParentesis();
-    afx_msg void OnButtonConvert();
-    afx_msg void OnContextMenuShowTree();
-    afx_msg void OnGotoExpr1();
-    afx_msg void OnGotoExpr2();
-    afx_msg void OnSetFocusEditExpr1();
-    afx_msg void OnKillFocusEditExpr1();
-    afx_msg void OnSetFocusEditExpr2();
-    afx_msg void OnKillFocusEditExpr2();
-    DECLARE_MESSAGE_MAP()
+  virtual BOOL OnInitDialog();
+  virtual BOOL PreTranslateMessage(MSG *pMsg);
+  virtual void DoDataExchange(CDataExchange *pDX);
+  virtual void OnCancel();
+  virtual void OnOK();
+  afx_msg void OnPaint();
+  afx_msg void OnContextMenu(CWnd *pWnd, CPoint point);
+  afx_msg void OnTestTreesEqual();
+  afx_msg void OnTestTreesEqualMinus();
+  afx_msg void OnButtonCompile();
+  afx_msg void OnBnClickedClose();
+  afx_msg void OnEditFindMatchingParentesis();
+  afx_msg void OnButtonConvert();
+  afx_msg void OnContextMenuShowTree();
+  afx_msg void OnSetFocusEditExpr1();
+  afx_msg void OnKillFocusEditExpr1();
+  afx_msg void OnSetFocusEditExpr2();
+  afx_msg void OnKillFocusEditExpr2();
+  DECLARE_MESSAGE_MAP()
+  afx_msg void OnClose();
 };
-

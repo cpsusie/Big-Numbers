@@ -8,7 +8,6 @@
 #include <Math/Expression/ParserTree.h>
 #include <Math/Expression/ExpressionNode.h>
 #include <Math/Expression/Expression.h>
-#include <MFCUtil/LayoutManager.h>
 #include <MFCUtil/ExpressionGraphics.h>
 
 using namespace Expr;

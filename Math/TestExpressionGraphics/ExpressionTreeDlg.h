@@ -1,15 +1,15 @@
 #pragma once
 
 #include <PropertyContainer.h>
+#include <MFCUtil/DialogWithDynamicLayout.h>
 #include "ExpressionTreeCtrl.h"
 
 typedef enum {
   TREE_SELECTEDNODE            // const ExpressionNode *
 } ExpressionTreeDlgProperties;
 
-class CExpressionTreeDlg : public CDialog, public PropertyContainer {
+class CExpressionTreeDlg : public CDialogWithDynamicLayout, public PropertyContainer {
 private:
-  SimpleLayoutManager   m_layoutManager;
   const Expression     &m_expr;
   const ExpressionNode *m_node;
   ExpressionNode       *m_selectedNode;
@@ -32,7 +32,6 @@ public:
     virtual void DoDataExchange(CDataExchange *pDX);
     afx_msg void OnClose();
     virtual BOOL OnInitDialog();
-    afx_msg void OnSize(UINT nType, int cx, int cy);
     afx_msg void OnContextMenu(CWnd *pWnd, CPoint point);
     afx_msg void OnClearBreakPoint();
     afx_msg void OnSetBreakPoint();
@@ -40,4 +39,3 @@ public:
     afx_msg void OnBnClickedCheckExtendedInfo();
     DECLARE_MESSAGE_MAP()
 };
-

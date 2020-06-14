@@ -33,7 +33,7 @@ protected:
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CTestExpressionGraphicsDlg::CTestExpressionGraphicsDlg(CWnd *pParent /*=NULL*/) : CDialog(CTestExpressionGraphicsDlg::IDD, pParent), m_numberFormat(0) {
+CTestExpressionGraphicsDlg::CTestExpressionGraphicsDlg(CWnd *pParent /*=NULL*/) : CDialogWithDynamicLayout(IDD, pParent), m_numberFormat(0) {
   m_exprText         = EMPTYSTRING;
   m_x                = 0.0;
   m_hIcon            = theApp.LoadIcon(IDR_MAINFRAME);
@@ -62,7 +62,6 @@ BEGIN_MESSAGE_MAP(CTestExpressionGraphicsDlg, CDialog)
   ON_WM_QUERYDRAGICON()
   ON_WM_PAINT()
   ON_WM_CLOSE()
-  ON_WM_SIZE()
   ON_WM_LBUTTONDOWN()
   ON_WM_CONTEXTMENU()
   ON_COMMAND(       ID_CONTEXTMENU_SHOWEXPRTREE   , OnContextMenuShowExprTree      )
@@ -131,35 +130,12 @@ BOOL CTestExpressionGraphicsDlg::OnInitDialog() {
 
   m_reductionStackWindow.substituteControl(this, IDC_STATICREDUCTIONSTACK);
   m_exprCombo.substituteControl(           this, IDC_COMBOEXPR, _T("ExprHistory"));
-  m_layoutManager.OnInitDialog(this);
-
-  m_layoutManager.addControl(IDC_COMBOEXPR            , RELATIVE_WIDTH);
-  m_layoutManager.addControl(IDC_STATICXLABEL         , RELATIVE_X_POS);
-  m_layoutManager.addControl(IDC_EDITX                , RELATIVE_X_POS);
-  m_layoutManager.addControl(IDC_STATICRESULTLABEL    , RELATIVE_X_POS);
-  m_layoutManager.addControl(IDC_EDITRESULTVALUE      , RELATIVE_X_POS);
-  m_layoutManager.addControl(IDC_STATICFORMATLABEL    , RELATIVE_X_POS);
-  m_layoutManager.addControl(IDC_COMBONUMBERFORMAT    , RELATIVE_X_POS);
-  m_layoutManager.addControl(IDC_STATICDERIVEDLABEL1  , RELATIVE_X_POS);
-  m_layoutManager.addControl(IDC_EDITDERIVEDVALUE1    , RELATIVE_X_POS);
-  m_layoutManager.addControl(IDC_STATICDERIVEDLABEL2  , RELATIVE_X_POS);
-  m_layoutManager.addControl(IDC_EDITDERIVEDVALUE2    , RELATIVE_X_POS);
-  m_layoutManager.addControl(IDC_STATICDEBUGINFO      , PCT_RELATIVE_RIGHT);
-  m_layoutManager.addControl(IDC_STATICCONTEXT        , PCT_RELATIVE_LEFT   | RELATIVE_RIGHT);
-  m_layoutManager.addControl(IDC_STATICFONTSIZE       , RELATIVE_X_POS);
-  m_layoutManager.addControl(IDC_COMBOFONTSIZE        , RELATIVE_X_POS);
-  m_layoutManager.addControl(IDC_STATICEXPRIMAGE      , PCT_RELATIVE_RIGHT  | PCT_RELATIVE_BOTTOM);
-  m_layoutManager.addControl(IDC_STATICDERIVEDLABEL   , PCT_RELATIVE_Y_POS);
-  m_layoutManager.addControl(IDC_EDITDERIVED          , PCT_RELATIVE_RIGHT  | PCT_RELATIVE_Y_POS );
-  m_layoutManager.addControl(IDC_STATICDERIVEDIMAGE   , PCT_RELATIVE_RIGHT  | PCT_RELATIVE_TOP | RELATIVE_BOTTOM );
-  m_layoutManager.addControl(IDC_STATICREDUCTIONSTACK , PCT_RELATIVE_LEFT   | RELATIVE_RIGHT | RELATIVE_HEIGHT);
-
   theApp.m_device.attach(*this);
 
 #if !defined(TRACE_REDUCTION_CALLSTACK)
   enableMenuItem(this, ID_VIEW_SHOWREDUCTIONSTACK , false);
 #endif
-
+  reloadDynamicLayoutResource();
   loadOptions();
   OnEditGotoComboFx();
 
@@ -266,27 +242,34 @@ void CTestExpressionGraphicsDlg::OnViewShowReductionStack() {
 #if defined(TRACE_REDUCTION_CALLSTACK)
   const bool showStack = toggleMenuItem(this, ID_VIEW_SHOWREDUCTIONSTACK);
 
-  CWnd *stackWindow       = GetDlgItem(IDC_STATICREDUCTIONSTACK);
-  CWnd *exprImage         = GetDlgItem(IDC_STATICEXPRIMAGE);
-  CWnd *derivedImage      = GetDlgItem(IDC_STATICDERIVEDIMAGE);
-  CWnd *derivedTextWindow = GetDlgItem(IDC_EDITDERIVED);
-  CRect stackRect         = getWindowRect(stackWindow);
-  CRect r1                = getWindowRect(exprImage);
-  CRect r2                = getWindowRect(derivedImage);
-  CRect r3                = getWindowRect(derivedTextWindow);
-  const CRect cl          = getClientRect(this);
+  CRect stackRect         = getWindowRect(this, IDC_STATICREDUCTIONSTACK);
+  CRect r1                = getWindowRect(this, IDC_STATICEXPRIMAGE     );
+  CRect r2                = getWindowRect(this, IDC_EDITDERIVED         );
+  CRect r3                = getWindowRect(this, IDC_STATICDERIVEDIMAGE  );
+  CMFCDynamicLayout::MoveSettings mvStack, mvText;
+  CMFCDynamicLayout::SizeSettings szStack, szImage, szText;
   if(showStack) {
     stackRect.top = r1.top;
-    setWindowRect(stackWindow, stackRect);
-    stackWindow->ShowWindow(SW_SHOW);
-    r1.right = r2.right = r3.right = stackRect.left;
+    GetDlgItem(IDC_STATICREDUCTIONSTACK)->ShowWindow(SW_SHOW);
+    r1.right = r2.right = r3.right = stackRect.left - 1;
+//  mvStack.m_nXRatio =  60;
+    szStack.m_nXRatio =  40; szStack.m_nYRatio = 100;
+//  mvText.m_nYRatio  =  50;
+    szText.m_nXRatio  =  60; szImage.m_nYRatio =   0;
+    szImage.m_nXRatio =  60; szImage.m_nYRatio =  50;
   } else {
-    stackWindow->ShowWindow(SW_HIDE);
-    r1.right = r2.right = r3.right = cl.Size().cx;
+    GetDlgItem(IDC_STATICREDUCTIONSTACK)->ShowWindow(SW_HIDE);
+    r1.right = r2.right = r3.right = stackRect.right;
+//  mvStack.m_nXRatio =  60;
+    szStack.m_nXRatio =  40; szStack.m_nYRatio = 100;
+//  mvText.m_nYRatio  =  50;
+    szText.m_nXRatio  = 100; szImage.m_nYRatio =   0;
+    szImage.m_nXRatio = 100; szImage.m_nYRatio =  50;
   }
-  setWindowRect(exprImage        ,r1);
-  setWindowRect(derivedImage     ,r2);
-  setWindowRect(derivedTextWindow,r3);
+  setCtrlRect(IDC_STATICREDUCTIONSTACK,stackRect, NULL, &szStack);
+  setCtrlRect(IDC_STATICEXPRIMAGE     ,r1       , NULL, &szImage);
+  setCtrlRect(IDC_EDITDERIVED         ,r2       , NULL, &szText );
+  setCtrlRect(IDC_STATICDERIVEDIMAGE  ,r3       , NULL, &szImage);
 #endif
 }
 
@@ -355,11 +338,6 @@ void CTestExpressionGraphicsDlg::OnCancel() {
 
 void CTestExpressionGraphicsDlg::OnClose() {
   OnFileExit();
-}
-
-void CTestExpressionGraphicsDlg::OnSize(UINT nType, int cx, int cy) {
-  __super::OnSize(nType, cx, cy);
-  m_layoutManager.OnSize(nType, cx, cy);
 }
 
 void CTestExpressionGraphicsDlg::OnSamplesSampleId(UINT cmd) {

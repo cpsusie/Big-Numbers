@@ -6,7 +6,7 @@
 #define new DEBUG_NEW
 #endif
 
-CTestTreesEqualDlg::CTestTreesEqualDlg(CWnd *pParent /*=NULL*/) : CDialog(CTestTreesEqualDlg::IDD, pParent) {
+CTestTreesEqualDlg::CTestTreesEqualDlg(CWnd *pParent /*=NULL*/) : CDialogWithDynamicLayout(IDD, pParent) {
 	m_expr1 = EMPTYSTRING;
 	m_expr2 = EMPTYSTRING;
 
@@ -19,23 +19,22 @@ void CTestTreesEqualDlg::DoDataExchange(CDataExchange *pDX) {
 	DDX_CBString(pDX, IDC_EDITEXPR2, m_expr2);
 }
 
-BEGIN_MESSAGE_MAP(CTestTreesEqualDlg, CDialog)
+BEGIN_MESSAGE_MAP(CTestTreesEqualDlg, CDialogWithDynamicLayout)
 	ON_WM_PAINT()
-	ON_WM_SIZE()
 	ON_WM_CONTEXTMENU()
   ON_BN_CLICKED(    IDC_TESTTREESEQUAL            , OnTestTreesEqual            )
 	ON_BN_CLICKED(    IDC_TESTTREESEQUALMINUS       , OnTestTreesEqualMinus       )
 	ON_BN_CLICKED(    IDC_BUTTONCOMPILE             , OnButtonCompile             )
 	ON_BN_CLICKED(    IDC_BUTTONCONVERT             , OnButtonConvert             )
+  ON_BN_CLICKED(    IDC_BUTTONCLOSE               , OnBnClickedClose            )
 	ON_COMMAND(       ID_CONTEXTMENU_SHOWNODETREE   , OnContextMenuShowTree       )
 	ON_COMMAND(       ID_EDIT_FINDMATCHINGPARENTESIS, OnEditFindMatchingParentesis)
-  ON_COMMAND(       ID_GOTOEXPR1                  , OnGotoExpr1                 )
-  ON_COMMAND(       ID_GOTOEXPR2                  , OnGotoExpr2                 )
 	ON_COMMAND(       ID_COMPILE                    , OnButtonCompile             )
 	ON_CBN_SETFOCUS(  IDC_EDITEXPR1                 , OnSetFocusEditExpr1         )
 	ON_CBN_KILLFOCUS( IDC_EDITEXPR1                 , OnKillFocusEditExpr1        )
 	ON_CBN_SETFOCUS(  IDC_EDITEXPR2                 , OnSetFocusEditExpr2         )
 	ON_CBN_KILLFOCUS( IDC_EDITEXPR2                 , OnKillFocusEditExpr2        )
+  ON_WM_CLOSE()
 END_MESSAGE_MAP()
 
 static const int s_comboID[] = {
@@ -63,22 +62,7 @@ BOOL CTestTreesEqualDlg::OnInitDialog() {
     m_edata[i].m_tree.substituteControl(this, s_treeID[i]);
   }
 
-  m_layoutManager.OnInitDialog(this);
-
-  m_layoutManager.addControl(IDC_BUTTONCOMPILE        , RELATIVE_X_POS);
-  m_layoutManager.addControl(IDC_BUTTONCONVERT        , RELATIVE_X_POS);
-  m_layoutManager.addControl(IDC_TESTTREESEQUAL       , RELATIVE_X_POS);
-  m_layoutManager.addControl(IDC_TESTTREESEQUALMINUS  , RELATIVE_X_POS);
-
-  m_layoutManager.addControl(IDC_EDITEXPR1            , RELATIVE_WIDTH);
-  m_layoutManager.addControl(IDC_STATICIMAGE1         , PCT_RELATIVE_RIGHT | PCT_RELATIVE_BOTTOM);
-  m_layoutManager.addControl(IDC_TREE1                , PCT_RELATIVE_LEFT  | RELATIVE_RIGHT     | PCT_RELATIVE_BOTTOM);
-
-  m_layoutManager.addControl(IDC_STATICLABEL2         ,                      PCT_RELATIVE_Y_POS );
-  m_layoutManager.addControl(IDC_EDITEXPR2            , RELATIVE_WIDTH     | PCT_RELATIVE_Y_POS );
-  m_layoutManager.addControl(IDC_STATICIMAGE2         , PCT_RELATIVE_RIGHT | PCT_RELATIVE_TOP   | RELATIVE_BOTTOM);
-  m_layoutManager.addControl(IDC_TREE2                , PCT_RELATIVE_LEFT  | RELATIVE_RIGHT     | PCT_RELATIVE_TOP | RELATIVE_BOTTOM);
-
+  reloadDynamicLayoutResource();
   theApp.m_device.attach(*this);
 
   return false;
@@ -104,11 +88,6 @@ void CTestTreesEqualDlg::ajourButtons() {
   }
 }
 
-void CTestTreesEqualDlg::OnSize(UINT nType, int cx, int cy) {
-  __super::OnSize(nType, cx, cy);
-  m_layoutManager.OnSize(nType, cx, cy);	
-}
-
 BOOL CTestTreesEqualDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd, m_accelTabel, pMsg)) {
     return true;
@@ -132,14 +111,6 @@ void CTestTreesEqualDlg::OnTestTreesEqualMinus() {
   } catch(Exception e) {
     showException(e);
   }
-}
-
-void CTestTreesEqualDlg::OnGotoExpr1() {
-  m_edata[0].m_cb.SetFocus();
-}
-
-void CTestTreesEqualDlg::OnGotoExpr2() {
-  m_edata[1].m_cb.SetFocus();
 }
 
 void CTestTreesEqualDlg::OnButtonCompile() {
@@ -178,6 +149,19 @@ void CTestTreesEqualDlg::OnButtonConvert() {
     makeImage(1);
     Invalidate();
   }
+}
+
+void CTestTreesEqualDlg::OnOK() {
+}
+void CTestTreesEqualDlg::OnCancel() {
+}
+
+void CTestTreesEqualDlg::OnBnClickedClose() {
+  EndDialog(IDOK);
+}
+
+void CTestTreesEqualDlg::OnClose() {
+  OnBnClickedClose();
 }
 
 bool CTestTreesEqualDlg::compile(int index) {

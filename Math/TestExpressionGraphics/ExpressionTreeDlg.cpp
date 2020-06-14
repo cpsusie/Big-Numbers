@@ -7,7 +7,7 @@
 #endif
 
 CExpressionTreeDlg::CExpressionTreeDlg(const Expression &expr, CWnd *pParent)
-: CDialog(IDD, pParent)
+: CDialogWithDynamicLayout(IDD, pParent)
 , m_expr(expr)
 , m_node(expr.getRoot())
 , m_extendedInfo(FALSE)
@@ -16,8 +16,8 @@ CExpressionTreeDlg::CExpressionTreeDlg(const Expression &expr, CWnd *pParent)
 }
 
 CExpressionTreeDlg::CExpressionTreeDlg(const ExpressionNode *n, CWnd *pParent)
-: CDialog(IDD, pParent)
-, m_expr(*(Expression*)&n->getTree())
+: CDialogWithDynamicLayout(IDD, pParent)
+, m_expr(n->getExpression())
 , m_node(n)
 , m_extendedInfo(FALSE)
 , m_selectedNode(NULL)
@@ -31,7 +31,6 @@ void CExpressionTreeDlg::DoDataExchange(CDataExchange *pDX) {
 
 BEGIN_MESSAGE_MAP(CExpressionTreeDlg, CDialog)
     ON_BN_CLICKED(IDCLOSE, OnClose)
-    ON_WM_SIZE()
     ON_WM_CONTEXTMENU()
     ON_COMMAND(ID_CLEARBREAKPOINT                , OnClearBreakPoint           )
     ON_COMMAND(ID_SETBREAKPOINT                  , OnSetBreakPoint             )
@@ -39,23 +38,17 @@ BEGIN_MESSAGE_MAP(CExpressionTreeDlg, CDialog)
     ON_BN_CLICKED(IDC_CHECKEXTENDEDINFO          , OnBnClickedCheckExtendedInfo)
 END_MESSAGE_MAP()
 
-
 BOOL CExpressionTreeDlg::OnInitDialog() {
   __super::OnInitDialog();
 
   m_treeCtrl.substituteControl(this, IDC_TREE_EXPRESSION);
-
-  m_layoutManager.OnInitDialog(this);
-  m_layoutManager.addControl(IDC_TREE_EXPRESSION  , RELATIVE_SIZE );
-  m_layoutManager.addControl(IDCLOSE              , RELATIVE_X_POS);
-  m_layoutManager.addControl(IDC_CHECKEXTENDEDINFO, RELATIVE_X_POS);
-  m_layoutManager.addControl(IDC_LIST_SYMBOLTABLE , RELATIVE_Y_POS | RELATIVE_WIDTH);
-
   m_treeCtrl.showTree(m_node, m_extendedInfo);
   ParserTree *tree = m_expr.getTree();
   const String treeFormName = tree->getTreeFormName();
   const String stateName    = tree->getStateName();
   const UINT   nodeCount    = tree->getNodeCount();
+
+  reloadDynamicLayoutResource();
 
   String title = getWindowText(this);
   title += format(_T(" - %s form - state %s. %u nodes")
@@ -91,11 +84,6 @@ void CExpressionTreeDlg::updateNodeText(const ExpressionNode *n) {
   if(item) {
     m_treeCtrl.updateItemText(item);
   }
-}
-
-void CExpressionTreeDlg::OnSize(UINT nType, int cx, int cy) {
-  __super::OnSize(nType, cx, cy);
-  m_layoutManager.OnSize(nType, cx, cy);
 }
 
 void CExpressionTreeDlg::OnContextMenu(CWnd *pWnd, CPoint point) {

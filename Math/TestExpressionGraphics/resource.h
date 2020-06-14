@@ -44,12 +44,13 @@
 #define IDC_BUTTONCONVERT               1034
 #define IDC_TESTTREESEQUAL              1035
 #define IDC_BUTTONCOMPILE               1036
-#define IDC_TESTTREESEQUALMINUS         1037
-#define IDC_COMBONUMBERFORMAT           1038
-#define IDC_STATICFORMATLABEL           1039
-#define IDC_CHECKEXTENDEDINFO           1040
-#define IDC_TREE1                       1041
-#define IDC_TREE2                       1042
+#define IDC_BUTTONCLOSE                 1037
+#define IDC_TESTTREESEQUALMINUS         1038
+#define IDC_COMBONUMBERFORMAT           1039
+#define IDC_STATICFORMATLABEL           1040
+#define IDC_CHECKEXTENDEDINFO           1041
+#define IDC_TREE1                       1042
+#define IDC_TREE2                       1043
 #define ID_FILE_EXIT                    32771
 #define ID_EDIT_FINDMATCHINGPARENTESIS  32780
 #define ID_EDIT_GOTOCOMBOFX             32781
@@ -91,11 +92,11 @@
 
 // Next default values for new objects
 // 
-#if defined(APSTUDIO_INVOKED)
-#if !defined(APSTUDIO_READONLY_SYMBOLS)
+#ifdef APSTUDIO_INVOKED
+#ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        136
 #define _APS_NEXT_COMMAND_VALUE         32940
-#define _APS_NEXT_CONTROL_VALUE         1042
+#define _APS_NEXT_CONTROL_VALUE         1044
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

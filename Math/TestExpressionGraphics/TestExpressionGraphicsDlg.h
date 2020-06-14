@@ -2,6 +2,7 @@
 
 #include <TinyBitSet.h>
 #include <MFCUtil/PixRectDevice.h>
+#include <MFCUtil/DialogWithDynamicLayout.h>
 #include <MFCUtil/StaticBottomAligned.h>
 #include <MFCUtil/ComboBoxWithHistory.h>
 #include "Debugger.h"
@@ -18,11 +19,10 @@ typedef enum {
  ,HASDERIVEDVALUE2
 } StatusFlags;
 
-class CTestExpressionGraphicsDlg : public CDialog, public PropertyChangeListener {
+class CTestExpressionGraphicsDlg : public CDialogWithDynamicLayout, public PropertyChangeListener {
 private:
   HICON                        m_hIcon;
   HACCEL                       m_accelTabel;
-  SimpleLayoutManager          m_layoutManager;
   CStaticBottomAligned         m_reductionStackWindow;
   CComboBoxWithHistory         m_exprCombo;
   BitSet16                     m_flags;
@@ -36,7 +36,7 @@ private:
   const ExpressionRectangle   *m_contextRect, *m_leastContextRect;
   int                          m_debugWinId;
   Expression                  *m_debugExpr;
-  double	                   m_x;
+  double	                     m_x;
   CString                      m_exprText;
 
 #if defined(TRACE_REDUCTION_CALLSTACK)
@@ -146,7 +146,6 @@ public:
   virtual void OnOK();
   virtual void OnCancel();
   afx_msg void OnClose();
-  afx_msg void OnSize(UINT nType, int cx, int cy);
   afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
   afx_msg void OnContextMenu(CWnd *pWnd, CPoint point);
   afx_msg void OnContextMenuShowExprTree();
