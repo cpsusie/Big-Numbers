@@ -18,6 +18,7 @@ private:
   int                  m_currentControl;
   TextContainer       *m_textContainer;
   void                 addRegexSymbol(const TCHAR *s, int cursorpos);
+  void                 gotoFindWhat();
 public:
   CFindDlg(FindParameters &param, TextContainer *tc, CWnd *pParent = NULL);
   FindParameters &m_param;
@@ -31,11 +32,10 @@ public:
   BOOL    m_nonDiffOnly;
 
 public:
+  virtual BOOL OnInitDialog();
   virtual BOOL PreTranslateMessage(MSG *pMsg);
   virtual void DoDataExchange(CDataExchange *pDX);
   afx_msg void OnFindNext();
-  virtual void OnCancel();
-  virtual BOOL OnInitDialog();
   afx_msg void OnButtonRegSymbolsMenu();
   afx_msg void OnRegSymbolsAnyChar();
   afx_msg void OnRegSymbolsCharInRange();
@@ -49,12 +49,8 @@ public:
   afx_msg void OnRegSymbolsGroup();
   afx_msg void OnSetFocusComboFindWhat();
   afx_msg void OnKillFocusComboFindWhat();
-  afx_msg void OnGotoFindWhat();
-  afx_msg void OnSelEndOkComboFindWhat();
-  afx_msg void OnSelChangeComboFindWhat();
   afx_msg void OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct);
   afx_msg void OnCheckLimitDiff();
   afx_msg void OnCheckLimitNonDiff();
   DECLARE_MESSAGE_MAP()
 };
-

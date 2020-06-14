@@ -46,8 +46,6 @@ BEGIN_MESSAGE_MAP(CFindDlg, CDialog)
   ON_COMMAND(ID_REGSYMBOLS_GROUP           , OnRegSymbolsGroup              )
   ON_CBN_SETFOCUS(IDC_COMBOFINDWHAT        , OnSetFocusComboFindWhat        )
   ON_CBN_KILLFOCUS(IDC_COMBOFINDWHAT       , OnKillFocusComboFindWhat       )
-  ON_CBN_SELENDOK(IDC_COMBOFINDWHAT        , OnSelEndOkComboFindWhat        )
-  ON_CBN_SELCHANGE(IDC_COMBOFINDWHAT       , OnSelChangeComboFindWhat       )
 END_MESSAGE_MAP()
 
 BOOL CFindDlg::OnInitDialog() {
@@ -69,6 +67,7 @@ BOOL CFindDlg::OnInitDialog() {
     ((CButton*)GetDlgItem(IDC_RADIODOWN))->SetCheck(1);
   }
   UpdateData(false);
+  gotoFindWhat();
   return false;
 }
 
@@ -94,15 +93,11 @@ void CFindDlg::OnFindNext() {
       return;
     }
   } catch(Exception e) {
-    GetDlgItem(IDC_COMBOFINDWHAT)->SetFocus();
+    gotoFindWhat();
     showException(e);
     return;
   }
   __super::OnOK();
-}
-
-void CFindDlg::OnCancel() {
-  __super::OnCancel();
 }
 
 void CFindDlg::OnButtonRegSymbolsMenu() {
@@ -118,20 +113,14 @@ void CFindDlg::OnButtonRegSymbolsMenu() {
 }
 
 void CFindDlg::addRegexSymbol(const TCHAR *s, int cursorpos) {
-  CComboBox *b = (CComboBox*)GetDlgItem(IDC_COMBOFINDWHAT);
-
   UpdateData();
-
   String reg = m_findWhat.GetBuffer(m_findWhat.GetLength());
-
   reg = substr(reg,0,m_selStart) + s + substr(reg,m_selEnd,reg.length());
-
   m_findWhat  = reg.cstr();
   m_useRegex  = true;
   m_selStart  = m_selEnd = m_selStart + cursorpos;
   UpdateData(false);
-
-  b->SetFocus();
+  gotoFindWhat();
 }
 
 void CFindDlg::OnRegSymbolsAnyChar() {
@@ -174,9 +163,12 @@ void CFindDlg::OnRegSymbolsGroup() {
   addRegexSymbol(_T("\\(\\)"),2);
 }
 
+void CFindDlg::gotoFindWhat() {
+  m_findWhatCombo.SetFocus();
+}
+
 void CFindDlg::OnSetFocusComboFindWhat() {
-  CComboBox *b = (CComboBox*)GetDlgItem(IDC_COMBOFINDWHAT);
-  b->SetEditSel(m_selStart,m_selEnd);
+  m_findWhatCombo.SetEditSel(m_selStart,m_selEnd);
   m_currentControl = IDC_COMBOFINDWHAT;
 }
 
@@ -186,29 +178,12 @@ void CFindDlg::OnKillFocusComboFindWhat() {
 
 BOOL CFindDlg::PreTranslateMessage(MSG *pMsg) {
   BOOL ret = __super::PreTranslateMessage(pMsg);
-
   if(m_currentControl == IDC_COMBOFINDWHAT) {
-    CComboBox *b = (CComboBox*)GetDlgItem(IDC_COMBOFINDWHAT);
-    DWORD w = b->GetEditSel();
+    DWORD w = m_findWhatCombo.GetEditSel();
     m_selStart = w & 0xff;
     m_selEnd   = w >> 16;
   }
-
   return ret;
-}
-
-void CFindDlg::OnGotoFindWhat() {
-  GetDlgItem(IDC_COMBOFINDWHAT)->SetFocus();
-}
-
-void CFindDlg::OnSelEndOkComboFindWhat() {
-  CComboBox *b = (CComboBox*)GetDlgItem(IDC_COMBOFINDWHAT);
-  int f = b->GetCurSel();
-}
-
-void CFindDlg::OnSelChangeComboFindWhat() {
-  CComboBox *b = (CComboBox*)GetDlgItem(IDC_COMBOFINDWHAT);
-  int f = b->GetCurSel();
 }
 
 void drawTriangle(CWnd *wnd) {
@@ -226,7 +201,6 @@ void CFindDlg::OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct) {
   if(nIDCtl == IDC_BUTTONREGSYMBOLSMENU) {
     drawTriangle(GetDlgItem(IDC_BUTTONREGSYMBOLSMENU));
   }
-
   __super::OnDrawItem(nIDCtl, lpDrawItemStruct);
 }
 
