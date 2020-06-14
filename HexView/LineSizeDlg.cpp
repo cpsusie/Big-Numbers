@@ -8,7 +8,7 @@
 CLineSizeDlg::CLineSizeDlg(CWnd *pParent) : CDialog(IDD, pParent) {
   const Settings &settings = getSettings();
   m_lineSize = settings.getLineSize();
-    m_fitLines = settings.getFitLinesToWindow() ? TRUE : FALSE;
+  m_fitLines = settings.getFitLinesToWindow() ? TRUE : FALSE;
 }
 
 void CLineSizeDlg::DoDataExchange(CDataExchange *pDX) {
@@ -19,18 +19,14 @@ void CLineSizeDlg::DoDataExchange(CDataExchange *pDX) {
 }
 
 BEGIN_MESSAGE_MAP(CLineSizeDlg, CDialog)
-  ON_COMMAND(ID_GOTO_LINESIZE, OnGotoLineSize)
   ON_BN_CLICKED(IDC_CHECKFITLINES, OnCheckFitLines)
 END_MESSAGE_MAP()
 
 BOOL CLineSizeDlg::OnInitDialog() {
   __super::OnInitDialog();
-
-  m_accelTable = LoadAccelerators(theApp.m_hInstance, MAKEINTRESOURCE(IDR_ACCELERATORLINESIZE));
-
   UpdateData(FALSE);
   enableLineSize();
-  OnGotoLineSize();
+  gotoLineSize();
   return FALSE;
 }
 
@@ -43,7 +39,7 @@ void CLineSizeDlg::OnOK() {
   }
 }
 
-void CLineSizeDlg::OnGotoLineSize() {
+void CLineSizeDlg::gotoLineSize() {
   gotoEditBox(this,IDC_EDITLINESIZE);
 }
 
@@ -52,17 +48,10 @@ void CLineSizeDlg::enableLineSize() {
   GetDlgItem(IDC_STATICLINESIZE)->EnableWindow(enable);
   GetDlgItem(IDC_EDITLINESIZE  )->EnableWindow(enable);
   if(enable) {
-    OnGotoLineSize();
+    gotoLineSize();
   }
 }
 
 void CLineSizeDlg::OnCheckFitLines() {
   enableLineSize();
-}
-
-BOOL CLineSizeDlg::PreTranslateMessage(MSG *pMsg) {
-  if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
-    return TRUE;
-  }
-  return __super::PreTranslateMessage(pMsg);
 }

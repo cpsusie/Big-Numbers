@@ -1,23 +1,22 @@
 #pragma once
 
+#include "resource.h"
+
 class CLineSizeDlg : public CDialog, SettingsAccessor {
 private:
-  HACCEL     m_accelTable;
-
   void enableLineSize();
+  void gotoLineSize();
 public:
   CLineSizeDlg(CWnd *pParent = NULL);
+
+  enum { IDD = IDD_DIALOGLINESIZE };
+  UINT  m_lineSize;
+  BOOL  m_fitLines;
+
+  virtual void DoDataExchange(CDataExchange *pDX);
+  virtual void OnOK();
   BOOL OnInitDialog();
-
-    enum { IDD = IDD_DIALOGLINESIZE };
-    UINT  m_lineSize;
-    BOOL  m_fitLines;
-
-    virtual BOOL PreTranslateMessage(MSG *pMsg);
-    virtual void DoDataExchange(CDataExchange *pDX);
-    afx_msg void OnGotoLineSize();
-    afx_msg void OnCheckFitLines();
-    virtual void OnOK();
-    DECLARE_MESSAGE_MAP()
+  afx_msg void OnCheckFitLines();
+  DECLARE_MESSAGE_MAP()
 };
 

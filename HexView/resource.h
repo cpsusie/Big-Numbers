@@ -5,16 +5,12 @@
 #define IDD_ABOUTBOX                    100
 #define IDP_OLE_INIT_FAILED             100
 #define IDR_MAINFRAME                   128
-#define IDR_HEXVIETYPE                  129
+#define IDR_HEXVIEWTYPE                 129
 #define IDD_DIALOGFIND                  130
-#define IDD_DIALOGFINDNEXTPREV          131
-#define IDD_DIALOGLINESIZE              132
-#define IDD_DIALOGENTERADDR             133
-#define IDR_ACCELERATORFIND             134
-#define IDR_ACCELERATORNEXTPREV         135
-#define IDR_ACCELERATORLINESIZE         136
-#define IDR_ACCELERATORENTERADDR        137
-#define IDR_MENUSPECIALCHAR             138
+#define IDD_DIALOGLINESIZE              131
+#define IDD_DIALOGENTERADDR             132
+#define IDR_ACCELERATORFIND             133
+#define IDR_MENUSPECIALCHAR             134
 #define IDC_EDITLINESIZE                1000
 #define IDC_EDITADDRESS                 1001
 #define IDC_COMBOFINDWHAT               1002
@@ -65,9 +61,6 @@
 #define ID_VIEW_COLORS_ADDRBACK         32828
 #define ID_VIEW_WRAPENDOFLINE           32829
 #define ID_ACTIVATE_SETTINGS            32840
-#define ID_GOTO_FINDWHAT                32841
-#define ID_GOTO_EDITADDRESS             32842
-#define ID_GOTO_LINESIZE                32843
 #define ID_SPECIALCHAR_BACKSPACE        32850
 #define ID_SPECIALCHAR_TAB              32851
 #define ID_SPECIALCHAR_NEWLINE          32852
@@ -109,12 +102,12 @@
 
 // Next default values for new objects
 // 
-#if defined(APSTUDIO_INVOKED)
-#if !defined(APSTUDIO_READONLY_SYMBOLS)
+#ifdef APSTUDIO_INVOKED
+#ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        139
-#define _APS_NEXT_COMMAND_VALUE         32908
-#define _APS_NEXT_CONTROL_VALUE         1019
+#define _APS_NEXT_RESOURCE_VALUE        140
+#define _APS_NEXT_COMMAND_VALUE         32910
+#define _APS_NEXT_CONTROL_VALUE         1020
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

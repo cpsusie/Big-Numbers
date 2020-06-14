@@ -288,7 +288,6 @@
     <ClCompile Include="EnterAddressDlg.cpp" />
     <ClCompile Include="Escape.cpp" />
     <ClCompile Include="FindDlg.cpp" />
-    <ClCompile Include="FindHistory.cpp" />
     <ClCompile Include="HexView.cpp" />
     <ClCompile Include="HexViewDoc.cpp" />
     <ClCompile Include="HexViewView.cpp" />
@@ -317,7 +316,6 @@
     <ClInclude Include="AddrRange.h" />
     <ClInclude Include="EnterAddressDlg.h" />
     <ClInclude Include="FindDlg.h" />
-    <ClInclude Include="FindHistory.h" />
     <ClInclude Include="HexView.h" />
     <ClInclude Include="HexViewDoc.h" />
     <ClInclude Include="HexViewView.h" />

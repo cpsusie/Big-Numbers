@@ -22,24 +22,25 @@ int SequentialByteContainer::fread(UINT count, BYTE *buffer) { // return number 
   return got;
 }
 
-void SequentialByteContainer::fseek(__int64 pos) {
-  if(pos < 0 || pos > m_size) {
+void SequentialByteContainer::fseek(INT64 pos) {
+  if((pos < 0) || (pos > m_size)) {
     throwInvalidArgumentException(__TFUNCTION__, _T("pos=%I64d. size=%I64d"), pos, m_size);
   }
   m_position = pos;
 }
 
 SearchMachine::SearchMachine() {
-  m_forwardSearch = true;
-  m_startPosition = 0;
   m_byteContainer = NULL;
-  m_finished      = true;
   m_size          = 0;
   m_fileIndex     = 0;
   m_maxProgress   = 10;
 }
 
-void SearchMachine::prepareSearch(bool forwardSearch, __int64 startPosition, const String &findWhat, ByteContainer *byteContainer) {
+void SearchMachine::prepareSearch(const SearchParameters &param, ByteContainer *byteContainer) {
+  prepareSearch(param.m_forwardSearch, param.m_startPosition, param.m_findWhat, byteContainer);
+}
+
+void SearchMachine::prepareSearch(bool forwardSearch, INT64 startPosition, const String &findWhat, ByteContainer *byteContainer) {
   clearAllFlags();
   if(byteContainer != NULL) {
     m_byteContainer = byteContainer;
@@ -48,67 +49,58 @@ void SearchMachine::prepareSearch(bool forwardSearch, __int64 startPosition, con
     throwException(_T("%s:ByteContainer not set"), __TFUNCTION__);
   }
   if(findWhat.length() > 0) {
-    m_findWhat = findWhat;
+    m_searchParam.m_findWhat = findWhat;
   }
-  m_forwardSearch = forwardSearch;
+  m_searchParam.m_forwardSearch = forwardSearch;
   if(startPosition >= 0) {
-    m_startPosition = startPosition;
+    m_searchParam.m_startPosition = startPosition;
   }
   m_size          = m_byteContainer->getSize();
-  m_finished      = false;
   m_result.clear();
-  m_resultMessage = EMPTYSTRING;
 
-  m_maxProgress = forwardSearch ? (m_size - m_startPosition) : m_startPosition;
+  m_maxProgress = forwardSearch ? (m_size - getStartPosition()) : getStartPosition();
 }
 
 UINT SearchMachine::safeRun() {
-  try {
-    if((m_result = doSearch()).isEmpty()) {
-      m_resultMessage = isInterrupted()
-                      ? _T("Interrupted by user")
-                      : format(_T("Bytesequence <%s> not found"),
-                                SearchPattern(m_findWhat).toString().cstr());
-    }
-  } catch(Exception e) {
-    m_resultMessage = e.what();
-  } catch(...) {
-    m_resultMessage = _T("Unknown Exception");
+  if((m_result = doSearch()).isEmpty()) {
+    const String msg = isInterrupted()
+                     ? _T("Interrupted by user")
+                     : format(_T("Bytesequence <%s> not found"), SearchPattern(getFindWhat()).toString().cstr());
+    die(msg.cstr());
   }
-  m_finished = true;
   return 0;
 }
 
 double SearchMachine::getProgress() const {
-  if(m_forwardSearch) {
-    return (double)(m_fileIndex - m_startPosition);
+  if(isForwardSearch()) {
+    return (double)(m_fileIndex - getStartPosition());
   } else {
-    return (double)(m_startPosition - m_fileIndex);
+    return (double)(getStartPosition() - m_fileIndex);
   }
 }
 
 AddrRange SearchMachine::doSearch() {
-  if(!isSet() || (m_startPosition < 0) || (m_startPosition >= m_size)) {
+  if(!isSet() || (getStartPosition() < 0) || (getStartPosition() >= m_size)) {
     return AddrRange();
   }
 
-  SearchPattern pattern(m_findWhat);
+  SearchPattern pattern(getFindWhat());
   SequentialByteContainer sbc(*m_byteContainer);
 
   const size_t patternLength = pattern.size();
-  BMAutomateBYTE bmSearch(pattern.getData(), patternLength, m_forwardSearch);
-  if(m_forwardSearch) {
-    sbc.fseek(m_startPosition);
+  BMAutomateBYTE bmSearch(pattern.getData(), patternLength, isForwardSearch());
+  if(isForwardSearch()) {
+    sbc.fseek(getStartPosition());
     size_t headSize = 0;
     BYTE   buffer[0x10000];
-    for(m_fileIndex = m_startPosition; !isInterrupted();) {
+    for(m_fileIndex = getStartPosition(); !isInterrupted();) {
       const int bytesRead = sbc.fread(sizeof(buffer) - (int)headSize, buffer + headSize);
       if(bytesRead == 0) {
         break;
       }
       const intptr_t bufferIndex = bmSearch.search(buffer, bytesRead + headSize);
       if(bufferIndex >= 0) {
-        const __int64 foundIndex = m_fileIndex + bufferIndex - headSize;
+        const INT64 foundIndex = m_fileIndex + bufferIndex - headSize;
         return AddrRange(foundIndex, foundIndex + patternLength - 1);
       }
       m_fileIndex += bytesRead;
@@ -121,7 +113,7 @@ AddrRange SearchMachine::doSearch() {
     intptr_t tailSize = 0;
     BYTE buffer[0x10000];
     bool BOF = false; // beginning_of_file
-    for(__int64 addr = m_startPosition + patternLength-1; addr >= (__int64)patternLength && !isInterrupted();) { // could be a match begining at m_startPosition-1
+    for(INT64 addr = getStartPosition() + patternLength-1; addr >= (INT64)patternLength && !isInterrupted();) { // could be a match begining at m_startPosition-1
       const intptr_t bufferCapacity = ARRAYSIZE(buffer) - tailSize;
                      m_fileIndex    = addr - bufferCapacity;
       intptr_t       bytesNeeded    = bufferCapacity;
@@ -142,7 +134,7 @@ AddrRange SearchMachine::doSearch() {
       }
       const intptr_t bufferIndex = bmSearch.search(buffer, bytesRead + tailSize);
       if(bufferIndex >= 0) {
-        const __int64 foundIndex = m_fileIndex + bufferIndex;
+        const INT64 foundIndex = m_fileIndex + bufferIndex;
         return AddrRange(foundIndex, foundIndex + patternLength - 1);
       }
       if(BOF) {
@@ -156,7 +148,7 @@ AddrRange SearchMachine::doSearch() {
 }
 
 int SearchMachine::getPatternLength() const {
-  return (int)SearchPattern(m_findWhat).size();
+  return (int)(SearchPattern(getFindWhat()).size());
 }
 
 SearchPattern::SearchPattern(const String &pattern) {
@@ -164,16 +156,16 @@ SearchPattern::SearchPattern(const String &pattern) {
 }
 
 SearchPattern &SearchPattern::operator=(const String &pattern) {
-  convert(pattern);
-  return *this;
+  return convert(pattern);
 }
 
-void SearchPattern::convert(const String &pattern) {
+SearchPattern &SearchPattern::convert(const String &pattern) {
   const TCHAR *cp = pattern.cstr();
   clear();
   while(*cp) {
     add(escape(cp));
   }
+  return *this;
 }
 
 String SearchPattern::toString() const {

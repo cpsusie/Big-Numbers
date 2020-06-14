@@ -118,9 +118,11 @@ static UINT indicators[] = {
 CMainFrame::CMainFrame() {
   m_settingsActivated  = false;
   m_statusPanesVisible = true;
+  m_searchMachine      = NULL;
 }
 
 CMainFrame::~CMainFrame() {
+  destroySearchMachine();
 }
 
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
@@ -415,6 +417,16 @@ void CMainFrame::OnEditCopy() {
   }
 }
 
+SearchMachine *CMainFrame::createSearchMachine() {
+  destroySearchMachine();
+  m_searchMachine = new SearchMachine(); TRACE_NEW(m_searchMachine);
+  m_searchMachine->prepareSearch(m_searchParam, getDoc());
+  return m_searchMachine;
+}
+void CMainFrame::destroySearchMachine() {
+  SAFEDELETE(m_searchMachine);
+}
+
 void CMainFrame::OnEditFind() {
   CHexViewDoc *doc = getDoc();
   if(doc->getSize() == 0) {
@@ -422,15 +434,14 @@ void CMainFrame::OnEditFind() {
   }
   CHexViewView *view = getView();
   const AddrRange selection = view->getSelection();
-  String findWhat;
   if(!selection.isEmpty()) {
     const int length = min((int)selection.getLength(), 10);
     ByteArray selectedBytes;
     doc->getBytes(selection.getFirst(), length, selectedBytes);
-    findWhat = getSettings().unEscape(selectedBytes);
+    m_searchParam.m_findWhat = getSettings().unEscape(selectedBytes);
   }
-  m_searchMachine.prepareSearch(m_searchMachine.isForwardSearch(), view->getCurrentAddr(),  findWhat, doc);
-  CFindDlg dlg(m_searchMachine);
+  m_searchParam.m_startPosition = view->getCurrentAddr();
+  CFindDlg dlg(this);
   if(dlg.DoModal() == IDOK) {
     const AddrRange &searchResult = dlg.getSearchResult();
     view->dropAnchor(searchResult.getFirst());
@@ -438,47 +449,55 @@ void CMainFrame::OnEditFind() {
   }
 }
 
+bool CMainFrame::canFindNext() const {
+  return hasSearchMachine() && m_searchMachine->isSet() && (((CMainFrame*)this)->getDoc()->getSize() != 0);
+}
+bool CMainFrame::canFindPrev() const {
+  return canFindNext();
+}
+
 void CMainFrame::OnEditFindNext() {
-  CHexViewDoc *doc = getDoc();
-  if(!m_searchMachine.isSet() || (doc->getSize() == 0)) {
-    return;
-  }
-  CHexViewView *view = getView();
-  INT64 addr = view->getCurrentAddr();
+  if(!canFindNext()) return;
+
+  m_searchParam   = m_searchMachine->getSearchParameters();
+  CHexViewDoc     *doc           = getDoc();
+  CHexViewView    *view          = getView();
+  INT64            startPosition = view->getCurrentAddr();
   if(view->hasAnchor()) {
     const AddrRange selection = view->getSelection();
-    if((selection.getLength() == m_searchMachine.getPatternLength()) && (addr == selection.getLast())) {
-      addr = selection.getFirst() + 1;
+    if((selection.getLength() == m_searchMachine->getPatternLength()) && (startPosition == selection.getLast())) {
+      startPosition = selection.getFirst() + 1;
     }
   }
-  searchText(addr, true);
+  m_searchParam.m_startPosition = startPosition;
+  m_searchParam.m_forwardSearch = true;
+  searchText();
 }
 
 void CMainFrame::OnEditFindPrev() {
-  CHexViewDoc *doc = getDoc();
-  if(!m_searchMachine.isSet() || (doc->getSize() == 0)) {
-    return;
-  }
-  CHexViewView *view = getView();
-  INT64 addr = view->getCurrentAddr()-1;
+  if(!canFindPrev()) return;
+
+  m_searchParam   = m_searchMachine->getSearchParameters();
+  CHexViewDoc     *doc           = getDoc();
+  CHexViewView    *view          = getView();
+  INT64            startPosition = view->getCurrentAddr()-1;
   if(view->hasAnchor()) {
     const AddrRange selection = view->getSelection();
-    if((selection.getLength() == m_searchMachine.getPatternLength()) && (addr == selection.getLast()-1)) {
-      addr = selection.getFirst();
+    if((selection.getLength() == m_searchMachine->getPatternLength()) && (startPosition == selection.getLast()-1)) {
+      startPosition = selection.getFirst();
     }
   }
-  searchText(addr, false);
+  m_searchParam.m_startPosition = startPosition;
+  m_searchParam.m_forwardSearch = false;
+  searchText();
 }
 
-void CMainFrame::searchText(UINT64 startPos, bool forwardSearch) {
-  m_searchMachine.prepareSearch(forwardSearch, startPos, EMPTYSTRING, getDoc());
-  ProgressWindow prgWnd(this, m_searchMachine, 500);
-
-  AddrRange result = m_searchMachine.getResult();
-
+void CMainFrame::searchText() {
+  ProgressWindow prgWnd(this, *createSearchMachine(), 500);
+  AddrRange result = m_searchMachine->getResult();
   if(result.isEmpty()) {
-    if(!m_searchMachine.isInterrupted()) {
-      showInformation(m_searchMachine.getResultMessage());
+    if(!m_searchMachine->isInterrupted()) {
+      showInformation(m_searchMachine->getErrorMsg());
     }
   } else {
     CHexViewView *view = getView();
@@ -488,7 +507,7 @@ void CMainFrame::searchText(UINT64 startPos, bool forwardSearch) {
 }
 
 void CMainFrame::OnEditGotoAddress() {
-  CHexViewDoc *doc = getDoc();
+  CHexViewDoc *doc     = getDoc();
   const UINT64 docSize = doc->getSize();
   if(docSize == 0) {
     return;
@@ -565,8 +584,8 @@ void CMainFrame::ajourMenuItems() {
   enableMenuItem(          this, ID_EDIT_REDO       , hasBytes && doc->canRedo()            );
   enableToolbarButtonAndMenuItem(ID_EDIT_COPY       , !getView()->getSelection().isEmpty()  );
   enableToolbarButtonAndMenuItem(ID_EDIT_FIND       , hasBytes                              );
-  enableToolbarButtonAndMenuItem(ID_EDIT_FIND_NEXT  , hasBytes && m_searchMachine.isSet()   );
-  enableToolbarButtonAndMenuItem(ID_EDIT_FIND_PREV  , hasBytes && m_searchMachine.isSet()   );
+  enableToolbarButtonAndMenuItem(ID_EDIT_FIND_NEXT  , canFindNext()                         );
+  enableToolbarButtonAndMenuItem(ID_EDIT_FIND_PREV  , canFindNext()                         );
   enableMenuItem(          this, ID_EDIT_GOTOADDRESS, hasBytes                              );
   enableMenuItem(          this, ID_EDIT_REFRESHFILE, doc->isOpen()                         );
 

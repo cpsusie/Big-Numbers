@@ -5,59 +5,80 @@
 
 class ByteContainer {
 public:
-  virtual void      getBytes(unsigned __int64 start, UINT length, ByteArray &dst) = 0;
-  virtual BYTE      getByte( unsigned __int64 addr) = 0;
-  virtual unsigned __int64 getSize() const = 0;
+  virtual void   getBytes(UINT64 start, UINT length, ByteArray &dst) = 0;
+  virtual BYTE   getByte( UINT64 addr) = 0;
+  virtual UINT64 getSize() const = 0;
 };
 
 class UpdatableByteContainer : public ByteContainer {
 public:
-  virtual void putBytes(unsigned __int64 start, ByteArray &src) = 0;
+  virtual void putBytes(UINT64 start, ByteArray &src) = 0;
 };
 
 class SequentialByteContainer { // Emulates a FILE, with fseek and fread, given a ByteContainer
 private:
   ByteContainer &m_bc;
-  const __int64  m_size;
-  __int64        m_position;
+  const INT64    m_size;
+  INT64          m_position;
 public:
   SequentialByteContainer(ByteContainer &bc);
-  int fread(UINT count, BYTE *buffer);
-  void fseek(__int64 pos);
+  int  fread(UINT count, BYTE *buffer);
+  void fseek(INT64 pos);
+};
+
+class SearchParameters {
+public:
+  bool           m_forwardSearch;
+  INT64          m_startPosition;
+  String         m_findWhat;
+  SearchParameters() : m_forwardSearch(true), m_startPosition(0) {
+  }
+  inline bool isSet() const {
+    return m_findWhat.length() > 0;
+  }
+  inline bool isForwardSearch() const {
+    return m_forwardSearch;
+  }
+  inline INT64 getStartPosition() const {
+    return m_startPosition;
+  }
+  inline const String &getFindWhat() const {
+    return m_findWhat;
+  }
 };
 
 class SearchMachine : public InteractiveRunnable {
 private:
-  bool           m_forwardSearch;
-  __int64        m_startPosition;
-  String         m_findWhat;
-  ByteContainer *m_byteContainer;
+  SearchParameters m_searchParam;
+  ByteContainer   *m_byteContainer;
 
-  bool           m_finished;
-  AddrRange      m_result;
-  String         m_resultMessage;
-  __int64        m_size;
-  __int64        m_fileIndex;
-  __int64        m_maxProgress;
+  AddrRange        m_result;
+  INT64            m_size;
+  INT64            m_fileIndex;
+  INT64            m_maxProgress;
   AddrRange doSearch();
 public:
-
   SearchMachine();
 
-  void prepareSearch(bool forwardSearch, __int64 startPosition = -1, const String &findWhat = EMPTYSTRING, ByteContainer *byteContainer = NULL);
+  void prepareSearch(bool forwardSearch, INT64 startPosition, const String &findWhat, ByteContainer *byteContainer);
+  void prepareSearch(const SearchParameters &param, ByteContainer *byteContainer);
   // by using default-values for parameter 2,3,4, searchMachine will use the same values as last call. And Exception is thrown if
   // byteContainer isn't specified in this or previous calls
 
-  bool isForwardSearch() const {
-    return m_forwardSearch;
+  const SearchParameters &getSearchParameters() const {
+    return m_searchParam;
   }
-
-  __int64 getStartPosition() const {
-    return m_startPosition;
+  inline bool isSet() const {
+    return getSearchParameters().isSet();
   }
-
-  const String getFindWhat() const {
-    return m_findWhat;
+  inline bool isForwardSearch() const {
+    return getSearchParameters().isForwardSearch();
+  }
+  inline INT64 getStartPosition() const {
+    return getSearchParameters().getStartPosition();
+  }
+  inline const String &getFindWhat() const {
+    return getSearchParameters().getFindWhat();
   }
 // ---------------------- Functions to implement InteractiveRunnable ---------------
   UINT safeRun();
@@ -66,34 +87,22 @@ public:
   }
   double getProgress() const;
   String getTitle() {
-    return m_forwardSearch ? _T("Find next occurrence") : _T("Find previous occurrence");
+    return isForwardSearch() ? _T("Find next occurrence") : _T("Find previous occurrence");
   }
   int getSupportedFeatures() {
     return IR_PROGRESSBAR | IR_INTERRUPTABLE;
   }
 // ---------------------------------------------------------------------------------
 
-  bool isSet() const {
-    return m_findWhat.length() > 0;
-  }
-  bool isFinished() const {
-    return m_finished;
-  }
-
   const AddrRange &getResult() const {
     return m_result;
   }
-
-  const String &getResultMessage() const {
-    return m_resultMessage;
-  }
-
   int getPatternLength() const;
 };
 
 class SearchPattern : public ByteArray, SettingsAccessor {
 private:
-  void convert(const String &pattern);
+  SearchPattern &convert(const String &pattern);
 public:
   SearchPattern(const String &pattern);
   SearchPattern &operator=(const String &pattern);

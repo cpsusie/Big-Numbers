@@ -1,40 +1,40 @@
 #include "stdafx.h"
+#include <ThreadPool.h>
+#include <InterruptableRunnable.h>
 #include "FindDlg.h"
 
 #if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
-CFindDlg::CFindDlg(SearchMachine &searchMachine, CWnd *pParent)
+CFindDlg::CFindDlg(CMainFrame *pParent)
 : CDialog(IDD, pParent)
-, m_searchMachine(searchMachine)
+, m_searchParameters(pParent->getSearchParameters())
 {
-  m_findWhat       = searchMachine.getFindWhat().cstr();
+  m_findWhat       = m_searchParameters.m_findWhat.cstr();
   m_timerIsRunning = false;
   m_waitCursorOn   = false;
-  m_searchThread   = NULL;
 }
 
 CFindDlg::~CFindDlg() {
-  if(m_searchThread) {
-    delete m_searchThread;
-  }
+}
+
+CMainFrame &CFindDlg::getMainWin() {
+  return *(CMainFrame*)GetParent();
 }
 
 void CFindDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
-    DDX_CBString(pDX, IDC_COMBOFINDWHAT, m_findWhat);
+  DDX_CBString(pDX, IDC_COMBOFINDWHAT, m_findWhat);
   if(!pDX->m_bSaveAndValidate) {
     OnEditChangeComboFindWhat();
   }
 }
 
 BEGIN_MESSAGE_MAP(CFindDlg, CDialog)
-  ON_WM_SIZE()
   ON_WM_TIMER()
   ON_BN_CLICKED(IDC_FINDNEXT                  , OnFindNext                    )
   ON_BN_CLICKED(IDC_BUTTONSPECIALCHAR         , OnButtonSpecialChar           )
-  ON_COMMAND(ID_GOTO_FINDWHAT                 , OnGotoFindWhat                )
   ON_COMMAND(ID_SPECIALCHAR_CARRIAGERETURN    , OnSpecialCharCarriageReturn   )
   ON_COMMAND(ID_SPECIALCHAR_NEWLINE           , OnSpecialCharNewline          )
   ON_COMMAND(ID_SPECIALCHAR_BACKSPACE         , OnSpecialCharBackspace        )
@@ -54,134 +54,76 @@ BEGIN_MESSAGE_MAP(CFindDlg, CDialog)
   ON_CBN_SELENDCANCEL(IDC_COMBOFINDWHAT       , OnSelendCancelComboFindWhat   )
 END_MESSAGE_MAP()
 
-class SearchThread : public Thread {
-private:
-  SearchMachine  &m_job;
-  bool            m_quit, m_suspended;
-public:
-  SearchThread(SearchMachine &target);
-  ~SearchThread();
-  UINT run();
-  bool isSuspended() const {
-    return m_suspended;
-  }
-};
-
-SearchThread::SearchThread(SearchMachine &job) : Thread(_T("SearchThread"), job), m_job(job) {
-  m_quit = m_suspended = false;
-}
-
-SearchThread::~SearchThread() {
-  m_quit = true;
-  m_job.setInterrupted();
-  if (isSuspended()) {
-    resume();
-  }
-  while(stillActive()) {
-    Sleep(20);
-  }
-}
-
-UINT SearchThread::run() {
-  while(!m_quit) {
-    Thread::run();
-    m_suspended = true;
-    suspend();
-    m_suspended = false;
-  }
-  return 0;
-}
-
 BOOL CFindDlg::OnInitDialog() {
   __super::OnInitDialog();
 
-  CComboBox *combo = getComboFindWhat();
-  combo->AddString(m_findWhat.GetBuffer(m_findWhat.GetLength()));
-  for(size_t i = 0; i < m_history.size(); i++) {
-    combo->AddString(m_history[i].cstr());
-  }
-  const CRect cbRect = getWindowRect(combo);
+  m_findWhatCombo.substituteControl( this, IDC_COMBOFINDWHAT, _T("FindHistory"));
+  const CRect cbRect = getWindowRect(m_findWhatCombo);
   const CPoint buttonPos(cbRect.right+1, cbRect.top);
   m_specialCharButton.Create(this, OBMIMAGE(RGARROW), buttonPos, IDC_BUTTONSPECIALCHAR, true);
+  LoadDynamicLayoutResource(m_lpszTemplateName);
 
   GetDlgItem(IDC_STATICRADIXNAME)->SetWindowText(getSettings().getDataRadixShortName());
   m_currentControl = 0;
   m_selStart       = 0;
   m_selEnd         = m_findWhat.GetLength();
 
-  if(m_searchMachine.isForwardSearch()) {
+  if(m_searchParameters.isForwardSearch()) {
     ((CButton*)GetDlgItem(IDC_RADIODOWN))->SetCheck(1);
   } else {
     ((CButton*)GetDlgItem(IDC_RADIOUP))->SetCheck(1);
   }
   m_accelTable = LoadAccelerators(theApp.m_hInstance, MAKEINTRESOURCE(IDR_ACCELERATORFIND));
-
-  m_layoutManager.OnInitDialog(this);
-
-  m_layoutManager.addControl(IDC_COMBOFINDWHAT,         RELATIVE_WIDTH        );
-  m_layoutManager.addControl(IDC_BUTTONSPECIALCHAR    , RELATIVE_X_POS        );
-  m_layoutManager.addControl(IDC_FINDNEXT             , RELATIVE_X_POS        );
-  m_layoutManager.addControl(IDCANCEL                 , RELATIVE_X_POS        );
-  m_layoutManager.addControl(IDC_STATICRADIXNAME      , PCT_RELATIVE_Y_CENTER );
-  m_layoutManager.addControl(IDC_STATICBYTESEQUENCE   , RELATIVE_SIZE         );
-  m_layoutManager.addControl(IDC_STATICDIRECTIONFRAME , RELATIVE_POSITION     );
-  m_layoutManager.addControl(IDC_RADIOUP              , RELATIVE_POSITION     );
-  m_layoutManager.addControl(IDC_RADIODOWN            , RELATIVE_POSITION     );
-  m_layoutManager.addControl(IDC_PROGRESSFIND         , RELATIVE_WIDTH | RELATIVE_Y_POS);
-
   UpdateData(false);
-
-  OnGotoFindWhat();
+  gotoFindWhat();
   return FALSE;
 }
 
 void CFindDlg::OnFindNext() {
   UpdateData();
   if(m_findWhat.GetLength() == 0) {
-    OnGotoFindWhat();
+    gotoFindWhat();
     return;
   }
 
   try {
-    if(m_searchThread == NULL) {
-      m_searchThread = new SearchThread(m_searchMachine);
-    }
-    const bool forwardSearch = ((CButton*)GetDlgItem(IDC_RADIODOWN))->GetCheck() ? true : false;
-    m_searchMachine.prepareSearch(forwardSearch, -1, (LPCTSTR)m_findWhat);
-    m_searchThread->resume();
+    m_searchParameters.m_forwardSearch = ((CButton*)GetDlgItem(IDC_RADIODOWN))->GetCheck() ? true : false;
+    m_searchParameters.m_findWhat      = (LPCTSTR)m_findWhat;
+    ThreadPool::executeNoWait(*getMainWin().createSearchMachine());
     CProgressCtrl *p = (CProgressCtrl*)GetDlgItem(IDC_PROGRESSFIND);
     p->SetRange(0, 100);
     p->SetPos(0);
     startTimer();
   } catch(Exception e) {
-    OnGotoFindWhat();
+    gotoFindWhat();
     showException(e);
   }
 }
 
 void CFindDlg::OnTimer(UINT_PTR nIDEvent) {
   __super::OnTimer(nIDEvent);
-  if(m_searchMachine.isFinished()) {
+  SearchMachine *sm = getSearchMachine();
+  if(sm->isJobDone()) {
     stopTimer();
-    m_result = m_searchMachine.getResult();
+    m_result = sm->getResult();
     if(m_result.isEmpty()) {
-      OnGotoFindWhat();
-      if(!m_searchMachine.isInterrupted()) {
-        showWarning(_T("%s"), m_searchMachine.getResultMessage().cstr());
+      gotoFindWhat();
+      if(!sm->isInterrupted()) {
+        showWarning(_T("%s"), sm->getErrorMsg().cstr());
       }
     } else {
-      m_history.add(m_searchMachine.getFindWhat());
+      m_findWhatCombo.updateList();
       __super::OnOK();
     }
   } else {
     CProgressCtrl *p = (CProgressCtrl*)GetDlgItem(IDC_PROGRESSFIND);
-    p->SetPos((int)m_searchMachine.getPercentDone());
+    p->SetPos((int)sm->getPercentDone());
   }
 }
 
 void CFindDlg::OnCancel() {
   if(m_timerIsRunning) {
-    m_searchMachine.setInterrupted();
+    getSearchMachine()->setInterrupted();
   } else {
     __super::OnCancel();
   }
@@ -191,11 +133,9 @@ BOOL CFindDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
     return TRUE;
   }
-
   const BOOL ret = __super::PreTranslateMessage(pMsg);
-
   if(m_currentControl == IDC_COMBOFINDWHAT) {
-    DWORD w = getComboFindWhat()->GetEditSel();
+    DWORD w = getFindWhatCombo()->GetEditSel();
     m_selStart = w & 0xff;
     m_selEnd   = w >> 16;
   }
@@ -229,33 +169,26 @@ void CFindDlg::addSpecialChar(const String &s, int cursorPos) {
   UpdateData();
 
   String str = (LPCTSTR)m_findWhat;
-
   str = substr(str, 0, m_selStart) + s + substr(str, m_selEnd, str.length());
-
   m_findWhat  = str.cstr();
-
   m_selStart += cursorPos;
   m_selEnd   = m_selStart + (int)s.length() - cursorPos;
 
   UpdateData(false);
-  OnGotoFindWhat();
+  gotoFindWhat();
 }
 
-void CFindDlg::OnGotoFindWhat() {
-  getComboFindWhat()->SetFocus();
+void CFindDlg::gotoFindWhat() {
+  getFindWhatCombo()->SetFocus();
 }
 
 void CFindDlg::OnSetFocusComboFindWhat() {
-  getComboFindWhat()->SetEditSel(m_selStart, m_selEnd);
+  getFindWhatCombo()->SetEditSel(m_selStart, m_selEnd);
   m_currentControl = IDC_COMBOFINDWHAT;
 }
 
 void CFindDlg::OnKillFocusComboFindWhat() {
   m_currentControl = 0;
-}
-
-CComboBox *CFindDlg::getComboFindWhat() {
-  return (CComboBox*)GetDlgItem(IDC_COMBOFINDWHAT);
 }
 
 void CFindDlg::updateByteSequence(const CString &findWhat) {
@@ -266,9 +199,12 @@ void CFindDlg::updateByteSequence(const CString &findWhat) {
   }
 }
 
+CComboBox *CFindDlg::getFindWhatCombo() {
+  return (CComboBox*)GetDlgItem(IDC_COMBOFINDWHAT);
+}
 void CFindDlg::OnEditChangeComboFindWhat() {
   CString findWhat;
-  getComboFindWhat()->GetWindowText(findWhat);
+  getFindWhatCombo()->GetWindowText(findWhat);
   updateByteSequence(findWhat);
 }
 
@@ -281,20 +217,14 @@ void CFindDlg::OnSelendOkComboFindWhat() {
 }
 
 void CFindDlg::OnSelChangeComboFindWhat() {
-  CComboBox *cb = getComboFindWhat();
-  int index = cb->GetCurSel();
+  int index = getFindWhatCombo()->GetCurSel();
   CString str;
-  cb->GetLBText(index, str);
+  getFindWhatCombo()->GetLBText(index, str);
   updateByteSequence(str);
 }
 
 void CFindDlg::OnSelendCancelComboFindWhat() {
   OnEditChangeComboFindWhat();
-}
-
-void CFindDlg::OnSize(UINT nType, int cx, int cy) {
-  m_layoutManager.OnSize(nType,cx,cy);
-  __super::OnSize(nType, cx, cy);
 }
 
 #define TIMERUPDATERATE 200
