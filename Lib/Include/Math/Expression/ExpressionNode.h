@@ -132,6 +132,7 @@ public:
 
   inline ExpressionInputSymbol       getSymbol()                    const   { return m_info.m_symbol;                                          }
   inline        ParserTree          &getTree()                      const   { return m_tree;                                                   }
+  Expression                        &getExpression()                const;
   inline const PackedSyntaxNodeInfo &getInfo()                      const   { return m_info;                                                   }
   static String                      getSymbolName(    ExpressionInputSymbol symbol);
   static String                      getNodeTypeName(  ExpressionNodeType    nt    );
@@ -139,7 +140,6 @@ public:
   inline String                      getSymbolName()                const   { return getSymbolName(    getSymbol());                           }
   String                             getNodeTypeName()              const   { return getNodeTypeName(  getNodeType());                         }
   String                             getReturnTypeName()            const   { return getReturnTypeName(getReturnType());                       }
-
   inline  void                       mark()                                 { m_info.m_marked = true;                                          }
   inline  void                       unMark()                               { m_info.m_marked = false;                                         }
   inline  bool                       isMarked()                     const   { return m_info.m_marked;                                          }

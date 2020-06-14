@@ -13,6 +13,10 @@ ExpressionSymbolTable &ExpressionNode::getSymbolTable() const {
   return m_tree.getSymbolTable();
 }
 
+Expression &ExpressionNode::getExpression() const {
+  return m_tree.getExpression();
+}
+
 String ExpressionNode::getNodeTypeName(ExpressionNodeType nt) { // static
   switch(nt) {
 #define CASESTR(t) case NT_##t: return _T("NT_" #t);

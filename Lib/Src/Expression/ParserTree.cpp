@@ -146,22 +146,22 @@ bool ParserTree::equalMinus(const ParserTree &tree) const {
   return Expr::equalMinus(getRoot(), tree.getRoot());
 }
 
-ParserTree &ParserTree::setTreeForm(ParserTreeForm form) {
+ParserTree &ParserTree::setTreeForm(ParserTreeForm treeForm) {
   const ParserTreeForm oldForm = getTreeForm();
-  if(form != oldForm) {
+  if(treeForm != oldForm) {
     CHECKTREE_ISCONSISTENT(*this);
     const ExpressionVariableArray oldVariables = getSymbolTable().getAllVariables();
-    switch(form) {
+    switch(treeForm) {
     case TREEFORM_STANDARD : setRoot(toStandardForm( getRoot()).node()); break;
     case TREEFORM_CANONICAL: setRoot(toCanonicalForm(getRoot()).node()); break;
     case TREEFORM_NUMERIC  : setRoot(toNumericForm(  getRoot()).node()); break;
     default                :
-      throwInvalidArgumentException(__TFUNCTION__, _T("form=%d"), form);
+      throwInvalidArgumentException(__TFUNCTION__, _T("form=%d"), treeForm);
     }
     pruneUnusedNodes();
     buildSymbolTable(&oldVariables);
     CHECKTREE_ISCONSISTENT(*this);
-    notifyPropertyChanged(PP_TREEFORM, &oldForm, &form);
+    notifyPropertyChanged(PP_TREEFORM, &oldForm, &treeForm);
   }
   return *this;
 }
@@ -172,7 +172,9 @@ String ParserTree::getTreeFormName(ParserTreeForm treeForm) { // static
   case TREEFORM_STANDARD : return _T("standard");
   case TREEFORM_CANONICAL: return _T("canonical");
   case TREEFORM_NUMERIC  : return _T("numeric");
-  default                : return format(_T("Unknown treeForm:%d"), treeForm);
+  default                :
+    throwInvalidArgumentException(__TFUNCTION__, _T("treeForm=%d"), treeForm);
+    return EMPTYSTRING;
   }
 }
 
@@ -187,9 +189,10 @@ String ParserTree::getStateName(ParserTreeState state) { // static
   CASESTR(MAINREDUCTION2);
   CASESTR(STANDARDFORM  );
   CASESTR(REDUCTIONDONE );
-  default: return format(_T("unknown treestate:%d"), state);
+  default: throwInvalidArgumentException(__TFUNCTION__, _T("state=%d"), state);
   }
 #undef CASESTR
+  return EMPTYSTRING;
 }
 
 void ParserTree::releaseAll() {
