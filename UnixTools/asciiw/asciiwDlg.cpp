@@ -7,20 +7,12 @@
 
 class CAboutDlg : public CDialog {
 public:
-  CAboutDlg();
-
   enum { IDD = IDD_ABOUTBOX };
 
-  virtual void DoDataExchange(CDataExchange *pDX);
+  CAboutDlg() : CDialog(IDD) {
+  }
   DECLARE_MESSAGE_MAP()
 };
-
-CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
-}
-
-void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-  __super::DoDataExchange(pDX);
-}
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
@@ -34,15 +26,15 @@ void CAsciiwDlg::DoDataExchange(CDataExchange *pDX) {
 }
 
 BEGIN_MESSAGE_MAP(CAsciiwDlg, CDialog)
-    ON_WM_SYSCOMMAND()
-    ON_WM_PAINT()
-    ON_WM_QUERYDRAGICON()
-    ON_COMMAND(ID_FILE_EXIT, OnFileExit)
-    ON_COMMAND(ID_VIEW_HEX, OnViewHex)
-    ON_COMMAND(ID_VIEW_DEC, OnViewDec)
-    ON_COMMAND(ID_VIEW_FONT, OnViewFont)
-    ON_WM_SIZE()
-    ON_WM_LBUTTONDOWN()
+  ON_WM_SYSCOMMAND()
+  ON_WM_PAINT()
+  ON_WM_QUERYDRAGICON()
+  ON_COMMAND(ID_FILE_EXIT, OnFileExit)
+  ON_COMMAND(ID_VIEW_HEX, OnViewHex)
+  ON_COMMAND(ID_VIEW_DEC, OnViewDec)
+  ON_COMMAND(ID_VIEW_FONT, OnViewFont)
+  ON_WM_SIZE()
+  ON_WM_LBUTTONDOWN()
 END_MESSAGE_MAP()
 
 BOOL CAsciiwDlg::OnInitDialog() {
@@ -76,10 +68,6 @@ BOOL CAsciiwDlg::OnInitDialog() {
   m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATOR1));
 
   setCurrentFont(&m_defaultFont);
-
-  m_layoutManager.OnInitDialog(this);
-  m_layoutManager.addControl(IDOK    , RELATIVE_POSITION);
-  m_layoutManager.addControl(IDCANCEL, RELATIVE_POSITION);
 
 //    memset(table,0,sizeof(table));
 //    for(unsigned char ch = 0; ch < 128; ch++)
@@ -279,15 +267,14 @@ void CAsciiwDlg::OnViewFont() {
 }
 
 BOOL CAsciiwDlg::PreTranslateMessage(MSG *pMsg) {
-  if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg))
+  if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
     return true;
-
+  }
   return __super::PreTranslateMessage(pMsg);
 }
 
 void CAsciiwDlg::OnSize(UINT nType, int cx, int cy) {
   __super::OnSize(nType, cx, cy);
-  m_layoutManager.OnSize(nType,cx,cy);
   if(!IsWindowVisible()) {
     Invalidate();
   }
