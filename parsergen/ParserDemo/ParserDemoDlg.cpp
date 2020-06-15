@@ -17,23 +17,12 @@
 
 class CAboutDlg : public CDialog {
 public:
-  CAboutDlg();
-
   enum { IDD = IDD_ABOUTBOX };
-
-  protected:
-  virtual void DoDataExchange(CDataExchange *pDX);
-
+  CAboutDlg() : CDialog(IDD) {
+  }
 protected:
   DECLARE_MESSAGE_MAP()
 };
-
-CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
-}
-
-void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-  __super::DoDataExchange(pDX);
-}
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
@@ -214,23 +203,6 @@ static void printf(CClientDC &dc, int x, int y, int width, const TCHAR *form, ..
   va_end(argptr);
 }
 
-int CParserDemoDlg::OnCreate(LPCREATESTRUCT lpCreateStruct) {
-  if(__super::OnCreate(lpCreateStruct) == -1) {
-    return -1;
-  }
-
-  CRect rect;
-  rect.left   = 255;
-  rect.top    = 0;
-  rect.right  = 1025;
-  rect.bottom = 260;
-
-  m_textBox.CreateEx(WS_VISIBLE | WS_GROUP | WS_TABSTOP | WS_VSCROLL| WS_HSCROLL | WS_BORDER
-                   | ES_MULTILINE|ES_NOHIDESEL|ES_AUTOVSCROLL|ES_AUTOHSCROLL|ES_WANTRETURN
-                    ,0
-                    ,rect, this, IDC_EDITINPUTSTRING);
-  return 0;
-}
 
 void CParserDemoDlg::OnMaxTextEditInputString() {
   int inputLength = m_input.GetLength();
@@ -258,17 +230,26 @@ BOOL CParserDemoDlg::OnInitDialog() {
     }
   }
 
-  // Set the icon for this dialog.  The framework does this automatically
-  //  when the application's main window is not a dialog
-
   SetIcon(m_hIcon, TRUE);  // Set big icon
   SetIcon(m_hIcon, FALSE); // Set small icon
+
+  const TabOrder tabOrder(this);
+
+  CRect rect = getWindowRect(this, IDC_EDITINPUTSTRING);
+  CEdit *e = (CEdit*)GetDlgItem(IDC_EDITINPUTSTRING);
+  e->DestroyWindow();
+  m_textBox.CreateEx(WS_VISIBLE | WS_GROUP | WS_TABSTOP | WS_VSCROLL| WS_HSCROLL | WS_BORDER
+                   | ES_MULTILINE|ES_NOHIDESEL|ES_AUTOVSCROLL|ES_AUTOHSCROLL|ES_WANTRETURN
+                    ,0
+                    ,rect, this, IDC_EDITINPUTSTRING);
+
 
   m_printFont.CreateFont(12, 10, 0, 0, 400, FALSE, FALSE, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS
                         ,CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY
                         ,DEFAULT_PITCH | FF_MODERN
                         ,_T("Courier"));
 
+  tabOrder.restoreTabOrder();
 
   TEXTMETRIC tm;
 
@@ -276,31 +257,13 @@ BOOL CParserDemoDlg::OnInitDialog() {
   pDC->SelectObject(m_printFont);
   pDC->GetTextMetrics(&tm);
 
-  m_layoutManager.OnInitDialog(this);
-
-  m_layoutManager.addControl(IDC_EDITINPUTSTRING       , RELATIVE_SIZE                  );
-  m_layoutManager.addControl(IDC_SOURCEPOSITION        , RELATIVE_POSITION              );
-  m_layoutManager.addControl(IDC_STATELABEL            , RELATIVE_Y_POS                 );
-  m_layoutManager.addControl(IDC_STATE                 , RELATIVE_Y_POS                 );
-  m_layoutManager.addControl(IDC_LOOKAHEADLABEL        , RELATIVE_Y_POS                 );
-  m_layoutManager.addControl(IDC_LOOKAHEAD             , RELATIVE_Y_POS | RELATIVE_WIDTH);
-  m_layoutManager.addControl(IDC_ACTIONLABEL           , RELATIVE_Y_POS                 );
-  m_layoutManager.addControl(IDC_ACTION                , RELATIVE_Y_POS | RELATIVE_WIDTH);
-  m_layoutManager.addControl(IDC_CHECKBREAKONPRODUCTION, RELATIVE_Y_POS                 );
-  m_layoutManager.addControl(IDC_CHECKBREAKONSTATE     , RELATIVE_Y_POS                 );
-  m_layoutManager.addControl(IDC_CHECKBREAKONSYMBOL    , RELATIVE_Y_POS                 );
-  m_layoutManager.addControl(IDC_CHECKBREAKONERROR     , RELATIVE_Y_POS                 );
-  m_layoutManager.addControl(IDC_BREAKPRODTEXT         , RELATIVE_Y_POS | RELATIVE_WIDTH);
-  m_layoutManager.addControl(IDC_BREAKSTATETEXT        , RELATIVE_Y_POS | RELATIVE_WIDTH);
-  m_layoutManager.addControl(IDC_BREAKSYMBOLTEXT       , RELATIVE_Y_POS | RELATIVE_WIDTH);
-  m_layoutManager.addControl(IDC_LISTERRORS            , RELATIVE_Y_POS | RELATIVE_WIDTH);
-  m_layoutManager.addControl(IDC_LISTDEBUG             , RELATIVE_Y_POS | RELATIVE_WIDTH);
-  m_layoutManager.addControl(IDC_ERRORSLABEL           , RELATIVE_Y_POS                 );
-  m_layoutManager.addControl(IDC_DEBUGLABEL            , RELATIVE_Y_POS                 );
-  m_layoutManager.addControl(IDC_STATICSTACK           , RELATIVE_HEIGHT                );
-
   m_charSize.cx = tm.tmMaxCharWidth;
   m_charSize.cy = tm.tmHeight;
+
+  CMFCDynamicLayout *mfcLM = GetDynamicLayout();
+  CMFCDynamicLayout::MoveSettings inputMv; inputMv.m_nXRatio = 10;
+  CMFCDynamicLayout::SizeSettings inputSz; inputSz.m_nXRatio = 90; inputSz.m_nYRatio = 50;
+  mfcLM->AddItem(m_textBox, inputMv, inputSz);
 
   m_showStateThread  = NULL;
 
@@ -784,8 +747,6 @@ void CParserDemoDlg::OnHelpAboutParserDemo() {
 
 void CParserDemoDlg::OnSize(UINT nType, int cx, int cy) {
   __super::OnSize(nType, cx, cy);
-  m_layoutManager.OnSize(nType, cx, cy);
-
   if(IsWindowVisible()) {
     setBreakProdText();
     setBreakSymbolText();

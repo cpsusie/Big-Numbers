@@ -292,7 +292,6 @@
     <ClCompile Include="ErrorsDlg.cpp" />
     <ClCompile Include="FindDlg.cpp" />
     <ClCompile Include="GotoDlg.cpp" />
-    <ClCompile Include="History.cpp" />
     <ClCompile Include="ParserDemo.cpp" />
     <ClCompile Include="ParserDemoDlg.cpp" />
     <ClCompile Include="ScannerToTest.cpp" />
@@ -326,7 +325,6 @@
     <ClInclude Include="FindDlg.h" />
     <ClInclude Include="GotoDlg.h" />
     <ClInclude Include="GRAMMARS.h" />
-    <ClInclude Include="History.h" />
     <ClInclude Include="ParserDemo.h" />
     <ClInclude Include="ParserDemoDlg.h" />
     <ClInclude Include="Resource.h" />

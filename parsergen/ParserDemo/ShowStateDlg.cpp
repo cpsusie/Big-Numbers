@@ -1,6 +1,6 @@
 #include "stdafx.h"
-#include "ShowStateDlg.h"
 #include "ParserDemoDlg.h"
+#include "ShowStateDlg.h"
 
 #if defined(_DEBUG)
 #define new DEBUG_NEW
@@ -17,7 +17,6 @@ void ShowStateDlg::DoDataExchange(CDataExchange *pDX) {
 }
 
 BEGIN_MESSAGE_MAP(ShowStateDlg, CDialog)
-  ON_WM_SIZE()
   ON_MESSAGE(      ID_SHOWSTATE_UPDATE, OnShowStateUpdate)
 END_MESSAGE_MAP()
 
@@ -41,26 +40,14 @@ BOOL ShowStateDlg::OnInitDialog() {
   ajourState();
 
   m_accelTable = LoadAccelerators(theApp.m_hInstance, MAKEINTRESOURCE(IDR_ACCELERATORSHOWSTATE));
-
-  m_layoutManager.OnInitDialog(this);
-  m_layoutManager.addControl(IDC_EDITSTATE, RELATIVE_SIZE    );
-  m_layoutManager.addControl(IDOK         , RELATIVE_POSITION);
-
   return TRUE;  // return TRUE unless you set the focus to a control
 	            // EXCEPTION: OCX Property Pages should return FALSE
-}
-
-void ShowStateDlg::OnSize(UINT nType, int cx, int cy) {
-  __super::OnSize(nType, cx, cy);
-
-  m_layoutManager.OnSize(nType, cx, cy);
 }
 
 BOOL ShowStateDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
     theApp.m_pMainWnd->PostMessage(pMsg->message, pMsg->wParam, pMsg->lParam);
-	return true;
+    return true;
   }
-
   return __super::PreTranslateMessage(pMsg);
 }

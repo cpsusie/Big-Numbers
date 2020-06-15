@@ -1,10 +1,10 @@
 #pragma once
 
-#include <Scanner.h>
-#include "SearchMachine.h"
-#include "History.h"
 
-void drawTriangle(CWnd *wnd);
+#include <Scanner.h>
+#include <MFCUtil/ComboBoxWithHistory.h>
+#include <MFCUtil/OBMButton.h>
+#include "SearchMachine.h"
 
 class TextPosition : public SourcePosition {
 public:
@@ -42,47 +42,39 @@ public:
 
 class FindDlg : public CDialog {
 private:
-  TextContainer &m_TextContainer;
-  FindParameter &m_param;
-  HACCEL         m_accelTable;
-  int            m_selStart, m_selEnd;
-  History        m_history;
-  void       addRegSymbol(const TCHAR *s, int cursorPos);
+  TextContainer       &m_TextContainer;
+  FindParameter       &m_param;
+  CComboBoxWithHistory m_findWhatCombo;
+  OBMButton            m_specialCharButton;
+  int                  m_selStart, m_selEnd;
+  void                 addRegSymbol(const TCHAR *s, int cursorPos);
+  void                 gotoFindWhat();
 // Construction
 public:
-    FindDlg(FindParameter &param, TextContainer &tc, CWnd *pParent = NULL);
-    enum { IDD = IDD_DIALOGFIND };
-    BOOL    m_matchCase;
-    BOOL    m_matchWholeWord;
-    BOOL    m_useRegExp;
-    CString m_findWhat;
+  FindDlg(FindParameter &param, TextContainer &tc, CWnd *pParent = NULL);
+  enum { IDD = IDD_DIALOGFIND };
+  BOOL    m_matchCase;
+  BOOL    m_matchWholeWord;
+  BOOL    m_useRegExp;
+  CString m_findWhat;
 
-
-    public:
-    virtual BOOL PreTranslateMessage(MSG *pMsg);
-    protected:
-    virtual void DoDataExchange(CDataExchange *pDX);
-
-protected:
-
-    afx_msg void OnFindnext();
-    virtual BOOL OnInitDialog();
-    afx_msg void OnButtonregsymbolsmenu();
-    afx_msg void OnRegsymbolsAnycharacter();
-    afx_msg void OnRegsymbolsCharacterinrange();
-    afx_msg void OnRegsymbolsCharacternotinrange();
-    afx_msg void OnRegsymbolsBeginningofline();
-    afx_msg void OnRegsymbolsEndofline();
-    afx_msg void OnRegsymbols0ormoreoccurrences();
-    afx_msg void OnRegsymbols1ormoreoccurrences();
-    afx_msg void OnRegsymbols0or1occurence();
-    afx_msg void OnRegsymbolsOr();
-    afx_msg void OnRegsymbolsGroup();
-    afx_msg void OnSetfocusCombofindwhat();
-    afx_msg void OnGotofindwhat();
-    afx_msg void OnSelendokCombofindwhat();
-    afx_msg void OnSelchangeCombofindwhat();
-    afx_msg void OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct);
-    DECLARE_MESSAGE_MAP()
+  virtual BOOL OnInitDialog();
+  virtual BOOL PreTranslateMessage(MSG *pMsg);
+  virtual void DoDataExchange(CDataExchange *pDX);
+  afx_msg void OnFindnext();
+  afx_msg void OnButtonregsymbolsmenu();
+  afx_msg void OnRegsymbolsAnycharacter();
+  afx_msg void OnRegsymbolsCharacterinrange();
+  afx_msg void OnRegsymbolsCharacternotinrange();
+  afx_msg void OnRegsymbolsBeginningofline();
+  afx_msg void OnRegsymbolsEndofline();
+  afx_msg void OnRegsymbols0ormoreoccurrences();
+  afx_msg void OnRegsymbols1ormoreoccurrences();
+  afx_msg void OnRegsymbols0or1occurence();
+  afx_msg void OnRegsymbolsOr();
+  afx_msg void OnRegsymbolsGroup();
+  afx_msg void OnSetfocusCombofindwhat();
+  afx_msg void OnSelendokCombofindwhat();
+  afx_msg void OnSelchangeCombofindwhat();
+  DECLARE_MESSAGE_MAP()
 };
-

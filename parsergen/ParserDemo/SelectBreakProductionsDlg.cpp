@@ -17,7 +17,6 @@ void CSelectBreakProductionsDlg::DoDataExchange(CDataExchange *pDX) {
 BEGIN_MESSAGE_MAP(CSelectBreakProductionsDlg, CDialog)
   ON_BN_CLICKED(IDC_BUTTONSELECTALL, OnButtonSelectAll)
   ON_BN_CLICKED(IDC_BUTTONCLEAR    , OnButtonClear    )
-  ON_WM_SIZE()
 END_MESSAGE_MAP()
 
 ProductionLine::ProductionLine(const ParserTables &tables, int production, int leftSideLength, bool selected) {
@@ -65,14 +64,6 @@ BOOL CSelectBreakProductionsDlg::OnInitDialog() {
       lb->SetSel((int)i);
     }
   }
-
-  m_layoutManager.OnInitDialog(this);
-  m_layoutManager.addControl(IDC_PRODUCTIONLIST , RELATIVE_SIZE );
-  m_layoutManager.addControl(IDOK               , RELATIVE_X_POS);
-  m_layoutManager.addControl(IDCANCEL           , RELATIVE_X_POS);
-  m_layoutManager.addControl(IDC_BUTTONSELECTALL, RELATIVE_X_POS);
-  m_layoutManager.addControl(IDC_BUTTONCLEAR    , RELATIVE_X_POS);
-
   lb->SetFocus();
   return FALSE;
 }
@@ -106,9 +97,4 @@ void CSelectBreakProductionsDlg::OnButtonClear() {
   for(int i = 0; i < listBox->GetCount(); i++) {
     listBox->SetSel(i, false);
   }
-}
-
-void CSelectBreakProductionsDlg::OnSize(UINT nType, int cx, int cy) {
-  __super::OnSize(nType, cx, cy);
-  m_layoutManager.OnSize(nType, cx, cy);
 }

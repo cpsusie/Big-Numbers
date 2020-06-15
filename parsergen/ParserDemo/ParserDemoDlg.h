@@ -6,7 +6,6 @@
 
 class CParserDemoDlg : public CDialog, public TextContainer, public ParserHandler {
 private:
-  SimpleLayoutManager   m_layoutManager;
   HICON                 m_hIcon;
   CFont                 m_printFont;
   HACCEL                m_accelTable;
@@ -68,7 +67,6 @@ protected:
   virtual void DoDataExchange(CDataExchange *pDX);
   virtual BOOL OnInitDialog();
   afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
-  afx_msg int  OnCreate(LPCREATESTRUCT lpCreateStruct);
   afx_msg void OnPaint();
   afx_msg HCURSOR OnQueryDragIcon();
   afx_msg void OnFileOpen();

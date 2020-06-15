@@ -17,8 +17,6 @@ void ErrorsDlg::DoDataExchange(CDataExchange *pDX) {
 }
 
 BEGIN_MESSAGE_MAP(ErrorsDlg, CDialog)
-  ON_COMMAND(ID_GOTOERRORCASCADECOUNT, OnGotoErrorCascadeCount)
-  ON_COMMAND(ID_GOTOMAXERRORCOUNT    , OnGotoMaxErrorCount    )
 END_MESSAGE_MAP()
 
 void ErrorsDlg::OnOK() {
@@ -28,22 +26,6 @@ void ErrorsDlg::OnOK() {
 
 BOOL ErrorsDlg::OnInitDialog() {
   __super::OnInitDialog();
-  m_accelTable = LoadAccelerators(theApp.m_hInstance, MAKEINTRESOURCE(IDR_ACCELERATORERRORS));
   gotoEditBox(this, IDC_EDITMAXERRORCOUNT);
   return false;
-}
-
-void ErrorsDlg::OnGotoErrorCascadeCount() {
-  gotoEditBox(this, IDC_EDITCASCADECOUNT);
-}
-
-void ErrorsDlg::OnGotoMaxErrorCount() {
-  gotoEditBox(this, IDC_EDITMAXERRORCOUNT);
-}
-
-BOOL ErrorsDlg::PreTranslateMessage(MSG *pMsg) {
-  if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
-    return true;
-  }
-  return __super::PreTranslateMessage(pMsg);
 }

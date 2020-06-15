@@ -9,12 +9,7 @@
 TreeDlg::TreeDlg(SyntaxNodep tree, CWnd *pParent) : m_tree(tree), CDialog(TreeDlg::IDD, pParent) {
 }
 
-void TreeDlg::DoDataExchange(CDataExchange *pDX) {
-	__super::DoDataExchange(pDX);
-}
-
 BEGIN_MESSAGE_MAP(TreeDlg, CDialog)
-	ON_WM_SIZE()
 	ON_BN_CLICKED(IDC_BUTTONEXPAND   , OnButtonExpand    )
 	ON_BN_CLICKED(IDC_BUTTONEXPANDALL, OnButtonExpandAll )
 	ON_COMMAND(ID_COLLAPSE           , OnCollapse        )
@@ -44,13 +39,6 @@ BOOL TreeDlg::OnInitDialog() {
   traverse(ctrl, m_tree, TVI_ROOT);
   ctrl->SetFocus();
   ctrl->SelectItem(ctrl->GetRootItem());
-
-  m_layoutManager.OnInitDialog(this);
-  m_layoutManager.addControl(IDC_DERIVATIONTREE , RELATIVE_SIZE );
-  m_layoutManager.addControl(IDOK               , RELATIVE_X_POS);
-  m_layoutManager.addControl(IDC_BUTTONEXPAND   , RELATIVE_X_POS);
-  m_layoutManager.addControl(IDC_BUTTONEXPANDALL, RELATIVE_X_POS);
-
   return false;
 }
 
@@ -106,11 +94,6 @@ BOOL TreeDlg::PreTranslateMessage(MSG *pMsg) {
     break;
   }
   return __super::PreTranslateMessage(pMsg);
-}
-
-void TreeDlg::OnSize(UINT nType, int cx, int cy) {
-  __super::OnSize(nType, cx, cy);
-  m_layoutManager.OnSize(nType, cx, cy);
 }
 
 void TreeDlg::OnOK() {

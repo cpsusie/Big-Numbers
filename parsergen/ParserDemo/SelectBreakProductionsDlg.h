@@ -1,6 +1,5 @@
 #pragma once
 
-#include <MFCUtil/LayoutManager.h>
 #include <LRParser.h>
 
 class ProductionLine {
@@ -19,7 +18,6 @@ public:
 
 class CSelectBreakProductionsDlg : public CDialog {
 private:
-  SimpleLayoutManager m_layoutManager;
   BitSet             &m_prodSet;
   ProductionLineArray m_productionLines;
 
@@ -35,7 +33,6 @@ protected:
   virtual void OnOK();
   afx_msg void OnButtonSelectAll();
   afx_msg void OnButtonClear();
-  afx_msg void OnSize(UINT nType, int cx, int cy);
   DECLARE_MESSAGE_MAP()
 };
 
