@@ -2,8 +2,8 @@
 #include <MyUtil.h>
 #include <FileNameSplitter.h>
 #include <MFCUtil/Clipboard.h>
-#include "LinePrinterDlg.h"
 #include "LinePrinterThread.h"
+#include "LinePrinterDlg.h"
 
 #if defined(_DEBUG)
 #define new DEBUG_NEW
@@ -23,7 +23,6 @@ BEGIN_MESSAGE_MAP(CLinePrinterDlg, CDialog)
     ON_MESSAGE(ID_MSG_SETTITLE    , OnSetTitle    )
     ON_MESSAGE(ID_MSG_CLEARWINDOW , OnClearWindow )
     ON_MESSAGE(ID_MSG_RECEIVELINE , OnReceiveLine )
-    ON_WM_SIZE()
     ON_WM_SHOWWINDOW()
     ON_BN_CLICKED(IDC_BUTTON_COPY , OnButtonCopy  )
     ON_BN_CLICKED(IDC_BUTTON_SAVE , OnButtonSave  )
@@ -40,13 +39,6 @@ BOOL CLinePrinterDlg::OnInitDialog() {
   GetClientRect(&cr);
 
   m_lineList = (CListBox*)GetDlgItem(IDC_LISTBOX_LINE);
-
-  m_layoutManager.OnInitDialog(this);
-  m_layoutManager.addControl(IDC_LISTBOX_LINE, RELATIVE_SIZE );
-  m_layoutManager.addControl(IDC_BUTTON_COPY , RELATIVE_X_POS);
-  m_layoutManager.addControl(IDC_BUTTON_SAVE , RELATIVE_X_POS);
-  m_layoutManager.addControl(IDC_BUTTON_CLOSE, RELATIVE_X_POS);
-
   return TRUE;
 }
 
@@ -73,11 +65,6 @@ LRESULT CLinePrinterDlg::OnClearWindow(WPARAM wp, LPARAM lp) {
 LRESULT CLinePrinterDlg::OnReceiveLine(WPARAM wp, LPARAM lp) {
   m_lineList->AddString(m_receivedText.cstr());
   return 0;
-}
-
-void CLinePrinterDlg::OnSize(UINT nType, int cx, int cy) {
-  __super::OnSize(nType, cx, cy);
-  m_layoutManager.OnSize(nType,cx,cy);
 }
 
 void CLinePrinterDlg::OnShowWindow(BOOL bShow, UINT nStatus) {
