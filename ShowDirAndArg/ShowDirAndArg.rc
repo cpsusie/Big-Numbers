@@ -1,4 +1,4 @@
-//Microsoft Developer Studio generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
 
@@ -13,13 +13,11 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Danish resources
+// Danish (Denmark) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DAN)
-#ifdef _WIN32
 LANGUAGE LANG_DANISH, SUBLANG_DEFAULT
 #pragma code_page(1252)
-#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -27,18 +25,18 @@ LANGUAGE LANG_DANISH, SUBLANG_DEFAULT
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE DISCARDABLE 
+1 TEXTINCLUDE 
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE DISCARDABLE 
+2 TEXTINCLUDE 
 BEGIN
     "#include ""afxres.h""\r\n"
     "\0"
 END
 
-3 TEXTINCLUDE DISCARDABLE 
+3 TEXTINCLUDE 
 BEGIN
     "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
     "#define _AFX_NO_OLE_RESOURCES\r\n"
@@ -66,47 +64,41 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDR_MAINFRAME           ICON    DISCARDABLE     "res\\ShowDirAndArg.ico"
-#endif    // Danish resources
+IDR_MAINFRAME           ICON                    "res\\ShowDirAndArg.ico"
+
+#endif    // Danish (Denmark) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
 /////////////////////////////////////////////////////////////////////////////
-// English (U.S.) resources
+// English (United States) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-#ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
-#endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Dialog
 //
 
-IDD_SHOWDIRANDARG_DIALOG DIALOGEX 0, 0, 485, 311
-STYLE WS_MINIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | 
-    WS_THICKFRAME
+IDD_SHOWDIRANDARG_DIALOG DIALOGEX 0, 0, 371, 239
+STYLE DS_SETFONT | WS_MINIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
 EXSTYLE WS_EX_APPWINDOW
 CAPTION "ShowDirAndArg"
-FONT 10, "MS Sans Serif"
+FONT 10, "MS Sans Serif", 0, 0, 0x1
 BEGIN
-    DEFPUSHBUTTON   "Exit (return -1)",IDCANCEL,428,290,50,14
-    LTEXT           "Argv:",IDC_STATICARGV,21,49,20,14,SS_CENTERIMAGE
-    LTEXT           "Cwd:",IDC_STATICCWD,21,9,20,14,SS_CENTERIMAGE
-    EDITTEXT        IDC_EDITARGV,50,41,428,82,ES_MULTILINE | ES_AUTOVSCROLL | 
-                    ES_READONLY | WS_VSCROLL
-    LTEXT           "Env",IDC_STATICENV,21,144,20,14,SS_CENTERIMAGE
-    EDITTEXT        IDC_EDITCWD,50,7,428,20,ES_AUTOHSCROLL | ES_READONLY
-    CONTROL         "List1",IDC_LISTENV,"SysListView32",LVS_REPORT | 
-                    LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | 
-                    WS_BORDER | WS_TABSTOP,50,135,428,146
-    PUSHBUTTON      "Ok (return 0)",IDOK,367,290,50,14
+    DEFPUSHBUTTON   "Exit (return -1)",IDCANCEL,314,218,50,14
+    LTEXT           "Argv:",IDC_STATICARGV,10,27,20,14,SS_CENTERIMAGE
+    LTEXT           "Cwd:",IDC_STATICCWD,10,9,20,15,SS_CENTERIMAGE
+    EDITTEXT        IDC_EDITARGV,39,27,325,64,ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY | WS_VSCROLL
+    LTEXT           "Env",IDC_STATICENV,10,94,20,14,SS_CENTERIMAGE
+    EDITTEXT        IDC_EDITCWD,39,9,325,15,ES_AUTOHSCROLL | ES_READONLY
+    CONTROL         "List1",IDC_LISTENV,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,39,94,325,123
+    PUSHBUTTON      "Ok (return 0)",IDOK,253,218,50,14
 END
 
 
-#ifndef _MAC
 /////////////////////////////////////////////////////////////////////////////
 //
 // Version
@@ -129,15 +121,13 @@ BEGIN
     BEGIN
         BLOCK "040904B0"
         BEGIN
-            VALUE "CompanyName", "\0"
-            VALUE "FileDescription", "ShowDirAndArg MFC Application\0"
-            VALUE "FileVersion", "1, 0, 0, 1\0"
-            VALUE "InternalName", "ShowDirAndArg\0"
-            VALUE "LegalCopyright", "Copyright (C) 2014\0"
-            VALUE "LegalTrademarks", "\0"
-            VALUE "OriginalFilename", "ShowDirAndArg.EXE\0"
-            VALUE "ProductName", "ShowDirAndArg Application\0"
-            VALUE "ProductVersion", "1, 0, 0, 1\0"
+            VALUE "FileDescription", "ShowDirAndArg MFC Application"
+            VALUE "FileVersion", "1, 0, 0, 1"
+            VALUE "InternalName", "ShowDirAndArg"
+            VALUE "LegalCopyright", "Copyright (C) 2014"
+            VALUE "OriginalFilename", "ShowDirAndArg.EXE"
+            VALUE "ProductName", "ShowDirAndArg Application"
+            VALUE "ProductVersion", "1, 0, 0, 1"
         END
     END
     BLOCK "VarFileInfo"
@@ -146,8 +136,6 @@ BEGIN
     END
 END
 
-#endif    // !_MAC
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -155,19 +143,38 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO DISCARDABLE 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_SHOWDIRANDARG_DIALOG, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 478
+        RIGHTMARGIN, 364
         TOPMARGIN, 7
-        BOTTOMMARGIN, 304
+        BOTTOMMARGIN, 232
     END
 END
 #endif    // APSTUDIO_INVOKED
 
-#endif    // English (U.S.) resources
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_SHOWDIRANDARG_DIALOG AFX_DIALOG_LAYOUT
+BEGIN
+    0,
+    100, 100, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 100, 40,
+    0, 40, 0, 0,
+    0, 0, 100, 0,
+    0, 40, 100, 60,
+    100, 100, 0, 0
+END
+
+#endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

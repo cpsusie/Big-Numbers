@@ -20,7 +20,6 @@ void CShowDirAndArgDlg::DoDataExchange(CDataExchange *pDX) {
 BEGIN_MESSAGE_MAP(CShowDirAndArgDlg, CDialog)
   ON_WM_PAINT()
   ON_WM_QUERYDRAGICON()
-  ON_WM_SIZE()
 END_MESSAGE_MAP()
 
 HCURSOR CShowDirAndArgDlg::OnQueryDragIcon() {
@@ -63,19 +62,7 @@ BOOL CShowDirAndArgDlg::OnInitDialog() {
     addData(*list, count, 1, value);
   }
 
-  m_layoutManager.OnInitDialog(this);
-  m_layoutManager.addControl(IDC_EDITCWD   , RELATIVE_WIDTH   );
-  m_layoutManager.addControl(IDC_EDITARGV  , RELATIVE_SIZE    );
-  m_layoutManager.addControl(IDC_STATICENV , RELATIVE_Y_POS   );
-  m_layoutManager.addControl(IDC_LISTENV   , RELATIVE_Y_POS | RELATIVE_WIDTH | INIT_LISTHEADERS| RESIZE_LISTHEADERS);
-  m_layoutManager.addControl(IDOK          , RELATIVE_POSITION);
-  m_layoutManager.addControl(IDCANCEL      , RELATIVE_POSITION);
   return TRUE;
-}
-
-void CShowDirAndArgDlg::OnSize(UINT nType, int cx, int cy) {
-  m_layoutManager.OnSize(nType,cx,cy);
-  __super::OnSize(nType, cx, cy);
 }
 
 void CShowDirAndArgDlg::OnPaint() {
