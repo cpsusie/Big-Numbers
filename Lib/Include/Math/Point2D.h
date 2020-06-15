@@ -76,7 +76,7 @@ public:
 };
 
 template<typename T, typename S> Size2DTemplate<S> operator*(const T &factor, const Size2DTemplate<S> &s) {
-  return s * f;
+  return s * factor;
 }
 
 typedef Size2DTemplate<float >   FloatSize2D;
