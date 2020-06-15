@@ -42,7 +42,6 @@ BEGIN_MESSAGE_MAP(CWordsepgraphDlg, CDialog)
   ON_WM_SYSCOMMAND()
   ON_WM_PAINT()
   ON_WM_QUERYDRAGICON()
-  ON_WM_SIZE()
   ON_WM_TIMER()
   ON_WM_CLOSE()
   ON_COMMAND(ID_FILE_LOADNETWORK  , OnFileLoadNetwork  )
@@ -85,10 +84,6 @@ BOOL CWordsepgraphDlg::OnInitDialog() {
 //    randomize();
   m_threadPriority = THREAD_PRIORITY_NORMAL;
   m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATOR));
-
-  m_layoutManager.OnInitDialog(this);
-  m_layoutManager.addControl(IDC_DETAILS, RELATIVE_SIZE);
-  m_layoutManager.addControl(IDC_MESSAGE, RELATIVE_Y_POS | RELATIVE_WIDTH);
 
   enableButtons(false);
   OnGotoEditord();
@@ -276,11 +271,6 @@ BOOL CWordsepgraphDlg::PreTranslateMessage(MSG *pMsg) {
     return true;
   }
   return __super::PreTranslateMessage(pMsg);
-}
-
-void CWordsepgraphDlg::OnSize(UINT nType, int cx, int cy) {
-  __super::OnSize(nType, cx, cy);
-  m_layoutManager.OnSize(nType, cx, cy);
 }
 
 static void showfile(char *fname) {

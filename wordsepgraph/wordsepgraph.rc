@@ -1,4 +1,4 @@
-//Microsoft Developer Studio generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
 
@@ -13,13 +13,11 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Danish resources
+// Danish (Denmark) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DAN)
-#ifdef _WIN32
 LANGUAGE LANG_DANISH, SUBLANG_DEFAULT
 #pragma code_page(1252)
-#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -27,18 +25,18 @@ LANGUAGE LANG_DANISH, SUBLANG_DEFAULT
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE DISCARDABLE 
+1 TEXTINCLUDE 
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE DISCARDABLE 
+2 TEXTINCLUDE 
 BEGIN
     "#include ""afxres.h""\r\n"
     "\0"
 END
 
-3 TEXTINCLUDE DISCARDABLE 
+3 TEXTINCLUDE 
 BEGIN
     "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
     "#define _AFX_NO_OLE_RESOURCES\r\n"
@@ -66,7 +64,8 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDR_MAINFRAME           ICON    DISCARDABLE     "res\\wordsepgraph.ico"
+IDR_MAINFRAME           ICON                    "res\\wordsepgraph.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -74,26 +73,24 @@ IDR_MAINFRAME           ICON    DISCARDABLE     "res\\wordsepgraph.ico"
 //
 
 IDD_WORDSEPGRAPH_DIALOG DIALOGEX 0, 0, 430, 260
-STYLE WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
-    WS_SYSMENU | WS_THICKFRAME
+STYLE DS_SETFONT | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
 EXSTYLE WS_EX_CLIENTEDGE | WS_EX_APPWINDOW
 CAPTION "wordsepgraph"
 MENU IDR_MENU1
-FONT 10, "Courier"
+FONT 10, "Courier", 0, 0, 0x1
 BEGIN
-    LTEXT           "&Indtast ord:",IDC_STATIC,9,15,39,9
-    EDITTEXT        IDC_EDITORD,51,14,93,12,ES_AUTOHSCROLL
-    PUSHBUTTON      "&Del ord",IDC_BUTTONSEPARATE,13,35,45,14
-    LTEXT           "=",IDC_STATIC,148,15,8,8
-    LTEXT           "",IDC_STATICRESULT,157,16,263,9
-    PUSHBUTTON      "&Lær ord",IDC_BUTTONLEARN,64,35,45,14
+    LTEXT           "&Indtast ord:",IDC_STATIC,6,15,49,9,SS_CENTERIMAGE
+    EDITTEXT        IDC_EDITORD,56,13,88,12,ES_AUTOHSCROLL
+    PUSHBUTTON      "&Del ord",IDC_BUTTONSEPARATE,6,34,45,12
+    LTEXT           "=",IDC_STATIC,148,15,8,9,SS_CENTERIMAGE
+    LTEXT           "",IDC_STATICRESULT,160,15,260,9
+    PUSHBUTTON      "&Lær ord",IDC_BUTTONLEARN,56,34,45,12
     LTEXT           "",IDC_MESSAGE,4,239,419,16,SS_SUNKEN
-    EDITTEXT        IDC_DETAILS,180,34,243,201,ES_MULTILINE | ES_AUTOVSCROLL | 
-                    ES_READONLY | WS_VSCROLL
+    EDITTEXT        IDC_DETAILS,144,34,279,201,ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY | WS_VSCROLL
 END
 
-IDD_DIALOGTRAININGPARAMDIALOG DIALOG DISCARDABLE  0, 0, 284, 177
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_DIALOGTRAININGPARAMDIALOG DIALOG 0, 0, 284, 177
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "TrainingParameters"
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -105,21 +102,18 @@ BEGIN
     EDITTEXT        IDC_EDITMOMENTUM,78,42,65,18,ES_AUTOHSCROLL
     CONTROL         "Update only on error",IDC_RADIO_UPDATE_ON_ERROR_ONLY,
                     "Button",BS_AUTORADIOBUTTON | WS_GROUP,56,111,115,13
-    CONTROL         "Update always",IDC_RADIO_UPDATEALWAYS,"Button",
-                    BS_AUTORADIOBUTTON,56,134,116,13
-    COMBOBOX        IDC_COMBOPRIORITY,78,67,106,48,CBS_DROPDOWN | WS_VSCROLL | 
-                    WS_TABSTOP
+    CONTROL         "Update always",IDC_RADIO_UPDATEALWAYS,"Button",BS_AUTORADIOBUTTON,56,134,116,13
+    COMBOBOX        IDC_COMBOPRIORITY,78,67,106,48,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
     LTEXT           "Priority of trainingthread:",IDC_STATIC,11,67,60,15
 END
 
-IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 235, 55
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_ABOUTBOX DIALOG 0, 0, 235, 55
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About wordsepgraph"
 FONT 8, "MS Sans Serif"
 BEGIN
     ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
-    LTEXT           "wordsepgraph Version 1.0",IDC_STATIC,40,10,119,8,
-                    SS_NOPREFIX
+    LTEXT           "wordsepgraph Version 1.0",IDC_STATIC,40,10,119,8,SS_NOPREFIX
     LTEXT           "Copyright (C) 2002",IDC_STATIC,40,25,119,8
     DEFPUSHBUTTON   "OK",IDOK,178,7,50,14,WS_GROUP
 END
@@ -131,13 +125,14 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO DISCARDABLE 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_WORDSEPGRAPH_DIALOG, DIALOG
     BEGIN
         LEFTMARGIN, 1
         TOPMARGIN, 7
     END
+
     IDD_DIALOGTRAININGPARAMDIALOG, DIALOG
     BEGIN
         LEFTMARGIN, 7
@@ -145,6 +140,7 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 170
     END
+
     IDD_ABOUTBOX, DIALOG
     BEGIN
         LEFTMARGIN, 7
@@ -161,7 +157,7 @@ END
 // Menu
 //
 
-IDR_MENU1 MENU DISCARDABLE 
+IDR_MENU1 MENU
 BEGIN
     POPUP "&File"
     BEGIN
@@ -177,9 +173,7 @@ BEGIN
     END
     POPUP "Options"
     BEGIN
-        MENUITEM "Trainingparameters...\tCtrl+P", 
-                                                ID_OPTIONS_TRAININGPARAMETERS
-
+        MENUITEM "Trainingparameters...\tCtrl+P", ID_OPTIONS_TRAININGPARAMETERS
     END
 END
 
@@ -189,15 +183,14 @@ END
 // Accelerator
 //
 
-IDR_ACCELERATOR ACCELERATORS DISCARDABLE 
+IDR_ACCELERATOR ACCELERATORS
 BEGIN
     "D",            ID_FILE_TRAININGDATA,   VIRTKEY, CONTROL, NOINVERT
     "E",            ID_FILE_ERRORWORDS,     VIRTKEY, CONTROL, NOINVERT
     "I",            ID_GOTO_EDITORD,        VIRTKEY, ALT, NOINVERT
     "L",            ID_FILE_LOADNETWORK,    VIRTKEY, CONTROL, NOINVERT
     "O",            ID_FILE_STOPTRAINING,   VIRTKEY, CONTROL, NOINVERT
-    "P",            ID_OPTIONS_TRAININGPARAMETERS, VIRTKEY, CONTROL, 
-                                                    NOINVERT
+    "P",            ID_OPTIONS_TRAININGPARAMETERS, VIRTKEY, CONTROL, NOINVERT
     "S",            ID_FILE_SAVENETWORK,    VIRTKEY, CONTROL, NOINVERT
     "T",            ID_FILE_STARTTRAINING,  VIRTKEY, CONTROL, NOINVERT
     VK_F4,          ID_FILE_QUIT,           VIRTKEY, ALT, NOINVERT
@@ -232,7 +225,6 @@ BEGIN
 END
 
 
-#ifndef _MAC
 /////////////////////////////////////////////////////////////////////////////
 //
 // Version
@@ -255,18 +247,13 @@ BEGIN
     BEGIN
         BLOCK "040904b0"
         BEGIN
-            VALUE "Comments", "\0"
-            VALUE "CompanyName", "\0"
-            VALUE "FileDescription", "Separates words using backpropagation neural network\0"
-            VALUE "FileVersion", "1, 0, 0, 1\0"
-            VALUE "InternalName", "wordsepgraph\0"
-            VALUE "LegalCopyright", "Copyright (C) 2002\0"
-            VALUE "LegalTrademarks", "\0"
-            VALUE "OriginalFilename", "wordsepgraph.EXE\0"
-            VALUE "PrivateBuild", "\0"
-            VALUE "ProductName", "wordsepgraph\0"
-            VALUE "ProductVersion", "1, 0, 0, 1\0"
-            VALUE "SpecialBuild", "\0"
+            VALUE "FileDescription", "Separates words using backpropagation neural network"
+            VALUE "FileVersion", "1, 0, 0, 1"
+            VALUE "InternalName", "wordsepgraph"
+            VALUE "LegalCopyright", "Copyright (C) 2002"
+            VALUE "OriginalFilename", "wordsepgraph.EXE"
+            VALUE "ProductName", "wordsepgraph"
+            VALUE "ProductVersion", "1, 0, 0, 1"
         END
     END
     BLOCK "VarFileInfo"
@@ -275,7 +262,24 @@ BEGIN
     END
 END
 
-#endif    // !_MAC
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_WORDSEPGRAPH_DIALOG AFX_DIALOG_LAYOUT
+BEGIN
+    0,
+    0, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 100, 0,
+    0, 0, 0, 0,
+    0, 100, 100, 0,
+    0, 0, 100, 100
+END
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -283,12 +287,12 @@ END
 // String Table
 //
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDS_ABOUTBOX            "&About wordsepgraph..."
 END
 
-#endif    // Danish resources
+#endif    // Danish (Denmark) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
