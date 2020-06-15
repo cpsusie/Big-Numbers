@@ -1,12 +1,9 @@
 #pragma once
 
-#include <MFCUtil/LayoutManager.h>
-
 class CReversiDlg : public CDialog {
 private:
     HICON               m_hIcon;
     HACCEL              m_accelTable;
-    SimpleLayoutManager m_layoutManager;
     bool                m_currentIsSystemCursor;
     GameState           m_game;
     bool                m_timerIsRunning;

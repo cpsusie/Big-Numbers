@@ -84,11 +84,6 @@ BOOL CReversiDlg::OnInitDialog() {
 
   m_currentIsSystemCursor = true;
   m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATOR1));
-
-  m_layoutManager.OnInitDialog(this);
-  m_layoutManager.addControl(IDC_BOARDFRAME, RELATIVE_SIZE );
-  m_layoutManager.addControl(IDC_SCORE     , RELATIVE_Y_POS);
-
   return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -317,7 +312,6 @@ void CReversiDlg::OnTimer(UINT_PTR nIDEvent) {
 }
 
 void CReversiDlg::OnSize(UINT nType, int cx, int cy) {
-  m_layoutManager.OnSize(nType, cx, cy);
   Invalidate(TRUE);
 }
 
