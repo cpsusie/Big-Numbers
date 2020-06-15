@@ -28,7 +28,6 @@ void CHistoryDlg::DoDataExchange(CDataExchange *pDX) {
 }
 
 BEGIN_MESSAGE_MAP(CHistoryDlg, CDialog)
-  ON_WM_SIZE()
   ON_WM_HSCROLL(  )
   ON_COMMAND(ID_FILE_ANALYZEPOSITION          , OnFileAnalyzePosition               )
   ON_COMMAND(ID_FILE_PRINT                    , OnFilePrint                         )
@@ -65,12 +64,6 @@ BOOL CHistoryDlg::OnInitDialog() {
     _tcscpy(lf.lfFaceName, _T("courier new"));
   BOOL ret = m_historyFont.CreateFontIndirect(&lf);
   getHistoryBox()->SetFont(&m_historyFont,FALSE);
-
-  m_layoutManager.OnInitDialog(this);
-  m_layoutManager.addControl(IDC_EDIT_HISTORY     , RELATIVE_SIZE     | RESIZE_FONT    );
-  m_layoutManager.addControl(IDC_SCROLLBAR_HISTORY, RELATIVE_Y_POS    | RELATIVE_WIDTH );
-  m_layoutManager.addControl(IDOK                 , RELATIVE_POSITION    );
-  m_layoutManager.addControl(IDCANCEL             , RELATIVE_POSITION    );
 
   setWindowText(this, getWindowText(this) + _T(" - ") + FileNameSplitter(m_gameName).getFileName());
   setMoveFormat(getOptions().getMoveFormat());
@@ -136,7 +129,6 @@ void CHistoryDlg::OnFontsize175() { setFontSize(175, true); }
 void CHistoryDlg::OnFontsize200() { setFontSize(200, true); }
 
 void CHistoryDlg::setFontSize(int pct, bool redraw) {
-  m_layoutManager.scaleFont((double)pct / 100, redraw);
   getOptions().setHistoryFontSize(pct);
   FontSizeMenuManager::setFontSize(this, pct);
 }
@@ -364,9 +356,4 @@ bool CHistoryDlg::isChanged() const {
 void CHistoryDlg::OnFileAnalyzePosition() {
   assert(m_currentPly >= 0 && m_currentPly < (int)m_history.size());
   startNewGameAnalyzeThread(m_gameName, m_gameStartPosition, m_history, m_currentPly);
-}
-
-void CHistoryDlg::OnSize(UINT nType, int cx, int cy) {
-  __super::OnSize(nType, cx, cy);
-  m_layoutManager.OnSize(nType, cx, cy);
 }

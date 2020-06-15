@@ -2,8 +2,8 @@
 #include <MFCUtil/WinTools.h>
 #include <MFCUtil/TreeCtrlWalker.h>
 #include "Chess.h"
-#include "OpeningDlg.h"
 #include "SelectOpeningDlg.h"
+#include "OpeningDlg.h"
 
 #if defined(_DEBUG)
 #define new DEBUG_NEW
@@ -17,7 +17,6 @@ void COpeningDlg::DoDataExchange(CDataExchange *pDX) {
 }
 
 BEGIN_MESSAGE_MAP(COpeningDlg, CDialog)
-  ON_WM_SIZE()
   ON_BN_CLICKED(IDC_BUTTON_EXPAND   , OnButtonExpand)
   ON_BN_CLICKED(IDC_BUTTON_EXPANDALL, OnButtonExpandAll)
   ON_COMMAND(   ID_OPENING_EXPAND   , OnOpeningExpand)
@@ -39,12 +38,6 @@ BOOL COpeningDlg::OnInitDialog() {
     ctrl->SetFocus();
     ctrl->SelectItem(ctrl->GetRootItem());
   }
-
-  m_layoutManager.OnInitDialog(this);
-  m_layoutManager.addControl(IDC_TREE_OPENING    , RELATIVE_SIZE );
-  m_layoutManager.addControl(IDOK                , RELATIVE_X_POS);
-  m_layoutManager.addControl(IDC_BUTTON_EXPAND   , RELATIVE_X_POS);
-  m_layoutManager.addControl(IDC_BUTTON_EXPANDALL, RELATIVE_X_POS);
 
   m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_OPENING_ACCELERATOR));
   return false;
@@ -91,11 +84,6 @@ HTREEITEM getChildByIndex(CTreeCtrl *ctrl, HTREEITEM parent, int index) {
     child = ctrl->GetNextSiblingItem(child);
   }
   return child;
-}
-
-void COpeningDlg::OnSize(UINT nType, int cx, int cy) {
-  __super::OnSize(nType, cx, cy);
-  m_layoutManager.OnSize(nType, cx, cy);
 }
 
 void COpeningDlg::OnOpeningExpand() {

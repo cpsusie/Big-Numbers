@@ -1,14 +1,12 @@
 #pragma once
 
 #include <SynchronizedQueue.h>
-#include <MFCUTIL/LayoutManager.h>
 
 class CTraceDlgThread;
 
 class CTraceDlg : public CDialog, OptionsAccessor {
 private:
   HICON                     m_hIcon;
-  SimpleLayoutManager       m_layoutManager;
   bool                      m_initDone;
   UINT                      m_timerCount;
   SynchronizedQueue<String> m_textQueue;

@@ -53,12 +53,6 @@ BOOL CTraceDlg::OnInitDialog() {
   m_textBox      = (CEdit*)GetDlgItem(IDC_EDIT_TEXTBOX);
   m_messageField = (CEdit*)GetDlgItem(IDC_EDIT_PV);
 
-  m_layoutManager.OnInitDialog(this);
-  m_layoutManager.addControl(IDC_EDIT_TEXTBOX  , RELATIVE_SIZE         | RESIZE_FONT                 );
-  m_layoutManager.addControl(IDC_EDIT_PV       , RELATIVE_Y_POS        | RELATIVE_WIDTH | RESIZE_FONT);
-  m_layoutManager.addControl(IDC_BUTTON_HIDE   , PCT_RELATIVE_X_CENTER | RELATIVE_Y_POS              );
-  m_layoutManager.addControl(IDC_BUTTON_CLEAR  , PCT_RELATIVE_X_CENTER | RELATIVE_Y_POS              );
-  m_layoutManager.addControl(IDC_CHECK_KEEPTEXT, PCT_RELATIVE_X_CENTER | RELATIVE_Y_POS              );
   m_initDone = true;
   return TRUE;
 }
@@ -99,7 +93,6 @@ void CTraceDlg::OnMove(int x, int y) {
 
 void CTraceDlg::OnSize(UINT nType, int cx, int cy) {
   __super::OnSize(nType, cx, cy);
-  m_layoutManager.OnSize(nType, cx, cy);
   if(m_timerCount > 2) {
     getOptions().setTraceWindowSize(getWindowSize(this));
   }
@@ -260,7 +253,6 @@ void CTraceDlg::OnFontsize175() { setFontSize(175, true); }
 void CTraceDlg::OnFontsize200() { setFontSize(200, true); }
 
 void CTraceDlg::setFontSize(int pct, bool redraw) {
-  m_layoutManager.scaleFont((double)pct / 100, redraw);
   getOptions().setTraceFontSize(pct);
   FontSizeMenuManager::setFontSize(this, pct);
 }
