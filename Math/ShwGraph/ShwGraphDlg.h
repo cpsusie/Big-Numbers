@@ -51,6 +51,7 @@ public:
   bool showMousePositionIsChecked();
   bool showCoefIsChecked();
   bool autoUpdateScreen();
+  void autoInvalidate();
   void drawDerived( Viewport2D &vp, int d);
   void drawFunction(Viewport2D &vp, Function &f);
   void showCoef();

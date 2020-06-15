@@ -134,8 +134,8 @@ void CShwGraphDlg::OnPaint() {
     const int   y      = (rect.Height() - cyIcon + 1) / 2;
     dc.DrawIcon(x, y, m_hIcon);
   } else {
-    m_cs.OnPaint();
     CPaintDC    dc(&m_cs);
+    m_cs.paint(dc);
     Viewport2D &vp    = m_cs.getViewport();
     CDC        *oldDC = vp.setDC(&dc);
     try {
@@ -197,6 +197,11 @@ bool CShwGraphDlg::showCoefIsChecked()          { return isMenuItemChecked(this,
 bool CShwGraphDlg::autoUpdateScreen() {
   return showCoefIsChecked() || showFunctionIsChecked() || showD1IsChecked() || showD2IsChecked() || showD3IsChecked();
 }
+void CShwGraphDlg::autoInvalidate() {
+  if(autoUpdateScreen()) {
+    Invalidate(FALSE);
+  }
+}
 
 void CShwGraphDlg::setState(DialogState newstate) {
   m_state = newstate;
@@ -224,9 +229,7 @@ void CShwGraphDlg::movePoint(intptr_t index, const CPoint &point) {
   m_needUpdateRange = true;
   m_needSolve       = true;
   m_cs.setDC(oldDC);
-  if(autoUpdateScreen()) {
-    Invalidate(FALSE);
-  }
+  autoInvalidate();
 }
 
 void CShwGraphDlg::readData(FILE *f) {
@@ -256,8 +259,9 @@ void CShwGraphDlg::adjustTransform() {
 }
 
 intptr_t CShwGraphDlg::findDataPoint(const CPoint &point) { /* returns the index of the nearest DataPoint. -1 if none */
-  double minDist = 100;
-  intptr_t found = -1;
+  const size_t n       = m_points.size();
+  double       minDist = 25;
+  intptr_t     found   = -1;
   RectangleTransformation &tr = getTr();
   for(size_t i = 0; i < m_points.size();i++) {
     const Point2DP pp = tr.forwardTransform(m_points[i]);
@@ -265,7 +269,7 @@ intptr_t CShwGraphDlg::findDataPoint(const CPoint &point) { /* returns the index
       continue;
     }
     const double dist = sqr(pp.x - point.x)+sqr(pp.y-point.y);
-    if(dist < 25 && dist < minDist) {
+    if(dist < minDist) {
       minDist = dist;
       found   = i;
     }
@@ -305,9 +309,7 @@ void CShwGraphDlg::OnEditDegree() {
   DegreeDlg dlg(m_preferredDegree);
   if(dlg.DoModal() == IDOK) {
     m_preferredDegree = dlg.m_degree;
-    if(autoUpdateScreen()) {
-      Invalidate(FALSE);
-    }
+    autoInvalidate();
   }
 }
 
@@ -474,7 +476,7 @@ void CShwGraphDlg::OnMouseMove(UINT nFlags, CPoint point) {
       m_movePoint = m_points.size()-1;
       m_cs.setDC(oldDC);
       setState(STATE_MOVEPOINT);
-      if(autoUpdateScreen()) Invalidate(FALSE);
+      autoInvalidate();
     }
     break;
   case STATE_MOVEPOINT:
@@ -507,7 +509,7 @@ void CShwGraphDlg::OnLButtonUp(UINT nFlags, CPoint point) {
       addPoint(vp.backwardTransform(point));
       vp.paintCross(m_points.last(),BLACK);
       m_cs.setDC(oldDC);
-      if(autoUpdateScreen()) Invalidate(FALSE);
+      autoInvalidate();
       setState(STATE_IDLE);
     }
     break;
@@ -542,7 +544,7 @@ void CShwGraphDlg::OnRButtonDown(UINT nFlags, CPoint point) {
         vp.paintCross(m_points[index],WHITE);
         removePoint(index);
         m_cs.setDC(oldDC);
-        if(autoUpdateScreen()) Invalidate(FALSE);
+        autoInvalidate();
       }
       break;
     }
@@ -703,9 +705,7 @@ void CShwGraphDlg::OnEditIncrdegree() {
     return;
   }
   m_preferredDegree++;
-  if(autoUpdateScreen()) {
-    Invalidate(FALSE);
-  }
+  autoInvalidate();
 }
 
 void CShwGraphDlg::OnEditDecrdegree() {
@@ -713,9 +713,7 @@ void CShwGraphDlg::OnEditDecrdegree() {
     return;
   }
   m_preferredDegree--;
-  if(autoUpdateScreen()) {
-    Invalidate(FALSE);
-  }
+  autoInvalidate();
 }
 
 BOOL CShwGraphDlg::PreTranslateMessage(MSG *pMsg) {
