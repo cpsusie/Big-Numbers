@@ -1,6 +1,6 @@
 #pragma once
 
-#include <MFCUtil/LayoutManager.h>
+#include <MFCUtil/DialogWithDynamicLayout.h>
 #include <MFCUtil/StaticBottomAligned.h>
 #include <MFCUtil/ComboBoxWithHistory.h>
 #include <TinyBitSet.h>
@@ -21,7 +21,7 @@ typedef enum {
   PROP_BLINKERSVISIBLE
 } DialogProperty;
 
-class CRegexDemoDlg : public CDialog, public PropertyChangeListener, public PropertyContainer {
+class CRegexDemoDlg : public CDialogWithDynamicLayout, public PropertyChangeListener, public PropertyContainer {
 private:
   HICON                          m_hIcon;
   HACCEL                         m_accelTable;
@@ -29,7 +29,6 @@ private:
   CComboBoxWithHistory           m_patternCombo, m_targetCombo;
   CDebugTextWindow               m_codeWindow;
   CStaticBottomAligned           m_stackWindow;
-  SimpleLayoutManager            m_layoutManager;
   CharacterMarkerArray           m_charMarkers;
   bool                           m_patternOk;
   bool                           m_patternDirty;
@@ -53,7 +52,7 @@ private:
   void enableRegisterWindow(bool enable);
   void setGraphicsWindowVisible(bool visible);
   bool isGraphicsWindowVisible();
-  void setCylceAndStackWindowTop(int top);
+  void setCylceAndStackWindowTop(int top, int topMoveRatio);
   void clearDebuggerState();
   CompileParameters getCompileParameters();
   void showCompilerState();

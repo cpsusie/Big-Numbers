@@ -19,7 +19,7 @@ protected:
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CRegexDemoDlg::CRegexDemoDlg(CWnd *pParent) : CDialog(IDD, pParent) {
+CRegexDemoDlg::CRegexDemoDlg(CWnd *pParent) : CDialogWithDynamicLayout(IDD, pParent) {
   m_pattern         = EMPTYSTRING;
   m_target          = EMPTYSTRING;
   m_hIcon           = theApp.LoadIcon(IDR_MAINFRAME);
@@ -104,10 +104,14 @@ BOOL CRegexDemoDlg::OnInitDialog() {
   SetIcon(m_hIcon, TRUE);         // Set big icon
   SetIcon(m_hIcon, FALSE);        // Set small icon
 
+  const TabOrder tabOrder(this);
   m_codeWindow.substituteControl(   this, IDC_LISTBYTECODE);
   m_patternCombo.substituteControl( this, IDC_COMBOPATTERN      , _T("PatternHistory"));
   m_targetCombo.substituteControl(  this, IDC_COMBOTARGET       , _T("TargetHistory") );
   m_stackWindow.substituteControl(  this, IDC_STATICSTACK);
+
+  tabOrder.restoreTabOrder();
+  reloadDynamicLayoutResource();
 
   LOGFONT lf;
   GetFont()->GetLogFont(&lf);
@@ -131,26 +135,6 @@ BOOL CRegexDemoDlg::OnInitDialog() {
   addPropertyChangeListener(&m_regex       );
   addPropertyChangeListener(getCodeWindow());
 
-  m_layoutManager.OnInitDialog(this);
-
-  m_layoutManager.addControl(IDC_COMBOPATTERN            , RELATIVE_WIDTH                            );
-  m_layoutManager.addControl(IDC_COMBOTARGET             , RELATIVE_WIDTH                            );
-  m_layoutManager.addControl(IDC_STATICRESULT            , PCT_RELATIVE_RIGHT                        );
-  m_layoutManager.addControl(IDC_STATICSTATENAMELABEL    , PCT_RELATIVE_RIGHT  | CONSTANT_WIDTH      );
-  m_layoutManager.addControl(IDC_STATICSTATENAME         , PCT_RELATIVE_LEFT   | PCT_RELATIVE_RIGHT  );
-  m_layoutManager.addControl(IDC_LISTBYTECODE            , PCT_RELATIVE_RIGHT                        | RELATIVE_BOTTOM                           );
-  m_layoutManager.addControl(IDC_STATICFASTMAPLABEL      ,                                             RELATIVE_Y_POS                            );
-  m_layoutManager.addControl(IDC_STATICFASTMAP           , PCT_RELATIVE_RIGHT  |                       RELATIVE_Y_POS                            );
-
-  m_layoutManager.addControl(IDC_STATICREGISTERSLABEL    , PCT_RELATIVE_LEFT   | PCT_RELATIVE_RIGHT                                              );
-  m_layoutManager.addControl(IDC_STATICREGISTERS         , PCT_RELATIVE_LEFT   | RELATIVE_RIGHT                            | PCT_RELATIVE_BOTTOM );
-
-  m_layoutManager.addControl(IDC_STATICSTACKLABEL        , PCT_RELATIVE_LEFT   | PCT_RELATIVE_RIGHT  | PCT_RELATIVE_TOP    | CONSTANT_HEIGHT     );
-  m_layoutManager.addControl(IDC_STATICSTACK             , PCT_RELATIVE_LEFT   | RELATIVE_RIGHT      | PCT_RELATIVE_TOP    | RELATIVE_BOTTOM     );
-
-  m_layoutManager.addControl(IDC_STATICDFAGRAPHICSWINDOW , PCT_RELATIVE_LEFT   | RELATIVE_RIGHT                            | PCT_RELATIVE_BOTTOM );
-  m_layoutManager.addControl(IDC_STATICCYCLES            , PCT_RELATIVE_LEFT   | RELATIVE_RIGHT      | PCT_RELATIVE_TOP    | CONSTANT_HEIGHT     );
-
   m_patternDirty = false;
   m_patternOk    = false;
 
@@ -162,7 +146,6 @@ BOOL CRegexDemoDlg::OnInitDialog() {
 
 void CRegexDemoDlg::OnSize(UINT nType, int cx, int cy) {
   __super::OnSize(nType, cx, cy);
-  m_layoutManager.OnSize(nType, cx, cy);
   if(isGraphicsOn()) {
     PostMessage(WM_PAINT);
   }
@@ -951,7 +934,7 @@ void CRegexDemoDlg::setRegisterWindowMode() {
   if(m_regex.getType() == EMACS_REGEX) {
     setRegisterWindowVisible(true);
     setGraphicsWindowVisible(false);
-    setCylceAndStackWindowTop(getWindowRect(getRegisterWindow()).bottom);
+    setCylceAndStackWindowTop(getWindowRect(getRegisterWindow()).bottom, getItemLayout(IDC_STATICREGISTERS)->getBottomMoveRatio());
   } else {
     setRegisterWindowVisible(false);
     if(isGraphicsOn()) {
@@ -963,7 +946,7 @@ void CRegexDemoDlg::setRegisterWindowMode() {
     rect.bottom = getClientRect(this).Height() - 200;
 */
       setGraphicsWindowVisible(true);
-      setCylceAndStackWindowTop(getWindowRect(getGraphicsWindow()).bottom);
+      setCylceAndStackWindowTop(getWindowRect(getGraphicsWindow()).bottom, getItemLayout(IDC_STATICDFAGRAPHICSWINDOW)->getBottomMoveRatio());
     }
   }
 }
@@ -987,21 +970,24 @@ bool CRegexDemoDlg::isGraphicsWindowVisible() {
   return getGraphicsWindow()->IsWindowVisible() ? true : false;
 }
 
-void CRegexDemoDlg::setCylceAndStackWindowTop(int top) {
-  CRect cycleRect = getWindowRect(this, IDC_STATICCYCLES);
-  CRect stackRect = getWindowRect(getStackWindow());
-  CRect labelRect = getWindowRect(this, IDC_STATICSTACKLABEL);
+void CRegexDemoDlg::setCylceAndStackWindowTop(int top, int topMoveRatio) {
+  CRect      cycleRect = getWindowRect(this, IDC_STATICCYCLES    );
+  CRect      labelRect = getWindowRect(this, IDC_STATICSTACKLABEL);
+  CRect      stackRect = getWindowRect(this, IDC_STATICSTACK     );
 
-  int dt = top - cycleRect.top;
+  ItemLayout cycleItem = *getItemLayout(     IDC_STATICCYCLES    );
+  ItemLayout labelItem = *getItemLayout(     IDC_STATICSTACKLABEL);
+  ItemLayout stackItem = *getItemLayout(     IDC_STATICSTACK     );
 
-  cycleRect.top    += dt;
-  cycleRect.bottom += dt;
-  labelRect.top    += dt;
-  labelRect.bottom += dt;
-  stackRect.top    += dt;
-  setWindowRect(getStackWindow()          , stackRect);
-  setWindowRect(this, IDC_STATICCYCLES    , cycleRect);
-  setWindowRect(this, IDC_STATICSTACKLABEL, labelRect);
+  const int dt = top - cycleRect.top;
+
+  cycleRect.top    += dt; cycleRect.bottom += dt; cycleItem.m_moveSettings.m_nYRatio = topMoveRatio;
+  labelRect.top    += dt; labelRect.bottom += dt; labelItem.m_moveSettings.m_nYRatio = topMoveRatio;
+  stackRect.top    += dt;                         stackItem.m_moveSettings.m_nYRatio = topMoveRatio;
+                                                  stackItem.m_sizeSettings.m_nYRatio = 100 - topMoveRatio;
+  setCtrlRect(  IDC_STATICCYCLES    , cycleRect, &cycleItem.getMoveSettings());
+  setCtrlRect(  IDC_STATICSTACKLABEL, labelRect, &labelItem.getMoveSettings());
+  setCtrlRect(  IDC_STATICSTACK     , stackRect, &stackItem.getMoveSettings(), &stackItem.getSizeSettings());
 }
 
 void CRegexDemoDlg::showMatchStack(const _RegexMatchState &state) {
