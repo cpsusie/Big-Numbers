@@ -17,6 +17,14 @@ public:
   inline const CMFCDynamicLayout::SizeSettings &getSizeSettings() const {
     return m_sizeSettings;
   }
+  // m_moveSettings.m_nXRatio + m_sizeSettings.m_nXRatio
+  inline int getRightMoveRatio() const {
+    return m_moveSettings.m_nXRatio + m_sizeSettings.m_nXRatio;
+  }
+  // m_moveSettings.m_nYRatio + m_sizeSettings.m_nYRatio;
+  inline int getBottomMoveRatio() const {
+    return m_moveSettings.m_nYRatio + m_sizeSettings.m_nYRatio;
+  }
 };
 
 class DynLayoutData : public CompactArray<ItemLayout> {
@@ -40,6 +48,7 @@ public:
   }
   void updateWindowPointers();
   ItemLayout *findItem(int ctrlId);
+  const ItemLayout *findItem(int ctrlId) const;
 };
 
 class CDialogWithDynamicLayout : public CDialog {
@@ -52,6 +61,9 @@ protected:
   CMFCDynamicLayout &resetMFCLayoutManager();
   // Reload MFCLayoutManager and m_layoutData
   CDialogWithDynamicLayout &reloadDynamicLayoutResource();
+  const ItemLayout *getItemLayout(int ctrlId) const {
+    return m_layoutData.findItem(ctrlId);
+  }
   // Delete and recreate MFCLayoutManager and add all items in m_layoutData
   CDialogWithDynamicLayout &putLayoutDataToMFCLayoutManager();
   CDialogWithDynamicLayout &setCtrlPos( int ctrlId, CPoint &newPos , const CMFCDynamicLayout::MoveSettings *newSettings  = NULL);

@@ -56,6 +56,16 @@ ItemLayout *DynLayoutData::findItem(int ctrlId) {
   return NULL;
 }
 
+const ItemLayout *DynLayoutData::findItem(int ctrlId) const {
+  if(isEmpty()) return NULL;
+  for(const ItemLayout *pil = &first(), *endp = &last(); pil<=endp; pil++) {
+    if(pil->m_ctrlId == ctrlId) {
+      return pil;
+    }
+  }
+  return NULL;
+}
+
 BOOL CDialogWithDynamicLayout::OnInitDialog() {
   const BOOL result = __super::OnInitDialog();
   if(IS_INTRESOURCE(m_lpszTemplateName)) {
