@@ -12,27 +12,17 @@ class CAboutDlg : public CDialog {
 private:
   COneOrTwoDlg *m_mainDlg;
 public:
-  CAboutDlg(COneOrTwoDlg *mainDlg);
-
   enum { IDD = IDD_ABOUTBOX };
-
-protected:
-  virtual void DoDataExchange(CDataExchange *pDX);
+  CAboutDlg(COneOrTwoDlg *mainDlg) : CDialog(IDD), m_mainDlg(mainDlg) {
+  }
 
   afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
   DECLARE_MESSAGE_MAP()
 };
 
-CAboutDlg::CAboutDlg(COneOrTwoDlg *mainDlg) : CDialog(CAboutDlg::IDD) {
-  m_mainDlg = mainDlg;
-}
-
-void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-  __super::DoDataExchange(pDX);
-}
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
-    ON_WM_LBUTTONDBLCLK()
+  ON_WM_LBUTTONDBLCLK()
 END_MESSAGE_MAP()
 
 void CAboutDlg::OnLButtonDblClk(UINT nFlags, CPoint point) {
@@ -103,15 +93,8 @@ BOOL COneOrTwoDlg::OnInitDialog() {
   SetIcon(m_hIcon, FALSE);        // Set small icon
 
   m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_MAINFRAME));
-
   randomize();
-
   newGame((Player)(randInt() % 2));
-
-  m_layoutManager.OnInitDialog(this);
-  m_layoutManager.addControl(IDC_BUTTONREMOVE   , RELATIVE_X_POS);
-  m_layoutManager.addControl(IDC_BUTTONSHOWMOVES, RELATIVE_X_POS);
-
   return TRUE;
 }
 
@@ -193,7 +176,6 @@ void COneOrTwoDlg::OnOK() {
 }
 
 void COneOrTwoDlg::OnSize(UINT nType, int cx, int cy) {
-  m_layoutManager.OnSize(nType,cx,cy);
   __super::OnSize(nType, cx, cy);
   Invalidate();
 }
