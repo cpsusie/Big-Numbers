@@ -1,9 +1,9 @@
 #pragma once
 
 #include <MFCUtil/ComboBoxWithHistory.h>
+#include <MFCUtil/OBMButton.h>
 #include "SearchMachine.h"
 #include "TextPosition.h"
-void drawTriangle(CWnd *wnd);
 
 class TextContainer {
 public:
@@ -13,6 +13,7 @@ public:
 class CFindDlg: public CDialog, private OptionsAccessor {
 private:
   CComboBoxWithHistory m_findWhatCombo;
+  OBMButton            m_specialCharButton;
   CFont                m_font;
   int                  m_selStart, m_selEnd;
   int                  m_currentControl;
@@ -49,7 +50,6 @@ public:
   afx_msg void OnRegSymbolsGroup();
   afx_msg void OnSetFocusComboFindWhat();
   afx_msg void OnKillFocusComboFindWhat();
-  afx_msg void OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct);
   afx_msg void OnCheckLimitDiff();
   afx_msg void OnCheckLimitNonDiff();
   DECLARE_MESSAGE_MAP()

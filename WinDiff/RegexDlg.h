@@ -1,11 +1,14 @@
 #pragma once
 
 #include <MFCUtil/ComboBoxWithHistory.h>
+#include <MFCUtil/OBMButton.h>
 #include "RegexFilter.h"
 
 class CRegexDlg: public CDialog {
 private:
   CComboBoxWithHistory m_regexCombo;
+  OBMButton            m_regexCharButton;
+  void gotoRegexCombo();
 public:
   CRegexDlg(RegexFilter &param, CWnd *pParent = NULL);
   void addRegexSymbol(const TCHAR *s, int cursorpos);
@@ -39,7 +42,6 @@ public:
   afx_msg void OnRegSymbols0Or1Occurence();
   afx_msg void OnRegSymbolsOr();
   afx_msg void OnRegSymbolsGroup();
-  afx_msg void OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct);
   DECLARE_MESSAGE_MAP()
 };
 

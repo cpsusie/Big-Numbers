@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "WinDiff.h"
-#include "FindDlg.h"
 #include "RegexDlg.h"
 
 #if defined(_DEBUG)
@@ -20,7 +19,6 @@ void CRegexDlg::DoDataExchange(CDataExchange *pDX) {
   DDX_CBString(pDX, IDC_COMBOREGEX         , m_regex        );
 }
 
-
 BEGIN_MESSAGE_MAP(CRegexDlg, CDialog)
   ON_CBN_KILLFOCUS(IDC_COMBOREGEX             , OnKillFocusComboRegex          )
   ON_CBN_SETFOCUS(IDC_COMBOREGEX              , OnSetFocusComboRegex           )
@@ -35,25 +33,28 @@ BEGIN_MESSAGE_MAP(CRegexDlg, CDialog)
   ON_COMMAND(ID_REGSYMBOLS_0OR1               , OnRegSymbols0Or1Occurence      )
   ON_COMMAND(ID_REGSYMBOLS_OR                 , OnRegSymbolsOr                 )
   ON_COMMAND(ID_REGSYMBOLS_GROUP              , OnRegSymbolsGroup              )
-  ON_WM_DRAWITEM()
 END_MESSAGE_MAP()
 
 BOOL CRegexDlg::OnInitDialog() {
   __super::OnInitDialog();
-
   m_regexCombo.substituteControl(this, IDC_COMBOREGEX, _T("RegexHistory"));
+  const CRect cbRect = getWindowRect(this, IDC_COMBOREGEX);
+  const CPoint buttonPos(cbRect.right+1, cbRect.top);
+  m_regexCharButton.Create(this, OBMIMAGE(RGARROW), buttonPos, IDC_BUTTONREGSYMBOLSMENU, true);
 
   m_currentControl = 0;
   m_selStart       = 0;
   m_selEnd         = (int)m_param.m_regex.length();
 
   UpdateData(false);
+  gotoRegexCombo();
   return false;
 }
 
 void CRegexDlg::OnOK() {
   UpdateData();
   if(m_regex.GetLength() == 0) {
+    gotoRegexCombo();
     showWarning(_T("Empty regular expression not allowed"));
     return;
   }
@@ -65,9 +66,13 @@ void CRegexDlg::OnOK() {
     m_regexCombo.updateList();
     __super::OnOK();
   } catch(Exception e) {
-    GetDlgItem(IDC_COMBOREGEX)->SetFocus();
+    gotoRegexCombo();
     showException(e);
   }
+}
+
+void CRegexDlg::gotoRegexCombo() {
+  GetDlgItem(IDC_COMBOREGEX)->SetFocus();
 }
 
 void CRegexDlg::OnSetFocusComboRegex() {
@@ -106,18 +111,13 @@ void CRegexDlg::OnButtonRegSymbolsMenu() {
 
 void CRegexDlg::addRegexSymbol(const TCHAR *s, int cursorpos) {
   CComboBox *b = (CComboBox*)GetDlgItem(IDC_COMBOREGEX);
-
   UpdateData();
-
   String reg = m_regex;
-
   reg = substr(reg,0,m_selStart) + s + substr(reg,m_selEnd,reg.length());
-
   m_regex    = reg.cstr();
   m_selStart = m_selEnd = m_selStart + cursorpos;
   UpdateData(false);
-
-  b->SetFocus();
+  gotoRegexCombo();
 }
 
 void CRegexDlg::OnRegSymbolsAnyChar()             { addRegexSymbol(_T("."),1);      }
@@ -130,10 +130,3 @@ void CRegexDlg::OnRegSymbols1OrMoreOccurrences()  { addRegexSymbol(_T("+"),1);  
 void CRegexDlg::OnRegSymbols0Or1Occurence()       { addRegexSymbol(_T("?"),1);      }
 void CRegexDlg::OnRegSymbolsOr()                  { addRegexSymbol(_T("\\|"),2);    }
 void CRegexDlg::OnRegSymbolsGroup()               { addRegexSymbol(_T("\\(\\)"),2); }
-
-void CRegexDlg::OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct) {
-  if(nIDCtl == IDC_BUTTONREGSYMBOLSMENU) {
-    drawTriangle(GetDlgItem(IDC_BUTTONREGSYMBOLSMENU));
-  }
-  __super::OnDrawItem(nIDCtl, lpDrawItemStruct);
-}

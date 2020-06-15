@@ -1,9 +1,11 @@
 #pragma once
 
 #include "resource.h"
+#include <MFCUtil/OBMButton.h>
 #include "FileFormat.h"
 
 class CDefineFileFormatDlg: public CDialog {
+  OBMButton            m_delimiterCharButton;
 public:
     CDefineFileFormatDlg(FileFormat &param, const String &sampleline, CWnd *pParent = NULL);
     FileFormat &m_param;
@@ -52,7 +54,6 @@ public:
     virtual BOOL PreTranslateMessage(MSG *pMsg);
     virtual void DoDataExchange(CDataExchange *pDX);
     virtual BOOL OnInitDialog();
-    afx_msg void OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct);
     virtual void OnOK();
     virtual void OnCancel();
     afx_msg void OnFormatNew();
@@ -85,4 +86,3 @@ public:
     afx_msg void OnChangeEditTo();
     DECLARE_MESSAGE_MAP()
 };
-

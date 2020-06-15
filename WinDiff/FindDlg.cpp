@@ -29,7 +29,6 @@ void CFindDlg::DoDataExchange(CDataExchange *pDX) {
 }
 
 BEGIN_MESSAGE_MAP(CFindDlg, CDialog)
-  ON_WM_DRAWITEM()
   ON_BN_CLICKED(IDC_FINDNEXT               , OnFindNext                     )
   ON_BN_CLICKED(IDC_BUTTONREGSYMBOLSMENU   , OnButtonRegSymbolsMenu         )
   ON_BN_CLICKED(IDC_CHECKLIMITDIFF         , OnCheckLimitDiff               )
@@ -52,10 +51,12 @@ BOOL CFindDlg::OnInitDialog() {
   __super::OnInitDialog();
 
   m_font.CreateFontIndirect(&getOptions().m_logFont);
-//  SetFont(&m_font);
-
   m_findWhatCombo.substituteControl( this, IDC_COMBOFINDWHAT, _T("FindHistory"));
   m_findWhatCombo.SetFont(&m_font);
+  const CRect cbRect = getWindowRect(this, IDC_COMBOFINDWHAT);
+  const CPoint buttonPos(cbRect.right+1, cbRect.top);
+  m_specialCharButton.Create(this, OBMIMAGE(RGARROW), buttonPos, IDC_BUTTONREGSYMBOLSMENU, true);
+  LoadDynamicLayoutResource(m_lpszTemplateName);
 
   m_currentControl = 0;
   m_selStart       = 0;
@@ -123,45 +124,16 @@ void CFindDlg::addRegexSymbol(const TCHAR *s, int cursorpos) {
   gotoFindWhat();
 }
 
-void CFindDlg::OnRegSymbolsAnyChar() {
-  addRegexSymbol(_T("."),1);
-}
-
-void CFindDlg::OnRegSymbolsCharInRange() {
-  addRegexSymbol(_T("[]"),1);
-}
-
-void CFindDlg::OnRegSymbolsCharNotInRange() {
-  addRegexSymbol(_T("[^]"),2);
-}
-
-void CFindDlg::OnRegSymbolsBeginningOfLine() {
-  addRegexSymbol(_T("^"),1);
-}
-
-void CFindDlg::OnRegSymbolsEndOfLine() {
-  addRegexSymbol(_T("$"),1);
-}
-
-void CFindDlg::OnRegSymbols0orMoreOccurrences() {
-  addRegexSymbol(_T("*"),1);
-}
-
-void CFindDlg::OnRegSymbols1orMoreOccurrences() {
-  addRegexSymbol(_T("+"),1);
-}
-
-void CFindDlg::OnRegSymbols0or1Occurence() {
-  addRegexSymbol(_T("?"),1);
-}
-
-void CFindDlg::OnRegSymbolsOr() {
-  addRegexSymbol(_T("\\|"),2);
-}
-
-void CFindDlg::OnRegSymbolsGroup() {
-  addRegexSymbol(_T("\\(\\)"),2);
-}
+void CFindDlg::OnRegSymbolsAnyChar()            { addRegexSymbol(_T(".")     ,1); }
+void CFindDlg::OnRegSymbolsCharInRange()        { addRegexSymbol(_T("[]")    ,1); }
+void CFindDlg::OnRegSymbolsCharNotInRange()     { addRegexSymbol(_T("[^]")   ,2); }
+void CFindDlg::OnRegSymbolsBeginningOfLine()    { addRegexSymbol(_T("^")     ,1); }
+void CFindDlg::OnRegSymbolsEndOfLine()          { addRegexSymbol(_T("$")     ,1); }
+void CFindDlg::OnRegSymbols0orMoreOccurrences() { addRegexSymbol(_T("*")     ,1); }
+void CFindDlg::OnRegSymbols1orMoreOccurrences() { addRegexSymbol(_T("+")     ,1); }
+void CFindDlg::OnRegSymbols0or1Occurence()      { addRegexSymbol(_T("?")     ,1); }
+void CFindDlg::OnRegSymbolsOr()                 { addRegexSymbol(_T("\\|")   ,2); }
+void CFindDlg::OnRegSymbolsGroup()              { addRegexSymbol(_T("\\(\\)"),2); }
 
 void CFindDlg::gotoFindWhat() {
   m_findWhatCombo.SetFocus();
@@ -184,24 +156,6 @@ BOOL CFindDlg::PreTranslateMessage(MSG *pMsg) {
     m_selEnd   = w >> 16;
   }
   return ret;
-}
-
-void drawTriangle(CWnd *wnd) {
-  CClientDC dc(wnd);
-
-  CRgn rgn;
-  CPoint p[] = { CPoint(2,2),CPoint(6,6), CPoint(2,10) };
-  CBrush brush;
-  brush.CreateSolidBrush(RGB(0,0,0));
-  rgn.CreatePolygonRgn(p,3,ALTERNATE);
-  dc.FillRgn(&rgn,&brush);
-}
-
-void CFindDlg::OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct) {
-  if(nIDCtl == IDC_BUTTONREGSYMBOLSMENU) {
-    drawTriangle(GetDlgItem(IDC_BUTTONREGSYMBOLSMENU));
-  }
-  __super::OnDrawItem(nIDCtl, lpDrawItemStruct);
 }
 
 void CFindDlg::OnCheckLimitDiff() {

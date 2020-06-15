@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include <Tokenizer.h>
 #include "WinDiff.h"
-#include "FindDlg.h"
 #include "DefineFileFormatDlg.h"
 #include "EnterFormatNameDlg.h"
 #include "FileFormatsDlg.h"
@@ -33,7 +32,6 @@ void CDefineFileFormatDlg::DoDataExchange(CDataExchange *pDX) {
 }
 
 BEGIN_MESSAGE_MAP(CDefineFileFormatDlg, CDialog)
-  ON_WM_DRAWITEM()
   ON_COMMAND(      ID_FORMAT_NEW                    , OnFormatNew                       )
   ON_COMMAND(      ID_FILE_OPEN                     , OnFileOpen                        )
   ON_COMMAND(      ID_FILE_SAVE                     , OnFileSave                        )
@@ -64,6 +62,24 @@ BEGIN_MESSAGE_MAP(CDefineFileFormatDlg, CDialog)
   ON_EN_CHANGE(    IDC_EDITFROM                     , OnChangeEditFrom                  )
   ON_EN_CHANGE(    IDC_EDITTO                       , OnChangeEditTo                    )
 END_MESSAGE_MAP()
+
+BOOL CDefineFileFormatDlg::OnInitDialog() {
+  __super::OnInitDialog();
+  const CRect ebRect = getWindowRect(this, IDC_EDITFIELDDELIMITER);
+  const CPoint buttonPos(ebRect.right+1, ebRect.top);
+  m_delimiterCharButton.Create(this, OBMIMAGE(RGARROW), buttonPos, IDC_BUTTONDELIMITERMENU);
+
+  paramToWindow(m_param);
+  m_lastCheckpoint = m_param;
+
+  ((CListBox*)GetDlgItem(IDC_LISTCOLUMNS))->SetCurSel(0);
+  ajourSample();
+  ajourDeleteButton();
+  gotoEditBox(this, IDC_EDITFROM);
+  m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATORDEFINEFLEFORMAT));
+
+  return false;
+}
 
 void CDefineFileFormatDlg::enableDropdowns(bool enable) {
   GetDlgItem(IDC_STATICFIELDDELIMITER   )->EnableWindow(enable);
@@ -184,21 +200,6 @@ void CDefineFileFormatDlg::paramFromWindow(FileFormat &param) {
     param.m_columns.add(ColumnInterval(str.GetBuffer(str.GetLength())));
   }
   param.m_name = m_name;
-}
-
-BOOL CDefineFileFormatDlg::OnInitDialog() {
-  __super::OnInitDialog();
-
-  paramToWindow(m_param);
-  m_lastCheckpoint = m_param;
-
-  ((CListBox*)GetDlgItem(IDC_LISTCOLUMNS))->SetCurSel(0);
-  ajourSample();
-  ajourDeleteButton();
-  gotoEditBox(this, IDC_EDITFROM);
-  m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATORDEFINEFLEFORMAT));
-
-  return false;
 }
 
 BOOL CDefineFileFormatDlg::PreTranslateMessage(MSG *pMsg) {
@@ -595,13 +596,6 @@ void CDefineFileFormatDlg::OnDelimEscSymbolUnicode()   {
 #if defined(UNICODE)
   addDelimiter(_T("\\u"));
 #endif
-}
-
-void CDefineFileFormatDlg::OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct) {
-  if(nIDCtl == IDC_BUTTONDELIMITERMENU) {
-    drawTriangle(GetDlgItem(IDC_BUTTONDELIMITERMENU));
-  }
-  __super::OnDrawItem(nIDCtl, lpDrawItemStruct);
 }
 
 void CDefineFileFormatDlg::OnCheckMultipleDelimiters() {
