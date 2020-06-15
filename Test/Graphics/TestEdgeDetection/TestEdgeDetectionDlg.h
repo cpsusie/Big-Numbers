@@ -2,7 +2,6 @@
 
 #include <Thread.h>
 #include <CompactStack.h>
-#include <MFCUtil/Layoutmanager.h>
 #include <MatrixTemplate.h>
 #include "EdgeMatrix.h"
 
@@ -52,7 +51,6 @@ class CTestEdgeDetectionDlg : public CDialog {
 private:
   HICON               m_hIcon;
   HACCEL              m_accelTable;
-  SimpleLayoutManager m_layoutManager;
   CWnd               *m_pixelWindow;
   CClientDC          *m_dc;
   CSize               m_logicalSize;

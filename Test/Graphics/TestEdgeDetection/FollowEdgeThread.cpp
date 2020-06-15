@@ -2,9 +2,11 @@
 #include "TestEdgeDetectionDlg.h"
 
 FollowEdgeThread::FollowEdgeThread(CTestEdgeDetectionDlg *dlg, const CPoint &startPoint)
-: m_dlg(*dlg)
+: Thread(_T("FollowEdgeThread"))
+, m_dlg(*dlg)
 , m_currentRect(CPoint(0,0), dlg->getWindowSize())
 , m_startPoint(startPoint)
+
 {
   setDemon(true);
 }

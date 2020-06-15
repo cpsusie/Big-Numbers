@@ -95,11 +95,6 @@ BOOL CTestEdgeDetectionDlg::OnInitDialog() {
 
   m_accelTable = LoadAccelerators(theApp.m_hInstance, MAKEINTRESOURCE(IDR_MAINFRAME));
 
-  m_layoutManager.OnInitDialog(this);
-  m_layoutManager.addControl(IDC_PIXELAREA     , RELATIVE_SIZE  );
-  m_layoutManager.addControl(IDC_STATICDIRTEXT , RELATIVE_Y_POS );
-  m_layoutManager.addControl(IDC_STATICDIRIMAGE, RELATIVE_Y_POS );
-
   m_pixelWindow = GetDlgItem(IDC_PIXELAREA);
 
   m_breakPoint = isMenuItemChecked(this, ID_EDIT_TOGGLEBREAKPOINT);
@@ -162,7 +157,6 @@ void CTestEdgeDetectionDlg::OnPaint() {
 void CTestEdgeDetectionDlg::OnSize(UINT nType, int cx, int cy) {
   if(isEdgeThreadActive()) return;
   __super::OnSize(nType, cx, cy);
-  m_layoutManager.OnSize(nType, cx, cy);
   adjustPixelMatrix();
 }
 
