@@ -66,12 +66,14 @@ END
 // remains consistent on all systems.
 IDR_MAINFRAME           ICON                    "res\\ShwGraph.ico"
 
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // Cursor
 //
 
 IDC_CURSORZOOM          CURSOR                  "res\\cursor1.cur"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -96,34 +98,34 @@ BEGIN
     LISTBOX         IDC_DATALIST,15,13,140,150,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
 END
 
-IDD_DEGREE_DIALOG DIALOG 0, 0, 200, 58
+IDD_DEGREE_DIALOG DIALOGEX 0, 0, 200, 58
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Enter degree of polynomium"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
+    LTEXT           "&Degree:",IDC_STATIC,15,16,29,8
+    EDITTEXT        IDC_EDIT_DEGREE,49,13,20,14
+    CONTROL         "Spin1",IDC_SPIN1,"msctls_updown32",UDS_ARROWKEYS,70,13,11,14
     DEFPUSHBUTTON   "OK",IDOK,143,7,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,143,24,50,14
-    EDITTEXT        IDC_EDIT_DEGREE,49,13,20,14
-    LTEXT           "Degree:",IDC_STATIC,15,16,29,8
-    CONTROL         "Spin1",IDC_SPIN1,"msctls_updown32",UDS_ARROWKEYS,70,13,11,14
 END
 
-IDD_INTERVAL_DIALOG DIALOG 0, 0, 242, 81
+IDD_INTERVAL_DIALOG DIALOGEX 0, 0, 242, 81
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Enter intervals"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
+    LTEXT           "&X - interval",IDC_STATIC,16,22,39,8
+    EDITTEXT        IDC_EDIT_MINX,59,19,40,14,ES_AUTOHSCROLL
+    LTEXT           "-",IDC_STATIC,103,22,8,8
+    EDITTEXT        IDC_EDIT_MAXX,111,19,40,14,ES_AUTOHSCROLL
+    LTEXT           "&Y - interval",IDC_STATIC,16,47,39,8
+    EDITTEXT        IDC_EDIT_MINY,59,44,40,14,ES_AUTOHSCROLL
+    LTEXT           "-",IDC_STATIC,103,47,8,8
+    EDITTEXT        IDC_EDIT_MAXY,111,44,40,14,ES_AUTOHSCROLL
+    CONTROL         "&Autoscale",IDC_AUTOSCALECHECK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,161,47,61,9
     DEFPUSHBUTTON   "OK",IDOK,185,7,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,185,24,50,14
-    EDITTEXT        IDC_EDIT_MINX,59,19,40,14,ES_AUTOHSCROLL
-    EDITTEXT        IDC_EDIT_MAXX,111,19,40,14,ES_AUTOHSCROLL
-    LTEXT           "-",IDC_STATIC,103,23,8,8
-    LTEXT           "X - interval",IDC_STATIC,16,25,37,8
-    LTEXT           "Y - interval",IDC_STATIC,16,50,43,8
-    EDITTEXT        IDC_EDIT_MINY,59,44,40,14,ES_AUTOHSCROLL
-    EDITTEXT        IDC_EDIT_MAXY,111,44,40,14,ES_AUTOHSCROLL
-    LTEXT           "-",IDC_STATIC,103,45,8,8
-    CONTROL         "Autoscale",IDC_AUTOSCALECHECK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,161,47,61,9
 END
 
 IDD_ABOUTBOX DIALOG 0, 0, 304, 55
@@ -144,8 +146,8 @@ CAPTION "Regression"
 MENU IDR_MENU1
 FONT 8, "Courier New", 0, 0, 0x1
 BEGIN
-    LTEXT           "Static",IDC_COORSYSTEM,0,0,450,270,0,WS_EX_CLIENTEDGE
-    LTEXT           "Static",IDC_STATICINFO,6,270,450,8,SS_SUNKEN
+    LTEXT           "Static",IDC_COORSYSTEM,3,3,450,262,WS_BORDER,WS_EX_CLIENTEDGE
+    LTEXT           "Static",IDC_STATICINFO,3,267,450,10,SS_SUNKEN
 END
 
 
@@ -180,6 +182,7 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 74
     END
+
     IDD_ABOUTBOX, DIALOG
     BEGIN
         LEFTMARGIN, 7
@@ -187,15 +190,17 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 48
     END
+
     IDD_SHWGRAPH_DIALOG, DIALOG
     BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 449
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 259
+        LEFTMARGIN, 3
+        RIGHTMARGIN, 453
+        BOTTOMMARGIN, 277
+        HORZGUIDE, 3
     END
 END
 #endif    // APSTUDIO_INVOKED
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -204,8 +209,21 @@ END
 
 IDD_SHWGRAPH_DIALOG AFX_DIALOG_LAYOUT
 BEGIN
+    0,
+    0, 0, 100, 100,
+    0, 100, 100, 0
+END
+
+IDD_DEGREE_DIALOG AFX_DIALOG_LAYOUT
+BEGIN
     0
 END
+
+IDD_INTERVAL_DIALOG AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -297,26 +315,6 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// String Table
-//
-
-STRINGTABLE
-BEGIN
-    ID_HELP_ABOUT           "About"
-    ID_FILE_QUIT            "Quit"
-END
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// String Table
-//
-
-STRINGTABLE
-BEGIN
-    IDS_ABOUTBOX            "&About ShwGraph..."
-END
-/////////////////////////////////////////////////////////////////////////////
-//
 // Version
 //
 
@@ -352,6 +350,26 @@ BEGIN
     END
 END
 
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    ID_HELP_ABOUT           "About"
+END
+
+STRINGTABLE
+BEGIN
+    ID_FILE_QUIT            "Quit"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_ABOUTBOX            "&About ShwGraph..."
+END
 
 #endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////

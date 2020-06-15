@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Stack.h>
-#include <MFCUtil/LayoutManager.h>
 #include <MFCUTil/Viewport2D.h>
 
 typedef enum {
@@ -25,7 +24,6 @@ private:
   HACCEL              m_accelTable;
   CBrush              m_whiteBrush;
   HCURSOR             m_systemCursor;
-  SimpleLayoutManager m_layout;
   CCoordinateSystem   m_cs;
 
 public:

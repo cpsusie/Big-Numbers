@@ -14,23 +14,12 @@ using namespace std;
 
 class CAboutDlg : public CDialog {
 public:
-    CAboutDlg();
-
-    enum { IDD = IDD_ABOUTBOX };
-
-    protected:
-    virtual void DoDataExchange(CDataExchange *pDX);
-
+  enum { IDD = IDD_ABOUTBOX };
+  CAboutDlg() : CDialog(IDD) {
+  }
 protected:
-    DECLARE_MESSAGE_MAP()
+  DECLARE_MESSAGE_MAP()
 };
-
-CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
-}
-
-void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-    __super::DoDataExchange(pDX);
-}
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
@@ -105,10 +94,11 @@ BOOL CShwGraphDlg::OnInitDialog() {
                           _T("Courier") );
   setCurrentFont(&m_defaultFont);
 
+  const TabOrder tabOrder(this);
   m_cs.substituteControl(this, IDC_COORSYSTEM);
-  m_layout.OnInitDialog(this);
-  m_layout.addControl(IDC_COORSYSTEM, RELATIVE_SIZE);
-  m_layout.addControl(IDC_STATICINFO, RELATIVE_Y_POS | RELATIVE_WIDTH);
+
+  tabOrder.restoreTabOrder();
+  LoadDynamicLayoutResource(m_lpszTemplateName);
 
   SetIcon(m_hIcon, TRUE);
   SetIcon(m_hIcon, FALSE);
@@ -178,7 +168,6 @@ HCURSOR CShwGraphDlg::OnQueryDragIcon() {
 
 void CShwGraphDlg::OnSize(UINT nType, int cx, int cy) {
   __super::OnSize(nType, cx, cy);
-  m_layout.OnSize(nType, cx, cy);
   Invalidate(FALSE);
 }
 
