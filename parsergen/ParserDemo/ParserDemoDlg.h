@@ -31,6 +31,7 @@ public:
   TestParser            m_parser;
 
   CParserDemoDlg(CWnd *pParent = NULL);
+  ~CParserDemoDlg();
   void             showLastDebugLine();
   void             showStatus(bool gotoLastDebug = true);
   int              findStackElement(const CPoint &p);

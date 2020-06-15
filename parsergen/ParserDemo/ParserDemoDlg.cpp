@@ -41,6 +41,12 @@ CParserDemoDlg::CParserDemoDlg(CWnd *pParent) : CDialog(CParserDemoDlg::IDD, pPa
   m_breakSymbols     = new BitSet(m_parser.getParserTables().getTerminalCount());
 }
 
+CParserDemoDlg::~CParserDemoDlg() {
+  delete m_breakProductions;
+  delete m_breakStates;
+  delete m_breakSymbols;
+}
+
 void CParserDemoDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
   DDX_Text( pDX, IDC_EDITINPUTSTRING       , m_input);
@@ -362,8 +368,8 @@ int CParserDemoDlg::findStackElement(const CPoint &p) {
 }
 
 void CParserDemoDlg::showStatus(bool gotoLastDebug) {
-  String state = format(_T("%d"), m_parser.state());
-  SetDlgItemText(IDC_STATE, state.cstr());
+  setWindowText(this, IDC_STATE     , format(_T("%d"), m_parser.state()));
+  setWindowText(this, IDC_CYCLECOUNT, format(_T("%d"), m_parser.getCycleCount()));
 
   if(m_parser.done()) {
     if(m_parser.accept()) {

@@ -31,9 +31,10 @@
 #define IDC_ACTION                      1006
 #define IDC_STATE                       1007
 #define IDC_EDITCASCADECOUNT            1008
-#define IDC_BREAKSTATETEXT              1009
-#define IDC_BREAKSYMBOLTEXT             1010
-#define IDC_PRODUCTIONLIST              1011
+#define IDC_CYCLECOUNT                  1009
+#define IDC_BREAKSTATETEXT              1010
+#define IDC_BREAKSYMBOLTEXT             1011
+#define IDC_PRODUCTIONLIST              1012
 #define IDC_BUTTONSELECTALL             1020
 #define IDC_BUTTONCLEAR                 1021
 #define IDC_CHECKBREAKONPRODUCTION      1022
@@ -66,6 +67,7 @@
 #define IDC_LOOKAHEADLABEL              1069
 #define IDC_STATELABEL                  1080
 #define IDC_ACTIONLABEL                 1081
+#define IDC_CYCLELABEL                  1082
 #define ID_FILE_EXIT                    32771
 #define ID_HELP_ABOUTPARSERDEMO         32772
 #define ID_EDIT_BREAKONTEXTPOSITION     32773

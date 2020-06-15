@@ -172,7 +172,7 @@ BOOL CIRemesDlg::OnInitDialog() {
   m_coorSystemSpline.setDataRange(DataRange(0, 1, 0, 1), false);
   m_coorSystemSpline.setAutoScale(true, false);
 
-  reloadDynamicLayoutResource();
+  reloadLayoutResource();
 
   setErrorFunctionVisible(isShowErrorFunctionChecked());
   setSplineVisible(isShowSplineChecked());
@@ -224,21 +224,19 @@ void CIRemesDlg::setSplineVisible(bool visible) {
   if(visible == isVisible) {
     return;
   }
-  CRect errorRect = getWindowRect(this, IDC_FRAME_COORSYSTEM_ERROR);
-  CMFCDynamicLayout::SizeSettings newSizeSettings;
+  CRect errorRect = getCtrlRect(IDC_FRAME_COORSYSTEM_ERROR);
+  SizeSettings newSizeSettings;
   newSizeSettings.m_nYRatio = 60;
   if(visible) {
-    CRect splineRect = getWindowRect(this, IDC_FRAME_COORSYSTEM_SPLINE);
+    CRect splineRect = getCtrlRect(IDC_FRAME_COORSYSTEM_SPLINE);
     errorRect.right  = splineRect.left-1;
-//    setWindowRect(this, IDC_FRAME_COORSYSTEM_ERROR, errorRect);
     GetDlgItem(IDC_FRAME_COORSYSTEM_SPLINE)->ShowWindow(SW_SHOW);
     newSizeSettings.m_nXRatio = 50;
   } else {
-    const CRect splineRect = getWindowRect(this, IDC_FRAME_COORSYSTEM_SPLINE);
+    const CRect splineRect = getCtrlRect(IDC_FRAME_COORSYSTEM_SPLINE);
     GetDlgItem(IDC_FRAME_COORSYSTEM_SPLINE)->ShowWindow(SW_HIDE);
     errorRect.right = splineRect.right;
     newSizeSettings.m_nXRatio = 100;
-//    setWindowRect(this, IDC_FRAME_COORSYSTEM_ERROR, errorRect);
   }
   setCtrlSize(IDC_FRAME_COORSYSTEM_ERROR, errorRect.Size(), &newSizeSettings);
   Invalidate();

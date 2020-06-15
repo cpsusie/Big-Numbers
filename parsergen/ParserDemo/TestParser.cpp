@@ -2,14 +2,14 @@
 #include "TestParser.h"
 #include "GRAMMARS.h"
 
-SyntaxNode::SyntaxNode(const TCHAR *symbol, unsigned int childCount, bool terminal, TestParser *parser) {
+SyntaxNode::SyntaxNode(const TCHAR *symbol, UINT childCount, bool terminal, TestParser *parser) {
   m_symbol     = symbol;
   m_childCount = childCount;
   m_terminal   = terminal;
   if(m_childCount == 0) {
     m_children = NULL;
   } else {
-    m_children = new SyntaxNodep[childCount];
+    m_children = new SyntaxNodep[childCount]; TRACE_NEW(m_children);
     for(UINT i = 0; i < m_childCount; i++) {
       m_children[i] = NULL;
     }
@@ -19,7 +19,7 @@ SyntaxNode::SyntaxNode(const TCHAR *symbol, unsigned int childCount, bool termin
 
 SyntaxNode::~SyntaxNode() {
   if(m_childCount > 0) {
-    delete[] m_children;
+    SAFEDELETEARRAY(m_children);
   }
 }
 
@@ -39,15 +39,15 @@ public:
   TestScanner(LRparser &parser) : m_parser(parser) {}
 };
 
-static String getLegalInput(const ParserTables &tables, unsigned int state) {
-  const UINT n = tables.getLegalInputCount(state);
-  UINT *symbols = new UINT[n];
+static String getLegalInput(const ParserTables &tables, UINT state) {
+  const UINT n       = tables.getLegalInputCount(state);
+  UINT      *symbols = new UINT[n]; TRACE_NEW(symbols);
   tables.getLegalInputs(state, symbols);
   StringArray symstr;
   for(UINT i = 0; i < n; i++) {
     symstr.add(tables.getSymbolName(symbols[i]));
   }
-  delete[] symbols;
+  SAFEDELETEARRAY(symbols);
 
   String result;
   for(size_t i = 0; i < symstr.size(); i++) {
@@ -68,7 +68,7 @@ public:
 };
 
 YaccThread::YaccThread(TestParser &parser)
-: Thread(_T("YeccThread"))
+: Thread(_T("YaccThread"))
 , m_parser(parser)
 {
 }
@@ -79,29 +79,26 @@ UINT YaccThread::run() {
 }
 
 TestParser::TestParser() : LRparser(*tablesToTest), m_grammar(CPP, *tablesToTest) {
-  m_scanner    = new TestScanner(*this);
+  m_scanner    = new TestScanner(*this);          TRACE_NEW(m_scanner   );
   setScanner(m_scanner);
   m_root       = NULL;
-  m_userStack  = new SyntaxNodep[getStackSize()];
-  m_initThread = new YaccThread(*this);
+  m_userStack  = new SyntaxNodep[getStackSize()]; TRACE_NEW(m_userStack );
+  m_initThread = new YaccThread(*this);           TRACE_NEW(m_initThread);
   m_initThread->resume();
   buildLegalInputArray();
   buildReduceActionArray();
 }
 
 TestParser::~TestParser() {
-  delete m_scanner;
-  delete[] m_userStack;
-  if(m_initThread != NULL) {
-    delete m_initThread;
-    m_initThread = NULL;
-  }
+  SAFEDELETE(     m_scanner   );
+  SAFEDELETEARRAY(m_userStack );
+  SAFEDELETE(     m_initThread);
   deleteNodeList();
 }
 
 void TestParser::deleteNodeList() {
   for(size_t i = 0; i < m_nodeList.size(); i++) {
-    delete m_nodeList[i];
+    SAFEDELETE(m_nodeList[i]);
   }
   m_nodeList.clear();
   m_root = NULL;
@@ -140,12 +137,11 @@ void TestParser::waitForInitThread() {
     while(m_initThread->stillActive()) {
       Sleep(300);
     }
-    delete m_initThread;
-    m_initThread = NULL;
+    SAFEDELETE(m_initThread);
   }
 }
 
-const String &TestParser::getStateItems(unsigned int state) {
+const String &TestParser::getStateItems(UINT state) {
   if(m_initThread != NULL) {
     waitForInitThread();
   }
@@ -153,15 +149,16 @@ const String &TestParser::getStateItems(unsigned int state) {
 }
 
 void TestParser::userStackInit() {
-  m_stacktop = m_userStack;
-  m_root     = NULL;
+  m_cycleCount = 0;
+  m_stacktop   = m_userStack;
+  m_root       = NULL;
   deleteNodeList();
 }
 
-void TestParser::setStackSize(unsigned int newSize) {
+void TestParser::setStackSize(UINT newSize) {
   LRparser::setStackSize(newSize);
-  delete[] m_userStack;
-  m_userStack = new SyntaxNodep[getStackSize()];
+  SAFEDELETEARRAY(m_userStack);
+  m_userStack = new SyntaxNodep[getStackSize()]; TRACE_NEW(m_userStack);
 }
 
 void TestParser::setNewInput(const TCHAR *string) {
@@ -180,15 +177,17 @@ void TestParser::vdebug(const TCHAR *format, va_list argptr) {
   m_handler->handleDebug(m_scanner->getPos(), format, argptr);
 }
 
-void TestParser::userStackShiftSymbol(unsigned int symbol) {
-  SyntaxNode *p = new SyntaxNode(m_scanner->getText(), 0, true, this);
+void TestParser::userStackShiftSymbol(UINT symbol) {
+  m_cycleCount++;
+  SyntaxNode *p = new SyntaxNode(m_scanner->getText(), 0, true, this); TRACE_NEW(p);
   push(p);
 }
 
-int TestParser::reduceAction(unsigned int prod) {
+int TestParser::reduceAction(UINT prod) {
+  m_cycleCount++;
   const ParserTables &tables  = getParserTables();
-  const unsigned int  symbol  = tables.getLeftSymbol(prod);
-  const unsigned int  prodlen = tables.getProductionLength(prod);
+  const UINT  symbol  = tables.getLeftSymbol(prod);
+  const UINT  prodlen = tables.getProductionLength(prod);
   SyntaxNodep         p       = new SyntaxNode(getSymbolName(symbol), prodlen, false, this);
   for(UINT i = 0; i < prodlen; i++) {
     SyntaxNodep child = getStackTop(prodlen - i - 1);

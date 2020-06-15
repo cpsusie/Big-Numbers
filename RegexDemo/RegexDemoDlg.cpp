@@ -111,7 +111,7 @@ BOOL CRegexDemoDlg::OnInitDialog() {
   m_stackWindow.substituteControl(  this, IDC_STATICSTACK);
 
   tabOrder.restoreTabOrder();
-  reloadDynamicLayoutResource();
+  reloadLayoutResource();
 
   LOGFONT lf;
   GetFont()->GetLogFont(&lf);
@@ -971,9 +971,9 @@ bool CRegexDemoDlg::isGraphicsWindowVisible() {
 }
 
 void CRegexDemoDlg::setCylceAndStackWindowTop(int top, int topMoveRatio) {
-  CRect      cycleRect = getWindowRect(this, IDC_STATICCYCLES    );
-  CRect      labelRect = getWindowRect(this, IDC_STATICSTACKLABEL);
-  CRect      stackRect = getWindowRect(this, IDC_STATICSTACK     );
+  CRect      cycleRect = getCtrlRect(IDC_STATICCYCLES    );
+  CRect      labelRect = getCtrlRect(IDC_STATICSTACKLABEL);
+  CRect      stackRect = getCtrlRect(IDC_STATICSTACK     );
 
   ItemLayout cycleItem = *getItemLayout(     IDC_STATICCYCLES    );
   ItemLayout labelItem = *getItemLayout(     IDC_STATICSTACKLABEL);

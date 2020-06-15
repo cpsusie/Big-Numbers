@@ -83,7 +83,7 @@ CMFCDynamicLayout &CDialogWithDynamicLayout::resetMFCLayoutManager() {
   return *mfcLM;
 }
 
-CDialogWithDynamicLayout &CDialogWithDynamicLayout::reloadDynamicLayoutResource() {
+CDialogWithDynamicLayout &CDialogWithDynamicLayout::reloadLayoutResource() {
   resetMFCLayoutManager();
   LoadDynamicLayoutResource(m_lpszTemplateName);
   m_layoutData.reloadFromResource();
@@ -100,7 +100,7 @@ CDialogWithDynamicLayout &CDialogWithDynamicLayout::putLayoutDataToMFCLayoutMana
   return *this;
 }
 
-CDialogWithDynamicLayout &CDialogWithDynamicLayout::setCtrlPos(int ctrlId, CPoint &newPos, const CMFCDynamicLayout::MoveSettings *newSettings) {
+CDialogWithDynamicLayout &CDialogWithDynamicLayout::setCtrlPos(int ctrlId, CPoint &newPos, const MoveSettings *newSettings) {
   setWindowPosition(this, ctrlId, newPos);
   if(newSettings) {
     ItemLayout *li = m_layoutData.findItem(ctrlId);
@@ -111,7 +111,7 @@ CDialogWithDynamicLayout &CDialogWithDynamicLayout::setCtrlPos(int ctrlId, CPoin
   return putLayoutDataToMFCLayoutManager();
 }
 
-CDialogWithDynamicLayout &CDialogWithDynamicLayout::setCtrlSize(int ctrlId, CSize  &newSize, const CMFCDynamicLayout::SizeSettings *newSettings) {
+CDialogWithDynamicLayout &CDialogWithDynamicLayout::setCtrlSize(int ctrlId, CSize  &newSize, const SizeSettings *newSettings) {
   setWindowSize(this, ctrlId, newSize);
   if(newSettings) {
     ItemLayout *li = m_layoutData.findItem(ctrlId);
@@ -122,7 +122,7 @@ CDialogWithDynamicLayout &CDialogWithDynamicLayout::setCtrlSize(int ctrlId, CSiz
   return putLayoutDataToMFCLayoutManager();
 }
 
-CDialogWithDynamicLayout &CDialogWithDynamicLayout::setCtrlRect(int ctrlId, CRect  &newRect, const CMFCDynamicLayout::MoveSettings *newMSettings, const CMFCDynamicLayout::SizeSettings *newSSettings) {
+CDialogWithDynamicLayout &CDialogWithDynamicLayout::setCtrlRect(int ctrlId, CRect  &newRect, const MoveSettings *newMSettings, const CMFCDynamicLayout::SizeSettings *newSSettings) {
   setWindowRect(this, ctrlId, newRect);
   if(newMSettings || newSSettings) {
     ItemLayout *li = m_layoutData.findItem(ctrlId);
@@ -136,4 +136,8 @@ CDialogWithDynamicLayout &CDialogWithDynamicLayout::setCtrlRect(int ctrlId, CRec
     }
   }
   return putLayoutDataToMFCLayoutManager();
+}
+
+CRect CDialogWithDynamicLayout::getCtrlRect(int ctrlId) const {
+  return getWindowRect(this, ctrlId);
 }

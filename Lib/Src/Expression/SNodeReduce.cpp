@@ -892,22 +892,34 @@ SNode SNode::reduceTrigonometricFactors(SNode f1, SNode f2) {
   switch(f1.base().getSymbol()) {
   case SIN:
     switch(f2.base().getSymbol()) {
-    case COS: RETURNNODE( e1 == -e2 ? powerExp(tan(arg),f1.exponent()) : NULL );
-    case TAN: RETURNNODE( e1 == -e2 ? powerExp(cos(arg),f1.exponent()) : NULL );
+    case COS:
+      if(e1 == -e2) RETURNNODE(powerExp(tan(arg), f1.exponent()));
+      break;
+    case TAN:
+      if(e1 == -e2) RETURNNODE(powerExp(cos(arg), f1.exponent()));
+      break;
     }
-    RETURNNULL;
+    break;
   case COS:
     switch(f2.base().getSymbol()) {
-    case SIN: RETURNNODE( e1 == -e2 ? powerExp(tan(arg),f2.exponent()) : NULL );
-    case TAN: RETURNNODE( e1 ==  e2 ? powerExp(tan(arg),f1.exponent()) : NULL );
+    case SIN:
+      if(e1 == -e2) RETURNNODE(powerExp(tan(arg), f2.exponent()));
+      break;
+    case TAN:
+      if(e1 == e2) RETURNNODE(powerExp(tan(arg), f1.exponent()));
+      break;
     }
-    RETURNNULL;
+    break;
   case TAN:
     switch(f2.base().getSymbol()) {
-    case SIN: RETURNNODE( e1 == -e2 ? powerExp(cos(arg),f2.exponent()) : NULL );
-    case COS: RETURNNODE( e1 ==  e2 ? powerExp(sin(arg),f1.exponent()) : NULL );
+    case SIN:
+      if(e1 == -e2) RETURNNODE(powerExp(cos(arg),f2.exponent()));
+      break;
+    case COS:
+      if(e1 ==  e2) RETURNNODE(powerExp(sin(arg),f1.exponent()));
+      break;
     }
-    RETURNNULL;
+    break;
   }
   RETURNNULL;
 }
@@ -1118,16 +1130,14 @@ SNode SNode::reduceLn() {
 
 SNode SNode::getPowerOfE() {
   ENTERMETHOD();
-
   if(isEulersConstant()) {
     RETURNNODE( _1() );
   } else if(isOne()) {
     RETURNNODE( _0() );
   } else if((getSymbol() == POW) && left().isEulersConstant()) {
     RETURNNODE( right() );
-  } else {
-    RETURNNULL;
   }
+  RETURNNULL;
 }
 
 /*
@@ -1149,7 +1159,7 @@ SNode SNode::reduceLog10() {
   if(Rarg.getSymbol() == POW) {
     RETURNNODE( Rarg.right() * log10( Rarg.left()) );
   }
-  if( Rarg.isSameNode(arg) ) {
+  if(Rarg.isSameNode(arg)) {
     setReduced();
     RETURNTHIS;
   } else {
@@ -1159,16 +1169,14 @@ SNode SNode::reduceLog10() {
 
 SNode SNode::getPowerOf10() {
   ENTERMETHOD();
-
   if(isTen()) {
     RETURNNODE( _1() );
   } else if(isOne()) {
     RETURNNODE( _0() );
   } else if((getSymbol() == POW) && left().isTen()) {
     RETURNNODE( right() );
-  } else {
-    RETURNNULL;
   }
+  RETURNNULL;
 }
 
 /*
@@ -1200,16 +1208,14 @@ SNode SNode::reduceLog2() {
 
 SNode SNode::getPowerOf2() {
   ENTERMETHOD();
-
   if(isTwo()) {
     RETURNNODE( _1() );
   } else if(isOne()) {
     RETURNNODE( _0() );
   } else if((getSymbol() == POW) && left().isTwo()) {
     RETURNNODE( right() );
-  } else {
-    RETURNNULL;
   }
+  RETURNNULL;
 }
 
 SNode SNode::reduceAsymmetricFunction() {

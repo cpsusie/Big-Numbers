@@ -62,7 +62,7 @@ BOOL CTestTreesEqualDlg::OnInitDialog() {
     m_edata[i].m_tree.substituteControl(this, s_treeID[i]);
   }
 
-  reloadDynamicLayoutResource();
+  reloadLayoutResource();
   theApp.m_device.attach(*this);
 
   return false;
@@ -227,8 +227,8 @@ void CTestTreesEqualDlg::destroyImage(int index) {
 void CTestTreesEqualDlg::OnContextMenu(CWnd *pWnd, CPoint point) {
   CPoint mouseDown = point;
   ScreenToClient(&mouseDown);
-  const CRect image1Rect  = getWindowRect(this, IDC_STATICIMAGE1);
-  const CRect image2Rect  = getWindowRect(this, IDC_STATICIMAGE2);
+  const CRect image1Rect  = getCtrlRect(IDC_STATICIMAGE1);
+  const CRect image2Rect  = getCtrlRect(IDC_STATICIMAGE2);
 
   if(image1Rect.PtInRect(mouseDown)) {
     m_contextWinIndex = 0;

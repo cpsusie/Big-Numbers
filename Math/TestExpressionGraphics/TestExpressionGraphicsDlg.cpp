@@ -135,7 +135,7 @@ BOOL CTestExpressionGraphicsDlg::OnInitDialog() {
 #if !defined(TRACE_REDUCTION_CALLSTACK)
   enableMenuItem(this, ID_VIEW_SHOWREDUCTIONSTACK , false);
 #endif
-  reloadDynamicLayoutResource();
+  reloadLayoutResource();
   loadOptions();
   OnEditGotoComboFx();
 
@@ -242,12 +242,12 @@ void CTestExpressionGraphicsDlg::OnViewShowReductionStack() {
 #if defined(TRACE_REDUCTION_CALLSTACK)
   const bool showStack = toggleMenuItem(this, ID_VIEW_SHOWREDUCTIONSTACK);
 
-  CRect stackRect         = getWindowRect(this, IDC_STATICREDUCTIONSTACK);
-  CRect r1                = getWindowRect(this, IDC_STATICEXPRIMAGE     );
-  CRect r2                = getWindowRect(this, IDC_EDITDERIVED         );
-  CRect r3                = getWindowRect(this, IDC_STATICDERIVEDIMAGE  );
-  CMFCDynamicLayout::MoveSettings mvStack, mvText;
-  CMFCDynamicLayout::SizeSettings szStack, szImage, szText;
+  CRect stackRect         = getCtrlRect(IDC_STATICREDUCTIONSTACK);
+  CRect r1                = getCtrlRect(IDC_STATICEXPRIMAGE     );
+  CRect r2                = getCtrlRect(IDC_EDITDERIVED         );
+  CRect r3                = getCtrlRect(IDC_STATICDERIVEDIMAGE  );
+  MoveSettings mvStack, mvText;
+  SizeSettings szStack, szImage, szText;
   if(showStack) {
     stackRect.top = r1.top;
     GetDlgItem(IDC_STATICREDUCTIONSTACK)->ShowWindow(SW_SHOW);
@@ -909,8 +909,8 @@ void CTestExpressionGraphicsDlg::OnContextMenu(CWnd *pWnd, CPoint point) {
 }
 
 int CTestExpressionGraphicsDlg::getWindowIdFromPoint(CPoint &p) { // assume p relative to *this
-  const CRect exprRect    = getWindowRect(this, IDC_STATICEXPRIMAGE);
-  const CRect derivedRect = getWindowRect(this, IDC_STATICDERIVEDIMAGE);
+  const CRect exprRect    = getCtrlRect(IDC_STATICEXPRIMAGE);
+  const CRect derivedRect = getCtrlRect(IDC_STATICDERIVEDIMAGE);
   const CRect stackRect   = m_reductionStackWindow.IsWindowVisible() ? getWindowRect(m_reductionStackWindow) : CRect(0,0,0,0);
   int mouseWinId = -1;
 

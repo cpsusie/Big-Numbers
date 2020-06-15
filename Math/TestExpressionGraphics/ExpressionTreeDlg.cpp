@@ -48,7 +48,7 @@ BOOL CExpressionTreeDlg::OnInitDialog() {
   const String stateName    = tree->getStateName();
   const UINT   nodeCount    = tree->getNodeCount();
 
-  reloadDynamicLayoutResource();
+  reloadLayoutResource();
 
   String title = getWindowText(this);
   title += format(_T(" - %s form - state %s. %u nodes")
