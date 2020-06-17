@@ -433,7 +433,7 @@
       <MinimalRebuild>false</MinimalRebuild>
       <ExceptionHandling>Async</ExceptionHandling>
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
-      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -614,7 +614,7 @@
       <ExceptionHandling>Async</ExceptionHandling>
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
-      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
       <OmitFramePointers>false</OmitFramePointers>
     </ClCompile>
     <Link>
