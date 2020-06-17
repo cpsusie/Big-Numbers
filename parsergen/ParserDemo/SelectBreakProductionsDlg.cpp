@@ -6,7 +6,9 @@
 #endif
 
 CSelectBreakProductionsDlg::CSelectBreakProductionsDlg(const ParserTables &tables, BitSet &prodSet, CWnd *pParent)
-: CDialog(CSelectBreakProductionsDlg::IDD, pParent), m_prodSet(prodSet), m_productionLines(tables, prodSet)
+: CDialog(CSelectBreakProductionsDlg::IDD, pParent)
+, m_prodSet(prodSet)
+, m_productionLines(tables, prodSet)
 {
 }
 
@@ -40,7 +42,7 @@ ProductionLineArray::ProductionLineArray(const ParserTables &tables, const BitSe
   int        leftSideLength = 0;
   UINT       prod;
   for(prod = 0; prod < tables.getProductionCount(); prod++) {
-    int length = (int)_tcsclen(tables.getLeftSymbolName(prod));
+    const int length = (int)_tcsclen(tables.getLeftSymbolName(prod));
     if(length > leftSideLength) {
       leftSideLength = length;
     }
@@ -54,11 +56,9 @@ ProductionLineArray::ProductionLineArray(const ParserTables &tables, const BitSe
 BOOL CSelectBreakProductionsDlg::OnInitDialog() {
   __super::OnInitDialog();
   CListBox *lb = getListBox();
-
   for(size_t i = 0; i < m_productionLines.size(); i++) {
     lb->InsertString(-1, m_productionLines[i].m_text.cstr());
   }
-
   for(size_t i = 0; i < m_productionLines.size(); i++) {
     if(m_productionLines[i].m_selected) {
       lb->SetSel((int)i);
@@ -74,8 +74,8 @@ CListBox *CSelectBreakProductionsDlg::getListBox() {
 
 void CSelectBreakProductionsDlg::OnOK() {
   CListBox *listBox = getListBox();
-  const int count =  listBox->GetSelCount();
-  int *items = new int[count];
+  const int count   =  listBox->GetSelCount();
+  int      *items   = new int[count];
   listBox->GetSelItems(count, items);
   m_prodSet.clear();
   for(int i = 0; i < count; i++) {

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <ThreadPool.h>
 #include "TestParser.h"
 #include "GRAMMARS.h"
 
@@ -59,40 +60,38 @@ static String getLegalInput(const ParserTables &tables, UINT state) {
   return result;
 }
 
-class YaccThread : public Thread {
+class YaccJob : public SafeRunnable {
 private:
   TestParser &m_parser;
 public:
-  YaccThread(TestParser &parser);
-  UINT run();
+  YaccJob(TestParser &parser);
+  UINT safeRun();
 };
 
-YaccThread::YaccThread(TestParser &parser)
-: Thread(_T("YaccThread"))
-, m_parser(parser)
-{
+YaccJob::YaccJob(TestParser &parser) : m_parser(parser) {
 }
 
-UINT YaccThread::run() {
+UINT YaccJob::safeRun() {
+  SETTHREADDESCRIPTION(_T("YaccJob"));
   m_parser.buildStateArray();
   return 0;
 }
 
 TestParser::TestParser() : LRparser(*tablesToTest), m_grammar(CPP, *tablesToTest) {
-  m_scanner    = new TestScanner(*this);          TRACE_NEW(m_scanner   );
+  m_scanner    = new TestScanner(*this);          TRACE_NEW(m_scanner  );
   setScanner(m_scanner);
   m_root       = NULL;
-  m_userStack  = new SyntaxNodep[getStackSize()]; TRACE_NEW(m_userStack );
-  m_initThread = new YaccThread(*this);           TRACE_NEW(m_initThread);
-  m_initThread->resume();
+  m_userStack  = new SyntaxNodep[getStackSize()]; TRACE_NEW(m_userStack);
+  m_yaccJob    = new YaccJob(*this);              TRACE_NEW(m_yaccJob  );
+  ThreadPool::executeNoWait(*m_yaccJob);
   buildLegalInputArray();
   buildReduceActionArray();
 }
 
 TestParser::~TestParser() {
-  SAFEDELETE(     m_scanner   );
-  SAFEDELETEARRAY(m_userStack );
-  SAFEDELETE(     m_initThread);
+  SAFEDELETE(     m_scanner  );
+  SAFEDELETEARRAY(m_userStack);
+  SAFEDELETE(     m_yaccJob  );
   deleteNodeList();
 }
 
@@ -132,19 +131,12 @@ void TestParser::buildStateArray() {
   }
 }
 
-void TestParser::waitForInitThread() {
-  if(m_initThread != NULL) {
-    while(m_initThread->stillActive()) {
-      Sleep(300);
-    }
-    SAFEDELETE(m_initThread);
-  }
+void TestParser::waitForYaccJob() {
+  SAFEDELETE(m_yaccJob);
 }
 
 const String &TestParser::getStateItems(UINT state) {
-  if(m_initThread != NULL) {
-    waitForInitThread();
-  }
+  waitForYaccJob();
   return m_stateStr[state];
 }
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <grammar.h>
-#include <Thread.h>
+#include <SafeRunnable.h>
 
 class TestParser;
 
@@ -30,33 +30,32 @@ public:
   virtual void handleDebug(const SourcePosition &pos, const TCHAR *format, va_list argptr) = 0;
 };
 
-
 class TestParser : public LRparser {
 private:
-  LexStringStream    m_inputStream;
-  Scanner           *m_scanner;
-  Grammar            m_grammar;
-  ParserHandler     *m_handler;
-  bool               m_ok;
-  UINT               m_cycleCount;
-  SyntaxNodep        m_leftSide,*m_stacktop;
-  SyntaxNodep       *m_userStack;
-  Array<SyntaxNodep> m_nodeList;
-  SyntaxNodep        m_root;
-  StringArray        m_legalLookahead;
-  StringArray        m_reduceActionStr;
-  StringArray        m_stateStr;
-  Thread            *m_initThread;
+  LexStringStream           m_inputStream;
+  Scanner                  *m_scanner;
+  Grammar                   m_grammar;
+  ParserHandler            *m_handler;
+  bool                      m_ok;
+  UINT                      m_cycleCount;
+  SyntaxNodep               m_leftSide,*m_stacktop;
+  SyntaxNodep              *m_userStack;
+  CompactArray<SyntaxNodep> m_nodeList;
+  SyntaxNodep               m_root;
+  StringArray               m_legalLookahead;
+  StringArray               m_reduceActionStr;
+  StringArray               m_stateStr;
+  SafeRunnable             *m_yaccJob;
   void deleteNodeList();
   void buildLegalInputArray();
   void buildReduceActionArray();
-  void waitForInitThread();
+  void waitForYaccJob();
 public:
   TestParser();
   ~TestParser();
-  Grammar &getGrammar()                             { return m_grammar;                 }
-  void setHandler(ParserHandler *handler)           { m_handler = handler;              }
-  void setNewInput(const TCHAR *String);
+  Grammar      &getGrammar()                        { return m_grammar;                 }
+  void          setHandler(ParserHandler *handler)  { m_handler = handler;              }
+  void          setNewInput(const TCHAR *String);
   inline bool   accept()              const         { return m_ok;                      }
   inline UINT   getCycleCount()       const         { return m_cycleCount;              }
   const String &getLegalInput()       const         { return m_legalLookahead[state()]; }
@@ -64,7 +63,7 @@ public:
   const String &getStateItems(UINT state);
   inline SyntaxNodep getRoot()                      { return m_root;                    }
   void addSyntaxNode(SyntaxNodep p)                 { m_nodeList.add(p);                }
-  void vdebug(const TCHAR *format, va_list argptr);
+  void vdebug(                           const TCHAR *format, va_list argptr);
   void verror(const SourcePosition &pos, const TCHAR *format, va_list argptr);
   void setDebugScanner(bool newvalue)               { m_scanner->setDebug(newvalue);    }
   void setStackSize(UINT newsize);
@@ -72,10 +71,10 @@ public:
   const SyntaxNodep *getUserStack()           const { return m_userStack;               }
   void buildStateArray();
   void userStackInit();
-  int  reduceAction(        UINT prod);
+  int  reduceAction(        UINT prod  );
   void userStackShiftSymbol(UINT symbol);
-  void userStackPopSymbols( UINT count)              { m_stacktop -= count;              } // pop count symbols from userstack
-  void push(SyntaxNodep p)                           { *(++m_stacktop) = p;              } // push p onto userstack
-  void userStackShiftLeftSide()                      { push(m_leftSide);                 } // push($$) onto userstack
-  void defaultReduce(UINT prod)                      { m_leftSide = *m_stacktop;         } // $$ = $1
+  void userStackPopSymbols( UINT count )             { m_stacktop -= count;             } // pop count symbols from userstack
+  void push(SyntaxNodep p)                           { *(++m_stacktop) = p;             } // push p onto userstack
+  void userStackShiftLeftSide()                      { push(m_leftSide);                } // push($$) onto userstack
+  void defaultReduce(UINT prod)                      { m_leftSide = *m_stacktop;        } // $$ = $1
 };
