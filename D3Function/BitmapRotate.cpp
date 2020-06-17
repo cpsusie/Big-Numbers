@@ -176,8 +176,8 @@ HBITMAP rotateBitmap(LPDIRECT3DDEVICE device, HBITMAP bm, double degree) {
       worldMatrix = rotationMatrix * translateMatrix;
       trSize      = CSize(bmSize.cy, bmSize.cx);
       break;
-    case    0   :
-    case  180 :
+    case    0:
+    case  180:
     case -180:
       worldMatrix = rotationMatrix;
       trSize      = bmSize;
