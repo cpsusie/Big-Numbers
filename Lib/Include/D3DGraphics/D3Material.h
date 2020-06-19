@@ -12,11 +12,22 @@ inline bool operator!=(const D3DMATERIAL &m1, const D3DMATERIAL &m2) {
   return !(m1 == m2);
 }
 
+class D3MATERIAL : public D3DMATERIAL {
+public:
+  bool m_specularHighlights;
+  inline bool operator==(const D3MATERIAL &m) const {
+    return (m_specularHighlights == m.m_specularHighlights) && ((*(D3DMATERIAL*)this) == ((const D3DMATERIAL&)m));
+  }
+  inline bool operator!=(const D3MATERIAL &m) const {
+    return !(*this == m);
+  }
+};
+
 // Sent to listener for id=SP_MATERIALPARAMETERS
-class D3Material : public D3DMATERIAL {
+class D3Material : public D3MATERIAL {
 private:
-  // If < 0, material is undefined
-  int m_id;
+  // If m_id < 0, material is undefined
+  int  m_id;
 public:
   inline D3Material() {
     setUndefined();
@@ -24,8 +35,8 @@ public:
   inline explicit D3Material(UINT id) {
     setUndefined().m_id = id;
   }
-  inline D3Material &operator=(const D3DMATERIAL &m) {
-    *((D3DMATERIAL*)this) = m;
+  inline D3Material &operator=(const D3MATERIAL &m) {
+    *((D3MATERIAL*)this) = m;
     return *this;
   }
   D3Material &setUndefined() {
@@ -42,25 +53,25 @@ public:
   D3Material &setMaterialForTexture();
 
   // create a material with the specified diffuse and emissive color
-  static D3DMATERIAL createMaterialWithColor(D3DCOLOR color);
-  static inline D3DMATERIAL createDefaultMaterial() {
+  static D3MATERIAL        createMaterialWithColor(D3DCOLOR color, bool specularHighlights=true);
+  static inline D3MATERIAL createDefaultMaterial() {
     return D3Material().setDefault();
   }
-  static D3DMATERIAL createMaterialForTexture() {
+  static D3MATERIAL createMaterialForTexture() {
     return D3Material().setMaterialForTexture();
   }
   // v=0 => transparent, v=1 => opaque
   D3Material &setOpacity(float v);
   float getOpacity() const;
+
+  inline bool operator==(const D3Material &m) const {
+    return __super::operator==(m) && (m_id == m.m_id);
+  }
+  inline bool operator!=(const D3Material &m) const {
+    return !(*this == m);
+  }
+
   String toString(int dec=3) const;
 };
-
-inline bool operator==(const D3Material &m1, const D3Material &m2) {
-  return memcmp(&m1, &m2, sizeof(D3Material)) == 0;
-}
-
-inline bool operator!=(const D3Material &m1, const D3Material &m2) {
-  return !(m1 == m2);
-}
 
 typedef CompactUIntHashMap<D3Material> MaterialMap;

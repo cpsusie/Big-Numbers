@@ -96,13 +96,6 @@ void D3Scene::setRightHanded(bool rightHanded) {
   }
 }
 
-void D3Scene::setSpecularEnable(bool enabled) {
-  getDevice().setSpecularEnable(enabled);
-}
-bool D3Scene::getSpecularEnable() const {
-  return getDevice().getSpecularEnable();
-}
-
 UINT D3Scene::getTextureCoordCount() const {
   return getDevice().getTextureCoordCount();
 }

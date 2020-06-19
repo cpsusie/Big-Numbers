@@ -14,6 +14,8 @@ void getValue(XMLDoc &doc, XMLNodePtr n,       D3DXQUATERNION &q);
 
 void setValue(XMLDoc &doc, XMLNodePtr n, const D3DMATERIAL    &v);
 void getValue(XMLDoc &doc, XMLNodePtr n,       D3DMATERIAL    &v);
+void setValue(XMLDoc &doc, XMLNodePtr n, const D3MATERIAL     &v);
+void getValue(XMLDoc &doc, XMLNodePtr n,       D3MATERIAL     &v);
 void setValue(XMLDoc &doc, XMLNodePtr n, const MaterialMap    &map);
 void getValue(XMLDoc &doc, XMLNodePtr n,       MaterialMap    &map);
 

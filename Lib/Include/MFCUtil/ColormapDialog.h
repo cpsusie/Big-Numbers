@@ -1,19 +1,19 @@
 #pragma once
 #include "colormap.h"
-#include <Hashmap.h>
+#include <CompactHashmap.h>
 #include "SliderCtrlWithTransformation.h"
 #include "ColorSpace.h"
 #include "PropertyDialog.h"
 
 template<typename T> class CColormapDialog : public CPropertyDialog<T>  {
 private:
-  IntHashMap<CSliderCtrlWithTransformation*> m_sliderMap;
+  CompactIntHashMap<CSliderCtrlWithTransformation*> m_sliderMap;
 public:
   CColormapDialog(int resId, int propertyId, CWnd *pParent) : CPropertyDialog<T>(resId, propertyId, pParent) {
   }
   ~CColormapDialog() {
-    for(Iterator<CSliderCtrlWithTransformation*> it = m_sliderMap.values().getIterator(); it.hasNext();) {
-      CSliderCtrlWithTransformation *ctrl = it.next();
+    for(Iterator<Entry<CompactIntKeyType, CSliderCtrlWithTransformation*> > it = m_sliderMap.getEntryIterator(); it.hasNext();) {
+      CSliderCtrlWithTransformation *ctrl = it.next().getValue();
       SAFEDELETE(ctrl);
     }
     m_sliderMap.clear();

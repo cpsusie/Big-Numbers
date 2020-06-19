@@ -196,8 +196,6 @@ D3Cube MeshBuilder::getBoundingBox() const {
   return D3Cube(pmin,pmax);
 }
 
-static FastSemaphore   meshCreatorGate;
-
 template<typename VertexType, typename IndexType> class MeshCreator {
 private:
   const MeshBuilder &m_mb;
@@ -217,16 +215,11 @@ private:
     const int                 vertexCount       = vertexCount1Side * factor;
     const int                 faceCount1Side    = m_mb.getTriangleCount();
     const int                 faceCount         = faceCount1Side * factor;
-    bool                      inCriticalSection = false;
     BitSet                    vertexDone(vertexCount1Side);
 
     LPD3DXMESH mesh = NULL;
     try {
-      meshCreatorGate.wait();
-      inCriticalSection = true;
       mesh = amf.allocateMesh(VertexType::FVF_Flags, faceCount, vertexCount, getMeshFlags());
-      inCriticalSection = false;
-      meshCreatorGate.notify();
       VertexType *vertices;
       IndexType  *indexArray;
       V(mesh->LockVertexBuffer( 0, (void**)&vertices  ));
@@ -280,9 +273,6 @@ private:
         mesh->UnlockVertexBuffer();
         SAFERELEASE(mesh);
       }
-      if(inCriticalSection) {
-        meshCreatorGate.notify();
-      }
       throw;
     }
   }
@@ -297,15 +287,10 @@ private:
     const int                 vertexCount        = vertexCount1Side * factor;
     const int                 faceCount1Side     = m_mb.getTriangleCount();
     const int                 faceCount          = faceCount1Side * factor;
-    bool                      inCriticalSection  = false;
 
     LPD3DXMESH mesh = NULL;
     try {
-      meshCreatorGate.wait();
-      inCriticalSection = true;
       mesh = amf.allocateMesh(VertexType::FVF_Flags, (DWORD)faceCount, (DWORD)vertexCount, getMeshFlags());
-      inCriticalSection = false;
-      meshCreatorGate.notify();
 
       VertexType *vertices;
       IndexType  *indexArray;
@@ -359,9 +344,6 @@ private:
         mesh->UnlockIndexBuffer();
         mesh->UnlockVertexBuffer();
         SAFERELEASE(mesh);
-      }
-      if(inCriticalSection) {
-        meshCreatorGate.notify();
       }
       throw;
     }

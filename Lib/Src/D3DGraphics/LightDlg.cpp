@@ -8,6 +8,7 @@
 
 CLightDlg::CLightDlg(PropertyChangeListener *listener, CWnd *pParent)
 : CColormapDialog<D3Light>(IDD, SP_LIGHTPARAMETERS, pParent)
+, m_setCurrentValueActive(false)
 {
   if(listener) {
     addPropertyChangeListener(listener);
@@ -23,21 +24,25 @@ void CLightDlg::DoDataExchange(CDataExchange *pDX) {
 
 BEGIN_MESSAGE_MAP(CLightDlg, CDialog)
   ON_WM_HSCROLL()
-  ON_WM_SHOWWINDOW()
-  ON_MESSAGE(_ID_MSG_RESETCONTROLS   , OnMsgResetControls)
-  ON_BN_CLICKED(ID_BUTTON_HIDEWINDOW , OnHideWindow      )
   ON_WM_CLOSE()
+  ON_WM_SHOWWINDOW()
+  ON_BN_CLICKED(ID_BUTTON_HIDEWINDOW , OnHideWindow      )
+  ON_MESSAGE(_ID_MSG_RESETCONTROLS   , OnMsgResetControls)
 END_MESSAGE_MAP()
 
 BOOL CLightDlg::OnInitDialog() {
   __super::OnInitDialog();
   m_origName = getWindowText(this);
-
-  initSlider(IDC_SLIDER_RANGE               , 0.001 , 100, 200, LOGARITHMIC);
-  initSlider(IDC_SLIDER_CONSTANTATTENUATION , 0.001 , 10 , 200, LOGARITHMIC);
-  initSlider(IDC_SLIDER_LINEARATTENUATION   , 0.0001, 10 , 200, LOGARITHMIC);
-  initSlider(IDC_SLIDER_QUADRATICATTENUATION, 0.0001, 10 , 200, LOGARITHMIC);
-  initSlider(IDC_SLIDER_FALLOFF             , 0     ,300);
+  const TabOrder tabOrder(this);
+  initSlider(IDC_SLIDER_RANGE               , 0.001    , 100, 200, LOGARITHMIC);
+  initSlider(IDC_SLIDER_CONSTANTATTENUATION , 0.001    ,  10, 200, LOGARITHMIC);
+  initSlider(IDC_SLIDER_LINEARATTENUATION   , 0.0001   ,  10, 200, LOGARITHMIC);
+  initSlider(IDC_SLIDER_QUADRATICATTENUATION, 0.0001   ,  10, 200, LOGARITHMIC);
+  initSlider(IDC_SLIDER_FALLOFF             , 0        , 300                  );
+  initSlider(IDC_SLIDER_SPOTANGLEOUTER      , 0.0015625, 180, 200, LOGARITHMIC);
+  initSlider(IDC_SLIDER_SPOTANGLEINNER      , 0.0015625, 180, 200, LOGARITHMIC);
+  tabOrder.restoreTabOrder();
+  LoadDynamicLayoutResource(m_lpszTemplateName);
   return TRUE;
 }
 
@@ -48,16 +53,17 @@ LRESULT CLightDlg::OnMsgResetControls(WPARAM wp, LPARAM lp) {
 
 void CLightDlg::resetControls() {
   const bool notifyEnable = setNotifyEnable(false);
-
   const D3Light &v = getStartValue();
   setCurrentValue(v);
-  valueToWindow(v);
   setNotifyEnable(notifyEnable);
 }
 
 void CLightDlg::setCurrentValue(const D3Light &v) {
+  if(m_setCurrentValueActive) return;
+  m_setCurrentValueActive = true;
   CPropertyDialog<D3Light>::setCurrentValue(v);
-  ajourSliders(v);
+  valueToWindow(v);
+  m_setCurrentValueActive = false;
 }
 
 D3Light &CLightDlg::copyModifiableValues(D3Light &dst, const D3Light &src) { // static
@@ -69,6 +75,8 @@ D3Light &CLightDlg::copyModifiableValues(D3Light &dst, const D3Light &src) { // 
   dst.Attenuation1 = src.Attenuation1;
   dst.Attenuation2 = src.Attenuation2;
   dst.Falloff      = src.Falloff;
+  dst.Theta        = src.Theta;
+  dst.Phi          = src.Phi;
   return dst;
 }
 
@@ -81,11 +89,13 @@ void CLightDlg::valueToWindow(const D3Light &v) {
   }
   setWindowText(this, format(_T("%s (%s light[%d]"), m_origName.cstr(), lightTypeStr, v.getIndex()));
 
-  setSliderValue(IDC_SLIDER_RANGE               , v.Range        );
-  setSliderValue(IDC_SLIDER_CONSTANTATTENUATION , v.Attenuation0 );
-  setSliderValue(IDC_SLIDER_LINEARATTENUATION   , v.Attenuation1 );
-  setSliderValue(IDC_SLIDER_QUADRATICATTENUATION, v.Attenuation2 );
-  setSliderValue(IDC_SLIDER_FALLOFF             , v.Falloff      );
+  setSliderValue(IDC_SLIDER_RANGE               , v.Range                   );
+  setSliderValue(IDC_SLIDER_CONSTANTATTENUATION , v.Attenuation0            );
+  setSliderValue(IDC_SLIDER_LINEARATTENUATION   , v.Attenuation1            );
+  setSliderValue(IDC_SLIDER_QUADRATICATTENUATION, v.Attenuation2            );
+  setSliderValue(IDC_SLIDER_FALLOFF             , v.Falloff                 );
+  setSliderValue(IDC_SLIDER_SPOTANGLEOUTER      , degrees(v.getOuterAngle()));
+  setSliderValue(IDC_SLIDER_SPOTANGLEINNER      , degrees(v.getInnerAngle()));
 
   setD3DCOLORVALUE(IDC_COLORMAP_DIFFUSE , v.Diffuse );
   setD3DCOLORVALUE(IDC_COLORMAP_SPECULAR, v.Specular);
@@ -102,26 +112,28 @@ void CLightDlg::ajourSliders(const D3Light &v) {
 void CLightDlg::enableSliders(const D3Light &v) {
   const bool isSpot        = v.Type == D3DLIGHT_SPOT;
   const bool isDirectional = v.Type == D3DLIGHT_DIRECTIONAL;
+  enableWindowList(*this,!isDirectional
+                  ,IDC_STATIC_RANGE               ,IDC_SLIDER_RANGE               
+                  ,IDC_STATIC_CONSTANTATTENUATION ,IDC_SLIDER_CONSTANTATTENUATION 
+                  ,IDC_STATIC_LINEARATTENUATION   ,IDC_SLIDER_LINEARATTENUATION   
+                  ,IDC_STATIC_QUADRATICATTENUATION,IDC_SLIDER_QUADRATICATTENUATION
+                  ,0);
 
-  GetDlgItem(IDC_STATIC_RANGE               )->EnableWindow(!isDirectional);
-  GetDlgItem(IDC_SLIDER_RANGE               )->EnableWindow(!isDirectional);
-  GetDlgItem(IDC_STATIC_CONSTANTATTENUATION )->EnableWindow(!isDirectional);
-  GetDlgItem(IDC_SLIDER_CONSTANTATTENUATION )->EnableWindow(!isDirectional);
-  GetDlgItem(IDC_STATIC_LINEARATTENUATION   )->EnableWindow(!isDirectional);
-  GetDlgItem(IDC_SLIDER_LINEARATTENUATION   )->EnableWindow(!isDirectional);
-  GetDlgItem(IDC_STATIC_QUADRATICATTENUATION)->EnableWindow(!isDirectional);
-  GetDlgItem(IDC_SLIDER_QUADRATICATTENUATION)->EnableWindow(!isDirectional);
-
-  GetDlgItem(IDC_STATIC_FALLOFF             )->EnableWindow(isSpot);
-  GetDlgItem(IDC_SLIDER_FALLOFF             )->EnableWindow(isSpot);
+  enableWindowList(*this,isSpot
+                  ,IDC_STATIC_FALLOFF             ,IDC_SLIDER_FALLOFF             
+                  ,IDC_STATIC_SPOTANGLEOUTER      ,IDC_SLIDER_SPOTANGLEOUTER
+                  ,IDC_STATIC_SPOTANGLEINNER      ,IDC_SLIDER_SPOTANGLEINNER
+                  ,0);
 }
 
 void CLightDlg::showSliderValues(const D3Light &v) {
-  setWindowText(this, IDC_STATIC_RANGEVALUE         ,format(_T("%.3f"), v.Range        ));
-  setWindowText(this, IDC_STATIC_CONSTANTATTVALUE   ,format(_T("%.3f"), v.Attenuation0 ));
-  setWindowText(this, IDC_STATIC_LINEARATTVALUE     ,format(_T("%.3f"), v.Attenuation1 ));
-  setWindowText(this, IDC_STATIC_QUADRATICATTVALUE  ,format(_T("%.3f"), v.Attenuation2 ));
-  setWindowText(this, IDC_STATIC_FALLOFFVALUE       ,format(_T("%.3f"), v.Falloff      ));
+  setWindowText(this, IDC_STATIC_RANGEVALUE         , format(_T("%.3f"),         v.Range           ));
+  setWindowText(this, IDC_STATIC_CONSTANTATTVALUE   , format(_T("%.3f"),         v.Attenuation0    ));
+  setWindowText(this, IDC_STATIC_LINEARATTVALUE     , format(_T("%.3f"),         v.Attenuation1    ));
+  setWindowText(this, IDC_STATIC_QUADRATICATTVALUE  , format(_T("%.3f"),         v.Attenuation2    ));
+  setWindowText(this, IDC_STATIC_FALLOFFVALUE       , format(_T("%.3f"),         v.Falloff         ));
+  setWindowText(this, IDC_STATIC_SPOTANGLEOUTERVALUE, format(_T("%.2f"), degrees(v.getOuterAngle())));
+  setWindowText(this, IDC_STATIC_SPOTANGLEINNERVALUE, format(_T("%.2f"), degrees(v.getInnerAngle())));
 }
 
 void CLightDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar) {
@@ -143,6 +155,12 @@ void CLightDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar) {
     break;
   case IDC_SLIDER_FALLOFF               :
     v.Falloff      = pos;
+    break;
+  case IDC_SLIDER_SPOTANGLEOUTER        :
+    v.setOuterAngle(radians(pos));
+    break;
+  case IDC_SLIDER_SPOTANGLEINNER        :
+    v.setInnerAngle(radians(pos));
     break;
   }
   setCurrentValue(v);

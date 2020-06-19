@@ -3,12 +3,13 @@
 
 D3Material &D3Material::setDefault() {
   memset(this, 0, sizeof(D3Material));
-  m_id     = -1;
-  Ambient  = D3DXCOLOR(0.10f , 0.10f , 0.16f, 1.0f);
-  Diffuse  = D3DXCOLOR(0.1f  , 0.086f, 0.29f, 1.0f);
-  Specular = D3DXCOLOR(0.835f, 0.808f, 0.95f, 1.0f);
-  Emissive = D3DXCOLOR(0     , 0     , 0    , 0   );
-  Power    = 9.73f;
+  m_id                 = -1;
+  Ambient              = D3DXCOLOR(0.10f , 0.10f , 0.16f, 1.0f);
+  Diffuse              = D3DXCOLOR(0.1f  , 0.086f, 0.29f, 1.0f);
+  Specular             = D3DXCOLOR(0.835f, 0.808f, 0.95f, 1.0f);
+  Emissive             = D3DXCOLOR(0     , 0     , 0    , 0   );
+  Power                = 9.73f;
+  m_specularHighlights = true;
   return *this;
 }
 
@@ -20,12 +21,13 @@ D3Material &D3Material::setMaterialForTexture() {
   return *this;
 }
 
-D3DMATERIAL D3Material::createMaterialWithColor(D3DCOLOR color) { // static
+D3MATERIAL D3Material::createMaterialWithColor(D3DCOLOR color, bool specularHighlights) { // static
   const D3DCOLORVALUE cv = colorToColorValue(color);
-  D3DMATERIAL mat;
+  D3MATERIAL mat;
   memset(&mat, 0, sizeof(mat));
-  mat.Diffuse  = cv;
-  mat.Emissive = cv;
+  mat.Diffuse              = cv;
+  mat.Emissive             = cv;
+  mat.m_specularHighlights = specularHighlights;
   return mat;
 }
 
@@ -42,9 +44,9 @@ String D3Material::toString(int dec) const {
   if(!isDefined()) {
     return _T("Material undefined");
   }
-  return format(_T("Material[%2d]:Power:%.*f\n  Colors:Amb:%s Dif:%s Spec:%s Emi:%s")
+  return format(_T("Material[%2d]:Power:%.*f,SpecularHL:%s\n  Colors:Amb:%s Dif:%s Spec:%s Emi:%s")
                ,m_id
-               ,dec, Power
+               ,dec, Power, boolToStr(m_specularHighlights)
                ,::toString(Ambient).cstr()
                ,::toString(Diffuse , true).cstr()
                ,::toString(Specular, true).cstr()

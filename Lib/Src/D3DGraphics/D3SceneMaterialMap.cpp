@@ -2,7 +2,7 @@
 #include <D3DGraphics/D3ToString.h>
 #include <D3DGraphics/D3Scene.h>
 
-UINT D3Scene::addMaterial(const D3DMATERIAL &material) {
+UINT D3Scene::addMaterial(const D3MATERIAL &material) {
   const UINT oldCount = getMaterialCount();
   const UINT id       = getFirstFreeMaterialId();
   D3Material  m(id);
@@ -20,8 +20,8 @@ void D3Scene::setAllMaterials(const MaterialMap &materialMap) {
   notifyPropertyChanged(SP_MATERIALCOUNT, &oldCount, &newCount);
 }
 
-UINT D3Scene::addMaterialWithColor(D3DCOLOR color) {
-  return addMaterial(D3Material::createMaterialWithColor(color));
+UINT D3Scene::addMaterialWithColor(D3DCOLOR color, bool specularHighlights) {
+  return addMaterial(D3Material::createMaterialWithColor(color, specularHighlights));
 }
 
 UINT D3Scene::getFirstFreeMaterialId() const {

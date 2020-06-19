@@ -8,17 +8,18 @@ void setValue(XMLDoc &doc, XMLNodePtr n, const D3SceneObjectVisual &v) {
   setValue(doc, n, _T("world"          ), D3World(v.getWorld()));
   setValue(doc, n, _T("visible"        ), v.isVisible()        );
   setValue(doc, n, _T("hasfillmode"    ), v.hasFillMode()      );
+  setValue(doc, n, _T("hasshademode"   ), v.hasShadeMode()     );
+  setValue(doc, n, _T("hastextureid"   ), v.hasTextureId()     );
   if(v.hasFillMode()) {
     setValue(doc, n, _T("fillmode"       ), fillModeToString(v.getFillMode()));
   }
-  setValue(doc, n, _T("hasshademode"   ), v.hasShadeMode()     );
   if(v.hasShadeMode()) {
     setValue(doc, n, _T("hasshademode"   ), shadeModeToString(v.getShadeMode()));
   }
   if(v.hasMaterial()) {
     setValue(doc, n, _T("materialid"), v.getMaterialId());
   }
-  if(v.hasTexture()) {
+  if(v.hasTextureId()) {
     setValue(doc, n, _T("textureid"), v.getTextureId());
   }
   setValue(doc, n, _T("hasmesh"        ), v.hasMesh()          );

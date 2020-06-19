@@ -118,15 +118,16 @@ D3DCOLORVALUE D3LightControl::getMaterialColor(const D3Light &l) { // static
   return l.isEnabled() ? l.Diffuse : getDisabledMaterialColor();
 }
 
-D3DMATERIAL D3LightControl::createMaterialFromLight(const D3Light &l) { // static
-  D3DMATERIAL mat;
-  ZeroMemory(&mat, sizeof(D3DMATERIAL));
+D3MATERIAL D3LightControl::createMaterialFromLight(const D3Light &l) { // static
+  D3MATERIAL mat;
+  ZeroMemory(&mat, sizeof(D3MATERIAL));
   mat.Power = 0.7f;
   const D3DCOLORVALUE color = getMaterialColor(l);
   mat.Diffuse  = color;
   mat.Specular = color;
 #define EMSIVEFACTOR 0.4f
   mat.Emissive = D3DXCOLOR(color.r*EMSIVEFACTOR, color.g*EMSIVEFACTOR, color.b*EMSIVEFACTOR, 1);
+  mat.m_specularHighlights = false;
   return mat;
 }
 

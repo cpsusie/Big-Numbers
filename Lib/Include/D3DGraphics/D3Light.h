@@ -49,9 +49,15 @@ public:
   // Only valid for spot lights
   // Maintain invariant:0 <= Theta <= Phi <= pi
   D3Light &setOuterAngle(float rad);
+
+  // Only valid for spot lights
+  // Return Theta in radians, 0 <= Theta <= Phi <= pi
   inline float getInnerAngle() const {
     return Theta;
   }
+
+  // Only valid for spot lights.
+  // Return Phi in radians, 0 <= Theta <= Phi <= pi
   inline float getOuterAngle() const {
     return Phi;
   }

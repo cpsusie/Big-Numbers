@@ -116,7 +116,6 @@ private:
           D3LightControl *getCurrentLightControl();
     const D3LightControl *getCurrentLightControl() const;
     void setLightControlRenderEffect(bool enabled);
-    void setSpecularEnable(          bool enabled);
     void OnSceneSaveParameters();
     void OnSceneLoadParameters();
     void OnControlObjMoveRotate();

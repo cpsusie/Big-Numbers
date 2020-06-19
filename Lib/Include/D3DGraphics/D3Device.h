@@ -20,7 +20,8 @@ private:
   LPDIRECT3DDEVICE m_device;
   D3DCAPS          m_deviceCaps;
   D3Material       m_material;
-  FastSemaphore    m_renderLock;
+  FastSemaphore    m_renderLock, m_allocLock;
+
   // only set in scene.render
   const D3Camera  *m_currentCamera;
   template<typename T> void setDevRenderState(D3DRENDERSTATETYPE id, T value) {
@@ -192,20 +193,20 @@ public:
     return m_lighting;
   }
 
-  // set device specularHighLightEnable (D3DRS_SPECULARENABLE),
-  // and update m_renderState.m_specularHighLightEnable if different from current
-  inline D3Device &setSpecularEnable(bool enabled) {
-    if(enabled != getSpecularEnable()) {
+  // set device specularHighlightEnable (D3DRS_SPECULARENABLE),
+  // and update m_renderState.m_specularHighlightEnable if different from current
+  inline D3Device &setSpecularHighlights(bool enabled) {
+    if(enabled != getSpecularHighlights()) {
       setDevRenderState(D3DRS_SPECULARENABLE, enabled ? TRUE : FALSE);
-      m_specularHighLightEnable = enabled;
+      m_specularHighlights = enabled;
     }
     return *this;
   }
-  inline bool getSpecularEnable() const {
-    return m_specularHighLightEnable;
+  inline bool getSpecularHighlights() const {
+    return m_specularHighlights;
   }
-  // call m_device->SetMaterial(&mat),
-  D3Device &setMaterial(const D3Material &matarial);
+  // call m_device->SetMaterial(&material),
+  D3Device &setMaterial(const D3Material &material);
   inline const D3Material &getMaterial() const {
     return m_material;
   }
@@ -270,14 +271,10 @@ public:
   }
 
   template<typename VertexType> LPDIRECT3DVERTEXBUFFER allocateVertexBuffer(UINT count, UINT *bufferSize = NULL) {
-    const UINT vertexSize = sizeof(VertexType);
-    UINT tmp, &totalSize = bufferSize ? *bufferSize : tmp;
-    totalSize = vertexSize * count;
-    LPDIRECT3DVERTEXBUFFER result;
-    V(m_device->CreateVertexBuffer(totalSize, 0, VertexType::FVF_Flags, D3DPOOL_DEFAULT, &result, NULL)); TRACE_CREATE(result);
-    return result;
+    return allocateVertexBuffer(VertexType::FVF_Flags, count, bufferSize);
   }
-  LPDIRECT3DINDEXBUFFER   allocateIndexBuffer( bool int32, UINT count, UINT *bufferSize = NULL);
-  LPD3DXMESH              allocateMesh(        DWORD fvf , UINT faceCount, UINT vertexCount, DWORD options);
+  LPDIRECT3DVERTEXBUFFER  allocateVertexBuffer(DWORD fvf  , UINT count, UINT *bufferSize = NULL);
+  LPDIRECT3DINDEXBUFFER   allocateIndexBuffer( bool  int32, UINT count, UINT *bufferSize = NULL);
+  LPD3DXMESH              allocateMesh(        DWORD fvf  , UINT faceCount, UINT vertexCount, DWORD options);
 
 };

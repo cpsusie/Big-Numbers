@@ -31,8 +31,8 @@ protected:
   static inline D3DCOLORVALUE getDisabledMaterialColor() {
     return D3DXCOLOR(0.1f,0.1f,0.1f,1);
   }
-  static D3DMATERIAL   createMaterialFromLight(const D3Light &l);
-  D3DCOLORVALUE getMaterialColor() const;
+  static D3MATERIAL    createMaterialFromLight(const D3Light &l);
+  D3DCOLORVALUE        getMaterialColor() const;
 
   inline void setSize(float size) {
     m_size = size;

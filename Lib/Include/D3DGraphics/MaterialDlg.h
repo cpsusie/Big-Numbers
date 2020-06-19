@@ -14,6 +14,8 @@ private:
   void  showPower(       double v);
   void  setSliderPower(  double v);
   float getSliderPower() const;
+  void  setSpecularHighlights(bool v);
+  bool  getSpecularHighlights() const;
   void  setSliderOpacity(double v);
   float getSliderOpacity() const;
   void  showOpacity(     double v);
@@ -24,15 +26,16 @@ public:
     return _T("D3Material");
   }
 protected:
-    virtual void    DoDataExchange(CDataExchange *pDX);
-    virtual BOOL    OnInitDialog();
-    afx_msg void    OnHScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar);
-    afx_msg void    OnVScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar);
-    afx_msg void    OnHideWindow();
-    virtual void    OnCancel();
-    afx_msg void    OnClose();
-    afx_msg LRESULT OnMsgResetControls(WPARAM wp, LPARAM lp);
-    DECLARE_MESSAGE_MAP()
+  virtual void    DoDataExchange(CDataExchange *pDX);
+  virtual BOOL    OnInitDialog();
+  virtual void    OnCancel();
+  afx_msg void    OnClose();
+  afx_msg void    OnHideWindow();
+  afx_msg void    OnBnClickedCheckSpecularHighlights();
+  afx_msg void    OnHScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar);
+  afx_msg void    OnVScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar);
+  afx_msg LRESULT OnMsgResetControls(WPARAM wp, LPARAM lp);
+  DECLARE_MESSAGE_MAP()
 private:
   CColormap m_colormapAmbient;
   CColormap m_colormapDiffuse;

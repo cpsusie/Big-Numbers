@@ -31,7 +31,7 @@ D3DeviceRenderState &D3DeviceRenderState::getValuesFromDevice(LPDIRECT3DDEVICE d
   m_normalizeNormals         = getBoolProperty(device, D3DRS_NORMALIZENORMALS);
   m_alphaBlendEnable         = getBoolProperty(device, D3DRS_ALPHABLENDENABLE);
   m_lighting                 = getBoolProperty(device, D3DRS_LIGHTING        );
-  m_specularHighLightEnable  = getBoolProperty(device, D3DRS_SPECULARENABLE  );
+  m_specularHighlights       = getBoolProperty(device, D3DRS_SPECULARENABLE  );
   return *this;
 }
 
@@ -47,21 +47,21 @@ D3DeviceRenderState &D3DeviceRenderState::setValuesToDevice(LPDIRECT3DDEVICE dev
   setBoolProperty(device, D3DRS_NORMALIZENORMALS , m_normalizeNormals       );
   setBoolProperty(device, D3DRS_ALPHABLENDENABLE , m_alphaBlendEnable       );
   setBoolProperty(device, D3DRS_LIGHTING         , m_lighting               );
-  setBoolProperty(device, D3DRS_SPECULARENABLE   , m_specularHighLightEnable);
+  setBoolProperty(device, D3DRS_SPECULARENABLE   , m_specularHighlights     );
   return *this;
 }
 
 D3DeviceRenderState &D3DeviceRenderState::setDefault() {
-  m_fillMode                = D3DFILL_SOLID;
-  m_shadeMode               = D3DSHADE_GOURAUD;
-  m_ambientColor            = D3DCOLOR_XRGB(50, 50, 50);
-  m_cullMode                = D3DCULL_CCW;
-  m_srcBlend                = D3DBLEND_ONE;
-  m_dstBlend                = D3DBLEND_ZERO;
-  m_zEnable                 = D3DZB_TRUE;
-  m_normalizeNormals        = true;
-  m_alphaBlendEnable        = false;
-  m_lighting                = true;
-  m_specularHighLightEnable = true;
+  m_fillMode           = D3DFILL_SOLID;
+  m_shadeMode          = D3DSHADE_GOURAUD;
+  m_ambientColor       = D3DCOLOR_XRGB(50, 50, 50);
+  m_cullMode           = D3DCULL_CCW;
+  m_srcBlend           = D3DBLEND_ONE;
+  m_dstBlend           = D3DBLEND_ZERO;
+  m_zEnable            = D3DZB_TRUE;
+  m_normalizeNormals   = true;
+  m_alphaBlendEnable   = false;
+  m_lighting           = true;
+  m_specularHighlights = true;
   return *this;
 }

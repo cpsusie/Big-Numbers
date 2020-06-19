@@ -181,8 +181,6 @@ public:
   void   setLightPosition(         UINT lightIndex, const D3DXVECTOR3 &pos);
   String getLightString(           UINT lightIndex) const;
   String getLightString() const;
-  void   setSpecularEnable(bool enabled);
-  bool   getSpecularEnable() const;
 
 // --------------------------- D3Material ----------------------------
 
@@ -196,12 +194,12 @@ public:
   // notify listeners with either SP_MATERIALPARAMETERS or SP_MATERIALCOUNT in case of new material
   void setMaterial(const D3Material  &material);
   // notify listeners by notification id=SP_MATERIALCOUNT
-  UINT addMaterial(const D3DMATERIAL &material);
+  UINT addMaterial(const D3MATERIAL &material);
   // notify listeners by notification id=SP_MATERIALCOUNT
   void setAllMaterials(const MaterialMap &materialMap);
   // add a material with the specified diffuse and emissive color, and return it's id
   // uses D3Material::createMaterialWithColor
-  UINT addMaterialWithColor(D3DCOLOR color);
+  UINT addMaterialWithColor(D3DCOLOR color, bool specularHighlights=true);
   // notify listeners by notification id=SP_MATERIALCOUNT
   void removeAllMaterials();
   // notify listeners by notification id=SP_MATERIALCOUNT

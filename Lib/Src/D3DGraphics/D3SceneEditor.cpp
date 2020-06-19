@@ -529,8 +529,6 @@ BOOL D3SceneEditor::PreTranslateMessage(MSG *pMsg) {
     case ID_RIGHTHANDED                   : SetRightHanded(true)                ; return true;
     case ID_LEFTHANDED                    : SetRightHanded(false)               ; return true;
     case ID_SCENE_EDIT_AMBIENTLIGHT       : OnSceneEditAmbientLight()           ; return true;
-    case ID_ENABLE_SPECULARHIGHLIGHT      : setSpecularEnable(true)             ; return true;
-    case ID_DISABLE_SPECULARHIGHLIGHT     : setSpecularEnable(false)            ; return true;
     case ID_SHOWCOORDINATESYSTEM          : setCoordinateSystemVisible(true)    ; return true;
     case ID_HIDECOORDINATESYSTEM          : setCoordinateSystemVisible(false)   ; return true;
     case ID_LIGHT_ADDDIRECTIONAL          : OnLightAddDirectional()             ; return true;
@@ -1061,11 +1059,6 @@ void D3SceneEditor::setLightControlRenderEffect(bool enabled) {
   }
 }
 
-void D3SceneEditor::setSpecularEnable(bool enabled) {
-  SCENE.setSpecularEnable(enabled);
-  renderActiveCameras(SC_RENDER3D);
-}
-
 void D3SceneEditor::setSpotToPointAt(CPoint point) {
   D3LightControl *lc = getCurrentLightControl();
   if((lc == NULL) || (lc->getLightType() != D3DLIGHT_SPOT)) {
@@ -1150,9 +1143,6 @@ void D3SceneEditor::OnContextMenuBackground(CPoint point) {
   removeMenuItem(menu, isCoordinateSystemVisible()
                       ?ID_SHOWCOORDINATESYSTEM
                       :ID_HIDECOORDINATESYSTEM);
-  removeMenuItem(menu, SCENE.getSpecularEnable()
-                      ?ID_ENABLE_SPECULARHIGHLIGHT
-                      :ID_DISABLE_SPECULARHIGHLIGHT);
   removeMenuItem(menu, SCENE.getRightHanded()
                       ?ID_RIGHTHANDED
                       :ID_LEFTHANDED);

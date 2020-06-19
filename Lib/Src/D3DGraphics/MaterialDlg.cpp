@@ -16,26 +16,30 @@ CMaterialDlg::CMaterialDlg(PropertyChangeListener *listener, CWnd *pParent)
 
 void CMaterialDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
-  DDX_Control(pDX, IDC_COLORMAP_AMBIENT , m_colormapAmbient );
-  DDX_Control(pDX, IDC_COLORMAP_DIFFUSE , m_colormapDiffuse );
-  DDX_Control(pDX, IDC_COLORMAP_EMISSIVE, m_colormapEmissive);
-  DDX_Control(pDX, IDC_COLORMAP_SPECULAR, m_colormapSpecular);
+  DDX_Control(pDX, IDC_COLORMAP_AMBIENT        , m_colormapAmbient   );
+  DDX_Control(pDX, IDC_COLORMAP_DIFFUSE        , m_colormapDiffuse   );
+  DDX_Control(pDX, IDC_COLORMAP_EMISSIVE       , m_colormapEmissive  );
+  DDX_Control(pDX, IDC_COLORMAP_SPECULAR       , m_colormapSpecular  );
 }
 
 BEGIN_MESSAGE_MAP(CMaterialDlg, CDialog)
-    ON_WM_HSCROLL()
-    ON_WM_VSCROLL()
-    ON_WM_SHOWWINDOW()
-    ON_MESSAGE(_ID_MSG_RESETCONTROLS  , OnMsgResetControls)
-    ON_BN_CLICKED(ID_BUTTON_HIDEWINDOW, OnHideWindow      )
-    ON_WM_CLOSE()
+  ON_WM_CLOSE()
+  ON_WM_SHOWWINDOW()
+  ON_WM_HSCROLL()
+  ON_WM_VSCROLL()
+  ON_BN_CLICKED(ID_BUTTON_HIDEWINDOW        , OnHideWindow                      )
+  ON_BN_CLICKED(IDC_CHECK_SPECULARHIGHLIGHTS, OnBnClickedCheckSpecularHighlights)
+  ON_MESSAGE(_ID_MSG_RESETCONTROLS          , OnMsgResetControls                )
 END_MESSAGE_MAP()
 
 BOOL CMaterialDlg::OnInitDialog() {
   __super::OnInitDialog();
   m_origName = getWindowText(this);
+  const TabOrder tabOrder(this);
   initSlider(IDC_SLIDER_POWER  , 0.1, 400, 200, LOGARITHMIC);
   initSlider(IDC_SLIDER_OPACITY, 1  ,   0, 200);
+  tabOrder.restoreTabOrder();
+  LoadDynamicLayoutResource(m_lpszTemplateName);
   return TRUE;
 }
 
@@ -59,6 +63,7 @@ void CMaterialDlg::valueToWindow(const D3Material &v) {
 
   setSliderPower(v.Power);
   setSliderOpacity(v.getOpacity());
+  setSpecularHighlights(v.m_specularHighlights);
   setD3DCOLORVALUE(IDC_COLORMAP_AMBIENT , v.Ambient );
   setD3DCOLORVALUE(IDC_COLORMAP_DIFFUSE , v.Diffuse );
   setD3DCOLORVALUE(IDC_COLORMAP_SPECULAR, v.Specular);
@@ -78,6 +83,20 @@ void CMaterialDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar) {
   setCurrentValue(v.setOpacity(getSliderOpacity()));
   showOpacity(v.getOpacity());
   __super::OnHScroll(nSBCode, nPos, pScrollBar);
+}
+
+void CMaterialDlg::OnBnClickedCheckSpecularHighlights() {
+  D3Material v = getCurrentValue();
+  v.m_specularHighlights = getSpecularHighlights();
+  setCurrentValue(v);
+}
+
+void CMaterialDlg::setSpecularHighlights(bool v) {
+  CheckDlgButton(IDC_CHECK_SPECULARHIGHLIGHTS, v ? BST_CHECKED : BST_UNCHECKED);
+}
+
+bool CMaterialDlg::getSpecularHighlights() const {
+  return IsDlgButtonChecked(IDC_CHECK_SPECULARHIGHLIGHTS) == BST_CHECKED;
 }
 
 void CMaterialDlg::setSliderPower(double v) {

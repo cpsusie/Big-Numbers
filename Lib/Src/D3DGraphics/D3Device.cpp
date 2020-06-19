@@ -61,6 +61,7 @@ D3Device &D3Device::setMaterial(const D3Material &material) {
     }
     m_material = material;
   }
+  setSpecularHighlights(material.m_specularHighlights);
   return *this;
 }
 
@@ -80,19 +81,50 @@ D3DLIGHT D3Device::getLight(UINT lightIndex) const {
   return lp;
 }
 
+LPDIRECT3DVERTEXBUFFER D3Device::allocateVertexBuffer(DWORD fvf, UINT count, UINT *bufferSize) {
+  const UINT vertexSize = FVFToSize(fvf);
+  UINT tmp, &totalSize = bufferSize ? *bufferSize : tmp;
+  totalSize = vertexSize * count;
+  LPDIRECT3DVERTEXBUFFER result;
+  try {
+    m_allocLock.wait();
+    V(m_device->CreateVertexBuffer(totalSize, 0, fvf, D3DPOOL_DEFAULT, &result, NULL));
+    m_allocLock.notify();
+    TRACE_CREATE(result);
+  } catch(...) {
+    m_allocLock.notify();
+    throw;
+  }
+  return result;
+}
+
 LPDIRECT3DINDEXBUFFER D3Device::allocateIndexBuffer(bool int32, UINT count, UINT *bufferSize) {
   const int itemSize   = int32 ? sizeof(long) : sizeof(short);
   UINT tmp, &totalSize = bufferSize ? *bufferSize : tmp;
   totalSize = itemSize * count;
   LPDIRECT3DINDEXBUFFER result;
-  V(m_device->CreateIndexBuffer(totalSize, 0, int32 ? D3DFMT_INDEX32 : D3DFMT_INDEX16, D3DPOOL_DEFAULT, &result, NULL));
-  TRACE_CREATE(result);
+  try {
+    m_allocLock.wait();
+    V(m_device->CreateIndexBuffer(totalSize, 0, int32 ? D3DFMT_INDEX32 : D3DFMT_INDEX16, D3DPOOL_DEFAULT, &result, NULL));
+    m_allocLock.notify();
+    TRACE_CREATE(result);
+  } catch(...) {
+    m_allocLock.notify();
+    throw;
+  }
   return result;
 }
 
 LPD3DXMESH D3Device::allocateMesh(DWORD fvf , UINT faceCount, UINT vertexCount, DWORD options) {
   LPD3DXMESH result;
-  V(D3DXCreateMeshFVF(faceCount, vertexCount, options, fvf, m_device, &result));
-  TRACE_CREATE(result);
+  try {
+    m_allocLock.wait();
+    V(D3DXCreateMeshFVF(faceCount, vertexCount, options, fvf, m_device, &result));
+    m_allocLock.notify();
+    TRACE_CREATE(result);
+  } catch(...) {
+    m_allocLock.notify();
+    throw;
+  }
   return result;
 }

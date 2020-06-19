@@ -12,10 +12,10 @@ public:
   D3DBLEND       m_srcBlend;
   D3DBLEND       m_dstBlend;
   D3DZBUFFERTYPE m_zEnable;
-  bool           m_normalizeNormals : 1;
-  bool           m_alphaBlendEnable : 1;
-  bool           m_lighting : 1;
-  bool           m_specularHighLightEnable : 1;
+  bool           m_normalizeNormals   : 1;
+  bool           m_alphaBlendEnable   : 1;
+  bool           m_lighting           : 1;
+  bool           m_specularHighlights : 1;
 
   D3DeviceRenderState() {
     setDefault();
