@@ -70,23 +70,23 @@ LPD3DXMESH createMeshFrom2DFunction(AbstractMeshFactory &amf, FunctionR2R1 &f, c
 
   MeshBuilder   mb;
   mb.clear((nx+1)*(ny+1));
-  const double  stepx      = xInterval.getLength() / (nx-1);
-  const double  stepy      = yInterval.getLength() / (ny-1);
-  const bool    hasNormals = fvf & D3DFVF_NORMAL;
-  const bool    hasTexture = fvf & D3DFVF_TEX1;
+  const double  stepx            = xInterval.getLength() / (nx-1);
+  const double  stepy            = yInterval.getLength() / (ny-1);
+  const bool    calculateNormals = fvf & D3DFVF_NORMAL;
+  const bool    calculateTexture = fvf & D3DFVF_TEX1;
   const TexturePoints uPoints(nx), vPoints(ny);
-  const float *uValues = hasTexture ? uPoints.getBuffer() : NULL, *vValues = hasTexture ? vPoints.getBuffer() : NULL;
+  const float *uValues = calculateTexture ? uPoints.getBuffer() : NULL, *vValues = calculateTexture ? vPoints.getBuffer() : NULL;
   // (u ~ x, v ~ y)
   Point2D p(xInterval.getFrom(), yInterval.getFrom());
   for(UINT i = 0; i < ny; i++, p.y += stepy) {
     p.x = xInterval.getFrom();
     for(UINT j = 0; j < nx; j++, p.x += stepx) {
-      Function2DPoint fp(f, p, hasNormals);
+      Function2DPoint fp(f, p, calculateNormals);
       mb.addVertex(fp.m_p);
-      if(hasNormals) {
+      if(calculateNormals) {
         mb.addNormal(fp.m_n);
       }
-      if(hasTexture) {
+      if(calculateTexture) {
         mb.addTextureVertex(uValues[j],vValues[i]);
       }
     }

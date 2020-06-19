@@ -2,6 +2,7 @@
 #include <ByteFile.h>
 #include <ExternProcess.h>
 #include <MFCUtil/ColorDlg.h>
+#include <D3DGraphics/D3Device.h>
 #include <D3DGraphics/D3ToString.h>
 #include <D3DGraphics/LightDlg.h>
 #include <D3DGraphics/MaterialDlg.h>
@@ -9,6 +10,7 @@
 #include <D3DGraphics/D3LightControl.h>
 #include <D3DGraphics/D3SceneObjectAnimatedMesh.h>
 #include <D3DGraphics/D3SceneObjectCoordinateSystem.h>
+#include <D3DGraphics/D3AbstractTextureFactory.h>
 #include <D3DGraphics/D3SelectedCube.h>
 #include <D3DGraphics/D3SceneEditor.h>
 
@@ -32,6 +34,14 @@ D3SceneEditor::~D3SceneEditor() {
   close();
 }
 
+D3Scene *D3SceneEditor::getScene() const {
+  return hasSceneContainer() ? &m_sceneContainer->getScene() : NULL;
+}
+D3Device *D3SceneEditor::getDevice() const {
+  D3Scene *scene = getScene();
+  return scene ? &scene->getDevice() : NULL;
+}
+
 CameraSet D3SceneEditor::getActiveCameraSet() const {
   return SCENE.getCameraArray().getActiveCameraSet();
 }
@@ -42,6 +52,12 @@ CameraSet D3SceneEditor::getSelectedCameraSet() const {
     set.add(m_selectedCameraIndex);
   }
   return set;
+}
+
+void D3SceneEditor::render(BYTE flags, CameraSet cameraSet) const {
+  if(isSet(flags)) {
+    m_sceneContainer->render(flags, cameraSet);
+  }
 }
 
 void D3SceneEditor::init(D3SceneContainer *sceneContainer) {
@@ -489,6 +505,7 @@ BOOL D3SceneEditor::PreTranslateMessage(MSG *pMsg) {
     case ID_OBJECT_SHOWDATA               : OnObjectShowData()                  ; return true;
     case ID_OBJECT_SHOWNORMALS            : OnObjectShowNormals(true)           ; return true;
     case ID_OBJECT_HIDENORMALS            : OnObjectShowNormals(false)          ; return true;
+    case ID_OBJECT_SELECTTEXTURE          : OnObjectSelectTexture()             ; return true;
     case ID_OBJECT_REMOVE                 : OnObjectRemove()                    ; return true;
     case ID_OBJECT_SETCENTEROFROTATION    : OnObjectSetCenterOfRotation()       ; return true;
     case ID_OBJECT_RESETCENTEROFROTATION  : OnObjectResetCenterOfRotation()     ; return true;
@@ -1216,6 +1233,9 @@ void D3SceneEditor::OnContextMenuVisualObj(CPoint point) {
   } else {
     removeMenuItem(menu, ID_OBJECT_HIDENORMALS);
   }
+  if(!getCurrentObj()->hasMutableTexture()) {
+    removeMenuItem(menu, ID_OBJECT_SELECTTEXTURE);
+  }
   getCurrentObj()->modifyContextMenu(*menu.GetSubMenu(0));
   showContextMenu(menu, point);
 }
@@ -1359,6 +1379,27 @@ void D3SceneEditor::OnObjectShowNormals(bool show) {
       getCurrentObj()->setNormalsVisible(show);
       renderActiveCameras(SC_RENDERALL);
     }
+  }
+}
+
+void D3SceneEditor::OnObjectSelectTexture() {
+  try {
+    if(hasObj() && getCurrentObj()->hasMutableTexture()) {
+      D3Device *device = getDevice();
+      if(device) {
+        const String fileName = selectAndValidateTextureFile(*device);
+        if(fileName.length() == 0) {
+          return;
+        }
+        LPDIRECT3DTEXTURE texture = device->loadTextureFromFile(fileName);
+        D3Scene          *scene   = getScene();
+        const UINT        id      = scene->addTexture(texture);
+        getCurrentObj()->setTextureId(id);
+        renderActiveCameras(SC_RENDERALL);
+      }
+    }
+  } catch(Exception e) {
+    showWarning(_T("Exception:%s"), e.what());
   }
 }
 

@@ -39,10 +39,15 @@ public:
     return m_id;
   }
   D3Material &setDefault();
+  D3Material &setMaterialForTexture();
+
   // create a material with the specified diffuse and emissive color
   static D3DMATERIAL createMaterialWithColor(D3DCOLOR color);
   static inline D3DMATERIAL createDefaultMaterial() {
     return D3Material().setDefault();
+  }
+  static D3DMATERIAL createMaterialForTexture() {
+    return D3Material().setMaterialForTexture();
   }
   // v=0 => transparent, v=1 => opaque
   D3Material &setOpacity(float v);

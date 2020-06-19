@@ -50,7 +50,7 @@ LPDIRECT3DTEXTURE AbstractTextureFactory::getTextureFromBitmap(LPDIRECT3DDEVICE 
 
 LPDIRECT3DTEXTURE AbstractTextureFactory::loadTextureFromBitmapResource(LPDIRECT3DDEVICE device, int id) {
   CBitmap bm;
-  bm.LoadBitmap(id);
+  bm.LoadBitmap(id); // TODO - Use LoadImage instead here
   return getTextureFromBitmap(device, bm);
 }
 

@@ -37,5 +37,5 @@ void setValue(XMLDoc &doc, XMLNodePtr n, const D3SceneObjectVisual &v) {
 }
 
 void getValue(XMLDoc &doc, XMLNodePtr n, D3SceneObjectVisual &s) {
-
+  // TODO
 }

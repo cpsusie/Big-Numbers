@@ -222,9 +222,6 @@
     <ClCompile Include="D3SceneContainer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D3CameraslideAnimator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="D3ToSize.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -386,6 +383,9 @@
     </ClCompile>
     <ClCompile Include="D3SurfaceCommonParametersXML.cpp">
       <Filter>Source Files\D3StringConversion\D3XML</Filter>
+    </ClCompile>
+    <ClCompile Include="D3CameraSlideAnimator.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

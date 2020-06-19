@@ -63,12 +63,20 @@ public:
   D3DVERTEXBUFFER_DESC getVertexBufferDesc() const;
   DWORD                getFVF() const;
   virtual bool         hasTextureCoordinates() const;
+  virtual bool         hasTextureId() const {
+    return false;
+  }
+  virtual void         setTextureId(int id) {
+  }
   virtual int          getTextureId() const {
     return -1;
   }
   LPDIRECT3DTEXTURE    getTexture() const;
   inline bool          hasTexture() const {
     return getTextureId() >= 0;
+  }
+  inline bool          hasMutableTexture() const {
+    return hasTextureId() && hasTextureCoordinates();
   }
   D3Device            &setDeviceTextureIfExist() const;
 

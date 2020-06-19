@@ -234,7 +234,7 @@ BEGIN
             MENUITEM "Phong",                       ID_OBJECT_SHADING_PHONG
         END
         MENUITEM "Material...",                 ID_OBJECT_ADJUSTMATERIAL
-        MENUITEM "Texture",                     ID_OBJECT_TEXTURE
+        MENUITEM "Texture...",                  ID_OBJECT_SELECTTEXTURE
         MENUITEM "Show data",                   ID_OBJECT_SHOWDATA
         MENUITEM "Show Normals",                ID_OBJECT_SHOWNORMALS
         MENUITEM "Hide Normals",                ID_OBJECT_HIDENORMALS

@@ -27,14 +27,17 @@ public:
 
 class D3FunctionSurface : public D3SceneObjectWithMesh {
 private:
-  int m_materialId;
-  int m_textureId;
+  int  m_materialId;
+  int  m_textureId;
+  bool m_hasTextureId;
 public:
   D3FunctionSurface(D3Scene &scene, LPD3DXMESH mesh) : D3SceneObjectWithMesh(scene, mesh), m_textureId(-1) {
-    m_materialId = scene.addMaterial(D3Material::createDefaultMaterial());
+    m_hasTextureId = hasTextureCoordinates();
+    m_materialId   = scene.addMaterial(D3Material::createDefaultMaterial());
   }
   D3FunctionSurface(D3Scene &scene, LPD3DXMESH mesh, UINT textureId)
     : D3SceneObjectWithMesh(scene, mesh), m_textureId(textureId)
+    , m_hasTextureId(true)
   {
     m_materialId = -1;
   }
@@ -49,15 +52,24 @@ public:
   int getMaterialId() const {
     return m_materialId;
   }
+  bool hasTextureId() const {
+    return m_hasTextureId;
+  }
+  void setTextureId(int id) {
+    if(hasTextureId()) {
+      m_textureId = id;
+    }
+  }
   int getTextureId() const {
-    return m_textureId;
+    return hasTextureId() ? m_textureId : -1;
   }
 };
 
 template<typename T> D3FunctionSurface *createSurface(D3Scene &s, const T &param) {
   D3FunctionSurface *obj = new D3FunctionSurface(s, createMesh(s.getDevice(), param)); TRACE_NEW(obj);
-  if(param.hasTexture()) {
-    ;
+  if(obj->hasMutableTexture() && param.hasTextureFileName()) {
+    LPDIRECT3DTEXTURE texture = s.getDevice().loadTextureFromFile(param.m_textureFileName);
+    obj->setTextureId(s.addTexture(texture));
   }
   return obj;
 }

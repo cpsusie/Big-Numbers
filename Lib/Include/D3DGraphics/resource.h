@@ -57,7 +57,8 @@
 #define ID_OBJECT_SHOWDATA              34131
 #define ID_OBJECT_SHOWNORMALS           34132
 #define ID_OBJECT_HIDENORMALS           34133
-#define ID_OBJECT_CREATECUBE            34134
+#define ID_OBJECT_SELECTTEXTURE         34134
+#define ID_OBJECT_CREATECUBE            34135
 #define ID_CONTROL_CAMERA_WALK          34140
 #define ID_CONTROL_CAMERA_PROJECTION    34141
 #define ID_CAMERA_RESETPOSITION         34142
@@ -113,7 +114,6 @@
 #define ID_SCENE_SAVEPARAMETERS         34250
 #define ID_SCENE_LOADPARAMETERS         34251
 #define ID_VISUALOBJECTCONTEXTMENU_TEXTURE 34296
-#define ID_OBJECT_TEXTURE               34297
 
 // Next default values for new objects
 // 

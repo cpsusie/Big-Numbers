@@ -5,7 +5,7 @@
 // Sent to listener for id=SP_TEXTUREIMAGE
 class D3Texture {
 private:
-  // If < 0, texture is undefined
+  // If < 0, texture is undefined and m_image == NULL
   int               m_id;
   LPDIRECT3DTEXTURE m_image;
 public:

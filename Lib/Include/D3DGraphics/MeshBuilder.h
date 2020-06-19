@@ -64,8 +64,8 @@ private:
   VertexArray                 m_normals;
   TextureVertexArray          m_textureVertexArray;
   Array<Face>                 m_faceArray;
-  mutable bool                m_hasNormals          : 1;
-  mutable bool                m_hasTextures         : 1;
+  mutable bool                m_calculateNormals    : 1;
+  mutable bool                m_calculateTexture    : 1;
   bool                        m_hasColors           : 1;
   mutable bool                m_vertexNormalChecked : 1;
   mutable bool                m_1NormalPerVertex    : 1;
@@ -151,11 +151,11 @@ public:
   bool isOk()                  const;
   bool has1NormalPerVertex()   const;
   bool isEmpty()               const;
-  inline bool hasNormals() const {
-    return m_hasNormals;
+  inline bool calculateNormals() const {
+    return m_calculateNormals;
   }
-  inline bool hasTextureVertices() const {
-    return m_hasTextures;
+  inline bool calculateTexture() const {
+    return m_calculateTexture;
   }
   inline bool hasColors()      const {
     return m_hasColors;

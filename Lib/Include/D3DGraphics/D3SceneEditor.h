@@ -84,7 +84,7 @@ private:
     // Assume getCurrentObjType() in { SOTYPE_VISUALOBJECT, SOTYPE_LIGHTCONTROL, SOTYPE_ANIMATEDOBJECT }
     void              setCurrentObjPos(   const D3DXVECTOR3 &pos);
     // Assume getCurrentVisual() != NULL (currentSceneObject.type in { SOTYPE_ANIMATEDOBJECT, SOTYPE_VISUALOBJECT }
-    void              setCurrentVisualWorld(       const D3DXMATRIX &world);
+    void              setCurrentVisualWorld(      const D3DXMATRIX &world);
     // Return pointer to getCurrentObj->getWorld() if getCcurrentVisual() != NULL, else NULL
     const D3DXMATRIX *getCurrentVisualWorld() const;
     void              setCurrentVisualOrientation(const D3DXQUATERNION &q    );
@@ -173,6 +173,7 @@ private:
     void OnObjectEditMaterial();
     void OnObjectShowData();
     void OnObjectShowNormals(bool show);
+    void OnObjectSelectTexture();
     void OnObjectResetPosition();
     void OnObjectResetScale();
     void OnObjectResetOrientation();
@@ -237,9 +238,11 @@ public:
     inline D3SceneContainer *getSceneContainer() const {
       return m_sceneContainer;
     }
-    inline D3Scene *getScene() const {
-      return hasSceneContainer() ? &m_sceneContainer->getScene() : NULL;
-    }
+
+    // Return hasSceneContainer() ? &m_sceneContainer->getScene() : NULL;
+    D3Scene  *getScene()  const;
+    // Return scene ? &scene->getDevice() : NULL;
+    D3Device *getDevice() const;
     inline D3EditorControl      getCurrentControl() const {
       return m_currentControl;
     }
@@ -248,11 +251,7 @@ public:
     }
     CameraSet getActiveCameraSet() const;
     CameraSet getSelectedCameraSet() const;
-    inline void render(BYTE flags, CameraSet cameraSet) {
-      if(isSet(flags)) {
-        m_sceneContainer->render(flags, cameraSet);
-      }
-    }
+    void render(BYTE flags, CameraSet cameraSet) const;
     inline void renderInfo() {
       render(SC_RENDERINFO, CameraSet());
     }
@@ -265,15 +264,14 @@ public:
     inline D3SceneObjectVisual *getCurrentObj() const {
       return m_currentObj;
     }
-    inline bool                 hasObj() const {
-      return getCurrentObj() != NULL;
-    }
+
+    // Return hasObj() ? getCurrentObj()->getType() : SOTYPE_NULL;
     SceneObjectType             getCurrentObjType() const;
     // Return NULL, if m_currentVisual->type not in {SOTYPE_VISUALOBJECT, SOTYPE_ANIMATEDOBJECT, }
     D3SceneObjectVisual        *getCurrentVisual() const;
     // return NULL, if m_currentVisual->type not SOTYPE_ANIMATEDOBJECT
     D3SceneObjectAnimatedMesh  *getCurrentAnimatedObj() const;
-    inline bool hasCurrentObj() const {
+    inline bool                 hasObj() const {
       return getCurrentObj() != NULL;
     }
     inline bool hasCurrentVisual() const {

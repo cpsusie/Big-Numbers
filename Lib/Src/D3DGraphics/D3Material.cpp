@@ -12,6 +12,14 @@ D3Material &D3Material::setDefault() {
   return *this;
 }
 
+D3Material &D3Material::setMaterialForTexture() {
+  memset(this, 0, sizeof(D3Material));
+  m_id     = -1;
+  Emissive = D3DXCOLOR(1, 1, 1, 1);
+  Power    = 1;
+  return *this;
+}
+
 D3DMATERIAL D3Material::createMaterialWithColor(D3DCOLOR color) { // static
   const D3DCOLORVALUE cv = colorToColorValue(color);
   D3DMATERIAL mat;

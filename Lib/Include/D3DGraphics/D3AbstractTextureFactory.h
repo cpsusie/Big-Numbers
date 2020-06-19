@@ -5,7 +5,7 @@
 
 class AbstractTextureFactory {
 public:
-  static LPDIRECT3DTEXTURE loadTextureFromFile(          LPDIRECT3DDEVICE device, const String &fileName);
+  static LPDIRECT3DTEXTURE loadTextureFromFile(          LPDIRECT3DDEVICE device,            const String &fileName);
   static LPDIRECT3DTEXTURE loadTextureFromResource(      LPDIRECT3DDEVICE device, int resId, const String &typeName);
   static LPDIRECT3DTEXTURE loadTextureFromByteArray(     LPDIRECT3DDEVICE device, ByteArray &ba);
   static LPDIRECT3DTEXTURE getTextureFromBitmap(         LPDIRECT3DDEVICE device, HBITMAP bm);
@@ -36,4 +36,6 @@ public:
   virtual LPDIRECT3DDEVICE getDirectDevice() const = 0;
 };
 
+// Return name of image-file, to be loaded with AbstractTextureFactory.loadTextureFromFile
+// or EMPTYSTRING if none selected
 String selectAndValidateTextureFile(AbstractTextureFactory &atf);

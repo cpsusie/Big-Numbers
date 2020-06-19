@@ -28,7 +28,7 @@ BEGIN_MESSAGE_MAP(CExprFunctionR2R1SurfaceParametersDlg, CDialog)
   ON_BN_CLICKED(IDC_BUTTON_HELP            , OnButtonHelp                     )
   ON_BN_CLICKED(IDC_CHECK_INCLUDETIME      , OnBnClickedCheckIncludeTime      )
   ON_BN_CLICKED(IDC_CHECK_MACHINECODE      , OnBnClickedCheckMachineCode      )
-  ON_BN_CLICKED(IDC_CHECK_HASTEXTURE       , OnBnClickedCheckHasTexture       )
+  ON_BN_CLICKED(IDC_CHECK_CALCULATETEXTURE , OnBnClickedCheckCalculateTexture )
   ON_BN_CLICKED(IDC_BUTTON_BROWSETEXTURE   , OnBnClickedButtonBrowseTexture   )
 END_MESSAGE_MAP()
 

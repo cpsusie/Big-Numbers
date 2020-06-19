@@ -4,8 +4,8 @@
 
 class D3SurfaceCommonParameters {
 public:
-  bool                m_hasNormals;
-  bool                m_hasTexture;
+  bool                m_calculateNormals;
+  bool                m_calculateTexture;
   String              m_textureFileName;
   bool                m_doubleSided;
   AnimationParameters m_animation;
@@ -13,11 +13,14 @@ public:
   inline bool isAnimated() const {
     return m_animation.includeTime();
   }
-  inline bool hasTexture() const {
-    return m_hasTexture;
+  inline bool calculateTexture() const {
+    return m_calculateTexture;
   }
-  inline bool hasNormals() const {
-    return m_hasNormals;
+  inline bool hasTextureFileName() const {
+    return m_textureFileName.length() != 0;
+  }
+  inline bool calculateNormals() const {
+    return m_calculateNormals;
   }
   DWORD getFVF() const;
   D3SurfaceCommonParameters();

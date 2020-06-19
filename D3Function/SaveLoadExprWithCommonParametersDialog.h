@@ -14,7 +14,7 @@ protected:
   BOOL    m_createListFile;
   BOOL    m_doubleSided;
   BOOL    m_calculateNormals;
-  BOOL    m_hasTexture;
+  BOOL    m_calculateTexture;
   CString m_textureFileName;
   AbstractTextureFactory &m_atf;
 
@@ -38,8 +38,8 @@ protected:
 
 #define MAXFRAMECOUNT 300
 
-  bool validateTexture(const String &textureFileName) const {
-    if(m_atf.validateTextureFile(textureFileName)) {
+  bool validateTextureFile(const String &textureFileName) const {
+    if(!m_atf.validateTextureFile(textureFileName)) {
       gotoEditBox((CWnd*)this, IDC_EDIT_TEXTUREFILENAME);
       showWarning(_T("Cannot load texture from file %s"), textureFileName.cstr());
       return false;
@@ -56,14 +56,11 @@ protected:
         return false;
       }
     }
-    if(m_hasTexture) {
-      if(m_textureFileName.GetLength() == 0) {
-        gotoEditBox(this, IDC_EDIT_TEXTUREFILENAME);
-        showWarning(_T("Must specify texture image file"));
-        return false;
-      }
-      if(!validateTexture((LPCTSTR)m_textureFileName)) {
-        return false;
+    if(m_calculateTexture) {
+      if(m_textureFileName.GetLength() > 0) {
+        if(!validateTextureFile((LPCTSTR)m_textureFileName)) {
+          return false;
+        }
       }
     }
     return true;
@@ -71,14 +68,14 @@ protected:
 
   void paramToWin(const T &param) {
     const AnimationParameters &d = param.m_animation;
-    m_includeTime      = d.m_includeTime     ? TRUE : FALSE;
+    m_includeTime      = d.m_includeTime           ? TRUE : FALSE;
     m_frameCount       = d.m_frameCount;
     m_timefrom         = d.getTimeInterval().getMin();
     m_timeto           = d.getTimeInterval().getMax();
-    m_machineCode      = param.m_machineCode ? TRUE : FALSE;
-    m_doubleSided      = param.m_doubleSided ? TRUE : FALSE;
-    m_calculateNormals = param.m_hasNormals  ? TRUE : FALSE;
-    m_hasTexture       = param.m_hasTexture  ? TRUE : FALSE;
+    m_machineCode      = param.m_machineCode       ? TRUE : FALSE;
+    m_doubleSided      = param.m_doubleSided       ? TRUE : FALSE;
+    m_calculateNormals = param.m_calculateNormals  ? TRUE : FALSE;
+    m_calculateTexture = param.m_calculateTexture  ? TRUE : FALSE;
     m_textureFileName  = param.m_textureFileName.cstr();
     enableTimeFields();
     enableCreateListFile();
@@ -88,15 +85,15 @@ protected:
 
   bool winToParam(T &param) {
     if(!__super::winToParam(param)) return false;
-    AnimationParameters &d  = param.m_animation;
-    d.m_includeTime         = m_includeTime      ? true : false;
-    d.m_frameCount          = m_frameCount;
-    d.m_timeInterval        = DoubleInterval(m_timefrom, m_timeto);
-    param.m_machineCode     = m_machineCode      ? true : false;
-    param.m_doubleSided     = m_doubleSided      ? true : false;
-    param.m_hasNormals      = m_calculateNormals ? true : false;
-    param.m_hasTexture      = m_hasTexture       ? true : false;
-    param.m_textureFileName = (LPCTSTR)m_textureFileName;
+    AnimationParameters &d   = param.m_animation;
+    d.m_includeTime          = m_includeTime      ? true : false;
+    d.m_frameCount           = m_frameCount;
+    d.m_timeInterval         = DoubleInterval(m_timefrom, m_timeto);
+    param.m_machineCode      = m_machineCode      ? true : false;
+    param.m_doubleSided      = m_doubleSided      ? true : false;
+    param.m_calculateNormals = m_calculateNormals ? true : false;
+    param.m_calculateTexture = m_calculateTexture ? true : false;
+    param.m_textureFileName  = (LPCTSTR)m_textureFileName;
     return true;
   }
 
@@ -110,7 +107,7 @@ protected:
     DDX_Check(pDX, IDC_CHECK_MACHINECODE     , m_machineCode     );
     DDX_Check(pDX, IDC_CHECK_CREATELISTFILE  , m_createListFile  );
     DDX_Check(pDX, IDC_CHECK_DOUBLESIDED     , m_doubleSided     );
-    DDX_Check(pDX, IDC_CHECK_HASTEXTURE      , m_hasTexture      );
+    DDX_Check(pDX, IDC_CHECK_CALCULATETEXTURE, m_calculateTexture);
     DDX_Check(pDX, IDC_CHECK_CALCULATENORMALS, m_calculateNormals);
     DDX_Text( pDX, IDC_EDIT_TEXTUREFILENAME  , m_textureFileName );
   }
@@ -140,13 +137,13 @@ protected:
                     );
   }
   virtual void enableTextureFields() {
-    enableWindowList(*this, m_hasTexture
+    enableWindowList(*this, m_calculateTexture
                     ,IDC_EDIT_TEXTUREFILENAME
                     ,IDC_BUTTON_BROWSETEXTURE
                     ,0);
   }
 
-  afx_msg void OnBnClickedCheckHasTexture() {
+  afx_msg void OnBnClickedCheckCalculateTexture() {
     UpdateData();
     enableTextureFields();
   }

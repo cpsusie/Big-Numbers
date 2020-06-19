@@ -109,8 +109,8 @@ void MeshBuilder::validate() const {
   const int maxVertexIndex  = (int)m_vertices.size()           - 1;
   const int maxNormalIndex  = (int)m_normals.size()            - 1;
   const int maxTextureIndex = (int)m_textureVertexArray.size() - 1;
-  m_hasNormals  = maxNormalIndex  >= 0;
-  m_hasTextures = maxTextureIndex >= 0;
+  m_calculateNormals = maxNormalIndex  >= 0;
+  m_calculateTexture = maxTextureIndex >= 0;
   const size_t faceCount = m_faceArray.size();
   for(size_t i = 0; i < faceCount; i++) {
     const VNTIArray &indexArray = m_faceArray[i].getIndices();
@@ -593,8 +593,8 @@ LPD3DXMESH MeshBuilder::createMesh(AbstractMeshFactory &amf, bool doubleSided) c
 //  copy.optimize();
 //  debugLog(_T("%s:\n%s"), _T("Copy (optimized)")  , indentString(copy.toString(), 2).cstr());
 
-  if(copy.hasNormals()) {
-    if(copy.hasTextureVertices()) {
+  if(copy.calculateNormals()) {
+    if(copy.calculateTexture()) {
       if(copy.hasColors()) {
         return MeshCreator1<VertexNormalDiffuseTex1>(copy).createMesh(amf, doubleSided);
       } else { // no colors
@@ -608,7 +608,7 @@ LPD3DXMESH MeshBuilder::createMesh(AbstractMeshFactory &amf, bool doubleSided) c
       }
     }
   } else { // no normals
-    if(copy.hasTextureVertices()) {
+    if(copy.calculateTexture()) {
       if(copy.hasColors()) {
         return MeshCreator1<VertexDiffuseTex1>(      copy).createMesh(amf, doubleSided);
       } else { // no colors

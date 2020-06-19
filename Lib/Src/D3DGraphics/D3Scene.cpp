@@ -3,8 +3,8 @@
 #include <D3DGraphics/D3Camera.h>
 #include <D3DGraphics/D3LightControl.h>
 #include <D3DGraphics/D3ToString.h>
-#include <D3DGraphics/D3Scene.h>
 #include <D3DGraphics/D3SceneObjectAnimatedMesh.h>
+#include <D3DGraphics/D3Scene.h>
 
 #pragma warning(disable : 4073)
 #pragma init_seg(lib)

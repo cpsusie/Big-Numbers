@@ -893,7 +893,7 @@
   <ItemGroup>
     <ClCompile Include="CreateMeshExprParametricR2R3Surface.cpp" />
     <ClCompile Include="D3CameraArray.cpp" />
-    <ClCompile Include="D3CameraslideAnimator.cpp" />
+    <ClCompile Include="D3CameraSlideAnimator.cpp" />
     <ClCompile Include="D3CameraXML.cpp" />
     <ClCompile Include="D3Device.cpp" />
     <ClCompile Include="D3DisplayModeStr.cpp" />
