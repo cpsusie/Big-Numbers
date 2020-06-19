@@ -163,7 +163,7 @@ template<typename T, typename D> void getValue(XMLDoc &doc, XMLNodePtr parent, c
 
 template<typename T> void setValue(XMLDoc &doc, XMLNodePtr n, const Iterator<T> &it) {
   UINT index = 0;
-  for(Iterator<T> it1 = it; it1.hasNext();index++) {
+  for(Iterator<T> it1 = it; it1.hasNext(); index++) {
     setValue<T>(doc, n, format(_T("id%u"),index).cstr(), it1.next());
   }
 }
