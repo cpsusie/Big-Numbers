@@ -1,6 +1,37 @@
-<ParametricSurface><common>p = 2; q = 5; pi2 = 2 * pi;
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<ParametricSurface>
+	<expr>
+		<common>p = 2; q = 5; pi2 = 2 * pi;
 pi2time = pi2*time;
 fi = pi2*t; theta = pi2*s + pi2time;
-r = cos(q*(fi - pi2time))+2; r1 = 0.2;
-
-</common><exprx>r * cos(p*fi) + r1 * sin(theta)</exprx><expry>r * sin(p*fi) + r1 * sin(theta)</expry><exprz>-sin(q*fi) + r1 * cos(theta)</exprz><tinterval><from>0</from><to>1</to></tinterval><sinterval><from>0</from><to>1</to></sinterval><tstepcount>160</tstepcount><sstepcount>20</sstepcount><machinecode>1</machinecode><doublesided>1</doublesided><includetime>1</includetime><timeinterval><from>0</from><to>1</to></timeinterval><framecount>120</framecount></ParametricSurface>
+r = cos(q*(fi - pi2time))+2; r1 = 0.2;</common>
+		<exprx>r * cos(p*fi) + r1 * sin(theta)</exprx>
+		<expry>r * sin(p*fi) + r1 * sin(theta)</expry>
+		<exprz>-sin(q*fi) + r1 * cos(theta)</exprz>
+	</expr>
+	<tinterval>
+		<from>0</from>
+		<to>1</to>
+	</tinterval>
+	<sinterval>
+		<from>0</from>
+		<to>1</to>
+	</sinterval>
+	<tstepcount>160</tstepcount>
+	<sstepcount>20</sstepcount>
+	<machinecode>true</machinecode>
+	<common>
+		<calculateNormals>true</calculateNormals>
+		<calculateTexture>false</calculateTexture>
+		<texturefilename/>
+		<doublesided>false</doublesided>
+		<animation>
+			<includetime>true</includetime>
+			<timeinterval>
+				<from>0</from>
+				<to>1</to>
+			</timeinterval>
+			<framecount>100</framecount>
+		</animation>
+	</common>
+</ParametricSurface>

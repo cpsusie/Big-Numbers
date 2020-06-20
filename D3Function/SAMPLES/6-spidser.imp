@@ -15,13 +15,18 @@
 			<z>10</z>
 		</rtf>
 	</boundingbox>
-	<tetrahedral>true</tetrahedral>
+	<tetrahedral>false</tetrahedral>
 	<tetraoptimize4>false</tetraoptimize4>
 	<adaptivecellsize>false</adaptivecellsize>
 	<originoutside>false</originoutside>
 	<machinecode>true</machinecode>
-	<doublesided>false</doublesided>
-	<animation>
-		<includetime>false</includetime>
-	</animation>
+	<common>
+		<calculateNormals>true</calculateNormals>
+		<calculateTexture>false</calculateTexture>
+		<texturefilename/>
+		<doublesided>false</doublesided>
+		<animation>
+			<includetime>false</includetime>
+		</animation>
+	</common>
 </IsoSurface>

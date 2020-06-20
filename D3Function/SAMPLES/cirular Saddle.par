@@ -1,4 +1,31 @@
-<ParametricSurface><common>t2pi = 2*pi*t;
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<ParametricSurface>
+	<expr>
+		<common>t2pi = 2*pi*t;
 a = s*cos(t2pi);
-b = 2*s*sin(t2pi);
-</common><exprx>a</exprx><expry>b</expry><exprz>a * b/5</exprz><tinterval><from>0.000000000000000e+00</from><to>1.000000000000000e+00</to></tinterval><sinterval><from>0.000000000000000e+00</from><to>3.000000000000000e+00</to></sinterval><tstepcount>40</tstepcount><sstepcount>30</sstepcount><machinecode>1</machinecode><doublesided>1</doublesided><includetime>0</includetime></ParametricSurface>
+b = 2*s*sin(t2pi);</common>
+		<exprx>a</exprx>
+		<expry>b</expry>
+		<exprz>a * b/5</exprz>
+	</expr>
+	<tinterval>
+		<from>0</from>
+		<to>1</to>
+	</tinterval>
+	<sinterval>
+		<from>0</from>
+		<to>3</to>
+	</sinterval>
+	<tstepcount>40</tstepcount>
+	<sstepcount>30</sstepcount>
+	<machinecode>true</machinecode>
+	<common>
+		<calculateNormals>true</calculateNormals>
+		<calculateTexture>false</calculateTexture>
+		<texturefilename/>
+		<doublesided>true</doublesided>
+		<animation>
+			<includetime>false</includetime>
+		</animation>
+	</common>
+</ParametricSurface>

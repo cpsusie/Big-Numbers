@@ -1,7 +1,0 @@
-<ParametricSurface><expr><common>p=2; q=3;
-pi2=2*pi; fi=pi2*t; pfi=p*fi; qfi=q*fi; r=cos(qfi)+2;        r1=0.2; theta = pi2*s; sintheta=sin(theta);
-x=r*cos(pfi); y=r*sin(pfi); z=-sin(qfi);                                                                   // p(t)=(x,y,z)
-fim=pi2; pfim=p*fim; qfim=q*fim; rm=-sin(qfi)*qfim;
-xm1= -sin(pfi)*pfim; ym1= cos(pfi)*pfim; zm1= -cos(qfi)*qfim; xm=x*rm+xm1*r; ym=y*rm+ym1*r; zm=z*rm+zm1*r; // dp/dt=p'(t)
-nl=sqrt(xm*xm+ym*ym+zm*zm); xn = xm/nl; yn=ym/nl; zn=zm/nl;
-Tx=-zn*xn;Ty=-yn*zn;Tz=1-zn*zn; Tl=sqrt(Tx*Tx+Ty*Ty+Tz*Tz); Tux=Tx/Tl;Tuy=Ty/Tl;Tuz=Tz/Tl;</common><exprx>x + r1 * sintheta</exprx><expry>y + r1 * sintheta</expry><exprz>z + r1 * cos(theta)</exprz></expr><tinterval><from>0</from><to>1</to></tinterval><sinterval><from>0</from><to>1</to></sinterval><tstepcount>160</tstepcount><sstepcount>20</sstepcount><machinecode>1</machinecode><doublesided>1</doublesided><animation><includetime>0</includetime></animation></ParametricSurface>

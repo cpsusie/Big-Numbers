@@ -1,1 +1,29 @@
-<ParametricSurface><common>R = 3; tpi = pi * t; t2pi = 2 * tpi;</common><exprx>(R + s*cos(tpi)) * cos(t2pi)</exprx><expry>(R + s*cos(tpi)) * sin(t2pi)</expry><exprz>s*sin(tpi)</exprz><tinterval><from>0.000000000000000e+00</from><to>1.000000000000000e+00</to></tinterval><sinterval><from>-1.000000000000000e+00</from><to>1.000000000000000e+00</to></sinterval><tstepcount>40</tstepcount><sstepcount>40</sstepcount><machinecode>1</machinecode><doublesided>1</doublesided><includetime>0</includetime></ParametricSurface>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<ParametricSurface>
+	<expr>
+		<common>R = 3; tpi = pi * t; t2pi = 2 * tpi;</common>
+		<exprx>(R + s*cos(tpi)) * cos(t2pi)</exprx>
+		<expry>(R + s*cos(tpi)) * sin(t2pi)</expry>
+		<exprz>s*sin(tpi)</exprz>
+	</expr>
+	<tinterval>
+		<from>0</from>
+		<to>1</to>
+	</tinterval>
+	<sinterval>
+		<from>-1</from>
+		<to>1</to>
+	</sinterval>
+	<tstepcount>40</tstepcount>
+	<sstepcount>40</sstepcount>
+	<machinecode>true</machinecode>
+	<common>
+		<calculateNormals>true</calculateNormals>
+		<calculateTexture>false</calculateTexture>
+		<texturefilename/>
+		<doublesided>true</doublesided>
+		<animation>
+			<includetime>false</includetime>
+		</animation>
+	</common>
+</ParametricSurface>

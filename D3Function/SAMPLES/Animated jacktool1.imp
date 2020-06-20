@@ -42,13 +42,18 @@ sqrz=sqr(z);
 	<adaptivecellsize>false</adaptivecellsize>
 	<originoutside>false</originoutside>
 	<machinecode>true</machinecode>
-	<doublesided>false</doublesided>
-	<animation>
-		<includetime>true</includetime>
-		<timeinterval>
-			<from>0</from>
-			<to>1</to>
-		</timeinterval>
-		<framecount>30</framecount>
-	</animation>
+	<common>
+		<calculateNormals>true</calculateNormals>
+		<calculateTexture>false</calculateTexture>
+		<texturefilename/>
+		<doublesided>false</doublesided>
+		<animation>
+			<includetime>true</includetime>
+			<timeinterval>
+				<from>0</from>
+				<to>1</to>
+			</timeinterval>
+			<framecount>20</framecount>
+		</animation>
+	</common>
 </IsoSurface>

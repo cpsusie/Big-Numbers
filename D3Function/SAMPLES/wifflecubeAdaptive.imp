@@ -1,2 +1,33 @@
-<IsoSurface><expr>a = 1/2.3; b = 1/2;
-1 - ( a^2 *(x^2 + y^2 + z^2) )^-6 - ( b^8 * (x^8 + y^8 + z^8) )^6</expr><cellsize>3.000000000000000e-01</cellsize><lambda>2.5000000e-01</lambda><boundingbox><lbn><x>-5</x><y>-5</y><z>-5</z></lbn><rtf><x>5</x><y>5</y><z>5</z></rtf></boundingbox><tetrahedral>1</tetrahedral><tetraoptimize4>0</tetraoptimize4><adaptivecellsize>1</adaptivecellsize><originoutside>1</originoutside><machinecode>1</machinecode><doublesided>1</doublesided><animation><includetime>0</includetime></animation></IsoSurface>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<IsoSurface>
+	<expr>a = 1/2.3; b = 1/2;
+1 - ( a^2 *(x^2 + y^2 + z^2) )^-6 - ( b^8 * (x^8 + y^8 + z^8) )^6</expr>
+	<cellsize>0.04</cellsize>
+	<lambda>0.35</lambda>
+	<boundingbox>
+		<lbn>
+			<x>-5</x>
+			<y>-5</y>
+			<z>-5</z>
+		</lbn>
+		<rtf>
+			<x>5</x>
+			<y>5</y>
+			<z>5</z>
+		</rtf>
+	</boundingbox>
+	<tetrahedral>false</tetrahedral>
+	<tetraoptimize4>false</tetraoptimize4>
+	<adaptivecellsize>false</adaptivecellsize>
+	<originoutside>true</originoutside>
+	<machinecode>true</machinecode>
+	<common>
+		<calculateNormals>true</calculateNormals>
+		<calculateTexture>false</calculateTexture>
+		<texturefilename/>
+		<doublesided>false</doublesided>
+		<animation>
+			<includetime>false</includetime>
+		</animation>
+	</common>
+</IsoSurface>

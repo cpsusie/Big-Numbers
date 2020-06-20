@@ -1,32 +1,38 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <IsoSurface>
-	<expr>1-(x*x*y*y)^t-(y*y*z*z)^t-(x*x*z*z)^t</expr>
-	<cellsize>0.25</cellsize>
-	<lambda>0.25</lambda>
+	<expr>x2 = x*x; y2 = y*y; z2 = z*z;
+1-(x2*y2)^t-(y2*z2)^t-(x2*z2)^t</expr>
+	<cellsize>0.06</cellsize>
+	<lambda>0.35</lambda>
 	<boundingbox>
 		<lbn>
-			<x>-5</x>
-			<y>-5</y>
-			<z>-5</z>
+			<x>-8</x>
+			<y>-8</y>
+			<z>-8</z>
 		</lbn>
 		<rtf>
-			<x>5</x>
-			<y>5</y>
-			<z>5</z>
+			<x>8</x>
+			<y>8</y>
+			<z>8</z>
 		</rtf>
 	</boundingbox>
-	<tetrahedral>true</tetrahedral>
+	<tetrahedral>false</tetrahedral>
 	<tetraoptimize4>false</tetraoptimize4>
 	<adaptivecellsize>false</adaptivecellsize>
 	<originoutside>false</originoutside>
 	<machinecode>true</machinecode>
-	<doublesided>false</doublesided>
-	<animation>
-		<includetime>true</includetime>
-		<timeinterval>
-			<from>1</from>
-			<to>3</to>
-		</timeinterval>
-		<framecount>20</framecount>
-	</animation>
+	<common>
+		<calculateNormals>true</calculateNormals>
+		<calculateTexture>false</calculateTexture>
+		<texturefilename/>
+		<doublesided>false</doublesided>
+		<animation>
+			<includetime>true</includetime>
+			<timeinterval>
+				<from>0.5</from>
+				<to>2</to>
+			</timeinterval>
+			<framecount>60</framecount>
+		</animation>
+	</common>
 </IsoSurface>
