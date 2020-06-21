@@ -36,8 +36,9 @@ public:
   inline void addVertexTextureIndex(int vIndex, int tIndex) {
     m_data.add(VertexNormalTextureIndex(vIndex, -1, tIndex));
   }
-  inline int getTriangleCount() const {
-    return (int)m_data.size() - 2;
+  inline UINT getTriangleCount() const {
+    const UINT ic = getIndexCount();
+    return (ic < 3) ? 0 : (ic - 2);
   }
   inline UINT getIndexCount() const {
     return (UINT)m_data.size();
@@ -45,7 +46,7 @@ public:
   inline bool isEmpty() const {
     return m_data.isEmpty();
   }
-  inline const VNTIArray &getIndices() const {
+  inline const VNTIArray &getIndexArray() const {
     return m_data;
   }
   inline int getDiffuseColor() const {
@@ -73,6 +74,8 @@ private:
   mutable bool                m_validateOk          : 1;
 
   void pruneUnused();
+  MeshBuilder &reduceVertexArray();
+  MeshBuilder &reduceNormalArray();
   void check1NormalPerVertex() const;
   void adjustNegativeVertexIndex( int &v);
   void adjustNegativeNormalIndex( int &n);
@@ -82,41 +85,41 @@ public:
     clear();
   }
   void clear(UINT capacity = 0);
-  inline int addVertex(const Vertex &p) {
-    const int n = (int)m_vertices.size();
+  inline UINT addVertex(const Vertex &p) {
+    const UINT n = (UINT)m_vertices.size();
     m_vertices.add(p);
     return n;
   }
-  template<typename TX, typename TY, typename TZ> int addVertex(TX x, TY y, TZ z) {
+  template<typename TX, typename TY, typename TZ> UINT addVertex(TX x, TY y, TZ z) {
     return addVertex(Vertex(x, y, z));
   }
-  inline int addVertex(const D3DXVECTOR3 &v) {
+  inline UINT addVertex(const D3DXVECTOR3 &v) {
     return addVertex(Vertex(v));
   }
-  template<typename T> int addVertex(const Point3DTemplate<T> &p) {
+  template<typename T> UINT addVertex(const Point3DTemplate<T> &p) {
     return addVertex(Vertex(p));
   }
-  inline int addNormal(const Vertex &n) {
-    const int c = (int)m_normals.size();
+  inline UINT addNormal(const Vertex &n) {
+    const UINT c = (UINT)m_normals.size();
     m_normals.add(n);
     return c;
   }
-  template<typename TX, typename TY, typename TZ> int addNormal(TX x, TY y, TZ z) {
+  template<typename TX, typename TY, typename TZ> UINT addNormal(TX x, TY y, TZ z) {
     return addNormal(Vertex(x, y, z));
   }
-  inline int addNormal(const D3DXVECTOR3 &v) {
+  inline UINT addNormal(const D3DXVECTOR3 &v) {
     return addNormal(Vertex(v));
   }
-  template<typename T> int addNormal(const Point3DTemplate<T> &n) {
+  template<typename T> UINT addNormal(const Point3DTemplate<T> &n) {
     return addNormal(Vertex(n));
   }
-  inline int addTextureVertex(const TextureVertex &vt) {
+  inline UINT addTextureVertex(const TextureVertex &vt) {
+    const UINT c = (UINT)m_textureVertexArray.size();
     m_textureVertexArray.add(vt);
-    return (int)m_textureVertexArray.size()-1;
+    return c;
   }
-  inline int addTextureVertex(float u, float v) {
-    m_textureVertexArray.add(TextureVertex(u,v));
-    return (int)m_textureVertexArray.size()-1;
+  inline UINT addTextureVertex(float u, float v) {
+    return addTextureVertex(TextureVertex(u,v));
   }
   inline Face &addFace(D3DCOLOR color, size_t capacity=3) {
     m_faceArray.add(Face(color, capacity));
@@ -130,23 +133,25 @@ public:
     return m_faceArray.last();
   }
   MeshBuilder &addSquareFace(int v0, int v1, int v2, int v3);
+  // Return true, if normals point in same direction as the visible side of the face
+  bool hasCorrectOrientation(const Face &f) const;
   static D3DXVECTOR3 calculateNormal(const D3DXVECTOR3 &v0, const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2) {
     return unitVector(cross(v2-v0, v1-v0));
   }
   inline D3DXVECTOR3 calculateNormal(int v0, int v1, int v2) const {
     return calculateNormal(m_vertices[v0], m_vertices[v1], m_vertices[v2]);
   }
-  inline int getVertexCount() const {
-    return (int)m_vertices.size();
+  inline UINT getVertexCount() const {
+    return (UINT)m_vertices.size();
   }
-  inline int getNormalCount() const {
-    return (int)m_normals.size();
+  inline UINT getNormalCount() const {
+    return (UINT)m_normals.size();
   }
-  inline int getTextureCount() const {
-    return (int)m_textureVertexArray.size();
+  inline UINT getTextureCount() const {
+    return (UINT)m_textureVertexArray.size();
   }
-  int getTriangleCount()       const;
-  int getIndexCount()          const;
+  UINT getTriangleCount()      const;
+  UINT getIndexCount()         const;
   void validate()              const;
   bool isOk()                  const;
   bool has1NormalPerVertex()   const;

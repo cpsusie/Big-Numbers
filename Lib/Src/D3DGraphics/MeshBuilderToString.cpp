@@ -29,7 +29,7 @@ String MeshBuilder::toString() const {
   tmp     = EMPTYSTRING;
   for(size_t i = 0; i < m_faceArray.size(); i++) {
     const Face      &face = m_faceArray[i];
-    const VNTIArray &vna  = face.getIndices();
+    const VNTIArray &vna  = face.getIndexArray();
     tmp += format(_T("%5zd %zd\n"), i, vna.size());
     for(size_t v = 0; v < vna.size(); v++) {
       tmp += format(_T("  %5d %5d %5d\n"), vna[v].m_vIndex, vna[v].m_nIndex, vna[v].m_tIndex);

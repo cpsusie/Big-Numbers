@@ -387,6 +387,15 @@
     <ClCompile Include="D3CameraSlideAnimator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="D3ReductionArray.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshBuilderBoundingBox.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshBuilderOptimize.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\D3DGraphics\D3Scene.h">
@@ -573,6 +582,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\D3DGraphics\D3SurfaceCommonParameters.h">
       <Filter>Header Files\D3StringConversion\D3XML\SurfaceParameters</Filter>
+    </ClInclude>
+    <ClInclude Include="D3ReductionArray.h">
+      <Filter>Source Files\Mesh</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -71,13 +71,15 @@ private:
   void stretchProfile();
   void repaintProfile();
   void repaintAll();
+  bool isAutoUpdate3DChecked() const;
   void showValidateError( const ValidationException &e);
   void clearException();
   void raiseException(const Exception &e);
   void validate();
   void validateAndUpdate();
-  void renderAll();
+  void render2D();
   void render3D();
+  void renderAll();
   void enableWindowItems();
   void disableAll();
   void resetView();
@@ -109,7 +111,7 @@ public:
   }
 
   void        checkWorkRectSize();
-  void        repaintViewport() { renderAll(); }
+  void        repaintViewport() { render2D(); }
   NormalsMode getNormalsMode();
   bool        getShowPoints();
   void        setMousePosition(const Point2D &p);

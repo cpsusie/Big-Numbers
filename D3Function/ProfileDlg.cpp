@@ -221,12 +221,20 @@ void CProfileDlg::repaintProfile() {
   m_currentDrawTool->repaintProfile();
 }
 
-void CProfileDlg::renderAll() {
-  render(SC_RENDER2D | SC_RENDER3D);
+void CProfileDlg::render2D() {
+  render(SC_RENDER2D);
 }
 
 void CProfileDlg::render3D() {
   render(SC_RENDER3D);
+}
+
+void CProfileDlg::renderAll() {
+  render(SC_RENDER2D | SC_RENDER3D);
+}
+
+bool CProfileDlg::isAutoUpdate3DChecked() const {
+  return isMenuItemChecked(this, ID_VIEW_AUTO_UPDATE_3D);
 }
 
 void CProfileDlg::render(BYTE renderFlags) {
@@ -245,24 +253,25 @@ static UINT render2DCount = 0, render3DCount = 0;
 LRESULT CProfileDlg::OnMsgRender(WPARAM wp, LPARAM lp) {
   try {
     if(wp & SC_RENDER2D) {
-      render2DCount++;
       checkWorkRectSize();
       CClientDC dc(GetDlgItem(IDC_STATIC_PROFILEIMAGE2D));
       dc.BitBlt(0, 0, m_workRect.Width(), m_workRect.Height(), &m_workDC, 0, 0, SRCCOPY);
-      wp |= SC_RENDER3D;
+      render2DCount++;
+      if(isAutoUpdate3DChecked()) {
+        wp |= SC_RENDER3D;
+      }
     }
     if(wp & SC_RENDER3D) {
       if(needUpdate3DObject()) {
         create3DObject();
-        saveCurrentProfVars();
       }
       CameraSet cameraSet(lp);
       __super::doRender((BYTE)wp, cameraSet);
-      enableWindowItems();
       render3DCount++;
-      if(m_exceptionRaised) {
-        clearException();
-      }
+    }
+    enableWindowItems();
+    if(m_exceptionRaised) {
+      clearException();
     }
   } catch(Exception e) {
     raiseException(e);
@@ -342,6 +351,7 @@ void CProfileDlg::create3DObject() {
     visual = new D3ProfileObjectWithColor(this); TRACE_NEW(visual);
   }
   setVisual(visual);
+  saveCurrentProfVars();
 }
 
 void CProfileDlg::setVisual(D3SceneObjectVisual *visual) {
@@ -664,8 +674,9 @@ void CProfileDlg::OnViewShowNormals() {
 }
 
 void CProfileDlg::OnViewAutoUpdate3D() {
-  toggleMenuItem(this,ID_VIEW_AUTO_UPDATE_3D);
-  render(SC_RENDER3D);
+  if(toggleMenuItem(this, ID_VIEW_AUTO_UPDATE_3D)) {
+    render(SC_RENDER3D);
+  }
 }
 
 NormalsMode CProfileDlg::getNormalsMode() {

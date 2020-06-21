@@ -1,7 +1,4 @@
 #include "pch.h"
-#include <FastSemaphore.h>
-#include <comdef.h>
-#include <atlconv.h>
 #include <CompactHashMap.h>
 #include <D3DGraphics/MeshBuilder.h>
 
@@ -29,8 +26,25 @@ MeshBuilder &MeshBuilder::addSquareFace(int v0, int v1, int v2, int v3) {
   return *this;
 }
 
-int MeshBuilder::getTriangleCount() const {
-  int count = 0;
+// Return true, if normals point in same direction as the visible side of the face
+bool MeshBuilder::hasCorrectOrientation(const Face &f) const {
+  const UINT         n  = f.getIndexCount();
+  const VNTIArray   &fa = f.getIndexArray();
+  const VertexArray &va = getVertexArray();
+  const VertexArray &na = getNormalArray();
+  const Vertex      &p1 = va[fa[0].m_vIndex];
+  const Vertex      &p2 = va[fa[1].m_vIndex];
+  const Vertex      &p3 = va[fa[2].m_vIndex];
+  const Vertex      &n1 = na[fa[0].m_nIndex];
+  const Vertex      &n2 = na[fa[1].m_nIndex];
+  const Vertex      &n3 = na[fa[2].m_nIndex];
+  const D3DXVECTOR3 c = cross((D3DXVECTOR3&)p3 - (D3DXVECTOR3&)p1, (D3DXVECTOR3&)p2 - (D3DXVECTOR3&)p1);
+  const float s1 = c * n1, s2 = c * n2, s3 = c * n3; // TODO
+  return s1 > 0;
+}
+
+UINT MeshBuilder::getTriangleCount() const {
+  UINT count = 0;
   const size_t n = m_faceArray.size();
   for(size_t i = 0; i < n; i++) {
     count += m_faceArray[i].getTriangleCount();
@@ -77,7 +91,7 @@ void MeshBuilder::check1NormalPerVertex() const {
   CompactUIntHashMap<UINT> vnMap(2*m_vertices.size() + 241);
 
   for(size_t i = 0; i < faceCount; i++) {
-    const VNTIArray &vna = m_faceArray[i].getIndices();
+    const VNTIArray &vna = m_faceArray[i].getIndexArray();
     for(size_t j = 0; j < vna.size(); j++) {
       const VertexNormalTextureIndex &vn = vna[j];
       const UINT *np = vnMap.get(vn.m_vIndex);
@@ -93,8 +107,8 @@ void MeshBuilder::check1NormalPerVertex() const {
   m_1NormalPerVertex = true;
 }
 
-int MeshBuilder::getIndexCount() const {
-  int count = 0;
+UINT MeshBuilder::getIndexCount() const {
+  UINT count = 0;
   const size_t n = m_faceArray.size();
   for(size_t i = 0; i < n; i++) {
     count += m_faceArray[i].getIndexCount();
@@ -111,21 +125,18 @@ void MeshBuilder::validate() const {
   const int maxTextureIndex = (int)m_textureVertexArray.size() - 1;
   m_calculateNormals = maxNormalIndex  >= 0;
   m_calculateTexture = maxTextureIndex >= 0;
-  const size_t faceCount = m_faceArray.size();
-  for(size_t i = 0; i < faceCount; i++) {
-    const VNTIArray &indexArray = m_faceArray[i].getIndices();
-    const size_t     indexCount = indexArray.size();
-    if(indexCount == 0) continue;
-    const VertexNormalTextureIndex *last = &indexArray.last();
-    for(const VertexNormalTextureIndex *vntp = &indexArray.first(); vntp <= last ; vntp++) {
-      if(vntp->m_vIndex > maxVertexIndex) {
-        throwException(_T("Face %zu/%zu references undefined vertex %d. maxVertexIndex=%d"), i, vntp->m_vIndex, maxVertexIndex);
+  const UINT faceCount = (UINT)m_faceArray.size();
+  for(UINT i = 0; i < faceCount; i++) {
+    const VNTIArray &indexArray = m_faceArray[i].getIndexArray();
+    for(const VertexNormalTextureIndex vnt : indexArray) {
+      if(vnt.m_vIndex > maxVertexIndex) {
+        throwException(_T("Face %u references undefined vertex %d. maxVertexIndex=%d"), i, vnt.m_vIndex, maxVertexIndex);
       }
-      if(vntp->m_nIndex > maxNormalIndex) {
-        throwException(_T("Face %zu/%zu references undefined normal %d. maxNormalIndex=%d"), i, vntp->m_nIndex, maxNormalIndex);
+      if(vnt.m_nIndex > maxNormalIndex) {
+        throwException(_T("Face %u references undefined normal %d. maxNormalIndex=%d"), i, vnt.m_nIndex, maxNormalIndex);
       }
-      if(vntp->m_tIndex > maxTextureIndex) {
-        throwException(_T("Face %zu%zu references undefined textureVertex %d. maxTextureVertexIndex=%d"), i, vntp->m_tIndex, maxTextureIndex);
+      if(vnt.m_tIndex > maxTextureIndex) {
+        throwException(_T("Face %u references undefined textureVertex %d. maxTextureVertexIndex=%d"), i, vnt.m_tIndex, maxTextureIndex);
       }
     }
   }
@@ -139,7 +150,6 @@ bool MeshBuilder::isOk() const {
   return m_validateOk;
 }
 
-
 bool MeshBuilder::has1NormalPerVertex() const {
   if(!m_vertexNormalChecked) {
     check1NormalPerVertex();
@@ -148,52 +158,12 @@ bool MeshBuilder::has1NormalPerVertex() const {
 }
 
 bool MeshBuilder::use32BitIndices(bool doubleSided) const {
-  const int    factor           = doubleSided ? 2 : 1;
+  const UINT   factor           = doubleSided ? 2 : 1;
   const size_t vertexCount1Side = has1NormalPerVertex() ? m_vertices.size() : getIndexCount();
   const size_t vertexCount      = vertexCount1Side * factor;
-  const int    faceCount1Side   = getTriangleCount();
-  const int    faceCount        = faceCount1Side * factor;
+  const UINT   faceCount1Side   = getTriangleCount();
+  const UINT   faceCount        = faceCount1Side * factor;
   return (vertexCount > MAX16BITVERTEXCOUNT) || (faceCount > MAX16BITVERTEXCOUNT);
-}
-
-D3Cube MeshBuilder::getBoundingBox() const {
-  D3DXVECTOR3  pmin,pmax;
-  const size_t faceCount = m_faceArray.size();
-  bool         firstTime = true;
-  const int    maxVertexIndex  = (int)m_vertices.size() - 1;
-  for(size_t i = 0; i < faceCount; i++) {
-    const Face &f = m_faceArray[i];
-    if(f.isEmpty()) continue;
-    const size_t     n = f.getIndexCount();
-    const VNTIArray &a = f.getIndices();
-    for(size_t j = 0; j < n; j++) {
-      const int vi = a[j].m_vIndex;
-      if((vi >= 0) && (vi <= maxVertexIndex)) {
-        const Vertex &v = m_vertices[vi];
-        if(firstTime) {
-          pmin = pmax = v;
-          firstTime = false;
-        } else {
-          if(v.x < pmin.x) {
-            pmin.x = v.x;
-          } else if(v.x > pmax.x) {
-            pmax.x = v.x;
-          }
-          if(v.y < pmin.y) {
-            pmin.y = v.y;
-          } else if(v.y > pmax.y) {
-            pmax.y = v.y;
-          }
-          if(v.z < pmin.z) {
-            pmin.z = v.z;
-          } else if(v.z > pmax.z) {
-            pmax.z = v.z;
-          }
-        }
-      }
-    }
-  }
-  return D3Cube(pmin,pmax);
 }
 
 template<typename VertexType, typename IndexType> class MeshCreator {
@@ -210,11 +180,11 @@ private:
     const VertexArray        &normalArray       = m_mb.getNormalArray();
     const TextureVertexArray &textureArray      = m_mb.getTextureVertexArray();
 
-    const int                 factor            = doubleSided ? 2 : 1;
-    const int                 vertexCount1Side  = (int)vertexArray.size();
-    const int                 vertexCount       = vertexCount1Side * factor;
-    const int                 faceCount1Side    = m_mb.getTriangleCount();
-    const int                 faceCount         = faceCount1Side * factor;
+    const UINT                factor            = doubleSided ? 2 : 1;
+    const UINT                vertexCount1Side  = (UINT)vertexArray.size();
+    const UINT                vertexCount       = vertexCount1Side * factor;
+    const UINT                faceCount1Side    = m_mb.getTriangleCount();
+    const UINT                faceCount         = faceCount1Side * factor;
     BitSet                    vertexDone(vertexCount1Side);
 
     LPD3DXMESH mesh = NULL;
@@ -228,11 +198,11 @@ private:
 
       for(size_t i = 0; i < faceArray.size(); i++) {
         const Face      &face         = faceArray[i];
-        const VNTIArray &vnArray      = face.getIndices();
-        const int        aSize        = (int)vnArray.size();
+        const UINT       aSize        = face.getIndexCount();
+        const VNTIArray &vnArray      = face.getIndexArray();
         const D3DCOLOR   diffuseColor = face.getDiffuseColor();
 
-        for(int j = 0; j < aSize; j++) {
+        for(UINT j = 0; j < aSize; j++) {
           const VertexNormalTextureIndex &vn = vnArray[j];
           if(vertexDone.contains(vn.m_vIndex)) {
             continue;
@@ -251,13 +221,13 @@ private:
             v2.setDiffuse(diffuseColor);
           }
         }
-        for(int j = 2; j < aSize; j++) {
+        for(UINT j = 2; j < aSize; j++) {
           *(ip1++) = vnArray[0  ].m_vIndex;
           *(ip1++) = vnArray[j-1].m_vIndex;
           *(ip1++) = vnArray[j  ].m_vIndex;
         }
         if(doubleSided) {
-          for(int j = 2; j < aSize; j++) {
+          for(UINT j = 2; j < aSize; j++) {
             *(ip2++) = vnArray[0  ].m_vIndex + vertexCount1Side;
             *(ip2++) = vnArray[j  ].m_vIndex + vertexCount1Side;
             *(ip2++) = vnArray[j-1].m_vIndex + vertexCount1Side;
@@ -282,11 +252,11 @@ private:
     const VertexArray        &vertexArray        = m_mb.getVertexArray();
     const VertexArray        &normalArray        = m_mb.getNormalArray();
     const TextureVertexArray &textureArray       = m_mb.getTextureVertexArray();
-    const int                 factor             = doubleSided ? 2 : 1;
-    const int                 vertexCount1Side   = m_mb.getIndexCount();
-    const int                 vertexCount        = vertexCount1Side * factor;
-    const int                 faceCount1Side     = m_mb.getTriangleCount();
-    const int                 faceCount          = faceCount1Side * factor;
+    const UINT                factor             = doubleSided ? 2 : 1;
+    const UINT                vertexCount1Side   = m_mb.getIndexCount();
+    const UINT                vertexCount        = vertexCount1Side * factor;
+    const UINT                faceCount1Side     = m_mb.getTriangleCount();
+    const UINT                faceCount          = faceCount1Side * factor;
 
     LPD3DXMESH mesh = NULL;
     try {
@@ -297,32 +267,32 @@ private:
       V(mesh->LockVertexBuffer( 0, (void**)&vertices  ));
       V(mesh->LockIndexBuffer(  0, (void**)&indexArray));
       IndexType *ip1 = indexArray, *ip2 = indexArray + 3*faceCount1Side;
-      int vnCount1 = 0, vnCount2 = (int)vertexCount1Side;
+      UINT vnCount1 = 0, vnCount2 = vertexCount1Side;
 
       for(size_t i = 0; i < faceArray.size(); i++) {
         const Face      &face         = faceArray[i];
-        const VNTIArray &vnArray      = face.getIndices();
-        const int        aSize        = (int)vnArray.size();
+        const UINT       aSize        = face.getIndexCount();
+        const VNTIArray &vnArray      = face.getIndexArray();
         const D3DCOLOR   diffuseColor = face.getDiffuseColor();
 
-        for(int j = 0; j < aSize; j++) {
+        for(UINT j = 0; j < aSize; j++) {
           const VertexNormalTextureIndex &vn = vnArray[j];
           VertexType                     &v1 = vertices[vnCount1+j];
           v1.setPos(vertexArray[vn.m_vIndex]);
-          if(vn.m_nIndex >= 0) v1.setNormal(normalArray[vn.m_nIndex]);
+          if(vn.m_nIndex >= 0) v1.setNormal( normalArray[ vn.m_nIndex]);
           if(vn.m_tIndex >= 0) v1.setTexture(textureArray[vn.m_tIndex]);
           v1.setDiffuse(diffuseColor);
 
           if(doubleSided) {
-            VertexType                     &v2 = vertices[vnCount2+j];
+            VertexType                   &v2 = vertices[vnCount2+j];
             v2.setPos(vertexArray[vn.m_vIndex]);
-            if(vn.m_nIndex >= 0) v2.setNormal(-normalArray[vn.m_nIndex]);
+            if(vn.m_nIndex >= 0) v2.setNormal(-normalArray[ vn.m_nIndex]);
             if(vn.m_tIndex >= 0) v2.setTexture(textureArray[vn.m_tIndex]);
             v2.setDiffuse(diffuseColor);
           }
         }
 
-        for(int f = 2; f < aSize; f++) {
+        for(UINT f = 2; f < aSize; f++) {
           *(ip1++) = vnCount1;
           *(ip1++) = vnCount1 + f-1;
           *(ip1++) = vnCount1 + f;
@@ -376,192 +346,6 @@ public:
     }
   }
 };
-
-typedef struct {
-  const Vertex        *m_v, *m_n;
-  const TextureVertex *m_t;
-  int m_faceIndex, m_index;
-} TmpVNTI;
-
-static int tmpVertexCmp(const TmpVNTI &tv1, const TmpVNTI &tv2) {
-  const Vertex *v1 = tv1.m_v, *v2 = tv2.m_v;
-  int c;
-  c = sign(v1->x - v2->x); if(c) return c;
-  c = sign(v1->y - v2->y); if(c) return c;
-  c = sign(v1->z - v2->z); if(c) return c;
-  const Vertex *n1 = tv1.m_n, *n2 = tv2.m_n;
-  if(n1 != n2) {
-    if(!n2) {
-      return 1;
-    } else if(!n1) {
-      return -1;
-    } else {
-      c = sign(n1->x - n2->x); if(c) return c;
-      c = sign(n1->y - n2->y); if(c) return c;
-      c = sign(n1->z - n2->z); if(c) return c;
-    }
-  }
-  const TextureVertex *t1 = tv1.m_t, *t2 = tv2.m_t;
-  if(t1 != t2) {
-    if(!t2) {
-      return 1;
-    } else if(!t1) {
-      return -1;
-    } else {
-      c = sign(t1->u - t2->u); if(c) return c;
-      c = sign(t1->v - t2->v); if(c) return c;
-    }
-  }
-  return 0;
-}
-
-inline bool operator==(const TmpVNTI &tv1, const TmpVNTI &tv2) {
-  return tmpVertexCmp(tv1, tv2) == 0;
-}
-
-MeshBuilder &MeshBuilder::optimize() {
-  const int             faceCount = (int)m_faceArray.size();
-  CompactArray<TmpVNTI> tmpArray;
-  for(int f = 0; f < faceCount; f++) {
-    const VNTIArray &a     = m_faceArray[f].getIndices();
-    const int        aSize = (int)a.size();
-    for(int v = 0; v < aSize; v++) {
-      const VertexNormalTextureIndex &vnti = a[v];
-      tmpArray.add(TmpVNTI());
-      TmpVNTI &tmp    = tmpArray.last();
-      tmp.m_faceIndex = f;
-      tmp.m_index     = v;
-      tmp.m_v         = &m_vertices[vnti.m_vIndex];
-      tmp.m_n         = (vnti.m_nIndex<0) ? NULL : &m_normals[           vnti.m_nIndex];
-      tmp.m_t         = (vnti.m_tIndex<0) ? NULL : &m_textureVertexArray[vnti.m_tIndex];
-    }
-  }
-  const size_t n = tmpArray.size();
-  if(n > 0) {
-    tmpArray.sort(tmpVertexCmp);
-    TmpVNTI                        *lastTmp = &tmpArray[0];
-    const VertexNormalTextureIndex *lastVn  = &m_faceArray[lastTmp->m_faceIndex].m_data[lastTmp->m_index];
-    for(size_t i = 1; i < n; i++) {
-      TmpVNTI &tmp = tmpArray[i];
-      if(tmp == *lastTmp) {
-        VertexNormalTextureIndex &vn = m_faceArray[tmp.m_faceIndex].m_data[tmp.m_index];
-        vn.m_vIndex = lastVn->m_vIndex;
-        vn.m_nIndex = lastVn->m_nIndex;
-        vn.m_tIndex = lastVn->m_tIndex;
-      } else {
-        lastTmp = &tmp;
-        lastVn  = &m_faceArray[tmp.m_faceIndex].m_data[tmp.m_index];
-      }
-    }
-    pruneUnused();
-  }
-  return *this;
-}
-
-void MeshBuilder::pruneUnused() {
-  const int vCount = getVertexCount();
-  const int nCount = getNormalCount();
-  const int tCount = getTextureCount();
-  BitSet unusedVertices(vCount  );
-  BitSet unusedNormals( nCount+1);
-  BitSet unusedTextures(tCount+1);
-  if(vCount > 0) unusedVertices.add(0, vCount-1);
-  if(nCount > 0) unusedNormals.add( 0, nCount-1);
-  if(tCount > 0) unusedTextures.add(0, tCount-1);
-  const size_t faceCount = m_faceArray.size();
-  for(size_t f = 0; f < faceCount; f++) {
-    const VNTIArray &vnArray = m_faceArray[f].getIndices();
-    size_t           n       = vnArray.size();
-    if(n) {
-      for(const VertexNormalTextureIndex *vnp = &vnArray[0]; n--; vnp++) {
-        unusedVertices.remove(vnp->m_vIndex);
-        if(vnp->m_nIndex >= 0) unusedNormals.remove( vnp->m_nIndex);
-        if(vnp->m_tIndex >= 0) unusedTextures.remove(vnp->m_tIndex);
-      }
-    }
-  }
-  if(unusedVertices.isEmpty()
-  && unusedNormals.isEmpty()
-  && unusedTextures.isEmpty()) {
-#if defined(DUMP_PRUNECOUNT)
-    debugLog(_T("Pruned 0 vertices, 0 normals, 0 textureVertices\n"));
-#endif
-    return;
-  }
-  CompactIntArray vTranslate(vCount), nTranslate(nCount), tTranslate(tCount);
-  int lastIndex = 0;
-  for(int i = 0; i < vCount; i++) {
-    if(unusedVertices.contains(i)) {
-      vTranslate.add(-1);
-    } else {
-      vTranslate.add(lastIndex++);
-    }
-  }
-  lastIndex = 0;
-  for(int i = 0; i < nCount; i++) {
-    if(unusedNormals.contains(i)) {
-      nTranslate.add(-1);
-    } else {
-      nTranslate.add(lastIndex++);
-    }
-  }
-  lastIndex = 0;
-  for(int i = 0; i < tCount; i++) {
-    if(unusedTextures.contains(i)) {
-      tTranslate.add(-1);
-    } else {
-      tTranslate.add(lastIndex++);
-    }
-  }
-  for(size_t f = 0; f < faceCount; f++) {
-    VNTIArray &vnArray = m_faceArray[f].m_data;
-    size_t     n       = vnArray.size();
-    if(n) {
-      for(VertexNormalTextureIndex *vnp = &vnArray[0]; n--; vnp++) {
-        vnp->m_vIndex = vTranslate[vnp->m_vIndex];
-        if(vnp->m_nIndex >= 0) {
-          vnp->m_nIndex = nTranslate[vnp->m_nIndex];
-        }
-        if(vnp->m_tIndex >= 0) {
-          vnp->m_tIndex = tTranslate[vnp->m_tIndex];
-        }
-      }
-    }
-  }
-  vTranslate.clear();
-  nTranslate.clear();
-  tTranslate.clear();
-
-  VertexArray tmp = m_vertices;
-  m_vertices.clear();
-  for(int i = 0; i < vCount; i++) {
-    if(!unusedVertices.contains(i)) {
-      m_vertices.add(tmp[i]);
-    }
-  }
-
-  tmp = m_normals;
-  m_normals.clear();
-  for(int i = 0; i < nCount; i++) {
-    if(!unusedNormals.contains(i)) {
-      m_normals.add(tmp[i]);
-    }
-  }
-  TextureVertexArray tmpt = m_textureVertexArray;
-  m_textureVertexArray.clear();
-  for(int i = 0; i < tCount; i++) {
-    if(!unusedTextures.contains(i)) {
-      m_textureVertexArray.add(tmpt[i]);
-    }
-  }
-#if defined(DUMP_PRUNECOUNT)
-  debugLog(_T("Pruned %s vertices, %s normals, %s texturevertices\n")
-          ,format1000(unusedVertices.size()).cstr()
-          ,format1000(unusedNormals.size() ).cstr()
-          ,format1000(unusedTextures.size()).cstr()
-          );
-#endif
-}
 
 LPD3DXMESH MeshBuilder::createMesh(AbstractMeshFactory &amf, bool doubleSided) const {
   if(!isOk()) {

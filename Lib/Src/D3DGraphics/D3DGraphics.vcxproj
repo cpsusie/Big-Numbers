@@ -908,6 +908,7 @@
     <ClCompile Include="D3MeshXML.cpp" />
     <ClCompile Include="D3Quaternion.cpp" />
     <ClCompile Include="D3Ray.cpp" />
+    <ClCompile Include="D3ReductionArray.cpp" />
     <ClCompile Include="D3SceneContainer.cpp" />
     <ClCompile Include="D3SceneEditorPickedInfo.cpp" />
     <ClCompile Include="D3SceneLightArray.cpp" />
@@ -964,6 +965,8 @@
     <ClCompile Include="D3Material.cpp" />
     <ClCompile Include="LightTypeStr.cpp" />
     <ClCompile Include="MaterialDlg.cpp" />
+    <ClCompile Include="MeshBuilderBoundingBox.cpp" />
+    <ClCompile Include="MeshBuilderOptimize.cpp" />
     <ClCompile Include="MeshBuilderToString.cpp" />
     <ClCompile Include="MeshToBoundingBox.cpp" />
     <ClCompile Include="D3MeshToString.cpp" />
@@ -1083,6 +1086,7 @@
     <ClInclude Include="..\..\Include\D3DGraphics\Profile.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\resource.h" />
     <ClInclude Include="D3NameLookupTemplate.h" />
+    <ClInclude Include="D3ReductionArray.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>

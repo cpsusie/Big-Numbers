@@ -199,23 +199,6 @@ static BitSet getVerticesOnRotationAxis(char rotateAxis, const CompactArray<Vert
   return result;
 }
 
-// Return true, if normals point in same direction as the visible side of the face
-static bool hasCorrectOrientation(const MeshBuilder &mb, const Face &f) {
-  const VNTIArray   &fa = f.getIndices();
-  const size_t       n  = fa.size();
-  const VertexArray &va = mb.getVertexArray();
-  const VertexArray &na = mb.getNormalArray();
-  const Vertex      &p1 = va[fa[0].m_vIndex];
-  const Vertex      &p2 = va[fa[1].m_vIndex];
-  const Vertex      &p3 = va[fa[2].m_vIndex];
-  const Vertex      &n1 = na[fa[0].m_nIndex];
-  const Vertex      &n2 = na[fa[1].m_nIndex];
-  const Vertex      &n3 = na[fa[2].m_nIndex];
-  const D3DXVECTOR3 c = cross((D3DXVECTOR3&)p3 - (D3DXVECTOR3&)p1, (D3DXVECTOR3&)p2 - (D3DXVECTOR3&)p1);
-  const float s1 = c * n1, s2 = c * n2, s3 = c * n3;
-  return s1 > 0;
-}
-
 LPD3DXMESH rotateProfile(AbstractMeshFactory &amf, const Profile &profile, const ProfileRotationParameters &param, bool doubleSided) {
   param.checkIsValid();
 
@@ -323,7 +306,7 @@ LPD3DXMESH rotateProfile(AbstractMeshFactory &amf, const Profile &profile, const
       for(UINT i = 0; i < tmp.size(); i++) {
         face.addVertexNormalIndex(pindex[i], nindex[i]);
       }
-      if(!hasCorrectOrientation(mb, face)) {
+      if(!mb.hasCorrectOrientation(face)) {
         face.invertOrientation();
       }
     }
