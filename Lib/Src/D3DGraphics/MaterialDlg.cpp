@@ -109,7 +109,7 @@ float CMaterialDlg::getSliderPower() const {
 }
 
 void CMaterialDlg::showPower(double v) {
-  setWindowText(this, IDC_STATIC_POWER, format(_T("%.2f"), v));
+  setWindowText(this, IDC_STATIC_POWERVALUE, format(_T("%.2f"), v));
 }
 
 void CMaterialDlg::setSliderOpacity(double v) {
@@ -122,7 +122,7 @@ float CMaterialDlg::getSliderOpacity() const {
 }
 
 void  CMaterialDlg::showOpacity(double v) {
-  setWindowText(this, IDC_STATIC_OPACITY, format(_T("%.1f%%"), v*100.0));
+  setWindowText(this, IDC_STATIC_OPACITYVALUE, format(_T("%.1f%%"), v*100.0));
 }
 
 void CMaterialDlg::OnHideWindow() {
