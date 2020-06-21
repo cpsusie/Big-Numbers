@@ -43,7 +43,16 @@ public:
   inline float getFramePerSec() const {
     return m_running ? 1000.0f / m_sleepTime : 0;
   }
+  const MeshArray &getMeshArray() const {
+    return m_meshArray;
+  }
   LPD3DXMESH getMesh() const;
+  inline UINT getNextMeshindex() const {
+    return m_nextMeshIndex;
+  }
+  inline int getLastRenderedMeshindex() const {
+    return m_lastRenderedIndex;
+  }
   void draw();
   bool hasFillMode() const {
     return true;

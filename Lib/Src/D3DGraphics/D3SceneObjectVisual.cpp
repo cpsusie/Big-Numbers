@@ -89,9 +89,6 @@ D3Device &D3SceneObjectVisual::setDeviceMaterialIfExist() const {
   return device;
 }
 
-#define NORMALFVFFLAGS  (D3DFVF_XYZ | D3DFVF_NORMAL)
-#define TEXTUREFVFFLAGS (D3DFVF_XYZ | D3DFVF_TEX1)
-
 DWORD D3SceneObjectVisual::getFVF() const {
   return getVertexBufferDesc().FVF;
 }
@@ -114,11 +111,11 @@ D3DVERTEXBUFFER_DESC D3SceneObjectVisual::getVertexBufferDesc() const {
 }
 
 bool D3SceneObjectVisual::hasNormals() const {
-  return (getFVF() & NORMALFVFFLAGS) == NORMALFVFFLAGS;
+  return hasVertexNormals(getFVF());
 }
 
 bool D3SceneObjectVisual::hasTextureCoordinates() const {
-  return (getFVF() & TEXTUREFVFFLAGS) == TEXTUREFVFFLAGS;
+  return hasTextureVertices(getFVF());
 }
 
 bool D3SceneObjectVisual::isNormalsVisible() const {

@@ -58,7 +58,13 @@ LPD3DXMESH createMeshFromParametricSurface(AbstractMeshFactory &amf, FunctionR2R
 
 LPD3DXMESH createMesh(AbstractMeshFactory &amf, const ParametricR2R3SurfaceParameters &param, FunctionR2R3 &f) {
   checkIsAnimation(__TFUNCTION__, param, false);
-  return createMeshFromParametricSurface(amf, f, param.getTInterval(), param.getSInterval(), param.m_tStepCount, param.m_sStepCount, param.m_doubleSided);
+  return createMeshFromParametricSurface(amf
+                                        ,f
+                                        ,param.getTInterval()
+                                        ,param.getSInterval()
+                                        ,param.m_tStepCount
+                                        ,param.m_sStepCount
+                                        ,param.m_doubleSided);
 }
 
 class VariableParametricSurfaceMeshCreator : public AbstractVariableMeshCreator {

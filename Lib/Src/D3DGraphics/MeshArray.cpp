@@ -39,6 +39,32 @@ void MeshArray::remove(UINT index, UINT count) {
   __super::remove(index, count);
 }
 
+CompactArray<DWORD> MeshArray::getFVFArray() const {
+  CompactArray<DWORD> result(size());
+  for(UINT i = 0; i < size(); i++) {
+    LPD3DXMESH mesh = (*this)[i];
+    result.add(mesh->GetFVF());
+  }
+  return result;
+}
+
+DWORD MeshArray::getFVFUnion() const {
+  CompactArray<DWORD> a = getFVFArray();
+  DWORD fvf = 0;
+  for(DWORD f : a) {
+    fvf |= f;
+  }
+  return fvf;
+}
+
+bool MeshArray::hasNormals() const {
+  return hasVertexNormals(getFVFUnion());
+}
+
+bool MeshArray::hasTextureCoordinates() const {
+  return hasTextureVertices(getFVFUnion());
+}
+
 void MeshArray::clear(int capacity) {
   for(size_t i = 0; i < size(); i++) {
     LPD3DXMESH mesh = (*this)[i];

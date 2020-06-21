@@ -164,6 +164,7 @@ LPD3DXMESH VariableFunction2DMeshCreator::createMesh(double time, InterruptableR
                                  ,m_param.m_pointCount
                                  ,m_param.m_pointCount
                                  ,m_param.m_doubleSided
+                                 ,m_param.getFVF()
                                  );
 }
 

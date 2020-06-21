@@ -112,17 +112,22 @@ void D3SceneObjectAnimatedMesh::nextIndex() {
 }
 
 void D3SceneObjectAnimatedMesh::draw() {
-  getDevice().setWorldMatrix(getWorld())
-             .setFillMode(getFillMode())
-             .setShadeMode(getShadeMode())
-             .setMaterial(getMaterial());
+  D3Device &device = setDeviceMaterialIfExist();
+  setDeviceTextureIfExist();
+  device.setWorldMatrix(getWorld())
+        .setFillMode(getFillMode())
+        .setShadeMode(getShadeMode())
+        .setLightingEnable(getLightingEnable());
   V(m_meshArray[m_lastRenderedIndex = m_nextMeshIndex]->DrawSubset(0));
   __super::draw();
 }
 
 LPD3DXMESH D3SceneObjectAnimatedMesh::getMesh() const {
-  if(m_lastRenderedIndex < 0) {
+  if(m_meshArray.isEmpty()) {
     return NULL;
+  } else if(m_lastRenderedIndex < 0) {
+    return m_meshArray[m_nextMeshIndex];
+  } else {
+    return m_meshArray[m_lastRenderedIndex];
   }
-  return m_meshArray[m_lastRenderedIndex];
 }

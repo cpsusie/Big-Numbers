@@ -131,6 +131,17 @@ inline String toString(const TextureVertex &tv, int dec = 3) {
   return format(_T("(%*.*f,%*.*f)"), dec+3,dec, tv.u, dec+3,dec, tv.v);
 }
 
+#define NORMALFVFFLAGS  (D3DFVF_XYZ | D3DFVF_NORMAL)
+#define TEXTUREFVFFLAGS (D3DFVF_XYZ | D3DFVF_TEX1)
+
+inline bool hasVertexNormals(DWORD fvf) {
+  return (fvf & NORMALFVFFLAGS) == NORMALFVFFLAGS;
+}
+
+inline bool hasTextureVertices(DWORD fvf) {
+  return (fvf & TEXTUREFVFFLAGS) == TEXTUREFVFFLAGS;
+}
+
 class Vertex {
 public:
   float x, y, z;

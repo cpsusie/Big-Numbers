@@ -22,6 +22,9 @@ public:
   void removeLast() {
     remove((UINT)size()-1);
   }
-
-  void clear(int capacity=0);
+  CompactArray<DWORD> getFVFArray() const;
+  DWORD getFVFUnion() const;
+  bool  hasNormals() const;
+  bool  hasTextureCoordinates() const;
+  void  clear(int capacity=0);
 };
