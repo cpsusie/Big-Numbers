@@ -82,7 +82,7 @@ private:
   void removeEquationFromLayoutManager(SimpleLayoutManager &layoutManager, size_t index);
 
 public:
-  ~CDiffEquationEditArray() {
+  ~CDiffEquationEditArray() override {
     clear();
   }
   int                findEquationIndexByCtrlId(UINT id) const;

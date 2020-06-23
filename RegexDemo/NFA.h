@@ -242,8 +242,8 @@ public:
 #endif
   NFA(NFAState *start);
   void create(NFAState *start);
-  ~NFA(); // All elements in array will be released
-          // clear and remove will NOT release the elements
+  ~NFA() override; // All elements in array will be released
+                   // clear and remove will NOT release the elements
 
 #if defined(_DEBUG)
   String toString() const;

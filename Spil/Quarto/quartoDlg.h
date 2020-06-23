@@ -92,21 +92,21 @@ private:
   }
 public:
   CQuartoDlg(CWnd *pParent = NULL);
-  void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
+  void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) override;
 
-  D3Scene &getScene() {
+  D3Scene &getScene() override {
     return m_scene;
   }
-  UINT get3DWindowCount(void) const {
+  UINT get3DWindowCount(void) const override {
     return 1;
   }
-  HWND getMessageWindow() const {
+  HWND getMessageWindow() const override {
     return *this;
   }
-  HWND get3DWindow(UINT index) const {
+  HWND get3DWindow(UINT index) const override {
     return *GetDlgItem(IDC_STATICGAMEWINDOW);
   }
-  void doRender(BYTE renderFlags, CameraSet cameraSet);
+  void doRender(BYTE renderFlags, CameraSet cameraSet) override;
   enum { IDD = IDD_DIALOGQUARTO };
 
 

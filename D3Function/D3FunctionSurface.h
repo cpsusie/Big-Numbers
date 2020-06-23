@@ -27,24 +27,24 @@ public:
   {
     m_materialId = -1;
   }
-  ~D3AnimatedFunctionSurface() {
+  ~D3AnimatedFunctionSurface() override {
     getScene().removeMaterial(m_materialId);
   }
-  void modifyContextMenu(HMENU menu) {
+  void modifyContextMenu(HMENU menu) override {
     appendMenuItem(menu, _T("Edit function"), ID_OBJECT_EDITFUNCTION);
   }
-  int getMaterialId() const {
+  int getMaterialId() const override {
     return m_materialId;
   }
-  bool hasTextureId() const {
+  bool hasTextureId() const override {
     return m_hasTextureId;
   }
-  void setTextureId(int id) {
+  void setTextureId(int id) override {
     if(hasTextureId()) {
       m_textureId = id;
     }
   }
-  int getTextureId() const {
+  int getTextureId() const override {
     return hasTextureId() ? m_textureId : -1;
   }
 };
@@ -68,26 +68,26 @@ public:
   {
     m_materialId = -1;
   }
-  ~D3FunctionSurface() {
+  ~D3FunctionSurface() override {
     if(hasMaterial()) {
       getScene().removeMaterial(m_materialId);
     }
   }
-  void modifyContextMenu(HMENU menu) {
+  void modifyContextMenu(HMENU menu) override {
     appendMenuItem(menu, _T("Edit function"), ID_OBJECT_EDITFUNCTION);
   }
-  int getMaterialId() const {
+  int getMaterialId() const override {
     return m_materialId;
   }
-  bool hasTextureId() const {
+  bool hasTextureId() const override {
     return m_hasTextureId;
   }
-  void setTextureId(int id) {
+  void setTextureId(int id) override {
     if(hasTextureId()) {
       m_textureId = id;
     }
   }
-  int getTextureId() const {
+  int getTextureId() const override {
     return hasTextureId() ? m_textureId : -1;
   }
 };

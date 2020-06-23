@@ -95,10 +95,10 @@ public:
                                ,format(_T("%s(Marker)"),parent->getName().cstr()))
   {
   }
-  int getMaterialId() const {
+  int getMaterialId() const override {
     return GameBoardObject::getMarkerMaterialId();
   }
-  D3DXMATRIX &getWorld() {
+  D3DXMATRIX &getWorld() override {
     return getParent()->getWorld();
   }
 };
@@ -134,7 +134,7 @@ D3DXMATRIX &BrickObject::getWorld() {
 }
 
 void BrickObject::draw() {
-  getDevice().setSpecularEnable(true).setTexture(0, NULL);
+  getDevice().setSpecularHighlights(true).setTexture(0, NULL);
   __super::draw();
   if(m_marked) {
     m_brickMarker->draw();

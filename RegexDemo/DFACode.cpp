@@ -88,12 +88,33 @@ template<class T> String arrayToString(const T *a, size_t size, size_t maxPerLin
   return result;
 }
 
+class CharMapElement {
+public:
+  _TUCHAR m_ch;
+  int     m_mapsTo;
+  inline CharMapElement() : m_ch(0), m_mapsTo(0) {
+  }
+  inline CharMapElement(_TUCHAR ch, int mapsTo) : m_ch(ch), m_mapsTo(mapsTo) {
+  }
+};
+
+static int charMapElemCmp(const CharMapElement &e1, const CharMapElement &e2) {
+  int c = e1.m_mapsTo - e2.m_mapsTo;
+  if(c) return c;
+  return (int)e1.m_ch - (int)e2.m_ch;
+}
+
 static String thinCharMapToString(const short *a) { // size = MAX_CHARS
-  String result = _T("EOI = 0\n");
-  for(int ch = 0; ch < MAX_CHARS; ch++,a++) {
+  CompactArray<CharMapElement> map(MAX_CHARS);
+  for(UINT ch = 0; ch < MAX_CHARS; ch++, a++) {
     if(*a) {
-      result += format(_T("'%s' = %d\n"), NFAState::getFormater()->toString(ch).cstr(), *a);
+      map.add(CharMapElement((_TUCHAR)ch, *a));
     }
+  }
+  map.sort(charMapElemCmp);
+  String result = _T("EOI = 0\n");
+  for(const CharMapElement e : map) {
+    result += format(_T("'%s' = %d\n"), NFAState::getFormater()->toString(e.m_ch).cstr(), e.m_mapsTo);
   }
   return result;
 }

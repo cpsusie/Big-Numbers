@@ -40,7 +40,7 @@ private:
   static D3Cube createCube(float cellSize);
 public:
   OctaObject(D3SceneObjectVisual *parent, float cellSize);
-  ~OctaObject();
+  ~OctaObject() override;
   void setOctagon(const Octagon &octa);
   inline const D3DXVECTOR3 &getCornerCenter(UINT index) const {
     return m_cornerCenterArray[index];
@@ -54,15 +54,15 @@ public:
   inline const D3DXVECTOR3 &getCenter() const {
     return m_center;
   }
-  int getMaterialId() const {
+  int getMaterialId() const override {
     return m_materialId;
   }
   inline float getCellSize() const {
     return m_cellSize;
   }
-  D3DXMATRIX &getWorld();
-  void draw();
-  String getInfoString() const;
+  D3DXMATRIX &getWorld() override;
+  void draw() override;
+  String getInfoString() const override;
 };
 
 class DebugMeshObject : public D3SceneObjectWithMesh {
@@ -72,11 +72,11 @@ private:
 public:
   DebugMeshObject(D3SceneObjectVisual *parent, LPD3DXMESH m);
   DebugMeshObject(D3Scene &scene, LPD3DXMESH m);
-  ~DebugMeshObject();
-  int getMaterialId() const {
+  ~DebugMeshObject() override;
+  int getMaterialId() const override {
     return m_materialId;
   }
-  D3DXMATRIX &getWorld();
+  D3DXMATRIX &getWorld() override;
 };
 
 class DebugSceneobject : public D3SceneObjectVisual {
@@ -110,55 +110,54 @@ private:
   void        moveCamToNewCubeCenter();
 public:
   DebugSceneobject(D3Scene &scene, Debugger &debugger);
-  ~DebugSceneobject();
+  ~DebugSceneobject() override;
   void initOctaTetraVertex(OctaObject *octaObject, D3SceneObjectVisual *tetraObject, D3SceneObjectVisual *vertexObject);
   void setMeshObject(      DebugMeshObject     *obj);
   void setFacesObject(     D3SceneObjectVisual *obj);
-  bool OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
-  void draw();
-  D3Camera   *dbgCAM() const;
-  bool        hasCubeCenter() const;
-  D3DXVECTOR3 getCubeCenter() const;
-  void        updateCamDistance();
-  void        handleDebuggerPaused();
-  inline float getCamDistance() const {
-    return m_currentCamDistance;
-  }
-  LPD3DXMESH getMesh() const {
+  bool OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) override;
+  void draw()                                           override;
+  LPD3DXMESH getMesh()                            const override {
     return m_meshObject ? m_meshObject->getMesh() : NULL;
   }
-  inline OctaObject          *getOctaObject() const {
-    return m_octaObject;
-  }
-  inline D3SceneObjectVisual *getTetraObject() const {
-    return m_tetraObject;
-  }
-  inline D3SceneObjectVisual *getVertexObject() const {
-    return m_vertexObject;
-  }
-
-  bool hasFillMode() const {
+  bool hasFillMode()                              const override {
     return true;
   }
-  void setFillMode(D3DFILLMODE fillMode) {
+  void setFillMode(D3DFILLMODE fillMode)                override {
     m_fillMode = fillMode;
     if(m_meshObject) m_meshObject->setFillMode(fillMode);
   }
-  D3DFILLMODE getFillMode() const {
+  D3DFILLMODE getFillMode()                       const override {
     return m_meshObject ? m_meshObject->getFillMode() : m_fillMode;
   }
-  bool hasShadeMode() const {
+  bool hasShadeMode()                             const override {
     return true;
   }
-  void setShadeMode(D3DSHADEMODE shadeMode) {
+  void setShadeMode(D3DSHADEMODE shadeMode)             override {
     m_shadeMode = shadeMode;
     if(m_meshObject) m_meshObject->setShadeMode(shadeMode);
   }
-  D3DSHADEMODE getShadeMode() const {
+  D3DSHADEMODE getShadeMode()                     const override {
     return m_meshObject ? m_meshObject->getShadeMode() : m_shadeMode;
+  }
+  D3Camera   *dbgCAM()                            const;
+  bool        hasCubeCenter()                     const;
+  D3DXVECTOR3 getCubeCenter()                     const;
+  void        updateCamDistance();
+  void        handleDebuggerPaused();
+  inline float getCamDistance()                   const {
+    return m_currentCamDistance;
   }
   inline void setVisibleParts(BYTE visibleParts) {
     m_visibleParts = visibleParts;
+  }
+  inline OctaObject          *getOctaObject()     const {
+    return m_octaObject;
+  }
+  inline D3SceneObjectVisual *getTetraObject()    const {
+    return m_tetraObject;
+  }
+  inline D3SceneObjectVisual *getVertexObject()   const {
+    return m_vertexObject;
   }
 };
 
@@ -229,15 +228,15 @@ public:
   DebugIsoSurface(Debugger *debugger, D3SceneContainer &sc, const ExprIsoSurfaceParameters &param);
   ~DebugIsoSurface();
   void   createData();
-  double evaluate(const Point3D &p);
-  void   receiveFace(const Face3 &face);
+  double evaluate(const Point3D &p)     override;
+  void   receiveFace(const Face3 &face) override;
 
   void   markCurrentOcta(  const Octagon          &octa  );
   void   markCurrentTetra( const Tetrahedron      &tetra );
   void   markCurrentFace(  const Face3            &fave  );
   void   markCurrentVertex(const IsoSurfaceVertex &vertex);
   void   asyncKillDebugger();
-  void   handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
+  void   handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) override;
 
   inline float getCellSize() const {
     return (float)m_param.m_cellSize;
@@ -290,20 +289,20 @@ private:
 public:
   FinalDebugIsoSurface(D3SceneEditor &editor, LPD3DXMESH m, const PolygonizerBase &polygonizer);
   ~FinalDebugIsoSurface();
-  bool OnLButtonDown(UINT nFlags, CPoint point);
-  bool OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
+  bool OnLButtonDown(UINT nFlags, CPoint point)         override;
+  bool OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) override;
 
+  void draw()                                           override;
+  String getInfoString()                         const override;
   inline const PolygonizerBase &getPolygonizer() const {
     return m_polygonizer;
   }
-  inline int getSelectedCubeIndex() const {
+  inline int getSelectedCubeIndex()              const {
     return m_cubeIndex;
   }
-  inline bool hasSelectedCube() const {
+  inline bool hasSelectedCube()                  const {
     return getSelectedCubeIndex() >= 0;
   }
-  void draw();
-  String getInfoString() const;
 };
 
 #endif // ISODEBUGGER

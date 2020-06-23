@@ -59,10 +59,10 @@ private:
   bool            m_hasElement;
 public:
   FileHashMapKeyIterator(KeyFileWrapper &keyFile);
-  AbstractIterator *clone();
-  bool hasNext() const;
-  void *next();
-  void remove();
+  AbstractIterator *clone()       override;
+  bool hasNext()            const override;
+  void *next()                    override;
+  void remove()                   override;
 };
 
 class FileHashMapEntryIterator : public AbstractIterator {
@@ -75,15 +75,15 @@ private:
     friend class FileHashMapEntryIterator;
 
   public:
-    const void *key() const {
+    const void *key()   const override {
       return m_key;
     }
 
-    void *value() {
+    void *value()             override {
       return m_value;
     }
 
-    const void *value() const {
+    const void *value() const override {
       return m_value;
     }
   };
@@ -103,12 +103,11 @@ public:
   FileHashMapEntryIterator(KeyFileWrapper &keyFile);
   FileHashMapEntryIterator(FileHashMapEntryIterator &src);
   FileHashMapEntryIterator &operator=(FileHashMapEntryIterator &src);
-  ~FileHashMapEntryIterator();
-
-  AbstractIterator *clone();
-  bool hasNext() const;
-  void *next();
-  void remove();
+  ~FileHashMapEntryIterator()     override;
+  AbstractIterator *clone()       override;
+  bool hasNext()            const override;
+  void *next()                    override;
+  void remove()                   override;
 };
 
 template <class K, class E> class FileHashMap {

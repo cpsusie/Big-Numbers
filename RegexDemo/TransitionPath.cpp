@@ -97,6 +97,11 @@ void TransitionGrid::initGrid() {
 }
 
 TransitionPath TransitionGrid::findShortestFreePath(const CPoint &from, const CPoint &to) {
+#if defined(_DEBUG)
+  if(to == from) {
+    throwInvalidArgumentException(__TFUNCTION__, _T("from=%s, to=%s"), ::toString(from).cstr(), ::toString(to).cstr());
+  }
+#endif // _DEBUG
   size_t swz = sizeof(GridElement);
   initGrid();
   CompactStack<CPoint> stack;
@@ -134,10 +139,14 @@ TransitionPath TransitionGrid::findShortestFreePath(const CPoint &from, const CP
     throwException(_T("cannot connect (%d,%d) with (%d,%d)"), from.x, from.y, to.x, to.y);
   }
   getGridElement(startPoint).setOccupied(false);
+  const size_t maxResultSize = (abs(to.x - from.x) + abs(to.y - from.y)) * 10;
   TransitionPath result;
   result.add(to);
   CPoint gp = winToGrid(to);
   for(;;) {
+    if(result.size() > maxResultSize) {
+      int fisk = 1;
+    }
     gp = findNeighbourWithMinDistance(gp);
     if(gp == startPoint) {
       result.add(from);

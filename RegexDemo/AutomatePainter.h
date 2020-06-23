@@ -23,7 +23,7 @@ class FontCache : public CompactHashMap<FontKey, CFont*> {
 public:
   FontCache() : CompactHashMap<FontKey, CFont*>(361) {
   }
-  ~FontCache();
+  ~FontCache() override;
 };
 
 #define CIRCLE_RADIUS  12

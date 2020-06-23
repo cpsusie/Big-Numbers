@@ -292,6 +292,17 @@ void DFAPainter::paintOutgoingTransitions(const DFAPointArray &pointArray, HDC h
   }
 }
 
+// i = [0..8]
+inline Point2DP shiftingRotate(const Point2DP &v, int i) {
+  if(i == 0) {
+    return v;
+  } else if(i % 2 == 0) {
+    return v.rotate(M_PI * i / 8);
+  } else {
+    return v.rotate(-M_PI * (i + 1) / 8);
+  }
+}
+
 void DFAPainter::paintOutgoingTransition(const DFAPointArray &pointArray, size_t index, const DFATransition &transition, HDC hdc) {
   DFAStatePoint *from = pointArray[index];
   DFAStatePoint *to   = pointArray[transition.getSuccessor()];
@@ -307,9 +318,20 @@ void DFAPainter::paintOutgoingTransition(const DFAPointArray &pointArray, size_t
   }
   const Point2DP v = (ct - cf).normalize();
   Point2DP pFrom, pTo;
-
   pFrom = cf + v * CIRCLE_RADIUS;
   pTo   = ct - v * CIRCLE_RADIUS;
+  if(pFrom == pTo) {
+    int fisk = 1;
+  }
+  for(int i1 = 0; i1 < 8; i1++) {
+    for(int i2 = 0; i2 < 8; i2++) {
+      pFrom = cf + shiftingRotate(v,i1) * CIRCLE_RADIUS;
+      pTo   = ct - shiftingRotate(v,i2) * CIRCLE_RADIUS;
+      if(distance(pTo,pFrom) >= 1) {
+        i1 = i2 = 8;
+      }
+    }
+  }
 
   const ArrowDirection arrowDir = getVectorDirection(v);
   const DirectionPair dp(arrowDir, getOppositeDirection(arrowDir));

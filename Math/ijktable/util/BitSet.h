@@ -228,14 +228,14 @@ private:
   DECLARECLASSNAME;
   void first(size_t start, size_t end);
 public:
-  AbstractIterator *clone();
   BitSetIterator(BitSet &set, size_t start=0, size_t end=-1)
     : AbstractBitSetIterator(set)
   {
     first(start, end);
   }
-  void *next();
-  void remove() {
+  AbstractIterator *clone() override;
+  void *next()              override;
+  void  remove()            override {
     AbstractBitSetIterator::remove(s_className);
   }
 };

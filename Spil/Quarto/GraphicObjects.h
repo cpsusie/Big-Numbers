@@ -13,23 +13,23 @@ class GameBoardObject;
 
 class BoardObjectWithTexture : public D3SceneObjectWithMesh {
 protected:
-  virtual LPDIRECT3DTEXTURE getTexture() = NULL;
+  virtual LPDIRECT3DTEXTURE getTexture() = NULL; /* TODO not virtual in base-class */
 public:
   BoardObjectWithTexture(D3Scene &scene, LPD3DXMESH mesh) : D3SceneObjectWithMesh(scene, mesh) {
   }
   BoardObjectWithTexture(D3SceneObjectVisual *parent, LPD3DXMESH mesh) : D3SceneObjectWithMesh(parent, mesh) {
   }
-  ~BoardObjectWithTexture() {
+  ~BoardObjectWithTexture() override {
   }
-  bool getLightingEnable() const {
+  bool getLightingEnable() const override {
     return false;
   }
-  D3DXMATRIX &getWorld() {
+  D3DXMATRIX &getWorld() override {
     D3SceneObjectVisual *parent = getParent();
     return parent ? getParent()->getWorld() : __super::getWorld();
   }
 
-  void draw();
+  void draw() override;
 };
 
 class BoardFieldObject : public BoardObjectWithTexture {
@@ -70,7 +70,7 @@ public:
   }
 
 #if defined(_DEBUG)
-  String toString() const;
+  String toString() const override;
 #endif
 };
 
@@ -85,7 +85,7 @@ private:
   GameBoardObject     &getBoard() const;
 public:
   BrickObject(GameBoardObject *board, BYTE attr);
-  ~BrickObject();
+  ~BrickObject() override;
 
   void setPos(const D3DXVECTOR3 &pos) {
     m_pos = pos;
@@ -99,17 +99,17 @@ public:
     if(marked) debugLog(_T("Mark %s\n"), toString().cstr());
 #endif
   }
-  bool isVisible() const {
+  bool isVisible()            const override {
     return m_visible;
   }
   inline void setVisible(bool visible) {
     m_visible = visible;
   }
-  int getMaterialId() const;
-  D3DXMATRIX &getWorld();
-  void draw();
+  int         getMaterialId() const override;
+  D3DXMATRIX &getWorld()            override;
+  void        draw()                override;
 #if defined(_DEBUG)
-  String toString() const;
+  String      toString()      const override;
 #endif
 };
 

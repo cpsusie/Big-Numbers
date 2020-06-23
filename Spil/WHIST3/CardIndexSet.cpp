@@ -65,11 +65,11 @@ private:
   int                 m_current;
   void first();
 public:
-  AbstractIterator *clone();
   CardIndexSetIterator(const CardIndexSet &set);
-  bool hasNext() const { return m_next >= 0; }
-  void *next();
-  void remove();
+  AbstractIterator *clone()       override;
+  bool  hasNext()           const override { return m_next >= 0; }
+  void *next()                    override;
+  void  remove()                  override;
 };
 
 DEFINECLASSNAME(CardIndexSetIterator);

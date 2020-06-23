@@ -78,8 +78,8 @@ public:
 
   void addStep(double estimatedTimeUnits, const TCHAR *msg);
 
-  UINT safeRun();
-  void handleInterruptOrSuspend();
+  UINT safeRun() override;
+  void handleInterruptOrSuspend() override;
 };
 
 class CompareSubJob : public InterruptableRunnable {
@@ -96,7 +96,7 @@ public:
   Execute2(CompareJob *compareJob) : m_compareJob(*compareJob) {
   }
   void run(CompareSubJob &job1, CompareSubJob &job2);
-  void handleTimeout(Timer &timer);
+  void handleTimeout(Timer &timer) override;
   void setBothSuspended();
   void setBothInterrupted();
   void resumeBoth();

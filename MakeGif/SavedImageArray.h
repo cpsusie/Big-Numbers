@@ -8,6 +8,6 @@ private:
   SavedImageArray &operator=(const SavedImageArray &src); // Not defined. Class not cloneable
 public:
   SavedImageArray(const PixRectArray &prArray, int maxColorCount);
-  ~SavedImageArray();
+  ~SavedImageArray() override;
   void clear(intptr_t capacity = 0);
 };

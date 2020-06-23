@@ -160,7 +160,7 @@ class EndGameTablebaseList : public CompactArray<EndGameTablebase*> {
 public:
   EndGameTablebaseList() : CompactArray<EndGameTablebase*>(143) {
   }
-  virtual ~EndGameTablebaseList() {
+  ~EndGameTablebaseList() override {
   }
 };
 

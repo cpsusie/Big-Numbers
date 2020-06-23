@@ -58,7 +58,7 @@ typedef CompactArray<FallingNFAState> FallingNFAStateArray;
 
 class NFAPointArray : public CompactArray<NFAStatePoint*> {
 public:
-  ~NFAPointArray() {
+  ~NFAPointArray() override {
     deleteAll();
   }
   void add(NFAStatePoint *p) {
@@ -97,4 +97,3 @@ public:
   void animateOldToNew(HDC hdc);
   void shiftCurrentToNew();
 };
-

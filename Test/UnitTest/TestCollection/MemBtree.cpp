@@ -535,13 +535,13 @@ private:
 protected:
   const BTreePageItem *nextNode();
 public:
-  AbstractIterator *clone();
   BTreeSetIterator(BTreeSetImpl &tree);
-  void *next() {
+  AbstractIterator *clone()       override;
+  bool hasNext()            const override;
+  void *next()                    override {
     return nextNode()->m_key;
   }
-  bool hasNext() const;
-  void remove();
+  void remove()                   override;
   String toString() {
     return m_stack.toString();
   }
@@ -783,10 +783,10 @@ class BTreeMapIterator : public BTreeSetIterator {
 public:
   BTreeMapIterator(BTreeSetImpl &set) : BTreeSetIterator(set) {
   }
-  AbstractIterator *clone() {
+  AbstractIterator *clone() override {
     return new BTreeMapIterator(*this);
   }
-  void *next();
+  void *next()              override;
 };
 
 void *BTreeMapIterator::next() {

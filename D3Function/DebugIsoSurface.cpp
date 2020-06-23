@@ -27,13 +27,13 @@ private:
   static D3Cube createCube(float cellSize);
 public:
   CornerMarkObject(OctaObject *parent);
-  ~CornerMarkObject();
-  int getMaterialId() const;
+  ~CornerMarkObject() override;
+  int getMaterialId() const override;
   inline CornerMarkObject &setCornerIndex(int index) {
     m_cornerIndex = index;
     return *this;
   }
-  D3DXMATRIX &getWorld();
+  D3DXMATRIX &getWorld() override;
 };
 
 OctaObject::OctaObject(D3SceneObjectVisual *parent, float cellSize)
@@ -152,10 +152,10 @@ public:
     : D3SceneObjectLineArray(parent, lineArray, name)
   {
   }
-  int getMaterialId() const {
+  int getMaterialId() const override {
     return m_parent->getMaterialId();
   }
-  D3DXMATRIX &getWorld() {
+  D3DXMATRIX &getWorld() override {
     return m_parent->getWorld();
   }
 };
@@ -170,16 +170,16 @@ private:
   UINT                 getLinesObject( const Tetrahedron &tetra);
 public:
   TetraObject(OctaObject *octaObject);
-  ~TetraObject();
+  ~TetraObject()                                      override;
   void setTetrahedron(const Tetrahedron &tetra);
-  int getMaterialId() const {
+  int getMaterialId()                           const override {
     return m_materialId;
   }
   void selectVisibleChild(int index);
-  D3DXMATRIX &getWorld() {
+  D3DXMATRIX &getWorld()                              override {
     return m_octaObject.getWorld();
   }
-  void draw() {
+  void draw()                                         override {
     if(m_currentVisible >= 0) {
       getChild(m_currentVisible)->draw();
     }
@@ -235,13 +235,13 @@ class ColoredFaceObject : public D3SceneObjectLineArray {
   int m_materialId;
 public:
   ColoredFaceObject(D3SceneObjectVisual *parent, const CompactArray<Line3D> &lines, D3DCOLOR color);
-  ~ColoredFaceObject() {
+  ~ColoredFaceObject()      override {
     getScene().removeMaterial(m_materialId);
   }
-  int getMaterialId() const {
+  int getMaterialId() const override {
     return m_materialId;
   }
-  D3DXMATRIX &getWorld() {
+  D3DXMATRIX &getWorld()    override {
     return m_parent->getWorld();
   }
 };
@@ -258,7 +258,7 @@ private:
   CompactArray<Line3D> createLineArray(CompactArray<Face3> &faceArray, const IsoSurfaceVertexArray &va) const;
 public:
   FacesObject(DebugIsoSurface *dbgObject, CompactArray<Face3> &faceArray);
-  D3DXMATRIX &getWorld() {
+  D3DXMATRIX &getWorld() override {
     return m_parent->getWorld();
   }
 };
@@ -309,11 +309,11 @@ private:
   int           m_materialId;
 public:
   NormalArrowObject(VertexObject *vertexObject, float scale);
-  ~NormalArrowObject();
-  int getMaterialId() const {
+  ~NormalArrowObject()      override;
+  int getMaterialId() const override {
     return m_materialId;
   }
-  D3DXMATRIX &getWorld();
+  D3DXMATRIX &getWorld()    override;
 };
 
 class VertexObject : public D3SceneObjectLineArray {
@@ -327,16 +327,16 @@ private:
   CompactArray<Line3D> createLineArray(float lineLength) const;
 public:
   VertexObject(D3SceneObjectVisual *parent, float cellSize);
-  ~VertexObject();
+  ~VertexObject()           override;
   void setSurfaceVertexArray(const IsoSurfaceVertexArray &a);
-  int getMaterialId() const {
+  int getMaterialId() const override {
     return m_materialId;
   }
   const IsoSurfaceVertex &getCurrentVertex() const {
     return m_vertexArray[m_positionIndex];
   }
-  D3DXMATRIX &getWorld();
-  void draw();
+  D3DXMATRIX &getWorld()    override;
+  void draw()               override;
 };
 
 

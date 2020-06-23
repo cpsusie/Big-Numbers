@@ -91,7 +91,7 @@ public:
 
 class DFAPointArray : public CompactArray<DFAStatePoint*> {
 public:
-  ~DFAPointArray() {
+  ~DFAPointArray() override {
     deleteAll();
   }
   void add(DFAStatePoint *p) {

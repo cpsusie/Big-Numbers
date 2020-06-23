@@ -18,7 +18,7 @@ public:
   }
   bool needUpdate(const PixRectArray &src) const;
   PixRectArray(const StringArray &fileNames, StringArray &errors);
-  ~PixRectArray();
+  ~PixRectArray() override;
   PixRectArray &operator=(const PixRectArray &src);
   PixRectArray &scale(double scaleFactor);
   PixRectArray &setAllToSize(const CSize &newSize);

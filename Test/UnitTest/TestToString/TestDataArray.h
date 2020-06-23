@@ -45,14 +45,14 @@ private:
   void nextValue();
 public:
   AbstractTestElementIterator(TestValueArray &a, StreamSize maxWidth, StreamSize maxPrecision, UINT multibitFieldsFilter);
-  AbstractIterator *clone() {
+  AbstractIterator *clone()       override {
     return new AbstractTestElementIterator(*this);
   }
-  bool hasNext() const {
+  bool hasNext()            const override {
     return m_hasNext;
   }
-  void *next();
-  void remove() {
+  void *next()                    override;
+  void remove()                   override {
     unsupportedOperationError(__TFUNCTION__);
   }
   inline size_t getMaxIterationCount() const {

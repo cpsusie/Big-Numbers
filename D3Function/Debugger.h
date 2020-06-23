@@ -34,13 +34,13 @@ private:
   bool hasOctaBreakPointsAboveCounter(const BitSet &s) const;
 public:
   Debugger(D3SceneContainer *sc, const ExprIsoSurfaceParameters &param);
-  ~Debugger();
+  ~Debugger() override;
   void singleStep(BYTE breakFlags, const BitSet &octaBreakPoints);
   inline void go(const BitSet &octaBreakPoints) {
     singleStep(FL_BREAKONOCTAINDEX, octaBreakPoints);
   }
   void kill();
-  UINT safeRun();
+  UINT safeRun() override;
   void handleStep(StepType type);
   inline BYTE getFlags() const {
     return m_flags;

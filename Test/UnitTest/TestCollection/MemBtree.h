@@ -187,28 +187,28 @@ protected:
 
 public:
   BTreeMapImpl(const AbstractObjectManager &keyManager, const AbstractObjectManager &dataManager, const AbstractComparator &comparator);
-  ~BTreeMapImpl();
-  bool put(const void *key,       void *elem);
-  bool put(const void *key, const void *elem);
-  bool remove(const void *key);
-        void *get(const void *key);
-  const void *get(const void *key) const;
-  AbstractEntry *selectEntry(RandomGenerator &rnd) const;
+  ~BTreeMapImpl() override;
+  bool put(const void *key,       void *elem) override;
+  bool put(const void *key, const void *elem) override;
+  bool remove(const void *key) override;
+        void *get(const void *key) override;
+  const void *get(const void *key) const override;
+  AbstractEntry *selectEntry(RandomGenerator &rnd) const override;
   const AbstractEntry *getMinEntry() const;
   const AbstractEntry *getMaxEntry() const;
-  size_t size() const {
+  size_t size() const override {
     return BTreeSetImpl::size();
   }
 
-  void clear() {
+  void clear() override {
     BTreeSetImpl::clear();
   }
 
-  bool hasOrder() const {
+  bool hasOrder() const override {
     return BTreeSetImpl::hasOrder();
   }
 
-  AbstractComparator *getComparator() {
+  AbstractComparator *getComparator() override {
     return BTreeSetImpl::getComparator();
   }
 
@@ -221,14 +221,11 @@ public:
     return NULL;
   }
 
-  AbstractMap *cloneMap(bool cloneData) const;
-
-  AbstractIterator *getIterator();
-
-  AbstractIterator *getKeyIterator() {
+  AbstractMap      *cloneMap(bool cloneData) const override;
+  AbstractIterator *getIterator()                  override;
+  AbstractIterator *getKeyIterator()               override {
     return BTreeSetImpl::getIterator();
   }
-
   void showTree(AbstractFormatter &keyFormatter, AbstractFormatter &dataFormatter) const;
 };
 

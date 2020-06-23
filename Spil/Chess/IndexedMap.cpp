@@ -184,14 +184,14 @@ private:
   void first();
 public:
   IndexedMapKeyIterator(IndexedMap &map);
-  AbstractIterator *clone() {
+  AbstractIterator *clone()       override {
     return new IndexedMapKeyIterator(*this);
   }
-  bool hasNext() const {
+  bool hasNext()            const override {
     return m_current <= m_lastElement;
   }
-  void *next();
-  void remove();
+  void *next()                    override;
+  void remove()                   override;
 };
 
 DEFINECLASSNAME(IndexedMapKeyIterator);
@@ -378,9 +378,9 @@ private:                                                                        
   const int m_value;                                                                      \
 public:                                                                                   \
   name(IndexedMap &map, int value=0);                                                     \
-  AbstractIterator *clone() { return new name(*this); }                                   \
-  void *next();                                                                           \
-  UINT64 getCount() const;                                                                \
+  AbstractIterator *clone() override { return new name(*this); }                          \
+  void *next()              override;                                                     \
+  UINT64 getCount()   const override;                                                     \
 };                                                                                        \
                                                                                           \
 name::name(IndexedMap &map, int value) : IndexedMapEntryIterator(map), m_value(value) {   \

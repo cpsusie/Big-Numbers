@@ -1005,11 +1005,7 @@ void CRegexDemoDlg::clearCodeWindow() {
 }
 
 String CRegexDemoDlg::getCompiledCodeText() const {
-  if(isCodeTextDFATables()) {
-    return m_regex.getDFATablesToString();
-  } else {
-    return m_regex.codeToString();
-  }
+  return isCodeTextDFATables() ? m_regex.getDFATablesToString() : m_regex.codeToString();
 }
 
 void CRegexDemoDlg::fillCodeWindow(const String &codeText) {
@@ -1065,8 +1061,8 @@ void CRegexDemoDlg::setDFAGraphicsMode(int id) {
    ,ID_OPTIONS_DFA_PAINT_STATES
    ,ID_OPTIONS_DFA_ANIMATE_CREATE
   };
-  for(int i = 0; i < ARRAYSIZE(menuIds); i++) {
-    checkMenuItem(this, menuIds[i], menuIds[i] == id);
+  for(int menuId : menuIds) {
+    checkMenuItem(this, menuId, menuId == id);
   }
   if(wasGraphicsOn) {
     unmarkAll();

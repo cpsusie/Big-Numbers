@@ -179,7 +179,7 @@ const XMMRegister XMMregList[] = {
 
 class InstructionOperandArray : public CompactArray<const InstructionOperand*> {
 public:
-  virtual ~InstructionOperandArray();
+  ~InstructionOperandArray() override;
   String toString() const;
 };
 
