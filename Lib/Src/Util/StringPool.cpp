@@ -127,10 +127,10 @@ class StringPoolIterator : public AbstractIterator {
 private:
 public:
   StringPoolIterator(const CompactArray<TCHAR> &textData);
-  AbstractIterator *clone();
-  bool hasNext() const;
-  void *next();
-  void remove();
+  AbstractIterator *clone()       override;
+  bool hasNext()            const override;
+  void *next()                    override;
+  void remove()                   override;
 };
 
 StringPoolIterator::StringPoolIterator(const CompactArray<TCHAR> &textData) : m_textData(textData) {

@@ -55,15 +55,14 @@ protected:
     initBuffers(varray, iarray);
   }
 
-  ~D3SceneObjectWithIndexBuffer() {
+  ~D3SceneObjectWithIndexBuffer() override {
     releaseIndexBuffer();
   }
 
   D3Device &setIndices(D3Device &device);
 public:
-  LPDIRECT3DINDEXBUFFER getIndexBuffer() const {
+  LPDIRECT3DINDEXBUFFER getIndexBuffer() const override {
     return m_indexBuffer;
   }
-  D3DINDEXBUFFER_DESC getDesc() const;
   String toString() const;
 };

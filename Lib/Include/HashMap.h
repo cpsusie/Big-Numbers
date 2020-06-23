@@ -9,13 +9,13 @@ class HashMapNode : public HashSetNode, public AbstractEntry {
 private:
   void *m_value;
 public:
-  const void *key() const {
+  const void *key() const override {
     return HashSetNode::key();
   }
-  void *value() {
+  void *value() override {
     return m_value;
   }
-  const void *value() const {
+  const void *value() const override {
     return m_value;
   }
   friend class HashMapImpl;
@@ -44,33 +44,33 @@ protected:
   virtual void deleteNode(HashSetNode *n) const;
 public:
   HashMapImpl(const AbstractObjectManager &keyManager, const AbstractObjectManager &dataManager, HashFunction hash, const AbstractComparator &comparator, size_t capacity);
-  virtual ~HashMapImpl();
-  bool put(const void *key, void *value);
-  bool put(const void *key, const void *value);
-  bool remove(const void *key);
-  void *get(const void *key);
-  const void *get(const void *key) const;
-  AbstractEntry *selectEntry(RandomGenerator &rnd) const;
+  virtual ~HashMapImpl() override;
+  bool put(const void *key, void *value) override;
+  bool put(const void *key, const void *value) override;
+  bool remove(const void *key) override;
+  void *get(const void *key) override;
+  const void *get(const void *key) const override;
+  AbstractEntry *selectEntry(RandomGenerator &rnd) const override;
   const AbstractEntry *getMinEntry() const;
   const AbstractEntry *getMaxEntry() const;
-  size_t size() const;
-  void clear();
-  bool hasOrder() const {
+  size_t size() const override;
+  void clear() override;
+  bool hasOrder() const override {
     return HashSetImpl::hasOrder();
   }
-  AbstractComparator *getComparator() {
+  AbstractComparator *getComparator() override {
     return HashSetImpl::getComparator();
   }
   const AbstractComparator *getComparator() const {
     return HashSetImpl::getComparator();
   }
-  AbstractCollection *clone(bool cloneData) const {
+  AbstractCollection *clone(bool cloneData) const override {
     throwUnsupportedOperationException(__TFUNCTION__);
     return NULL;
   }
-  AbstractMap *cloneMap(bool cloneData) const;
-  AbstractIterator *getIterator();
-  AbstractIterator *getKeyIterator() {
+  AbstractMap *cloneMap(bool cloneData) const override;
+  AbstractIterator *getIterator() override;
+  AbstractIterator *getKeyIterator() override {
     return HashSetImpl::getIterator();
   }
 };

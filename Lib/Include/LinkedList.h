@@ -30,20 +30,20 @@ private:
   friend class ListIterator;
 public:
   ListImpl(AbstractObjectManager &objectManager);
-  virtual ~ListImpl();
-  AbstractCollection *clone(bool cloneData) const;
+  virtual ~ListImpl() override;
+  AbstractCollection *clone(bool cloneData) const override;
   ListImpl &operator=(const ListImpl &src);
-  bool add(const void *e);
+  bool add(const void *e) override;
   bool add(size_t i, const void *e);
   void removeIndex(size_t i);
-  bool remove(const void *e);
+  bool remove(const void *e) override;
   void removeFirst();
   void removeLast();
-  bool contains(const void *e) const; // unsupported
-  const void *select(RandomGenerator &rnd) const ;
+  bool contains(const void *e) const override; // unsupported
+  const void *select(RandomGenerator &rnd) const override;
   void *select(RandomGenerator &rnd);
-  void clear();
-  size_t size() const {
+  void clear() override;
+  size_t size() const override {
     return m_size;
   }
         void *getElement(size_t index);
@@ -53,7 +53,7 @@ public:
         void *last();
   const void *last() const;
 
-  AbstractIterator *getIterator();
+  AbstractIterator *getIterator() override;
 };
 
 template <typename T> class LinkedList : public Collection<T> {

@@ -93,7 +93,7 @@ public:
     resume();
   }
 
-  UINT run();
+  UINT run() override;
 
   void setDemon(bool on);
   inline bool isDemon() const {

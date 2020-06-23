@@ -12,7 +12,7 @@ private:
   void OnColorchangedColormapColor();
 public:
   CColorDlg(const String &caption, int propertyId, D3DCOLOR color, CWnd *pParent = NULL);
-  String getTypeName() const {
+  String getTypeName() const override {
     return _T("D3DCOLOR");
   }
   enum { IDD = _IDD_COLOR_DIALOG };

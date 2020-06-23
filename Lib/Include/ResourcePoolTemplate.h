@@ -31,7 +31,7 @@ protected:
 public:
   ResourcePoolTemplate(const String &typeName) : m_typeName(typeName) {
   }
-  virtual ~ResourcePoolTemplate() {
+  ~ResourcePoolTemplate() override {
     deleteAll();
   }
   T *fetchResource() {

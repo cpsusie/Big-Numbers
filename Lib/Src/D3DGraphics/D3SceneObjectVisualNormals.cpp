@@ -16,10 +16,10 @@ public:
      : D3SceneObjectLineArray(parent, lines)
   {
   }
-  int getMaterialId() const {
+  int getMaterialId() const override {
     return getParent()->getMaterialId();
   }
-  D3DXMATRIX &getWorld() {
+  D3DXMATRIX &getWorld() override {
     return getParent()->getWorld();
   }
 };
@@ -38,13 +38,13 @@ public:
     , m_primitiveCount((UINT)iarray.size()/3)
   {
   }
-  int getMaterialId() const {
+  int getMaterialId() const override {
     return getParent()->getMaterialId();
   }
-  D3DXMATRIX &getWorld() {
+  D3DXMATRIX &getWorld() override {
     return getParent()->getWorld();
   }
-  void draw();
+  void draw() override;
 };
 
 void D3SceneObjectTriangleArray::draw() {
@@ -68,13 +68,13 @@ class D3SceneObjectVectorArrary : public D3SceneObjectVisual {
 public:
   D3SceneObjectVectorArrary(D3SceneObjectVisual *parent, const CompactArray<Line3D> &lines);
   ~D3SceneObjectVectorArrary();
-  int getMaterialId() const {
+  int getMaterialId() const override {
     return m_materialId;
   }
-  D3DXMATRIX &getWorld() {
+  D3DXMATRIX &getWorld() override {
     return getParent()->getWorld();
   }
-  void draw();
+  void draw() override;
 };
 
 D3SceneObjectVectorArrary::D3SceneObjectVectorArrary(D3SceneObjectVisual *parent, const CompactArray<Line3D> &lines)

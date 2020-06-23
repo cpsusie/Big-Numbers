@@ -26,23 +26,23 @@ private:
   friend class ArrayIterator;
 public:
   ArrayImpl(AbstractObjectManager &objectManager, size_t capacity);
-  ~ArrayImpl();
+  ~ArrayImpl() override;
   ArrayImpl(AbstractObjectManager &objectManager, const AbstractCollection *src); // not implemented
   ArrayImpl &operator=(const ArrayImpl &src);                                     // not implemented
-  AbstractCollection *clone(bool cloneData) const;
-  bool add(const void *e);
+  AbstractCollection *clone(bool cloneData) const  override;
+  bool add(const void *e)  override;
   bool add(size_t i, const void *e, size_t count);
   void removeIndex(size_t i, size_t count);
-  bool remove(const void *e);
-  bool contains(const void *e) const; // unsuppoerted
-  const void *select(RandomGenerator &rnd) const ;
-  void *select(RandomGenerator &rnd);
+  bool remove(const void *e) override;
+  bool contains(const void *e) const override; // unsuppoerted
+  const void *select(RandomGenerator &rnd) const;
+  void *select(RandomGenerator &rnd) override;
   inline size_t getCapacity() const {
     return m_capacity;
   }
   void setCapacity(size_t capacity);
-  void clear();
-  inline size_t size() const {
+  void clear() override;
+  inline size_t size() const override {
     return m_size;
   }
   inline void *getElement(size_t index) {
@@ -75,7 +75,7 @@ public:
   intptr_t bInsert(const void *e, int (*compare)(const void  *e1, const void  *e2));
   intptr_t bInsert(const void *e, AbstractComparator &comparator);
 
-  AbstractIterator *getIterator();
+  AbstractIterator *getIterator() override;
 };
 
 /*

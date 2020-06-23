@@ -21,7 +21,7 @@ private:
   ATOMICFLAGTRAITS(Timer, BYTE,m_flags)
   _TimerJob            *m_job;
   mutable FastSemaphore m_lock;
-  void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
+  void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) override;
   // no lock protection
   void createJob(TimeoutHandler &handler);
   // no lock protection

@@ -29,7 +29,7 @@ protected:
     }
   }
 public:
-  virtual ~PropertyDialog() {
+  ~PropertyDialog() override {
     PropertyContainer::clear();
   }
   inline int getPropertyId() const {
@@ -78,15 +78,15 @@ public:
   const T &getCurrentValue() const {
     return m_currentValue;
   }
-  const void *getCurrentProperty(size_t size) const {
+  const void *getCurrentProperty(size_t size) const override final {
     checkSize(__TFUNCTION__, size);
     return &m_currentValue;
   }
-  bool setStartProperty(const void *v, size_t size) {
+  bool setStartProperty(const void *v, size_t size) override final {
     checkSize(__TFUNCTION__, size);
     return setStartValue(*(T*)v);
   }
-  size_t getDataSize() const {
+  size_t getDataSize() const final {
     return sizeof(T);
   }
 };

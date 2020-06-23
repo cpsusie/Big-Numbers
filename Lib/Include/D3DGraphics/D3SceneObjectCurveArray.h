@@ -9,5 +9,5 @@ private:
 public:
   D3SceneObjectCurveArray(D3Scene             &scene , const CurveArray &curves, const String &name = _T("CurveArray"));
   D3SceneObjectCurveArray(D3SceneObjectVisual *parent, const CurveArray &curves, const String &name = _T("CurveArray"));
-  void draw();
+  void draw() override;
 };

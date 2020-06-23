@@ -194,13 +194,13 @@ public:
     {
       first(start, end);
     }
-    AbstractIterator *clone() {
+    AbstractIterator *clone()   override {
       return new TinyBitSetIterator(*this);
     }
-    inline bool hasNext() const {
+    inline bool hasNext() const override {
       return m_hasNext;
     }
-    void *next() {
+    void *next()                override {
       if(!m_hasNext) {
         noNextElementError(_T("TinyBitSetIterator"));
       }
@@ -221,7 +221,7 @@ public:
       return &m_current;
     }
 
-    void remove() {;
+    void remove()               override {
       m_set.remove(m_current);
     }
   };
@@ -258,13 +258,13 @@ public:
     {
       first(start, end);
     }
-    AbstractIterator *clone() {
+    AbstractIterator *clone()       override {
       return new TinyBitSetReverseIterator(*this);
     }
-    inline bool hasNext() const {
+    bool hasNext()            const override {
       return m_hasNext;
     }
-    void *next() {
+    void *next()                    override {
       if(!m_hasNext) {
         noNextElementError(_T("TinyBitSetReverseIterator"));
       }
@@ -285,7 +285,7 @@ public:
       return &m_current;
     }
 
-    void remove() {
+    void remove()                   override {
       m_set.remove(m_current);
     }
   };

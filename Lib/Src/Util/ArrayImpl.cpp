@@ -221,11 +221,11 @@ private:
   }
 
 public:
-  AbstractIterator *clone();
   ArrayIterator(ArrayImpl &a);
-  bool hasNext() const;
-  void *next();
-  void remove();
+  AbstractIterator *clone()       override;
+  bool hasNext()            const override;
+  void *next()                    override;
+  void remove()                   override;
 };
 
 DEFINECLASSNAME(ArrayIterator);

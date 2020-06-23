@@ -44,12 +44,6 @@ D3Device &D3SceneObjectWithVertexBuffer::setStreamSource() {
   return device;
 }
 
-D3DVERTEXBUFFER_DESC D3SceneObjectWithVertexBuffer::getDesc() const {
-  D3DVERTEXBUFFER_DESC desc;
-  V(m_vertexBuffer->GetDesc(&desc));
-  return desc;
-}
-
 D3Cube D3SceneObjectWithVertexBuffer::getBoundingBox() const {
   return ::getBoundingBox(m_vertexBuffer) + D3World(*this).getPos();
 }

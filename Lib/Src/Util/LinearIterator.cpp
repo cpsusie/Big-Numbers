@@ -11,14 +11,14 @@ private:
   double               m_iteratorValue, m_nextValue;
 public:
   _LinearIterator(const DoubleInterval &interval, UINT steps);
-  AbstractIterator *clone() {
+  AbstractIterator *clone()       override {
     return new _LinearIterator(*this);
   }
-  bool hasNext() const {
+  bool hasNext()            const override {
     return m_stepCounter < m_steps;
   }
-  void *next();
-  void remove() {
+  void *next()                    override;
+  void remove()                   override {
     unsupportedOperationError(__TFUNCTION__);
   }
   inline const DoubleInterval &getInterval() const {

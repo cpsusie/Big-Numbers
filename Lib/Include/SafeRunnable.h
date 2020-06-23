@@ -23,7 +23,7 @@ private:
 public:
   SafeRunnable() : m_flags(0), m_started(0) {
   }
-  ~SafeRunnable() {
+  ~SafeRunnable() override {
     waitUntilJobDone();
   }
 
@@ -46,7 +46,7 @@ public:
   // If exception is caught, the returncode is -1
   // To get message text from caught exception, call getErrorMsg();
   // If destructor is called, caller will wait, until run has terminated.
-  UINT run();
+  UINT run() override final;
   // Should do the real job. Will be called by run(), see this
   virtual UINT safeRun() = 0;
 };

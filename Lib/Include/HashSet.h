@@ -82,23 +82,23 @@ protected:
 #endif
 public:
   HashSetImpl(const AbstractObjectManager &objectManager, HashFunction hash, const AbstractComparator &comparator, size_t capacity);
-  virtual ~HashSetImpl();
+  virtual ~HashSetImpl() override;
   inline HashFunction getHashFunction() const {
     return m_hash;
   }
-  bool add(const void *key);
-  bool remove(const void *key);
-  bool contains(const void *key) const;
-  inline size_t size() const {  // return number of elements
+  bool add(const void *key) override;
+  bool remove(const void *key) override;
+  bool contains(const void *key) const override;
+  inline size_t size() const override {  // return number of elements
     return m_table->size();
   }
-  inline void clear() {
+  inline void clear() override {
     m_table->clear();
   }
-  inline bool hasOrder() const {
+  inline bool hasOrder() const override {
     return false;
   }
-  inline AbstractComparator *getComparator() {
+  inline AbstractComparator *getComparator() override {
     return m_comparator;
   }
   inline const AbstractComparator *getComparator() const {
@@ -107,8 +107,8 @@ public:
   const void *getMin() const;
   const void *getMax() const;
 
-  AbstractCollection *clone(bool cloneData) const;
-  AbstractIterator *getIterator();
+  AbstractCollection *clone(bool cloneData) const override;
+  AbstractIterator *getIterator() override;
 
   inline CompactIntArray getLength() const {
     return m_table->getLength();
@@ -139,12 +139,12 @@ protected:
   HashSetNode *nextNode();
 public:
   HashSetIterator(HashSetImpl &set);
-  AbstractIterator *clone();
-  virtual void *next() {
+  AbstractIterator *clone()       override;
+  bool  hasNext()           const override;
+  void *next()                    override {
     return (void*)(nextNode()->key());
   }
-  bool hasNext() const;
-  void remove();
+  void remove()                   override;
 };
 
 template <typename T> class HashSet : public Set<T> {

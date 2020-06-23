@@ -8,7 +8,7 @@ class CLightDlg : public CColormapDialog<D3Light> {
 private:
   String m_origName;
   bool   m_setCurrentValueActive; // to prevent infinite recursion
-  void  resetControls();
+  void  resetControls() override;
   void  valueToWindow(   const D3Light &v);
   void  ajourSliders(    const D3Light &v);
   void  enableSliders(   const D3Light &v);
@@ -18,7 +18,7 @@ public:
   CLightDlg(PropertyChangeListener *listener = NULL, CWnd *pParent = NULL);
   enum { IDD = IDD_LIGHT_DIALOG };
   static D3Light &copyModifiableValues(D3Light &dst, const D3Light &src);
-  String getTypeName() const {
+  String getTypeName() const override {
     return _T("D3Light");
   }
 protected:

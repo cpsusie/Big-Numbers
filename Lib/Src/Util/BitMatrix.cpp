@@ -178,9 +178,9 @@ public:
   BitMatrixIterator(BitMatrix &m) : BitSetIterator(m), m_matrix(m) {
     setCurrentUndefined();
   }
-  AbstractIterator *clone();
-  void *next();
-  void remove();
+  AbstractIterator *clone() override;
+  void *next()              override;
+  void remove()             override;
 };
 
 DEFINECLASSNAME(BitMatrixIterator);
@@ -229,9 +229,9 @@ public:
     , m_matrix(m) {
     setCurrentUndefined();
   }
-  AbstractIterator *clone();
-  void *next();
-  void remove();
+  AbstractIterator *clone() override;
+  void *next()              override;
+  void remove()             override;
 };
 
 DEFINECLASSNAME(BitMatrixRowIterator);
@@ -275,12 +275,12 @@ public:
   BitMatrixColumnIterator(BitMatrix &m, size_t c) : m_matrix(m) {
     first(c);
   }
-  AbstractIterator *clone();
-  bool hasNext() const {
+  AbstractIterator *clone()       override;
+  bool hasNext()            const override {
     return m_hasNext;
   }
-  void *next();
-  void remove();
+  void *next()                    override;
+  void  remove()                  override;
 };
 
 DEFINECLASSNAME(BitMatrixColumnIterator);

@@ -215,7 +215,7 @@ public:
     ~D3SceneEditor();
     void init(D3SceneContainer *sceneContainer);
     void close();
-    void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
+    void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) override;
     inline bool isInitDone() const {
       return isSet(SE_INITDONE);
     }

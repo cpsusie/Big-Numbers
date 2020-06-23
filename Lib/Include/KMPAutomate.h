@@ -1,5 +1,6 @@
 #pragma once
 
+#include "MyString.h"
 #include "StringSearchAlgorithm.h"
 
 // Knuth-Morris-Pratt string search algorithm
@@ -29,12 +30,12 @@ public:
     copyFrom(src);
   }
 
-  StringSearchAlgorithm<Ctype> *clone() const {
+  StringSearchAlgorithm<Ctype> *clone() const override {
     KMPAutomateTemplate *result = new KMPAutomateTemplate<Ctype>(*this); TRACE_NEW(result);
     return result;
   }
 
-  virtual ~KMPAutomateTemplate() {
+  ~KMPAutomateTemplate() override {
     deallocate();
   }
 
@@ -50,7 +51,7 @@ public:
     return *this;
   }
 
-  void compilePattern(const Ctype *pattern, size_t patternLength, bool forwardSearch = true, const Ctype *translateTable = NULL) {
+  void compilePattern(const Ctype *pattern, size_t patternLength, bool forwardSearch = true, const Ctype *translateTable = NULL) override {
     if(patternLength != m_patternLength) {
       deallocate();
       allocate(patternLength);
@@ -72,12 +73,11 @@ public:
     }
   }
 
-  intptr_t search(const Ctype *text, size_t textLength) const {
+  intptr_t search(const Ctype *text, size_t textLength) const override {
     return (this->*m_search)(text, textLength);
   }
 
 private:
-
   void allocate(size_t patternLength) {
     if(patternLength > INT_MAX) {
       throwInvalidArgumentException(__TFUNCTION__, _T("patternLength > %u not allowed"), INT_MAX);

@@ -45,13 +45,13 @@ public:
   virtual void clear() = 0;
   virtual bool hasOrder() const = 0;
   virtual AbstractComparator *getComparator() = 0;
-  virtual AbstractMap *cloneMap(bool cloneData) const = 0;
-  virtual AbstractSet *getEntrySet();
-  virtual AbstractIterator *getIterator() = 0;
-  virtual AbstractSet *getKeySet();
-  virtual AbstractIterator *getKeyIterator() = 0;
+  virtual AbstractMap        *cloneMap(bool cloneData) const = 0;
+  virtual AbstractSet        *getEntrySet();
+  virtual AbstractIterator   *getIterator() = 0;
+  virtual AbstractSet        *getKeySet();
+  virtual AbstractIterator   *getKeyIterator() = 0;
   virtual AbstractCollection *getValues(int (*cmp)(const void *e1, const void *e2));
-  virtual AbstractIterator *getValueIterator();
+  virtual AbstractIterator   *getValueIterator();
   virtual ~AbstractMap() {}
 };
 

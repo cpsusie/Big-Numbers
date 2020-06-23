@@ -28,19 +28,19 @@ protected:
 public:
   InteractiveRunnable() : m_timeEstimator(NULL) {
   }
- ~InteractiveRunnable() {
+ ~InteractiveRunnable() override {
     cleanup();
   }
   inline bool isSuspendOrCancelButtonPressed() const {
     return isInterruptedOrSuspended();
   }
   // Only called if getSupportedFeatures() contains IR_PROGRESSBAR, IR_SHOWTIMEESTIMATE or IR_SUBPROGRESSBAR
-  /*virtual*/ double getMaxProgress() const {
+  double getMaxProgress() const override {
     return 0;
   }
   // Only called if getSupportedFeatures() contains IR_PROGRESSBAR, IR_SHOWTIMEESTIMATE or IR_SUBPROGRESSBAR
   // Should return a value in the range [0..getMaxProgress()]
-  /*virtual*/ double getProgress() const {
+  double getProgress() const override {
     return 0;
   };
   virtual USHORT getJobCount() const {

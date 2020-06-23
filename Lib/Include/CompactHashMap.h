@@ -256,21 +256,17 @@ public:
     CompactMapIteratorEntry() {
       m_entry = NULL;
     }
-
     inline CompactMapIteratorEntry &operator=(MapEntry<K,V> &entry) {
       m_entry = &entry;
       return *this;
     }
-
-    const void *key() const {
+    const void *key()   const override {
       return &m_entry->m_key;
     }
-
-    void *value() {
+    void *value()             override {
       return &m_entry->m_value;
     }
-
-    const void *value() const {
+    const void *value() const override {
       return &m_entry->m_value;
     }
   };
@@ -302,7 +298,6 @@ public:
         concurrentModificationError(_T("CompactMapEntryIterator"));
       }
     }
-
   protected:
     CompactMapIteratorEntry m_entry;
 
@@ -310,16 +305,13 @@ public:
     CompactMapEntryIterator(CompactHashMap *map) : m_map(*map), m_updateCount(map->m_updateCount) {
       first();
     }
-
-    AbstractIterator *clone() {
+    AbstractIterator *clone()       override {
       return new CompactMapEntryIterator(*this);
     }
-
-    bool hasNext() const {
+    bool hasNext()            const override {
       return m_next != NULL;
     }
-
-    void *next() {
+    void *next()                    override {
       if(m_next == NULL) {
         noNextElementError(_T("CompactMapEntryIterator"));
       }
@@ -339,7 +331,7 @@ public:
       return &m_entry;
     }
 
-    void remove() {
+    void remove() override {
       if(m_current == NULL) {
         noCurrentElementError(_T("CompactMapEntryIterator"));
       }
@@ -360,17 +352,14 @@ public:
   public:
     CompactMapKeyIterator(CompactHashMap *map) : CompactMapEntryIterator(map) {
     }
-
-    AbstractIterator *clone() {
+    AbstractIterator *clone()        override {
       return new CompactMapKeyIterator(*this);
     }
-
-    void *next() {
+    void *next()                     override {
       __super::next();
       return (void*)m_entry.key();
     }
   };
-
   Iterator<K> getKeyIterator() const {
     return Iterator<K>(new CompactMapKeyIterator((CompactHashMap*)this));
   }

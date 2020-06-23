@@ -9,16 +9,16 @@ private:
   void destroyNormalsObject();
 public:
   D3SceneObjectVisualNormals(D3SceneObjectVisual *parent);
-  ~D3SceneObjectVisualNormals();
+  ~D3SceneObjectVisualNormals() override;
 
-  D3DXMATRIX &getWorld() {
-    return getParent()->getWorld();
-  }
-  bool hasNormals() const {
-    return false;
-  }
-  SceneObjectType getType() const {
+  SceneObjectType getType() const override {
     return SOTYPE_NORMALSOBJECT;
   }
-  void draw();
+  D3DXMATRIX &getWorld() override {
+    return getParent()->getWorld();
+  }
+  bool hasNormals() const override {
+    return false;
+  }
+  void draw() override;
 };

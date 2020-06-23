@@ -122,8 +122,8 @@ private:
   MeshArrayJobMonitor         &getJobMonitor();
 public:
   MeshBuilderWorker(MeshArrayCreator *arrayCreator);
-  ~MeshBuilderWorker();
-  UINT run();
+  ~MeshBuilderWorker() override;
+  UINT run() override;
 };
 
 class MeshArrayCreator : public InteractiveRunnable {
@@ -138,19 +138,19 @@ public:
   , m_frameCount(param.getFrameCount())
   {
   }
-  ~MeshArrayCreator() {
+  ~MeshArrayCreator() override {
     cleanup();
   }
-  double getMaxProgress() const {
+  double getMaxProgress() const override {
     return m_frameCount;
   }
-  double getProgress() const {
+  double getProgress() const override {
     return m_jobMonitor.getJobsDone();
   }
-  String getTitle() {
+  String getTitle() override {
     return _T("Creating Mesh Array");
   }
-  int getSupportedFeatures() {
+  int getSupportedFeatures() override {
     return IR_PROGRESSBAR | IR_INTERRUPTABLE | IR_SHOWTIMEESTIMATE;
   }
   MeshArrayJobMonitor &getJobMonitor() {
@@ -159,7 +159,7 @@ public:
   MeshArray getResult() {
     return m_jobMonitor.getResult();
   }
-  UINT safeRun();
+  UINT safeRun() override;
 };
 
 UINT MeshArrayCreator::safeRun() {

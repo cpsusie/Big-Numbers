@@ -14,15 +14,15 @@ private:
   D3SceneObjectCoordinateSystem &operator=(const D3SceneObjectCoordinateSystem &src); // not implemented
 public:
   D3SceneObjectCoordinateSystem(D3Scene &scene, const D3Cube *cube=NULL);
+  void setVisible(bool visible) {
+    m_visible = visible;
+  }
+  bool isVisible() const override {
+    return m_visible;
+  }
+  D3DXMATRIX &getWorld() override;
   void setRange(const D3Cube &cube);
   inline const D3Cube &getRange() const {
     return m_cube;
   }
-  void setVisible(bool visible) {
-    m_visible = visible;
-  }
-  bool isVisible() const {
-    return m_visible;
-  }
-  D3DXMATRIX &getWorld();
 };

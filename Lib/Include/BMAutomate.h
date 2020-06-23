@@ -1,5 +1,6 @@
 #pragma once
 
+#include "MyString.h"
 #include "StringSearchAlgorithm.h"
 
 // Boyer-Moore string search algorithm
@@ -31,11 +32,11 @@ public:
     copyFrom(src);
   }
 
-  StringSearchAlgorithm<Ctype> *clone() const {
+  StringSearchAlgorithm<Ctype> *clone() const override {
     BMAutomateTemplate *a = new BMAutomateTemplate<Ctype>(*this); TRACE_NEW(a); return a;
   }
 
-  virtual ~BMAutomateTemplate() {
+  ~BMAutomateTemplate() override {
     deallocate();
   }
 
@@ -51,7 +52,7 @@ public:
     return *this;
   }
 
-  void compilePattern(const Ctype *pattern, size_t patternLength, bool forwardSearch, const Ctype *translateTable) {
+  void compilePattern(const Ctype *pattern, size_t patternLength, bool forwardSearch, const Ctype *translateTable) override {
     if(patternLength != m_patternLength) {
       deallocate();
       allocate(patternLength);
@@ -73,7 +74,7 @@ public:
     }
   }
 
-  intptr_t search(const Ctype *text, size_t length) const {
+  intptr_t search(const Ctype *text, size_t length) const override {
     return (this->*m_search)(text, length);
   }
 

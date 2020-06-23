@@ -16,10 +16,10 @@ class TreeMapIterator : public TreeSetIterator {
 public:
   TreeMapIterator(TreeSetImpl &set) : TreeSetIterator(set) {
   }
-  AbstractIterator *clone() {
+  AbstractIterator *clone() override {
     return new TreeMapIterator(*this);
   }
-  void *next();
+  void *next()              override;
 };
 
 void *TreeMapIterator::next() {

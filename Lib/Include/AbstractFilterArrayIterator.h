@@ -14,22 +14,19 @@ public:
   {
     m_it = m_filterSet.getIterator();
   }
-  AbstractIterator *clone() {
+  AbstractIterator *clone()       override {
     return new AbstractFilterArrayIterator(m_a, m_filterSet);
   }
-
-  inline bool hasNext() const {
+  inline bool hasNext()     const override {
     return m_it.hasNext();
   }
-
-  void *next() {
+  void *next()                    override {
     if(!m_it.hasNext()) {
       noNextElementError(__TFUNCTION__);
     }
     return &m_a[m_it.next()];
   }
-
-  void remove() {
+  void remove()                   override {
     throwUnsupportedOperationException(__TFUNCTION__);
   }
 };

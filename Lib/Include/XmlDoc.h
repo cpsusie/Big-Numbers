@@ -106,16 +106,16 @@ inline void getValue(  XMLDoc &doc, const XMLNodePtr &n, INT64           &value,
 inline void getValue(  XMLDoc &doc, const XMLNodePtr &n, UINT64          &value, bool hex = false) { doc.getNodeValue(n, value, hex); }
 inline void getValue(  XMLDoc &doc, const XMLNodePtr &n, float           &value                  ) { doc.getNodeValue(n, value     ); }
 inline void getValue(  XMLDoc &doc, const XMLNodePtr &n, double          &value                  ) { doc.getNodeValue(n, value     ); }
-void setValue(XMLDoc &doc, const XMLNodePtr &n, char    c, bool hex = false);
-void getValue(XMLDoc &doc, const XMLNodePtr &n, char   &c, bool hex = false);
-void setValue(XMLDoc &doc, const XMLNodePtr &n, BYTE    b, bool hex = false);
-void getValue(XMLDoc &doc, const XMLNodePtr &n, BYTE   &b, bool hex = false);
-void setValue(XMLDoc &doc, const XMLNodePtr &n, short   s, bool hex = false);
-void getValue(XMLDoc &doc, const XMLNodePtr &n, short  &s, bool hex = false);
-void setValue(XMLDoc &doc, const XMLNodePtr &n, USHORT  s, bool hex = false);
-void getValue(XMLDoc &doc, const XMLNodePtr &n, USHORT &s, bool hex = false);
-void setValue(XMLDoc &doc, const XMLNodePtr &n, bool    value);
-void getValue(XMLDoc &doc, const XMLNodePtr &n, bool   &value);
+void        setValue(  XMLDoc &doc, const XMLNodePtr &n, char    c, bool hex = false);
+void        getValue(  XMLDoc &doc, const XMLNodePtr &n, char   &c, bool hex = false);
+void        setValue(  XMLDoc &doc, const XMLNodePtr &n, BYTE    b, bool hex = false);
+void        getValue(  XMLDoc &doc, const XMLNodePtr &n, BYTE   &b, bool hex = false);
+void        setValue(  XMLDoc &doc, const XMLNodePtr &n, short   s, bool hex = false);
+void        getValue(  XMLDoc &doc, const XMLNodePtr &n, short  &s, bool hex = false);
+void        setValue(  XMLDoc &doc, const XMLNodePtr &n, USHORT  s, bool hex = false);
+void        getValue(  XMLDoc &doc, const XMLNodePtr &n, USHORT &s, bool hex = false);
+void        setValue(  XMLDoc &doc, const XMLNodePtr &n, bool    value);
+void        getValue(  XMLDoc &doc, const XMLNodePtr &n, bool   &value);
 
 template<typename T> void setValue(XMLDoc &doc, XMLNodePtr n, const CompactKeyType<T> &v) {
   setValue(doc, n, (T)v);

@@ -72,18 +72,18 @@ protected:
   }
 public:
   TreeSetImpl(const AbstractObjectManager &objectManager, const AbstractComparator &comparator);
-  virtual ~TreeSetImpl();
-  bool add(const void *key);
-  bool remove(const void *key);
-  bool contains(const void *e) const;
-  size_t size() const {
+  virtual ~TreeSetImpl()                          override;
+  bool add(     const void *key)                  override;
+  bool remove(  const void *key)                  override;
+  bool contains(const void *e)              const override;
+  size_t size()                             const override {
     return m_size;
   }
-  void clear();
-  bool hasOrder() const {
+  void clear()                                    override;
+  bool hasOrder()                           const override {
     return true;
   }
-  AbstractComparator *getComparator() {
+  AbstractComparator *getComparator()             override {
     return m_comparator;
   }
 
@@ -93,8 +93,8 @@ public:
 
   const void *getMin() const;
   const void *getMax() const;
-  AbstractCollection *clone(bool cloneData) const;
-  AbstractIterator *getIterator();
+  AbstractCollection *clone(bool cloneData) const override;
+  AbstractIterator *getIterator()                 override;
 };
 
 class TreeSetIteratorStackElement {
@@ -136,12 +136,12 @@ protected:
   TreeSetNode *nextNode();
 public:
   TreeSetIterator(TreeSetImpl &set);
-  AbstractIterator *clone();
-  virtual void *next() {
+  AbstractIterator *clone() override;
+  bool hasNext()      const override;
+  void *next()              override {
     return (void*)(nextNode()->key());
   }
-  bool hasNext() const;
-  void remove();
+  void remove()             override;
 };
 
 template <typename T> class TreeSet : public Set<T> {

@@ -33,7 +33,7 @@ public:
   D3Device(HWND hwnd);
   ~D3Device();
 
-  LPDIRECT3DDEVICE getDirectDevice() const {
+  LPDIRECT3DDEVICE getDirectDevice() const override {
     return m_device;
   }
   inline HWND getHwnd() const {
@@ -275,6 +275,6 @@ public:
   }
   LPDIRECT3DVERTEXBUFFER  allocateVertexBuffer(DWORD fvf  , UINT count, UINT *bufferSize = NULL);
   LPDIRECT3DINDEXBUFFER   allocateIndexBuffer( bool  int32, UINT count, UINT *bufferSize = NULL);
-  LPD3DXMESH              allocateMesh(        DWORD fvf  , UINT faceCount, UINT vertexCount, DWORD options);
+  LPD3DXMESH              allocateMesh(        DWORD fvf  , UINT faceCount, UINT vertexCount, DWORD options) override;
 
 };

@@ -38,12 +38,6 @@ D3Device &D3SceneObjectWithIndexBuffer::setIndices(D3Device &device) {
 #define GETLOCKEDSHORTBUFFER(count) (USHORT*)allocateIndexBuffer(false, count)
 #define GETLOCKEDLONGBUFFER( count) (ULONG* )allocateIndexBuffer(true , count)
 
-D3DINDEXBUFFER_DESC D3SceneObjectWithIndexBuffer::getDesc() const {
-  D3DINDEXBUFFER_DESC desc;
-  V(m_indexBuffer->GetDesc(&desc));
-  return desc;
-}
-
 String D3SceneObjectWithIndexBuffer::toString() const {
   return format(_T("%s\nIndexBuffer:\n%s")
                ,__super::toString().cstr()

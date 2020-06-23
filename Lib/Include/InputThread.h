@@ -20,7 +20,7 @@ protected:
   void          verbose(_In_z_ _Printf_format_string_ TCHAR const * const format, ...);
 public:
   InputThread(FILE *input = stdin, bool verbose = false);
-  virtual ~InputThread();
+  ~InputThread() override;
   // timeout in msec. throws TimeoutException on timeout
   virtual String getLine(int timeout = INFINITE);
   void kill();
@@ -31,7 +31,7 @@ public:
     return m_eoi;
   }
   virtual void readTextFile(const String &fileName);
-  UINT run();
+  UINT run() override;
   void putMessage(const String &s) {
     m_inputQueue.put(s);
   }

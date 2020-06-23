@@ -10,7 +10,7 @@ public:
     addAll(src);
   }
   MeshArray &operator=(const MeshArray &src);
-  ~MeshArray() {
+  ~MeshArray() override {
     clear();
   }
   void add(const LPD3DXMESH &m) {

@@ -90,7 +90,11 @@ D3Device &D3SceneObjectVisual::setDeviceMaterialIfExist() const {
 }
 
 DWORD D3SceneObjectVisual::getFVF() const {
-  return getVertexBufferDesc().FVF;
+  if(hasMesh()) {
+    return getMesh()->GetFVF();
+  } else {
+    return getVertexBufferDesc().FVF;
+  }
 }
 
 D3DVERTEXBUFFER_DESC D3SceneObjectVisual::getVertexBufferDesc() const {
@@ -104,6 +108,23 @@ D3DVERTEXBUFFER_DESC D3SceneObjectVisual::getVertexBufferDesc() const {
   } else if(hasVertexBuffer()) {
     LPDIRECT3DVERTEXBUFFER vb = getVertexBuffer();
     V(vb->GetDesc(&desc));
+  } else {
+    memset(&desc, 0, sizeof(desc));
+  }
+  return desc;
+}
+
+D3DINDEXBUFFER_DESC D3SceneObjectVisual::getIndexBufferDesc() const {
+  D3DINDEXBUFFER_DESC desc;
+  if(hasMesh()) {
+    LPD3DXMESH mesh = getMesh();
+    LPDIRECT3DINDEXBUFFER ib;
+    V(mesh->GetIndexBuffer(&ib)); TRACE_CREATE(ib);
+    V(ib->GetDesc(&desc));
+    SAFERELEASE(ib);
+  } else if(hasIndexBuffer()) {
+    LPDIRECT3DINDEXBUFFER ib = getIndexBuffer();
+    V(ib->GetDesc(&desc));
   } else {
     memset(&desc, 0, sizeof(desc));
   }

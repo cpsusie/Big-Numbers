@@ -251,11 +251,11 @@ private:
   ListNode           *m_current;
   size_t              m_updateCount;
 public:
-  AbstractIterator *clone();
   ListIterator(ListImpl &list);
-  bool hasNext() const;
-  void *next();
-  void remove();
+  AbstractIterator *clone()       override;
+  bool hasNext()            const override;
+  void *next()                    override;
+  void remove()                   override;
 };
 
 DEFINECLASSNAME(ListIterator);

@@ -57,6 +57,6 @@ private:
   }
 public:
   TimeEstimator(const ProgressProvider &progressProvider);
-  ~TimeEstimator();
+  ~TimeEstimator() override;
   double getMilliSecondsRemaining() const;
 };

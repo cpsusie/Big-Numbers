@@ -891,6 +891,7 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AbstractAnimator.cpp" />
     <ClCompile Include="CreateMeshExprParametricR2R3Surface.cpp" />
     <ClCompile Include="D3CameraArray.cpp" />
     <ClCompile Include="D3CameraSlideAnimator.cpp" />
@@ -916,6 +917,7 @@
     <ClCompile Include="D3SceneObjectAnimatedMesh.cpp" />
     <ClCompile Include="D3PickedInfo.cpp" />
     <ClCompile Include="D3CompileEffect.cpp" />
+    <ClCompile Include="D3SceneObjectAnimatedVisual.cpp" />
     <ClCompile Include="D3SceneObjectIntersectWithRay.cpp" />
     <ClCompile Include="D3Camera.cpp" />
     <ClCompile Include="D3SceneEditorToString.cpp" />
@@ -1025,6 +1027,7 @@
     <ClCompile Include="WavefrontObjFileMeshBuilder.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Include\D3DGraphics\AbstractAnimator.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3AbstractMeshFactory.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3CameraArray.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3DeviceRenderState.h" />
@@ -1039,6 +1042,7 @@
     <ClInclude Include="..\..\Include\D3DGraphics\D3Camera.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3SceneContainer.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObject.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectAnimatedVisual.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectCoordinateSystem.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3LightControl.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3Math.h" />
@@ -1052,6 +1056,7 @@
     <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectPoint.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectSolidBox.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectVisualNormals.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectVisualChild.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectWireFrameBox.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectWithIndexBuffer.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectWithMesh.h" />

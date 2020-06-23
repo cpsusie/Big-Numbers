@@ -17,10 +17,10 @@ public:
   HashMapIterator(HashMapImpl &map) : HashSetIterator(map) {
   }
 
-  AbstractIterator *clone() {
+  AbstractIterator *clone() override {
     return new HashMapIterator(*this);
   }
-  void *next();
+  void *next()              override;
 };
 
 void *HashMapIterator::next() {

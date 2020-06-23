@@ -798,11 +798,11 @@ private:
 public:
   SubKeyIterator(const RegistryKey &key);
   SubKeyIterator(const SubKeyIterator &src); // copy constructor
-  ~SubKeyIterator();
-  AbstractIterator *clone();
-  bool hasNext() const;
-  void *next();
-  void remove();
+  ~SubKeyIterator()               override;
+  AbstractIterator *clone()       override;
+  bool hasNext()            const override;
+  void *next()                    override;
+  void remove()                   override;
 };
 
 DEFINECLASSNAME(SubKeyIterator);
@@ -939,11 +939,11 @@ private:
 public:
   RegValueIterator(const RegistryKey &key);
   RegValueIterator(const RegValueIterator &src); // copy constructor
-  ~RegValueIterator();
-  AbstractIterator *clone();
-  bool hasNext() const;
-  void *next();
-  void remove();
+  ~RegValueIterator()             override;
+  AbstractIterator *clone()       override;
+  bool hasNext()            const override;
+  void *next()                    override;
+  void remove()                   override;
 };
 
 DEFINECLASSNAME(RegValueIterator);

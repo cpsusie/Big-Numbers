@@ -87,14 +87,14 @@ private:
 public:
   AbstractStreamParametersIterator(const StreamSizeInterval &widthInterval, const StreamSizeInterval &precisionInterval, FormatFlags lowMask, FormatFlags highMask, UINT multibitFieldsFilter, const TCHAR *fillers);
   void reset();
-  AbstractIterator *clone() {
+  AbstractIterator *clone()   override {
     return new AbstractStreamParametersIterator(*this);
   }
-  inline bool hasNext() const {
+  inline bool hasNext() const override {
     return m_hasNext;
   }
-  void *next();
-  void remove() {
+  void *next()                override;
+  void remove()               override {
     unsupportedOperationError(__TFUNCTION__);
   }
   inline size_t getMaxIterationCount() const {

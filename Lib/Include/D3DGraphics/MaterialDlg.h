@@ -9,7 +9,7 @@ class CMaterialDlg : public CColormapDialog<D3Material> {
 private:
   String   m_origName;
 
-  void  resetControls();
+  void  resetControls() override;
   void  valueToWindow(const D3Material &v);
   void  showPower(       double v);
   void  setSliderPower(  double v);
@@ -22,7 +22,7 @@ private:
 public:
   CMaterialDlg(PropertyChangeListener *listener = NULL, CWnd *pParent = NULL);
   enum { IDD = IDD_MATERIAL_DIALOG };
-  String getTypeName() const {
+  String getTypeName() const override {
     return _T("D3Material");
   }
 protected:

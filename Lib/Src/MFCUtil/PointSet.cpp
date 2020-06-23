@@ -44,17 +44,17 @@ private:
 public:
   PointSetIterator(const PointSet &set) : m_set((PointSet&)set), m_it(((BitMatrix&)set).getIterator()) {
   }
-  AbstractIterator *clone() {
+  AbstractIterator *clone()       override {
     return new PointSetIterator(*this);
   }
-  bool hasNext() const {
+  bool hasNext()            const override {
     return m_it.hasNext();
   }
-  void *next() {
+  void *next()                    override {
     m_p = m_set.getPoint(m_it.next());
     return &m_p;
   }
-  void remove() {
+  void remove()                   override {
     m_it.remove();
   }
 };
@@ -72,4 +72,3 @@ String PointSet::toString() const {
   }
   return result;
 }
-

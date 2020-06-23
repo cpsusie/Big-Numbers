@@ -29,14 +29,14 @@ public:
     m_current      = -1;
     m_updateCount  = m_a.getUpdateCount();
   }
-  AbstractIterator *clone() {
+  AbstractIterator *clone()       override {
     return new PackedArrayIterator(this);
   }
-  bool  hasNext() const {
+  bool  hasNext()           const override {
     return m_next < m_a.size();
   }
-  void *next();
-  void  remove();
+  void *next()                    override;
+  void  remove()                  override;
 };
 
 DEFINECLASSNAME(PackedArrayIterator);
@@ -95,14 +95,14 @@ public:
     m_current      = -1;
     m_updateCount  = m_a.getUpdateCount();
   }
-  AbstractIterator *clone() {
+  AbstractIterator *clone()       override {
     return new PackedArrayReverseIterator(this);
   }
-  bool  hasNext() const {
+  bool  hasNext()           const override {
     return m_next >= 0;
   }
-  void *next();
-  void  remove();
+  void *next()                    override;
+  void  remove()                  override;
 };
 
 DEFINECLASSNAME(PackedArrayReverseIterator);

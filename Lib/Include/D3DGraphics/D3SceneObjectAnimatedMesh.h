@@ -1,78 +1,45 @@
 #pragma once
 
-#include <Timer.h>
+#include "AbstractAnimator.h"
 #include "D3SceneObjectVisual.h"
 #include "MeshArray.h"
 
-typedef enum {
-  ANIMATE_FORWARD
- ,ANIMATE_BACKWARD
- ,ANIMATE_ALTERNATING
-} AnimationType;
-
-class D3SceneObjectAnimatedMesh : public D3SceneObjectVisual, public TimeoutHandler {
+class D3SceneObjectAnimatedMesh : public D3SceneObjectVisual, public AbstractAnimator {
 private:
   MeshArray     m_meshArray;
-  const UINT    m_frameCount;
-  Timer         m_timer;
   D3DFILLMODE   m_fillMode;
   D3DSHADEMODE  m_shadeMode;
-  float         m_sleepTime;
-  AnimationType m_animationType;
-  bool          m_forward;
-  bool          m_running;
-  int           m_nextMeshIndex, m_lastRenderedIndex;
-  void nextIndex();
-  int  getSleepTime() const;
+  UINT          m_lastRenderedIndex;
   void init();
 public:
   D3SceneObjectAnimatedMesh(D3Scene             &scene , const MeshArray &meshArray, const String &name = _T("Animated Mesh"));
   D3SceneObjectAnimatedMesh(D3SceneObjectVisual *parent, const MeshArray &meshArray, const String &name = _T("Animated Mesh"));
-  ~D3SceneObjectAnimatedMesh();
-  void startAnimation(AnimationType type = ANIMATE_FORWARD);
-  void stopAnimation();
-  void handleTimeout(Timer &timer);
-  inline bool isRunning() const {
-    return m_running;
+  ~D3SceneObjectAnimatedMesh()                                override;
+  void            handleTimeout(Timer &timer)                 override;
+  SceneObjectType getType()                             const override {
+    return SOTYPE_ANIMATEDOBJECT;
   }
-  inline AnimationType getAnimationType() const {
-    return m_animationType;
-  }
-  // sleepTime /= factor
-  void scaleSpeed(float factor);
-  inline float getFramePerSec() const {
-    return m_running ? 1000.0f / m_sleepTime : 0;
-  }
-  const MeshArray &getMeshArray() const {
+  void            draw()                                      override;
+  LPD3DXMESH      getMesh()                             const override;
+  const MeshArray             &getMeshArray()           const {
     return m_meshArray;
   }
-  LPD3DXMESH getMesh() const;
-  inline UINT getNextMeshindex() const {
-    return m_nextMeshIndex;
-  }
-  inline int getLastRenderedMeshindex() const {
-    return m_lastRenderedIndex;
-  }
-  void draw();
-  bool hasFillMode() const {
+  bool            hasFillMode()                         const override {
     return true;
   }
-  void setFillMode(D3DFILLMODE fillMode) {
+  void            setFillMode(D3DFILLMODE fillMode)           override {
     m_fillMode = fillMode;
   }
-  D3DFILLMODE getFillMode() const {
+  D3DFILLMODE      getFillMode()                        const override {
     return m_fillMode;
   }
-  bool hasShadeMode() const {
+  bool             hasShadeMode()                       const override {
     return true;
   }
-  void setShadeMode(D3DSHADEMODE shadeMode) {
+  void             setShadeMode(D3DSHADEMODE shadeMode)       override {
     m_shadeMode = shadeMode;
   }
-  D3DSHADEMODE getShadeMode() const {
+  D3DSHADEMODE     getShadeMode()                       const override {
     return m_shadeMode;
-  }
-  SceneObjectType getType() const {
-    return SOTYPE_ANIMATEDOBJECT;
   }
 };

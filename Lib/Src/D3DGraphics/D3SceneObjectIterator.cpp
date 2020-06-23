@@ -35,14 +35,13 @@ public:
     m_next        = first();
     m_updateCount = m_a.getUpdateCount();
   }
-  AbstractIterator *clone() {
+  AbstractIterator *clone()       override {
     return new D3SceneObjectIterator(*this);
   }
-  inline bool hasNext() const {
+  bool hasNext()            const override {
     return m_next < m_a.size();
   }
-
-  void *next() {
+  void *next()                    override {
     if(m_next >= m_a.size()) {
       noNextElementError(s_className);
     }
@@ -50,7 +49,7 @@ public:
     for(m_current = m_next++; (m_next < m_a.size()) && !checkMask(m_next); m_next++);
     return &m_a[m_current];
   }
-  void remove() {
+  void remove()                   override {
     if(m_current < 0) {
       noCurrentElementError(s_className);
     }

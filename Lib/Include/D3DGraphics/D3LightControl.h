@@ -42,32 +42,32 @@ protected:
   }
 public:
   D3LightControl(D3Scene &scene, int lightIndex);
-  ~D3LightControl();
+  ~D3LightControl()                override;
 
-  SceneObjectType getType() const {
+  SceneObjectType getType()  const override {
     return SOTYPE_LIGHTCONTROL;
   }
-  bool isVisible() const;
+  bool isVisible()           const override;
+  void draw()                      override;
+  LPD3DXMESH getMesh()       const override;
+  int getMaterialId()        const override {
+    return s_renderEffectEnabled ? -1 : m_materialId;
+  }
   virtual D3DLIGHTTYPE getLightType() const = 0;
 
   inline int getLightIndex() const {
     return m_lightIndex;
   }
-  LPD3DXMESH getMesh() const;
 
-  int getMaterialId() const {
-    return s_renderEffectEnabled ? -1 : m_materialId;
-  }
   static bool isDifferentMaterial(const D3Light &l1, const D3Light &l2);
-  D3Light getLight() const;
-  void updateMaterial() const;
+  D3Light getLight()         const;
+  void updateMaterial()      const;
   static inline void enableRenderEffect(bool enabled) {
     s_renderEffectEnabled = enabled;
   }
   static inline bool isRenderEffectEnabled() {
     return s_renderEffectEnabled;
   }
-  void draw();
 };
 
 class D3LightControlDirectional : public D3LightControl {
@@ -75,32 +75,32 @@ private:
   float m_sphereRadius;
 public:
   D3LightControlDirectional(D3Scene &scene, int lightIndex);
-  D3DLIGHTTYPE getLightType() const {
+  D3DLIGHTTYPE getLightType()    const override {
     return D3DLIGHT_DIRECTIONAL;
   }
+  D3DXMATRIX &getWorld()               override;
   inline float getSphereRadius() const {
     return m_sphereRadius;
   }
   inline void setSphereRadius(float radius) {
     m_sphereRadius = radius;
   }
-  D3DXMATRIX &getWorld();
 };
 
 class D3LightControlPoint : public D3LightControl {
 public:
   D3LightControlPoint(D3Scene &scene, int lightIndex);
-  D3DLIGHTTYPE getLightType() const {
+  D3DLIGHTTYPE getLightType()    const override {
     return D3DLIGHT_POINT;
   }
-  D3DXMATRIX &getWorld();
+  D3DXMATRIX &getWorld()                override;
 };
 
 class D3LightControlSpot : public D3LightControl {
 public:
   D3LightControlSpot(D3Scene &scene, int lightIndex);
-  D3DLIGHTTYPE getLightType() const {
+  D3DLIGHTTYPE getLightType()     const override {
     return D3DLIGHT_SPOT;
   }
-  D3DXMATRIX &getWorld();
+  D3DXMATRIX &getWorld()                override;
 };

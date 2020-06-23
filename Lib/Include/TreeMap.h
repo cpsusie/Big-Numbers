@@ -23,44 +23,44 @@ class TreeMapImpl : public TreeSetImpl, public AbstractMap {
 private:
   AbstractObjectManager *m_dataManager;
 protected:
-  virtual TreeSetNode *allocateNode() const;
+  TreeSetNode         *allocateNode()                                 const override;
   virtual TreeSetNode *createNode(const void *key, const void *value) const;
-  virtual TreeSetNode *cloneNode(TreeSetNode *n) const;
-  virtual void deleteNode(TreeSetNode *n) const;
-  virtual void swapContent(TreeSetNode *n1, TreeSetNode *n2);
+  TreeSetNode         *cloneNode(TreeSetNode *n)                      const override;
+  void                 deleteNode(TreeSetNode *n)                     const override;
+  void                 swapContent(TreeSetNode *n1, TreeSetNode *n2)        override;
 public:
   TreeMapImpl(const AbstractObjectManager &keyManager, const AbstractObjectManager &dataManager, const AbstractComparator &comparator);
-  virtual ~TreeMapImpl();
-  bool put(const void *key, void *value);
-  bool put(const void *key, const void *value);
-  bool remove(const void *key);
-  void *get(const void *key);
-  const void *get(const void *key) const;
-  AbstractEntry *selectEntry(RandomGenerator &rnd) const;
-  const AbstractEntry *getMinEntry() const;
-  const AbstractEntry *getMaxEntry() const;
-  size_t size() const {
+  virtual ~TreeMapImpl()                                       override;
+  bool put(       const void *key,       void *value)          override;
+  bool put(       const void *key, const void *value)          override;
+  bool remove(    const void *key)                             override;
+  void *get(      const void *key)                             override;
+  const void *get(const void *key)                       const override;
+  AbstractEntry *selectEntry(RandomGenerator &rnd)       const override;
+  const AbstractEntry *getMinEntry()                     const;
+  const AbstractEntry *getMaxEntry()                     const;
+  size_t size()                                          const override {
     return TreeSetImpl::size();
   }
-  void clear() {
+  void clear()                                                 override {
     TreeSetImpl::clear();
   }
-  bool hasOrder() const {
+  bool hasOrder()                                        const override {
     return TreeSetImpl::hasOrder();
   }
-  AbstractComparator *getComparator() {
+  AbstractComparator *getComparator()                          override {
     return TreeSetImpl::getComparator();
   }
-  const AbstractComparator *getComparator() const {
+  const AbstractComparator *getComparator()              const          {
     return TreeSetImpl::getComparator();
   }
-  AbstractCollection *clone(bool cloneData) const {
+  AbstractCollection *clone(bool cloneData)              const override {
     throwUnsupportedOperationException(__TFUNCTION__);
     return NULL;
   }
-  AbstractMap *cloneMap(bool cloneData) const;
-  AbstractIterator *getIterator();
-  AbstractIterator *getKeyIterator() {
+  AbstractMap *cloneMap(bool cloneData)                  const override;
+  AbstractIterator *getIterator()                              override;
+  AbstractIterator *getKeyIterator()                           override {
     return TreeSetImpl::getIterator();
   }
 };

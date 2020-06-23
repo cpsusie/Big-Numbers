@@ -10,5 +10,5 @@ private:
 public:
   D3SceneObjectLineArrow(D3Scene             &scene , const Vertex &from, const Vertex &to, const String &name = _T("LineArrow"));
   D3SceneObjectLineArrow(D3SceneObjectVisual *parent, const Vertex &from, const Vertex &to, const String &name = _T("LineArrow"));
-  void draw();
+  void draw() override;
 };

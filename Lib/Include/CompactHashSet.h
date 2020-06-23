@@ -308,16 +308,13 @@ public:
     CompactSetIterator(CompactHashSet *set) : m_set(*set), m_updateCount(set->m_updateCount) {
       first();
     }
-
-    AbstractIterator *clone() {
+    AbstractIterator *clone()       override {
       return new CompactSetIterator(*this);
     }
-
-    bool hasNext() const {
+    bool hasNext()            const override {
       return m_next != NULL;
     }
-
-    void *next() {
+    void *next()                    override {
       if(m_next == NULL) {
         noNextElementError(_T("CompactSetIterator"));
       }
@@ -335,8 +332,7 @@ public:
       }
       return &(m_current->m_e.m_key);
     }
-
-    void remove() {
+    void remove()                   override {
       if(m_current == NULL) {
         noCurrentElementError(_T("CompactSetIterator"));
       }

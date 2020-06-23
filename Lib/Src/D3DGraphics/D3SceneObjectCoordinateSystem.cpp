@@ -23,10 +23,10 @@ private:
 public:
   D3SCoordSystemLineArrow(D3SceneObjectVisual *parent, int id);
   ~D3SCoordSystemLineArrow();
-  int getMaterialId() const {
+  int getMaterialId() const override {
     return m_materialId;
   }
-  D3DXMATRIX &getWorld() {
+  D3DXMATRIX &getWorld() override {
     return m_world = m_parent->getWorld();
   }
 };
@@ -52,13 +52,13 @@ public:
   {
     m_materialId = getScene().addMaterialWithColor(D3D_BLACK);
   }
-  ~D3SceneGridObject() {
+  ~D3SceneGridObject() override {
     getScene().removeMaterial(m_materialId);
   }
-  int getMaterialId() const {
+  int getMaterialId() const override {
     return m_materialId;
   }
-  D3DXMATRIX &getWorld() {
+  D3DXMATRIX &getWorld() override {
     return m_world = m_parent->getWorld();
   }
 };
@@ -95,13 +95,13 @@ public:
   {
     m_materialId = getScene().addMaterialWithColor(D3D_BLACK);
   }
-  ~VerticalAxisLineObject() {
+  ~VerticalAxisLineObject() override {
     getScene().removeMaterial(m_materialId);
   }
-  int getMaterialId() {
+  int getMaterialId() const override {
     return m_materialId;
   }
-  D3DXMATRIX &getWorld() {
+  D3DXMATRIX &getWorld() override {
     return m_world = m_parent->getWorld();
   }
 };
@@ -119,11 +119,11 @@ private:
   D3DXVECTOR3 findCornerNearestCam() const;
 public:
   VerticalAxisMeshObject(D3SceneObjectVisual *parent);
-  ~VerticalAxisMeshObject();
-  int getMaterialId() const {
+  ~VerticalAxisMeshObject() override;
+  int getMaterialId() const override {
     return m_materialId;
   }
-  D3DXMATRIX &getWorld();
+  D3DXMATRIX &getWorld() override;
 };
 
 VerticalAxisMeshObject::VerticalAxisMeshObject(D3SceneObjectVisual *parent)
@@ -186,7 +186,7 @@ public:
   int getMaterialId() const {
     return m_materialId;
   }
-  D3DXMATRIX &getWorld() {
+  D3DXMATRIX &getWorld() override {
     return m_world = m_parent->getWorld();
   }
 };

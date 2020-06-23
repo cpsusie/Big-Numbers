@@ -10,11 +10,11 @@ protected:
   void unsupportedOperationError(  const TCHAR *method   ) const;
 
 public:
-  virtual AbstractIterator *clone() = 0;
   virtual ~AbstractIterator() {};
-  virtual bool hasNext() const = 0;
-  virtual void *next() = 0;
-  virtual void remove() = 0;
+  virtual AbstractIterator *clone() = 0;
+  virtual bool  hasNext() const     = 0;
+  virtual void *next()              = 0;
+  virtual void  remove()            = 0;
 };
 
 template <typename T> class Iterator {

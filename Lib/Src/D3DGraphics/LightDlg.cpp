@@ -61,7 +61,7 @@ void CLightDlg::resetControls() {
 void CLightDlg::setCurrentValue(const D3Light &v) {
   if(m_setCurrentValueActive) return;
   m_setCurrentValueActive = true;
-  CPropertyDialog<D3Light>::setCurrentValue(v);
+  __super::setCurrentValue(v);
   valueToWindow(v);
   m_setCurrentValueActive = false;
 }

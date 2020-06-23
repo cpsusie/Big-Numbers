@@ -11,32 +11,32 @@ public:
   EntrySet(AbstractMap *map, bool deleteMap) : m_map(map) {
     m_deleteMap = deleteMap;
   }
-  bool add(const void *e) {
+  bool add(const void *e) override {
     AbstractEntry* ae = (AbstractEntry*)e;
     return m_map->put(ae->key(),ae->value());
   }
-  bool remove(const void *e) {
+  bool remove(const void *e) override {
     return m_map->remove(((AbstractEntry*)e)->key());
   }
-  bool contains(const void *e) const {
+  bool contains(const void *e) const override {
     return m_map->get(((AbstractEntry*)e)->key()) != NULL;
   }
-  const void *select(RandomGenerator &rnd) const {
+  const void *select(RandomGenerator &rnd) const override {
     return m_map->selectEntry(rnd);
   }
-  void *select(RandomGenerator &rnd) {
+  void *select(RandomGenerator &rnd) override {
     return m_map->selectEntry(rnd);
   }
-  size_t size() const {
+  size_t size() const override {
     return m_map->size();
   }
-  void clear() {
+  void clear() override {
     m_map->clear();
   }
-  bool hasOrder() const {
+  bool hasOrder() const override {
     return m_map->hasOrder();
   }
-  AbstractComparator *getComparator() {
+  AbstractComparator *getComparator() override {
     return m_map->getComparator();
   }
   const void *getMin() const {
@@ -46,13 +46,13 @@ public:
     return m_map->getMaxEntry();
   }
 
-  AbstractCollection *clone(bool cloneData) const {
+  AbstractCollection *clone(bool cloneData) const override {
     return new EntrySet(m_map->cloneMap(cloneData),true);
   }
-  AbstractIterator *getIterator() {
+  AbstractIterator *getIterator() override {
     return m_map->getIterator();
   }
-  ~EntrySet() {
+  ~EntrySet() override {
     if(m_deleteMap) {
       SAFEDELETE(m_map);
     }
@@ -69,34 +69,34 @@ public:
   KeySet(AbstractMap *map, bool deleteMap) : m_map(map) {
     m_deleteMap = deleteMap;
   }
-  bool add(const void *e) {
+  bool add(const void *e) override {
     throwUnsupportedOperationException(__TFUNCTION__);
     return false;
   }
-  bool remove(const void *e) {
+  bool remove(const void *e) override {
     return m_map->remove(e);
   }
-  bool contains(const void *e) const {
+  bool contains(const void *e) const override {
     return m_map->get(e) != NULL;
   }
 
-  const void *select(RandomGenerator &rnd) const {
+  const void *select(RandomGenerator &rnd) const override {
     return m_map->selectEntry(rnd)->key();
   }
-  void *select(RandomGenerator &rnd) {
+  void *select(RandomGenerator &rnd) override {
     return (void*)m_map->selectEntry(rnd)->key();
   }
 
-  size_t size() const {
+  size_t size() const override {
     return m_map->size();
   }
-  void clear() {
+  void clear() override {
     m_map->clear();
   }
-  bool hasOrder() const {
+  bool hasOrder() const override {
     return m_map->hasOrder();
   }
-  AbstractComparator *getComparator() {
+  AbstractComparator *getComparator() override {
     return m_map->getComparator();
   }
   const void *getMin() const {
@@ -105,13 +105,13 @@ public:
   const void *getMax() const {
     return m_map->getMaxEntry()->key();
   }
-  AbstractCollection *clone(bool cloneData) const {
+  AbstractCollection *clone(bool cloneData) const override {
     return new KeySet(m_map->cloneMap(cloneData),true);
   }
-  AbstractIterator *getIterator() {
+  AbstractIterator *getIterator() override {
     return m_map->getKeyIterator();
   }
-  ~KeySet() {
+  ~KeySet() override {
     if(m_deleteMap) {
       SAFEDELETE(m_map);
     }
@@ -131,32 +131,32 @@ public:
     m_deleteMap = deleteMap;
     m_cmp       = cmp;
   }
-  bool add(const void *e) {
+  bool add(const void *e) override {
     throwUnsupportedOperationException(__TFUNCTION__);
     return false;
   }
-  bool remove(const void *e) {
+  bool remove(const void *e) override {
     throwUnsupportedOperationException(__TFUNCTION__);
     return false;
   }
-  bool contains(const void *e) const;
-  const void *select(RandomGenerator &rnd) const;
-  void *select(RandomGenerator &rnd);
+  bool contains(const void *e) const override;
+  const void *select(RandomGenerator &rnd) const override;
+  void *select(RandomGenerator &rnd) override;
 
-  size_t size() const {
+  size_t size() const override {
     return m_map->size();
   }
-  void clear() {
+  void clear() override {
     m_map->clear();
   }
-  AbstractCollection *clone(bool cloneData) const {
+  AbstractCollection *clone(bool cloneData) const override {
     return new ValueCollection(m_map->cloneMap(cloneData),true,m_cmp);
   }
-  AbstractIterator *getIterator() {
+  AbstractIterator *getIterator() override {
     return m_map->getValueIterator();
   }
 
-  ~ValueCollection() {
+  ~ValueCollection() override {
     if(m_deleteMap) {
       SAFEDELETE(m_map);
     }
@@ -207,19 +207,19 @@ public:
   ValueIterator(AbstractMap *map) {
     m_it = map->getIterator(); TRACE_NEW(m_it);
   }
-  AbstractIterator *clone() {
-    return new ValueIterator(this);
-  }
-  ~ValueIterator() {
+  ~ValueIterator()                override {
     SAFEDELETE(m_it);
   }
-  bool hasNext() const {
+  AbstractIterator *clone()       override {
+    return new ValueIterator(this);
+  }
+  bool hasNext()            const override {
     return m_it->hasNext();
   }
-  void *next() {
+  void *next()                    override {
     return ((AbstractEntry *)m_it->next())->value();
   }
-  void remove() {
+  void remove()                   override {
     m_it->remove();
   }
 };

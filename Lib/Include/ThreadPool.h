@@ -69,7 +69,7 @@ public:
     return source == s_propertySource;
   }
 
-  void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
+  void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) override;
   static void addListener(   PropertyChangeListener *listener);
   static void removeListener(PropertyChangeListener *listener);
 };

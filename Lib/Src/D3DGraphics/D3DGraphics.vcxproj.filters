@@ -396,6 +396,12 @@
     <ClCompile Include="MeshBuilderOptimize.cpp">
       <Filter>Source Files\Mesh</Filter>
     </ClCompile>
+    <ClCompile Include="D3SceneObjectAnimatedVisual.cpp">
+      <Filter>Source Files\Visual Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="AbstractAnimator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\D3DGraphics\D3Scene.h">
@@ -585,6 +591,15 @@
     </ClInclude>
     <ClInclude Include="D3ReductionArray.h">
       <Filter>Source Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectAnimatedVisual.h">
+      <Filter>Header Files\Visual Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\AbstractAnimator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectVisualChild.h">
+      <Filter>Header Files\Visual Objects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

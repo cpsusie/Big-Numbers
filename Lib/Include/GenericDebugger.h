@@ -47,11 +47,11 @@ private:
   void suspend();
 public:
   GenericDebugger(AbstractDebugable &debugable, AbstractDebugableVisualizer &visualizer);
-  ~GenericDebugger();
+  ~GenericDebugger() override;
   void singleStep();
   void go();
   void kill();
-  UINT safeRun();
+  UINT safeRun() override;
   void handleStep();
   inline DebuggerState getState() const {
     return m_state;

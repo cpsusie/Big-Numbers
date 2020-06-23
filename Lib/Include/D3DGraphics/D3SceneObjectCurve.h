@@ -9,5 +9,5 @@ public:
   D3SceneObjectCurve(D3Scene             &scene , const VertexArray &points, const String &name = _T("Curve"));
   D3SceneObjectCurve(D3SceneObjectVisual *parent, const VertexArray &points, const String &name = _T("Curve"));
 
-  void draw();
+  void draw() override;
 };

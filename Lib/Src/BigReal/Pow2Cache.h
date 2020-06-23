@@ -35,7 +35,7 @@ private:
   void load(ByteInputStream  &s);
   void clear();
   Pow2Cache(DigitPool *digitPool, DigitPool *workPool);
-  ~Pow2Cache();
+  ~Pow2Cache() override;
   Pow2Cache(const Pow2Cache &src);            // not implemented
   Pow2Cache &operator=(const Pow2Cache &src); // not implemented
 public:

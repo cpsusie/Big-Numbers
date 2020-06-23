@@ -26,8 +26,8 @@ public:
   InterruptableIsoSurfaceEvaluator(const IsoSurfaceParameters &param);
   InterruptableIsoSurfaceEvaluator &createData(FunctionR3R1 &f, InterruptableRunnable *ir = NULL);
   InterruptableIsoSurfaceEvaluator &createData(FunctionWithTimeTemplate<FunctionR3R1> &f, const Real &time, InterruptableRunnable *ir = NULL);
-  double evaluate(const Point3D &p);
-  void   receiveFace(const Face3 &face);
+  double evaluate(const Point3D &p)     override;
+  void   receiveFace(const Face3 &face) override;
   String getInfoMessage() const {
     return m_statistics.toString();
   }

@@ -40,7 +40,7 @@ typedef CompactKeyType<UINT> FontSizeKey;
 
 class FontCache : public CompactHashMap<FontSizeKey, CFont*> {
 public:
-  ~FontCache();
+  ~FontCache() override;
   CFont *getFont(bool text, int fontSize);
 };
 

@@ -174,7 +174,7 @@ String D3SceneEditor::toString() const {
   case CONTROL_ANIMATION_SPEED       :
     { D3SceneObjectAnimatedMesh *obj = getCurrentAnimatedObj();
       if(obj) {
-        text.addSection("Frames/sec").printf(_T("%.2f"), obj->getFramePerSec());
+        text.addSection("Frames/sec").printf(_T("%.2f"), obj->getFramesPerSec());
       }
     }
     break;

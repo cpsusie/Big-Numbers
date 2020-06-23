@@ -31,14 +31,12 @@ protected:
   D3Device &setStreamSource();
   D3SceneObjectWithVertexBuffer(D3Scene             &scene , const String &name = _T("ObjectWithVertexBuffer"));
   D3SceneObjectWithVertexBuffer(D3SceneObjectVisual *parent, const String &name = _T("ObjectWithVertexBuffer"));
-
 public:
   ~D3SceneObjectWithVertexBuffer();
-  LPDIRECT3DVERTEXBUFFER getVertexBuffer() const {
+  LPDIRECT3DVERTEXBUFFER getVertexBuffer() const override {
     return m_vertexBuffer;
   }
-  D3DVERTEXBUFFER_DESC getDesc() const;
-  D3Cube getBoundingBox() const;
-  String toString() const;
-  String getInfoString() const;
+  D3Cube                              getBoundingBox()  const;
+  String                 toString()        const override;
+  String                 getInfoString()   const override;
 };

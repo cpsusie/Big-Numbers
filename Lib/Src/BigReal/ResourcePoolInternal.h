@@ -22,7 +22,7 @@ public:
     clear();
   }
   void setInOut(BigReal &result, const BigReal &x, const BigReal &y, const BigReal &f, int level);
-  UINT run();
+  UINT run() override;
 };
 
 class SubProdRunnableArray : public RunnableArray {
@@ -50,7 +50,7 @@ public:
 
 class SubProdRunnablePool : public ResourcePoolTemplate<SubProdRunnable> {
 protected:
-  SubProdRunnable *newResource(UINT id) {
+  SubProdRunnable *newResource(UINT id) override {
     SubProdRunnable *r = new SubProdRunnable(id, format(_T("%s(%u)"), getTypeName().cstr(), id)); TRACE_NEW(r);
     return r;
   }
@@ -61,7 +61,7 @@ public:
 
 class DigitPoolPool : public ResourcePoolTemplate<DigitPool> {
 protected:
-  DigitPool *newResource(UINT id) {
+  DigitPool *newResource(UINT id) override {
     DigitPool *dp = new DigitPool(id, format(_T("%s(%u)"), getTypeName().cstr(), id)); TRACE_NEW(dp);
     return dp;
   }
@@ -72,7 +72,7 @@ public:
 
 class LockedDigitPoolPool : public ResourcePoolTemplate<DigitPoolWithLock> {
 protected:
-  DigitPoolWithLock *newResource(UINT id) {
+  DigitPoolWithLock *newResource(UINT id) override {
     DigitPoolWithLock *dp = new DigitPoolWithLock(id, format(_T("%s(%u)"), getTypeName().cstr(), id)); TRACE_NEW(dp);
     return dp;
   }
