@@ -9,17 +9,17 @@
 // ----------------------------------- D3SceneObjectWithMesh --------------------------------------------
 
 D3SceneObjectWithMesh::D3SceneObjectWithMesh(D3Scene &scene, LPD3DXMESH mesh, const String &name)
-: D3SceneObjectVisual(scene, name)
-, m_fillMode( D3DFILL_SOLID)
-, m_shadeMode(D3DSHADE_GOURAUD)
+: D3SceneObjectVisual(scene, name     )
+, m_fillMode(         D3DFILL_SOLID   )
+, m_shadeMode(        D3DSHADE_GOURAUD)
 {
   m_mesh = mesh;
 }
 
 D3SceneObjectWithMesh::D3SceneObjectWithMesh(D3SceneObjectVisual *parent, LPD3DXMESH mesh, const String &name)
-: D3SceneObjectVisual(parent, name)
-, m_fillMode( D3DFILL_SOLID)
-, m_shadeMode(D3DSHADE_GOURAUD)
+: D3SceneObjectVisual(parent, name    )
+, m_fillMode(         D3DFILL_SOLID   )
+, m_shadeMode(        D3DSHADE_GOURAUD)
 {
   m_mesh = mesh;
 }
@@ -64,10 +64,10 @@ D3Cube D3SceneObjectWithMesh::getBoundingBox() const {
 void D3SceneObjectWithMesh::draw() {
   if(hasMesh()) {
     D3Device &device = setDeviceMaterialIfExist();
-    setDeviceTextureIfExist();
-    device.setWorldMatrix(getWorld())
-          .setFillMode(getFillMode())
-          .setShadeMode(getShadeMode())
+    setDeviceTextureIfExist()
+          .setWorldMatrix(   getWorld())
+          .setFillMode(      getFillMode())
+          .setShadeMode(     getShadeMode())
           .setLightingEnable(getLightingEnable());
     drawSubset(0);
   }
