@@ -45,7 +45,7 @@ Expression &Expression::operator=(const Expression &src) {
 }
 
 void Expression::initialize(ExpressionReturnType returnType) {
-  m_symbolTable       = new ExpressionSymbolTable(this);
+  m_symbolTable       = new ExpressionSymbolTable(this); TRACE_NEW(m_symbolTable);
   m_tree              = NULL;
   m_returnType        = returnType;
   m_machineCode       = false;
