@@ -12,13 +12,13 @@ public:
   }
 };
 
-template <typename K, typename V> class CompactHashMap {
+template <typename K, typename V, UINT pageSize=20000> class CompactHashMap {
 private:
-  size_t                                       m_size;
-  size_t                                       m_capacity;
-  LinkObject<MapEntry<K,V> >                 **m_buffer;
-  HeapObjectPool<LinkObject<MapEntry<K,V> > >  m_entryPool;
-  UINT64                                       m_updateCount;
+  size_t                                                m_size;
+  size_t                                                m_capacity;
+  LinkObject<MapEntry<K,V> >                          **m_buffer;
+  HeapObjectPool<LinkObject<MapEntry<K,V> >, pageSize>  m_entryPool;
+  UINT64                                                m_updateCount;
 
   LinkObject<MapEntry<K,V> > **allocateBuffer(size_t capacity) const {
     LinkObject<MapEntry<K,V> > **result = capacity ? new LinkObject<MapEntry<K,V> >*[capacity] : NULL; TRACE_NEW(result);
@@ -440,57 +440,57 @@ public:
   }
 };
 
-template <typename T> class CompactShortHashMap : public CompactHashMap<CompactShortKeyType, T> {
+template <typename T, UINT pageSize=20000> class CompactShortHashMap : public CompactHashMap<CompactShortKeyType, T, pageSize> {
 public:
   CompactShortHashMap() {
   }
-  explicit CompactShortHashMap(size_t capacity)  : CompactHashMap<CompactShortKeyType, T>(capacity) {
+  explicit CompactShortHashMap(size_t capacity) : CompactHashMap(capacity) {
   }
-  CompactShortHashMap(const CompactShortHashMap<T> &src) : CompactHashMap<CompactShortKeyType, T>(src) {
+  CompactShortHashMap(const CompactShortHashMap<T> &src) : CompactHashMap(src) {
   }
 };
 
-template <typename T> class CompactUShortHashMap : public CompactHashMap<CompactUShortKeyType, T> {
+template <typename T, UINT pageSize=20000> class CompactUShortHashMap : public CompactHashMap<CompactUShortKeyType, T, pageSize> {
 public:
   CompactUShortHashMap() {
   }
-  explicit CompactUShortHashMap(size_t capacity)  : CompactHashMap<CompactUShortKeyType, T>(capacity) {
+  explicit CompactUShortHashMap(size_t capacity) : CompactHashMap(capacity) {
   }
-  CompactUShortHashMap(const CompactUShortHashMap<T> &src) : CompactHashMap<CompactUShortKeyType, T>(src) {
+  CompactUShortHashMap(const CompactUShortHashMap<T> &src) : CompactHashMap(src) {
   }
 };
 
-template <typename T> class CompactIntHashMap : public CompactHashMap<CompactIntKeyType, T> {
+template <typename T, UINT pageSize=20000> class CompactIntHashMap : public CompactHashMap<CompactIntKeyType, T, pageSize> {
 public:
   CompactIntHashMap() {
   }
-  explicit CompactIntHashMap(size_t capacity)  : CompactHashMap<CompactIntKeyType, T>(capacity) {
+  explicit CompactIntHashMap(size_t capacity) : CompactHashMap(capacity) {
   }
-  CompactIntHashMap(const CompactIntHashMap<T> &src) : CompactHashMap<CompactIntKeyType, T>(src) {
+  CompactIntHashMap(const CompactIntHashMap<T> &src) : CompactHashMap(src) {
   }
 };
 
-template <typename T> class CompactUIntHashMap : public CompactHashMap<CompactUIntKeyType, T> {
+template <typename T, UINT pageSize=20000> class CompactUIntHashMap : public CompactHashMap<CompactUIntKeyType, T, pageSize> {
 public:
   CompactUIntHashMap() {
   }
-  explicit CompactUIntHashMap(size_t capacity)  : CompactHashMap<CompactUIntKeyType, T>(capacity) {
+  explicit CompactUIntHashMap(size_t capacity) : CompactHashMap(capacity) {
   }
-  CompactUIntHashMap(const CompactUIntHashMap<T> &src) : CompactHashMap<CompactUIntKeyType, T>(src) {
+  CompactUIntHashMap(const CompactUIntHashMap<T> &src) : CompactHashMap(src) {
   }
 };
 
-template <typename T> class CompactFloatHashMap : public CompactHashMap<CompactFloatKeyType, T> {
+template <typename T, UINT pageSize=20000> class CompactFloatHashMap : public CompactHashMap<CompactFloatKeyType, T, pageSize> {
 public:
   CompactFloatHashMap() {
   }
-  explicit CompactFloatHashMap(size_t capacity)  : CompactHashMap<CompactFloatKeyType, T>(capacity) {
+  explicit CompactFloatHashMap(size_t capacity) : CompactHashMap(capacity) {
   }
-  CompactFloatHashMap(const CompactFloatHashMap<T> &src) : CompactHashMap<CompactFloatKeyType, T>(src) {
+  CompactFloatHashMap(const CompactFloatHashMap<T> &src) : CompactHashMap(src) {
   }
 };
 
-template <typename T> class CompactDoubleHashMap : public CompactHashMap<CompactDoubleKeyType, T> {
+template <typename T, UINT pageSize=20000> class CompactDoubleHashMap : public CompactHashMap<CompactDoubleKeyType, T, pageSize> {
 public:
   CompactDoubleHashMap() {
   }
@@ -500,7 +500,7 @@ public:
   }
 };
 
-template <typename T> class CompactStrHashMap    : public CompactHashMap<CompactStrKeyType, T> {
+template <typename T, UINT pageSize=20000> class CompactStrHashMap    : public CompactHashMap<CompactStrKeyType, T, pageSize> {
 public:
   CompactStrHashMap() {
   }
@@ -510,7 +510,7 @@ public:
   }
 };
 
-template <typename T> class CompactStrIHashMap    : public CompactHashMap<CompactStrIKeyType, T> {
+template <typename T, UINT pageSize=20000> class CompactStrIHashMap    : public CompactHashMap<CompactStrIKeyType, T, pageSize> {
 public:
   CompactStrIHashMap() {
   }

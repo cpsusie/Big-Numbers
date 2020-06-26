@@ -14,13 +14,13 @@ public:
 
 // Assume K has public member-function ULONG hashCode() const...
 // and bool operator==(const K &) defined
-template <typename K> class CompactHashSet {
+template <typename K, UINT pageSize=20000> class CompactHashSet {
 private:
-  size_t                                    m_size;
-  size_t                                    m_capacity;
-  LinkObject<SetEntry<K> >                **m_buffer;
-  HeapObjectPool<LinkObject<SetEntry<K> > > m_entryPool;
-  UINT64                                    m_updateCount;
+  size_t                                             m_size;
+  size_t                                             m_capacity;
+  LinkObject<SetEntry<K> >                         **m_buffer;
+  HeapObjectPool<LinkObject<SetEntry<K> >, pageSize> m_entryPool;
+  UINT64                                             m_updateCount;
 
   LinkObject<SetEntry<K> > **allocateBuffer(size_t capacity) const {
     LinkObject<SetEntry<K> > **result = capacity ? new LinkObject<SetEntry<K> >*[capacity] : NULL; TRACE_NEW(result);
