@@ -5,7 +5,7 @@
 void setValue(XMLDoc &doc, XMLNodePtr n, const LPD3DXMESH &m) {
   LPDIRECT3DVERTEXBUFFER vb = NULL;
   try {
-    V(m->GetVertexBuffer(&vb)); TRACE_REFCOUNT(vertexBuffer);
+    V(m->GetVertexBuffer(&vb)); TRACE_REFCOUNT(vb);
     setValue(doc, n, _T("vertexbuffer"), vb);
     SAFERELEASE(vb);
   } catch(...) {
