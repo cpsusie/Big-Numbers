@@ -3,29 +3,29 @@
 #include <D3DGraphics/D3Device.h>
 #include <D3DGraphics/D3Scene.h>
 #include <D3DGraphics/D3SceneObjectWithMesh.h>
-#include <D3DGraphics/D3SceneObjectAnimatedMesh.h>
+#include <D3DGraphics/D3SceneObjectAnimatedVisual.h>
 #include <D3DGraphics/MeshCreators.h>
 #include "resource.h"       // main symbols
 
-class D3AnimatedFunctionSurface : public D3SceneObjectAnimatedMesh {
+class D3AnimatedFunctionSurface : public D3SceneObjectAnimatedVisual {
 private:
   int  m_materialId;
   int  m_textureId;
   bool m_hasTextureId;
 public:
   D3AnimatedFunctionSurface(D3Scene &scene, const MeshArray &ma)
-    : D3SceneObjectAnimatedMesh(scene, ma)
+    : D3SceneObjectAnimatedVisual(scene, ma)
     , m_textureId(-1)
+    , m_materialId(scene.addMaterial(D3Material::createDefaultMaterial()))
   {
     m_hasTextureId = hasTextureCoordinates();
-    m_materialId   = scene.addMaterial(D3Material::createDefaultMaterial());
   }
   D3AnimatedFunctionSurface(D3Scene &scene, const MeshArray &ma, UINT textureId)
-    : D3SceneObjectAnimatedMesh(scene, ma)
+    : D3SceneObjectAnimatedVisual(scene, ma)
     , m_textureId(textureId)
     , m_hasTextureId(true)
+    , m_materialId(-1)
   {
-    m_materialId = -1;
   }
   ~D3AnimatedFunctionSurface() override {
     getScene().removeMaterial(m_materialId);

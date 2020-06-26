@@ -41,7 +41,7 @@ class D3Camera;
 class D3SceneContainer;
 class D3SceneObjectVisual;
 class D3LightControl;
-class D3SceneObjectAnimatedMesh;
+class D3SceneObjectAnimatedVisual;
 
 class D3SceneEditor : public PropertyChangeListener {
 private:
@@ -265,11 +265,11 @@ public:
     }
 
     // Return hasObj() ? getCurrentObj()->getType() : SOTYPE_NULL;
-    SceneObjectType             getCurrentObjType() const;
+    SceneObjectType              getCurrentObjType() const;
     // Return NULL, if m_currentVisual->type not in {SOTYPE_VISUALOBJECT, SOTYPE_ANIMATEDOBJECT, }
-    D3SceneObjectVisual        *getCurrentVisual() const;
+    D3SceneObjectVisual         *getCurrentVisual() const;
     // return NULL, if m_currentVisual->type not SOTYPE_ANIMATEDOBJECT
-    D3SceneObjectAnimatedMesh  *getCurrentAnimatedObj() const;
+    D3SceneObjectAnimatedVisual *getCurrentAnimatedObj() const;
     inline bool                 hasObj() const {
       return getCurrentObj() != NULL;
     }

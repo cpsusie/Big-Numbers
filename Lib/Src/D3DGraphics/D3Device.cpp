@@ -4,7 +4,7 @@
 #include <D3DGraphics/D3Light.h>
 
 D3Device::D3Device(HWND hwnd) {
-  m_device          = DirectXDeviceFactory::createDevice(hwnd);
+  m_device          = DirectXDeviceFactory::getInstance().createDevice(hwnd);
   getValuesFromDevice(m_device).setDefault().setValuesToDevice(m_device);
   V(m_device->GetDeviceCaps(&m_deviceCaps));
   m_currentCamera = NULL;
@@ -19,12 +19,12 @@ void D3Device::beginRender(const D3Camera &camera) {
   try {
     setCurrentCamera(&camera);
     V(m_device->Clear(0
-                      ,NULL
-                      ,D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER
-                      ,camera.getBackgroundColor()
-                      ,1.0f
-                      ,0
-                      ));
+                     ,NULL
+                     ,D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER
+                     ,camera.getBackgroundColor()
+                     ,1.0f
+                     ,0
+                     ));
     setViewMatrix(camera.getViewMatrix()).setProjMatrix(camera.getProjMatrix());
     V(m_device->BeginScene());
   } catch(...) {
@@ -85,46 +85,46 @@ LPDIRECT3DVERTEXBUFFER D3Device::allocateVertexBuffer(DWORD fvf, UINT count, UIN
   const UINT vertexSize = FVFToSize(fvf);
   UINT tmp, &totalSize = bufferSize ? *bufferSize : tmp;
   totalSize = vertexSize * count;
-  LPDIRECT3DVERTEXBUFFER result;
   try {
+    LPDIRECT3DVERTEXBUFFER result = NULL;
     m_allocLock.wait();
     V(m_device->CreateVertexBuffer(totalSize, 0, fvf, D3DPOOL_DEFAULT, &result, NULL));
     m_allocLock.notify();
     TRACE_CREATE(result);
+    return result;
   } catch(...) {
     m_allocLock.notify();
     throw;
   }
-  return result;
 }
 
 LPDIRECT3DINDEXBUFFER D3Device::allocateIndexBuffer(bool int32, UINT count, UINT *bufferSize) {
-  const int itemSize   = int32 ? sizeof(long) : sizeof(short);
-  UINT tmp, &totalSize = bufferSize ? *bufferSize : tmp;
+  const int itemSize   = int32      ? sizeof(long) : sizeof(short);
+  UINT tmp, &totalSize = bufferSize ? *bufferSize  : tmp;
   totalSize = itemSize * count;
-  LPDIRECT3DINDEXBUFFER result;
   try {
+    LPDIRECT3DINDEXBUFFER result = NULL;;
     m_allocLock.wait();
     V(m_device->CreateIndexBuffer(totalSize, 0, int32 ? D3DFMT_INDEX32 : D3DFMT_INDEX16, D3DPOOL_DEFAULT, &result, NULL));
     m_allocLock.notify();
     TRACE_CREATE(result);
+    return result;
   } catch(...) {
     m_allocLock.notify();
     throw;
   }
-  return result;
 }
 
-LPD3DXMESH D3Device::allocateMesh(DWORD fvf , UINT faceCount, UINT vertexCount, DWORD options) {
-  LPD3DXMESH result;
+LPD3DXMESH D3Device::allocateMesh(DWORD fvf, UINT faceCount, UINT vertexCount, DWORD options) {
   try {
+    LPD3DXMESH result = NULL;
     m_allocLock.wait();
     V(D3DXCreateMeshFVF(faceCount, vertexCount, options, fvf, m_device, &result));
     m_allocLock.notify();
     TRACE_CREATE(result);
+    return result;
   } catch(...) {
     m_allocLock.notify();
     throw;
   }
-  return result;
 }

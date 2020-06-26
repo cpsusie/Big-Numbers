@@ -49,16 +49,16 @@ private:
   friend class D3SceneObjectIterator;
   friend class D3Camera;
 
-  D3Device        *m_device;
-  bool             m_rightHanded;
-  D3DCOLOR         m_ambientColor;
-  BitSet           m_lightsEnabled, m_lightsDefined;
-  D3Material       m_undefinedMaterial;
-  MaterialMap      m_materialMap;
-  D3Texture        m_undefinedTexture;
-  TextureMap       m_textureMap;
-  D3VisualArray    m_visualArray;
-  D3CameraArray    m_cameraArray;
+  D3Device                 *m_device;
+  bool                      m_rightHanded;
+  D3DCOLOR                  m_ambientColor;
+  BitSet                    m_lightsEnabled, m_lightsDefined;
+  D3Material                m_undefinedMaterial;
+  MaterialMap               m_materialMap;
+  D3Texture                 m_undefinedTexture;
+  TextureMap                m_textureMap;
+  D3VisualArray             m_visualArray;
+  D3CameraArray             m_cameraArray;
 
   void notifyVisualCountChanged(UINT oldCount);
 

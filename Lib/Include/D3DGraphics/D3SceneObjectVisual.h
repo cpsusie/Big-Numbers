@@ -25,6 +25,9 @@ protected:
   inline D3SceneObjectVisual *getChild(UINT index) const {
     return m_children[index];
   }
+  inline UINT getChildCount() const {
+    return (UINT)m_children.size();
+  }
   // return index of first child with the specified type, or -1, if none exist
   int findChildByType(SceneObjectType type) const;
 public:

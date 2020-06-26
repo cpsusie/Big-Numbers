@@ -914,7 +914,6 @@
     <ClCompile Include="D3SceneEditorPickedInfo.cpp" />
     <ClCompile Include="D3SceneLightArray.cpp" />
     <ClCompile Include="D3SceneMaterialMap.cpp" />
-    <ClCompile Include="D3SceneObjectAnimatedMesh.cpp" />
     <ClCompile Include="D3PickedInfo.cpp" />
     <ClCompile Include="D3CompileEffect.cpp" />
     <ClCompile Include="D3SceneObjectAnimatedVisual.cpp" />
@@ -1038,7 +1037,6 @@
     <ClInclude Include="..\..\Include\D3DGraphics\D3Ray.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3Device.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3SceneEditorPickedInfo.h" />
-    <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectAnimatedMesh.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3Camera.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3SceneContainer.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObject.h" />

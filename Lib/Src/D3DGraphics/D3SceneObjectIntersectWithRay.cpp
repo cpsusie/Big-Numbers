@@ -95,8 +95,7 @@ bool D3SceneObjectVisual::intersectsWithRay(const D3Ray &ray, float &dist, D3Pic
     }
   }
   if(!hit) {
-    for(Iterator<D3SceneObjectVisual*> it = ((D3SceneObjectVisual*)this)->m_children.getIterator(); it.hasNext();) {
-      D3SceneObjectVisual *child = it.next();
+    for(D3SceneObjectVisual *child : m_children) {
       if(child->isVisible() && child->intersectsWithRay(ray, dist, info)) {
         hit = TRUE;
         break;

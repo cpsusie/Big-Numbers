@@ -3,7 +3,7 @@
 #include <D3DGraphics/D3Camera.h>
 #include <D3DGraphics/D3Scene.h>
 #include <D3DGraphics/D3SceneObjectVisual.h>
-#include <D3DGraphics/D3SceneObjectAnimatedMesh.h>
+#include <D3DGraphics/D3SceneObjectAnimatedVisual.h>
 #include <D3DGraphics/D3LightControl.h>
 #include <D3DGraphics/D3SceneEditor.h>
 #include <D3DGraphics/D3ToString.h>
@@ -172,7 +172,7 @@ String D3SceneEditor::toString() const {
     }
     break;
   case CONTROL_ANIMATION_SPEED       :
-    { D3SceneObjectAnimatedMesh *obj = getCurrentAnimatedObj();
+    { D3SceneObjectAnimatedVisual *obj = getCurrentAnimatedObj();
       if(obj) {
         text.addSection("Frames/sec").printf(_T("%.2f"), obj->getFramesPerSec());
       }

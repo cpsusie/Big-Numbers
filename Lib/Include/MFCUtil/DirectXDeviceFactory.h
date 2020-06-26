@@ -3,6 +3,7 @@
 #include <D3D9.h>
 #include <D3DX9.h>
 #include <CompactArray.h>
+#include <Singleton.h>
 
 typedef LPDIRECT3D9EX           LPDIRECT3D;
 typedef LPDIRECT3DDEVICE9EX     LPDIRECT3DDEVICE;
@@ -15,17 +16,21 @@ typedef D3DVIEWPORT9            D3DVIEWPORT;
 typedef LPDIRECT3DVERTEXBUFFER9 LPDIRECT3DVERTEXBUFFER;
 typedef LPDIRECT3DINDEXBUFFER9  LPDIRECT3DINDEXBUFFER;
 
-class DirectXDeviceFactory {
+class DirectXDeviceFactory : public Singleton {
+  friend class SingletonFactory;
 private:
-  static LPDIRECT3D s_direct3D;
-  static void initDirect3D();
+  LPDIRECT3D    m_direct3D;
+  FastSemaphore m_lock;
+  void initDirect3D();
+  DirectXDeviceFactory(SingletonFactory *factory);
+  ~DirectXDeviceFactory() override;
 public:
-  ~DirectXDeviceFactory();
-  static LPDIRECT3DDEVICE             createDevice(HWND hwnd, D3DPRESENT_PARAMETERS *param = NULL, UINT adapter = D3DADAPTER_DEFAULT);
-  static D3DDISPLAYMODE               getDisplayMode(                                              UINT adapter = D3DADAPTER_DEFAULT);
-  static CompactArray<D3DDISPLAYMODE> getDisplayModes(                                             UINT adapter = D3DADAPTER_DEFAULT);
-  static D3DPRESENT_PARAMETERS        getDefaultPresentParameters(HWND hwnd                      , UINT adapter = D3DADAPTER_DEFAULT);
-  static bool supportFormatConversion(D3DDEVTYPE deviceType, D3DFORMAT srcFormat, D3DFORMAT dstFormat, UINT adapter = D3DADAPTER_DEFAULT);
+  static DirectXDeviceFactory &getInstance();
+  LPDIRECT3DDEVICE             createDevice(HWND hwnd, D3DPRESENT_PARAMETERS *param = NULL, UINT adapter = D3DADAPTER_DEFAULT);
+  D3DDISPLAYMODE               getDisplayMode(                                              UINT adapter = D3DADAPTER_DEFAULT);
+  CompactArray<D3DDISPLAYMODE> getDisplayModes(                                             UINT adapter = D3DADAPTER_DEFAULT);
+  D3DPRESENT_PARAMETERS        getDefaultPresentParameters(HWND hwnd                      , UINT adapter = D3DADAPTER_DEFAULT);
+  bool supportFormatConversion(D3DDEVTYPE deviceType, D3DFORMAT srcFormat, D3DFORMAT dstFormat, UINT adapter = D3DADAPTER_DEFAULT);
 };
 
 #if defined(_DEBUG)
@@ -56,4 +61,3 @@ void checkDirectXResult(HRESULT hr, bool exitOnError);
 
 #pragma comment(lib, DIRECTXLIB_VERSION "d3d9.lib" )
 #pragma comment(lib, DIRECTXLIB_VERSION "d3dx9.lib")
-

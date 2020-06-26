@@ -4,6 +4,8 @@
 #include <MFCUtil/DirectXDeviceFactory.h>
 
 class AbstractTextureFactory {
+protected:
+  virtual LPDIRECT3DDEVICE getDirectDevice() const = 0;
 public:
   static LPDIRECT3DTEXTURE loadTextureFromFile(          LPDIRECT3DDEVICE device,            const String &fileName);
   static LPDIRECT3DTEXTURE loadTextureFromResource(      LPDIRECT3DDEVICE device, int resId, const String &typeName);
@@ -32,8 +34,6 @@ public:
     return loadTextureFromBitmapResource(getDirectDevice(), id);
   }
   bool validateTextureFile(const String &textureFileName) const;
-
-  virtual LPDIRECT3DDEVICE getDirectDevice() const = 0;
 };
 
 // Return name of image-file, to be loaded with AbstractTextureFactory.loadTextureFromFile

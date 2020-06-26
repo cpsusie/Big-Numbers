@@ -6,31 +6,58 @@
 
 class D3SceneObjectAnimatedVisual : public D3SceneObjectVisual, public AbstractAnimator {
 private:
-  UINT m_lastRenderedIndex;
-  void init();
+  D3DFILLMODE   m_fillMode;
+  D3DSHADEMODE  m_shadeMode;
+  UINT          m_lastRenderedIndex;
+  FastSemaphore m_lock;
+  void init(const MeshArray &meshArray);
+
+  // return (m_lastRenderedIndex < childCount())
+  //      ?  getChild(m_lastRenderedIndex)
+  //      : (getCurrentIndex()    < childCount()) ? getChild(getCurrentIndex()) : NULL
+  D3SceneObjectVisual *getCurrentChild() const;
 public:
   D3SceneObjectAnimatedVisual(D3Scene             &scene , const MeshArray &meshArray, const String &name = _T("Animated Visual"));
   D3SceneObjectAnimatedVisual(D3SceneObjectVisual *parent, const MeshArray &meshArray, const String &name = _T("Animated Visual"));
-  ~D3SceneObjectAnimatedVisual()                             override;
-  void            handleTimeout(Timer &timer)                override;
-  SceneObjectType getType()                            const override {
+  ~D3SceneObjectAnimatedVisual();
+
+  void                   handleTimeout(Timer &timer)                override;
+  SceneObjectType        getType()                            const override {
     return SOTYPE_ANIMATEDOBJECT;
   }
-  void            draw()                                     override;
-  LPD3DXMESH      getMesh()                            const override;
-  bool            hasTextureCoordinates()              const override;
-  bool            hasTextureId()                       const override;
-  void            setTextureId(int id)                       override;
-  int             getTextureId()                       const override;
-  bool            hasNormals()                         const override;
-  bool            isNormalsVisible()                   const override;
-  void            setNormalsVisible(bool visible)            override;
-  bool            hasFillMode()                        const override;
-  bool            hasShadeMode()                       const override;
-  void            setFillMode( D3DFILLMODE  fillMode )       override;
-  D3DFILLMODE     getFillMode()                        const override;
-  void            setShadeMode(D3DSHADEMODE shadeMode)       override;
-  D3DSHADEMODE    getShadeMode()                       const override;
-  int             getMaterialId()                      const override;
-  D3DXMATRIX     &getWorld()                                 override;
+
+  // synchronized
+  // if(getCurrentIndex() < getChildCount()) {
+  //   getChild(getCurrentIndex())->draw(); m_lastRenderedIndex = index;
+  // }
+  void                   draw()                                     override;
+  // Return currentChild ? currentChild->getMesh() : NULL
+  LPD3DXMESH             getMesh()                            const override;
+  // Return currentChild ? currentChild->getVertexBuffer() : NULL
+  LPDIRECT3DVERTEXBUFFER getVertexBuffer()                    const override;
+  // Return currentChild ? currentChild->getIndexBuffer() : NULL
+  LPDIRECT3DINDEXBUFFER  getIndexBuffer()                     const override;
+  // Return currentChild ? currentChild->isNormalsVisible() : false
+  bool                   isNormalsVisible()                   const override;
+  // synchronized
+  // foreach child child->setNormalsVisible(visible);
+  void                   setNormalsVisible(bool visible)            override;
+  bool                   hasFillMode()                        const override {
+    return true;
+  }
+  bool                   hasShadeMode()                       const override {
+    return true;
+  }
+  void                   setFillMode(D3DFILLMODE  fillMode)         override {
+    m_fillMode = fillMode;
+  }
+  D3DFILLMODE             getFillMode()                       const override {
+    return m_fillMode;
+  }
+  void                    setShadeMode(D3DSHADEMODE shadeMode)      override {
+    m_shadeMode = shadeMode;
+  }
+  D3DSHADEMODE            getShadeMode()                      const override {
+    return m_shadeMode;
+  }
 };

@@ -101,7 +101,7 @@ D3DPRESENT_PARAMETERS BitmapCache::getPresentParameters() const {
 
 void BitmapCache::initDevice() {
   D3DPRESENT_PARAMETERS present = getPresentParameters();
-  m_device = DirectXDeviceFactory::createDevice(m_hwnd, &present);
+  m_device = DirectXDeviceFactory::getInstance().createDevice(m_hwnd, &present);
 }
 
 void BitmapCache::releaseDevice() {

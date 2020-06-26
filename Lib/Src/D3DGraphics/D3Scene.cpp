@@ -3,7 +3,7 @@
 #include <D3DGraphics/D3Camera.h>
 #include <D3DGraphics/D3LightControl.h>
 #include <D3DGraphics/D3ToString.h>
-#include <D3DGraphics/D3SceneObjectAnimatedMesh.h>
+#include <D3DGraphics/D3SceneObjectAnimatedVisual.h>
 #include <D3DGraphics/D3Scene.h>
 
 #pragma warning(disable : 4073)
@@ -139,7 +139,7 @@ void D3Scene::removeVisual(D3SceneObjectVisual *obj) {
 void D3Scene::removeVisual(size_t index) {
   D3SceneObjectVisual *obj = m_visualArray[index];
   if(obj->getType() == SOTYPE_ANIMATEDOBJECT) {
-    ((D3SceneObjectAnimatedMesh*)obj)->stopAnimation();
+    ((D3SceneObjectAnimatedVisual*)obj)->stopAnimation();
   }
   const UINT oldCount = (UINT)m_visualArray.size();
   m_visualArray.remove(index);
@@ -158,7 +158,7 @@ bool D3Scene::isVisual(const D3SceneObjectVisual *obj) const {
 
 void D3Scene::stopAllAnimations() {
   for(D3VisualIterator it = getVisualIterator(OBJMASK_ANIMATEDOBJECT); it.hasNext();) {
-    ((D3SceneObjectAnimatedMesh*)it.next())->stopAnimation();
+    ((D3SceneObjectAnimatedVisual*)it.next())->stopAnimation();
   }
 }
 

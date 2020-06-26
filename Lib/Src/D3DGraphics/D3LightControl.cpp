@@ -86,14 +86,14 @@ static LPD3DXMESH createLCMesh(AbstractMeshFactory &factory, D3DLIGHTTYPE lightT
   return optimizeMesh(mesh);
 }
 
-static CompactIntHashMap<LPD3DXMESH> m_meshCache;
 static LPD3DXMESH getMesh(AbstractMeshFactory &factory, D3DLIGHTTYPE lightType) {
-  LPD3DXMESH *mp = m_meshCache.get(lightType);
+  static CompactIntHashMap<LPD3DXMESH,5> meshCache(7);
+  LPD3DXMESH *mp = meshCache.get(lightType);
   if(mp != NULL) {
     return *mp;
   }
-  m_meshCache.put(lightType, createLCMesh(factory, lightType));
-  return *m_meshCache.get(lightType);
+  meshCache.put(lightType, createLCMesh(factory, lightType));
+  return *meshCache.get(lightType);
 }
 
 D3Light D3LightControl::getLight() const { // public

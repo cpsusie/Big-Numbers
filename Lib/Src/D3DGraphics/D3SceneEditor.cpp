@@ -8,7 +8,7 @@
 #include <D3DGraphics/MaterialDlg.h>
 #include <D3DGraphics/D3Camera.h>
 #include <D3DGraphics/D3LightControl.h>
-#include <D3DGraphics/D3SceneObjectAnimatedMesh.h>
+#include <D3DGraphics/D3SceneObjectAnimatedVisual.h>
 #include <D3DGraphics/D3SceneObjectCoordinateSystem.h>
 #include <D3DGraphics/D3AbstractTextureFactory.h>
 #include <D3DGraphics/D3SelectedCube.h>
@@ -1024,10 +1024,10 @@ D3SceneObjectVisual *D3SceneEditor::getCurrentVisual() const {
   return NULL;
 }
 
-D3SceneObjectAnimatedMesh *D3SceneEditor::getCurrentAnimatedObj() const {
+D3SceneObjectAnimatedVisual *D3SceneEditor::getCurrentAnimatedObj() const {
   switch(getCurrentObjType()) {
   case SOTYPE_ANIMATEDOBJECT:
-    return (D3SceneObjectAnimatedMesh*)getCurrentObj();
+    return (D3SceneObjectAnimatedVisual*)getCurrentObj();
   }
   return NULL;
 }
@@ -1176,7 +1176,7 @@ void D3SceneEditor::OnContextMenuVisualObj(CPoint point) {
     break;
 
   case SOTYPE_ANIMATEDOBJECT:
-    { D3SceneObjectAnimatedMesh *obj = getCurrentAnimatedObj();
+    { D3SceneObjectAnimatedVisual *obj = getCurrentAnimatedObj();
       if(obj->isRunning()) {
         removeMenuItem(menu, ID_OBJECT_STARTANIMATION   );
         removeMenuItem(menu, ID_OBJECT_STARTBCKANIMATION);
@@ -1409,7 +1409,7 @@ typedef enum {
  ,ANIMATION_ALTERNATING
 } AnimationState;
 
-static void setCurrentAnimationState(D3SceneObjectAnimatedMesh *obj, AnimationState newState) {
+static void setCurrentAnimationState(D3SceneObjectAnimatedVisual *obj, AnimationState newState) {
   if(obj == NULL) return;
   switch(newState) {
   case ANIMATION_STOPPED    :
@@ -1443,7 +1443,7 @@ void D3SceneEditor::OnObjectStartAltAnimation() {
 }
 
 void D3SceneEditor::OnObjectReverseAnimation() {
-  D3SceneObjectAnimatedMesh *obj = getCurrentAnimatedObj();
+  D3SceneObjectAnimatedVisual *obj = getCurrentAnimatedObj();
   if((obj == NULL) || !obj->isRunning()) return;
   switch(obj->getAnimationType()) {
   case ANIMATE_FORWARD    : setCurrentAnimationState(obj, ANIMATION_BACKWARDS); break;
@@ -1457,7 +1457,7 @@ void D3SceneEditor::OnObjectStopAnimation() {
 
 void D3SceneEditor::OnMouseWheelAnimationSpeed(UINT nFlags, short zDelta, CPoint pt) {
   const float factor = (1.0f + 0.04f*signDelta);
-  D3SceneObjectAnimatedMesh *obj = getCurrentAnimatedObj();
+  D3SceneObjectAnimatedVisual *obj = getCurrentAnimatedObj();
   if(obj && obj->isRunning()) {
     obj->scaleSpeed(factor);
     renderInfo();
