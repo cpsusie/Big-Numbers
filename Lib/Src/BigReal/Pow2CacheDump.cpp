@@ -1,5 +1,4 @@
 #include "pch.h"
-#include <DebugLog.h>
 #include "Pow2Cache.h"
 
 class ArrayEntry : public Pow2ArgumentKey {

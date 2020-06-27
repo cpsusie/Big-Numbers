@@ -6,7 +6,6 @@
 #include <HashMap.h>
 #include "DFA.h"
 #include <MarginFile.h>
-#include <DebugLog.h>
 
 void DFA::dumpStates() const {
   const size_t stateCount = m_states.size();

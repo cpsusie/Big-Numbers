@@ -2,9 +2,6 @@
 #include "PatternParser.h"
 #include "DFA.h"
 #include "DFARegex.h"
-#if defined(_DEBUG)
-#include <DebugLog.h>
-#endif
 
 DFARegex::DFARegex(const StringArray &pattern, BYTE flags)
 : m_flags(flags)

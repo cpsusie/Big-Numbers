@@ -3,7 +3,6 @@
 #include <io.h>
 #include <process.h>
 #include <MyUtil.h>
-#include <DebugLog.h>
 #include <FastSemaphore.h>
 #include <FileNameSplitter.h>
 #include <ExternProcess.h>

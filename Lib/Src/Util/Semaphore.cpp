@@ -3,7 +3,6 @@
 #include <Semaphore.h>
 #if defined(TRACESEMAPHORE)
 #include <Thread.h>
-#include <DebugLog.h>
 #endif  // TRACESEMAPHORE
 
 Semaphore::Semaphore(const String &name, UINT initialCount, UINT maxWait) {

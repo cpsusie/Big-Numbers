@@ -1,6 +1,5 @@
 #include "pch.h"
 #include <float.h>
-#include <DebugLog.h>
 
 std::atomic<UINT>  DigitPool::s_totalAllocatedPageCount;
 

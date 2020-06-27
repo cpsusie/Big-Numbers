@@ -1,8 +1,8 @@
 #pragma once
 
-#if defined(TRACE_MEMORY)
-
 #include "DebugLog.h"
+
+#if defined(TRACE_MEMORY)
 
 inline int _getrc(IUnknown *p) {
   p->AddRef(); return p->Release();

@@ -7,7 +7,6 @@
 #include <SynchronizedQueue.h>
 
 #if defined(TRACE_THREADPOOL)
-#include <DebugLog.h>
 void threadPoolTrace(const TCHAR *function, const TCHAR *format, ...);
 #define THREADPOOL_TRACE(format,...) threadPoolTrace(__TFUNCTION__,_T(format), __VA_ARGS__)
 #define THREADPOOL_ENTER ENTERFUNC

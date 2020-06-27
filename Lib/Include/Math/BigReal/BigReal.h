@@ -2,12 +2,10 @@
 
 #include <MyUtil.h>
 #include <FastSemaphore.h>
-#include <Singleton.h>
 #include <StreamParameters.h>
 #include <Random.h>
 #include <Math/Double80.h>
 #include <Math/Real.h>
-#include <MyAssert.h>
 #include "DigitPool.h"
 
 class Packer;

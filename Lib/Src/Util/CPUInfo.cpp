@@ -2,7 +2,6 @@
 //
 
 #include "pch.h"
-#include <DebugLog.h>
 #include <CPUInfo.h>
 
 static const char *processorTypeStr[] = {
@@ -299,5 +298,3 @@ bool CPUInfo::CPUSupportsId() { // static
 }
 
 #endif
-
-

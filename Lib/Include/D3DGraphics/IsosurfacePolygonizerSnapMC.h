@@ -7,7 +7,6 @@
 #include <TinyBitSet.h>
 #include <Random.h>
 #include <Math/Cube3D.h>
-#include <DebugLog.h>
 
 namespace ISOSURFACE_POLYGONIZER_SNAPMC {
 

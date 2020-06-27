@@ -1,9 +1,5 @@
 #include "pch.h"
 
-#if defined(TRACEPOW2CACHE)
-#include <DebugLog.h>
-#endif
-
 #include <ByteFile.h>
 #include <CompressFilter.h>
 #include "ResourcePoolInternal.h"

@@ -11,7 +11,6 @@
 
 #include "pch.h"
 #include <Thread.h>
-#include <DebugLog.h>
 #include <TinyBitSet.h>
 #include <MFCUtil/ColorSpace.h>
 #include <D3DGraphics/IsoSurfacePolygonizerSnapMC.h>

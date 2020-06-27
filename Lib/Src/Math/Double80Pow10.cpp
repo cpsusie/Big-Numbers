@@ -9961,7 +9961,6 @@ static DefaultPow10Cache defaultPow10Cache;
 Pow10Calculator *Double80::s_p10Calculator = &defaultPow10Cache;
 
 #if defined(_DEBUG)
-#include <DebugLog.h>
 
 static String d80ToHexDumpFormat(const Double80 &v) {
   const UINT64 sig   = getSignificand(v);

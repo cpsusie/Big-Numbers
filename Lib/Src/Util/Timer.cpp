@@ -3,7 +3,6 @@
 #include <ThreadPool.h>
 #include <Thread.h>
 #include <SafeRunnable.h>
-#include <DebugLog.h>
 #include <Timer.h>
 
 #define TM_TIMEOUTREPEAT          0x01

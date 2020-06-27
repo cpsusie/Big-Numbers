@@ -4,7 +4,6 @@
 #include <TinyBitSet.h>
 #include <Tokenizer.h>
 #include <Registry.h>
-#include <DebugLog.h>
 
 #pragma comment(lib,"wsock32.lib")
 

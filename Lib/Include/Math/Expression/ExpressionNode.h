@@ -1,6 +1,5 @@
 #pragma once
 
-#include <DebugLog.h>
 #include <CompactStack.h>
 #include <CompactHashMap.h>
 #include <SourcePosition.h>
