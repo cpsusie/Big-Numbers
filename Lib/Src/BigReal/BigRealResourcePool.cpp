@@ -1,5 +1,4 @@
 #include "pch.h"
-#include <DebugLog.h>
 #include "ResourcePoolInternal.h"
 
 // The order of declaration is important here.!
@@ -63,16 +62,7 @@ public:
 
 static DefaultDigitPoolModifier setDefaultDPToMutable;
 
-DEFINESINGLETON(BigRealResourcePool);
-
-BigRealResourcePool &BigRealResourcePool::getInstance() { // static
-  return getBigRealResourcePool().wait();
-}
-
-BigRealResourcePool::BigRealResourcePool(SingletonFactory *factory)
-: Singleton(factory)
-{
-  DEBUGLOG(_T("BigRealResourcePool allocated\n"));
+BigRealResourcePool::BigRealResourcePool() : Singleton(__TFUNCTION__) {
   Double80::initClass();
   DigitPool::s_totalAllocatedPageCount = 0;
 
@@ -102,11 +92,10 @@ BigRealResourcePool::~BigRealResourcePool() {
   SAFEDELETE(m_subProdPool       );
   SAFEDELETE(m_digitPoolPool     );
   SAFEDELETE(m_lockedDigitPoolPool);
-  DEBUGLOG(_T("BigRealResourcePool deallocated\n"));
 }
 
 void BigRealResourcePool::fetchSubProdRunnableArray(SubProdRunnableArray &a, UINT runnableCount, UINT digitPoolCount) { // static
-  BigRealResourcePool &instance = getInstance();
+  BigRealResourcePool &instance = getInstance().wait();
   try {
     a.clear(runnableCount, digitPoolCount);
     for(UINT i = 0; i < runnableCount; i++) {
@@ -124,7 +113,7 @@ void BigRealResourcePool::fetchSubProdRunnableArray(SubProdRunnableArray &a, UIN
 }
 
 void BigRealResourcePool::releaseSubProdRunnableArray(SubProdRunnableArray &a) {
-  BigRealResourcePool &instance = getInstance();
+  BigRealResourcePool &instance = getInstance().wait();
   try {
     const UINT runnableCount = a.getRunnableCount();
     for(UINT i = 0; i < runnableCount; i++) {
@@ -148,7 +137,7 @@ void BigRealResourcePool::releaseSubProdRunnableArray(SubProdRunnableArray &a) {
 }
 
 DigitPool *BigRealResourcePool::fetchDigitPool(bool withLock, BYTE initFlags) { // static
-  BigRealResourcePool &instance = getInstance();
+  BigRealResourcePool &instance = getInstance().wait();
   try {
     DigitPool *pool = instance.fetchDPool(withLock, initFlags);
     instance.notify();
@@ -160,7 +149,7 @@ DigitPool *BigRealResourcePool::fetchDigitPool(bool withLock, BYTE initFlags) { 
 }
 
 void BigRealResourcePool::releaseDigitPool(DigitPool *pool) { // static
-  BigRealResourcePool &instance = getInstance();
+  BigRealResourcePool &instance = getInstance().wait();
   try {
     instance.releaseDPool(pool);
     instance.notify();
@@ -173,7 +162,7 @@ void BigRealResourcePool::releaseDigitPool(DigitPool *pool) { // static
 void BigRealResourcePool::fetchDigitPoolArray(DigitPoolArray &a, UINT count, bool withLock, BYTE initFlags) { // static
   a.clear(count);
   if(count == 0) return;
-  BigRealResourcePool &instance = getInstance();
+  BigRealResourcePool &instance = getInstance().wait();
   try {
     for(UINT i = 0; i < count; i++) {
       a.add(instance.fetchDPool(withLock, initFlags));
@@ -188,7 +177,7 @@ void BigRealResourcePool::fetchDigitPoolArray(DigitPoolArray &a, UINT count, boo
 void BigRealResourcePool::releaseDigitPoolArray(DigitPoolArray &a) {  // static
   const UINT count = (UINT)a.size();
   if(count == 0) return;
-  BigRealResourcePool &instance = getInstance();
+  BigRealResourcePool &instance = getInstance().wait();
   try {
     for(UINT i = 0; i < count; i++) {
       instance.releaseDPool(a[i]);
@@ -202,7 +191,7 @@ void BigRealResourcePool::releaseDigitPoolArray(DigitPoolArray &a) {  // static
 }
 
 DigitPool *BigRealResourcePool::getDefaultDigitPool() { // static
-  BigRealResourcePool &instance = getInstance();
+  BigRealResourcePool &instance = getInstance().wait();
   try {
     if(instance.m_defaultDigitPool == NULL) {
       instance.m_defaultDigitPool = instance.fetchDPool(false, 0); // this will be changed to BR_MUTABLE when all class constants have been defined and initialized
@@ -217,7 +206,7 @@ DigitPool *BigRealResourcePool::getDefaultDigitPool() { // static
 }
 
 DigitPool *BigRealResourcePool::getConstDigitPool() {  // static
-  BigRealResourcePool &instance = getInstance();
+  BigRealResourcePool &instance = getInstance().wait();
   try {
     if(instance.m_constDigitPool == NULL) {
       instance.m_constDigitPool = instance.fetchDPool(true, 0);
@@ -232,7 +221,7 @@ DigitPool *BigRealResourcePool::getConstDigitPool() {  // static
 }
 
 Pow2Cache *BigRealResourcePool::getPow2Cache() { // static
-  BigRealResourcePool &instance = getInstance();
+  BigRealResourcePool &instance = getInstance().wait();
   try {
     if(instance.m_pow2Cache == NULL) {
       instance.allocatePow2Cache();
@@ -294,7 +283,7 @@ void BigRealResourcePool::releaseDPool(DigitPool *pool) {
 }
 
 void BigRealResourcePool::setTerminateAllPoolsInUse(bool terminate) { // static
-  BigRealResourcePool &instance = getInstance();
+  BigRealResourcePool &instance = getInstance().wait();
   DigitPoolPool &dpp = *instance.m_digitPoolPool;
   Iterator<DigitPool*> it = dpp.getIterator(&dpp.getActiveIdSet());
   while(it.hasNext()) {
@@ -309,7 +298,7 @@ void BigRealResourcePool::setTerminateAllPoolsInUse(bool terminate) { // static
 }
 
 String BigRealResourcePool::toString() { // static
-  BigRealResourcePool &instance = getInstance();
+  BigRealResourcePool &instance = getInstance().wait();
   const String result = format(_T("SubProds:%s DigitPools:%s LockedDigitPools:%s")
                               ,instance.m_subProdPool->toString().cstr()
                               ,instance.m_digitPoolPool->toString().cstr()

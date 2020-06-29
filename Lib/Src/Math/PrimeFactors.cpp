@@ -1,22 +1,22 @@
 #include "pch.h"
 #include <Singleton.h>
+#include <FastSemaphore.h>
 #include <Math/Double80.h>
 #include <Math/PrimeFactors.h>
 
 class Primes : public Singleton {
-  friend class SingletonFactory;
 private:
   BitSet        m_primeSet;
   FastSemaphore m_lock;
-  Primes(SingletonFactory *factory);
+  Primes() : Singleton(__TFUNCTION__), m_primeSet(3) {
+    m_primeSet.add(2);
+  }
   // remove all nonprimes from m_primeSet
   void removeNonPrimes(size_t start);
   // extend m_primeSet to contain all primes from start..upperLimit (incl)
   void extendPrimeSet(UINT newCapacity);
-
 public:
   Iterator<size_t> getIterator(UINT upperLimit);
-  static Primes &getInstance();
   inline Primes &wait() {
     m_lock.wait();
     return *this;
@@ -25,14 +25,8 @@ public:
     m_lock.notify();
     return *this;
   }
+  DEFINESINGLETON(Primes);
 };
-
-Primes::Primes(SingletonFactory *factory)
-: Singleton(factory)
-, m_primeSet(3)
-{
-  m_primeSet.add(2);
-}
 
 // extend m_primeSet to contain all primes [2..newCapacity-1]
 void Primes::extendPrimeSet(UINT newCapacity) {
@@ -57,12 +51,6 @@ Iterator<size_t> Primes::getIterator(UINT upperLimit) {
     extendPrimeSet(upperLimit+1);
   }
   return m_primeSet.getIterator();
-}
-
-DEFINESINGLETON(Primes);
-
-Primes &Primes::getInstance() { // static
-  return getPrimes();
 }
 
 PrimeFactorArray::PrimeFactorArray(INT64 n, UINT limit) {

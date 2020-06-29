@@ -1,6 +1,7 @@
 #include "pch.h"
 #include <MyUtil.h>
 #include <Singleton.h>
+#include <FastSemaphore.h>
 #include <FileNameSplitter.h>
 #include <FlagTraits.h>
 #include <Date.h>
@@ -26,107 +27,61 @@ static const TCHAR *timeFormats[] = {
 
 class DebugLogger : public Singleton {
 private:
-  friend class SingletonFactory;
   mutable FastSemaphore m_lock;
   FLAGTRAITS(DebugLogger, BYTE, m_flags);
   FILE                 *m_traceFile;
   TCHAR                *m_fileName; // has to be a pointer, so it will not be deallocated before any
                                     // destructors of static variables do som logging
 
-  DebugLogger(SingletonFactory *factory)
-    : Singleton(factory)
-    , m_traceFile(stdout)
-    , m_fileName(NULL)
-    , m_flags(0) {
+  // no lock
+  bool StdoutAtty();
+  // no lock
+  bool IsEnvironRedirection();
+  // no lock
+  inline bool MustRedirect() {
+    return !StdoutAtty() || IsEnvironRedirection();
   }
-  ~DebugLogger() {
-    unredirect().releaseFileName();
-  }
-  DebugLogger(           const DebugLogger &src); // not implemented
-  DebugLogger &operator=(const DebugLogger &src); // not implemented
+  static String GenerateFileName();
+  // no lock
+  void SetFileName(const String &fileName);
+  // no lock
+  void ReleaseFileName();
+  // no lock
+  void Redirect(bool append = false, const TCHAR *fileName = NULL);
+  // no lock
+  void Unredirect();
+  // no lock
+  void Vlog(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
 
-  bool stdoutAtty();
-  bool isEnvironRedirection();
-  inline bool mustRedirect() {
-    return !stdoutAtty() || isEnvironRedirection();
+  DebugLogger()
+    : Singleton(  __TFUNCTION__)
+    , m_traceFile(stdout       )
+    , m_fileName( NULL         )
+    , m_flags(    0            )
+  {
   }
-  DebugLogger &setFileName(const String &fileName);
-  DebugLogger &releaseFileName();
-  static String generateFileName();
+  ~DebugLogger() override;
 public:
-  inline bool isRedirected() const {
-    return isSet(FLAG_REDIDRECT) || (m_traceFile != stdout);
-  }
-  DebugLogger &setTimePrefix(bool prefixWithDate, bool prefixWithTime) {
-    return setFlag(FLAG_PREFIXDATE, prefixWithDate).setFlag(FLAG_PREFIXTIME, prefixWithTime);
-  }
-  DebugLogger &redirect(bool append = false, const TCHAR *fileName = NULL);
-  DebugLogger &unredirect();
-  DebugLogger &vlog(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
-
-  static DebugLogger &getInstance();
-  inline void notify() {
-    m_lock.notify();
-  }
+  void redirect(bool append = false, const TCHAR *fileName = NULL);
+  void unredirect();
+  bool isRedirected() const;
+  void setTimePrefix(bool prefixWithDate, bool prefixWithTime);
+  void vlog(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
+  DEFINESINGLETON(DebugLogger)
 };
 
-DEFINESINGLETON(DebugLogger);
-
-DebugLogger &DebugLogger::getInstance() { // static
-  DebugLogger &logger = getDebugLogger();
-  logger.m_lock.wait();
-  return logger;
+DebugLogger::~DebugLogger() {
+  m_lock.wait();
+  Unredirect();
+  ReleaseFileName();
+  m_lock.notify();
 }
 
-DebugLogger &DebugLogger::setFileName(const String &fileName) {
-  releaseFileName();
-  m_fileName = _tcsdup(fileName.cstr());
-  return *this;
-}
 
-DebugLogger &DebugLogger::releaseFileName() {
-  if(m_fileName != NULL) {
-    FREE(m_fileName);
-    m_fileName = NULL;
-  }
-  return *this;
-}
 
-bool DebugLogger::stdoutAtty() {
-  if(!isSet(FLAG_STDOUTISCHECKED)) {
-    if(isatty(stdout)) {
-      setFlag(FLAG_STDOUTATTY);
-    }
-    setFlag(FLAG_STDOUTISCHECKED);
-  }
-  return isSet(FLAG_STDOUTATTY);
-}
+// private...no lock
 
-bool DebugLogger::isEnvironRedirection() {
-  if(!isSet(FLAG_ENVIRONCHECKED)) {
-    TCHAR *v = _tgetenv(_T("DEBUGLOG")); // could parse v, if it contains info about append, timeformat,etc.
-    if(v != NULL) setFlag(FLAG_ENVIRONSET);
-    setFlag(FLAG_ENVIRONCHECKED);
-  }
-  return isSet(FLAG_ENVIRONSET);
-}
-
-DebugLogger &DebugLogger::unredirect() {
-  if(m_traceFile != stdout) {
-    fclose(m_traceFile);
-    m_traceFile = stdout;
-  }
-  return clrFlag(FLAG_REDIDRECT);
-}
-
-DebugLogger &DebugLogger::redirect(bool append, const TCHAR *fileName) {
-  return unredirect()
-        .setFileName(fileName?fileName:generateFileName().cstr())
-        .setFlag(FLAG_REDIDRECT)
-        .setFlag(FLAG_APPEND,append);
-}
-
-String DebugLogger::generateFileName() { // static
+String DebugLogger::GenerateFileName() { // static
   FileNameSplitter fileInfo(getModuleFileName());
 #if defined(UNICODE)
 #define _CHARSET_ "U"
@@ -139,12 +94,58 @@ String DebugLogger::generateFileName() { // static
   return fileInfo.setDrive(_T("C")).setDir(_T("\\temp")).setFileName(fname).setExtension(_T("txt")).getFullPath();
 }
 
-DebugLogger &DebugLogger::vlog(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
+void DebugLogger::SetFileName(const String &fileName) {
+  ReleaseFileName();
+  m_fileName = _tcsdup(fileName.cstr());
+}
+
+void DebugLogger::ReleaseFileName() {
+  if(m_fileName != NULL) {
+    FREE(m_fileName);
+    m_fileName = NULL;
+  }
+}
+
+bool DebugLogger::StdoutAtty() {
+  if(!isSet(FLAG_STDOUTISCHECKED)) {
+    if(isatty(stdout)) {
+      setFlag(FLAG_STDOUTATTY);
+    }
+    setFlag(FLAG_STDOUTISCHECKED);
+  }
+  return isSet(FLAG_STDOUTATTY);
+}
+
+bool DebugLogger::IsEnvironRedirection() {
+  if(!isSet(FLAG_ENVIRONCHECKED)) {
+    TCHAR *v = _tgetenv(_T("DEBUGLOG")); // could parse v, if it contains info about append, timeformat,etc.
+    if(v != NULL) setFlag(FLAG_ENVIRONSET);
+    setFlag(FLAG_ENVIRONCHECKED);
+  }
+  return isSet(FLAG_ENVIRONSET);
+}
+
+void DebugLogger::Redirect(bool append, const TCHAR *fileName) {
+  Unredirect();
+  SetFileName(fileName ? fileName : GenerateFileName().cstr());
+  setFlag(FLAG_REDIDRECT);
+  setFlag(FLAG_APPEND,append);
+}
+
+void DebugLogger::Unredirect() {
+  if(m_traceFile != stdout) {
+    fclose(m_traceFile);
+    m_traceFile = stdout;
+  }
+  clrFlag(FLAG_REDIDRECT);
+}
+
+void DebugLogger::Vlog(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
   if(m_traceFile == NULL) {
     m_traceFile = stdout;
   }
-  if(!isSet(FLAG_REDIDRECT) && (m_traceFile == stdout) && mustRedirect()) {
-    redirect();
+  if(!isSet(FLAG_REDIDRECT) && (m_traceFile == stdout) && MustRedirect()) {
+    Redirect();
   }
   if(isSet(FLAG_REDIDRECT) && (m_traceFile == stdout)) {
     m_traceFile = MKFOPEN(m_fileName, isSet(FLAG_APPEND) ? _T("a") : _T("w"));
@@ -170,32 +171,65 @@ DebugLogger &DebugLogger::vlog(_In_z_ _Printf_format_string_ TCHAR const * const
     _fputts(str.cstr(), m_traceFile);
   }
   fflush(m_traceFile);
-  return *this;
 }
 
-void redirectDebugLog(bool append, const TCHAR *fileName) {
-  DebugLogger::getInstance().redirect(append, fileName).notify();
+// public..... with lock
+void DebugLogger::unredirect() {
+  m_lock.wait();
+  Unredirect();
+  m_lock.notify();
 }
 
-void unredirectDebugLog() {
-  DebugLogger::getInstance().unredirect().notify();
+void DebugLogger::redirect(bool append, const TCHAR *fileName) {
+  m_lock.wait();
+  Redirect(append, fileName);
+  m_lock.notify();
 }
 
-bool isDebugLogRedirected() {
-  DebugLogger &logger = DebugLogger::getInstance();
-  const bool result = logger.isRedirected();
-  logger.notify();
+bool DebugLogger::isRedirected() const {
+  m_lock.wait();
+  const bool result = isSet(FLAG_REDIDRECT) || (m_traceFile != stdout);
+  m_lock.notify();
   return result;
 }
 
+void DebugLogger::setTimePrefix(bool prefixWithDate, bool prefixWithTime) {
+  m_lock.wait();
+  setFlag(FLAG_PREFIXDATE, prefixWithDate).setFlag(FLAG_PREFIXTIME, prefixWithTime);
+  m_lock.notify();
+}
+
+void DebugLogger::vlog(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
+  m_lock.wait();
+  try {
+    Vlog(format, argptr);
+    m_lock.notify();
+  } catch(...) {
+    m_lock.notify();
+    throw;
+  }
+}
+
+void redirectDebugLog(bool append, const TCHAR *fileName) {
+  DebugLogger::getInstance().redirect(append, fileName);
+}
+
+void unredirectDebugLog() {
+  DebugLogger::getInstance().unredirect();
+}
+
+bool isDebugLogRedirected() {
+  return DebugLogger::getInstance().isRedirected();
+}
+
 void vdebugLog(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
-  DebugLogger::getInstance().vlog(format, argptr).notify();
+  DebugLogger::getInstance().vlog(format, argptr);
 }
 
 void debugLog(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   va_list argptr;
   va_start(argptr, format);
-  vdebugLog(format, argptr);
+  DebugLogger::getInstance().vlog(format, argptr);
   va_end(argptr);
 }
 
@@ -204,7 +238,5 @@ void debugLogLine(const TCHAR *fileName, int line) {
 }
 
 void debugLogSetTimePrefix(bool prefixWithDate, bool prefixWithTime) {
-  DebugLogger &logger = DebugLogger::getInstance();
-  logger.setTimePrefix(prefixWithDate, prefixWithTime);
-  logger.notify();
+  DebugLogger::getInstance().setTimePrefix(prefixWithDate, prefixWithTime);
 }

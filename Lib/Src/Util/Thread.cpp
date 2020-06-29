@@ -12,8 +12,6 @@ DEFINECLASSNAME(Thread);
 
 #if defined(TRACE_THREAD)
 
-#include <DebugLog.h>
-
 void threadTrace(const TCHAR *function, const TCHAR *format, ...) {
   va_list argptr;
   va_start(argptr, format);
@@ -47,7 +45,6 @@ void DefaultExceptionHandler::uncaughtException(Thread &thread, Exception &e) {
 
 // map ThreadId -> Thread*
 class ThreadMap : public Singleton, private CompactUIntHashMap<Thread*>, private PropertyContainer {
-  friend class SingletonFactory;
 private:
   mutable FastSemaphore m_lock;
   mutable FastSemaphore m_activeCountLock, m_activeIsZero; // need separate locks to prevent deadlock
@@ -64,11 +61,8 @@ private:
     setProperty(THR_BLOCKNEWTHREADS, m_blockNewThreads, true);
     m_lock.notify();
   }
-  ThreadMap(SingletonFactory *factory);
-  ~ThreadMap();                               // declared virtual in Collection
-  ThreadMap(const ThreadMap &src);            // not implemented
-  ThreadMap &operator=(const ThreadMap &src); // not implemented
-
+  ThreadMap();
+  ~ThreadMap() override;
 public:
   // throws exception if destructor has been called (as part of terminating this process)
   // Return true, if thread was added
@@ -91,21 +85,19 @@ public:
     return __super::hasListener(listener);
   }
   bool isEmpty() const;
+  DEFINESINGLETON(ThreadMap)
 };
 
 typedef Entry<CompactUIntKeyType, Thread*> ThreadMapEntry;
 
-ThreadMap::ThreadMap(SingletonFactory *factory)
-: Singleton(factory)
-, m_blockNewThreads(false)
-{
+ThreadMap::ThreadMap() : Singleton(__TFUNCTION__), m_blockNewThreads(false) {
   THREAD_ENTER;
   Thread::s_propertySource = this;
   Thread::s_defaultUncaughtExceptionHandler = new DefaultExceptionHandler; TRACE_NEW(Thread::s_defaultUncaughtExceptionHandler);
   THREAD_LEAVE;
 }
 
-ThreadMap::~ThreadMap() { // declared virtual in Collection
+ThreadMap::~ThreadMap() {
   THREAD_ENTER;
   blockNewThreads();
   killDemonThreads();
@@ -226,10 +218,8 @@ PropertyContainer        *Thread::s_propertySource                  = NULL;
 UncaughtExceptionHandler *Thread::s_defaultUncaughtExceptionHandler = NULL;
 UINT                      Thread::s_activeCount                     = 0;
 
-DEFINESINGLETON(ThreadMap);
-
 ThreadMap &Thread::getMap() { // static
-  return getThreadMap();
+  return ThreadMap::getInstance();
 }
 
 Thread::Thread(const String &description, Runnable &target, size_t stackSize)

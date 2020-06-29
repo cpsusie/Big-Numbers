@@ -17,7 +17,6 @@ typedef enum {
 } ThreadPoolProperty;
 
 class ThreadPool : public Singleton, public PropertyChangeListener, PropertyContainer {
-  friend class SingletonFactory;
   friend class ThreadPoolThread;
 private:
   PoolThreadPool             *m_threadPool;
@@ -28,21 +27,41 @@ private:
   int                         m_activeThreads, m_maxActiveThreads;
   bool                        m_blockExecute;
   static PropertyContainer   *s_propertySource;
-  void prepareDelete();
-  void killLogger();
-  ThreadPool(SingletonFactory *factory);
-  ~ThreadPool();
-  ThreadPool(const ThreadPool &src);            // not implemented
-  ThreadPool &operator=(const ThreadPool &src); // not implemented
-  void releaseThread(ThreadPoolThread *thr);
-  inline PoolThreadPool &getTPool() const {
+  // private ..... no lock
+  ThreadPool &ExecuteNoWait(Runnable &job);  // Execute job without blocking. Uncaught exceptions are lost.
+  // no lock
+  ThreadPool &ExecuteInParallelNoWait(RunnableArray &jobs);
+  // no lock
+  ThreadPool &PrepareDelete();
+  // no lock
+  ThreadPool &ReleaseThread(ThreadPoolThread *thr);
+  // no lock
+  ThreadPool &KillLogger();
+  // no lock
+  ThreadPool &AddListener(PropertyChangeListener *listener);
+  // no lock
+  ThreadPool &RemoveListener(PropertyChangeListener *listener);
+
+  inline PoolThreadPool &GetTPool() const {
     return *m_threadPool;
   }
-  inline ResultQueuePool &getQPool() const {
+  // no lock
+  inline ResultQueuePool &GetQPool() const {
     return *m_queuePool;
   }
-  inline void wait()   const { m_gate.wait();   }
-  inline void notify() const { m_gate.notify(); }
+
+  ThreadPool();
+  ~ThreadPool() override;
+  inline ThreadPool &wait()   { m_gate.wait();   return *this; }
+  inline void        notify() { m_gate.notify(); }
+
+  // with lock
+  void prepareDelete();
+  // with lock
+  void killLogger();
+  // with lock
+  void releaseThread(ThreadPoolThread *thr);
+
 public:
   static void executeNoWait(          Runnable      &job);  // Execute job without blocking. Uncaught exceptions are lost.
   static void executeInParallelNoWait(RunnableArray &jobs); // Execute all jobs without blocking. Uncaught exceptions are lost.
@@ -54,16 +73,17 @@ public:
     return getInstance().m_maxActiveThreads;
   }
 
+  // with lock
   String toString() const; // for debug
+  // with lock
   void   startLogging();
+  // with lock
   void   stopLogging();
   static void   setPriority(ThreadPriority priority); // Sets the priority for all running and future running threads
   // Default is THREAD_PRIORITY_BELOW_NORMAL
   // THREAD_PRIORITY_IDLE,-PRIORITY_LOWEST,-PRIORITY_BELOW_NORMAL,-PRIORITY_NORMAL,-PRIORITY_ABOVE_NORMAL
 
   static void setPriorityBoost(bool disablePriorityBoost);
-  static ThreadPool &getInstance();
-
   // This pointer will be source (PropertyContainer*) int PropertyChangeListener::handlePropertyChanged
   static inline bool isPropertyContainer(const PropertyContainer *source) {
     return source == s_propertySource;
@@ -72,4 +92,5 @@ public:
   void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) override;
   static void addListener(   PropertyChangeListener *listener);
   static void removeListener(PropertyChangeListener *listener);
+  DEFINESINGLETON(ThreadPool)
 };

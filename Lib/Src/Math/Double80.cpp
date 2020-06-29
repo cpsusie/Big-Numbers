@@ -151,6 +151,7 @@ Double80 pow(const Double80 &x, const Double80 &y) {
     default: NODEFAULT;
     }
   }
+  return std::numeric_limits<Double80>::quiet_NaN(); // should not come here
 }
 
 Double80 mypow(const Double80 &x, const Double80 &y) {
@@ -183,6 +184,7 @@ Double80 mypow(const Double80 &x, const Double80 &y) {
     default: NODEFAULT;
     }
   }
+  return std::numeric_limits<Double80>::quiet_NaN(); // should not come here
 }
 
 Double80 root(const Double80 &x, const Double80 &y) {

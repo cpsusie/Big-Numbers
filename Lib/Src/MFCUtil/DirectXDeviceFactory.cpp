@@ -2,21 +2,14 @@
 #include <MyUtil.h>
 #include <MFCUtil/DirectXDeviceFactory.h>
 
-DEFINESINGLETON(DirectXDeviceFactory);
-
-DirectXDeviceFactory &DirectXDeviceFactory::getInstance() { // static
-  return getDirectXDeviceFactory();
-};
-
-DirectXDeviceFactory::DirectXDeviceFactory(SingletonFactory *factory)
-: Singleton(factory)
-, m_direct3D(NULL)
-{
+DirectXDeviceFactory::DirectXDeviceFactory() : Singleton(__TFUNCTION__), m_direct3D(NULL) {
   initDirect3D();
 }
 
 DirectXDeviceFactory::~DirectXDeviceFactory() {
+  m_lock.wait();
   SAFERELEASE(m_direct3D);
+  m_lock.notify();
 }
 
 void DirectXDeviceFactory::initDirect3D() {

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Singleton.h>
+#include <FastSemaphore.h>
 #include <Math/BigReal/BigRealConfig.h>
 
 class SubProdRunnableArray;
@@ -12,7 +13,6 @@ class SubProdRunnablePool;
 class Pow2Cache;
 
 class BigRealResourcePool : public Singleton {
-  friend class SingletonFactory;
 private:
   DigitPoolPool        *m_digitPoolPool;
   LockedDigitPoolPool  *m_lockedDigitPoolPool;
@@ -43,11 +43,8 @@ private:
   void allocatePow2Cache();
   // No lock-protection
   void deallocatePow2Cache();
-  BigRealResourcePool(SingletonFactory *factory);
-  ~BigRealResourcePool();
-  BigRealResourcePool(const BigRealResourcePool &src);            // not implemented
-  BigRealResourcePool &operator=(const BigRealResourcePool &src); // not implemented
-  static BigRealResourcePool &getInstance();
+  BigRealResourcePool();
+  ~BigRealResourcePool() override;
 public:
   static void                 fetchSubProdRunnableArray(  SubProdRunnableArray &a, UINT runnableCount, UINT digitPoolCount);
   static void                 releaseSubProdRunnableArray(SubProdRunnableArray &a);
@@ -71,4 +68,6 @@ public:
   // Sets the priority for all running and future running threads
   // Default is THREAD_PRIORITY_BELOW_NORMAL
   // THREAD_PRIORITY_IDLE,-PRIORITY_LOWEST,-PRIORITY_BELOW_NORMAL,-PRIORITY_NORMAL,-PRIORITY_ABOVE_NORMAL
+
+  DEFINESINGLETON(BigRealResourcePool)
 };

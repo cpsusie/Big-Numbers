@@ -17,8 +17,7 @@ private:
   int            m_level;
   void clear();
 public:
-  SubProdRunnable(int id, const String &name) : BigRealResource(id), m_name(name)
-  {
+  SubProdRunnable(int id, const String &name) : BigRealResource(id), m_name(name) {
     clear();
   }
   void setInOut(BigReal &result, const BigReal &x, const BigReal &y, const BigReal &f, int level);
@@ -33,7 +32,7 @@ private:
   void reset();
 
 public:
-  ~SubProdRunnableArray(); // declared virtual in CompactArray
+  ~SubProdRunnableArray() override;
   inline SubProdRunnable &getRunnable(UINT index) const {
     return *(SubProdRunnable*)(*this)[index];
   }
@@ -44,7 +43,7 @@ public:
     return (UINT)size();
   }
   inline UINT getDigitPoolCount() const {
-    return m_digitPoolArray.size();
+    return (UINT)m_digitPoolArray.size();
   }
 };
 
