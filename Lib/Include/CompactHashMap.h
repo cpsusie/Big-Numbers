@@ -494,9 +494,9 @@ template <typename T, UINT pageSize=20000> class CompactDoubleHashMap : public C
 public:
   CompactDoubleHashMap() {
   }
-  explicit CompactDoubleHashMap(size_t capacity)  : CompactHashMap<CompactDoubleKeyType, T>(capacity) {
+  explicit CompactDoubleHashMap(size_t capacity)  : CompactHashMap(capacity) {
   }
-  CompactDoubleHashMap(const CompactDoubleHashMap<T> &src) : CompactHashMap<CompactDoubleKeyType, T>(src) {
+  CompactDoubleHashMap(const CompactDoubleHashMap<T> &src) : CompactHashMap(src) {
   }
 };
 
@@ -504,9 +504,9 @@ template <typename T, UINT pageSize=20000> class CompactStrHashMap    : public C
 public:
   CompactStrHashMap() {
   }
-  explicit CompactStrHashMap(size_t capacity)  : CompactHashMap<CompactStrKeyType, T>(capacity) {
+  explicit CompactStrHashMap(size_t capacity)  : CompactHashMap(capacity) {
   }
-  CompactStrHashMap(const CompactStrHashMap<T> &src) : CompactHashMap<CompactStrKeyType, T>(src) {
+  CompactStrHashMap(const CompactStrHashMap<T> &src) : CompactHashMap(src) {
   }
 };
 
@@ -514,8 +514,8 @@ template <typename T, UINT pageSize=20000> class CompactStrIHashMap    : public 
 public:
   CompactStrIHashMap() {
   }
-  explicit CompactStrIHashMap(size_t capacity)  : CompactHashMap<CompactStrIKeyType, T>(capacity) {
+  explicit CompactStrIHashMap(size_t capacity)  : CompactHashMap(capacity) {
   }
-  CompactStrIHashMap(const CompactStrIHashMap<T> &src) : CompactHashMap<CompactStrIKeyType, T>(src) {
+  CompactStrIHashMap(const CompactStrIHashMap<T> &src) : CompactHashMap(src) {
   }
 };

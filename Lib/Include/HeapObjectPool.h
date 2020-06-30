@@ -1,5 +1,7 @@
 #pragma once
 
+#include "DebugLog.h"
+
 // Assume T has a public field T *m_next
 template<typename T, UINT pageSize=20000> class HeapObjectPool {
 private:
@@ -10,6 +12,7 @@ private:
 
   public:
     HeapObjectPage(HeapObjectPage *nextPage) {
+//      DEBUGLOG(_T("%s:pageSize:%5u(%8s bytes), elementsize:%zu, nextPage:%p\n"), __TFUNCTION__, pageSize, format1000(sizeof(HeapObjectPage)).cstr(), sizeof(T), nextPage);
       m_nextPage = nextPage;
     }
 
