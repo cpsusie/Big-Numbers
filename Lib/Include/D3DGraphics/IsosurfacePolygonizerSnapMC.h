@@ -10,6 +10,18 @@
 
 namespace ISOSURFACE_POLYGONIZER_SNAPMC {
 
+//#define DUMP_STATISTICS
+//#define DUMP_CUBES
+//#define DUMP_CUBETABLE
+//#define DUMP_CORNERMAP
+//#define DUMP_EDGEMAP
+//#define DUMP_VERTEXARRAY
+//#define DUMP_FACEARRAY
+//#define VALIDATE_OPPOSITESIGN
+//#define VALIDATE_PUTFACE
+//#define VALIDATE_CUBES
+//#define ISODEBUGGER // should be defined in compile-options, to make it defined in D3FunctionPlotter too
+
 typedef enum {                        // x y z  x={left,right}, y={near,far}, z={bottom,top}
   LBN   // left  bottom near corner  <c> 0 0 0 </c> 0
  ,RBN   // right bottom near corner  <c> 2 0 0 </c> 1
@@ -210,18 +222,6 @@ public:
   static double distance(const Point3DKey &k1, const Point3DKey &k2);
   String toString() const;
 };
-
-//#define DUMP_STATISTICS
-//#define DUMP_CUBES
-//#define DUMP_CUBETABLE
-//#define DUMP_CORNERMAP
-//#define DUMP_EDGEMAP
-//#define DUMP_VERTEXARRAY
-//#define DUMP_FACEARRAY
-//#define VALIDATE_OPPOSITESIGN
-//#define VALIDATE_PUTFACE
-//#define VALIDATE_CUBES
-//#define ISODEBUGGER // should be defined in compile-options, to make it defined in D3FunctionPlotter too
 
 class CubeEdgeHashKey {
 private:
