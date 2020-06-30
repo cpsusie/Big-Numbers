@@ -507,7 +507,7 @@ static const KeyWord keywordtable[] = {
 ,_T("TO"        ),TO
 };
 
-typedef CompactStrIHashMap<ExpressionInputSymbol> HashMapType;
+typedef CompactStrIHashMap<ExpressionInputSymbol,ARRAYSIZE(keywordtable)> HashMapType;
 
 class ExpressionKeyWordMap : public HashMapType {
 public:

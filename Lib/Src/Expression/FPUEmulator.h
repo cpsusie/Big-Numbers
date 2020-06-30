@@ -26,7 +26,7 @@ typedef enum {
  ,_FCOS      ,_CALL      ,_NOTFPU=-1
 } FPUOpcodeKey;
 
-class FPUOpcodeHashMap : public CompactStrHashMap<FPUOpcodeKey> {
+class FPUOpcodeHashMap : public CompactStrHashMap<FPUOpcodeKey,80> {
 public:
   FPUOpcodeHashMap(size_t capacity);
   // Returns the corresponding FPUOpcodeKey if opcode is for FPU. _NOTFPU if not

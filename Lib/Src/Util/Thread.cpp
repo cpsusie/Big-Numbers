@@ -44,7 +44,7 @@ void DefaultExceptionHandler::uncaughtException(Thread &thread, Exception &e) {
 }
 
 // map ThreadId -> Thread*
-class ThreadMap : public Singleton, private CompactUIntHashMap<Thread*>, private PropertyContainer {
+class ThreadMap : public Singleton, private CompactUIntHashMap<Thread*,256>, private PropertyContainer {
 private:
   mutable FastSemaphore m_lock;
   mutable FastSemaphore m_activeCountLock, m_activeIsZero; // need separate locks to prevent deadlock
