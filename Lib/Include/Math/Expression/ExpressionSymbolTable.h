@@ -5,7 +5,7 @@
 
 namespace Expr {
 
-class NameTable : public CompactStrIHashMap<UINT> { // Variable-names are case-insensitive
+class NameTable : public CompactStrIHashMap<UINT,500> { // Variable-names are case-insensitive
 public:
   String toString() const;
 };
@@ -19,7 +19,7 @@ private:
   Array<ExpressionVariable>     m_variableTable;
   mutable CompactRealArray      m_valueTable;
   CompactIntArray               m_valueRefCountTable;
-  CompactIntHashMap<int>        m_valueRefCountHashMap;
+  CompactIntHashMap<int,500>    m_valueRefCountHashMap;
   void                  incrValueRefCount(UINT valueIndex);
   void                  buildValueRefCountTable();
   ParserTree           *getTree();
