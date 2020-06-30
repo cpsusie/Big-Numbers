@@ -28,12 +28,18 @@ protected:
       alwaysNotifyPropertyChanged(id, &oldValue, &v);
     }
   }
-  void setProperty(int id, String &v, const TCHAR *newValue) {
+  inline void setProperty(int id, String &v, const wchar_t *newValue) {
+    setProperty<String>(id, v, String(newValue));
+  }
+  inline void setProperty(int id, String &v, const char *newValue) {
     setProperty<String>(id, v, String(newValue));
   }
   bool setNotifyEnable(bool enable);
   inline bool getNotifyEnable() const {
     return m_notifyEnable;
+  }
+  inline UINT getListenerCount() const {
+    return (UINT)m_listeners.size();
   }
 public:
   inline PropertyContainer() : m_notifyEnable(true) {
@@ -41,7 +47,7 @@ public:
   virtual ~PropertyContainer() {
     clear();
   }
-  inline bool hasListener(PropertyChangeListener * listener) const {
+  inline bool hasListener(PropertyChangeListener * const listener) const {
     return m_listeners.getFirstIndex(listener) >= 0;
   }
   inline void addPropertyChangeListener(PropertyChangeListener *listener) {
