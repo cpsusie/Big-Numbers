@@ -74,4 +74,4 @@ public:
   String toString(int dec=3) const;
 };
 
-typedef CompactUIntHashMap<D3Material> MaterialMap;
+typedef CompactUIntHashMap<D3Material,200> MaterialMap;

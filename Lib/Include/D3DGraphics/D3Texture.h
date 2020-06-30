@@ -46,4 +46,4 @@ inline bool operator!=(const D3Texture &t1, const D3Texture &t2) {
   return !(t1 == t2);
 }
 
-typedef CompactUIntHashMap<D3Texture> TextureMap;
+typedef CompactUIntHashMap<D3Texture,200> TextureMap;

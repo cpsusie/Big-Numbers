@@ -6,7 +6,7 @@ template<typename T> struct NameValue {
   const TCHAR *m_str;
 };
 
-template<typename T, const NameValue<T> *table, UINT n> class NameLookup : public CompactStrIHashMap<T> {
+template<typename T, const NameValue<T> *table, UINT n> class NameLookup : public CompactStrIHashMap<T,n> {
 protected:
   NameLookup() : CompactStrIHashMap(31) {
     for(UINT i = 0; i < n; i++) {
