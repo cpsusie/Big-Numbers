@@ -6,41 +6,39 @@
 #include <Math/Point2D.h>
 #include "Math/Point3D.h"
 
-float       operator*(            const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2);
-float       length(               const D3DXVECTOR3 &v);
-float       angle(                const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2);
-D3DXMATRIX &D3DXMatrixPerspectiveFov(D3DXMATRIX &mat , FLOAT              angel, FLOAT            apsect, FLOAT zn, FLOAT    fn, bool rightHanded);
-D3DXMATRIX &D3DXMatrixLookAt(        D3DXMATRIX &view, const D3DXVECTOR3 &eye, const D3DXVECTOR3 &lookAt, const D3DXVECTOR3 &up, bool rightHanded);
-D3DXVECTOR3 unitVector(           const D3DXVECTOR3 &v);
+float              operator*(            const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2);
+float              length(               const D3DXVECTOR3 &v);
+float              angle(                const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2);
+D3DXVECTOR3        unitVector(           const D3DXVECTOR3 &v);
 extern D3DXVECTOR3 E[3];
 // i = [0..2] giving ((1,0,0) or (0,1,0) or (0,0,1)
-D3DXVECTOR3 createUnitVector(UINT i);
-D3DXVECTOR3 rotate(               const D3DXVECTOR3 &v, const D3DXVECTOR3 &axis, float rad);
-D3DXVECTOR3 rotate(               const D3DXVECTOR3 &v, const D3DXQUATERNION &q);
-
-D3DXVECTOR3 cross(                const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2);
-D3DXVECTOR3 randUnitVector(       RandomGenerator   &rnd = *RandomGenerator::s_stdGenerator);
-D3DXVECTOR3 ortonormalVector(     const D3DXVECTOR3 &v);
-String      toString(             const D3DXVECTOR3 &v, int dec = 3);
-String      toString(             const D3DXVECTOR4 &v, int dec = 3);
-String      toString(             const D3DXQUATERNION &q, int dec = 3);
-D3DXMATRIX  transpose(            const D3DXMATRIX  &m);
-D3DXMATRIX  inverse(              const D3DXMATRIX  &m);
-D3DXMATRIX  createIdentityMatrix();
-D3DXMATRIX  createTranslateMatrix(const D3DXVECTOR3 &v);
-D3DXMATRIX  createScaleMatrix(    const D3DXVECTOR3 &s);
-D3DXVECTOR3 operator*(            const D3DXMATRIX  &m   , const D3DXVECTOR3 &v);
-D3DXVECTOR3 operator*(            const D3DXVECTOR3 &v   , const D3DXMATRIX  &m);
+D3DXVECTOR3        createUnitVector(UINT i);
+D3DXVECTOR3        cross(                const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2);
+D3DXVECTOR3        randUnitVector(       RandomGenerator   &rnd = *RandomGenerator::s_stdGenerator);
+D3DXVECTOR3        ortonormalVector(     const D3DXVECTOR3 &v);
+String             toString(             const D3DXVECTOR3 &v, int dec = 3);
+String             toString(             const D3DXVECTOR4 &v, int dec = 3);
+String             toString(             const D3DXQUATERNION &q, int dec = 3);
+D3DXMATRIX         transpose(            const D3DXMATRIX  &m);
+D3DXMATRIX         inverse(              const D3DXMATRIX  &m);
+D3DXMATRIX         createIdentityMatrix();
+D3DXMATRIX         createTranslateMatrix(const D3DXVECTOR3 &v);
+D3DXVECTOR3        operator*(            const D3DXMATRIX  &m   , const D3DXVECTOR3 &v);
+D3DXVECTOR3        operator*(            const D3DXVECTOR3 &v   , const D3DXMATRIX  &m);
 // return quarternion that rotates unit-vector[unitIndex] pointing into dir
-D3DXQUATERNION createOrientation( const D3DXVECTOR3 &dir , int unitIndex=0);
-D3DXQUATERNION createOrientation( const D3DXVECTOR3 &dir , const D3DXVECTOR3 &up);
+D3DXQUATERNION     createOrientation(    const D3DXVECTOR3 &dir , int unitIndex=0);
+D3DXQUATERNION     createOrientation(    const D3DXVECTOR3 &dir , const D3DXVECTOR3 &up);
 // return quarternion that rotates from into to
-D3DXQUATERNION createRotation(    const D3DXVECTOR3 &from, const D3DXVECTOR3 &to);
+D3DXQUATERNION     createRotation(       const D3DXVECTOR3 &from, const D3DXVECTOR3 &to);
 // angle in radians
-D3DXQUATERNION createRotation(    const D3DXVECTOR3 &axis, float angle);
-void           getDirUp(          const D3DXQUATERNION &q, D3DXVECTOR3 &dir, D3DXVECTOR3 &up);
-float          det(               const D3DXMATRIX  &m);
-String         toString(          const D3DXMATRIX  &m, int dec = 3);
+D3DXQUATERNION     createRotation(       const D3DXVECTOR3 &axis, float angle);
+D3DXVECTOR3        rotate(               const D3DXVECTOR3 &v, const D3DXQUATERNION &q);
+inline D3DXVECTOR3 rotate(               const D3DXVECTOR3 &v, const D3DXVECTOR3    &axis, float rad) {
+  return rotate(v, createRotation(axis, rad));
+}
+void               getDirUp(             const D3DXQUATERNION &q, D3DXVECTOR3 &dir, D3DXVECTOR3 &up);
+float              det(                  const D3DXMATRIX  &m);
+String             toString(             const D3DXMATRIX  &m, int dec = 3);
 
 #define D3DXORIGIN D3DXVECTOR3(0,0,0)
 

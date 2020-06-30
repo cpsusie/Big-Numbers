@@ -1,36 +1,14 @@
 #include "pch.h"
 #include <MFCUtil/ColorSpace.h>
 
-D3DXMATRIX  createIdentityMatrix() {
+D3DXMATRIX createIdentityMatrix() {
   D3DXMATRIX m;
   return *D3DXMatrixIdentity(&m);
 }
 
-D3DXMATRIX  createTranslateMatrix(const D3DXVECTOR3 &v) {
+D3DXMATRIX createTranslateMatrix(const D3DXVECTOR3 &v) {
   D3DXMATRIX m;
   return *D3DXMatrixTranslation(&m,v.x,v.y,v.z);
-}
-
-D3DXMATRIX createScaleMatrix(const D3DXVECTOR3 &s) {
-  D3DXMATRIX m;
-  return *D3DXMatrixScaling(&m, s.x, s.y, s.z);
-}
-
-D3DXVECTOR3 rotate(const D3DXVECTOR3 &v, const D3DXVECTOR3 &axes, float rad) {
-  D3DXMATRIX matRot;
-  return *D3DXMatrixRotationAxis(&matRot, &axes, rad) * v;
-}
-
-D3DXMATRIX &D3DXMatrixPerspectiveFov(D3DXMATRIX &mat, FLOAT angel, FLOAT apsect, FLOAT zn, FLOAT fn, bool rightHanded) {
-  return rightHanded
-       ? *D3DXMatrixPerspectiveFovRH(&mat, angel, apsect, zn, fn)
-       : *D3DXMatrixPerspectiveFovLH(&mat, angel, apsect, zn, fn);
-}
-
-D3DXMATRIX &D3DXMatrixLookAt(D3DXMATRIX &view, const D3DXVECTOR3 &eye, const D3DXVECTOR3 &lookAt, const D3DXVECTOR3 &up, bool rightHanded) {
-  return rightHanded
-       ? *D3DXMatrixLookAtRH(&view, &eye, &lookAt, &up)
-       : *D3DXMatrixLookAtLH(&view, &eye, &lookAt, &up);
 }
 
 D3DXVECTOR3 randUnitVector(RandomGenerator &rnd) {

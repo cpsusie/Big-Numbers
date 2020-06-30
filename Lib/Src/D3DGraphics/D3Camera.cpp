@@ -140,9 +140,15 @@ D3Camera &D3Camera::setViewMatrix() {
   return *this;
 }
 
+static D3DXMATRIX &createMatrixPerspectiveFov(D3DXMATRIX &mat, FLOAT angel, FLOAT apsect, FLOAT zn, FLOAT fn, bool rightHanded) {
+  return rightHanded
+       ? *D3DXMatrixPerspectiveFovRH(&mat, angel, apsect, zn, fn)
+       : *D3DXMatrixPerspectiveFovLH(&mat, angel, apsect, zn, fn);
+}
+
 D3DXMATRIX &D3Camera::createProjMatrix(D3DXMATRIX &m) const {
   const CSize size = getWinSize();
-  D3DXMatrixPerspectiveFov(m, m_viewAngle, (float)size.cx / size.cy, m_nearViewPlane, m_farViewPlane, getRightHanded());
+  createMatrixPerspectiveFov(m, m_viewAngle, (float)size.cx / size.cy, m_nearViewPlane, m_farViewPlane, getRightHanded());
   return m;
 }
 
@@ -275,10 +281,12 @@ void D3Camera::endAnimate() {
 
 String D3Camera::toString() const {
   const CSize size = getWinSize();
-  return format(_T("View angle:%.2lf, Near/Far view:(%.3f,%.3f), WinSize:%s")
+  return format(_T("View angle:%.2lf, Near/Far view:(%.3f,%.3f), WinSize:%s, NotifyEnabled:%s, Listeners:%d")
                , degrees(getViewAngle())
                , getNearViewPlane()
                , getFarViewPlane()
                , ::toString(size).cstr()
+               , boolToStr(getNotifyEnable())
+               , getListenerCount()
                );
 }

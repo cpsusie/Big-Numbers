@@ -21,13 +21,28 @@ D3DXVECTOR3 D3World::getLeft() const {
   return cross(getUp(), getDir());
 }
 
+static D3DXMATRIX &createMatrixLookAt(D3DXMATRIX &view, const D3DXVECTOR3 &eye, const D3DXVECTOR3 &lookAt, const D3DXVECTOR3 &up, bool rightHanded) {
+  return rightHanded
+       ? *D3DXMatrixLookAtRH(&view, &eye, &lookAt, &up)
+       : *D3DXMatrixLookAtLH(&view, &eye, &lookAt, &up);
+}
+
 D3DXMATRIX &D3World::createViewMatrix(D3DXMATRIX &dst, bool rightHanded) const {
-  return D3DXMatrixLookAt(dst, m_pos, m_pos + getDir(), getUp(), rightHanded);
+  return createMatrixLookAt(dst, m_pos, m_pos + getDir(), getUp(), rightHanded);
+}
+
+D3World &D3World::setLookAt(const D3DXVECTOR3 &lookAt) {
+  D3DXVECTOR3 newDir = lookAt - m_pos;
+  const float dirlen = length(newDir);
+  if(dirlen != 0) {
+    newDir /= dirlen;
+    m_q *= createRotation(getDir(), newDir);
+  }
+  return *this;
 }
 
 D3World &D3World::setLookAt(const D3DXVECTOR3 &pos, const D3DXVECTOR3 &lookAt, const D3DXVECTOR3 &up) {
-  const D3DXVECTOR3 dir = lookAt - pos, Up = up;;
-  return setPos(pos).setOrientation(createOrientation(dir, Up));
+  return setPos(pos).setOrientation(createOrientation(lookAt - pos, up));
 }
 
 D3World &D3World::setOrientation(const D3DXQUATERNION &q, const D3DXVECTOR3 &centerOfRotation) {

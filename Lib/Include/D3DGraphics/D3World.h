@@ -80,10 +80,10 @@ public:
   D3DXVECTOR3 getLeft() const;
   D3World &rotate(const D3DXQUATERNION &rot);
   D3World &rotate(const D3DXQUATERNION &rot, const D3DXVECTOR3 &centerOfRotation);
-  inline D3World &setLookAt(const D3DXVECTOR3 &point) {
-    return setLookAt(getPos(), point, getUp());
-  }
   D3World &setLookAt(const D3DXVECTOR3 &pos, const D3DXVECTOR3 &lookAt, const D3DXVECTOR3 &up);
+  // Automatic find the best up (which cause minimal rotation)
+  // if lookAt == getPos(), then no changes
+  D3World &setLookAt(const D3DXVECTOR3 &lookAt);
 
   D3DXMATRIX &createViewMatrix(D3DXMATRIX &dst, bool rightHanded) const;
   String toString(int dec = 3) const;
