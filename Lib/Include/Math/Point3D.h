@@ -204,7 +204,11 @@ public:
   inline bool operator<=(const Point3DTemplate &p) const {
     return (x <= p.x) && (y <= p.y) && (z <= p.z);
   }
-
+#if defined(__D3DX9MATH_H__)
+  inline operator D3DXVECTOR3() const {
+    return D3DXVECTOR3((float)x, (float)y, (float)z);
+  }
+#endif
   inline String toString(int precision = 3) const {
     return format(_T("(%s,%s,%s)"),::toString(x, precision).cstr(),::toString(y, precision).cstr(),::toString(z, precision).cstr());
   }
