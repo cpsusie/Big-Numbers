@@ -107,7 +107,6 @@ private:
     return (m_visibleParts & part) != 0;
   }
   D3DXVECTOR3 getCubeCamVector() const;
-  void        moveCamToNewCubeCenter();
 public:
   DebugSceneobject(D3Scene &scene, Debugger &debugger);
   ~DebugSceneobject() override;
@@ -147,6 +146,7 @@ public:
   inline float getCamDistance()                   const {
     return m_currentCamDistance;
   }
+  bool        isSlidingCamera()                   const;
   inline void setVisibleParts(BYTE visibleParts) {
     m_visibleParts = visibleParts;
   }
@@ -245,6 +245,9 @@ public:
     return m_polygonizer->getVertexArray();
   }
   inline DebugSceneobject *getSceneObject() {
+    return &m_sceneObject;
+  }
+  inline const DebugSceneobject *getSceneObject() const {
     return &m_sceneObject;
   }
   void updateSceneObject(BYTE visibleParts);

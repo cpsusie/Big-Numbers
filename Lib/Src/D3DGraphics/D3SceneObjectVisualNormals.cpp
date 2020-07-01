@@ -26,7 +26,7 @@ public:
 
 // -------------------------------------------------------------------------------------------------------------
 
-#define TRIANGLECOUNT 12
+#define TRIANGLECOUNT 6
 
 class D3SceneObjectTriangleArray : public D3SceneObjectWithIndexBuffer {
 private:

@@ -9,16 +9,14 @@ D3SceneObjectVisual::D3SceneObjectVisual(D3Scene &scene, const String &name)
   : D3SceneObject(scene)
   , m_parent(NULL)
   , m_name(name)
-  , m_userData(NULL)
-{
+  , m_userData(NULL) {
   m_world = D3World();
 }
 D3SceneObjectVisual::D3SceneObjectVisual(D3SceneObjectVisual *parent, const String &name)
   : D3SceneObject(parent->getScene())
   , m_parent(parent)
   , m_name(name.length() ? name : parent->getName())
-  , m_userData(NULL)
-{
+  , m_userData(NULL) {
   m_world = D3World();
 }
 
@@ -32,10 +30,16 @@ D3SceneObjectVisual::~D3SceneObjectVisual() {
 
 UINT D3SceneObjectVisual::addChild(D3SceneObjectVisual *child) {
   if(child->m_parent != this) {
-    throwInvalidArgumentException(__TFUNCTION__,_T("child(name=%s).parent(%s) != this (%s)")
-                                 ,child->getName().cstr()
-                                 ,child->m_parent->getName().cstr()
-                                 ,getName().cstr()
+    throwInvalidArgumentException(__TFUNCTION__, _T("child(name=%s).parent(%s) != this(%s)")
+                                 , child->getName().cstr()
+                                 , child->m_parent->getName().cstr()
+                                 , getName().cstr()
+                                 );
+  }
+  if(isAncestor(child)) { // prevent circular references, which would cause infinite recursion several places
+    throwInvalidArgumentException(__TFUNCTION__, _T("child(name=%s) is ancestor to this(%s)")
+                                 , child->getName().cstr()
+                                 , getName().cstr()
                                  );
   }
   const UINT index = (UINT)m_children.size();
@@ -57,6 +61,28 @@ int D3SceneObjectVisual::findChildByType(SceneObjectType type) const {
     }
   }
   return -1;
+}
+
+bool D3SceneObjectVisual::isDescendant(D3SceneObjectVisual * const visual, bool recursive) const {
+  if(recursive) {
+    for(const D3SceneObjectVisual *child : m_children) {
+      if((child == visual) || child->isDescendant(visual, true)) {
+        return true;
+      }
+    }
+    return false;
+  } else {
+    return m_children.getFirstIndex(visual) >= 0;
+  }
+}
+
+bool D3SceneObjectVisual::isAncestor(D3SceneObjectVisual * const visual) const {
+  for(D3SceneObjectVisual *p = getParent(); p; p = p->getParent()) {
+    if(p == visual) {
+      return true;
+    }
+  }
+  return false;
 }
 
 LPDIRECT3DTEXTURE D3SceneObjectVisual::getTexture() const {

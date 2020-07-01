@@ -88,8 +88,9 @@ bool D3SceneObjectAnimatedVisual::isNormalsVisible() const {
 
 void D3SceneObjectAnimatedVisual::setNormalsVisible(bool visible) {
   m_lock.wait();
-  for(D3SceneObjectVisual *c : m_children) {
-    c->setNormalsVisible(visible);
+  const UINT n = getChildCount();
+  for(UINT i = 0; i < n; i++) {
+    getChild(i)->setNormalsVisible(visible);
   }
   m_lock.notify();
 }

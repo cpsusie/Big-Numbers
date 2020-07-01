@@ -58,9 +58,9 @@ D3CameraSlideAnimator &D3CameraSlideAnimator::animate(UINT msec, UINT steps, Cam
       }
       if(isSet(FL_UPDATEWORLD)) {
         D3World w(m_oldWorld);
-        if(isSet(FL_UPDATEPOS)) w.setPos(interpolate(w.getPos(), m_newWorld.getPos(), t));
-        if(isSet(FL_UPDATESCALE)) w.setScale(interpolate(w.getScale(), m_newWorld.getScale(), t));
-        if(isSet(FL_UPDATEORIENTATION)) w.setOrientation(interpolate(w.getOrientation(), m_newWorld.getOrientation(), t));
+        if(isSet(FL_UPDATEPOS        )) w.setPos(        interpolate(w.getPos()        , m_newWorld.getPos()        ,t));
+        if(isSet(FL_UPDATESCALE      )) w.setScale(      interpolate(w.getScale()      , m_newWorld.getScale()      ,t));
+        if(isSet(FL_UPDATEORIENTATION)) w.setOrientation(interpolate(w.getOrientation(), m_newWorld.getOrientation(),t));
         m_cam.setD3World(w);
       }
       if(isSet(FL_UPDATEVIEWANGLE)) {
@@ -74,8 +74,8 @@ D3CameraSlideAnimator &D3CameraSlideAnimator::animate(UINT msec, UINT steps, Cam
         m_cam.setBackgroundColor(bldColor);
       }
       m_cam.doRender(); // bypass sceneContainers render system and render camera directly
-      m_cam.endAnimate();
     }
+    m_cam.endAnimate();
   } catch(...) {
     m_cam.endAnimate();
     throw;

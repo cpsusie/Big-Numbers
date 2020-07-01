@@ -29,9 +29,7 @@ D3DXQUATERNION createOrientation(const D3DXVECTOR3 &dir, int unitIndex) {
 
 D3DXQUATERNION createOrientation(const D3DXVECTOR3 &dir, const D3DXVECTOR3 &up) {
   const D3DXVECTOR3    unitDir = unitVector(dir), unitUp = unitVector(up);
-  const float          s = unitDir * unitUp;
-  const float          p = 1 - fabs(s);
-  verify(p > 1e-5);
+  verify(1 - fabs(unitDir * unitUp) > 1e-5);
   const D3DXVECTOR3    uup     = unitVector(unitUp - (unitDir*unitUp) * unitDir);  // unitDir,uup are ortonormal, span(dir,up) = span(unitDir,uup)
   const D3DXQUATERNION q1      = createOrientation(unitDir);
   const D3DXQUATERNION q2      = createRotation(rotate(E[2], q1), uup);

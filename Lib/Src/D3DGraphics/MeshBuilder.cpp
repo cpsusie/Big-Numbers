@@ -32,14 +32,14 @@ bool MeshBuilder::hasCorrectOrientation(const Face &f) const {
   const VNTIArray   &fa = f.getIndexArray();
   const VertexArray &va = getVertexArray();
   const VertexArray &na = getNormalArray();
-  const Vertex      &p1 = va[fa[0].m_vIndex];
-  const Vertex      &p2 = va[fa[1].m_vIndex];
-  const Vertex      &p3 = va[fa[2].m_vIndex];
-  const Vertex      &n1 = na[fa[0].m_nIndex];
-  const Vertex      &n2 = na[fa[1].m_nIndex];
-  const Vertex      &n3 = na[fa[2].m_nIndex];
-  const D3DXVECTOR3 c = cross((D3DXVECTOR3&)p3 - (D3DXVECTOR3&)p1, (D3DXVECTOR3&)p2 - (D3DXVECTOR3&)p1);
-  const float s1 = c * n1, s2 = c * n2, s3 = c * n3; // TODO
+  const D3DXVECTOR3 &p1 = va[fa[0].m_vIndex].getPos();
+  const D3DXVECTOR3 &p2 = va[fa[1].m_vIndex].getPos();
+  const D3DXVECTOR3 &p3 = va[fa[2].m_vIndex].getPos();
+  const D3DXVECTOR3 &n1 = na[fa[0].m_nIndex].getPos();
+//const D3DXVECTOR3 &n2 = na[fa[1].m_nIndex].getPos();
+//const D3DXVECTOR3 &n3 = na[fa[2].m_nIndex].getPos();
+  const D3DXVECTOR3 c = cross(p3 - p1, p2 - p1);
+  const float s1 = c * n1; // , s2 = c * n2, s3 = c * n3; // TODO
   return s1 > 0;
 }
 

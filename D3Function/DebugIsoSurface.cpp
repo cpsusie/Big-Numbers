@@ -27,13 +27,13 @@ private:
   static D3Cube createCube(float cellSize);
 public:
   CornerMarkObject(OctaObject *parent);
-  ~CornerMarkObject() override;
+  ~CornerMarkObject()       override;
   int getMaterialId() const override;
   inline CornerMarkObject &setCornerIndex(int index) {
     m_cornerIndex = index;
     return *this;
   }
-  D3DXMATRIX &getWorld() override;
+  D3DXMATRIX &getWorld()    override;
 };
 
 OctaObject::OctaObject(D3SceneObjectVisual *parent, float cellSize)
@@ -44,18 +44,20 @@ OctaObject::OctaObject(D3SceneObjectVisual *parent, float cellSize)
   m_materialId = getScene().addMaterialWithColor(D3D_BLUE);
 
   const D3Cube      cube = createCube(cellSize);
-  const D3DXVECTOR3 lbn  = cube.getMin(), rtf = cube.getMax();
+
 #if defined(USE_SNAPMC)
   // x={left,right}, y={near,far}, z={bottom,top}
-  m_cornerCenterArray[LBN] = D3DXVECTOR3(lbn.x, lbn.y, lbn.z); // left  bottom near corner
-  m_cornerCenterArray[LBF] = D3DXVECTOR3(lbn.x, rtf.y, lbn.z); // left  bottom far  corner
-  m_cornerCenterArray[LTN] = D3DXVECTOR3(lbn.x, lbn.y, rtf.z); // left  top    near corner
-  m_cornerCenterArray[LTF] = D3DXVECTOR3(lbn.x, rtf.y, rtf.z); // left  top    far  corner
-  m_cornerCenterArray[RBN] = D3DXVECTOR3(rtf.x, lbn.y, lbn.z); // right bottom near corner
-  m_cornerCenterArray[RBF] = D3DXVECTOR3(rtf.x, rtf.y, lbn.z); // right bottom far  corner
-  m_cornerCenterArray[RTN] = D3DXVECTOR3(rtf.x, lbn.y, rtf.z); // right top    near corner
-  m_cornerCenterArray[RTF] = D3DXVECTOR3(rtf.x, rtf.y, rtf.z); // right top    far  corner
+  m_cornerCenterArray[LBN] = cube.LBN();
+  m_cornerCenterArray[LBF] = cube.LBF();
+  m_cornerCenterArray[LTN] = cube.LTN();
+  m_cornerCenterArray[LTF] = cube.LTF();
+  m_cornerCenterArray[RBN] = cube.RBN();
+  m_cornerCenterArray[RBF] = cube.RBF();
+  m_cornerCenterArray[RTN] = cube.RTN();
+  m_cornerCenterArray[RTF] = cube.RTF();
 #else
+  // x={left,right}, z={near,far}, y={bottom,top}
+  const D3DXVECTOR3 lbn  = cube.getMin(), rtf = cube.getMax();
   m_cornerCenterArray[LBN] = D3DXVECTOR3(lbn.x, lbn.y, lbn.z); // left  bottom near corner
   m_cornerCenterArray[LBF] = D3DXVECTOR3(lbn.x, lbn.y, rtf.z); // left  bottom far  corner
   m_cornerCenterArray[LTN] = D3DXVECTOR3(lbn.x, rtf.y, lbn.z); // left  top    near corner
@@ -81,7 +83,7 @@ D3Cube OctaObject::createCube(float cellSize) {
 
 void OctaObject::setOctagon(const Octagon &octa) {
   if(!octa.isEmpty()) {
-    m_cube = *octa.getCube();
+    m_cube   = *octa.getCube();
     m_center = m_cube.getCenter();
     const UINT n = octa.getCornerCount();
     for(UINT i = 0; i < n; i++) {
@@ -91,7 +93,7 @@ void OctaObject::setOctagon(const Octagon &octa) {
 }
 
 D3DXMATRIX &OctaObject::getWorld() {
-  D3World w(m_parent->getWorld());
+  D3World w(getParent()->getWorld());
   return m_world = w.setPos(w.getPos() + rotate(m_center, w.getOrientation()));
 }
 
@@ -140,7 +142,7 @@ int CornerMarkObject::getMaterialId() const {
 }
 
 D3DXMATRIX &CornerMarkObject::getWorld() {
-  D3World w = m_parent->getWorld();
+  D3World w = getParent()->getWorld();
   return m_world = w.setPos(w.getPos()+rotate(m_octaObject.getCornerCenter(m_cornerIndex),w.getOrientation()));
 }
 
@@ -153,10 +155,10 @@ public:
   {
   }
   int getMaterialId() const override {
-    return m_parent->getMaterialId();
+    return getParent()->getMaterialId();
   }
   D3DXMATRIX &getWorld() override {
-    return m_parent->getWorld();
+    return getParent()->getWorld();
   }
 };
 
@@ -218,9 +220,9 @@ UINT TetraObject::getLinesObject(const Tetrahedron &tetra) {
 }
 
 CompactArray<Line3D> TetraObject::createLineArray(const Tetrahedron &tetra) const {
-  const D3DXVECTOR3 *corners = m_octaObject.getCornerCenterArray();
+  const D3DXVECTOR3   *corners = m_octaObject.getCornerCenterArray();
   CompactArray<Line3D> result(6);
-  const UINT n = tetra.getCornerCount();
+  const UINT           n       = tetra.getCornerCount();
   for(UINT i = 0; i < n; i++) {
     for(UINT j = i+1; j < n; j++) {
       result.add(Line3D(corners[tetra.getCorner(i)], corners[tetra.getCorner(j)]));
@@ -232,6 +234,7 @@ CompactArray<Line3D> TetraObject::createLineArray(const Tetrahedron &tetra) cons
 // ------------------------------------------------------------Face Object ----------------------------------------------
 
 class ColoredFaceObject : public D3SceneObjectLineArray {
+private:
   int m_materialId;
 public:
   ColoredFaceObject(D3SceneObjectVisual *parent, const CompactArray<Line3D> &lines, D3DCOLOR color);
@@ -242,7 +245,7 @@ public:
     return m_materialId;
   }
   D3DXMATRIX &getWorld()    override {
-    return m_parent->getWorld();
+    return getParent()->getWorld();
   }
 };
 
@@ -254,16 +257,16 @@ ColoredFaceObject::ColoredFaceObject(D3SceneObjectVisual *parent, const CompactA
 
 class FacesObject : public D3SceneObjectVisual {
 private:
-  CompactArray<Line3D> createLineArray(const Face3 &face,              const IsoSurfaceVertexArray &va) const;
-  CompactArray<Line3D> createLineArray(CompactArray<Face3> &faceArray, const IsoSurfaceVertexArray &va) const;
+  CompactArray<Line3D> createLineArray(const Face3               &face     , const IsoSurfaceVertexArray &va) const;
+  CompactArray<Line3D> createLineArray(const CompactArray<Face3> &faceArray, const IsoSurfaceVertexArray &va) const;
 public:
-  FacesObject(DebugIsoSurface *dbgObject, CompactArray<Face3> &faceArray);
+  FacesObject(DebugIsoSurface *dbgObject, const CompactArray<Face3> &faceArray);
   D3DXMATRIX &getWorld() override {
-    return m_parent->getWorld();
+    return getParent()->getWorld();
   }
 };
 
-FacesObject::FacesObject(DebugIsoSurface *dbgObject, CompactArray<Face3> &faceArray)
+FacesObject::FacesObject(DebugIsoSurface *dbgObject, const CompactArray<Face3> &faceArray)
 : D3SceneObjectVisual(dbgObject->getSceneObject(), _T("FaceObject"))
 {
   if(faceArray.isEmpty()) return;
@@ -286,7 +289,7 @@ CompactArray<Line3D> FacesObject::createLineArray(const Face3 &face, const IsoSu
   return result;
 }
 
-CompactArray<Line3D> FacesObject::createLineArray(CompactArray<Face3> &faceArray, const IsoSurfaceVertexArray &va) const {
+CompactArray<Line3D> FacesObject::createLineArray(const CompactArray<Face3> &faceArray, const IsoSurfaceVertexArray &va) const {
   CompactArray<Line3D> result;
   size_t n = faceArray.size();
   if(n <= 1) {
@@ -357,12 +360,12 @@ void VertexObject::setSurfaceVertexArray(const IsoSurfaceVertexArray &a) {
 }
 
 CompactArray<Line3D> VertexObject::createLineArray(float lineLength) const {
-  CompactArray<Line3D> result;
   float d = lineLength;
   const D3DXVECTOR3 v1( d, d, d);
   const D3DXVECTOR3 v2( d, d,-d);
   const D3DXVECTOR3 v3( d,-d, d);
   const D3DXVECTOR3 v4(-d, d, d);
+  CompactArray<Line3D> result(4);
   result.add(Line3D(-v1, +v1));
   result.add(Line3D(-v2, +v2));
   result.add(Line3D(-v3, +v3));

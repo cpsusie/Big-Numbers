@@ -13,23 +13,33 @@ class D3PickedInfo;
 typedef CompactArray<D3SceneObjectVisual*> D3VisualArray;
 
 class D3SceneObjectVisual : public D3SceneObject, public AbstractMouseHandler {
-protected:
+private:
   D3SceneObjectVisual *m_parent;
   D3VisualArray        m_children;
+
+protected:
   String               m_name;
   void                *m_userData;
   D3DXMATRIX           m_world;
   // Return index of the child in m_children. can be used as parameter to getChild(UINT index)
   UINT addChild(D3SceneObjectVisual *child);
   void removeChild(UINT index);
+  inline D3SceneObjectVisual *getParent() const {
+    return m_parent;
+  }
   inline D3SceneObjectVisual *getChild(UINT index) const {
     return m_children[index];
   }
   inline UINT getChildCount() const {
     return (UINT)m_children.size();
   }
+
   // return index of first child with the specified type, or -1, if none exist
-  int findChildByType(SceneObjectType type) const;
+  // not recursive search
+  int  findChildByType(SceneObjectType type) const;
+  bool isDescendant(D3SceneObjectVisual * const visual, bool recursive) const;
+  bool isAncestor(  D3SceneObjectVisual * const visual) const;
+
 public:
   D3SceneObjectVisual(D3Scene             &scene , const String &name=_T("VisualObject"));
   D3SceneObjectVisual(D3SceneObjectVisual *parent, const String &name=EMPTYSTRING);
@@ -41,9 +51,6 @@ public:
     return true;
   }
   virtual void                    draw();
-  D3SceneObjectVisual            *getParent()                 const {
-    return m_parent;
-  }
   virtual LPD3DXMESH              getMesh()                   const {
     return NULL;
   }

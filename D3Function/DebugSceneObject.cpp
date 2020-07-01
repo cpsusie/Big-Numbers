@@ -2,6 +2,7 @@
 
 #if defined(ISODEBUGGER)
 #include <D3DGraphics/D3Camera.h>
+#include "MainFrm.h"
 #include "Debugger.h"
 #include "DebugIsoSurface.h"
 // --------------------------------------------- DebugSceneobject -------------------------------------
@@ -134,29 +135,31 @@ D3DXVECTOR3 DebugSceneobject::getCubeCamVector() const {
 }
 
 
-void DebugSceneobject::moveCamToNewCubeCenter() {
-  const D3DXVECTOR3 cc = getCubeCenter();
-  D3Camera         *cam = dbgCAM();
-  D3World           w = cam->getD3World();
-  w.setPos(cc + m_currentCamDistance * getCubeCamVector()).setLookAt(cc);
-  D3CameraSlideAnimator animator(*cam, w);
-  animator.animate(200, 10);
-}
-
-#define SLIDECAMERA
-
 void DebugSceneobject::handleDebuggerPaused() {
   if(hasCubeCenter()) {
-#if !defined(SLIDECAMERA)
     const D3DXVECTOR3 cc  = getCubeCenter();
     D3Camera         *cam = dbgCAM();
-    D3World           w   = cam->getD3World();
-    cam->setD3World(w.setPos(cc + m_currentCamDistance * getCubeCamVector())).setLookAt(cc);
-#else
-    moveCamToNewCubeCenter();
-#endif // SLIDECAMERA
+    D3World           nw  = cam->getD3World();
+    const D3DXVECTOR3 np  = cc + m_currentCamDistance * getCubeCamVector();
+    nw.setPos(np).setLookAt(cc);
+
+    debugLog(_T("CubeCenter:%s,camDist:%.3e, nw=%s)\n")
+            ,::toString(getCubeCenter()).cstr()
+            ,m_currentCamDistance
+            ,nw.toString().replace('\n',' ').cstr()
+            );
+
+    if(isSlidingCamera()) {
+      D3CameraSlideAnimator(*cam, nw).animate(200, 10);
+    } else {
+      cam->setD3World(nw);
+    }
     adjustDebugLightDir();
   }
+}
+
+bool DebugSceneobject::isSlidingCamera() const {
+  return theApp.getMainFrame()->isSlidingCamera();
 }
 
 void DebugSceneobject::resetCameraFocus(bool resetViewAngleAndDistance) {

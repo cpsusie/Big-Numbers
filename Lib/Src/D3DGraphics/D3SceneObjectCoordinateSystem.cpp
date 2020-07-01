@@ -27,7 +27,7 @@ public:
     return m_materialId;
   }
   D3DXMATRIX &getWorld() override {
-    return m_world = m_parent->getWorld();
+    return m_world = getParent()->getWorld();
   }
 };
 
@@ -59,7 +59,7 @@ public:
     return m_materialId;
   }
   D3DXMATRIX &getWorld() override {
-    return m_world = m_parent->getWorld();
+    return m_world = getParent()->getWorld();
   }
 };
 
@@ -102,7 +102,7 @@ public:
     return m_materialId;
   }
   D3DXMATRIX &getWorld() override {
-    return m_world = m_parent->getWorld();
+    return m_world = getParent()->getWorld();
   }
 };
 
@@ -158,7 +158,7 @@ static const D3DXVECTOR3 bottomCorners[] = {
 
 D3DXVECTOR3 VerticalAxisMeshObject::findCornerNearestCam() const {
   const D3DXVECTOR3 camPos   = getScene().getDevice().getCurrentCamera()->getPos();
-  const D3DXMATRIX  &world   = m_parent->getWorld();
+  const D3DXMATRIX  &world   = getParent()->getWorld();
   float              minDist = -1;
   D3DXVECTOR3        result;
   for(int i = 0; i < 4; i++) {
@@ -173,7 +173,7 @@ D3DXVECTOR3 VerticalAxisMeshObject::findCornerNearestCam() const {
 }
 
 D3DXMATRIX &VerticalAxisMeshObject::getWorld() {
-  return m_world = D3World(m_parent->getWorld()).setPos(findCornerNearestCam());
+  return m_world = D3World(getParent()->getWorld()).setPos(findCornerNearestCam());
 }
 
 class D3CoordinateSystemFrameObject : public D3SceneObjectWithMesh {
@@ -187,7 +187,7 @@ public:
     return m_materialId;
   }
   D3DXMATRIX &getWorld() override {
-    return m_world = m_parent->getWorld();
+    return m_world = getParent()->getWorld();
   }
 };
 

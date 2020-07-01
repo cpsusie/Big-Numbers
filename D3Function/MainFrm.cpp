@@ -62,6 +62,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
   ON_COMMAND(ID_DEBUG_TOGGLEBREAKONPREVCUBE, OnDebugToggleBreakOnPrevCube)
   ON_COMMAND(ID_DEBUG_DISABLEALLBREAKPOINTS, OnDebugDisableAllBreakPoints)
   ON_COMMAND(ID_DEBUG_CLEARALLBREAKPOINTS  , OnDebugClearAllBreakPoints  )
+  ON_COMMAND(ID_DEBUG_SLIDINGCAMERA        , OnDebugSlidingCamera        )
   ON_COMMAND(ID_RESETPOSITIONS             , OnResetPositions            )
   ON_COMMAND(ID_OPTIONS_SAVEOPTIONS        , OnOptionsSaveOptions        )
   ON_COMMAND(ID_OPTIONS_LOADOPTIONS1       , OnOptionsLoadOptions1       )
@@ -595,6 +596,7 @@ void CMainFrame::ajourDebugMenu() {
     setMenuItemText(this, ID_DEBUG_GO, _T("Go\tF5"));
   }
   enableMenuItem(           this, ID_DEBUG_GO                   , menuFlags.enableGo()          );
+  enableMenuItem(           this, ID_DEBUG_STOPDEBUGGING        , menuFlags.enableStopDebugger());
   enableMenuItem(           this, ID_DEBUG_STEPCUBE             , menuFlags.enableStep()        );
   enableMenuItem(           this, ID_DEBUG_STEPTETRA            , menuFlags.enableStep()        );
   enableMenuItem(           this, ID_DEBUG_STEPFACE             , menuFlags.enableStep()        );
@@ -602,7 +604,7 @@ void CMainFrame::ajourDebugMenu() {
   enableMenuItem(           this, ID_DEBUG_TOGGLEBREAKONPREVCUBE, FLAGS.m_enableToggleBreak     );
   enableMenuItem(           this, ID_DEBUG_DISABLEALLBREAKPOINTS, FLAGS.m_enableBreak           );
   enableMenuItem(           this, ID_DEBUG_CLEARALLBREAKPOINTS  , FLAGS.m_enableBreak           );
-  enableMenuItem(           this, ID_DEBUG_STOPDEBUGGING        , menuFlags.enableStopDebugger());
+  enableMenuItem(           this, ID_DEBUG_SLIDINGCAMERA        , menuFlags.enableStep()        );
 #endif // ISODEBUGGER
 }
 
@@ -618,6 +620,7 @@ void CMainFrame::OnDebugStopDebugging() {}
 void CMainFrame::OnDebugToggleBreakOnPrevCube() {}
 void CMainFrame::OnDebugDisableAllBreakPoints() {}
 void CMainFrame::OnDebugClearAllBreakPoints() {}
+void CMainFrame::OnDebugSlidingCamera() {}
 
 LRESULT CMainFrame::OnMsgKillDebugger(WPARAM wp, LPARAM lp) { return 0; }
 #else
@@ -711,6 +714,10 @@ void CMainFrame::OnDebugClearAllBreakPoints() {
   clearAllOctaBreakpoints();
 }
 
+void CMainFrame::OnDebugSlidingCamera() {
+  toggleMenuItem(this, ID_DEBUG_SLIDINGCAMERA);
+}
+
 void CMainFrame::setOctaBreakpoint(size_t index, bool on) {
   if(!canUpdateBreakpoints()) return;
   if(m_octaBreakPoints.getCapacity() <= index) {
@@ -751,6 +758,10 @@ void CMainFrame::enableOctaBreakpoints(bool enable) {
   if(updateInfo) {
     show3DInfo(INFO_DEBUG);
   }
+}
+
+bool CMainFrame::isSlidingCamera() const {
+  return isMenuItemChecked(this, ID_DEBUG_SLIDINGCAMERA);
 }
 
 LRESULT CMainFrame::OnMsgKillDebugger(WPARAM wp, LPARAM lp) {

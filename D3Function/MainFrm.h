@@ -104,7 +104,9 @@ private:
   bool isOctaBreakpointsEnabled() const {
     return m_breakPointsEnabled;
   }
-
+public:
+  bool isSlidingCamera() const;
+private:
   inline String getDebuggerStateName() const {
     return hasDebugger() ? m_debugger->getStateName() : _T("No debugger");
   }
@@ -226,7 +228,6 @@ public:
     afx_msg void OnFileIsoSurface();
     afx_msg void OnFileProfileSurface();
     afx_msg void OnObjectEditFunction();
-    afx_msg void OnFilePrintPreview();
     afx_msg void OnFileMruFile1();
     afx_msg void OnFileMruFile2();
     afx_msg void OnFileMruFile3();
@@ -252,6 +253,7 @@ public:
     afx_msg void OnDebugToggleBreakOnPrevCube();
     afx_msg void OnDebugDisableAllBreakPoints();
     afx_msg void OnDebugClearAllBreakPoints();
+    afx_msg void OnDebugSlidingCamera();
     afx_msg void OnResetPositions();
     afx_msg void OnOptionsSaveOptions();
     afx_msg void OnOptionsLoadOptions1();
