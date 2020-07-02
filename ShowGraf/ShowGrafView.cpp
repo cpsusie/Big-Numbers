@@ -241,8 +241,8 @@ BOOL CShowGrafView::OnMouseWheel(UINT nFlags, short zDelta, CPoint point) {
   CPoint pt = point;
   ScreenToClient(&pt);
   if(ptInPanel(IDC_SYSTEMPANEL, pt)) {
-    const Point2DP tmppt(pt);
-    int zoomFlags = 0;
+    const Point2D tmppt(pt);
+    int   zoomFlags = 0;
     if(nFlags & MK_CONTROL) {
       zoomFlags |= X_AXIS;
     }

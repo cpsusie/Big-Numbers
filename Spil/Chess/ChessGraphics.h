@@ -93,11 +93,11 @@ typedef enum {
 class ChessResources {
 private:
   static int            s_instanceCount;
-  static const Point2DP s_upperLeftCorner0;
-  static const Size2DS  s_fieldSize0;
-  Size2DS               m_imageSize0;
-  Size2DS               m_boardSize0;
-  Size2DS               m_selectionFrameSize0;
+  static const Point2D  s_upperLeftCorner0;
+  static const Size2D   s_fieldSize0;
+  Size2D                m_imageSize0;
+  Size2D                m_boardSize0;
+  Size2D                m_selectionFrameSize0;
   Point2D               m_scale;
   CSize                 m_crSize; // current clientRect size
 
@@ -124,17 +124,17 @@ public:
   inline double getAvgScale() const {
     return (m_scale.x + m_scale.y)/2;
   }
-  inline Point2DP     scalePoint(   const Point2DP &p) const {
-    return Point2DP(p.x  * m_scale.x , p.y  * m_scale.y);
+  inline Point2D     scalePoint(   const Point2D &p) const {
+    return Point2D(p.x  * m_scale.x , p.y  * m_scale.y);
   }
-  inline Point2DP     unscalePoint( const Point2DP &p) const {
-    return Point2DP(p.x  / m_scale.x , p.y  / m_scale.y);
+  inline Point2D     unscalePoint( const Point2D &p) const {
+    return Point2D(p.x  / m_scale.x , p.y  / m_scale.y);
   }
-  inline Size2DS      scaleSize(    const Size2DS  &s) const {
-    return Size2DS( s.cx * m_scale.x , s.cy * m_scale.y);
+  inline Size2D      scaleSize(    const Size2D  &s) const {
+    return Size2D( s.cx * m_scale.x , s.cy * m_scale.y);
   }
-  inline Rectangle2DR scaleRect(    const Rectangle2DR &r) const {
-    return Rectangle2DR(scalePoint(r.getTopLeft()), scalePoint(r.getBottomRight()));
+  inline Rectangle2D scaleRect(    const Rectangle2D &r) const {
+    return Rectangle2D(scalePoint(r.getTopLeft()), scalePoint(r.getBottomRight()));
   }
   inline CFont &getBoardFont() const {
     return s_boardTextFont;
@@ -142,34 +142,34 @@ public:
   inline CFont &getDebugFont() const {
     return s_debugInfoFont;
   }
-  inline const Size2DS &getBoardSize0() const {
+  inline const Size2D &getBoardSize0() const {
     return m_boardSize0;
   }
   inline const CSize &getBoardSize() const {
     return m_crSize;
   }
-  inline const Point2DP &getUpperLeftCorner0() const {
+  inline const Point2D &getUpperLeftCorner0() const {
     return s_upperLeftCorner0;
   }
-  inline Point2DP getUpperLeftCorner() const {
+  inline Point2D getUpperLeftCorner() const {
     return scalePoint(getUpperLeftCorner0());
   }
-  inline const Size2DS &getFieldSize0() const {
+  inline const Size2D &getFieldSize0() const {
     return s_fieldSize0;
   }
-  inline const Size2DS getFieldSize() const {
+  inline const Size2D getFieldSize() const {
     return scaleSize(getFieldSize0());
   }
-  inline const Size2DS &getImageSize0() const {
+  inline const Size2D &getImageSize0() const {
     return m_imageSize0;
   }
-  inline const Size2DS getImageSize() const {
+  inline const Size2D getImageSize() const {
     return scaleSize(getImageSize0());
   }
-  inline const Size2DS &getSelectionFrameSize0() const {
+  inline const Size2D &getSelectionFrameSize0() const {
     return m_selectionFrameSize0;
   }
-  inline Size2DS getSelectionFrameSize() const {
+  inline Size2D getSelectionFrameSize() const {
     return scaleSize(getSelectionFrameSize0());
   }
   inline const Image *getBoardImage() const {
@@ -427,9 +427,9 @@ public:
   void  animateMove(         const MoveBase &m                            );
   void  animateCheckMate();
 
-  Point2DP     getFieldPosition(int r, int c, bool scaled) const;
-  Point2DP     getFieldPosition(int pos     , bool scaled) const;
-  Rectangle2DR getFieldRect(    int pos     , bool scaled) const;
+  Point2D     getFieldPosition(int r, int c, bool scaled) const;
+  Point2D     getFieldPosition(int pos     , bool scaled) const;
+  Rectangle2D getFieldRect(    int pos     , bool scaled) const;
 
   inline bool isDragging() const {
     return m_pieceDragger != NULL;

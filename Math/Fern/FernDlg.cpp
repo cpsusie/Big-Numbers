@@ -283,7 +283,7 @@ BOOL CFernDlg::OnInitDialog() {
   afinToFields();
 
   UpdateData(false);
-  m_tr.setToRectangle(Rectangle2DR(getClientRect(this)));
+  m_tr.setToRectangle(getClientRect(this));
   m_tr.setFromRectangle(Rectangle2D(MINX, MAXY, MAXX-MINX, MINY-MAXY));
 
   startTimer();
@@ -361,7 +361,7 @@ void CFernDlg::OnSize(UINT nType, int cx, int cy) {
 //  dc.Rectangle(0,0,rect.Width(),rect.Height());
 //  dc.SetBkColor(RGB(0,200,0));
 
-  m_tr.setToRectangle(Rectangle2DR(getClientRect(this)));
+  m_tr.setToRectangle(getClientRect(this));
   __super::OnSize(nType, cx, cy);
   Invalidate();
 }

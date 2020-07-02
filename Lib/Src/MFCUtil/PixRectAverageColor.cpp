@@ -178,5 +178,5 @@ D3DCOLOR PixRect::getAverageColor(const Rectangle2D &rect) const {
 }
 
 D3DCOLOR PixRect::getAverageColor() const {
-  return getAverageColor(Rectangle2DR(getRect()));
+  return getAverageColor(getRect());
 }

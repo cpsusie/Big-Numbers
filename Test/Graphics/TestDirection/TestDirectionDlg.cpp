@@ -166,7 +166,7 @@ void CTestDirectionDlg::OnMouseMove(UINT nFlags, CPoint point) {
       line(m_mouseDown, m_lastMouse, BLACK);
     }
   }
-  Point2DP v = m_lastMouse - m_mouseDown;
+  Point2D v = m_lastMouse - m_mouseDown;
   if(v.length() != 0) {
     double degree = RAD2GRAD(atan2(v.y,v.x));
     setMessage(_T("%.2lf degree %s"), degree, getArrowDirection(v).cstr());

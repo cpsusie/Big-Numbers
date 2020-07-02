@@ -114,9 +114,9 @@ void GameHexagon::paint(CDC &dc, const CRect &rect, PositionSet markedPositions)
 
   const BYTE innerHexagon[] = { 7, 10, 12, 14, 16, 17 };
   i = 0;
-  dc.MoveTo(Point2DP(m_brickPositions[innerHexagon[i++]]));
+  dc.MoveTo(Point2D(m_brickPositions[innerHexagon[i++]]));
   for(;i <= ARRAYSIZE(innerHexagon); i++) {
-    dc.LineTo(Point2DP(m_brickPositions[innerHexagon[i%6]]));
+    dc.LineTo(Point2D(m_brickPositions[innerHexagon[i%6]]));
   }
 
   dc.SelectObject(oldPen);

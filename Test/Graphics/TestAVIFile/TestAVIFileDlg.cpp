@@ -248,7 +248,7 @@ void CTestAVIFileDlg::startMovieThread(UINT frameCount) {
   do {
     m_p2.x = randInt(m_frameSize.cx);
     m_p2.y = randInt(m_frameSize.cy);
-  } while(distance(Point2DP(m_p1), Point2DP(m_p2)) < 30);
+  } while(distance(Point2D(m_p1), Point2D(m_p2)) < 30);
 
   m_step1.cx = randInt(20)-10;
   m_step1.cy = randInt(20)-10;

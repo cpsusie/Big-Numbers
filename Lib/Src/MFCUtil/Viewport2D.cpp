@@ -11,7 +11,7 @@ Viewport2D::Viewport2D(bool retainAspectRatio) {
   setCurrentPen(PS_SOLID, 1, BLACK);
 }
 
-Viewport2D::Viewport2D(CDC &dc, const Rectangle2DR &from, const Rectangle2DR &to, bool retainAspectRatio) : m_dc(&dc) {
+Viewport2D::Viewport2D(CDC &dc, const Rectangle2D &from, const Rectangle2D &to, bool retainAspectRatio) : m_dc(&dc) {
   m_tr                = new RectangleTransformation(from, to); TRACE_NEW(m_tr);
   m_ownTransformation = true;
   m_currentPenWidth   = 0;
@@ -85,7 +85,7 @@ CPen &Viewport2D::setCurrentPen(int penStyle, int width, COLORREF color) const {
   return m_currentPen;
 }
 
-void Viewport2D::setToRectangle(const Rectangle2DR &rect) {
+void Viewport2D::setToRectangle(const Rectangle2D &rect) {
   m_tr->setToRectangle(rect);
   if(isRetainingAspectRatio()) {
     m_tr->adjustAspectRatio();
@@ -105,7 +105,7 @@ void Viewport2D::noDCError(const TCHAR *method) const {
 }
 #endif
 
-void Viewport2D::MoveTo(const Point2DP &p) const {
+void Viewport2D::MoveTo(const Point2D &p) const {
   CHECKHASDC();
   m_dc->MoveTo(forwardTransform(p));
 }
@@ -115,7 +115,7 @@ void Viewport2D::MoveTo(double x, double y) const {
   m_dc->MoveTo(forwardTransform(x,y));
 }
 
-void Viewport2D::LineTo(const Point2DP &p) const {
+void Viewport2D::LineTo(const Point2D &p) const {
   CHECKHASDC();
   m_dc->LineTo(forwardTransform(p));
 }
@@ -125,7 +125,7 @@ void Viewport2D::LineTo(double x, double y) const{
   m_dc->LineTo(forwardTransform(x,y));
 }
 
-void Viewport2D::SetPixel(const Point2DP &p, COLORREF color) const {
+void Viewport2D::SetPixel(const Point2D &p, COLORREF color) const {
   CHECKHASDC();
   m_dc->SetPixel(forwardTransform(p),color);
 }
@@ -135,7 +135,7 @@ void Viewport2D::SetPixel(double x, double y, COLORREF color) const {
   m_dc->SetPixel(forwardTransform(x,y),color);
 }
 
-COLORREF Viewport2D::GetPixel(const Point2DP &p) const {
+COLORREF Viewport2D::GetPixel(const Point2D &p) const {
   CHECKHASDC();
   return m_dc->GetPixel(forwardTransform(p));
 }
@@ -145,7 +145,7 @@ COLORREF Viewport2D::GetPixel(double x, double y) const {
   return m_dc->GetPixel(forwardTransform(x,y));
 }
 
-void Viewport2D::paintCross(const Point2DP &point, COLORREF color, int size) const {
+void Viewport2D::paintCross(const Point2D &point, COLORREF color, int size) const {
   CHECKHASDC();
   const CPoint p       = forwardTransform(point);
   CPen        *origPen = m_dc->SelectObject(&setCurrentPen(PS_SOLID, 1, color));
@@ -161,7 +161,7 @@ void Viewport2D::paintCross(const Point2DP &point, COLORREF color, int size) con
   m_dc->SelectObject(origPen);
 }
 
-bool Viewport2D::Rectangle(const Rectangle2DR &r) const {
+bool Viewport2D::Rectangle(const Rectangle2D &r) const {
   CHECKHASDC();
   const CRect tmp = forwardTransform(r);
   return m_dc->Rectangle(&tmp) ? true : false;
@@ -176,13 +176,13 @@ bool Viewport2D::Rectangle(double x1, double y1, double x2, double y2) const {
   return m_dc->Rectangle(ix1,iy1,ix2,iy2) ? true : false;
 }
 
-void Viewport2D::FillSolidRect(const Rectangle2DR &r, COLORREF color) const {
+void Viewport2D::FillSolidRect(const Rectangle2D &r, COLORREF color) const {
   CHECKHASDC();
   const CRect rect = forwardTransform(r);
   m_dc->FillSolidRect(rect,color);
 }
 
-void Viewport2D::TextOut(const Point2DP &point, const String &text, COLORREF color, BackgroundSaver *bckSave /* = NULL*/) const {
+void Viewport2D::TextOut(const Point2D &point, const String &text, COLORREF color, BackgroundSaver *bckSave /* = NULL*/) const {
   CHECKHASDC();
   const int      oldMode  = m_dc->SetBkMode(TRANSPARENT);
   const COLORREF oldColor = m_dc->SetTextColor(color);

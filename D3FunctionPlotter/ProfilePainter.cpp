@@ -45,10 +45,10 @@ void NormalPainter::drawNormal(const Point2D &from, const Point2D &dir) {
   double length  = dir2.length();
   dir2 /= length;
   to2 = from2 + dir2 * 20;
-  m_vp.getDC()->LineTo((Point2DP)to2);
-  m_vp.getDC()->LineTo((Point2DP)(to2 + dir2.rotate(GRAD2RAD(160)) * 5));
-  m_vp.getDC()->MoveTo((Point2DP)to2);
-  m_vp.getDC()->LineTo((Point2DP)(to2 + dir2.rotate(GRAD2RAD(-160)) * 5));
+  m_vp.getDC()->LineTo(to2);
+  m_vp.getDC()->LineTo(to2 + dir2.rotate(GRAD2RAD(160)) * 5);
+  m_vp.getDC()->MoveTo(to2);
+  m_vp.getDC()->LineTo(to2 + dir2.rotate(GRAD2RAD(-160)) * 5);
 }
 
 class FlatNormalPainter : public NormalPainter {

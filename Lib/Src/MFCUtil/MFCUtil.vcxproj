@@ -835,7 +835,6 @@
     <ClInclude Include="..\..\Include\MFCUtil\PixRect.h" />
     <ClInclude Include="..\..\Include\MFCUtil\PixRectDevice.h" />
     <ClInclude Include="..\..\Include\MFCUtil\PixRectType.h" />
-    <ClInclude Include="..\..\Include\MFCUtil\Point2DP.h" />
     <ClInclude Include="..\..\Include\MFCUtil\PointSet.h" />
     <ClInclude Include="..\..\Include\MFCUtil\PolygonCurve.h" />
     <ClInclude Include="..\..\Include\MFCUtil\PragmaLib.h" />

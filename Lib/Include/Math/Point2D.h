@@ -6,6 +6,7 @@
 #include "MathLib.h"
 #include "Double80.h"
 #include "Fixed.h"
+
 template<typename T> class Size2DTemplate {
 public:
   T cx, cy;
@@ -20,6 +21,13 @@ public:
     : cx((T)_cx), cy((T)_cy)
   {
   }
+#if defined(__ATLTYPES_H__)
+  inline Size2DTemplate(const CSize &s) : cx((T)s.cx), cy((T)s.cy) {
+  }
+  inline operator CSize() const {
+    return CSize((int)round(cx), (int)round(cy));
+  }
+#endif
   template<typename S> Size2DTemplate<T> &operator=(const Size2DTemplate<S> &s) {
     cx = (T)s.cx;
     cy = (T)s.cy;
@@ -90,7 +98,6 @@ public:
   inline Point2DTemplate() {
     x = y = 0;
   }
-
   template<typename S> Point2DTemplate(const Point2DTemplate<S> &p)
     : x((T)p.x), y((T)p.y)
   {
@@ -103,6 +110,13 @@ public:
     : x((T)s.cx), y((T)s.cy)
   {
   }
+#if defined(__ATLTYPES_H__)
+  inline Point2DTemplate(const CPoint &p) : x((T)p.x), y((T)p.y) {
+  }
+  inline operator CPoint() const {
+    return CPoint((int)round(x), (int)round(y));
+  }
+#endif
   template<typename S> Point2DTemplate<T> &operator=(const Point2DTemplate<S> &p) {
     x = (T)p.x;
     y = (T)p.y;

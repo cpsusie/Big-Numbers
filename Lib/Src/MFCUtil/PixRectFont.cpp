@@ -18,7 +18,7 @@ Rectangle2D GlyphPolygon::getBoundingBox() const {
   return getAllPoints().getBoundingBox();
 }
 
-void GlyphPolygon::move(const Point2DP &dp) {
+void GlyphPolygon::move(const Point2D &dp) {
   m_start += dp;
   for(size_t i = 0; i < m_polygonCurveArray.size(); i++) {
     m_polygonCurveArray[i].move(dp);
@@ -103,7 +103,7 @@ GlyphCurveData::GlyphCurveData(HDC hdc, _TUCHAR ch, const MAT2 &m) {
       c = (TTPOLYCURVE*)&buffer[index+h];
       PolygonCurve curve(c->wType);
       for(int i = 0; i < c->cpfx; i++) {
-        curve.addPoint(Point2DP(c->apfx[i]));
+        curve.addPoint(Point2D(c->apfx[i]));
       }
       polygon.addCurve(curve);
     }
@@ -134,7 +134,7 @@ Rectangle2D GlyphCurveData::getBoundingBox() const {
   return getAllPoints().getBoundingBox();
 }
 
-void GlyphCurveData::addLine(const Point2DP &p1, const Point2DP &p2) {
+void GlyphCurveData::addLine(const Point2D &p1, const Point2D &p2) {
   GlyphPolygon polygon(p1);
   PolygonCurve curve(TT_PRIM_LINE);
   curve.addPoint(p2);
@@ -142,7 +142,7 @@ void GlyphCurveData::addLine(const Point2DP &p1, const Point2DP &p2) {
   addPolygon(polygon);
 }
 
-void GlyphCurveData::move(const Point2DP &dp) {
+void GlyphCurveData::move(const Point2D &dp) {
   for(size_t i = 0; i < m_glyphPolygonArray.size(); i++) {
     m_glyphPolygonArray[i].move(dp);
   }
@@ -279,7 +279,7 @@ void applyToGlyph(const GlyphCurveData &glyphCurve, CurveOperator &op) {
 }
 
 void applyToText(const String &text, const PixRectFont &font, TextOperator &op) {
-  Point2DP chPos(0,0);
+  Point2D chPos(0,0);
   const size_t len = text.length();
   for(size_t i = 0; i < len; i++) {
     const _TUCHAR    ch = text[i];
@@ -295,10 +295,10 @@ void applyToText(const String &text, const PixRectFont &font, TextOperator &op) 
 }
 
 void PixRect::drawGlyph(const CPoint &p, const GlyphCurveData &glyph, D3DCOLOR color, bool invert) {
-  applyToGlyph(glyph,PixRectTextMaker(this,Point2DP(p),color,invert));
+  applyToGlyph(glyph,PixRectTextMaker(this,p,color,invert));
 }
 
 void PixRect::drawText(const CPoint &p, const String &text, const PixRectFont &font, D3DCOLOR color, bool invert) {
-  applyToText(text,font,PixRectTextMaker(this,Point2DP(p),color,invert));
+  applyToText(text,font,PixRectTextMaker(this,p,color,invert));
 }
 

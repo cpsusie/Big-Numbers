@@ -140,7 +140,7 @@ public:
 
   // flags any combination of X_AXIS and Y_AXIS
   void zoom(const CPoint &p, bool in, int flags) {
-    getTransformation().zoom(Point2DP(p), in, flags);
+    getTransformation().zoom(p, in, flags);
   }
 
   void setAutoScale(bool autoScale, bool makeSpace) {

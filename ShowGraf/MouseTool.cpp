@@ -103,16 +103,15 @@ void DragTool::takeoverDrag(MouseTool &mdTool) {
 void DragTool::updateDragRect(UINT nFlags, const CPoint &point) {
   if(isDragging()) {
     if(nFlags & MK_LBUTTON) {
-      Rectangle2D   fr = m_mouseDownTransform.getFromRectangle();
-      Point2D       startPoint = m_mouseDownTransform.backwardTransform((Point2DP)m_mouseDownPoint);
-      Point2D       newPoint   = m_mouseDownTransform.backwardTransform((Point2DP)point);
+      Rectangle2D   fr         = m_mouseDownTransform.getFromRectangle();
+      Point2D       startPoint = m_mouseDownTransform.backwardTransform(m_mouseDownPoint);
+      Point2D       newPoint   = m_mouseDownTransform.backwardTransform(point);
       const Point2D dp = newPoint - startPoint;
       fr -= dp;
       try {
         getSystem().getTransformation().setFromRectangle(fr);
         repaint();
-      }
-      catch (Exception e) {
+      } catch (Exception e) {
         // ignore
       }
     } else {

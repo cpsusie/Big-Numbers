@@ -111,7 +111,7 @@ public:
 class IsoSurfaceVertex {
 public:
   // Position and surface normal
-  Point3DP        m_position, m_normal;
+  Point3D        m_position, m_normal;
   inline void reset() {
     m_position = m_normal = D3DXORIGIN;
   }
@@ -255,7 +255,7 @@ public:
   inline Point3D getSize() const {
     return *m_corners[RTF] - *m_corners[LBN];
   }
-  inline Point3DP getCenter() const {
+  inline Point3D getCenter() const {
     return (*m_corners[LBN] + *m_corners[RTF])/2;
   }
 #if defined(VALIDATE_CUBES)
@@ -278,7 +278,7 @@ public:
     return *m_cube;
   }
   inline const D3DXVECTOR3 getCenter() const {
-    return Point3DP(getCube().getCenter());
+    return getCube().getCenter();
   }
   inline UINT getCornerCount() const {
     return 8;

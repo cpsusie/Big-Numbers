@@ -90,7 +90,9 @@ int main(int argc, char **argv) {
       }
     }
   }
+#if defined(_DEBUG)
   cout << UndefNumericStreamScanner::getInstance().toString();
+#endif
   try {
     switch(cmd) {
     case CMD_TESTINTERNETEXAMPLE :

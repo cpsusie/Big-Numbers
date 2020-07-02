@@ -2,7 +2,6 @@
 
 #include "WinTools.h"
 #include "DirectXDeviceFactory.h"
-#include "Point2DP.h"
 #include "PolygonCurve.h"
 #include "ShapeFunctions.h"
 #include "ColorSpace.h"
@@ -382,7 +381,7 @@ public:
   static CSize    getRotatedSize(const CSize &size, double degree);
   // rotationCenter is the point in src pixRect about which the rotation occurs
   // dst is the point in this, where the rotationCenter is placed
-  void            drawRotated(const PixRect *src, const CPoint &dst, double degree, const Point2DP &rotationCenter);
+  void            drawRotated(const PixRect *src, const CPoint &dst, double degree, const Point2D &rotationCenter);
   void text(const CPoint &p, const String &text, const PixRectFont &font, D3DCOLOR color, bool invert=false);
   void drawGlyph(const CPoint &p, const GlyphCurveData &glyphCurve, D3DCOLOR color, bool invert=false);
   void drawText( const CPoint &p, const String &text, const PixRectFont &font, D3DCOLOR color, bool invert=false);
@@ -466,7 +465,7 @@ public:
   GlyphPolygon() {
   }
 
-  GlyphPolygon(const Point2DP &start) {
+  GlyphPolygon(const Point2D &start) {
     m_start = start;
   }
 
@@ -479,7 +478,7 @@ public:
   inline const Array<PolygonCurve> &getCurveArray() const {
     return m_polygonCurveArray;
   }
-  void move(const Point2DP &dp);
+  void move(const Point2D &dp);
   String toString() const;
 };
 
@@ -499,8 +498,8 @@ public:
     m_glyphPolygonArray.add(polygon);
   }
 
-  void addLine(const Point2DP &p1, const Point2DP &p2);
-  void move(const Point2DP &dp);
+  void addLine(const Point2D &p1, const Point2D &p2);
+  void move(   const Point2D &dp);
   const Array<GlyphPolygon> &getPolygonArray() const {
     return m_glyphPolygonArray;
   }

@@ -15,7 +15,7 @@ void paintCross(CDC &dc, const CPoint &p, COLORREF color=0, int size=2);
 class vector {
 public:
   CPoint m_p;
-  inline vector(const CPoint &p) : m_p(p){
+  inline vector(const CPoint &p) : m_p(p) {
   }
   inline vector(int x, int y) : m_p(x,y) {
   }
@@ -33,7 +33,7 @@ public:
     return vector(-m_p.x, -m_p.y);
   }
   inline double operator*(const vector &v) const {
-    return m_p.x * v.m_p.x + m_p.y*v.m_p.y;
+    return m_p.x*v.m_p.x + m_p.y*v.m_p.y;
   }
   inline int sqrLength() const {
     return sqr(m_p.x) + sqr(m_p.y);
@@ -82,12 +82,12 @@ public:
   }
   void paint(CDC &dc) const;
   void convexHull();
-  void addPoint(const CPoint &p);
-  void removeNearest(const CPoint &p);
-  int  findTopPoint() const;
+  void addPoint(         const CPoint &p);
+  void removeNearest(    const CPoint &p);
+  int  findTopPoint()    const;
   int  findBottomPoint() const;
-  int  findNearest(const CPoint &p) const;
-  double pointInside(const CPoint &p) const; // 1=inside, -1=outside, 0=edge
+  int  findNearest(      const CPoint &p) const;
+  double pointInside(    const CPoint &p) const; // 1=inside, -1=outside, 0=edge
   inline int getPointCount() const {
     return (int)m_points.size();
   }

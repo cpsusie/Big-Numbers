@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include <MFCUtil/Point2DP.h>
+#include <MFCUtil/Point2D.h>
 #include <MFCUtil/ColorSpace.h>
 #include "Incremental Delaunay Triangulation.h"
 #include "Incremental Delaunay TriangulationDlg.h"
@@ -158,11 +158,11 @@ void CIncrementalDelaunayTriangulationDlg::paintEdges(CDC &dc) {
 
 void CIncrementalDelaunayTriangulationDlg::OnLButtonDown(UINT nFlags, CPoint point) {
   if(m_edges) {
-    m_edges->insertPoint(Point2DP(point));
+    m_edges->insertPoint(point);
   } else if(m_count < 3) {
     m_p[m_count++] = point;
     if(m_count == 3) {
-      m_edges = new SubDivision(Point2DP(m_p[0]),Point2DP(m_p[1]),Point2DP(m_p[2])); TRACE_NEW(m_edges);
+      m_edges = new SubDivision(m_p[0],m_p[1],m_p[2]); TRACE_NEW(m_edges);
     }
   }
   Invalidate();

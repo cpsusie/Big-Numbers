@@ -66,7 +66,7 @@ void CCoordinateSystem::substituteControl(CWnd *parent, int id) {
   SetFont(font, FALSE);
   RectangleTransformation &tr = m_vp.getTransformation();
   tr.setFromRectangle(getDefaultDataRange(AXIS_LINEAR,AXIS_LINEAR));
-  tr.setToRectangle(Rectangle2DR(rect));
+  tr.setToRectangle(rect);
 }
 
 void CCoordinateSystem::addObject(CoordinateSystemObject *object) {
@@ -108,7 +108,7 @@ void CCoordinateSystem::paint(CDC &dc) {
   CDC        *oldDC = m_vp.setDC(&dc);
 
   try {
-    m_vp.setToRectangle(Rectangle2DR::makeBottomUpRectangle(cr));
+    m_vp.setToRectangle(Rectangle2D::makeBottomUpRectangle(cr));
     m_occupationMap.clear();
     m_occupationMap.setWindowSize(cr.Size());
     if(m_autoScale && m_objectArray.size() > 0) {

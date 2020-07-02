@@ -63,7 +63,7 @@ void ChessGraphics::deallocate() {
 }
 
 // r,c might be an invalid position. See paintFieldNames
-Point2DP ChessGraphics::getFieldPosition(int r, int c, bool scaled) const {
+Point2D ChessGraphics::getFieldPosition(int r, int c, bool scaled) const {
   const Size2D fs = FIELDSIZE(scaled);
   return UPPERLEFTCORNER(scaled)
        + ((m_computerPlayer == WHITEPLAYER)
@@ -72,11 +72,11 @@ Point2DP ChessGraphics::getFieldPosition(int r, int c, bool scaled) const {
         ;
 }
 
-Point2DP ChessGraphics::getFieldPosition(int pos, bool scaled) const {
+Point2D ChessGraphics::getFieldPosition(int pos, bool scaled) const {
   return getFieldPosition(GETROW(pos),GETCOL(pos), scaled);
 }
 
-Rectangle2DR ChessGraphics::getFieldRect(int pos, bool scaled) const {
+Rectangle2D ChessGraphics::getFieldRect(int pos, bool scaled) const {
   return Rectangle2D(getFieldPosition(pos, scaled), FIELDSIZE(scaled));
 }
 
@@ -271,16 +271,16 @@ void ChessGraphics::paintFieldNames() {
   m_fieldNamesRectangles.clear();
 
   HGDIOBJ oldFont = SelectObject(hdc, m_resources.getBoardFont());
-  const Size2DS charSize = getTextExtent(hdc, _T("8"));
-  Size2DS offset = FIELDSIZE0 - charSize;
+  const Size2D charSize = getTextExtent(hdc, _T("8"));
+  Size2D       offset   = FIELDSIZE0 - charSize;
   offset.cx /= 2;
   offset.cy /= 2;
 
-#define FN_POS(r,c) Point2DP(getFieldPosition(r,c, false) + offset)
-#define FN_LEFTPOS( r) FN_POS(r,-1)
-#define FN_RIGHTPOS(r) FN_POS(r, 8)
-#define FN_UPPERPOS(c) FN_POS(-1,c)
-#define FN_LOWERPOS(c) FN_POS( 8,c)
+#define FN_POS(r,c) Point2D(getFieldPosition(r,c, false) + offset)
+#define FN_LEFTPOS( r) FN_POS( r,-1)
+#define FN_RIGHTPOS(r) FN_POS( r, 8)
+#define FN_UPPERPOS(c) FN_POS(-1, c)
+#define FN_LOWERPOS(c) FN_POS( 8, c)
 
   for(int r = 0; r < 8; r++) {
     const String text = format(_T("%d"),r+1);
@@ -333,11 +333,11 @@ void ChessGraphics::paintPlayerIndicator() {
   pushLevel();
   unpaintPlayerIndicator();
   const Image  *image    = m_resources.getPlayerIndicatorImage();
-  const Size2DS markSize = image->getSize();
-  const Size2DS offset   = (FIELDSIZE0 - markSize)/2;
+  const Size2D  markSize = image->getSize();
+  const Size2D  offset   = (FIELDSIZE0 - markSize)/2;
 
-  const Point2DP pos = getFieldPosition((m_game->getPlayerInTurn() == WHITEPLAYER)?-1:8
-                                       ,(m_computerPlayer          == WHITEPLAYER)?8:-1, false) + offset;
+  const Point2D pos      = getFieldPosition((m_game->getPlayerInTurn() == WHITEPLAYER)?-1:8
+                                           ,(m_computerPlayer          == WHITEPLAYER)?8:-1, false) + offset;
   image->paintImage(*m_bufferPr, pos);
   m_playerIndicatorRect = CRect(pos, markSize);
   popLevel();
@@ -475,8 +475,8 @@ void ChessGraphics::animateMove(const MoveBase &m) {
 
 const CPoint &ChessGraphics::getFirstOffboardPiecePosition(Player player) const {
   static const CPoint pos[] = {
-    Point2DP(UPPERLEFT0.x - FIELDSIZE0.cx*2 -  80, UPPERLEFT0.y)
-   ,Point2DP(UPPERLEFT0.x + FIELDSIZE0.cx*8 + 160, UPPERLEFT0.y)
+    Point2D(UPPERLEFT0.x - FIELDSIZE0.cx*2 -  80, UPPERLEFT0.y)
+   ,Point2D(UPPERLEFT0.x + FIELDSIZE0.cx*8 + 160, UPPERLEFT0.y)
   };
   return pos[ISLEFTSIDE(player)?0:1];
 }
@@ -488,7 +488,7 @@ OffboardPieceArray ChessGraphics::getOffboardPieces(Player player) const {
     return result;
   }
   const CPoint p0 = getFirstOffboardPiecePosition(player);
-  Point2DP p = p0;
+  Point2D p = p0;
   for(size_t i = 0; i < capturedPieces.size(); i++) {
     const PieceKey key = capturedPieces[i];
     if(GET_TYPE_FROMKEY(key) == Pawn && (p.x == p0.x)) {
@@ -602,7 +602,7 @@ void ChessGraphics::paintModeText() {
     const CSize  textSize  = getTextExtent(dc, m_modeText);
     SelectObject(dc, oldFont);
 
-    const Point2DP p = Point2DP((m_resources.getBoardSize0().cx - textSize.cx) / 2,20);
+    const Point2D p = Point2D((m_resources.getBoardSize0().cx - textSize.cx) / 2,20);
 
     textOutTransparentBackground(dc, p, m_modeText, m_resources.getBoardFont(), LETTERCOLOR);
 
@@ -634,9 +634,9 @@ static String formatSeconds(int sec) {
 }
 
 const CPoint ChessGraphics::getTimeTextPosition(int i) const {
-  static const Point2DP pos[] = {
-    Point2DP(UPPERLEFT0.x + 8 * FIELDSIZE0.cx + 180, UPPERLEFT0.y - 80)
-   ,Point2DP(UPPERLEFT0.x + 8 * FIELDSIZE0.cx + 180, UPPERLEFT0.y + 8 * FIELDSIZE0.cy + 40)
+  static const Point2D pos[] = {
+    Point2D(UPPERLEFT0.x + 8 * FIELDSIZE0.cx + 180, UPPERLEFT0.y - 80)
+   ,Point2D(UPPERLEFT0.x + 8 * FIELDSIZE0.cx + 180, UPPERLEFT0.y + 8 * FIELDSIZE0.cy + 40)
   };
   return pos[i];
 }
@@ -941,7 +941,7 @@ void ChessGraphics::restoreBackground(const CPoint &p, const CSize &size) {
 CRect ChessGraphics::getSelectionFrameRect(int pos) const {
   const Size2D &selectFrameSize = m_resources.getSelectionFrameSize0();
   const Size2D offset((selectFrameSize - FIELDSIZE0)/2);
-  return Rectangle2DR(getFieldPosition(pos,false) - offset, selectFrameSize);
+  return Rectangle2D(getFieldPosition(pos,false) - offset, selectFrameSize);
 }
 
 MoveBaseArray ChessGraphics::getLegalMoves() const {

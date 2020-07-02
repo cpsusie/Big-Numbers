@@ -604,7 +604,7 @@ DistanceFinder::DistanceFinder(Viewport2D &vp, const CPoint &p) : m_vp(vp) {
 }
 
 void DistanceFinder::line(const Point2D &from, const Point2D &to) {
-  double dist = distanceFromLineSegment(m_vp.forwardTransform(from),m_vp.forwardTransform(to),(Point2DP)m_point);
+  double dist = distanceFromLineSegment(m_vp.forwardTransform(from),m_vp.forwardTransform(to),Point2D(m_point));
   if(m_minDist < 0 || dist < m_minDist) {
     m_minDist = dist;
   }
@@ -622,7 +622,7 @@ ProfilePolygon *SelectTool::findNearestPolygon(const CPoint &p) {
     DistanceFinder df(m_container.getViewport(),p);
     polygon.apply(df);
 
-    if(minDist < 0 || df.m_minDist < minDist) {
+    if((minDist < 0) || (df.m_minDist < minDist)) {
       minDist        = df.m_minDist;
       nearestPolygon = &polygon;
     }
@@ -633,12 +633,12 @@ ProfilePolygon *SelectTool::findNearestPolygon(const CPoint &p) {
 Point2D *SelectTool::findNearestPoint(const CPoint &p) {
   CompactArray<Point2D*> points = m_container.getProfile().getAllPointsRef();
   double minDist        = -1;
-  Point2D *nearestPoint  = NULL;
+  Point2D *nearestPoint = NULL;
 
   for(size_t i = 0; i < points.size(); i++) {
-    Point2D *point = points[i];
-    double dist = distance((Point2DP)p,m_container.getViewport().forwardTransform(*point));
-    if(minDist < 0 || dist < minDist) {
+    Point2D     *point = points[i];
+    const double dist  = distance(Point2D(p),m_container.getViewport().forwardTransform(*point));
+    if((minDist < 0) || (dist < minDist)) {
       minDist      = dist;
       nearestPoint = point;
     }

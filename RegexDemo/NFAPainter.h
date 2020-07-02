@@ -45,10 +45,10 @@ public:
 
 class FallingNFAState {
 public:
-  Point2DP m_p0;
-  CPoint   m_pos;
-  BYTE     m_attributes;
-  int      m_id;
+  Point2D m_p0;
+  CPoint  m_pos;
+  BYTE    m_attributes;
+  int     m_id;
   FallingNFAState() {
   }
   FallingNFAState(const NFAStatePoint *state, int id);

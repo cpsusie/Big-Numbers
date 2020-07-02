@@ -279,8 +279,8 @@ void NFAPainter::setPositions(size_t subNFACount) {
 
   for(size_t i = 0; i < m_nfaPoints.size(); i++) {
     NFAStatePoint *sp = m_nfaPoints[i];
-    sp->setPosition(Point2DP((float)m_size.cx * (sp->m_gridX + 0.5) / gridSize.cx
-                            ,(float)m_size.cy * (sp->m_gridY + 0.5) / gridSize.cy));
+    sp->setPosition(Point2D((float)m_size.cx * (sp->m_gridX + 0.5) / gridSize.cx
+                           ,(float)m_size.cy * (sp->m_gridY + 0.5) / gridSize.cy));
   }
 }
 
@@ -319,8 +319,8 @@ void NFAPainter::unpaintState(HDC hdc, CPoint p) {
 }
 
 void NFAPainter::paintTransition(const NFAStatePoint *from, const NFAStatePoint *to) {
-  const Point2DP   cf = from->getPosition();
-  const Point2DP   ct = to->getPosition();
+  const Point2D cf = from->getPosition();
+  const Point2D ct = to->getPosition();
 
   const NFAState &sf = *from->m_state;
   const NFAState &st = *to->m_state;
@@ -328,18 +328,18 @@ void NFAPainter::paintTransition(const NFAStatePoint *from, const NFAStatePoint 
   Point2D v;
   if(cf == ct) { // transition to the same state. No possible with NFA
     v = Point2D(1,-1).normalize();
-    const Point2DP pFrom = cf + v  * CIRCLE_RADIUS;
-    const Point2DP v2(-v.x,v.y);
-    const Point2DP pTo   = cf + v2 * CIRCLE_RADIUS;
+    const Point2D pFrom = cf + v  * CIRCLE_RADIUS;
+    const Point2D v2(-v.x,v.y);
+    const Point2D pTo   = cf + v2 * CIRCLE_RADIUS;
     paintBezierArrow(pFrom, pTo);
   } else {
     v = (ct - cf).normalize();
-    Point2DP pFrom, pTo;
+    Point2D pFrom, pTo;
 
     if((st.getID() < sf.getID()) && (st.m_next == &sf || st.m_next2 == &sf)) {
-      Point2DP v2 = -v;
-      v = v.rotate(  GRAD2RAD(-45));
-      v2 = v2.rotate(GRAD2RAD(45));
+      Point2D v2 = -v;
+      v  = v.rotate( GRAD2RAD(-45));
+      v2 = v2.rotate(GRAD2RAD( 45));
       pFrom = cf + v  * CIRCLE_RADIUS;
       pTo   = ct + v2 * CIRCLE_RADIUS;
 
@@ -350,8 +350,8 @@ void NFAPainter::paintTransition(const NFAStatePoint *from, const NFAStatePoint 
       paintLineArrow(pFrom, pTo);
     }
   }
-  Point2DP tv(v.y, -v.x);
-  Point2DP textPos = cf + (v * (CIRCLE_RADIUS+2) + tv * 17);
+  Point2D tv(v.y, -v.x);
+  Point2D textPos = cf + (v * (CIRCLE_RADIUS+2) + tv * 17);
   String text;
   CFont *font;
   switch(sf.getEdge()) {
@@ -404,7 +404,7 @@ NFAPointArray NFAPainter::s_newNFAPoints;
 class AnimationPoint {
 public:
   NFAStatePoint *m_oldP,*m_newP;  // m_oldP can be NULL
-  Point2DP       m_from, m_to;    // if m_oldP is NULL, then just *m_newP
+  Point2D        m_from, m_to;    // if m_oldP is NULL, then just *m_newP
   AnimationPoint() : m_oldP(NULL), m_newP(NULL), m_from(0,0), m_to(0,0) {
   }
   AnimationPoint(NFAStatePoint *oldP, NFAStatePoint *newP)
@@ -416,7 +416,7 @@ public:
   }
   CPoint interpolate(double t) const {
     const double t1 = 1.0 - t;
-    return (Point2DP)(t1 * m_from + t * m_to);
+    return t1 * m_from + t * m_to;
   }
   int getUpdateFlags() const;
 };
@@ -543,13 +543,13 @@ void NFAPainter::animateFallingStates(HDC hdc, FallingNFAStateArray &states) {
   }
   SAVEBACKGROUND();
   const int maxY = m_size.cy + CIRCLE_RADIUS;
-  const Point2DP v0(-7,-10);
-  const Point2DP g(0,9.82);
+  const Point2D v0(-7,-10);
+  const Point2D g(0,9.82);
   for(double t = 0;; t += 0.05) {
     bool anyInside = false;
     for(size_t i = 0; i < states.size(); i++) {
       FallingNFAState &s = states[i];
-      s.m_pos = (Point2DP)(((g * (0.5 * t)) + v0) * t + s.m_p0);
+      s.m_pos = ((g * (0.5 * t)) + v0) * t + s.m_p0;
       paintState(hdc, s.m_pos, s.m_id, s.m_attributes);
       if(s.m_pos.y <= maxY) anyInside = true;
     }

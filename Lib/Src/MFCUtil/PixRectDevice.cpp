@@ -226,11 +226,12 @@ public:
   }
   TextureVertex2D(int x, int y, float tu, float tv) : m_x((float)x), m_y((float)y), m_z(0), m_tu(tu), m_tv(tv) {
   }
-  TextureVertex2D(const CPoint &p, const Point2DP &tp) : m_x((float)p.x), m_y((float)p.y), m_z(0), m_tu((float)tp.x), m_tv((float)tp.y) {
+  TextureVertex2D(const CPoint &p, const Point2D &tp) : m_x((float)p.x), m_y((float)p.y), m_z(0), m_tu((float)tp.x), m_tv((float)tp.y) {
   }
 };
 
 class TextureTriangleFan2D {
+private:
   PixRectDevice &m_device;
 public:
   TextureVertex2D m_vtx[4];

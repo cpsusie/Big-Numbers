@@ -41,7 +41,7 @@ SystemPainter::~SystemPainter() {
 
 void SystemPainter::paint() {
   CDC *dc = getViewport().getDC();
-  const CRect r = Rectangle2DR::makePositiveRectangle(getToRectangle());
+  const CRect r = Rectangle2D::makePositiveRectangle(getToRectangle());
   dc->FillSolidRect(r, m_system.m_backgroundColor);
 //  dc->Rectangle(&r);
 
@@ -97,7 +97,7 @@ void SystemPainter::makeSpaceForText() {
   if(adjustRectangle) {
     getViewport().setFromRectangle(fr);
   }
-  Rectangle2DR innerRectangle = getToRectangle();
+  Rectangle2D innerRectangle = getToRectangle();
 
   innerRectangle.m_x += leftMargin;
   innerRectangle.m_w -= leftMargin + rightMargin;

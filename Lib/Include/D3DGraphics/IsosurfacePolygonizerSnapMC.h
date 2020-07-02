@@ -188,7 +188,7 @@ public:
 class IsoSurfaceVertex {
 public:
   // Position and surface normal
-  Point3DP m_position, m_normal;
+  Point3D m_position, m_normal;
   inline IsoSurfaceVertex &reset() {
     m_position = m_normal = D3DXORIGIN;
     return *this;
@@ -405,7 +405,7 @@ public:
   inline Point3D getSize() const {
     return *m_corners[RTF] - *m_corners[LBN];
   }
-  inline Point3DP getCenter() const {
+  inline Point3D getCenter() const {
     return (*m_corners[LBN] + *m_corners[RTF])/2;
   }
   SimplexArray has4ZeroCorners(CubeFace cf) const;

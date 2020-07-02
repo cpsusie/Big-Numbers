@@ -28,6 +28,14 @@ public:
     , m_w((T)size.cx), m_h((T)size.cy)
   {
   }
+
+#if defined(__ATLTYPES_H__)
+  inline Rectangle2DTemplate(const CRect &r) : m_x((T)r.left), m_y((T)r.top), m_w((T)(r.right - r.left)), m_h((T)(r.bottom - r.top)) {
+  }
+  inline operator CRect() const {
+    return CRect((int)m_x,(int)m_y,(int)(m_x+m_w),(int)(m_y+m_h));
+  }
+#endif
   inline const T &getX() const {
     return m_x;
   }

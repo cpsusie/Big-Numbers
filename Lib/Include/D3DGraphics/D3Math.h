@@ -269,22 +269,4 @@ public:
   static CurveArray createSphereObject(double r);
 };
 
-class Point3DP : public Point3D {
-public:
-  inline Point3DP() {
-  }
-  template<typename TX, typename TY, typename TZ> Point3DP(TX x, TY y, TZ z) : Point3D((double)x, (double)y, (double)z) {
-  }
-  template<typename T> Point3DP(const Point3DTemplate<T> &p) : Point3D(p) {
-  }
-  template<typename T> Point3DP(const Size3DTemplate<T> &s) : Point3D(s) {
-  }
-
-  inline Point3DP(const D3DXVECTOR3 &v) : Point3D(v.x, v.y, v.z) {
-  }
-  inline operator D3DXVECTOR3() const {
-    return D3DXVECTOR3((float)x, (float)y, (float)z);
-  }
-};
-
 #include "PragmaLib.h"

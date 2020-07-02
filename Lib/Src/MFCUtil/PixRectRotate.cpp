@@ -4,14 +4,14 @@
 #include <MFCUtil/Viewport2D.h>
 #include <MFCUtil/PixRect.h>
 
-D3DXVECTOR2 p2DToD3V3(const Point2DP &p) {
+D3DXVECTOR2 p2DToD3V3(const Point2D &p) {
   D3DXVECTOR2 result;
   result.x = (float)p.x;
   result.y = (float)p.y;
   return result;
 }
 
-static inline D3DXMATRIX createTransformedWorld(double scale, const Point2DP *rotationCenter, double rad, const Point2DP *translate) { // static
+static inline D3DXMATRIX createTransformedWorld(double scale, const Point2D *rotationCenter, double rad, const Point2D *translate) { // static
   D3DXMATRIX m;
   D3DXVECTOR2 d3C,d3T;
   if(rotationCenter) d3C = p2DToD3V3(*rotationCenter);
@@ -25,7 +25,7 @@ static inline D3DXMATRIX createIdWorld() {
 static inline D3DXMATRIX createScaleWorld(double scale) {
   return createTransformedWorld(scale, NULL, 0, NULL);
 }
-static inline D3DXMATRIX createTranslateWorld(const Point2DP &translate) {
+static inline D3DXMATRIX createTranslateWorld(const Point2D &translate) {
   return createTransformedWorld(1, NULL, 0, &translate);
 }
 
@@ -35,7 +35,7 @@ D3DXVECTOR2 operator*(const D3DXMATRIX &m, const D3DXVECTOR2 &v) {
   return D3DXVECTOR2(v4.x, v4.y);
 }
 
-Rectangle2DR getTransformedRectangle(const D3DXMATRIX &m, const Rectangle2DR &r) {
+Rectangle2D getTransformedRectangle(const D3DXMATRIX &m, const Rectangle2D &r) {
   D3DXVECTOR2 corner[4];
   corner[0] = p2DToD3V3(r.getTopLeft());
   corner[1] = p2DToD3V3(r.getTopRight());
@@ -50,7 +50,7 @@ Rectangle2DR getTransformedRectangle(const D3DXMATRIX &m, const Rectangle2DR &r)
   return trCorners.getBoundingBox();
 }
 
-void PixRect::drawRotated(const PixRect *src, const CPoint &dst, double degree, const Point2DP &rotationCenter) {
+void PixRect::drawRotated(const PixRect *src, const CPoint &dst, double degree, const Point2D &rotationCenter) {
   const CSize           dstSize = getSize();
   LPDIRECT3DDEVICE     &device  = m_device.getD3Device();
   LPD3DXRENDERTOSURFACE tmpRender;
@@ -77,7 +77,7 @@ void PixRect::drawRotated(const PixRect *src, const CPoint &dst, double degree, 
   m_device.setWorldMatrix(createIdWorld());
   m_device.draw(this, getRect());
 //showPixRect(this);
-  const Point2DP   dp = Point2DP(dst)-rotationCenter;
+  const Point2D   dp = Point2D(dst)-rotationCenter;
   const D3DXMATRIX tr = createTransformedWorld(1,&rotationCenter,GRAD2RAD(degree),&dp);
   m_device.setWorldMatrix(tr);
   const PixRect *texture = (src->getType() == PIXRECT_TEXTURE) ? src  : src->clone(true, PIXRECT_TEXTURE, D3DPOOL_DEFAULT);
@@ -106,8 +106,8 @@ PixRect *PixRect::rotateImage(const PixRect *src, double degree, D3DCOLOR backgr
 }
 
 CSize PixRect::getRotatedSize(const CSize &size, double degree) { // static
-  const Point2DP center = ORIGIN;
-  const CSize result = Size2DS(getTransformedRectangle(createTransformedWorld(1, &center, GRAD2RAD(degree), NULL)
-                                                      ,CRect(ORIGIN,size)).getSize());
+  const Point2D center = ORIGIN;
+  const CSize   result = Size2D(getTransformedRectangle(createTransformedWorld(1, &center, GRAD2RAD(degree), NULL)
+                                                       ,CRect(ORIGIN,size)).getSize());
   return result;
 }

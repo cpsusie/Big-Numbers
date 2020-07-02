@@ -7,9 +7,9 @@
 
 class IsoCurveGraphParameters : public ExprGraphParameters {
 private:
-  String            m_expr;
-  Rectangle2DR      m_boundingBox;
-  double            m_cellSize;
+  String           m_expr;
+  Rectangle2D      m_boundingBox;
+  double           m_cellSize;
 public:
   IsoCurveGraphParameters(const String &name=s_defaultName, COLORREF color=BLACK, GraphStyle style=GSCURVE, TrigonometricMode trigonometricMode=RADIANS);
   virtual GraphParameters *clone() const {
@@ -24,12 +24,12 @@ public:
   inline const String &getExprText() const {
     return m_expr;
   }
-  inline const Rectangle2DR &getBoundingBox() const {
+  inline const Rectangle2D &getBoundingBox() const {
     return m_boundingBox;
   }
   // return old boundingBox
-  inline Rectangle2DR setBoundingBox(const Rectangle2DR &boundingBox) {
-    const Rectangle2DR oldbb = m_boundingBox; m_boundingBox = boundingBox; return oldbb;
+  inline Rectangle2D setBoundingBox(const Rectangle2D &boundingBox) {
+    const Rectangle2D oldbb = m_boundingBox; m_boundingBox = boundingBox; return oldbb;
   }
   inline double getCellSize() const {
     return m_cellSize;

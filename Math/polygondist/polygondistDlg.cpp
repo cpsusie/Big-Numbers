@@ -342,7 +342,7 @@ void CPolygondistDlg::OnToolsFindIntersectionOfLines() {
     const Line2D l1(m_point4[0], m_point4[1]);
     const Line2D l2(m_point4[2], m_point4[3]);
     bool intersect;
-    const Point2DP p = pointOfIntersection(l1,l2, intersect);
+    const Point2D p = pointOfIntersection(l1,l2, intersect);
     if (!intersect) {
       showWarning(_T("lines do not intersect"));
       return;

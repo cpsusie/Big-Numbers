@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include <DebugLog.h>
-#include <MFCUtil/Point2DP.h>
+#include <Math/Point2D.h>
 #include "TestEdgeDetectionDlg.h"
 
 #if defined(_DEBUG)
@@ -286,12 +286,12 @@ void CTestEdgeDetectionDlg::setMark(UINT x, UINT y, bool marked, COLORREF color)
 
 CTestEdgeDetectionDlg &CTestEdgeDetectionDlg::paintArrow(const CPoint &p, Direction dir, COLORREF color) {
   removeArrow();
-  Point2DP v = EdgeMatrix::dirStep[dir];
+  Point2D v = EdgeMatrix::dirStep[dir];
   v /= v.length();
   v *= 2*PIXELSIZE;
   CDC &dc = getDC();
-  Point2DP start(PPOS(p.x)+PIXELSIZE/2, PPOS(p.y)+PIXELSIZE/2);
-  Point2DP end = start + v;
+  Point2D start(PPOS(p.x)+PIXELSIZE/2, PPOS(p.y)+PIXELSIZE/2);
+  Point2D end = start + v;
 
   CPen pen(PS_SOLID, 2, color);
 
@@ -306,13 +306,13 @@ CTestEdgeDetectionDlg &CTestEdgeDetectionDlg::paintArrow(const CPoint &p, Direct
    , 180  // W
   };
 
-  const double   angle = GRAD2RAD(angle360[dir]);
-  const int      aLen  = 7;
-  const double   s    = M_PI/6;
-  const double   a1   = angle + s;
-  const double   a2   = angle - s;
-  const Point2DP v1   = end - Point2D(aLen*cos(a1),-aLen*sin(a1));
-  const Point2DP v2   = end - Point2D(aLen*cos(a2),-aLen*sin(a2));
+  const double  angle = GRAD2RAD(angle360[dir]);
+  const int     aLen  = 7;
+  const double  s     = M_PI/6;
+  const double  a1    = angle + s;
+  const double  a2    = angle - s;
+  const Point2D v1    = end - Point2D(aLen*cos(a1),-aLen*sin(a1));
+  const Point2D v2    = end - Point2D(aLen*cos(a2),-aLen*sin(a2));
 
   dc.MoveTo(end);
   dc.LineTo(v1);

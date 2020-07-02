@@ -207,7 +207,7 @@ void CShwGraphDlg::setState(DialogState newstate) {
   m_state = newstate;
 }
 
-void CShwGraphDlg::addPoint(const Point2DP &p) {
+void CShwGraphDlg::addPoint(const Point2D &p) {
   m_points.add(p);
   m_needUpdateRange = true;
   m_needSolve = true;
@@ -224,7 +224,7 @@ void CShwGraphDlg::movePoint(intptr_t index, const CPoint &point) {
   CDC        *oldDC = m_cs.setDC(&dc);
   Viewport2D &vp    = m_cs.getViewport();
   vp.paintCross(m_points[index],WHITE);
-  m_points[index] = getTr().backwardTransform(Point2DP(point));
+  m_points[index] = getTr().backwardTransform(point);
   vp.paintCross(m_points[index],BLACK);
   m_needUpdateRange = true;
   m_needSolve       = true;
@@ -264,7 +264,7 @@ intptr_t CShwGraphDlg::findDataPoint(const CPoint &point) { /* returns the index
   intptr_t     found   = -1;
   RectangleTransformation &tr = getTr();
   for(size_t i = 0; i < m_points.size();i++) {
-    const Point2DP pp = tr.forwardTransform(m_points[i]);
+    const Point2D pp = tr.forwardTransform(m_points[i]);
     if(abs(pp.x - point.x) > 5 || abs(pp.y - point.y) > 5) {
       continue;
     }
@@ -412,7 +412,7 @@ void CShwGraphDlg::OnToolsSetinterval() {
     if(dlg.m_autoscaley) {
       yInterval = findYInterval(xInterval);
     }
-    tr.setFromRectangle(Rectangle2DR(xInterval.getFrom(),yInterval.getTo(),xInterval.getTo(), yInterval.getFrom()));
+    tr.setFromRectangle(Rectangle2D(xInterval.getFrom(),yInterval.getTo(),xInterval.getTo(), yInterval.getFrom()));
     Invalidate(FALSE);
   }
 }
@@ -455,7 +455,7 @@ void CShwGraphDlg::OnLButtonDown(UINT nFlags, CPoint point) {
 
 void CShwGraphDlg::showMousePosition(const CPoint &p) {
   if(!showMousePositionIsChecked()) return;
-  const Point2D dp  = getTr().backwardTransform(Point2DP(p));
+  const Point2D dp  = getTr().backwardTransform(p);
   const String  str = format(_T("(%+.2lf,%+.2lf)  "),dp.x,dp.y);
   setWindowText(this, IDC_STATICINFO, str);
 }
@@ -471,7 +471,7 @@ void CShwGraphDlg::OnMouseMove(UINT nFlags, CPoint point) {
       CClientDC  dc(&m_cs);
       CDC       *oldDC = m_cs.setDC(&dc);
       Viewport2D &vp   = m_cs.getViewport();
-      addPoint(getTr().backwardTransform(Point2DP(point)));
+      addPoint(getTr().backwardTransform(point));
       vp.paintCross(m_points.last(),BLACK);
       m_movePoint = m_points.size()-1;
       m_cs.setDC(oldDC);
@@ -553,7 +553,7 @@ void CShwGraphDlg::OnRButtonDown(UINT nFlags, CPoint point) {
 }
 
 void CShwGraphDlg::pushZoom(CRect &rect) {
-  Point2DP tmpp;
+  Point2D tmpp;
 
   tmpp.x = rect.left;  tmpp.y = rect.top;
   Point2D dp1 = getTr().backwardTransform(tmpp);
@@ -570,7 +570,7 @@ void CShwGraphDlg::pushZoom(CRect &rect) {
 
 void CShwGraphDlg::pushZoom(double minx, double maxx, double miny, double maxy) {
   m_zoomStack.push(m_cs.getDataRange());
-  m_cs.setDataRange(Rectangle2DR(minx,maxy,maxx,miny), true);
+  m_cs.setDataRange(Rectangle2D(minx,maxy,maxx,miny), true);
   enableMenuItem(this, ID_TOOLS_ZOOMOUT, true);
 }
 
@@ -584,7 +584,7 @@ void CShwGraphDlg::popZoom() {
   }
 }
 
-static DataPoint convertPoint(const Point2DP &p) {
+static DataPoint convertPoint(const Point2D &p) {
   return DataPoint(p.x,p.y,1);
 }
 
@@ -695,7 +695,7 @@ BOOL CShwGraphDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) {
   if(nFlags & MK_CONTROL)   zoomFlags |= X_AXIS;
   if(nFlags & MK_SHIFT)     zoomFlags |= Y_AXIS;
   if(zoomFlags == 0)        zoomFlags = X_AXIS | Y_AXIS;
-  getTr().zoom(Point2DP(pt), double(zDelta) / 1000.0,zoomFlags);
+  getTr().zoom(pt, double(zDelta) / 1000.0,zoomFlags);
   Invalidate(FALSE);
   return __super::OnMouseWheel(nFlags, zDelta, pt);
 }

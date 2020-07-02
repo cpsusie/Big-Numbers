@@ -2,7 +2,6 @@
 
 #include <Math/Transformation.h>
 #include "WinTools.h"
-#include "Point2DP.h"
 
 class Viewport2D {
 private:
@@ -36,7 +35,7 @@ private:
 
 public:
   Viewport2D(bool retainAspectRatio = false);
-  Viewport2D(CDC &dc, const Rectangle2DR &from, const Rectangle2DR &to, bool retainAspectRatio = false);
+  Viewport2D(CDC &dc, const Rectangle2D &from, const Rectangle2D &to, bool retainAspectRatio = false);
   Viewport2D(CDC &dc, RectangleTransformation &tr,  bool retainAspectRatio = false);
   ~Viewport2D();
 
@@ -55,19 +54,19 @@ public:
     return *m_tr;
   }
 
-  inline Rectangle2DR getFromRectangle() const {
+  inline Rectangle2D getFromRectangle() const {
     return m_tr->getFromRectangle();
   }
 
-  inline Rectangle2DR getToRectangle() const {
+  inline Rectangle2D getToRectangle() const {
     return m_tr->getToRectangle();
   }
 
-  inline void setFromRectangle(const Rectangle2DR &rect) {
+  inline void setFromRectangle(const Rectangle2D &rect) {
     m_tr->setFromRectangle(rect);
   }
 
-  void setToRectangle(const Rectangle2DR &rect);
+  void setToRectangle(const Rectangle2D &rect);
 
   inline void setScale(IntervalScale newScale, int flags) {
     m_tr->setScale(newScale, flags);
@@ -87,43 +86,43 @@ public:
     return m_tr->getYTransformation();
   }
 
-  inline Point2DP forwardTransform(const Point2DP &p) const {
+  inline Point2D forwardTransform(const Point2D &p) const {
     return m_tr->forwardTransform(p);
   }
 
-  inline Point2DP forwardTransform(double x, double y) const {
+  inline Point2D forwardTransform(double x, double y) const {
     return m_tr->forwardTransform(x,y);
   }
 
-  inline Point2DP backwardTransform(const Point2DP &p) const {
+  inline Point2D backwardTransform(const Point2D &p) const {
     return m_tr->backwardTransform(p);
   }
 
-  inline Rectangle2DR forwardTransform(const Rectangle2DR &r) const {
+  inline Rectangle2D forwardTransform(const Rectangle2D &r) const {
     return m_tr->forwardTransform(r);
   }
 
-  inline Rectangle2DR backwardTransform(const Rectangle2DR &r) const {
+  inline Rectangle2D backwardTransform(const Rectangle2D &r) const {
     return m_tr->backwardTransform(r);
   }
 
   void        setClipping(bool         clip) const;
-  void        MoveTo(    const Point2DP  &p) const;
+  void        MoveTo(    const Point2D  &p) const;
   void        MoveTo(    double x, double y) const;
-  void        LineTo(    const Point2DP  &p) const;
+  void        LineTo(    const Point2D  &p) const;
   void        LineTo(    double x, double y) const;
-  void        SetPixel(  const Point2DP  &p, COLORREF color) const;
+  void        SetPixel(  const Point2D  &p, COLORREF color) const;
   void        SetPixel(  double x, double y, COLORREF color) const;
-  void        paintCross(const Point2DP  &p, COLORREF color, int size=4) const;
-  COLORREF    GetPixel(  const Point2DP  &p) const;
+  void        paintCross(const Point2D  &p, COLORREF color, int size=4) const;
+  COLORREF    GetPixel(  const Point2D  &p) const;
   COLORREF    GetPixel(  double x, double y) const;
-  bool        Rectangle( const Rectangle2DR &r) const;
+  bool        Rectangle( const Rectangle2D &r) const;
   bool        Rectangle( double x1, double y1, double x2, double y2) const;
-  void        FillSolidRect(const Rectangle2DR &r, COLORREF color) const;
+  void        FillSolidRect(const Rectangle2D &r, COLORREF color) const;
   // transparent background
   // If bckSave is specified, the bounding recangle of the written text is returned (can be used for selection)
   // and the original pixels in the bounding rectangle containing the text, will be saved, for later restore
-  void        TextOut( const Point2DP &p, const String &text, COLORREF color, BackgroundSaver *bckSave = NULL) const;
+  void        TextOut( const Point2D &p, const String &text, COLORREF color, BackgroundSaver *bckSave = NULL) const;
   void        clear(COLORREF color) const;
   CGdiObject *SelectObject(CGdiObject *object) const;
   CBitmap    *SelectObject(CBitmap    *bitmap) const;

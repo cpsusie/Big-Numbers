@@ -10,7 +10,7 @@ public:
   float       m_area;
 };
 
-class VertexWithFaceArray : public Point3DP {
+class VertexWithFaceArray : public Point3D {
 public:
   CompactIntArray m_faceArray;
   D3DXVECTOR3     m_normal;

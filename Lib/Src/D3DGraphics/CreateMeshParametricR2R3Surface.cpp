@@ -14,15 +14,15 @@ public:
 
 ParametricSurfacePoint::ParametricSurfacePoint(FunctionR2R3 &f, const Point2D &p) {
   const Point3D v = f(p);
-  m_p = Vertex(v.x, v.y, v.z);
+  m_p = v;
 #define EPS 1e-5
   Point2D  pt = p, ps = p;
 
   pt.x = (fabs(p.x) < 2) ? (p.x+EPS) : p.x * (1+EPS);
   ps.y = (fabs(p.y) < 2) ? (p.y+EPS) : p.y * (1+EPS);
-  const Point3DP vt = (f(pt) - v) / (pt.x - p.x);
-  const Point3DP vs = (f(ps) - v) / (ps.y - p.y);
-  m_n = Vertex(unitVector((Point3DP)cross(vt, vs)));
+  const Point3D vt = (f(pt) - v) / (pt.x - p.x);
+  const Point3D vs = (f(ps) - v) / (ps.y - p.y);
+  m_n = unitVector(cross(vt, vs));
 }
 
 LPD3DXMESH createMeshFromParametricSurface(AbstractMeshFactory &amf, FunctionR2R3 &f, const DoubleInterval &tInterval, const DoubleInterval &sInterval, UINT nt, UINT ns, bool doubleSided) {

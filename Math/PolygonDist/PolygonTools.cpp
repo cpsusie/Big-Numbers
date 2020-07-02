@@ -12,20 +12,20 @@ double angle(const line &l1, const line &l2) {
   return angle(v1,v2);
 }
 
-void drawArrow(CDC &dc, const Point2DP start, const Point2DP end, int length) {
+void drawArrow(CDC &dc, const Point2D start, const Point2D end, int length) {
   const Point2D aStart(start);
-  Point2D dirUnit(Point2D(end) - aStart);
+  Point2D dirUnit(end - aStart);
   dirUnit.normalize();
-  const Point2DP aEnd     =  aStart + dirUnit * length;
+  const Point2D  aEnd      =  aStart + dirUnit * length;
   const Point2D  dirUnit1 = -dirUnit;
-  Point2DP vp1 = aEnd + dirUnit1.rotate(GRAD2RAD(+40)) * 6;
-  Point2DP vp2 = aEnd + dirUnit1.rotate(GRAD2RAD(-40)) * 6;
+  const Point2D vp1 = aEnd + dirUnit1.rotate(GRAD2RAD(+40)) * 6;
+  const Point2D vp2 = aEnd + dirUnit1.rotate(GRAD2RAD(-40)) * 6;
 
   dc.MoveTo(start);
-  dc.LineTo(aEnd);
-  dc.LineTo(vp1);
-  dc.MoveTo(aEnd);
-  dc.LineTo(vp2);
+  dc.LineTo(aEnd );
+  dc.LineTo(vp1  );
+  dc.MoveTo(aEnd );
+  dc.LineTo(vp2  );
 }
 
 void line::paint(CDC &dc, const CRect &rect, COLORREF color) const {

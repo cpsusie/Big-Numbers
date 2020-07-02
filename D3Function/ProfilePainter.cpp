@@ -50,9 +50,9 @@ void paintProfileNormals(const Profile &profile, Viewport2D &vp, COLORREF color,
     double  tlen    = tnormal.length();
     tnormal /= tlen;
     tto = tfrom + tnormal * 20;
-    dc.LineTo((Point2DP)tto);
-    dc.LineTo((Point2DP)(tto + tnormal.rotate(GRAD2RAD(160)) * 5));
-    dc.MoveTo((Point2DP)tto);
-    dc.LineTo((Point2DP)(tto + tnormal.rotate(GRAD2RAD(-160)) * 5));
+    dc.LineTo(tto);
+    dc.LineTo(tto + tnormal.rotate(GRAD2RAD(160)) * 5);
+    dc.MoveTo(tto);
+    dc.LineTo(tto + tnormal.rotate(GRAD2RAD(-160)) * 5);
   }
 }

@@ -68,8 +68,8 @@ public:
   inline bool operator!=(const GridParameters &rhs) const {
     return !(*this == rhs);
   }
-  Size2DS getImageSize() const {
-    return Size2DS(m_cellCount) * m_cellSizeMM;
+  Size2D getImageSize() const {
+    return Size2D(m_cellCount) * m_cellSizeMM;
   }
   int getType() const {
     return 0;

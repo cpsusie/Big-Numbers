@@ -186,7 +186,7 @@ double IsoCurveGraph::distance(const CPoint &p) const {
         try {
           const Point2D &p1 = m_pointArray[ls->m_i1];
           const Point2D &p2 = m_pointArray[ls->m_i2];
-          const double dist = distanceFromLineSegment(tr.forwardTransform((Point2DP)p1), tr.forwardTransform(p2), (Point2DP)p);
+          const double dist = distanceFromLineSegment(tr.forwardTransform(p1), tr.forwardTransform(p2), Point2D(p));
           if(dist < minDist) {
             minDist = dist;
           }
@@ -202,8 +202,8 @@ double IsoCurveGraph::distance(const CPoint &p) const {
       for(size_t i = 0; i < n; i++, ls++) {
         try {
           const Point2D &p1 = m_pointArray[ls->m_i1];
-          double dist = ::distance(tr.forwardTransform(p1), (Point2DP)p);
-          if(minDist < 0 || dist < minDist) {
+          double dist = ::distance(tr.forwardTransform(p1), Point2D(p));
+          if((minDist < 0) || (dist < minDist)) {
             minDist = dist;
           }
         } catch(...) {
@@ -211,8 +211,8 @@ double IsoCurveGraph::distance(const CPoint &p) const {
         }
         try {
           const Point2D &p2 = m_pointArray[ls->m_i2];
-          double dist = ::distance(tr.forwardTransform(p2), (Point2DP)p);
-          if(minDist < 0 || dist < minDist) {
+          double dist = ::distance(tr.forwardTransform(p2), Point2D(p));
+          if((minDist < 0) || (dist < minDist)) {
             minDist = dist;
           }
         } catch (...) {

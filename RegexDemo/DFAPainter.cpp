@@ -242,8 +242,8 @@ void DFAPainter::calculateAllPositions() {
     assert(n == statesInColumn.size());
     for(int i = 0; i < n; i++) {
       DFAStatePoint *sp = m_dfaPoints[statesInColumn[i]];
-      sp->setPosition(Point2DP((float)m_size.cx * (c + 0.5) / gridSize.cx
-                              ,(float)m_size.cy * (i + 0.5) / n));
+      sp->setPosition(Point2D((float)m_size.cx * (c + 0.5) / gridSize.cx
+                             ,(float)m_size.cy * (i + 0.5) / n));
     }
   }
   m_grid.markStateCircles(m_dfaPoints);
@@ -293,7 +293,7 @@ void DFAPainter::paintOutgoingTransitions(const DFAPointArray &pointArray, HDC h
 }
 
 // i = [0..8]
-inline Point2DP shiftingRotate(const Point2DP &v, int i) {
+inline Point2D shiftingRotate(const Point2D &v, int i) {
   if(i == 0) {
     return v;
   } else if(i % 2 == 0) {
@@ -307,8 +307,8 @@ void DFAPainter::paintOutgoingTransition(const DFAPointArray &pointArray, size_t
   DFAStatePoint *from = pointArray[index];
   DFAStatePoint *to   = pointArray[transition.getSuccessor()];
 
-  const Point2DP cf = from->getPosition();
-  const Point2DP ct = to->getPosition();
+  const Point2D cf = from->getPosition();
+  const Point2D ct = to->getPosition();
 
   const DFAState &sf = from->m_state;
   const DFAState &st = to->m_state;
@@ -316,8 +316,8 @@ void DFAPainter::paintOutgoingTransition(const DFAPointArray &pointArray, size_t
   if(&sf == &st) { // transition to the same state.
     throwException(_T("paintOutgoingTransition cannot paint loop transitions"));
   }
-  const Point2DP v = (ct - cf).normalize();
-  Point2DP pFrom, pTo;
+  const Point2D v = (ct - cf).normalize();
+  Point2D pFrom, pTo;
   pFrom = cf + v * CIRCLE_RADIUS;
   pTo   = ct - v * CIRCLE_RADIUS;
   if(pFrom == pTo) {
@@ -383,7 +383,7 @@ void DFAPainter::paintLoopTransitions(const DFAPointArray &pointArray, HDC hdc) 
 
 void DFAPainter::paintLoopTransition(const DFAStatePoint *sp, HDC hdc) {
   const int            stateID     = sp->m_state.m_id;
-  const Point2DP       center      = sp->getPosition();
+  const Point2D        center      = sp->getPosition();
   const DFATransition &trans       = sp->getLoopTransition();
   const DirectionPair  dirPair     = sp->findBestLoopPosition();
   paintLoopArrow(sp->getPosition(), CIRCLE_RADIUS, dirPair, trans.toString(), hdc);

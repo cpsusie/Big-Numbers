@@ -56,9 +56,9 @@ public:
 
 class MoveSinglePieceAnimation : public AbstractPieceMoveAnimation {
 private:
-  const Point2DP        m_from, m_to;
-  Point2DP              m_pos;
-  SigmoidIterator       m_it;
+  const Point2D        m_from, m_to;
+  Point2D              m_pos;
+  SigmoidIterator      m_it;
 public:
   MoveSinglePieceAnimation(ChessGraphics *graphics, const int from, const int to, int steps = 0);
   bool step();

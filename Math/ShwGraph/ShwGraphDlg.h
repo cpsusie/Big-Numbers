@@ -31,7 +31,7 @@ public:
 
   void readData(FILE *f);
   void readTextFile(const String &fname);
-  void addPoint(const Point2DP &p);
+  void addPoint(const Point2D &p);
   void removePoint(intptr_t index);
   void movePoint(  intptr_t index, const CPoint &point);
   intptr_t findDataPoint(const CPoint &point);

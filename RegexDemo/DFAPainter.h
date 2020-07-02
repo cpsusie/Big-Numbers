@@ -158,14 +158,14 @@ private:
 
   // convert window point to grid point
   inline CPoint winToGrid(int x, int y) const {
-    return (Point2DP)m_tr.forwardTransform(x, y);
+    return m_tr.forwardTransform(x, y);
   }
   // convert window point to grid point
   inline CPoint winToGrid(const CPoint &p) const {
-    return (Point2DP)m_tr.forwardTransform(p.x, p.y);
+    return m_tr.forwardTransform(p.x, p.y);
   }
   inline CPoint gridToWin(const CPoint &p) const {
-    return (Point2DP)m_tr.backwardTransform((Point2DP)p);
+    return m_tr.backwardTransform(p);
   }
   // x,y in window space
   void markCircle(int x, int y);

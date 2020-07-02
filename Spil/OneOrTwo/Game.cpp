@@ -10,7 +10,7 @@
 #define HASWON()             (m_bricksOnBoard == 0)
 
 void line(CDC &dc, const Point2D &p1, const Point2D &p2) {
-  Point2DP from(p1), to(p2);
+  Point2D from(p1), to(p2);
   dc.MoveTo(from);
   dc.LineTo(to);
 }
@@ -242,7 +242,7 @@ LineIntersectionKey::LineIntersectionKey(int n, int i1, int i2, int i3, int i4) 
 }
 
 void AbstractGame::paintRegularPolygon(CDC &dc, int edgeCount, int size, const CPoint &start, double startDir) {
-  Point2DP p = start;
+  Point2D p = start;
 
   dc.MoveTo(p);
   const double dg         = 360.0/edgeCount;
@@ -292,7 +292,7 @@ void AbstractGame::addPosition(CDC &dc, const Point2D &p) {
 
 int AbstractGame::findPosition(const CPoint &p) const {
   for(int pos = 0; pos < m_positionCount; pos++) {
-    if(distance(Point2DP(p), m_brickPositions[pos]) <= POSSIZE) {
+    if(distance(Point2D(p), m_brickPositions[pos]) <= POSSIZE) {
       if(isOccupied(pos)) {
         return pos;
       }

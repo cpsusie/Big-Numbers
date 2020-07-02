@@ -2,17 +2,17 @@
 #include <Math.h>
 #include "ChessGraphics.h"
 
-int            ChessResources::s_instanceCount    = 0;
-const Point2DP ChessResources::s_upperLeftCorner0 = CPoint(351,110);
-const Size2DS  ChessResources::s_fieldSize0       = CSize(74,74);
+int           ChessResources::s_instanceCount    = 0;
+const Point2D ChessResources::s_upperLeftCorner0 = CPoint(351,110);
+const Size2D  ChessResources::s_fieldSize0       = CSize(74,74);
 
-Image         *ChessResources::s_boardImage;
-ImageArray     ChessResources::s_pieceImage[2];
-ImageArray     ChessResources::s_markImage;
-Image         *ChessResources::s_selectionFrameImage;
-Image         *ChessResources::s_playerIndicator;
-CFont          ChessResources::s_boardTextFont;
-CFont          ChessResources::s_debugInfoFont;
+Image        *ChessResources::s_boardImage;
+ImageArray    ChessResources::s_pieceImage[2];
+ImageArray    ChessResources::s_markImage;
+Image        *ChessResources::s_selectionFrameImage;
+Image        *ChessResources::s_playerIndicator;
+CFont         ChessResources::s_boardTextFont;
+CFont         ChessResources::s_debugInfoFont;
 
 #define MINSCALE 0.4
 
@@ -128,15 +128,15 @@ void ChessResources::unload() {
 }
 
 CBitmap &ChessResources::getSmallPieceBitmap(CBitmap &dst, PieceKey pk) const { // for promote-menu
-  const Size2DS size0     = s_fieldSize0;
-  const CSize   imageSize = Size2DS(max(getAvgScale()*0.8,MINSCALE) * size0);
+  const Size2D size0     = s_fieldSize0;
+  const CSize  imageSize = Size2D(max(getAvgScale()*0.8,MINSCALE) * size0);
   PixRect pr(theApp.m_device, PIXRECT_PLAINSURFACE, s_fieldSize0);
   pr.rop(ORIGIN
         ,s_fieldSize0
         ,SRCCOPY
         ,getBoardImage()
         ,(GET_PLAYER_FROMKEY(pk)==WHITEPLAYER)
-        ?Point2DP(s_upperLeftCorner0+Size2D(0,s_fieldSize0.cy))
+        ?Point2D(s_upperLeftCorner0+Size2D(0,s_fieldSize0.cy))
         :s_upperLeftCorner0);
   getPieceImage(pk)->paintImage(pr, ORIGIN);
 

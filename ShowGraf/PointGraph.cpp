@@ -60,10 +60,10 @@ void PointGraph::clear() {
 }
 
 double PointGraph::distance(const CPoint &p) const {
-  const Point2DP                 tmpp(p);
+  const Point2D                  tmpp(p);
   const Point2DArray            &data = getProcessedData();
   const size_t                   n    = data.size();
-  const RectangleTransformation &tr = getSystem().getTransformation();
+  const RectangleTransformation &tr   = getSystem().getTransformation();
   switch(getParam().getGraphStyle()) {
   case GSCURVE:
     { double minDist = EMPTY_DISTANCE;

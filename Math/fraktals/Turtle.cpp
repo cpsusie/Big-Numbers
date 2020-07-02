@@ -10,10 +10,10 @@ void Turtle::move(double l) {
 }
 
 void Turtle::moveTo(double x, double y) {
-  Point2DP cp = m_tr.forwardTransform(m_currentp);
+  Point2D cp = m_tr.forwardTransform(m_currentp);
   m_currentp.x = x;
   m_currentp.y = y;
-  Point2DP np = m_tr.forwardTransform(m_currentp);
+  Point2D np = m_tr.forwardTransform(m_currentp);
   CClientDC dc(m_dlg);
   dc.MoveTo(cp);
   dc.LineTo(np);
@@ -60,7 +60,7 @@ void Turtle::init(CDialog *dlg, double minx, double maxx,double miny, double max
   rect.top += 40; rect.bottom -= 40;
   rect.left += 40; rect.right -= 40;
 
-  m_tr.setToRectangle(Rectangle2D::makeBottomUpRectangle(Rectangle2DR(rect)));
+  m_tr.setToRectangle(Rectangle2D::makeBottomUpRectangle(rect));
   m_tr.setFromRectangle(Rectangle2D(minx,miny,maxx-minx,maxy-miny));
   jumpTo(0,0);
   turnTo(0);
@@ -68,8 +68,8 @@ void Turtle::init(CDialog *dlg, double minx, double maxx,double miny, double max
 
 void Turtle::OnSize(CDialog *dlg) {
   CRect rect = getClientRect(dlg);
-  rect.top += 40; rect.bottom -= 40;
-  rect.left += 40; rect.right -= 40;
-  m_tr.setToRectangle(Rectangle2DR(rect));
+  rect.top  += 40; rect.bottom -= 40;
+  rect.left += 40; rect.right  -= 40;
+  m_tr.setToRectangle(rect);
 }
 

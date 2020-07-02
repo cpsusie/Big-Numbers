@@ -7,7 +7,7 @@ inline CPoint toCPoint(const BigRealPoint2D &p) {
   return CPoint(getInt(p.x), getInt(p.y));
 }
 
-inline BigRealPoint2D toBigRealPoint(const Point2DP &p, DigitPool *digitPool) {
+inline BigRealPoint2D toBigRealPoint(const Point2D &p, DigitPool *digitPool) {
   BigRealPoint2D result(digitPool);
   return result = p;
 }
@@ -16,7 +16,7 @@ inline CRect toCRect(const BigRealRectangle2D &r) {
   return CRect(getInt(r.getX()),getInt(r.getY()),getInt(r.getX()+r.getWidth()),getInt(r.getY()+r.getHeight()));
 }
 
-inline BigRealRectangle2D toBigRealRect(const Rectangle2DR &r, DigitPool *digitPool) {
+inline BigRealRectangle2D toBigRealRect(const Rectangle2D &r, DigitPool *digitPool) {
   BigRealRectangle2D result(digitPool);
   return result = r;
 }
