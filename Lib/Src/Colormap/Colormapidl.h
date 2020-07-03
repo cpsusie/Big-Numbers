@@ -19,19 +19,19 @@
 
 
 /* verify that the <rpcndr.h> version is high enough to compile this file*/
-#if !defined(__REQUIRED_RPCNDR_H_VERSION__)
+#ifndef __REQUIRED_RPCNDR_H_VERSION__
 #define __REQUIRED_RPCNDR_H_VERSION__ 500
 #endif
 
 #include "rpc.h"
 #include "rpcndr.h"
 
-#if !defined(__RPCNDR_H_VERSION__)
+#ifndef __RPCNDR_H_VERSION__
 #error this stub requires an updated version of <rpcndr.h>
 #endif /* __RPCNDR_H_VERSION__ */
 
 
-#if !defined(__Colormapidl_h__)
+#ifndef __Colormapidl_h__
 #define __Colormapidl_h__
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
@@ -40,24 +40,24 @@
 
 /* Forward Declarations */ 
 
-#if !defined(___DColormap_FWD_DEFINED__)
+#ifndef ___DColormap_FWD_DEFINED__
 #define ___DColormap_FWD_DEFINED__
 typedef interface _DColormap _DColormap;
 
 #endif 	/* ___DColormap_FWD_DEFINED__ */
 
 
-#if !defined(___DColormapEvents_FWD_DEFINED__)
+#ifndef ___DColormapEvents_FWD_DEFINED__
 #define ___DColormapEvents_FWD_DEFINED__
 typedef interface _DColormapEvents _DColormapEvents;
 
 #endif 	/* ___DColormapEvents_FWD_DEFINED__ */
 
 
-#if !defined(__Colormap_FWD_DEFINED__)
+#ifndef __Colormap_FWD_DEFINED__
 #define __Colormap_FWD_DEFINED__
 
-#if defined(__cplusplus)
+#ifdef __cplusplus
 typedef class Colormap Colormap;
 #else
 typedef struct Colormap Colormap;
@@ -66,7 +66,7 @@ typedef struct Colormap Colormap;
 #endif 	/* __Colormap_FWD_DEFINED__ */
 
 
-#if defined(__cplusplus)
+#ifdef __cplusplus
 extern "C"{
 #endif 
 
@@ -90,7 +90,7 @@ extern RPC_IF_HANDLE __MIDL_itf_Colormap_0000_0000_v0_0_c_ifspec;
 extern RPC_IF_HANDLE __MIDL_itf_Colormap_0000_0000_v0_0_s_ifspec;
 
 
-#if !defined(__ColormapLib_LIBRARY_DEFINED__)
+#ifndef __ColormapLib_LIBRARY_DEFINED__
 #define __ColormapLib_LIBRARY_DEFINED__
 
 /* library ColormapLib */
@@ -99,7 +99,7 @@ extern RPC_IF_HANDLE __MIDL_itf_Colormap_0000_0000_v0_0_s_ifspec;
 
 EXTERN_C const IID LIBID_ColormapLib;
 
-#if !defined(___DColormap_DISPINTERFACE_DEFINED__)
+#ifndef ___DColormap_DISPINTERFACE_DEFINED__
 #define ___DColormap_DISPINTERFACE_DEFINED__
 
 /* dispinterface _DColormap */
@@ -180,7 +180,7 @@ EXTERN_C const IID DIID__DColormap;
 
     
 
-#if defined(COBJMACROS)
+#ifdef COBJMACROS
 
 
 #define _DColormap_QueryInterface(This,riid,ppvObject)	\
@@ -214,7 +214,7 @@ EXTERN_C const IID DIID__DColormap;
 #endif 	/* ___DColormap_DISPINTERFACE_DEFINED__ */
 
 
-#if !defined(___DColormapEvents_DISPINTERFACE_DEFINED__)
+#ifndef ___DColormapEvents_DISPINTERFACE_DEFINED__
 #define ___DColormapEvents_DISPINTERFACE_DEFINED__
 
 /* dispinterface _DColormapEvents */
@@ -295,7 +295,7 @@ EXTERN_C const IID DIID__DColormapEvents;
 
     
 
-#if defined(COBJMACROS)
+#ifdef COBJMACROS
 
 
 #define _DColormapEvents_QueryInterface(This,riid,ppvObject)	\
@@ -331,7 +331,7 @@ EXTERN_C const IID DIID__DColormapEvents;
 
 EXTERN_C const CLSID CLSID_Colormap;
 
-#if defined(__cplusplus)
+#ifdef __cplusplus
 
 class DECLSPEC_UUID("B4097DDA-446A-4AB9-B210-3AF19276DF6C")
 Colormap;
@@ -342,7 +342,7 @@ Colormap;
 
 /* end of Additional Prototypes */
 
-#if defined(__cplusplus)
+#ifdef __cplusplus
 }
 #endif
 
