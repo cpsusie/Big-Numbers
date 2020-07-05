@@ -103,15 +103,21 @@ UIDIV:                                         ; Assume dst>=0, rax==x.hi, x>0, 
     div         rcx                            ;   rax     = q.lo, rdx==(dst % x)(ignore)
     mov         rdx, rbx                       ;   rdx:rax==|quotient|
     jmp         L5                             ; }
-L1: bsr         rcx, rax                       ; Assume rax==x.hi, x(signed)>0 => x.hi.bit[63]==0 => rcx<63
-    inc         cl                             ; cl = #positions to shift both operands, to make x.hi==0 (cl<64)
-    mov         rbx, qword ptr[r9]             ; rax:rbx==x
-    shrd        rbx, rax, cl                   ; rshift x cl positions, x.hi==0
+L1: bsr         rcx, rax                       ; Assume rax==x.hi
+    cmp         cl, 63                         ;
+    je          MRS                            ; if(cl<63) {
+    inc         cl                             ;   cl = #positions to shift both operands, to make x.hi==0 (cl<64)
+    mov         rbx, qword ptr[r9]             ;   rax:rbx==x
+    shrd        rbx, rax, cl                   ;   rshift x cl positions, x.hi==0
     mov         rdx, qword ptr[r8+8]           ;
-    mov         rax, qword ptr[r8]             ; rdx:rax==dst
-    shrd        rax, rdx, cl                   ; rshift dst cl positions, filling open bitpositions with 0
+    mov         rax, qword ptr[r8]             ;   rdx:rax==dst
+    shrd        rax, rdx, cl                   ;   rshift dst cl positions, filling open bitpositions with 0
     shr         rdx, cl                        ;
-                                               ; Assume rdx:rax==dst shifted, rbx==(x shifted).lo (x.hi==0)
+    jmp         Divide                         ; } else {
+MRS:mov         rbx, rax                       ;   Manual 64 bit rshift both operands
+    mov         rax, qword ptr[r8+8]           ;
+    xor         rdx, rdx                       ; }
+Divide:                                        ; Assume rdx:rax==dst shifted, rbx==(x shifted).lo (x.hi==0)
     div         rbx                            ; rax = q, rdx = remainder(ignore)
     mov         rsi, rax                       ; rsi = q, (quotient==q or q-1), q.hi==0
     mul         qword ptr[r9+8]                ; rdx:rax = q * x.hi
@@ -182,15 +188,22 @@ UIREM:                                         ; Assume dst>=0, rax==x.hi, x>0, 
     or          edi, edi                       ;
     jne         L5                             ;   if(edi!=0) change sign of remainder
     jmp         L2                             ; }
-L1: bsr         rcx, rax                       ; Assume rax==x.hi, x(signed)>0 => x.hi.bit[63]==0 => rcx<63
-    inc         cl                             ; cl = #positions to shift both operands, to make x.hi==0 (cl<64)
-    mov         rbx, qword ptr[r9]             ; rax:rbx==x
-    shrd        rbx, rax, cl                   ; rshift x cl positions, x.hi==0
+
+L1: bsr         rcx, rax                       ; Assume rax==x.hi
+    cmp         cl, 63                         ;
+    je          MRS                            ; if(cl<63) {
+    inc         cl                             ;   cl = #positions to shift both operands, to make x.hi==0 (cl<64)
+    mov         rbx, qword ptr[r9]             ;   rax:rbx==x
+    shrd        rbx, rax, cl                   ;   rshift x cl positions, x.hi==0
     mov         rdx, qword ptr[r8+8]           ;
-    mov         rax, qword ptr[r8]             ; rdx:rax==dst
-    shrd        rax, rdx, cl                   ; rshift dst cl positions, filling open bitpositions with 0
+    mov         rax, qword ptr[r8]             ;   rdx:rax==dst
+    shrd        rax, rdx, cl                   ;   rshift dst cl positions, filling open bitpositions with 0
     shr         rdx, cl                        ;
-                                               ; Assume rdx:rax==dst shifted, rbx==(x shifted).lo (x.hi==0)
+    jmp         Divide                         ; } else {
+MRS:mov         rbx, rax                       ;   Manual 64 bit rshift both operands
+    mov         rax, qword ptr[r8+8]           ;
+    xor         rdx, rdx                       ; }
+Divide:                                        ; Assume rdx:rax==dst shifted, rbx==(x shifted).lo (x.hi==0)
     div         rbx                            ; rax = q, rdx = remainder(ignore)
     mov         rcx, rax                       ; rcx = q, (quotient==q or q-1), q.hi==0
     mul         qword ptr[r9+8]                ; rdx:rax = q * x.hi
@@ -337,10 +350,10 @@ L1: bsr         rcx, rax                       ; Assume rax==x.hi
     mov         rax, qword ptr[r8]             ;   rdx:rax==dst
     shrd        rax, rdx, cl                   ;   rshift dst cl positions, filling open bitpositions with 0
     shr         rdx, cl                        ;
-    jmp         Divide                         ; }
-MRS:mov         rbx, rax                       ; Manual 64 bit rshift both operands
-    mov         rax, qword ptr[r8+8]
-    xor         rdx, rdx
+    jmp         Divide                         ; } else {
+MRS:mov         rbx, rax                       ;   Manual 64 bit rshift both operands
+    mov         rax, qword ptr[r8+8]           ;
+    xor         rdx, rdx                       ; }
 Divide:                                        ; Assume rdx:rax==dst shifted, rbx==(x shifted).lo (x.hi==0)
     div         rbx                            ; rax = q, rdx = remainder(ignore)
     mov         rsi, rax                       ; rsi = q, (quotient==q or q-1), q.hi==0
@@ -393,10 +406,10 @@ L1: bsr         rcx, rax                       ; Assume rax==x.hi
     mov         rax, qword ptr[r8]             ;   rdx:rax==dst
     shrd        rax, rdx, cl                   ;   rshift dst cl positions, filling open bitpositions with 0
     shr         rdx, cl                        ;
-    jmp         Divide                         ; }
-MRS:mov         rbx, rax                       ; Manual 64 bit rshift both operands
-    mov         rax, qword ptr[r8+8]
-    xor         rdx, rdx
+    jmp         Divide                         ; } else {
+MRS:mov         rbx, rax                       ;   Manual 64 bit rshift both operands
+    mov         rax, qword ptr[r8+8]           ;
+    xor         rdx, rdx                       ; }
 Divide:                                        ; Assume rdx:rax==dst shifted, rbx==(x shifted).lo (x.hi==0)
     div         rbx                            ; rax     = q, rdx = remainder(ignore)
     mov         rcx, rax                       ; rcx     = q, (quotient==q or q-1), q.hi==0
@@ -461,10 +474,10 @@ L1: bsr         rcx, rax                       ; Assume rax==denom.hi
     mov         rax, qword ptr[r8]             ;   rdx:rax==dst (numer)
     shrd        rax, rdx, cl                   ;   rshift numer cl positions, filling open bitpositions with 0
     shr         rdx, cl                        ;
-    jmp         Divide                         ; }
-MRS:mov         rbx, rax                       ; Manual 64 bit rshift both operands
-    mov         rax, qword ptr[r8+8]
-    xor         rdx, rdx
+    jmp         Divide                         ; } else {
+MRS:mov         rbx, rax                       ;   Manual 64 bit rshift both operands
+    mov         rax, qword ptr[r8+8]           ;
+    xor         rdx, rdx                       ; }
 Divide:                                        ; Assume rdx:rax==numer shifted, rbx==(denom shifted).lo (denom.hi=0)
     div         rbx                            ; rax = q, rdx = remainder(ignore)
     mov         rsi, rax                       ; rsi = q, (quotient==q or q-1) q.hi==0

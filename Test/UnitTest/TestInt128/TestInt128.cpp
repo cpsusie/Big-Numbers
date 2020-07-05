@@ -500,6 +500,17 @@ namespace TestInt128 {
       verify(R == expectedR);
     }
 
+    TEST_METHOD(TestDivision20) {
+      const _int128 x(_I128_MAX);
+      const _int128 y(_I128_MIN);
+      const _int128 Q = x / y;
+      const _int128 R = x % y;
+      const _uint128 expectedQ(0);
+      const _uint128 expectedR(x);
+      verify(Q == expectedQ);
+      verify(R == expectedR);
+    }
+
     TEST_METHOD(Int128_ui128div) {
       JavaRandom rnd;
       _uint128 n = 5;
