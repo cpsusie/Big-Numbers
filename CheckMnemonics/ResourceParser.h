@@ -32,5 +32,5 @@ private:
   SyntaxNode       *newNode(const SourcePosition &pos, int symbol, ... );
 };
 
-#line 22 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
+#line 22 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
 
