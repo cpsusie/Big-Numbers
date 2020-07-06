@@ -31,8 +31,8 @@ D3SceneObjectWithIndexBuffer &D3SceneObjectWithIndexBuffer::releaseIndexBuffer()
   return *this;
 }
 
-D3Device &D3SceneObjectWithIndexBuffer::setIndices(D3Device &device) {
-  return device.setIndices(m_indexBuffer);
+D3Device &D3SceneObjectWithIndexBuffer::setDeviceIndices() {
+  return getDevice().setIndices(m_indexBuffer);
 }
 
 #define GETLOCKEDSHORTBUFFER(count) (USHORT*)allocateIndexBuffer(false, count)

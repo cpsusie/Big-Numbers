@@ -50,12 +50,12 @@ public:
 void D3SceneObjectTriangleArray::draw() {
   if(hasVertexBuffer()) {
     D3Device &device = setDeviceMaterialIfExist();
-    setStreamSource().setIndices(getIndexBuffer())
-                     .setWorldMatrix(getWorld())
-                     .setFillMode(getFillMode())
-                     .setShadeMode(getShadeMode())
-                     .setLightingEnable(getLightingEnable())
-                     .drawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, m_vertexCount, 0, m_primitiveCount);
+    setDeviceStreamSource().setIndices(getIndexBuffer())
+                           .setWorldMatrix(getWorld())
+                           .setFillMode(getFillMode())
+                           .setShadeMode(getShadeMode())
+                           .setLightingEnable(getLightingEnable())
+                           .drawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, m_vertexCount, 0, m_primitiveCount);
   }
 }
 
@@ -144,8 +144,7 @@ D3SceneObjectVisualNormals::~D3SceneObjectVisualNormals() {
 }
 
 static CompactArray<Line3D> &getNormalArray(LPDIRECT3DVERTEXBUFFER vertexBuffer, CompactArray<Line3D> &lines) {
-  D3DVERTEXBUFFER_DESC desc;
-  V(vertexBuffer->GetDesc(&desc));
+  D3DVERTEXBUFFER_DESC desc = getDesc(vertexBuffer);
   if((desc.FVF & NEEDEDFVFFLAGS) != NEEDEDFVFFLAGS) {
     throwInvalidArgumentException(__TFUNCTION__, _T("vertexBuffer has no normals:fvf=%s"), FVFToString(desc.FVF).cstr());
   }

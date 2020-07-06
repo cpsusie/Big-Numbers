@@ -38,10 +38,8 @@ D3SceneObjectWithVertexBuffer &D3SceneObjectWithVertexBuffer::releaseVertexBuffe
   return *this;
 }
 
-D3Device &D3SceneObjectWithVertexBuffer::setStreamSource() {
-  D3Device &device = getDevice();
-  device.setStreamSource(m_vertexBuffer, m_vertexSize, m_fvf);
-  return device;
+D3Device &D3SceneObjectWithVertexBuffer::setDeviceStreamSource() {
+  return getDevice().setStreamSource(m_vertexBuffer, m_vertexSize, m_fvf);
 }
 
 D3Cube D3SceneObjectWithVertexBuffer::getBoundingBox() const {

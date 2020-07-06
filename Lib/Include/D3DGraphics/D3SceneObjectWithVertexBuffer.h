@@ -28,7 +28,7 @@ protected:
 
   D3SceneObjectWithVertexBuffer &lockVertexArray(void **a, UINT nbytes);
   D3SceneObjectWithVertexBuffer &unlockVertexArray();
-  D3Device &setStreamSource();
+  D3Device &setDeviceStreamSource();
   D3SceneObjectWithVertexBuffer(D3Scene             &scene , const String &name = _T("ObjectWithVertexBuffer"));
   D3SceneObjectWithVertexBuffer(D3SceneObjectVisual *parent, const String &name = _T("ObjectWithVertexBuffer"));
 public:

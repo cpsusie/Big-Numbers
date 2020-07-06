@@ -52,13 +52,13 @@ void D3SceneObjectLineArrow::init(const Vertex &from, const Vertex &to) {
 void D3SceneObjectLineArrow::draw() {
   if(hasVertexBuffer()) {
     setDeviceMaterialIfExist();
-    setStreamSource().setWorldMatrix(getWorld())
-                     .setFillMode(getFillMode())
-                     .setShadeMode(getShadeMode())
-                     .setLightingEnable(getLightingEnable())
-                     .drawPrimitive(D3DPT_LINELIST, 0, 1)
-                     .drawPrimitive(D3DPT_TRIANGLEFAN, 1, FANCOUNT)
-                     .drawPrimitive(D3DPT_TRIANGLEFAN, FANCOUNT + 3, FANCOUNT);
+    setDeviceStreamSource().setWorldMatrix(getWorld())
+                           .setFillMode(getFillMode())
+                           .setShadeMode(getShadeMode())
+                           .setLightingEnable(getLightingEnable())
+                           .drawPrimitive(D3DPT_LINELIST, 0, 1)
+                           .drawPrimitive(D3DPT_TRIANGLEFAN, 1, FANCOUNT)
+                           .drawPrimitive(D3DPT_TRIANGLEFAN, FANCOUNT + 3, FANCOUNT);
   }
   __super::draw();
 }

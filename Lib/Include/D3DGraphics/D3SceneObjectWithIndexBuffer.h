@@ -59,7 +59,7 @@ protected:
     releaseIndexBuffer();
   }
 
-  D3Device &setIndices(D3Device &device);
+  D3Device &setDeviceIndices();
 public:
   LPDIRECT3DINDEXBUFFER getIndexBuffer() const override {
     return m_indexBuffer;
