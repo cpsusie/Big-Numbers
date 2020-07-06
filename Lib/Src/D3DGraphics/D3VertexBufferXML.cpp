@@ -3,13 +3,12 @@
 #include <D3DGraphics/D3XML.h>
 
 void setValue(XMLDoc &doc, XMLNodePtr n, const LPDIRECT3DVERTEXBUFFER &vb) {
-  D3DVERTEXBUFFER_DESC desc;
-  V(vb->GetDesc(&desc));
+  const D3DVERTEXBUFFER_DESC desc = getDesc(vb);
   setValue(doc, n, _T("description"), desc);
   void *bufferItems = NULL;
   V(vb->Lock(0, 0, &bufferItems, D3DLOCK_READONLY));
   try {
-    int index = 0;
+    int        index    = 0;
     const UINT itemSize = FVFToSize(desc.FVF);
     StringArray dataLines;
     for(size_t bp = 0; bp < desc.Size; bp += itemSize, index++) {

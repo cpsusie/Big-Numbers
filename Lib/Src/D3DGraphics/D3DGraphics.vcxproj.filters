@@ -399,6 +399,15 @@
     <ClCompile Include="D3ToSize.cpp">
       <Filter>Source Files\D3Math</Filter>
     </ClCompile>
+    <ClCompile Include="D3IndexBufferGetDesc.cpp">
+      <Filter>Source Files\D3StringConversion</Filter>
+    </ClCompile>
+    <ClCompile Include="D3MeshGetDesc.cpp">
+      <Filter>Source Files\D3StringConversion</Filter>
+    </ClCompile>
+    <ClCompile Include="D3VertexBufferGetDesc.cpp">
+      <Filter>Source Files\D3StringConversion</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\D3DGraphics\D3Scene.h">

@@ -33,6 +33,11 @@ public:
   DEFINESINGLETON(DirectXDeviceFactory)
 };
 
+D3DVERTEXBUFFER_DESC getvDesc(LPD3DXMESH             mesh        );
+D3DINDEXBUFFER_DESC  getiDesc(LPD3DXMESH             mesh        );
+D3DVERTEXBUFFER_DESC getDesc( LPDIRECT3DVERTEXBUFFER vertexBuffer);
+D3DINDEXBUFFER_DESC  getDesc( LPDIRECT3DINDEXBUFFER  indexBuffer );
+
 #if defined(_DEBUG)
 
 void checkDirectXResult(const TCHAR *method, HRESULT hr, bool exitOnError);

@@ -43,16 +43,14 @@ bool D3SceneObjectVisual::intersectsWithRay(const D3Ray &ray, float &dist, D3Pic
       LPDIRECT3DVERTEXBUFFER vertexBuffer;
       void *indexItems = NULL, *vertexItems = NULL;
       try {
-        V(mesh->GetIndexBuffer(&indexBuffer)); TRACE_REFCOUNT(indexBuffer);
-        D3DINDEXBUFFER_DESC inxdesc;
-        V(indexBuffer->GetDesc(&inxdesc));
-        const bool use32Bit = inxdesc.Format == D3DFMT_INDEX32;
-        V(indexBuffer->Lock(0, 0, &indexItems, D3DLOCK_READONLY));
         V(mesh->GetVertexBuffer(&vertexBuffer)); TRACE_REFCOUNT(vertexBuffer);
-        D3DVERTEXBUFFER_DESC vtxdesc;
-        V(vertexBuffer->GetDesc(&vtxdesc));
-        const UINT itemSize = FVFToSize(vtxdesc.FVF);
+        V(mesh->GetIndexBuffer( &indexBuffer )); TRACE_REFCOUNT(indexBuffer);
+        const D3DINDEXBUFFER_DESC  inxdesc  = getDesc(indexBuffer );
+        const D3DVERTEXBUFFER_DESC vtxdesc  = getDesc(vertexBuffer);
+        const UINT                 itemSize = FVFToSize(vtxdesc.FVF);
+        const bool                 use32Bit = inxdesc.Format == D3DFMT_INDEX32;
         V(vertexBuffer->Lock(0, 0, &vertexItems, D3DLOCK_READONLY));
+        V(indexBuffer->Lock( 0, 0, &indexItems , D3DLOCK_READONLY));
 
         for(UINT h = 0; h < hitCount; h++) {
           const D3DXINTERSECTINFO &hi = infoArray[h];

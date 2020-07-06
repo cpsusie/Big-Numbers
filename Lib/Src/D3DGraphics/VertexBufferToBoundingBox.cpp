@@ -2,8 +2,7 @@
 #include <D3DGraphics/D3Cube.h>
 
 D3Cube getBoundingBox(LPDIRECT3DVERTEXBUFFER vertexBuffer) {
-  D3DVERTEXBUFFER_DESC desc;
-  V(vertexBuffer->GetDesc(&desc));
+  const D3DVERTEXBUFFER_DESC desc = getDesc(vertexBuffer);
   if(desc.Size == 0) {
     return D3Cube();
   }

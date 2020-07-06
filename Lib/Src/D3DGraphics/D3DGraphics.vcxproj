@@ -900,12 +900,14 @@
     <ClCompile Include="D3DisplayModeStr.cpp" />
     <ClCompile Include="D3IndexBufferDescStr.cpp" />
     <ClCompile Include="D3IndexBufferDescXML.cpp" />
+    <ClCompile Include="D3IndexBufferGetDesc.cpp" />
     <ClCompile Include="D3IndexBufferStr.cpp" />
     <ClCompile Include="D3IndexBufferXML.cpp" />
     <ClCompile Include="D3Light.cpp" />
     <ClCompile Include="D3LightXML.cpp" />
     <ClCompile Include="D3MaterialXML.cpp" />
     <ClCompile Include="D3MathXML.cpp" />
+    <ClCompile Include="D3MeshGetDesc.cpp" />
     <ClCompile Include="D3MeshXML.cpp" />
     <ClCompile Include="D3Quaternion.cpp" />
     <ClCompile Include="D3Ray.cpp" />
@@ -948,6 +950,7 @@
     <ClCompile Include="D3ToSize.cpp" />
     <ClCompile Include="D3VertexBufferDescXML.cpp" />
     <ClCompile Include="D3VertexBufferDescStr.cpp" />
+    <ClCompile Include="D3VertexBufferGetDesc.cpp" />
     <ClCompile Include="D3VertexBufferStr.cpp" />
     <ClCompile Include="D3VertexBufferXML.cpp" />
     <ClCompile Include="D3World.cpp" />

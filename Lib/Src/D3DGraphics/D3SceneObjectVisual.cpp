@@ -1,7 +1,6 @@
 #include "pch.h"
 #include <D3DGraphics/D3Device.h>
 #include <D3DGraphics/D3Scene.h>
-#include <D3DGraphics/D3ToString.h>
 #include <D3DGraphics/D3SceneObjectVisual.h>
 #include <D3DGraphics/D3SceneObjectVisualNormals.h>
 
@@ -124,37 +123,27 @@ DWORD D3SceneObjectVisual::getFVF() const {
 }
 
 D3DVERTEXBUFFER_DESC D3SceneObjectVisual::getVertexBufferDesc() const {
-  D3DVERTEXBUFFER_DESC desc;
   if(hasMesh()) {
-    LPD3DXMESH mesh = getMesh();
-    LPDIRECT3DVERTEXBUFFER vb;
-    V(mesh->GetVertexBuffer(&vb)); TRACE_CREATE(vb);
-    V(vb->GetDesc(&desc));
-    SAFERELEASE(vb);
+    return getvDesc(getMesh());
   } else if(hasVertexBuffer()) {
-    LPDIRECT3DVERTEXBUFFER vb = getVertexBuffer();
-    V(vb->GetDesc(&desc));
+    return getDesc(getVertexBuffer());
   } else {
+    D3DVERTEXBUFFER_DESC desc;
     memset(&desc, 0, sizeof(desc));
+    return desc;
   }
-  return desc;
 }
 
 D3DINDEXBUFFER_DESC D3SceneObjectVisual::getIndexBufferDesc() const {
-  D3DINDEXBUFFER_DESC desc;
   if(hasMesh()) {
-    LPD3DXMESH mesh = getMesh();
-    LPDIRECT3DINDEXBUFFER ib;
-    V(mesh->GetIndexBuffer(&ib)); TRACE_CREATE(ib);
-    V(ib->GetDesc(&desc));
-    SAFERELEASE(ib);
+    return getiDesc(getMesh());
   } else if(hasIndexBuffer()) {
-    LPDIRECT3DINDEXBUFFER ib = getIndexBuffer();
-    V(ib->GetDesc(&desc));
+    return getDesc(getIndexBuffer());
   } else {
+    D3DINDEXBUFFER_DESC desc;
     memset(&desc, 0, sizeof(desc));
+    return desc;
   }
-  return desc;
 }
 
 bool D3SceneObjectVisual::hasNormals() const {

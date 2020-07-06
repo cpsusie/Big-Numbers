@@ -1,10 +1,8 @@
 #include "pch.h"
-#include <D3DGraphics/D3ToString.h>
 #include <D3DGraphics/D3XML.h>
 
 void setValue(XMLDoc &doc, XMLNodePtr n, const LPDIRECT3DINDEXBUFFER &ib) {
-  D3DINDEXBUFFER_DESC desc;
-  V(ib->GetDesc(&desc));
+  const D3DINDEXBUFFER_DESC desc = getDesc(ib);
   setValue(doc, n, _T("description"), desc);
 
   const UINT itemSize  = formatToSize(desc.Format);

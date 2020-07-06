@@ -6,11 +6,10 @@ String toString(LPDIRECT3DINDEXBUFFER indexBuffer, BYTE flags) {
   if(indexBuffer == NULL) {
     return multiLines ? _T("Null\n") : _T("Null");
   }
-  String result;
-  D3DINDEXBUFFER_DESC desc;
-  V(indexBuffer->GetDesc(&desc));
-  const UINT itemSize = formatToSize(desc.Format);
-  const int itemCount = desc.Size/itemSize;
+  const D3DINDEXBUFFER_DESC desc      = getDesc(indexBuffer);
+  const UINT                itemSize  = formatToSize(desc.Format);
+  const int                 itemCount = desc.Size/itemSize;
+  String                    result;
   if(flags & FORMAT_BUFFERDESC) {
     if(multiLines) {
       result = format(_T("Description:\n%s"
