@@ -1,5 +1,8 @@
 #include "pch.h"
 #include <CompactHashMap.h>
+#if defined(_DEBUG)
+#include <D3DGraphics/D3ToString.h>
+#endif // _DEBUG
 #include <D3DGraphics/MeshBuilder.h>
 
 void MeshBuilder::clear(UINT capacity) {
@@ -38,8 +41,8 @@ bool MeshBuilder::hasCorrectOrientation(const Face &f) const {
   const D3DXVECTOR3 &n1 = na[fa[0].m_nIndex].getPos();
 //const D3DXVECTOR3 &n2 = na[fa[1].m_nIndex].getPos();
 //const D3DXVECTOR3 &n3 = na[fa[2].m_nIndex].getPos();
-  const D3DXVECTOR3 c = cross(p3 - p1, p2 - p1);
-  const float s1 = c * n1; // , s2 = c * n2, s3 = c * n3; // TODO
+  const D3DXVECTOR3 c   = cross(p3 - p1, p2 - p1);
+  const float       s1  = c * n1; // , s2 = c * n2, s3 = c * n3; // TODO
   return s1 > 0;
 }
 
@@ -196,6 +199,15 @@ private:
       V(mesh->LockIndexBuffer(  0, (void**)&indexArray));
       IndexType *ip1 = indexArray, *ip2 = indexArray + 3*faceCount1Side;
 
+#if defined(_DEBUG)
+      const D3DVERTEXBUFFER_DESC vdesc = getvDesc(mesh);
+      const D3DINDEXBUFFER_DESC  idesc = getiDesc(mesh);
+      const UINT                 vSize = vdesc.Size;
+      const UINT                 iSize = idesc.Size;
+      const VertexType          *maxvp = vertices   + vSize;
+      const IndexType           *maxip = indexArray + iSize;
+#endif // _DEBUG
+
       for(size_t i = 0; i < faceArray.size(); i++) {
         const Face      &face         = faceArray[i];
         const UINT       aSize        = face.getIndexCount();
@@ -209,12 +221,14 @@ private:
           }
           vertexDone.add(vn.m_vIndex);
           VertexType &v1 = vertices[vn.m_vIndex];
+          assert((VertexType*)(((BYTE*)&v1)+sizeof(VertexType)) < maxvp);
           v1.setPos(vertexArray[vn.m_vIndex]);
           if(vn.m_nIndex >= 0) v1.setNormal(normalArray[vn.m_nIndex]);
           if(vn.m_tIndex >= 0) v1.setTexture(textureArray[vn.m_tIndex]);
           v1.setDiffuse(diffuseColor);
           if(doubleSided) {
             VertexType &v2 = vertices[vn.m_vIndex + vertexCount1Side];
+            assert((VertexType*)(((BYTE*)&v2)+sizeof(VertexType)) < maxvp);
             v2.setPos(vertexArray[vn.m_vIndex]);
             if(vn.m_nIndex >= 0) v2.setNormal(-normalArray[vn.m_nIndex]);
             if(vn.m_tIndex >= 0) v2.setTexture(textureArray[vn.m_tIndex]);
@@ -224,12 +238,14 @@ private:
         for(UINT j = 2; j < aSize; j++) {
           *(ip1++) = vnArray[0  ].m_vIndex;
           *(ip1++) = vnArray[j-1].m_vIndex;
+          assert(ip1 < maxip);
           *(ip1++) = vnArray[j  ].m_vIndex;
         }
         if(doubleSided) {
           for(UINT j = 2; j < aSize; j++) {
             *(ip2++) = vnArray[0  ].m_vIndex + vertexCount1Side;
             *(ip2++) = vnArray[j  ].m_vIndex + vertexCount1Side;
+            assert(ip2 < maxip);
             *(ip2++) = vnArray[j-1].m_vIndex + vertexCount1Side;
           }
         }
@@ -261,13 +277,21 @@ private:
     LPD3DXMESH mesh = NULL;
     try {
       mesh = amf.allocateMesh(VertexType::FVF_Flags, (DWORD)faceCount, (DWORD)vertexCount, getMeshFlags());
-
       VertexType *vertices;
       IndexType  *indexArray;
       V(mesh->LockVertexBuffer( 0, (void**)&vertices  ));
       V(mesh->LockIndexBuffer(  0, (void**)&indexArray));
       IndexType *ip1 = indexArray, *ip2 = indexArray + 3*faceCount1Side;
       UINT vnCount1 = 0, vnCount2 = vertexCount1Side;
+
+#if defined(_DEBUG)
+      const D3DVERTEXBUFFER_DESC vdesc = getvDesc(mesh);
+      const D3DINDEXBUFFER_DESC  idesc = getiDesc(mesh);
+      const UINT                 vSize = vdesc.Size;
+      const UINT                 iSize = idesc.Size;
+      const VertexType          *maxvp = vertices   + vSize;
+      const IndexType           *maxip = indexArray + iSize;
+#endif // _DEBUG
 
       for(size_t i = 0; i < faceArray.size(); i++) {
         const Face      &face         = faceArray[i];
@@ -278,6 +302,7 @@ private:
         for(UINT j = 0; j < aSize; j++) {
           const VertexNormalTextureIndex &vn = vnArray[j];
           VertexType                     &v1 = vertices[vnCount1+j];
+          assert((VertexType*)(((BYTE*)&v1)+sizeof(VertexType)) < maxvp);
           v1.setPos(vertexArray[vn.m_vIndex]);
           if(vn.m_nIndex >= 0) v1.setNormal( normalArray[ vn.m_nIndex]);
           if(vn.m_tIndex >= 0) v1.setTexture(textureArray[vn.m_tIndex]);
@@ -285,6 +310,7 @@ private:
 
           if(doubleSided) {
             VertexType                   &v2 = vertices[vnCount2+j];
+            assert((VertexType*)(((BYTE*)&v2)+sizeof(VertexType)) < maxvp);
             v2.setPos(vertexArray[vn.m_vIndex]);
             if(vn.m_nIndex >= 0) v2.setNormal(-normalArray[ vn.m_nIndex]);
             if(vn.m_tIndex >= 0) v2.setTexture(textureArray[vn.m_tIndex]);
@@ -295,11 +321,13 @@ private:
         for(UINT f = 2; f < aSize; f++) {
           *(ip1++) = vnCount1;
           *(ip1++) = vnCount1 + f-1;
+          assert(ip1 < maxip);
           *(ip1++) = vnCount1 + f;
 
           if(doubleSided) {
             *(ip2++) = vnCount2;
             *(ip2++) = vnCount2 + f;
+            assert(ip2 < maxip);
             *(ip2++) = vnCount2 + f-1;
           }
         }

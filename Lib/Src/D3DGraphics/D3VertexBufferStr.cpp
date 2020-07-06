@@ -6,10 +6,10 @@ String toString(LPDIRECT3DVERTEXBUFFER vertexBuffer, BYTE flags) {
   if(vertexBuffer == NULL) {
     return multiLines ? _T("Null\n") : _T("Null");
   }
-  String result;
-  D3DVERTEXBUFFER_DESC desc;
-  V(vertexBuffer->GetDesc(&desc));
-  const UINT itemSize = FVFToSize(desc.FVF);
+  const D3DVERTEXBUFFER_DESC desc      = getDesc(vertexBuffer);
+  const UINT                 itemSize  = FVFToSize(desc.FVF);
+  const int                  itemCount = desc.Size/itemSize;
+  String                     result;
   if(flags & FORMAT_BUFFERDESC) {
     if(multiLines) {
       result = format(_T("Description:\n%s"
@@ -17,13 +17,13 @@ String toString(LPDIRECT3DVERTEXBUFFER vertexBuffer, BYTE flags) {
                          "ItemCount  :%s\n")
                      ,indentString(toString(desc,true), 2).cstr()
                      ,itemSize
-                     ,format1000(desc.Size/itemSize).cstr()
+                     ,format1000(itemCount).cstr()
                      );
     } else {
       result = format(_T("%s,ItemSize:%d bytes,ItemCount:%s")
                      ,toString(desc,false).cstr()
                      ,itemSize
-                     ,format1000(desc.Size/itemSize).cstr()
+                     ,format1000(itemCount).cstr()
                      );
     }
   }

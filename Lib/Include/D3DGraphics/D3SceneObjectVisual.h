@@ -5,6 +5,7 @@
 #include "D3World.h"
 #include "D3Material.h"
 #include "D3SceneObject.h"
+
 class D3Scene;
 class D3SceneObjectVisual;
 class D3Ray;
