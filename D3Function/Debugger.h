@@ -26,12 +26,14 @@ private:
   int                   m_octaIndex;
   DebuggerState         m_state;
   DebugIsoSurface      *m_surface;
+  D3SceneContainer     &m_sc;
   inline Debugger &checkTerminated() {
     if(getState() == DEBUGGER_TERMINATED) throwException(_T("Debugger is terminated"));
     return *this;
   }
   void suspend();
   bool hasOctaBreakPointsAboveCounter(const BitSet &s) const;
+  void setState(DebuggerState newState);
 public:
   Debugger(D3SceneContainer *sc, const ExprIsoSurfaceParameters &param);
   ~Debugger() override;

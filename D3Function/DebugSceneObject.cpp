@@ -53,14 +53,14 @@ void DebugSceneobject::setFacesObject(D3SceneObjectVisual *obj) {
 }
 
 void DebugSceneobject::draw() {
-  if(isSet(MESH_VISIBLE) && m_meshObject  ) {
+  if(isSet(MESH_VISIBLE) && m_meshObject) {
     m_meshObject->draw();
-    if(isSet(OCTA_VISIBLE) && m_octaObject) {
-      m_octaObject->draw();
-      if(isSet(TETRA_VISIBLE ) && m_tetraObject ) m_tetraObject->draw();
-      if(isSet(FACES_VISIBLE ) && m_facesObject ) m_facesObject->draw();
-      if(isSet(VERTEX_VISIBLE) && m_vertexObject) m_vertexObject->draw();
-    }
+  }
+  if(isSet(OCTA_VISIBLE) && m_octaObject) {
+    m_octaObject->draw();
+    if(isSet(TETRA_VISIBLE ) && m_tetraObject ) m_tetraObject->draw();
+    if(isSet(FACES_VISIBLE ) && m_facesObject ) m_facesObject->draw();
+    if(isSet(VERTEX_VISIBLE) && m_vertexObject) m_vertexObject->draw();
   }
 }
 
@@ -142,12 +142,6 @@ void DebugSceneobject::handleDebuggerPaused() {
     D3World           nw  = cam->getD3World();
     const D3DXVECTOR3 np  = cc + m_currentCamDistance * getCubeCamVector();
     nw.setPos(np).setLookAt(cc);
-
-    debugLog(_T("CubeCenter:%s,camDist:%.3e, nw=%s)\n")
-            ,::toString(getCubeCenter()).cstr()
-            ,m_currentCamDistance
-            ,nw.toString().replace('\n',' ').cstr()
-            );
 
     if(isSlidingCamera()) {
       D3CameraSlideAnimator(*cam, nw).animate(200, 10);

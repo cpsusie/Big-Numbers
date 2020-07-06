@@ -12,6 +12,7 @@ Debugger::Debugger(D3SceneContainer *sc, const ExprIsoSurfaceParameters &param)
 , m_state(DEBUGGER_CREATED)
 , m_octaBreakPoints(10000)
 , m_octaIndex(-1)
+, m_sc(*sc)
 {
   m_surface = new DebugIsoSurface(this,*sc,param); TRACE_NEW(m_surface);
 }
@@ -19,6 +20,17 @@ Debugger::Debugger(D3SceneContainer *sc, const ExprIsoSurfaceParameters &param)
 Debugger::~Debugger() {
   kill();
   SAFEDELETE(m_surface);
+}
+
+void Debugger::setState(DebuggerState newState) {
+  if(newState != m_state) {
+    if(newState == DEBUGGER_RUNNING) {
+      m_sc.incrLevel();
+    } else if(m_state == DEBUGGER_RUNNING) {
+      m_sc.decrLevel();
+    }
+  }
+  setProperty(DEBUGGER_STATE, m_state, newState);
 }
 
 bool Debugger::hasOctaBreakPointsAboveCounter(const BitSet &s) const {
@@ -52,22 +64,22 @@ void Debugger::singleStep(BYTE breakFlags, const BitSet &octaBreakPoints) {
 void Debugger::kill() {
   setInterrupted();
   waitUntilJobDone();
-  setProperty(DEBUGGER_STATE, m_state, DEBUGGER_TERMINATED);
+  setState(DEBUGGER_TERMINATED);
 }
 
 UINT Debugger::safeRun() {
   SETTHREADDESCRIPTION("Debugger");
-  setProperty(DEBUGGER_STATE, m_state, DEBUGGER_RUNNING);
+  setState(DEBUGGER_RUNNING);
   suspend();
   m_surface->createData();
-  setProperty(DEBUGGER_STATE, m_state, DEBUGGER_TERMINATED);
+  setState(DEBUGGER_TERMINATED);
   return 0;
 }
 
 void Debugger::suspend() {
-  setProperty(DEBUGGER_STATE, m_state, DEBUGGER_PAUSED);
+  setState(DEBUGGER_PAUSED);
   __super::suspend();
-  setProperty(DEBUGGER_STATE, m_state, DEBUGGER_RUNNING);
+  setState(DEBUGGER_RUNNING);
 }
 
 void Debugger::handleStep(StepType type) {

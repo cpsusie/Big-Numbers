@@ -87,7 +87,7 @@ static UINT indicators[] = {
 
 #define INDICATORCOUNT ARRAYSIZE(indicators)
 
-#define REPAINT() Invalidate(FALSE)
+#define REPAINT()
 
 CMainFrame::CMainFrame()
 #if defined(ISODEBUGGER)
@@ -526,16 +526,12 @@ void CMainFrame::doRender(BYTE renderFlags, CameraSet cameraSet) {
   }
 }
 
-static UINT renderSceneCount = 0, renderInfoCount = 0;
 LRESULT CMainFrame::OnMsgRender(WPARAM wp, LPARAM lp) {
-  if(wp & SC_RENDER3D) {
-    CameraSet cameraSet(lp);
-    __super::doRender((BYTE)wp, cameraSet);
-    renderSceneCount++;
+  if(lp && (wp & SC_RENDER3D)) {
+    __super::doRender((BYTE)wp, CameraSet(lp));
   }
   if(wp & SC_RENDERINFO) {
     if(m_editor.isEnabled()) {
-      renderInfoCount++;
       show3DInfo(INFO_EDIT);
     }
   }
@@ -810,9 +806,8 @@ void CMainFrame::show3DInfo(BYTE flags) {
   showInfo(_T("%s\n%s"), m_memoryInfo.cstr(), m_editorInfo.cstr());
 #else
   if(flags & INFO_DEBUG) updateDebugInfo();
-  showInfo(_T("%s, RenderCount:(%5u,%5u)\n%s\n%s")
+  showInfo(_T("%s\n%s\n%s")
           ,m_memoryInfo.cstr()
-          ,renderSceneCount, renderInfoCount
           ,m_editorInfo.cstr()
           ,m_debugInfo.cstr());
 #endif //  ISODEBUGGER
