@@ -1,10 +1,11 @@
 #include "stdafx.h"
 #include <Math/Point2DTransformations.h>
-#include "DrawTool.h"
+#include "TurnableRect.h"
+#include "BitmapRotate.h"
 
 RectMark::RectMark(MarkId markId, const CPoint &p, int imageId, int degree) {
   m_markId = markId;
-  m_image  = getBitmap(imageId, degree);
+  m_image  = getRotatedBitmapResource(imageId, degree);
   const CSize bmSize = getBitmapSize(*m_image);
   left   = p.x  - bmSize.cx/2;
   top    = p.y  - bmSize.cy/2;
@@ -100,14 +101,14 @@ FunctionR2R2 *TurnableRect::getMoveTransformation(const Point2D &dp) {
 }
 
 FunctionR2R2 *TurnableRect::getStretchTransformation(const Point2D &dp) {
-  const Point2D    dir    = unit(getStretchDir());
+  const Point2D    dir    = unitVector(getStretchDir());
   const Point2D    step   = (dp * dir) * dir;
   FunctionR2R2 *result = new StretchTransformation(getStretchOrigin(),getU1(),getU2(),getSelectedMarkPoint(),step); TRACE_NEW(result);
   return result;
 }
 
 FunctionR2R2 *TurnableRect::getRotateTransformation(const Point2D &dp) {
-  const Point2D    dir    = unit(getRotateDir());
+  const Point2D    dir    = unitVector(getRotateDir());
   const Point2D    step   = (dp * dir) * dir;
   const double     theta  = angle(getSelectedMarkPoint() - m_rotationCenter, getSelectedMarkPoint() + step - m_rotationCenter);
   FunctionR2R2 *result = new RotateTransformation(m_rotationCenter, theta); TRACE_NEW(result);
@@ -115,7 +116,7 @@ FunctionR2R2 *TurnableRect::getRotateTransformation(const Point2D &dp) {
 }
 
 FunctionR2R2 *TurnableRect::getSkewTransformation(const Point2D &dp) {
-  const Point2D    dir    = unit(getSkewDir());
+  const Point2D    dir    = unitVector(getSkewDir());
   const Point2D    step   = (dp * dir) * dir;
   FunctionR2R2 *result = new SkewTransformation(getStretchOrigin(),getU1(),getU2(),getSelectedMarkPoint(),step); TRACE_NEW(result);
   return result;
@@ -217,7 +218,7 @@ void TurnableRect::addMarkRect(Viewport2D &vp, MarkId markId, int imageId, int d
   m_marks.add(RectMark(markId, vp.forwardTransform(getMarkPoint(markId)),imageId,degree));
 }
 
-void TurnableRect::repaint(Viewport2D &vp, ProfileDialogState state) {
+void TurnableRect::repaint(Viewport2D &vp, ProfileEditorState state) {
 
 #define DEGREE(v)     (int)RAD2GRAD(angle(v, Point2D(1,0)))
 #define VDEGREE(id,p) DEGREE(getMarkPoint(id)-p)

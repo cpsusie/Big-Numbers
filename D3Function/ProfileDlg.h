@@ -1,10 +1,10 @@
 #pragma once
 
-#include <MFCUtil/Viewport2D.h>
 #include <D3DGraphics/D3SceneContainer.h>
 #include <D3DGraphics/D3SceneEditor.h>
-#include "Resource.h"
+#include "ProfileEditor.h"
 #include "DrawTool.h"
+#include "Resource.h"
 
 #define SC_RENDER2D SC_RENDERUSER(0x01)
 
@@ -23,7 +23,7 @@ inline bool operator!=(const ProfileDialogVariables &v1, const ProfileDialogVari
 class ValidationException;
 
 class CProfileDlg : public CDialog
-                  , public ViewportContainer
+                  , public ProfileEditor
                   , public D3SceneContainer
 {
 private:
@@ -102,7 +102,7 @@ public:
  ~CProfileDlg();
   void setProfileName(const String &name);
 
-// ---------------------------------- ViewportContainer interface functions----------------
+// ---------------------------------- ProfileEditor interface functions----------------
   Viewport2D &getViewport() {
     return *m_viewport;
   }

@@ -16,8 +16,8 @@ Point2D MoveTransformation::operator()(const Point2D &p) {
 
 RectAreaTransformation::RectAreaTransformation(const Point2D &origin, const Point2D &u1, const Point2D &u2) {
   m_origin  = origin;
-  m_u1      = unit(u1);
-  m_u2      = unit(u2);
+  m_u1      = unitVector(u1);
+  m_u2      = unitVector(u2);
   m_det     = det(m_u1, m_u2);
 }
 
@@ -101,7 +101,7 @@ MirrorTransformation::MirrorTransformation(const Point2D &p1, const Point2D &p2)
 }
 
 Point2D MirrorTransformation::operator()(const Point2D &p) {
-  Point2D u = unit(m_p2 - m_p1);
+  Point2D u = unitVector(m_p2 - m_p1);
   Point2D v = p - m_p1;
   Point2D prj = (u * v) * u;
   Point2D normal = v - prj;

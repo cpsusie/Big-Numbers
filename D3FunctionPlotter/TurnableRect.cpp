@@ -100,14 +100,14 @@ Point2DFunction *TurnableRect::getMoveTransformation(const Point2D &dp) {
 }
 
 Point2DFunction *TurnableRect::getStretchTransformation(const Point2D &dp) {
-  const Point2D    dir    = unit(getStretchDir());
+  const Point2D    dir    = unitVector(getStretchDir());
   const Point2D    step   = (dp * dir) * dir;
   Point2DFunction *result = new StretchTransformation(getStretchOrigin(),getU1(),getU2(),getSelectedMarkPoint(),step); TRACE_NEW(result);
   return result;
 }
 
 Point2DFunction *TurnableRect::getRotateTransformation(const Point2D &dp) {
-  const Point2D    dir    = unit(getRotateDir());
+  const Point2D    dir    = unitVector(getRotateDir());
   const Point2D    step   = (dp * dir) * dir;
   const double     theta  = angle(getSelectedMarkPoint() - m_rotationCenter, getSelectedMarkPoint() + step - m_rotationCenter);
   Point2DFunction *result = new RotateTransformation(m_rotationCenter, theta); TRACE_NEW(result);
@@ -115,7 +115,7 @@ Point2DFunction *TurnableRect::getRotateTransformation(const Point2D &dp) {
 }
 
 Point2DFunction *TurnableRect::getSkewTransformation(const Point2D &dp) {
-  const Point2D    dir    = unit(getSkewDir());
+  const Point2D    dir    = unitVector(getSkewDir());
   const Point2D    step   = (dp * dir) * dir;
   Point2DFunction *result = new SkewTransformation(getStretchOrigin(),getU1(),getU2(),getSelectedMarkPoint(),step); TRACE_NEW(result);
   return result;

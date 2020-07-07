@@ -5,7 +5,7 @@
 #include <D3DGraphics/Profile.h>
 
 static Point2D findNormal(const Point2D &from, const Point2D &to) {
-  Point2D tmp = unit(to - from);
+  Point2D tmp = unitVector(to - from);
   return Point2D(-tmp.y,tmp.x);
 }
 
@@ -128,16 +128,16 @@ Vertex2DArray ProfilePolygon::getSmoothVertexArray() const { // return noOfPoint
 
   Vertex2DArray result;
   if(m_closed) {
-    result.add(Vertex2D(p0, unit(findNormal(pl,p0) + findNormal(p0,pa[1]))));
+    result.add(Vertex2D(p0, unitVector(findNormal(pl,p0) + findNormal(p0,pa[1]))));
   } else {
     result.add(Vertex2D(p0, findNormal(p0,pa[1])));
   }
   for(size_t j = 1; j < n-1; j++) {
-    result.add(Vertex2D(pa[j],unit(findNormal(pa[j-1],pa[j]) + findNormal(pa[j],pa[j+1]))));
+    result.add(Vertex2D(pa[j],unitVector(findNormal(pa[j-1],pa[j]) + findNormal(pa[j],pa[j+1]))));
   }
   if(n >= 2) {
     if(m_closed) {
-      result.add(Vertex2D(pl, unit(findNormal(pa[n-2],pl) + findNormal(pl,p0))));
+      result.add(Vertex2D(pl, unitVector(findNormal(pa[n-2],pl) + findNormal(pl,p0))));
     } else {
       result.add(Vertex2D(pl, findNormal(pa[n-2],pl)));
     }

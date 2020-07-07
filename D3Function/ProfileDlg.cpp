@@ -6,6 +6,8 @@
 #include <D3DGraphics/resource.h>
 #include "ProfilePainter.h"
 #include "D3ProfileObjectWithColor.h"
+#include "BitmapRotate.h"
+#include "DrawTools.h"
 #include "ProfileDlg.h"
 //#include "SelectGlyphDialog.h"
 
@@ -46,7 +48,6 @@ CProfileDlg::~CProfileDlg() {
   m_scene.close();
   destroyViewport();
   destroyWorkBitmap();
-  destroyBitmapCache();
 }
 
 void CProfileDlg::DoDataExchange(CDataExchange *pDX) {
@@ -142,7 +143,6 @@ BOOL CProfileDlg::OnInitDialog() {
     m_scene.setLightDirection(0, rotate(cam->getDir(), cam->getRight(), 0.2f));
   }
 
-  createBitmapCache(*GetDlgItem(IDC_STATIC_DEBUG3DFRAME));
   setCurrentDrawToolId(ID_TOOLS_LINE);
   CSliderCtrl *slider = (CSliderCtrl*)GetDlgItem(IDC_SLIDER_DEGREE);
   slider->SetRange(0,360);
@@ -716,25 +716,25 @@ void CProfileDlg::setCurrentDrawToolId(int id) {
   checkToolItem(id);
   switch(id) {
   case ID_TOOLS_LINE:
-    setCurrentDrawTool(new LineTool(this));
+    setCurrentDrawTool(new DrawToolLine(this));
     break;
   case ID_TOOLS_BEZIERCURVE:
-    setCurrentDrawTool(new BezierCurveTool(this));
+    setCurrentDrawTool(new DrawToolBezierCurve(this));
     break;
   case ID_TOOLS_RECTANGLE:
-    setCurrentDrawTool(new RectangleTool(this));
+    setCurrentDrawTool(new DrawToolRectangle(this));
     break;
   case ID_TOOLS_POLYGON:
-    setCurrentDrawTool(new PolygonTool(this));
+    setCurrentDrawTool(new DrawToolPolygon(this));
     break;
   case ID_TOOLS_ELLIPSE:
-    setCurrentDrawTool(new EllipseTool(this));
+    setCurrentDrawTool(new DrawToolEllipse(this));
     break;
   case ID_TOOLS_SELECT:
-    setCurrentDrawTool(new SelectTool(this));
+    setCurrentDrawTool(new DrawToolSelect(this));
     break;
   default:
-    setCurrentDrawTool(new NullTool());
+    setCurrentDrawTool(new DrawToolNull());
     break;
   }
   m_currentDrawTool->repaintProfile().repaintScreen();
@@ -921,9 +921,8 @@ void CProfileDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) {
   static const CSize testSize = getBitmapSize(m_testBitmap);
   static const CSize maxSize(2*testSize.cx, 2*testSize.cy);
 
-  HBITMAP rotBM = rotateBitmap(getBitmapCacheDevice(), m_testBitmap, degree);
-  CBitmap *bm = CBitmap::FromHandle(rotBM);
-  CDC *srcDC = CDC::FromHandle(CreateCompatibleDC(NULL));
+  CBitmap *bm    = bitmapRotate(&m_testBitmap, degree);
+  CDC     *srcDC = CDC::FromHandle(CreateCompatibleDC(NULL));
   srcDC->SelectObject(bm);
   CSize bmSize = getBitmapSize(*bm);
 
@@ -932,7 +931,7 @@ void CProfileDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) {
   dstDC.FillSolidRect(0,0,maxSize.cx, maxSize.cy, RGB(255,255,255));
   dstDC.BitBlt(0,0,bmSize.cx, bmSize.cy, srcDC, 0,0, SRCCOPY);
 
-  DeleteObject(rotBM);
+  SAFEDELETE(bm);
   showSliderPos();
 }
 

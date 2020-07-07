@@ -30,29 +30,25 @@ void paintProfile(const Profile &profile, Viewport2D &vp, COLORREF color) {
   profile.apply(ProfilePainter(vp,color));
 }
 
+void paintArrow(CDC &dc, const Point2D &p, const Point2D &dir, double length) {
+  const Point2D udir = unitVector(dir);
+  const Point2D end  = p + udir * length;
+  dc.MoveTo(p);
+  dc.LineTo(end);
+  dc.LineTo(end + udir.rotate(GRAD2RAD( 160)) * length/4);
+  dc.MoveTo(end);
+  dc.LineTo(end + udir.rotate(GRAD2RAD(-160)) * length/4);
+}
+
 void paintProfileNormals(const Profile &profile, Viewport2D &vp, COLORREF color, bool smooth) {
-  Vertex2DArray va = profile.getAllVertices(smooth);
-  const size_t  n  = va.size();
-  CPen          pen;
+  const Vertex2DArray va = profile.getAllVertices(smooth);
+  CPen                pen;
   pen.CreatePen(BS_SOLID, 1, color);
   vp.SelectObject(&pen);
   CDC &dc = *vp.getDC();
-  for(size_t i = 0; i < n; i++) {
-    const Vertex2D     &v      = va[i];
-    const FloatPoint2D &from   = v.m_pos;
-    const FloatPoint2D &normal = v.m_normal;
-    const FloatPoint2D &to     = from + normal;
-
-    vp.MoveTo(from);
-    Point2D tfrom   = vp.forwardTransform(from);
-    Point2D tto     = vp.forwardTransform(to);
-    Point2D tnormal = tto-tfrom;
-    double  tlen    = tnormal.length();
-    tnormal /= tlen;
-    tto = tfrom + tnormal * 20;
-    dc.LineTo(tto);
-    dc.LineTo(tto + tnormal.rotate(GRAD2RAD(160)) * 5);
-    dc.MoveTo(tto);
-    dc.LineTo(tto + tnormal.rotate(GRAD2RAD(-160)) * 5);
+  for(const Vertex2D v : va) {
+    const Point2D from = vp.forwardTransform(v.m_pos);
+    const Point2D dir  = vp.forwardTransform(v.m_pos + v.m_normal) - from;
+    paintArrow(dc, from, dir, 20);
   }
 }

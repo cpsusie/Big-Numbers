@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include <Math/Rectangle2D.h>
 #include <D3DGraphics/D3AbstractTextureFactory.h>
-#include "DrawTool.h"
+#include "BitmapRotate.h"
 
 #define D3DFVF_BLENDVERTEX ( D3DFVF_XYZ | D3DFVF_TEX1 )
 
@@ -154,12 +154,12 @@ static Rectangle2D getTransformedRectangle(const D3DXMATRIX &m, const CSize bmSi
   return trCorners.getBoundingBox();
 }
 
-HBITMAP rotateBitmap(LPDIRECT3DDEVICE device, HBITMAP bm, double degree) {
-  const BITMAP      bmInfo          = getBitmapInfo(bm);
-  const CSize       bmSize          = CSize(bmInfo.bmWidth, bmInfo.bmHeight);
-  const D3DXVECTOR2 rotCenter       = D3DXVECTOR2((float)bmSize.cx/2, (float)bmSize.cy/2);
+HBITMAP bitmapRotate(LPDIRECT3DDEVICE device, HBITMAP b0, double degree) {
+  const BITMAP      b0Info          = getBitmapInfo(b0);
+  const CSize       b0Size          = CSize(b0Info.bmWidth, b0Info.bmHeight);
+  const D3DXVECTOR2 rotCenter       = D3DXVECTOR2((float)b0Size.cx/2, (float)b0Size.cy/2);
   const D3DXMATRIX  rotationMatrix  = create2DRotationWorld(rotCenter, GRAD2RAD(degree));
-        Rectangle2D fRect           = getTransformedRectangle(rotationMatrix, bmSize);
+        Rectangle2D fRect           = getTransformedRectangle(rotationMatrix, b0Size);
   const Point2D     offset          = -Point2D(ceil(fRect.getX()),ceil(fRect.getY())) + Point2D(fraction(fRect.getBottomRight().x),fraction(fRect.getBottomRight().y));
   const D3DXMATRIX  translateMatrix = createTranslateMatrix(D3DXVECTOR3((float)offset.x, (float)offset.y, 0));
                     fRect           = Rectangle2D(0,0, fRect.getBottomRight().x + offset.x, fRect.getBottomRight().y + offset.y);
@@ -174,13 +174,13 @@ HBITMAP rotateBitmap(LPDIRECT3DDEVICE device, HBITMAP bm, double degree) {
     case  270:
     case -270:
       worldMatrix = rotationMatrix * translateMatrix;
-      trSize      = CSize(bmSize.cy, bmSize.cx);
+      trSize      = CSize(b0Size.cy, b0Size.cx);
       break;
     case    0:
     case  180:
     case -180:
       worldMatrix = rotationMatrix;
-      trSize      = bmSize;
+      trSize      = b0Size;
       break;
     }
   } else {
@@ -188,13 +188,19 @@ HBITMAP rotateBitmap(LPDIRECT3DDEVICE device, HBITMAP bm, double degree) {
     worldMatrix   = rotationMatrix * translateMatrix;
   }
 
-  HBITMAP result = CreateBitmap(trSize.cx, trSize.cy, bmInfo.bmPlanes, bmInfo.bmBitsPixel, NULL);
+  HBITMAP result = CreateBitmap(trSize.cx, trSize.cy, b0Info.bmPlanes, b0Info.bmBitsPixel, NULL);
 
   setWorldMatrix(device, worldMatrix);
 
-  LPDIRECT3DTEXTURE texture = AbstractTextureFactory::getTextureFromBitmap(device, bm);
-  render(device, texture, bmSize, result, trSize);
+  LPDIRECT3DTEXTURE texture = AbstractTextureFactory::getTextureFromBitmap(device, b0);
+  render(device, texture, b0Size, result, trSize);
   SAFERELEASE(texture);
+  return result;
+}
 
+CBitmap *bitmapRotate(LPDIRECT3DDEVICE device, CBitmap *b0, double degree) {
+  HBITMAP  bm     = bitmapRotate(device, *b0, degree);
+  CBitmap *result = createFromHandle(bm);
+  DeleteObject(bm);
   return result;
 }

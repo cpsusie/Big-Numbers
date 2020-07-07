@@ -169,26 +169,28 @@ public:
     return Point2DTemplate<T>(-x, -y);
   }
   template<typename S> Point2DTemplate<T> operator+(const Point2DTemplate<S> &p) const {
-    return Point2DTemplate<T>(x+p.x, y+p.y);
+    return Point2DTemplate<T>(x+(T)p.x, y+(T)p.y);
   }
   template<typename S> Point2DTemplate<T> operator-(const Point2DTemplate<S> &p) const {
-    return Point2DTemplate<T>(x-p.x, y-p.y);
+    return Point2DTemplate<T>(x-(T)p.x, y-(T)p.y);
   }
   template<typename S> Point2DTemplate<T> operator+(const Size2DTemplate<S> &s) const {
-    return Point2DTemplate<T>(x+s.cx, y+s.cy);
+    return Point2DTemplate<T>(x+(T)s.cx, y+(T)s.cy);
   }
-  template<typename S> Point2DTemplate operator-(const Size2DTemplate<S> &s) const {
-    return Point2DTemplate<T>(x-s.cx, y-s.cy);
+  template<typename S> Point2DTemplate<T> operator-(const Size2DTemplate<S> &s) const {
+    return Point2DTemplate<T>(x-(T)s.cx, y-(T)s.cy);
   }
 
   template<typename S> Point2DTemplate<T> operator%(const Point2DTemplate<S> &p) const { // x+=p1.x, y-=p1.y
-    return Point2DTemplate<T>(x+p.x, y-p.y);
+    return Point2DTemplate<T>(x+(T)p.x, y-(T)p.y);
   }
-  template<typename S> Point2DTemplate operator*(const S &factor) const {
-    return Point2DTemplate(x*factor, y*factor);
+  template<typename S> Point2DTemplate<T> operator*(S factor) const {
+    const T tmp = (T)factor;
+    return Point2DTemplate<T>(x*tmp, y*tmp);
   }
-  template<typename S> Point2DTemplate operator/(const S &factor) const {
-    return Point2DTemplate(x/factor, y/factor);
+  template<typename S> Point2DTemplate<T> operator/(S factor) const {
+    const T tmp = (T)factor;
+    return Point2DTemplate<T>(x/tmp, y/tmp);
   }
 
   template<typename S> T operator*(const Point2DTemplate<S> &p) const {
@@ -355,7 +357,7 @@ template<typename T> T distanceFromLineSegment(const Line2DTemplate<T> &line, co
   return distanceFromLineSegment(line.m_p1, line.m_p2, p);
 }
 
-template<typename T> Point2DTemplate<T> unit(const Point2DTemplate<T> &p) {
+template<typename T> Point2DTemplate<T> unitVector(const Point2DTemplate<T> &p) {
   return Point2DTemplate<T>(p).normalize();
 }
 

@@ -1,6 +1,14 @@
 #include "stdafx.h"
-#include <HashMap.h>
-#include "DrawTool.h"
+#include <CompactHashMap.h>
+#include <Singleton.h>
+#include "BitmapRotate.h"
+
+static int MarkerBitmaps[] = {
+  IDB_BLACKSQUAREBITMAP
+ ,IDB_LEFTRIGHTARROWBITMAP
+ ,IDB_ROTATECORNERBITMAP
+ ,IDB_CIRCLEARROWBITMAP
+};
 
 class BitmapKey {
 public:
@@ -17,45 +25,34 @@ public:
   }
 };
 
-class BitmapCache : public CompactHashMap<BitmapKey,CBitmap*> {
+class BitmapCache : public CompactHashMap<BitmapKey,CBitmap*,ARRAYSIZE(MarkerBitmaps)*360>, public Singleton {
 private:
-  HWND             m_hwnd;
   LPDIRECT3DDEVICE m_device;
+  FastSemaphore    m_lock;
 
-  D3DPRESENT_PARAMETERS getPresentParameters() const;
-  void initDevice();
+  static D3DPRESENT_PARAMETERS getPresentParameters(HWND hwnd);
+  void createDevice(HWND hwnd);
   void releaseDevice();
+  BitmapCache();
+  ~BitmapCache() override;
 public:
   LPDIRECT3DDEVICE getDevice() {
     return m_device;
   }
-  BitmapCache(HWND hwnd);
-  ~BitmapCache();
-};
-
-static BitmapCache *bitmapCache = NULL;
-
-void createBitmapCache(HWND hwnd) {
-  if(bitmapCache != NULL) {
-    destroyBitmapCache();
+  inline BitmapCache &wait() {
+    m_lock.wait();
+    return *this;
   }
-  bitmapCache = new BitmapCache(hwnd); TRACE_NEW(bitmapCache);
-}
-
-void destroyBitmapCache() {
-  SAFEDELETE(bitmapCache);
-}
-
-static int MarkerBitmaps[] = {
-  IDB_BLACKSQUAREBITMAP
- ,IDB_LEFTRIGHTARROWBITMAP
- ,IDB_ROTATECORNERBITMAP
- ,IDB_CIRCLEARROWBITMAP
+  inline void notify() {
+    m_lock.notify();
+  }
+  DEFINESINGLETON(BitmapCache);
 };
 
-BitmapCache::BitmapCache(HWND hwnd) : m_hwnd(hwnd) {
+BitmapCache::BitmapCache() : Singleton(__TFUNCTION__) {
   m_device = NULL;
-  initDevice();
+
+  createDevice(*theApp.GetMainWnd());
 
   for(int i = 0; i < ARRAYSIZE(MarkerBitmaps); i++) {
     int id = MarkerBitmaps[i];
@@ -79,11 +76,11 @@ BitmapCache::~BitmapCache() {
   }
 }
 
-D3DPRESENT_PARAMETERS BitmapCache::getPresentParameters() const {
+D3DPRESENT_PARAMETERS BitmapCache::getPresentParameters(HWND hwnd) { // static
   D3DPRESENT_PARAMETERS param;
   ZeroMemory(&param, sizeof(param));
 
-  const CSize sz = getClientRect(m_hwnd).Size();
+  const CSize sz = getClientRect(hwnd).Size();
 
   param.Windowed               = TRUE;
   param.MultiSampleType        = D3DMULTISAMPLE_NONE;
@@ -99,9 +96,9 @@ D3DPRESENT_PARAMETERS BitmapCache::getPresentParameters() const {
   return param;
 }
 
-void BitmapCache::initDevice() {
-  D3DPRESENT_PARAMETERS present = getPresentParameters();
-  m_device = DirectXDeviceFactory::getInstance().createDevice(m_hwnd, &present);
+void BitmapCache::createDevice(HWND hwnd) {
+  D3DPRESENT_PARAMETERS present = getPresentParameters(hwnd);
+  m_device = DirectXDeviceFactory::getInstance().createDevice(hwnd, &present);
 }
 
 void BitmapCache::releaseDevice() {
@@ -127,29 +124,49 @@ static CBitmap *cloneBitmap(CBitmap *bm) {
   return result;
 }
 
-static CBitmap *rotate(LPDIRECT3DDEVICE device, CBitmap *b0, double degree) {
-  HBITMAP bm = rotateBitmap(device, *b0, degree);
-  CBitmap *result = createFromHandle(bm);
-  DeleteObject(bm);
-  return result;
-}
-
-CBitmap *getBitmap(int id, int degree) {
-  BitmapKey key(id, degree);
-  CBitmap **b = bitmapCache->get(key);
-  if(b == NULL) {
-    BitmapKey k0(id,0);
-    CBitmap **b0 = bitmapCache->get(k0);
-    if(b0 == NULL) {
-      throwException(_T("No bitmap with id=%d"),id);
-    }
-    CBitmap *br = rotate(bitmapCache->getDevice(), *b0, degree);
-    bitmapCache->put(key,br);
-    b = bitmapCache->get(key);
+HBITMAP bitmapRotate(HBITMAP b0, double degree) {
+  BitmapCache &cache = BitmapCache::getInstance().wait();
+  try {
+    HBITMAP br = bitmapRotate(cache.getDevice(), b0, degree);
+    cache.notify();
+    return br;
+  } catch(...) {
+    cache.notify();
+    throw;
   }
-  return *b;
 }
 
-LPDIRECT3DDEVICE getBitmapCacheDevice() {
-  return bitmapCache ? bitmapCache->getDevice() : NULL;
+CBitmap *bitmapRotate(CBitmap *b0, double degree) {
+  BitmapCache &cache = BitmapCache::getInstance().wait();
+  try {
+    CBitmap *br = bitmapRotate(cache.getDevice(), b0, degree);
+    cache.notify();
+    return br;
+  } catch(...) {
+    cache.notify();
+    throw;
+  }
+}
+
+CBitmap *getRotatedBitmapResource(int id, int degree) {
+  BitmapCache &cache = BitmapCache::getInstance().wait();
+  try {
+    BitmapKey    key(id, degree);
+    CBitmap    **b = cache.get(key);
+    if(b == NULL) {
+      const BitmapKey k0(id,0);
+      CBitmap **b0 = cache.get(k0);
+      if(b0 == NULL) {
+        throwException(_T("No bitmap with id=%d"),id);
+      }
+      CBitmap *br = bitmapRotate(cache.getDevice(), *b0, degree);
+      cache.put(key,br);
+      b = cache.get(key);
+    }
+    cache.notify();
+    return *b;
+  } catch(...) {
+    cache.notify();
+    throw;
+  }
 }

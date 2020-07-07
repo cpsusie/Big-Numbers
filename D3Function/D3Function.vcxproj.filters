@@ -16,17 +16,17 @@
     <Filter Include="Source Files\Dialogs">
       <UniqueIdentifier>{784193f6-5e03-4648-8a1a-70d3c98aba85}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Dialogs">
-      <UniqueIdentifier>{a5c210f4-a4e1-4d61-b84e-389606565c30}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Dialogs\ProfileEditor">
-      <UniqueIdentifier>{5636e8d4-8ba6-463e-a632-64e70897aa77}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Dialogs\ProfileEditor\Header Files">
+    <Filter Include="Source Files\Dialogs\Header Files">
       <UniqueIdentifier>{e7a79560-1829-42a4-8287-e64df9ed714d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Dialogs\ProfileEditor\Source Files">
+    <Filter Include="Source Files\Dialogs\Source Files">
       <UniqueIdentifier>{50e24d18-cd7c-4b34-a941-6ecfb4b85327}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Dialogs\Source Files\Profile Helper">
+      <UniqueIdentifier>{3c55d0a8-69cb-4a17-b1f2-a7147771c0fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Dialogs\Source Files\Profile Helper\DrawTool">
+      <UniqueIdentifier>{f7876a17-f61c-41c8-8862-64b50fd8747a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -66,38 +66,74 @@
     <ClInclude Include="SplitView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="EnterOptionsNameDlg.h">
-      <Filter>Header Files\Dialogs</Filter>
-    </ClInclude>
-    <ClInclude Include="FunctionR2R1SurfaceParametersDlg.h">
-      <Filter>Header Files\Dialogs</Filter>
-    </ClInclude>
-    <ClInclude Include="IsoSurfaceParametersDlg.h">
-      <Filter>Header Files\Dialogs</Filter>
-    </ClInclude>
-    <ClInclude Include="ParametricR2R3SurfaceParametersDlg.h">
-      <Filter>Header Files\Dialogs</Filter>
-    </ClInclude>
-    <ClInclude Include="OptionsOrganizerDlg.h">
-      <Filter>Header Files\Dialogs</Filter>
-    </ClInclude>
     <ClInclude Include="D3FunctionSurface.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DrawTool.h">
-      <Filter>Source Files\Dialogs\ProfileEditor\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ProfileDlg.h">
-      <Filter>Source Files\Dialogs\ProfileEditor\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ProfilePainter.h">
-      <Filter>Source Files\Dialogs\ProfileEditor\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="D3ProfileObjectWithColor.h">
-      <Filter>Source Files\Dialogs\ProfileEditor\Header Files</Filter>
+      <Filter>Source Files\Dialogs\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SaveLoadExprWithCommonParametersDialog.h">
-      <Filter>Header Files\Dialogs</Filter>
+      <Filter>Source Files\Dialogs\Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EnterOptionsNameDlg.h">
+      <Filter>Source Files\Dialogs\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FunctionR2R1SurfaceParametersDlg.h">
+      <Filter>Source Files\Dialogs\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OptionsOrganizerDlg.h">
+      <Filter>Source Files\Dialogs\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IsoSurfaceParametersDlg.h">
+      <Filter>Source Files\Dialogs\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ParametricR2R3SurfaceParametersDlg.h">
+      <Filter>Source Files\Dialogs\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ProfilePainter.h">
+      <Filter>Source Files\Dialogs\Source Files\Profile Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="D3ProfileObjectWithColor.h">
+      <Filter>Source Files\Dialogs\Source Files\Profile Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="TurnableRect.h">
+      <Filter>Source Files\Dialogs\Source Files\Profile Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="PolygonSet.h">
+      <Filter>Source Files\Dialogs\Source Files\Profile Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="ProfileEditor.h">
+      <Filter>Source Files\Dialogs\Source Files\Profile Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawTool.h">
+      <Filter>Source Files\Dialogs\Source Files\Profile Helper\DrawTool</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawToolBezierCurve.h">
+      <Filter>Source Files\Dialogs\Source Files\Profile Helper\DrawTool</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawToolEllipse.h">
+      <Filter>Source Files\Dialogs\Source Files\Profile Helper\DrawTool</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawToolLine.h">
+      <Filter>Source Files\Dialogs\Source Files\Profile Helper\DrawTool</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawToolNull.h">
+      <Filter>Source Files\Dialogs\Source Files\Profile Helper\DrawTool</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawToolPolygon.h">
+      <Filter>Source Files\Dialogs\Source Files\Profile Helper\DrawTool</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawToolRectangle.h">
+      <Filter>Source Files\Dialogs\Source Files\Profile Helper\DrawTool</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawToolSelect.h">
+      <Filter>Source Files\Dialogs\Source Files\Profile Helper\DrawTool</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawTools.h">
+      <Filter>Source Files\Dialogs\Source Files\Profile Helper\DrawTool</Filter>
+    </ClInclude>
+    <ClInclude Include="BitmapRotate.h">
+      <Filter>Source Files\Dialogs\Source Files\Profile Helper</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -135,40 +171,64 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="EnterOptionsNameDlg.cpp">
-      <Filter>Source Files\Dialogs</Filter>
+      <Filter>Source Files\Dialogs\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FunctionR2R1SurfaceParametersDlg.cpp">
-      <Filter>Source Files\Dialogs</Filter>
+      <Filter>Source Files\Dialogs\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="IsoSurfaceParametersDlg.cpp">
-      <Filter>Source Files\Dialogs</Filter>
+      <Filter>Source Files\Dialogs\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="OptionsOrganizerDlg.cpp">
-      <Filter>Source Files\Dialogs</Filter>
+      <Filter>Source Files\Dialogs\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ParametricR2R3SurfaceParametersDlg.cpp">
-      <Filter>Source Files\Dialogs</Filter>
-    </ClCompile>
-    <ClCompile Include="TurnableRect.cpp">
-      <Filter>Source Files\Dialogs\ProfileEditor\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="BitmapCache.cpp">
-      <Filter>Source Files\Dialogs\ProfileEditor\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="BitmapRotate.cpp">
-      <Filter>Source Files\Dialogs\ProfileEditor\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DrawTool.cpp">
-      <Filter>Source Files\Dialogs\ProfileEditor\Source Files</Filter>
+      <Filter>Source Files\Dialogs\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ProfileDlg.cpp">
-      <Filter>Source Files\Dialogs\ProfileEditor\Source Files</Filter>
+      <Filter>Source Files\Dialogs\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BitmapCache.cpp">
+      <Filter>Source Files\Dialogs\Source Files\Profile Helper</Filter>
+    </ClCompile>
+    <ClCompile Include="BitmapRotate.cpp">
+      <Filter>Source Files\Dialogs\Source Files\Profile Helper</Filter>
     </ClCompile>
     <ClCompile Include="ProfilePainter.cpp">
-      <Filter>Source Files\Dialogs\ProfileEditor\Source Files</Filter>
+      <Filter>Source Files\Dialogs\Source Files\Profile Helper</Filter>
+    </ClCompile>
+    <ClCompile Include="TurnableRect.cpp">
+      <Filter>Source Files\Dialogs\Source Files\Profile Helper</Filter>
     </ClCompile>
     <ClCompile Include="D3ProfileObjectWithColor.cpp">
-      <Filter>Source Files\Dialogs\ProfileEditor\Source Files</Filter>
+      <Filter>Source Files\Dialogs\Source Files\Profile Helper</Filter>
+    </ClCompile>
+    <ClCompile Include="PolygonSet.cpp">
+      <Filter>Source Files\Dialogs\Source Files\Profile Helper</Filter>
+    </ClCompile>
+    <ClCompile Include="ProfileEditor.cpp">
+      <Filter>Source Files\Dialogs\Source Files\Profile Helper</Filter>
+    </ClCompile>
+    <ClCompile Include="DrawTool.cpp">
+      <Filter>Source Files\Dialogs\Source Files\Profile Helper\DrawTool</Filter>
+    </ClCompile>
+    <ClCompile Include="DrawToolBezierCurve.cpp">
+      <Filter>Source Files\Dialogs\Source Files\Profile Helper\DrawTool</Filter>
+    </ClCompile>
+    <ClCompile Include="DrawToolEllipse.cpp">
+      <Filter>Source Files\Dialogs\Source Files\Profile Helper\DrawTool</Filter>
+    </ClCompile>
+    <ClCompile Include="DrawToolLine.cpp">
+      <Filter>Source Files\Dialogs\Source Files\Profile Helper\DrawTool</Filter>
+    </ClCompile>
+    <ClCompile Include="DrawToolPolygon.cpp">
+      <Filter>Source Files\Dialogs\Source Files\Profile Helper\DrawTool</Filter>
+    </ClCompile>
+    <ClCompile Include="DrawToolRectangle.cpp">
+      <Filter>Source Files\Dialogs\Source Files\Profile Helper\DrawTool</Filter>
+    </ClCompile>
+    <ClCompile Include="DrawToolSelect.cpp">
+      <Filter>Source Files\Dialogs\Source Files\Profile Helper\DrawTool</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -1,6 +1,5 @@
 #pragma once
 
-
 class Profile;
 class ProfilePolygon;
 class Viewport2D;
