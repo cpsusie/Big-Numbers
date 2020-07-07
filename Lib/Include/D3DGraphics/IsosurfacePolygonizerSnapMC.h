@@ -1,11 +1,8 @@
 #pragma once
 
 #include <CompactStack.h>
-#include <CompactArray.h>
 #include <CompactHashSet.h>
 #include <CompactHashMap.h>
-#include <TinyBitSet.h>
-#include <Random.h>
 #include <Math/Cube3D.h>
 
 namespace ISOSURFACE_POLYGONIZER_SNAPMC {
