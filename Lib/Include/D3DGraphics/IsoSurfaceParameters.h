@@ -10,7 +10,7 @@ public:
   Cube3D              m_boundingBox;
   bool                m_tetrahedral;
   bool                m_tetraOptimize4;
-  bool                m_adaptiveCellSize;
+  bool                m_showStatistics;
   bool                m_originOutside;
   IsoSurfaceParameters();
 };

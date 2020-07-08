@@ -12,11 +12,10 @@ void ExprIsoSurfaceParameters::putDataToDoc(XMLDoc &doc) {
   setValue(doc,    root, _T("boundingbox"       ), m_boundingBox     );
   setValue(doc,    root, _T("tetrahedral"       ), m_tetrahedral     );
   setValue(doc,    root, _T("tetraoptimize4"    ), m_tetraOptimize4  );
-  setValue(doc,    root, _T("adaptivecellsize"  ), m_adaptiveCellSize);
+  setValue(doc,    root, _T("showStatistics"    ), m_showStatistics  );
   setValue(doc,    root, _T("originoutside"     ), m_originOutside   );
   setValue(doc,    root, _T("machinecode"       ), m_machineCode     );
   setValue(doc,    root, _T("common"            ), *(D3SurfaceCommonParameters*)this);
-
 }
 
 void ExprIsoSurfaceParameters::getDataFromDoc(XMLDoc &doc) {
@@ -29,10 +28,10 @@ void ExprIsoSurfaceParameters::getDataFromDoc(XMLDoc &doc) {
     getValue(doc,    root, _T("boundingbox"       ), m_boundingBox     );
     getValue(doc,    root, _T("tetrahedral"       ), m_tetrahedral     );
     getValue(doc,    root, _T("tetraoptimize4"    ), m_tetraOptimize4  );
-    getValue(doc,    root, _T("adaptivecellsize"  ), m_adaptiveCellSize);
+    getValue(doc,    root, _T("showStatistics"    ), m_showStatistics  );
     getValue(doc,    root, _T("originoutside"     ), m_originOutside   );
     getValue(doc,    root, _T("machinecode"       ), m_machineCode     );
-    setValue(doc,    root, _T("common"            ), *(D3SurfaceCommonParameters*)this);
+    getValue(doc,    root, _T("common"            ), *(D3SurfaceCommonParameters*)this);
   } catch(...) {
     getDataFromDocOld(doc);
   }
@@ -47,8 +46,8 @@ void ExprIsoSurfaceParameters::getDataFromDocOld(XMLDoc &doc) {
   getValue(doc,    root, _T("boundingbox"       ), m_boundingBox     );
   getValue(doc,    root, _T("tetrahedral"       ), m_tetrahedral     );
   getValue(doc,    root, _T("tetraoptimize4"    ), m_tetraOptimize4  );
-  getValue(doc,    root, _T("adaptivecellsize"  ), m_adaptiveCellSize);
   getValue(doc,    root, _T("originoutside"     ), m_originOutside   );
   getValue(doc,    root, _T("machinecode"       ), m_machineCode     );
-  getValue(doc,    root, _T("doublesided"       ), m_doubleSided     );
+  getValue(doc,    root, _T("common"            ), *(D3SurfaceCommonParameters*)this);
+  m_showStatistics = false;
 }

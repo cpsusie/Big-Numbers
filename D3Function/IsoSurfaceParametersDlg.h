@@ -11,7 +11,7 @@ private:
   UINT    m_bounds;
   BOOL    m_tetrahedral;
   BOOL    m_tetraOptimize4;
-  BOOL    m_adaptiveCellSize;
+  BOOL    m_showStatistics;
   BOOL    m_originOutside;
   BOOL    m_debugPolygonizer;
   double  m_xfrom;

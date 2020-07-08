@@ -4,7 +4,7 @@
 D3SurfaceCommonParameters::D3SurfaceCommonParameters() {
   m_calculateNormals  = true;
   m_calculateTexture  = false;
-  m_doubleSided = false;
+  m_doubleSided       = false;
   m_animation.reset();
 }
 

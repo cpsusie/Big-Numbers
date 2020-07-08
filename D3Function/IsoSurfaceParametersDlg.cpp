@@ -37,7 +37,7 @@ void CIsoSurfaceParametersDlg::DoDataExchange(CDataExchange *pDX) {
   DDX_Text( pDX, IDC_EDIT_LAMBDA           , m_lambda          );
   DDX_Check(pDX, IDC_CHECK_TETRAHEDRAL     , m_tetrahedral     );
   DDX_Check(pDX, IDC_CHECK_TETRAOPTIMIZE4  , m_tetraOptimize4  );
-  DDX_Check(pDX, IDC_CHECK_ADAPTIVECELLSIZE, m_adaptiveCellSize);
+  DDX_Check(pDX, IDC_CHECK_SHOWSTATISTICS  , m_showStatistics  );
   DDX_Check(pDX, IDC_CHECK_ORIGINOUTSIDE   , m_originOutside   );
   DDX_Check(pDX, IDC_CHECK_DEBUGPOLYGONIZER, m_debugPolygonizer);
   DDX_Text( pDX, IDC_EDIT_XFROM            , m_xfrom           );
@@ -134,7 +134,7 @@ void CIsoSurfaceParametersDlg::paramToWin(const ExprIsoSurfaceParameters &param)
   setZInterval(param.m_boundingBox.getZInterval());
   m_tetrahedral      = param.m_tetrahedral      ? TRUE : FALSE;
   m_tetraOptimize4   = param.m_tetraOptimize4   ? TRUE : FALSE;
-  m_adaptiveCellSize = param.m_adaptiveCellSize ? TRUE : FALSE;
+  m_showStatistics   = param.m_showStatistics   ? TRUE : FALSE;
   m_originOutside    = param.m_originOutside    ? TRUE : FALSE;
   __super::paramToWin(param);
   enableCheckBoxOrigin();
@@ -149,7 +149,7 @@ bool CIsoSurfaceParametersDlg::winToParam(ExprIsoSurfaceParameters &param) {
   param.m_boundingBox      = Cube3D(getXInterval(),getYInterval(),getZInterval());
   param.m_tetrahedral      = m_tetrahedral      ? true : false;
   param.m_tetraOptimize4   = m_tetraOptimize4   ? true : false;
-  param.m_adaptiveCellSize = m_adaptiveCellSize ? true : false;
+  param.m_showStatistics   = m_showStatistics   ? true : false;
   param.m_originOutside    = m_originOutside    ? true : false;
   return true;
 }
