@@ -20,9 +20,9 @@
 
 static const TCHAR *timeFormats[] = {
   EMPTYSTRING
- ,hhmmss
- ,ddMMyy
- ,ddMMyyhhmmss
+ ,_T("hh:mm:ss:")
+ ,_T("dd/MM/yy:")
+ ,_T("dd/MM/yy hh:mm:ss:")
 };
 
 class DebugLogger : public Singleton {
