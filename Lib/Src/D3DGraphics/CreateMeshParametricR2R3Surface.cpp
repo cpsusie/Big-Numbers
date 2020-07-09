@@ -25,7 +25,7 @@ ParametricSurfacePoint::ParametricSurfacePoint(FunctionR2R3 &f, const Point2D &p
   m_n = unitVector(cross(vt, vs));
 }
 
-LPD3DXMESH createMeshFromParametricSurface(AbstractMeshFactory &amf, FunctionR2R3 &f, const DoubleInterval &tInterval, const DoubleInterval &sInterval, UINT nt, UINT ns, bool doubleSided) {
+LPD3DXMESH createMeshFromParametricSurface(AbstractMeshFactory &amf, FunctionR2R3 &f, const DoubleInterval &tInterval, const DoubleInterval &sInterval, UINT nt, UINT ns, bool doubleSided, DWORD fvf) {
   nt = max(nt, 2);
   ns = max(ns, 2);
 
@@ -57,67 +57,51 @@ LPD3DXMESH createMeshFromParametricSurface(AbstractMeshFactory &amf, FunctionR2R
 }
 
 LPD3DXMESH createMesh(AbstractMeshFactory &amf, const ParametricR2R3SurfaceParameters &param, FunctionR2R3 &f) {
-  checkIsAnimation(__TFUNCTION__, param, false);
   return createMeshFromParametricSurface(amf
                                         ,f
                                         ,param.getTInterval()
                                         ,param.getSInterval()
                                         ,param.m_tStepCount
                                         ,param.m_sStepCount
-                                        ,param.m_doubleSided);
+                                        ,param.m_doubleSided
+                                        ,param.getFVF()
+                                        );
 }
 
 class VariableParametricSurfaceMeshCreator : public AbstractVariableMeshCreator {
 private:
-  AbstractMeshFactory                    &m_amf;
   const ParametricR2R3SurfaceParameters  &m_param;
   FunctionWithTimeTemplate<FunctionR2R3> *m_f;
 public:
-  VariableParametricSurfaceMeshCreator(AbstractMeshFactory &amf, const ParametricR2R3SurfaceParameters &param, FunctionWithTimeTemplate<FunctionR2R3> &f);
-  ~VariableParametricSurfaceMeshCreator() {
+  VariableParametricSurfaceMeshCreator(AbstractMeshFactory &amf, const ParametricR2R3SurfaceParameters &param, FunctionWithTimeTemplate<FunctionR2R3> &f)
+    : AbstractVariableMeshCreator(amf      )
+    , m_param(                    param    )
+    , m_f(                        f.clone())
+  {
+  }
+  ~VariableParametricSurfaceMeshCreator() override {
     SAFEDELETE(m_f);
   }
-  LPD3DXMESH createMesh(double time, InterruptableRunnable *ir) const;
+  LPD3DXMESH createMesh(double time, InterruptableRunnable *ir) const override;
 };
-
-VariableParametricSurfaceMeshCreator::VariableParametricSurfaceMeshCreator(AbstractMeshFactory &amf, const ParametricR2R3SurfaceParameters &param, FunctionWithTimeTemplate<FunctionR2R3> &f)
-: m_amf(amf)
-, m_param(param)
-, m_f(f.clone())
-{
-}
 
 LPD3DXMESH VariableParametricSurfaceMeshCreator::createMesh(double time, InterruptableRunnable *ir) const {
   m_f->setTime(time);
-  return createMeshFromParametricSurface(m_amf
-                                        ,*m_f
-                                        ,m_param.getTInterval()
-                                        ,m_param.getSInterval()
-                                        ,m_param.m_tStepCount
-                                        ,m_param.m_sStepCount
-                                        ,m_param.m_doubleSided
-                                        );
+  return ::createMesh(m_amf, m_param, *m_f);
 }
 
 class ParametricSurfaceMeshArrayJobParameter : public AbstractMeshArrayJobParameter {
 private:
-  AbstractMeshFactory                    &m_amf;
   const ParametricR2R3SurfaceParameters  &m_param;
   FunctionWithTimeTemplate<FunctionR2R3> &m_f;
 public:
   ParametricSurfaceMeshArrayJobParameter(AbstractMeshFactory &amf, const ParametricR2R3SurfaceParameters &param, FunctionWithTimeTemplate<FunctionR2R3> &f)
-    : m_amf(  amf  )
+    : AbstractMeshArrayJobParameter(amf, param.m_animation)
     , m_param(param)
     , m_f(    f    )
   {
   }
-  const DoubleInterval &getTimeInterval() const {
-    return m_param.m_animation.getTimeInterval();
-  }
-  UINT getFrameCount() const {
-    return m_param.m_animation.m_frameCount;
-  }
-  AbstractVariableMeshCreator *fetchMeshCreator() const {
+  AbstractVariableMeshCreator *fetchMeshCreator() const override {
     VariableParametricSurfaceMeshCreator *result = new VariableParametricSurfaceMeshCreator(m_amf, m_param, m_f); TRACE_NEW(result);
     return result;
   }

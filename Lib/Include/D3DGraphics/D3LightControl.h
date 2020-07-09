@@ -1,6 +1,6 @@
 #pragma once
 
-#include <D3DGraphics/D3SceneObjectWithMesh.h>
+#include "D3SceneObjectWithMesh.h"
 
 class D3Light;
 

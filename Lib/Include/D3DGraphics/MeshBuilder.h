@@ -1,8 +1,8 @@
 #pragma once
 
-#include <D3DGraphics/D3AbstractMeshFactory.h>
-#include <D3DGraphics/D3Math.h>
-#include <D3DGraphics/D3Cube.h>
+#include "D3AbstractMeshFactory.h"
+#include "D3Math.h"
+#include "D3Cube.h"
 
 class VertexNormalTextureIndex {
 public:

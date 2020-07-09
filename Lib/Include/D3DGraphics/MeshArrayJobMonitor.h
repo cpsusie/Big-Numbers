@@ -2,9 +2,18 @@
 
 #include <NumberInterval.h>
 #include <InterruptableRunnable.h>
-#include <D3DGraphics/MeshArray.h>
+#include <MFCUtil/AnimationParameters.h>
+#include "MeshArray.h"
+
+class AbstractMeshFactory;
 
 class AbstractVariableMeshCreator {
+protected:
+  AbstractMeshFactory &m_amf;
+  AbstractVariableMeshCreator(AbstractMeshFactory &amf)
+    : m_amf(amf)
+  {
+  }
 public:
   virtual LPD3DXMESH createMesh(double time, InterruptableRunnable *ir = NULL) const = 0;
   virtual ~AbstractVariableMeshCreator() {
@@ -12,10 +21,23 @@ public:
 };
 
 class AbstractMeshArrayJobParameter {
+private:
+  const AnimationParameters &m_animation;
+protected:
+  AbstractMeshFactory &m_amf;
+  AbstractMeshArrayJobParameter(AbstractMeshFactory &amf, const AnimationParameters &animation)
+    : m_amf(amf)
+    , m_animation(animation)
+  {
+  }
 public:
-  virtual const DoubleInterval &getTimeInterval()    const = 0;
-  virtual UINT                  getFrameCount()      const = 0;
-  virtual AbstractVariableMeshCreator  *fetchMeshCreator()   const = 0;
+  const DoubleInterval &getTimeInterval() const {
+    return m_animation.getTimeInterval();
+  }
+  UINT getFrameCount() const {
+    return m_animation.getFrameCount();
+  }
+  virtual AbstractVariableMeshCreator  *fetchMeshCreator() const = 0;
   MeshArray createMeshArray(CWnd *wnd);
 };
 

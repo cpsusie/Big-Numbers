@@ -1,6 +1,6 @@
 #pragma once
 
-#include <D3DGraphics/D3SurfaceCommonParameters.h>
+#include "D3SurfaceCommonParameters.h"
 
 class ParametricR2R3SurfaceParameters : public D3SurfaceCommonParameters {
 public:

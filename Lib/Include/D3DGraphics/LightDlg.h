@@ -1,7 +1,7 @@
 #pragma once
 
 #include <MFCUtil/ColormapDialog.h>
-#include <D3DGraphics/resource.h>
+#include "resource.h"
 #include "D3Scene.h"
 
 class CLightDlg : public CColormapDialog<D3Light> {

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <D3DGraphics/D3SurfaceCommonParameters.h>
-#include <D3DGraphics/D3Cube.h>
+#include "D3SurfaceCommonParameters.h"
+#include "D3Cube.h"
 
 class IsoSurfaceParameters : public D3SurfaceCommonParameters {
 public:

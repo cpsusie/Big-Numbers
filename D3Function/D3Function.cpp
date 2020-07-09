@@ -36,7 +36,7 @@ BOOL CD3FunctionApp::InitInstance() {
   InitCommonControlsEx(&InitCtrls);
 
   __super::InitInstance();
-
+  debugLogSetTimePrefix(false,true);
   // Initialize OLE libraries
   if(!AfxOleInit()) {
     AfxMessageBox(IDP_OLE_INIT_FAILED);

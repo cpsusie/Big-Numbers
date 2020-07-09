@@ -2,7 +2,7 @@
 
 #include <MFCUtil/ColormapDialog.h>
 #include <MFCUtil/colormap.h>
-#include <D3DGraphics/resource.h>
+#include "resource.h"
 #include "D3Scene.h"
 
 class CMaterialDlg : public CColormapDialog<D3Material> {

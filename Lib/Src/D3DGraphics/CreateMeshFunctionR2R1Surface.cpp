@@ -125,11 +125,12 @@ LPD3DXMESH createMeshFrom2DFunction(AbstractMeshFactory &amf, FunctionR2R1 &f, c
 }
 
 LPD3DXMESH createMesh(AbstractMeshFactory &amf, const FunctionR2R1SurfaceParameters &param, FunctionR2R1 &f) {
-  checkIsAnimation(__TFUNCTION__, param, false);
-  return createMeshFrom2DFunction(amf, f
+  return createMeshFrom2DFunction(amf
+                                 ,f
                                  ,param.getXInterval()
                                  ,param.getYInterval()
-                                 ,param.m_pointCount, param.m_pointCount
+                                 ,param.m_pointCount
+                                 ,param.m_pointCount
                                  ,param.m_doubleSided
                                  ,param.getFVF()
                                  );
@@ -137,56 +138,38 @@ LPD3DXMESH createMesh(AbstractMeshFactory &amf, const FunctionR2R1SurfaceParamet
 
 class VariableFunction2DMeshCreator : public AbstractVariableMeshCreator {
 private:
-  AbstractMeshFactory                     &m_amf;
-  const FunctionR2R1SurfaceParameters     &m_param;
+  const FunctionR2R1SurfaceParameters    &m_param;
   FunctionWithTimeTemplate<FunctionR2R1> *m_f;
 public:
-  VariableFunction2DMeshCreator(AbstractMeshFactory &amf, const FunctionR2R1SurfaceParameters &param, FunctionWithTimeTemplate<FunctionR2R1> &f);
-  ~VariableFunction2DMeshCreator() {
+  VariableFunction2DMeshCreator(AbstractMeshFactory &amf, const FunctionR2R1SurfaceParameters &param, FunctionWithTimeTemplate<FunctionR2R1> &f)
+    : AbstractVariableMeshCreator(amf      )
+    , m_param(                    param    )
+    , m_f(                        f.clone())
+  {
+  }
+  ~VariableFunction2DMeshCreator() override {
     SAFEDELETE(m_f);
   }
-  LPD3DXMESH createMesh(double time, InterruptableRunnable *ir) const;
+  LPD3DXMESH createMesh(double time, InterruptableRunnable *ir) const override;
 };
-
-VariableFunction2DMeshCreator::VariableFunction2DMeshCreator(AbstractMeshFactory &amf, const FunctionR2R1SurfaceParameters &param, FunctionWithTimeTemplate<FunctionR2R1> &f)
-: m_amf(amf)
-, m_param(param)
-, m_f(f.clone())
-{
-}
 
 LPD3DXMESH VariableFunction2DMeshCreator::createMesh(double time, InterruptableRunnable *ir) const {
   m_f->setTime(time);
-  return createMeshFrom2DFunction(m_amf
-                                 ,*m_f
-                                 ,m_param.getXInterval()
-                                 ,m_param.getYInterval()
-                                 ,m_param.m_pointCount
-                                 ,m_param.m_pointCount
-                                 ,m_param.m_doubleSided
-                                 ,m_param.getFVF()
-                                 );
+  return ::createMesh(m_amf, m_param, *m_f);
 }
 
 class Function2DMeshArrayJobParameter : public AbstractMeshArrayJobParameter {
 private:
-  AbstractMeshFactory                     &m_amf;
-  const FunctionR2R1SurfaceParameters     &m_param;
-  FunctionWithTimeTemplate<FunctionR2R1>  &m_f;
+  const FunctionR2R1SurfaceParameters    &m_param;
+  FunctionWithTimeTemplate<FunctionR2R1> &m_f;
 public:
   Function2DMeshArrayJobParameter(AbstractMeshFactory &amf, const FunctionR2R1SurfaceParameters &param, FunctionWithTimeTemplate<FunctionR2R1> &f)
-    : m_amf(  amf  )
+    : AbstractMeshArrayJobParameter(amf, param.m_animation)
     , m_param(param)
     , m_f(    f    )
   {
   }
-  const DoubleInterval &getTimeInterval() const {
-    return m_param.m_animation.getTimeInterval();
-  }
-  UINT getFrameCount() const {
-    return m_param.m_animation.getFrameCount();
-  }
-  AbstractVariableMeshCreator *fetchMeshCreator() const {
+  AbstractVariableMeshCreator *fetchMeshCreator() const override {
     VariableFunction2DMeshCreator *result = new VariableFunction2DMeshCreator(m_amf, m_param, m_f); TRACE_NEW(result);
     return result;
   }

@@ -118,20 +118,19 @@ LPD3DXMESH createMesh(AbstractMeshFactory &amf, const IsoSurfaceParameters &para
 
 class VariableIsoSurfaceMeshCreator : public AbstractVariableMeshCreator {
 private:
-  AbstractMeshFactory                    &m_amf;
   const IsoSurfaceParameters             &m_param;
   FunctionWithTimeTemplate<FunctionR3R1> *m_f;
 public:
   VariableIsoSurfaceMeshCreator(AbstractMeshFactory &amf, const IsoSurfaceParameters &param, FunctionWithTimeTemplate<FunctionR3R1> &f)
-  : m_amf(  amf      )
-  , m_param(param    )
-  , m_f(    f.clone())
+    : AbstractVariableMeshCreator(  amf      )
+    , m_param(                      param    )
+    , m_f(                          f.clone())
   {
   }
-  ~VariableIsoSurfaceMeshCreator() {
+  ~VariableIsoSurfaceMeshCreator() override {
     SAFEDELETE(m_f);
   }
-  LPD3DXMESH createMesh(double time, InterruptableRunnable *ir) const;
+  LPD3DXMESH createMesh(double time, InterruptableRunnable *ir) const override;
 };
 
 LPD3DXMESH VariableIsoSurfaceMeshCreator::createMesh(double time, InterruptableRunnable *ir) const {
@@ -145,23 +144,16 @@ LPD3DXMESH VariableIsoSurfaceMeshCreator::createMesh(double time, InterruptableR
 
 class IsoSurfaceMeshArrayJobParameter : public AbstractMeshArrayJobParameter {
 private:
-  AbstractMeshFactory                    &m_amf;
   const IsoSurfaceParameters             &m_param;
   FunctionWithTimeTemplate<FunctionR3R1> &m_f;
 public:
   IsoSurfaceMeshArrayJobParameter(AbstractMeshFactory &amf, const IsoSurfaceParameters &param, FunctionWithTimeTemplate<FunctionR3R1> &f)
-    : m_amf(amf)
+    : AbstractMeshArrayJobParameter(amf, param.m_animation)
     , m_param(param)
-    , m_f(f)
+    , m_f(    f    )
   {
   }
-  const DoubleInterval &getTimeInterval() const {
-    return m_param.m_animation.getTimeInterval();
-  }
-  UINT getFrameCount() const {
-    return m_param.m_animation.getFrameCount();
-  }
-  AbstractVariableMeshCreator *fetchMeshCreator() const {
+  AbstractVariableMeshCreator *fetchMeshCreator() const override {
     VariableIsoSurfaceMeshCreator *result = new VariableIsoSurfaceMeshCreator(m_amf, m_param, m_f); TRACE_NEW(result);
     return result;
   }
