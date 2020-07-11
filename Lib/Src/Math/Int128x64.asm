@@ -454,10 +454,10 @@ uint128quotrem PROC
     jne         L1                             ; if(denom.hi==0) {
     mov         rcx, qword ptr[r9]             ;   rcx     = denom.lo (==denom)
     mov         rax, qword ptr[r8+8]           ;   rax     = numer.hi
-    xor         rdx, rdx                       ;   rax:rdx = numer.hi:0
+    xor         rdx, rdx                       ;   rdx:rax = 0:numer.hi
     div         rcx                            ;   rax     = q.hi. rdx = remainder.hi
     mov         qword ptr[rdi+8], rax          ;   save q.hi
-    mov         rax, qword ptr[r8]             ;   rdx:rax==remainder:lo word of dividend
+    mov         rax, qword ptr[r8]             ;   rdx:rax = remainder:lo word of dividend
     div         rcx                            ;   rax:rdx = q.lo:remainder
     mov         qword ptr[rdi], rax            ;   save q.lo
     mov         qword ptr[rdi+10h], rdx        ;   save remainder.lo
