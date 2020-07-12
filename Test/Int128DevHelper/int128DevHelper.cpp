@@ -180,30 +180,29 @@ void QuotFunction::f() {
       const _ui128div_t qr = _ui128div(numer, denom);
     }
   }
-
 }
 
 static void testUint128quotrem() {
   try {
+#define SAMPLECOUNT 100000
     JavaRandom rnd;
-    for(int p = 5; p < 128; p++) {
-      const _uint128 n = _uint128(1) << p;
-      for (int i = 0; i < 1000; i++) {
-        _uint128 numer = randInt128(rnd);
-
-        _uint128 denom;
+    cout.setf(std::ios::left, std::ios_base::adjustfield); 
+    for(int denomExpo = 1; denomExpo < 128; denomExpo++) {
+      UINT okCount = 0, failCount = 0;
+      cout << "expo2:" << denomExpo;
+      const _uint128 maxdenom = _uint128(1) << denomExpo;
+      for(int i = 0; i < SAMPLECOUNT; i++) {
+        _uint128 numer = randInt128(rnd), denom;
         do {
-          denom = randInt128(n, rnd);
-        } while (denom == 0);
+          denom = randInt128(maxdenom, rnd);
+        } while(denom.isZero());
+        const _uint128    quot = numer / denom, rem = numer % denom;
 
-        _uint128 quot = numer / denom;
-        _uint128 rem = numer % denom;
-
-        const _ui128div_t div = _ui128div(numer, denom);
+        const _ui128div_t div  = _ui128div(numer, denom);
         if((quot != div.quot) || (rem != div.rem)) {
           std::stringstream tmp;
-          cout << numer << "/" << denom << "=" << quot << endl
-               << numer << "%" << denom << "=" << rem << endl
+          cout << numer << "/" << denom << "=" << quot  << endl
+               << numer << "%" << denom << "=" << rem   << endl
                << "_ui128div(" << numer << "," << denom << ") = " << div << endl;
 
           _ui128div_t div1 = _ui128div(numer, denom);
@@ -211,14 +210,12 @@ static void testUint128quotrem() {
       }
     }
   } catch (Exception e) {
-
   }
 }
 
-
 int main(int argc, TCHAR **argv) {
-
   testUint128quotrem();
+  return 0;
   double ttsum = 0;
   for(int i = 0; i < 10; i++) {
     QuotFunction qft;

@@ -513,24 +513,30 @@ namespace TestInt128 {
 
     TEST_METHOD(Int128_ui128div) {
       JavaRandom rnd;
-      _uint128 n = 5;
-      for(int p = 5; p < 128; p++) {
-        for(int i = 0; i < 1000; i++) {
-          _uint128 numer = randInt128(rnd);
-          _uint128 denom;
-          do {
-            denom = randInt128(n, rnd);
-          } while(denom == 0);
-
-          _uint128 quot = numer / denom;
-          _uint128 rem  = numer % denom;
-
-          const _ui128div_t div = _ui128div(numer, denom);
-          verify((quot == div.quot) && (rem == div.rem));
-          verify(div.quot * denom + div.rem == numer);
+      _uint128 xmax = 21;
+      for(int xp = 1; xp < 128; xp++) {
+//        OUTPUT(_T("xp:%d/127"),xp);
+        for(int i = 0; i < 33; i++) {
+          const _uint128 x = randInt128(xmax,rnd);
+          _uint128 ymax = 21;
+          for(int yp = 1; yp < 128; yp++) {
+            for(int j = 0; j < 33; j++) {
+              _uint128 y;
+              do {
+                y = randInt128(ymax, rnd);
+              } while(y == 0);
+              const _uint128    q   = x / y;
+              const _uint128    r   = x % y;
+              const _ui128div_t div = _ui128div(x, y);
+              verify((q == div.quot) && (r == div.rem));
+              verify(div.quot * y + div.rem == x);
+            }
+            ymax <<= 1;
+            if(rnd.nextBool()) ymax |= 1;
+          }
         }
-        n <<= 1;
-        if(rnd.nextBool()) n |= 1;
+        xmax <<= 1;
+        if(rnd.nextBool()) xmax |= 1;
       }
     }
 

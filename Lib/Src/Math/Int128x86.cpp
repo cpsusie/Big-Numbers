@@ -346,105 +346,6 @@ GE128:                                        ; cl >= 128
 End:;
 }
 
-static UINT getFirst16(const _uint128 &n, int &expo2) {
-  UINT result, expo;
-  __asm {
-    pushf
-    mov         ecx , 4
-    mov         edi , n
-    add         edi , 12
-    xor         eax , eax
-    std
-    repe        scasd
-    jnz         SearchBit
-    xor         edx , edx
-    jmp         End1Result
-
-SearchBit:                                     ; assume ecx hold the index of integer with first 1-bit
-    mov         edx , dword ptr [edi+4]
-    bsr         eax , edx                      ; eax holds index of highest 1 bit
-    cmp         eax , 15
-    je          End2Results
-    jg          TooManyBits
-    test        ecx , ecx                      ; Get some bits from previous, if we got some
-    je          End2Results
-
-    shl         ecx , 5
-    add         ecx , eax
-    mov         expo, ecx
-
-    mov         edi , dword ptr[edi]           ; edi = previous int
-    mov         ecx , 15
-    sub         ecx , eax                      ; ecx = 15 - index of higest 1-bit
-    shld        edx , edi, cl                  ; Shift edx left adding new bits from previous digit (edi)
-    jmp         End1Result
-
-TooManyBits:                                   ; assume eax = index of higest 1-bit in edx (>15)
-    shl         ecx , 5
-    add         ecx , eax
-    mov         expo, ecx
-    mov         ecx , eax
-    sub         ecx , 15
-    shr         edx , cl
-    jmp         End1Result
-
-End2Results:
-    shl         ecx , 5
-    add         ecx , eax
-    mov         expo, ecx
-End1Result:
-    mov         result, edx
-    popf
-  }
-  expo2 = expo;
-  return result;
-}
-
-static UINT getFirst32(const _uint128 &n, int &expo2) {
-  UINT result, expo;
-  __asm {
-    pushf
-    mov         ecx, 4
-    mov         edi, n
-    add         edi, 12
-    xor         eax, eax
-    std
-    repe        scasd
-    jnz         SearchBit
-    xor         edx, edx
-    jmp         End1Result
-
-SearchBit:                                     ; assume ecx hold the index of integer with first 1-bit
-    mov         edx, dword ptr[edi+4]
-    bsr         eax, edx                       ; eax holds index of highest 1 bit
-    cmp         eax, 31
-    je          End2Results
-    test        ecx, ecx                       ; Get some bits from next, if we got some
-    je          End2Results
-
-    shl         ecx, 5
-    add         ecx, eax
-    mov         expo, ecx
-
-    mov         edi, dword ptr[edi]            ; edi = previous int
-    mov         ecx, 31
-    sub         ecx, eax                       ; ecx = 31 - bits already in edx
-    shld        edx, edi, cl                   ; Shift edx left adding new bits from previous digit (edi)
-    jmp         End1Result
-
-End2Results:
-    shl         ecx   , 5
-    add         ecx   , eax
-    mov         expo  , ecx
-
-End1Result:
-    mov         result, edx
-    popf
-  }
-  expo2 = expo;
-  return result;
-}
-
 static inline int getExpo2(UINT x) {
   UINT result;
   _asm {
@@ -454,11 +355,55 @@ static inline int getExpo2(UINT x) {
   return result;
 }
 
+static int getExpo2(const _uint128 &n) {
+  UINT result;
+  __asm {
+    pushf
+    mov         ecx, 4
+    mov         edi, n                         ; edi = &n
+    add         edi, 12                        ; edi = &highend byte of n
+    xor         eax, eax
+    std
+    repe        scasd
+    jz          End
+    bsr         eax, dword ptr[edi+4]          ; eax = index of highest 1 bit
+    shl         ecx, 5                         ; ecx *= 32
+    add         eax, ecx                       ;
+End:
+    mov         result, eax
+    popf
+  }
+}
+
+static UINT getFirst32(const _uint128 &n, int &scale) {
+  const int expo2 = getExpo2(n);
+  if(expo2 <= 31) {
+    scale = 0;
+    return n.s4.i[0];
+  } else { // expo2 > 31
+    scale = expo2 - 31;
+    return (UINT)(n >> scale);
+  }
+}
+
+static void getFirst63(const _uint128 &n, UINT64 &n63, int &scale) {
+  const int expo2 = getExpo2(n);
+  if(expo2 <= 62) {
+    scale = 0;
+    n63   = LO64(n);
+  } else {
+    scale = expo2 - 62;
+    n63   = (UINT64)(n >> scale);
+  }
+}
+
 // Special class to perform fast multiplication of _uint128 and UINT
 // no need to do any accumulation of "cross-multiplications" cause 2. operand
 // is only 32 bits
 class _uint128FastMul : public _uint128 {
 public:
+  inline _uint128FastMul(const _uint128 &src) : _uint128(src) {
+  }
   inline _uint128FastMul &operator=(const _uint128 &src) {
     HI64(*this) = HI64(src); LO64(*this) = LO64(src);
     return *this;
@@ -490,122 +435,142 @@ public:
   }
 };
 
-static void unsignedQuotRemainder(const _uint128 &a, const _uint128 &y, _uint128 *quot, _uint128 &rem) {
-  _uint128FastMul p128;
-  int             lastShift = 0;
-  rem = a;
-  if(quot) *quot = 0;
-  if(y < 0x8000) {
-    int                yExpo2 = getExpo2((UINT)y);
-    const int          yScale = 15 - yExpo2;
-    const UINT         y16    = (UINT)y << yScale;
-    for(int count = 0; rem >= y16; count++) {
-      int remExpo2;
-      const UINT         rem32      = getFirst32(rem, remExpo2);
-      const int          rem32Expo2 = getExpo2(rem32);
-      UINT               q32;
-      int                shift;
-      p128 = y;
-      if((shift = remExpo2 - rem32Expo2 + yScale) < 0) { // >= -31
-        q32  = (rem32 / (y16+1)) >> -shift;
-        shift = 0;
-        switch(q32) {
-        case 0 : q32 = 1    ; break;
-        case 1 :              break;
-        default: p128 *= q32; break;
-        }
-      } else {
-        q32 = rem32 / (y16 + 1);
-        switch(q32) {
-        case 0 : q32 = 1    ; break;
-        case 1 :              break;
-        default: p128 *= q32; break;
-        }
-        if(shift) int128shl(shift, &p128);
-      }
-      if(quot) { // do we want the quot. If its NULL there's no need to do this
-        if(count) {
-          if(lastShift > shift) {
-            int128shl(lastShift - shift, quot);
-          }
-          __asm {
-            mov eax, q32
-            mov esi, quot
-            add dword ptr[esi], eax
-            jnc AddDone1
-            adc dword ptr[esi+4] ,0
-            adc dword ptr[esi+8] ,0
-            adc dword ptr[esi+12],0
-          }
-        } else {
-          *quot = q32;
-        }
-AddDone1:
-        lastShift = shift;
-      }
-      rem -= p128;
-    }
-
-    // rem < 0xffff
+static void unsignedQuotRemainderU32(const _uint128 &x, UINT y, _uint128 *quot, _uint128 &rem) {
+  const int xExpo2 = getExpo2(x);
+  if(xExpo2 <= 31) {
+    rem = x.s4.i[0] % y;
     if(quot) {
-      if(lastShift) {
-        int128shl(lastShift, quot);
-      }
-      *quot += (UINT)rem / (UINT)y;
+      *quot = x.s4.i[0] / y;
     }
-    rem = (UINT)rem % (UINT)y;
+  } else if(xExpo2 <= 63) {
+    rem = x.s2.i[0] % y;
+    if(quot) {
+      *quot = x.s2.i[0] / y;
+    }
   } else {
-    int                yExpo2;
-    const UINT         y16    = getFirst16(y, yExpo2);
-    const int          yScale = yExpo2 - getExpo2(y16);
+    _uint128 tmp, &q = quot ? *quot : tmp;
+    UINT     r32;
+    __asm {
+      mov         ebx, x                         ; ebx     = &x
+      mov         ecx, q                         ; ecx     = &q
+      xor         edx, edx                       ;
+      mov         eax, dword ptr[ebx+12]         ; edx:eax = 0:x.dword[3]
+      div         y                              ; eax:edx = quotient:remainder
+      mov         dword ptr[ecx+12], eax         ; save quot.dword[3]
+      mov         eax, dword ptr[ebx+8]          ; edx:eax = last remainder:x.dword[2]
+      div         y                              ; eax:edx = quotient:remainder
+      mov         dword ptr[ecx+8], eax          ; save quot.dword[2]
+      mov         eax, dword ptr[ebx+4]          ; edx:eax = last remainder:x.dword[1]
+      div         y                              ; eax:edx = quotient:remainder
+      mov         dword ptr[ecx+4], eax          ; save quot.dword[1]
+      mov         eax, dword ptr[ebx]            ; edx:eax = last remainder:x.dword[0]
+      div         y                              ; eax:edx = quotient:remainder
+      mov         dword ptr[ecx], eax            ; save quot.dword[0]
+
+      mov         r32, edx                       ; save remainder
+      mul         y                              ; edx:eax = last quot * y
+      cmp         eax, dword ptr[ebx]            ;
+      jae         End                            ; if(eax < x.dword[0]) {
+      sub         eax, dword ptr[ebx]            ;
+      neg         eax                            ;   remainder = x.dword[0] - eax
+      mov         r32, eax                       ; }
+    }
+End:
+    rem = r32;
+  }
+}
+
+static void unsignedQuotRemainder(const _uint128 &x, const _uint128 &y, _uint128 *quot, _uint128 &rem) {
+  int        yScale;
+  const UINT y32 = getFirst32(y, yScale);
+  if(yScale == 0) {
+    unsignedQuotRemainderU32(x,y32,quot,rem);
+  } else {
+    rem = x;
+    if(quot) *quot = 0;
+
+    int lastShift = 0;
     for(int count = 0; rem >= y; count++) {
-      int remExpo2;
-      const UINT         rem32      = getFirst32(rem, remExpo2);
-      const int          rem32Expo2 = getExpo2(rem32);
-      UINT               q32;
-      int                shift;
-      p128 = y;
-      if((shift = remExpo2 - rem32Expo2 - yScale) < 0) { // >= -31
-        q32  = (rem32 / (y16+1)) >> -shift;
+      _uint128FastMul  p128 = y;
+      UINT64           rem63;    // max 63 bits to prevent overflow in division
+      int              remScale;
+      getFirst63(rem, rem63, remScale);
+      int              shift = remScale - yScale;
+      UINT             q32;
+      if(shift < 0) {
+        shift = -shift;
+        __asm {
+          lea eax, rem63
+          mov edx, dword ptr[eax+4]        ;
+          mov eax, dword ptr[eax]          ; edx:eax = rem63
+          div y32                          ; eax = rem63 / y32
+          mov ecx, shift                   ;
+          shr eax, cl                      ;
+          mov q32, eax                     ; q32 = (rem63 / y32) >> shift, ignore remainder
+        }
         shift = 0;
         switch(q32) {
-        case 0 : q32 = 1    ; break;
+        case 0 : q32  =  1  ; break;
         case 1 :              break;
         default: p128 *= q32; break;
         }
-      } else {
-        q32 = rem32 / (y16 + 1);
+        while(p128 > rem) { // make sure p128 <= rem, so we don't turn rem negative
+          p128 -= y;
+          q32--;
+        }
+      } else { // shift >= 0
+        __asm {
+          lea eax, rem63                   ; eax     = &rem64
+          mov edx, dword ptr[eax+4]        ; edx     = HI32(rem63)
+          mov eax, dword ptr[eax]          ; rdx:rax = rem63
+          div y32                          ; never overflow. rem63 < 2^63, y >= 2^31 => rem63/y < 2^(63-31)=2^32, which is max 32 bits
+          mov q32, eax                     ; q32 = rem63 / y32
+        }
         switch(q32) {
         case 0 : q32 = 1    ; break;
         case 1 :              break;
         default: p128 *= q32; break;
         }
-        if(shift) int128shl(shift, &p128);
+        if(shift) {
+          const _uint128 tmprem = rem >> shift;
+          while(p128 > tmprem) {
+            p128 -= y;
+            q32--;
+          }
+          p128 <<= shift;
+        } else { // shift == 0
+          while(p128 > rem) { // make sure p128 <= rem, so we don't turn rem negative
+            p128 -= y;
+            q32--;
+          }
+        }
       }
+      rem -= p128;
+
       if(quot) { // do we want the quot. If its NULL there's no need to do this
-        if(count) {
-          if(lastShift > shift) {
-            int128shl(lastShift - shift, quot);
+        if(count == 0) {
+          *quot = q32;
+        } else {
+          const int ds = lastShift - shift;
+          if(ds) {
+            *quot <<= ds;
           }
           __asm {
-            mov eax, q32
+            mov eax, q32               ; *quot += q32
             mov esi, quot
             add dword ptr[esi], eax
-            jnc AddDone2
+            jnc AddDone
             adc dword ptr[esi+4] ,0
             adc dword ptr[esi+8] ,0
             adc dword ptr[esi+12],0
           }
-        } else {
-          *quot = q32;
         }
-AddDone2:
-        lastShift = shift;
       }
-      rem -= p128;
+AddDone:
+      lastShift = shift;
     }
     if(lastShift && quot) {
-      int128shl(lastShift, quot);
+      *quot <<= lastShift;
     }
   }
 }
@@ -621,6 +586,9 @@ static void signedQuotRemainder(const _int128 &a, const _int128 &b, _int128 *quo
     if(aNegative) int128neg(&rem);
   }
 }
+
+// -----------------------------------------------------------------
+
 
 void int128div(void *dst, void *x) {
   const _int128  a(*(_int128*)dst);
