@@ -63,77 +63,6 @@ Done:
   }
 }
 
-#pragma warning(disable:4731)
-
-void int128mul(void *dst, const void *x) {
-  _int128       *dp = (_int128*)dst;
-  const _int128 *b = (const _int128*)x;
-
-  if(!(dp->s4.i[1] || b->s4.i[1] || dp->s4.i[2] || b->s4.i[2] || dp->s4.i[3] || b->s4.i[3])) {
-    HI64(*dp) = 0;
-    LO64(*dp) = __int64(dp->s4.i[0]) * b->s4.i[0]; // simple _int64 multiplication. int32 * int32
-  }
-  else {
-    const _int128       a(*dp);
-    __asm {
-      push        ebp
-      lea         ebx, a                       // ebx = &a
-      mov         ecx, b                       // ecx = b
-      mov         ebp, dst                     // ebp = &dp (dst)
-      xor         eax, eax
-      mov         dword ptr[ebp+8 ], eax       // dst[2..3] = 0
-      mov         dword ptr[ebp+12], eax
-      mov         eax, dword ptr[ebx]          // 1. round
-      mul         dword ptr[ecx]               // [edx:eax] = x[0]*y[0]
-      mov         dword ptr[ebp]  , eax
-      mov         dword ptr[ebp+4], edx        // dst[0:1] = [edx:eax]
-
-      mov         eax, dword ptr[ebx]          // 2. round
-      mul         dword ptr[ecx+4]             // [edx:eax] = x[0]*y[1]
-      mov         esi, eax                     //
-      mov         edi, edx                     // [edi:esi] = [edx:eax]
-      mov         eax, dword ptr[ebx+4]
-      mul         dword ptr[ecx]               // [edx:eax] = x[1]*y[0]
-      add         esi, eax                     //
-      adc         edi, edx                     // [edi:esi] += [edx:eax]
-      adc         dword ptr[ebp+12],0          // may be extra carry for dst[3]
-      add         dword ptr[ebp+4], esi
-      adc         dword ptr[ebp+8], edi        // dst[1:2] += [edi:esi]
-
-      mov         eax, dword ptr[ebx]          // 3. round. Extra carries are overflow
-      mul         dword ptr[ecx+8]             // [edx:eax] = x[0]*y[2]
-      mov         esi, eax                     //
-      mov         edi, edx                     // [edi:esi] = [edx:eax]
-      mov         eax, dword ptr[ebx+4]
-      mul         dword ptr[ecx+4]             // [edx:eax] = x[1]*y[1]
-      add         esi, eax                     //
-      adc         edi, edx                     // [edi:esi] += [edx:eax]
-      mov         eax, dword ptr[ebx+8]
-      mul         dword ptr[ecx]               // [edx:eax] = x[2]*y[0]
-      add         esi, eax                     //
-      adc         edi, edx                     // [edi:esi] += [edx:eax]
-      add         dword ptr[ebp+8 ], esi
-      adc         dword ptr[ebp+12], edi       // dst[2:3] += [edi:esi]
-
-      mov         eax, dword ptr[ebx]          // 4. round. High end and carries are overflow
-      mul         dword ptr[ecx+12]            // [edx:eax] = x[0]*y[3]
-      mov         esi, eax                     // esi = eax
-      mov         eax, dword ptr[ebx+4]        //
-      mul         dword ptr[ecx+8]             // [edx:eax] = x[1]*y[2]
-      add         esi, eax                     // esi += eax
-      mov         eax, dword ptr[ebx+8]
-      mul         dword ptr[ecx+4]             // [edx:eax] = x[2]*y[1]
-      add         esi, eax                     // esi += eax
-      mov         eax, dword ptr[ebx+12]
-      mul         dword ptr[ecx]               // [edx:eax] = x[3]*y[0]
-      add         esi, eax                     // esi += eax
-      add         dword ptr[ebp+12], esi       // dst[3] += esi
-
-      pop         ebp
-    }
-  }
-}
-
 void int128shl(int shft, void *x) {
   __asm {
     mov         ecx, shft                      ; ecx = shift count
@@ -368,48 +297,70 @@ static int getExpo2(const _uint128 &n) {
     jz          End
     bsr         eax, dword ptr[edi+4]          ; eax = index of highest 1 bit
     shl         ecx, 5                         ; ecx *= 32
-    add         eax, ecx                       ;
+    add         eax, ecx
 End:
     mov         result, eax
     popf
   }
+  return result;
 }
 
-static UINT getFirst32(const _uint128 &n, int &scale) {
+// Return highest index of n.dword[index] != 0, range[0..3]
+static BYTE getDwordIndex(const _uint128 &n) {
+  BYTE result;
+  __asm {
+    pushf
+    mov         ecx, 4
+    mov         edi, n                         ; edi = &n
+    add         edi, 12                        ; edi = &highend dword of n
+    xor         eax, eax
+    std
+    repe        scasd
+    mov         result, cl
+    popf
+  }
+  return result;
+}
+
+// return scale
+static int getFirst32(const _uint128 &n, UINT &n32) {
   const int expo2 = getExpo2(n);
   if(expo2 <= 31) {
-    scale = 0;
-    return n.s4.i[0];
+    n32 = n.s4.i[0];
+    return 0;
   } else { // expo2 > 31
-    scale = expo2 - 31;
-    return (UINT)(n >> scale);
+    const int scale = expo2 - 31;
+    n32 = (UINT)(n >> scale);
+    return scale;
   }
 }
 
-static void getFirst63(const _uint128 &n, UINT64 &n63, int &scale) {
+// return scale
+static int getFirst63(const _uint128 &n, UINT64 &n63) {
   const int expo2 = getExpo2(n);
   if(expo2 <= 62) {
-    scale = 0;
-    n63   = LO64(n);
+    n63 = LO64(n);
+    return 0;
   } else {
-    scale = expo2 - 62;
-    n63   = (UINT64)(n >> scale);
+    const int scale = expo2 - 62;
+    n63 = (UINT64)(n >> scale);
+    return scale;
   }
 }
 
 // Special class to perform fast multiplication of _uint128 and UINT
 // no need to do any accumulation of "cross-multiplications" cause 2. operand
 // is only 32 bits
-class _uint128FastMul : public _uint128 {
+class _uint128MulU32 : public _uint128 {
 public:
-  inline _uint128FastMul(const _uint128 &src) : _uint128(src) {
+  inline _uint128MulU32(const _uint128 &src) : _uint128(src) {
   }
-  inline _uint128FastMul &operator=(const _uint128 &src) {
+  inline _uint128MulU32 &operator=(const _uint128 &src) {
     HI64(*this) = HI64(src); LO64(*this) = LO64(src);
     return *this;
   }
-  inline _uint128FastMul &operator*=(UINT k) {
-    const _uint128FastMul copy(*this);
+  inline _uint128MulU32 &operator*=(UINT k) {
+    const _uint128 copy(*this);
     _asm {
       mov edi, this
       lea esi, copy
@@ -435,6 +386,92 @@ public:
   }
 };
 
+#pragma warning(disable:4731) // warning C4731: 'int128mul': frame pointer register 'ebp' modified by inline assembly code
+
+void int128mul(void *dst, const void *x) {
+  _uint128       &dp   = *(_uint128*)dst;
+  const _uint128 &b    = *(const _uint128*)x;
+
+  switch((getDwordIndex(b) << 2) | getDwordIndex(dp)) {
+  case 0 : // both max 32 bit int
+    HI64(dp) = 0;
+    LO64(dp) = __int64(dp.s4.i[0]) * b.s4.i[0]; // simple _int64 multiplication. int32 * int32
+    break;
+  case 1 : // 0,1 b max 32 bit
+  case 2 : // 0,2
+  case 3 : // 0,3
+    ((_uint128MulU32&)dp) *= b.s4.i[0];
+    break;
+  case 4 : // 1,0 dp max 32 bit
+  case 8 : // 2,0
+  case 12: // 3,0
+    { const UINT k = dp.s4.i[0];
+      dp = b;
+      ((_uint128MulU32&)dp) *= k;
+    }
+    break;
+  default:
+    { const _uint128 a(dp);
+      __asm {
+        push        ebp
+        lea         ebx, a                       // ebx = &a
+        mov         ecx, b                       // ecx = &b  (x)
+        mov         ebp, dst                     // ebp = &dp (dst)
+        xor         eax, eax
+        mov         dword ptr[ebp+8 ], eax       // dst[2..3] = 0
+        mov         dword ptr[ebp+12], eax
+        mov         eax, dword ptr[ebx]          // 1. round
+        mul         dword ptr[ecx]               // [edx:eax] = x[0]*y[0]
+        mov         dword ptr[ebp]  , eax
+        mov         dword ptr[ebp+4], edx        // dst[0:1] = [edx:eax]
+
+        mov         eax, dword ptr[ebx]          // 2. round
+        mul         dword ptr[ecx+4]             // [edx:eax] = x[0]*y[1]
+        mov         esi, eax                     //
+        mov         edi, edx                     // [edi:esi] = [edx:eax]
+        mov         eax, dword ptr[ebx+4]
+        mul         dword ptr[ecx]               // [edx:eax] = x[1]*y[0]
+        add         esi, eax                     //
+        adc         edi, edx                     // [edi:esi] += [edx:eax]
+        adc         dword ptr[ebp+12],0          // maybe extra carry for dst[3]
+        add         dword ptr[ebp+4], esi
+        adc         dword ptr[ebp+8], edi        // dst[1:2] += [edi:esi]
+
+        mov         eax, dword ptr[ebx]          // 3. round. Extra carries are overflow
+        mul         dword ptr[ecx+8]             // [edx:eax] = x[0]*y[2]
+        mov         esi, eax                     //
+        mov         edi, edx                     // [edi:esi] = [edx:eax]
+        mov         eax, dword ptr[ebx+4]
+        mul         dword ptr[ecx+4]             // [edx:eax] = x[1]*y[1]
+        add         esi, eax                     //
+        adc         edi, edx                     // [edi:esi] += [edx:eax]
+        mov         eax, dword ptr[ebx+8]
+        mul         dword ptr[ecx]               // [edx:eax] = x[2]*y[0]
+        add         esi, eax                     //
+        adc         edi, edx                     // [edi:esi] += [edx:eax]
+        add         dword ptr[ebp+8 ], esi
+        adc         dword ptr[ebp+12], edi       // dst[2:3] += [edi:esi]
+
+        mov         eax, dword ptr[ebx]          // 4. round. Highend and carries are overflow
+        mul         dword ptr[ecx+12]            // [edx:eax] = x[0]*y[3]
+        mov         esi, eax                     // esi = eax
+        mov         eax, dword ptr[ebx+4]        //
+        mul         dword ptr[ecx+8]             // [edx:eax] = x[1]*y[2]
+        add         esi, eax                     // esi += eax
+        mov         eax, dword ptr[ebx+8]
+        mul         dword ptr[ecx+4]             // [edx:eax] = x[2]*y[1]
+        add         esi, eax                     // esi += eax
+        mov         eax, dword ptr[ebx+12]
+        mul         dword ptr[ecx]               // [edx:eax] = x[3]*y[0]
+        add         esi, eax                     // esi += eax
+        add         dword ptr[ebp+12], esi       // dst[3] += esi
+
+        pop         ebp
+      }
+    }
+  }
+}
+
 static void unsignedQuotRemainderU32(const _uint128 &x, UINT y, _uint128 *quot, _uint128 &rem) {
   const int xExpo2 = getExpo2(x);
   if(xExpo2 <= 31) {
@@ -443,9 +480,9 @@ static void unsignedQuotRemainderU32(const _uint128 &x, UINT y, _uint128 *quot, 
       *quot = x.s4.i[0] / y;
     }
   } else if(xExpo2 <= 63) {
-    rem = x.s2.i[0] % y;
+    rem = LO64(x) % y;
     if(quot) {
-      *quot = x.s2.i[0] / y;
+      *quot = LO64(x) / y;
     }
   } else {
     _uint128 tmp, &q = quot ? *quot : tmp;
@@ -466,7 +503,6 @@ static void unsignedQuotRemainderU32(const _uint128 &x, UINT y, _uint128 *quot, 
       mov         eax, dword ptr[ebx]            ; edx:eax = last remainder:x.dword[0]
       div         y                              ; eax:edx = quotient:remainder
       mov         dword ptr[ecx], eax            ; save quot.dword[0]
-
       mov         r32, edx                       ; save remainder
       mul         y                              ; edx:eax = last quot * y
       cmp         eax, dword ptr[ebx]            ;
@@ -481,8 +517,8 @@ End:
 }
 
 static void unsignedQuotRemainder(const _uint128 &x, const _uint128 &y, _uint128 *quot, _uint128 &rem) {
-  int        yScale;
-  const UINT y32 = getFirst32(y, yScale);
+  UINT      y32;
+  const int yScale = getFirst32(y, y32);
   if(yScale == 0) {
     unsignedQuotRemainderU32(x,y32,quot,rem);
   } else {
@@ -491,65 +527,58 @@ static void unsignedQuotRemainder(const _uint128 &x, const _uint128 &y, _uint128
 
     int lastShift = 0;
     for(int count = 0; rem >= y; count++) {
-      _uint128FastMul  p128 = y;
-      UINT64           rem63;    // max 63 bits to prevent overflow in division
-      int              remScale;
-      getFirst63(rem, rem63, remScale);
-      int              shift = remScale - yScale;
-      UINT             q32;
-      if(shift < 0) {
-        __asm {
-          lea eax, rem63
-          mov edx, dword ptr[eax+4]        ;
-          mov eax, dword ptr[eax]          ; edx:eax = rem63
-          div y32                          ; eax = rem63 / y32 See comment below
-          mov ecx, shift                   ;
-          neg ecx                          ;
-          shr eax, cl                      ; eax = (rem63 / y32) >> -shift, ignore remainder
-          xor ecx,ecx                      ;
-          mov shift, ecx                   ; shift = 0
-          cmp eax,1                        ;
-          ja Mul1                          ; if(eax <= 1) {
-          mov q32, 1                       ;   q32 = 1;
-          jmp EndNegativeShift             ;   skip multiplication
-Mul1:     mov q32, eax                     ; } else { // q32 = eax;
+      _uint128MulU32 p128     = y;
+      UINT64         rem63;            // max 63 bits to prevent overflow in division
+      const int      remScale = getFirst63(rem, rem63);
+      int            shift    = remScale - yScale;
+      UINT           q32;
+      __asm {
+        lea eax, rem63
+        mov edx, dword ptr[eax+4]        ;
+        mov eax, dword ptr[eax]          ; edx:eax = rem63
+        div y32                          ; eax = rem63/y32, ignore remainder. See comment below
+        mov ecx, shift                   ;
+        cmp ecx, 0                       ;
+        jge SaveQ                        ; if(shift < 0) {
+        neg ecx                          ;
+        shr eax, cl                      ;   eax = (rem63 / y32) >> -shift
+        xor ecx, ecx                     ;
+        mov shift, ecx                   ;   shift = 0
+        cmp eax, 1                       ;
+        ja SaveQ                         ;   if(eax <= 1) {
+        mov q32, 1                       ;     q32 = 1;
+        jmp SubtractP128                 ;     skip multiplication
+                                         ;   }
+SaveQ:                                   ; }
+        mov q32, eax                     ;
+      }
+                                         // division never overflow.
+                                         // rem63<2^63 and y32>=2^31 =>
+                                         // rem63/y32 < 2^(63-31)=2^32, which is max 32 bits.
+                                         // if shift >= 0 we have:
+                                         //   y32<2^32,
+                                         //   shift(=remScale-yScale)>=0, yScale>0 =>
+                                         //   remScale(=expo2(rem)-62)>0 => expo2(rem)>=63
+                                         //   =>rem63>=2^62 => q32=rem63/y32 >= 2^(62-32)=2^30
+                                         //   which is at least 31 bits
+                                         // if shift < 0 and division followed by right shift <= 1, then
+                                         //   set q32=1 and skip multiplication
+
+      p128 *= q32;                       // Assume: q32 > 1, shift >= 0
+      if(shift) {                        //   shift > 0;
+        const _uint128 tmprem = rem >> shift;
+        while(p128 > tmprem) {           // make sure p128 <= rem
+          p128 -= y;                     // so we don't turn rem negative
+          q32--;
         }
-        p128 *= q32;                       // then multiply
-        while(p128 > rem) {                // make sure p128 <= rem
-          p128 -= y;                       // so we don't turn rem negative
-          q32--;                           //}
+        p128 <<= shift;
+      } else {                           //   shift == 0
+        while(p128 > rem) {
+          p128 -= y;
+          q32--;
         }
-EndNegativeShift:;
-      } else { // shift >= 0
-        __asm {
-          lea eax, rem63                   ; eax     = &rem63
-          mov edx, dword ptr[eax+4]        ; edx     = HI32(rem63)
-          mov eax, dword ptr[eax]          ; rdx:rax = rem63
-          div y32                          ; eax = rem63 / y32, ignore remainder
-                                           ; Never overflow. rem63<2^63, y32>=2^31 => rem63/y32 < 2^(63-31)=2^32
-                                           ; which is max 32 bits
-          cmp eax,1                        ;
-          ja Mul2                          ; if(eax <= 1) {
-          mov q32, 1                       ;   q32 = 1;
-          jmp AfterMul2                    ;   skip multiplication
-Mul2:     mov q32, eax                     ; } else
-        }                                  //   q32 = rem63 / y32
-        p128 *= q32;                       //   multiply and same check as above
-AfterMul2:                                 //
-        if(shift) {                        //   shift > 0;
-          const _uint128 tmprem = rem >> shift;
-          while(p128 > tmprem) {
-            p128 -= y;
-            q32--;
-          }
-          p128 <<= shift;
-        } else {                           //   shift == 0
-          while(p128 > rem) {
-            p128 -= y;
-            q32--;
-          }
-        }
-      }                                    // } end of shift >= 0
+      }
+SubtractP128:
       rem -= p128;                         // Assume: p128 <= rem
 
       if(quot) { // do we want the quot. If its NULL there's no need to do this

@@ -184,28 +184,34 @@ void QuotFunction::f() {
 
 static void testUint128quotrem() {
   try {
+    { _uint128 x = _uint128(0xffffffff,0xffffffffffffffff), y = 0xffffffff;
+      _uint128 z = x*y;
+      int fisk = 1;
+    }
 #define SAMPLECOUNT 100000
     JavaRandom rnd;
     cout.setf(std::ios::left, std::ios_base::adjustfield); 
-    for(int denomExpo = 1; denomExpo < 128; denomExpo++) {
+    for(int yExpo = 1; yExpo < 128; yExpo++) {
       UINT okCount = 0, failCount = 0;
-      cout << "expo2:" << denomExpo;
-      const _uint128 maxdenom = _uint128(1) << denomExpo;
+      cout << "Yexpo2:" << yExpo;
+      const _uint128 maxY = _uint128(1) << yExpo;
       for(int i = 0; i < SAMPLECOUNT; i++) {
-        _uint128 numer = randInt128(rnd), denom;
+        _uint128 x = randInt128(rnd), y;
         do {
-          denom = randInt128(maxdenom, rnd);
-        } while(denom.isZero());
-        const _uint128    quot = numer / denom, rem = numer % denom;
+          y = randInt128(maxY, rnd);
+        } while(y.isZero());
+        const _uint128    quot = x / y, rem = x % y;
 
-        const _ui128div_t div  = _ui128div(numer, denom);
+        const _ui128div_t div  = _ui128div(x, y);
+        verify(div.quot * y + div.rem == x);
+        verify(y * div.quot + div.rem == x);
         if((quot != div.quot) || (rem != div.rem)) {
           std::stringstream tmp;
-          cout << numer << "/" << denom << "=" << quot  << endl
-               << numer << "%" << denom << "=" << rem   << endl
-               << "_ui128div(" << numer << "," << denom << ") = " << div << endl;
+          cout << x << "/" << y << "=" << quot  << endl
+               << x << "%" << y << "=" << rem   << endl
+               << "_ui128div(" << x << "," << y << ") = " << div << endl;
 
-          _ui128div_t div1 = _ui128div(numer, denom);
+          _ui128div_t div1 = _ui128div(x, y);
         }
       }
     }
