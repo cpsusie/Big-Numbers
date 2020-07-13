@@ -361,7 +361,7 @@ static int getExpo2(const _uint128 &n) {
     pushf
     mov         ecx, 4
     mov         edi, n                         ; edi = &n
-    add         edi, 12                        ; edi = &highend byte of n
+    add         edi, 12                        ; edi = &highend dword of n
     xor         eax, eax
     std
     repe        scasd
@@ -498,54 +498,59 @@ static void unsignedQuotRemainder(const _uint128 &x, const _uint128 &y, _uint128
       int              shift = remScale - yScale;
       UINT             q32;
       if(shift < 0) {
-        shift = -shift;
         __asm {
           lea eax, rem63
           mov edx, dword ptr[eax+4]        ;
           mov eax, dword ptr[eax]          ; edx:eax = rem63
-          div y32                          ; eax = rem63 / y32
+          div y32                          ; eax = rem63 / y32 See comment below
           mov ecx, shift                   ;
-          shr eax, cl                      ;
-          mov q32, eax                     ; q32 = (rem63 / y32) >> shift, ignore remainder
+          neg ecx                          ;
+          shr eax, cl                      ; eax = (rem63 / y32) >> -shift, ignore remainder
+          xor ecx,ecx                      ;
+          mov shift, ecx                   ; shift = 0
+          cmp eax,1                        ;
+          ja Mul1                          ; if(eax <= 1) {
+          mov q32, 1                       ;   q32 = 1;
+          jmp EndNegativeShift             ;   skip multiplication
+Mul1:     mov q32, eax                     ; } else { // q32 = eax;
         }
-        shift = 0;
-        switch(q32) {
-        case 0 : q32  =  1  ; break;
-        case 1 :              break;
-        default: p128 *= q32; break;
+        p128 *= q32;                       // then multiply
+        while(p128 > rem) {                // make sure p128 <= rem
+          p128 -= y;                       // so we don't turn rem negative
+          q32--;                           //}
         }
-        while(p128 > rem) { // make sure p128 <= rem, so we don't turn rem negative
-          p128 -= y;
-          q32--;
-        }
+EndNegativeShift:;
       } else { // shift >= 0
         __asm {
-          lea eax, rem63                   ; eax     = &rem64
+          lea eax, rem63                   ; eax     = &rem63
           mov edx, dword ptr[eax+4]        ; edx     = HI32(rem63)
           mov eax, dword ptr[eax]          ; rdx:rax = rem63
-          div y32                          ; never overflow. rem63 < 2^63, y >= 2^31 => rem63/y < 2^(63-31)=2^32, which is max 32 bits
-          mov q32, eax                     ; q32 = rem63 / y32
-        }
-        switch(q32) {
-        case 0 : q32 = 1    ; break;
-        case 1 :              break;
-        default: p128 *= q32; break;
-        }
-        if(shift) {
+          div y32                          ; eax = rem63 / y32, ignore remainder
+                                           ; Never overflow. rem63<2^63, y32>=2^31 => rem63/y32 < 2^(63-31)=2^32
+                                           ; which is max 32 bits
+          cmp eax,1                        ;
+          ja Mul2                          ; if(eax <= 1) {
+          mov q32, 1                       ;   q32 = 1;
+          jmp AfterMul2                    ;   skip multiplication
+Mul2:     mov q32, eax                     ; } else
+        }                                  //   q32 = rem63 / y32
+        p128 *= q32;                       //   multiply and same check as above
+AfterMul2:                                 //
+        if(shift) {                        //   shift > 0;
           const _uint128 tmprem = rem >> shift;
           while(p128 > tmprem) {
             p128 -= y;
             q32--;
           }
           p128 <<= shift;
-        } else { // shift == 0
-          while(p128 > rem) { // make sure p128 <= rem, so we don't turn rem negative
+        } else {                           //   shift == 0
+          while(p128 > rem) {
             p128 -= y;
             q32--;
           }
         }
-      }
-      rem -= p128;
+      }                                    // } end of shift >= 0
+      rem -= p128;                         // Assume: p128 <= rem
 
       if(quot) { // do we want the quot. If its NULL there's no need to do this
         if(count == 0) {
@@ -557,16 +562,11 @@ static void unsignedQuotRemainder(const _uint128 &x, const _uint128 &y, _uint128
           }
           __asm {
             mov eax, q32               ; *quot += q32
-            mov esi, quot
-            add dword ptr[esi], eax
-            jnc AddDone
-            adc dword ptr[esi+4] ,0
-            adc dword ptr[esi+8] ,0
-            adc dword ptr[esi+12],0
+            mov ecx, quot
+            add dword ptr[ecx], eax
           }
         }
       }
-AddDone:
       lastShift = shift;
     }
     if(lastShift && quot) {
