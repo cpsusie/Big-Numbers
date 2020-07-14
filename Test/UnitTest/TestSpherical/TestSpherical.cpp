@@ -19,16 +19,14 @@ namespace TestSpherical {
             const RealPoint3D   v1   = sph;
             const RealPoint3D   diff = v - v1;
             const Real          dist = diff.length();
-            verify(dist < 1e-5);
-            /*
-            printf("dist:%le, v:(%f,%f,%f) -> sph:(%f,%f,%f) -> v1:(%f,%f,%f)\n"
-            ,dist
-            ,v.x,v.y,v.z
-            ,sph.r, RAD2GRAD(sph.fi), RAD2GRAD(sph.theta)
-            ,v1.x,v1.y,v1.z);
-            pause();
+            if(dist >= 1e-5) {
+              OUTPUT(_T("dist:%le, v:(%f,%f,%f) -> sph:(%f,%f,%f) -> v1:(%f,%f,%f)")
+                    ,dist
+                    ,v.x,v.y,v.z
+                    ,sph.r, RAD2GRAD(sph.fi), RAD2GRAD(sph.theta)
+                    ,v1.x,v1.y,v1.z);
             }
-            */
+            verify(dist < 1e-5);
           }
         }
       }
