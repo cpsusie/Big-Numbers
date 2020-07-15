@@ -9,6 +9,8 @@
 
 #include <Math/Int128.h>
 
+#define LO32(n) (n).s4.i[0]
+
 void int128add( void *dst, const void *x) {
   __asm {
     mov         esi, x
@@ -72,27 +74,27 @@ void int128shl(int shft, void *x) {
     cmp         cl, 32                         ; cl < 64
     jae         _32_63
     mov         eax, dword ptr[esi+8]          ; cl < 32
-    shld        dword ptr[esi+12], eax, cl     ; shift s4.i[3] adding bits from s4.i[2]
+    shld        dword ptr[esi+12], eax, cl     ; shift x.dword[3] adding bits from x.dword[2]
     mov         eax, dword ptr[esi+4]
-    shld        dword ptr[esi+8], eax, cl      ; shift s4.i[2] adding bits from s4.i[1]
+    shld        dword ptr[esi+8], eax, cl      ; shift x.dword[2] adding bits from x.dword[1]
     mov         eax, dword ptr[esi]
-    shld        dword ptr[esi+4], eax, cl      ; shift s4.i[1] adding bits from s4.i[0]
-    shl         dword ptr[esi], cl             ; shift s4.i[0]
+    shld        dword ptr[esi+4], eax, cl      ; shift x.dword[1] adding bits from x.dword[0]
+    shl         dword ptr[esi], cl             ; shift x.dword[0]
     jmp         End
 
 _32_63 :                                       ; 32 <= cl < 64
     and         cl, 1Fh                        ; cl %= 32
     mov         eax, dword ptr[esi+8]
-    mov         dword ptr[esi+12], eax         ; s4.i[3] = s4.i[1]
+    mov         dword ptr[esi+12], eax         ; x.dword[3] = x.dword[1]
     mov         eax, dword ptr[esi+4]
-    shld        dword ptr[esi+12], eax, cl     ; shift s4.i[3] adding bits eax
-    mov         dword ptr[esi+8], eax          ; s4.i[2] = s4.i[1]
-    mov         eax, dword ptr[esi]            ; eax = s4.i[0]
-    shld        dword ptr[esi+8], eax, cl      ; shift s4.i[2] adding bits eax
+    shld        dword ptr[esi+12], eax, cl     ; shift x.dword[3] adding bits eax
+    mov         dword ptr[esi+8], eax          ; x.dword[2] = x.dword[1]
+    mov         eax, dword ptr[esi]            ; eax = x.dword[0]
+    shld        dword ptr[esi+8], eax, cl      ; shift x.dword[2] adding bits eax
     shl         eax, cl
-    mov         dword ptr[esi+4], eax          ; shift s4.i[1] eax << cl (old i[0] << cl)
+    mov         dword ptr[esi+4], eax          ; shift x.dword[1] eax << cl (old x.dword[0] << cl)
     xor         eax, eax
-    mov         dword ptr[esi], eax            ; s4.i[0] = 0
+    mov         dword ptr[esi], eax            ; x.dword[0] = 0
     jmp         End
 
 GE64:                                          ; cl >= 64
@@ -100,14 +102,14 @@ GE64:                                          ; cl >= 64
     jae         GE96
     and         cl, 1Fh                        ; cl < 96; cl %= 32
     mov         eax, dword ptr[esi+4]
-    mov         dword ptr[esi+12], eax         ; s4.i[3] = s4.i[1]
-    mov         eax, dword ptr[esi]            ; eax = s4.i[0]
-    shld        dword ptr[esi+12], eax, cl     ; shift s4.i[3] adding bits eax
+    mov         dword ptr[esi+12], eax         ; x.dword[3] = x.dword[1]
+    mov         eax, dword ptr[esi]            ; eax = x.dword[0]
+    shld        dword ptr[esi+12], eax, cl     ; shift x.dword[3] adding bits eax
     shl         eax, cl
-    mov         dword ptr[esi+8], eax          ; shift s4.i[2] eax << cl
+    mov         dword ptr[esi+8], eax          ; shift x.dword[2] eax << cl
     xor         eax, eax
-    mov         dword ptr[esi], eax            ; s4.i[0] = 0
-    mov         dword ptr[esi+4], eax          ; s4.i[1] = 0
+    mov         dword ptr[esi], eax            ; x.dword[0] = 0
+    mov         dword ptr[esi+4], eax          ; x.dword[1] = 0
     jmp         End
 
 GE96:                                          ; cl >= 96
@@ -116,11 +118,11 @@ GE96:                                          ; cl >= 96
     and         cl, 1Fh                        ; cl < 128; cl %= 32
     mov         eax, dword ptr[esi]
     shl         eax, cl
-    mov         dword ptr[esi+12], eax         ; s4.i[3] = s4.i[0] << cl
+    mov         dword ptr[esi+12], eax         ; x.dword[3] = x.dword[0] << cl
     xor         eax, eax
-    mov         dword ptr[esi], eax            ; s4.i[0] = 0
-    mov         dword ptr[esi+4], eax          ; s4.i[1] = 0
-    mov         dword ptr[esi+8], eax          ; s4.i[2] = 0
+    mov         dword ptr[esi], eax            ; x.dword[0] = 0
+    mov         dword ptr[esi+4], eax          ; x.dword[1] = 0
+    mov         dword ptr[esi+8], eax          ; x.dword[2] = 0
     jmp         End
 
 GE128:                                         ; cl >= 128
@@ -142,28 +144,28 @@ void int128shr(int shft, void *x) {            // signed shift right
     cmp         cl, 32                         ; cl < 64
     jae         _32_63
     mov         eax, dword ptr[esi+4]
-    shrd        dword ptr[esi], eax, cl        ; shift s4[0] new bits from s4[1] (eax)
+    shrd        dword ptr[esi], eax, cl        ; shift x.dword[0] new bits from x.dword[1] (eax)
     mov         eax, dword ptr[esi+8]
-    shrd        dword ptr[esi+4], eax, cl      ; shift s4[1] new bits from s4[2] (eax)
+    shrd        dword ptr[esi+4], eax, cl      ; shift x.dword[1] new bits from x.dword[2] (eax)
     mov         eax, dword ptr[esi+12]
-    shrd        dword ptr[esi+8], eax, cl      ; shift s4[2] new bits from s4[3] (eax)
-    sar         dword ptr[esi+12], cl          ; shift s4[3]
+    shrd        dword ptr[esi+8], eax, cl      ; shift x.dword[2] new bits from x.dword[3] (eax)
+    sar         dword ptr[esi+12], cl          ; shift x.dword[3]
     jmp         End
 
 _32_63 :                                       ; 32 <= cl < 64
     and         cl, 1Fh                        ; cl %= 32
     mov         eax, dword ptr[esi+4]
-    mov         dword ptr[esi], eax            ; s4[0] = eax (old s4[1])
-    mov         eax, dword ptr[esi+8]          ; eax = s4[2]
-    shrd        dword ptr[esi], eax, cl        ; shift s[0] new bits from s4[2] (eax)
-    mov         dword ptr[esi+4], eax          ; s4[1] = eax (old s4[2])
-    mov         eax, dword ptr[esi+12]         ; eax = s4[3]
-    shrd        dword ptr[esi+4], eax, cl      ; shift s4[1] new bits from eax (old s4[3])
-    mov         dword ptr[esi+8], eax          ; s4[2] = eax (old s4[3])
-    mov         eax, dword ptr[esi+12]         ; eax = s4[3]
+    mov         dword ptr[esi], eax            ; x.dword[0] = eax (old x.dword[1])
+    mov         eax, dword ptr[esi+8]          ; eax = x.dword[2]
+    shrd        dword ptr[esi], eax, cl        ; shift s[0] new bits from x.dword[2] (eax)
+    mov         dword ptr[esi+4], eax          ; x.dword[1] = eax (old x.dword[2])
+    mov         eax, dword ptr[esi+12]         ; eax = x.dword[3]
+    shrd        dword ptr[esi+4], eax, cl      ; shift x.dword[1] new bits from eax (old x.dword[3])
+    mov         dword ptr[esi+8], eax          ; x.dword[2] = eax (old x.dword[3])
+    mov         eax, dword ptr[esi+12]         ; eax = x.dword[3]
     sar         eax, 1fh                       ; eax contain signbit in all bits
-    shrd        dword ptr[esi+8], eax, cl      ; shift s4[1] new bits from eax (sign of s4[3])
-    mov         dword ptr[esi+12], eax         ; s4[3] = eax
+    shrd        dword ptr[esi+8], eax, cl      ; shift x.dword[1] new bits from eax (sign of x.dword[3])
+    mov         dword ptr[esi+12], eax         ; x.dword[3] = eax
     jmp         End
 
 GE64:                                          ; cl >= 64
@@ -171,14 +173,14 @@ GE64:                                          ; cl >= 64
     jae         GE96
     and         cl, 1Fh                        ; cl < 96; cl %= 32
     mov         eax, dword ptr[esi+8]
-    mov         dword ptr[esi], eax            ; s4[0] = s4[2]
-    mov         eax, dword ptr[esi+12]         ; eax = s4[3]
-    shrd        dword ptr[esi], eax, cl        ; shift s4[0] new bits from eax (old s4[3])
+    mov         dword ptr[esi], eax            ; x.dword[0] = x.dword[2]
+    mov         eax, dword ptr[esi+12]         ; eax = x.dword[3]
+    shrd        dword ptr[esi], eax, cl        ; shift x.dword[0] new bits from eax (old x.dword[3])
     sar         eax, cl                        ; eax contain sign bit in all bits
-    mov         dword ptr[esi+4], eax          ; s4[1] = eax (old s4[3])
+    mov         dword ptr[esi+4], eax          ; x.dword[1] = eax (old x.dword[3])
     sar         eax, 1fh
-    mov         dword ptr[esi+8], eax          ; s4[2] = sign of s4[3]
-    mov         dword ptr[esi+12], eax         ; s4[3] = sign of s4[3]
+    mov         dword ptr[esi+8], eax          ; x.dword[2] = sign of x.dword[3]
+    mov         dword ptr[esi+12], eax         ; x.dword[3] = sign of x.dword[3]
     jmp         End
 
 GE96:                                          ; cl >= 96
@@ -187,11 +189,11 @@ GE96:                                          ; cl >= 96
     and         cl, 1Fh                        ; cl < 128; cl %= 32
     mov         eax, dword ptr[esi+12]
     sar         eax, cl
-    mov         dword ptr[esi], eax            ; s4[0] = s4[3] >> cl (shift in signbit of s4[3])
+    mov         dword ptr[esi], eax            ; x.dword[0] = x.dword[3] >> cl (shift in signbit of x.dword[3])
     sar         eax, 1fh
-    mov         dword ptr[esi+4 ], eax         ; s4[1] = sign of s4[3]
-    mov         dword ptr[esi+8 ], eax         ; s4[2] = sign of s4[3]
-    mov         dword ptr[esi+12], eax         ; s4[3] = sign of s4[3]
+    mov         dword ptr[esi+4 ], eax         ; x.dword[1] = sign of x.dword[3]
+    mov         dword ptr[esi+8 ], eax         ; x.dword[2] = sign of x.dword[3]
+    mov         dword ptr[esi+12], eax         ; x.dword[3] = sign of x.dword[3]
     jmp         End
 
 GE128:                                         ; cl >= 128
@@ -214,27 +216,27 @@ void uint128shr(int shft, void *x) { // unsigned shift right
     cmp         cl, 32                         ; cl < 64
     jae         _32_63
     mov         eax, dword ptr[esi+4]
-    shrd        dword ptr[esi], eax, cl       ; shift s4[0] new bits from s4[1] (eax)
+    shrd        dword ptr[esi], eax, cl       ; shift x.dword[0] new bits from x.dword[1] (eax)
     mov         eax, dword ptr[esi+8]
-    shrd        dword ptr[esi+4], eax, cl     ; shift s4[1] new bits from s4[2] (eax)
+    shrd        dword ptr[esi+4], eax, cl     ; shift x.dword[1] new bits from x.dword[2] (eax)
     mov         eax, dword ptr[esi+12]
-    shrd        dword ptr[esi+8], eax, cl     ; shift s4[2] new bits from s4[3] (eax)
-    shr         dword ptr[esi+12], cl         ; shift s4[3]
+    shrd        dword ptr[esi+8], eax, cl     ; shift x.dword[2] new bits from x.dword[3] (eax)
+    shr         dword ptr[esi+12], cl         ; shift x.dword[3]
     jmp         End
 
 _32_63 :                                      ; 32 <= cl < 64
     and         cl, 1Fh                       ; cl %= 32
     mov         eax, dword ptr[esi+4]
-    mov         dword ptr[esi], eax           ; s4[0] = eax (old s4[1])
-    mov         eax, dword ptr[esi+8]         ; eax = s4[2]
-    shrd        dword ptr[esi], eax, cl       ; shift s[0] new bits from s4[2] (eax)
-    mov         dword ptr[esi+4], eax         ; s4[1] = eax (old s4[2])
-    mov         eax, dword ptr[esi+12]        ; eax = s4[3]
-    shrd        dword ptr[esi+4], eax, cl     ; shift s4[1] new bits from eax (old s4[3])
+    mov         dword ptr[esi], eax           ; x.dword[0] = eax (old x.dword[1])
+    mov         eax, dword ptr[esi+8]         ; eax = x.dword[2]
+    shrd        dword ptr[esi], eax, cl       ; shift s[0] new bits from x.dword[2] (eax)
+    mov         dword ptr[esi+4], eax         ; x.dword[1] = eax (old x.dword[2])
+    mov         eax, dword ptr[esi+12]        ; eax = x.dword[3]
+    shrd        dword ptr[esi+4], eax, cl     ; shift x.dword[1] new bits from eax (old x.dword[3])
     shr         eax, cl
-    mov         dword ptr[esi+8], eax         ; s4[2] = eax >> cl
+    mov         dword ptr[esi+8], eax         ; x.dword[2] = eax >> cl
     xor         eax, eax
-    mov         dword ptr[esi+12], eax        ; s4[3] = 0
+    mov         dword ptr[esi+12], eax        ; x.dword[3] = 0
     jmp         End
 
 GE64:                                         ; cl >= 64
@@ -242,14 +244,14 @@ GE64:                                         ; cl >= 64
     jae         GE96
     and         cl, 1Fh                       ; cl < 96; cl %= 32
     mov         eax, dword ptr[esi+8]
-    mov         dword ptr[esi], eax           ; s4[0] = s4[2]
-    mov         eax, dword ptr[esi+12]        ; eax = s4[3]
-    shrd        dword ptr[esi], eax, cl       ; shift s4[0] new bits from eax (old s4[3])
+    mov         dword ptr[esi], eax           ; x.dword[0] = x.dword[2]
+    mov         eax, dword ptr[esi+12]        ; eax = x.dword[3]
+    shrd        dword ptr[esi], eax, cl       ; shift x.dword[0] new bits from eax (old x.dword[3])
     shr         eax, cl
-    mov         dword ptr[esi+4], eax         ; s4[1] = eax >> cl (old s4[3] >> cl)
+    mov         dword ptr[esi+4], eax         ; x.dword[1] = eax >> cl (old x.dword[3] >> cl)
     xor         eax, eax
-    mov         dword ptr[esi+8], eax         ; s4[2] = 0
-    mov         dword ptr[esi+12], eax        ; s4[3] = 0
+    mov         dword ptr[esi+8], eax         ; x.dword[2] = 0
+    mov         dword ptr[esi+12], eax        ; x.dword[3] = 0
     jmp         End
 
 GE96:                                         ; cl >= 96
@@ -258,11 +260,11 @@ GE96:                                         ; cl >= 96
     and         cl, 1Fh                       ; cl < 128; cl %= 32
     mov         eax, dword ptr[esi+12]
     shr         eax, cl
-    mov         dword ptr[esi], eax           ; s4[0] = s4[3] >> cl
+    mov         dword ptr[esi], eax           ; x.dword[0] = x.dword[3] >> cl
     xor         eax, eax
-    mov         dword ptr[esi+4 ], eax        ; s4[1] = 0
-    mov         dword ptr[esi+8 ], eax        ; s4[2] = 0
-    mov         dword ptr[esi+12], eax        ; s4[3] = 0
+    mov         dword ptr[esi+4 ], eax        ; x.dword[1] = 0
+    mov         dword ptr[esi+8 ], eax        ; x.dword[2] = 0
+    mov         dword ptr[esi+12], eax        ; x.dword[3] = 0
     jmp         End
 
 GE128:                                        ; cl >= 128
@@ -326,7 +328,7 @@ static BYTE getDwordIndex(const _uint128 &n) {
 static int getFirst32(const _uint128 &n, UINT &n32) {
   const int expo2 = getExpo2(n);
   if(expo2 <= 31) {
-    n32 = n.s4.i[0];
+    n32 = LO32(n);
     return 0;
   } else { // expo2 > 31
     const int scale = expo2 - 31;
@@ -348,43 +350,34 @@ static int getFirst63(const _uint128 &n, UINT64 &n63) {
   }
 }
 
-// Special class to perform fast multiplication of _uint128 and UINT
-// no need to do any accumulation of "cross-multiplications" cause 2. operand
-// is only 32 bits
-class _uint128MulU32 : public _uint128 {
-public:
-  inline _uint128MulU32(const _uint128 &src) : _uint128(src) {
+static void mulU32(_uint128 &dst, const _uint128 &x, UINT y) {
+  _asm {
+    mov edi, dst               ; edi = &dst
+    mov esi, x                 ; esi = &x
+    mov eax, dword ptr[esi]
+    mul y
+    mov dword ptr[edi], eax
+    mov dword ptr[edi+4], edx
+    mov eax, dword ptr[esi+4]
+    mul y
+    add dword ptr[edi+4], eax
+    mov dword ptr[edi+8], edx
+    adc dword ptr[edi+8], 0
+    mov eax, dword ptr[esi+8]
+    mul y
+    add dword ptr[edi+8], eax
+    mov dword ptr[edi+12], edx
+    adc dword ptr[edi+12], 0
+    mov eax, dword ptr[esi+12]
+    mul y
+    add dword ptr[edi+12], eax
   }
-  inline _uint128MulU32 &operator=(const _uint128 &src) {
-    HI64(*this) = HI64(src); LO64(*this) = LO64(src);
-    return *this;
-  }
-  inline _uint128MulU32 &operator*=(UINT k) {
-    const _uint128 copy(*this);
-    _asm {
-      mov edi, this
-      lea esi, copy
-      mov eax, dword ptr[esi]
-      mul k
-      mov dword ptr[edi], eax
-      mov dword ptr[edi+4], edx
-      mov eax, dword ptr[esi+4]
-      mul k
-      add dword ptr[edi+4], eax
-      mov dword ptr[edi+8], edx
-      adc dword ptr[edi+8], 0
-      mov eax, dword ptr[esi+8]
-      mul k
-      add dword ptr[edi+8], eax
-      mov dword ptr[edi+12], edx
-      adc dword ptr[edi+12], 0
-      mov eax, dword ptr[esi+12]
-      mul k
-      add dword ptr[edi+12], eax
-    }
-    return *this;
-  }
-};
+}
+
+static inline void mulU32(_uint128 &x, UINT y) {
+  const _uint128 copy(x);
+  mulU32(x,copy,y);
+}
 
 #pragma warning(disable:4731) // warning C4731: 'int128mul': frame pointer register 'ebp' modified by inline assembly code
 
@@ -395,19 +388,19 @@ void int128mul(void *dst, const void *x) {
   switch((getDwordIndex(b) << 2) | getDwordIndex(dp)) {
   case 0 : // both max 32 bit int
     HI64(dp) = 0;
-    LO64(dp) = __int64(dp.s4.i[0]) * b.s4.i[0]; // simple _int64 multiplication. int32 * int32
+    LO64(dp) = __int64(LO32(dp)) * LO32(b); // simple _int64 multiplication. int32 * int32
     break;
   case 1 : // 0,1 b max 32 bit
   case 2 : // 0,2
   case 3 : // 0,3
-    ((_uint128MulU32&)dp) *= b.s4.i[0];
+    mulU32(dp, LO32(b));
     break;
   case 4 : // 1,0 dp max 32 bit
   case 8 : // 2,0
   case 12: // 3,0
-    { const UINT k = dp.s4.i[0];
-      dp = b;
-      ((_uint128MulU32&)dp) *= k;
+    { const UINT     y1 = LO32(dp);
+      const _uint128 x1 = b;
+      mulU32(dp, x1, y1);
     }
     break;
   default:
@@ -475,9 +468,9 @@ void int128mul(void *dst, const void *x) {
 static void unsignedQuotRemainderU32(const _uint128 &x, UINT y, _uint128 *quot, _uint128 &rem) {
   const int xExpo2 = getExpo2(x);
   if(xExpo2 <= 31) {
-    rem = x.s4.i[0] % y;
+    rem = LO32(x) % y;
     if(quot) {
-      *quot = x.s4.i[0] / y;
+      *quot = LO32(x) / y;
     }
   } else if(xExpo2 <= 63) {
     rem = LO64(x) % y;
@@ -527,32 +520,40 @@ static void unsignedQuotRemainder(const _uint128 &x, const _uint128 &y, _uint128
 
     int lastShift = 0;
     for(int count = 0; rem >= y; count++) {
-      _uint128MulU32 p128     = y;
-      UINT64         rem63;            // max 63 bits to prevent overflow in division
+      UINT64         rem63;              // max 63 bits to prevent overflow in division
       const int      remScale = getFirst63(rem, rem63);
       int            shift    = remScale - yScale;
       UINT           q32;
       __asm {
-        lea eax, rem63
-        mov edx, dword ptr[eax+4]        ;
-        mov eax, dword ptr[eax]          ; edx:eax = rem63
-        div y32                          ; eax = rem63/y32, ignore remainder. See comment below
-        mov ecx, shift                   ;
-        cmp ecx, 0                       ;
-        jge SaveQ                        ; if(shift < 0) {
-        neg ecx                          ;
-        shr eax, cl                      ;   eax = (rem63 / y32) >> -shift
-        xor ecx, ecx                     ;
-        mov shift, ecx                   ;   shift = 0
-        cmp eax, 1                       ;
-        ja SaveQ                         ;   if(eax <= 1) {
-        mov q32, 1                       ;     q32 = 1;
-        jmp SubtractP128                 ;     skip multiplication
-                                         ;   }
-SaveQ:                                   ; }
-        mov q32, eax                     ;
+        lea eax              , rem63
+        mov edx              , dword ptr[eax+4]        ;
+        mov eax              , dword ptr[eax]          ; edx:eax = rem63
+        div y32                                        ; eax = rem63/y32, ignore remainder. See comment below
+        mov ecx              , shift                   ;
+        cmp ecx              , 0                       ;
+        jge SaveQ32                                    ; if(shift < 0) {
+        neg ecx                                        ;
+        shr eax              , cl                      ;   eax = (rem63 / y32) >> -shift
+        xor ecx              , ecx                     ;
+        mov shift            , ecx                     ;   shift = 0
+        cmp eax              , 1                       ;
+        ja SaveQ32                                     ;   if(eax <= 1) {
+        mov q32              , 1                       ;     q32 = 1;
+        mov edx              , rem                     ;     edx = &rem
+        mov ecx              , y                       ;     ecx = &y
+        mov eax              , dword ptr[ecx   ]       ;     rem -= y
+        sub dword ptr[edx   ], eax                     ;     we know y <= rem => rem-y >= 0
+        mov eax              , dword ptr[ecx+ 4]       ;
+        sbb dword ptr[edx+ 4], eax                     ;
+        mov eax              , dword ptr[ecx+ 8]       ;
+        sbb dword ptr[edx+ 8], eax                     ;
+        mov eax              , dword ptr[ecx+12]       ;
+        sbb dword ptr[edx+12], eax                     ;
+        jmp UpdateQuot                                 ;     skip multiplication, subtraction already done, update quot and we're done
+SaveQ32:                                               ;   }
+        mov q32, eax                                   ; }
       }
-                                         // division never overflow.
+                                         // Division never overflow.
                                          // rem63<2^63 and y32>=2^31 =>
                                          // rem63/y32 < 2^(63-31)=2^32, which is max 32 bits.
                                          // if shift >= 0 we have:
@@ -562,9 +563,14 @@ SaveQ:                                   ; }
                                          //   =>rem63>=2^62 => q32=rem63/y32 >= 2^(62-32)=2^30
                                          //   which is at least 31 bits
                                          // if shift < 0 and division followed by right shift <= 1, then
-                                         //   set q32=1 and skip multiplication
+                                         //   set q32=1 and skip multiplication, just subtract y
+                                         //   we know, that y <= rem (loop condition)
+                                         //   so q32 will be at least 1, and rem >= 0
+                                         //   but because we make div by rem63,y32, this may result in 0
 
-      p128 *= q32;                       // Assume: q32 > 1, shift >= 0
+      _uint128 p128;                     // Assume: q32 > 1, shift >= 0
+      mulU32(p128, y, q32);
+
       if(shift) {                        //   shift > 0;
         const _uint128 tmprem = rem >> shift;
         while(p128 > tmprem) {           // make sure p128 <= rem
@@ -578,9 +584,8 @@ SaveQ:                                   ; }
           q32--;
         }
       }
-SubtractP128:
       rem -= p128;                         // Assume: p128 <= rem
-
+UpdateQuot:
       if(quot) { // do we want the quot. If its NULL there's no need to do this
         if(count == 0) {
           *quot = q32;
