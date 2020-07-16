@@ -3,6 +3,7 @@
 #include <D3DGraphics/FunctionR2R1SurfaceParameters.h>
 #include <D3DGraphics/MeshArrayJobMonitor.h>
 #include <D3DGraphics/D3ToString.h>
+#include <D3DGraphics/D3TexturePointArray.h>
 #include <D3DGraphics/MeshCreators.h>
 
 class Function2DPoint {
@@ -50,20 +51,6 @@ static void findMax16BitMeshVertexCount(LPDIRECT3DDEVICE device) {
 
 #define MF_DOUBLESIDED 0x01
 
-class TexturePoints : public CompactFloatArray {
-public:
-  TexturePoints(UINT n);
-};
-
-TexturePoints::TexturePoints(UINT n) : CompactFloatArray(n) {
-  const float dx = 1.0f / (n - 1);
-  float       x = 0;
-  for(UINT j = 0; j < n; j++, x += dx) {
-    add(x);
-  }
-  last() = 1;
-}
-
 LPD3DXMESH createMeshFrom2DFunction(AbstractMeshFactory &amf, FunctionR2R1 &f, const DoubleInterval &xInterval, const DoubleInterval &yInterval, UINT nx, UINT ny, bool doubleSided, DWORD fvf) {
   nx = max(nx, 2);
   ny = max(ny, 2);
@@ -74,7 +61,7 @@ LPD3DXMESH createMeshFrom2DFunction(AbstractMeshFactory &amf, FunctionR2R1 &f, c
   const double  stepy            = yInterval.getLength() / (ny-1);
   const bool    calculateNormals = fvf & D3DFVF_NORMAL;
   const bool    calculateTexture = fvf & D3DFVF_TEX1;
-  const TexturePoints uPoints(nx), vPoints(ny);
+  const D3TexturePointArray uPoints(nx), vPoints(ny);
   const float *uValues = calculateTexture ? uPoints.getBuffer() : NULL, *vValues = calculateTexture ? vPoints.getBuffer() : NULL;
   // (u ~ x, v ~ y)
   Point2D p(xInterval.getFrom(), yInterval.getFrom());

@@ -408,6 +408,9 @@
     <ClCompile Include="D3VertexBufferGetDesc.cpp">
       <Filter>Source Files\D3StringConversion</Filter>
     </ClCompile>
+    <ClCompile Include="D3TexturePointArray.cpp">
+      <Filter>Source Files\D3Math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\D3DGraphics\D3Scene.h">
@@ -603,6 +606,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectVisualChild.h">
       <Filter>Header Files\Visual Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\D3TexturePointArray.h">
+      <Filter>Header Files\D3Math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

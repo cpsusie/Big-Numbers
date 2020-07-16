@@ -947,6 +947,7 @@
     <ClCompile Include="D3SceneEditorSplitWindow.cpp" />
     <ClCompile Include="D3SurfaceCommonParameters.cpp" />
     <ClCompile Include="D3SurfaceCommonParametersXML.cpp" />
+    <ClCompile Include="D3TexturePointArray.cpp" />
     <ClCompile Include="D3ToSize.cpp" />
     <ClCompile Include="D3VertexBufferDescXML.cpp" />
     <ClCompile Include="D3VertexBufferDescStr.cpp" />
@@ -1067,6 +1068,7 @@
     <ClInclude Include="..\..\Include\D3DGraphics\D3Spherical.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3SurfaceCommonParameters.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3Texture.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\D3TexturePointArray.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3ToString.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3Transformation.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectVisual.h" />
