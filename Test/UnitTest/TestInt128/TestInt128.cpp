@@ -160,6 +160,310 @@ namespace TestInt128 {
 
     } // Int128Comparators
 
+    TEST_METHOD(TestMultiplication1) {
+      const _uint128 x              = 0;
+      const _uint128 y              = 0xffffffffffffffff;
+      const _uint128 expected       = 0;
+      const _uint128 p              = x * y;
+      verify(p == expected);
+    }
+
+    TEST_METHOD(TestMultiplication2) {
+      const _uint128 x              = 0xffffffffffffffff;
+      const _uint128 y              = 0;
+      const _uint128 expected       = 0;
+      const _uint128 p              = x * y;
+      verify(p == expected);
+    }
+
+    TEST_METHOD(TestMultiplication3) {
+      const _uint128 x              = 0x5;
+      const _uint128 y              = 0x4;
+      const _uint128 expected       = 0x14;
+      const _uint128 p              = x * y;
+      verify(p == expected);
+    }
+
+    TEST_METHOD(TestMultiplication4) {
+      const _uint128 x              = 0x5;
+      const _uint128 y              = 0x54ce9;
+      const _uint128 expected       = 0x1a808d;
+      const _uint128 p              = x * y;
+      verify(p == expected);
+    }
+
+    TEST_METHOD(TestMultiplication5) {
+      const _uint128 x              = 0x5;
+      const _uint128 y              = 0x6d8c1369f;
+      const _uint128 expected       = 0x223bc6111b;
+      const _uint128 p              = x * y;
+      verify(p == expected);
+    }
+
+    TEST_METHOD(TestMultiplication6) {
+      const _uint128 x              = 0x5;
+      const _uint128 y              = 0x1959e0c2282b9;
+      const _uint128 expected       = 0x7ec163cac8d9d;
+      const _uint128 p              = x * y;
+      verify(p == expected);
+    }
+
+    TEST_METHOD(TestMultiplication7) {
+      const _uint128 x              = 0x5;
+      const _uint128 y              = _uint128(0x4,0x4fd0ed4d21e2306e);
+      const _uint128 expected       = _uint128(0x15,0x8f14a281a96af226);
+      const _uint128 p              = x * y;
+      verify(p == expected);
+    }
+
+    TEST_METHOD(TestMultiplication8) {
+      const _uint128 x              = 0x5;
+      const _uint128 y              = _uint128(0x4e0b4,0x2587b14bd4460c2e);
+      const _uint128 expected       = _uint128(0x186384,0xbba6767b255e3ce6);
+      const _uint128 p              = x * y;
+      verify(p == expected);
+    }
+
+    TEST_METHOD(TestMultiplication9) {
+      const _uint128 x              = 0x5;
+      const _uint128 y              = _uint128(0x1901d787a,0x8bf7230848e829bd);
+      const _uint128 expected       = _uint128(0x7d0935a64,0xbbd3af296c88d0b1);
+      const _uint128 p              = x * y;
+      verify(p == expected);
+    }
+
+    TEST_METHOD(TestMultiplication10) {
+      const _uint128 x              = 0x5;
+      const _uint128 y              = _uint128(0x597a449310e6c,0x1abfe6cb40bd20a1);
+      const _uint128 expected       = _uint128(0x1bf6356df5481c,0x85bf81f843b1a325);
+      const _uint128 p              = x * y;
+      verify(p == expected);
+    }
+
+    TEST_METHOD(TestMultiplication11) {
+      const _uint128 x              = 0x23645;
+      const _uint128 y              = 0x3;
+      const _uint128 expected       = 0x6a2cf;
+      const _uint128 p              = x * y;
+      verify(p == expected);
+    }
+
+    TEST_METHOD(TestMultiplication12) {
+      const _uint128 x              = 0x23645;
+      const _uint128 y              = 0x2d7a8;
+      const _uint128 expected       = 0x649919048;
+      const _uint128 p              = x * y;
+      verify(p == expected);
+    }
+
+    TEST_METHOD(TestMultiplication13) {
+      const _uint128 x              = 0x23645;
+      const _uint128 y              = 0x186fba9e;
+      const _uint128 expected       = 0x360d9cb6a096;
+      const _uint128 p              = x * y;
+      verify(p == expected);
+    }
+
+    TEST_METHOD(TestMultiplication14) {
+      const _uint128 x              = 0x23645;
+      const _uint128 y              = 0x1574bf8ceb899;
+      const _uint128 expected       = _uint128(0x2,0xf75e7f931bda073d);
+      const _uint128 p              = x * y;
+      verify(p == expected);
+    }
+
+    TEST_METHOD(TestMultiplication15) {
+      const _uint128 x              = 0x23645;
+      const _uint128 y              = _uint128(0x3,0x285d305f072070ff);
+      const _uint128 expected       = _uint128(0x6fc17,0xea10235ea5923ebb);
+      const _uint128 p              = x * y;
+      verify(p == expected);
+    }
+
+    TEST_METHOD(TestMultiplication16) {
+      const _uint128 x              = 0x23645;
+      const _uint128 y              = _uint128(0x1a715,0xfa840ddd2266ba77);
+      const _uint128 expected       = _uint128(0x3a7dca0cc,0x7c3ea6a965f35c13);
+      const _uint128 p              = x * y;
+      verify(p == expected);
+    }
+
+    TEST_METHOD(TestMultiplication17) {
+      const _uint128 x              = 0x23645;
+      const _uint128 y              = _uint128(0x65bf242ac,0xb70c45c11aedf9bb);
+      const _uint128 expected       = _uint128(0xe110067b5d542,0x7887be966847c167);
+      const _uint128 p              = x * y;
+      verify(p == expected);
+    }
+
+    TEST_METHOD(TestMultiplication18) {
+      const _uint128 x              = 0x587b108f5;
+      const _uint128 y              = 0x6;
+      const _uint128 expected       = 0x212e2635be;
+      const _uint128 p              = x * y;
+      verify(p == expected);
+    }
+
+    TEST_METHOD(TestMultiplication19) {
+      const _uint128 x              = 0x587b108f5;
+      const _uint128 y              = 0x28844;
+      const _uint128 expected       = 0xe00f029b28914;
+      const _uint128 p              = x * y;
+      verify(p == expected);
+    }
+
+    TEST_METHOD(TestMultiplication20) {
+      const _uint128 x              = 0x587b108f5;
+      const _uint128 y              = 0x6206aeff8;
+      const _uint128 expected       = _uint128(0x21,0xe16bb534104f6858);
+      const _uint128 p              = x * y;
+      verify(p == expected);
+    }
+
+    TEST_METHOD(TestMultiplication21) {
+      const _uint128 x              = 0x587b108f5;
+      const _uint128 y              = 0x658dbc637c7b0;
+      const _uint128 expected       = _uint128(0x23198a,0x6d6c45d5524f9b70);
+      const _uint128 p              = x * y;
+      verify(p == expected);
+    }
+
+    TEST_METHOD(TestMultiplication22) {
+      const _uint128 x              = 0x587b108f5;
+      const _uint128 y              = _uint128(0x1,0x763299bcf0fbd626);
+      const _uint128 expected       = _uint128(0x8155475d7,0x56dda42599fb225e);
+      const _uint128 p              = x * y;
+      verify(p == expected);
+    }
+
+    TEST_METHOD(TestMultiplication23) {
+      const _uint128 x              = 0x587b108f5;
+      const _uint128 y              = _uint128(0x20ba6,0x27a28eb4dff1504);
+      const _uint128 expected       = _uint128(0xb4fccb7cb4497,0x16fe5e28418b3cd4);
+      const _uint128 p              = x * y;
+      verify(p == expected);
+    }
+
+    TEST_METHOD(TestMultiplication24) {
+      const _uint128 x              = 0x43a1ff032df98;
+      const _uint128 y              = 0x6;
+      const _uint128 expected       = 0x195cbfa1313d90;
+      const _uint128 p              = x * y;
+      verify(p == expected);
+    }
+
+    TEST_METHOD(TestMultiplication25) {
+      const _uint128 x              = 0x43a1ff032df98;
+      const _uint128 y              = 0x93fa;
+      const _uint128 expected       = _uint128(0x2,0x71811a1dc812a270);
+      const _uint128 p              = x * y;
+      verify(p == expected);
+    }
+
+    TEST_METHOD(TestMultiplication26) {
+      const _uint128 x              = 0x43a1ff032df98;
+      const _uint128 y              = 0x5af5ab4c9;
+      const _uint128 expected       = _uint128(0x1807da,0xf19baeaae0986e58);
+      const _uint128 p              = x * y;
+      verify(p == expected);
+    }
+
+    TEST_METHOD(TestMultiplication27) {
+      const _uint128 x              = 0x43a1ff032df98;
+      const _uint128 y              = 0x34f9add8d7914;
+      const _uint128 expected       = _uint128(0xdfede4b72,0x662343822e604fe0);
+      const _uint128 p              = x * y;
+      verify(p == expected);
+    }
+
+    TEST_METHOD(TestMultiplication28) {
+      const _uint128 x              = 0x43a1ff032df98;
+      const _uint128 y              = _uint128(0x6,0xee87c450f2cdd5f4);
+      const _uint128 expected       = _uint128(0x1d4d07372ed47d,0x8145a8e6013e94e0);
+      const _uint128 p              = x * y;
+      verify(p == expected);
+    }
+
+    TEST_METHOD(TestMultiplication29) {
+      const _uint128 x              = _uint128(0x4,0xd7792d2edbc73c4);
+      const _uint128 y              = 0x4;
+      const _uint128 expected       = _uint128(0x10,0x35de4b4bb6f1cf10);
+      const _uint128 p              = x * y;
+      verify(p == expected);
+    }
+
+    TEST_METHOD(TestMultiplication30) {
+      const _uint128 x              = _uint128(0x4,0xd7792d2edbc73c4);
+      const _uint128 y              = 0x693b7;
+      const _uint128 expected       = _uint128(0x1aa76e,0xbabaa5b5dec84d1c);
+      const _uint128 p              = x * y;
+      verify(p == expected);
+    }
+
+    TEST_METHOD(TestMultiplication31) {
+      const _uint128 x              = _uint128(0x4,0xd7792d2edbc73c4);
+      const _uint128 y              = 0x4850e3d7f;
+      const _uint128 expected       = _uint128(0x1251172055,0x804bd0cd00cb223c);
+      const _uint128 p              = x * y;
+      verify(p == expected);
+    }
+
+    TEST_METHOD(TestMultiplication32) {
+      const _uint128 x              = _uint128(0x4,0xd7792d2edbc73c4);
+      const _uint128 y              = 0x3b5403a93044d;
+      const _uint128 expected       = _uint128(0xf06f08e8d8462,0xc802f995509e1f4);
+      const _uint128 p              = x * y;
+      verify(p == expected);
+    }
+
+    TEST_METHOD(TestMultiplication33) {
+      const _uint128 x              = _uint128(0x55de,0x5a652a5e93d0db54);
+      const _uint128 y              = 0x3;
+      const _uint128 expected       = _uint128(0x1019b,0xf2f7f1bbb7291fc);
+      const _uint128 p              = x * y;
+      verify(p == expected);
+    }
+
+    TEST_METHOD(TestMultiplication34) {
+      const _uint128 x              = _uint128(0x55de,0x5a652a5e93d0db54);
+      const _uint128 y              = 0x48319;
+      const _uint128 expected       = _uint128(0x18372948d,0x4209d823bcf16734);
+      const _uint128 p              = x * y;
+      verify(p == expected);
+    }
+
+    TEST_METHOD(TestMultiplication35) {
+      const _uint128 x              = _uint128(0x55de,0x5a652a5e93d0db54);
+      const _uint128 y              = 0x2ab1194db;
+      const _uint128 expected       = _uint128(0xe51e20ddea3b,0xf5aff664df0c30dc);
+      const _uint128 p              = x * y;
+      verify(p == expected);
+    }
+
+    TEST_METHOD(TestMultiplication36) {
+      const _uint128 x              = _uint128(0x5666de47,0x805b93b1abc5639c);
+      const _uint128 y              = 0x4;
+      const _uint128 expected       = _uint128(0x1599b791e,0x16e4ec6af158e70);
+      const _uint128 p              = x * y;
+      verify(p == expected);
+    }
+
+    TEST_METHOD(TestMultiplication37) {
+      const _uint128 x              = _uint128(0x5666de47,0x805b93b1abc5639c);
+      const _uint128 y              = 0x4b11e;
+      const _uint128 expected       = _uint128(0x19562b8db7d8e,0xaa9fd5ab29708848);
+      const _uint128 p              = x * y;
+      verify(p == expected);
+    }
+
+    TEST_METHOD(TestMultiplication38) {
+      const _uint128 x              = _uint128(0x47385ed0c45b1,0x5a961b82d1f73384);
+      const _uint128 y              = 0x4;
+      const _uint128 expected       = _uint128(0x11ce17b43116c5,0x6a586e0b47dcce10);
+      const _uint128 p              = x * y;
+      verify(p == expected);
+    }
+
     TEST_METHOD(TestMultiplication) {
       _uint128 x(0x1111111122222222);
       _uint128 y(0x3333333344444444);
@@ -175,17 +479,7 @@ namespace TestInt128 {
       verify(z == expected2);
 
     }
-    /*
-        TEST_METHOD(TestShortDivisor) {
-          _uint128 x(0);
-          for (int i = 1; i < 128; i++) {
-            int expo2;
-            unsigned int q = ShortDivisor::getFirst32(x, expo2);
-            x <<= 1;
-            x |= (i & 1);
-          }
-        }
-    */
+
     TEST_METHOD(TestDivision1) {
       _uint128 x(0x00000000ffffffff);
       _uint128 y(0x12345);

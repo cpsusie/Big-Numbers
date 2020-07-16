@@ -307,18 +307,27 @@ End:
   return result;
 }
 
-// Return highest index of n.dword[index] != 0, range[0..3]
-static BYTE getDwordIndex(const _uint128 &n) {
+// dst and x are both _uint128
+// dwordIndex(_uint128 n) is the highest index,i = [0..3], so n.s4.i[i] != 0
+// return (dwordIndex(dst)<<2) | dwordIndex(x), range:[0..15]
+static inline BYTE getMultCode(const void *dst, const void *x) {
   BYTE result;
   __asm {
     pushf
     mov         ecx, 4
-    mov         edi, n                         ; edi = &n
-    add         edi, 12                        ; edi = &highend dword of n
+    mov         edi, x                         ; edi = &x
+    add         edi, 12                        ; edi = &highend dword of x
     xor         eax, eax
     std
     repe        scasd
     mov         result, cl
+
+    mov         cl, 4
+    mov         edi, dst                       ; edi = &dst
+    add         edi, 12                        ; edi = &highend dword of dst
+    repe        scasd
+    shl         cl, 2
+    or          result, cl
     popf
   }
   return result;
@@ -350,7 +359,8 @@ static int getFirst63(const _uint128 &n, UINT64 &n63) {
   }
 }
 
-static void mulU32(_uint128 &dst, const _uint128 &x, UINT y) {
+// dst and x are _uint128
+static void mulU32(void *dst, UINT y, const void *x) {
   _asm {
     mov edi, dst               ; edi = &dst
     mov esi, x                 ; esi = &x
@@ -374,42 +384,33 @@ static void mulU32(_uint128 &dst, const _uint128 &x, UINT y) {
   }
 }
 
-static inline void mulU32(_uint128 &x, UINT y) {
-  const _uint128 copy(x);
-  mulU32(x,copy,y);
-}
-
 #pragma warning(disable:4731) // warning C4731: 'int128mul': frame pointer register 'ebp' modified by inline assembly code
 
 void int128mul(void *dst, const void *x) {
-  _uint128       &dp   = *(_uint128*)dst;
-  const _uint128 &b    = *(const _uint128*)x;
-
-  switch((getDwordIndex(b) << 2) | getDwordIndex(dp)) {
+  switch(getMultCode(dst,x)) {
   case 0 : // both max 32 bit int
-    HI64(dp) = 0;
-    LO64(dp) = __int64(LO32(dp)) * LO32(b); // simple _int64 multiplication. int32 * int32
+    HI64(*(_uint128*)dst) = 0;
+    LO64(*(_uint128*)dst) = __int64(*(UINT*)dst) * (*(UINT*)x); // simple _int64 multiplication. int32 * int32
     break;
-  case 1 : // 0,1 b max 32 bit
+  case 1 : // 0,1 dst max 32 bit
   case 2 : // 0,2
   case 3 : // 0,3
-    mulU32(dp, LO32(b));
+    mulU32(dst, *(UINT*)dst, x);
     break;
-  case 4 : // 1,0 dp max 32 bit
+  case 4 : // 1,0 x max 32 bit
   case 8 : // 2,0
   case 12: // 3,0
-    { const UINT     y1 = LO32(dp);
-      const _uint128 x1 = b;
-      mulU32(dp, x1, y1);
+    { const _uint128 copy(*(_uint128*)dst);
+      mulU32(dst, *(UINT*)x, &copy);
     }
     break;
   default:
-    { const _uint128 a(dp);
+    { const _uint128 a(*(_uint128*)dst);
       __asm {
         push        ebp
         lea         ebx, a                       // ebx = &a
-        mov         ecx, b                       // ecx = &b  (x)
-        mov         ebp, dst                     // ebp = &dp (dst)
+        mov         ecx, x                       // ecx = &x
+        mov         ebp, dst                     // ebp = dst
         xor         eax, eax
         mov         dword ptr[ebp+8 ], eax       // dst[2..3] = 0
         mov         dword ptr[ebp+12], eax
@@ -569,7 +570,7 @@ SaveQ32:                                               ;   }
                                          //   but because we make div by rem63,y32, this may result in 0
 
       _uint128 p128;                     // Assume: q32 > 1, shift >= 0
-      mulU32(p128, y, q32);
+      mulU32(&p128, q32, &y);
 
       if(shift) {                        //   shift > 0;
         const _uint128 tmprem = rem >> shift;
