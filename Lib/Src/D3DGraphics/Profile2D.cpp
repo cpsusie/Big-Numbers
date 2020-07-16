@@ -1,8 +1,8 @@
 #include "pch.h"
 #include <FileNameSplitter.h>
-#include <MFCUtil/PolygonCurve.h>
+#include <MFCUtil/PolygonCurve2D.h>
 #include <MFCUtil/ShapeFunctions.h>
-#include <D3DGraphics/Profile.h>
+#include <D3DGraphics/Profile2D.h>
 
 static Point2D findNormal(const Point2D &from, const Point2D &to) {
   Point2D tmp = unitVector(to - from);
@@ -25,31 +25,31 @@ void FlatVertexGenerator::line(const Point2D &from, const Point2D &to) {
   m_result.add(Vertex2D(to  ,normal));
 }
 
-// ------------------------------------ ProfileCurve ------------------------------
+// ------------------------------------ ProfileCurve2D ------------------------------
 
-ProfileCurve::ProfileCurve(const PolygonCurve &src) {
+ProfileCurve2D::ProfileCurve2D(const PolygonCurve2D &src) {
   m_type   = src.getType();
   m_points = src.getAllPoints();
 }
 
-ProfileCurve::operator PolygonCurve() const {
-  PolygonCurve result;
+ProfileCurve2D::operator PolygonCurve2D() const {
+  PolygonCurve2D result;
   result.m_type   = m_type;
   result.m_points = m_points;
   return result;
 }
 
-void ProfileCurve::move(const Point2D &dp) {
+void ProfileCurve2D::move(const Point2D &dp) {
   for(size_t i = 0; i < m_points.size(); i++) {
     m_points[i] += dp;
   }
 }
 
-const Point2DArray &ProfileCurve::getAllPoints() const {
+const Point2DArray &ProfileCurve2D::getAllPoints() const {
   return m_points;
 }
 
-CompactArray<Point2D*> ProfileCurve::getAllPointsRef() {
+CompactArray<Point2D*> ProfileCurve2D::getAllPointsRef() {
   CompactArray<Point2D*> result(m_points.size());
   for(size_t i = 0; i < m_points.size(); i++) {
     result.add(&m_points[i]);
@@ -57,29 +57,29 @@ CompactArray<Point2D*> ProfileCurve::getAllPointsRef() {
   return result;
 }
 
-Rectangle2D ProfileCurve::getBoundingBox() const {
+Rectangle2D ProfileCurve2D::getBoundingBox() const {
   return m_points.getBoundingBox();
 }
 
-String ProfileCurve::toString() const {
-  return ((PolygonCurve*)(this))->toString();
+String ProfileCurve2D::toString() const {
+  return ((PolygonCurve2D*)(this))->toString();
 }
 
-bool operator==(const ProfileCurve   &p1, const ProfileCurve   &p2) {
+bool operator==(const ProfileCurve2D   &p1, const ProfileCurve2D   &p2) {
   return (p1.m_type == p2.m_type) && (p1.m_points == p2.m_points);
 }
 
-bool operator!=(const ProfileCurve   &p1, const ProfileCurve   &p2) {
+bool operator!=(const ProfileCurve2D   &p1, const ProfileCurve2D   &p2) {
   return !(p1==p2);
 }
 
-// ------------------------------------ ProfilePolygon ------------------------------
+// ------------------------------------ ProfilePolygon2D ------------------------------
 
-ProfilePolygon::ProfilePolygon() {
+ProfilePolygon2D::ProfilePolygon2D() {
   m_closed = false;
 }
 /*
-ProfilePolygon::ProfilePolygon(const GlyphPolygon &src) {
+ProfilePolygon2D::ProfilePolygon2D(const GlyphPolygon &src) {
   m_start = src.m_start;
   m_closed = true;
   for(size_t i = 0; i < src.m_polygonCurveArray.size(); i++) {
@@ -88,7 +88,7 @@ ProfilePolygon::ProfilePolygon(const GlyphPolygon &src) {
 }
 */
 
-Point2DArray ProfilePolygon::getAllPoints() const {
+Point2DArray ProfilePolygon2D::getAllPoints() const {
   Point2DArray result;
   result.add(m_start);
   for(size_t i = 0; i < m_curveArray.size(); i++) {
@@ -97,7 +97,7 @@ Point2DArray ProfilePolygon::getAllPoints() const {
   return result;
 }
 
-CompactArray<Point2D*> ProfilePolygon::getAllPointsRef() {
+CompactArray<Point2D*> ProfilePolygon2D::getAllPointsRef() {
   CompactArray<Point2D*> result;
   result.add(&m_start);
   for(size_t i = 0; i < m_curveArray.size(); i++) {
@@ -106,7 +106,7 @@ CompactArray<Point2D*> ProfilePolygon::getAllPointsRef() {
   return result;
 }
 
-Point2DArray ProfilePolygon::getCurvePoints() const {
+Point2DArray ProfilePolygon2D::getCurvePoints() const {
   PointCollector collector;
   apply(collector);
   if(m_closed) {
@@ -115,13 +115,13 @@ Point2DArray ProfilePolygon::getCurvePoints() const {
   return collector.m_result;
 }
 
-Vertex2DArray ProfilePolygon::getFlatVertexArray() const {
+Vertex2DArray ProfilePolygon2D::getFlatVertexArray() const {
   FlatVertexGenerator vg;
   apply(vg);
   return vg.getResult();
 }
 
-Vertex2DArray ProfilePolygon::getSmoothVertexArray() const { // return noOfPoints normals
+Vertex2DArray ProfilePolygon2D::getSmoothVertexArray() const { // return noOfPoints normals
   const Point2DArray pa = getCurvePoints();
   const size_t       n  = pa.size();
   const Point2D     &p0 = pa[0], &pl = pa.last();
@@ -145,11 +145,11 @@ Vertex2DArray ProfilePolygon::getSmoothVertexArray() const { // return noOfPoint
   return result;
 }
 
-Rectangle2D ProfilePolygon::getBoundingBox() const {
+Rectangle2D ProfilePolygon2D::getBoundingBox() const {
   return getAllPoints().getBoundingBox();
 }
 
-bool ProfilePolygon::isEmpty() const {
+bool ProfilePolygon2D::isEmpty() const {
   for(size_t i = 0; i < m_curveArray.size(); i++) {
     if(!m_curveArray[i].isEmpty()) {
       return false;
@@ -158,22 +158,22 @@ bool ProfilePolygon::isEmpty() const {
   return true;
 }
 
-void ProfilePolygon::move(const Point2D &dp) {
+void ProfilePolygon2D::move(const Point2D &dp) {
   m_start += dp;
   for(size_t i = 0; i < m_curveArray.size(); i++) {
     m_curveArray[i].move(dp);
   }
 }
 
-void ProfilePolygon::reverseOrder() {
-  ProfilePolygon result;
+void ProfilePolygon2D::reverseOrder() {
+  ProfilePolygon2D result;
   result.m_closed = m_closed;
   Point2DArray points = getAllPoints();
   int pindex = (int)points.size() - 1;
   result.m_start = points[pindex--];
   for(intptr_t i = m_curveArray.size()-1; i >= 0; i--) {
-    ProfileCurve &curve = m_curveArray[i];
-    ProfileCurve newCurve(curve.m_type);
+    ProfileCurve2D &curve = m_curveArray[i];
+    ProfileCurve2D newCurve(curve.m_type);
     for(size_t j = 0; j < curve.m_points.size(); j++) {
       newCurve.addPoint(points[pindex--]);
     }
@@ -185,7 +185,7 @@ void ProfilePolygon::reverseOrder() {
   *this = result;
 }
 
-String ProfilePolygon::toString() const {
+String ProfilePolygon2D::toString() const {
   String result = format(_T("start:%s\n"), m_start.toString().cstr());
   for(size_t p = 0; p < m_curveArray.size(); p++) {
     result += m_curveArray[p].toString() + _T("\n");
@@ -193,18 +193,18 @@ String ProfilePolygon::toString() const {
   return result;
 }
 
-bool operator==(const ProfilePolygon &p1, const ProfilePolygon &p2) {
+bool operator==(const ProfilePolygon2D &p1, const ProfilePolygon2D &p2) {
   return p1.m_start == p2.m_start
       && p1.m_closed == p2.m_closed
       && p1.m_curveArray == p2.m_curveArray;
 }
 
-bool operator!=(const ProfilePolygon &p1, const ProfilePolygon &p2) {
+bool operator!=(const ProfilePolygon2D &p1, const ProfilePolygon2D &p2) {
   return !(p1==p2);
 }
-// ------------------------------------ Profile ------------------------------
+// ------------------------------------ Profile2D ------------------------------
 
-Point2DArray Profile::getAllPoints() const {
+Point2DArray Profile2D::getAllPoints() const {
   Point2DArray result;
   for(size_t i = 0; i < m_polygonArray.size(); i++) {
     result.addAll(m_polygonArray[i].getAllPoints());
@@ -212,7 +212,7 @@ Point2DArray Profile::getAllPoints() const {
   return result;
 }
 
-CompactArray<Point2D*> Profile::getAllPointsRef() {
+CompactArray<Point2D*> Profile2D::getAllPointsRef() {
   CompactArray<Point2D*> result;
   for(size_t i = 0; i < m_polygonArray.size(); i++) {
     result.addAll(m_polygonArray[i].getAllPointsRef());
@@ -220,7 +220,7 @@ CompactArray<Point2D*> Profile::getAllPointsRef() {
   return result;
 }
 
-Point2DArray Profile::getCurvePoints() const {
+Point2DArray Profile2D::getCurvePoints() const {
   Point2DArray result;
   for(size_t i = 0; i < m_polygonArray.size(); i++) {
     result.addAll(m_polygonArray[i].getCurvePoints());
@@ -228,7 +228,7 @@ Point2DArray Profile::getCurvePoints() const {
   return result;
 }
 
-bool Profile::isEmpty() const {
+bool Profile2D::isEmpty() const {
   for(size_t i = 0; i < m_polygonArray.size(); i++) {
     if(!m_polygonArray[i].isEmpty()) {
       return false;
@@ -237,13 +237,13 @@ bool Profile::isEmpty() const {
   return true;
 }
 
-Rectangle2D Profile::getBoundingBox() const {
+Rectangle2D Profile2D::getBoundingBox() const {
   return getAllPoints().getBoundingBox();
 }
 
-void Profile::addLine(const Point2D &p1, const Point2D &p2) {
-  ProfilePolygon polygon;
-  ProfileCurve curve(TT_PRIM_LINE);
+void Profile2D::addLine(const Point2D &p1, const Point2D &p2) {
+  ProfilePolygon2D polygon;
+  ProfileCurve2D   curve(TT_PRIM_LINE);
   polygon.m_start  = p1;
   polygon.m_closed = false;
   curve.m_points.add(p2);
@@ -251,7 +251,7 @@ void Profile::addLine(const Point2D &p1, const Point2D &p2) {
   addPolygon(polygon);
 }
 
-void Profile::addLineStrip(const Point2D *points, int n) {
+void Profile2D::addLineStrip(const Point2D *points, int n) {
   const Point2D *last = points++;
   while(--n) {
     addLine(*last, *points);
@@ -259,15 +259,15 @@ void Profile::addLineStrip(const Point2D *points, int n) {
   }
 }
 
-void Profile::move(const Point2D &dp) {
+void Profile2D::move(const Point2D &dp) {
   for(size_t i = 0; i < m_polygonArray.size(); i++) {
     m_polygonArray[i].move(dp);
   }
 }
 
-int Profile::findPolygonContainingPoint(const Point2D *p) const {
+int Profile2D::findPolygonContainingPoint(const Point2D *p) const {
   for(size_t i = 0; i < m_polygonArray.size(); i++) {
-    const ProfilePolygon &pp = m_polygonArray[i];
+    const ProfilePolygon2D &pp = m_polygonArray[i];
     if(pp.m_closed) {
       continue;
     }
@@ -280,7 +280,7 @@ int Profile::findPolygonContainingPoint(const Point2D *p) const {
   return -1;
 }
 
-bool Profile::canConnect(const Point2D *p1, const Point2D *p2) const {
+bool Profile2D::canConnect(const Point2D *p1, const Point2D *p2) const {
   if(p1 == p2) {
     return false;
   }
@@ -289,14 +289,14 @@ bool Profile::canConnect(const Point2D *p1, const Point2D *p2) const {
   return pp1 >= 0 && pp2 >= 0 && pp1 != pp2;
 }
 
-void Profile::connect(const Point2D *p1, const Point2D *p2) {
+void Profile2D::connect(const Point2D *p1, const Point2D *p2) {
   if(!canConnect(p1,p2)) {
     return;
   }
   int i1 = findPolygonContainingPoint(p1);
   int i2 = findPolygonContainingPoint(p2);
-  ProfilePolygon &pp1 = m_polygonArray[i1];
-  ProfilePolygon &pp2 = m_polygonArray[i2];
+  ProfilePolygon2D &pp1 = m_polygonArray[i1];
+  ProfilePolygon2D &pp2 = m_polygonArray[i2];
 
   if(p1 == &pp1.m_start) {
     if(p2 == &pp2.getLastPoint()) {
@@ -319,12 +319,12 @@ void Profile::connect(const Point2D *p1, const Point2D *p2) {
   }
 }
 
-void ProfilePolygon::apply(CurveOperator &op) const {
+void ProfilePolygon2D::apply(CurveOperator &op) const {
   Point2D pp = m_start;
   op.beginCurve();
   op.apply(pp);
   for(size_t i = 0; i < m_curveArray.size(); i++) {
-    const ProfileCurve &curve = m_curveArray[i];
+    const ProfileCurve2D &curve = m_curveArray[i];
     switch(curve.m_type) {
     case TT_PRIM_LINE   :
       { for(size_t j = 0; j < curve.m_points.size(); j++) {
@@ -355,7 +355,7 @@ void ProfilePolygon::apply(CurveOperator &op) const {
   op.endCurve();
 }
 
-void Profile::apply(CurveOperator &op) const {
+void Profile2D::apply(CurveOperator &op) const {
   for(size_t i = 0; i < m_polygonArray.size(); i++) {
     m_polygonArray[i].apply(op);
   }
@@ -363,14 +363,14 @@ void Profile::apply(CurveOperator &op) const {
 
 /*
 
-LPDIRECT3DRMMESHBUILDER Profile::createSkeleton(C3D &d3) {
+LPDIRECT3DRMMESHBUILDER Profile2D::createSkeleton(C3D &d3) {
   LPDIRECT3DRMMESHBUILDER meshBuilder = d3.createMeshBuilder(m_name);
   apply(CurveMaker(meshBuilder));
   return meshBuilder;
 }
 */
 
-String Profile::toString() const {
+String Profile2D::toString() const {
   String result;
   for(size_t i = 0; i < m_polygonArray.size(); i++) {
     result += m_polygonArray[i].toString();
@@ -379,7 +379,7 @@ String Profile::toString() const {
 }
 
 /*
-Profile::Profile(const String &name, const GlyphCurveData &src) {
+Profile2D::Profile2D(const String &name, const GlyphCurveData &src) {
   m_name = name;
   const Array< GlyphPolygon> &gpa = src.getPolygonArray();
   for(int i = 0; i < gpa.size(); i++) {
@@ -388,37 +388,37 @@ Profile::Profile(const String &name, const GlyphCurveData &src) {
 }
 */
 
-void Profile::init() {
+void Profile2D::init() {
   m_name = _T("Untitled");
   m_polygonArray.clear();
 }
 
-bool Profile::hasDefaultName() const {
+bool Profile2D::hasDefaultName() const {
   return m_name != EMPTYSTRING && m_name != _T("Untitled");
 }
 
-String Profile::getDisplayName() const {
+String Profile2D::getDisplayName() const {
   return FileNameSplitter(m_name).getFileName();
 }
 
-bool operator==(const Profile &p1, const Profile &p2) {
+bool operator==(const Profile2D &p1, const Profile2D &p2) {
   return (p1.m_name == p2.m_name) && (p1.m_polygonArray == p2.m_polygonArray);
 }
 
-bool operator!=(const Profile &p1, const Profile &p2) {
+bool operator!=(const Profile2D &p1, const Profile2D &p2) {
   return !(p1==p2);
 }
 
-Vertex2DArray Profile::getFlatVertexArray() const {
+Vertex2DArray Profile2D::getFlatVertexArray() const {
   FlatVertexGenerator normalGenerator;
   apply(normalGenerator);
   return normalGenerator.getResult();
 }
 
-Vertex2DArray Profile::getSmoothVertexArray() const {
+Vertex2DArray Profile2D::getSmoothVertexArray() const {
   Vertex2DArray result;
   for(size_t i = 0; i < m_polygonArray.size(); i++) {
-    const ProfilePolygon &pp = m_polygonArray[i];
+    const ProfilePolygon2D &pp = m_polygonArray[i];
     result.addAll(pp.getSmoothVertexArray());
   }
   return result;

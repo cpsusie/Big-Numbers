@@ -54,19 +54,19 @@ inline void getValue(XMLDoc &doc, XMLNodePtr n,       D3SceneObjectVisual *v) {
 void setValue(XMLDoc &doc, XMLNodePtr n, const D3Scene             &s);
 void getValue(XMLDoc &doc, XMLNodePtr n,       D3Scene             &s);
 
-class ProfileCurve;
-class ProfilePolygon;
-class Profile;
+class ProfileCurve2D;
+class ProfilePolygon2D;
+class Profile2D;
 class ProfileRotationParameters;
 
-void setValue(XMLDoc &doc, XMLNodePtr n, const ProfileCurve              &v);
-void getValue(XMLDoc &doc, XMLNodePtr n,       ProfileCurve              &v);
+void setValue(XMLDoc &doc, XMLNodePtr n, const ProfileCurve2D            &v);
+void getValue(XMLDoc &doc, XMLNodePtr n,       ProfileCurve2D            &v);
 
-void setValue(XMLDoc &doc, XMLNodePtr n, const ProfilePolygon            &v);
-void getValue(XMLDoc &doc, XMLNodePtr n,       ProfilePolygon            &v);
+void setValue(XMLDoc &doc, XMLNodePtr n, const ProfilePolygon2D          &v);
+void getValue(XMLDoc &doc, XMLNodePtr n,       ProfilePolygon2D          &v);
 
-void setValue(XMLDoc &doc, XMLNodePtr n, const Profile                   &v);
-void getValue(XMLDoc &doc, XMLNodePtr n,       Profile                   &v);
+void setValue(XMLDoc &doc, XMLNodePtr n, const Profile2D                 &v);
+void getValue(XMLDoc &doc, XMLNodePtr n,       Profile2D                 &v);
 
 void setValue(XMLDoc &doc, XMLNodePtr n, const ProfileRotationParameters &v);
 void getValue(XMLDoc &doc, XMLNodePtr n,       ProfileRotationParameters &v);

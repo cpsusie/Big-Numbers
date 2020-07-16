@@ -1,9 +1,9 @@
 #pragma once
 
-#include <D3DGraphics/Profile.h>
+#include <D3DGraphics/Profile2D.h>
 #include "TurnableRect.h"
 
-class PolygonSet : public CompactArray<ProfilePolygon*> {
+class PolygonSet : public CompactArray<ProfilePolygon2D*> {
 private:
   TurnableRect m_boundingBox; // world rect
   Point2DRefArray getPointRefArray();

@@ -1,5 +1,5 @@
 #include "pch.h"
-#include <MFCUtil/PolygonCurve.h>
+#include <MFCUtil/PolygonCurve2D.h>
 
 // ------------------------------------ PolygonCurve ------------------------------
 

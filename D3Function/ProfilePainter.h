@@ -1,9 +1,9 @@
 #pragma once
 
-class Profile;
-class ProfilePolygon;
+class Profile2D;
+class ProfilePolygon2D;
 class Viewport2D;
 
-void paintProfile(       const Profile        &profile, Viewport2D &vp, COLORREF color);
-void paintProfilePolygon(const ProfilePolygon &pp     , Viewport2D &vp, COLORREF color);
-void paintProfileNormals(const Profile        &profile, Viewport2D &vp, COLORREF color, bool smooth);
+void paintProfile(       const Profile2D        &profile, Viewport2D &vp, COLORREF color);
+void paintProfilePolygon(const ProfilePolygon2D &pp     , Viewport2D &vp, COLORREF color);
+void paintProfileNormals(const Profile2D        &profile, Viewport2D &vp, COLORREF color, bool smooth);

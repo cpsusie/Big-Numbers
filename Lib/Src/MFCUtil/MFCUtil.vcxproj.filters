@@ -256,9 +256,6 @@
     <ClCompile Include="PixRectFont.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PolygonCurve.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ColorDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -397,6 +394,9 @@
     <ClCompile Include="DialogWithDynamicLayout.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PolygonCurve2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\MFCUtil\Viewport2D.h">
@@ -518,9 +518,6 @@
     <ClInclude Include="..\..\Include\MFCUtil\Avifile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\MFCUtil\PolygonCurve.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\MFCUtil\PragmaLib.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -606,6 +603,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\MFCUtil\DialogWithDynamicLayout.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\MFCUtil\PolygonCurve2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

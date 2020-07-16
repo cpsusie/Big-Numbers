@@ -1,7 +1,7 @@
 #pragma once
 
 #include <MFCUtil/Viewport2D.h>
-#include <D3DGraphics/Profile.h>
+#include <D3DGraphics/Profile2D.h>
 
 typedef enum {
   NORMALS_INVISIBLE
@@ -22,7 +22,7 @@ const TCHAR *stateToString(ProfileEditorState state);
 class ProfileEditor {
 public:
   virtual Viewport2D &getViewport()      = 0;
-  virtual Profile    &getProfile()       = 0;
+  virtual Profile2D  &getProfile()       = 0;
   virtual void        repaintViewport()  = 0;
   virtual NormalsMode getNormalsMode()   = 0;
   virtual bool        getShowPoints()    = 0;

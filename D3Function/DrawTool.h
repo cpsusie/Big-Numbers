@@ -16,16 +16,16 @@ protected:
 
   DrawTool &drawState();
   DrawTool &paintBox(            const Point2D        &p, bool selected);
-  DrawTool &paintPoints(         const ProfilePolygon &p, bool selected);
-  DrawTool &repaintPolygon(      const ProfilePolygon &p, bool selected);
+  DrawTool &paintPoints(         const ProfilePolygon2D &p, bool selected);
+  DrawTool &repaintPolygon(      const ProfilePolygon2D &p, bool selected);
   DrawTool &selectPolygonsInRect(const Rectangle2D    &r);
   DrawTool &selectPointsInRect(  const Rectangle2D    &r);
-  DrawTool &select(                    ProfilePolygon *p);
-  DrawTool &select(                    Point2D        *p);
-  DrawTool &unselect(                  ProfilePolygon *p);
-  DrawTool &unselect(                  Point2D        *p);
-  bool isSelected(                     ProfilePolygon *p) const;
-  bool isSelected(               const Point2D        *p) const;
+  DrawTool &select(                    ProfilePolygon2D *p);
+  DrawTool &select(                    Point2D          *p);
+  DrawTool &unselect(                  ProfilePolygon2D *p);
+  DrawTool &unselect(                  Point2D          *p);
+  bool isSelected(                     ProfilePolygon2D *p) const;
+  bool isSelected(               const Point2D          *p) const;
 public:
   DrawTool(ProfileEditor *editor);
   virtual ~DrawTool();

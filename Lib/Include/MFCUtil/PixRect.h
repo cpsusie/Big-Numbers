@@ -2,7 +2,7 @@
 
 #include "WinTools.h"
 #include "DirectXDeviceFactory.h"
-#include "PolygonCurve.h"
+#include "PolygonCurve2D.h"
 #include "ShapeFunctions.h"
 #include "ColorSpace.h"
 #include "PixRectType.h"
@@ -459,8 +459,8 @@ public:
 
 class GlyphPolygon {
 public:
-  Point2D             m_start;
-  Array<PolygonCurve> m_polygonCurveArray;
+  Point2D               m_start;
+  Array<PolygonCurve2D> m_polygonCurveArray;
 
   GlyphPolygon() {
   }
@@ -469,13 +469,13 @@ public:
     m_start = start;
   }
 
-  void addCurve(PolygonCurve &curve) {
+  void addCurve(PolygonCurve2D &curve) {
     m_polygonCurveArray.add(curve);
   }
 
   Rectangle2D getBoundingBox() const;
   Point2DArray getAllPoints() const;
-  inline const Array<PolygonCurve> &getCurveArray() const {
+  inline const Array<PolygonCurve2D> &getCurveArray() const {
     return m_polygonCurveArray;
   }
   void move(const Point2D &dp);

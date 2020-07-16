@@ -750,7 +750,7 @@
     <ClCompile Include="PixRectShapes.cpp" />
     <ClCompile Include="PointSet.cpp" />
     <ClCompile Include="PointToString.cpp" />
-    <ClCompile Include="PolygonCurve.cpp" />
+    <ClCompile Include="PolygonCurve2D.cpp" />
     <ClCompile Include="ProgressDlg.cpp" />
     <ClCompile Include="ProgressWindow.cpp" />
     <ClCompile Include="ProgressWithPctCtrl.cpp" />
@@ -836,7 +836,7 @@
     <ClInclude Include="..\..\Include\MFCUtil\PixRectDevice.h" />
     <ClInclude Include="..\..\Include\MFCUtil\PixRectType.h" />
     <ClInclude Include="..\..\Include\MFCUtil\PointSet.h" />
-    <ClInclude Include="..\..\Include\MFCUtil\PolygonCurve.h" />
+    <ClInclude Include="..\..\Include\MFCUtil\PolygonCurve2D.h" />
     <ClInclude Include="..\..\Include\MFCUtil\PragmaLib.h" />
     <ClInclude Include="..\..\Include\MFCUtil\ProgressWindow.h" />
     <ClInclude Include="..\..\Include\MFCUtil\ProgressWithPctCtrl.h" />

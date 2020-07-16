@@ -4,7 +4,7 @@
 
 class DrawToolPolygon : public DrawTool {
 private:
-  ProfilePolygon *m_pp;
+  ProfilePolygon2D *m_pp;
 public:
   DrawToolPolygon(ProfileEditor *editor)
     : DrawTool(editor)

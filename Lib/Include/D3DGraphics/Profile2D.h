@@ -98,25 +98,25 @@ public:
 typedef Vertex2DTemplate<float>      Vertex2D;
 typedef Vertex2DTemplateArray<float> Vertex2DArray;
 
-class PolygonCurve;
+class PolygonCurve2D;
 
-class ProfileCurve {
+class ProfileCurve2D {
 public:
   // TT_PRIM_LINE, TT_PRIM_QSPLINE or TT_PRIM_CSPLINE
   short          m_type;
   Point2DArray   m_points;
 
-  inline ProfileCurve(short type=0) {
+  inline ProfileCurve2D(short type=0) {
     m_type = type;
   }
 
-  ProfileCurve(const PolygonCurve &src);
-  operator PolygonCurve() const;
+  ProfileCurve2D(const PolygonCurve2D &src);
+  operator PolygonCurve2D() const;
 
-  inline ProfileCurve &addPoint(const Point2D &p) {
+  inline ProfileCurve2D &addPoint(const Point2D &p) {
     m_points.add(p); return *this;
   }
-  inline ProfileCurve &addPoint(double x, double y) {
+  inline ProfileCurve2D &addPoint(double x, double y) {
     return addPoint(Point2D(x,y));
   }
   inline Point2D &getLastPoint() {
@@ -141,33 +141,33 @@ public:
   String toString() const;
 };
 
-class ProfilePolygon {
+class ProfilePolygon2D {
 public:
   Point2D             m_start;
-  Array<ProfileCurve> m_curveArray;
+  Array<ProfileCurve2D> m_curveArray;
   bool                m_closed;
 
-  ProfilePolygon();
+  ProfilePolygon2D();
 
-  inline void addCurve(const ProfileCurve &curve) {
+  inline void addCurve(const ProfileCurve2D &curve) {
     m_curveArray.add(curve);
   }
 
-  Rectangle2D          getBoundingBox() const;
-  Point2DArray         getAllPoints() const;
+  Rectangle2D            getBoundingBox() const;
+  Point2DArray           getAllPoints() const;
   CompactArray<Point2D*> getAllPointsRef();
-  Point2DArray         getCurvePoints() const;
-  Vertex2DArray        getFlatVertexArray() const;
+  Point2DArray           getCurvePoints() const;
+  Vertex2DArray          getFlatVertexArray() const;
   // Return noOfPoints normals
-  Vertex2DArray        getSmoothVertexArray() const;
-  inline Vertex2DArray getAllVertices(bool smoothNormals) const {
+  Vertex2DArray          getSmoothVertexArray() const;
+  inline Vertex2DArray   getAllVertices(bool smoothNormals) const {
     return smoothNormals ? getSmoothVertexArray() : getFlatVertexArray();
   }
-  inline ProfileCurve &getLastCurve() {
+  inline ProfileCurve2D &getLastCurve() {
     return m_curveArray.last();
   }
 
-  inline const ProfileCurve &getLastCurve() const {
+  inline const ProfileCurve2D &getLastCurve() const {
     return m_curveArray.last();
   }
 
@@ -190,14 +190,14 @@ public:
   String toString() const;
 };
 
-class Profile {
+class Profile2D {
 private:
   int findPolygonContainingPoint(const Point2D *p) const;
 public:
   String                m_name;
-  Array<ProfilePolygon> m_polygonArray;
+  Array<ProfilePolygon2D> m_polygonArray;
   void init();
-  Profile() {
+  Profile2D() {
     init();
   }
   bool hasDefaultName() const;
@@ -207,10 +207,10 @@ public:
   // n is number of points. number of lines will be n-1
   void addLineStrip(const Point2D *points, int n);
 
-  inline void addPolygon(const ProfilePolygon &polygon) {
+  inline void addPolygon(const ProfilePolygon2D &polygon) {
     m_polygonArray.add(polygon);
   }
-  ProfilePolygon &getLastPolygon() {
+  ProfilePolygon2D &getLastPolygon() {
     return m_polygonArray.last();
   }
   bool            isEmpty() const;
@@ -233,12 +233,12 @@ public:
   String toString() const;
 };
 
-bool operator==(const ProfileCurve   &p1, const ProfileCurve   &p2);
-bool operator!=(const ProfileCurve   &p1, const ProfileCurve   &p2);
-bool operator==(const ProfilePolygon &p1, const ProfilePolygon &p2);
-bool operator!=(const ProfilePolygon &p1, const ProfilePolygon &p2);
-bool operator==(const Profile        &p1, const Profile        &p2);
-bool operator!=(const Profile        &p1, const Profile        &p2);
+bool operator==(const ProfileCurve2D   &p1, const ProfileCurve2D   &p2);
+bool operator!=(const ProfileCurve2D   &p1, const ProfileCurve2D   &p2);
+bool operator==(const ProfilePolygon2D &p1, const ProfilePolygon2D &p2);
+bool operator!=(const ProfilePolygon2D &p1, const ProfilePolygon2D &p2);
+bool operator==(const Profile2D        &p1, const Profile2D        &p2);
+bool operator!=(const Profile2D        &p1, const Profile2D        &p2);
 
-LPD3DXMESH rotateProfile(AbstractMeshFactory &amf, const Profile &profile, const ProfileRotationParameters &param, bool doubleSided);
-Profile   *selectAndLoadProfile();
+LPD3DXMESH rotateProfile(AbstractMeshFactory &amf, const Profile2D &profile, const ProfileRotationParameters &param, bool doubleSided);
+Profile2D   *selectAndLoadProfile();

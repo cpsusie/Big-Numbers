@@ -3,7 +3,7 @@
 #include <D3DGraphics/D3Camera.h>
 #include <D3DGraphics/D3Device.h>
 #include <D3DGraphics/D3Scene.h>
-#include <D3DGraphics/Profile.h>
+#include <D3DGraphics/Profile2D.h>
 #include <D3DGraphics/MeshCreators.h>
 #include <D3DGraphics/D3LightControl.h>
 
@@ -54,7 +54,7 @@ static const Point2D directionalMeshProfilePoints[] = {
 };
 
 static LPD3DXMESH createDirectionalMesh(AbstractMeshFactory &factory) {
-  Profile prof;
+  Profile2D prof;
   prof.addLineStrip(directionalMeshProfilePoints, ARRAYSIZE(directionalMeshProfilePoints));
   ProfileRotationParameters param('x','x',radians(360),20,PRROT_ROTATESMOOTH|PRROT_INVERTNORMALS);
   return rotateProfile(factory, prof, param, false);
@@ -70,7 +70,7 @@ static const Point2D spotMeshProfilePoints[] = {
 };
 
 static LPD3DXMESH createSpotMesh(AbstractMeshFactory &factory) {
-  Profile prof;
+  Profile2D prof;
   prof.addLineStrip(spotMeshProfilePoints, ARRAYSIZE(spotMeshProfilePoints));
   ProfileRotationParameters param('x','x',radians(360),20,PRROT_ROTATESMOOTH|PRROT_NORMALSMOOTH|PRROT_INVERTNORMALS);
   return rotateProfile(factory, prof, param, false);

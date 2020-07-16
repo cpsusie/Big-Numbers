@@ -186,9 +186,6 @@
     <ClCompile Include="VertexNormalTextureIndex.cpp">
       <Filter>Source Files\Mesh</Filter>
     </ClCompile>
-    <ClCompile Include="Profile.cpp">
-      <Filter>Source Files\Mesh</Filter>
-    </ClCompile>
     <ClCompile Include="RotateProfile.cpp">
       <Filter>Source Files\Mesh</Filter>
     </ClCompile>
@@ -336,9 +333,6 @@
     <ClCompile Include="D3SceneIO.cpp">
       <Filter>Source Files\D3StringConversion\D3XML</Filter>
     </ClCompile>
-    <ClCompile Include="ProfileXML.cpp">
-      <Filter>Source Files\D3StringConversion\D3XML</Filter>
-    </ClCompile>
     <ClCompile Include="MeshBuilderToString.cpp">
       <Filter>Source Files\D3StringConversion</Filter>
     </ClCompile>
@@ -410,6 +404,12 @@
     </ClCompile>
     <ClCompile Include="D3TexturePointArray.cpp">
       <Filter>Source Files\D3Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Profile2D.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Profile2DXML.cpp">
+      <Filter>Source Files\D3StringConversion\D3XML</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -538,9 +538,6 @@
     <ClInclude Include="..\..\Include\D3DGraphics\D3AbstractMeshFactory.h">
       <Filter>Header Files\Mesh</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\D3DGraphics\Profile.h">
-      <Filter>Header Files\Mesh</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\D3DGraphics\D3Cube.h">
       <Filter>Header Files\D3Math</Filter>
     </ClInclude>
@@ -609,6 +606,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\D3DGraphics\D3TexturePointArray.h">
       <Filter>Header Files\D3Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\Profile2D.h">
+      <Filter>Header Files\Mesh</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

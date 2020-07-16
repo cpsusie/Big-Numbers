@@ -1,47 +1,47 @@
 #include "pch.h"
 #include <Math/MathXML.h>
 #include <MFCUtil/MFCXML.h>
-#include <MFCUtil/PolygonCurve.h>
-#include <D3DGraphics/Profile.h>
+#include <MFCUtil/PolygonCurve2D.h>
+#include <D3DGraphics/Profile2D.h>
 #include <D3DGraphics/D3XML.h>
 
-void setValue(XMLDoc &doc, XMLNodePtr n, const ProfileCurve &v) {
-  PolygonCurve pc = v;
+void setValue(XMLDoc &doc, XMLNodePtr n, const ProfileCurve2D &v) {
+  PolygonCurve2D pc = v;
   setValue(doc, n, pc);
 }
 
-void getValue(XMLDoc &doc, XMLNodePtr n, ProfileCurve &v) {
-  PolygonCurve pc;
+void getValue(XMLDoc &doc, XMLNodePtr n, ProfileCurve2D &v) {
+  PolygonCurve2D pc;
   getValue(doc, n, pc);
   v = pc;
 }
 
-void setValue(XMLDoc &doc, XMLNodePtr n, const ProfilePolygon &v) {
+void setValue(XMLDoc &doc, XMLNodePtr n, const ProfilePolygon2D &v) {
   setValue(doc, n,_T("closed"), v.m_closed);
   setValue(doc, n,_T("start" ), v.m_start );
   XMLNodePtr clist = doc.createNode(n, _T("profilecurve"));
-  setValue<Array<ProfileCurve>, ProfileCurve>(doc, clist, v.m_curveArray);
+  setValue<Array<ProfileCurve2D>, ProfileCurve2D>(doc, clist, v.m_curveArray);
 }
 
-void getValue(XMLDoc &doc, XMLNodePtr n, ProfilePolygon &v) {
+void getValue(XMLDoc &doc, XMLNodePtr n, ProfilePolygon2D &v) {
   getValue(doc, n, _T("closed"), v.m_closed);
   getValue(doc, n, _T("start" ), v.m_start );
   XMLNodePtr clist = doc.getChild(n, _T("profilecurve"));
-  getValue<Array<ProfileCurve>, ProfileCurve>(doc, clist, v.m_curveArray);
+  getValue<Array<ProfileCurve2D>, ProfileCurve2D>(doc, clist, v.m_curveArray);
 }
 
-void setValue(XMLDoc &doc, XMLNodePtr n, const Profile &v) {
+void setValue(XMLDoc &doc, XMLNodePtr n, const Profile2D &v) {
   XMLNodePtr pn = doc.createNode(n, _T("profile"));
   setValue(doc, pn, _T("name"), v.m_name);
   XMLNodePtr plist = doc.createNode(pn, _T("profilepolygon"));
-  setValue<Array<ProfilePolygon>, ProfilePolygon>(doc, plist, v.m_polygonArray);
+  setValue<Array<ProfilePolygon2D>, ProfilePolygon2D>(doc, plist, v.m_polygonArray);
 }
 
-void getValue(XMLDoc &doc, XMLNodePtr n, Profile &v) {
+void getValue(XMLDoc &doc, XMLNodePtr n, Profile2D &v) {
   XMLNodePtr pn = doc.getChild(n, _T("profile"));
   getValue(doc, pn, _T("name"), v.m_name);
   XMLNodePtr plist = doc.getChild(pn, _T("profilepolygon"));
-  getValue<Array<ProfilePolygon>, ProfilePolygon>(doc, plist, v.m_polygonArray);
+  getValue<Array<ProfilePolygon2D>, ProfilePolygon2D>(doc, plist, v.m_polygonArray);
 }
 
 void setValue(XMLDoc &doc, XMLNodePtr n, const ProfileRotationParameters &v) {

@@ -561,7 +561,7 @@ void CProfileDlg::OnFileOpen() {
   if(!dirtyCheck()) {
     return;
   }
-  Profile *profile = selectAndLoadProfile();
+  Profile2D *profile = selectAndLoadProfile();
   if(profile != NULL) {
     m_profile = *profile;
     SAFEDELETE(profile);
@@ -579,7 +579,7 @@ void CProfileDlg::OnFileSelectFromFont() {
     dlg.GetCurrentFont(&m_logFont);
     CSelectGlyphDialog selectGlyphDlg(m_logFont,this);
     if(selectGlyphDlg.DoModal() == IDOK) {
-      m_profile = Profile("Untitled",selectGlyphDlg.getSelectedGlyphCurveData());
+      m_profile = Profile2D("Untitled",selectGlyphDlg.getSelectedGlyphCurveData());
       resetView();
     }
   }

@@ -17,7 +17,7 @@ public:
   static short        strToType(const TCHAR *str );
 };
 
-template<typename T> class PolygonCurveTemplate : public _PolygonCurveTypeName {
+template<typename T> class PolygonCurve2DTemplate : public _PolygonCurveTypeName {
 public:
   short                   m_type; // TT_PRIM_LINE, TT_PRIM_QSPLINE or TT_PRIM_CSPLINE
   Point2DTemplateArray<T> m_points;
@@ -25,10 +25,10 @@ public:
     m_points.add(p);
   }
 
-  PolygonCurveTemplate(short type=0) {
+  PolygonCurve2DTemplate(short type=0) {
     m_type = type;
   }
-  template<typename P> PolygonCurveTemplate(const PolygonCurveTemplate<P> &src)
+  template<typename P> PolygonCurve2DTemplate(const PolygonCurve2DTemplate<P> &src)
     : m_type(src.m_type)
     , m_points(src.m_points)
   {
@@ -53,10 +53,10 @@ public:
   }
 };
 
-class PolygonCurve : public PolygonCurveTemplate<double> {
+class PolygonCurve2D : public PolygonCurve2DTemplate<double> {
 public:
-  PolygonCurve(short type=0) : PolygonCurveTemplate(type) {
+  PolygonCurve2D(short type=0) : PolygonCurve2DTemplate(type) {
   }
-  template<typename P> PolygonCurve(const PolygonCurveTemplate<P> &src) : PolygonCurveTemplate<double>(src) {
+  template<typename P> PolygonCurve2D(const PolygonCurve2DTemplate<P> &src) : PolygonCurve2DTemplate<double>(src) {
   }
 };

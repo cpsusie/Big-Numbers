@@ -53,13 +53,13 @@ void DistanceFinder::line(const Point2D &from, const Point2D &to) {
 
 #define MAXDIST 8
 
-ProfilePolygon *DrawToolSelect::findNearestPolygon(const CPoint &p) {
-  Profile        &profile        = m_editor.getProfile();
-  double          minDist        = -1;
-  ProfilePolygon *nearestPolygon = NULL;
+ProfilePolygon2D *DrawToolSelect::findNearestPolygon(const CPoint &p) {
+  Profile2D        &profile        = m_editor.getProfile();
+  double            minDist        = -1;
+  ProfilePolygon2D *nearestPolygon = NULL;
 
   for(size_t i = 0; i < profile.m_polygonArray.size(); i++) {
-    ProfilePolygon &polygon = profile.m_polygonArray[i];
+    ProfilePolygon2D &polygon = profile.m_polygonArray[i];
     DistanceFinder df(m_editor.getViewport(),p);
     polygon.apply(df);
 
@@ -95,7 +95,7 @@ void DrawToolSelect::moveSelectedPoints(const Point2D &dp) {
 
 bool DrawToolSelect::OnLButtonDown(UINT nFlags, CPoint point) {
   m_mouseDownPoint = point;
-  ProfilePolygon *np = findNearestPolygon(point);
+  ProfilePolygon2D *np = findNearestPolygon(point);
   switch(m_state) {
   case IDLE       :
   case MOVING    :

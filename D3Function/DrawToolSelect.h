@@ -7,13 +7,13 @@ private:
   CPoint m_lastMousePoint;
   CPoint m_mouseDownPoint;
   CRect  m_dragRect;
-  void            startDragRect();
-  void            redrawDragRect(    const CPoint  &p);
-  void            endDragRect();
-  ProfilePolygon *findNearestPolygon(const CPoint  &p);
-  Point2D        *findNearestPoint(  const CPoint  &p);
-  void            moveSelectedPoints(const Point2D &dp);
-  void            adjustMousePosition();
+  void              startDragRect();
+  void              redrawDragRect(    const CPoint  &p);
+  void              endDragRect();
+  ProfilePolygon2D *findNearestPolygon(const CPoint  &p);
+  Point2D          *findNearestPoint(  const CPoint  &p);
+  void              moveSelectedPoints(const Point2D &dp);
+  void              adjustMousePosition();
 public:
   DrawToolSelect(ProfileEditor *editor)
     : DrawTool(editor)

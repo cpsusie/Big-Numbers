@@ -2,10 +2,10 @@
 #include "DrawToolBezierCurve.h"
 
 bool DrawToolBezierCurve::OnLButtonDown(  UINT nFlags, CPoint point) {
-  Profile &profile = m_editor.getProfile();
+  Profile2D &profile = m_editor.getProfile();
   Point2D p = m_editor.getViewport().backwardTransform(point);
-  ProfilePolygon polygon;
-  ProfileCurve   curve(TT_PRIM_CSPLINE);
+  ProfilePolygon2D polygon;
+  ProfileCurve2D   curve(TT_PRIM_CSPLINE);
   polygon.m_start  = p;
   polygon.m_closed = false;
   p.x += 0.1;

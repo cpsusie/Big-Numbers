@@ -1,7 +1,7 @@
 #include "pch.h"
 #include <D3DGraphics/D3Scene.h>
 #include <D3DGraphics/D3LightControl.h>
-#include <D3DGraphics/Profile.h>
+#include <D3DGraphics/Profile2D.h>
 
 D3LightControlSpot::D3LightControlSpot(D3Scene &scene, int lightIndex)
 : D3LightControl(scene, lightIndex)

@@ -101,7 +101,7 @@ GlyphCurveData::GlyphCurveData(HDC hdc, _TUCHAR ch, const MAT2 &m) {
     int h;
     for(h = sizeof(TTPOLYGONHEADER); h < (int)header->cb; h += sizeof(TTPOLYCURVE)+(c->cpfx-1)*sizeof(POINTFX)) {
       c = (TTPOLYCURVE*)&buffer[index+h];
-      PolygonCurve curve(c->wType);
+      PolygonCurve2D curve(c->wType);
       for(int i = 0; i < c->cpfx; i++) {
         curve.addPoint(Point2D(c->apfx[i]));
       }
@@ -136,7 +136,7 @@ Rectangle2D GlyphCurveData::getBoundingBox() const {
 
 void GlyphCurveData::addLine(const Point2D &p1, const Point2D &p2) {
   GlyphPolygon polygon(p1);
-  PolygonCurve curve(TT_PRIM_LINE);
+  PolygonCurve2D curve(TT_PRIM_LINE);
   curve.addPoint(p2);
   polygon.addCurve(curve);
   addPolygon(polygon);
@@ -240,7 +240,7 @@ void applyToGlyphPolygon(const GlyphPolygon &polygon, CurveOperator &op) {
   op.beginCurve();
   op.apply(*pp);
   for(size_t i = 0; i < polygon.m_polygonCurveArray.size(); i++) {
-    const PolygonCurve &curve = polygon.m_polygonCurveArray[i];
+    const PolygonCurve2D &curve = polygon.m_polygonCurveArray[i];
     switch(curve.getType()) {
     case TT_PRIM_LINE   :
       { const Point2DArray &pa = curve.getAllPoints();

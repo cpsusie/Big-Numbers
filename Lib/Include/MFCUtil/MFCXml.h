@@ -16,12 +16,12 @@ void getValue(XMLDoc &doc, XMLNodePtr n,       D3PCOLOR       &v);
 void setValue(XMLDoc &doc, XMLNodePtr n, const D3DCOLORVALUE  &v);
 void getValue(XMLDoc &doc, XMLNodePtr n,       D3DCOLORVALUE  &v);
 
-class PolygonCurve;
+class PolygonCurve2D;
 class GlyphPolygon;
 class GlyphCurveData;
 
-void setValue(XMLDoc &doc, XMLNodePtr n, const PolygonCurve   &v);
-void getValue(XMLDoc &doc, XMLNodePtr n,       PolygonCurve   &v);
+void setValue(XMLDoc &doc, XMLNodePtr n, const PolygonCurve2D &v);
+void getValue(XMLDoc &doc, XMLNodePtr n,       PolygonCurve2D &v);
 
 void setValue(XMLDoc &doc, XMLNodePtr n, const GlyphPolygon   &v);
 void getValue(XMLDoc &doc, XMLNodePtr n,       GlyphPolygon   &v);

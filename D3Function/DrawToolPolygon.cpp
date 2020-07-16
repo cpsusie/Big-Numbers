@@ -3,12 +3,12 @@
 
 bool DrawToolPolygon::OnLButtonDown(UINT nFlags, CPoint point) {
   Point2D p        = m_editor.getViewport().backwardTransform(point);
-  Profile &profile = m_editor.getProfile();
+  Profile2D &profile = m_editor.getProfile();
   if(m_pp == NULL) {
-    ProfilePolygon pp;
+    ProfilePolygon2D pp;
     pp.m_start  = p;
     pp.m_closed = false;
-    ProfileCurve curve(TT_PRIM_LINE);
+    ProfileCurve2D curve(TT_PRIM_LINE);
     curve.addPoint(p);
     pp.addCurve(curve);
     profile.addPolygon(pp);

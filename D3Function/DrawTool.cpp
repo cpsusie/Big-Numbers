@@ -61,12 +61,12 @@ DrawTool &DrawTool::paintBox(const Point2D &point, bool selected) {
   return *this;
 }
 
-DrawTool &DrawTool::paintPoints(const ProfilePolygon &p, bool selected) {
+DrawTool &DrawTool::paintPoints(const ProfilePolygon2D &p, bool selected) {
   const Point2D *currentPoint = &p.m_start;
   Viewport2D &vp = m_editor.getViewport();
   paintBox(*currentPoint, selected);
   for(size_t c = 0; c < p.m_curveArray.size(); c++) {
-    const ProfileCurve &curve = p.m_curveArray[c];
+    const ProfileCurve2D &curve = p.m_curveArray[c];
     switch(curve.m_type) {
     case TT_PRIM_LINE   :
       { for(size_t j = 0; j < curve.m_points.size(); j++) {
@@ -105,7 +105,7 @@ DrawTool &DrawTool::paintPoints(const ProfilePolygon &p, bool selected) {
   return *this;
 }
 
-DrawTool &DrawTool::repaintPolygon(const ProfilePolygon &pp, bool selected) {
+DrawTool &DrawTool::repaintPolygon(const ProfilePolygon2D &pp, bool selected) {
   paintProfilePolygon(pp, m_editor.getViewport(), selected ? RED : BLACK);
   if(m_editor.getShowPoints()) {
     paintPoints(pp, selected);
@@ -115,9 +115,9 @@ DrawTool &DrawTool::repaintPolygon(const ProfilePolygon &pp, bool selected) {
 
 DrawTool &DrawTool::repaintProfile() {
   m_editor.getViewport().clear(WHITE);
-  Profile &p = m_editor.getProfile();
+  Profile2D &p = m_editor.getProfile();
   for(size_t i = 0; i < p.m_polygonArray.size(); i++) {
-    ProfilePolygon &polygon = p.m_polygonArray[i];
+    ProfilePolygon2D &polygon = p.m_polygonArray[i];
     repaintPolygon(polygon, isSelected(&polygon));
   }
   switch(m_editor.getNormalsMode()) {
@@ -156,9 +156,9 @@ DrawTool &DrawTool::drawState() {
 }
 
 DrawTool &DrawTool::selectPolygonsInRect(const Rectangle2D &r) {
-  Profile &profile = m_editor.getProfile();
+  Profile2D &profile = m_editor.getProfile();
   for(size_t i = 0; i < profile.m_polygonArray.size(); i++) {
-    ProfilePolygon &p = profile.m_polygonArray[i];
+    ProfilePolygon2D &p = profile.m_polygonArray[i];
     if(r.contains(p.getBoundingBox())) {
       select(&p);
     }
@@ -183,12 +183,12 @@ DrawTool &DrawTool::unselectAll() {
   return *this;
 }
 
-DrawTool &DrawTool::select(ProfilePolygon *p) {
+DrawTool &DrawTool::select(ProfilePolygon2D *p) {
   m_polygonSet.add(p);
   return *this;
 }
 
-DrawTool &DrawTool::unselect(ProfilePolygon *p) {
+DrawTool &DrawTool::unselect(ProfilePolygon2D *p) {
   const intptr_t index = m_polygonSet.getFirstIndex(p);
   if(index >= 0) {
     m_polygonSet.remove(index);
@@ -209,7 +209,7 @@ DrawTool &DrawTool::unselect(Point2D *p) {
   return *this;
 }
 
-bool DrawTool::isSelected(ProfilePolygon *p) const {
+bool DrawTool::isSelected(ProfilePolygon2D *p) const {
   return m_polygonSet.contains(p);
 }
 
@@ -227,7 +227,7 @@ bool DrawTool::canDelete() {
 }
 
 DrawTool &DrawTool::deleteSelected() {
-  Profile &profile = m_editor.getProfile();
+  Profile2D &profile = m_editor.getProfile();
   for(size_t i = 0; i < m_polygonSet.size(); i++) {
     profile.m_polygonArray.remove(*m_polygonSet[i]);
   }
@@ -242,7 +242,7 @@ DrawTool &DrawTool::copySelected() {
 #if !defined(__TODO__)
   showWarning(_T("%s:Function not implemented"), __TFUNCTION__);
 #else
-  Profile copy;
+  Profile2D copy;
   for(size_t i = 0; i < m_polygonSet.size(); i++) {
     copy.addPolygon(*m_polygonSet[i]);
   }
@@ -264,9 +264,9 @@ DrawTool &DrawTool::paste() {
   showWarning(_T("%s:Function not implemented"), __TFUNCTION__);
 #else
   const String str = getClipboardText();
-  Profile pasted(str);
+  Profile2D pasted(str);
   Rectangle2D rect = m_editor.getViewport().getFromRectangle();
-  Profile &profile = m_editor.getProfile();
+  Profile2D &profile = m_editor.getProfile();
   pasted.move(Point2D(rect.getWidth()/10,rect.getHeight()/10));
   for(size_t i = 0; i < pasted.m_polygonArray.size(); i++) {
     profile.addPolygon(pasted.m_polygonArray[i]);

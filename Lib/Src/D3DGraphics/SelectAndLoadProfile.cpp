@@ -1,9 +1,9 @@
 #include "pch.h"
-#include <D3DGraphics/Profile.h>
+#include <D3DGraphics/Profile2D.h>
 
 const TCHAR *profileFileExtensions = _T("Profile-files (*.prf)\0*.prf\0All files (*.*)\0*.*\0\0");
 
-Profile *selectAndLoadProfile() {
+Profile2D *selectAndLoadProfile() {
 #if !defined(__TODO__)
   showWarning(_T("%s:Function not implemented"), __TFUNCTION__);
   return NULL;

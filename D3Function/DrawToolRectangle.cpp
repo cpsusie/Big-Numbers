@@ -2,10 +2,10 @@
 #include "DrawToolRectangle.h"
 
 bool DrawToolRectangle::OnLButtonDown(UINT nFlags, CPoint point) {
-  Profile       &profile = m_editor.getProfile();
-  const Point2D  p       = m_editor.getViewport().backwardTransform(point);
-  ProfilePolygon polygon;
-  ProfileCurve   curve(TT_PRIM_LINE);
+  Profile2D       &profile = m_editor.getProfile();
+  const Point2D    p       = m_editor.getViewport().backwardTransform(point);
+  ProfilePolygon2D polygon;
+  ProfileCurve2D   curve(TT_PRIM_LINE);
   polygon.m_start  = p;
   polygon.m_closed = true;
   curve.addPoint(p);
@@ -14,8 +14,8 @@ bool DrawToolRectangle::OnLButtonDown(UINT nFlags, CPoint point) {
   polygon.addCurve(curve);
   profile.addPolygon(polygon);
 
-  ProfilePolygon &gp = profile.m_polygonArray.last();
-  ProfileCurve   &pc = gp.m_curveArray.last();
+  ProfilePolygon2D &gp = profile.m_polygonArray.last();
+  ProfileCurve2D   &pc = gp.m_curveArray.last();
   m_ul = &gp.m_start;
   m_ur = &pc.m_points[0];
   m_lr = &pc.m_points[1];

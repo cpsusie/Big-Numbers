@@ -13,7 +13,7 @@ public:
   int                       m_3dmode;
   BOOL                      m_doubleSided;
   ProfileRotationParameters m_rotationParameters;
-  Profile                   m_profile;
+  Profile2D                 m_profile;
 };
 bool operator==(const ProfileDialogVariables &v1, const ProfileDialogVariables &v2);
 inline bool operator!=(const ProfileDialogVariables &v1, const ProfileDialogVariables &v2) {
@@ -39,7 +39,7 @@ private:
   bool                      m_exceptionRaised;
   DrawTool                 *m_currentDrawTool;
   int                       m_currentControl;
-  Profile                   m_profile        , m_lastSavedProfile;
+  Profile2D                 m_profile        , m_lastSavedProfile;
   ProfileDialogVariables    m_currentProfVars, m_lastProfVars;
   CBitmap                   m_testBitmap;
 
@@ -106,7 +106,7 @@ public:
   Viewport2D &getViewport() {
     return *m_viewport;
   }
-  Profile    &getProfile() {
+  Profile2D  &getProfile() {
     return m_profile;
   }
 
@@ -200,5 +200,5 @@ public:
   DECLARE_MESSAGE_MAP()
 };
 
-Profile *selectAndLoadProfile();
+Profile2D *selectAndLoadProfile();
 extern const TCHAR *profileFileExtensions;
