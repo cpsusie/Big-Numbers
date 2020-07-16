@@ -219,7 +219,78 @@ static void testUint128quotrem() {
   }
 }
 
+static void outputAssignment(char *name, const _uint128 &v) {
+  cout << std::hex << std::showbase;
+  if(HI64(v) == 0) {
+    cout << "      const " << name << "       = " << v    << ";" << endl;
+  } else {
+    cout << "      const " << name << "       = _uint128(" << HI64(v) << "," << LO64(v)   << ");" << endl;
+  }
+}
+static void outputXYProd(const _uint128 &x, const _uint128 &y, const _uint128 &prod, int index) {
+  cout << std::dec;
+  cout << "    TEST_METHOD(TestMultiplication" << index << ") {" << endl;
+  outputAssignment("x       ", x);
+  outputAssignment("y       ", y);
+  outputAssignment("expected", prod);
+  cout << "      const p        = x * y;"          << endl;
+  cout << "      verify(p == expected);"             << endl;
+  cout << "    }" << endl << endl;
+}
+
+static void genMultiplicationTestCases() {
+  int index = 1;
+  outputXYProd(0,0xffffffffffffffff,0,index++);
+  outputXYProd(0xffffffffffffffff,0,0,index++);
+  JavaRandom rnd;
+  _uint128 xmax = 7;
+  for(int xp = 2; xp < 128; xp+=16) {
+    const _uint128 x = randInt128(1,xmax,rnd);
+    _uint128 ymax = 6;
+    for(int yp = 3; yp < 128; yp+=16) {
+      if(xp+yp>=128) continue;
+      _uint128 y = randInt128(2,ymax, rnd);
+      const _uint128      p = x * y;
+      outputXYProd(x,y,p,index++);
+      ymax <<= 16;
+      ymax |= 0xffff;
+    }
+    xmax <<= 16;
+    xmax |= 0xffff;
+  }
+}
+
+static void testMultiplicationAllSizes() {
+  JavaRandom rnd;
+  _uint128 xmax = 21;
+  for(int xp = 1; xp < 128; xp++) {
+//        OUTPUT(_T("xp:%d/127"),xp);
+    for(int i = 0; i < 33; i++) {
+      const _uint128 x = randInt128(xmax,rnd);
+      _uint128 ymax = 21;
+      for(int yp = 1; yp < 128; yp++) {
+        if(xp+yp>=128) continue;
+        for(int j = 0; j < 33; j++) {
+          _uint128 y = randInt128(ymax, rnd);
+
+          const _uint128      p = x * y;
+        }
+        ymax <<= 1;
+        if(rnd.nextBool()) ymax |= 1;
+      }
+    }
+    xmax <<= 1;
+    if(rnd.nextBool()) xmax |= 1;
+  }
+}
+
 int main(int argc, TCHAR **argv) {
+  genMultiplicationTestCases();
+  return 0;
+
+  testMultiplicationAllSizes();
+  return 0;
+
   testUint128quotrem();
   return 0;
   double ttsum = 0;
