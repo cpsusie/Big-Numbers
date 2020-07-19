@@ -411,6 +411,9 @@
     <ClCompile Include="Profile2DXML.cpp">
       <Filter>Source Files\D3StringConversion\D3XML</Filter>
     </ClCompile>
+    <ClCompile Include="Profile3D.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\D3DGraphics\D3Scene.h">
@@ -608,6 +611,9 @@
       <Filter>Header Files\D3Math</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\D3DGraphics\Profile2D.h">
+      <Filter>Header Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\Profile3D.h">
       <Filter>Header Files\Mesh</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1016,6 +1016,7 @@
     <ClCompile Include="Profile2D.cpp" />
     <ClCompile Include="IsoSurfaceParameters.cpp" />
     <ClCompile Include="Profile2DXML.cpp" />
+    <ClCompile Include="Profile3D.cpp" />
     <ClCompile Include="ResourceTypeStr.cpp" />
     <ClCompile Include="RotateProfile.cpp" />
     <ClCompile Include="SelectAndLoadProfile.cpp" />
@@ -1092,6 +1093,7 @@
     <ClInclude Include="..\..\Include\D3DGraphics\ParametricR2R3SurfaceParameters.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\PragmaLib.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\Profile2D.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\Profile3D.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\resource.h" />
     <ClInclude Include="D3NameLookupTemplate.h" />
     <ClInclude Include="D3ReductionArray.h" />

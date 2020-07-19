@@ -141,11 +141,19 @@ public:
   String toString() const;
 };
 
+inline bool operator==(const ProfileCurve2D   &p1, const ProfileCurve2D   &p2) {
+  return (p1.m_type == p2.m_type) && (p1.m_points == p2.m_points);
+}
+
+inline bool operator!=(const ProfileCurve2D   &p1, const ProfileCurve2D   &p2) {
+  return !(p1==p2);
+}
+
 class ProfilePolygon2D {
 public:
-  Point2D             m_start;
+  Point2D               m_start;
   Array<ProfileCurve2D> m_curveArray;
-  bool                m_closed;
+  bool                  m_closed;
 
   ProfilePolygon2D();
 
@@ -190,11 +198,21 @@ public:
   String toString() const;
 };
 
+inline bool operator==(const ProfilePolygon2D &p1, const ProfilePolygon2D &p2) {
+  return p1.m_start      == p2.m_start
+      && p1.m_closed     == p2.m_closed
+      && p1.m_curveArray == p2.m_curveArray;
+}
+
+inline bool operator!=(const ProfilePolygon2D &p1, const ProfilePolygon2D &p2) {
+  return !(p1==p2);
+}
+
 class Profile2D {
 private:
   int findPolygonContainingPoint(const Point2D *p) const;
 public:
-  String                m_name;
+  String                  m_name;
   Array<ProfilePolygon2D> m_polygonArray;
   void init();
   Profile2D() {
@@ -233,12 +251,13 @@ public:
   String toString() const;
 };
 
-bool operator==(const ProfileCurve2D   &p1, const ProfileCurve2D   &p2);
-bool operator!=(const ProfileCurve2D   &p1, const ProfileCurve2D   &p2);
-bool operator==(const ProfilePolygon2D &p1, const ProfilePolygon2D &p2);
-bool operator!=(const ProfilePolygon2D &p1, const ProfilePolygon2D &p2);
-bool operator==(const Profile2D        &p1, const Profile2D        &p2);
-bool operator!=(const Profile2D        &p1, const Profile2D        &p2);
+inline bool operator==(const Profile2D &p1, const Profile2D &p2) {
+  return (p1.m_name == p2.m_name) && (p1.m_polygonArray == p2.m_polygonArray);
+}
+
+inline bool operator!=(const Profile2D &p1, const Profile2D &p2) {
+  return !(p1==p2);
+}
 
 LPD3DXMESH rotateProfile(AbstractMeshFactory &amf, const Profile2D &profile, const ProfileRotationParameters &param, bool doubleSided);
 Profile2D   *selectAndLoadProfile();

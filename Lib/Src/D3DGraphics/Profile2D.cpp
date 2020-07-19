@@ -65,14 +65,6 @@ String ProfileCurve2D::toString() const {
   return ((PolygonCurve2D*)(this))->toString();
 }
 
-bool operator==(const ProfileCurve2D   &p1, const ProfileCurve2D   &p2) {
-  return (p1.m_type == p2.m_type) && (p1.m_points == p2.m_points);
-}
-
-bool operator!=(const ProfileCurve2D   &p1, const ProfileCurve2D   &p2) {
-  return !(p1==p2);
-}
-
 // ------------------------------------ ProfilePolygon2D ------------------------------
 
 ProfilePolygon2D::ProfilePolygon2D() {
@@ -193,15 +185,6 @@ String ProfilePolygon2D::toString() const {
   return result;
 }
 
-bool operator==(const ProfilePolygon2D &p1, const ProfilePolygon2D &p2) {
-  return p1.m_start == p2.m_start
-      && p1.m_closed == p2.m_closed
-      && p1.m_curveArray == p2.m_curveArray;
-}
-
-bool operator!=(const ProfilePolygon2D &p1, const ProfilePolygon2D &p2) {
-  return !(p1==p2);
-}
 // ------------------------------------ Profile2D ------------------------------
 
 Point2DArray Profile2D::getAllPoints() const {
@@ -399,14 +382,6 @@ bool Profile2D::hasDefaultName() const {
 
 String Profile2D::getDisplayName() const {
   return FileNameSplitter(m_name).getFileName();
-}
-
-bool operator==(const Profile2D &p1, const Profile2D &p2) {
-  return (p1.m_name == p2.m_name) && (p1.m_polygonArray == p2.m_polygonArray);
-}
-
-bool operator!=(const Profile2D &p1, const Profile2D &p2) {
-  return !(p1==p2);
 }
 
 Vertex2DArray Profile2D::getFlatVertexArray() const {
