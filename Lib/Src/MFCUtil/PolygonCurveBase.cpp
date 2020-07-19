@@ -1,9 +1,12 @@
 #include "pch.h"
-#include <MFCUtil/PolygonCurve2D.h>
+#include <MFCUtil/PolygonCurveBase.h>
 
-// ------------------------------------ PolygonCurve ------------------------------
+typedef struct {
+  const short  m_type;
+  const TCHAR *m_name;
+} PolygonCurveTypeName;
 
-const PolygonCurveTypeName _PolygonCurveTypeName::s_typeNames[4] = {
+static const PolygonCurveTypeName s_typeNames[4] = {
   TT_PRIM_LINE   , _T("line"   )
  ,TT_PRIM_QSPLINE, _T("qspline")
  ,TT_PRIM_CSPLINE, _T("cspline")

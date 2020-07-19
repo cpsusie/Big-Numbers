@@ -1,21 +1,7 @@
 #pragma once
 
 #include <Math/Rectangle2D.h>
-
-typedef struct {
-  const short  m_type;
-  const TCHAR *m_name;
-} PolygonCurveTypeName;
-
-class _PolygonCurveTypeName {
-private:
-  static const PolygonCurveTypeName s_typeNames[4];
-public:
-  // throws exception if type not in {0,TT_PRIM_LINE, TT_PRIM_QSPLINE, TT_PRIM_CSPLINE}. type==0 returns ""
-  static const TCHAR *typeToStr(short        type);
-  // throws exception if str not in {"","line","qspline", "cspline"} (comparing ignore case) str=="" return 0
-  static short        strToType(const TCHAR *str );
-};
+#include "PolygonCurveBase.h"
 
 template<typename T> class PolygonCurve2DTemplate : public _PolygonCurveTypeName {
 public:

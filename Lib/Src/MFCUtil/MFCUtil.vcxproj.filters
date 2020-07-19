@@ -394,7 +394,7 @@
     <ClCompile Include="DialogWithDynamicLayout.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PolygonCurve2D.cpp">
+    <ClCompile Include="PolygonCurveBase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -606,6 +606,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\MFCUtil\PolygonCurve2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\MFCUtil\PolygonCurveBase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
