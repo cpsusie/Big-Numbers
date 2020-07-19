@@ -38,8 +38,8 @@ public:
 class D3SceneContainer {
 private:
   BYTE          m_renderLevel;
-  CameraSet     m_accCameraSet;
   BYTE          m_accRenderFlags;
+  CameraSet     m_accCameraSet;
   FastSemaphore m_lock;
   // no lock
   void renderAccumulatedAndReset();
@@ -55,7 +55,7 @@ public:
   // Should return the window to receieve messages (from contextmenu)
   virtual HWND       getMessageWindow() const = 0;
   // Assume index = [0..get3DWindowCount()-1].
-  // Should return the 3D-window with the given indexed
+  // Should return the 3D-window with the given index
   virtual HWND       get3DWindow(UINT index) const = 0;
   virtual void       modifyContextMenu(HMENU menu) {
   }
@@ -75,11 +75,12 @@ public:
     return getClientRect(get3DWindow(index)).Size();
   }
   // incrLevel/decrLevel works in stack-like manner. All calls to render(...) will be accumulated
-  // in (m_accCamraSet,m_accRenderFlags) as long as m_renderLevel > 0.
+  // in (m_accCameraSet,m_accRenderFlags) as long as m_renderLevel > 0.
   // When m_renderLevel is decremented to 0, doRender(m_accRenderFlags,m_accCameraSet) is called (like flushing)
   // and m_accRenderFlags,m_accCameraSet are both reset, to begin a new cycle
   // NB:If a call to render with bit SC_RENDERNOW set, doRender is called immediately with the same arguments
   // leaving m_accCameraSet,m_accRenderFlags unchanged
+
   // with lock
   void               incrLevel();
   // with lock
