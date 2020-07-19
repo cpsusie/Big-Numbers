@@ -113,6 +113,10 @@ public:
 #if defined(__ATLTYPES_H__)
   inline Point2DTemplate(const CPoint &p) : x((T)p.x), y((T)p.y) {
   }
+  inline Point2DTemplate<T> &operator=(const CPoint &p) {
+    x = (T)p.x; y = (T)p.y;
+    return *this;
+  }
   inline operator CPoint() const {
     return CPoint((int)round(x), (int)round(y));
   }

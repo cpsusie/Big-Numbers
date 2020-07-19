@@ -105,14 +105,14 @@ public:
     : x((T)s.cx), y((T)s.cy), z((T)s.cz)
   {
   }
-  template<typename S> Point3DTemplate<T> &operator=(const Point3DTemplate<S> &src) {
-    x = (T)src.x;
-    y = (T)src.y;
-    z = (T)src.z;
-    return *this;
+  template<typename S> Point3DTemplate<T> &operator=(const Point3DTemplate<S> &p) {
+    x = (T)p.x; y = (T)p.y; z = (T)p.z; return *this;
   }
 #if defined(__D3DX9MATH_H__)
   inline Point3DTemplate(const D3DXVECTOR3 &v) : x((T)v.x), y((T)v.y), z((T)v.z) {
+  }
+  inline Point3DTemplate<T> &operator=(const D3DXVECTOR3 &v) {
+    x = (T)v.x; y = (T)v.y; z = (T)v.z; return *this;
   }
   inline operator D3DXVECTOR3() const {
     return D3DXVECTOR3((float)x, (float)y, (float)z);

@@ -166,6 +166,9 @@ public:
   }
 };
 
+typedef Cube3DTemplate<float>  FloatCube3D;
+typedef Cube3DTemplate<double> Cube3D;
+
 template<typename T1, typename T2> Cube3DTemplate<T1> getUnion(const Cube3DTemplate<T1> &c1, const Cube3DTemplate<T2> &c2) {
   const T1 minX = min(c1.getMinX(), c2.getMinX()), maxX = max(c1.getMaxX(), c2.getMaxX());
   const T1 minY = min(c1.getMinY(), c2.getMinY()), maxY = max(c1.getMaxY(), c2.getMaxY());
@@ -173,5 +176,47 @@ template<typename T1, typename T2> Cube3DTemplate<T1> getUnion(const Cube3DTempl
   return Cube3DTemplate<T1>(minX, minY, minZ, maxX - minX, maxY - minY, maxZ - minZ);
 }
 
-typedef Cube3DTemplate<double> Cube3D;
-typedef Cube3DTemplate<float>  FloatCube3D;
+
+template<typename T> class Point3DTemplateArray : public CompactArray<Point3DTemplate<T> > {
+public:
+  Point3DTemplateArray() {
+  }
+  explicit Point3DTemplateArray(size_t capacity) : CompactArray(capacity) {
+  }
+  template<typename S> Point3DTemplateArray(const Point3DTemplateArray<S> &src) : CompactArray(src.size) {
+    const size_t n = src.size();
+    for(const Point3DTemplate<S> p : src) {
+      add(Point3DTemplate<T>(p));
+    }
+  }
+  template<typename S> Point3DTemplateArray<T> &operator=(const Point3DTemplateArray<S> &src) {
+    if((void*)&src == (void*)this) {
+      return *this;
+    }
+    clear(src.size());
+    for(const Point3DTemplate<S> p : src) {
+      add(Point3DTemplate<T>(p));
+    }
+    return *this;
+  }
+  Cube3DTemplate<T> getBoundingBox() const {
+    if(size() == 0) {
+      return Cube3DTemplate<T>();
+    }
+
+    const Point3DTemplate<T> *p   = &first();
+    const Point3DTemplate<T> *end = &last();
+    T minX = p->x, maxX = minX, minY = p->y, maxY = minY, minZ = p->z, maxZ = minZ;
+    while(p++ < end) {
+      if(p->x < minX) minX = p->x; else if(p->x > maxX) maxX = p->x;
+      if(p->y < minY) minY = p->y; else if(p->y > maxY) maxY = p->y;
+      if(p->z < minZ) minZ = p->z; else if(p->z > maxZ) maxZ = p->z;
+    }
+    return Cube3DTemplate<T>(minX,minY,minZ, maxX-minX, maxY-minY,maxZ-minZ);
+  }
+};
+
+typedef Point3DTemplateArray<float   > FloatPoint3DArray;
+typedef Point3DTemplateArray<double  > Point3DArray;
+typedef Point3DTemplateArray<Double80> D80Point3DArray;
+typedef Point3DTemplateArray<Real>     RealPoint3DArray;
