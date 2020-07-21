@@ -293,11 +293,11 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="BigRealShortProductx64.asm">
-      <Filter>Source Files\Asm Files</Filter>
-    </CustomBuild>
+    <Natvis Include="BigReal.natvis" />
   </ItemGroup>
   <ItemGroup>
-    <Natvis Include="BigReal.natvis" />
+    <CustomBuild Include="BigRealShortProductx64.asm">
+      <Filter>Source Files</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>
