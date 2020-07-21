@@ -767,6 +767,7 @@ inline _int128  operator+(const _int128  &lft, unsigned short rhs) {
   return lft + (_uint128)rhs;
 }
 
+
 inline _uint128 operator+(const _uint128 &lft, __int64 rhs) {
   return lft + (_int128)rhs;
 }
@@ -791,7 +792,6 @@ inline _uint128 operator+(const _uint128 &lft, short rhs) {
 inline _uint128 operator+(const _uint128 &lft, unsigned short rhs) {
   return lft + (_uint128)rhs;
 }
-
 
 // operator- for built in integral types as second argument
 inline _int128  operator-(const _int128  &lft, __int64 rhs) {
@@ -819,6 +819,7 @@ inline _int128  operator-(const _int128  &lft, unsigned short rhs) {
   return lft - (_uint128)rhs;
 }
 
+
 inline _uint128 operator-(const _uint128 &lft, __int64 rhs) {
   return lft - (_int128)rhs;
 }
@@ -843,7 +844,6 @@ inline _uint128 operator-(const _uint128 &lft, short rhs) {
 inline _uint128 operator-(const _uint128 &lft, unsigned short rhs) {
   return lft - (_uint128)rhs;
 }
-
 
 // operator* for built in integral types as second argument
 inline _int128  operator*(const _int128  &lft, __int64 rhs) {
@@ -871,6 +871,7 @@ inline _int128  operator*(const _int128  &lft, unsigned short rhs) {
   return lft * (_uint128)rhs;
 }
 
+
 inline _uint128 operator*(const _uint128 &lft, __int64 rhs) {
   return lft * (_int128)rhs;
 }
@@ -895,7 +896,6 @@ inline _uint128 operator*(const _uint128 &lft, short rhs) {
 inline _uint128 operator*(const _uint128 &lft, unsigned short rhs) {
   return lft * (_uint128)rhs;
 }
-
 
 // operator/ for built in integral types as second argument
 inline _int128  operator/(const _int128  &lft, __int64 rhs) {
@@ -923,6 +923,7 @@ inline _int128  operator/(const _int128  &lft, unsigned short rhs) {
   return lft / (_int128)rhs;
 }
 
+
 inline _uint128 operator/(const _uint128 &lft, __int64 rhs) {
   return lft / (_int128)rhs;
 }
@@ -947,7 +948,6 @@ inline _uint128 operator/(const _uint128 &lft, short rhs) {
 inline _uint128 operator/(const _uint128 &lft, unsigned short rhs) {
   return lft / (_uint128)rhs;
 }
-
 
 // operator% for built in integral types as second argument
 inline _int128  operator%(const _int128  &lft, __int64 rhs) {
@@ -975,6 +975,7 @@ inline _int128  operator%(const _int128  &lft, unsigned short rhs) {
   return lft % (_int128)rhs;
 }
 
+
 inline _uint128 operator%(const _uint128 &lft, __int64 rhs) {
   return lft % (_int128)rhs;
 }
@@ -999,7 +1000,6 @@ inline _uint128 operator%(const _uint128 &lft, short rhs) {
 inline _uint128 operator%(const _uint128 &lft, unsigned short rhs) {
   return lft % (_uint128)rhs;
 }
-
 
 // operator& for built in integral types as second argument
 inline _int128  operator&(const _int128  &lft, __int64 rhs) {
@@ -1027,6 +1027,7 @@ inline _int128  operator&(const _int128  &lft, unsigned short rhs) {
   return lft & (_int128)rhs;
 }
 
+
 inline _uint128 operator&(const _uint128 &lft, __int64 rhs) {
   return lft & (_int128)rhs;
 }
@@ -1051,7 +1052,6 @@ inline _uint128 operator&(const _uint128 &lft, short rhs) {
 inline _uint128 operator&(const _uint128 &lft, unsigned short rhs) {
   return lft & (_uint128)rhs;
 }
-
 
 // operator| for built in integral types as second argument
 inline _int128  operator|(const _int128  &lft, __int64 rhs) {
@@ -1079,6 +1079,7 @@ inline _int128  operator|(const _int128  &lft, unsigned short rhs) {
   return lft | (_int128)rhs;
 }
 
+
 inline _uint128 operator|(const _uint128 &lft, __int64 rhs) {
   return lft | (_int128)rhs;
 }
@@ -1103,7 +1104,6 @@ inline _uint128 operator|(const _uint128 &lft, short rhs) {
 inline _uint128 operator|(const _uint128 &lft, unsigned short rhs) {
   return lft | (_uint128)rhs;
 }
-
 
 // operator^ for built in integral types as second argument
 inline _int128  operator^(const _int128  &lft, __int64 rhs) {
@@ -1130,6 +1130,7 @@ inline _int128  operator^(const _int128  &lft, short rhs) {
 inline _int128  operator^(const _int128  &lft, unsigned short rhs) {
   return lft ^ (_int128)rhs;
 }
+
 
 inline _uint128 operator^(const _uint128 &lft, __int64 rhs) {
   return lft ^ (_int128)rhs;
@@ -1189,6 +1190,7 @@ inline bool operator==(const _int128 &lft, unsigned char rhs) {
   return lft == _int128(rhs);
 }
 
+
 inline bool operator==(const _uint128 &lft, __int64 rhs) {
   return lft == _int128(rhs);
 }
@@ -1219,7 +1221,6 @@ inline bool operator==(const _uint128 &lft, char rhs) {
 inline bool operator==(const _uint128 &lft, unsigned char rhs) {
   return lft == _uint128(rhs);
 }
-
 
 // operator!= for built in integral types as second argument
 inline bool operator!=(const _int128 &lft, __int64 rhs) {
@@ -1253,6 +1254,7 @@ inline bool operator!=(const _int128 &lft, unsigned char rhs) {
   return lft != _int128(rhs);
 }
 
+
 inline bool operator!=(const _uint128 &lft, __int64 rhs) {
   return lft != _int128(rhs);
 }
@@ -1283,7 +1285,6 @@ inline bool operator!=(const _uint128 &lft, char rhs) {
 inline bool operator!=(const _uint128 &lft, unsigned char rhs) {
   return lft != _uint128(rhs);
 }
-
 
 // operator> for built in integral types as second argument
 inline bool operator>(const _int128 &lft, __int64 rhs) {
@@ -1317,6 +1318,7 @@ inline bool operator>(const _int128 &lft, unsigned char rhs) {
   return lft > _uint128(rhs);
 }
 
+
 inline bool operator>(const _uint128 &lft, __int64 rhs) {
   return lft > _int128(rhs);
 }
@@ -1347,7 +1349,6 @@ inline bool operator>(const _uint128 &lft, char rhs) {
 inline bool operator>(const _uint128 &lft, unsigned char rhs) {
   return lft > _uint128(rhs);
 }
-
 
 // operator>= for built in integral types as second argument
 inline bool operator>=(const _int128 &lft, __int64 rhs) {
@@ -1381,6 +1382,7 @@ inline bool operator>=(const _int128 &lft, unsigned char rhs) {
   return lft >= _uint128(rhs);
 }
 
+
 inline bool operator>=(const _uint128 &lft, __int64 rhs) {
   return lft >= _int128(rhs);
 }
@@ -1411,7 +1413,6 @@ inline bool operator>=(const _uint128 &lft, char rhs) {
 inline bool operator>=(const _uint128 &lft, unsigned char rhs) {
   return lft >= _uint128(rhs);
 }
-
 
 // operator< for built in integral types as second argument
 inline bool operator<(const _int128 &lft, __int64 rhs) {
@@ -1445,6 +1446,7 @@ inline bool operator<(const _int128 &lft, unsigned char rhs) {
   return lft < _uint128(rhs);
 }
 
+
 inline bool operator<(const _uint128 &lft, __int64 rhs) {
   return lft < _int128(rhs);
 }
@@ -1475,7 +1477,6 @@ inline bool operator<(const _uint128 &lft, char rhs) {
 inline bool operator<(const _uint128 &lft, unsigned char rhs) {
   return lft < _uint128(rhs);
 }
-
 
 // operator<= for built in integral types as second argument
 inline bool operator<=(const _int128 &lft, __int64 rhs) {
@@ -1508,6 +1509,7 @@ inline bool operator<=(const _int128 &lft, char rhs) {
 inline bool operator<=(const _int128 &lft, unsigned char rhs) {
   return lft <= _uint128(rhs);
 }
+
 
 inline bool operator<=(const _uint128 &lft, __int64 rhs) {
   return lft <= _int128(rhs);
@@ -1567,6 +1569,7 @@ inline _int128  &operator+=(_int128  &lft, unsigned short rhs) {
   return lft += (_uint128)rhs;
 }
 
+
 inline _uint128 &operator+=(_uint128 &lft, __int64 rhs) {
   return lft += (_int128)rhs;
 }
@@ -1591,7 +1594,6 @@ inline _uint128 &operator+=(_uint128 &lft, short rhs) {
 inline _uint128 &operator+=(_uint128 &lft, unsigned short rhs) {
   return lft += (_uint128)rhs;
 }
-
 
 // operator-= for built in integral types as second argument
 inline _int128  &operator-=(_int128  &lft, __int64 rhs) {
@@ -1619,6 +1621,7 @@ inline _int128  &operator-=(_int128  &lft, unsigned short rhs) {
   return lft -= (_uint128)rhs;
 }
 
+
 inline _uint128 &operator-=(_uint128 &lft, __int64 rhs) {
   return lft -= (_int128)rhs;
 }
@@ -1643,7 +1646,6 @@ inline _uint128 &operator-=(_uint128 &lft, short rhs) {
 inline _uint128 &operator-=(_uint128 &lft, unsigned short rhs) {
   return lft -= (_uint128)rhs;
 }
-
 
 // operator*= for built in integral types as second argument
 inline _int128  &operator*=(_int128  &lft, __int64 rhs) {
@@ -1671,6 +1673,7 @@ inline _int128  &operator*=(_int128  &lft, unsigned short rhs) {
   return lft *= (_uint128)rhs;
 }
 
+
 inline _uint128 &operator*=(_uint128 &lft, __int64 rhs) {
   return lft *= (_int128)rhs;
 }
@@ -1695,7 +1698,6 @@ inline _uint128 &operator*=(_uint128 &lft, short rhs) {
 inline _uint128 &operator*=(_uint128 &lft, unsigned short rhs) {
   return lft *= (_uint128)rhs;
 }
-
 
 // operator/= for built in integral types as second argument
 inline _int128  &operator/=(_int128  &lft, __int64 rhs) {
@@ -1723,6 +1725,7 @@ inline _int128  &operator/=(_int128  &lft, unsigned short rhs) {
   return lft /= (_uint128)rhs;
 }
 
+
 inline _uint128 &operator/=(_uint128 &lft, __int64 rhs) {
   return lft /= (_int128)rhs;
 }
@@ -1747,7 +1750,6 @@ inline _uint128 &operator/=(_uint128 &lft, short rhs) {
 inline _uint128 &operator/=(_uint128 &lft, unsigned short rhs) {
   return lft /= (_uint128)rhs;
 }
-
 
 // operator%= for built in integral types as second argument
 inline _int128  &operator%=(_int128  &lft, __int64 rhs) {
@@ -1775,6 +1777,7 @@ inline _int128  &operator%=(_int128  &lft, unsigned short rhs) {
   return lft %= (_uint128)rhs;
 }
 
+
 inline _uint128 &operator%=(_uint128 &lft, __int64 rhs) {
   return lft %= (_int128)rhs;
 }
@@ -1799,7 +1802,6 @@ inline _uint128 &operator%=(_uint128 &lft, short rhs) {
 inline _uint128 &operator%=(_uint128 &lft, unsigned short rhs) {
   return lft %= (_uint128)rhs;
 }
-
 
 // operator&= for built in integral types as second argument
 inline _int128  &operator&=(_int128  &lft, __int64 rhs) {
@@ -1827,6 +1829,7 @@ inline _int128  &operator&=(_int128  &lft, unsigned short rhs) {
   return lft &= (_uint128)rhs;
 }
 
+
 inline _uint128 &operator&=(_uint128 &lft, __int64 rhs) {
   return lft &= (_int128)rhs;
 }
@@ -1851,7 +1854,6 @@ inline _uint128 &operator&=(_uint128 &lft, short rhs) {
 inline _uint128 &operator&=(_uint128 &lft, unsigned short rhs) {
   return lft &= (_uint128)rhs;
 }
-
 
 // operator|= for built in integral types as second argument
 inline _int128  &operator|=(_int128  &lft, __int64 rhs) {
@@ -1879,6 +1881,7 @@ inline _int128  &operator|=(_int128  &lft, unsigned short rhs) {
   return lft |= (_uint128)rhs;
 }
 
+
 inline _uint128 &operator|=(_uint128 &lft, __int64 rhs) {
   return lft |= (_int128)rhs;
 }
@@ -1903,7 +1906,6 @@ inline _uint128 &operator|=(_uint128 &lft, short rhs) {
 inline _uint128 &operator|=(_uint128 &lft, unsigned short rhs) {
   return lft |= (_uint128)rhs;
 }
-
 
 // operator^= for built in integral types as second argument
 inline _int128  &operator^=(_int128  &lft, __int64 rhs) {
@@ -1930,6 +1932,7 @@ inline _int128  &operator^=(_int128  &lft, short rhs) {
 inline _int128  &operator^=(_int128  &lft, unsigned short rhs) {
   return lft ^= (_uint128)rhs;
 }
+
 
 inline _uint128 &operator^=(_uint128 &lft, __int64 rhs) {
   return lft ^= (_int128)rhs;

@@ -297,7 +297,7 @@
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="BigRealShortProductx64.asm">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Asm Files</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>

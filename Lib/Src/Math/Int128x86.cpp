@@ -533,7 +533,7 @@ static void unsignedQuotRemainder(const _uint128 &x, const _uint128 &y, _uint128
     if(quot) *quot = 0;
 
     int lastShift = 0;
-    for(int count = 0; rem >= y; count++) {
+    for(int count = 0; rem >= y;) {
       UINT64         rem63;                            // max 63 bits to prevent overflow in division
       const int      remScale = getFirst63(rem, rem63);
       int            shift    = remScale - yScale;
@@ -601,7 +601,7 @@ SaveQ32:                                               ;   }
       rem -= p128;                                     // Assume: p128 <= rem
 UpdateQuot:
       if(quot) {                                       // Do we want the quot. If its NULL there's no need to do this
-        if(count == 0) {
+        if(count++ == 0) {
           *quot = q32;
         } else {
           const int ds = lastShift - shift;
