@@ -10,19 +10,57 @@
 #define PRROT_INVERTNORMALS     0x04
 #define PRROT_USECOLOR          0x08
 
-class ProfileRotationParameters {
+class Point2DTo3DConverter {
+protected:
+  char m_rotateAxis;         // ['x','y','z'] - rotationaxis in 3D space
+  char m_rotateAxisAlignsTo; // ['x','y']     - axis in 2D space aligned with rotateAxis
+  char m_xTo3Dcoord, m_yTo3Dcoord;
 public:
-  ProfileRotationParameters(char rotateAxis='x', char rotateAxisAlignsTo='x', float rad=D3DX_PI*2.0f, unsigned int edgeCount=20, BYTE flags=0, D3DCOLOR color=0);
+  Point2DTo3DConverter(char rotateAxis='x', char rotateAxisAlignsTo='x');
   void checkIsValid() const; // throws Exception if not valid
-  char         m_rotateAxis;         // ['x','y','z'] - rotationaxis in 3D space
-  char         m_rotateAxisAlignsTo; // ['x','y']     - axis in 2D space aligned with rotateAxis
-  float        m_rad;
-  unsigned int m_edgeCount;
-  FLAGTRAITS(ProfileRotationParameters, BYTE, m_flags);
-  D3DCOLOR     m_color;
+  template<typename T> Point3DTemplate<T> convertPoint(const Point2DTemplate<T> &p) const {
+    Point3DTemplate<T> result(0,0,0);
+    switch(m_xTo3Dcoord) {
+    case 'x': result.x = p.x; break;
+    case 'y': result.y = p.x; break;
+    case 'z': result.z = p.x; break;
+    }
+    switch(m_yTo3Dcoord) {
+    case 'x': result.x = p.y; break;
+    case 'y': result.y = p.y; break;
+    case 'z': result.z = p.y; break;
+    }
+    return result;
+  }
   inline BYTE getRotateAxisIndex() const {
     return m_rotateAxis - 'x';
   }
+  inline char getRotateAxis() const {
+    return m_rotateAxis;
+  }
+  inline char getRotateAxisAlignsTo() const {
+    return m_rotateAxisAlignsTo;
+  }
+};
+
+inline bool operator==(const Point2DTo3DConverter &c1, const Point2DTo3DConverter &c2) {
+  return (c1.getRotateAxis() == c2.getRotateAxis()) && (c1.getRotateAxisAlignsTo() == c2.getRotateAxisAlignsTo());
+}
+
+inline bool operator!=(const Point2DTo3DConverter &c1, const Point2DTo3DConverter &c2) {
+  return !(c1 == c2);
+}
+
+class ProfileRotationParameters {
+public:
+  ProfileRotationParameters();
+  ProfileRotationParameters(const Point2DTo3DConverter &converter, float rad=D3DX_PI*2.0f, UINT edgeCount=20, BYTE flags=0, D3DCOLOR color=0);
+  void checkIsValid() const; // throws Exception if not valid
+  Point2DTo3DConverter m_converter;
+  float                m_rad;
+  UINT                 m_edgeCount;
+  D3DCOLOR             m_color;
+  FLAGTRAITS(ProfileRotationParameters, BYTE, m_flags);
 };
 
 class ProfileStretchParameters {
@@ -70,26 +108,26 @@ public:
   explicit Vertex2DTemplateArray(size_t capacity) : CompactArray(capacity) {
   }
 
-  template<typename S> Vertex2DTemplateArray(const Vertex2DTemplateArray<S> &src) : CompactArray(src.size) {
+  template<typename S> Vertex2DTemplateArray(const Vertex2DTemplateArray<S> &src) : CompactArray(src.size()) {
     const size_t n = src.size();
-    for(const Vertex2DTemplate<S> *srcp = src.getBuffer(); *endp = srcp + n, srcp < endp;) {
-      add(Vertex2DTemplate<T>(*(srcp++)));
+    for(const Vertex2DTemplate<S> v : src) {
+      add(Vertex2DTemplate<T>(v));
     }
   }
   template<typename S> Vertex2DTemplateArray<T> &operator=(const Vertex2DTemplateArray<S> &src) {
     const size_t n = src.size();
     clear(n);
     if(n == 0) return *this;
-    for(const Vertex2DTemplate<S> *srcp = src.getBuffer(), *endp = srcp + n; srcp < endp;) {
-      add(Vertex2DTemplate<T>(*(srcp++)));
+    for(const Vertex2DTemplate<S> v : src) {
+      add(Vertex2DTemplate<T>(v));
     }
     return *this;
   }
   Vertex2DTemplateArray<T> &invertNormals() {
     const size_t n = size();
     if(n == 0) return *this;
-    for(Vertex2DTemplate<T> *vp = &first(), *endp = vp + n; vp < endp;) {
-      (vp++)->invertNormal();
+    for(Vertex2DTemplate<T> v : *this) {
+      v.invertNormal();
     }
     return *this;
   }
@@ -97,6 +135,16 @@ public:
 
 typedef Vertex2DTemplate<float>      Vertex2D;
 typedef Vertex2DTemplateArray<float> Vertex2DArray;
+typedef Vertex2DArray                VertexCurve2D;
+
+class VertexProfile2D : public Array<VertexCurve2D> {
+public:
+  VertexProfile2D() {
+  }
+  explicit VertexProfile2D(size_t capacity) : Array(capacity) {
+  }
+  VertexProfile2D &invertNormals();
+};
 
 class PolygonCurve2D;
 
@@ -141,15 +189,19 @@ public:
   String toString() const;
 };
 
-inline bool operator==(const ProfileCurve2D   &p1, const ProfileCurve2D   &p2) {
+inline bool operator==(const ProfileCurve2D &p1, const ProfileCurve2D &p2) {
   return (p1.m_type == p2.m_type) && (p1.m_points == p2.m_points);
 }
 
-inline bool operator!=(const ProfileCurve2D   &p1, const ProfileCurve2D   &p2) {
+inline bool operator!=(const ProfileCurve2D &p1, const ProfileCurve2D &p2) {
   return !(p1==p2);
 }
 
 class ProfilePolygon2D {
+private:
+  VertexCurve2D getFlatVertexCurve() const;
+  // Return noOfPoints normals
+  VertexCurve2D getSmoothVertexCurve() const;
 public:
   Point2D               m_start;
   Array<ProfileCurve2D> m_curveArray;
@@ -165,11 +217,8 @@ public:
   Point2DArray           getAllPoints() const;
   CompactArray<Point2D*> getAllPointsRef();
   Point2DArray           getCurvePoints() const;
-  Vertex2DArray          getFlatVertexArray() const;
-  // Return noOfPoints normals
-  Vertex2DArray          getSmoothVertexArray() const;
-  inline Vertex2DArray   getAllVertices(bool smoothNormals) const {
-    return smoothNormals ? getSmoothVertexArray() : getFlatVertexArray();
+  inline VertexCurve2D getVertexCurve(bool smoothNormals) const {
+    return smoothNormals ? getSmoothVertexCurve() : getFlatVertexCurve();
   }
   inline ProfileCurve2D &getLastCurve() {
     return m_curveArray.last();
@@ -231,18 +280,12 @@ public:
   ProfilePolygon2D &getLastPolygon() {
     return m_polygonArray.last();
   }
-  bool            isEmpty() const;
-  Rectangle2D     getBoundingBox() const;
-  Point2DArray    getAllPoints() const;
+  bool                   isEmpty() const;
+  Rectangle2D            getBoundingBox() const;
+  Point2DArray           getAllPoints() const;
   CompactArray<Point2D*> getAllPointsRef();
-  Point2DArray    getCurvePoints() const;
-  // Return noOfLines normals
-  Vertex2DArray   getFlatVertexArray() const;
-  // Return noOfPoints normals
-  Vertex2DArray   getSmoothVertexArray() const;
-  inline Vertex2DArray getAllVertices(bool smoothNormals) const {
-    return smoothNormals ? getSmoothVertexArray() : getFlatVertexArray();
-  }
+  Point2DArray           getCurvePoints() const;
+  VertexProfile2D        getVertexProfile(bool smoothNormals) const;
 
   bool canConnect(const Point2D *p1, const Point2D *p2) const;
   void connect(   const Point2D *p1, const Point2D *p2);

@@ -44,10 +44,24 @@ void getValue(XMLDoc &doc, XMLNodePtr n, Profile2D &v) {
   getValue<Array<ProfilePolygon2D>, ProfilePolygon2D>(doc, plist, v.m_polygonArray);
 }
 
-void setValue(XMLDoc &doc, XMLNodePtr n, const ProfileRotationParameters &v) {
-  const String rotStr = format(_T("%c"), v.m_rotateAxis), rotAlignsToStr = format(_T("%c"), v.m_rotateAxisAlignsTo);
+void setValue(XMLDoc &doc, XMLNodePtr n, const Point2DTo3DConverter &v) {
+  const String rotStr = format(_T("%c"), v.getRotateAxis()), rotAlignsToStr = format(_T("%c"), v.getRotateAxisAlignsTo());
   setValue(doc,n, _T("rotateaxis"        ), rotStr              );
   setValue(doc,n, _T("rotateaxisalignsto"), rotAlignsToStr      );
+}
+
+void getValue(XMLDoc &doc, XMLNodePtr n, Point2DTo3DConverter &v) {
+  String rotStr, rotAlignsToStr;
+  getValue(doc,n, _T("rotateaxis"        ), rotStr             );
+  getValue(doc,n, _T("rotateaxisalignsto"), rotAlignsToStr     );
+  assert(rotStr.length()         == 1);
+  assert(rotAlignsToStr.length() == 1);
+  v = Point2DTo3DConverter((char)rotStr[0],(char)rotAlignsToStr[0]);
+}
+
+void setValue(XMLDoc &doc, XMLNodePtr n, const ProfileRotationParameters &v) {
+  XMLNodePtr   cn = doc.createNode(n, _T("converter"));
+  setValue(doc,cn                         , v.m_converter       );
   setValue(doc,n, _T("rad"               ), v.m_rad             );
   setValue(doc,n, _T("edgeCount"         ), v.m_edgeCount       );
   setValue(doc,n, _T("flags"             ), v.m_flags           );
@@ -55,16 +69,11 @@ void setValue(XMLDoc &doc, XMLNodePtr n, const ProfileRotationParameters &v) {
 }
 
 void getValue(XMLDoc &doc, XMLNodePtr n, ProfileRotationParameters &v) {
-  String rotStr, rotAlignsToStr;
-  getValue(doc,n, _T("rotateaxis"        ), rotStr             );
-  getValue(doc,n, _T("rotateaxisalignsto"), rotAlignsToStr     );
+  XMLNodePtr   cn = doc.getChild(n, _T("converter"));
+
+  getValue(doc,cn                         , v.m_converter      );
   getValue(doc,n, _T("rad"               ), v.m_rad            );
   getValue(doc,n, _T("edgeCount"         ), v.m_edgeCount      );
   getValue(doc,n, _T("flags"             ), v.m_flags          );
   getValue(doc,n, _T("color"             ), v.m_color     ,true);
-
-  assert(rotStr.length()         == 1);
-  assert(rotAlignsToStr.length() == 1);
-  v.m_rotateAxis         = (char)rotStr[0];
-  v.m_rotateAxisAlignsTo = (char)rotAlignsToStr[0];
 }

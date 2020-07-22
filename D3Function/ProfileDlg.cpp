@@ -381,8 +381,8 @@ void CProfileDlg::rotateParamToWin(const ProfileRotationParameters &param) {
   m_useColor           = param.isSet(PRROT_USECOLOR    );
   m_degrees            = degrees(param.m_rad);
   m_edgeCount          = param.m_edgeCount;
-  m_rotateAxis         = format(_T("%c"), param.m_rotateAxis).cstr();
-  m_rotateAxisAlignsTo = format(_T("%c"), param.m_rotateAxisAlignsTo).cstr();
+  m_rotateAxis         = format(_T("%c"), param.m_converter.getRotateAxis()).cstr();
+  m_rotateAxisAlignsTo = format(_T("%c"), param.m_converter.getRotateAxisAlignsTo()).cstr();
   COLORREF mfcColor    = D3DCOLOR2COLORREF(param.m_color);
   getColorButton()->SetColor(mfcColor);
 }
@@ -401,9 +401,8 @@ void CProfileDlg::rotateWinToParam(ProfileRotationParameters &param) {
   }
   param.m_rad                = radians(m_degrees);
   param.m_edgeCount          = m_edgeCount;
-  param.m_rotateAxis         = (char)m_rotateAxis.GetAt(0);
-  param.m_rotateAxisAlignsTo = (char)m_rotateAxisAlignsTo.GetAt(0);
-  COLORREF mfcColor          = getColorButton()->GetColor();
+  param.m_converter          = Point2DTo3DConverter((char)m_rotateAxis.GetAt(0),(char)m_rotateAxisAlignsTo.GetAt(0));
+  const COLORREF mfcColor    = getColorButton()->GetColor();
   param.m_color              = COLORREF2D3DCOLOR(mfcColor);
 }
 

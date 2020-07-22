@@ -57,6 +57,7 @@ void getValue(XMLDoc &doc, XMLNodePtr n,       D3Scene             &s);
 class ProfileCurve2D;
 class ProfilePolygon2D;
 class Profile2D;
+class Point2DTo3DConverter;
 class ProfileRotationParameters;
 
 void setValue(XMLDoc &doc, XMLNodePtr n, const ProfileCurve2D            &v);
@@ -67,6 +68,9 @@ void getValue(XMLDoc &doc, XMLNodePtr n,       ProfilePolygon2D          &v);
 
 void setValue(XMLDoc &doc, XMLNodePtr n, const Profile2D                 &v);
 void getValue(XMLDoc &doc, XMLNodePtr n,       Profile2D                 &v);
+
+void setValue(XMLDoc &doc, XMLNodePtr n, const Point2DTo3DConverter      &v);
+void getValue(XMLDoc &doc, XMLNodePtr n,       Point2DTo3DConverter      &v);
 
 void setValue(XMLDoc &doc, XMLNodePtr n, const ProfileRotationParameters &v);
 void getValue(XMLDoc &doc, XMLNodePtr n,       ProfileRotationParameters &v);

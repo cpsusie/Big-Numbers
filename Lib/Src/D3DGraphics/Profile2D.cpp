@@ -11,10 +11,10 @@ static Point2D findNormal(const Point2D &from, const Point2D &to) {
 
 class FlatVertexGenerator : public CurveOperator {
 private:
-  Vertex2DArray m_result;
+  VertexCurve2D m_result;
 public:
   void line(const Point2D &from, const Point2D &to);
-  const Vertex2DArray &getResult() const {
+  const VertexCurve2D &getResult() const {
     return m_result;
   }
 };
@@ -107,18 +107,18 @@ Point2DArray ProfilePolygon2D::getCurvePoints() const {
   return collector.m_result;
 }
 
-Vertex2DArray ProfilePolygon2D::getFlatVertexArray() const {
+VertexCurve2D ProfilePolygon2D::getFlatVertexCurve() const {
   FlatVertexGenerator vg;
   apply(vg);
   return vg.getResult();
 }
 
-Vertex2DArray ProfilePolygon2D::getSmoothVertexArray() const { // return noOfPoints normals
-  const Point2DArray pa = getCurvePoints();
-  const size_t       n  = pa.size();
-  const Point2D     &p0 = pa[0], &pl = pa.last();
+VertexCurve2D ProfilePolygon2D::getSmoothVertexCurve() const { // return noOfPoints normals
+ const Point2DArray pa = getCurvePoints();
+ const size_t       n  = pa.size();
+ const Point2D     &p0 = pa[0], &pl = pa.last();
 
-  Vertex2DArray result;
+  VertexCurve2D result;
   if(m_closed) {
     result.add(Vertex2D(p0, unitVector(findNormal(pl,p0) + findNormal(p0,pa[1]))));
   } else {
@@ -267,17 +267,17 @@ bool Profile2D::canConnect(const Point2D *p1, const Point2D *p2) const {
   if(p1 == p2) {
     return false;
   }
-  int pp1 = findPolygonContainingPoint(p1);
-  int pp2 = findPolygonContainingPoint(p2);
-  return pp1 >= 0 && pp2 >= 0 && pp1 != pp2;
+  const int pp1 = findPolygonContainingPoint(p1);
+  const int pp2 = findPolygonContainingPoint(p2);
+  return (pp1 >= 0) && (pp2 >= 0) && (pp1 != pp2);
 }
 
 void Profile2D::connect(const Point2D *p1, const Point2D *p2) {
   if(!canConnect(p1,p2)) {
     return;
   }
-  int i1 = findPolygonContainingPoint(p1);
-  int i2 = findPolygonContainingPoint(p2);
+  const int i1 = findPolygonContainingPoint(p1);
+  const int i2 = findPolygonContainingPoint(p2);
   ProfilePolygon2D &pp1 = m_polygonArray[i1];
   ProfilePolygon2D &pp2 = m_polygonArray[i2];
 
@@ -377,35 +377,36 @@ void Profile2D::init() {
 }
 
 bool Profile2D::hasDefaultName() const {
-  return m_name != EMPTYSTRING && m_name != _T("Untitled");
+  return (m_name != EMPTYSTRING) && (m_name != _T("Untitled"));
 }
 
 String Profile2D::getDisplayName() const {
   return FileNameSplitter(m_name).getFileName();
 }
 
-Vertex2DArray Profile2D::getFlatVertexArray() const {
-  FlatVertexGenerator normalGenerator;
-  apply(normalGenerator);
-  return normalGenerator.getResult();
+VertexProfile2D &VertexProfile2D::invertNormals() {
+  const size_t n = size();
+  for(size_t i = 0; i < n; i++) {
+    (*this)[i].invertNormals();
+  }
+  return *this;
 }
 
-Vertex2DArray Profile2D::getSmoothVertexArray() const {
-  Vertex2DArray result;
-  for(size_t i = 0; i < m_polygonArray.size(); i++) {
-    const ProfilePolygon2D &pp = m_polygonArray[i];
-    result.addAll(pp.getSmoothVertexArray());
+VertexProfile2D Profile2D::getVertexProfile(bool smoothNormals) const {
+  const size_t    n = m_polygonArray.size();
+  VertexProfile2D result(n);
+  for(size_t i = 0; i < n; i++) {
+    result.add(m_polygonArray[i].getVertexCurve(smoothNormals));
   }
   return result;
 }
 
 bool operator==(const ProfileRotationParameters &p1, const ProfileRotationParameters &p2) {
-  return p1.m_rotateAxis         == p2.m_rotateAxis
-      && p1.m_rotateAxisAlignsTo == p2.m_rotateAxisAlignsTo
-      && p1.m_edgeCount          == p2.m_edgeCount
-      && p1.m_rad                == p2.m_rad
-      && p1.m_flags              == p2.m_flags
-      && p1.m_color              == p2.m_color;
+  return p1.m_converter == p2.m_converter
+      && p1.m_edgeCount == p2.m_edgeCount
+      && p1.m_rad       == p2.m_rad
+      && p1.m_flags     == p2.m_flags
+      && p1.m_color     == p2.m_color;
 }
 
 bool operator!=(const ProfileRotationParameters &p1, const ProfileRotationParameters &p2) {

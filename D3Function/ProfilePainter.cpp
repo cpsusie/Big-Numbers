@@ -41,14 +41,18 @@ void paintArrow(CDC &dc, const Point2D &p, const Point2D &dir, double length) {
 }
 
 void paintProfileNormals(const Profile2D &profile, Viewport2D &vp, COLORREF color, bool smooth) {
-  const Vertex2DArray va = profile.getAllVertices(smooth);
-  CPen                pen;
+  const VertexProfile2D vp2d = profile.getVertexProfile(smooth);
+  const size_t          n    = vp2d.size();
+  CPen                  pen;
   pen.CreatePen(BS_SOLID, 1, color);
   vp.SelectObject(&pen);
   CDC &dc = *vp.getDC();
-  for(const Vertex2D v : va) {
-    const Point2D from = vp.forwardTransform(v.m_pos);
-    const Point2D dir  = vp.forwardTransform(v.m_pos + v.m_normal) - from;
-    paintArrow(dc, from, dir, 20);
+  for(size_t i = 0; i < n; i++) {
+    const VertexCurve2D &vc = vp2d[i];
+    for(const Vertex2D v : vc) {
+      const Point2D from = vp.forwardTransform(v.m_pos);
+      const Point2D dir  = vp.forwardTransform(v.m_pos + v.m_normal) - from;
+      paintArrow(dc, from, dir, 20);
+    }
   }
 }
