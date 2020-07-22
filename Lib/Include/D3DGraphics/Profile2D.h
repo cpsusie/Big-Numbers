@@ -51,11 +51,16 @@ inline bool operator!=(const Point2DTo3DConverter &c1, const Point2DTo3DConverte
   return !(c1 == c2);
 }
 
+
 class ProfileRotationParameters {
 public:
+  static const IntInterval s_legalEdgeCountInterval;
   ProfileRotationParameters();
   ProfileRotationParameters(const Point2DTo3DConverter &converter, float rad=D3DX_PI*2.0f, UINT edgeCount=20, BYTE flags=0, D3DCOLOR color=0);
-  void checkIsValid() const; // throws Exception if not valid
+  // throws Exception if not valid
+  void checkIsValid() const;
+  // throws Exception if not valid
+  static void validateEdgeCount(UINT edgeCount);
   Point2DTo3DConverter m_converter;
   float                m_rad;
   UINT                 m_edgeCount;

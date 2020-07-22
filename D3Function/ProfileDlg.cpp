@@ -11,6 +11,7 @@
 #include "ProfileDlg.h"
 //#include "SelectGlyphDialog.h"
 
+
 class ValidationException : public Exception {
 public:
   int m_field;
@@ -112,6 +113,7 @@ BEGIN_MESSAGE_MAP(CProfileDlg, CDialog)
   ON_CBN_SELCHANGE(IDC_COMBOROTATEAXIS        , OnCbnSelchangeComboRotateAxis        )
   ON_CBN_SELCHANGE(IDC_COMBOROTATEAXISALIGNSTO, OnCbnSelchangeComboRotateAxisAlignsTo)
   ON_MESSAGE(      ID_MSG_RENDER              , OnMsgRender                          )
+  ON_NOTIFY(UDN_DELTAPOS, IDC_SPIN_EDGECOUNT  , OnDeltaposSpinEdgeCount              )
 END_MESSAGE_MAP()
 
 static LOGFONT makeDefaultFont() {
@@ -440,9 +442,13 @@ void CProfileDlg::validate() {
     || (m_degrees <= 0) || (m_degrees > 360)) {
     throwValidateException(IDC_EDIT_DEGREES,_T("Degrees must be in ]0..360]"));
   }
-  if(!getEditValue(this, IDC_EDIT_EDGECOUNT, m_edgeCount, false)
-    || (m_edgeCount <= 2) || (m_edgeCount > 100)) {
-    throwValidateException(IDC_EDIT_EDGECOUNT, _T("Edge count must be in [2..100]"));
+  if(!getEditValue(this, IDC_EDIT_EDGECOUNT, m_edgeCount, false)) {
+    throwValidateException(IDC_EDIT_EDGECOUNT, _T("Invalid input"));
+  }
+  try {
+    ProfileRotationParameters::validateEdgeCount(m_edgeCount);
+  } catch(Exception e) {
+    throwValidateException(IDC_EDIT_EDGECOUNT, _T("%s"), e.what());
   }
 }
 
@@ -459,6 +465,25 @@ void CProfileDlg::clearException() {
 void CProfileDlg::raiseException(const Exception &e) {
   m_exceptionRaised = true;
   setWindowText(this, IDC_STATIC_INFO, e.what());
+}
+
+bool CProfileDlg::getUintValue(int id, UINT &value) {
+  const String str = getWindowText(this, id);
+  return _stscanf(str.cstr(), _T("%u"), &value) == 1;
+}
+
+bool CProfileDlg::getUintEmptyZero(int id, UINT &value) {
+  const String str = getWindowText(this, id).trim();
+  if(str.length() == 0) {
+    value = 0;
+    return true;
+  } else {
+    return _stscanf(str.cstr(), _T("%u"), &value) == 1;
+  }
+}
+
+void CProfileDlg::setUintEmptyZero(int id, UINT value) {
+  setWindowText(this, id, value?format(_T("%u"),value):EMPTYSTRING);
 }
 
 void CProfileDlg::showMousePosition(const CPoint &p) {
@@ -880,6 +905,18 @@ void CProfileDlg::OnCheckNormalSmooth()                   { repaintAll(); }
 void CProfileDlg::OnButtonRefresh()                       { render3D();   }
 void CProfileDlg::OnBnClickedCheckUseColor()              { render3D();   }
 void CProfileDlg::OnBnClickedMFCColorButton()             { render3D();   }
+
+void CProfileDlg::OnDeltaposSpinEdgeCount(NMHDR *pNMHDR, LRESULT *pResult) {
+  LPNMUPDOWN pNMUpDown = reinterpret_cast<LPNMUPDOWN>(pNMHDR);
+  UINT value;
+  const IntInterval &legalInterval = ProfileRotationParameters ::s_legalEdgeCountInterval;
+  if(getUintEmptyZero(IDC_EDIT_EDGECOUNT, value)) {
+    value -= pNMUpDown->iDelta;
+    value  = minMax((int)value, legalInterval.getFrom(), legalInterval.getTo());
+    setEditValue(this, IDC_EDIT_EDGECOUNT, value);
+  }
+  *pResult = 0;
+}
 
 void CProfileDlg::OnRadioRotate() {
   m_currentControl = IDC_RADIO_ROTATE;

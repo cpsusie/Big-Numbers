@@ -56,10 +56,17 @@ ProfileRotationParameters::ProfileRotationParameters(const Point2DTo3DConverter 
   checkIsValid();
 }
 
-void ProfileRotationParameters::checkIsValid() const { // throws Exception if not valid
-  if(m_edgeCount < 2) {
-    throwException(_T("EdgeCount must >= 2. (=%u"), m_edgeCount);
+const IntInterval ProfileRotationParameters::s_legalEdgeCountInterval(3,100);
+void ProfileRotationParameters::validateEdgeCount(UINT edgeCount) { // static
+  if(!s_legalEdgeCountInterval.contains(edgeCount)) {
+    throwException(_T("EdgeCount must be in interval %s. (=%u")
+                  , s_legalEdgeCountInterval.toString().cstr()
+                  , edgeCount);
   }
+}
+
+void ProfileRotationParameters::checkIsValid() const { // throws Exception if not valid
+  validateEdgeCount(m_edgeCount);
   if(m_rad == 0) {
     throwException(_T("Rad == 0"));
   }

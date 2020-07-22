@@ -48,7 +48,7 @@ private:
   float     m_degrees;
   BOOL      m_normalSmooth;
   BOOL      m_rotateSmooth;
-  int       m_edgeCount;
+  UINT      m_edgeCount;
   CString   m_rotateAxis;
   CString   m_rotateAxisAlignsTo;
   BOOL      m_useColor;
@@ -75,6 +75,9 @@ private:
   void showValidateError( const ValidationException &e);
   void clearException();
   void raiseException(const Exception &e);
+  bool getUintValue(    int id, UINT   &value);
+  bool getUintEmptyZero(int id, UINT   &value);
+  void setUintEmptyZero(int id, UINT    value);
   void validate();
   void validateAndUpdate();
   void render2D();
@@ -196,6 +199,7 @@ public:
   afx_msg void OnCbnSelchangeComboRotateAxisAlignsTo();
   afx_msg void OnBnClickedCheckUseColor();
   afx_msg void OnBnClickedMFCColorButton();
+  afx_msg void OnDeltaposSpinEdgeCount(NMHDR *pNMHDR, LRESULT *pResult);
   afx_msg LRESULT OnMsgRender(              WPARAM wp, LPARAM lp);
   DECLARE_MESSAGE_MAP()
 };

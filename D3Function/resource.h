@@ -87,14 +87,15 @@
 #define IDC_STATIC_DEBUG3DFRAME         1220
 #define IDC_STATIC_INFO                 1221
 #define IDC_EDIT_EDGECOUNT              1222
-#define IDC_EDIT_DEGREES                1223
-#define IDC_SLIDER_DEGREE               1224
-#define IDC_STATIC_DEGREE               1225
-#define IDC_RADIO_ROTATE                1226
-#define IDC_RADIO_STRETCH               1227
-#define IDC_CHECK_ROTATESMOOTH          1228
-#define IDC_CHECK_NORMALSMOOTH          1229
-#define IDC_BUTTON_REFRESH              1230
+#define IDC_SPIN_EDGECOUNT              1223
+#define IDC_EDIT_DEGREES                1224
+#define IDC_SLIDER_DEGREE               1225
+#define IDC_STATIC_DEGREE               1226
+#define IDC_RADIO_ROTATE                1227
+#define IDC_RADIO_STRETCH               1228
+#define IDC_CHECK_ROTATESMOOTH          1229
+#define IDC_CHECK_NORMALSMOOTH          1230
+#define IDC_BUTTON_REFRESH              1231
 #define IDC_STATIC_PROFILEIMAGE2D       1233
 #define IDC_STATIC_PROFILEIMAGE3D       1234
 #define IDC_CHECKDOUBLESIDED            1235
@@ -184,7 +185,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        210
 #define _APS_NEXT_COMMAND_VALUE         33553
-#define _APS_NEXT_CONTROL_VALUE         1260
+#define _APS_NEXT_CONTROL_VALUE         1261
 #define _APS_NEXT_SYMED_VALUE           102
 #endif
 #endif
