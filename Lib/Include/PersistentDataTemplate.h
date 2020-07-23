@@ -9,9 +9,9 @@ private:
   String m_name;
 protected:
   static const TCHAR *s_defaultName; // = "Untitled"
-public:
-  _PersistentData() : m_name(s_defaultName) {
+  _PersistentData(const String &name = s_defaultName) : m_name(name) {
   }
+public:
   virtual ~_PersistentData() {
   }
   inline const String &getName() const {
@@ -27,7 +27,7 @@ public:
     return m_name.length() > 0;
   }
   inline bool hasDefaultName() const {
-    return m_name == s_defaultName;
+    return getDisplayName() == s_defaultName;
   }
   String getDisplayName() const;
   void load(const String &fileName);
@@ -37,4 +37,7 @@ public:
 };
 
 template<typename T> class PersistentDataTemplate : public _PersistentData, public TypeContainerTemplate<T> {
+protected:
+  PersistentDataTemplate(const String &name = s_defaultName) : _PersistentData(name) {
+  }
 };

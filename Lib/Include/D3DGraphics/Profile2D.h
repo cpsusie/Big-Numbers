@@ -1,6 +1,7 @@
 #pragma once
 
 #include <FlagTraits.h>
+#include <PersistentDataTemplate.h>
 #include <MFCUtil/ShapeFunctions.h>
 #include "D3Math.h"
 #include "D3AbstractMeshFactory.h"
@@ -202,6 +203,7 @@ inline bool operator!=(const ProfileCurve2D &p1, const ProfileCurve2D &p2) {
   return !(p1==p2);
 }
 
+class GlyphPolygon;
 class ProfilePolygon2D {
 private:
   VertexCurve2D getFlatVertexCurve() const;
@@ -213,7 +215,7 @@ public:
   bool                  m_closed;
 
   ProfilePolygon2D();
-
+  ProfilePolygon2D(const GlyphPolygon &gp);
   inline void addCurve(const ProfileCurve2D &curve) {
     m_curveArray.add(curve);
   }
@@ -262,19 +264,20 @@ inline bool operator!=(const ProfilePolygon2D &p1, const ProfilePolygon2D &p2) {
   return !(p1==p2);
 }
 
-class Profile2D {
+class GlyphCurveData;
+
+class Profile2D : public _PersistentData {
 private:
   int findPolygonContainingPoint(const Point2D *p) const;
 public:
-  String                  m_name;
+  static const TCHAR *s_profileFileExtensions;
+
   Array<ProfilePolygon2D> m_polygonArray;
   void init();
   Profile2D() {
     init();
   }
-  bool hasDefaultName() const;
-  String getDisplayName() const;
-
+  Profile2D(const GlyphCurveData &glyphData, const String &name = s_defaultName);
   void addLine(const Point2D &p1, const Point2D &p2);
   // n is number of points. number of lines will be n-1
   void addLineStrip(const Point2D *points, int n);
@@ -296,11 +299,18 @@ public:
   void connect(   const Point2D *p1, const Point2D *p2);
   void move(      const Point2D &dp);
   void apply(CurveOperator &op) const;
+
+  void putDataToDoc(  XMLDoc &doc);
+  void getDataFromDoc(XMLDoc &doc);
+
   String toString() const;
+
+  bool selectAndLoadProfile();
+
 };
 
 inline bool operator==(const Profile2D &p1, const Profile2D &p2) {
-  return (p1.m_name == p2.m_name) && (p1.m_polygonArray == p2.m_polygonArray);
+  return (p1.getName() == p2.getName()) && (p1.m_polygonArray == p2.m_polygonArray);
 }
 
 inline bool operator!=(const Profile2D &p1, const Profile2D &p2) {
@@ -308,4 +318,3 @@ inline bool operator!=(const Profile2D &p1, const Profile2D &p2) {
 }
 
 LPD3DXMESH rotateProfile(AbstractMeshFactory &amf, const Profile2D &profile, const ProfileRotationParameters &param, bool doubleSided);
-Profile2D   *selectAndLoadProfile();

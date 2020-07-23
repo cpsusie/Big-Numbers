@@ -1017,6 +1017,7 @@
     <ClCompile Include="IsoSurfaceParameters.cpp" />
     <ClCompile Include="Profile2DXML.cpp" />
     <ClCompile Include="Profile3D.cpp" />
+    <ClCompile Include="Profile2DFromGlyphData.cpp" />
     <ClCompile Include="ResourceTypeStr.cpp" />
     <ClCompile Include="RotateProfile.cpp" />
     <ClCompile Include="SelectAndLoadProfile.cpp" />

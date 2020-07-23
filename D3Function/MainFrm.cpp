@@ -132,6 +132,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
   m_accelTable = LoadAccelerators(theApp.m_hInstance, MAKEINTRESOURCE(IDR_MAINFRAME));
   ajourDebugMenu();
 
+  theApp.m_prDevice.attach(*this);
   init3D();
   return 0;
 }
@@ -140,6 +141,7 @@ void CMainFrame::OnDestroy() {
   m_destroyCalled = true;
   stopDebugging();
   deleteCalculatedObject();
+  theApp.m_prDevice.detach();
   __super::OnDestroy();
 }
 

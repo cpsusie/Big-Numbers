@@ -6,7 +6,7 @@
 #endif
 
 CExprFunctionR2R1SurfaceParametersDlg::CExprFunctionR2R1SurfaceParametersDlg(const ExprFunctionR2R1SurfaceParameters &param, AbstractTextureFactory &atf, CWnd *pParent)
-: SaveLoadExprWithCommonParametersDialog(IDD, pParent, param, atf, _T("expression"), _T("exp"))
+: SaveLoadExprWithCommonParametersDlg(IDD, pParent, param, atf, _T("expression"), _T("exp"))
 {
 }
 

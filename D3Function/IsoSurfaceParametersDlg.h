@@ -1,9 +1,9 @@
 #pragma once
 
-#include "SaveLoadExprWithCommonParametersDialog.h"
+#include "SaveLoadExprWithCommonParametersDlg.h"
 #include <D3DGraphics/ExprIsoSurfaceParameters.h>
 
-class CIsoSurfaceParametersDlg : public SaveLoadExprWithCommonParametersDialog<ExprIsoSurfaceParameters> {
+class CIsoSurfaceParametersDlg : public SaveLoadExprWithCommonParametersDlg<ExprIsoSurfaceParameters> {
 private:
   CString m_expr;
   double  m_cellSize;

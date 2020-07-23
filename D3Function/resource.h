@@ -15,6 +15,7 @@
 #define IDD_DIALOGENTEROPTIONSNAME      150
 #define IDD_DIALOGORGANIZEOPTIONS       151
 #define IDR_PROFILE                     152
+#define IDD_SELECTGLYPH                 153
 #define IDB_TESTBITMAP                  200
 #define IDB_CIRCLEARROWBITMAP           201
 #define IDB_LEFTRIGHTARROWBITMAP        202
@@ -103,13 +104,14 @@
 #define IDC_COMBOROTATEAXISALIGNSTO     1237
 #define IDC_CHECK_USECOLOR              1238
 #define IDC_MFCCOLORBUTTON              1239
-#define IDC_COMBOOPTIONSNAME            1240
-#define IDC_LISTOPTIONNAMES             1241
-#define IDC_BUTTONRENAME                1250
-#define IDC_BUTTONDELETE                1251
-#define IDC_BUTTONMOVEUP                1252
-#define IDC_EDIT_INFOBOX                1253
-#define IDC_BUTTONMOVEDOWN              1254
+#define IDC_STATICGLYPHFRAME            1240
+#define IDC_COMBOOPTIONSNAME            1400
+#define IDC_LISTOPTIONNAMES             1401
+#define IDC_BUTTONRENAME                1402
+#define IDC_BUTTONDELETE                1403
+#define IDC_BUTTONMOVEUP                1404
+#define IDC_EDIT_INFOBOX                1405
+#define IDC_BUTTONMOVEDOWN              1406
 #define ID_INDICATOR_POSITION           32771
 #define ID_INDICATOR_DEBUG              32772
 #define ID_FILE_FUNCTIONSURFACE         32802
@@ -178,6 +180,10 @@
 #define ID_TOOLS_POLYGON                33542
 #define ID_TOOLS_ELLIPSE                33543
 #define ID_TOOLS_SELECT                 33544
+#define ID_GODOWN                       33560
+#define ID_GOLEFT                       33561
+#define ID_GORIGHT                      33562
+#define ID_GOUP                         33563
 
 // Next default values for new objects
 // 

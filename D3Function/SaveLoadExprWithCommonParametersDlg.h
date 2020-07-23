@@ -4,7 +4,7 @@
 #include <FileNameSplitter.h>
 #include <D3DGraphics/D3AbstractTextureFactory.h>
 
-template<typename T> class SaveLoadExprWithCommonParametersDialog : public SaveLoadExprDialog<T> {
+template<typename T> class SaveLoadExprWithCommonParametersDlg : public SaveLoadExprDialog<T> {
 protected:
   BOOL    m_includeTime;
   double  m_timefrom;
@@ -18,7 +18,7 @@ protected:
   CString m_textureFileName;
   AbstractTextureFactory &m_atf;
 
-  SaveLoadExprWithCommonParametersDialog<T>(int resId, CWnd *pParent, const T &param, AbstractTextureFactory &atf, const String &paramTypeName, const String &extension)
+  SaveLoadExprWithCommonParametersDlg<T>(int resId, CWnd *pParent, const T &param, AbstractTextureFactory &atf, const String &paramTypeName, const String &extension)
     : SaveLoadExprDialog<T>(resId, pParent, param, paramTypeName, extension)
     , m_atf(                atf  )
     , m_createListFile(     FALSE)

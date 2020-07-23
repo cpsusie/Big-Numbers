@@ -372,16 +372,8 @@ Profile2D::Profile2D(const String &name, const GlyphCurveData &src) {
 */
 
 void Profile2D::init() {
-  m_name = _T("Untitled");
+  setDefaultName();
   m_polygonArray.clear();
-}
-
-bool Profile2D::hasDefaultName() const {
-  return (m_name != EMPTYSTRING) && (m_name != _T("Untitled"));
-}
-
-String Profile2D::getDisplayName() const {
-  return FileNameSplitter(m_name).getFileName();
 }
 
 VertexProfile2D &VertexProfile2D::invertNormals() {

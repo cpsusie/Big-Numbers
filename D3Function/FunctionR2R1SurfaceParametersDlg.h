@@ -1,10 +1,10 @@
 #pragma once
 
-#include "SaveLoadExprWithCommonParametersDialog.h"
+#include "SaveLoadExprWithCommonParametersDlg.h"
 #include <D3DGraphics/D3AbstractTextureFactory.h>
 #include <D3DGraphics/ExprFunctionR2R1SurfaceParameters.h>
 
-class CExprFunctionR2R1SurfaceParametersDlg : public SaveLoadExprWithCommonParametersDialog<ExprFunctionR2R1SurfaceParameters> {
+class CExprFunctionR2R1SurfaceParametersDlg : public SaveLoadExprWithCommonParametersDlg<ExprFunctionR2R1SurfaceParameters> {
 private:
   CString m_expr;
   double  m_xfrom;

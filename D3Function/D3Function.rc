@@ -59,6 +59,16 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\D3Function.ico"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
 // Bitmap
 //
 
@@ -267,6 +277,16 @@ BEGIN
     CONTROL         "",IDC_STATIC_DEBUG3DFRAME,"Static",SS_WHITEFRAME | SS_SUNKEN,516,195,106,84
 END
 
+IDD_SELECTGLYPH DIALOG 0, 0, 594, 407
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Select character"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,537,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,537,24,50,14
+    GROUPBOX        "Font",IDC_STATICGLYPHFRAME,7,32,519,368
+END
+
 IDD_ABOUTBOX DIALOGEX 0, 0, 235, 55
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About D3Function"
@@ -335,6 +355,10 @@ BEGIN
         TOPMARGIN, 6
         BOTTOMMARGIN, 337
         HORZGUIDE, 6
+    END
+
+    IDD_SELECTGLYPH, DIALOG
+    BEGIN
     END
 
     IDD_ABOUTBOX, DIALOG
@@ -603,6 +627,14 @@ BEGIN
     "X",            ID_EDIT_CUT,            VIRTKEY, CONTROL, NOINVERT
 END
 
+IDR_SELECTGLYPHDIALOGACCELERATOR ACCELERATORS
+BEGIN
+    VK_DOWN,        ID_GODOWN,              VIRTKEY, NOINVERT
+    VK_LEFT,        ID_GOLEFT,              VIRTKEY, NOINVERT
+    VK_RIGHT,       ID_GORIGHT,             VIRTKEY, NOINVERT
+    VK_UP,          ID_GOUP,                VIRTKEY, NOINVERT
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -760,16 +792,6 @@ BEGIN
         MENUITEM "&Select",                     ID_TOOLS_SELECT
     END
 END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Icon
-//
-
-// Icon with lowest ID value placed first to ensure application icon
-// remains consistent on all systems.
-IDR_MAINFRAME           ICON                    "res\\D3Function.ico"
 
 
 /////////////////////////////////////////////////////////////////////////////

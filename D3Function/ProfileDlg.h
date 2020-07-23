@@ -203,6 +203,3 @@ public:
   afx_msg LRESULT OnMsgRender(              WPARAM wp, LPARAM lp);
   DECLARE_MESSAGE_MAP()
 };
-
-Profile2D *selectAndLoadProfile();
-extern const TCHAR *profileFileExtensions;

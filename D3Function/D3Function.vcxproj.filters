@@ -138,7 +138,10 @@
     <ClInclude Include="TurnableRect.h">
       <Filter>Source Files\Dialogs\Source Files\Profile Helper\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SaveLoadExprWithCommonParametersDialog.h">
+    <ClInclude Include="SaveLoadExprWithCommonParametersDlg.h">
+      <Filter>Source Files\Dialogs\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SelectGlyphDlg.h">
       <Filter>Source Files\Dialogs\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -235,6 +238,9 @@
     </ClCompile>
     <ClCompile Include="DrawToolSelect.cpp">
       <Filter>Source Files\Dialogs\Source Files\Profile Helper\DrawTool</Filter>
+    </ClCompile>
+    <ClCompile Include="SelectGlyphDlg.cpp">
+      <Filter>Source Files\Dialogs\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

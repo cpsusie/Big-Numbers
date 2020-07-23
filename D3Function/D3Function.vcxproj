@@ -680,7 +680,8 @@
     <ClInclude Include="D3Function.h" />
     <ClInclude Include="D3FunctionDoc.h" />
     <ClInclude Include="D3SceneView.h" />
-    <ClInclude Include="SaveLoadExprWithCommonParametersDialog.h" />
+    <ClInclude Include="SaveLoadExprWithCommonParametersDlg.h" />
+    <ClInclude Include="SelectGlyphDlg.h" />
     <ClInclude Include="SplitView.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -713,6 +714,7 @@
     <ClCompile Include="ProfileDlg.cpp" />
     <ClCompile Include="ProfileEditor.cpp" />
     <ClCompile Include="ProfilePainter.cpp" />
+    <ClCompile Include="SelectGlyphDlg.cpp" />
     <ClCompile Include="SplitView.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

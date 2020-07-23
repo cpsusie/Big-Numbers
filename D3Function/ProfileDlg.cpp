@@ -9,8 +9,7 @@
 #include "BitmapRotate.h"
 #include "DrawTools.h"
 #include "ProfileDlg.h"
-//#include "SelectGlyphDialog.h"
-
+#include "SelectGlyphDlg.h"
 
 class ValidationException : public Exception {
 public:
@@ -53,15 +52,15 @@ CProfileDlg::~CProfileDlg() {
 
 void CProfileDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
-  DDX_Text(pDX, IDC_EDIT_DEGREES, m_degrees);
-  DDX_Check(pDX, IDC_CHECK_NORMALSMOOTH, m_normalSmooth);
-  DDX_Check(pDX, IDC_CHECK_ROTATESMOOTH, m_rotateSmooth);
-  DDX_Text(pDX, IDC_EDIT_EDGECOUNT, m_edgeCount);
-  DDX_Radio(pDX, IDC_RADIO_ROTATE, m_3dmode);
-  DDX_Check(pDX, IDC_CHECKDOUBLESIDED, m_doubleSided);
-  DDX_CBString(pDX, IDC_COMBOROTATEAXIS, m_rotateAxis);
+  DDX_Text(    pDX, IDC_EDIT_DEGREES           , m_degrees);
+  DDX_Check(   pDX, IDC_CHECK_NORMALSMOOTH     , m_normalSmooth);
+  DDX_Check(   pDX, IDC_CHECK_ROTATESMOOTH     , m_rotateSmooth);
+  DDX_Text(    pDX, IDC_EDIT_EDGECOUNT         , m_edgeCount);
+  DDX_Radio(   pDX, IDC_RADIO_ROTATE           , m_3dmode);
+  DDX_Check(   pDX, IDC_CHECKDOUBLESIDED       , m_doubleSided);
+  DDX_CBString(pDX, IDC_COMBOROTATEAXIS        , m_rotateAxis);
   DDX_CBString(pDX, IDC_COMBOROTATEAXISALIGNSTO, m_rotateAxisAlignsTo);
-  DDX_Check(pDX, IDC_CHECK_USECOLOR, m_useColor);
+  DDX_Check(   pDX, IDC_CHECK_USECOLOR         , m_useColor);
 }
 
 BEGIN_MESSAGE_MAP(CProfileDlg, CDialog)
@@ -208,7 +207,7 @@ void CProfileDlg::destroyViewport() {
 void CProfileDlg::resetView() {
   m_lastSavedProfile = m_profile;
   initViewport();
-  setProfileName(m_profile.m_name);
+  setProfileName(m_profile.getName());
   m_currentDrawTool->unselectAll();
   m_currentDrawTool->initState();
   render(SC_RENDERALL);
@@ -428,8 +427,8 @@ bool CProfileDlg::isDoubleSided() const {
 }
 
 void CProfileDlg::setProfileName(const String &name) {
-  m_profile.m_name = name;
-  SetWindowText(name.cstr());
+  m_profile.setName(name);
+  setWindowText(this, name);
 }
 
 void CProfileDlg::validateAndUpdate() {
@@ -496,10 +495,10 @@ void CProfileDlg::showMousePosition(const CPoint &p) {
 void CProfileDlg::OnFileSave() {
   try {
     validateAndUpdate();
-    if(!m_profile.hasDefaultName()) {
+    if(m_profile.hasDefaultName()) {
       saveAs();
     } else {
-      save(m_profile.m_name);
+      save(m_profile.getName());
     }
   } catch(ValidationException e) {
     showValidateError(e);
@@ -520,42 +519,29 @@ void CProfileDlg::OnFileSaveAs() {
 }
 
 void CProfileDlg::saveAs() {
-#if !defined(__TODO__)
-  showWarning(_T("%s:Function not implemented"), __TFUNCTION__);
-#else
-  CString objName = m_profile.m_name.cstr();
+  CString objName = m_profile.getName().cstr();
   CFileDialog dlg(FALSE,_T("*.prf"),objName);
-  dlg.m_ofn.lpstrFilter = profileFileExtensions;
+  dlg.m_ofn.lpstrFilter = Profile2D::s_profileFileExtensions;
   dlg.m_ofn.lpstrTitle  = _T("Save Profile");
   if((dlg.DoModal() != IDOK) || (_tcslen(dlg.m_ofn.lpstrFile) == 0)) {
     return;
   }
   save(dlg.m_ofn.lpstrFile);
-#endif
 }
 
 void CProfileDlg::save(const String &fileName) {
-#if !defined(__TODO__)
-  showWarning(_T("%s:Function not implemented"), __TFUNCTION__);
-#else
-  FILE *file = NULL;
   try {
     String extension = FileNameSplitter(fileName).getExtension();
     String fullName = fileName;
     if(extension.length() == 0) {
       fullName = FileNameSplitter(fileName).setExtension(_T("prf")).getFullPath();
     }
-    file = FOPEN(fullName,_T("w"));
-    m_profile.write(file);
+    m_profile.save(fullName);
     setProfileName(fullName);
     m_lastSavedProfile = m_profile;
   } catch(Exception e) {
     showException(e);
   }
-  if(file != NULL) {
-    fclose(file);
-  }
-#endif
 }
 
 bool CProfileDlg::dirtyCheck() {
@@ -585,29 +571,26 @@ void CProfileDlg::OnFileOpen() {
   if(!dirtyCheck()) {
     return;
   }
-  Profile2D *profile = selectAndLoadProfile();
-  if(profile != NULL) {
-    m_profile = *profile;
-    SAFEDELETE(profile);
+  Profile2D tmp;
+  if(tmp.selectAndLoadProfile()) {
+    m_profile = tmp;
     resetView();
   }
 }
 
 void CProfileDlg::OnFileSelectFromFont() {
-/*
   if(!dirtyCheck()) {
     return;
   }
   CFontDialog dlg(&m_logFont,CF_EFFECTS | CF_SCREENFONTS,NULL,this);
   if(dlg.DoModal() == IDOK) {
     dlg.GetCurrentFont(&m_logFont);
-    CSelectGlyphDialog selectGlyphDlg(m_logFont,this);
+    CSelectGlyphDlg selectGlyphDlg(m_logFont,this);
     if(selectGlyphDlg.DoModal() == IDOK) {
-      m_profile = Profile2D("Untitled",selectGlyphDlg.getSelectedGlyphCurveData());
+      m_profile = Profile2D(selectGlyphDlg.getSelectedGlyphCurveData());
       resetView();
     }
   }
-*/
 }
 
 BOOL CProfileDlg::PreTranslateMessage(MSG *pMsg) {

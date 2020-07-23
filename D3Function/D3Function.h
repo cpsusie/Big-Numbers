@@ -4,6 +4,7 @@
     #error include 'stdafx.h' before including this file for PCH
 #endif
 
+#include <MFCUtil/PixRectDevice.h>
 #include "resource.h"       // main symbols
 #include "Options.h"
 
@@ -11,7 +12,8 @@ class CMainFrame;
 
 class CD3FunctionApp : public CWinApp {
 public:
-  Options     m_options;
+  PixRectDevice m_prDevice;
+  Options       m_options;
   CD3FunctionApp();
   String getRecentFile(int index);
   void   removeFromRecentFiles(int index);
