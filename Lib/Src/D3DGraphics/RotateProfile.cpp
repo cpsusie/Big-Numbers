@@ -2,7 +2,6 @@
 #include <TinyBitSet.h>
 #include <D3DGraphics/MeshBuilder.h>
 #include <D3DGraphics/Profile2D.h>
-#include <D3DGraphics/Profile3D.h>
 
 Point2DTo3DConverter::Point2DTo3DConverter(char rotateAxis, char rotateAxisAlignsTo) {
   m_rotateAxis         = rotateAxis;         // ['x','y','z'] - rotationaxis in 3D space

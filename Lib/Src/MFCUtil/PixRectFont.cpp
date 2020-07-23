@@ -18,21 +18,6 @@ Rectangle2D GlyphPolygon::getBoundingBox() const {
   return getAllPoints().getBoundingBox();
 }
 
-void GlyphPolygon::move(const Point2D &dp) {
-  m_start += dp;
-  for(size_t i = 0; i < m_polygonCurveArray.size(); i++) {
-    m_polygonCurveArray[i].move(dp);
-  }
-}
-
-String GlyphPolygon::toString() const {
-  String result = format(_T("start:%s\n"), m_start.toString().cstr());
-  for(size_t p = 0; p < m_polygonCurveArray.size(); p++) {
-    result += m_polygonCurveArray[p].toString() + "\n";
-  }
-  return result;
-}
-
 // ------------------------------------ GlyphData ------------------------------
 
 GlyphData::GlyphData(PixRectDevice &device, HDC hdc, _TUCHAR ch, const MAT2 &m) : m_glyphCurveData(hdc, ch, m) {
@@ -50,8 +35,6 @@ GlyphData::GlyphData(PixRectDevice &device, HDC hdc, _TUCHAR ch, const MAT2 &m) 
   m_pixRect = new PixRect(device, PIXRECT_PLAINSURFACE, width,height); TRACE_NEW(m_pixRect);
   m_pixRect->fillRect(0,0,width,height,BLACK);
 
-//  FILE *logFile = FOPEN("c:\\temp\\glyph.txt", "a");
-//  fprintf(logFile,"letter %x '%c'\n",ch,ch);
   PixelAccessor *pa = m_pixRect->getPixelAccessor();
   for(int y = 0; y < height; y++) {
     int startIndex = y * ((width+31)/32);
@@ -60,17 +43,10 @@ GlyphData::GlyphData(PixRectDevice &device, HDC hdc, _TUCHAR ch, const MAT2 &m) 
       for(BYTE mask = 0x80; mask && x < width; x++, mask >>= 1) {
         if(*rowBits&mask) {
           pa->setPixel(x,y,D3D_WHITE);
-//          fprintf(logFile,"#");
         }
-//      else {
-//          fprintf(logFile," ");
-//        }
       }
     }
-//    fprintf(logFile,"\n");
   }
-//  fprintf(logFile,"\n\n");
-//  fclose(logFile);
   m_pixRect->releasePixelAccessor();
   SAFEDELETEARRAY(buffer);
 }
@@ -80,9 +56,6 @@ GlyphData::~GlyphData() {
 }
 
 // ------------------------------------ GlyphCurveData ------------------------------
-
-GlyphCurveData::GlyphCurveData() {
-}
 
 GlyphCurveData::GlyphCurveData(HDC hdc, _TUCHAR ch, const MAT2 &m) {
   GLYPHMETRICS m_metrics;
@@ -94,11 +67,11 @@ GlyphCurveData::GlyphCurveData(HDC hdc, _TUCHAR ch, const MAT2 &m) {
   char *buffer = new char[buffersize]; TRACE_NEW(buffer);
   GetGlyphOutline(hdc,ch, GGO_BEZIER,&m_metrics,buffersize,buffer,&m);
 
-  for(int index = 0;index < (int)buffersize;) {
+  for(int index = 0; index < (int)buffersize;) {
     TTPOLYGONHEADER *header = (TTPOLYGONHEADER*)&buffer[index];
-    GlyphPolygon polygon(header->pfxStart);
-    TTPOLYCURVE *c;
-    int h;
+    GlyphPolygon     polygon(header->pfxStart);
+    TTPOLYCURVE     *c;
+    int              h;
     for(h = sizeof(TTPOLYGONHEADER); h < (int)header->cb; h += sizeof(TTPOLYCURVE)+(c->cpfx-1)*sizeof(POINTFX)) {
       c = (TTPOLYCURVE*)&buffer[index+h];
       PolygonCurve2D curve(c->wType);
@@ -110,9 +83,6 @@ GlyphCurveData::GlyphCurveData(HDC hdc, _TUCHAR ch, const MAT2 &m) {
     addPolygon(polygon);
     index += h;
   }
-
-//  String s = dumphex(buffer+index,buffersize-index);
-  String s = toString();
   SAFEDELETEARRAY(buffer);
 }
 
@@ -124,36 +94,8 @@ Point2DArray GlyphCurveData::getAllPoints() const {
   return result;
 }
 
-Point2DArray GlyphCurveData::getLinePoints() const {
-  PointCollector collector;
-  applyToGlyph(*this,collector);
-  return collector.m_result;
-}
-
 Rectangle2D GlyphCurveData::getBoundingBox() const {
   return getAllPoints().getBoundingBox();
-}
-
-void GlyphCurveData::addLine(const Point2D &p1, const Point2D &p2) {
-  GlyphPolygon polygon(p1);
-  PolygonCurve2D curve(TT_PRIM_LINE);
-  curve.addPoint(p2);
-  polygon.addCurve(curve);
-  addPolygon(polygon);
-}
-
-void GlyphCurveData::move(const Point2D &dp) {
-  for(size_t i = 0; i < m_glyphPolygonArray.size(); i++) {
-    m_glyphPolygonArray[i].move(dp);
-  }
-}
-
-String GlyphCurveData::toString() const {
-  String result;
-  for(size_t i = 0; i < m_glyphPolygonArray.size(); i++) {
-    result += m_glyphPolygonArray[i].toString();
-  }
-  return result;
 }
 
 // ------------------------------------ PixRectFont ------------------------------
@@ -178,10 +120,7 @@ PixRectFont::~PixRectFont() {
     GlyphData *gd = m_glyphData[i];
     SAFEDELETE(gd);
   }
-}
-
-void PixRectFont::getLogFont(LOGFONT &logfont) {
-  m_font.GetLogFont(&logfont);
+  m_glyphData.clear();
 }
 
 void PixRectFont::initGlyphData(float orientation) {
@@ -195,26 +134,6 @@ void PixRectFont::initGlyphData(float orientation) {
     m_glyphData.add(gd);
   }
   DeleteDC(screenDC);
-}
-
-const GlyphData *PixRectFont::getGlyphData(_TUCHAR index) const {
-  return m_glyphData[index];
-}
-
-String dumphex(char *buffer, int count) {
-  String res;
-  for(int i = 0; i < count; i++) {
-    res += format(_T("%02x "),(BYTE)buffer[i]);
-  }
-  return res;
-}
-
-String dumphex(DWORD *buffer, int count) {
-  String res;
-  for(int i = 0; i < count; i++) {
-    res += format(_T("%08lx "), buffer[i]);
-  }
-  return res;
 }
 
 void PixRect::text(const CPoint &p, const String &text, const PixRectFont &font, D3DCOLOR color, bool invert) {
@@ -236,11 +155,13 @@ void PixRect::text(const CPoint &p, const String &text, const PixRectFont &font,
 }
 
 void applyToGlyphPolygon(const GlyphPolygon &polygon, CurveOperator &op) {
-  const Point2D *pp = &polygon.m_start;
+  const Point2D *pp = &polygon.getStart();
   op.beginCurve();
   op.apply(*pp);
-  for(size_t i = 0; i < polygon.m_polygonCurveArray.size(); i++) {
-    const PolygonCurve2D &curve = polygon.m_polygonCurveArray[i];
+  const Array<PolygonCurve2D> &a = polygon.getCurveArray();
+  const size_t curveCount = a.size();
+  for(size_t i = 0; i < curveCount; i++) {
+    const PolygonCurve2D &curve = a[i];
     switch(curve.getType()) {
     case TT_PRIM_LINE   :
       { const Point2DArray &pa = curve.getAllPoints();
@@ -267,7 +188,7 @@ void applyToGlyphPolygon(const GlyphPolygon &polygon, CurveOperator &op) {
       break;
     }
   }
-  op.apply(polygon.m_start);
+  op.apply(polygon.getStart());
   op.endCurve();
 }
 
@@ -301,4 +222,3 @@ void PixRect::drawGlyph(const CPoint &p, const GlyphCurveData &glyph, D3DCOLOR c
 void PixRect::drawText(const CPoint &p, const String &text, const PixRectFont &font, D3DCOLOR color, bool invert) {
   applyToText(text,font,PixRectTextMaker(this,p,color,invert));
 }
-

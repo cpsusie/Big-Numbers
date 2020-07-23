@@ -19,15 +19,18 @@ void getValue(XMLDoc &doc, XMLNodePtr n, PolygonCurve2D &v) {
 }
 
 void setValue(XMLDoc &doc, XMLNodePtr n, const GlyphPolygon &v) {
-  setValue(doc, n, _T("start"), v.m_start);
+  setValue(doc, n, _T("start"), v.getStart());
   XMLNodePtr clist = doc.createNode(n, _T("polygoncurve"));
   setValue<Array<PolygonCurve2D>, PolygonCurve2D>(doc, clist, v.getCurveArray());
 }
 
 void getValue(XMLDoc &doc, XMLNodePtr n, GlyphPolygon &v) {
-  getValue(doc, n, _T("start"), v.m_start);
+  Point2D               start;
+  Array<PolygonCurve2D> curveArray;
+  getValue(doc, n, _T("start"), start);
   XMLNodePtr clist = doc.getChild(n, _T("polygoncurve"));
-  getValue<Array<PolygonCurve2D>, PolygonCurve2D>(doc, clist, v.m_polygonCurveArray);
+  getValue<Array<PolygonCurve2D>, PolygonCurve2D>(doc, clist, curveArray);
+  v = GlyphPolygon(start, curveArray);
 }
 
 void setValue(XMLDoc &doc, XMLNodePtr parent, const GlyphCurveData &v) {
@@ -37,5 +40,7 @@ void setValue(XMLDoc &doc, XMLNodePtr parent, const GlyphCurveData &v) {
 
 void getValue(XMLDoc &doc, XMLNodePtr parent, GlyphCurveData &v) {
   XMLNodePtr n = doc.getChild(parent, _T("glyphcurvedata"));
-  getValue<Array<GlyphPolygon>, GlyphPolygon>(doc, n, v.m_glyphPolygonArray);
+  Array<GlyphPolygon> polygonArray;
+  getValue<Array<GlyphPolygon>, GlyphPolygon>(doc, n, polygonArray);
+  v = GlyphCurveData(polygonArray);
 }

@@ -458,49 +458,56 @@ public:
 };
 
 class GlyphPolygon {
-public:
+private:
   Point2D               m_start;
   Array<PolygonCurve2D> m_polygonCurveArray;
-
-  GlyphPolygon() {
+public:
+  inline GlyphPolygon() {
   }
 
-  GlyphPolygon(const Point2D &start) {
-    m_start = start;
+  inline GlyphPolygon(const Point2D &start) {
+    m_start             = start;
   }
 
-  void addCurve(PolygonCurve2D &curve) {
+  GlyphPolygon(const Point2D &start, const Array<PolygonCurve2D> &curveArray) {
+    m_start             = start;
+    m_polygonCurveArray = curveArray;
+  }
+
+  inline void addCurve(PolygonCurve2D &curve) {
     m_polygonCurveArray.add(curve);
   }
 
-  Rectangle2D getBoundingBox() const;
-  Point2DArray getAllPoints() const;
+  Rectangle2D    getBoundingBox() const;
+  Point2DArray   getAllPoints() const;
+
+  inline const Point2D &getStart() const {
+    return m_start;
+  }
   inline const Array<PolygonCurve2D> &getCurveArray() const {
     return m_polygonCurveArray;
   }
-  void move(const Point2D &dp);
-  String toString() const;
 };
 
 class GlyphCurveData {
-public:
+private:
   Array<GlyphPolygon> m_glyphPolygonArray;
+public:
 
+  inline GlyphCurveData() {
+  }
+  inline GlyphCurveData(const Array<GlyphPolygon> &polygonArray) : m_glyphPolygonArray(polygonArray) {
+  }
   GlyphCurveData(HDC hdc, _TUCHAR ch, const MAT2 &m);
-  GlyphCurveData();
 
-  String toString() const;
   Rectangle2D getBoundingBox() const;
   Point2DArray getAllPoints() const;
-  Point2DArray getLinePoints() const;
 
-  void addPolygon(const GlyphPolygon &polygon) {
+  inline void addPolygon(const GlyphPolygon &polygon) {
     m_glyphPolygonArray.add(polygon);
   }
 
-  void addLine(const Point2D &p1, const Point2D &p2);
-  void move(   const Point2D &dp);
-  const Array<GlyphPolygon> &getPolygonArray() const {
+  inline const Array<GlyphPolygon> &getPolygonArray() const {
     return m_glyphPolygonArray;
   }
 };
@@ -519,27 +526,29 @@ public:
 class PixRectFont {
 private:
   void initGlyphData(float orientation);
-  PixRectDevice           &m_device;
+  PixRectDevice                 &m_device;
+  CompactArray<GlyphData*>       m_glyphData;
 protected:
-  CFont                    m_font;
-  TEXTMETRIC               m_textMetrics;
-  CompactArray<GlyphData*> m_glyphData;
+  CFont                          m_font;
+  TEXTMETRIC                     m_textMetrics;
 public:
   PixRectFont(PixRectDevice &device);
   PixRectFont(PixRectDevice &device, const LOGFONT &logfont, float orientation=0);
  ~PixRectFont();
 
-  void getLogFont(LOGFONT &logfont);
+  inline void getLogFont(LOGFONT &logfont) {
+    m_font.GetLogFont(&logfont);
+  }
 
-  CFont &getFont() {
+  inline CFont &getFont() {
     return m_font;
   }
-
-  const TEXTMETRIC getTextMetrics() const {
+  inline const TEXTMETRIC &getTextMetrics() const {
     return m_textMetrics;
   }
-
-  const GlyphData *getGlyphData(_TUCHAR index) const;
+  inline const GlyphData *getGlyphData(_TUCHAR index) const {
+    return m_glyphData[index];
+  }
 };
 
 void applyToGlyphPolygon(const GlyphPolygon   &glyphPolygon, CurveOperator &op);

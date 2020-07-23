@@ -3,7 +3,7 @@
 #include <D3DGraphics/Profile2D.h>
 
 ProfilePolygon2D::ProfilePolygon2D(const GlyphPolygon &gp) {
-  m_start  = gp.m_start;
+  m_start  = gp.getStart();
   m_closed = true;
   const Array<PolygonCurve2D> &a = gp.getCurveArray();
   const size_t                 n = a.size();
