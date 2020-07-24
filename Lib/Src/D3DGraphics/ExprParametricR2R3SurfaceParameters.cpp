@@ -1,25 +1,8 @@
 #include "pch.h"
+#include <Math/Expression/ExpressionXML.h>
 #include <MFCUtil/MFCXml.h>
 #include <D3DGraphics/D3XML.h>
 #include <D3DGraphics/ExprParametricR2R3SurfaceParameters.h>
-
-void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const Expr3 &expr) {
-  XMLNodePtr n = doc.createNode(parent, tag);
-  setValue(doc, n, _T("common"            ), expr.getCommonText());
-  setValue(doc, n, _T("exprx"             ), expr.getRawText(0)  );
-  setValue(doc, n, _T("expry"             ), expr.getRawText(1)  );
-  setValue(doc, n, _T("exprz"             ), expr.getRawText(2)  );
-}
-
-void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, Expr3 &expr) {
-  XMLNodePtr n = doc.getChild(parent, tag);
-  String x, y, z, common;
-  getValueLF(doc,n, _T("exprx" ), x     );
-  getValueLF(doc,n, _T("expry" ), y     );
-  getValueLF(doc,n, _T("exprz" ), z     );
-  getValueLF(doc,n, _T("common"), common);
-  expr = Expr3(x, y, z, common);
-}
 
 void ExprParametricR2R3SurfaceParameters::putDataToDoc(XMLDoc &doc) {
   XMLNodePtr     root = doc.createRoot(_T("ParametricSurface"));

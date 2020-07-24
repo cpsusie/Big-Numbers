@@ -263,5 +263,6 @@ typedef Point3DTemplate<double  > Point3D;
 typedef Point3DTemplate<Double80> D80Point3D;
 typedef Point3DTemplate<Real    > RealPoint3D;
 
+typedef FunctionTemplate<Real   , Point3D> FunctionR1R3;
+typedef FunctionTemplate<Point3D, Real   > FunctionR3R1;
 typedef FunctionTemplate<Point3D, Point3D> FunctionR3R3;
-typedef FunctionTemplate<Point3D, Real>    FunctionR3R1;

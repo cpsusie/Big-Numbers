@@ -8,7 +8,7 @@ ExpressionFunctionR2R3::ExpressionFunctionR2R3(const Expr3 &expr, TrigonometricM
 }
 
 void ExpressionFunctionR2R3::compile(const Expr3 &expr, TrigonometricMode mode, bool machineCode, const String &names) {
-  for(int i = 0; i < 3; i++) {
+  for(int i = 0; i < ARRAYSIZE(m_expr); i++) {
     m_expr[i].compile(expr.getExprText(i), mode, machineCode, names);
   }
 }
@@ -22,7 +22,7 @@ Point3D ExpressionFunctionR2R3::operator()(const Point2D &p) {
 }
 
 void ExpressionFunctionR2R3::setTime(const Real &time) {
-  for(int i = 0; i < 3; i++) {
+  for(int i = 0; i < ARRAYSIZE(m_expr); i++) {
     m_expr[i].setTime(time);
   }
 }
@@ -33,14 +33,6 @@ const Real &ExpressionFunctionR2R3::getTime() const {
 
 FunctionWithTimeTemplate<FunctionR2R3> *ExpressionFunctionR2R3::clone() const {
   return new ExpressionFunctionR2R3(*this);
-}
-
-Expr3::Expr3(const String &expr1, const String &expr2, const String &expr3, const String &commonText)
-: m_commonText(commonText)
-{
-  add(expr1);
-  add(expr2);
-  add(expr3);
 }
 
 }; // namespace Expr

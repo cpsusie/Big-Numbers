@@ -27,9 +27,6 @@
     <ClInclude Include="..\..\Include\Math\Expression\Expression.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\Math\Expression\ExpressionFunction.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\Math\Expression\ExpressionNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -95,15 +92,24 @@
     <ClInclude Include="..\..\Include\Math\Expression\ExpressionFunctionR2R3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Expression\ExpressionFunctionR1R3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Expression\ExpressionFunctionR1R1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Expression\Expr3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Expression\ExpressionXML.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Expression.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ExpressionDerive.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ExpressionFunction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ExpressionHelp.cpp">
@@ -279,6 +285,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ExpressionFunctionR3R1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ExpressionFunctionR1R3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ExpressionFunctionR1R1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Expr3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ExpressionXML.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

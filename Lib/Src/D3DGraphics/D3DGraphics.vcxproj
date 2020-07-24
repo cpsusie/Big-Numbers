@@ -957,6 +957,7 @@
     <ClCompile Include="D3World.cpp" />
     <ClCompile Include="D3WorldXML.cpp" />
     <ClCompile Include="ExprFunctionR2R1SurfaceParameters.cpp" />
+    <ClCompile Include="ExprParametricR1R3SurfaceParameters.cpp" />
     <ClCompile Include="ExprParametricR2R3SurfaceParameters.cpp" />
     <ClCompile Include="Face.cpp" />
     <ClCompile Include="CreateMeshFunctionR2R1Surface.cpp" />
@@ -989,6 +990,7 @@
     <ClCompile Include="CreateMeshExprIsoSurface.cpp" />
     <ClCompile Include="MeshArray.cpp" />
     <ClCompile Include="MeshArrayJobMonitor.cpp" />
+    <ClCompile Include="ParametricR1R3SurfaceParameters.cpp" />
     <ClCompile Include="ParametricR2R3SurfaceParameters.cpp" />
     <ClCompile Include="CreateMeshParametricR2R3Surface.cpp" />
     <ClCompile Include="pch.cpp">
@@ -1076,6 +1078,7 @@
     <ClInclude Include="..\..\Include\D3DGraphics\D3World.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\ExprFunctionR2R1SurfaceParameters.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\ExprIsoSurfaceParameters.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\ExprParametricR1R3SurfaceParameters.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\ExprParametricR2R3SurfaceParameters.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\FunctionR2R1SurfaceParameters.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\IsoSurfaceParameters.h" />
@@ -1090,6 +1093,7 @@
     <ClInclude Include="..\..\Include\D3DGraphics\MeshBuilder.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\MeshCreators.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3XML.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\ParametricR1R3SurfaceParameters.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\ParametricR2R3SurfaceParameters.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\PragmaLib.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\Profile2D.h" />

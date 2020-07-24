@@ -840,14 +840,17 @@
     </CustomBuild>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Include\Math\Expression\Expr3.h" />
     <ClInclude Include="..\..\Include\Math\Expression\Expression.h" />
+    <ClInclude Include="..\..\Include\Math\Expression\ExpressionFunctionR1R3.h" />
     <ClInclude Include="..\..\Include\Math\Expression\ExpressionFunctionR2R3.h" />
-    <ClInclude Include="..\..\Include\Math\Expression\ExpressionFunction.h" />
+    <ClInclude Include="..\..\Include\Math\Expression\ExpressionFunctionR1R1.h" />
     <ClInclude Include="..\..\Include\Math\Expression\ExpressionFunctionR2R1.h" />
     <ClInclude Include="..\..\Include\Math\Expression\ExpressionFunctionR3R1.h" />
     <ClInclude Include="..\..\Include\Math\Expression\ExpressionNode.h" />
     <ClInclude Include="..\..\Include\Math\Expression\ExpressionSymbol.h" />
     <ClInclude Include="..\..\Include\Math\Expression\ExpressionWrapper.h" />
+    <ClInclude Include="..\..\Include\Math\Expression\ExpressionXML.h" />
     <ClInclude Include="..\..\Include\Math\Expression\ParserTree.h" />
     <ClInclude Include="..\..\Include\Math\Expression\ExpressionSymbolTable.h" />
     <ClInclude Include="..\..\Include\Math\Expression\ParserTreeComplexity.h" />
@@ -870,7 +873,9 @@
     <ClCompile Include="AddentArray.cpp" />
     <ClCompile Include="CodeGeneration.cpp" />
     <ClCompile Include="CoefArray.cpp" />
+    <ClCompile Include="Expr3.cpp" />
     <ClCompile Include="Expression.cpp" />
+    <ClCompile Include="ExpressionFunctionR1R3.cpp" />
     <ClCompile Include="ExpressionFunctionR2R3.cpp" />
     <ClCompile Include="ExpressionAction.cpp" />
     <ClCompile Include="ExpressionCompile.cpp" />
@@ -880,7 +885,7 @@
     <ClCompile Include="CodeGenerator.cpp" />
     <ClCompile Include="ExpressionDerive.cpp" />
     <ClCompile Include="ExpressionNodePower.cpp" />
-    <ClCompile Include="ExpressionFunction.cpp" />
+    <ClCompile Include="ExpressionFunctionR1R1.cpp" />
     <ClCompile Include="ExpressionHelp.cpp" />
     <ClCompile Include="ExpressionLex.cpp" />
     <ClCompile Include="ExpressionNode.cpp" />
@@ -900,6 +905,7 @@
     <ClCompile Include="ExpressionRandom.cpp" />
     <ClCompile Include="ExpressionSymbolSet.cpp" />
     <ClCompile Include="ExpressionTables.cpp" />
+    <ClCompile Include="ExpressionXML.cpp" />
     <ClCompile Include="FPUEmulator.cpp" />
     <ClCompile Include="FPUOpcodeHashMap.cpp" />
     <ClCompile Include="NodeOperatorsNumericForm.cpp" />
