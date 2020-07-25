@@ -12,12 +12,12 @@ CExprFunctionR2R1SurfaceParametersDlg::CExprFunctionR2R1SurfaceParametersDlg(con
 
 void CExprFunctionR2R1SurfaceParametersDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
-  DDX_Text(pDX, IDC_EDIT_EXPR  , m_expr      );
-  DDX_Text(pDX, IDC_EDIT_XFROM , m_xfrom     );
-  DDX_Text(pDX, IDC_EDIT_XTO   , m_xto       );
-  DDX_Text(pDX, IDC_EDIT_YFROM , m_yfrom     );
-  DDX_Text(pDX, IDC_EDIT_YTO   , m_yto       );
-  DDX_Text(pDX, IDC_EDIT_POINTS, m_pointCount);
+  DDX_Text(pDX, IDC_EDIT_EXPR      , m_expr      );
+  DDX_Text(pDX, IDC_EDIT_XFROM     , m_xfrom     );
+  DDX_Text(pDX, IDC_EDIT_XTO       , m_xto       );
+  DDX_Text(pDX, IDC_EDIT_YFROM     , m_yfrom     );
+  DDX_Text(pDX, IDC_EDIT_YTO       , m_yto       );
+  DDX_Text(pDX, IDC_EDIT_POINTCOUNT, m_pointCount);
 }
 
 BEGIN_MESSAGE_MAP(CExprFunctionR2R1SurfaceParametersDlg, CDialog)
@@ -45,7 +45,7 @@ bool CExprFunctionR2R1SurfaceParametersDlg::validate() {
   if(!validateAllExpr()) {
     return false;
   }
-  if(!validateMinMax(IDC_EDIT_POINTS, 1, MAXPOINTCOUNT)) {
+  if(!validateMinMax(IDC_EDIT_POINTCOUNT, 1, MAXPOINTCOUNT)) {
     return false;
   }
   if(!validateInterval(IDC_EDIT_XFROM, IDC_EDIT_XTO)) {

@@ -4,7 +4,7 @@
 CParametricR1R3SurfaceParametersDlg::CParametricR1R3SurfaceParametersDlg(const ExprParametricR1R3SurfaceParameters &param, AbstractTextureFactory &atf, CWnd *pParent /*=NULL*/)
 : SaveLoadExprWithCommonParametersDlg(IDD, pParent, param, atf, _T("Parametric Surface"), _T("par"))
 , m_tStepCount(0)
-{
+, m_profileFileName(_T("")) {
 }
 
 CParametricR1R3SurfaceParametersDlg::~CParametricR1R3SurfaceParametersDlg() {
@@ -12,14 +12,15 @@ CParametricR1R3SurfaceParametersDlg::~CParametricR1R3SurfaceParametersDlg() {
 
 void CParametricR1R3SurfaceParametersDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
-  DDX_Text( pDX, IDC_EDITCOMMON         , m_commonText    );
-  DDX_Text( pDX, IDC_EDIT_EXPRX         , m_exprX         );
-  DDX_Text( pDX, IDC_EDIT_EXPRY         , m_exprY         );
-  DDX_Text( pDX, IDC_EDIT_EXPRZ         , m_exprZ         );
-  DDX_Text( pDX, IDC_EDIT_TFROM         , m_tfrom         );
-  DDX_Text( pDX, IDC_EDIT_TTO           , m_tto           );
-  DDX_Text( pDX, IDC_EDIT_TSTEPCOUNT    , m_tStepCount    );
-  DDV_MinMaxUInt(pDX, m_tStepCount      , 1, 200          );
+  DDX_Text(pDX, IDC_EDIT_COMMON, m_commonText);
+  DDX_Text(pDX, IDC_EDIT_EXPRX, m_exprX);
+  DDX_Text(pDX, IDC_EDIT_EXPRY, m_exprY);
+  DDX_Text(pDX, IDC_EDIT_EXPRZ, m_exprZ);
+  DDX_Text(pDX, IDC_EDIT_TFROM, m_tfrom);
+  DDX_Text(pDX, IDC_EDIT_TTO, m_tto);
+  DDX_Text(pDX, IDC_EDIT_TSTEPCOUNT, m_tStepCount);
+  DDV_MinMaxUInt(pDX, m_tStepCount, 1, 200);
+  DDX_Text(pDX, IDC_EDIT_PROFILEFILENAME, m_profileFileName);
 }
 
 BEGIN_MESSAGE_MAP(CParametricR1R3SurfaceParametersDlg, CDialog)
@@ -41,7 +42,7 @@ BOOL CParametricR1R3SurfaceParametersDlg::OnInitDialog() {
   createExprHelpButton(IDC_BUTTON_HELPX, IDC_EDIT_EXPRX);
   createExprHelpButton(IDC_BUTTON_HELPY, IDC_EDIT_EXPRY);
   createExprHelpButton(IDC_BUTTON_HELPZ, IDC_EDIT_EXPRZ);
-  setCommonExprFieldId(IDC_EDITCOMMON);
+  setCommonExprFieldId(IDC_EDIT_COMMON);
   gotoEditBox(this, IDC_EDIT_EXPRX);
   return FALSE;  // return TRUE  unless you set the focus to a control
 }
@@ -86,13 +87,14 @@ void CParametricR1R3SurfaceParametersDlg::OnButtonHelpZ() {
 
 void CParametricR1R3SurfaceParametersDlg::paramToWin(const ExprParametricR1R3SurfaceParameters &param) {
   const Expr3 &e = param.m_expr;
-  m_commonText    = e.getCommonText().cstr();
-  m_exprX         = e.getRawText(0).cstr();
-  m_exprY         = e.getRawText(1).cstr();
-  m_exprZ         = e.getRawText(2).cstr();
-  m_tfrom         = param.getTInterval().getMin();
-  m_tto           = param.getTInterval().getMax();
-  m_tStepCount    = param.m_tStepCount;
+  m_commonText      = e.getCommonText().cstr();
+  m_exprX           = e.getRawText(0).cstr();
+  m_exprY           = e.getRawText(1).cstr();
+  m_exprZ           = e.getRawText(2).cstr();
+  m_tfrom           = param.getTInterval().getMin();
+  m_tto             = param.getTInterval().getMax();
+  m_tStepCount      = param.m_tStepCount;
+  m_profileFileName = param.m_profileFileName.cstr();
   __super::paramToWin(param);
 }
 

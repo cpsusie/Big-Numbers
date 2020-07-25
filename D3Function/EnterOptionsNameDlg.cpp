@@ -13,7 +13,7 @@ CEnterOptionsNameDlg::CEnterOptionsNameDlg(const String &currentName, CWnd *pPar
 
 void CEnterOptionsNameDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
-  DDX_CBString(pDX, IDC_COMBOOPTIONSNAME, m_name);
+  DDX_CBString(pDX, IDC_COMBO_OPTIONSNAME, m_name);
 }
 
 BEGIN_MESSAGE_MAP(CEnterOptionsNameDlg, CDialog)
@@ -59,5 +59,5 @@ void CEnterOptionsNameDlg::OnCancel() {
 }
 
 CComboBox *CEnterOptionsNameDlg::getNameCombo() {
-  return (CComboBox*)GetDlgItem(IDC_COMBOOPTIONSNAME);
+  return (CComboBox*)GetDlgItem(IDC_COMBO_OPTIONSNAME);
 }

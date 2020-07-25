@@ -75,7 +75,7 @@ CRect CSelectGlyphDlg::getWindowRect(int id) {
 
 void CSelectGlyphDlg::OnPaint() {
   CPaintDC    dc(this);
-  CRect       clientRect = getClientRect(IDC_STATICGLYPHFRAME);
+  CRect       clientRect = getClientRect(IDC_STATIC_GLYPHFRAME);
   dc.SelectObject(&m_prFont->getFont());
   const int   chWidth  = m_prFont->getTextMetrics().tmMaxCharWidth + 4;
   const int   chHeight = m_prFont->getTextMetrics().tmHeight + 8;

@@ -13,7 +13,7 @@ CParametricR2R3SurfaceParametersDlg::~CParametricR2R3SurfaceParametersDlg() {
 
 void CParametricR2R3SurfaceParametersDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
-  DDX_Text( pDX, IDC_EDITCOMMON         , m_commonText    );
+  DDX_Text( pDX, IDC_EDIT_COMMON         , m_commonText    );
   DDX_Text( pDX, IDC_EDIT_EXPRX         , m_exprX         );
   DDX_Text( pDX, IDC_EDIT_EXPRY         , m_exprY         );
   DDX_Text( pDX, IDC_EDIT_EXPRZ         , m_exprZ         );
@@ -46,7 +46,7 @@ BOOL CParametricR2R3SurfaceParametersDlg::OnInitDialog() {
   createExprHelpButton(IDC_BUTTON_HELPX, IDC_EDIT_EXPRX);
   createExprHelpButton(IDC_BUTTON_HELPY, IDC_EDIT_EXPRY);
   createExprHelpButton(IDC_BUTTON_HELPZ, IDC_EDIT_EXPRZ);
-  setCommonExprFieldId(IDC_EDITCOMMON);
+  setCommonExprFieldId(IDC_EDIT_COMMON);
   gotoEditBox(this, IDC_EDIT_EXPRX);
   return FALSE;  // return TRUE  unless you set the focus to a control
 }

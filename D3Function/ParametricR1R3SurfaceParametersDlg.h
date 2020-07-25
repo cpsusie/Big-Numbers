@@ -12,6 +12,7 @@ private:
   double  m_tfrom;
   double  m_tto;
   UINT    m_tStepCount;
+  CString m_profileFileName;
 
   bool   validate();
   void   paramToWin(const ExprParametricR1R3SurfaceParameters &param);

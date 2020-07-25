@@ -12,16 +12,16 @@ COptionsOrganizerDlg::COptionsOrganizerDlg(CWnd *pParent /*=NULL*/)
 
 void COptionsOrganizerDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
-  DDX_Control(pDX, IDC_LISTOPTIONNAMES, m_nameListCtrl);
+  DDX_Control(pDX, IDC_LIST_OPTIONNAMES, m_nameListCtrl);
 }
 
 BEGIN_MESSAGE_MAP(COptionsOrganizerDlg, CDialog)
-  ON_BN_CLICKED(IDC_BUTTONRENAME  , OnButtonRename    )
-  ON_BN_CLICKED(IDC_BUTTONDELETE  , OnButtonDelete    )
-  ON_BN_CLICKED(IDC_BUTTONMOVEDOWN, OnButtonMoveDown  )
-  ON_BN_CLICKED(IDC_BUTTONMOVEUP  , OnButtonMoveUp    )
-  ON_NOTIFY(LVN_ITEMCHANGED       , IDC_LISTOPTIONNAMES, OnItemChangedList )
-  ON_NOTIFY(LVN_ENDLABELEDIT      , IDC_LISTOPTIONNAMES, OnEndLabelEditList)
+  ON_BN_CLICKED(IDC_BUTTON_RENAME  , OnButtonRename    )
+  ON_BN_CLICKED(IDC_BUTTON_DELETE  , OnButtonDelete    )
+  ON_BN_CLICKED(IDC_BUTTON_MOVEDOWN, OnButtonMoveDown  )
+  ON_BN_CLICKED(IDC_BUTTON_MOVEUP  , OnButtonMoveUp    )
+  ON_NOTIFY(LVN_ITEMCHANGED        , IDC_LIST_OPTIONNAMES, OnItemChangedList )
+  ON_NOTIFY(LVN_ENDLABELEDIT       , IDC_LIST_OPTIONNAMES, OnEndLabelEditList)
 END_MESSAGE_MAP()
 
 BOOL COptionsOrganizerDlg::OnInitDialog() {
@@ -30,7 +30,7 @@ BOOL COptionsOrganizerDlg::OnInitDialog() {
   m_nameListCtrl.SetExtendedStyle(LVS_EX_FULLROWSELECT);
   m_nameListCtrl.InsertColumn( 0,EMPTYSTRING,LVCFMT_LEFT, 200);
   updateListCtrl();
-  GetDlgItem(IDC_LISTOPTIONNAMES)->SetFocus();
+  GetDlgItem(IDC_LIST_OPTIONNAMES)->SetFocus();
   setSelectedIndex(m_nameListCtrl, 0);
   ajourButtons();
 
@@ -78,10 +78,10 @@ void COptionsOrganizerDlg::ajourButtons(int selected) {
   if(selected < 0) {
     selected = getSelectedIndex();
   }
-  GetDlgItem(IDC_BUTTONRENAME  )->EnableWindow((selected >= 0             )?TRUE:FALSE);
-  GetDlgItem(IDC_BUTTONDELETE  )->EnableWindow((selected >= 0             )?TRUE:FALSE);
-  GetDlgItem(IDC_BUTTONMOVEUP  )->EnableWindow((selected >  0             )?TRUE:FALSE);
-  GetDlgItem(IDC_BUTTONMOVEDOWN)->EnableWindow((selected >= 0)
+  GetDlgItem(IDC_BUTTON_RENAME  )->EnableWindow((selected >= 0             )?TRUE:FALSE);
+  GetDlgItem(IDC_BUTTON_DELETE  )->EnableWindow((selected >= 0             )?TRUE:FALSE);
+  GetDlgItem(IDC_BUTTON_MOVEUP  )->EnableWindow((selected >  0             )?TRUE:FALSE);
+  GetDlgItem(IDC_BUTTON_MOVEDOWN)->EnableWindow((selected >= 0)
                                             && (selected < getListSize()-1)?TRUE:FALSE);
 }
 
