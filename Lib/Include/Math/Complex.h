@@ -160,7 +160,7 @@ std::wistream &operator>>(std::wistream &in ,       Complex &c);
 std::wostream &operator<<(std::wostream &out, const Complex &c);
 
 typedef FunctionTemplate<Complex,Complex>   ComplexFunction;
-typedef VectorTemplate<Complex>   ComplexVector;
+typedef VectorTemplate<Complex>             ComplexVector;
 
 // assume r >= 1
 ComplexVector roots(const Complex &c, UINT r);

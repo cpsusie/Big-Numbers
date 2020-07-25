@@ -107,10 +107,26 @@ public:
   }
 protected:
   DECLARE_MESSAGE_MAP()
+public:
+  afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
 };
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
+  ON_WM_LBUTTONDBLCLK()
 END_MESSAGE_MAP()
+
+void CAboutDlg::OnLButtonDblClk(UINT nFlags, CPoint point) {
+  CRect iconRect = getWindowRect(this, IDC_STATIC_ICON);
+  if((nFlags & MK_CONTROL) && iconRect.PtInRect(point)) {
+    HMENU menu = *theApp.getMainFrame()->GetMenu();
+    if(menuItemExists(menu, ID_FILE_CONVERTALL)) {
+      removeMenuItem(menu, ID_FILE_CONVERTALL);
+    } else {
+      appendMenuItem(menu,_T("Convert XML"), ID_FILE_CONVERTALL);
+    }
+  }
+  __super::OnLButtonDblClk(nFlags, point);
+}
 
 // -----------------------------------------------------------------------------
 

@@ -420,6 +420,39 @@
     <ClCompile Include="ParametricR1R3SurfaceParameters.cpp">
       <Filter>Source Files\D3StringConversion\D3XML\SurfaceParameters</Filter>
     </ClCompile>
+    <ClCompile Include="CreateMeshExprParametricR1R3Surface.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="CreateMeshParametricR1R3Surface.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="ParametricR1R3SurfaceParametersXML.cpp">
+      <Filter>Source Files\D3StringConversion\D3XML</Filter>
+    </ClCompile>
+    <ClCompile Include="ParametricR2R3SurfaceParametersXML.cpp">
+      <Filter>Source Files\D3StringConversion\D3XML</Filter>
+    </ClCompile>
+    <ClCompile Include="IsoSurfaceParametersXML.cpp">
+      <Filter>Source Files\D3StringConversion\D3XML</Filter>
+    </ClCompile>
+    <ClCompile Include="ExprIsoSurfaceParametersXML.cpp">
+      <Filter>Source Files\D3StringConversion\D3XML</Filter>
+    </ClCompile>
+    <ClCompile Include="ExprParametricR1R3SurfaceParametersXML.cpp">
+      <Filter>Source Files\D3StringConversion\D3XML</Filter>
+    </ClCompile>
+    <ClCompile Include="ExprParametricR2R3SurfaceParametersXML.cpp">
+      <Filter>Source Files\D3StringConversion\D3XML</Filter>
+    </ClCompile>
+    <ClCompile Include="ExprParametricR2R1SurfaceParametersXML.cpp">
+      <Filter>Source Files\D3StringConversion\D3XML</Filter>
+    </ClCompile>
+    <ClCompile Include="ParametricR2R1SurfaceParametersXML.cpp">
+      <Filter>Source Files\D3StringConversion\D3XML</Filter>
+    </ClCompile>
+    <ClCompile Include="ConvertXMLFiles.cpp">
+      <Filter>Source Files\D3StringConversion\D3XML</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\D3DGraphics\D3Scene.h">
@@ -564,9 +597,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\D3DGraphics\D3SceneObjectVisualNormals.h">
       <Filter>Header Files\Visual Objects</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\D3DGraphics\D3FunctionParamPersistentData.h">
-      <Filter>Header Files\D3StringConversion\D3XML\SurfaceParameters</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\D3DGraphics\ExprFunctionR2R1SurfaceParameters.h">
       <Filter>Header Files\D3StringConversion\D3XML\SurfaceParameters</Filter>

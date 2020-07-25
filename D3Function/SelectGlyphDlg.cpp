@@ -31,7 +31,7 @@ END_MESSAGE_MAP()
 BOOL CSelectGlyphDlg::OnInitDialog() {
   __super::OnInitDialog();
 
-  m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDD_SELECTGLYPH));
+  m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_SELECTGLYPH));
   m_currentSelection = -1;
 
   m_selectedBrush.CreateSolidBrush(RED);

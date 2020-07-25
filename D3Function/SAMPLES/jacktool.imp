@@ -12,6 +12,7 @@ sqrx=sqr(x1); sqry=sqr(y1); sqrz=sqr(z1);
 +((4/3*y1-4)^2+16/9*sqrx+16/9*sqrz)^-4
 +((4/3*y1+4)^2+16/9*sqrx+16/9*sqrz)^-4)
 ^-0.25-1</expr>
+	<machinecode>true</machinecode>
 	<cellsize>0.03</cellsize>
 	<lambda>0.25</lambda>
 	<boundingbox>
@@ -28,9 +29,8 @@ sqrx=sqr(x1); sqry=sqr(y1); sqrz=sqr(z1);
 	</boundingbox>
 	<tetrahedral>false</tetrahedral>
 	<tetraoptimize4>false</tetraoptimize4>
-	<adaptivecellsize>false</adaptivecellsize>
+	<showStatistics>false</showStatistics>
 	<originoutside>false</originoutside>
-	<machinecode>true</machinecode>
 	<common>
 		<calculateNormals>true</calculateNormals>
 		<calculateTexture>false</calculateTexture>

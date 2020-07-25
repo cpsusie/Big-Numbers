@@ -2,6 +2,7 @@
 <IsoSurface>
 	<expr>x2 = x*x; y2 = y*y; z2 = z*z;
 1-(x2*y2)^t-(y2*z2)^t-(x2*z2)^t</expr>
+	<machinecode>true</machinecode>
 	<cellsize>0.06</cellsize>
 	<lambda>0.35</lambda>
 	<boundingbox>
@@ -18,9 +19,8 @@
 	</boundingbox>
 	<tetrahedral>false</tetrahedral>
 	<tetraoptimize4>false</tetraoptimize4>
-	<adaptivecellsize>false</adaptivecellsize>
+	<showStatistics>false</showStatistics>
 	<originoutside>false</originoutside>
-	<machinecode>true</machinecode>
 	<common>
 		<calculateNormals>true</calculateNormals>
 		<calculateTexture>false</calculateTexture>

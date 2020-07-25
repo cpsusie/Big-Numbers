@@ -2,6 +2,7 @@
 <IsoSurface>
 	<expr>a = 1/2.3; b = 1/2;
 1 - ( a^2 *(x^2 + y^2 + z^2) )^-6 - ( b^8 * (x^8 + y^8 + z^8) )^6</expr>
+	<machinecode>true</machinecode>
 	<cellsize>0.04</cellsize>
 	<lambda>0.35</lambda>
 	<boundingbox>
@@ -18,9 +19,8 @@
 	</boundingbox>
 	<tetrahedral>false</tetrahedral>
 	<tetraoptimize4>false</tetraoptimize4>
-	<adaptivecellsize>false</adaptivecellsize>
+	<showStatistics>false</showStatistics>
 	<originoutside>true</originoutside>
-	<machinecode>true</machinecode>
 	<common>
 		<calculateNormals>true</calculateNormals>
 		<calculateTexture>false</calculateTexture>

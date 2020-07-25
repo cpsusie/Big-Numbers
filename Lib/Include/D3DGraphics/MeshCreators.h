@@ -7,6 +7,8 @@
 class AbstractMeshFactory;
 class FunctionR2R1SurfaceParameters;
 class ExprFunctionR2R1SurfaceParameters;
+class ParametricR1R3SurfaceParameters;
+class ExprParametricR1R3SurfaceParameters;
 class ParametricR2R3SurfaceParameters;
 class ExprParametricR2R3SurfaceParameters;
 class IsoSurfaceParameters;
@@ -20,6 +22,10 @@ LPD3DXMESH     createMesh(                AbstractMeshFactory &amf, const Functi
 MeshArray      createMeshArray(CWnd *wnd, AbstractMeshFactory &amf, const FunctionR2R1SurfaceParameters       &param, FunctionWithTimeTemplate<FunctionR2R1> &f);
 LPD3DXMESH     createMesh(                AbstractMeshFactory &amf, const ExprFunctionR2R1SurfaceParameters   &param);
 MeshArray      createMeshArray(CWnd *wnd, AbstractMeshFactory &amf, const ExprFunctionR2R1SurfaceParameters   &param);
+LPD3DXMESH     createMesh(                AbstractMeshFactory &amf, const ParametricR1R3SurfaceParameters     &param, FunctionR1R3                           &f);
+MeshArray      createMeshArray(CWnd *wnd, AbstractMeshFactory &amf, const ParametricR1R3SurfaceParameters     &param, FunctionWithTimeTemplate<FunctionR1R3> &f);
+LPD3DXMESH     createMesh(                AbstractMeshFactory &amf, const ExprParametricR1R3SurfaceParameters &param);
+MeshArray      createMeshArray(CWnd *wnd, AbstractMeshFactory &amf, const ExprParametricR1R3SurfaceParameters &param);
 LPD3DXMESH     createMesh(                AbstractMeshFactory &amf, const ParametricR2R3SurfaceParameters     &param, FunctionR2R3                           &f);
 MeshArray      createMeshArray(CWnd *wnd, AbstractMeshFactory &amf, const ParametricR2R3SurfaceParameters     &param, FunctionWithTimeTemplate<FunctionR2R3> &f);
 LPD3DXMESH     createMesh(                AbstractMeshFactory &amf, const ExprParametricR2R3SurfaceParameters &param);
@@ -39,3 +45,5 @@ template<typename T> void checkIsAnimation(const TCHAR *method, const T &param, 
     }
   }
 }
+
+String D3convertAllXMLFiles(const String &dir);

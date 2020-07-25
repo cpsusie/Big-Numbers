@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<ParametricSurface>
+<ParametricSurfaceR2R3>
 	<expr>
 		<common>R = 3; tpi = pi * t; t2pi = 2 * tpi;</common>
 		<exprx>(R + s*cos(tpi)) * cos(t2pi)</exprx>
 		<expry>(R + s*cos(tpi)) * sin(t2pi)</expry>
 		<exprz>s*sin(tpi)</exprz>
 	</expr>
+	<machinecode>true</machinecode>
 	<tinterval>
 		<from>0</from>
 		<to>1</to>
@@ -16,7 +17,6 @@
 	</sinterval>
 	<tstepcount>40</tstepcount>
 	<sstepcount>40</sstepcount>
-	<machinecode>true</machinecode>
 	<common>
 		<calculateNormals>true</calculateNormals>
 		<calculateTexture>false</calculateTexture>
@@ -26,4 +26,4 @@
 			<includetime>false</includetime>
 		</animation>
 	</common>
-</ParametricSurface>
+</ParametricSurfaceR2R3>

@@ -24,8 +24,7 @@ public:
   inline bool isAnimated() const {
     return m_animation.includeTime();
   }
-#define TYPE_ISOCURVE FUNCTIONDOMAINRANGE(2, 1)
-  FunctionDomainRangeType getType() const {
+  FunctionDomainRangeDimension getType() const {
     return TYPE_ISOCURVE;
   }
 };

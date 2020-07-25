@@ -29,4 +29,5 @@ public:
   afx_msg void OnFilePrint();
 };
 
+void convertXMLFile(const String &fileName);
 extern CD3FunctionApp theApp;

@@ -63,7 +63,8 @@ public:
     m_materialId   = scene.addMaterial(D3Material::createDefaultMaterial());
   }
   D3FunctionSurface(D3Scene &scene, LPD3DXMESH mesh, UINT textureId)
-    : D3SceneObjectWithMesh(scene, mesh), m_textureId(textureId)
+    : D3SceneObjectWithMesh(scene, mesh)
+    , m_textureId(textureId)
     , m_hasTextureId(true)
   {
     m_materialId = -1;

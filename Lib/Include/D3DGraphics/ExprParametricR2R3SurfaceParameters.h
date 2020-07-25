@@ -1,8 +1,8 @@
 #pragma once
 
-#include "D3FunctionParamPersistentData.h"
+#include <Math/Expression/ExpressionFunctionR1R3.h>
+#include <MFCUtil/FunctionImageParamPersistentData.h>
 #include "ParametricR2R3SurfaceParameters.h"
-#include <Math/Expression/ExpressionFunctionR2R3.h>
 
 using namespace Expr;
 
@@ -18,7 +18,7 @@ public:
   void putDataToDoc(  XMLDoc &doc);
   void getDataFromDoc(XMLDoc &doc);
 
-  FunctionDomainRangeType getType() const {
+  FunctionDomainRangeDimension getType() const {
     return TYPE_PARAMETRICR2R3SURFACE;
   }
 };

@@ -15,6 +15,7 @@ sqrz=sqr(z);
 + ((4/3*y+4)^2+16/9*(sqrx+sqrz))^-4)
 ^-0.25
 -1</expr>
+	<machinecode>true</machinecode>
 	<cellsize>0.1</cellsize>
 	<lambda>0.25</lambda>
 	<boundingbox>
@@ -31,9 +32,8 @@ sqrz=sqr(z);
 	</boundingbox>
 	<tetrahedral>false</tetrahedral>
 	<tetraoptimize4>false</tetraoptimize4>
-	<adaptivecellsize>false</adaptivecellsize>
+	<showStatistics>false</showStatistics>
 	<originoutside>false</originoutside>
-	<machinecode>true</machinecode>
 	<common>
 		<calculateNormals>true</calculateNormals>
 		<calculateTexture>false</calculateTexture>

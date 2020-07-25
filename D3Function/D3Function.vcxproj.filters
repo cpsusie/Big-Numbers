@@ -144,6 +144,9 @@
     <ClInclude Include="SelectGlyphDlg.h">
       <Filter>Source Files\Dialogs\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ParametricR1R3SurfaceParametersDlg.h">
+      <Filter>Source Files\Dialogs\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MainFrm.cpp">
@@ -240,6 +243,9 @@
       <Filter>Source Files\Dialogs\Source Files\Profile Helper\DrawTool</Filter>
     </ClCompile>
     <ClCompile Include="SelectGlyphDlg.cpp">
+      <Filter>Source Files\Dialogs\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ParametricR1R3SurfaceParametersDlg.cpp">
       <Filter>Source Files\Dialogs\Source Files</Filter>
     </ClCompile>
   </ItemGroup>

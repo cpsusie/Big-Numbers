@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <IsoSurface>
 	<expr>1-x*x*y*y-y*y*z*z-x*x*z*z</expr>
+	<machinecode>true</machinecode>
 	<cellsize>0.25</cellsize>
 	<lambda>0.25</lambda>
 	<boundingbox>
@@ -17,9 +18,8 @@
 	</boundingbox>
 	<tetrahedral>false</tetrahedral>
 	<tetraoptimize4>false</tetraoptimize4>
-	<adaptivecellsize>false</adaptivecellsize>
+	<showStatistics>false</showStatistics>
 	<originoutside>false</originoutside>
-	<machinecode>true</machinecode>
 	<common>
 		<calculateNormals>true</calculateNormals>
 		<calculateTexture>false</calculateTexture>

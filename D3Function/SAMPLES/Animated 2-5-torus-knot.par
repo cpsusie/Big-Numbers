@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<ParametricSurface>
+<ParametricSurfaceR2R3>
 	<expr>
 		<common>p = 2; q = 5; pi2 = 2 * pi;
 pi2time = pi2*time;
@@ -9,6 +9,7 @@ r = cos(q*(fi - pi2time))+2; r1 = 0.2;</common>
 		<expry>r * sin(p*fi) + r1 * sin(theta)</expry>
 		<exprz>-sin(q*fi) + r1 * cos(theta)</exprz>
 	</expr>
+	<machinecode>true</machinecode>
 	<tinterval>
 		<from>0</from>
 		<to>1</to>
@@ -19,7 +20,6 @@ r = cos(q*(fi - pi2time))+2; r1 = 0.2;</common>
 	</sinterval>
 	<tstepcount>160</tstepcount>
 	<sstepcount>20</sstepcount>
-	<machinecode>true</machinecode>
 	<common>
 		<calculateNormals>true</calculateNormals>
 		<calculateTexture>false</calculateTexture>
@@ -34,4 +34,4 @@ r = cos(q*(fi - pi2time))+2; r1 = 0.2;</common>
 			<framecount>100</framecount>
 		</animation>
 	</common>
-</ParametricSurface>
+</ParametricSurfaceR2R3>

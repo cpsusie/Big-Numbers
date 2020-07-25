@@ -14,7 +14,6 @@ void D3Scene::load(const String &fileName) {
   load(doc);
 }
 
-
 void D3Scene::save(XMLDoc &doc) const {
   XMLNodePtr root = doc.createRoot(_T("scene"));
   setValue(doc, root, _T("setup"), *this);

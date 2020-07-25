@@ -672,6 +672,7 @@
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="Options.h" />
     <ClInclude Include="OptionsOrganizerDlg.h" />
+    <ClInclude Include="ParametricR1R3SurfaceParametersDlg.h" />
     <ClInclude Include="ParametricR2R3SurfaceParametersDlg.h" />
     <ClInclude Include="PolygonSet.h" />
     <ClInclude Include="ProfileDlg.h" />
@@ -709,6 +710,7 @@
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="Options.cpp" />
     <ClCompile Include="OptionsOrganizerDlg.cpp" />
+    <ClCompile Include="ParametricR1R3SurfaceParametersDlg.cpp" />
     <ClCompile Include="ParametricR2R3SurfaceParametersDlg.cpp" />
     <ClCompile Include="PolygonSet.cpp" />
     <ClCompile Include="ProfileDlg.cpp" />

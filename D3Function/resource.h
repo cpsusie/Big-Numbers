@@ -7,15 +7,15 @@
 #define IDD_ABOUTBOX                    100
 #define IDS_ABOUTBOX                    101
 #define IDR_MAINFRAME                   128
-#define IDD_D3FUNCTIONVIEW              129
-#define IDD_INFOVIEW                    130
+#define IDR_INFOVIEW                    130
 #define IDR_FUNCTIONR2R1SURFACE         140
-#define IDR_PARAMETRICR2R3SURFACE       141
-#define IDR_ISOSURFACE                  142
+#define IDR_PARAMETRICR1R3SURFACE       141
+#define IDR_PARAMETRICR2R3SURFACE       142
+#define IDR_ISOSURFACE                  143
+#define IDR_PROFILE                     144
+#define IDR_SELECTGLYPH                 145
 #define IDD_DIALOGENTEROPTIONSNAME      150
 #define IDD_DIALOGORGANIZEOPTIONS       151
-#define IDR_PROFILE                     152
-#define IDD_SELECTGLYPH                 153
 #define IDB_TESTBITMAP                  200
 #define IDB_CIRCLEARROWBITMAP           201
 #define IDB_LEFTRIGHTARROWBITMAP        202
@@ -110,16 +110,19 @@
 #define IDC_BUTTONRENAME                1402
 #define IDC_BUTTONDELETE                1403
 #define IDC_BUTTONMOVEUP                1404
-#define IDC_EDIT_INFOBOX                1405
-#define IDC_BUTTONMOVEDOWN              1406
+#define IDC_BUTTONMOVEDOWN              1405
+#define IDC_EDIT_INFOBOX                1406
+#define IDC_STATIC_ICON                 1410
 #define ID_INDICATOR_POSITION           32771
 #define ID_INDICATOR_DEBUG              32772
-#define ID_FILE_FUNCTIONSURFACE         32802
+#define ID_FILE_FUNCTIONSURFACE         32801
+#define ID_FILE_PARAMETRICCURVE         32802
 #define ID_FILE_PARAMETRICSURFACE       32803
 #define ID_FILE_ISOSURFACE              32804
 #define ID_FILE_PROFILESURFACE          32805
 #define ID_FILE_READ3DPOINTSFROMFILE    32806
 #define ID_FILE_READOBJFILE             32807
+#define ID_FILE_CONVERTALL              32808
 #define ID_FILE_EXIT                    32820
 #define ID_VIEW_SHOW3DINFO              32900
 #define ID_EDIT_FINDMATCHINGPARENTESIS  32900
@@ -190,8 +193,8 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        210
-#define _APS_NEXT_COMMAND_VALUE         33553
-#define _APS_NEXT_CONTROL_VALUE         1261
-#define _APS_NEXT_SYMED_VALUE           102
+#define _APS_NEXT_COMMAND_VALUE         33570
+#define _APS_NEXT_CONTROL_VALUE         1451
+#define _APS_NEXT_SYMED_VALUE           169
 #endif
 #endif

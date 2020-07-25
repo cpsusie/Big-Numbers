@@ -7,10 +7,12 @@
 #if defined(ISODEBUGGER)
 #include <ThreadPool.h>
 #endif // ISODEBUGGER
+#include <MFCUtil/SelectDirDlg.h>
 #include <D3DGraphics/MeshCreators.h>
 #include <D3DGraphics/D3SceneEditor.h>
 #include <D3DGraphics/D3Camera.h>
 #include "FunctionR2R1SurfaceParametersDlg.h"
+#include "ParametricR1R3SurfaceParametersDlg.h"
 #include "ParametricR2R3SurfaceParametersDlg.h"
 #include "IsoSurfaceParametersDlg.h"
 #include "ProfileDlg.h"
@@ -49,9 +51,11 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
   ON_COMMAND(ID_FILE_MRU_FILE15            , OnFileMruFile15             )
   ON_COMMAND(ID_FILE_MRU_FILE16            , OnFileMruFile16             )
   ON_COMMAND(ID_FILE_FUNCTIONSURFACE       , OnFileFunctionSurface       )
+  ON_COMMAND(ID_FILE_PARAMETRICCURVE       , OnFileParametricCurve       )
   ON_COMMAND(ID_FILE_PARAMETRICSURFACE     , OnFileParametricSurface     )
   ON_COMMAND(ID_FILE_ISOSURFACE            , OnFileIsoSurface            )
   ON_COMMAND(ID_FILE_PROFILESURFACE        , OnFileProfileSurface        )
+  ON_COMMAND(ID_FILE_CONVERTALL            , OnFileConvertAll            )
   ON_COMMAND(ID_OBJECT_EDITFUNCTION        , OnObjectEditFunction        )
   ON_COMMAND(ID_DEBUG_GO                   , OnDebugGo                   )
   ON_COMMAND(ID_DEBUG_STEPCUBE             , OnDebugStepCube             )
@@ -838,6 +842,20 @@ void CMainFrame::OnFileFunctionSurface() {
   }
 }
 
+void CMainFrame::OnFileParametricCurve() {
+  try {
+    CParametricR1R3SurfaceParametersDlg dlg(m_parametricR1R3SurfaceParam, m_scene.getDevice());
+    if(dlg.DoModal() != IDOK) {
+      return;
+    }
+    m_parametricR1R3SurfaceParam = dlg.getData();
+    setCalculatedObject(m_parametricR1R3SurfaceParam);
+    REPAINT();
+  } catch(Exception e) {
+    showException(e);
+  }
+}
+
 void CMainFrame::OnFileParametricSurface() {
   try {
     CParametricR2R3SurfaceParametersDlg dlg(m_parametricR2R3SurfaceParam, m_scene.getDevice());
@@ -885,23 +903,35 @@ void CMainFrame::OnFileProfileSurface() {
   }
 }
 
+void CMainFrame::OnFileConvertAll() {
+  CSelectDirDlg dlg(_T("."));
+  if(dlg.DoModal() == IDOK) {
+    showInformation(D3convertAllXMLFiles(dlg.getSelectedDir()));
+  }
+}
+
+typedef struct {
+  const FunctionDomainRangeDimension m_dimensions;
+  int                                m_command;
+} SurfaceTypeCommand;
+
+static const SurfaceTypeCommand surfaceCommandTable[] = {
+  TYPE_FUNCTIONR2R1SURFACE  , ID_FILE_FUNCTIONSURFACE
+ ,TYPE_PARAMETRICR1R3SURFACE, ID_FILE_PARAMETRICCURVE
+ ,TYPE_PARAMETRICR2R3SURFACE, ID_FILE_PARAMETRICSURFACE
+ ,TYPE_ISOSURFACE           , ID_FILE_ISOSURFACE
+};
+
 void CMainFrame::OnObjectEditFunction() {
   D3SceneObjectVisual *calcObj = getCalculatedObject();
   if(!calcObj) return;
   FunctionImageParamPersistentData *param = (FunctionImageParamPersistentData*)calcObj->getUserData();
-  switch(param->getType()) {
-  case TYPE_FUNCTIONR2R1SURFACE:
-    OnFileFunctionSurface();
-    break;
-  case TYPE_PARAMETRICR2R3SURFACE:
-    OnFileParametricSurface();
-    break;
-  case TYPE_ISOSURFACE:
-    OnFileIsoSurface();
-    break;
-  default:
-    showWarning(_T("Unknown PersistentDataType:%d"), param->getType());
-    break;
+  const FunctionDomainRangeDimension drDim = param->getType();
+  for(const SurfaceTypeCommand stc : surfaceCommandTable) {
+    if(stc.m_dimensions == drDim) {
+      PostMessage(WM_COMMAND, MAKELONG(stc.m_command, 0), 0);
+      return;
+    }
   }
 }
 

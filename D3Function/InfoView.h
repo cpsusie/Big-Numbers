@@ -15,7 +15,7 @@ protected: // create from serialization only
   DECLARE_DYNCREATE(CInfoView)
 
 public:
-  enum { IDD = IDD_INFOVIEW };
+  enum { IDD = IDR_INFOVIEW };
 
   CD3FunctionDoc *GetDocument();
   void vprintf(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);

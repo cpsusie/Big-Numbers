@@ -6,6 +6,7 @@ sphere = (x^2 + y^2 + z^2)^(1/2);
 
 
 (cube*tc) + (sphere*ts) - 1</expr>
+	<machinecode>true</machinecode>
 	<cellsize>0.07</cellsize>
 	<lambda>0.25</lambda>
 	<boundingbox>
@@ -22,9 +23,8 @@ sphere = (x^2 + y^2 + z^2)^(1/2);
 	</boundingbox>
 	<tetrahedral>false</tetrahedral>
 	<tetraoptimize4>false</tetraoptimize4>
-	<adaptivecellsize>false</adaptivecellsize>
+	<showStatistics>false</showStatistics>
 	<originoutside>false</originoutside>
-	<machinecode>true</machinecode>
 	<common>
 		<calculateNormals>true</calculateNormals>
 		<calculateTexture>false</calculateTexture>

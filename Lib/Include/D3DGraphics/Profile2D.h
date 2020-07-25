@@ -52,7 +52,6 @@ inline bool operator!=(const Point2DTo3DConverter &c1, const Point2DTo3DConverte
   return !(c1 == c2);
 }
 
-
 class ProfileRotationParameters {
 public:
   static const IntInterval s_legalEdgeCountInterval;
@@ -152,7 +151,10 @@ public:
   VertexProfile2D &invertNormals();
 };
 
+// from MFCUtil library
 class PolygonCurve2D;
+class GlyphPolygon;
+class GlyphCurveData;
 
 class ProfileCurve2D {
 public:
@@ -188,8 +190,8 @@ public:
     m_points.removeLast();
     return m_points.isEmpty();
   }
-  Rectangle2D getBoundingBox() const;
-  const Point2DArray &getAllPoints() const;
+  Rectangle2D            getBoundingBox() const;
+  const Point2DArray    &getAllPoints() const;
   CompactArray<Point2D*> getAllPointsRef();
   void move(const Point2D &dp);
   String toString() const;
@@ -203,7 +205,6 @@ inline bool operator!=(const ProfileCurve2D &p1, const ProfileCurve2D &p2) {
   return !(p1==p2);
 }
 
-class GlyphPolygon;
 class ProfilePolygon2D {
 private:
   VertexCurve2D getFlatVertexCurve() const;
@@ -224,9 +225,6 @@ public:
   Point2DArray           getAllPoints() const;
   CompactArray<Point2D*> getAllPointsRef();
   Point2DArray           getCurvePoints() const;
-  inline VertexCurve2D getVertexCurve(bool smoothNormals) const {
-    return smoothNormals ? getSmoothVertexCurve() : getFlatVertexCurve();
-  }
   inline ProfileCurve2D &getLastCurve() {
     return m_curveArray.last();
   }
@@ -251,6 +249,9 @@ public:
   void reverseOrder();
   void apply(CurveOperator &op) const;
 
+  inline VertexCurve2D getVertexCurve(bool smoothNormals) const {
+    return smoothNormals ? getSmoothVertexCurve() : getFlatVertexCurve();
+  }
   String toString() const;
 };
 
@@ -263,8 +264,6 @@ inline bool operator==(const ProfilePolygon2D &p1, const ProfilePolygon2D &p2) {
 inline bool operator!=(const ProfilePolygon2D &p1, const ProfilePolygon2D &p2) {
   return !(p1==p2);
 }
-
-class GlyphCurveData;
 
 class Profile2D : public _PersistentData {
 private:
@@ -293,7 +292,6 @@ public:
   Point2DArray           getAllPoints() const;
   CompactArray<Point2D*> getAllPointsRef();
   Point2DArray           getCurvePoints() const;
-  VertexProfile2D        getVertexProfile(bool smoothNormals) const;
 
   bool canConnect(const Point2D *p1, const Point2D *p2) const;
   void connect(   const Point2D *p1, const Point2D *p2);
@@ -302,6 +300,8 @@ public:
 
   void putDataToDoc(  XMLDoc &doc);
   void getDataFromDoc(XMLDoc &doc);
+
+  VertexProfile2D        getVertexProfile(bool smoothNormals) const;
 
   String toString() const;
 

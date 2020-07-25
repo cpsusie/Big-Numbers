@@ -98,3 +98,37 @@ void getValue(XMLDoc &doc, XMLNodePtr n,       LPDIRECT3DINDEXBUFFER       &ib);
 
 void setValue(XMLDoc &doc, XMLNodePtr n, const LPD3DXMESH                   &m);
 void getValue(XMLDoc &doc, XMLNodePtr n,       LPD3DXMESH                   &m);
+
+class FunctionR2R1SurfaceParameters;
+class IsoSurfaceParameters;
+class ParametricR1R3SurfaceParameters;
+class ParametricR2R3SurfaceParameters;
+
+class ExprFunctionR2R1SurfaceParameters;
+class ExprIsoSurfaceParameters;
+class ExprParametricR1R3SurfaceParameters;
+class ExprParametricR2R3SurfaceParameters;
+
+void setValue(XMLDoc &doc, XMLNodePtr n, const FunctionR2R1SurfaceParameters       &v);
+void getValue(XMLDoc &doc, XMLNodePtr n,       FunctionR2R1SurfaceParameters       &v);
+
+void setValue(XMLDoc &doc, XMLNodePtr n, const IsoSurfaceParameters                &v);
+void getValue(XMLDoc &doc, XMLNodePtr n,       IsoSurfaceParameters                &v);
+
+void setValue(XMLDoc &doc, XMLNodePtr n, const ParametricR1R3SurfaceParameters     &v);
+void getValue(XMLDoc &doc, XMLNodePtr n,       ParametricR1R3SurfaceParameters     &v);
+
+void setValue(XMLDoc &doc, XMLNodePtr n, const ParametricR2R3SurfaceParameters     &v);
+void getValue(XMLDoc &doc, XMLNodePtr n,       ParametricR2R3SurfaceParameters     &v);
+
+void setValue(XMLDoc &doc, XMLNodePtr n, const ExprFunctionR2R1SurfaceParameters   &v);
+void getValue(XMLDoc &doc, XMLNodePtr n,       ExprFunctionR2R1SurfaceParameters   &v);
+
+void setValue(XMLDoc &doc, XMLNodePtr n, const ExprIsoSurfaceParameters            &v);
+void getValue(XMLDoc &doc, XMLNodePtr n,       ExprIsoSurfaceParameters            &v);
+
+void setValue(XMLDoc &doc, XMLNodePtr n, const ExprParametricR1R3SurfaceParameters &v);
+void getValue(XMLDoc &doc, XMLNodePtr n,       ExprParametricR1R3SurfaceParameters &v);
+
+void setValue(XMLDoc &doc, XMLNodePtr n, const ExprParametricR2R3SurfaceParameters &v);
+void getValue(XMLDoc &doc, XMLNodePtr n,       ExprParametricR2R3SurfaceParameters &v);

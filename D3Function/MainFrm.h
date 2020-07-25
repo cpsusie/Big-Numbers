@@ -1,6 +1,7 @@
 #pragma once
 
 #include <D3DGraphics/ExprFunctionR2R1SurfaceParameters.h>
+#include <D3DGraphics/ExprParametricR1R3SurfaceParameters.h>
 #include <D3DGraphics/ExprParametricR2R3SurfaceParameters.h>
 #include <D3DGraphics/ExprIsoSurfaceParameters.h>
 #include "D3DGraphics/D3SceneObjectCoordinateSystem.h"
@@ -64,6 +65,7 @@ private:
   D3Scene                             m_scene;
   D3SceneEditor                       m_editor;
   ExprFunctionR2R1SurfaceParameters   m_functionR2R1SurfaceParam;
+  ExprParametricR1R3SurfaceParameters m_parametricR1R3SurfaceParam;
   ExprParametricR2R3SurfaceParameters m_parametricR2R3SurfaceParam;
   ExprIsoSurfaceParameters            m_isoSurfaceParam;
   String                              m_memoryInfo, m_editorInfo;
@@ -224,9 +226,11 @@ public:
     afx_msg void OnTimer(UINT_PTR nIDEvent);
     afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
     afx_msg void OnFileFunctionSurface();
+    afx_msg void OnFileParametricCurve();
     afx_msg void OnFileParametricSurface();
     afx_msg void OnFileIsoSurface();
     afx_msg void OnFileProfileSurface();
+    afx_msg void OnFileConvertAll();
     afx_msg void OnObjectEditFunction();
     afx_msg void OnFileMruFile1();
     afx_msg void OnFileMruFile2();

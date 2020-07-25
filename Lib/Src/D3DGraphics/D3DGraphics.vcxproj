@@ -892,7 +892,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AbstractAnimator.cpp" />
+    <ClCompile Include="ConvertXMLFiles.cpp" />
+    <ClCompile Include="CreateMeshExprParametricR1R3Surface.cpp" />
     <ClCompile Include="CreateMeshExprParametricR2R3Surface.cpp" />
+    <ClCompile Include="CreateMeshParametricR1R3Surface.cpp" />
     <ClCompile Include="D3CameraArray.cpp" />
     <ClCompile Include="D3CameraSlideAnimator.cpp" />
     <ClCompile Include="D3CameraXML.cpp" />
@@ -957,13 +960,18 @@
     <ClCompile Include="D3World.cpp" />
     <ClCompile Include="D3WorldXML.cpp" />
     <ClCompile Include="ExprFunctionR2R1SurfaceParameters.cpp" />
+    <ClCompile Include="ExprIsoSurfaceParametersXML.cpp" />
     <ClCompile Include="ExprParametricR1R3SurfaceParameters.cpp" />
+    <ClCompile Include="ExprParametricR1R3SurfaceParametersXML.cpp" />
+    <ClCompile Include="ParametricR2R1SurfaceParametersXML.cpp" />
     <ClCompile Include="ExprParametricR2R3SurfaceParameters.cpp" />
+    <ClCompile Include="ExprParametricR2R3SurfaceParametersXML.cpp" />
     <ClCompile Include="Face.cpp" />
     <ClCompile Include="CreateMeshFunctionR2R1Surface.cpp" />
     <ClCompile Include="CreateMeshIsoSurface.cpp" />
     <ClCompile Include="FillModeStr.cpp" />
     <ClCompile Include="FormatStr.cpp" />
+    <ClCompile Include="IsoSurfaceParametersXML.cpp" />
     <ClCompile Include="IsoSurfaceSnapMCLookupTable.cpp" />
     <ClCompile Include="FVFStr.cpp" />
     <ClCompile Include="IsoSurfacePolygonizerSnapMC.cpp" />
@@ -991,8 +999,11 @@
     <ClCompile Include="MeshArray.cpp" />
     <ClCompile Include="MeshArrayJobMonitor.cpp" />
     <ClCompile Include="ParametricR1R3SurfaceParameters.cpp" />
+    <ClCompile Include="ParametricR1R3SurfaceParametersXML.cpp" />
+    <ClCompile Include="ExprParametricR2R1SurfaceParametersXML.cpp" />
     <ClCompile Include="ParametricR2R3SurfaceParameters.cpp" />
     <ClCompile Include="CreateMeshParametricR2R3Surface.cpp" />
+    <ClCompile Include="ParametricR2R3SurfaceParametersXML.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='IsoDebuggerDebug|Win32'">Create</PrecompiledHeader>
@@ -1038,7 +1049,6 @@
     <ClInclude Include="..\..\Include\D3DGraphics\D3CameraArray.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3DeviceRenderState.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3Cube.h" />
-    <ClInclude Include="..\..\Include\D3DGraphics\D3FunctionParamPersistentData.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3Light.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3PickedInfo.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3Ray.h" />

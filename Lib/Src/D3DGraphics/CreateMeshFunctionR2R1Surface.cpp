@@ -29,26 +29,6 @@ Function2DPoint::Function2DPoint(FunctionR2R1 &f, const Point2D &p, bool calcula
   m_n = Vertex(unitVector(D3DXVECTOR3((float)-dfx, (float)-dfy, 1.0f)));
 }
 
-#if defined(__NEVER__)
-static void findMax16BitMeshVertexCount(LPDIRECT3DDEVICE device) {
-  unsigned int l = 100;
-  unsigned int h = 0xfffff;
-  while(l < h-1) {
-    int vertexCount = (l+h)/2;
-    LPD3DXMESH mesh = NULL;
-    HRESULT hr = D3DXCreateMeshFVF(10000, vertexCount, D3DXMESH_SYSTEMMEM, VertexNormal::FVF_Flags, device, &mesh);
-    if(hr != D3D_OK) {
-      h = vertexCount - 1;
-    } else {
-      TRACE_CREATE(mesh);
-      l = vertexCount;
-      SAFERELEASE(mesh);
-    }
-  }
-  showInformation(_T("l:%d, h:%d"), l, h);
-}
-#endif
-
 #define MF_DOUBLESIDED 0x01
 
 LPD3DXMESH createMeshFrom2DFunction(AbstractMeshFactory &amf, FunctionR2R1 &f, const DoubleInterval &xInterval, const DoubleInterval &yInterval, UINT nx, UINT ny, bool doubleSided, DWORD fvf) {

@@ -5,6 +5,7 @@ y1 = cos(t) * x - sin(t) * z;
 z1 = cos(t) * x + sin(t) * y;
 
 1-(x1*x1*y1*y1)^2-(y1*y1*z1*z1)^2-(x1*x1*z1*z1)^2</expr>
+	<machinecode>true</machinecode>
 	<cellsize>0.15</cellsize>
 	<lambda>0.25</lambda>
 	<boundingbox>
@@ -21,16 +22,20 @@ z1 = cos(t) * x + sin(t) * y;
 	</boundingbox>
 	<tetrahedral>false</tetrahedral>
 	<tetraoptimize4>false</tetraoptimize4>
-	<adaptivecellsize>false</adaptivecellsize>
+	<showStatistics>false</showStatistics>
 	<originoutside>false</originoutside>
-	<machinecode>true</machinecode>
-	<doublesided>true</doublesided>
-	<animation>
-		<includetime>true</includetime>
-		<timeinterval>
-			<from>1</from>
-			<to>6.28318</to>
-		</timeinterval>
-		<framecount>50</framecount>
-	</animation>
+	<common>
+		<calculateNormals>true</calculateNormals>
+		<calculateTexture>false</calculateTexture>
+		<texturefilename/>
+		<doublesided>true</doublesided>
+		<animation>
+			<includetime>true</includetime>
+			<timeinterval>
+				<from>1</from>
+				<to>6.28318</to>
+			</timeinterval>
+			<framecount>50</framecount>
+		</animation>
+	</common>
 </IsoSurface>

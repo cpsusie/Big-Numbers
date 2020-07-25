@@ -37,7 +37,7 @@ public:
   ~CSelectGlyphDlg();
   const GlyphCurveData &getSelectedGlyphCurveData() const { return m_selectedGlyphCurveData; }
 
-  enum { IDD = IDD_SELECTGLYPH };
+  enum { IDD = IDR_SELECTGLYPH };
 
 protected:
   virtual BOOL PreTranslateMessage(MSG *pMsg);
