@@ -347,12 +347,11 @@ static inline BYTE getMultCode(const void *dst, const void *x) {
 // Set n32 = (scale==0)?LO32(n) : (n >> scale); where scale = (max(0,expo2(n) - 31) (=[0..127-31]=[0..96])
 // Return scale
 static int getFirst32(const _uint128 &n, UINT &n32) {
-  const int expo2 = getExpo2(n);
-  if(expo2 <= 31) {
+  const int scale = getExpo2(n) - 31;
+  if(scale <= 0) {
     n32 = LO32(n);
     return 0;
-  } else { // expo2 > 31
-    const int scale = expo2 - 31;
+  } else {
     n32 = (UINT)(n >> scale);
     return scale;
   }
@@ -361,12 +360,11 @@ static int getFirst32(const _uint128 &n, UINT &n32) {
 // Set n63 = (scale==0)?LO64(n) : (n >> scale); where scale = (max(0,expo2(n) - 62) (=[0..127-62]=[0..65])
 // Return scale
 static int getFirst63(const _uint128 &n, UINT64 &n63) {
-  const int expo2 = getExpo2(n);
-  if(expo2 <= 62) {
+  const int scale = getExpo2(n) - 62;
+  if(scale <= 0) {
     n63 = LO64(n);
     return 0;
   } else {
-    const int scale = expo2 - 62;
     n63 = (UINT64)(n >> scale);
     return scale;
   }
@@ -535,8 +533,7 @@ static void unsignedQuotRemainder(const _uint128 &x, const _uint128 &y, _uint128
     int lastShift = 0;
     for(int count = 0; rem >= y;) {
       UINT64         rem63;                            // max 63 bits to prevent overflow in division
-      const int      remScale = getFirst63(rem, rem63);
-      int            shift    = remScale - yScale;
+      int            shift = getFirst63(rem, rem63) - yScale;
       UINT           q32;
       __asm {
         lea     eax              , rem63               ;
