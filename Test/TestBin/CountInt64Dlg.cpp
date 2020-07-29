@@ -34,7 +34,7 @@ CCountInt64Dlg::CCountInt64Dlg(StartCommand command, CWnd *pParent)
 
 void CCountInt64Dlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
-  DDX_Text(    pDX, IDC_EDITHEX, m_hexString    );
+  DDX_Text(    pDX, IDC_EDIT_HEX, m_hexString    );
   DDV_MaxChars(pDX             , m_hexString, 16);
 }
 
@@ -52,7 +52,7 @@ BEGIN_MESSAGE_MAP(CCountInt64Dlg, CDialog)
   ON_BN_CLICKED(   IDC_STOPBUTTON        , OnStopButton                )
   ON_BN_CLICKED(   IDC_STEPBUTTON        , OnStepButton                )
   ON_BN_CLICKED(   IDC_RESETBUTTON       , OnResetButton               )
-  ON_BN_CLICKED(   IDC_EDITBUTTON        , OnEditButton                )
+  ON_BN_CLICKED(   IDC_EDIT_BUTTON       , OnEditButton                )
 END_MESSAGE_MAP()
 
 BOOL CCountInt64Dlg::OnInitDialog() {
@@ -201,31 +201,31 @@ UINT CounterThread::run() {
 void CCountInt64Dlg::showCounter(UINT64 n) {
   TCHAR tmp[100];
   if(m_editMode) {
-    setWindowText(this, IDC_STATICTEXT, format(_T("%s:"), sprintbin(tmp, n)));
+    setWindowText(this, IDC_STATIC_TEXT, format(_T("%s:"), sprintbin(tmp, n)));
   } else {
-    setWindowText(this, IDC_STATICTEXT, format(_T("%s:%016I64X"), sprintbin(tmp, n), n));
+    setWindowText(this, IDC_STATIC_TEXT, format(_T("%s:%016I64X"), sprintbin(tmp, n), n));
   }
 }
 
 void CCountInt64Dlg::ajourEnabling() {
   if(m_editMode) {
-    GetDlgItem(IDC_STARTBUTTON)->EnableWindow(FALSE);
-    GetDlgItem(IDC_STOPBUTTON )->EnableWindow(FALSE);
-    GetDlgItem(IDC_STEPBUTTON )->EnableWindow(FALSE);
-    GetDlgItem(IDC_RESETBUTTON)->EnableWindow(FALSE);
-    GetDlgItem(IDC_EDITBUTTON )->EnableWindow(TRUE );
+    GetDlgItem(IDC_STARTBUTTON )->EnableWindow(FALSE);
+    GetDlgItem(IDC_STOPBUTTON  )->EnableWindow(FALSE);
+    GetDlgItem(IDC_STEPBUTTON  )->EnableWindow(FALSE);
+    GetDlgItem(IDC_RESETBUTTON )->EnableWindow(FALSE);
+    GetDlgItem(IDC_EDIT_BUTTON )->EnableWindow(TRUE );
   } else if(m_timerIsRunning) {
-    GetDlgItem(IDC_STARTBUTTON)->EnableWindow(FALSE);
-    GetDlgItem(IDC_STOPBUTTON )->EnableWindow(TRUE );
-    GetDlgItem(IDC_STEPBUTTON )->EnableWindow(FALSE);
-    GetDlgItem(IDC_RESETBUTTON)->EnableWindow(FALSE);
-    GetDlgItem(IDC_EDITBUTTON )->EnableWindow(FALSE);
+    GetDlgItem(IDC_STARTBUTTON )->EnableWindow(FALSE);
+    GetDlgItem(IDC_STOPBUTTON  )->EnableWindow(TRUE );
+    GetDlgItem(IDC_STEPBUTTON  )->EnableWindow(FALSE);
+    GetDlgItem(IDC_RESETBUTTON )->EnableWindow(FALSE);
+    GetDlgItem(IDC_EDIT_BUTTON )->EnableWindow(FALSE);
   } else {
-    GetDlgItem(IDC_STARTBUTTON)->EnableWindow(TRUE );
-    GetDlgItem(IDC_STOPBUTTON )->EnableWindow(FALSE);
-    GetDlgItem(IDC_STEPBUTTON )->EnableWindow(TRUE );
-    GetDlgItem(IDC_RESETBUTTON)->EnableWindow(TRUE );
-    GetDlgItem(IDC_EDITBUTTON )->EnableWindow(TRUE );
+    GetDlgItem(IDC_STARTBUTTON )->EnableWindow(TRUE );
+    GetDlgItem(IDC_STOPBUTTON  )->EnableWindow(FALSE);
+    GetDlgItem(IDC_STEPBUTTON  )->EnableWindow(TRUE );
+    GetDlgItem(IDC_RESETBUTTON )->EnableWindow(TRUE );
+    GetDlgItem(IDC_EDIT_BUTTON )->EnableWindow(TRUE );
   }
 }
 
@@ -273,17 +273,17 @@ void CCountInt64Dlg::OnEditButton() {
 
 void CCountInt64Dlg::enterEditMode() {
   if(m_editMode) return;
-  GetDlgItem(IDC_EDITHEX)->ShowWindow(SW_SHOW);
+  GetDlgItem(IDC_EDIT_HEX)->ShowWindow(SW_SHOW);
   UINT64 n = m_counterThread->getCounter();
   TCHAR tmp[100];
   _stprintf(tmp, _T("%016I64X"), n);
   m_hexString = tmp;
   UpdateData(FALSE);
-  GetDlgItem(IDC_EDITHEX)->SetFocus();
-  m_staticTextWinSize = getWindowSize(    this, IDC_STATICTEXT);
-  CPoint editPos      = getWindowPosition(this, IDC_EDITHEX   );
-  CPoint staticPos    = getWindowPosition(this, IDC_STATICTEXT);
-  setWindowSize(this, IDC_STATICTEXT, CSize(editPos.x - staticPos.x - 2, m_staticTextWinSize.cy));
+  GetDlgItem(IDC_EDIT_HEX)->SetFocus();
+  m_staticTextWinSize = getWindowSize(    this, IDC_STATIC_TEXT);
+  CPoint editPos      = getWindowPosition(this, IDC_EDIT_HEX   );
+  CPoint staticPos    = getWindowPosition(this, IDC_STATIC_TEXT);
+  setWindowSize(this, IDC_STATIC_TEXT, CSize(editPos.x - staticPos.x - 2, m_staticTextWinSize.cy));
   m_editMode = true;
 }
 
@@ -292,8 +292,8 @@ void CCountInt64Dlg::leaveEditMode() {
 
   UpdateData();
   m_counterThread->setCounter(hexStringToInt());
-  GetDlgItem(IDC_EDITHEX)->ShowWindow(SW_HIDE);
-  setWindowSize(this, IDC_STATICTEXT, m_staticTextWinSize);
+  GetDlgItem(IDC_EDIT_HEX)->ShowWindow(SW_HIDE);
+  setWindowSize(this, IDC_STATIC_TEXT, m_staticTextWinSize);
   m_editMode = false;
 }
 

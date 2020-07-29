@@ -29,7 +29,7 @@ private:
   void               showIntTypeValue(const IntType &i, bool mem);
   void               setStreamOpIsMem(bool v);
   inline bool        getStreamOpIsMem() {
-    return IsDlgButtonChecked(IDC_RADIOOPMEM) == BST_CHECKED;
+    return IsDlgButtonChecked(IDC_RADIO_OPMEM) == BST_CHECKED;
   }
   inline IntType    &getSelectedStreamOp() {
     return getStreamOpIsMem() ? m_memory : m_accumulator;

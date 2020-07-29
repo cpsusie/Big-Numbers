@@ -27,81 +27,80 @@ CTestIntDlg::CTestIntDlg(CWnd *pParent)
 
 void CTestIntDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
-  DDX_Text(      pDX, IDC_EDITSTREAMINVALUE       , m_streamInString     );
-  DDX_Text(      pDX, IDC_EDITSTREAMOUTVALUE      , m_streamOutString    );
-  DDX_Text(      pDX, IDC_EDITWIDTHVALUE          , m_width              );
-  DDX_Text(      pDX, IDC_EDITFILLVALUE           , m_fillString         );
+  DDX_Text(      pDX, IDC_EDIT_STREAMINVALUE       , m_streamInString     );
+  DDX_Text(      pDX, IDC_EDIT_STREAMOUTVALUE      , m_streamOutString    );
+  DDX_Text(      pDX, IDC_EDIT_WIDTHVALUE          , m_width              );
+  DDX_Text(      pDX, IDC_EDIT_FILLVALUE           , m_fillString         );
   DDV_MaxChars(  pDX, m_fillString, 1);
-  DDX_Text(      pDX, IDC_STATICSTREAMSTATEVALUE  , m_streamState        );
-  DDX_Check(     pDX, IDC_CHECKWIDECHARSTREAM     , m_widecharStream     );
-  DDX_Check(     pDX, IDC_CHECKAUTOUPDATESTREAMOUT, m_autoUpdateStreamOut);
-  DDX_Text(      pDX, IDC_EDITRADIXVALUE          , m_radix              );
+  DDX_Text(      pDX, IDC_STATIC_STREAMSTATEVALUE  , m_streamState        );
+  DDX_Check(     pDX, IDC_CHECK_WIDECHARSTREAM     , m_widecharStream     );
+  DDX_Check(     pDX, IDC_CHECK_AUTOUPDATESTREAMOUT, m_autoUpdateStreamOut);
+  DDX_Text(      pDX, IDC_EDIT_RADIXVALUE          , m_radix              );
 }
-
 
 BEGIN_MESSAGE_MAP(CTestIntDlg, CDialog)
   ON_WM_CLOSE()
-  ON_BN_CLICKED(          IDC_RADIOTYPEI32             , OnBnClickedRadioTypeI32            )
-  ON_BN_CLICKED(          IDC_RADIOTYPEU32             , OnBnClickedRadioTypeU32            )
-  ON_BN_CLICKED(          IDC_RADIOTYPEI64             , OnBnClickedRadioTypeI64            )
-  ON_BN_CLICKED(          IDC_RADIOTYPEU64             , OnBnClickedRadioTypeU64            )
-  ON_BN_CLICKED(          IDC_RADIOTYPEI128            , OnBnClickedRadioTypeI128           )
-  ON_BN_CLICKED(          IDC_RADIOTYPEU128            , OnBnClickedRadioTypeU128           )
-  ON_EN_SETFOCUS(         IDC_EDITINTVALUE             , OnEnSetFocusEditIntValue           )
-  ON_EN_CHANGE(           IDC_EDITINTVALUE             , OnChangeEditIntValue               )
-  ON_NOTIFY(UDN_DELTAPOS, IDC_SPININTVALUE             , OnDeltaPosSpinIntValue             )
-  ON_EN_CHANGE(           IDC_EDITRADIXVALUE           , OnEnChangeEditRadixValue           )
-  ON_EN_UPDATE(           IDC_EDITRADIXVALUE           , OnEnUpdateEditRadixValue           )
-  ON_NOTIFY(UDN_DELTAPOS, IDC_SPINRADIXVALUE           , OnDeltaposSpinRadixValue           )
-  ON_BN_CLICKED(          IDC_BUTTONSAVE               , OnBnClickedButtonSave              )
-  ON_BN_CLICKED(          IDC_BUTTONLOAD               , OnBnClickedButtonLoad              )
-  ON_BN_CLICKED(          IDC_BUTTONRESETMEM           , OnBnClickedButtonResetMem          )
-  ON_BN_CLICKED(          IDC_BUTTONSWAPACCMEM         , OnBnClickedButtonSwapAccMem        )
-  ON_BN_CLICKED(          IDC_BUTTONSETZERO            , OnBnClickedButtonSetZero           )
-  ON_BN_CLICKED(          IDC_BUTTONSETONE             , OnBnClickedButtonSetOne            )
-  ON_BN_CLICKED(          IDC_BUTTONSETMIN             , OnBnClickedButtonSetMin            )
-  ON_BN_CLICKED(          IDC_BUTTONSETMAX             , OnBnClickedButtonSetMax            )
-  ON_BN_CLICKED(          IDC_BUTTONSETRND             , OnBnClickedButtonSetRnd            )
-  ON_BN_CLICKED(          IDC_BUTTONADD                , OnBnClickedButtonAdd               )
-  ON_BN_CLICKED(          IDC_BUTTONSUB                , OnBnClickedButtonSub               )
-  ON_BN_CLICKED(          IDC_BUTTONMULT               , OnBnClickedButtonMult              )
-  ON_BN_CLICKED(          IDC_BUTTONDIV                , OnBnClickedButtonDiv               )
-  ON_BN_CLICKED(          IDC_BUTTONFMOD               , OnBnClickedButtonFmod              )
-  ON_BN_CLICKED(          IDC_BUTTONSQR                , OnBnClickedButtonSqr               )
-  ON_BN_CLICKED(          IDC_BUTTONAND                , OnBnClickedButtonAnd               )
-  ON_BN_CLICKED(          IDC_BUTTONOR                 , OnBnClickedButtonOr                )
-  ON_BN_CLICKED(          IDC_BUTTONXOR                , OnBnClickedButtonXor               )
-  ON_BN_CLICKED(          IDC_BUTTONNEG                , OnBnClickedButtonNeg               )
-  ON_BN_CLICKED(          IDC_BUTTONNOT                , OnBnClickedButtonNot               )
-  ON_BN_CLICKED(          IDC_CHECK_IOS_SKIPWS         , OnBnClickedCheckIosFlag            )
-  ON_BN_CLICKED(          IDC_CHECK_IOS_UNITBUF        , OnBnClickedCheckIosFlag            )
-  ON_BN_CLICKED(          IDC_CHECK_IOS_UPPERCASE      , OnBnClickedCheckIosFlag            )
-  ON_BN_CLICKED(          IDC_CHECK_IOS_SHOWBASE       , OnBnClickedCheckIosFlag            )
-  ON_BN_CLICKED(          IDC_CHECK_IOS_SHOWPOINT      , OnBnClickedCheckIosFlag            )
-  ON_BN_CLICKED(          IDC_CHECK_IOS_SHOWPOS        , OnBnClickedCheckIosFlag            )
-  ON_BN_CLICKED(          IDC_CHECK_IOS_LEFT           , OnBnClickedCheckIosFlag            )
-  ON_BN_CLICKED(          IDC_CHECK_IOS_RIGHT          , OnBnClickedCheckIosFlag            )
-  ON_BN_CLICKED(          IDC_CHECK_IOS_INTERNAL       , OnBnClickedCheckIosFlag            )
-  ON_BN_CLICKED(          IDC_CHECK_IOS_DEC            , OnBnClickedCheckIosFlag            )
-  ON_BN_CLICKED(          IDC_CHECK_IOS_OCT            , OnBnClickedCheckIosFlag            )
-  ON_BN_CLICKED(          IDC_CHECK_IOS_HEX            , OnBnClickedCheckIosFlag            )
-  ON_BN_CLICKED(          IDC_CHECK_IOS_SCIENTIFIC     , OnBnClickedCheckIosFlag            )
-  ON_BN_CLICKED(          IDC_CHECK_IOS_FIXED          , OnBnClickedCheckIosFlag            )
-  ON_BN_CLICKED(          IDC_CHECK_IOS_HEXFLOAT       , OnBnClickedCheckIosFlag            )
-  ON_BN_CLICKED(          IDC_CHECK_IOS_BOOLALPHA      , OnBnClickedCheckIosFlag            )
-  ON_BN_CLICKED(          IDC_CHECK_IOS_STDIO          , OnBnClickedCheckIosFlag            )
-  ON_BN_CLICKED(          IDC_RADIOOPACC               , OnBnClickedRadioOpAcc              )
-  ON_BN_CLICKED(          IDC_RADIOOPMEM               , OnBnClickedRadioOpMem              )
-  ON_BN_CLICKED(          IDC_BUTTONSTREAMIN           , OnBnClickedButtonStreamIn          )
-  ON_BN_CLICKED(          IDC_BUTTONSTREAMOUT          , OnBnClickedButtonStreamOut         )
-  ON_BN_CLICKED(          IDC_BUTTONCOPYOUTTOIN        , OnBnClickedButtonCopyOutToIn       )
-  ON_BN_CLICKED(          IDC_CHECKWIDECHARSTREAM      , OnBnClickedCheckWideCharStream     )
-  ON_BN_CLICKED(          IDC_CHECKAUTOUPDATESTREAMOUT , OnBnClickedCheckAutoUpdateStreamOut)
-  ON_EN_CHANGE(           IDC_EDITWIDTHVALUE           , OnEnChangeEditWidthValue           )
-  ON_EN_UPDATE(           IDC_EDITWIDTHVALUE           , OnEnUpdateEditWidthValue           )
-  ON_NOTIFY(UDN_DELTAPOS, IDC_SPINWIDTHVALUE           , OnDeltaPosSpinWidthValue           )
-  ON_EN_CHANGE(           IDC_EDITFILLVALUE            , OnEnChangeEditFillValue            )
-  ON_EN_SETFOCUS(         IDC_EDITFILLVALUE            , OnEnSetFocusEditFillValue          )
+  ON_BN_CLICKED(          IDC_RADIO_TYPEI32             , OnBnClickedRadioTypeI32            )
+  ON_BN_CLICKED(          IDC_RADIO_TYPEU32             , OnBnClickedRadioTypeU32            )
+  ON_BN_CLICKED(          IDC_RADIO_TYPEI64             , OnBnClickedRadioTypeI64            )
+  ON_BN_CLICKED(          IDC_RADIO_TYPEU64             , OnBnClickedRadioTypeU64            )
+  ON_BN_CLICKED(          IDC_RADIO_TYPEI128            , OnBnClickedRadioTypeI128           )
+  ON_BN_CLICKED(          IDC_RADIO_TYPEU128            , OnBnClickedRadioTypeU128           )
+  ON_EN_SETFOCUS(         IDC_EDIT_INTVALUE             , OnEnSetFocusEditIntValue           )
+  ON_EN_CHANGE(           IDC_EDIT_INTVALUE             , OnChangeEditIntValue               )
+  ON_NOTIFY(UDN_DELTAPOS, IDC_SPIN_INTVALUE             , OnDeltaPosSpinIntValue             )
+  ON_EN_CHANGE(           IDC_EDIT_RADIXVALUE           , OnEnChangeEditRadixValue           )
+  ON_EN_UPDATE(           IDC_EDIT_RADIXVALUE           , OnEnUpdateEditRadixValue           )
+  ON_NOTIFY(UDN_DELTAPOS, IDC_SPIN_RADIXVALUE           , OnDeltaposSpinRadixValue           )
+  ON_BN_CLICKED(          IDC_BUTTON_SAVE               , OnBnClickedButtonSave              )
+  ON_BN_CLICKED(          IDC_BUTTON_LOAD               , OnBnClickedButtonLoad              )
+  ON_BN_CLICKED(          IDC_BUTTON_RESETMEM           , OnBnClickedButtonResetMem          )
+  ON_BN_CLICKED(          IDC_BUTTON_SWAPACCMEM         , OnBnClickedButtonSwapAccMem        )
+  ON_BN_CLICKED(          IDC_BUTTON_SETZERO            , OnBnClickedButtonSetZero           )
+  ON_BN_CLICKED(          IDC_BUTTON_SETONE             , OnBnClickedButtonSetOne            )
+  ON_BN_CLICKED(          IDC_BUTTON_SETMIN             , OnBnClickedButtonSetMin            )
+  ON_BN_CLICKED(          IDC_BUTTON_SETMAX             , OnBnClickedButtonSetMax            )
+  ON_BN_CLICKED(          IDC_BUTTON_SETRND             , OnBnClickedButtonSetRnd            )
+  ON_BN_CLICKED(          IDC_BUTTON_ADD                , OnBnClickedButtonAdd               )
+  ON_BN_CLICKED(          IDC_BUTTON_SUB                , OnBnClickedButtonSub               )
+  ON_BN_CLICKED(          IDC_BUTTON_MULT               , OnBnClickedButtonMult              )
+  ON_BN_CLICKED(          IDC_BUTTON_DIV                , OnBnClickedButtonDiv               )
+  ON_BN_CLICKED(          IDC_BUTTON_FMOD               , OnBnClickedButtonFmod              )
+  ON_BN_CLICKED(          IDC_BUTTON_SQR                , OnBnClickedButtonSqr               )
+  ON_BN_CLICKED(          IDC_BUTTON_AND                , OnBnClickedButtonAnd               )
+  ON_BN_CLICKED(          IDC_BUTTON_OR                 , OnBnClickedButtonOr                )
+  ON_BN_CLICKED(          IDC_BUTTON_XOR                , OnBnClickedButtonXor               )
+  ON_BN_CLICKED(          IDC_BUTTON_NEG                , OnBnClickedButtonNeg               )
+  ON_BN_CLICKED(          IDC_BUTTON_NOT                , OnBnClickedButtonNot               )
+  ON_BN_CLICKED(          IDC_CHECK_IOS_SKIPWS          , OnBnClickedCheckIosFlag            )
+  ON_BN_CLICKED(          IDC_CHECK_IOS_UNITBUF         , OnBnClickedCheckIosFlag            )
+  ON_BN_CLICKED(          IDC_CHECK_IOS_UPPERCASE       , OnBnClickedCheckIosFlag            )
+  ON_BN_CLICKED(          IDC_CHECK_IOS_SHOWBASE        , OnBnClickedCheckIosFlag            )
+  ON_BN_CLICKED(          IDC_CHECK_IOS_SHOWPOINT       , OnBnClickedCheckIosFlag            )
+  ON_BN_CLICKED(          IDC_CHECK_IOS_SHOWPOS         , OnBnClickedCheckIosFlag            )
+  ON_BN_CLICKED(          IDC_CHECK_IOS_LEFT            , OnBnClickedCheckIosFlag            )
+  ON_BN_CLICKED(          IDC_CHECK_IOS_RIGHT           , OnBnClickedCheckIosFlag            )
+  ON_BN_CLICKED(          IDC_CHECK_IOS_INTERNAL        , OnBnClickedCheckIosFlag            )
+  ON_BN_CLICKED(          IDC_CHECK_IOS_DEC             , OnBnClickedCheckIosFlag            )
+  ON_BN_CLICKED(          IDC_CHECK_IOS_OCT             , OnBnClickedCheckIosFlag            )
+  ON_BN_CLICKED(          IDC_CHECK_IOS_HEX             , OnBnClickedCheckIosFlag            )
+  ON_BN_CLICKED(          IDC_CHECK_IOS_SCIENTIFIC      , OnBnClickedCheckIosFlag            )
+  ON_BN_CLICKED(          IDC_CHECK_IOS_FIXED           , OnBnClickedCheckIosFlag            )
+  ON_BN_CLICKED(          IDC_CHECK_IOS_HEXFLOAT        , OnBnClickedCheckIosFlag            )
+  ON_BN_CLICKED(          IDC_CHECK_IOS_BOOLALPHA       , OnBnClickedCheckIosFlag            )
+  ON_BN_CLICKED(          IDC_CHECK_IOS_STDIO           , OnBnClickedCheckIosFlag            )
+  ON_BN_CLICKED(          IDC_RADIO_OPACC               , OnBnClickedRadioOpAcc              )
+  ON_BN_CLICKED(          IDC_RADIO_OPMEM               , OnBnClickedRadioOpMem              )
+  ON_BN_CLICKED(          IDC_BUTTON_STREAMIN           , OnBnClickedButtonStreamIn          )
+  ON_BN_CLICKED(          IDC_BUTTON_STREAMOUT          , OnBnClickedButtonStreamOut         )
+  ON_BN_CLICKED(          IDC_BUTTON_COPYOUTTOIN        , OnBnClickedButtonCopyOutToIn       )
+  ON_BN_CLICKED(          IDC_CHECK_WIDECHARSTREAM      , OnBnClickedCheckWideCharStream     )
+  ON_BN_CLICKED(          IDC_CHECK_AUTOUPDATESTREAMOUT , OnBnClickedCheckAutoUpdateStreamOut)
+  ON_EN_CHANGE(           IDC_EDIT_WIDTHVALUE           , OnEnChangeEditWidthValue           )
+  ON_EN_UPDATE(           IDC_EDIT_WIDTHVALUE           , OnEnUpdateEditWidthValue           )
+  ON_NOTIFY(UDN_DELTAPOS, IDC_SPIN_WIDTHVALUE           , OnDeltaPosSpinWidthValue           )
+  ON_EN_CHANGE(           IDC_EDIT_FILLVALUE            , OnEnChangeEditFillValue            )
+  ON_EN_SETFOCUS(         IDC_EDIT_FILLVALUE            , OnEnSetFocusEditFillValue          )
 END_MESSAGE_MAP()
 
 BOOL CTestIntDlg::OnInitDialog() {
@@ -109,16 +108,16 @@ BOOL CTestIntDlg::OnInitDialog() {
   showIntTypeValue(m_accumulator, false);
   showIntTypeValue(m_memory     , true );
 
-  CButton *oldButton = ((CButton*)GetDlgItem(IDC_BUTTONCOPYOUTTOIN));
-  CPoint p = getWindowPosition(this, IDC_BUTTONCOPYOUTTOIN);
+  CButton *oldButton = ((CButton*)GetDlgItem(IDC_BUTTON_COPYOUTTOIN));
+  CPoint p = getWindowPosition(this, IDC_BUTTON_COPYOUTTOIN);
   oldButton->DestroyWindow();
-  m_copyOutToInButton.Create(this, OBMIMAGE(UPARROW), p, IDC_BUTTONCOPYOUTTOIN);
+  m_copyOutToInButton.Create(this, OBMIMAGE(UPARROW), p, IDC_BUTTON_COPYOUTTOIN);
 
-  setWindowText(this, IDC_EDITRADIXVALUE, _T("2"));
+  setWindowText(this, IDC_EDIT_RADIXVALUE, _T("2"));
   setDefaultStreamParam();
   OnBnClickedCheckIosFlag();
   setStreamOpIsMem(false);
-  GetDlgItem(IDC_EDITINTVALUE)->SetFocus();
+  GetDlgItem(IDC_EDIT_INTVALUE)->SetFocus();
   return FALSE;
 }
 
@@ -134,17 +133,17 @@ void CTestIntDlg::OnClose() {
 
 BOOL CTestIntDlg::PreTranslateMessage(MSG *pMsg) {
   switch(getFocusCtrlId(this)) {
-  case IDC_EDITINTVALUE  :
+  case IDC_EDIT_INTVALUE  :
     if(isOverwriteCurrentHexChar(this, pMsg)) {
       return true;
     }
     break;
-  case IDC_EDITRADIXVALUE :
+  case IDC_EDIT_RADIXVALUE :
     if(isOverwriteCurrentDecChar(this, pMsg,2,36)) {
       return true;
     }
     break;
-  case IDC_EDITFILLVALUE  :
+  case IDC_EDIT_FILLVALUE  :
     if(isOverwriteCurrentChar(this, pMsg)) {
       return true;
     }
@@ -165,7 +164,7 @@ void CTestIntDlg::OnBnClickedRadioTypeU64()      { setAccIntegerType(IT_U64     
 void CTestIntDlg::OnBnClickedRadioTypeI128()     { setAccIntegerType(IT_I128    );                                       }
 void CTestIntDlg::OnBnClickedRadioTypeU128()     { setAccIntegerType(IT_U128    );                                       }
 void CTestIntDlg::OnChangeEditIntValue()         { updateAcc();                                                          }
-void CTestIntDlg::OnEnSetFocusEditIntValue()     { setCaretPos((CEdit*)GetDlgItem(IDC_EDITINTVALUE  ), 0);               }
+void CTestIntDlg::OnEnSetFocusEditIntValue()     { setCaretPos((CEdit*)GetDlgItem(IDC_EDIT_INTVALUE  ), 0);              }
 void CTestIntDlg::updateAcc()                    { showIntTypeValue(editFieldToIntType()                       , false); }
 void CTestIntDlg::OnBnClickedButtonSave()        { showIntTypeValue(m_accumulator                              , true ); }
 void CTestIntDlg::OnBnClickedButtonLoad()        { showIntTypeValue(m_memory                                   , false); }
@@ -191,7 +190,7 @@ void CTestIntDlg::OnBnClickedRadioOpMem()        { setStreamOpIsMem(true);      
 void CTestIntDlg::OnEnChangeEditWidthValue()     { autoClickStreamOut();                                                 }
 void CTestIntDlg::OnEnUpdateEditWidthValue()     { autoClickStreamOut();                                                 }
 void CTestIntDlg::OnEnChangeEditFillValue()      { autoClickStreamOut();                                                 }
-void CTestIntDlg::OnEnSetFocusEditFillValue()    { setCaretPos((CEdit*)GetDlgItem(IDC_EDITFILLVALUE), 0);                }
+void CTestIntDlg::OnEnSetFocusEditFillValue()    { setCaretPos((CEdit*)GetDlgItem(IDC_EDIT_FILLVALUE), 0);               }
 
 void CTestIntDlg::OnBnClickedButtonSwapAccMem() {
   const IntType mem = m_memory, acc = m_accumulator;
@@ -312,7 +311,7 @@ void CTestIntDlg::OnBnClickedButtonCopyOutToIn() {
 
 void CTestIntDlg::OnBnClickedCheckIosFlag() {
   const FormatFlags flags = winToFormatFlags();
-  setWindowText(this, IDC_STATICSTREAMFLAGSVALUE, format(_T("%08X"), flags));
+  setWindowText(this, IDC_STATIC_STREAMFLAGSVALUE, format(_T("%08X"), flags));
   autoClickStreamOut();
 }
 
@@ -330,11 +329,11 @@ void CTestIntDlg::setAccIntegerType(IntegerType type) {
 }
 
 void CTestIntDlg::setWinIntegerType(IntegerType type) {
-  static const int typeRadioButtonId[] = { IDC_RADIOTYPEI32 ,IDC_RADIOTYPEU32
-                                          ,IDC_RADIOTYPEI64 ,IDC_RADIOTYPEU64
-                                          ,IDC_RADIOTYPEI128,IDC_RADIOTYPEU128
+  static const int typeRadioButtonId[] = { IDC_RADIO_TYPEI32 ,IDC_RADIO_TYPEU32
+                                          ,IDC_RADIO_TYPEI64 ,IDC_RADIO_TYPEU64
+                                          ,IDC_RADIO_TYPEI128,IDC_RADIO_TYPEU128
                                          };
-  CheckRadioButton(IDC_RADIOTYPEI32, IDC_RADIOTYPEU128, typeRadioButtonId[type]);
+  CheckRadioButton(IDC_RADIO_TYPEI32, IDC_RADIO_TYPEU128, typeRadioButtonId[type]);
   m_winIntegerType = type;
 }
 
@@ -356,7 +355,7 @@ void CTestIntDlg::showIntTypeValue(const IntType &i, bool mem) {
   if(m_showItActive) return;
   m_showItActive = true;
   const String displayStr   = i.getDisplayString();
-  const int    displayWinId = mem ? IDC_STATICMEMVALUE : IDC_STATICACCVALUE;
+  const int    displayWinId = mem ? IDC_STATIC_MEMVALUE : IDC_STATIC_ACCVALUE;
   if(!mem) {
     m_accumulator = i;
     setWinIntegerType(i.getType());
@@ -378,20 +377,20 @@ void CTestIntDlg::showIntTypeValue(const IntType &i, bool mem) {
 
 void CTestIntDlg::updateAccRadix() {
   if(m_radix == 2) {
-    setWindowText(this, IDC_STATICACCBIN, m_accumulator.toBinString());
+    setWindowText(this, IDC_STATIC_ACCBIN, m_accumulator.toBinString());
   } else {
-    setWindowText(this, IDC_STATICACCBIN, m_accumulator.toString(m_radix));
+    setWindowText(this, IDC_STATIC_ACCBIN, m_accumulator.toString(m_radix));
   }
 }
 
 // ----------------------------------------- Edit field --------------------------------------------
 
 void CTestIntDlg::intTypeToEditField(const IntType &i) {
-  setWindowText(this, IDC_EDITINTVALUE, i.toHexString());
+  setWindowText(this, IDC_EDIT_INTVALUE, i.toHexString());
 }
 
 IntType CTestIntDlg::editFieldToIntType() {
-  return IntType(getWinIntegerType(), getWindowText(this, IDC_EDITINTVALUE).cstr(), 16);
+  return IntType(getWinIntegerType(), getWindowText(this, IDC_EDIT_INTVALUE).cstr(), 16);
 }
 
 void CTestIntDlg::markLabel(int id, bool marked) {
@@ -406,10 +405,10 @@ void CTestIntDlg::markLabel(int id, bool marked) {
 }
 
 void CTestIntDlg::setStreamOpIsMem(bool v) {
-  const int radiobuttons[] = { IDC_RADIOOPACC, IDC_RADIOOPMEM };
+  const int radiobuttons[] = { IDC_RADIO_OPACC, IDC_RADIO_OPMEM };
   CheckRadioButton(radiobuttons[0], radiobuttons[1], radiobuttons[ordinal(v)]);
-  markLabel(IDC_STATICMEMLABEL, v );
-  markLabel(IDC_STATICACCLABEL, !v);
+  markLabel(IDC_STATIC_MEMLABEL, v );
+  markLabel(IDC_STATIC_ACCLABEL, !v);
   autoClickStreamOut();
 }
 

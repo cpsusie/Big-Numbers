@@ -31,10 +31,10 @@ private:
   }
   void             showFloatFieldsValue(const FloatFields &ff, bool mem);
   inline void      setSignBit(bool v) {
-    CheckDlgButton(IDC_CHECKSIGNBIT, v ? BST_CHECKED : BST_UNCHECKED);
+    CheckDlgButton(IDC_CHECK_SIGNBIT, v ? BST_CHECKED : BST_UNCHECKED);
   }
   inline bool      getSignBit() {
-    return IsDlgButtonChecked(IDC_CHECKSIGNBIT) == BST_CHECKED;
+    return IsDlgButtonChecked(IDC_CHECK_SIGNBIT) == BST_CHECKED;
   }
   void             setExpoField(UINT  v, FloatType type);
   inline void      setExpoField(UINT  v) { setExpoField(v, getWinFloatType()); }
@@ -44,7 +44,7 @@ private:
   UINT64           getSigField();
   void             setStreamOpIsMem(bool v);
   inline bool      getStreamOpIsMem() {
-    return IsDlgButtonChecked(IDC_RADIOOPMEM) == BST_CHECKED;
+    return IsDlgButtonChecked(IDC_RADIO_OPMEM) == BST_CHECKED;
   }
   FloatFields     &getSelectedStreamOp() {
     return getStreamOpIsMem() ? m_memory : m_accumulator;
