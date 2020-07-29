@@ -74,7 +74,7 @@ namespace TestToString {
       TestIterator it             = a.getIterator();
       const UINT   totalItCount   = (UINT)it.getMaxIterationCount(), quatil = totalItCount/4;
       UINT         itCounter      = 0;
-      UINT         testCounter    = 0, mismatch    = 0, lengthMismatch = 0;
+      UINT         mismatch       = 0, lengthMismatch = 0;
       const int    openMode       = ofstream::out | ofstream::trunc;
       tofstream    errorLog;
 
@@ -93,21 +93,20 @@ namespace TestToString {
       const double startTime = getProcessTime();
 
       while(it.hasNext()) {
-        TestElement element = it.next();
+        const TestElement element = it.next();
         tostrstream sD64;
         if(++itCounter % quatil == 0) {
           OUTPUT(_T("%s progress:%.2lf%%"), __TFUNCTION__, PERCENT(itCounter, totalItCount));
         }
 
-        sD64 << element.m_param << element.m_values->getDouble();
-        D64Str = sD64.str();
+        sD64   << element.m_param << element.m_values->getDouble();
+        D64Str =  sD64.str();
 
         tostrstream stream;
-        stream << element.m_param << element.m_values->getDouble80();
-        testStr = stream.str();
-        testCounter++;
+        stream  << element.m_param << element.m_values->getDouble80();
+        testStr =  stream.str();
         if(testStr != D64Str) {
-          errorLog << element.toString() << _T("\tD64Str:<") << D64Str << _T(">\ttestStr:<") << testStr << _T(">") << endl;
+          errorLog << "it:" << itCounter << "," << element.toString() << "\tD64Str:<" << D64Str << ">\ttestStr:<" << testStr << ">" << endl;
           mismatch++;
           if(testStr.length() != D64Str.length()) {
             lengthMismatch++;
@@ -118,9 +117,13 @@ namespace TestToString {
       const double timeUsage = getProcessTime() - startTime;
 
       if((mismatch > acceptableErrors) || (lengthMismatch > acceptableLengthErrors)) {
-        OUTPUT(_T("Number of tests for Double80:%s"          ), format1000(testCounter   ).cstr());
-        OUTPUT(_T("Format mismatch for Double80:%s - %.2lf%%"), format1000(mismatch      ).cstr(), PERCENT(mismatch      , testCounter));
-        OUTPUT(_T("Length mismatch for Double80:%s - %.2lf%%"), format1000(lengthMismatch).cstr(), PERCENT(lengthMismatch, testCounter));
+        OUTPUT(_T("Number of tests for Double80:%s"    ), format1000(itCounter   ).cstr());
+        OUTPUT(_T("Format mismatch for Double80:%s - %.2lf%% (max=%s)")
+              ,format1000(mismatch              ).cstr(), PERCENT(mismatch      , itCounter)
+              ,format1000(acceptableErrors      ).cstr());
+        OUTPUT(_T("Length mismatch for Double80:%s - %.2lf%% (max=%s)")
+              ,format1000(lengthMismatch        ).cstr(), PERCENT(lengthMismatch, itCounter)
+              ,format1000(acceptableLengthErrors).cstr());
       }
       OUTPUT(_T("Total time usage:%.3lf sec."), ((getProcessTime() - startTime) / 1e6));
       verify((mismatch <= acceptableErrors) && (lengthMismatch <= acceptableLengthErrors));
@@ -130,11 +133,11 @@ namespace TestToString {
                               ,const String &errorName, TestDataArray &a
                               ,UINT acceptableErrors, UINT acceptableLengthErrors
                               ) {
-      TestIterator it             = a.getIterator(24, 14, 0);
-      const UINT   totalItCount   = (UINT)it.getMaxIterationCount(), quatil = totalItCount/4;
-      UINT         itCounter      = 0;
-      UINT         testCounter    = 0, mismatch     = 0, lengthMismatch  = 0;
-      const int    openMode       = ofstream::out | ofstream::trunc;
+      TestIterator it           = a.getIterator(24, 14, 0);
+      const UINT   totalItCount = (UINT)it.getMaxIterationCount(), quatil = totalItCount/4;
+      UINT         itCounter    = 0;
+      UINT         mismatch     = 0, lengthMismatch  = 0;
+      const int    openMode     = ofstream::out | ofstream::trunc;
       tofstream    errorLog;
 
       OUTPUT(_T("Total format-tests:%s"), format1000(totalItCount).cstr());
@@ -153,7 +156,7 @@ namespace TestToString {
       const double startTime = getProcessTime();
 
       while(it.hasNext()) {
-        TestElement element = it.next();
+        const TestElement element = it.next();
         tostrstream sD64;
         if(++itCounter % quatil == 0) {
           OUTPUT(_T("%s progress:%.2lf%%"), __TFUNCTION__, PERCENT(itCounter, totalItCount));
@@ -162,12 +165,11 @@ namespace TestToString {
         sD64 << element.m_param << element.m_values->getDouble();
         D64Str = sD64.str();
 
-        testCounter++;
         tostrstream stream;
         stream << element.m_param << element.m_values->getBigReal();
         testStr = stream.str();
         if(testStr != D64Str) {
-          errorLog << element.toString() << _T("\tD64Str:<") << D64Str << _T(">\ttestStr:<") << testStr << _T(">") << endl;
+          errorLog << "it:" << itCounter << "," << element.toString() << "\tD64Str:<" << D64Str << ">\ttestStr:<" << testStr << ">" << endl;
           mismatch++;
           if(testStr.length() != D64Str.length()) {
             lengthMismatch++;
@@ -177,9 +179,13 @@ namespace TestToString {
       const double timeUsage = getProcessTime() - startTime;
 
       if((mismatch > acceptableErrors) || (lengthMismatch > acceptableLengthErrors)) {
-        OUTPUT(_T("Number of tests for BigReal :%s"          ), format1000(testCounter    ).cstr());
-        OUTPUT(_T("Format mismatch for BigReal :%s - %.2lf%%"), format1000(mismatch       ).cstr(), PERCENT(mismatch      , testCounter));
-        OUTPUT(_T("Length mismatch for BigReal :%s - %.2lf%%"), format1000(lengthMismatch ).cstr(), PERCENT(lengthMismatch, testCounter));
+        OUTPUT(_T("Number of tests for BigReal :%s"          ), format1000(itCounter    ).cstr());
+        OUTPUT(_T("Format mismatch for BigReal :%s - %.2lf%% (max=%s)")
+              ,format1000(mismatch              ).cstr(), PERCENT(mismatch      , itCounter)
+              ,format1000(acceptableErrors      ).cstr());
+        OUTPUT(_T("Length mismatch for BigReal :%s - %.2lf%% (max=%s)")
+              ,format1000(lengthMismatch        ).cstr(), PERCENT(lengthMismatch, itCounter)
+              ,format1000(acceptableLengthErrors).cstr());
       }
       OUTPUT(_T("Total time usage:%.3lf sec."), ((getProcessTime() - startTime) / 1e6));
       verify((mismatch <= acceptableErrors) && (lengthMismatch <= acceptableLengthErrors));
