@@ -2,7 +2,7 @@
 #include <D3DGraphics/D3Device.h>
 #include <D3DGraphics/D3Cube.h>
 #include <D3DGraphics/D3SceneObjectWireFrameBox.h>
-#include <D3DGraphics/Profile.h>
+#include <D3DGraphics/Profile2D.h>
 #include "GraphicObjects.h"
 
 static const Point2D smallProfileNoTop[] = {
@@ -37,23 +37,23 @@ static const Point2D bigProfileWithTop[] = {
  ,Point2D( 0    ,2   )
 };
 
-static Profile createProfile(const Point2DArray &points) {
-  Profile        result;
-  ProfilePolygon polygon;
-  ProfileCurve   curve(TT_PRIM_LINE);
+static Profile2D createProfile(const Point2DArray &points) {
+  Profile2D        result;
+  ProfilePolygon2D polygon;
+  ProfileCurve2D   curve(TT_PRIM_LINE);
   polygon.m_start  = points[0];
   polygon.m_closed = false;
   for(size_t i = 1; i < points.size(); i++) {
     curve.addPoint(points[i]);
   }
   polygon.addCurve(curve);
-//  polygon.reverseOrder();
+  polygon.reverseOrder();
   result.addPolygon(polygon);
 
   return result;
 }
 
-static Profile createProfile(const Point2D *data, int n) {
+static Profile2D createProfile(const Point2D *data, int n) {
   Point2DArray points(n);
   for(int i = 0; i < n; i++) {
     points.add(data[i]);
@@ -62,7 +62,7 @@ static Profile createProfile(const Point2D *data, int n) {
 }
 
 LPD3DXMESH BrickObject::createMesh(AbstractMeshFactory &amf, BYTE attr) { // static
-  Profile profile;
+  Profile2D profile;
   if(ISBIG(attr)) {
     if(ISWITHTOP(attr)) {
       profile = createProfile(bigProfileWithTop,ARRAYSIZE(bigProfileWithTop));
@@ -78,12 +78,11 @@ LPD3DXMESH BrickObject::createMesh(AbstractMeshFactory &amf, BYTE attr) { // sta
   }
 
   ProfileRotationParameters param;
-  param.m_rotateAxisAlignsTo = 'y';
-  param.m_rotateAxis         = 'z';
+  param.m_converter = Point2DTo3DConverter('z', 'y');
   param.m_rad                = (float)(2*M_PI);
   param.m_edgeCount          = ISSQUARE(attr) ? 4 : 20;
   if(!ISSQUARE(attr)) param.setFlag(PRROT_ROTATESMOOTH);
-  param.setFlag(PRROT_INVERTNORMALS);
+//  param.setFlag(PRROT_INVERTNORMALS);
   return rotateProfile(amf, profile, param, false);
 }
 
