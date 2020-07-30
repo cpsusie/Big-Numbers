@@ -433,9 +433,9 @@ public:
   }
   // Return 0 on ok. < 0 on error.
   int parseBegin();
-  // Return 0 on continue, nonzero 0 terminate parse.
+  // Return 0 on continue, nonzero will terminate parse.
   int parseStep();
-  // Return 0 on accept. nonzero 0 on error
+  // Return 0 on accept. nonzero on error
   int parse();
 
   inline void setDebug(bool newValue) {

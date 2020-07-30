@@ -458,7 +458,7 @@ void int128mul(void *dst, const void *x) {
         adc     dword ptr[ebp+12], edi                 ; dst[2:3] += edi:esi
                                                        ;
         mov     eax, dword ptr[ebx   ]                 ; 4. round. Highend and carries are overflow
-        mul     dword ptr[ecx+12]                      ; edx:eax] = x[0]*y[3]
+        mul     dword ptr[ecx+12]                      ; edx:eax = x[0]*y[3]
         mov     esi, eax                               ; esi = eax
         mov     eax, dword ptr[ebx+ 4]                 ;
         mul     dword ptr[ecx+ 8]                      ; edx:eax = x[1]*y[2]
