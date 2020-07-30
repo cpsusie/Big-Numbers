@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <FileNameSplitter.h>
 
 static void usage() {
   fprintf(stderr

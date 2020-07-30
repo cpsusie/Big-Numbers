@@ -2,7 +2,7 @@
 #pragma once
 #include <Scanner.h>
 
-#line 2 "C:\\mytools2015\\UnixTools\\sqlbeauty\\Sql.lex"
+#line 2 "C:\\Mytools2015\\UnixTools\\sqlbeauty\\Sql.lex"
 #pragma once
 
  /* This part goes to SqlLex.h */
@@ -19,7 +19,6 @@ public:
   void verror(const SourcePosition &pos, const TCHAR *format, va_list argptr);
   static void findBestHashMapSize();
 };
-
 
 #line 5 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
 

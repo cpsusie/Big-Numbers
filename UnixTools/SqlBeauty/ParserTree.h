@@ -8,8 +8,6 @@
 #include "SqlSymbol.h"
 #include "SqlLex.h"
 
-const extern ParserTables *SqlTables;
-
 class SyntaxNode {
 private:
   String       m_symbol;
@@ -75,6 +73,8 @@ public:
 
 class SqlParser : public LRparser {
 private:
+  static const ParserTables *SqlTables;
+
   BitSet                      m_noSpaceSet;
   TokenPairHashMap<short>     m_pairNoSpace;
   ShortHashMap<IndentSize>    m_indentSet;
@@ -98,7 +98,7 @@ protected:
   void userStackShiftSymbol(UINT symbol);
   void push(SyntaxNodep p)                { *(++m_stacktop) = p;              }
   void userStackPopSymbols(UINT count)    { m_stacktop -= count;              } // pop count symbols from userstack
-  void userStackShiftDollarDollar()       { push(m_dollardollar);             } // push($$) on userstack
+  void userStackShiftLeftSide()           { push(m_dollardollar);             } // push($$) on userstack
   void defaultReduce(UINT prod)           { m_dollardollar  = *m_stacktop;    } // $$ = $1
 public:
   SqlParser();

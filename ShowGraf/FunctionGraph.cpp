@@ -1,8 +1,8 @@
 #include "stdafx.h"
-#include <Math/Expression/ExpressionFunction.h>
+#include <Math/Expression/ExpressionFunctionR1R1.h>
 #include "FunctionGraph.h"
 
-class FunctionGraphFunction : public ExpressionFunction {
+class FunctionGraphFunction : public ExpressionFunctionR1R1 {
 public:
   inline FunctionGraphFunction(const FunctionGraph *graph) {
     const FunctionGraphParameters &param = (FunctionGraphParameters&)graph->getParam();

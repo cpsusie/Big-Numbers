@@ -3,11 +3,8 @@
 
 #include <LRparser.h>
 
-const extern ParserTables *SqlTables;
+#line 5 "C:\\Mytools2015\\UnixTools\\sqlbeauty\\Sql.y"
+#include "ParserTree.h"
 
-#line 5 "C:\\mytools2015\\UnixTools\\sqlbeauty\\Sql.y"
-#include <LrParser.h>
-
-
-#line 18 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 22 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
 

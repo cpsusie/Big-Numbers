@@ -1,5 +1,7 @@
 #include "stdafx.h"
+#include <FileNameSplitter.h>
 #include <MFCUtil/Clipboard.h>
+
 #include "ParserTree.h"
 
 static String getStmt() {

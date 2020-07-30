@@ -2,7 +2,7 @@
 
   /* This part goes to sqlparser.h */
 
-#include <LrParser.h>
+#include "ParserTree.h"
 
 %}
 
