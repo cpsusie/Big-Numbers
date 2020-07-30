@@ -50,13 +50,11 @@ private:
   mutable const Type **m_rightSides;
 
   static inline bool contains(const BYTE *bitset, UINT v) {
-    return (bitset[v/8]&(1<<(v%8))) != 0;
+    return (bitset[v>>3]&(1<<(v&7))) != 0;
   }
 
   int findElementUncompressed(const Type *state, int token) const {
-    int l = 0;
-    int r = *(state++)-1;
-    while(l <= r) { // binary search
+    for(int l = 0, r = *(state++) - 1; l <= r;) { // binary search
       const int m = (l+r)>>1;
       const int cmp = state[m<<1] - token;
       if(cmp < 0) {
