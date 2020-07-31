@@ -7,7 +7,7 @@ class CCountInt64Dlg;
 class CounterThread : public Thread {
 private:
   CCountInt64Dlg &m_dlg;
-  UINT64         m_counter;
+  UINT64          m_counter;
 public:
   CounterThread(CCountInt64Dlg &dlg)
     : Thread(_T("Counter"))
@@ -18,8 +18,8 @@ public:
   UINT run();
   inline UINT64 getCounter() const       { return m_counter;  }
   inline void   setCounter(UINT64 value) { m_counter = value; }
-  void step()  { m_counter++;   }
-  void reset() { m_counter = 0; }
+  void          step()                   { m_counter++;       }
+  void          reset()                  { m_counter = 0;     }
 };
 
 typedef enum {
@@ -73,10 +73,10 @@ protected:
   afx_msg void OnFileTestInt();
   afx_msg void OnFileExit();
   afx_msg void OnViewTimer();
-  afx_msg void OnStartButton();
-  afx_msg void OnStopButton();
-  afx_msg void OnStepButton();
-  afx_msg void OnResetButton();
-  afx_msg void OnEditButton();
+  afx_msg void OnButtonStart();
+  afx_msg void OnButtonStop();
+  afx_msg void OnButtonStep();
+  afx_msg void OnButtonReset();
+  afx_msg void OnButtonEdit();
   DECLARE_MESSAGE_MAP()
 };

@@ -15,7 +15,7 @@ using namespace std;
 class CAboutDlg : public CDialog {
 public:
   enum { IDD = IDD_ABOUTBOX };
-  CAboutDlg() : CDialog(CAboutDlg::IDD) {
+  CAboutDlg() : CDialog(IDD) {
   }
 protected:
   DECLARE_MESSAGE_MAP()
@@ -25,8 +25,8 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
 CCountInt64Dlg::CCountInt64Dlg(StartCommand command, CWnd *pParent)
-: m_command(command)
-, CDialog(CCountInt64Dlg::IDD, pParent)
+: CDialog(IDD, pParent)
+, m_command(command)
 , m_hexString(EMPTYSTRING)
 {
   m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
@@ -48,11 +48,11 @@ BEGIN_MESSAGE_MAP(CCountInt64Dlg, CDialog)
   ON_COMMAND(      ID_FILE_TESTINT       , OnFileTestInt               )
   ON_COMMAND(      ID_FILE_EXIT          , OnFileExit                  )
   ON_COMMAND(      ID_VIEW_TIMER         , OnViewTimer                 )
-  ON_BN_CLICKED(   IDC_STARTBUTTON       , OnStartButton               )
-  ON_BN_CLICKED(   IDC_STOPBUTTON        , OnStopButton                )
-  ON_BN_CLICKED(   IDC_STEPBUTTON        , OnStepButton                )
-  ON_BN_CLICKED(   IDC_RESETBUTTON       , OnResetButton               )
-  ON_BN_CLICKED(   IDC_EDIT_BUTTON       , OnEditButton                )
+  ON_BN_CLICKED(   IDC_BUTTON_START      , OnButtonStart               )
+  ON_BN_CLICKED(   IDC_BUTTON_STOP       , OnButtonStop                )
+  ON_BN_CLICKED(   IDC_BUTTON_STEP       , OnButtonStep                )
+  ON_BN_CLICKED(   IDC_BUTTON_RESET      , OnButtonReset               )
+  ON_BN_CLICKED(   IDC_BUTTON_EDIT       , OnButtonEdit                )
 END_MESSAGE_MAP()
 
 BOOL CCountInt64Dlg::OnInitDialog() {
@@ -209,34 +209,34 @@ void CCountInt64Dlg::showCounter(UINT64 n) {
 
 void CCountInt64Dlg::ajourEnabling() {
   if(m_editMode) {
-    GetDlgItem(IDC_STARTBUTTON )->EnableWindow(FALSE);
-    GetDlgItem(IDC_STOPBUTTON  )->EnableWindow(FALSE);
-    GetDlgItem(IDC_STEPBUTTON  )->EnableWindow(FALSE);
-    GetDlgItem(IDC_RESETBUTTON )->EnableWindow(FALSE);
-    GetDlgItem(IDC_EDIT_BUTTON )->EnableWindow(TRUE );
+    GetDlgItem(IDC_BUTTON_START)->EnableWindow(FALSE);
+    GetDlgItem(IDC_BUTTON_STOP )->EnableWindow(FALSE);
+    GetDlgItem(IDC_BUTTON_STEP )->EnableWindow(FALSE);
+    GetDlgItem(IDC_BUTTON_RESET)->EnableWindow(FALSE);
+    GetDlgItem(IDC_BUTTON_EDIT )->EnableWindow(TRUE );
   } else if(m_timerIsRunning) {
-    GetDlgItem(IDC_STARTBUTTON )->EnableWindow(FALSE);
-    GetDlgItem(IDC_STOPBUTTON  )->EnableWindow(TRUE );
-    GetDlgItem(IDC_STEPBUTTON  )->EnableWindow(FALSE);
-    GetDlgItem(IDC_RESETBUTTON )->EnableWindow(FALSE);
-    GetDlgItem(IDC_EDIT_BUTTON )->EnableWindow(FALSE);
+    GetDlgItem(IDC_BUTTON_START)->EnableWindow(FALSE);
+    GetDlgItem(IDC_BUTTON_STOP )->EnableWindow(TRUE );
+    GetDlgItem(IDC_BUTTON_STEP )->EnableWindow(FALSE);
+    GetDlgItem(IDC_BUTTON_RESET)->EnableWindow(FALSE);
+    GetDlgItem(IDC_BUTTON_EDIT )->EnableWindow(FALSE);
   } else {
-    GetDlgItem(IDC_STARTBUTTON )->EnableWindow(TRUE );
-    GetDlgItem(IDC_STOPBUTTON  )->EnableWindow(FALSE);
-    GetDlgItem(IDC_STEPBUTTON  )->EnableWindow(TRUE );
-    GetDlgItem(IDC_RESETBUTTON )->EnableWindow(TRUE );
-    GetDlgItem(IDC_EDIT_BUTTON )->EnableWindow(TRUE );
+    GetDlgItem(IDC_BUTTON_START)->EnableWindow(TRUE );
+    GetDlgItem(IDC_BUTTON_STOP )->EnableWindow(FALSE);
+    GetDlgItem(IDC_BUTTON_STEP )->EnableWindow(TRUE );
+    GetDlgItem(IDC_BUTTON_RESET)->EnableWindow(TRUE );
+    GetDlgItem(IDC_BUTTON_EDIT )->EnableWindow(TRUE );
   }
 }
 
-void CCountInt64Dlg::OnStartButton() {
+void CCountInt64Dlg::OnButtonStart() {
   if(m_timerIsRunning) return;
   m_counterThread->resume();
   startTimer();
   ajourEnabling();
 }
 
-void CCountInt64Dlg::OnStopButton() {
+void CCountInt64Dlg::OnButtonStop() {
   if(!m_timerIsRunning) return;
   m_counterThread->suspend();
   stopTimer();
@@ -244,15 +244,15 @@ void CCountInt64Dlg::OnStopButton() {
   ajourEnabling();
 }
 
-void CCountInt64Dlg::OnStepButton() {
+void CCountInt64Dlg::OnButtonStep() {
   if(m_timerIsRunning) {
-    OnStopButton();
+    OnButtonStop();
   }
   m_counterThread->step();
   showCounter();
 }
 
-void CCountInt64Dlg::OnResetButton() {
+void CCountInt64Dlg::OnButtonReset() {
   stopTimer();
   m_counterThread->suspend();
   m_counterThread->reset();
@@ -260,7 +260,7 @@ void CCountInt64Dlg::OnResetButton() {
   ajourEnabling();
 }
 
-void CCountInt64Dlg::OnEditButton() {
+void CCountInt64Dlg::OnButtonEdit() {
   if(m_timerIsRunning) return;
   if(m_editMode) {
     leaveEditMode();
