@@ -13,7 +13,7 @@ BigInt powmod(const BigInt &a, const BigInt &r, const BigInt &n, bool verbose, D
   BigInt tmpr(r, pool);
 
   int i = 1;
-  StreamParameters param(20);
+  const StreamParameters param(20);
   if(verbose) {
     tcout << param << "a" << " " << param << "r" << " " << param << "p" << endl;
   }
