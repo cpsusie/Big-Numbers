@@ -3,8 +3,8 @@
 #include "PatternParser.h"
 
 static const TCHAR *unexpectedEndMsg    = _T("Unexpected end of regular expression");
-static const TCHAR *unmatchedLPMsg      = _T("Unmatched \\(");
-static const TCHAR *unmatchedRPMsg      = _T("Unmatched \\)");
+static const TCHAR *unmatchedLPMsg      = _T("Unmatched /(");
+static const TCHAR *unmatchedRPMsg      = _T("Unmatched /)");
 static const TCHAR *missingRBMsg        = _T("Missing ] in character class");
 
 PatternParser::PatternParser(const StringArray &pattern, NFA &nfa, bool ignoreCase)
@@ -165,7 +165,7 @@ SubNFA PatternParser::term() {
 
   SubNFA result(m_statePool);
   switch(m_token) {
-  case LPAR:            // \( alternativeList \)
+  case LPAR:            // /( alternativeList /)
     { const intptr_t lpIndex = m_scanner.getIndex();
       nextToken();
       result = alternativeList();
@@ -219,8 +219,8 @@ SubNFA PatternParser::term() {
       result.create2StateNFA(charSet);
     }
     break;
-  case WORDCHAR    :            // \w
-  case NONWORDCHAR :            // \W
+  case WORDCHAR    :            // /w
+  case NONWORDCHAR :            // /W
     { CharacterSet charSet;
       charSet += !m_ignoreCase ? m_scanner.translate(wordLetterSet) : wordLetterSet;
       if(m_token == NONWORDCHAR) charSet.invert();
