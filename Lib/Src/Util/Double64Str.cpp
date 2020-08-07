@@ -3,6 +3,8 @@
 #include <StrStream.h>
 
 using namespace std;
+using namespace OStreamHelper;
+
 // dst must point to memory with at least 26 free char
 char *dbltoa(char *dst, double x) {
   return strcpy(dst, (TostringStream(numeric_limits<double>::max_digits10, 0, ios::scientific) << x).str().c_str());

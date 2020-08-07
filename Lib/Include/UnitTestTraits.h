@@ -1,16 +1,5 @@
 #pragma once
 
-static void myVerify(bool b, TCHAR *str) {
-  if(!b) {
-    Assert::IsTrue(b, str);
-  }
-}
-
-#if defined(verify)
-#undef verify
-#endif
-#define verify(expr) myVerify(expr, _T(#expr))
-
 void OUTPUT(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
   va_list argptr;
   va_start(argptr, format);
@@ -24,6 +13,18 @@ void OUTPUT(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) {
 #else
 #define INFO(...)
 #endif
+
+inline void myVerify(bool b, TCHAR *str, const TCHAR *method, int line) {
+  if(!b) {
+    OUTPUT(_T("%s(%d):%s failed"), method, line, str);
+    Assert::IsTrue(b, str);
+  }
+}
+
+#if defined(verify)
+#undef verify
+#endif
+#define verify(expr) myVerify(expr, _T(#expr), __TFUNCTION__, __LINE__)
 
 class DebugLogRedirector {
 public:

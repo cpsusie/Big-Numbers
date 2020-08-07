@@ -1149,6 +1149,7 @@
     <ClCompile Include="ComplexMatrix.cpp" />
     <ClCompile Include="ComplexMatrixSvd.cpp" />
     <ClCompile Include="ComplexStr.cpp" />
+    <ClCompile Include="ComplexToString.cpp" />
     <ClCompile Include="ComplexVector.cpp" />
     <ClCompile Include="CubicSpline.cpp" />
     <ClCompile Include="DataFit.cpp" />
@@ -1158,6 +1159,7 @@
     <ClCompile Include="Double80Pow10.cpp" />
     <ClCompile Include="Double80Random.cpp" />
     <ClCompile Include="Double80Str.cpp" />
+    <ClCompile Include="Double80ToString.cpp" />
     <ClCompile Include="Double80x86.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">true</ExcludedFromBuild>
@@ -1208,6 +1210,7 @@
     <ClCompile Include="Jacobi.cpp" />
     <ClCompile Include="LssdPolynomial.cpp" />
     <ClCompile Include="MathException.cpp" />
+    <ClCompile Include="NumberToString.cpp" />
     <ClCompile Include="RationalPacker.cpp" />
     <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="MatrixSvd.cpp" />
@@ -1245,6 +1248,7 @@
     <ClCompile Include="RationalIO.cpp" />
     <ClCompile Include="RationalRandom.cpp" />
     <ClCompile Include="RationalStr.cpp" />
+    <ClCompile Include="RationalToString.cpp" />
     <ClCompile Include="Rungekutta.cpp" />
     <ClCompile Include="RungekuttaFehlberg.cpp" />
     <ClCompile Include="SigmoidIterator.cpp" />

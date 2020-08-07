@@ -3,6 +3,8 @@
 #include <StrStream.h>
 #include <Math/Rational.h>
 
+using namespace OStreamHelper;
+
 #define EATWHITE() { while(iswspace(*s)) s++; }
 
 template<typename INTTYPE, typename CharType> Rational _strtorat(const CharType *s, CharType **end, INTTYPE (*strtointtype)(const CharType *, CharType **, int), int radix) {
@@ -40,7 +42,7 @@ Rational wcstorat(const wchar_t *s, wchar_t **end, int radix) {
 
 char *rattoa(char *dst, const Rational &r, int radix) {
   if(!isfinite(r)) {
-    return StrStream::formatUndefined(dst, _fpclass(r));
+    return formatUndefined(dst, _fpclass(r));
   }
   if(radix==10) {
     _i64toa(r.getNumerator(), dst, radix);
@@ -57,7 +59,7 @@ char *rattoa(char *dst, const Rational &r, int radix) {
 
 wchar_t *rattow(wchar_t *dst, const Rational &r, int radix) {
   if(!isfinite(r)) {
-    return StrStream::formatUndefined(dst, _fpclass(r));
+    return formatUndefined(dst, _fpclass(r));
   }
   if(radix==10) {
     _i64tow(r.getNumerator(), dst, radix);

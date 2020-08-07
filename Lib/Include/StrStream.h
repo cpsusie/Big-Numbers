@@ -2,91 +2,191 @@
 
 #include "StreamParameters.h"
 
-// Used instead of standardclass strstream, which is slow!!! (at least in windows)
-class StrStream : public StreamParameters, public String {
-private:
-  StrStream &appendFill(size_t count);
-public:
-  static constexpr char  s_decimalPointChar = '.';
-  static const     char *s_infStr;
-  static const     char *s_qNaNStr;
-  static const     char *s_sNaNStr;
+namespace OStreamHelper {
 
-  inline StrStream(StreamSize precision = 6, StreamSize width = 0, FormatFlags flags = 0) : StreamParameters(precision, width, flags) {
-  }
-  inline StrStream(const StreamParameters &param) : StreamParameters(param) {
-  }
-  inline StrStream(std::ostream &stream) : StreamParameters(stream) {
-  }
-  inline StrStream(std::wostream &stream) : StreamParameters(stream) {
-  }
-
-  inline void clear() {
-    String::operator=(EMPTYSTRING);
-  }
-
-  inline TCHAR getLast() const {
-    return last();
-  }
+  constexpr char  s_decimalPointChar = '.';
+  constexpr char *s_infStr           = "inf";
+  constexpr char *s_qNaNStr          = "nan(ind)";
+  constexpr char *s_sNaNStr          = "nan(snan)";
 
   // helper functions when formating various numbertypes
-  static inline void addDecimalPoint(String &s) {
-    s += s_decimalPointChar;
+  template<typename StringType> void addDecimalPoint(StringType &dst) {
+    dst += s_decimalPointChar;
   }
-  static inline TCHAR getExponentChar(FormatFlags flags) {
+
+  inline char getExponentChar(FormatFlags flags) {
     return ((flags & std::ios::floatfield) == std::ios::hexfloat)
-         ? ((flags & std::ios::uppercase)  ? _T('P') : _T('p'))
-         : ((flags & std::ios::uppercase)  ? _T('E') : _T('e'));
-    }
-  static inline void addExponentChar(String &s, FormatFlags flags) {
-    s += getExponentChar(flags);
+         ? ((flags & std::ios::uppercase) ? 'P' : 'p')
+         : ((flags & std::ios::uppercase) ? 'E' : 'e');
   }
-  static inline void addCharSeq(String &s, TCHAR ch, size_t count) {
-    s.insert(s.length(), count, ch);
+
+  template<typename StringType> void addExponentChar(StringType &dst, FormatFlags flags) {
+    dst += getExponentChar(flags);
   }
-  static inline void addZeroes(String &s, size_t count) {
-    addCharSeq(s, _T('0'), count);
+
+  template<typename StringType> void addCharSeq(StringType &dst, TCHAR ch, size_t count) {
+    dst.insert(dst.length(), count, ch);
   }
-  static void removeTralingZeroDigits(String &s) {
+
+  template<typename StringType> void addZeroes(StringType &dst, size_t count) {
+    addCharSeq(dst, '0', count);
+  }
+
+  template<typename StringType> void removeTralingZeroDigits(StringType &s) {
     while(s.last() == '0') s.removeLast();
     if(s.last() == s_decimalPointChar) s.removeLast();
   }
-  static inline TCHAR *getHexPrefix(FormatFlags flags) {
-    return (flags & std::ios::uppercase) ? _T("0X") : _T("0x");
+
+  inline char *getHexPrefix(FormatFlags flags) {
+    return (flags & std::ios::uppercase) ? "0X" : "0x";
   }
-  static inline void addHexPrefix(String &s, FormatFlags flags) {
-    s += getHexPrefix(flags);
+
+  template<typename StringType> void addHexPrefix(StringType &dst, FormatFlags flags) {
+    dst += getHexPrefix(flags);
   }
-  StrStream &formatFilledField(const String &prefix, const String &str, int flags = -1);
-  StrStream &formatFilledNumericField(const String &str, bool negative, int flags = -1);
+
+  // Return dst
+  template<typename StringType> StringType &formatFilledField(StringType &dst, const StringType &prefix, const String &str, const StreamParameters &param) {
+    const intptr_t    fillCount = (intptr_t)param.width() - (intptr_t)str.length() - (intptr_t)prefix.length();
+    const FormatFlags flags = param.flags();
+    if(fillCount <= 0) {
+      dst += prefix;
+      dst += str.cstr();
+    } else {
+      switch(flags & ios::adjustfield) {
+      case ios::left:
+        dst += prefix;
+        dst += str.cstr();
+        addCharSeq(dst, param.fill(), fillCount);
+        break;
+      case ios::internal:
+        dst += prefix;
+        addCharSeq(dst, param.fill(), fillCount);
+        dst += str.cstr();
+        break;
+      case ios::right: // every other combination is the same as right-adjustment
+      default:
+        addCharSeq(dst, param.fill(), fillCount);
+        dst += prefix;
+        dst += str.cstr();
+        break;
+      }
+    }
+    return dst;
+  }
+
+  // Return dst
+  template<typename StringType> StringType &formatFilledNumericField(StringType &dst, const String &str, bool negative, const StreamParameters &param) {
+    const FormatFlags flags = param.flags();
+    StringType        prefixStr;
+    if(negative) {
+      prefixStr = "-";
+    } else if((flags & ios::showpos) && (param.radix() == 10)) {
+      prefixStr = "+";
+    }
+    if(flags & ios::showbase) {
+      switch(flags & ios::basefield) {
+      case ios::oct:
+        return formatFilledField(dst, prefixStr, "0" + str, param);
+      case ios::hex:
+        addHexPrefix(prefixStr, flags);
+        break;
+      }
+    }
+    return formatFilledField(dst, prefixStr, str, param);
+  }
 
   // format str, left,right,internal aligned, width filler character/inserted if getWidth() > str.length()
   // prefix containing sign and radix sequence (0x/X) is added
   // if flags == -1 (default), then stream.flags() will be used
-  // return *this
-  StrStream &formatFilledFloatField(const String &str, bool negative, int flags=-1);
+  // Return dst
+  template<typename StringType> StringType &formatFilledFloatField(StringType &dst, const String &str, bool negative, const StreamParameters &param) {
+    const FormatFlags flags = param.flags();
+    StringType        prefixStr;
+    if(negative) {
+      prefixStr = "-";
+    } else if(flags & ios::showpos) {
+      prefixStr = "+";
+    }
+    if((flags & ios::floatfield) == ios::hexfloat) {
+      addHexPrefix(prefixStr, flags);
+    }
+    return formatFilledField(dst, prefixStr, str, param);
+  }
 
-  static String &formatZero(String &result, StreamSize precision, FormatFlags flags, StreamSize maxPrecision = 0);
-  template<typename CharType> static CharType *formatpinf(CharType *dst, bool uppercase) {
+  // Return dst
+  template<typename StringType> StringType &formatZero(StringType &dst, StreamSize precision, FormatFlags flags, StreamSize maxPrecision = 0) {
+    switch(flags & ios::floatfield) {
+    case 0:
+      dst += '0';
+      if(flags & ios::showpoint) {
+        addDecimalPoint(dst);
+        precision = max(precision, 1);
+        addZeroes(dst, (size_t)precision);
+      }
+      break;
+    case ios::scientific:
+      dst += '0';
+      if((flags & ios::showpoint) || (precision > 0)) {
+        addDecimalPoint(dst);
+        if(precision > 0) {
+          addZeroes(dst, (size_t)((maxPrecision <= 0) ? precision : min(precision, maxPrecision)));
+        }
+      }
+      addExponentChar(dst, flags);
+      dst += "+00";
+      break;
+    case ios::fixed:
+      dst += _T('0');
+      if((flags & ios::showpoint) || (precision > 0)) {
+        addDecimalPoint(dst);
+        if(precision > 0) {
+          addZeroes(dst, (size_t)precision);
+        }
+      }
+      break;
+    case ios::hexfloat:
+      dst += '0';
+      if(precision == 0) {
+        precision = 6;
+      }
+      addDecimalPoint(dst);
+      addZeroes(dst, (size_t)precision);
+      addExponentChar(dst, flags);
+      dst += "+0";
+      break;
+    }
+    return dst;
+  }
+
+  // Return dst
+  template<typename CharType> CharType *formatpinf(CharType *dst, bool uppercase) {
     strCpy(dst, s_infStr);
     return uppercase ? strUpr(dst) : dst;
   }
-  template<typename CharType> static CharType *formatninf(CharType *dst, bool uppercase) {
+
+  // Return dst
+  template<typename CharType> CharType *formatninf(CharType *dst, bool uppercase) {
     *dst = '-';
     formatpinf(dst + 1, uppercase);
     return dst;
   }
-  template<typename CharType> static CharType *formatqnan(CharType *dst, bool uppercase) {
+
+  // Return dst
+  template<typename CharType> CharType *formatqnan(CharType *dst, bool uppercase) {
     strCpy(dst, s_qNaNStr);
     return uppercase ? strUpr(dst) : dst;
   }
-  template<typename CharType> static CharType *formatsnan(CharType *dst, bool uppercase) {
+
+  // Return dst
+  template<typename CharType> CharType *formatsnan(CharType *dst, bool uppercase) {
     strCpy(dst, s_sNaNStr);
     return uppercase ? strUpr(dst) : dst;
   }
 
   // fpclass is assumed to be one of _FPCLASS_PINF: _FPCLASS_NINF, _FPCLASS_SNAN : _FPCLASS_QNAN, return value from _fpclass(NumbeType)
-  template<typename CharType> static CharType *formatUndefined(CharType *dst, int fpclass, bool uppercase=false, bool formatNinfAsPinf=false) {
+  // Return dst
+  template<typename CharType> CharType *formatUndefined(CharType *dst, int fpclass, bool uppercase = false, bool formatNinfAsPinf = false) {
     switch(fpclass) {
     case _FPCLASS_SNAN:  // signaling NaN
       return formatsnan(dst, uppercase);
@@ -105,292 +205,197 @@ public:
     return dst;
   }
 
-  TCHAR unputc();
-  inline StrStream &append(const String &str) { // append str to stream without using any format-specifiers
-    *this += str;
-    return *this;
-  }
-  inline StrStream &append(const char *str) {
-    *this += str;
-    return *this;
-  }
-  inline StrStream &append(const wchar_t *str) {
-    *this += str;
-    return *this;
-  }
+  class TostringStream : public std::ostringstream {
+  public:
+    inline TostringStream(const StreamParameters &param) {
+      *this << param;
+    }
+    inline TostringStream(StreamSize prec, StreamSize w, FormatFlags flg) {
+      precision(prec);
+      width(w);
+      flags(flg);
+    }
+    inline TostringStream(StreamSize w, FormatFlags flg) {
+      width(w);
+      flags(flg);
+    }
+  };
 
-  inline StrStream &operator<<(wchar_t ch) {
-    return append(format(getCharFormat().cstr(), (TCHAR)ch));
-  }
-  inline StrStream &operator<<(char ch) {
-    return append(format(getCharFormat().cstr(), (TCHAR)ch));
-  }
-  StrStream &operator<<(      BYTE ch) {
-    return append(format(getCharFormat().cstr(), (_TUCHAR)ch));
-  }
-  inline StrStream &operator<<(const BYTE *str) {
-    USES_ACONVERSION;
-    return append(format(getStringFormat().cstr(), ASTR2TSTR((char*)str)));
-  }
-  inline StrStream &operator<<(const char *str) {
-    USES_ACONVERSION;
-    return append(format(getStringFormat().cstr(), ASTR2TSTR(str)));
-  }
-  inline StrStream &operator<<(const wchar_t *str) {
-    USES_WCONVERSION;
-    return append(format(getStringFormat().cstr(), WSTR2TSTR(str)));
-  }
-  inline StrStream &operator<<(const String &str) {
-    return append(format(getStringFormat().cstr(), str.cstr()));
-  }
-  inline StrStream &operator<<(int n) {
-    return append(format(getIntFormat().cstr(), n));
-  }
-  inline StrStream &operator<<(UINT n) {
-    return append(format(getUIntFormat().cstr(), n));
-  }
-  inline StrStream &operator<<(long n) {
-    return append(format(getLongFormat().cstr(), n));
-  }
-  inline StrStream &operator<<(ULONG n) {
-    return append(format(getULongFormat().cstr(), n));
-  }
-  inline StrStream &operator<<(INT64 n) {
-    return append(format(getInt64Format().cstr(), n));
-  }
-  inline StrStream &operator<<(UINT64 n) {
-    return append(format(getUInt64Format().cstr(), n));
-  }
-  inline StrStream &operator<<(float f) {
-    return append(format(getFloatFormat().cstr(), f));
-  }
-  inline StrStream &operator<<(double d) {
-    return append(format(getDoubleFormat().cstr(), d));
-  }
-  inline StrStream &operator<<(const StrStream &s) {
-    return append(s.cstr());
-  }
-  inline StrStream &operator<<(const StreamParameters &param) {
-    ((StreamParameters&)(*this)) = param;
-    return *this;
-  }
-};
+  class TowstringStream : public std::wostringstream {
+  public:
+    inline TowstringStream(const StreamParameters &param) {
+      *this << param;
+    }
+    inline TowstringStream(StreamSize prec, StreamSize w, FormatFlags flg) {
+      precision(prec);
+      width(w);
+      flags(flg);
+    }
+    inline TowstringStream(StreamSize w, FormatFlags flg) {
+      width(w);
+      flags(flg);
+    }
+  };
 
-class TostringStream : public std::stringstream {
-public:
-  inline TostringStream(StreamSize prec, StreamSize w, FormatFlags flg) {
-    precision(prec);
-    width(w);
-    flags(flg);
-  }
-  inline TostringStream(StreamSize w, FormatFlags flg) {
-    width(w);
-    flags(flg);
-  }
-};
-
-class TowstringStream : public std::wstringstream {
-public:
-  inline TowstringStream(StreamSize prec, StreamSize w, FormatFlags flg) {
-    precision(prec);
-    width(w);
-    flags(flg);
-  }
-  inline TowstringStream(StreamSize w, FormatFlags flg) {
-    width(w);
-    flags(flg);
-  }
-};
-
+}; // namespace OStreamHelper
 
 // ----------------------------------------------------------------------------------------------------
 
-template<typename STREAM> String streamStateToString(STREAM &s) {
-  String result;
-  if(s) {
-    result = _T("ok ");
+namespace IStreamHelper {
+
+  template<typename StreamType> String streamStateToString(StreamType &s) {
+    String result;
+    if(s) {
+      result = _T("ok ");
+    }
+    if(s.fail()) result += _T("fail ");
+    if(s.bad()) result += _T("bad ");
+    if(s.eof()) {
+      result += _T("eof ");
+    } else {
+      result += format(_T("next:'%c'"), s.peek());
+    }
+    return result;
   }
-  if(s.fail()) result += _T("fail ");
-  if(s.bad()) result += _T("bad ");
-  if(s.eof()) {
-    result += _T("eof ");
-  } else {
-    result += format(_T("next:'%c'"), s.peek());
-  }
-  return result;
-}
 
 //#define DEBUG_ISTREAMSCANNER
 
-template<typename IStreamType, typename CharType> class IStreamScanner {
-private:
-  IStreamType       &m_in;
-  const FormatFlags  m_flags;
-  const CharType     m_fill;
-  intptr_t           m_startIndex, m_fillStartIndex, m_fillLength;
-  String             m_buf;
-  mutable String     m_tmp;
-  CharType           m_ch;
+  template<typename IStreamType, typename CharType> class IStreamScanner {
+  private:
+    IStreamType       &m_in;
+    const FormatFlags  m_flags;
+    const CharType     m_fill;
+    intptr_t           m_startIndex;
+    String             m_buf;
+    mutable String     m_tmp;
+    CharType           m_ch;
 #if defined(DEBUG_ISTREAMSCANNER)
-  mutable String     m_stateString;
-  void updateStateString() const {
-    m_stateString = streamStateToString(m_in);
-  }
+    mutable String     m_stateString;
+    void updateStateString() const {
+      m_stateString = streamStateToString(m_in);
+    }
 #define UPDSTSTR() updateStateString();
 #else
 #define UPDSTSTR()
 #endif // DEBUG_ISTREAMSCANNER
 
-  // if m_in.eof(), return 0, else { int ch = m_in.peek(). return (CharType)ch); }
-  CharType peekInput() const {
-    if(m_in.eof()) {
-      return 0;
+    // if m_in.eof(), return 0, else { int ch = m_in.peek(). return (CharType)ch); }
+    CharType peekInput() const {
+      if(m_in.eof()) {
+        return 0;
+      }
+      const int ch = m_in.peek();
+      UPDSTSTR()
+      return (CharType)ch;
     }
-    const int ch = m_in.peek();
-    UPDSTSTR()
-    return (CharType)ch;
-  }
 
-  CharType skipleadingwhite() {
-    if(iswspace(m_ch = peekInput())) {
-      do {
-        next();
-      } while(iswspace(m_ch));
+    CharType skipleadingwhite() {
+      if(iswspace(m_ch = peekInput())) {
+        do {
+          next();
+        } while(iswspace(m_ch));
+      }
+      return m_ch;
     }
-    return m_ch;
-  }
-  const String &getBufferExlusiveWhiteAndFill() const {
-    if(m_fillLength == 0) {
+
+    void ungetAll() {
+      for(intptr_t count = m_buf.length(); count--;) {
+        m_in.unget();
+        UPDSTSTR()
+      }
+      m_buf = EMPTYSTRING;
+      m_ch = peekInput();
+    }
+
+  public:
+    IStreamScanner(IStreamType &in)
+      : m_in(in)
+      , m_flags(in.flags())
+      , m_fill(m_in.fill())
+    {
+      m_in.setf(0, std::ios::skipws);
+      if(m_flags & std::ios::skipws) {
+        m_ch = skipleadingwhite();
+      } else {
+        m_ch = peekInput();
+      }
+      m_startIndex = m_buf.length();
+    }
+
+    // if(!ok) all characters read, is unget, and m_in.setstate(ios::failbit)
+    void endScan(bool ok = true) {
+      UPDSTSTR()
+      if(ok) {
+        m_in.flags(m_flags);
+      } else {
+        if(!m_in.eof()) {
+          ungetAll();
+        }
+        UPDSTSTR()
+        m_in.flags(m_flags);
+        m_in.setstate(std::ios::failbit);
+        UPDSTSTR()
+      }
+    }
+
+    inline FormatFlags flags() const {
+      return m_flags;
+    }
+    inline int radix() const {
+      return StreamParameters::radix(flags());
+    }
+
+    // Add current character to buf, and set current character = peekInput()
+    CharType next() {
+      m_buf += m_ch;
+      m_in.get();
+      UPDSTSTR()
+      return m_ch = peekInput();
+    }
+
+    CharType skipwhite() {
+      while(iswspace(peek())) {
+        next();
+      }
+      return peek();
+    }
+
+    inline CharType peek() const {
+      return m_ch;
+    }
+
+    const String &getBuffer() const {
       if(m_startIndex == 0) {
         return m_buf;
       } else {
         return m_tmp = substr(m_buf, m_startIndex, m_buf.length() - m_startIndex);
       }
     }
-    const intptr_t headLength = m_fillStartIndex - m_startIndex;
-    if(headLength > 0) {
-      m_tmp = substr(m_buf, m_startIndex, headLength);
-    }
-    const size_t lastIndex = m_fillStartIndex + m_fillLength;
-    const size_t tailLength = m_buf.length() - lastIndex;
-    if(tailLength) {
-      m_tmp += substr(m_buf, lastIndex, tailLength);
-    }
-    return m_tmp;
-  }
-  void ungetAll() {
-    for(intptr_t count = m_buf.length(); count--;) {
-      m_in.unget();
-      UPDSTSTR()
-    }
-    m_buf = EMPTYSTRING;
-    m_ch = peekInput();
-  }
+  };
 
-public:
-  IStreamScanner(IStreamType &in)
-    : m_in(in)
-    , m_flags(in.flags())
-    , m_fillStartIndex(0)
-    , m_fillLength(0)
-    , m_fill(m_in.fill())
-  {
-    m_in.setf(0, std::ios::skipws);
-    if(m_flags & std::ios::skipws) {
-      m_ch = skipleadingwhite();
-    } else {
-      m_ch = peekInput();
-    }
-    m_startIndex = m_buf.length();
-  }
-
-  // if(!ok) all characters read, is unget, and m_in.setstate(ios::failbit)
-  void endScan(bool ok = true) {
-    UPDSTSTR()
-    if(ok) {
-      m_in.flags(m_flags);
-    } else {
-      if(!m_in.eof()) {
-        ungetAll();
+  template<typename IStreamType> IStreamType &skipfill(IStreamType &in) {
+    const wchar_t fillchar = in.fill();
+    if(!iswspace(fillchar)) {
+      const FormatFlags flg = in.flags();
+      in.flags(flg | ios::skipws);
+      wchar_t ch;
+      while((ch = in.peek()) == fillchar) {
+        in.get();
       }
-      UPDSTSTR()
-      m_in.flags(m_flags);
-      m_in.setstate(std::ios::failbit);
-      UPDSTSTR()
+      in.flags(flg);
     }
+    return in;
   }
 
-  inline FormatFlags flags() const {
-    return m_flags;
-  }
-  inline int radix() const {
-    return StreamParameters::radix(flags());
-  }
-
-  // Add current character to buf, and set current character = peekInput()
-  CharType next() {
-    m_buf += m_ch;
-    m_in.get();
-    UPDSTSTR()
-    return m_ch = peekInput();
-  }
-
-  CharType skipInternalFill() {
-    if(((m_flags & std::ios::adjustfield) == std::ios::internal) && !iswspace(m_fill) && (m_buf.length() > (size_t)m_startIndex)) {
-      m_fillStartIndex = m_buf.length();
-      while(peek() == m_fill) {
-        next();
-      }
-      m_fillLength = m_buf.length() - m_fillStartIndex;
-    }
-    return peek();
-  }
-
-  CharType skipwhite() {
-    while(iswspace(peek())) {
-      next();
-    }
-    return peek();
-  }
-
-  inline CharType peek() const {
-    return m_ch;
-  }
-
-  const String &getBuffer() const {
-    return getBufferExlusiveWhiteAndFill();
-  }
-};
-
-template<typename STREAM> STREAM &setFormat(STREAM &stream, const StreamParameters &param) {
-  stream.width(    param.width());
-  stream.precision(param.precision());
-  stream.flags(    param.flags());
-  stream.fill((char)param.fill());
-  return stream;
-}
-
-template<typename STREAM> STREAM &skipfill(STREAM &in) {
-  const wchar_t fillchar = in.fill();
-  if(!iswspace(fillchar)) {
+  template<typename IStreamType> IStreamType &skipspace(IStreamType &in) {
     const FormatFlags flg = in.flags();
     in.flags(flg | ios::skipws);
     wchar_t ch;
-    while((ch = in.peek()) == fillchar) {
+    while(iswspace(ch = in.peek())) {
       in.get();
     }
     in.flags(flg);
+    return in;
   }
-  return in;
-}
 
-template<typename STREAM> STREAM &skipspace(STREAM &in) {
-  const FormatFlags flg = in.flags();
-  in.flags(flg | ios::skipws);
-  wchar_t ch;
-  while(iswspace(ch = in.peek())) {
-    in.get();
-  }
-  in.flags(flg);
-  return in;
-}
+}; // namespace IStreamHelper

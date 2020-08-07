@@ -263,6 +263,18 @@
     <ClCompile Include="Fixed.cpp">
       <Filter>Source Files\Number Types</Filter>
     </ClCompile>
+    <ClCompile Include="ComplexToString.cpp">
+      <Filter>Source Files\Number Types</Filter>
+    </ClCompile>
+    <ClCompile Include="Double80ToString.cpp">
+      <Filter>Source Files\Number Types</Filter>
+    </ClCompile>
+    <ClCompile Include="RationalToString.cpp">
+      <Filter>Source Files\Number Types</Filter>
+    </ClCompile>
+    <ClCompile Include="NumberToString.cpp">
+      <Filter>Source Files\Number Types</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Triangle\ReadMe.txt">

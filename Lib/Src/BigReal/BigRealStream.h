@@ -4,31 +4,23 @@
 #include <StrStream.h>
 
 using namespace std;
+using namespace OStreamHelper;
+using namespace IStreamHelper;
 
-class BigRealStream : public StrStream { // Don't derive from standardclass strstream. Its slow!!! (at least in windows)
+class BigRealFormatter : public StreamParameters {
 private:
   TCHAR m_separatorChar;
   static void formatFixed(         String &dst, const BigReal &x, StreamSize precision, FormatFlags flags, bool removeTrailingZeroes);
   static void formatScientific(    String &dst, const BigReal &x, StreamSize precision, FormatFlags flags, BRExpoType expo10, bool removeTrailingZeroes);
   static void formatSeparateDigits(String &dst, const BigReal &x, TCHAR separatorChar);
 public:
-  BigRealStream(StreamSize precision = 6, StreamSize width = 0, FormatFlags flags = 0, TCHAR separatorChar = 0)
-    : StrStream(precision, width, flags)
+  BigRealFormatter(StreamSize precision = 6, StreamSize width = 0, FormatFlags flags = 0, TCHAR separatorChar = 0)
+    : StreamParameters(precision, width, flags)
     , m_separatorChar(separatorChar)
   {
   }
-  BigRealStream(const StreamParameters &param, TCHAR separatorChar = 0)
-    : StrStream(param)
-    , m_separatorChar(separatorChar)
-  {
-  }
-  BigRealStream(ostream &out, TCHAR separatorChar = 0)
-    : StrStream(out)
-    , m_separatorChar(separatorChar)
-  {
-  }
-  BigRealStream(wostream &out, TCHAR separatorChar = 0)
-    : StrStream(out)
+  template<typename P> BigRealFormatter(const P &p, TCHAR separatorChar = 0)
+    : StreamParameters(p)
     , m_separatorChar(separatorChar)
   {
   }
@@ -40,7 +32,8 @@ public:
   inline TCHAR separator() const {
     return m_separatorChar;
   }
-  BigRealStream &operator<<(const BigReal &v);
+  // Return dst;
+  String &formatBigReal(String &dst, const BigReal &v);
 };
 
 template <typename IStreamType, typename CharType> IStreamType &getBigReal(IStreamType &in, BigReal &x) {
@@ -61,9 +54,8 @@ template <typename IStreamType, typename CharType> IStreamType &getBigReal(IStre
 }
 
 template <typename OStreamType> OStreamType &putBigReal(OStreamType &out, const BigReal &x, TCHAR separatorChar=0) {
-  BigRealStream buf(out, separatorChar);
-  buf << x;
-  out << (String&)buf;
+  String tmp;
+  out << BigRealFormatter(out, separatorChar).formatBigReal(tmp, x);
   return out;
 }
 
@@ -128,7 +120,7 @@ template <typename OStreamType> OStreamType &putBigRational(OStreamType &out, co
   DigitPool *pool = x.getDigitPool();
   if(!isfinite(x)) {
     char tmp[100];
-    out << StrStream::formatUndefined(tmp, _fpclass(x), (out.flags() & ios::uppercase) != 0);
+    out << formatUndefined(tmp, _fpclass(x), (out.flags() & ios::uppercase) != 0);
   } else if(x._isinteger()) {
     putBigInt(out, x.getNumerator(), separatorChar);
   } else {

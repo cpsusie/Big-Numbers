@@ -4,6 +4,8 @@
 #include <RegexIStream.h>
 #include <Date.h>
 
+using namespace IStreamHelper;
+
 class DateStreamScanner : public RegexIStream {
 private:
   static StringArray getRegexLines();

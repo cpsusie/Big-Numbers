@@ -2,6 +2,8 @@
 #include <StrStream.h>
 #include "D80ToDbgString.h"
 
+using namespace OStreamHelper;
+
 ADDIN_API HRESULT WINAPI AddIn_Double80(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t maxResult, DWORD /*reserved*/) {
   try {
     Double80 d;
@@ -13,15 +15,11 @@ ADDIN_API HRESULT WINAPI AddIn_Double80(DWORD dwAddress, DEBUGHELPER *pHelper, i
   return S_OK;
 }
 
-string tostring(const Double80 &x, StreamSize precision, StreamSize width, FormatFlags flags) {
-  return (TostringStream(precision, width, flags) << x).str().c_str();
-}
-
 string D80ToDbgString(const Double80 &d80) {
   String result;
   if(!isfinite(d80)) {
     char tmp[100];
-    return StrStream::formatUndefined(tmp, _fpclass(d80));
+    return formatUndefined(tmp, _fpclass(d80));
   }
   const int expo10 = Double80::getExpo10(d80);
   if((expo10 < -4) || (expo10 >= 18)) {
@@ -32,6 +30,6 @@ string D80ToDbgString(const Double80 &d80) {
     }
     return str;
   } else {
-    return tostring(d80, 19 - expo10, 21, ios::fixed | ios::left);
+    return (TostringStream(21, 19 - expo10, ios::fixed | ios::left) << d80).str();
   }
 }

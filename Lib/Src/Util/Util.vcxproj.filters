@@ -451,12 +451,6 @@
     <ClCompile Include="Packer.cpp">
       <Filter>Source Files\Stream</Filter>
     </ClCompile>
-    <ClCompile Include="StreamParameters.cpp">
-      <Filter>Source Files\Stream</Filter>
-    </ClCompile>
-    <ClCompile Include="StrStream.cpp">
-      <Filter>Source Files\Stream</Filter>
-    </ClCompile>
     <ClCompile Include="Regex.cpp">
       <Filter>Source Files\String</Filter>
     </ClCompile>

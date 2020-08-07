@@ -5,8 +5,9 @@
 #include <Math/Int128.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
-
 using namespace std;
+using namespace OStreamHelper;
+using namespace IStreamHelper;
 
 namespace TestInt128 {
 
@@ -1479,8 +1480,8 @@ namespace TestInt128 {
 
 //          OUTPUT(_T("formatCounter:%d format:%s"), formatCounter, param.toString().cstr());
 
-          setFormat(costr, param);
-          setFormat(wostr, param);
+          costr << param;
+          wostr << param;
           const StreamSize w = param.width();
           for(size_t i = 0; i < a.size(); i++) {
             const INTTYPE &x = a[i];
@@ -1501,8 +1502,8 @@ namespace TestInt128 {
           wistringstream   wistr(wstr);
           StreamParameters ip(param);
           ip.flags(param.flags() | ios::skipws);
-          setFormat(cistr, ip);
-          setFormat(wistr, ip);
+          cistr << ip;
+          wistr << ip;
           for(size_t i = 0; i < a.size(); i++) {
             const INTTYPE &expected = a[i];
 
@@ -1592,12 +1593,9 @@ namespace TestInt128 {
             if((radix != 10) && (x64 < 0)) {
               x128 &= 0xffffffffffffffffui64;
             }
-            setFormat( ostr64 , param);
-            setFormat(costr128, param);
-            setFormat(wostr128, param);
-            ostr64   << x64 << endl;
-            costr128 << x128 << endl;
-            wostr128 << x128 << endl;
+            ostr64   << param << x64  << endl;
+            costr128 << param << x128 << endl;
+            wostr128 << param << x128 << endl;
           }
 
           string  str64   =  ostr64.str();
@@ -1614,10 +1612,8 @@ namespace TestInt128 {
                 const INT64TYPE  x1       = a[errIndex];
                 const INT128TYPE x2       = x1;
                 ostringstream  o64, o128;
-                setFormat(o64 , param);
-                setFormat(o128, param);
-                o64 << x1 << endl;
-                o128 << x2 << endl;
+                o64  << param << x1 << endl;
+                o128 << param << x2 << endl;
               }
             }
             verify(cstr128 == str64);

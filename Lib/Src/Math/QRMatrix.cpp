@@ -20,7 +20,7 @@ static StreamParameters param(9,14,ios::fixed);
 typedef Real Vector3[3];
 
 tostream& operator<<(tostream &out, const Vector3 &v) {
-  StreamParameters param(out);
+  const StreamParameters param(out);
   return out << "(" << param << v[0] << "," << param << v[1] << "," << param << v[2] << ")";
 };
 
@@ -90,7 +90,7 @@ void ElementaryReflector::postMultiply(Matrix &A, int row, int column) const {
 }
 
 static tostream &operator<<(tostream &out, const ElementaryReflector &r) {
-  StreamParameters param(out);
+  const StreamParameters param(out);
   return out << "ElementaryReflector:(v,w,sigma):(" << param << r.v << "," << param << r.w << "," << param << r.sigma << ")" << endl;
 }
 
@@ -204,7 +204,7 @@ void PlaneRotation::postMultiply(Matrix &A, int row, int column) const {
 }
 
 static tostream &operator<<(tostream &out, const PlaneRotation &r) {
-  StreamParameters param(out);
+  const StreamParameters param(out);
   return out << _T("PlaneRotation:(gamma,sigma,vs):(") << param << r.gamma << "," << param << r.sigma << "," << param << r.vs << ")" << endl;
 }
 

@@ -4,6 +4,8 @@
 #include <Math/Number.h>
 
 using namespace std;
+using namespace OStreamHelper;
+using namespace IStreamHelper;
 
 class NumberValueStreamScanner : public RegexIStream {
 private:
@@ -85,8 +87,3 @@ istream  &operator>>(istream  &in, Number &n) {
 wistream &operator>>(wistream &in, Number &n) {
   return getNumber<wistream, wchar_t>(in, n);
 }
-
-String toString(const Number &n, StreamSize precision, StreamSize width, FormatFlags flags) {
-  return (TowstringStream(precision, width, flags) << n).str().c_str();
-}
-

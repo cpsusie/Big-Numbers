@@ -11,6 +11,7 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace std;
+using namespace OStreamHelper;
 
 
 static const StreamSize typePrecision[] = {
@@ -350,10 +351,10 @@ namespace TestNumber {
       StreamParameters param(precision);
       const NumberArray list = generateTestArray(count, type, rnd);
 
-      stringstream  coutstr;
-      wstringstream woutstr;
-      setFormat(coutstr, param);
-      setFormat(woutstr, param);
+      ostringstream  coutstr;
+      wostringstream woutstr;
+      coutstr << param;
+      woutstr << param;
       for(size_t i = 0; i < list.size(); i++) {
         coutstr << list[i] << endl;
         woutstr << list[i] << endl;

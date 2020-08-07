@@ -8,6 +8,8 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace std;
+using namespace OStreamHelper;
+using namespace IStreamHelper;
 
 namespace TestComplex {		
 
@@ -265,8 +267,8 @@ namespace TestComplex {
           wostringstream wostr;
 
 //          OUTPUT(_T("formatCounter:%d format:%s"), formatCounter, param.toString().cstr());
-          setFormat(costr, param);
-          setFormat(wostr, param);
+          costr << param;
+          wostr << param;
           const StreamSize w = param.width();
           for(size_t i = 0; i < a.size(); i++) {
             const Complex &x = a[i];
@@ -288,8 +290,8 @@ namespace TestComplex {
           const Real tolerance = sqrt(0.5) * pow(10.0, -param.precision());
           StreamParameters ip(param);
           ip.flags(param.flags() | ios::skipws);
-          setFormat(cistr, ip);
-          setFormat(wistr, ip);
+          cistr << ip;
+          wistr << ip;
           for(size_t i = 0; i < a.size(); i++) {
             const Complex &expected = a[i];
 

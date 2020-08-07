@@ -10,6 +10,8 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace std;
+using namespace OStreamHelper;
+using namespace IStreamHelper;
 
 #define VERIFYOP(op, maxError) {                                                                     \
   const Rational rBinResult = (r1) op (r2);                                                          \
@@ -232,8 +234,8 @@ namespace TestRational {
 
 //          OUTPUT(_T("formatCounter:%d format:%s"), formatCounter, param.toString().cstr());
 
-          setFormat(costr, param);
-          setFormat(wostr, param);
+          costr << param;
+          wostr << param;
           const StreamSize w = param.width();
           for(size_t i = 0; i < a.size(); i++) { // write signed
             const Rational &x = a[i];
@@ -254,8 +256,8 @@ namespace TestRational {
 
           StreamParameters ip(param);
           ip.flags(param.flags() | ios::skipws);
-          setFormat(cistr, ip);
-          setFormat(wistr, ip);
+          cistr << ip;
+          wistr << ip;
           for(size_t i = 0; i < a.size(); i++) {
             const Rational &expected = a[i];
 

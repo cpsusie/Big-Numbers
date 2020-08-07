@@ -22,12 +22,12 @@ static TCHAR *digitToStr(TCHAR *dst, BRDigitType n, UINT width = 0) {
   return dst;
 }
 
-void BigRealStream::formatFixed(String &dst, const BigReal &x, StreamSize precision, FormatFlags flags, bool removeTrailingZeroes) {
+void BigRealFormatter::formatFixed(String &dst, const BigReal &x, StreamSize precision, FormatFlags flags, bool removeTrailingZeroes) {
   bool decimalPointAdded = false;
 
   const BigReal nn(round(x, (intptr_t)precision));
   if(nn.isZero()) {
-    StrStream::formatZero(dst, precision, flags);
+    formatZero(dst, precision, flags);
     return;
   }
 
@@ -83,7 +83,7 @@ void BigRealStream::formatFixed(String &dst, const BigReal &x, StreamSize precis
   }
 }
 
-void BigRealStream::formatScientific(String &dst, const BigReal &x, StreamSize precision, FormatFlags flags, BRExpoType expo10, bool removeTrailingZeroes) {
+void BigRealFormatter::formatScientific(String &dst, const BigReal &x, StreamSize precision, FormatFlags flags, BRExpoType expo10, bool removeTrailingZeroes) {
   bool decimalPointAdded = false;
   bool exponentCharAdded = false;
 
@@ -136,15 +136,15 @@ void BigRealStream::formatScientific(String &dst, const BigReal &x, StreamSize p
 #endif
 }
 
-void BigRealStream::formatSeparateDigits(String &dst, const BigReal &x, TCHAR separatorChar) {
+void BigRealFormatter::formatSeparateDigits(String &dst, const BigReal &x, TCHAR separatorChar) {
   if(x.isZero()) {
-    dst += _T('0');
+    dst += '0';
   } else {
     TCHAR digStr[100];
     bool decimalPointAdded = false;
     BRExpoType d = x.m_expo;
     if(d < 0) {
-      dst += _T('0');
+      dst += '0';
       addDecimalPoint(dst);
       digitToStr(digStr, 0, BIGREAL_LOG10BASE);
       for(int i = -1; i > d; i--) {
@@ -180,41 +180,41 @@ void BigRealStream::formatSeparateDigits(String &dst, const BigReal &x, TCHAR se
   }
 }
 
-BigRealStream &BigRealStream::operator<<(const BigReal &x) {
-  intptr_t    precision     = (intptr_t)this->precision();
-  FormatFlags flg           = flags();
+String &BigRealFormatter::formatBigReal(String &dst, const BigReal &x) {
+  intptr_t    prec          = (intptr_t)precision();
+  FormatFlags flgs          = flags();
   const TCHAR separatorChar = separator();
 
   String result;
   if(!isfinite(x)) {
     TCHAR tmp[100];
-    result = formatUndefined(tmp, _fpclass(x), (flg & ios::uppercase), true);
-    flg &= ~ios::hexfloat;
+    result = formatUndefined(tmp, _fpclass(x), (flgs & ios::uppercase), true);
+    flgs &= ~ios::hexfloat;
   } else if(separatorChar != 0) {
     formatSeparateDigits(result, x, separatorChar);
   } else if(x.isZero()) {
-    formatZero(result, precision, flg);
+    formatZero(result, prec, flgs);
   } else { // x defined && x != 0
-    switch(flg & ios::floatfield) {
+    switch(flgs & ios::floatfield) {
     case ios::fixed : // Use fixed format
-      formatFixed(result, x, precision, flg, false);
+      formatFixed(result, x, prec, flgs, false);
       break;
     case ios::scientific:  // Use scientific format
-      formatScientific(result, x, precision, flg, BigReal::getExpo10(x), false);
+      formatScientific(result, x, prec, flgs, BigReal::getExpo10(x), false);
       break;
     default:  // neither scientific nor fixed format (or both) are specified
       { BRExpoType expo10 = BigReal::getExpo10(x);
-        if((expo10 < -4) || (expo10 > 14) || ((expo10 > 0) && (expo10 >= precision)) || (expo10 > precision)) {
-          precision = max(0, precision - 1);
-          formatScientific(result, x, precision, flg, expo10, (flg & ios::showpoint) == 0);
+        if((expo10 < -4) || (expo10 > 14) || ((expo10 > 0) && (expo10 >= prec)) || (expo10 > prec)) {
+          prec = max(0, prec - 1);
+          formatScientific(result, x, prec, flgs, expo10, (flgs & ios::showpoint) == 0);
         } else {
-          const intptr_t prec = (precision == 0) ? abs(expo10) : max(0, precision - expo10 - 1);
-          formatFixed(result, x, prec, flg, ((flg & ios::showpoint) == 0) || precision <= 1);
+          const intptr_t prec1 = (prec == 0) ? abs(expo10) : max(0, prec - expo10 - 1);
+          formatFixed(result, x, prec1, flgs, ((flgs & ios::showpoint) == 0) || prec <= 1);
         }
       }
       break;
     } // switch
   } // x defined && x != 0
-  formatFilledFloatField(result, x.isNegative(), flg);
-  return *this;
+  flags(flgs);
+  return formatFilledFloatField(dst, result, x.isNegative(), *this);
 }

@@ -3,6 +3,7 @@
 #include <Math/Complex.h>
 
 using namespace std;
+using namespace IStreamHelper;
 
 /* inputformat for Complex;
     re
@@ -67,7 +68,7 @@ istream &operator>>(istream &in, Complex &c) {
 }
 
 ostream &operator<<(ostream &out, const Complex &c) {
-  return putComplex<ostream, stringstream>(out, c);
+  return putComplex<ostream, ostringstream>(out, c);
 }
 
 wistream &operator>>(wistream &in, Complex &c) {
@@ -75,9 +76,5 @@ wistream &operator>>(wistream &in, Complex &c) {
 }
 
 wostream &operator<<(wostream &out, const Complex &c) {
-  return putComplex<wostream, wstringstream>(out, c);
-}
-
-String toString(const Complex &c, StreamSize precision, StreamSize width, FormatFlags flags) {
-  return (TowstringStream(precision, width, flags) << c).str().c_str();
+  return putComplex<wostream, wostringstream>(out, c);
 }

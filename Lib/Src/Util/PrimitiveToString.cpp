@@ -2,7 +2,7 @@
 #include <StrStream.h>
 
 using namespace std;
-
+using namespace OStreamHelper;
 
 String toString(char ch, StreamSize width, FormatFlags flags) {
   return (TowstringStream(width, flags) << ch).str().c_str();

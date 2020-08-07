@@ -3,76 +3,71 @@
 #include <Math/Rational.h>
 
 using namespace std;
-
-class RationalStrStream : public StrStream {
-public:
-  RationalStrStream(const ostream &s) : StrStream(s) {
-  }
-  RationalStrStream(const wostream &s) : StrStream(s) {
-  }
-  RationalStrStream &operator<<(const Rational &r);
-};
+using namespace OStreamHelper;
 
 // assume !r.isInteger()
-RationalStrStream &RationalStrStream::operator<<(const Rational &r) {
-  const int   base     = radix();
-  FormatFlags flg      = flags();
+// Return dst
+static String &formatRational(String &dst, const Rational &r, StreamParameters &param) {
+  const int   base     = param.radix();
+  FormatFlags flags    = param.flags();
   bool        negative = r.isNegative();
   String      buf;
   if(!isfinite(r)) {
     TCHAR tmp[150];
-    buf = formatUndefined(tmp, _fpclass(r), (flg & ios::uppercase), true);
-    flg &= ~(ios::hexfloat | ios::basefield | ios::showbase);
+    buf    = formatUndefined(tmp, _fpclass(r), (flags & ios::uppercase), true);
+    flags &= ~(ios::hexfloat | ios::basefield | ios::showbase);
   } else {
-    StrStream numStr(*this), denStr(*this);
-    numStr.width(0); denStr.width(0);
-    numStr.flags(flg & ~(ios::showpos | ios::showbase));
-    denStr.flags(flg & ~ios::showpos);
-    numStr << ((negative && (base == 10)) ? -r.getNumerator() : r.getNumerator());
+    StreamParameters numParam(param), denParam(param);
+    numParam.width(0);
+    numParam.flags(flags & ~(ios::showpos | ios::showbase));
+    denParam.width(0);
+    denParam.flags(flags & ~ios::showpos);
     if(base != 10) {
       negative = false;
-      flg &= ~ios::showpos;
+      flags   &= ~ios::showpos;
     }
+    TowstringStream numStr(numParam), denStr(denParam);
+    numStr << ((negative && (base == 10)) ? -r.getNumerator() : r.getNumerator());
     denStr << r.getDenominator(); // denominator always positive
-    buf = numStr;
-    buf += _T('/');
-    buf += denStr;
-    if((base==16) && (flg & ios::uppercase)) {
+    buf = numStr.str().c_str();
+    buf += '/';
+    buf += denStr.str().c_str();
+    if((base==16) && (flags & ios::uppercase)) {
       buf = toUpperCase(buf);
     }
   }
-  formatFilledNumericField(buf, negative, flg);
-  return *this;
+  param.flags(flags);
+  return formatFilledNumericField(dst, buf, negative, param);
 }
 
 template <typename IStreamType> IStreamType &getRational(IStreamType &in, Rational &r) {
-  const FormatFlags flg  = in.flags();
-  const int         base = StreamParameters::radix(flg);
+  const FormatFlags flags = in.flags();
+  const int         base  = StreamParameters::radix(flags);
   INT64             num, den;
   if(base == 10) {
     in >> num;
     if(in) {
-      in.flags(flg & ~ios::skipws);
+      in.flags(flags & ~ios::skipws);
       if(in.peek() != '/') {
         den = 1;
       } else {
         in.get();
         in >> den;
       }
-      in.flags(flg);
+      in.flags(flags);
     }
   } else {
     UINT64 unum, uden;
     in >> unum;
     if(in) {
-      in.flags(flg & ~ios::skipws);
+      in.flags(flags & ~ios::skipws);
       if(in.peek() != '/') {
         uden = 1;
       } else {
         in.get();
         in >> uden;
       }
-      in.flags(flg);
+      in.flags(flags);
       if(in) {
         num = unum;
         den = uden;
@@ -89,9 +84,8 @@ template <typename OStreamType> OStreamType &putRational(OStreamType &out, const
   if(r.isInteger()) {
     out << r.getNumerator();
   } else {
-    RationalStrStream stream(out);
-    stream << r;
-    out << (String&)stream;
+    String buf;
+    out << formatRational(buf, r, StreamParameters(out));
     if(out.flags() & ios::unitbuf) {
       out.flush();
     }
@@ -113,8 +107,4 @@ wistream &operator>>(wistream &in, Rational &r) {
 
 wostream &operator<<(wostream &out, const Rational &r) {
   return putRational(out, r);
-}
-
-String toString(const Rational &r, StreamSize precision, StreamSize width, FormatFlags flags) {
-  return (TowstringStream(precision, width, flags) << r).str().c_str();
 }

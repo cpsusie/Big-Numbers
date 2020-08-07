@@ -2,6 +2,8 @@
 #include <StrStream.h>
 #include <Math/Int128.h>
 
+using namespace OStreamHelper;
+
 String toString(const _int128  &n, StreamSize precision, StreamSize width, FormatFlags flags) {
   return (TowstringStream(precision, width, flags) << n).str().c_str();
 }

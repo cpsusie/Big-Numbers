@@ -3,6 +3,8 @@
 #include <Math/Double80.h>
 #include <Math/FPU.h>
 
+using namespace OStreamHelper;
+
 template<typename CharType> const CharType *parseD80Decimal(const CharType *s, Double80 &result, bool &gotDigit) {
   if(iswdigit(*s)) {
     gotDigit = true;
@@ -293,7 +295,7 @@ static void normalizeValue(Double80 &m, int &expo10) {
 
 template<typename CharType> CharType *_d80tostr(CharType *dst, const Double80 &x) {
   if(!isfinite(x)) {
-    return StrStream::formatUndefined(dst,_fpclass(x));
+    return formatUndefined(dst,_fpclass(x));
   } else if(x.isZero()) {
     return strCpy(dst, "0.0000000000000000000e+000");
   }

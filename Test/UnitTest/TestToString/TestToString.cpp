@@ -99,7 +99,7 @@ namespace TestToString {
           OUTPUT(_T("%s progress:%.2lf%%"), __TFUNCTION__, PERCENT(itCounter, totalItCount));
         }
 
-        sD64   << element.m_param << element.m_values->getDouble();
+        sD64 << element.m_param << element.m_values->getDouble(); sD64.flush();
         D64Str =  sD64.str();
 
         tostrstream stream;
@@ -162,7 +162,7 @@ namespace TestToString {
           OUTPUT(_T("%s progress:%.2lf%%"), __TFUNCTION__, PERCENT(itCounter, totalItCount));
         }
 
-        sD64 << element.m_param << element.m_values->getDouble();
+        sD64 << element.m_param << element.m_values->getDouble(); sD64.flush();
         D64Str = sD64.str();
 
         tostrstream stream;

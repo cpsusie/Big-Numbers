@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <Math.h>
+#include <FastSemaphore.h>
 #include <float.h>
 #include <limits.h>
 #include <Date.h>
@@ -47,9 +48,10 @@ namespace TestDouble80 {
   typedef Double80(*D801RefFunc)(const Double80 &);
   typedef Double80(*D802RefFunc)(const Double80 &, const Double80 &);
 
-  static void testFunction(const String &name, D801ValFunc f80, D641ValFunc f64, double low, double high) {
+  static void testFunction(const String &name, D801RefFunc f80, D641ValFunc f64, double low, double high) {
     double maxRelativeError = 0;
     const double step = (high - low) / 10;
+//  OUTPUT(_T("Testing %s in %s"), name.cstr(), __TFUNCSIG__);
     for(double x64 = low; x64 <= high; x64 += step) {
       const double y64 = f64(x64);
 
@@ -74,7 +76,7 @@ namespace TestDouble80 {
     INFO(_T("%-10s:Max relative error:%.16le"), name.cstr(), maxRelativeError);
   }
 
-  static void checkResult(double x64, Double80 x80, TCHAR *op, double tolerance = EPS) {
+  static void checkResult(double x64, const Double80 &x80, TCHAR *op, double tolerance = EPS) {
     const double relativeError = getRelativeError(x64, x80);
     if(relativeError > tolerance) {
       OUTPUT(_T("operator %s failed. x64=%20.16le x80=%s. Relative error:%le"), op, x64, toString(x80).cstr(), relativeError);
@@ -82,7 +84,7 @@ namespace TestDouble80 {
     }
   }
 
-  static void checkResult(double x64, double y64, bool cmp64, Double80 x80, Double80 y80, bool cmp80, TCHAR *relation) {
+  static void checkResult(double x64, double y64, bool cmp64, const Double80 &x80, const Double80 &y80, bool cmp80, TCHAR *relation) {
     if(cmp64 != cmp80) {
       OUTPUT(_T("Relation %s failed. %20.16le %s %20.16le = %s. %s %s %s = %s")
               , relation
@@ -211,8 +213,9 @@ namespace TestDouble80 {
   testRelationD80(   r )
 
 
-static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, double low1, double high1, double low2, double high2) {
+static void testFunction(const String &name, D802RefFunc f80, D642ValFunc f64, double low1, double high1, double low2, double high2) {
     double maxRelativeError = 0;
+//  OUTPUT(_T("Testing %s in %s"), name.cstr(), __TFUNCSIG__);
     const double step1 = (high1 - low1) / 10;
     const double step2 = (high2 - low2) / 10;
     for(double x64 = low1; x64 <= high1; x64 += step1) {
@@ -262,50 +265,135 @@ static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, d
     INFO(_T("%-10s:Max relative error:%.16le"), name.cstr(), maxRelativeError);
   }
 
-  static D641RefFunc _F64_1Arg;
-  static D642RefFunc _F64_2Arg;
-  static D801RefFunc _F80_1Arg;
-  static D802RefFunc _F80_2Arg;
-  static double f64_1Arg(double x) {
-    return _F64_1Arg(x);
+class RefFunctionsMonitor {
+private:
+  friend Double80 f80_1Ref(const Double80 &x);
+  friend Double80 f80_2Ref(const Double80 &x, const Double80 &y);
+  friend double   f64_1Val(double   x);
+  friend double   f64_2Val(double   x, double   y);
+  D801ValFunc   m_d80_1ValFunc;
+  D802ValFunc   m_d80_2ValFunc;
+  D641RefFunc   m_d64_1RefFunc;
+  D642RefFunc   m_d64_2RefFunc;
+  FastSemaphore m_lock;
+  void resetAllFunctions();
+public:
+  inline RefFunctionsMonitor() {
+    resetAllFunctions();
   }
-  static double f64_2Arg(double x, double y) {
-    return _F64_2Arg(x, y);
-  }
-  static Double80 f80_1Arg(Double80 x) {
-    return _F80_1Arg(x);
-  }
-  static Double80 f80_2Arg(Double80 x, Double80 y) {
-    return _F80_2Arg(x, y);
-  }
+  void prepareTest(D801ValFunc f80, D641RefFunc f64);
+  void prepareTest(D802ValFunc f80, D642RefFunc f64);
+  void endTest();
+};
 
-  static void testFunction(const String &name, D801ValFunc f80, D641RefFunc f64, double low, double high) {
-    _F64_1Arg = f64;
-    testFunction(name, f80, f64_1Arg, low, high);
-  }
-  static void testFunction(const String &name, D801RefFunc f80, D641ValFunc f64, double low, double high) {
-    _F80_1Arg = f80;
-    testFunction(name, f80_1Arg, f64, low, high);
-  }
-  static void testFunction(const String &name, D801RefFunc f80, D641RefFunc f64, double low, double high) {
-    _F80_1Arg = f80;
-    _F64_1Arg = f64;
-    testFunction(name, f80_1Arg, f64_1Arg, low, high);
-  }
+void RefFunctionsMonitor::resetAllFunctions() {
+  m_d64_1RefFunc = NULL;
+  m_d64_2RefFunc = NULL;
+  m_d80_1ValFunc = NULL;
+  m_d80_2ValFunc = NULL;
+}
 
-  static void testFunction(const String &name, D802ValFunc f80, D642RefFunc f64, double low1, double high1, double low2, double high2) {
-    _F64_2Arg = f64;
-    testFunction(name, f80, f64_2Arg, low1, high1, low2, high2);
+void RefFunctionsMonitor::prepareTest(D801ValFunc f80, D641RefFunc f64) {
+  m_lock.wait();
+  m_d80_1ValFunc = f80;
+  m_d64_1RefFunc = f64;
+}
+
+void RefFunctionsMonitor::prepareTest(D802ValFunc f80, D642RefFunc f64) {
+  m_lock.wait();
+  m_d80_2ValFunc = f80;
+  m_d64_2RefFunc = f64;
+}
+
+void RefFunctionsMonitor::endTest() {
+  resetAllFunctions();
+  m_lock.notify();
+}
+
+static RefFunctionsMonitor s_refFunctions;
+
+// ------------------------------------------------------------------------------------
+
+static double f64_1Val(double x) {
+  return s_refFunctions.m_d64_1RefFunc(x);
+}
+static double f64_2Val(double x, double y) {
+  return s_refFunctions.m_d64_2RefFunc(x, y);
+}
+static Double80 f80_1Ref(const Double80 &x) {
+  return s_refFunctions.m_d80_1ValFunc(x);
+}
+static Double80 f80_2Ref(const Double80 &x, const Double80 &y) {
+  return s_refFunctions.m_d80_2ValFunc(x, y);
+}
+
+static void testFunction(const String &name, D801ValFunc f80, D641RefFunc f64, double low, double high) {
+  try {
+    s_refFunctions.prepareTest(f80, f64);
+//  OUTPUT(_T("Testing %s in %s"), name.cstr(), __TFUNCSIG__);
+    testFunction(name, f80_1Ref, f64_1Val, low, high);
+    s_refFunctions.endTest();
+  } catch (...) {
+    s_refFunctions.endTest();
+    throw;
   }
-  static void testFunction(const String &name, D802RefFunc f80, D642ValFunc f64, double low1, double high1, double low2, double high2) {
-    _F80_2Arg = f80;
-    testFunction(name, f80_2Arg, f64, low1, high1, low2, high2);
+}
+static void testFunction(const String &name, D801ValFunc f80, D641ValFunc f64, double low, double high) {
+  try {
+    s_refFunctions.prepareTest(f80, NULL);
+//  OUTPUT(_T("Testing %s in %s"), name.cstr(), __TFUNCSIG__);
+    testFunction(name, f80_1Ref, f64, low, high);
+    s_refFunctions.endTest();
+  } catch (...) {
+    s_refFunctions.endTest();
+    throw;
   }
-  static void testFunction(const String &name, D802RefFunc f80, D642RefFunc f64, double low1, double high1, double low2, double high2) {
-    _F80_2Arg = f80;
-    _F64_2Arg = f64;
-    testFunction(name, f80_2Arg, f64_2Arg, low1, high1, low2, high2);
+}
+static void testFunction(const String &name, D801RefFunc f80, D641RefFunc f64, double low, double high) {
+  try {
+    s_refFunctions.prepareTest(NULL, f64);
+//  OUTPUT(_T("Testing %s in %s"), name.cstr(), __TFUNCSIG__);
+    testFunction(name, f80, f64_1Val, low, high);
+    s_refFunctions.endTest();
+  } catch (...) {
+    s_refFunctions.endTest();
+    throw;
   }
+}
+
+static void testFunction(const String &name, D802ValFunc f80, D642RefFunc f64, double low1, double high1, double low2, double high2) {
+  try {
+    s_refFunctions.prepareTest(f80, f64);
+//  OUTPUT(_T("Testing %s in %s"), name.cstr(), __TFUNCSIG__);
+    testFunction(name, f80_2Ref, f64_2Val, low1, high1, low2, high2);
+    s_refFunctions.endTest();
+  } catch (...) {
+    s_refFunctions.endTest();
+    throw;
+  }
+}
+static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, double low1, double high1, double low2, double high2) {
+  try {
+    s_refFunctions.prepareTest(f80, NULL);
+//  OUTPUT(_T("Testing %s in %s"), name.cstr(), __TFUNCSIG__);
+    testFunction(name, f80_2Ref, f64, low1, high1, low2, high2);
+    s_refFunctions.endTest();
+  } catch (...) {
+    s_refFunctions.endTest();
+    throw;
+  }
+}
+static void testFunction(const String &name, D802RefFunc f80, D642RefFunc f64, double low1, double high1, double low2, double high2) {
+  try {
+    s_refFunctions.prepareTest(NULL, f64);
+//  OUTPUT(_T("Testing %s in %s"), name.cstr(), __TFUNCSIG__);
+    testFunction(name, f80, f64_2Val, low1, high1, low2, high2);
+    s_refFunctions.endTest();
+  } catch (...) {
+    s_refFunctions.endTest();
+    throw;
+  }
+}
 
 #define TESTFUNC(f, ...) testFunction(_T(#f),f,f,__VA_ARGS__)
 
@@ -318,7 +406,6 @@ static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, d
 //    }
 
     TEST_METHOD(Double80Testio) {
-
       long     i32 = 0;
       double   d64 = 0;
       Double80 d80 = i32;
@@ -393,7 +480,7 @@ static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, d
       verify(substr(s64, 0, 17) == substr(s80, 0, 17));
 
       const FormatFlags dformats[] = { ios::scientific, ios::hexfloat };
-      for (size_t f = 0; f < ARRAYSIZE(dformats); f++) {
+      for(size_t f = 0; f < ARRAYSIZE(dformats); f++) {
         const FormatFlags ff = dformats[f];
         for(int i = 1; i >= -1; i -= 2) {
           for(double d64 = 1e-100*i; fabs(d64) < 1e100; d64 *= 1.1) {
@@ -503,7 +590,7 @@ static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, d
     }
 
     TEST_METHOD(Double80MeasureExpo10) {
-      const double startTime = getProcessTime();
+      const double   startTime  = getProcessTime();
       const Double80 stepFactor = 1.0012345;
       int count = 0;
       for(Double80 x = DBL80_MIN; isfinite(x); x *= stepFactor) {
@@ -516,8 +603,8 @@ static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, d
     }
 
     TEST_METHOD(Double80TestPow2) {
-      const int minExpo2 = getExpo2(DBL80_MIN);
-      const int maxExpo2 = getExpo2(DBL80_MAX);
+      const int    minExpo2  = getExpo2(DBL80_MIN);
+      const int    maxExpo2  = getExpo2(DBL80_MAX);
       const double startTime = getProcessTime();
       int count = 0;
       for(int p = minExpo2; p <= maxExpo2; p++) {
@@ -532,8 +619,7 @@ static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, d
     }
 
     void testAllCast(double d64) {
-      Double80 d80 = d64;
-
+      Double80     d80    = d64;
       const int    i1_32  = (int)d64;
       const int    i2_32  = getInt(d80);
       verify(i2_32  == i1_32 );
@@ -605,7 +691,7 @@ static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, d
     }
 
     TEST_METHOD(Double80measureToString) {
-      const double startTime = getProcessTime();
+      const double   startTime  = getProcessTime();
       const Double80 stepFactor = 1.012345;
       int count = 0;
       TCHAR tmp[50];
@@ -972,8 +1058,8 @@ static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, d
       TESTFUNC(log10    , 1e-3   ,   1e3  );
       TESTFUNC(log2     , 1e-3   ,   1e3  );
       TESTFUNC(pow      , 0.1    ,   2.7e3, -2.1, 2);
-      verify(pow(Double80::_0, Double80::_1)  == Double80::_0);
-      verify(pow(Double80::_0, Double80::_0) == Double80::_1 );
+      verify(pow(Double80::_0, Double80::_1) == Double80::_0);
+      verify(pow(Double80::_0, Double80::_0) == Double80::_1);
       TESTFUNC(root     , 0.1    ,   2.7e3, -2.1, 2);
       TESTFUNC(fraction , 1e-3   ,   1e3  );
       TESTFUNC(fraction ,-1e3    ,  -1e-3 );

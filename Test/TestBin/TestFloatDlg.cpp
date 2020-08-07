@@ -9,6 +9,8 @@
 #endif
 
 using namespace std;
+using namespace OStreamHelper;
+using namespace IStreamHelper;
 
 CTestFloatDlg::CTestFloatDlg(CWnd *pParent)
 : CDialog(CTestFloatDlg::IDD, pParent)
@@ -465,14 +467,6 @@ void CTestFloatDlg::streamParametersToWin(const StreamParameters &param) {
   setPrecision(    (int)param.precision());
   formatFlagsToWin(     param.flags()    );
   fillCharToWin(        param.fill()     );
-}
-
-wstringstream &CTestFloatDlg::paramWinToStream(wstringstream &stream) {
-  return setFormat(stream, winToStreamParameters());
-}
-
-stringstream &CTestFloatDlg::paramWinToStream(stringstream  &stream) {
-  return setFormat(stream, winToStreamParameters());
 }
 
 struct ButtunIdFlag {

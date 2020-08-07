@@ -3,8 +3,8 @@
 #include "Iterator.h"
 #include "NumberInterval.h"
 
-typedef int FormatFlags; // std::_Iosb<int>::_Fmtflags
-typedef std::streamsize            StreamSize;
+typedef int               FormatFlags; // std::_Iosb<int>::_Fmtflags
+typedef std::streamsize   StreamSize;
 
 typedef NumberInterval<StreamSize> StreamSizeInterval;
 class StreamParametersIterator;
@@ -14,14 +14,8 @@ private:
   StreamSize  m_width, m_prec;
   FormatFlags m_flags;
   TCHAR       m_fill;
-  TCHAR  *addModifier(      TCHAR *dst)                                                const;
-  TCHAR  *addWidth(         TCHAR *dst)                                                const;
-  TCHAR  *addPrecision(     TCHAR *dst, StreamSize maxPrecision)                       const;
-  TCHAR  *addPrefix(        TCHAR *dst, bool withPrecision, StreamSize maxPrecision=0) const;
-  TCHAR  *addIntSpecifier(  TCHAR *dst, bool isSigned)                                 const;
-  TCHAR  *addFloatSpecifier(TCHAR *dst)                                                const;
 public:
-  StreamParameters(StreamSize precision=6, StreamSize width=0, FormatFlags flags = 0, TCHAR fill = _T(' '))
+  StreamParameters(StreamSize precision=6, StreamSize width=0, FormatFlags flags = 0, TCHAR fill = ' ')
     : m_prec( precision)
     , m_width(width    )
     , m_flags(flags    )
@@ -53,24 +47,18 @@ public:
   inline StreamSize  width()     const { return m_width;     }
   inline FormatFlags flags()     const { return m_flags;     }
   inline TCHAR       fill()      const { return m_fill;      }
-  static int         radix(FormatFlags flags);
+  static int         radix(FormatFlags flags) {
+    switch(flags & std::ios::basefield) {
+    case std::ios::oct:return 8;
+    case std::ios::dec:return 10;
+    case std::ios::hex:return 16;
+    }
+    return 10;
+  }
+
   inline int         radix() const {
     return radix(m_flags);
   }
-
-  String getStringFormat() const;
-  String getCharFormat()   const;
-  String getUCharFormat()  const;
-  String getShortFormat()  const;
-  String getUShortFormat() const;
-  String getIntFormat()    const;
-  String getUIntFormat()   const;
-  String getLongFormat()   const;
-  String getULongFormat()  const;
-  String getInt64Format()  const;
-  String getUInt64Format() const;
-  String getFloatFormat()  const;
-  String getDoubleFormat() const;
 
   static TCHAR *flagsToStr(TCHAR *dst, FormatFlags flags);
   static String flagsToString(FormatFlags flags);
@@ -98,20 +86,26 @@ public:
   static StreamParametersIterator getIntParamIterator(               StreamSize   maxWidth     ,                                              FormatFlags lowMask = 0, FormatFlags highMask = ITERATOR_INTFORMATMASK  , UINT multibitFieldsFilter = 0                       , const TCHAR *fillers = _T(" r"));
 };
 
-inline std::ostream &operator<<(std::ostream &s, const StreamParameters &p) {
-  s.precision( p.precision());
-  s.width(     p.width()    );
-  s.flags(     p.flags()    );
-  s.fill((char)p.fill()     );
+template<typename StreamType, typename CharType> StreamType &setFormat(StreamType &s, const StreamParameters &p) {
+  s.width(         p.width());
+  s.precision(     p.precision());
+  s.flags(         p.flags());
+  s.fill((CharType)p.fill());
   return s;
 }
 
+inline std::ostream &operator<<(std::ostream &s, const StreamParameters &p) {
+  return setFormat<std::ostream, char>(s, p);
+}
+inline std::istream &operator<<(std::istream &s, const StreamParameters &p) {
+  return setFormat<std::istream, char>(s, p);
+}
+
 inline std::wostream &operator<<(std::wostream &s, const StreamParameters &p) {
-  s.precision(p.precision());
-  s.width(    p.width()    );
-  s.flags(    p.flags()    );
-  s.fill(     p.fill()     );
-  return s;
+  return setFormat<std::wostream, wchar_t>(s, p);
+}
+inline std::wistream &operator<<(std::wistream &s, const StreamParameters &p) {
+  return setFormat<std::wistream, wchar_t>(s, p);
 }
 
 #define iparam(width) StreamParameters(0   ,  width  , std::ios::fixed      | std::ios::unitbuf)
