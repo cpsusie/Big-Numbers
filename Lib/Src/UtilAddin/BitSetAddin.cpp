@@ -99,7 +99,7 @@ ADDIN_API HRESULT WINAPI AddIn_BitSet(DWORD dwAddress, DEBUGHELPER *pHelper, int
     const char *cp = T2A(tmpStr.cstr());
     strncpy(pResult, cp, maxResult);
   } catch(...) {
-    strncpy(pResult, "undefined", maxResult);
+    strncpy(pResult, "", maxResult);
   }
   return S_OK;
 }
