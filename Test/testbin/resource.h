@@ -72,7 +72,6 @@
 #define IDC_BUTTON_SETMIN               1142
 #define IDC_BUTTON_SETMAX               1143
 #define IDC_BUTTON_SETRND               1144
-#define IDC_BUTTON_SETONE2              1145
 #define IDC_BUTTON_SETTRUEMIN           1150
 #define IDC_BUTTON_SETEPS               1151
 #define IDC_BUTTON_SETINF               1152

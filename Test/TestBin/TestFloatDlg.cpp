@@ -458,10 +458,6 @@ void CTestFloatDlg::setStreamOpIsMem(bool v) {
   autoClickStreamOut();
 }
 
-StreamParameters CTestFloatDlg::winToStreamParameters() {
-  return StreamParameters(m_precision, m_width, winToFormatFlags(), winToFillChar());
-}
-
 void CTestFloatDlg::streamParametersToWin(const StreamParameters &param) {
   setWidth(        (int)param.width()    );
   setPrecision(    (int)param.precision());

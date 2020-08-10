@@ -56,9 +56,15 @@ private:
     streamParametersToWin(StreamParameters(stream));
   }
   void             streamParametersToWin(const StreamParameters &param);
-  StreamParameters winToStreamParameters();
-  wstringstream   &paramWinToStream(wstringstream &stream);
-  stringstream    &paramWinToStream(stringstream  &stream);
+  StreamParameters winToStreamParameters() {
+    return StreamParameters(m_precision, m_width, winToFormatFlags(), winToFillChar());
+  }
+  wstringstream   &paramWinToStream(wstringstream &stream) {
+    return setFormat<wstringstream, wchar_t>(stream, winToStreamParameters());
+  }
+  stringstream    &paramWinToStream(stringstream  &stream) {
+    return setFormat<stringstream, char>(stream, winToStreamParameters());
+  }
   void             formatFlagsToWin(FormatFlags flags);
   FormatFlags      winToFormatFlags();
   void             fillCharToWin(wchar_t ch);

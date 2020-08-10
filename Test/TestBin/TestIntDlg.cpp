@@ -414,10 +414,6 @@ void CTestIntDlg::setStreamOpIsMem(bool v) {
   autoClickStreamOut();
 }
 
-StreamParameters CTestIntDlg::winToStreamParameters() {
-  return StreamParameters(0, m_width, winToFormatFlags(), winToFillChar());
-}
-
 void CTestIntDlg::streamParametersToWin(const StreamParameters &param) {
   setWidth(        (int)param.width());
   formatFlagsToWin(param.flags());
