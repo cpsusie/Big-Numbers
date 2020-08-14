@@ -507,16 +507,17 @@ namespace TestInt128 {
     }
 
     TEST_METHOD(TestUnsignedDivision2a) {
+      JavaRandom rnd;
       _uint128 xmask = 1;
       for(UINT xbits = 1; xbits <= 128; xbits++, xmask = (xmask<<1)|1) {
         for(int i = 0; i < 30; i++) {
-          const _uint128 x = _uint128(randInt64(), randInt64()) & xmask;
+          const _uint128 x = _uint128(randInt64(rnd), randInt64(rnd)) & xmask;
           _uint128 ymask = 1;
           _uint128 y,q,r;
           for(UINT ybits = 1; ybits <= 128; ybits++, ymask = (ymask<<1)|1) {
             for(int j = 0; j < 30; j++) {
               do {
-                y = _uint128(randInt64(), randInt64()) & ymask;
+                y = _uint128(randInt64(rnd), randInt64(rnd)) & ymask;
               } while(y.isZero());
               q = x / y;
               r = x % y;
@@ -529,11 +530,12 @@ namespace TestInt128 {
     }
 
     TEST_METHOD(TestDivision2a) {
+      JavaRandom rnd;
       for (int i = 0; i < 30; i++) {
-        int ystep = randInt(2, 20);
+        int ystep = randInt(2, 20, rnd);
         //        OUTPUT(_T("i:%d, ystep:%d"), i, ystep);
-        _uint128 x = _uint128(randInt64(), randInt64());
-        _uint128 y = randInt(1, 5);
+        _uint128 x = _uint128(randInt64(rnd), randInt64(rnd));
+        _uint128 y = randInt(1, 5, rnd);
         for (int j = 0; y < 0x8000; j++, y += ystep) {
           _uint128 d = x / y;
           _uint128 r = x % y;
@@ -812,7 +814,7 @@ namespace TestInt128 {
       for(int xp = 1; xp < 128; xp++) {
 //        OUTPUT(_T("xp:%d/127"),xp);
         for(int i = 0; i < 33; i++) {
-          const _uint128 x = randInt128(xmax,rnd);
+          const _uint128 x = randInt128(xmax, rnd);
           _uint128 ymax = 21;
           for(int yp = 1; yp < 128; yp++) {
             for(int j = 0; j < 33; j++) {
@@ -823,8 +825,9 @@ namespace TestInt128 {
               const _uint128    q   = x / y;
               const _uint128    r   = x % y;
               const _ui128div_t div = _ui128div(x, y);
-              verify((q == div.quot) && (r == div.rem));
-              verify(div.quot * y + div.rem == x);
+              verify(  q*y + r == x);
+              verify(((q == 0) && (x < y) && (r == x)) || (r < y));
+              verify((div.quot == q) && (div.rem == r));
             }
             ymax <<= 1;
             if(rnd.nextBool()) ymax |= 1;
@@ -880,16 +883,17 @@ namespace TestInt128 {
     }
 
     TEST_METHOD(TestSignedDivision2a) {
+      JavaRandom rnd;
       _uint128 xmask = 1;
       for(UINT xbits = 1; xbits <= 128; xbits++, xmask = (xmask<<1)|1) {
         for(int i = 0; i < 30; i++) {
-          const _int128 x = _int128(randInt64(), randInt64()) & xmask;
+          const _int128 x = _int128(randInt64(rnd), randInt64(rnd)) & xmask;
           _uint128 ymask = 1;
           _int128 y,q,r;
           for(UINT ybits = 1; ybits <= 128; ybits++, ymask = (ymask<<1)|1) {
             for(int j = 0; j < 30; j++) {
               do {
-                y = _int128(randInt64(), randInt64()) & ymask;
+                y = _int128(randInt64(rnd), randInt64(rnd)) & ymask;
               } while(y.isZero());
               q = x / y;
               r = x % y;
@@ -1153,8 +1157,9 @@ namespace TestInt128 {
     }
 
     TEST_METHOD(Int128ShiftOperators) {
-      const _int128  si0 = randInt128() & _I128_MAX;
-      const _int128  si1 = randInt128() | _I128_MIN;
+      JavaRandom rnd;
+      const _int128  si0 = randInt128(rnd) & _I128_MAX;
+      const _int128  si1 = randInt128(rnd) | _I128_MIN;
       const _uint128 ui0 = si0;
       const _uint128 ui1 = si1;
 
@@ -1165,12 +1170,12 @@ namespace TestInt128 {
       testAllShifts(ui1, operator>>);
     } // Int128ShiftOperators
 
-    static inline UINT64 getRandInt64(UINT bits) {
-      return (bits >= 64) ? randInt64() : (randInt64() & ((UINT64(1) << bits) - 1));
+    static inline UINT64 getRandInt64(UINT bits, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) {
+      return (bits >= 64) ? randInt64(rnd) : (randInt64(rnd) & ((UINT64(1) << bits) - 1));
     }
 
-    static inline _uint128 getRandInt128(UINT bits) {
-      return (bits <= 64) ? getRandInt64(bits) : _uint128(getRandInt64(bits - 64), randInt64());
+    static inline _uint128 getRandInt128(UINT bits, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) {
+      return (bits <= 64) ? getRandInt64(bits,rnd) : _uint128(getRandInt64(bits - 64,rnd), randInt64(rnd));
     }
 
     static inline bool isPow2(int n) {
@@ -1281,9 +1286,10 @@ namespace TestInt128 {
 #pragma warning(disable : 4996)
 
     TEST_METHOD(Int128Test_ui128tot) {
+      JavaRandom rnd;
       for (int i = 0; i < 1000; i++) {
-        const int       bits = randInt(BITCOUNT) + 1;
-        const _uinttype x = randuitype(bits);
+        const int       bits = randInt(BITCOUNT,rnd) + 1;
+        const _uinttype x = randuitype(bits,rnd);
         for (int radix = MINRADIX; radix <= MAXRADIX; radix++) {
           const String wanted = uitypeToString(x, radix);
           TCHAR str[200], *endp;
@@ -1324,9 +1330,10 @@ namespace TestInt128 {
     }
 
     TEST_METHOD(Int128Test_i128tot) {
+      JavaRandom rnd;
       for (int i = 0; i < 1000; i++) {
-        const int      bits = randInt(BITCOUNT) + 1;
-        const _inttype x = randuitype(bits);
+        const int      bits = randInt(BITCOUNT, rnd) + 1;
+        const _inttype x = randuitype(bits,rnd);
         for (int radix = MINRADIX; radix <= MAXRADIX; radix++) {
           const String wanted = itypeToString(x, radix);
           TCHAR str[200], *endp;

@@ -1,9 +1,7 @@
 #include "pch.h"
 
-// The code in this file is only used for x86 compilation.
-// For x64 mode the file Int128x64.asm should be used instead.
-// They execute much faster, because they use 64-bit registers,
-// and division functions are coded entirely in assembler.
+// Implementation of _int128/_uint128 x86 compilation.
+// For x64 use Int128x64.asm instead.
 
 #if !defined(_M_X64)
 
@@ -11,6 +9,7 @@
 
 #define LO32(n) (n).s4.i[0]
 
+// void int128add(_int128 &dst, const _int128 &x); do assignop dst += x;
 void int128add( void *dst, const void *x) {
   __asm {
     mov         esi, x
@@ -26,6 +25,7 @@ void int128add( void *dst, const void *x) {
   }
 }
 
+// void int128sub(_int128 &dst, const _int128 &x); do assignop dst -= x;
 void int128sub(void *dst, const void *x) {
   __asm {
     mov         esi, x
@@ -41,6 +41,7 @@ void int128sub(void *dst, const void *x) {
   }
 }
 
+// void int128inc(_int128 &x); set x = x + 1;
 void int128inc(void *x) {
   __asm {
     mov         edi, x
@@ -53,6 +54,7 @@ Done:
   }
 }
 
+// void int128dec(_int128 &x); set x = x - 1;
 void int128dec(void *x) {
   __asm {
     mov         edi, x
@@ -65,6 +67,7 @@ Done:
   }
 }
 
+// void int128neg(_int128 &x); set x = -x;
 void int128neg(void *x) {
   __asm {
     mov         esi, x
@@ -81,7 +84,7 @@ Done:
   }
 }
 
-// signed/unsigned shift left
+// void int128shl(int shft, _int128 &x); do assignop x <<= shft;
 void int128shl(int shft, void *x) {
   __asm {
     mov         ecx, shft                              ; ecx  = shift count
@@ -149,7 +152,7 @@ GE128:                                                 ; Assume cl >= 128
 End:;
 }
 
-// signed shift right
+// void int128shr(int shft, _int128 &x); do assignop x >>= shft; (if (x < 0) shift 1 - bits in from left, else 0 - bits)
 void int128shr(int shft, void *x) {
   __asm {
     mov         ecx, shft                              ; ecx  = shift count
@@ -218,7 +221,7 @@ GE128:                                                 ; Assume cl >= 128
 End:;
 }
 
- // unsigned shift right
+// void uint128shr(int shft, void *x); do assignop x >>= shft.always shift 0 - bits in from left
 void uint128shr(int shft, void *x) {
   __asm {
     mov         ecx, shft                              ; ecx = shift count
@@ -286,12 +289,19 @@ GE128:                                                 ; Assume cl >= 128
 End:;
 }
 
-// Return e = (n==0)?0:floor(log2(n)), e=[0..31]
-static inline int getExpo2(UINT x) {
-  UINT result;
-  _asm {
-    bsr         eax, x
-    mov         result, eax
+// Return max(i) | i = [0..3] and n[i] != 0
+static BYTE getDwordIndex(const _uint128 &n) {
+  BYTE result;
+  __asm {
+    pushf                                              ;
+    mov         ecx, 4                                 ;
+    mov         edi, n                                 ; edi = &n
+    add         edi, 12                                ; edi = &n[3]
+    xor         eax, eax                               ;
+    std                                                ; make repe scasd search backwards
+    repe        scasd                                  ;
+    mov         result, cl                             ;
+    popf                                               ;
   }
   return result;
 }
@@ -310,7 +320,7 @@ static int getExpo2(const _uint128 &n) {
     jz          End                                    ;
     bsr         eax, dword ptr[edi+4]                  ; eax = index of leftmost 1 bit
     shl         ecx, 5                                 ; ecx *= 32
-    add         eax, ecx                               ;
+    or          al, cl                                 ;
 End:                                                   ;
     mov         result, eax                            ;
     popf                                               ;
@@ -319,8 +329,7 @@ End:                                                   ;
 }
 
 // dst and x are both _uint128
-// dwordIndex(_uint128 n) is the highest index,i = [0..3], so n[i] != 0
-// return (dwordIndex(dst)<<2) | dwordIndex(x), range:[0..15]
+// Return c = (getDwordIndex(dst)<<2) | getDwordIndex(x), c = [0..15], getDwordIndex defined as above
 static inline BYTE getMultCode(const void *dst, const void *x) {
   BYTE result;
   __asm {
@@ -344,8 +353,8 @@ static inline BYTE getMultCode(const void *dst, const void *x) {
   return result;
 }
 
-// Set n32 = (scale==0)?LO32(n) : (n >> scale); where scale = (max(0,expo2(n) - 31) (=[0..127-31]=[0..96])
-// Return scale
+// Return scale = (max(0,expo2(n) - 31) (=[0..127-31]=[0..96])
+// Set n32 = (scale==0)?LO32(n) : (n >> scale), ie highend 32 bits of n
 static int getFirst32(const _uint128 &n, UINT &n32) {
   const int scale = getExpo2(n) - 31;
   if(scale <= 0) {
@@ -357,8 +366,8 @@ static int getFirst32(const _uint128 &n, UINT &n32) {
   }
 }
 
-// Set n63 = (scale==0)?LO64(n) : (n >> scale); where scale = (max(0,expo2(n) - 62) (=[0..127-62]=[0..65])
-// Return scale
+// Return scale = (max(0,expo2(n) - 62) (=[0..127-62]=[0..65])
+// Set n63 = (scale==0)?LO64(n) : (n >> scale), ie highend 63 bits of n
 static int getFirst63(const _uint128 &n, UINT64 &n63) {
   const int scale = getExpo2(n) - 62;
   if(scale <= 0) {
@@ -371,6 +380,7 @@ static int getFirst63(const _uint128 &n, UINT64 &n63) {
 }
 
 // dst and x are _uint128
+// Calculate dst = x * y
 static void mulU32(void *dst, UINT y, const void *x) {
   _asm {
     mov         edi, dst                               ; edi = &dst
@@ -397,8 +407,9 @@ static void mulU32(void *dst, UINT y, const void *x) {
 
 #pragma warning(disable:4731) // warning C4731: 'int128mul': frame pointer register 'ebp' modified by inline assembly code
 
+// void int128mul(_int128 &dst, const _int128 &x); do assignop dst *= x;
 void int128mul(void *dst, const void *x) {
-  switch(getMultCode(dst,x)) {
+  switch(getMultCode(dst, x)) {
   case 0 : // both max 32 bit int
     HI64(*(_uint128*)dst) = 0;
     LO64(*(_uint128*)dst) = __int64(*(UINT*)dst) * (*(UINT*)x); // simple _int64 multiplication. int32 * int32
@@ -477,50 +488,75 @@ void int128mul(void *dst, const void *x) {
   }
 }
 
+// Set rem = x % y; for y <= _UI32_MAX
+// If quot != NULL, then *quot = x / y;
 static void unsignedQuotRemainderU32(const _uint128 &x, UINT y, _uint128 *quot, _uint128 &rem) {
-  const int xExpo2 = getExpo2(x);
-  if(xExpo2 <= 31) {
-    rem = LO32(x) % y;
-    if(quot) {
-      *quot = LO32(x) / y;
+  UINT r32;
+  switch(getDwordIndex(x)) {
+  case 0:
+    { UINT q32;
+      __asm {
+        mov     eax, x                                   ;
+        mov     eax, dword ptr[eax]                      ; eax     = x[0]
+        xor     edx, edx                                 ; edx:eax = 0             :x[0]
+        div     y                                        ; eax:edx = quotient:remainder
+        mov     q32, eax                                 ; save quotient
+        mov     r32, edx                                 ; save remainder
+      }
+      if(quot) *quot = q32;
     }
-  } else if(xExpo2 <= 63) {
-    rem = LO64(x) % y;
-    if(quot) {
-      *quot = LO64(x) / y;
+    break;
+  case 1:
+    { UINT64 q64;
+      __asm {
+        mov     ebx, x                                   ; ebx     = &x
+        lea     ecx, q64                                 ; ecx     = &q64
+        xor     edx, edx                                 ;
+        mov     eax, dword ptr[ebx+ 4]                   ; edx:eax = 0             :x[1]
+        div     y                                        ; eax:edx = quotient:remainder
+        mov     dword ptr[ecx+ 4], eax                   ; save q64[1]
+        mov     eax, dword ptr[ebx   ]                   ; edx:eax = last remainder:x[0]
+        div     y                                        ; eax:edx = quotient:remainder
+        mov     dword ptr[ecx   ], eax                   ; save q64[0]
+        mov     r32, edx                                 ; save remainder
+      }
+      if(quot) *quot = q64;
     }
-  } else {
-    _uint128 tmp, &q = quot ? *quot : tmp;
-    UINT     r32;
-    __asm {
-      mov       ebx, x                                 ; ebx     = &x
-      mov       ecx, q                                 ; ecx     = &q
-      xor       edx, edx                               ;
-      mov       eax, dword ptr[ebx+12]                 ; edx:eax = 0:x[3]
-      div       y                                      ; eax:edx = quotient:remainder
-      mov       dword ptr[ecx+12], eax                 ; save quot[3]
-      mov       eax, dword ptr[ebx+ 8]                 ; edx:eax = last remainder:x[2]
-      div       y                                      ; eax:edx = quotient:remainder
-      mov       dword ptr[ecx+ 8], eax                 ; save quot[2]
-      mov       eax, dword ptr[ebx+ 4]                 ; edx:eax = last remainder:x[1]
-      div       y                                      ; eax:edx = quotient:remainder
-      mov       dword ptr[ecx+ 4], eax                 ; save quot[1]
-      mov       eax, dword ptr[ebx   ]                 ; edx:eax = last remainder:x[0]
-      div       y                                      ; eax:edx = quotient:remainder
-      mov       dword ptr[ecx   ], eax                 ; save quot[0]
-      mov       r32, edx                               ; save remainder
-      mul       y                                      ; edx:eax = last quot * y
-      cmp       eax, dword ptr[ebx]                    ;
-      jae       End                                    ; if(eax < x[0]) {
-      sub       eax, dword ptr[ebx]                    ;
-      neg       eax                                    ;   remainder = x[0] - eax
-      mov       r32, eax                               ; }
+    break;
+  default:
+    { _uint128 tmp, &q = quot ? *quot : tmp;
+      __asm {
+        mov     ebx, x                                   ; ebx     = &x
+        mov     ecx, q                                   ; ecx     = &q
+        xor     edx, edx                                 ;
+        mov     eax, dword ptr[ebx+12]                   ; edx:eax = 0             :x[3]
+        div     y                                        ; eax:edx = quotient:remainder
+        mov     dword ptr[ecx+12], eax                   ; save q[3]
+        mov     eax, dword ptr[ebx+ 8]                   ; edx:eax = last remainder:x[2]
+        div     y                                        ; eax:edx = quotient:remainder
+        mov     dword ptr[ecx+ 8], eax                   ; save q[2]
+        mov     eax, dword ptr[ebx+ 4]                   ; edx:eax = last remainder:x[1]
+        div     y                                        ; eax:edx = quotient:remainder
+        mov     dword ptr[ecx+ 4], eax                   ; save q[1]
+        mov     eax, dword ptr[ebx   ]                   ; edx:eax = last remainder:x[0]
+        div     y                                        ; eax:edx = quotient:remainder
+        mov     dword ptr[ecx   ], eax                   ; save q[0]
+        mov     r32, edx                                 ; save remainder
+        mul     y                                        ; edx:eax = q[0] * y
+        sub     eax, dword ptr[ebx]                      ;
+        jae     End                                      ; if(eax < x[0]) {
+        neg     eax                                      ;   remainder = x[0] - eax
+        mov     r32, eax                                 ; }
+      }
+End:;
     }
-End:
-    rem = r32;
+    break;
   }
+  rem = r32;
 }
 
+// Set rem = x % y;
+// If quot != NULL, then *quot = x / y;
 static void unsignedQuotRemainder(const _uint128 &x, const _uint128 &y, _uint128 *quot, _uint128 &rem) {
   UINT      y32;
   const int yScale = getFirst32(y, y32);
@@ -635,34 +671,46 @@ static void signedQuotRemainder(const _int128 &a, const _int128 &b, _int128 *quo
 // -----------------------------------------------------------------
 
 
+// void int128div(_int128 &dst, _int128 &x); do assignop dst /= x;
 void int128div(void *dst, void *x) {
   const _int128  a(*(_int128*)dst);
   _int128 rem;
   signedQuotRemainder(a, *(const _int128*)x, (_int128*)dst, rem);
 }
 
+// void int128rem(_int128 &dst, _int128 &x); do assignop dst %= x;
 void int128rem(void *dst, void *x) {
   const _int128  a(*(_int128*)dst);
   signedQuotRemainder(a, *(const _int128*)x, NULL, *(_int128*)dst);
 }
 
+// void uint128div(_uint128 &dst, const _uint128 &x); do assignop dst /= x;
 void uint128div(void *dst, const void *x) {
   const _uint128  a(*(_uint128*)dst);
   _uint128 rem;
   unsignedQuotRemainder(a, *(const _uint128*)x, (_uint128*)dst, rem);
 }
 
+// calculates unsigned remainder
+// void uint128rem(_uint128 &dst, const _uint128 &x); do assignop dst %= x;
 void uint128rem(void *dst, const void *x) {
   const _uint128  a(*(_uint128*)dst);
   unsignedQuotRemainder(a, *(const _uint128*)x, NULL, *(_uint128*)dst);
 }
 
-// qr type _ui128div_t. See below
+/*
+ typedef struct {
+   _uint128 quot;
+   _uint128 rem;
+ } _ui128div_t;
+*/
+// void uint128quotrem(const _uint128 &numer, const _uint128 &denom, _ui128div_t *qr);
 void uint128quotrem(void *numer, void *denom, void *qr) {
   _ui128div_t *div_t = (_ui128div_t*)qr;
   unsignedQuotRemainder(*(_uint128*)numer, *(_uint128*)denom, &div_t->quot, div_t->rem);
 }
 
+// int int128cmp(const _int128 &x1, const _int128 &x2); return sign(x1 - x2);
 int int128cmp(const void *x1, const void *x2) {
   int result;
   __asm {
@@ -696,6 +744,7 @@ End:
   return result;
 }
 
+// int uint128cmp(const _uint128 &x1, const _uint128 &x2); return sign(x1 - x2);
 int uint128cmp(const void *x1, const void *x2) {
   int result;
   __asm {
