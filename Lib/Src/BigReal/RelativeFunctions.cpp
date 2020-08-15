@@ -62,10 +62,10 @@ BigReal rExp(const BigReal &x, size_t digits, DigitPool *digitPool) {
   _SELECTDIGITPOOL(x);
   const BigReal c = x.isNegative() ? -rProd(REXPC.c1,fabs(x,pool),20, pool) : rProd(REXPC.c2,x,20,pool);
   double cd;
-  if(BigReal::compareAbs(x, pool->_05()) < 0) { // prevent underflow in getDouble
+  if(BigReal::compareAbs(x, pool->_05()) < 0) {
     cd = 0;
   } else {
-    cd = getDouble(c);
+    cd = (double)c;
     if(cd > CD_MAX) {
       throwBigRealInvalidArgumentException(method, _T("Argument too big"));
     } else if(cd < CD_MIN) {

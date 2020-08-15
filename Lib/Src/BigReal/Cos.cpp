@@ -78,7 +78,7 @@ BigReal cos(const BigReal &x, const BigReal &f, DigitPool *digitPool) {
     BigReal jn(pool);
     jn = APCsum(>,COSC.c10,APCsum(>,APCprod(>,COSC.c7,sqrt(-BigReal::getExpo10N(f,pool),COSC.c8,pool),pool),APCprod(>,y,BigReal::getExpo10N(COSC.c9,pool),pool),pool),pool);
 
-    int j = (jn < _1) ? 0 : getInt(floor(jn,pool));
+    int j = (jn < _1) ? 0 : (int)floor(jn,pool);
 
     const BigReal h(BigReal::pow2(-j),pool);
     y = fabs(prod(y,h,h*COSC.c11*f,pool));

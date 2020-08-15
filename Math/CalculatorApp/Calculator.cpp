@@ -379,14 +379,14 @@ static _uint128 decToBin(const BigReal &x) {
       if(bi > _I128_MAX) {
         bi %= _I128_MAX;
       }
-      return -getInt128(bi);
+      return -(_int128)bi;
     }
   case 1:
     { BigInt bi = floor(x);
       if(bi > _UI128_MAX) {
         bi %= _UI128_MAX;
       }
-      return getUint128(bi);
+      return (_uint128)bi;
     }
   }
   throwInvalidArgumentException(__TFUNCTION__,_T("x=%s"), toString(x).cstr());
@@ -624,20 +624,20 @@ void Calculator::doBinaryOp() {
   const int op = m_opStack.pop();
   switch(op) {
   case IDC_BUTTONAND      :
-    result = getInt128(leftOperand)  & getInt128(rightOperand);
+    result = (_int128)leftOperand  & (_int128)rightOperand;
     break;
   case IDC_BUTTONXOR      :
-    result = getInt128(leftOperand)  ^ getInt128(rightOperand);
+    result = (_int128)leftOperand  ^ (_int128)rightOperand;
     break;
   case IDC_BUTTONOR       :
-    result = getInt128(leftOperand)  | getInt128(rightOperand);
+    result = (_int128)leftOperand  | (_int128)rightOperand;
     break;
   case IDC_BUTTONLSH      :
     if(m_inverse) {
-      result = getInt128(leftOperand) >> getInt128(rightOperand);
+      result = (_int128)leftOperand >> (int)rightOperand;
       m_inverse = false;
     } else {
-      result = getInt128(leftOperand) << getInt128(rightOperand);
+      result = (_int128)leftOperand << (int)rightOperand;
     }
     break;
   case IDC_BUTTONADD      :
@@ -992,9 +992,9 @@ void Calculator::handleButton(int button) {
     break;
   case IDC_BUTTONNOT         :
     if(m_radix == 10 && getDisplay().isNegative()) {
-      setDisplay(~getInt128(getDisplay()));
+      setDisplay(~(_int128)getDisplay());
     } else {
-      setDisplay(~getUint128(getDisplay()));
+      setDisplay(~(_uint128)getDisplay());
     }
     break;
   case IDC_BUTTONPI          :

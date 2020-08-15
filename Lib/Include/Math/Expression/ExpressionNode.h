@@ -206,8 +206,8 @@ public:
   inline  bool                       isEven()                       const   { return isRational() && ::isEven(getRational());                  }
   inline  bool                       isOdd()                        const   { return isRational() && ::isOdd(getRational());                   }
   inline  bool                       isMultiplyable()               const   { return !isNameOrNumber();                                        }
-  inline  Real                       getReal()                      const   { return ::getReal(getNumber());                                   }
-  inline  Rational                   getRational()                  const   { return ::getRational(getNumber());                               }
+  inline  Real                       getReal()                      const   { return (Real)getNumber();                                        }
+  inline  Rational                   getRational()                  const   { return (Rational)getNumber();                                    }
   inline  bool                       isUnaryMinus()                 const   { return getSymbol() == UNARYMINUS;                                }
   inline  bool                       isEulersConstant()             const   { return isName()     && getName()  == _T("e");                    }
   inline  bool                       isPi()                         const   { return isName()     && getName()  == _T("pi");                   }
@@ -327,7 +327,7 @@ public:
   ExpressionNode      *clone(ParserTree *tree)             const;
   ExpressionNodeType   getNodeType()                       const { return NT_NUMBER;                }
 //ExpressionReturnType getReturnType()                     const { as ExpressionNode                }
-  Real                 evaluateReal()                      const { return ::getReal(m_number);      }
+  Real                 evaluateReal()                      const { return (Real)m_number;           }
 //bool                 evaluateBool()                      const { as ExpressionNode                }
   int                  compare(   const ExpressionNode *n) const;
   bool                 equal(     const ExpressionNode *n) const;

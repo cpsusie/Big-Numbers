@@ -18,10 +18,6 @@ const Rational Rational::_RAT_NINF(-1,0       );    // -infinity;         (-1/0)
 #define SAFEDIF( a,b) Rational::safeDif( __TFUNCTION__,__LINE__,a,b)
 #define SAFEPROD(a,b) Rational::safeProd(__TFUNCTION__,__LINE__,a,b)
 
-Double80 getDouble80(const Rational &r) {
-  return Double80(r.getNumerator()) / r.getDenominator();
-}
-
 int fpclassify(const Rational &r) {
   switch(_fpclass(r)) {
   case _FPCLASS_PN  :
@@ -181,7 +177,7 @@ Rational::Rational(const Double80 &d80, UINT64 maxND) {
   }
 
   UINT64 p0 = 1, q0 = 0;
-  UINT64 p1 = getInt64(floor(da));
+  UINT64 p1 = (UINT64)floor(da);
   UINT64 q1 = 1;
   UINT64 p2, q2;
 
@@ -189,8 +185,8 @@ Rational::Rational(const Double80 &d80, UINT64 maxND) {
   while(!frac.isZero()) {
     frac = Double80::_1 / frac;
     const Double80 next = floor(frac);
-    p2 = getInt64(next * p1 + p0);
-    q2 = getInt64(next * q1 + q0);
+    p2 = (INT64)(next * p1 + p0);
+    q2 = (INT64)(next * q1 + q0);
 
     // Limit the numerator and denominator to be maxND or less
     if((p2 > maxND) || (q2 > maxND)) {
@@ -439,7 +435,7 @@ INT64 Rational::safeSum(const TCHAR *method, int line, const INT64 &a, const INT
   _int128 result(a);
   result += b;
   CHECKVALIDRANGE(result)
-  return result;
+  return (INT64)result;
 }
 
 INT64 Rational::safeDif(const TCHAR *method, int line, const INT64 &a, const INT64 &b) { // static
@@ -447,7 +443,7 @@ INT64 Rational::safeDif(const TCHAR *method, int line, const INT64 &a, const INT
   _int128 result(a);
   result -= b;
   CHECKVALIDRANGE(result)
-  return result;
+  return (INT64)result;
 }
 
 INT64 Rational::safeProd(const TCHAR *method, int line, const INT64 &a, const INT64 &b) { // static
@@ -455,7 +451,7 @@ INT64 Rational::safeProd(const TCHAR *method, int line, const INT64 &a, const IN
   _int128 result(a);
   result *= b;
   CHECKVALIDRANGE(result)
-  return result;
+  return (INT64)result;
 }
 
 template<typename T, typename signedT> T findGCDTemplate(T a, T b) {
@@ -569,7 +565,7 @@ bool Rational::isRational(float x, Rational *r) { // static
     if(fabs(x) > LLONG_MAX) {
       return false;
     }
-    RETURNTRUE(getInt64(x));
+    RETURNTRUE((INT64)x);
   }
   try {
     const Rational tmp(x);
@@ -589,7 +585,7 @@ bool Rational::isRational(double x, Rational *r) { // static
     if(fabs(x) > LLONG_MAX) {
       return false;
     }
-    RETURNTRUE(getInt64(x));
+    RETURNTRUE((INT64)x);
   }
   try {
     const Rational tmp(x);
@@ -609,7 +605,7 @@ bool Rational::isRational(const Double80 &x, Rational *r) { // static
     if(fabs(x) > LLONG_MAX) {
       return false;
     }
-    RETURNTRUE(getInt64(x));
+    RETURNTRUE((INT64)x);
   }
   try {
     const Rational tmp(x);
@@ -634,7 +630,7 @@ bool Rational::isRationalPow(const Rational &base, const Rational &e, Rational *
       }
     }
     if(isInt(e)) {
-      RETURNTRUE(::pow(base, getInt(e)));
+      RETURNTRUE(::pow(base, (int)e));
     } else {
       const __int64 &bn = base.getNumerator();
       const __int64 &bd = base.getDenominator();

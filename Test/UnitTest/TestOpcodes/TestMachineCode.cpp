@@ -27,143 +27,143 @@
 // #define TEST_ALLSCALEFACTORS // If defined, all four values, 1,2,4,8 of factor in SIB-byte will be used
                                 // If not defined, only 1 and 8 will be used
 
-static const GPRegister r8List[] = {
+static const GPRegister *r8List[] = {
 #if !defined(TEST_ALLGPREGISTERS)
-    AL   ,CL                                 ,BH
+   &AL   ,&CL                                ,&BH
 #else
-    AL   ,CL   ,DL   ,BL   ,AH   ,CH   ,DH   ,BH
+   &AL   ,&CL  ,&DL  ,&BL  ,&AH  ,&CH  ,&DH  ,&BH
 #endif // TEST_ALLGPREGISTERS
 #if defined(IS64BIT)
 #if !defined(TEST_ALLGPREGISTERS)
-                           ,SPL              ,DIL
-   ,R8B                                      ,R15B
+                           ,&SPL             ,&DIL
+   ,&R8B                                     ,&R15B
 #else
-                           ,SPL  ,BPL  ,SIL  ,DIL
-   ,R8B  ,R9B  ,R10B ,R11B ,R12B ,R13B ,R14B ,R15B
+                           ,&SPL ,&BPL ,&SIL ,&DIL
+   ,&R8B ,&R9B ,&R10B,&R11B,&R12B,&R13B,&R14B,&R15B
 #endif // TEST_ALLGPREGISTERS
 #endif // IS64BIT
 };
 
-const GPRegister r16List[] = {
+const GPRegister *r16List[] = {
 #if !defined(TEST_ALLGPREGISTERS)
-    AX                                       ,DI
+    &AX                                      ,&DI
 #else
-    AX   ,CX   ,DX   ,BX   ,SP   ,BP   ,SI   ,DI
+    &AX  ,&CX  ,&DX  ,&BX  ,&SP  ,&BP  ,&SI  ,&DI
 #endif // TEST_ALLGPREGISTERS
 #if defined(IS64BIT)
 #if !defined(TEST_ALLGPREGISTERS)
-   ,R8W                                      ,R15W
+   ,&R8W                                     ,&R15W
 #else
-   ,R8W  ,R9W  ,R10W ,R11W ,R12W ,R13W ,R14W ,R15W
+   ,&R8W ,&R9W ,&R10W,&R11W,&R12W,&R13W,&R14W,&R15W
 #endif // TEST_ALLGPREGISTERS
 #endif // IS64BIT
 };
 
-const GPRegister r32List[] = {
+const GPRegister *r32List[] = {
 #if !defined(TEST_ALLGPREGISTERS)
-    EAX                                      ,EDI
+    &EAX                                     ,&EDI
 #else
-    EAX  ,ECX  ,EDX  ,EBX  ,ESP  ,EBP  ,ESI  ,EDI
+    &EAX ,&ECX ,&EDX ,&EBX ,&ESP ,&EBP ,&ESI ,&EDI
 #endif // TEST_ALLGPREGISTERS
 #if defined(IS64BIT)
 #if !defined(TEST_ALLGPREGISTERS)
-   ,R8D                                      ,R15D
+   ,&R8D                                     ,&R15D
 #else  // TEST_ALLGPREGISTERS
-   ,R8D  ,R9D  ,R10D ,R11D ,R12D ,R13D ,R14D ,R15D
+   ,&R8D ,&R9D ,&R10D,&R11D,&R12D,&R13D,&R14D,&R15D
 #endif // TEST_ALLGPREGISTERS
 #endif // IS64BIT
 };
 
-const IndexRegister indexRegList[] = {
+const IndexRegister *indexRegList[] = {
 #if defined(IS32BIT)
 #if !defined(TEST_ALLGPREGISTERS)
-    EAX                    ,ESP  ,EBP        ,EDI
+    &EAX                   ,&ESP ,&EBP       ,&EDI
 #else // TEST_ALLGPREGISTERS
-    EAX  ,ECX  ,EDX  ,EBX  ,ESP  ,EBP  ,ESI  ,EDI
+    &EAX ,&ECX ,&EDX ,&EBX ,&ESP ,&EBP ,&ESI ,&EDI
 #endif // TEST_ALLGPREGISTERS
 #else // IS64BIT
 #if !defined(TEST_ALLGPREGISTERS)
-    RAX                    ,RSP  ,RBP        ,RDI
-   ,R8                     ,R12  ,R13        ,R15
+    &RAX                   ,&RSP ,&RBP       ,&RDI
+   ,&R8                    ,&R12 ,&R13       ,&R15
 #else // TEST_ALLGPREGISTERS
-    RAX  ,RCX  ,RDX  ,RBX  ,RSP  ,RBP  ,RSI  ,RDI
-   ,R8   ,R9   ,R10  ,R11  ,R12  ,R13  ,R14  ,R15
+    &RAX ,&RCX ,&RDX ,&RBX ,&RSP ,&RBP ,&RSI ,&RDI
+   ,&R8  ,&R9  ,&R10 ,&R11 ,&R12 ,&R13 ,&R14 ,&R15
 #endif // TEST_ALLGPREGISTERS
 #endif // IS64BIT
 };
 
-const IndexRegister baseRegList[] = {
+const IndexRegister *baseRegList[] = {
 #if defined(IS32BIT)
 #if !defined(TEST_ALLBASEREGISTERS)
-    EAX                    ,ESP
+    &EAX                   ,&ESP
 #else // TEST_ALLBASEREGISTERS
-    EAX  ,ECX  ,EDX  ,EBX  ,ESP  ,EBP  ,ESI  ,EDI
+    &EAX ,&ECX ,&EDX ,&EBX ,&ESP ,&EBP ,&ESI ,&EDI
 #endif // TEST_ALLGPREGISTERS
 #else // IS64BIT
 #if !defined(TEST_ALLBASREGISTERS)
-    RAX                                      ,R15
+    &RAX                                     ,&R15
 #else // TEST_ALLBASREGISTERS
-    RAX  ,RCX  ,RDX  ,RBX  ,RSP  ,RBP  ,RSI  ,RDI
-   ,R8   ,R9   ,R10  ,R11  ,R12  ,R13  ,R14  ,R15
+    &RAX ,&RCX ,&RDX ,&RBX ,&RSP ,&RBP ,&RSI ,&RDI
+   ,&R8  ,&R9  ,&R10 ,&R11 ,&R12 ,&R13 ,&R14 ,&R15
 #endif // TEST_ALLBASEREGISTERS
 #endif // IS64BIT
 };
 
-const IndexRegister inxRegList[] = {
+const IndexRegister *inxRegList[] = {
 #if defined(IS32BIT)
 #if !defined(TEST_ALLINXREGISTERS)
-    EAX                          ,EBP        ,EDI
+    &EAX                         ,&EBP       ,&EDI
 #else // TEST_ALLINXREGISTERS
-    EAX  ,ECX  ,EDX  ,EBX  ,ESP  ,EBP  ,ESI  ,EDI
+    &EAX ,&ECX ,&EDX ,&EBX ,&ESP ,&EBP ,&ESI ,&EDI
 #endif // TEST_ALLINXREGISTERS
 #else // IS64BIT
 #if !defined(TEST_ALLINXREGISTERS)
-    RAX                          ,RBP        ,R15
+    &RAX                         ,&RBP       ,&R15
 #else // TEST_ALLINXREGISTERS
-    RAX  ,RCX  ,RDX  ,RBX  ,RSP  ,RBP  ,RSI  ,RDI
-   ,R8   ,R9   ,R10  ,R11  ,R12  ,R13  ,R14  ,R15
+    &RAX ,&RCX ,&RDX ,&RBX ,&RSP ,&RBP ,&RSI ,&RDI
+   ,&R8  ,&R9  ,&R10 ,&R11 ,&R12 ,&R13 ,&R14 ,&R15
 #endif // TEST_ALLINXREGISTERS
 #endif // IS64BIT
 };
 
 #if defined(IS64BIT)
-const GPRegister r64List[] = {
+const GPRegister *r64List[] = {
 #if !defined(TEST_ALLGPREGISTERS)
-    RAX                                      ,RDI
-   ,R8                                       ,R15
+    &RAX                                     ,&RDI
+   ,&R8                                      ,&R15
 #else
-    RAX  ,RCX  ,RDX  ,RBX  ,RSP  ,RBP  ,RSI  ,RDI
-   ,R8   ,R9   ,R10  ,R11  ,R12  ,R13  ,R14  ,R15
+    &RAX  ,&RCX ,&RDX,&RBX ,&RSP ,&RBP ,&RSI ,&RDI
+   ,&R8   ,&R9  ,&R10,&R11 ,&R12 ,&R13 ,&R14 ,&R15
 #endif // TEST_ALLGPREGISTERS
 };
 #endif // IS64BIT
 
-const SegmentRegister segregList[] = {
+const SegmentRegister *segregList[] = {
 #if defined(IS32BIT)
-  ES,CS,SS,DS,FS,GS
+  &ES,&CS,&SS,&DS,&FS,&GS
 #else  // IS64BIT
-  FS,GS
+  &FS,&GS
 #endif // IS64BIT
 };
 
-const FPURegister fpuregList[] = {
+const FPURegister *fpuregList[] = {
 #if !defined(TEST_ALLFPUREGISTERS)
-  ST0,                               ST7
+  &ST0,                              &ST7
 #else  // TEST_ALLFPUREGISTERS
-  ST0, ST1, ST2, ST3, ST4, ST5, ST6, ST7
+  &ST0,&ST1,&ST2,&ST3,&ST4,&ST5,&ST6,&ST7
 #endif // TEST_ALLFPUREGISTERS
 };
 
-const XMMRegister XMMregList[] = {
+const XMMRegister *XMMregList[] = {
 #if !defined(TEST_ALLXMMREGISTERS)
-  XMM0,                                   XMM7
+  &XMM0,                                  &XMM7
 #if defined(IS64BIT)
- ,XMM8,                                   XMM15
+ ,&XMM8,                                  &XMM15
 #endif  // IS64BIT
 #else   // TEST_ALLXMMREGISTERS
-  XMM0,XMM1,XMM2 ,XMM3 ,XMM4 ,XMM5 ,XMM6 ,XMM7
+  &XMM0,&XMM1,&XMM2 ,&XMM3 ,&XMM4 ,&XMM5 ,&XMM6 ,&XMM7
 #if defined(IS64BIT)
- ,XMM8,XMM9,XMM10,XMM11,XMM12,XMM13,XMM14,XMM15
+ ,&XMM8,&XMM9,&XMM10,&XMM11,&XMM12,&XMM13,&XMM14,&XMM15
 #endif  // IS64BIT
 #endif  // TEST_ALLXMMREGISTERS
 };
@@ -201,9 +201,9 @@ String InstructionOperandArray::toString() const {
 
 class AllRegisters : public InstructionOperandArray {
 private:
-  template<class REG> void addRegArray(const REG *list, size_t n) {
+  template<class REG> void addRegArray(const REG *list[], size_t n) {
     for(size_t i = 0; i < n; i++) {
-      add(new InstructionOperand(list[i]));
+      add(new InstructionOperand(*list[i]));
     }
   }
 public:
@@ -279,7 +279,7 @@ AllMemoryOperands::AllMemoryOperands() {
     addAllMemPtrTypes(allImmAddr[i]);
   }
   for(int i = 0; i < INXREGISTER_COUNT; i++) {
-    const IndexRegister &inxReg = inxRegList[i];
+    const IndexRegister &inxReg = *inxRegList[i];
     if(!inxReg.isValidIndexRegister()) continue;
     for(int factor = 1; factor <= 8; factor *= SCALE_FACTORSTEP) {
       for(int i = 0; i < ARRAYSIZE(allOffset); i++) {
@@ -291,10 +291,10 @@ AllMemoryOperands::AllMemoryOperands() {
   for(int f = 0; f < ARRAYSIZE(allOffset); f++) {
     const int offset = allOffset[f];
     for(int b = 0; b < BASEREGISTER_COUNT; b++) {
-      const IndexRegister &baseReg = baseRegList[b];
+      const IndexRegister &baseReg = *baseRegList[b];
       addAllMemPtrTypes(baseReg + offset);
       for(int i = 0; i < INXREGISTER_COUNT; i++) {
-        const IndexRegister &inxReg = inxRegList[i];
+        const IndexRegister &inxReg = *inxRegList[i];
         if(!inxReg.isValidIndexRegister()) continue;
         for(int factor = 1; factor <= 8; factor *= SCALE_FACTORSTEP) {
           addAllMemPtrTypes(baseReg + factor*inxReg + offset);

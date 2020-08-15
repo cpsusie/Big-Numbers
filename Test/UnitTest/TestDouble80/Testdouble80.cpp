@@ -29,7 +29,7 @@ namespace TestDouble80 {
   };
 
   static double getRelativeError(double x64, const Double80 &x80) {
-    const double relativeError = fabs(x64 - getDouble(x80));
+    const double relativeError = fabs(x64 - (double)x80);
     return (x64 == 0) ? relativeError : relativeError / x64;
   }
 
@@ -60,12 +60,12 @@ namespace TestDouble80 {
 
       const double relativeError = getRelativeError(y64, y80);
 
-      if(x64 != getDouble(x80) || relativeError > EPS) {
+      if(x64 != (double)x80 || relativeError > EPS) {
         LOG log;
         log  << _T("Function ") << name << _T(" failed.") << endl
              << _T("(x64,y64):(") << dparam(16) << x64 << _T(",") << dparam(16) << y64 << _T(").") << endl
-             << _T("x64 - getDouble(x80):") << dparam(16) << (x64 - getDouble(x80)) << _T(".") << endl
-             << _T("y64 - getdouble(y80):") << dparam(16) << (y64 - getDouble(y80)) << _T(".") << endl
+             << _T("x64 - x80:" ) << dparam(16) << (x64 - (double)x80) << _T(".") << endl
+             << _T("y64 - y80:" ) << dparam(16) << (y64 - (double)y80) << _T(".") << endl
              << _T("RelativeError:") << dparam(16) << relativeError << endl;
         verify(false);
       }
@@ -229,13 +229,13 @@ static void testFunction(const String &name, D802RefFunc f80, D642ValFunc f64, d
 
         const double relativeError = getRelativeError(z64, z80);
 
-        if(x64 != getDouble(x80) || y64 != getDouble(y80) || relativeError > EPS) {
+        if((x64 != (double)x80) || (y64 != (double)y80) || (relativeError > EPS)) {
           LOG log;
           log << _T("Function ") << name << _T(" failed.") << endl
               << _T("(x64,y64,z64):(") << dparam(16) << x64 << _T(",") << dparam(16) << y64 << _T(",") << dparam(16) << z64 << _T(").") << endl
-              << _T("x64 - getDouble(x80):") << dparam(16) << (x64 - getDouble(x80)) << _T(".") << endl
-              << _T("y64 - getdouble(y80):") << dparam(16) << (y64 - getDouble(y80)) << _T(".") << endl
-              << _T("z64 - getdouble(z80):") << dparam(16) << (z64 - getDouble(z80)) << _T(".") << endl
+              << _T("x64 - x80:") << dparam(16) << (x64 - (double)x80) << _T(".") << endl
+              << _T("y64 - y80:") << dparam(16) << (y64 - (double)y80) << _T(".") << endl
+              << _T("z64 - z80:") << dparam(16) << (z64 - (double)z80) << _T(".") << endl
               << _T("RelativeError:") << dparam(16) << relativeError << endl;
           verify(false);
         }
@@ -579,10 +579,10 @@ static void testFunction(const String &name, D802RefFunc f80, D642RefFunc f64, d
 
       const double relativeError = getRelativeError(y64, y80);
 
-      if(x64 != getDouble(x80) || relativeError > EPS) {
+      if((x64 != (double)x80) || (relativeError > EPS)) {
         OUTPUT(_T("Function:%s failed"), _T("round"));
-        OUTPUT(_T("x64 - getDouble(x80):%le"), x64 - getDouble(x80));
-        OUTPUT(_T("y64 - getDouble(y80):%le"), y64 - getDouble(y80));
+        OUTPUT(_T("x64 - x80:%le"), x64 - (double)x80);
+        OUTPUT(_T("y64 - y80:%le"), y64 - (double)y80);
         OUTPUT(_T("RelativeError:%le\n"), relativeError);
         verify(false);
       }
@@ -619,37 +619,37 @@ static void testFunction(const String &name, D802RefFunc f80, D642RefFunc f64, d
     }
 
     void testAllCast(double d64) {
-      Double80     d80    = d64;
-      const int    i1_32  = (int)d64;
-      const int    i2_32  = getInt(d80);
+      const Double80     d80    = d64;
+      const int    i1_32  = (int   )d64;
+      const int    i2_32  = (int   )d80;
       verify(i2_32  == i1_32 );
 
-      const UINT   ui1_32 = (UINT)d64;
-      const UINT   ui2_32 = getUint(d80);
+      const UINT   ui1_32 = (UINT  )d64;
+      const UINT   ui2_32 = (UINT  )d80;
       verify(ui2_32 == ui1_32);
 
-      const short  s1_16 = (short)d64;
-      const short  s2_16 = getShort(d80);
+      const short  s1_16 = (short  )d64;
+      const short  s2_16 = (short  )d80;
       verify(s2_16  == s1_16 );
 
       const USHORT us1_16 = (USHORT)d64;
-      const USHORT us2_16 = getUshort(d80);
+      const USHORT us2_16 = (USHORT)d80;
       verify(us2_16 == us1_16);
 
-      const long   l1_32  = (long)d64;
-      const long   l2_32  = getLong(d80);
+      const long   l1_32  = (long  )d64;
+      const long   l2_32  = (long  )d80;
       verify(l2_32  == l1_32 );
 
-      const ULONG  ul1_32 = (ULONG)d64;
-      const ULONG  ul2_32 = getUlong(d80);
+      const ULONG  ul1_32 = (ULONG )d64;
+      const ULONG  ul2_32 = (ULONG )d80;
       verify(ul2_32 == ul1_32);
 
-      const INT64  i1_64  = (INT64)d64;
-      const INT64  i2_64  = getInt64(d80);
+      const INT64  i1_64  = (INT64 )d64;
+      const INT64  i2_64  = (INT64 )d80;
       verify(i2_64 == i1_64);
 
       const UINT64 ui1_64 = (UINT64)d64;
-      const UINT64 ui2_64 = getUint64(d80);
+      const UINT64 ui2_64 = (UINT64)d80;
       verify(ui2_64 == ui1_64);
     }
 
@@ -676,17 +676,17 @@ static void testFunction(const String &name, D802RefFunc f80, D642RefFunc f64, d
       testAllCast(-(double)ULLONG_MAX);
 
       Double80 x(LLONG_MAX);
-      INT64    l64  = getInt64( x);
-      UINT64   ul64 = getUint64(x);
+      INT64    l64  = (INT64 )x;
+      UINT64   ul64 = (UINT64)x;
       verify(l64  == LLONG_MAX);
       verify(ul64 == LLONG_MAX);
 
       x = LLONG_MIN;
-      l64  = getInt64( x);
+      l64  = (INT64)x;
       verify(l64  == LLONG_MIN);
 
       x = ULLONG_MAX;
-      ul64  = getUint64( x);
+      ul64  = (UINT64)x;
       verify(ul64 == ULLONG_MAX);
     }
 
@@ -953,8 +953,8 @@ static void testFunction(const String &name, D802RefFunc f80, D642RefFunc f64, d
 
       long             i32max = _I32_MAX;
       Double80         di32   = i32max;
-      long             ri32   = getLong(di32);
-      long             ri321  = getUlong(di32);
+      long             ri32   = (long )di32;
+      long             ri321  = (ULONG)di32;
 
       verify(ri32 == i32max);
       verify(ri321 == i32max);
@@ -963,7 +963,7 @@ static void testFunction(const String &name, D802RefFunc f80, D642RefFunc f64, d
 
       long             i32min = _I32_MIN;
       di32 = i32min;
-      ri32 = getLong(di32);
+      ri32 = (long)di32;
 
       verify(ri32 == i32min);
 
@@ -971,8 +971,8 @@ static void testFunction(const String &name, D802RefFunc f80, D642RefFunc f64, d
 
       ULONG          ul32max  = _UI32_MAX;
       Double80       dul32    = ul32max;
-      ULONG          rul32    = getUlong(dul32);
-      UINT           rui32    = getUint(dul32);
+      ULONG          rul32    = (ULONG)dul32;
+      UINT           rui32    = (UINT )dul32;
 
       verify(rul32 == ul32max);
       verify(rui32 == ul32max);
@@ -981,7 +981,7 @@ static void testFunction(const String &name, D802RefFunc f80, D642RefFunc f64, d
 
       INT64          i64max   = _I64_MAX;
       Double80       di64     = i64max;
-      INT64          ri64     = getInt64(di64);
+      INT64          ri64     = (INT64)di64;
 
       verify(ri64 == i64max);
 
@@ -989,7 +989,7 @@ static void testFunction(const String &name, D802RefFunc f80, D642RefFunc f64, d
 
       INT64           i64min  = _I64_MIN;
       di64 = i64min;
-      ri64 = getUint64(di64);
+      ri64 = (UINT64)di64;
 
       verify(ri64 == i64min);
 
@@ -997,7 +997,7 @@ static void testFunction(const String &name, D802RefFunc f80, D642RefFunc f64, d
 
       UINT64          ui64max = _UI64_MAX;
       Double80        dui64   = ui64max;
-      UINT64          rui64   = getUint64(dui64);
+      UINT64          rui64   = (UINT64)dui64;
 
       verify(rui64 == ui64max);
 
@@ -1020,13 +1020,13 @@ static void testFunction(const String &name, D802RefFunc f80, D642RefFunc f64, d
 
       for(double x = 1e-100; x < 1e100; x *= 1.1) {
         const Double80 d80(x);
-        const double   y = getDouble(d80);
+        const double   y = (double)d80;
         verify(y == x);
       }
 
       for(double x = -1e-100; x > -1e100; x *= 1.1) {
         const Double80 d80(x);
-        const double   y = getDouble(d80);
+        const double   y = (double)d80;
         verify(y == x);
       }
 
@@ -1132,21 +1132,21 @@ static void testFunction(const String &name, D802RefFunc f80, D642RefFunc f64, d
       FPU::setPrecisionMode(FPU_LOW_PRECISION);
       float flt1 = 1 + FLT_EPSILON;
       d80 = flt1;
-      float flt2 = getFloat(d80);
+      float flt2 = (float)d80;
       verify(flt2 == flt1);
       double x = 1 + DBL_EPSILON;
       d80 = x;
-      double y = getDouble(d80);
+      double y   = (double)d80;
       verify(y == x);
 
       FPU::setPrecisionMode(FPU_NORMAL_PRECISION);
       flt1 = 1 + FLT_EPSILON;
-      d80 = flt1;
-      flt2 = getFloat(d80);
+      d80  = flt1;
+      flt2 = (float)d80;
       verify(flt2 == flt1);
       x = 1 + DBL_EPSILON;
       d80 = x;
-      y = getDouble(d80);
+      y = (double)d80;
       verify(y == x);
 
       FPU::setPrecisionMode(FPU_HIGH_PRECISION);

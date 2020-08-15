@@ -3,31 +3,6 @@
 #include <Math.h>
 #include <RegexIStream.h>
 
-inline char   getChar(  float  v) { return (char  )v;         }
-inline char   getChar(  double v) { return (char  )v;         }
-inline char   getUchar( float  v) { return (UCHAR )v;         }
-inline char   getUchar( double v) { return (UCHAR )v;         }
-inline int    getShort( float  v) { return (short )v;         }
-inline int    getShort( double v) { return (short )v;         }
-inline UINT   getUshort(float  v) { return (USHORT)v;         }
-inline UINT   getUshort(double v) { return (USHORT)v;         }
-inline int    getInt(   float  v) { return (int   )v;         }
-inline int    getInt(   double v) { return (int   )v;         }
-inline UINT   getUint(  float  v) { return (UINT  )v;         }
-inline UINT   getUint(  double v) { return (UINT  )v;         }
-inline long   getLong(  float  v) { return getInt( v);        }
-inline long   getLong(  double v) { return getInt( v);        }
-inline ULONG  getUlong( float  v) { return getUint(v);        }
-inline ULONG  getUlong( double v) { return getUint(v);        }
-inline INT64  getInt64( float  v) { return (INT64 )v;         }
-inline INT64  getInt64( double v) { return (INT64 )v;         }
-inline UINT64 getUint64(float  v) { return (UINT64)v;         }
-inline UINT64 getUint64(double v) { return (UINT64)v;         }
-inline float  getFloat( float  v) { return v;                 }
-inline float  getFloat( double v) { return (float )v;         }
-inline double getDouble(float  v) { return v;                 }
-inline double getDouble(double v) { return v;                 }
-
 inline bool   isChar(   char   v) { return true;              }
 inline bool   isChar(   UCHAR  v) { return v <= CHAR_MAX;     }
 inline bool   isChar(   short  v) { return v == (char)v;      }
@@ -38,8 +13,8 @@ inline bool   isChar(   long   v) { return v == (char)v;      }
 inline bool   isChar(   ULONG  v) { return v == (char)v;      }
 inline bool   isChar(   INT64  v) { return v == (char)v;      }
 inline bool   isChar(   UINT64 v) { return v == (char)v;      }
-inline bool   isChar(   float  v) { return v == getChar(v);   }
-inline bool   isChar(   double v) { return v == getChar(v);   }
+inline bool   isChar(   float  v) { return isfinite(v) && (v == (char)v); }
+inline bool   isChar(   double v) { return isfinite(v) && (v == (char)v); }
 
 inline bool   isUchar(  char   v) { return v >= 0;            }
 inline bool   isUchar(  UCHAR  v) { return true;              }
@@ -51,8 +26,8 @@ inline bool   isUchar(  long   v) { return v == (UCHAR)v;     }
 inline bool   isUchar(  ULONG  v) { return v == (UCHAR)v;     }
 inline bool   isUchar(  INT64  v) { return v == (UCHAR)v;     }
 inline bool   isUchar(  UINT64 v) { return v == (UCHAR)v;     }
-inline bool   isUchar(  float  v) { return isfinite(v) && (v == getUchar(v));  }
-inline bool   isUchar(  double v) { return isfinite(v) && (v == getUchar(v));  }
+inline bool   isUchar(  float  v) { return isfinite(v) && (v == (UCHAR)v); }
+inline bool   isUchar(  double v) { return isfinite(v) && (v == (UCHAR)v); }
 
 inline bool   isShort(  short  v) { return true;              }
 inline bool   isShort(  USHORT v) { return v <= SHRT_MAX;     }
@@ -62,8 +37,8 @@ inline bool   isShort(  long   v) { return v == (short)v;     }
 inline bool   isShort(  ULONG  v) { return v == (short)v;     }
 inline bool   isShort(  INT64  v) { return v == (short)v;     }
 inline bool   isShort(  UINT64 v) { return v == (short)v;     }
-inline bool   isShort(  float  v) { return isfinite(v) && (v == getShort(v));  }
-inline bool   isShort(  double v) { return isfinite(v) && (v == getShort(v));  }
+inline bool   isShort(  float  v) { return isfinite(v) && (v == (short)v); }
+inline bool   isShort(  double v) { return isfinite(v) && (v == (short)v); }
 
 inline bool   isUshort( short  v) { return v >= 0;            }
 inline bool   isUshort( USHORT v) { return true;              }
@@ -73,8 +48,8 @@ inline bool   isUshort( long   v) { return v == (USHORT)v;    }
 inline bool   isUshort( ULONG  v) { return v == (USHORT)v;    }
 inline bool   isUshort( INT64  v) { return v == (USHORT)v;    }
 inline bool   isUshort( UINT64 v) { return v == (USHORT)v;    }
-inline bool   isUshort( float  v) { return isfinite(v) && (v == getUshort(v)); }
-inline bool   isUshort( double v) { return isfinite(v) && (v == getUshort(v)); }
+inline bool   isUshort( float  v) { return isfinite(v) && (v == (USHORT)v); }
+inline bool   isUshort( double v) { return isfinite(v) && (v == (USHORT)v); }
 
 inline bool   isInt(    int    v) { return true;              }
 inline bool   isInt(    UINT   v) { return v <= INT_MAX;      }
@@ -82,8 +57,8 @@ inline bool   isInt(    long   v) { return true;              }
 inline bool   isInt(    ULONG  v) { return v <= INT_MAX;      }
 inline bool   isInt(    INT64  v) { return v == (int)v;       }
 inline bool   isInt(    UINT64 v) { return v == (int)v;       }
-inline bool   isInt(    float  v) { return isfinite(v) && (v == getInt(v));    }
-inline bool   isInt(    double v) { return isfinite(v) && (v == getInt(v));    }
+inline bool   isInt(    float  v) { return isfinite(v) && (v == (int)v); }
+inline bool   isInt(    double v) { return isfinite(v) && (v == (int)v); }
 
 inline bool   isUint(   int    v) { return v >= 0;            }
 inline bool   isUint(   UINT   v) { return true;              }
@@ -91,21 +66,21 @@ inline bool   isUint(   long   v) { return v >= 0;            }
 inline bool   isUint(   ULONG  v) { return true;              }
 inline bool   isUint(   INT64  v) { return v == (UINT)v;      }
 inline bool   isUint(   UINT64 v) { return v == (UINT)v;      }
-inline bool   isUint(   float  v) { return isfinite(v) && (v == getUint(v));   }
-inline bool   isUint(   double v) { return isfinite(v) && (v == getUint(v));   }
+inline bool   isUint(   float  v) { return isfinite(v) && (v == (UINT)v); }
+inline bool   isUint(   double v) { return isfinite(v) && (v == (UINT)v); }
 
 inline bool   isInt64(  INT64  v) { return true;              }
 inline bool   isInt64(  UINT64 v) { return v <= INT64_MAX;    }
-inline bool   isInt64(  float  v) { return isfinite(v) && (v == getInt64(v));  }
-inline bool   isInt64(  double v) { return isfinite(v) && (v == getInt64(v));  }
+inline bool   isInt64(  float  v) { return isfinite(v) && (v == (INT64)v);  }
+inline bool   isInt64(  double v) { return isfinite(v) && (v == (INT64)v);  }
 
 inline bool   isUint64( INT64  v) { return v >= 0;            }
 inline bool   isUint64( UINT64 v) { return true;              }
-inline bool   isUint64( float  v) { return isfinite(v) && (v == getUint64(v)); }
-inline bool   isUint64( double v) { return isfinite(v) && (v == getUint64(v)); }
+inline bool   isUint64( float  v) { return isfinite(v) && (v == (UINT64)v); }
+inline bool   isUint64( double v) { return isfinite(v) && (v == (UINT64)v); }
 
 inline bool   isFloat(  float  v) { return true;              }
-inline bool   isFloat(  double v) { return !isnormal(v) || (v == getFloat(v));  }
+inline bool   isFloat(  double v) { return !isnormal(v) || (v == (float)v);  }
 
 
 inline bool   isnan(    float  v) { return std::isnan(v);    }

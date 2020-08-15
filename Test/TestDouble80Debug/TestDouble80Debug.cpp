@@ -30,7 +30,7 @@ SigApprox::SigApprox(const BigReal &x, UINT64 s0, int adds, const BigReal &p2) {
 static Double80 createPrciseDouble80(const BigReal &x) {
   DigitPool     &pool  = *x.getDigitPool();
   const BigReal  l2    = rLog(pool._2(), x, 40);
-  int            expo2 = getInt(floor(l2));
+  int            expo2 = (int)floor(l2);
   UINT           expoField, normalizingSteps = 0;
 
   for(;;) { // normalize
@@ -41,7 +41,7 @@ static Double80 createPrciseDouble80(const BigReal &x) {
     normalizingSteps++;
   }
   const BigReal &p2   = BigReal::pow2(expo2 + normalizingSteps - 63, CONVERSION_POW2DIGITCOUNT);
-  const UINT64   sig0 = getUint64(round(rQuot(x, p2, 40))) >> normalizingSteps;
+  const UINT64   sig0 = (UINT64)round(rQuot(x, p2, 40)) >> normalizingSteps;
 
   Array<SigApprox> sigArray;
   for(int adds = -2; adds <= 2; adds++) {
@@ -456,10 +456,10 @@ int main() {
     StreamParameters param80(numeric_limits<Double80>::max_digits10);
 
     while((x64 != 0) || (x80 != 0)) {
-      wstringstream  strstr64,  strstr80;
-      wstring        string64,  string80;
-      const wchar_t *cp64    , *cp80;
-      wchar_t       *ce64    , *ce80;
+      wostringstream  strstr64,  strstr80;
+      wstring         string64,  string80;
+      const wchar_t  *cp64    , *cp80;
+      wchar_t        *ce64    , *ce80;
       strstr64 << param64 << x64;
       strstr80 << param80 << x80;
       strstr64.flush(); string64 = strstr64.str(); cp64 = string64.c_str();

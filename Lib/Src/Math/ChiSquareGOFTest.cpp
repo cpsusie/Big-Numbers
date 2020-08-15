@@ -33,7 +33,7 @@ double chiSquareGoodnessOfFitTest(const CompactDoubleArray &observed, const Comp
     double err = fabs(sumObs - sumEx);
     if(sumObs != 0) err /= sumObs;
     if(err > 1e-10) {
-      throwInvalidArgumentException(__TFUNCTION__, _T("Relative diference betwen observed (=%le) must be <= 1e-10"), err);
+      throwInvalidArgumentException(__TFUNCTION__, _T("Relative difference between observed (=%le) must be <= 1e-10"), err);
     }
     ex = expected;
   }
@@ -43,5 +43,5 @@ double chiSquareGoodnessOfFitTest(const CompactDoubleArray &observed, const Comp
     const double &expi = ex[i];
     q += sqr(obsi - expi) / expi;
   }
-  return 1.0 - getDouble(chiSquaredDistribution((double)n - 1, q));
+  return 1.0 - (double)chiSquaredDistribution((double)n - 1, q);
 }

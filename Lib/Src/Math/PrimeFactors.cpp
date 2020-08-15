@@ -63,7 +63,7 @@ PrimeFactorArray::PrimeFactorArray(INT64 n, UINT limit) {
     n = -n;
     m_positive = false;
   }
-  const UINT upperLimit = limit ? limit : (getUint(sqrt(Double80(n))) + 1);
+  const UINT upperLimit = limit ? limit : ((UINT)sqrt(Double80(n)) + 1);
   Primes &primes = Primes::getInstance().wait();
   for(Iterator<size_t> it = primes.getIterator(upperLimit); it.hasNext();) {
     const size_t p = it.next();

@@ -4,11 +4,11 @@
 
 // Return the N+2 extrema (incl. endpoints) of the Chebyshev polynomial of degree N+1, scaled to the x-interval [m_left;m_right], where N=M+K
 BigRealVector Remes::getDefaultInitialExtrema(UINT M, UINT K) const {
-  const Real left  = getReal(m_domain.getFrom());
-  const Real right = getReal(m_domain.getTo());
-  const Real a = (left + right)/2.0;
-  const Real b = (left - right)/2.0;
-  const UINT N = M + K;
+  const Real left  = (Real)m_domain.getFrom();
+  const Real right = (Real)m_domain.getTo();
+  const Real a     = (left + right)/2.0;
+  const Real b     = (left - right)/2.0;
+  const UINT N     = M + K;
 
   BigRealVector result(N+2);
   for(UINT i = 0; i <= N+1; i++) {
@@ -70,8 +70,8 @@ CompactArray<DataPoint> InterpolationFunction::getInterpolationPoints(const BigR
   assert(finalExtr.getDimension() == dim);
   result.add(DataPoint(0,0));
   for(UINT i = 1; i < dim1; i++) {
-    const Real x = (Real)i/(dim1);                         // x = [0..1] Equally spaced
-    const Real y = getReal(finalExtr[i] - initialExtr[i]); // first and last y will be 0
+    const Real x = (Real)i/dim1;                         // x = [0..1] Equally spaced
+    const Real y = (Real)(finalExtr[i] - initialExtr[i]); // first and last y will be 0
     result.add(DataPoint(x,y));
   }
   result.add(DataPoint(1,0));
@@ -81,13 +81,13 @@ CompactArray<DataPoint> InterpolationFunction::getInterpolationPoints(const BigR
 Real InterpolationFunction::operator()(const Real &x) {
   const Real maxX  = (int)m_initialExtr.getDimension()-1;
   if((x == 0) || (x == maxX)) {
-    return getReal(m_initialExtr[getInt(x)]);
+    return (Real)m_initialExtr[(int)x];
   } else if((x < 0) || (x > maxX)) {
     throwInvalidArgumentException(__TFUNCTION__
                                  ,_T("x=%s. x must be in the interval [0..%d]")
                                  ,toString(x).cstr(), maxX);
   }
-  Real result1 = getReal(m_initialExtr[getInt(x)]) + __super::operator()(x/maxX);
+  Real result1 = (Real)m_initialExtr[(int)x] + __super::operator()(x/maxX);
   const Real fracX = fraction(x);
   if (fracX == 0) {
     return result1;

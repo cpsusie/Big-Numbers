@@ -264,7 +264,7 @@ bool ExpressionNode::isLogarithmicPowExponent(int e) { // static
 
 bool ExpressionNode::isLogarithmicPowExponent() const {
   Number v;
-  return isConstant(&v) && v.isInteger() && isLogarithmicPowExponent(getInt(v));
+  return isConstant(&v) && v.isInteger() && isLogarithmicPowExponent((int)v);
 }
 
 bool ExpressionNode::isLogarithmicRoot(const Rational &r) { // static

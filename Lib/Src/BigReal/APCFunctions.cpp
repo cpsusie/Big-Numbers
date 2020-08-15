@@ -87,7 +87,7 @@ BigReal BigReal::apcPow(const char bias, const BigReal &x, const BigInt &y, Digi
 
   const bool yNegative = y.isNegative();
   if(compareAbs(y, BigReal::_ui32_max) <= 0) {       // use unsigned long as exponent;
-    for(unsigned long tmpY = yNegative ? getUlong(-y) : getUlong(y); tmpY;) {
+    for(ULONG tmpY = yNegative ? (ULONG)(-y) : (ULONG)y; tmpY;) {
       if(tmpY & 1) {
         result = SHORTPROD(result, tmpX); --tmpY;
       } else {
@@ -95,7 +95,7 @@ BigReal BigReal::apcPow(const char bias, const BigReal &x, const BigInt &y, Digi
       }
     }
   } else if(compareAbs(y, BigReal::_ui64_max) <= 0) { // use unsigned __int64 as exponent
-    for(unsigned __int64 tmpY = yNegative ? getUint64(-y) : getUint64(y); tmpY;) {
+    for(UINT64 tmpY = yNegative ? (UINT64)(-y) : (UINT64)y; tmpY;) {
       if(tmpY & 1) {
         result = SHORTPROD(result, tmpX); --tmpY;
       } else {

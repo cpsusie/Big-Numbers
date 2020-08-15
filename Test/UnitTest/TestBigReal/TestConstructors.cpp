@@ -5,15 +5,15 @@ static void checkZero(DigitPool *pool) {
   BigReal n(0, pool);
   VALIDATEBIG(n);
   verify(n.isZero());
-  verify(getInt(n)      == 0);
-  verify(getUint(n)     == 0);
-  verify(getInt64(n)    == 0);
-  verify(getUint64(n)   == 0);
-  verify(getInt128(n)   == 0);
-  verify(getUint128(n)  == 0);
-  verify(getFloat(n)    == 0);
-  verify(getDouble(n)   == 0);
-  verify(getDouble80(n) == 0);
+  verify((int     )n == 0);
+  verify((UINT    )n == 0);
+  verify((INT64   )n == 0);
+  verify((UINT64  )n == 0);
+  verify((_int128 )n == 0);
+  verify((_uint128)n == 0);
+  verify((float   )n == 0);
+  verify((double  )n == 0);
+  verify((Double80)n == 0);
 }
 
 static String getFileName() {
@@ -27,7 +27,7 @@ static String getFileName() {
 static void checkExact(int line, int x, DigitPool *pool) {
   BigReal n(x, pool);
   VALIDATEBIG(n);
-  const int x1 = getInt(n);
+  const int x1 = (int)n;
 
   if(x1 != x) {
     ERRLOG << getFileName() << _T(" line ") << line                              << endl
@@ -40,7 +40,7 @@ static void checkExact(int line, int x, DigitPool *pool) {
 static void checkExact(int line, UINT x, DigitPool *pool) {
   BigReal n(x, pool);
   VALIDATEBIG(n);
-  const UINT x1 = getUint(n);
+  const UINT x1 = (UINT)n;
 
   if(x1 != x) {
     ERRLOG << getFileName() << _T(" line ") << line                           << endl
@@ -53,7 +53,7 @@ static void checkExact(int line, UINT x, DigitPool *pool) {
 static void checkExact(int line, INT64 x, DigitPool *pool) {
   BigReal n(x, pool);
   VALIDATEBIG(n);
-  const INT64 x1 = getInt64(n);
+  const INT64 x1 = (INT64)n;
 
   if(x1 != x) {
     ERRLOG << getFileName() << _T(" line ") << line                               << endl
@@ -66,7 +66,7 @@ static void checkExact(int line, INT64 x, DigitPool *pool) {
 static void checkExact(int line, UINT64 x, DigitPool *pool) {
   BigReal n(x, pool);
   VALIDATEBIG(n);
-  const UINT64 x1 = getUint64(n);
+  const UINT64 x1 = (UINT64)n;
 
   if(x1 != x) {
     ERRLOG << getFileName() << _T(" line ") << line                           << endl
@@ -79,7 +79,7 @@ static void checkExact(int line, UINT64 x, DigitPool *pool) {
 static void checkExact(int line, _int128 x, DigitPool *pool) {
   BigReal n(x, pool);
   VALIDATEBIG(n);
-  const _int128 x1 = getInt128(n);
+  const _int128 x1 = (_int128)n;
 
   if(x1 != x) {
     ERRLOG << getFileName() << _T(" line ") << line                              << endl
@@ -92,7 +92,7 @@ static void checkExact(int line, _int128 x, DigitPool *pool) {
 static void checkExact(int line, _uint128 x, DigitPool *pool) {
   BigReal n(x, pool);
   VALIDATEBIG(n);
-  const _uint128 x1 = getUint128(n);
+  const _uint128 x1 = (_uint128)n;
 
   if(x1 != x) {
     ERRLOG << getFileName() << _T(" line ") << line                               << endl

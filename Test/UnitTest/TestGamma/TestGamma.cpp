@@ -30,7 +30,7 @@ namespace TestGamma {
         }
         const BigReal X    = x;
         const BigReal Y    = rFactorial(X, 20);
-        const double  refy = getDouble(Y);
+        const double  refy = (double)Y;
         const double  e    = fabs(y - refy);
 #if defined(LIST_DATA)
         if(e > maxError) {
@@ -49,7 +49,7 @@ namespace TestGamma {
         const double  y    = factorial(x);
         const BigReal X    = x;
         const BigReal Y    = rFactorial(X, 20);
-        const double  refy = getDouble(Y);
+        const double  refy = (double)Y;
         const double  e    = fabs(y - refy);
 #if defined(LIST_DATA)
         if(e > maxError) {
@@ -87,7 +87,7 @@ namespace TestGamma {
         const Double80 y    = factorial(x);
         const BigReal  X    = x;
         const BigReal  Y    = rFactorial(X, 26);
-        const Double80 refy = getDouble80(Y);
+        const Double80 refy = (Double80)Y;
         const Double80 e    = fabs(y - refy);
 #if defined(LIST_DATA)
         if(e > maxError) {
@@ -106,7 +106,7 @@ namespace TestGamma {
         const Double80 y    = factorial(x);
         const BigReal  X    = x;
         const BigReal  Y    = rFactorial(X, 26);
-        const Double80 refy = getDouble80(Y);
+        const Double80 refy = (Double80)Y;
         const Double80 e    = fabs(y - refy);
 #if defined(LIST_DATA)
         if(e > maxError) {
@@ -152,7 +152,7 @@ namespace TestGamma {
 
         verify(eD64 < 7e-13);
         verify(eD80 == 0);
-        verify(eBR <= e(BigReal::_1, -32));
+        verify(eBR <= e(pool->_1(), -32));
       } catch (Exception e) {
         BigRealResourcePool::releaseDigitPool(pool);
         OUTPUT(_T("Exception:%s"), e.what());

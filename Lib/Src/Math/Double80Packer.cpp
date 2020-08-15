@@ -3,11 +3,11 @@
 
 Packer &operator<<(Packer &p, const Double80 &x) {
   if(isInt64(x)) {
-    return p << getInt64(x);
+    return p << (INT64)x;
   } else if(isFloat(x)) {
-    return p << getFloat(x);
+    return p << (float)x;
   } else if(isDouble(x)) {
-    return p << getDouble(x);
+    return p << (double)x;
   } else {
     return p.addElement(Packer::E_DOUBLE80, &x, sizeof(Double80));
   }

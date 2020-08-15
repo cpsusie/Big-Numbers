@@ -362,7 +362,7 @@ void CodeGenerator::genExpression(SNode n DCL_DSTPARAM) {
     { Rational rexpo;
       if(n.right().reducesToRational(&rexpo)) {
         if(isInt(rexpo)) {
-          const int i32expo = getInt(rexpo);
+          const int i32expo = (int)rexpo;
           if(i32expo == 0) {
             genExpression(n._1() DST_PARAM);
             return;
@@ -388,7 +388,7 @@ void CodeGenerator::genExpression(SNode n DCL_DSTPARAM) {
     { Rational rroot;
       if(n.right().reducesToRational(&rroot)) {
         const Rational rexpo = reciprocal(rroot);
-        if((isInt(rexpo) && ExpressionNode::isLogarithmicPowExponent(getInt(rexpo)))
+        if((isInt(rexpo) && ExpressionNode::isLogarithmicPowExponent((int)rexpo))
          || ExpressionNode::isLogarithmicRoot(rexpo)) {
           // don't use pow here, causes infinite recursion
           genExpression(binExp(POW, n.left(), SNode(m_tree,rexpo)) DST_PARAM);
@@ -783,7 +783,7 @@ int CodeGenerator::genPushValue(SNode n) {
   const MemoryRef mem3 = MemoryRef(TABLEREF_REG + (mem2.getOffset()+sizeof(DWORD)));
   m_code->emit(PUSH, DWORDPtr(mem3)); // reverse sequence, because stack grows downwards
   bytesPushed += sizeof(DWORD);
-#endif
+#endif // LONGDOUBLE
 
   m_code->emit(PUSH, DWORDPtr(mem2)); // reverse sequence, because stack grows downwards
   bytesPushed += sizeof(DWORD);
@@ -844,18 +844,22 @@ int CodeGenerator::genPushReturnAddr() {
   return genPushRef(&getSymbolTable().getValueRef(0));
 #else
   return 0;
-#endif
+#endif // LONGDOUBLE
 }
 
 #else // IS64BIT
 
-static const IndexRegister int64ParamRegister[] = {
+static const IndexRegister &getInt64ParamRegister(BYTE p) {
+  static const IndexRegister *int64ParamRegister[] = {
 #if !defined(LONGDOUBLE)
-  RCX ,RDX ,R8 ,R9
+    &RCX,&RDX,&R8 ,&R9
 #else
-  RDX, R8, R9
-#endif
-};
+    &RDX,&R8 ,&R9
+#endif // LONGDOUBLE
+  };
+  assert(p < ARRAYSIZE(int64ParamRegister));
+  return *int64ParamRegister[p];
+}
 
 #if defined(USEXMMREG)
 
@@ -966,11 +970,11 @@ void CodeGenerator::genPolynomial(SNode n DCL_DSTPARAM) {
   genSetRefParameter(n.getArgument(), 0);
 #endif // LONGDOUBLE
 
-  const IndexRegister &param2    = int64ParamRegister[1];
+  const IndexRegister &param2    = getInt64ParamRegister(1);
   const size_t         coefCount = coefArray.size();
   m_code->emit(MOV,param2,coefCount);
 
-  const IndexRegister &param3    = int64ParamRegister[2];
+  const IndexRegister &param3    = getInt64ParamRegister(2);
   m_code->emitLEAReal(param3, m_code->getTableRef(firstCoefIndex));
   genCall(FunctionCall((BuiltInFunction)Expr::evaluatePolynomial, polyName, polySignatureStr) DST_PARAM);
 }
@@ -979,14 +983,14 @@ void CodeGenerator::genSetRefParameter(SNode n, int index) {
   bool stacked;
   const BYTE offset = genSetRefParameter(n, index, stacked);
   if(stacked) {
-    m_code->emitLEAReal(int64ParamRegister[index], m_code->getStackRef(offset));
+    m_code->emitLEAReal(getInt64ParamRegister(index), m_code->getStackRef(offset));
     m_code->popTmp();
   }
 }
 
 BYTE CodeGenerator::genSetRefParameter(SNode n, int index, bool &savedOnStack) {
   if(n.isNameOrNumber()) {
-    m_code->emitLEAReal(int64ParamRegister[index], getTableRef(n));
+    m_code->emitLEAReal(getInt64ParamRegister(index), getTableRef(n));
     savedOnStack = false;
     return 0;
   } else {

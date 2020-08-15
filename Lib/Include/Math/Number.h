@@ -88,9 +88,15 @@ public:
     return m_type;
   }
   static String getTypeName(NumberType nt);
-  String getTypeName() const {
+  inline String getTypeName() const {
     return getTypeName(getType());
   }
+
+  explicit operator int()      const;
+  explicit operator float()    const;
+  explicit operator double()   const;
+  explicit operator Double80() const;
+  explicit operator Rational() const;
 
   inline bool isInteger() const {
     return isRational() && m_rational->isInteger();
@@ -136,11 +142,6 @@ public:
   inline bool isZero() const {
     return (_fpclass(*this) & (_FPCLASS_PZ | _FPCLASS_NZ)) != 0;
   }
-  friend int      getInt(     const Number &n);
-  friend float    getFloat(   const Number &n);
-  friend double   getDouble(  const Number &n);
-  friend Double80 getDouble80(const Number &n);
-  friend Rational getRational(const Number &n);
   friend Number operator+( const Number &n1, const Number &n2);
   friend Number operator-( const Number &n1, const Number &n2);
   friend Number operator-( const Number &v);
@@ -155,14 +156,6 @@ public:
   static void throwUnknownTypeException(const TCHAR *method, NumberType type);
   void        throwUnknownTypeException(const TCHAR *method) const;
 };
-
-inline Real getReal( const Number &n) {
-#if defined(LONGDOUBLE)
-  return getDouble80(n);
-#else
-  return getDouble(n);
-#endif
-}
 
 inline Number fabs(const Number &n) {
   return n.isNegative() ? -n : n;

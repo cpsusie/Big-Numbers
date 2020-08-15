@@ -50,6 +50,38 @@ public:
   Double80(float  x);
   Double80(double x);
 
+  explicit inline operator char() const {
+    return (char)_D80ToI32(*this);
+  }
+  explicit inline operator unsigned char() const {
+    return (unsigned char)_D80ToUI32(*this);
+  }
+  explicit inline operator short() const {
+    return (short)_D80ToI32(*this);
+  }
+  explicit inline operator unsigned short() const {
+    return (unsigned short)_D80ToI32(*this); ;
+  }
+  explicit inline operator int() const {
+    return _D80ToI32(*this);
+  }
+  explicit inline operator unsigned int() const {
+    return _D80ToUI32(*this);
+  }
+  explicit inline operator long() const {
+    return _D80ToI32(*this);
+  }
+  explicit inline operator unsigned long() const {
+    return _D80ToUI32(*this);
+  }
+  explicit inline operator __int64() const {
+    return _D80ToI64(*this);
+  }
+  explicit inline operator unsigned __int64() const {
+    return _D80ToUI64(*this);
+  }
+  explicit operator float()  const;
+  explicit operator double() const;
   // x == 0 ? 0 : floor(log10(|x|))
   static inline int getExpo10(const Double80 &x) {
     return _D80getExpo10(x);
@@ -336,19 +368,6 @@ _D80DEFINE_REVERSECOMPAREOPERATORS(UINT64)
 _D80DEFINE_REVERSECOMPAREOPERATORS(float )
 _D80DEFINE_REVERSECOMPAREOPERATORS(double)
 
-inline char   getChar(  const Double80 &x) { return (char)_D80ToI32(   x); }
-inline UCHAR  getUchar( const Double80 &x) { return (UCHAR)_D80ToUI32( x); }
-inline short  getShort( const Double80 &x) { return (short)_D80ToI32(  x); }
-inline USHORT getUshort(const Double80 &x) { return (USHORT)_D80ToI32( x); }
-inline int    getInt(   const Double80 &x) { return _D80ToI32(         x); }
-inline UINT   getUint(  const Double80 &x) { return _D80ToUI32(        x); }
-inline long   getLong(  const Double80 &x) { return _D80ToI32(         x); }
-inline ULONG  getUlong( const Double80 &x) { return _D80ToUI32(        x); }
-inline INT64  getInt64( const Double80 &x) { return _D80ToI64(         x); }
-inline UINT64 getUint64(const Double80 &x) { return _D80ToUI64(        x); }
-float         getFloat( const Double80 &x);
-double        getDouble(const Double80 &x);
-
 inline Double80 fabs(const Double80 &x) {
   Double80 tmp(x);
   _D80fabs(tmp);
@@ -507,16 +526,16 @@ inline bool isNInfinity(const Double80 &v) {
   return isinf(v) && v.isNegative();
 }
 
-inline bool   isChar(   const Double80 &v) {  return isfinite( v) && (v == getChar(  v)); }
-inline bool   isUchar(  const Double80 &v) {  return isfinite( v) && (v == getUchar( v)); }
-inline bool   isShort(  const Double80 &v) {  return isfinite( v) && (v == getShort( v)); }
-inline bool   isUshort( const Double80 &v) {  return isfinite( v) && (v == getUshort(v)); }
-inline bool   isInt(    const Double80 &v) {  return isfinite( v) && (v == getInt(   v)); }
-inline bool   isUint(   const Double80 &v) {  return isfinite( v) && (v == getUint(  v)); }
-inline bool   isInt64(  const Double80 &v) {  return isfinite( v) && (v == getInt64( v)); }
-inline bool   isUint64( const Double80 &v) {  return isfinite( v) && (v == getUint64(v)); }
-inline bool   isFloat(  const Double80 &v) {  return !isnormal(v) || (v == getFloat( v)); }
-inline bool   isDouble( const Double80 &v) {  return !isnormal(v) || (v == getDouble(v)); }
+inline bool   isChar(   const Double80 &v) {  return isfinite( v) && (v == (char            )v); }
+inline bool   isUchar(  const Double80 &v) {  return isfinite( v) && (v == (unsigned char   )v); }
+inline bool   isShort(  const Double80 &v) {  return isfinite( v) && (v == (short           )v); }
+inline bool   isUshort( const Double80 &v) {  return isfinite( v) && (v == (unsigned short  )v); }
+inline bool   isInt(    const Double80 &v) {  return isfinite( v) && (v == (int             )v); }
+inline bool   isUint(   const Double80 &v) {  return isfinite( v) && (v == (unsigned int    )v); }
+inline bool   isInt64(  const Double80 &v) {  return isfinite( v) && (v == (__int64         )v); }
+inline bool   isUint64( const Double80 &v) {  return isfinite( v) && (v == (unsigned __int64)v); }
+inline bool   isFloat(  const Double80 &v) {  return !isnormal(v) || (v == (float           )v); }
+inline bool   isDouble( const Double80 &v) {  return !isnormal(v) || (v == (double          )v); }
 
 Double80 randDouble80(                                               RandomGenerator &rnd = *RandomGenerator::s_stdGenerator);
 Double80 randDouble80(   const Double80 &low , const Double80 &high, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator);

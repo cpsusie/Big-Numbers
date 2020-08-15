@@ -80,10 +80,10 @@ Number::Number(UINT v) {
 
 int _fpclass(const Number &n) {
   switch(n.getType()) {
-  case NUMBERTYPE_FLOAT   : return ::_fpclass(getFloat(   n));
-  case NUMBERTYPE_DOUBLE  : return ::_fpclass(getDouble(  n));
-  case NUMBERTYPE_DOUBLE80: return ::_fpclass(getDouble80(n));
-  case NUMBERTYPE_RATIONAL: return ::_fpclass(getRational(n));
+  case NUMBERTYPE_FLOAT   : return ::_fpclass((float   )n);
+  case NUMBERTYPE_DOUBLE  : return ::_fpclass((double  )n);
+  case NUMBERTYPE_DOUBLE80: return ::_fpclass((Double80)n);
+  case NUMBERTYPE_RATIONAL: return ::_fpclass((Rational)n);
   default                 : n.throwUnknownTypeException(__TFUNCTION__);
   }
   return 0;
@@ -91,10 +91,10 @@ int _fpclass(const Number &n) {
 
 int fpclassify(const Number &n) {
   switch(n.getType()) {
-  case NUMBERTYPE_FLOAT   : return fpclassify(getFloat(n));
-  case NUMBERTYPE_DOUBLE  : return fpclassify(getDouble(n));
-  case NUMBERTYPE_DOUBLE80: return fpclassify(getDouble80(n));
-  case NUMBERTYPE_RATIONAL: return fpclassify(getRational(n));
+  case NUMBERTYPE_FLOAT   : return fpclassify((float   )n);
+  case NUMBERTYPE_DOUBLE  : return fpclassify((double  )n);
+  case NUMBERTYPE_DOUBLE80: return fpclassify((Double80)n);
+  case NUMBERTYPE_RATIONAL: return fpclassify((Rational)n);
   default                 : n.throwUnknownTypeException(__TFUNCTION__);
   }
   return 0;
@@ -213,57 +213,57 @@ Number &Number::operator=(UINT v) {
   return *this;
 }
 
-int getInt(const Number &n) {
-  switch(n.getType()) {
-  case NUMBERTYPE_FLOAT    : return getInt(*n.m_flt     );
-  case NUMBERTYPE_DOUBLE   : return getInt(*n.m_d64     );
-  case NUMBERTYPE_DOUBLE80 : return getInt(*n.m_d80     );
-  case NUMBERTYPE_RATIONAL : return getInt(*n.m_rational);
-  default                  : n.throwUnknownTypeException(__TFUNCTION__);
+Number::operator int()      const {
+  switch(getType()) {
+  case NUMBERTYPE_FLOAT    : return (int)*m_flt;
+  case NUMBERTYPE_DOUBLE   : return (int)*m_d64;
+  case NUMBERTYPE_DOUBLE80 : return (int)*m_d80;
+  case NUMBERTYPE_RATIONAL : return (int)*m_rational;
+  default                  : throwUnknownTypeException(__TFUNCTION__);
   }
   return 0;
 }
 
-float getFloat(const Number &n) {
-  switch(n.getType()) {
-  case NUMBERTYPE_FLOAT    : return *n.m_flt;
-  case NUMBERTYPE_DOUBLE   : return getFloat(*n.m_d64);
-  case NUMBERTYPE_DOUBLE80 : return getFloat(*n.m_d80);
-  case NUMBERTYPE_RATIONAL : return getFloat(*n.m_rational);
-  default                  : n.throwUnknownTypeException(__TFUNCTION__);
+Number::operator float()    const {
+  switch(getType()) {
+  case NUMBERTYPE_FLOAT    : return *m_flt;
+  case NUMBERTYPE_DOUBLE   : return (float)*m_d64;
+  case NUMBERTYPE_DOUBLE80 : return (float)*m_d80;
+  case NUMBERTYPE_RATIONAL : return (float)*m_rational;
+  default                  : throwUnknownTypeException(__TFUNCTION__);
   }
   return 0;
 }
 
-double getDouble(const Number &n) {
-  switch(n.getType()) {
-  case NUMBERTYPE_FLOAT    : return *n.m_flt;
-  case NUMBERTYPE_DOUBLE   : return *n.m_d64;
-  case NUMBERTYPE_DOUBLE80 : return getDouble(*n.m_d80);
-  case NUMBERTYPE_RATIONAL : return getDouble(*n.m_rational);
-  default                  : n.throwUnknownTypeException(__TFUNCTION__);
+Number::operator double()   const {
+  switch(getType()) {
+  case NUMBERTYPE_FLOAT    : return *m_flt;
+  case NUMBERTYPE_DOUBLE   : return *m_d64;
+  case NUMBERTYPE_DOUBLE80 : return (double)*m_d80;
+  case NUMBERTYPE_RATIONAL : return (double)*m_rational;
+  default                  : throwUnknownTypeException(__TFUNCTION__);
   }
   return 0;
 }
 
-Double80 getDouble80(const Number &n) {
-  switch(n.getType()) {
-  case NUMBERTYPE_FLOAT    : return *n.m_flt;
-  case NUMBERTYPE_DOUBLE   : return *n.m_d64;
-  case NUMBERTYPE_DOUBLE80 : return *n.m_d80;
-  case NUMBERTYPE_RATIONAL : return getDouble80(*n.m_rational);
-  default                  : n.throwUnknownTypeException(__TFUNCTION__);
+Number::operator Double80() const {
+  switch(getType()) {
+  case NUMBERTYPE_FLOAT    : return *m_flt;
+  case NUMBERTYPE_DOUBLE   : return *m_d64;
+  case NUMBERTYPE_DOUBLE80 : return *m_d80;
+  case NUMBERTYPE_RATIONAL : return (Double80)*m_rational;
+  default                  : throwUnknownTypeException(__TFUNCTION__);
   }
   return 0;
 }
 
-Rational getRational(const Number &n) {
-  switch(n.getType()) {
-  case NUMBERTYPE_FLOAT    : return Rational(*n.m_flt);
-  case NUMBERTYPE_DOUBLE   : return Rational(*n.m_d64);
-  case NUMBERTYPE_DOUBLE80 : return Rational(*n.m_d80);
-  case NUMBERTYPE_RATIONAL : return *n.m_rational;
-  default                  : n.throwUnknownTypeException(__TFUNCTION__);
+Number::operator Rational() const {
+  switch(getType()) {
+  case NUMBERTYPE_FLOAT    : return Rational(*m_flt);
+  case NUMBERTYPE_DOUBLE   : return Rational(*m_d64);
+  case NUMBERTYPE_DOUBLE80 : return Rational(*m_d80);
+  case NUMBERTYPE_RATIONAL : return *m_rational;
+  default                  : throwUnknownTypeException(__TFUNCTION__);
   }
   return 0;
 }
@@ -294,7 +294,7 @@ Number operator+(const Number &n1, const Number &n2) {
       Number::throwUnknownTypeException(__TFUNCTION__, t1);
     }
   }
-  return getDouble80(n1) + getDouble80(n2);
+  return (Double80)n1 + (Double80)n2;
 }
 
 Number operator-(const Number &n1, const Number &n2) {
@@ -323,7 +323,7 @@ Number operator-(const Number &n1, const Number &n2) {
       Number::throwUnknownTypeException(__TFUNCTION__, t1);
     }
   }
-  return getDouble80(n1) - getDouble80(n2);
+  return (Double80)n1 - (Double80)n2;
 }
 
 Number operator-(const Number &v) {
@@ -363,7 +363,7 @@ Number operator*(const Number &n1, const Number &n2) {
       Number::throwUnknownTypeException(__TFUNCTION__, t1);
     }
   }
-  return getDouble80(n1) * getDouble80(n2);
+  return (Double80)n1 * (Double80)n2;
 }
 
 Number operator/(const Number &n1, const Number &n2) {
@@ -392,7 +392,7 @@ Number operator/(const Number &n1, const Number &n2) {
       Number::throwUnknownTypeException(__TFUNCTION__, t1);
     }
   }
-  return getDouble80(n1) / getDouble80(n2);
+  return (Double80)n1 / (Double80)n2;
 }
 
 Number operator%(const Number &n1, const Number &n2) {
@@ -406,15 +406,15 @@ Number operator%(const Number &n1, const Number &n2) {
     default                 : Number::throwUnknownTypeException(__TFUNCTION__, t1);
     }
   }
-  return Number(fmod(getDouble80(n1), getDouble80(n2)));
+  return Number(fmod((Double80)n1, (Double80)n2));
 }
 
 Number reciprocal(const Number &n) {
   switch(n.getType()) {
-  case NUMBERTYPE_FLOAT   : return Number(1.0f         / getFloat(   n));
-  case NUMBERTYPE_DOUBLE  : return Number(1.0          / getDouble(  n));
-  case NUMBERTYPE_DOUBLE80: return Number(Double80::_1 / getDouble80(n));
-  case NUMBERTYPE_RATIONAL: return Number(reciprocal(getRational(n)));
+  case NUMBERTYPE_FLOAT   : return Number(1.0f         / (float)   n);
+  case NUMBERTYPE_DOUBLE  : return Number(1.0          / (double)  n);
+  case NUMBERTYPE_DOUBLE80: return Number(Double80::_1 / (Double80)n);
+  case NUMBERTYPE_RATIONAL: return Number(reciprocal((Rational)n));
   default                 : Number::throwUnknownTypeException(__TFUNCTION__, n.getType());
   }
   return 0;
@@ -422,16 +422,16 @@ Number reciprocal(const Number &n) {
 
 Number pow(const Number &n1, const Number &n2) {
   if(n2.getType() == NUMBERTYPE_RATIONAL) {
-    const Rational r2 = getRational(n2);
+    const Rational r2 = (Rational)n2;
     if(n1.getType() == NUMBERTYPE_RATIONAL) {
       Rational result;
-      if(Rational::isRationalPow(getRational(n1), r2, &result)) {
+      if(Rational::isRationalPow((Rational)n1, r2, &result)) {
         return result;
       }
     }
-    return Rational::pow(getDouble80(n1), r2);
+    return Rational::pow((Double80)n1, r2);
   }
-  return mypow(getDouble80(n1), getDouble80(n2));
+  return mypow((Double80)n1, (Double80)n2);
 }
 
 int numberCmp(const Number &n1, const Number &n2) {
@@ -446,5 +446,5 @@ int numberCmp(const Number &n1, const Number &n2) {
     default                 : Number::throwUnknownTypeException(__TFUNCTION__, t1);
     }
   }
-  return sign(getDouble80(n1) - getDouble80(n2));
+  return sign((Double80)n1 - (Double80)n2);
 }

@@ -12,10 +12,10 @@ String Remes::getHeaderString() const {
   return format(_T("// (%d,%d)-Minimax-approximation of %s in [%le,%le] with max %serror = %21.15le\n")
                ,m_M,m_K
                ,m_targetFunction.getName().cstr()
-               ,getDouble(m_domain.getFrom())
-               ,getDouble(m_domain.getTo())
+               ,(double)m_domain.getFrom()
+               ,(double)m_domain.getTo()
                ,m_useRelativeError ? _T("relative ") : EMPTYSTRING
-               ,getDouble(m_maxError)
+               ,(double)m_maxError
                );
 }
 
@@ -33,8 +33,8 @@ String Remes::getCFunctionString(bool useDouble80) const {
   str += format(_T("static const BYTE coefdata[] = {\n"));
   const TCHAR *delimStr = _T(" ");
   for(UINT i = 0; i <= m_N; i++) {
-    const Double80 d80  = getDouble80(m_coefficientVector[i]);
-    const double   d64  = getDouble(  m_coefficientVector[i]);
+    const Double80 d80  = (Double80)m_coefficientVector[i];
+    const double   d64  = (double  )m_coefficientVector[i];
     const BYTE    *byte = useDouble80 ? (BYTE*)&d80 : (BYTE*)&d64;
     str += _T(" ");
     for(int j = 0; j < typeSize; j++, delimStr = _T(",")) {
@@ -74,8 +74,8 @@ String Remes::getJavaFunctionString() const {
 
   String str = format(_T("    private static final double coef[] = {\n"));
   for(UINT i = 0; i <= m_N; i++) {
-    const double coef = getDouble(m_coefficientVector[i]);
-    const unsigned __int64 *c = (unsigned __int64*)&coef;
+    const double            coef = (double)m_coefficientVector[i];
+    const unsigned __int64 *c    = (unsigned __int64*)&coef;
     str += format(_T("        Double.longBitsToDouble(0x%I64xL)"), *c);
     str += format(_T("%s // %20.16le\n"), i == m_N ? _T(" ") : _T(","), coef);
   }
@@ -118,11 +118,11 @@ String Remes::getMMQuotString() const {
 StringArray Remes::getCoefficientStringArray() const {
   StringArray result;
   for(UINT i = 0; i <= m_M; i++) {
-    result.add(format(_T("a[%2d] = %s     %s"), i, FormatBigReal(m_coefficientVector[i], 25, 35).cstr(), FormatBigReal(getReal(m_coefficientVector[i])).cstr()));
+    result.add(format(_T("a[%2d] = %s     %s"), i, FormatBigReal(m_coefficientVector[i], 25, 35).cstr(), FormatBigReal((Real)m_coefficientVector[i]).cstr()));
   }
   result.add(format(_T("b[ 0] = +1")));
   for(UINT i = m_M + 1; i <= m_N; i++) {
-    result.add(format(_T("b[%2d] = %s     %s"), i-m_M, FormatBigReal(m_coefficientVector[i], 25, 35).cstr(), FormatBigReal(getReal(m_coefficientVector[i])).cstr()));
+    result.add(format(_T("b[%2d] = %s     %s"), i-m_M, FormatBigReal(m_coefficientVector[i], 25, 35).cstr(), FormatBigReal((Real)m_coefficientVector[i]).cstr()));
   }
   result.add(format(_T("Max.error:%s"), FormatBigReal(m_maxError).cstr()));
   return result;

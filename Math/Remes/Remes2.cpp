@@ -435,11 +435,7 @@ void Remes::genCppFunction(FILE *f) {
   genHeader(f);
   _ftprintf(f, _T("static unsigned char coefdata[] = {\n"));
   for(int i = 0; i <= m_N; i++) {
-#if defined(LONGDOUBLE)
-    const double coef = getDouble(m_coef[i]);
-#else
-    const double coef = m_coef[i];
-#endif
+    const double coef = (double)m_coef[i];
     _ftprintf(f, _T("   "));
     BYTE *c = (BYTE*)&coef;
     for(int j = 0 ; j < sizeof(coef); j++, c++) {
@@ -513,8 +509,8 @@ void Remes::genJavaFunction(FILE *f) {
 
   _ftprintf(f, _T("    private static final double coef[] = {\n"));
   for(int i = 0; i <= m_N; i++) {
-    const double coef = getDouble(m_coef[i]);
-    unsigned __int64 *c = (unsigned __int64*)&coef;
+    const double      coef = (double)m_coef[i];
+    unsigned __int64 *c    = (unsigned __int64*)&coef;
     _ftprintf(f, _T("        Double.longBitsToDouble(0x%I64xL)"), *c);
     _ftprintf(f, _T("%s // %20.16le\n"), i == m_N ? _T(" ") : _T(","), coef);
   }

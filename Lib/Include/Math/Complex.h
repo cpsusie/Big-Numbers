@@ -63,7 +63,7 @@ public:
     return Complex(r*cos(theta), r*sin(theta));
   }
   operator Point2D() const {
-    return Point2D(getDouble(r*cos(theta)), getDouble(r*sin(theta)));
+    return Point2D(r*cos(theta), r*sin(theta));
   }
   inline String toString(StreamSize dec = 1, bool rad = false) const {
     return format(_T("(%s, %s)"), ::toString(r, dec).cstr(), ::toString(rad ? theta : RAD2GRAD(theta), dec).cstr());

@@ -471,10 +471,10 @@ private:
   friend bool isDouble80(const BigReal &v, Double80 *d80 = NULL);
 
   inline float getFloatNoLimitCheck() const {
-    return getFloat(getDouble80NoLimitCheck());
+    return (float)getDouble80NoLimitCheck();
   }
   inline double getDoubleNoLimitCheck() const {
-    return getDouble(getDouble80NoLimitCheck());
+    return (double)getDouble80NoLimitCheck();
   }
   // Assume this->_isnormal()
   Double80 getDouble80NoLimitCheck() const;
@@ -1042,21 +1042,21 @@ public:
 
   // ------------------------------------------------------------------------------------------
 
-  friend long        getLong(    const BigReal &v, bool validate = true);
-  friend ULONG       getUlong(   const BigReal &v, bool validate = true);
-  friend inline int  getInt(     const BigReal &v, bool validate = true) {
-    return (int)getLong(v, validate);
+  inline explicit operator long() const {
+    return operator int();
   }
-  friend inline UINT getUint(    const BigReal &v, bool validate = true) {
-    return (UINT)getUlong(v, validate);
+  inline explicit operator unsigned long() const {
+    return operator unsigned int();
   }
-  friend INT64       getInt64(   const BigReal &v, bool validate = true);
-  friend UINT64      getUint64(  const BigReal &v, bool validate = true);
-  friend _int128     getInt128(  const BigReal &v, bool validate = true);
-  friend _uint128    getUint128( const BigReal &v, bool validate = true);
-  friend float       getFloat(   const BigReal &v, bool validate = true);
-  friend double      getDouble(  const BigReal &v, bool validate = true);
-  friend Double80    getDouble80(const BigReal &v, bool validate = true);
+  explicit operator            int()      const;
+  explicit operator unsigned   int()      const;
+  explicit operator          __int64()    const;
+  explicit operator unsigned __int64()    const;
+  explicit operator           _int128()   const;
+  explicit operator           _uint128()  const;
+  explicit operator            float()    const;
+  explicit operator            double()   const;
+  explicit operator            Double80() const;
 
   // Comnon used constants allocated with DEFAULT_DIGITPOOL (see below)
   static const BigInt  &_0;         // 0
@@ -1204,16 +1204,6 @@ public:
     return *this;
   }
 };
-
-#if defined(LONGDOUBLE)
-inline Real getReal(const BigReal &x) {
-  return getDouble80(x);
-}
-#else
-inline Real getReal(const BigReal &x) {
-  return getDouble(x);
-}
-#endif // LONGDOUBLE
 
 std::istream     &operator>>(std::istream  &in ,       BigReal           &x);
 std::ostream     &operator<<(std::ostream  &out, const BigReal           &x);

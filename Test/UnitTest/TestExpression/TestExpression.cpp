@@ -288,7 +288,7 @@ namespace TestExpression {
     }
 
     static inline bool isOddInt(Real n) {
-      return isInt(n) && !isEven(getInt(n));
+      return isInt(n) && !isEven((int)n);
     }
 
     TEST_METHOD(ExpressionTestPowRoot) {
@@ -318,7 +318,7 @@ namespace TestExpression {
           verifyExprOk(compRootExpr     , compErrors,p!=0);
           verifyExprOk(interpretRootExpr, interpErrors);
 
-          const Real startx = (p == getInt(p)) ? -1.9 : -0.9, step = 0.125;
+          const Real startx = (p == (int)p) ? -1.9 : -0.9, step = 0.125;
           for(Real x = startx; x <= 0.5; x += step) {
             compPowExpr.setValue(     _T("x"),x);
             interpretPowExpr.setValue(_T("x"),x);
@@ -368,7 +368,7 @@ namespace TestExpression {
             for(Real x = startx; x <= 0.5; x += step) {
               compPowExpr.setValue(     _T("x"),x);
               interpretPowExpr.setValue(_T("x"),x);
-              const Real yp1 = mypow((1+x),getReal(p));
+              const Real yp1 = mypow((1+x),(Real)p);
               const Real yp2 = compPowExpr.evaluate();
               const Real yp3 = interpretPowExpr.evaluate();
               verify(relativeDiff(yp2,yp1) < 1e-13);
@@ -376,7 +376,7 @@ namespace TestExpression {
 
               compRootExpr.setValue(     _T("x"),x);
               interpretRootExpr.setValue(_T("x"),x);
-              const Real yr1 = root(1+x,getReal(p));
+              const Real yr1 = root(1+x,(Real)p);
               const Real yr2 = compRootExpr.evaluate();
               const Real yr3 = interpretRootExpr.evaluate();
               verify(relativeDiff(yr2,yr1) < 1e-13);

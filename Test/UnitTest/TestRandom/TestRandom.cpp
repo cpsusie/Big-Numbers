@@ -66,7 +66,7 @@ namespace TestRandom {
         _int128 t128 = b[i];
         t128 *= bucketCount;
         t128 /= length;
-        const UINT index = t128;
+        const UINT index = (UINT)t128;
         observed[index]++;
       }
       const double e = (double)n / bucketCount;

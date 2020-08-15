@@ -95,7 +95,7 @@ namespace TestSimplex {
       //  printf("Totalcost:%s. diff:%s\n", ::toString(solution.getTotalCost(),20).cstr(), toString(fabs(solution.getTotalCost() - expectedTotalCost)).cstr());
       verify(fabs(solution.getTotalCost() - expectedTotalCost) < 2e-8);
 
-      //  printf("TotalCost:%20.15lg\n", getDouble(solution.getTotalCost()));
+      //  printf("TotalCost:%20.15lg\n", (double)solution.getTotalCost());
       //  printf("Solution:\n%s",tab.getSolution().toString().cstr());
     }
 

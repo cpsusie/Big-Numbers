@@ -144,18 +144,18 @@ String DescriptiveStatistics::toString(int prec) {
   "Count            :%ld\n";
 
   return format(formatStr.cstr()
-               ,prec, getDouble(m_average)
-               ,prec, getDouble(m_standardError)
-               ,prec, getDouble(m_median)
-               ,prec, getDouble(m_mode)
-               ,prec, getDouble(m_standardDeviation)
-               ,prec, getDouble(m_variance)
-               ,prec, getDouble(m_kurtosis)
-               ,prec, getDouble(m_skewness)
-               ,prec, getDouble(m_range)
-               ,prec, getDouble(m_minimum)
-               ,prec, getDouble(m_maximum)
-               ,prec, getDouble(m_sum)
+               ,prec, (double)m_average
+               ,prec, (double)m_standardError
+               ,prec, (double)m_median
+               ,prec, (double)m_mode
+               ,prec, (double)m_standardDeviation
+               ,prec, (double)m_variance
+               ,prec, (double)m_kurtosis
+               ,prec, (double)m_skewness
+               ,prec, (double)m_range
+               ,prec, (double)m_minimum
+               ,prec, (double)m_maximum
+               ,prec, (double)m_sum
                ,m_count
               );
 }

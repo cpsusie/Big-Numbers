@@ -514,7 +514,7 @@ ExpressionNodeName *ParserTree::fetchNameNode(const String &name) {
 }
 
 ExpressionNodeNumber *ParserTree::numberExpr(const Number   &v) {
-  if(isRational(v)) return numberExpr(getRational(v));
+  if(isRational(v)) return numberExpr((Rational)v);
   ExpressionNodeNumber *n = new ExpressionNodeNumber(this, v); TRACE_NEW(n);
   return n;
 }

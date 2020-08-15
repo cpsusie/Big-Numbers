@@ -91,7 +91,7 @@ InterruptableIsoSurfaceEvaluator &InterruptableIsoSurfaceEvaluator::createData(F
 }
 
 double InterruptableIsoSurfaceEvaluator::evaluate(const Point3D &p) {
-  return m_reverseSign ? -getDouble((*m_f)(p)) : getDouble((*m_f)(p));
+  return m_reverseSign ? -(double)(*m_f)(p) : (double)(*m_f)(p);
 }
 
 void InterruptableIsoSurfaceEvaluator::receiveFace(const Face3 &face) {

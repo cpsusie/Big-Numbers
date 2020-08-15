@@ -80,7 +80,7 @@ BigReal &BigReal::shortProductNoZeroCheck(const BigReal &x, const BigReal &y, UI
         BRDigitType carry      = 0;
         Digit      *d          = sps.m_cd;
         _ui128div_t sumquotrem = _ui128div(sps.m_bigSum, s_BIGREALBASEBR2);
-        d->n         = sumquotrem.rem;
+        d->n         = (BRDigitTypex64)sumquotrem.rem;
         sps.m_bigSum = sumquotrem.quot;
         do {
           d = d->prev;
@@ -114,7 +114,7 @@ BigReal &BigReal::shortProductNoZeroCheck(const BigReal &x, const BigReal &y, UI
         BRDigitType carry      = 0;
         Digit      *d          = sps.m_cd;
         _ui128div_t sumquotrem = _ui128div(sps.m_bigSum, s_BIGREALBASEBR2);
-        d->n = sumquotrem.rem;
+        d->n         = (BRDigitTypex64)sumquotrem.rem;
         sps.m_bigSum = sumquotrem.quot;
         do {
           d = d->prev;

@@ -124,7 +124,7 @@ static const double polyCoefD[] = {
 // Assume 1 <= x <= 10
 BigReal BigReal::lnEstimateD(const BigReal &x) { // static
   DigitPool *pool = x.getDigitPool();
-  double t = getDouble(x) - 2;
+  double t = (double)x - 2;
   double sum = polyCoefD[2];
   for(int i = 1; i >= 0; i--) {
     sum = sum * t + polyCoefD[i];
@@ -146,7 +146,7 @@ static const double coef[] = {
 BigReal BigReal::lnEstimate(const BigReal &x, DigitPool *digitPool) { // static
   _SELECTDIGITPOOL(x);
   assert((_1 <= x) && (x <= LN10C.c15));
-  const double t = getDouble(x) - 2;
+  const double t = (double)x - 2;
   double sum1 = coef[2];
   double sum2 = coef[4];
   int i;
@@ -336,7 +336,7 @@ BigReal ln1(const BigReal &x, const BigReal &f, DigitPool *digitPool) {
   if(s > APCprod(>,LN1C.c9,g,pool)) {
     g = APCprod(<,LN1C.c10,g,pool);
     BigReal jn = APCsum(<,LN1C.c14,APCsum(<,APCprod(<,LN1C.c11,sqrt(-BigReal::getExpo10N(g,pool),LN1C.c12),pool),APCprod(<,LN1C.c13,BigReal::getExpo10N(s,pool),pool),pool),pool);
-    int j = (jn < _1) ? 0 : getInt(floor(jn));
+    int j = (jn < _1) ? 0 : (int)floor(jn);
     for(int i = 1; i <= j; i++) {
       y = sqrt(y,g);
       g = APCprod(<,LN1C.c15,g,pool);

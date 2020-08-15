@@ -85,43 +85,43 @@ public:
     HI64(*this) = n < 0 ? -1 : 0;
     LO64(*this) = n;
   }
-  explicit inline _int128(const unsigned __int64 &hi, const unsigned __int64 &lo) {
+  inline _int128(const unsigned __int64 &hi, const unsigned __int64 &lo) {
     HI64(*this) = hi;
     LO64(*this) = lo;
   }
 
   // type operators
-  inline operator unsigned __int64() const {
+  explicit inline operator unsigned __int64() const {
     return LO64(*this);
   }
-  inline operator __int64() const {
+  explicit inline operator __int64() const {
     return LO64(*this);
   }
-  inline operator unsigned long() const {
+  explicit inline operator unsigned long() const {
     return (unsigned long)LO64(*this);
   }
-  inline operator long() const {
+  explicit inline operator long() const {
     return (long)LO64(*this);
   }
-  inline operator unsigned int() const {
+  explicit inline operator unsigned int() const {
     return (unsigned int)LO64(*this);
   }
-  inline operator int() const {
+  explicit inline operator int() const {
     return (int)LO64(*this);
   }
-  inline operator unsigned short() const {
+  explicit inline operator unsigned short() const {
     return (unsigned short)LO64(*this);
   }
-  inline operator short() const {
+  explicit inline operator short() const {
     return (short)LO64(*this);
   }
-  inline operator unsigned char() const {
+  explicit inline operator unsigned char() const {
     return (unsigned char)LO64(*this);
   }
-  inline operator char() const {
+  explicit inline operator char() const {
     return (char)LO64(*this);
   }
-  inline operator bool() const {
+  explicit inline operator bool() const {
     return LO64(*this) || HI64(*this);
   }
 
@@ -211,37 +211,37 @@ public:
   inline operator _int128() const {
     return *(_int128*)(void*)this;
   }
-  inline operator unsigned __int64() const {
+  explicit inline operator unsigned __int64() const {
     return LO64(*this);
   }
-  inline operator __int64() const {
+  explicit inline operator __int64() const {
     return LO64(*this);
   }
-  inline operator unsigned long() const {
+  explicit inline operator unsigned long() const {
     return (unsigned long)LO64(*this);
   }
-  inline operator long() const {
+  explicit inline operator long() const {
     return (long)LO64(*this);
   }
-  inline operator unsigned int() const {
+  explicit inline operator unsigned int() const {
     return (unsigned int)LO64(*this);
   }
-  inline operator int() const {
+  explicit inline operator int() const {
     return (int)LO64(*this);
   }
-  inline operator unsigned short() const {
+  explicit inline operator unsigned short() const {
     return (unsigned short)LO64(*this);
   }
-  inline operator short() const {
+  explicit inline operator short() const {
     return (short)LO64(*this);
   }
-  inline operator unsigned char() const {
+  explicit inline operator unsigned char() const {
     return (unsigned char)LO64(*this);
   }
-  inline operator char() const {
+  explicit inline operator char() const {
     return (char)LO64(*this);
   }
-  inline operator bool() const {
+  explicit inline operator bool() const {
     return LO64(*this) || HI64(*this);
   }
 

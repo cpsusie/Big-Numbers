@@ -1227,7 +1227,7 @@ AlignedImage *ExpressionPainter::getNumberImage(SNode n, int fontSize, Expressio
     m_getNumberActive = true; // to prevent infinte recursion
     Real significand;
     int  exponent;
-    splitReal(getReal(num), significand, exponent);
+    splitReal((Real)num, significand, exponent);
     if(m_numberFormat == ENGINEERING_NOTATION) {
       const int r = ::abs(exponent % 3);
       if(r) {
@@ -1273,7 +1273,7 @@ bool ExpressionPainter::mustConvertNumber(const Number &n) const {
     if(n.isRational()) return false;
     { Real significant;
       int  exponent;
-      splitReal(getReal(n), significant, exponent);
+      splitReal((Real)n, significant, exponent);
       return (exponent != 0);
     }
     break;
@@ -1474,4 +1474,4 @@ ExpressionImage expressionToImage(PixRectDevice &device, const Expression &expr,
   return result;
 }
 
-}; // amespace Expr
+}; // namespace Expr

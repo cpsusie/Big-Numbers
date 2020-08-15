@@ -28,7 +28,7 @@ double mypow(double x, double y) {
   default:
     if(x < 0) {
       if(y == floor(y)) {
-        const INT64 d = getInt64(y);
+        const INT64 d = (INT64)y;
         return isOdd(d) ? -pow(-x, y) : pow(-x, y);
       }
     }
@@ -39,7 +39,7 @@ double mypow(double x, double y) {
 double root(double x, double y) {
   if(x < 0) {
     if(y == floor(y)) {
-      const INT64 d = getInt64(y);
+      const INT64 d = (INT64)y;
       if(isOdd(d)) {
         return -pow(-x, 1.0 / y);
       }

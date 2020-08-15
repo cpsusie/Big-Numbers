@@ -57,20 +57,20 @@ FloatFields &FloatFields::setType(FloatType type) {
     switch(type) {
     case FT_FLOAT  :
       switch(oldType) {
-      case FT_DOUBLE  : *this = ::getFloat(getDouble());    break;
-      case FT_DOUBLE80: *this = ::getFloat(getDouble80());  break;
+      case FT_DOUBLE  : *this = (float)getDouble();    break;
+      case FT_DOUBLE80: *this = (float)getDouble80();  break;
       }
       break;
     case FT_DOUBLE  :
       switch(oldType) {
-      case FT_FLOAT   : *this = ::getDouble(getFloat());    break;
-      case FT_DOUBLE80: *this = ::getDouble(getDouble80()); break;
+      case FT_FLOAT   : *this = (double)getFloat();    break;
+      case FT_DOUBLE80: *this = (double)getDouble80(); break;
       }
       break;
     case FT_DOUBLE80:
       switch(oldType) {
-      case FT_FLOAT   : *this =   Double80(getFloat());     break;
-      case FT_DOUBLE  : *this =   Double80(getDouble());    break;
+      case FT_FLOAT   : *this = Double80(getFloat());     break;
+      case FT_DOUBLE  : *this = Double80(getDouble());    break;
       }
       break;
     }

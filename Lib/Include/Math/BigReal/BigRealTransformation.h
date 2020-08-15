@@ -30,7 +30,7 @@ class BigRealSize2D : public Size2DTemplate<BigReal> {
     return *this;
   }
   inline operator RealSize2D() const {
-    return RealSize2D(getReal(cx), getReal(cy));
+    return RealSize2D((Real)cx, (Real)cy);
   }
 };
 
@@ -61,7 +61,7 @@ public:
     return *this;
   }
   inline operator RealPoint2D() const {
-    return RealPoint2D(getReal(x), getReal(y));
+    return RealPoint2D((Real)x, (Real)y);
   }
 };
 
@@ -186,7 +186,7 @@ public:
     return *this;
   }
   inline operator RealRectangle2D() const {
-    return RealRectangle2D(getReal(getX()), getReal(getY()), getReal(getWidth()), getReal(getHeight()));
+    return RealRectangle2D((Real)getX(), (Real)getY(), (Real)getWidth(), (Real)getHeight());
   }
 
   inline size_t getNeededDecimalDigits(size_t digits) const {

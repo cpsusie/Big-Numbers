@@ -191,7 +191,7 @@ void testAPCPow(TestStatistic &stat) {
   const BigInt        minY( -50, pool);
   const BigInt        maxY(  50, pool);
   const int           lengthStep     = 5;
-  const unsigned int  totalTestCount = (unsigned int)(biasCount * ceil((double)(MAXSCALE - MINSCALE)/SCALESTEP) * ceil((double)(MAXLENGTH-4)/lengthStep) * getInt(maxY-minY));
+  const unsigned int  totalTestCount = (unsigned int)(biasCount * ceil((double)(MAXSCALE - MINSCALE)/SCALESTEP) * ceil((double)(MAXLENGTH-4)/lengthStep) * (int)(maxY-minY));
   size_t              maxLength      = 0;
   size_t              sumLength      = 0;
 

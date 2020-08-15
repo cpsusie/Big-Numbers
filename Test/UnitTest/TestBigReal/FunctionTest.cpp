@@ -115,17 +115,17 @@ void OperatorTest2ArgND64D80Pool::specialTest(int threadId, DigitPool *pool) {
 // We will loose precsion when first converted to double and then subtracted. In fact the relative error can become very big
 // when 2 almost equal floating-point numbers are subtracted!!. So we have to accept an error > 1e-12 now and then
 
-  double x64 = getDouble(x);
-  double y64 = getDouble(y);
+  double x64   = (double)x;
+  double y64   = (double)y;
 
-  BigReal x1 = x64;
-  BigReal y1 = y64;
+  BigReal x1   = x64;
+  BigReal y1   = y64;
 
-  double x1_64 = getDouble(x1);
-  double y1_64 = getDouble(y1);
+  double x1_64 = (double)x1;
+  double y1_64 = (double)y1;
 
-  bool xeq = x1_64 == x64;
-  bool yeq = y1_64 == y64;
+  bool xeq     = x1_64 == x64;
+  bool yeq     = y1_64 == y64;
 
   const FullFormatBigReal maxTolerance   = e(pool->_1(),-MAXDIGITS-6);
   TestStatistic           stat(threadId, m_functionName, pool, XYF, MAXDIGITS, maxTolerance);
@@ -467,8 +467,8 @@ void testIntSum(TestStatistic &stat) { // tester BigInt sum
       stat.printLoopMessage(_T("i:%10u"), i);
     }
     const BigInt  X(x64, pool), Y(y64, pool), Za = X + Y, Zb = sum(X,Y);
-    const _int128 Z128a = getInt128(Za);
-    const _int128 Z128b = getInt128(Zb);
+    const _int128 Z128a = (_int128)Za;
+    const _int128 Z128b = (_int128)Zb;
     if((Z128a != z128) || (Z128b != z128)) {
       ERRLOG << _T("Error in int sum")       << endl
              << _T("X            :") << X    << endl
@@ -495,8 +495,8 @@ void testIntDif(TestStatistic &stat) { // tester BigInt dif
       stat.printLoopMessage(_T("i:%10u"), i);
     }
     const BigInt  X(x64, pool), Y(y64, pool), Za = X - Y, Zb = dif(X,Y);
-    const _int128 Z128a = getInt128(Za);
-    const _int128 Z128b = getInt128(Zb);
+    const _int128 Z128a = (_int128)Za;
+    const _int128 Z128b = (_int128)Zb;
     if((Z128a != z128) || (Z128b != z128)) {
       ERRLOG << _T("Error in int dif")       << endl
              << _T("X            :") << X    << endl
@@ -526,8 +526,8 @@ void testIntProd(TestStatistic &stat) { // tester BigInt prod
     }
 
     const BigInt  X(x64, pool), Y(y64, pool), Za = X * Y, Zb = prod(X,Y);
-    const _int128 Z128a = getInt128(Za);
-    const _int128 Z128b = getInt128(Zb);
+    const _int128 Z128a = (_int128)Za;
+    const _int128 Z128b = (_int128)Zb;
     if((Z128a != z128) || (Z128b != z128)) {
       ERRLOG << _T("Error in int prod")       << endl
              << _T("X             :") << X    << endl
@@ -556,8 +556,8 @@ void testIntQuot(TestStatistic &stat) { // tester BigInt quot
     }
 
     const BigInt  X(x64, pool), Y(y64, pool), Za = X / Y, Zb = quot(X,Y);
-    const __int64 Z64a = getInt64(Za);
-    const __int64 Z64b = getInt64(Zb);
+    const __int64 Z64a = (__int64)Za;
+    const __int64 Z64b = (__int64)Zb;
     if((Z64a != z64) || (Z64b != z64)) {
       ERRLOG << _T("Error in int prod")       << endl
              << _T("X             :") << X    << endl
@@ -586,8 +586,8 @@ void testIntRem(TestStatistic &stat) { // tester BigInt rem
     }
 
     const BigInt  X(x64, pool), Y(y64, pool), Za = X % Y, Zb = rem(X,Y);
-    const __int64 Z64a = getInt64(Za);
-    const __int64 Z64b = getInt64(Zb);
+    const __int64 Z64a = (__int64)Za;
+    const __int64 Z64b = (__int64)Zb;
     if((Z64a != z64) || (Z64b != z64)) {
       ERRLOG << _T("Error in int rem")       << endl
              << _T("X            :") << X    << endl
@@ -614,7 +614,7 @@ void testMultiply2(TestStatistic &stat) {
     if(stat.isTimeToPrint()) {
       stat.printLoopMessage(_T("i:%10u"), i);
     }
-    verify(x128 == getUint128(X));
+    verify(x128 == (_uint128)X);
   }
   stat.setEndMessageToOk();
 }

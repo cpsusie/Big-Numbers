@@ -185,11 +185,11 @@ void MBRealCalculator::prepareMaps(const RealRectangleTransformation &tr) { // s
   s_ytr = &tr.getYTransformation();
   const RealInterval &xInterval = s_xtr->getToInterval();
   const RealInterval &yInterval = s_ytr->getToInterval();
-  const int xFrom = getInt(xInterval.getFrom());
-  const int xTo   = getInt(xInterval.getTo());
+  const int xFrom = (int)xInterval.getFrom();
+  const int xTo   = (int)xInterval.getTo();
   const int xLen  = xTo - xFrom;
-  const int yFrom = getInt(yInterval.getFrom());
-  const int yTo   = getInt(yInterval.getTo());
+  const int yFrom = (int)yInterval.getFrom();
+  const int yTo   = (int)yInterval.getTo();
   const int yLen  = yTo - yFrom;
   s_xValue = new Real[xLen]; TRACE_NEW(s_xValue);
   s_yValue = new Real[yLen]; TRACE_NEW(s_yValue);

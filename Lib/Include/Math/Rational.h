@@ -1,9 +1,7 @@
 #pragma once
 
 #include <CommonHashFunctions.h>
-#include "Real.h"
-
-class Double80;
+#include "Double80.h"
 
 class Rational {
 private:
@@ -42,6 +40,18 @@ public:
   explicit Rational(float           f  , UINT   maxND = _I16_MAX);
   explicit Rational(double          d  , UINT   maxND = _I32_MAX);
   explicit Rational(const Double80 &d80, UINT64 maxND = _I64_MAX);
+
+  inline explicit operator short()    const { return (short )operator __int64();  }
+  inline explicit operator USHORT()   const { return (USHORT)operator UINT64();   }
+  inline explicit operator int()      const { return (int   )operator __int64();  }
+  inline explicit operator UINT()     const { return (UINT  )operator UINT64();   }
+  inline explicit operator long()     const { return (long  )operator __int64();  }
+  inline explicit operator ULONG()    const { return (ULONG )operator UINT64();   }
+  inline explicit operator __int64()  const { return         m_num / m_den;       }
+  inline explicit operator UINT64()   const { return (UINT64)m_num / m_den;       }
+  inline explicit operator float()    const { return (float )operator Double80(); }
+  inline explicit operator double()   const { return (double)operator Double80(); }
+  inline explicit operator Double80() const { return Double80(m_num) / m_den;     }
 
   static INT64 safeSum( const TCHAR *method, int line, const INT64 &a, const INT64 &b);
   static INT64 safeDif( const TCHAR *method, int line, const INT64 &a, const INT64 &b);
@@ -218,25 +228,6 @@ inline bool     isUiInt(    const Rational &r) { return r.isInteger() && isUint(
 inline bool     isInt64(    const Rational &r) { return r.isInteger() && isInt64( r.getNumerator());          }
 // Return true, if isInteger() && isUint64(numerator)
 inline bool     isUint64(   const Rational &r) { return r.isInteger() && isUint64(r.getNumerator());          }
-inline INT64    getInt64(   const Rational &r) { return r.getNumerator() / r.getDenominator();                }
-inline UINT64   getUint64(  const Rational &r) { return (UINT64)r.getNumerator() / r.getDenominator();        }
-inline short    getShort(   const Rational &r) { return (short)getInt64(r);                                   }
-inline USHORT   getUshort(  const Rational &r) { return (USHORT)getUint64(r);                                 }
-inline int      getInt(     const Rational &r) { return (int)getInt64(r);                                     }
-inline UINT     getUint(    const Rational &r) { return (UINT)getUint64(r);                                   }
-inline long     getLong(    const Rational &r) { return getInt(r);                                            }
-inline ULONG    getUlong(   const Rational &r) { return getUint(r);                                           }
-inline float    getFloat(   const Rational &r) { return (float)((double)r.getNumerator()/r.getDenominator()); }
-inline double   getDouble(  const Rational &r) { return (double)r.getNumerator()/r.getDenominator();          }
-Double80        getDouble80(const Rational &r);
-
-inline Real     getReal(    const Rational &r) {
-#if defined(LONGDOUBLE)
-  return getDouble80(r);
-#else
-  return getDouble(r);
-#endif
-}
 
 inline int sign(const Rational &r) {
   return ::sign(r.getNumerator());

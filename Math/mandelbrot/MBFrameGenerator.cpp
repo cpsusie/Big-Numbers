@@ -17,7 +17,7 @@ MBFrameGenerator::MBFrameGenerator(CMandelbrotDlg *dlg, const String &dirName)
   m_frameIndex      = 0;
   BigRealInterval frameInterval(dp), zoomInterval(dp), unitInterval(dp);
   frameInterval     = RealInterval(0,m_totalFrameCount);
-  zoomInterval      = RealInterval(1,getReal(m_finalRect.getWidth())/getReal(m_startRect.getWidth()));
+  zoomInterval      = RealInterval(1,(Real)m_finalRect.getWidth()/(Real)m_startRect.getWidth());
   unitInterval      = IntInterval( 1,0);
   m_expTransform    = new ExpTransformation(frameInterval, zoomInterval, dp); TRACE_NEW(m_expTransform);
   m_linearTransform = new BigRealLinearTransformation(m_expTransform->getToInterval(), unitInterval,AUTOPRECISION,dp);
@@ -59,9 +59,9 @@ ExpTransformation::ExpTransformation(const BigRealInterval &from, const BigRealI
 }
 
 int MBFrameGenerator::findTotalFrameCount(const BigRealRectangle2D &startRect, const BigRealRectangle2D &finalRect) { // static
-  const Double80 l0 = getDouble80(startRect.getWidth());
-  const Double80 lf = getDouble80(finalRect.getWidth());
-  return getInt((log2(lf/l0) / log2(1.0 - ZOOMSTEP))) + 1;
+  const Double80 l0 = (Double80)startRect.getWidth();
+  const Double80 lf = (Double80)finalRect.getWidth();
+  return (int)((log2(lf/l0) / log2(1.0 - ZOOMSTEP))) + 1;
 }
 
 BigRealRectangle2D MBFrameGenerator::getInterpolatedRectangle() const {

@@ -65,12 +65,12 @@ Sieve::Sieve(const BigInt &base) : m_base(base) {
   for(Iterator<size_t> it = s_smallPrimeSet.getIterator(); it.hasNext(); ) {
     const UINT p = it.next();
     bp = p;
-    m_remainder[p] = getUint(m_base % bp);
+    m_remainder[p] = (UINT)(m_base % bp);
   }
 }
 
 bool Sieve::hasSmallFactor(const BigInt &n, int &factor) const {
-  const int diff = getInt(n - m_base);
+  const int diff = (int)(n - m_base);
   for(Iterator<size_t> it = s_smallPrimeSet.getIterator(); it.hasNext(); ) {
     int p = (int)it.next();
     int r;

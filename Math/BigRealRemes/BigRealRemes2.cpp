@@ -241,8 +241,8 @@ bool Remes::hasNextSolveState() const {
 
 // Return the N+2 extrema (incl. endpoints) of the Chebyshev polynomial of degree N+1, scaled to the x-interval [m_left;m_right], where N=M+K
 BigRealVector Remes::getDefaultInitialExtrema(const int M, const int K) {
-  const Real left  = getReal(m_left);
-  const Real right = getReal(m_right);
+  const Real left  = (Real)m_left;
+  const Real right = (Real)m_right;
   const Real a = (left + right)/2.0;
   const Real b = (left - right)/2.0;
   const int    N = M + K;
@@ -303,7 +303,7 @@ CompactArray<DataPoint> InterpolationFunction::getInterpolationPoints(const BigR
 
   for(int i = 0; i <= dim-1; i++) {
     const Real x = (Real)i/(dim-1); // x = [0..1] Equally spaced
-    const Real y = getReal(finalExtr[i] - initialExtr[i]); // first and last y will be 0
+    const Real y = (Real)(finalExtr[i] - initialExtr[i]); // first and last y will be 0
     result.add(DataPoint(x,y));
   }
   return result;
@@ -312,12 +312,12 @@ CompactArray<DataPoint> InterpolationFunction::getInterpolationPoints(const BigR
 Real InterpolationFunction::operator()(const Real &x) {
   const int maxX = (int)m_initialExtr.getDimension()-1;
   if(x == 0 || x == maxX) {
-    return getReal(m_initialExtr[getInt(x)]);
+    return (Real)m_initialExtr[(int)x];
   } else if(x < 0 || x > maxX) {
     throwException(_T("InterpolationFunction::Invalid argument. x=%s. x must be in the interval [0..%d]"), toString(x).cstr(), maxX);
   }
 
-  return getReal(m_initialExtr[getInt(x)]) + CubicSpline::operator()(x/maxX);
+  return (Real)m_initialExtr[(int)x] + CubicSpline::operator()(x/maxX);
 }
 
 bool Remes::hasSavedExtrema(const int M, const int K) {
@@ -666,11 +666,11 @@ void Remes::printExtremum(const int index, const TCHAR *comment) {
 void Remes::printCoefficients() {
   int i;
   for(i = 0; i <= m_M; i++) {
-    verbose(FIRSTCOEFFICIENTLINE+i,format(_T("a[%2d] = %s     %s"), i,    FormatBigReal(m_coefficient[i],25,35).cstr(), FormatBigReal(getReal(m_coefficient[i])).cstr()));
+    verbose(FIRSTCOEFFICIENTLINE+i,format(_T("a[%2d] = %s     %s"), i,    FormatBigReal(m_coefficient[i],25,35).cstr(), FormatBigReal((Real)m_coefficient[i]).cstr()));
   }
   verbose(FIRSTCOEFFICIENTLINE+i,format(_T("b[ 0] = +1")));
   for(i = m_M + 1; i <= m_N; i++) {
-    verbose(FIRSTCOEFFICIENTLINE+i+1,format(_T("b[%2d] = %s     %s"), i-m_M,FormatBigReal(m_coefficient[i],25,35).cstr(), FormatBigReal(getReal(m_coefficient[i])).cstr()));
+    verbose(FIRSTCOEFFICIENTLINE+i+1,format(_T("b[%2d] = %s     %s"), i-m_M,FormatBigReal(m_coefficient[i],25,35).cstr(), FormatBigReal((Real)m_coefficient[i]).cstr()));
   }
   verbose(FIRSTCOEFFICIENTLINE+m_N+2,format(_T("Maxerror:%s"),FormatBigReal(m_maxError).cstr()));
 }
@@ -695,12 +695,13 @@ void Remes::generateCFunction(FILE *f, bool useDouble80) {
 
   _ftprintf(f, _T("static const %s coef[%d] = {\n"), type, m_N+1);
   for(int i = 0; i <= m_N; i++) {
-    Double80 d80 = getDouble80(m_coefficient[i]);
-    double   d64 = getDouble(  m_coefficient[i]);
+    Double80 d80 = (Double80)m_coefficient[i];
+    double   d64 = (double  )m_coefficient[i];
     unsigned char *byte = useDouble80 ? (unsigned char*)&d80 : (unsigned char*)&d64;
     _ftprintf(f, useDouble80 ? _T("  Double80::bytesToDouble80((unsigned char*)\"") : _T("  *((double*)\""));
-    for(int j = 0; j < typeSize; j++)
+    for(int j = 0; j < typeSize; j++) {
       _ftprintf(f, _T("\\x%02x"), *(byte++));
+    }
     _ftprintf(f, _T("%s // %s\n"), (i==m_N)?_T("\") "):_T("\"),"), toString(d80,17,24,ios::scientific).cstr());
   }
   _ftprintf( f, _T("};\n\n") );
@@ -715,13 +716,13 @@ void Remes::generateCFunction(FILE *f, bool useDouble80) {
       _ftprintf(f, _T("  for(i = %d; i >= 0; i--) sum1 = sum1 * x + coef[i];\n"), m_M - 1);
     if(m_N - 1 > m_M)
       _ftprintf(f, _T("  for(i = %d; i > %d; i--) sum2 = sum2 * x + coef[i];\n"), m_N - 1, m_M);
-    _ftprintf(f, _T("  return %s;\n"), useDouble80 ? _T("getDouble(sum1 / (sum2 * x + 1.0))") : _T("sum1 / (sum2 * x + 1.0)"));
+    _ftprintf(f, _T("  return %s;\n"), useDouble80 ? _T("(double)(sum1 / (sum2 * x + 1.0))") : _T("sum1 / (sum2 * x + 1.0)"));
   }
   else {
     _ftprintf(f, _T("  %s sum = coef[%d];\n"), type, m_N);
     if(m_N - 1 >= 0)
       _ftprintf(f, _T("  for(int i = %d; i >= 0; i--) sum = sum * x + coef[i];\n"), m_N - 1);
-    _ftprintf(f, _T("  return %s;\n"), useDouble80 ? _T("getDouble(sum)") : _T("sum"));
+    _ftprintf(f, _T("  return %s;\n"), useDouble80 ? _T("(double)sum") : _T("sum"));
   }
   _ftprintf(f, _T("}\n"));
 }
@@ -731,8 +732,8 @@ void Remes::generateJavaFunction(FILE *f) {
 
   _ftprintf(f, _T("    private static final double coef[] = {\n"));
   for(int i = 0; i <= m_N; i++) {
-    const double coef = getDouble(m_coefficient[i]);
-    const unsigned __int64 *c = (unsigned __int64*)&coef;
+    const double            coef = (double)m_coefficient[i];
+    const unsigned __int64 *c    = (unsigned __int64*)&coef;
     _ftprintf(f, _T("        Double.longBitsToDouble(0x%I64xL)"), *c);
     _ftprintf(f, _T("%s // %20.16le\n"), i == m_N ? _T(" ") : _T(","), coef);
   }
@@ -761,10 +762,10 @@ void Remes::generateHeader(FILE *f) {
   _ftprintf(f, _T("// (%d,%d)-Minimax-approximation of %s in [%le,%le] with max %serror = %21.15le\n")
    ,m_M,m_K
    ,m_targetFunction.getName().cstr()
-   ,getDouble(m_left)
-   ,getDouble(m_right)
+   ,(double)m_left
+   ,(double)m_right
    ,m_useRelativeError ? _T("relative ") : EMPTYSTRING
-   ,getDouble(m_maxError) );
+   ,(double)m_maxError);
 }
 
 // -----------------------------------------------------------------------------------

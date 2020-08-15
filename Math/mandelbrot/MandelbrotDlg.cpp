@@ -1123,11 +1123,11 @@ void CMandelbrotDlg::setDigits() {
 void CMandelbrotDlg::updateZoomFactor() {
   const BigRealRectangle2D r = m_bigRealTransform.getFromRectangle();
   if(isRetainAspectRatio()) {
-    const double z = getDouble(m_zoom1Rect.getWidth())/getDouble(r.getWidth());
+    const double z = (double)m_zoom1Rect.getWidth()/(double)r.getWidth();
     m_zoomFactor = Size2D(z,z);
   } else {
-    m_zoomFactor = Size2D(getDouble(m_zoom1Rect.getWidth()) /getDouble(r.getWidth())
-                         ,getDouble(m_zoom1Rect.getHeight())/getDouble(r.getHeight()));
+    m_zoomFactor = Size2D((double)m_zoom1Rect.getWidth() /(double)r.getWidth()
+                         ,(double)m_zoom1Rect.getHeight()/(double)r.getHeight());
   }
 }
 

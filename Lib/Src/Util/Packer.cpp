@@ -273,7 +273,7 @@ Packer &Packer::operator>>(UINT64 &n) {
 
 Packer &Packer::operator<<(float n) {
   if(isInt(n)) {
-    *this << getInt(n);
+    *this << (int)n;
   } else {
     addElement(E_FLOAT , &n, sizeof(n));
   }
@@ -304,9 +304,9 @@ Packer &Packer::operator>>(float &n) {
 
 Packer &Packer::operator<<(double n) {
   if(isFloat(n)) {
-    *this << getFloat(n);
+    *this << (float)n;
   } else if(isInt64(n)) {
-    *this << getInt64(n);
+    *this << (INT64)n;
   } else {
     addElement(E_DOUBLE, &n, sizeof(double));
   }

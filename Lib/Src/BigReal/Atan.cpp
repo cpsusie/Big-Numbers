@@ -95,7 +95,7 @@ BigReal atan(const BigReal &x, const BigReal &f, DigitPool *digitPool) {
                          ,ATANC.c13
                          ,pool
                        );
-    int j = (jn < _1) ? 0 : getInt(floor(jn,pool));
+    int j = (jn < _1) ? 0 : (int)floor(jn,pool);
 
     for(int i = 1; i <= j; i++) {
       a = APCquot(<,g,y,pool);
@@ -112,7 +112,7 @@ BigReal atan(const BigReal &x, const BigReal &f, DigitPool *digitPool) {
       BigReal       n = _1;
       BigReal       s =  y;
       const BigReal t = -prod(y,y,APCprod(<,ATANC.c24,u,pool),pool);
-      const UINT    l32 = getUint(l);
+      const UINT    l32 = (UINT)l;
       for(UINT i = 1; i <= l32; i++) {
         n += ATANC.c26;
         s = prod(s,t,w,pool);

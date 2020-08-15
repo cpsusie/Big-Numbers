@@ -105,23 +105,23 @@ Double80::Double80(double x) {
   }
 }
 
-float  getFloat(const Double80 &x) {
-  switch(_fpclass(x)) {
+Double80::operator float() const {
+  switch(_fpclass(*this)) {
   case _FPCLASS_PZ  :
   case _FPCLASS_NZ  : return 0.0f;
   case _FPCLASS_QNAN: return std::numeric_limits<float>::quiet_NaN();
   case _FPCLASS_SNAN: return std::numeric_limits<float>::signaling_NaN();
-  default           : return _D80ToFlt(x);
+  default           : return _D80ToFlt(*this);
   }
 }
 
-double getDouble(const Double80 &x) {
-  switch(_fpclass(x)) {
+Double80::operator double() const {
+  switch(_fpclass(*this)) {
   case _FPCLASS_PZ  :
   case _FPCLASS_NZ  : return 0.0;
   case _FPCLASS_QNAN: return std::numeric_limits<double>::quiet_NaN();
   case _FPCLASS_SNAN: return std::numeric_limits<double>::signaling_NaN();
-  default           : return _D80ToDbl(x);
+  default           : return _D80ToDbl(*this);
   }
 }
 
@@ -141,7 +141,7 @@ Double80 pow(const Double80 &x, const Double80 &y) {
       if(y == floor(y)) { // y is integer
         tmp = -tmp; // tmp > 0
         _D80pow(tmp, y); // tmp = |x|^y
-        const INT64 d = getInt64(y);
+        const INT64 d = (INT64)y;
         return isEven(d) ? tmp : -tmp; // sign of result depends on parity of y, neg for odd y, pos for even y
       }
       return std::numeric_limits<Double80>::quiet_NaN(); // negative^(non-integer) = nan
@@ -174,7 +174,7 @@ Double80 mypow(const Double80 &x, const Double80 &y) {
       if(y == floor(y)) { // y is integer
         tmp = -tmp; // tmp > 0
         _D80pow(tmp, y); // tmp = |x|^y
-        const INT64 d = getInt64(y);
+        const INT64 d = (INT64)y;
         return isEven(d) ? tmp : -tmp; // sign of result depends on parity of y, neg for odd y, pos for even y
       }
       return std::numeric_limits<Double80>::quiet_NaN(); // negative^(non-integer) = nan
@@ -190,7 +190,7 @@ Double80 mypow(const Double80 &x, const Double80 &y) {
 Double80 root(const Double80 &x, const Double80 &y) {
   if(x.isNegative()) {
     if(y == floor(y)) {
-      const INT64 d = getInt64(y);
+      const INT64 d = (INT64)y;
       if(isOdd(d)) {
         return -pow(-x, Double80::_1/y);
       }

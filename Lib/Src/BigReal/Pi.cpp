@@ -81,7 +81,7 @@ BigReal pi(const BigReal &f, DigitPool *digitPool) {
       } else {
 
         const BigInt l = floor(APCsum(>,APCprod(>,ln(-BigReal::getExpo10N(APCprod(<,f,PIC.c4,PIP),PIP),PIC.c5,PIP),PIC.c3,PIP),PIC.c6,PIP),PIP);
-        const int li = getInt(l);
+        const int li = (int)l;
         BigReal w = APCprod(<,APCprod(<,PIC.c7,f,PIP),cut(BigReal::pow2(-li),APC_DIGITS, PIP),PIP); // APCpow(<,c16,l));
         BigReal z = APCprod(<,PIC.c8,APCquot(<,f,l+_1,PIP),PIP);
         BigReal u = APCprod(<,PIC.c9,APCprod(<,z,APCpow(<,PIC.c10,l,PIP),PIP),PIP);

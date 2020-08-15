@@ -78,7 +78,7 @@ BigReal exp( const BigReal &x, const BigReal &f, DigitPool *digitPool) {
       BigReal jn = APCprod(>,EXPC.c8, sqrt(-BigReal::getExpo10N(g,pool),EXPC.c9,pool),pool) + kn + EXPC.c10;
       jn = (jn < _1) ? _0 : floor(jn,pool);
       kn = (kn < _1) ? _1  : (kn > jn) ? (jn + _1) : floor(kn,pool);
-      int j = getInt(jn),k = getInt(kn);
+      int j = (int)jn, k = (int)kn;
       BigReal h(pool),y(pool),d(pool),q(pool),l(pool);
       h = BigReal::pow2(-j);
       g = APCprod(<,g,APCprod(<,EXPC.c11,h,pool),pool);

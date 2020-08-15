@@ -16,7 +16,7 @@ double chiSquareIndependencyTest(const Matrix &m) {
   for(size_t r = 0; r < rows; r++) {
     double sum = 0;
     for(size_t c = 0; c < cols; c++) {
-      sum += getDouble(m(r, c));
+      sum += (double)m(r, c);
     }
     rowSum.add(sum);
     totalSum += sum;
@@ -24,7 +24,7 @@ double chiSquareIndependencyTest(const Matrix &m) {
   for(size_t c = 0; c < cols; c++) {
     double sum = 0;
     for(size_t r = 0; r < rows; r++) {
-      sum += getDouble(m(r, c));
+      sum += (double)m(r, c);
     }
     colSum.add(sum);
   }
@@ -32,8 +32,8 @@ double chiSquareIndependencyTest(const Matrix &m) {
   for(size_t r = 0; r < rows; r++) {
     for(size_t c = 0; c < cols; c++) {
       const double expected = (rowSum[r] * colSum[c]) / totalSum;
-      q += sqr(getDouble(m(r, c)) - expected) / expected;
+      q += sqr((double)m(r, c) - expected) / expected;
     }
   }
-  return 1.0 - getDouble(chiSquaredDistribution((double)(rows - 1)*(cols - 1), q));
+  return 1.0 - (double)chiSquaredDistribution((double)(rows - 1)*(cols - 1), q);
 }

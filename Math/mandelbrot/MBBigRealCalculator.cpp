@@ -60,11 +60,11 @@ void MBBigRealCalculator::prepareMaps(const BigRealRectangleTransformation &tr) 
   s_ytr = &tr.getYTransformation();
   const BigRealInterval &xInterval = s_xtr->getToInterval();
   const BigRealInterval &yInterval = s_ytr->getToInterval();
-  const int xFrom = getInt(xInterval.getFrom());
-  const int xTo   = getInt(xInterval.getTo());
+  const int xFrom = (int)xInterval.getFrom();
+  const int xTo   = (int)xInterval.getTo();
   const int xLen  = xTo - xFrom;
-  const int yFrom = getInt(yInterval.getFrom());
-  const int yTo   = getInt(yInterval.getTo());
+  const int yFrom = (int)yInterval.getFrom();
+  const int yTo   = (int)yInterval.getTo();
   const int yLen  = yTo - yFrom;
   s_xValue.setCapacity(xLen);
   s_yValue.setCapacity(yLen);

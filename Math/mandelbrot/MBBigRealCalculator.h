@@ -4,7 +4,7 @@
 #include "MBCalculator.h"
 
 inline CPoint toCPoint(const BigRealPoint2D &p) {
-  return CPoint(getInt(p.x), getInt(p.y));
+  return CPoint((int)p.x, (int)p.y);
 }
 
 inline BigRealPoint2D toBigRealPoint(const Point2D &p, DigitPool *digitPool) {
@@ -13,7 +13,7 @@ inline BigRealPoint2D toBigRealPoint(const Point2D &p, DigitPool *digitPool) {
 }
 
 inline CRect toCRect(const BigRealRectangle2D &r) {
-  return CRect(getInt(r.getX()),getInt(r.getY()),getInt(r.getX()+r.getWidth()),getInt(r.getY()+r.getHeight()));
+  return CRect((int)r.getX(),(int)r.getY(),(int)(r.getX()+r.getWidth()),(int)(r.getY()+r.getHeight()));
 }
 
 inline BigRealRectangle2D toBigRealRect(const Rectangle2D &r, DigitPool *digitPool) {
@@ -33,7 +33,7 @@ private:
   UINT               findCountFast(      const BigReal &X, const BigReal     &Y  , UINT maxCount);
   CellCountAccessor *followBlackEdge(    const CPoint  &p, CellCountAccessor *cca, UINT maxCount);
   inline CPoint      toCPoint(           const BigReal &x, const BigReal     &y) const {
-    return CPoint(getInt(s_xtr->forwardTransform(x)), getInt(s_ytr->forwardTransform(y)));
+    return CPoint((int)s_xtr->forwardTransform(x), (int)s_ytr->forwardTransform(y));
   }
   inline DigitPool *getDigitPool() const {
     return m_digitPool;

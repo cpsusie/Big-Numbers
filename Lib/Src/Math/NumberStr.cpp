@@ -4,9 +4,9 @@
 
 static inline void setNumberFloatValue(Number &n, const Double80 &v) {
   if(isFloat(v)) {
-    n = getFloat(v);
+    n = (float)v;
   } else if(isDouble(v)) {
-    n = getDouble(v);
+    n = (double)v;
   } else {
     n = v;
   }
@@ -50,10 +50,10 @@ Number _wcstonum_l(const wchar_t *s, wchar_t **end, _locale_t locale) {
 
 char *numtoa(char *dst, const Number &n) {
   switch(n.getType()) {
-  case NUMBERTYPE_FLOAT   : return flttoa(dst, getFloat(   n));
-  case NUMBERTYPE_DOUBLE  : return dbltoa(dst, getDouble(  n));
-  case NUMBERTYPE_DOUBLE80: return d80toa(dst, getDouble80(n));
-  case NUMBERTYPE_RATIONAL: return rattoa(dst, getRational(n), 10);
+  case NUMBERTYPE_FLOAT   : return flttoa(dst, (float   )n);
+  case NUMBERTYPE_DOUBLE  : return dbltoa(dst, (double  )n);
+  case NUMBERTYPE_DOUBLE80: return d80toa(dst, (Double80)n);
+  case NUMBERTYPE_RATIONAL: return rattoa(dst, (Rational)n, 10);
   default                 : n.throwUnknownTypeException(__TFUNCTION__);
   }
   return dst;
@@ -61,10 +61,10 @@ char *numtoa(char *dst, const Number &n) {
 
 wchar_t *numtow(wchar_t *dst, const Number &n) {
   switch(n.getType()) {
-  case NUMBERTYPE_FLOAT   : return flttow(dst, getFloat(   n));
-  case NUMBERTYPE_DOUBLE  : return dbltow(dst, getDouble(  n));
-  case NUMBERTYPE_DOUBLE80: return d80tow(dst, getDouble80(n));
-  case NUMBERTYPE_RATIONAL: return rattow(dst, getRational(n), 10);
+  case NUMBERTYPE_FLOAT   : return flttow(dst, (float   )n);
+  case NUMBERTYPE_DOUBLE  : return dbltow(dst, (double  )n);
+  case NUMBERTYPE_DOUBLE80: return d80tow(dst, (Double80)n);
+  case NUMBERTYPE_RATIONAL: return rattow(dst, (Rational)n, 10);
   default                 : n.throwUnknownTypeException(__TFUNCTION__);
   }
   return dst;

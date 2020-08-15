@@ -563,7 +563,7 @@ void Remes::getErrorPlot(RationalFunction &approx, UINT n, Point2DArray &pa, Dig
   if(progressPct) *progressPct = 0;
   UINT count = 0;
   for(BigReal x(domain.getFrom(), digitPool); x <= maxx; x += step) {
-    pa.add(Point2D(getDouble(x), getDouble(errorFunction(approx, x))));
+    pa.add(Point2D((double)x, (double)errorFunction(approx, x)));
     if(progressPct) *progressPct = (float)((double)(++count) / n * 100.0);
   }
 }

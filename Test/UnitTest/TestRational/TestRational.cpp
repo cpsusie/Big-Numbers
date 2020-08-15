@@ -16,7 +16,7 @@ using namespace IStreamHelper;
 #define VERIFYOP(op, maxError) {                                                                     \
   const Rational rBinResult = (r1) op (r2);                                                          \
   const double   dBinResult = (d1) op (d2);                                                          \
-  const double   dFromR     = getDouble(rBinResult);                                                 \
+  const double   dFromR     = (double)rBinResult;                                                    \
   const double   error      = fabs(dFromR - dBinResult);                                             \
   if(error > maxError) {                                                                             \
     throwException(_T("%s %s %s = %s = %23.16le. %23.16le %s %23.16le = %23.16le. Error:%le > %le")  \
@@ -54,7 +54,7 @@ namespace TestRational {
 
     TEST_METHOD(RationalTestBasicOperations) {
       JavaRandom rnd;
-      rnd.randomize();
+//      rnd.randomize();
       try {
         //  double maxTotalError = 0;
         for(int i = 0; i < 100000; i++) {
@@ -71,8 +71,8 @@ namespace TestRational {
           const Rational r1(nm1, dn1);
           const Rational r2(nm2, dn2);
 
-          const double d1 = getDouble(r1);
-          const double d2 = getDouble(r2);
+          const double d1 = (double)r1;
+          const double d2 = (double)r2;
 
           const bool rgt = r1 >  r2, dgt = d1 >  d2;
           const bool rge = r1 >= r2, dge = d1 >= d2;
@@ -117,12 +117,12 @@ namespace TestRational {
           const int      expo = r1.isZero() ? randInt(1, 4, rnd) : randInt(-3, 3, rnd);
           const Rational r1Pe = pow(r1, expo);
           const Real     d1Pe = mypow(d1, expo);
-          Real           error = fabs(getReal(r1Pe) - d1Pe);
+          Real           error = fabs((Real)r1Pe - d1Pe);
           if(d1Pe != 0) error /= d1Pe;
           verify(error < 1e-15);
 
           const Rational rfd(d1);
-          const double   dfr = getDouble(rfd);
+          const double   dfr = (double)rfd;
           error = fabs(dfr - d1);
           verify(error < 1e-13);
         } // for(...)
@@ -149,12 +149,12 @@ namespace TestRational {
           try {
             const Rational x     = randRational(low, high, 128, rnd);
             const Rational y     = randRational(low, high, 128, rnd);
-            const Double80 x80   = getDouble80(x);
-            const Double80 y80   = getDouble80(y);
+            const Double80 x80   = (Double80)x;
+            const Double80 y80   = (Double80)y;
             const Double80 mod80 = fmod(x80, y80);
-            const INT64    q     = getInt64(x / y);
+            const INT64    q     = (INT64)(x / y);
             const Rational rem   = x % y;
-            const Double80 rem80 = getDouble80(rem);
+            const Double80 rem80 = (Double80)rem;
 
             const Double80 relError = getRelativeError(rem80, mod80);
             if(relError > detectedMaxRelError) {
@@ -293,9 +293,9 @@ namespace TestRational {
       verify(isPInfinity(r)  == fisPInf);
       verify(isNInfinity(r)  == fisNInf);
 
-      const float    f1  = getFloat(   r);
-      const double   d1  = getDouble(  r);
-      const Double80 d80 = getDouble80(r);
+      const float    f1  = (float)   r;
+      const double   d1  = (double)  r;
+      const Double80 d80 = (Double80)r;
 
       verify(isnan(      f1 ) == fisNan );
       verify(isinf(      f1 ) == fisInf );
@@ -360,7 +360,7 @@ namespace TestRational {
         for(int i = 0; i < 1000; i++) {
           Rational r = randRational(maxden, rnd);
           verify((r >= 0) && (r < 1));
-          debugLog(_T("%23.15le\n"), getDouble(r));
+          debugLog(_T("%23.15le\n"), (double)r);
         }
       }
     }
@@ -377,7 +377,7 @@ namespace TestRational {
         for(int i = 0; i < 1000; i++) {
           Rational r = randRational(low, high, rnd);
           verify((r >= low) && (r <= high));
-          debugLog(_T("%23.15le\n"), getDouble(r));
+          debugLog(_T("%23.15le\n"), (double)r);
         }
       }
     }
@@ -524,8 +524,8 @@ namespace TestRational {
         const Rational e(2,3);
         Rational p;
         verify(Rational::isRationalPow(b,e,&p));
-        const double pd = pow(getDouble(b),getDouble(e));
-        const double error = pd - getDouble(p);
+        const double pd = pow((double)b,(double)e);
+        const double error = pd - (double)p;
         const double relError = fabs(error / pd);
         verify(relError < 1e-15);
       } catch(Exception e) {

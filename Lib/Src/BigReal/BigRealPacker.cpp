@@ -5,10 +5,10 @@
 // in Pow2Cache::load/save and will cause deadlock if used
 Packer &operator<<(Packer &p, const BigReal &v) {
   if(!isnormal(v)) {
-    const float f = getFloat(v); // only non-normal floats can be used here (easy way of handling 0, nan, +/-inf)
+    const float f = (float)v; // only non-normal floats can be used here (easy way of handling 0, nan, +/-inf)
     p << f;
   } else if(isInt64(v)) {
-    p << getInt64(v);
+    p << (INT64)v;
   } else {
     p << BCDArray(toString((FullFormatBigReal&)v));
   }

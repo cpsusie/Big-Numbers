@@ -63,10 +63,10 @@ BYTE regSizeToByteCount(RegSize regSize);
 #define MAX_XMMREGISTER_INDEX  7
 typedef int                    MovMaxImmType;
 #else // IS64BIT
-#define INDEX_REGSIZE         REGSIZE_QWORD
-#define MAX_GPREGISTER_INDEX  15
-#define MAX_XMMREGISTER_INDEX 15
-typedef INT64                 MovMaxImmType;
+#define INDEX_REGSIZE          REGSIZE_QWORD
+#define MAX_GPREGISTER_INDEX   15
+#define MAX_XMMREGISTER_INDEX  15
+typedef INT64                  MovMaxImmType;
 
 typedef enum {
   REX_DONTCARE
@@ -77,21 +77,31 @@ typedef enum {
 
 class Register {
 private:
-  const BYTE m_index; // = [0..15]
-  Register &operator=(const Register &); // not implemented, and not accessible.
-                                         // All register are singletons
+  const RegType m_type;
+  const RegSize m_size;
+  const BYTE    m_index; // = [0..15]
+  Register &operator=(const Register &); // Not implemented, and not accessible.
+  Register(           const Register &); // All register are singletons
   DECLAREDEBUGSTR;
 public:
 
   static const RegSizeSet s_wordRegCapacity, s_dwordRegCapacity, s_qwordRegCapacity;
 
-  inline Register(BYTE index) : m_index(index) {
+  inline Register(RegType type, RegSize size, BYTE index)
+    : m_type(type)
+    , m_size(size)
+    , m_index(index)
+  {
   }
   inline UINT getIndex() const {
     return m_index;
   }
-  virtual RegType getType()  const = 0;
-  virtual RegSize getSize()  const = 0;
+  inline RegType getType() const {
+    return m_type;
+  }
+  inline RegSize getSize() const {
+    return m_size;
+  }
   inline bool isGPR() const {
     return getType() == REGTYPE_GPR;
   }
@@ -185,30 +195,23 @@ int registerCmp(const Register &reg1, const Register &reg2);
 
 class GPRegister : public Register {
 private:
-  const RegSize      m_size; // = REGSIZE_BYTE, _WORD, _DWORD, _QWORD
 #if defined(IS64BIT)
   const RexByteUsage m_rexByteUsage;
 #endif // IS64BIT
 public:
   inline GPRegister(RegSize size
-                   ,BYTE index
+                   ,BYTE    index
 #if defined(IS64BIT)
                    ,RexByteUsage rexByteUsage=REX_DONTCARE
 #endif // IS64BIT
                    )
-    : Register(index)
-    , m_size(size)
+    : Register(REGTYPE_GPR,size,index)
 #if defined(IS64BIT)
     , m_rexByteUsage(rexByteUsage)
 #endif // IS64BIT
   {
+    assert((size == REGSIZE_BYTE) || (size == REGSIZE_WORD) || (size == REGSIZE_DWORD) || (size == REGSIZE_QWORD));
     SETDEBUGSTR();
-  }
-  RegType getType()  const {
-    return REGTYPE_GPR;
-  }
-  RegSize getSize()  const {
-    return m_size;
   }
 #if defined(IS64BIT)
   bool    isREXCompatible(bool rexBytePresent) const;
@@ -223,7 +226,7 @@ int registerCmp(const GPRegister &reg1, const GPRegister &reg2);
 
 class IndexRegister : public GPRegister {
 public:
-  inline IndexRegister(BYTE index)
+  explicit inline IndexRegister(BYTE index)
     : GPRegister(INDEX_REGSIZE,index
 #if defined(IS64BIT)
                 ,(INDEX_REGSIZE==REGSIZE_QWORD)?REX_REQUIRED:REX_DONTCARE
@@ -238,42 +241,24 @@ public:
 
 class FPURegister : public Register {
 public:
-  inline FPURegister(BYTE index) : Register(index) {
+  explicit inline FPURegister(BYTE index) : Register(REGTYPE_FPU,REGSIZE_TBYTE,index) {
     SETDEBUGSTR();
-  }
-  RegType getType()  const {
-    return REGTYPE_FPU;
-  }
-  RegSize getSize()  const {
-    return REGSIZE_TBYTE;
   }
   String getName() const;
 };
 
 class XMMRegister : public Register {
 public:
-  inline XMMRegister(BYTE index) : Register(index) {
+  explicit inline XMMRegister(BYTE index) : Register(REGTYPE_XMM,REGSIZE_XMMWORD,index) {
     SETDEBUGSTR();
-  }
-  RegType getType()  const {
-    return REGTYPE_XMM;
-  }
-  RegSize getSize()  const {
-    return REGSIZE_XMMWORD;
   }
   String getName() const;
 };
 
 class SegmentRegister : public Register {
 public:
-  inline SegmentRegister(BYTE index) : Register(index) {
+  explicit inline SegmentRegister(BYTE index) : Register(REGTYPE_SEG,REGSIZE_WORD,index) {
     SETDEBUGSTR();
-  }
-  RegType getType()  const {
-    return REGTYPE_SEG;
-  }
-  RegSize getSize()  const {
-    return REGSIZE_WORD;
   }
   String getName() const;
 };

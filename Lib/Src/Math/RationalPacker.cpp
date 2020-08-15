@@ -3,9 +3,9 @@
 
 Packer &operator<<(Packer &p, const Rational &x) {
   if(!isfinite(x)) {
-    p << getFloat(x);
+    p << (float)x;
   } else if(isInt64(x)) {
-    p << getInt64(x);
+    p << (__int64)x;
   } else {
     p.addElement(Packer::E_RATIONAL, NULL, 0) << x.getNumerator() << x.getDenominator();
   }

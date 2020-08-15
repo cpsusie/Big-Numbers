@@ -47,7 +47,7 @@ float getRelativeError32(float x, DigitPool *pool, size_t *length) {
   BigReal n(x, pool);
   VALIDATEBIG(n);
   if(length) *length = n.getLength();
-  const float f32 = getFloat(n);
+  const float f32    = (float)n;
   return fabs((f32-x)/x);
 }
 
@@ -55,7 +55,7 @@ double getRelativeError64(double x, DigitPool *pool, size_t *length) {
   BigReal n(x, pool);
   VALIDATEBIG(n);
   if(length)  *length = n.getLength();
-  const double d64    = getDouble(n);
+  const double d64    = (double)n;
   return fabs((d64-x)/x);
 }
 
@@ -63,8 +63,8 @@ double getRelativeError80(const Double80 &x, DigitPool *pool, size_t *length) {
   BigReal n(x, pool);
   VALIDATEBIG(n);
   if(length)    *length = n.getLength();
-  const Double80 d80    = getDouble80(n);
-  const double   error  = getDouble(fabs((d80-x)/x));
+  const Double80 d80    = (Double80)n;
+  const double   error  = (double)fabs((d80-x)/x);
   return error;
 }
 
@@ -72,7 +72,7 @@ double getRelativeError(const double &x, const BigReal &x0) {
   if(x0.isZero()) {
     return fabs(x);
   } else {
-    const double d0 = getDouble(x0);
+    const double d0 = (double)x0;
     return fabs((x-d0)/d0);
   }
 }
@@ -81,7 +81,7 @@ Double80 getRelativeError(const Double80 &x, const BigReal &x0) {
   if(x0.isZero()) {
     return fabs(x);
   } else {
-    const Double80 d0 = getDouble80(x0);
+    const Double80 d0 = (Double80)x0;
     return fabs((x-d0)/d0);
   }
 }

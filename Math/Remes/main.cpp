@@ -10,7 +10,7 @@
 #include "gamma.h"
 
 static Real targetfunc_gamma(const Real &x) {
-  return getDouble(gamma80(x+1.5));
+  return (Real)gamma80(x+1.5);
 }
 */
 static Real targetfunc_log(const Real &x) {

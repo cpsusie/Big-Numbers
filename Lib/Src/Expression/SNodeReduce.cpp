@@ -634,7 +634,7 @@ SNode SNode::reduceProduct() {
   getFactors(unreducedFactors);
 
   for(size_t i = 0; i < unreducedFactors.size(); i++) { // first remove all number factors, multiplied together in constantFactor
-    SNode f = unreducedFactors[i];
+    SNode  f = unreducedFactors[i];
     Number v;
     if(!f.isConstant(&v)) {
       nonConstantFactors *= f; // contains non-constant factors
@@ -643,7 +643,7 @@ SNode SNode::reduceProduct() {
     } else if(!v.isRational()) {
       constantFactors *= f;
     } else {
-      const Rational r = ::getRational(v);
+      const Rational r = (Rational)v;
       if(r == 0) { // the whole product is 0
         RETURNNODE( _0() );
       } else if(r != 1) { // No need to add 1 as a factor
@@ -684,7 +684,7 @@ SNode SNode::reduceProduct() {
               } else if(!v.isRational()) {
                 constantFactors *= f;
               } else {
-                const Rational r = ::getRational(v);
+                const Rational r = (Rational)v;
                 if(r == 0) {               // No need to go further. The product is 0
                   RETURNNODE( _0() );
                 } else if(r != 1) {        // No need to add 1 as a factor
@@ -727,7 +727,7 @@ FactorArray &SNode::getFactors(FactorArray &result, SNode exponent) {
     if(!isOne()) { // 1 should not be added
       const Number &v = getNumber();
       if(v.isRational()) {
-        const Rational r = ::getRational(v);
+        const Rational r = (Rational)v;
         if(::abs(r.getNumerator()) == 1) {
           result *= powerExp(SNV(sign(r.getNumerator()) * r.getDenominator()), (-exponent).reduceRealExp());
           break;
@@ -1027,7 +1027,7 @@ SNode SNode::reduceRationalPower(const Rational &base, const Rational &exponent)
   ENTERMETHOD2NUM(base, exponent);
 
   if(exponent.isInteger()) {
-    RETURNNODE( SNV(pow(base, getInt(exponent))) );
+    RETURNNODE( SNV(pow(base, (int)exponent)) );
   } else {
     const INT64 &ed = exponent.getDenominator();
     const INT64 &bn = base.getNumerator();

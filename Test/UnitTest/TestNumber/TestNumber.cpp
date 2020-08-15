@@ -37,7 +37,7 @@ static const StreamSize typePrecision[] = {
 #define VERIFYOP(op, maxError)                                        \
   nBinResult = (n1) op (n2);                                          \
   dBinResult = (d1) op (d2);                                          \
-  relError   = getDouble80(getRelativeError(nBinResult, dBinResult)); \
+  relError   = (Double80)getRelativeError(nBinResult, dBinResult);    \
   if(relError > maxError) {                                           \
     maxError = relError;                                              \
 /*    SHOWOPERROR(OUTPUT,op, maxError)  */                            \
@@ -211,8 +211,8 @@ namespace TestNumber {
           Double80 &maxErrorMul = MmaxErrorMul(n1.getType(), n2.getType());
           Double80 &maxErrorDiv = MmaxErrorDiv(n1.getType(), n2.getType());
 
-          const Double80 d1 = getDouble80(n1);
-          const Double80 d2 = getDouble80(n2);
+          const Double80 d1 = (Double80)n1;
+          const Double80 d2 = (Double80)n2;
 
           const bool ngt = n1 >  n2, dgt = d1 >  d2;
           const bool nge = n1 >= n2, dge = d1 >= d2;
@@ -257,14 +257,14 @@ namespace TestNumber {
           const int      expo = n1.isZero() ? randInt(0, 4) : randInt(-3, 3);
           const Number   n1Pe = pow(  n1, expo);
           const Double80 d1Pe = mypow(d1, expo);
-          Double80       nerror = fabs(getDouble80(n1Pe) - d1Pe);
+          Double80       nerror = fabs((Double80)n1Pe - d1Pe);
           if(d1Pe != 0) {
             nerror /= d1Pe;
           }
           verify(nerror < 1e-15);
 
           const Number   nfd(d1);
-          const Double80 dfn = getDouble80(nfd);
+          const Double80 dfn = (Double80)nfd;
           nerror = fabs(dfn - d1);
           verify(nerror < 1e-13);
         }
@@ -424,10 +424,10 @@ namespace TestNumber {
       verify(isPInfinity(n)  == fisPInf);
       verify(isNInfinity(n)  == fisNInf);
 
-      const float    f1  = getFloat(   n);
-      const double   d1  = getDouble(  n);
-      const Double80 d80 = getDouble80(n);
-      const Rational rat = getRational(n);
+      const float    f1  = (float)   n;
+      const double   d1  = (double)  n;
+      const Double80 d80 = (Double80)n;
+      const Rational rat = (Rational)n;
 
       verify(isnan(      f1 ) == fisNan );
       verify(isinf(      f1 ) == fisInf );
@@ -543,7 +543,7 @@ namespace TestNumber {
               const Number   n1result3 = pow(n1bpe, n3e); // = root((n1b^e)^3,e) (= n1b^3)
               bool nanResult = false;
               if(n1b.isZero() && (e<=0)) {
-                verify(isnan(n1bpe));
+                verify(isnan(n1bpe    ));
                 verify(isnan(n1result2));
                 verify(isnan(n1result3));
                 nanResult = true;
@@ -559,7 +559,7 @@ namespace TestNumber {
                   verify(-n1result3 == n1bcub);
                 }
               }
-              const Number n2bpe = mypow(getDouble80(n1b), e);
+              const Number n2bpe = mypow((Double80)n1b, e);
               if(nanResult) {
                 verify(!isfinite(n2bpe));
                 const Number n2result2 = pow(n2bpe, n2e);

@@ -10,7 +10,7 @@ bool ExpressionNode::reducesToRational(Rational *r) const {
     return false;
   }
   if(r != NULL) {
-    *r = ::getRational(v);
+    *r = (Rational)v;
   }
   return true;
 }

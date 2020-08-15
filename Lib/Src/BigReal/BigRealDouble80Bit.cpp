@@ -25,7 +25,7 @@ void BigReal::init(const Double80 &x) {
 bool isDouble80(const BigReal &v, Double80 *d80 /*=NULL*/) {
   if(!isnormal(v)) {
     if(d80) {
-      *d80 = getDouble80(v);
+      *d80 = (Double80)v;
     }
     return true;
   }
@@ -40,11 +40,12 @@ bool isDouble80(const BigReal &v, Double80 *d80 /*=NULL*/) {
   return ret;
 }
 
-Double80 getDouble80(const BigReal &x, bool validate) {
+BigReal::operator Double80() const {
   DEFINEMETHODNAME;
-  if(!isnormal(x)) {
-    return getNonNormalValue(_fpclass(x), Double80::_0);
+  if(!_isnormal()) {
+    return getNonNormalValue(_fpclass(*this), Double80::_0);
   }
+/*
   if(validate) {
     if(BigReal::compareAbs(x,BigReal::_dbl80_max) > 0) {
       throwBigRealGetIntegralTypeOverflowException(method, x, toString(BigReal::_dbl80_max));
@@ -53,7 +54,8 @@ Double80 getDouble80(const BigReal &x, bool validate) {
       throwBigRealGetIntegralTypeUnderflowException(method, x, toString(BigReal::_dbl80_min));
     }
   }
-  return x.getDouble80NoLimitCheck();
+*/
+  return getDouble80NoLimitCheck();
 }
 
 Double80 BigReal::getDouble80NoLimitCheck() const {

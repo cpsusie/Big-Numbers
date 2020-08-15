@@ -47,7 +47,7 @@ ZeroFunction::ZeroFunction(Expression &e) : m_e(e) {
 
 double ZeroFunction::y(double x) {
   if(m_x) *m_x = x;
-  return getDouble(m_e.evaluate());
+  return (double)m_e.evaluate();
 }
 
 static void usage() {
@@ -114,7 +114,7 @@ int _tmain(int argc, TCHAR **argv) {
       Vector result = newton(zf, X);
       _tprintf(_T("root:%-.16lg\n"), result[0]);
       if(listy) {
-        _tprintf(_T("f(x):%-.16lg\n"), zf.y(getDouble(result[0])));
+        _tprintf(_T("f(x):%-.16lg\n"), zf.y((double)result[0]));
       }
     } else {
       bool rootFound = false;
@@ -126,7 +126,7 @@ int _tmain(int argc, TCHAR **argv) {
           Vector result = newton(zf, X);
           _tprintf(_T("root:%18.12le\n"), result[0]);
           if(listy) {
-            _tprintf(_T("f(x):%18.12le\n"), zf.y(getDouble(result[0])));
+            _tprintf(_T("f(x):%18.12le\n"), zf.y((double)result[0]));
           }
           rootFound = true;
           break;

@@ -71,7 +71,7 @@ static void printPrimes(size_t lower, size_t upper) {
 }
 
 static void printFactors(size_t number) {
-  ULONG upper = getLong(sqrt(Double80(number))) + 1;
+  ULONG upper = (ULONG)sqrt(Double80(number)) + 1;
   BitSet64 primes(upper+1);
   size_t count = 0;
   for(size_t p = 2; p <= upper; p++) {
@@ -82,7 +82,7 @@ static void printFactors(size_t number) {
       while(number % p == 0) {
         _tprintf(_T("%I64u "), (UINT64)p);
         number /= p;
-        upper = getLong(sqrt(Double80(number))) + 1;
+        upper = (ULONG)sqrt(Double80(number)) + 1;
       }
       if(number == 1) {
         break;

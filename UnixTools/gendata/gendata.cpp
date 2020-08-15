@@ -8,7 +8,7 @@ static void printExpressionList(double x, Array<Expression> &expressionList) {
     if(v > 0) {
       _tprintf(_T(" "));
     }
-    _tprintf(_T("%.15le"), getDouble(e.evaluate()));
+    _tprintf(_T("%.15le"), (double)e.evaluate());
   }
   _tprintf(_T("\n"));
 }

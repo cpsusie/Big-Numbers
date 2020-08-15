@@ -70,7 +70,7 @@ ExpressionNode *NodeOperatorsStdForm::reciprocal(ExpressionNode *n) const {
   case NUMBER:
     { const Number &v = n->getNumber();
       if(v.isRational()) {
-        return numberExpr(n,::reciprocal(getRational(v)));
+        return numberExpr(n,::reciprocal((Rational)v));
       }
     }
     break;
@@ -175,7 +175,7 @@ ExpressionNode *NodeOperatorsStdForm::sqrt(ExpressionNode *n) const {
 
 ExpressionNode *NodeOperatorsStdForm::power(ExpressionNode *n1, ExpressionNode *n2) const {
   if(n1->isRational() && n2->isInteger()) {
-    return numberExpr(n1, pow(n1->getRational(), getInt(n2->getNumber())));
+    return numberExpr(n1, pow(n1->getRational(), (int)n2->getNumber()));
   }
   if(n1->isEulersConstant()) {
     if(n2->isZero()) {
@@ -192,7 +192,7 @@ ExpressionNode *NodeOperatorsStdForm::power(ExpressionNode *n1, ExpressionNode *
   if(n2->isNumber()) {
     const Number &e = n2->getNumber();
     if(e.isRational()) {
-      const Rational eR = getRational(e);
+      const Rational eR = (Rational)e;
       if(eR.isZero()) {
         return getOne(n1);
       } else if(eR == 1) {

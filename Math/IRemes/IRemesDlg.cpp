@@ -612,7 +612,7 @@ void CIRemesDlg::OnFileShowMaxErrors() {
     const Array<ExtremaVector> &v   = e.getValue();
     const int    x = key.getM();
     const int    y = key.getK();
-    const double z = fabs(getDouble(v[0].getE()));
+    const double z = fabs((double)v[0].getE());
     _ftprintf(f, _T("%2d %2d %lf\n"), x, y, log(z));
   }
   fclose(f);
@@ -824,7 +824,7 @@ void CIRemesDlg::handleRemesProperty(const Remes &r, int id, const void *oldValu
     }
     break;
   case MAXERROR           : // *BigReal
-    { const double maxError = getDouble(r.getMaxError(), false);
+    { const double maxError = (double)r.getMaxError();
       m_debugInfo.setMaxError(maxError);
       PostMessage(ID_MSG_MAXERROR_CHANGED, 0, 0);
     }

@@ -28,7 +28,7 @@ void BigReal::init(double x) {
 bool isDouble(const BigReal &v, double *dbl /*=NULL*/) {
   if(!isnormal(v)) {
     if(dbl) {
-      *dbl = getDouble(v);
+      *dbl = (double)v;
     }
     return true;
   }
@@ -43,11 +43,12 @@ bool isDouble(const BigReal &v, double *dbl /*=NULL*/) {
   return ret;
 }
 
-double getDouble(const BigReal &x, bool validate) {
+BigReal::operator double() const {
   DEFINEMETHODNAME;
-  if(!isnormal(x)) {
-    return getNonNormalValue(_fpclass(x), 0.0);
+  if(!_isnormal()) {
+    return getNonNormalValue(_fpclass(*this), 0.0);
   }
+/*
   if(validate) {
     if(BigReal::compareAbs(x,BigReal::_dbl_max) > 0) {
       throwBigRealGetIntegralTypeOverflowException(method, x, toString(BigReal::_dbl_max));
@@ -56,5 +57,6 @@ double getDouble(const BigReal &x, bool validate) {
       throwBigRealGetIntegralTypeUnderflowException(method, x, toString(BigReal::_dbl_min));
     }
   }
-  return x.getDoubleNoLimitCheck();
+*/
+  return getDoubleNoLimitCheck();
 }

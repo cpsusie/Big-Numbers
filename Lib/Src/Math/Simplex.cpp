@@ -275,7 +275,7 @@ SimplexResult Tableau::endPhase1() {
   for(int row = 1; row <= constraintCount; row++) {
     const int bv = m_table[row].m_basisVariable;
     if(bv >= getArtificialColumn(1)) {
-      trace(TRACE_WARNINGS,_T("endPhase1:Artificial variabel %s not eliminated. Value=%lg"), getVariableName(bv).cstr(),getDouble(getRightSide(row)));
+      trace(TRACE_WARNINGS,_T("endPhase1:Artificial variabel %s not eliminated. Value=%lg"), getVariableName(bv).cstr(),(double)getRightSide(row));
       traceTableau();
 
       if(getRightSide(row) == 0) {
@@ -317,16 +317,16 @@ void Tableau::pivot(size_t pivotRow, size_t pivotColumn, bool primalSimplex) {
       trace(_T("pivot(%2s,%2s). %s -> %s. Cost[%s]:%-15.10lg   Tab[%2s,%2s]=%-15.10lg   Minimum:%-15.10lg")
             ,FSZ(pivotRow),FSZ(pivotColumn)
             ,enteringVarName.cstr(),leavingVarName.cstr()
-            ,enteringVarName.cstr(),getDouble(getObjectFactor(pivotColumn))
-            ,FSZ(pivotRow),FSZ(pivotColumn),getDouble(factor)
-            ,getDouble(getObjectValue()));
+            ,enteringVarName.cstr(),(double)getObjectFactor(pivotColumn)
+            ,FSZ(pivotRow),FSZ(pivotColumn),(double)factor
+            ,(double)getObjectValue());
     } else {
       trace(_T("pivot(%2s,%2s). %s -> %s. %s=B[%2s]:%-15.10lg  Tab[%2s,%2s]=%-15.10lg   Minimum:%-15.10lg")
             ,FSZ(pivotRow),FSZ(pivotColumn)
             ,enteringVarName.cstr(),leavingVarName.cstr()
-            ,leavingVarName.cstr(),FSZ(pivotRow),getDouble(getRightSide(pivotRow))
-            ,FSZ(pivotRow),FSZ(pivotColumn),getDouble(factor)
-            ,getDouble(getObjectValue()));
+            ,leavingVarName.cstr(),FSZ(pivotRow),(double)getRightSide(pivotRow)
+            ,FSZ(pivotRow),FSZ(pivotColumn),(double)factor
+            ,(double)getObjectValue());
     }
   }
 
@@ -480,7 +480,7 @@ void Tableau::addConstraint(size_t xIndex, SimplexRelation relation, const Real 
   switch(relation) {
   case EQUALS     :
     if(currentValue == rightSide) {
-      trace(_T("addConstraint:No need to add constraint %s = %-16lg. %s already has the specified value."), varName.cstr(), getDouble(rightSide), varName.cstr());
+      trace(_T("addConstraint:No need to add constraint %s = %-16lg. %s already has the specified value."), varName.cstr(), (double)rightSide, varName.cstr());
       return;
     } else if(currentValue < rightSide) {
       relation = GREATERTHAN;
@@ -491,21 +491,21 @@ void Tableau::addConstraint(size_t xIndex, SimplexRelation relation, const Real 
 
   case LESSTHAN   :
     if(currentValue <= rightSide) {
-      trace(_T("addConstraint:No need to add constraint %s <= %-16lg. %s=%-16lg."), varName.cstr(), getDouble(rightSide), varName.cstr(), getDouble(currentValue));
+      trace(_T("addConstraint:No need to add constraint %s <= %-16lg. %s=%-16lg."), varName.cstr(), (double)rightSide, varName.cstr(), (double)currentValue);
       return;
     }
     break;
 
   case GREATERTHAN:
     if(currentValue >= rightSide) {
-      trace(_T("addConstraint:No need to add constraint %s >= %-16lg. %s=%-16lg."), varName.cstr(), getDouble(rightSide), varName.cstr(), getDouble(currentValue));
+      trace(_T("addConstraint:No need to add constraint %s >= %-16lg. %s=%-16lg."), varName.cstr(), (double)rightSide, varName.cstr(), (double)currentValue);
       return;
     }
     break;
   }
 
   if(isTracing(TRACE_ITERATIONS)) {
-    trace(_T("Add constraint %s %s %lg"), varName.cstr(), getRelationString(relation), getDouble(rightSide));
+    trace(_T("Add constraint %s %s %lg"), varName.cstr(), getRelationString(relation), (double)rightSide);
   }
 
   m_table.add(TableauRow(getMaxColumnCount()));
@@ -695,15 +695,15 @@ String Tableau::toString(int fieldSize, int decimals) const {
 
   result += format(_T("%-*s"), 17+fieldSize, _T("Orig. cost: "));
   for(int col = 1; col <= getXCount(); col++) {
-    result += format(matrixFormat, getDouble(m_costFactor[col]));
+    result += format(matrixFormat, (double)m_costFactor[col]);
   }
   result += NEWLINE;
   result += _T("ObjectValue:");
 
-  result += format(matrixFormat, getDouble(getObjectValue()));
+  result += format(matrixFormat, (double)getObjectValue());
   result += _T("    "); // filler instead of relation
   for(int col = 1; col <= width; col++) {
-    result += format(matrixFormat, getDouble(getObjectFactor(col)));
+    result += format(matrixFormat, (double)getObjectFactor(col));
   }
   result += NEWLINE;
   result += separatorLine;
@@ -712,10 +712,10 @@ String Tableau::toString(int fieldSize, int decimals) const {
   for(int r = 1; r <= constraintCount; r++ ) {
     const TableauRow &row = m_table[r];
     result += format(_T("%3d %-6s ="),r, getVariableName(row.m_basisVariable).cstr());
-    result += format(matrixFormat,getDouble(getRightSide(r)));
+    result += format(matrixFormat, (double)getRightSide(r));
     result += format(_T(" %-2s "), printOriginalRelation ? getRelationString(reverseRelation(row.m_relation)) : _T("="));
     for(int col = 1; col <= width; col++) {
-      result += format(matrixFormat,getDouble(row.m_a[col]));
+      result += format(matrixFormat, (double)row.m_a[col]);
     }
     result += NEWLINE;
   }
@@ -766,7 +766,7 @@ void Tableau::checkInvariant() const {
     const int            col     = v.m_index;
     const String         varName = v.getName();
     if(getObjectFactor(col) != 0) {
-      throwException(_T("%s is basic but objectFactor != 0 (=%le)"),varName.cstr(),getDouble(getObjectFactor(col)));
+      throwException(_T("%s is basic but objectFactor != 0 (=%le)"),varName.cstr(), (double)getObjectFactor(col));
     }
     int count = 0;
     for(int i = 1; i <= constraintCount; i++) {
@@ -910,7 +910,7 @@ String BasisVariable::getName() const {
 }
 
 String BasisVariable::toString() const {
-  return format(_T("%s = %-16.10lg Cost = %-.10lg"), getName().cstr(), getDouble(m_value), getDouble(m_costFactor));
+  return format(_T("%s = %-16.10lg Cost = %-.10lg"), getName().cstr(), (double)m_value, (double)m_costFactor);
 }
 
 static int basisVarCmp(const BasisVariable &v1, const BasisVariable &v2) {
@@ -935,6 +935,6 @@ String SimplexSolution::toString() const {
     result += format(_T("%s\n"),v.toString().cstr());
     sum += v.m_value * v.m_costFactor;
   }
-  result += format(_T("Minimum:%-15.10lg TestSum:%-.10lg Difference:%.10lg\n"),getDouble(m_totalCost),getDouble(sum), getDouble(m_totalCost - sum));
+  result += format(_T("Minimum:%-15.10lg TestSum:%-.10lg Difference:%.10lg\n"), (double)m_totalCost, (double)sum, (double)(m_totalCost - sum));
   return result;
 }

@@ -504,9 +504,9 @@ double DebugIsoSurface::evaluate(const Point3D &p) {
   *m_yp = p.y;
   *m_zp = p.z;
   if(m_reverseSign) {
-    return -getDouble(m_exprWrapper.evaluate());
+    return -(double)m_exprWrapper.evaluate();
   } else {
-    return getDouble(m_exprWrapper.evaluate());
+    return  (double)m_exprWrapper.evaluate();
   }
 }
 

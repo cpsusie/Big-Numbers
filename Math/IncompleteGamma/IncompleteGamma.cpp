@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "stdafx.h"
 #include <Math.h>
 #include <float.h>
 #include <Math/MathLib.h>
@@ -77,7 +78,7 @@ double findRoot(double x0, BigRealFunction &f) {
     ++x2;
     y2 = f(x2);
     if(y2.isZero()) {
-      return getDouble(x2);
+      return (double)x2;
     }
     if(sign(y2) == -sign1) {
       sign2 = -sign1;
@@ -100,7 +101,7 @@ double findRoot(double x0, BigRealFunction &f) {
     const BigReal xn = rDif(x1, y1 * A, DIGITS);
     const BigReal yn = f(xn);
     if(yn.isZero()) {
-      return getDouble(xn);
+      return (double)xn;
     }
     if(BigReal::compareAbs(yn,bestY) < 0) {
       bestX = xn; bestY = yn;
@@ -111,7 +112,7 @@ double findRoot(double x0, BigRealFunction &f) {
       x2 = xn; y2 = yn;
     }
   }
-  return getDouble(bestX);
+  return (double)bestX;
 }
 
 static double findLowerX(UINT df) {
@@ -202,17 +203,17 @@ int main(int argc, char **argv) {
   for(Real x = 0.01; x < 25; x += 0.05) {
 //    const Real c1 = chiSquaredDistribution(a,x);
 //    const Real ct = chiSquaredDistributionTaylor(a,x);
-//    printf("%le %le %le %le\n", getDouble(x), getDouble(c1), getDouble(ct), getDouble(c1-ct));
+//    printf("%le %le %le %le\n", (double)x, (double)c1, (double)ct, (double)(c1-ct));
 
 //    const Real lig1 = lowerIncGamma(a,x);
 //    const Real ligt = lowerIncGammaTaylor(a,x);
-//    printf("%le %le %le %le\n", getDouble(x), getDouble(lig1), getDouble(ligt), getDouble(lig1-ligt));
+//    printf("%le %le %le %le\n", (double)x, (double)lig1, (double)ligt, (double)(lig1-ligt));
 
 //    const Real chidens = chiSquaredDensity(a,x);
 //    const Real dfa     = dfdx(a,x,chiSquaredDistributionApprox);
 //    const Real df      = dfdx(a,x,chiSquaredDistribution);
 
-//    printf("%le %le %le %le\n", getDouble(x), getDouble(chidens), getDouble(dfa), getDouble(df));
+//    printf("%le %le %le %le\n", (double)x, (double)chidens, (double)dfa, (double)df);
   }
   return 0;
 }

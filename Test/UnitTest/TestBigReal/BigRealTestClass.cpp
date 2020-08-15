@@ -212,7 +212,7 @@ TimeUsageMethod::TimeUsageMethod(const TCHAR *method, double timeUsage) {
 }
 
 static int timeUsageMethodCmp(const TimeUsageMethod &t1, const TimeUsageMethod &t2) {
-  return getInt(dsign(t1.m_timeUsage - t2.m_timeUsage));
+  return (int)dsign(t1.m_timeUsage - t2.m_timeUsage);
 }
 
 void BigRealTestClass::measureQuot() {
@@ -622,7 +622,7 @@ void BigRealTestClass::testGetDouble() {
     tcout << _T("enter BigReal:");
     tcin >> x;
     if(x.isZero()) break;
-    double dx = getDouble(x);
+    double dx = (double)x;
     tcout.precision(17);
     tcout << dx << _T("\n");
     BigReal y(dx);

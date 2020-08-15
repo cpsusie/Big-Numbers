@@ -231,7 +231,7 @@ Double80 _wcstod80_l(const wchar_t *s, wchar_t **end, _locale_t locale) {
 
 // Assume x > 0
 static char *getDigitsStr(char *str, Double80 &x, int &e10) {
-  const UINT64 tmp  = getUint64(x);
+  const UINT64 tmp  = (UINT64)x;
   Double80     diff = x - tmp;          // diff >= 0
   if(diff.isZero()) {                   // diff == 0 => tmp == x => use ui64toa on tmp as result
     _ui64toa(tmp, str, 10);
@@ -243,7 +243,7 @@ static char *getDigitsStr(char *str, Double80 &x, int &e10) {
     int diffInt;
     do {
       diff *= 10;
-      diffInt = getInt(diff);
+      diffInt = (int)diff;
     } while(diff != diffInt);
     char fraction[10];
     return strcat(str, _itoa(diffInt,fraction,10));
@@ -309,7 +309,7 @@ template<typename CharType> CharType *_d80tostr(CharType *dst, const Double80 &x
   // Assertion: (m > 0) && (x = (negative?-1:1) * m)
   char         digits[30];
   int          expo10;
-  const UINT64 ui64    = getUint64(m);
+  const UINT64 ui64    = (UINT64)m;
   if(m == ui64) {
     _ui64toa(ui64, digits, 10);
     if(DBL80_DIG > (expo10 = (int)strlen(digits) - 1)) {
