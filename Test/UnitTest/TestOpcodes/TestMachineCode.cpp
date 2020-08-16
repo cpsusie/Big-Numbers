@@ -5,6 +5,8 @@
 #include <IntelCPU/ExecutableByteArray.h>
 #include <IntelCPU/Opcode.h>
 
+using namespace IntelCPU;
+
 #define TEST_MACHINECODE
 
 #if defined(TEST_MACHINECODE)

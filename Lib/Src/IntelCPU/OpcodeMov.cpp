@@ -1,5 +1,7 @@
 #include "pch.h"
 
+namespace IntelCPU {
+
 static inline bool isGPR0AndImmAddr(const InstructionOperand &op1, const InstructionOperand &op2) {
   return op1.isGPR0() && op2.isDisplaceOnly();
 }
@@ -51,3 +53,5 @@ InstructionBase OpcodeMov::operator()(const InstructionOperand &op1, const Instr
   throwInvalidOperandCombination(op1, op2);
   return __super::operator()(op1, op2); // should never come here
 }
+
+}; // namespace

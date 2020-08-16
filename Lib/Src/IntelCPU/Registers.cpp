@@ -1,5 +1,7 @@
 #include "pch.h"
 
+namespace IntelCPU {
+
 String toString(RegType regType) {
   switch(regType) {
   case REGTYPE_NONE: return _T("NONE");
@@ -352,3 +354,5 @@ const SegmentRegister SS(2);
 const SegmentRegister DS(3);
 const SegmentRegister FS(4);
 const SegmentRegister GS(5);
+
+}; // namespace

@@ -1,5 +1,7 @@
 #include "pch.h"
 
+namespace IntelCPU {
+
 #pragma warning(disable : 4073)
 #pragma init_seg(lib)
 
@@ -33,3 +35,5 @@ String InstructionBase::toString() const {
 InstructionBase StringPrefix::operator()(const StringInstruction &ins) const {
   return InstructionBuilder(*this).add(ins);
 }
+
+}; // namespace

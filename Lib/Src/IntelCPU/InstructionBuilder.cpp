@@ -1,5 +1,7 @@
 #include "pch.h"
 
+namespace IntelCPU {
+
 const RegSizeSet InstructionBuilder::s_sizeBitSet(REGSIZE_WORD, REGSIZE_DWORD, REGSIZE_QWORD, -1);
 
 static inline BYTE findDirectionMask(const OpcodeBase &opcode) {
@@ -339,3 +341,5 @@ InstructionBuilder &InstructionBuilder::addImmediateOperand(const InstructionOpe
   }
   return *this;
 }
+
+}; // namespace

@@ -1,5 +1,7 @@
 #include "pch.h"
 
+namespace IntelCPU {
+
 InstructionBase Opcode3Arg::operator()(const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3) const {
   isValidOperandCombination(op1,op2,op3,true);
   if(op3.getType() == IMMEDIATEVALUE) {
@@ -21,3 +23,5 @@ InstructionBase Opcode3Arg::operator()(const InstructionOperand &op1, const Inst
   throwInvalidOperandCombination(op1,op2,op3);
   return __super::operator()(op1,op2,op3);
 }
+
+}; // namespace

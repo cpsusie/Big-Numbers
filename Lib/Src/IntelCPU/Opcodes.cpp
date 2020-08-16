@@ -1,5 +1,7 @@
 #include "pch.h"
 
+namespace IntelCPU {
+
 #pragma warning(disable : 4073)
 #pragma init_seg(lib)
 
@@ -320,3 +322,5 @@ DEFNAME(Opcode2ArgPfxF2SD ,ADDSD  ,0x0F58 , OP1_REGONLY   );
 DEFNAME(Opcode2ArgPfxF2SD ,MULSD  ,0x0F59 , OP1_REGONLY   );
 DEFNAME(Opcode2ArgPfxF2SD ,SUBSD  ,0x0F5C , OP1_REGONLY   );
 DEFNAME(Opcode2ArgPfxF2SD ,DIVSD  ,0x0F5E , OP1_REGONLY   );
+
+}; // namespace

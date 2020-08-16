@@ -1,5 +1,7 @@
 #include "pch.h"
 
+namespace IntelCPU {
+
 // --------------------------------- OpcodeBase -----------------------------------
 
 #define _SWAP2(op) ((((op)&0xff)<< 8) | (((op)>> 8)&0xff ))
@@ -703,3 +705,5 @@ InstructionBase OpcodeBase::operator()(const InstructionOperand &op1, const Inst
                                      );
   return InstructionBuilder(*this);
 }
+
+}; // namespace

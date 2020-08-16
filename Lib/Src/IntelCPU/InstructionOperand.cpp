@@ -2,6 +2,8 @@
 #include <CommonHashFunctions.h>
 #include <MathUtil.h>
 
+namespace IntelCPU {
+
 String toString(OperandType type) {
   switch(type) {
   case REGISTER      : return _T("REGISTER"      );
@@ -382,3 +384,5 @@ int InstructionOperand::insOpCmp(const InstructionOperand &op1, const Instructio
   throwInvalidArgumentException(__TFUNCTION__, _T("op1.getType()=%s"), ::toString(op1.getType()).cstr());
   return 0;
 }
+
+}; // namespace

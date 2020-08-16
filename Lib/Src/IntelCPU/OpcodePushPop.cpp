@@ -1,5 +1,7 @@
 #include "pch.h"
 
+namespace IntelCPU {
+
 bool OpcodePushPop::isValidOperand(const InstructionOperand &op, bool throwOnError) const {
   switch(op.getType()) {
   case REGISTER      : return __super::isValidOperand( op, throwOnError);
@@ -19,3 +21,5 @@ InstructionBase OpcodePushPop::operator()(const InstructionOperand &op) const {
   throwUnknownOperandType(op,1);
   return InstructionBuilder(*this);
 }
+
+}; // namespace

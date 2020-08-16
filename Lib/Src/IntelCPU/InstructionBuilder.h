@@ -2,6 +2,8 @@
 
 #include "RexByte.h"
 
+namespace IntelCPU {
+
 // Encoding of various addressing modes is described here:
 // http://www.c-jump.com/CIS77/CPU/x86/index.html
 //
@@ -263,3 +265,5 @@ public:
 { if(throwOnError) throwException(_T("%s:%s"),getMnemonic().cstr(),format(__VA_ARGS__).cstr()); \
   return false;                                                                                 \
 }
+
+}; // namespace

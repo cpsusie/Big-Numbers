@@ -1,5 +1,7 @@
 #include "pch.h"
 
+namespace IntelCPU {
+
 InstructionBase Opcode2Arg::operator()(const InstructionOperand &op1, const InstructionOperand &op2) const {
   isValidOperandCombination(op1,op2,true);
   switch(op1.getType()) {
@@ -125,3 +127,5 @@ bool Opcode2ArgPfxF2SD::validateCompatibleSize(const Register &reg, const Instru
   }
   return __super::validateCompatibleSize(reg,op,throwOnError);
 }
+
+}; // namespace

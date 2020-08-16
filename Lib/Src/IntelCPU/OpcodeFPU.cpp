@@ -1,5 +1,7 @@
 #include "pch.h"
 
+namespace IntelCPU {
+
 // ---------------------------------- OpcodeFPUTransfer --------------------------------
 
 bool OpcodeFPUTransfer::isValidOperand(const InstructionOperand &op, bool throwOnError) const {
@@ -128,3 +130,5 @@ InstructionBase Opcode1ArgFNSTSW::operator()(const InstructionOperand &op) const
   }
   return __super::operator()(op);
 }
+
+}; // namespace

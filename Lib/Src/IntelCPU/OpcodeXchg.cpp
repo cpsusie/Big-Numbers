@@ -1,5 +1,7 @@
 #include "pch.h"
 
+namespace IntelCPU {
+
 static inline bool isEAXOrRAX(const Register &reg) {
   return reg.isGPR0() && Register::sizeContainsSrcSize(reg.getSize(),REGSIZE_DWORD);
 }
@@ -20,3 +22,5 @@ InstructionBase OpcodeXchg::operator()(const InstructionOperand &op1, const Inst
   }
   return __super::operator()(op1,op2);
 }
+
+}; // namespace

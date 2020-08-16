@@ -3,15 +3,19 @@
 #include <MyUtil.h>
 #include "FunctionCall.h"
 
-class IndexRegister;
-class OpcodeBase;
-class Opcode0Arg;
-class OpcodeCall;
-class InstructionBase;
-class StringPrefix;
-class StringInstruction;
+namespace IntelCPU {
+  class IndexRegister;
+  class OpcodeBase;
+  class Opcode0Arg;
+  class OpcodeCall;
+  class InstructionBase;
+  class StringPrefix;
+  class StringInstruction;
+};
 
 namespace Expr {
+
+using namespace IntelCPU;
 
 typedef int CodeLabel;
 class FPUState;

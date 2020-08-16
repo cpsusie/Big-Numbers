@@ -2,10 +2,14 @@
 
 #include <CompactHashMap.h>
 
-class OpcodeBase;
-class InstructionOperand;
+namespace IntelCPU {
+  class OpcodeBase;
+  class InstructionOperand;
+};
 
 namespace Expr {
+
+using namespace IntelCPU;
 
 typedef enum {
   _FLD       ,_FSTP      ,_FST       ,_FADD      ,_FMUL

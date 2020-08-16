@@ -1,5 +1,7 @@
 #include "pch.h"
 
+namespace IntelCPU {
+
 InstructionBase Opcode1Arg::operator()(const InstructionOperand &op) const {
   isValidOperand(op, true);
   switch(op.getType()) {
@@ -30,3 +32,5 @@ InstructionBase OpcodeIncDec::operator()(const InstructionOperand &op) const {
   return __super::operator()(op);
 }
 #endif // IS32BIT
+
+}; // namespace

@@ -1,5 +1,7 @@
 #include "pch.h"
 
+namespace IntelCPU {
+
 OpcodeShiftRot::OpcodeShiftRot(const String &mnemonic, BYTE extension)
   : Opcode2ArgMI8(mnemonic, 0xC0, extension)
   , m_clCode(     mnemonic, 0xD2, extension, ALL_GPR_ALLOWED | ALL_GPRPTR_ALLOWED | HAS_ALL_SIZEBITS)
@@ -61,3 +63,5 @@ InstructionBase OpcodeDoubleShift::operator()(const InstructionOperand &op1, con
   throwInvalidOperandCombination(op1,op2,op3);
   return __super::operator()(op1,op2,op3);
 }
+
+}; // namespace

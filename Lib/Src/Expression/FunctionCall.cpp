@@ -4,6 +4,8 @@
 
 namespace Expr {
 
+using namespace IntelCPU;
+
 void ValueAddressCalculation::setValueCount(size_t valueCount) {
   if(valueCount == 0) {
     m_esiOffset = 0;

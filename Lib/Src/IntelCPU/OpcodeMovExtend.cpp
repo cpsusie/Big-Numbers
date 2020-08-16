@@ -1,5 +1,7 @@
 #include "pch.h"
 
+namespace IntelCPU {
+
 bool OpcodeMovExtend::isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError) const {
   switch(op2.getSize()) {
   case REGSIZE_BYTE :
@@ -20,3 +22,5 @@ InstructionBase OpcodeMovExtend::operator()(const InstructionOperand &op1, const
   }
   return __super::operator()(op1,op2);
 }
+
+}; // namespace

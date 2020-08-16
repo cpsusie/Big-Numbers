@@ -15,6 +15,8 @@ inline bool isByte( UINT64 v) { return v == (BYTE)v;  }
 inline bool isWord( UINT64 v) { return v == (USHORT)v;}
 inline bool isDword(UINT64 v) { return v == (UINT)v;  }
 
+namespace IntelCPU {
+
 typedef RegSize OperandSize;
 
 typedef enum {
@@ -1516,3 +1518,5 @@ extern Opcode2ArgPfxF2SD ADDSD;
 extern Opcode2ArgPfxF2SD MULSD;
 extern Opcode2ArgPfxF2SD SUBSD;
 extern Opcode2ArgPfxF2SD DIVSD;
+
+}; // namespace

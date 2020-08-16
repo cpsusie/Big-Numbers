@@ -1,5 +1,7 @@
 #pragma once
 
+namespace IntelCPU {
+
 #if defined(IS32BIT)
 
 #define SETREXBITS(          bits     )
@@ -39,3 +41,5 @@
 #define QWORDTOREX(          size      ) (((size)==REGSIZE_QWORD)?(1<<REX_W):0)
 
 #endif // IS64BIT
+
+}; // namespace

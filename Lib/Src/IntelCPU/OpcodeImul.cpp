@@ -1,5 +1,7 @@
 #include "pch.h"
 
+namespace IntelCPU {
+
 bool OpcodeIMul::isValidOperandType(const InstructionOperand &op, BYTE index) const {
   validateOperandIndex(index);
   switch(index) {
@@ -25,3 +27,5 @@ InstructionBase OpcodeIMul::operator()(const InstructionOperand &op1, const Inst
 InstructionBase OpcodeIMul::operator()(const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3) const {
   return m_imul3ArgCode(op1,op2,op3);
 }
+
+}; // namespace

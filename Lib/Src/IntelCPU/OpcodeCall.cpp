@@ -1,5 +1,7 @@
 #include "pch.h"
 
+namespace IntelCPU {
+
 #if defined(IS32BIT)
 #define JMP_NEAR_ABSRM_FLAGS (REGTYPE_GPR_ALLOWED    | DWORDGPR_ALLOWED   | WORDGPR_ALLOWED | DWORDPTR_ALLOWED | WORDPTR_ALLOWED | HAS_WORDPREFIX)
 #define JMP_NEAR_IMM_FLAGS   (IMMEDIATEVALUE_ALLOWED | HAS_IMM_XBIT       | HAS_WORDPREFIX)
@@ -122,3 +124,5 @@ InstructionBase OpcodeCall::operator()(const InstructionOperand &op) const {
   throwUnknownOperandType(op,1);
   return __super::operator()(op);
 }
+
+}; // namespace
