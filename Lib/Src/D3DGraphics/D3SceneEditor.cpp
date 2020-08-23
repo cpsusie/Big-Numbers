@@ -43,7 +43,7 @@ D3Device *D3SceneEditor::getDevice() const {
 }
 
 CameraSet D3SceneEditor::getActiveCameraSet() const {
-  return SCENE.getCameraArray().getActiveCameraSet();
+  return SCENE.getActiveCameraSet();
 }
 
 CameraSet D3SceneEditor::getSelectedCameraSet() const {
@@ -86,7 +86,7 @@ void D3SceneEditor::close() {
   }
 }
 
-D3SceneEditor &D3SceneEditor::setEnabled(bool enabled, BYTE flags) {
+D3SceneEditor &D3SceneEditor::setEnabled(bool enabled, UINT flags) {
   if(isInitDone()) {
     flags &= ~SE_INITDONE;
     if(enabled) {
@@ -105,13 +105,23 @@ D3SceneEditor &D3SceneEditor::setEnabled(bool enabled, BYTE flags) {
   return *this;
 }
 
-D3SceneEditor &D3SceneEditor::pushStateFlags(bool enabled, BYTE flags) {
+D3SceneEditor &D3SceneEditor::pushStateFlags() {
   m_stateFlagsStack.push(m_stateFlags);
-  return setEnabled(enabled, flags);
+  return *this;
 }
 
 D3SceneEditor &D3SceneEditor::popStateFlags() {
-  return setEnabled(true, m_stateFlagsStack.pop());
+  const UINT top = m_stateFlagsStack.pop();
+  const UINT toEnable  = top & ~m_stateFlags; // bits in top and not in m_stateFlags; {top}\{m_stateFlags}
+  const UINT toDisable = m_stateFlags & ~top; // bits in m_stateFlags and not in top; {m_stateFlags}\{top}
+
+  if(toEnable != 0) {
+    setEnabled(true, toEnable);
+  }
+  if(toDisable != 0) {
+    setEnabled(false, toDisable);
+  }
+  return *this;
 }
 
 D3SceneEditor &D3SceneEditor::popAllStateFlags() {

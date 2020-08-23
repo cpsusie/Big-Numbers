@@ -71,110 +71,110 @@
     <ProjectGuid>{20C38850-59EE-46E3-AD91-7327685B83D2}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>Expression</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LDDebug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TraceMemLDDebug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LDRelease|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TraceMemLDDebug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -1087,22 +1087,22 @@
       <Message Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|x64'">Analyzing Expression Grammar</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Analyzing Expression Grammar</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">Analyzing Expression Grammar</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">ExpressionAction.cpp;ExpressionTables.cpp;ExpressionParser.h</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|Win32'">ExpressionAction.cpp;ExpressionTables.cpp;ExpressionParser.h</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='LDDebug|Win32'">ExpressionAction.cpp;ExpressionTables.cpp;ExpressionParser.h</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemLDDebug|Win32'">ExpressionAction.cpp;ExpressionTables.cpp;ExpressionParser.h</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='LDRelease|Win32'">ExpressionAction.cpp;ExpressionTables.cpp;ExpressionParser.h</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|Win32'">ExpressionAction.cpp;ExpressionTables.cpp;ExpressionParser.h</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">ExpressionAction.cpp;ExpressionTables.cpp;ExpressionParser.h</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|Win32'">ExpressionAction.cpp;ExpressionTables.cpp;ExpressionParser.h</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ExpressionAction.cpp;ExpressionTables.cpp;ExpressionParser.h</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">ExpressionAction.cpp;ExpressionTables.cpp;ExpressionParser.h</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">ExpressionAction.cpp;ExpressionTables.cpp;ExpressionParser.h</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemLDDebug|x64'">ExpressionAction.cpp;ExpressionTables.cpp;ExpressionParser.h</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">ExpressionAction.cpp;ExpressionTables.cpp;ExpressionParser.h</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|x64'">ExpressionAction.cpp;ExpressionTables.cpp;ExpressionParser.h</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">ExpressionAction.cpp;ExpressionTables.cpp;ExpressionParser.h</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">ExpressionAction.cpp;ExpressionTables.cpp;ExpressionParser.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">ExpressionAction.cpp;ExpressionTables.cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|Win32'">ExpressionAction.cpp;ExpressionTables.cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='LDDebug|Win32'">ExpressionAction.cpp;ExpressionTables.cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemLDDebug|Win32'">ExpressionAction.cpp;ExpressionTables.cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='LDRelease|Win32'">ExpressionAction.cpp;ExpressionTables.cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|Win32'">ExpressionAction.cpp;ExpressionTables.cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">ExpressionAction.cpp;ExpressionTables.cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|Win32'">ExpressionAction.cpp;ExpressionTables.cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ExpressionAction.cpp;ExpressionTables.cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">ExpressionAction.cpp;ExpressionTables.cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">ExpressionAction.cpp;ExpressionTables.cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemLDDebug|x64'">ExpressionAction.cpp;ExpressionTables.cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">ExpressionAction.cpp;ExpressionTables.cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|x64'">ExpressionAction.cpp;ExpressionTables.cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">ExpressionAction.cpp;ExpressionTables.cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">ExpressionAction.cpp;ExpressionTables.cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">c:\mytools2015\parsergen\lib\parsergencpp.par</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|Win32'">c:\mytools2015\parsergen\lib\parsergencpp.par</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='LDDebug|Win32'">c:\mytools2015\parsergen\lib\parsergencpp.par</AdditionalInputs>
@@ -1119,6 +1119,70 @@
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|x64'">c:\mytools2015\parsergen\lib\parsergencpp.par</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">c:\mytools2015\parsergen\lib\parsergencpp.par</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">c:\mytools2015\parsergen\lib\parsergencpp.par</AdditionalInputs>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='LDDebug|Win32'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='TraceMemLDDebug|Win32'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|Win32'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='LDRelease|Win32'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|Win32'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|Win32'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='TraceMemLDDebug|x64'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|x64'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">false</DeploymentContent>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </LinkObjects>
+      <OutputItemType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">ClCompile</OutputItemType>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='LDDebug|Win32'">
+      </LinkObjects>
+      <OutputItemType Condition="'$(Configuration)|$(Platform)'=='LDDebug|Win32'">ClCompile</OutputItemType>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='TraceMemLDDebug|Win32'">
+      </LinkObjects>
+      <OutputItemType Condition="'$(Configuration)|$(Platform)'=='TraceMemLDDebug|Win32'">ClCompile</OutputItemType>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|Win32'">
+      </LinkObjects>
+      <OutputItemType Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|Win32'">ClCompile</OutputItemType>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='LDRelease|Win32'">
+      </LinkObjects>
+      <OutputItemType Condition="'$(Configuration)|$(Platform)'=='LDRelease|Win32'">ClCompile</OutputItemType>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|Win32'">
+      </LinkObjects>
+      <OutputItemType Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|Win32'">ClCompile</OutputItemType>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </LinkObjects>
+      <OutputItemType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">ClCompile</OutputItemType>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|Win32'">
+      </LinkObjects>
+      <OutputItemType Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|Win32'">ClCompile</OutputItemType>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </LinkObjects>
+      <OutputItemType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ClCompile</OutputItemType>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">
+      </LinkObjects>
+      <OutputItemType Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">ClCompile</OutputItemType>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='TraceMemLDDebug|x64'">
+      </LinkObjects>
+      <OutputItemType Condition="'$(Configuration)|$(Platform)'=='TraceMemLDDebug|x64'">ClCompile</OutputItemType>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|x64'">
+      </LinkObjects>
+      <OutputItemType Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|x64'">ClCompile</OutputItemType>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">
+      </LinkObjects>
+      <OutputItemType Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">ClCompile</OutputItemType>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">
+      </LinkObjects>
+      <OutputItemType Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">ClCompile</OutputItemType>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </LinkObjects>
+      <OutputItemType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">ClCompile</OutputItemType>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">
+      </LinkObjects>
+      <OutputItemType Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">ClCompile</OutputItemType>
     </CustomBuild>
     <CustomBuild Include="ExpressionCallx64.asm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
@@ -1170,14 +1234,14 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|x64'">call masm64 /nologo /c /Zf /Fo$(IntDir)ExpressionCallx64.obj ExpressionCallx64.asm</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">call masm64 /nologo /c /Zf /Fo$(IntDir)ExpressionCallx64.obj ExpressionCallx64.asm</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">call masm64 /nologo /c /Zf /Fo$(IntDir)ExpressionCallx64.obj ExpressionCallx64.asm</Command>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">true</DeploymentContent>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">true</DeploymentContent>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='TraceMemLDDebug|x64'">true</DeploymentContent>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">true</DeploymentContent>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|x64'">true</DeploymentContent>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DeploymentContent>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='TraceMemLDDebug|x64'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='TraceMemLDRelease|x64'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">false</DeploymentContent>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>

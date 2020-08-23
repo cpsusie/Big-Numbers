@@ -2,7 +2,7 @@
 #include <D3DGraphics/D3Device.h>
 #include <D3DGraphics/D3Cube.h>
 #include <D3DGraphics/D3SceneObjectWireFrameBox.h>
-#include <D3DGraphics/Profile2D.h>
+#include <D3DGraphics/Profile3D.h>
 #include "GraphicObjects.h"
 
 static const Point2D smallProfileNoTop[] = {

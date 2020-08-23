@@ -220,12 +220,12 @@ public:
       return isSet(SE_INITDONE);
     }
     // flags is any combination of SE_*
-    D3SceneEditor &setEnabled(bool enabled, BYTE flags = SE_ALL);
+    D3SceneEditor &setEnabled(bool enabled, UINT flags = SE_ALL);
     inline bool isEnabled() const {
       return isSet(SE_ENABLED);
     }
 
-    D3SceneEditor &pushStateFlags(bool enabled = false, BYTE flags = SE_ALL);
+    D3SceneEditor &pushStateFlags();
     D3SceneEditor &popStateFlags();
     D3SceneEditor &popAllStateFlags();
     inline bool isFlagsStackEmpty() const {
@@ -282,7 +282,9 @@ public:
     inline const D3Ray &getPickedRay() const {
       return m_pickedRay;
     }
-
+    inline D3SceneObjectPoint &getCenterOfRotation() {
+      return m_centerOfRotation;
+    }
     // Assume hasCAM(). Point in window-coordinates (m_hwnd) of m_selectedCamera;
     D3SceneObjectVisual *getPickedVisual(const CPoint &point, long mask, D3Ray &ray, D3SceneEditorPickedInfo &info) const;
 

@@ -71,7 +71,7 @@ Real DescriptiveStatistics::findStandardError(const CompactRealArray &data) {
 
 Real DescriptiveStatistics::findSkewness(const CompactRealArray &data) {
   if(m_count < 3 || m_standardDeviation == 0) {
-    return _Nan._Double;
+    return std::numeric_limits<Real>::quiet_NaN();
   }
 
   Real factor = sqr((double)m_count) / ((m_count-1) * (m_count-2));
@@ -81,7 +81,7 @@ Real DescriptiveStatistics::findSkewness(const CompactRealArray &data) {
 
 Real DescriptiveStatistics::findKurtosis(const CompactRealArray &data) {
   if(m_count < 4 || m_standardDeviation == 0) {
-    return _Nan._Double;
+    return std::numeric_limits<Real>::quiet_NaN();
   }
 
   Real factor = sqr((double)m_count) * (m_count+1) / ((m_count-1) * (m_count-2) * (m_count-3));

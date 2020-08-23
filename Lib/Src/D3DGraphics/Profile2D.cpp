@@ -70,15 +70,6 @@ String ProfileCurve2D::toString() const {
 ProfilePolygon2D::ProfilePolygon2D() {
   m_closed = false;
 }
-/*
-ProfilePolygon2D::ProfilePolygon2D(const GlyphPolygon &src) {
-  m_start = src.m_start;
-  m_closed = true;
-  for(size_t i = 0; i < src.m_polygonCurveArray.size(); i++) {
-    addCurve(src.m_polygonCurveArray[i]);
-  }
-}
-*/
 
 Point2DArray ProfilePolygon2D::getAllPoints() const {
   Point2DArray result;
@@ -344,15 +335,6 @@ void Profile2D::apply(CurveOperator &op) const {
   }
 }
 
-/*
-
-LPDIRECT3DRMMESHBUILDER Profile2D::createSkeleton(C3D &d3) {
-  LPDIRECT3DRMMESHBUILDER meshBuilder = d3.createMeshBuilder(m_name);
-  apply(CurveMaker(meshBuilder));
-  return meshBuilder;
-}
-*/
-
 String Profile2D::toString() const {
   String result;
   for(size_t i = 0; i < m_polygonArray.size(); i++) {
@@ -360,16 +342,6 @@ String Profile2D::toString() const {
   }
   return result;
 }
-
-/*
-Profile2D::Profile2D(const String &name, const GlyphCurveData &src) {
-  m_name = name;
-  const Array< GlyphPolygon> &gpa = src.getPolygonArray();
-  for(int i = 0; i < gpa.size(); i++) {
-    addPolygon(gpa[i]);
-  }
-}
-*/
 
 void Profile2D::init() {
   setDefaultName();
@@ -391,19 +363,4 @@ VertexProfile2D Profile2D::getVertexProfile(bool smoothNormals) const {
     result.add(m_polygonArray[i].getVertexCurve(smoothNormals));
   }
   return result;
-}
-
-bool operator==(const ProfileRotationParameters &p1, const ProfileRotationParameters &p2) {
-  return p1.m_converter == p2.m_converter
-      && p1.m_edgeCount == p2.m_edgeCount
-      && p1.m_rad       == p2.m_rad
-      && p1.m_flags     == p2.m_flags
-      && p1.m_color     == p2.m_color;
-}
-
-bool operator!=(const ProfileRotationParameters &p1, const ProfileRotationParameters &p2) {
-  return !(p1==p2);
-}
-
-ProfileStretchParameters::ProfileStretchParameters() {
 }

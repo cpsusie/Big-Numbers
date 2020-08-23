@@ -224,6 +224,12 @@ static String &formatHex(String &dst, const Double80 &x, StreamSize precision, F
 
 #define MAXPRECISION numeric_limits<Double80>::digits10
 
+// See Solution by Stephan T. Lavavej [MSFT] on
+// https ://developercommunity.visualstudio.com/content/problem/1145155/wrong-output-in-x64-release-mode-c.html?childToView=1159350#comment-1159350
+// For fixed and scientific, precision is the number of digits after the decimal point, ignoring any digits before the decimal point.
+// For general(aka defaultfloat in C++), precision is the total number of digits, including those before the decimal point.
+// Requesting showpoint is equivalent to the printf flag `#` which says "always print the decimal point, 
+// even if there are no decimal digits to the right".
 // Return dst
 template<typename StringType> StringType &formatD80(StringType &dst, const Double80 &x, StreamParameters &param) {
   StreamSize  prec  = param.precision();

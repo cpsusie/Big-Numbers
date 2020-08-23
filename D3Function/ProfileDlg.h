@@ -2,6 +2,7 @@
 
 #include <D3DGraphics/D3SceneContainer.h>
 #include <D3DGraphics/D3SceneEditor.h>
+#include <D3DGraphics/Profile3D.h>
 #include "ProfileEditor.h"
 #include "DrawTool.h"
 #include "Resource.h"
@@ -15,12 +16,14 @@ public:
   ProfileRotationParameters m_rotationParameters;
   Profile2D                 m_profile;
 };
+
 bool operator==(const ProfileDialogVariables &v1, const ProfileDialogVariables &v2);
 inline bool operator!=(const ProfileDialogVariables &v1, const ProfileDialogVariables &v2) {
   return !(v1 == v2);
 }
 
 class ValidationException;
+class D3ProfileObjectWithColor;
 
 class CProfileDlg : public CDialog
                   , public ProfileEditor
@@ -34,14 +37,13 @@ private:
   CRect                     m_workRect;
   D3Scene                   m_scene;
   D3SceneEditor             m_editor;
-  D3SceneObjectVisual      *m_visual;
+  D3ProfileObjectWithColor *m_visual;
   Viewport2D               *m_viewport;
   bool                      m_exceptionRaised;
   DrawTool                 *m_currentDrawTool;
   int                       m_currentControl;
   Profile2D                 m_profile        , m_lastSavedProfile;
   ProfileDialogVariables    m_currentProfVars, m_lastProfVars;
-  CBitmap                   m_testBitmap;
 
   int       m_3dmode;
   BOOL      m_doubleSided;
@@ -89,8 +91,7 @@ private:
   void render(BYTE renderFlags);
   void saveAs();
   void save(const String &fileName);
-  void setVisual(D3SceneObjectVisual *visual);
-  void showSliderPos();
+  void setVisual(D3ProfileObjectWithColor *visual);
   CPoint getRelativePoint(int id, const CPoint &p);
   int getControlAtPoint(const CPoint &point);
   void clipCursor();
@@ -104,7 +105,9 @@ public:
   CProfileDlg(CWnd *pParent = NULL);
  ~CProfileDlg();
   void setProfileName(const String &name);
-
+  inline D3SceneEditor &getD3SceneEditor() {
+    return m_editor;
+  }
 // ---------------------------------- ProfileEditor interface functions----------------
   Viewport2D &getViewport() {
     return *m_viewport;
@@ -160,7 +163,6 @@ public:
   afx_msg void OnRButtonUp(    UINT nFlags, CPoint point);
   afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
   afx_msg BOOL OnMouseWheel(   UINT nFlags, short zDelta, CPoint pt);
-  afx_msg void OnHScroll(      UINT nSBCode, UINT nPos, CScrollBar *pScrollBar);
   afx_msg void OnFileNew();
   afx_msg void OnFileOpen();
   afx_msg void OnFileSave();

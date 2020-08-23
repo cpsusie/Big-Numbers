@@ -3,81 +3,6 @@
 #include <FlagTraits.h>
 #include <PersistentDataTemplate.h>
 #include <MFCUtil/ShapeFunctions.h>
-#include "D3Math.h"
-#include "D3AbstractMeshFactory.h"
-
-#define PRROT_ROTATESMOOTH      0x01
-#define PRROT_NORMALSMOOTH      0x02
-#define PRROT_INVERTNORMALS     0x04
-#define PRROT_USECOLOR          0x08
-
-class Point2DTo3DConverter {
-protected:
-  char m_rotateAxis;         // ['x','y','z'] - rotationaxis in 3D space
-  char m_rotateAxisAlignsTo; // ['x','y']     - axis in 2D space aligned with rotateAxis
-  char m_xTo3Dcoord, m_yTo3Dcoord;
-public:
-  Point2DTo3DConverter(char rotateAxis='x', char rotateAxisAlignsTo='x');
-  void checkIsValid() const; // throws Exception if not valid
-  template<typename T> Point3DTemplate<T> convertPoint(const Point2DTemplate<T> &p) const {
-    Point3DTemplate<T> result(0,0,0);
-    switch(m_xTo3Dcoord) {
-    case 'x': result.x = p.x; break;
-    case 'y': result.y = p.x; break;
-    case 'z': result.z = p.x; break;
-    }
-    switch(m_yTo3Dcoord) {
-    case 'x': result.x = p.y; break;
-    case 'y': result.y = p.y; break;
-    case 'z': result.z = p.y; break;
-    }
-    return result;
-  }
-  inline BYTE getRotateAxisIndex() const {
-    return m_rotateAxis - 'x';
-  }
-  inline char getRotateAxis() const {
-    return m_rotateAxis;
-  }
-  inline char getRotateAxisAlignsTo() const {
-    return m_rotateAxisAlignsTo;
-  }
-};
-
-inline bool operator==(const Point2DTo3DConverter &c1, const Point2DTo3DConverter &c2) {
-  return (c1.getRotateAxis() == c2.getRotateAxis()) && (c1.getRotateAxisAlignsTo() == c2.getRotateAxisAlignsTo());
-}
-
-inline bool operator!=(const Point2DTo3DConverter &c1, const Point2DTo3DConverter &c2) {
-  return !(c1 == c2);
-}
-
-class ProfileRotationParameters {
-public:
-  static const IntInterval s_legalEdgeCountInterval;
-  ProfileRotationParameters();
-  ProfileRotationParameters(const Point2DTo3DConverter &converter, float rad=D3DX_PI*2.0f, UINT edgeCount=20, BYTE flags=0, D3DCOLOR color=0);
-  // throws Exception if not valid
-  void checkIsValid() const;
-  // throws Exception if not valid
-  static void validateEdgeCount(UINT edgeCount);
-  Point2DTo3DConverter m_converter;
-  float                m_rad;
-  UINT                 m_edgeCount;
-  D3DCOLOR             m_color;
-  FLAGTRAITS(ProfileRotationParameters, BYTE, m_flags);
-};
-
-class ProfileStretchParameters {
-public:
-  ProfileStretchParameters();
-  D3DXVECTOR3 d;
-};
-
-bool operator==(const ProfileRotationParameters &p1, const ProfileRotationParameters &p2);
-bool operator!=(const ProfileRotationParameters &p1, const ProfileRotationParameters &p2);
-bool operator==(const ProfileStretchParameters  &p1, const ProfileStretchParameters  &p2);
-bool operator!=(const ProfileStretchParameters  &p1, const ProfileStretchParameters  &p2);
 
 template<typename T> class Vertex2DTemplate {
 public:
@@ -276,6 +201,10 @@ public:
   Profile2D() {
     init();
   }
+  Profile2D(const String &fileName) {
+    init();
+    load(fileName);
+  }
   Profile2D(const GlyphCurveData &glyphData, const String &name = s_defaultName);
   void addLine(const Point2D &p1, const Point2D &p2);
   // n is number of points. number of lines will be n-1
@@ -305,8 +234,6 @@ public:
 
   String toString() const;
 
-  bool selectAndLoadProfile();
-
 };
 
 inline bool operator==(const Profile2D &p1, const Profile2D &p2) {
@@ -317,4 +244,4 @@ inline bool operator!=(const Profile2D &p1, const Profile2D &p2) {
   return !(p1==p2);
 }
 
-LPD3DXMESH rotateProfile(AbstractMeshFactory &amf, const Profile2D &profile, const ProfileRotationParameters &param, bool doubleSided);
+String selectAndValidateProfileFile();

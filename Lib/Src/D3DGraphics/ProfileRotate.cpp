@@ -1,42 +1,9 @@
 #include "pch.h"
 #include <TinyBitSet.h>
+#include <D3DGraphics/D3Math.h>
 #include <D3DGraphics/MeshBuilder.h>
-#include <D3DGraphics/Profile2D.h>
-
-Point2DTo3DConverter::Point2DTo3DConverter(char rotateAxis, char rotateAxisAlignsTo) {
-  m_rotateAxis         = rotateAxis;         // ['x','y','z'] - rotationaxis in 3D space
-  m_rotateAxisAlignsTo = rotateAxisAlignsTo; // ['x','y']     - axis in 2D space aligned with rotationAxis
-  checkIsValid();
-  switch(m_rotateAxis) {
-  case 'x':
-    switch(m_rotateAxisAlignsTo) {
-    case 'x': m_xTo3Dcoord = 'x'; m_yTo3Dcoord = 'y'; break;
-    case 'y': m_xTo3Dcoord = 'z'; m_yTo3Dcoord = 'x'; break;
-    }
-    break;
-  case 'y':
-    switch(m_rotateAxisAlignsTo) {
-    case 'x': m_xTo3Dcoord = 'y'; m_yTo3Dcoord = 'z'; break;
-    case 'y': m_xTo3Dcoord = 'x'; m_yTo3Dcoord = 'y'; break;
-    }
-    break;
-  case 'z':
-    switch(m_rotateAxisAlignsTo) {
-    case 'x': m_xTo3Dcoord = 'z'; m_yTo3Dcoord = 'y'; break;
-    case 'y': m_xTo3Dcoord = 'x'; m_yTo3Dcoord = 'z'; break;
-    }
-    break;
-  }
-}
-
-void Point2DTo3DConverter::checkIsValid() const { // throws Exception if not valid
-  if(strchr("xyz", m_rotateAxis) == NULL) {
-    throwException(_T("RotateAxis must be 'x','y' or 'z'"));
-  }
-  if(strchr("xy", m_rotateAxisAlignsTo) == NULL) {
-    throwException(_T("RotateAxisAlignsTo must be 'x' or 'y'"));
-  }
-}
+#include <D3DGraphics/D3AbstractMeshFactory.h>
+#include <D3DGraphics/Profile3D.h>
 
 ProfileRotationParameters::ProfileRotationParameters() {
   m_rad          = D3DX_PI*2.0f;
@@ -71,56 +38,14 @@ void ProfileRotationParameters::checkIsValid() const { // throws Exception if no
   }
 }
 
-class VertexNormalWithIndex : public VertexNormal {
-public:
-  int m_pindex, m_nindex;
-  inline VertexNormalWithIndex() : m_pindex(-1), m_nindex(-1) {
-  }
-  inline VertexNormalWithIndex(const VertexNormal &vn) : VertexNormal(vn), m_pindex(-1), m_nindex(-1) {
-  }
-  inline bool haspindex() const {
-    return m_pindex >= 0;
-  }
-  inline bool hasnindex() const {
-    return m_nindex >= 0;
-  }
-  inline UINT getpindex() const {
-    return m_pindex;
-  }
-  inline UINT getnindex() const {
-    return m_nindex;
-  }
-};
-
-class VertexCurve3D : public CompactArray<VertexNormalWithIndex> {
-public:
-  explicit VertexCurve3D(size_t capacity = 0) : CompactArray(capacity) {
-  }
-  VertexCurve3D(const VertexCurve2D &c, const Point2DTo3DConverter &converter);
-  VertexCurve3D(const CompactArray<VertexNormal> &src) {
-    setCapacity(src.size());
-    for(const VertexNormal v : src) {
-      add(v);
-    }
-  }
-  VertexCurve3D rotate(const D3DXQUATERNION &rot) const;
-};
-
- VertexCurve3D::VertexCurve3D(const VertexCurve2D &c, const Point2DTo3DConverter &converter) {
-  const size_t  n = c.size();
-  setCapacity(n);
-  for(const Vertex2D v : c) {
-    add(VertexNormal(converter.convertPoint(v.m_pos),converter.convertPoint(v.m_normal)));
-  }
+bool operator==(const ProfileRotationParameters &p1, const ProfileRotationParameters &p2) {
+  return p1.m_converter == p2.m_converter
+      && p1.m_edgeCount == p2.m_edgeCount
+      && p1.m_rad       == p2.m_rad
+      && p1.m_flags     == p2.m_flags
+      && p1.m_color     == p2.m_color;
 }
 
-VertexCurve3D VertexCurve3D::rotate(const D3DXQUATERNION &rot) const {
-  VertexCurve3D result(size());
-  for(const VertexNormal v : *this) {
-    result.add(VertexNormal(::rotate(v.getPos(), rot),::rotate(v.getNormal(),rot)));
-  }
-  return result;
-}
 
 class VertexNormalIndexPArray : public CompactArray<VertexNormalWithIndex*> {
 public:
@@ -141,47 +66,12 @@ D3DXVECTOR3 VertexNormalIndexPArray::sumAllNormals() const {
   return s;
 }
 
-class VertexProfile3D : public Array<VertexCurve3D> {
-public:
-  explicit VertexProfile3D(size_t capacity = 0) : Array(capacity) {
-  }
-  VertexProfile3D(const VertexProfile2D &p, const Point2DTo3DConverter &converter);
-  VertexProfile3D rotate(const D3DXQUATERNION &rot) const;
-};
-
-VertexProfile3D::VertexProfile3D(const VertexProfile2D &p, const Point2DTo3DConverter &converter) {
-  const size_t    n = p.size();
-  setCapacity(n);
-  for(size_t i = 0; i < n; i++) {
-    add(VertexCurve3D(p[i], converter));
-  }
-}
-
-VertexProfile3D VertexProfile3D::rotate(const D3DXQUATERNION &rot) const {
-  const size_t    n = size();
-  VertexProfile3D result(n);
-  for(size_t i = 0; i < n; i++) {
-    result.add((*this)[i].rotate(rot));
-  }
-  return result;
-}
-
-D3Cube getBoundingBox(const VertexProfile3D &p) {
-  const size_t n = p.size();
-  if(n == 0) return D3Cube();
-  D3Cube result = getBoundingBox(p[0]);
-  for(size_t i = 1; i < n; i++) {
-    result += getBoundingBox(p[i]);
-  }
-  return result;
-
-}
 D3Cube getBoundingBox(const Array<VertexProfile3D> &a) {
   const size_t n = a.size();
   if(n == 0) return D3Cube();
-  D3Cube result = getBoundingBox(a[0]);
+  D3Cube result = a[0].getBoundingBox();
   for(size_t i = 1; i < n; i++) {
-    result += getBoundingBox(a[i]);
+    result += a[i].getBoundingBox();
   }
   return result;
 }

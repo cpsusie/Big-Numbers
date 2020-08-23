@@ -187,7 +187,7 @@ void CD3FunctionSplitterWnd::OnInvertTracker(const CRect &rect) {
   __super::OnInvertTracker(rect);
   D3SceneEditor &editor = getEditor();
   if(editor.isFlagsStackEmpty()) {
-    editor.pushStateFlags(false, SE_ENABLED | SE_PROPCHANGES | SE_RENDER);
+    editor.pushStateFlags().setEnabled(false, SE_ENABLED | SE_PROPCHANGES | SE_RENDER);
   }
   m_splitPointMoved = true;
 }

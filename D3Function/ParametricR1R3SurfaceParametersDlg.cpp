@@ -1,8 +1,9 @@
 #include "stdafx.h"
 #include "ParametricR1R3SurfaceParametersDlg.h"
+#include <D3DGraphics/Profile2D.h>
 
 CParametricR1R3SurfaceParametersDlg::CParametricR1R3SurfaceParametersDlg(const ExprParametricR1R3SurfaceParameters &param, AbstractTextureFactory &atf, CWnd *pParent /*=NULL*/)
-: SaveLoadExprWithCommonParametersDlg(IDD, pParent, param, atf, _T("Parametric Surface"), _T("par"))
+: SaveLoadExprWithCommonParametersDlg(IDD, pParent, param, atf, _T("Parametric Surface"), _T("parR1R3"))
 , m_tStepCount(0)
 , m_profileFileName(_T("")) {
 }
@@ -32,6 +33,7 @@ BEGIN_MESSAGE_MAP(CParametricR1R3SurfaceParametersDlg, CDialog)
   ON_BN_CLICKED(IDC_BUTTON_HELPY           , OnButtonHelpY                    )
   ON_BN_CLICKED(IDC_BUTTON_HELPZ           , OnButtonHelpZ                    )
   ON_BN_CLICKED(IDC_CHECK_MACHINECODE      , OnBnClickedCheckMachineCode      )
+  ON_BN_CLICKED(IDC_BUTTON_BROWSEPROFILE   , OnBnClickedButtonBrowseProfile   )
   ON_BN_CLICKED(IDC_CHECK_CALCULATETEXTURE , OnBnClickedCheckCalculateTexture )
   ON_BN_CLICKED(IDC_BUTTON_BROWSETEXTURE   , OnBnClickedButtonBrowseTexture   )
   ON_BN_CLICKED(IDC_CHECK_INCLUDETIME      , OnBnClickedCheckIncludeTime      )
@@ -57,6 +59,20 @@ bool CParametricR1R3SurfaceParametersDlg::validate() {
     return false;
   }
   if(!validateMinMax(IDC_EDIT_TSTEPCOUNT, 1, MAXPOINTCOUNT)) {
+    return false;
+  }
+  if(m_profileFileName.GetLength() == 0) {
+    gotoEditBox(this, IDC_EDIT_PROFILEFILENAME);
+    showWarning(_T("Profile filename must be filled"));
+    return false;
+  }
+
+  try {
+    Profile2D profile;
+    profile.load((LPCTSTR)m_profileFileName);
+  } catch (Exception e) {
+    gotoEditBox(this, IDC_EDIT_PROFILEFILENAME);
+    showWarning(_T("File %s is not a cvalid profile"));
     return false;
   }
   return __super::validate();
@@ -85,6 +101,14 @@ void CParametricR1R3SurfaceParametersDlg::OnButtonHelpZ() {
   handleExprHelpButtonClick(IDC_BUTTON_HELPZ);
 }
 
+void CParametricR1R3SurfaceParametersDlg::OnBnClickedButtonBrowseProfile() {
+  const String fileName = selectAndValidateProfileFile();
+  if(fileName.length() > 0) {
+    setWindowText(this, IDC_EDIT_PROFILEFILENAME, fileName);
+  }
+}
+
+
 void CParametricR1R3SurfaceParametersDlg::paramToWin(const ExprParametricR1R3SurfaceParameters &param) {
   const Expr3 &e = param.m_expr;
   m_commonText      = e.getCommonText().cstr();
@@ -100,8 +124,9 @@ void CParametricR1R3SurfaceParametersDlg::paramToWin(const ExprParametricR1R3Sur
 
 bool CParametricR1R3SurfaceParametersDlg::winToParam(ExprParametricR1R3SurfaceParameters &param) {
   if(!__super::winToParam(param)) return false;
-  param.m_expr       = Expr3((LPCTSTR)m_exprX,(LPCTSTR)m_exprY,(LPCTSTR)m_exprZ, (LPCTSTR)m_commonText);
-  param.m_tInterval  = DoubleInterval(m_tfrom, m_tto);
-  param.m_tStepCount = m_tStepCount;
+  param.m_expr            = Expr3((LPCTSTR)m_exprX,(LPCTSTR)m_exprY,(LPCTSTR)m_exprZ, (LPCTSTR)m_commonText);
+  param.m_tInterval       = DoubleInterval(m_tfrom, m_tto);
+  param.m_tStepCount      = m_tStepCount;
+  param.m_profileFileName = m_profileFileName;
   return true;
 }

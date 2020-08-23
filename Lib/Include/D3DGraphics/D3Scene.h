@@ -101,6 +101,9 @@ public:
   inline UINT getCameraCount() const {
     return (UINT)m_cameraArray.size();
   }
+  inline CameraSet getActiveCameraSet() const {
+    return m_cameraArray.getActiveCameraSet();
+  }
   void close();
   void render(const D3Camera &camera);
   void render(CameraSet cameraSet);

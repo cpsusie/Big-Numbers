@@ -16,7 +16,6 @@
 #define IDR_SELECTGLYPH                 145
 #define IDD_DIALOGENTEROPTIONSNAME      150
 #define IDD_DIALOGORGANIZEOPTIONS       151
-#define IDB_TESTBITMAP                  200
 #define IDB_CIRCLEARROWBITMAP           201
 #define IDB_LEFTRIGHTARROWBITMAP        202
 #define IDB_BLACKSQUAREBITMAP           203
@@ -109,8 +108,6 @@
 #define IDC_COMBO_ROTATEAXISALIGNSTO    1545
 #define IDC_CHECK_USECOLOR              1550
 #define IDC_MFCCOLORBUTTON              1551
-#define IDC_STATIC_DEGREE               1561
-#define IDC_SLIDER_DEGREE               1562
 #define IDC_STATIC_GLYPHFRAME           1600
 #define IDC_COMBO_OPTIONSNAME           1700
 #define IDC_LIST_OPTIONNAMES            1701

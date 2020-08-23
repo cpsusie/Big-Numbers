@@ -32,5 +32,6 @@ protected:
   afx_msg void OnButtonHelpX();
   afx_msg void OnButtonHelpY();
   afx_msg void OnButtonHelpZ();
+  afx_msg void OnBnClickedButtonBrowseProfile();
   DECLARE_MESSAGE_MAP()
 };

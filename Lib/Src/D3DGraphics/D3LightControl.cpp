@@ -3,7 +3,7 @@
 #include <D3DGraphics/D3Camera.h>
 #include <D3DGraphics/D3Device.h>
 #include <D3DGraphics/D3Scene.h>
-#include <D3DGraphics/Profile2D.h>
+#include <D3DGraphics/Profile3D.h>
 #include <D3DGraphics/MeshCreators.h>
 #include <D3DGraphics/D3LightControl.h>
 

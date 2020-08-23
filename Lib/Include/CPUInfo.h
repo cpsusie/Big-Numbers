@@ -53,7 +53,7 @@ public:
   const char *m_desc;
 };
 
-typedef struct {
+typedef struct _FeatureInfo {
   bool FPU       : 1;
   bool VME       : 1;
   bool DE        : 1;

@@ -81,7 +81,7 @@ public:
   String toString() const;
 };
 
-typedef struct {
+typedef struct _FPUStatusWord {
   union {
     WORD m_data;
     struct {
@@ -111,7 +111,7 @@ typedef enum {
  ,FPUREG_EMPTY
 } FPURegisterContent;
 
-typedef struct {
+typedef struct _FPUTagWord {
   union {
     WORD m_data;
     struct {

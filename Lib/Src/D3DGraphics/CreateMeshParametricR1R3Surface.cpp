@@ -2,35 +2,33 @@
 #include <Math/Point2D3D.h>
 #include <D3DGraphics/MeshBuilder.h>
 #include <D3DGraphics/ParametricR1R3SurfaceParameters.h>
+#include <D3DGraphics/Profile3D.h>
 #include <D3DGraphics/D3ToString.h>
 #include <D3DGraphics/MeshArrayJobMonitor.h>
 #include <D3DGraphics/D3TexturePointArray.h>
 #include <D3DGraphics/MeshCreators.h>
 
-#ifdef __TODO__
-ParametricSurfacePoint::ParametricSurfacePoint(FunctionR1R3 &f, const Point2D &p, bool calculateNormal) {
-  const Point3D v = f(p);
-  m_p = v;
-  if(calculateNormal) {
-#define EPS 1e-5
-    Point2D  pt = p, ps = p;
+#if defined(TODO)
 
-    pt.x = (fabs(p.x) < 2) ? (p.x+EPS) : p.x * (1+EPS);
-    ps.y = (fabs(p.y) < 2) ? (p.y+EPS) : p.y * (1+EPS);
-    const Point3D vt = (f(pt) - v) / (pt.x - p.x);
-    const Point3D vs = (f(ps) - v) / (ps.y - p.y);
-    m_n = unitVector(cross(vt, vs));
+static VertexArray create3DCurve(FunctionR1R3 &f, const DoubleInterval &tInterval, UINT nt) {
+  nt = max(nt, 2);
+  VertexArray  result(nt);
+  const double stept = tInterval.getLength() / (nt - 1);
+  double t = tInterval.getFrom();
+  for(UINT i = 0; i++ < nt; t += stept) {
+    if(i == nt) {
+      t = tInterval.getTo();
+    }
+    result.add(f(t));
   }
+  return result;
 }
 
-LPD3DXMESH createMeshFromParametricSurface(AbstractMeshFactory &amf, FunctionR2R3 &f, const DoubleInterval &tInterval, const DoubleInterval &sInterval, UINT nt, UINT ns, bool doubleSided, DWORD fvf) {
-  nt = max(nt, 2);
-  ns = max(ns, 2);
-
+static LPD3DXMESH createMeshFromParametricCurve(AbstractMeshFactory &amf, FunctionR1R3 &f, const ParametricR1R3SurfaceParameters &param) {
+  const Profile2D   profile(param.m_profileFileName);
+  const VertexArray curve = create3DCurve(f, param.getTInterval(), param.m_tStepCount);
   MeshBuilder mb;
-  mb.clear((nt+1)*(ns+1));
-  const double  stept            = tInterval.getLength() / (nt-1);
-  const double  steps            = sInterval.getLength() / (ns-1);
+  mb.clear(curve.size(nt+1)*(ns+1));
   const bool    calculateNormals = fvf & D3DFVF_NORMAL;
   const bool    calculateTexture = fvf & D3DFVF_TEX1;
   const D3TexturePointArray uPoints(nt), vPoints(ns);
@@ -151,4 +149,4 @@ MeshArray createMeshArray(CWnd *wnd, AbstractMeshFactory &amf, const ParametricR
   MeshArray a;
   return a;
 }
-#endif
+#endif // TODO

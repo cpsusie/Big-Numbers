@@ -52,15 +52,15 @@ CProfileDlg::~CProfileDlg() {
 
 void CProfileDlg::DoDataExchange(CDataExchange *pDX) {
   __super::DoDataExchange(pDX);
-  DDX_Text(    pDX, IDC_EDIT_DEGREES           , m_degrees);
-  DDX_Check(   pDX, IDC_CHECK_NORMALSMOOTH     , m_normalSmooth);
-  DDX_Check(   pDX, IDC_CHECK_ROTATESMOOTH     , m_rotateSmooth);
-  DDX_Text(    pDX, IDC_EDIT_EDGECOUNT         , m_edgeCount);
-  DDX_Radio(   pDX, IDC_RADIO_ROTATE           , m_3dmode);
-  DDX_Check(   pDX, IDC_CHECK_DOUBLESIDED       , m_doubleSided);
-  DDX_CBString(pDX, IDC_COMBO_ROTATEAXIS        , m_rotateAxis);
+  DDX_Text(    pDX, IDC_EDIT_DEGREES            , m_degrees           );
+  DDX_Check(   pDX, IDC_CHECK_NORMALSMOOTH      , m_normalSmooth      );
+  DDX_Check(   pDX, IDC_CHECK_ROTATESMOOTH      , m_rotateSmooth      );
+  DDX_Text(    pDX, IDC_EDIT_EDGECOUNT          , m_edgeCount         );
+  DDX_Radio(   pDX, IDC_RADIO_ROTATE            , m_3dmode            );
+  DDX_Check(   pDX, IDC_CHECK_DOUBLESIDED       , m_doubleSided       );
+  DDX_CBString(pDX, IDC_COMBO_ROTATEAXIS        , m_rotateAxis        );
   DDX_CBString(pDX, IDC_COMBO_ROTATEAXISALIGNSTO, m_rotateAxisAlignsTo);
-  DDX_Check(   pDX, IDC_CHECK_USECOLOR         , m_useColor);
+  DDX_Check(   pDX, IDC_CHECK_USECOLOR          , m_useColor          );
 }
 
 BEGIN_MESSAGE_MAP(CProfileDlg, CDialog)
@@ -71,7 +71,6 @@ BEGIN_MESSAGE_MAP(CProfileDlg, CDialog)
   ON_WM_RBUTTONUP()
   ON_WM_LBUTTONDBLCLK()
   ON_WM_MOUSEWHEEL()
-  ON_WM_HSCROLL()
   ON_WM_SIZE()
   ON_COMMAND(      ID_FILE_NEW                 , OnFileNew                            )
   ON_COMMAND(      ID_FILE_OPEN                , OnFileOpen                           )
@@ -145,10 +144,6 @@ BOOL CProfileDlg::OnInitDialog() {
   }
 
   setCurrentDrawToolId(ID_TOOLS_LINE);
-  CSliderCtrl *slider = (CSliderCtrl*)GetDlgItem(IDC_SLIDER_DEGREE);
-  slider->SetRange(0,360);
-  m_testBitmap.LoadBitmap(IDB_TESTBITMAP);
-  showSliderPos();
   ProfileRotationParameters param;
   rotateParamToWin(param);
   UpdateData(false);
@@ -210,7 +205,7 @@ void CProfileDlg::resetView() {
   setProfileName(m_profile.getName());
   m_currentDrawTool->unselectAll();
   m_currentDrawTool->initState();
-  render(SC_RENDERALL);
+  renderAll();
 }
 
 void CProfileDlg::repaintAll() {
@@ -239,7 +234,7 @@ bool CProfileDlg::isAutoUpdate3DChecked() const {
 }
 
 void CProfileDlg::render(BYTE renderFlags) {
-  __super::render(renderFlags, m_scene.getCameraArray().getActiveCameraSet());
+  __super::render(renderFlags, m_scene.getActiveCameraSet());
 }
 
 void CProfileDlg::doRender(BYTE renderFlags, CameraSet cameraSet) {
@@ -274,7 +269,7 @@ LRESULT CProfileDlg::OnMsgRender(WPARAM wp, LPARAM lp) {
     if(m_exceptionRaised) {
       clearException();
     }
-  } catch(Exception e) {
+  } catch (Exception e) {
     raiseException(e);
     disableAll();
   }
@@ -289,13 +284,13 @@ void CProfileDlg::checkWorkRectSize() {
 }
 
 void CProfileDlg::enableWindowItems() {
-  enableMenuItem(this,ID_EDIT_CONNECT          ,m_currentDrawTool->canConnect());
-  enableMenuItem(this,ID_EDIT_INVERTNORMALS    ,m_currentDrawTool->canInvertNormals());
-  enableMenuItem(this,ID_EDIT_MIRROR_HORIZONTAL,m_currentDrawTool->canMirror());
-  enableMenuItem(this,ID_EDIT_MIRROR_VERTICAL  ,m_currentDrawTool->canMirror());
-  enableMenuItem(this,ID_EDIT_DELETE           ,m_currentDrawTool->canDelete());
-  enableMenuItem(this,ID_EDIT_COPY             ,m_currentDrawTool->canCopy());
-  enableMenuItem(this,ID_EDIT_CUT              ,m_currentDrawTool->canCut());
+  enableMenuItem(this, ID_EDIT_CONNECT          , m_currentDrawTool->canConnect()      );
+  enableMenuItem(this, ID_EDIT_INVERTNORMALS    , m_currentDrawTool->canInvertNormals());
+  enableMenuItem(this, ID_EDIT_MIRROR_HORIZONTAL, m_currentDrawTool->canMirror()       );
+  enableMenuItem(this, ID_EDIT_MIRROR_VERTICAL  , m_currentDrawTool->canMirror()       );
+  enableMenuItem(this, ID_EDIT_DELETE           , m_currentDrawTool->canDelete()       );
+  enableMenuItem(this, ID_EDIT_COPY             , m_currentDrawTool->canCopy()         );
+  enableMenuItem(this, ID_EDIT_CUT              , m_currentDrawTool->canCut()          );
   getColorButton()->EnableWindow(m_useColor);
 }
 
@@ -312,14 +307,14 @@ void CProfileDlg::disableAll() {
 }
 
 void CProfileDlg::stretchProfile() {
-/*
-  try {
-    m_imageFrame->AddVisual(m_d3.stretchProfile(m_profile,getStretchParameters()));
-    m_d3.addInnerSide(m_imageFrame);
-  } catch(Exception e) {
-    showException(e);
-  }
-*/
+  /*
+    try {
+      m_imageFrame->AddVisual(m_d3.stretchProfile(m_profile,getStretchParameters()));
+      m_d3.addInnerSide(m_imageFrame);
+    } catch(Exception e) {
+      showException(e);
+    }
+  */
 }
 
 ProfileDialogVariables &CProfileDlg::getAllProfVars(ProfileDialogVariables &profVars) {
@@ -347,24 +342,26 @@ bool CProfileDlg::needUpdate3DObject() {
 }
 
 void CProfileDlg::create3DObject() {
-  D3SceneObjectVisual *visual = NULL;
+  m_editor.pushStateFlags().setEnabled(false, SE_RENDER);
+  D3ProfileObjectWithColor *visual = NULL;
   if(!m_profile.isEmpty()) {
     visual = new D3ProfileObjectWithColor(this); TRACE_NEW(visual);
   }
   setVisual(visual);
   saveCurrentProfVars();
+  m_editor.popStateFlags();
 }
 
-void CProfileDlg::setVisual(D3SceneObjectVisual *visual) {
-  const bool  hadOldVisual = m_visual != NULL;
-  D3DXMATRIX  oldWorld;
+void CProfileDlg::setVisual(D3ProfileObjectWithColor *visual) {
+  const bool hadOldVisual = m_visual != NULL;
+  ProfileObjectProperties oldProperties;
   if(hadOldVisual) {
-    oldWorld = m_visual->getWorld();
+    m_visual->getAllProperties(oldProperties);
   }
   destroy3DObject();
   if(visual != NULL) {
     if(hadOldVisual) {
-      visual->getWorld() = oldWorld;
+      visual->setAllProperties(oldProperties);
     }
     m_scene.addVisual(visual);
   }
@@ -565,16 +562,17 @@ void CProfileDlg::OnFileNew() {
   }
   m_profile.init();
   resetView();
+  repaintAll();
 }
 
 void CProfileDlg::OnFileOpen() {
   if(!dirtyCheck()) {
     return;
   }
-  Profile2D tmp;
-  if(tmp.selectAndLoadProfile()) {
-    m_profile = tmp;
-    resetView();
+  const String fileName = selectAndValidateProfileFile();
+  if(fileName.length() != 0) {
+    m_profile.load(fileName);
+    repaintAll();
   }
 }
 
@@ -929,33 +927,4 @@ int CProfileDlg::getControlAtPoint(const CPoint &point) {
   CWnd *w = ChildWindowFromPoint(point);
   m_currentControl = (w == NULL) ? -1 : w->GetDlgCtrlID();
   return m_currentControl;
-}
-
-void CProfileDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) {
-  __super::OnHScroll(nSBCode, nPos, pScrollBar);
-
-  CSliderCtrl *slider = (CSliderCtrl*)GetDlgItem(IDC_SLIDER_DEGREE);
-  int degree = slider->GetPos();
-
-  static const CSize testSize = getBitmapSize(m_testBitmap);
-  static const CSize maxSize(2*testSize.cx, 2*testSize.cy);
-
-  CBitmap *bm    = bitmapRotate(&m_testBitmap, degree);
-  CDC     *srcDC = CDC::FromHandle(CreateCompatibleDC(NULL));
-  srcDC->SelectObject(bm);
-  CSize bmSize = getBitmapSize(*bm);
-
-  CClientDC dstDC(GetDlgItem(IDC_STATIC_PROFILEIMAGE2D));
-
-  dstDC.FillSolidRect(0,0,maxSize.cx, maxSize.cy, RGB(255,255,255));
-  dstDC.BitBlt(0,0,bmSize.cx, bmSize.cy, srcDC, 0,0, SRCCOPY);
-
-  SAFEDELETE(bm);
-  showSliderPos();
-}
-
-void CProfileDlg::showSliderPos() {
-  CSliderCtrl *slider = (CSliderCtrl*)GetDlgItem(IDC_SLIDER_DEGREE);
-  int sliderPos = slider->GetPos();
-  setWindowText(this, IDC_STATIC_DEGREE, format(_T("%d"), sliderPos).cstr());
 }

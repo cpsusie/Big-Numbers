@@ -217,6 +217,8 @@ inline BitSet  compl(const BitSet &s) {
   return BitSet(s).invert();
 }
 
+#pragma warning(disable:26495)
+
 class AbstractBitSetIterator : public AbstractIterator {
 protected:
   BitSet &m_s;
