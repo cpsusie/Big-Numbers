@@ -444,10 +444,9 @@ int main() {
     redirectDebugLog();
 
 //  BigRealGeneratedPow10Cache testCache;
-  AvgPow10Cache            testCache;
-    testCache.selfTest();
-
-    return 0;
+//  AvgPow10Cache            testCache;
+//  testCache.selfTest();
+//  return 0;
 
     String x64classstr, x80classstr;
     double   x64 = numeric_limits<double  >::min();
