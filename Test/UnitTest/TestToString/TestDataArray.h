@@ -8,7 +8,8 @@ public:
   const TestValueArrayElement *m_values;
   StreamParameters             m_param;
   String toString() const {
-    return m_param.toString() + format(_T(" v=%20.16le"), m_values->getDouble());
+    return m_param.toString()
+         + format(_T(" v=%20.16le (%25.13a)"), m_values->getDouble(), m_values->getDouble());
   }
 };
 

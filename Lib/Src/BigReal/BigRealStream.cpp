@@ -23,7 +23,8 @@ static TCHAR *digitToStr(TCHAR *dst, BRDigitType n, UINT width = 0) {
 }
 
 void BigRealFormatter::formatFixed(String &dst, const BigReal &x, StreamSize precision, FormatFlags flags, bool removeTrailingZeroes) {
-  bool decimalPointAdded = false;
+  const bool forceDecimalPoint = (flags & ios::showpoint ) != 0;
+  bool       decimalPointAdded = false;
 
   const BigReal nn(round(x, (intptr_t)precision));
   if(nn.isZero()) {
@@ -49,7 +50,7 @@ void BigRealFormatter::formatFixed(String &dst, const BigReal &x, StreamSize pre
   }
 
   // now handle fraction if wanted
-  if((flags & ios::showpoint) || precision > 0) {
+  if(forceDecimalPoint || (precision > 0)) {
     addDecimalPoint(dst);
 
     if(precision > 0) {
@@ -77,21 +78,22 @@ void BigRealFormatter::formatFixed(String &dst, const BigReal &x, StreamSize pre
         addZeroes(dst,precision - decimalsDone);
       }
       if(removeTrailingZeroes) {
-        removeTralingZeroDigits(dst);
+        removeTralingZeroes(dst, !forceDecimalPoint);
       }
     }
   }
 }
 
 void BigRealFormatter::formatScientific(String &dst, const BigReal &x, StreamSize precision, FormatFlags flags, BRExpoType expo10, bool removeTrailingZeroes) {
-  bool decimalPointAdded = false;
-  bool exponentCharAdded = false;
+  const bool forceDecimalPoint = (flags & ios::showpoint ) != 0;
+  bool       decimalPointAdded = false;
+  bool       exponentCharAdded = false;
 
   const BigReal nn(round(x, (intptr_t)(precision - expo10)));
-  const Digit *digit = nn.m_first;
+  const Digit *digit        = nn.m_first;
   int          decimalsDone = 0;
-  int          scale = BigReal::getDecimalDigitCount(digit->n) - 1;
-  BRDigitType  scaleE10 = BigReal::pow10(scale);
+  int          scale        = BigReal::getDecimalDigitCount(digit->n) - 1;
+  BRDigitType  scaleE10     = BigReal::pow10(scale);
 
   TCHAR digStr[100];
   dst += digitToStr(digStr, digit->n / scaleE10);
@@ -124,7 +126,7 @@ void BigRealFormatter::formatScientific(String &dst, const BigReal &x, StreamSiz
         addZeroes(dst, precision - decimalsDone);
       }
       if(removeTrailingZeroes) {
-        removeTralingZeroDigits(dst);
+        removeTralingZeroes(dst, !forceDecimalPoint);
       }
     }
   }

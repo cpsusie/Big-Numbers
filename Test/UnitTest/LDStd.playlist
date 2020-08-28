@@ -1,1 +1,21 @@
-<Playlist Version="1.0"><Add Test="TestExpression::TestExpression::ExpressionTestEvaluate" /><Add Test="TestExpression::TestExpression::ExpressionTestPowRoot" /><Add Test="TestExpression::TestExpression::SNodeEqual" /><Add Test="TestExpression::TestExpression::ExpressionTestAndOrReduction" /><Add Test="TestMatrix::TestMatrix::MatrixSVDTest" /><Add Test="TestComplex::TestComplex::ComplexIO" /><Add Test="TestMatrix::TestMatrix::MatrixTestQR_Normal" /><Add Test="TestRandom::TestRandom::TestNextInt64_LLONG_MIN_MAX" /><Add Test="TestMatrix::TestMatrix::MatrixTestQR_NoConvergence" /><Add Test="TestComplex::TestComplex::ComplexIOAllFormats" /><Add Test="TestRandom::TestRandom::TestNextInt32_INT_MIN_MAX" /><Add Test="TestComplex::TestComplex::TestPowNegativeReal" /><Add Test="TestMatrix::TestMatrix::MatrixComplexEquationsTest" /><Add Test="TestComplex::TestComplex::TestRoots" /><Add Test="TestSpherical::TestSpherical::SphericalTest" /><Add Test="TestRandom::TestRandom::TestRandInt32_0_n" /><Add Test="TestMatrix::TestMatrix::MatrixCubicRoot" /><Add Test="TestMatrix::TestMatrix::MatrixRealTest" /><Add Test="TestMatrix::TestMatrix::MatrixExp" /><Add Test="TestRandom::TestRandom::TestRandInt64_0_UINT64_MAX" /><Add Test="TestMatrix::TestMatrix::MatrixComplexTest" /><Add Test="TestRandom::TestRandom::TestRandInt32_0_UINT_MAX" /><Add Test="TestMatrix::TestMatrix::MatrixKroneckerProduct" /><Add Test="TestMatrix::TestMatrix::MatrixTestQR_Zero" /><Add Test="TestMatrix::TestMatrix::MatrixRealEquationsTest" /><Add Test="TestSimplex::TestSimplex::SimplexTest2" /><Add Test="TestSimplex::TestSimplex::SimplexTest1" /><Add Test="TestMatrix::TestMatrix::MatrixCosSin" /><Add Test="TestComplex::TestComplex::ComplexFunctions" /><Add Test="TestComplex::TestComplex::BasicOperations" /><Add Test="TestFFT::TestFFT::FFTTest" /><Add Test="TestComplex::TestComplex::TestIdiotRule" /></Playlist>
+<Playlist Version="2.0">
+  <Rule Name="Includes" Match="Any">
+    <Rule Match="All">
+      <Property Name="Solution" />
+      <Rule Match="Any">
+        <Property Name="Project" Value="TestComplex" />
+        <Property Name="Project" Value="TestDouble80" />
+        <Property Name="Project" Value="TestExpression" />
+        <Property Name="Project" Value="TestFFT" />
+        <Property Name="Project" Value="TestGamma" />
+        <Property Name="Project" Value="TestMatrix" />
+        <Property Name="Project" Value="TestNumber" />
+        <Property Name="Project" Value="TestSimplex" />
+        <Property Name="Project" Value="TestRKF45" />
+        <Property Name="Project" Value="TestSpherical" />
+        <Property Name="Project" Value="TestStatistic" />
+        <Property Name="Project" Value="TestPolynomial" />
+      </Rule>
+    </Rule>
+  </Rule>
+</Playlist>

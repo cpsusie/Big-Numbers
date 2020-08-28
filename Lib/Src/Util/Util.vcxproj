@@ -1023,6 +1023,7 @@
     <ClCompile Include="PriorityClass.cpp" />
     <ClCompile Include="RegexIStream\DFADumpStates.cpp" />
     <ClCompile Include="RegexIStream\FixedIntArray.cpp" />
+    <ClCompile Include="StrStream.cpp" />
     <ClCompile Include="ThreadAffinityMask.cpp" />
     <ClCompile Include="ThreadDescription.cpp" />
     <ClCompile Include="ThreadExitCode.cpp" />

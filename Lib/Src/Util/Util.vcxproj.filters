@@ -86,6 +86,9 @@
     <Filter Include="Source Files\XmlDoc">
       <UniqueIdentifier>{2bff1ccb-4b98-4170-b209-09fec1ed464a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Stream\RegexIStream\Header Files">
+      <UniqueIdentifier>{084a69ff-9a45-43f5-87cf-91af8931cb1b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="access.cpp">
@@ -953,6 +956,9 @@
     <ClCompile Include="RegexIStream\FixedIntArray.cpp">
       <Filter>Source Files\Stream\RegexIStream</Filter>
     </ClCompile>
+    <ClCompile Include="StrStream.cpp">
+      <Filter>Source Files\Stream</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -1262,30 +1268,6 @@
     <ClInclude Include="..\..\Include\RegexIStream.h">
       <Filter>Header Files\Stream</Filter>
     </ClInclude>
-    <ClInclude Include="RegexIStream\DFA.h">
-      <Filter>Source Files\Stream\RegexIStream</Filter>
-    </ClInclude>
-    <ClInclude Include="RegexIStream\DFARegex.h">
-      <Filter>Source Files\Stream\RegexIStream</Filter>
-    </ClInclude>
-    <ClInclude Include="RegexIStream\NFA.h">
-      <Filter>Source Files\Stream\RegexIStream</Filter>
-    </ClInclude>
-    <ClInclude Include="RegexIStream\NFAState.h">
-      <Filter>Source Files\Stream\RegexIStream</Filter>
-    </ClInclude>
-    <ClInclude Include="RegexIStream\PatternParser.h">
-      <Filter>Source Files\Stream\RegexIStream</Filter>
-    </ClInclude>
-    <ClInclude Include="RegexIStream\PatternScanner.h">
-      <Filter>Source Files\Stream\RegexIStream</Filter>
-    </ClInclude>
-    <ClInclude Include="RegexIStream\pch.h">
-      <Filter>Source Files\Stream\RegexIStream</Filter>
-    </ClInclude>
-    <ClInclude Include="RegexIStream\SubNFA.h">
-      <Filter>Source Files\Stream\RegexIStream</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\CommonHashFunctions.h">
       <Filter>Header Files\Misc</Filter>
     </ClInclude>
@@ -1368,8 +1350,32 @@
     <ClInclude Include="..\..\Include\MarginFile.h">
       <Filter>Header Files\Stream</Filter>
     </ClInclude>
+    <ClInclude Include="RegexIStream\DFA.h">
+      <Filter>Source Files\Stream\RegexIStream\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RegexIStream\DFARegex.h">
+      <Filter>Source Files\Stream\RegexIStream\Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="RegexIStream\FixedIntArray.h">
-      <Filter>Source Files\Stream\RegexIStream</Filter>
+      <Filter>Source Files\Stream\RegexIStream\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RegexIStream\NFA.h">
+      <Filter>Source Files\Stream\RegexIStream\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RegexIStream\NFAState.h">
+      <Filter>Source Files\Stream\RegexIStream\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RegexIStream\PatternParser.h">
+      <Filter>Source Files\Stream\RegexIStream\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RegexIStream\PatternScanner.h">
+      <Filter>Source Files\Stream\RegexIStream\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RegexIStream\SubNFA.h">
+      <Filter>Source Files\Stream\RegexIStream\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RegexIStream\pch.h">
+      <Filter>Source Files\Stream\RegexIStream\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
