@@ -227,10 +227,10 @@ Packer &operator<<(Packer &p, const BigInt &v);
 Packer &operator>>(Packer &p, BigInt &v);
 
 
-std::istream     &operator>>(std::istream  &in ,       BigInt            &x);
-std::ostream     &operator<<(std::ostream  &out, const BigInt            &x);
-std::wistream    &operator>>(std::wistream &in,        BigInt            &x);
-std::wostream    &operator<<(std::wostream &out, const BigInt            &x);
+std::istream  &operator>>(std::istream  &in ,       BigInt &x);
+std::ostream  &operator<<(std::ostream  &out, const BigInt &x);
+std::wistream &operator>>(std::wistream &in,        BigInt &x);
+std::wostream &operator<<(std::wostream &out, const BigInt &x);
 
 String      toString(const BigInt            &x, StreamSize width = 0, FormatFlags flags = 0, TCHAR separatorChar = 0);
 BigInt      inputBigInt(DigitPool &digitPool, _In_z_ _Printf_format_string_ TCHAR const * const format, ...);

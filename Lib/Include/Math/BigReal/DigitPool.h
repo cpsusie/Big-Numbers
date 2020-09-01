@@ -3,7 +3,7 @@
 #include "BigRealConfig.h"
 #include <ResourcePoolTemplate.h>
 
-// The definition of Digit should NOT be changed!!! Se asm-code in ShortProduct*.cpp
+// The definition of Digit should NOT be changed!!! Se asm-code in ShortProduct*.cpp/BigRealShortProductx64.asm
 class Digit {
 public:
   BRDigitType    n;
@@ -220,7 +220,7 @@ public:
   {
   }
 
-  Digit *fetchDigit() {
+  Digit *fetchDigit() override {
     m_lock.wait();
     Digit *d = __super::fetchDigit();
     m_lock.notify();
@@ -229,14 +229,14 @@ public:
 
 #if defined(USE_FETCHDIGITLIST)
   // Return head of double linked list with count digits with undefined values. prev-pointer of head points to last digit in list
-  Digit *fetchDigitList(size_t count) {
+  Digit *fetchDigitList(size_t count) override {
     m_lock.wait();
     Digit *d = __super::fetchDigitList(count);
     m_lock.notify();
     return d;
   }
   // Return head of double linked list with count digits = n. prev-pointer of head points to last digit in list
-  Digit *fetchDigitList(size_t count, BRDigitType n) {
+  Digit *fetchDigitList(size_t count, BRDigitType n) override {
     m_lock.wait();
     Digit *d = __super::fetchDigitList(count, n);
     m_lock.notify();
@@ -244,12 +244,12 @@ public:
   }
 #endif // USE_FETCHDIGITLIST
 
-  void deleteDigits(Digit *first, Digit *last) {
+  void deleteDigits(Digit *first, Digit *last) override {
     m_lock.wait();
     __super::deleteDigits(first, last);
     m_lock.notify();
   }
-  bool isWithLock() const {
+  bool isWithLock() const override {
     return true;
   }
 };
