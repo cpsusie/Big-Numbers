@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<ParametricSurfaceR1R3>
+	<expr>
+		<common>p = 2; q = 3; fi=2*pi*t; theta = 2*pi*s; r = cos(q*fi)+2; r1 = 0.2;</common>
+		<exprx>r * cos(p*fi)+ r1 * sin(theta)</exprx>
+		<expry>r * sin(p*fi) + r1 * sin(theta)</expry>
+		<exprz>-sin(q*fi) + r1 * cos(theta)</exprz>
+	</expr>
+	<machinecode>true</machinecode>
+	<tinterval>
+		<from>0</from>
+		<to>1</to>
+	</tinterval>
+	<tstepcount>160</tstepcount>
+	<profilename>C:\Mytools2015\D3Function\SAMPLES\box1.prf</profilename>
+	<smoothnormals>true</smoothnormals>
+	<common>
+		<calculateNormals>true</calculateNormals>
+		<calculateTexture>false</calculateTexture>
+		<texturefilename/>
+		<doublesided>true</doublesided>
+		<animation>
+			<includetime>true</includetime>
+			<timeinterval>
+				<from>0</from>
+				<to>10</to>
+			</timeinterval>
+			<framecount>20</framecount>
+		</animation>
+	</common>
+</ParametricSurfaceR1R3>

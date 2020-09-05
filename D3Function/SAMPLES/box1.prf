@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<profile2d>
+	<profilepolygon2d>
+		<id0>
+			<closed>true</closed>
+			<start>
+				<x>0.285176</x>
+				<y>0.224863</y>
+			</start>
+			<profilecurve2d>
+				<id0>
+					<type>line</type>
+					<points>
+						<id0>
+							<x>0.511217</x>
+							<y>0.224435</y>
+						</id0>
+						<id1>
+							<x>0.51228</x>
+							<y>0.0436707</y>
+						</id1>
+						<id2>
+							<x>0.286238</x>
+							<y>0.0440992</y>
+						</id2>
+					</points>
+				</id0>
+			</profilecurve2d>
+		</id0>
+	</profilepolygon2d>
+</profile2d>
