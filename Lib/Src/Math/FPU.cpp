@@ -1,7 +1,11 @@
 #include "pch.h"
 #include <Math/FPU.h>
 
-#define CASE(c) case EXCEPTION_##c:
+static void throwFPUException(const TCHAR *msg, int code) {
+  throw FPUException(msg, code);
+}
+
+#define CASE(c) case EXCEPTION_##c: throwFPUException(_T(#c), pExp->ExceptionRecord->ExceptionCode)
 
 void FPUexceptionTranslator(UINT u, EXCEPTION_POINTERS *pExp) {
   switch(pExp->ExceptionRecord->ExceptionCode) {
@@ -12,7 +16,6 @@ void FPUexceptionTranslator(UINT u, EXCEPTION_POINTERS *pExp) {
   CASE(FLT_OVERFLOW             );
   CASE(FLT_STACK_CHECK          );
   CASE(FLT_UNDERFLOW            );
-    throw FPUException(pExp->ExceptionRecord->ExceptionCode);
   default:
     exceptionTranslator(u,pExp);
   }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <MyUtil.h>
+#include "MathException.h"
 
 typedef enum {
   FPU_LOW_PRECISION     = 0    // 32-bits floatingpoint
@@ -15,14 +16,14 @@ typedef enum {
  ,FPU_ROUNDCONTROL_TRUNCATE    // Truncate (toward 0)
 } FPURoundMode;
 
-#define FPU_INVALID_OPERATION_EXCEPTION 0x01
-#define FPU_DENORMALIZED_EXCEPTION      0x02
-#define FPU_DIVIDE_BY_ZERO_EXCEPTION    0x04
-#define FPU_OVERFLOW_EXCEPTION          0x08
-#define FPU_UNDERFLOW_EXCEPTION         0x10
-#define FPU_PRECISION_EXCEPTION         0x20
+constexpr USHORT FPU_INVALID_OPERATION_EXCEPTION = 0x01;
+constexpr USHORT FPU_DENORMALIZED_EXCEPTION      = 0x02;
+constexpr USHORT FPU_DIVIDE_BY_ZERO_EXCEPTION    = 0x04;
+constexpr USHORT FPU_OVERFLOW_EXCEPTION          = 0x08;
+constexpr USHORT FPU_UNDERFLOW_EXCEPTION         = 0x10;
+constexpr USHORT FPU_PRECISION_EXCEPTION         = 0x20;
 
-#define FPU_ALL_EXCEPTIONS              0x3f
+constexpr USHORT FPU_ALL_EXCEPTIONS              = 0x3f;
 
 #if defined(_DEBUG)
 #pragma runtime_checks( "", off )
@@ -293,7 +294,11 @@ public:
     FPUsetControlWord(&cw.adjustExceptionMask(enable, disable).m_cw);
     return old;
   }
-  static inline void             restoreControlWord(const FPUControlWord &cw) {
+  // returns current FPU controlword
+  static FPUControlWord disableExceptions(USHORT disable = FPU_ALL_EXCEPTIONS) {
+    return adjustExceptionMask(0, disable);
+  }
+  static inline void             restoreControlWord(FPUControlWord cw) {
     FPUsetControlWord(&cw.m_cw);
   }
   static inline int              getStackHeight() {
@@ -316,10 +321,14 @@ public:
 #pragma runtime_checks( "", restore )
 #endif _DEBUG
 
-class FPUException {
+class FPUException : public MathException {
 public:
   int m_code;
-  FPUException(int code) : m_code(code) {
+  FPUException(const TCHAR *msg, int code)
+    : MathException(msg)
+    , m_code(code)
+  {
   }
 };
+
 void FPUexceptionTranslator(UINT u, EXCEPTION_POINTERS *pExp);

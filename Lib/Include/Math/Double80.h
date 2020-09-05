@@ -5,6 +5,7 @@
 #include <ByteStream.h>
 #include <Packer.h>
 #include <Random.h>
+#include "FPU.h"
 #include "PragmaLib.h"
 
 #pragma check_stack(off)
@@ -50,35 +51,48 @@ public:
   Double80(float  x);
   Double80(double x);
 
-  explicit inline operator char() const {
-    return (char)_D80ToI32(*this);
-  }
-  explicit inline operator unsigned char() const {
-    return (unsigned char)_D80ToUI32(*this);
-  }
-  explicit inline operator short() const {
-    return (short)_D80ToI32(*this);
-  }
-  explicit inline operator unsigned short() const {
-    return (unsigned short)_D80ToI32(*this); ;
-  }
+
   explicit inline operator int() const {
-    return _D80ToI32(*this);
+    const FPUControlWord cw     = FPU::disableExceptions();
+    const int            result = _D80ToI32(*this);
+    FPU::restoreControlWord(cw);
+    return result;
   }
   explicit inline operator unsigned int() const {
-    return _D80ToUI32(*this);
+    const FPUControlWord cw     = FPU::disableExceptions();
+    const unsigned int   result = _D80ToUI32(*this);
+    FPU::restoreControlWord(cw);
+    return result;
+  }
+  explicit inline operator char() const {
+    return (char)(int)(*this);
+  }
+  explicit inline operator unsigned char() const {
+    return (unsigned char)(int)(*this);
+  }
+  explicit inline operator short() const {
+    return (short)(int)(*this);
+  }
+  explicit inline operator unsigned short() const {
+    return (unsigned short)(int)(*this); ;
   }
   explicit inline operator long() const {
-    return _D80ToI32(*this);
+    return (int)(*this);
   }
   explicit inline operator unsigned long() const {
-    return _D80ToUI32(*this);
+    return (unsigned int)(*this);
   }
   explicit inline operator __int64() const {
-    return _D80ToI64(*this);
+    const FPUControlWord cw     = FPU::disableExceptions();
+    const __int64        result = _D80ToI64(*this);
+    FPU::restoreControlWord(cw);
+    return result;
   }
   explicit inline operator unsigned __int64() const {
-    return _D80ToUI64(*this);
+    const FPUControlWord   cw     = FPU::disableExceptions();
+    const unsigned __int64 result = _D80ToUI64(*this);
+    FPU::restoreControlWord(cw);
+    return result;
   }
   explicit operator float()  const;
   explicit operator double() const;

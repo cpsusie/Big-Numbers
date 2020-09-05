@@ -111,7 +111,12 @@ Double80::operator float() const {
   case _FPCLASS_NZ  : return 0.0f;
   case _FPCLASS_QNAN: return std::numeric_limits<float>::quiet_NaN();
   case _FPCLASS_SNAN: return std::numeric_limits<float>::signaling_NaN();
-  default           : return _D80ToFlt(*this);
+  default           :
+    { const FPUControlWord cw     = FPU::disableExceptions();
+      const float          result = _D80ToFlt(*this);
+      FPU::restoreControlWord(cw);
+      return result;
+    }
   }
 }
 
@@ -121,7 +126,12 @@ Double80::operator double() const {
   case _FPCLASS_NZ  : return 0.0;
   case _FPCLASS_QNAN: return std::numeric_limits<double>::quiet_NaN();
   case _FPCLASS_SNAN: return std::numeric_limits<double>::signaling_NaN();
-  default           : return _D80ToDbl(*this);
+  default           :
+    { const FPUControlWord cw     = FPU::disableExceptions();
+      const double         result = _D80ToDbl(*this);
+      FPU::restoreControlWord(cw);
+      return result;
+    }
   }
 }
 
