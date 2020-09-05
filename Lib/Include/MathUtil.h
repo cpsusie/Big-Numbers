@@ -77,7 +77,7 @@ inline bool   isInt64(  double v) { return isfinite(v) && (v == (INT64)v);  }
 inline bool   isUint64( INT64  v) { return v >= 0;            }
 inline bool   isUint64( UINT64 v) { return true;              }
 inline bool   isUint64( float  v) { return isfinite(v) && (v == (UINT64)v); }
-inline bool   isUint64( double v) { return isfinite(v) && (v == (UINT64)v); }
+inline bool   isUint64( double v) { return isfinite(v) && (v == floor(v)) && (v>=0) && (v<0x1.0p+64); }
 
 inline bool   isFloat(  float  v) { return true;              }
 inline bool   isFloat(  double v) { return !isnormal(v) || (v == (float)v);  }
