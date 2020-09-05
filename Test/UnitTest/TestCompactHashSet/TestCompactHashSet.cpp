@@ -170,21 +170,21 @@ namespace TestCompactHashSet {
 
     INFO(_T("Testing set.intersection"));
     CompactHashSet<KeyType> intersectionSet = set * set1;
-    INFO(_T("intersect:%s\n"),intersectionSet.toString().cstr());
+    INFO(_T("intersect:%s\n"), intersectionSet.getIterator().toString().cstr());
     verify(intersectionSet.size() == 1);
 
     INFO(_T("Testing set.union"));
     CompactHashSet<KeyType> unionSet = set + set1;
-    INFO(_T("union:%s\n"),unionSet.toString().cstr());
+    INFO(_T("union:%s\n"), unionSet.getIterator().toString().cstr());
     verify(unionSet.size() == 3);
 
     INFO(_T("Testing set.difference"));
     CompactHashSet<KeyType> diffSet1 = set - set1;
-    INFO(_T("diff1:%s\n"),diffSet1.toString().cstr());
+    INFO(_T("diff1:%s\n"), diffSet1.getIterator().toString().cstr());
     verify(diffSet1.size() == 1);
 
     CompactHashSet<KeyType> diffSet2 = set1 - set;
-    INFO(_T("diff2:%s\n"),diffSet2.toString().cstr());
+    INFO(_T("diff2:%s\n"), diffSet2.getIterator().toString().cstr());
     verify(diffSet2.size() == 1);
 
     INFO(_T("Testing set.copyConstructor"));

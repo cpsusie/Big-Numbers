@@ -109,6 +109,12 @@
                         <Property Name="DisplayName" Value="TestReadWrite" />
                       </Rule>
                     </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="TestDouble80::TestDouble80::Double80TestHexStrToD80" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Double80TestHexStrToD80" />
+                      </Rule>
+                    </Rule>
                   </Rule>
                 </Rule>
               </Rule>

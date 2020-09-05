@@ -28,6 +28,35 @@ namespace TestDouble80 {
     }
   };
 
+#define LOGLINE INFO(_T("line %d"), __LINE__);
+
+  static void logFPUEnvironment() {
+    OUTPUT(_T("Env:%s"), FPU::getEnvironment().toString().cstr());
+  }
+
+  static void handleFPUException(const TCHAR *name, int code) {
+    OUTPUT(_T("FPU exception:%s, code=%d"),name, code);
+    logFPUEnvironment();
+  }
+
+#define CASE(c) case EXCEPTION_##c: handleFPUException(_T(#c), pExp->ExceptionRecord->ExceptionCode); \
+                                    break;
+
+  void testFPUexceptionHandler(UINT u, EXCEPTION_POINTERS *pExp) {
+    FPU::clearExceptionsNoWait();
+    switch(pExp->ExceptionRecord->ExceptionCode) {
+    CASE(FLT_DENORMAL_OPERAND     );
+    CASE(FLT_DIVIDE_BY_ZERO       );
+    CASE(FLT_INEXACT_RESULT       );
+    CASE(FLT_INVALID_OPERATION    );
+    CASE(FLT_OVERFLOW             );
+    CASE(FLT_STACK_CHECK          );
+    CASE(FLT_UNDERFLOW            );
+    default:
+      exceptionTranslator(u,pExp);
+    }
+  }
+
   static double getRelativeError(double x64, const Double80 &x80) {
     const double relativeError = fabs(x64 - (double)x80);
     return (x64 == 0) ? relativeError : relativeError / x64;
@@ -51,7 +80,7 @@ namespace TestDouble80 {
   static void testFunction(const String &name, D801RefFunc f80, D641ValFunc f64, double low, double high) {
     double maxRelativeError = 0;
     const double step = (high - low) / 10;
-//  OUTPUT(_T("Testing %s in %s"), name.cstr(), __TFUNCSIG__);
+    INFO(_T("Testing %s in %s"), name.cstr(), __TFUNCSIG__);
     for(double x64 = low; x64 <= high; x64 += step) {
       const double y64 = f64(x64);
 
@@ -76,7 +105,7 @@ namespace TestDouble80 {
     INFO(_T("%-10s:Max relative error:%.16le"), name.cstr(), maxRelativeError);
   }
 
-  static void checkResult(double x64, const Double80 &x80, TCHAR *op, double tolerance = EPS) {
+  static void checkBinOpResult(double x64, const Double80 &x80, TCHAR *op, double tolerance = EPS) {
     const double relativeError = getRelativeError(x64, x80);
     if(relativeError > tolerance) {
       OUTPUT(_T("operator %s failed. x64=%20.16le x80=%s. Relative error:%le"), op, x64, toString(x80).cstr(), relativeError);
@@ -84,7 +113,15 @@ namespace TestDouble80 {
     }
   }
 
-  static void checkResult(double x64, double y64, bool cmp64, const Double80 &x80, const Double80 &y80, bool cmp80, TCHAR *relation) {
+  static void checkAssignOpResult(double x64, const Double80 &x80, TCHAR *op, double tolerance = EPS) {
+    const double relativeError = getRelativeError(x64, x80);
+    if(relativeError > tolerance) {
+      OUTPUT(_T("operator %s failed. x64=%20.16le x80=%s. Relative error:%le"), op, x64, toString(x80).cstr(), relativeError);
+      verify(false);
+    }
+  }
+
+  static void checkCmpResult(double x64, double y64, bool cmp64, const Double80 &x80, const Double80 &y80, bool cmp80, TCHAR *relation) {
     if(cmp64 != cmp80) {
       OUTPUT(_T("Relation %s failed. %20.16le %s %20.16le = %s. %s %s %s = %s")
               , relation
@@ -94,62 +131,113 @@ namespace TestDouble80 {
     }
   }
 
-#define CHECKOPERATOR(op,allowZero,x64,y1,x80,y2,...)                                                   \
-  if(allowZero || (((y1 )!=0) && ((y2 )!=0))) checkResult((x64 op y1),(x80 op y2),_T(#op),__VA_ARGS__); \
-  if(allowZero || (((x64)!=0) && ((x80)!=0))) checkResult((y1 op x64),(y2 op x80),_T(#op),__VA_ARGS__)
+#if defined(_DEBUG)
+#define INFOCHECKOPERATOR(op,allowZero,x64,y1,x80,y2,...)                                                                                  \
+{ LOG log;                                                                                                                                 \
+  log << "op=" << #op << ", " << #x64 << "=" << x64 << ", " << #x80 << "=" << x80 << ", " << #y1 << "=" << y1 << ", " << #y2 << "=" << y2; \
+}
+#else
+#define INFOCHECKOPERATOR(...)
+#endif // defined(_DEBUG)
 
-#define CHECKASSIGNOPERATOR(op,allowZero,y1,y2) \
-  if(allowZero || (((y1)!=0) && ((y2)!=0))) {   \
-    double   s64 = z64;                         \
-    Double80 s80 = z80;                         \
-    s64 op (y1);                                \
-    s80 op (y2);                                \
-    checkResult(s64,s80,_T(#op));               \
-  }
+#define CHECKOPERATOR(op,allowZero,x64,y1,x80,y2,...)                                                                  \
+{ INFOCHECKOPERATOR(op,allowZero,x64,y1,x80,y2,__VA_ARGS__)                                                            \
+  if(allowZero || (((y1 )!=0) && ((y2 )!=0))) checkBinOpResult(((x64) op (y1)),((x80) op (y2)) ,_T(#op),__VA_ARGS__);  \
+  if(allowZero || (((x64)!=0) && ((x80)!=0))) checkBinOpResult(((y1)  op (x64)),((y2) op (x80)),_T(#op),__VA_ARGS__);  \
+}
 
-#define CHECKRELATION(r,y1,y2)                                               \
-  checkResult(x64       ,(double)y1,x64  r (y1),x80,y2 , x80 r (y2),_T(#r)); \
-  checkResult((double)y1,x64       ,(y1) r x64 ,y2 ,x80,(y2) r  x80,_T(#r))
+#define CHECKOPERATORCAST(op,castTo,allowZero,x64,y1,x80,y2,...)                  \
+{ INFO(_T("cast=%s, op=%s"), _T(#castTo), _T(#op));                               \
+  CHECKOPERATOR(op, allowZero, x64, (castTo)(y1), x80, (castTo)(y2),__VA_ARGS__); \
+}
 
-#define testOperatorI16(   op,allowZero)    CHECKOPERATOR(op,allowZero,x64,   (short  )y64,x80,  (short )y64)
-#define testOperatorUI16(  op,allowZero)  { CHECKOPERATOR(op,allowZero,x64,   (USHORT )y64,x80,  (USHORT)y64); \
-                                            const USHORT _ui16 = (USHORT )(y64+_I16_MAX);                      \
-                                            CHECKOPERATOR(op,allowZero,x64,          _ui16,x80,        _ui16); \
+#if defined(_DEBUG)
+#define INFOCHECKASSIGNOPERATOR(op,allowZero,y1,y2)                                                                   \
+{ LOG log;                                                                                                            \
+  log << "op=" << #op << ", z64=" << z64 << ", z80=" << z80 << ", " << #y1 << "=" << y1 << ", " << #y2 << "=" << y2;  \
+}
+#else
+#define INFOCHECKASSIGNOPERATOR(...)
+#endif // defined(_DEBUG)
+
+#define CHECKASSIGNOPERATOR(op,allowZero,y1,y2)                                                                       \
+{ INFOCHECKASSIGNOPERATOR(op,allowZero,y1,y2)                                                                         \
+  if(allowZero || (((y1)!=0) && ((y2)!=0))) {                                                                         \
+    double   s64 = z64;                                                                                               \
+    Double80 s80 = z80;                                                                                               \
+    s64 op (y1);                                                                                                      \
+    s80 op (y2);                                                                                                      \
+    checkAssignOpResult(s64,s80,_T(#op));                                                                             \
+  }                                                                                                                   \
+}
+
+#define CHECKASSIGNOPCAST(op,castTo,allowZero,y1,y2)           \
+{ INFO(_T("cast=%s, op=%s"), _T(#castTo), _T(#op));            \
+  CHECKASSIGNOPERATOR(op,allowZero,(castTo)(y1),(castTo)(y2)); \
+}
+
+#if defined(_DEBUG)
+#define INFOCHECKRELATION(r,y1,y2)                                                                                   \
+{ LOG log;                                                                                                           \
+  log << "rel=" << #r << ", x64=" << x64 << ", x80=" << x80 << ", " << #y1 << "=" << y1 << ", " << #y2 << "=" << y2; \
+}
+#else
+#define INFOCHECKRELATION(r,y1,y2)
+#endif // defined(_DEBUG)
+
+#define CHECKRELATION(r,y1,y2)                                                                                       \
+{ INFOCHECKRELATION(r,y1,y2)                                                                                         \
+  checkCmpResult(x64       ,(double)y1,x64  r (y1),x80,y2 , x80 r (y2),_T(#r));                                      \
+  checkCmpResult((double)y1,x64       ,(y1) r x64 ,y2 ,x80,(y2) r  x80,_T(#r));                                      \
+}
+
+#define CHECKRELATIONCAST(r,castTo,y1,y2)                                     \
+{ INFO(_T("cast=%s, rel=%s"), _T(#castTo), _T(#r));                         \
+  CHECKRELATION(r,   (castTo)(y64),  (castTo)(y64));                          \
+}
+
+#define testOperatorI16(   op,allowZero)    CHECKOPERATORCAST(op,short ,allowZero,x64,   y64,x80,y64)
+#define testOperatorUI16(  op,allowZero)  { CHECKOPERATORCAST(op,USHORT,allowZero,x64,   y64,x80,y64);   \
+                                            const USHORT _ui16 = (USHORT )(y64+_I16_MAX);                \
+                                            CHECKOPERATOR(    op       ,allowZero,x64, _ui16,x80,_ui16); \
                                           }
 
-#define testOperatorI32(   op,allowZero)    CHECKOPERATOR(op,allowZero,x64,   (int    )y64,x80,  (int   )y64)
-#define testOperatorUI32(  op,allowZero)  { CHECKOPERATOR(op,allowZero,x64,   (UINT32 )y64,x80,  (UINT32)y64); \
-                                            const UINT32 _ui32 = (UINT32 )(y64+_I32_MAX);                      \
-                                            CHECKOPERATOR(op,allowZero,x64,          _ui32,x80,        _ui32); \
+#define testOperatorI32(   op,allowZero)    CHECKOPERATORCAST(op,int   ,allowZero,x64,   y64,x80,  y64)
+#define testOperatorUI32(  op,allowZero)  { CHECKOPERATORCAST(op,UINT  ,allowZero,x64,   y64,x80,  y64); \
+                                            const UINT32 _ui32 = (UINT32 )(y64+_I32_MAX);                \
+                                            CHECKOPERATOR(    op       ,allowZero,x64, _ui32,x80,_ui32); \
                                           }
 
-#define testOperatorI64(   op,allowZero)    CHECKOPERATOR(op,allowZero,x64,   (INT64  )y64,x80,  (INT64 )y64)
-#define testOperatorUI64(  op,allowZero)  { CHECKOPERATOR(op,allowZero,x64,   (UINT64 )y64,x80,  (UINT64)y64); \
-                                            const UINT64 _ui64 = (UINT64 )(y64+_I64_MAX);                      \
-                                            CHECKOPERATOR(op,allowZero,x64,          _ui64,x80,        _ui64); \
+#define testOperatorI64(   op,allowZero)    CHECKOPERATORCAST(op,INT64 ,allowZero,x64,   y64,x80,  y64)
+#define testOperatorUI64(  op,allowZero)  { CHECKOPERATORCAST(op,UINT64,allowZero,x64,   y64,x80,  y64); \
+                                            const UINT64 _ui64 = (UINT64 )(y64+_I64_MAX);                \
+                                            CHECKOPERATOR(    op       ,allowZero,x64, _ui64,x80,_ui64); \
                                           }
 
-#define testOperatorFloat( op,allowZero)    CHECKOPERATOR(op,allowZero,x32,            y32,x80,          y32, 1e-6)
-#define testOperatorDouble(op,allowZero)    CHECKOPERATOR(op,allowZero,x64,            y64,x80,          y64)
-#define testOperatorD80(   op,allowZero)    CHECKOPERATOR(op,allowZero,x64,            y64,x80,          y80)
-
-
-#define testAssignOpI16(   op,allowZero)    CHECKASSIGNOPERATOR(op,allowZero,   (short  )y64,  (short )y64)
-#define testAssignOpUI16(  op,allowZero)  { CHECKASSIGNOPERATOR(op,allowZero,   (USHORT )y64,  (USHORT)y64); \
-                                            const USHORT _ui16 = (USHORT )(y64+_I16_MAX);                    \
-                                            CHECKASSIGNOPERATOR(op,allowZero,          _ui16,        _ui16); \
+#define testOperatorFloat( op,allowZero)  { CHECKOPERATOR(op,allowZero,x32,            y32,x80,          y32, 1e-6); \
+                                          }
+#define testOperatorDouble(op,allowZero)  { CHECKOPERATOR(op,allowZero,x64,            y64,x80,          y64)        \
+                                          }
+#define testOperatorD80(   op,allowZero)  { CHECKOPERATOR(op,allowZero,x64,            y64,x80,          y80);       \
                                           }
 
-#define testAssignOpI32(   op,allowZero)    CHECKASSIGNOPERATOR(op,allowZero,   (int    )y64,  (int   )y64)
-#define testAssignOpUI32(  op,allowZero)  { CHECKASSIGNOPERATOR(op,allowZero,   (UINT32 )y64,  (UINT32)y64); \
-                                            const UINT32 _ui32 = (UINT32 )(y64+_I32_MAX);                    \
-                                            CHECKASSIGNOPERATOR(op,allowZero,          _ui32,        _ui32); \
+
+#define testAssignOpI16(   op,allowZero)    CHECKASSIGNOPCAST(  op,short ,allowZero,  y64, y64)
+#define testAssignOpUI16(  op,allowZero)  { CHECKASSIGNOPCAST(  op,USHORT,allowZero,  y64, y64);   \
+                                            const USHORT _ui16 = (USHORT )(y64+_I16_MAX);          \
+                                            CHECKASSIGNOPERATOR(op       ,allowZero,_ui16,_ui16);  \
                                           }
 
-#define testAssignOpI64(   op,allowZero)    CHECKASSIGNOPERATOR(op,allowZero,   (INT64  )y64,  (INT64 )y64)
-#define testAssignOpUI64(  op,allowZero)  { CHECKASSIGNOPERATOR(op,allowZero,   (UINT64 )y64,  (UINT64)y64); \
-                                            const UINT64 _ui64 = (UINT64 )(y64+_I64_MAX);                    \
-                                            CHECKASSIGNOPERATOR(op,allowZero,          _ui64,        _ui64); \
+#define testAssignOpI32(   op,allowZero)    CHECKASSIGNOPCAST(  op,int   ,allowZero,   y64,  y64)
+#define testAssignOpUI32(  op,allowZero)  { CHECKASSIGNOPCAST(  op,UINT  ,allowZero,   y64,  y64); \
+                                            const UINT  _ui32 = (UINT    )(y64+_I32_MAX);          \
+                                            CHECKASSIGNOPERATOR(op       ,allowZero, _ui32,_ui32); \
+                                          }
+
+#define testAssignOpI64(   op,allowZero)    CHECKASSIGNOPCAST(op,INT64   ,allowZero,   y64,  y64)
+#define testAssignOpUI64(  op,allowZero)  { CHECKASSIGNOPCAST(op,UINT64  ,allowZero,   y64,  y64); \
+                                            const UINT64 _ui64 = (UINT64 )(y64+_I64_MAX);          \
+                                            CHECKASSIGNOPERATOR(op       ,allowZero, _ui64,_ui64); \
                                           }
 
 #define testAssignOpFloat( op,allowZero)    CHECKASSIGNOPERATOR(op,allowZero,            y32,          y32)
@@ -157,22 +245,22 @@ namespace TestDouble80 {
 #define testAssignOpD80(   op,allowZero)    CHECKASSIGNOPERATOR(op,allowZero,            y64,          y80)
 
 
-#define testRelationI16(   op)    CHECKRELATION(op,   (short  )y64,  (short )y64)
-#define testRelationUI16(  op)  { CHECKRELATION(op,   (USHORT )y64,  (USHORT)y64); \
-                                  const USHORT _ui16 = (USHORT )(y64+_I16_MAX);    \
-                                  CHECKRELATION(op,          _ui16,        _ui16); \
+#define testRelationI16(   op)    CHECKRELATIONCAST(op, short , y64 , y64)
+#define testRelationUI16(  op)  { CHECKRELATIONCAST(op, USHORT, y64 , y64);       \
+                                  const USHORT _ui16 = (USHORT )(y64+_I16_MAX);   \
+                                  CHECKRELATION(    op        ,_ui16,_ui16);      \
                                 }
 
-#define testRelationI32(   op)    CHECKRELATION(op,   (int    )y64,  (int   )y64)
-#define testRelationUI32(  op)  { CHECKRELATION(op,   (UINT32 )y64,  (UINT32)y64); \
-                                  const UINT32 _ui32 = (UINT32 )(y64+_I32_MAX);    \
-                                  CHECKRELATION(op,          _ui32,        _ui32); \
+#define testRelationI32(   op)    CHECKRELATIONCAST(op, int   , y64 , y64)
+#define testRelationUI32(  op)  { CHECKRELATIONCAST(op, UINT32, y64 , y64);       \
+                                  const UINT32 _ui32 = (UINT32)(y64+_I32_MAX);    \
+                                  CHECKRELATION(    op        ,_ui32,_ui32);      \
                                 }
 
-#define testRelationI64(   op)    CHECKRELATION(op,   (INT64  )y64,  (INT64 )y64)
-#define testRelationUI64(  op)  { CHECKRELATION(op,   (UINT64 )y64,  (UINT64)y64); \
-                                  const UINT64 _ui64 = (UINT64 )(y64+_I64_MAX);    \
-                                  CHECKRELATION(op,          _ui64,        _ui64); \
+#define testRelationI64(   op)    CHECKRELATIONCAST(op, INT64 , y64 , y64)
+#define testRelationUI64(  op)  { CHECKRELATIONCAST(op, UINT64, y64 , y64);       \
+                                  const UINT64 _ui64 = (UINT64 )(y64+_I64_MAX);   \
+                                  CHECKRELATION(    op        ,_ui64,_ui64);      \
                                 }
 
 #define testRelationFloat( op)    CHECKRELATION(op,            y32,          y32)
@@ -215,11 +303,12 @@ namespace TestDouble80 {
 
 static void testFunction(const String &name, D802RefFunc f80, D642ValFunc f64, double low1, double high1, double low2, double high2) {
     double maxRelativeError = 0;
-//  OUTPUT(_T("Testing %s in %s"), name.cstr(), __TFUNCSIG__);
+    INFO(_T("Testing %s in %s"), name.cstr(), __TFUNCSIG__);
     const double step1 = (high1 - low1) / 10;
     const double step2 = (high2 - low2) / 10;
     for(double x64 = low1; x64 <= high1; x64 += step1) {
       for(double y64 = low2; y64 <= high2; y64 += step2) {
+        INFO(_T("Testing %s(%d) x64,y64=(%le,%le)"), name.cstr(), __LINE__,x64,y64);
         double         z64 = f64(x64, y64);
         const Double80 x80 = x64;
         const Double80 y80 = y64;
@@ -247,7 +336,6 @@ static void testFunction(const String &name, D802RefFunc f80, D642ValFunc f64, d
         testOperator(-,true );
         testOperator(*,true );
         testOperator(/,false);
-
         testAssignOperator(+= ,true );
         testAssignOperator(-= ,true );
         testAssignOperator(*= ,true );
@@ -259,7 +347,6 @@ static void testFunction(const String &name, D802RefFunc f80, D642ValFunc f64, d
         testRelation(>= );
         testRelation(<  );
         testRelation(>  );
-
       }
     }
     INFO(_T("%-10s:Max relative error:%.16le"), name.cstr(), maxRelativeError);
@@ -315,22 +402,29 @@ static RefFunctionsMonitor s_refFunctions;
 // ------------------------------------------------------------------------------------
 
 static double f64_1Val(double x) {
+  LOGLINE
   return s_refFunctions.m_d64_1RefFunc(x);
 }
+
 static double f64_2Val(double x, double y) {
+  LOGLINE
   return s_refFunctions.m_d64_2RefFunc(x, y);
 }
+
 static Double80 f80_1Ref(const Double80 &x) {
+  LOGLINE
   return s_refFunctions.m_d80_1ValFunc(x);
 }
+
 static Double80 f80_2Ref(const Double80 &x, const Double80 &y) {
+  LOGLINE
   return s_refFunctions.m_d80_2ValFunc(x, y);
 }
 
 static void testFunction(const String &name, D801ValFunc f80, D641RefFunc f64, double low, double high) {
   try {
     s_refFunctions.prepareTest(f80, f64);
-//  OUTPUT(_T("Testing %s in %s"), name.cstr(), __TFUNCSIG__);
+    INFO(_T("Line %d, Testing %s in %s"), __LINE__, name.cstr(), __TFUNCSIG__);
     testFunction(name, f80_1Ref, f64_1Val, low, high);
     s_refFunctions.endTest();
   } catch (...) {
@@ -338,10 +432,11 @@ static void testFunction(const String &name, D801ValFunc f80, D641RefFunc f64, d
     throw;
   }
 }
+
 static void testFunction(const String &name, D801ValFunc f80, D641ValFunc f64, double low, double high) {
   try {
     s_refFunctions.prepareTest(f80, NULL);
-//  OUTPUT(_T("Testing %s in %s"), name.cstr(), __TFUNCSIG__);
+    INFO(_T("Line %d, Testing %s in %s"), __LINE__, name.cstr(), __TFUNCSIG__);
     testFunction(name, f80_1Ref, f64, low, high);
     s_refFunctions.endTest();
   } catch (...) {
@@ -349,10 +444,11 @@ static void testFunction(const String &name, D801ValFunc f80, D641ValFunc f64, d
     throw;
   }
 }
+
 static void testFunction(const String &name, D801RefFunc f80, D641RefFunc f64, double low, double high) {
   try {
     s_refFunctions.prepareTest(NULL, f64);
-//  OUTPUT(_T("Testing %s in %s"), name.cstr(), __TFUNCSIG__);
+    INFO(_T("Line %d, Testing %s in %s"), __LINE__, name.cstr(), __TFUNCSIG__);
     testFunction(name, f80, f64_1Val, low, high);
     s_refFunctions.endTest();
   } catch (...) {
@@ -364,7 +460,7 @@ static void testFunction(const String &name, D801RefFunc f80, D641RefFunc f64, d
 static void testFunction(const String &name, D802ValFunc f80, D642RefFunc f64, double low1, double high1, double low2, double high2) {
   try {
     s_refFunctions.prepareTest(f80, f64);
-//  OUTPUT(_T("Testing %s in %s"), name.cstr(), __TFUNCSIG__);
+    INFO(_T("Line %d, Testing %s in %s"), __LINE__, name.cstr(), __TFUNCSIG__);
     testFunction(name, f80_2Ref, f64_2Val, low1, high1, low2, high2);
     s_refFunctions.endTest();
   } catch (...) {
@@ -372,10 +468,11 @@ static void testFunction(const String &name, D802ValFunc f80, D642RefFunc f64, d
     throw;
   }
 }
+
 static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, double low1, double high1, double low2, double high2) {
   try {
     s_refFunctions.prepareTest(f80, NULL);
-//  OUTPUT(_T("Testing %s in %s"), name.cstr(), __TFUNCSIG__);
+    INFO(_T("Line %d, Testing %s in %s"), __LINE__, name.cstr(), __TFUNCSIG__);
     testFunction(name, f80_2Ref, f64, low1, high1, low2, high2);
     s_refFunctions.endTest();
   } catch (...) {
@@ -383,10 +480,11 @@ static void testFunction(const String &name, D802ValFunc f80, D642ValFunc f64, d
     throw;
   }
 }
+
 static void testFunction(const String &name, D802RefFunc f80, D642RefFunc f64, double low1, double high1, double low2, double high2) {
   try {
     s_refFunctions.prepareTest(NULL, f64);
-//  OUTPUT(_T("Testing %s in %s"), name.cstr(), __TFUNCSIG__);
+    INFO(_T("Line %d, Testing %s in %s"), __LINE__, name.cstr(), __TFUNCSIG__);
     testFunction(name, f80, f64_2Val, low1, high1, low2, high2);
     s_refFunctions.endTest();
   } catch (...) {
@@ -396,7 +494,6 @@ static void testFunction(const String &name, D802RefFunc f80, D642RefFunc f64, d
 }
 
 #define TESTFUNC(f, ...) testFunction(_T(#f),f,f,__VA_ARGS__)
-
 	TEST_CLASS(TestDouble80) {
     public:
 
@@ -473,7 +570,7 @@ static void testFunction(const String &name, D802RefFunc f80, D642RefFunc f64, d
       s80 = toString(d80, 0, 0, ios::fixed);
       verify(substr(s64, 0, 17) == substr(s80, 0, 17));
 
-      ui64 = (UINT64)_I64_MAX + 10;
+      ui64 = ((UINT64)_I64_MAX) + 10;
       d80 = ui64;
       s64 = toString(i64);
       s80 = toString(d80, 0, 0, ios::fixed);
@@ -503,22 +600,22 @@ static void testFunction(const String &name, D802RefFunc f80, D642RefFunc f64, d
       const Double80 pi = DBL80_PI;
 
       const String piStr = d80tot(charBuf, pi);
-      diff = pi - wcstod80(piStr.cstr(), &endp);
+      diff = pi - _tcstod80(piStr.cstr(), &endp);
       verify(diff == 0);
       verify(endp == piStr.cstr() + piStr.length());
 
       const String maxStr = d80tot(charBuf, DBL80_MAX);
-      diff = DBL80_MAX - wcstod80(maxStr.cstr(), &endp);
+      diff = DBL80_MAX - _tcstod80(maxStr.cstr(), &endp);
       verify((diff == 0) && (errno == 0));
       verify(endp == maxStr.cstr() + maxStr.length());
 
       const String minStr = d80tot(charBuf, DBL80_MIN);
-      diff = DBL80_MIN - wcstod80(minStr.cstr(), NULL);
+      diff = DBL80_MIN - _tcstod80(minStr.cstr(), NULL);
       verify((diff == 0) && (errno == 0));
 
       const Double80 tmin = numeric_limits<Double80>::denorm_min();
       const String tminStr = d80tot(charBuf, tmin);
-      diff = tmin - wcstod80(tminStr.cstr(), NULL);
+      diff = tmin - _tcstod80(tminStr.cstr(), NULL);
       verify((diff == 0) && (errno == 0));
 
       Double80 tmp1 = strtod80("1.18973149535723237e+4932", NULL);
@@ -529,11 +626,11 @@ static void testFunction(const String &name, D802RefFunc f80, D642RefFunc f64, d
 
       for(Double80 d = DBL80_MIN; d != 0; d /= 2) {
         const String dpStr = d80tot(charBuf, d);
-        Double80 tmp = wcstod80(dpStr.cstr(), NULL);
+        Double80 tmp = _tcstod80(dpStr.cstr(), NULL);
         verify((tmp == d) && (errno == 0));
         const Double80 dm = -d;
         const String dmStr = d80tot(charBuf, dm);
-        tmp = wcstod80(dmStr.cstr(), NULL);
+        tmp = _tcstod80(dmStr.cstr(), NULL);
         verify((tmp == dm) && (errno == 0));
       }
 
@@ -570,6 +667,37 @@ static void testFunction(const String &name, D802RefFunc f80, D642RefFunc f64, d
             , __TFUNCTION__
             ,format1000(totalCompares).cstr()
             ,PERCENT(nonZeroErrorCount, totalCompares));
+    }
+
+#if defined(min)
+#undef min
+#endif
+
+    TEST_METHOD(Double80TestHexStrToD80) {
+      constexpr double start             = std::numeric_limits<double>::min();
+      constexpr double step              = 1.0237432;
+      double           maxRelError       = 0;
+      UINT             nonZeroErrorCount = 0, zeroErrorCount = 0;
+      for(double d64 = start; isfinite(d64); d64 *= step) {
+        char str[50];
+        sprintf(str, "%#.17a", d64);
+        Double80 d80 = strtod80(str, NULL);
+        const double err = getRelativeError(d64, d80);
+        if(err == 0) {
+          zeroErrorCount++;
+        } else {
+          nonZeroErrorCount++;
+          if(err > maxRelError) {
+            maxRelError = err;
+            if(err > 3e-19) {
+              String s = str;
+              OUTPUT(_T("Fejl for %21.15le: Relative error:%le"), d64, err);
+              verify(false);
+            }
+          }
+        }
+      }
+      INFO(_T("okCount:%u, fail:%lu, maxError:%le"), zeroErrorCount, nonZeroErrorCount, maxRelError);
     }
 
     static double testRound(double x64, int dec) {
@@ -619,38 +747,128 @@ static void testFunction(const String &name, D802RefFunc f80, D642RefFunc f64, d
     }
 
     void testAllCast(double d64) {
-      const Double80     d80    = d64;
+      const Double80 d80 = d64;
+      verify(d80 == d64);
+
       const int    i1_32  = (int   )d64;
       const int    i2_32  = (int   )d80;
-      verify(i2_32  == i1_32 );
+      if(isInt(d64)) {
+        verify(i2_32  == i1_32 );
+        verify(isInt(d80));
+      } else {
+        verify(!isInt(d80));
+        if(i2_32 != i1_32) {
+          LOG() << "Warning: INT cast for double/Double80 differ"
+                << ": d64=" << d64 << ", d80=" << d80
+                << ", i1_32=" << i1_32
+                << ", i2_32=" << i2_32;
+        }
+      }
 
       const UINT   ui1_32 = (UINT  )d64;
       const UINT   ui2_32 = (UINT  )d80;
-      verify(ui2_32 == ui1_32);
+      if(isUint(d64)) {
+        verify(ui2_32 == ui1_32);
+        verify(isUint(d80));
+      } else {
+        verify(!isUint(d80));
+        if(ui2_32 != ui1_32) {
+          LOG() << "Warning: UINT cast for double/Double80 differ"
+                << ": d64=" << d64 << ", d80=" << d80
+                << ", ui1_32=" << ui1_32
+                << ", ui2_32=" << ui2_32;
+        }
+      }
 
       const short  s1_16 = (short  )d64;
       const short  s2_16 = (short  )d80;
-      verify(s2_16  == s1_16 );
+      if(isShort(d64)) {
+        verify(s2_16  == s1_16 );
+        verify(isShort(d80));
+      } else {
+        verify(!isShort(d80));
+        if(s2_16 != s1_16) {
+          LOG() << "Warning: SHORT cast for double/Double80 differ"
+                << ": d64=" << d64 << ", d80=" << d80
+                << ", s1_16=" << s1_16
+                << ", s2_16=" << s2_16;
+        }
+      }
 
       const USHORT us1_16 = (USHORT)d64;
       const USHORT us2_16 = (USHORT)d80;
-      verify(us2_16 == us1_16);
+      if(isUshort(d64)) {
+        verify(us2_16 == us1_16);
+        verify(isUshort(d80));
+      } else {
+        verify(!isUshort(d80));
+        if(us2_16 != us1_16) {
+          LOG() << "Warning: USHORT cast for double/Double80 differ"
+                << ": d64=" << d64 << ", d80=" << d80
+                << ", us1_16=" << us1_16
+                << ", us2_16=" << us2_16;
+        }
+      }
 
       const long   l1_32  = (long  )d64;
       const long   l2_32  = (long  )d80;
-      verify(l2_32  == l1_32 );
+      if(isInt(d64)) {
+        verify(l2_32 == l1_32);
+        verify(isInt(d80));
+      } else {
+        verify(!isInt(d80));
+        if(l2_32 != l1_32) {
+          LOG() << "Warning: LONG cast for double/Double80 differ"
+                << ": d64=" << d64 << ", d80=" << d80
+                << ", l1_32=" << l1_32
+                << ", l2_32=" << l2_32;
+        }
+      }
 
       const ULONG  ul1_32 = (ULONG )d64;
       const ULONG  ul2_32 = (ULONG )d80;
-      verify(ul2_32 == ul1_32);
+      if(isUint(d64)) {
+        verify(ul2_32 == ul1_32);
+        verify(isUint(d80));
+      } else {
+        verify(!isUint(d80));
+        if(ul2_32 != ul1_32) {
+          LOG() << "Warning: ULONG cast for double/Double80 differ"
+                << ": d64=" << d64 << ", d80=" << d80
+                << ", ul1_32=" << ul1_32
+                << ", ul2_32=" << ul2_32;
+        }
+      }
 
       const INT64  i1_64  = (INT64 )d64;
       const INT64  i2_64  = (INT64 )d80;
-      verify(i2_64 == i1_64);
+      if(isInt64(d64)) {
+        verify(i2_64 == i1_64);
+        verify(isInt64(d80));
+      } else {
+        verify(!isInt(d80));
+        if(i2_64 != i1_64) {
+          LOG() << "Warning: INT64 cast for double/Double80 differ"
+                << ": d64=" << d64 << ", d80=" << d80
+                << ", l1_32=" << l1_32
+                << ", l2_32=" << l2_32;
+        }
+      }
 
       const UINT64 ui1_64 = (UINT64)d64;
       const UINT64 ui2_64 = (UINT64)d80;
-      verify(ui2_64 == ui1_64);
+      if(isUint64(d64)) {
+        verify(ui2_64 == ui1_64);
+        verify(isUint64(d80));
+      } else {
+        verify(!isUint64(d80));
+        if(ui2_64 != ui1_64) {
+          LOG() << "Warning: UINT64 cast for double/Double80 differ"
+                << ": d64=" << d64 << ", d80=" << d80
+                << ", ui1_64=" << ui1_64
+                << ", ui2_64=" << ui2_64;
+        }
+      }
     }
 
     TEST_METHOD(Double80TestCast) {
@@ -675,18 +893,18 @@ static void testFunction(const String &name, D802RefFunc f80, D642RefFunc f64, d
       testAllCast( (double)ULLONG_MAX);
       testAllCast(-(double)ULLONG_MAX);
 
-      Double80 x(LLONG_MAX);
-      INT64    l64  = (INT64 )x;
-      UINT64   ul64 = (UINT64)x;
+      Double80 d80(LLONG_MAX);
+      INT64    l64  = (INT64 )d80;
+      UINT64   ul64 = (UINT64)d80;
       verify(l64  == LLONG_MAX);
       verify(ul64 == LLONG_MAX);
 
-      x = LLONG_MIN;
-      l64  = (INT64)x;
+      d80 = LLONG_MIN;
+      l64  = (INT64)d80;
       verify(l64  == LLONG_MIN);
 
-      x = ULLONG_MAX;
-      ul64  = (UINT64)x;
+      d80 = ULLONG_MAX;
+      ul64  = (UINT64)d80;
       verify(ul64 == ULLONG_MAX);
     }
 
@@ -781,7 +999,7 @@ static void testFunction(const String &name, D802RefFunc f80, D642RefFunc f64, d
 
     TEST_METHOD(Double80FindMax) {
       TCHAR tmpStr[50];
-      OUTPUT(_T("DBL80_MAX:%s"), d80tot(tmpStr, DBL80_MAX));
+      INFO(_T("DBL80_MAX:%s"), d80tot(tmpStr, DBL80_MAX));
       char buffer[10];
       memcpy(buffer, &DBL80_MAX, sizeof(buffer));
       hexdump(buffer, sizeof(buffer), stdout);
@@ -853,7 +1071,7 @@ static void testFunction(const String &name, D802RefFunc f80, D642RefFunc f64, d
             detectedMaxRelError = relError;
           }
           if(relError > maxTolerance) {
-            OUTPUT(_T("%s:Read %s at line %d = %s != expected (=%s"), __TFUNCTION__, dtypeName, i, toString(data, 18).cstr(), toString(expected, 18).cstr());
+            OUTPUT(_T("%s:Read %s at line %zu = %s != expected (=%s"), __TFUNCTION__, dtypeName, i, toString(data, 18).cstr(), toString(expected, 18).cstr());
             OUTPUT(_T("Relative error:%s"), toString(relError).cstr());
             verify(false);
           }
@@ -922,10 +1140,12 @@ static void testFunction(const String &name, D802RefFunc f80, D642RefFunc f64, d
       verify(sizeof(FPUState      ) == 108);
 
 //      debugLog(_T("%s\n%s\n"), __TFUNCTION__, FPU::getState().toString().cstr());
+      _se_translator_function oldTranslator = FPU::setExceptionTranslator(testFPUexceptionHandler);
       FPU::clearExceptions();
 
       const FPUControlWord ctrlSave = FPU::getControlWord();
 
+    try {
       FPUControlWord ctrlWord = ctrlSave;
       FPU::setControlWord(ctrlWord.setPrecisionMode(FPU_HIGH_PRECISION)
                                   .adjustExceptionMask(FPU_INVALID_OPERATION_EXCEPTION
@@ -1039,35 +1259,6 @@ static void testFunction(const String &name, D802RefFunc f80, D642RefFunc f64, d
       verify(d80 == 1000);
       for(d80 = 1000; d80 > -1000; d80--);
       verify(d80 == -1000);
-      TESTFUNC(fmod     , -60    , 60     ,  1.2    , 10     );
-      TESTFUNC(fmod     , -2.3   , 2.7    , -1.2    , 1      );
-      TESTFUNC(fmod     , -1.1e23, 1.1e23 , 1.1e-10 , 1.45e-6);
-
-      TESTFUNC(sqrt     ,  0     ,  10    );
-      TESTFUNC(sin      , -1     ,   1    );
-      TESTFUNC(cos      , -1     ,   1    );
-      TESTFUNC(tan      , -1     ,   1    );
-      TESTFUNC(asin     , -1     ,   1    );
-      TESTFUNC(acos     , -1     ,   1    );
-      TESTFUNC(atan     , -1     ,   1    );
-      TESTFUNC(atan2    , -2.3   , 2.7    , -1.2, 1);
-      TESTFUNC(exp      , -1     ,   1    );
-      TESTFUNC(exp10    , -2.4   ,  12.2  );
-      TESTFUNC(exp2     , -2.4   ,  12.2  );
-      TESTFUNC(log      , 1e-3   ,   1e3  );
-      TESTFUNC(log10    , 1e-3   ,   1e3  );
-      TESTFUNC(log2     , 1e-3   ,   1e3  );
-      TESTFUNC(pow      , 0.1    ,   2.7e3, -2.1, 2);
-      verify(pow(Double80::_0, Double80::_1) == Double80::_0);
-      verify(pow(Double80::_0, Double80::_0) == Double80::_1);
-      TESTFUNC(root     , 0.1    ,   2.7e3, -2.1, 2);
-      TESTFUNC(fraction , 1e-3   ,   1e3  );
-      TESTFUNC(fraction ,-1e3    ,  -1e-3 );
-      TESTFUNC(floor    ,-2.3    ,   2.7  );
-      TESTFUNC(ceil     ,-2.3    ,   2.7  );
-      TESTFUNC(fabs     ,-1      ,   1    );
-      testFunction("dmin", dmin<Double80>    , dmin<double>, -2.3, 2.7, -1.2, 1);
-      testFunction("dmax", dmax<Double80>    , dmax<double>, -2.3, 2.7, -1.2, 1);
 
       verify(sign(Double80( 2)  ) ==  1);
       verify(sign(Double80(-2)  ) == -1);
@@ -1196,8 +1387,46 @@ static void testFunction(const String &name, D802RefFunc f80, D642RefFunc f64, d
 
       const Double80 e80(buffer);
       verify(e80 == d80);
-
       FPU::restoreControlWord(ctrlSave);
+      FPU::setExceptionTranslator(oldTranslator);
+    } catch(...) {
+      FPU::clearExceptionsNoWait();
+      FPU::restoreControlWord(ctrlSave);
+      FPU::setExceptionTranslator(oldTranslator);
+      throw;
+    }
+    }
+
+    TEST_METHOD(Double80MathFunctions) {
+      TESTFUNC(fmod     , -60    , 60     ,  1.2    , 10     );
+      TESTFUNC(fmod     , -2.3   , 2.7    , -1.2    , 1      );
+      TESTFUNC(fmod     , -1.1e23, 1.1e23 , 1.1e-10 , 1.45e-6);
+
+      TESTFUNC(sqrt     ,  0     ,  10    );
+      TESTFUNC(sin      , -1     ,   1    );
+      TESTFUNC(cos      , -1     ,   1    );
+      TESTFUNC(tan      , -1     ,   1    );
+      TESTFUNC(asin     , -1     ,   1    );
+      TESTFUNC(acos     , -1     ,   1    );
+      TESTFUNC(atan     , -1     ,   1    );
+      TESTFUNC(atan2    , -2.3   , 2.7    , -1.2, 1);
+      TESTFUNC(exp      , -1     ,   1    );
+      TESTFUNC(exp10    , -2.4   ,  12.2  );
+      TESTFUNC(exp2     , -2.4   ,  12.2  );
+      TESTFUNC(log      , 1e-3   ,   1e3  );
+      TESTFUNC(log10    , 1e-3   ,   1e3  );
+      TESTFUNC(log2     , 1e-3   ,   1e3  );
+      TESTFUNC(pow      , 0.1    ,   2.7e3, -2.1, 2);
+      verify(pow(Double80::_0, Double80::_1) == Double80::_0);
+      verify(pow(Double80::_0, Double80::_0) == Double80::_1);
+      TESTFUNC(root     , 0.1    ,   2.7e3, -2.1, 2);
+      TESTFUNC(fraction , 1e-3   ,   1e3  );
+      TESTFUNC(fraction ,-1e3    ,  -1e-3 );
+      TESTFUNC(floor    ,-2.3    ,   2.7  );
+      TESTFUNC(ceil     ,-2.3    ,   2.7  );
+      TESTFUNC(fabs     ,-1      ,   1    );
+      testFunction("dmin", dmin<Double80>    , dmin<double>, -2.3, 2.7, -1.2, 1);
+      testFunction("dmax", dmax<Double80>    , dmax<double>, -2.3, 2.7, -1.2, 1);
     }
 
     template<class T> class Pair {

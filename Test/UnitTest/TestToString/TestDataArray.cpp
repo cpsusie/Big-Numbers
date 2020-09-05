@@ -3,8 +3,8 @@
 
 DEFINECLASSNAME(AbstractTestElementIterator);
 
-TestIterator::TestIterator(TestDataArray *array, StreamSize maxWidth, StreamSize maxPrecision, UINT multibitFieldsFilter)
-: Iterator<TestElement>(new AbstractTestElementIterator(*array, maxWidth, maxPrecision, multibitFieldsFilter))
+TestIterator::TestIterator(TestDataArray *array, UINT multibitFieldsFilter, StreamSize maxWidth, StreamSize maxPrecision)
+: Iterator<TestElement>(new AbstractTestElementIterator(*array, multibitFieldsFilter, maxWidth, maxPrecision))
 {
 }
 
@@ -16,11 +16,11 @@ void TestIterator::dumpAllFormats() const {
   ((AbstractTestElementIterator*)m_it)->dumpAllFormats();
 }
 
-TestIterator TestDataArray::getIterator(StreamSize maxWidth, StreamSize maxPrecision, UINT multibitFieldsFilter) {
-  return TestIterator(this, maxWidth, maxPrecision, multibitFieldsFilter);
+TestIterator TestDataArray::getIterator(UINT multibitFieldsFilter, StreamSize maxWidth, StreamSize maxPrecision) {
+  return TestIterator(this, multibitFieldsFilter, maxWidth, maxPrecision);
 }
 
-AbstractTestElementIterator::AbstractTestElementIterator(TestValueArray &a, StreamSize maxWidth, StreamSize maxPrecision, UINT multibitFieldsFilter)
+AbstractTestElementIterator::AbstractTestElementIterator(TestValueArray &a, UINT multibitFieldsFilter, StreamSize maxWidth, StreamSize maxPrecision)
   : m_valueArray(a)
   , m_maxWidth(maxWidth)
   , m_maxPrecision(maxPrecision)

@@ -17,21 +17,19 @@ class TestDataArray;
 
 class TestIterator : public Iterator<TestElement> {
 public:
-  TestIterator(TestDataArray *array, StreamSize maxWidth, StreamSize maxPrecision, UINT multibitFieldsFilter);
+  TestIterator(TestDataArray *array, UINT multibitFieldsFilter, StreamSize maxWidth, StreamSize maxPrecision);
   size_t getMaxIterationCount() const;
   void dumpAllFormats() const;
 };
 
 class TestDataArray : public TestValueArray {
 public:
-  TestDataArray(const double *testValues, size_t n)
-    : TestValueArray(testValues, n)
-  {}
-  TestDataArray(const CompactDoubleArray &testValues)
-    : TestValueArray(testValues)
-  {}
+  TestDataArray(const double *testValues, size_t n) : TestValueArray(testValues, n) {
+  }
+  TestDataArray(const CompactDoubleArray &testValues) : TestValueArray(testValues) {
+  }
 
-  TestIterator getIterator(StreamSize maxWidth = 24, StreamSize maxPrecision = 14, UINT multibitFieldsFilter = ALLOWMANY_FLOATFIELDBITS);
+  TestIterator getIterator(UINT multibitFieldsFilter = ALLOWMANY_FLOATFIELDBITS, StreamSize maxWidth = 24, StreamSize maxPrecision = 14);
 };
 
 class AbstractTestElementIterator : public AbstractIterator {
@@ -45,7 +43,7 @@ private:
   bool                             m_hasNext;
   void nextValue();
 public:
-  AbstractTestElementIterator(TestValueArray &a, StreamSize maxWidth, StreamSize maxPrecision, UINT multibitFieldsFilter);
+  AbstractTestElementIterator(TestValueArray &a, UINT multibitFieldsFilter, StreamSize maxWidth, StreamSize maxPrecision);
   AbstractIterator *clone()       override {
     return new AbstractTestElementIterator(*this);
   }
