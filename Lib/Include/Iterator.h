@@ -61,11 +61,25 @@ public:
   }
 
   String toString(AbstractStringifier<T> &sf, const TCHAR *delimiter = _T(",")) {
-    const TCHAR *delim = NULL;
     String result;
-    while(hasNext()) {
-      if(delim) result += delim; else delim = delimiter;
+    if(hasNext()) {
       result += sf.toString(next());
+      while(hasNext()) {
+        result += delimiter;
+        result += sf.toString(next());
+      }
+    }
+    return result;
+  }
+
+  String toString(const TCHAR *delimiter = _T(",")) {
+    String result;
+    if(hasNext()) {
+      result += sf.toString(next());
+      while(hasNext()) {
+        result += delimiter;
+        result += toString(next());
+      }
     }
     return result;
   }
