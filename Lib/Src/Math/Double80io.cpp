@@ -100,32 +100,9 @@ template<typename StringType> StringType &formatD80(StringType &dst, const Doubl
   } else if(x.isZero()) {
     formatZero(d80Str, prec, flags);
   } else if((flags & ios::floatfield) == ios::hexfloat) { // x defined && x != 0
-
     formatHex(d80Str, x, prec, flags);
   } else {
-    D80StringFields sf(x);
-    switch(flags & ios::floatfield) {
-    case 0              : // No float-format is specified. Format depends on e10 and precision
-      if((flags & ios::showpoint) && (prec == 0)) prec = 6;
-      if(prec == 0) {
-        if((sf.m_expo10 < -4) || (sf.m_expo10 >= 6)) {
-          formatScientific(d80Str, sf, 6, flags);
-        } else {
-          formatFixed(d80Str, sf, 6-sf.m_expo10, flags);
-        }
-      } else if((sf.m_expo10 < -4) || (sf.m_expo10 > 14) || ((sf.m_expo10 > 0) && (sf.m_expo10 >= prec)) || (sf.m_expo10 > prec)) {
-        formatScientific(d80Str, sf, prec, flags);
-      } else {
-        formatFixed(d80Str, sf, max(0, prec-sf.m_expo10), flags);
-      }
-      break;
-    case ios::scientific: // Use scientific format
-      formatScientific(d80Str, sf, prec?prec:6, flags);
-      break;
-    case ios::fixed     : // Use fixed format
-      formatFixed(d80Str, sf, prec, flags);
-      break;
-    }
+    D80StringFields(x).formatFloat(d80Str, prec, flags);
   } // x defined && x != 0
   return formatFilledFloatField(dst, d80Str, x.isNegative(), param);
 }

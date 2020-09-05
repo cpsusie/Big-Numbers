@@ -51,7 +51,7 @@ class BigReal {
   friend class BigRealTestClass;
   friend class BigInt;
   friend class BigRational;
-  friend class BigRealFormatter;
+  friend class BigRealStringFields;
 
 private:
   static const BRDigitTypex86 s_power10Tablex86[BIGREAL_POW10TABLESIZEx86];

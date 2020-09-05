@@ -5,16 +5,17 @@ using namespace std;
 
 
 TCHAR *StreamParameters::flagsToStr(TCHAR *dst, FormatFlags flags) { // static
-#define BITCH(f,chset,chclr) (flags & ios::f) ? #@chset : chclr
-#define BIT(f)                BITCH(f,1,'0')
+#define BITCH(f,chset,chclr) (flags & ios::f) ? _T(#@chset) : _T(chclr)
+#define BIT(f)                BITCH(f,1 ,'0')
 #define BITCH1(f,ch)          BITCH(f,ch,' ')
+#define BITSTR(f,s1,s2)       ((flags & ios::f)?_T(s1):_T(s2))
 
-  _stprintf(dst, _T("%c%c,skw%c,uc%c,shb%c,adj(%c%c%c),b(%c%c%c),fl(%c%c),u%c,ba%c,std%c")
+  _stprintf(dst, _T("%c%c%s,%s,%s,adj(%c%c%c),b(%c%c%c),fl(%c%c),%s,%s,%s")
                , BITCH1(showpos   ,+)
                , BITCH1(showpoint ,.)
-               , BIT(skipws         )
-               , BIT(uppercase      )
-               , BIT(showbase       )
+               , BITSTR(uppercase ,"uc"   ,"lc"   )
+               , BITSTR(skipws    ,"skipW","     ")
+               , BITSTR(showbase  ,"showB","     ")
                , BITCH1(left      ,l)
                , BITCH1(right     ,r)
                , BITCH1(internal  ,i)
@@ -23,9 +24,9 @@ TCHAR *StreamParameters::flagsToStr(TCHAR *dst, FormatFlags flags) { // static
                , BITCH1(oct       ,o)
                , BITCH1(scientific,e)
                , BITCH1(fixed     ,f)
-               , BIT(   unitbuf     )
-               , BIT(   boolalpha   )
-               , BIT(   _Stdio      )
+               , BITSTR(unitbuf   ,"unit" ,"    " )
+               , BITSTR(boolalpha ,"boolA","     ")
+               , BITSTR(_Stdio    ,"stdio","     ")
            );
   return dst;
 }

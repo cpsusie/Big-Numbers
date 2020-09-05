@@ -5,14 +5,29 @@
 
 using namespace OStreamHelper;
 
+static unsigned char hexCharLookup[] = {
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 0, 0, 0, 0, 0,
+  0,10,11,12,13,14,15, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0,10,11,12,13,14,15, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+};
+
+// assume isxdigit(ch)
+static inline int charToInt(wchar_t ch) {
+  return hexCharLookup[ch];
+}
+
 template<typename CharType> const CharType *parseD80Decimal(const CharType *s, Double80 &result, bool &gotDigit) {
   if(iswdigit(*s)) {
     gotDigit = true;
-#define TCHARTODECIMAL(ch) ((int)((ch) - '0'))
-    result   = TCHARTODECIMAL(*(s++));
+    result   = charToInt(*(s++));
     while(iswdigit(*s)) {
       result *= 10;
-      result += TCHARTODECIMAL(*(s++));
+      result += charToInt(*(s++));
     }
   }
   bool     hasFraction    = false;
@@ -21,10 +36,10 @@ template<typename CharType> const CharType *parseD80Decimal(const CharType *s, D
   if((*s == '.') && iswdigit(s[1])) {
     s++;
     gotDigit = true;
-    fraction = TCHARTODECIMAL(*(s++));
+    fraction = charToInt(*(s++));
     for(fractionLength++; iswdigit(*s); fractionLength++) {
       fraction *= 10;
-      fraction += TCHARTODECIMAL(*(s++));
+      fraction += charToInt(*(s++));
     }
     if(fraction != 0) {
       hasFraction = true;
@@ -45,11 +60,11 @@ template<typename CharType> const CharType *parseD80Decimal(const CharType *s, D
       }
       bool gotExpoDigits = false;
       if(iswdigit(*s)) {
-        exponent = TCHARTODECIMAL(*(s++));
+        exponent = charToInt(*(s++));
         gotExpoDigits = true;
         while(iswdigit(*s)) {
           exponent *= 10;
-          exponent += TCHARTODECIMAL(*(s++));
+          exponent += charToInt(*(s++));
         }
       }
       if(!gotExpoDigits) {
@@ -78,34 +93,6 @@ template<typename CharType> const CharType *parseD80Decimal(const CharType *s, D
     }
   }
   return s;
-}
-
-static UINT charToInt(wchar_t ch) {
-  switch(ch) {
-  case '0':
-  case '1':
-  case '2':
-  case '3':
-  case '4':
-  case '5':
-  case '6':
-  case '7':
-  case '8':
-  case '9': return ch - '0';
-  case 'a':
-  case 'b':
-  case 'c':
-  case 'd':
-  case 'e':
-  case 'f':  return ch - 'a' + 10;
-  case 'A':
-  case 'B':
-  case 'C':
-  case 'D':
-  case 'E':
-  case 'F':  return ch - 'A' + 10;
-  }
-  return 0;
 }
 
 template<typename CharType> const CharType *parseD80Hex(const CharType *s, Double80 &result, bool &gotDigit) {
@@ -143,11 +130,11 @@ template<typename CharType> const CharType *parseD80Hex(const CharType *s, Doubl
     }
     bool gotExpoDigits = false;
     if(iswdigit(*s)) {
-      exponent = TCHARTODECIMAL(*(s++));
+      exponent = charToInt(*(s++));
       gotExpoDigits = true;
       while(iswdigit(*s)) {
         exponent *= 10;
-        exponent += TCHARTODECIMAL(*(s++));
+        exponent += charToInt(*(s++));
       }
     }
     if(!gotExpoDigits) {
@@ -176,12 +163,14 @@ template<typename CharType> Double80 _strtod80_locale(const CharType *s, CharTyp
     s++;
   }
 
-  _se_translator_function prevTranslator = FPU::setExceptionTranslator(FPUexceptionTranslator);
+  _se_translator_function oldTranslator = FPU::setExceptionTranslator(FPUexceptionTranslator);
   FPU::clearExceptions();
-  FPUControlWord oldcw = FPU::getControlWord(), ctrlWord = oldcw;
-  FPU::setControlWord(ctrlWord.adjustExceptionMask(FPU_OVERFLOW_EXCEPTION, FPU_UNDERFLOW_EXCEPTION | FPU_DENORMALIZED_EXCEPTION)
-                              .setRoundMode(FPU_ROUNDCONTROL_ROUND));
+  const FPUControlWord    oldcw = FPU::getControlWord();
   try {
+    FPUControlWord ctrlWord = oldcw;
+    FPU::setControlWord(ctrlWord.adjustExceptionMask(FPU_OVERFLOW_EXCEPTION, FPU_UNDERFLOW_EXCEPTION | FPU_DENORMALIZED_EXCEPTION)
+                                .setRoundMode(FPU_ROUNDCONTROL_ROUND));
+
     if((s[0] == '0') && ((s[1] == 'x') || (s[1] == 'X'))) {
       s = parseD80Hex(s+2, result, gotDigit);
     } else {
@@ -203,13 +192,13 @@ template<typename CharType> Double80 _strtod80_locale(const CharType *s, CharTyp
     }
   } catch(...) {
     FPU::clearExceptionsNoWait();
-    FPU::restoreControlWord(oldcw);
-    FPU::setExceptionTranslator(prevTranslator);
+    FPU::restoreControlWord(    oldcw        );
+    FPU::setExceptionTranslator(oldTranslator);
     throw;
   }
   FPU::clearExceptionsNoWait();
-  FPU::restoreControlWord(oldcw);
-  FPU::setExceptionTranslator(prevTranslator);
+  FPU::restoreControlWord(    oldcw        );
+  FPU::setExceptionTranslator(oldTranslator);
   return isNegative ? -result : result;
 }
 
@@ -324,11 +313,7 @@ template<typename CharType> CharType *_d80tostr(CharType *dst, const Double80 &x
     expo10 = Double80::getExpo10(x) - DBL80_DIG + 1;
     normalizeValue(m, expo10);
     // Assertion: _UI64_MAX/10 < m <= _UI64_MAX and x = (negative?-1:1) * m * 10^(expo10-DBL80_DIG)
-#if defined(_DEBUG)
-    if((m <= d80Maxui64q10) || (m > _UI64_MAX)) {
-      int fisk = 1;
-    }
-#endif
+    assert((d80Maxui64q10 < m) && (m <= _UI64_MAX));
     getDigitsStr(digits, m, expo10);
     expo10--;
     FPU::restoreControlWord(cwSave);

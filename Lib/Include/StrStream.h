@@ -116,7 +116,7 @@ namespace OStreamHelper {
   //     str=="8946", wantedLength==1, will modify str to "9"   , return false
   //     str=="4"   , wantedLength==0, will modify str to ""    , return false
   //     str=="5"   , wantedLength==0, will modify str to ""    , return true
-  bool round5DigitString(String &str, UINT wantedLength);
+  bool round5DigitString(String &str, intptr_t wantedLength);
 
   // format str, left,right,internal aligned, width filler character/inserted if getWidth() > str.length()
   // prefix containing sign and radix sequence (0x/X) is added
@@ -138,20 +138,37 @@ namespace OStreamHelper {
 
   class FloatStringFields {
   public:
-    String m_ciphers;       // digits before comma
-    String m_decimals;      // digits after comma
-    int    m_expo10;        // base 10 exponent
-    UINT   m_minExpoLength;
+    String   m_ciphers;       // digits before comma
+    String   m_decimals;      // digits after comma
+    intptr_t m_expo10;        // base 10 exponent
+    UINT     m_minExpoLength;
   protected:
     void init(TCHAR *str);
+    // Adjust m_ciphers,m_decimals,m_expo10, so exactly 1 decimal digit (!= '0') is in m_ciphers and tail in m_decimals.
+    // If any digits are moved between m_ciphers and m_decimals, m_expo10 is adjusted accordingly.
+    void normalize();
     inline FloatStringFields(UINT minExpoLength = 3)
       : m_minExpoLength(minExpoLength)
       , m_expo10(0)
     {
     }
+    // Return index of first character in s not equal to '0', -1 of none found
+    static intptr_t findFirstNonZero(const String &s);
+
+    // Remove leading zeroes ('0') from s if any.
+    // Return the number of zeroes removed
+    static size_t   trimLeadingZeroes(  String &s);
+
+    // Remove trailing zeroes ('0') from s if any.
+    // Return s
+    static String  &trimTrailingZeroes( String &s);
+
+    static size_t   countLeadingZeroes( const String &s);
+    static size_t   countTrailingZeroes(const String &s);
   public:
     // Assume str contains a numeric field of decimal digits in the form
-    // "[0-9].[0-9]*e[+-][0-9]+"
+    // "[0-9]+(.[0-9]*)?(e[+-]?[0-9]+)?" or "[0-9]*.[0-9]+(e[+-]?[0-9]+)?"
+    // If exponent part is not specified, an exponent of 0 is assumed
     inline FloatStringFields(TCHAR *str, UINT minExpoLength = 3)
       : m_minExpoLength(minExpoLength)
     {
@@ -165,25 +182,33 @@ namespace OStreamHelper {
     }
     // Return formatted exponent, without leading 'e'
     inline String getExponentStr() const {
+#if defined(IS64BIT)
+      return format(_T("%+0*lld"), m_minExpoLength+1, m_expo10);
+#else // IS32BIT
       return format(_T("%+0*d"), m_minExpoLength+1, m_expo10);
+#endif // IS64BIT
     }
+    template<typename StringType> StringType &formatFixed(     StringType &dst, StreamSize prec, FormatFlags flags);
+    template<typename StringType> StringType &formatScientific(StringType &dst, StreamSize prec, FormatFlags flags);
+    template<typename StringType> StringType &formatFloat(     StringType &dst, StreamSize prec, FormatFlags flags);
   };
 
   // Return dst
-  template<typename StringType> StringType &formatFixed(StringType &dst, FloatStringFields &sf, StreamSize prec, FormatFlags flags) {
-    const bool defaultFormat      = (flags & ios::floatfield) == 0;
-    const bool forceDecimalPoint  = (flags & ios::showpoint ) != 0;
-    const bool trimTrailingZeroes = defaultFormat && !forceDecimalPoint;
-    const int  decimalsAfterComma = defaultFormat ? max(0, (int)prec - (int)sf.m_ciphers.length())
-                                                  : max(0, (int)prec);
+  template<typename StringType> StringType &FloatStringFields::formatFixed(StringType &dst, StreamSize prec, FormatFlags flags) {
+    const bool     defaultFormat      = (flags & ios::floatfield) == 0;
+    const bool     forceDecimalPoint  = (flags & ios::showpoint ) != 0;
+    const bool     trimTrailingZeroes = defaultFormat && !forceDecimalPoint;
 
-    String     allDigits  = sf.getAllDigits();
-    int        digitCount = (int)allDigits.length();
-    int        commaPos   = (int)sf.m_ciphers.length() + sf.m_expo10;
+    const intptr_t decimalsAfterComma = defaultFormat ? max(0, (intptr_t)prec - ((intptr_t)m_ciphers.length() - countLeadingZeroes(m_ciphers)))
+                                                      : max(0, (intptr_t)prec);
+
+    String     allDigits  = getAllDigits();
+    intptr_t   digitCount = allDigits.length();
+    intptr_t   commaPos   = m_ciphers.length() + m_expo10;
 
     if(commaPos <= digitCount) {
-      if(sf.m_expo10 < 0) {
-        allDigits.insert(0, -sf.m_expo10, '0');
+      if(commaPos <= 0) {
+        allDigits.insert(0, 1-commaPos, '0');
         commaPos = 1;
       }
       if(round5DigitString(allDigits, commaPos + decimalsAfterComma)) {
@@ -193,19 +218,19 @@ namespace OStreamHelper {
       dst = substr(allDigits, 0, commaPos);
       if(forceDecimalPoint || (decimalsAfterComma > 0)) {
         addDecimalPoint(dst);
-        const int len1 = (int)dst.length();
+        const intptr_t len1 = dst.length();
         if(decimalsAfterComma > 0) {
           dst += substr(allDigits, commaPos, decimalsAfterComma);
         }
-        const int currentDecimalsAfterComma = (int)dst.length() - len1;
+        const intptr_t currentDecimalsAfterComma = (intptr_t)dst.length() - len1;
         if(trimTrailingZeroes) {
           removeTralingZeroes(dst, !forceDecimalPoint);
         } else if(decimalsAfterComma > currentDecimalsAfterComma) {
           addZeroes(dst, decimalsAfterComma - currentDecimalsAfterComma);
         }
       }
-    } else { // commaPos > digits.length()
-      const int zeroCount = commaPos - digitCount;
+    } else { // commaPos > digitCount
+      const intptr_t zeroCount = commaPos - digitCount;
       dst = allDigits;
       addZeroes(dst, zeroCount);
       if(forceDecimalPoint || (decimalsAfterComma > 0)) {
@@ -219,38 +244,69 @@ namespace OStreamHelper {
   }
 
   // Return dst
-  template<typename StringType> StringType &formatScientific(StringType &dst, FloatStringFields &sf, StreamSize prec, FormatFlags flags) {
-    const bool defaultFormat      = (flags & ios::floatfield) == 0;
-    const bool forceDecimalPoint  = (flags & ios::showpoint ) != 0;
-    const bool trimTrailingZeroes = defaultFormat && !forceDecimalPoint;
-    const int  decimalsAfterComma = defaultFormat ? max(0, (int)prec - 1) : (int)prec;
+  template<typename StringType> StringType &FloatStringFields::formatScientific(StringType &dst, StreamSize prec, FormatFlags flags) {
+    const bool     defaultFormat      = (flags & ios::floatfield) == 0;
+    const bool     forceDecimalPoint  = (flags & ios::showpoint ) != 0;
+    const bool     trimTrailingZeroes = defaultFormat && !forceDecimalPoint;
+    const intptr_t decimalsAfterComma = defaultFormat ? max(0, (intptr_t)prec - 1) : (intptr_t)prec;
 
-    if(decimalsAfterComma < (int)sf.m_decimals.length()) {
-      if(round5DigitString(sf.m_decimals, decimalsAfterComma)) {
-        if(sf.m_ciphers[0] < '9') {
-          sf.m_ciphers[0]++;
+    normalize();
+    if(decimalsAfterComma < (intptr_t)m_decimals.length()) {
+      if(round5DigitString(m_decimals, decimalsAfterComma)) {
+        if(m_ciphers[0] < '9') {
+          m_ciphers[0]++;
         } else {
-          sf.m_ciphers[0] = _T('1');
-          sf.m_expo10++;
+          m_ciphers[0] = _T('1');
+          m_expo10++;
         }
       }
     }
     if(trimTrailingZeroes) {
-      removeTralingZeroes(sf.m_decimals, false);
+      removeTralingZeroes(m_decimals, false);
     } else {
-      const int zeroCount = decimalsAfterComma - (int)sf.m_decimals.length();
-      if(zeroCount > 0) addZeroes(sf.m_decimals, zeroCount);
+      const intptr_t zeroCount = decimalsAfterComma - (intptr_t)m_decimals.length();
+      if(zeroCount > 0) addZeroes(m_decimals, zeroCount);
     }
-    dst = sf.m_ciphers;
+    dst = m_ciphers;
 
-    if(forceDecimalPoint || (sf.m_decimals.length() > 0)) {
+    if(forceDecimalPoint || (m_decimals.length() > 0)) {
       addDecimalPoint(dst);
-      if(sf.m_decimals.length() > 0) {
-        dst += sf.m_decimals;
+      if(m_decimals.length() > 0) {
+        dst += m_decimals;
       }
     }
     addExponentChar(dst, flags);
-    dst += sf.getExponentStr();
+    dst += getExponentStr();
+    return dst;
+  }
+
+  // Format floating point. (flags & ios::floatfield) must be in {0,ios:scientific,ios::fixed}
+  // return dst
+  template<typename StringType> StringType &FloatStringFields::formatFloat(StringType &dst, StreamSize prec, FormatFlags flags) {
+    switch(flags & ios::floatfield) {
+    case 0: // No float-format is specified. Format depends on e10 and precision
+      if((flags & ios::showpoint) && (prec == 0)) prec = 6;
+      if(prec == 0) {
+        if((m_expo10 < -4) || (m_expo10 >= 6)) {
+          formatScientific(dst, 6, flags);
+        } else {
+          formatFixed(dst, 6 - m_expo10, flags);
+        }
+      } else if((m_expo10 < -4) || (m_expo10 > 14) || ((m_expo10 > 0) && (m_expo10 >= prec)) || (m_expo10 > prec)) {
+        formatScientific(dst, prec, flags);
+      } else {
+        formatFixed(dst, max(0, prec - m_expo10), flags);
+      }
+      break;
+    case ios::scientific: // Use scientific format
+      formatScientific(dst, prec ? prec : 6, flags);
+      break;
+    case ios::fixed: // Use fixed format
+      formatFixed(dst, prec, flags);
+      break;
+    default:
+      throwInvalidArgumentException(__TFUNCTION__, _T("flags.floatField must be 0,fixed,scientific"));
+    }
     return dst;
   }
 
@@ -264,18 +320,7 @@ namespace OStreamHelper {
       dst += "+0";
     } else {
       String tmp(_T("0.0e0"));
-      FloatStringFields zf(tmp.cstr(), 2);
-      switch(flags & ios::floatfield) {
-      case 0:
-        formatFixed(dst, zf, prec?prec:6, flags);
-        break;
-      case ios::scientific:
-        formatScientific(dst, zf, prec?prec:6, flags);
-        break;
-      case ios::fixed:
-        formatFixed(dst, zf, prec, flags);
-        break;
-      }
+      FloatStringFields(tmp.cstr(), 2).formatFloat(dst, prec, flags);
     }
     return dst;
   }
