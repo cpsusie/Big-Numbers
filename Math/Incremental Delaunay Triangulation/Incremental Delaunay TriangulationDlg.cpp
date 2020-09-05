@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include <MFCUtil/Point2D.h>
+#include <Math/Point2D.h>
 #include <MFCUtil/ColorSpace.h>
 #include "Incremental Delaunay Triangulation.h"
 #include "Incremental Delaunay TriangulationDlg.h"

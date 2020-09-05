@@ -67,6 +67,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IntelCPU", "Src\IntelCPU\IntelCPU.vcxproj", "{AB106985-7539-4131-A4C5-C0D0318022D1}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UtilAddin", "Src\UtilAddin\UtilAddin.vcxproj", "{3795D6FD-BA02-4881-9C9A-233B936E282B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DA57B57F-CFF3-4620-87AE-69D3598B492D} = {DA57B57F-CFF3-4620-87AE-69D3598B492D}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

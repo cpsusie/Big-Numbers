@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2027
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30413.136
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ShowGraf", "ShowGraf\ShowGraf.vcxproj", "{7C7B1CB0-410D-4BE1-86B2-7C279CBF0ED6}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -201,12 +201,6 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FindStrings", "FindStrings\FindStrings.vcxproj", "{6370C4C8-7A7A-4580-8F5C-29909DFC957E}"
 	ProjectSection(ProjectDependencies) = postProject
 		{DA57B57F-CFF3-4620-87AE-69D3598B492D} = {DA57B57F-CFF3-4620-87AE-69D3598B492D}
-	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "prndlg", "prndlg\prndlg.vcxproj", "{90B069E3-FB6F-42E6-BF33-5F07CE768EC2}"
-	ProjectSection(ProjectDependencies) = postProject
-		{DA57B57F-CFF3-4620-87AE-69D3598B492D} = {DA57B57F-CFF3-4620-87AE-69D3598B492D}
-		{EC9661C7-AA70-418D-BC1C-4F9A87837BFD} = {EC9661C7-AA70-418D-BC1C-4F9A87837BFD}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Alarm", "Alarm\alarm.vcxproj", "{C8DC2B40-7FEF-44C8-9A45-37C52F97C28B}"
@@ -1224,40 +1218,6 @@ Global
 		{6370C4C8-7A7A-4580-8F5C-29909DFC957E}.TraceMemRelease|x64.Build.0 = Release|x64
 		{6370C4C8-7A7A-4580-8F5C-29909DFC957E}.TraceMemRelease|x86.ActiveCfg = Release|Win32
 		{6370C4C8-7A7A-4580-8F5C-29909DFC957E}.TraceMemRelease|x86.Build.0 = Release|Win32
-		{90B069E3-FB6F-42E6-BF33-5F07CE768EC2}.Debug|x64.ActiveCfg = Debug|x64
-		{90B069E3-FB6F-42E6-BF33-5F07CE768EC2}.Debug|x64.Build.0 = Debug|x64
-		{90B069E3-FB6F-42E6-BF33-5F07CE768EC2}.Debug|x86.ActiveCfg = Debug|Win32
-		{90B069E3-FB6F-42E6-BF33-5F07CE768EC2}.Debug|x86.Build.0 = Debug|Win32
-		{90B069E3-FB6F-42E6-BF33-5F07CE768EC2}.LDDebug|x64.ActiveCfg = Debug|x64
-		{90B069E3-FB6F-42E6-BF33-5F07CE768EC2}.LDDebug|x64.Build.0 = Debug|x64
-		{90B069E3-FB6F-42E6-BF33-5F07CE768EC2}.LDDebug|x86.ActiveCfg = Debug|Win32
-		{90B069E3-FB6F-42E6-BF33-5F07CE768EC2}.LDDebug|x86.Build.0 = Debug|Win32
-		{90B069E3-FB6F-42E6-BF33-5F07CE768EC2}.LDRelease|x64.ActiveCfg = Release|x64
-		{90B069E3-FB6F-42E6-BF33-5F07CE768EC2}.LDRelease|x64.Build.0 = Release|x64
-		{90B069E3-FB6F-42E6-BF33-5F07CE768EC2}.LDRelease|x86.ActiveCfg = Release|Win32
-		{90B069E3-FB6F-42E6-BF33-5F07CE768EC2}.LDRelease|x86.Build.0 = Release|Win32
-		{90B069E3-FB6F-42E6-BF33-5F07CE768EC2}.Profilling|x64.ActiveCfg = Release|x64
-		{90B069E3-FB6F-42E6-BF33-5F07CE768EC2}.Profilling|x86.ActiveCfg = Release|Win32
-		{90B069E3-FB6F-42E6-BF33-5F07CE768EC2}.Release|x64.ActiveCfg = Release|x64
-		{90B069E3-FB6F-42E6-BF33-5F07CE768EC2}.Release|x64.Build.0 = Release|x64
-		{90B069E3-FB6F-42E6-BF33-5F07CE768EC2}.Release|x86.ActiveCfg = Release|Win32
-		{90B069E3-FB6F-42E6-BF33-5F07CE768EC2}.Release|x86.Build.0 = Release|Win32
-		{90B069E3-FB6F-42E6-BF33-5F07CE768EC2}.TraceMemDebug|x64.ActiveCfg = Debug|x64
-		{90B069E3-FB6F-42E6-BF33-5F07CE768EC2}.TraceMemDebug|x64.Build.0 = Debug|x64
-		{90B069E3-FB6F-42E6-BF33-5F07CE768EC2}.TraceMemDebug|x86.ActiveCfg = Debug|Win32
-		{90B069E3-FB6F-42E6-BF33-5F07CE768EC2}.TraceMemDebug|x86.Build.0 = Debug|Win32
-		{90B069E3-FB6F-42E6-BF33-5F07CE768EC2}.TraceMemLDDebug|x64.ActiveCfg = Debug|x64
-		{90B069E3-FB6F-42E6-BF33-5F07CE768EC2}.TraceMemLDDebug|x64.Build.0 = Debug|x64
-		{90B069E3-FB6F-42E6-BF33-5F07CE768EC2}.TraceMemLDDebug|x86.ActiveCfg = Debug|Win32
-		{90B069E3-FB6F-42E6-BF33-5F07CE768EC2}.TraceMemLDDebug|x86.Build.0 = Debug|Win32
-		{90B069E3-FB6F-42E6-BF33-5F07CE768EC2}.TraceMemLDRelease|x64.ActiveCfg = Release|x64
-		{90B069E3-FB6F-42E6-BF33-5F07CE768EC2}.TraceMemLDRelease|x64.Build.0 = Release|x64
-		{90B069E3-FB6F-42E6-BF33-5F07CE768EC2}.TraceMemLDRelease|x86.ActiveCfg = Release|Win32
-		{90B069E3-FB6F-42E6-BF33-5F07CE768EC2}.TraceMemLDRelease|x86.Build.0 = Release|Win32
-		{90B069E3-FB6F-42E6-BF33-5F07CE768EC2}.TraceMemRelease|x64.ActiveCfg = Release|x64
-		{90B069E3-FB6F-42E6-BF33-5F07CE768EC2}.TraceMemRelease|x64.Build.0 = Release|x64
-		{90B069E3-FB6F-42E6-BF33-5F07CE768EC2}.TraceMemRelease|x86.ActiveCfg = Release|Win32
-		{90B069E3-FB6F-42E6-BF33-5F07CE768EC2}.TraceMemRelease|x86.Build.0 = Release|Win32
 		{C8DC2B40-7FEF-44C8-9A45-37C52F97C28B}.Debug|x64.ActiveCfg = Debug|x64
 		{C8DC2B40-7FEF-44C8-9A45-37C52F97C28B}.Debug|x64.Build.0 = Debug|x64
 		{C8DC2B40-7FEF-44C8-9A45-37C52F97C28B}.Debug|x86.ActiveCfg = Debug|Win32

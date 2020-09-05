@@ -3,6 +3,7 @@
 #include <windows.h>
 #include <string>
 #include "MemoryTrace.h"
+#include <iostream>
 
 #ifdef _M_X64
 #define _PLATFORM_ "x64/"
