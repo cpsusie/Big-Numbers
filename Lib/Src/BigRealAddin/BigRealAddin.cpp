@@ -14,6 +14,9 @@ public:
   inline bool hasPrev() const {
     return prev != 0;
   }
+  inline void clear() {
+    memset(0, 0, sizeof(*this));
+  }
 };
 
 static const UINT64 debugPattern = 0xccccccccccccccccui64;
@@ -88,7 +91,7 @@ private:
     m_result += s;
   }
   inline void addstr(const string &s) {
-    m_result += s;
+    addstr(s.c_str());
   }
   // return digits added
   inline int addDigitStr(VTYPE n, UINT width = 0) {
@@ -147,14 +150,16 @@ private:
   }
   inline void removeTrailingZeroes() {
     if(m_hasDecimalPoint) {
-      size_t last = m_result.length()-1, index = last;
-      while(m_result.at(index) == '0') index--;
-      if(m_result.at(index) == '.') index--;
-      removeLast(last - index);
+      const char *first = m_result.c_str(), *last = first + m_result.length() - 1, *cp = last;
+      while((cp > first) && (*cp == '0')) cp--;
+      if(*cp == '.') cp--;
+      if(cp < last) {
+        removeLast(last - cp);
+      }
     }
   }
-  inline void removeLast(intptr_t n) {
-    if(n > 0) {
+  inline void removeLast(size_t n) {
+    if((0 < n) && (n < m_result.length())) {
       m_result.erase(m_result.length() - n, n);
     }
   }
@@ -214,7 +219,7 @@ public:
     if(m_showFlags) {
       addstr(makeFlagsString(n.m_flags));
     }
-    if(expo == nonNormalExpo) {
+    if((expo == nonNormalExpo) || (n.m_first == 0)) {
       formatNonNormal(n, true);
       return;
     }
@@ -230,7 +235,11 @@ public:
       totalDecimalDigitCount = firstDigitCount;
     } else {
       DigitType<VTYPE> lastDigit;
-      getDigit(lastDigit, n.m_last);
+      if(n.m_last == 0) {
+        lastDigit.clear();
+      } else {
+        getDigit(lastDigit, n.m_last);
+      }
       int lastDigitCount;
       if(lastDigit.n == 0) {
         lastDigitCount = 0;
