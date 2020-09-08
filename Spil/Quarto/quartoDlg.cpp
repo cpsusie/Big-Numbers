@@ -540,7 +540,7 @@ void CQuartoDlg::flashWinnerBlocks() {
     return;
   }
   BrickSet bset;
-  for(int f = 0; f < wf.size(); f++) {
+  for(UINT f = 0; f < wf.size(); f++) {
     const int b = m_game.getBrickOnField(wf[f]);
     if(b == NOBRICK) {
       return;

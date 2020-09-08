@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "OLEContainerClass.h"
-
 #include "MainFrm.h"
 #include "IpFrame.h"
 #include "OLEContainerClassDoc.h"
@@ -20,8 +19,6 @@ END_MESSAGE_MAP()
 // COLEContainerClassApp construction
 
 COLEContainerClassApp::COLEContainerClassApp() {
-    // TODO: add construction code here,
-    // Place all significant initialization in InitInstance
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -38,22 +35,19 @@ static const CLSID clsid =
 
 BOOL COLEContainerClassApp::InitInstance() {
     // Initialize OLE libraries
-    if (!AfxOleInit()) {
+    if(!AfxOleInit()) {
         AfxMessageBox(IDP_OLE_INIT_FAILED);
         return FALSE;
     }
 
     AfxEnableControlContainer();
 
-    // Change the registry key under which our settings are stored.
-    // TODO: You should modify this string to be something appropriate
-    // such as the name of your company or organization.
-    SetRegistryKey(_T("Local AppWizard-Generated Applications"));
+    SetRegistryKey(_T("JGMData"));
 
     LoadStdProfileSettings();  // Load standard INI file options (including MRU)
 
     // Register the application's document templates.  Document templates
-    //  serve as the connection between documents, frame windows and views.
+    // serve as the connection between documents, frame windows and views.
 
     CSingleDocTemplate* pDocTemplate;
     pDocTemplate = new CSingleDocTemplate(
@@ -79,15 +73,14 @@ BOOL COLEContainerClassApp::InitInstance() {
     ParseCommandLine(cmdInfo);
 
     // Check to see if launched as OLE server
-    if (cmdInfo.m_bRunEmbedded || cmdInfo.m_bRunAutomated)
-    {
-        // Register all OLE server (factories) as running.  This enables the
-        //  OLE libraries to create objects from other applications.
-        COleTemplateServer::RegisterAll();
+    if(cmdInfo.m_bRunEmbedded || cmdInfo.m_bRunAutomated) {
+		// Register all OLE server (factories) as running.  This enables the
+		//  OLE libraries to create objects from other applications.
+		COleTemplateServer::RegisterAll();
 
-        // Application was run with /Embedding or /Automation.  Don't show the
-        //  main window in this case.
-        return TRUE;
+		// Application was run with /Embedding or /Automation.  Don't show the
+		//  main window in this case.
+		return TRUE;
     }
 
     // When a server application is launched stand-alone, it is a good idea
@@ -96,7 +89,7 @@ BOOL COLEContainerClassApp::InitInstance() {
     COleObjectFactory::UpdateRegistryAll();
 
     // Dispatch commands specified on the command line
-    if (!ProcessShellCommand(cmdInfo))
+    if(!ProcessShellCommand(cmdInfo))
         return FALSE;
 
     // The one and only window has been initialized, so show and update it.
@@ -106,30 +99,20 @@ BOOL COLEContainerClassApp::InitInstance() {
     return TRUE;
 }
 
-
 class CAboutDlg : public CDialog {
 public:
-    CAboutDlg();
+  enum { IDD = IDD_ABOUTBOX };
 
-    enum { IDD = IDD_ABOUTBOX };
+  CAboutDlg() : CDialog(IDD) {
+  }
 
-protected:
-    virtual void DoDataExchange(CDataExchange *pDX);    // DDX/DDV support
-    DECLARE_MESSAGE_MAP()
+  DECLARE_MESSAGE_MAP()
 };
-
-CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
-}
-
-void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-    __super::DoDataExchange(pDX);
-}
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
 void COLEContainerClassApp::OnAppAbout() {
-    CAboutDlg aboutDlg;
-    aboutDlg.DoModal();
+  CAboutDlg().DoModal();
 }
 

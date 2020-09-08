@@ -11,9 +11,6 @@ END_MESSAGE_MAP()
 
 CGrabXmlApp::CGrabXmlApp() {
   m_dwRestartManagerSupportFlags = AFX_RESTART_MANAGER_SUPPORT_RESTART;
-
-  // TODO: add construction code here,
-  // Place all significant initialization in InitInstance
 }
 
 CGrabXmlApp theApp;
@@ -52,15 +49,14 @@ BOOL CGrabXmlApp::InitInstance() {
   CGrabXmlDlg dlg;
   m_pMainWnd = &dlg;
   INT_PTR nResponse = dlg.DoModal();
-  if (nResponse == IDOK) {
-  } else if (nResponse == IDCANCEL) {
-  }
-  else if (nResponse == -1) {
+  if(nResponse == IDOK) {
+  } else if(nResponse == IDCANCEL) {
+  } else if(nResponse == -1) {
     TRACE(traceAppMsg, 0, "Warning: dialog creation failed, so application is terminating unexpectedly.\n");
     TRACE(traceAppMsg, 0, "Warning: if you are using MFC controls on the dialog, you cannot #define _AFX_NO_MFC_CONTROLS_IN_DIALOGS.\n");
   }
 
-  if (pShellManager != NULL) {
+  if(pShellManager != NULL) {
     delete pShellManager;
   }
 

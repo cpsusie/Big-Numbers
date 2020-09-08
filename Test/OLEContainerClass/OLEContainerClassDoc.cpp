@@ -1,9 +1,5 @@
-// OLEContainerClassDoc.cpp : implementation of the COLEContainerClassDoc class
-//
-
 #include "stdafx.h"
 #include "OLEContainerClass.h"
-
 #include "OLEContainerClassDoc.h"
 #include "SrvrItem.h"
 
@@ -45,11 +41,7 @@ COLEContainerClassDoc::COLEContainerClassDoc()
 {
     // Use OLE compound files
     EnableCompoundFile();
-
-    // TODO: add one-time construction code here
-
     EnableAutomation();
-
     AfxOleLockApp();
 }
 
@@ -59,11 +51,8 @@ COLEContainerClassDoc::~COLEContainerClassDoc()
 }
 
 BOOL COLEContainerClassDoc::OnNewDocument() {
-    if (!COleServerDoc::OnNewDocument())
+    if(!COleServerDoc::OnNewDocument())
         return FALSE;
-
-    // TODO: add reinitialization code here
-    // (SDI documents will reuse this document)
 
     return TRUE;
 }
@@ -83,7 +72,7 @@ COleServerItem *COLEContainerClassDoc::OnGetEmbeddedItem() {
 
 
 void COLEContainerClassDoc::Serialize(CArchive &ar) {
-    if (ar.IsStoring()) {
+    if(ar.IsStoring()) {
     } else {
     }
 }
@@ -98,5 +87,3 @@ void COLEContainerClassDoc::Dump(CDumpContext &dc) const {
 }
 #endif //_DEBUG
 
-/////////////////////////////////////////////////////////////////////////////
-// COLEContainerClassDoc commands

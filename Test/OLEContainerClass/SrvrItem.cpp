@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "OLEContainerClass.h"
-
 #include "OLEContainerClassDoc.h"
 #include "SrvrItem.h"
 
@@ -13,8 +12,6 @@ IMPLEMENT_DYNAMIC(COLEContainerClassSrvrItem, COleServerItem)
 COLEContainerClassSrvrItem::COLEContainerClassSrvrItem(COLEContainerClassDoc *pContainerDoc)
     : COleServerItem(pContainerDoc, TRUE)
 {
-    // TODO: add one-time construction code here
-    //  (eg, adding additional clipboard formats to the item's data source)
 }
 
 COLEContainerClassSrvrItem::~COLEContainerClassSrvrItem() {
@@ -28,23 +25,21 @@ void COLEContainerClassSrvrItem::Serialize(CArchive &ar) {
     //  function.  If you support links, then you will want to serialize
     //  just a portion of the document.
 
-    if (!IsLinkedItem())
-    {
+    if(!IsLinkedItem()) {
         COLEContainerClassDoc *pDoc = GetDocument();
         ASSERT_VALID(pDoc);
         pDoc->Serialize(ar);
     }
 }
 
-BOOL COLEContainerClassSrvrItem::OnGetExtent(DVASPECT dwDrawAspect, CSize& rSize)
-{
+BOOL COLEContainerClassSrvrItem::OnGetExtent(DVASPECT dwDrawAspect, CSize& rSize) {
     // Most applications, like this one, only handle drawing the content
     //  aspect of the item.  If you wish to support other aspects, such
     //  as DVASPECT_THUMBNAIL (by overriding OnDrawEx), then this
     //  implementation of OnGetExtent should be modified to handle the
     //  additional aspect(s).
 
-    if (dwDrawAspect != DVASPECT_CONTENT)
+    if(dwDrawAspect != DVASPECT_CONTENT)
         return COleServerItem::OnGetExtent(dwDrawAspect, rSize);
 
     // COLEContainerClassSrvrItem::OnGetExtent is called to get the extent in
@@ -96,4 +91,3 @@ void COLEContainerClassSrvrItem::Dump(CDumpContext &dc) const
 }
 #endif
 
-/////////////////////////////////////////////////////////////////////////////

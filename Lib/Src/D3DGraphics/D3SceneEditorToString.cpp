@@ -132,7 +132,7 @@ String D3SceneEditor::toString() const {
     text.addSection("Picked Ray" ).addText(m_pickedRay.toString());
     if(!m_pickedInfo.m_info.isEmpty() &&
        !getScene()->isVisual(m_pickedInfo.m_info.getVisual())) {
-      ((D3SceneEditor*)this)->m_pickedInfo.clear(); // TODO this pointer is sime invalid!!
+      ((D3SceneEditor*)this)->m_pickedInfo.clear(); // TODO this pointer is sometimes invalid!!
     }
     text.addSection("Picked Info").addText(m_pickedInfo.toString());
   }

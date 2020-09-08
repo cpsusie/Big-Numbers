@@ -1,7 +1,5 @@
-
 #include "stdafx.h"
 #include "OLEContainerClass.h"
-
 #include "OLEContainerClassDoc.h"
 #include "OLEContainerClassView.h"
 
@@ -16,17 +14,12 @@ BEGIN_MESSAGE_MAP(COLEContainerClassView, CView)
 END_MESSAGE_MAP()
 
 COLEContainerClassView::COLEContainerClassView() {
-    // TODO: add construction code here
-
 }
 
 COLEContainerClassView::~COLEContainerClassView() {
 }
 
 BOOL COLEContainerClassView::PreCreateWindow(CREATESTRUCT &cs) {
-    // TODO: Modify the Window class or styles here by modifying
-    //  the CREATESTRUCT cs
-
     return CView::PreCreateWindow(cs);
 }
 
@@ -36,7 +29,6 @@ BOOL COLEContainerClassView::PreCreateWindow(CREATESTRUCT &cs) {
 void COLEContainerClassView::OnDraw(CDC *pDC) {
     COLEContainerClassDoc *pDoc = GetDocument();
     ASSERT_VALID(pDoc);
-    // TODO: add draw code for native data here
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -64,5 +56,3 @@ COLEContainerClassDoc *COLEContainerClassView::GetDocument() {
 }
 #endif //_DEBUG
 
-/////////////////////////////////////////////////////////////////////////////
-// COLEContainerClassView message handlers

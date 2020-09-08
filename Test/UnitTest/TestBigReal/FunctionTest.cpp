@@ -986,7 +986,7 @@ void testGetFirst64(TestStatistic &stat) {
         const int len = (int)_tcslen(str);
         const int missing = k - len;
         String expected = substr(str + spaceString(missing, _T('0')), 0, k);
-        if (result != expected) {
+        if(result != expected) {
           ERRLOG << _T("getFirst64(") << X << _T(",") << k << _T(")=") << result << endl
                  << _T("Expected:") << expected << endl;
           THROWTESTERROR();
@@ -1040,7 +1040,7 @@ void testGetFirst128(TestStatistic &stat) {
         const int len = (int)_tcslen(str);
         missing = k - len;
         String expected = substr(str + spaceString(missing, _T('0')), 0, k);
-        if (result != expected) {
+        if(result != expected) {
           ERRLOG << _T("getFirst128(") << X << _T(",") << k << _T(")=") << result << endl
                  << _T("Expected:") << expected << endl;
           THROWTESTERROR();
@@ -1094,7 +1094,7 @@ void testReadWriteBigReal(TestStatistic &stat) {
       }
     } else if(isPInfinity(data)) {
       verify(isPInfinity(expected));
-    } else if (isNInfinity(data)) {
+    } else if(isNInfinity(data)) {
       verify(isNInfinity(expected));
     } else if(isnan(data)) {
       verify(isnan(expected));
@@ -1119,7 +1119,7 @@ void testReadWriteBigInt(TestStatistic &stat) {
   }
 
   tofstream out(fileName.cstr());
-  for (size_t i = 0; i < list.size(); i++) {
+  for(size_t i = 0; i < list.size(); i++) {
     const BigInt &x = list[i];
     out << x << endl;
   }
@@ -1231,7 +1231,7 @@ void testReadWritePackerBigReal(TestStatistic &stat) {
       }
     } else if(isPInfinity(data)) {
       verify(isPInfinity(expected));
-    } else if (isNInfinity(data)) {
+    } else if(isNInfinity(data)) {
       verify(isNInfinity(expected));
     } else if(isnan(data)) {
       verify(isnan(expected));
@@ -1279,7 +1279,7 @@ void testReadWritePackerBigInt(TestStatistic &stat) {
       }
     } else if(isPInfinity(data)) {
       verify(isPInfinity(expected));
-    } else if (isNInfinity(data)) {
+    } else if(isNInfinity(data)) {
       verify(isNInfinity(expected));
     } else if(isnan(data)) {
       verify(isnan(expected));
@@ -1301,7 +1301,7 @@ void testReadWritePackerBigRational(TestStatistic &stat) {
   a.add(BigRational::_BRAT_NINF);
   a.add(BigRational::_0);
 
-  for (i = BigReal::_i16_min; i <= BigReal::_i16_max; i += BigReal::_1) {
+  for(i = BigReal::_i16_min; i <= BigReal::_i16_max; i += BigReal::_1) {
     a.add(i);
     a.add(-i);
   }
@@ -1328,7 +1328,7 @@ void testReadWritePackerBigRational(TestStatistic &stat) {
       }
     } else if(isPInfinity(data)) {
       verify(isPInfinity(expected));
-    } else if (isNInfinity(data)) {
+    } else if(isNInfinity(data)) {
       verify(isNInfinity(expected));
     } else if(isnan(data)) {
       verify(isnan(expected));

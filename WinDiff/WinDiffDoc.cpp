@@ -545,14 +545,11 @@ BOOL CWinDiffDoc::OnNewDocument() {
     return FALSE;
   }
 
-  // TODO: add reinitialization code here
-  // (SDI documents will reuse this document)
-
   return TRUE;
 }
 
 void CWinDiffDoc::Serialize(CArchive& ar) {
-  if (ar.IsStoring()) {
+  if(ar.IsStoring()) {
   } else {
   }
 }

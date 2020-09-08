@@ -1,6 +1,3 @@
-// testzorderDlg.cpp : implementation file
-//
-
 #include "stdafx.h"
 #include <assert.h>
 #include "testzorder.h"
@@ -12,28 +9,16 @@
 
 class CAboutDlg : public CDialog {
 public:
-    CAboutDlg();
+  enum { IDD = IDD_ABOUTBOX };
 
+  CAboutDlg() : CDialog(IDD) {
+  }
 
-    enum { IDD = IDD_ABOUTBOX };
-
-protected:
-    virtual void DoDataExchange(CDataExchange *pDX);
-
-protected:
-    DECLARE_MESSAGE_MAP()
+  DECLARE_MESSAGE_MAP()
 };
-
-CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
-}
-
-void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-    __super::DoDataExchange(pDX);
-}
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
-
 
 CTestzorderDlg::CTestzorderDlg(CWnd *pParent)
     : CDialog(CTestzorderDlg::IDD, pParent) {
@@ -60,11 +45,11 @@ BOOL CTestzorderDlg::OnInitDialog() {
     ASSERT(IDM_ABOUTBOX < 0xF000);
 
     CMenu *pSysMenu = GetSystemMenu(FALSE);
-    if (pSysMenu != NULL)
+    if(pSysMenu != NULL)
     {
         CString strAboutMenu;
         strAboutMenu.LoadString(IDS_ABOUTBOX);
-        if (!strAboutMenu.IsEmpty())
+        if(!strAboutMenu.IsEmpty())
         {
             pSysMenu->AppendMenu(MF_SEPARATOR);
             pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
@@ -73,8 +58,6 @@ BOOL CTestzorderDlg::OnInitDialog() {
 
     SetIcon(m_hIcon, TRUE);         // Set big icon
     SetIcon(m_hIcon, FALSE);        // Set small icon
-
-    // TODO: Add extra initialization here
 
     return TRUE;  // return TRUE  unless you set the focus to a control
 }

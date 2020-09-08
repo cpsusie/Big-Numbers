@@ -1,6 +1,3 @@
-// testzorder.cpp : Defines the class behaviors for the application.
-//
-
 #include "stdafx.h"
 #include "testzorder.h"
 #include "testzorderDlg.h"
@@ -21,10 +18,7 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CTestzorderApp construction
 
-CTestzorderApp::CTestzorderApp()
-{
-    // TODO: add construction code here,
-    // Place all significant initialization in InitInstance
+CTestzorderApp::CTestzorderApp() {
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -53,18 +47,11 @@ BOOL CTestzorderApp::InitInstance()
     CTestzorderDlg dlg;
     m_pMainWnd = &dlg;
     int nResponse = dlg.DoModal();
-    if (nResponse == IDOK)
-    {
-        // TODO: Place code here to handle when the dialog is
-        //  dismissed with OK
-    }
-    else if (nResponse == IDCANCEL)
-    {
-        // TODO: Place code here to handle when the dialog is
-        //  dismissed with Cancel
+    if(nResponse == IDOK) {
+    } else if(nResponse == IDCANCEL) {
     }
 
     // Since the dialog has been closed, return FALSE so that we exit the
-    //  application, rather than start the application's message pump.
+    // application, rather than start the application's message pump.
     return FALSE;
 }

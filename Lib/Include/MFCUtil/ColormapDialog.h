@@ -55,7 +55,7 @@ protected:
     return COLORREF2COLORVALUE(((CColormap*)GetDlgItem(ctrlId))->GetColor());
   }
   void setD3DCOLORVALUE(int ctrlId, D3DCOLORVALUE c) {
-    ((CColormap*)GetDlgItem(ctrlId))->SetColor(D3DCOLORVALUE2COLORREF(c)); // TODO
+    ((CColormap*)GetDlgItem(ctrlId))->SetColor(D3DCOLORVALUE2COLORREF(c));
   }
 
   D3DCOLOR getD3DCOLOR(int ctrlId) {

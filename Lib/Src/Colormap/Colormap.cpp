@@ -1,12 +1,9 @@
-// Colormap.cpp : Implementation of CColormapApp and DLL registration.
-
 #include "stdafx.h"
 #include "Colormap.h"
 
 #if defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
-
 
 CColormapApp theApp;
 
@@ -16,23 +13,23 @@ const WORD _wVerMinor = 1;
 
 // CColormapApp::InitInstance - DLL initialization
 BOOL CColormapApp::InitInstance() {
-	BOOL bInit = COleControlModule::InitInstance();
+    BOOL bInit = COleControlModule::InitInstance();
 
-	if(bInit) {
-		// TODO: Add your own module initialization code here.
-	}
-	return bInit;
+    if(bInit) {
+        // TODO: Add your own module initialization code here.
+    }
+    return bInit;
 }
 
 // CColormapApp::ExitInstance - DLL termination
 int CColormapApp::ExitInstance() {
-	// TODO: Add your own module termination code here.
-	return COleControlModule::ExitInstance();
+    // TODO: Add your own module termination code here.
+    return COleControlModule::ExitInstance();
 }
 
 // DllRegisterServer - Adds entries to the system registry
 STDAPI DllRegisterServer() {
-	AFX_MANAGE_STATE(_afxModuleAddrThis);
+    AFX_MANAGE_STATE(_afxModuleAddrThis);
 
   if(!AfxOleRegisterTypeLib(AfxGetInstanceHandle(), _tlid)) {
     return ResultFromScode(SELFREG_E_TYPELIB);
@@ -40,12 +37,12 @@ STDAPI DllRegisterServer() {
   if(!COleObjectFactoryEx::UpdateRegistryAll(TRUE)) {
     return ResultFromScode(SELFREG_E_CLASS);
   }
-	return NOERROR;
+    return NOERROR;
 }
 
 // DllUnregisterServer - Removes entries from the system registry
 STDAPI DllUnregisterServer() {
-	AFX_MANAGE_STATE(_afxModuleAddrThis);
+    AFX_MANAGE_STATE(_afxModuleAddrThis);
 
   if(!AfxOleUnregisterTypeLib(_tlid, _wVerMajor, _wVerMinor)) {
     return ResultFromScode(SELFREG_E_TYPELIB);
@@ -53,5 +50,5 @@ STDAPI DllUnregisterServer() {
   if(!COleObjectFactoryEx::UpdateRegistryAll(FALSE)) {
     return ResultFromScode(SELFREG_E_CLASS);
   }
-	return NOERROR;
+    return NOERROR;
 }

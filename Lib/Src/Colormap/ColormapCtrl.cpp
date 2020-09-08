@@ -1,5 +1,3 @@
-// ColormapCtrl.cpp : Implementation of the CColormapCtrl ActiveX Control class.
-
 #include "stdafx.h"
 #include <msstkppg.h>
 #include <MyUtil.h>

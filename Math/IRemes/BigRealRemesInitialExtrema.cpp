@@ -89,7 +89,7 @@ Real InterpolationFunction::operator()(const Real &x) {
   }
   Real result1 = (Real)m_initialExtr[(int)x] + __super::operator()(x/maxX);
   const Real fracX = fraction(x);
-  if (fracX == 0) {
+  if(fracX == 0) {
     return result1;
   } else {
      Real result2 = (*this)(ceil(x));

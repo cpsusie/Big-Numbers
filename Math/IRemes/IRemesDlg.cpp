@@ -12,10 +12,11 @@
 
 class CAboutDlg : public CDialog {
 public:
+  enum { IDD = IDD_ABOUTBOX };
+
   CAboutDlg() : CDialog(IDD) {
   }
-  enum { IDD = IDD_ABOUTBOX };
-protected:
+
   DECLARE_MESSAGE_MAP()
 };
 
@@ -924,7 +925,7 @@ LRESULT CIRemesDlg::OnMsgClearErrorFunction(WPARAM wp, LPARAM lp) {
 LRESULT CIRemesDlg::OnMsgUpdateInterpolation(WPARAM wp, LPARAM lp) {
 #if defined(__TODO__)
   m_gate.wait();
-  if (m_coorSystemSpline.getObjectCount() == 0) {
+  if(m_coorSystemSpline.getObjectCount() == 0) {
     return 0;
   }
   m_coorSystemSpline.Invalidate(FALSE);

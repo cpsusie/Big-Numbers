@@ -15,15 +15,13 @@ using namespace std;
 
 class CAboutDlg : public CDialog {
 public:
-  CAboutDlg();
-
   enum { IDD = IDD_ABOUTBOX };
+
+  CAboutDlg() : CDialog(IDD) {
+  }
 
   DECLARE_MESSAGE_MAP()
 };
-
-CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
-}
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
@@ -656,7 +654,7 @@ void CMandelbrotDlg::handlePropertyChanged(const PropertyContainer *source, int 
 }
 
 void CMandelbrotDlg::OnPaint() {
-  if (IsIconic())   {
+  if(IsIconic())   {
     CPaintDC dc(this); // device context for painting
 
     SendMessage(WM_ICONERASEBKGND, (WPARAM) dc.GetSafeHdc(), 0);
@@ -900,7 +898,7 @@ int CMandelbrotDlg::setWorkSize(const CSize &size) {
   if(size != getWorkSize()) {
     flags |= WORKSIZE_CHANGED;
   }
-  if (!hasCCM() || (getMaxCount() != m_ccMatrix->getMaxCount())) {
+  if(!hasCCM() || (getMaxCount() != m_ccMatrix->getMaxCount())) {
     flags |= MAXCOUNT_CHANGED;
   }
   if(flags == 0) {
@@ -1087,7 +1085,7 @@ int CMandelbrotDlg::setScale(const BigReal &minX, const BigReal &maxX, const Big
   int flags = 0;
   const BigRealRectangle2D old = m_bigRealTransform.getFromRectangle();
   m_bigRealTransform.setFromRectangle(BigRealRectangle2D(minX, maxY, maxX-minX, minY-maxY));
-  if (m_bigRealTransform.getFromRectangle() != old) {
+  if(m_bigRealTransform.getFromRectangle() != old) {
     flags |= SCALE_CHANGED;
   }
   flags |= handleTransformChanged(isRetainAspectRatio() && allowAdjustAspectRatio);
@@ -1327,7 +1325,7 @@ void CMandelbrotDlg::paintMark(const CPoint &p) {
 }
 
 bool CMandelbrotDlg::useFPUCalculators() const {
-  switch (m_precisionMode) {
+  switch(m_precisionMode) {
   case ID_OPTIONS_AUTOPRECISION: return getDigits() < 18;
   case ID_OPTIONS_FORCEFPU     : return true;
   case ID_OPTIONS_FORCEBIGREAL : return false;

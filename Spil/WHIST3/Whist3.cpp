@@ -13,8 +13,6 @@ END_MESSAGE_MAP()
 // CWhist3App construction
 
 CWhist3App::CWhist3App() {
-  // TODO: add construction code here,
-  // Place all significant initialization in InitInstance
 }
 
 CWhist3App theApp;

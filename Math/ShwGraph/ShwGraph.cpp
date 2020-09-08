@@ -10,8 +10,6 @@ BEGIN_MESSAGE_MAP(CShwgraphApp, CWinApp)
 END_MESSAGE_MAP()
 
 CShwgraphApp::CShwgraphApp() {
-    // TODO: add construction code here,
-    // Place all significant initialization in InitInstance
 }
 
 CShwgraphApp theApp;
@@ -28,14 +26,14 @@ BOOL CShwgraphApp::InitInstance() {
     m_pMainWnd = &dlg;
     try {
       intptr_t nResponse = dlg.DoModal();
-      if (nResponse == IDOK) {
-      } else if (nResponse == IDCANCEL) {
+      if(nResponse == IDOK) {
+      } else if(nResponse == IDCANCEL) {
       }
     } catch(Exception e) {
       showException(e);
     }
 
     // Since the dialog has been closed, return FALSE so that we exit the
-    //  application, rather than start the application's message pump.
+    // application, rather than start the application's message pump.
     return FALSE;
 }

@@ -4,7 +4,7 @@
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace std;
 
-namespace TestMatrix {		
+namespace TestMatrix {      
 
 #include <UnitTestTraits.h>
 
@@ -42,7 +42,7 @@ namespace TestMatrix {
   }
 
 
-	TEST_CLASS(TestMatrix) {
+    TEST_CLASS(TestMatrix) {
     public:
 
       static Vector randomVector(size_t dimension, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) {
@@ -576,13 +576,10 @@ namespace TestMatrix {
     TEST_METHOD(MatrixTestQR_Normal) {
       INFO(_T("  Begin test QRMatrix on 100 random matrices"));
         JavaRandom rnd(2);
-//        TODO
-//        JavaRandom rnd(3); <----------- ry this one. then i=35 will fail test
+//        TODO:
+//        JavaRandom rnd(3); <----------- try this one. then i=35 will fail test
         //      rnd.randomize();
         for(int i = 0; i < 100; i++) {
-          if (i == 35) {
-            int fisk = 1;
-          }
           const size_t dim = randInt(2, 16, rnd);
           INFO(_T("i:%d, dim:%zu"), i, dim);
           testQRMatrix(randomMatrix(dim, dim, rnd));

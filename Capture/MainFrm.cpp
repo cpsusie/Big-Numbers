@@ -121,7 +121,6 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
   }
   m_wndStatusBar.SetIndicators(indicators, sizeof(indicators)/sizeof(UINT));
 
-  // TODO: Delete these five lines if you don't want the toolbar and menubar to be dockable
   m_wndMenuBar.EnableDocking(CBRS_ALIGN_ANY);
   m_wndToolBar.EnableDocking(CBRS_ALIGN_ANY);
   EnableDocking(CBRS_ALIGN_ANY);
@@ -142,17 +141,15 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
   // enable quick (Alt+drag) toolbar customization
   CMFCToolBar::EnableQuickCustomization();
 
-  if (CMFCToolBar::GetUserImages() == NULL)
-  {
-      // load user-defined toolbar images
-      if (m_UserImages.Load(_T(".\\UserImages.bmp")))
+  if(CMFCToolBar::GetUserImages() == NULL) {
+    // load user-defined toolbar images
+   if(m_UserImages.Load(_T(".\\UserImages.bmp")))
       {
           CMFCToolBar::SetUserImages(&m_UserImages);
       }
   }
 
   // enable menu personalization (most-recently used commands)
-  // TODO: define your own basic commands, ensuring that each pulldown menu has at least one basic command.
   CList<UINT, UINT> lstBasicCommands;
 
   lstBasicCommands.AddTail(ID_FILE_NEW);
