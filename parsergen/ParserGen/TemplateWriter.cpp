@@ -17,6 +17,7 @@ CodeFlags::CodeFlags() {
   m_useTableCompression  = true;
   m_dumpStates           = false;
   m_DFAVerbose           = false;
+  m_skipIfEqual          = false;
   m_callWizard           = false;
   m_verbose              = false;
 }
@@ -34,7 +35,7 @@ TemplateWriter::TemplateWriter(const String &templateName, const String &implOut
 
 void TemplateWriter::openOutput(const String &name) {
   closeOutput();
-  if(ACCESS(name, 0) < 0) {
+  if(!m_flags.m_skipIfEqual || (ACCESS(name, 0) < 0)) {
     m_output             = new MarginFile(name); TRACE_NEW(m_output);
     m_outputIsTemp       = false;
   } else {

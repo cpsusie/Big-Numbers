@@ -14,6 +14,7 @@ public:
   bool m_useTableCompression  : 1;
   bool m_dumpStates           : 1;
   bool m_DFAVerbose           : 1;
+  bool m_skipIfEqual          : 1;
   bool m_callWizard           : 1;
   bool m_verbose              : 1;
   CodeFlags();
