@@ -9,16 +9,26 @@ public:
   TcpStartUp();
   ~TcpStartUp();
 private:
-  bool initok;
+  bool m_initok;
 };
 
 TcpStartUp::TcpStartUp() {
+  m_initok = false;
+  initWSA();
+  m_initok = true;
+}
+
+TcpStartUp::~TcpStartUp() {
+  if(m_initok) {
+    WSACleanup();
+    m_initok = false;
+  }
+}
+
+void initWSA() {
   WSADATA     WsaData;
-  INT         err = WSAStartup (0x0101, &WsaData);
-  if(err == 0)  {
-    initok = true;
-  } else {
-    initok = false;
+  INT         err = WSAStartup(0x0101, &WsaData);
+  if(err != 0)  {
     throw TcpException(getWSAErrorText(err));
   }
 /*
@@ -31,12 +41,6 @@ TcpStartUp::TcpStartUp() {
     ,WsaData.wVersion
     ,WsaData.iMaxUdpDg);
 */
-}
-
-TcpStartUp::~TcpStartUp() {
-  if(initok) {
-    WSACleanup();
-  }
 }
 
 static TcpStartUp tcpInit;

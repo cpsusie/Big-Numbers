@@ -3,6 +3,7 @@
 #include <winsock.h>
 #include "PragmaLib.h"
 
+void   initWSA();
 SOCKET tcpOpen(   unsigned short portnr, const char *hostName = NULL);
 SOCKET tcpCreate( unsigned short portnr);
 SOCKET tcpAccept( SOCKET listener);

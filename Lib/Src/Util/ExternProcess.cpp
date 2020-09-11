@@ -1,85 +1,11 @@
 #include "pch.h"
-#include <fcntl.h>
-#include <io.h>
 #include <process.h>
 #include <MyUtil.h>
+#include <Pipe.h>
 #include <FastSemaphore.h>
 #include <FileNameSplitter.h>
 #include <ExternProcess.h>
 
-#define READ_FD  0
-#define WRITE_FD 1
-
-class Pipe {
-private:
-  int m_fd[2];
-  void init();
-  void close(int index);
-public:
-  Pipe() { init(); }
-  Pipe(int bufferSize, int textMode);
-  void open(int bufferSize = 256, int textMode = _O_TEXT | _O_NOINHERIT);
-  void close();
-  void dupAndClose(int index);
-  void saveStdFiles();
-  void restoreStdFilesAndClose();
-  bool isOpen(int index) const {
-    return m_fd[index] != -1;
-  }
-  FILE *getFile(int index, const TCHAR *mode) {
-    assert(isOpen(index));
-    return _tfdopen(m_fd[index], mode);
-  }
-};
-
-Pipe::Pipe(int bufferSize, int textMode) {
-  init();
-  open(bufferSize, textMode);
-}
-
-void Pipe::open(int bufferSize, int textMode) {
-  close();
-  PIPE(m_fd,bufferSize, textMode);
-}
-
-void Pipe::dupAndClose(int index) {
-  assert(isOpen(index));
-  DUP2(m_fd[index], index);
-  close(index);
-}
-
-void Pipe::close() {
-  close(READ_FD);
-  close(WRITE_FD);
-}
-
-void Pipe::close(int index) {
-  int &fd = m_fd[index];
-  if(fd != -1) {
-    ::_close(fd);
-    fd = -1;
-  }
-}
-
-void Pipe::saveStdFiles() {
-  close();
-  m_fd[0] = DUP(0);
-  m_fd[1] = DUP(1);
-}
-
-void Pipe::restoreStdFilesAndClose() {
-  for(int i = 0; i < 2; i++) {
-    int fd = m_fd[i];
-    if(fd != -1) {
-      DUP2(fd, i);
-      close(i);
-    }
-  }
-}
-
-void Pipe::init() {
-  m_fd[0] = m_fd[1] = -1;
-}
 
 #if defined(ENTERFUNC)
 #undef ENTERFUNC

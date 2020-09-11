@@ -610,9 +610,6 @@
     <ClCompile Include="ExternProcess.cpp">
       <Filter>Source Files\Process</Filter>
     </ClCompile>
-    <ClCompile Include="InputThread.cpp">
-      <Filter>Source Files\Process</Filter>
-    </ClCompile>
     <ClCompile Include="GetHandle.cpp">
       <Filter>Source Files\System</Filter>
     </ClCompile>
@@ -959,6 +956,12 @@
     <ClCompile Include="StrStream.cpp">
       <Filter>Source Files\Stream</Filter>
     </ClCompile>
+    <ClCompile Include="PipeUtil.cpp">
+      <Filter>Source Files\System</Filter>
+    </ClCompile>
+    <ClCompile Include="InputThread.cpp">
+      <Filter>Source Files\Process</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -1101,9 +1104,6 @@
       <Filter>Header Files\Math</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\ExternProcess.h">
-      <Filter>Header Files\Process</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\InputThread.h">
       <Filter>Header Files\Process</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\ProcessTools.h">
@@ -1376,6 +1376,12 @@
     </ClInclude>
     <ClInclude Include="RegexIStream\pch.h">
       <Filter>Source Files\Stream\RegexIStream\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Pipe.h">
+      <Filter>Header Files\System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\InputThread.h">
+      <Filter>Header Files\Process</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
