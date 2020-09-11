@@ -530,6 +530,9 @@
     <Xdcmake>
       <OutputFile>$(IntDir)$(TargetName).xml</OutputFile>
     </Xdcmake>
+    <CustomBuild>
+      <AdditionalInputs>$(IntDir)BigRealShortProductx64.obj</AdditionalInputs>
+    </CustomBuild>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">
     <ClCompile>
@@ -568,6 +571,9 @@
     <Xdcmake>
       <OutputFile>$(IntDir)$(TargetName).xml</OutputFile>
     </Xdcmake>
+    <CustomBuild>
+      <AdditionalInputs>$(IntDir)BigRealShortProductx64.obj</AdditionalInputs>
+    </CustomBuild>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -606,6 +612,9 @@
     <Xdcmake>
       <OutputFile>$(IntDir)$(TargetName).xml</OutputFile>
     </Xdcmake>
+    <CustomBuild>
+      <AdditionalInputs>$(IntDir)BigRealShortProductx64.obj</AdditionalInputs>
+    </CustomBuild>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">
     <ClCompile>
@@ -646,6 +655,9 @@
     <Xdcmake>
       <OutputFile>$(IntDir)$(TargetName).xml</OutputFile>
     </Xdcmake>
+    <CustomBuild>
+      <AdditionalInputs>$(IntDir)BigRealShortProductx64.obj</AdditionalInputs>
+    </CustomBuild>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profiling|x64'">
     <ClCompile>
@@ -685,6 +697,9 @@
     <Xdcmake>
       <OutputFile>$(IntDir)$(TargetName).xml</OutputFile>
     </Xdcmake>
+    <CustomBuild>
+      <AdditionalInputs>$(IntDir)BigRealShortProductx64.obj</AdditionalInputs>
+    </CustomBuild>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\Math\BigReal\BigInt.h" />
@@ -864,24 +879,24 @@
     <CustomBuild Include="BigRealShortProductx64.asm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">false</ExcludedFromBuild>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">false</DeploymentContent>
       <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">masm64 /nologo /Zi /c /Zf /Fo$(IntDir)BigRealShortProductx64.obj BigRealShortProductx64.asm</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">call masm64 /nologo /Zi /c /Zf /Fo$(IntDir)BigRealShortProductx64.obj BigRealShortProductx64.asm</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">masm64 /nologo /Zi /c /Zf /Fo$(IntDir)BigRealShortProductx64.obj BigRealShortProductx64.asm</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)BigRealShortProductx64.obj</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">$(IntDir)BigRealShortProductx64.obj</Outputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Assembler code for BigRealShortProduct function x64 mode</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">Assembler code for BigRealShortProduct function x64 mode</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">masm64 /nologo /c /Zf /Fo$(IntDir)BigRealShortProductx64.obj BigRealShortProductx64.asm</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">call masm64 /nologo /c /Zf /Fo$(IntDir)BigRealShortProductx64.obj BigRealShortProductx64.asm</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">masm64 /nologo /c /Zf /Fo$(IntDir)BigRealShortProductx64.obj BigRealShortProductx64.asm</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Profiling|x64'">masm64 /nologo /c /Zf /Fo$(IntDir)BigRealShortProductx64.obj BigRealShortProductx64.asm</Command>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profiling|x64'">false</ExcludedFromBuild>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DeploymentContent>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">true</DeploymentContent>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Profiling|x64'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Profiling|x64'">false</DeploymentContent>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Assembler code for BigRealShortProduct function x64 mode</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">Assembler code for BigRealShortProduct function x64 mode</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='Profiling|x64'">Assembler code for BigRealShortProduct function x64 mode</Message>
@@ -893,6 +908,16 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profiling|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|Win32'">true</ExcludedFromBuild>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">
+      </AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Profiling|x64'">
+      </AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='TraceMemRelease|x64'">
+      </AdditionalInputs>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
