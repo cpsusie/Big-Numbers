@@ -13,7 +13,7 @@ class ResultQueuePool;
 class PoolLogger;
 
 typedef enum {
-  THREADPOOL_SHUTTINGDDOWN
+  THREADPOOL_SHUTTINGDDOWN   // bool
 } ThreadPoolProperty;
 
 class ThreadPool : public Singleton, public PropertyChangeListener, PropertyContainer {

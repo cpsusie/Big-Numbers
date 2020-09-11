@@ -46,7 +46,7 @@ public:
   // If exception is caught, the returncode is -1
   // To get message text from caught exception, call getErrorMsg();
   // If destructor is called, caller will wait, until run has terminated.
-  UINT run() override final;
+  UINT run() final;
   // Should do the real job. Will be called by run(), see this
   virtual UINT safeRun() = 0;
 };

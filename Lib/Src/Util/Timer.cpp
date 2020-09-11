@@ -175,7 +175,7 @@ void Timer::setTimeout(UINT msec, bool repeatTimeout) {
 }
 
 void Timer::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
-  if(ThreadPool::isPropertyContainer(source) && (id == THREADPOOL_SHUTTINGDDOWN)) {
+  if(ThreadPool::isPropertyContainer(source) && (id == THREADPOOL_SHUTTINGDDOWN) && *(bool*)newValue) {
     setFlag(TM_BLOCKSTART);
     stopTimer();
   }

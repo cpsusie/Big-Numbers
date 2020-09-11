@@ -28,6 +28,7 @@ int              chdir(  const String &dir );
 bool             isatty( FILE *f);
 // mode = { _O_TEXT, _O_BINARY }. Returns old mode.
 int              setFileMode(FILE *f, int mode);
+// Never call CloseHandle on the return value of this function.
 HANDLE           getHandle(FILE *f);
 
 String           getSysErrorText(int errno);
