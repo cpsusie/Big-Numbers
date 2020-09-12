@@ -70,7 +70,7 @@ DEFNAME(OpcodeIncDec     ,  DEC   ,0xFE,1);
 
 //        Non existing opcode (0xF6,1);
 DEFNAME(Opcode1Arg       ,  NOT   ,0xF6,2);                // Negate the operand, logical NOT
-DEFNAME(Opcode1Arg       ,  NEG   ,0xF6,3);                // Two's complement negation
+DEFNAME(Opcode1Arg       ,  NEG   ,0xF6,3);                // Two's complement negation, op = -op
 DEFNAME(OpcodeIMul       ,  IMUL         );                // Signed multiply   (ax = al*src, dx:ax=ax*src, edx:eax=eax*src, rdx:rax=rax*src)
 DEFNAME(Opcode1Arg       ,  IDIV  ,0xF6,7);                // Signed divide   ax      /= src, ah  must contain sign extension of al . al =quot, ah =rem
                                                            //                 dk:ax   /= src. dx  must contain sign extension of ax . ax =quot, dx =rem
@@ -78,7 +78,7 @@ DEFNAME(Opcode1Arg       ,  IDIV  ,0xF6,7);                // Signed divide   ax
                                                            //                 rdx:rax /= src. rdx must contain sign extension of rax. rax=quot, rdx=rem
 
 DEFNAME(Opcode2ArgM      ,  MUL   ,0xF6,4);                // Unsigned multiply (ax = al*src, dx:ax=ax*src, edx:eax=eax*src, rdx:rax=rax*src)
-DEFNAME(Opcode2ArgM      ,  DIV   ,0xF6,6);                // Unsigned divide   (ax/=src,al=quot,ah=rem,    edx:eax/=src,eax=quot,edx=rem,  rdx:rax/=src,rax=quit,rdx=rem
+DEFNAME(Opcode2ArgM      ,  DIV   ,0xF6,6);                // Unsigned divide   (ax/=src,al=quot,ah=rem,    edx:eax/=src,eax=quot,edx=rem,  rdx:rax/=src,rax=quot,rdx=rem
 
 DEFNAME(OpcodeShiftRot   ,  ROL   ,0     );                // Rotate left  by cl/imm
 DEFNAME(OpcodeShiftRot   ,  ROR   ,1     );                // Rotate right by cl/imm
@@ -96,15 +96,15 @@ DEFNAME(OpcodeDoubleShift,  SHRD  ,0x0FAD,0x0FAC);         // Shift right by cl/
 #define BITSCAN_FLAGS (NONBYTE_GPR_ALLOWED | NONBYTE_GPRPTR_ALLOWED | HAS_NONBYTE_SIZEBITS | OP1_REGONLY)
 
 DEFNAME(Opcode2Arg       ,  BSF   ,0x0FBC, BITSCAN_FLAGS); // Bitscan forward
-DEFNAME(Opcode2Arg       ,  BSR   ,0x0FBD, BITSCAN_FLAGS); // Bitscan reversed
+DEFNAME(Opcode2Arg       ,  BSR   ,0x0FBD, BITSCAN_FLAGS); // Bitscan reverse
 
-DEFNAME(OpcodeBitTest    ,  BT    ,0x0FA3, 4);
-DEFNAME(OpcodeBitTest    ,  BTS   ,0x0FAB, 5);
-DEFNAME(OpcodeBitTest    ,  BTR   ,0x0FB3, 6);
-DEFNAME(OpcodeBitTest    ,  BTC   ,0x0FBB, 7);
+DEFNAME(OpcodeBitTest    ,  BT    ,0x0FA3, 4);             // Bit Test
+DEFNAME(OpcodeBitTest    ,  BTS   ,0x0FAB, 5);             // Bit Test and Set
+DEFNAME(OpcodeBitTest    ,  BTR   ,0x0FB3, 6);             // Bit Test and Reset
+DEFNAME(OpcodeBitTest    ,  BTC   ,0x0FBB, 7);             // Bit Test and Complement
 
-DEFNAME(OpcodeJmp        ,  JMP );
-DEFNAME(OpcodeCall       ,  CALL);
+DEFNAME(OpcodeJmp        ,  JMP );                         // Jump
+DEFNAME(OpcodeCall       ,  CALL);                         // Call Procedure
 
 DEFNAME(OpcodeJcc        ,  JO    ,0x70);                  // Jump     if overflow                                  (OF==1 )
 DEFNAME(OpcodeJcc        ,  JNO   ,0x71);                  // Jump     if not overflow                              (OF==0 )
