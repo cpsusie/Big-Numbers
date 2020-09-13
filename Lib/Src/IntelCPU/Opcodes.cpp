@@ -95,85 +95,84 @@ DEFNAME(OpcodeDoubleShift,  SHRD  ,0x0FAD,0x0FAC);         // Shift right by cl/
 
 #define BITSCAN_FLAGS (NONBYTE_GPR_ALLOWED | NONBYTE_GPRPTR_ALLOWED | HAS_NONBYTE_SIZEBITS | OP1_REGONLY)
 
-DEFNAME(Opcode2Arg       ,  BSF   ,0x0FBC, BITSCAN_FLAGS); // Bitscan forward
-DEFNAME(Opcode2Arg       ,  BSR   ,0x0FBD, BITSCAN_FLAGS); // Bitscan reverse
+DEFNAME(Opcode2Arg       ,  BSF   ,0x0FBC, BITSCAN_FLAGS);                            // Bitscan forward
+DEFNAME(Opcode2Arg       ,  BSR   ,0x0FBD, BITSCAN_FLAGS);                            // Bitscan reverse
 
-DEFNAME(OpcodeBitTest    ,  BT    ,0x0FA3, 4);             // Bit Test
-DEFNAME(OpcodeBitTest    ,  BTS   ,0x0FAB, 5);             // Bit Test and Set
-DEFNAME(OpcodeBitTest    ,  BTR   ,0x0FB3, 6);             // Bit Test and Reset
-DEFNAME(OpcodeBitTest    ,  BTC   ,0x0FBB, 7);             // Bit Test and Complement
+DEFNAME(OpcodeBitTest    ,  BT    ,0x0FA3, 4);                                        // Bit Test
+DEFNAME(OpcodeBitTest    ,  BTS   ,0x0FAB, 5);                                        // Bit Test and Set
+DEFNAME(OpcodeBitTest    ,  BTR   ,0x0FB3, 6);                                        // Bit Test and Reset
+DEFNAME(OpcodeBitTest    ,  BTC   ,0x0FBB, 7);                                        // Bit Test and Complement
 
-DEFNAME(OpcodeJmp        ,  JMP );                         // Jump
-DEFNAME(OpcodeCall       ,  CALL);                         // Call Procedure
+DEFNAME(OpcodeJmp        ,  JMP );                                                    // Jump
+DEFNAME(OpcodeCall       ,  CALL);                                                    // Call Procedure
 
-DEFNAME(OpcodeJcc        ,  JO    ,0x70);                  // Jump     if overflow                                  (OF==1 )
-DEFNAME(OpcodeJcc        ,  JNO   ,0x71);                  // Jump     if not overflow                              (OF==0 )
-DEFNAME(OpcodeJcc        ,  JB    ,0x72);                  // Jump     if below                 (unsigned)          (CF==1 )
-DEFNAME(OpcodeJcc        ,  JAE   ,0x73);                  // Jump     if above or equal        (unsigned)          (CF==0 )
-DEFNAME(OpcodeJcc        ,  JE    ,0x74);                  // Jump     if equal                 (signed/unsigned)   (ZF==1 )
-DEFNAME(OpcodeJcc        ,  JNE   ,0x75);                  // Jump     if not equal             (signed/unsigned)   (ZF==0 )
-DEFNAME(OpcodeJcc        ,  JBE   ,0x76);                  // Jump     if below or equal        (unsigned)          (CF==1 || ZF==1)
-DEFNAME(OpcodeJcc        ,  JA    ,0x77);                  // Jump     if above                 (unsigned)          (CF==0 && ZF==0)
-DEFNAME(OpcodeJcc        ,  JS    ,0x78);                  // Jump     if sign                                      (SF==1 )
-DEFNAME(OpcodeJcc        ,  JNS   ,0x79);                  // Jump     if not sign                                  (SF==0 )
-DEFNAME(OpcodeJcc        ,  JP    ,0x7A);                  // Jump     if parity even                               (PF==1 )
-DEFNAME(OpcodeJcc        ,  JNP   ,0x7B);                  // Jump     if parity odd                                (PF==0 )
-DEFNAME(OpcodeJcc        ,  JL    ,0x7C);                  // Jump     if less                  (signed  )          (SF!=OF)
-DEFNAME(OpcodeJcc        ,  JGE   ,0x7D);                  // Jump     if greater or equal      (signed  )          (SF==OF)
-DEFNAME(OpcodeJcc        ,  JLE   ,0x7E);                  // Jump     if less or equal         (signed  )          (ZF==1 || SF!=OF)
-DEFNAME(OpcodeJcc        ,  JG    ,0x7F);                  // Jump     if greater               (signed  )          (ZF==0 && SF==OF)
+DEFNAME(OpcodeJcc        ,  JO    ,0x70);                                             // Jump      if overflow           (OF==1 )
+DEFNAME(OpcodeJcc        ,  JNO   ,0x71);                                             // Jump      if not overflow       (OF==0 )
+DEFNAME(OpcodeJcc        ,  JB    ,0x72);                                             // Jump      if below              (CF==1 )          (unsigned)
+DEFNAME(OpcodeJcc        ,  JAE   ,0x73);                                             // Jump      if above or equal     (CF==0 )          (unsigned)
+DEFNAME(OpcodeJcc        ,  JE    ,0x74);                                             // Jump      if equal              (ZF==1 )
+DEFNAME(OpcodeJcc        ,  JNE   ,0x75);                                             // Jump      if not equal          (ZF==0 )
+DEFNAME(OpcodeJcc        ,  JBE   ,0x76);                                             // Jump      if below or equal     (CF==1 || ZF==1)  (unsigned)
+DEFNAME(OpcodeJcc        ,  JA    ,0x77);                                             // Jump      if above              (CF==0 && ZF==0)  (unsigned)
+DEFNAME(OpcodeJcc        ,  JS    ,0x78);                                             // Jump      if sign               (SF==1 )
+DEFNAME(OpcodeJcc        ,  JNS   ,0x79);                                             // Jump      if not sign           (SF==0 )
+DEFNAME(OpcodeJcc        ,  JP    ,0x7A);                                             // Jump      if parity even        (PF==1 )
+DEFNAME(OpcodeJcc        ,  JNP   ,0x7B);                                             // Jump      if parity odd         (PF==0 )
+DEFNAME(OpcodeJcc        ,  JL    ,0x7C);                                             // Jump      if less               (SF!=OF)          (signed  )
+DEFNAME(OpcodeJcc        ,  JGE   ,0x7D);                                             // Jump      if greater or equal   (SF==OF)          (signed  )
+DEFNAME(OpcodeJcc        ,  JLE   ,0x7E);                                             // Jump      if less or equal      (ZF==1 || SF!=OF) (signed  )
+DEFNAME(OpcodeJcc        ,  JG    ,0x7F);                                             // Jump      if greater            (ZF==0 && SF==OF) (signed  )
 
 #if defined(IS32BIT)
-DEFNAME(Opcode1Arg       , JCXZ   ,0x67E3,0,IMM8_ALLOWED); // Jump if CX  register is 0. 1 byte PC relative offset
-DEFNAME(Opcode1Arg       , JECXZ  ,0xE3  ,0,IMM8_ALLOWED); // Jump if ECX register is 0. 1 byte PC relative offset
+DEFNAME(Opcode1Arg       , JCXZ   ,0x67E3,0,IMM8_ALLOWED);                            // Jump if CX  register is 0. 1 byte PC relative offset
+DEFNAME(Opcode1Arg       , JECXZ  ,0xE3  ,0,IMM8_ALLOWED);                            // Jump if ECX register is 0. 1 byte PC relative offset
 #else
-DEFNAME(Opcode1Arg       , JECXZ  ,0x67E3,0,IMM8_ALLOWED); // Jump if ECX register is 0. 1 byte PC relative offset
-DEFNAME(Opcode1Arg       , JRCXZ  ,0xE3  ,0,IMM8_ALLOWED); // Jump if RCX register is 0. 1 byte PC relative offset
+DEFNAME(Opcode1Arg       , JECXZ  ,0x67E3,0,IMM8_ALLOWED);                            // Jump if ECX register is 0. 1 byte PC relative offset
+DEFNAME(Opcode1Arg       , JRCXZ  ,0xE3  ,0,IMM8_ALLOWED);                            // Jump if RCX register is 0. 1 byte PC relative offset
 #endif // IS64BIT
 
-DEFNAME(Opcode1Arg       , LOOP   ,0xE2  ,0,IMM8_ALLOWED); // Decrement count jump if count != 0
-DEFNAME(Opcode1Arg       , LOOPE  ,0xE1  ,0,IMM8_ALLOWED); // Decrement count jump if count != 0 and ZF = 1
-DEFNAME(Opcode1Arg       , LOOPNE ,0xE0  ,0,IMM8_ALLOWED); // Decrement count jump if count != 0 and ZF = 0
+DEFNAME(Opcode1Arg       , LOOP   ,0xE2  ,0,IMM8_ALLOWED);                            // Decrement count jump if count != 0
+DEFNAME(Opcode1Arg       , LOOPE  ,0xE1  ,0,IMM8_ALLOWED);                            // Decrement count jump if count != 0 and ZF = 1
+DEFNAME(Opcode1Arg       , LOOPNE ,0xE0  ,0,IMM8_ALLOWED);                            // Decrement count jump if count != 0 and ZF = 0
 
 #define SETCC_FLAGS   (REGTYPE_GPR_ALLOWED | BYTEGPR_ALLOWED | BYTEPTR_ALLOWED)
 // Set Byte on Condition
-DEFNAME(Opcode1Arg       ,  SETO  ,0x0F90 ,0,SETCC_FLAGS); // Set byte if overflow
-DEFNAME(Opcode1Arg       ,  SETNO ,0x0F91 ,0,SETCC_FLAGS); // Set byte if not overflow
-DEFNAME(Opcode1Arg       ,  SETB  ,0x0F92 ,0,SETCC_FLAGS); // Set byte if below                 (unsigned)
-DEFNAME(Opcode1Arg       ,  SETAE ,0x0F93 ,0,SETCC_FLAGS); // Set byte if above or equal        (unsigned)
-DEFNAME(Opcode1Arg       ,  SETE  ,0x0F94 ,0,SETCC_FLAGS); // Set byte if equal                 (signed/unsigned)
-DEFNAME(Opcode1Arg       ,  SETNE ,0x0F95 ,0,SETCC_FLAGS); // Set byte if not equal             (signed/unsigned)
-DEFNAME(Opcode1Arg       ,  SETBE ,0x0F96 ,0,SETCC_FLAGS); // Set byte if below or equal        (unsigned)
-DEFNAME(Opcode1Arg       ,  SETA  ,0x0F97 ,0,SETCC_FLAGS); // Set byte if above                 (unsigned)
-DEFNAME(Opcode1Arg       ,  SETS  ,0x0F98 ,0,SETCC_FLAGS); // Set byte if sign
-DEFNAME(Opcode1Arg       ,  SETNS ,0x0F99 ,0,SETCC_FLAGS); // Set byte if not sign
-DEFNAME(Opcode1Arg       ,  SETP  ,0x0F9A ,0,SETCC_FLAGS); // Set byte if parity even
-DEFNAME(Opcode1Arg       ,  SETNP ,0x0F9B ,0,SETCC_FLAGS); // Set byte if parity odd
-DEFNAME(Opcode1Arg       ,  SETL  ,0x0F9C ,0,SETCC_FLAGS); // Set byte if less                  (signed  )
-DEFNAME(Opcode1Arg       ,  SETGE ,0x0F9D ,0,SETCC_FLAGS); // Set byte if greater or equal      (signed  )
-DEFNAME(Opcode1Arg       ,  SETLE ,0x0F9E ,0,SETCC_FLAGS); // Set byte if less or equal         (signed  )
-DEFNAME(Opcode1Arg       ,  SETG  ,0x0F9F ,0,SETCC_FLAGS); // Set byte if greater               (signed  )
+DEFNAME(Opcode1Arg       ,  SETO  ,0x0F90 ,0,SETCC_FLAGS);                            // Set byte  if overflow           (OF==1 )
+DEFNAME(Opcode1Arg       ,  SETNO ,0x0F91 ,0,SETCC_FLAGS);                            // Set byte  if not overflow       (OF==0 )
+DEFNAME(Opcode1Arg       ,  SETB  ,0x0F92 ,0,SETCC_FLAGS);                            // Set byte  if below              (CF==1 )          (unsigned)
+DEFNAME(Opcode1Arg       ,  SETAE ,0x0F93 ,0,SETCC_FLAGS);                            // Set byte  if above or equal     (CF==0 )          (unsigned)
+DEFNAME(Opcode1Arg       ,  SETE  ,0x0F94 ,0,SETCC_FLAGS);                            // Set byte  if equal              (ZF==1 )
+DEFNAME(Opcode1Arg       ,  SETNE ,0x0F95 ,0,SETCC_FLAGS);                            // Set byte  if not equal          (ZF==0 )
+DEFNAME(Opcode1Arg       ,  SETBE ,0x0F96 ,0,SETCC_FLAGS);                            // Set byte  if below or equal     (CF==1 || ZF==1)  (unsigned)
+DEFNAME(Opcode1Arg       ,  SETA  ,0x0F97 ,0,SETCC_FLAGS);                            // Set byte  if above              (CF==0 && ZF==0)  (unsigned)
+DEFNAME(Opcode1Arg       ,  SETS  ,0x0F98 ,0,SETCC_FLAGS);                            // Set byte  if sign               (SF==1 )
+DEFNAME(Opcode1Arg       ,  SETNS ,0x0F99 ,0,SETCC_FLAGS);                            // Set byte  if not sign           (SF==0 )
+DEFNAME(Opcode1Arg       ,  SETP  ,0x0F9A ,0,SETCC_FLAGS);                            // Set byte  if parity even        (PF==1 )
+DEFNAME(Opcode1Arg       ,  SETNP ,0x0F9B ,0,SETCC_FLAGS);                            // Set byte  if parity odd         (PF==0 )
+DEFNAME(Opcode1Arg       ,  SETL  ,0x0F9C ,0,SETCC_FLAGS);                            // Set byte  if less               (SF!=OF)          (signed  )
+DEFNAME(Opcode1Arg       ,  SETGE ,0x0F9D ,0,SETCC_FLAGS);                            // Set byte  if greater or equal   (SF==OF)          (signed  )
+DEFNAME(Opcode1Arg       ,  SETLE ,0x0F9E ,0,SETCC_FLAGS);                            // Set byte  if less or equal      (ZF==1 || SF!=OF) (signed  )
+DEFNAME(Opcode1Arg       ,  SETG  ,0x0F9F ,0,SETCC_FLAGS);                            // Set byte  if greater            (ZF==0 && SF==OF) (signed  )
 
 
 #define CMOV_FLAGS   (NONBYTE_GPR_ALLOWED|NONBYTE_GPRPTR_ALLOWED|OP1_REGONLY|HAS_NONBYTE_SIZEBITS)
 
-DEFNAME(Opcode2Arg       ,  CMOVO ,0x0F40 ,0,CMOV_FLAGS ); // Move       if overflow                                 (OF==1 )
-DEFNAME(Opcode2Arg       ,  CMOVNO,0x0F41 ,0,CMOV_FLAGS ); // Move       if not overflow                             (OF==0 )
-DEFNAME(Opcode2Arg       ,  CMOVB ,0x0F42 ,0,CMOV_FLAGS ); // Move       if below                (unsigned)          (CF==1 )
-DEFNAME(Opcode2Arg       ,  CMOVAE,0x0F43 ,0,CMOV_FLAGS ); // Move       if above or equal       (unsigned)          (CF==0 )
-DEFNAME(Opcode2Arg       ,  CMOVE ,0x0F44 ,0,CMOV_FLAGS ); // Move       if equal                (signed/unsigned)   (ZF==1 )
-DEFNAME(Opcode2Arg       ,  CMOVNE,0x0F45 ,0,CMOV_FLAGS ); // Move       if not equal            (signed/unsigned)   (ZF==0 )
-DEFNAME(Opcode2Arg       ,  CMOVBE,0x0F46 ,0,CMOV_FLAGS ); // Move       if below or equal       (unsigned)          (CF==1 || ZF==1)
-DEFNAME(Opcode2Arg       ,  CMOVA ,0x0F47 ,0,CMOV_FLAGS ); // Move       if above                (unsigned)          (CF==0 && ZF==0)
-DEFNAME(Opcode2Arg       ,  CMOVS ,0x0F48 ,0,CMOV_FLAGS ); // Move       if sign                                     (SF==1 )
-DEFNAME(Opcode2Arg       ,  CMOVNS,0x0F49 ,0,CMOV_FLAGS ); // Move       if not sign                                 (SF==0 )
-DEFNAME(Opcode2Arg       ,  CMOVP ,0x0F4A ,0,CMOV_FLAGS ); // Move       if parity even                              (PF==1 )
-DEFNAME(Opcode2Arg       ,  CMOVNP,0x0F4B ,0,CMOV_FLAGS ); // Move       if parity odd                               (PF==0 )
-DEFNAME(Opcode2Arg       ,  CMOVL ,0x0F4C ,0,CMOV_FLAGS ); // Move       if less                 (signed  )          (SF!=OF)
-DEFNAME(Opcode2Arg       ,  CMOVGE,0x0F4D ,0,CMOV_FLAGS ); // Move       if greater or equal     (signed  )          (SF==OF)
-DEFNAME(Opcode2Arg       ,  CMOVLE,0x0F4E ,0,CMOV_FLAGS ); // Move       if less or equal        (signed  )          (ZF==1 || SF!=OF)
-DEFNAME(Opcode2Arg       ,  CMOVG ,0x0F4F ,0,CMOV_FLAGS ); // Move       if greater              (signed  )          (ZF==0 && SF==OF)
-
+DEFNAME(Opcode2Arg       ,  CMOVO ,0x0F40 ,0,CMOV_FLAGS );                            // Move      if overflow           (OF==1 )
+DEFNAME(Opcode2Arg       ,  CMOVNO,0x0F41 ,0,CMOV_FLAGS );                            // Move      if not overflow       (OF==0 )
+DEFNAME(Opcode2Arg       ,  CMOVB ,0x0F42 ,0,CMOV_FLAGS );                            // Move      if below              (CF==1 )          (unsigned)
+DEFNAME(Opcode2Arg       ,  CMOVAE,0x0F43 ,0,CMOV_FLAGS );                            // Move      if above or equal     (CF==0 )          (unsigned)
+DEFNAME(Opcode2Arg       ,  CMOVE ,0x0F44 ,0,CMOV_FLAGS );                            // Move      if equal              (ZF==1 )
+DEFNAME(Opcode2Arg       ,  CMOVNE,0x0F45 ,0,CMOV_FLAGS );                            // Move      if not equal          (ZF==0 )
+DEFNAME(Opcode2Arg       ,  CMOVBE,0x0F46 ,0,CMOV_FLAGS );                            // Move      if below or equal     (CF==1 || ZF==1)  (unsigned)
+DEFNAME(Opcode2Arg       ,  CMOVA ,0x0F47 ,0,CMOV_FLAGS );                            // Move      if above              (CF==0 && ZF==0)  (unsigned)
+DEFNAME(Opcode2Arg       ,  CMOVS ,0x0F48 ,0,CMOV_FLAGS );                            // Move      if sign               (SF==1 )
+DEFNAME(Opcode2Arg       ,  CMOVNS,0x0F49 ,0,CMOV_FLAGS );                            // Move      if not sign           (SF==0 )
+DEFNAME(Opcode2Arg       ,  CMOVP ,0x0F4A ,0,CMOV_FLAGS );                            // Move      if parity even        (PF==1 )
+DEFNAME(Opcode2Arg       ,  CMOVNP,0x0F4B ,0,CMOV_FLAGS );                            // Move      if parity odd         (PF==0 )
+DEFNAME(Opcode2Arg       ,  CMOVL ,0x0F4C ,0,CMOV_FLAGS );                            // Move      if less               (SF!=OF)          (signed  )
+DEFNAME(Opcode2Arg       ,  CMOVGE,0x0F4D ,0,CMOV_FLAGS );                            // Move      if greater or equal   (SF==OF)          (signed  )
+DEFNAME(Opcode2Arg       ,  CMOVLE,0x0F4E ,0,CMOV_FLAGS );                            // Move      if less or equal      (ZF==1 || SF!=OF) (signed  )
+DEFNAME(Opcode2Arg       ,  CMOVG ,0x0F4F ,0,CMOV_FLAGS );                            // Move      if greater            (ZF==0 && SF==OF) (signed  )
 
 
 
@@ -219,12 +218,12 @@ DEFNAME(StringPrefix     ,  REPNE ,0xF2);                         // Apply to CM
 
 // ----------------------------- FPU opcodes -------------------------------------
 
-DEFNAME(OpcodeFPUTransfer,FLD     ,0xD9C0,0xD9,0,0xDD,0,0xDB,5, 1);
-DEFNAME(OpcodeFPUTransfer,FST     ,0xDDD0,0xD9,2,0xDD,2,0   ,0, 0);
-DEFNAME(OpcodeFPUTransfer,FSTP    ,0xDDD8,0xD9,3,0xDD,3,0xDB,7,-1);
+DEFNAME(OpcodeFPUTransfer,FLD     ,0xD9C0,0xD9,0,0xDD,0,0xDB,5, 1);                   // FLD( src).  Push  src   into st(0). src={st(i),Real4/8/10 in memory}
+DEFNAME(OpcodeFPUTransfer,FST     ,0xDDD0,0xD9,2,0xDD,2,0   ,0, 0);                   // FST( dst).  Store st(0) into dst.   dst={st(i),Real4/8    in memory}
+DEFNAME(OpcodeFPUTransfer,FSTP    ,0xDDD8,0xD9,3,0xDD,3,0xDB,7,-1);                   // FSTP(dst).  Pop   st(0) into dst.   dst={st(i),Real4/8/10 in memory}
 
-DEFNAME(OpcodeFPU1Arg    ,FBLD    ,0xDF,4, 1,TBYTEPTR_ALLOWED);      // LoaD BCD data from memory
-DEFNAME(OpcodeFPU1Arg    ,FBSTP   ,0xDF,6,-1,TBYTEPTR_ALLOWED);      // STore BCD data to memory
+DEFNAME(OpcodeFPU1Arg    ,FBLD    ,0xDF,4, 1,TBYTEPTR_ALLOWED);                       // FBLD( src). Push  BCD data from src into st(0). src=tbyte ptr
+DEFNAME(OpcodeFPU1Arg    ,FBSTP   ,0xDF,6,-1,TBYTEPTR_ALLOWED);                       // FBSTP(dst). Pop   st(0) as BCD data into dst.   dst=tbyte ptr
 
 static const char s_FPUArithmStackDelta[3] = {-1,0,0 };
 
@@ -235,87 +234,89 @@ DEFNAME(OpcodeFPUArithm  ,FSUBR   ,0xDEE1,0xDCE0,0xD8E8,0xD8,5,0xDC,5,s_FPUArith
 DEFNAME(OpcodeFPUArithm  ,FDIV    ,0xDEF9,0xDCF8,0xD8F0,0xD8,6,0xDC,6,s_FPUArithmStackDelta);
 DEFNAME(OpcodeFPUArithm  ,FDIVR   ,0xDEF1,0xDCF0,0xD8F8,0xD8,7,0xDC,7,s_FPUArithmStackDelta);
 
-DEFNAME(OpcodeFPU1Arg    ,FADDP   ,0xDEC0,0,-1,REGTYPE_FPU_ALLOWED);
-DEFNAME(OpcodeFPU1Arg    ,FMULP   ,0xDEC8,0,-1,REGTYPE_FPU_ALLOWED);
-DEFNAME(OpcodeFPU1Arg    ,FSUBP   ,0xDEE8,0,-1,REGTYPE_FPU_ALLOWED);
-DEFNAME(OpcodeFPU1Arg    ,FDIVP   ,0xDEF8,0,-1,REGTYPE_FPU_ALLOWED);
-DEFNAME(OpcodeFPU1Arg    ,FSUBRP  ,0xDEE0,0,-1,REGTYPE_FPU_ALLOWED);
-DEFNAME(OpcodeFPU1Arg    ,FDIVRP  ,0xDEF0,0,-1,REGTYPE_FPU_ALLOWED);
+DEFNAME(OpcodeFPU1Arg    ,FADDP   ,0xDEC0,0,-1,REGTYPE_FPU_ALLOWED);                  // FADDP(st(i)).  st(i) += st(0);       pop st(0);
+DEFNAME(OpcodeFPU1Arg    ,FMULP   ,0xDEC8,0,-1,REGTYPE_FPU_ALLOWED);                  // FMULP(st(i)).  st(i) *= st(0);       pop st(0);
+DEFNAME(OpcodeFPU1Arg    ,FSUBP   ,0xDEE8,0,-1,REGTYPE_FPU_ALLOWED);                  // FSUBP(st(i)).  st(i) -= st(0);       pop st(0);
+DEFNAME(OpcodeFPU1Arg    ,FDIVP   ,0xDEF8,0,-1,REGTYPE_FPU_ALLOWED);                  // FDIVP(st(i)).  st(i) /= st(0);       pop st(0);
+DEFNAME(OpcodeFPU1Arg    ,FSUBRP  ,0xDEE0,0,-1,REGTYPE_FPU_ALLOWED);                  // FSUBRP(st(i)). st(i)  = st(0)-st(i); pop st(0);
+DEFNAME(OpcodeFPU1Arg    ,FDIVRP  ,0xDEF0,0,-1,REGTYPE_FPU_ALLOWED);                  // FDIVRP(st(i)). st(i)  = st(0)/st(i); pop st(0);
 
-DEFNAME(OpcodeFPUCompare ,FCOM    ,0xD8D0,0xD8,2,0xDC,2, 0);
-DEFNAME(OpcodeFPUCompare ,FCOMP   ,0xD8D8,0xD8,3,0xDC,3,-1);
-DEFNAME(OpcodeFPU1Arg    ,FCOMI   ,0xDBF0,0, 0,REGTYPE_FPU_ALLOWED); // Compare st(0) to st(i) and set CPU-flags
-DEFNAME(OpcodeFPU1Arg    ,FCOMIP  ,0xDFF0,0,-1,REGTYPE_FPU_ALLOWED); // Compare st(0) to st(i) and set CPU-flags; pop st(0)
-DEFNAME(OpcodeFPU1Arg    ,FUCOM   ,0xDDE0,0, 0,REGTYPE_FPU_ALLOWED); // Unordered compare st(0) to st(i)
-DEFNAME(OpcodeFPU1Arg    ,FUCOMP  ,0xDDE8,0,-1,REGTYPE_FPU_ALLOWED); // Unordered compare st(0) to st(i); pop st(0)
-DEFNAME(OpcodeFPU1Arg    ,FUCOMI  ,0xDBE8,0, 0,REGTYPE_FPU_ALLOWED); // Unordered compare st(0) to st(i) and set CPU-flags
-DEFNAME(OpcodeFPU1Arg    ,FUCOMIP ,0xDFE8,0,-1,REGTYPE_FPU_ALLOWED); // Unordered compare st(0) to st(i) and set CPU-flags; pop st(0)
+// ----------------------------- FPU compare opcodes ----------------------------
+DEFNAME(OpcodeFPUCompare ,FCOM    ,0xD8D0,0xD8,2,0xDC,2, 0);                          // FCOM(  src  ). Compare st(0) to src, src={st(i),Real4/8 in memory}
+DEFNAME(OpcodeFPUCompare ,FCOMP   ,0xD8D8,0xD8,3,0xDC,3,-1);                          // Same as FCOM,  but pop st(0) after compare
+DEFNAME(OpcodeFPU1Arg    ,FCOMI   ,0xDBF0,0, 0,REGTYPE_FPU_ALLOWED);                  // FCOMI( st(i)). Compare st(0) to st(i) and set CPU-flags
+DEFNAME(OpcodeFPU1Arg    ,FCOMIP  ,0xDFF0,0,-1,REGTYPE_FPU_ALLOWED);                  // Same as FCOMI, but pop st(0) after compare
+DEFNAME(OpcodeFPU1Arg    ,FUCOM   ,0xDDE0,0, 0,REGTYPE_FPU_ALLOWED);                  // FUCOM( st(i)). Unordered compare st(0) to st(i)
+DEFNAME(OpcodeFPU1Arg    ,FUCOMP  ,0xDDE8,0,-1,REGTYPE_FPU_ALLOWED);                  // Same as FUCOM, but pop st(0) after compare
+DEFNAME(OpcodeFPU1Arg    ,FUCOMI  ,0xDBE8,0, 0,REGTYPE_FPU_ALLOWED);                  // FUCOMI(st(i)). Unordered compare st(0) to st(i) and set CPU-flags
+DEFNAME(OpcodeFPU1Arg    ,FUCOMIP ,0xDFE8,0,-1,REGTYPE_FPU_ALLOWED);                  // Same as FUCOMI, but pop st(0) after compare
 
-DEFNAME(OpcodeFPU0Arg    ,FCOMPP  ,0xDED9,-2);                       // Compare st(0) to st(1); pop both
-DEFNAME(OpcodeFPU0Arg    ,FUCOMPP ,0xDAE9,-2);                       // Unordered compare st(0) to st(1); pop both
+DEFNAME(OpcodeFPU0Arg    ,FCOMPP  ,0xDED9,-2);                                        // Compare st(0) to st(1); pop both
+DEFNAME(OpcodeFPU0Arg    ,FUCOMPP ,0xDAE9,-2);                                        // Unordered compare st(0) to st(1); pop both
 
-DEFNAME(OpcodeFPUIArithm ,FILD    ,0xDF,0,0xDB,0,0xDF,5, 1);
-DEFNAME(OpcodeFPUIArithm ,FISTTP  ,0xDF,1,0xDB,1,0xDD,1,-1);
-DEFNAME(OpcodeFPUIArithm ,FIST    ,0xDF,2,0xDB,2,0,   0, 0);
-DEFNAME(OpcodeFPUIArithm ,FISTP   ,0xDF,3,0xDB,3,0xDF,7,-1);
-DEFNAME(OpcodeFPUIArithm ,FIADD   ,0xDE,0,0xDA,0,0,   0, 0);
-DEFNAME(OpcodeFPUIArithm ,FIMUL   ,0xDE,1,0xDA,1,0,   0, 0);
-DEFNAME(OpcodeFPUIArithm ,FICOM   ,0xDE,2,0xDA,2,0,   0, 0);
-DEFNAME(OpcodeFPUIArithm ,FICOMP  ,0xDE,3,0xDA,3,0,   0,-1);
-DEFNAME(OpcodeFPUIArithm ,FISUB   ,0xDE,4,0xDA,4,0,   0, 0);
-DEFNAME(OpcodeFPUIArithm ,FISUBR  ,0xDE,5,0xDA,5,0,   0, 0);
-DEFNAME(OpcodeFPUIArithm ,FIDIV   ,0xDE,6,0xDA,6,0,   0, 0);
-DEFNAME(OpcodeFPUIArithm ,FIDIVR  ,0xDE,7,0xDA,7,0,   0, 0);
+// ------------------------ FPU integer opcodes ---------------------------------
+DEFNAME(OpcodeFPUIArithm ,FILD    ,0xDF,0,0xDB,0,0xDF,5, 1);                          // FILD(  src). Push src into st(0). src=(signed int16/32/64 in memory)
+DEFNAME(OpcodeFPUIArithm ,FISTP   ,0xDF,3,0xDB,3,0xDF,7,-1);                          // FISTP( dst). Pop st(0) into dst, rounding according to RC-field FPU control word. dst=(signed int16/32/64 in memory)
+DEFNAME(OpcodeFPUIArithm ,FISTTP  ,0xDF,1,0xDB,1,0xDD,1,-1);                          // FISTTP(dst). Same as fistp, but truncates to nearest integer, regardless of RC-field in FPU control word
+DEFNAME(OpcodeFPUIArithm ,FIST    ,0xDF,2,0xDB,2,0,   0, 0);                          // FIST(  dst). Store st(0) into dst, rounding according to RC-field FPU control word. dst=(signed int16/32 in memory)
+DEFNAME(OpcodeFPUIArithm ,FIADD   ,0xDE,0,0xDA,0,0,   0, 0);                          // FIADD( src). st(0) += src.      src=(signed int16/32 in memory)
+DEFNAME(OpcodeFPUIArithm ,FIMUL   ,0xDE,1,0xDA,1,0,   0, 0);                          // FIMUL( src). st(0) *= src.      src=(signed int16/32 in memory)
+DEFNAME(OpcodeFPUIArithm ,FISUB   ,0xDE,4,0xDA,4,0,   0, 0);                          // FISUB( src). st(0) -= src.      src=(signed int16/32 in memory)
+DEFNAME(OpcodeFPUIArithm ,FIDIV   ,0xDE,6,0xDA,6,0,   0, 0);                          // FIDIV( src). st(0) /= src.      src=(signed int16/32 in memory)
+DEFNAME(OpcodeFPUIArithm ,FISUBR  ,0xDE,5,0xDA,5,0,   0, 0);                          // FISUBR(src). st(0) = src-st(0). src=(signed int16/32 in memory)
+DEFNAME(OpcodeFPUIArithm ,FIDIVR  ,0xDE,7,0xDA,7,0,   0, 0);                          // FIDIVR(src). st(0) = src/st(0). src=(signed int16/32 in memory)
+DEFNAME(OpcodeFPUIArithm ,FICOM   ,0xDE,2,0xDA,2,0,   0, 0);                          // FICOM( src). Compare st(0) to signed int16/32 in memory
+DEFNAME(OpcodeFPUIArithm ,FICOMP  ,0xDE,3,0xDA,3,0,   0,-1);                          // Same as ficom, but pop st(0) after compare
 
 
-DEFNAME(OpcodeFPU1Arg    ,FCMOVB  ,0xDAC0,0,0,REGTYPE_FPU_ALLOWED);  // Move if below (CF=1)
-DEFNAME(OpcodeFPU1Arg    ,FCMOVE  ,0xDAC8,0,0,REGTYPE_FPU_ALLOWED);  // Move if equal (ZF=1)
-DEFNAME(OpcodeFPU1Arg    ,FCMOVBE ,0xDAD0,0,0,REGTYPE_FPU_ALLOWED);  // Move if below or equal (CF=1 or ZF=1)
-DEFNAME(OpcodeFPU1Arg    ,FCMOVU  ,0xDAD8,0,0,REGTYPE_FPU_ALLOWED);  // Move if unordered (PF=1)
-DEFNAME(OpcodeFPU1Arg    ,FCMOVAE ,0xDBC0,0,0,REGTYPE_FPU_ALLOWED);  // Move if above or equal (CF=0)
-DEFNAME(OpcodeFPU1Arg    ,FCMOVNE ,0xDBC8,0,0,REGTYPE_FPU_ALLOWED);  // Move if not equal (ZF=0)
-DEFNAME(OpcodeFPU1Arg    ,FCMOVA  ,0xDBD0,0,0,REGTYPE_FPU_ALLOWED);  // Move if above (CF=0 and ZF=0)
-DEFNAME(OpcodeFPU1Arg    ,FCMOVNU ,0xDBD8,0,0,REGTYPE_FPU_ALLOWED);  // Move if not unordered (PF=0)
+// ------------------- Conditional Copy st(i) to st(0) --------------------------
+DEFNAME(OpcodeFPU1Arg    ,FCMOVB  ,0xDAC0,0,0,REGTYPE_FPU_ALLOWED);                   // Copy      if below              (CF==1 )
+DEFNAME(OpcodeFPU1Arg    ,FCMOVE  ,0xDAC8,0,0,REGTYPE_FPU_ALLOWED);                   // Copy      if equal              (ZF==1 )
+DEFNAME(OpcodeFPU1Arg    ,FCMOVBE ,0xDAD0,0,0,REGTYPE_FPU_ALLOWED);                   // Copy      if below or equal     (CF==1 || ZF==1)
+DEFNAME(OpcodeFPU1Arg    ,FCMOVU  ,0xDAD8,0,0,REGTYPE_FPU_ALLOWED);                   // Copy      if unordered          (PF==1 )
+DEFNAME(OpcodeFPU1Arg    ,FCMOVAE ,0xDBC0,0,0,REGTYPE_FPU_ALLOWED);                   // Copy      if above or equal     (CF==0 )
+DEFNAME(OpcodeFPU1Arg    ,FCMOVNE ,0xDBC8,0,0,REGTYPE_FPU_ALLOWED);                   // Copy      if not equal          (ZF==0 )
+DEFNAME(OpcodeFPU1Arg    ,FCMOVA  ,0xDBD0,0,0,REGTYPE_FPU_ALLOWED);                   // Copy      if above              (CF==0 && ZF==0)
+DEFNAME(OpcodeFPU1Arg    ,FCMOVNU ,0xDBD8,0,0,REGTYPE_FPU_ALLOWED);                   // Copy      if not unordered      (PF==0 )
 
-DEFNAME(OpcodeFPU1Arg    ,FFREE   ,0xDDC0,0,0,REGTYPE_FPU_ALLOWED);  // Free a data register
-DEFNAME(OpcodeFPU1Arg    ,FXCH    ,0xD9C8,0,0,REGTYPE_FPU_ALLOWED);  // Swap st(0) and st(i)
+DEFNAME(OpcodeFPU1Arg    ,FFREE   ,0xDDC0,0,0,REGTYPE_FPU_ALLOWED);                   // Free a data register
+DEFNAME(OpcodeFPU1Arg    ,FXCH    ,0xD9C8,0,0,REGTYPE_FPU_ALLOWED);                   // Swap st(0) and st(i)
 
-DEFNAME(OpcodeFPU0Arg    ,FWAIT   ,0x9B  , 0);                       // Wait while FPU is busy
-DEFNAME(OpcodeFPU0Arg    ,FNOP    ,0xD9D0, 0);                       // No operation
-DEFNAME(OpcodeFPU0Arg    ,FCHS    ,0xD9E0, 0);                       // st(0); = -st(0)
-DEFNAME(OpcodeFPU0Arg    ,FABS    ,0xD9E1, 0);                       // st(0) = abs(st(0))
-DEFNAME(OpcodeFPU0Arg    ,FTST    ,0xD9E4, 0);                       // Compare st(0) to 0.0
-DEFNAME(OpcodeFPU0Arg    ,FXAM    ,0xD9E5, 0);                       // Examine the content of st(0)
-DEFNAME(OpcodeFPU0Arg    ,FLD1    ,0xD9E8, 1);                       // push 1.0
-DEFNAME(OpcodeFPU0Arg    ,FLDL2T  ,0xD9E9, 1);                       // push log2(10)
-DEFNAME(OpcodeFPU0Arg    ,FLDL2E  ,0xD9EA, 1);                       // push log2(e)
-DEFNAME(OpcodeFPU0Arg    ,FLDPI   ,0xD9EB, 1);                       // push pi
-DEFNAME(OpcodeFPU0Arg    ,FLDLG2  ,0xD9EC, 1);                       // push log10(2)
-DEFNAME(OpcodeFPU0Arg    ,FLDLN2  ,0xD9ED, 1);                       // push ln(2)
-DEFNAME(OpcodeFPU0Arg    ,FLDZ    ,0xD9EE, 1);                       // push 0.0
-DEFNAME(OpcodeFPU0Arg    ,F2XM1   ,0xD9F0, 0);                       // st(0) = 2^st(0)-1, assume -1 <= st(0) <= 1
-DEFNAME(OpcodeFPU0Arg    ,FYL2X   ,0xD9F1,-1);                       // st(1) = log2(st(0))*st(1); pop st(0)
-DEFNAME(OpcodeFPU0Arg    ,FPTAN   ,0xD9F2, 1);                       // st(0) = tan(st(0)); push 1.0
-DEFNAME(OpcodeFPU0Arg    ,FPATAN  ,0xD9F3,-1);                       // st(1) = atan(st(1)/st(0)); pop st(0)
-DEFNAME(OpcodeFPU0Arg    ,FXTRACT ,0xD9F4, 1);                       // st(0) = unbiased exponent in floating point format of st(0). then push signinificant wiht exponent 0
-DEFNAME(OpcodeFPU0Arg    ,FPREM1  ,0xD9F5, 0);                       // As FPREM. Magnitude of the remainder <= ST(1) / 2
-DEFNAME(OpcodeFPU0Arg    ,FDECSTP ,0xD9F6, 0);                       // Decrement stack pointer. st0->st1, st7->st0, ..., st1->st2
-DEFNAME(OpcodeFPU0Arg    ,FINCSTP ,0xD9F7, 0);                       // Increment stack pointer. st0->st7, st1->st0, ..., st7->st6
-DEFNAME(OpcodeFPU0Arg    ,FPREM   ,0xD9F8, 0);                       // Partial remainder. st(0) %= st(1). Exponent of st(0) reduced with at most 63
-DEFNAME(OpcodeFPU0Arg    ,FYL2XP1 ,0xD9F9,-1);                       // st(1) = log2(st(0)+1)*st(1); pop st(0)
-DEFNAME(OpcodeFPU0Arg    ,FSQRT   ,0xD9FA, 0);                       // st(0) = sqrt(st(0))
-DEFNAME(OpcodeFPU0Arg    ,FSINCOS ,0xD9FB, 1);                       // Sine and cosine of the angle value in ST(0), st(0)=sin; push(cos)
-DEFNAME(OpcodeFPU0Arg    ,FRNDINT ,0xD9FC, 0);                       // st(0) = nearest integral value according to the rounding mode
-DEFNAME(OpcodeFPU0Arg    ,FSCALE  ,0xD9FD, 0);                       // st(0) *= 2^int(st(1))
-DEFNAME(OpcodeFPU0Arg    ,FSIN    ,0xD9FE, 0);                       // st(0) = sin(ST(0))
-DEFNAME(OpcodeFPU0Arg    ,FCOS    ,0xD9FF, 0);                       // st(0) = cos(ST(0))
+DEFNAME(OpcodeFPU0Arg    ,FWAIT   ,0x9B  , 0);                                        // Wait while FPU is busy
+DEFNAME(OpcodeFPU0Arg    ,FNOP    ,0xD9D0, 0);                                        // No operation
+DEFNAME(OpcodeFPU0Arg    ,FCHS    ,0xD9E0, 0);                                        // st(0); = -st(0)
+DEFNAME(OpcodeFPU0Arg    ,FABS    ,0xD9E1, 0);                                        // st(0) = abs(st(0))
+DEFNAME(OpcodeFPU0Arg    ,FTST    ,0xD9E4, 0);                                        // Compare st(0) to 0.0
+DEFNAME(OpcodeFPU0Arg    ,FXAM    ,0xD9E5, 0);                                        // Examine the content of st(0)
+DEFNAME(OpcodeFPU0Arg    ,FLD1    ,0xD9E8, 1);                                        // push 1.0
+DEFNAME(OpcodeFPU0Arg    ,FLDL2T  ,0xD9E9, 1);                                        // push log2(10)
+DEFNAME(OpcodeFPU0Arg    ,FLDL2E  ,0xD9EA, 1);                                        // push log2(e)
+DEFNAME(OpcodeFPU0Arg    ,FLDPI   ,0xD9EB, 1);                                        // push pi
+DEFNAME(OpcodeFPU0Arg    ,FLDLG2  ,0xD9EC, 1);                                        // push log10(2)
+DEFNAME(OpcodeFPU0Arg    ,FLDLN2  ,0xD9ED, 1);                                        // push ln(2)
+DEFNAME(OpcodeFPU0Arg    ,FLDZ    ,0xD9EE, 1);                                        // push 0.0
+DEFNAME(OpcodeFPU0Arg    ,F2XM1   ,0xD9F0, 0);                                        // st(0) = 2^st(0)-1, assume -1 <= st(0) <= 1
+DEFNAME(OpcodeFPU0Arg    ,FYL2X   ,0xD9F1,-1);                                        // st(1) = log2(st(0))*st(1); pop st(0)
+DEFNAME(OpcodeFPU0Arg    ,FPTAN   ,0xD9F2, 1);                                        // st(0) = tan(st(0)); push 1.0
+DEFNAME(OpcodeFPU0Arg    ,FPATAN  ,0xD9F3,-1);                                        // st(1) = atan(st(1)/st(0)); pop st(0)
+DEFNAME(OpcodeFPU0Arg    ,FXTRACT ,0xD9F4, 1);                                        // st(0) = unbiased exponent in floating point format of st(0). then push signinificant wiht exponent 0
+DEFNAME(OpcodeFPU0Arg    ,FPREM1  ,0xD9F5, 0);                                        // As FPREM. Magnitude of the remainder <= ST(1) / 2
+DEFNAME(OpcodeFPU0Arg    ,FDECSTP ,0xD9F6, 0);                                        // Decrement stack pointer. st0->st1, st7->st0, ..., st1->st2
+DEFNAME(OpcodeFPU0Arg    ,FINCSTP ,0xD9F7, 0);                                        // Increment stack pointer. st0->st7, st1->st0, ..., st7->st6
+DEFNAME(OpcodeFPU0Arg    ,FPREM   ,0xD9F8, 0);                                        // Partial remainder. st(0) %= st(1). Exponent of st(0) reduced with at most 63
+DEFNAME(OpcodeFPU0Arg    ,FYL2XP1 ,0xD9F9,-1);                                        // st(1) = log2(st(0)+1)*st(1); pop st(0)
+DEFNAME(OpcodeFPU0Arg    ,FSQRT   ,0xD9FA, 0);                                        // st(0) = sqrt(st(0))
+DEFNAME(OpcodeFPU0Arg    ,FSINCOS ,0xD9FB, 1);                                        // Sine and cosine of the angle value in ST(0), st(0)=sin; push(cos)
+DEFNAME(OpcodeFPU0Arg    ,FRNDINT ,0xD9FC, 0);                                        // st(0) = nearest integral value according to the rounding mode
+DEFNAME(OpcodeFPU0Arg    ,FSCALE  ,0xD9FD, 0);                                        // st(0) *= 2^int(st(1))
+DEFNAME(OpcodeFPU0Arg    ,FSIN    ,0xD9FE, 0);                                        // st(0) = sin(ST(0))
+DEFNAME(OpcodeFPU0Arg    ,FCOS    ,0xD9FF, 0);                                        // st(0) = cos(ST(0))
 
-DEFNAME(Opcode1Arg       ,FLDCW   ,0xD9  ,5,WORDPTR_ALLOWED);        // load control word
-DEFNAME(Opcode1Arg       ,FNSTCW  ,0xD9  ,7,WORDPTR_ALLOWED);        // store control word
-DEFNAME(Opcode1ArgFNSTSW ,FNSTSW  ,0xDD  );                          // store status word in m16/AX
+DEFNAME(Opcode1Arg       ,FLDCW   ,0xD9  ,5,WORDPTR_ALLOWED);                         // FLDCW( m16   ). Load  control word.
+DEFNAME(Opcode1Arg       ,FNSTCW  ,0xD9  ,7,WORDPTR_ALLOWED);                         // FNSTCW(m16   ). Store control word.
+DEFNAME(Opcode1ArgFNSTSW ,FNSTSW  ,0xDD  );                                           // FNSTSW(m16/AX). Store status  word.
 
 // --------------------------- XMM opcodes --------------------------------
-
 DEFNAME(Opcode2Arg        ,MOVAPS ,0x0F28 , REGTYPE_XMM_ALLOWED | HAS_DIRBIT0 | XMMWORDPTR_ALLOWED);
 Opcode2ArgPfxF2SD          MOVSD1(_T("movsd") ,0x0F10 , HAS_DIRBIT0 );
 DEFNAME(Opcode2ArgPfxF2SD ,ADDSD  ,0x0F58 , OP1_REGONLY   );
