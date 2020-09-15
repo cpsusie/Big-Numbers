@@ -343,11 +343,11 @@ public:
 };
 
 AllStringInstructions::AllStringInstructions() {
-  add(&MOVSB);  add(&CMPSB);  add(&STOSB);  add(&LODSB);  add(&SCASB);
-  add(&MOVSW);  add(&CMPSW);  add(&STOSW);  add(&LODSW);  add(&SCASW);
-  add(&MOVSD);  add(&CMPSD);  add(&STOSD);  add(&LODSD);  add(&SCASD);
+  add(&INSB );  add(&OUTSB);  add(&MOVSB);  add(&CMPSB);  add(&STOSB);  add(&LODSB);  add(&SCASB);
+  add(&INSW );  add(&OUTSW);  add(&MOVSW);  add(&CMPSW);  add(&STOSW);  add(&LODSW);  add(&SCASW);
+  add(&INSD );  add(&OUTSD);  add(&MOVSD);  add(&CMPSD);  add(&STOSD);  add(&LODSD);  add(&SCASD);
 #if defined(IS64BIT)
-  add(&MOVSQ);  add(&CMPSQ);  add(&STOSQ);  add(&LODSQ);  add(&SCASQ);
+  add(&INSQ );  add(&OUTSQ);  add(&MOVSQ);  add(&CMPSQ);  add(&STOSQ);  add(&LODSQ);  add(&SCASQ);
 #endif // IS64BIT
 }
 
@@ -844,18 +844,24 @@ void TestMachineCode::testBitOperations() {
 
 void TestMachineCode::testStringInstructions() {
   clear(true);
+  testOpcode(INSB    );
+  testOpcode(OUTSB   );
   testOpcode(MOVSB   );
   testOpcode(CMPSB   );
   testOpcode(STOSB   );
   testOpcode(LODSB   );
   testOpcode(SCASB   );
 
+  testOpcode(INSW    );
+  testOpcode(OUTSW   );
   testOpcode(MOVSW   );
   testOpcode(CMPSW   );
   testOpcode(STOSW   );
   testOpcode(LODSW   );
   testOpcode(SCASW   );
 
+  testOpcode(INSD    );
+  testOpcode(OUTSD   );
   testOpcode(MOVSD   );
   testOpcode(CMPSD   );
   testOpcode(STOSD   );
@@ -863,6 +869,8 @@ void TestMachineCode::testStringInstructions() {
   testOpcode(SCASD   );
 
 #if defined(IS64BIT)
+  testOpcode(INSQ    );
+  testOpcode(OUTSQ   );
   testOpcode(MOVSQ   );
   testOpcode(CMPSQ   );
   testOpcode(STOSQ   );
@@ -1050,7 +1058,7 @@ End:
   const BYTE *endIP = getIP();
   const size_t codeSize = endIP - startIP;
   ExecutableByteArray code;
-  code.append(startIP, codeSize);
+  code.add(startIP, codeSize);
 }
 #endif // IS64BIT
 #endif // TEST_MACHINECODE

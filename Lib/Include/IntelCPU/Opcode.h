@@ -1356,7 +1356,6 @@ extern Opcode2Arg        CMOVG;                            // CMOVG(  r16-64, r/
 #define                  CMOVNLE        CMOVG              // CMOVNLE(r16-64, r/m16-64). Move      if not less or equal                    (signed  )
 
 
-
 extern Opcode0Arg        CWDE;                             // Convert word  to dword. Sign extend AX into EAX.      Copy sign (bit 15) of AX  into higher 16 bits of EAX
 extern Opcode0Arg        CDQ;                              // Convert dword to qword. Sign extend EAX into EDX:EAX. Copy sign (bit 31) of EAX into every bit of EDX
 extern Opcode0Arg        CBW;                              // Convert byte  to word.  Sign extend AL into AX.       Copy sign (bit 7 ) of AL  into higher 8 bits of AX
@@ -1367,9 +1366,8 @@ extern Opcode0Arg        CDQE;                             // Convert dword to q
 extern Opcode0Arg        CQO;                              // Convert qword to oword. Sign extend RAX into RDX:RAX. Copy sign (bit 63) of RAX into every bit of RDX
 #endif // IS64BIT
 
-//#define INS_BYTE                               B1INS(0x6C)
-//#define OUTS_BYTE                              B1INS(0x6E)
-
+extern StringInstruction INSB;                             // Input byte from I/O port specified in DX into memory location specified in ES:(E)DI or RDI
+extern StringInstruction OUTSB;                            // Output byte from memory location specified in DS:(E)SI or RSI to I/O port specified in DX
 extern StringInstruction MOVSB;                            // Move byte from string to string; if(DF==0) *(byte*)DI++ = *(byte*)SI++; else *(byte*)DI-- = *(byte*)SI--;
 extern StringInstruction CMPSB;                            // Compare bytes in memory; if(DF==0) Compares ES:[DI++] with DS:[SI++] else Compares ES:[DI--] with DS:[SI--]
 extern StringInstruction STOSB;                            // Store byte in string; if(DF==0) *ES:DI++ = AL; else *ES:DI-- = AL;
@@ -1377,6 +1375,8 @@ extern StringInstruction LODSB;                            // Load string byte; 
 extern StringInstruction SCASB;                            // Compare byte string; if(DF==0) Compares ES:[DI++] with AL else Compares ES:[DI--] with AL
 
 // Same as MOVSB...,but with WORD, and AL -> AX
+extern StringInstruction INSW;
+extern StringInstruction OUTSW;
 extern StringInstruction MOVSW;
 extern StringInstruction CMPSW;
 extern StringInstruction STOSW;
@@ -1384,6 +1384,8 @@ extern StringInstruction LODSW;
 extern StringInstruction SCASW;
 
 // Same as MOVSB...,but with DWORD, and AL->EAX, SI->ESI,DI->EDI
+extern StringInstruction INSD;
+extern StringInstruction OUTSD;
 extern StringInstruction MOVSD;
 extern StringInstruction CMPSD;
 extern StringInstruction STOSD;
@@ -1392,6 +1394,8 @@ extern StringInstruction SCASD;
 
 #if defined(IS64BIT)
 // Same as MOVSB...,but with QWORD, and AL -> RAX, SI->RSI,DI->RDI
+extern StringInstruction INSQ;
+extern StringInstruction OUTSQ;
 extern StringInstruction MOVSQ;
 extern StringInstruction CMPSQ;
 extern StringInstruction STOSQ;

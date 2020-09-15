@@ -186,18 +186,24 @@ DEFNAME(Opcode0Arg       ,  CDQE  ,CWDE,REGSIZE_QWORD );   // Sign extend EAX in
 DEFNAME(Opcode0Arg       ,  CQO   ,CDQ ,REGSIZE_QWORD );   // Sign extend RAX into RDX:RAX
 #endif // IS64BIT
 
+DEFNAME(StringInstruction,  INSB  ,0x6C);
+DEFNAME(StringInstruction,  OUTSB ,0x6E);
 DEFNAME(StringInstruction,  MOVSB ,0xA4);
 DEFNAME(StringInstruction,  CMPSB ,0xA6);
 DEFNAME(StringInstruction,  STOSB ,0xAA);
 DEFNAME(StringInstruction,  LODSB ,0xAC);
 DEFNAME(StringInstruction,  SCASB ,0xAE);
 
+DEFNAME(StringInstruction,  INSW  ,INSB ,REGSIZE_WORD);
+DEFNAME(StringInstruction,  OUTSW ,OUTSB,REGSIZE_WORD);
 DEFNAME(StringInstruction,  MOVSW ,MOVSB,REGSIZE_WORD);
 DEFNAME(StringInstruction,  CMPSW ,CMPSB,REGSIZE_WORD);
 DEFNAME(StringInstruction,  STOSW ,STOSB,REGSIZE_WORD);
 DEFNAME(StringInstruction,  LODSW ,LODSB,REGSIZE_WORD);
 DEFNAME(StringInstruction,  SCASW ,SCASB,REGSIZE_WORD);
 
+DEFNAME(StringInstruction,  INSD  ,INSB ,REGSIZE_DWORD);
+DEFNAME(StringInstruction,  OUTSD ,OUTSB,REGSIZE_DWORD);
 DEFNAME(StringInstruction,  MOVSD ,MOVSB,REGSIZE_DWORD);
 DEFNAME(StringInstruction,  CMPSD ,CMPSB,REGSIZE_DWORD);
 DEFNAME(StringInstruction,  STOSD ,STOSB,REGSIZE_DWORD);
@@ -205,6 +211,8 @@ DEFNAME(StringInstruction,  LODSD ,LODSB,REGSIZE_DWORD);
 DEFNAME(StringInstruction,  SCASD ,SCASB,REGSIZE_DWORD);
 
 #if defined(IS64BIT)
+DEFNAME(StringInstruction,  INSQ  ,INSB ,REGSIZE_QWORD);
+DEFNAME(StringInstruction,  OUTSQ ,OUTSB,REGSIZE_QWORD);
 DEFNAME(StringInstruction,  MOVSQ ,MOVSB,REGSIZE_QWORD);
 DEFNAME(StringInstruction,  CMPSQ ,CMPSB,REGSIZE_QWORD);
 DEFNAME(StringInstruction,  STOSQ ,STOSB,REGSIZE_QWORD);
