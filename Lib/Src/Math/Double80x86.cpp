@@ -8,7 +8,6 @@
 #pragma warning(disable : 4073)
 #pragma init_seg(lib)
 
-static const float    ten(10.0f);
 const double          _Dmaxi16P1 =  ((UINT)_I16_MAX + 1);
 const double          _Dmaxi32P1 =  ((UINT)_I32_MAX + 1);
 const Double80        _D80maxi64(   (BYTE*)"\xfe\xff\xff\xff\xff\xff\xff\xff\x3d\x40"); // (Double80)_I64_MAX;
