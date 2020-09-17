@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2024
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30503.244
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlib", "..\Lib\Src\zlib\zlib.vcxproj", "{D0280A64-5E92-45BB-95F9-561171595A26}"
 EndProject
@@ -171,6 +171,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "D3Function", "..\D3Function
 		{A90057E9-13D7-4E6F-8C02-0B355A71C134} = {A90057E9-13D7-4E6F-8C02-0B355A71C134}
 		{0D1324F1-16AC-4245-9A51-8BF3B09A6C5F} = {0D1324F1-16AC-4245-9A51-8BF3B09A6C5F}
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NMC1993", "NordicMathContest1993\NMC1993.vcxproj", "{4C24F172-1809-45A6-A3E8-84B3AC264841}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1782,6 +1784,50 @@ Global
 		{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}.TraceMemRelease|x64.Build.0 = TraceMemDebug|x64
 		{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}.TraceMemRelease|x86.ActiveCfg = TraceMemDebug|Win32
 		{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}.TraceMemRelease|x86.Build.0 = TraceMemDebug|Win32
+		{4C24F172-1809-45A6-A3E8-84B3AC264841}.Debug|x64.ActiveCfg = Debug|x64
+		{4C24F172-1809-45A6-A3E8-84B3AC264841}.Debug|x64.Build.0 = Debug|x64
+		{4C24F172-1809-45A6-A3E8-84B3AC264841}.Debug|x86.ActiveCfg = Debug|Win32
+		{4C24F172-1809-45A6-A3E8-84B3AC264841}.Debug|x86.Build.0 = Debug|Win32
+		{4C24F172-1809-45A6-A3E8-84B3AC264841}.IsoDebuggerDebug|x64.ActiveCfg = Debug|x64
+		{4C24F172-1809-45A6-A3E8-84B3AC264841}.IsoDebuggerDebug|x64.Build.0 = Debug|x64
+		{4C24F172-1809-45A6-A3E8-84B3AC264841}.IsoDebuggerDebug|x86.ActiveCfg = Debug|Win32
+		{4C24F172-1809-45A6-A3E8-84B3AC264841}.IsoDebuggerDebug|x86.Build.0 = Debug|Win32
+		{4C24F172-1809-45A6-A3E8-84B3AC264841}.IsoDebuggerRelease|x64.ActiveCfg = Release|x64
+		{4C24F172-1809-45A6-A3E8-84B3AC264841}.IsoDebuggerRelease|x64.Build.0 = Release|x64
+		{4C24F172-1809-45A6-A3E8-84B3AC264841}.IsoDebuggerRelease|x86.ActiveCfg = Release|Win32
+		{4C24F172-1809-45A6-A3E8-84B3AC264841}.IsoDebuggerRelease|x86.Build.0 = Release|Win32
+		{4C24F172-1809-45A6-A3E8-84B3AC264841}.LDDebug|x64.ActiveCfg = Debug|x64
+		{4C24F172-1809-45A6-A3E8-84B3AC264841}.LDDebug|x64.Build.0 = Debug|x64
+		{4C24F172-1809-45A6-A3E8-84B3AC264841}.LDDebug|x86.ActiveCfg = Debug|Win32
+		{4C24F172-1809-45A6-A3E8-84B3AC264841}.LDDebug|x86.Build.0 = Debug|Win32
+		{4C24F172-1809-45A6-A3E8-84B3AC264841}.LDRelease|x64.ActiveCfg = Release|x64
+		{4C24F172-1809-45A6-A3E8-84B3AC264841}.LDRelease|x64.Build.0 = Release|x64
+		{4C24F172-1809-45A6-A3E8-84B3AC264841}.LDRelease|x86.ActiveCfg = Release|Win32
+		{4C24F172-1809-45A6-A3E8-84B3AC264841}.LDRelease|x86.Build.0 = Release|Win32
+		{4C24F172-1809-45A6-A3E8-84B3AC264841}.Profiling|x64.ActiveCfg = Debug|x64
+		{4C24F172-1809-45A6-A3E8-84B3AC264841}.Profiling|x64.Build.0 = Debug|x64
+		{4C24F172-1809-45A6-A3E8-84B3AC264841}.Profiling|x86.ActiveCfg = Debug|Win32
+		{4C24F172-1809-45A6-A3E8-84B3AC264841}.Profiling|x86.Build.0 = Debug|Win32
+		{4C24F172-1809-45A6-A3E8-84B3AC264841}.Release|x64.ActiveCfg = Release|x64
+		{4C24F172-1809-45A6-A3E8-84B3AC264841}.Release|x64.Build.0 = Release|x64
+		{4C24F172-1809-45A6-A3E8-84B3AC264841}.Release|x86.ActiveCfg = Release|Win32
+		{4C24F172-1809-45A6-A3E8-84B3AC264841}.Release|x86.Build.0 = Release|Win32
+		{4C24F172-1809-45A6-A3E8-84B3AC264841}.TraceMemDebug|x64.ActiveCfg = Debug|x64
+		{4C24F172-1809-45A6-A3E8-84B3AC264841}.TraceMemDebug|x64.Build.0 = Debug|x64
+		{4C24F172-1809-45A6-A3E8-84B3AC264841}.TraceMemDebug|x86.ActiveCfg = Debug|Win32
+		{4C24F172-1809-45A6-A3E8-84B3AC264841}.TraceMemDebug|x86.Build.0 = Debug|Win32
+		{4C24F172-1809-45A6-A3E8-84B3AC264841}.TraceMemLDDebug|x64.ActiveCfg = Debug|x64
+		{4C24F172-1809-45A6-A3E8-84B3AC264841}.TraceMemLDDebug|x64.Build.0 = Debug|x64
+		{4C24F172-1809-45A6-A3E8-84B3AC264841}.TraceMemLDDebug|x86.ActiveCfg = Debug|Win32
+		{4C24F172-1809-45A6-A3E8-84B3AC264841}.TraceMemLDDebug|x86.Build.0 = Debug|Win32
+		{4C24F172-1809-45A6-A3E8-84B3AC264841}.TraceMemLDRelease|x64.ActiveCfg = Release|x64
+		{4C24F172-1809-45A6-A3E8-84B3AC264841}.TraceMemLDRelease|x64.Build.0 = Release|x64
+		{4C24F172-1809-45A6-A3E8-84B3AC264841}.TraceMemLDRelease|x86.ActiveCfg = Release|Win32
+		{4C24F172-1809-45A6-A3E8-84B3AC264841}.TraceMemLDRelease|x86.Build.0 = Release|Win32
+		{4C24F172-1809-45A6-A3E8-84B3AC264841}.TraceMemRelease|x64.ActiveCfg = Release|x64
+		{4C24F172-1809-45A6-A3E8-84B3AC264841}.TraceMemRelease|x64.Build.0 = Release|x64
+		{4C24F172-1809-45A6-A3E8-84B3AC264841}.TraceMemRelease|x86.ActiveCfg = Release|Win32
+		{4C24F172-1809-45A6-A3E8-84B3AC264841}.TraceMemRelease|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
