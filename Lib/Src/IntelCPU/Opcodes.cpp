@@ -224,6 +224,12 @@ DEFNAME(StringPrefix     ,  REP   ,0xF3);                         // Apply to IN
 DEFNAME(StringPrefix     ,  REPE  ,0xF3);                         // Apply to CMPS and SCAS instructions
 DEFNAME(StringPrefix     ,  REPNE ,0xF2);                         // Apply to CMPS and SCAS instructions
 
+#if defined(IS32BIT)
+DEFNAME(Opcode1ArgImm8   ,  AAMB  ,0xD4);                         // Unsigned Divide AL by imm8, put the quotient in AH, and the remainder in AL
+DEFNAME(Opcode1ArgImm8   ,  AADB  ,0xD5);                         // Unsigned Multiplication counterpart of AAD
+DEFNAME(Opcode0Arg       ,  SALC  ,0xD6);                         // Set AL depending on the value of the Carry Flag (a 1-byte alternative of SBB AL, AL)
+#endif
+
 // ----------------------------- FPU opcodes -------------------------------------
 
 DEFNAME(OpcodeFPUTransfer,FLD     ,0xD9C0,0xD9,0,0xDD,0,0xDB,5, 1);                   // FLD( src).  Push  src   into st(0). src={st(i),Real4/8/10 in memory}

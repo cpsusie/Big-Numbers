@@ -636,6 +636,15 @@ public:
   InstructionBase operator()(const InstructionOperand &op) const;
 };
 
+class Opcode1ArgImm8 : public OpcodeBase {
+public:
+  inline Opcode1ArgImm8(const String &mnemonic, UINT op)
+    : OpcodeBase(mnemonic, op, 0, 1, IMM8_ALLOWED)
+  {
+  }
+  InstructionBase operator()(const InstructionOperand &op) const;
+};
+
 // encoding MR/RM. op1=reg/mem, op2=reg/mem/imm. at least 1 operand must be reg
 class Opcode2Arg : public OpcodeBase {
 public :
@@ -1406,6 +1415,12 @@ extern StringInstruction SCASQ;
 extern StringPrefix      REP;                              // Apply to INS, OUTS, MOVS, LODS, and STOS
 extern StringPrefix      REPE;                             // Apply to CMPS and SCAS instructions
 extern StringPrefix      REPNE;                            // Apply to CMPS and SCAS instructions
+
+#if defined(IS32BIT)
+extern Opcode1ArgImm8    AAMB;                             // Unsigned Divide AL by imm8, put the quotient in AH, and the remainder in AL (undocumented)
+extern Opcode1ArgImm8    AADB;                             // Multiplication counterpart of AAMB: AX <- (AH*imm8 + AL) & 0xFF             (undocumented)
+extern Opcode0Arg        SALC;                             // Set AL depending on the value of the Carry Flag (a 1-byte alternative of SBB AL, AL) (undocumented)
+#endif
 
 // ------------------------------ FPU opcodes ----------------------------------
 

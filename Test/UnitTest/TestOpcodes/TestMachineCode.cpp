@@ -692,6 +692,7 @@ void TestMachineCode::testArg0Opcodes() {
   testOpcode(PUSHF   );
   testOpcode(POPF    );
 #if defined(IS32BIT)
+  testOpcode(SALC    );
   testOpcode(PUSHFD  );
   testOpcode(POPFD   );
   testOpcode(PUSHAD  );
@@ -724,6 +725,8 @@ void TestMachineCode::testArg1Opcodes() {
   testOpcode(JMP     );
   clear(true);
 #if defined(IS32BIT)
+  testOpcode(AAMB    );
+  testOpcode(AADB    );
   testOpcode(JCXZ    );
   testOpcode(JECXZ   );
 #else // IS64BIT
@@ -1017,8 +1020,22 @@ static BYTE *getIP() {
 void assemblerCode() {
   const BYTE *startIP = getIP();
   __asm {
-    jmp         End
 
+    xor eax,eax
+    STC
+    __asm { _emit 0xD6 }
+    xor eax,eax
+    CLC
+    __asm { _emit 0xD6 }
+
+    xor eax,eax
+    mov al ,0f5h
+    __asm { _emit 0d4h }
+    __asm { _emit 0bh  }
+    __asm { _emit 0d5h }
+    __asm { _emit 0bh  }
+
+    jmp         End
     nop
     RET
     CMC

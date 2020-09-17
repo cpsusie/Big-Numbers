@@ -23,6 +23,17 @@ InstructionBase Opcode1ArgNoMode::operator()(const InstructionOperand &op) const
   return __super::operator()(op);
 }
 
+InstructionBase Opcode1ArgImm8::operator()(const InstructionOperand &op) const {
+  isValidOperand(op,true);
+  switch(op.getType()) {
+  case REGISTER       :
+  case MEMORYOPERAND  : break;
+  case IMMEDIATEVALUE : return InstructionBuilder(*this).setImmediateOperand(op);
+  }
+  throwInvalidOperandType(op,1,true);
+  return __super::operator()(op);
+}
+
 #if defined(IS32BIT)
 InstructionBase OpcodeIncDec::operator()(const InstructionOperand &op) const {
   if(op.isRegister() && (op.getSize() == REGSIZE_DWORD)) {
