@@ -29,9 +29,9 @@ InstructionBase OpcodeShiftRot::operator()(const InstructionOperand &op1, const 
 
 #define _DSHIFT_FLAGS (NONBYTE_GPR_ALLOWED | NONBYTE_GPRPTR_ALLOWED | HAS_NONBYTE_SIZEBITS)
 
-OpcodeDoubleShift::OpcodeDoubleShift(const String &mnemonic, UINT opCL, UINT opImm)
+OpcodeDoubleShift::OpcodeDoubleShift(const String &mnemonic, UINT opImm)
   : Opcode3Arg(mnemonic, opImm, _DSHIFT_FLAGS | IMM8_ALLOWED)
-  , m_clCode(  mnemonic, opCL , _DSHIFT_FLAGS)
+  , m_clCode(  mnemonic, opImm | 0x1 , _DSHIFT_FLAGS)
 {
 }
 

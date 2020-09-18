@@ -86,11 +86,11 @@ DEFNAME(OpcodeShiftRot   ,  RCL   ,2     );                // Rotate left  by cl
 DEFNAME(OpcodeShiftRot   ,  RCR   ,3     );                // Rotate right by cl/imm (with carry)
 DEFNAME(OpcodeShiftRot   ,  SHL   ,4     );                // Shift left   by cl/imm                 (unsigned shift left )
 DEFNAME(OpcodeShiftRot   ,  SHR   ,5     );                // Shift right  by cl/imm                 (unsigned shift right)
-// OpcodeShiftRot          SH??   (6     );                // DO WHAT?
+//      OpcodeShiftRot   ,  SH??? ,6     );                // Non existing
 DEFNAME(OpcodeShiftRot   ,  SAR   ,7     );                // Shift Arithmetically right by cl/imm   (signed shift   right)
 
-DEFNAME(OpcodeDoubleShift,  SHLD  ,0x0FA5,0x0FA4);         // Shift left  by cl/imm, filling opened bitpositions, by most significant bits of reg
-DEFNAME(OpcodeDoubleShift,  SHRD  ,0x0FAD,0x0FAC);         // Shift right by cl/imm, filling opened bitpositions, by least significant bits of reg
+DEFNAME(OpcodeDoubleShift,  SHLD  ,0x0FA4);                // Shift left  by cl/imm, filling opened bitpositions, by most  significant bits of reg
+DEFNAME(OpcodeDoubleShift,  SHRD  ,0x0FAC);                // Shift right by cl/imm, filling opened bitpositions, by least significant bits of reg
 
 
 #define BITSCAN_FLAGS (NONBYTE_GPR_ALLOWED | NONBYTE_GPRPTR_ALLOWED | HAS_NONBYTE_SIZEBITS | OP1_REGONLY)

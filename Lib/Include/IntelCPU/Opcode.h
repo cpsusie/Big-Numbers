@@ -922,7 +922,7 @@ class OpcodeDoubleShift : public Opcode3Arg {
 private:
   const Opcode2Arg m_clCode;
 public:
-  OpcodeDoubleShift(const String &mnemonic, UINT opCL, UINT opImm);
+  OpcodeDoubleShift(const String &mnemonic, UINT opImm);
   bool isValidOperandType(const InstructionOperand &op, BYTE index) const {
     return (index == 3) ? op.isShiftAmountOperand() : __super::isValidOperandType(op,index);
   }
