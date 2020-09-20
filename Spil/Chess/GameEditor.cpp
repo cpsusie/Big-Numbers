@@ -335,8 +335,12 @@ void CChessDlg::OnEditPasteFEN() {
     Game &game = m_editHistory.saveState();
     game = tmp;
     game.beginSetup();
-    paintGamePosition();
-    TRACESTATE();
+    if(game.getPlayerInTurn() == getComputerPlayer()) {
+      OnEditTurnBoard();
+    } else {
+      paintGamePosition();
+      TRACESTATE();
+    }
   } catch(Exception e) {
     errorMessage(e);
   }
