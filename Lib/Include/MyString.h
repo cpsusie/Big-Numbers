@@ -106,6 +106,7 @@ private:
   inline bool needReallocate(size_t newSize) const {
     return (newSize >= m_capacity) || (newSize + 100 < m_capacity);
   }
+
 public:
   String();
   String(const String  &s);
@@ -191,13 +192,19 @@ public:
   String &replace(  TCHAR         from, TCHAR         to);
 
   // Substitute every occurrence of from in s with to. Return this
-  String &replace(  TCHAR         from, const TCHAR  *to);
+  template<typename ToType> String &replace(TCHAR from, const ToType *to) {
+    return replace(from, String(to));
+  }
 
   // Substitute every occurrence of from in s with to. Return this
-  String &replace(  const TCHAR  *from, TCHAR         to);
+  template<typename FromType> String &replace(const FromType *from, TCHAR to) {
+    return replace(String(from), to);
+  }
 
   // Substitute every occurrence of from in s with to. Return this
-  String &replace(  const TCHAR  *from, const TCHAR  *to);
+  template<typename FromType, typename ToType> String &replace(const FromType *from, const ToType *to) {
+    return replace(String(from), String(to));
+  }
 
   // Substitute every occurrence of from in s with to. Return this
   String &replace(  TCHAR         from, const String &to);

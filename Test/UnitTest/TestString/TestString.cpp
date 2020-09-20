@@ -153,6 +153,10 @@ namespace TestString {
       s2.replace(_T("--"), _T('x'));
       verify(s2 == _T("axbxc"));
 
+      s2 = _T("a--b--c");
+      s2.replace("--", _T('x'));
+      verify(s2 == "axbxc");
+
       s2 = _T("a--b--c-");
       String fromStr = EMPTYSTRING;
       s2.replace(fromStr, _T('x'));
@@ -167,6 +171,12 @@ namespace TestString {
       s2.replace(_T(' '), _T("++"));
       verify(s2 == _T("a++b++c"));
       s2.replace(_T('+'), _T("-+"));
+      verify(s2 == _T("a-+-+b-+-+c"));
+
+      s2 = _T("a b c");
+      s2.replace(_T(' '), "++");
+      verify(s2 == _T("a++b++c"));
+      s2.replace('+', "-+");
       verify(s2 == _T("a-+-+b-+-+c"));
 
       s2.replace(_T('+'), _T("-"));
@@ -193,6 +203,18 @@ namespace TestString {
       s2 = _T("a--b--c");
       s2.replace(_T("--"), EMPTYSTRING);
       verify(s2 == _T("abc"));
+
+      s2 = "fisk1fisk2fisk3";
+      s2.replace(s2, "fusk");
+      verify(s2 == "fusk");
+
+      s2 = "fisk1fisk2fisk3";
+      s2.replace("fisk", s2);
+      verify(s2 == "fisk1fisk2fisk31fisk1fisk2fisk32fisk1fisk2fisk33");
+
+      s2 = "fisk1fisk2fisk3";
+      s2.replace(s2, s2);
+      verify(s2 == "fisk1fisk2fisk3");
 
       s2 = _T("fisk1fisk2fisk3");
       s2.replace(_T("fisk"), _T("fusk"));
@@ -315,24 +337,44 @@ namespace TestString {
       String s4(_T("john_henry"));
       String s5(_T("JOHNSTON "));
 
-      verify(s1.compare(s2) < 0);
-      verify(s1 < s2);
+      verify(s1.compare(s2) < 0 );
+      verify(s1             < s2);
       verify(s1.compareIgnoreCase(s2) == 0);
 
-      verify(s1.compare(s3) < 0);
-      verify(s1 < s3);
+      verify(s2.compare(s1) > 0 );
+      verify(s2             > s1);
+      verify(s2.compareIgnoreCase(s1) == 0);
+
+      verify(s1.compare(s3) < 0 );
+      verify(s1             < s3);
       verify(s1.compareIgnoreCase(s3) > 0);
 
-      verify(s3.compare(s4) < 0);
-      verify(s3 < s4);
+      verify(s3.compare(s1) > 0 );
+      verify(s3             > s1);
+      verify(s3.compareIgnoreCase(s1) < 0);
+
+      verify(s3.compare(s4) < 0 );
+      verify(s3             < s4);
       verify(s3.compareIgnoreCase(s4) == 0);
 
-      verify(s1.compare(s5) < 0);
-      verify(s1 < s5);
+      verify(s4.compare(s3) > 0 );
+      verify(s4             > s3);
+      verify(s4.compareIgnoreCase(s3) == 0);
 
-      verify(s2.compare(s5) > 0);
-      verify(s2 > s5);
+      verify(s1.compare(s5) < 0 );
+      verify(s1             < s5);
+
+      verify(s5.compare(s1) > 0 );
+      verify(s5             > s1);
+
+      verify(s2.compare(s5) > 0 );
+      verify(s2             > s5);
       verify(s2.compareIgnoreCase(s5) < 0);
+
+      verify(s5.compare(s2) < 0 );
+      verify(s5             < s2);
+      verify(s5.compareIgnoreCase(s2) > 0);
+
     }
   };
 }

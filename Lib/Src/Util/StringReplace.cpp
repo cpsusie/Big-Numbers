@@ -10,22 +10,14 @@ String &String::replace(TCHAR from, TCHAR to) {
   return *this;
 }
 
-String &String::replace(TCHAR from, const TCHAR *to) {
-  return replace(from, String(to));
-}
-
-String &String::replace(const TCHAR *from, TCHAR to) {
-  return replace(String(from), to);
-}
-
-String &String::replace(const TCHAR *from, const TCHAR *to) {
-  return replace(String(from), String(to));
-}
-
 String &String::replace(const String &from, TCHAR to) {
   const size_t fromLength = from.length();
   if(fromLength == 0) {
     return *this;
+  }
+  if(&from == this) {
+    *this = EMPTYSTRING;
+    return (*this += to);
   }
   if(fromLength == 1) {
     return replace(from[0], to);
@@ -38,8 +30,7 @@ String &String::replace(const String &from, TCHAR to) {
   for(s = m_buf, d = newBuf; s <= last;) {
     if(TMEMCMP(s, from.m_buf, fromLength)) {
       *(d++) = *(s++);
-    }
-    else { // replace
+    } else { // replace
       *(d++) = to;
       s += fromLength;
     }
@@ -52,8 +43,8 @@ String &String::replace(const String &from, TCHAR to) {
 
   *d = 0;
   delete[] m_buf;
-  m_buf = newBuf;
-  m_len = d - newBuf;
+  m_buf      = newBuf;
+  m_len      = d - newBuf;
   m_capacity = newCapacity;
   return *this;
 }
@@ -86,41 +77,46 @@ String &String::replace(TCHAR from, const String &to) {
   if(count == 0) {
     return *this; // nothing to do
   }
-  const size_t newLength = m_len + count * (toLength - 1);
+  const size_t newLength   = m_len + count * (toLength - 1);
   const size_t newCapacity = (newLength + 1) * 2;
-  TCHAR       *newBuf = new TCHAR[newCapacity];
-  TCHAR       *dst = newBuf;
+  TCHAR       *newBuf      = new TCHAR[newCapacity];
+  TCHAR       *dst         = newBuf;
 
   // dont worry about overlap. copying to a new string
   for(const TCHAR *s = m_buf; s <= last;) {
     if(*s != from) {
       *(dst++) = *(s++);
-    }
-    else {
+    } else {
       TMEMCPY(dst, to.m_buf, toLength);
       dst += toLength;
       s++;
     }
   }
   *dst = 0;
+
   delete[] m_buf;
-  m_buf = newBuf;
-  m_len = newLength;
+  m_buf      = newBuf;
+  m_len      = newLength;
   m_capacity = newCapacity;
   return *this;
 }
 
 String &String::replace(const String &from, const String &to) {
+  if(&from == &to) {
+    return *this;
+  }
+
   const intptr_t fromLength = from.length();
-  const intptr_t toLength = to.length();
+  const intptr_t toLength   = to.length();
   if(fromLength == 0) {
     return *this;
   }
   if(fromLength == 1) {
     return replace(from[0], to);
-  }
-  if(toLength == 1) {
+  } else if(toLength == 1) {
     return replace(from, to[0]);
+  } else if(&from == this) {
+    return *this = to;
   }
 
   int count = 0;
@@ -129,8 +125,7 @@ String &String::replace(const String &from, const String &to) {
     if(TMEMCMP(t, from.m_buf, fromLength) == 0) {
       count++;
       t += fromLength;
-    }
-    else {
+    } else {
       t++;
     }
   }
@@ -146,8 +141,7 @@ String &String::replace(const String &from, const String &to) {
   for(s = m_buf, d = newBuf; s <= last;) {
     if(TMEMCMP(s, from.m_buf, fromLength)) {
       *(d++) = *(s++);
-    }
-    else { // replace
+    } else { // replace
       if(toLength) {
         TMEMCPY(d, to.m_buf, toLength);
         d += toLength;
