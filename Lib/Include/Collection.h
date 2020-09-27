@@ -106,21 +106,21 @@ public:
     return m_collection->size() == 0;
   };
 
-  // Adds every element in c to this. Return true if any elements were added.
-  bool addAll(const Collection<T> &c) {
+  bool addAll(const Iterator<T> &it) {
     bool changed = false;
-    for(Iterator<T> it = ((Collection<T>&)c).getIterator(); it.hasNext(); ) {
-      if(add(it.next())) changed = true;
+    for(Iterator<T> it1 = it; it1.hasNext();) {
+      if(add(it1.next())) changed = true;
     }
     return changed;
   }
 
+  // Adds every element in c to this. Return true if any elements were added.
+  bool addAll(const Collection<T> &c) {
+    return addAll(((Collection<T> &)c).getIterator());
+  }
+
   bool addAll(const CompactArray<T> &a) {
-    bool changed = false;
-    for(size_t i = 0; i < a.size(); i++) {
-      if(add(a[i])) changed = true;
-    }
-    return changed;
+    return addAll(((CompactArray<T> &)a).getIterator());
   }
 
   // Remove every element in c from this. Return true if any elements were removed.

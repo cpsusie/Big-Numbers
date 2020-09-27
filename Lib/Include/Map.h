@@ -125,6 +125,10 @@ public:
     return Set<Entry<K, V> >(m_map->getEntrySet());
   }
 
+  Iterator<Entry<K, V> > getEntryIterator() {
+    return entrySet().getIterator();
+  }
+
   Set<K> keySet() {
     return Set<K>(m_map->getKeySet());
   }
@@ -138,9 +142,9 @@ public:
       return false;
     }
     const size_t n = size();
-    for(Iterator<Entry<K, V> > it = ((Map<K, V>&)src).entrySet().getIterator(); it.hasNext();) {
-      Entry<K, V> &entry = it.next();
-      put(entry.getKey(), entry.getValue());
+    for(Iterator<Entry<K, V> > it = ((Map<K, V>&)src).getEntryIterator(); it.hasNext();) {
+      Entry<K, V> &e = it.next();
+      put(e.getKey(), e.getValue());
     }
     return size() != n;
   }
