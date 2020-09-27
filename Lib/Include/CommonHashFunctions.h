@@ -9,7 +9,7 @@ inline ULONG shortHash(const short &n) {
 }
 
 inline int shortHashCmp(const short &n1, const short &n2) {
-  return n1 - n2;
+  return (n1 > n2) ? 1 : (n1 < n2) ? -1 : 0;
 }
 
 inline ULONG ushortHash(const USHORT &n) {
@@ -25,7 +25,7 @@ inline ULONG intHash(const int &n) {
 }
 
 inline int intHashCmp(const int &n1, const int &n2) {
-  return n1 - n2;
+  return (n1 > n2) ? 1 : (n1 < n2) ? -1 : 0;
 }
 
 inline ULONG uintHash(const UINT &n) {
@@ -41,7 +41,7 @@ inline ULONG longHash(const long &n) {
 }
 
 inline int longHashCmp(const long &n1, const long &n2) {
-  return n1 - n2;
+  return (n1 > n2) ? 1 : (n1 < n2) ? -1 : 0;
 }
 
 inline ULONG ulongHash(const ULONG &n) {
@@ -81,7 +81,7 @@ inline ULONG floatHash(const float &f) {
 }
 
 inline int floatHashCmp(const float &f1, const float &f2) {
-  return sign(f1 - f2);
+  return (f1 > f2) ? 1 : (f1 < f2) ? -1 : 0;
 }
 
 inline ULONG doubleHash(const double &d) {
@@ -90,7 +90,7 @@ inline ULONG doubleHash(const double &d) {
 }
 
 inline int doubleHashCmp(const double &d1, const double &d2) {
-  return sign(d1 - d2);
+  return (d1 > d2) ? 1 : (d1 < d2) ? -1 : 0;
 }
 
 template<typename T> ULONG pointerHash(const T * const &p) {
