@@ -238,6 +238,14 @@ public:
     return true;
   }
 
+  bool addAll(const Iterator<T> &it) {
+    const size_t oldSize = size();
+    for(Iterator<T> it1 = it; it1.hasNext();) {
+      add(it1.next());
+    }
+    return size() != oldSize;
+  }
+
   void remove(size_t index, size_t count = 1) {
     if(count == 0) {
       return;
