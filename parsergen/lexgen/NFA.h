@@ -43,7 +43,7 @@ public:
   void print(MarginFile &f);
 };
 
-class NFA : public Array<NFAstate*> {
+class NFA : public CompactArray<NFAstate*> {
 private:
   NFA(const NFA &src);      // Not defined. Class not cloneable
   NFA &operator=(NFA &src); // Not defined. Class not cloneable
