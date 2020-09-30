@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CompactKeyType.h"
+#include <Map.h>
 
 #pragma warning(disable:4192)
 
@@ -15,8 +16,8 @@ typedef MSXML2::DOMNodeType          XMLNodeType;
 class XMLDoc {
 private:
   XMLDocPtr m_doc;
-  VARIANT    getVariant(  const XMLNodePtr &node);
-  XMLNodePtr findTextNode(const XMLNodePtr &node);
+  VARIANT    getVariant(  const XMLNodePtr &node) const;
+  XMLNodePtr findTextNode(const XMLNodePtr &node) const;
   XMLDocPtr getDocument() {
     return m_doc;
   }
@@ -38,23 +39,24 @@ public:
   void saveToFile(  const String &filename);
 
   void loadFromString(const String &XML);
-
-  XMLNodePtr findNode( const TCHAR *nodeName);
-  XMLNodePtr findNode( const XMLNodePtr &node, const TCHAR *nodeName);
+  inline bool isEmpty() const {
+    return getRoot() == NULL;
+  }
+  XMLNodePtr findNode( const TCHAR *nodeName) const;
+  XMLNodePtr findNode( const XMLNodePtr &node, const TCHAR *nodeName) const;
   // return NULL, if not found
-  XMLNodePtr findChild(const XMLNodePtr &node, const TCHAR *nodeName, int instans=0);
+  XMLNodePtr findChild(const XMLNodePtr &node, const TCHAR *nodeName, int instans=0) const;
   // throws exception, if not found
-  XMLNodePtr getChild( const XMLNodePtr &node, const TCHAR *nodeName, int instans=0);
-
+  XMLNodePtr getChild( const XMLNodePtr &node, const TCHAR *nodeName, int instans=0) const;
   XMLNodePtr createNode(const TCHAR *nodeName, bool force=true);
   XMLNodePtr createNode(const XMLNodePtr &parent, const TCHAR *nodeName, bool force=true);
   XMLNodePtr createRoot(const TCHAR *rootName);
-  XMLNodePtr getRoot();
+  XMLNodePtr getRoot() const;
   // throws Exception if node hasn't the expected tag
   static void checkTag(     XMLNodePtr &node, const TCHAR *expectedTag);
 
   void    setNodeText(const XMLNodePtr &node, const TCHAR *value) ;
-  String &getNodeText(const XMLNodePtr &node,       String &value);
+  String &getNodeText(const XMLNodePtr &node,       String &value) const;
 
   template<typename T> T &getNodeValue(const XMLNodePtr &node, T &v) {
     String s;
@@ -67,7 +69,7 @@ public:
   template<typename T> T &getNodeValue(const XMLNodePtr &node, T &v, bool hex) {
     String s;
     std::wstringstream wstr(getNodeText(node, s).cstr());
-    if(hex) {
+    if(hex || (_tcsnicmp(s.cstr(),_T("0x"),2) == 0)) {
       wstr.setf(std::ios::hex, std::ios::basefield);
     }
     wstr >> v;
@@ -83,24 +85,83 @@ public:
     wstr << v;
     setNodeText(node, wstr.str().c_str());
   }
+  template<typename T> void setNodeValue(const XMLNodePtr &node, const T &v, std::streamsize prec) {
+    std::wstringstream wstr;
+    if(prec && (v!=0)) {
+      if(prec < 0) prec = std::numeric_limits<T>::max_digits10;
+      wstr.precision(prec);
+    }
+    wstr << v;
+    setNodeText(node, wstr.str().c_str());
+  }
 };
 
+inline size_t getChildCount(const XMLNodePtr &node) {
+  return (node == NULL) ? 0 : node->childNodes->Getlength();
+}
+
+class AbstractChildIterator: public AbstractIterator {
+private:
+  XMLNodePtr m_next, m_child;
+  BYTE      *m_childAddr;
+protected:
+  AbstractChildIterator(const AbstractChildIterator &src)
+    : m_next (src.m_next )
+  {
+    m_childAddr = (BYTE *)&m_child;
+    m_child     = src.m_child;
+  }
+public:
+  AbstractChildIterator(XMLNodePtr n)
+    : m_next(n->firstChild)
+  {
+    m_childAddr = (BYTE *)&m_child;
+    m_child     = NULL;
+  }
+  AbstractIterator *clone() override {
+    return new AbstractChildIterator(*this);
+  }
+  bool hasNext() const override {
+    return m_next != NULL;
+  }
+  void *next() override {
+    if(!hasNext()) noNextElementError(__TFUNCTION__);
+    m_child = m_next;
+    m_next  = m_next->nextSibling;
+    return m_childAddr;
+  }
+  void remove() override {
+    unsupportedOperationError(__TFUNCTION__);
+  }
+
+  inline XMLNodePtr &nextChild() {
+    AbstractChildIterator::next();
+    return m_child;
+  }
+};
+
+inline Iterator<XMLNodePtr> getChildIterator(XMLNodePtr n) {
+  return Iterator<XMLNodePtr>(new AbstractChildIterator(n));
+}
+
+
 inline void setValue(  XMLDoc &doc, const XMLNodePtr &n, const String    &value                  ) { doc.setNodeValue(n, value     ); }
-inline void setValue(  XMLDoc &doc, const XMLNodePtr &n, const TCHAR     *value                  ) { doc.setNodeValue(n, value     ); }
-inline void setValue(  XMLDoc &doc, const XMLNodePtr &n, int              value, bool hex = false) { doc.setNodeValue(n, value, hex); }
+inline void setValue(  XMLDoc &doc, const XMLNodePtr &n, const char      *value                  ) { doc.setNodeValue(n, value     ); }
+inline void setValue(  XMLDoc &doc, const XMLNodePtr &n, const wchar_t   *value                  ) { doc.setNodeValue(n, value     ); }
+inline void setValue(  XMLDoc &doc, const XMLNodePtr &n, INT              value, bool hex = false) { doc.setNodeValue(n, value, hex); }
 inline void setValue(  XMLDoc &doc, const XMLNodePtr &n, UINT             value, bool hex = false) { doc.setNodeValue(n, value, hex); }
-inline void setValue(  XMLDoc &doc, const XMLNodePtr &n, long             value, bool hex = false) { doc.setNodeValue(n, value, hex); }
+inline void setValue(  XMLDoc &doc, const XMLNodePtr &n, LONG             value, bool hex = false) { doc.setNodeValue(n, value, hex); }
 inline void setValue(  XMLDoc &doc, const XMLNodePtr &n, ULONG            value, bool hex = false) { doc.setNodeValue(n, value, hex); }
 inline void setValue(  XMLDoc &doc, const XMLNodePtr &n, INT64            value, bool hex = false) { doc.setNodeValue(n, value, hex); }
 inline void setValue(  XMLDoc &doc, const XMLNodePtr &n, UINT64           value, bool hex = false) { doc.setNodeValue(n, value, hex); }
-inline void setValue(  XMLDoc &doc, const XMLNodePtr &n, float            value                  ) { doc.setNodeValue(n, value     ); }
-inline void setValue(  XMLDoc &doc, const XMLNodePtr &n, double           value                  ) { doc.setNodeValue(n, value     ); }
+inline void setValue(  XMLDoc &doc, const XMLNodePtr &n, float            value, std::streamsize prec = 0) { doc.setNodeValue(n, value,prec); }
+inline void setValue(  XMLDoc &doc, const XMLNodePtr &n, double           value, std::streamsize prec = 0) { doc.setNodeValue(n, value,prec); }
 
 inline void getValue(  XMLDoc &doc, const XMLNodePtr &n, String          &value                  ) { doc.getNodeText( n, value     ); }
-inline void getValueLF(XMLDoc &doc, const XMLNodePtr &n, String          &value                  ) { doc.getNodeText( n, value).replace('\n',_T("\r\n")); }
-inline void getValue(  XMLDoc &doc, const XMLNodePtr &n, int             &value, bool hex = false) { doc.getNodeValue(n, value, hex); }
+inline void getValueLF(XMLDoc &doc, const XMLNodePtr &n, String          &value                  ) { doc.getNodeText( n, value).replace('\n',"\r\n"); }
+inline void getValue(  XMLDoc &doc, const XMLNodePtr &n, INT             &value, bool hex = false) { doc.getNodeValue(n, value, hex); }
 inline void getValue(  XMLDoc &doc, const XMLNodePtr &n, UINT            &value, bool hex = false) { doc.getNodeValue(n, value, hex); }
-inline void getValue(  XMLDoc &doc, const XMLNodePtr &n, long            &value, bool hex = false) { doc.getNodeValue(n, value, hex); }
+inline void getValue(  XMLDoc &doc, const XMLNodePtr &n, LONG            &value, bool hex = false) { doc.getNodeValue(n, value, hex); }
 inline void getValue(  XMLDoc &doc, const XMLNodePtr &n, ULONG           &value, bool hex = false) { doc.getNodeValue(n, value, hex); }
 inline void getValue(  XMLDoc &doc, const XMLNodePtr &n, INT64           &value, bool hex = false) { doc.getNodeValue(n, value, hex); }
 inline void getValue(  XMLDoc &doc, const XMLNodePtr &n, UINT64          &value, bool hex = false) { doc.getNodeValue(n, value, hex); }
@@ -117,42 +178,60 @@ void        getValue(  XMLDoc &doc, const XMLNodePtr &n, USHORT &s, bool hex = f
 void        setValue(  XMLDoc &doc, const XMLNodePtr &n, bool    value);
 void        getValue(  XMLDoc &doc, const XMLNodePtr &n, bool   &value);
 
-template<typename T> void setValue(XMLDoc &doc, XMLNodePtr n, const CompactKeyType<T> &v) {
-  setValue(doc, n, (T)v);
+void getValueLF(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, String &v);
+void getValueLF(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, String &v, const String &defaultValue);
+
+template<typename T, typename... Args> void setValue(XMLDoc &doc, XMLNodePtr n, const CompactKeyType<T> &v, Args... args) {
+  setValue(doc, n, (T)v, args...);
 }
 
-template<typename T> void getValue(XMLDoc &doc, XMLNodePtr n, CompactKeyType<T> &v) {
+template<typename T, typename... Args> void getValue(XMLDoc &doc, XMLNodePtr n, CompactKeyType<T> &v, Args... args) {
   T value;
-  getValue(doc, n, value);
+  getValue(doc, n, value, args...);
   v = value;
+}
+
+template<typename K, typename V, typename... Args> void setValue(XMLDoc &doc, XMLNodePtr n, const Entry<K, V> &e, Args... args) {
+  setValue<K>(doc, n, _T("key"  ), e.getKey()  ,args...);
+  setValue<V>(doc, n, _T("value"), e.getValue(),args...);
+}
+
+template<typename K, typename V> class PairEntry : public Entry<K,V> {
+public:
+  K m_key;
+  V m_value;
+  const void *key() const override {
+    return &m_key;
+  }
+  void *value() override {
+    return &m_value;
+  }
+  const void *value() const override {
+    return &m_value;
+  }
+};
+
+template<typename K, typename V, typename... Args> void getValue(XMLDoc &doc, XMLNodePtr n, PairEntry<K, V> &e, Args... args) {
+  getValue<K>(doc, n, _T("key"  ), e.m_key  ,args...);
+  getValue<V>(doc, n, _T("value"), e.m_value,args...);
 }
 
 String BSTRToString(const BSTR &s);
 
-template<typename T> void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const T &v) {
+template<typename T, typename... Args> void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const T &v, Args... args) {
   XMLNodePtr n = doc.createNode(parent, tag);
-  setValue(doc, n, v);
+  setValue(doc, n, v, args...);
 }
 
-template<typename T> void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, T &v) {
+template<typename T, typename... Args> void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, T &v, Args... args) {
   XMLNodePtr n = doc.getChild(parent, tag);
-  getValue(doc, n, v);
+  getValue(doc, n, v, args...);
 }
 
-template<typename T> void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const T &v, bool hex) {
-  XMLNodePtr n = doc.createNode(parent, tag);
-  setValue(doc, n, v, hex);
-}
 
-template<typename T> void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, T &v, bool hex) {
-  XMLNodePtr n = doc.getChild(parent, tag);
-  getValue(doc, n, v, hex);
-}
-
-void getValueLF(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, String &v);
-void getValueLF(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, String &v, const String &defaultValue);
-
-template<typename T, typename D> void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, T &v, const D &defaultValue) {
+// try to get value from child(n) with specified tag.
+// If childnode not found, v is set to defaultValue
+template<typename T, typename D> void getOptValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, T &v, const D &defaultValue) {
   XMLNodePtr n = doc.findChild(parent, tag);
   if(n) {
     getValue(doc, n, v);
@@ -161,55 +240,68 @@ template<typename T, typename D> void getValue(XMLDoc &doc, XMLNodePtr parent, c
   }
 }
 
-template<typename T> void setValue(XMLDoc &doc, XMLNodePtr n, const Iterator<T> &it) {
+template<typename T, typename... Args> void setValue(XMLDoc &doc, XMLNodePtr n, const Iterator<T> &it, Args... args) {
   UINT index = 0;
   for(Iterator<T> it1 = it; it1.hasNext(); index++) {
-    setValue<T>(doc, n, format(_T("id%u"),index).cstr(), it1.next());
+    setValue(doc, n, format(_T("id%u"),index).cstr(), it1.next(), args...);
   }
 }
 
-template<typename Iterable, typename ElementType> void setValue(XMLDoc &doc, XMLNodePtr n, const Iterable &a) {
-  setValue(doc, n, ((Iterable&)a).getIterator());
+template<typename T, typename... Args> void setValue(XMLDoc &doc, XMLNodePtr n, const CollectionBase<T> &c, Args... args) {
+  setValue(doc, n, c.getIterator(), args...);
 }
 
-template<typename Collection, typename ElementType> void getValue(XMLDoc &doc, XMLNodePtr n, Collection &c) {
-  UINT index = 0;
+template<typename T, typename... Args> class AbstractValueListIterator : public AbstractChildIterator {
+private:
+  XMLDoc     &m_doc;
+  UINT        m_index;
+  T           m_v;
+  AbstractValueListIterator(const AbstractValueListIterator &src)
+    : AbstractChildIterator(src        )
+    , m_doc(                src.m_doc  )
+    , m_index(              src.m_index)
+  {
+  }
+public:
+  AbstractValueListIterator(XMLDoc &doc, XMLNodePtr n)
+    : AbstractChildIterator(n  )
+    , m_doc(                doc)
+    , m_index(              0  )
+  {
+  }
+  AbstractIterator *clone() override {
+    return new AbstractValueListIterator(*this);
+  }
+  void *next() override {
+    XMLNodePtr n = nextChild();
+    const String expectedName = format(_T("id%u"), m_index++);
+    const String childName    = (wchar_t *)n->nodeName;
+    if(childName != expectedName) {
+      throwException(_T("Invalid nodename:%s, expected:%s"), childName.cstr(), expectedName.cstr());
+    }
+    getValue(m_doc, n, m_v, Args...);
+    return &m_v;
+  }
+};
+
+template<typename T, typename... Args> Iterator<T> getValueListIterator(XMLDoc &doc, XMLNodePtr n) {
+  return Iterator<T>(new AbstractValueListIterator<T, Args...>(doc, n));
+}
+
+template<typename T, typename... Args> void getValue(XMLDoc &doc, XMLNodePtr n, CollectionBase<T> &c, Args... args) {
   c.clear();
-  for(XMLNodePtr child = n->firstChild; child != NULL; child = child->nextSibling, index++) {
-    const String expectedName = format(_T("id%u"), index);
-    const String childName    = (wchar_t*)child->nodeName;
-    if(childName != expectedName) {
-      throwException(_T("Invalid nodename:%s, expected:%s"), childName.cstr(), expectedName.cstr());
-    }
-    ElementType e;
-    getValue(doc, child, e);
-    c.add(e);
-  }
+  c.addAll(getValueListIterator<T, Args...>(doc, n));
 }
 
-template<typename MAP, typename KEY, typename VALUE> void setValue(XMLDoc &doc, XMLNodePtr n, const MAP &map) {
-  UINT index = 0;
-  for(Iterator<Entry<KEY, VALUE> > it = map.getEntryIterator(); it.hasNext(); index++) {
-    const Entry<KEY, VALUE> &entry = it.next();
-    XMLNodePtr entryNode = doc.createNode(n, format(_T("e%u"), index).cstr());
-    setValue<KEY>(  doc, entryNode, _T("key"  ), entry.getKey()  );
-    setValue<VALUE>(doc, entryNode, _T("value"), entry.getValue());
-  }
+template<typename K,typename V, typename... Args> Iterator<Entry<K,V> > getEntryListIterator(XMLDoc &doc, XMLNodePtr n) {
+  return Iterator<Entry<K, V> >(new AbstractValueListIterator<PairEntry<K,V>, Args...>(doc, n));
 }
 
-template<typename MAP, typename KEY, typename VALUE> void getValue(XMLDoc &doc, XMLNodePtr n, MAP &map) {
+template<typename K, typename V, typename... Args> void setValue(XMLDoc &doc, XMLNodePtr n, const MapBase<K,V> &map, Args... args) {
+  setValue(doc, n, map.getIterator(), args...);
+}
+
+template<typename K, typename V, typename... Args> void getValue(XMLDoc &doc, XMLNodePtr n, MapBase<K,V> &map, Args... args) {
   map.clear();
-  UINT index = 0;
-  for(XMLNodePtr child = n->firstChild; child; child = child->nextSibling, index++) {
-    const String expectedName = format(_T("e%u"), index);
-    const String childName    = (wchar_t*)child->nodeName;
-    if(childName != expectedName) {
-      throwException(_T("Invalid nodename:%s, expected:%s"), childName.cstr(), expectedName.cstr());
-    }
-    KEY   key;
-    VALUE value;
-    getValue<KEY>  (doc, child, _T("key"  ), key  );
-    getValue<VALUE>(doc, child, _T("value"), value);
-    map.put(key, value);
-  }
+  map.addAll(getEntryListIterator<K,V, Args...>(doc, n));
 }

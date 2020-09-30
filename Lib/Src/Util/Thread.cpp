@@ -68,7 +68,7 @@ public:
   // Return true, if thread was added
   bool    addThread(   Thread *thread);
   bool    removeThread(Thread *thread);
-  Thread *findThread(DWORD threadId) const;
+  Thread *findThread(DWORD threadId);
   void incrActiveCount();
   void decrActiveCount();
   void addListener(PropertyChangeListener *listener) {
@@ -150,7 +150,7 @@ bool ThreadMap::removeThread(Thread *thread) {
   return result;
 }
 
-Thread *ThreadMap::findThread(DWORD threadId) const {
+Thread *ThreadMap::findThread(DWORD threadId) {
   m_lock.wait();
   Thread **t = get(threadId);
   m_lock.notify();
@@ -167,7 +167,7 @@ bool ThreadMap::isEmpty() const {
 void ThreadMap::killDemonThreads() {
   m_lock.wait();
   CompactArray<Thread*> demonArray;
-  for(Iterator<ThreadMapEntry> it = getEntryIterator(); it.hasNext();) {
+  for(Iterator<ThreadMapEntry> it = getIterator(); it.hasNext();) {
     Thread *t = it.next().getValue();
     if(t->isDemon()) {
       demonArray.add(t);

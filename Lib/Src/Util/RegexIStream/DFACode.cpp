@@ -28,9 +28,9 @@ public:
 #define ZERO ((int)0)
 
 void TmpDFATables::allocate(UINT stateCount, UINT charMapSize) {
-  m_charMap.add(     0, (int)-1, charMapSize );
-  m_stateMap.add(    0, (int)-1, stateCount  );
-  m_acceptStates.add(0, ZERO, stateCount  );
+  m_charMap.insert(     0, (int)-1, charMapSize );
+  m_stateMap.insert(    0, (int)-1, stateCount  );
+  m_acceptStates.insert(0, ZERO, stateCount  );
 }
 
 void TmpDFATables::reduceCharMapSize(UINT newCharMapSize) {
@@ -44,7 +44,7 @@ void TmpDFATables::allocateMatrix(UINT rowCount, UINT columnCount) {
   m_rowCount    = rowCount;
   m_columnCount = columnCount;
   const size_t elemCount = rowCount * m_columnCount;
-  m_transitionMatrix.add(0, ZERO, elemCount);
+  m_transitionMatrix.insert(0, ZERO, elemCount);
 }
 
 void TmpDFATables::saveToDFATable(DFATables &t) const {

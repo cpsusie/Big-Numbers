@@ -7,9 +7,44 @@ HashMapImpl::HashMapImpl(const AbstractObjectManager &keyManager, const Abstract
   m_dataManager = dataManager.clone(); TRACE_NEW(m_dataManager);
 }
 
+AbstractCollection *HashMapImpl::clone(bool cloneData) const {
+  throwUnsupportedOperationException(__TFUNCTION__);
+  return NULL;
+}
+
+AbstractMap *HashMapImpl::cloneMap(bool cloneData) const {
+  HashMapImpl      *clone = nullptr;
+  AbstractIterator *it    = nullptr;
+  clone = new HashMapImpl(*getKeyManager(), *getDataManager(), getHashFunction(), *getComparator(), getCapacity());
+  try {
+    if(cloneData) {
+      it = getIterator(); TRACE_NEW(it);
+      while(it->hasNext()) {
+        const AbstractEntry *n = (AbstractEntry *)it->next();
+        clone->put(n->key(), n->value());
+      }
+      SAFEDELETE(it);
+    }
+  } catch(...) {
+    TRACE_NEW( clone);
+    SAFEDELETE(it   );
+    SAFEDELETE(clone);
+    throw;
+  }
+  return clone;
+}
+
 HashMapImpl::~HashMapImpl() {
   clear();
   SAFEDELETE(m_dataManager);
+}
+
+void HashMapImpl::clear() {
+  HashSetImpl::clear();
+}
+
+size_t HashMapImpl::size() const {
+  return HashSetImpl::size();
 }
 
 class HashMapIterator : public HashSetIterator {
@@ -27,21 +62,8 @@ void *HashMapIterator::next() {
   return (AbstractEntry*)((HashMapNode*)nextNode());
 }
 
-AbstractIterator *HashMapImpl::getIterator() {
-  return new HashMapIterator(*this);
-}
-
-AbstractMap *HashMapImpl::cloneMap(bool cloneData) const {
-  HashMapImpl *clone = new HashMapImpl(*getKeyManager(), *getDataManager(), getHashFunction(),*getComparator(),getCapacity());
-  if(cloneData) {
-    AbstractIterator *it = ((HashMapImpl*)this)->getIterator(); TRACE_NEW(it);
-    while(it->hasNext()) {
-      const AbstractEntry *n = (AbstractEntry*)it->next();
-      clone->put(n->key(), n->value());
-    }
-    SAFEDELETE(it);
-  }
-  return clone;
+AbstractIterator *HashMapImpl::getIterator() const {
+  return new HashMapIterator((HashMapImpl&)*this);
 }
 
 HashSetNode *HashMapImpl::allocateNode() const {
@@ -80,32 +102,13 @@ bool HashMapImpl::put(const void *key, const void *value) {
   }
 }
 
-bool HashMapImpl::put(const void *key, void *value) {
-  HashMapNode *n = createNode(key, value);
-  try {
-    bool result = insertNode(n);
-    if(!result) {
-      deleteNode(n); // duplicate key
-    }
-    return result;
-  } catch(...) {
-    deleteNode(n);
-    throw;
-  }
-}
-
 bool HashMapImpl::remove(const void *key) {
   return HashSetImpl::remove(key);
 }
 
-void *HashMapImpl::get(const void *key) {
-  HashSetNode *n = HashSetImpl::findNode(key);
-  return (n != NULL) ? ((HashMapNode*)n)->value() : NULL;
-}
-
-const void *HashMapImpl::get(const void *key) const {
+void *HashMapImpl::get(const void *key) const {
   const HashSetNode *n = HashSetImpl::findNode(key);
-  return (n != NULL) ? ((HashMapNode*)n)->value() : NULL;
+  return (n != nullptr) ? ((HashMapNode*)n)->value() : nullptr;
 }
 
 AbstractEntry *HashMapImpl::selectEntry(RandomGenerator &rnd) const {
@@ -115,18 +118,10 @@ AbstractEntry *HashMapImpl::selectEntry(RandomGenerator &rnd) const {
 
 const AbstractEntry *HashMapImpl::getMinEntry() const {
   throwUnsupportedOperationException(__TFUNCTION__);
-  return NULL;
+  return nullptr;
 }
 
 const AbstractEntry *HashMapImpl::getMaxEntry() const {
   throwUnsupportedOperationException(__TFUNCTION__);
-  return NULL;
-}
-
-size_t HashMapImpl::size() const {
-  return HashSetImpl::size();
-}
-
-void HashMapImpl::clear() {
-  HashSetImpl::clear();
+  return nullptr;
 }

@@ -48,8 +48,7 @@ void setValue(XMLDoc &doc, XMLNodePtr n, const LPDIRECT3DINDEXBUFFER &ib) {
       }
     }
     V(ib->Unlock());
-    XMLNodePtr dataNode = doc.createNode(n, _T("bufferdata"));
-    setValue<StringArray, String>(doc, dataNode, dataLines);
+    setValue(doc, n, _T("bufferdata"), dataLines);
   } catch(...) {
     ib->Unlock();
     throw;

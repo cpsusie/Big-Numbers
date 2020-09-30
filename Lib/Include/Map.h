@@ -1,61 +1,34 @@
 #pragma once
 
+#include "MapBase.h"
 #include "ObjectManager.h"
-#include "Iterator.h"
 #include "Comparator.h"
 #include "Set.h"
 
-class AbstractEntry {
-public:
-  virtual const void *key() const   = 0;
-  virtual       void *value()       = 0;
-  virtual const void *value() const = 0;
-};
-
-template <typename K, typename V> class Entry : public AbstractEntry {
-public:
-  const K &getKey() const {
-    return *(K*)key();
-  }
-
-  V &getValue() {
-    return *(V*)value();
-  }
-
-  const V &getValue() const {
-    return *(V*)value();
-  }
-
-  String toString() const {
-    return _T("(") + getKey().toString() + _T(",") + getValue().toString() + _T(")");
-  }
-};
-
 class AbstractMap {
 public:
-  virtual bool put(const void *key, void *value) = 0;
-  virtual bool put(const void *key, const void *value) = 0;
-  virtual bool remove(const void *key) = 0;
-  virtual const void *get(const void *key) const = 0;
-  virtual       void *get(const void *key) = 0;
-  virtual size_t size() const = 0;
-  virtual AbstractEntry *selectEntry(RandomGenerator &rnd) const = 0;
-  virtual const AbstractEntry *getMinEntry() const = 0;
-  virtual const AbstractEntry *getMaxEntry() const = 0;
-  virtual void clear() = 0;
-  virtual bool hasOrder() const = 0;
-  virtual AbstractComparator *getComparator() = 0;
-  virtual AbstractMap        *cloneMap(bool cloneData) const = 0;
-  virtual AbstractSet        *getEntrySet();
-  virtual AbstractIterator   *getIterator() = 0;
-  virtual AbstractSet        *getKeySet();
-  virtual AbstractIterator   *getKeyIterator() = 0;
-  virtual AbstractCollection *getValues(int (*cmp)(const void *e1, const void *e2));
-  virtual AbstractIterator   *getValueIterator();
-  virtual ~AbstractMap() {}
+  virtual AbstractMap         *cloneMap(bool cloneData)                    const = 0;
+  virtual ~AbstractMap() {
+  }
+  virtual void                 clear()                                           = 0;
+  virtual size_t               size()                                      const = 0;
+  virtual bool                 put(   const void *key, const void *value)        = 0;
+  virtual void                *get(   const void *key)                     const = 0;
+  virtual bool                 remove(const void *key)                           = 0;
+  virtual AbstractEntry       *selectEntry(RandomGenerator &rnd)           const = 0;
+  virtual const AbstractEntry *getMinEntry()                               const = 0;
+  virtual const AbstractEntry *getMaxEntry()                               const = 0;
+  virtual AbstractComparator  *getComparator()                             const = 0;
+  virtual AbstractSet         *getEntrySet();
+  virtual AbstractSet         *getKeySet();
+  virtual AbstractCollection  *getValues(int (*cmp)(const void *e1, const void *e2));
+  virtual AbstractIterator    *getIterator()                               const = 0;
+  virtual bool                 hasOrder()                                  const = 0;
+  virtual AbstractIterator    *getKeyIterator()                            const = 0;
+  virtual AbstractIterator    *getValueIterator()                          const;
 };
 
-template <typename K, typename V> class Map {
+template <typename K, typename V> class Map : public MapBase<K,V> {
 protected:
   AbstractMap *m_map;
   Map(AbstractMap *map) {
@@ -68,93 +41,61 @@ public:
   Map(const Map<K, V> &src) {
     m_map = src.m_map->cloneMap(true); TRACE_NEW(m_map);
   }
-  virtual ~Map() {
+  ~Map() override {
     SAFEDELETE(m_map);
   }
 
-  Map &operator=(const Map<K, V> &src) {
-    if(this == &src) {
-      return *this;
-    }
-    clear();
-    addAll(src);
+  Map<K,V> &operator=(const Map<K,V> &src) {
+    __super::operator=(src);
     return *this;
   }
 
-  bool put(const K &key, V &value) {
-    return m_map->put(&key, &value);
-  }
-
-  bool put(const K &key, const V &value) {
-    return m_map->put(&key, &value);
-  }
-
-  const V *get(const K &key) const {
-    return (V*)m_map->get(&key);
-  }
-
-  V *get(const K &key) {
-    return (V*)m_map->get(&key);
-  }
-
-  bool remove(const K &key) {
-    return m_map->remove(&key);
-  }
-
-  size_t size() const {
-    return m_map->size();
-  }
-
-  void clear() {
+  void clear() override {
     m_map->clear();
   }
 
-  bool hasOrder() const {
-    return m_map->hasOrder();
+  size_t size() const override {
+    return m_map->size();
+  }
+
+  bool put(const K &key, const V &value) override {
+    return m_map->put(&key, &value);
+  }
+
+  const V *get(const K &key) const override {
+    return (V*)m_map->get(&key);
+  }
+
+  V *get(const K &key) override {
+    return (V*)m_map->get(&key);
+  }
+
+  bool remove(const K &key) override {
+    return m_map->remove(&key);
   }
 
   Comparator<K> &getComparator() {
     return *(Comparator<K>*)(m_map->getComparator());
   }
 
-  bool isEmpty() const {
-    return m_map->size() == 0;
-  }
-
-  Set<Entry<K, V> > entrySet() {
+  Set<Entry<K, V> > entrySet() const {
     return Set<Entry<K, V> >(m_map->getEntrySet());
   }
 
-  Iterator<Entry<K, V> > getEntryIterator() {
+  Iterator<Entry<K, V> > getIterator() const override {
     return entrySet().getIterator();
   }
 
-  Set<K> keySet() {
+  bool hasOrder() const override {
+    return m_map->hasOrder();
+  }
+
+  Set<K> keySet() const {
     return Set<K>(m_map->getKeySet());
   }
 
-  Collection<V> values() {
+  Collection<V> values() const {
     return Collection<V>(m_map->getValues(compareValues));
-  }
-
-  bool addAll(const Map<K, V> &src) {
-    if(this == &src) {
-      return false;
-    }
-    const size_t n = size();
-    for(Iterator<Entry<K, V> > it = ((Map<K, V>&)src).getEntryIterator(); it.hasNext();) {
-      Entry<K, V> &e = it.next();
-      put(e.getKey(), e.getValue());
-    }
-    return size() != n;
-  }
-
-  bool removeAll(const Collection<K> &src) {
-    const size_t n = size();
-    for(Iterator<K> it = ((Collection<K>&)src).getIterator(); it.hasNext();) {
-      remove(it.next());
-    }
-    return size() != n;
   }
 
   friend Map<K, V> operator*(const Map<K, V> &m1, const Map<K, V> &m2) { // intersection
@@ -187,8 +128,8 @@ public:
     if(n != m.size()) {
       return false;
     }
-    Iterator<Entry<K, V> > it1 = ((Map<K, V>*)this)->entrySet().getIterator();
-    Iterator<Entry<K, V> > it2 = ((Map<K, V>&)m).entrySet().getIterator();
+    Iterator<Entry<K, V> > it1 = getIterator();
+    Iterator<Entry<K, V> > it2 = m.getIterator();
     size_t count = 0;
     while(it1.hasNext() && it2.hasNext()) {
       const Entry<K, V> &e1 = it1.next();
@@ -218,7 +159,7 @@ public:
     Packer       header;
     header << keySize << valueSize << n;
     header.write(s);
-    for(Iterator<Entry<K, V> > it = ((Map<K, V>*)this)->entrySet().getIterator(); it.hasNext();) {
+    for(Iterator<Entry<K, V> > it = getIterator(); it.hasNext();) {
       Packer p;
       const Entry<K, V> &e = it.next();
       p << e.getKey() << e.getValue();
@@ -260,7 +201,7 @@ public:
   String toString(const TCHAR *delimiter = _T(",")) const {
     String result = _T("(");
     const TCHAR *delim = NULL;
-    for(Iterator<Entry<K, V> > it = ((Map<K, V>*)this)->entrySet().getIterator(); it.hasNext();) {
+    for(Iterator<Entry<K, V> > it = getIterator(); it.hasNext();) {
       const Entry<K, V> &entry = it.next();
       if(delim) result += delim; else delim = delimiter;
       result += entry.toString();
@@ -274,7 +215,7 @@ template<typename S, typename K, typename V, typename D=StreamDelimiter> S &oper
   const D      delimiter;
   const size_t size = m.size();
   out << size << delimiter;
-  for(Iterator<Entry<K, V> > it = ((Map<K, V>&)m).entrySet().getIterator(); it.hasNext();) {
+  for(Iterator<Entry<K, V> > it = m.getIterator(); it.hasNext();) {
     Entry<K, V> &e = it.next();
     out << e.getKey() << delimiter << e.getValue() << delimiter;
   }

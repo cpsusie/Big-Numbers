@@ -50,28 +50,26 @@ public:
 };
 
 class HashSetImpl : public AbstractSet {
+  friend class HashSetIterator;
+  friend class HashSetTable;
 private:
   AbstractObjectManager *m_objectManager;
   AbstractComparator    *m_comparator;
   HashFunction           m_hash;
   HashSetTable          *m_table;
 protected:
-  virtual HashSetNode *allocateNode() const;
-  virtual HashSetNode *createNode(const void *key) const;
-  virtual HashSetNode *cloneNode(HashSetNode *n) const;
-  virtual void deleteNode(HashSetNode *n) const;
-  virtual bool insertNode(HashSetNode *n);
-  const void  *select(RandomGenerator &rnd) const; // return key*
-  void *select(RandomGenerator &rnd);
-  void resize(size_t newCapacity);
+  virtual HashSetNode                *allocateNode()                const;
+  virtual HashSetNode                *createNode(const void *key )  const;
+  virtual HashSetNode                *cloneNode( HashSetNode *n  )  const;
+  virtual void                        deleteNode(HashSetNode *n  )  const;
+  virtual bool                        insertNode(HashSetNode *n  );
+  const void                         *select(RandomGenerator &rnd)  const; // return key*
+  void                               *select(RandomGenerator &rnd);
+  void                                resize(size_t newCapacity);
 
-  HashSetNode *findNode(const void *key);
-  const HashSetNode *findNode(const void *key) const;
+  HashSetNode                        *findNode(const void    *key)  const;
 
-  inline AbstractObjectManager *getObjectManager() {
-    return m_objectManager;
-  }
-  inline const AbstractObjectManager *getObjectManager() const {
+  inline       AbstractObjectManager *getObjectManager()            const {
     return m_objectManager;
   }
 
@@ -82,46 +80,41 @@ protected:
 #endif
 public:
   HashSetImpl(const AbstractObjectManager &objectManager, HashFunction hash, const AbstractComparator &comparator, size_t capacity);
-  virtual ~HashSetImpl() override;
-  inline HashFunction getHashFunction() const {
-    return m_hash;
-  }
-  bool add(const void *key) override;
-  bool remove(const void *key) override;
-  bool contains(const void *key) const override;
-  inline size_t size() const override {  // return number of elements
-    return m_table->size();
-  }
-  inline void clear() override {
+  AbstractCollection        *clone(bool cloneData)        const override;
+  ~HashSetImpl()                                                override;
+  void                       clear()                            override {
     m_table->clear();
   }
-  inline bool hasOrder() const override {
+  // return number of elements
+  size_t                     size()                       const override {
+    return m_table->size();
+  }
+  bool                       add(     const void *key)          override;
+  bool                       remove(  const void *key)          override;
+  bool                       contains(const void *key)    const override;
+  inline AbstractComparator *getComparator()              const override {
+    return m_comparator;
+  }
+  inline HashFunction        getHashFunction()            const {
+    return m_hash;
+  }
+  const void                *getMin()                     const override;
+  const void                *getMax()                     const override;
+
+  AbstractIterator          *getIterator()                const override;
+  bool                       hasOrder()                   const override {
     return false;
   }
-  inline AbstractComparator *getComparator() override {
-    return m_comparator;
-  }
-  inline const AbstractComparator *getComparator() const {
-    return m_comparator;
-  }
-  const void *getMin() const;
-  const void *getMax() const;
 
-  AbstractCollection *clone(bool cloneData) const override;
-  AbstractIterator *getIterator() override;
-
-  inline CompactIntArray getLength() const {
+  inline CompactIntArray     getLength()                  const {
     return m_table->getLength();
   }
-  inline size_t getCapacity() const {  // return capacity, NOT number of elements
+  inline size_t              getCapacity()                const {  // return capacity, NOT number of elements
     return m_table->getCapacity();
   }
-  inline int getMaxChainLength() const {
+  inline int                 getMaxChainLength()          const {
     return m_table->getMaxChainLength();
   }
-
-  friend class HashSetIterator;
-  friend class HashSetTable;
 };
 
 class HashSetIterator : public AbstractIterator {
@@ -161,12 +154,8 @@ public:
     : Set<T>(new HashSetImpl(ObjectManager<T>(), (HashFunction)hash, comparator, capacity))
   {
   }
-  HashSet<T> &operator=(const Collection<T> &src) {
-    if(this == &src) {
-      return *this;
-    }
-    clear();
-    addAll(src);
+  HashSet<T> &operator=(const CollectionBase<T> &src) {
+    __super::operator=(src);
     return *this;
   }
 

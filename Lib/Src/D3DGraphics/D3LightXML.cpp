@@ -79,17 +79,9 @@ void setValue(XMLDoc &doc, XMLNodePtr n, const D3Light &v) {
 void getValue(XMLDoc &doc, XMLNodePtr n, D3Light &v) {
   int  index;
   bool enabled;
-  getValue(doc, n, _T("index"    ), index  );
-  getValue(doc, n, _T("enabled"  ), enabled);
+  getValue(doc, n, _T("index"     ), index  );
+  getValue(doc, n, _T("enabled"   ), enabled);
   v = D3Light(index);
   v.setEnabled(enabled);
   getValue(doc, n, _T("parameters"), (D3DLIGHT&)v);
-}
-
-void setValue(XMLDoc &doc, XMLNodePtr n, const LightArray &a) {
-  setValue<LightArray, D3Light>(doc, n, a);
-}
-
-void getValue(XMLDoc &doc, XMLNodePtr n, LightArray &a) {
-  getValue<LightArray, D3Light>(doc, n, a);
 }

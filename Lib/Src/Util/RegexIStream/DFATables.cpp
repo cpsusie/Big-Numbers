@@ -21,10 +21,10 @@ void DFATables::init() {
   m_rowCount           = 0;
   m_columnCount        = 0;
   m_charMapSize        = 0;
-  m_charMap            = NULL;
-  m_stateMap           = NULL;
-  m_transitionMatrix   = NULL;
-  m_acceptStates       = NULL;
+  m_charMap            = nullptr;
+  m_stateMap           = nullptr;
+  m_transitionMatrix   = nullptr;
+  m_acceptStates       = nullptr;
 }
 
 void DFATables::copy(const DFATables &src) {
@@ -133,7 +133,7 @@ String DFATables::toString() const {
 
 String DFATables::acceptStatesToString() const {
   String s1 = _T("State:"), s2 = _T("Value:");
-  const TCHAR *delim = NULL;
+  const TCHAR *delim = nullptr;
   const UINT   size  = m_acceptStates->size();
   for(UINT s = 0; s < size; s++) {
     const int v = (*m_acceptStates)[s];

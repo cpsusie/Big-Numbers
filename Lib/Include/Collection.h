@@ -1,24 +1,31 @@
 #pragma once
 
-#include "Iterator.h"
+#include "CollectionBase.h"
 #include "Packer.h"
 #include "CompactArray.h"
 
 class AbstractCollection {
+private:
+  AbstractCollection(           const AbstractCollection &); // not implemented
+  AbstractCollection &operator=(const AbstractCollection &); // not implemented
 public:
-  virtual bool add(const void *e) = 0;
-  virtual bool remove(const void *e) = 0;
-  virtual bool contains(const void *e) const = 0;
-  virtual const void *select(RandomGenerator &rnd) const = 0;
-  virtual void *select(RandomGenerator &rnd) = 0;
-  virtual size_t size() const = 0;
-  virtual void clear() = 0;
-  virtual AbstractCollection *clone(bool cloneData) const = 0;
-  virtual AbstractIterator *getIterator() = 0;
-  virtual ~AbstractCollection() {}
+  AbstractCollection() {
+  }
+  virtual AbstractCollection *clone(bool cloneData)        const = 0;
+  virtual ~AbstractCollection() {
+  }
+  virtual void                clear()                            = 0;
+  virtual size_t              size()                       const = 0;
+  virtual bool                add(     const void *e)            = 0;
+  virtual bool                remove(  const void *e)            = 0;
+  virtual bool                contains(const void *e)      const = 0;
+  virtual const void         *select(RandomGenerator &rnd) const = 0;
+  virtual void               *select(RandomGenerator &rnd)       = 0;
+  virtual AbstractIterator   *getIterator()                const = 0;
+  virtual bool                hasOrder()                   const = 0;
 };
 
-template <typename T> class Collection {
+template<typename T> class Collection : public CollectionBase<T> {
 protected:
   AbstractCollection *m_collection;
 public:
@@ -30,20 +37,28 @@ public:
     m_collection = src.m_collection->clone(true); TRACE_NEW(m_collection);
   }
 
-  virtual ~Collection() {
-    SAFEDELETE(m_collection);
-  }
-
   Collection<T> &operator=(const Collection<T> &src) {
-    if(this == &src) {
-      return *this;
-    }
-    clear();
-    addAll(src);
+    __super::operator=(src);
     return *this;
   }
 
-  bool add(const T &e) {
+  Collection<T> &operator=(const CollectionBase<T> &src) {
+    __super::operator=(src);
+    return *this;
+  }
+
+  ~Collection() override {
+    SAFEDELETE(m_collection);
+  }
+
+  void clear() override {
+    m_collection->clear();
+  }
+  size_t size() const override {
+    return m_collection->size();
+  }
+
+  bool add(const T &e) override {
     return m_collection->add(&e);
   }
 
@@ -70,7 +85,7 @@ public:
     }
     CompactArray<const T*> tmp;
     tmp.setCapacity(k);
-    Iterator<T> it = ((Collection<T>&)*this).getIterator();
+    Iterator<T> it = getIterator();
     while(tmp.size() < (int)k) {
       tmp.add(&it.next());
     }
@@ -90,53 +105,29 @@ public:
     return result;
   }
 
-  size_t size() const {
-    return m_collection->size();
-  }
-
-  void clear() {
-    m_collection->clear();
-  }
-
-  Iterator<T> getIterator() {
+  Iterator<T> getIterator() const override {
     return Iterator<T>(m_collection->getIterator());
   }
+  bool hasOrder() const override {
+    return m_collection->hasOrder();
+  }
 
-  bool isEmpty() const {
-    return m_collection->size() == 0;
-  };
-
-  bool addAll(const Iterator<T> &it) {
-    bool changed = false;
+  bool removeAll(const Iterator<T> &it) {
+    const size_t oldSize = size();
     for(Iterator<T> it1 = it; it1.hasNext();) {
-      if(add(it1.next())) changed = true;
+      remove(it1.next());
     }
-    return changed;
-  }
-
-  // Adds every element in c to this. Return true if any elements were added.
-  bool addAll(const Collection<T> &c) {
-    return addAll(((Collection<T> &)c).getIterator());
-  }
-
-  bool addAll(const CompactArray<T> &a) {
-    return addAll(((CompactArray<T> &)a).getIterator());
+    return size() != oldSize;
   }
 
   // Remove every element in c from this. Return true if any elements were removed.
-  bool removeAll(const Collection<T> &c) {
+  bool removeAll(const CollectionBase<T> &c) {
     if(this == &c) {
       if(isEmpty()) return false;
       clear();
       return true;
     }
-    bool changed = false;
-    for(Iterator<T> it = ((Collection<T>&)c).getIterator(); it.hasNext();) {
-      if(remove(it.next())) {
-        changed = true;
-      }
-    }
-    return changed;
+    return removeAll(c.getIterator());
   }
 
   // Remove every element from this that is not contained in c. Return true if any elements were removed.
@@ -152,15 +143,19 @@ public:
     return changed;
   }
 
-  // Returns true if every element in c is contained in this
-  bool containsAll(const Collection<T> &c) const {
-    if(this == &c) return true;
-    for(Iterator<T> it = ((Collection<T>&)c).getIterator(); it.hasNext();) {
-      if(!contains(it.next())) {
+  bool containsAll(const Iterator<T> &it) const {
+    for(Iterator<T> it1 = it; it1.hasNext();) {
+      if(!contains(it1.next())) {
         return false;
       }
     }
     return true;
+  }
+
+  // Returns true if every element in c is contained in this
+  bool containsAll(const CollectionBase<T> &c) const {
+    if(this == &c) return true;
+    return containsAll(c.getIterator());
   }
 
   bool operator==(const Collection<T> &c) const {
@@ -170,8 +165,8 @@ public:
     if(n != c.size()) {
       return false;
     }
-    Iterator<T> it1 = ((Collection<T>&)*this).getIterator();
-    Iterator<T> it2 = ((Collection<T>&)c).getIterator();
+    Iterator<T> it1 = getIterator();
+    Iterator<T> it2 = c.getIterator();
     size_t count = 0;
     while(it1.hasNext() && it2.hasNext()) {
       const T &e1 = it1.next();
@@ -202,7 +197,7 @@ public:
     Packer header;
     header << esize << n;
     header.write(s);
-    for(Iterator<T> it = ((Collection<T>*)this)->getIterator(); it.hasNext();) {
+    for(Iterator<T> it = getIterator(); it.hasNext();) {
       Packer p;
       p << it.next();
       p.write(s);
@@ -238,7 +233,7 @@ public:
 
   String toString(const TCHAR *delimiter = _T(",")) const {
     String result = _T("(");
-    Iterator<T> it = ((Collection<T>*)this)->getIterator();
+    Iterator<T> it = getIterator();
     if(it.hasNext()) {
       result += it.next().toString();
       while(it.hasNext()) {
@@ -252,7 +247,7 @@ public:
 
   String toStringBasicType(const TCHAR *delimiter = _T(",")) const {
     String result = _T("(");
-    Iterator<T> it = ((Collection<T>*)this)->getIterator();
+    Iterator<T> it = getIterator();
     if(it.hasNext()) {
       result += ::toString(it.next());
       while(it.hasNext()) {
@@ -266,18 +261,17 @@ public:
 
   String toString(AbstractStringifier<T> &sf, TCHAR *delimiter = _T(",")) const {
     String result = _T("(");
-    result += ((Collection<T>*)this)->getIterator().toString(sf, delimiter);
+    result += getIterator().toString(sf, delimiter);
     result += _T(")");
     return result;
   }
-
 };
 
 template<typename S, typename T, class D=StreamDelimiter> S &operator<<(S &out, const Collection<T> &c) {
   const D      delimiter;
   const UINT64 size = c.size();
   out << size << delimiter;
-  for(Iterator<T> it = ((Collection<T>&)c).getIterator(); it.hasNext();) {
+  for(Iterator<T> it = c.getIterator(); it.hasNext();) {
     out << it.next() << delimiter;
   }
   return out;

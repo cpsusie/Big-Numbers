@@ -186,6 +186,6 @@ intptr_t ArrayImpl::binaryInsert(const void *e, AbstractComparator &comparator) 
       r = m;
     }
   }
-  add(r, e, 1);
+  insert(r, e, 1);
   return r;
 }

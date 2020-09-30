@@ -33,14 +33,14 @@ XMLNodePtr XMLDoc::createNode(const XMLNodePtr &parent, const TCHAR *nodeName, b
   if(parent == NULL) {
     throwInvalidArgumentException(method, _T("parent=NULL"));
   }
-  if(nodeName == NULL || _tcsclen(nodeName) == 0) {
+  if((nodeName == NULL) || (_tcsclen(nodeName) == 0)) {
     throwInvalidArgumentException(method, _T("nodeName=%s"), nodeName?nodeName:_T("null"));
   }
 
   XMLNodePtr result;
   if(_tcschr(nodeName, '.') == NULL) {
     result = findChild(parent,nodeName);
-    if(result != NULL && !force) {
+    if((result != NULL) && !force) {
       throwException(_T("Node %s alredy exist. set force to true, if duplicates are allowed"), nodeName);
     } else {
       result = m_doc->createElement(nodeName);
@@ -61,7 +61,7 @@ XMLNodePtr XMLDoc::createNode(const XMLNodePtr &parent, const TCHAR *nodeName, b
     }
 
     XMLNodePtr result = findChild(node,tokens[i].cstr());
-    if(result != NULL && !force) {
+    if((result != NULL) && !force) {
       throwException(_T("Node %s alredy exist. set force to true, if duplicates are allowed"), nodeName);
     } else {
       result = m_doc->createElement(tokens[i].cstr());
@@ -75,24 +75,24 @@ XMLNodePtr XMLDoc::createRoot(const TCHAR *rootName) {
   return m_doc->appendChild(m_doc->createElement(rootName));
 }
 
-XMLNodePtr XMLDoc::getRoot() {
+XMLNodePtr XMLDoc::getRoot() const {
   return m_doc->documentElement;
 }
 
-XMLNodePtr XMLDoc::findChild(const XMLNodePtr &node, const TCHAR *nodeName, int instans) {
+XMLNodePtr XMLDoc::findChild(const XMLNodePtr &node, const TCHAR *nodeName, int instans) const {
   if(node == NULL) {
     return NULL;
   }
   int i = 0;
   for(XMLNodePtr result=node->firstChild; result!=NULL; result=result->nextSibling) {
-    if(_tcsicmp(result->nodeName, nodeName)==0 && i++==instans) {
+    if((_tcsicmp(result->nodeName, nodeName)==0) && (i++==instans)) {
       return result;
     }
   }
   return NULL;
 }
 
-XMLNodePtr XMLDoc::getChild(const XMLNodePtr &node, const TCHAR *nodeName, int instans) {
+XMLNodePtr XMLDoc::getChild(const XMLNodePtr &node, const TCHAR *nodeName, int instans) const {
   XMLNodePtr child = findChild(node, nodeName, instans);
   if(child == NULL) {
     throwException(_T("ChildNode with name=\"%s\" not found in node %s"), nodeName, (TCHAR*)node->nodeName);
@@ -100,11 +100,11 @@ XMLNodePtr XMLDoc::getChild(const XMLNodePtr &node, const TCHAR *nodeName, int i
   return child;
 }
 
-XMLNodePtr XMLDoc::findNode(const TCHAR *nodeName) {
-  return findNode(m_doc->documentElement,nodeName);
+XMLNodePtr XMLDoc::findNode(const TCHAR *nodeName) const {
+  return findNode(getRoot(),nodeName);
 }
 
-XMLNodePtr XMLDoc::findNode(const XMLNodePtr &node, const TCHAR *nodeName) {
+XMLNodePtr XMLDoc::findNode(const XMLNodePtr &node, const TCHAR *nodeName) const {
   if(node == NULL) {
     return NULL;
   }
@@ -113,7 +113,7 @@ XMLNodePtr XMLDoc::findNode(const XMLNodePtr &node, const TCHAR *nodeName) {
   } else {
     StringArray tokens(Tokenizer(nodeName,_T(".")));
     XMLNodePtr result = node;
-    for(size_t i = 0; i < tokens.size() && result != NULL; result = result->nextSibling) {
+    for(size_t i = 0; (i < tokens.size()) && (result != NULL); result = result->nextSibling) {
 //    String sss = BSTRToString(node->GetbaseName());
 //    printf("tagName:%s\n",sss.cstr());
       if(_tcsicmp(result->nodeName,tokens[i].cstr())==0) {
@@ -149,11 +149,11 @@ String &XMLDoc::variantToString(String &dst, const VARIANT &var) { // static
   return dst;
 }
 
-String &XMLDoc::getNodeText(const XMLNodePtr &node, String &value) {
+String &XMLDoc::getNodeText(const XMLNodePtr &node, String &value) const {
   return variantToString(value, getVariant(node));
 }
 
-XMLNodePtr XMLDoc::findTextNode(const XMLNodePtr &node) {
+XMLNodePtr XMLDoc::findTextNode(const XMLNodePtr &node) const {
   for(XMLNodePtr p = node->firstChild; p != NULL; p = p->nextSibling) {
     if(p->nodeType == NODE_TEXT) {
       return p;
@@ -174,7 +174,7 @@ void XMLDoc::setNodeText(const XMLNodePtr &node, const TCHAR *value) {
   }
 }
 
-VARIANT XMLDoc::getVariant(const XMLNodePtr &node) {
+VARIANT XMLDoc::getVariant(const XMLNodePtr &node) const {
   VARIANT result;
   result.vt = NULL;
   XMLNodeType type;

@@ -7,6 +7,33 @@ TreeMapImpl::TreeMapImpl(const AbstractObjectManager &keyManager, const Abstract
   m_dataManager = dataManager.clone(); TRACE_NEW(m_dataManager);
 }
 
+AbstractCollection  *TreeMapImpl::clone(bool cloneData) const {
+  throwUnsupportedOperationException(__TFUNCTION__);
+  return nullptr;
+}
+
+AbstractMap *TreeMapImpl::cloneMap(bool cloneData) const {
+  TreeMapImpl      *clone = nullptr;
+  AbstractIterator *it    = nullptr;
+  clone = new TreeMapImpl(*TreeSetImpl::getObjectManager(), *m_dataManager, *getComparator());
+  try {
+    if(cloneData) {
+      it = getIterator(); TRACE_NEW(it);
+      while(it->hasNext()) {
+        AbstractEntry *n = (AbstractEntry *)it->next();
+        clone->put(n->key(), n->value());
+      }
+      SAFEDELETE(it);
+    }
+  } catch(...) {
+    TRACE_NEW( clone);
+    SAFEDELETE(it   );
+    SAFEDELETE(clone);
+    throw;
+  }
+  return clone;
+}
+
 TreeMapImpl::~TreeMapImpl() {
   clear();
   SAFEDELETE(m_dataManager);
@@ -26,21 +53,8 @@ void *TreeMapIterator::next() {
   return (AbstractEntry*)((TreeMapNode*)nextNode());
 }
 
-AbstractIterator *TreeMapImpl::getIterator() {
-  return new TreeMapIterator(*this);
-}
-
-AbstractMap *TreeMapImpl::cloneMap(bool cloneData) const {
-  TreeMapImpl *clone = new TreeMapImpl(*TreeSetImpl::getObjectManager(),*m_dataManager,*getComparator());
-  if(cloneData) {
-    AbstractIterator *it = ((TreeMapImpl*)this)->getIterator(); TRACE_NEW(it);
-    while(it->hasNext()) {
-      AbstractEntry *n = (AbstractEntry*)it->next();
-      clone->put(n->key(), n->value());
-    }
-    SAFEDELETE(it);
-  }
-  return clone;
+AbstractIterator *TreeMapImpl::getIterator() const {
+  return new TreeMapIterator((TreeMapImpl&)*this);
 }
 
 TreeSetNode *TreeMapImpl::allocateNode() const {
@@ -74,15 +88,6 @@ void TreeMapImpl::swapContent(TreeSetNode *p1, TreeSetNode *p2) {
   mp2->m_value = tmp;
 }
 
-bool TreeMapImpl::put(const void *key, void *value) {
-  TreeSetNode *newNode = createNode(key, value);
-  bool ret = TreeSetImpl::insertNode(newNode);
-  if(!ret) {
-    deleteNode(newNode);
-  }
-  return ret;
-}
-
 bool TreeMapImpl::put(const void *key, const void *value) {
   TreeSetNode *newNode = createNode(key, value);
   bool ret = TreeSetImpl::insertNode(newNode);
@@ -92,18 +97,13 @@ bool TreeMapImpl::put(const void *key, const void *value) {
   return ret;
 }
 
-bool TreeMapImpl::remove(const void *key) {
-  return TreeSetImpl::remove(key);
-}
-
-void *TreeMapImpl::get(const void *key) {
-  TreeSetNode *n = TreeSetImpl::findNode(key);
-  return (n != NULL) ? ((TreeMapNode*)n)->value() : NULL;
-}
-
-const void *TreeMapImpl::get(const void *key) const {
+void *TreeMapImpl::get(const void *key) const {
   const TreeSetNode *n = TreeSetImpl::findNode(key);
   return (n != NULL) ? ((TreeMapNode*)n)->value() : NULL;
+}
+
+bool TreeMapImpl::remove(const void *key) {
+  return TreeSetImpl::remove(key);
 }
 
 AbstractEntry *TreeMapImpl::selectEntry(RandomGenerator &rnd) const {

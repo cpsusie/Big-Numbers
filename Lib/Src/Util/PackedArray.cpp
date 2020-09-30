@@ -128,14 +128,14 @@ void PackedArray::add(UINT v) {
   m_updateCount++;
 }
 
-void PackedArray::add(UINT64 index, UINT v) {
+void PackedArray::insert(UINT64 index, UINT v) {
   CHECK_VALUE
-  addZeroes(index, 1);
+  insertZeroes(index, 1);
   set(index, v);
 }
 
 // TODO works only for little-endian
-void PackedArray::addZeroes(UINT64 index, UINT64 count) {
+void PackedArray::insertZeroes(UINT64 index, UINT64 count) {
   if(index > size()) indexError(__TFUNCTION__, index);
   DUMP();
 

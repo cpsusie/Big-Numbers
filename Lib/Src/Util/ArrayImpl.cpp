@@ -87,24 +87,38 @@ ArrayImpl::~ArrayImpl() {
 }
 
 AbstractCollection *ArrayImpl::clone(bool cloneData) const {
-  ArrayImpl *copy = new ArrayImpl(*m_objectManager,m_capacity);
-  if(cloneData) {
-    copy->m_size = m_size;
-    for(size_t i = 0; i < m_size;i++) {
-      copy->m_elem[i] = m_objectManager->cloneObject(m_elem[i]);
+  ArrayImpl *clone = new ArrayImpl(*m_objectManager,m_capacity);
+  try {
+    if(cloneData) {
+      clone->m_size = m_size;
+      for(size_t i = 0; i < m_size; i++) {
+        clone->m_elem[i] = m_objectManager->cloneObject(m_elem[i]);
+      }
     }
+  } catch(...) {
+    TRACE_NEW( clone);
+    SAFEDELETE(clone);
+    throw;
   }
-  return copy;
+  return clone;
+}
+
+// if capacity < 0, it's left unchanged
+void ArrayImpl::clear(intptr_t capacity) {
+  if(m_size > 0) {
+    for(size_t i = 0; i < m_size; i++) {
+      m_objectManager->deleteObject(m_elem[i]);
+    }
+    m_size = 0;
+    m_updateCount++;
+  }
+  if(capacity >= 0) {
+    setCapacity(capacity);
+  }
 }
 
 void ArrayImpl::clear() {
-  for(size_t i = 0; i < m_size; i++) {
-    m_objectManager->deleteObject(m_elem[i]);
-  }
-//  memset(m_elem,0,m_size * sizeof(m_elem[0]));
-  m_size = 0;
-  setCapacity(10);
-  m_updateCount++;
+  clear(10);
 }
 
 void ArrayImpl::indexError(const TCHAR *method, size_t index) const {
@@ -132,37 +146,37 @@ bool ArrayImpl::add(const void *e) {
   return true;
 }
 
-bool ArrayImpl::add(size_t i, const void *e, size_t count) {
-  if(i > m_size) indexError(__TFUNCTION__, i);
+bool ArrayImpl::insert(size_t index, const void *e, size_t count) {
+  if(index > m_size) indexError(__TFUNCTION__, index);
   if(count == 0) {
     return false;
   }
   if(m_size + count > m_capacity) {
     setCapacity(2*(m_size + count) + 5);
   }
-  if(i < m_size) {
-    memmove(m_elem+i+count, m_elem+i, (m_size-i)*sizeof(m_elem[0]));
+  if(index < m_size) {
+    memmove(m_elem+index+count, m_elem+index, (m_size-index)*sizeof(m_elem[0]));
   }
   m_size += count;
   while(count--) {
-    m_elem[i++] = m_objectManager->cloneObject(e);
+    m_elem[index++] = m_objectManager->cloneObject(e);
   }
   m_updateCount++;
   return true;
 }
 
-void ArrayImpl::removeIndex(size_t i, size_t count) {
+void ArrayImpl::removeIndex(size_t index, size_t count) {
   if(count == 0) {
     return;
   }
-  const size_t j = i + count;
-  if(j > m_size) indexError(__TFUNCTION__, i, count);
-  for(size_t k = i; k < j; k++) {
+  const size_t j = index + count;
+  if(j > m_size) indexError(__TFUNCTION__, index, count);
+  for(size_t k = index; k < j; k++) {
     m_objectManager->deleteObject(m_elem[k]);
   }
   if(j < m_size) {
-    memmove(m_elem+i, m_elem+j, (m_size-j)*sizeof(m_elem[0]));
-//    m_elem[m_size] = NULL;
+    memmove(m_elem+index, m_elem+j, (m_size-j)*sizeof(m_elem[0]));
+//    m_elem[m_size] = nullptr;
   }
   m_size -= count;
   if(m_size < m_capacity/2 && m_capacity > 10) {
@@ -263,6 +277,6 @@ void ArrayIterator::remove() {
   m_updateCount = m_a.m_updateCount;
 }
 
-AbstractIterator *ArrayImpl::getIterator() {
-  return new ArrayIterator(*this);
+AbstractIterator *ArrayImpl::getIterator() const {
+  return new ArrayIterator((ArrayImpl&)*this);
 }

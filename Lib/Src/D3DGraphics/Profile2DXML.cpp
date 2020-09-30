@@ -17,27 +17,23 @@ void getValue(XMLDoc &doc, XMLNodePtr n, ProfileCurve2D &v) {
 }
 
 void setValue(XMLDoc &doc, XMLNodePtr n, const ProfilePolygon2D &v) {
-  setValue(doc, n,_T("closed"), v.m_closed);
-  setValue(doc, n,_T("start" ), v.m_start );
-  XMLNodePtr clist = doc.createNode(n, _T("profilecurve2d"));
-  setValue<Array<ProfileCurve2D>, ProfileCurve2D>(doc, clist, v.m_curveArray);
+  setValue(doc, n,_T("closed"         ), v.m_closed    );
+  setValue(doc, n,_T("start"          ), v.m_start     );
+  setValue(doc, n, _T("profilecurve2d"), v.m_curveArray);
 }
 
 void getValue(XMLDoc &doc, XMLNodePtr n, ProfilePolygon2D &v) {
-  getValue(doc, n, _T("closed"), v.m_closed);
-  getValue(doc, n, _T("start" ), v.m_start );
-  XMLNodePtr clist = doc.getChild(n, _T("profilecurve2d"));
-  getValue<Array<ProfileCurve2D>, ProfileCurve2D>(doc, clist, v.m_curveArray);
+  getValue(doc, n, _T("closed"        ), v.m_closed    );
+  getValue(doc, n, _T("start"         ), v.m_start     );
+  getValue(doc, n, _T("profilecurve2d"), v.m_curveArray);
 }
 
 void setValue(XMLDoc &doc, XMLNodePtr n, const Profile2D &v) {
-  XMLNodePtr plist = doc.createNode(n, _T("profilepolygon2d"));
-  setValue<Array<ProfilePolygon2D>, ProfilePolygon2D>(doc, plist, v.m_polygonArray);
+  setValue(doc, n, _T("profilepolygon2d"), v.m_polygonArray);
 }
 
 void getValue(XMLDoc &doc, XMLNodePtr n, Profile2D &v) {
-  XMLNodePtr plist = doc.getChild(n, _T("profilepolygon2d"));
-  getValue<Array<ProfilePolygon2D>, ProfilePolygon2D>(doc, plist, v.m_polygonArray);
+  getValue(doc, n, _T("profilepolygon2d"), v.m_polygonArray);
 }
 
 void Profile2D::putDataToDoc(XMLDoc &doc) {
@@ -50,4 +46,3 @@ void Profile2D::getDataFromDoc(XMLDoc &doc) {
   XMLDoc::checkTag(root, _T("profile2d"));
   getValue(doc,    root, *this);
 }
-

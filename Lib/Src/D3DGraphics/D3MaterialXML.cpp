@@ -29,11 +29,3 @@ void getValue(XMLDoc &doc, XMLNodePtr n, D3MATERIAL &v) {
   getValue(doc, n, (D3DMATERIAL&)v);
   getValue(doc, n, _T("specularhighlights"), v.m_specularHighlights);
 }
-
-void setValue(XMLDoc &doc, XMLNodePtr n, const MaterialMap &map) {
-  setValue<MaterialMap, CompactUIntKeyType, D3Material>(doc, n, map);
-}
-
-void getValue(XMLDoc &doc, XMLNodePtr n, MaterialMap &map) {
-  getValue<MaterialMap, CompactUIntKeyType, D3Material>(doc, n, map);
-}

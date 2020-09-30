@@ -13,10 +13,11 @@ public:
   ~MeshArray() override {
     clear();
   }
-  void add(const LPD3DXMESH &m) {
-    add((UINT)size(), m);
+  bool add(const LPD3DXMESH &m) override {
+    insert((UINT)size(), m);
+    return true;
   }
-  void add(UINT index, const LPD3DXMESH &m, UINT count = 1);
+  void insert(UINT index, const LPD3DXMESH &m, UINT count = 1);
   bool addAll(const MeshArray &src);
   void remove(UINT index, UINT count = 1);
   void removeLast() {

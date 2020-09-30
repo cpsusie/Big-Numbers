@@ -107,19 +107,21 @@ public:
   friend class Tableau;
 };
 
-class TableauCostFactors : private CompactArray<Real> {
+class TableauCostFactors {
+private:
+  CompactArray<Real> m_c;
 public:
   TableauCostFactors() {};
   TableauCostFactors(const String &str);
 
   const Real &operator[](int index) const {                      // index=[1..size]
-    return CompactArray<Real>::operator[](index-1);
+    return m_c[index-1];
   }
   int size() const {
-    return (int)CompactArray<Real>::size();
+    return (int)m_c.size();
   }
   void add(const Real &x) {
-    CompactArray<Real>::add(x);
+    m_c.add(x);
   }
 };
 

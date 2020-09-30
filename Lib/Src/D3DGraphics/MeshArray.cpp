@@ -7,8 +7,8 @@ MeshArray &MeshArray::operator=(const MeshArray &src) {
   return *this;
 }
 
-void MeshArray::add(UINT index, const LPD3DXMESH &m, UINT count) {
-  __super::add(index, m, count);
+void MeshArray::insert(UINT index, const LPD3DXMESH &m, UINT count) {
+  __super::insert(index, m, count);
   while(count--) {
     LPD3DXMESH mesh = (*this)[index++];
     SAFEADDREF(mesh);

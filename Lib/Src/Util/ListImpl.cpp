@@ -26,7 +26,7 @@ ListImpl::ListImpl(AbstractObjectManager &objectManager) {
 
 void ListImpl::init(AbstractObjectManager &objectManager) {
   m_objectManager = objectManager.clone(); TRACE_NEW(m_objectManager);
-  m_first         = m_last = NULL;
+  m_first         = m_last = nullptr;
   m_size          = 0;
   m_updateCount   = 0;
 #if defined(DEBUG_LISTIMPL)
@@ -46,7 +46,7 @@ ListImpl::~ListImpl() {
 ListNode *ListImpl::createNode(const void *e) {
   ListNode *result = m_nodePool.fetch();
   result->m_data   = m_objectManager->cloneObject(e);
-  result->m_next   = result->m_prev = NULL;
+  result->m_next   = result->m_prev = nullptr;
   return result;
 }
 
@@ -68,24 +68,33 @@ const ListNode *ListImpl::findNode(size_t index) const {
 }
 
 AbstractCollection *ListImpl::clone(bool cloneData) const {
-  ListImpl *copy = new ListImpl(*m_objectManager);
-  if(cloneData) {
-    AbstractIterator *it = ((ListImpl*)this)->getIterator(); TRACE_NEW(it);
-    while(it->hasNext()) {
-      copy->add(it->next());
+  ListImpl         *clone = nullptr;
+  AbstractIterator *it    = nullptr;
+  clone = new ListImpl(*m_objectManager);
+  try {
+    if(cloneData) {
+      it = getIterator(); TRACE_NEW(it);
+      while(it->hasNext()) {
+        clone->add(it->next());
+      }
+      SAFEDELETE(it);
     }
-    SAFEDELETE(it);
+  } catch(...) {
+    TRACE_NEW( clone);
+    SAFEDELETE(it   );
+    SAFEDELETE(clone);
+    throw;
   }
-  return copy;
+  return clone;
 }
 
 void ListImpl::clear() {
   ListNode *next;
-  for(ListNode *n = m_first; n != NULL; n = next) {
+  for(ListNode *n = m_first; n != nullptr; n = next) {
     next = n->m_next;
     deleteNode(n);
   }
-  m_first = m_last = NULL;
+  m_first = m_last = nullptr;
   m_size = 0;
   m_updateCount++;
 }
@@ -118,25 +127,25 @@ bool ListImpl::add(const void *e) {
   return true;
 }
 
-bool ListImpl::add(size_t i, const void *e) {
+bool ListImpl::insert(size_t i, const void *e) {
   if(i > m_size) indexError(__TFUNCTION__, i);
   ListNode *n = createNode(e);
   if(i == 0) {
     n->m_next = m_first;
-    if(m_first != NULL) {
+    if(m_first != nullptr) {
       m_first->m_prev = n;
     }
     m_first = n;
-    if(m_last == NULL) {
+    if(m_last == nullptr) {
       m_last = n;
     }
   } else if(i == m_size) {
     n->m_prev = m_last;
-    if(m_last != NULL) {
+    if(m_last != nullptr) {
       m_last->m_next = n;
     }
     m_last = n;
-    if(m_first == NULL) {
+    if(m_first == nullptr) {
       m_first = n;
     }
   } else {
@@ -152,12 +161,12 @@ bool ListImpl::add(size_t i, const void *e) {
 }
 
 void ListImpl::removeNode(ListNode *n) {
-  if(n->m_prev != NULL) {
+  if(n->m_prev != nullptr) {
     n->m_prev->m_next = n->m_next;
   } else {
     m_first = n->m_next;
   }
-  if(n->m_next != NULL) {
+  if(n->m_next != nullptr) {
     n->m_next->m_prev = n->m_prev;
   } else {
     m_last = n->m_prev;
@@ -263,7 +272,7 @@ DEFINECLASSNAME(ListIterator);
 ListIterator::ListIterator(ListImpl &list) : m_list(list) {
   m_updateCount = m_list.m_updateCount;
   m_next    = m_list.m_first;
-  m_current = NULL;
+  m_current = nullptr;
 }
 
 AbstractIterator *ListIterator::clone() {
@@ -271,11 +280,11 @@ AbstractIterator *ListIterator::clone() {
 }
 
 bool ListIterator::hasNext() const {
-  return m_next != NULL;
+  return m_next != nullptr;
 }
 
 void *ListIterator::next() {
-  if(m_next == NULL) {
+  if(m_next == nullptr) {
     noNextElementError(s_className);
   }
   __assume(m_next);
@@ -288,14 +297,14 @@ void *ListIterator::next() {
 }
 
 void ListIterator::remove() {
-  if(m_current == NULL) {
+  if(m_current == nullptr) {
     noCurrentElementError(s_className);
   }
   m_list.removeNode(m_current);
-  m_current = NULL;
+  m_current = nullptr;
   m_updateCount = m_list.m_updateCount;
 }
 
-AbstractIterator *ListImpl::getIterator() {
-  return new ListIterator(*this);
+AbstractIterator *ListImpl::getIterator() const {
+  return new ListIterator((ListImpl&)*this);
 }

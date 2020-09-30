@@ -14,8 +14,7 @@ public:
 
 class AbstractSet : public AbstractCollection {
 public:
-  virtual bool                hasOrder()      const = 0;
-  virtual AbstractComparator *getComparator()       = 0;
+  virtual AbstractComparator *getComparator() const = 0;
   virtual const void         *getMin()        const = 0;
   virtual const void         *getMax()        const = 0;
 };
@@ -25,17 +24,9 @@ public:
   Set(AbstractSet *set) : Collection<T>(set) {
   }
 
-  Set<T> &operator=(const Collection<T> &src) {
-    if(this == &src) {
-      return *this;
-    }
-    clear();
-    addAll(src);
+  Set<T> &operator=(const CollectionBase<T> &src) {
+    __super::operator=(src);
     return *this;
-  }
-
-  bool hasOrder() const {
-    return ((AbstractSet*)m_collection)->hasOrder();
   }
 
   Comparator<T> &getComparator() {
@@ -46,14 +37,14 @@ public:
   Set<T> operator*(const Set<T> &set) const {
     Set<T> result((AbstractSet*)m_collection->clone(false));
     if(size() < set.size()) {
-      for(Iterator<T> it = ((Set<T>&)*this).getIterator(); it.hasNext();) {
+      for(Iterator<T> it = getIterator(); it.hasNext();) {
         const T &e = it.next();
         if(set.contains(e)) {
           result.add(e);
         }
       }
     } else {
-      for(Iterator<T> it = ((Set<T>&)set).getIterator(); it.hasNext();) {
+      for(Iterator<T> it = set.getIterator(); it.hasNext();) {
         const T &e = it.next();
         if(contains(e)) {
           result.add(e);
@@ -80,13 +71,13 @@ public:
   // s1^s2 = (s1-s2) + (s2-s1) (symmetric difference) = set of elements that are in only one of the sets
   Set <T> operator^(const Set<T> &set) const {
     Set<T> result((AbstractSet*)m_collection->clone(false));
-    for(Iterator<T> it = ((Set<T>&)*this).getIterator(); it.hasNext();) {
+    for(Iterator<T> it = getIterator(); it.hasNext();) {
       const T &e = it.next();
       if(!set.contains(e)) {
         result.add(e);
       }
     }
-    for(Iterator<T> it = ((Set<T>&)set).getIterator(); it.hasNext();) {
+    for(Iterator<T> it = set.getIterator(); it.hasNext();) {
       const T &e = it.next();
       if(!contains(e)) {
         result.add(e);
@@ -97,7 +88,7 @@ public:
 
   // Subset. Return true if all elements in *this are in set
   bool operator<=(const Set<T> &set) const {
-    for(Iterator<T> it = ((Set<T>&)*this).getIterator(); it.hasNext();) {
+    for(Iterator<T> it = getIterator(); it.hasNext();) {
       if(!set.contains(it.next())) {
         return false;
       }

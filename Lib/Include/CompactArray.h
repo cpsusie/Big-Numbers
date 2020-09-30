@@ -3,12 +3,12 @@
 #include "Packer.h"
 #include "ByteFile.h"
 #include "Comparator.h"
-#include "Iterator.h"
+#include "CollectionBase.h"
 #include "Random.h"
 
 extern const TCHAR *_compactArrayIteratorClassName;
 
-template <typename T> class CompactArray {
+template <typename T> class CompactArray : public CollectionBase<T> {
 private:
   size_t  m_capacity;
   size_t  m_size;
@@ -71,8 +71,28 @@ public:
     return *this;
   }
 
-  virtual ~CompactArray() {
+  ~CompactArray() override {
     SAFEDELETEARRAY(m_array);
+  }
+
+  // if capacity < 0, it's left unchanged
+  CompactArray<T> &clear(intptr_t capacity) {
+    if(m_size != 0) {
+      m_updateCount++;
+    }
+    m_size = 0;
+    if(capacity >= 0) {
+      setCapacity(capacity);
+    }
+    return *this;
+  }
+
+  void clear() override {
+    clear(0);
+  }
+
+  size_t size() const override {
+    return m_size;
   }
 
   CompactArray<T> &setCapacity(size_t capacity) {
@@ -178,15 +198,16 @@ public:
     return -1;
   }
 
-  void add(const T &e) {
+  bool add(const T &e) override {
     if(m_size == m_capacity) {
       setCapacity(3*m_capacity+5);
     }
     m_array[m_size++] = e;
     m_updateCount++;
+    return true;
   }
 
-  void add(size_t index, const T &e, size_t count = 1) {
+  void insert(size_t index, const T &e, size_t count = 1) {
     if(index > m_size) indexError(__TFUNCTION__, index);
     if(count == 0) return;
     const size_t newSize = m_size + count;
@@ -203,7 +224,7 @@ public:
     m_updateCount++;
   }
 
-  void add(size_t index, const T *ep, size_t count) {
+  void insert(size_t index, const T *ep, size_t count) {
     if(index > m_size) indexError(__TFUNCTION__, index);
     if(count == 0) return;
     const size_t newSize = m_size + count;
@@ -221,7 +242,7 @@ public:
   }
 
   void append(const T *ep, size_t count) {
-    add(size(), ep, count);
+    insert(size(), ep, count);
   }
 
   bool addAll(const CompactArray<T> &src) {
@@ -236,14 +257,6 @@ public:
     m_size = newSize;
     m_updateCount++;
     return true;
-  }
-
-  bool addAll(const Iterator<T> &it) {
-    const size_t oldSize = size();
-    for(Iterator<T> it1 = it; it1.hasNext();) {
-      add(it1.next());
-    }
-    return size() != oldSize;
   }
 
   void remove(size_t index, size_t count = 1) {
@@ -331,18 +344,6 @@ public:
 
   bool generateAllPermuations(PermutationHandler &handler) {
     return permuter(size(), handler);
-  }
-
-  // if capacity < 0, it's left unchanged
-  CompactArray<T> &clear(intptr_t capacity=0) {
-    if(m_size != 0) {
-      m_updateCount++;
-    }
-    m_size = 0;
-    if(capacity >= 0) {
-      setCapacity(capacity);
-    }
-    return *this;
   }
 
   CompactArray<T> &sort(size_t from, size_t count, Comparator<T> &cmp) {
@@ -435,7 +436,7 @@ public:
         r = m;
       }
     }
-    add(r, key);
+    insert(r, key);
     return r;
   }
 
@@ -467,14 +468,6 @@ public:
       sum = sum * 31 + (p++)->hashCode();
     }
     return sum;
-  }
-
-  inline bool isEmpty() const {
-    return m_size == 0;
-  };
-
-  inline size_t size() const {
-    return m_size;
   }
 
   inline const T *getBuffer() const { // can return NULL
@@ -587,8 +580,11 @@ public:
       m_updateCount = m_a.getUpdateCount();
     }
   };
-  inline Iterator<T> getIterator() {
-    return Iterator<T>(new CompactArrayIterator(this));
+  Iterator<T> getIterator() const override {
+    return Iterator<T>(new CompactArrayIterator((CompactArray<T>*)this));
+  }
+  bool      hasOrder()   const override {
+    return true;
   }
   inline T *begin() {
     return isEmpty() ? NULL : &first();

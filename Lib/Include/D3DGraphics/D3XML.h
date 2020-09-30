@@ -16,15 +16,13 @@ void setValue(XMLDoc &doc, XMLNodePtr n, const D3DMATERIAL    &v);
 void getValue(XMLDoc &doc, XMLNodePtr n,       D3DMATERIAL    &v);
 void setValue(XMLDoc &doc, XMLNodePtr n, const D3MATERIAL     &v);
 void getValue(XMLDoc &doc, XMLNodePtr n,       D3MATERIAL     &v);
-void setValue(XMLDoc &doc, XMLNodePtr n, const MaterialMap    &map);
-void getValue(XMLDoc &doc, XMLNodePtr n,       MaterialMap    &map);
+void setValue(XMLDoc &doc, XMLNodePtr n, const D3Material     &v);
+void getValue(XMLDoc &doc, XMLNodePtr n,       D3Material     &v);
 
 void setValue(XMLDoc &doc, XMLNodePtr n, const D3DLIGHT       &v);
 void getValue(XMLDoc &doc, XMLNodePtr n,       D3DLIGHT       &v);
 void setValue(XMLDoc &doc, XMLNodePtr n, const D3Light        &v);
 void getValue(XMLDoc &doc, XMLNodePtr n,       D3Light        &v);
-void setValue(XMLDoc &doc, XMLNodePtr n, const LightArray     &a);
-void getValue(XMLDoc &doc, XMLNodePtr n,       LightArray     &a);
 
 class D3World;
 class D3Camera;

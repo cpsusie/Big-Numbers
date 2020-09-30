@@ -5,9 +5,30 @@
 TreeSetImpl::TreeSetImpl(const AbstractObjectManager &objectManager, const AbstractComparator &comparator) {
   m_objectManager = objectManager.clone(); TRACE_NEW(m_objectManager);
   m_comparator    = comparator.clone();    TRACE_NEW(m_comparator);
-  m_root          = NULL;
+  m_root          = nullptr;
   m_size          = 0;
   m_updateCount   = 0;
+}
+
+AbstractCollection *TreeSetImpl::clone(bool cloneData) const {
+  TreeSetImpl      *clone = nullptr;
+  AbstractIterator *it    = nullptr;
+  clone = new TreeSetImpl(*m_objectManager, *m_comparator);
+  try {
+    if(cloneData) {
+      it = getIterator(); TRACE_NEW(it);
+      while(it->hasNext()) {
+        clone->add(it->next());
+      }
+      SAFEDELETE(it);
+    }
+  } catch(...) {
+    TRACE_NEW( clone);
+    SAFEDELETE(it   );
+    SAFEDELETE(clone);
+    throw;
+  }
+  return clone;
 }
 
 TreeSetImpl::~TreeSetImpl() {
@@ -20,18 +41,6 @@ void TreeSetImpl::throwEmptySetException(const TCHAR *method) const {
   throwSelectFromEmptyCollectionException(method);
 }
 
-AbstractCollection *TreeSetImpl::clone(bool cloneData) const {
-  TreeSetImpl *clone = new TreeSetImpl(*m_objectManager, *m_comparator);
-  if(cloneData) {
-    AbstractIterator *it = ((TreeSetImpl*)this)->getIterator(); TRACE_NEW(it);
-    while(it->hasNext()) {
-      clone->add(it->next());
-    }
-    SAFEDELETE(it);
-  }
-  return clone;
-}
-
 TreeSetNode *TreeSetImpl::allocateNode() const {
   TreeSetNode *n = new TreeSetNode(); TRACE_NEW(n); return n;
 }
@@ -39,7 +48,7 @@ TreeSetNode *TreeSetImpl::allocateNode() const {
 TreeSetNode *TreeSetImpl::createNode(const void *key) const {
   TreeSetNode *n = allocateNode();
   n->m_balance = 0;
-  n->m_left    = n->m_right = NULL;
+  n->m_left    = n->m_right = nullptr;
   n->m_key     = m_objectManager->cloneObject(key);
   return n;
 }
@@ -50,7 +59,7 @@ TreeSetNode *TreeSetImpl::cloneNode(TreeSetNode *n) const {
 
 void TreeSetImpl::deleteNode(TreeSetNode *n) const {
   m_objectManager->deleteObject(n->m_key);
-  n->m_key = NULL;
+  n->m_key = nullptr;
   SAFEDELETE(n);
 }
 
@@ -257,7 +266,7 @@ bool TreeSetImpl::nodeDel(TreeSetNode *&pp) {
 bool TreeSetImpl::nodeDelete(TreeSetNode *&pp, const void *key) {
   TreeSetNode *p = pp;
 
-  if(p == NULL) {
+  if(p == nullptr) {
     return false;                  // key not found
   }
 
@@ -278,10 +287,10 @@ bool TreeSetImpl::nodeDelete(TreeSetNode *&pp, const void *key) {
   }
 
   bool result = false;
-  if(p->m_right == NULL) {
+  if(p->m_right == nullptr) {
     pp = p->m_left;
     result = true;
-  } else if(p->m_left == NULL) {
+  } else if(p->m_left == nullptr) {
     pp = p->m_right;
     result = true;
   } else {
@@ -311,9 +320,9 @@ void TreeSetImpl::deleteNodeRecurse(TreeSetNode *n) {
 }
 
 void TreeSetImpl::clear() {
-  if(m_root != NULL) {
+  if(m_root != nullptr) {
     deleteNodeRecurse(m_root);
-    m_root = NULL;
+    m_root = nullptr;
     m_size = 0;
     m_updateCount++;
   }
@@ -353,7 +362,7 @@ TreeSetNode *TreeSetImpl::findNode(const void *key) {
       return p;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 const TreeSetNode *TreeSetImpl::findNode(const void *key) const {
@@ -369,11 +378,11 @@ const TreeSetNode *TreeSetImpl::findNode(const void *key) const {
       return p;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 bool TreeSetImpl::contains(const void *key) const {
-  return findNode(key) != NULL;
+  return findNode(key) != nullptr;
 }
 
 const void *TreeSetImpl::getRandom(RandomGenerator &rnd) const {
@@ -384,12 +393,12 @@ const void *TreeSetImpl::getRandom(RandomGenerator &rnd) const {
   const TreeSetNode *p = m_root;
 
   for(;;) {
-    bool cont = (p->m_left != NULL || p->m_right != NULL) && rnd.nextBool();
+    bool cont = (p->m_left != nullptr || p->m_right != nullptr) && rnd.nextBool();
     if(!cont) {
       return p->m_key;
-    } else if(p->m_left == NULL) {
+    } else if(p->m_left == nullptr) {
       p = p->m_right;
-    } else if(p->m_right == NULL) {
+    } else if(p->m_right == nullptr) {
       p = p->m_left;
     } else {
       p = rnd.nextBool() ? p->m_left : p->m_right;
@@ -406,18 +415,18 @@ void *TreeSetImpl::select(RandomGenerator &rnd) {
 }
 
 const TreeSetNode *TreeSetImpl::getMinNode() const {
-  const TreeSetNode *result = NULL;
+  const TreeSetNode *result = nullptr;
   for(const TreeSetNode *p = m_root; p; result = p, p = p->m_left);
-  if(result == NULL) {
+  if(result == nullptr) {
     throwEmptySetException(__TFUNCTION__);
   }
   return result;
 }
 
 const TreeSetNode *TreeSetImpl::getMaxNode() const {
-  const TreeSetNode *result = NULL;
+  const TreeSetNode *result = nullptr;
   for(const TreeSetNode *p = m_root; p; result = p, p = p->m_right);
-  if(result == NULL) {
+  if(result == nullptr) {
     throwEmptySetException(__TFUNCTION__);
   }
   return result;
@@ -431,6 +440,6 @@ const void *TreeSetImpl::getMax() const {
   return getMaxNode()->key();
 }
 
-AbstractIterator *TreeSetImpl::getIterator() {
-  return new TreeSetIterator(*this);
+AbstractIterator *TreeSetImpl::getIterator() const {
+  return new TreeSetIterator((TreeSetImpl&)*this);
 }

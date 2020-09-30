@@ -20,57 +20,56 @@ private:
   size_t                    m_size;
   size_t                    m_updateCount;
 
-  void init(AbstractObjectManager &objectManager);
-  ListNode *createNode(const void *e);
-  void deleteNode(ListNode *n);
+  void            init(AbstractObjectManager &objectManager);
+  ListNode       *createNode(const void *e);
+  void            deleteNode(ListNode *n);
   // assume index < size()
   const ListNode *findNode(size_t index) const;
-  void removeNode(ListNode *n);
-  void indexError(const TCHAR *method, size_t index) const;
+  void            removeNode(ListNode *n);
+  void            indexError(const TCHAR *method, size_t index) const;
   friend class ListIterator;
 public:
   ListImpl(AbstractObjectManager &objectManager);
-  virtual ~ListImpl() override;
-  AbstractCollection *clone(bool cloneData) const override;
-  ListImpl &operator=(const ListImpl &src);
-  bool add(const void *e) override;
-  bool add(size_t i, const void *e);
-  void removeIndex(size_t i);
-  bool remove(const void *e) override;
-  void removeFirst();
-  void removeLast();
-  bool contains(const void *e) const override; // unsupported
-  const void *select(RandomGenerator &rnd) const override;
-  void *select(RandomGenerator &rnd);
-  void clear() override;
-  size_t size() const override {
+  AbstractCollection *clone(bool cloneData)          const override;
+  ~ListImpl()                                              override;
+  size_t              size()                         const override {
     return m_size;
   }
-        void *getElement(size_t index);
-  const void *getElement(size_t index) const;
-        void *first();
-  const void *first() const;
-        void *last();
-  const void *last() const;
+  void                clear()                              override;
+  bool                add(                  const void *e) override;
+  bool                insert(     size_t i, const void *e);
+  void                removeIndex(size_t i);
+  bool                remove(  const void *e)              override;
+  // unsupported
+  bool                contains(const void *e)        const override;
+  void                removeFirst();
+  void                removeLast();
+  const void         *select(RandomGenerator &rnd)   const override;
+        void         *select(RandomGenerator &rnd);
+        void         *getElement(size_t index);
+  const void         *getElement(size_t index)       const;
+        void         *first();
+  const void         *first()                        const;
+        void         *last();
+  const void         *last()                         const;
 
-  AbstractIterator *getIterator() override;
+  AbstractIterator   *getIterator()                  const override;
+  bool                hasOrder()                     const override {
+    return true;
+  }
 };
 
-template <typename T> class LinkedList : public Collection<T> {
+template<typename T> class LinkedList : public Collection<T> {
 public:
   LinkedList() : Collection<T>(new ListImpl(ObjectManager<T>())) {
   }
 
-  LinkedList(const Collection<T> &src) : Collection<T>(new ListImpl(ObjectManager<T>())) {
+  LinkedList(const CollectionBase<T> &src) : Collection<T>(new ListImpl(ObjectManager<T>())) {
     addAll(src);
   }
 
-  LinkedList<T> &operator=(const Collection<T> &src) {
-    if(this == &src) {
-      return *this;
-    }
-    clear();
-    addAll(src);
+  LinkedList<T> &operator=(const CollectionBase<T> &src) {
+    __super::operator=(src);
     return *this;
   }
 
@@ -98,16 +97,12 @@ public:
     return *(T*)(((ListImpl*)m_collection)->last());
   }
 
-  inline T &select(RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) {
-    return *(T*)m_collection->select(rnd);
-  }
-
   bool operator==(const LinkedList<T> &rhs) const { // NB not virtual in Collection, because of ==
     if(size() != rhs.size()) {
       return false;
     }
-    Iterator<T> it1 = ((LinkedList<T>*)this)->getIterator();
-    Iterator<T> it2 = ((LinkedList<T>&)rhs).getIterator();
+    Iterator<T> it1 = getIterator();
+    Iterator<T> it2 = rhs.getIterator();
     while(it1.hasNext()) {
       if(!(it1.next() == it2.next())) {
         return false;
@@ -120,11 +115,11 @@ public:
     return !(operator==(rhs));
   }
 
-  bool add(size_t i, const T &e) {
-    return ((ListImpl*)m_collection)->add(i, &e);
+  bool insert(size_t i, const T &e) {
+    return ((ListImpl*)m_collection)->insert(i, &e);
   }
 
-  bool add(const T &e) {
+  bool add(const T &e) override {
     return m_collection->add(&e);
   }
 
@@ -153,7 +148,7 @@ public:
   }
 
   bool contains(const T &e) const {            // NB not virtual in Collection, because of ==
-    for(Iterator<T> it = ((LinkedList<T>*)this)->getIterator(); it.hasNext();) {
+    for(Iterator<T> it = getIterator(); it.hasNext();) {
       if(it.next() == e) {
         return true;
       }

@@ -12,7 +12,7 @@ public:
   }
 };
 
-template <typename K, typename V, UINT pageSize=20000> class CompactHashMap {
+template <typename K, typename V, UINT pageSize=20000> class CompactHashMap : public MapBase<K,V> {
 private:
   size_t                                                m_size;
   size_t                                                m_capacity;
@@ -67,11 +67,89 @@ public:
     return *this;
   }
 
-  virtual ~CompactHashMap() {
+  ~CompactHashMap() override {
     clear();
   }
 
-  inline bool hasOrder() const {
+  void clear() override {
+    m_entryPool.releaseAll();
+    if(m_size) {
+      m_size = 0;
+      m_updateCount++;
+    }
+    setCapacity(0);
+  }
+
+  size_t size() const override {
+    return m_size;
+  }
+
+  bool put(const K &key, const V &value) override {
+    ULONG index;
+    if(m_capacity) {
+      index = key.hashCode() % m_capacity;
+      for(LinkObject<MapEntry<K,V> > *p = m_buffer[index]; p; p = p->m_next) {
+        if(key == p->m_e.m_key) {
+          return false;
+        }
+      }
+    }
+    if(m_size+1 > m_capacity*3) {
+      setCapacity(m_size*5+5);
+      index = key.hashCode() % m_capacity; // no need to search key again. if m_capacity was 0, the set is empty
+    }
+    LinkObject<MapEntry<K,V> > *p = m_entryPool.fetch();
+    p->m_e.m_key                  = key;
+    p->m_e.m_value                = value;
+    p->m_next                     = m_buffer[index];
+    m_buffer[index]               = p;
+    m_size++;
+    m_updateCount++;
+    return true;
+  }
+
+private:
+  inline const V *getValue(const K &key) const {
+    if(m_capacity) {
+      const ULONG index = key.hashCode() % m_capacity;
+      for(LinkObject<MapEntry<K,V> > *p = m_buffer[index]; p; p = p->m_next) {
+        if(key == p->m_e.m_key) {
+          return &(p->m_e.m_value);
+        }
+      }
+    }
+    return NULL;
+  }
+
+public:
+  const V *get(const K &key) const override {
+    return getValue(key);
+  }
+  V *get(const K &key) override {
+    return (V*)getValue(key);
+  }
+
+  bool remove(const K &key) override {
+    if(m_capacity) {
+      const ULONG index = key.hashCode() % m_capacity;
+      for(LinkObject<MapEntry<K,V> > *p = m_buffer[index], *last = NULL; p; last = p, p = p->m_next) {
+        if(key == p->m_e.m_key) {
+          if(last) {
+            last->m_next = p->m_next;
+          } else {
+            m_buffer[index] = p->m_next;
+          }
+          m_entryPool.release(p);
+          m_size--;
+          m_updateCount++;
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  bool hasOrder() const override {
     return false;
   }
 
@@ -111,79 +189,6 @@ public:
     return m_entryPool.getPageCount();
   }
 
-  bool put(const K &key, const V &value) {
-    ULONG index;
-    if(m_capacity) {
-      index = key.hashCode() % m_capacity;
-      for(LinkObject<MapEntry<K,V> > *p = m_buffer[index]; p; p = p->m_next) {
-        if(key == p->m_e.m_key) {
-          return false;
-        }
-      }
-    }
-    if(m_size+1 > m_capacity*3) {
-      setCapacity(m_size*5+5);
-      index = key.hashCode() % m_capacity; // no need to search key again. if m_capacity was 0, the set is empty
-    }
-    LinkObject<MapEntry<K,V> > *p = m_entryPool.fetch();
-    p->m_e.m_key                  = key;
-    p->m_e.m_value                = value;
-    p->m_next                     = m_buffer[index];
-    m_buffer[index]               = p;
-    m_size++;
-    m_updateCount++;
-    return true;
-  }
-
-  bool remove(const K &key) {
-    if(m_capacity) {
-      const ULONG index = key.hashCode() % m_capacity;
-      for(LinkObject<MapEntry<K,V> > *p = m_buffer[index], *last = NULL; p; last = p, p = p->m_next) {
-        if(key == p->m_e.m_key) {
-          if(last) {
-            last->m_next = p->m_next;
-          } else {
-            m_buffer[index] = p->m_next;
-          }
-          m_entryPool.release(p);
-          m_size--;
-          m_updateCount++;
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
-  V *get(const K &key) const {
-    if(m_capacity) {
-      const ULONG index = key.hashCode() % m_capacity;
-      for(LinkObject<MapEntry<K,V> > *p = m_buffer[index]; p; p = p->m_next) {
-        if(key == p->m_e.m_key) {
-          return &(p->m_e.m_value);
-        }
-      }
-    }
-    return NULL;
-  }
-
-  void clear() {
-    m_entryPool.releaseAll();
-    if(m_size) {
-      m_size = 0;
-      m_updateCount++;
-    }
-    setCapacity(0);
-  }
-
-  inline size_t size() const {
-    return m_size;
-  }
-
-  inline bool isEmpty() const {
-    return m_size == 0;
-  }
-
   CompactIntArray getLength() const {
     const size_t capacity = getCapacity();
     CompactIntArray tmp(capacity);
@@ -215,38 +220,6 @@ public:
       }
     }
     return m;
-  }
-
-  // Adds every element in src to this. Return true if any elements were added.
-  bool addAll(const CompactHashMap &map) {
-    const size_t n = size();
-    for(Iterator<Entry<K,V> > it = map.getEntryIterator(); it.hasNext(); ) {
-      const Entry<K,V> &e = it.next();
-      put(e.getKey(), e.getValue());
-    }
-    return size() != n;
-  }
-
-  // Remove every element in set from this. Return true if any elements were removed.
-  bool removeAll(const CompactHashMap &map) {
-    if(this == &map) {
-      if(isEmpty()) return false;
-      clear();
-      return true;
-    }
-    const size_t n = size();
-    for(Iterator<Entry<K,V> > it = map.getEntryIterator(); it.hasNext();) {
-      remove(it.next().getKey());
-    }
-    return size() != n;
-  }
-
-  bool removeAll(const CompactArray<K> &a) {
-    const size_t n = size();
-    for(K key : a) {
-      remove(key);
-    }
-    return size() != n;
   }
 
   class CompactMapIteratorEntry : public AbstractEntry {
@@ -343,7 +316,7 @@ public:
     }
   };
 
-  Iterator<Entry<K,V> > getEntryIterator() const {
+  Iterator<Entry<K,V> > getIterator() const override {
     return Iterator<Entry<K,V> >(new CompactMapEntryIterator((CompactHashMap*)this));
   }
 
@@ -369,7 +342,7 @@ public:
     if(map.size() != size()) {
       return false;
     }
-    for(Iterator<Entry<K,V> > it = getEntryIterator(); it.hasNext();) {
+    for(Iterator<Entry<K,V> > it = getIterator(); it.hasNext();) {
       const Entry<K,V> &e = it.next();
       const V *v = map.get(e.getKey());
       if((v == NULL) || (*v != e.getValue())) {
@@ -393,7 +366,7 @@ public:
     s.putBytes((BYTE*)&count, sizeof(count));
     CompactArray<MapEntry<K,V> > a(1000);
     UINT64 wCount = 0;
-    for(Iterator<Entry<K,V> > it = getEntryIterator(); it.hasNext();) {
+    for(Iterator<Entry<K,V> > it = getIterator(); it.hasNext();) {
       const Entry<K,V> &e = it.next();
       a.add(MapEntry<K,V>(e.getKey(), e.getValue()));
       if(a.size() == 1000) {

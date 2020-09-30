@@ -791,6 +791,7 @@
     <ClInclude Include="..\..\Include\ByteStream.h" />
     <ClInclude Include="..\..\Include\CallCounter.h" />
     <ClInclude Include="..\..\Include\Collection.h" />
+    <ClInclude Include="..\..\Include\CollectionBase.h" />
     <ClInclude Include="..\..\Include\CommonHashFunctions.h" />
     <ClInclude Include="..\..\Include\CompactArray.h" />
     <ClInclude Include="..\..\Include\CompactLineArray.h" />
@@ -829,6 +830,7 @@
     <ClInclude Include="..\..\Include\LinkedList.h" />
     <ClInclude Include="..\..\Include\LRparser.h" />
     <ClInclude Include="..\..\Include\Map.h" />
+    <ClInclude Include="..\..\Include\MapBase.h" />
     <ClInclude Include="..\..\Include\MarginFile.h" />
     <ClInclude Include="..\..\Include\MathUtil.h" />
     <ClInclude Include="..\..\Include\MatrixDimension.h" />

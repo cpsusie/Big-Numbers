@@ -11,51 +11,50 @@ public:
   EntrySet(AbstractMap *map, bool deleteMap) : m_map(map) {
     m_deleteMap = deleteMap;
   }
-  bool add(const void *e) override {
-    AbstractEntry* ae = (AbstractEntry*)e;
-    return m_map->put(ae->key(),ae->value());
-  }
-  bool remove(const void *e) override {
-    return m_map->remove(((AbstractEntry*)e)->key());
-  }
-  bool contains(const void *e) const override {
-    return m_map->get(((AbstractEntry*)e)->key()) != NULL;
-  }
-  const void *select(RandomGenerator &rnd) const override {
-    return m_map->selectEntry(rnd);
-  }
-  void *select(RandomGenerator &rnd) override {
-    return m_map->selectEntry(rnd);
-  }
-  size_t size() const override {
-    return m_map->size();
-  }
-  void clear() override {
-    m_map->clear();
-  }
-  bool hasOrder() const override {
-    return m_map->hasOrder();
-  }
-  AbstractComparator *getComparator() override {
-    return m_map->getComparator();
-  }
-  const void *getMin() const {
-    return m_map->getMinEntry();
-  }
-  const void *getMax() const {
-    return m_map->getMaxEntry();
-  }
-
-  AbstractCollection *clone(bool cloneData) const override {
+  AbstractCollection *clone(bool cloneData)        const override {
     return new EntrySet(m_map->cloneMap(cloneData),true);
   }
-  AbstractIterator *getIterator() override {
-    return m_map->getIterator();
-  }
-  ~EntrySet() override {
+  ~EntrySet()                                            override {
     if(m_deleteMap) {
       SAFEDELETE(m_map);
     }
+  }
+  void                clear()                            override {
+    m_map->clear();
+  }
+  size_t              size()                       const override {
+    return m_map->size();
+  }
+  bool                add(const void *e)                 override {
+    AbstractEntry* ae = (AbstractEntry*)e;
+    return m_map->put(ae->key(),ae->value());
+  }
+  bool                remove(const void *e)              override {
+    return m_map->remove(((AbstractEntry*)e)->key());
+  }
+  bool                contains(const void *e)      const override {
+    return m_map->get(((AbstractEntry*)e)->key()) != nullptr;
+  }
+  const void         *select(RandomGenerator &rnd) const override {
+    return m_map->selectEntry(rnd);
+  }
+        void         *select(RandomGenerator &rnd)       override {
+    return m_map->selectEntry(rnd);
+  }
+  AbstractComparator *getComparator()              const override {
+    return m_map->getComparator();
+  }
+  const void         *getMin()                     const override {
+    return m_map->getMinEntry();
+  }
+  const void         *getMax()                     const override {
+    return m_map->getMaxEntry();
+  }
+  AbstractIterator   *getIterator()                const override {
+    return m_map->getIterator();
+  }
+  bool                hasOrder()                   const override {
+    return m_map->hasOrder();
   }
 };
 
@@ -69,52 +68,51 @@ public:
   KeySet(AbstractMap *map, bool deleteMap) : m_map(map) {
     m_deleteMap = deleteMap;
   }
-  bool add(const void *e) override {
-    throwUnsupportedOperationException(__TFUNCTION__);
-    return false;
-  }
-  bool remove(const void *e) override {
-    return m_map->remove(e);
-  }
-  bool contains(const void *e) const override {
-    return m_map->get(e) != NULL;
-  }
-
-  const void *select(RandomGenerator &rnd) const override {
-    return m_map->selectEntry(rnd)->key();
-  }
-  void *select(RandomGenerator &rnd) override {
-    return (void*)m_map->selectEntry(rnd)->key();
-  }
-
-  size_t size() const override {
-    return m_map->size();
-  }
-  void clear() override {
-    m_map->clear();
-  }
-  bool hasOrder() const override {
-    return m_map->hasOrder();
-  }
-  AbstractComparator *getComparator() override {
-    return m_map->getComparator();
-  }
-  const void *getMin() const {
-    return m_map->getMinEntry()->key();
-  }
-  const void *getMax() const {
-    return m_map->getMaxEntry()->key();
-  }
-  AbstractCollection *clone(bool cloneData) const override {
+  AbstractCollection *clone(bool cloneData)           const override {
     return new KeySet(m_map->cloneMap(cloneData),true);
   }
-  AbstractIterator *getIterator() override {
-    return m_map->getKeyIterator();
-  }
-  ~KeySet() override {
+  ~KeySet()                                                 override {
     if(m_deleteMap) {
       SAFEDELETE(m_map);
     }
+  }
+  void               clear()                                override {
+    m_map->clear();
+  }
+  size_t             size()                           const override {
+    return m_map->size();
+  }
+  bool               add(const void *e)                     override {
+    throwUnsupportedOperationException(__TFUNCTION__);
+    return false;
+  }
+  bool               remove(const void *e)                  override {
+    return m_map->remove(e);
+  }
+  bool               contains(const void *e)          const override {
+    return m_map->get(e) != nullptr;
+  }
+
+  const void         *select(RandomGenerator &rnd)    const override {
+    return m_map->selectEntry(rnd)->key();
+  }
+        void         *select(RandomGenerator &rnd)          override {
+    return (void*)m_map->selectEntry(rnd)->key();
+  }
+  AbstractComparator *getComparator()                 const override {
+    return m_map->getComparator();
+  }
+  const void         *getMin()                        const override {
+    return m_map->getMinEntry()->key();
+  }
+  const void         *getMax()                        const override {
+    return m_map->getMaxEntry()->key();
+  }
+  AbstractIterator   *getIterator()                   const override {
+    return m_map->getKeyIterator();
+  }
+  bool                hasOrder()                      const override {
+    return m_map->hasOrder();
   }
 };
 
@@ -131,41 +129,43 @@ public:
     m_deleteMap = deleteMap;
     m_cmp       = cmp;
   }
-  bool add(const void *e) override {
-    throwUnsupportedOperationException(__TFUNCTION__);
-    return false;
-  }
-  bool remove(const void *e) override {
-    throwUnsupportedOperationException(__TFUNCTION__);
-    return false;
-  }
-  bool contains(const void *e) const override;
-  const void *select(RandomGenerator &rnd) const override;
-  void *select(RandomGenerator &rnd) override;
-
-  size_t size() const override {
-    return m_map->size();
-  }
-  void clear() override {
-    m_map->clear();
-  }
   AbstractCollection *clone(bool cloneData) const override {
     return new ValueCollection(m_map->cloneMap(cloneData),true,m_cmp);
   }
-  AbstractIterator *getIterator() override {
-    return m_map->getValueIterator();
-  }
-
-  ~ValueCollection() override {
+  ~ValueCollection()                              override {
     if(m_deleteMap) {
       SAFEDELETE(m_map);
     }
+  }
+  void clear()                                     override {
+    m_map->clear();
+  }
+  size_t size()                              const override {
+    return m_map->size();
+  }
+  bool add(const void *e)                          override {
+    throwUnsupportedOperationException(__TFUNCTION__);
+    return false;
+  }
+  bool remove(const void *e)                       override {
+    throwUnsupportedOperationException(__TFUNCTION__);
+    return false;
+  }
+  bool contains(const void *e)               const override;
+  const void *select(RandomGenerator &rnd)   const override;
+        void *select(RandomGenerator &rnd)         override;
+
+  AbstractIterator *getIterator()            const override {
+    return m_map->getValueIterator();
+  }
+  bool hasOrder()                            const override {
+    return false;
   }
 };
 
 bool ValueCollection::contains(const void *e) const {
   bool result = false;
-  AbstractIterator *it = ((ValueCollection*)this)->getIterator(); TRACE_NEW(it);
+  AbstractIterator *it = getIterator(); TRACE_NEW(it);
   while(it->hasNext()) {
     void *e1 = it->next();
     if(m_cmp(e,e1) == 0) {
@@ -204,7 +204,7 @@ private:
     m_it = src->m_it->clone(); TRACE_NEW(m_it);
   }
 public:
-  ValueIterator(AbstractMap *map) {
+  ValueIterator(const AbstractMap *map) {
     m_it = map->getIterator(); TRACE_NEW(m_it);
   }
   ~ValueIterator()                override {
@@ -238,6 +238,6 @@ AbstractCollection *AbstractMap::getValues(int (*cmp)(const void *e1, const void
   return new ValueCollection(this, false, cmp);
 }
 
-AbstractIterator *AbstractMap::getValueIterator() {
+AbstractIterator *AbstractMap::getValueIterator() const {
   return new ValueIterator(this);
 }

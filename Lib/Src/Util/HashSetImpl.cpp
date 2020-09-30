@@ -7,7 +7,7 @@ HashSetTable::HashSetTable(const HashSetImpl &owner, size_t capacity) : m_owner(
   m_updateCount = 0;
   m_table       = new HashSetNode*[m_capacity]; TRACE_NEW(m_table);
   memset(m_table, 0, sizeof(m_table[0])*m_capacity);
-  m_firstLink   = m_lastLink = NULL;
+  m_firstLink   = m_lastLink = nullptr;
 }
 
 HashSetTable::~HashSetTable() {
@@ -19,20 +19,20 @@ void HashSetTable::insert(size_t index, HashSetNode *n) {
   HashSetNode *q = m_table[index];
   m_table[index] = n;
   n->m_next      = q;
-  if(q != NULL) {
+  if(q != nullptr) {
     q->m_prev = &n->m_next;
   }
   n->m_prev = &m_table[index];
 
-  if(m_firstLink == NULL) {
+  if(m_firstLink == nullptr) {
     m_firstLink            = n;
-    n->m_prevLink          = NULL;
+    n->m_prevLink          = nullptr;
   } else {
     m_lastLink->m_nextLink = n;
     n->m_prevLink          = m_lastLink;
   }
   m_lastLink    = n;
-  n->m_nextLink = NULL;
+  n->m_nextLink = nullptr;
   m_size++;
   m_updateCount++;
 }
@@ -41,7 +41,7 @@ void HashSetTable::remove(HashSetNode *n) {
   if(n->m_next) {
     n->m_next->m_prev = n->m_prev;
   }
-  *n->m_prev = n->m_next; // p->prev always != NULL !
+  *n->m_prev = n->m_next; // p->prev always != nullptr !
 
   if(n->m_nextLink) {
     n->m_nextLink->m_prevLink = n->m_prevLink;
@@ -65,13 +65,13 @@ const AbstractKey *HashSetTable::select(RandomGenerator &rnd) const {
 
   if(rnd.nextBool()) {
     for(const HashSetNode *p = m_firstLink;; p = p->m_nextLink) {
-      if((p->m_nextLink == NULL) || (rnd.nextInt(3) == 0)) {
+      if((p->m_nextLink == nullptr) || (rnd.nextInt(3) == 0)) {
         return p;
       }
     }
   } else {
     for(const HashSetNode *p = m_lastLink;; p = p->m_prevLink) {
-      if((p->m_prevLink == NULL) || (rnd.nextInt(3) == 0)) {
+      if((p->m_prevLink == nullptr) || (rnd.nextInt(3) == 0)) {
         return p;
       }
     }
@@ -89,7 +89,7 @@ void HashSetTable::clear() {
     m_owner.deleteNode(p);
   }
   memset(m_table, 0, sizeof(m_table[0])*m_capacity);
-  m_firstLink = m_lastLink = NULL;
+  m_firstLink = m_lastLink = nullptr;
   m_size = 0;
   m_updateCount++;
 }
@@ -143,30 +143,39 @@ HashSetImpl::HashSetImpl(const AbstractObjectManager &objectManager, HashFunctio
 }
 
 AbstractCollection *HashSetImpl::clone(bool cloneData) const {
-  HashSetImpl *clone = new HashSetImpl(*m_objectManager, m_hash, *m_comparator, getCapacity());
-  if(cloneData) {
-    AbstractIterator *it = ((HashSetImpl*)this)->getIterator(); TRACE_NEW(it);
-    while(it->hasNext()) {
-      clone->add(it->next());
+  HashSetImpl      *clone = nullptr;
+  AbstractIterator *it    = nullptr;
+  clone = new HashSetImpl(*m_objectManager, m_hash, *m_comparator, getCapacity());
+  try {
+    if(cloneData) {
+      it = getIterator(); TRACE_NEW(it);
+      while(it->hasNext()) {
+        clone->add(it->next());
+      }
+      SAFEDELETE(it);
     }
-    SAFEDELETE(it);
+  } catch(...) {
+    TRACE_NEW( clone);
+    SAFEDELETE(it   );
+    SAFEDELETE(clone);
+    throw;
   }
   return clone;
 }
 
 HashSetImpl::~HashSetImpl() {
   clear();
-  SAFEDELETE(m_table);
-  SAFEDELETE(m_comparator);
+  SAFEDELETE(m_table        );
+  SAFEDELETE(m_comparator   );
   SAFEDELETE(m_objectManager);
 }
 
 HashSetNode::HashSetNode() {
-  m_key      = NULL;
-  m_next     = NULL;
-  m_prev     = NULL;
-  m_nextLink = NULL;
-  m_prevLink = NULL;
+  m_key      = nullptr;
+  m_next     = nullptr;
+  m_prev     = nullptr;
+  m_nextLink = nullptr;
+  m_prevLink = nullptr;
 }
 
 HashSetNode *HashSetImpl::allocateNode() const {
@@ -252,7 +261,7 @@ bool HashSetImpl::remove(const void *key) {
 }
 
 bool HashSetImpl::contains(const void *key) const {
-  return findNode(key) != NULL;
+  return findNode(key) != nullptr;
 }
 
 const void *HashSetImpl::select(RandomGenerator &rnd) const {
@@ -266,36 +275,26 @@ void *HashSetImpl::select(RandomGenerator &rnd) {
 
 const void *HashSetImpl::getMin() const {
   throwUnsupportedOperationException(__TFUNCTION__);
-  return NULL;
+  return nullptr;
 }
 
 const void *HashSetImpl::getMax() const {
   throwUnsupportedOperationException(__TFUNCTION__);
-  return NULL;
+  return nullptr;
 }
 
-AbstractIterator *HashSetImpl::getIterator() {
-  return new HashSetIterator(*this);
+AbstractIterator *HashSetImpl::getIterator() const {
+  return new HashSetIterator((HashSetImpl&)*this);
 }
 
-const HashSetNode *HashSetImpl::findNode(const void *key) const {
-  const ULONG hashIndex = m_hash(key) % getCapacity();
-  for(const HashSetNode *p = m_table->m_table[hashIndex]; p; p = p->m_next) {
-    if(m_comparator->cmp(key, p->m_key) == 0) {
-      return p;
-    }
-  }
-  return NULL;
-}
-
-HashSetNode *HashSetImpl::findNode(const void *key) {
+HashSetNode *HashSetImpl::findNode(const void *key) const {
   const ULONG hashIndex = m_hash(key) % getCapacity();
   for(HashSetNode *p = m_table->m_table[hashIndex]; p; p = p->m_next) {
     if(m_comparator->cmp(key, p->m_key) == 0) {
       return p;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 #if defined(__HASHSET_CHECK_INTEGRITY)
@@ -320,7 +319,7 @@ void HashSetImpl::checktable(const TCHAR *label) const {
     pause();
   }
   count = 0;
-  const HashSetNode *last = NULL;
+  const HashSetNode *last = nullptr;
   for(const HashSetNode *p  = m_table->m_firstLink; p; p = p->m_nextLink) {
     if(p->m_prevLink != last) {
       pause();

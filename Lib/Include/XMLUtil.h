@@ -2,6 +2,7 @@
 
 #include "XmlDoc.h"
 #include "NumberInterval.h"
+#include "FlagTraits.h"
 
 class Date;
 class Time;
@@ -27,6 +28,14 @@ template<typename T> void getValue(XMLDoc &doc, XMLNodePtr n, NumberInterval<T> 
   getValue(doc, n, _T("to"  ), to  );
   interval.setFrom(from);
   interval.setTo(to);
+}
+
+template<typename M, typename P> void setValue(XMLDoc &doc, XMLNodePtr n, const FlagSet<M, P> &fs) {
+  setValue(doc, n, (const M &)fs);
+}
+
+template<typename M, typename P> void getValue(XMLDoc &doc, XMLNodePtr n, FlagSet<M, P> &fs) {
+  getValue(doc, n, (M&)fs);
 }
 
 class BitSet;

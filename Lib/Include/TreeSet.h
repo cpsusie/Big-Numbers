@@ -26,6 +26,7 @@ public:
 };
 
 class TreeSetImpl : public AbstractSet {
+  friend class TreeSetIterator;
 private:
   AbstractObjectManager *m_objectManager;
   AbstractComparator    *m_comparator;
@@ -34,67 +35,59 @@ private:
   size_t                 m_updateCount;
   size_t                 m_size;
 
-  bool nodeInsert(TreeSetNode *&pp, TreeSetNode *n);
-  bool balanceL(  TreeSetNode *&pp);
-  bool balanceR(  TreeSetNode *&pp);
-  bool nodeDel(   TreeSetNode *&pp);
-  bool nodeDelete(TreeSetNode *&pp, const void *key);
-  void deleteNodeRecurse(TreeSetNode *n);
-  const void *getRandom(RandomGenerator &rnd) const;
-  friend class TreeSetIterator;
-  void throwEmptySetException(const TCHAR *method) const;
+  bool        nodeInsert(TreeSetNode *&pp, TreeSetNode *n);
+  bool        balanceL(  TreeSetNode *&pp);
+  bool        balanceR(  TreeSetNode *&pp);
+  bool        nodeDel(   TreeSetNode *&pp);
+  bool        nodeDelete(TreeSetNode *&pp, const void *key);
+  void        deleteNodeRecurse(TreeSetNode *n);
+  const void *getRandom(RandomGenerator &rnd)                    const;
+  void        throwEmptySetException(const TCHAR *method)        const;
 protected:
-  virtual TreeSetNode *allocateNode() const;
-  virtual TreeSetNode *createNode(const void *key) const;
-  virtual TreeSetNode *cloneNode(TreeSetNode *n) const;
-  virtual void deleteNode(TreeSetNode *n) const;
-  virtual bool insertNode(TreeSetNode *n);
-  const void *select(RandomGenerator &rnd) const; // return key*
-  void *select(RandomGenerator &rnd);
-  virtual void swapContent(TreeSetNode *n1, TreeSetNode *n2);
+  virtual TreeSetNode         *allocateNode()                    const;
+  virtual TreeSetNode         *createNode( const void  *key    ) const;
+  virtual TreeSetNode         *cloneNode(  TreeSetNode *n      ) const;
+  virtual void                 deleteNode( TreeSetNode *n      ) const;
+  virtual bool                 insertNode( TreeSetNode *n      );
+  virtual void                 swapContent(TreeSetNode *n1, TreeSetNode *n2);
+  const   void                *select(     RandomGenerator &rnd) const override; // return key*
+          void                *select(     RandomGenerator &rnd)       override;
 
-  TreeSetNode *findNode(const void *key);
+        TreeSetNode           *findNode(   const void  *key    );
+  const TreeSetNode           *findNode(   const void  *key    ) const;
+  const TreeSetNode           *getMinNode()                      const;
+  const TreeSetNode           *getMaxNode()                      const;
 
-  const TreeSetNode *findNode(const void *key) const;
-  const TreeSetNode *getMinNode() const;
-  const TreeSetNode *getMaxNode() const;
-
-  AbstractObjectManager *getObjectManager() {
+  const AbstractObjectManager *getObjectManager()                const {
     return m_objectManager;
   }
-
-  const AbstractObjectManager *getObjectManager() const {
+  AbstractObjectManager       *getObjectManager() {
     return m_objectManager;
   }
-
-  TreeSetNode *getRoot() {
+  TreeSetNode                 *getRoot()                         const {
     return m_root;
   }
 public:
   TreeSetImpl(const AbstractObjectManager &objectManager, const AbstractComparator &comparator);
-  virtual ~TreeSetImpl()                          override;
-  bool add(     const void *key)                  override;
-  bool remove(  const void *key)                  override;
-  bool contains(const void *e)              const override;
-  size_t size()                             const override {
+  AbstractCollection          *clone(bool cloneData)             const override;
+  ~TreeSetImpl()                                                       override;
+  void                         clear()                                 override;
+  size_t                       size()                            const override {
     return m_size;
   }
-  void clear()                                    override;
-  bool hasOrder()                           const override {
+  bool                          add(     const void *key)              override;
+  bool                          remove(  const void *key)              override;
+  bool                          contains(const void *e  )        const override;
+  AbstractComparator           *getComparator()                  const override {
+    return m_comparator;
+  }
+
+  const void                   *getMin()                          const override;
+  const void                   *getMax()                          const override;
+  AbstractIterator             *getIterator()                     const override;
+  bool                          hasOrder()                        const override {
     return true;
   }
-  AbstractComparator *getComparator()             override {
-    return m_comparator;
-  }
-
-  const AbstractComparator *getComparator() const {
-    return m_comparator;
-  }
-
-  const void *getMin() const;
-  const void *getMax() const;
-  AbstractCollection *clone(bool cloneData) const override;
-  AbstractIterator *getIterator()                 override;
 };
 
 class TreeSetIteratorStackElement {
@@ -126,22 +119,22 @@ private:
     m_stack.pop();
   }
   inline TreeSetIteratorStackElement *top() {
-    return m_stack.isEmpty() ? NULL : &m_stack.top();
+    return m_stack.isEmpty() ? nullptr : &m_stack.top();
   }
-  TreeSetNode *findFirst();
-  void findPath(const void *key);
-  TreeSetNode *findNext();
-  void checkUpdateCount() const;
+  TreeSetNode      *findFirst();
+  void              findPath(const void *key);
+  TreeSetNode      *findNext();
+  void              checkUpdateCount() const;
 protected:
-  TreeSetNode *nextNode();
+  TreeSetNode      *nextNode();
 public:
   TreeSetIterator(TreeSetImpl &set);
-  AbstractIterator *clone() override;
-  bool hasNext()      const override;
-  void *next()              override {
+  AbstractIterator *clone()                  override;
+  bool              hasNext()          const override;
+  void             *next()                   override {
     return (void*)(nextNode()->key());
   }
-  void remove()             override;
+  void              remove()                 override;
 };
 
 template <typename T> class TreeSet : public Set<T> {
@@ -158,12 +151,8 @@ public:
     : Set<T>(new TreeSetImpl(ObjectManager<T>(), comparator))
   {
   }
-  TreeSet<T> &operator=(const Collection<T> &src) {
-    if(this == &src) {
-      return *this;
-    }
-    clear();
-    addAll(src);
+  TreeSet<T> &operator=(const CollectionBase<T> &src) {
+    __super::operator=(src);
     return *this;
   }
 };

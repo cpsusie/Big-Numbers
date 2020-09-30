@@ -23,6 +23,6 @@ void getValue(XMLDoc &doc, XMLNodePtr n, D3Scene &s) {
   getValue(doc, n, _T("lights"      ), lightArray  );
   s.setAmbientColor(ambientColor);
   s.setAllMaterials(materialMap );
-  s.setAllLights(lightArray     );
+  s.setAllLights(   lightArray  );
   getValue(doc, n, _T("cameras"     ), (D3CameraArray&)s.getCameraArray() );
 }

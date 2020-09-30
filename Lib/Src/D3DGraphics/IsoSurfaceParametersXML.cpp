@@ -6,7 +6,7 @@
 
 static void getValueOld3(XMLDoc &doc, XMLNodePtr n, IsoSurfaceParameters                   &v) {
   getValue(  doc, n, _T("cellsize"         ), v.m_cellSize        );
-  getValue(  doc, n, _T("lambda"           ), v.m_lambda, 0.25    );
+  getOptValue(doc,n, _T("lambda"           ), v.m_lambda, 0.25    );
   getValue(  doc, n, _T("boundingbox"      ), v.m_boundingBox     );
   getValue(  doc, n, _T("tetrahedral"      ), v.m_tetrahedral     );
   getValue(  doc, n, _T("tetraoptimize4"   ), v.m_tetraOptimize4  );
@@ -18,7 +18,7 @@ static void getValueOld3(XMLDoc &doc, XMLNodePtr n, IsoSurfaceParameters        
 static void getValueOld2(XMLDoc &doc, XMLNodePtr n, IsoSurfaceParameters                   &v) {
   try {
     getValue( doc, n, _T("cellsize"          ), v.m_cellSize                );
-    getValue( doc, n, _T("lambda"            ), v.m_lambda, 0.25            );
+    getOptValue(doc,n,_T("lambda"            ), v.m_lambda, 0.25            );
     getValue( doc, n, _T("boundingbox"       ), v.m_boundingBox             );
     getValue( doc, n, _T("tetrahedral"       ), v.m_tetrahedral             );
     getValue( doc, n, _T("tetraoptimize4"    ), v.m_tetraOptimize4          );
@@ -37,7 +37,7 @@ static void getValueOld2(XMLDoc &doc, XMLNodePtr n, IsoSurfaceParameters        
 void getValueOld1(XMLDoc &doc, XMLNodePtr n, IsoSurfaceParameters                   &v) {
   try {
     getValue(  doc,  n, _T("cellsize"          ), v.m_cellSize                       );
-    getValue(  doc,  n, _T("lambda"            ), v.m_lambda,  0.25                  );
+    getOptValue(doc, n, _T("lambda"            ), v.m_lambda,  0.25                  );
     getValue(  doc,  n, _T("boundingbox"       ), v.m_boundingBox                    );
     getValue(  doc,  n, _T("tetrahedral"       ), v.m_tetrahedral                    );
     getValue(  doc,  n, _T("tetraoptimize4"    ), v.m_tetraOptimize4                 );
@@ -52,7 +52,7 @@ void getValueOld1(XMLDoc &doc, XMLNodePtr n, IsoSurfaceParameters               
 void getValue(XMLDoc &doc, XMLNodePtr n, IsoSurfaceParameters                      &v) {
   try {
     getValue(doc,  n, _T("cellsize"          ), v.m_cellSize                       );
-    getValue(doc,  n, _T("lambda"            ), v.m_lambda, 0.25                   );
+    getOptValue(doc, n,_T("lambda"           ), v.m_lambda, 0.25                   );
     getValue(doc,  n, _T("boundingbox"       ), v.m_boundingBox                    );
     getValue(doc,  n, _T("tetrahedral"       ), v.m_tetrahedral                    );
     getValue(doc,  n, _T("tetraoptimize4"    ), v.m_tetraOptimize4                 );

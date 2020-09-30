@@ -536,7 +536,7 @@ void Tableau::addSlackColumn() {
   const int c = getSlackColumn(m_slackCount);
   if(getWidth() == m_table[0].m_a.size()) {
     for(int row = 0; row < getRowCount(); row++) {
-      m_table[row].m_a.add(c,0);
+      m_table[row].m_a.insert(c,0.0);
     }
   } else {
     for(int row = 0; row < getRowCount(); row++) {

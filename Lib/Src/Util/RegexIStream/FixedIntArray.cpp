@@ -64,17 +64,17 @@ public:
       m_buffer[index++] = (T)v;
     }
   }
-  size_t getMemoryUsage() const { // in bytes
+  size_t getMemoryUsage() const override { // in bytes
     return sizeof(FixedIntArrayTemplate) + getBufferBytes();
   }
-  FixedIntArray *clone() const {
-    return new FixedIntArrayTemplate<T>(*this);
+  FixedIntArray *clone() const override {
+    FixedIntArray *a = new FixedIntArrayTemplate<T>(*this); TRACE_NEW(a); return a;
   }
-  int operator[](UINT index) const {
+  int operator[](UINT index) const override {
     assert(index < m_size);
     return m_buffer[index];
   }
-  UINT countNonZeroes() const {
+  UINT countNonZeroes() const override {
     UINT count = 0;
     const UINT sz = size();
     for(UINT i = 0; i < sz; i++) {
@@ -84,7 +84,7 @@ public:
     }
     return count;
   }
-  ~FixedIntArrayTemplate() {
+  ~FixedIntArrayTemplate() override {
     deallocateBuffer();
   }
 };
@@ -103,13 +103,13 @@ public:
       m_buffer[index++] = (T)(v - m_minValue);
     }
   }
-  size_t getMemoryUsage() const { // in bytes
+  size_t getMemoryUsage() const override { // in bytes
     return sizeof(BiasedFixedIntArrayTemplate) + getBufferBytes();
   }
-  FixedIntArray *clone() const {
-    return new BiasedFixedIntArrayTemplate<T>(*this);
+  FixedIntArray *clone() const override {
+    FixedIntArray *a = new BiasedFixedIntArrayTemplate<T>(*this); TRACE_NEW(a); return a;
   }
-  int operator[](UINT index) const {
+  int operator[](UINT index) const override {
     assert(index < m_size);
     return m_minValue + m_buffer[index];
   }
@@ -119,19 +119,21 @@ FixedIntArray *FixedIntArray::allocateFixedArray(const CompactIntArray &values) 
   assert(!values.isEmpty());
   const IntInterval range       = getRange(values);
   const UINT        rangeLength = range.getLength();
+  FixedIntArray    *result;
   if(rangeLength <= UCHAR_MAX) {
     if(IntInterval(CHAR_MIN,CHAR_MAX).contains(range)) {
-      return new FixedIntArrayTemplate<CHAR>(values, range);
+      result = new FixedIntArrayTemplate<CHAR>(values, range); TRACE_NEW(result);
     } else {
-      return new BiasedFixedIntArrayTemplate<UCHAR>(values, range);
+      result = new BiasedFixedIntArrayTemplate<UCHAR>(values, range); TRACE_NEW(result);
     }
   } else if(rangeLength < USHRT_MAX) {
     if(IntInterval(SHRT_MIN,SHRT_MAX).contains(range)) {
-      return new FixedIntArrayTemplate<SHORT>(values, range);
+      result = new FixedIntArrayTemplate<SHORT>(values, range); TRACE_NEW(result);
     } else {
-      return new BiasedFixedIntArrayTemplate<USHORT>(values, range);
+      result = new BiasedFixedIntArrayTemplate<USHORT>(values, range); TRACE_NEW(result);
     }
   } else {
-    return new FixedIntArrayTemplate<INT>(values, range);
+    result = new FixedIntArrayTemplate<INT>(values, range); TRACE_NEW(result);
   }
+  return result;
 }

@@ -33,16 +33,16 @@ public:
   virtual ~PackedArray() {
     clear();
   }
-  UINT get(      UINT64 index) const;
+  UINT get(         UINT64 index) const;
   UINT select(RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) const;
-  void set(      UINT64 index, UINT v);
-  void or(       UINT64 index, UINT v);
-  void and(      UINT64 index, UINT v);
-  void xor(      UINT64 index, UINT v);
-  void add(                    UINT v);
-  void add(      UINT64 index, UINT v);
-  void addZeroes(UINT64 index, UINT64 count);
-  void remove(   UINT64 index, UINT64 count = 1);
+  void set(         UINT64 index, UINT v);
+  void or(          UINT64 index, UINT v);
+  void and(         UINT64 index, UINT v);
+  void xor(         UINT64 index, UINT v);
+  void add(                       UINT v);
+  void insert(      UINT64 index, UINT v);
+  void insertZeroes(UINT64 index, UINT64 count);
+  void remove(      UINT64 index, UINT64 count = 1);
   PackedArray &clear();
   inline bool isEmpty() const {
     return m_firstFreeBit == 0;

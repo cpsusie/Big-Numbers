@@ -577,23 +577,23 @@ Regex::Regex(const TCHAR *pattern, const TCHAR *translateTable) : m_fastMap(MAXC
 #if defined(_DEBUG)
 
 #define DBG_clear()                               m_PCToLineArray.clear()
-#define DBG_INSERT(                addr, index)   m_PCToLineArray.add(addr, index)
+#define DBG_INSERT(                addr, index)   m_PCToLineArray.insert(addr, index)
 #define DBG_STORE(                 addr, index)   m_PCToLineArray[addr] = index
 #define DBG_APPEND(                      index)   m_PCToLineArray.add(index)
-#define DBG_INSERTZEROES(          addr, count) { for(int i = 0; i < (count); i++) m_PCToLineArray.add(addr, 0); }
-#define DBG_appendZeroes(          count      ) { for(int i = 0; i < (count); i++) m_PCToLineArray.add(0);       }
+#define DBG_INSERTZEROES(          addr, count) { for(int i = 0; i < (count); i++) m_PCToLineArray.insert(addr, 0); }
+#define DBG_appendZeroes(                count) { for(int i = 0; i < (count); i++) m_PCToLineArray.add(0);          }
 #define DBG_appendOpcode(                index)   DBG_APPEND(index)
 #define DBG_appendByte()                          DBG_APPEND(0)
 #define DBG_appendCharacter()                     DBG_appendZeroes(sizeof(TCHAR))
 #define DBG_appendShort()                         DBG_appendZeroes(sizeof(short))
 #define DBG_insertOpcode(          addr, index)   DBG_INSERT(addr, index)
-#define DBG_insertJump(            addr, index) { DBG_INSERT(addr,index);  DBG_INSERTZEROES(addr+1, 2);          }
-#define DBG_storeJump(             addr, index)   DBG_STORE(addr, index)
-#define DBG_insertResetCounter(    addr, index) { DBG_INSERT(addr, index); DBG_INSERTZEROES(addr+1, 1);          }
-#define DBG_insertCountingJump(    addr, index) { DBG_INSERT(addr, index); DBG_INSERTZEROES(addr+1, 3);          }
+#define DBG_insertJump(            addr, index) { DBG_INSERT(addr, index); DBG_INSERTZEROES(addr+1, 2);             }
+#define DBG_storeJump(             addr, index)   DBG_STORE( addr, index)
+#define DBG_insertResetCounter(    addr, index) { DBG_INSERT(addr, index); DBG_INSERTZEROES(addr+1, 1);             }
+#define DBG_insertCountingJump(    addr, index) { DBG_INSERT(addr, index); DBG_INSERTZEROES(addr+1, 3);             }
 
-#define DBG_appendJump(                  index) { DBG_APPEND(index);       DBG_appendZeroes(2);                  }
-#define DBG_appendCountingJump(          index) { DBG_APPEND(index);       DBG_appendZeroes(3);                  }
+#define DBG_appendJump(                  index) { DBG_APPEND(index);       DBG_appendZeroes(2);                     }
+#define DBG_appendCountingJump(          index) { DBG_APPEND(index);       DBG_appendZeroes(3);                     }
 #define DBG_saveIndex(             name       )   int dbg_##name = scanner.getIndex()
 #define DBG_setIndex(              name       )   dbg_##name     = scanner.getIndex()
 #define DBG_getIndex(              name       )   dbg_##name

@@ -15,8 +15,7 @@ void setValue(XMLDoc &doc, XMLNodePtr n, const LPDIRECT3DVERTEXBUFFER &vb) {
       dataLines.add(vertexToString(((const char*)bufferItems) + bp, desc.FVF, 5));
     }
     V(vb->Unlock());
-    XMLNodePtr dataNode = doc.createNode(n, _T("bufferdata"));
-    setValue<StringArray, String>(doc, dataNode, dataLines);
+    setValue(doc, n, _T("bufferdata"), dataLines);
   } catch(...) {
     vb->Unlock();
     throw;

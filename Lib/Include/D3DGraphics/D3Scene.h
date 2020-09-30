@@ -228,7 +228,7 @@ public:
   void removeTexture(UINT textureId);
   void removeAllTextures();
   const D3Texture &getTexture(UINT textureId) const {
-    D3Texture *t = m_textureMap.get(textureId);
+    const D3Texture *t = m_textureMap.get(textureId);
     return (t != NULL) ? *t : m_undefinedTexture;
   }
   inline bool isTextureDefined(UINT textureId) const {

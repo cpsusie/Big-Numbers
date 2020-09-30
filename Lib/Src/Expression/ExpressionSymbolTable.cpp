@@ -423,8 +423,8 @@ void ExpressionSymbolTable::buildValueRefCountTable() {
   const size_t n = getValueTable().size();
   m_valueRefCountTable.clear();
   m_valueRefCountTable.setCapacity(n);
-  m_valueRefCountTable.add(0,0,n);
-  for(Iterator<Entry<CompactIntKeyType, int> > it = m_valueRefCountHashMap.getEntryIterator(); it.hasNext();) {
+  m_valueRefCountTable.insert(0,(int)0,n);
+  for(Iterator<Entry<CompactIntKeyType, int> > it = m_valueRefCountHashMap.getIterator(); it.hasNext();) {
     const Entry<CompactIntKeyType, int> &e = it.next();
     m_valueRefCountTable[e.getKey()] = e.getValue();
   }
@@ -466,10 +466,11 @@ String NameTable::toString() const {
   String result = _T("{");
   const TCHAR *del = NULL;
 
-  for(Iterator<Entry<CompactStrIKeyType, UINT> > it = ((NameTable*)this)->getEntryIterator(); it.hasNext();) {
-    const Entry<CompactStrIKeyType, UINT> &e = it.next();
+  for(Iterator<Entry<CompactStrIKeyType, UINT> > it = getIterator(); it.hasNext();) {
+    const Entry<CompactStrIKeyType, UINT> &e    = it.next();
+    const TCHAR                           *name = e.getKey();
     if(del) result += del; else del = _T(", ");
-    result += format(_T("(%s,%u)"), e.getKey(), e.getValue());
+    result += format(_T("(%s,%u)"), name, e.getValue());
   }
   result += _T("}");
   return result;
@@ -524,7 +525,7 @@ StringArray ExpressionSymbolTable::getIndexedNameArray() const {
     }
   }
   for(size_t i = 0; i < a.size(); i++) {
-    a[i] = format(_T("value[%2d]:%s"), i, a[i].cstr());
+    a[i] = format(_T("value[%2zu]:%s"), i, a[i].cstr());
   }
   return a;
 }
@@ -533,7 +534,7 @@ String ExpressionSymbolTable::valueRefCountToString() const {
   const size_t n = m_valueRefCountTable.size();
   String result = _T("Value references\n");
   for(size_t i = 0; i < n; i++) {
-    result += format(_T("  Value[%2d]:%3d references\n"),i,m_valueRefCountTable[i]);
+    result += format(_T("  Value[%2zu]:%3d references\n"),i,m_valueRefCountTable[i]);
   }
   return result;
 }

@@ -44,7 +44,7 @@ public:
 };
 
 FontCache::~FontCache() {
-  for(Iterator<Entry<FontSizeKey, CFont*> > it = getEntryIterator(); it.hasNext();) {
+  for(Iterator<Entry<FontSizeKey, CFont*> > it = getIterator(); it.hasNext();) {
     CFont *font = it.next().getValue();
     font->DeleteObject();
     SAFEDELETE(font);
@@ -672,7 +672,7 @@ AlignedImage *ExpressionPainter::getQuotImage(const AlignedImage *p, const Align
   PixRect::bitBlt(lineImage, 0,0,size.cx, size.cy, BLACKNESS, NULL, 0,0);
   ExpressionRectangle lineRect;
   lineRect.setSize(lineImage);
-  rect.m_children.add(1, lineRect);
+  rect.m_children.insert(1, lineRect);
   AlignedImage *result = stackImages(rect, true, p, lineImage, q, NULL);
   result->setLeftFiller(2);
 //  result->setAlignment(p->getHeight() + lineWidth/2);

@@ -14,7 +14,7 @@ public:
 
 // Assume K has public member-function ULONG hashCode() const...
 // and bool operator==(const K &) defined
-template <typename K, UINT pageSize=20000> class CompactHashSet {
+template <typename K, UINT pageSize=20000> class CompactHashSet : public CollectionBase<K> {
 private:
   size_t                                             m_size;
   size_t                                             m_capacity;
@@ -69,51 +69,24 @@ public:
     return *this;
   }
 
-  virtual ~CompactHashSet() {
+  ~CompactHashSet() override {
     clear();
   }
 
-  inline bool hasOrder() const {
-    return false;
-  }
-
-  void setCapacity(size_t capacity) {
-    if(capacity < m_size) {
-      capacity = m_size;
+  void clear() override {
+    m_entryPool.releaseAll();
+    if(m_size) {
+      m_size = 0;
+      m_updateCount++;
     }
-    if(capacity == m_capacity) {
-      return;
-    }
-    LinkObject<SetEntry<K> > **oldBuffer   = m_buffer;
-    const size_t               oldCapacity = m_capacity;
-
-    m_capacity = capacity;
-    m_buffer   = allocateBuffer(capacity);
-
-    if(!isEmpty()) {
-      for(size_t i = 0; i < oldCapacity; i++) {
-        for(LinkObject<SetEntry<K> > *n = oldBuffer[i]; n;) {
-          const ULONG index = n->m_e.m_key.hashCode() % m_capacity;
-          LinkObject<SetEntry<K> > *&bp = m_buffer[index];
-          LinkObject<SetEntry<K> > *next = n->m_next;
-          n->m_next = bp;
-          bp        = n;
-          n         = next;
-        }
-      }
-    }
-    SAFEDELETEARRAY(oldBuffer);
+    setCapacity(0);
   }
 
-  inline size_t getCapacity() const {
-    return m_capacity;
+  size_t size() const override {
+    return m_size;
   }
 
-  inline int getPageCount() const {
-    return m_entryPool.getPageCount();
-  }
-
-  bool add(const K &key) {
+  bool add(const K &key) override {
     ULONG index;
     if(m_capacity) {
       index = key.hashCode() % m_capacity;
@@ -168,21 +141,40 @@ public:
     return false;
   }
 
-  void clear() {
-    m_entryPool.releaseAll();
-    if(m_size) {
-      m_size = 0;
-      m_updateCount++;
+  void setCapacity(size_t capacity) {
+    if(capacity < m_size) {
+      capacity = m_size;
     }
-    setCapacity(0);
+    if(capacity == m_capacity) {
+      return;
+    }
+    LinkObject<SetEntry<K> > **oldBuffer   = m_buffer;
+    const size_t               oldCapacity = m_capacity;
+
+    m_capacity = capacity;
+    m_buffer   = allocateBuffer(capacity);
+
+    if(!isEmpty()) {
+      for(size_t i = 0; i < oldCapacity; i++) {
+        for(LinkObject<SetEntry<K> > *n = oldBuffer[i]; n;) {
+          const ULONG index = n->m_e.m_key.hashCode() % m_capacity;
+          LinkObject<SetEntry<K> > *&bp = m_buffer[index];
+          LinkObject<SetEntry<K> > *next = n->m_next;
+          n->m_next = bp;
+          bp        = n;
+          n         = next;
+        }
+      }
+    }
+    SAFEDELETEARRAY(oldBuffer);
   }
 
-  inline size_t size() const {
-    return m_size;
+  inline size_t getCapacity() const {
+    return m_capacity;
   }
 
-  inline bool isEmpty() const {
-    return m_size == 0;
+  inline int getPageCount() const {
+    return m_entryPool.getPageCount();
   }
 
   CompactIntArray getLength() const {
@@ -218,46 +210,28 @@ public:
     return m;
   }
 
-  // Adds every element in src to this. Return true if any elements were added.
-  bool addAll(const CompactHashSet &set) {
-    if(this == &set) {
+  // Add every element in set to this. Return true if any elements were added.
+  bool addAll(const CollectionBase<K> &c) override {
+    if(this == &c) {
       return false;
     }
-    const size_t n = size();
-    for(Iterator<K> it = set.getIterator(); it.hasNext(); ) {
-      add(it.next());
-    }
-    return size() != n;
+    return __super::addAll(c);
   }
-
+  bool removeAll(const Iterator<K> &it) {
+    const size_t oldSize = size();
+    for(Iterator<K> it1 = it; it1.hasNext(); ) {
+      remove(it1.next());
+    }
+    return size() != oldSize;
+  }
   // Remove every element in set from this. Return true if any elements were removed.
-  bool removeAll(const CompactHashSet &set) {
-    if(this == &set) {
+  bool removeAll(const CollectionBase<K> &c) {
+    if(this == &c) {
       if(isEmpty()) return false;
       clear();
       return true;
     }
-    const size_t n = size();
-    for(Iterator<K> it = set.getIterator(); it.hasNext();) {
-      remove(it.next());
-    }
-    return size() != n;
-  }
-
-  bool addAll(const CompactArray<K> &a) {
-    const size_t n = size();
-    for(K e : a) {
-      add(e);
-    }
-    return size() != n;
-  }
-
-  bool removeAll(const CompactArray<K> &a) {
-    const size_t n = size();
-    for(K e : a) {
-      remove(e);
-    }
-    return size() != n;
+    return removeAll(c.getIterator());
   }
 
   // Remove every element from this that is not contained in set. Return true if any elements were removed.
@@ -308,13 +282,13 @@ public:
     CompactSetIterator(CompactHashSet *set) : m_set(*set), m_updateCount(set->m_updateCount) {
       first();
     }
-    AbstractIterator *clone()       override {
+    AbstractIterator *clone() override {
       return new CompactSetIterator(*this);
     }
-    bool hasNext()            const override {
+    bool hasNext() const override {
       return m_next != NULL;
     }
-    void *next()                    override {
+    void *next() override {
       if(m_next == NULL) {
         noNextElementError(_T("CompactSetIterator"));
       }
@@ -332,7 +306,7 @@ public:
       }
       return &(m_current->m_e.m_key);
     }
-    void remove()                   override {
+    void remove() override {
       if(m_current == NULL) {
         noCurrentElementError(_T("CompactSetIterator"));
       }
@@ -344,10 +318,13 @@ public:
     }
   };
 
-  Iterator<K> getIterator() const {
+  Iterator<K> getIterator() const override {
     return Iterator<K>(new CompactSetIterator((CompactHashSet*)this));
   }
 
+  bool hasOrder() const override {
+    return false;
+  }
   // Set intersection = set of elements that are in both sets.
   CompactHashSet operator*(const CompactHashSet &set) const {
     CompactHashSet result;

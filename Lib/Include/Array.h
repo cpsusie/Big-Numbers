@@ -26,42 +26,47 @@ private:
   friend class ArrayIterator;
 public:
   ArrayImpl(AbstractObjectManager &objectManager, size_t capacity);
-  ~ArrayImpl() override;
-  ArrayImpl(AbstractObjectManager &objectManager, const AbstractCollection *src); // not implemented
-  ArrayImpl &operator=(const ArrayImpl &src);                                     // not implemented
-  AbstractCollection *clone(bool cloneData) const  override;
-  bool add(const void *e)  override;
-  bool add(size_t i, const void *e, size_t count);
-  void removeIndex(size_t i, size_t count);
-  bool remove(const void *e) override;
-  bool contains(const void *e) const override; // unsuppoerted
-  const void *select(RandomGenerator &rnd) const;
-  void *select(RandomGenerator &rnd) override;
-  inline size_t getCapacity() const {
-    return m_capacity;
-  }
-  void setCapacity(size_t capacity);
-  void clear() override;
-  inline size_t size() const override {
+  AbstractCollection *clone(bool cloneData)                                   const override;
+  ~ArrayImpl()                                                                      override;
+  // If capacity < 0, it's left unchanged
+  void                 clear(intptr_t capacity);
+  void                 clear()                                                      override;
+  size_t               size()                                                 const override {
     return m_size;
   }
-  inline void *getElement(size_t index) {
+  bool                 add(                      const void *e)                      override;
+  bool                 insert(     size_t index, const void *e, size_t count);
+  void                 removeIndex(size_t index, size_t count);
+  bool                 remove(                   const void *e)                      override;
+  // unsuppoerted
+  bool                 contains(                 const void *e)                const override;
+  const void          *select(RandomGenerator &rnd)                            const override;
+  void                *select(RandomGenerator &rnd)                                  override;
+  inline size_t        getCapacity()                                           const {
+    return m_capacity;
+  }
+  void                 setCapacity(size_t capacity);
+  inline       void   *getElement(size_t index) {
     if(index >= m_size) indexError(__TFUNCTION__, index);
     return m_elem[index];
   }
 
-  inline const void *getElement(size_t index) const {
+  inline const void   *getElement(size_t index)                                const {
     if(index >= m_size) indexError(__TFUNCTION__, index);
     return m_elem[index];
   }
 
-  void swap(size_t i1, size_t i2);
-  void shuffle(size_t from, size_t count);
-  void reverse();
-  bool equals(const ArrayImpl *rhs) const;
-  void arraySort(size_t from, size_t count, int (*compare)(const void **e1, const void **e2));
-  void arraySort(size_t from, size_t count, int (*compare)(const void  *e1, const void  *e2));
-  void arraySort(size_t from, size_t count, AbstractComparator &comparator);
+  AbstractIterator    *getIterator()                                           const override;
+  bool                 hasOrder()                                              const override {
+    return true;
+  }
+  void                 swap(   size_t i1, size_t i2);
+  void                 shuffle(size_t from, size_t count);
+  void                 reverse();
+  bool                 equals(const ArrayImpl *rhs) const;
+  void                 arraySort(size_t from, size_t count, int (*compare)(const void **e1, const void **e2));
+  void                 arraySort(size_t from, size_t count, int (*compare)(const void  *e1, const void  *e2));
+  void                 arraySort(size_t from, size_t count, AbstractComparator &comparator);
 
   intptr_t lSearch(const void *key, size_t from, size_t count, int (*compare)(const void **e1, const void **e2)) const;
   intptr_t lSearch(const void *key, size_t from, size_t count, int (*compare)(const void  *e1, const void  *e2)) const;
@@ -74,21 +79,9 @@ public:
   intptr_t bInsert(const void *e, int (*compare)(const void **e1, const void **e2));
   intptr_t bInsert(const void *e, int (*compare)(const void  *e1, const void  *e2));
   intptr_t bInsert(const void *e, AbstractComparator &comparator);
-
-  AbstractIterator *getIterator() override;
 };
 
-/*
-template <typename T> class TArrayImpl : public ArrayImpl {
-public:
-  TArrayImpl(AbstractObjectManager &om, size_t capacity) : ArrayImpl(om, capacity) {
-  }
-  TArrayImpl(AbstractObjectManager &om, const AbstractCollection *src) : ArrayImpl(om, src) {
-  }
-};
-*/
-
-template <typename T> class Array : public Collection<T> {
+template<typename T> class Array : public Collection<T> {
 public:
   Array() : Collection<T>(new ArrayImpl(ObjectManager<T>(), 10)) {
   }
@@ -96,16 +89,20 @@ public:
   explicit Array(size_t capacity) : Collection<T>(new ArrayImpl(ObjectManager<T>(), capacity)) {
   }
 
-  Array(const Collection<T> &src) : Collection<T>(new ArrayImpl(ObjectManager<T>(), src.size())) {
+  Array(const CollectionBase<T> &src) : Collection<T>(new ArrayImpl(ObjectManager<T>(), src.size())) {
     addAll(src);
   }
 
-  Array<T> &operator=(const Collection<T> &src) {
-    if(this == &src) {
-      return *this;
-    }
-    clear();
-    addAll(src);
+  // If capacity < 0, it's left unchanged
+  void clear(intptr_t capacity) {
+    ((ArrayImpl *)m_collection)->clear(capacity);
+  }
+  void clear() override {
+    ((ArrayImpl *)m_collection)->clear();
+  }
+
+  Array<T> &operator=(const CollectionBase<T> &src) {
+    __super::operator=(src);
     return *this;
   }
 
@@ -150,11 +147,11 @@ public:
     return !(operator==(a));
   }
 
-  inline bool add(size_t i, const T &e, size_t count=1) {
-    return ((ArrayImpl*)m_collection)->add(i, &e, count);
+  inline bool insert(size_t index, const T &e, size_t count=1) {
+    return ((ArrayImpl*)m_collection)->insert(index, &e, count);
   }
 
-  inline bool add(const T &e) {
+  bool add(const T &e) override {
     return m_collection->add(&e);
   }
 

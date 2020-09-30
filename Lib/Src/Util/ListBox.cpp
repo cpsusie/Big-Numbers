@@ -102,7 +102,7 @@ void ListBox::insertString(int i, const String &str) {
   if(i < 0 || i > (int)m_strings.size()) {
     return;
   }
-  m_strings.add(i,str);
+  m_strings.insert(i,str);
   if(getDialog().isVisible()) {
     draw();
   }

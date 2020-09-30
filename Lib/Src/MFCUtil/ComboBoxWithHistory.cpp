@@ -163,7 +163,7 @@ bool ComboBoxHistory::add(const String &s) {
       break;
     }
   }
-  StringArray::add(0, s);
+  StringArray::insert(0, s);
   while(size() > m_maxHistoryLength) {
     removeLast();
   }

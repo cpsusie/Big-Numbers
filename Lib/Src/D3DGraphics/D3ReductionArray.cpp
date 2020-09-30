@@ -47,7 +47,7 @@ D3ReductionArray &D3ReductionArray::setTranslation() {
   const UINT  n    = (UINT)size();
   D3Index    *last = &(*this)[0];
   last->m_translateTo = 0;
-  m_translateTable.setCapacity(n).add(0,(UINT)0, n);
+  m_translateTable.setCapacity(n).insert(0,(UINT)0, n);
   m_translateTable[last->m_origIndex] = last->m_translateTo;
   m_reducedArray.setCapacity(n);
   m_reducedArray.add(*last);
