@@ -91,7 +91,7 @@ CellCountHistogram::CellCountHistogram(const CellCountMatrix &ccm) {
 
   init();
   setCapacity(histoSize);
-  h.add(0,HistogramEntry(),histoSize);
+  h.insert(0,HistogramEntry(),histoSize);
   CPoint p;
   for(p.y = 0; p.y < size.cy; p.y++) {
     for(p.x = 0; p.x < size.cx; p.x++) {

@@ -149,7 +149,7 @@ ColorMap::ColorMap(const ColorMapData &cdm, UINT maxCount) {
 void ColorMap::initColors(UINT maxCount) {
   __super::clear(maxCount+1);
   if(m_cdm.size() == 1) {
-    add(0, ColorMapEntry(m_cdm[0].getD3DColor()), maxCount);
+    insert(0, ColorMapEntry(m_cdm[0].getD3DColor()), maxCount);
   } else if(m_cdm.size() >= 2) {
     for(UINT index = 1; index < m_cdm.size(); index++) {
       const ColorMapInterpolationPoint *p1 = &m_cdm[index-1], *p2 = &m_cdm[index];
@@ -163,7 +163,7 @@ void ColorMap::initColors(UINT maxCount) {
       }
     }
   }
-  add(size(), ColorMapEntry(D3D_BLACK), maxCount+1-size());
+  insert(size(), ColorMapEntry(D3D_BLACK), maxCount+1-size());
   assert(getMaxCount() == maxCount);
 }
 

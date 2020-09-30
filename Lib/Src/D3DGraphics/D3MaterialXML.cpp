@@ -29,3 +29,23 @@ void getValue(XMLDoc &doc, XMLNodePtr n, D3MATERIAL &v) {
   getValue(doc, n, (D3DMATERIAL&)v);
   getValue(doc, n, _T("specularhighlights"), v.m_specularHighlights);
 }
+
+void setValue(XMLDoc &doc, XMLNodePtr n, const D3Material &v) {
+  setValue(doc, n, _T("id"), v.getId());
+  if(v.isDefined()) {
+    setValue(doc, n, (const D3MATERIAL &)v);
+  }
+}
+
+void getValue(XMLDoc &doc, XMLNodePtr n, D3Material &v) {
+  int id;
+  getValue(doc, n, _T("id"), id);
+  if(id < 0) {
+    v.setUndefined();
+  } else {
+    D3MATERIAL m;
+    getValue(doc, n, m);
+    v = D3Material(id);
+    v = m;
+  }
+}
