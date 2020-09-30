@@ -69,7 +69,7 @@ static void reduceColors(PixRect &image, int colorCount, PearlDiagram *diagram) 
     diagram->clear(size,n);
     Array<CellSpec>     &sa = diagram->m_cellSpecArray;
     MatrixTemplate<int> &cm = diagram->m_cellMatrix;
-    sa.add(0,CellSpec(),n);
+    sa.insert(0,CellSpec(),n);
     int pixelCount = 0;
     for(p.y = 0; p.y < size.cy; p.y++) {
       for(p.x = 0; p.x < size.cx; p.x++) {

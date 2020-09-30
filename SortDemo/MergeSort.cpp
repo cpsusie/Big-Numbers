@@ -76,7 +76,7 @@ MergeList &ListAllocator::fetchList(size_t minSize) {
     }
   }
   if(r == m_bufferArray.size() || m_bufferArray[r].m_used) {
-    m_bufferArray.add(r, MergeList(neededCapacity));
+    m_bufferArray.insert(r, MergeList(neededCapacity));
   }
   MergeList &result = m_bufferArray[r];
   result.m_used = true;

@@ -489,14 +489,14 @@ void CDiffEquationGraphDlg::resetLowerPanelHeight() {
 void CDiffEquationGraphDlg::adjustTabOrder(const TabOrder &tabs) {
   TabOrder tabOrder = tabs;
   if(tabOrder.getFirstIndex(IDC_EDITCOMMON) < 0) {
-    tabOrder.add(tabOrder.getFirstIndex(IDC_COMBOSTYLE)+1, IDC_EDITCOMMON);
+    tabOrder.insert(tabOrder.getFirstIndex(IDC_COMBOSTYLE)+1, IDC_EDITCOMMON);
   }
 
   const CDiffEquationEdit *eq             = getLastEquationEdit();
   const CompactUintArray    eqTabOrder     = eq->getTabOrderArray();
   const intptr_t           xIntervalIndex = tabOrder.getFirstIndex(IDC_EDITXFROM);
   if(xIntervalIndex < 0) return; // actually an error
-  tabOrder.add(xIntervalIndex, eqTabOrder.getBuffer(), eqTabOrder.size());
+  tabOrder.insert(xIntervalIndex, eqTabOrder.getBuffer(), eqTabOrder.size());
   tabOrder.restoreTabOrder();
 }
 

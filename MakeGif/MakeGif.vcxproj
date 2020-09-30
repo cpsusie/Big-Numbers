@@ -491,6 +491,7 @@
     <ClInclude Include="SavedImageArray.h" />
     <ClInclude Include="SettingsDlg.h" />
     <ClInclude Include="StdAfx.h" />
+    <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\MakeGif.ico" />
