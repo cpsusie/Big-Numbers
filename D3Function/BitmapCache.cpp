@@ -68,7 +68,7 @@ BitmapCache::BitmapCache() : Singleton(__TFUNCTION__) {
 BitmapCache::~BitmapCache() {
   releaseDevice();
 
-  for(Iterator<Entry<BitmapKey, CBitmap*> > it = getEntryIterator(); it.hasNext();) {
+  for(Iterator<Entry<BitmapKey, CBitmap*> > it = getIterator(); it.hasNext();) {
     Entry<BitmapKey, CBitmap*> &e = it.next();
     CBitmap *b = e.getValue();
     b->DeleteObject();

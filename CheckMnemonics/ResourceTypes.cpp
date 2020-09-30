@@ -660,13 +660,13 @@ const AcceleratorsDefinition *LanguageSection::findMatchingAccelerator(const Dia
 
 
 void LanguageSection::checkHasAllMenuAndStrings(const StringHashSet &menuIds, const StringHashSet &stringIds) const {
-  for(Iterator<String> it = ((StringHashSet&)menuIds).getIterator(); it.hasNext();) {
+  for(Iterator<String> it = menuIds.getIterator(); it.hasNext();) {
     const String &id = it.next();
     if(findMenu(id) == NULL) {
       m_rf->error(_T("Menu %s not defined for language %s"), id.cstr(), getLanguage().getId().cstr());
     }
   }
-  for(Iterator<String> it = ((StringHashSet&)stringIds).getIterator(); it.hasNext();) {
+  for(Iterator<String> it = stringIds.getIterator(); it.hasNext();) {
     const String &id = it.next();
     if(m_stringTable.findStringById(id) == NULL) {
       m_rf->error(_T("StringId %s not defined for language %s"), id.cstr(), getLanguage().getId().cstr());

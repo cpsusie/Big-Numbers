@@ -403,7 +403,7 @@ void AutomatePainter::initStaticGDIObjects() { // static
 FontCache  AutomatePainter::s_fontCache;
 
 FontCache::~FontCache() {
-  for(Iterator<Entry<FontKey, CFont*> > it = getEntryIterator(); it.hasNext();) {
+  for(Iterator<Entry<FontKey, CFont*> > it = getIterator(); it.hasNext();) {
     Entry<FontKey, CFont*> &e = it.next();
     e.getValue()->DeleteObject();
     SAFEDELETE(e.getValue());

@@ -164,11 +164,11 @@ public:
     return Iterator<K>(new FileHashMapKeyIterator(*keyFile));
   }
 
-  Iterator<Entry<K, E> > getEntryIterator() {
+  Iterator<Entry<K, E> > getIterator() {
     return Iterator<Entry<K, E> >(new FileHashMapEntryIterator(m_keyFile));
   }
 
-  Iterator<Entry<K, E> > getEntryIterator() const {
+  Iterator<Entry<K, E> > getIterator() const {
     KeyFileWrapper *keyFile = (KeyFileWrapper*)(&m_keyFile);
     return Iterator<Entry<K, E> >(new FileHashMapEntryIterator(*keyFile));
   }

@@ -12,7 +12,7 @@ int _tmain(int argc, TCHAR **argv) {
       map.put(i,i*i);
     }
     return 0;
-    for(Iterator<Entry<int,int> > it = map.getEntryIterator(); it.hasNext();) {
+    for(Iterator<Entry<int,int> > it = map.getIterator(); it.hasNext();) {
       Entry<int,int> &entry = it.next();
       _tprintf(_T("%d:%d\n"),entry.getKey(), entry.getValue());
       if(entry.getKey() == 99) {
