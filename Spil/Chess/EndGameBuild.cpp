@@ -1925,7 +1925,7 @@ void EndGameTablebase::checkAllSubKeysFound() const {
 }
 
 bool EndGameTablebase::allSubKeysFound() const {
-  for(Iterator<Entry<SubTablebaseKey, SubTablebasePositionInfo> > it = m_subTablebaseMap.getEntryIterator(); it.hasNext();) {
+  for(Iterator<Entry<SubTablebaseKey, SubTablebasePositionInfo> > it = m_subTablebaseMap.getIterator(); it.hasNext();) {
     if(!it.next().getValue().allKeysFound()) {
       return false;
     }

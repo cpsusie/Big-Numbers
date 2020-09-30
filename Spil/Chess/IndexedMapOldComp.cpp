@@ -223,7 +223,7 @@ void IndexedMap::decompress(ByteInputStream &s, const TablebaseInfo &info) const
 
   PackedArray positionInfoArray(bitsPerEntry);
   positionInfoArray.setCapacity(winnerPositions);
-  positionInfoArray.addZeroes(0,winnerPositions);
+  positionInfoArray.insertZeroes(0,winnerPositions);
 
   if(canWinFlags == BOTHCANWIN) {
     for(UINT64 i = 0; i < winnerPositions; i++) {

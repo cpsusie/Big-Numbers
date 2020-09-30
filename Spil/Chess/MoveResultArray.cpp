@@ -191,7 +191,7 @@ Packer &operator>>(Packer &p, MoveResultArray &a) {
   return p >> (CompactArray<MoveWithResult>&)a;
 }
 
-#if !defined(TABLEBASE_BUILDER)
+//#if !defined(TABLEBASE_BUILDER)
 
 class MoveWithResult2Comparator : public Comparator<MoveWithResult2> {
 private:
@@ -303,4 +303,4 @@ String MoveResult2Array::toString(const Game &game, MoveStringFormat mf, bool de
   return result;
 }
 
-#endif // TABLEBASE_BUILDER
+//#endif // TABLEBASE_BUILDER

@@ -71,8 +71,8 @@ typedef enum {
   COMPRESSEDDUMP     ,
 #endif
 #else // !TABLEBASE_BUILDER
-  DECOMPRESSEDTABLEBASE, // needed only in chess
 #endif // TABLEBASE_BUILDER
+  DECOMPRESSEDTABLEBASE, // needed only in chess
   COMPRESSEDTABLEBASE    // needed in both
 } TablebaseFileType;
 

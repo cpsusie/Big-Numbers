@@ -41,7 +41,7 @@ IndexedMap::IndexedMap(const EndGameKeyDefinition &keydef)
 void IndexedMap::allocate() {
   clear();
   setCapacity((size_t)m_indexSize);
-  add(0,EndGameResult(), (size_t)m_indexSize);
+  insert(0,EndGameResult(), (size_t)m_indexSize);
 }
 
 const EndGameResult &IndexedMap::get(EndGameKey key) const {

@@ -118,7 +118,7 @@ void EndGameTablebase::clear() {
 }
 
 void EndGameTablebase::unloadSubTablebases() {
-  for(Iterator<Entry<SubTablebaseKey, SubTablebasePositionInfo> > it = m_subTablebaseMap.getEntryIterator(); it.hasNext();) {
+  for(Iterator<Entry<SubTablebaseKey, SubTablebasePositionInfo> > it = m_subTablebaseMap.getIterator(); it.hasNext();) {
     it.next().getValue().unload();
   }
   m_subTablebaseMap.clear();

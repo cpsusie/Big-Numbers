@@ -58,7 +58,7 @@ void PackedIndexedMap::load(ByteInputStream &s) {
   }
   clear();
   m_statusArray.setCapacity(m_indexSize);
-  m_statusArray.addZeroes(0, m_indexSize);
+  m_statusArray.insertZeroes(0, m_indexSize);
 
   EndGameResult *buffer = NULL;
 #define BUFFERSIZE 30000
