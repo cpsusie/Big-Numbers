@@ -41,6 +41,7 @@
         <Property Name="Project" Value="TestSwap" />
         <Property Name="Project" Value="TestToString" />
         <Property Name="Project" Value="TestTokenizer" />
+        <Property Name="Project" Value="TestXML" />
       </Rule>
     </Rule>
   </Rule>

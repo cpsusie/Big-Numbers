@@ -89,7 +89,7 @@ namespace TestCompactHashMap {
     } // for
 
     BitSet foundSet(map.size());
-    for(Iterator<Entry<K,V> > it = map.getEntryIterator(); it.hasNext();) {
+    for(Iterator<Entry<K,V> > it = map.getIterator(); it.hasNext();) {
       const Entry<K,V> &entry = it.next();
       bool found = false;
       for(size_t i = 0; i < list.size(); i++) {
@@ -139,7 +139,7 @@ namespace TestCompactHashMap {
 
     INFO(_T("Testing operator=="));
     const size_t h = map2.size() / 2;
-    Iterator<Entry<K,V> > itHalf = map2.getEntryIterator();
+    Iterator<Entry<K,V> > itHalf = map2.getIterator();
     for(size_t i = 0; i < h; i++) {
       itHalf.next();
     }
@@ -157,7 +157,7 @@ namespace TestCompactHashMap {
 
     map2.clear();
     verify(map2.isEmpty());
-    Iterator<Entry<K,V> > it2 = map2.getEntryIterator();
+    Iterator<Entry<K,V> > it2 = map2.getIterator();
     verify(!it2.hasNext());
     Iterator<K> keyIt = map2.getKeyIterator();
     verify(!keyIt.hasNext());
@@ -167,7 +167,7 @@ namespace TestCompactHashMap {
 
     INFO(_T("Testing map.iterator"));
     count = 0;
-    for(Iterator<Entry<K,V> > it = map.getEntryIterator(); it.hasNext();) {
+    for(Iterator<Entry<K,V> > it = map.getIterator(); it.hasNext();) {
       const Entry<K,V> &e     = it.next();
       const K          &key   = e.getKey();
       const V          *value = map2.get(key);
@@ -178,7 +178,7 @@ namespace TestCompactHashMap {
     verify(count == map.size());
 
     INFO(_T("Testing iterator.remove"));
-    for(Iterator<Entry<K,V> > it = map2.getEntryIterator(); it.hasNext();) {
+    for(Iterator<Entry<K,V> > it = map2.getIterator(); it.hasNext();) {
       it.next();
       it.remove();
     }

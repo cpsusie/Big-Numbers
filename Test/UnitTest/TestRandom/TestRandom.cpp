@@ -61,7 +61,7 @@ namespace TestRandom {
     for(size_t i = 0; i < allFactors.size(); i++) {
       const UINT bucketCount = allFactors[i];
       CompactDoubleArray observed(bucketCount);
-      observed.add(0, 0.0, bucketCount);
+      observed.insert(0, 0.0, bucketCount);
       for(size_t i = 0; i < n; i++) {
         _int128 t128 = b[i];
         t128 *= bucketCount;
@@ -71,7 +71,7 @@ namespace TestRandom {
       }
       const double e = (double)n / bucketCount;
       CompactDoubleArray expected(bucketCount);
-      expected.add(0,e,bucketCount);
+      expected.insert(0,e,bucketCount);
 
       const double pvalue = chiSquareGoodnessOfFitTest(observed, expected,false);
       allPValues.add(pvalue);

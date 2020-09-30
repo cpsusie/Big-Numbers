@@ -155,14 +155,14 @@ namespace TestCompactArray {
       for(int i = 0; i < SOURCE_SIZE; i++) {
         S.add(i);
       }
-      counters.add(0,0.0, SOURCE_SIZE);
+      counters.insert(0,0.0, SOURCE_SIZE);
       for(int e = 0; e < SAMPLE_COUNT; e++) {
         const CompactIntArray sample = S.getRandomSample(SAMPLE_SIZE, rnd);
         for(const int *ep = &sample.first(), *endp = &sample.last(); ep <= endp;) {
           counters[*(ep++)]++;
         }
       }
-      frequencies.add(0, 1.0 / SOURCE_SIZE, SOURCE_SIZE);
+      frequencies.insert(0, 1.0 / SOURCE_SIZE, SOURCE_SIZE);
       const double pvalue = chiSquareGoodnessOfFitTest(counters, frequencies);
       if(pvalue < 0.1) {
         OUTPUT(_T("Randomsample differs from expected with pvalue = %.6lf"), pvalue);
@@ -461,7 +461,7 @@ namespace TestCompactArray {
           // ok
         }
         try {
-          a.add(a.size() + 1, 1);
+          a.insert(a.size() + 1, 1);
           verify(false);
         } catch (Exception e) {
           // ok
@@ -476,7 +476,7 @@ namespace TestCompactArray {
       verify(a != b);
       b = a;
       verify(a == b);
-      b.add(1, -1);
+      b.insert(1, -1);
       verify(b[0] == 0);
       verify(b[1] == -1);
       verify(b[2] == 1);

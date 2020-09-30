@@ -8,7 +8,7 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-namespace TestBitSet {
+namespace TestCollection {
 
 #include <UnitTestTraits.h>
 
@@ -46,7 +46,7 @@ namespace TestBitSet {
   }
 
   int keyCompare(const Key &key1, const Key &key2) {
-    return key1.getValue() - key2.getValue();
+    return intHashCmp(key1.getValue(), key2.getValue());
   }
 
   class Element {
@@ -307,14 +307,14 @@ namespace TestBitSet {
     for(int i = 0; i < SOURCE_SIZE; i++) {
       S.add(i);
     }
-    counters.add(0,0.0,SOURCE_SIZE);
+    counters.insert(0,0.0,SOURCE_SIZE);
     for(size_t e = 0; e < SAMPLE_COUNT; e++) {
       Collection<Key> sample = S.getRandomSample(SAMPLE_SIZE, rnd); // sample = SAMPLE_SIZE elements in range [0..SOURCE_SIZE-1]
       for(Iterator<Key> it = sample.getIterator(); it.hasNext(); ) {
         counters[it.next().getValue()]++;
       }
     }
-    frequencies.add(0, 1.0 / SOURCE_SIZE, SOURCE_SIZE);
+    frequencies.insert(0, 1.0 / SOURCE_SIZE, SOURCE_SIZE);
 //      double sum1 = sum(counters);
 //      for(int i = 0; i < SOURCE_SIZE; i++) {
 //        counters[i] += (Real)(i - ((Real)SOURCE_SIZE-1)/2.0) * 10;

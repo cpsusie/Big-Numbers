@@ -20,7 +20,7 @@ namespace TestPackedArray {
     void and(UINT index, UINT v);
     void xor(UINT index, UINT v);
     void add(UINT v);
-    void add(UINT index, UINT v);
+    void insert(    UINT index, UINT v);
     void remove(    UINT index, UINT count = 1);
     void safeRemove(UINT index, UINT count = 1);
     void addZeroes( UINT index, UINT count);
@@ -96,9 +96,9 @@ namespace TestPackedArray {
     m_pa.add(v);
   }
 
-  void TestClass::add(UINT index, UINT v) {
-    m_a.add(index, v);
-    m_pa.add(index, v);
+  void TestClass::insert(UINT index, UINT v) {
+    m_a.insert(index, v);
+    m_pa.insert(index, v);
   }
 
   void TestClass::remove(UINT index, UINT count) {
@@ -124,10 +124,8 @@ namespace TestPackedArray {
     }
 #endif
 
-    for(UINT i = 0; i < count; i++) {
-      m_a.add(index, 0);
-    }
-    m_pa.addZeroes(index, count);
+    m_a.insert(index, 0, count);
+    m_pa.insertZeroes(index, count);
   }
 
   size_t TestClass::size() const {

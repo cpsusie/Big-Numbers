@@ -144,7 +144,7 @@ namespace TestArray {
           // ok
         }
         try {
-          a.add(a.size() + 1, 1);
+          a.insert(a.size() + 1, 1);
           verify(false);
         } catch (Exception e) {
           // ok
@@ -159,7 +159,7 @@ namespace TestArray {
       verify(a != b);
       b = a;
       verify(a == b);
-      b.add(1, -1);
+      b.insert(1, -1);
       verify(b[0] == 0);
       verify(b[1] == -1);
       verify(b[2] == 1);

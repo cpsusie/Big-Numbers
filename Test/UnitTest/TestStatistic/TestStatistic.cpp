@@ -56,8 +56,8 @@ static double testData[] = {
       const double freqData[] = { 0.16, 0.10, 0.12, 0.22, 0.24, 0.11, 0.01, 0.03, 0.01 };
 
       CompactDoubleArray obs, freq;
-      obs.add(0, obsData, ARRAYSIZE(obsData));
-      freq.add(0, freqData, ARRAYSIZE(freqData));
+      obs.insert(0, obsData, ARRAYSIZE(obsData));
+      freq.insert(0, freqData, ARRAYSIZE(freqData));
       const double pValue = chiSquareGoodnessOfFitTest(obs, freq);
       verify(fabs(pValue - 0.96950428) < 1e-7);
     }

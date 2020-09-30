@@ -115,57 +115,50 @@ private:
   void showPage(  const     BTreePage *p, int level, AbstractFormatter &formatter) const;
   void checkPage( const     BTreePage *p, int level, int height) const;
   UINT getHeight() const;
-  void deletePage(BTreePage *a);
-  void traverse(const BTreePage *p, PageWalker &pw) const;
+  void deletePage(          BTreePage *a);
+  void traverse(  const     BTreePage *p, PageWalker &pw) const;
 protected:
   virtual BTreePage     *allocatePage() const;
   virtual BTreePageItem &allocatePassupItem();
-  virtual void clearPassupItems();
-  virtual void copyItem(BTreePageItem &dst, const BTreePageItem &src) const;
-  virtual void deleteItem(BTreePageItem &item) const;
-  const BTreePage *getRoot() const {
+  virtual void           clearPassupItems();
+  virtual void           copyItem(BTreePageItem &dst, const BTreePageItem &src) const;
+  virtual void           deleteItem(BTreePageItem &item) const;
+  const BTreePage       *getRoot() const {
     return m_root;
   }
 
-  AbstractObjectManager *getObjectManager() {
-    return m_objectManager;
-  }
-  const AbstractObjectManager *getObjectManager() const {
+  AbstractObjectManager *getObjectManager() const {
     return m_objectManager;
   }
 
-  BTreePageItem *findNode(const void *key) ;
-  const BTreePageItem *getMinNode() const;
-  const BTreePageItem *getMaxNode() const;
-
-  const BTreePageItem *findNode(const void *key) const;
-  bool insertItem(BTreePageItem &item);
+  BTreePageItem         *findNode(const void *key)  const;
+  const BTreePageItem   *getMinNode()               const;
+  const BTreePageItem   *getMaxNode()               const;
+  bool                   insertItem(BTreePageItem &item);
 public:
   BTreeSetImpl(const AbstractObjectManager &objectManager, const AbstractComparator &comparator);
-  virtual ~BTreeSetImpl();
-  bool add(      const void *key);
-  bool remove(   const void *key);
-  bool contains( const void *key) const;
-  const void *select(RandomGenerator &rnd) const; // returns key*
-  void *select(RandomGenerator &rnd);
-  size_t size() const {
+  AbstractCollection *clone(bool cloneData)               const override;
+  ~BTreeSetImpl()                                               override;
+  void                clear()                                   override;
+  size_t              size()                              const override {
     return m_size;
   }
-  void clear();
-  bool hasOrder() const {
+  bool                add(          const void *key)            override;
+  bool                remove(       const void *key)            override;
+  bool                contains(     const void *key)      const override;
+  const void         *select(RandomGenerator &rnd)        const override; // returns key*
+        void         *select(RandomGenerator &rnd)              override;
+  AbstractComparator *getComparator()                     const {
+    return m_comparator;
+  }
+  const void         *getMin()                            const;
+  const void         *getMax()                            const;
+
+  AbstractIterator *getIterator()                         const override;
+  bool hasOrder()                                         const override {
     return true;
   }
-  AbstractComparator *getComparator() {
-    return m_comparator;
-  }
-  const AbstractComparator *getComparator() const {
-    return m_comparator;
-  }
-  const void *getMin() const;
-  const void *getMax() const;
 
-  AbstractCollection *clone(bool cloneData) const;
-  AbstractIterator *getIterator();
   friend class BTreeSetIterator;
 
   void traverse(PageWalker &pw) const;
@@ -179,51 +172,39 @@ private:
   Array<BTreeMapPageItem> m_passupItems;
   void showPage(const BTreePage *p, int level, AbstractFormatter &keyFormatter, AbstractFormatter &dataFormatter) const;
 protected:
-  BTreePage     *allocatePage() const;
+  BTreePage     *allocatePage()                                           const;
   BTreePageItem &allocatePassupItem();
-  void clearPassupItems();
-  void copyItem(BTreePageItem &dst, const BTreePageItem &src) const;
-  void deleteItem(BTreePageItem &item) const;
+  void           clearPassupItems();
+  void           copyItem(  BTreePageItem &dst, const BTreePageItem &src) const;
+  void           deleteItem(BTreePageItem &item)                          const;
 
 public:
   BTreeMapImpl(const AbstractObjectManager &keyManager, const AbstractObjectManager &dataManager, const AbstractComparator &comparator);
-  ~BTreeMapImpl() override;
-  bool put(const void *key,       void *elem) override;
-  bool put(const void *key, const void *elem) override;
-  bool remove(const void *key) override;
-        void *get(const void *key) override;
-  const void *get(const void *key) const override;
-  AbstractEntry *selectEntry(RandomGenerator &rnd) const override;
-  const AbstractEntry *getMinEntry() const;
-  const AbstractEntry *getMaxEntry() const;
-  size_t size() const override {
+  AbstractMap         *cloneMap(bool cloneData)                   const override;
+  AbstractSet         *cloneSet(bool cloneData);
+  ~BTreeMapImpl()                                                       override;
+  size_t               size()                                     const override {
     return BTreeSetImpl::size();
   }
-
-  void clear() override {
+  void                 clear()                                          override {
     BTreeSetImpl::clear();
   }
+  bool                 put(   const void *key, const void *elem)         override;
+  void                *get(   const void *key)                     const override;
+  bool                 remove(const void *key)                           override;
+  AbstractEntry       *selectEntry(RandomGenerator &rnd)           const override;
+  const AbstractEntry *getMinEntry()                               const;
+  const AbstractEntry *getMaxEntry()                               const;
 
-  bool hasOrder() const override {
+  AbstractComparator  *getComparator()                             const {
+    return BTreeSetImpl::getComparator();
+  }
+
+  AbstractIterator    *getIterator()                               const override;
+  bool                 hasOrder()                                  const override {
     return BTreeSetImpl::hasOrder();
   }
-
-  AbstractComparator *getComparator() override {
-    return BTreeSetImpl::getComparator();
-  }
-
-  const AbstractComparator *getComparator() const {
-    return BTreeSetImpl::getComparator();
-  }
-
-  AbstractSet *cloneSet(bool cloneData) {
-    throwUnsupportedOperationException(__TFUNCTION__);
-    return NULL;
-  }
-
-  AbstractMap      *cloneMap(bool cloneData) const override;
-  AbstractIterator *getIterator()                  override;
-  AbstractIterator *getKeyIterator()               override {
+  AbstractIterator    *getKeyIterator()                            const override {
     return BTreeSetImpl::getIterator();
   }
   void showTree(AbstractFormatter &keyFormatter, AbstractFormatter &dataFormatter) const;
@@ -265,18 +246,18 @@ public:
   }
 };
 
-template <class K, class E> class BTreeMap : public Map<K,E> {
+template <class K, class V> class BTreeMap : public Map<K,V> {
 public:
   BTreeMap(int (*comparator)(const K &key1, const K &key2))
-    : Map<K,E>(new BTreeMapImpl(ObjectManager<K>(), ObjectManager<E>(), FunctionComparator<K>(comparator)))
+    : Map<K,V>(new BTreeMapImpl(ObjectManager<K>(), ObjectManager<V>(), FunctionComparator<K>(comparator)))
   {
   }
   BTreeMap(int (*comparator)(const K *key1, const K *key2))
-    : Map<K,E>(new BTreeMapImpl(ObjectManager<K>(), ObjectManager<E>(), FunctionComparator<K>(comparator)))
+    : Map<K,V>(new BTreeMapImpl(ObjectManager<K>(), ObjectManager<V>(), FunctionComparator<K>(comparator)))
   {
   }
   BTreeMap(Comparator<K> &comparator)
-    : Map<K,E>(new BTreeMapImpl(ObjectManager<K>(), ObjectManager<E>(), comparator))
+    : Map<K,V>(new BTreeMapImpl(ObjectManager<K>(), ObjectManager<V>(), comparator))
   {
   }
   void traverse(PageWalker &pw) const {
@@ -285,7 +266,7 @@ public:
   void checkTree() const {
     ((BTreeMapImpl*)m_map)->checkTree();
   }
-  void showTree(Formatter<K> &keyFormatter, Formatter<E> &dataFormatter) const {
+  void showTree(Formatter<K> &keyFormatter, Formatter<V> &dataFormatter) const {
     ((BTreeMapImpl*)m_map)->showTree(keyFormatter,dataFormatter);
   }
 };

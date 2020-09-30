@@ -45,18 +45,18 @@ namespace TestList {
       ElementComparator       elementComparator;
       TreeSet<ListElement>    set(elementComparator);
 
-      for (int i = 0; i < 20; i++) {
+      for(int i = 0; i < 20; i++) {
         list.add(i);
         array.add(i);
       }
 
 
       verify(list.size() == array.size());
-      for (Iterator<ListElement> it = list.getIterator(), it1 = array.getIterator(); it.hasNext();) {
+      for(Iterator<ListElement> it = list.getIterator(), it1 = array.getIterator(); it.hasNext();) {
         verify(it.next() == it1.next());
       }
 
-      for (size_t i = 0; i < array.size(); i++) {
+      for(size_t i = 0; i < array.size(); i++) {
         verify(array[i] == list[i]);
       }
 
@@ -68,12 +68,12 @@ namespace TestList {
       array.remove(6);
       verify(list.size() == array.size());
 
-      for (Iterator<ListElement> it = list.getIterator(), it1 = array.getIterator(); it.hasNext();) {
+      for(Iterator<ListElement> it = list.getIterator(), it1 = array.getIterator(); it.hasNext();) {
         verify(it.next() == it1.next());
       }
 
       int i = 0;
-      for (Iterator<ListElement> it = list.getIterator(), it1 = array.getIterator(); it.hasNext(); it.next(), it1.next()) {
+      for(Iterator<ListElement> it = list.getIterator(), it1 = array.getIterator(); it.hasNext(); it.next(), it1.next()) {
         if (++i == 5) {
           it.remove();
           it1.remove();
@@ -82,7 +82,7 @@ namespace TestList {
       }
 
       verify(list.size() == array.size());
-      for (Iterator<ListElement> it = list.getIterator(), it1 = array.getIterator(); it.hasNext();) {
+      for(Iterator<ListElement> it = list.getIterator(), it1 = array.getIterator(); it.hasNext();) {
         verify(it.next() == it1.next());
       }
 
@@ -92,7 +92,7 @@ namespace TestList {
       list.removeFirst();
 
       verify(list.size() == array.size());
-      for (Iterator<ListElement> it = list.getIterator(), it1 = array.getIterator(); it.hasNext();) {
+      for(Iterator<ListElement> it = list.getIterator(), it1 = array.getIterator(); it.hasNext();) {
         verify(it.next() == it1.next());
       }
 
@@ -100,7 +100,7 @@ namespace TestList {
       list.removeLast();
 
       verify(list.size() == array.size());
-      for (Iterator<ListElement> it = list.getIterator(), it1 = array.getIterator(); it.hasNext();) {
+      for(Iterator<ListElement> it = list.getIterator(), it1 = array.getIterator(); it.hasNext();) {
         verify(it.next() == it1.next());
       }
 
@@ -108,8 +108,9 @@ namespace TestList {
 
       verify(list1 == list);
 
-      for (Iterator<ListElement> it = list.getIterator(); it.hasNext();)
+      for(Iterator<ListElement> it = list.getIterator(); it.hasNext();) {
         verify(list1.contains(it.next()));
+      }
 
       verify(list1.toString() == list.toString());
 
@@ -124,6 +125,5 @@ namespace TestList {
       list.clear();
       verify(list.size() == 0);
     }
-
   };
 }

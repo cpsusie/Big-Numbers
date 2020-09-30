@@ -116,7 +116,7 @@ void BTreeMapPageImpl::setItem(UINT i, const BTreePageItem &v) {
 BTreeSetImpl::BTreeSetImpl(const AbstractObjectManager &objectManager, const AbstractComparator &comparator) {
   m_objectManager = objectManager.clone();
   m_comparator    = comparator.clone();
-  m_root          = NULL;
+  m_root          = nullptr;
   m_size          = 0;
   m_updateCount   = 0;
 }
@@ -157,10 +157,10 @@ void BTreeSetImpl::deleteItem(BTreePageItem &item) const {
 // Returns true if item.key is inserted in tree.
 // Returnvalue of h indicates if middleitem of page a is passed up because of overflow.
 bool BTreeSetImpl::pageInsert(BTreePage *a, const BTreePageItem &item, bool &h, BTreePageItem &passup) {
-  if(a == NULL) {
+  if(a == nullptr) {
     h = true;
     copyItem(passup,item);
-    passup.m_child = NULL;
+    passup.m_child = nullptr;
     return true;
   }
   int l = 1;
@@ -273,7 +273,7 @@ void BTreeSetImpl::pageUnderflow(BTreePage *c, BTreePage *a, int s, bool &h) {
 
 void BTreeSetImpl::pageDel(BTreePage *p, BTreePage *a, int r, bool &h) {
   BTreePage *q = p->getChild(p->getItemCount());
-  if(q != NULL) {
+  if(q != nullptr) {
     pageDel(q,a,r,h);
     if(h)  {
       pageUnderflow(p,q,p->getItemCount(),h);
@@ -290,7 +290,7 @@ void BTreeSetImpl::pageDel(BTreePage *p, BTreePage *a, int r, bool &h) {
 }
 
 bool BTreeSetImpl::pageRemove(BTreePage *a, const void *key, bool &h) {
-  if(a == NULL) { // key not in tree
+  if(a == nullptr) { // key not in tree
     h = false;
     return false;
   }
@@ -308,7 +308,7 @@ bool BTreeSetImpl::pageRemove(BTreePage *a, const void *key, bool &h) {
 
   BTreePage *q = a->getChild(r-1);
   if(r <= a->getItemCount() && m_comparator->cmp(a->getKey(r),key) == 0) { // found, now delete
-    if(q == NULL) { // a is a terminal page
+    if(q == nullptr) { // a is a terminal page
 
       deleteItem(a->getItem(r));
 
@@ -331,7 +331,7 @@ bool BTreeSetImpl::pageRemove(BTreePage *a, const void *key, bool &h) {
 }
 
 BTreePageItem *BTreeSetImpl::pageSearch(const void *key) const {
-  for(BTreePage *p = m_root; p != NULL;) {
+  for(BTreePage *p = m_root; p != nullptr;) {
     UINT l = 1;
     UINT r = p->getItemCount() + 1;
     while(l < r) {
@@ -349,7 +349,7 @@ BTreePageItem *BTreeSetImpl::pageSearch(const void *key) const {
 
     p = p->getChild(r); // item not on this page. Try child
   }
-  return NULL;
+  return nullptr;
 }
 
 bool BTreeSetImpl::insertItem(BTreePageItem &item) {
@@ -401,16 +401,12 @@ bool BTreeSetImpl::remove(const void *key) {
   return true;
 }
 
-BTreePageItem *BTreeSetImpl::findNode(const void *key) {
-  return pageSearch(key);
-}
-
-const BTreePageItem *BTreeSetImpl::findNode(const void *key) const {
+BTreePageItem *BTreeSetImpl::findNode(const void *key) const {
   return pageSearch(key);
 }
 
 bool BTreeSetImpl::contains(const void *key) const {
-  return findNode(key) != NULL;
+  return findNode(key) != nullptr;
 }
 
 const void *BTreeSetImpl::select(RandomGenerator &rnd) const {
@@ -424,18 +420,18 @@ void *BTreeSetImpl::select(RandomGenerator &rnd = *RandomGenerator::s_stdGenerat
 }
 
 const BTreePageItem *BTreeSetImpl::getMinNode() const {
-  const BTreePage *result = NULL;
+  const BTreePage *result = nullptr;
   for(const BTreePage *p = m_root; p; result = p, p = p->getChild(0));
-  if(result == NULL) {
+  if(result == nullptr) {
     throwException(_T("%s:Set is empty"), __TFUNCTION__);
   }
   return &result->getItem(1);
 }
 
 const BTreePageItem *BTreeSetImpl::getMaxNode() const {
-  const BTreePage *result = NULL;
+  const BTreePage *result = nullptr;
   for(const BTreePage *p = m_root; p; result = p, p = p->getLastItem().m_child);
-  if(result == NULL) {
+  if(result == nullptr) {
     throwException(_T("%s:Set is empty"), __TFUNCTION__);
   }
   return &result->getLastItem();
@@ -463,7 +459,7 @@ void BTreeSetImpl::traverse(PageWalker &pw) const {
 }
 
 void BTreeSetImpl::deletePage(BTreePage *page) {
-  if(page == NULL) {
+  if(page == nullptr) {
     return;
   }
   int childCount = page->getItemCount();
@@ -479,9 +475,9 @@ void BTreeSetImpl::deletePage(BTreePage *page) {
 }
 
 void BTreeSetImpl::clear() {
-  if(m_root != NULL) {
+  if(m_root != nullptr) {
     deletePage(m_root);
-    m_root = NULL;
+    m_root = nullptr;
     m_size = 0;
     m_updateCount++;
   }
@@ -535,9 +531,13 @@ private:
 protected:
   const BTreePageItem *nextNode();
 public:
-  BTreeSetIterator(BTreeSetImpl &tree);
-  AbstractIterator *clone()       override;
-  bool hasNext()            const override;
+  BTreeSetIterator(const BTreeSetImpl &tree);
+  AbstractIterator *clone()       override {
+    return new BTreeSetIterator(*this);
+  }
+  bool hasNext()            const override {
+    return m_next != nullptr;
+  }
   void *next()                    override {
     return nextNode()->m_key;
   }
@@ -549,30 +549,22 @@ public:
 
 DEFINECLASSNAME(BTreeSetIterator);
 
-AbstractIterator *BTreeSetIterator::clone() {
-  return new BTreeSetIterator(*this);
-}
-
 void BTreeSetIterator::push(const BTreePage *page, int index, bool childDone) {
   m_stack.push(BTreeIteratorStackElement(page,index,childDone));
 }
 
 BTreeIteratorStackElement *BTreeSetIterator::top() {
-  return m_stack.isEmpty() ? NULL : &m_stack.top();
+  return m_stack.isEmpty() ? nullptr : &m_stack.top();
 }
 
-BTreeSetIterator::BTreeSetIterator(BTreeSetImpl &tree) : m_tree(tree) {
+BTreeSetIterator::BTreeSetIterator(const BTreeSetImpl &tree) : m_tree((BTreeSetImpl&)tree) {
   m_updateCount = m_tree.m_updateCount;
   m_next        = findFirst();
-  m_current     = NULL;
-}
-
-bool BTreeSetIterator::hasNext() const {
-  return m_next != NULL;
+  m_current     = nullptr;
 }
 
 const BTreePageItem *BTreeSetIterator::nextNode() {
-  if(m_next == NULL) {
+  if(m_next == nullptr) {
     noNextElementError(s_className);
   }
   if(m_updateCount != m_tree.m_updateCount) {
@@ -606,17 +598,17 @@ const BTreePageItem *BTreeSetIterator::findNext() {
     } else {
       sp->m_childDone = true;
       BTreePage *child = page->getChild(sp->m_index);
-      if(child != NULL) {
+      if(child != nullptr) {
         push(child,0,false);
       }
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 BTreePageItem *BTreeSetIterator::findPath(void *key) {
   m_stack.clear();
-  for(BTreePage *p = m_tree.m_root; p != NULL;) {
+  for(BTreePage *p = m_tree.m_root; p != nullptr;) {
     int l = 1;
     int r = p->getItemCount() + 1;
     while(l < r) {
@@ -637,21 +629,22 @@ BTreePageItem *BTreeSetIterator::findPath(void *key) {
     p = p->getChild(r); // item not on this page. Try child
   }
   throwException(_T("%s:Key not found"), __TFUNCTION__);
-  return NULL;
+  return nullptr;
 }
 
 void BTreeSetIterator::remove() {
-  if(m_current == NULL) {
+  if(m_current == nullptr) {
     noCurrentElementError(s_className);
   }
-  void *nextKey = NULL;
-  if(m_next != NULL) {
+  void *nextKey = nullptr;
+  if(m_next != nullptr) {
     nextKey = m_next->m_key;
   }
+  __assume(m_current != nullptr);
   m_tree.remove(m_current->m_key);
-  m_current = NULL;
+  m_current = nullptr;
 
-  if(nextKey != NULL) {
+  if(nextKey != nullptr) {
     m_next = findPath(nextKey);
   }
   m_updateCount = m_tree.m_updateCount;
@@ -659,7 +652,7 @@ void BTreeSetIterator::remove() {
 
 //-----------------------------------------------------------------
 
-AbstractIterator *BTreeSetImpl::getIterator() {
+AbstractIterator *BTreeSetImpl::getIterator() const {
   return new BTreeSetIterator(*this);
 }
 
@@ -674,12 +667,12 @@ UINT BTreeSetImpl::getHeight() const {
 void BTreeSetImpl::checkPage(const BTreePage *p, int level, int height) const {
   DEFINEMETHODNAME;
   if(level == height) {
-    if(p != NULL) {
-      throwException(_T("%s::Page at max-level not NULL"), method);
+    if(p != nullptr) {
+      throwException(_T("%s::Page at max-level not nullptr"), method);
     }
   } else {
-    if(p == NULL) {
-      throwException(_T("%s::Page at level < %d is NULL"),method, height);
+    if(p == nullptr) {
+      throwException(_T("%s::Page at level < %d is nullptr"),method, height);
     }
     if(p->getItemCount() < HALFSIZE) {
       throwException(_T("%s::Invariant %d <= itemcount <= %d not satisfied. Itemcount=%d")
@@ -740,6 +733,33 @@ BTreeMapImpl::BTreeMapImpl(const AbstractObjectManager &keyManager, const Abstra
   m_dataManager = dataManager.clone();
 }
 
+AbstractMap *BTreeMapImpl::cloneMap(bool cloneData) const {
+  BTreeMapImpl     *clone = nullptr;
+  AbstractIterator *it    = nullptr;
+  clone = new BTreeMapImpl(*BTreeSetImpl::getObjectManager(), *m_dataManager, *getComparator());
+  try {
+    if(cloneData) {
+      it = getIterator(); TRACE_NEW(it);
+      while(it->hasNext()) {
+        AbstractEntry *n = (AbstractEntry *)it->next();
+        clone->put(n->key(), n->value());
+      }
+      SAFEDELETE(it);
+    }
+  } catch(...) {
+    TRACE_NEW(clone );
+    SAFEDELETE(it   );
+    SAFEDELETE(clone);
+    throw;
+  }
+  return clone;
+}
+
+AbstractSet *BTreeMapImpl::cloneSet(bool cloneData) {
+  throwUnsupportedOperationException(__TFUNCTION__);
+  return nullptr;
+}
+
 BTreeMapImpl::~BTreeMapImpl() {
   clear();
   delete m_dataManager;
@@ -781,7 +801,7 @@ const AbstractEntry *BTreeMapImpl::getMaxEntry() const {
 
 class BTreeMapIterator : public BTreeSetIterator {
 public:
-  BTreeMapIterator(BTreeSetImpl &set) : BTreeSetIterator(set) {
+  BTreeMapIterator(const BTreeSetImpl &set) : BTreeSetIterator((BTreeSetImpl&)set) {
   }
   AbstractIterator *clone() override {
     return new BTreeMapIterator(*this);
@@ -793,53 +813,20 @@ void *BTreeMapIterator::next() {
   return (AbstractEntry*)((BTreeMapPageItem*)nextNode());
 }
 
-AbstractIterator *BTreeMapImpl::getIterator() {
+AbstractIterator *BTreeMapImpl::getIterator() const {
   return new BTreeMapIterator(*this);
 }
 
-AbstractMap *BTreeMapImpl::cloneMap(bool cloneData) const {
-  BTreeMapImpl *clone = new BTreeMapImpl(*BTreeSetImpl::getObjectManager(),*m_dataManager,*getComparator());
-  if(cloneData) {
-    AbstractIterator *it = ((BTreeMapImpl*)this)->getIterator();
-    while(it->hasNext()) {
-      AbstractEntry *n = (AbstractEntry*)it->next();
-      clone->put(n->key(),n->value());
-    }
-    delete it;
-  }
-  return clone;
-}
-
-void *BTreeMapImpl::get(const void *key) {
+void *BTreeMapImpl::get(const void *key) const {
   BTreePageItem *item = findNode(key);
-  if(item == NULL) {
-    return NULL;
-  } else {
-    return ((BTreeMapPageItem*)item)->m_value;
-  }
-}
-
-const void *BTreeMapImpl::get(const void *key) const {
-  const BTreePageItem *item = findNode(key);
-  if(item == NULL) {
-    return NULL;
+  if(item == nullptr) {
+    return nullptr;
   } else {
     return ((BTreeMapPageItem*)item)->m_value;
   }
 }
 
 bool BTreeMapImpl::put(const void *key, const void *elem) {
-  BTreeMapPageItem item;
-  item.m_key  = getObjectManager()->cloneObject(key);
-  item.m_value = m_dataManager->cloneObject(elem);
-  if(!insertItem(item)) {
-    deleteItem(item);
-    return false;
-  }
-  return true;
-}
-
-bool BTreeMapImpl::put(const void *key, void *elem) {
   BTreeMapPageItem item;
   item.m_key  = getObjectManager()->cloneObject(key);
   item.m_value = m_dataManager->cloneObject(elem);

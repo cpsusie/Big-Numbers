@@ -44,9 +44,9 @@ namespace TestExpression {
     const String fileName = Expression::getDefaultListFileName();
     FileNameSplitter fs(fileName);
     DirComponents dc = fs.getDirComponents();
-    dc.add(3,dirComp1);
+    dc.insert(3,dirComp1);
     if(dirComponent.length() > 0) {
-      dc.add(4,dirComponent);
+      dc.insert(4,dirComponent);
     }
     fs.setDir(dc);
     fs.setFileName(format(_T("testCase%04d"), testCase));
