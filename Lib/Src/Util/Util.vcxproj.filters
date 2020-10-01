@@ -1388,6 +1388,12 @@
     <ClInclude Include="..\..\Include\MapBase.h">
       <Filter>Source Files\Collection\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TreeSetIterator.h">
+      <Filter>Source Files\Collection\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TreeMapIterator.h">
+      <Filter>Source Files\Collection\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="BitSetx64.asm">

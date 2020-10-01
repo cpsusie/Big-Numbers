@@ -3,22 +3,6 @@
 #include "TreeSet.h"
 #include "Map.h"
 
-class TreeMapNode : public TreeSetNode, public AbstractEntry {
-private:
-  void *m_value;
-public:
-  const void *key() const {
-    return TreeSetNode::key();
-  }
-  void *value() {
-    return m_value;
-  }
-  const void *value() const {
-    return m_value;
-  }
-  friend class TreeMapImpl;
-};
-
 class TreeMapImpl : public TreeSetImpl, public AbstractMap {
 private:
   AbstractObjectManager *m_dataManager;

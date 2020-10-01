@@ -1,6 +1,6 @@
 #include "pch.h"
 #include <Random.h>
-#include <TreeSet.h>
+#include "TreeSetIterator.h"
 
 TreeSetImpl::TreeSetImpl(const AbstractObjectManager &objectManager, const AbstractComparator &comparator) {
   m_objectManager = objectManager.clone(); TRACE_NEW(m_objectManager);

@@ -919,6 +919,8 @@
     <ClInclude Include="RegexIStream\pch.h" />
     <ClInclude Include="RegexIStream\SubNFA.h" />
     <ClInclude Include="ThreadPoolInternal.h" />
+    <ClInclude Include="TreeMapIterator.h" />
+    <ClInclude Include="TreeSetIterator.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AbstractIterator.cpp" />

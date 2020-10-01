@@ -1,5 +1,6 @@
 #include "pch.h"
 #include <TreeMap.h>
+#include "TreeMapIterator.h"
 
 TreeMapImpl::TreeMapImpl(const AbstractObjectManager &keyManager, const AbstractObjectManager &dataManager, const AbstractComparator &comparator)
 : TreeSetImpl(keyManager, comparator)
@@ -37,20 +38,6 @@ AbstractMap *TreeMapImpl::cloneMap(bool cloneData) const {
 TreeMapImpl::~TreeMapImpl() {
   clear();
   SAFEDELETE(m_dataManager);
-}
-
-class TreeMapIterator : public TreeSetIterator {
-public:
-  TreeMapIterator(TreeSetImpl &set) : TreeSetIterator(set) {
-  }
-  AbstractIterator *clone() override {
-    return new TreeMapIterator(*this);
-  }
-  void *next()              override;
-};
-
-void *TreeMapIterator::next() {
-  return (AbstractEntry*)((TreeMapNode*)nextNode());
 }
 
 AbstractIterator *TreeMapImpl::getIterator() const {
