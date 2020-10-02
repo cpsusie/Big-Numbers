@@ -4,9 +4,8 @@
 
 class AbstractEntry {
 public:
-  virtual const void *key() const   = 0;
-  virtual       void *value()       = 0;
-  virtual const void *value() const = 0;
+  virtual const void *key()   const = 0;
+  virtual       void *value() const = 0;
 };
 
 template <typename K, typename V> class Entry : public AbstractEntry {

@@ -217,7 +217,7 @@ public:
     return m_it->hasNext();
   }
   void *next()                    override {
-    return ((AbstractEntry *)m_it->next())->value();
+    return ((AbstractEntry*)m_it->next())->value();
   }
   void remove()                   override {
     m_it->remove();

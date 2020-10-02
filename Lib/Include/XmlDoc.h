@@ -40,11 +40,11 @@ public:
 
   void loadFromString(const String &XML);
   inline bool isEmpty() const {
-    return getRoot() == NULL;
+    return getRoot() == nullptr;
   }
   XMLNodePtr findNode( const TCHAR *nodeName) const;
   XMLNodePtr findNode( const XMLNodePtr &node, const TCHAR *nodeName) const;
-  // return NULL, if not found
+  // return nullptr, if not found
   XMLNodePtr findChild(const XMLNodePtr &node, const TCHAR *nodeName, int instans=0) const;
   // throws exception, if not found
   XMLNodePtr getChild( const XMLNodePtr &node, const TCHAR *nodeName, int instans=0) const;
@@ -97,7 +97,7 @@ public:
 };
 
 inline size_t getChildCount(const XMLNodePtr &node) {
-  return (node == NULL) ? 0 : node->childNodes->Getlength();
+  return (node == nullptr) ? 0 : node->childNodes->Getlength();
 }
 
 class AbstractChildIterator: public AbstractIterator {
@@ -116,13 +116,13 @@ public:
     : m_next(n->firstChild)
   {
     m_childAddr = (BYTE *)&m_child;
-    m_child     = NULL;
+    m_child     = nullptr;
   }
   AbstractIterator *clone() override {
     return new AbstractChildIterator(*this);
   }
   bool hasNext() const override {
-    return m_next != NULL;
+    return m_next != nullptr;
   }
   void *next() override {
     if(!hasNext()) noNextElementError(__TFUNCTION__);
@@ -203,11 +203,8 @@ public:
   const void *key() const override {
     return &m_key;
   }
-  void *value() override {
-    return &m_value;
-  }
-  const void *value() const override {
-    return &m_value;
+  void *value()     const override {
+    return (void*)&m_value;
   }
 };
 

@@ -755,7 +755,7 @@ AbstractMap *BTreeMapImpl::cloneMap(bool cloneData) const {
   return clone;
 }
 
-AbstractSet *BTreeMapImpl::cloneSet(bool cloneData) {
+AbstractCollection *BTreeMapImpl::clone(bool cloneData) const {
   throwUnsupportedOperationException(__TFUNCTION__);
   return nullptr;
 }
@@ -806,12 +806,10 @@ public:
   AbstractIterator *clone() override {
     return new BTreeMapIterator(*this);
   }
-  void *next()              override;
+  void *next()              override {
+    return (AbstractEntry*)((BTreeMapPageItem*)nextNode());
+  }
 };
-
-void *BTreeMapIterator::next() {
-  return (AbstractEntry*)((BTreeMapPageItem*)nextNode());
-}
 
 AbstractIterator *BTreeMapImpl::getIterator() const {
   return new BTreeMapIterator(*this);

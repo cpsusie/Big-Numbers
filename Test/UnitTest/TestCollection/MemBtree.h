@@ -30,16 +30,10 @@ public:
 class BTreeMapPageItem : public BTreePageItem, public AbstractEntry {
 public:
   void      *m_value;
-
-  const void *key() const {
+  const void *key() const override {
     return BTreePageItem::key();
   }
-
-  void *value() {
-    return m_value;
-  }
-
-  const void *value() const {
+  void *value() const override {
     return m_value;
   }
 };
@@ -146,15 +140,16 @@ public:
   bool                add(          const void *key)            override;
   bool                remove(       const void *key)            override;
   bool                contains(     const void *key)      const override;
-  const void         *select(RandomGenerator &rnd)        const override; // returns key*
+  // returns key*
+  const void         *select(RandomGenerator &rnd)        const override;
         void         *select(RandomGenerator &rnd)              override;
   AbstractComparator *getComparator()                     const {
     return m_comparator;
   }
-  const void         *getMin()                            const;
-  const void         *getMax()                            const;
+  const void         *getMin()                            const override;
+  const void         *getMax()                            const override;
 
-  AbstractIterator *getIterator()                         const override;
+  AbstractIterator   *getIterator()                       const override;
   bool hasOrder()                                         const override {
     return true;
   }
@@ -180,8 +175,9 @@ protected:
 
 public:
   BTreeMapImpl(const AbstractObjectManager &keyManager, const AbstractObjectManager &dataManager, const AbstractComparator &comparator);
+  // throw unsupported exception
+  AbstractCollection  *clone(   bool cloneData)                   const override;
   AbstractMap         *cloneMap(bool cloneData)                   const override;
-  AbstractSet         *cloneSet(bool cloneData);
   ~BTreeMapImpl()                                                       override;
   size_t               size()                                     const override {
     return BTreeSetImpl::size();

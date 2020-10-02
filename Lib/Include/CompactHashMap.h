@@ -236,10 +236,7 @@ public:
     const void *key()   const override {
       return &m_entry->m_key;
     }
-    void *value()             override {
-      return &m_entry->m_value;
-    }
-    const void *value() const override {
+    void *value()       const override {
       return &m_entry->m_value;
     }
   };
