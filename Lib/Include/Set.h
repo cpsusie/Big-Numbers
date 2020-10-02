@@ -15,8 +15,8 @@ public:
 class AbstractSet : public AbstractCollection {
 public:
   virtual AbstractComparator *getComparator() const = 0;
-  virtual const void         *getMin()        const = 0;
-  virtual const void         *getMax()        const = 0;
+  virtual void               *getMin()        const = 0;
+  virtual void               *getMax()        const = 0;
 };
 
 template <typename T> class Set : public Collection<T> {

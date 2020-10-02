@@ -5,6 +5,7 @@
 #include "ObjectManager.h"
 
 class ArrayImpl : public AbstractCollection {
+  friend class ArrayIterator;
 private:
   AbstractObjectManager *m_objectManager;
   void                 **m_elem;
@@ -23,7 +24,6 @@ private:
   void      indexError( const TCHAR *method, size_t index, size_t count) const;
   void      selectError(const TCHAR *method) const;
   void      unsupportedOperationError(const TCHAR *method) const;
-  friend class ArrayIterator;
 public:
   ArrayImpl(AbstractObjectManager &objectManager, size_t capacity);
   AbstractCollection *clone(bool cloneData)                                   const override;
@@ -40,18 +40,13 @@ public:
   bool                 remove(                   const void *e)                      override;
   // unsuppoerted
   bool                 contains(                 const void *e)                const override;
-  const void          *select(RandomGenerator &rnd)                            const override;
-  void                *select(RandomGenerator &rnd)                                  override;
+  void                *select(RandomGenerator &rnd)                            const override;
   inline size_t        getCapacity()                                           const {
     return m_capacity;
   }
   void                 setCapacity(size_t capacity);
-  inline       void   *getElement(size_t index) {
-    if(index >= m_size) indexError(__TFUNCTION__, index);
-    return m_elem[index];
-  }
 
-  inline const void   *getElement(size_t index)                                const {
+  inline void         *getElement(size_t index)                                const {
     if(index >= m_size) indexError(__TFUNCTION__, index);
     return m_elem[index];
   }

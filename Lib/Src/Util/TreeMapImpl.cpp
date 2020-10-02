@@ -98,10 +98,10 @@ AbstractEntry *TreeMapImpl::selectEntry(RandomGenerator &rnd) const {
   return (TreeMapNode*)findNode(select(rnd));
 }
 
-const AbstractEntry *TreeMapImpl::getMinEntry() const {
+AbstractEntry *TreeMapImpl::getMinEntry() const {
   return (TreeMapNode*)TreeSetImpl::getMinNode();
 }
 
-const AbstractEntry *TreeMapImpl::getMaxEntry() const {
+AbstractEntry *TreeMapImpl::getMaxEntry() const {
   return (TreeMapNode*)TreeSetImpl::getMaxNode();
 }

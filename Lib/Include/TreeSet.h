@@ -22,7 +22,7 @@ private:
   bool        nodeDel(   TreeSetNode *&pp);
   bool        nodeDelete(TreeSetNode *&pp, const void *key);
   void        deleteNodeRecurse(TreeSetNode *n);
-  const void *getRandom(RandomGenerator &rnd)                    const;
+  void       *getRandom(RandomGenerator &rnd)                    const;
 protected:
   virtual TreeSetNode         *allocateNode()                    const;
   virtual TreeSetNode         *createNode( const void  *key    ) const;
@@ -31,18 +31,13 @@ protected:
   virtual bool                 insertNode( TreeSetNode *n      );
   virtual void                 swapContent(TreeSetNode *n1, TreeSetNode *n2);
   // return key*
-  const   void                *select(     RandomGenerator &rnd) const override;
-          void                *select(     RandomGenerator &rnd)       override;
+          void                *select(     RandomGenerator &rnd) const override;
 
-        TreeSetNode           *findNode(   const void  *key    );
-  const TreeSetNode           *findNode(   const void  *key    ) const;
-  const TreeSetNode           *getMinNode()                      const;
-  const TreeSetNode           *getMaxNode()                      const;
+  TreeSetNode                 *findNode(   const void  *key    ) const;
+  TreeSetNode                 *getMinNode()                      const;
+  TreeSetNode                 *getMaxNode()                      const;
 
-  const AbstractObjectManager *getObjectManager()                const {
-    return m_objectManager;
-  }
-  AbstractObjectManager       *getObjectManager() {
+  AbstractObjectManager       *getObjectManager()                const {
     return m_objectManager;
   }
   TreeSetNode                 *getRoot()                         const {
@@ -63,8 +58,8 @@ public:
     return m_comparator;
   }
 
-  const void                   *getMin()                          const override;
-  const void                   *getMax()                          const override;
+  void                         *getMin()                          const override;
+  void                         *getMax()                          const override;
   AbstractIterator             *getIterator()                     const override;
   bool                          hasOrder()                        const override {
     return true;

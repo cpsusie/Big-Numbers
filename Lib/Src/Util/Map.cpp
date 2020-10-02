@@ -35,19 +35,16 @@ public:
   bool                contains(const void *e)      const override {
     return m_map->get(((AbstractEntry*)e)->key()) != nullptr;
   }
-  const void         *select(RandomGenerator &rnd) const override {
-    return m_map->selectEntry(rnd);
-  }
-        void         *select(RandomGenerator &rnd)       override {
+  void               *select(RandomGenerator &rnd) const override {
     return m_map->selectEntry(rnd);
   }
   AbstractComparator *getComparator()              const override {
     return m_map->getComparator();
   }
-  const void         *getMin()                     const override {
+  void               *getMin()                     const override {
     return m_map->getMinEntry();
   }
-  const void         *getMax()                     const override {
+  void               *getMax()                     const override {
     return m_map->getMaxEntry();
   }
   AbstractIterator   *getIterator()                const override {
@@ -93,20 +90,17 @@ public:
     return m_map->get(e) != nullptr;
   }
 
-  const void         *select(RandomGenerator &rnd)    const override {
-    return m_map->selectEntry(rnd)->key();
-  }
-        void         *select(RandomGenerator &rnd)          override {
-    return (void*)m_map->selectEntry(rnd)->key();
+  void              *select(RandomGenerator &rnd)     const override {
+    return (void*)(m_map->selectEntry(rnd)->key());
   }
   AbstractComparator *getComparator()                 const override {
     return m_map->getComparator();
   }
-  const void         *getMin()                        const override {
-    return m_map->getMinEntry()->key();
+  void               *getMin()                        const override {
+    return (void*)(m_map->getMinEntry()->key());
   }
-  const void         *getMax()                        const override {
-    return m_map->getMaxEntry()->key();
+  void               *getMax()                        const override {
+    return (void*)(m_map->getMaxEntry()->key());
   }
   AbstractIterator   *getIterator()                   const override {
     return m_map->getKeyIterator();
@@ -123,7 +117,6 @@ private:
   AbstractMap *m_map;
   bool         m_deleteMap;
   int        (*m_cmp)(const void *e1, const void *e2);
-  void selectError(const TCHAR *method) const;
 public:
   ValueCollection(AbstractMap *map, bool deleteMap,int (*cmp)(const void *e1, const void *e2)) : m_map(map) {
     m_deleteMap = deleteMap;
@@ -151,9 +144,8 @@ public:
     throwUnsupportedOperationException(__TFUNCTION__);
     return false;
   }
-  bool contains(const void *e)               const override;
-  const void *select(RandomGenerator &rnd)   const override;
-        void *select(RandomGenerator &rnd)         override;
+  bool  contains(const void *e)              const override;
+  void *select(RandomGenerator &rnd)         const override;
 
   AbstractIterator *getIterator()            const override {
     return m_map->getValueIterator();
@@ -177,22 +169,11 @@ bool ValueCollection::contains(const void *e) const {
   return result;
 }
 
-const void *ValueCollection::select(RandomGenerator &rnd) const {
+void *ValueCollection::select(RandomGenerator &rnd) const {
   if(size() == 0) {
-    selectError(__TFUNCTION__);
+    throwSelectFromEmptyCollectionException(__TFUNCTION__);
   }
   return m_map->selectEntry(rnd)->value();
-}
-
-void *ValueCollection::select(RandomGenerator &rnd) {
-  if(size() == 0) {
-    selectError(__TFUNCTION__);
-  }
-  return m_map->selectEntry(rnd)->value();
-}
-
-void ValueCollection::selectError(const TCHAR *method) const {
-  throwSelectFromEmptyCollectionException(method);
 }
 
 // ------------------------------------ValueIterator-----------------------------------------------------

@@ -23,8 +23,7 @@ protected:
   virtual void                        deleteNode(HashSetNode *n  )  const;
   virtual bool                        insertNode(HashSetNode *n  );
    // return key*
-  const void                         *select(RandomGenerator &rnd)  const override;
-  void                               *select(RandomGenerator &rnd)        override;
+  void                               *select(RandomGenerator &rnd)  const override;
   void                                resize(size_t newCapacity);
 
   HashSetNode                        *findNode(const void    *key)  const;
@@ -54,8 +53,8 @@ public:
   inline HashFunction        getHashFunction()            const {
     return m_hash;
   }
-  const void                *getMin()                     const override;
-  const void                *getMax()                     const override;
+  void                      *getMin()                     const override;
+  void                      *getMax()                     const override;
 
   AbstractIterator          *getIterator()                const override;
   bool                       hasOrder()                   const override {

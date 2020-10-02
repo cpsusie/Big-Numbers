@@ -79,14 +79,9 @@ void BTreePage::setChild(UINT i, BTreePage *v) {
 // ------------------------------------BTreeSetPageImpl---------------------------------------------
 
 
-const BTreePageItem &BTreeSetPageImpl::getItem(UINT i) const {
+BTreePageItem &BTreeSetPageImpl::getItem(UINT i) const {
   if((i < 1) || (i > getItemCount())) throwIndexError(__TFUNCTION__, i);
-  return m_item[i-1];
-}
-
-BTreePageItem &BTreeSetPageImpl::getItem(UINT i) {
-  if((i < 1) || (i > getItemCount())) throwIndexError(__TFUNCTION__, i);
-  return m_item[i-1];
+  return (BTreePageItem&)(m_item[i-1]);
 }
 
 void BTreeSetPageImpl::setItem(UINT i, const BTreePageItem &v) {
@@ -96,14 +91,9 @@ void BTreeSetPageImpl::setItem(UINT i, const BTreePageItem &v) {
 
 // ------------------------------------BTreeMapPageImpl---------------------------------------------
 
-const BTreePageItem &BTreeMapPageImpl::getItem(UINT i) const {
+BTreePageItem &BTreeMapPageImpl::getItem(UINT i) const {
   if((i < 1) || (i > getItemCount())) throwIndexError(__TFUNCTION__, i);
-  return m_item[i-1];
-}
-
-BTreePageItem &BTreeMapPageImpl::getItem(UINT i) {
-  if((i < 1) || (i > getItemCount())) throwIndexError(__TFUNCTION__, i);
-  return m_item[i-1];
+  return (BTreePageItem&)(m_item[i-1]);
 }
 
 void BTreeMapPageImpl::setItem(UINT i, const BTreePageItem &v) {
@@ -409,40 +399,35 @@ bool BTreeSetImpl::contains(const void *key) const {
   return findNode(key) != nullptr;
 }
 
-const void *BTreeSetImpl::select(RandomGenerator &rnd) const {
+void *BTreeSetImpl::select(RandomGenerator &rnd) const {
   if(size() == 0) throwSelectFromEmptyCollectionException(__TFUNCTION__);
-  return m_root->getItem(1).key();
+  return (void*)(m_root->getItem(1).key());
 }
 
-void *BTreeSetImpl::select(RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) {
-  if(size() == 0) throwSelectFromEmptyCollectionException(__TFUNCTION__);
-  return (void*)m_root->getItem(1).key();
-}
-
-const BTreePageItem *BTreeSetImpl::getMinNode() const {
-  const BTreePage *result = nullptr;
-  for(const BTreePage *p = m_root; p; result = p, p = p->getChild(0));
+BTreePageItem *BTreeSetImpl::getMinNode() const {
+  BTreePage *result = nullptr;
+  for(BTreePage *p = m_root; p; result = p, p = p->getChild(0));
   if(result == nullptr) {
     throwException(_T("%s:Set is empty"), __TFUNCTION__);
   }
   return &result->getItem(1);
 }
 
-const BTreePageItem *BTreeSetImpl::getMaxNode() const {
-  const BTreePage *result = nullptr;
-  for(const BTreePage *p = m_root; p; result = p, p = p->getLastItem().m_child);
+BTreePageItem *BTreeSetImpl::getMaxNode() const {
+  BTreePage *result = nullptr;
+  for(BTreePage *p = m_root; p; result = p, p = p->getLastItem().m_child);
   if(result == nullptr) {
     throwException(_T("%s:Set is empty"), __TFUNCTION__);
   }
   return &result->getLastItem();
 }
 
-const void *BTreeSetImpl::getMin() const {
-  return getMinNode()->key();
+void *BTreeSetImpl::getMin() const {
+  return (void*)(getMinNode()->key());
 }
 
-const void *BTreeSetImpl::getMax() const {
-  return getMaxNode()->key();
+void *BTreeSetImpl::getMax() const {
+  return (void*)(getMaxNode()->key());
 }
 
 void BTreeSetImpl::traverse(const BTreePage *p, PageWalker &pw) const {
@@ -790,11 +775,11 @@ void BTreeMapImpl::deleteItem(BTreePageItem &item) const {
   m_dataManager->deleteObject(((BTreeMapPageItem&)item).m_value);
 }
 
-const AbstractEntry *BTreeMapImpl::getMinEntry() const {
+AbstractEntry *BTreeMapImpl::getMinEntry() const {
   return (BTreeMapPageItem*)getMinNode();
 }
 
-const AbstractEntry *BTreeMapImpl::getMaxEntry() const {
+AbstractEntry *BTreeMapImpl::getMaxEntry() const {
   return (BTreeMapPageItem*)getMaxNode();
 }
 //--------------------------------------------------------------------------------------------------------

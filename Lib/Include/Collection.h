@@ -19,8 +19,7 @@ public:
   virtual bool                add(     const void *e)            = 0;
   virtual bool                remove(  const void *e)            = 0;
   virtual bool                contains(const void *e)      const = 0;
-  virtual const void         *select(RandomGenerator &rnd) const = 0;
-  virtual void               *select(RandomGenerator &rnd)       = 0;
+  virtual void               *select(RandomGenerator &rnd) const = 0;
   virtual AbstractIterator   *getIterator()                const = 0;
   virtual bool                hasOrder()                   const = 0;
 };

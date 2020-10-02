@@ -160,24 +160,24 @@ bool TreeSetImpl::balanceL(TreeSetNode *&pp) {
   case  0:
     p->m_balance = 1;
     return false;
-  case  1:                         // Rebalance
+  case  1:                             // Rebalance
     { TreeSetNode *p1 = p->m_right;
       char b = p1->m_balance;
-      if(b >= 0) {                   // Single RR rotation
+      if(b >= 0) {                     // Single RR rotation
         p->m_right = p1->m_left;
         p1->m_left = p;
-        if(b == 0) {                 // p->right->balance == 0
+        if(b == 0) {                   // p->right->balance == 0
           p->m_balance  =  1;
           p1->m_balance = -1;
           pp = p1;
           return false;
-        } else {                     // p->right->balance > 0
+        } else {                       // p->right->balance > 0
           p->m_balance  = 0;
           p1->m_balance = 0;
           pp = p1;
           return true;
         }
-      } else {                       // p->right->balance < 0. Double RL rotation
+      } else {                         // p->right->balance < 0. Double RL rotation
         TreeSetNode *p2 = p1->m_left;
         b               = p2->m_balance;
         p1->m_left      = p2->m_right;
@@ -206,24 +206,24 @@ bool TreeSetImpl::balanceR(TreeSetNode *&pp) {
   case  0:
     p->m_balance = -1;
     return false;
-  case -1:                           // Rebalance
+  case -1:                             // Rebalance
     { TreeSetNode *p1 = p->m_left;
       char b = p1->m_balance;
-      if(b <= 0) {                   // Single LL rotation
+      if(b <= 0) {                     // Single LL rotation
         p->m_left   = p1->m_right;
         p1->m_right = p;
-        if(b == 0) {                 // p->left->balance == 0
+        if(b == 0) {                   // p->left->balance == 0
           p->m_balance  = -1;
           p1->m_balance =  1;
           pp = p1;
           return false;
-        } else {                     // p->left->balance < 0
+        } else {                       // p->left->balance < 0
           p->m_balance  = 0;
           p1->m_balance = 0;
           pp = p1;
           return true;
         }
-      } else {                       // p->left->balance > 0. Double LR rotation
+      } else {                         // p->left->balance > 0. Double LR rotation
         TreeSetNode *p2 = p1->m_right;
         b               = p2->m_balance;
         p1->m_right     = p2->m_left;
@@ -263,18 +263,18 @@ bool TreeSetImpl::nodeDelete(TreeSetNode *&pp, const void *key) {
   TreeSetNode *p = pp;
 
   if(p == nullptr) {
-    return false;                  // key not found
+    return false;                      // key not found
   }
 
   const int c = m_comparator->cmp(p->m_key, key);
-  if(c > 0) {                      // pp.key > key. Continue search in left subtree
+  if(c > 0) {                          // pp.key > key. Continue search in left subtree
     if(nodeDelete(p->m_left, key)) {
       return balanceL(pp);
     } else {
       return false;
     }
   }
-  if(c < 0) {                      // pp.key < key. Continue search in right subtree
+  if(c < 0) {                          // pp.key < key. Continue search in right subtree
     if(nodeDelete(p->m_right, key)) {
       return balanceR(pp);
     } else {
@@ -345,30 +345,14 @@ bool TreeSetImpl::remove(const void *key) {
   return size != m_size;
 }
 
-TreeSetNode *TreeSetImpl::findNode(const void *key) {
+TreeSetNode *TreeSetImpl::findNode(const void *key) const {
   TreeSetNode *p = m_root;
 
   while(p) {
     const int c = m_comparator->cmp(p->m_key, key);
-    if(c > 0) {                    // p->key > key
+    if(c > 0) {                        // p->key > key
       p = p->m_left;
-    } else if(c < 0) {            // p->key < key
-      p = p->m_right;
-    } else {
-      return p;
-    }
-  }
-  return nullptr;
-}
-
-const TreeSetNode *TreeSetImpl::findNode(const void *key) const {
-  const TreeSetNode *p = m_root;
-
-  while(p) {
-    const int c = m_comparator->cmp(p->m_key, key);
-    if(c > 0) {                    // p->key > key
-      p = p->m_left;
-    } else if(c < 0) {            // p->key < key
+    } else if(c < 0) {                 // p->key < key
       p = p->m_right;
     } else {
       return p;
@@ -381,7 +365,7 @@ bool TreeSetImpl::contains(const void *key) const {
   return findNode(key) != nullptr;
 }
 
-const void *TreeSetImpl::getRandom(RandomGenerator &rnd) const {
+void *TreeSetImpl::getRandom(RandomGenerator &rnd) const {
   if(size() == 0) {
     throwSelectFromEmptyCollectionException(__TFUNCTION__);
   }
@@ -402,38 +386,34 @@ const void *TreeSetImpl::getRandom(RandomGenerator &rnd) const {
   }
 }
 
-const void *TreeSetImpl::select(RandomGenerator &rnd) const {
+void *TreeSetImpl::select(RandomGenerator &rnd) const {
   return getRandom(rnd);
 }
 
-void *TreeSetImpl::select(RandomGenerator &rnd) {
-  return (void*)getRandom(rnd);
-}
-
-const TreeSetNode *TreeSetImpl::getMinNode() const {
-  const TreeSetNode *result = nullptr;
-  for(const TreeSetNode *p = m_root; p; result = p, p = p->m_left);
+TreeSetNode *TreeSetImpl::getMinNode() const {
+  TreeSetNode *result = nullptr;
+  for(TreeSetNode *p = m_root; p; result = p, p = p->m_left);
   if(result == nullptr) {
     throwSelectFromEmptyCollectionException(__TFUNCTION__);
   }
   return result;
 }
 
-const TreeSetNode *TreeSetImpl::getMaxNode() const {
-  const TreeSetNode *result = nullptr;
-  for(const TreeSetNode *p = m_root; p; result = p, p = p->m_right);
+TreeSetNode *TreeSetImpl::getMaxNode() const {
+  TreeSetNode *result = nullptr;
+  for(TreeSetNode *p = m_root; p; result = p, p = p->m_right);
   if(result == nullptr) {
     throwSelectFromEmptyCollectionException(__TFUNCTION__);
   }
   return result;
 }
 
-const void *TreeSetImpl::getMin() const {
-  return getMinNode()->key();
+void *TreeSetImpl::getMin() const {
+  return (void*)(getMinNode()->key());
 }
 
-const void *TreeSetImpl::getMax() const {
-  return getMaxNode()->key();
+void *TreeSetImpl::getMax() const {
+  return (void*)(getMaxNode()->key());
 }
 
 AbstractIterator *TreeSetImpl::getIterator() const {

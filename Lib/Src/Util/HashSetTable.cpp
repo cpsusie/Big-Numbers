@@ -57,19 +57,19 @@ void HashSetTable::remove(HashSetNode *n) {
   m_updateCount++;
 }
 
-const AbstractKey *HashSetTable::select(RandomGenerator &rnd) const {
+AbstractKey *HashSetTable::select(RandomGenerator &rnd) const {
   if(m_size == 0) {
     throwSelectFromEmptyCollectionException(__TFUNCTION__);
   }
 
   if(rnd.nextBool()) {
-    for(const HashSetNode *p = m_firstLink;; p = p->m_nextLink) {
+    for(HashSetNode *p = m_firstLink;; p = p->m_nextLink) {
       if((p->m_nextLink == nullptr) || (rnd.nextInt(3) == 0)) {
         return p;
       }
     }
   } else {
-    for(const HashSetNode *p = m_lastLink;; p = p->m_prevLink) {
+    for(HashSetNode *p = m_lastLink;; p = p->m_prevLink) {
       if((p->m_prevLink == nullptr) || (rnd.nextInt(3) == 0)) {
         return p;
       }

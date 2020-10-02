@@ -103,14 +103,9 @@ void ListImpl::indexError(const TCHAR *method, size_t index) const {
   throwIndexOutOfRangeException(method, index, m_size);
 }
 
-void *ListImpl::getElement(size_t index) {
+void *ListImpl::getElement(size_t index) const {
   if(index >= m_size) indexError(__TFUNCTION__, index);
   return (void*)findNode(index)->m_data;
-}
-
-const void *ListImpl::getElement(size_t index) const {
-  if(index >= m_size) indexError(__TFUNCTION__, index);
-  return findNode(index)->m_data;
 }
 
 bool ListImpl::add(const void *e) {
@@ -208,42 +203,21 @@ bool ListImpl::contains(const void *e) const {
   return false;
 }
 
-const void *ListImpl::select(RandomGenerator &rnd) const {
+void *ListImpl::select(RandomGenerator &rnd) const {
   if(size() == 0) {
     throwException(getElementeErrorText, __TFUNCTION__);
   }
   return findNode(randSizet(size(), rnd))->m_data;
 }
 
-void *ListImpl::select(RandomGenerator &rnd) {
-  if(size() == 0) {
-    throwException(getElementeErrorText, __TFUNCTION__);
-  }
-  return findNode(randSizet(size(), rnd))->m_data;
-}
-
-void *ListImpl::first() {
+void *ListImpl::first() const {
   if(size() == 0) {
     throwException(getElementeErrorText, __TFUNCTION__);
   }
   return m_first->m_data;
 }
 
-const void *ListImpl::first() const {
-  if(size() == 0) {
-    throwException(getElementeErrorText, __TFUNCTION__);
-  }
-  return m_first->m_data;
-}
-
-void *ListImpl::last() {
-  if(size() == 0) {
-    throwException(getElementeErrorText, __TFUNCTION__);
-  }
-  return m_last->m_data;
-}
-
-const void *ListImpl::last() const {
+void *ListImpl::last() const {
   if(size() == 0) {
     throwException(getElementeErrorText, __TFUNCTION__);
   }
@@ -261,10 +235,14 @@ private:
   size_t              m_updateCount;
 public:
   ListIterator(ListImpl &list);
-  AbstractIterator *clone()       override;
-  bool hasNext()            const override;
-  void *next()                    override;
-  void remove()                   override;
+  AbstractIterator *clone()         override {
+    return new ListIterator(*this);
+  }
+  bool              hasNext() const override {
+    return m_next != nullptr;
+  }
+  void             *next()          override;
+  void              remove()        override;
 };
 
 DEFINECLASSNAME(ListIterator);
@@ -273,14 +251,6 @@ ListIterator::ListIterator(ListImpl &list) : m_list(list) {
   m_updateCount = m_list.m_updateCount;
   m_next    = m_list.m_first;
   m_current = nullptr;
-}
-
-AbstractIterator *ListIterator::clone() {
-  return new ListIterator(*this);
-}
-
-bool ListIterator::hasNext() const {
-  return m_next != nullptr;
 }
 
 void *ListIterator::next() {

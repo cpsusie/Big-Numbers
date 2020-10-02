@@ -47,9 +47,8 @@ protected:
   void throwIndexError(const TCHAR *method, UINT i) const;
 public:
   virtual void setItem(UINT i, const BTreePageItem &v) = 0;
-  virtual const BTreePageItem &getItem(UINT i) const = 0;
-  virtual BTreePageItem &getItem(UINT i) = 0;
-  const BTreePageItem &getLastItem() const {
+  virtual BTreePageItem &getItem(UINT i) const = 0;
+          BTreePageItem &getLastItem() const {
     return getItem(m_itemCount);
   }
   void copyItems(UINT from, UINT to, const BTreePage *src, UINT start);
@@ -76,8 +75,7 @@ private:
   }
 public:
   void setItem(UINT i, const BTreePageItem &v);
-  const BTreePageItem &getItem(UINT i) const;
-  BTreePageItem &getItem(UINT i);
+  BTreePageItem &getItem(UINT i) const;
 };
 
 class BTreeMapPageImpl : public BTreePage {
@@ -88,11 +86,11 @@ private:
   }
 public:
   void setItem(UINT i, const BTreePageItem &v);
-  const BTreePageItem &getItem(UINT ki) const;
-  BTreePageItem &getItem(UINT i);
+  BTreePageItem &getItem(UINT i) const;
 };
 
 class BTreeSetImpl : public AbstractSet {
+  friend class BTreeSetIterator;
 private:
   AbstractObjectManager *m_objectManager;
   AbstractComparator    *m_comparator;
@@ -126,8 +124,8 @@ protected:
   }
 
   BTreePageItem         *findNode(const void *key)  const;
-  const BTreePageItem   *getMinNode()               const;
-  const BTreePageItem   *getMaxNode()               const;
+  BTreePageItem         *getMinNode()               const;
+  BTreePageItem         *getMaxNode()               const;
   bool                   insertItem(BTreePageItem &item);
 public:
   BTreeSetImpl(const AbstractObjectManager &objectManager, const AbstractComparator &comparator);
@@ -141,20 +139,17 @@ public:
   bool                remove(       const void *key)            override;
   bool                contains(     const void *key)      const override;
   // returns key*
-  const void         *select(RandomGenerator &rnd)        const override;
-        void         *select(RandomGenerator &rnd)              override;
+  void               *select(RandomGenerator &rnd)        const override;
   AbstractComparator *getComparator()                     const {
     return m_comparator;
   }
-  const void         *getMin()                            const override;
-  const void         *getMax()                            const override;
+  void               *getMin()                            const override;
+  void               *getMax()                            const override;
 
   AbstractIterator   *getIterator()                       const override;
   bool hasOrder()                                         const override {
     return true;
   }
-
-  friend class BTreeSetIterator;
 
   void traverse(PageWalker &pw) const;
   void showTree(AbstractFormatter &formatter) const;
@@ -189,8 +184,8 @@ public:
   void                *get(   const void *key)                     const override;
   bool                 remove(const void *key)                           override;
   AbstractEntry       *selectEntry(RandomGenerator &rnd)           const override;
-  const AbstractEntry *getMinEntry()                               const;
-  const AbstractEntry *getMaxEntry()                               const;
+  AbstractEntry       *getMinEntry()                               const;
+  AbstractEntry       *getMaxEntry()                               const;
 
   AbstractComparator  *getComparator()                             const {
     return BTreeSetImpl::getComparator();

@@ -33,8 +33,8 @@ public:
   void                *get(   const void *key)                          const override;
   bool                 remove(const void *key)                                override;
   AbstractEntry       *selectEntry(RandomGenerator &rnd)                const override;
-  const AbstractEntry *getMinEntry()                                    const override;
-  const AbstractEntry *getMaxEntry()                                    const override;
+  AbstractEntry       *getMinEntry()                                    const override;
+  AbstractEntry       *getMaxEntry()                                    const override;
   AbstractComparator  *getComparator()                                  const override {
     return HashSetImpl::getComparator();
   }

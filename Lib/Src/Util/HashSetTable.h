@@ -35,19 +35,19 @@ private:
   size_t              m_size;
   size_t              m_updateCount;
   int chainLength(size_t index) const;
-  int getMaxChainLength() const;
-  CompactIntArray getLength() const;
+  int getMaxChainLength()       const;
+  CompactIntArray getLength()   const;
 public:
   HashSetTable(const HashSetImpl &owner, size_t capacity);
   ~HashSetTable();
-  void insert(size_t index, HashSetNode *n);
-  void remove(HashSetNode *n);
-  void clear();
-  const AbstractKey *select(RandomGenerator &rnd) const;
-  inline size_t getCapacity() const {
-    return m_capacity;
-  }
+  void          clear();
   inline size_t size() const {
     return m_size;
+  }
+  void          insert(size_t index, HashSetNode *n);
+  void          remove(HashSetNode *n);
+  AbstractKey  *select(RandomGenerator &rnd) const;
+  inline size_t getCapacity() const {
+    return m_capacity;
   }
 };

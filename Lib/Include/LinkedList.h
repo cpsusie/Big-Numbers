@@ -44,14 +44,10 @@ public:
   bool                contains(const void *e)        const override;
   void                removeFirst();
   void                removeLast();
-  const void         *select(RandomGenerator &rnd)   const override;
-        void         *select(RandomGenerator &rnd);
-        void         *getElement(size_t index);
-  const void         *getElement(size_t index)       const;
-        void         *first();
-  const void         *first()                        const;
-        void         *last();
-  const void         *last()                         const;
+  void               *select(RandomGenerator &rnd)   const override;
+  void               *getElement(size_t index)       const;
+  void               *first()                        const;
+  void               *last()                         const;
 
   AbstractIterator   *getIterator()                  const override;
   bool                hasOrder()                     const override {

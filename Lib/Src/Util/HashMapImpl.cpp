@@ -101,12 +101,12 @@ AbstractEntry *HashMapImpl::selectEntry(RandomGenerator &rnd) const {
   return (HashMapNode*)findNode(select(rnd));
 }
 
-const AbstractEntry *HashMapImpl::getMinEntry() const {
+AbstractEntry *HashMapImpl::getMinEntry() const {
   throwUnsupportedOperationException(__TFUNCTION__);
   return nullptr;
 }
 
-const AbstractEntry *HashMapImpl::getMaxEntry() const {
+AbstractEntry *HashMapImpl::getMaxEntry() const {
   throwUnsupportedOperationException(__TFUNCTION__);
   return nullptr;
 }

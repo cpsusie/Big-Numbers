@@ -143,21 +143,16 @@ bool HashSetImpl::contains(const void *key) const {
   return findNode(key) != nullptr;
 }
 
-const void *HashSetImpl::select(RandomGenerator &rnd) const {
-  return m_table->select(rnd)->key();
+void *HashSetImpl::select(RandomGenerator &rnd) const {
+  return (void*)m_table->select(rnd)->key();
 }
 
-void *HashSetImpl::select(RandomGenerator &rnd) {
-  const void *key = m_table->select(rnd)->key();
-  return (void*)key;
-}
-
-const void *HashSetImpl::getMin() const {
+void *HashSetImpl::getMin() const {
   throwUnsupportedOperationException(__TFUNCTION__);
   return nullptr;
 }
 
-const void *HashSetImpl::getMax() const {
+void *HashSetImpl::getMax() const {
   throwUnsupportedOperationException(__TFUNCTION__);
   return nullptr;
 }

@@ -16,8 +16,8 @@ public:
   virtual void                *get(   const void *key)                     const = 0;
   virtual bool                 remove(const void *key)                           = 0;
   virtual AbstractEntry       *selectEntry(RandomGenerator &rnd)           const = 0;
-  virtual const AbstractEntry *getMinEntry()                               const = 0;
-  virtual const AbstractEntry *getMaxEntry()                               const = 0;
+  virtual AbstractEntry       *getMinEntry()                               const = 0;
+  virtual AbstractEntry       *getMaxEntry()                               const = 0;
   virtual AbstractComparator  *getComparator()                             const = 0;
   virtual AbstractSet         *getEntrySet();
   virtual AbstractSet         *getKeySet();
