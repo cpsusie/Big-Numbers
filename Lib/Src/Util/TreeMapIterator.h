@@ -4,19 +4,19 @@
 #include "TreeSetIterator.h"
 
 class TreeMapNode : public TreeSetNode, public AbstractEntry {
+  friend class TreeMapImpl;
 private:
   void *m_value;
 public:
-  const void *key() const {
+  const void *key()   const override {
     return TreeSetNode::key();
   }
-  void *value() {
+        void *value()       override {
     return m_value;
   }
-  const void *value() const {
+  const void *value() const override {
     return m_value;
   }
-  friend class TreeMapImpl;
 };
 
 class TreeMapIterator : public TreeSetIterator {

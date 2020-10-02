@@ -905,6 +905,9 @@
     <ClInclude Include="..\..\Include\XmlDoc.h" />
     <ClInclude Include="..\..\Include\XMLUtil.h" />
     <ClInclude Include="DateTimeStreamScanner.h" />
+    <ClInclude Include="HashMapIterator.h" />
+    <ClInclude Include="HashSetIterator.h" />
+    <ClInclude Include="HashSetTable.h" />
     <ClInclude Include="pch.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">false</ExcludedFromBuild>
@@ -1024,6 +1027,7 @@
     <ClCompile Include="GetSize.cpp" />
     <ClCompile Include="GetSystemTime.cpp" />
     <ClCompile Include="GetTestFileName.cpp" />
+    <ClCompile Include="HashSetTable.cpp" />
     <ClCompile Include="InputThread.cpp" />
     <ClCompile Include="MarginFile.cpp" />
     <ClCompile Include="PipeUtil.cpp" />

@@ -88,6 +88,15 @@
     <Filter Include="Source Files\System\Asm Files">
       <UniqueIdentifier>{7521240d-c477-4b6a-858a-aba657640d39}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Collection\Private Header Fles">
+      <UniqueIdentifier>{c01161fc-93f7-4648-b0f4-5e81f42f7913}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Process\Private Header Files">
+      <UniqueIdentifier>{6f64edce-5b30-4e26-87bc-b641b9d7b0c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Date\Private Header Files">
+      <UniqueIdentifier>{8f9756b9-8032-46f0-95b6-ec8c5a0e3cdb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="access.cpp">
@@ -961,16 +970,13 @@
     <ClCompile Include="InputThread.cpp">
       <Filter>Source Files\Process</Filter>
     </ClCompile>
+    <ClCompile Include="HashSetTable.cpp">
+      <Filter>Source Files\Collection</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
-    <ClInclude Include="ThreadPoolInternal.h">
-      <Filter>Source Files\Process</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\targetver.h" />
-    <ClInclude Include="DateTimeStreamScanner.h">
-      <Filter>Source Files\Date</Filter>
-    </ClInclude>
     <ClInclude Include="RegexIStream\DFA.h">
       <Filter>Source Files\Stream\RegexIStream\Header Files</Filter>
     </ClInclude>
@@ -1389,10 +1395,25 @@
       <Filter>Source Files\Collection\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TreeSetIterator.h">
-      <Filter>Source Files\Collection\Header Files</Filter>
+      <Filter>Source Files\Collection\Private Header Fles</Filter>
     </ClInclude>
     <ClInclude Include="TreeMapIterator.h">
-      <Filter>Source Files\Collection\Header Files</Filter>
+      <Filter>Source Files\Collection\Private Header Fles</Filter>
+    </ClInclude>
+    <ClInclude Include="HashSetIterator.h">
+      <Filter>Source Files\Collection\Private Header Fles</Filter>
+    </ClInclude>
+    <ClInclude Include="HashMapIterator.h">
+      <Filter>Source Files\Collection\Private Header Fles</Filter>
+    </ClInclude>
+    <ClInclude Include="HashSetTable.h">
+      <Filter>Source Files\Collection\Private Header Fles</Filter>
+    </ClInclude>
+    <ClInclude Include="ThreadPoolInternal.h">
+      <Filter>Source Files\Process\Private Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DateTimeStreamScanner.h">
+      <Filter>Source Files\Date\Private Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

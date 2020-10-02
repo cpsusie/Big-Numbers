@@ -4,50 +4,9 @@
 #include "CommonHashFunctions.h"
 #include "Set.h"
 
-class HashSetNode : public AbstractKey {
-private:
-  void        *m_key;
-  HashSetNode *m_next, **m_prev;        // next/previous node vith same hash-index
-  HashSetNode *m_nextLink, *m_prevLink; // for iterator
-public:
-  const void *key() const {
-    return m_key;
-  }
-  HashSetNode();
-  friend class HashSetImpl;
-  friend class HashSetTable;
-  friend class HashSetIterator;
-};
+class HashSetNode;
 
 typedef ULONG (*HashFunction)(const void *);
-
-class HashSetTable {
-private:
-  const HashSetImpl  &m_owner;
-  const size_t        m_capacity;
-  HashSetNode       **m_table;
-  HashSetNode        *m_firstLink, *m_lastLink;
-  size_t              m_size;
-  size_t              m_updateCount;
-  int chainLength(size_t index) const;
-  int getMaxChainLength() const;
-  CompactIntArray getLength() const;
-public:
-  HashSetTable(const HashSetImpl &owner, size_t capacity);
-  ~HashSetTable();
-  void insert(size_t index, HashSetNode *n);
-  void remove(HashSetNode *n);
-  void clear();
-  const AbstractKey *select(RandomGenerator &rnd) const;
-  inline size_t getCapacity() const {
-    return m_capacity;
-  }
-  inline size_t size() const {
-    return m_size;
-  }
-  friend class HashSetImpl;
-  friend class HashSetIterator;
-};
 
 class HashSetImpl : public AbstractSet {
   friend class HashSetIterator;
@@ -63,8 +22,9 @@ protected:
   virtual HashSetNode                *cloneNode( HashSetNode *n  )  const;
   virtual void                        deleteNode(HashSetNode *n  )  const;
   virtual bool                        insertNode(HashSetNode *n  );
-  const void                         *select(RandomGenerator &rnd)  const; // return key*
-  void                               *select(RandomGenerator &rnd);
+   // return key*
+  const void                         *select(RandomGenerator &rnd)  const override;
+  void                               *select(RandomGenerator &rnd)        override;
   void                                resize(size_t newCapacity);
 
   HashSetNode                        *findNode(const void    *key)  const;
@@ -82,13 +42,9 @@ public:
   HashSetImpl(const AbstractObjectManager &objectManager, HashFunction hash, const AbstractComparator &comparator, size_t capacity);
   AbstractCollection        *clone(bool cloneData)        const override;
   ~HashSetImpl()                                                override;
-  void                       clear()                            override {
-    m_table->clear();
-  }
+  void                       clear()                            override;
   // return number of elements
-  size_t                     size()                       const override {
-    return m_table->size();
-  }
+  size_t                     size()                       const override;
   bool                       add(     const void *key)          override;
   bool                       remove(  const void *key)          override;
   bool                       contains(const void *key)    const override;
@@ -106,38 +62,10 @@ public:
     return false;
   }
 
-  inline CompactIntArray     getLength()                  const {
-    return m_table->getLength();
-  }
-  inline size_t              getCapacity()                const {  // return capacity, NOT number of elements
-    return m_table->getCapacity();
-  }
-  inline int                 getMaxChainLength()          const {
-    return m_table->getMaxChainLength();
-  }
-};
-
-class HashSetIterator : public AbstractIterator {
-private:
-  DECLARECLASSNAME;
-  HashSetImpl        *m_set;
-  HashSetNode        *m_next, *m_current;
-  size_t              m_updateCount;
-
-  void checkUpdateCount() const;
-protected:
-  HashSetImpl &getSet() {
-    return *m_set;
-  }
-  HashSetNode *nextNode();
-public:
-  HashSetIterator(HashSetImpl &set);
-  AbstractIterator *clone()       override;
-  bool  hasNext()           const override;
-  void *next()                    override {
-    return (void*)(nextNode()->key());
-  }
-  void remove()                   override;
+  CompactIntArray            getLength()                  const;
+  // return capacity, NOT number of elements
+  size_t                     getCapacity()                const;
+  int                        getMaxChainLength()          const;
 };
 
 template <typename T> class HashSet : public Set<T> {

@@ -3,10 +3,6 @@
 
 DEFINECLASSNAME(TreeSetIterator);
 
-AbstractIterator *TreeSetIterator::clone() {
-  return new TreeSetIterator(*this);
-}
-
 enum IteratorState {
   LEFT_DONE
  ,LEFT_FOR
@@ -17,15 +13,11 @@ enum IteratorState {
 TreeSetIterator::TreeSetIterator(TreeSetImpl &set) : m_set(set) {
   m_updateCount = m_set.m_updateCount;
   m_next        = findFirst();
-  m_current     = NULL;
-}
-
-bool TreeSetIterator::hasNext() const {
-  return m_next != NULL;
+  m_current     = nullptr;
 }
 
 TreeSetNode *TreeSetIterator::nextNode() {
-  if(m_next == NULL) {
+  if(m_next == nullptr) {
     noNextElementError(s_className);
   }
   checkUpdateCount();
@@ -95,18 +87,18 @@ TreeSetNode *TreeSetIterator::findNext() {
       throwException(_T("%s:Illegal state:%d"), __TFUNCTION__, sp->m_state);
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 void TreeSetIterator::remove() {
-  if(m_current == NULL) {
+  if(m_current == nullptr) {
     noCurrentElementError(s_className);
   }
   __assume(m_current);
   checkUpdateCount();
   m_set.remove(m_current->key());
-  m_current = NULL;
-  if(m_next != NULL) {
+  m_current = nullptr;
+  if(m_next != nullptr) {
     findPath(m_next->key());
   }
   m_updateCount = m_set.m_updateCount;

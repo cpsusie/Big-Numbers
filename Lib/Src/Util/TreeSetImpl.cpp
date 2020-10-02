@@ -37,10 +37,6 @@ TreeSetImpl::~TreeSetImpl() {
   SAFEDELETE(m_objectManager);
 }
 
-void TreeSetImpl::throwEmptySetException(const TCHAR *method) const {
-  throwSelectFromEmptyCollectionException(method);
-}
-
 TreeSetNode *TreeSetImpl::allocateNode() const {
   TreeSetNode *n = new TreeSetNode(); TRACE_NEW(n); return n;
 }
@@ -387,7 +383,7 @@ bool TreeSetImpl::contains(const void *key) const {
 
 const void *TreeSetImpl::getRandom(RandomGenerator &rnd) const {
   if(size() == 0) {
-    throwEmptySetException(__TFUNCTION__);
+    throwSelectFromEmptyCollectionException(__TFUNCTION__);
   }
 
   const TreeSetNode *p = m_root;
@@ -418,7 +414,7 @@ const TreeSetNode *TreeSetImpl::getMinNode() const {
   const TreeSetNode *result = nullptr;
   for(const TreeSetNode *p = m_root; p; result = p, p = p->m_left);
   if(result == nullptr) {
-    throwEmptySetException(__TFUNCTION__);
+    throwSelectFromEmptyCollectionException(__TFUNCTION__);
   }
   return result;
 }
@@ -427,7 +423,7 @@ const TreeSetNode *TreeSetImpl::getMaxNode() const {
   const TreeSetNode *result = nullptr;
   for(const TreeSetNode *p = m_root; p; result = p, p = p->m_right);
   if(result == nullptr) {
-    throwEmptySetException(__TFUNCTION__);
+    throwSelectFromEmptyCollectionException(__TFUNCTION__);
   }
   return result;
 }

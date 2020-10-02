@@ -14,7 +14,8 @@ protected:
   void                 swapContent(TreeSetNode *n1, TreeSetNode *n2)        override;
 public:
   TreeMapImpl(const AbstractObjectManager &keyManager, const AbstractObjectManager &dataManager, const AbstractComparator &comparator);
-  AbstractCollection  *clone(bool cloneData)                          const override;
+  // throw unsupported exception
+  AbstractCollection  *clone(   bool cloneData)                       const override;
   AbstractMap         *cloneMap(bool cloneData)                       const override;
   ~TreeMapImpl()                                                            override;
   void                 clear()                                              override {
@@ -27,8 +28,8 @@ public:
   void                *get(   const void *key)                        const override;
   bool                 remove(const void *key)                              override;
   AbstractEntry       *selectEntry(RandomGenerator &rnd)              const override;
-  const AbstractEntry *getMinEntry()                                  const;
-  const AbstractEntry *getMaxEntry()                                  const;
+  const AbstractEntry *getMinEntry()                                  const override;
+  const AbstractEntry *getMaxEntry()                                  const override;
   AbstractComparator  *getComparator()                                const override {
     return TreeSetImpl::getComparator();
   }

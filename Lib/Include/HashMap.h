@@ -1,25 +1,10 @@
 #pragma once
 
-#include "Array.h"
 #include "CompactArray.h"
 #include "HashSet.h"
 #include "Map.h"
 
-class HashMapNode : public HashSetNode, public AbstractEntry {
-private:
-  void *m_value;
-public:
-  const void *key() const override {
-    return HashSetNode::key();
-  }
-  void *value() override {
-    return m_value;
-  }
-  const void *value() const override {
-    return m_value;
-  }
-  friend class HashMapImpl;
-};
+class HashMapNode;
 
 class HashMapImpl : public HashSetImpl, public AbstractMap {
 private:
@@ -32,32 +17,32 @@ private:
     return m_dataManager;
   }
 protected:
-  virtual HashSetNode   *allocateNode()                                 const;
-  virtual HashMapNode   *createNode(const void *key, const void *value) const;
-  virtual HashSetNode   *cloneNode( HashSetNode *n)                     const;
-  virtual void           deleteNode(HashSetNode *n)                     const;
+  HashSetNode           *allocateNode()                                 const override;
+  virtual HashMapNode   *createNode(const void *key, const void *value) const ;
+  HashSetNode           *cloneNode( HashSetNode *n)                     const override;
+  void                   deleteNode(HashSetNode *n)                     const override;
 public:
   HashMapImpl(const AbstractObjectManager &keyManager, const AbstractObjectManager &dataManager, HashFunction hash, const AbstractComparator &comparator, size_t capacity);
   // throw unsupported exception
-  AbstractCollection  *clone(   bool cloneData)                   const override;
-  AbstractMap         *cloneMap(bool cloneData)                   const override;
-  ~HashMapImpl()                                                        override;
-  void                 clear()                                          override;
-  size_t               size()                                     const override;
-  bool                 put(   const void *key, const void *value)       override;
-  void                *get(   const void *key)                    const override;
-  bool                 remove(const void *key)                          override;
-  AbstractEntry       *selectEntry(RandomGenerator &rnd)          const override;
-  const AbstractEntry *getMinEntry()                              const;
-  const AbstractEntry *getMaxEntry()                              const;
-  AbstractComparator  *getComparator()                            const override {
+  AbstractCollection  *clone(   bool cloneData)                         const override;
+  AbstractMap         *cloneMap(bool cloneData)                         const override;
+  ~HashMapImpl()                                                              override;
+  void                 clear()                                                override;
+  size_t               size()                                           const override;
+  bool                 put(   const void *key, const void *value)             override;
+  void                *get(   const void *key)                          const override;
+  bool                 remove(const void *key)                                override;
+  AbstractEntry       *selectEntry(RandomGenerator &rnd)                const override;
+  const AbstractEntry *getMinEntry()                                    const override;
+  const AbstractEntry *getMaxEntry()                                    const override;
+  AbstractComparator  *getComparator()                                  const override {
     return HashSetImpl::getComparator();
   }
-  AbstractIterator    *getIterator()                              const override;
-  bool                 hasOrder()                                 const override {
+  AbstractIterator    *getIterator()                                    const override;
+  bool                 hasOrder()                                       const override {
     return HashSetImpl::hasOrder();
   }
-  AbstractIterator    *getKeyIterator()                           const override {
+  AbstractIterator    *getKeyIterator()                                 const override {
     return HashSetImpl::getIterator();
   }
 };

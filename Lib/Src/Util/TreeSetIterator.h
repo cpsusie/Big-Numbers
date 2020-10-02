@@ -3,24 +3,21 @@
 #include <TreeSet.h>
 
 class TreeSetNode : public AbstractKey {
+  friend class TreeSetImpl;
 private:
   void *m_key;
   char  m_balance;
   TreeSetNode *m_left, *m_right;
 public:
-  const void *key() const {
+  const void *key() const override {
     return m_key;
   }
-
-  TreeSetNode *left() {
+  inline TreeSetNode *left() {
     return m_left;
   }
-
-  TreeSetNode *right() {
+  inline TreeSetNode *right() {
     return m_right;
   }
-
-  friend class TreeSetImpl;
 };
 
 class TreeSetIteratorStackElement {
@@ -28,12 +25,11 @@ public:
   TreeSetNode *m_node;
   char         m_state;
 
+  inline TreeSetIteratorStackElement() {
+  }
   inline TreeSetIteratorStackElement(TreeSetNode *node, char state) {
     m_node  = node;
     m_state = state;
-  }
-
-  inline TreeSetIteratorStackElement() {
   }
 };
 
@@ -62,8 +58,12 @@ protected:
   TreeSetNode      *nextNode();
 public:
   TreeSetIterator(TreeSetImpl &set);
-  AbstractIterator *clone()                  override;
-  bool              hasNext()          const override;
+  AbstractIterator *clone()                  override {
+    return new TreeSetIterator(*this);
+  }
+  bool              hasNext()          const override {
+    return m_next != nullptr;
+  }
   void             *next()                   override {
     return (void*)(nextNode()->key());
   }

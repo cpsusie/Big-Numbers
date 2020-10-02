@@ -1,5 +1,5 @@
 #include "pch.h"
-#include <HashMap.h>
+#include "HashMapIterator.h"
 
 HashMapImpl::HashMapImpl(const AbstractObjectManager &keyManager, const AbstractObjectManager &dataManager, HashFunction hash, const AbstractComparator &comparator, size_t capacity)
 : HashSetImpl(keyManager, hash, comparator, capacity)
@@ -45,21 +45,6 @@ void HashMapImpl::clear() {
 
 size_t HashMapImpl::size() const {
   return HashSetImpl::size();
-}
-
-class HashMapIterator : public HashSetIterator {
-public:
-  HashMapIterator(HashMapImpl &map) : HashSetIterator(map) {
-  }
-
-  AbstractIterator *clone() override {
-    return new HashMapIterator(*this);
-  }
-  void *next()              override;
-};
-
-void *HashMapIterator::next() {
-  return (AbstractEntry*)((HashMapNode*)nextNode());
 }
 
 AbstractIterator *HashMapImpl::getIterator() const {

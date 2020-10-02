@@ -23,7 +23,6 @@ private:
   bool        nodeDelete(TreeSetNode *&pp, const void *key);
   void        deleteNodeRecurse(TreeSetNode *n);
   const void *getRandom(RandomGenerator &rnd)                    const;
-  void        throwEmptySetException(const TCHAR *method)        const;
 protected:
   virtual TreeSetNode         *allocateNode()                    const;
   virtual TreeSetNode         *createNode( const void  *key    ) const;
@@ -31,7 +30,8 @@ protected:
   virtual void                 deleteNode( TreeSetNode *n      ) const;
   virtual bool                 insertNode( TreeSetNode *n      );
   virtual void                 swapContent(TreeSetNode *n1, TreeSetNode *n2);
-  const   void                *select(     RandomGenerator &rnd) const override; // return key*
+  // return key*
+  const   void                *select(     RandomGenerator &rnd) const override;
           void                *select(     RandomGenerator &rnd)       override;
 
         TreeSetNode           *findNode(   const void  *key    );

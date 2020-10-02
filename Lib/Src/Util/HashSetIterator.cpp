@@ -1,24 +1,16 @@
 #include "pch.h"
-#include <HashSet.h>
+#include "HashSetIterator.h"
 
 DEFINECLASSNAME(HashSetIterator);
 
 HashSetIterator::HashSetIterator(HashSetImpl &set) : m_set(&set) {
   m_updateCount = m_set->m_table->m_updateCount;
   m_next        = m_set->m_table->m_firstLink;
-  m_current     = NULL;
-}
-
-AbstractIterator *HashSetIterator::clone() {
-  return new HashSetIterator(*this);
-}
-
-bool HashSetIterator::hasNext() const {
-  return m_next != NULL;
+  m_current     = nullptr;
 }
 
 HashSetNode *HashSetIterator::nextNode() {
-  if(m_next == NULL) {
+  if(m_next == nullptr) {
     noNextElementError(s_className);
   }
   __assume(m_next);
@@ -30,13 +22,13 @@ HashSetNode *HashSetIterator::nextNode() {
 }
 
 void HashSetIterator::remove() {
-  if(m_current == NULL) {
+  if(m_current == nullptr) {
     noCurrentElementError(s_className);
   }
   __assume(m_current);
   checkUpdateCount();
   m_set->remove(m_current->key());
-  m_current = NULL;
+  m_current = nullptr;
   m_updateCount = m_set->m_table->m_updateCount;
 }
 
