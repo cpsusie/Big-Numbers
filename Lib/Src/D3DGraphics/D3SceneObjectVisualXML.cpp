@@ -14,7 +14,7 @@ void setValue(XMLDoc &doc, XMLNodePtr n, const D3SceneObjectVisual &v) {
     setValue(doc, n, _T("fillmode"       ), fillModeToString(v.getFillMode()));
   }
   if(v.hasShadeMode()) {
-    setValue(doc, n, _T("hasshademode"   ), shadeModeToString(v.getShadeMode()));
+    setValue(doc, n, _T("shademode"   ), shadeModeToString(v.getShadeMode()));
   }
   if(v.hasMaterial()) {
     setValue(doc, n, _T("materialid"), v.getMaterialId());
