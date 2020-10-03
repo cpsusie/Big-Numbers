@@ -5,7 +5,7 @@
 #include <PropertyContainer.h>
 
 class CPropertyDialogThread;
-class PropertyDialog;
+class AbstractPropertyDialog;
 
 typedef enum {
   PDM_VISIBLE_PROPERTYID  // int    - notification id, when active dialog changes, or hide/show
@@ -13,12 +13,14 @@ typedef enum {
  ,PDM_DIALOG_COUNT        // UINT   . notification id, when number of dialogs in map changes
 } PropertyDialogMapProperty;
 
-class PropertyDialogMap : private IntHashMap<CPropertyDialogThread*>, public PropertyContainer, private PropertyChangeListener {
+class PropertyDialogMap : public PropertyContainer, private PropertyChangeListener {
 private:
-  mutable FastSemaphore  m_gate, m_lock1;
-  CPropertyDialogThread *m_visibleDialogThread;
-  int                    m_visiblePropertyId;
+  IntHashMap<CPropertyDialogThread*> m_map;
+  mutable FastSemaphore              m_gate, m_lock1;
+  CPropertyDialogThread             *m_visibleDialogThread;
+  int                                m_visiblePropertyId;
 
+  UINT mapSize() const;
   void setVisibleDialogThread(CPropertyDialogThread *newValue);
   // no lock-protection
   bool isDialogVisible1() const;
@@ -41,12 +43,12 @@ public:
     , m_visiblePropertyId(  -1  )
   {
   }
-  ~PropertyDialogMap() {
+  ~PropertyDialogMap() override {
     removeAllDialogs();
-    PropertyContainer::clear();
+    __super::clear();
   }
   // notification Id=PDM_DIALOG_COUNT
-  PropertyDialogMap &addDialog(PropertyDialog *dlg);
+  PropertyDialogMap &addDialog(AbstractPropertyDialog *dlg);
   // notification Id=PDM_DIALOG_COUNT
   PropertyDialogMap &removeDialog(int id);
   // notification Id=PDM_DIALOG_COUNT (once)

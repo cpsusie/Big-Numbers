@@ -60,8 +60,8 @@ void PackedArrayIterator::remove() {
   m_updateCount = m_a.getUpdateCount();
 }
 
-Iterator<UINT> PackedArray::getIterator() {
-  return Iterator<UINT>(new PackedArrayIterator(this));
+Iterator<UINT> PackedArray::getIterator() const {
+  return Iterator<UINT>(new PackedArrayIterator((PackedArray*)this));
 }
 
 // --------------------------------------- PackedArrayReverseIterator ----------------------------------------
@@ -126,6 +126,6 @@ void PackedArrayReverseIterator::remove() {
   m_updateCount = m_a.getUpdateCount();
 }
 
-Iterator<UINT> PackedArray::getReverseIterator() {
-  return Iterator<UINT>(new PackedArrayReverseIterator(this));
+Iterator<UINT> PackedArray::getReverseIterator() const {
+  return Iterator<UINT>(new PackedArrayReverseIterator((PackedArray*)this));
 }

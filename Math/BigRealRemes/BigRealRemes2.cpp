@@ -832,7 +832,7 @@ static int extremaVectorCmp(const ExtremaVector &v1, const ExtremaVector &v2) {
 }
 
 void ExtremaHashMap::save(tostream &out) {
-  Iterator<Entry<ExtremaKey, Array<ExtremaVector> > > it = entrySet().getIterator();
+  Iterator<Entry<ExtremaKey, Array<ExtremaVector> > > it = getIterator();
   out << size() << endl;
   while(it.hasNext()) {
     Entry<ExtremaKey, Array<ExtremaVector> > &e = it.next();

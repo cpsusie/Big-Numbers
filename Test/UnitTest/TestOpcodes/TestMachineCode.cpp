@@ -327,7 +327,7 @@ public:
 };
 
 AllVOIDPtrOperands &AllVOIDPtrOperands::operator=(const AllMemoryOperands &src) {
-  for(Iterator<const InstructionOperand*> it = ((AllMemoryOperands&)src).getIterator(); it.hasNext();) {
+  for(Iterator<const InstructionOperand*> it = src.getIterator(); it.hasNext();) {
     const MemoryOperand &op = (MemoryOperand&)*it.next();
     if(op.getSize() == REGSIZE_BYTE) {
       add(new VOIDPtr(op));

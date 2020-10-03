@@ -144,7 +144,7 @@ namespace TestBitSet {
     size_t m_result[100];
   public:
     BitSetGetIndexTimeTester(const BitSet &a) : m_a(a) {
-      for(Iterator<size_t> it = ((BitSet&)m_a).getReverseIterator(); it.hasNext();) {
+      for(Iterator<size_t> it = m_a.getReverseIterator(); it.hasNext();) {
          m_values.add(it.next());
          if(m_values.size() >= ARRAYSIZE(m_result)) break;
       }
@@ -166,7 +166,7 @@ namespace TestBitSet {
     size_t m_result[100];
   public:
     BitSetOldGetIndexTimeTester(const BitSet &a) : m_a(a) {
-      for(Iterator<size_t> it = ((BitSet&)m_a).getReverseIterator(); it.hasNext();) {
+      for(Iterator<size_t> it = m_a.getReverseIterator(); it.hasNext();) {
          m_values.add(it.next());
          if(m_values.size() >= ARRAYSIZE(m_result)) break;
       }
@@ -513,7 +513,7 @@ namespace TestBitSet {
         return -1;
       }
       size_t count = 0;
-      for(Iterator<size_t> it = ((BitSet&)s).getIterator(); it.hasNext(); count++) {
+      for(Iterator<size_t> it = s.getIterator(); it.hasNext(); count++) {
         if(it.next() == e) {
           return count;
         }
@@ -549,7 +549,7 @@ namespace TestBitSet {
 
     static size_t getCount2(const BitSet &s, size_t from, size_t to) {
       size_t count = 0;
-      for(Iterator<size_t> it = ((BitSet&)s).getIterator(from, to); it.hasNext(); it.next()) {
+      for(Iterator<size_t> it = s.getIterator(from, to); it.hasNext(); it.next()) {
         count++;
       }
       return count;
@@ -784,7 +784,7 @@ namespace TestBitSet {
           copy.setDimension(dim1);
           verify(copy.getDimension() == dim1);
           verify(copy.size() == m.size());
-          for(Iterator<MatrixIndex> it = ((BitMatrix&)m).getIterator(); it.hasNext();) {
+          for(Iterator<MatrixIndex> it = m.getIterator(); it.hasNext();) {
             const MatrixIndex i = it.next();
             verify(copy.get(i));
           }

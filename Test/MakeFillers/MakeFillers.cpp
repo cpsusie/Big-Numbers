@@ -287,7 +287,7 @@ FileInfo FileTable::writeFillerFile(size_t n, size_t wantedSize) {
 void FileTable::listTimeTable(FILE *f) const {
   _ftprintf(f,_T("Sum:%s"), m_sum.toString().cstr());
   const double avgSum = m_sum.getAvgTimePerKb();
-  for(Iterator<size_t> it = ((FileTable*)this)->m_existingFiles.getIterator(); it.hasNext();) {
+  for(Iterator<size_t> it = m_existingFiles.getIterator(); it.hasNext();) {
     const size_t    i    = it.next();
     const FileInfo &info = m_timeTable[i];
     const double    avg  = info.getAvgTimePerKb();

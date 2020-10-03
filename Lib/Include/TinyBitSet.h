@@ -236,9 +236,9 @@ public:
       m_current = -1;
     }
     void first(UINT start, UINT end) {
-      start = min(start, m_set.getCapacity()-1);
+      start     = min(start, m_set.getCapacity()-1);
       m_hasNext = false;
-      m_end = end;
+      m_end     = end;
       setCurrentUndefined();
       if(start < m_end) {
         return;
@@ -253,18 +253,16 @@ public:
       }
     }
   public:
-    inline TinyBitSetReverseIterator(TinyBitSet &set, UINT start, UINT end)
-      : m_set(set)
-    {
+    inline TinyBitSetReverseIterator(TinyBitSet &set, UINT start, UINT end) : m_set(set) {
       first(start, end);
     }
-    AbstractIterator *clone()       override {
+    AbstractIterator *clone()         override {
       return new TinyBitSetReverseIterator(*this);
     }
-    bool hasNext()            const override {
+    bool              hasNext() const override {
       return m_hasNext;
     }
-    void *next()                    override {
+    void             *next()          override {
       if(!m_hasNext) {
         noNextElementError(_T("TinyBitSetReverseIterator"));
       }
@@ -292,19 +290,19 @@ public:
 
   // Iterates elements of bitset in ascending order,
   // beginning from smallest element >= start
-  Iterator<UINT> getIterator(UINT start = 0, UINT end = -1) {
-    return Iterator<UINT>(new TinyBitSetIterator(*this, start, end));
+  Iterator<UINT> getIterator(UINT start = 0, UINT end = -1) const {
+    return Iterator<UINT>(new TinyBitSetIterator((TinyBitSet&)*this, start, end));
   }
 
   // Iterates elements of bitset in descending order,
   // beginning from biggest element <= start
-  Iterator<UINT> getReverseIterator(UINT start = -1, UINT end = 0) {
-    return Iterator<UINT>(new TinyBitSetReverseIterator(*this, start, end));
+  Iterator<UINT> getReverseIterator(UINT start = -1, UINT end = 0) const {
+    return Iterator<UINT>(new TinyBitSetReverseIterator((TinyBitSet&)*this, start, end));
   }
 
   String toString(AbstractStringifier<UINT> *sf = NULL, const TCHAR *delim = _T(",")) const {
     String result = _T("(");
-    Iterator<UINT> it = ((TinyBitSet*)this)->getIterator();
+    Iterator<UINT> it = getIterator();
     if(sf) {
       result += it.toString(*sf, delim);
     } else {

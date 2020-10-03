@@ -320,14 +320,14 @@ String CalculatorInfo::toString() const {
   result += format(_T("#Edge  points:%d\n"), m_edgeSet.size());
   result += format(_T("#Inner points:%d\n"), m_innerSet.size());
   String tmp;
-  Iterator<size_t> it = ((CalculatorInfo*)this)->m_edgeSet.getIterator();
+  Iterator<size_t> it = m_edgeSet.getIterator();
   for(int i = 0; (i < 20) && it.hasNext(); i++) {
     const CPoint p = m_edgeSet.next(it);
     tmp += format(_T("(%d,%d) "), p.x,p.y);
   }
   result += format(_T("First %d edgePoints:(%s)\n"), i, tmp.cstr());
   tmp = EMPTYSTRING;
-  it = ((CalculatorInfo*)this)->m_innerSet.getIterator();
+  it = m_innerSet.getIterator();
   for(i = 0; (i < 20) && it.hasNext(); i++) {
     const CPoint p = m_innerSet.next(it);
     tmp += format(_T("(%d,%d) "), p.x,p.y);

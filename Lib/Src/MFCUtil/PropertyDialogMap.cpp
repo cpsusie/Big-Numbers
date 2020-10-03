@@ -3,18 +3,18 @@
 #include <MFCUtil/PropertyDialogThread.h>
 #include <MFCUtil/PropertyDialogMap.h>
 
-PropertyDialogMap &PropertyDialogMap::addDialog(PropertyDialog *dlg) {
+PropertyDialogMap &PropertyDialogMap::addDialog(AbstractPropertyDialog *dlg) {
   m_gate.wait();
-  const UINT oldSize = (UINT)size();
+  const UINT oldSize = mapSize();
   UINT newSize;
   try {
     const int id = dlg->getPropertyId();
-    if(get(id)) {
+    if(m_map.get(id)) {
       throwInvalidArgumentException(__TFUNCTION__, _T("PropertyDialog with id=%d already added"), id);
     }
     dlg->addPropertyChangeListener(this);
-    put(id, CPropertyDialogThread::startThread(dlg));
-    newSize = (UINT)size();
+    m_map.put(id, CPropertyDialogThread::startThread(dlg));
+    newSize = mapSize();
     m_gate.notify();
   } catch(...) {
     m_gate.notify();
@@ -24,17 +24,21 @@ PropertyDialogMap &PropertyDialogMap::addDialog(PropertyDialog *dlg) {
   return *this;
 }
 
+UINT PropertyDialogMap::mapSize() const {
+  return (UINT)m_map.size();
+}
+
 PropertyDialogMap &PropertyDialogMap::removeDialog(int id) {
   m_gate.wait();
-  UINT oldSize = (UINT)size();
+  UINT oldSize = mapSize();
   UINT newSize;
   try {
-    CPropertyDialogThread **thr = get(id);
+    CPropertyDialogThread **thr = m_map.get(id);
     if(thr) {
       (*thr)->kill();
-      remove(id);
+      m_map.remove(id);
     }
-    newSize = (UINT)size();
+    newSize = mapSize();
     m_gate.notify();
   } catch(...) {
     m_gate.notify();
@@ -46,15 +50,14 @@ PropertyDialogMap &PropertyDialogMap::removeDialog(int id) {
 
 PropertyDialogMap &PropertyDialogMap::removeAllDialogs() {
   m_gate.wait();
-  UINT oldSize = (UINT)size();
+  UINT oldSize = mapSize();
   UINT newSize;
   try {
-    for(Iterator<Entry<int, CPropertyDialogThread*> > it = entrySet().getIterator(); it.hasNext(); ) {
-      Entry<int, CPropertyDialogThread*> &e = it.next();
-      e.getValue()->kill();
+    for(Iterator<CPropertyDialogThread*> it = m_map.values().getIterator(); it.hasNext(); ) {
+      it.next()->kill();
     }
-    IntHashMap<CPropertyDialogThread*>::clear();
-    newSize = (UINT)size();
+    m_map.clear();
+    newSize = mapSize();
     m_gate.notify();
   } catch(...) {
     m_gate.notify();
@@ -104,7 +107,7 @@ bool PropertyDialogMap::showDialog(int id, const void *data, size_t size) {
   m_gate.wait();
   bool changed = false;
   try {
-    CPropertyDialogThread * const * thr = get(id);
+    CPropertyDialogThread * const * thr = m_map.get(id);
     if((getVisiblePropertyId() != id) && thr) {
       hideVisibleDialog();
       (*thr)->setDialogVisible(true);
@@ -130,7 +133,7 @@ const void *PropertyDialogMap::getProperty(int id, size_t size) const {
   m_gate.wait();
   try {
     const void *result = NULL;
-    CPropertyDialogThread * const *thr = get(id);
+    CPropertyDialogThread * const *thr = m_map.get(id);
     if(thr) {
       result = (*thr)->getCurrentDialogProperty(size);
     }
@@ -143,7 +146,7 @@ const void *PropertyDialogMap::getProperty(int id, size_t size) const {
 }
 
 void PropertyDialogMap::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
-  PropertyDialog *dlg = (PropertyDialog*)source;
+  AbstractPropertyDialog *dlg = (AbstractPropertyDialog*)source;
   switch(dlg->getPropertyIdOffset(id)) {
   case 0:
     notifyPropertyChanged(PDM_CURRENT_DLGVALUE, oldValue, newValue);
@@ -153,7 +156,7 @@ void PropertyDialogMap::handlePropertyChanged(const PropertyContainer *source, i
       if(!newVisible) {
         setVisibleDialogThread(NULL);
       } else {
-        setVisibleDialogThread(*get(dlg->getPropertyId()));
+        setVisibleDialogThread(*m_map.get(dlg->getPropertyId()));
       }
     }
     break;

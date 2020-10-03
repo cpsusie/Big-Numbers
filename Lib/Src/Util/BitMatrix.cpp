@@ -59,7 +59,7 @@ void BitMatrix::checkValidColumn(const TCHAR *method, size_t c) const {
 BitSet &BitMatrix::getRow(size_t r, BitSet &s) const {
   checkValidRow(__TFUNCTION__, r);
   s.clear().setCapacity(getColumnCount());
-  for(Iterator<MatrixIndex> it = ((BitMatrix*)this)->getRowIterator(r); it.hasNext();) {
+  for(Iterator<MatrixIndex> it = getRowIterator(r); it.hasNext();) {
     s.add(it.next().c);
   }
   return s;
@@ -68,7 +68,7 @@ BitSet &BitMatrix::getRow(size_t r, BitSet &s) const {
 BitSet &BitMatrix::getColumn(size_t c, BitSet &s) const {
   checkValidColumn(__TFUNCTION__, c);
   s.clear().setCapacity(getRowCount());
-  for(Iterator<MatrixIndex> it = ((BitMatrix*)this)->getColumnIterator(c); it.hasNext();) {
+  for(Iterator<MatrixIndex> it = getColumnIterator(c); it.hasNext();) {
     s.add(it.next().r);
   }
   return s;
@@ -162,164 +162,11 @@ BitMatrix BitMatrix::operator*(const BitMatrix &rhs) const { // like normal matr
 
 // ------------------------------------------------------------------
 
-class BitMatrixIterator : public BitSetIterator {
-private:
-  DECLARECLASSNAME;
-  BitMatrix  &m_matrix;
-  MatrixIndex m_p;
-  inline bool hasCurrent() const {
-    return m_p.r < m_matrix.getRowCount();
-  }
-  inline void setCurrentUndefined() {
-    m_p.r = -1;
-  }
-
-public:
-  BitMatrixIterator(BitMatrix &m) : BitSetIterator(m), m_matrix(m) {
-    setCurrentUndefined();
-  }
-  AbstractIterator *clone() override;
-  void *next()              override;
-  void remove()             override;
-};
-
-DEFINECLASSNAME(BitMatrixIterator);
-
-AbstractIterator *BitMatrixIterator::clone() {
-  return new BitMatrixIterator(*this);
-}
-
-void *BitMatrixIterator::next() {
-  m_p = m_matrix.indexToPoint(*(size_t*)(BitSetIterator::next()));
-  return &m_p;
-}
-
-void BitMatrixIterator::remove() {
-  if(!hasCurrent()) noCurrentElementError(s_className);
-  m_matrix.set(m_p, false);
-  setCurrentUndefined();
-}
-
-Iterator<MatrixIndex> BitMatrix::getIterator() {
-  return Iterator<MatrixIndex>(new BitMatrixIterator(*this));
-}
 
 // ------------------------------------------------------------------
 
-class BitMatrixRowIterator : public BitSetIterator {
-private:
-  DECLARECLASSNAME;
-  BitMatrix  &m_matrix;
-  MatrixIndex m_p;
-  static inline size_t firstIndex(const BitMatrix &m, size_t r) {
-    return m.getIndex(r,0);
-  }
-  static inline size_t lastIndex(const BitMatrix &m, size_t r) {
-    return m.getIndex(r,m.getColumnCount()-1);
-  }
-  inline bool hasCurrent() const {
-    return m_p.c < m_matrix.getColumnCount();
-  }
-  inline void setCurrentUndefined() {
-    m_p.c = -1;
-  }
-public:
-  BitMatrixRowIterator(BitMatrix &m, size_t r)
-    : BitSetIterator(m, firstIndex(m,r), lastIndex(m,r))
-    , m_matrix(m) {
-    setCurrentUndefined();
-  }
-  AbstractIterator *clone() override;
-  void *next()              override;
-  void remove()             override;
-};
-
-DEFINECLASSNAME(BitMatrixRowIterator);
-
-AbstractIterator *BitMatrixRowIterator::clone() {
-  return new BitMatrixRowIterator(*this);
-}
-
-void *BitMatrixRowIterator::next() {
-  m_p = m_matrix.indexToPoint(*(size_t*)(BitSetIterator::next()));
-  return &m_p;
-}
-
-void BitMatrixRowIterator::remove() {
-  if(!hasCurrent()) noCurrentElementError(s_className);
-  m_matrix.set(m_p, false);
-  setCurrentUndefined();
-}
-
-Iterator<MatrixIndex> BitMatrix::getRowIterator(size_t r) {
-  checkValidRow(__TFUNCTION__, r);
-  return Iterator<MatrixIndex>(new BitMatrixRowIterator(*this, r));
-}
 
 // ------------------------------------------------------------------
-
-class BitMatrixColumnIterator : public AbstractIterator {
-private:
-  DECLARECLASSNAME;
-  BitMatrix  &m_matrix;
-  MatrixIndex m_p, m_next;
-  bool        m_hasNext;
-  void first(size_t c);
-  inline bool hasCurrent() const {
-    return m_p.r < m_matrix.getRowCount();
-  }
-  inline void setCurrentUndefined() {
-    m_p.r = -1;
-  }
-public:
-  BitMatrixColumnIterator(BitMatrix &m, size_t c) : m_matrix(m) {
-    first(c);
-  }
-  AbstractIterator *clone()       override;
-  bool hasNext()            const override {
-    return m_hasNext;
-  }
-  void *next()                    override;
-  void  remove()                  override;
-};
-
-DEFINECLASSNAME(BitMatrixColumnIterator);
-
-void BitMatrixColumnIterator::first(size_t c) {
-  m_next.c = m_p.c = c;
-  setCurrentUndefined();
-  for(m_next.r = 0; m_next.r < m_matrix.getRowCount(); m_next.r++) {
-    if(m_matrix.get(m_next)) {
-      m_hasNext = true;
-      return;
-    }
-  }
-  m_hasNext = false;
-}
-
-AbstractIterator *BitMatrixColumnIterator::clone() {
-  return new BitMatrixColumnIterator(*this);
-}
-
-void *BitMatrixColumnIterator::next() {
-  if(!hasNext()) noNextElementError(s_className);
-  for(m_p.r = m_next.r++; m_next.r < m_matrix.getRowCount(); m_next.r++) {
-    if(m_matrix.get(m_next)) return &m_p;
-  }
-  m_hasNext = false;
-  return &m_p;
-}
-
-void BitMatrixColumnIterator::remove() {
-  if(!hasCurrent()) noCurrentElementError(s_className);
-  m_matrix.set(m_p, false);
-  setCurrentUndefined();
-}
-
-Iterator<MatrixIndex> BitMatrix::getColumnIterator(size_t c) {
-  checkValidColumn(__TFUNCTION__, c);
-  return Iterator<MatrixIndex>(new BitMatrixColumnIterator(*this, c));
-}
 
 // -------------------------------------------------------------------------
 

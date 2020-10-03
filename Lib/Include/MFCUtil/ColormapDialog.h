@@ -11,7 +11,7 @@ private:
 public:
   CColormapDialog(int resId, int propertyId, CWnd *pParent) : CPropertyDialog<T>(resId, propertyId, pParent) {
   }
-  ~CColormapDialog() {
+  ~CColormapDialog() override {
     for(Iterator<Entry<CompactIntKeyType, CSliderCtrlWithTransformation*> > it = m_sliderMap.getIterator(); it.hasNext();) {
       CSliderCtrlWithTransformation *ctrl = it.next().getValue();
       SAFEDELETE(ctrl);
@@ -19,7 +19,7 @@ public:
     m_sliderMap.clear();
   }
 protected:
-  BOOL PreTranslateMessage(MSG *pMsg) {
+  BOOL PreTranslateMessage(MSG *pMsg) override {
     if(pMsg->message == WM_MOUSEWHEEL) {
       short zDelta = (short)(pMsg->wParam >> 16);
       zDelta = -zDelta;

@@ -12,7 +12,7 @@ IMPLEMENT_DYNCREATE(CPropertyDialogThread, CWinThread)
 BEGIN_MESSAGE_MAP(CPropertyDialogThread, CWinThread)
 END_MESSAGE_MAP()
 
-CPropertyDialogThread *CPropertyDialogThread::startThread(PropertyDialog *dlg) { // static
+CPropertyDialogThread *CPropertyDialogThread::startThread(AbstractPropertyDialog *dlg) { // static
   CPropertyDialogThread *thr = (CPropertyDialogThread*)AfxBeginThread(RUNTIME_CLASS(CPropertyDialogThread), THREAD_PRIORITY_NORMAL, 0, CREATE_SUSPENDED);
   thr->m_dlg = dlg;
   thr->ResumeThread();
@@ -49,11 +49,11 @@ int CPropertyDialogThread::ExitInstance() {
 
 class VisibleChangedNotification : public PropertyChangeListener {
 private:
-  PropertyDialog    *m_dlg;
-  const         bool m_initialVisibleStatus;
-  FastSemaphore      m_changed;
+  AbstractPropertyDialog *m_dlg;
+  const              bool m_initialVisibleStatus;
+  FastSemaphore           m_changed;
 public:
-  VisibleChangedNotification(PropertyDialog *dlg)
+  VisibleChangedNotification(AbstractPropertyDialog *dlg)
     : m_dlg(dlg)
     , m_initialVisibleStatus(dlg->isVisible())
     , m_changed(0)

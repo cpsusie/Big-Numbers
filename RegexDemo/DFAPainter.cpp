@@ -70,7 +70,7 @@ DFAStatePoint::DFAStatePoint(const DFAState &state, int gridX, int gridY)
 {
   DFATransitionMap map;
   state.getTransitionMap(map);
-  for(Iterator<Entry<int, CharacterSet> > it = map.entrySet().getIterator(); it.hasNext();) {
+  for(Iterator<Entry<int, CharacterSet> > it = map.getIterator(); it.hasNext();) {
     const Entry<int, CharacterSet> &e = it.next();
     const int           successor = e.getKey();
     const CharacterSet &set       = e.getValue();

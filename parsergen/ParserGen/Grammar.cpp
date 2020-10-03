@@ -784,7 +784,7 @@ int Grammar::getMaxNonTerminalNameLength() const {
 
 String Grammar::symbolSetToString(const BitSet &set) const {
   String result;
-  Iterator<size_t> it = ((BitSet&)set).getIterator();
+  Iterator<size_t> it = set.getIterator();
   int i = 0;
   while(it.hasNext()) {
     const int s = (int)it.next();

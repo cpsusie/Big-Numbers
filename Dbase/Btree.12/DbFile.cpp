@@ -260,7 +260,7 @@ ULONG FileSlotTable::nextTransCount() {
 
 FileSlot *FileSlotTable::allocateFileSlot(const String &fileName) {
   if(size() >= MAXFILESLOT) {
-    Iterator<Entry<String,FileSlot> > it = entrySet().getIterator();
+    Iterator<Entry<String,FileSlot> > it = getIterator();
     FileSlot *fileSlot = &it.next().getValue();
     while(it.hasNext()) {
       FileSlot &fs1 = it.next().getValue();
@@ -305,7 +305,7 @@ void FileSlotTable::dump() {
 
   int line = 1;
   Console::printf(40,line++,_T("slotTable.size:%2d"),size());
-  for(Iterator<Entry<String,FileSlot> > it = entrySet().getIterator(); it.hasNext();line++) {
+  for(Iterator<Entry<String,FileSlot> > it = getIterator(); it.hasNext();line++) {
     FileSlot &slot = it.next().getValue();
     Console::printf(40,line,_T("%-20s lastTrans:%d  "),slot.m_fileName.cstr(),slot.m_lastTrans);
   }

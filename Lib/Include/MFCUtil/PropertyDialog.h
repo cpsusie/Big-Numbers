@@ -8,14 +8,14 @@ inline void putWindowBesideMainWindow(CWnd *wnd) {
 
 #define PROPDLG_VISIBLE_OFFSET 1
 
-class PropertyDialog : public CDialog, public PropertyContainer {
+class AbstractPropertyDialog : public CDialog, public PropertyContainer {
 private:
   const int m_propertyId;
   bool      m_hasBeenVisible;
   bool      m_visible; // when changed, notification with id = m_propertyId+PROPDLG_VISIBLE_OFFSET (bool) is sent to listeners
   bool      m_showWinActive;
 protected:
-  PropertyDialog(int resId, int propertyId, CWnd *pParent) : CDialog(resId, pParent), m_propertyId(propertyId) {
+  AbstractPropertyDialog(int resId, int propertyId, CWnd *pParent) : CDialog(resId, pParent), m_propertyId(propertyId) {
     setNotifyEnable(false);
     m_hasBeenVisible = false;
     m_visible        = false;
@@ -29,7 +29,7 @@ protected:
     }
   }
 public:
-  ~PropertyDialog() override {
+  ~AbstractPropertyDialog() override {
     PropertyContainer::clear();
   }
   inline int getPropertyId() const {
@@ -41,7 +41,7 @@ public:
   inline bool isVisible() const {
     return m_visible;
   }
-  virtual bool setStartProperty(const void *v, size_t size) = 0;
+  virtual bool        setStartProperty(const void *v, size_t size) = 0;
   virtual const void *getCurrentProperty(size_t size) const = 0;
   virtual void reposition() {
     putWindowBesideMainWindow(this);
@@ -52,11 +52,11 @@ public:
   virtual String getTypeName() const = 0;
 };
 
-template<typename T> class CPropertyDialog : public PropertyDialog {
+template<typename T> class CPropertyDialog : public AbstractPropertyDialog {
 private:
   T m_startValue, m_currentValue;
 protected:
-  CPropertyDialog(int resId, int propertyId, CWnd *pParent) : PropertyDialog(resId, propertyId, pParent) {
+  CPropertyDialog(int resId, int propertyId, CWnd *pParent) : AbstractPropertyDialog(resId, propertyId, pParent) {
   }
 
   const T &getStartValue() const {
@@ -78,11 +78,11 @@ public:
   const T &getCurrentValue() const {
     return m_currentValue;
   }
-  const void *getCurrentProperty(size_t size) const override final {
+  const void *getCurrentProperty(size_t size) const final {
     checkSize(__TFUNCTION__, size);
     return &m_currentValue;
   }
-  bool setStartProperty(const void *v, size_t size) override final {
+  bool setStartProperty(const void *v, size_t size) final {
     checkSize(__TFUNCTION__, size);
     return setStartValue(*(T*)v);
   }

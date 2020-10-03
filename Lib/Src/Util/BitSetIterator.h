@@ -1,0 +1,58 @@
+#pragma once
+
+#include <BitSet.h>
+
+class AbstractBitSetIterator : public AbstractIterator {
+protected:
+  BitSet &m_s;
+  size_t  m_next, m_current, m_end;
+  bool    m_hasNext;
+  inline AbstractBitSetIterator(BitSet &set) : m_s(set) {
+  }
+  inline bool hasCurrent() const {
+    return m_current < m_s.getCapacity();
+  }
+  inline void setCurrentUndefined() {
+    m_current = -1;
+  }
+  inline void remove(const TCHAR *className) {
+    if(!hasCurrent()) noCurrentElementError(className);
+    m_s.remove(m_current);
+    setCurrentUndefined();
+  }
+
+public:
+  bool hasNext() const override {
+    return m_hasNext;
+  }
+};
+
+class BitSetIterator : public AbstractBitSetIterator {
+private:
+  DECLARECLASSNAME;
+  void first(size_t start, size_t end);
+public:
+  BitSetIterator(BitSet &set, size_t start=0, size_t end=-1) : AbstractBitSetIterator(set) {
+    first(start, end);
+  }
+  AbstractIterator *clone()  override;
+  void             *next()   override;
+  void              remove() override {
+    __super::remove(s_className);
+  }
+};
+
+class BitSetReverseIterator : public AbstractBitSetIterator {
+private:
+  DECLARECLASSNAME;
+  void first(size_t start, size_t end);
+public:
+  BitSetReverseIterator(BitSet &set, size_t start=-1, size_t end=0)  : AbstractBitSetIterator(set) {
+    first(start, end);
+  }
+  AbstractIterator *clone()  override;
+  void             *next()   override;
+  void              remove() override {
+    __super::remove(s_className);
+  }
+};

@@ -163,11 +163,11 @@ public:
 
   // Iterates elements of bitset in ascending  order,
   // beginning from smallest element >= start
-  Iterator<size_t> getIterator(       size_t start =  0, size_t end=-1);
+  Iterator<size_t> getIterator(       size_t start =  0, size_t end=-1) const;
 
   // Iterates elements of bitset in descending order,
   // beginning from biggest element <= start
-  Iterator<size_t> getReverseIterator(size_t start = -1, size_t end= 0);
+  Iterator<size_t> getReverseIterator(size_t start = -1, size_t end= 0) const;
 
   friend class BitSetIterator;
   friend class BitSetReverseIterator;
@@ -217,69 +217,8 @@ inline BitSet  compl(const BitSet &s) {
   return BitSet(s).invert();
 }
 
-#pragma warning(disable:26495)
-
-class AbstractBitSetIterator : public AbstractIterator {
-protected:
-  BitSet &m_s;
-  size_t  m_next, m_current, m_end;
-  bool    m_hasNext;
-  inline AbstractBitSetIterator(BitSet &set) : m_s(set) {
-  }
-  inline bool hasCurrent() const {
-    return m_current < m_s.getCapacity();
-  }
-  inline void setCurrentUndefined() {
-    m_current = -1;
-  }
-  inline void remove(const TCHAR *className) {
-    if(!hasCurrent()) noCurrentElementError(className);
-    m_s.remove(m_current);
-    setCurrentUndefined();
-  }
-
-public:
-  bool hasNext() const override {
-    return m_hasNext;
-  }
-};
-
-class BitSetIterator : public AbstractBitSetIterator {
-private:
-  DECLARECLASSNAME;
-  void first(size_t start, size_t end);
-public:
-  BitSetIterator(BitSet &set, size_t start=0, size_t end=-1)
-    : AbstractBitSetIterator(set)
-  {
-    first(start, end);
-  }
-  AbstractIterator *clone() override;
-  void *next()              override;
-  void  remove()            override {
-    AbstractBitSetIterator::remove(s_className);
-  }
-};
-
-class BitSetReverseIterator : public AbstractBitSetIterator {
-private:
-  DECLARECLASSNAME;
-  void first(size_t start, size_t end);
-public:
-  BitSetReverseIterator(BitSet &set, size_t start=-1, size_t end=0)
-    : AbstractBitSetIterator(set)
-  {
-    first(start, end);
-  }
-  AbstractIterator *clone() override;
-  void *next()              override;
-  void  remove()            override {
-    AbstractBitSetIterator::remove(s_className);
-  }
-};
-
 inline String charBitSetToString(const BitSet &set, AbstractStringifier<size_t> *sf = CharacterFormater::stdAsciiFormater) {
-  return ((BitSet&)set).getIterator().rangesToString(*sf);
+  return set.getIterator().rangesToString(*sf);
 }
 
 class FileBitSet {

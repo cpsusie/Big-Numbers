@@ -65,11 +65,11 @@ public:
 
   void setCapacity(UINT64 capacity);
 
-  Iterator<UINT> getIterator();
-  Iterator<UINT> getReverseIterator();
+  Iterator<UINT> getIterator() const;
+  Iterator<UINT> getReverseIterator() const;
 
   String toString(const TCHAR *delimiter = _T(",")) const {
-    return ((PackedArray*)this)->getIterator().toString(UIntStringifier(), delimiter);
+    return getIterator().toString(UIntStringifier(), delimiter);
   }
   void checkInvariant(const TCHAR *method) const;
 

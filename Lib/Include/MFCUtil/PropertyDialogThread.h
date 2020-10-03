@@ -2,12 +2,12 @@
 
 #include <FastSemaphore.h>
 
-class PropertyDialog;
+class AbstractPropertyDialog;
 class PropertyContainer;
 
 class CPropertyDialogThread : public CWinThread {
 private:
-  PropertyDialog         *m_dlg;
+  AbstractPropertyDialog *m_dlg;
   bool                    m_setVisibleBusy : 1;
   bool                    m_inModalLoop    : 1;
   bool                    m_killed         : 1;
@@ -37,5 +37,5 @@ public:
   }
   virtual BOOL InitInstance();
   virtual int ExitInstance();
-  static CPropertyDialogThread *startThread(PropertyDialog *dlg);
+  static CPropertyDialogThread *startThread(AbstractPropertyDialog *dlg);
 };

@@ -1332,7 +1332,7 @@ bool D3SceneEditor::setControl(D3EditorControl control, D3SceneObjectVisual *vis
   return true;
 }
 
-void D3SceneEditor::selectPropertyDialog(PropertyDialog *dlg, D3EditorControl control) {
+void D3SceneEditor::selectPropertyDialog(AbstractPropertyDialog *dlg, D3EditorControl control) {
   m_currentPropertyDialog = dlg;
   setControl(control, NULL);
 }

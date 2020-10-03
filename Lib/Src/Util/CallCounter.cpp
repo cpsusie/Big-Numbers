@@ -44,7 +44,7 @@ static int callEntryCmp(const CallEntry &e1, const CallEntry &e2) {
 String CallCounter::mapToString() {
   Array<CallEntry> entryArray(m_map.size());
 
-  for(Iterator<Entry<int, UINT> > it = m_map.entrySet().getIterator(); it.hasNext();) {
+  for(Iterator<Entry<int, UINT> > it = m_map.getIterator(); it.hasNext();) {
     const Entry<int, UINT> &e = it.next();
     entryArray.add(CallEntry(e.getKey(), e.getValue()));
   }

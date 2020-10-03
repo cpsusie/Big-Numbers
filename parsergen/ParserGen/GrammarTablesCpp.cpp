@@ -238,7 +238,7 @@ ByteCount GrammarTables::printCompressedActionsCpp(MarginFile &output) const {
     output.printf(_T("#define compressedLasets NULL\n\n"));
   } else {
     Array<BitSetWithIndex> laSetArray;
-    for(Iterator<LASetEntry> it = laSetMap.entrySet().getIterator(); it.hasNext();) {
+    for(Iterator<LASetEntry> it = laSetMap.getIterator(); it.hasNext();) {
       laSetArray.add(it.next());
     }
     laSetMap.clear();
@@ -247,7 +247,7 @@ ByteCount GrammarTables::printCompressedActionsCpp(MarginFile &output) const {
     StringArray linePrefix;
     for(int i = 0; i < laSetCount; i++) {
       laSetTotal.addAll(bitSetToByteArray(laSetArray[i]));
-      linePrefix.add(format(_T("%2d %3d tokens"), i, laSetArray[i].size()));
+      linePrefix.add(format(_T("%2d %3zu tokens"), i, laSetArray[i].size()));
     }
     laSetSize1State = (int)laSetTotal.size() / laSetCount; // all laSets are the same size
     byteCount = printByteArray(output, _T("compressedLasets"), laSetTotal, laSetSize1State, &linePrefix);
@@ -522,8 +522,8 @@ ByteCount GrammarTables::printSymbolNameTableCpp(MarginFile &output) const {
   const UINT maxNameLength = (UINT)m_symbolName.maxLength()+1;
   for(int s = 0; s < symbolCount; s++) {
     const String &name = m_symbolName[s];
-    output.printf(_T("/* %3d */ _T(\"%s\"%*s"), s, name.cstr(), maxNameLength-name.length(),_T(")"));
-    const UINT stringSize = sizeof(TCHAR)*((int)name.length() + 1);
+    output.printf(_T("/* %3d */ _T(\"%s\"%*s"), s, name.cstr(), (UINT)(maxNameLength-name.length()),_T(")"));
+    const UINT stringSize = sizeof(TCHAR)*((int)(name.length()) + 1);
     stringByteCount += ByteCount(stringSize,stringSize);
     if(s < symbolCount-1) {
       output.printf(_T(","));

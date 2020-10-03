@@ -287,7 +287,7 @@ void DFA::fixupTransitions() {
 BitSet DFA::getNFASetForGroup(UINT g) const {
 #if defined(_DEBUG)
   BitSet result(m_NFA.size());
-  for(Iterator<size_t> it = ((BitSet&)m_groups[g]).getIterator(); it.hasNext();) {
+  for(Iterator<size_t> it = m_groups[g].getIterator(); it.hasNext();) {
     result += m_states[it.next()].m_NFAset;
   }
   return result;
@@ -362,7 +362,7 @@ static int countNewLines(const String &s) {
 BitSet DFA::getPatternIndexSet(UINT stateIndex, int maxPatternCharIndex) const {
   BitSet result(maxPatternCharIndex+1);
   const DFAState &state = m_states[stateIndex];
-  for(Iterator<size_t> it = ((BitSet&)(state.m_NFAset)).getIterator(); it.hasNext();) {
+  for(Iterator<size_t> it = state.m_NFAset.getIterator(); it.hasNext();) {
     const NFAState *nfaState = m_NFA[it.next()];
     if((nfaState->getEdge() != EDGE_EPSILON) && nfaState->m_patternCharIndex >= 0) {
       result.add(nfaState->m_patternCharIndex);

@@ -20,7 +20,7 @@ public:
 };
 
 CacheArray::CacheArray(const Pow2Cache *cache) : CompactArray<ArrayEntry>(cache->size()) {
-  for(Iterator<Pow2CacheEntry> it = ((Pow2Cache*)cache)->getIterator(); it.hasNext();) {
+  for(Iterator<Pow2CacheEntry> it = cache->getIterator(); it.hasNext();) {
     const Pow2CacheEntry &e = it.next();
     add(e);
   }

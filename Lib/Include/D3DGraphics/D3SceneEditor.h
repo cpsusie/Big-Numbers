@@ -52,7 +52,7 @@ private:
     D3SceneObjectVisual            *m_currentObj;
     D3SceneObjectCoordinateSystem  *m_coordinateSystem;
     PropertyDialogMap               m_propertyDialogMap;
-    PropertyDialog                 *m_currentPropertyDialog;
+    AbstractPropertyDialog         *m_currentPropertyDialog;
     FLAGTRAITS(D3SceneEditor, UINT, m_stateFlags);
     CompactStack<UINT>              m_stateFlagsStack;
     CPoint                          m_lastMouse;
@@ -96,7 +96,7 @@ private:
     void moveCamera(           const D3DXVECTOR3 &dir, float dist);
     void rotateCameraUpDown(   float angle);
     void rotateCameraLeftRight(float angle);
-    void selectPropertyDialog(PropertyDialog *dlg, D3EditorControl control);
+    void selectPropertyDialog(AbstractPropertyDialog *dlg, D3EditorControl control);
     void unselectPropertyDialog();
     void mapDialogShow(D3LightControl      *lc);
     void mapDialogShow(D3SceneObjectVisual *obj);

@@ -57,7 +57,7 @@ public:
   }
   String                           getNewLoopName(const String &oldName) const;
   inline Iterator<ExpressionVariable> getVariablesIterator() const {
-    return ((ExpressionSymbolTable*)this)->m_variableTable.getIterator();
+    return m_variableTable.getIterator();
   }
   ExpressionVariableArray getAllVariables() const;
   void unmarkAllReferencedNodes() const;

@@ -4,8 +4,18 @@
 
 template <typename T> class QueueList : protected LinkedList<T> {
 public:
+  void clear() override {
+    __super::clear();
+  }
+  size_t size() const override {
+    return __super::size();
+  }
+  inline bool isEmpty() const {
+    return (size() == 0);
+  }
+
   void put(const T &e) {
-    LinkedList<T>::add(e);
+    __super::add(e);
   }
 
   T get() {
@@ -14,27 +24,15 @@ public:
     return e;
   }
 
-  void clear() {
-    LinkedList<T>::clear();
-  }
-
-  bool isEmpty() const {
-    return size() == 0;
-  }
-
-  size_t size() const {
-    return LinkedList<T>::size();
-  }
-
   T &operator[](size_t index) {
-    return LinkedList<T>::operator[](index);
+    return __super::operator[](index);
   }
 
   const T &operator[](size_t index) const {
-    return LinkedList<T>::operator[](index);
+    return __super::operator[](index);
   }
 
-  Iterator<T> getIterator() {
-    return LinkedList<T>::getIterator();
+  Iterator<T> getIterator() const override {
+    return __super::getIterator();
   }
 };

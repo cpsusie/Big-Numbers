@@ -45,14 +45,14 @@ static void readTrainingData(TrainingList &list, WordWindowMap &wwmap) {
     }
   }
   fclose(f);
-  for(Iterator<Entry<String,WordWindowCheck> > wwit = wwmap.entrySet().getIterator(); wwit.hasNext(); ) {
+  for(Iterator<Entry<String,WordWindowCheck> > wwit = wwmap.getIterator(); wwit.hasNext(); ) {
     Entry<String,WordWindowCheck> &entry = wwit.next();
     list.add(WordWindow(entry.getKey().cstr(),entry.getValue().m_allowSeparation));
   }
 
   FILE *wwfile = fopen(_T("wwdat.txt"),_T("w"));
   if(wwfile != NULL) {
-    for(Iterator<Entry<String,WordWindowCheck> > wwit = wwmap.entrySet().getIterator(); wwit.hasNext(); ) {
+    for(Iterator<Entry<String,WordWindowCheck> > wwit = wwmap.getIterator(); wwit.hasNext(); ) {
       Entry<String,WordWindowCheck> &entry = wwit.next();
       _ftprintf(wwfile,_T("%d %s\n"),entry.getValue().m_count,entry.getKey().cstr());
     }

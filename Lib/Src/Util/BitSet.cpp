@@ -164,10 +164,10 @@ BitSet &BitSet::add(size_t a, size_t b) {
 
 size_t BitSet::select(RandomGenerator &rnd) const {
   const size_t i = randSizet(m_capacity, rnd);
-  for(Iterator<size_t> it = ((BitSet*)this)->getIterator(i); it.hasNext();) {
+  for(Iterator<size_t> it = getIterator(i); it.hasNext();) {
     return it.next();
   }
-  for(Iterator<size_t> it = ((BitSet*)this)->getReverseIterator(i); it.hasNext();) {
+  for(Iterator<size_t> it = getReverseIterator(i); it.hasNext();) {
     return it.next();
   }
   throwSelectFromEmptyCollectionException(__TFUNCTION__);
@@ -412,7 +412,7 @@ int bitSetCmp(const BitSet &i1, const BitSet &i2) {
 
 String BitSet::toString(AbstractStringifier<size_t> *sf, const TCHAR *delim) const {
   String result = _T("(");
-  Iterator<size_t> it = ((BitSet*)this)->getIterator();
+  Iterator<size_t> it = getIterator();
   if(sf) {
     result += it.toString(*sf, delim);
   } else {
@@ -448,8 +448,8 @@ void BitSet::getRangeTable(CompactInt64Array &rangeTable, BYTE shift) const {
   const UINT         stepSize     = 1 << shift;
   size_t             currentLimit = stepSize;
   size_t             counter      = 0;
-  for(BitSetIterator it((BitSet&)(*this)); it.hasNext();) {
-    const size_t &e = *(const size_t*)it.next();
+  for(Iterator<size_t> it = getIterator(); it.hasNext();) {
+    const size_t e = it.next();
     if(++counter >= currentLimit) {
 
 //      printf("hashTable[%3d]:%11s -> %s\n", m_rangeTable.size(), format1000(currentLimit).cstr(), format1000(e).cstr());

@@ -383,7 +383,7 @@ void CharSetMap::incrAddresses(UINT addr, UINT incr) { // called when instructio
 String CharSetMap::toString() const {
   String result;
   int count = 0;
-  for(Iterator<Entry<ByteBitSet, CompactIntArray> > it = ((CharSetMap*)this)->entrySet().getIterator(); it.hasNext();) {
+  for(Iterator<Entry<ByteBitSet, CompactIntArray> > it = getIterator(); it.hasNext();) {
     const Entry<ByteBitSet, CompactIntArray> &entry = it.next();
     result += format(_T("%s : %s\n"),  charBitSetToString(entry.getKey()).cstr(), entry.getValue().toStringBasicType().cstr());
   }
@@ -1195,7 +1195,7 @@ void Regex::compilePattern1(const TCHAR *pattern) {
   m_codeSize = pc;
 
   // Save the charsets used in the code, and fixup the references
-  for(Iterator<Entry<ByteBitSet, CompactIntArray> > it = usedCharSetMap.entrySet().getIterator(); it.hasNext();) {
+  for(Iterator<Entry<ByteBitSet, CompactIntArray> > it = usedCharSetMap.getIterator(); it.hasNext();) {
     const Entry<ByteBitSet, CompactIntArray> &e = it.next();
     const short addr = pc;
     e.getKey().append(m_buffer);

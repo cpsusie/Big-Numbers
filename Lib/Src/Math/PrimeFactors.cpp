@@ -53,15 +53,12 @@ Iterator<size_t> Primes::getIterator(UINT upperLimit) {
   return m_primeSet.getIterator();
 }
 
-PrimeFactorArray::PrimeFactorArray(INT64 n, UINT limit) {
+PrimeFactorArray::PrimeFactorArray(INT64 n, UINT limit) : m_positive(n >= 0) {
   if(n == 0) {
     return;
   }
-  if(n > 0) {
-    m_positive = true;
-  } else {
+  if(!m_positive) {
     n = -n;
-    m_positive = false;
   }
   const UINT upperLimit = limit ? limit : ((UINT)sqrt(Double80(n)) + 1);
   Primes &primes = Primes::getInstance().wait();

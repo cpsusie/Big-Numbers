@@ -53,7 +53,7 @@ void printCharClass(MarginFile &f, BitSet &set) {
   size_t charsPrinted = f.getLeftMargin();
   unsigned int first = 1, last = 0;
   const TCHAR *delim = NULL;
-  for(Iterator<size_t> it = ((BitSet&)set).getIterator(); it.hasNext();) {
+  for(Iterator<size_t> it = set.getIterator(); it.hasNext();) {
     const UINT ch = (UINT)it.next();
     if(first > last) {
       first = last = ch;

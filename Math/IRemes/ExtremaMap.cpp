@@ -56,7 +56,7 @@ static int extremaVectorCmp(const ExtremaVector &v1, const ExtremaVector &v2) {
 typedef Entry<ExtremaKey, Array<ExtremaVector> > ExtremaMapEntry;
 
 void ExtremaMap::save(tostream &out) {
-  for(Iterator<ExtremaMapEntry> it = entrySet().getIterator(); it.hasNext();) {
+  for(Iterator<ExtremaMapEntry> it = getIterator(); it.hasNext();) {
     ExtremaMapEntry &e = it.next();
     Array<ExtremaVector> &a = e.getValue();
     if(a.size() > 1) {

@@ -973,6 +973,15 @@
     <ClCompile Include="HashSetTable.cpp">
       <Filter>Source Files\Collection</Filter>
     </ClCompile>
+    <ClCompile Include="BitMatrixIterator.cpp">
+      <Filter>Source Files\Collection</Filter>
+    </ClCompile>
+    <ClCompile Include="BitMatrixColumnIterator.cpp">
+      <Filter>Source Files\Collection</Filter>
+    </ClCompile>
+    <ClCompile Include="BitMatrixRowIterator.cpp">
+      <Filter>Source Files\Collection</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -1414,6 +1423,12 @@
     </ClInclude>
     <ClInclude Include="DateTimeStreamScanner.h">
       <Filter>Source Files\Date\Private Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BitSetIterator.h">
+      <Filter>Source Files\Collection\Private Header Fles</Filter>
+    </ClInclude>
+    <ClInclude Include="BitMatrixIterator.h">
+      <Filter>Source Files\Collection\Private Header Fles</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

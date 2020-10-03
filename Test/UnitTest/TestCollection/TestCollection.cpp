@@ -565,7 +565,7 @@ namespace TestCollection {
     if(map.hasOrder()) {
       list.sort(KeyElementCompare);
       int i = 0;
-      for(Iterator<Entry<Key, Element> > it = map.entrySet().getIterator(); it.hasNext();i++) {
+      for(Iterator<Entry<Key, Element> > it = map.getIterator(); it.hasNext();i++) {
         Entry<Key, Element> &e = it.next();
         verify(e.getKey() == list[i].m_key && e.getValue() == list[i].m_elem);
       }
@@ -627,7 +627,7 @@ namespace TestCollection {
     }
 
     INFO(_T("Testing entrySet.Iterator"));
-    for(Iterator<Entry<Key, Element> > entryIterator = map.entrySet().getIterator(); entryIterator.hasNext();) {
+    for(Iterator<Entry<Key, Element> > entryIterator = map.getIterator(); entryIterator.hasNext();) {
       Entry<Key, Element> &entry = entryIterator.next();
       String dd = format(_T("(%s,%s)\n"), entry.getKey().toString().cstr(), entry.getValue().toString().cstr());
     }
@@ -636,7 +636,7 @@ namespace TestCollection {
       INFO(_T("Testing map order"));
       testMapStream(map);
       int counter = 0;
-      Iterator<Entry<Key, Element> > it = map.entrySet().getIterator();
+      Iterator<Entry<Key, Element> > it = map.getIterator();
       Comparator<Key> &comparator = map.getComparator();
       const Key firstKey1 = map.keySet().getMin();
       const Key lastKey1 = map.keySet().getMax();
@@ -696,7 +696,7 @@ namespace TestCollection {
     count = 0;
 
     INFO(_T("Testing map.iterator1"));
-    Iterator<Entry<Key, Element> > it1 = map.entrySet().getIterator();
+    Iterator<Entry<Key, Element> > it1 = map.getIterator();
     while(it1.hasNext()) {
       const Key &k = it1.next().getKey();
       count++;
@@ -708,7 +708,7 @@ namespace TestCollection {
     verify(!itcopy.hasNext());
 
     INFO(_T("Testing map.iterator2"));
-    for(Iterator<Entry<Key, Element> > it2 = bigmap.entrySet().getIterator(); it2.hasNext();) {
+    for(Iterator<Entry<Key, Element> > it2 = bigmap.getIterator(); it2.hasNext();) {
       const Key &k = it2.next().getKey();
       verify(map.get(k) != NULL);
     }
@@ -770,7 +770,7 @@ namespace TestCollection {
     verify(map2.size() == Union.size());
 
     map2 = map;
-    const Key                 &selectedKey = map.keySet().select();
+    const Key                 &selectedKey   = map.keySet().select();
     const Entry<Key, Element> &selectedEntry = map.entrySet().select();
     const Key                 &SEK = selectedEntry.getKey();
     const Element             &SEE = selectedEntry.getValue();

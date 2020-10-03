@@ -140,13 +140,13 @@ void DFA::getTransitionMatrix(TmpDFATables &ttabs, const BitSet &rowSave, const 
 
   ttabs.allocateMatrix(rowCount, colCount);
   CompactIntArray columnsIndex(colCount);
-  for(Iterator<size_t> cit = ((BitSet&)columnSave).getIterator(); cit.hasNext();) {
-    columnsIndex.add((int)cit.next());
+  for(Iterator<size_t> it = columnSave.getIterator(); it.hasNext();) {
+    columnsIndex.add((int)it.next());
   }
 
   int r = 0;
-  for(Iterator<size_t> rit = ((BitSet&)rowSave).getIterator(); rit.hasNext(); r++) {
-    const int *DFAtransitions = m_states[rit.next()].m_transition;
+  for(Iterator<size_t> it = rowSave.getIterator(); it.hasNext(); r++) {
+    const int *DFAtransitions = m_states[it.next()].m_transition;
     int       *row            = &ttabs.transition(r, 0);
     for(UINT c = 0; c < colCount; c++) {
       *(row++) = DFAtransitions[columnsIndex[c]];
