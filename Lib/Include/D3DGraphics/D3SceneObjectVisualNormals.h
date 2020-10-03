@@ -11,13 +11,13 @@ public:
   D3SceneObjectVisualNormals(D3SceneObjectVisual *parent);
   ~D3SceneObjectVisualNormals() override;
 
-  SceneObjectType getType() const override {
+  SceneObjectType getType() const final {
     return SOTYPE_NORMALSOBJECT;
   }
-  D3DXMATRIX &getWorld() override {
+  D3DXMATRIX &getWorld() final {
     return getParent()->getWorld();
   }
-  bool hasNormals() const override {
+  bool hasNormals() const final {
     return false;
   }
   void draw() override;
