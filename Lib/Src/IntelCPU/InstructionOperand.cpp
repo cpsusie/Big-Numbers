@@ -298,7 +298,7 @@ String MemoryRef::toString() const {
 }
 
 void MemoryRef::throwInvalidIndexScale(const TCHAR *method, BYTE a) { // static
-  throwInvalidArgumentException(method, _T("a=%d. Must be 1,2,4,8"));
+  throwInvalidArgumentException(method, _T("a=%d. Must be 1,2,4,8"),a);
 }
 
 void MemoryRef::throwInvalidIndexRegister(const TCHAR *method, const Register &reg) { // static
