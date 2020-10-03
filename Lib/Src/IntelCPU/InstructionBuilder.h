@@ -107,7 +107,7 @@ protected:
     throwImmSizeException(method,mem.toString(),immv);
   }
   static inline void sizeError(     const TCHAR *method, OperandSize         size, INT64 immv) {
-    throwImmSizeException(method,::toString(size),immv);
+    throwImmSizeException(method,IntelCPU::toString(size),immv);
   }
   static inline void sizeError(     const TCHAR *method, INT64 immv) {
     throwImmSizeException(method,immv);

@@ -135,16 +135,16 @@ void InstructionOperand::throwUnknownSize(const TCHAR *method) const {
 void InstructionOperand::throwTypeError(const TCHAR *method, OperandType expectedType) const {
   throwException(_T("%s:Invalid type (=%s). Expected %s")
                 ,method
-                ,::toString(getType()).cstr()
-                ,::toString(expectedType).cstr()
+                ,IntelCPU::toString(getType()).cstr()
+                ,IntelCPU::toString(expectedType).cstr()
                 );
 }
 
 void InstructionOperand::throwSizeError(const TCHAR *method, OperandSize expectedSize) const {
   throwException(_T("%s:Operandsize=%s. Cannot convert to %s")
                 ,method
-                ,::toString(getSize()).cstr()
-                ,::toString(expectedSize).cstr());
+                ,IntelCPU::toString(getSize()).cstr()
+                ,IntelCPU::toString(expectedSize).cstr());
 }
 
 #define VALIDATEISIMMVALUE() if(getType() != IMMEDIATEVALUE) throwTypeError(__TFUNCTION__,IMMEDIATEVALUE)
@@ -317,8 +317,8 @@ String MemoryOperand::toString() const {
           : format(_T("[%s]")   , m_mr.toString().cstr());
   default          :
     return (m_segReg)
-          ? format(_T("%s ptr %s:[%s]"), ::toString(getSize()).cstr(), m_segReg->getName().cstr(), m_mr.toString().cstr())
-          : format(_T("%s ptr[%s]")    , ::toString(getSize()).cstr(), m_mr.toString().cstr());
+          ? format(_T("%s ptr %s:[%s]"), IntelCPU::toString(getSize()).cstr(), m_segReg->getName().cstr(), m_mr.toString().cstr())
+          : format(_T("%s ptr[%s]")    , IntelCPU::toString(getSize()).cstr(), m_mr.toString().cstr());
   }
 }
 
@@ -381,7 +381,7 @@ int InstructionOperand::insOpCmp(const InstructionOperand &op1, const Instructio
     if(c = regSizeCmp(op1.getSize(), op2.getSize())) return c;
     return sign(op1.getImmInt64() - op2.getImmInt64());
   }
-  throwInvalidArgumentException(__TFUNCTION__, _T("op1.getType()=%s"), ::toString(op1.getType()).cstr());
+  throwInvalidArgumentException(__TFUNCTION__, _T("op1.getType()=%s"), IntelCPU::toString(op1.getType()).cstr());
   return 0;
 }
 

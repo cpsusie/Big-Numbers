@@ -308,7 +308,7 @@ InstructionBuilder &InstructionBuilder::addImmediateOperand(const InstructionOpe
     default           :
       throwInvalidArgumentException(__TFUNCTION__
                                    ,_T("size=%s. Unable to determine size of immediate operand")
-                                   ,::toString(size).cstr());
+                                   ,IntelCPU::toString(size).cstr());
     }
   }
   switch(size) {
@@ -337,7 +337,7 @@ InstructionBuilder &InstructionBuilder::addImmediateOperand(const InstructionOpe
     break;
 #endif // IS64BIT
   default:
-    throwInvalidArgumentException(__TFUNCTION__, _T("size=%s"), ::toString(size).cstr());
+    throwInvalidArgumentException(__TFUNCTION__, _T("size=%s"), IntelCPU::toString(size).cstr());
   }
   return *this;
 }

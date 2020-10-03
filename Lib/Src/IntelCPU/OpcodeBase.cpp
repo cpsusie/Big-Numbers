@@ -174,7 +174,7 @@ bool OpcodeBase::isGPRegisterSizeAllowed(RegSize size) const {
   case REGSIZE_QWORD: return (getFlags() & QWORDGPR_ALLOWED  ) != 0;
   default           : throwInvalidArgumentException(__TFUNCTION__
                                                    ,_T("size=%s. (not GP-register size)")
-                                                   ,::toString(size).cstr()
+                                                   ,IntelCPU::toString(size).cstr()
                                                    );
   }
   return false;
@@ -235,11 +235,11 @@ void OpcodeBase::throwUnknownOperandType(const InstructionOperand &op, BYTE inde
   throwException(_T("%s:Operand %d has unknown type=%s")
                 ,getMnemonic().cstr()
                 ,index
-                ,::toString(op.getType()).cstr());
+                ,IntelCPU::toString(op.getType()).cstr());
 }
 
 void OpcodeBase::throwUnknownRegisterType(const TCHAR *method, RegType type) { // static
-  throwInvalidArgumentException(method, _T("RegisterType=%s"), ::toString(type).cstr());
+  throwInvalidArgumentException(method, _T("RegisterType=%s"), IntelCPU::toString(type).cstr());
 }
 
 #if defined(IS32BIT)
@@ -274,7 +274,7 @@ void OpcodeBase::throwUnknownRegisterType(const TCHAR *method, RegType type) { /
 #define CHECKLASTOP_IMMONLY(op)                                                                 \
 { if((getFlags() & LASTOP_IMMONLY) && (op.getType() != IMMEDIATEVALUE)) {                       \
     RAISEERROR(_T("Last operand must be immediate value. Type=%s")                              \
-              ,::toString(op.getType()).cstr());                                                \
+              ,IntelCPU::toString(op.getType()).cstr());                                        \
   }                                                                                             \
 }
 
