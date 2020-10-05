@@ -30,7 +30,7 @@ protected:
   }
 public:
   ~AbstractPropertyDialog() override {
-    PropertyContainer::clear();
+    __super::clear();
   }
   inline int getPropertyId() const {
     return m_propertyId;

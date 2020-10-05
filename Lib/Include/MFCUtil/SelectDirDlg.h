@@ -15,23 +15,18 @@ public:
   String getSelectedDir() const {
     return (LPCTSTR)m_dir;
   }
-    enum { IDD = _IDD_SELECTDIR_DIALOG };
-    CString	m_dir;
-    CString	m_drive;
-public:
-    virtual BOOL PreTranslateMessage(MSG *pMsg);
-protected:
-    virtual void DoDataExchange(CDataExchange *pDX);
-
-protected:
-
-    virtual BOOL OnInitDialog();
-    virtual void OnOK();
-    afx_msg void OnEditChangeDriveCombo();
-    afx_msg void OnGotoDir();
-    afx_msg void OnGotoDrive();
-    afx_msg void OnSelChangeDriveCombo();
-    afx_msg void OnDblclkDirTree(NMHDR *pNMHDR, LRESULT *pResult);
+  enum { IDD = _IDD_SELECTDIR_DIALOG };
+  CString	m_dir;
+  CString	m_drive;
+  virtual BOOL PreTranslateMessage(MSG *pMsg);
+  virtual void DoDataExchange(CDataExchange *pDX);
+  virtual BOOL OnInitDialog();
+  virtual void OnOK();
+  afx_msg void OnEditChangeDriveCombo();
+  afx_msg void OnGotoDir();
+  afx_msg void OnGotoDrive();
+  afx_msg void OnSelChangeDriveCombo();
+  afx_msg void OnDblclkDirTree(NMHDR *pNMHDR, LRESULT *pResult);
   DECLARE_MESSAGE_MAP()
 };
 
