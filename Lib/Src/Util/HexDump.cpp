@@ -2,7 +2,7 @@
 #include <DebugLog.h>
 
 void hexdump(const void *data, size_t size, FILE *f) {
-  const String str = hexdumpString(data, size);
+  const String str = createHexdumpString(data, size);
   if(f) {
     _ftprintf(f, _T("%s"), str.cstr());
   } else {

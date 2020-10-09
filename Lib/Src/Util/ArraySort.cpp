@@ -1,6 +1,5 @@
 #include "pch.h"
 #include <Comparator.h>
-#include <Random.h>
 #include <Array.h>
 
 #pragma check_stack(off)
@@ -51,22 +50,6 @@ public:
     return new ArrayImplComparator(m_userSuppliedComparator);
   }
 };
-
-intptr_t ArrayImpl::getSortCount(intptr_t from, intptr_t count) const {
-  const intptr_t length = (intptr_t)size() - from;
-  return min(count, length);
-}
-
-void ArrayImpl::shuffle(size_t from, size_t count) {
-  if(from >= size()) {
-    return;
-  }
-  count = getSortCount(from, count);
-  for(size_t i = from; i < count; i++ ) {
-    std::swap(m_elem[i], m_elem[from + randSizet() % count]);
-  }
-  m_updateCount++;
-}
 
 void ArrayImpl::reverse() {
   if(size() < 2) return;

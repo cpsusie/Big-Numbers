@@ -4,12 +4,20 @@
 #include <Random.h>
 #include "BitSetIterator.h"
 
-Iterator<size_t> BitSet::getIterator(size_t start, size_t end) const {
-  return Iterator<size_t>(new BitSetIterator((BitSet&)*this, start, end));
+ConstIterator<size_t> BitSet::getIterator(size_t start, size_t end) const {
+  return ConstIterator<size_t>(new BitSetIterator(this, start, end));
 }
 
-Iterator<size_t> BitSet::getReverseIterator(size_t start, size_t end) const {
-  return Iterator<size_t>(new BitSetReverseIterator((BitSet&)*this, start, end));
+Iterator<size_t> BitSet::getIterator(size_t start, size_t end) {
+  return Iterator<size_t>(new BitSetIterator(this, start, end));
+}
+
+ConstIterator<size_t> BitSet::getReverseIterator(size_t start, size_t end) const {
+  return ConstIterator<size_t>(new BitSetReverseIterator(this, start, end));
+}
+
+Iterator<size_t> BitSet::getReverseIterator(size_t start, size_t end) {
+  return Iterator<size_t>(new BitSetReverseIterator(this, start, end));
 }
 
 // -----------------------------------------------------------------------

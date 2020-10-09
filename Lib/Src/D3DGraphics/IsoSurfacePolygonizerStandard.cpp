@@ -607,7 +607,7 @@ static int sortedCubeEdgeCmp(const SortedCubeEdge &e1, const SortedCubeEdge &e2)
 void IsoSurfacePolygonizer::dumpEdgeMap() const {
   debugLog(_T("EdgeMap\n"));
   Array<SortedCubeEdge> tmpArray(m_edgeMap.size());
-  for(Iterator<EdgeMapEntry> it = m_edgeMap.getIterator(); it.hasNext();) {
+  for(ConstIterator<EdgeMapEntry> it = m_edgeMap.getIterator(); it.hasNext();) {
     tmpArray.add(it.next());
   }
   tmpArray.sort(sortedCubeEdgeCmp);

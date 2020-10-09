@@ -383,9 +383,9 @@ void CharSetMap::incrAddresses(UINT addr, UINT incr) { // called when instructio
 String CharSetMap::toString() const {
   String result;
   int count = 0;
-  for(Iterator<Entry<ByteBitSet, CompactIntArray> > it = getIterator(); it.hasNext();) {
+  for(ConstIterator<Entry<ByteBitSet, CompactIntArray> > it = getIterator(); it.hasNext();) {
     const Entry<ByteBitSet, CompactIntArray> &entry = it.next();
-    result += format(_T("%s : %s\n"),  charBitSetToString(entry.getKey()).cstr(), entry.getValue().toStringBasicType().cstr());
+    result += format(_T("%s : %s\n"),  charBitSetToString(entry.getKey()).cstr(), entry.getValue().toString().cstr());
   }
   return result;
 }
@@ -404,15 +404,21 @@ public:
     , m_addressStartMemory(addressStartMemory) {
 #if defined(_DEBUG)
      m_addressStopMemory = 0;
-#endif
+#endif // _DEBUG
   }
   void incrAddresses(UINT addr, UINT incr);
 #if defined(_DEBUG)
   String toString() const {
     return format(_T("R:%d L:%d, [%d-%d]\n"), m_regno, m_level, m_addressStartMemory, m_addressStopMemory);
   }
-#endif
+#endif // _DEBUG
 };
+
+#if defined(_DEBUG)
+std::wostream &operator<<(std::wostream &out, const RegisterInfo ri) {
+  return out << ri.toString();
+}
+#endif // _DEBUG
 
 void RegisterInfo::incrAddresses(UINT addr, UINT incr) {
   if(m_addressStartMemory >= addr) m_addressStartMemory += incr;
@@ -777,7 +783,7 @@ public:
     return format(_T("%d,%d,%d,dbgAlt:%d, Fixups:%s")
           ,m_regno, m_lastStart, m_beginAlternative
           ,m_dbgStartAlternative
-          ,m_jumpFixups.toStringBasicType().cstr());
+          ,m_jumpFixups.toString().cstr());
   }
 #endif
 };

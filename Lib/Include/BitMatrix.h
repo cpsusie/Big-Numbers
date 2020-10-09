@@ -90,9 +90,12 @@ public:
   BitMatrix &operator-=(const BitMatrix &m);
   // like normal matrix multiplication, using bool instead of floating points
   BitMatrix operator*  (const BitMatrix &rhs) const;
-  Iterator<MatrixIndex> getIterator()               const;
-  Iterator<MatrixIndex> getRowIterator(size_t r)    const;
-  Iterator<MatrixIndex> getColumnIterator(size_t c) const;
+  ConstIterator<MatrixIndex> getIterator()               const;
+  ConstIterator<MatrixIndex> getRowIterator(   size_t r) const;
+  ConstIterator<MatrixIndex> getColumnIterator(size_t c) const;
+  Iterator<MatrixIndex>      getIterator();
+  Iterator<MatrixIndex>      getRowIterator(   size_t r);
+  Iterator<MatrixIndex>      getColumnIterator(size_t c);
   String toString() const;
   String getDimensionString() const {
     return format(_T("Dimension=%s"), m_dim.toString().cstr());

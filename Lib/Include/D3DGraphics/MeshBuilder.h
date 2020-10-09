@@ -17,6 +17,11 @@ public:
   String toString() const;
 };
 
+template<typename OUTSTREAM> OUTSTREAM &operator<<(OUTSTREAM &out, const VertexNormalTextureIndex &v) {
+  out << v.toString();
+  return out;
+}
+
 typedef CompactArray<VertexNormalTextureIndex> VNTIArray;
 
 class Face {

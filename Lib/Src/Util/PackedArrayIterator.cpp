@@ -23,20 +23,20 @@ private:
     }
   }
 public:
-  PackedArrayIterator(PackedArray *a) : m_a(*a) {
+  PackedArrayIterator(const PackedArray *a) : m_a(*(PackedArray*)a) {
     m_currentValue =  0;
     m_next         =  0;
     m_current      = -1;
     m_updateCount  = m_a.getUpdateCount();
   }
-  AbstractIterator *clone()       override {
+  AbstractIterator *clone()         override {
     return new PackedArrayIterator(this);
   }
-  bool  hasNext()           const override {
+  bool              hasNext() const override {
     return m_next < m_a.size();
   }
-  void *next()                    override;
-  void  remove()                  override;
+  void             *next()          override;
+  void              remove()        override;
 };
 
 DEFINECLASSNAME(PackedArrayIterator);
@@ -61,7 +61,7 @@ void PackedArrayIterator::remove() {
 }
 
 Iterator<UINT> PackedArray::getIterator() const {
-  return Iterator<UINT>(new PackedArrayIterator((PackedArray*)this));
+  return Iterator<UINT>(new PackedArrayIterator(this));
 }
 
 // --------------------------------------- PackedArrayReverseIterator ----------------------------------------
@@ -89,20 +89,20 @@ private:
     }
   }
 public:
-  PackedArrayReverseIterator(PackedArray *a) : m_a(*a) {
+  PackedArrayReverseIterator(const PackedArray *a) : m_a(*(PackedArray*)a) {
     m_currentValue =  0;
     m_next         =  (INT64)m_a.size() - 1;
     m_current      = -1;
     m_updateCount  = m_a.getUpdateCount();
   }
-  AbstractIterator *clone()       override {
+  AbstractIterator *clone()         override {
     return new PackedArrayReverseIterator(this);
   }
-  bool  hasNext()           const override {
+  bool              hasNext() const override {
     return m_next >= 0;
   }
-  void *next()                    override;
-  void  remove()                  override;
+  void              *next()         override;
+  void               remove()       override;
 };
 
 DEFINECLASSNAME(PackedArrayReverseIterator);
@@ -127,5 +127,5 @@ void PackedArrayReverseIterator::remove() {
 }
 
 Iterator<UINT> PackedArray::getReverseIterator() const {
-  return Iterator<UINT>(new PackedArrayReverseIterator((PackedArray*)this));
+  return Iterator<UINT>(new PackedArrayReverseIterator(this));
 }

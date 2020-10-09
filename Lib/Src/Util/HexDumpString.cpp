@@ -1,9 +1,8 @@
 #include "pch.h"
-#include <DebugLog.h>
 
 #define LINESIZE 16
 
-String hexdumpString(const void *data, size_t size) {
+String createHexdumpString(const void *data, size_t size) {
   const String LINESTRING = (spaceString(60, _T('-')) + _T("\n"));
   String       result     = format(_T("hexdump(size=%zu)\n"), size);
   const BYTE  *p          = (const BYTE*)data;

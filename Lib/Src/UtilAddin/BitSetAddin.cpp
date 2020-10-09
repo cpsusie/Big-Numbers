@@ -2,12 +2,14 @@
 
 class BitSetx86 {
 public:
+  DWORD m_vfptr;
   DWORD m_paddr;
   DWORD m_capacity;
 };
 
 class BitSetx64 {
 public:
+  QWORD m_vfptr;
   QWORD m_paddr;
   QWORD m_capacity;
 };

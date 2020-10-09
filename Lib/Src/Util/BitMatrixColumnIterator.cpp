@@ -34,8 +34,12 @@ void BitMatrixColumnIterator::remove() {
   setCurrentUndefined();
 }
 
-Iterator<MatrixIndex> BitMatrix::getColumnIterator(size_t c) const {
+ConstIterator<MatrixIndex> BitMatrix::getColumnIterator(size_t c) const {
   checkValidColumn(__TFUNCTION__, c);
-  return Iterator<MatrixIndex>(new BitMatrixColumnIterator((BitMatrix&)(*this), c));
+  return ConstIterator<MatrixIndex>(new BitMatrixColumnIterator(this, c));
 }
 
+Iterator<MatrixIndex> BitMatrix::getColumnIterator(size_t c) {
+  checkValidColumn(__TFUNCTION__, c);
+  return Iterator<MatrixIndex>(new BitMatrixColumnIterator(this, c));
+}

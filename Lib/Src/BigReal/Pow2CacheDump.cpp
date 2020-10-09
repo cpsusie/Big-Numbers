@@ -20,7 +20,7 @@ public:
 };
 
 CacheArray::CacheArray(const Pow2Cache *cache) : CompactArray<ArrayEntry>(cache->size()) {
-  for(Iterator<Pow2CacheEntry> it = cache->getIterator(); it.hasNext();) {
+  for(ConstIterator<Pow2CacheEntry> it = cache->getIterator(); it.hasNext();) {
     const Pow2CacheEntry &e = it.next();
     add(e);
   }
@@ -42,7 +42,7 @@ void Pow2Cache::dump() const {
   a.clear();
   CompactIntArray lengthArray = getLength();
   debugLog(_T("size:%zu, capacity:%zu\nLength:%s\n")
-          ,size(), getCapacity(), lengthArray.toStringBasicType().cstr());
+          ,size(), getCapacity(), lengthArray.toString().cstr());
 
 }
 

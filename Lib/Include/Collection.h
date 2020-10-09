@@ -1,7 +1,6 @@
 #pragma once
 
 #include "CollectionBase.h"
-#include "Packer.h"
 #include "CompactArray.h"
 
 class AbstractCollection {
@@ -56,15 +55,12 @@ public:
   size_t size() const override {
     return m_collection->size();
   }
-
   bool add(const T &e) override {
     return m_collection->add(&e);
   }
-
   bool remove(const T &e) {
     return m_collection->remove(&e);
   }
-
   bool contains(const T &e) const {
     return m_collection->contains(&e);
   }
@@ -84,7 +80,7 @@ public:
     }
     CompactArray<const T*> tmp;
     tmp.setCapacity(k);
-    Iterator<T> it = getIterator();
+    ConstIterator<T> it = getIterator();
     while(tmp.size() < (int)k) {
       tmp.add(&it.next());
     }
@@ -104,16 +100,19 @@ public:
     return result;
   }
 
-  Iterator<T> getIterator() const override {
+  ConstIterator<T> getIterator() const override {
+    return ConstIterator<T>(m_collection->getIterator());
+  }
+  Iterator<T> getIterator() override {
     return Iterator<T>(m_collection->getIterator());
   }
   bool hasOrder() const override {
     return m_collection->hasOrder();
   }
 
-  bool removeAll(const Iterator<T> &it) {
+  bool removeAll(const ConstIterator<T> &it) {
     const size_t oldSize = size();
-    for(Iterator<T> it1 = it; it1.hasNext();) {
+    for(ConstIterator<T> it1 = it; it1.hasNext();) {
       remove(it1.next());
     }
     return size() != oldSize;
@@ -142,8 +141,8 @@ public:
     return changed;
   }
 
-  bool containsAll(const Iterator<T> &it) const {
-    for(Iterator<T> it1 = it; it1.hasNext();) {
+  bool containsAll(const ConstIterator<T> &it) const {
+    for(ConstIterator<T> it1 = it; it1.hasNext();) {
       if(!contains(it1.next())) {
         return false;
       }
@@ -164,8 +163,8 @@ public:
     if(n != c.size()) {
       return false;
     }
-    Iterator<T> it1 = getIterator();
-    Iterator<T> it2 = c.getIterator();
+    ConstIterator<T> it1 = getIterator();
+    ConstIterator<T> it2 = c.getIterator();
     size_t count = 0;
     while(it1.hasNext() && it2.hasNext()) {
       const T &e1 = it1.next();
@@ -189,102 +188,4 @@ public:
   bool operator!=(const Collection<T> &c) const {
     return !(*this == c);
   }
-
-  void save(ByteOutputStream &s) const {
-    const int    esize = sizeof(T);
-    const UINT64 n     = size();
-    Packer header;
-    header << esize << n;
-    header.write(s);
-    for(Iterator<T> it = getIterator(); it.hasNext();) {
-      Packer p;
-      p << it.next();
-      p.write(s);
-    }
-  }
-
-  void load(ByteInputStream &s) {
-    DEFINEMETHODNAME;
-    Packer header;
-    int    esize;
-    UINT64 n;
-    if(!header.read(s)) {
-      throwException(_T("%s:Couldn't read header"), method);
-    }
-    header >> esize >> n;
-    if(esize != sizeof(T)) {
-      throwException(_T("%s:Invalid element size:%d bytes. Expected %zu bytes")
-                    ,method, esize, sizeof(T));
-    }
-    CHECKUINT64ISVALIDSIZET(n);
-    clear();
-    for(size_t i = 0; i < n; i++) {
-      Packer p;
-      if(!p.read(s)) {
-        throwException(_T("%s:Unexpected eos. Expected %s elements. got %s")
-                      ,method, format1000(n).cstr(), format1000(i).cstr());
-      }
-      T e;
-      p >> e;
-      add(e);
-    }
-  }
-
-  String toString(const TCHAR *delimiter = _T(",")) const {
-    String result = _T("(");
-    Iterator<T> it = getIterator();
-    if(it.hasNext()) {
-      result += it.next().toString();
-      while(it.hasNext()) {
-        result += delimiter;
-        result += it.next().toString();
-      }
-    }
-    result += _T(")");
-    return result;
-  }
-
-  String toStringBasicType(const TCHAR *delimiter = _T(",")) const {
-    String result = _T("(");
-    Iterator<T> it = getIterator();
-    if(it.hasNext()) {
-      result += ::toString(it.next());
-      while(it.hasNext()) {
-        result += delimiter;
-        result += ::toString(it.next());
-      }
-    }
-    result += _T(")");
-    return result;
-  }
-
-  String toString(AbstractStringifier<T> &sf, TCHAR *delimiter = _T(",")) const {
-    String result = _T("(");
-    result += getIterator().toString(sf, delimiter);
-    result += _T(")");
-    return result;
-  }
 };
-
-template<typename S, typename T, class D=StreamDelimiter> S &operator<<(S &out, const Collection<T> &c) {
-  const D      delimiter;
-  const UINT64 size = c.size();
-  out << size << delimiter;
-  for(Iterator<T> it = c.getIterator(); it.hasNext();) {
-    out << it.next() << delimiter;
-  }
-  return out;
-}
-
-template<typename S, typename T> S &operator>>(S &in, Collection<T> &c) {
-  UINT64 size;
-  in >> size;
-  CHECKUINT64ISVALIDSIZET(size);
-  c.clear();
-  for(size_t i = 0; i < size; i++) {
-    T e;
-    in >> e;
-    c.add(e);
-  }
-  return in;
-}

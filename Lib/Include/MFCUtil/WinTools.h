@@ -172,19 +172,19 @@ private:
   HWND m_parent;
   bool m_recursive;
 public:
-  ChildWindowArray() : m_parent(NULL) {
+  ChildWindowArray() : m_parent(NULL), m_recursive(false) {
   }
   // Create a list of ctrlId's of the child-windows (recursive or non recursive) of the specified parent-window
-  ChildWindowArray(HWND parent, bool recursive=false) {
+  ChildWindowArray(        HWND  parent, bool recursive=false) {
     enumerateChildren(parent, recursive);
   }
-  ChildWindowArray(CWnd *parent, bool recursive=false) {
+  ChildWindowArray(        CWnd *parent, bool recursive=false) {
     enumerateChildren(*parent, recursive);
   }
-  void enumerateChildren(HWND parent, bool recursive=false);
+  void enumerateChildren(  HWND  parent, bool recursive=false);
 
   // Return index in array of child or -1 if not found
-  int getChildIndex(HWND child) const;
+  int        getChildIndex(HWND child ) const;
   // Return index in array of ctrlId or -1 if not found
   inline int getChildIndex(UINT ctrlId) const {
     return (int)getFirstIndex(ctrlId);
@@ -209,7 +209,7 @@ public:
   }
   void restoreTabOrder() const {
     setTabOrder(getParent(), *this);
-  };
+  }
 };
 
 /*
@@ -231,21 +231,21 @@ public:
 };
 */
 
-void   setWindowCursor(     HWND  wnd, const TCHAR *name);
-void   setWindowCursor(     HWND  wnd, int resId);
-void   setWindowCursor(     HWND  wnd, HCURSOR cursor);
-inline void setWindowCursor(CWnd *wnd, const TCHAR *name) {
+void        setWindowCursor(     HWND  wnd, const TCHAR *name  );
+void        setWindowCursor(     HWND  wnd, int          resId );
+void        setWindowCursor(     HWND  wnd, HCURSOR      cursor);
+inline void setWindowCursor(CWnd *wnd, const TCHAR      *name  ) {
   ::setWindowCursor(wnd->m_hWnd, name);
 }
-inline void setWindowCursor(CWnd *wnd, int resId) {
+inline void setWindowCursor(CWnd *wnd, int               resId ) {
   ::setWindowCursor(wnd->m_hWnd, resId);
 }
-inline void setWindowCursor(CWnd *wnd, HCURSOR cursor) {
+inline void setWindowCursor(CWnd *wnd, HCURSOR           cursor) {
   ::setWindowCursor(wnd->m_hWnd, cursor);
 }
-void   setSystemCursor(            int   id , const TCHAR *name);
-void   setSystemCursor(            int   id , int resId);
-void   setSystemCursor(            int   id , HCURSOR cursor);
+void        setSystemCursor(      int  id , const TCHAR *name  );
+void        setSystemCursor(      int  id , int          resId );
+void        setSystemCursor(      int  id , HCURSOR      cursor);
 
 HCURSOR createCursor(HINSTANCE hInstance, int bitmapResId, int maskResId, int xHotSpot, int yHotSpot);
 HCURSOR createCursor(const ByteArray &bytes);
@@ -361,7 +361,8 @@ inline void showError(const String &msg) {
   showError(_T("%s"), msg.cstr());
 }
 
-void showException(const Exception &e, int flags = MB_ICONERROR);
+String getMessageName(int msg);
+void   showException(const Exception &e, int flags = MB_ICONERROR);
 
 void   addData(                     CListCtrl &ctrl, int row, int col, const String &str, bool newItem = false);
 String getItemString(         const CListCtrl &ctrl, int row, int col);

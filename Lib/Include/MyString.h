@@ -41,14 +41,24 @@
 #define A2TNULL(s) ((s)?ASTR2TSTR(s):_T("null"))
 #define W2TNULL(s) ((s)?WSTR2TSTR(s):_T("null"))
 
-ULONG strHash(const TCHAR * const &s);
-inline int strHashCmp(   const TCHAR * const &s1, const TCHAR * const &s2) {
-  return _tcscmp(s1, s2);
+ULONG strHash(const char    * const &s);
+ULONG strHash(const wchar_t * const &s);
+inline int strHashCmp(   const char * const &s1, const char * const &s2) {
+  return strcmp(s1, s2);
 }
-ULONG striHash(     const TCHAR * const &s                          );
-inline int striHashCmp(const TCHAR * const &s1, const TCHAR * const &s2) {
-  return _tcsicmp(s1, s2);
+inline int strHashCmp(   const wchar_t * const &s1, const wchar_t * const &s2) {
+  return wcscmp(s1, s2);
 }
+ULONG striHash(     const char    * const &s                          );
+ULONG striHash(     const wchar_t * const &s                          );
+
+inline int striHashCmp(const char * const &s1, const char * const &s2) {
+  return _stricmp(s1, s2);
+}
+inline int striHashCmp(const wchar_t * const &s1, const wchar_t * const &s2) {
+  return _wcsicmp(s1, s2);
+}
+
 ULONG strnHash(     const TCHAR * const &s                          , size_t n);
 int   strnHashCmp(  const TCHAR * const &s1, const TCHAR * const &s2, size_t n1, size_t n2);
 ULONG strniHash(    const TCHAR * const &s                          , size_t n);
@@ -367,6 +377,8 @@ inline String vformat(_In_z_ _Printf_format_string_ TCHAR const * const format, 
 
 // Same arguments as printf,sprintf
 String format(_In_z_ _Printf_format_string_ TCHAR const * const Format, ...);
+
+String createHexdumpString(const void *data, size_t size);
 
 template<typename T> class AbstractStringifier {
 public:

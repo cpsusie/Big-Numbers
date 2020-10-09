@@ -149,10 +149,6 @@ public:
     return false;
   }
 
-  bool hasOrder() const override {
-    return false;
-  }
-
   void setCapacity(size_t capacity) {
     if(capacity < m_size) {
       capacity = m_size;
@@ -272,16 +268,16 @@ public:
     CompactMapIteratorEntry m_entry;
 
   public:
-    CompactMapEntryIterator(CompactHashMap *map) : m_map(*map), m_updateCount(map->m_updateCount) {
+    CompactMapEntryIterator(const CompactHashMap *map) : m_map(*(CompactHashMap*)map), m_updateCount(map->m_updateCount) {
       first();
     }
-    AbstractIterator *clone()       override {
+    AbstractIterator *clone()         override {
       return new CompactMapEntryIterator(*this);
     }
-    bool hasNext()            const override {
+    bool              hasNext() const override {
       return m_next != NULL;
     }
-    void *next()                    override {
+    void             *next()          override {
       if(m_next == NULL) {
         noNextElementError(_T("CompactMapEntryIterator"));
       }
@@ -301,7 +297,7 @@ public:
       return &m_entry;
     }
 
-    void remove() override {
+    void              remove()        override {
       if(m_current == NULL) {
         noCurrentElementError(_T("CompactMapEntryIterator"));
       }
@@ -313,25 +309,33 @@ public:
     }
   };
 
-  Iterator<Entry<K,V> > getIterator() const override {
-    return Iterator<Entry<K,V> >(new CompactMapEntryIterator((CompactHashMap*)this));
-  }
-
-
   class CompactMapKeyIterator : public CompactMapEntryIterator {
   public:
-    CompactMapKeyIterator(CompactHashMap *map) : CompactMapEntryIterator(map) {
+    CompactMapKeyIterator(const CompactHashMap *map) : CompactMapEntryIterator(map) {
     }
     AbstractIterator *clone()        override {
       return new CompactMapKeyIterator(*this);
     }
-    void *next()                     override {
+    void             *next()         override {
       __super::next();
       return (void*)m_entry.key();
     }
   };
-  Iterator<K> getKeyIterator() const {
-    return Iterator<K>(new CompactMapKeyIterator((CompactHashMap*)this));
+  ConstIterator<Entry<K,V> > getIterator()    const override {
+    return ConstIterator<Entry<K,V> >(new CompactMapEntryIterator(this));
+  }
+  Iterator<Entry<K,V> >      getIterator()          override {
+    return Iterator<Entry<K,V> >(new CompactMapEntryIterator(this));
+  }
+  ConstIterator<K>           getKeyIterator() const override {
+    return Iterator<K>(new CompactMapKeyIterator(this));
+  }
+  Iterator<K>                getKeyIterator()       override {
+    return Iterator<K>(new CompactMapKeyIterator(this));
+  }
+
+  bool hasOrder()                             const override {
+    return false;
   }
 
   bool operator==(const CompactHashMap &map) const {
@@ -339,10 +343,10 @@ public:
     if(map.size() != size()) {
       return false;
     }
-    for(Iterator<Entry<K,V> > it = getIterator(); it.hasNext();) {
+    for(ConstIterator<Entry<K,V> > it = getIterator(); it.hasNext();) {
       const Entry<K,V> &e = it.next();
-      const V *v = map.get(e.getKey());
-      if((v == NULL) || (*v != e.getValue())) {
+      const V *mv = map.get(e.getKey());
+      if((mv == NULL) || (*mv != e.getValue())) {
         return false;
       }
     }
@@ -351,62 +355,6 @@ public:
 
   bool operator!=(const CompactHashMap &map) const {
     return !(*this == map);
-  }
-
-  void save(ByteOutputStream &s) const {
-    const UINT   kSize = sizeof(K);
-    const UINT   vSize = sizeof(V);
-    const UINT64 count = size();
-
-    s.putBytes((BYTE*)&kSize, sizeof(kSize));
-    s.putBytes((BYTE*)&vSize, sizeof(vSize));
-    s.putBytes((BYTE*)&count, sizeof(count));
-    CompactArray<MapEntry<K,V> > a(1000);
-    UINT64 wCount = 0;
-    for(Iterator<Entry<K,V> > it = getIterator(); it.hasNext();) {
-      const Entry<K,V> &e = it.next();
-      a.add(MapEntry<K,V>(e.getKey(), e.getValue()));
-      if(a.size() == 1000) {
-        s.putBytes((BYTE*)a.getBuffer(),sizeof(MapEntry<K,V>)*a.size());
-        wCount += a.size();
-        a.clear(-1);
-      }
-    }
-    if(a.size() > 0) {
-      s.putBytes((BYTE*)a.getBuffer(),sizeof(MapEntry<K,V>)*a.size());
-      wCount += a.size();
-    }
-    if(wCount != count) {
-      throwException(_T("%s:#written elements:%I64u. setSize:%I64u")
-                    ,__TFUNCTION__, wCount, count);
-    }
-  }
-
-  void load(ByteInputStream &s) {
-    UINT kSize,vSize;
-    s.getBytesForced((BYTE*)&kSize, sizeof(kSize));
-    s.getBytesForced((BYTE*)&vSize, sizeof(vSize));
-    if(kSize != sizeof(K)) {
-      throwException(_T("sizeof(Key):%zu. Size from stream=%u"), sizeof(K), kSize);
-    }
-    if(vSize != sizeof(V)) {
-      throwException(_T("sizeof(Value):%zu. Size from stream=%u"), sizeof(V), vSize);
-    }
-    UINT64 size64;
-    s.getBytesForced((BYTE*)&size64,sizeof(size64));
-    CHECKUINT64ISVALIDSIZET(size64);
-    size_t count = (size_t)size64;
-    clear();
-    setCapacity(count);
-    for(size_t i = 0; i < count;) {
-      MapEntry<K,V> buffer[1000];
-      const size_t n = min(count-i,ARRAYSIZE(buffer));
-      s.getBytesForced((BYTE*)buffer, sizeof(buffer[0])*n);
-      for(const MapEntry<K,V> *p = buffer, *end = buffer + n; p < end; p++) {
-        put(p->m_key, p->m_value);
-      }
-      i += n;
-    }
   }
 };
 

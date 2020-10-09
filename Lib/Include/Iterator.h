@@ -11,28 +11,28 @@ protected:
 
 public:
   virtual ~AbstractIterator() {};
-  virtual AbstractIterator *clone() = 0;
-  virtual bool  hasNext() const     = 0;
-  virtual void *next()              = 0;
-  virtual void  remove()            = 0;
+  virtual AbstractIterator *clone()         = 0;
+  virtual bool              hasNext() const = 0;
+  virtual void             *next()          = 0;
+  virtual void              remove()        = 0;
 };
 
-template <typename T> class Iterator {
+template<typename T> class ConstIterator {
 protected:
   AbstractIterator *m_it;
 public:
-  Iterator() {
+  inline ConstIterator() {
     m_it = NULL;
   }
-  Iterator(AbstractIterator *it) {
+  inline ConstIterator(AbstractIterator *it) {
     m_it = it; TRACE_NEW(it);
   }
 
-  Iterator(const Iterator<T> &src) {
+  inline ConstIterator(const ConstIterator<T> &src) {
     m_it = src.m_it ? src.m_it->clone() : NULL; TRACE_NEW(m_it);
   }
 
-  Iterator<T> &operator=(const Iterator<T> &src) {
+  ConstIterator<T> &operator=(const ConstIterator<T> &src) {
     if(this == &src) {
       return *this;
     }
@@ -41,7 +41,7 @@ public:
     return *this;
   }
 
-  ~Iterator() {
+  virtual ~ConstIterator() {
     SAFEDELETE(m_it);
   }
 
@@ -50,42 +50,40 @@ public:
     return m_it->hasNext();
   }
 
-  inline T &next() {
+  inline const T &next() {
     assert(m_it != NULL);
-    return *(T*)m_it->next();
+    return *(const T *)m_it->next();
   }
 
-  inline void remove() {
-    assert(m_it != NULL);
-    m_it->remove();
-  }
-
-  String toString(AbstractStringifier<T> &sf, const TCHAR *delimiter = _T(",")) {
-    String result;
+  String toString(AbstractStringifier<T> &sf, const TCHAR *delimiter = _T(",")) const {
+    String result = "(";
     if(hasNext()) {
-      result += sf.toString(next());
-      while(hasNext()) {
+      ConstIterator<T> t = *this;
+      result += sf.toString(t.next());
+      while(t.hasNext()) {
         result += delimiter;
-        result += sf.toString(next());
+        result += sf.toString(t.next());
       }
     }
+    result += ")";
     return result;
   }
-
-  String toString(const TCHAR *delimiter = _T(",")) {
-    String result;
+  String toString(const TCHAR *delimiter = _T(",")) const {
+    std::wostringstream result;
+    result << "(";
     if(hasNext()) {
-      result += sf.toString(next());
-      while(hasNext()) {
-        result += delimiter;
-        result += toString(next());
+      ConstIterator<T> t = *this;
+      result << t.next();
+      while(t.hasNext()) {
+        result << delimiter << t.next();
       }
     }
-    return result;
+    result << ")";
+    return result.str().c_str();
   }
 
   // T must be enumerable (e1 + 1 == e2 must be defined for T e1,e2)
-  String rangesToString(AbstractStringifier<T> &sf, const TCHAR *delimiter = _T(",")) {
+  String rangesToString(AbstractStringifier<T> &sf, const TCHAR *delimiter = _T(",")) const {
 
 #if defined(_FLUSHRANGE)
 #undef _FLUSHRANGE
@@ -101,12 +99,14 @@ public:
       }                                                                                   \
     }
 
-    String       result    = _T("[");
-    const TCHAR *delim     = NULL;
-    bool         firstTime = true;
-    T            first, last;
-    while(hasNext()) {
-      const T e = next();
+    String           result    = _T("[");
+    const TCHAR     *delim     = NULL;
+    bool             firstTime = true;
+    ConstIterator<T> t         = *this;
+    T                first, last;
+
+    while(t.hasNext()) {
+      const T &e = t.next();
       if(firstTime) {
         first = last = e;
         firstTime = false;
@@ -125,3 +125,30 @@ public:
   }
 #undef _FLUSHRANGE
 };
+
+template<typename T> class Iterator: public ConstIterator<T> {
+public:
+  inline Iterator() {
+    m_it = NULL;
+  }
+  inline Iterator(AbstractIterator *it) : ConstIterator<T>(it) {
+  }
+  inline Iterator(const Iterator<T> &src) : ConstIterator<T>(src) {
+  }
+  inline Iterator<T> &operator=(const Iterator<T> &src) {
+    __super::operator=(src);
+    return *this;
+  }
+  inline T &next() {
+    return (T &)__super::next();
+  }
+  inline void remove() {
+    assert(m_it != NULL);
+    m_it->remove();
+  }
+};
+
+template<template<typename...> class V,typename... Args> std::wostringstream &operator<<(std::wostringstream &out, const V<Args...> &v) {
+  out << v.toString();
+  return out;
+}

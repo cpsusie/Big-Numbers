@@ -186,8 +186,8 @@ public:
   }
   inline String toString() const {
     return __super::toString() + _T(": <")
-         + m_falseJumps.toStringBasicType() + _T(",")
-         + m_trueJumps.toStringBasicType()  + _T(">");
+         + m_falseJumps.toString() + _T(",")
+         + m_trueJumps.toString()  + _T(">");
   }
 };
 

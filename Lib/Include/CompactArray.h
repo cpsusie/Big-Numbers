@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Packer.h"
 #include "ByteFile.h"
 #include "Comparator.h"
 #include "CollectionBase.h"
@@ -133,12 +132,12 @@ public:
 
   inline const T &select(RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) const {
     if(m_size == 0) selectError(__TFUNCTION__);
-    return m_array[randSizet(rnd) % m_size];
+    return m_array[randSizet(m_size,rnd)];
   }
 
   inline T &select(RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) {
     if(m_size == 0) selectError(__TFUNCTION__);
-    return m_array[randSizet(rnd) % m_size];
+    return m_array[randSizet(m_size,rnd)];
   }
 
   CompactArray<T> getRandomSample(size_t k, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) const {
@@ -290,13 +289,13 @@ public:
     return *this;
   }
 
-  CompactArray<T> &shuffle(size_t from, size_t count) {
-    if(from >= (size_t)size()) {
+  CompactArray<T> &shuffle(size_t from, size_t count, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) {
+    if(from >= size()) {
       return *this;
     }
     if((count = getSortCount(from, count)) > 1) {
       for(size_t i = 0; i < count; i++ ) {
-        swap(from + i, from + randSizet() % count);
+        swap(from + i, from + randSizet(count,rnd));
       }
     }
     m_updateCount++;
@@ -493,20 +492,6 @@ public:
     m_size = (size_t)size64;
   }
 
-  String toString(const TCHAR *delimiter = _T(",")) const {
-    String result = _T("(");
-    if(m_size) {
-      const T *p = m_array;
-      result += (p++)->toString();
-      for(const T *end = &last(); p <= end;) {
-        result += delimiter;
-        result += (p++)->toString();
-      }
-    }
-    result += _T(")");
-    return result;
-  }
-
   String toStringPointerType(const TCHAR *delimiter = _T(",")) const {
     String result = _T("(");
     if(m_size) {
@@ -515,20 +500,6 @@ public:
       for(const T *end = &last(); p <= end;) {
         result += delimiter;
         result += (*(p++))->toString();
-      }
-    }
-    result += _T(")");
-    return result;
-  }
-
-  String toStringBasicType(const TCHAR *delimiter = _T(",")) const {
-    String result = _T("(");
-    if(m_size) {
-      const T *p = m_array;
-      result += ::toString(*(p++));
-      for(const T *end = &last(); p <= end;) {
-        result += delimiter;
-        result += ::toString(*(p++));
       }
     }
     result += _T(")");
@@ -551,7 +522,7 @@ public:
       }
     }
   public:
-    CompactArrayIterator(CompactArray<T> *a) : m_a(*a) {
+    CompactArrayIterator(const CompactArray<T> *a) : m_a(*(CompactArray<T>*)a) {
       m_next        = 0;
       m_current     = -1;
       m_updateCount = m_a.getUpdateCount();
@@ -580,8 +551,11 @@ public:
       m_updateCount = m_a.getUpdateCount();
     }
   };
-  Iterator<T> getIterator() const override {
-    return Iterator<T>(new CompactArrayIterator((CompactArray<T>*)this));
+  ConstIterator<T> getIterator() const override {
+    return ConstIterator<T>(new CompactArrayIterator(this));
+  }
+  Iterator<T>      getIterator()       override {
+    return Iterator<T>(new CompactArrayIterator(this));
   }
   bool      hasOrder()   const override {
     return true;
@@ -599,38 +573,6 @@ public:
     return isEmpty() ? NULL : (&first() + size());
   }
 };
-
-template<typename S, typename T, class D=StreamDelimiter> S &operator<<(S &out, const CompactArray<T> &a) {
-  const D      delimiter;
-  const UINT   elemSize = sizeof(T);
-  const size_t n        = a.size();
-  out << elemSize << delimiter << n << delimiter;
-  if(n) {
-    for(T e : a) {
-      out << e << delimiter;
-    }
-  }
-  return out;
-}
-
-template<typename S, typename T> S &operator>>(S &in, CompactArray<T> &a) {
-  UINT elemSize;
-  in >> elemSize;
-  if(elemSize != sizeof(T)) {
-    throwException(_T("Invalid element size:%u bytes. Expected %zu bytes"), elemSize, sizeof(T));
-  }
-  a.clear();
-  UINT64 size64;
-  in >> size64;
-  CHECKUINT64ISVALIDSIZET(size64)
-  a.setCapacity((size_t)size64);
-  for(size_t i = (size_t)size64; i--;) {
-    T e;
-    in >> e;
-    a.add(e);
-  }
-  return in;
-}
 
 typedef CompactArray<TCHAR*> CompactStrArray;
 typedef CompactArray<char>   CompactCharArray;

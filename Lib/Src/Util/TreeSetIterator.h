@@ -1,24 +1,7 @@
 #pragma once
 
 #include <TreeSet.h>
-
-class TreeSetNode : public AbstractKey {
-  friend class TreeSetImpl;
-private:
-  void *m_key;
-  char  m_balance;
-  TreeSetNode *m_left, *m_right;
-public:
-  const void *key() const override {
-    return m_key;
-  }
-  inline TreeSetNode *left() {
-    return m_left;
-  }
-  inline TreeSetNode *right() {
-    return m_right;
-  }
-};
+#include "TreeSetNode.h"
 
 class TreeSetIteratorStackElement {
 public:
@@ -57,7 +40,7 @@ private:
 protected:
   TreeSetNode      *nextNode();
 public:
-  TreeSetIterator(TreeSetImpl &set);
+  TreeSetIterator(const TreeSetImpl *set);
   AbstractIterator *clone()                  override {
     return new TreeSetIterator(*this);
   }

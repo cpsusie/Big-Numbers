@@ -34,6 +34,18 @@ public:
   }
 };
 
+class Packer;
+template<typename T> Packer &operator<<(Packer &p, const CompactKeyType<T> &v) {
+  p << (T)v;
+  return p;
+}
+template<typename T> Packer &operator>>(Packer &p, CompactKeyType<T> &v) {
+  T tmp;
+  p >> tmp;
+  v = tmp;
+  return p;
+}
+
 class CompactStrKeyType {
 private:
   const TCHAR *m_value;

@@ -1,21 +1,21 @@
 #pragma once
 
 #include <StrStream.h>
+#include <Singleton.h>
 #include <RegexIStream.h>
 #include <Date.h>
 
-using namespace IStreamHelper;
+namespace DateTimeIO {
 
-class DateStreamScanner : public RegexIStream {
+using namespace IStreamHelper;
+using namespace std;
+
+class DateStreamScanner : public RegexIStream, public Singleton {
 private:
   static StringArray getRegexLines();
-  DateStreamScanner() : RegexIStream(getRegexLines()) {
+  DateStreamScanner() : RegexIStream(getRegexLines()), Singleton(__TFUNCTION__) {
   }
-public:
-  static const RegexIStream &getInstance() {
-    static DateStreamScanner s_instance;
-    return s_instance;
-  }
+  DEFINESINGLETON(DateStreamScanner)
 };
 
 template<typename IStreamType, typename CharType> IStreamType &getDate(IStreamType &in, Date &d) {
@@ -45,16 +45,12 @@ template<typename OStreamType> OStreamType &putDate(OStreamType &out, const Date
 
 // -------------------------------------------------------------------------------------------------------
 
-class TimeStreamScanner : public RegexIStream {
+class TimeStreamScanner: public RegexIStream, public Singleton {
 private:
   static StringArray getRegexLines();
-  TimeStreamScanner() : RegexIStream(getRegexLines()) {
+  TimeStreamScanner() : RegexIStream(getRegexLines()), Singleton(__TFUNCTION__) {
   }
-public:
-  static const RegexIStream &getInstance() {
-    static TimeStreamScanner s_instance;
-    return s_instance;
-  }
+  DEFINESINGLETON(TimeStreamScanner)
 };
 
 template<typename IStreamType, typename CharType> IStreamType &getTime(IStreamType &in, Time &t) {
@@ -84,16 +80,12 @@ template<typename OStreamType> OStreamType &putTime(OStreamType &out, const Time
 
 // -------------------------------------------------------------------------------------------------------
 
-class TimestampStreamScanner : public RegexIStream {
+class TimestampStreamScanner: public RegexIStream, public Singleton {
 private:
   static StringArray getRegexLines();
-  TimestampStreamScanner() : RegexIStream(getRegexLines()) {
+  TimestampStreamScanner() : RegexIStream(getRegexLines()), Singleton(__TFUNCTION__) {
   }
-public:
-  static const RegexIStream &getInstance() {
-    static TimestampStreamScanner s_instance;
-    return s_instance;
-  }
+  DEFINESINGLETON(TimestampStreamScanner)
 };
 
 template<typename IStreamType, typename CharType> IStreamType &getTimestamp(IStreamType &in, Timestamp &t) {
@@ -120,3 +112,5 @@ template<typename OStreamType> OStreamType &putTimestamp(OStreamType &out, const
   out << t.tostr(tmp, ddMMyyyyhhmmssSSS);
   return out;
 }
+
+}; // namespace DateTimeIO

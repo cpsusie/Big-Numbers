@@ -1,8 +1,7 @@
 #include "pch.h"
-#include "DateTimeStreamScanner.h"
-#include <Date.h>
+#include "DateTimeIO.h"
 
-using namespace std;
+using namespace DateTimeIO;
 
 istream  &operator>>(istream  &in, Time &t) {
   return getTime<istream, char>(in, t);

@@ -76,6 +76,11 @@ void ArrayImpl::init(const AbstractObjectManager &objectManager, size_t size, si
 #endif
 }
 
+intptr_t ArrayImpl::getSortCount(intptr_t from, intptr_t count) const {
+  const intptr_t length = (intptr_t)size() - from;
+  return min(count, length);
+}
+
 ArrayImpl::~ArrayImpl() {
   clear();
   SAFEDELETE(m_objectManager);
@@ -203,73 +208,4 @@ void ArrayImpl::swap(size_t i1, size_t i2) {
 bool ArrayImpl::contains(const void *e) const {
   unsupportedOperationError(__TFUNCTION__);
   return false;
-}
-
-void *ArrayImpl::select(RandomGenerator &rnd) const {
-  if(m_size == 0) {
-    selectError(__TFUNCTION__);
-  }
-  return m_elem[randSizet(m_size, rnd)];
-}
-
-// -------------------------------------------------------------------------------
-
-class ArrayIterator : public AbstractIterator {
-private:
-  DECLARECLASSNAME;
-  ArrayImpl          &m_a;
-  size_t              m_next;
-  intptr_t            m_current;
-  size_t              m_updateCount;
-  inline void checkUpdateCount() const {
-    if(m_updateCount != m_a.m_updateCount) {
-      concurrentModificationError(s_className);
-    }
-  }
-
-public:
-  ArrayIterator(ArrayImpl &a);
-  AbstractIterator *clone()       override;
-  bool hasNext()            const override;
-  void *next()                    override;
-  void remove()                   override;
-};
-
-DEFINECLASSNAME(ArrayIterator);
-
-ArrayIterator::ArrayIterator(ArrayImpl &a) : m_a(a) {
-  m_updateCount = m_a.m_updateCount;
-  m_next        = 0;
-  m_current     = -1;
-}
-
-AbstractIterator *ArrayIterator::clone() {
-  return new ArrayIterator(*this);
-}
-
-bool ArrayIterator::hasNext() const {
-  return m_next < m_a.size();
-}
-
-void *ArrayIterator::next() {
-  if(m_next >= m_a.size()) {
-    noNextElementError(s_className);
-  }
-  checkUpdateCount();
-  m_current = m_next++;
-  return m_a.getElement(m_current);
-}
-
-void ArrayIterator::remove() {
-  if(m_current < 0) {
-    noCurrentElementError(s_className);
-  }
-  checkUpdateCount();
-  m_a.removeIndex(m_current,1);
-  m_current     = -1;
-  m_updateCount = m_a.m_updateCount;
-}
-
-AbstractIterator *ArrayImpl::getIterator() const {
-  return new ArrayIterator((ArrayImpl&)*this);
 }

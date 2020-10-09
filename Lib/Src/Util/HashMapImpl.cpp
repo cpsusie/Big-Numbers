@@ -47,10 +47,6 @@ size_t HashMapImpl::size() const {
   return HashSetImpl::size();
 }
 
-AbstractIterator *HashMapImpl::getIterator() const {
-  return new HashMapIterator((HashMapImpl&)*this);
-}
-
 HashSetNode *HashMapImpl::allocateNode() const {
   HashMapNode *n = new HashMapNode(); TRACE_NEW(n);
   return n;
@@ -94,11 +90,6 @@ bool HashMapImpl::remove(const void *key) {
 void *HashMapImpl::get(const void *key) const {
   const HashSetNode *n = HashSetImpl::findNode(key);
   return (n != nullptr) ? ((HashMapNode*)n)->value() : nullptr;
-}
-
-AbstractEntry *HashMapImpl::selectEntry(RandomGenerator &rnd) const {
-  if(size() == 0) throwSelectFromEmptyCollectionException(__TFUNCTION__);
-  return (HashMapNode*)findNode(select(rnd));
 }
 
 AbstractEntry *HashMapImpl::getMinEntry() const {

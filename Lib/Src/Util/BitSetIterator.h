@@ -7,7 +7,7 @@ protected:
   BitSet &m_s;
   size_t  m_next, m_current, m_end;
   bool    m_hasNext;
-  inline AbstractBitSetIterator(BitSet &set) : m_s(set) {
+  inline AbstractBitSetIterator(const BitSet *set) : m_s(*(BitSet*)set) {
   }
   inline bool hasCurrent() const {
     return m_current < m_s.getCapacity();
@@ -32,7 +32,7 @@ private:
   DECLARECLASSNAME;
   void first(size_t start, size_t end);
 public:
-  BitSetIterator(BitSet &set, size_t start=0, size_t end=-1) : AbstractBitSetIterator(set) {
+  BitSetIterator(const BitSet *set, size_t start=0, size_t end=-1) : AbstractBitSetIterator(set) {
     first(start, end);
   }
   AbstractIterator *clone()  override;
@@ -47,7 +47,7 @@ private:
   DECLARECLASSNAME;
   void first(size_t start, size_t end);
 public:
-  BitSetReverseIterator(BitSet &set, size_t start=-1, size_t end=0)  : AbstractBitSetIterator(set) {
+  BitSetReverseIterator(const BitSet *set, size_t start=-1, size_t end=0)  : AbstractBitSetIterator(set) {
     first(start, end);
   }
   AbstractIterator *clone()  override;

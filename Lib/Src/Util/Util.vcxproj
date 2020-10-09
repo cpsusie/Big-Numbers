@@ -906,9 +906,11 @@
     <ClInclude Include="..\..\Include\XMLUtil.h" />
     <ClInclude Include="BitMatrixIterator.h" />
     <ClInclude Include="BitSetIterator.h" />
-    <ClInclude Include="DateTimeStreamScanner.h" />
+    <ClInclude Include="DateTimeIO.h" />
     <ClInclude Include="HashMapIterator.h" />
+    <ClInclude Include="HashMapNode.h" />
     <ClInclude Include="HashSetIterator.h" />
+    <ClInclude Include="HashSetNode.h" />
     <ClInclude Include="HashSetTable.h" />
     <ClInclude Include="pch.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
@@ -925,7 +927,9 @@
     <ClInclude Include="RegexIStream\SubNFA.h" />
     <ClInclude Include="ThreadPoolInternal.h" />
     <ClInclude Include="TreeMapIterator.h" />
+    <ClInclude Include="TreeMapNode.h" />
     <ClInclude Include="TreeSetIterator.h" />
+    <ClInclude Include="TreeSetNode.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AbstractIterator.cpp" />
@@ -933,6 +937,9 @@
     <ClCompile Include="ArgvConversion.cpp" />
     <ClCompile Include="ArgvExpand.cpp" />
     <ClCompile Include="ArrayImpl.cpp" />
+    <ClCompile Include="ArrayIterator.cpp" />
+    <ClCompile Include="ArraySelect.cpp" />
+    <ClCompile Include="ArrayShuffle.cpp" />
     <ClCompile Include="ArraySort.cpp" />
     <ClCompile Include="BCDArray.cpp" />
     <ClCompile Include="BCDArrayPacker.cpp" />
@@ -944,10 +951,11 @@
     <ClCompile Include="BitMatrixRowIterator.cpp" />
     <ClCompile Include="BitOutputStream.cpp" />
     <ClCompile Include="BitSet.cpp" />
+    <ClCompile Include="BitSetSelect.cpp" />
     <ClCompile Include="BitSetXml.cpp" />
     <ClCompile Include="Date.cpp" />
     <ClCompile Include="DateEaster.cpp" />
-    <ClCompile Include="DateIO.cpp" />
+    <ClCompile Include="DateaIO.cpp" />
     <ClCompile Include="DateStr.cpp" />
     <ClCompile Include="DateStreamScanner.cpp" />
     <ClCompile Include="DatewIO.cpp" />
@@ -1032,13 +1040,21 @@
     <ClCompile Include="GetSize.cpp" />
     <ClCompile Include="GetSystemTime.cpp" />
     <ClCompile Include="GetTestFileName.cpp" />
+    <ClCompile Include="HashMapIterator.cpp" />
+    <ClCompile Include="HashMapSelect.cpp" />
+    <ClCompile Include="HashSetSelect.cpp" />
     <ClCompile Include="HashSetTable.cpp" />
+    <ClCompile Include="HashSetTableSelect.cpp" />
     <ClCompile Include="InputThread.cpp" />
+    <ClCompile Include="ListIterator.cpp" />
+    <ClCompile Include="ListSelect.cpp" />
     <ClCompile Include="MarginFile.cpp" />
     <ClCompile Include="PipeUtil.cpp" />
     <ClCompile Include="PriorityClass.cpp" />
     <ClCompile Include="RegexIStream\DFADumpStates.cpp" />
     <ClCompile Include="RegexIStream\FixedIntArray.cpp" />
+    <ClCompile Include="StraHash.cpp" />
+    <ClCompile Include="StraIHash.cpp" />
     <ClCompile Include="StrStream.cpp" />
     <ClCompile Include="ThreadAffinityMask.cpp" />
     <ClCompile Include="ThreadDescription.cpp" />
@@ -1052,7 +1068,7 @@
     <ClCompile Include="HashSetImpl.cpp" />
     <ClCompile Include="HashSetIterator.cpp" />
     <ClCompile Include="HexDump.cpp" />
-    <ClCompile Include="HexDumpStr.cpp" />
+    <ClCompile Include="HexDumpString.cpp" />
     <ClCompile Include="HexFloatRegex.cpp" />
     <ClCompile Include="IndentString.cpp" />
     <ClCompile Include="InputPassword.cpp" />
@@ -1147,8 +1163,8 @@
     <ClCompile Include="straccent.cpp" />
     <ClCompile Include="StreamParametersIterator.cpp" />
     <ClCompile Include="StreamParametersStr.cpp" />
-    <ClCompile Include="StrHash.cpp" />
-    <ClCompile Include="StrIHash.cpp" />
+    <ClCompile Include="StrwHash.cpp" />
+    <ClCompile Include="StrwIHash.cpp" />
     <ClCompile Include="StringArray.cpp" />
     <ClCompile Include="StringExpConstructors.cpp" />
     <ClCompile Include="StringFind.cpp" />
@@ -1191,11 +1207,11 @@
     <ClCompile Include="ThreadPriority.cpp" />
     <ClCompile Include="Time.cpp" />
     <ClCompile Include="TimeEstimator.cpp" />
-    <ClCompile Include="TimeIO.cpp" />
+    <ClCompile Include="TimeaIO.cpp" />
     <ClCompile Include="TimeMeasure.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Timestamp.cpp" />
-    <ClCompile Include="TimestampIO.cpp" />
+    <ClCompile Include="TimestampaIO.cpp" />
     <ClCompile Include="TimestampStr.cpp" />
     <ClCompile Include="TimestampStreamScanner.cpp" />
     <ClCompile Include="TimestampwIO.cpp" />
@@ -1221,8 +1237,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="TreeMapImpl.cpp" />
+    <ClCompile Include="TreeMapSelect.cpp" />
     <ClCompile Include="TreeSetImpl.cpp" />
     <ClCompile Include="TreeSetIterator.cpp" />
+    <ClCompile Include="TreeSetSelect.cpp" />
     <ClCompile Include="UndefNumericRegex.cpp" />
     <ClCompile Include="Unlink.cpp" />
     <ClCompile Include="WildCardRegex.cpp" />

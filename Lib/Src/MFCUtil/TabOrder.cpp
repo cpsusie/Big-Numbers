@@ -14,7 +14,7 @@ void getTabOrder(HWND dlg, CompactUintArray &tabOrder) {
 void setTabOrder(HWND dlg, const CompactUintArray &tabOrder) {
   if(tabOrder.size() > 1) {
     HWND prev = HWND_TOP;
-    for(Iterator<UINT> it = tabOrder.getIterator(); it.hasNext();) {
+    for(ConstIterator<UINT> it = tabOrder.getIterator(); it.hasNext();) {
       const UINT id = it.next();
       HWND wnd = GetDlgItem(dlg, id);
       if(wnd) {

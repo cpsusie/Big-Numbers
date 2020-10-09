@@ -237,9 +237,9 @@ template<typename T, typename D> void getOptValue(XMLDoc &doc, XMLNodePtr parent
   }
 }
 
-template<typename T, typename... Args> void setValue(XMLDoc &doc, XMLNodePtr n, const Iterator<T> &it, Args... args) {
+template<typename T, typename... Args> void setValue(XMLDoc &doc, XMLNodePtr n, const ConstIterator<T> &it, Args... args) {
   UINT index = 0;
-  for(Iterator<T> it1 = it; it1.hasNext(); index++) {
+  for(ConstIterator<T> it1 = it; it1.hasNext(); index++) {
     setValue(doc, n, format(_T("id%u"),index).cstr(), it1.next(), args...);
   }
 }
@@ -281,8 +281,8 @@ public:
   }
 };
 
-template<typename T, typename... Args> Iterator<T> getValueListIterator(XMLDoc &doc, XMLNodePtr n) {
-  return Iterator<T>(new AbstractValueListIterator<T, Args...>(doc, n));
+template<typename T, typename... Args> ConstIterator<T> getValueListIterator(XMLDoc &doc, XMLNodePtr n) {
+  return ConstIterator<T>(new AbstractValueListIterator<T, Args...>(doc, n));
 }
 
 template<typename T, typename... Args> void getValue(XMLDoc &doc, XMLNodePtr n, CollectionBase<T> &c, Args... args) {
@@ -290,7 +290,7 @@ template<typename T, typename... Args> void getValue(XMLDoc &doc, XMLNodePtr n, 
   c.addAll(getValueListIterator<T, Args...>(doc, n));
 }
 
-template<typename K,typename V, typename... Args> Iterator<Entry<K,V> > getEntryListIterator(XMLDoc &doc, XMLNodePtr n) {
+template<typename K,typename V, typename... Args> ConstIterator<Entry<K,V> > getEntryListIterator(XMLDoc &doc, XMLNodePtr n) {
   return Iterator<Entry<K, V> >(new AbstractValueListIterator<PairEntry<K,V>, Args...>(doc, n));
 }
 

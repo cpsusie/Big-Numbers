@@ -1,6 +1,5 @@
 #include "pch.h"
 #include <String.h>
-#include <Random.h>
 #include <CommonHashFunctions.h>
 #include <BitSet.h>
 
@@ -160,18 +159,6 @@ BitSet &BitSet::add(size_t a, size_t b) {
     m_p[aIndex] |= ~_BS_MASKATOM(a%_BS_BITSINATOM) & _BS_MASKATOM(b%_BS_BITSINATOM + 1);
   }
   return *this;
-}
-
-size_t BitSet::select(RandomGenerator &rnd) const {
-  const size_t i = randSizet(m_capacity, rnd);
-  for(Iterator<size_t> it = getIterator(i); it.hasNext();) {
-    return it.next();
-  }
-  for(Iterator<size_t> it = getReverseIterator(i); it.hasNext();) {
-    return it.next();
-  }
-  throwSelectFromEmptyCollectionException(__TFUNCTION__);
-  return -1;
 }
 
 BitSet &BitSet::invert() {
@@ -411,15 +398,7 @@ int bitSetCmp(const BitSet &i1, const BitSet &i2) {
 }
 
 String BitSet::toString(AbstractStringifier<size_t> *sf, const TCHAR *delim) const {
-  String result = _T("(");
-  Iterator<size_t> it = getIterator();
-  if(sf) {
-    result += it.toString(*sf, delim);
-  } else {
-    result += it.toString(SizeTStringifier(),delim);
-  }
-  result += _T(")");
-  return result;
+  return sf ? getIterator().toString(*sf, delim) : getIterator().toString(SizeTStringifier(),delim);
 }
 
 static TCHAR *sprintbin(TCHAR *s, BitSet::Atom p) {
@@ -448,7 +427,7 @@ void BitSet::getRangeTable(CompactInt64Array &rangeTable, BYTE shift) const {
   const UINT         stepSize     = 1 << shift;
   size_t             currentLimit = stepSize;
   size_t             counter      = 0;
-  for(Iterator<size_t> it = getIterator(); it.hasNext();) {
+  for(ConstIterator<size_t> it = getIterator(); it.hasNext();) {
     const size_t e = it.next();
     if(++counter >= currentLimit) {
 

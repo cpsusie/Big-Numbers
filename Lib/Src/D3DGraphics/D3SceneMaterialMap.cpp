@@ -78,8 +78,8 @@ static int materialIdCmp(const D3Material &m1, const D3Material &m2) {
 
 String D3Scene::getMaterialString() const {
   Array<D3Material> matArray(getMaterialCount());
-  for(Iterator<Entry<CompactUIntKeyType, D3Material> > it = m_materialMap.getIterator(); it.hasNext();) {
-    Entry<CompactUIntKeyType, D3Material> &e = it.next();
+  for(ConstIterator<Entry<CompactUIntKeyType, D3Material> > it = m_materialMap.getIterator(); it.hasNext();) {
+    const Entry<CompactUIntKeyType, D3Material> &e = it.next();
     matArray.add(e.getValue());
   }
   return matArray.sort(materialIdCmp).toString(_T("\n"));

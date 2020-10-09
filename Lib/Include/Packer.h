@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ByteArray.h"
+#include <CompactKeyType.h>
 
 class Packer {
 private:
@@ -43,11 +44,11 @@ public:
   Packer &operator<<(      bool            n) { return addElement(E_BOOL , &n, sizeof(n)); }
   Packer &operator<<(      char            n) { return addElement(E_CHAR , &n, sizeof(n)); }
   Packer &operator<<(      UCHAR           n) { return addElement(E_CHAR , &n, sizeof(n)); }
-  Packer &operator<<(      short           n);
+  Packer &operator<<(      SHORT           n);
   Packer &operator<<(      USHORT          n);
-  Packer &operator<<(      long            n);
+  Packer &operator<<(      LONG            n);
   Packer &operator<<(      ULONG           n);
-  Packer &operator<<(      int             n) { return *this << (long  )n; }
+  Packer &operator<<(      INT             n) { return *this << (LONG  )n; }
   Packer &operator<<(      UINT            n) { return *this << (ULONG )n; }
   Packer &operator<<(      INT64           n);
   Packer &operator<<(      UINT64          n);
@@ -61,11 +62,11 @@ public:
   Packer &operator>>(      bool           &n) { return getElement(E_BOOL , &n, sizeof(bool));  }
   Packer &operator>>(      char           &n) { return getElement(E_CHAR , &n, sizeof(char));  }
   Packer &operator>>(      UCHAR          &n) { return getElement(E_CHAR , &n, sizeof(UCHAR)); }
-  Packer &operator>>(      short          &n);
+  Packer &operator>>(      SHORT          &n);
   Packer &operator>>(      USHORT         &n);
-  Packer &operator>>(      long           &n);
+  Packer &operator>>(      LONG           &n);
   Packer &operator>>(      ULONG          &n);
-  Packer &operator>>(      int            &n) { return *this >> (long &)n; }
+  Packer &operator>>(      INT            &n) { return *this >> (LONG &)n; }
   Packer &operator>>(      UINT           &n) { return *this >> (ULONG&)n; }
   Packer &operator>>(      INT64          &n);
   Packer &operator>>(      UINT64         &n);

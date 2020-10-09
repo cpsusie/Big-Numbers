@@ -106,7 +106,7 @@ void Pow2Cache::save(ByteOutputStream &s) const {
   LOGPOW2CACHE(_T("Saving Pow2Cache to %s. size:%lu, capacity:%lu\n"), CACHEFILENAME, n, capacity);
   Packer p;
   p << capacity << n;
-  for(Iterator<Pow2CacheEntry> it = getIterator(); it.hasNext();) {
+  for(ConstIterator<Pow2CacheEntry> it = getIterator(); it.hasNext();) {
     const Pow2CacheEntry &e = it.next();
     p << e.getKey() << *e.getValue();
   }

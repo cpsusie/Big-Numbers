@@ -231,12 +231,6 @@
     <ClCompile Include="straccent.cpp">
       <Filter>Source Files\String</Filter>
     </ClCompile>
-    <ClCompile Include="StrHash.cpp">
-      <Filter>Source Files\String</Filter>
-    </ClCompile>
-    <ClCompile Include="StrIHash.cpp">
-      <Filter>Source Files\String</Filter>
-    </ClCompile>
     <ClCompile Include="StringArray.cpp">
       <Filter>Source Files\String</Filter>
     </ClCompile>
@@ -757,9 +751,6 @@
     <ClCompile Include="RegexIStream\SubNFA.cpp">
       <Filter>Source Files\Stream\RegexIStream</Filter>
     </ClCompile>
-    <ClCompile Include="GetTestFileName.cpp">
-      <Filter>Source Files\Debugging and Exceptions</Filter>
-    </ClCompile>
     <ClCompile Include="FloatRegex.cpp">
       <Filter>Source Files\Math</Filter>
     </ClCompile>
@@ -823,9 +814,6 @@
     <ClCompile Include="UndefNumericRegex.cpp">
       <Filter>Source Files\Math</Filter>
     </ClCompile>
-    <ClCompile Include="HexDumpStr.cpp">
-      <Filter>Source Files\Debugging and Exceptions</Filter>
-    </ClCompile>
     <ClCompile Include="InputPassword.cpp">
       <Filter>Source Files\Console</Filter>
     </ClCompile>
@@ -884,15 +872,6 @@
       <Filter>Source Files\Date</Filter>
     </ClCompile>
     <ClCompile Include="DateEaster.cpp">
-      <Filter>Source Files\Date</Filter>
-    </ClCompile>
-    <ClCompile Include="DateIO.cpp">
-      <Filter>Source Files\Date</Filter>
-    </ClCompile>
-    <ClCompile Include="TimeIO.cpp">
-      <Filter>Source Files\Date</Filter>
-    </ClCompile>
-    <ClCompile Include="TimestampIO.cpp">
       <Filter>Source Files\Date</Filter>
     </ClCompile>
     <ClCompile Include="Date.cpp">
@@ -980,6 +959,69 @@
       <Filter>Source Files\Collection</Filter>
     </ClCompile>
     <ClCompile Include="BitMatrixRowIterator.cpp">
+      <Filter>Source Files\Collection</Filter>
+    </ClCompile>
+    <ClCompile Include="TimestampaIO.cpp">
+      <Filter>Source Files\Date</Filter>
+    </ClCompile>
+    <ClCompile Include="DateaIO.cpp">
+      <Filter>Source Files\Date</Filter>
+    </ClCompile>
+    <ClCompile Include="TimeaIO.cpp">
+      <Filter>Source Files\Date</Filter>
+    </ClCompile>
+    <ClCompile Include="StrwHash.cpp">
+      <Filter>Source Files\String</Filter>
+    </ClCompile>
+    <ClCompile Include="StraHash.cpp">
+      <Filter>Source Files\String</Filter>
+    </ClCompile>
+    <ClCompile Include="StrwIHash.cpp">
+      <Filter>Source Files\String</Filter>
+    </ClCompile>
+    <ClCompile Include="StraIHash.cpp">
+      <Filter>Source Files\String</Filter>
+    </ClCompile>
+    <ClCompile Include="GetTestFileName.cpp">
+      <Filter>Source Files\System</Filter>
+    </ClCompile>
+    <ClCompile Include="HexDumpString.cpp">
+      <Filter>Source Files\String</Filter>
+    </ClCompile>
+    <ClCompile Include="ArrayIterator.cpp">
+      <Filter>Source Files\Collection</Filter>
+    </ClCompile>
+    <ClCompile Include="ArraySelect.cpp">
+      <Filter>Source Files\Collection</Filter>
+    </ClCompile>
+    <ClCompile Include="ArrayShuffle.cpp">
+      <Filter>Source Files\Collection</Filter>
+    </ClCompile>
+    <ClCompile Include="ListSelect.cpp">
+      <Filter>Source Files\Collection</Filter>
+    </ClCompile>
+    <ClCompile Include="ListIterator.cpp">
+      <Filter>Source Files\Collection</Filter>
+    </ClCompile>
+    <ClCompile Include="TreeSetSelect.cpp">
+      <Filter>Source Files\Collection</Filter>
+    </ClCompile>
+    <ClCompile Include="TreeMapSelect.cpp">
+      <Filter>Source Files\Collection</Filter>
+    </ClCompile>
+    <ClCompile Include="HashSetTableSelect.cpp">
+      <Filter>Source Files\Collection</Filter>
+    </ClCompile>
+    <ClCompile Include="HashSetSelect.cpp">
+      <Filter>Source Files\Collection</Filter>
+    </ClCompile>
+    <ClCompile Include="HashMapSelect.cpp">
+      <Filter>Source Files\Collection</Filter>
+    </ClCompile>
+    <ClCompile Include="BitSetSelect.cpp">
+      <Filter>Source Files\Collection</Filter>
+    </ClCompile>
+    <ClCompile Include="HashMapIterator.cpp">
       <Filter>Source Files\Collection</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1421,13 +1463,25 @@
     <ClInclude Include="ThreadPoolInternal.h">
       <Filter>Source Files\Process\Private Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DateTimeStreamScanner.h">
-      <Filter>Source Files\Date\Private Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="BitSetIterator.h">
       <Filter>Source Files\Collection\Private Header Fles</Filter>
     </ClInclude>
     <ClInclude Include="BitMatrixIterator.h">
+      <Filter>Source Files\Collection\Private Header Fles</Filter>
+    </ClInclude>
+    <ClInclude Include="DateTimeIO.h">
+      <Filter>Source Files\Date\Private Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TreeSetNode.h">
+      <Filter>Source Files\Collection\Private Header Fles</Filter>
+    </ClInclude>
+    <ClInclude Include="TreeMapNode.h">
+      <Filter>Source Files\Collection\Private Header Fles</Filter>
+    </ClInclude>
+    <ClInclude Include="HashMapNode.h">
+      <Filter>Source Files\Collection\Private Header Fles</Filter>
+    </ClInclude>
+    <ClInclude Include="HashSetNode.h">
       <Filter>Source Files\Collection\Private Header Fles</Filter>
     </ClInclude>
   </ItemGroup>

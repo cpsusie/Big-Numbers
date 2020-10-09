@@ -1,5 +1,4 @@
 #include "pch.h"
-#include <DebugLog.h>
 #include <FileNameSplitter.h>
 
 String getTestFileName(const String &fileName, const String &extension) {

@@ -291,7 +291,7 @@ ExpressionVariableArray ExpressionSymbolTable::getAllVariables() const {
   return result;
 }
 
-void ExpressionSymbolTable::unmarkAllReferencedNodes() const {
+void ExpressionSymbolTable::unmarkAllReferencedNodes() {
   for(Iterator<ExpressionVariable> it = getVariablesIterator(); it.hasNext();) {
     it.next().unMark();
   }
@@ -466,7 +466,7 @@ String NameTable::toString() const {
   String result = _T("{");
   const TCHAR *del = NULL;
 
-  for(Iterator<Entry<CompactStrIKeyType, UINT> > it = getIterator(); it.hasNext();) {
+  for(ConstIterator<Entry<CompactStrIKeyType, UINT> > it = getIterator(); it.hasNext();) {
     const Entry<CompactStrIKeyType, UINT> &e    = it.next();
     const TCHAR                           *name = e.getKey();
     if(del) result += del; else del = _T(", ");

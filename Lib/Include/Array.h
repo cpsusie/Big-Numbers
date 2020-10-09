@@ -56,7 +56,7 @@ public:
     return true;
   }
   void                 swap(   size_t i1, size_t i2);
-  void                 shuffle(size_t from, size_t count);
+  void                 shuffle(size_t from, size_t count, RandomGenerator &rnd);
   void                 reverse();
   bool                 equals(const ArrayImpl *rhs) const;
   void                 arraySort(size_t from, size_t count, int (*compare)(const void **e1, const void **e2));
@@ -189,13 +189,13 @@ public:
     return *this;
   }
 
-  inline Array<T> &shuffle(size_t from, size_t count) {
-    ((ArrayImpl*)m_collection)->shuffle(from, count);
+  inline Array<T> &shuffle(size_t from, size_t count, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) {
+    ((ArrayImpl*)m_collection)->shuffle(from, count, rnd);
     return *this;
   }
 
-  inline Array<T> &shuffle() {
-    return shuffle(0, size());
+  inline Array<T> &shuffle(RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) {
+    return shuffle(0, size(), rnd);
   }
 
   inline Array<T> &reverse() {

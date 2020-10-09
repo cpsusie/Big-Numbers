@@ -49,7 +49,7 @@ public:
   // can store integers from [0..capacity-1]
   explicit BitSet(size_t capacity);
   BitSet(const BitSet &set);
-  ~BitSet() {
+  virtual ~BitSet() {
     SAFEDELETEARRAY(m_p);
   }
   BitSet &operator=(const BitSet &rhs);
@@ -163,11 +163,13 @@ public:
 
   // Iterates elements of bitset in ascending  order,
   // beginning from smallest element >= start
-  Iterator<size_t> getIterator(       size_t start =  0, size_t end=-1) const;
+  ConstIterator<size_t> getIterator(       size_t start =  0, size_t end=-1) const;
+  Iterator<size_t>      getIterator(       size_t start =  0, size_t end=-1);
 
   // Iterates elements of bitset in descending order,
   // beginning from biggest element <= start
-  Iterator<size_t> getReverseIterator(size_t start = -1, size_t end= 0) const;
+  ConstIterator<size_t> getReverseIterator(size_t start = -1, size_t end= 0) const;
+  Iterator<size_t>      getReverseIterator(size_t start = -1, size_t end= 0);
 
   friend class BitSetIterator;
   friend class BitSetReverseIterator;

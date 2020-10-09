@@ -42,7 +42,7 @@ private:
   PointSetIterator(const PointSetIterator &it) : m_set(it.m_set), m_it(it.m_it) {
   }
 public:
-  PointSetIterator(const PointSet &set) : m_set((PointSet&)set), m_it(((BitMatrix&)set).getIterator()) {
+  PointSetIterator(const PointSet *set) : m_set(*(PointSet*)set), m_it((*(BitMatrix*)set).getIterator()) {
   }
   AbstractIterator *clone()       override {
     return new PointSetIterator(*this);
@@ -60,7 +60,7 @@ public:
 };
 
 Iterator<CPoint> PointSet::getIterator() const {
-  return Iterator<CPoint>(new PointSetIterator(*this));
+  return Iterator<CPoint>(new PointSetIterator(this));
 }
 
 String PointSet::toString() const {

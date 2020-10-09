@@ -344,6 +344,11 @@ public:
   friend SNode gauss(     const SNode &x);
 };
 
+inline std::wostream &operator<<(std::wostream &out, const Expr::SNode &n) {
+  out << n.toString();
+  return out;
+}
+
 class SNodeArray : public CompactArray<SNode> {
   DECLAREARRAYDEBUGSTRING;
 private:

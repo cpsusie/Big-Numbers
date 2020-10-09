@@ -4,6 +4,8 @@
 
 namespace OStreamHelper {
 
+using namespace std;
+
   constexpr char  s_decimalPointChar = '.';
   constexpr char *s_infStr           = "inf";
   constexpr char *s_qNaNStr          = "nan(ind)";

@@ -1,24 +1,11 @@
 #pragma once
 
-#include <MapBase.h>
 #include "TreeSetIterator.h"
-
-class TreeMapNode : public TreeSetNode, public AbstractEntry {
-  friend class TreeMapImpl;
-private:
-  void *m_value;
-public:
-  const void *key()   const override {
-    return TreeSetNode::key();
-  }
-  void       *value() const override {
-    return m_value;
-  }
-};
+#include "TreeMapNode.h"
 
 class TreeMapIterator : public TreeSetIterator {
 public:
-  TreeMapIterator(TreeSetImpl &set) : TreeSetIterator(set) {
+  TreeMapIterator(const TreeSetImpl *set) : TreeSetIterator(set) {
   }
   AbstractIterator *clone() override {
     return new TreeMapIterator(*this);

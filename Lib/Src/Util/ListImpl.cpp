@@ -1,6 +1,5 @@
 #include "pch.h"
 #include <LinkedList.h>
-#include <Random.h>
 
 /* DEBUG-klasse til optælling af kald til ListImpl */
 //#define DEBUG_LISTIMPL
@@ -103,6 +102,14 @@ void ListImpl::indexError(const TCHAR *method, size_t index) const {
   throwIndexOutOfRangeException(method, index, m_size);
 }
 
+void ListImpl::removeError(const TCHAR *method) const {
+  throwException(_T("%s:Cannot remove element from empty list"), method);
+}
+
+void ListImpl::getError(const TCHAR *method) const {
+  throwException(_T("%s:List is empty"), method);
+}
+
 void *ListImpl::getElement(size_t index) const {
   if(index >= m_size) indexError(__TFUNCTION__, index);
   return (void*)findNode(index)->m_data;
@@ -171,19 +178,16 @@ void ListImpl::removeNode(ListNode *n) {
   m_updateCount++;
 }
 
-static const TCHAR *removeErrorText      = _T("%s:Cannot remove element from empty list.");
-static const TCHAR *getElementeErrorText = _T("%s:List is empty");
-
 void ListImpl::removeFirst() {
   if(size() == 0) {
-    throwException(removeErrorText, __TFUNCTION__);
+    removeError(__TFUNCTION__);
   }
   removeNode(m_first);
 }
 
 void ListImpl::removeLast() {
   if(size() == 0) {
-    throwException(removeErrorText, __TFUNCTION__);
+    removeError(__TFUNCTION__);
   }
   removeNode(m_last);
 }
@@ -203,78 +207,16 @@ bool ListImpl::contains(const void *e) const {
   return false;
 }
 
-void *ListImpl::select(RandomGenerator &rnd) const {
-  if(size() == 0) {
-    throwException(getElementeErrorText, __TFUNCTION__);
-  }
-  return findNode(randSizet(size(), rnd))->m_data;
-}
-
 void *ListImpl::first() const {
   if(size() == 0) {
-    throwException(getElementeErrorText, __TFUNCTION__);
+    getError(__TFUNCTION__);
   }
   return m_first->m_data;
 }
 
 void *ListImpl::last() const {
   if(size() == 0) {
-    throwException(getElementeErrorText, __TFUNCTION__);
+    getError(__TFUNCTION__);
   }
   return m_last->m_data;
-}
-
-// -------------------------------------------------------------------------------
-
-class ListIterator : public AbstractIterator {
-private:
-  DECLARECLASSNAME;
-  ListImpl           &m_list;
-  ListNode           *m_next;
-  ListNode           *m_current;
-  size_t              m_updateCount;
-public:
-  ListIterator(ListImpl &list);
-  AbstractIterator *clone()         override {
-    return new ListIterator(*this);
-  }
-  bool              hasNext() const override {
-    return m_next != nullptr;
-  }
-  void             *next()          override;
-  void              remove()        override;
-};
-
-DEFINECLASSNAME(ListIterator);
-
-ListIterator::ListIterator(ListImpl &list) : m_list(list) {
-  m_updateCount = m_list.m_updateCount;
-  m_next    = m_list.m_first;
-  m_current = nullptr;
-}
-
-void *ListIterator::next() {
-  if(m_next == nullptr) {
-    noNextElementError(s_className);
-  }
-  __assume(m_next);
-  if(m_updateCount != m_list.m_updateCount) {
-    concurrentModificationError(s_className);
-  }
-  m_current = m_next;
-  m_next    = m_current->m_next;
-  return m_current->m_data;
-}
-
-void ListIterator::remove() {
-  if(m_current == nullptr) {
-    noCurrentElementError(s_className);
-  }
-  m_list.removeNode(m_current);
-  m_current = nullptr;
-  m_updateCount = m_list.m_updateCount;
-}
-
-AbstractIterator *ListImpl::getIterator() const {
-  return new ListIterator((ListImpl&)*this);
 }

@@ -1,5 +1,7 @@
 #include "pch.h"
-#include "HashSetIterator.h"
+#include <HashSet.h>
+#include "HashSetTable.h"
+#include "HashSetNode.h"
 
 HashSetImpl::HashSetImpl(const AbstractObjectManager &objectManager, HashFunction hash, const AbstractComparator &comparator, size_t capacity) {
   m_objectManager = objectManager.clone(); TRACE_NEW(m_objectManager);
@@ -143,10 +145,6 @@ bool HashSetImpl::contains(const void *key) const {
   return findNode(key) != nullptr;
 }
 
-void *HashSetImpl::select(RandomGenerator &rnd) const {
-  return (void*)m_table->select(rnd)->key();
-}
-
 void *HashSetImpl::getMin() const {
   throwUnsupportedOperationException(__TFUNCTION__);
   return nullptr;
@@ -155,10 +153,6 @@ void *HashSetImpl::getMin() const {
 void *HashSetImpl::getMax() const {
   throwUnsupportedOperationException(__TFUNCTION__);
   return nullptr;
-}
-
-AbstractIterator *HashSetImpl::getIterator() const {
-  return new HashSetIterator((HashSetImpl&)*this);
 }
 
 HashSetNode *HashSetImpl::findNode(const void *key) const {

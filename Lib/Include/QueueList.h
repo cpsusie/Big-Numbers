@@ -32,7 +32,10 @@ public:
     return __super::operator[](index);
   }
 
-  Iterator<T> getIterator() const override {
+  ConstIterator<T> getIterator() const override {
+    return __super::getIterator();
+  }
+  Iterator<T> getIterator() override {
     return __super::getIterator();
   }
 };

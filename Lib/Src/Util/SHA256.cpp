@@ -12,11 +12,9 @@ ostream  &operator<<(ostream  &out, const SHA256HashCode &code) {
 }
 
 wostream &operator<<(wostream &out, const SHA256HashCode &code) {
-  USES_WCONVERSION;
   const bool uppercase = (out.flags() & ios_base::uppercase) != 0;
   const String tmp = code.toString(uppercase);
-
-  return out << TSTR2WSTR(tmp.cstr());
+  return out << tmp;
 }
 
 String SHA256HashCode::toString(bool upper) const {

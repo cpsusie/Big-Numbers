@@ -74,4 +74,10 @@ public:
   String toString(int dec=3) const;
 };
 
+inline std::wostream &operator<<(std::wostream &out, const D3Material &mat) {
+  int precision = (int)out.precision();
+  out << mat.toString(precision);
+  return out;
+}
+
 typedef CompactUIntHashMap<D3Material,200> MaterialMap;

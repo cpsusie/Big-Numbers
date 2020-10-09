@@ -26,7 +26,9 @@ private:
   // assume index < size()
   const ListNode *findNode(size_t index) const;
   void            removeNode(ListNode *n);
-  void            indexError(const TCHAR *method, size_t index) const;
+  void            indexError( const TCHAR *method, size_t index) const;
+  void            removeError(const TCHAR *method) const;
+  void            getError(   const TCHAR *method) const;
   friend class ListIterator;
 public:
   ListImpl(AbstractObjectManager &objectManager);
@@ -97,8 +99,8 @@ public:
     if(size() != rhs.size()) {
       return false;
     }
-    Iterator<T> it1 = getIterator();
-    Iterator<T> it2 = rhs.getIterator();
+    ConstIterator<T> it1 = getIterator();
+    ConstIterator<T> it2 = rhs.getIterator();
     while(it1.hasNext()) {
       if(!(it1.next() == it2.next())) {
         return false;
@@ -144,7 +146,7 @@ public:
   }
 
   bool contains(const T &e) const {            // NB not virtual in Collection, because of ==
-    for(Iterator<T> it = getIterator(); it.hasNext();) {
+    for(ConstIterator<T> it = getIterator(); it.hasNext();) {
       if(it.next() == e) {
         return true;
       }

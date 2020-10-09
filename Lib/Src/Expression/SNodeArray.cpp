@@ -94,7 +94,7 @@ SNodeArray &SNodeArray::cloneNodes(SNodeArray &dst, ParserTree *tree) const {
 
 SNodeArray SNodeArray::filterNodes(const BitSet &set) const {
   SNodeArray result(getTree(), set.size());
-  for(Iterator<size_t> it = set.getIterator(); it.hasNext();) {
+  for(ConstIterator<size_t> it = set.getIterator(); it.hasNext();) {
     const size_t index = it.next();
     result.add((*this)[index]);
   }

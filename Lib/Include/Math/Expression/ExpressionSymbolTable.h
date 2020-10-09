@@ -55,12 +55,17 @@ public:
     const UINT *index = m_nameTable.get(name.cstr());
     return index ? &m_variableTable[*index] : NULL;
   }
-  String                           getNewLoopName(const String &oldName) const;
-  inline Iterator<ExpressionVariable> getVariablesIterator() const {
+  String                              getNewLoopName(const String &oldName) const;
+
+  inline ConstIterator<ExpressionVariable> getVariablesIterator() const {
     return m_variableTable.getIterator();
   }
+  inline Iterator<ExpressionVariable> getVariablesIterator() {
+    return m_variableTable.getIterator();
+  }
+
   ExpressionVariableArray getAllVariables() const;
-  void unmarkAllReferencedNodes() const;
+  void unmarkAllReferencedNodes();
   inline void setValue(UINT valueIndex, const Real &value) const {
     m_valueTable[valueIndex] = value;
   }

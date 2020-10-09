@@ -5,7 +5,7 @@
 class Singleton {
 private:
   static std::atomic<UINT> s_count;
-  const String m_className;
+  const String             m_className;
   Singleton(           const Singleton &src); // not implemented. Singleton not cloneable
   Singleton &operator=(const Singleton &src); // not implemented. Singleton not cloneable
   static String getClassNameFromConstructorName(const TCHAR *constructorName);

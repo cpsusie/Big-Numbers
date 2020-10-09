@@ -41,7 +41,7 @@ TreeMapImpl::~TreeMapImpl() {
 }
 
 AbstractIterator *TreeMapImpl::getIterator() const {
-  return new TreeMapIterator((TreeMapImpl&)*this);
+  return new TreeMapIterator(this);
 }
 
 TreeSetNode *TreeMapImpl::allocateNode() const {
@@ -91,11 +91,6 @@ void *TreeMapImpl::get(const void *key) const {
 
 bool TreeMapImpl::remove(const void *key) {
   return TreeSetImpl::remove(key);
-}
-
-AbstractEntry *TreeMapImpl::selectEntry(RandomGenerator &rnd) const {
-  if(size() == 0) throwSelectFromEmptyCollectionException(__TFUNCTION__);
-  return (TreeMapNode*)findNode(select(rnd));
 }
 
 AbstractEntry *TreeMapImpl::getMinEntry() const {

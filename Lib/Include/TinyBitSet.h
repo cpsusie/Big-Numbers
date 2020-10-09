@@ -3,6 +3,7 @@
 #include "CompactArray.h"
 #include <intrin.h>
 
+// Add no virtual functions
 template<typename T> class TinyBitSet {
 private:
   static inline UINT getSize(BYTE b) {
@@ -189,18 +190,16 @@ public:
       }
     }
   public:
-    inline TinyBitSetIterator(TinyBitSet &set, UINT start, UINT end)
-      : m_set(set)
-    {
+    inline TinyBitSetIterator(const TinyBitSet *set, UINT start, UINT end) : m_set(*(TinyBitSet*)set) {
       first(start, end);
     }
-    AbstractIterator *clone()   override {
+    AbstractIterator *clone()         override {
       return new TinyBitSetIterator(*this);
     }
-    inline bool hasNext() const override {
+    inline bool       hasNext() const override {
       return m_hasNext;
     }
-    void *next()                override {
+    void             *next()          override {
       if(!m_hasNext) {
         noNextElementError(_T("TinyBitSetIterator"));
       }
@@ -221,7 +220,7 @@ public:
       return &m_current;
     }
 
-    void remove()               override {
+    void              remove()        override {
       m_set.remove(m_current);
     }
   };
@@ -253,7 +252,7 @@ public:
       }
     }
   public:
-    inline TinyBitSetReverseIterator(TinyBitSet &set, UINT start, UINT end) : m_set(set) {
+    inline TinyBitSetReverseIterator(const TinyBitSet *set, UINT start, UINT end) : m_set(*(TinyBitSet*)set) {
       first(start, end);
     }
     AbstractIterator *clone()         override {
@@ -290,25 +289,24 @@ public:
 
   // Iterates elements of bitset in ascending order,
   // beginning from smallest element >= start
-  Iterator<UINT> getIterator(UINT start = 0, UINT end = -1) const {
-    return Iterator<UINT>(new TinyBitSetIterator((TinyBitSet&)*this, start, end));
+  ConstIterator<UINT> getIterator(UINT start = 0, UINT end = -1) const {
+    return ConstIterator<UINT>(new TinyBitSetIterator(this, start, end));
+  }
+  Iterator<UINT> getIterator(UINT start = 0, UINT end = -1) {
+    return Iterator<UINT>(new TinyBitSetIterator(this, start, end));
   }
 
   // Iterates elements of bitset in descending order,
   // beginning from biggest element <= start
-  Iterator<UINT> getReverseIterator(UINT start = -1, UINT end = 0) const {
-    return Iterator<UINT>(new TinyBitSetReverseIterator((TinyBitSet&)*this, start, end));
+  ConstIterator<UINT> getReverseIterator(UINT start = -1, UINT end = 0) const {
+    return ConstIterator<UINT>(new TinyBitSetReverseIterator(this, start, end));
+  }
+  Iterator<UINT> getReverseIterator(UINT start = -1, UINT end = 0) {
+    return Iterator<UINT>(new TinyBitSetReverseIterator(this, start, end));
   }
 
   String toString(AbstractStringifier<UINT> *sf = NULL, const TCHAR *delim = _T(",")) const {
-    String result = _T("(");
-    Iterator<UINT> it = getIterator();
-    if(sf) {
-      result += it.toString(*sf, delim);
-    } else {
-      result += it.toString(UIntStringifier(), delim);
-    }
-    return result + _T(")");
+    return sf ? getIterator().toString(*sf, delim) : getIterator().toString(UIntStringifier(),delim);
   }
 
   static TinyBitSet all() {

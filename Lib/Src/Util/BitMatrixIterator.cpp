@@ -18,6 +18,10 @@ void BitMatrixIterator::remove() {
   setCurrentUndefined();
 }
 
-Iterator<MatrixIndex> BitMatrix::getIterator() const {
-  return Iterator<MatrixIndex>(new BitMatrixIterator((BitMatrix&)(*this)));
+ConstIterator<MatrixIndex> BitMatrix::getIterator() const {
+  return ConstIterator<MatrixIndex>(new BitMatrixIterator(this));
+}
+
+Iterator<MatrixIndex> BitMatrix::getIterator() {
+  return Iterator<MatrixIndex>(new BitMatrixIterator(this));
 }

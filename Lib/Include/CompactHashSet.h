@@ -217,9 +217,9 @@ public:
     }
     return __super::addAll(c);
   }
-  bool removeAll(const Iterator<K> &it) {
+  bool removeAll(const ConstIterator<K> &it) {
     const size_t oldSize = size();
-    for(Iterator<K> it1 = it; it1.hasNext(); ) {
+    for(ConstIterator<K> it1 = it; it1.hasNext(); ) {
       remove(it1.next());
     }
     return size() != oldSize;
@@ -279,16 +279,16 @@ public:
     }
 
   public:
-    CompactSetIterator(CompactHashSet *set) : m_set(*set), m_updateCount(set->m_updateCount) {
+    CompactSetIterator(const CompactHashSet *set) : m_set(*(CompactHashSet*)set), m_updateCount(set->m_updateCount) {
       first();
     }
-    AbstractIterator *clone() override {
+    AbstractIterator *clone()            override {
       return new CompactSetIterator(*this);
     }
-    bool hasNext() const override {
+    bool              hasNext()    const override {
       return m_next != NULL;
     }
-    void *next() override {
+    void             *next()             override {
       if(m_next == NULL) {
         noNextElementError(_T("CompactSetIterator"));
       }
@@ -306,7 +306,7 @@ public:
       }
       return &(m_current->m_e.m_key);
     }
-    void remove() override {
+    void remove()                        override {
       if(m_current == NULL) {
         noCurrentElementError(_T("CompactSetIterator"));
       }
@@ -318,25 +318,29 @@ public:
     }
   };
 
-  Iterator<K> getIterator() const override {
-    return Iterator<K>(new CompactSetIterator((CompactHashSet*)this));
+  ConstIterator<K> getIterator() const override {
+    return ConstIterator<K>(new CompactSetIterator(this));
+  }
+  Iterator<K>      getIterator()       override {
+    return Iterator<K>(new CompactSetIterator(this));
   }
 
   bool hasOrder() const override {
     return false;
   }
+
   // Set intersection = set of elements that are in both sets.
   CompactHashSet operator*(const CompactHashSet &set) const {
     CompactHashSet result;
     if(size() < set.size()) {
-      for(Iterator<K> it = getIterator(); it.hasNext();) {
+      for(ConstIterator<K> it = getIterator(); it.hasNext();) {
         const K &e = it.next();
         if(set.contains(e)) {
           result.add(e);
         }
       }
     } else {
-      for(Iterator<K> it = set.getIterator(); it.hasNext();) {
+      for(ConstIterator<K> it = set.getIterator(); it.hasNext();) {
         const K &e = it.next();
         if(contains(e)) {
           result.add(e);
@@ -363,13 +367,13 @@ public:
   // s1^s2 = (s1-s2) + (s2-s1) (symmetric difference) = set of elements that are in only one of the sets
   CompactHashSet operator^(const CompactHashSet &set) const {
     CompactHashSet result;
-    for(Iterator<K> it = getIterator(); it.hasNext();) {
+    for(ConstIterator<K> it = getIterator(); it.hasNext();) {
       const K &e = it.next();
       if(!set.contains(e)) {
         result.add(e);
       }
     }
-    for(Iterator<K> it = set.getIterator(); it.hasNext();) {
+    for(ConstIterator<K> it = set.getIterator(); it.hasNext();) {
       const K &e = it.next();
       if(!contains(e)) {
         result.add(e);
@@ -383,7 +387,7 @@ public:
     if(set.size() != size()) {
       return false;
     }
-    for(Iterator<K> it = getIterator(); it.hasNext();) {
+    for(ConstIterator<K> it = getIterator(); it.hasNext();) {
       if(!set.contains(it.next())) {
         return false;
       }
@@ -398,7 +402,7 @@ public:
   // Subset. Return true if all elements in *this are in set
   bool operator<=(const CompactHashSet &set) const {
     if(size() > set.size()) return false;
-    for(Iterator<K> it = getIterator(); it.hasNext();) {
+    for(ConstIterator<K> it = getIterator(); it.hasNext();) {
       if(!set.contains(it.next())) {
         return false;
       }
@@ -417,55 +421,6 @@ public:
 
   inline bool operator>(const CompactHashSet &set) const {
     return set < *this;
-  }
-
-  void save(ByteOutputStream &s) const {
-    const UINT  kSize = sizeof(K);
-    const UINT64 count = size();
-
-    s.putBytes((BYTE*)&kSize, sizeof(kSize));
-    s.putBytes((BYTE*)&count, sizeof(count));
-    CompactArray<K> a(1000);
-    UINT64 wCount = 0;
-    for(Iterator<K> it = getIterator(); it.hasNext();) {
-      a.add(it.next());
-      if(a.size() == 1000) {
-        s.putBytes((BYTE*)a.getBuffer(),sizeof(K)*a.size());
-        wCount += a.size();
-        a.clear(-1);
-      }
-    }
-    if(a.size() > 0) {
-      s.putBytes((BYTE*)a.getBuffer(),sizeof(K)*a.size());
-      wCount += a.size();
-    }
-    if(wCount != count) {
-      throwException(_T("%s:#written elements:%I64u. setSize:%I64u")
-                    ,__TFUNCTION__, wCount, count);
-    }
-  }
-
-  void load(ByteInputStream &s) {
-    UINT kSize;
-    s.getBytesForced((BYTE*)&kSize, sizeof(kSize));
-    if(kSize != sizeof(K)) {
-      throwException(_T("sizeof(Key):%zu. Size from stream=%u"), sizeof(K), kSize);
-    }
-    UINT64 size64;
-    s.getBytesForced((BYTE*)&size64,sizeof(size64));
-    CHECKUINT64ISVALIDSIZET(size64);
-    size_t count = (size_t)size64;
-    clear();
-    setCapacity(count);
-    for(size_t i = 0; i < count;) {
-      K buffer[1000];
-      const size_t n = min(count-i,ARRAYSIZE(buffer));
-      s.getBytesForced((BYTE*)buffer, sizeof(buffer[0])*n);
-      for(const K *p = buffer, *end = buffer + n; p < end;) {
-        add(*(p++));
-      }
-      i += n;
-    }
   }
 };
 

@@ -74,33 +74,50 @@ public:
     return m_map->remove(&key);
   }
 
-  Comparator<K> &getComparator() {
+  Comparator<K> &getComparator() const {
     return *(Comparator<K>*)(m_map->getComparator());
   }
 
-  Set<Entry<K, V> > entrySet() const {
-    return Set<Entry<K, V> >(m_map->getEntrySet());
+  const Set<Entry<K, V> > entrySet() const {
+    return Set<Entry<K,V> >(m_map->getEntrySet());
+  }
+  Set<Entry<K, V> >       entrySet() {
+    return Set<Entry<K,V> >(m_map->getEntrySet());
+  }
+  const Set<K>            keySet() const {
+    return Set<K>(m_map->getKeySet());
+  }
+  Set<K>                  keySet() {
+    return Set<K>(m_map->getKeySet());
+  }
+  const Collection<V>     values() const {
+    return Collection<V>(m_map->getValues(compareValues));
+  }
+  Collection<V>           values() {
+    return Collection<V>(m_map->getValues(compareValues));
   }
 
-  Iterator<Entry<K, V> > getIterator() const override {
+  ConstIterator<Entry<K,V> > getIterator()    const override {
+    return entrySet().getIterator();
+  }
+  Iterator<Entry<K,V> >      getIterator()          override {
     return entrySet().getIterator();
   }
 
-  bool hasOrder() const override {
+  ConstIterator<K>           getKeyIterator() const override {
+    return keySet().getIterator();
+  }
+  Iterator<K>                getKeyIterator()       override {
+    return keySet().getIterator();
+  }
+
+  bool hasOrder()                             const override {
     return m_map->hasOrder();
-  }
-
-  Set<K> keySet() const {
-    return Set<K>(m_map->getKeySet());
-  }
-
-  Collection<V> values() const {
-    return Collection<V>(m_map->getValues(compareValues));
   }
 
   friend Map<K, V> operator*(const Map<K, V> &m1, const Map<K, V> &m2) { // intersection
     Map<K, V> result(m1.m_map->cloneMap(false));
-    for(Iterator<K> it = ((Map<K, V>&)m1).keySet().getIterator(); it.hasNext();) {
+    for(ConstIterator<K> it = m1.keySet().getIterator(); it.hasNext();) {
       const K &key   = it.next();
       const V *value = m2.get(key);
       if(value != NULL) {
@@ -118,7 +135,7 @@ public:
 
   friend Map<K, V> operator-(const Map<K, V> &m1, const Map<K, V> &m2) { // difference
     Map<K, V> result(m1);
-    result.removeAll(((Map<K, V>&)m2).keySet());
+    result.removeAll(m2.keySet());
     return result;
   }
 
@@ -128,8 +145,8 @@ public:
     if(n != m.size()) {
       return false;
     }
-    Iterator<Entry<K, V> > it1 = getIterator();
-    Iterator<Entry<K, V> > it2 = m.getIterator();
+    ConstIterator<Entry<K, V> > it1 = getIterator();
+    ConstIterator<Entry<K, V> > it2 = m.getIterator();
     size_t count = 0;
     while(it1.hasNext() && it2.hasNext()) {
       const Entry<K, V> &e1 = it1.next();
@@ -151,85 +168,4 @@ public:
   bool operator!=(const Map<K, V> &m) const {
     return !(*this == m);
   }
-
-  void save(ByteOutputStream &s) const {
-    const int    keySize   = sizeof(K);
-    const int    valueSize = sizeof(V);
-    const size_t n         = size();
-    Packer       header;
-    header << keySize << valueSize << n;
-    header.write(s);
-    for(Iterator<Entry<K, V> > it = getIterator(); it.hasNext();) {
-      Packer p;
-      const Entry<K, V> &e = it.next();
-      p << e.getKey() << e.getValue();
-      p.write(s);
-    }
-  }
-
-  void load(ByteInputStream &s) {
-    DEFINEMETHODNAME;
-    Packer header;
-    int keySize, valueSize;
-    size_t size;
-    if(!header.read(s)) {
-      throwException(_T("%s:Couldn't read header"), method);
-    }
-    header >> keySize >> valueSize >> size;
-    if(keySize != sizeof(K)) {
-      throwException(_T("%s:Invalid keysize:%d bytes. Expected keysize = %zu bytes")
-                    ,method, keySize, sizeof(K));
-    }
-    if(valueSize != sizeof(V)) {
-      throwException(_T("%s:Invalid valuesize:%d bytes. Expected valuesize = %zu bytes")
-                    ,method, valueSize, sizeof(V));
-    }
-    clear();
-    for(size_t i = 0; i < size; i++) {
-      Packer p;
-      if(!p.read(s)) {
-        throwException(_T("%s:Unexpected eos. Expected %zd entries. got %zd")
-                      ,method, size, i);
-      }
-      K key;
-      V value;
-      p >> key >> value;
-      put(key, value);
-    }
-  }
-
-  String toString(const TCHAR *delimiter = _T(",")) const {
-    String result = _T("(");
-    const TCHAR *delim = NULL;
-    for(Iterator<Entry<K, V> > it = getIterator(); it.hasNext();) {
-      const Entry<K, V> &entry = it.next();
-      if(delim) result += delim; else delim = delimiter;
-      result += entry.toString();
-    }
-    result += _T(")");
-    return result;
-  }
 };
-
-template<typename S, typename K, typename V, typename D=StreamDelimiter> S &operator<<(S &out, const Map<K, V> &m) {
-  const D      delimiter;
-  const size_t size = m.size();
-  out << size << delimiter;
-  for(Iterator<Entry<K, V> > it = m.getIterator(); it.hasNext();) {
-    Entry<K, V> &e = it.next();
-    out << e.getKey() << delimiter << e.getValue() << delimiter;
-  }
-  return out;
-}
-
-template<typename S, typename K, typename V> S &operator>>(S &in, Map<K, V> &m) {
-  size_t size;
-  in >> size;
-  for(size_t i = 0; i < size; i++) {
-    K key;
-    V value;
-    in >> key >> value;
-    m.put(key, value);
-  }
-  return in;
-}

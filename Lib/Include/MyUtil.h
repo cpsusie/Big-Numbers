@@ -109,6 +109,8 @@ void checkResult(const TCHAR *fileName, int line, HRESULT hresult);
 void checkResult(const TCHAR *fileName, int line, BOOL    ok     );
 #define CHECKRESULT(result) checkResult(__TFILE__, __LINE__, result)
 
+String getTestFileName(const String &fileName, const String &extension = _T("dat"));
+
 void   sleep(int seconds);
 
 extern int UseSafeNew; // assign something to this, and we use safe new_handler, which throws Exception on out of memory

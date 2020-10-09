@@ -18,7 +18,12 @@ void BitMatrixRowIterator::remove() {
   setCurrentUndefined();
 }
 
-Iterator<MatrixIndex> BitMatrix::getRowIterator(size_t r) const {
+ConstIterator<MatrixIndex> BitMatrix::getRowIterator(size_t r) const {
   checkValidRow(__TFUNCTION__, r);
-  return Iterator<MatrixIndex>(new BitMatrixRowIterator((BitMatrix&)(*this), r));
+  return ConstIterator<MatrixIndex>(new BitMatrixRowIterator(this, r));
+}
+
+Iterator<MatrixIndex> BitMatrix::getRowIterator(size_t r) {
+  checkValidRow(__TFUNCTION__, r);
+  return Iterator<MatrixIndex>(new BitMatrixRowIterator(this, r));
 }

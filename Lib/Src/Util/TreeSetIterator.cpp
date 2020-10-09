@@ -10,7 +10,7 @@ enum IteratorState {
  ,RIGHT_DONE
 };
 
-TreeSetIterator::TreeSetIterator(TreeSetImpl &set) : m_set(set) {
+TreeSetIterator::TreeSetIterator(const TreeSetImpl *set) : m_set(*(TreeSetImpl*)set) {
   m_updateCount = m_set.m_updateCount;
   m_next        = findFirst();
   m_current     = nullptr;
@@ -108,4 +108,8 @@ void TreeSetIterator::checkUpdateCount() const {
   if(m_updateCount != m_set.m_updateCount) {
     concurrentModificationError(s_className);
   }
+}
+
+AbstractIterator *TreeSetImpl::getIterator() const {
+  return new TreeSetIterator(this);
 }

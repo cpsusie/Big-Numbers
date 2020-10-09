@@ -1,22 +1,23 @@
 #pragma once
 
 #include "HashSetTable.h"
+#include "HashSetNode.h"
 
 class HashSetIterator : public AbstractIterator {
 private:
   DECLARECLASSNAME;
-  HashSetImpl        *m_set;
+  HashSetImpl        &m_set;
   HashSetNode        *m_next, *m_current;
   size_t              m_updateCount;
 
   void checkUpdateCount() const;
 protected:
-  HashSetImpl &getSet() {
-    return *m_set;
+  HashSetImpl &getSet() const {
+    return m_set;
   }
   HashSetNode *nextNode();
 public:
-  HashSetIterator(HashSetImpl &set);
+  HashSetIterator(const HashSetImpl *set);
   AbstractIterator *clone()         override {
     return new HashSetIterator(*this);
   }

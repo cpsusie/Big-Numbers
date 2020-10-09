@@ -1,7 +1,7 @@
 #include "pch.h"
-#include "DateTimeStreamScanner.h"
+#include "DateTimeIO.h"
 
-using namespace std;
+using namespace DateTimeIO;
 
 wistream &operator>>(wistream &in, Date &d) {
   return getDate<wistream, wchar_t>(in, d);
