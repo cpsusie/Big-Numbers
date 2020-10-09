@@ -18,17 +18,17 @@ private:
   }
 public:
   _SigmoidIterator(const DoubleInterval &interval, UINT steps);
-  AbstractIterator *clone()       override {
+  AbstractIterator     *clone()             override {
     return new _SigmoidIterator(*this);
   }
-  bool hasNext()            const override {
+  bool                  hasNext()     const override {
     return m_stepCounter < m_steps;
   }
-  void *next()                    override;
-  void remove()                   override {
+  void                 *next()              override;
+  void                  remove()            override {
     unsupportedOperationError(__TFUNCTION__);
   }
-  UINT getSteps() const {
+  UINT                  getSteps()    const {
     return m_steps;
   }
   const DoubleInterval &getInterval() const {

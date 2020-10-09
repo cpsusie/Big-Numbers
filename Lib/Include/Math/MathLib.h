@@ -34,7 +34,7 @@ public:
 };
 #pragma pack(pop)
 
-template <typename Domain, typename Range> class FunctionTemplate {
+template<typename Domain, typename Range> class FunctionTemplate {
 public:
   virtual Range operator()(const Domain &x) = 0;
   virtual ~FunctionTemplate() {
@@ -45,9 +45,9 @@ typedef FunctionTemplate<Real,Real> FunctionR1R1;
 
 typedef FunctionR1R1 Function;
 
-CompactRealArray findZeroes(  Function &f, const RealInterval &interval);
+CompactRealArray findZeroes(Function &f, const RealInterval &interval);
 
-template <typename F> class FunctionWithTimeTemplate : public F {
+template<typename F> class FunctionWithTimeTemplate : public F {
 public:
   virtual void        setTime(const Real &time)   = 0;
   virtual const Real &getTime() const             = 0;

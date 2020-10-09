@@ -245,3 +245,6 @@ std::ostream  &operator<<(std::ostream  &out, const Number &n);
 
 std::wistream &operator>>(std::wistream &in,        Number &n);
 std::wostream &operator<<(std::wostream &out, const Number &n);
+
+Packer &operator<<(Packer &p, const Number &n);
+Packer &operator>>(Packer &p,       Number &n);

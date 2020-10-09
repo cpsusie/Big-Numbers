@@ -1,6 +1,9 @@
-#include "pch.h"
-#include <StrStream.h>
+#pragma once
+
 #include <Math/Complex.h>
+#include <StrStream.h>
+
+namespace ComplexIO {
 
 using namespace std;
 using namespace IStreamHelper;
@@ -24,7 +27,7 @@ template <typename IStreamType, typename CharType> IStreamType &getComplex(IStre
     if(!in) goto Fail;
     skipspace(in);
     ch = in.peek();
-    if(ch == ',')  {
+    if(ch == ',') {
       in.get();
       skipspace(in);
       in >> im;
@@ -39,7 +42,7 @@ template <typename IStreamType, typename CharType> IStreamType &getComplex(IStre
     }
   }
   if(in) {
-    c = Complex(re,im);
+    c = Complex(re, im);
     return in;
   }
 Fail:
@@ -47,15 +50,15 @@ Fail:
   return in;
 }
 
-template<typename OStreamType, typename SStreamType> OStreamType &putComplex(OStreamType &out, const Complex &c) {
+template<typename OStreamType> OStreamType &putComplex(OStreamType &out, const Complex &c) {
   if(c.im == 0) {
     out << c.re;
   } else {
     StreamParameters param(out);
     param.width(0);
-    SStreamType tmp;
+    ostringstream tmp;
     tmp << param << "(" << c.re << "," << c.im << ")";
-    out << tmp.str();
+    out << tmp.str().c_str();
   }
   if(out.flags() & ios::unitbuf) {
     out.flush();
@@ -63,18 +66,4 @@ template<typename OStreamType, typename SStreamType> OStreamType &putComplex(OSt
   return out;
 }
 
-istream &operator>>(istream &in, Complex &c) {
-  return getComplex<istream, char>(in, c);
-}
-
-ostream &operator<<(ostream &out, const Complex &c) {
-  return putComplex<ostream, ostringstream>(out, c);
-}
-
-wistream &operator>>(wistream &in, Complex &c) {
-  return getComplex<wistream, wchar_t>(in, c);
-}
-
-wostream &operator<<(wostream &out, const Complex &c) {
-  return putComplex<wostream, wostringstream>(out, c);
-}
+}; // namespace ComplexIO

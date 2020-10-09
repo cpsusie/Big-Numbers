@@ -2,8 +2,6 @@
 
 #include <BasicIncludes.h>
 #include <limits>
-#include <ByteStream.h>
-#include <Packer.h>
 #include <Random.h>
 #include "FPU.h"
 #include "PragmaLib.h"
@@ -162,14 +160,6 @@ public:
   // _FPCLASS_PN    0x0100   positive normal
   // _FPCLASS_PINF  0x0200   positive infinity
   friend int _fpclass(const Double80 &x);
-
-  inline void save(ByteOutputStream &s) const {
-    s.putBytes((BYTE*)m_value, sizeof(m_value));
-  }
-
-  inline void load(ByteInputStream &s) {
-    s.getBytesForced((BYTE*)m_value, sizeof(m_value));
-  }
 
   static inline Double80       pow10(int p) {
     return s_p10Calculator->pow10(p);
@@ -556,9 +546,9 @@ Double80 randDouble80(   const Double80 &low , const Double80 &high, RandomGener
 Double80 randGaussianD80(const Double80 &mean, const Double80 &s   , RandomGenerator &rnd = *RandomGenerator::s_stdGenerator);
 
 // dst must point to memory with at least 26 free char
-char    *d80toa(char    *dst, const Double80 &x);
+char    *d80toa(char    *dst, Double80 x);
 // dst must point to memory with at least 26 free wchar_t
-wchar_t *d80tow(wchar_t *dst, const Double80 &x);
+wchar_t *d80tow(wchar_t *dst, Double80 x);
 
 #if defined(_UNICODE)
 #define d80tot d80tow
@@ -592,6 +582,7 @@ std::ostream &operator<<(std::ostream &s, const Double80 &x);
 std::wistream &operator>>(std::wistream &s,       Double80 &x);
 std::wostream &operator<<(std::wostream &s, const Double80 &x);
 
+class Packer;
 Packer &operator<<(Packer &p, const Double80 &x);
 Packer &operator>>(Packer &p,       Double80 &x);
 

@@ -1145,21 +1145,27 @@
     <ClCompile Include="ChiSquareIndependentTest.cpp" />
     <ClCompile Include="CommonSpline.cpp" />
     <ClCompile Include="Complex.cpp" />
-    <ClCompile Include="ComplexIO.cpp" />
+    <ClCompile Include="ComplexaIO.cpp" />
     <ClCompile Include="ComplexMatrix.cpp" />
     <ClCompile Include="ComplexMatrixSvd.cpp" />
-    <ClCompile Include="ComplexStr.cpp" />
+    <ClCompile Include="ComplexaStr.cpp" />
     <ClCompile Include="ComplexToString.cpp" />
     <ClCompile Include="ComplexVector.cpp" />
+    <ClCompile Include="ComplexwIO.cpp" />
+    <ClCompile Include="ComplexwStr.cpp" />
     <ClCompile Include="CubicSpline.cpp" />
     <ClCompile Include="DataFit.cpp" />
     <ClCompile Include="Double80.cpp" />
+    <ClCompile Include="Double80aIO.cpp" />
+    <ClCompile Include="Double80aStr.cpp" />
     <ClCompile Include="Double80IO.cpp" />
     <ClCompile Include="Double80Packer.cpp" />
     <ClCompile Include="Double80Pow10.cpp" />
     <ClCompile Include="Double80Random.cpp" />
     <ClCompile Include="Double80Str.cpp" />
     <ClCompile Include="Double80ToString.cpp" />
+    <ClCompile Include="Double80wIO.cpp" />
+    <ClCompile Include="Double80wStr.cpp" />
     <ClCompile Include="Double80x86.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">true</ExcludedFromBuild>
@@ -1210,14 +1216,20 @@
     <ClCompile Include="Jacobi.cpp" />
     <ClCompile Include="LssdPolynomial.cpp" />
     <ClCompile Include="MathException.cpp" />
+    <ClCompile Include="NumberaIO.cpp" />
+    <ClCompile Include="NumberPacker.cpp" />
     <ClCompile Include="NumberToString.cpp" />
+    <ClCompile Include="NumberwIO.cpp" />
+    <ClCompile Include="NumberwStr.cpp" />
+    <ClCompile Include="Point2DTransformations.cpp" />
+    <ClCompile Include="RationalaStr.cpp" />
     <ClCompile Include="RationalPacker.cpp" />
     <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="MatrixSvd.cpp" />
     <ClCompile Include="Newton.cpp" />
     <ClCompile Include="Number.cpp" />
     <ClCompile Include="NumberIO.cpp" />
-    <ClCompile Include="NumberStr.cpp" />
+    <ClCompile Include="NumberaStr.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='TraceMemDebug|Win32'">Create</PrecompiledHeader>
@@ -1239,16 +1251,17 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Fixed.cpp" />
-    <ClCompile Include="Point2DTransformations.cpp" />
     <ClCompile Include="Polygon2D.cpp" />
     <ClCompile Include="Polynomial.cpp" />
     <ClCompile Include="PrimeFactors.cpp" />
     <ClCompile Include="QRMatrix.cpp" />
     <ClCompile Include="Rational.cpp" />
-    <ClCompile Include="RationalIO.cpp" />
+    <ClCompile Include="RationalaIO.cpp" />
     <ClCompile Include="RationalRandom.cpp" />
     <ClCompile Include="RationalStr.cpp" />
     <ClCompile Include="RationalToString.cpp" />
+    <ClCompile Include="RationalwIO.cpp" />
+    <ClCompile Include="RationalwStr.cpp" />
     <ClCompile Include="Rungekutta.cpp" />
     <ClCompile Include="RungekuttaFehlberg.cpp" />
     <ClCompile Include="SigmoidIterator.cpp" />
@@ -1358,8 +1371,16 @@
     <ClInclude Include="..\..\Include\Math\Transformation.h" />
     <ClInclude Include="..\..\Include\Math\Triangle\Triangle.h" />
     <ClInclude Include="..\..\Include\Math\TrigonometricMode.h" />
+    <ClInclude Include="ComplexIO.h" />
+    <ClInclude Include="ComplexStr.h" />
+    <ClInclude Include="Double80IO.h" />
+    <ClInclude Include="Double80Str.h" />
     <ClInclude Include="MemoryPool.h" />
+    <ClInclude Include="NumberIO.h" />
+    <ClInclude Include="NumberStr.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="RationalIO.h" />
+    <ClInclude Include="RationalStr.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>

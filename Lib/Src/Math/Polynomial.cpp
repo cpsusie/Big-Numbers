@@ -4,22 +4,6 @@
 
 using namespace std;
 
-DataPoint::DataPoint() {
-  x = y = w = 0;
-}
-
-DataPoint::DataPoint(const Real &x, const Real &y, const Real &w) {
-  this->x = x;
-  this->y = y;
-  this->w = w;
-}
-
-DataPoint::DataPoint(const Point2D &p) {
-  x = p.x;
-  y = p.y;
-  w = 1;
-}
-
 String DataPoint::toString(StreamSize precision) const {
   return format(_T("(%s,%s,%s)")
                ,::toString(x, precision).cstr()

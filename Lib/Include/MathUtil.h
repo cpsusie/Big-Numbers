@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Math.h>
+#include <Singleton.h>
 #include <RegexIStream.h>
 
 inline bool   isChar(   char   v) { return true;              }
@@ -233,88 +234,60 @@ inline BYTE   getSign(       double x) {
   return (((BYTE  *)&x)[7]) & 0x80;
 }
 
-class UndefNumericStreamScanner : public RegexIStream {
+class UndefNumericStreamScanner : public RegexIStream, public Singleton {
 private:
   static StringArray getRegexLines();
-  UndefNumericStreamScanner() : RegexIStream(getRegexLines(), true) {
+  UndefNumericStreamScanner() : RegexIStream(getRegexLines(), true), Singleton(__TFUNCTION__) {
   }
-public:
-  static const RegexIStream &getInstance() {
-    static UndefNumericStreamScanner s_instance;
-    return s_instance;
-  }
+  DEFINESINGLETON(UndefNumericStreamScanner)
 };
 
-class DecFloatValueStreamScanner : public RegexIStream {
+class DecFloatValueStreamScanner : public RegexIStream, public Singleton {
 private:
   static StringArray getRegexLines();
-  DecFloatValueStreamScanner() : RegexIStream(getRegexLines(), true) {
+  DecFloatValueStreamScanner() : RegexIStream(getRegexLines(), true), Singleton(__TFUNCTION__) {
 }
-public:
-  static const RegexIStream &getInstance() {
-    static DecFloatValueStreamScanner s_instance;
-    return s_instance;
-  }
+  DEFINESINGLETON(DecFloatValueStreamScanner)
 };
 
-class HexFloatValueStreamScanner : public RegexIStream {
+class HexFloatValueStreamScanner : public RegexIStream, public Singleton {
 private:
   static StringArray getRegexLines();
-  HexFloatValueStreamScanner() : RegexIStream(getRegexLines(), true) {
+  HexFloatValueStreamScanner() : RegexIStream(getRegexLines(), true), Singleton(__TFUNCTION__) {
   }
-public:
-  static const RegexIStream &getInstance() {
-    static HexFloatValueStreamScanner s_instance;
-    return s_instance;
-  }
+  DEFINESINGLETON(HexFloatValueStreamScanner)
 };
 
-class DecIntValueStreamScanner : public RegexIStream {
+class DecIntValueStreamScanner : public RegexIStream, public Singleton {
 private:
   static StringArray getRegexLines();
-  DecIntValueStreamScanner() : RegexIStream(getRegexLines(), true) {
+  DecIntValueStreamScanner() : RegexIStream(getRegexLines(), true), Singleton(__TFUNCTION__) {
   }
-public:
-  static const RegexIStream &getInstance() {
-    static DecIntValueStreamScanner s_instance;
-    return s_instance;
-  }
+  DEFINESINGLETON(DecIntValueStreamScanner)
 };
 
-class HexIntValueStreamScanner : public RegexIStream {
+class HexIntValueStreamScanner : public RegexIStream, public Singleton {
 private:
   static StringArray getRegexLines();
-  HexIntValueStreamScanner() : RegexIStream(getRegexLines(), true) {
+  HexIntValueStreamScanner() : RegexIStream(getRegexLines(), true), Singleton(__TFUNCTION__) {
   }
-public:
-  static const RegexIStream &getInstance() {
-    static HexIntValueStreamScanner s_instance;
-    return s_instance;
-  }
+  DEFINESINGLETON(HexIntValueStreamScanner)
 };
 
-class OctIntValueStreamScanner : public RegexIStream {
+class OctIntValueStreamScanner : public RegexIStream, public Singleton {
 private:
   static StringArray getRegexLines();
-  OctIntValueStreamScanner() : RegexIStream(getRegexLines(), true) {
+  OctIntValueStreamScanner() : RegexIStream(getRegexLines(), true), Singleton(__TFUNCTION__) {
   }
-public:
-  static const RegexIStream &getInstance() {
-    static OctIntValueStreamScanner s_instance;
-    return s_instance;
-  }
+  DEFINESINGLETON(OctIntValueStreamScanner)
 };
 
-class DecRationalValueStreamScanner : public RegexIStream {
+class DecRationalValueStreamScanner : public RegexIStream, public Singleton {
 private:
   static StringArray getRegexLines();
-  DecRationalValueStreamScanner() : RegexIStream(getRegexLines(), true) {
+  DecRationalValueStreamScanner() : RegexIStream(getRegexLines(), true), Singleton(__TFUNCTION__) {
   }
-public:
-  static const RegexIStream &getInstance() {
-    static DecRationalValueStreamScanner s_instance;
-    return s_instance;
-  }
+  DEFINESINGLETON(DecRationalValueStreamScanner)
 };
 
 // radix must be 8,10, 16

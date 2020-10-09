@@ -44,6 +44,12 @@
     <Filter Include="Header Files\BigReal">
       <UniqueIdentifier>{835dec52-50a8-41ad-8a78-ca31626c6d29}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Number Types\Header Files">
+      <UniqueIdentifier>{37883598-a4db-4378-9339-f001856eda63}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Number Types\Private Header Files">
+      <UniqueIdentifier>{7c756e12-e3b4-4bbd-bc80-63394bc840b8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ComplexMatrix.cpp">
@@ -100,9 +106,6 @@
     <ClCompile Include="Rational.cpp">
       <Filter>Source Files\Number Types</Filter>
     </ClCompile>
-    <ClCompile Include="RationalIO.cpp">
-      <Filter>Source Files\Number Types</Filter>
-    </ClCompile>
     <ClCompile Include="Double80Random.cpp">
       <Filter>Source Files\Number Types</Filter>
     </ClCompile>
@@ -111,9 +114,6 @@
     </ClCompile>
     <ClCompile Include="Newton.cpp">
       <Filter>Source Files\Matrix</Filter>
-    </ClCompile>
-    <ClCompile Include="Point2DTransformations.cpp">
-      <Filter>Source Files\Geometri</Filter>
     </ClCompile>
     <ClCompile Include="Polygon2D.cpp">
       <Filter>Source Files\Geometri</Filter>
@@ -185,18 +185,6 @@
       <Filter>Source Files\Number Types</Filter>
     </ClCompile>
     <ClCompile Include="Double80Str.cpp">
-      <Filter>Source Files\Number Types</Filter>
-    </ClCompile>
-    <ClCompile Include="ComplexStr.cpp">
-      <Filter>Source Files\Number Types</Filter>
-    </ClCompile>
-    <ClCompile Include="NumberStr.cpp">
-      <Filter>Source Files\Number Types</Filter>
-    </ClCompile>
-    <ClCompile Include="RationalStr.cpp">
-      <Filter>Source Files\Number Types</Filter>
-    </ClCompile>
-    <ClCompile Include="ComplexIO.cpp">
       <Filter>Source Files\Number Types</Filter>
     </ClCompile>
     <ClCompile Include="NumberIO.cpp">
@@ -275,6 +263,63 @@
     <ClCompile Include="NumberToString.cpp">
       <Filter>Source Files\Number Types</Filter>
     </ClCompile>
+    <ClCompile Include="ComplexwIO.cpp">
+      <Filter>Source Files\Number Types</Filter>
+    </ClCompile>
+    <ClCompile Include="Double80aIO.cpp">
+      <Filter>Source Files\Number Types</Filter>
+    </ClCompile>
+    <ClCompile Include="Double80wIO.cpp">
+      <Filter>Source Files\Number Types</Filter>
+    </ClCompile>
+    <ClCompile Include="ComplexaIO.cpp">
+      <Filter>Source Files\Number Types</Filter>
+    </ClCompile>
+    <ClCompile Include="RationalStr.cpp">
+      <Filter>Source Files\Number Types</Filter>
+    </ClCompile>
+    <ClCompile Include="RationalaIO.cpp">
+      <Filter>Source Files\Number Types</Filter>
+    </ClCompile>
+    <ClCompile Include="RationalwIO.cpp">
+      <Filter>Source Files\Number Types</Filter>
+    </ClCompile>
+    <ClCompile Include="NumberaStr.cpp">
+      <Filter>Source Files\Number Types</Filter>
+    </ClCompile>
+    <ClCompile Include="NumberwStr.cpp">
+      <Filter>Source Files\Number Types</Filter>
+    </ClCompile>
+    <ClCompile Include="NumberaIO.cpp">
+      <Filter>Source Files\Number Types</Filter>
+    </ClCompile>
+    <ClCompile Include="NumberwIO.cpp">
+      <Filter>Source Files\Number Types</Filter>
+    </ClCompile>
+    <ClCompile Include="Point2DTransformations.cpp">
+      <Filter>Source Files\Geometri</Filter>
+    </ClCompile>
+    <ClCompile Include="ComplexaStr.cpp">
+      <Filter>Source Files\Number Types</Filter>
+    </ClCompile>
+    <ClCompile Include="ComplexwStr.cpp">
+      <Filter>Source Files\Number Types</Filter>
+    </ClCompile>
+    <ClCompile Include="Double80aStr.cpp">
+      <Filter>Source Files\Number Types</Filter>
+    </ClCompile>
+    <ClCompile Include="Double80wStr.cpp">
+      <Filter>Source Files\Number Types</Filter>
+    </ClCompile>
+    <ClCompile Include="RationalaStr.cpp">
+      <Filter>Source Files\Number Types</Filter>
+    </ClCompile>
+    <ClCompile Include="RationalwStr.cpp">
+      <Filter>Source Files\Number Types</Filter>
+    </ClCompile>
+    <ClCompile Include="NumberPacker.cpp">
+      <Filter>Source Files\Number Types</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Triangle\ReadMe.txt">
@@ -296,12 +341,6 @@
     <ClInclude Include="..\..\Include\Math\AlgorithmHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\Math\Complex.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Math\Double80.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\Math\fft.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -321,12 +360,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\Math\PragmaLib.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Math\Rational.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Math\Real.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\Math\SigmoidIterator.h">
@@ -356,9 +389,6 @@
     <ClInclude Include="..\..\Include\Math\Polygon2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\Math\Int128.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\Math\Spherical.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -374,22 +404,10 @@
     <ClInclude Include="..\..\Include\Math\PrimeFactors.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\Math\Number.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\Math\Double64.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\Math\FPU.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Math\Int128Net.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Math\Double80Asmx64.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Math\Double80Asmx86.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="pch.h" />
@@ -434,7 +452,58 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\Math\Fixed.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files\Number Types\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Int128.h">
+      <Filter>Source Files\Number Types\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Int128Net.h">
+      <Filter>Source Files\Number Types\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Number.h">
+      <Filter>Source Files\Number Types\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Rational.h">
+      <Filter>Source Files\Number Types\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Complex.h">
+      <Filter>Source Files\Number Types\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Double80.h">
+      <Filter>Source Files\Number Types\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Double80Asmx64.h">
+      <Filter>Source Files\Number Types\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Double80Asmx86.h">
+      <Filter>Source Files\Number Types\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Real.h">
+      <Filter>Source Files\Number Types\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ComplexIO.h">
+      <Filter>Source Files\Number Types\Private Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Double80IO.h">
+      <Filter>Source Files\Number Types\Private Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NumberIO.h">
+      <Filter>Source Files\Number Types\Private Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RationalIO.h">
+      <Filter>Source Files\Number Types\Private Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Double80Str.h">
+      <Filter>Source Files\Number Types\Private Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RationalStr.h">
+      <Filter>Source Files\Number Types\Private Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NumberStr.h">
+      <Filter>Source Files\Number Types\Private Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ComplexStr.h">
+      <Filter>Source Files\Number Types\Private Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

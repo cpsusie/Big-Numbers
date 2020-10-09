@@ -9,9 +9,23 @@
 class DataPoint {
 public:
   Real x,y,w;
-  DataPoint();
-  DataPoint(const Real &x, const Real &y, const Real &w = 1);
-  DataPoint(const Point2D &p);
+  inline DataPoint() :x(0), y(0), w(0) {
+  }
+  template<typename TX,typename TY> DataPoint(const TX &_x, const TY &_y) {
+    x = (Real)_x;
+    y = (Real)_y;
+    w = 1;
+  }
+  template<typename TX,typename TY,typename TW> DataPoint(const TX &_x, const TY &_y, const TW &_w) {
+    x = (Real)_x;
+    y = (Real)_y;
+    w = (Real)_w;
+  }
+  template<typename T> DataPoint(const Point2DTemplate<T> &p) {
+    x = (Real)p.x;
+    y = (Real)p.y;
+    w = 1;
+  }
   String toString(StreamSize precision = -1) const;
 };
 
@@ -213,7 +227,8 @@ public:
   Polynomial dfdx() const;
   Complex findRoot(const Complex &start, bool verbose, const Real &rootCriterium = 1e-15) const;
   ComplexVector findRoots(bool verbose, const Real &rootCriterium = 1e-15) const;
-  friend tostream& operator<<(tostream &out,const Polynomial &poly);
+  friend std::ostream  &operator<<(std::ostream  &out, const Polynomial &poly);
+  friend std::wostream &operator<<(std::wostream &out, const Polynomial &poly);
   String toString(StreamSize precision = -1) const;
 };
 

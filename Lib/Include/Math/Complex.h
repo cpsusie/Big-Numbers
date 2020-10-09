@@ -21,7 +21,6 @@ public:
   }
   inline Complex(const Real &_re, const Real &_im = 0) : re(_re), im(_im) {
   }
-
   inline void save(ByteOutputStream &s) const {
     s.putBytes((BYTE*)this, sizeof(Complex));
   }
@@ -44,9 +43,9 @@ public:
 
 class Polar {
 private:
-  inline void init(Real x, Real y) {
-    r = sqrt(x*x + y*y);
-    theta = atan2(y, x);
+  template<typename T1, typename T2> void init(const T1 &x, const T2 &y) {
+    r     = (Real)sqrt((Real)x*x + (Real)y*y);
+    theta = (Real)atan2(y, x);
   }
 public:
   Real r, theta;
@@ -56,7 +55,7 @@ public:
   inline Polar(const Complex &c) {
     init(c.re, c.im);
   }
-  Polar(const Point2D &p) {
+  template<typename T> Polar(const Point2DTemplate<T> &p) {
     init(p.x, p.y);
   }
   inline operator Complex() const {
@@ -141,6 +140,15 @@ Complex acos(const Complex &c);
 Complex atan(const Complex &c);
 
 void setToRandom(Complex &c, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator);
+
+char    *ctoa(char    *dst, const Complex &c);
+wchar_t *ctow(wchar_t *dst, const Complex &c);
+
+#if defined(_UNICODE)
+#define ctot ctow
+#else
+#define ctot ctoa
+#endif
 
 String toString(const Complex &c, StreamSize precision=6, StreamSize width=0, FormatFlags flags=0);
 

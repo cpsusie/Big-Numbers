@@ -269,6 +269,12 @@ public:
   }
 };
 
+template<typename T> std::wostream &operator<<(std::wostream &out, const Point2DTemplate<T> &p) {
+  const int prec = (int)out.precision();
+  out << p.toString(prec);
+  return out;
+}
+
 template<typename T1, typename T2> Point2DTemplate<T1> Min(const Point2DTemplate<T1> &p1, const Point2DTemplate<T2> &p2) {
   return Point2DTemplate<T1>(min((T1)p1.x, (T1)p2.x), min((T1)p1.y, (T1)p2.y));
 }

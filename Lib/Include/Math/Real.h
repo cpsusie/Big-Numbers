@@ -122,15 +122,22 @@ inline Real getRealNaN() {
 }
 
 #if !defined(LONGDOUBLE)
+#define rtoa   dbltoa
+#define rtow   dbltow
 #define strtor strtod
 #define wcstor wcstod
 #else // LONGDOUBLE
+#define rtoa   d80toa
+#define rtow   d80tow
 #define strtor strtod80
 #define wcstor wcstod80
 #endif // LONGDOUBLE
 
 #if defined(_UNICODE)
+#define rtot    rtow
 #define _tcstor wcstor
+
 #else
+#define rtot    rtoa
 #define _tcstor strtor
 #endif // _UNICODE

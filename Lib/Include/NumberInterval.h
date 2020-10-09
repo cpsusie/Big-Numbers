@@ -1,6 +1,6 @@
 #pragma once
 
-template <typename T> class NumberInterval {
+template<typename T> class NumberInterval {
 private:
   T m_from, m_to;
 public:
