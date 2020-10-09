@@ -38,7 +38,7 @@ namespace TestCollection {
       return k1.x == k2.x;
     }
     friend Packer &operator<<(Packer &p, const Key &k);
-    friend Packer &operator >> (Packer &p, Key &k);
+    friend Packer &operator>>(Packer &p,       Key &k);
   };
 
   ULONG keyHash(const Key &key) {
@@ -64,7 +64,7 @@ namespace TestCollection {
       return e1.x == e2.x && *e1.f == *e2.f;
     }
     friend Packer &operator<<(Packer &p, const Element &e);
-    friend Packer &operator >> (Packer &p, Element &e);
+    friend Packer &operator>>(Packer &p, Element &e);
   };
 
   class KeyElement {
@@ -323,8 +323,8 @@ namespace TestCollection {
     const double pvalue = chiSquareGoodnessOfFitTest(counters, frequencies);
     if(pvalue < 0.1) {
       OUTPUT(_T("Randomsample differs from expected with pvalue = %.6lf"), pvalue);
-      OUTPUT(_T("Counters   :%s"), counters.toStringBasicType().cstr());
-      OUTPUT(_T("Frequencies:%s"), frequencies.toStringBasicType().cstr());
+      OUTPUT(_T("Counters   :%s"), counters.toString().cstr());
+      OUTPUT(_T("Frequencies:%s"), frequencies.toString().cstr());
     }
   }
 

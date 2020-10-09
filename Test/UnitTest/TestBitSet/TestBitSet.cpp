@@ -189,7 +189,7 @@ namespace TestBitSet {
     bool               m_memberCheckEnabled;
 
     void verifyMembers() const {
-      for(Iterator<CompactUIntKeyType> it = m_hs.getIterator(); it.hasNext();) {
+      for(ConstIterator<CompactUIntKeyType> it = m_hs.getIterator(); it.hasNext();) {
         const UINT k = it.next();
         verify(m_bs.contains(k));
       }
@@ -513,7 +513,7 @@ namespace TestBitSet {
         return -1;
       }
       size_t count = 0;
-      for(Iterator<size_t> it = s.getIterator(); it.hasNext(); count++) {
+      for(ConstIterator<size_t> it = s.getIterator(); it.hasNext(); count++) {
         if(it.next() == e) {
           return count;
         }
@@ -549,7 +549,7 @@ namespace TestBitSet {
 
     static size_t getCount2(const BitSet &s, size_t from, size_t to) {
       size_t count = 0;
-      for(Iterator<size_t> it = s.getIterator(from, to); it.hasNext(); it.next()) {
+      for(ConstIterator<size_t> it = s.getIterator(from, to); it.hasNext(); it.next()) {
         count++;
       }
       return count;
@@ -784,7 +784,7 @@ namespace TestBitSet {
           copy.setDimension(dim1);
           verify(copy.getDimension() == dim1);
           verify(copy.size() == m.size());
-          for(Iterator<MatrixIndex> it = m.getIterator(); it.hasNext();) {
+          for(ConstIterator<MatrixIndex> it = m.getIterator(); it.hasNext();) {
             const MatrixIndex i = it.next();
             verify(copy.get(i));
           }

@@ -15,13 +15,18 @@ namespace TestList {
     ListElement(int i) {
       m_s = format(_T("List element %d"), i);
     }
-    const String &toString() const {
+    String toString() const {
       return m_s;
     }
   };
 
   bool operator==(const ListElement &e1, const ListElement &e2) {
     return e1.toString() == e2.toString();
+  }
+
+  template<typename S> S &operator<<(S &out, const ListElement &e) {
+    out << e.toString();
+    return out;
   }
 
   class ElementComparator : public Comparator<ListElement> {

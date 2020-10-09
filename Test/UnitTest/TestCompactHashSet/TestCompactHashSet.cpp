@@ -25,7 +25,7 @@ namespace TestCompactHashSet {
 
     verify(list.size() == testSet.size());
 
-    while (testSet.size() > 10) {
+    while(testSet.size() > 10) {
       int i = 0;
       INFO(_T("TestSet.size():%6d"), testSet.size());
       for(Iterator<KeyType> it1 = testSet.getIterator(); it1.hasNext();) {
@@ -46,7 +46,7 @@ namespace TestCompactHashSet {
     INFO(_T("Testing save/load"));
     const String fileName = getTestFileName(__TFUNCTION__);
     set.save(ByteOutputFile(fileName));
-    CompactHashSet<KeyType> tmp;;
+    CompactHashSet<KeyType> tmp;
     tmp.load(ByteInputFile(fileName));
     verify(tmp == set);
   }

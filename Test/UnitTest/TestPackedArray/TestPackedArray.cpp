@@ -182,8 +182,8 @@ namespace TestPackedArray {
   }
 
   bool TestClass::checkIterators() const {
-    Iterator<UINT> it1 = m_a.getIterator();
-    Iterator<UINT> it2 = m_pa.getIterator();
+    ConstIterator<UINT> it1 = m_a.getIterator();
+    ConstIterator<UINT> it2 = m_pa.getIterator();
     bool hnext1 = it1.hasNext();
     bool hnext2 = it2.hasNext();
 

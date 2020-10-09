@@ -150,7 +150,7 @@ namespace TestCompactArray {
 #define SOURCE_SIZE   20
 #define SAMPLE_SIZE   5
 
-      CompactIntArray S(SOURCE_SIZE); // each element in range [0..SOURCE_SIZE-1]
+      CompactIntArray    S(SOURCE_SIZE); // each element in range [0..SOURCE_SIZE-1]
       CompactDoubleArray counters(SOURCE_SIZE), frequencies(SOURCE_SIZE);
       for(int i = 0; i < SOURCE_SIZE; i++) {
         S.add(i);
@@ -166,8 +166,8 @@ namespace TestCompactArray {
       const double pvalue = chiSquareGoodnessOfFitTest(counters, frequencies);
       if(pvalue < 0.1) {
         OUTPUT(_T("Randomsample differs from expected with pvalue = %.6lf"), pvalue);
-        OUTPUT(_T("Counters   :%s"), counters.toStringBasicType().cstr());
-        OUTPUT(_T("Frequencies:%s"), frequencies.toStringBasicType().cstr());
+        OUTPUT(_T("Counters   :%s"), counters.toString().cstr());
+        OUTPUT(_T("Frequencies:%s"), frequencies.toString().cstr());
       }
       INFO(_T("Random samples"));
       for(int i = 0; i < SOURCE_SIZE; i++) {
