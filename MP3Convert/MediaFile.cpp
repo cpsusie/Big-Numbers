@@ -152,7 +152,7 @@ String FieldWithData::toString(bool hexdump) const {
     { const ByteArray &ba = getBinData();
       result += format(_T(":size=%zu\n"), ba.size());
       if(hexdump) {
-        result += format(_T("\n%s"), hexdumpString(ba.getData(), ba.size()).cstr());
+        result += format(_T("\n%s"), createHexdumpString(ba.getData(), ba.size()).cstr());
       }
     }
     break;

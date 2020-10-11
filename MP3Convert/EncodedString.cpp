@@ -97,6 +97,6 @@ String EncodedString::toString(bool hexdump) const {
   } else {
     return format(_T("\"%s\"\n%s")
                  ,result.cstr()
-                 ,indentString(hexdumpString(getData(), size()),1).cstr());
+                 ,indentString(createHexdumpString(getData(), size()),1).cstr());
   }
 }

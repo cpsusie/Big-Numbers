@@ -3,7 +3,7 @@
 
 bool MoveablePointArray::removePointSet(const BitSet &set) { // set of indices
   bool changed = false;
-  for(Iterator<size_t> it = set.getReverseIterator(); it.hasNext();) {
+  for(ConstIterator<size_t> it = set.getReverseIterator(); it.hasNext();) {
     removePoint(it.next());
     changed = true;
   }
@@ -84,12 +84,12 @@ bool MoveablePointArray::addAll(const MoveablePointArray &a, bool removeOldOfSam
   bool changed = false;
   if(removeOldOfSameType) {
     CompactHashSet<GraphPointType> combinationSet(a.size());
-    for(Iterator<MoveablePoint*> it = a.getIterator(); it.hasNext();) {
+    for(ConstIterator<MoveablePoint*> it = a.getIterator(); it.hasNext();) {
       const MoveablePoint &p = *(it.next());
       combinationSet.add(GraphPointType(p.getType(), p.getGraph()));
     }
     BitSet oldPointSet(size() + 1);
-    for(Iterator<GraphPointType> it = combinationSet.getIterator(); it.hasNext();) {
+    for(ConstIterator<GraphPointType> it = combinationSet.getIterator(); it.hasNext();) {
       const GraphPointType &e = it.next();
       oldPointSet += findPointsBelongingToGraphWithType(e.getGraph(), e.getType());
     }

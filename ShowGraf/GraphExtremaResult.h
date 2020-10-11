@@ -37,6 +37,10 @@ public:
   String toString(const TCHAR *name = NULL) const;
 };
 
+inline std::wostream &operator<<(std::wostream &out, const GraphExtremaResult &er) {
+  return out << er.toString();
+}
+
 class GraphExtremaResultArray : public Array<GraphExtremaResult> {
 private:
   Graph            &m_graph;

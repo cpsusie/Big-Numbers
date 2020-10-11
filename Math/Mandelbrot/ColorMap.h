@@ -45,6 +45,10 @@ public:
   }
 };
 
+inline std::wostream &operator<<(std::wostream &out, const ColorMapInterpolationPoint &p) {
+  return out << p.toString();
+}
+
 class ColorMapData : public CompactArray<ColorMapInterpolationPoint> {
 public:
   ColorMapData() {
@@ -95,6 +99,10 @@ public:
     return format(_T("%3d,%3d,%3d"), ARGB_GETRED(m_d3c), ARGB_GETGREEN(m_d3c), ARGB_GETBLUE(m_d3c));
   }
 };
+
+inline std::wostream &operator<<(std::wostream &out, const ColorMapEntry &p) {
+  return out << p.toString();
+}
 
 // The last entry always BLACK
 class ColorMap : public CompactArray<ColorMapEntry> {

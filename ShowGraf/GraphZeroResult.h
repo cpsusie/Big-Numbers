@@ -22,6 +22,10 @@ public:
   String toString(const TCHAR *name = NULL) const;
 };
 
+inline std::wostream &operator<<(std::wostream &out, const GraphZeroesResult &zr) {
+  return out << zr.toString();
+}
+
 class GraphZeroesResultArray : public Array<GraphZeroesResult> {
 private:
   Graph &m_graph;

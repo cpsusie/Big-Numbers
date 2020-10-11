@@ -1,6 +1,6 @@
 #define _GETOPT_H // dont need it
 #undef  _MSC_VER
-#define _MSC_VER 1915 // to include stdint.h
+#define _MSC_VER 1926 // to include stdint.h, set to current compiler version, see yvals_core.h
 
 #include <stdio.h>
 

@@ -23,8 +23,8 @@ String GraphExtremaResult::toString(const TCHAR *name) const {
 
 MoveablePointArray GraphExtremaResultArray::getMoveablePointArray() const {
   MoveablePointArray result;
-  for(size_t i = 0; i < size(); i++) {
-    result.addAll((*this)[i].getMoveablePointArray(), false);
+  for(ConstIterator<GraphExtremaResult> it = getIterator(); it.hasNext();) {
+    result.addAll(it.next().getMoveablePointArray(), false);
   }
   return result;
 }
@@ -36,9 +36,9 @@ String GraphExtremaResultArray::toString() const {
   if(size() == 1) {
     return __super::toString(_T("\n"));
   }
-  StringArray result;
-  for(size_t i = 0; i < size(); i++) {
-    const GraphExtremaResult &er = (*this)[i];
+  StringArray result(size());
+  for(ConstIterator<GraphExtremaResult> it = getIterator(); it.hasNext();) {
+    const GraphExtremaResult &er = it.next();
     const String              name = format(_T("%s.%s")
                                            ,m_graph.getParam().getDisplayName().cstr()
                                            ,er.getGraph().getParam().getDisplayName().cstr());

@@ -238,12 +238,12 @@ void DFA::getTransitionMatrix(DFATables &tables, const BitSet &rowSave, const Bi
 
   tables.allocateMatrix(rowCount, colCount);
   CompactIntArray columnsIndex;
-  for(Iterator<size_t> it = columnSave.getIterator(); it.hasNext();) {
+  for(ConstIterator<size_t> it = columnSave.getIterator(); it.hasNext();) {
     columnsIndex.add((int)it.next());
   }
 
   int r = 0;
-  for(Iterator<size_t> it = rowSave.getIterator(); it.hasNext(); r++) {
+  for(ConstIterator<size_t> it = rowSave.getIterator(); it.hasNext(); r++) {
     const int *DFAtransitions = m_states[it.next()].m_transition;
     short     *row            = &tables.transition(r, 0);
     for(UINT c = 0; c < colCount; c++) {
