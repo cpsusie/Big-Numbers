@@ -368,7 +368,7 @@ void ExternEngine::clickButton(const EngineOptionDescription &option) {
 // public
 void ExternEngine::setParameters(const EngineOptionValueArray &valueArray) {
   ENTERFUNC();
-  for(Iterator<EngineOptionValue> it = valueArray.getIterator(); it.hasNext();) {
+  for(ConstIterator<EngineOptionValue> it = valueArray.getIterator(); it.hasNext();) {
     setParameterValue(it.next());
   }
   LEAVEFUNC();

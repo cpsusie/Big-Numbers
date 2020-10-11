@@ -238,13 +238,9 @@ public:
 
   IndexedMapEntry(IndexedMap &map) : m_keydef(map.getKeyDefinition()), m_firstElement(map.getFirstElement()) {
   }
-  const void *key() const;
+  const void *key() const override;
 
-  void *value() {
-    return m_result;
-  }
-
-  const void *value() const {
+  void *value() const override {
     return m_result;
   }
 };

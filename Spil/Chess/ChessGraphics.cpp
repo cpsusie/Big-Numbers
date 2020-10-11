@@ -854,7 +854,7 @@ void ChessGraphics::unmarkMatingPositions() {
 
 void ChessGraphics::markFields(const FieldSet &fields, FieldMark mark) {
   pushLevel();
-  for(Iterator<UINT> it = fields.getIterator(); it.hasNext();) {
+  for(ConstIterator<UINT> it = fields.getIterator(); it.hasNext();) {
     markField(it.next(), mark);
   }
   popLevel();
@@ -862,7 +862,7 @@ void ChessGraphics::markFields(const FieldSet &fields, FieldMark mark) {
 
 void ChessGraphics::unmarkFields(const FieldSet &fields) {
   pushLevel();
-  for(Iterator<UINT> it = fields.getIterator(); it.hasNext();) {
+  for(ConstIterator<UINT> it = fields.getIterator(); it.hasNext();) {
     unmarkField(it.next());
   }
   popLevel();

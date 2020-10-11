@@ -57,12 +57,9 @@ public:
   }
         EngineOptionValue *getValue(const String &optionName);
   const EngineOptionValue *getValue(const String &optionName) const;
-  void               setValue(const String &optionName, const String &value);
-  void               setValue(const String &optionName, int           value);
-  void               setValue(const String &optionName, bool          value);
-  Iterator<EngineOptionValue> getIterator() const {
-    return ((EngineOptionValueArray*)this)->Array<EngineOptionValue>::getIterator();
-  }
+  void                     setValue(const String &optionName, const String &value);
+  void                     setValue(const String &optionName, int           value);
+  void                     setValue(const String &optionName, bool          value);
 };
 
 class EngineDescription {

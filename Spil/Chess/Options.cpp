@@ -1009,7 +1009,7 @@ int EngineRegister::getIndexByName(const String &name) const {
 void Options::saveEngineOptionValues(Player player, const EngineOptionValueArray &valueArray) { // static
   RegistryKey key = getEngineOptionsSubKey(player, valueArray.getEngineName());
   key.deleteValues();
-  for(Iterator<EngineOptionValue> it = valueArray.getIterator(); it.hasNext();) {
+  for(ConstIterator<EngineOptionValue> it = valueArray.getIterator(); it.hasNext();) {
     const EngineOptionValue &option = it.next();
     if(option.isStringType()) {
       key.setValue(option.getName(), option.getStringValue());
