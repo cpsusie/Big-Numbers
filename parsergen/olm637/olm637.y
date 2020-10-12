@@ -6,17 +6,20 @@
 
 #define YYSTYPE int
 class Olm637Parser : public LRparser {
+private:
+  static const ParserTables *Olm637Tables;
 public:
-  Olm637Parser(Scanner *lex=NULL) : LRparser(*Olm637Tables,lex) {}
+  Olm637Parser(Scanner *lex=NULL) : LRparser(*Olm637Tables,lex) {
+  }
 private:
   YYSTYPE m_leftSide,*m_stacktop,m_userstack[256];
-  YYSTYPE getStackTop(int fromtop)               { return m_stacktop[-fromtop];            }
-  void userStackInit()                           { m_stacktop = m_userstack;               }
-  void userStackShiftSymbol(unsigned int symbol) { m_stacktop++;                           } // push 1 element (garbage) on userstack
-  void userStackPopSymbols( unsigned int count ) { m_stacktop      -= count;               } // pop count symbols from userstack
-  void userStackShiftLeftSide()                  { *(++m_stacktop) = m_leftSide;           } // push($$) on userstack
-  void defaultReduce(       unsigned int prod)   { m_leftSide      = *m_stacktop;          } // $$ = $1
-  int  reduceAction(        unsigned int prod);
+  YYSTYPE getStackTop(int fromtop)                { return m_stacktop[-fromtop];           }
+  void userStackInit()                   override { m_stacktop = m_userstack;              }
+  void userStackShiftSymbol(UINT symbol) override { m_stacktop++;                          } // push 1 element (garbage) on userstack
+  void userStackPopSymbols( UINT count ) override { m_stacktop      -= count;              } // pop count symbols from userstack
+  void userStackShiftLeftSide()          override { *(++m_stacktop) = m_leftSide;          } // push($$) on userstack
+  void defaultReduce(       UINT prod  ) override { m_leftSide      = *m_stacktop;         } // $$ = $1
+  int  reduceAction(        UINT prod  ) override;
 };
 
 %}

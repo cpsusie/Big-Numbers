@@ -2,6 +2,8 @@
 #include <FileNameSplitter.h>
 #include "GrammarCode.h"
 
+const ByteCount ByteCount::s_pointerSize(4,8); // sizeof(void*) in x86 and x64
+
 GrammarCoder::GrammarCoder(const String &templateName
                           ,Grammar      &grammar
                           ,const String &implOutputDir
@@ -86,7 +88,7 @@ void TablesWriter::handleKeyword(TemplateWriter &writer, String &line) const {
   const String text = readTextFile(tmpFileName);
   writer.printf(_T("%s"),text.cstr());
   unlink(tmpFileName);
-  m_coder.setByteCount(tables.getTotalSizeInBytes(m_coder.getFlags().m_useTableCompression));
+  m_coder.setByteCount(tables.getTotalSizeInBytes());
 }
 
 class SymbolsWriter : public KeywordHandler {

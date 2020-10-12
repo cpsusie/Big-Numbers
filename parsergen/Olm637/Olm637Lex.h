@@ -2,7 +2,7 @@
 #pragma once
 #include <Scanner.h>
 
-#line 2 "C:\\mytools2015\\ParserGen\\Olm637\\Olm637.lex"
+#line 2 "C:\\Mytools2015\\ParserGen\\Olm637\\Olm637.lex"
 #pragma once
 
  /* This part goes to the h file */
@@ -11,6 +11,5 @@ class Olm637Lex : public Scanner {
 public:
   int getNextLexeme();
 };
-
 #line 5 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
 

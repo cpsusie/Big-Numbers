@@ -276,30 +276,30 @@
     <CustomBuild Include="Olm641.lex">
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">lexgen Olm641.lex</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">lexgen Olm641.lex</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Olm641Lex.cpp;Olm641Lex.h;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Olm641Lex.cpp;Olm641Lex.h;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">c:\bin\lexgen.exe;c:\mytools\parsergen\lib\lexgencpp.par;%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">c:\bin\lexgen.exe;c:\mytools\parsergen\lib\lexgencpp.par;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Olm641Lex.cpp;Olm641Lex.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Olm641Lex.cpp;Olm641Lex.h</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">c:\bin\lexgen.exe;c:\mytools2015\parsergen\lib\lexgencpp.par</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">c:\bin\lexgen.exe;c:\mytools2015\parsergen\lib\lexgencpp.par</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">lexgen Olm641.lex</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">lexgen Olm641.lex</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Olm641Lex.cpp;Olm641Lex.h;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Olm641Lex.cpp;Olm641Lex.h;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">c:\bin\lexgen.exe;c:\mytools\parsergen\lib\lexgencpp.par;%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">c:\bin\lexgen.exe;c:\mytools\parsergen\lib\lexgencpp.par;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Olm641Lex.cpp;Olm641Lex.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Olm641Lex.cpp;Olm641Lex.h</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">c:\bin\lexgen.exe;c:\mytools2015\parsergen\lib\lexgencpp.par</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">c:\bin\lexgen.exe;c:\mytools2015\parsergen\lib\lexgencpp.par</AdditionalInputs>
     </CustomBuild>
     <CustomBuild Include="Olm641.y">
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">parsergen -h -l  Olm641.y</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">parsergen -h -l  Olm641.y</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Olm641Parser.h;Olm641Symbol.h;Olm641Action.cpp;Olm641Tables.cpp;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Olm641Parser.h;Olm641Symbol.h;Olm641Action.cpp;Olm641Tables.cpp;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">c:\bin\parsergen.exe;c:\mytools\parsergen\lib\parsergencpp.par;%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">c:\bin\parsergen.exe;c:\mytools\parsergen\lib\parsergencpp.par;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Olm641Parser.h;Olm641Symbol.h;Olm641Action.cpp;Olm641Tables.cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Olm641Parser.h;Olm641Symbol.h;Olm641Action.cpp;Olm641Tables.cpp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">c:\bin\parsergen.exe;c:\mytools2015\parsergen\lib\parsergencpp.par</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">c:\bin\parsergen.exe;c:\mytools2015\parsergen\lib\parsergencpp.par</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">parsergen -h -l  Olm641.y</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">parsergen -h -l  Olm641.y</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Olm641Parser.h;Olm641Symbol.h;Olm641Action.cpp;Olm641Tables.cpp;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Olm641Parser.h;Olm641Symbol.h;Olm641Action.cpp;Olm641Tables.cpp;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">c:\bin\parsergen.exe;c:\mytools\parsergen\lib\parsergencpp.par;%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">c:\bin\parsergen.exe;c:\mytools\parsergen\lib\parsergencpp.par;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Olm641Parser.h;Olm641Symbol.h;Olm641Action.cpp;Olm641Tables.cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Olm641Parser.h;Olm641Symbol.h;Olm641Action.cpp;Olm641Tables.cpp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">c:\bin\parsergen.exe;c:\mytools2015\parsergen\lib\parsergencpp.par</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">c:\bin\parsergen.exe;c:\mytools2015\parsergen\lib\parsergencpp.par</AdditionalInputs>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>

@@ -276,30 +276,30 @@
     <CustomBuild Include="Olm627.lex">
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">lexgen -v Olm627.lex</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">lexgen -v Olm627.lex</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Olm627Lex.cpp;Olm627Lex.h;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Olm627Lex.cpp;Olm627Lex.h;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">c:\bin\lexgen.exe;c:\mytools\parsergen\lib\lexgencpp.par;%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">c:\bin\lexgen.exe;c:\mytools\parsergen\lib\lexgencpp.par;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Olm627Lex.cpp;Olm627Lex.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Olm627Lex.cpp;Olm627Lex.h</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">c:\bin\lexgen.exe;c:\mytools2015\parsergen\lib\lexgencpp.par</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">c:\bin\lexgen.exe;c:\mytools2015\parsergen\lib\lexgencpp.par</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">lexgen -v Olm627.lex</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">lexgen -v Olm627.lex</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Olm627Lex.cpp;Olm627Lex.h;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Olm627Lex.cpp;Olm627Lex.h;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">c:\bin\lexgen.exe;c:\mytools\parsergen\lib\lexgencpp.par;%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">c:\bin\lexgen.exe;c:\mytools\parsergen\lib\lexgencpp.par;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Olm627Lex.cpp;Olm627Lex.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Olm627Lex.cpp;Olm627Lex.h</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">c:\bin\lexgen.exe;c:\mytools2015\parsergen\lib\lexgencpp.par</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">c:\bin\lexgen.exe;c:\mytools2015\parsergen\lib\lexgencpp.par</AdditionalInputs>
     </CustomBuild>
     <CustomBuild Include="Olm627.y">
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">parsergen -h Olm627.y</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">parsergen -h Olm627.y</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Olm627Parser.h;Olm627Symbol.h;Olm627Action.cpp;Olm627Tables.cpp;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Olm627Parser.h;Olm627Symbol.h;Olm627Action.cpp;Olm627Tables.cpp;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">c:\bin\parsergen.exe;c:\mytools\parsergen\lib\parsergencpp.par;%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">c:\bin\parsergen.exe;c:\mytools\parsergen\lib\parsergencpp.par;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Olm627Parser.h;Olm627Symbol.h;Olm627Action.cpp;Olm627Tables.cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Olm627Parser.h;Olm627Symbol.h;Olm627Action.cpp;Olm627Tables.cpp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">c:\bin\parsergen.exe;c:\mytools2015\parsergen\lib\parsergencpp.par</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">c:\bin\parsergen.exe;c:\mytools2015\parsergen\lib\parsergencpp.par</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">parsergen -h Olm627.y</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">parsergen -h Olm627.y</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Olm627Parser.h;Olm627Symbol.h;Olm627Action.cpp;Olm627Tables.cpp;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Olm627Parser.h;Olm627Symbol.h;Olm627Action.cpp;Olm627Tables.cpp;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">c:\bin\parsergen.exe;c:\mytools\parsergen\lib\parsergencpp.par;%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">c:\bin\parsergen.exe;c:\mytools\parsergen\lib\parsergencpp.par;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Olm627Parser.h;Olm627Symbol.h;Olm627Action.cpp;Olm627Tables.cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Olm627Parser.h;Olm627Symbol.h;Olm627Action.cpp;Olm627Tables.cpp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">c:\bin\parsergen.exe;c:\mytools2015\parsergen\lib\parsergencpp.par</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">c:\bin\parsergen.exe;c:\mytools2015\parsergen\lib\parsergencpp.par</AdditionalInputs>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>

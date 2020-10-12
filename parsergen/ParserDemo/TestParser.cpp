@@ -28,11 +28,11 @@ class TestScanner : public ScannerToTest {
 private:
   LRparser &m_parser;
 
-  void verror(const SourcePosition &pos, const TCHAR *format, va_list argptr) {
+  void verror(const SourcePosition &pos, const TCHAR *format, va_list argptr) override {
     m_parser.verror(pos, format, argptr);
   }
 
-  void vdebug(const TCHAR *format, va_list argptr) {
+  void vdebug(const TCHAR *format, va_list argptr) override {
     m_parser.vdebug(format, argptr);
   }
 
@@ -65,7 +65,7 @@ private:
   TestParser &m_parser;
 public:
   YaccJob(TestParser &parser);
-  UINT safeRun();
+  UINT safeRun() override;
 };
 
 YaccJob::YaccJob(TestParser &parser) : m_parser(parser) {

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <limits>
 #include "GrammarCode.h"
 
 GrammarTables::GrammarTables(const Grammar &grammar, const String &tablesClassName, const String &parserClassName)
@@ -33,10 +34,10 @@ GrammarTables::GrammarTables(const Grammar &grammar, const String &tablesClassNa
   initCompressibleStateSet();
 }
 
-int GrammarTables::getMaxInputCount() const {
-  int m = 0;
-  for(unsigned int s = 0; s < getStateCount(); s++) {
-    int count = getLegalInputCount(s);
+UINT GrammarTables::getMaxInputCount() const {
+  UINT m = 0;
+  for(UINT s = 0; s < getStateCount(); s++) {
+    const UINT count = getLegalInputCount(s);
     if(count > m) {
       m = count;
     }
@@ -44,7 +45,7 @@ int GrammarTables::getMaxInputCount() const {
   return m;
 }
 
-BitSet GrammarTables::getLookaheadSet(unsigned int state) const {
+BitSet GrammarTables::getLookaheadSet(UINT state) const {
   BitSet             result(m_terminalCount);
   const ActionArray &actions     = m_stateActions[state];
   const size_t       actionCount = actions.size();
@@ -54,11 +55,39 @@ BitSet GrammarTables::getLookaheadSet(unsigned int state) const {
   return result;
 }
 
+const TCHAR *GrammarTables::getTableTypeName(bool isShort) { // static
+  return isShort ? _T("short") : _T("char");
+}
+
+IndexType GrammarTables::findIndexType(UINT maxValue) { // static
+  if(maxValue < UCHAR_MAX-1) {
+    return INDEXTYPE_BYTE;
+  } else if(maxValue < USHRT_MAX-1) {
+    return INDEXTYPE_USHORT;
+  } else {
+    return INDEXTYPE_UINT;
+  }
+}
+const TCHAR *GrammarTables::getIndexTypeName(IndexType type) { // static
+  switch(type) {
+  case INDEXTYPE_BYTE  : return _T("unsigned char" );
+  case INDEXTYPE_USHORT: return _T("unsigned short");
+  default              : return _T("unsigned int"  );
+  }
+}
+UINT GrammarTables::getIndexTypeSize(IndexType type) { // static
+  switch(type) {
+  case INDEXTYPE_BYTE  : return sizeof(BYTE  );
+  case INDEXTYPE_USHORT: return sizeof(USHORT);
+  default              : return sizeof(UINT  );
+  }
+}
+
 ByteArray GrammarTables::bitSetToByteArray(const BitSet &set) { // static
-  ByteArray result;
   const size_t capacity = set.getCapacity();
-  BYTE b    = 0;
-  BYTE mask = 1;
+  ByteArray    result((capacity-1)/8+1);
+  BYTE         b    = 0;
+  BYTE         mask = 1;
   for(size_t i = 0; i < capacity; i++) {
     if(set.contains(i)) {
       b |= mask;
@@ -76,8 +105,8 @@ ByteArray GrammarTables::bitSetToByteArray(const BitSet &set) { // static
 }
 
 void GrammarTables::initCompressibleStateSet() {
-  const int stateCount = getStateCount();
-  for(int state = 0; state < stateCount; state++) {
+  const UINT stateCount = getStateCount();
+  for(UINT state = 0; state < stateCount; state++) {
     if(calcIsCompressibleState(state)) {
       m_compressibleStateSet.add(state);
     }
@@ -85,7 +114,7 @@ void GrammarTables::initCompressibleStateSet() {
 }
 
 // Returns true if actionArray.size == 1 or all actions in the specified state is reduce by the same production
-bool GrammarTables::calcIsCompressibleState(unsigned int state) const {
+bool GrammarTables::calcIsCompressibleState(UINT state) const {
   const ActionArray &actions = m_stateActions[state];
   const size_t       count   = actions.size();
   switch(count) {
@@ -112,49 +141,15 @@ ByteCount GrammarTables::wordAlignedSize(const ByteCount &c, UINT n) { // static
   return (n *c).getAlignedSize();
 }
 
-ByteCount GrammarTables::wordAlignedSize(int size) { // static
+ByteCount GrammarTables::wordAlignedSize(UINT size) { // static
   return wordAlignedSize(ByteCount(size,size),1);
 }
 
-ByteCount GrammarTables::getTotalSizeInBytes(bool useTableCompression) const {
-  if(!m_countTableBytes.isEmpty()) {
-    return m_countTableBytes;
-  }
-
-  const UINT tableTypeSize = getTableTypeSize();
-
-  const ByteCount compressedSetSize = wordAlignedSize(sizeof(unsigned char) * ((getStateCount()-1)/8+1));
-
-  m_countTableBytes += compressedSetSize + m_compressedLASetBytes + m_uncompressedStateBytes;
-
-  for(size_t s = 0; s < m_stateSucc.size(); s++) {
-    m_countTableBytes += wordAlignedSize((2 * (UINT)m_stateSucc[s].size() + 1) * tableTypeSize);
-  }
-
-  UINT rightSideItems = 0;
-  for(size_t p = 0; p < m_rightSide.size(); p++) {
-    rightSideItems += (UINT)m_rightSide[p].size();
-  }
-
-  m_countTableBytes += wordAlignedSize(rightSideItems * tableTypeSize); // rightSideTable
-
-  unsigned int countStringBytes = 0;
-  for(size_t s = 0; s < m_symbolName.size(); s++) {
-    countStringBytes += sizeof(TCHAR)*((UINT)m_symbolName[s].length() + 1);
-  }
-
-  m_countTableBytes += 2 * wordAlignedSize(ByteCount::s_pointerSize,getStateCount())  // action + successor
-                     + wordAlignedSize(sizeof(char)      * getProductionCount())      // productionLength
-                     + wordAlignedSize(tableTypeSize     * getProductionCount())      // leftSide
-                     + wordAlignedSize(countStringBytes)                              // symbolname[i]
-                     + wordAlignedSize(ByteCount::s_pointerSize    ,getSymbolCount()) // symbolname array
-                     + wordAlignedSize(ByteCount::s_pointerSize,    8               ) // PAshorttable/PAchartables + PAtables
-                     + wordAlignedSize(sizeof(short)*4);                              // noorterminals, symbolCount, productionCount, stateCount
-
-  return m_countTableBytes;
+ByteCount GrammarTables::getTotalSizeInBytes() const {
+  return ByteCount(getTableByteCount(PLATFORM_X86), getTableByteCount(PLATFORM_X64));
 }
 
-int GrammarTables::getSuccessor(unsigned int state, int nt) const {
+int GrammarTables::getSuccessor(UINT state, UINT nt) const {
   const ActionArray &list = m_stateSucc[state];
   for(size_t i = 0; i < list.size(); i++) {
     if(list[i].m_token == nt) {
@@ -164,7 +159,7 @@ int GrammarTables::getSuccessor(unsigned int state, int nt) const {
   return _ParserError;
 }
 
-int GrammarTables::getAction(unsigned int state, int input) const {
+int GrammarTables::getAction(UINT state, UINT input) const {
   const ActionArray &list = m_stateActions[state];
   for(size_t i = 0; i < list.size(); i++) {
     if(list[i].m_token == input) {
@@ -174,14 +169,18 @@ int GrammarTables::getAction(unsigned int state, int input) const {
   return _ParserError;
 }
 
-void GrammarTables::getLegalInputs(unsigned int state, unsigned int *symbols) const {
+void GrammarTables::getLegalInputs(UINT state, UINT *symbols) const {
   const ActionArray &list = m_stateActions[state];
   for(size_t i = 0; i < list.size(); i++) {
     symbols[i] = list[i].m_token;
   }
 }
 
-void GrammarTables::getRightSide(unsigned int prod, unsigned int *dst) const {
+UINT GrammarTables::getTableByteCount(Platform platform) const {
+  return m_countTableBytes.getByteCount(platform);
+}
+
+void GrammarTables::getRightSide(UINT prod, UINT *dst) const {
   const CompactIntArray &r = m_rightSide[prod];
   for(size_t i = 0; i < r.size(); i++) {
     dst[i] = r[i];

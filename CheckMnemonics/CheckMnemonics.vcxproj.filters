@@ -9,7 +9,7 @@
       <UniqueIdentifier>{3112e226-8f7e-45df-a7ba-404b68594e0d}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl</Extensions>
     </Filter>
-    <Filter Include="Grammar">
+    <Filter Include="Source Files\Grammar">
       <UniqueIdentifier>{08866209-500c-4e91-af6f-38a5fb486bf5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -70,15 +70,15 @@
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="Resource.lex">
-      <Filter>Grammar</Filter>
+      <Filter>Source Files\Grammar</Filter>
     </CustomBuild>
     <CustomBuild Include="Resource.y">
-      <Filter>Grammar</Filter>
+      <Filter>Source Files\Grammar</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Resource.txt">
-      <Filter>Grammar</Filter>
+      <Filter>Source Files\Grammar</Filter>
     </Text>
   </ItemGroup>
 </Project>

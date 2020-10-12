@@ -9,21 +9,27 @@
 typedef SyntaxNode *stype;
 
 class CppParser : public LRparser, public ParserTree {
+private:
+  static const ParserTables *CppTables;
 public:
-  CppParser(CppLex *lex = NULL) : LRparser(*CppTables,lex) {}
+  CppParser(CppLex *lex = NULL) : LRparser(*CppTables,lex) {
+  }
   SyntaxNode *newNode( int token, ... );
   void  appendError(_In_z_ _Printf_format_string_ TCHAR const * const format, ...);
-  void	verror(const SourcePosition &pos, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr);
+  void	verror(const SourcePosition &pos, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) override;
+  static inline const ParserTables &getTables() {
+    return *CppTables;
+  }
 private:
   stype m_leftSide,*m_stacktop,m_userstack[256];
-//void traceStack(unsigned int prod);
-  stype getStackTop(int fromtop)                 { return m_stacktop[-fromtop];	           }
-  void initUserStack()                           { m_stacktop = m_userstack;               }
-  void shiftSymbol(         unsigned int symbol) { m_stacktop++;                           } // push 1 element (garbage) on userstack
-  void popSymbols(          unsigned int count ) { m_stacktop      -= count;               } // pop count symbols from userstack
-  void shiftLeftSide()                           { *(++m_stacktop) = m_leftSide;           } // push($$) on userstack
-  void defaultReduce(       unsigned int prod)   { m_leftSide      = *m_stacktop;          } // $$ = $1
-  int  reduceAction(        unsigned int prod);
+//void traceStack(UINT prod);
+  stype getStackTop(int fromtop)         { return m_stacktop[-fromtop];            }
+  void initUserStack()                   { m_stacktop = m_userstack;               }
+  void shiftSymbol(         UINT symbol) { m_stacktop++;                           } // push 1 element (garbage) on userstack
+  void popSymbols(          UINT count ) { m_stacktop      -= count;               } // pop count symbols from userstack
+  void shiftLeftSide()                   { *(++m_stacktop) = m_leftSide;           } // push($$) on userstack
+  void defaultReduce(       UINT prod  ) override { m_leftSide      = *m_stacktop;          } // $$ = $1
+  int  reduceAction(        UINT prod  ) override;
 };
 
 %}

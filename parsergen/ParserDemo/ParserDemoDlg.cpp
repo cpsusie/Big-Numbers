@@ -36,15 +36,15 @@ CParserDemoDlg::CParserDemoDlg(CWnd *pParent) : CDialog(CParserDemoDlg::IDD, pPa
 
   m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
   m_parser.setHandler(this);
-  m_breakProductions = new BitSet(m_parser.getParserTables().getProductionCount());
-  m_breakStates      = new BitSet(m_parser.getParserTables().getStateCount());
-  m_breakSymbols     = new BitSet(m_parser.getParserTables().getTerminalCount());
+  m_breakProductions = new BitSet(m_parser.getParserTables().getProductionCount()); TRACE_NEW(m_breakProductions);
+  m_breakStates      = new BitSet(m_parser.getParserTables().getStateCount());      TRACE_NEW(m_breakStates     );
+  m_breakSymbols     = new BitSet(m_parser.getParserTables().getTerminalCount());   TRACE_NEW(m_breakSymbols    );
 }
 
 CParserDemoDlg::~CParserDemoDlg() {
-  delete m_breakProductions;
-  delete m_breakStates;
-  delete m_breakSymbols;
+  SAFEDELETE(m_breakProductions);
+  SAFEDELETE(m_breakStates     );
+  SAFEDELETE(m_breakSymbols    );
 }
 
 void CParserDemoDlg::DoDataExchange(CDataExchange *pDX) {
@@ -398,8 +398,8 @@ void CParserDemoDlg::showStatus(bool gotoLastDebug) {
       int charIndex = findCharacterPosition(s, pos);
       ((CTextBox*)GetDlgItem(IDC_EDITINPUTSTRING))->SetSel(charIndex, charIndex+(int)m_parser.getScanner()->getLength());
     }
-    SetDlgItemText(IDC_LOOKAHEAD, LAtext.cstr());
-    SetDlgItemText(IDC_ACTION, m_parser.getActionString().cstr());
+    setWindowText(this,IDC_LOOKAHEAD, LAtext);
+    setWindowText(this,IDC_ACTION, m_parser.getActionString());
   }
   if(m_showStateThread != NULL) {
     m_showStateThread->m_pMainWnd->PostMessage(ID_SHOWSTATE_UPDATE, 0, 0);

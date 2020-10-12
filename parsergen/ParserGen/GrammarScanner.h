@@ -70,7 +70,7 @@ public:
     m_collecting = false;
   }
   void getCollected(SourceText &sourceText);
-  inline unsigned int getLineNumber() const {
+  inline UINT getLineNumber() const {
     return m_sourcePos.getLineNumber();
   }
   inline SourcePosition getSourcePos() const {

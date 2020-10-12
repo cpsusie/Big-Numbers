@@ -93,19 +93,19 @@ private:
   String sprintTerm(SyntaxNodep n);
   String sprintTree(SyntaxNodep n);
 protected:
-  int  reduceAction(UINT prod);
-  void userStackInit()                    { m_stacktop = m_userstack; delete m_root; m_root = NULL; }
-  void userStackShiftSymbol(UINT symbol);
-  void push(SyntaxNodep p)                { *(++m_stacktop) = p;              }
-  void userStackPopSymbols(UINT count)    { m_stacktop -= count;              } // pop count symbols from userstack
-  void userStackShiftLeftSide()           { push(m_dollardollar);             } // push($$) on userstack
-  void defaultReduce(UINT prod)           { m_dollardollar  = *m_stacktop;    } // $$ = $1
+  int  reduceAction(        UINT prod  ) override;
+  void userStackInit()                   override { m_stacktop = m_userstack; delete m_root; m_root = NULL; }
+  void userStackShiftSymbol(UINT symbol) override;
+  void push(SyntaxNodep p)                        { *(++m_stacktop) = p;              }
+  void userStackPopSymbols( UINT count ) override { m_stacktop -= count;              } // pop count symbols from userstack
+  void userStackShiftLeftSide()          override { push(m_dollardollar);             } // push($$) on userstack
+  void defaultReduce(       UINT prod  ) override { m_dollardollar  = *m_stacktop;    } // $$ = $1
 public:
   SqlParser();
-  ~SqlParser();
+  ~SqlParser() override;
   String      m_filename;
   StringArray m_errmsg;
-  void   verror(const SourcePosition &pos, const TCHAR *format, va_list argptr);
+  void   verror(const SourcePosition &pos, const TCHAR *format, va_list argptr) override;
   bool   ok() const { return m_errmsg.size() == 0; }
   void   listErrors();
   void   dumpTree(FILE *f = stdout);

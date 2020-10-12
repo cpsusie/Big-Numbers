@@ -137,17 +137,17 @@ Grammar::Grammar(Language language, const ParserTables &src)
   m_terminalCount = 0;
 
   SourcePosition dummyPos;
-  for(unsigned int t = 0; t < src.getTerminalCount(); t++) {
+  for(UINT t = 0; t < src.getTerminalCount(); t++) {
     addTerminal(src.getSymbolName(t), TERMINAL, 0, dummyPos);
   }
-  for(unsigned int nt = src.getTerminalCount(); nt < src.getSymbolCount(); nt++) {
+  for(UINT nt = src.getTerminalCount(); nt < src.getSymbolCount(); nt++) {
     addNonTerminal(src.getSymbolName(nt), dummyPos);
   }
-  for(unsigned int p = 0; p < src.getProductionCount(); p++) {
+  for(UINT p = 0; p < src.getProductionCount(); p++) {
     Production production(src.getLeftSymbol(p), dummyPos);
-    unsigned int rightSide[256]; // guess there is no more than 256 symbols on the rightside of any Production
+    UINT rightSide[256]; // guess there is no more than 256 symbols on the rightside of any Production
     src.getRightSide(p, rightSide);
-    for(unsigned int s = 0; s < src.getProductionLength(p); s++) {
+    for(UINT s = 0; s < src.getProductionLength(p); s++) {
       production.m_rightSide.add(RightSideSymbol(rightSide[s], NO_MODIFIER));
     }
     addProduction(production);

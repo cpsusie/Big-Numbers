@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Scanner.h"
+#include <StringArray.h>
+#include <Tokenizer.h>
 
 typedef enum {
   NO_MODIFIER
@@ -9,105 +11,119 @@ typedef enum {
  ,ONEORMANY     // +
 } SymbolModifier;
 
+typedef enum {
+  PLATFORM_X86 = 0
+ ,PLATFORM_X64 = 1
+} Platform;
+
 class ParserTables {
 public:
-  virtual int          getAction(           UINT state, int input) const = 0; // > 0:shift, <=0:reduce, _ParserError:Error
-  virtual int          getSuccessor(        UINT state, int nt   ) const = 0;
-  virtual UINT         getProductionLength( UINT prod  ) const = 0;
-  virtual UINT         getLeftSymbol(       UINT prod  ) const = 0;
-  virtual const TCHAR *getSymbolName(       UINT symbol) const = 0;
-  const   TCHAR       *getLeftSymbolName(   UINT prod  ) const {
+  virtual int          getAction(           UINT state, UINT input   ) const = 0; // > 0:shift, <=0:reduce, _ParserError:Error
+  virtual int          getSuccessor(        UINT state, UINT nt      ) const = 0;
+  virtual UINT         getProductionLength( UINT prod                ) const = 0;
+  virtual UINT         getLeftSymbol(       UINT prod                ) const = 0;
+  virtual const TCHAR *getSymbolName(       UINT symbol              ) const = 0;
+  const   TCHAR       *getLeftSymbolName(   UINT prod                ) const {
     return getSymbolName(getLeftSymbol(prod));
   }
-          String       getRightString(      UINT prod  ) const;
-  virtual void         getRightSide(        UINT prod, UINT *dst) const = 0;
-  virtual UINT         getTerminalCount()   const = 0;
-  virtual UINT         getSymbolCount()     const = 0;
-  virtual UINT         getProductionCount() const = 0;
-  virtual UINT         getStateCount()      const = 0;
-  virtual UINT         getLegalInputCount(  UINT state ) const = 0;
+          String       getRightString(      UINT prod                ) const;
+  virtual void         getRightSide(        UINT prod, UINT *dst     ) const = 0;
+  virtual UINT         getTerminalCount()                              const = 0;
+  virtual UINT         getSymbolCount()                                const = 0;
+  virtual UINT         getProductionCount()                            const = 0;
+  virtual UINT         getStateCount()                                 const = 0;
+  virtual UINT         getLegalInputCount(  UINT state               ) const = 0;
   virtual void         getLegalInputs(      UINT state, UINT *symbols) const = 0;
+  virtual UINT         getTableByteCount(   Platform platform        ) const = 0;
+
   virtual ~ParserTables() {
   }
 };
 
 #define _ParserError 0xffff
 
-template <typename Type> class ParserTablesTemplate : public ParserTables {
+template<typename Type, typename SuccIndexType> class ParserTablesTemplate : public ParserTables {
 private:
-  const BYTE          *m_compressedSet;
+  const UINT          *m_actionCode;
   const BYTE          *m_compressedLasets;
-  const void  * const *m_action;
-  const Type  * const *m_successor;
-  const unsigned char *m_productionLength;
+  const Type          *m_uncompressedActions;
+  const SuccIndexType *m_successorsIndex;
+  const Type          *m_stateSuccessors;
+  const BYTE          *m_productionLength;
   const Type          *m_leftSide;
   const Type          *m_rightSideTable;
-  const TCHAR        **m_symbolName;
+  const char          *m_nameString;
   const USHORT         m_terminalCount;
   const USHORT         m_symbolCount;
   const USHORT         m_productionCount;
   const USHORT         m_stateCount;
+  const UINT           m_tableByteCountx86,m_tableByteCountx64;
   mutable const Type **m_rightSides;
+  mutable StringArray  m_symbolNameTable;
 
   static inline bool contains(const BYTE *bitset, UINT v) {
     return (bitset[v>>3]&(1<<(v&7))) != 0;
   }
 
-  int findElementUncompressed(const Type *state, int token) const {
-    for(int l = 0, r = *(state++) - 1; l <= r;) { // binary search
+  int findElementUncompressed(const Type *uaArray, UINT symbol) const {
+    for(int l = 0, r = *(uaArray++) - 1; l <= r;) { // binary search
       const int m = (l+r)>>1;
-      const int cmp = state[m<<1] - token;
+      const int cmp = uaArray[m<<1] - (int)symbol;
       if(cmp < 0) {
         l = m + 1;
       } else if(cmp > 0) {
         r = m - 1;
       } else {
-        return state[(m<<1)|1];
+        return uaArray[(m<<1)|1];
       }
     }
     return _ParserError;
   }
 
-  inline bool isSingleItemActionState(ULONG statev) const {
-    return (statev & 0x8000) == 0;
+  void buildSymbolNameTable() const {
+    String tmp = m_nameString;
+    m_symbolNameTable.setCapacity(getSymbolCount());
+    for(Tokenizer tok(tmp, _T(" ")); tok.hasNext();) {
+      m_symbolNameTable.add(tok.next());
+    }
   }
-  inline const BYTE *getCompressedLaset(ULONG statev) const {
-    return m_compressedLasets + (statev&0x7fff);
+  inline bool isSingleItemActionState(UINT code) const {
+    return (code & 0x8000) == 0;
   }
-  inline int getCompressedAction(ULONG statev) const {
-    return (long)statev >> 16;
+  inline const BYTE *getCompressedLaset(UINT code) const {
+    return m_compressedLasets + (code&0x7fff);
+  }
+  inline int getCompressedAction(UINT code) const {
+    return ((int)code<<1) >> 17; // signed right shift!!
+  }
+  inline int getActionCompressedSingleItem(UINT code, UINT token) const {
+    return ((code&0x7fff) == token) ? getCompressedAction(code) : _ParserError;
+  }
+  inline int getActionCompressedMultiItem(UINT code, UINT token) const {
+    return contains(getCompressedLaset(code), token) ? getCompressedAction(code) : _ParserError;
+  }
+  inline int findActionCompressed(UINT code, UINT token) const {
+    return isSingleItemActionState(code)
+         ? getActionCompressedSingleItem(code, token)
+         : getActionCompressedMultiItem( code, token);
+  }
+  inline void getLegalInputsCompressedSingleItem(UINT code, UINT *symbols) const {
+    *symbols = (code&0x7fff);
   }
 
-  inline int getActionCompressedSingleItem(ULONG statev, int token) const {
-    return ((statev&0x7fff) == (ULONG)token) ? getCompressedAction(statev) : _ParserError;
-  }
-
-  inline int getActionCompressedMultiItem(ULONG statev, int token) const {
-    return contains(getCompressedLaset(statev), token) ? getCompressedAction(statev) : _ParserError;
-  }
-  inline int findActionCompressed(ULONG statev, int token) const {
-    return isSingleItemActionState(statev)
-         ? getActionCompressedSingleItem(statev, token)
-         : getActionCompressedMultiItem( statev, token);
-  }
-
-  inline void getLegalInputsCompressedSingleItem(ULONG statev, UINT *symbols) const {
-    *symbols = (statev&0x7fff);
-  }
-
-  void getLegalInputsCompressedMultiItem(ULONG statev, UINT *symbols) const {
-    const BYTE *set = getCompressedLaset(statev);
-    for(int token = 0; token < m_terminalCount; token++) {
+  void getLegalInputsCompressedMultiItem(UINT code, UINT *symbols) const {
+    const BYTE *set = getCompressedLaset(code);
+    for(UINT token = 0; token < m_terminalCount; token++) {
       if(contains(set, token)) {
         *(symbols++) = token;
       }
     }
   }
 
-  int getLegalInputCountCompressedMultiItem(ULONG statev) const {
-    const BYTE *set = getCompressedLaset(statev);
-    int         sum = 0;
-    for(int byteCount = (m_terminalCount-1)/8 + 1; byteCount--;) {
+  UINT getLegalInputCountCompressedMultiItem(UINT code) const {
+    const BYTE *set = getCompressedLaset(code);
+    UINT        sum = 0;
+    for(UINT byteCount = (m_terminalCount-1)/8 + 1; byteCount--;) {
       for(BYTE b = *(set++); b; b &= (b-1)) {
         sum++;
       }
@@ -115,35 +131,34 @@ private:
     return sum;
   }
 
-  void getLegalInputsCompressed(ULONG statev, UINT *symbols) const {
-    if(isSingleItemActionState(statev)) {
-      getLegalInputsCompressedSingleItem(statev, symbols);
+  void getLegalInputsCompressed(UINT code, UINT *symbols) const {
+    if(isSingleItemActionState(code)) {
+      getLegalInputsCompressedSingleItem(code, symbols);
     } else {
-      getLegalInputsCompressedMultiItem(statev, symbols);
+      getLegalInputsCompressedMultiItem(code, symbols);
     }
   }
 
-  int getLegalInputCountCompressed(ULONG statev) const {
-    return isSingleItemActionState(statev)
+  UINT getLegalInputCountCompressed(UINT code) const {
+    return isSingleItemActionState(code)
          ? 1
-         : getLegalInputCountCompressedMultiItem(statev);
+         : getLegalInputCountCompressedMultiItem(code);
   }
 
-  void getLegalInputsUncompressed(const Type *state, UINT *symbols) const {
-    for(int n = *(state++); n--; state+=2) {
-      *(symbols++) = *state;
+  void getLegalInputsUncompressed(const Type *uaArray, UINT *symbols) const {
+    for(int n = *(uaArray++); n--; uaArray+=2) {
+      *(symbols++) = *uaArray;
     }
   }
 
-  inline int getLegalInputCountUncompressed(const Type *state) const {
-    return state[0];
+  inline UINT getLegalInputCountUncompressed(const Type *uaArray) const {
+    return uaArray[0];
   }
 
   const Type **getRightSides() const {
-    if(m_rightSides == NULL) {
+    if(m_rightSides == nullptr) {
       m_rightSides = new const Type*[m_productionCount]; TRACE_NEW(m_rightSides);
-      int index = 0;;
-      for(int p = 0; p < m_productionCount; p++) {
+      for(UINT p = 0, index = 0; p < m_productionCount; p++) {
         const UINT prodLen = m_productionLength[p];
         m_rightSides[p] = prodLen ? (m_rightSideTable + index) : NULL;
         index += prodLen;
@@ -153,38 +168,48 @@ private:
   }
 
   inline bool isCompressedState(UINT state) const {
-    return contains(m_compressedSet, state);
+    return (m_actionCode[state] & 0x80000000) != 0;
   }
 
+  inline UINT getCompressedActionCode(UINT state) const {
+    return m_actionCode[state] & 0x7fffffff;
+  }
+  inline const Type *getUncompressedActionList(UINT state) const {
+    return m_uncompressedActions + m_actionCode[state];
+  }
 public:
+
 #pragma warning(push)
-#pragma warning(disable:4311 4302)
+//#pragma warning(disable:4311 4302)
 
    // token is terminal. return > 0:shift, <=0:reduce, _ParserError:Error
-  inline int getAction(UINT state, int token) const {
+  int getAction(UINT state, UINT token)   const override {
     return isCompressedState(state)
-         ? findActionCompressed(   (ULONG      )m_action[state], token)
-         : findElementUncompressed((const Type*)m_action[state], token);
+         ? findActionCompressed(   getCompressedActionCode(  state), token)
+         : findElementUncompressed(getUncompressedActionList(state), token);
   }
 
   // nt is nonterminal
-  inline int getSuccessor(UINT state, int nt) const {
-    return findElementUncompressed(m_successor[state], nt);
+  int getSuccessor(UINT state, UINT nt)   const override {
+    return findElementUncompressed(m_stateSuccessors + m_successorsIndex[state], nt);
   };
 
-  inline UINT getProductionLength(UINT prod) const {
+  UINT getProductionLength(UINT prod)     const override {
     return m_productionLength[prod];
   }
 
-  inline UINT getLeftSymbol(UINT prod) const {
+  UINT getLeftSymbol(UINT prod)           const override {
     return m_leftSide[prod];
   }
 
-  inline const TCHAR *getSymbolName(UINT symbol) const {
-    return m_symbolName[symbol];
+  const TCHAR *getSymbolName(UINT symbol) const override {
+    if(m_symbolNameTable.size() == 0) {
+      buildSymbolNameTable();
+    }
+    return m_symbolNameTable[symbol].cstr();
   }
 
-  void getRightSide(UINT prod, UINT *dst) const {
+  void getRightSide(UINT prod, UINT *dst) const override {
     UINT l = getProductionLength(prod);
     if(l == 0) {
       return;
@@ -195,75 +220,82 @@ public:
     }
   }
 
-  inline UINT getTerminalCount() const {
+  UINT getTerminalCount()                 const override {
     return m_terminalCount;
   }
 
-  inline UINT getSymbolCount() const {
+  UINT getSymbolCount()                   const override {
     return m_symbolCount;
   }
 
-  inline UINT getProductionCount() const {
+  UINT getProductionCount()               const override {
     return m_productionCount;
   }
 
-  inline UINT getStateCount() const {
+  UINT getStateCount()                    const override {
     return m_stateCount;
   }
-  inline UINT getLegalInputCount(UINT state) const {
+  UINT getLegalInputCount(UINT state)     const override {
     return isCompressedState(state)
-         ? getLegalInputCountCompressed(  (ULONG      )(m_action[state]))
-         : getLegalInputCountUncompressed((const Type*)(m_action[state]));
+         ? getLegalInputCountCompressed(  getCompressedActionCode(  state))
+         : getLegalInputCountUncompressed(getUncompressedActionList(state));
   }
 
-  void getLegalInputs(UINT state, UINT *symbols) const {
+  void getLegalInputs(UINT state, UINT *symbols) const override {
     if(isCompressedState(state)) {
-      getLegalInputsCompressed(  (ULONG      )(m_action[state]), symbols);
+      getLegalInputsCompressed(  getCompressedActionCode(  state), symbols);
     } else {
-      getLegalInputsUncompressed((const Type*)(m_action[state]), symbols);
+      getLegalInputsUncompressed(getUncompressedActionList(state), symbols);
     }
+  }
+  UINT getTableByteCount(Platform platform)      const override {
+    return (platform==PLATFORM_X86) ? m_tableByteCountx86 : m_tableByteCountx64;
   }
 #pragma warning(pop)
 
-  ParserTablesTemplate(const BYTE           *compressedSet
-                     , const BYTE           *compressedLasets
-                     , const void * const   *action
-                     , const Type * const   *successor
-                     , const unsigned char  *productionLength
-                     , const Type           *leftSide
-                     , const Type           *rightSideTable
-                     , const TCHAR         **symbolName
-                     , USHORT                terminalCount
-                     , USHORT                symbolCount
-                     , USHORT                productionCount
-                     , USHORT                stateCount)
-   :m_compressedSet    ( compressedSet   )
-   ,m_compressedLasets ( compressedLasets)
-   ,m_action           ( action          )
-   ,m_successor        ( successor       )
-   ,m_productionLength ( productionLength)
-   ,m_leftSide         ( leftSide        )
-   ,m_rightSideTable   ( rightSideTable  )
-   ,m_symbolName       ( symbolName      )
-   ,m_terminalCount    ( terminalCount   )
-   ,m_symbolCount      ( symbolCount     )
-   ,m_productionCount  ( productionCount )
-   ,m_stateCount       ( stateCount      )
+  ParserTablesTemplate(const UINT          *actionCode
+                      ,const BYTE          *compressedLasets
+                      ,const Type          *uncompressedActions
+                      ,const SuccIndexType *successorsIndex
+                      ,const Type          *stateSuccessors
+                      ,const BYTE          *productionLength
+                      ,const Type          *leftSide
+                      ,const Type          *rightSideTable
+                      ,const char          *nameString
+                      ,USHORT               terminalCount
+                      ,USHORT               symbolCount
+                      ,USHORT               productionCount
+                      ,USHORT               stateCount
+                      ,UINT                 tableByteCountx86
+                      ,UINT                 tableByteCountx64
+                      )
+   :m_actionCode         ( actionCode         )
+   ,m_compressedLasets   ( compressedLasets   )
+   ,m_uncompressedActions( uncompressedActions)
+   ,m_successorsIndex    ( successorsIndex    )
+   ,m_stateSuccessors    ( stateSuccessors    )
+   ,m_productionLength   ( productionLength   )
+   ,m_leftSide           ( leftSide           )
+   ,m_rightSideTable     ( rightSideTable     )
+   ,m_nameString         ( nameString         )
+   ,m_terminalCount      ( terminalCount      )
+   ,m_symbolCount        ( symbolCount        )
+   ,m_productionCount    ( productionCount    )
+   ,m_stateCount         ( stateCount         )
+   ,m_tableByteCountx86  (tableByteCountx86   )
+   ,m_tableByteCountx64  (tableByteCountx64   )
   {
-    m_rightSides = NULL;
+    m_rightSides      = nullptr;
   }
-  ~ParserTablesTemplate() {
+  ~ParserTablesTemplate() override {
     SAFEDELETEARRAY(m_rightSides);
   }
 };
 
-typedef ParserTablesTemplate<char>  ParserCharTables;
-typedef ParserTablesTemplate<short> ParserShortTables;
-
 class ParserStackElement {
 public:
-  USHORT m_state;
-  USHORT m_symbol;
+  USHORT         m_state;
+  USHORT         m_symbol;
   SourcePosition m_pos;
   inline ParserStackElement()
     : m_state( 0)
@@ -365,7 +397,7 @@ protected:
   virtual void defaultReduce(       UINT prod  ) = 0;
 public:
   LRparser(const ParserTables &tables, Scanner *lex = NULL, UINT stackSize = 256);
-  ~LRparser();
+  virtual ~LRparser();
 
   inline int input() const {
     return m_input;

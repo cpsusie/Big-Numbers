@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27703.2000
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30523.141
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ParserDemo", "ParserDemo\ParserDemo.vcxproj", "{D9845C1E-2D62-4D66-87C4-D122A684B31A}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -83,6 +83,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Parsergen", "parsergen\Pars
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MFCUtil", "..\Lib\Src\MFCUtil\MFCUtil.vcxproj", "{EC9661C7-AA70-418D-BC1C-4F9A87837BFD}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Expression", "..\Lib\Src\Expression\Expression.vcxproj", "{20C38850-59EE-46E3-AD91-7327685B83D2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -617,6 +619,38 @@ Global
 		{EC9661C7-AA70-418D-BC1C-4F9A87837BFD}.TraceMemRelease|x64.Build.0 = TraceMemRelease|x64
 		{EC9661C7-AA70-418D-BC1C-4F9A87837BFD}.TraceMemRelease|x86.ActiveCfg = TraceMemRelease|Win32
 		{EC9661C7-AA70-418D-BC1C-4F9A87837BFD}.TraceMemRelease|x86.Build.0 = TraceMemRelease|Win32
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.Debug|x64.ActiveCfg = Debug|x64
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.Debug|x64.Build.0 = Debug|x64
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.Debug|x86.ActiveCfg = Debug|Win32
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.Debug|x86.Build.0 = Debug|Win32
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.LDDebug|x64.ActiveCfg = LDDebug|x64
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.LDDebug|x64.Build.0 = LDDebug|x64
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.LDDebug|x86.ActiveCfg = LDDebug|Win32
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.LDDebug|x86.Build.0 = LDDebug|Win32
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.LDRelease|x64.ActiveCfg = LDRelease|x64
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.LDRelease|x64.Build.0 = LDRelease|x64
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.LDRelease|x86.ActiveCfg = LDRelease|Win32
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.LDRelease|x86.Build.0 = LDRelease|Win32
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.Release|x64.ActiveCfg = Release|x64
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.Release|x64.Build.0 = Release|x64
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.Release|x86.ActiveCfg = Release|Win32
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.Release|x86.Build.0 = Release|Win32
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.TraceMemDebug|x64.ActiveCfg = TraceMemDebug|x64
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.TraceMemDebug|x64.Build.0 = TraceMemDebug|x64
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.TraceMemDebug|x86.ActiveCfg = TraceMemDebug|Win32
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.TraceMemDebug|x86.Build.0 = TraceMemDebug|Win32
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.TraceMemLDDebug|x64.ActiveCfg = TraceMemLDDebug|x64
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.TraceMemLDDebug|x64.Build.0 = TraceMemLDDebug|x64
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.TraceMemLDDebug|x86.ActiveCfg = TraceMemLDDebug|Win32
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.TraceMemLDDebug|x86.Build.0 = TraceMemLDDebug|Win32
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.TraceMemLDRelease|x64.ActiveCfg = TraceMemLDRelease|x64
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.TraceMemLDRelease|x64.Build.0 = TraceMemLDRelease|x64
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.TraceMemLDRelease|x86.ActiveCfg = TraceMemLDRelease|Win32
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.TraceMemLDRelease|x86.Build.0 = TraceMemLDRelease|Win32
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.TraceMemRelease|x64.ActiveCfg = TraceMemRelease|x64
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.TraceMemRelease|x64.Build.0 = TraceMemRelease|x64
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.TraceMemRelease|x86.ActiveCfg = TraceMemRelease|Win32
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.TraceMemRelease|x86.Build.0 = TraceMemRelease|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

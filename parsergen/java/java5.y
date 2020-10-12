@@ -12,21 +12,21 @@ class Java5Parser : public LRparser {
 public:
   static const ParserTables *Java5Tables;
 private:
-  int reduceAction(unsigned int prod);
+  int reduceAction(         UINT prod  ) override;
 
-  void userStackInit() {                              // Called before the first parsecycle
+  void userStackInit()                   override { // Called before the first parsecycle
   }
 
-  void userStackShiftSymbol(unsigned int symbol) {    // Called when LRparser shift in inputtoken
+  void userStackShiftSymbol(UINT symbol) override { // Called when LRparser shift in inputtoken
   }
 
-  void userStackPopSymbols(unsigned int count)   {    // Pop count symbols from userstack
+  void userStackPopSymbols( UINT count ) override { // Pop count symbols from userstack
   }
 
-  void userStackShiftLeftSide()                  {    // Push($$) to userstack. called at the end of each reduction
+  void userStackShiftLeftSide()          override { // Push($$) to userstack. called at the end of each reduction
   }
 
-  void defaultReduce(unsigned int prod)          {    // $$ = $1
+  void defaultReduce(       UINT prod  ) override { // $$ = $1
   }
 
   int *getStackTop(int fromtop) {
@@ -34,10 +34,10 @@ private:
   }
   String m_fileName;
 public:
-  Java5Parser(const TCHAR *fileName, Scanner *lex=NULL, unsigned int stacksize = 1000) : LRparser(*Java5Tables,lex,stacksize) {
+  Java5Parser(const TCHAR *fileName, Scanner *lex=NULL, UINT stacksize = 1000) : LRparser(*Java5Tables,lex,stacksize) {
     m_fileName = fileName;
   }
-  ~Java5Parser() {
+  ~Java5Parser() override {
   }
 };
 

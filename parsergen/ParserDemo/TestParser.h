@@ -52,7 +52,7 @@ private:
   void waitForYaccJob();
 public:
   TestParser();
-  ~TestParser();
+  ~TestParser() override;
   Grammar      &getGrammar()                        { return m_grammar;                 }
   void          setHandler(ParserHandler *handler)  { m_handler = handler;              }
   void          setNewInput(const TCHAR *String);
@@ -63,18 +63,18 @@ public:
   const String &getStateItems(UINT state);
   inline SyntaxNodep getRoot()                      { return m_root;                    }
   void addSyntaxNode(SyntaxNodep p)                 { m_nodeList.add(p);                }
-  void vdebug(                           const TCHAR *format, va_list argptr);
-  void verror(const SourcePosition &pos, const TCHAR *format, va_list argptr);
+  void vdebug(                           const TCHAR *format, va_list argptr) override;
+  void verror(const SourcePosition &pos, const TCHAR *format, va_list argptr) override;
   void setDebugScanner(bool newvalue)               { m_scanner->setDebug(newvalue);    }
   void setStackSize(UINT newsize);
   const SyntaxNodep  getStackTop(int fromtop) const { return m_stacktop[-fromtop];      }
   const SyntaxNodep *getUserStack()           const { return m_userStack;               }
   void buildStateArray();
-  void userStackInit();
-  int  reduceAction(        UINT prod  );
-  void userStackShiftSymbol(UINT symbol);
-  void userStackPopSymbols( UINT count )             { m_stacktop -= count;             } // pop count symbols from userstack
-  void push(SyntaxNodep p)                           { *(++m_stacktop) = p;             } // push p onto userstack
-  void userStackShiftLeftSide()                      { push(m_leftSide);                } // push($$) onto userstack
-  void defaultReduce(UINT prod)                      { m_leftSide = *m_stacktop;        } // $$ = $1
+  void userStackInit()                   override;
+  int  reduceAction(        UINT prod  ) override;
+  void userStackShiftSymbol(UINT symbol) override;
+  void userStackPopSymbols( UINT count ) override   { m_stacktop -= count;              } // pop count symbols from userstack
+  void push(SyntaxNodep p)                          { *(++m_stacktop) = p;              } // push p onto userstack
+  void userStackShiftLeftSide()          override   { push(m_leftSide);                 } // push($$) onto userstack
+  void defaultReduce(       UINT prod  ) override   { m_leftSide = *m_stacktop;         } // $$ = $1
 };

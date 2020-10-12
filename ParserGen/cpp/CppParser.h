@@ -3,9 +3,7 @@
 
 #include <LRparser.h>
 
-const extern ParserTables *CppTables;
-
-#line 5 "C:\\mytools2015\\ParserGen\\cpp\\Cpp.y"
+#line 5 "C:\\Mytools2015\\ParserGen\\cpp\\Cpp.y"
 #include "ParserTree.h"
 #include "CppSymbol.h"
 #include "CppLex.h"
@@ -13,23 +11,28 @@ const extern ParserTables *CppTables;
 typedef SyntaxNode *stype;
 
 class CppParser : public LRparser, public ParserTree {
-public:
-  CppParser(CppLex *lex = NULL) : LRparser(*CppTables,lex) {}
-  SyntaxNode *newNode( int token, ... );
-  void  appendError(const TCHAR *format, ...);
-  void	verror(const SourcePosition &pos, const TCHAR *format, va_list argptr);
 private:
-  stype m_dollardollar,*m_stacktop,m_userstack[256];
-  int	reduceAction(unsigned int prod);
-//void	traceStack(unsigned int prod);
-  stype getStackTop(int fromtop)          { return m_stacktop[-fromtop];	  }
-  void	initUserStack()                   { m_stacktop = m_userstack;         }
-  void	shiftSymbol(unsigned int symbol)  { m_stacktop++;				      } // push 1 element (garbage) on userstack
-  void	popSymbols(unsigned int count)    { m_stacktop -= count;	          } // pop count symbols from userstack
-  void	shiftDollarDollar()               { *(++m_stacktop) = m_dollardollar; } // push($$) on userstack
-  void	defaultReduce(unsigned int prod)  { m_dollardollar  = *m_stacktop;    } // $$ = $1
+  static const ParserTables *CppTables;
+public:
+  CppParser(CppLex *lex = NULL) : LRparser(*CppTables,lex) {
+  }
+  SyntaxNode *newNode( int token, ... );
+  void  appendError(_In_z_ _Printf_format_string_ TCHAR const * const format, ...);
+  void	verror(const SourcePosition &pos, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) override;
+  static inline const ParserTables &getTables() {
+    return *CppTables;
+  }
+private:
+  stype m_leftSide,*m_stacktop,m_userstack[256];
+//void traceStack(UINT prod);
+  stype getStackTop(int fromtop)         { return m_stacktop[-fromtop];            }
+  void initUserStack()                   { m_stacktop = m_userstack;               }
+  void shiftSymbol(         UINT symbol) { m_stacktop++;                           } // push 1 element (garbage) on userstack
+  void popSymbols(          UINT count ) { m_stacktop      -= count;               } // pop count symbols from userstack
+  void shiftLeftSide()                   { *(++m_stacktop) = m_leftSide;           } // push($$) on userstack
+  void defaultReduce(       UINT prod  ) override { m_leftSide      = *m_stacktop;          } // $$ = $1
+  int  reduceAction(        UINT prod  ) override;
 };
 
-
-#line 18 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 22 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
 

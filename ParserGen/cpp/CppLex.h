@@ -2,7 +2,7 @@
 #pragma once
 #include <Scanner.h>
 
-#line 2 "C:\\mytools2015\\ParserGen\\cpp\\Cpp.lex"
+#line 2 "C:\\Mytools2015\\ParserGen\\cpp\\Cpp.lex"
 #pragma once
  /* This part goes to cpplex.h */
 
@@ -21,7 +21,6 @@ public:
   int m_token;
   int ascii;
 };
-
 
 #line 5 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
 

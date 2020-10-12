@@ -28,7 +28,7 @@ static void scan(Scanner &lex) {
     token = lex.getNextLexeme();
     _tprintf(_T("%2d %-20s : %s \n")
             ,lex.getLineNumber()
-            ,CppTables->getSymbolName(token)
+            ,CppParser::getTables().getSymbolName(token)
             ,lex.getText());
   } while(token != 0);
 }

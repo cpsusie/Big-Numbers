@@ -11,15 +11,16 @@
 
 class DummyParser : public LRparser {
 public:
-  DummyParser(Scanner *lex) : LRparser(*DummyTables,lex) {}
+  DummyParser(Scanner *lex) : LRparser(*DummyTables,lex) {
+  }
 private:
   YYSTYPE m_leftSide,*m_stacktop,m_userstack[256];
-  void userStackInit()                           { m_stacktop = m_userstack;               }
-  void userStackShiftSymbol(unsigned int symbol) { m_stacktop++;                           } // push 1 element (garbage) on userstack
-  void userStackPopSymbols( unsigned int count ) { m_stacktop      -= count;               } // pop count symbols from userstack
-  void userStackShiftLeftSide()                  { *(++m_stacktop) = m_leftSide;           } // push($$) on userstack
-  void defaultReduce(       unsigned int prod)   { m_leftSide      = *m_stacktop;          } // $$ = $1
-  int  reduceAction(        unsigned int prod);
+  void userStackInit()                   override { m_stacktop = m_userstack;              }
+  void userStackShiftSymbol(UINT symbol) override { m_stacktop++;                          } // push 1 element (garbage) on userstack
+  void userStackPopSymbols( UINT count ) override { m_stacktop      -= count;              } // pop count symbols from userstack
+  void userStackShiftLeftSide()          override { *(++m_stacktop) = m_leftSide;          } // push($$) on userstack
+  void defaultReduce(       UINT prod  ) override { m_leftSide      = *m_stacktop;         } // $$ = $1
+  int  reduceAction(        UINT prod  ) override;
 };
 %}
 %right a b
