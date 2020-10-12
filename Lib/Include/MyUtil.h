@@ -6,7 +6,7 @@
 void  *xmalloc( UINT n);
 void  *xrealloc(void *q, UINT n);
 TCHAR *xstrdup( const TCHAR *str);
-void  xfree(void *p);
+void   xfree(void *p);
 
 #define MALLOC(type, n)     (type*)xmalloc(sizeof(type)*(n))
 #define REALLOC(p, type, n) (type*)xrealloc(p, sizeof(type)*(n))
@@ -40,7 +40,7 @@ FILE            *MKFOPEN(const TCHAR   *name, const TCHAR  *mode);
 FILE            *MKFOPEN(const String  &name, const String &mode);
 void             FWRITE( const void *buffer, size_t size, size_t count, FILE *f);
 size_t           FREAD(        void *buffer, size_t size, size_t count, FILE *f);
-void             FSEEK(  FILE *f, INT64 offset);
+void             FSEEK(  FILE  *f, INT64 offset);
 TCHAR           *FGETS(  TCHAR *line, size_t n, FILE *f);
 TCHAR           *GETS(   TCHAR *line);
 void             UNLINK( const String &name);
@@ -92,12 +92,15 @@ String   searchenv(  const String &fileName, const String &envName);
 void argvExpand(int &argc, wchar_t **&argv);
 void argvExpand(int &argc, char    **&argv);
 
-const wchar_t **argv2wargv(const char    **argv );
-const char    **wargv2argv(const wchar_t **targv);
-const TCHAR   **argv2targv(const char    **argv );
+const wchar_t **argv2wargv( const char    **argv);
+const char    **wargv2argv( const wchar_t **argv);
+const TCHAR   **argv2targv( const char    **argv);
+const TCHAR   **argv2targv( const wchar_t **argv);
+const char    **targv2argv( const TCHAR   **argv);
+const wchar_t **targv2wargv(const TCHAR   **argv);
 
 // if module == NULL, path of executable
-String getModuleFileName(HMODULE module = NULL);
+String getModuleFileName(HMODULE module = nullptr);
 String getUserName();
 String getHostName();
 
@@ -115,6 +118,6 @@ void   sleep(int seconds);
 
 extern int UseSafeNew; // assign something to this, and we use safe new_handler, which throws Exception on out of memory
 
-TCHAR *newGUID(TCHAR *dst);
+TCHAR *newGUID(   TCHAR *dst);
 TCHAR *sprintGUID(TCHAR *dst, const GUID &guid);
-GUID  *newGUID(GUID *guid);
+GUID  *newGUID(   GUID  *guid);
