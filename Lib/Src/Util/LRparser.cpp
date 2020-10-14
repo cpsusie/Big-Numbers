@@ -6,7 +6,7 @@
 // try this one: select max(sdf* + from my,df where sdf * 2 =;
 
 LRparser::LRparser(const ParserTables &tables, Scanner *scanner, UINT stackSize) : m_tables(tables), m_scanner(scanner) {
-  m_parserStack   = NULL;
+  m_parserStack   = nullptr;
   parserStackCreate(stackSize);
 
   initialize();
@@ -93,7 +93,7 @@ bool LRparser::recover() {
 
       if(m_debug && (poppedSymbols != 0)) {
         String poppedString;
-        const TCHAR *delim = NULL;
+        const TCHAR *delim = nullptr;
         for(UINT i = getStackHeight(); i < startHeight; i++) {
           if(delim) poppedString += delim; else delim = _T(" ");
           poppedString += getSymbolName(m_parserStack[i].m_symbol);
@@ -254,7 +254,7 @@ int LRparser::parseStep() { // return 0 on continue, != 0 terminate parse
 static const TCHAR *noScannerText = _T("No scanner specified for LRparser");
 
 int LRparser::parseBegin() { // return 0 on ok. < 0 on error
-  if(m_scanner == NULL) {
+  if(m_scanner == nullptr) {
     m_errorCount++;
     m_done = true;
     error(SourcePosition(),_T("%s"), noScannerText);

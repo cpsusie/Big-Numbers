@@ -42,39 +42,44 @@ public:
 
 #define _ParserError 0xffff
 
-template<typename Type, typename SuccIndexType> class ParserTablesTemplate : public ParserTables {
+template<typename NTType
+        ,typename SymType
+        ,typename UncompType
+        ,typename SuccIndexType
+        ,typename StateSuccType
+        ,UINT     terminalCount
+        ,UINT     symbolCount
+        ,UINT     productionCount
+        ,UINT     stateCount> class ParserTablesTemplate : public ParserTables {
 private:
-  const UINT          *m_actionCode;
-  const BYTE          *m_compressedLasets;
-  const Type          *m_uncompressedActions;
-  const SuccIndexType *m_successorsIndex;
-  const Type          *m_stateSuccessors;
-  const BYTE          *m_productionLength;
-  const Type          *m_leftSide;
-  const Type          *m_rightSideTable;
-  const char          *m_nameString;
-  const USHORT         m_terminalCount;
-  const USHORT         m_symbolCount;
-  const USHORT         m_productionCount;
-  const USHORT         m_stateCount;
-  const UINT           m_tableByteCountx86,m_tableByteCountx64;
-  mutable const Type **m_rightSides;
-  mutable StringArray  m_symbolNameTable;
+  const UINT             *m_actionCode;
+  const BYTE             *m_compressedLasets;
+  const UncompType       *m_uncompressedActions;
+  const SuccIndexType    *m_successorsIndex;
+  const StateSuccType    *m_stateSuccessors;
+  const BYTE             *m_productionLength;
+  const NTType           *m_leftSide;
+  const SymType          *m_rightSideTable;
+  const char             *m_nameString;
+  const UINT              m_tableByteCountx86,m_tableByteCountx64;
+  mutable const SymType **m_rightSides;
+  mutable StringArray     m_symbolNameTable;
 
   static inline bool contains(const BYTE *bitset, UINT v) {
     return (bitset[v>>3]&(1<<(v&7))) != 0;
   }
 
-  int findElementUncompressed(const Type *uaArray, UINT symbol) const {
-    for(int l = 0, r = *(uaArray++) - 1; l <= r;) { // binary search
-      const int m = (l+r)>>1;
-      const int cmp = uaArray[m<<1] - (int)symbol;
+  template<typename T> static int findElementUncompressed(const T *uaArray, UINT symbol) {
+    const int n = *(uaArray++);
+    for(int l = 0, r = n - 1; l <= r;) { // binary search
+      const int m   = (l+r)>>1;
+      const int cmp = (int)uaArray[m] - (int)symbol;
       if(cmp < 0) {
         l = m + 1;
       } else if(cmp > 0) {
         r = m - 1;
       } else {
-        return uaArray[(m<<1)|1];
+        return (int)uaArray[n+m];
       }
     }
     return _ParserError;
@@ -87,16 +92,16 @@ private:
       m_symbolNameTable.add(tok.next());
     }
   }
-  inline bool isSingleItemActionState(UINT code) const {
+  static inline bool isSingleItemActionState(UINT code) {
     return (code & 0x8000) == 0;
   }
   inline const BYTE *getCompressedLaset(UINT code) const {
     return m_compressedLasets + (code&0x7fff);
   }
-  inline int getCompressedAction(UINT code) const {
+  static inline int getCompressedAction(UINT code) {
     return ((int)code<<1) >> 17; // signed right shift!!
   }
-  inline int getActionCompressedSingleItem(UINT code, UINT token) const {
+  static inline int getActionCompressedSingleItem(UINT code, UINT token) {
     return ((code&0x7fff) == token) ? getCompressedAction(code) : _ParserError;
   }
   inline int getActionCompressedMultiItem(UINT code, UINT token) const {
@@ -107,13 +112,13 @@ private:
          ? getActionCompressedSingleItem(code, token)
          : getActionCompressedMultiItem( code, token);
   }
-  inline void getLegalInputsCompressedSingleItem(UINT code, UINT *symbols) const {
+  static inline void getLegalInputsCompressedSingleItem(UINT code, UINT *symbols) {
     *symbols = (code&0x7fff);
   }
 
   void getLegalInputsCompressedMultiItem(UINT code, UINT *symbols) const {
     const BYTE *set = getCompressedLaset(code);
-    for(UINT token = 0; token < m_terminalCount; token++) {
+    for(UINT token = 0; token < terminalCount; token++) {
       if(contains(set, token)) {
         *(symbols++) = token;
       }
@@ -123,7 +128,7 @@ private:
   UINT getLegalInputCountCompressedMultiItem(UINT code) const {
     const BYTE *set = getCompressedLaset(code);
     UINT        sum = 0;
-    for(UINT byteCount = (m_terminalCount-1)/8 + 1; byteCount--;) {
+    for(UINT byteCount = (terminalCount-1)/8 + 1; byteCount--;) {
       for(BYTE b = *(set++); b; b &= (b-1)) {
         sum++;
       }
@@ -145,20 +150,20 @@ private:
          : getLegalInputCountCompressedMultiItem(code);
   }
 
-  void getLegalInputsUncompressed(const Type *uaArray, UINT *symbols) const {
-    for(int n = *(uaArray++); n--; uaArray+=2) {
-      *(symbols++) = *uaArray;
+  static inline void getLegalInputsUncompressed(const UncompType *uaArray, UINT *symbols) {
+    for(int n = *(uaArray++); n--;) {
+      *(symbols++) = *(uaArray++);
     }
   }
 
-  inline UINT getLegalInputCountUncompressed(const Type *uaArray) const {
+  static inline UINT getLegalInputCountUncompressed(const UncompType *uaArray) {
     return uaArray[0];
   }
 
-  const Type **getRightSides() const {
+  const SymType **getRightSides() const {
     if(m_rightSides == nullptr) {
-      m_rightSides = new const Type*[m_productionCount]; TRACE_NEW(m_rightSides);
-      for(UINT p = 0, index = 0; p < m_productionCount; p++) {
+      m_rightSides = new const SymType*[productionCount]; TRACE_NEW(m_rightSides);
+      for(UINT p = 0, index = 0; p < productionCount; p++) {
         const UINT prodLen = m_productionLength[p];
         m_rightSides[p] = prodLen ? (m_rightSideTable + index) : NULL;
         index += prodLen;
@@ -174,13 +179,12 @@ private:
   inline UINT getCompressedActionCode(UINT state) const {
     return m_actionCode[state] & 0x7fffffff;
   }
-  inline const Type *getUncompressedActionList(UINT state) const {
+  inline const UncompType *getUncompressedActionList(UINT state) const {
     return m_uncompressedActions + m_actionCode[state];
   }
 public:
 
 #pragma warning(push)
-//#pragma warning(disable:4311 4302)
 
    // token is terminal. return > 0:shift, <=0:reduce, _ParserError:Error
   int getAction(UINT state, UINT token)   const override {
@@ -190,16 +194,16 @@ public:
   }
 
   // nt is nonterminal
-  int getSuccessor(UINT state, UINT nt)   const override {
-    return findElementUncompressed(m_stateSuccessors + m_successorsIndex[state], nt);
+  int getSuccessor(UINT state, UINT nt  ) const override {
+    return findElementUncompressed(m_stateSuccessors + m_successorsIndex[state], nt-terminalCount);
   };
 
-  UINT getProductionLength(UINT prod)     const override {
+  UINT getProductionLength(  UINT prod  ) const override {
     return m_productionLength[prod];
   }
 
-  UINT getLeftSymbol(UINT prod)           const override {
-    return m_leftSide[prod];
+  UINT getLeftSymbol(        UINT prod  ) const override {
+    return terminalCount + m_leftSide[prod];
   }
 
   const TCHAR *getSymbolName(UINT symbol) const override {
@@ -214,26 +218,26 @@ public:
     if(l == 0) {
       return;
     }
-    const Type *rightSide = getRightSides()[prod];
+    const SymType *rightSide = getRightSides()[prod];
     while(l--) {
       *(dst++) = *(rightSide++);
     }
   }
 
   UINT getTerminalCount()                 const override {
-    return m_terminalCount;
+    return terminalCount;
   }
 
   UINT getSymbolCount()                   const override {
-    return m_symbolCount;
+    return symbolCount;
   }
 
   UINT getProductionCount()               const override {
-    return m_productionCount;
+    return productionCount;
   }
 
   UINT getStateCount()                    const override {
-    return m_stateCount;
+    return stateCount;
   }
   UINT getLegalInputCount(UINT state)     const override {
     return isCompressedState(state)
@@ -255,35 +259,27 @@ public:
 
   ParserTablesTemplate(const UINT          *actionCode
                       ,const BYTE          *compressedLasets
-                      ,const Type          *uncompressedActions
+                      ,const UncompType    *uncompressedActions
                       ,const SuccIndexType *successorsIndex
-                      ,const Type          *stateSuccessors
+                      ,const StateSuccType *stateSuccessors
                       ,const BYTE          *productionLength
-                      ,const Type          *leftSide
-                      ,const Type          *rightSideTable
+                      ,const NTType        *leftSide
+                      ,const SymType       *rightSideTable
                       ,const char          *nameString
-                      ,USHORT               terminalCount
-                      ,USHORT               symbolCount
-                      ,USHORT               productionCount
-                      ,USHORT               stateCount
                       ,UINT                 tableByteCountx86
                       ,UINT                 tableByteCountx64
                       )
-   :m_actionCode         ( actionCode         )
-   ,m_compressedLasets   ( compressedLasets   )
-   ,m_uncompressedActions( uncompressedActions)
-   ,m_successorsIndex    ( successorsIndex    )
-   ,m_stateSuccessors    ( stateSuccessors    )
-   ,m_productionLength   ( productionLength   )
-   ,m_leftSide           ( leftSide           )
-   ,m_rightSideTable     ( rightSideTable     )
-   ,m_nameString         ( nameString         )
-   ,m_terminalCount      ( terminalCount      )
-   ,m_symbolCount        ( symbolCount        )
-   ,m_productionCount    ( productionCount    )
-   ,m_stateCount         ( stateCount         )
-   ,m_tableByteCountx86  (tableByteCountx86   )
-   ,m_tableByteCountx64  (tableByteCountx64   )
+   :m_actionCode         ( actionCode          )
+   ,m_compressedLasets   ( compressedLasets    )
+   ,m_uncompressedActions( uncompressedActions )
+   ,m_successorsIndex    ( successorsIndex     )
+   ,m_stateSuccessors    ( stateSuccessors     )
+   ,m_productionLength   ( productionLength    )
+   ,m_leftSide           ( leftSide            )
+   ,m_rightSideTable     ( rightSideTable      )
+   ,m_nameString         ( nameString          )
+   ,m_tableByteCountx86  ( tableByteCountx86   )
+   ,m_tableByteCountx64  ( tableByteCountx64   )
   {
     m_rightSides      = nullptr;
   }

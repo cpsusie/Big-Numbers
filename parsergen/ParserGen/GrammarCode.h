@@ -105,10 +105,13 @@ public:
 };
 
 typedef enum {
-  INDEXTYPE_BYTE
- ,INDEXTYPE_USHORT
- ,INDEXTYPE_UINT
-} IndexType;
+  TYPE_CHAR
+ ,TYPE_UCHAR
+ ,TYPE_SHORT
+ ,TYPE_USHORT
+ ,TYPE_INT
+ ,TYPE_UINT
+} IntegerType;
 
 class GrammarTables : public ParserTables {
 private:
@@ -124,32 +127,12 @@ private:
   mutable ByteCount            m_countTableBytes;
   mutable ByteCount            m_uncompressedStateBytes;
   mutable ByteCount            m_compressedLASetBytes;
-  mutable IndexType            m_succIndexType;
+  mutable short                m_firstNT;
+  mutable IntegerType          m_NTType, m_symType, m_uncompType, m_succIndexType, m_stateSuccType;
 
-  static const TCHAR *getTableTypeName(bool      isShort );
-  static inline UINT  getTableTypeSize(bool      isShort ) {
-    return isShort ? sizeof(short) : sizeof(char);
-  }
-  static IndexType    findIndexType(   UINT      maxValue);
-  static const TCHAR *getIndexTypeName(IndexType type    );
-  static UINT         getIndexTypeSize(IndexType type    );
-
-  inline bool         isTableTypeShort() const {
-    return getStateCount() >= 128 || getSymbolCount() >= 128 || getProductionCount() >= 128 || getMaxInputCount() >= 128;
-  }
-  inline const TCHAR *getTableTypeName() const {
-    return getTableTypeName(isTableTypeShort());
-  }
-  inline UINT         getTableTypeSize() const {
-    return getTableTypeSize(isTableTypeShort());
-  }
-
-  inline const TCHAR *getIndexTypeName() const {
-    return getIndexTypeName(m_succIndexType);
-  }
-  inline UINT         getIndexTypeSize() const {
-    return getIndexTypeSize(m_succIndexType);
-  }
+  static IntegerType  findTableType( UINT      maxValue  );
+  static const TCHAR *getTypeName(   IntegerType type    );
+  static UINT         getTypeSize(   IntegerType type    );
 
   static ByteCount    wordAlignedSize(UINT size);
   static ByteCount    wordAlignedSize(const ByteCount &c, UINT n); // for arrays with n elements, each of size s
@@ -166,19 +149,19 @@ private:
   static ByteArray    bitSetToByteArray(const BitSet &set);
   BitSet              getLookaheadSet(UINT state) const;
 
-  void printCpp( MarginFile &output, bool useTableCompression) const;
-  void printJava(MarginFile &output, bool useTableCompression) const;
-  ByteCount printActionMatrixCpp(           MarginFile &output) const;                                              // return size in bytes
-  ByteCount printCompressedActionsCpp(      MarginFile &output, StringArray &defines) const;
-  ByteCount printUncompressedActionsCpp(    MarginFile &output, StringArray &defines) const;                        // return size in bytes
-  void      printUncompressedActionArrayCpp(MarginFile &output, UINT state, UINT startindex) const;                 // return size in bytes
-  ByteCount printSuccessorMatrixCpp(        MarginFile &output) const;                                              // return size in bytes
-  void      printSuccessorArrayCpp(         MarginFile &output, UINT state, UINT startIndex) const;
-  ByteCount printProductionLengthTableCpp(  MarginFile &output) const;                                              // return size in bytes
-  ByteCount printLeftSideTableCpp(          MarginFile &output) const;                                              // return size in bytes
-  ByteCount printRightSideTableCpp(         MarginFile &output) const;                                              // return size in bytes
-  ByteCount printSymbolNameTableCpp(        MarginFile &output) const;                                              // return size in bytes
-  ByteCount printByteArray(                 MarginFile &output, const String &name, const ByteArray &ba, UINT bytesPerLine = 20, const StringArray *linePrefix = NULL) const;
+  void      printCpp( MarginFile &output, bool useTableCompression) const;
+  void      printJava(MarginFile &output, bool useTableCompression) const;
+  ByteCount printCompressedActionsCpp(       MarginFile &output, StringArray &defines) const;
+  ByteCount printUncompressedActionMatrixCpp(MarginFile &output, StringArray &defines) const;                        // return size in bytes
+  void      printUncompressedActionArrayCpp( MarginFile &output, UINT state, UINT startindex) const;                 // return size in bytes
+  ByteCount printActionCodeTableCpp(         MarginFile &output) const;                                              // return size in bytes
+  ByteCount printSuccessorMatrixCpp(         MarginFile &output) const;                                              // return size in bytes
+  void      printSuccessorArrayCpp(          MarginFile &output, UINT state, UINT startIndex) const;
+  ByteCount printProductionLengthTableCpp(   MarginFile &output) const;                                              // return size in bytes
+  ByteCount printLeftSideTableCpp(           MarginFile &output) const;                                              // return size in bytes
+  ByteCount printRightSideTableCpp(          MarginFile &output) const;                                              // return size in bytes
+  ByteCount printSymbolNameTableCpp(         MarginFile &output) const;                                              // return size in bytes
+  ByteCount printByteArray(                  MarginFile &output, const String &name, const ByteArray &ba, UINT bytesPerLine = 20, const StringArray *linePrefix = NULL) const;
 public:
   GrammarTables(const Grammar &g, const String &tableClassName, const String &parserClassName);
   int  getAction(   UINT state, UINT input)      const override;

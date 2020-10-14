@@ -3,7 +3,7 @@
 #line 57 "C:\\Mytools2015\\Lib\\Src\\Expression\\Expression.y"
 #include "pch.h"
 #include <Math/Real.h>
-#include "Math/Expression/ExpressionParser.h"
+#include <Math/Expression/ExpressionParser.h>
 
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
 

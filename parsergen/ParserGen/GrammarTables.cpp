@@ -55,32 +55,40 @@ BitSet GrammarTables::getLookaheadSet(UINT state) const {
   return result;
 }
 
-const TCHAR *GrammarTables::getTableTypeName(bool isShort) { // static
-  return isShort ? _T("short") : _T("char");
+IntegerType GrammarTables::findTableType(UINT maxValue) { // static
+  if(maxValue < UCHAR_MAX-1) {
+    return TYPE_UCHAR;
+  } else if(maxValue < USHRT_MAX-1) {
+    return TYPE_USHORT;
+  } else {
+    return TYPE_UINT;
+  }
 }
 
-IndexType GrammarTables::findIndexType(UINT maxValue) { // static
-  if(maxValue < UCHAR_MAX-1) {
-    return INDEXTYPE_BYTE;
-  } else if(maxValue < USHRT_MAX-1) {
-    return INDEXTYPE_USHORT;
-  } else {
-    return INDEXTYPE_UINT;
-  }
-}
-const TCHAR *GrammarTables::getIndexTypeName(IndexType type) { // static
+const TCHAR *GrammarTables::getTypeName(IntegerType type) { // static
   switch(type) {
-  case INDEXTYPE_BYTE  : return _T("unsigned char" );
-  case INDEXTYPE_USHORT: return _T("unsigned short");
-  default              : return _T("unsigned int"  );
+  case TYPE_CHAR  : return _T("char"          );
+  case TYPE_UCHAR : return _T("unsigned char" );
+  case TYPE_SHORT : return _T("short"         );
+  case TYPE_USHORT: return _T("unsigned short");
+  case TYPE_INT   : return _T("int"           );
+  case TYPE_UINT  : return _T("unsigned int"  );
   }
+  throwInvalidArgumentException(__TFUNCTION__, _T("type=%d"), type);
+  return EMPTYSTRING;
 }
-UINT GrammarTables::getIndexTypeSize(IndexType type) { // static
+
+UINT GrammarTables::getTypeSize(IntegerType type) { // static
   switch(type) {
-  case INDEXTYPE_BYTE  : return sizeof(BYTE  );
-  case INDEXTYPE_USHORT: return sizeof(USHORT);
-  default              : return sizeof(UINT  );
+  case TYPE_CHAR  :
+  case TYPE_UCHAR : return sizeof(char );
+  case TYPE_SHORT :
+  case TYPE_USHORT: return sizeof(short);
+  case TYPE_INT   :
+  case TYPE_UINT  : return sizeof(int  );
   }
+  throwInvalidArgumentException(__TFUNCTION__, _T("type=%d"), type);
+  return 0;
 }
 
 ByteArray GrammarTables::bitSetToByteArray(const BitSet &set) { // static

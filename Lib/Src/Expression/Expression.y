@@ -56,7 +56,7 @@ $POPNAMESPACE$
 
 #include "pch.h"
 #include <Math/Real.h>
-#include "Math/Expression/ExpressionParser.h"
+#include <Math/Expression/ExpressionParser.h>
 
 %}
 %%
