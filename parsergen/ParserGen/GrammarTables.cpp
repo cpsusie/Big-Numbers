@@ -132,22 +132,13 @@ UINT GrammarTables::getTypeSize(IntegerType type) { // static
 }
 
 ByteArray GrammarTables::bitSetToByteArray(const BitSet &set) { // static
-  const size_t capacity = set.getCapacity();
-  ByteArray    result((capacity-1)/8+1);
-  BYTE         b    = 0;
-  BYTE         mask = 1;
-  for(size_t i = 0; i < capacity; i++) {
-    if(set.contains(i)) {
-      b |= mask;
-    }
-    if((mask <<= 1) == 0) {
-      result.add(b);
-      mask = 1;
-      b    = 0;
-    }
-  }
-  if(mask != 1) {
-    result.add(b);
+  const size_t byteCount = (set.getCapacity() - 1) / 8 + 1;
+  ByteArray    result(byteCount);
+  result.addZeroes(byteCount);
+  BYTE *b = (BYTE*)result.getData();
+  for(ConstIterator<size_t> it = set.getIterator(); it.hasNext();) {
+    const UINT v = (UINT)it.next();
+    b[v >> 3] |= (1 << (v & 7));
   }
   return result;
 }
