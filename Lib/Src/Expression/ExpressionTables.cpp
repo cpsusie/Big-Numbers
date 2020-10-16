@@ -64,311 +64,243 @@ namespace Expr {
 * generated uncompressed state M, a #define _acN _acM                          *
 *                                                                              *
 \******************************************************************************/
-static const BYTE compressedLasets[44] = {
-  /*  0  59 tokens */  0x1a,0x4c,0x80,0x81,0xff,0xff,0xff,0xff,0xff,0xff,0x05
-  /*  1  20 tokens */ ,0x81,0xb3,0x9f,0x79,0x00,0x00,0x00,0x00,0x00,0x00,0x0a
-  /*  2  21 tokens */ ,0xc1,0xb3,0x9f,0x79,0x00,0x00,0x00,0x00,0x00,0x00,0x0a
-  /*  3   6 tokens */ ,0x01,0x31,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x0a
+static const unsigned char compressedLAsets[44] = {
+   0x1a,0x4c,0x80,0x81,0xff,0xff,0xff,0xff,0xff,0xff,0x05 /*   0  59 tokens Used by states (6,77,92) */
+  ,0x81,0xb3,0x9f,0x79,0x00,0x00,0x00,0x00,0x00,0x00,0x0a /*   1  20 tokens Used by states (9,10,16,17,18,19,75,98,114,126,129,136,149,157,158) */
+  ,0xc1,0xb3,0x9f,0x79,0x00,0x00,0x00,0x00,0x00,0x00,0x0a /*   2  21 tokens Used by state  (74) */
+  ,0x01,0x31,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x0a /*   3   6 tokens Used by states (108,121,127) */
 }; // Size of table:44(x86)/48(x64) bytes.
 
-static const short uncompressedActions[] = {
-  /* state[0],Index=0                     */   59,   1,   3,   4,  10,  11,  14,  23,  24,  31,  32
-                                                 ,  33,  34,  35,  36,  37,  38,  39,  40,  41,  42
-                                                 ,  43,  44,  45,  46,  47,  48,  49,  50,  51,  52
-                                                 ,  53,  54,  55,  56,  57,  58,  59,  60,  61,  62
-                                                 ,  63,  64,  65,  66,  67,  68,  69,  70,  71,  72
-                                                 ,  73,  74,  75,  76,  77,  78,  79,  80,  82
-                                                 ,  75,  74,  21,  22,  23,  62,  15,  14,  26,  27
-                                                 ,  28,  29,  30,  31,  32,  33,  72,  34,  36,  37
-                                                 ,  38,  39,  54,  56,  57,  60,  61,  25,  35,  40
-                                                 ,  41,  42,  43,  44,  45,  73,  46,  47,  48,  49
-                                                 ,  50,  51,  52,  53,  70,  69,  71,  67,  55,  58
-                                                 ,  59,  68,  63,  64,  65,  24,  66,  13,  20
-  /* state[4],Index=119                   */ , 13,   0,  15,  16,  17,  18,  19,  20,  23,  24,  27
-                                                 ,  28,  29,  30
-                                                 ,  -3,  84,  88,  89,  86,  87,  85,  78,  79,  80
-                                                 ,  81,  82,  83
-  /* state[5],Index=146                   */ ,  3,   0,  12,  13
-                                                 ,  -4,  91,  90
-  /* state[8],Index=153                   */ , 14,   0,   6,  15,  16,  17,  18,  19,  20,  23,  24
-                                                 ,  27,  28,  29,  30
-                                                 , -17,  93, -17, -17, -17, -17, -17, -17, -17, -17
-                                                 , -17, -17, -17, -17
-  /* state[14],Index=182                  */ , 58,   1,   3,   4,  10,  11,  23,  24,  31,  32,  33
-                                                 ,  34,  35,  36,  37,  38,  39,  40,  41,  42,  43
-                                                 ,  44,  45,  46,  47,  48,  49,  50,  51,  52,  53
-                                                 ,  54,  55,  56,  57,  58,  59,  60,  61,  62,  63
-                                                 ,  64,  65,  66,  67,  68,  69,  70,  71,  72,  73
-                                                 ,  74,  75,  76,  77,  78,  79,  80,  82
-                                                 ,  75,  74,  21,  22,  23,  15,  14,  26,  27,  28
-                                                 ,  29,  30,  31,  32,  33,  72,  34,  36,  37,  38
-                                                 ,  39,  54,  56,  57,  60,  61,  25,  35,  40,  41
-                                                 ,  42,  43,  44,  45,  73,  46,  47,  48,  49,  50
-                                                 ,  51,  52,  53,  70,  69,  71,  67,  55,  58,  59
-                                                 ,  68,  63,  64,  65,  24,  66, 100,  20
-  /* state[96],Index=299                  */ , 13,  15,  16,  17,  18,  19,  20,  23,  24,  27,  28
-                                                 ,  29,  30,  81
-                                                 ,  84,  88,  89,  86,  87,  85,  78,  79,  80,  81
-                                                 ,  82,  83, 126
-  /* state[97],Index=326                  */ ,  3,  12,  13,  81
-                                                 ,  91,  90, 127
-  /* state[99],Index=333                  */ , 20,   0,   7,   8,   9,  12,  13,  15,  16,  17,  18
-                                                 ,  19,  20,  23,  24,  27,  28,  29,  30,  81,  83
-                                                 , -21, -21, -21, -21, -21, -21, -21, -21, -21, -21
-                                                 , -21, -21, -21, -21,  80,  81,  82,  83, -21, -21
-  /* state[101],Index=374                 */ , 20,   0,   7,   8,   9,  12,  13,  15,  16,  17,  18
-                                                 ,  19,  20,  23,  24,  27,  28,  29,  30,  81,  83
-                                                 , -22, -22, -22, -22, -22, -22, -22, -22, -22, -22
-                                                 , -22, -22, -22, -22,  80,  81,  82,  83, -22, -22
-  /* state[102],Index=415                 */ ,  3,  12,  13,  83
-                                                 ,  91,  90, 129
-  /* state[103],Index=422                 */ , 12,  15,  16,  17,  18,  19,  20,  23,  24,  27,  28
-                                                 ,  29,  30
-                                                 ,  84,  88,  89,  86,  87,  85,  78,  79,  80,  81
-                                                 ,  82,  83
-  /* state[109],Index=447                 */ , 20,   0,   7,   8,   9,  12,  13,  15,  16,  17,  18
-                                                 ,  19,  20,  23,  24,  27,  28,  29,  30,  81,  83
-                                                 ,  -9,  -9,  -9,  -9,  -9,  -9,  -9,  -9,  -9,  -9
-                                                 ,  -9,  -9,  -9,  -9,  80,  81,  82,  83,  -9,  -9
-  /* state[110],Index=488                 */ , 20,   0,   7,   8,   9,  12,  13,  15,  16,  17,  18
-                                                 ,  19,  20,  23,  24,  27,  28,  29,  30,  81,  83
-                                                 , -10, -10, -10, -10, -10, -10, -10, -10, -10, -10
-                                                 , -10, -10, -10, -10,  80,  81,  82,  83, -10, -10
-  /* state[111],Index=529                 */ , 20,   0,   7,   8,   9,  12,  13,  15,  16,  17,  18
-                                                 ,  19,  20,  23,  24,  27,  28,  29,  30,  81,  83
-                                                 , -11, -11, -11, -11, -11, -11, -11, -11, -11, -11
-                                                 , -11, -11, -11, -11, -11, -11, -11,  83, -11, -11
-  /* state[112],Index=570                 */ , 20,   0,   7,   8,   9,  12,  13,  15,  16,  17,  18
-                                                 ,  19,  20,  23,  24,  27,  28,  29,  30,  81,  83
-                                                 , -12, -12, -12, -12, -12, -12, -12, -12, -12, -12
-                                                 , -12, -12, -12, -12, -12, -12, -12,  83, -12, -12
-  /* state[113],Index=611                 */ , 20,   0,   7,   8,   9,  12,  13,  15,  16,  17,  18
-                                                 ,  19,  20,  23,  24,  27,  28,  29,  30,  81,  83
-                                                 , -13, -13, -13, -13, -13, -13, -13, -13, -13, -13
-                                                 , -13, -13, -13, -13, -13, -13, -13,  83, -13, -13
-  /* state[115],Index=652                 */ , 12,   0,   8,  12,  13,  23,  24,  27,  28,  29,  30
-                                                 ,  81,  83
-                                                 , -71, -71, -71, -71,  78,  79,  80,  81,  82,  83
-                                                 , -71, -71
-  /* state[116],Index=677                 */ , 12,   0,   8,  12,  13,  23,  24,  27,  28,  29,  30
-                                                 ,  81,  83
-                                                 , -72, -72, -72, -72,  78,  79,  80,  81,  82,  83
-                                                 , -72, -72
-  /* state[117],Index=702                 */ , 12,   0,   8,  12,  13,  23,  24,  27,  28,  29,  30
-                                                 ,  81,  83
-                                                 , -73, -73, -73, -73,  78,  79,  80,  81,  82,  83
-                                                 , -73, -73
-  /* state[118],Index=727                 */ , 12,   0,   8,  12,  13,  23,  24,  27,  28,  29,  30
-                                                 ,  81,  83
-                                                 , -74, -74, -74, -74,  78,  79,  80,  81,  82,  83
-                                                 , -74, -74
-  /* state[119],Index=752                 */ , 12,   0,   8,  12,  13,  23,  24,  27,  28,  29,  30
-                                                 ,  81,  83
-                                                 , -75, -75, -75, -75,  78,  79,  80,  81,  82,  83
-                                                 , -75, -75
-  /* state[120],Index=777                 */ , 12,   0,   8,  12,  13,  23,  24,  27,  28,  29,  30
-                                                 ,  81,  83
-                                                 , -76, -76, -76, -76,  78,  79,  80,  81,  82,  83
-                                                 , -76, -76
-  /* state[122],Index=802                 */ ,  6,   0,   8,  12,  13,  81,  83
-                                                 , -78, -78, -78,  90, -78, -78
-  /* state[123],Index=815                 */ ,  8,   7,   9,  23,  24,  27,  28,  29,  30
-                                                 ,  -8,  -8,  78,  79,  80,  81,  82,  83
-  /* state[124],Index=832                 */ ,  7,  23,  24,  27,  28,  29,  30,  81
-                                                 ,  78,  79,  80,  81,  82,  83, 136
-  /* state[125],Index=847                 */ ,  7,   8,  23,  24,  27,  28,  29,  30
-                                                 , 137,  78,  79,  80,  81,  82,  83
-  /* state[128],Index=862                 */ ,  7,  23,  24,  27,  28,  29,  30,  81
-                                                 ,  78,  79,  80,  81,  82,  83, 126
-  /* state[130],Index=877                 */ ,  3,   8,  12,  13
-                                                 , 138,  91,  90
-  /* state[134],Index=884                 */ ,  2,   8,  83
-                                                 , 142, 141
-  /* state[135],Index=889                 */ ,  8,   8,  23,  24,  27,  28,  29,  30,  83
-                                                 , -33,  78,  79,  80,  81,  82,  83, -33
-  /* state[143],Index=906                 */ ,  7,  23,  24,  27,  28,  29,  30,  81
-                                                 ,  78,  79,  80,  81,  82,  83, 149
-  /* state[144],Index=921                 */ ,  7,   8,  23,  24,  27,  28,  29,  30
-                                                 , 150,  78,  79,  80,  81,  82,  83
-  /* state[145],Index=936                 */ ,  7,  23,  24,  27,  28,  29,  30,  81
-                                                 ,  78,  79,  80,  81,  82,  83, 151
-  /* state[146],Index=951                 */ ,  7,  23,  24,  27,  28,  29,  30,  81
-                                                 ,  78,  79,  80,  81,  82,  83, 152
-  /* state[148],Index=966                 */ ,  8,   8,  23,  24,  27,  28,  29,  30,  83
-                                                 , -32,  78,  79,  80,  81,  82,  83, -32
-  /* state[153],Index=983                 */ ,  7,  23,  24,  27,  28,  29,  30,  81
-                                                 ,  78,  79,  80,  81,  82,  83, 157
-  /* state[154],Index=998                 */ ,  7,  23,  24,  27,  28,  29,  30,  81
-                                                 ,  78,  79,  80,  81,  82,  83, 158
-  /* state[155],Index=1013                */ , 20,   0,   7,   8,   9,  12,  13,  15,  16,  17,  18
-                                                 ,  19,  20,  23,  24,  27,  28,  29,  30,  81,  83
-                                                 , -29, -29, -29, -29, -29, -29, -29, -29, -29, -29
-                                                 , -29, -29,  78,  79,  80,  81,  82,  83, -29, -29
-  /* state[156],Index=1054                */ , 20,   0,   7,   8,   9,  12,  13,  15,  16,  17,  18
-                                                 ,  19,  20,  23,  24,  27,  28,  29,  30,  81,  83
-                                                 , -30, -30, -30, -30, -30, -30, -30, -30, -30, -30
-                                                 , -30, -30,  78,  79,  80,  81,  82,  83, -30, -30
-}; // Size of table:2.192(x86)/2.192(x64) bytes.
+static const unsigned char termListTable[] = {
+    59,   1,   3,   4,  10,  11,  14,  23,  24,  31,  32,  33,  34,  35,  36,  37,  38,  39,  40,  41,  42   /*    0 Used by states (0,3,13,20,62,90,91,104) */
+      ,  43,  44,  45,  46,  47,  48,  49,  50,  51,  52,  53,  54,  55,  56,  57,  58,  59,  60,  61,  62
+      ,  63,  64,  65,  66,  67,  68,  69,  70,  71,  72,  73,  74,  75,  76,  77,  78,  79,  80,  82
+  , 13,   0,  15,  16,  17,  18,  19,  20,  23,  24,  27,  28,  29,  30                                      /*    1 Used by state  (4) */
+  ,  3,   0,  12,  13                                                                                        /*    2 Used by state  (5) */
+  , 14,   0,   6,  15,  16,  17,  18,  19,  20,  23,  24,  27,  28,  29,  30                                 /*    3 Used by state  (8) */
+  , 58,   1,   3,   4,  10,  11,  23,  24,  31,  32,  33,  34,  35,  36,  37,  38,  39,  40,  41,  42,  43   /*    4 Used by states (14,15,78,79,80,81,82,83,84,85,86,87,88,89,93,94,95,100,107,137,138,139,140,142,147,150,151,152) */
+      ,  44,  45,  46,  47,  48,  49,  50,  51,  52,  53,  54,  55,  56,  57,  58,  59,  60,  61,  62,  63
+      ,  64,  65,  66,  67,  68,  69,  70,  71,  72,  73,  74,  75,  76,  77,  78,  79,  80,  82
+  , 13,  15,  16,  17,  18,  19,  20,  23,  24,  27,  28,  29,  30,  81                                      /*    5 Used by state  (96) */
+  ,  3,  12,  13,  81                                                                                        /*    6 Used by state  (97) */
+  , 20,   0,   7,   8,   9,  12,  13,  15,  16,  17,  18,  19,  20,  23,  24,  27,  28,  29,  30,  81,  83   /*    7 Used by states (99,101,109,110,111,112,113,155,156) */
+  ,  3,  12,  13,  83                                                                                        /*    8 Used by state  (102) */
+  , 12,  15,  16,  17,  18,  19,  20,  23,  24,  27,  28,  29,  30                                           /*    9 Used by state  (103) */
+  , 12,   0,   8,  12,  13,  23,  24,  27,  28,  29,  30,  81,  83                                           /*   10 Used by states (115,116,117,118,119,120) */
+  ,  6,   0,   8,  12,  13,  81,  83                                                                         /*   11 Used by state  (122) */
+  ,  8,   7,   9,  23,  24,  27,  28,  29,  30                                                               /*   12 Used by state  (123) */
+  ,  7,  23,  24,  27,  28,  29,  30,  81                                                                    /*   13 Used by states (124,128,143,145,146,153,154) */
+  ,  7,   8,  23,  24,  27,  28,  29,  30                                                                    /*   14 Used by states (125,144) */
+  ,  3,   8,  12,  13                                                                                        /*   15 Used by state  (130) */
+  ,  2,   8,  83                                                                                             /*   16 Used by state  (134) */
+  ,  8,   8,  23,  24,  27,  28,  29,  30,  83                                                               /*   17 Used by states (135,148) */
+}; // Size of table:272(x86)/272(x64) bytes.
 
-#define _ac0000 0          /* Index of uncompressed state[0]          */
-#define _ac0001 0x80000000 /* Reduce by 0 on EOI                      */
-#define _ac0002 0xffff0000 /* Reduce by 1 on EOI                      */
-#define _ac0003 _ac0000    /* Saved 238 bytes                         */
-#define _ac0004 119        /* Index of uncompressed state[4]          */
-#define _ac0005 146        /* Index of uncompressed state[5]          */
-#define _ac0006 0xfffb8000 /* Reduce by 5 on tokens in set[0]         */
-#define _ac0007 0x805c0007 /* Shift  to 92 on SEMI                    */
-#define _ac0008 153        /* Index of uncompressed state[8]          */
-#define _ac0009 0xfff1800b /* Reduce by 15 on tokens in set[1]        */
-#define _ac0010 0xfff0800b /* Reduce by 16 on tokens in set[1]        */
-#define _ac0011 0x805e0050 /* Shift  to 94 on LPAR                    */
-#define _ac0012 0x805f0050 /* Shift  to 95 on LPAR                    */
-#define _ac0013 _ac0000    /* Saved 238 bytes                         */
-#define _ac0014 182        /* Index of uncompressed state[14]         */
-#define _ac0015 _ac0014    /* Saved 234 bytes                         */
-#define _ac0016 0xffe9800b /* Reduce by 23 on tokens in set[1]        */
-#define _ac0017 0xffe8800b /* Reduce by 24 on tokens in set[1]        */
-#define _ac0018 0xffe7800b /* Reduce by 25 on tokens in set[1]        */
-#define _ac0019 0xffe6800b /* Reduce by 26 on tokens in set[1]        */
-#define _ac0020 _ac0000    /* Saved 238 bytes                         */
-#define _ac0021 0x80680050 /* Shift  to 104 on LPAR                   */
-#define _ac0022 0x80690050 /* Shift  to 105 on LPAR                   */
-#define _ac0023 0x806a0050 /* Shift  to 106 on LPAR                   */
-#define _ac0024 0x806b0052 /* Shift  to 107 on LB                     */
-#define _ac0025 0xffde0050 /* Reduce by 34 on LPAR                    */
-#define _ac0026 0xffdd0050 /* Reduce by 35 on LPAR                    */
-#define _ac0027 0xffdc0050 /* Reduce by 36 on LPAR                    */
-#define _ac0028 0xffdb0050 /* Reduce by 37 on LPAR                    */
-#define _ac0029 0xffda0050 /* Reduce by 38 on LPAR                    */
-#define _ac0030 0xffd90050 /* Reduce by 39 on LPAR                    */
-#define _ac0031 0xffd80050 /* Reduce by 40 on LPAR                    */
-#define _ac0032 0xffd70050 /* Reduce by 41 on LPAR                    */
-#define _ac0033 0xffd60050 /* Reduce by 42 on LPAR                    */
-#define _ac0034 0xffd50050 /* Reduce by 43 on LPAR                    */
-#define _ac0035 0xffd40050 /* Reduce by 44 on LPAR                    */
-#define _ac0036 0xffd30050 /* Reduce by 45 on LPAR                    */
-#define _ac0037 0xffd20050 /* Reduce by 46 on LPAR                    */
-#define _ac0038 0xffd10050 /* Reduce by 47 on LPAR                    */
-#define _ac0039 0xffd00050 /* Reduce by 48 on LPAR                    */
-#define _ac0040 0xffcf0050 /* Reduce by 49 on LPAR                    */
-#define _ac0041 0xffce0050 /* Reduce by 50 on LPAR                    */
-#define _ac0042 0xffcd0050 /* Reduce by 51 on LPAR                    */
-#define _ac0043 0xffcc0050 /* Reduce by 52 on LPAR                    */
-#define _ac0044 0xffcb0050 /* Reduce by 53 on LPAR                    */
-#define _ac0045 0xffca0050 /* Reduce by 54 on LPAR                    */
-#define _ac0046 0xffc90050 /* Reduce by 55 on LPAR                    */
-#define _ac0047 0xffc80050 /* Reduce by 56 on LPAR                    */
-#define _ac0048 0xffc70050 /* Reduce by 57 on LPAR                    */
-#define _ac0049 0xffc60050 /* Reduce by 58 on LPAR                    */
-#define _ac0050 0xffc50050 /* Reduce by 59 on LPAR                    */
-#define _ac0051 0xffc40050 /* Reduce by 60 on LPAR                    */
-#define _ac0052 0xffc30050 /* Reduce by 61 on LPAR                    */
-#define _ac0053 0xffc20050 /* Reduce by 62 on LPAR                    */
-#define _ac0054 0xffc10050 /* Reduce by 63 on LPAR                    */
-#define _ac0055 0xffc00050 /* Reduce by 64 on LPAR                    */
-#define _ac0056 0xffbf0050 /* Reduce by 65 on LPAR                    */
-#define _ac0057 0xffbe0050 /* Reduce by 66 on LPAR                    */
-#define _ac0058 0xffbd0050 /* Reduce by 67 on LPAR                    */
-#define _ac0059 0xffbc0050 /* Reduce by 68 on LPAR                    */
-#define _ac0060 0xffbb0050 /* Reduce by 69 on LPAR                    */
-#define _ac0061 0xffba0050 /* Reduce by 70 on LPAR                    */
-#define _ac0062 _ac0000    /* Saved 238 bytes                         */
-#define _ac0063 0xffaf0050 /* Reduce by 81 on LPAR                    */
-#define _ac0064 0xffae0050 /* Reduce by 82 on LPAR                    */
-#define _ac0065 0xffad0050 /* Reduce by 83 on LPAR                    */
-#define _ac0066 0xffac0050 /* Reduce by 84 on LPAR                    */
-#define _ac0067 0xffab0050 /* Reduce by 85 on LPAR                    */
-#define _ac0068 0xffaa0050 /* Reduce by 86 on LPAR                    */
-#define _ac0069 0xffa90050 /* Reduce by 87 on LPAR                    */
-#define _ac0070 0xffa80050 /* Reduce by 88 on LPAR                    */
-#define _ac0071 0xffa70050 /* Reduce by 89 on LPAR                    */
-#define _ac0072 0xffa60050 /* Reduce by 90 on LPAR                    */
-#define _ac0073 0xffa50050 /* Reduce by 91 on LPAR                    */
-#define _ac0074 0xffa48016 /* Reduce by 92 on tokens in set[2]        */
-#define _ac0075 0xffa3800b /* Reduce by 93 on tokens in set[1]        */
-#define _ac0076 0xfffe0000 /* Reduce by 2 on EOI                      */
-#define _ac0077 0xfffa8000 /* Reduce by 6 on tokens in set[0]         */
-#define _ac0078 _ac0014    /* Saved 234 bytes                         */
-#define _ac0079 _ac0014    /* Saved 234 bytes                         */
-#define _ac0080 _ac0014    /* Saved 234 bytes                         */
-#define _ac0081 _ac0014    /* Saved 234 bytes                         */
-#define _ac0082 _ac0014    /* Saved 234 bytes                         */
-#define _ac0083 _ac0014    /* Saved 234 bytes                         */
-#define _ac0084 _ac0014    /* Saved 234 bytes                         */
-#define _ac0085 _ac0014    /* Saved 234 bytes                         */
-#define _ac0086 _ac0014    /* Saved 234 bytes                         */
-#define _ac0087 _ac0014    /* Saved 234 bytes                         */
-#define _ac0088 _ac0014    /* Saved 234 bytes                         */
-#define _ac0089 _ac0014    /* Saved 234 bytes                         */
-#define _ac0090 _ac0000    /* Saved 238 bytes                         */
-#define _ac0091 _ac0000    /* Saved 238 bytes                         */
-#define _ac0092 0xfff98000 /* Reduce by 7 on tokens in set[0]         */
-#define _ac0093 _ac0014    /* Saved 234 bytes                         */
-#define _ac0094 _ac0014    /* Saved 234 bytes                         */
-#define _ac0095 _ac0014    /* Saved 234 bytes                         */
-#define _ac0096 299        /* Index of uncompressed state[96]         */
-#define _ac0097 326        /* Index of uncompressed state[97]         */
-#define _ac0098 0xffef800b /* Reduce by 17 on tokens in set[1]        */
-#define _ac0099 333        /* Index of uncompressed state[99]         */
-#define _ac0100 _ac0014    /* Saved 234 bytes                         */
-#define _ac0101 374        /* Index of uncompressed state[101]        */
-#define _ac0102 415        /* Index of uncompressed state[102]        */
-#define _ac0103 422        /* Index of uncompressed state[103]        */
-#define _ac0104 _ac0000    /* Saved 238 bytes                         */
-#define _ac0105 0x804a0003 /* Shift  to 74 on NAME                    */
-#define _ac0106 0x804a0003 /* Shift  to 74 on NAME                    */
-#define _ac0107 _ac0014    /* Saved 234 bytes                         */
-#define _ac0108 0xffb18021 /* Reduce by 79 on tokens in set[3]        */
-#define _ac0109 447        /* Index of uncompressed state[109]        */
-#define _ac0110 488        /* Index of uncompressed state[110]        */
-#define _ac0111 529        /* Index of uncompressed state[111]        */
-#define _ac0112 570        /* Index of uncompressed state[112]        */
-#define _ac0113 611        /* Index of uncompressed state[113]        */
-#define _ac0114 0xfff2800b /* Reduce by 14 on tokens in set[1]        */
-#define _ac0115 652        /* Index of uncompressed state[115]        */
-#define _ac0116 677        /* Index of uncompressed state[116]        */
-#define _ac0117 702        /* Index of uncompressed state[117]        */
-#define _ac0118 727        /* Index of uncompressed state[118]        */
-#define _ac0119 752        /* Index of uncompressed state[119]        */
-#define _ac0120 777        /* Index of uncompressed state[120]        */
-#define _ac0121 0xffb38021 /* Reduce by 77 on tokens in set[3]        */
-#define _ac0122 802        /* Index of uncompressed state[122]        */
-#define _ac0123 815        /* Index of uncompressed state[123]        */
-#define _ac0124 832        /* Index of uncompressed state[124]        */
-#define _ac0125 847        /* Index of uncompressed state[125]        */
-#define _ac0126 0xffec800b /* Reduce by 20 on tokens in set[1]        */
-#define _ac0127 0xffb08021 /* Reduce by 80 on tokens in set[3]        */
-#define _ac0128 862        /* Index of uncompressed state[128]        */
-#define _ac0129 0xffe5800b /* Reduce by 27 on tokens in set[1]        */
-#define _ac0130 877        /* Index of uncompressed state[130]        */
-#define _ac0131 0x808b0009 /* Shift  to 139 on TO                     */
-#define _ac0132 0x805d0006 /* Shift  to 93 on ASSIGN                  */
-#define _ac0133 0x808c0009 /* Shift  to 140 on TO                     */
-#define _ac0134 884        /* Index of uncompressed state[134]        */
-#define _ac0135 889        /* Index of uncompressed state[135]        */
-#define _ac0136 0xffee800b /* Reduce by 18 on tokens in set[1]        */
-#define _ac0137 _ac0014    /* Saved 234 bytes                         */
-#define _ac0138 _ac0014    /* Saved 234 bytes                         */
-#define _ac0139 _ac0014    /* Saved 234 bytes                         */
-#define _ac0140 _ac0014    /* Saved 234 bytes                         */
-#define _ac0141 0x80930050 /* Shift  to 147 on LPAR                   */
-#define _ac0142 _ac0014    /* Saved 234 bytes                         */
-#define _ac0143 906        /* Index of uncompressed state[143]        */
-#define _ac0144 921        /* Index of uncompressed state[144]        */
-#define _ac0145 936        /* Index of uncompressed state[145]        */
-#define _ac0146 951        /* Index of uncompressed state[146]        */
-#define _ac0147 _ac0014    /* Saved 234 bytes                         */
-#define _ac0148 966        /* Index of uncompressed state[148]        */
-#define _ac0149 0xffed800b /* Reduce by 19 on tokens in set[1]        */
-#define _ac0150 _ac0014    /* Saved 234 bytes                         */
-#define _ac0151 _ac0014    /* Saved 234 bytes                         */
-#define _ac0152 _ac0014    /* Saved 234 bytes                         */
-#define _ac0153 983        /* Index of uncompressed state[153]        */
-#define _ac0154 998        /* Index of uncompressed state[154]        */
-#define _ac0155 1013       /* Index of uncompressed state[155]        */
-#define _ac0156 1054       /* Index of uncompressed state[156]        */
-#define _ac0157 0xffe1800b /* Reduce by 31 on tokens in set[1]        */
-#define _ac0158 0xffe4800b /* Reduce by 28 on tokens in set[1]        */
+static const short actionListTable[] = {
+     75,  74,  21,  22,  23,  62,  15,  14,  26,  27,  28,  29,  30,  31,  32,  33,  72,  34,  36,  37       /*   0 Used by states (0,3,13,20,62,90,91,104) */
+  ,  38,  39,  54,  56,  57,  60,  61,  25,  35,  40,  41,  42,  43,  44,  45,  73,  46,  47,  48,  49
+  ,  50,  51,  52,  53,  70,  69,  71,  67,  55,  58,  59,  68,  63,  64,  65,  24,  66,  13,  20
+  ,  -3,  84,  88,  89,  86,  87,  85,  78,  79,  80,  81,  82,  83                                          /*   1 Used by state  (4) */
+  ,  -4,  91,  90                                                                                            /*   2 Used by state  (5) */
+  , -17,  93, -17, -17, -17, -17, -17, -17, -17, -17, -17, -17, -17, -17                                     /*   3 Used by state  (8) */
+  ,  75,  74,  21,  22,  23,  15,  14,  26,  27,  28,  29,  30,  31,  32,  33,  72,  34,  36,  37,  38       /*   4 Used by states (14,15,78,79,80,81,82,83,84,85,86,87,88,89,93,94,95,100,107,137,138,139,140,142,147,150,151,152) */
+  ,  39,  54,  56,  57,  60,  61,  25,  35,  40,  41,  42,  43,  44,  45,  73,  46,  47,  48,  49,  50
+  ,  51,  52,  53,  70,  69,  71,  67,  55,  58,  59,  68,  63,  64,  65,  24,  66, 100,  20
+  ,  84,  88,  89,  86,  87,  85,  78,  79,  80,  81,  82,  83, 126                                          /*   5 Used by state  (96) */
+  ,  91,  90, 127                                                                                            /*   6 Used by state  (97) */
+  , -21, -21, -21, -21, -21, -21, -21, -21, -21, -21, -21, -21, -21, -21,  80,  81,  82,  83, -21, -21       /*   7 Used by state  (99) */
+  , -22, -22, -22, -22, -22, -22, -22, -22, -22, -22, -22, -22, -22, -22,  80,  81,  82,  83, -22, -22       /*   8 Used by state  (101) */
+  ,  91,  90, 129                                                                                            /*   9 Used by state  (102) */
+  ,  84,  88,  89,  86,  87,  85,  78,  79,  80,  81,  82,  83                                               /*  10 Used by state  (103) */
+  ,  -9,  -9,  -9,  -9,  -9,  -9,  -9,  -9,  -9,  -9,  -9,  -9,  -9,  -9,  80,  81,  82,  83,  -9,  -9       /*  11 Used by state  (109) */
+  , -10, -10, -10, -10, -10, -10, -10, -10, -10, -10, -10, -10, -10, -10,  80,  81,  82,  83, -10, -10       /*  12 Used by state  (110) */
+  , -11, -11, -11, -11, -11, -11, -11, -11, -11, -11, -11, -11, -11, -11, -11, -11, -11,  83, -11, -11       /*  13 Used by state  (111) */
+  , -12, -12, -12, -12, -12, -12, -12, -12, -12, -12, -12, -12, -12, -12, -12, -12, -12,  83, -12, -12       /*  14 Used by state  (112) */
+  , -13, -13, -13, -13, -13, -13, -13, -13, -13, -13, -13, -13, -13, -13, -13, -13, -13,  83, -13, -13       /*  15 Used by state  (113) */
+  , -71, -71, -71, -71,  78,  79,  80,  81,  82,  83, -71, -71                                               /*  16 Used by state  (115) */
+  , -72, -72, -72, -72,  78,  79,  80,  81,  82,  83, -72, -72                                               /*  17 Used by state  (116) */
+  , -73, -73, -73, -73,  78,  79,  80,  81,  82,  83, -73, -73                                               /*  18 Used by state  (117) */
+  , -74, -74, -74, -74,  78,  79,  80,  81,  82,  83, -74, -74                                               /*  19 Used by state  (118) */
+  , -75, -75, -75, -75,  78,  79,  80,  81,  82,  83, -75, -75                                               /*  20 Used by state  (119) */
+  , -76, -76, -76, -76,  78,  79,  80,  81,  82,  83, -76, -76                                               /*  21 Used by state  (120) */
+  , -78, -78, -78,  90, -78, -78                                                                             /*  22 Used by state  (122) */
+  ,  -8,  -8,  78,  79,  80,  81,  82,  83                                                                   /*  23 Used by state  (123) */
+  ,  78,  79,  80,  81,  82,  83, 136                                                                        /*  24 Used by state  (124) */
+  , 137,  78,  79,  80,  81,  82,  83                                                                        /*  25 Used by state  (125) */
+  ,  78,  79,  80,  81,  82,  83, 126                                                                        /*  26 Used by state  (128) */
+  , 138,  91,  90                                                                                            /*  27 Used by state  (130) */
+  , 142, 141                                                                                                 /*  28 Used by state  (134) */
+  , -33,  78,  79,  80,  81,  82,  83, -33                                                                   /*  29 Used by state  (135) */
+  ,  78,  79,  80,  81,  82,  83, 149                                                                        /*  30 Used by state  (143) */
+  , 150,  78,  79,  80,  81,  82,  83                                                                        /*  31 Used by state  (144) */
+  ,  78,  79,  80,  81,  82,  83, 151                                                                        /*  32 Used by state  (145) */
+  ,  78,  79,  80,  81,  82,  83, 152                                                                        /*  33 Used by state  (146) */
+  , -32,  78,  79,  80,  81,  82,  83, -32                                                                   /*  34 Used by state  (148) */
+  ,  78,  79,  80,  81,  82,  83, 157                                                                        /*  35 Used by state  (153) */
+  ,  78,  79,  80,  81,  82,  83, 158                                                                        /*  36 Used by state  (154) */
+  , -29, -29, -29, -29, -29, -29, -29, -29, -29, -29, -29, -29,  78,  79,  80,  81,  82,  83, -29, -29       /*  37 Used by state  (155) */
+  , -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30,  78,  79,  80,  81,  82,  83, -30, -30       /*  38 Used by state  (156) */
+}; // Size of table:1.056(x86)/1.056(x64) bytes.
+
+#define _ac0000 0x00000000 /* termList   0, actionList   0            */
+#define _ac0001 0x00010000 /* Reduce by    0 on EOI                   */
+#define _ac0002 0xffff0000 /* Reduce by    1 on EOI                   */
+#define _ac0003 0x00000000 /* termList   0, actionList   0            */
+#define _ac0004 0x0076003c /* termList   1, actionList   1            */
+#define _ac0005 0x0090004a /* termList   2, actionList   2            */
+#define _ac0006 0xfff78000 /* Reduce by 5 on tokens in LAset[0]       */
+#define _ac0007 0x00b90007 /* Shift  to   92 on SEMI                  */
+#define _ac0008 0x0096004e /* termList   3, actionList   3            */
+#define _ac0009 0xffe3800b /* Reduce by 15 on tokens in LAset[1]      */
+#define _ac0010 0xffe1800b /* Reduce by 16 on tokens in LAset[1]      */
+#define _ac0011 0x00bd0050 /* Shift  to   94 on LPAR                  */
+#define _ac0012 0x00bf0050 /* Shift  to   95 on LPAR                  */
+#define _ac0013 0x00000000 /* termList   0, actionList   0            */
+#define _ac0014 0x00b2005d /* termList   4, actionList   4            */
+#define _ac0015 0x00b2005d /* termList   4, actionList   4            */
+#define _ac0016 0xffd3800b /* Reduce by 23 on tokens in LAset[1]      */
+#define _ac0017 0xffd1800b /* Reduce by 24 on tokens in LAset[1]      */
+#define _ac0018 0xffcf800b /* Reduce by 25 on tokens in LAset[1]      */
+#define _ac0019 0xffcd800b /* Reduce by 26 on tokens in LAset[1]      */
+#define _ac0020 0x00000000 /* termList   0, actionList   0            */
+#define _ac0021 0x00d10050 /* Shift  to  104 on LPAR                  */
+#define _ac0022 0x00d30050 /* Shift  to  105 on LPAR                  */
+#define _ac0023 0x00d50050 /* Shift  to  106 on LPAR                  */
+#define _ac0024 0x00d70052 /* Shift  to  107 on LB                    */
+#define _ac0025 0xffbd0050 /* Reduce by   34 on LPAR                  */
+#define _ac0026 0xffbb0050 /* Reduce by   35 on LPAR                  */
+#define _ac0027 0xffb90050 /* Reduce by   36 on LPAR                  */
+#define _ac0028 0xffb70050 /* Reduce by   37 on LPAR                  */
+#define _ac0029 0xffb50050 /* Reduce by   38 on LPAR                  */
+#define _ac0030 0xffb30050 /* Reduce by   39 on LPAR                  */
+#define _ac0031 0xffb10050 /* Reduce by   40 on LPAR                  */
+#define _ac0032 0xffaf0050 /* Reduce by   41 on LPAR                  */
+#define _ac0033 0xffad0050 /* Reduce by   42 on LPAR                  */
+#define _ac0034 0xffab0050 /* Reduce by   43 on LPAR                  */
+#define _ac0035 0xffa90050 /* Reduce by   44 on LPAR                  */
+#define _ac0036 0xffa70050 /* Reduce by   45 on LPAR                  */
+#define _ac0037 0xffa50050 /* Reduce by   46 on LPAR                  */
+#define _ac0038 0xffa30050 /* Reduce by   47 on LPAR                  */
+#define _ac0039 0xffa10050 /* Reduce by   48 on LPAR                  */
+#define _ac0040 0xff9f0050 /* Reduce by   49 on LPAR                  */
+#define _ac0041 0xff9d0050 /* Reduce by   50 on LPAR                  */
+#define _ac0042 0xff9b0050 /* Reduce by   51 on LPAR                  */
+#define _ac0043 0xff990050 /* Reduce by   52 on LPAR                  */
+#define _ac0044 0xff970050 /* Reduce by   53 on LPAR                  */
+#define _ac0045 0xff950050 /* Reduce by   54 on LPAR                  */
+#define _ac0046 0xff930050 /* Reduce by   55 on LPAR                  */
+#define _ac0047 0xff910050 /* Reduce by   56 on LPAR                  */
+#define _ac0048 0xff8f0050 /* Reduce by   57 on LPAR                  */
+#define _ac0049 0xff8d0050 /* Reduce by   58 on LPAR                  */
+#define _ac0050 0xff8b0050 /* Reduce by   59 on LPAR                  */
+#define _ac0051 0xff890050 /* Reduce by   60 on LPAR                  */
+#define _ac0052 0xff870050 /* Reduce by   61 on LPAR                  */
+#define _ac0053 0xff850050 /* Reduce by   62 on LPAR                  */
+#define _ac0054 0xff830050 /* Reduce by   63 on LPAR                  */
+#define _ac0055 0xff810050 /* Reduce by   64 on LPAR                  */
+#define _ac0056 0xff7f0050 /* Reduce by   65 on LPAR                  */
+#define _ac0057 0xff7d0050 /* Reduce by   66 on LPAR                  */
+#define _ac0058 0xff7b0050 /* Reduce by   67 on LPAR                  */
+#define _ac0059 0xff790050 /* Reduce by   68 on LPAR                  */
+#define _ac0060 0xff770050 /* Reduce by   69 on LPAR                  */
+#define _ac0061 0xff750050 /* Reduce by   70 on LPAR                  */
+#define _ac0062 0x00000000 /* termList   0, actionList   0            */
+#define _ac0063 0xff5f0050 /* Reduce by   81 on LPAR                  */
+#define _ac0064 0xff5d0050 /* Reduce by   82 on LPAR                  */
+#define _ac0065 0xff5b0050 /* Reduce by   83 on LPAR                  */
+#define _ac0066 0xff590050 /* Reduce by   84 on LPAR                  */
+#define _ac0067 0xff570050 /* Reduce by   85 on LPAR                  */
+#define _ac0068 0xff550050 /* Reduce by   86 on LPAR                  */
+#define _ac0069 0xff530050 /* Reduce by   87 on LPAR                  */
+#define _ac0070 0xff510050 /* Reduce by   88 on LPAR                  */
+#define _ac0071 0xff4f0050 /* Reduce by   89 on LPAR                  */
+#define _ac0072 0xff4d0050 /* Reduce by   90 on LPAR                  */
+#define _ac0073 0xff4b0050 /* Reduce by   91 on LPAR                  */
+#define _ac0074 0xff498016 /* Reduce by 92 on tokens in LAset[2]      */
+#define _ac0075 0xff47800b /* Reduce by 93 on tokens in LAset[1]      */
+#define _ac0076 0xfffd0000 /* Reduce by    2 on EOI                   */
+#define _ac0077 0xfff58000 /* Reduce by 6 on tokens in LAset[0]       */
+#define _ac0078 0x00b2005d /* termList   4, actionList   4            */
+#define _ac0079 0x00b2005d /* termList   4, actionList   4            */
+#define _ac0080 0x00b2005d /* termList   4, actionList   4            */
+#define _ac0081 0x00b2005d /* termList   4, actionList   4            */
+#define _ac0082 0x00b2005d /* termList   4, actionList   4            */
+#define _ac0083 0x00b2005d /* termList   4, actionList   4            */
+#define _ac0084 0x00b2005d /* termList   4, actionList   4            */
+#define _ac0085 0x00b2005d /* termList   4, actionList   4            */
+#define _ac0086 0x00b2005d /* termList   4, actionList   4            */
+#define _ac0087 0x00b2005d /* termList   4, actionList   4            */
+#define _ac0088 0x00b2005d /* termList   4, actionList   4            */
+#define _ac0089 0x00b2005d /* termList   4, actionList   4            */
+#define _ac0090 0x00000000 /* termList   0, actionList   0            */
+#define _ac0091 0x00000000 /* termList   0, actionList   0            */
+#define _ac0092 0xfff38000 /* Reduce by 7 on tokens in LAset[0]       */
+#define _ac0093 0x00b2005d /* termList   4, actionList   4            */
+#define _ac0094 0x00b2005d /* termList   4, actionList   4            */
+#define _ac0095 0x00b2005d /* termList   4, actionList   4            */
+#define _ac0096 0x01260098 /* termList   5, actionList   5            */
+#define _ac0097 0x014000a6 /* termList   6, actionList   6            */
+#define _ac0098 0xffdf800b /* Reduce by 17 on tokens in LAset[1]      */
+#define _ac0099 0x014600aa /* termList   7, actionList   7            */
+#define _ac0100 0x00b2005d /* termList   4, actionList   4            */
+#define _ac0101 0x016e00aa /* termList   7, actionList   8            */
+#define _ac0102 0x019600bf /* termList   8, actionList   9            */
+#define _ac0103 0x019c00c3 /* termList   9, actionList  10            */
+#define _ac0104 0x00000000 /* termList   0, actionList   0            */
+#define _ac0105 0x00950003 /* Shift  to   74 on NAME                  */
+#define _ac0106 0x00950003 /* Shift  to   74 on NAME                  */
+#define _ac0107 0x00b2005d /* termList   4, actionList   4            */
+#define _ac0108 0xff638021 /* Reduce by 79 on tokens in LAset[3]      */
+#define _ac0109 0x01b400aa /* termList   7, actionList  11            */
+#define _ac0110 0x01dc00aa /* termList   7, actionList  12            */
+#define _ac0111 0x020400aa /* termList   7, actionList  13            */
+#define _ac0112 0x022c00aa /* termList   7, actionList  14            */
+#define _ac0113 0x025400aa /* termList   7, actionList  15            */
+#define _ac0114 0xffe5800b /* Reduce by 14 on tokens in LAset[1]      */
+#define _ac0115 0x027c00d0 /* termList  10, actionList  16            */
+#define _ac0116 0x029400d0 /* termList  10, actionList  17            */
+#define _ac0117 0x02ac00d0 /* termList  10, actionList  18            */
+#define _ac0118 0x02c400d0 /* termList  10, actionList  19            */
+#define _ac0119 0x02dc00d0 /* termList  10, actionList  20            */
+#define _ac0120 0x02f400d0 /* termList  10, actionList  21            */
+#define _ac0121 0xff678021 /* Reduce by 77 on tokens in LAset[3]      */
+#define _ac0122 0x030c00dd /* termList  11, actionList  22            */
+#define _ac0123 0x031800e4 /* termList  12, actionList  23            */
+#define _ac0124 0x032800ed /* termList  13, actionList  24            */
+#define _ac0125 0x033600f5 /* termList  14, actionList  25            */
+#define _ac0126 0xffd9800b /* Reduce by 20 on tokens in LAset[1]      */
+#define _ac0127 0xff618021 /* Reduce by 80 on tokens in LAset[3]      */
+#define _ac0128 0x034400ed /* termList  13, actionList  26            */
+#define _ac0129 0xffcb800b /* Reduce by 27 on tokens in LAset[1]      */
+#define _ac0130 0x035200fd /* termList  15, actionList  27            */
+#define _ac0131 0x01170009 /* Shift  to  139 on TO                    */
+#define _ac0132 0x00bb0006 /* Shift  to   93 on ASSIGN                */
+#define _ac0133 0x01190009 /* Shift  to  140 on TO                    */
+#define _ac0134 0x03580101 /* termList  16, actionList  28            */
+#define _ac0135 0x035c0104 /* termList  17, actionList  29            */
+#define _ac0136 0xffdd800b /* Reduce by 18 on tokens in LAset[1]      */
+#define _ac0137 0x00b2005d /* termList   4, actionList   4            */
+#define _ac0138 0x00b2005d /* termList   4, actionList   4            */
+#define _ac0139 0x00b2005d /* termList   4, actionList   4            */
+#define _ac0140 0x00b2005d /* termList   4, actionList   4            */
+#define _ac0141 0x01270050 /* Shift  to  147 on LPAR                  */
+#define _ac0142 0x00b2005d /* termList   4, actionList   4            */
+#define _ac0143 0x036c00ed /* termList  13, actionList  30            */
+#define _ac0144 0x037a00f5 /* termList  14, actionList  31            */
+#define _ac0145 0x038800ed /* termList  13, actionList  32            */
+#define _ac0146 0x039600ed /* termList  13, actionList  33            */
+#define _ac0147 0x00b2005d /* termList   4, actionList   4            */
+#define _ac0148 0x03a40104 /* termList  17, actionList  34            */
+#define _ac0149 0xffdb800b /* Reduce by 19 on tokens in LAset[1]      */
+#define _ac0150 0x00b2005d /* termList   4, actionList   4            */
+#define _ac0151 0x00b2005d /* termList   4, actionList   4            */
+#define _ac0152 0x00b2005d /* termList   4, actionList   4            */
+#define _ac0153 0x03b400ed /* termList  13, actionList  35            */
+#define _ac0154 0x03c200ed /* termList  13, actionList  36            */
+#define _ac0155 0x03d000aa /* termList   7, actionList  37            */
+#define _ac0156 0x03f800aa /* termList   7, actionList  38            */
+#define _ac0157 0xffc3800b /* Reduce by 31 on tokens in LAset[1]      */
+#define _ac0158 0xffc9800b /* Reduce by 28 on tokens in LAset[1]      */
 
 static const unsigned int actionCode[159] = {
    _ac0000,_ac0001,_ac0002,_ac0003,_ac0004,_ac0005,_ac0006,_ac0007,_ac0008,_ac0009
@@ -406,122 +338,114 @@ static const unsigned int actionCode[159] = {
 * referering to the first number belonging to the state (as actionCode)        *
 * or 0 if a state has no items of the form B -> beta . A gamma                 *
 \******************************************************************************/
-static const unsigned char stateSuccessors[] = {
-  /* successors state[0], Index=0         */   16,   1,   2,   3,   4,   5,   6,   7,   8,   9,  10
-                                                 ,  11,  12,  13,  14,  15,  16
-                                                 ,   1,   2,   3,   4,   5,   6,   7,   8,   9,  10
-                                                 ,  11,  12,  16,  17,  18,  19
-  /* successors state[3], Index=33        */ , 14,   2,   4,   5,   6,   7,   8,   9,  10,  11,  12
-                                                 ,  13,  14,  15,  16
-                                                 ,  76,   4,   5,  77,   7,   8,   9,  10,  11,  12
-                                                 ,  16,  17,  18,  19
-  /* successors state[13], Index=62       */ , 11,   4,   5,   8,   9,  10,  11,  12,  13,  14,  15
-                                                 ,  16
-                                                 ,  96,  97,  98,   9,  10,  11,  12,  16,  17,  18
-                                                 ,  19
-  /* successors state[14], Index=85       */ , 10,   4,   8,   9,  10,  11,  12,  13,  14,  15,  16
-                                                 ,  99,  98,   9,  10,  11,  12,  16,  17,  18,  19
-  /* successors state[15], Index=106      */ , 10,   4,   8,   9,  10,  11,  12,  13,  14,  15,  16
-                                                 , 101,  98,   9,  10,  11,  12,  16,  17,  18,  19
-  /* successors state[20], Index=127      */ , 11,   4,   5,   8,   9,  10,  11,  12,  13,  14,  15
-                                                 ,  16
-                                                 , 103, 102,  98,   9,  10,  11,  12,  16,  17,  18
-                                                 ,  19
-  /* successors state[62], Index=150      */ , 11,   4,   5,   8,   9,  10,  11,  12,  13,  14,  15
-                                                 ,  16
-                                                 , 103, 108,  98,   9,  10,  11,  12,  16,  17,  18
-                                                 ,  19
-  /* successors state[78], Index=173      */ , 10,   4,   8,   9,  10,  11,  12,  13,  14,  15,  16
-                                                 , 109,  98,   9,  10,  11,  12,  16,  17,  18,  19
-  /* successors state[79], Index=194      */ , 10,   4,   8,   9,  10,  11,  12,  13,  14,  15,  16
-                                                 , 110,  98,   9,  10,  11,  12,  16,  17,  18,  19
-  /* successors state[80], Index=215      */ , 10,   4,   8,   9,  10,  11,  12,  13,  14,  15,  16
-                                                 , 111,  98,   9,  10,  11,  12,  16,  17,  18,  19
-  /* successors state[81], Index=236      */ , 10,   4,   8,   9,  10,  11,  12,  13,  14,  15,  16
-                                                 , 112,  98,   9,  10,  11,  12,  16,  17,  18,  19
-  /* successors state[82], Index=257      */ , 10,   4,   8,   9,  10,  11,  12,  13,  14,  15,  16
-                                                 , 113,  98,   9,  10,  11,  12,  16,  17,  18,  19
-  /* successors state[83], Index=278      */ , 10,   4,   8,   9,  10,  11,  12,  13,  14,  15,  16
-                                                 , 114,  98,   9,  10,  11,  12,  16,  17,  18,  19
-  /* successors state[84], Index=299      */ , 10,   4,   8,   9,  10,  11,  12,  13,  14,  15,  16
-                                                 , 115,  98,   9,  10,  11,  12,  16,  17,  18,  19
-  /* successors state[85], Index=320      */ , 10,   4,   8,   9,  10,  11,  12,  13,  14,  15,  16
-                                                 , 116,  98,   9,  10,  11,  12,  16,  17,  18,  19
-  /* successors state[86], Index=341      */ , 10,   4,   8,   9,  10,  11,  12,  13,  14,  15,  16
-                                                 , 117,  98,   9,  10,  11,  12,  16,  17,  18,  19
-  /* successors state[87], Index=362      */ , 10,   4,   8,   9,  10,  11,  12,  13,  14,  15,  16
-                                                 , 118,  98,   9,  10,  11,  12,  16,  17,  18,  19
-  /* successors state[88], Index=383      */ , 10,   4,   8,   9,  10,  11,  12,  13,  14,  15,  16
-                                                 , 119,  98,   9,  10,  11,  12,  16,  17,  18,  19
-  /* successors state[89], Index=404      */ , 10,   4,   8,   9,  10,  11,  12,  13,  14,  15,  16
-                                                 , 120,  98,   9,  10,  11,  12,  16,  17,  18,  19
-  /* successors state[90], Index=425      */ , 11,   4,   5,   8,   9,  10,  11,  12,  13,  14,  15
-                                                 ,  16
-                                                 , 103, 121,  98,   9,  10,  11,  12,  16,  17,  18
-                                                 ,  19
-  /* successors state[91], Index=448      */ , 11,   4,   5,   8,   9,  10,  11,  12,  13,  14,  15
-                                                 ,  16
-                                                 , 103, 122,  98,   9,  10,  11,  12,  16,  17,  18
-                                                 ,  19
-  /* successors state[93], Index=471      */ , 10,   4,   8,   9,  10,  11,  12,  13,  14,  15,  16
-                                                 , 123,  98,   9,  10,  11,  12,  16,  17,  18,  19
-  /* successors state[94], Index=492      */ , 10,   4,   8,   9,  10,  11,  12,  13,  14,  15,  16
-                                                 , 124,  98,   9,  10,  11,  12,  16,  17,  18,  19
-  /* successors state[95], Index=513      */ , 10,   4,   8,   9,  10,  11,  12,  13,  14,  15,  16
-                                                 , 125,  98,   9,  10,  11,  12,  16,  17,  18,  19
-  /* successors state[100], Index=534     */ , 10,   4,   8,   9,  10,  11,  12,  13,  14,  15,  16
-                                                 , 128,  98,   9,  10,  11,  12,  16,  17,  18,  19
-  /* successors state[104], Index=555     */ , 11,   4,   5,   8,   9,  10,  11,  12,  13,  14,  15
-                                                 ,  16
-                                                 , 103, 130,  98,   9,  10,  11,  12,  16,  17,  18
-                                                 ,  19
-  /* successors state[105], Index=578     */ ,  2,   7,   8
-                                                 , 131, 132
-  /* successors state[106], Index=583     */ ,  2,   7,   8
-                                                 , 133, 132
-  /* successors state[107], Index=588     */ , 11,   4,   8,   9,  10,  11,  12,  13,  14,  15,  16
-                                                 ,  17
-                                                 , 135,  98,   9,  10,  11,  12,  16,  17,  18,  19
-                                                 , 134
-  /* successors state[137], Index=611     */ , 10,   4,   8,   9,  10,  11,  12,  13,  14,  15,  16
-                                                 , 143,  98,   9,  10,  11,  12,  16,  17,  18,  19
-  /* successors state[138], Index=632     */ , 10,   4,   8,   9,  10,  11,  12,  13,  14,  15,  16
-                                                 , 144,  98,   9,  10,  11,  12,  16,  17,  18,  19
-  /* successors state[139], Index=653     */ , 10,   4,   8,   9,  10,  11,  12,  13,  14,  15,  16
-                                                 , 145,  98,   9,  10,  11,  12,  16,  17,  18,  19
-  /* successors state[140], Index=674     */ , 10,   4,   8,   9,  10,  11,  12,  13,  14,  15,  16
-                                                 , 146,  98,   9,  10,  11,  12,  16,  17,  18,  19
-  /* successors state[142], Index=695     */ , 10,   4,   8,   9,  10,  11,  12,  13,  14,  15,  16
-                                                 , 148,  98,   9,  10,  11,  12,  16,  17,  18,  19
-  /* successors state[147], Index=716     */ , 10,   4,   8,   9,  10,  11,  12,  13,  14,  15,  16
-                                                 , 153,  98,   9,  10,  11,  12,  16,  17,  18,  19
-  /* successors state[150], Index=737     */ , 10,   4,   8,   9,  10,  11,  12,  13,  14,  15,  16
-                                                 , 154,  98,   9,  10,  11,  12,  16,  17,  18,  19
-  /* successors state[151], Index=758     */ , 10,   4,   8,   9,  10,  11,  12,  13,  14,  15,  16
-                                                 , 155,  98,   9,  10,  11,  12,  16,  17,  18,  19
-  /* successors state[152], Index=779     */ , 10,   4,   8,   9,  10,  11,  12,  13,  14,  15,  16
-                                                 , 156,  98,   9,  10,  11,  12,  16,  17,  18,  19
-}; // Size of table:800(x86)/800(x64) bytes.
+static const unsigned char NTindexListTable[] = {
+    16,   1,   2,   3,   4,   5,   6,   7,   8,   9,  10,  11,  12,  13,  14,  15,  16                       /*    0 Used by state  (0) */
+  , 14,   2,   4,   5,   6,   7,   8,   9,  10,  11,  12,  13,  14,  15,  16                                 /*    1 Used by state  (3) */
+  , 11,   4,   5,   8,   9,  10,  11,  12,  13,  14,  15,  16                                                /*    2 Used by states (13,20,62,90,91,104) */
+  , 10,   4,   8,   9,  10,  11,  12,  13,  14,  15,  16                                                     /*    3 Used by states (14,15,78,79,80,81,82,83,84,85,86,87,88,89,93,94,95,100,137,138,139,140,142,147,150,151,152) */
+  ,  2,   7,   8                                                                                             /*    4 Used by states (105,106) */
+  , 11,   4,   8,   9,  10,  11,  12,  13,  14,  15,  16,  17                                                /*    5 Used by state  (107) */
+}; // Size of table:72(x86)/72(x64) bytes.
 
-#define nil (unsigned short)-1
-static const unsigned short successorsIndex[159] = {
-       0,  nil,  nil,   33,  nil,  nil,  nil,  nil,  nil,  nil
-  ,  nil,  nil,  nil,   62,   85,  106,  nil,  nil,  nil,  nil
-  ,  127,  nil,  nil,  nil,  nil,  nil,  nil,  nil,  nil,  nil
-  ,  nil,  nil,  nil,  nil,  nil,  nil,  nil,  nil,  nil,  nil
-  ,  nil,  nil,  nil,  nil,  nil,  nil,  nil,  nil,  nil,  nil
-  ,  nil,  nil,  nil,  nil,  nil,  nil,  nil,  nil,  nil,  nil
-  ,  nil,  nil,  150,  nil,  nil,  nil,  nil,  nil,  nil,  nil
-  ,  nil,  nil,  nil,  nil,  nil,  nil,  nil,  nil,  173,  194
-  ,  215,  236,  257,  278,  299,  320,  341,  362,  383,  404
-  ,  425,  448,  nil,  471,  492,  513,  nil,  nil,  nil,  nil
-  ,  534,  nil,  nil,  nil,  555,  578,  583,  588,  nil,  nil
-  ,  nil,  nil,  nil,  nil,  nil,  nil,  nil,  nil,  nil,  nil
-  ,  nil,  nil,  nil,  nil,  nil,  nil,  nil,  nil,  nil,  nil
-  ,  nil,  nil,  nil,  nil,  nil,  nil,  nil,  611,  632,  653
-  ,  674,  nil,  695,  nil,  nil,  nil,  nil,  716,  nil,  nil
-  ,  737,  758,  779,  nil,  nil,  nil,  nil,  nil,  nil
-}; // Size of table:320(x86)/320(x64) bytes.
+static const unsigned char stateListTable[] = {
+      1,   2,   3,   4,   5,   6,   7,   8,   9,  10,  11,  12,  16,  17,  18,  19                           /*   0 Used by state  (0) */
+  ,  76,   4,   5,  77,   7,   8,   9,  10,  11,  12,  16,  17,  18,  19                                     /*   1 Used by state  (3) */
+  ,  96,  97,  98,   9,  10,  11,  12,  16,  17,  18,  19                                                    /*   2 Used by state  (13) */
+  ,  99,  98,   9,  10,  11,  12,  16,  17,  18,  19                                                         /*   3 Used by state  (14) */
+  , 101,  98,   9,  10,  11,  12,  16,  17,  18,  19                                                         /*   4 Used by state  (15) */
+  , 103, 102,  98,   9,  10,  11,  12,  16,  17,  18,  19                                                    /*   5 Used by state  (20) */
+  , 103, 108,  98,   9,  10,  11,  12,  16,  17,  18,  19                                                    /*   6 Used by state  (62) */
+  , 109,  98,   9,  10,  11,  12,  16,  17,  18,  19                                                         /*   7 Used by state  (78) */
+  , 110,  98,   9,  10,  11,  12,  16,  17,  18,  19                                                         /*   8 Used by state  (79) */
+  , 111,  98,   9,  10,  11,  12,  16,  17,  18,  19                                                         /*   9 Used by state  (80) */
+  , 112,  98,   9,  10,  11,  12,  16,  17,  18,  19                                                         /*  10 Used by state  (81) */
+  , 113,  98,   9,  10,  11,  12,  16,  17,  18,  19                                                         /*  11 Used by state  (82) */
+  , 114,  98,   9,  10,  11,  12,  16,  17,  18,  19                                                         /*  12 Used by state  (83) */
+  , 115,  98,   9,  10,  11,  12,  16,  17,  18,  19                                                         /*  13 Used by state  (84) */
+  , 116,  98,   9,  10,  11,  12,  16,  17,  18,  19                                                         /*  14 Used by state  (85) */
+  , 117,  98,   9,  10,  11,  12,  16,  17,  18,  19                                                         /*  15 Used by state  (86) */
+  , 118,  98,   9,  10,  11,  12,  16,  17,  18,  19                                                         /*  16 Used by state  (87) */
+  , 119,  98,   9,  10,  11,  12,  16,  17,  18,  19                                                         /*  17 Used by state  (88) */
+  , 120,  98,   9,  10,  11,  12,  16,  17,  18,  19                                                         /*  18 Used by state  (89) */
+  , 103, 121,  98,   9,  10,  11,  12,  16,  17,  18,  19                                                    /*  19 Used by state  (90) */
+  , 103, 122,  98,   9,  10,  11,  12,  16,  17,  18,  19                                                    /*  20 Used by state  (91) */
+  , 123,  98,   9,  10,  11,  12,  16,  17,  18,  19                                                         /*  21 Used by state  (93) */
+  , 124,  98,   9,  10,  11,  12,  16,  17,  18,  19                                                         /*  22 Used by state  (94) */
+  , 125,  98,   9,  10,  11,  12,  16,  17,  18,  19                                                         /*  23 Used by state  (95) */
+  , 128,  98,   9,  10,  11,  12,  16,  17,  18,  19                                                         /*  24 Used by state  (100) */
+  , 103, 130,  98,   9,  10,  11,  12,  16,  17,  18,  19                                                    /*  25 Used by state  (104) */
+  , 131, 132                                                                                                 /*  26 Used by state  (105) */
+  , 133, 132                                                                                                 /*  27 Used by state  (106) */
+  , 135,  98,   9,  10,  11,  12,  16,  17,  18,  19, 134                                                    /*  28 Used by state  (107) */
+  , 143,  98,   9,  10,  11,  12,  16,  17,  18,  19                                                         /*  29 Used by state  (137) */
+  , 144,  98,   9,  10,  11,  12,  16,  17,  18,  19                                                         /*  30 Used by state  (138) */
+  , 145,  98,   9,  10,  11,  12,  16,  17,  18,  19                                                         /*  31 Used by state  (139) */
+  , 146,  98,   9,  10,  11,  12,  16,  17,  18,  19                                                         /*  32 Used by state  (140) */
+  , 148,  98,   9,  10,  11,  12,  16,  17,  18,  19                                                         /*  33 Used by state  (142) */
+  , 153,  98,   9,  10,  11,  12,  16,  17,  18,  19                                                         /*  34 Used by state  (147) */
+  , 154,  98,   9,  10,  11,  12,  16,  17,  18,  19                                                         /*  35 Used by state  (150) */
+  , 155,  98,   9,  10,  11,  12,  16,  17,  18,  19                                                         /*  36 Used by state  (151) */
+  , 156,  98,   9,  10,  11,  12,  16,  17,  18,  19                                                         /*  37 Used by state  (152) */
+}; // Size of table:384(x86)/384(x64) bytes.
+
+#define _su0000 0x00000000 /* NTindexList   0, stateList   0          */
+#define _su0003 0x00200011 /* NTindexList   1, stateList   1          */
+#define _su0013 0x003c0020 /* NTindexList   2, stateList   2          */
+#define _su0014 0x0052002c /* NTindexList   3, stateList   3          */
+#define _su0015 0x0066002c /* NTindexList   3, stateList   4          */
+#define _su0020 0x007a0020 /* NTindexList   2, stateList   5          */
+#define _su0062 0x00900020 /* NTindexList   2, stateList   6          */
+#define _su0078 0x00a6002c /* NTindexList   3, stateList   7          */
+#define _su0079 0x00ba002c /* NTindexList   3, stateList   8          */
+#define _su0080 0x00ce002c /* NTindexList   3, stateList   9          */
+#define _su0081 0x00e2002c /* NTindexList   3, stateList  10          */
+#define _su0082 0x00f6002c /* NTindexList   3, stateList  11          */
+#define _su0083 0x010a002c /* NTindexList   3, stateList  12          */
+#define _su0084 0x011e002c /* NTindexList   3, stateList  13          */
+#define _su0085 0x0132002c /* NTindexList   3, stateList  14          */
+#define _su0086 0x0146002c /* NTindexList   3, stateList  15          */
+#define _su0087 0x015a002c /* NTindexList   3, stateList  16          */
+#define _su0088 0x016e002c /* NTindexList   3, stateList  17          */
+#define _su0089 0x0182002c /* NTindexList   3, stateList  18          */
+#define _su0090 0x01960020 /* NTindexList   2, stateList  19          */
+#define _su0091 0x01ac0020 /* NTindexList   2, stateList  20          */
+#define _su0093 0x01c2002c /* NTindexList   3, stateList  21          */
+#define _su0094 0x01d6002c /* NTindexList   3, stateList  22          */
+#define _su0095 0x01ea002c /* NTindexList   3, stateList  23          */
+#define _su0100 0x01fe002c /* NTindexList   3, stateList  24          */
+#define _su0104 0x02120020 /* NTindexList   2, stateList  25          */
+#define _su0105 0x02280037 /* NTindexList   4, stateList  26          */
+#define _su0106 0x022c0037 /* NTindexList   4, stateList  27          */
+#define _su0107 0x0230003a /* NTindexList   5, stateList  28          */
+#define _su0137 0x0246002c /* NTindexList   3, stateList  29          */
+#define _su0138 0x025a002c /* NTindexList   3, stateList  30          */
+#define _su0139 0x026e002c /* NTindexList   3, stateList  31          */
+#define _su0140 0x0282002c /* NTindexList   3, stateList  32          */
+#define _su0142 0x0296002c /* NTindexList   3, stateList  33          */
+#define _su0147 0x02aa002c /* NTindexList   3, stateList  34          */
+#define _su0150 0x02be002c /* NTindexList   3, stateList  35          */
+#define _su0151 0x02d2002c /* NTindexList   3, stateList  36          */
+#define _su0152 0x02e6002c /* NTindexList   3, stateList  37          */
+
+#define nil (unsigned int)-1
+static const unsigned int successorCode[159] = {
+   _su0000,nil    ,nil    ,_su0003,nil    ,nil    ,nil    ,nil    ,nil    ,nil
+  ,nil    ,nil    ,nil    ,_su0013,_su0014,_su0015,nil    ,nil    ,nil    ,nil
+  ,_su0020,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil
+  ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil
+  ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil
+  ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil
+  ,nil    ,nil    ,_su0062,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil
+  ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,_su0078,_su0079
+  ,_su0080,_su0081,_su0082,_su0083,_su0084,_su0085,_su0086,_su0087,_su0088,_su0089
+  ,_su0090,_su0091,nil    ,_su0093,_su0094,_su0095,nil    ,nil    ,nil    ,nil
+  ,_su0100,nil    ,nil    ,nil    ,_su0104,_su0105,_su0106,_su0107,nil    ,nil
+  ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil
+  ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil
+  ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,_su0137,_su0138,_su0139
+  ,_su0140,nil    ,_su0142,nil    ,nil    ,nil    ,nil    ,_su0147,nil    ,nil
+  ,_su0150,_su0151,_su0152,nil    ,nil    ,nil    ,nil    ,nil    ,nil
+}; // Size of table:636(x86)/640(x64) bytes.
 
 /******************************************************************************\
 * The productionLength[] array is indexed by production number and holds       *
@@ -544,7 +468,7 @@ static const unsigned char productionLength[94] = {
 * The leftSide[] array is indexed by production number, and holds the          *
 * nonTerminal A on the left side of each production.                           *
 \******************************************************************************/
-static const unsigned char leftSide[94] = {
+static const unsigned char leftSideTable[94] = {
   /*   0 */    0,   1,   1,   2,   2,   3,   3,   6,   7,   4,
   /*  10 */    4,   4,   4,   4,   4,   4,   9,   9,   9,   9,
   /*  20 */    9,   9,   9,   9,   9,   9,   9,   9,  13,  14,
@@ -766,22 +690,22 @@ static const char *symbolNames = {
   " productExpr"
   " polyExpr"
   " exprList"
-}; // Total size of strings:620(x86)/624(x64) bytes
+}; // Total size of string:620(x86)/624(x64) bytes
 
-static const ParserTablesTemplate<unsigned char
+static const ParserTablesTemplate<84,102,94,159
+                                 ,unsigned char
+                                 ,unsigned char
                                  ,unsigned char
                                  ,short
-                                 ,unsigned short
-                                 ,unsigned char
-                                 ,84,102,94,159> ExpressionTables_s(actionCode, compressedLasets, uncompressedActions
-                                                                   ,successorsIndex , stateSuccessors
-                                                                   ,productionLength, leftSide
+                                 ,unsigned char> ExpressionTables_s(actionCode      , compressedLAsets  , termListTable, actionListTable
+                                                                   ,successorCode   , NTindexListTable  , stateListTable
+                                                                   ,productionLength, leftSideTable
                                                                    ,rightSideTable  , symbolNames
-                                                                   ,5048, 5120);
+                                                                   ,4156, 4232);
 
 const ParserTables *ExpressionParser::ExpressionTables = &ExpressionTables_s;
 // Size of ExpressionTables_s: 68(x86)/120(x64) bytes. Size of ExpressionTables:4(x86)/8(x64) bytes
 
-// Total size of table data:5.048(x86)/5.120(x64) bytes.
+// Total size of table data:4.156(x86)/4.232(x64) bytes.
 
 }; // namespace Expr

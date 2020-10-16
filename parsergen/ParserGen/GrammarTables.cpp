@@ -55,6 +55,46 @@ BitSet GrammarTables::getLookaheadSet(UINT state) const {
   return result;
 }
 
+RawActionArray GrammarTables::getRawActionArray(UINT state) const {
+  const ActionArray &actions     = m_stateActions[state];
+  const size_t       actionCount = actions.size();
+  RawActionArray     result(actionCount);
+  for(size_t a = 0; a < actionCount; a++) {
+    result.add(actions[a].m_action);
+  }
+  return result;
+}
+
+BitSet GrammarTables::getNTOffsetSet(UINT state) const {
+  BitSet             result(getSymbolCount()-m_terminalCount);
+  const ActionArray &successors     = m_stateSucc[state];
+  const size_t       successorCount = successors.size();
+  for(size_t s = 0; s < successorCount; s++) {
+    result.add(successors[s].m_token-m_terminalCount);
+  }
+  return result;
+}
+
+SuccesorArray GrammarTables::getSuccessorArray(UINT state) const {
+  const ActionArray &successors     = m_stateSucc[state];
+  const size_t       successorCount = successors.size();
+  SuccesorArray      result(successorCount);
+  for(size_t s = 0; s < successorCount; s++) {
+    result.add(successors[s].m_action);
+  }
+  return result;
+}
+
+IntegerType GrammarTables::findUintType(UINT maxValue) { // static
+  if(maxValue <= UCHAR_MAX) {
+    return TYPE_UCHAR;
+  } else if(maxValue <= USHRT_MAX) {
+    return TYPE_USHORT;
+  } else {
+    return TYPE_UINT;
+  }
+}
+
 IntegerType GrammarTables::findTableType(UINT maxValue) { // static
   if(maxValue < UCHAR_MAX-1) {
     return TYPE_UCHAR;
@@ -127,7 +167,7 @@ bool GrammarTables::calcIsCompressibleState(UINT state) const {
   const size_t       count   = actions.size();
   switch(count) {
   case 0 :
-    throwException(_T("actionArray for state %d has size 0"), state);
+    throwException(_T("actionArray for state %u has size 0"), state);
   case 1 :
     return true;
   default:

@@ -9,8 +9,6 @@
 
 
 
-typedef char TableType;
-
 /******************************************************************************\
 * The action matrix holds the parse action(state,terminal)                     *
 * Used in LRParser::parserStep() tp determine what to do in the current state  *
@@ -64,20 +62,25 @@ typedef char TableType;
 * generated uncompressed state M, a #define _acN _acM                          *
 *                                                                              *
 \******************************************************************************/
-static const BYTE compressedLasets[1] = {/*  0   2 tokens */  0x18
+static const unsigned char compressedLasets[1] = {
+   0x18 /*   0   2 tokens Used by state  (6) */
 }; // Size of table:4(x86)/8(x64) bytes.
 
-static const TableType uncompressedActions[] = {
-  /* state[0],Index=0                     */    2,   1,   2,   2,   3
-}; // Size of table:8(x86)/8(x64) bytes.
+static const unsigned char terminalToUncompAction[] = {
+     2,   1,   2                                                                                             /*    0 Used by state  (0) */
+}; // Size of table:4(x86)/8(x64) bytes.
 
-#define _ac0000 0          /* Index of uncompressed state[0]          */
+static const char uncompActionTable[] = {
+      2,   3                                                                                                 /*   0 Used by state  (0) */
+}; // Size of table:4(x86)/8(x64) bytes.
+
+#define _ac0000 0x00000000 /* Tokenlist   0, actionList   0           */
 #define _ac0001 0x80000000 /* Reduce by 0 on EOI                      */
 #define _ac0002 0x80060005 /* Shift  to 6 on f                        */
 #define _ac0003 0x80060005 /* Shift  to 6 on f                        */
 #define _ac0004 0x80090004 /* Shift  to 9 on d                        */
 #define _ac0005 0x800a0003 /* Shift  to 10 on c                       */
-#define _ac0006 0xfffb8000 /* Reduce by 5 on tokens in set[0]         */
+#define _ac0006 0xfffb8000 /* Reduce by 5 on tokens in LAset[0]       */
 #define _ac0007 0x800b0003 /* Shift  to 11 on c                       */
 #define _ac0008 0x800c0004 /* Shift  to 12 on d                       */
 #define _ac0009 0xffff0000 /* Reduce by 1 on EOI                      */
@@ -107,17 +110,24 @@ static const unsigned int actionCode[13] = {
 * referering to the first number belonging to the state (as actionCode)        *
 * or 0 if a state has no items of the form B -> beta . A gamma                 *
 \******************************************************************************/
-static const TableType stateSuccessors[] = {
-  /* successors state[0], Index=0         */    1,   7,   1
-  /* successors state[2], Index=3         */ ,  2,   8,   4,   9,   5
-  /* successors state[3], Index=8         */ ,  2,   8,   7,   9,   8
-}; // Size of table:16(x86)/16(x64) bytes.
+static const unsigned char NTindexListTable[] = {
+     2,   2,   3                                                                                             /*    0 Used by states (2,3) */
+}; // Size of table:4(x86)/8(x64) bytes.
 
-#define nil (unsigned char)-1
-static const unsigned char successorsIndex[13] = {
-       0,  nil,    3,    8,  nil,  nil,  nil,  nil,  nil,  nil
-  ,  nil,  nil,  nil
-}; // Size of table:16(x86)/16(x64) bytes.
+static const unsigned char stateListTable[] = {
+      4,   5                                                                                                 /*   0 Used by state  (2) */
+  ,   7,   8                                                                                                 /*   1 Used by state  (3) */
+}; // Size of table:4(x86)/8(x64) bytes.
+
+#define _su0000 0x80010001 /* Goto 1 on S                             */
+#define _su0002 0x00000000 /* NTindexList   0, stateList   0          */
+#define _su0003 0x00020000 /* NTindexList   0, stateList   1          */
+
+#define nil (unsigned int)-1
+static const unsigned int successorCode[13] = {
+   _su0000,nil    ,_su0002,_su0003,nil    ,nil    ,nil    ,nil    ,nil    ,nil
+  ,nil    ,nil    ,nil
+}; // Size of table:52(x86)/56(x64) bytes.
 
 /******************************************************************************\
 * The productionLength[] array is indexed by production number and holds       *
@@ -131,8 +141,8 @@ static const unsigned char productionLength[7] = {
 * The leftSide[] array is indexed by production number, and holds the          *
 * nonTerminal A on the left side of each production.                           *
 \******************************************************************************/
-static const TableType leftSide[7] = {
-  /*   0 */    6,   7,   7,   7,   7,   8,   9
+static const unsigned char leftSideTable[7] = {
+  /*   0 */    0,   1,   1,   1,   1,   2,   3
 }; // Size of table:8(x86)/8(x64) bytes.
 
 /******************************************************************************\
@@ -140,7 +150,7 @@ static const TableType leftSide[7] = {
 * the right side symbols of each production.                                   *
 * Compressed and only used for debugging.                                      *
 \******************************************************************************/
-static const TableType rightSideTable[15] = {
+static const unsigned char rightSideTable[15] = {
   /*   0 */    7
   /*   1 */ ,  1,  8,  4
   /*   2 */ ,  1,  9,  3
@@ -165,17 +175,22 @@ static const char *symbolNames = {
   " S"
   " A"
   " B"
-}; // Total size of strings:28(x86)/32(x64) bytes
+}; // Total size of string:28(x86)/32(x64) bytes
 
-static const ParserTablesTemplate<TableType, unsigned char> Olm637Tables_s(actionCode, compressedLasets, uncompressedActions
-                                                                          ,successorsIndex , stateSuccessors
-                                                                          ,productionLength, leftSide
-                                                                          ,rightSideTable  , symbolNames
-                                                                          ,6, 10, 7, 13, 228, 296);
+static const ParserTablesTemplate<6,10,7,13
+                                 ,unsigned char
+                                 ,unsigned char
+                                 ,unsigned char
+                                 ,char
+                                 ,unsigned char> Olm637Tables_s(actionCode       , compressedLasets  , terminalToUncompAction, uncompActionTable
+                                                               ,successorCode   , NTindexListTable  , stateListTable
+                                                               ,productionLength, leftSideTable
+                                                               ,rightSideTable  , symbolNames
+                                                               ,256, 344);
 
 const ParserTables *Olm637Parser::Olm637Tables = &Olm637Tables_s;
 // Size of Olm637Tables_s: 68(x86)/120(x64) bytes. Size of Olm637Tables:4(x86)/8(x64) bytes
 
-// Total size of table data:228(x86)/296(x64) bytes.
+// Total size of table data:256(x86)/344(x64) bytes.
 
 
