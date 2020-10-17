@@ -70,7 +70,7 @@ BitSet GrammarTables::getNTOffsetSet(UINT state) const {
   const ActionArray &successors     = m_stateSucc[state];
   const size_t       successorCount = successors.size();
   for(size_t s = 0; s < successorCount; s++) {
-    result.add(successors[s].m_token-m_terminalCount);
+    result.add((UINT)successors[s].m_token-m_terminalCount);
   }
   return result;
 }
