@@ -54,9 +54,9 @@ template<UINT     terminalCount
 class ParserTablesTemplate : public ParserTables {
 private:
   const UINT                *m_actionCode;
-  const BYTE                *m_compressedLAsets;
   const TerminalType        *m_termListTable;
   const ActionType          *m_actionListTable;
+  const BYTE                *m_compressedLAsets;
   const UINT                *m_successorCode;
   const NTIndexType         *m_NTindexListTable;
   const StateType           *m_stateListTable;
@@ -284,9 +284,9 @@ public:
 #pragma warning(pop)
 
   ParserTablesTemplate(const UINT          *actionCode
-                      ,const BYTE          *compressedLAsets
                       ,const TerminalType  *termListTable
                       ,const ActionType    *actionListTable
+                      ,const BYTE          *compressedLAsets
                       ,const UINT          *successorCode
                       ,const NTIndexType   *NTindexListTable
                       ,const StateType     *stateListTable
@@ -298,9 +298,9 @@ public:
                       ,UINT                 tableByteCountx64
                       )
    :m_actionCode             ( actionCode             )
-   ,m_compressedLAsets       ( compressedLAsets       )
    ,m_termListTable          ( termListTable          )
    ,m_actionListTable        ( actionListTable        )
+   ,m_compressedLAsets       ( compressedLAsets       )
    ,m_successorCode          ( successorCode          )
    ,m_NTindexListTable       ( NTindexListTable       )
    ,m_stateListTable         ( stateListTable         )

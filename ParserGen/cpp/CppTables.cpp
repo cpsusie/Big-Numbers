@@ -10,90 +10,400 @@
 
 
 
-/******************************************************************************\
-* The action matrix holds the parse action(state,terminal)                     *
-* Used in LRParser::parserStep() tp determine what to do in the current state  *
-* and a given terminal on input. The interpretation of action is:              *
-*                                                                              *
-*   action <  0   - Reduce by production p, p == -action.                      *
-*   action == 0   - Accept. Reduce by production 0.                            *
-*   action >  0   - Go to state s (=action),                                   *
-*                   and push [s,input,pos] to parser stack.                    *
-*                   Then read next symbol from input.                          *
-*   action == _ParserError - not found (=unexpected input).                    *
-*                                                                              *
-* 3 different formats are used:1 Uncompressed and 2 Compressed.                *
-* Uncompressed state:                                                          *
-*   The array uncompressedActions[] holds a list of numbers for each state     *
-*   starting with number of items, M, belonging to the state, followed by M    *
-*   pairs, each consisting of (token,action)                                   *
-*     Item list for state NNNN with 2 items             2, 1, 2, 2,-3          *
-*     Number of pairs in list---------------------------+  |  |  |  |          *
-*     Legal input symbol-----------------------------------+  |  |  |          *
-*     Action-(> 0 => shift input and goto state 1)------------+  |  |          *
-*     Legal input symbol-----------------------------------------+  |          *
-*     Action-(< 0 => reduce by production 3)------------------------+          *
-*   A line containing "#define _acNNNN Index" is added, where Index is a       *
-*   reference to the first number in list of numbers belonging to the state    *
-*                                                                              *
-* Compressed state:                                                            *
-*   Single-item-state (SIS) ot Multi-item-state (MIS)                          *
-*   SIS:If there is only 1 possible action in the state:                       *
-*     A line containing "#define _acNNNN code" is added, where code is         *
-*     encoded as:          ((Action&0x7fff) << 16) | (Token&0x7fff) )          *
-*     Bit[16-30] = Action-------+                       |                      *
-*     Bit[0 -14] = Legal token--------------------------+                      *
-*     Bit 31     = 1 Compressed state indicator                                *
-*     Bit 15     = 0 SIS compression                                           *
-*                                                                              *
-*   MIS:If all actions in the state are reduce by the same production:         *
-*     A line containing "#define _acNNNN code" is added, where code is         *
-*     encoded as:          ((Action&0x7fff) << 16) | (Index&0x7fff))           *
-*     Bit[16-30] = Action-------+                       |                      *
-*     Bit[0 -14] = Index into compressedLasets----------+                      *
-*     Bit 31     = 1 Compressed state indicator                                *
-*     Bit 15     = 1 MIS compression                                           *
-*                                                                              *
-* CompressedLasets is a list of bitsets, containing 1-bits for all legal       *
-* inputsymbols in the given state (MIS). Many MIS may refer to the same bitset *
-* Number of bytes in each bitset = (terminalcount-1)/8+1                       *
-* Index in MIS-code refer to the first byte in the bitset belonging the state  *
-*                                                                              *
-* If any uncompressed state N has the same actionarray as a previous           *
-* generated uncompressed state M, a #define _acN _acM                          *
-*                                                                              *
-\******************************************************************************/
-static const unsigned char compressedLasets[270] = {
-   0x71,0x00,0x00,0x00,0x00,0x01,0x00,0x02,0xc1,0x01 /*   0  10 tokens Used by states (0,2,16,32,34) */
-  ,0x00,0x00,0x00,0x00,0x00,0x01,0x00,0x02,0x01,0x01 /*   1   4 tokens Used by states (5,24) */
-  ,0x70,0x00,0x00,0x00,0x00,0x41,0x00,0x02,0x81,0x01 /*   2   9 tokens Used by states (7,8,25,26) */
-  ,0x70,0x00,0x00,0x00,0x00,0x45,0x00,0x42,0x83,0x01 /*   3  12 tokens Used by states (9,10,11,47,99,172,174) */
-  ,0x00,0x00,0x00,0x00,0x40,0x00,0x00,0x00,0x00,0x01 /*   4   2 tokens Used by state  (14) */
-  ,0x00,0x00,0x00,0x00,0x00,0x05,0x00,0x00,0x00,0x00 /*   5   2 tokens Used by states (18,52,78,207,245,267,268,269) */
-  ,0x70,0x00,0x00,0x00,0xc0,0x4d,0x00,0x42,0x83,0x01 /*   6  15 tokens Used by state  (23) */
-  ,0x70,0x00,0x00,0x00,0x40,0x45,0x00,0x42,0x83,0x01 /*   7  13 tokens Used by state  (29) */
-  ,0x7e,0x00,0x00,0xff,0xef,0x01,0x08,0x3b,0x81,0x01 /*   8  31 tokens Used by states (37,134,135,204,241) */
-  ,0x70,0x00,0x00,0x00,0x80,0x00,0x00,0x00,0x80,0x00 /*   9   5 tokens Used by states (46,173) */
-  ,0x00,0x00,0x00,0x00,0x80,0x04,0x00,0x00,0x00,0x00 /*  10   2 tokens Used by states (50,156,175,176,261) */
-  ,0x00,0x00,0x00,0x00,0x40,0x05,0x00,0x40,0x03,0x00 /*  11   6 tokens Used by states (54,76,91,96,102,169,171) */
-  ,0x00,0x00,0x00,0x00,0x80,0xfd,0xff,0xe7,0x07,0x00 /*  12  25 tokens Used by states (57,58,59,110,177,183,185,234,235,236,237,238) */
-  ,0x00,0x00,0x00,0x00,0x80,0x45,0x00,0x80,0x00,0x00 /*  13   5 tokens Used by state  (68) */
-  ,0x00,0x00,0x00,0x00,0x80,0x7d,0x00,0x80,0x02,0x00 /*  14   9 tokens Used by state  (70) */
-  ,0x00,0x00,0x00,0x00,0x80,0xfd,0x00,0x80,0x02,0x00 /*  15  10 tokens Used by states (72,191) */
-  ,0x02,0x00,0x00,0x00,0x80,0xfd,0xff,0xe7,0x07,0x00 /*  16  26 tokens Used by states (75,106) */
-  ,0x00,0x00,0x00,0x00,0x80,0x05,0x00,0x00,0x00,0x00 /*  17   3 tokens Used by states (79,226) */
-  ,0x00,0x00,0x00,0x00,0x00,0x4d,0x00,0x40,0x03,0x00 /*  18   7 tokens Used by states (81,89,95,157,168) */
-  ,0x00,0x00,0x00,0x00,0x00,0x04,0x00,0x00,0x02,0x00 /*  19   2 tokens Used by states (83,85,86,94,228,232) */
-  ,0x70,0x00,0x00,0x00,0x00,0x04,0x00,0x42,0x03,0x01 /*  20   9 tokens Used by states (87,160) */
-  ,0x7f,0x00,0x00,0xff,0xff,0x01,0x08,0x3b,0xc1,0x03 /*  21  35 tokens Used by state  (133) */
-  ,0x7e,0x00,0x00,0xff,0xef,0x01,0x08,0x3b,0x81,0x03 /*  22  32 tokens Used by states (137,138,209,210,219,220,223,246,247,248,256,257,280,283,295,296,300) */
-  ,0x00,0x00,0x00,0x00,0x00,0x04,0x00,0x40,0x03,0x00 /*  23   4 tokens Used by state  (162) */
-  ,0x00,0x00,0x00,0x00,0x80,0xfd,0xff,0x87,0x02,0x00 /*  24  21 tokens Used by states (195,196) */
-  ,0x7e,0x00,0x00,0xff,0xff,0x01,0x08,0x3b,0x81,0x03 /*  25  33 tokens Used by states (259,275,298) */
-  ,0x00,0x00,0x00,0x00,0x00,0x04,0x00,0x40,0x02,0x00 /*  26   3 tokens Used by states (262,277,287) */
-}; // Size of table:272(x86)/272(x64) bytes.
+/**********************************************************************************\
+* The 4 arrays actionCode, termListTable, actionstateListTable, compressedLAsets   *
+* holds a compressed action-matrix, used by LRParser to find                       *
+* action = getAction(S,T), where S is current state, T is next terminal on input   *
+*                                                                                  *
+* The interpretation of action is:                                                 *
+*   action <  0 - Reduce by production p, p == -action.                            *
+*   action == 0 - Accept. Reduce by production 0.                                  *
+*   action >  0 - Go to state newstate (=action),                                  *
+*                 and push newstate.                                               *
+*                 Then advance input 1 symbol                                      *
+*   action == _ParserError -  Unexpected input - do some recovery, to synchronize. *
+*                 input and stack                                                  *
+*                                                                                  *
+* For each state S, a #define is generated and used as element S in array          *
+* actionCode. Each define has the format:                                          *
+*                    3         2         1         0                               *
+*                   10987654321098765432109876543210                               *
+* #define _acSSSS 0xaaaaaaaaaaaaaaaCIttttttttttttttt                               *
+* where SSSS : The statenumber S                                                   *
+* t          : Bit[0-14],  unsigned short                                          *
+* a          : Bit[17-31], signed short                                            *
+* CI         : Bit[15-16], indicates how to interpret t and a.                     *
+* If C is 0  : Uncompressed format                                                 *
+*              t: Index into array termListTable, pointing at the first            *
+*                 element of termList (see below).                                 *
+*              a: Index into array actionListTable, pointing at the first          *
+*                 element of actionList (see below)                                *
+* If C is 1  : Compressed format                                                   *
+*              This format is used if there is only 1 possible action, a.          *
+*    I=0 (bit 15) There is only 1 legal terminal in this state                     *
+*              t: legal terminal                                                   *
+*              a: action                                                           *
+*                                                                                  *
+*    I=1 If all actions in the state are reduce by the same production             *
+*              t: Index into compressedLAsets, pointing at the first element       *
+*                 of LASet (see below)                                             *
+*              a: action                                                           *
+*                                                                                  *
+* For Uncompressed states (C=0) then use arrays termListTable and actionListTable. *
+*    n                 : termListTable[t] = number of elements in the list         *
+*    termList[  0..n-1]: termListTable[t+1]..termListTable[t+n]                    *
+*                        ordered list of terminals, of length n                    *
+*    actionList[0..n-1]: actionListTable[a]..actionListTable[a+n-1], length = n    *
+*                                                                                  *
+*    To get the action, find the index k in termList, so termList[k] = T           *
+*    and then pick actionList[k]. If T is not found, set action = _ParseError      *
+*                                                                                  *
+* For Compressed states, C=1 and I=1 then use array compressedLAsets which is a    *
+* list of bitset(0..terminalCount-1), LASet. Number of bytes in each LAset         *
+*                                                                                  *
+*    b                 : (terminalcount-1)/8+1                                     *
+*    LAset[0..b-1]     : compressedLAsets[t]..compressedLAsets[t+b-1]              *
+*                                                                                  *
+* As for Uncompressed states, the same check for existence is done. If terminal T  *
+* is not found, set action = _ParseError.                                          *
+\**********************************************************************************/
+#define _ac0000 0xffff8000 /* Reduce by 1 on tokens in LAset[0]       */
+#define _ac0001 0x00000000 /* termList   0, actionList   0            */
+#define _ac0002 0xfffd8000 /* Reduce by 2 on tokens in LAset[0]       */
+#define _ac0003 0x0014000b /* termList   1, actionList   1            */
+#define _ac0004 0x001c0010 /* termList   2, actionList   2            */
+#define _ac0005 0xfff1800a /* Reduce by 8 on tokens in LAset[1]       */
+#define _ac0006 0x002e001a /* termList   3, actionList   3            */
+#define _ac0007 0xffed8014 /* Reduce by 10 on tokens in LAset[2]      */
+#define _ac0008 0xffe98014 /* Reduce by 12 on tokens in LAset[2]      */
+#define _ac0009 0xffe5801e /* Reduce by 14 on tokens in LAset[3]      */
+#define _ac0010 0xffe3801e /* Reduce by 15 on tokens in LAset[3]      */
+#define _ac0011 0xffe1801e /* Reduce by 16 on tokens in LAset[3]      */
+#define _ac0012 0x003e0023 /* termList   4, actionList   4            */
+#define _ac0013 0x00420023 /* termList   4, actionList   5            */
+#define _ac0014 0xff6d8028 /* Reduce by 74 on tokens in LAset[4]      */
+#define _ac0015 0x00460026 /* termList   5, actionList   6            */
+#define _ac0016 0xfff98000 /* Reduce by 4 on tokens in LAset[0]       */
+#define _ac0017 0x004a0029 /* termList   6, actionList   7            */
+#define _ac0018 0xffdf8032 /* Reduce by 17 on tokens in LAset[5]      */
+#define _ac0019 0x0054002f /* termList   7, actionList   8            */
+#define _ac0020 0x005e0035 /* termList   8, actionList   9            */
+#define _ac0021 0x006c003d /* termList   9, actionList  10            */
+#define _ac0022 0x006c003d /* termList   9, actionList   9            */
+#define _ac0023 0xfeb9803c /* Reduce by 164 on tokens in LAset[6]     */
+#define _ac0024 0xfff3800a /* Reduce by 7 on tokens in LAset[1]       */
+#define _ac0025 0xffeb8014 /* Reduce by 11 on tokens in LAset[2]      */
+#define _ac0026 0xffe78014 /* Reduce by 13 on tokens in LAset[2]      */
+#define _ac0027 0x005d0026 /* Shift  to 46 on LC                      */
+#define _ac0028 0x00720041 /* termList  10, actionList  11            */
+#define _ac0029 0xff8d8046 /* Reduce by 58 on tokens in LAset[7]      */
+#define _ac0030 0x008c0041 /* termList  10, actionList  12            */
+#define _ac0031 0x002f0048 /* Shift  to 23 on NAME                    */
+#define _ac0032 0xfffb8000 /* Reduce by 3 on tokens in LAset[0]       */
+#define _ac0033 0x006c003d /* termList   9, actionList   9            */
+#define _ac0034 0xfff78000 /* Reduce by 5 on tokens in LAset[0]       */
+#define _ac0035 0x00a6004f /* termList  11, actionList  13            */
+#define _ac0036 0x00990041 /* Shift  to 76 on RPAR                    */
+#define _ac0037 0xff618050 /* Reduce by 80 on tokens in LAset[8]      */
+#define _ac0038 0x00be005c /* termList  12, actionList  14            */
+#define _ac0039 0x00d60069 /* termList  13, actionList  15            */
+#define _ac0040 0x00e2004f /* termList  11, actionList  16            */
+#define _ac0041 0x00fa0070 /* termList  14, actionList  17            */
+#define _ac0042 0x01080035 /* termList   8, actionList  18            */
+#define _ac0043 0x01160078 /* termList  15, actionList  19            */
+#define _ac0044 0x0122007f /* termList  16, actionList  20            */
+#define _ac0045 0x0128007f /* termList  16, actionList  21            */
+#define _ac0046 0xff8b805a /* Reduce by 59 on tokens in LAset[9]      */
+#define _ac0047 0xff75801e /* Reduce by 70 on tokens in LAset[3]      */
+#define _ac0048 0x002f0048 /* Shift  to 23 on NAME                    */
+#define _ac0049 0x012e0083 /* termList  17, actionList  22            */
+#define _ac0050 0xff6b8064 /* Reduce by 75 on tokens in LAset[10]     */
+#define _ac0051 0x01320086 /* termList  18, actionList  23            */
+#define _ac0052 0xffdd8032 /* Reduce by 18 on tokens in LAset[5]      */
+#define _ac0053 0x0138008a /* termList  19, actionList  24            */
+#define _ac0054 0xffc5806e /* Reduce by 30 on tokens in LAset[11]     */
+#define _ac0055 0x00cd003f /* Shift  to 102 on RB                     */
+#define _ac0056 0x0140008f /* termList  20, actionList  25            */
+#define _ac0057 0xff218078 /* Reduce by 112 on tokens in LAset[12]    */
+#define _ac0058 0xff1f8078 /* Reduce by 113 on tokens in LAset[12]    */
+#define _ac0059 0xff1d8078 /* Reduce by 114 on tokens in LAset[12]    */
+#define _ac0060 0x015e009f /* termList  21, actionList  26            */
+#define _ac0061 0x00d70040 /* Shift  to 107 on LPAR                   */
+#define _ac0062 0x019200ba /* termList  22, actionList  27            */
+#define _ac0063 0x019200ba /* termList  22, actionList  22            */
+#define _ac0064 0x01a800c6 /* termList  23, actionList  28            */
+#define _ac0065 0x019200ba /* termList  22, actionList  22            */
+#define _ac0066 0x019200ba /* termList  22, actionList  22            */
+#define _ac0067 0x019200ba /* termList  22, actionList  22            */
+#define _ac0068 0xfec78082 /* Reduce by 157 on tokens in LAset[13]    */
+#define _ac0069 0x01da00e0 /* termList  24, actionList  29            */
+#define _ac0070 0xfeef808c /* Reduce by 137 on tokens in LAset[14]    */
+#define _ac0071 0x01ec00ea /* termList  25, actionList  30            */
+#define _ac0072 0xfee98096 /* Reduce by 140 on tokens in LAset[15]    */
+#define _ac0073 0x020000f5 /* termList  26, actionList  31            */
+#define _ac0074 0x02160101 /* termList  27, actionList  32            */
+#define _ac0075 0xfebd80a0 /* Reduce by 162 on tokens in LAset[16]    */
+#define _ac0076 0xffbf806e /* Reduce by 33 on tokens in LAset[11]     */
+#define _ac0077 0x02400117 /* termList  28, actionList  33            */
+#define _ac0078 0xffd98032 /* Reduce by 20 on tokens in LAset[5]      */
+#define _ac0079 0xfec580aa /* Reduce by 158 on tokens in LAset[17]    */
+#define _ac0080 0x00be005c /* termList  12, actionList  12            */
+#define _ac0081 0xffd380b4 /* Reduce by 23 on tokens in LAset[18]     */
+#define _ac0082 0x027e0137 /* termList  29, actionList  34            */
+#define _ac0083 0xffb380be /* Reduce by 39 on tokens in LAset[19]     */
+#define _ac0084 0x0282013a /* termList  30, actionList  35            */
+#define _ac0085 0xffad80be /* Reduce by 42 on tokens in LAset[19]     */
+#define _ac0086 0xffab80be /* Reduce by 43 on tokens in LAset[19]     */
+#define _ac0087 0xffa980c8 /* Reduce by 44 on tokens in LAset[20]     */
+#define _ac0088 0x02940144 /* termList  31, actionList  36            */
+#define _ac0089 0xffcf80b4 /* Reduce by 25 on tokens in LAset[18]     */
+#define _ac0090 0x0151003f /* Shift  to 168 on RB                     */
+#define _ac0091 0xffbd806e /* Reduce by 34 on tokens in LAset[11]     */
+#define _ac0092 0x029e0137 /* termList  29, actionList  37            */
+#define _ac0093 0x02a20137 /* termList  29, actionList  38            */
+#define _ac0094 0xffb780be /* Reduce by 37 on tokens in LAset[19]     */
+#define _ac0095 0xffc980b4 /* Reduce by 28 on tokens in LAset[18]     */
+#define _ac0096 0xffc1806e /* Reduce by 32 on tokens in LAset[11]     */
+#define _ac0097 0x02a6014a /* termList  32, actionList  39            */
+#define _ac0098 0x02b00083 /* termList  17, actionList  40            */
+#define _ac0099 0xff73801e /* Reduce by 71 on tokens in LAset[3]      */
+#define _ac0100 0x002f0048 /* Shift  to 23 on NAME                    */
+#define _ac0101 0x019200ba /* termList  22, actionList  22            */
+#define _ac0102 0xffc3806e /* Reduce by 31 on tokens in LAset[11]     */
+#define _ac0103 0x02b40137 /* termList  29, actionList  41            */
+#define _ac0104 0x01650041 /* Shift  to 178 on RPAR                   */
+#define _ac0105 0x02b80150 /* termList  33, actionList  42            */
+#define _ac0106 0xfebb80a0 /* Reduce by 163 on tokens in LAset[16]    */
+#define _ac0107 0x0140008f /* termList  20, actionList  20            */
+#define _ac0108 0x02c600c6 /* termList  23, actionList  43            */
+#define _ac0109 0x02f800c6 /* termList  23, actionList  44            */
+#define _ac0110 0xff0d8078 /* Reduce by 122 on tokens in LAset[12]    */
+#define _ac0111 0x019200ba /* termList  22, actionList  22            */
+#define _ac0112 0x016f0048 /* Shift  to 183 on NAME                   */
+#define _ac0113 0x032a0158 /* termList  34, actionList  45            */
+#define _ac0114 0x034200c6 /* termList  23, actionList  46            */
+#define _ac0115 0x037400c6 /* termList  23, actionList  47            */
+#define _ac0116 0x03a600c6 /* termList  23, actionList  48            */
+#define _ac0117 0x019200ba /* termList  22, actionList  22            */
+#define _ac0118 0x019200ba /* termList  22, actionList  22            */
+#define _ac0119 0x019200ba /* termList  22, actionList  22            */
+#define _ac0120 0x019200ba /* termList  22, actionList  22            */
+#define _ac0121 0x019200ba /* termList  22, actionList  22            */
+#define _ac0122 0x019200ba /* termList  22, actionList  22            */
+#define _ac0123 0x019200ba /* termList  22, actionList  22            */
+#define _ac0124 0x019200ba /* termList  22, actionList  22            */
+#define _ac0125 0x019200ba /* termList  22, actionList  22            */
+#define _ac0126 0x019200ba /* termList  22, actionList  22            */
+#define _ac0127 0x019200ba /* termList  22, actionList  22            */
+#define _ac0128 0x019200ba /* termList  22, actionList  22            */
+#define _ac0129 0x019200ba /* termList  22, actionList  22            */
+#define _ac0130 0x019200ba /* termList  22, actionList  22            */
+#define _ac0131 0x019200ba /* termList  22, actionList  22            */
+#define _ac0132 0x019200ba /* termList  22, actionList  22            */
+#define _ac0133 0xff6380d2 /* Reduce by 79 on tokens in LAset[21]     */
+#define _ac0134 0xff5f8050 /* Reduce by 81 on tokens in LAset[8]      */
+#define _ac0135 0xff5d8050 /* Reduce by 82 on tokens in LAset[8]      */
+#define _ac0136 0x03d80165 /* termList  35, actionList  49            */
+#define _ac0137 0xff5b80dc /* Reduce by 83 on tokens in LAset[22]     */
+#define _ac0138 0xff5980dc /* Reduce by 84 on tokens in LAset[22]     */
+#define _ac0139 0x03ea0026 /* termList   5, actionList  50            */
+#define _ac0140 0x03ee016f /* termList  36, actionList  51            */
+#define _ac0141 0x01ab0048 /* Shift  to 213 on NAME                   */
+#define _ac0142 0x01ad002e /* Shift  to 214 on COLON                  */
+#define _ac0143 0x01af0040 /* Shift  to 215 on LPAR                   */
+#define _ac0144 0x01b10040 /* Shift  to 216 on LPAR                   */
+#define _ac0145 0x0406017c /* termList  37, actionList  52            */
+#define _ac0146 0x01b50040 /* Shift  to 218 on LPAR                   */
+#define _ac0147 0x01b70028 /* Shift  to 219 on SEMI                   */
+#define _ac0148 0x01b90028 /* Shift  to 220 on SEMI                   */
+#define _ac0149 0x01bb0040 /* Shift  to 221 on LPAR                   */
+#define _ac0150 0x019200ba /* termList  22, actionList  22            */
+#define _ac0151 0x01bf002e /* Shift  to 223 on COLON                  */
+#define _ac0152 0x019200ba /* termList  22, actionList  22            */
+#define _ac0153 0x004b0026 /* Shift  to 37 on LC                      */
+#define _ac0154 0x043a0197 /* termList  38, actionList  53            */
+#define _ac0155 0x04660083 /* termList  17, actionList  54            */
+#define _ac0156 0xfec18064 /* Reduce by 160 on tokens in LAset[10]    */
+#define _ac0157 0xffd180b4 /* Reduce by 24 on tokens in LAset[18]     */
+#define _ac0158 0x046a01ae /* termList  39, actionList  55            */
+#define _ac0159 0x047401b4 /* termList  40, actionList  56            */
+#define _ac0160 0xffa780c8 /* Reduce by 45 on tokens in LAset[20]     */
+#define _ac0161 0x047c01b9 /* termList  41, actionList  57            */
+#define _ac0162 0xffd580e6 /* Reduce by 22 on tokens in LAset[23]     */
+#define _ac0163 0x048201bd /* termList  42, actionList  58            */
+#define _ac0164 0x048e01c4 /* termList  43, actionList  59            */
+#define _ac0165 0x049801b9 /* termList  41, actionList  60            */
+#define _ac0166 0x049e01ca /* termList  44, actionList  61            */
+#define _ac0167 0x02940144 /* termList  31, actionList  31            */
+#define _ac0168 0xffcd80b4 /* Reduce by 26 on tokens in LAset[18]     */
+#define _ac0169 0xffbb806e /* Reduce by 35 on tokens in LAset[11]     */
+#define _ac0170 0x002f0048 /* Shift  to 23 on NAME                    */
+#define _ac0171 0xffb9806e /* Reduce by 36 on tokens in LAset[11]     */
+#define _ac0172 0xff95801e /* Reduce by 54 on tokens in LAset[3]      */
+#define _ac0173 0xff89805a /* Reduce by 60 on tokens in LAset[9]      */
+#define _ac0174 0xff6f801e /* Reduce by 73 on tokens in LAset[3]      */
+#define _ac0175 0xff698064 /* Reduce by 76 on tokens in LAset[10]     */
+#define _ac0176 0xff658064 /* Reduce by 78 on tokens in LAset[10]     */
+#define _ac0177 0xff238078 /* Reduce by 111 on tokens in LAset[12]    */
+#define _ac0178 0x019200ba /* termList  22, actionList  22            */
+#define _ac0179 0x04a601cf /* termList  45, actionList  62            */
+#define _ac0180 0x04d20137 /* termList  29, actionList  63            */
+#define _ac0181 0x01d90041 /* Shift  to 236 on RPAR                   */
+#define _ac0182 0x04d601e6 /* termList  46, actionList  64            */
+#define _ac0183 0xff038078 /* Reduce by 127 on tokens in LAset[12]    */
+#define _ac0184 0x01dd0041 /* Shift  to 238 on RPAR                   */
+#define _ac0185 0xfeff8078 /* Reduce by 129 on tokens in LAset[12]    */
+#define _ac0186 0x04da01e9 /* termList  47, actionList  65            */
+#define _ac0187 0x04e400e0 /* termList  24, actionList  66            */
+#define _ac0188 0x04f601ef /* termList  48, actionList  67            */
+#define _ac0189 0x04fe00e0 /* termList  24, actionList  68            */
+#define _ac0190 0x051000e0 /* termList  24, actionList  69            */
+#define _ac0191 0xfeeb8096 /* Reduce by 139 on tokens in LAset[15]    */
+#define _ac0192 0x05220101 /* termList  27, actionList  70            */
+#define _ac0193 0x054c0101 /* termList  27, actionList  71            */
+#define _ac0194 0x05760101 /* termList  27, actionList  72            */
+#define _ac0195 0xfedd80f0 /* Reduce by 146 on tokens in LAset[24]    */
+#define _ac0196 0xfedb80f0 /* Reduce by 147 on tokens in LAset[24]    */
+#define _ac0197 0x05a00101 /* termList  27, actionList  73            */
+#define _ac0198 0x05ca0101 /* termList  27, actionList  74            */
+#define _ac0199 0x05f40101 /* termList  27, actionList  75            */
+#define _ac0200 0x061e0101 /* termList  27, actionList  76            */
+#define _ac0201 0x06480101 /* termList  27, actionList  77            */
+#define _ac0202 0x06720101 /* termList  27, actionList  78            */
+#define _ac0203 0x069c0026 /* termList   5, actionList  79            */
+#define _ac0204 0xff858050 /* Reduce by 62 on tokens in LAset[8]      */
+#define _ac0205 0x06a001f4 /* termList  49, actionList  80            */
+#define _ac0206 0x06ac008a /* termList  19, actionList  81            */
+#define _ac0207 0xff838032 /* Reduce by 63 on tokens in LAset[5]      */
+#define _ac0208 0x019200ba /* termList  22, actionList  22            */
+#define _ac0209 0xff5780dc /* Reduce by 85 on tokens in LAset[22]     */
+#define _ac0210 0xff5580dc /* Reduce by 86 on tokens in LAset[22]     */
+#define _ac0211 0x06b40026 /* termList   5, actionList  82            */
+#define _ac0212 0x01ef0028 /* Shift  to 247 on SEMI                   */
+#define _ac0213 0xff290028 /* Reduce by 108 on SEMI                   */
+#define _ac0214 0x0406017c /* termList  37, actionList  37            */
+#define _ac0215 0x06b80158 /* termList  34, actionList  83            */
+#define _ac0216 0x06b80158 /* termList  34, actionList  34            */
+#define _ac0217 0x01f90020 /* Shift  to 252 on WHILE                  */
+#define _ac0218 0x06d0016f /* termList  36, actionList  84            */
+#define _ac0219 0xff4380dc /* Reduce by 95 on tokens in LAset[22]     */
+#define _ac0220 0xff4180dc /* Reduce by 96 on tokens in LAset[22]     */
+#define _ac0221 0x019200ba /* termList  22, actionList  22            */
+#define _ac0222 0x0201002e /* Shift  to 256 on COLON                  */
+#define _ac0223 0xff3b80dc /* Reduce by 99 on tokens in LAset[22]     */
+#define _ac0224 0x06e80026 /* termList   5, actionList  85            */
+#define _ac0225 0x02090024 /* Shift  to 260 on CATCH                  */
+#define _ac0226 0xfec380aa /* Reduce by 159 on tokens in LAset[17]    */
+#define _ac0227 0x00be005c /* termList  12, actionList  12            */
+#define _ac0228 0xffb180be /* Reduce by 40 on tokens in LAset[19]     */
+#define _ac0229 0x06ec004f /* termList  11, actionList  86            */
+#define _ac0230 0x070401b9 /* termList  41, actionList  87            */
+#define _ac0231 0x070a01fb /* termList  50, actionList  88            */
+#define _ac0232 0xffb580be /* Reduce by 38 on tokens in LAset[19]     */
+#define _ac0233 0x070e00c6 /* termList  23, actionList  89            */
+#define _ac0234 0xff198078 /* Reduce by 116 on tokens in LAset[12]    */
+#define _ac0235 0xff178078 /* Reduce by 117 on tokens in LAset[12]    */
+#define _ac0236 0xff158078 /* Reduce by 118 on tokens in LAset[12]    */
+#define _ac0237 0xff058078 /* Reduce by 126 on tokens in LAset[12]    */
+#define _ac0238 0xff018078 /* Reduce by 128 on tokens in LAset[12]    */
+#define _ac0239 0x019200ba /* termList  22, actionList  22            */
+#define _ac0240 0x019200ba /* termList  22, actionList  22            */
+#define _ac0241 0xff878050 /* Reduce by 61 on tokens in LAset[8]      */
+#define _ac0242 0x074001fe /* termList  51, actionList  90            */
+#define _ac0243 0x00be005c /* termList  12, actionList  12            */
+#define _ac0244 0x019200ba /* termList  22, actionList  22            */
+#define _ac0245 0xff778032 /* Reduce by 69 on tokens in LAset[5]      */
+#define _ac0246 0xff5380dc /* Reduce by 87 on tokens in LAset[22]     */
+#define _ac0247 0xff5180dc /* Reduce by 88 on tokens in LAset[22]     */
+#define _ac0248 0xff4f80dc /* Reduce by 89 on tokens in LAset[22]     */
+#define _ac0249 0x021d0041 /* Shift  to 270 on RPAR                   */
+#define _ac0250 0x07480203 /* termList  52, actionList  91            */
+#define _ac0251 0x021f0041 /* Shift  to 271 on RPAR                   */
+#define _ac0252 0x02210040 /* Shift  to 272 on LPAR                   */
+#define _ac0253 0x02230028 /* Shift  to 273 on SEMI                   */
+#define _ac0254 0x074e0203 /* termList  52, actionList  92            */
+#define _ac0255 0x07540137 /* termList  29, actionList  93            */
+#define _ac0256 0xff3d80dc /* Reduce by 98 on tokens in LAset[22]     */
+#define _ac0257 0xff3980dc /* Reduce by 100 on tokens in LAset[22]    */
+#define _ac0258 0x07580207 /* termList  53, actionList  94            */
+#define _ac0259 0xff3580fa /* Reduce by 102 on tokens in LAset[25]    */
+#define _ac0260 0x02290040 /* Shift  to 276 on LPAR                   */
+#define _ac0261 0xfebf8064 /* Reduce by 161 on tokens in LAset[10]    */
+#define _ac0262 0xff9b8104 /* Reduce by 51 on tokens in LAset[26]     */
+#define _ac0263 0x022b003f /* Shift  to 277 on RB                     */
+#define _ac0264 0x079a01b4 /* termList  40, actionList  95            */
+#define _ac0265 0xfefb0041 /* Reduce by 131 on RPAR                   */
+#define _ac0266 0x07a200e0 /* termList  24, actionList  96            */
+#define _ac0267 0xff818032 /* Reduce by 64 on tokens in LAset[5]      */
+#define _ac0268 0xff7b8032 /* Reduce by 67 on tokens in LAset[5]      */
+#define _ac0269 0xff798032 /* Reduce by 68 on tokens in LAset[5]      */
+#define _ac0270 0x0406017c /* termList  37, actionList  37            */
+#define _ac0271 0x0406017c /* termList  37, actionList  37            */
+#define _ac0272 0x06b80158 /* termList  34, actionList  34            */
+#define _ac0273 0x07b4016f /* termList  36, actionList  97            */
+#define _ac0274 0x004b0026 /* Shift  to 37 on LC                      */
+#define _ac0275 0xff3380fa /* Reduce by 103 on tokens in LAset[25]    */
+#define _ac0276 0x07cc0229 /* termList  54, actionList  98            */
+#define _ac0277 0xff998104 /* Reduce by 52 on tokens in LAset[26]     */
+#define _ac0278 0x023f0041 /* Shift  to 287 on RPAR                   */
+#define _ac0279 0x07d4022e /* termList  55, actionList  99            */
+#define _ac0280 0xff4980dc /* Reduce by 92 on tokens in LAset[22]     */
+#define _ac0281 0x02430041 /* Shift  to 289 on RPAR                   */
+#define _ac0282 0x02450028 /* Shift  to 290 on SEMI                   */
+#define _ac0283 0xff3f80dc /* Reduce by 97 on tokens in LAset[22]     */
+#define _ac0284 0x02470041 /* Shift  to 291 on RPAR                   */
+#define _ac0285 0x0814024f /* termList  56, actionList 100            */
+#define _ac0286 0xff2f0041 /* Reduce by 105 on RPAR                   */
+#define _ac0287 0xff9f8104 /* Reduce by 49 on tokens in LAset[26]     */
+#define _ac0288 0x0406017c /* termList  37, actionList  37            */
+#define _ac0289 0x02510028 /* Shift  to 296 on SEMI                   */
+#define _ac0290 0x08220158 /* termList  34, actionList 101            */
+#define _ac0291 0x004b0026 /* Shift  to 37 on LC                      */
+#define _ac0292 0x083a007f /* termList  16, actionList 102            */
+#define _ac0293 0x0840003d /* termList   9, actionList 103            */
+#define _ac0294 0x0840003d /* termList   9, actionList   9            */
+#define _ac0295 0xff4b80dc /* Reduce by 91 on tokens in LAset[22]     */
+#define _ac0296 0xff4780dc /* Reduce by 93 on tokens in LAset[22]     */
+#define _ac0297 0x02570041 /* Shift  to 299 on RPAR                   */
+#define _ac0298 0xff3180fa /* Reduce by 104 on tokens in LAset[25]    */
+#define _ac0299 0x0406017c /* termList  37, actionList  37            */
+#define _ac0300 0xff4580dc /* Reduce by 94 on tokens in LAset[22]     */
 
-static const unsigned char terminalToUncompAction[] = {
+static const unsigned int actionCode[301] = {
+   _ac0000,_ac0001,_ac0002,_ac0003,_ac0004,_ac0005,_ac0006,_ac0007,_ac0008,_ac0009
+  ,_ac0010,_ac0011,_ac0012,_ac0013,_ac0014,_ac0015,_ac0016,_ac0017,_ac0018,_ac0019
+  ,_ac0020,_ac0021,_ac0022,_ac0023,_ac0024,_ac0025,_ac0026,_ac0027,_ac0028,_ac0029
+  ,_ac0030,_ac0031,_ac0032,_ac0033,_ac0034,_ac0035,_ac0036,_ac0037,_ac0038,_ac0039
+  ,_ac0040,_ac0041,_ac0042,_ac0043,_ac0044,_ac0045,_ac0046,_ac0047,_ac0048,_ac0049
+  ,_ac0050,_ac0051,_ac0052,_ac0053,_ac0054,_ac0055,_ac0056,_ac0057,_ac0058,_ac0059
+  ,_ac0060,_ac0061,_ac0062,_ac0063,_ac0064,_ac0065,_ac0066,_ac0067,_ac0068,_ac0069
+  ,_ac0070,_ac0071,_ac0072,_ac0073,_ac0074,_ac0075,_ac0076,_ac0077,_ac0078,_ac0079
+  ,_ac0080,_ac0081,_ac0082,_ac0083,_ac0084,_ac0085,_ac0086,_ac0087,_ac0088,_ac0089
+  ,_ac0090,_ac0091,_ac0092,_ac0093,_ac0094,_ac0095,_ac0096,_ac0097,_ac0098,_ac0099
+  ,_ac0100,_ac0101,_ac0102,_ac0103,_ac0104,_ac0105,_ac0106,_ac0107,_ac0108,_ac0109
+  ,_ac0110,_ac0111,_ac0112,_ac0113,_ac0114,_ac0115,_ac0116,_ac0117,_ac0118,_ac0119
+  ,_ac0120,_ac0121,_ac0122,_ac0123,_ac0124,_ac0125,_ac0126,_ac0127,_ac0128,_ac0129
+  ,_ac0130,_ac0131,_ac0132,_ac0133,_ac0134,_ac0135,_ac0136,_ac0137,_ac0138,_ac0139
+  ,_ac0140,_ac0141,_ac0142,_ac0143,_ac0144,_ac0145,_ac0146,_ac0147,_ac0148,_ac0149
+  ,_ac0150,_ac0151,_ac0152,_ac0153,_ac0154,_ac0155,_ac0156,_ac0157,_ac0158,_ac0159
+  ,_ac0160,_ac0161,_ac0162,_ac0163,_ac0164,_ac0165,_ac0166,_ac0167,_ac0168,_ac0169
+  ,_ac0170,_ac0171,_ac0172,_ac0173,_ac0174,_ac0175,_ac0176,_ac0177,_ac0178,_ac0179
+  ,_ac0180,_ac0181,_ac0182,_ac0183,_ac0184,_ac0185,_ac0186,_ac0187,_ac0188,_ac0189
+  ,_ac0190,_ac0191,_ac0192,_ac0193,_ac0194,_ac0195,_ac0196,_ac0197,_ac0198,_ac0199
+  ,_ac0200,_ac0201,_ac0202,_ac0203,_ac0204,_ac0205,_ac0206,_ac0207,_ac0208,_ac0209
+  ,_ac0210,_ac0211,_ac0212,_ac0213,_ac0214,_ac0215,_ac0216,_ac0217,_ac0218,_ac0219
+  ,_ac0220,_ac0221,_ac0222,_ac0223,_ac0224,_ac0225,_ac0226,_ac0227,_ac0228,_ac0229
+  ,_ac0230,_ac0231,_ac0232,_ac0233,_ac0234,_ac0235,_ac0236,_ac0237,_ac0238,_ac0239
+  ,_ac0240,_ac0241,_ac0242,_ac0243,_ac0244,_ac0245,_ac0246,_ac0247,_ac0248,_ac0249
+  ,_ac0250,_ac0251,_ac0252,_ac0253,_ac0254,_ac0255,_ac0256,_ac0257,_ac0258,_ac0259
+  ,_ac0260,_ac0261,_ac0262,_ac0263,_ac0264,_ac0265,_ac0266,_ac0267,_ac0268,_ac0269
+  ,_ac0270,_ac0271,_ac0272,_ac0273,_ac0274,_ac0275,_ac0276,_ac0277,_ac0278,_ac0279
+  ,_ac0280,_ac0281,_ac0282,_ac0283,_ac0284,_ac0285,_ac0286,_ac0287,_ac0288,_ac0289
+  ,_ac0290,_ac0291,_ac0292,_ac0293,_ac0294,_ac0295,_ac0296,_ac0297,_ac0298,_ac0299
+  ,_ac0300
+}; // Size of table:1.204(x86)/1.208(x64) bytes.
+
+static const unsigned char termListTable[599] = {
     10,   0,   4,   5,   6,  40,  57,  64,  70,  71,  72                                                     /*    0 Used by state  (1) */
   ,  4,  40,  57,  64,  72                                                                                   /*    1 Used by state  (3) */
   ,  9,   4,   5,   6,  40,  57,  64,  70,  71,  72                                                          /*    2 Used by state  (4) */
@@ -162,7 +472,7 @@ static const unsigned char terminalToUncompAction[] = {
   ,  7,   4,   5,   6,  57,  64,  65,  72                                                                    /*   56 Used by state  (285) */
 }; // Size of table:600(x86)/600(x64) bytes.
 
-static const short uncompActionTable[] = {
+static const short actionListTable[1059] = {
       0,   9,  12,  14,  -6,  -6,  -6,   5,   4,  -6                                                         /*   0 Used by state  (1) */
   ,  16,  21,  22,  23                                                                                       /*   1 Used by state  (3) */
   , -13, -13, -13, -13, -13, -13,  24, -13, -13                                                              /*   2 Used by state  (4) */
@@ -293,360 +603,203 @@ static const short uncompActionTable[] = {
   , 293, 294,  23                                                                                            /* 103 Used by states (293,294) */
 }; // Size of table:2.120(x86)/2.120(x64) bytes.
 
-#define _ac0000 0xffff8000 /* Reduce by 1 on tokens in LAset[0]       */
-#define _ac0001 0x00000000 /* Tokenlist   0, actionList   0           */
-#define _ac0002 0xfffe8000 /* Reduce by 2 on tokens in LAset[0]       */
-#define _ac0003 0x000a000b /* Tokenlist   1, actionList   1           */
-#define _ac0004 0x000e0010 /* Tokenlist   2, actionList   2           */
-#define _ac0005 0xfff8800a /* Reduce by 8 on tokens in LAset[1]       */
-#define _ac0006 0x0017001a /* Tokenlist   3, actionList   3           */
-#define _ac0007 0xfff68014 /* Reduce by 10 on tokens in LAset[2]      */
-#define _ac0008 0xfff48014 /* Reduce by 12 on tokens in LAset[2]      */
-#define _ac0009 0xfff2801e /* Reduce by 14 on tokens in LAset[3]      */
-#define _ac0010 0xfff1801e /* Reduce by 15 on tokens in LAset[3]      */
-#define _ac0011 0xfff0801e /* Reduce by 16 on tokens in LAset[3]      */
-#define _ac0012 0x001f0023 /* Tokenlist   4, actionList   4           */
-#define _ac0013 0x00210023 /* Tokenlist   4, actionList   5           */
-#define _ac0014 0xffb68028 /* Reduce by 74 on tokens in LAset[4]      */
-#define _ac0015 0x00230026 /* Tokenlist   5, actionList   6           */
-#define _ac0016 0xfffc8000 /* Reduce by 4 on tokens in LAset[0]       */
-#define _ac0017 0x00250029 /* Tokenlist   6, actionList   7           */
-#define _ac0018 0xffef8032 /* Reduce by 17 on tokens in LAset[5]      */
-#define _ac0019 0x002a002f /* Tokenlist   7, actionList   8           */
-#define _ac0020 0x002f0035 /* Tokenlist   8, actionList   9           */
-#define _ac0021 0x0036003d /* Tokenlist   9, actionList  10           */
-#define _ac0022 0x0036003d /* Tokenlist   9, actionList   9           */
-#define _ac0023 0xff5c803c /* Reduce by 164 on tokens in LAset[6]     */
-#define _ac0024 0xfff9800a /* Reduce by 7 on tokens in LAset[1]       */
-#define _ac0025 0xfff58014 /* Reduce by 11 on tokens in LAset[2]      */
-#define _ac0026 0xfff38014 /* Reduce by 13 on tokens in LAset[2]      */
-#define _ac0027 0x802e0026 /* Shift  to 46 on LC                      */
-#define _ac0028 0x00390041 /* Tokenlist  10, actionList  11           */
-#define _ac0029 0xffc68046 /* Reduce by 58 on tokens in LAset[7]      */
-#define _ac0030 0x00460041 /* Tokenlist  10, actionList  12           */
-#define _ac0031 0x80170048 /* Shift  to 23 on NAME                    */
-#define _ac0032 0xfffd8000 /* Reduce by 3 on tokens in LAset[0]       */
-#define _ac0033 0x0036003d /* Tokenlist   9, actionList   9           */
-#define _ac0034 0xfffb8000 /* Reduce by 5 on tokens in LAset[0]       */
-#define _ac0035 0x0053004f /* Tokenlist  11, actionList  13           */
-#define _ac0036 0x804c0041 /* Shift  to 76 on RPAR                    */
-#define _ac0037 0xffb08050 /* Reduce by 80 on tokens in LAset[8]      */
-#define _ac0038 0x005f005c /* Tokenlist  12, actionList  14           */
-#define _ac0039 0x006b0069 /* Tokenlist  13, actionList  15           */
-#define _ac0040 0x0071004f /* Tokenlist  11, actionList  16           */
-#define _ac0041 0x007d0070 /* Tokenlist  14, actionList  17           */
-#define _ac0042 0x00840035 /* Tokenlist   8, actionList  18           */
-#define _ac0043 0x008b0078 /* Tokenlist  15, actionList  19           */
-#define _ac0044 0x0091007f /* Tokenlist  16, actionList  20           */
-#define _ac0045 0x0094007f /* Tokenlist  16, actionList  21           */
-#define _ac0046 0xffc5805a /* Reduce by 59 on tokens in LAset[9]      */
-#define _ac0047 0xffba801e /* Reduce by 70 on tokens in LAset[3]      */
-#define _ac0048 0x80170048 /* Shift  to 23 on NAME                    */
-#define _ac0049 0x00970083 /* Tokenlist  17, actionList  22           */
-#define _ac0050 0xffb58064 /* Reduce by 75 on tokens in LAset[10]     */
-#define _ac0051 0x00990086 /* Tokenlist  18, actionList  23           */
-#define _ac0052 0xffee8032 /* Reduce by 18 on tokens in LAset[5]      */
-#define _ac0053 0x009c008a /* Tokenlist  19, actionList  24           */
-#define _ac0054 0xffe2806e /* Reduce by 30 on tokens in LAset[11]     */
-#define _ac0055 0x8066003f /* Shift  to 102 on RB                     */
-#define _ac0056 0x00a0008f /* Tokenlist  20, actionList  25           */
-#define _ac0057 0xff908078 /* Reduce by 112 on tokens in LAset[12]    */
-#define _ac0058 0xff8f8078 /* Reduce by 113 on tokens in LAset[12]    */
-#define _ac0059 0xff8e8078 /* Reduce by 114 on tokens in LAset[12]    */
-#define _ac0060 0x00af009f /* Tokenlist  21, actionList  26           */
-#define _ac0061 0x806b0040 /* Shift  to 107 on LPAR                   */
-#define _ac0062 0x00c900ba /* Tokenlist  22, actionList  27           */
-#define _ac0063 0x00c900ba /* Tokenlist  22, actionList  22           */
-#define _ac0064 0x00d400c6 /* Tokenlist  23, actionList  28           */
-#define _ac0065 0x00c900ba /* Tokenlist  22, actionList  22           */
-#define _ac0066 0x00c900ba /* Tokenlist  22, actionList  22           */
-#define _ac0067 0x00c900ba /* Tokenlist  22, actionList  22           */
-#define _ac0068 0xff638082 /* Reduce by 157 on tokens in LAset[13]    */
-#define _ac0069 0x00ed00e0 /* Tokenlist  24, actionList  29           */
-#define _ac0070 0xff77808c /* Reduce by 137 on tokens in LAset[14]    */
-#define _ac0071 0x00f600ea /* Tokenlist  25, actionList  30           */
-#define _ac0072 0xff748096 /* Reduce by 140 on tokens in LAset[15]    */
-#define _ac0073 0x010000f5 /* Tokenlist  26, actionList  31           */
-#define _ac0074 0x010b0101 /* Tokenlist  27, actionList  32           */
-#define _ac0075 0xff5e80a0 /* Reduce by 162 on tokens in LAset[16]    */
-#define _ac0076 0xffdf806e /* Reduce by 33 on tokens in LAset[11]     */
-#define _ac0077 0x01200117 /* Tokenlist  28, actionList  33           */
-#define _ac0078 0xffec8032 /* Reduce by 20 on tokens in LAset[5]      */
-#define _ac0079 0xff6280aa /* Reduce by 158 on tokens in LAset[17]    */
-#define _ac0080 0x005f005c /* Tokenlist  12, actionList  12           */
-#define _ac0081 0xffe980b4 /* Reduce by 23 on tokens in LAset[18]     */
-#define _ac0082 0x013f0137 /* Tokenlist  29, actionList  34           */
-#define _ac0083 0xffd980be /* Reduce by 39 on tokens in LAset[19]     */
-#define _ac0084 0x0141013a /* Tokenlist  30, actionList  35           */
-#define _ac0085 0xffd680be /* Reduce by 42 on tokens in LAset[19]     */
-#define _ac0086 0xffd580be /* Reduce by 43 on tokens in LAset[19]     */
-#define _ac0087 0xffd480c8 /* Reduce by 44 on tokens in LAset[20]     */
-#define _ac0088 0x014a0144 /* Tokenlist  31, actionList  36           */
-#define _ac0089 0xffe780b4 /* Reduce by 25 on tokens in LAset[18]     */
-#define _ac0090 0x80a8003f /* Shift  to 168 on RB                     */
-#define _ac0091 0xffde806e /* Reduce by 34 on tokens in LAset[11]     */
-#define _ac0092 0x014f0137 /* Tokenlist  29, actionList  37           */
-#define _ac0093 0x01510137 /* Tokenlist  29, actionList  38           */
-#define _ac0094 0xffdb80be /* Reduce by 37 on tokens in LAset[19]     */
-#define _ac0095 0xffe480b4 /* Reduce by 28 on tokens in LAset[18]     */
-#define _ac0096 0xffe0806e /* Reduce by 32 on tokens in LAset[11]     */
-#define _ac0097 0x0153014a /* Tokenlist  32, actionList  39           */
-#define _ac0098 0x01580083 /* Tokenlist  17, actionList  40           */
-#define _ac0099 0xffb9801e /* Reduce by 71 on tokens in LAset[3]      */
-#define _ac0100 0x80170048 /* Shift  to 23 on NAME                    */
-#define _ac0101 0x00c900ba /* Tokenlist  22, actionList  22           */
-#define _ac0102 0xffe1806e /* Reduce by 31 on tokens in LAset[11]     */
-#define _ac0103 0x015a0137 /* Tokenlist  29, actionList  41           */
-#define _ac0104 0x80b20041 /* Shift  to 178 on RPAR                   */
-#define _ac0105 0x015c0150 /* Tokenlist  33, actionList  42           */
-#define _ac0106 0xff5d80a0 /* Reduce by 163 on tokens in LAset[16]    */
-#define _ac0107 0x00a0008f /* Tokenlist  20, actionList  20           */
-#define _ac0108 0x016300c6 /* Tokenlist  23, actionList  43           */
-#define _ac0109 0x017c00c6 /* Tokenlist  23, actionList  44           */
-#define _ac0110 0xff868078 /* Reduce by 122 on tokens in LAset[12]    */
-#define _ac0111 0x00c900ba /* Tokenlist  22, actionList  22           */
-#define _ac0112 0x80b70048 /* Shift  to 183 on NAME                   */
-#define _ac0113 0x01950158 /* Tokenlist  34, actionList  45           */
-#define _ac0114 0x01a100c6 /* Tokenlist  23, actionList  46           */
-#define _ac0115 0x01ba00c6 /* Tokenlist  23, actionList  47           */
-#define _ac0116 0x01d300c6 /* Tokenlist  23, actionList  48           */
-#define _ac0117 0x00c900ba /* Tokenlist  22, actionList  22           */
-#define _ac0118 0x00c900ba /* Tokenlist  22, actionList  22           */
-#define _ac0119 0x00c900ba /* Tokenlist  22, actionList  22           */
-#define _ac0120 0x00c900ba /* Tokenlist  22, actionList  22           */
-#define _ac0121 0x00c900ba /* Tokenlist  22, actionList  22           */
-#define _ac0122 0x00c900ba /* Tokenlist  22, actionList  22           */
-#define _ac0123 0x00c900ba /* Tokenlist  22, actionList  22           */
-#define _ac0124 0x00c900ba /* Tokenlist  22, actionList  22           */
-#define _ac0125 0x00c900ba /* Tokenlist  22, actionList  22           */
-#define _ac0126 0x00c900ba /* Tokenlist  22, actionList  22           */
-#define _ac0127 0x00c900ba /* Tokenlist  22, actionList  22           */
-#define _ac0128 0x00c900ba /* Tokenlist  22, actionList  22           */
-#define _ac0129 0x00c900ba /* Tokenlist  22, actionList  22           */
-#define _ac0130 0x00c900ba /* Tokenlist  22, actionList  22           */
-#define _ac0131 0x00c900ba /* Tokenlist  22, actionList  22           */
-#define _ac0132 0x00c900ba /* Tokenlist  22, actionList  22           */
-#define _ac0133 0xffb180d2 /* Reduce by 79 on tokens in LAset[21]     */
-#define _ac0134 0xffaf8050 /* Reduce by 81 on tokens in LAset[8]      */
-#define _ac0135 0xffae8050 /* Reduce by 82 on tokens in LAset[8]      */
-#define _ac0136 0x01ec0165 /* Tokenlist  35, actionList  49           */
-#define _ac0137 0xffad80dc /* Reduce by 83 on tokens in LAset[22]     */
-#define _ac0138 0xffac80dc /* Reduce by 84 on tokens in LAset[22]     */
-#define _ac0139 0x01f50026 /* Tokenlist   5, actionList  50           */
-#define _ac0140 0x01f7016f /* Tokenlist  36, actionList  51           */
-#define _ac0141 0x80d50048 /* Shift  to 213 on NAME                   */
-#define _ac0142 0x80d6002e /* Shift  to 214 on COLON                  */
-#define _ac0143 0x80d70040 /* Shift  to 215 on LPAR                   */
-#define _ac0144 0x80d80040 /* Shift  to 216 on LPAR                   */
-#define _ac0145 0x0203017c /* Tokenlist  37, actionList  52           */
-#define _ac0146 0x80da0040 /* Shift  to 218 on LPAR                   */
-#define _ac0147 0x80db0028 /* Shift  to 219 on SEMI                   */
-#define _ac0148 0x80dc0028 /* Shift  to 220 on SEMI                   */
-#define _ac0149 0x80dd0040 /* Shift  to 221 on LPAR                   */
-#define _ac0150 0x00c900ba /* Tokenlist  22, actionList  22           */
-#define _ac0151 0x80df002e /* Shift  to 223 on COLON                  */
-#define _ac0152 0x00c900ba /* Tokenlist  22, actionList  22           */
-#define _ac0153 0x80250026 /* Shift  to 37 on LC                      */
-#define _ac0154 0x021d0197 /* Tokenlist  38, actionList  53           */
-#define _ac0155 0x02330083 /* Tokenlist  17, actionList  54           */
-#define _ac0156 0xff608064 /* Reduce by 160 on tokens in LAset[10]    */
-#define _ac0157 0xffe880b4 /* Reduce by 24 on tokens in LAset[18]     */
-#define _ac0158 0x023501ae /* Tokenlist  39, actionList  55           */
-#define _ac0159 0x023a01b4 /* Tokenlist  40, actionList  56           */
-#define _ac0160 0xffd380c8 /* Reduce by 45 on tokens in LAset[20]     */
-#define _ac0161 0x023e01b9 /* Tokenlist  41, actionList  57           */
-#define _ac0162 0xffea80e6 /* Reduce by 22 on tokens in LAset[23]     */
-#define _ac0163 0x024101bd /* Tokenlist  42, actionList  58           */
-#define _ac0164 0x024701c4 /* Tokenlist  43, actionList  59           */
-#define _ac0165 0x024c01b9 /* Tokenlist  41, actionList  60           */
-#define _ac0166 0x024f01ca /* Tokenlist  44, actionList  61           */
-#define _ac0167 0x014a0144 /* Tokenlist  31, actionList  31           */
-#define _ac0168 0xffe680b4 /* Reduce by 26 on tokens in LAset[18]     */
-#define _ac0169 0xffdd806e /* Reduce by 35 on tokens in LAset[11]     */
-#define _ac0170 0x80170048 /* Shift  to 23 on NAME                    */
-#define _ac0171 0xffdc806e /* Reduce by 36 on tokens in LAset[11]     */
-#define _ac0172 0xffca801e /* Reduce by 54 on tokens in LAset[3]      */
-#define _ac0173 0xffc4805a /* Reduce by 60 on tokens in LAset[9]      */
-#define _ac0174 0xffb7801e /* Reduce by 73 on tokens in LAset[3]      */
-#define _ac0175 0xffb48064 /* Reduce by 76 on tokens in LAset[10]     */
-#define _ac0176 0xffb28064 /* Reduce by 78 on tokens in LAset[10]     */
-#define _ac0177 0xff918078 /* Reduce by 111 on tokens in LAset[12]    */
-#define _ac0178 0x00c900ba /* Tokenlist  22, actionList  22           */
-#define _ac0179 0x025301cf /* Tokenlist  45, actionList  62           */
-#define _ac0180 0x02690137 /* Tokenlist  29, actionList  63           */
-#define _ac0181 0x80ec0041 /* Shift  to 236 on RPAR                   */
-#define _ac0182 0x026b01e6 /* Tokenlist  46, actionList  64           */
-#define _ac0183 0xff818078 /* Reduce by 127 on tokens in LAset[12]    */
-#define _ac0184 0x80ee0041 /* Shift  to 238 on RPAR                   */
-#define _ac0185 0xff7f8078 /* Reduce by 129 on tokens in LAset[12]    */
-#define _ac0186 0x026d01e9 /* Tokenlist  47, actionList  65           */
-#define _ac0187 0x027200e0 /* Tokenlist  24, actionList  66           */
-#define _ac0188 0x027b01ef /* Tokenlist  48, actionList  67           */
-#define _ac0189 0x027f00e0 /* Tokenlist  24, actionList  68           */
-#define _ac0190 0x028800e0 /* Tokenlist  24, actionList  69           */
-#define _ac0191 0xff758096 /* Reduce by 139 on tokens in LAset[15]    */
-#define _ac0192 0x02910101 /* Tokenlist  27, actionList  70           */
-#define _ac0193 0x02a60101 /* Tokenlist  27, actionList  71           */
-#define _ac0194 0x02bb0101 /* Tokenlist  27, actionList  72           */
-#define _ac0195 0xff6e80f0 /* Reduce by 146 on tokens in LAset[24]    */
-#define _ac0196 0xff6d80f0 /* Reduce by 147 on tokens in LAset[24]    */
-#define _ac0197 0x02d00101 /* Tokenlist  27, actionList  73           */
-#define _ac0198 0x02e50101 /* Tokenlist  27, actionList  74           */
-#define _ac0199 0x02fa0101 /* Tokenlist  27, actionList  75           */
-#define _ac0200 0x030f0101 /* Tokenlist  27, actionList  76           */
-#define _ac0201 0x03240101 /* Tokenlist  27, actionList  77           */
-#define _ac0202 0x03390101 /* Tokenlist  27, actionList  78           */
-#define _ac0203 0x034e0026 /* Tokenlist   5, actionList  79           */
-#define _ac0204 0xffc28050 /* Reduce by 62 on tokens in LAset[8]      */
-#define _ac0205 0x035001f4 /* Tokenlist  49, actionList  80           */
-#define _ac0206 0x0356008a /* Tokenlist  19, actionList  81           */
-#define _ac0207 0xffc18032 /* Reduce by 63 on tokens in LAset[5]      */
-#define _ac0208 0x00c900ba /* Tokenlist  22, actionList  22           */
-#define _ac0209 0xffab80dc /* Reduce by 85 on tokens in LAset[22]     */
-#define _ac0210 0xffaa80dc /* Reduce by 86 on tokens in LAset[22]     */
-#define _ac0211 0x035a0026 /* Tokenlist   5, actionList  82           */
-#define _ac0212 0x80f70028 /* Shift  to 247 on SEMI                   */
-#define _ac0213 0xff940028 /* Reduce by 108 on SEMI                   */
-#define _ac0214 0x0203017c /* Tokenlist  37, actionList  37           */
-#define _ac0215 0x035c0158 /* Tokenlist  34, actionList  83           */
-#define _ac0216 0x035c0158 /* Tokenlist  34, actionList  34           */
-#define _ac0217 0x80fc0020 /* Shift  to 252 on WHILE                  */
-#define _ac0218 0x0368016f /* Tokenlist  36, actionList  84           */
-#define _ac0219 0xffa180dc /* Reduce by 95 on tokens in LAset[22]     */
-#define _ac0220 0xffa080dc /* Reduce by 96 on tokens in LAset[22]     */
-#define _ac0221 0x00c900ba /* Tokenlist  22, actionList  22           */
-#define _ac0222 0x8100002e /* Shift  to 256 on COLON                  */
-#define _ac0223 0xff9d80dc /* Reduce by 99 on tokens in LAset[22]     */
-#define _ac0224 0x03740026 /* Tokenlist   5, actionList  85           */
-#define _ac0225 0x81040024 /* Shift  to 260 on CATCH                  */
-#define _ac0226 0xff6180aa /* Reduce by 159 on tokens in LAset[17]    */
-#define _ac0227 0x005f005c /* Tokenlist  12, actionList  12           */
-#define _ac0228 0xffd880be /* Reduce by 40 on tokens in LAset[19]     */
-#define _ac0229 0x0376004f /* Tokenlist  11, actionList  86           */
-#define _ac0230 0x038201b9 /* Tokenlist  41, actionList  87           */
-#define _ac0231 0x038501fb /* Tokenlist  50, actionList  88           */
-#define _ac0232 0xffda80be /* Reduce by 38 on tokens in LAset[19]     */
-#define _ac0233 0x038700c6 /* Tokenlist  23, actionList  89           */
-#define _ac0234 0xff8c8078 /* Reduce by 116 on tokens in LAset[12]    */
-#define _ac0235 0xff8b8078 /* Reduce by 117 on tokens in LAset[12]    */
-#define _ac0236 0xff8a8078 /* Reduce by 118 on tokens in LAset[12]    */
-#define _ac0237 0xff828078 /* Reduce by 126 on tokens in LAset[12]    */
-#define _ac0238 0xff808078 /* Reduce by 128 on tokens in LAset[12]    */
-#define _ac0239 0x00c900ba /* Tokenlist  22, actionList  22           */
-#define _ac0240 0x00c900ba /* Tokenlist  22, actionList  22           */
-#define _ac0241 0xffc38050 /* Reduce by 61 on tokens in LAset[8]      */
-#define _ac0242 0x03a001fe /* Tokenlist  51, actionList  90           */
-#define _ac0243 0x005f005c /* Tokenlist  12, actionList  12           */
-#define _ac0244 0x00c900ba /* Tokenlist  22, actionList  22           */
-#define _ac0245 0xffbb8032 /* Reduce by 69 on tokens in LAset[5]      */
-#define _ac0246 0xffa980dc /* Reduce by 87 on tokens in LAset[22]     */
-#define _ac0247 0xffa880dc /* Reduce by 88 on tokens in LAset[22]     */
-#define _ac0248 0xffa780dc /* Reduce by 89 on tokens in LAset[22]     */
-#define _ac0249 0x810e0041 /* Shift  to 270 on RPAR                   */
-#define _ac0250 0x03a40203 /* Tokenlist  52, actionList  91           */
-#define _ac0251 0x810f0041 /* Shift  to 271 on RPAR                   */
-#define _ac0252 0x81100040 /* Shift  to 272 on LPAR                   */
-#define _ac0253 0x81110028 /* Shift  to 273 on SEMI                   */
-#define _ac0254 0x03a70203 /* Tokenlist  52, actionList  92           */
-#define _ac0255 0x03aa0137 /* Tokenlist  29, actionList  93           */
-#define _ac0256 0xff9e80dc /* Reduce by 98 on tokens in LAset[22]     */
-#define _ac0257 0xff9c80dc /* Reduce by 100 on tokens in LAset[22]    */
-#define _ac0258 0x03ac0207 /* Tokenlist  53, actionList  94           */
-#define _ac0259 0xff9a80fa /* Reduce by 102 on tokens in LAset[25]    */
-#define _ac0260 0x81140040 /* Shift  to 276 on LPAR                   */
-#define _ac0261 0xff5f8064 /* Reduce by 161 on tokens in LAset[10]    */
-#define _ac0262 0xffcd8104 /* Reduce by 51 on tokens in LAset[26]     */
-#define _ac0263 0x8115003f /* Shift  to 277 on RB                     */
-#define _ac0264 0x03cd01b4 /* Tokenlist  40, actionList  95           */
-#define _ac0265 0xff7d0041 /* Reduce by 131 on RPAR                   */
-#define _ac0266 0x03d100e0 /* Tokenlist  24, actionList  96           */
-#define _ac0267 0xffc08032 /* Reduce by 64 on tokens in LAset[5]      */
-#define _ac0268 0xffbd8032 /* Reduce by 67 on tokens in LAset[5]      */
-#define _ac0269 0xffbc8032 /* Reduce by 68 on tokens in LAset[5]      */
-#define _ac0270 0x0203017c /* Tokenlist  37, actionList  37           */
-#define _ac0271 0x0203017c /* Tokenlist  37, actionList  37           */
-#define _ac0272 0x035c0158 /* Tokenlist  34, actionList  34           */
-#define _ac0273 0x03da016f /* Tokenlist  36, actionList  97           */
-#define _ac0274 0x80250026 /* Shift  to 37 on LC                      */
-#define _ac0275 0xff9980fa /* Reduce by 103 on tokens in LAset[25]    */
-#define _ac0276 0x03e60229 /* Tokenlist  54, actionList  98           */
-#define _ac0277 0xffcc8104 /* Reduce by 52 on tokens in LAset[26]     */
-#define _ac0278 0x811f0041 /* Shift  to 287 on RPAR                   */
-#define _ac0279 0x03ea022e /* Tokenlist  55, actionList  99           */
-#define _ac0280 0xffa480dc /* Reduce by 92 on tokens in LAset[22]     */
-#define _ac0281 0x81210041 /* Shift  to 289 on RPAR                   */
-#define _ac0282 0x81220028 /* Shift  to 290 on SEMI                   */
-#define _ac0283 0xff9f80dc /* Reduce by 97 on tokens in LAset[22]     */
-#define _ac0284 0x81230041 /* Shift  to 291 on RPAR                   */
-#define _ac0285 0x040a024f /* Tokenlist  56, actionList 100           */
-#define _ac0286 0xff970041 /* Reduce by 105 on RPAR                   */
-#define _ac0287 0xffcf8104 /* Reduce by 49 on tokens in LAset[26]     */
-#define _ac0288 0x0203017c /* Tokenlist  37, actionList  37           */
-#define _ac0289 0x81280028 /* Shift  to 296 on SEMI                   */
-#define _ac0290 0x04110158 /* Tokenlist  34, actionList 101           */
-#define _ac0291 0x80250026 /* Shift  to 37 on LC                      */
-#define _ac0292 0x041d007f /* Tokenlist  16, actionList 102           */
-#define _ac0293 0x0420003d /* Tokenlist   9, actionList 103           */
-#define _ac0294 0x0420003d /* Tokenlist   9, actionList   9           */
-#define _ac0295 0xffa580dc /* Reduce by 91 on tokens in LAset[22]     */
-#define _ac0296 0xffa380dc /* Reduce by 93 on tokens in LAset[22]     */
-#define _ac0297 0x812b0041 /* Shift  to 299 on RPAR                   */
-#define _ac0298 0xff9880fa /* Reduce by 104 on tokens in LAset[25]    */
-#define _ac0299 0x0203017c /* Tokenlist  37, actionList  37           */
-#define _ac0300 0xffa280dc /* Reduce by 94 on tokens in LAset[22]     */
+static const unsigned char compressedLAsets[270] = {
+   0x71,0x00,0x00,0x00,0x00,0x01,0x00,0x02,0xc1,0x01 /*   0  10 tokens Used by states (0,2,16,32,34) */
+  ,0x00,0x00,0x00,0x00,0x00,0x01,0x00,0x02,0x01,0x01 /*   1   4 tokens Used by states (5,24) */
+  ,0x70,0x00,0x00,0x00,0x00,0x41,0x00,0x02,0x81,0x01 /*   2   9 tokens Used by states (7,8,25,26) */
+  ,0x70,0x00,0x00,0x00,0x00,0x45,0x00,0x42,0x83,0x01 /*   3  12 tokens Used by states (9,10,11,47,99,172,174) */
+  ,0x00,0x00,0x00,0x00,0x40,0x00,0x00,0x00,0x00,0x01 /*   4   2 tokens Used by state  (14) */
+  ,0x00,0x00,0x00,0x00,0x00,0x05,0x00,0x00,0x00,0x00 /*   5   2 tokens Used by states (18,52,78,207,245,267,268,269) */
+  ,0x70,0x00,0x00,0x00,0xc0,0x4d,0x00,0x42,0x83,0x01 /*   6  15 tokens Used by state  (23) */
+  ,0x70,0x00,0x00,0x00,0x40,0x45,0x00,0x42,0x83,0x01 /*   7  13 tokens Used by state  (29) */
+  ,0x7e,0x00,0x00,0xff,0xef,0x01,0x08,0x3b,0x81,0x01 /*   8  31 tokens Used by states (37,134,135,204,241) */
+  ,0x70,0x00,0x00,0x00,0x80,0x00,0x00,0x00,0x80,0x00 /*   9   5 tokens Used by states (46,173) */
+  ,0x00,0x00,0x00,0x00,0x80,0x04,0x00,0x00,0x00,0x00 /*  10   2 tokens Used by states (50,156,175,176,261) */
+  ,0x00,0x00,0x00,0x00,0x40,0x05,0x00,0x40,0x03,0x00 /*  11   6 tokens Used by states (54,76,91,96,102,169,171) */
+  ,0x00,0x00,0x00,0x00,0x80,0xfd,0xff,0xe7,0x07,0x00 /*  12  25 tokens Used by states (57,58,59,110,177,183,185,234,235,236,237,238) */
+  ,0x00,0x00,0x00,0x00,0x80,0x45,0x00,0x80,0x00,0x00 /*  13   5 tokens Used by state  (68) */
+  ,0x00,0x00,0x00,0x00,0x80,0x7d,0x00,0x80,0x02,0x00 /*  14   9 tokens Used by state  (70) */
+  ,0x00,0x00,0x00,0x00,0x80,0xfd,0x00,0x80,0x02,0x00 /*  15  10 tokens Used by states (72,191) */
+  ,0x02,0x00,0x00,0x00,0x80,0xfd,0xff,0xe7,0x07,0x00 /*  16  26 tokens Used by states (75,106) */
+  ,0x00,0x00,0x00,0x00,0x80,0x05,0x00,0x00,0x00,0x00 /*  17   3 tokens Used by states (79,226) */
+  ,0x00,0x00,0x00,0x00,0x00,0x4d,0x00,0x40,0x03,0x00 /*  18   7 tokens Used by states (81,89,95,157,168) */
+  ,0x00,0x00,0x00,0x00,0x00,0x04,0x00,0x00,0x02,0x00 /*  19   2 tokens Used by states (83,85,86,94,228,232) */
+  ,0x70,0x00,0x00,0x00,0x00,0x04,0x00,0x42,0x03,0x01 /*  20   9 tokens Used by states (87,160) */
+  ,0x7f,0x00,0x00,0xff,0xff,0x01,0x08,0x3b,0xc1,0x03 /*  21  35 tokens Used by state  (133) */
+  ,0x7e,0x00,0x00,0xff,0xef,0x01,0x08,0x3b,0x81,0x03 /*  22  32 tokens Used by states (137,138,209,210,219,220,223,246,247,248,256,257,280,283,295,296,300) */
+  ,0x00,0x00,0x00,0x00,0x00,0x04,0x00,0x40,0x03,0x00 /*  23   4 tokens Used by state  (162) */
+  ,0x00,0x00,0x00,0x00,0x80,0xfd,0xff,0x87,0x02,0x00 /*  24  21 tokens Used by states (195,196) */
+  ,0x7e,0x00,0x00,0xff,0xff,0x01,0x08,0x3b,0x81,0x03 /*  25  33 tokens Used by states (259,275,298) */
+  ,0x00,0x00,0x00,0x00,0x00,0x04,0x00,0x40,0x02,0x00 /*  26   3 tokens Used by states (262,277,287) */
+}; // Size of table:272(x86)/272(x64) bytes.
 
-static const unsigned int actionCode[301] = {
-   _ac0000,_ac0001,_ac0002,_ac0003,_ac0004,_ac0005,_ac0006,_ac0007,_ac0008,_ac0009
-  ,_ac0010,_ac0011,_ac0012,_ac0013,_ac0014,_ac0015,_ac0016,_ac0017,_ac0018,_ac0019
-  ,_ac0020,_ac0021,_ac0022,_ac0023,_ac0024,_ac0025,_ac0026,_ac0027,_ac0028,_ac0029
-  ,_ac0030,_ac0031,_ac0032,_ac0033,_ac0034,_ac0035,_ac0036,_ac0037,_ac0038,_ac0039
-  ,_ac0040,_ac0041,_ac0042,_ac0043,_ac0044,_ac0045,_ac0046,_ac0047,_ac0048,_ac0049
-  ,_ac0050,_ac0051,_ac0052,_ac0053,_ac0054,_ac0055,_ac0056,_ac0057,_ac0058,_ac0059
-  ,_ac0060,_ac0061,_ac0062,_ac0063,_ac0064,_ac0065,_ac0066,_ac0067,_ac0068,_ac0069
-  ,_ac0070,_ac0071,_ac0072,_ac0073,_ac0074,_ac0075,_ac0076,_ac0077,_ac0078,_ac0079
-  ,_ac0080,_ac0081,_ac0082,_ac0083,_ac0084,_ac0085,_ac0086,_ac0087,_ac0088,_ac0089
-  ,_ac0090,_ac0091,_ac0092,_ac0093,_ac0094,_ac0095,_ac0096,_ac0097,_ac0098,_ac0099
-  ,_ac0100,_ac0101,_ac0102,_ac0103,_ac0104,_ac0105,_ac0106,_ac0107,_ac0108,_ac0109
-  ,_ac0110,_ac0111,_ac0112,_ac0113,_ac0114,_ac0115,_ac0116,_ac0117,_ac0118,_ac0119
-  ,_ac0120,_ac0121,_ac0122,_ac0123,_ac0124,_ac0125,_ac0126,_ac0127,_ac0128,_ac0129
-  ,_ac0130,_ac0131,_ac0132,_ac0133,_ac0134,_ac0135,_ac0136,_ac0137,_ac0138,_ac0139
-  ,_ac0140,_ac0141,_ac0142,_ac0143,_ac0144,_ac0145,_ac0146,_ac0147,_ac0148,_ac0149
-  ,_ac0150,_ac0151,_ac0152,_ac0153,_ac0154,_ac0155,_ac0156,_ac0157,_ac0158,_ac0159
-  ,_ac0160,_ac0161,_ac0162,_ac0163,_ac0164,_ac0165,_ac0166,_ac0167,_ac0168,_ac0169
-  ,_ac0170,_ac0171,_ac0172,_ac0173,_ac0174,_ac0175,_ac0176,_ac0177,_ac0178,_ac0179
-  ,_ac0180,_ac0181,_ac0182,_ac0183,_ac0184,_ac0185,_ac0186,_ac0187,_ac0188,_ac0189
-  ,_ac0190,_ac0191,_ac0192,_ac0193,_ac0194,_ac0195,_ac0196,_ac0197,_ac0198,_ac0199
-  ,_ac0200,_ac0201,_ac0202,_ac0203,_ac0204,_ac0205,_ac0206,_ac0207,_ac0208,_ac0209
-  ,_ac0210,_ac0211,_ac0212,_ac0213,_ac0214,_ac0215,_ac0216,_ac0217,_ac0218,_ac0219
-  ,_ac0220,_ac0221,_ac0222,_ac0223,_ac0224,_ac0225,_ac0226,_ac0227,_ac0228,_ac0229
-  ,_ac0230,_ac0231,_ac0232,_ac0233,_ac0234,_ac0235,_ac0236,_ac0237,_ac0238,_ac0239
-  ,_ac0240,_ac0241,_ac0242,_ac0243,_ac0244,_ac0245,_ac0246,_ac0247,_ac0248,_ac0249
-  ,_ac0250,_ac0251,_ac0252,_ac0253,_ac0254,_ac0255,_ac0256,_ac0257,_ac0258,_ac0259
-  ,_ac0260,_ac0261,_ac0262,_ac0263,_ac0264,_ac0265,_ac0266,_ac0267,_ac0268,_ac0269
-  ,_ac0270,_ac0271,_ac0272,_ac0273,_ac0274,_ac0275,_ac0276,_ac0277,_ac0278,_ac0279
-  ,_ac0280,_ac0281,_ac0282,_ac0283,_ac0284,_ac0285,_ac0286,_ac0287,_ac0288,_ac0289
-  ,_ac0290,_ac0291,_ac0292,_ac0293,_ac0294,_ac0295,_ac0296,_ac0297,_ac0298,_ac0299
-  ,_ac0300
+/**********************************************************************************\
+* The 3 arrays NTindexListTable, stateListTable and successorCode holds a          *
+* compressed succesor-matrix, used by LRParser to find newstate = successor(S,A)   *
+* as last part of a reduction with production P, A -> alfa. The number of elements *
+* popped from the stack is the length of alfa, the state S is then taken from      *
+* stacktop, the nonterminal A is leftside of the reduce production P.              *
+* To complete the reduction, push(newstate)                                        *
+* For each relevant state S, a #define is generated and used as element S in array *
+* successorCode. Each define has the format:                                       *
+*                    3         2         1         0                               *
+*                   10987654321098765432109876543210                               *
+* #define _suSSSS 0xrrrrrrrrrrrrrrrCiiiiiiiiiiiiiiii                               *
+* where SSSS : The statenumber S                                                   *
+* i          : Bit[ 0-15], unsigned short                                          *
+* r          : Bit[17-31], unsigned short                                          *
+* C          : Bit 16, indicates how to interpret i and r.                         *
+* If C is 0  : Uncompressed format                                                 *
+*              i is the index into array NTindexListTable, pointing at the first   *
+*              element of NTIndexList (see below).                                 *
+*              r is the index into array stateListTable, pointing at the first     *
+*              element of stateList (see below)                                    *
+* If C is 1  : Compressed format                                                   *
+*              i is the index A' of nonterminal A, A' = (A - terminalCount)        *
+*              r is the new state. This format is used if there is only 1 possible *
+*              successor-state.                                                    *
+*                                                                                  *
+* For Uncompressed states (C=0) then use arrays NTIndexListTable and stateTable.   *
+*    n                  : NTIndexListTable[i] = number of elements in the list     *
+*    NTIndexList[0..n-1]: NTIndexListTable[i+1]..NTIndexListTable[i+n]             *
+*                         ordered list of non-terminals-indices, of length n       *
+*    stateList[  0..n-1]: stateListTable[r]..stateListTable[r+n-1], length = n     *
+*                                                                                  *
+* To get the new state, find the index k in NTIndexList, so NTIndexList[k] = A'    *
+* and use stateList[k] as the new state. Note that the non-terminal always exist   *
+\**********************************************************************************/
+#define _su0000 0x00030001 /* Goto 1 on ext_def_list                  */
+#define _su0001 0x00000000 /* NTindexList   0, stateList   0          */
+#define _su0003 0x00100009 /* NTindexList   1, stateList   1          */
+#define _su0006 0x001a000f /* NTindexList   2, stateList   2          */
+#define _su0012 0x00240015 /* NTindexList   3, stateList   3          */
+#define _su0013 0x003d000f /* Goto 30 on name                         */
+#define _su0017 0x00450006 /* Goto 34 on compound_stmt                */
+#define _su0021 0x00280018 /* NTindexList   4, stateList   4          */
+#define _su0022 0x002e0018 /* NTindexList   4, stateList   5          */
+#define _su0030 0x005f001e /* Goto 47 on opt_enum_list                */
+#define _su0031 0x0034001c /* NTindexList   5, stateList   6          */
+#define _su0033 0x003a0020 /* NTindexList   6, stateList   7          */
+#define _su0035 0x00420025 /* NTindexList   7, stateList   8          */
+#define _su0037 0x009b0021 /* Goto 77 on stmt_list                    */
+#define _su0038 0x00560030 /* NTindexList   8, stateList   9          */
+#define _su0039 0x006a003b /* NTindexList   9, stateList  10          */
+#define _su0040 0x007a0025 /* NTindexList   7, stateList  11          */
+#define _su0041 0x008e0044 /* NTindexList  10, stateList  12          */
+#define _su0046 0x00c30018 /* Goto 97 on def_list                     */
+#define _su0048 0x00a2001c /* NTindexList   5, stateList  13          */
+#define _su0056 0x00a8004f /* NTindexList  11, stateList  14          */
+#define _su0062 0x00c6005f /* NTindexList  12, stateList  15          */
+#define _su0063 0x00ca005f /* NTindexList  12, stateList  16          */
+#define _su0065 0x00ce005f /* NTindexList  12, stateList  17          */
+#define _su0066 0x00d2005f /* NTindexList  12, stateList  18          */
+#define _su0067 0x00d6005f /* NTindexList  12, stateList  19          */
+#define _su0077 0x00da0062 /* NTindexList  13, stateList  20          */
+#define _su0080 0x01000076 /* NTindexList  14, stateList  21          */
+#define _su0084 0x01160082 /* NTindexList  15, stateList  22          */
+#define _su0088 0x014b0016 /* Goto 165 on abs_decl                    */
+#define _su0097 0x0124008a /* NTindexList  16, stateList  23          */
+#define _su0100 0x01320092 /* NTindexList  17, stateList  24          */
+#define _su0101 0x01360025 /* NTindexList   7, stateList  25          */
+#define _su0105 0x014a0095 /* NTindexList  18, stateList  26          */
+#define _su0107 0x0154004f /* NTindexList  11, stateList  27          */
+#define _su0111 0x0172009b /* NTindexList  19, stateList  28          */
+#define _su0113 0x018400a5 /* NTindexList  20, stateList  29          */
+#define _su0117 0x019600af /* NTindexList  21, stateList  30          */
+#define _su0118 0x01a600af /* NTindexList  21, stateList  31          */
+#define _su0119 0x01b600af /* NTindexList  21, stateList  32          */
+#define _su0120 0x01c600af /* NTindexList  21, stateList  33          */
+#define _su0121 0x01d600b8 /* NTindexList  22, stateList  34          */
+#define _su0122 0x01e000be /* NTindexList  23, stateList  35          */
+#define _su0123 0x01e600be /* NTindexList  23, stateList  36          */
+#define _su0124 0x01ec00be /* NTindexList  23, stateList  37          */
+#define _su0125 0x01f200be /* NTindexList  23, stateList  38          */
+#define _su0126 0x01f800be /* NTindexList  23, stateList  39          */
+#define _su0127 0x01fe00be /* NTindexList  23, stateList  40          */
+#define _su0128 0x020400be /* NTindexList  23, stateList  41          */
+#define _su0129 0x020a00be /* NTindexList  23, stateList  42          */
+#define _su0130 0x021000be /* NTindexList  23, stateList  43          */
+#define _su0131 0x021600be /* NTindexList  23, stateList  44          */
+#define _su0132 0x021c00be /* NTindexList  23, stateList  45          */
+#define _su0136 0x022200c2 /* NTindexList  24, stateList  46          */
+#define _su0140 0x0236009b /* NTindexList  19, stateList  47          */
+#define _su0141 0x01a90024 /* Goto 212 on target                      */
+#define _su0145 0x024800cd /* NTindexList  25, stateList  48          */
+#define _su0150 0x02600025 /* NTindexList   7, stateList  49          */
+#define _su0152 0x0274009b /* NTindexList  19, stateList  50          */
+#define _su0153 0x01c30006 /* Goto 225 on compound_stmt               */
+#define _su0158 0x028600da /* NTindexList  26, stateList  51          */
+#define _su0163 0x029400e2 /* NTindexList  27, stateList  52          */
+#define _su0164 0x029a00e2 /* NTindexList  27, stateList  53          */
+#define _su0166 0x01cf0016 /* Goto 231 on abs_decl                    */
+#define _su0167 0x01cd0016 /* Goto 230 on abs_decl                    */
+#define _su0170 0x01d1000f /* Goto 232 on name                        */
+#define _su0178 0x02a0005f /* NTindexList  12, stateList  54          */
+#define _su0208 0x02a40025 /* NTindexList   7, stateList  55          */
+#define _su0214 0x02b800cd /* NTindexList  25, stateList  56          */
+#define _su0215 0x02d000e6 /* NTindexList  28, stateList  57          */
+#define _su0216 0x02e400e6 /* NTindexList  28, stateList  58          */
+#define _su0218 0x02f800f1 /* NTindexList  29, stateList  59          */
+#define _su0221 0x030c009b /* NTindexList  19, stateList  60          */
+#define _su0225 0x031e00fc /* NTindexList  30, stateList  61          */
+#define _su0227 0x03220030 /* NTindexList   8, stateList  62          */
+#define _su0229 0x03360025 /* NTindexList   7, stateList  63          */
+#define _su0239 0x034a00a5 /* NTindexList  20, stateList  64          */
+#define _su0240 0x035c00af /* NTindexList  21, stateList  65          */
+#define _su0242 0x036c00ff /* NTindexList  31, stateList  66          */
+#define _su0243 0x03740030 /* NTindexList   8, stateList  67          */
+#define _su0244 0x03880025 /* NTindexList   7, stateList  68          */
+#define _su0258 0x02270028 /* Goto 275 on exception_handler           */
+#define _su0270 0x039c00cd /* NTindexList  25, stateList  69          */
+#define _su0271 0x03b400cd /* NTindexList  25, stateList  70          */
+#define _su0272 0x03cc00e6 /* NTindexList  28, stateList  71          */
+#define _su0273 0x03e000e6 /* NTindexList  28, stateList  72          */
+#define _su0274 0x02370006 /* Goto 283 on compound_stmt               */
+#define _su0276 0x03f40104 /* NTindexList  32, stateList  73          */
+#define _su0285 0x0400010b /* NTindexList  33, stateList  74          */
+#define _su0288 0x040c00cd /* NTindexList  25, stateList  75          */
+#define _su0290 0x042400f1 /* NTindexList  29, stateList  76          */
+#define _su0291 0x02550006 /* Goto 298 on compound_stmt               */
+#define _su0293 0x04380112 /* NTindexList  34, stateList  77          */
+#define _su0294 0x043c0112 /* NTindexList  34, stateList  78          */
+#define _su0299 0x044000cd /* NTindexList  25, stateList  79          */
+
+#define nil (unsigned int)-1
+static const unsigned int successorCode[301] = {
+   _su0000,_su0001,nil    ,_su0003,nil    ,nil    ,_su0006,nil    ,nil    ,nil
+  ,nil    ,nil    ,_su0012,_su0013,nil    ,nil    ,nil    ,_su0017,nil    ,nil
+  ,nil    ,_su0021,_su0022,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil
+  ,_su0030,_su0031,nil    ,_su0033,nil    ,_su0035,nil    ,_su0037,_su0038,_su0039
+  ,_su0040,_su0041,nil    ,nil    ,nil    ,nil    ,_su0046,nil    ,_su0048,nil
+  ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,_su0056,nil    ,nil    ,nil
+  ,nil    ,nil    ,_su0062,_su0063,nil    ,_su0065,_su0066,_su0067,nil    ,nil
+  ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,_su0077,nil    ,nil
+  ,_su0080,nil    ,nil    ,nil    ,_su0084,nil    ,nil    ,nil    ,_su0088,nil
+  ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,_su0097,nil    ,nil
+  ,_su0100,_su0101,nil    ,nil    ,nil    ,_su0105,nil    ,_su0107,nil    ,nil
+  ,nil    ,_su0111,nil    ,_su0113,nil    ,nil    ,nil    ,_su0117,_su0118,_su0119
+  ,_su0120,_su0121,_su0122,_su0123,_su0124,_su0125,_su0126,_su0127,_su0128,_su0129
+  ,_su0130,_su0131,_su0132,nil    ,nil    ,nil    ,_su0136,nil    ,nil    ,nil
+  ,_su0140,_su0141,nil    ,nil    ,nil    ,_su0145,nil    ,nil    ,nil    ,nil
+  ,_su0150,nil    ,_su0152,_su0153,nil    ,nil    ,nil    ,nil    ,_su0158,nil
+  ,nil    ,nil    ,nil    ,_su0163,_su0164,nil    ,_su0166,_su0167,nil    ,nil
+  ,_su0170,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,_su0178,nil
+  ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil
+  ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil
+  ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,_su0208,nil
+  ,nil    ,nil    ,nil    ,nil    ,_su0214,_su0215,_su0216,nil    ,_su0218,nil
+  ,nil    ,_su0221,nil    ,nil    ,nil    ,_su0225,nil    ,_su0227,nil    ,_su0229
+  ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,_su0239
+  ,_su0240,nil    ,_su0242,_su0243,_su0244,nil    ,nil    ,nil    ,nil    ,nil
+  ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,_su0258,nil
+  ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil
+  ,_su0270,_su0271,_su0272,_su0273,_su0274,nil    ,_su0276,nil    ,nil    ,nil
+  ,nil    ,nil    ,nil    ,nil    ,nil    ,_su0285,nil    ,nil    ,_su0288,nil
+  ,_su0290,_su0291,nil    ,_su0293,_su0294,nil    ,nil    ,nil    ,nil    ,_su0299
+  ,nil
 }; // Size of table:1.204(x86)/1.208(x64) bytes.
 
-/******************************************************************************\
-* The successor matrix is used when the parser has reduced by prod A -> alfa   *
-* The number of elements popped from the stack is the length of the alfa, L.   *
-* and the state is taken from stacktop. The nonterminal A is leftside of the   *
-* reduce production                                                            *
-* Used by LRParser to find newstate = successor(state,A).                      *
-* For each relevant state the array stateSuccessors contains a list of numbers *
-*                                                                              *
-*   Item list for state NNNN with 3 items   3, 5,3 , 6,2, 8,5                  *
-*   Number of pairs in list ----------------+  | |                             *
-*   NonTerminal A------------------------------+ |                             *
-*   Goto this state------------------------------+                             *
-*                                                                              *
-* The array successorsIndex contains an index for each of these states         *
-* referering to the first number belonging to the state (as actionCode)        *
-* or 0 if a state has no items of the form B -> beta . A gamma                 *
-\******************************************************************************/
-static const unsigned char NTindexListTable[] = {
+static const unsigned char NTindexListTable[277] = {
      8,   2,   3,   7,   8,   9,  10,  11,  29                                                               /*    0 Used by state  (1) */
   ,  5,   4,   5,  12,  13,  15                                                                              /*    1 Used by state  (3) */
   ,  5,   8,   9,  10,  11,  29                                                                              /*    2 Used by state  (6) */
@@ -684,7 +837,7 @@ static const unsigned char NTindexListTable[] = {
   ,  2,  13,  15                                                                                             /*   34 Used by states (293,294) */
 }; // Size of table:280(x86)/280(x64) bytes.
 
-static const unsigned short stateListTable[] = {
+static const unsigned short stateListTable[556] = {
       2,   3,   6,   7,   8,  10,  11,  13                                                                   /*   0 Used by state  (1) */
   ,  15,  17,  18,  19,  20                                                                                  /*   1 Used by state  (3) */
   ,  25,   8,  10,  11,  13                                                                                  /*   2 Used by state  (6) */
@@ -767,141 +920,10 @@ static const unsigned short stateListTable[] = {
   , 138, 300, 139, 142,  64,  60,  69,  70,  71,  72,  73,  74                                               /*  79 Used by state  (299) */
 }; // Size of table:1.112(x86)/1.112(x64) bytes.
 
-#define _su0000 0x80010001 /* Goto 1 on ext_def_list                  */
-#define _su0001 0x00000000 /* NTindexList   0, stateList   0          */
-#define _su0003 0x00080009 /* NTindexList   1, stateList   1          */
-#define _su0006 0x000d000f /* NTindexList   2, stateList   2          */
-#define _su0012 0x00120015 /* NTindexList   3, stateList   3          */
-#define _su0013 0x801e000f /* Goto 30 on name                         */
-#define _su0017 0x80220006 /* Goto 34 on compound_stmt                */
-#define _su0021 0x00140018 /* NTindexList   4, stateList   4          */
-#define _su0022 0x00170018 /* NTindexList   4, stateList   5          */
-#define _su0030 0x802f001e /* Goto 47 on opt_enum_list                */
-#define _su0031 0x001a001c /* NTindexList   5, stateList   6          */
-#define _su0033 0x001d0020 /* NTindexList   6, stateList   7          */
-#define _su0035 0x00210025 /* NTindexList   7, stateList   8          */
-#define _su0037 0x804d0021 /* Goto 77 on stmt_list                    */
-#define _su0038 0x002b0030 /* NTindexList   8, stateList   9          */
-#define _su0039 0x0035003b /* NTindexList   9, stateList  10          */
-#define _su0040 0x003d0025 /* NTindexList   7, stateList  11          */
-#define _su0041 0x00470044 /* NTindexList  10, stateList  12          */
-#define _su0046 0x80610018 /* Goto 97 on def_list                     */
-#define _su0048 0x0051001c /* NTindexList   5, stateList  13          */
-#define _su0056 0x0054004f /* NTindexList  11, stateList  14          */
-#define _su0062 0x0063005f /* NTindexList  12, stateList  15          */
-#define _su0063 0x0065005f /* NTindexList  12, stateList  16          */
-#define _su0065 0x0067005f /* NTindexList  12, stateList  17          */
-#define _su0066 0x0069005f /* NTindexList  12, stateList  18          */
-#define _su0067 0x006b005f /* NTindexList  12, stateList  19          */
-#define _su0077 0x006d0062 /* NTindexList  13, stateList  20          */
-#define _su0080 0x00800076 /* NTindexList  14, stateList  21          */
-#define _su0084 0x008b0082 /* NTindexList  15, stateList  22          */
-#define _su0088 0x80a50016 /* Goto 165 on abs_decl                    */
-#define _su0097 0x0092008a /* NTindexList  16, stateList  23          */
-#define _su0100 0x00990092 /* NTindexList  17, stateList  24          */
-#define _su0101 0x009b0025 /* NTindexList   7, stateList  25          */
-#define _su0105 0x00a50095 /* NTindexList  18, stateList  26          */
-#define _su0107 0x00aa004f /* NTindexList  11, stateList  27          */
-#define _su0111 0x00b9009b /* NTindexList  19, stateList  28          */
-#define _su0113 0x00c200a5 /* NTindexList  20, stateList  29          */
-#define _su0117 0x00cb00af /* NTindexList  21, stateList  30          */
-#define _su0118 0x00d300af /* NTindexList  21, stateList  31          */
-#define _su0119 0x00db00af /* NTindexList  21, stateList  32          */
-#define _su0120 0x00e300af /* NTindexList  21, stateList  33          */
-#define _su0121 0x00eb00b8 /* NTindexList  22, stateList  34          */
-#define _su0122 0x00f000be /* NTindexList  23, stateList  35          */
-#define _su0123 0x00f300be /* NTindexList  23, stateList  36          */
-#define _su0124 0x00f600be /* NTindexList  23, stateList  37          */
-#define _su0125 0x00f900be /* NTindexList  23, stateList  38          */
-#define _su0126 0x00fc00be /* NTindexList  23, stateList  39          */
-#define _su0127 0x00ff00be /* NTindexList  23, stateList  40          */
-#define _su0128 0x010200be /* NTindexList  23, stateList  41          */
-#define _su0129 0x010500be /* NTindexList  23, stateList  42          */
-#define _su0130 0x010800be /* NTindexList  23, stateList  43          */
-#define _su0131 0x010b00be /* NTindexList  23, stateList  44          */
-#define _su0132 0x010e00be /* NTindexList  23, stateList  45          */
-#define _su0136 0x011100c2 /* NTindexList  24, stateList  46          */
-#define _su0140 0x011b009b /* NTindexList  19, stateList  47          */
-#define _su0141 0x80d40024 /* Goto 212 on target                      */
-#define _su0145 0x012400cd /* NTindexList  25, stateList  48          */
-#define _su0150 0x01300025 /* NTindexList   7, stateList  49          */
-#define _su0152 0x013a009b /* NTindexList  19, stateList  50          */
-#define _su0153 0x80e10006 /* Goto 225 on compound_stmt               */
-#define _su0158 0x014300da /* NTindexList  26, stateList  51          */
-#define _su0163 0x014a00e2 /* NTindexList  27, stateList  52          */
-#define _su0164 0x014d00e2 /* NTindexList  27, stateList  53          */
-#define _su0166 0x80e70016 /* Goto 231 on abs_decl                    */
-#define _su0167 0x80e60016 /* Goto 230 on abs_decl                    */
-#define _su0170 0x80e8000f /* Goto 232 on name                        */
-#define _su0178 0x0150005f /* NTindexList  12, stateList  54          */
-#define _su0208 0x01520025 /* NTindexList   7, stateList  55          */
-#define _su0214 0x015c00cd /* NTindexList  25, stateList  56          */
-#define _su0215 0x016800e6 /* NTindexList  28, stateList  57          */
-#define _su0216 0x017200e6 /* NTindexList  28, stateList  58          */
-#define _su0218 0x017c00f1 /* NTindexList  29, stateList  59          */
-#define _su0221 0x0186009b /* NTindexList  19, stateList  60          */
-#define _su0225 0x018f00fc /* NTindexList  30, stateList  61          */
-#define _su0227 0x01910030 /* NTindexList   8, stateList  62          */
-#define _su0229 0x019b0025 /* NTindexList   7, stateList  63          */
-#define _su0239 0x01a500a5 /* NTindexList  20, stateList  64          */
-#define _su0240 0x01ae00af /* NTindexList  21, stateList  65          */
-#define _su0242 0x01b600ff /* NTindexList  31, stateList  66          */
-#define _su0243 0x01ba0030 /* NTindexList   8, stateList  67          */
-#define _su0244 0x01c40025 /* NTindexList   7, stateList  68          */
-#define _su0258 0x81130028 /* Goto 275 on exception_handler           */
-#define _su0270 0x01ce00cd /* NTindexList  25, stateList  69          */
-#define _su0271 0x01da00cd /* NTindexList  25, stateList  70          */
-#define _su0272 0x01e600e6 /* NTindexList  28, stateList  71          */
-#define _su0273 0x01f000e6 /* NTindexList  28, stateList  72          */
-#define _su0274 0x811b0006 /* Goto 283 on compound_stmt               */
-#define _su0276 0x01fa0104 /* NTindexList  32, stateList  73          */
-#define _su0285 0x0200010b /* NTindexList  33, stateList  74          */
-#define _su0288 0x020600cd /* NTindexList  25, stateList  75          */
-#define _su0290 0x021200f1 /* NTindexList  29, stateList  76          */
-#define _su0291 0x812a0006 /* Goto 298 on compound_stmt               */
-#define _su0293 0x021c0112 /* NTindexList  34, stateList  77          */
-#define _su0294 0x021e0112 /* NTindexList  34, stateList  78          */
-#define _su0299 0x022000cd /* NTindexList  25, stateList  79          */
-
-#define nil (unsigned int)-1
-static const unsigned int successorCode[301] = {
-   _su0000,_su0001,nil    ,_su0003,nil    ,nil    ,_su0006,nil    ,nil    ,nil
-  ,nil    ,nil    ,_su0012,_su0013,nil    ,nil    ,nil    ,_su0017,nil    ,nil
-  ,nil    ,_su0021,_su0022,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil
-  ,_su0030,_su0031,nil    ,_su0033,nil    ,_su0035,nil    ,_su0037,_su0038,_su0039
-  ,_su0040,_su0041,nil    ,nil    ,nil    ,nil    ,_su0046,nil    ,_su0048,nil
-  ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,_su0056,nil    ,nil    ,nil
-  ,nil    ,nil    ,_su0062,_su0063,nil    ,_su0065,_su0066,_su0067,nil    ,nil
-  ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,_su0077,nil    ,nil
-  ,_su0080,nil    ,nil    ,nil    ,_su0084,nil    ,nil    ,nil    ,_su0088,nil
-  ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,_su0097,nil    ,nil
-  ,_su0100,_su0101,nil    ,nil    ,nil    ,_su0105,nil    ,_su0107,nil    ,nil
-  ,nil    ,_su0111,nil    ,_su0113,nil    ,nil    ,nil    ,_su0117,_su0118,_su0119
-  ,_su0120,_su0121,_su0122,_su0123,_su0124,_su0125,_su0126,_su0127,_su0128,_su0129
-  ,_su0130,_su0131,_su0132,nil    ,nil    ,nil    ,_su0136,nil    ,nil    ,nil
-  ,_su0140,_su0141,nil    ,nil    ,nil    ,_su0145,nil    ,nil    ,nil    ,nil
-  ,_su0150,nil    ,_su0152,_su0153,nil    ,nil    ,nil    ,nil    ,_su0158,nil
-  ,nil    ,nil    ,nil    ,_su0163,_su0164,nil    ,_su0166,_su0167,nil    ,nil
-  ,_su0170,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,_su0178,nil
-  ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil
-  ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil
-  ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,_su0208,nil
-  ,nil    ,nil    ,nil    ,nil    ,_su0214,_su0215,_su0216,nil    ,_su0218,nil
-  ,nil    ,_su0221,nil    ,nil    ,nil    ,_su0225,nil    ,_su0227,nil    ,_su0229
-  ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,_su0239
-  ,_su0240,nil    ,_su0242,_su0243,_su0244,nil    ,nil    ,nil    ,nil    ,nil
-  ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,_su0258,nil
-  ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil    ,nil
-  ,_su0270,_su0271,_su0272,_su0273,_su0274,nil    ,_su0276,nil    ,nil    ,nil
-  ,nil    ,nil    ,nil    ,nil    ,nil    ,_su0285,nil    ,nil    ,_su0288,nil
-  ,_su0290,_su0291,nil    ,_su0293,_su0294,nil    ,nil    ,nil    ,nil    ,_su0299
-  ,nil
-}; // Size of table:1.204(x86)/1.208(x64) bytes.
-
-/******************************************************************************\
-* The productionLength[] array is indexed by production number and holds       *
-* the number of symbols on the right side of each production.                  *
-\******************************************************************************/
+/**********************************************************************************\
+* The productionLength[] array is indexed by production number and holds           *
+* the number of symbols on the right side of each production.                      *
+\**********************************************************************************/
 static const unsigned char productionLength[165] = {
   /*   0 */    1,   0,   2,   3,   2,   3,   0,   2,   1,   1,
   /*  10 */    1,   2,   1,   1,   1,   1,   1,   1,   3,   1,
@@ -922,10 +944,10 @@ static const unsigned char productionLength[165] = {
   /* 160 */    1,   3,   1,   2,   1
 }; // Size of table:168(x86)/168(x64) bytes.
 
-/******************************************************************************\
-* The leftSide[] array is indexed by production number, and holds the          *
-* nonTerminal A on the left side of each production.                           *
-\******************************************************************************/
+/*********************************************************************************\
+* The leftSide[] array is indexed by production number, and holds the             *
+* index, A' of nonTerminal A on the left side of each production. A'=A-#terminals *
+\*********************************************************************************/
 static const unsigned char leftSideTable[165] = {
   /*   0 */    0,   1,   1,   2,   2,   2,   3,   3,   3,   3,
   /*  10 */    7,   7,   8,   8,   9,   9,   9,   4,   4,  12,
@@ -946,11 +968,11 @@ static const unsigned char leftSideTable[165] = {
   /* 160 */   51,  51,  43,  43,  15
 }; // Size of table:168(x86)/168(x64) bytes.
 
-/******************************************************************************\
-* The rightSide[] matrix is indexed by production number and holds             *
-* the right side symbols of each production.                                   *
-* Compressed and only used for debugging.                                      *
-\******************************************************************************/
+/*********************************************************************************\
+* The rightSide[] matrix is indexed by production number and holds                *
+* the right side symbols of each production.                                      *
+* Compressed and only used for debugging.                                         *
+\*********************************************************************************/
 static const unsigned char rightSideTable[376] = {
   /*   0 */   75
   /*   2 */ , 75, 76
@@ -1110,10 +1132,10 @@ static const unsigned char rightSideTable[376] = {
   /* 164 */ , 72
 }; // Size of table:376(x86)/376(x64) bytes.
 
-/******************************************************************************\
-* symbolNames contains names of terminal and nonTerminal separated by space    *
-* Used for debugging.                                                          *
-\******************************************************************************/
+/********************************************************************************\
+* symbolNames contains names of terminal and nonTerminal separated by space      *
+* Used for debugging.                                                            *
+\********************************************************************************/
 static const char *symbolNames = {
   "EOI"
   " STRING"
@@ -1248,7 +1270,7 @@ static const ParserTablesTemplate<74,126,165,301
                                  ,unsigned char
                                  ,unsigned char
                                  ,short
-                                 ,unsigned short> CppTables_s(actionCode       , compressedLasets  , terminalToUncompAction, uncompActionTable
+                                 ,unsigned short> CppTables_s(actionCode      , termListTable     , actionListTable, compressedLAsets
                                                              ,successorCode   , NTindexListTable  , stateListTable
                                                              ,productionLength, leftSideTable
                                                              ,rightSideTable  , symbolNames
