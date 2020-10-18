@@ -17,54 +17,64 @@
 * The interpretation of action is:                                                 *
 *   action <  0 - Reduce by production p, p == -action.                            *
 *   action == 0 - Accept. Reduce by production 0.                                  *
-*   action >  0 - Go to state newstate (=action),                                  *
-*                 and push newstate.                                               *
-*                 Then advance input 1 symbol                                      *
-*   action == _ParserError -  Unexpected input - do some recovery, to synchronize. *
-*                 input and stack                                                  *
+*   action >  0 - Shift to newstate (=action),                                     *
+*                 ie. push(newstate), set current state=newstate                   *
+*                 and advance input 1 symbol.                                      *
+*   action == _ParserError - Unexpected input. Do some recovery, to try to         *
+*                 synchronize input and stack, in order to continue parse.         *
+*                 (See LRParser::recover() in LRParser.cpp)                        *
 *                                                                                  *
 * For each state S, a #define is generated and used as element S in array          *
-* actionCode. Each define has the format:                                          *
-*                    3         2         1         0                               *
-*                   10987654321098765432109876543210                               *
-* #define _acSSSS 0xaaaaaaaaaaaaaaaCIttttttttttttttt                               *
-* where SSSS : The statenumber S                                                   *
-* t          : Bit[0-14],  unsigned short                                          *
-* a          : Bit[17-31], signed short                                            *
-* CI         : Bit[15-16], indicates how to interpret t and a.                     *
-* If C is 0  : Uncompressed format                                                 *
-*              t: Index into array termListTable, pointing at the first            *
-*                 element of termList (see below).                                 *
-*              a: Index into array actionListTable, pointing at the first          *
-*                 element of actionList (see below)                                *
-* If C is 1  : Compressed format                                                   *
-*              This format is used if there is only 1 possible action, a.          *
-*    I=0 (bit 15) There is only 1 legal terminal in this state                     *
-*              t: legal terminal                                                   *
-*              a: action                                                           *
+* actionCode. Each define looks as:                                                *
 *                                                                                  *
-*    I=1 If all actions in the state are reduce by the same production             *
-*              t: Index into compressedLAsets, pointing at the first element       *
-*                 of LASet (see below)                                             *
-*              a: action                                                           *
+* #define _acDDDD Code                                                             *
 *                                                                                  *
-* For Uncompressed states (C=0) then use arrays termListTable and actionListTable. *
-*    n                 : termListTable[t] = number of elements in the list         *
-*    termList[  0..n-1]: termListTable[t+1]..termListTable[t+n]                    *
-*                        ordered list of terminals, of length n                    *
-*    actionList[0..n-1]: actionListTable[a]..actionListTable[a+n-1], length = n    *
+* where DDDD is the statenumber S and Code is an unsigned int with the following   *
+* format:                                                                          *
+*                   0         1         2         3                                *
+* Bit index:        01234567890123456789012345678901                               *
+* Code     :        tttttttttttttttIFaaaaaaaaaaaaaaa                               *
 *                                                                                  *
-*    To get the action, find the index k in termList, so termList[k] = T           *
-*    and then pick actionList[k]. If T is not found, set action = _ParseError      *
+* t          : Bit[ 0-14]: unsigned short                                          *
+* a          : Bit[17-31]: signed short                                            *
+* F          : Bit 16    : Indicates how to interpret t and a.                     *
+* I          : Bit 15    : In case F==1, indicates how to interpret t.             *
 *                                                                                  *
-* For Compressed states, C=1 and I=1 then use array compressedLAsets which is a    *
-* list of bitset(0..terminalCount-1), LASet. Number of bytes in each LAset         *
+* F == 0: Uncompressed Format.                                                     *
+*      t: Index into array termListTable, pointing at the first element of         *
+*         termList (see below).                                                    *
+*      a: Index into array actionListTable, pointing at the first element of       *
+*         actionList (see below).                                                  *
+* F == 1: Compressed Format, used if there is only 1 possible action, a.           *
+*         I==0: There is only 1 legal terminal in the state.                       *
+*            t: Legal terminal.                                                    *
+*            a: Action.                                                            *
 *                                                                                  *
-*    b                 : (terminalcount-1)/8+1                                     *
-*    LAset[0..b-1]     : compressedLAsets[t]..compressedLAsets[t+b-1]              *
+*         I==1: All actions in the state are reduce by the same production P = -a. *
+*            t: Index into compressedLAsets, pointing at the first element of      *
+*               LASet (see below).                                                 *
+*            a: Action.                                                            *
 *                                                                                  *
-* As for Uncompressed states, the same check for existence is done. If terminal T  *
-* is not found, set action = _ParseError.                                          *
+* F == 0: Use arrays termListTable and actionListTable to find action.             *
+*      n                 : termListTable[t] = number of elements in termList.      *
+*      termList[0..n-1]  : termListTable[t+1..t+n]                                 *
+*                          Ordered list of legal terminals                         *
+*      actionList[0..n-1]: actionListTable[a..a+n-1] (same length as termList).    *
+*                                                                                  *
+*      To get action, find index k in termList, so termList[k] == T                *
+*      and set action = actionList[k]. If T is not found, set action = _ParseError.*
+*      Note that both termList and actionList may be shared by several states.     *
+*                                                                                  *
+* F == 1 and I==1: Use array compressedLAsets which is a list of bitsets, each     *
+*                  with terminalCount bits, a lookaheadset LAset with 1-bits       *
+*                  for legal terminals, and 0-bits for illegal terminals.          *
+*                                                                                  *
+*      b                 : Number of bytes in each LAset = (terminalCount-1)/8+1   *
+*      LAset[0..b-1]     : compressedLAsets[t..t+b-1]                              *
+*                                                                                  *
+*      As for uncompressed states, the same check for existence is done.           *
+*      If terminal T is not present in LAset, set action = _ParseError.            *
+*      Note that each LAset may be shared by several states.                       *
 \**********************************************************************************/
 #define _ac0000 0x00000000 /* termList   0, actionList   0            */
 #define _ac0001 0x00010000 /* Reduce by 0 on EOI                      */
@@ -100,37 +110,48 @@ static const char actionListTable[6] = {
 /**********************************************************************************\
 * The 3 arrays NTindexListTable, stateListTable and successorCode holds a          *
 * compressed succesor-matrix, used by LRParser to find newstate = successor(S,A)   *
-* as last part of a reduction with production P, A -> alfa. The number of elements *
-* popped from the stack is the length of alfa, the state S is then taken from      *
-* stacktop, the nonterminal A is leftside of the reduce production P.              *
-* To complete the reduction, push(newstate)                                        *
+* as last part of a reduction with production P, A -> alfa.                        *
+* A reduction by production P goes as follows:                                     *
+*   Pop L elements from stack, where L = length of alfa;                           *
+*   S = state on stacktop;                                                         *
+*   A = leftside of the reduce production P;                                       *
+*   newstate = successor(S,A);                                                     *
+*   push(newstate), and set current state = newstate.                              *
+*                                                                                  *
 * For each relevant state S, a #define is generated and used as element S in array *
 * successorCode. Each define has the format:                                       *
-*                    3         2         1         0                               *
-*                   10987654321098765432109876543210                               *
-* #define _suSSSS 0xrrrrrrrrrrrrrrrCiiiiiiiiiiiiiiii                               *
-* where SSSS : The statenumber S                                                   *
-* i          : Bit[ 0-15], unsigned short                                          *
-* r          : Bit[17-31], unsigned short                                          *
-* C          : Bit 16, indicates how to interpret i and r.                         *
-* If C is 0  : Uncompressed format                                                 *
-*              i is the index into array NTindexListTable, pointing at the first   *
-*              element of NTIndexList (see below).                                 *
-*              r is the index into array stateListTable, pointing at the first     *
-*              element of stateList (see below)                                    *
-* If C is 1  : Compressed format                                                   *
-*              i is the index A' of nonterminal A, A' = (A - terminalCount)        *
-*              r is the new state. This format is used if there is only 1 possible *
-*              successor-state.                                                    *
 *                                                                                  *
-* For Uncompressed states (C=0) then use arrays NTIndexListTable and stateTable.   *
-*    n                  : NTIndexListTable[i] = number of elements in the list     *
-*    NTIndexList[0..n-1]: NTIndexListTable[i+1]..NTIndexListTable[i+n]             *
-*                         ordered list of non-terminals-indices, of length n       *
-*    stateList[  0..n-1]: stateListTable[r]..stateListTable[r+n-1], length = n     *
+* #define _suDDDD Code                                                             *
 *                                                                                  *
-* To get the new state, find the index k in NTIndexList, so NTIndexList[k] = A'    *
-* and use stateList[k] as the new state. Note that the non-terminal always exist   *
+* where DDDD is the statenumber S and Code is an unsigned int with the following   *
+* format:                                                                          *
+*                   0         1         2         3                                *
+* Bit index:        01234567890123456789012345678901                               *
+* Code              iiiiiiiiiiiiiiiiFrrrrrrrrrrrrrrr                               *
+*                                                                                  *
+* i          : Bit[ 0-15]: unsigned short                                          *
+* r          : Bit[17-31]: unsigned short                                          *
+* F          : Bit 16    : Indicates how to interpret i and r.                     *
+*                                                                                  *
+* F == 0: Uncompressed Format.                                                     *
+*      i: Index into array NTindexListTable, pointing at the first element of      *
+*         NTIndexList (see below).                                                 *
+*      r: Index into array stateListTable, pointing at the first element of        *
+*         stateList (see below).                                                   *
+* F == 1: Compressed Format, used if there is only 1 possible newstate.            *
+*      i: Index A' of nonterminal A, A' = (A - terminalCount).                     *
+*      r: New state.                                                               *
+*                                                                                  *
+* F == 0: Use arrays NTIndexListTable and stateListTable to find newstate.         *
+*      n                  : NTIndexListTable[i] = number of elements in NTIndexList*
+*      NTIndexList[0..n-1]: NTIndexListTable[i+1..i+n]                             *
+*                           Ordered list of possible nonterminal-indices.          *
+*      stateList[0..n-1]  : stateListTable[r..r+n-1], same length as NTIndexList   *
+*                                                                                  *
+*      To get newstate, find index k in NTIndexList, so NTIndexList[k] == A',      *
+*      and set newstate = stateList[k].                                            *
+*      A' = (A - terminalCount) will always exist.                                 *
+*      Note that both NTIndexList and stateList may be shared by several states.   *
 \**********************************************************************************/
 #define _su0000 0x00030001 /* Goto 1 on S                             */
 #define _su0002 0x00090002 /* Goto 4 on A                             */
@@ -146,26 +167,28 @@ static const unsigned int successorCode[12] = {
 #define stateListTable   nullptr
 
 /**********************************************************************************\
-* The productionLength[] array is indexed by production number and holds           *
-* the number of symbols on the right side of each production.                      *
+* The productionLength[] is indexed by production number and holds the number of   *
+* symbols on the right side of each production.                                    *
 \**********************************************************************************/
 static const unsigned char productionLength[6] = {
-  /*   0 */    1,   3,   3,   3,   3,   1
+  /*   0 */    1,  3,  3,  3,  3,  1
 }; // Size of table:8(x86)/8(x64) bytes.
 
-/*********************************************************************************\
-* The leftSide[] array is indexed by production number, and holds the             *
-* index, A' of nonTerminal A on the left side of each production. A'=A-#terminals *
-\*********************************************************************************/
+/**********************************************************************************\
+* leftSideTable[] is indexed by production number.                                 *
+* leftSideTable[p] = A', A' = (A - terminalCount)                                  *
+*                        where A is the left side of production p.                 *
+* A' = 0..nonterminalCount-1.                                                      *
+* p  = 0..productionCount-1                                                        *
+\**********************************************************************************/
 static const unsigned char leftSideTable[6] = {
-  /*   0 */    0,   1,   1,   1,   1,   2
+  /*   0 */    0,  1,  1,  1,  1,  2
 }; // Size of table:8(x86)/8(x64) bytes.
 
-/*********************************************************************************\
-* The rightSide[] matrix is indexed by production number and holds                *
-* the right side symbols of each production.                                      *
-* Compressed and only used for debugging.                                         *
-\*********************************************************************************/
+/**********************************************************************************\
+* rightSideTable[] holds a compressed form of the rightsides of all                *
+* productions in the grammar. Only used for debugging.                             *
+\**********************************************************************************/
 static const unsigned char rightSideTable[14] = {
   /*   0 */    7
   /*   1 */ ,  1,  8,  4
@@ -175,20 +198,20 @@ static const unsigned char rightSideTable[14] = {
   /*   5 */ ,  5
 }; // Size of table:16(x86)/16(x64) bytes.
 
-/********************************************************************************\
-* symbolNames contains names of terminal and nonTerminal separated by space      *
-* Used for debugging.                                                            *
-\********************************************************************************/
+/**********************************************************************************\
+* symbolNames is a space separated string with the names of all symbols used in    *
+* grammar, terminals and nonTerminals. Only used for debugging.                    *
+\**********************************************************************************/
 static const char *symbolNames = {
-  "EOI"
-  " a"
-  " b"
-  " c"
-  " d"
-  " f"
-  " start"
-  " S"
-  " A"
+  "EOI"                                               /* T     0               */
+  " a"                                                /* T     1               */
+  " b"                                                /* T     2               */
+  " c"                                                /* T     3               */
+  " d"                                                /* T     4               */
+  " f"                                                /* T     5               */
+  " start"                                            /* NT    6 NTindex=0     */
+  " S"                                                /* NT    7 NTindex=1     */
+  " A"                                                /* NT    8 NTindex=2     */
 }; // Total size of string:24(x86)/24(x64) bytes
 
 static const ParserTablesTemplate<6,9,6,12
@@ -200,11 +223,11 @@ static const ParserTablesTemplate<6,9,6,12
                                                                ,successorCode   , NTindexListTable  , stateListTable
                                                                ,productionLength, leftSideTable
                                                                ,rightSideTable  , symbolNames
-                                                               ,240, 296);
+                                                               ,240, 304);
 
 const ParserTables *Olm627Parser::Olm627Tables = &Olm627Tables_s;
-// Size of Olm627Tables_s: 68(x86)/120(x64) bytes. Size of Olm627Tables:4(x86)/8(x64) bytes
+// Size of Olm627Tables_s: 68(x86)/128(x64) bytes. Size of Olm627Tables:4(x86)/8(x64) bytes
 
-// Total size of table data:240(x86)/296(x64) bytes.
+// Total size of table data:240(x86)/304(x64) bytes.
 
 

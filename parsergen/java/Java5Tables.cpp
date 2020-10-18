@@ -20,54 +20,64 @@
 * The interpretation of action is:                                                 *
 *   action <  0 - Reduce by production p, p == -action.                            *
 *   action == 0 - Accept. Reduce by production 0.                                  *
-*   action >  0 - Go to state newstate (=action),                                  *
-*                 and push newstate.                                               *
-*                 Then advance input 1 symbol                                      *
-*   action == _ParserError -  Unexpected input - do some recovery, to synchronize. *
-*                 input and stack                                                  *
+*   action >  0 - Shift to newstate (=action),                                     *
+*                 ie. push(newstate), set current state=newstate                   *
+*                 and advance input 1 symbol.                                      *
+*   action == _ParserError - Unexpected input. Do some recovery, to try to         *
+*                 synchronize input and stack, in order to continue parse.         *
+*                 (See LRParser::recover() in LRParser.cpp)                        *
 *                                                                                  *
 * For each state S, a #define is generated and used as element S in array          *
-* actionCode. Each define has the format:                                          *
-*                    3         2         1         0                               *
-*                   10987654321098765432109876543210                               *
-* #define _acSSSS 0xaaaaaaaaaaaaaaaCIttttttttttttttt                               *
-* where SSSS : The statenumber S                                                   *
-* t          : Bit[0-14],  unsigned short                                          *
-* a          : Bit[17-31], signed short                                            *
-* CI         : Bit[15-16], indicates how to interpret t and a.                     *
-* If C is 0  : Uncompressed format                                                 *
-*              t: Index into array termListTable, pointing at the first            *
-*                 element of termList (see below).                                 *
-*              a: Index into array actionListTable, pointing at the first          *
-*                 element of actionList (see below)                                *
-* If C is 1  : Compressed format                                                   *
-*              This format is used if there is only 1 possible action, a.          *
-*    I=0 (bit 15) There is only 1 legal terminal in this state                     *
-*              t: legal terminal                                                   *
-*              a: action                                                           *
+* actionCode. Each define looks as:                                                *
 *                                                                                  *
-*    I=1 If all actions in the state are reduce by the same production             *
-*              t: Index into compressedLAsets, pointing at the first element       *
-*                 of LASet (see below)                                             *
-*              a: action                                                           *
+* #define _acDDDD Code                                                             *
 *                                                                                  *
-* For Uncompressed states (C=0) then use arrays termListTable and actionListTable. *
-*    n                 : termListTable[t] = number of elements in the list         *
-*    termList[  0..n-1]: termListTable[t+1]..termListTable[t+n]                    *
-*                        ordered list of terminals, of length n                    *
-*    actionList[0..n-1]: actionListTable[a]..actionListTable[a+n-1], length = n    *
+* where DDDD is the statenumber S and Code is an unsigned int with the following   *
+* format:                                                                          *
+*                   0         1         2         3                                *
+* Bit index:        01234567890123456789012345678901                               *
+* Code     :        tttttttttttttttIFaaaaaaaaaaaaaaa                               *
 *                                                                                  *
-*    To get the action, find the index k in termList, so termList[k] = T           *
-*    and then pick actionList[k]. If T is not found, set action = _ParseError      *
+* t          : Bit[ 0-14]: unsigned short                                          *
+* a          : Bit[17-31]: signed short                                            *
+* F          : Bit 16    : Indicates how to interpret t and a.                     *
+* I          : Bit 15    : In case F==1, indicates how to interpret t.             *
 *                                                                                  *
-* For Compressed states, C=1 and I=1 then use array compressedLAsets which is a    *
-* list of bitset(0..terminalCount-1), LASet. Number of bytes in each LAset         *
+* F == 0: Uncompressed Format.                                                     *
+*      t: Index into array termListTable, pointing at the first element of         *
+*         termList (see below).                                                    *
+*      a: Index into array actionListTable, pointing at the first element of       *
+*         actionList (see below).                                                  *
+* F == 1: Compressed Format, used if there is only 1 possible action, a.           *
+*         I==0: There is only 1 legal terminal in the state.                       *
+*            t: Legal terminal.                                                    *
+*            a: Action.                                                            *
 *                                                                                  *
-*    b                 : (terminalcount-1)/8+1                                     *
-*    LAset[0..b-1]     : compressedLAsets[t]..compressedLAsets[t+b-1]              *
+*         I==1: All actions in the state are reduce by the same production P = -a. *
+*            t: Index into compressedLAsets, pointing at the first element of      *
+*               LASet (see below).                                                 *
+*            a: Action.                                                            *
 *                                                                                  *
-* As for Uncompressed states, the same check for existence is done. If terminal T  *
-* is not found, set action = _ParseError.                                          *
+* F == 0: Use arrays termListTable and actionListTable to find action.             *
+*      n                 : termListTable[t] = number of elements in termList.      *
+*      termList[0..n-1]  : termListTable[t+1..t+n]                                 *
+*                          Ordered list of legal terminals                         *
+*      actionList[0..n-1]: actionListTable[a..a+n-1] (same length as termList).    *
+*                                                                                  *
+*      To get action, find index k in termList, so termList[k] == T                *
+*      and set action = actionList[k]. If T is not found, set action = _ParseError.*
+*      Note that both termList and actionList may be shared by several states.     *
+*                                                                                  *
+* F == 1 and I==1: Use array compressedLAsets which is a list of bitsets, each     *
+*                  with terminalCount bits, a lookaheadset LAset with 1-bits       *
+*                  for legal terminals, and 0-bits for illegal terminals.          *
+*                                                                                  *
+*      b                 : Number of bytes in each LAset = (terminalCount-1)/8+1   *
+*      LAset[0..b-1]     : compressedLAsets[t..t+b-1]                              *
+*                                                                                  *
+*      As for uncompressed states, the same check for existence is done.           *
+*      If terminal T is not present in LAset, set action = _ParseError.            *
+*      Note that each LAset may be shared by several states.                       *
 \**********************************************************************************/
 #define _ac0000 0x00000000 /* termList   0, actionList   0            */
 #define _ac0001 0x00010000 /* Reduce by 0 on EOI                      */
@@ -2134,37 +2144,48 @@ static const unsigned char compressedLAsets[686] = {
 /**********************************************************************************\
 * The 3 arrays NTindexListTable, stateListTable and successorCode holds a          *
 * compressed succesor-matrix, used by LRParser to find newstate = successor(S,A)   *
-* as last part of a reduction with production P, A -> alfa. The number of elements *
-* popped from the stack is the length of alfa, the state S is then taken from      *
-* stacktop, the nonterminal A is leftside of the reduce production P.              *
-* To complete the reduction, push(newstate)                                        *
+* as last part of a reduction with production P, A -> alfa.                        *
+* A reduction by production P goes as follows:                                     *
+*   Pop L elements from stack, where L = length of alfa;                           *
+*   S = state on stacktop;                                                         *
+*   A = leftside of the reduce production P;                                       *
+*   newstate = successor(S,A);                                                     *
+*   push(newstate), and set current state = newstate.                              *
+*                                                                                  *
 * For each relevant state S, a #define is generated and used as element S in array *
 * successorCode. Each define has the format:                                       *
-*                    3         2         1         0                               *
-*                   10987654321098765432109876543210                               *
-* #define _suSSSS 0xrrrrrrrrrrrrrrrCiiiiiiiiiiiiiiii                               *
-* where SSSS : The statenumber S                                                   *
-* i          : Bit[ 0-15], unsigned short                                          *
-* r          : Bit[17-31], unsigned short                                          *
-* C          : Bit 16, indicates how to interpret i and r.                         *
-* If C is 0  : Uncompressed format                                                 *
-*              i is the index into array NTindexListTable, pointing at the first   *
-*              element of NTIndexList (see below).                                 *
-*              r is the index into array stateListTable, pointing at the first     *
-*              element of stateList (see below)                                    *
-* If C is 1  : Compressed format                                                   *
-*              i is the index A' of nonterminal A, A' = (A - terminalCount)        *
-*              r is the new state. This format is used if there is only 1 possible *
-*              successor-state.                                                    *
 *                                                                                  *
-* For Uncompressed states (C=0) then use arrays NTIndexListTable and stateTable.   *
-*    n                  : NTIndexListTable[i] = number of elements in the list     *
-*    NTIndexList[0..n-1]: NTIndexListTable[i+1]..NTIndexListTable[i+n]             *
-*                         ordered list of non-terminals-indices, of length n       *
-*    stateList[  0..n-1]: stateListTable[r]..stateListTable[r+n-1], length = n     *
+* #define _suDDDD Code                                                             *
 *                                                                                  *
-* To get the new state, find the index k in NTIndexList, so NTIndexList[k] = A'    *
-* and use stateList[k] as the new state. Note that the non-terminal always exist   *
+* where DDDD is the statenumber S and Code is an unsigned int with the following   *
+* format:                                                                          *
+*                   0         1         2         3                                *
+* Bit index:        01234567890123456789012345678901                               *
+* Code              iiiiiiiiiiiiiiiiFrrrrrrrrrrrrrrr                               *
+*                                                                                  *
+* i          : Bit[ 0-15]: unsigned short                                          *
+* r          : Bit[17-31]: unsigned short                                          *
+* F          : Bit 16    : Indicates how to interpret i and r.                     *
+*                                                                                  *
+* F == 0: Uncompressed Format.                                                     *
+*      i: Index into array NTindexListTable, pointing at the first element of      *
+*         NTIndexList (see below).                                                 *
+*      r: Index into array stateListTable, pointing at the first element of        *
+*         stateList (see below).                                                   *
+* F == 1: Compressed Format, used if there is only 1 possible newstate.            *
+*      i: Index A' of nonterminal A, A' = (A - terminalCount).                     *
+*      r: New state.                                                               *
+*                                                                                  *
+* F == 0: Use arrays NTIndexListTable and stateListTable to find newstate.         *
+*      n                  : NTIndexListTable[i] = number of elements in NTIndexList*
+*      NTIndexList[0..n-1]: NTIndexListTable[i+1..i+n]                             *
+*                           Ordered list of possible nonterminal-indices.          *
+*      stateList[0..n-1]  : stateListTable[r..r+n-1], same length as NTIndexList   *
+*                                                                                  *
+*      To get newstate, find index k in NTIndexList, so NTIndexList[k] == A',      *
+*      and set newstate = stateList[k].                                            *
+*      A' = (A - terminalCount) will always exist.                                 *
+*      Note that both NTIndexList and stateList may be shared by several states.   *
 \**********************************************************************************/
 #define _su0000 0x00000000 /* NTindexList   0, stateList   0          */
 #define _su0002 0x00280015 /* NTindexList   1, stateList   1          */
@@ -3401,152 +3422,154 @@ static const unsigned short stateListTable[5551] = {
 }; // Size of table:11.104(x86)/11.104(x64) bytes.
 
 /**********************************************************************************\
-* The productionLength[] array is indexed by production number and holds           *
-* the number of symbols on the right side of each production.                      *
+* The productionLength[] is indexed by production number and holds the number of   *
+* symbols on the right side of each production.                                    *
 \**********************************************************************************/
 static const unsigned char productionLength[635] = {
-  /*   0 */    1,   3,   1,   1,   1,   1,   1,   1,   1,   1,
-  /*  10 */    1,   1,   1,   1,   1,   1,   1,   1,   1,   2,
-  /*  20 */    2,   3,   5,   1,   3,   2,   1,   4,   1,   3,
-  /*  30 */    1,   4,   1,   1,   1,   1,   3,   5,   4,   6,
-  /*  40 */    1,   1,   1,   1,   1,   1,   1,   1,   1,   1,
-  /*  50 */    1,   1,   1,   1,   1,   1,   1,   7,   2,   2,
-  /*  60 */    3,   1,   1,   1,   1,   1,   1,   1,   2,   4,
-  /*  70 */    8,   7,   6,   3,   1,   1,   3,   1,   3,   2,
-  /*  80 */    1,   1,   3,   1,   3,   4,   1,   2,   1,   1,
-  /*  90 */    4,   4,   4,   6,   6,   2,   3,   1,   1,   1,
-  /* 100 */    5,   5,   1,   3,   4,   2,   5,   3,   7,   1,
-  /* 110 */    1,   2,   3,   1,   3,   1,   8,   7,   4,   1,
-  /* 120 */    3,   1,   1,   1,   1,   2,   3,   1,   1,   1,
-  /* 130 */    1,   1,   1,   1,   1,   1,   1,   1,   1,   1,
-  /* 140 */    1,   1,   1,   1,   1,   1,   1,   1,   1,   1,
-  /* 150 */    1,   1,   1,   1,   3,   3,   2,   1,   1,   1,
-  /* 160 */    1,   1,   1,   1,   3,   5,   5,   3,   4,   2,
-  /* 170 */    3,   2,   3,   3,   5,   9,   9,   1,   1,   1,
-  /* 180 */    9,   9,   1,   3,   3,   3,   3,   3,   3,   3,
-  /* 190 */    4,   3,   2,   3,   5,   3,   1,   1,   1,   1,
-  /* 200 */    3,   3,   1,   1,   1,   1,   3,   3,   4,   4,
-  /* 210 */    3,   5,   7,   7,   4,   4,   4,   4,   3,   3,
-  /* 220 */    2,   5,   5,   5,   2,   2,   3,   2,   1,   1,
-  /* 230 */    1,   1,   1,   1,   1,   3,   1,   5,   1,   5,
-  /* 240 */    5,   1,   3,   1,   3,   3,   1,   3,   1,   3,
-  /* 250 */    3,   1,   3,   1,   3,   3,   1,   3,   1,   3,
-  /* 260 */    3,   1,   3,   1,   3,   3,   1,   3,   3,   1,
-  /* 270 */    3,   3,   3,   3,   1,   3,   1,   3,   3,   1,
-  /* 280 */    3,   3,   3,   3,   1,   3,   3,   3,   3,   3,
-  /* 290 */    3,   3,   3,   1,   3,   3,   3,   1,   3,   3,
-  /* 300 */    3,   3,   3,   3,   1,   3,   3,   1,   3,   3,
-  /* 310 */    3,   3,   1,   3,   3,   3,   1,   3,   3,   3,
-  /* 320 */    3,   3,   3,   1,   1,   2,   2,   1,   1,   1,
-  /* 330 */    2,   2,   1,   2,   2,   1,   2,   2,   1,   1,
-  /* 340 */    2,   2,   1,   4,   5,   5,   6,   7,   8,   4,
-  /* 350 */    5,   1,   1,   1,   1,   1,   1,   1,   2,   2,
-  /* 360 */    1,   1,   1,   1,   1,   1,   1,   1,   1,   1,
-  /* 370 */    1,   1,   2,   1,   3,   1,   1,   2,   3,   2,
-  /* 380 */    3,   3,   1,   3,   1,   1,   2,   3,   2,   3,
-  /* 390 */    3,   1,   3,   1,   1,   2,   2,   3,   3,   1,
-  /* 400 */    3,   1,   1,   1,   3,   3,   2,   1,   3,   2,
-  /* 410 */    2,   2,   3,   1,   2,   2,   1,   3,   2,   2,
-  /* 420 */    3,   1,   2,   2,   1,   1,   1,   5,   2,   5,
-  /* 430 */    1,   3,   3,   1,   3,   1,   1,   1,   1,   4,
-  /* 440 */    2,   2,   1,   2,   1,   2,   1,   1,   2,   1,
-  /* 450 */    6,   6,   6,   2,   1,   7,   7,   6,   6,   5,
-  /* 460 */    5,   2,   1,   2,   3,   3,   3,   3,   5,   5,
-  /* 470 */    5,   2,   1,   4,   4,   4,   4,   2,   1,   3,
-  /* 480 */    3,   2,   1,   6,   2,   7,   7,   6,   6,   3,
-  /* 490 */    3,   2,   1,   2,   1,   8,   8,   8,   8,   8,
-  /* 500 */    8,   2,   2,   2,   2,   1,   4,   4,   6,   6,
-  /* 510 */    6,   6,   2,   1,   4,   4,   4,   1,   4,   3,
-  /* 520 */    3,   5,   5,   5,   5,   5,   5,   6,   6,   6,
-  /* 530 */    6,   5,   5,   5,   4,   4,   4,   2,   4,   4,
-  /* 540 */    4,   3,   3,   3,   3,   2,   2,   2,   5,   6,
-  /* 550 */    6,   6,   6,   5,   5,   5,   2,   7,   7,   7,
-  /* 560 */    7,   7,   7,   3,   5,   5,   2,   4,   4,   4,
-  /* 570 */    4,   5,   5,   5,   4,   3,   3,   2,   1,   5,
-  /* 580 */    5,   5,   4,   6,   6,   3,   4,   4,   2,   2,
-  /* 590 */    3,   6,   2,   3,   7,   7,   6,   5,   2,   1,
-  /* 600 */    3,   3,   5,   2,   4,   3,   1,   4,   2,   6,
-  /* 610 */    7,   7,   6,   2,   3,   3,   8,   8,   3,   3,
-  /* 620 */    3,   3,   3,   1,   1,   6,   2,   6,   5,   5,
-  /* 630 */    1,   6,   6,   2,   0
+  /*   0 */    1,  3,  1,  1,  1,  1,  1,  1,  1,  1
+  /*  10 */ ,  1,  1,  1,  1,  1,  1,  1,  1,  1,  2
+  /*  20 */ ,  2,  3,  5,  1,  3,  2,  1,  4,  1,  3
+  /*  30 */ ,  1,  4,  1,  1,  1,  1,  3,  5,  4,  6
+  /*  40 */ ,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1
+  /*  50 */ ,  1,  1,  1,  1,  1,  1,  1,  7,  2,  2
+  /*  60 */ ,  3,  1,  1,  1,  1,  1,  1,  1,  2,  4
+  /*  70 */ ,  8,  7,  6,  3,  1,  1,  3,  1,  3,  2
+  /*  80 */ ,  1,  1,  3,  1,  3,  4,  1,  2,  1,  1
+  /*  90 */ ,  4,  4,  4,  6,  6,  2,  3,  1,  1,  1
+  /* 100 */ ,  5,  5,  1,  3,  4,  2,  5,  3,  7,  1
+  /* 110 */ ,  1,  2,  3,  1,  3,  1,  8,  7,  4,  1
+  /* 120 */ ,  3,  1,  1,  1,  1,  2,  3,  1,  1,  1
+  /* 130 */ ,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1
+  /* 140 */ ,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1
+  /* 150 */ ,  1,  1,  1,  1,  3,  3,  2,  1,  1,  1
+  /* 160 */ ,  1,  1,  1,  1,  3,  5,  5,  3,  4,  2
+  /* 170 */ ,  3,  2,  3,  3,  5,  9,  9,  1,  1,  1
+  /* 180 */ ,  9,  9,  1,  3,  3,  3,  3,  3,  3,  3
+  /* 190 */ ,  4,  3,  2,  3,  5,  3,  1,  1,  1,  1
+  /* 200 */ ,  3,  3,  1,  1,  1,  1,  3,  3,  4,  4
+  /* 210 */ ,  3,  5,  7,  7,  4,  4,  4,  4,  3,  3
+  /* 220 */ ,  2,  5,  5,  5,  2,  2,  3,  2,  1,  1
+  /* 230 */ ,  1,  1,  1,  1,  1,  3,  1,  5,  1,  5
+  /* 240 */ ,  5,  1,  3,  1,  3,  3,  1,  3,  1,  3
+  /* 250 */ ,  3,  1,  3,  1,  3,  3,  1,  3,  1,  3
+  /* 260 */ ,  3,  1,  3,  1,  3,  3,  1,  3,  3,  1
+  /* 270 */ ,  3,  3,  3,  3,  1,  3,  1,  3,  3,  1
+  /* 280 */ ,  3,  3,  3,  3,  1,  3,  3,  3,  3,  3
+  /* 290 */ ,  3,  3,  3,  1,  3,  3,  3,  1,  3,  3
+  /* 300 */ ,  3,  3,  3,  3,  1,  3,  3,  1,  3,  3
+  /* 310 */ ,  3,  3,  1,  3,  3,  3,  1,  3,  3,  3
+  /* 320 */ ,  3,  3,  3,  1,  1,  2,  2,  1,  1,  1
+  /* 330 */ ,  2,  2,  1,  2,  2,  1,  2,  2,  1,  1
+  /* 340 */ ,  2,  2,  1,  4,  5,  5,  6,  7,  8,  4
+  /* 350 */ ,  5,  1,  1,  1,  1,  1,  1,  1,  2,  2
+  /* 360 */ ,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1
+  /* 370 */ ,  1,  1,  2,  1,  3,  1,  1,  2,  3,  2
+  /* 380 */ ,  3,  3,  1,  3,  1,  1,  2,  3,  2,  3
+  /* 390 */ ,  3,  1,  3,  1,  1,  2,  2,  3,  3,  1
+  /* 400 */ ,  3,  1,  1,  1,  3,  3,  2,  1,  3,  2
+  /* 410 */ ,  2,  2,  3,  1,  2,  2,  1,  3,  2,  2
+  /* 420 */ ,  3,  1,  2,  2,  1,  1,  1,  5,  2,  5
+  /* 430 */ ,  1,  3,  3,  1,  3,  1,  1,  1,  1,  4
+  /* 440 */ ,  2,  2,  1,  2,  1,  2,  1,  1,  2,  1
+  /* 450 */ ,  6,  6,  6,  2,  1,  7,  7,  6,  6,  5
+  /* 460 */ ,  5,  2,  1,  2,  3,  3,  3,  3,  5,  5
+  /* 470 */ ,  5,  2,  1,  4,  4,  4,  4,  2,  1,  3
+  /* 480 */ ,  3,  2,  1,  6,  2,  7,  7,  6,  6,  3
+  /* 490 */ ,  3,  2,  1,  2,  1,  8,  8,  8,  8,  8
+  /* 500 */ ,  8,  2,  2,  2,  2,  1,  4,  4,  6,  6
+  /* 510 */ ,  6,  6,  2,  1,  4,  4,  4,  1,  4,  3
+  /* 520 */ ,  3,  5,  5,  5,  5,  5,  5,  6,  6,  6
+  /* 530 */ ,  6,  5,  5,  5,  4,  4,  4,  2,  4,  4
+  /* 540 */ ,  4,  3,  3,  3,  3,  2,  2,  2,  5,  6
+  /* 550 */ ,  6,  6,  6,  5,  5,  5,  2,  7,  7,  7
+  /* 560 */ ,  7,  7,  7,  3,  5,  5,  2,  4,  4,  4
+  /* 570 */ ,  4,  5,  5,  5,  4,  3,  3,  2,  1,  5
+  /* 580 */ ,  5,  5,  4,  6,  6,  3,  4,  4,  2,  2
+  /* 590 */ ,  3,  6,  2,  3,  7,  7,  6,  5,  2,  1
+  /* 600 */ ,  3,  3,  5,  2,  4,  3,  1,  4,  2,  6
+  /* 610 */ ,  7,  7,  6,  2,  3,  3,  8,  8,  3,  3
+  /* 620 */ ,  3,  3,  3,  1,  1,  6,  2,  6,  5,  5
+  /* 630 */ ,  1,  6,  6,  2,  0
 }; // Size of table:636(x86)/640(x64) bytes.
 
-/*********************************************************************************\
-* The leftSide[] array is indexed by production number, and holds the             *
-* index, A' of nonTerminal A on the left side of each production. A'=A-#terminals *
-\*********************************************************************************/
+/**********************************************************************************\
+* leftSideTable[] is indexed by production number.                                 *
+* leftSideTable[p] = A', A' = (A - terminalCount)                                  *
+*                        where A is the left side of production p.                 *
+* A' = 0..nonterminalCount-1.                                                      *
+* p  = 0..productionCount-1                                                        *
+\**********************************************************************************/
 static const unsigned char leftSideTable[635] = {
-  /*   0 */    0,   1,   5,   5,   5,   5,   5,   5,   6,   6,
-  /*  10 */    7,   7,   7,   7,   7,   7,   7,   7,   8,   8,
-  /*  20 */    8,   8,   8,  14,  14,   9,  12,  12,  11,  11,
-  /*  30 */   15,   2,   3,   3,   3,   3,  17,  18,  19,  20,
-  /*  40 */    4,   4,   4,   4,   4,  16,  16,  16,  16,  16,
-  /*  50 */   16,  16,  16,  16,  16,  16,  16,  21,  27,  28,
-  /*  60 */   29,  30,  30,  30,  30,  31,  31,  31,  32,  35,
-  /*  70 */   36,  36,  33,  34,  38,  37,  37,  44,  44,  45,
-  /*  80 */   46,  46,  39,  49,  49,  50,  51,  40,  41,  41,
-  /*  90 */   42,  52,  52,  52,  23,  55,  56,  57,  57,  57,
-  /* 100 */   22,  60,  61,  61,  63,  62,  24,  64,  65,  65,
-  /* 110 */   65,  66,  53,  68,  68,  58,  59,  59,  48,  69,
-  /* 120 */   69,  43,  43,  43,  43,  70,  72,  71,  71,  71,
-  /* 130 */   71,  71,  71,  71,  80,  80,  80,  80,  80,  80,
-  /* 140 */   73,  73,  73,  73,  73,  73,  73,  73,  73,  73,
-  /* 150 */   73,  73,  73,  86,  74,  81,  87,  98,  98,  98,
-  /* 160 */   98,  98,  98,  98,  75,  76,  82,  88, 107, 108,
-  /* 170 */  109, 109,  77,  83,  89,  78,  84, 111, 111, 112,
-  /* 180 */   79,  85, 113, 113,  90,  91,  92,  94,  93,  95,
-  /* 190 */   95, 114, 115,  96,  97, 106,  54,  54, 116, 116,
-  /* 200 */  116, 116, 116, 116, 116, 116, 116, 116, 116, 116,
-  /* 210 */  116, 105, 105, 105, 117, 117, 117, 117, 119, 119,
-  /* 220 */  104, 104, 104, 104, 120, 120, 121,  10, 110,  47,
-  /* 230 */  118, 122, 122, 123, 123,  99, 124, 124, 125, 125,
-  /* 240 */  125, 128, 128, 129, 129, 129, 130, 130, 131, 131,
-  /* 250 */  131, 132, 132, 133, 133, 133, 134, 134, 135, 135,
-  /* 260 */  135, 136, 136, 137, 137, 137, 138, 138, 138, 139,
-  /* 270 */  139, 139, 139, 139, 140, 140, 141, 141, 141, 142,
-  /* 280 */  142, 142, 142, 142, 143, 143, 143, 143, 143, 143,
-  /* 290 */  143, 143, 143, 144, 144, 144, 144, 145, 145, 145,
-  /* 300 */  145, 145, 145, 145, 146, 146, 146, 147, 147, 147,
-  /* 310 */  147, 147, 148, 148, 148, 148, 149, 149, 149, 149,
-  /* 320 */  149, 149, 149, 150, 150, 150, 150, 150, 151, 151,
-  /* 330 */  151, 151, 151, 100, 101, 152, 152, 152, 152, 153,
-  /* 340 */  153, 153, 153, 154, 154, 154, 154, 154, 154, 154,
-  /* 350 */  154, 126, 126, 126, 126, 155, 155, 155, 102, 103,
-  /* 360 */  127, 127, 127, 127, 127, 127, 127, 127, 127, 127,
-  /* 370 */  127, 127,  13, 156, 156, 157, 157, 159, 159, 160,
-  /* 380 */  160, 160, 161, 161, 162, 162, 163, 163, 164, 164,
-  /* 390 */  164, 165, 165, 166, 166, 167, 168, 168, 168, 158,
-  /* 400 */  158, 169, 169, 170, 170, 170,  26, 171, 171, 172,
-  /* 410 */  172, 174, 174, 175, 175, 176, 173, 173, 177, 178,
-  /* 420 */  178, 179, 179, 180,  25,  25,  25, 181, 182, 183,
-  /* 430 */  184, 184, 185, 186, 186,  67,  67,  67,  67, 187,
-  /* 440 */    1, 188, 188, 189, 189, 190, 190,   9, 191, 191,
-  /* 450 */   21,  21,  21, 192, 192,  36,  36,  36,  36,  33,
-  /* 460 */   33, 193, 193,  39,  50,  42,  52,  52,  52,  23,
-  /* 470 */   23, 194, 194,  22,  60,  60,  60, 195, 195,  63,
-  /* 480 */   63, 196, 196,  65,  53,  59,  59,  59,  59,  48,
-  /* 490 */   48, 197, 197, 198, 198,  78,  78,  78,  84,  84,
-  /* 500 */   84,  90,  91,  92, 199, 199, 105, 105, 105, 105,
-  /* 510 */  105, 105, 200, 200, 104, 104, 104, 177, 181, 187,
-  /* 520 */  187,  21,  21,  21,  21,  21,  21,  36,  36,  36,
-  /* 530 */   36,  36,  36,  36,  33,  33,  33,  50,  23,  23,
-  /* 540 */   23,  22,  60,  60,  60,  63,  63,  63,  65,  59,
-  /* 550 */   59,  59,  59,  59,  59,  59,  48,  78,  78,  78,
-  /* 560 */   84,  84,  84, 105, 105, 105, 187,  21,  21,  21,
-  /* 570 */   21,  36,  36,  36,  36,  33,  23,  60,  63,  59,
-  /* 580 */   59,  59,  59,  78,  84,  21,  36,  59,   1,   1,
-  /* 590 */    2,  21,  29,  35,  36,  36,  36,  33,  34,  45,
-  /* 600 */   50,  42,  23,  56,  22,  63,  62,  24,  64,  65,
-  /* 610 */   59,  59,  59,  72, 107, 107,  79,  85,  95, 116,
-  /* 620 */  116, 117, 117,   1,   1,  36,  42,  59,  36,  59,
-  /* 630 */    1,  36,  59, 107,   1
+  /*   0 */    0,  1,  5,  5,  5,  5,  5,  5,  6,  6
+  /*  10 */ ,  7,  7,  7,  7,  7,  7,  7,  7,  8,  8
+  /*  20 */ ,  8,  8,  8, 14, 14,  9, 12, 12, 11, 11
+  /*  30 */ , 15,  2,  3,  3,  3,  3, 17, 18, 19, 20
+  /*  40 */ ,  4,  4,  4,  4,  4, 16, 16, 16, 16, 16
+  /*  50 */ , 16, 16, 16, 16, 16, 16, 16, 21, 27, 28
+  /*  60 */ , 29, 30, 30, 30, 30, 31, 31, 31, 32, 35
+  /*  70 */ , 36, 36, 33, 34, 38, 37, 37, 44, 44, 45
+  /*  80 */ , 46, 46, 39, 49, 49, 50, 51, 40, 41, 41
+  /*  90 */ , 42, 52, 52, 52, 23, 55, 56, 57, 57, 57
+  /* 100 */ , 22, 60, 61, 61, 63, 62, 24, 64, 65, 65
+  /* 110 */ , 65, 66, 53, 68, 68, 58, 59, 59, 48, 69
+  /* 120 */ , 69, 43, 43, 43, 43, 70, 72, 71, 71, 71
+  /* 130 */ , 71, 71, 71, 71, 80, 80, 80, 80, 80, 80
+  /* 140 */ , 73, 73, 73, 73, 73, 73, 73, 73, 73, 73
+  /* 150 */ , 73, 73, 73, 86, 74, 81, 87, 98, 98, 98
+  /* 160 */ , 98, 98, 98, 98, 75, 76, 82, 88,107,108
+  /* 170 */ ,109,109, 77, 83, 89, 78, 84,111,111,112
+  /* 180 */ , 79, 85,113,113, 90, 91, 92, 94, 93, 95
+  /* 190 */ , 95,114,115, 96, 97,106, 54, 54,116,116
+  /* 200 */ ,116,116,116,116,116,116,116,116,116,116
+  /* 210 */ ,116,105,105,105,117,117,117,117,119,119
+  /* 220 */ ,104,104,104,104,120,120,121, 10,110, 47
+  /* 230 */ ,118,122,122,123,123, 99,124,124,125,125
+  /* 240 */ ,125,128,128,129,129,129,130,130,131,131
+  /* 250 */ ,131,132,132,133,133,133,134,134,135,135
+  /* 260 */ ,135,136,136,137,137,137,138,138,138,139
+  /* 270 */ ,139,139,139,139,140,140,141,141,141,142
+  /* 280 */ ,142,142,142,142,143,143,143,143,143,143
+  /* 290 */ ,143,143,143,144,144,144,144,145,145,145
+  /* 300 */ ,145,145,145,145,146,146,146,147,147,147
+  /* 310 */ ,147,147,148,148,148,148,149,149,149,149
+  /* 320 */ ,149,149,149,150,150,150,150,150,151,151
+  /* 330 */ ,151,151,151,100,101,152,152,152,152,153
+  /* 340 */ ,153,153,153,154,154,154,154,154,154,154
+  /* 350 */ ,154,126,126,126,126,155,155,155,102,103
+  /* 360 */ ,127,127,127,127,127,127,127,127,127,127
+  /* 370 */ ,127,127, 13,156,156,157,157,159,159,160
+  /* 380 */ ,160,160,161,161,162,162,163,163,164,164
+  /* 390 */ ,164,165,165,166,166,167,168,168,168,158
+  /* 400 */ ,158,169,169,170,170,170, 26,171,171,172
+  /* 410 */ ,172,174,174,175,175,176,173,173,177,178
+  /* 420 */ ,178,179,179,180, 25, 25, 25,181,182,183
+  /* 430 */ ,184,184,185,186,186, 67, 67, 67, 67,187
+  /* 440 */ ,  1,188,188,189,189,190,190,  9,191,191
+  /* 450 */ , 21, 21, 21,192,192, 36, 36, 36, 36, 33
+  /* 460 */ , 33,193,193, 39, 50, 42, 52, 52, 52, 23
+  /* 470 */ , 23,194,194, 22, 60, 60, 60,195,195, 63
+  /* 480 */ , 63,196,196, 65, 53, 59, 59, 59, 59, 48
+  /* 490 */ , 48,197,197,198,198, 78, 78, 78, 84, 84
+  /* 500 */ , 84, 90, 91, 92,199,199,105,105,105,105
+  /* 510 */ ,105,105,200,200,104,104,104,177,181,187
+  /* 520 */ ,187, 21, 21, 21, 21, 21, 21, 36, 36, 36
+  /* 530 */ , 36, 36, 36, 36, 33, 33, 33, 50, 23, 23
+  /* 540 */ , 23, 22, 60, 60, 60, 63, 63, 63, 65, 59
+  /* 550 */ , 59, 59, 59, 59, 59, 59, 48, 78, 78, 78
+  /* 560 */ , 84, 84, 84,105,105,105,187, 21, 21, 21
+  /* 570 */ , 21, 36, 36, 36, 36, 33, 23, 60, 63, 59
+  /* 580 */ , 59, 59, 59, 78, 84, 21, 36, 59,  1,  1
+  /* 590 */ ,  2, 21, 29, 35, 36, 36, 36, 33, 34, 45
+  /* 600 */ , 50, 42, 23, 56, 22, 63, 62, 24, 64, 65
+  /* 610 */ , 59, 59, 59, 72,107,107, 79, 85, 95,116
+  /* 620 */ ,116,117,117,  1,  1, 36, 42, 59, 36, 59
+  /* 630 */ ,  1, 36, 59,107,  1
 }; // Size of table:636(x86)/640(x64) bytes.
 
-/*********************************************************************************\
-* The rightSide[] matrix is indexed by production number and holds                *
-* the right side symbols of each production.                                      *
-* Compressed and only used for debugging.                                         *
-\*********************************************************************************/
+/**********************************************************************************\
+* rightSideTable[] holds a compressed form of the rightsides of all                *
+* productions in the grammar. Only used for debugging.                             *
+\**********************************************************************************/
 static const unsigned short rightSideTable[1784] = {
   /*   0 */  106
   /*   1 */ ,107,293,294
@@ -4184,317 +4207,317 @@ static const unsigned short rightSideTable[1784] = {
   /* 633 */ , 58, 59
 }; // Size of table:3.568(x86)/3.568(x64) bytes.
 
-/********************************************************************************\
-* symbolNames contains names of terminal and nonTerminal separated by space      *
-* Used for debugging.                                                            *
-\********************************************************************************/
+/**********************************************************************************\
+* symbolNames is a space separated string with the names of all symbols used in    *
+* grammar, terminals and nonTerminals. Only used for debugging.                    *
+\**********************************************************************************/
 static const char *symbolNames = {
-  "EOI"
-  " CLASS"
-  " INTERFACE"
-  " ENUM"
-  " PACKAGE"
-  " IMPORT"
-  " TYPEBOOLEAN"
-  " TYPEBYTE"
-  " TYPECHAR"
-  " TYPESHORT"
-  " TYPEINT"
-  " TYPELONG"
-  " TYPEFLOAT"
-  " TYPEDOUBLE"
-  " TYPEVOID"
-  " FOR"
-  " WHILE"
-  " DO"
-  " IF"
-  " ELSE"
-  " SWITCH"
-  " CASE"
-  " DEFAULT"
-  " BREAK"
-  " CONTINUE"
-  " RETURN"
-  " THROW"
-  " TRYTOKEN"
-  " CATCH"
-  " FINALLY"
-  " ASSERT"
-  " PUBLIC"
-  " PRIVATE"
-  " PROTECTED"
-  " ABSTRACT"
-  " FINAL"
-  " STATIC"
-  " TRANSIENT"
-  " SYNCHRONIZED"
-  " NATIVE"
-  " VOLATILE"
-  " STRICTFP"
-  " THROWS"
-  " EXTENDS"
-  " IMPLEMENTS"
-  " INTEGERLITERAL"
-  " FLOATLITERAL"
-  " BOOLEANLITERAL"
-  " CHARACTERLITERAL"
-  " STRINGLITERAL"
-  " NULLLITERAL"
-  " THISLITERAL"
-  " SUPER"
-  " INSTANCEOF"
-  " NEW"
-  " COMMA"
-  " SEMICOLON"
-  " DOT"
-  " LC"
-  " RC"
-  " LPAR"
-  " RPAR"
-  " LB"
-  " RB"
-  " ELLIPSIS"
-  " AT"
-  " ASSIGN"
-  " PLUSASSIGN"
-  " MINUSASSIGN"
-  " STARASSIGN"
-  " DIVASSIGN"
-  " MODASSIGN"
-  " SHLASSIGN"
-  " SSHRASSIGN"
-  " USHRASSIGN"
-  " ANDASSIGN"
-  " XORASSIGN"
-  " ORASSIGN"
-  " QUESTION"
-  " COLON"
-  " COMPLEMENT"
-  " NOT"
-  " NEQ"
-  " EQ"
-  " LT"
-  " LE"
-  " GT"
-  " GE"
-  " XOR"
-  " OROR"
-  " ANDAND"
-  " SHL"
-  " SSHR"
-  " USHR"
-  " AND"
-  " OR"
-  " PLUS"
-  " MINUS"
-  " STAR"
-  " DIV"
-  " MOD"
-  " PLUSPLUS"
-  " MINUSMINUS"
-  " NUMBER"
-  " IDENTIFIER"
-  " Goal"
-  " CompilationUnit"
-  " PackageDeclaration"
-  " ImportDeclaration"
-  " TypeDeclaration"
-  " Literal"
-  " Type"
-  " PrimitiveType"
-  " ReferenceType"
-  " ClassOrInterfaceType"
-  " Dim"
-  " Name"
-  " ClassOrInterfaceName"
-  " TypeArguments"
-  " ClassOrInterfaceTypeList"
-  " Identifier"
-  " Modifier"
-  " SingleTypeImportDeclaration"
-  " TypeImportOnDemandDeclaration"
-  " SingleStaticImportDeclaration"
-  " StaticImportOnDemandDeclaration"
-  " ClassDeclaration"
-  " EnumDeclaration"
-  " InterfaceDeclaration"
-  " AnnotationTypeDeclaration"
-  " Annotation"
-  " TypeParameters"
-  " ExtendsClass"
-  " ImplementsInterfaces"
-  " ClassBody"
-  " ClassBodyDeclaration"
-  " ClassMemberDeclaration"
-  " StaticInitializer"
-  " ConstructorDeclaration"
-  " Block"
-  " FieldDeclaration"
-  " MethodDeclaration"
-  " VariableDeclarators"
-  " MethodName"
-  " FormalParameters"
-  " ThrowsException"
-  " MethodBody"
-  " ConstructorBody"
-  " BlockStatement"
-  " VariableDeclarator"
-  " VariableDeclaratorId"
-  " VariableInitializer"
-  " Expression"
-  " ArrayInitializer"
-  " FormalParameterList"
-  " FormalParameter"
-  " EllipsisOperator"
-  " ExplicitContructorInvocation"
-  " Arguments"
-  " Primary"
-  " ExtendsInterfaces"
-  " InterfaceBody"
-  " InterfaceMemberDeclaration"
-  " ConstantDeclaration"
-  " AbstractMethodDeclaration"
-  " EnumBody"
-  " EnumConstantList"
-  " EnumBodyDeclarations"
-  " EnumConstant"
-  " AnnotationTypeBody"
-  " AnnotationTypeElementDeclaration"
-  " DefaultValue"
-  " ElementValue"
-  " ArgumentList"
-  " VariableInitializerList"
-  " LocalVariableDeclarationStatement"
-  " Statement"
-  " LocalVariableDeclaration"
-  " StatementWithoutTrailingSubstatement"
-  " LabeledStatement"
-  " IfThenStatement"
-  " IfThenElseStatement"
-  " WhileStatement"
-  " ForStatement"
-  " EnhancedForStatement"
-  " StatementNoShortIf"
-  " LabeledStatementNoShortIf"
-  " IfThenElseStatementNoShortIf"
-  " WhileStatementNoShortIf"
-  " ForStatementNoShortIf"
-  " EnhancedForStatementNoShortIf"
-  " EmptyStatement"
-  " ExpressionStatement"
-  " SwitchStatement"
-  " DoStatement"
-  " BreakStatement"
-  " ContinueStatement"
-  " ReturnStatement"
-  " SynchronizedStatement"
-  " ThrowStatement"
-  " TryStatement"
-  " AssertStatementShort"
-  " AssertStatementLong"
-  " StatementExpression"
-  " Assignment"
-  " PreIncrementExpression"
-  " PreDecrementExpression"
-  " PostIncrementExpression"
-  " PostDecrementExpression"
-  " MethodInvocation"
-  " NewClassExpression"
-  " Condition"
-  " SwitchBlock"
-  " SwitchBlockStatementGroup"
-  " SwitchLabel"
-  " ConstantExpression"
-  " ForInit"
-  " ForUpdate"
-  " StatementExpressionList"
-  " CatchClause"
-  " FinallyClause"
-  " PrimaryNoNewArray"
-  " NewArrayExpression"
-  " ExpressionNN"
-  " FieldAccess"
-  " ArrayAccess"
-  " DimExpression"
-  " AssignmentExpression"
-  " AssignmentExpressionNN"
-  " ConditionalExpression"
-  " ConditionalExpressionNN"
-  " PostfixExpression"
-  " AssignmentOperator"
-  " ShortOrExpression"
-  " ShortOrExpressionNN"
-  " ShortAndExpression"
-  " ShortAndExpressionNN"
-  " OrExpression"
-  " OrExpressionNN"
-  " XorExpression"
-  " XorExpressionNN"
-  " AndExpression"
-  " AndExpressionNN"
-  " EqualityExpression"
-  " EqualityExpressionNN"
-  " InstanceOfExpression"
-  " InstanceOfExpressionNN"
-  " RelationalExpression"
-  " RelationalExpressionNN"
-  " ShiftExpression"
-  " ShiftExpressionNN"
-  " AdditiveExpression"
-  " AdditiveExpressionNN"
-  " MultiplicativeExpression"
-  " MultiplicativeExpressionNN"
-  " UnaryExpression"
-  " UnaryExpressionNN"
-  " UnaryExpressionNotPlusMinus"
-  " UnaryExpressionNotPlusMinusNN"
-  " CastExpression"
-  " PostfixExpressionNN"
-  " TypeArgumentListGT"
-  " TypeArgumentGT"
-  " TypeArgumentList"
-  " ReferenceTypeGT"
-  " WildcardGT"
-  " TypeArgumentListSSHR"
-  " TypeArgumentSSHR"
-  " ReferenceTypeSSHR"
-  " WildcardSSHR"
-  " TypeArgumentListUSHR"
-  " TypeArgumentUSHR"
-  " ReferenceTypeUSHR"
-  " WildcardUSHR"
-  " TypeArgument"
-  " Wildcard"
-  " TypeParameterListGT"
-  " TypeParameterGT"
-  " TypeParameterList"
-  " TypeBoundGT"
-  " AdditionalBoundSequenceGT"
-  " AdditionalBoundGT"
-  " TypeParameter"
-  " TypeBound"
-  " AdditionalBoundSequence"
-  " AdditionalBound"
-  " NormalAnnotation"
-  " MarkerAnnotation"
-  " SingleElementAnnotation"
-  " ElementValuePairList"
-  " ElementValuePair"
-  " ElementValueList"
-  " ElementValueArrayInitializer"
-  " ImportDeclaration_plus"
-  " TypeDeclaration_plus"
-  " Dim_plus"
-  " Modifier_plus"
-  " ClassBodyDeclaration_plus"
-  " BlockStatement_plus"
-  " InterfaceMemberDeclaration_plus"
-  " Annotation_plus"
-  " AnnotationTypeElementDeclaration_plus"
-  " SwitchBlockStatementGroup_plus"
-  " SwitchLabel_plus"
-  " CatchClause_plus"
-  " DimExpression_plus"
+  "EOI"                                               /* T     0               */
+  " CLASS"                                            /* T     1               */
+  " INTERFACE"                                        /* T     2               */
+  " ENUM"                                             /* T     3               */
+  " PACKAGE"                                          /* T     4               */
+  " IMPORT"                                           /* T     5               */
+  " TYPEBOOLEAN"                                      /* T     6               */
+  " TYPEBYTE"                                         /* T     7               */
+  " TYPECHAR"                                         /* T     8               */
+  " TYPESHORT"                                        /* T     9               */
+  " TYPEINT"                                          /* T    10               */
+  " TYPELONG"                                         /* T    11               */
+  " TYPEFLOAT"                                        /* T    12               */
+  " TYPEDOUBLE"                                       /* T    13               */
+  " TYPEVOID"                                         /* T    14               */
+  " FOR"                                              /* T    15               */
+  " WHILE"                                            /* T    16               */
+  " DO"                                               /* T    17               */
+  " IF"                                               /* T    18               */
+  " ELSE"                                             /* T    19               */
+  " SWITCH"                                           /* T    20               */
+  " CASE"                                             /* T    21               */
+  " DEFAULT"                                          /* T    22               */
+  " BREAK"                                            /* T    23               */
+  " CONTINUE"                                         /* T    24               */
+  " RETURN"                                           /* T    25               */
+  " THROW"                                            /* T    26               */
+  " TRYTOKEN"                                         /* T    27               */
+  " CATCH"                                            /* T    28               */
+  " FINALLY"                                          /* T    29               */
+  " ASSERT"                                           /* T    30               */
+  " PUBLIC"                                           /* T    31               */
+  " PRIVATE"                                          /* T    32               */
+  " PROTECTED"                                        /* T    33               */
+  " ABSTRACT"                                         /* T    34               */
+  " FINAL"                                            /* T    35               */
+  " STATIC"                                           /* T    36               */
+  " TRANSIENT"                                        /* T    37               */
+  " SYNCHRONIZED"                                     /* T    38               */
+  " NATIVE"                                           /* T    39               */
+  " VOLATILE"                                         /* T    40               */
+  " STRICTFP"                                         /* T    41               */
+  " THROWS"                                           /* T    42               */
+  " EXTENDS"                                          /* T    43               */
+  " IMPLEMENTS"                                       /* T    44               */
+  " INTEGERLITERAL"                                   /* T    45               */
+  " FLOATLITERAL"                                     /* T    46               */
+  " BOOLEANLITERAL"                                   /* T    47               */
+  " CHARACTERLITERAL"                                 /* T    48               */
+  " STRINGLITERAL"                                    /* T    49               */
+  " NULLLITERAL"                                      /* T    50               */
+  " THISLITERAL"                                      /* T    51               */
+  " SUPER"                                            /* T    52               */
+  " INSTANCEOF"                                       /* T    53               */
+  " NEW"                                              /* T    54               */
+  " COMMA"                                            /* T    55               */
+  " SEMICOLON"                                        /* T    56               */
+  " DOT"                                              /* T    57               */
+  " LC"                                               /* T    58               */
+  " RC"                                               /* T    59               */
+  " LPAR"                                             /* T    60               */
+  " RPAR"                                             /* T    61               */
+  " LB"                                               /* T    62               */
+  " RB"                                               /* T    63               */
+  " ELLIPSIS"                                         /* T    64               */
+  " AT"                                               /* T    65               */
+  " ASSIGN"                                           /* T    66               */
+  " PLUSASSIGN"                                       /* T    67               */
+  " MINUSASSIGN"                                      /* T    68               */
+  " STARASSIGN"                                       /* T    69               */
+  " DIVASSIGN"                                        /* T    70               */
+  " MODASSIGN"                                        /* T    71               */
+  " SHLASSIGN"                                        /* T    72               */
+  " SSHRASSIGN"                                       /* T    73               */
+  " USHRASSIGN"                                       /* T    74               */
+  " ANDASSIGN"                                        /* T    75               */
+  " XORASSIGN"                                        /* T    76               */
+  " ORASSIGN"                                         /* T    77               */
+  " QUESTION"                                         /* T    78               */
+  " COLON"                                            /* T    79               */
+  " COMPLEMENT"                                       /* T    80               */
+  " NOT"                                              /* T    81               */
+  " NEQ"                                              /* T    82               */
+  " EQ"                                               /* T    83               */
+  " LT"                                               /* T    84               */
+  " LE"                                               /* T    85               */
+  " GT"                                               /* T    86               */
+  " GE"                                               /* T    87               */
+  " XOR"                                              /* T    88               */
+  " OROR"                                             /* T    89               */
+  " ANDAND"                                           /* T    90               */
+  " SHL"                                              /* T    91               */
+  " SSHR"                                             /* T    92               */
+  " USHR"                                             /* T    93               */
+  " AND"                                              /* T    94               */
+  " OR"                                               /* T    95               */
+  " PLUS"                                             /* T    96               */
+  " MINUS"                                            /* T    97               */
+  " STAR"                                             /* T    98               */
+  " DIV"                                              /* T    99               */
+  " MOD"                                              /* T   100               */
+  " PLUSPLUS"                                         /* T   101               */
+  " MINUSMINUS"                                       /* T   102               */
+  " NUMBER"                                           /* T   103               */
+  " IDENTIFIER"                                       /* T   104               */
+  " Goal"                                             /* NT  105 NTindex=0     */
+  " CompilationUnit"                                  /* NT  106 NTindex=1     */
+  " PackageDeclaration"                               /* NT  107 NTindex=2     */
+  " ImportDeclaration"                                /* NT  108 NTindex=3     */
+  " TypeDeclaration"                                  /* NT  109 NTindex=4     */
+  " Literal"                                          /* NT  110 NTindex=5     */
+  " Type"                                             /* NT  111 NTindex=6     */
+  " PrimitiveType"                                    /* NT  112 NTindex=7     */
+  " ReferenceType"                                    /* NT  113 NTindex=8     */
+  " ClassOrInterfaceType"                             /* NT  114 NTindex=9     */
+  " Dim"                                              /* NT  115 NTindex=10    */
+  " Name"                                             /* NT  116 NTindex=11    */
+  " ClassOrInterfaceName"                             /* NT  117 NTindex=12    */
+  " TypeArguments"                                    /* NT  118 NTindex=13    */
+  " ClassOrInterfaceTypeList"                         /* NT  119 NTindex=14    */
+  " Identifier"                                       /* NT  120 NTindex=15    */
+  " Modifier"                                         /* NT  121 NTindex=16    */
+  " SingleTypeImportDeclaration"                      /* NT  122 NTindex=17    */
+  " TypeImportOnDemandDeclaration"                    /* NT  123 NTindex=18    */
+  " SingleStaticImportDeclaration"                    /* NT  124 NTindex=19    */
+  " StaticImportOnDemandDeclaration"                  /* NT  125 NTindex=20    */
+  " ClassDeclaration"                                 /* NT  126 NTindex=21    */
+  " EnumDeclaration"                                  /* NT  127 NTindex=22    */
+  " InterfaceDeclaration"                             /* NT  128 NTindex=23    */
+  " AnnotationTypeDeclaration"                        /* NT  129 NTindex=24    */
+  " Annotation"                                       /* NT  130 NTindex=25    */
+  " TypeParameters"                                   /* NT  131 NTindex=26    */
+  " ExtendsClass"                                     /* NT  132 NTindex=27    */
+  " ImplementsInterfaces"                             /* NT  133 NTindex=28    */
+  " ClassBody"                                        /* NT  134 NTindex=29    */
+  " ClassBodyDeclaration"                             /* NT  135 NTindex=30    */
+  " ClassMemberDeclaration"                           /* NT  136 NTindex=31    */
+  " StaticInitializer"                                /* NT  137 NTindex=32    */
+  " ConstructorDeclaration"                           /* NT  138 NTindex=33    */
+  " Block"                                            /* NT  139 NTindex=34    */
+  " FieldDeclaration"                                 /* NT  140 NTindex=35    */
+  " MethodDeclaration"                                /* NT  141 NTindex=36    */
+  " VariableDeclarators"                              /* NT  142 NTindex=37    */
+  " MethodName"                                       /* NT  143 NTindex=38    */
+  " FormalParameters"                                 /* NT  144 NTindex=39    */
+  " ThrowsException"                                  /* NT  145 NTindex=40    */
+  " MethodBody"                                       /* NT  146 NTindex=41    */
+  " ConstructorBody"                                  /* NT  147 NTindex=42    */
+  " BlockStatement"                                   /* NT  148 NTindex=43    */
+  " VariableDeclarator"                               /* NT  149 NTindex=44    */
+  " VariableDeclaratorId"                             /* NT  150 NTindex=45    */
+  " VariableInitializer"                              /* NT  151 NTindex=46    */
+  " Expression"                                       /* NT  152 NTindex=47    */
+  " ArrayInitializer"                                 /* NT  153 NTindex=48    */
+  " FormalParameterList"                              /* NT  154 NTindex=49    */
+  " FormalParameter"                                  /* NT  155 NTindex=50    */
+  " EllipsisOperator"                                 /* NT  156 NTindex=51    */
+  " ExplicitContructorInvocation"                     /* NT  157 NTindex=52    */
+  " Arguments"                                        /* NT  158 NTindex=53    */
+  " Primary"                                          /* NT  159 NTindex=54    */
+  " ExtendsInterfaces"                                /* NT  160 NTindex=55    */
+  " InterfaceBody"                                    /* NT  161 NTindex=56    */
+  " InterfaceMemberDeclaration"                       /* NT  162 NTindex=57    */
+  " ConstantDeclaration"                              /* NT  163 NTindex=58    */
+  " AbstractMethodDeclaration"                        /* NT  164 NTindex=59    */
+  " EnumBody"                                         /* NT  165 NTindex=60    */
+  " EnumConstantList"                                 /* NT  166 NTindex=61    */
+  " EnumBodyDeclarations"                             /* NT  167 NTindex=62    */
+  " EnumConstant"                                     /* NT  168 NTindex=63    */
+  " AnnotationTypeBody"                               /* NT  169 NTindex=64    */
+  " AnnotationTypeElementDeclaration"                 /* NT  170 NTindex=65    */
+  " DefaultValue"                                     /* NT  171 NTindex=66    */
+  " ElementValue"                                     /* NT  172 NTindex=67    */
+  " ArgumentList"                                     /* NT  173 NTindex=68    */
+  " VariableInitializerList"                          /* NT  174 NTindex=69    */
+  " LocalVariableDeclarationStatement"                /* NT  175 NTindex=70    */
+  " Statement"                                        /* NT  176 NTindex=71    */
+  " LocalVariableDeclaration"                         /* NT  177 NTindex=72    */
+  " StatementWithoutTrailingSubstatement"             /* NT  178 NTindex=73    */
+  " LabeledStatement"                                 /* NT  179 NTindex=74    */
+  " IfThenStatement"                                  /* NT  180 NTindex=75    */
+  " IfThenElseStatement"                              /* NT  181 NTindex=76    */
+  " WhileStatement"                                   /* NT  182 NTindex=77    */
+  " ForStatement"                                     /* NT  183 NTindex=78    */
+  " EnhancedForStatement"                             /* NT  184 NTindex=79    */
+  " StatementNoShortIf"                               /* NT  185 NTindex=80    */
+  " LabeledStatementNoShortIf"                        /* NT  186 NTindex=81    */
+  " IfThenElseStatementNoShortIf"                     /* NT  187 NTindex=82    */
+  " WhileStatementNoShortIf"                          /* NT  188 NTindex=83    */
+  " ForStatementNoShortIf"                            /* NT  189 NTindex=84    */
+  " EnhancedForStatementNoShortIf"                    /* NT  190 NTindex=85    */
+  " EmptyStatement"                                   /* NT  191 NTindex=86    */
+  " ExpressionStatement"                              /* NT  192 NTindex=87    */
+  " SwitchStatement"                                  /* NT  193 NTindex=88    */
+  " DoStatement"                                      /* NT  194 NTindex=89    */
+  " BreakStatement"                                   /* NT  195 NTindex=90    */
+  " ContinueStatement"                                /* NT  196 NTindex=91    */
+  " ReturnStatement"                                  /* NT  197 NTindex=92    */
+  " SynchronizedStatement"                            /* NT  198 NTindex=93    */
+  " ThrowStatement"                                   /* NT  199 NTindex=94    */
+  " TryStatement"                                     /* NT  200 NTindex=95    */
+  " AssertStatementShort"                             /* NT  201 NTindex=96    */
+  " AssertStatementLong"                              /* NT  202 NTindex=97    */
+  " StatementExpression"                              /* NT  203 NTindex=98    */
+  " Assignment"                                       /* NT  204 NTindex=99    */
+  " PreIncrementExpression"                           /* NT  205 NTindex=100   */
+  " PreDecrementExpression"                           /* NT  206 NTindex=101   */
+  " PostIncrementExpression"                          /* NT  207 NTindex=102   */
+  " PostDecrementExpression"                          /* NT  208 NTindex=103   */
+  " MethodInvocation"                                 /* NT  209 NTindex=104   */
+  " NewClassExpression"                               /* NT  210 NTindex=105   */
+  " Condition"                                        /* NT  211 NTindex=106   */
+  " SwitchBlock"                                      /* NT  212 NTindex=107   */
+  " SwitchBlockStatementGroup"                        /* NT  213 NTindex=108   */
+  " SwitchLabel"                                      /* NT  214 NTindex=109   */
+  " ConstantExpression"                               /* NT  215 NTindex=110   */
+  " ForInit"                                          /* NT  216 NTindex=111   */
+  " ForUpdate"                                        /* NT  217 NTindex=112   */
+  " StatementExpressionList"                          /* NT  218 NTindex=113   */
+  " CatchClause"                                      /* NT  219 NTindex=114   */
+  " FinallyClause"                                    /* NT  220 NTindex=115   */
+  " PrimaryNoNewArray"                                /* NT  221 NTindex=116   */
+  " NewArrayExpression"                               /* NT  222 NTindex=117   */
+  " ExpressionNN"                                     /* NT  223 NTindex=118   */
+  " FieldAccess"                                      /* NT  224 NTindex=119   */
+  " ArrayAccess"                                      /* NT  225 NTindex=120   */
+  " DimExpression"                                    /* NT  226 NTindex=121   */
+  " AssignmentExpression"                             /* NT  227 NTindex=122   */
+  " AssignmentExpressionNN"                           /* NT  228 NTindex=123   */
+  " ConditionalExpression"                            /* NT  229 NTindex=124   */
+  " ConditionalExpressionNN"                          /* NT  230 NTindex=125   */
+  " PostfixExpression"                                /* NT  231 NTindex=126   */
+  " AssignmentOperator"                               /* NT  232 NTindex=127   */
+  " ShortOrExpression"                                /* NT  233 NTindex=128   */
+  " ShortOrExpressionNN"                              /* NT  234 NTindex=129   */
+  " ShortAndExpression"                               /* NT  235 NTindex=130   */
+  " ShortAndExpressionNN"                             /* NT  236 NTindex=131   */
+  " OrExpression"                                     /* NT  237 NTindex=132   */
+  " OrExpressionNN"                                   /* NT  238 NTindex=133   */
+  " XorExpression"                                    /* NT  239 NTindex=134   */
+  " XorExpressionNN"                                  /* NT  240 NTindex=135   */
+  " AndExpression"                                    /* NT  241 NTindex=136   */
+  " AndExpressionNN"                                  /* NT  242 NTindex=137   */
+  " EqualityExpression"                               /* NT  243 NTindex=138   */
+  " EqualityExpressionNN"                             /* NT  244 NTindex=139   */
+  " InstanceOfExpression"                             /* NT  245 NTindex=140   */
+  " InstanceOfExpressionNN"                           /* NT  246 NTindex=141   */
+  " RelationalExpression"                             /* NT  247 NTindex=142   */
+  " RelationalExpressionNN"                           /* NT  248 NTindex=143   */
+  " ShiftExpression"                                  /* NT  249 NTindex=144   */
+  " ShiftExpressionNN"                                /* NT  250 NTindex=145   */
+  " AdditiveExpression"                               /* NT  251 NTindex=146   */
+  " AdditiveExpressionNN"                             /* NT  252 NTindex=147   */
+  " MultiplicativeExpression"                         /* NT  253 NTindex=148   */
+  " MultiplicativeExpressionNN"                       /* NT  254 NTindex=149   */
+  " UnaryExpression"                                  /* NT  255 NTindex=150   */
+  " UnaryExpressionNN"                                /* NT  256 NTindex=151   */
+  " UnaryExpressionNotPlusMinus"                      /* NT  257 NTindex=152   */
+  " UnaryExpressionNotPlusMinusNN"                    /* NT  258 NTindex=153   */
+  " CastExpression"                                   /* NT  259 NTindex=154   */
+  " PostfixExpressionNN"                              /* NT  260 NTindex=155   */
+  " TypeArgumentListGT"                               /* NT  261 NTindex=156   */
+  " TypeArgumentGT"                                   /* NT  262 NTindex=157   */
+  " TypeArgumentList"                                 /* NT  263 NTindex=158   */
+  " ReferenceTypeGT"                                  /* NT  264 NTindex=159   */
+  " WildcardGT"                                       /* NT  265 NTindex=160   */
+  " TypeArgumentListSSHR"                             /* NT  266 NTindex=161   */
+  " TypeArgumentSSHR"                                 /* NT  267 NTindex=162   */
+  " ReferenceTypeSSHR"                                /* NT  268 NTindex=163   */
+  " WildcardSSHR"                                     /* NT  269 NTindex=164   */
+  " TypeArgumentListUSHR"                             /* NT  270 NTindex=165   */
+  " TypeArgumentUSHR"                                 /* NT  271 NTindex=166   */
+  " ReferenceTypeUSHR"                                /* NT  272 NTindex=167   */
+  " WildcardUSHR"                                     /* NT  273 NTindex=168   */
+  " TypeArgument"                                     /* NT  274 NTindex=169   */
+  " Wildcard"                                         /* NT  275 NTindex=170   */
+  " TypeParameterListGT"                              /* NT  276 NTindex=171   */
+  " TypeParameterGT"                                  /* NT  277 NTindex=172   */
+  " TypeParameterList"                                /* NT  278 NTindex=173   */
+  " TypeBoundGT"                                      /* NT  279 NTindex=174   */
+  " AdditionalBoundSequenceGT"                        /* NT  280 NTindex=175   */
+  " AdditionalBoundGT"                                /* NT  281 NTindex=176   */
+  " TypeParameter"                                    /* NT  282 NTindex=177   */
+  " TypeBound"                                        /* NT  283 NTindex=178   */
+  " AdditionalBoundSequence"                          /* NT  284 NTindex=179   */
+  " AdditionalBound"                                  /* NT  285 NTindex=180   */
+  " NormalAnnotation"                                 /* NT  286 NTindex=181   */
+  " MarkerAnnotation"                                 /* NT  287 NTindex=182   */
+  " SingleElementAnnotation"                          /* NT  288 NTindex=183   */
+  " ElementValuePairList"                             /* NT  289 NTindex=184   */
+  " ElementValuePair"                                 /* NT  290 NTindex=185   */
+  " ElementValueList"                                 /* NT  291 NTindex=186   */
+  " ElementValueArrayInitializer"                     /* NT  292 NTindex=187   */
+  " ImportDeclaration_plus"                           /* NT  293 NTindex=188   */
+  " TypeDeclaration_plus"                             /* NT  294 NTindex=189   */
+  " Dim_plus"                                         /* NT  295 NTindex=190   */
+  " Modifier_plus"                                    /* NT  296 NTindex=191   */
+  " ClassBodyDeclaration_plus"                        /* NT  297 NTindex=192   */
+  " BlockStatement_plus"                              /* NT  298 NTindex=193   */
+  " InterfaceMemberDeclaration_plus"                  /* NT  299 NTindex=194   */
+  " Annotation_plus"                                  /* NT  300 NTindex=195   */
+  " AnnotationTypeElementDeclaration_plus"            /* NT  301 NTindex=196   */
+  " SwitchBlockStatementGroup_plus"                   /* NT  302 NTindex=197   */
+  " SwitchLabel_plus"                                 /* NT  303 NTindex=198   */
+  " CatchClause_plus"                                 /* NT  304 NTindex=199   */
+  " DimExpression_plus"                               /* NT  305 NTindex=200   */
 }; // Total size of string:4.456(x86)/4.456(x64) bytes
 
 static const ParserTablesTemplate<105,306,635,1191
@@ -4506,11 +4529,11 @@ static const ParserTablesTemplate<105,306,635,1191
                                                                ,successorCode   , NTindexListTable  , stateListTable
                                                                ,productionLength, leftSideTable
                                                                ,rightSideTable  , symbolNames
-                                                               ,45348, 45424);
+                                                               ,45348, 45432);
 
 const ParserTables *Java5Parser::Java5Tables = &Java5Tables_s;
-// Size of Java5Tables_s: 68(x86)/120(x64) bytes. Size of Java5Tables:4(x86)/8(x64) bytes
+// Size of Java5Tables_s: 68(x86)/128(x64) bytes. Size of Java5Tables:4(x86)/8(x64) bytes
 
-// Total size of table data:45.348(x86)/45.424(x64) bytes.
+// Total size of table data:45.348(x86)/45.432(x64) bytes.
 
 

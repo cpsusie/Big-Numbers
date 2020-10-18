@@ -18,54 +18,64 @@
 * The interpretation of action is:                                                 *
 *   action <  0 - Reduce by production p, p == -action.                            *
 *   action == 0 - Accept. Reduce by production 0.                                  *
-*   action >  0 - Go to state newstate (=action),                                  *
-*                 and push newstate.                                               *
-*                 Then advance input 1 symbol                                      *
-*   action == _ParserError -  Unexpected input - do some recovery, to synchronize. *
-*                 input and stack                                                  *
+*   action >  0 - Shift to newstate (=action),                                     *
+*                 ie. push(newstate), set current state=newstate                   *
+*                 and advance input 1 symbol.                                      *
+*   action == _ParserError - Unexpected input. Do some recovery, to try to         *
+*                 synchronize input and stack, in order to continue parse.         *
+*                 (See LRParser::recover() in LRParser.cpp)                        *
 *                                                                                  *
 * For each state S, a #define is generated and used as element S in array          *
-* actionCode. Each define has the format:                                          *
-*                    3         2         1         0                               *
-*                   10987654321098765432109876543210                               *
-* #define _acSSSS 0xaaaaaaaaaaaaaaaCIttttttttttttttt                               *
-* where SSSS : The statenumber S                                                   *
-* t          : Bit[0-14],  unsigned short                                          *
-* a          : Bit[17-31], signed short                                            *
-* CI         : Bit[15-16], indicates how to interpret t and a.                     *
-* If C is 0  : Uncompressed format                                                 *
-*              t: Index into array termListTable, pointing at the first            *
-*                 element of termList (see below).                                 *
-*              a: Index into array actionListTable, pointing at the first          *
-*                 element of actionList (see below)                                *
-* If C is 1  : Compressed format                                                   *
-*              This format is used if there is only 1 possible action, a.          *
-*    I=0 (bit 15) There is only 1 legal terminal in this state                     *
-*              t: legal terminal                                                   *
-*              a: action                                                           *
+* actionCode. Each define looks as:                                                *
 *                                                                                  *
-*    I=1 If all actions in the state are reduce by the same production             *
-*              t: Index into compressedLAsets, pointing at the first element       *
-*                 of LASet (see below)                                             *
-*              a: action                                                           *
+* #define _acDDDD Code                                                             *
 *                                                                                  *
-* For Uncompressed states (C=0) then use arrays termListTable and actionListTable. *
-*    n                 : termListTable[t] = number of elements in the list         *
-*    termList[  0..n-1]: termListTable[t+1]..termListTable[t+n]                    *
-*                        ordered list of terminals, of length n                    *
-*    actionList[0..n-1]: actionListTable[a]..actionListTable[a+n-1], length = n    *
+* where DDDD is the statenumber S and Code is an unsigned int with the following   *
+* format:                                                                          *
+*                   0         1         2         3                                *
+* Bit index:        01234567890123456789012345678901                               *
+* Code     :        tttttttttttttttIFaaaaaaaaaaaaaaa                               *
 *                                                                                  *
-*    To get the action, find the index k in termList, so termList[k] = T           *
-*    and then pick actionList[k]. If T is not found, set action = _ParseError      *
+* t          : Bit[ 0-14]: unsigned short                                          *
+* a          : Bit[17-31]: signed short                                            *
+* F          : Bit 16    : Indicates how to interpret t and a.                     *
+* I          : Bit 15    : In case F==1, indicates how to interpret t.             *
 *                                                                                  *
-* For Compressed states, C=1 and I=1 then use array compressedLAsets which is a    *
-* list of bitset(0..terminalCount-1), LASet. Number of bytes in each LAset         *
+* F == 0: Uncompressed Format.                                                     *
+*      t: Index into array termListTable, pointing at the first element of         *
+*         termList (see below).                                                    *
+*      a: Index into array actionListTable, pointing at the first element of       *
+*         actionList (see below).                                                  *
+* F == 1: Compressed Format, used if there is only 1 possible action, a.           *
+*         I==0: There is only 1 legal terminal in the state.                       *
+*            t: Legal terminal.                                                    *
+*            a: Action.                                                            *
 *                                                                                  *
-*    b                 : (terminalcount-1)/8+1                                     *
-*    LAset[0..b-1]     : compressedLAsets[t]..compressedLAsets[t+b-1]              *
+*         I==1: All actions in the state are reduce by the same production P = -a. *
+*            t: Index into compressedLAsets, pointing at the first element of      *
+*               LASet (see below).                                                 *
+*            a: Action.                                                            *
 *                                                                                  *
-* As for Uncompressed states, the same check for existence is done. If terminal T  *
-* is not found, set action = _ParseError.                                          *
+* F == 0: Use arrays termListTable and actionListTable to find action.             *
+*      n                 : termListTable[t] = number of elements in termList.      *
+*      termList[0..n-1]  : termListTable[t+1..t+n]                                 *
+*                          Ordered list of legal terminals                         *
+*      actionList[0..n-1]: actionListTable[a..a+n-1] (same length as termList).    *
+*                                                                                  *
+*      To get action, find index k in termList, so termList[k] == T                *
+*      and set action = actionList[k]. If T is not found, set action = _ParseError.*
+*      Note that both termList and actionList may be shared by several states.     *
+*                                                                                  *
+* F == 1 and I==1: Use array compressedLAsets which is a list of bitsets, each     *
+*                  with terminalCount bits, a lookaheadset LAset with 1-bits       *
+*                  for legal terminals, and 0-bits for illegal terminals.          *
+*                                                                                  *
+*      b                 : Number of bytes in each LAset = (terminalCount-1)/8+1   *
+*      LAset[0..b-1]     : compressedLAsets[t..t+b-1]                              *
+*                                                                                  *
+*      As for uncompressed states, the same check for existence is done.           *
+*      If terminal T is not present in LAset, set action = _ParseError.            *
+*      Note that each LAset may be shared by several states.                       *
 \**********************************************************************************/
 #define _ac0000 0xffff8000 /* Reduce by 1 on tokens in LAset[0]       */
 #define _ac0001 0x00000000 /* termList   0, actionList   0            */
@@ -636,37 +646,48 @@ static const unsigned char compressedLAsets[270] = {
 /**********************************************************************************\
 * The 3 arrays NTindexListTable, stateListTable and successorCode holds a          *
 * compressed succesor-matrix, used by LRParser to find newstate = successor(S,A)   *
-* as last part of a reduction with production P, A -> alfa. The number of elements *
-* popped from the stack is the length of alfa, the state S is then taken from      *
-* stacktop, the nonterminal A is leftside of the reduce production P.              *
-* To complete the reduction, push(newstate)                                        *
+* as last part of a reduction with production P, A -> alfa.                        *
+* A reduction by production P goes as follows:                                     *
+*   Pop L elements from stack, where L = length of alfa;                           *
+*   S = state on stacktop;                                                         *
+*   A = leftside of the reduce production P;                                       *
+*   newstate = successor(S,A);                                                     *
+*   push(newstate), and set current state = newstate.                              *
+*                                                                                  *
 * For each relevant state S, a #define is generated and used as element S in array *
 * successorCode. Each define has the format:                                       *
-*                    3         2         1         0                               *
-*                   10987654321098765432109876543210                               *
-* #define _suSSSS 0xrrrrrrrrrrrrrrrCiiiiiiiiiiiiiiii                               *
-* where SSSS : The statenumber S                                                   *
-* i          : Bit[ 0-15], unsigned short                                          *
-* r          : Bit[17-31], unsigned short                                          *
-* C          : Bit 16, indicates how to interpret i and r.                         *
-* If C is 0  : Uncompressed format                                                 *
-*              i is the index into array NTindexListTable, pointing at the first   *
-*              element of NTIndexList (see below).                                 *
-*              r is the index into array stateListTable, pointing at the first     *
-*              element of stateList (see below)                                    *
-* If C is 1  : Compressed format                                                   *
-*              i is the index A' of nonterminal A, A' = (A - terminalCount)        *
-*              r is the new state. This format is used if there is only 1 possible *
-*              successor-state.                                                    *
 *                                                                                  *
-* For Uncompressed states (C=0) then use arrays NTIndexListTable and stateTable.   *
-*    n                  : NTIndexListTable[i] = number of elements in the list     *
-*    NTIndexList[0..n-1]: NTIndexListTable[i+1]..NTIndexListTable[i+n]             *
-*                         ordered list of non-terminals-indices, of length n       *
-*    stateList[  0..n-1]: stateListTable[r]..stateListTable[r+n-1], length = n     *
+* #define _suDDDD Code                                                             *
 *                                                                                  *
-* To get the new state, find the index k in NTIndexList, so NTIndexList[k] = A'    *
-* and use stateList[k] as the new state. Note that the non-terminal always exist   *
+* where DDDD is the statenumber S and Code is an unsigned int with the following   *
+* format:                                                                          *
+*                   0         1         2         3                                *
+* Bit index:        01234567890123456789012345678901                               *
+* Code              iiiiiiiiiiiiiiiiFrrrrrrrrrrrrrrr                               *
+*                                                                                  *
+* i          : Bit[ 0-15]: unsigned short                                          *
+* r          : Bit[17-31]: unsigned short                                          *
+* F          : Bit 16    : Indicates how to interpret i and r.                     *
+*                                                                                  *
+* F == 0: Uncompressed Format.                                                     *
+*      i: Index into array NTindexListTable, pointing at the first element of      *
+*         NTIndexList (see below).                                                 *
+*      r: Index into array stateListTable, pointing at the first element of        *
+*         stateList (see below).                                                   *
+* F == 1: Compressed Format, used if there is only 1 possible newstate.            *
+*      i: Index A' of nonterminal A, A' = (A - terminalCount).                     *
+*      r: New state.                                                               *
+*                                                                                  *
+* F == 0: Use arrays NTIndexListTable and stateListTable to find newstate.         *
+*      n                  : NTIndexListTable[i] = number of elements in NTIndexList*
+*      NTIndexList[0..n-1]: NTIndexListTable[i+1..i+n]                             *
+*                           Ordered list of possible nonterminal-indices.          *
+*      stateList[0..n-1]  : stateListTable[r..r+n-1], same length as NTIndexList   *
+*                                                                                  *
+*      To get newstate, find index k in NTIndexList, so NTIndexList[k] == A',      *
+*      and set newstate = stateList[k].                                            *
+*      A' = (A - terminalCount) will always exist.                                 *
+*      Note that both NTIndexList and stateList may be shared by several states.   *
 \**********************************************************************************/
 #define _su0000 0x00030001 /* Goto 1 on ext_def_list                  */
 #define _su0001 0x00000000 /* NTindexList   0, stateList   0          */
@@ -921,58 +942,60 @@ static const unsigned short stateListTable[556] = {
 }; // Size of table:1.112(x86)/1.112(x64) bytes.
 
 /**********************************************************************************\
-* The productionLength[] array is indexed by production number and holds           *
-* the number of symbols on the right side of each production.                      *
+* The productionLength[] is indexed by production number and holds the number of   *
+* symbols on the right side of each production.                                    *
 \**********************************************************************************/
 static const unsigned char productionLength[165] = {
-  /*   0 */    1,   0,   2,   3,   2,   3,   0,   2,   1,   1,
-  /*  10 */    1,   2,   1,   1,   1,   1,   1,   1,   3,   1,
-  /*  20 */    3,   1,   1,   3,   4,   3,   4,   2,   3,   2,
-  /*  30 */    3,   4,   3,   3,   3,   4,   4,   1,   3,   1,
-  /*  40 */    3,   2,   1,   1,   1,   2,   2,   2,   0,   5,
-  /*  50 */    2,   3,   4,   3,   5,   2,   0,   1,   1,   0,
-  /*  60 */    2,   3,   2,   1,   3,   1,   1,   3,   3,   2,
-  /*  70 */    3,   4,   0,   3,   1,   1,   3,   1,   3,   3,
-  /*  80 */    0,   2,   2,   1,   1,   2,   2,   3,   3,   3,
-  /*  90 */    5,   7,   5,   7,   9,   2,   2,   5,   3,   2,
-  /* 100 */    3,   3,   1,   2,   5,   1,   2,   1,   1,   0,
-  /* 110 */    1,   3,   1,   1,   1,   1,   4,   4,   4,   4,
-  /* 120 */    2,   2,   2,   2,   2,   2,   4,   3,   4,   3,
-  /* 130 */    1,   3,   3,   1,   5,   3,   3,   1,   1,   3,
-  /* 140 */    1,   1,   3,   1,   3,   3,   3,   3,   3,   3,
-  /* 150 */    3,   3,   3,   3,   1,   0,   1,   1,   1,   3,
-  /* 160 */    1,   3,   1,   2,   1
+  /*   0 */    1,  0,  2,  3,  2,  3,  0,  2,  1,  1
+  /*  10 */ ,  1,  2,  1,  1,  1,  1,  1,  1,  3,  1
+  /*  20 */ ,  3,  1,  1,  3,  4,  3,  4,  2,  3,  2
+  /*  30 */ ,  3,  4,  3,  3,  3,  4,  4,  1,  3,  1
+  /*  40 */ ,  3,  2,  1,  1,  1,  2,  2,  2,  0,  5
+  /*  50 */ ,  2,  3,  4,  3,  5,  2,  0,  1,  1,  0
+  /*  60 */ ,  2,  3,  2,  1,  3,  1,  1,  3,  3,  2
+  /*  70 */ ,  3,  4,  0,  3,  1,  1,  3,  1,  3,  3
+  /*  80 */ ,  0,  2,  2,  1,  1,  2,  2,  3,  3,  3
+  /*  90 */ ,  5,  7,  5,  7,  9,  2,  2,  5,  3,  2
+  /* 100 */ ,  3,  3,  1,  2,  5,  1,  2,  1,  1,  0
+  /* 110 */ ,  1,  3,  1,  1,  1,  1,  4,  4,  4,  4
+  /* 120 */ ,  2,  2,  2,  2,  2,  2,  4,  3,  4,  3
+  /* 130 */ ,  1,  3,  3,  1,  5,  3,  3,  1,  1,  3
+  /* 140 */ ,  1,  1,  3,  1,  3,  3,  3,  3,  3,  3
+  /* 150 */ ,  3,  3,  3,  3,  1,  0,  1,  1,  1,  3
+  /* 160 */ ,  1,  3,  1,  2,  1
 }; // Size of table:168(x86)/168(x64) bytes.
 
-/*********************************************************************************\
-* The leftSide[] array is indexed by production number, and holds the             *
-* index, A' of nonTerminal A on the left side of each production. A'=A-#terminals *
-\*********************************************************************************/
+/**********************************************************************************\
+* leftSideTable[] is indexed by production number.                                 *
+* leftSideTable[p] = A', A' = (A - terminalCount)                                  *
+*                        where A is the left side of production p.                 *
+* A' = 0..nonterminalCount-1.                                                      *
+* p  = 0..productionCount-1                                                        *
+\**********************************************************************************/
 static const unsigned char leftSideTable[165] = {
-  /*   0 */    0,   1,   1,   2,   2,   2,   3,   3,   3,   3,
-  /*  10 */    7,   7,   8,   8,   9,   9,   9,   4,   4,  12,
-  /*  20 */   12,  12,  13,  13,  13,  13,  13,  13,  13,   5,
-  /*  30 */    5,   5,   5,   5,   5,   5,   5,  18,  18,  16,
-  /*  40 */   16,  19,  19,  19,  20,  20,  21,  21,  22,  22,
-  /*  50 */   22,  22,  22,  22,  11,  11,  23,  23,  25,  24,
-  /*  60 */   24,  26,  26,  27,  27,  28,  28,  28,  28,  28,
-  /*  70 */   10,  10,  30,  30,  29,  31,  31,  32,  32,   6,
-  /*  80 */   33,  33,  33,  34,  34,  34,  34,  34,  34,  34,
-  /*  90 */   34,  34,  34,  34,  34,  34,  34,  34,  34,  34,
-  /* 100 */   34,  34,  39,  39,  40,  41,  41,  41,  36,  37,
-  /* 110 */   37,  42,  42,  42,  42,  42,  42,  42,  42,  42,
-  /* 120 */   42,  42,  42,  42,  42,  42,  42,  42,  42,  42,
-  /* 130 */   44,  44,  35,  35,  45,  45,  45,  45,  46,  47,
-  /* 140 */   47,  48,  49,  49,  50,  50,  50,  50,  50,  50,
-  /* 150 */   50,  50,  50,  50,  50,  38,  38,  17,  14,  14,
-  /* 160 */   51,  51,  43,  43,  15
+  /*   0 */    0,  1,  1,  2,  2,  2,  3,  3,  3,  3
+  /*  10 */ ,  7,  7,  8,  8,  9,  9,  9,  4,  4, 12
+  /*  20 */ , 12, 12, 13, 13, 13, 13, 13, 13, 13,  5
+  /*  30 */ ,  5,  5,  5,  5,  5,  5,  5, 18, 18, 16
+  /*  40 */ , 16, 19, 19, 19, 20, 20, 21, 21, 22, 22
+  /*  50 */ , 22, 22, 22, 22, 11, 11, 23, 23, 25, 24
+  /*  60 */ , 24, 26, 26, 27, 27, 28, 28, 28, 28, 28
+  /*  70 */ , 10, 10, 30, 30, 29, 31, 31, 32, 32,  6
+  /*  80 */ , 33, 33, 33, 34, 34, 34, 34, 34, 34, 34
+  /*  90 */ , 34, 34, 34, 34, 34, 34, 34, 34, 34, 34
+  /* 100 */ , 34, 34, 39, 39, 40, 41, 41, 41, 36, 37
+  /* 110 */ , 37, 42, 42, 42, 42, 42, 42, 42, 42, 42
+  /* 120 */ , 42, 42, 42, 42, 42, 42, 42, 42, 42, 42
+  /* 130 */ , 44, 44, 35, 35, 45, 45, 45, 45, 46, 47
+  /* 140 */ , 47, 48, 49, 49, 50, 50, 50, 50, 50, 50
+  /* 150 */ , 50, 50, 50, 50, 50, 38, 38, 17, 14, 14
+  /* 160 */ , 51, 51, 43, 43, 15
 }; // Size of table:168(x86)/168(x64) bytes.
 
-/*********************************************************************************\
-* The rightSide[] matrix is indexed by production number and holds                *
-* the right side symbols of each production.                                      *
-* Compressed and only used for debugging.                                         *
-\*********************************************************************************/
+/**********************************************************************************\
+* rightSideTable[] holds a compressed form of the rightsides of all                *
+* productions in the grammar. Only used for debugging.                             *
+\**********************************************************************************/
 static const unsigned char rightSideTable[376] = {
   /*   0 */   75
   /*   2 */ , 75, 76
@@ -1132,137 +1155,137 @@ static const unsigned char rightSideTable[376] = {
   /* 164 */ , 72
 }; // Size of table:376(x86)/376(x64) bytes.
 
-/********************************************************************************\
-* symbolNames contains names of terminal and nonTerminal separated by space      *
-* Used for debugging.                                                            *
-\********************************************************************************/
+/**********************************************************************************\
+* symbolNames is a space separated string with the names of all symbols used in    *
+* grammar, terminals and nonTerminals. Only used for debugging.                    *
+\**********************************************************************************/
 static const char *symbolNames = {
-  "EOI"
-  " STRING"
-  " ICON"
-  " FCON"
-  " TYPE"
-  " STRUCT"
-  " ENUM"
-  " DEFINE"
-  " ENDIF"
-  " IFDEF"
-  " IFNDEF"
-  " INCLUDE"
-  " UNDEF"
-  " EXTERN"
-  " STATIC"
-  " VIRTUAL"
-  " REGISTER"
-  " AUTO"
-  " OPERATOR"
-  " SIGNED"
-  " PRIVATE"
-  " PUBLIC"
-  " PROTECTED"
-  " TEMPLATE"
-  " RETURN"
-  " GOTO"
-  " IF"
-  " SWITCH"
-  " CASE"
-  " DEFAULT"
-  " BREAK"
-  " CONTINUE"
-  " WHILE"
-  " DO"
-  " FOR"
-  " TRYSTMT"
-  " CATCH"
-  " THROW"
-  " LC"
-  " RC"
-  " SEMI"
-  " ELLIPSIS"
-  " COMMA"
-  " EQUAL"
-  " ASSIGNOP"
-  " QUEST"
-  " COLON"
-  " OROR"
-  " ANDAND"
-  " OR"
-  " XOR"
-  " AND"
-  " EQUOP"
-  " RELOP"
-  " SHIFTOP"
-  " PLUS"
-  " MINUS"
-  " STAR"
-  " DIVOP"
-  " SIZEOF"
-  " UNOP"
-  " INCOP"
-  " LB"
-  " RB"
-  " LPAR"
-  " RPAR"
-  " STRUCTOP"
-  " COLONCOLON"
-  " NEWOP"
-  " DELETEOP"
-  " TTYPE"
-  " CLASS"
-  " NAME"
-  " ELSE"
-  " program"
-  " ext_def_list"
-  " ext_def"
-  " opt_specifiers"
-  " ext_decl_list"
-  " funct_decl"
-  " compound_stmt"
-  " specifiers"
-  " type_or_class"
-  " type_specifier"
-  " enum_specifier"
-  " struct_specifier"
-  " ext_decl"
-  " var_decl"
-  " initializer"
-  " name"
-  " var_list"
-  " const_expr"
-  " name_list"
-  " param_declaration"
-  " type"
-  " abstract_decl"
-  " abs_decl"
-  " opt_tag"
-  " def_list"
-  " tag"
-  " def"
-  " decl_list"
-  " decl"
-  " enum"
-  " opt_enum_list"
-  " enumerator_list"
-  " enumerator"
-  " stmt_list"
-  " statement"
-  " expr"
-  " target"
-  " test"
-  " opt_expr"
-  " handler_list"
-  " exception_handler"
-  " catch_type"
-  " unary"
-  " string_const"
-  " args"
-  " non_comma_expr"
-  " or_expr"
-  " or_list"
-  " and_expr"
-  " and_list"
-  " binary"
-  " initializer_list"
+  "EOI"                                               /* T     0               */
+  " STRING"                                           /* T     1               */
+  " ICON"                                             /* T     2               */
+  " FCON"                                             /* T     3               */
+  " TYPE"                                             /* T     4               */
+  " STRUCT"                                           /* T     5               */
+  " ENUM"                                             /* T     6               */
+  " DEFINE"                                           /* T     7               */
+  " ENDIF"                                            /* T     8               */
+  " IFDEF"                                            /* T     9               */
+  " IFNDEF"                                           /* T    10               */
+  " INCLUDE"                                          /* T    11               */
+  " UNDEF"                                            /* T    12               */
+  " EXTERN"                                           /* T    13               */
+  " STATIC"                                           /* T    14               */
+  " VIRTUAL"                                          /* T    15               */
+  " REGISTER"                                         /* T    16               */
+  " AUTO"                                             /* T    17               */
+  " OPERATOR"                                         /* T    18               */
+  " SIGNED"                                           /* T    19               */
+  " PRIVATE"                                          /* T    20               */
+  " PUBLIC"                                           /* T    21               */
+  " PROTECTED"                                        /* T    22               */
+  " TEMPLATE"                                         /* T    23               */
+  " RETURN"                                           /* T    24               */
+  " GOTO"                                             /* T    25               */
+  " IF"                                               /* T    26               */
+  " SWITCH"                                           /* T    27               */
+  " CASE"                                             /* T    28               */
+  " DEFAULT"                                          /* T    29               */
+  " BREAK"                                            /* T    30               */
+  " CONTINUE"                                         /* T    31               */
+  " WHILE"                                            /* T    32               */
+  " DO"                                               /* T    33               */
+  " FOR"                                              /* T    34               */
+  " TRYSTMT"                                          /* T    35               */
+  " CATCH"                                            /* T    36               */
+  " THROW"                                            /* T    37               */
+  " LC"                                               /* T    38               */
+  " RC"                                               /* T    39               */
+  " SEMI"                                             /* T    40               */
+  " ELLIPSIS"                                         /* T    41               */
+  " COMMA"                                            /* T    42               */
+  " EQUAL"                                            /* T    43               */
+  " ASSIGNOP"                                         /* T    44               */
+  " QUEST"                                            /* T    45               */
+  " COLON"                                            /* T    46               */
+  " OROR"                                             /* T    47               */
+  " ANDAND"                                           /* T    48               */
+  " OR"                                               /* T    49               */
+  " XOR"                                              /* T    50               */
+  " AND"                                              /* T    51               */
+  " EQUOP"                                            /* T    52               */
+  " RELOP"                                            /* T    53               */
+  " SHIFTOP"                                          /* T    54               */
+  " PLUS"                                             /* T    55               */
+  " MINUS"                                            /* T    56               */
+  " STAR"                                             /* T    57               */
+  " DIVOP"                                            /* T    58               */
+  " SIZEOF"                                           /* T    59               */
+  " UNOP"                                             /* T    60               */
+  " INCOP"                                            /* T    61               */
+  " LB"                                               /* T    62               */
+  " RB"                                               /* T    63               */
+  " LPAR"                                             /* T    64               */
+  " RPAR"                                             /* T    65               */
+  " STRUCTOP"                                         /* T    66               */
+  " COLONCOLON"                                       /* T    67               */
+  " NEWOP"                                            /* T    68               */
+  " DELETEOP"                                         /* T    69               */
+  " TTYPE"                                            /* T    70               */
+  " CLASS"                                            /* T    71               */
+  " NAME"                                             /* T    72               */
+  " ELSE"                                             /* T    73               */
+  " program"                                          /* NT   74 NTindex=0     */
+  " ext_def_list"                                     /* NT   75 NTindex=1     */
+  " ext_def"                                          /* NT   76 NTindex=2     */
+  " opt_specifiers"                                   /* NT   77 NTindex=3     */
+  " ext_decl_list"                                    /* NT   78 NTindex=4     */
+  " funct_decl"                                       /* NT   79 NTindex=5     */
+  " compound_stmt"                                    /* NT   80 NTindex=6     */
+  " specifiers"                                       /* NT   81 NTindex=7     */
+  " type_or_class"                                    /* NT   82 NTindex=8     */
+  " type_specifier"                                   /* NT   83 NTindex=9     */
+  " enum_specifier"                                   /* NT   84 NTindex=10    */
+  " struct_specifier"                                 /* NT   85 NTindex=11    */
+  " ext_decl"                                         /* NT   86 NTindex=12    */
+  " var_decl"                                         /* NT   87 NTindex=13    */
+  " initializer"                                      /* NT   88 NTindex=14    */
+  " name"                                             /* NT   89 NTindex=15    */
+  " var_list"                                         /* NT   90 NTindex=16    */
+  " const_expr"                                       /* NT   91 NTindex=17    */
+  " name_list"                                        /* NT   92 NTindex=18    */
+  " param_declaration"                                /* NT   93 NTindex=19    */
+  " type"                                             /* NT   94 NTindex=20    */
+  " abstract_decl"                                    /* NT   95 NTindex=21    */
+  " abs_decl"                                         /* NT   96 NTindex=22    */
+  " opt_tag"                                          /* NT   97 NTindex=23    */
+  " def_list"                                         /* NT   98 NTindex=24    */
+  " tag"                                              /* NT   99 NTindex=25    */
+  " def"                                              /* NT  100 NTindex=26    */
+  " decl_list"                                        /* NT  101 NTindex=27    */
+  " decl"                                             /* NT  102 NTindex=28    */
+  " enum"                                             /* NT  103 NTindex=29    */
+  " opt_enum_list"                                    /* NT  104 NTindex=30    */
+  " enumerator_list"                                  /* NT  105 NTindex=31    */
+  " enumerator"                                       /* NT  106 NTindex=32    */
+  " stmt_list"                                        /* NT  107 NTindex=33    */
+  " statement"                                        /* NT  108 NTindex=34    */
+  " expr"                                             /* NT  109 NTindex=35    */
+  " target"                                           /* NT  110 NTindex=36    */
+  " test"                                             /* NT  111 NTindex=37    */
+  " opt_expr"                                         /* NT  112 NTindex=38    */
+  " handler_list"                                     /* NT  113 NTindex=39    */
+  " exception_handler"                                /* NT  114 NTindex=40    */
+  " catch_type"                                       /* NT  115 NTindex=41    */
+  " unary"                                            /* NT  116 NTindex=42    */
+  " string_const"                                     /* NT  117 NTindex=43    */
+  " args"                                             /* NT  118 NTindex=44    */
+  " non_comma_expr"                                   /* NT  119 NTindex=45    */
+  " or_expr"                                          /* NT  120 NTindex=46    */
+  " or_list"                                          /* NT  121 NTindex=47    */
+  " and_expr"                                         /* NT  122 NTindex=48    */
+  " and_list"                                         /* NT  123 NTindex=49    */
+  " binary"                                           /* NT  124 NTindex=50    */
+  " initializer_list"                                 /* NT  125 NTindex=51    */
 }; // Total size of string:996(x86)/1.000(x64) bytes
 
 static const ParserTablesTemplate<74,126,165,301
@@ -1274,11 +1297,11 @@ static const ParserTablesTemplate<74,126,165,301
                                                              ,successorCode   , NTindexListTable  , stateListTable
                                                              ,productionLength, leftSideTable
                                                              ,rightSideTable  , symbolNames
-                                                             ,8572, 8640);
+                                                             ,8572, 8648);
 
 const ParserTables *CppParser::CppTables = &CppTables_s;
-// Size of CppTables_s: 68(x86)/120(x64) bytes. Size of CppTables:4(x86)/8(x64) bytes
+// Size of CppTables_s: 68(x86)/128(x64) bytes. Size of CppTables:4(x86)/8(x64) bytes
 
-// Total size of table data:8.572(x86)/8.640(x64) bytes.
+// Total size of table data:8.572(x86)/8.648(x64) bytes.
 
 

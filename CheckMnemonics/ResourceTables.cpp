@@ -18,54 +18,64 @@
 * The interpretation of action is:                                                 *
 *   action <  0 - Reduce by production p, p == -action.                            *
 *   action == 0 - Accept. Reduce by production 0.                                  *
-*   action >  0 - Go to state newstate (=action),                                  *
-*                 and push newstate.                                               *
-*                 Then advance input 1 symbol                                      *
-*   action == _ParserError -  Unexpected input - do some recovery, to synchronize. *
-*                 input and stack                                                  *
+*   action >  0 - Shift to newstate (=action),                                     *
+*                 ie. push(newstate), set current state=newstate                   *
+*                 and advance input 1 symbol.                                      *
+*   action == _ParserError - Unexpected input. Do some recovery, to try to         *
+*                 synchronize input and stack, in order to continue parse.         *
+*                 (See LRParser::recover() in LRParser.cpp)                        *
 *                                                                                  *
 * For each state S, a #define is generated and used as element S in array          *
-* actionCode. Each define has the format:                                          *
-*                    3         2         1         0                               *
-*                   10987654321098765432109876543210                               *
-* #define _acSSSS 0xaaaaaaaaaaaaaaaCIttttttttttttttt                               *
-* where SSSS : The statenumber S                                                   *
-* t          : Bit[0-14],  unsigned short                                          *
-* a          : Bit[17-31], signed short                                            *
-* CI         : Bit[15-16], indicates how to interpret t and a.                     *
-* If C is 0  : Uncompressed format                                                 *
-*              t: Index into array termListTable, pointing at the first            *
-*                 element of termList (see below).                                 *
-*              a: Index into array actionListTable, pointing at the first          *
-*                 element of actionList (see below)                                *
-* If C is 1  : Compressed format                                                   *
-*              This format is used if there is only 1 possible action, a.          *
-*    I=0 (bit 15) There is only 1 legal terminal in this state                     *
-*              t: legal terminal                                                   *
-*              a: action                                                           *
+* actionCode. Each define looks as:                                                *
 *                                                                                  *
-*    I=1 If all actions in the state are reduce by the same production             *
-*              t: Index into compressedLAsets, pointing at the first element       *
-*                 of LASet (see below)                                             *
-*              a: action                                                           *
+* #define _acDDDD Code                                                             *
 *                                                                                  *
-* For Uncompressed states (C=0) then use arrays termListTable and actionListTable. *
-*    n                 : termListTable[t] = number of elements in the list         *
-*    termList[  0..n-1]: termListTable[t+1]..termListTable[t+n]                    *
-*                        ordered list of terminals, of length n                    *
-*    actionList[0..n-1]: actionListTable[a]..actionListTable[a+n-1], length = n    *
+* where DDDD is the statenumber S and Code is an unsigned int with the following   *
+* format:                                                                          *
+*                   0         1         2         3                                *
+* Bit index:        01234567890123456789012345678901                               *
+* Code     :        tttttttttttttttIFaaaaaaaaaaaaaaa                               *
 *                                                                                  *
-*    To get the action, find the index k in termList, so termList[k] = T           *
-*    and then pick actionList[k]. If T is not found, set action = _ParseError      *
+* t          : Bit[ 0-14]: unsigned short                                          *
+* a          : Bit[17-31]: signed short                                            *
+* F          : Bit 16    : Indicates how to interpret t and a.                     *
+* I          : Bit 15    : In case F==1, indicates how to interpret t.             *
 *                                                                                  *
-* For Compressed states, C=1 and I=1 then use array compressedLAsets which is a    *
-* list of bitset(0..terminalCount-1), LASet. Number of bytes in each LAset         *
+* F == 0: Uncompressed Format.                                                     *
+*      t: Index into array termListTable, pointing at the first element of         *
+*         termList (see below).                                                    *
+*      a: Index into array actionListTable, pointing at the first element of       *
+*         actionList (see below).                                                  *
+* F == 1: Compressed Format, used if there is only 1 possible action, a.           *
+*         I==0: There is only 1 legal terminal in the state.                       *
+*            t: Legal terminal.                                                    *
+*            a: Action.                                                            *
 *                                                                                  *
-*    b                 : (terminalcount-1)/8+1                                     *
-*    LAset[0..b-1]     : compressedLAsets[t]..compressedLAsets[t+b-1]              *
+*         I==1: All actions in the state are reduce by the same production P = -a. *
+*            t: Index into compressedLAsets, pointing at the first element of      *
+*               LASet (see below).                                                 *
+*            a: Action.                                                            *
 *                                                                                  *
-* As for Uncompressed states, the same check for existence is done. If terminal T  *
-* is not found, set action = _ParseError.                                          *
+* F == 0: Use arrays termListTable and actionListTable to find action.             *
+*      n                 : termListTable[t] = number of elements in termList.      *
+*      termList[0..n-1]  : termListTable[t+1..t+n]                                 *
+*                          Ordered list of legal terminals                         *
+*      actionList[0..n-1]: actionListTable[a..a+n-1] (same length as termList).    *
+*                                                                                  *
+*      To get action, find index k in termList, so termList[k] == T                *
+*      and set action = actionList[k]. If T is not found, set action = _ParseError.*
+*      Note that both termList and actionList may be shared by several states.     *
+*                                                                                  *
+* F == 1 and I==1: Use array compressedLAsets which is a list of bitsets, each     *
+*                  with terminalCount bits, a lookaheadset LAset with 1-bits       *
+*                  for legal terminals, and 0-bits for illegal terminals.          *
+*                                                                                  *
+*      b                 : Number of bytes in each LAset = (terminalCount-1)/8+1   *
+*      LAset[0..b-1]     : compressedLAsets[t..t+b-1]                              *
+*                                                                                  *
+*      As for uncompressed states, the same check for existence is done.           *
+*      If terminal T is not present in LAset, set action = _ParseError.            *
+*      Note that each LAset may be shared by several states.                       *
 \**********************************************************************************/
 #define _ac0000 0x00000000 /* termList   0, actionList   0            */
 #define _ac0001 0x00010000 /* Reduce by 0 on EOI                      */
@@ -1025,37 +1035,48 @@ static const unsigned char compressedLAsets[1681] = {
 /**********************************************************************************\
 * The 3 arrays NTindexListTable, stateListTable and successorCode holds a          *
 * compressed succesor-matrix, used by LRParser to find newstate = successor(S,A)   *
-* as last part of a reduction with production P, A -> alfa. The number of elements *
-* popped from the stack is the length of alfa, the state S is then taken from      *
-* stacktop, the nonterminal A is leftside of the reduce production P.              *
-* To complete the reduction, push(newstate)                                        *
+* as last part of a reduction with production P, A -> alfa.                        *
+* A reduction by production P goes as follows:                                     *
+*   Pop L elements from stack, where L = length of alfa;                           *
+*   S = state on stacktop;                                                         *
+*   A = leftside of the reduce production P;                                       *
+*   newstate = successor(S,A);                                                     *
+*   push(newstate), and set current state = newstate.                              *
+*                                                                                  *
 * For each relevant state S, a #define is generated and used as element S in array *
 * successorCode. Each define has the format:                                       *
-*                    3         2         1         0                               *
-*                   10987654321098765432109876543210                               *
-* #define _suSSSS 0xrrrrrrrrrrrrrrrCiiiiiiiiiiiiiiii                               *
-* where SSSS : The statenumber S                                                   *
-* i          : Bit[ 0-15], unsigned short                                          *
-* r          : Bit[17-31], unsigned short                                          *
-* C          : Bit 16, indicates how to interpret i and r.                         *
-* If C is 0  : Uncompressed format                                                 *
-*              i is the index into array NTindexListTable, pointing at the first   *
-*              element of NTIndexList (see below).                                 *
-*              r is the index into array stateListTable, pointing at the first     *
-*              element of stateList (see below)                                    *
-* If C is 1  : Compressed format                                                   *
-*              i is the index A' of nonterminal A, A' = (A - terminalCount)        *
-*              r is the new state. This format is used if there is only 1 possible *
-*              successor-state.                                                    *
 *                                                                                  *
-* For Uncompressed states (C=0) then use arrays NTIndexListTable and stateTable.   *
-*    n                  : NTIndexListTable[i] = number of elements in the list     *
-*    NTIndexList[0..n-1]: NTIndexListTable[i+1]..NTIndexListTable[i+n]             *
-*                         ordered list of non-terminals-indices, of length n       *
-*    stateList[  0..n-1]: stateListTable[r]..stateListTable[r+n-1], length = n     *
+* #define _suDDDD Code                                                             *
 *                                                                                  *
-* To get the new state, find the index k in NTIndexList, so NTIndexList[k] = A'    *
-* and use stateList[k] as the new state. Note that the non-terminal always exist   *
+* where DDDD is the statenumber S and Code is an unsigned int with the following   *
+* format:                                                                          *
+*                   0         1         2         3                                *
+* Bit index:        01234567890123456789012345678901                               *
+* Code              iiiiiiiiiiiiiiiiFrrrrrrrrrrrrrrr                               *
+*                                                                                  *
+* i          : Bit[ 0-15]: unsigned short                                          *
+* r          : Bit[17-31]: unsigned short                                          *
+* F          : Bit 16    : Indicates how to interpret i and r.                     *
+*                                                                                  *
+* F == 0: Uncompressed Format.                                                     *
+*      i: Index into array NTindexListTable, pointing at the first element of      *
+*         NTIndexList (see below).                                                 *
+*      r: Index into array stateListTable, pointing at the first element of        *
+*         stateList (see below).                                                   *
+* F == 1: Compressed Format, used if there is only 1 possible newstate.            *
+*      i: Index A' of nonterminal A, A' = (A - terminalCount).                     *
+*      r: New state.                                                               *
+*                                                                                  *
+* F == 0: Use arrays NTIndexListTable and stateListTable to find newstate.         *
+*      n                  : NTIndexListTable[i] = number of elements in NTIndexList*
+*      NTIndexList[0..n-1]: NTIndexListTable[i+1..i+n]                             *
+*                           Ordered list of possible nonterminal-indices.          *
+*      stateList[0..n-1]  : stateListTable[r..r+n-1], same length as NTIndexList   *
+*                                                                                  *
+*      To get newstate, find index k in NTIndexList, so NTIndexList[k] == A',      *
+*      and set newstate = stateList[k].                                            *
+*      A' = (A - terminalCount) will always exist.                                 *
+*      Note that both NTIndexList and stateList may be shared by several states.   *
 \**********************************************************************************/
 #define _su0000 0x00000000 /* NTindexList   0, stateList   0          */
 #define _su0002 0x00300019 /* NTindexList   1, stateList   1          */
@@ -1406,120 +1427,122 @@ static const unsigned short stateListTable[348] = {
 }; // Size of table:696(x86)/696(x64) bytes.
 
 /**********************************************************************************\
-* The productionLength[] array is indexed by production number and holds           *
-* the number of symbols on the right side of each production.                      *
+* The productionLength[] is indexed by production number and holds the number of   *
+* symbols on the right side of each production.                                    *
 \**********************************************************************************/
 static const unsigned char productionLength[475] = {
-  /*   0 */    1,   1,   2,   1,   1,   1,   1,   1,   1,   1,
-  /*  10 */    1,   1,   1,   1,   1,   1,   1,   1,   1,   1,
-  /*  20 */    1,   4,   4,   4,   8,   7,   2,   1,   2,   2,
-  /*  30 */    2,   2,   2,   1,   2,   2,   2,   2,   2,   3,
-  /*  40 */    1,   1,   3,   9,   1,   3,   1,   1,   1,   0,
-  /*  50 */    1,   1,   2,   1,   1,   1,   1,   1,   1,   1,
-  /*  60 */    1,   5,   1,   1,   1,   5,   1,   1,   1,   3,
-  /*  70 */    3,   3,   5,   3,   7,   1,   1,   1,   2,   1,
-  /*  80 */    2,   1,   1,   1,   1,   3,   1,   3,   1,   1,
-  /*  90 */    2,   1,   1,   1,   1,   1,   1,   1,   1,   1,
-  /* 100 */    1,   1,   1,   1,   0,   2,   1,   1,   1,   1,
-  /* 110 */    1,   1,   1,   1,   1,   1,   1,   1,   1,   1,
-  /* 120 */    1,   1,   1,   1,   1,   1,   1,   1,   1,   1,
-  /* 130 */    1,   1,   1,   1,   1,   1,   1,   1,   1,   1,
-  /* 140 */    1,   1,   1,   1,   1,   1,   1,   1,   1,   1,
-  /* 150 */    1,   1,   1,   1,   1,   1,   1,   1,   1,   1,
-  /* 160 */    1,   1,   1,   1,   1,   1,   1,   1,   1,   1,
-  /* 170 */    1,   1,   1,   1,   1,   1,   1,   1,   1,   1,
-  /* 180 */    1,   1,   1,   1,   1,   1,   1,   1,   1,   1,
-  /* 190 */    1,   1,   1,   1,   1,   1,   1,   1,   1,   1,
-  /* 200 */    1,   1,   1,   1,   1,   1,   1,   1,   1,   1,
-  /* 210 */    1,   1,   1,   1,   1,   1,   1,   1,   1,   1,
-  /* 220 */    1,   1,   1,   1,   1,   1,   1,   1,   1,   1,
-  /* 230 */    1,   1,   1,   1,   1,   1,   1,   1,   1,   1,
-  /* 240 */    1,   1,   1,   1,   1,   1,   1,   1,   1,   1,
-  /* 250 */    1,   1,   1,   1,   1,   1,   1,   1,   1,   1,
-  /* 260 */    1,   1,   1,   1,   1,   1,   1,   1,   1,   1,
-  /* 270 */    1,   1,   1,   1,   1,   1,   1,   1,   1,   1,
-  /* 280 */    1,   1,   1,   1,   1,   1,   1,   1,   1,   1,
-  /* 290 */    1,   1,   1,   1,   1,   1,   1,   1,   1,   1,
-  /* 300 */    1,   1,   1,   1,   1,   1,   1,   1,   1,   1,
-  /* 310 */    1,   1,   1,   1,   1,   1,   1,   1,   1,   1,
-  /* 320 */    1,   1,   1,   1,   1,   1,   1,   1,   1,   1,
-  /* 330 */    1,   1,   1,   1,   1,   1,   1,   1,   1,   6,
-  /* 340 */    2,   1,   6,   1,   1,   2,   0,   3,   0,   1,
-  /* 350 */    1,   1,   1,   1,   1,   7,   2,   1,   2,   1,
-  /* 360 */    4,   1,   1,   3,   2,   1,   1,   1,   4,   5,
-  /* 370 */    2,   0,   3,   1,   1,   1,   1,   1,   3,   1,
-  /* 380 */    1,   1,   1,   1,   1,   1,   1,   1,   1,   1,
-  /* 390 */    1,   1,   1,   1,   1,   1,   1,   1,   1,   1,
-  /* 400 */    1,   1,   1,   5,   2,   1,   1,   2,   6,   2,
-  /* 410 */    1,   4,   0,   2,   1,   3,   1,   1,   1,   1,
-  /* 420 */    1,   1,   6,   4,   3,   1,   5,   2,   1,   2,
-  /* 430 */    6,   2,   1,   4,   7,   2,   1,   2,   2,   2,
-  /* 440 */    2,   2,   2,   2,   2,   1,   5,   1,   1,   2,
-  /* 450 */    1,   2,   3,   5,   1,   1,   1,   1,   3,   3,
-  /* 460 */    1,   3,   1,   1,   1,   1,   4,   7,   3,   1,
-  /* 470 */    1,   1,   1,   1,   1
+  /*   0 */    1,  1,  2,  1,  1,  1,  1,  1,  1,  1
+  /*  10 */ ,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1
+  /*  20 */ ,  1,  4,  4,  4,  8,  7,  2,  1,  2,  2
+  /*  30 */ ,  2,  2,  2,  1,  2,  2,  2,  2,  2,  3
+  /*  40 */ ,  1,  1,  3,  9,  1,  3,  1,  1,  1,  0
+  /*  50 */ ,  1,  1,  2,  1,  1,  1,  1,  1,  1,  1
+  /*  60 */ ,  1,  5,  1,  1,  1,  5,  1,  1,  1,  3
+  /*  70 */ ,  3,  3,  5,  3,  7,  1,  1,  1,  2,  1
+  /*  80 */ ,  2,  1,  1,  1,  1,  3,  1,  3,  1,  1
+  /*  90 */ ,  2,  1,  1,  1,  1,  1,  1,  1,  1,  1
+  /* 100 */ ,  1,  1,  1,  1,  0,  2,  1,  1,  1,  1
+  /* 110 */ ,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1
+  /* 120 */ ,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1
+  /* 130 */ ,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1
+  /* 140 */ ,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1
+  /* 150 */ ,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1
+  /* 160 */ ,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1
+  /* 170 */ ,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1
+  /* 180 */ ,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1
+  /* 190 */ ,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1
+  /* 200 */ ,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1
+  /* 210 */ ,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1
+  /* 220 */ ,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1
+  /* 230 */ ,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1
+  /* 240 */ ,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1
+  /* 250 */ ,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1
+  /* 260 */ ,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1
+  /* 270 */ ,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1
+  /* 280 */ ,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1
+  /* 290 */ ,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1
+  /* 300 */ ,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1
+  /* 310 */ ,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1
+  /* 320 */ ,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1
+  /* 330 */ ,  1,  1,  1,  1,  1,  1,  1,  1,  1,  6
+  /* 340 */ ,  2,  1,  6,  1,  1,  2,  0,  3,  0,  1
+  /* 350 */ ,  1,  1,  1,  1,  1,  7,  2,  1,  2,  1
+  /* 360 */ ,  4,  1,  1,  3,  2,  1,  1,  1,  4,  5
+  /* 370 */ ,  2,  0,  3,  1,  1,  1,  1,  1,  3,  1
+  /* 380 */ ,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1
+  /* 390 */ ,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1
+  /* 400 */ ,  1,  1,  1,  5,  2,  1,  1,  2,  6,  2
+  /* 410 */ ,  1,  4,  0,  2,  1,  3,  1,  1,  1,  1
+  /* 420 */ ,  1,  1,  6,  4,  3,  1,  5,  2,  1,  2
+  /* 430 */ ,  6,  2,  1,  4,  7,  2,  1,  2,  2,  2
+  /* 440 */ ,  2,  2,  2,  2,  2,  1,  5,  1,  1,  2
+  /* 450 */ ,  1,  2,  3,  5,  1,  1,  1,  1,  3,  3
+  /* 460 */ ,  1,  3,  1,  1,  1,  1,  4,  7,  3,  1
+  /* 470 */ ,  1,  1,  1,  1,  1
 }; // Size of table:476(x86)/480(x64) bytes.
 
-/*********************************************************************************\
-* The leftSide[] array is indexed by production number, and holds the             *
-* index, A' of nonTerminal A on the left side of each production. A'=A-#terminals *
-\*********************************************************************************/
+/**********************************************************************************\
+* leftSideTable[] is indexed by production number.                                 *
+* leftSideTable[p] = A', A' = (A - terminalCount)                                  *
+*                        where A is the left side of production p.                 *
+* A' = 0..nonterminalCount-1.                                                      *
+* p  = 0..productionCount-1                                                        *
+\**********************************************************************************/
 static const unsigned char leftSideTable[475] = {
-  /*   0 */    0,   1,   2,   2,   3,   3,   3,   3,   3,   3,
-  /*  10 */    3,   3,   3,   3,   3,   3,   3,   3,   3,   3,
-  /*  20 */    3,   4,   5,   6,   7,   8,  26,  26,  29,  29,
-  /*  30 */   29,  29,  28,  28,  32,  32,  32,  32,  32,  33,
-  /*  40 */   33,  35,  31,  34,  34,  30,  30,  38,  38,  27,
-  /*  50 */   27,  41,  41,  42,  42,  42,  42,  42,  42,  42,
-  /*  60 */   42,  43,  51,  51,  51,  44,  53,  53,  53,  45,
-  /*  70 */   46,  47,  48,  49,  50,  55,  55,  55,  52,  52,
-  /*  80 */   56,  57,  57,  57,  57,  58,  58,  59,  59,  60,
-  /*  90 */   60,  61,  61,  61,  61,  61,  61,  61,  61,  61,
-  /* 100 */   61,  61,  61,  61,  22,  22,  74,  74,  74,  74,
-  /* 110 */   74,  74,  39,  39,  39,  39,  39,  39,  39,  39,
-  /* 120 */   39,  39,  39,  39,  39,  39,  40,  40,  40,  40,
-  /* 130 */   40,  40,  40,  40,  40,  40,  40,  40,  40,  40,
-  /* 140 */   40,  40,  40,  40,  40,  40,  36,  36,  36,  36,
-  /* 150 */   36,  36,  36,  36,  36,  36,  36,  36,  36,  36,
-  /* 160 */   36,  36,  36,  36,  36,  62,  62,  62,  62,  62,
-  /* 170 */   62,  62,  62,  62,  62,  62,  62,  62,  62,  62,
-  /* 180 */   62,  62,  62,  62,  62,  62,  62,  62,  62,  62,
-  /* 190 */   62,  62,  62,  62,  62,  63,  63,  63,  63,  63,
-  /* 200 */   63,  63,  63,  63,  63,  63,  63,  63,  63,  65,
-  /* 210 */   65,  65,  65,  65,  65,  65,  65,  65,  65,  65,
-  /* 220 */   65,  65,  67,  67,  67,  67,  67,  67,  67,  67,
-  /* 230 */   67,  67,  67,  67,  67,  67,  67,  64,  64,  64,
-  /* 240 */   64,  64,  64,  64,  64,  64,  64,  64,  64,  64,
-  /* 250 */   64,  64,  64,  64,  64,  64,  64,  64,  64,  64,
-  /* 260 */   64,  64,  64,  66,  66,  66,  66,  66,  66,  66,
-  /* 270 */   66,  66,  66,  68,  68,  68,  68,  68,  68,  68,
-  /* 280 */   68,  68,  68,  68,  68,  68,  69,  69,  69,  69,
-  /* 290 */   69,  69,  69,  69,  69,  69,  69,  69,  69,  69,
-  /* 300 */   69,  70,  70,  70,  70,  70,  70,  70,  70,  70,
-  /* 310 */   70,  70,  70,  70,  70,  70,  70,  70,  70,  70,
-  /* 320 */   70,  70,  70,  71,  71,  71,  71,  71,  71,  71,
-  /* 330 */   71,  71,  72,  72,  73,  73,  73,  73,  73,   9,
-  /* 340 */   75,  75,  76,  54,  54,  77,  77,  78,  79,  79,
-  /* 350 */   79,  79,  79,  79,  79,  10,  81,  81,  82,  82,
-  /* 360 */   11,  83,  83,  84,  85,  85,  86,  86,  87,  88,
-  /* 370 */   88,  89,  89,  91,  91,  91,  91,  91,  92,  92,
-  /* 380 */   93,  93,  93,  93,  93,  93,  93,  93,  93,  93,
-  /* 390 */   93,  93,  93,  93,  93,  93,  93,  93,  93,  93,
-  /* 400 */   93,  93,  93,  12,  94,  94,  95,  95,  13,  97,
-  /* 410 */   97,  98,  99,  99, 100, 100, 101, 101, 101, 101,
-  /* 420 */  101, 101,  14,  14, 102, 102,  15, 103, 103, 104,
-  /* 430 */   16, 105, 105,  17,  18, 106, 106, 108, 108, 108,
-  /* 440 */  108, 108, 108, 108, 107, 107, 111, 112, 112, 113,
-  /* 450 */  113, 114,  19,  20, 116, 115, 115, 117, 117, 109,
-  /* 460 */  109, 110, 110,  96,  96,  96,  96,  25,  80,  21,
-  /* 470 */   90,  90,  37,  24,  23
+  /*   0 */    0,  1,  2,  2,  3,  3,  3,  3,  3,  3
+  /*  10 */ ,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3
+  /*  20 */ ,  3,  4,  5,  6,  7,  8, 26, 26, 29, 29
+  /*  30 */ , 29, 29, 28, 28, 32, 32, 32, 32, 32, 33
+  /*  40 */ , 33, 35, 31, 34, 34, 30, 30, 38, 38, 27
+  /*  50 */ , 27, 41, 41, 42, 42, 42, 42, 42, 42, 42
+  /*  60 */ , 42, 43, 51, 51, 51, 44, 53, 53, 53, 45
+  /*  70 */ , 46, 47, 48, 49, 50, 55, 55, 55, 52, 52
+  /*  80 */ , 56, 57, 57, 57, 57, 58, 58, 59, 59, 60
+  /*  90 */ , 60, 61, 61, 61, 61, 61, 61, 61, 61, 61
+  /* 100 */ , 61, 61, 61, 61, 22, 22, 74, 74, 74, 74
+  /* 110 */ , 74, 74, 39, 39, 39, 39, 39, 39, 39, 39
+  /* 120 */ , 39, 39, 39, 39, 39, 39, 40, 40, 40, 40
+  /* 130 */ , 40, 40, 40, 40, 40, 40, 40, 40, 40, 40
+  /* 140 */ , 40, 40, 40, 40, 40, 40, 36, 36, 36, 36
+  /* 150 */ , 36, 36, 36, 36, 36, 36, 36, 36, 36, 36
+  /* 160 */ , 36, 36, 36, 36, 36, 62, 62, 62, 62, 62
+  /* 170 */ , 62, 62, 62, 62, 62, 62, 62, 62, 62, 62
+  /* 180 */ , 62, 62, 62, 62, 62, 62, 62, 62, 62, 62
+  /* 190 */ , 62, 62, 62, 62, 62, 63, 63, 63, 63, 63
+  /* 200 */ , 63, 63, 63, 63, 63, 63, 63, 63, 63, 65
+  /* 210 */ , 65, 65, 65, 65, 65, 65, 65, 65, 65, 65
+  /* 220 */ , 65, 65, 67, 67, 67, 67, 67, 67, 67, 67
+  /* 230 */ , 67, 67, 67, 67, 67, 67, 67, 64, 64, 64
+  /* 240 */ , 64, 64, 64, 64, 64, 64, 64, 64, 64, 64
+  /* 250 */ , 64, 64, 64, 64, 64, 64, 64, 64, 64, 64
+  /* 260 */ , 64, 64, 64, 66, 66, 66, 66, 66, 66, 66
+  /* 270 */ , 66, 66, 66, 68, 68, 68, 68, 68, 68, 68
+  /* 280 */ , 68, 68, 68, 68, 68, 68, 69, 69, 69, 69
+  /* 290 */ , 69, 69, 69, 69, 69, 69, 69, 69, 69, 69
+  /* 300 */ , 69, 70, 70, 70, 70, 70, 70, 70, 70, 70
+  /* 310 */ , 70, 70, 70, 70, 70, 70, 70, 70, 70, 70
+  /* 320 */ , 70, 70, 70, 71, 71, 71, 71, 71, 71, 71
+  /* 330 */ , 71, 71, 72, 72, 73, 73, 73, 73, 73,  9
+  /* 340 */ , 75, 75, 76, 54, 54, 77, 77, 78, 79, 79
+  /* 350 */ , 79, 79, 79, 79, 79, 10, 81, 81, 82, 82
+  /* 360 */ , 11, 83, 83, 84, 85, 85, 86, 86, 87, 88
+  /* 370 */ , 88, 89, 89, 91, 91, 91, 91, 91, 92, 92
+  /* 380 */ , 93, 93, 93, 93, 93, 93, 93, 93, 93, 93
+  /* 390 */ , 93, 93, 93, 93, 93, 93, 93, 93, 93, 93
+  /* 400 */ , 93, 93, 93, 12, 94, 94, 95, 95, 13, 97
+  /* 410 */ , 97, 98, 99, 99,100,100,101,101,101,101
+  /* 420 */ ,101,101, 14, 14,102,102, 15,103,103,104
+  /* 430 */ , 16,105,105, 17, 18,106,106,108,108,108
+  /* 440 */ ,108,108,108,108,107,107,111,112,112,113
+  /* 450 */ ,113,114, 19, 20,116,115,115,117,117,109
+  /* 460 */ ,109,110,110, 96, 96, 96, 96, 25, 80, 21
+  /* 470 */ , 90, 90, 37, 24, 23
 }; // Size of table:476(x86)/480(x64) bytes.
 
-/*********************************************************************************\
-* The rightSide[] matrix is indexed by production number and holds                *
-* the right side symbols of each production.                                      *
-* Compressed and only used for debugging.                                         *
-\*********************************************************************************/
+/**********************************************************************************\
+* rightSideTable[] holds a compressed form of the rightsides of all                *
+* productions in the grammar. Only used for debugging.                             *
+\**********************************************************************************/
 static const unsigned short rightSideTable[679] = {
   /*   0 */  329
   /*   1 */ ,330
@@ -1992,457 +2015,457 @@ static const unsigned short rightSideTable[679] = {
   /* 474 */ ,  3
 }; // Size of table:1.360(x86)/1.360(x64) bytes.
 
-/********************************************************************************\
-* symbolNames contains names of terminal and nonTerminal separated by space      *
-* Used for debugging.                                                            *
-\********************************************************************************/
+/**********************************************************************************\
+* symbolNames is a space separated string with the names of all symbols used in    *
+* grammar, terminals and nonTerminals. Only used for debugging.                    *
+\**********************************************************************************/
 static const char *symbolNames = {
-  "EOI"
-  " NUMBER"
-  " IDENTIFIER"
-  " STRING"
-  " COMMA"
-  " GUIDELINES"
-  " DESIGNINFO"
-  " LEFTMARGIN"
-  " RIGHTMARGIN"
-  " TOPMARGIN"
-  " BOTTOMMARGIN"
-  " HORZGUIDE"
-  " VERTGUIDE"
-  " TOOLBAR"
-  " BUTTON"
-  " _BITMAP"
-  " _ICON"
-  " _FONT"
-  " _MENU"
-  " _MENUITEM"
-  " STRINGTABLE"
-  " ACCELERATORS"
-  " VIRTKEY"
-  " ASCII"
-  " SHIFT"
-  " ALT"
-  " NOINVERT"
-  " RCDATA"
-  " DLGINIT"
-  " TEXTINCLUDE"
-  " LANGUAGE"
-  " TYPELIB"
-  " MENUEX"
-  " POPUP"
-  " GRAYED"
-  " CHECKED"
-  " INACTIVE"
-  " SEPARATOR"
-  " VERSIONINFO"
-  " FILEVERSION"
-  " PRODUCTVERSION"
-  " FILEFLAGSMASK"
-  " FILEFLAGS"
-  " FILEOS"
-  " FILETYPE"
-  " FILESUBTYPE"
-  " BLOCK"
-  " VALUE"
-  " DIALOG"
-  " DIALOGEX"
-  " AFX_DIALOG_LAYOUT"
-  " STYLE"
-  " EXSTYLE"
-  " CAPTION"
-  " DISCARDABLE"
-  " MOVEABLE"
-  " _PURE"
-  " IMPURE"
-  " PRELOAD"
-  " LOADONCALL"
-  " PUSHBUTTON"
-  " DEFPUSHBUTTON"
-  " EDITTEXT"
-  " SCROLLBAR"
-  " COMBOBOX"
-  " LISTBOX"
-  " GROUPBOX"
-  " LTEXT"
-  " RTEXT"
-  " CTEXT"
-  " CONTROL"
-  " _WS_OVERLAPPED"
-  " _WS_POPUP"
-  " _WS_CHILD"
-  " _WS_MINIMIZE"
-  " _WS_VISIBLE"
-  " _WS_DISABLED"
-  " _WS_CLIPSIBLINGS"
-  " _WS_CLIPCHILDREN"
-  " _WS_MAXIMIZE"
-  " _WS_CAPTION"
-  " _WS_BORDER"
-  " _WS_DLGFRAME"
-  " _WS_VSCROLL"
-  " _WS_HSCROLL"
-  " _WS_SYSMENU"
-  " _WS_THICKFRAME"
-  " _WS_GROUP"
-  " _WS_TABSTOP"
-  " _WS_MINIMIZEBOX"
-  " _WS_MAXIMIZEBOX"
-  " _WS_EX_DLGMODALFRAME"
-  " _WS_EX_NOPARENTNOTIFY"
-  " _WS_EX_TOPMOST"
-  " _WS_EX_ACCEPTFILES"
-  " _WS_EX_TRANSPARENT"
-  " _WS_EX_MDICHILD"
-  " _WS_EX_TOOLWINDOW"
-  " _WS_EX_WINDOWEDGE"
-  " _WS_EX_CLIENTEDGE"
-  " _WS_EX_CONTEXTHELP"
-  " _WS_EX_RIGHT"
-  " _WS_EX_LEFT"
-  " _WS_EX_RTLREADING"
-  " _WS_EX_LTRREADING"
-  " _WS_EX_LEFTSCROLLBAR"
-  " _WS_EX_RIGHTSCROLLBAR"
-  " _WS_EX_CONTROLPARENT"
-  " _WS_EX_STATICEDGE"
-  " _WS_EX_APPWINDOW"
-  " _SS_LEFT"
-  " _SS_CENTER"
-  " _SS_RIGHT"
-  " _SS_ICON"
-  " _SS_BLACKRECT"
-  " _SS_GRAYRECT"
-  " _SS_WHITERECT"
-  " _SS_BLACKFRAME"
-  " _SS_GRAYFRAME"
-  " _SS_WHITEFRAME"
-  " _SS_USERITEM"
-  " _SS_SIMPLE"
-  " _SS_LEFTNOWORDWRAP"
-  " _SS_OWNERDRAW"
-  " _SS_BITMAP"
-  " _SS_ENHMETAFILE"
-  " _SS_ETCHEDHORZ"
-  " _SS_ETCHEDVERT"
-  " _SS_ETCHEDFRAME"
-  " _SS_TYPEMASK"
-  " _SS_NOPREFIX"
-  " _SS_NOTIFY"
-  " _SS_CENTERIMAGE"
-  " _SS_RIGHTJUST"
-  " _SS_REALSIZEIMAGE"
-  " _SS_SUNKEN"
-  " _SS_ENDELLIPSIS"
-  " _SS_PATHELLIPSIS"
-  " _SS_WORDELLIPSIS"
-  " _SS_ELLIPSISMASK"
-  " _ES_LEFT"
-  " _ES_CENTER"
-  " _ES_RIGHT"
-  " _ES_MULTILINE"
-  " _ES_UPPERCASE"
-  " _ES_LOWERCASE"
-  " _ES_PASSWORD"
-  " _ES_AUTOVSCROLL"
-  " _ES_AUTOHSCROLL"
-  " _ES_NOHIDESEL"
-  " _ES_OEMCONVERT"
-  " _ES_READONLY"
-  " _ES_WANTRETURN"
-  " _ES_NUMBER"
-  " _BS_PUSHBUTTON"
-  " _BS_DEFPUSHBUTTON"
-  " _BS_CHECKBOX"
-  " _BS_AUTOCHECKBOX"
-  " _BS_RADIOBUTTON"
-  " _BS_3STATE"
-  " _BS_AUTO3STATE"
-  " _BS_GROUPBOX"
-  " _BS_USERBUTTON"
-  " _BS_AUTORADIOBUTTON"
-  " _BS_OWNERDRAW"
-  " _BS_LEFTTEXT"
-  " _BS_TEXT"
-  " _BS_ICON"
-  " _BS_BITMAP"
-  " _BS_LEFT"
-  " _BS_RIGHT"
-  " _BS_CENTER"
-  " _BS_TOP"
-  " _BS_BOTTOM"
-  " _BS_VCENTER"
-  " _BS_PUSHLIKE"
-  " _BS_MULTILINE"
-  " _BS_NOTIFY"
-  " _BS_FLAT"
-  " _BS_RIGHTBUTTON"
-  " _SBS_HORZ"
-  " _SBS_VERT"
-  " _SBS_TOPALIGN"
-  " _SBS_LEFTALIGN"
-  " _SBS_BOTTOMALIGN"
-  " _SBS_RIGHTALIGN"
-  " _SBS_SIZEBOXTOPLEFTALIGN"
-  " _SBS_SIZEBOXBOTTOMRIGHTALIGN"
-  " _SBS_SIZEBOX"
-  " _SBS_SIZEGRIP"
-  " _CBS_SIMPLE"
-  " _CBS_DROPDOWN"
-  " _CBS_DROPDOWNLIST"
-  " _CBS_OWNERDRAWFIXED"
-  " _CBS_OWNERDRAWVARIABLE"
-  " _CBS_AUTOHSCROLL"
-  " _CBS_OEMCONVERT"
-  " _CBS_SORT"
-  " _CBS_HASSTRINGS"
-  " _CBS_NOINTEGRALHEIGHT"
-  " _CBS_DISABLENOSCROLL"
-  " _CBS_UPPERCASE"
-  " _CBS_LOWERCASE"
-  " _LBS_NOTIFY"
-  " _LBS_SORT"
-  " _LBS_NOREDRAW"
-  " _LBS_MULTIPLESEL"
-  " _LBS_OWNERDRAWFIXED"
-  " _LBS_OWNERDRAWVARIABLE"
-  " _LBS_HASSTRINGS"
-  " _LBS_USETABSTOPS"
-  " _LBS_NOINTEGRALHEIGHT"
-  " _LBS_MULTICOLUMN"
-  " _LBS_WANTKEYBOARDINPUT"
-  " _LBS_EXTENDEDSEL"
-  " _LBS_DISABLENOSCROLL"
-  " _LBS_NODATA"
-  " _LBS_NOSEL"
-  " _TBS_AUTOTICKS"
-  " _TBS_VERT"
-  " _TBS_HORZ"
-  " _TBS_TOP"
-  " _TBS_BOTTOM"
-  " _TBS_LEFT"
-  " _TBS_RIGHT"
-  " _TBS_BOTH"
-  " _TBS_NOTICKS"
-  " _TBS_ENABLESELRANGE"
-  " _TBS_FIXEDLENGTH"
-  " _TBS_NOTHUMB"
-  " _TBS_TOOLTIPS"
-  " _TVS_HASBUTTONS"
-  " _TVS_HASLINES"
-  " _TVS_LINESATROOT"
-  " _TVS_EDITLABELS"
-  " _TVS_DISABLEDRAGDROP"
-  " _TVS_SHOWSELALWAYS"
-  " _TVS_RTLREADING"
-  " _TVS_NOTOOLTIPS"
-  " _TVS_CHECKBOXES"
-  " _TVS_TRACKSELECT"
-  " _TVS_SINGLEEXPAND"
-  " _TVS_INFOTIP"
-  " _TVS_FULLROWSELECT"
-  " _TVS_NOSCROLL"
-  " _TVS_NONEVENHEIGHT"
-  " _LVS_ICON"
-  " _LVS_REPORT"
-  " _LVS_SMALLICON"
-  " _LVS_LIST"
-  " _LVS_TYPEMASK"
-  " _LVS_SINGLESEL"
-  " _LVS_SHOWSELALWAYS"
-  " _LVS_SORTASCENDING"
-  " _LVS_SORTDESCENDING"
-  " _LVS_SHAREIMAGELISTS"
-  " _LVS_NOLABELWRAP"
-  " _LVS_AUTOARRANGE"
-  " _LVS_EDITLABELS"
-  " _LVS_OWNERDATA"
-  " _LVS_NOSCROLL"
-  " _LVS_TYPESTYLEMASK"
-  " _LVS_ALIGNTOP"
-  " _LVS_ALIGNLEFT"
-  " _LVS_ALIGNMASK"
-  " _LVS_OWNERDRAWFIXED"
-  " _LVS_NOCOLUMNHEADER"
-  " _LVS_NOSORTHEADER"
-  " _UDS_WRAP"
-  " _UDS_SETBUDDYINT"
-  " _UDS_ALIGNRIGHT"
-  " _UDS_ALIGNLEFT"
-  " _UDS_AUTOBUDDY"
-  " _UDS_ARROWKEYS"
-  " _UDS_HORZ"
-  " _UDS_NOTHOUSANDS"
-  " _UDS_HOTTRACK"
-  " _PBS_SMOOTH"
-  " _PBS_VERTICAL"
-  " _MCS_DAYSTATE"
-  " _MCS_MULTISELECT"
-  " _MCS_WEEKNUMBERS"
-  " _MCS_NOTODAYCIRCLE"
-  " _MCS_NOTODAY"
-  " _DS_ABSALIGN"
-  " _DS_SYSMODAL"
-  " _DS_LOCALEDIT"
-  " _DS_SETFONT"
-  " _DS_MODALFRAME"
-  " _DS_NOIDLEMSG"
-  " _DS_SETFOREGROUND"
-  " _DS_3DLOOK"
-  " _DS_FIXEDSYS"
-  " _DS_NOFAILCREATE"
-  " _DS_CONTROL"
-  " _DS_CENTER"
-  " _DS_CENTERMOUSE"
-  " _DS_CONTEXTHELP"
-  " _MFT_STRING"
-  " _MFT_BITMAP"
-  " _MFT_MENUBARBREAK"
-  " _MFT_MENUBREAK"
-  " _MFT_OWNERDRAW"
-  " _MFT_RADIOCHECK"
-  " _MFT_SEPARATOR"
-  " _MFT_RIGHTORDER"
-  " _MFT_RIGHTJUSTIFY"
-  " _MFS_GRAYED"
-  " _MFS_DISABLED"
-  " _MFS_CHECKED"
-  " _MFS_HILITE"
-  " _MFS_ENABLED"
-  " _MFS_UNCHECKED"
-  " _MFS_UNHILITE"
-  " _MFS_DEFAULT"
-  " _MFS_MASK"
-  " _MFS_HOTTRACKDRAWN"
-  " _MFS_CACHEDBMP"
-  " _MFS_BOTTOMGAPDROP"
-  " _MFS_TOPGAPDROP"
-  " _MFS_GAPDROP"
-  " BEGIN"
-  " END"
-  " OR"
-  " NOT"
-  " DOT"
-  " LPAR"
-  " RPAR"
-  " start"
-  " resourceFile"
-  " resourceDefinitionList"
-  " resourceDefinition"
-  " bitmapDefinition"
-  " iconDefinition"
-  " customTypeDefinition"
-  " dialogDefinition"
-  " extendedDialogDefinition"
-  " guideLinesDefinition"
-  " toolbarDefnition"
-  " menuDefinition"
-  " dialogInitDefinition"
-  " acceleratorsDefinition"
-  " rcdataDefinition"
-  " stringTableDefinition"
-  " textIncludeDirective"
-  " languageDirective"
-  " versionDefinition"
-  " typelibDefinition"
-  " afxDialogLayout"
-  " resourceId"
-  " resourceAttributeList"
-  " string"
-  " identifier"
-  " rectangleSpec"
-  " dialogSpecList"
-  " opt_dialogControlSpecList"
-  " extendedDialogSpecList"
-  " dialogSpec"
-  " dialogStyleExpr"
-  " fontSpec"
-  " extendedDialogSpec"
-  " extendedDialogStyleExpr"
-  " extendedFontSpec"
-  " extendedDialogStyle"
-  " ws_ex_style"
-  " number"
-  " dialogStyle"
-  " ds_style"
-  " ws_style"
-  " dialogControlSpecList"
-  " dialogControlSpec"
-  " pushButtonSpec"
-  " lrcTextSpec"
-  " editSpec"
-  " comboBoxSpec"
-  " listBoxSpec"
-  " iconSpec"
-  " scrollBarSpec"
-  " controlSpec"
-  " buttonType"
-  " controlAttributeList"
-  " lrcText"
-  " identifierOrString"
-  " controlId"
-  " controlAttribute"
-  " ctrlAttribute"
-  " controlStyleExpr"
-  " extendedWindowStyleExpr"
-  " ctrl_style"
-  " add_ctrl_style"
-  " ss_style"
-  " es_style"
-  " bs_style"
-  " cbs_style"
-  " sbs_style"
-  " lbs_style"
-  " tbs_style"
-  " tvs_style"
-  " lvs_style"
-  " uds_style"
-  " pbs_style"
-  " mcs_style"
-  " resourceAttribute"
-  " designInfoList"
-  " designInfo"
-  " designSpecList"
-  " designSpec"
-  " marginSpec"
-  " sizeSpec"
-  " buttonSpecList"
-  " buttonSpec"
-  " menuType"
-  " menuBody"
-  " menuSpecList"
-  " menuSpec"
-  " popupMenu"
-  " menuItem"
-  " menuItemModifierList"
-  " identifierOrNumber"
-  " menuItemModifier"
-  " menuItemFlagExpr"
-  " menuItemFlag"
-  " constantElementList"
-  " constantElement"
-  " constant"
-  " acceleratorList"
-  " accelerator"
-  " opt_acceleratorSpecList"
-  " acceleratorSpecList"
-  " acceleratorModifier"
-  " numberList"
-  " stringSpecList"
-  " stringSpec"
-  " stringList"
-  " versionSpecList"
-  " blockList"
-  " versionSpec"
-  " exprList"
-  " expr"
-  " block"
-  " blockBody"
-  " valueList"
-  " value"
-  " fileName"
-  " layoutInfo"
-  " name"
+  "EOI"                                               /* T     0               */
+  " NUMBER"                                           /* T     1               */
+  " IDENTIFIER"                                       /* T     2               */
+  " STRING"                                           /* T     3               */
+  " COMMA"                                            /* T     4               */
+  " GUIDELINES"                                       /* T     5               */
+  " DESIGNINFO"                                       /* T     6               */
+  " LEFTMARGIN"                                       /* T     7               */
+  " RIGHTMARGIN"                                      /* T     8               */
+  " TOPMARGIN"                                        /* T     9               */
+  " BOTTOMMARGIN"                                     /* T    10               */
+  " HORZGUIDE"                                        /* T    11               */
+  " VERTGUIDE"                                        /* T    12               */
+  " TOOLBAR"                                          /* T    13               */
+  " BUTTON"                                           /* T    14               */
+  " _BITMAP"                                          /* T    15               */
+  " _ICON"                                            /* T    16               */
+  " _FONT"                                            /* T    17               */
+  " _MENU"                                            /* T    18               */
+  " _MENUITEM"                                        /* T    19               */
+  " STRINGTABLE"                                      /* T    20               */
+  " ACCELERATORS"                                     /* T    21               */
+  " VIRTKEY"                                          /* T    22               */
+  " ASCII"                                            /* T    23               */
+  " SHIFT"                                            /* T    24               */
+  " ALT"                                              /* T    25               */
+  " NOINVERT"                                         /* T    26               */
+  " RCDATA"                                           /* T    27               */
+  " DLGINIT"                                          /* T    28               */
+  " TEXTINCLUDE"                                      /* T    29               */
+  " LANGUAGE"                                         /* T    30               */
+  " TYPELIB"                                          /* T    31               */
+  " MENUEX"                                           /* T    32               */
+  " POPUP"                                            /* T    33               */
+  " GRAYED"                                           /* T    34               */
+  " CHECKED"                                          /* T    35               */
+  " INACTIVE"                                         /* T    36               */
+  " SEPARATOR"                                        /* T    37               */
+  " VERSIONINFO"                                      /* T    38               */
+  " FILEVERSION"                                      /* T    39               */
+  " PRODUCTVERSION"                                   /* T    40               */
+  " FILEFLAGSMASK"                                    /* T    41               */
+  " FILEFLAGS"                                        /* T    42               */
+  " FILEOS"                                           /* T    43               */
+  " FILETYPE"                                         /* T    44               */
+  " FILESUBTYPE"                                      /* T    45               */
+  " BLOCK"                                            /* T    46               */
+  " VALUE"                                            /* T    47               */
+  " DIALOG"                                           /* T    48               */
+  " DIALOGEX"                                         /* T    49               */
+  " AFX_DIALOG_LAYOUT"                                /* T    50               */
+  " STYLE"                                            /* T    51               */
+  " EXSTYLE"                                          /* T    52               */
+  " CAPTION"                                          /* T    53               */
+  " DISCARDABLE"                                      /* T    54               */
+  " MOVEABLE"                                         /* T    55               */
+  " _PURE"                                            /* T    56               */
+  " IMPURE"                                           /* T    57               */
+  " PRELOAD"                                          /* T    58               */
+  " LOADONCALL"                                       /* T    59               */
+  " PUSHBUTTON"                                       /* T    60               */
+  " DEFPUSHBUTTON"                                    /* T    61               */
+  " EDITTEXT"                                         /* T    62               */
+  " SCROLLBAR"                                        /* T    63               */
+  " COMBOBOX"                                         /* T    64               */
+  " LISTBOX"                                          /* T    65               */
+  " GROUPBOX"                                         /* T    66               */
+  " LTEXT"                                            /* T    67               */
+  " RTEXT"                                            /* T    68               */
+  " CTEXT"                                            /* T    69               */
+  " CONTROL"                                          /* T    70               */
+  " _WS_OVERLAPPED"                                   /* T    71               */
+  " _WS_POPUP"                                        /* T    72               */
+  " _WS_CHILD"                                        /* T    73               */
+  " _WS_MINIMIZE"                                     /* T    74               */
+  " _WS_VISIBLE"                                      /* T    75               */
+  " _WS_DISABLED"                                     /* T    76               */
+  " _WS_CLIPSIBLINGS"                                 /* T    77               */
+  " _WS_CLIPCHILDREN"                                 /* T    78               */
+  " _WS_MAXIMIZE"                                     /* T    79               */
+  " _WS_CAPTION"                                      /* T    80               */
+  " _WS_BORDER"                                       /* T    81               */
+  " _WS_DLGFRAME"                                     /* T    82               */
+  " _WS_VSCROLL"                                      /* T    83               */
+  " _WS_HSCROLL"                                      /* T    84               */
+  " _WS_SYSMENU"                                      /* T    85               */
+  " _WS_THICKFRAME"                                   /* T    86               */
+  " _WS_GROUP"                                        /* T    87               */
+  " _WS_TABSTOP"                                      /* T    88               */
+  " _WS_MINIMIZEBOX"                                  /* T    89               */
+  " _WS_MAXIMIZEBOX"                                  /* T    90               */
+  " _WS_EX_DLGMODALFRAME"                             /* T    91               */
+  " _WS_EX_NOPARENTNOTIFY"                            /* T    92               */
+  " _WS_EX_TOPMOST"                                   /* T    93               */
+  " _WS_EX_ACCEPTFILES"                               /* T    94               */
+  " _WS_EX_TRANSPARENT"                               /* T    95               */
+  " _WS_EX_MDICHILD"                                  /* T    96               */
+  " _WS_EX_TOOLWINDOW"                                /* T    97               */
+  " _WS_EX_WINDOWEDGE"                                /* T    98               */
+  " _WS_EX_CLIENTEDGE"                                /* T    99               */
+  " _WS_EX_CONTEXTHELP"                               /* T   100               */
+  " _WS_EX_RIGHT"                                     /* T   101               */
+  " _WS_EX_LEFT"                                      /* T   102               */
+  " _WS_EX_RTLREADING"                                /* T   103               */
+  " _WS_EX_LTRREADING"                                /* T   104               */
+  " _WS_EX_LEFTSCROLLBAR"                             /* T   105               */
+  " _WS_EX_RIGHTSCROLLBAR"                            /* T   106               */
+  " _WS_EX_CONTROLPARENT"                             /* T   107               */
+  " _WS_EX_STATICEDGE"                                /* T   108               */
+  " _WS_EX_APPWINDOW"                                 /* T   109               */
+  " _SS_LEFT"                                         /* T   110               */
+  " _SS_CENTER"                                       /* T   111               */
+  " _SS_RIGHT"                                        /* T   112               */
+  " _SS_ICON"                                         /* T   113               */
+  " _SS_BLACKRECT"                                    /* T   114               */
+  " _SS_GRAYRECT"                                     /* T   115               */
+  " _SS_WHITERECT"                                    /* T   116               */
+  " _SS_BLACKFRAME"                                   /* T   117               */
+  " _SS_GRAYFRAME"                                    /* T   118               */
+  " _SS_WHITEFRAME"                                   /* T   119               */
+  " _SS_USERITEM"                                     /* T   120               */
+  " _SS_SIMPLE"                                       /* T   121               */
+  " _SS_LEFTNOWORDWRAP"                               /* T   122               */
+  " _SS_OWNERDRAW"                                    /* T   123               */
+  " _SS_BITMAP"                                       /* T   124               */
+  " _SS_ENHMETAFILE"                                  /* T   125               */
+  " _SS_ETCHEDHORZ"                                   /* T   126               */
+  " _SS_ETCHEDVERT"                                   /* T   127               */
+  " _SS_ETCHEDFRAME"                                  /* T   128               */
+  " _SS_TYPEMASK"                                     /* T   129               */
+  " _SS_NOPREFIX"                                     /* T   130               */
+  " _SS_NOTIFY"                                       /* T   131               */
+  " _SS_CENTERIMAGE"                                  /* T   132               */
+  " _SS_RIGHTJUST"                                    /* T   133               */
+  " _SS_REALSIZEIMAGE"                                /* T   134               */
+  " _SS_SUNKEN"                                       /* T   135               */
+  " _SS_ENDELLIPSIS"                                  /* T   136               */
+  " _SS_PATHELLIPSIS"                                 /* T   137               */
+  " _SS_WORDELLIPSIS"                                 /* T   138               */
+  " _SS_ELLIPSISMASK"                                 /* T   139               */
+  " _ES_LEFT"                                         /* T   140               */
+  " _ES_CENTER"                                       /* T   141               */
+  " _ES_RIGHT"                                        /* T   142               */
+  " _ES_MULTILINE"                                    /* T   143               */
+  " _ES_UPPERCASE"                                    /* T   144               */
+  " _ES_LOWERCASE"                                    /* T   145               */
+  " _ES_PASSWORD"                                     /* T   146               */
+  " _ES_AUTOVSCROLL"                                  /* T   147               */
+  " _ES_AUTOHSCROLL"                                  /* T   148               */
+  " _ES_NOHIDESEL"                                    /* T   149               */
+  " _ES_OEMCONVERT"                                   /* T   150               */
+  " _ES_READONLY"                                     /* T   151               */
+  " _ES_WANTRETURN"                                   /* T   152               */
+  " _ES_NUMBER"                                       /* T   153               */
+  " _BS_PUSHBUTTON"                                   /* T   154               */
+  " _BS_DEFPUSHBUTTON"                                /* T   155               */
+  " _BS_CHECKBOX"                                     /* T   156               */
+  " _BS_AUTOCHECKBOX"                                 /* T   157               */
+  " _BS_RADIOBUTTON"                                  /* T   158               */
+  " _BS_3STATE"                                       /* T   159               */
+  " _BS_AUTO3STATE"                                   /* T   160               */
+  " _BS_GROUPBOX"                                     /* T   161               */
+  " _BS_USERBUTTON"                                   /* T   162               */
+  " _BS_AUTORADIOBUTTON"                              /* T   163               */
+  " _BS_OWNERDRAW"                                    /* T   164               */
+  " _BS_LEFTTEXT"                                     /* T   165               */
+  " _BS_TEXT"                                         /* T   166               */
+  " _BS_ICON"                                         /* T   167               */
+  " _BS_BITMAP"                                       /* T   168               */
+  " _BS_LEFT"                                         /* T   169               */
+  " _BS_RIGHT"                                        /* T   170               */
+  " _BS_CENTER"                                       /* T   171               */
+  " _BS_TOP"                                          /* T   172               */
+  " _BS_BOTTOM"                                       /* T   173               */
+  " _BS_VCENTER"                                      /* T   174               */
+  " _BS_PUSHLIKE"                                     /* T   175               */
+  " _BS_MULTILINE"                                    /* T   176               */
+  " _BS_NOTIFY"                                       /* T   177               */
+  " _BS_FLAT"                                         /* T   178               */
+  " _BS_RIGHTBUTTON"                                  /* T   179               */
+  " _SBS_HORZ"                                        /* T   180               */
+  " _SBS_VERT"                                        /* T   181               */
+  " _SBS_TOPALIGN"                                    /* T   182               */
+  " _SBS_LEFTALIGN"                                   /* T   183               */
+  " _SBS_BOTTOMALIGN"                                 /* T   184               */
+  " _SBS_RIGHTALIGN"                                  /* T   185               */
+  " _SBS_SIZEBOXTOPLEFTALIGN"                         /* T   186               */
+  " _SBS_SIZEBOXBOTTOMRIGHTALIGN"                     /* T   187               */
+  " _SBS_SIZEBOX"                                     /* T   188               */
+  " _SBS_SIZEGRIP"                                    /* T   189               */
+  " _CBS_SIMPLE"                                      /* T   190               */
+  " _CBS_DROPDOWN"                                    /* T   191               */
+  " _CBS_DROPDOWNLIST"                                /* T   192               */
+  " _CBS_OWNERDRAWFIXED"                              /* T   193               */
+  " _CBS_OWNERDRAWVARIABLE"                           /* T   194               */
+  " _CBS_AUTOHSCROLL"                                 /* T   195               */
+  " _CBS_OEMCONVERT"                                  /* T   196               */
+  " _CBS_SORT"                                        /* T   197               */
+  " _CBS_HASSTRINGS"                                  /* T   198               */
+  " _CBS_NOINTEGRALHEIGHT"                            /* T   199               */
+  " _CBS_DISABLENOSCROLL"                             /* T   200               */
+  " _CBS_UPPERCASE"                                   /* T   201               */
+  " _CBS_LOWERCASE"                                   /* T   202               */
+  " _LBS_NOTIFY"                                      /* T   203               */
+  " _LBS_SORT"                                        /* T   204               */
+  " _LBS_NOREDRAW"                                    /* T   205               */
+  " _LBS_MULTIPLESEL"                                 /* T   206               */
+  " _LBS_OWNERDRAWFIXED"                              /* T   207               */
+  " _LBS_OWNERDRAWVARIABLE"                           /* T   208               */
+  " _LBS_HASSTRINGS"                                  /* T   209               */
+  " _LBS_USETABSTOPS"                                 /* T   210               */
+  " _LBS_NOINTEGRALHEIGHT"                            /* T   211               */
+  " _LBS_MULTICOLUMN"                                 /* T   212               */
+  " _LBS_WANTKEYBOARDINPUT"                           /* T   213               */
+  " _LBS_EXTENDEDSEL"                                 /* T   214               */
+  " _LBS_DISABLENOSCROLL"                             /* T   215               */
+  " _LBS_NODATA"                                      /* T   216               */
+  " _LBS_NOSEL"                                       /* T   217               */
+  " _TBS_AUTOTICKS"                                   /* T   218               */
+  " _TBS_VERT"                                        /* T   219               */
+  " _TBS_HORZ"                                        /* T   220               */
+  " _TBS_TOP"                                         /* T   221               */
+  " _TBS_BOTTOM"                                      /* T   222               */
+  " _TBS_LEFT"                                        /* T   223               */
+  " _TBS_RIGHT"                                       /* T   224               */
+  " _TBS_BOTH"                                        /* T   225               */
+  " _TBS_NOTICKS"                                     /* T   226               */
+  " _TBS_ENABLESELRANGE"                              /* T   227               */
+  " _TBS_FIXEDLENGTH"                                 /* T   228               */
+  " _TBS_NOTHUMB"                                     /* T   229               */
+  " _TBS_TOOLTIPS"                                    /* T   230               */
+  " _TVS_HASBUTTONS"                                  /* T   231               */
+  " _TVS_HASLINES"                                    /* T   232               */
+  " _TVS_LINESATROOT"                                 /* T   233               */
+  " _TVS_EDITLABELS"                                  /* T   234               */
+  " _TVS_DISABLEDRAGDROP"                             /* T   235               */
+  " _TVS_SHOWSELALWAYS"                               /* T   236               */
+  " _TVS_RTLREADING"                                  /* T   237               */
+  " _TVS_NOTOOLTIPS"                                  /* T   238               */
+  " _TVS_CHECKBOXES"                                  /* T   239               */
+  " _TVS_TRACKSELECT"                                 /* T   240               */
+  " _TVS_SINGLEEXPAND"                                /* T   241               */
+  " _TVS_INFOTIP"                                     /* T   242               */
+  " _TVS_FULLROWSELECT"                               /* T   243               */
+  " _TVS_NOSCROLL"                                    /* T   244               */
+  " _TVS_NONEVENHEIGHT"                               /* T   245               */
+  " _LVS_ICON"                                        /* T   246               */
+  " _LVS_REPORT"                                      /* T   247               */
+  " _LVS_SMALLICON"                                   /* T   248               */
+  " _LVS_LIST"                                        /* T   249               */
+  " _LVS_TYPEMASK"                                    /* T   250               */
+  " _LVS_SINGLESEL"                                   /* T   251               */
+  " _LVS_SHOWSELALWAYS"                               /* T   252               */
+  " _LVS_SORTASCENDING"                               /* T   253               */
+  " _LVS_SORTDESCENDING"                              /* T   254               */
+  " _LVS_SHAREIMAGELISTS"                             /* T   255               */
+  " _LVS_NOLABELWRAP"                                 /* T   256               */
+  " _LVS_AUTOARRANGE"                                 /* T   257               */
+  " _LVS_EDITLABELS"                                  /* T   258               */
+  " _LVS_OWNERDATA"                                   /* T   259               */
+  " _LVS_NOSCROLL"                                    /* T   260               */
+  " _LVS_TYPESTYLEMASK"                               /* T   261               */
+  " _LVS_ALIGNTOP"                                    /* T   262               */
+  " _LVS_ALIGNLEFT"                                   /* T   263               */
+  " _LVS_ALIGNMASK"                                   /* T   264               */
+  " _LVS_OWNERDRAWFIXED"                              /* T   265               */
+  " _LVS_NOCOLUMNHEADER"                              /* T   266               */
+  " _LVS_NOSORTHEADER"                                /* T   267               */
+  " _UDS_WRAP"                                        /* T   268               */
+  " _UDS_SETBUDDYINT"                                 /* T   269               */
+  " _UDS_ALIGNRIGHT"                                  /* T   270               */
+  " _UDS_ALIGNLEFT"                                   /* T   271               */
+  " _UDS_AUTOBUDDY"                                   /* T   272               */
+  " _UDS_ARROWKEYS"                                   /* T   273               */
+  " _UDS_HORZ"                                        /* T   274               */
+  " _UDS_NOTHOUSANDS"                                 /* T   275               */
+  " _UDS_HOTTRACK"                                    /* T   276               */
+  " _PBS_SMOOTH"                                      /* T   277               */
+  " _PBS_VERTICAL"                                    /* T   278               */
+  " _MCS_DAYSTATE"                                    /* T   279               */
+  " _MCS_MULTISELECT"                                 /* T   280               */
+  " _MCS_WEEKNUMBERS"                                 /* T   281               */
+  " _MCS_NOTODAYCIRCLE"                               /* T   282               */
+  " _MCS_NOTODAY"                                     /* T   283               */
+  " _DS_ABSALIGN"                                     /* T   284               */
+  " _DS_SYSMODAL"                                     /* T   285               */
+  " _DS_LOCALEDIT"                                    /* T   286               */
+  " _DS_SETFONT"                                      /* T   287               */
+  " _DS_MODALFRAME"                                   /* T   288               */
+  " _DS_NOIDLEMSG"                                    /* T   289               */
+  " _DS_SETFOREGROUND"                                /* T   290               */
+  " _DS_3DLOOK"                                       /* T   291               */
+  " _DS_FIXEDSYS"                                     /* T   292               */
+  " _DS_NOFAILCREATE"                                 /* T   293               */
+  " _DS_CONTROL"                                      /* T   294               */
+  " _DS_CENTER"                                       /* T   295               */
+  " _DS_CENTERMOUSE"                                  /* T   296               */
+  " _DS_CONTEXTHELP"                                  /* T   297               */
+  " _MFT_STRING"                                      /* T   298               */
+  " _MFT_BITMAP"                                      /* T   299               */
+  " _MFT_MENUBARBREAK"                                /* T   300               */
+  " _MFT_MENUBREAK"                                   /* T   301               */
+  " _MFT_OWNERDRAW"                                   /* T   302               */
+  " _MFT_RADIOCHECK"                                  /* T   303               */
+  " _MFT_SEPARATOR"                                   /* T   304               */
+  " _MFT_RIGHTORDER"                                  /* T   305               */
+  " _MFT_RIGHTJUSTIFY"                                /* T   306               */
+  " _MFS_GRAYED"                                      /* T   307               */
+  " _MFS_DISABLED"                                    /* T   308               */
+  " _MFS_CHECKED"                                     /* T   309               */
+  " _MFS_HILITE"                                      /* T   310               */
+  " _MFS_ENABLED"                                     /* T   311               */
+  " _MFS_UNCHECKED"                                   /* T   312               */
+  " _MFS_UNHILITE"                                    /* T   313               */
+  " _MFS_DEFAULT"                                     /* T   314               */
+  " _MFS_MASK"                                        /* T   315               */
+  " _MFS_HOTTRACKDRAWN"                               /* T   316               */
+  " _MFS_CACHEDBMP"                                   /* T   317               */
+  " _MFS_BOTTOMGAPDROP"                               /* T   318               */
+  " _MFS_TOPGAPDROP"                                  /* T   319               */
+  " _MFS_GAPDROP"                                     /* T   320               */
+  " BEGIN"                                            /* T   321               */
+  " END"                                              /* T   322               */
+  " OR"                                               /* T   323               */
+  " NOT"                                              /* T   324               */
+  " DOT"                                              /* T   325               */
+  " LPAR"                                             /* T   326               */
+  " RPAR"                                             /* T   327               */
+  " start"                                            /* NT  328 NTindex=0     */
+  " resourceFile"                                     /* NT  329 NTindex=1     */
+  " resourceDefinitionList"                           /* NT  330 NTindex=2     */
+  " resourceDefinition"                               /* NT  331 NTindex=3     */
+  " bitmapDefinition"                                 /* NT  332 NTindex=4     */
+  " iconDefinition"                                   /* NT  333 NTindex=5     */
+  " customTypeDefinition"                             /* NT  334 NTindex=6     */
+  " dialogDefinition"                                 /* NT  335 NTindex=7     */
+  " extendedDialogDefinition"                         /* NT  336 NTindex=8     */
+  " guideLinesDefinition"                             /* NT  337 NTindex=9     */
+  " toolbarDefnition"                                 /* NT  338 NTindex=10    */
+  " menuDefinition"                                   /* NT  339 NTindex=11    */
+  " dialogInitDefinition"                             /* NT  340 NTindex=12    */
+  " acceleratorsDefinition"                           /* NT  341 NTindex=13    */
+  " rcdataDefinition"                                 /* NT  342 NTindex=14    */
+  " stringTableDefinition"                            /* NT  343 NTindex=15    */
+  " textIncludeDirective"                             /* NT  344 NTindex=16    */
+  " languageDirective"                                /* NT  345 NTindex=17    */
+  " versionDefinition"                                /* NT  346 NTindex=18    */
+  " typelibDefinition"                                /* NT  347 NTindex=19    */
+  " afxDialogLayout"                                  /* NT  348 NTindex=20    */
+  " resourceId"                                       /* NT  349 NTindex=21    */
+  " resourceAttributeList"                            /* NT  350 NTindex=22    */
+  " string"                                           /* NT  351 NTindex=23    */
+  " identifier"                                       /* NT  352 NTindex=24    */
+  " rectangleSpec"                                    /* NT  353 NTindex=25    */
+  " dialogSpecList"                                   /* NT  354 NTindex=26    */
+  " opt_dialogControlSpecList"                        /* NT  355 NTindex=27    */
+  " extendedDialogSpecList"                           /* NT  356 NTindex=28    */
+  " dialogSpec"                                       /* NT  357 NTindex=29    */
+  " dialogStyleExpr"                                  /* NT  358 NTindex=30    */
+  " fontSpec"                                         /* NT  359 NTindex=31    */
+  " extendedDialogSpec"                               /* NT  360 NTindex=32    */
+  " extendedDialogStyleExpr"                          /* NT  361 NTindex=33    */
+  " extendedFontSpec"                                 /* NT  362 NTindex=34    */
+  " extendedDialogStyle"                              /* NT  363 NTindex=35    */
+  " ws_ex_style"                                      /* NT  364 NTindex=36    */
+  " number"                                           /* NT  365 NTindex=37    */
+  " dialogStyle"                                      /* NT  366 NTindex=38    */
+  " ds_style"                                         /* NT  367 NTindex=39    */
+  " ws_style"                                         /* NT  368 NTindex=40    */
+  " dialogControlSpecList"                            /* NT  369 NTindex=41    */
+  " dialogControlSpec"                                /* NT  370 NTindex=42    */
+  " pushButtonSpec"                                   /* NT  371 NTindex=43    */
+  " lrcTextSpec"                                      /* NT  372 NTindex=44    */
+  " editSpec"                                         /* NT  373 NTindex=45    */
+  " comboBoxSpec"                                     /* NT  374 NTindex=46    */
+  " listBoxSpec"                                      /* NT  375 NTindex=47    */
+  " iconSpec"                                         /* NT  376 NTindex=48    */
+  " scrollBarSpec"                                    /* NT  377 NTindex=49    */
+  " controlSpec"                                      /* NT  378 NTindex=50    */
+  " buttonType"                                       /* NT  379 NTindex=51    */
+  " controlAttributeList"                             /* NT  380 NTindex=52    */
+  " lrcText"                                          /* NT  381 NTindex=53    */
+  " identifierOrString"                               /* NT  382 NTindex=54    */
+  " controlId"                                        /* NT  383 NTindex=55    */
+  " controlAttribute"                                 /* NT  384 NTindex=56    */
+  " ctrlAttribute"                                    /* NT  385 NTindex=57    */
+  " controlStyleExpr"                                 /* NT  386 NTindex=58    */
+  " extendedWindowStyleExpr"                          /* NT  387 NTindex=59    */
+  " ctrl_style"                                       /* NT  388 NTindex=60    */
+  " add_ctrl_style"                                   /* NT  389 NTindex=61    */
+  " ss_style"                                         /* NT  390 NTindex=62    */
+  " es_style"                                         /* NT  391 NTindex=63    */
+  " bs_style"                                         /* NT  392 NTindex=64    */
+  " cbs_style"                                        /* NT  393 NTindex=65    */
+  " sbs_style"                                        /* NT  394 NTindex=66    */
+  " lbs_style"                                        /* NT  395 NTindex=67    */
+  " tbs_style"                                        /* NT  396 NTindex=68    */
+  " tvs_style"                                        /* NT  397 NTindex=69    */
+  " lvs_style"                                        /* NT  398 NTindex=70    */
+  " uds_style"                                        /* NT  399 NTindex=71    */
+  " pbs_style"                                        /* NT  400 NTindex=72    */
+  " mcs_style"                                        /* NT  401 NTindex=73    */
+  " resourceAttribute"                                /* NT  402 NTindex=74    */
+  " designInfoList"                                   /* NT  403 NTindex=75    */
+  " designInfo"                                       /* NT  404 NTindex=76    */
+  " designSpecList"                                   /* NT  405 NTindex=77    */
+  " designSpec"                                       /* NT  406 NTindex=78    */
+  " marginSpec"                                       /* NT  407 NTindex=79    */
+  " sizeSpec"                                         /* NT  408 NTindex=80    */
+  " buttonSpecList"                                   /* NT  409 NTindex=81    */
+  " buttonSpec"                                       /* NT  410 NTindex=82    */
+  " menuType"                                         /* NT  411 NTindex=83    */
+  " menuBody"                                         /* NT  412 NTindex=84    */
+  " menuSpecList"                                     /* NT  413 NTindex=85    */
+  " menuSpec"                                         /* NT  414 NTindex=86    */
+  " popupMenu"                                        /* NT  415 NTindex=87    */
+  " menuItem"                                         /* NT  416 NTindex=88    */
+  " menuItemModifierList"                             /* NT  417 NTindex=89    */
+  " identifierOrNumber"                               /* NT  418 NTindex=90    */
+  " menuItemModifier"                                 /* NT  419 NTindex=91    */
+  " menuItemFlagExpr"                                 /* NT  420 NTindex=92    */
+  " menuItemFlag"                                     /* NT  421 NTindex=93    */
+  " constantElementList"                              /* NT  422 NTindex=94    */
+  " constantElement"                                  /* NT  423 NTindex=95    */
+  " constant"                                         /* NT  424 NTindex=96    */
+  " acceleratorList"                                  /* NT  425 NTindex=97    */
+  " accelerator"                                      /* NT  426 NTindex=98    */
+  " opt_acceleratorSpecList"                          /* NT  427 NTindex=99    */
+  " acceleratorSpecList"                              /* NT  428 NTindex=100   */
+  " acceleratorModifier"                              /* NT  429 NTindex=101   */
+  " numberList"                                       /* NT  430 NTindex=102   */
+  " stringSpecList"                                   /* NT  431 NTindex=103   */
+  " stringSpec"                                       /* NT  432 NTindex=104   */
+  " stringList"                                       /* NT  433 NTindex=105   */
+  " versionSpecList"                                  /* NT  434 NTindex=106   */
+  " blockList"                                        /* NT  435 NTindex=107   */
+  " versionSpec"                                      /* NT  436 NTindex=108   */
+  " exprList"                                         /* NT  437 NTindex=109   */
+  " expr"                                             /* NT  438 NTindex=110   */
+  " block"                                            /* NT  439 NTindex=111   */
+  " blockBody"                                        /* NT  440 NTindex=112   */
+  " valueList"                                        /* NT  441 NTindex=113   */
+  " value"                                            /* NT  442 NTindex=114   */
+  " fileName"                                         /* NT  443 NTindex=115   */
+  " layoutInfo"                                       /* NT  444 NTindex=116   */
+  " name"                                             /* NT  445 NTindex=117   */
 }; // Total size of string:6.028(x86)/6.032(x64) bytes
 
 static const ParserTablesTemplate<328,446,475,635
@@ -2454,11 +2477,11 @@ static const ParserTablesTemplate<328,446,475,635
                                                                   ,successorCode   , NTindexListTable  , stateListTable
                                                                   ,productionLength, leftSideTable
                                                                   ,rightSideTable  , symbolNames
-                                                                  ,20824, 20912);
+                                                                  ,20824, 20920);
 
 const ParserTables *ResourceParser::ResourceTables = &ResourceTables_s;
-// Size of ResourceTables_s: 68(x86)/120(x64) bytes. Size of ResourceTables:4(x86)/8(x64) bytes
+// Size of ResourceTables_s: 68(x86)/128(x64) bytes. Size of ResourceTables:4(x86)/8(x64) bytes
 
-// Total size of table data:20.824(x86)/20.912(x64) bytes.
+// Total size of table data:20.824(x86)/20.920(x64) bytes.
 
 
