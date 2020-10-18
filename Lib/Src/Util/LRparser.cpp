@@ -144,7 +144,7 @@ int LRparser::parseStep() { // return 0 on continue, != 0 terminate parse
   if(action == _ParserError) {
 
     if(m_debug) {
-      debug(_T("Error in state %d. Input=%s ('%s')")
+      debug(_T("Error in state %u. Input=%s ('%s')")
            ,m_state
            ,getSymbolName(m_input)
            ,m_scanner->getText());

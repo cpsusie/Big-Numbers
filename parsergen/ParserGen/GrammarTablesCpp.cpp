@@ -4,7 +4,7 @@
 
 static const TCHAR *comment1 =
 _T("/**********************************************************************************\\\n"
-   "* The 4 arrays actionCode, termListTable, actionstateListTable, compressedLAsets   *\n"
+   "* The 4 arrays actionCode, termListTable, actionListTable and termSetTable         *\n"
    "* holds a compressed action-matrix, used by LRParser to find                       *\n"
    "* action = getAction(S,T), where S is current state, T is next terminal on input   *\n"
    "*                                                                                  *\n"
@@ -45,8 +45,8 @@ _T("/***************************************************************************
    "*            a: Action.                                                            *\n"
    "*                                                                                  *\n"
    "*         I==1: All actions in the state are reduce by the same production P = -a. *\n"
-   "*            t: Index into compressedLAsets, pointing at the first element of      *\n"
-   "*               LASet (see below).                                                 *\n"
+   "*            t: Index into termSetTable, pointing at the first element of termSet  *\n"
+   "*               (see below).                                                       *\n"
    "*            a: Action.                                                            *\n"
    "*                                                                                  *\n"
    "* F == 0: Use arrays termListTable and actionListTable to find action.             *\n"
@@ -59,16 +59,16 @@ _T("/***************************************************************************
    "*      and set action = actionList[k]. If T is not found, set action = _ParseError.*\n"
    "*      Note that both termList and actionList may be shared by several states.     *\n"
    "*                                                                                  *\n"
-   "* F == 1 and I==1: Use array compressedLAsets which is a list of bitsets, each     *\n"
-   "*                  with terminalCount bits, a lookaheadset LAset with 1-bits       *\n"
-   "*                  for legal terminals, and 0-bits for illegal terminals.          *\n"
+   "* F == 1 and I==1: Use array termSetTable which is a list of termSet, bitsets,     *\n"
+   "*                  each with terminalCount bits, 1-bits for legal terminals, and   *\n"
+   "*                  0-bits for illegal terminals.                                   *\n"
    "*                                                                                  *\n"
-   "*      b                 : Number of bytes in each LAset = (terminalCount-1)/8+1   *\n"
-   "*      LAset[0..b-1]     : compressedLAsets[t..t+b-1]                              *\n"
+   "*      b                 : Number of bytes in each termSet = (terminalCount-1)/8+1 *\n"
+   "*      termSet[0..b-1]   : termSetTable[t..t+b-1]                                  *\n"
    "*                                                                                  *\n"
    "*      As for uncompressed states, the same check for existence is done.           *\n"
-   "*      If terminal T is not present in LAset, set action = _ParseError.            *\n"
-   "*      Note that each LAset may be shared by several states.                       *\n"
+   "*      If terminal T is not present in termSet, set action = _ParseError.          *\n"
+   "*      Note that each termSet may be shared by several states.                     *\n"
    "\\**********************************************************************************/\n");
 
 static const TCHAR *comment2 =
@@ -181,7 +181,7 @@ void GrammarTables::printCpp(MarginFile &output, bool useTableCompression) const
 
   column = output.getCurrentLineLength();
   output.setLeftMargin(column - 1);
-  output.printf(_T("actionCode      , termListTable     , actionListTable, compressedLAsets\n"
+  output.printf(_T("actionCode      , termListTable     , actionListTable, termSetTable\n"
                    ",successorCode   , NTindexListTable  , stateListTable\n"
                    ",productionLength, leftSideTable\n"
                    ",rightSideTable  , symbolNames\n"
@@ -551,11 +551,11 @@ ByteCount GrammarTables::printCompressedActionsCpp(MarginFile &output, StringArr
   }
 
   if(laSetMap.size() == 0) {
-    output.printf(_T("#define compressedLAsets nullptr\n\n"));
+    output.printf(_T("#define termSetTable nullptr\n\n"));
   } else {
     const SymbolSetIndexArray laSetArray = laSetMap.getEntryArray();
     laSetMap.clear();
-    output.printf(_T("static const unsigned char compressedLAsets[%u] = {\n"), currentArrayIndex);
+    output.printf(_T("static const unsigned char termSetTable[%u] = {\n"), currentArrayIndex);
     output.setLeftMargin(2);
     TCHAR delim = ' ';
     for(ConstIterator<IndexArrayEntry<SymbolSet> > it = laSetArray.getIterator(); it.hasNext();) {
@@ -572,7 +572,7 @@ ByteCount GrammarTables::printCompressedActionsCpp(MarginFile &output, StringArr
         const UINT          state        = (UINT)it1.next();
         const int           action       = m_stateActions[state][0].m_action; // always negative
         const UINT          byteIndex    = e.m_arrayIndex;
-        const String        comment      = format(_T("Reduce by %u on tokens in LAset[%u]"), -action, e.m_count);
+        const String        comment      = format(_T("Reduce by %u on tokens in termSet[%u]"), -action, e.m_count);
         CHECKMAX15BITS(byteIndex);
         CHECKMAX15BITS(abs(action));
         const UINT          encodedValue = ((action<<17) | byteIndex);

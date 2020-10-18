@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Scanner.h"
-#include <StringArray.h>
-#include <Tokenizer.h>
+#include "StringArray.h"
+#include "Tokenizer.h"
 
 typedef enum {
   NO_MODIFIER
@@ -18,8 +18,8 @@ typedef enum {
 
 class ParserTables {
 public:
-  virtual int          getAction(           UINT state, UINT input   ) const = 0; // > 0:shift, <=0:reduce, _ParserError:Error
-  virtual int          getSuccessor(        UINT state, UINT nt      ) const = 0;
+  virtual int          getAction(           UINT state, UINT term    ) const = 0; // > 0:shift, <=0:reduce, _ParserError:Error
+  virtual UINT         getSuccessor(        UINT state, UINT nt      ) const = 0;
   virtual UINT         getProductionLength( UINT prod                ) const = 0;
   virtual UINT         getLeftSymbol(       UINT prod                ) const = 0;
   virtual const TCHAR *getSymbolName(       UINT symbol              ) const = 0;
@@ -56,7 +56,7 @@ private:
   const UINT                *m_actionCode;
   const TerminalType        *m_termListTable;
   const ActionType          *m_actionListTable;
-  const BYTE                *m_compressedLAsets;
+  const BYTE                *m_termSetTable;
   const UINT                *m_successorCode;
   const NTIndexType         *m_NTindexListTable;
   const StateType           *m_stateListTable;
@@ -64,7 +64,7 @@ private:
   const NTIndexType         *m_leftSideTable;
   const SymbolType          *m_rightSideTable;
   const char                *m_nameString;
-  const UINT                 m_tableByteCountx86,m_tableByteCountx64;
+  const UINT                 m_tableByteCountx86, m_tableByteCountx64;
   mutable const SymbolType **m_rightSides;
   mutable StringArray        m_symbolNameTable;
 
@@ -74,7 +74,7 @@ private:
 
   // Binary search.
   // Assume a[0] contains the number of elements, n, in the array, followed by n distinct elements, in increasing order
-  // return index of the search element, if it exist, or -1 if not found
+  // Return index [0..n-1] of the searched element, if it exist, or -1 if not found
   template<typename T> static int findElement(const T *a, int symbol) {
     const int n = *(a++);
     for(int l = 0, r = n - 1; l <= r;) { // binary search
@@ -91,6 +91,125 @@ private:
     return -1;
   }
 
+  static inline bool isCompressedCode(UINT code) {
+    return (code & 0x00010000) != 0;
+  }
+  static inline bool isSingleItemCode(UINT code) {
+    return isCompressedCode(code) && ((code & 0x8000) == 0);
+  }
+  static inline bool isMultiItemCode(UINT code) {
+    return isCompressedCode(code) && ((code & 0x8000) != 0);
+  }
+
+  // Compressed states
+  static inline int getCompressedAction(signed int code) { // must be signed int
+    assert(isCompressedCode(code));
+    return code >> 17;
+  }
+  static inline UINT getCompressedSuccessor(UINT code) { // must be unsigned int
+    assert(isCompressedCode(code));
+    return code >> 17;
+  }
+
+  // SingleItem functions
+  static inline int getSingleItemAction(UINT code, UINT term) {
+    assert(isSingleItemCode(code));
+    return ((code & 0x7fff) == term) ? getCompressedAction(code) : _ParserError;
+  }
+  static inline UINT getSingleItemLegalInputCount(UINT code) {
+    assert(isSingleItemCode(code));
+    return 1;
+  }
+  static inline void getSingleItemLegalInputs(UINT code, UINT *symbols) {
+    assert(isSingleItemCode(code));
+    *symbols = (code&0x7fff);
+  }
+
+  // termSet functions
+  static inline int getTermSetAction(const BYTE *termSet, UINT code, UINT term) {
+    return contains(termSet, term) ? getCompressedAction(code) : _ParserError;
+  }
+  static UINT getTermSetLegalInputCount(const BYTE *termSet) {
+    UINT sum = 0;
+    constexpr UINT termSetByteCount = (terminalCount - 1) / 8 + 1;
+    for(const BYTE *endp = termSet + termSetByteCount; termSet < endp;) {
+      for(BYTE b = *(termSet++); b; b &= (b-1)) {
+        sum++;
+      }
+    }
+    return sum;
+  }
+  static void getTermSetLegalInputs(const BYTE *termSet, UINT *symbols) {
+    for(UINT term = 0; term < terminalCount; term++) {
+      if(contains(termSet, term)) {
+        *(symbols++) = term;
+      }
+    }
+  }
+
+  inline const BYTE *getTermSet(UINT code) const {
+    assert(isMultiItemCode(code));
+    return m_termSetTable + (code & 0x7fff);
+  }
+  inline int getCompressedAction(UINT code, UINT term) const {
+    return isSingleItemCode(code)
+         ? getSingleItemAction(code, term)
+         : getTermSetAction(getTermSet(code), code, term);
+  }
+  inline UINT getCompressedSuccessor(UINT code, UINT nt) const {
+    assert((nt - terminalCount) == (code & 0xffff));
+    return getCompressedSuccessor(code);
+  }
+  UINT getCompressedLegalInputCount(UINT code) const {
+    return isSingleItemCode(code)
+         ? getSingleItemLegalInputCount(code)
+         : getTermSetLegalInputCount(getTermSet(code));
+  }
+  void getCompressedLegalInputs(UINT code, UINT *symbols) const {
+    if(isSingleItemCode(code)) {
+      getSingleItemLegalInputs(code, symbols);
+    } else {
+      getTermSetLegalInputs(getTermSet(code), symbols);
+    }
+  }
+
+  // termList functions
+  static inline UINT getTermListLegalInputCount(const TerminalType *termList) {
+    return termList[0];
+  }
+  static inline void getTermListLegalInputs(const TerminalType *termList, UINT *symbols) {
+    const UINT n = *(termList++);
+    for(const TerminalType *endp = termList+n; termList < endp;) {
+      *(symbols++) = *(termList++);
+    }
+  }
+
+  // Uncompressed functions
+  inline const TerminalType *getTermList(UINT code) const {
+    assert(!isCompressedCode(code));
+    return m_termListTable + (code & 0xffff);
+  }
+  inline const NTIndexType *getNTindexList(UINT code) const {
+    assert(!isCompressedCode(code));
+    return m_NTindexListTable + (code & 0xffff);
+  }
+
+  inline int getUncompressedAction(UINT code, UINT term) const {
+    const int index = findElement(getTermList(code), term);
+    return (index < 0) ? _ParserError : m_actionListTable[(code >> 17) + index];
+  }
+  inline UINT getUncompressedSuccessor(UINT code, UINT nt) const {
+    const int index = findElement(getNTindexList(code), nt - terminalCount);
+    assert(index >= 0);
+    return m_stateListTable[(code >> 17) + index];
+  }
+  inline UINT getUncompressedLegalInputCount(UINT code) const {
+    return getTermListLegalInputCount(getTermList(code));
+  }
+  inline void getUncompressedLegalInputs(UINT code, UINT *symbols) const {
+    getTermListLegalInputs(getTermList(code), symbols);
+  }
+
   void buildSymbolNameTable() const {
     String tmp = m_nameString;
     m_symbolNameTable.setCapacity(getSymbolCount());
@@ -98,90 +217,6 @@ private:
       m_symbolNameTable.add(tok.next());
     }
   }
-  static inline bool isSingleItemActionState(UINT code) {
-    return (code & 0x8000) == 0;
-  }
-  inline const BYTE *getCompressedLAset(UINT code) const {
-    return m_compressedLAsets + (code&0x7fff);
-  }
-  static inline int getCompressedAction(signed int code) { // must be signed int
-    return code >> 17;
-  }
-  static inline int getActionCompressedSingleItem(UINT code, UINT token) {
-    return ((code&0x7fff) == token) ? getCompressedAction(code) : _ParserError;
-  }
-  inline int getActionCompressedMultiItem(UINT code, UINT token) const {
-    return contains(getCompressedLAset(code), token) ? getCompressedAction(code) : _ParserError;
-  }
-  inline int findActionCompressed(UINT code, UINT token) const {
-    return isSingleItemActionState(code)
-         ? getActionCompressedSingleItem(code, token)
-         : getActionCompressedMultiItem( code, token);
-  }
-  static inline void getLegalInputsCompressedSingleItem(UINT code, UINT *symbols) {
-    *symbols = (code&0x7fff);
-  }
-
-  void getLegalInputsCompressedMultiItem(UINT code, UINT *symbols) const {
-    const BYTE *set = getCompressedLAset(code);
-    for(UINT token = 0; token < terminalCount; token++) {
-      if(contains(set, token)) {
-        *(symbols++) = token;
-      }
-    }
-  }
-
-  UINT getLegalInputCountCompressedMultiItem(UINT code) const {
-    const BYTE *set = getCompressedLAset(code);
-    UINT        sum = 0;
-    for(UINT byteCount = (terminalCount-1)/8 + 1; byteCount--;) {
-      for(BYTE b = *(set++); b; b &= (b-1)) {
-        sum++;
-      }
-    }
-    return sum;
-  }
-
-  void getLegalInputsCompressed(UINT code, UINT *symbols) const {
-    if(isSingleItemActionState(code)) {
-      getLegalInputsCompressedSingleItem(code, symbols);
-    } else {
-      getLegalInputsCompressedMultiItem(code, symbols);
-    }
-  }
-
-  UINT getLegalInputCountCompressed(UINT code) const {
-    return isSingleItemActionState(code)
-         ? 1
-         : getLegalInputCountCompressedMultiItem(code);
-  }
-
-  static inline void getLegalInputsUncompressed(const TerminalType *a, UINT *symbols) {
-    const UINT n = *(a++);
-    for(const TerminalType *last = a+n; a < last;) {
-      *(symbols++) = *(a++);
-    }
-  }
-
-  static inline UINT getLegalInputCountUncompressed(const TerminalType *a) {
-    return a[0];
-  }
-
-  inline const TerminalType *getTerminalArray(UINT code) const {
-    return m_termListTable + (code & 0xffff);
-  }
-
-  inline UINT getLegalInputCountUncompressed(UINT code) const {
-    return getLegalInputCountUncompressed(getTerminalArray(code));
-  }
-  inline void getLegalInputsUncompressed(UINT code, UINT *symbols) const {
-    getLegalInputsUncompressed(getTerminalArray(code), symbols);
-  }
-  inline const int findActionUncompressed(UINT code) const {
-    const int index = findElement(getTerminalArray(code));
-    return (index >= 0) ? m_uncompActionTable[(code>>17)+index] : _ParserError;
-  }
-
   const SymbolType **getRightSides() const {
     if(m_rightSides == nullptr) {
       m_rightSides = new const SymbolType*[productionCount]; TRACE_NEW(m_rightSides);
@@ -193,55 +228,60 @@ private:
     }
     return m_rightSides;
   }
-
-  static inline bool isCompressedCode(UINT code) {
-    return (code & 0x00010000) != 0;
-  }
-  inline bool isCompressedState(UINT state) const {
-    return isCompressedCode(m_actionCode[state]);
-  }
-
 public:
-
 #pragma warning(push)
 
-   // token is terminal. return > 0:shift, <=0:reduce, _ParserError:Error
-  int getAction(UINT state, UINT token)          const override {
+  // term is a terminal-symbol.
+  // Return action
+  //   action >  0 : Shift to state = action
+  //   action <  0 : Reduce by production p = -action;
+  //   action == 0 : Accept, ie. reduce by production 0
+  //   _ParserError: Unexpected term
+  int getAction(UINT state, UINT term)           const override {
+    assert(state < stateCount);
     const UINT code = m_actionCode[state];
-    if(isCompressedCode(code)) {
-      return findActionCompressed(code, token);
-    } else {
-      const int index = findElement(m_termListTable + (code & 0xffff), token);
-      return (index < 0) ? _ParserError : m_actionListTable[(code >> 17) + index];
-    }
+    return isCompressedCode(code) ? getCompressedAction(code, term) : getUncompressedAction(code, term);
   }
 
   // nt is nonterminal
-  int getSuccessor(UINT state, UINT nt)          const override {
-    const UINT code  = m_successorCode[state];
+  UINT getSuccessor(UINT state, UINT nt)         const override {
+    assert(state < stateCount);
+    const UINT code = m_successorCode[state];
+    return isCompressedCode(code) ? getCompressedSuccessor(code, nt) : getUncompressedSuccessor(code, nt);
+  }
+
+  UINT getLegalInputCount(UINT state)            const override {
+    assert(state < stateCount);
+    const UINT code = m_actionCode[state];
+    return isCompressedCode(code) ? getCompressedLegalInputCount(code) : getUncompressedLegalInputCount(code);
+  }
+  void getLegalInputs(UINT state, UINT *symbols) const override {
+    assert(state < stateCount);
+    const UINT code = m_actionCode[state];
     if(isCompressedCode(code)) {
-      assert((nt - terminalCount) == (code & 0x7fff));
-      return code >> 17;
+      getCompressedLegalInputs(  code, symbols);
     } else {
-      const int index = findElement(m_NTindexListTable + (code & 0xffff), nt - terminalCount);
-      assert(index >= 0);
-      return m_stateListTable[(code >> 17) + index];
+      getUncompressedLegalInputs(code, symbols);
     }
   }
 
   UINT getProductionLength(  UINT prod  )        const override {
+    assert(prod < productionCount);
     return m_productionLength[prod];
   }
   UINT getLeftSymbol(        UINT prod  )        const override {
+    assert(prod < productionCount);
     return terminalCount + m_leftSideTable[prod];
   }
   const TCHAR *getSymbolName(UINT symbol)        const override {
+    assert(symbol < symbolCount);
     if(m_symbolNameTable.size() == 0) {
       buildSymbolNameTable();
     }
     return m_symbolNameTable[symbol].cstr();
   }
   void getRightSide(UINT prod, UINT *dst)        const override {
+    assert(prod < productionCount);
     UINT l = getProductionLength(prod);
     if(l == 0) {
       return;
@@ -264,20 +304,6 @@ public:
   UINT getStateCount()                           const override {
     return stateCount;
   }
-  UINT getLegalInputCount(UINT state)            const override {
-    const UINT code = m_actionCode[state];
-    return isCompressedCode(code)
-         ? getLegalInputCountCompressed(  code)
-         : getLegalInputCountUncompressed(code);
-  }
-  void getLegalInputs(UINT state, UINT *symbols) const override {
-    const UINT code = m_actionCode[state];
-    if(isCompressedCode(code)) {
-      getLegalInputsCompressed(  code, symbols);
-    } else {
-      getLegalInputsUncompressed(code, symbols);
-    }
-  }
   UINT getTableByteCount(Platform platform)      const override {
     return (platform==PLATFORM_X86) ? m_tableByteCountx86 : m_tableByteCountx64;
   }
@@ -286,7 +312,7 @@ public:
   ParserTablesTemplate(const UINT          *actionCode
                       ,const TerminalType  *termListTable
                       ,const ActionType    *actionListTable
-                      ,const BYTE          *compressedLAsets
+                      ,const BYTE          *termSetTable
                       ,const UINT          *successorCode
                       ,const NTIndexType   *NTindexListTable
                       ,const StateType     *stateListTable
@@ -300,7 +326,7 @@ public:
    :m_actionCode             ( actionCode             )
    ,m_termListTable          ( termListTable          )
    ,m_actionListTable        ( actionListTable        )
-   ,m_compressedLAsets       ( compressedLAsets       )
+   ,m_termSetTable           ( termSetTable           )
    ,m_successorCode          ( successorCode          )
    ,m_NTindexListTable       ( NTindexListTable       )
    ,m_stateListTable         ( stateListTable         )

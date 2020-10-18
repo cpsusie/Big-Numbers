@@ -12,7 +12,7 @@
 namespace Expr {
 
 /**********************************************************************************\
-* The 4 arrays actionCode, termListTable, actionstateListTable, compressedLAsets   *
+* The 4 arrays actionCode, termListTable, actionListTable and termSetTable         *
 * holds a compressed action-matrix, used by LRParser to find                       *
 * action = getAction(S,T), where S is current state, T is next terminal on input   *
 *                                                                                  *
@@ -53,8 +53,8 @@ namespace Expr {
 *            a: Action.                                                            *
 *                                                                                  *
 *         I==1: All actions in the state are reduce by the same production P = -a. *
-*            t: Index into compressedLAsets, pointing at the first element of      *
-*               LASet (see below).                                                 *
+*            t: Index into termSetTable, pointing at the first element of termSet  *
+*               (see below).                                                       *
 *            a: Action.                                                            *
 *                                                                                  *
 * F == 0: Use arrays termListTable and actionListTable to find action.             *
@@ -67,16 +67,16 @@ namespace Expr {
 *      and set action = actionList[k]. If T is not found, set action = _ParseError.*
 *      Note that both termList and actionList may be shared by several states.     *
 *                                                                                  *
-* F == 1 and I==1: Use array compressedLAsets which is a list of bitsets, each     *
-*                  with terminalCount bits, a lookaheadset LAset with 1-bits       *
-*                  for legal terminals, and 0-bits for illegal terminals.          *
+* F == 1 and I==1: Use array termSetTable which is a list of termSet, bitsets,     *
+*                  each with terminalCount bits, 1-bits for legal terminals, and   *
+*                  0-bits for illegal terminals.                                   *
 *                                                                                  *
-*      b                 : Number of bytes in each LAset = (terminalCount-1)/8+1   *
-*      LAset[0..b-1]     : compressedLAsets[t..t+b-1]                              *
+*      b                 : Number of bytes in each termSet = (terminalCount-1)/8+1 *
+*      termSet[0..b-1]   : termSetTable[t..t+b-1]                                  *
 *                                                                                  *
 *      As for uncompressed states, the same check for existence is done.           *
-*      If terminal T is not present in LAset, set action = _ParseError.            *
-*      Note that each LAset may be shared by several states.                       *
+*      If terminal T is not present in termSet, set action = _ParseError.          *
+*      Note that each termSet may be shared by several states.                     *
 \**********************************************************************************/
 #define _ac0000 0x00000000 /* termList   0, actionList   0            */
 #define _ac0001 0x00010000 /* Reduce by 0 on EOI                      */
@@ -84,20 +84,20 @@ namespace Expr {
 #define _ac0003 0x00000000 /* termList   0, actionList   0            */
 #define _ac0004 0x0076003c /* termList   1, actionList   1            */
 #define _ac0005 0x0090004a /* termList   2, actionList   2            */
-#define _ac0006 0xfff78000 /* Reduce by 5 on tokens in LAset[0]       */
+#define _ac0006 0xfff78000 /* Reduce by 5 on tokens in termSet[0]     */
 #define _ac0007 0x00b90007 /* Shift  to 92 on SEMI                    */
 #define _ac0008 0x0096004e /* termList   3, actionList   3            */
-#define _ac0009 0xffe3800b /* Reduce by 15 on tokens in LAset[1]      */
-#define _ac0010 0xffe1800b /* Reduce by 16 on tokens in LAset[1]      */
+#define _ac0009 0xffe3800b /* Reduce by 15 on tokens in termSet[1]    */
+#define _ac0010 0xffe1800b /* Reduce by 16 on tokens in termSet[1]    */
 #define _ac0011 0x00bd0050 /* Shift  to 94 on LPAR                    */
 #define _ac0012 0x00bf0050 /* Shift  to 95 on LPAR                    */
 #define _ac0013 0x00000000 /* termList   0, actionList   0            */
 #define _ac0014 0x00b2005d /* termList   4, actionList   4            */
 #define _ac0015 0x00b2005d /* termList   4, actionList   4            */
-#define _ac0016 0xffd3800b /* Reduce by 23 on tokens in LAset[1]      */
-#define _ac0017 0xffd1800b /* Reduce by 24 on tokens in LAset[1]      */
-#define _ac0018 0xffcf800b /* Reduce by 25 on tokens in LAset[1]      */
-#define _ac0019 0xffcd800b /* Reduce by 26 on tokens in LAset[1]      */
+#define _ac0016 0xffd3800b /* Reduce by 23 on tokens in termSet[1]    */
+#define _ac0017 0xffd1800b /* Reduce by 24 on tokens in termSet[1]    */
+#define _ac0018 0xffcf800b /* Reduce by 25 on tokens in termSet[1]    */
+#define _ac0019 0xffcd800b /* Reduce by 26 on tokens in termSet[1]    */
 #define _ac0020 0x00000000 /* termList   0, actionList   0            */
 #define _ac0021 0x00d10050 /* Shift  to 104 on LPAR                   */
 #define _ac0022 0x00d30050 /* Shift  to 105 on LPAR                   */
@@ -152,10 +152,10 @@ namespace Expr {
 #define _ac0071 0xff4f0050 /* Reduce by 89 on LPAR                    */
 #define _ac0072 0xff4d0050 /* Reduce by 90 on LPAR                    */
 #define _ac0073 0xff4b0050 /* Reduce by 91 on LPAR                    */
-#define _ac0074 0xff498016 /* Reduce by 92 on tokens in LAset[2]      */
-#define _ac0075 0xff47800b /* Reduce by 93 on tokens in LAset[1]      */
+#define _ac0074 0xff498016 /* Reduce by 92 on tokens in termSet[2]    */
+#define _ac0075 0xff47800b /* Reduce by 93 on tokens in termSet[1]    */
 #define _ac0076 0xfffd0000 /* Reduce by 2 on EOI                      */
-#define _ac0077 0xfff58000 /* Reduce by 6 on tokens in LAset[0]       */
+#define _ac0077 0xfff58000 /* Reduce by 6 on tokens in termSet[0]     */
 #define _ac0078 0x00b2005d /* termList   4, actionList   4            */
 #define _ac0079 0x00b2005d /* termList   4, actionList   4            */
 #define _ac0080 0x00b2005d /* termList   4, actionList   4            */
@@ -170,13 +170,13 @@ namespace Expr {
 #define _ac0089 0x00b2005d /* termList   4, actionList   4            */
 #define _ac0090 0x00000000 /* termList   0, actionList   0            */
 #define _ac0091 0x00000000 /* termList   0, actionList   0            */
-#define _ac0092 0xfff38000 /* Reduce by 7 on tokens in LAset[0]       */
+#define _ac0092 0xfff38000 /* Reduce by 7 on tokens in termSet[0]     */
 #define _ac0093 0x00b2005d /* termList   4, actionList   4            */
 #define _ac0094 0x00b2005d /* termList   4, actionList   4            */
 #define _ac0095 0x00b2005d /* termList   4, actionList   4            */
 #define _ac0096 0x01260098 /* termList   5, actionList   5            */
 #define _ac0097 0x014000a6 /* termList   6, actionList   6            */
-#define _ac0098 0xffdf800b /* Reduce by 17 on tokens in LAset[1]      */
+#define _ac0098 0xffdf800b /* Reduce by 17 on tokens in termSet[1]    */
 #define _ac0099 0x014600aa /* termList   7, actionList   7            */
 #define _ac0100 0x00b2005d /* termList   4, actionList   4            */
 #define _ac0101 0x016e00aa /* termList   7, actionList   8            */
@@ -186,35 +186,35 @@ namespace Expr {
 #define _ac0105 0x00950003 /* Shift  to 74 on NAME                    */
 #define _ac0106 0x00950003 /* Shift  to 74 on NAME                    */
 #define _ac0107 0x00b2005d /* termList   4, actionList   4            */
-#define _ac0108 0xff638021 /* Reduce by 79 on tokens in LAset[3]      */
+#define _ac0108 0xff638021 /* Reduce by 79 on tokens in termSet[3]    */
 #define _ac0109 0x01b400aa /* termList   7, actionList  11            */
 #define _ac0110 0x01dc00aa /* termList   7, actionList  12            */
 #define _ac0111 0x020400aa /* termList   7, actionList  13            */
 #define _ac0112 0x022c00aa /* termList   7, actionList  14            */
 #define _ac0113 0x025400aa /* termList   7, actionList  15            */
-#define _ac0114 0xffe5800b /* Reduce by 14 on tokens in LAset[1]      */
+#define _ac0114 0xffe5800b /* Reduce by 14 on tokens in termSet[1]    */
 #define _ac0115 0x027c00d0 /* termList  10, actionList  16            */
 #define _ac0116 0x029400d0 /* termList  10, actionList  17            */
 #define _ac0117 0x02ac00d0 /* termList  10, actionList  18            */
 #define _ac0118 0x02c400d0 /* termList  10, actionList  19            */
 #define _ac0119 0x02dc00d0 /* termList  10, actionList  20            */
 #define _ac0120 0x02f400d0 /* termList  10, actionList  21            */
-#define _ac0121 0xff678021 /* Reduce by 77 on tokens in LAset[3]      */
+#define _ac0121 0xff678021 /* Reduce by 77 on tokens in termSet[3]    */
 #define _ac0122 0x030c00dd /* termList  11, actionList  22            */
 #define _ac0123 0x031800e4 /* termList  12, actionList  23            */
 #define _ac0124 0x032800ed /* termList  13, actionList  24            */
 #define _ac0125 0x033600f5 /* termList  14, actionList  25            */
-#define _ac0126 0xffd9800b /* Reduce by 20 on tokens in LAset[1]      */
-#define _ac0127 0xff618021 /* Reduce by 80 on tokens in LAset[3]      */
+#define _ac0126 0xffd9800b /* Reduce by 20 on tokens in termSet[1]    */
+#define _ac0127 0xff618021 /* Reduce by 80 on tokens in termSet[3]    */
 #define _ac0128 0x034400ed /* termList  13, actionList  26            */
-#define _ac0129 0xffcb800b /* Reduce by 27 on tokens in LAset[1]      */
+#define _ac0129 0xffcb800b /* Reduce by 27 on tokens in termSet[1]    */
 #define _ac0130 0x035200fd /* termList  15, actionList  27            */
 #define _ac0131 0x01170009 /* Shift  to 139 on TO                     */
 #define _ac0132 0x00bb0006 /* Shift  to 93 on ASSIGN                  */
 #define _ac0133 0x01190009 /* Shift  to 140 on TO                     */
 #define _ac0134 0x03580101 /* termList  16, actionList  28            */
 #define _ac0135 0x035c0104 /* termList  17, actionList  29            */
-#define _ac0136 0xffdd800b /* Reduce by 18 on tokens in LAset[1]      */
+#define _ac0136 0xffdd800b /* Reduce by 18 on tokens in termSet[1]    */
 #define _ac0137 0x00b2005d /* termList   4, actionList   4            */
 #define _ac0138 0x00b2005d /* termList   4, actionList   4            */
 #define _ac0139 0x00b2005d /* termList   4, actionList   4            */
@@ -227,7 +227,7 @@ namespace Expr {
 #define _ac0146 0x039600ed /* termList  13, actionList  33            */
 #define _ac0147 0x00b2005d /* termList   4, actionList   4            */
 #define _ac0148 0x03a40104 /* termList  17, actionList  34            */
-#define _ac0149 0xffdb800b /* Reduce by 19 on tokens in LAset[1]      */
+#define _ac0149 0xffdb800b /* Reduce by 19 on tokens in termSet[1]    */
 #define _ac0150 0x00b2005d /* termList   4, actionList   4            */
 #define _ac0151 0x00b2005d /* termList   4, actionList   4            */
 #define _ac0152 0x00b2005d /* termList   4, actionList   4            */
@@ -235,8 +235,8 @@ namespace Expr {
 #define _ac0154 0x03c200ed /* termList  13, actionList  36            */
 #define _ac0155 0x03d000aa /* termList   7, actionList  37            */
 #define _ac0156 0x03f800aa /* termList   7, actionList  38            */
-#define _ac0157 0xffc3800b /* Reduce by 31 on tokens in LAset[1]      */
-#define _ac0158 0xffc9800b /* Reduce by 28 on tokens in LAset[1]      */
+#define _ac0157 0xffc3800b /* Reduce by 31 on tokens in termSet[1]    */
+#define _ac0158 0xffc9800b /* Reduce by 28 on tokens in termSet[1]    */
 
 static const unsigned int actionCode[159] = {
    _ac0000,_ac0001,_ac0002,_ac0003,_ac0004,_ac0005,_ac0006,_ac0007,_ac0008,_ac0009
@@ -328,7 +328,7 @@ static const short actionListTable[528] = {
   , -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30,  78,  79,  80,  81,  82,  83, -30, -30       /*  38 Used by state  (156) */
 }; // Size of table:1.056(x86)/1.056(x64) bytes.
 
-static const unsigned char compressedLAsets[44] = {
+static const unsigned char termSetTable[44] = {
    0x1a,0x4c,0x80,0x81,0xff,0xff,0xff,0xff,0xff,0xff,0x05 /*   0  59 tokens Used by states (6,77,92) */
   ,0x81,0xb3,0x9f,0x79,0x00,0x00,0x00,0x00,0x00,0x00,0x0a /*   1  20 tokens Used by states (9,10,16,17,18,19,75,98,114,126,129,136,149,157,158) */
   ,0xc1,0xb3,0x9f,0x79,0x00,0x00,0x00,0x00,0x00,0x00,0x0a /*   2  21 tokens Used by state  (74) */
@@ -742,7 +742,7 @@ static const ParserTablesTemplate<84,102,94,159
                                  ,unsigned char
                                  ,unsigned char
                                  ,short
-                                 ,unsigned char> ExpressionTables_s(actionCode      , termListTable     , actionListTable, compressedLAsets
+                                 ,unsigned char> ExpressionTables_s(actionCode      , termListTable     , actionListTable, termSetTable
                                                                    ,successorCode   , NTindexListTable  , stateListTable
                                                                    ,productionLength, leftSideTable
                                                                    ,rightSideTable  , symbolNames

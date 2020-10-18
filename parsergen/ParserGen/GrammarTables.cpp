@@ -188,7 +188,7 @@ ByteCount GrammarTables::getTotalSizeInBytes() const {
   return ByteCount(getTableByteCount(PLATFORM_X86), getTableByteCount(PLATFORM_X64));
 }
 
-int GrammarTables::getSuccessor(UINT state, UINT nt) const {
+UINT GrammarTables::getSuccessor(UINT state, UINT nt) const {
   const ActionArray &list = m_stateSucc[state];
   for(size_t i = 0; i < list.size(); i++) {
     if(list[i].m_token == nt) {

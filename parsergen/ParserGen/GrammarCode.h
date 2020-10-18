@@ -169,7 +169,7 @@ private:
 public:
   GrammarTables(const Grammar &g, const String &tableClassName, const String &parserClassName);
   int  getAction(   UINT state, UINT input)      const override;
-  int  getSuccessor(UINT state, UINT nt   )      const override;
+  UINT getSuccessor(UINT state, UINT nt   )      const override;
 
   UINT getProductionLength(UINT prod)            const override {
     return m_productionLength[prod];
