@@ -427,7 +427,7 @@ ByteCount GrammarTables::printUncompressedActionMatrixCpp(MarginFile &output, St
       raIndex = currentRAListSize;
       raCount = (UINT)raaMap.size();
       IndexMapValue nv(stateCount, state, raIndex);
-      nv.m_count = laCount;
+      nv.m_count = raCount;
       raaMap.put(raa, nv);
       currentRAListSize += (UINT)raa.size();
     }
