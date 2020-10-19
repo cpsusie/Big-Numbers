@@ -32,7 +32,7 @@ private:
   GrammarCoder &m_coder;
 public:
   ActionsWriter(GrammarCoder &coder) : m_coder(coder) {}
-  void handleKeyword(TemplateWriter &writer, String &line) const;
+  void handleKeyword(TemplateWriter &writer, String &line) const override;
 };
 
 void ActionsWriter::handleKeyword(TemplateWriter &writer, String &line) const {
@@ -76,7 +76,7 @@ private:
   GrammarCoder &m_coder;
 public:
   TablesWriter(GrammarCoder &coder) : m_coder(coder) {};
-  void handleKeyword(TemplateWriter &writer, String &line) const;
+  void handleKeyword(TemplateWriter &writer, String &line) const override;
 };
 
 void TablesWriter::handleKeyword(TemplateWriter &writer, String &line) const {
@@ -99,7 +99,7 @@ private:
   void writeJavaSymbols(TemplateWriter &writer) const;
 public:
   SymbolsWriter(GrammarCoder &coder, bool terminals) : m_coder(coder) { m_terminals = terminals; }
-  void handleKeyword(TemplateWriter &writer, String &line) const;
+  void handleKeyword(TemplateWriter &writer, String &line) const override;
 };
 
 void SymbolsWriter::handleKeyword(TemplateWriter &writer, String &line) const {
@@ -155,7 +155,7 @@ private:
   GrammarCoder &m_coder;
 public:
   DocFileWriter(GrammarCoder &coder) : m_coder(coder) {}
-  void handleKeyword(TemplateWriter &writer, String &line) const;
+  void handleKeyword(TemplateWriter &writer, String &line) const override;
 };
 
 void DocFileWriter::handleKeyword(TemplateWriter &writer, String &line) const {
@@ -194,45 +194,41 @@ void GrammarCoder::generateDocFile(MarginFile &output) {
 
 void GrammarCoder::generateParser() {
 
-  SourceTextWriter headerWriter(     m_grammar.getHeader()    );
-  SourceTextWriter driverHeadWriter( m_grammar.getDriverHead());
-  SourceTextWriter driverTailWriter( m_grammar.getDriverTail());
-  TablesWriter     tablesWriter(*this);
-  ActionsWriter    actionsWriter(*this);
-  SymbolsWriter    terminalsWriter(*this, true);
-  SymbolsWriter    nonTerminalsWriter(*this, false);
-  DocFileWriter    docFileWriter(*this);
-  NewFileHandler   newFileHandler;
-
+  SourceTextWriter     headerWriter(     m_grammar.getHeader()    );
+  SourceTextWriter     driverHeadWriter( m_grammar.getDriverHead());
+  SourceTextWriter     driverTailWriter( m_grammar.getDriverTail());
+  TablesWriter         tablesWriter(      *this       );
+  ActionsWriter        actionsWriter(     *this       );
+  SymbolsWriter        terminalsWriter(   *this, true );
+  SymbolsWriter        nonTerminalsWriter(*this, false);
+  DocFileWriter        docFileWriter(     *this       );
   TemplateWriter writer(m_templateName, m_implOutputDir, m_headerOutputDir, m_flags);
 
-  writer.addKeywordHandler(_T("FILEHEAD"           ), headerWriter      );
-  writer.addKeywordHandler(_T("CLASSHEAD"          ), driverHeadWriter  );
-  writer.addKeywordHandler(_T("CLASSTAIL"          ), driverTailWriter  );
-  writer.addKeywordHandler(_T("TABLES"             ), tablesWriter      );
-  writer.addKeywordHandler(_T("ACTIONS"            ), actionsWriter     );
-  writer.addKeywordHandler(_T("TERMINALSYMBOLS"    ), terminalsWriter   );
-  writer.addKeywordHandler(_T("NONTERMINALSYMBOLS" ), nonTerminalsWriter);
-  writer.addKeywordHandler(_T("DOCFILE"            ), docFileWriter     );
-  writer.addKeywordHandler(_T("NEWFILE"            ), newFileHandler    );
-  writer.addKeywordHandler(_T("NEWHEADERFILE"      ), newFileHandler    );
-  writer.addMacro(         _T("GRAMMARNAME"        ), m_grammarName     );
-  writer.addMacro(         _T("PARSERCLASSNAME"    ), m_parserClassName );
-  writer.addMacro(         _T("TABLESCLASSNAME"    ), m_tablesClassName );
-  writer.addMacro(         _T("DOCFILENAME"        ), m_docFileName     );
-  writer.addMacro(         _T("TERMINALCOUNT"      ), toString(m_grammar.getTerminalCount()));
-  writer.addMacro(         _T("SYMBOLCOUNT"        ), toString(m_grammar.getSymbolCount()));
+  writer.addKeywordHandler(_T("FILEHEAD"           ), headerWriter         );
+  writer.addKeywordHandler(_T("CLASSHEAD"          ), driverHeadWriter     );
+  writer.addKeywordHandler(_T("CLASSTAIL"          ), driverTailWriter     );
+  writer.addKeywordHandler(_T("TABLES"             ), tablesWriter         );
+  writer.addKeywordHandler(_T("ACTIONS"            ), actionsWriter        );
+  writer.addKeywordHandler(_T("TERMINALSYMBOLS"    ), terminalsWriter      );
+  writer.addKeywordHandler(_T("NONTERMINALSYMBOLS" ), nonTerminalsWriter   );
+  writer.addKeywordHandler(_T("DOCFILE"            ), docFileWriter        );
+  writer.addMacro(         _T("GRAMMARNAME"        ), m_grammarName        );
+  writer.addMacro(         _T("PARSERCLASSNAME"    ), m_parserClassName    );
+  writer.addMacro(         _T("TABLESCLASSNAME"    ), m_tablesClassName    );
+  writer.addMacro(         _T("DOCFILENAME"        ), m_docFileName        );
+  writer.addMacro(         _T("TERMINALCOUNT"      ), toString(m_grammar.getTerminalCount(  )));
+  writer.addMacro(         _T("SYMBOLCOUNT"        ), toString(m_grammar.getSymbolCount(    )));
   writer.addMacro(         _T("PRODUCTIONCOUNT"    ), toString(m_grammar.getProductionCount()));
-  writer.addMacro(         _T("STATECOUNT"         ), toString(m_grammar.getStateCount()));
-  writer.addMacro(         _T("OUTPUTDIR"          ), m_implOutputDir    );
-  writer.addMacro(         _T("HEADERDIR"          ), m_headerOutputDir  );
-  writer.addMacro(         _T("NAMESPACE"          ), m_nameSpace        );
+  writer.addMacro(         _T("STATECOUNT"         ), toString(m_grammar.getStateCount(     )));
+  writer.addMacro(         _T("OUTPUTDIR"          ), m_implOutputDir      );
+  writer.addMacro(         _T("HEADERDIR"          ), m_headerOutputDir    );
+  writer.addMacro(         _T("NAMESPACE"          ), m_nameSpace          );
   if(m_nameSpace.length() > 0) {
-    writer.addMacro(       _T("PUSHNAMESPACE"      ), format(_T("namespace %s {"    ), m_nameSpace.cstr()));
-    writer.addMacro(       _T("POPNAMESPACE"       ), format(_T("}; // namespace %s"), m_nameSpace.cstr()));
+    writer.addMacro(       _T("PUSHNAMESPACE"      ), format(_T("\nnamespace %s {\n" ), m_nameSpace.cstr()));
+    writer.addMacro(       _T("POPNAMESPACE"       ), format(_T("}; // namespace %s" ), m_nameSpace.cstr()));
   } else {
-    writer.addMacro(       _T("PUSHNAMESPACE"      ), EMPTYSTRING);
-    writer.addMacro(       _T("POPNAMESPACE"       ), EMPTYSTRING);
+    writer.addMacro(       _T("PUSHNAMESPACE"      ), _T("$NOLINE$"));
+    writer.addMacro(       _T("POPNAMESPACE"       ), _T("$NOLINE$"));
   }
 
   writer.generateOutput();
