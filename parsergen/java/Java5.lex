@@ -5,7 +5,7 @@
 class Java5Lex : public Scanner {
   void init();
 public:
-  int getNextLexeme();
+  int getNextLexeme() override;
   static void findBestHashMapSize();
 };
 %}

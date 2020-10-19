@@ -9,7 +9,6 @@
 
 class Olm627Lex : public Scanner {
 public:
-  int getNextLexeme();
+  int getNextLexeme() override;
 };
 #line 5 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
-

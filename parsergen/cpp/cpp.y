@@ -20,14 +20,14 @@ public:
   static inline const ParserTables &getTables() {
     return *CppTables;
   }
-private:
+protected:
   stype m_leftSide,*m_stacktop,m_userstack[256];
 //void traceStack(UINT prod);
-  stype getStackTop(int fromtop)         { return m_stacktop[-fromtop];            }
-  void initUserStack()                   { m_stacktop = m_userstack;               }
-  void shiftSymbol(         UINT symbol) { m_stacktop++;                           } // push 1 element (garbage) on userstack
-  void popSymbols(          UINT count ) { m_stacktop      -= count;               } // pop count symbols from userstack
-  void shiftLeftSide()                   { *(++m_stacktop) = m_leftSide;           } // push($$) on userstack
+  stype getStackTop(int fromtop)                  { return m_stacktop[-fromtop];            }
+  void userStackInit()                   override { m_stacktop = m_userstack;               }
+  void userStackShiftSymbol(UINT symbol) override { m_stacktop++;                           } // push 1 element (garbage) on userstack
+  void userStackPopSymbols( UINT count ) override { m_stacktop      -= count;               } // pop count symbols from userstack
+  void userStackShiftLeftSide()          override { *(++m_stacktop) = m_leftSide;           } // push($$) on userstack
   void defaultReduce(       UINT prod  ) override { m_leftSide      = *m_stacktop;          } // $$ = $1
   int  reduceAction(        UINT prod  ) override;
 };

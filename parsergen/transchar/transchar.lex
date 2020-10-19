@@ -2,7 +2,7 @@
 
 class TranscharLex : public Scanner {
 public:
-  int getNextLexeme();
+  int getNextLexeme() override;
 };
 
 #define YYBADINP

@@ -5,10 +5,9 @@
 #line 3 "C:\\Mytools2015\\ParserGen\\transchar\\Transchar.lex"
 class TranscharLex : public Scanner {
 public:
-  int getNextLexeme();
+  int getNextLexeme() override;
 };
 
 #define YYBADINP
 
 #line 5 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
-

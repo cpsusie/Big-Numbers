@@ -5,7 +5,7 @@
 
 class Olm627Lex : public Scanner {
 public:
-  int getNextLexeme();
+  int getNextLexeme() override;
 };
 %}
 

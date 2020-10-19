@@ -2,10 +2,8 @@
 
 #include "stdafx.h"
 #include "olm641parser.h"
-
-
-
-#pragma warning(disable : 4060)
+#line 23 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
+#pragma warning(disable : 4060) // warning C4060: switch statement contains no 'case' or 'default' labels
 
 int Olm641Parser::reduceAction(unsigned int prod) {
   switch(prod) {
@@ -16,8 +14,7 @@ int Olm641Parser::reduceAction(unsigned int prod) {
     { _tprintf(_T("reduce by E -> eps yypos(0):(%d,%d)\n"), getPos(0).getLineNumber(),getPos(0).getColumn()); }
     break;
   }
+#line 30 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
   return 0;
 }
-
-
 

@@ -294,7 +294,7 @@
     <ClCompile Include="CppAction.cpp" />
     <ClCompile Include="CppLex.cpp" />
     <ClCompile Include="CppTables.cpp" />
-    <ClCompile Include="Parsertree.cpp" />
+    <ClCompile Include="ParserTree.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
@@ -307,10 +307,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="cpplex.h" />
-    <ClInclude Include="cppparser.h" />
-    <ClInclude Include="cppsymbol.h" />
-    <ClInclude Include="Parsertree.h" />
+    <ClInclude Include="cppLex.h" />
+    <ClInclude Include="cppParser.h" />
+    <ClInclude Include="cppSymbol.h" />
+    <ClInclude Include="ParserTree.h" />
     <ClInclude Include="StdAfx.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

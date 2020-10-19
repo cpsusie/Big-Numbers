@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include <Math/Expression/ExpressionParser.h>
-#include <Math/Expression/ExpressionLex.h>
+#include <c:\Mytools2015\Lib\Src\Expression\ExpressionLex.h>
 
 static void scan(TCHAR *s) {
   LexStringStream stream(s);

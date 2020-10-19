@@ -21,4 +21,3 @@ private:
   int  reduceAction(        UINT prod  ) override;
 };
 
-

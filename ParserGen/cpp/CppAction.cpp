@@ -4,15 +4,14 @@
 #include "stdafx.h"
 #include "CppParser.h"
 
-#line 26 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
-
-
-
-#pragma warning(disable : 4060)
+#line 20 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#line 23 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
+#pragma warning(disable : 4060) // warning C4060: switch statement contains no 'case' or 'default' labels
 
 int CppParser::reduceAction(unsigned int prod) {
   switch(prod) {
   }
+#line 30 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
   return 0;
 }
 
@@ -30,6 +29,4 @@ void CppParser::appendError(_In_z_ _Printf_format_string_ TCHAR const * const fo
   _vtprintf(format,argptr);
   va_end(argptr);
 }
-#line 39 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
-
-
+#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"

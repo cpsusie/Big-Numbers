@@ -3,28 +3,27 @@
 
 #include <LRparser.h>
 
-const extern ParserTables *DummyTables;
-
-#line 5 "C:\\mytools2015\\ParserGen\\dummy\\Dummy.y"
+#line 5 "C:\\Mytools2015\\ParserGen\\dummy\\Dummy.y"
 #include "dummysymbol.h"
 #include "dummylex.h"
 
-#if !defined(YYSTYPE)
+#ifndef YYSTYPE
 #define YYSTYPE int
 #endif
 
 class DummyParser : public LRparser {
-public:
-  DummyParser(Scanner *lex) : LRparser(*DummyTables,lex) {}
 private:
-  YYSTYPE m_dollardollar,*m_stacktop,m_userstack[256];
-  int reduceAction(unsigned int prod);
-  void userStackInit()                           { m_stacktop = m_userstack;         }
-  void userStackShiftSymbol(unsigned int symbol) { m_stacktop++;                     } // push 1 element (garbage) on userstack
-  void userStackPopSymbols(unsigned int count)   { m_stacktop -= count;              } // pop count symbols from userstack
-  void userStackShiftDollarDollar()              { *(++m_stacktop) = m_dollardollar; } // push($$) on userstack
-  void defaultReduce(unsigned int prod)          { m_dollardollar  = *m_stacktop;    } // $$ = $1
+  static const ParserTables *DummyTables;
+public:
+  DummyParser(Scanner *lex) : LRparser(*DummyTables,lex) {
+  }
+private:
+  YYSTYPE m_leftSide,*m_stacktop,m_userstack[256];
+  void userStackInit()                   override { m_stacktop = m_userstack;              }
+  void userStackShiftSymbol(UINT symbol) override { m_stacktop++;                          } // push 1 element (garbage) on userstack
+  void userStackPopSymbols( UINT count ) override { m_stacktop      -= count;              } // pop count symbols from userstack
+  void userStackShiftLeftSide()          override { *(++m_stacktop) = m_leftSide;          } // push($$) on userstack
+  void defaultReduce(       UINT prod  ) override { m_leftSide      = *m_stacktop;         } // $$ = $1
+  int  reduceAction(        UINT prod  ) override;
 };
-
-#line 18 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
-
+#line 17 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"

@@ -22,5 +22,4 @@ private:
   int  reduceAction(        UINT prod  ) override;
 };
 
-#line 22 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
-
+#line 17 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"

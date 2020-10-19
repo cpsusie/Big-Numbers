@@ -8,7 +8,7 @@
 
 class CLex : public Scanner {
 public:
-  int getNextLexeme();
+  int getNextLexeme() override;
 };
 
 extern void gotstructop();

@@ -12,9 +12,8 @@
 
 class CLex : public Scanner {
 public:
-  int getNextLexeme();
+  int getNextLexeme() override;
 };
 
 extern void gotstructop();
 #line 5 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
-

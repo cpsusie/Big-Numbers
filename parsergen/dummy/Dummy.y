@@ -10,6 +10,8 @@
 #endif
 
 class DummyParser : public LRparser {
+private:
+  static const ParserTables *DummyTables;
 public:
   DummyParser(Scanner *lex) : LRparser(*DummyTables,lex) {
   }

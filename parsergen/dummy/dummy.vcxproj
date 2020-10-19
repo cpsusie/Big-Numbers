@@ -298,30 +298,30 @@
     <CustomBuild Include="DUMMY.LEX">
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">lexgen -v Dummy.lex</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">lexgen -v Dummy.lex</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">DummyLex.cpp;DummyLex.h;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">DummyLex.cpp;DummyLex.h;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">c:\bin\lexgen.exe;c:\mytools\parsergen\lib\lexgencpp.par;%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">c:\bin\lexgen.exe;c:\mytools\parsergen\lib\lexgencpp.par;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">DummyLex.cpp;DummyLex.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">DummyLex.cpp;DummyLex.h</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">c:\bin\lexgen.exe;c:\mytools2015\parsergen\lib\lexgencpp.par</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">c:\bin\lexgen.exe;c:\mytools2015\parsergen\lib\lexgencpp.par</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">lexgen -v -l Dummy.lex</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">lexgen -v -l Dummy.lex</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">DummyLex.cpp;DummyLex.h;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">DummyLex.cpp;DummyLex.h;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">c:\bin\lexgen.exe;c:\mytools\parsergen\lib\lexgencpp.par;%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">c:\bin\lexgen.exe;c:\mytools\parsergen\lib\lexgencpp.par;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">DummyLex.cpp;DummyLex.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">DummyLex.cpp;DummyLex.h</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">c:\bin\lexgen.exe;c:\mytools2015\parsergen\lib\lexgencpp.par</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">c:\bin\lexgen.exe;c:\mytools2015\parsergen\lib\lexgencpp.par</AdditionalInputs>
     </CustomBuild>
     <CustomBuild Include="DUMMY.Y">
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">parsergen  -h Dummy.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">parsergen  -h Dummy.y</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">DummySymbol.h;DummyParser.h;DummyAction.cpp;DummyTables.cpp;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">DummySymbol.h;DummyParser.h;DummyAction.cpp;DummyTables.cpp;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">c:\bin\parsergen.exe;c:\mytools\parsergen\lib\parsergencpp.par;%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">c:\bin\parsergen.exe;c:\mytools\parsergen\lib\parsergencpp.par;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">parsergen -h Dummy.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">parsergen -h Dummy.y</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">DummySymbol.h;DummyParser.h;DummyAction.cpp;DummyTables.cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">DummySymbol.h;DummyParser.h;DummyAction.cpp;DummyTables.cpp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">c:\bin\parsergen.exe;c:\mytools2015\parsergen\lib\parsergencpp.par</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">c:\bin\parsergen.exe;c:\mytools2015\parsergen\lib\parsergencpp.par</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">parsergen -h Dummy.y</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">parsergen -h Dummy.y</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">DummySymbol.h;DummyParser.h;DummyAction.cpp;DummyTables.cpp;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">DummySymbol.h;DummyParser.h;DummyAction.cpp;DummyTables.cpp;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">c:\bin\parsergen.exe;c:\mytools\parsergen\lib\parsergencpp.par;%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">c:\bin\parsergen.exe;c:\mytools\parsergen\lib\parsergencpp.par;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">DummySymbol.h;DummyParser.h;DummyAction.cpp;DummyTables.cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">DummySymbol.h;DummyParser.h;DummyAction.cpp;DummyTables.cpp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">c:\bin\parsergen.exe;c:\mytools2015\parsergen\lib\parsergencpp.par</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">c:\bin\parsergen.exe;c:\mytools2015\parsergen\lib\parsergencpp.par</AdditionalInputs>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>

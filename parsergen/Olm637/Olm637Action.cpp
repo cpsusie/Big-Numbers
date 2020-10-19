@@ -3,24 +3,21 @@
 #line 33 "C:\\Mytools2015\\ParserGen\\Olm637\\Olm637.y"
 #include "stdafx.h"
 #include "Olm637parser.h"
-#line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
-
-
-
-#pragma warning(disable : 4060)
+#line 20 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
+#line 23 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
+#pragma warning(disable : 4060) // warning C4060: switch statement contains no 'case' or 'default' labels
 
 int Olm637Parser::reduceAction(unsigned int prod) {
   switch(prod) {
   case 1: /* S -> a A d */
 #line 41 "C:\\Mytools2015\\ParserGen\\Olm637\\Olm637.y"
     { m_leftSide = getStackTop(1); }
-#line 34 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
+#line 27 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
   }
+#line 30 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
   return 0;
 }
 
 #line 56 "C:\\Mytools2015\\ParserGen\\Olm637\\Olm637.y"
-#line 39 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
-
-
+#line 33 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"

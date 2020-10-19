@@ -6,8 +6,7 @@
 class Java5Lex : public Scanner {
   void init();
 public:
-  int getNextLexeme();
+  int getNextLexeme() override;
   static void findBestHashMapSize();
 };
 #line 5 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
-

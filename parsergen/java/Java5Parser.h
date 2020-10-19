@@ -3,7 +3,7 @@
 
 #include <LRparser.h>
 
-#line 5 "C:\\Mytools2015\\ParserGen\\java\\Java5.y"
+#line 4 "C:\\Mytools2015\\ParserGen\\java\\Java5.y"
 #pragma once
 
 #include <LRparser.h>
@@ -42,6 +42,4 @@ public:
   ~Java5Parser() override {
   }
 };
-
-#line 22 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
-
+#line 17 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"

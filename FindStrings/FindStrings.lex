@@ -17,7 +17,7 @@ class FindStringsLex : public Scanner {
 public:
   FindStringsLex(LexStream *inputStream = NULL) : Scanner(inputStream) {
   }
-  int  getNextLexeme();
+  int getNextLexeme() override;
 };
 
 %}

@@ -1,5 +1,4 @@
 %{
-
   /* This part goes to JavaParser.h */
 
 #pragma once
@@ -40,7 +39,6 @@ public:
   ~Java5Parser() override {
   }
 };
-
 %}
 
 %term   CLASS INTERFACE ENUM PACKAGE IMPORT
@@ -62,14 +60,10 @@ public:
 %term   NUMBER IDENTIFIER
 
 %{
-
   /* This part goes to the first part of javaaction.cpp */
 
 #include "stdafx.h"
 #include "Java5Parser.h"
-
-#pragma warning(disable:4312)
-
 %}
 
 %%
@@ -904,4 +898,3 @@ ElementValueArrayInitializer    : LC ElementValueList? COMMA? RC
                                 ;
 
 %%
-

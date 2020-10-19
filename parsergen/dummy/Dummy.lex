@@ -2,7 +2,7 @@
 
 class DummyLex : public Scanner {
 public:
-  int getNextLexeme();
+  int getNextLexeme() override;
 };
 %}
 

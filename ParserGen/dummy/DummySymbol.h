@@ -8,4 +8,3 @@
 
   typedef enum {
   } DummyNonTerminal;
-

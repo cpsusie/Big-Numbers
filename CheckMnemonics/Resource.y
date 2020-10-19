@@ -10,7 +10,7 @@ private:
   static int    _ttoi(const TCHAR *s);
   static String stripQuotes(const String &s);
 public:
-  ResourceParser(ParserTree &tree, ResourceLex *lex = NULL) : m_tree(tree), LRparser(*ResourceTables,lex) {
+  ResourceParser(ParserTree &tree, ResourceLex *lex = nullptr) : m_tree(tree), LRparser(*ResourceTables,lex) {
   }
   void  verror(const SourcePosition &pos, const TCHAR *format,va_list argptr) override;
   static const ParserTables &getTables() {
@@ -28,7 +28,6 @@ private:
   int  reduceAction(        UINT prod  ) override;
   SyntaxNode       *newNode(const SourcePosition &pos, int symbol, ... );
 };
-
 %}
 
 %term NUMBER IDENTIFIER STRING
@@ -130,29 +129,29 @@ resourceFile                : resourceDefinitionList
                             ;
 
 resourceDefinitionList      : resourceDefinitionList resourceDefinition                 { $$ = ($1&&$2)
-                                                                                               ? newNode(getPos(2), COMMA, $1, $2, NULL)
+                                                                                               ? newNode(getPos(2), COMMA, $1, $2, nullptr)
                                                                                                : $1 ? $1 : $2;
                                                                                         }
                             | resourceDefinition
                             ;
 
-resourceDefinition          : bitmapDefinition                                          { $$ = NULL; }
-                            | iconDefinition                                            { $$ = NULL; }
-                            | customTypeDefinition                                      { $$ = NULL; }
+resourceDefinition          : bitmapDefinition                                          { $$ = nullptr; }
+                            | iconDefinition                                            { $$ = nullptr; }
+                            | customTypeDefinition                                      { $$ = nullptr; }
                             | dialogDefinition
                             | extendedDialogDefinition
-                            | guideLinesDefinition                                      { $$ = NULL; }
-                            | toolbarDefnition                                          { $$ = NULL; }
+                            | guideLinesDefinition                                      { $$ = nullptr; }
+                            | toolbarDefnition                                          { $$ = nullptr; }
                             | menuDefinition
-                            | dialogInitDefinition                                      { $$ = NULL; }
+                            | dialogInitDefinition                                      { $$ = nullptr; }
                             | acceleratorsDefinition
-                            | rcdataDefinition                                          { $$ = NULL; }
+                            | rcdataDefinition                                          { $$ = nullptr; }
                             | stringTableDefinition
-                            | textIncludeDirective                                      { $$ = NULL; }
+                            | textIncludeDirective                                      { $$ = nullptr; }
                             | languageDirective
-                            | versionDefinition                                         { $$ = NULL; }
-                            | typelibDefinition                                         { $$ = NULL; }
-							| afxDialogLayout                                           { $$ = NULL; }
+                            | versionDefinition                                         { $$ = nullptr; }
+                            | typelibDefinition                                         { $$ = nullptr; }
+							| afxDialogLayout                                           { $$ = nullptr; }
                             ;
 
 
@@ -167,40 +166,40 @@ customTypeDefinition        : resourceId identifier resourceAttributeList string
 
 dialogDefinition            : resourceId DIALOG resourceAttributeList rectangleSpec
                               dialogSpecList
-                              BEGIN opt_dialogControlSpecList END                       { $$ = newNode(getPos(1), dialogDefinition, $1, $7, $5, NULL); }
+                              BEGIN opt_dialogControlSpecList END                       { $$ = newNode(getPos(1), dialogDefinition, $1, $7, $5, nullptr); }
                             ;
 
 extendedDialogDefinition    : resourceId DIALOGEX rectangleSpec
                               extendedDialogSpecList
-                              BEGIN opt_dialogControlSpecList END                       { $$ = newNode(getPos(1), dialogDefinition, $1, $6, $4, NULL);  }
+                              BEGIN opt_dialogControlSpecList END                       { $$ = newNode(getPos(1), dialogDefinition, $1, $6, $4, nullptr);  }
                             ;
 
 dialogSpecList              : dialogSpecList dialogSpec                                 { $$ = ($1&&$2)
-                                                                                               ? newNode(getPos(2), COMMA, $1, $2, NULL)
+                                                                                               ? newNode(getPos(2), COMMA, $1, $2, nullptr)
                                                                                                : $1 ? $1 : $2;
                                                                                         }
                             | dialogSpec
                             ;
 
-dialogSpec                  : STYLE dialogStyleExpr                                     { $$ = NULL; }
-                            | CAPTION string                                            { $$ = NULL; }
-                            | _MENU identifier                                          { $$ = newNode(getPos(1), _MENU, $2, NULL);            }
-                            | _FONT fontSpec                                            { $$ = NULL; }
+dialogSpec                  : STYLE dialogStyleExpr                                     { $$ = nullptr; }
+                            | CAPTION string                                            { $$ = nullptr; }
+                            | _MENU identifier                                          { $$ = newNode(getPos(1), _MENU, $2, nullptr);            }
+                            | _FONT fontSpec                                            { $$ = nullptr; }
                             ;
 
 
 extendedDialogSpecList      : extendedDialogSpecList extendedDialogSpec                 { $$ = ($1&&$2)
-                                                                                               ? newNode(getPos(2), COMMA, $1, $2, NULL)
+                                                                                               ? newNode(getPos(2), COMMA, $1, $2, nullptr)
                                                                                                : $1 ? $1 : $2;
                                                                                         }
                             | extendedDialogSpec
                             ;
 
-extendedDialogSpec          : STYLE dialogStyleExpr                                     { $$ = NULL; }
-                            | EXSTYLE extendedDialogStyleExpr                           { $$ = NULL; }
-                            | CAPTION string                                            { $$ = NULL; }
-                            | _MENU identifier                                          { $$ = newNode(getPos(1), _MENU, $2, NULL);            }
-                            | _FONT extendedFontSpec                                    { $$ = NULL; }
+extendedDialogSpec          : STYLE dialogStyleExpr                                     { $$ = nullptr; }
+                            | EXSTYLE extendedDialogStyleExpr                           { $$ = nullptr; }
+                            | CAPTION string                                            { $$ = nullptr; }
+                            | _MENU identifier                                          { $$ = newNode(getPos(1), _MENU, $2, nullptr);            }
+                            | _FONT extendedFontSpec                                    { $$ = nullptr; }
                             ;
 
 extendedDialogStyleExpr     : extendedDialogStyleExpr OR extendedDialogStyle
@@ -225,13 +224,13 @@ dialogStyle                 : ds_style
                             | ws_style
                             ;
 
-opt_dialogControlSpecList   : /* empty */                                               { $$ = newNode(getPos(0), dialogControlSpecList, NULL    ); }
-                            | dialogControlSpecList                                     { $$ = newNode(getPos(1), dialogControlSpecList, $1, NULL); }
+opt_dialogControlSpecList   : /* empty */                                               { $$ = newNode(getPos(0), dialogControlSpecList, nullptr    ); }
+                            | dialogControlSpecList                                     { $$ = newNode(getPos(1), dialogControlSpecList, $1, nullptr); }
                             ;
 
 dialogControlSpecList       : dialogControlSpec
                             | dialogControlSpecList dialogControlSpec                   { $$ = ($1&&$2)
-                                                                                             ? newNode(getPos(2), COMMA, $1, $2, NULL)
+                                                                                             ? newNode(getPos(2), COMMA, $1, $2, nullptr)
                                                                                              : $1 ? $1 : $2;
                                                                                         }
                             ;
@@ -239,23 +238,23 @@ dialogControlSpecList       : dialogControlSpec
 
 dialogControlSpec           : pushButtonSpec
                             | lrcTextSpec
-                            | editSpec                                                  { $$ = NULL; }
-                            | comboBoxSpec                                              { $$ = NULL; }
-                            | listBoxSpec                                               { $$ = NULL; }
-                            | iconSpec                                                  { $$ = NULL; }
-                            | scrollBarSpec                                             { $$ = NULL; }
+                            | editSpec                                                  { $$ = nullptr; }
+                            | comboBoxSpec                                              { $$ = nullptr; }
+                            | listBoxSpec                                               { $$ = nullptr; }
+                            | iconSpec                                                  { $$ = nullptr; }
+                            | scrollBarSpec                                             { $$ = nullptr; }
                             | controlSpec
                             ; 
 
-pushButtonSpec              : buttonType string  COMMA identifier controlAttributeList  { $$ = newNode(getPos(1), $1->getSymbol(), $4, $2, NULL); }
+pushButtonSpec              : buttonType string  COMMA identifier controlAttributeList  { $$ = newNode(getPos(1), $1->getSymbol(), $4, $2, nullptr); }
                             ;
 
-buttonType                  : PUSHBUTTON                                                { $$ = newNode(getPos(1), PUSHBUTTON   , NULL); }
-                            | DEFPUSHBUTTON                                             { $$ = newNode(getPos(1), DEFPUSHBUTTON, NULL); }
-                            | GROUPBOX                                                  { $$ = newNode(getPos(1), GROUPBOX     , NULL); }
+buttonType                  : PUSHBUTTON                                                { $$ = newNode(getPos(1), PUSHBUTTON   , nullptr); }
+                            | DEFPUSHBUTTON                                             { $$ = newNode(getPos(1), DEFPUSHBUTTON, nullptr); }
+                            | GROUPBOX                                                  { $$ = newNode(getPos(1), GROUPBOX     , nullptr); }
                             ;
 
-lrcTextSpec                 : lrcText string COMMA identifier controlAttributeList      { $$ = newNode(getPos(1), LTEXT, $4, $2, NULL); }
+lrcTextSpec                 : lrcText string COMMA identifier controlAttributeList      { $$ = newNode(getPos(1), LTEXT, $4, $2, nullptr); }
                             ;
 
 lrcText                     : LTEXT 
@@ -278,7 +277,7 @@ iconSpec                    : _ICON identifierOrString COMMA identifier controlA
 scrollBarSpec               : SCROLLBAR identifier controlAttributeList
                             ;
 
-controlSpec                 : CONTROL controlId COMMA identifier COMMA string controlAttributeList { $$ = newNode(getPos(1), CONTROL, $4, $2, $6, NULL); }
+controlSpec                 : CONTROL controlId COMMA identifier COMMA string controlAttributeList { $$ = newNode(getPos(1), CONTROL, $4, $2, $6, nullptr); }
                             ;
 
 controlId                   : string
@@ -637,7 +636,7 @@ buttonSpec                  : BUTTON identifier
                             | SEPARATOR
                             ;
 
-menuDefinition              : resourceId menuType resourceAttributeList menuBody            { $$ = newNode(getPos(1), menuDefinition, $1, $4, NULL); }
+menuDefinition              : resourceId menuType resourceAttributeList menuBody            { $$ = newNode(getPos(1), menuDefinition, $1, $4, nullptr); }
                             ;
 
 menuType                    : _MENU 
@@ -648,7 +647,7 @@ menuBody                    : BEGIN menuSpecList END                            
                             ;
 
 menuSpecList                : menuSpecList menuSpec                                         { $$ = ($1&&$2)
-                                                                                                 ? newNode(getPos(2), COMMA, $1, $2, NULL)
+                                                                                                 ? newNode(getPos(2), COMMA, $1, $2, nullptr)
                                                                                                  : $1 ? $1 : $2;
                                                                                             }
                             | menuSpec
@@ -658,11 +657,11 @@ menuSpec                    : popupMenu
                             | menuItem
                             ;
 
-popupMenu                   : POPUP string menuItemModifierList menuBody                    { $$ = newNode(getPos(1), POPUP, $2, $4, NULL); }
+popupMenu                   : POPUP string menuItemModifierList menuBody                    { $$ = newNode(getPos(1), POPUP, $2, $4, nullptr); }
                             ;
 
-menuItem                    : _MENUITEM string COMMA identifierOrNumber menuItemModifierList { $$ = newNode(getPos(1), _MENUITEM, $2, $4, NULL); }
-                            | _MENUITEM SEPARATOR                                            { $$ = NULL; }
+menuItem                    : _MENUITEM string COMMA identifierOrNumber menuItemModifierList { $$ = newNode(getPos(1), _MENUITEM, $2, $4, nullptr); }
+                            | _MENUITEM SEPARATOR                                            { $$ = nullptr; }
                             ;
 
 menuItemModifierList        : /* empty */
@@ -716,14 +715,14 @@ constantElement             : constant
                             | COMMA constant
                             ;
 
-acceleratorsDefinition      : resourceId ACCELERATORS resourceAttributeList BEGIN acceleratorList END { $$ = newNode(getPos(1), acceleratorsDefinition, $1, $5, NULL ); }
+acceleratorsDefinition      : resourceId ACCELERATORS resourceAttributeList BEGIN acceleratorList END { $$ = newNode(getPos(1), acceleratorsDefinition, $1, $5, nullptr ); }
                             ;
 
-acceleratorList             : acceleratorList accelerator                       { $$ = newNode(getPos(1), COMMA, $1, $2, NULL); }
+acceleratorList             : acceleratorList accelerator                       { $$ = newNode(getPos(1), COMMA, $1, $2, nullptr); }
                             | accelerator
                             ;
 
-accelerator                 : constant COMMA identifier opt_acceleratorSpecList { $$ = newNode(getPos(1), accelerator, $3, $1, $4, NULL); }
+accelerator                 : constant COMMA identifier opt_acceleratorSpecList { $$ = newNode(getPos(1), accelerator, $3, $1, $4, nullptr); }
                             ;
 
 opt_acceleratorSpecList     : /* empty */
@@ -731,15 +730,15 @@ opt_acceleratorSpecList     : /* empty */
                             ;
 
 acceleratorSpecList         : acceleratorModifier
-                            | acceleratorSpecList COMMA acceleratorModifier     { $$ = newNode(getPos(2), COMMA, $1, $3, NULL); }
+                            | acceleratorSpecList COMMA acceleratorModifier     { $$ = newNode(getPos(2), COMMA, $1, $3, nullptr); }
                             ;
 
-acceleratorModifier         : VIRTKEY                                           { $$ = newNode(getPos(1), VIRTKEY , NULL); }
-                            | ASCII                                             { $$ = newNode(getPos(1), ASCII   , NULL); }
-                            | SHIFT                                             { $$ = newNode(getPos(1), SHIFT   , NULL); }
-                            | CONTROL                                           { $$ = newNode(getPos(1), CONTROL , NULL); }
-                            | ALT                                               { $$ = newNode(getPos(1), ALT     , NULL); }
-                            | NOINVERT                                          { $$ = newNode(getPos(1), NOINVERT, NULL); }
+acceleratorModifier         : VIRTKEY                                           { $$ = newNode(getPos(1), VIRTKEY , nullptr); }
+                            | ASCII                                             { $$ = newNode(getPos(1), ASCII   , nullptr); }
+                            | SHIFT                                             { $$ = newNode(getPos(1), SHIFT   , nullptr); }
+                            | CONTROL                                           { $$ = newNode(getPos(1), CONTROL , nullptr); }
+                            | ALT                                               { $$ = newNode(getPos(1), ALT     , nullptr); }
+                            | NOINVERT                                          { $$ = newNode(getPos(1), NOINVERT, nullptr); }
                             ;
 
 rcdataDefinition            : resourceId RCDATA resourceAttributeList BEGIN numberList END
@@ -750,15 +749,15 @@ numberList                  : numberList COMMA number
                             | number
                             ;
 
-stringTableDefinition       : STRINGTABLE resourceAttributeList BEGIN stringSpecList END  { $$ = newNode(getPos(1), stringTableDefinition, $4, NULL); }
+stringTableDefinition       : STRINGTABLE resourceAttributeList BEGIN stringSpecList END  { $$ = newNode(getPos(1), stringTableDefinition, $4, nullptr); }
                             ;
 
 
-stringSpecList              : stringSpecList stringSpec                                   { $$ = newNode(getPos(1), COMMA, $1, $2, NULL); }
+stringSpecList              : stringSpecList stringSpec                                   { $$ = newNode(getPos(1), COMMA, $1, $2, nullptr); }
                             | stringSpec
                             ;
 
-stringSpec                  : identifier string                                           { $$ = newNode(getPos(1), stringSpec, $1, $2, NULL); }
+stringSpec                  : identifier string                                           { $$ = newNode(getPos(1), stringSpec, $1, $2, nullptr); }
                             ;
 
 textIncludeDirective        : number TEXTINCLUDE resourceAttributeList BEGIN stringList END
@@ -768,7 +767,7 @@ stringList                  : stringList string
                             | string
                             ;
 
-languageDirective           : LANGUAGE constant COMMA constant                            { $$ = newNode(getPos(1), languageDirective, $2, $4, NULL); }
+languageDirective           : LANGUAGE constant COMMA constant                            { $$ = newNode(getPos(1), languageDirective, $2, $4, nullptr); }
                             ;
 
 versionDefinition           : resourceId VERSIONINFO resourceAttributeList versionSpecList BEGIN blockList END
@@ -860,7 +859,6 @@ string                      : STRING                                            
 
 
 %%
-
 SyntaxNode *ResourceParser::newNode(const SourcePosition &pos, int symbol, ...) {
   va_list argptr;
   va_start(argptr,symbol);

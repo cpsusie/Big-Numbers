@@ -9,7 +9,7 @@
 
 class TestLex : public Scanner {
 public:
-  int getNextLexeme();
+  int getNextLexeme() override;
 };
 
 %}

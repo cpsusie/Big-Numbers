@@ -3,19 +3,16 @@
 #line 31 "C:\\Mytools2015\\ParserGen\\Olm627\\Olm627.y"
 #include "stdafx.h"
 #include "Olm627Parser.h"
-#line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
-
-
-
-#pragma warning(disable : 4060)
+#line 20 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
+#line 23 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
+#pragma warning(disable : 4060) // warning C4060: switch statement contains no 'case' or 'default' labels
 
 int Olm627Parser::reduceAction(unsigned int prod) {
   switch(prod) {
   }
+#line 30 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
   return 0;
 }
 
 #line 53 "C:\\Mytools2015\\ParserGen\\Olm627\\Olm627.y"
-#line 39 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
-
-
+#line 33 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"

@@ -14,7 +14,7 @@ private:
   static int    _ttoi(const TCHAR *s);
   static String stripQuotes(const String &s);
 public:
-  ResourceParser(ParserTree &tree, ResourceLex *lex = NULL) : m_tree(tree), LRparser(*ResourceTables,lex) {
+  ResourceParser(ParserTree &tree, ResourceLex *lex = nullptr) : m_tree(tree), LRparser(*ResourceTables,lex) {
   }
   void  verror(const SourcePosition &pos, const TCHAR *format,va_list argptr) override;
   static const ParserTables &getTables() {
@@ -32,6 +32,4 @@ private:
   int  reduceAction(        UINT prod  ) override;
   SyntaxNode       *newNode(const SourcePosition &pos, int symbol, ... );
 };
-
-#line 22 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
-
+#line 17 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
