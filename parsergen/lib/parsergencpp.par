@@ -1,9 +1,6 @@
 $NEWHEADERFILE$=$GRAMMARNAME$Symbol.h
-
 #pragma once
-
 $PUSHNAMESPACE$
-
   typedef enum {
     $TERMINALSYMBOLS$
   } $GRAMMARNAME$InputSymbol;
@@ -11,42 +8,32 @@ $PUSHNAMESPACE$
   typedef enum {
     $NONTERMINALSYMBOLS$
   } $GRAMMARNAME$NonTerminal;
-
 $POPNAMESPACE$
-
 $NEWHEADERFILE$=$GRAMMARNAME$Parser.h
 #pragma once
 
 #include <LRparser.h>
 
 $FILEHEAD$
-
 $NEWFILE$=$GRAMMARNAME$Action.cpp
 
 $CLASSHEAD$
-
 $PUSHNAMESPACE$
-
-#pragma warning(disable : 4060)
+$LINEDIRECTIVE$
+#pragma warning(disable : 4060) // warning C4060: switch statement contains no 'case' or 'default' labels
 
 int $GRAMMARNAME$Parser::reduceAction(unsigned int prod) {
   switch(prod) {
   $ACTIONS$
   }
+$LINEDIRECTIVE$
   return 0;
 }
 
 $CLASSTAIL$
-
 $POPNAMESPACE$
 $NEWFILE$=$GRAMMARNAME$Tables.cpp
-
 $CLASSHEAD$
-
-#pragma warning(disable : 4312)
-
 $PUSHNAMESPACE$
-
 $TABLES$
-
 $POPNAMESPACE$

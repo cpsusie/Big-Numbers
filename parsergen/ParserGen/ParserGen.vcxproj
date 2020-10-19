@@ -262,6 +262,12 @@
   <ItemGroup>
     <ResourceCompile Include="ParserGen.rc" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\lib\parsergen.wzr" />
+    <None Include="..\lib\parsergencpp.par" />
+    <None Include="..\lib\parsergencpp.wzr" />
+    <None Include="..\lib\parsergenJava.par" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

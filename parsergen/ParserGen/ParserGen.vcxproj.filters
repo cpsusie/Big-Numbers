@@ -92,4 +92,18 @@
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\lib\parsergen.wzr">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\lib\parsergencpp.par">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\lib\parsergencpp.wzr">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\lib\parsergenJava.par">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
 </Project>

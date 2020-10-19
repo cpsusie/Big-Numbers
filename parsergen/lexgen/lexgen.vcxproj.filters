@@ -80,4 +80,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\lib\lexgencpp.par">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\lib\lexgencpp.wzr">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\lib\lexgenjava.par">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\lib\lexgenjava.wzr">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
 </Project>

@@ -11,7 +11,7 @@ class ActionsWriter : public KeywordHandler {
 private:
 public:
   ActionsWriter(const DFA &dfa);
-  void handleKeyword(TemplateWriter &writer, String &line) const;
+  void handleKeyword(TemplateWriter &writer, String &line) const override;
 };
 
 ActionsWriter::ActionsWriter(const DFA &dfa) : m_dfa(dfa) {
@@ -44,7 +44,7 @@ class TablesWriter : public KeywordHandler {
   const DFA &m_dfa;
 public:
   TablesWriter(const DFA &dfa);
-  void handleKeyword(TemplateWriter &writer, String &line) const;
+  void handleKeyword(TemplateWriter &writer, String &line) const override;
 };
 
 TablesWriter::TablesWriter(const DFA &dfa) : m_dfa(dfa) {
@@ -79,31 +79,29 @@ static void printOutputFiles(const String    &templateName
   String lexName    = FileNameSplitter(lexFileName).getFileName();
   String sourceName = FileNameSplitter(lexFileName).getAbsolutePath();
 
-  TemplateWriter   writer(templateName, implOutputDir, headerOutputDir, flags);
-  SourceTextWriter headerWriter(    dfa.getHeader()    );
-  SourceTextWriter driverHeadWriter(dfa.getDriverHead());
-  SourceTextWriter driverTailWriter(dfa.getDriverTail());
-  ActionsWriter    actionsWriter(   dfa);
-  TablesWriter     tablesWriter(    dfa);
-  NewFileHandler   newFileHandler;
+  TemplateWriter       writer(templateName, implOutputDir, headerOutputDir, flags);
+  SourceTextWriter     headerWriter(    dfa.getHeader()    );
+  SourceTextWriter     driverHeadWriter(dfa.getDriverHead());
+  SourceTextWriter     driverTailWriter(dfa.getDriverTail());
+  ActionsWriter        actionsWriter(   dfa);
+  TablesWriter         tablesWriter(    dfa);
 
-  writer.addKeywordHandler(_T("FILEHEAD"     ), headerWriter     );
-  writer.addKeywordHandler(_T("CLASSHEAD"    ), driverHeadWriter );
-  writer.addKeywordHandler(_T("CLASSTAIL"    ), driverTailWriter );
-  writer.addKeywordHandler(_T("TABLES"       ), tablesWriter     );
-  writer.addKeywordHandler(_T("ACTIONS"      ), actionsWriter    );
-  writer.addKeywordHandler(_T("NEWFILE"      ), newFileHandler   );
-  writer.addKeywordHandler(_T("NEWHEADERFILE"), newFileHandler   );
-  writer.addMacro(_T("LEXNAME"  ), lexName        );
-  writer.addMacro(_T("OUTPUTDIR"), implOutputDir  );
-  writer.addMacro(_T("HEADERDIR"), headerOutputDir);
-  writer.addMacro(_T("NAMESPACE"), nameSpace      );
+  writer.addKeywordHandler(_T("FILEHEAD"           ), headerWriter         );
+  writer.addKeywordHandler(_T("CLASSHEAD"          ), driverHeadWriter     );
+  writer.addKeywordHandler(_T("CLASSTAIL"          ), driverTailWriter     );
+  writer.addKeywordHandler(_T("TABLES"             ), tablesWriter         );
+  writer.addKeywordHandler(_T("ACTIONS"            ), actionsWriter        );
+
+  writer.addMacro(_T("LEXNAME"  ), lexName         );
+  writer.addMacro(_T("OUTPUTDIR"), implOutputDir   );
+  writer.addMacro(_T("HEADERDIR"), headerOutputDir );
+  writer.addMacro(_T("NAMESPACE"), nameSpace       );
   if(nameSpace.length() > 0) {
-    writer.addMacro(       _T("PUSHNAMESPACE"      ), format(_T("namespace %s {"    ), nameSpace.cstr()));
-    writer.addMacro(       _T("POPNAMESPACE"       ), format(_T("}; // namespace %s"), nameSpace.cstr()));
+    writer.addMacro(       _T("PUSHNAMESPACE"      ), format(_T("\nnamespace %s {\n" ), nameSpace.cstr()));
+    writer.addMacro(       _T("POPNAMESPACE"       ), format(_T("}; // namespace %s" ), nameSpace.cstr()));
   } else {
-    writer.addMacro(       _T("PUSHNAMESPACE"      ), EMPTYSTRING);
-    writer.addMacro(       _T("POPNAMESPACE"       ), EMPTYSTRING);
+    writer.addMacro(       _T("PUSHNAMESPACE"      ), _T("$NOLINE$"));
+    writer.addMacro(       _T("POPNAMESPACE"       ), _T("$NOLINE$"));
   }
   writer.generateOutput();
 }

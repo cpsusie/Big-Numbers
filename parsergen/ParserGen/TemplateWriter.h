@@ -23,6 +23,8 @@ public:
 class KeywordHandler {
 public:
   virtual void handleKeyword(TemplateWriter &writer, String &line) const = 0;
+  virtual ~KeywordHandler() {
+  }
 };
 
 class KeywordTrigger {
@@ -59,7 +61,7 @@ private:
   const CodeFlags                m_flags;
   String                         m_wantedOutputName;
   bool                           m_outputIsTemp;
-
+  CompactArray<KeywordHandler*>  m_defaultHandlers;
   void           checkChar(     const TCHAR *&s, char expected) const;
   String         parseMacro(    const TCHAR *&s    ) const; // assume *s = '$'
   String         expandMacroes( const String &line ) const;
@@ -75,9 +77,11 @@ private:
       writeLineDirective(m_currentPos.getName(), m_currentPos.getLineNumber());
     }
   }
+  void createDefaultHandlers();
+  void destroyDefaultHandlers();
 public:
   TemplateWriter(const String &templateName, const String &implOutputDir, const String &headerOutputDir, const CodeFlags &flags);
-  ~TemplateWriter();
+  virtual ~TemplateWriter();
   void addKeywordHandler(const String &keyword, KeywordHandler &handler, const String &verboseString="");
   void addMacro(const String &macro, const String &value);
   void generateOutput();
@@ -92,6 +96,9 @@ public:
   void printf(const TCHAR *format,...);
   void writeSourceText(const SourceText &sourceText);
   void writeLineDirective(const String &sourceName, int lineNumber);
+  inline const SourcePositionWithName &getCurrentSourcePos() const {
+    return m_currentPos;
+  }
 
   const CodeFlags &getFlags() const {
     return m_flags;
@@ -122,10 +129,6 @@ private:
   SourceText  m_sourceText;
 public:
   SourceTextWriter(const SourceText &sourceText);
-  void handleKeyword(TemplateWriter &writer, String &line) const;
+  void handleKeyword(TemplateWriter &writer, String &line) const override;
 };
 
-class NewFileHandler : public KeywordHandler {
-public:
-  void handleKeyword(TemplateWriter &writer, String &line) const;
-};

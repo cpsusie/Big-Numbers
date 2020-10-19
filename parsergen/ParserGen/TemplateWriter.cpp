@@ -31,6 +31,8 @@ TemplateWriter::TemplateWriter(const String &templateName, const String &implOut
   m_output          = NULL;
   m_outputIsTemp    = false;
   openOutput(_T("stdout"));
+
+  createDefaultHandlers();
 }
 
 void TemplateWriter::openOutput(const String &name) {
@@ -78,6 +80,7 @@ TemplateWriter::~TemplateWriter() {
     KeywordTrigger *kwt = it.next();
     SAFEDELETE(kwt);
   }
+  destroyDefaultHandlers();
 }
 
 String getTempFileName(const String &fileName) {
@@ -131,9 +134,10 @@ String TemplateWriter::parseMacro(const TCHAR *&s) const {
 String TemplateWriter::expandMacroes(const String &line) const {
   String s = line;
   bool stable;
+  int  macroCount = 0;
   do {
     stable = true;
-    size_t incr = 0;
+    size_t incr  = 0;
     for(intptr_t dollarPos = s.find('$'); dollarPos >= 0; dollarPos = s.find('$', dollarPos+incr)) {
       const TCHAR  *macStart = s.cstr() + dollarPos,*cp = macStart;
       const String  macroName   = parseMacro(cp);
@@ -146,10 +150,14 @@ String TemplateWriter::expandMacroes(const String &line) const {
         s.insert(dollarPos, *value);
         incr = value->length();
         stable = false;
+        macroCount++;
         break;
       }
     }
   } while(!stable);
+  if((macroCount == 1) && (s == _T("\n"))) {
+    s = EMPTYSTRING;
+  }
   return s;
 }
 
@@ -224,6 +232,25 @@ void SourceTextWriter::handleKeyword(TemplateWriter &writer, String &line) const
   writer.writeSourceText(m_sourceText);
 }
 
+class NewFileHandler : public KeywordHandler {
+public:
+  void handleKeyword(TemplateWriter &writer, String &line) const override;
+};
+
+class NoLineHandler : public KeywordHandler {
+public:
+  void handleKeyword(TemplateWriter &writer, String &line) const override {
+  }
+};
+
+class LineDirectiveHandler : public KeywordHandler {
+public:
+  void handleKeyword(TemplateWriter &writer, String &line) const override {
+    const SourcePositionWithName &pos = writer.getCurrentSourcePos();
+    writer.writeLineDirective(pos.getName(), pos.getLineNumber()+1);
+  }
+};
+
 void NewFileHandler::handleKeyword(TemplateWriter &writer, String &line) const {
   intptr_t assign = line.find('=');
   if(assign >= 0) {
@@ -238,4 +265,28 @@ void NewFileHandler::handleKeyword(TemplateWriter &writer, String &line) const {
     writer.openOutput(newOutputName);
     writer.printf(_T("%s\n"), dontEditMessage);
   }
+}
+
+void TemplateWriter::createDefaultHandlers() {
+  KeywordHandler *newFileHandler       = new NewFileHandler;       TRACE_NEW(newFileHandler      );
+  KeywordHandler *noLineHandler        = new NoLineHandler;        TRACE_NEW(noLineHandler       );
+  KeywordHandler *lineDirectiveHandler = new LineDirectiveHandler; TRACE_NEW(lineDirectiveHandler);
+
+  addKeywordHandler(_T("NEWFILE"            ), *newFileHandler       );
+  addKeywordHandler(_T("NEWHEADERFILE"      ), *newFileHandler       );
+  addKeywordHandler(_T("LINEDIRECTIVE"      ), *lineDirectiveHandler );
+  addKeywordHandler(_T("NOLINE"             ), *noLineHandler        );
+
+  m_defaultHandlers.setCapacity(3);
+  m_defaultHandlers.add(newFileHandler      );
+  m_defaultHandlers.add(noLineHandler       );
+  m_defaultHandlers.add(lineDirectiveHandler);
+}
+
+void TemplateWriter::destroyDefaultHandlers() {
+  for(size_t i = 0; i < m_defaultHandlers.size(); i++) {
+    KeywordHandler *handler = m_defaultHandlers[i];
+    SAFEDELETE(handler);
+  }
+  m_defaultHandlers.clear();
 }

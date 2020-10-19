@@ -319,6 +319,12 @@
     <ClInclude Include="NFA.h" />
     <ClInclude Include="StdAfx.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\lib\lexgencpp.par" />
+    <None Include="..\lib\lexgencpp.wzr" />
+    <None Include="..\lib\lexgenjava.par" />
+    <None Include="..\lib\lexgenjava.wzr" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
