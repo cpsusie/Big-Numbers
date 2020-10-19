@@ -119,24 +119,24 @@ bool ExpressionNodePower::equalMinus(const ExpressionNode *n) const {
 
 bool ExpressionNodePower::isConstant(Number *v) const {
   if(exponent().isZero()) {
-    if(v != NULL) {
+    if(v != nullptr) {
       *v = 1;
     }
     return true;
   }
   if(base().isZero()) {
-    if(v != NULL) {
+    if(v != nullptr) {
       *v = 0;
     }
     return true;
   }
   if(base().isOne()) {
-    if(v != NULL) {
+    if(v != nullptr) {
       *v = 1;
     }
     return true;
   }
-  if(v != NULL) {
+  if(v != nullptr) {
     Rational baseR, expoR;
     if(base().reducesToRational(&baseR) && exponent().reducesToRational(&expoR)) {
       Rational powR;

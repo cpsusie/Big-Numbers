@@ -10,7 +10,7 @@ SNode SNode::reduceToPoly() const {
   }
   Number c;
 //  TODO
- return NULL;
+ return nullptr;
 }
 
 }; // namespace Expr

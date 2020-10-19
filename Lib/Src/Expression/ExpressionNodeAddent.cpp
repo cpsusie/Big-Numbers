@@ -5,7 +5,7 @@
 namespace Expr {
 
 ExpressionNodeAddent::ExpressionNodeAddent(SNode n, bool positive)
-: ExpressionNodeTree(&n.getTree(), ADDENT, n.node(), NULL)
+: ExpressionNodeTree(&n.getTree(), ADDENT, n.node(), nullptr)
 , m_positive(positive)
 {
   SETDEBUGSTRING();

@@ -47,7 +47,7 @@ bool Expression::compile(const String &expr, StringArray &errors, bool machineCo
 
       if(m_listFile) {
         ListFile::printComment(m_listFile, _T("%s\n"), ListFile::makeSkillLineString().cstr());
-        m_listFile = NULL;
+        m_listFile = nullptr;
       }
     }
     m_ok = true;
@@ -57,9 +57,9 @@ bool Expression::compile(const String &expr, StringArray &errors, bool machineCo
     if(listFile) {
       _ftprintf(listFile, _T("Exception:%s\n"), e.what());
     }
-    m_listFile = NULL;
+    m_listFile = nullptr;
   } catch(...) {
-    m_listFile = NULL;
+    m_listFile = nullptr;
     throw;
   }
   return m_ok;

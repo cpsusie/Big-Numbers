@@ -16,9 +16,9 @@ private:
   ExpressionWrapper &operator=(const ExpressionWrapper &src); // Not defined. Class not cloneable
 public:
   ExpressionWrapper();
-  ExpressionWrapper(const String &text, bool machineCode, FILE *listFile = NULL); // throws exception on error
+  ExpressionWrapper(const String &text, bool machineCode, FILE *listFile = nullptr); // throws exception on error
   virtual ~ExpressionWrapper();
-  bool compile(const String &text, bool machineCode, FILE *listFile = NULL); // doesn't throw on error
+  bool compile(const String &text, bool machineCode, FILE *listFile = nullptr); // doesn't throw on error
   static String getDefaultFileName();
   inline bool ok() const {
     return m_ok;

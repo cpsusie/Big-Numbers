@@ -21,7 +21,7 @@ private:
   MachineCode(const MachineCode &src);             // not implemented
   MachineCode &operator=(const MachineCode &src);  // not implemented
 public:
-  MachineCode() : m_entryPoint(NULL), m_esi(NULL) {
+  MachineCode() : m_entryPoint(nullptr), m_esi(nullptr) {
   }
   int  addBytes(const void *bytes, int count);
   void finalize(void *esi);

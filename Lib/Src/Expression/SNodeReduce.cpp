@@ -35,7 +35,7 @@ SNode SNode::reduce() {
     throwUnknownReturnTypeException(__TFUNCTION__);
   }
   throwUnknownNodeTypeException(__TFUNCTION__);
-  return NULL;
+  return nullptr;
 }
 
 SNode SNode::reduceStmtList() {
@@ -290,7 +290,7 @@ SNode SNode::reduceSum() const {
           reduced.add(mergeLogarithms(e1, e2));
           done.add(i1).add(i2);
         } else {
-          SNode cf = (getTree().getState() == PS_MAINREDUCTION1) ? getCommonFactor(e1, e2) : NULL;
+          SNode cf = (getTree().getState() == PS_MAINREDUCTION1) ? getCommonFactor(e1, e2) : nullptr;
           if(!cf.isEmpty()) {
             if(cf.left().getSymbol() != SUM) {
               reduced.add(cf);
@@ -468,7 +468,7 @@ SNode SNode::mergeLogarithms(SNode e1, SNode e2) const {
  *        If(e1 == p1 * a^c1 and e2 == p2 * a^c2)
  *          then, assuming c1 < c2, return a^c1 * (p1 + p2 * a^(c2-c1))
  *          and symmetric if c1 > c2 (taking care of signs of e1 and e2 too)
- * return NULL If no common factors found
+ * return nullptr If no common factors found
  */
 SNode SNode::getCommonFactor(SNode e1, SNode e2) const {
   ENTERMETHOD2(e1, e2);

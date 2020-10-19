@@ -46,11 +46,11 @@ Expression &Expression::operator=(const Expression &src) {
 
 void Expression::initialize(ExpressionReturnType returnType) {
   m_symbolTable       = new ExpressionSymbolTable(this); TRACE_NEW(m_symbolTable);
-  m_tree              = NULL;
+  m_tree              = nullptr;
   m_returnType        = returnType;
   m_machineCode       = false;
-  m_code              = NULL;
-  m_listFile          = NULL;
+  m_code              = nullptr;
+  m_listFile          = nullptr;
   m_ok                = false;
   updateEvalPointers();
 }
@@ -143,7 +143,7 @@ void Expression::setTrigonometricMode(TrigonometricMode mode) {
 }
 
 ExpressionNode *Expression::getRoot() const {
-  return m_tree ? m_tree->getRoot() : NULL;
+  return m_tree ? m_tree->getRoot() : nullptr;
 }
 
 Expression &Expression::setValue(const String &name, const Real &value) {
@@ -161,7 +161,7 @@ Real &Expression::getValueRef(const ExpressionVariable &var) const {
 
 Real *Expression::getValueRef(const String &name) const {
   const ExpressionVariable *var = getVariable(name);
-  return (var != NULL) ? &getValueRef(*var) : NULL;
+  return (var != nullptr) ? &getValueRef(*var) : nullptr;
 }
 
 Expression &Expression::expandMarkedNodes() {
@@ -175,16 +175,16 @@ Expression &Expression::multiplyMarkedNodes() {
 }
 
 bool Expression::equal(const Expression &e) const {
-  if(m_tree == NULL) return false;
+  if(m_tree == nullptr) return false;
   const ParserTree *t = e.getTree();
-  if(t == NULL) return false;
+  if(t == nullptr) return false;
   return m_tree->equal(*t);
 }
 
 bool Expression::equalMinus(const Expression &e) const {
-  if(m_tree == NULL) return false;
+  if(m_tree == nullptr) return false;
   const ParserTree *t = e.getTree();
-  if(t == NULL) return false;
+  if(t == nullptr) return false;
   return m_tree->equalMinus(*t);
 }
 

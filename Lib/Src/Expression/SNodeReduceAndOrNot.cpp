@@ -46,14 +46,18 @@ class CompareOpPairAndMap : public CompareOpPairMap {
 private:
   static const ReduceCompareMatrix s_m;
 protected:
-  const ReduceCompareMatrix &getReduceMatrix() const { return s_m; }
+  const ReduceCompareMatrix &getReduceMatrix() const override {
+    return s_m;
+  }
 };
 
 class CompareOpPairOrMap : public CompareOpPairMap {
 private:
   static const ReduceCompareMatrix s_m;
 protected:
-  const ReduceCompareMatrix &getReduceMatrix() const { return s_m; }
+  const ReduceCompareMatrix &getReduceMatrix() const override {
+    return s_m;
+  }
 };
 
 const ReduceCompareMatrix CompareOpPairAndMap::s_m = {

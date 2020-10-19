@@ -21,7 +21,7 @@ class FunctionCall {
 public:
   const BuiltInFunction m_fp;
   const String          m_signature;
-  inline FunctionCall() : m_fp(NULL), m_signature(EMPTYSTRING) {
+  inline FunctionCall() : m_fp(nullptr), m_signature(EMPTYSTRING) {
   }
   inline FunctionCall(const BuiltInFunction fp, const String &name, const TCHAR *paramStr)
     : m_fp(fp)

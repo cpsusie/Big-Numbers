@@ -10,7 +10,7 @@ private:
 public:
   SetMark(bool setMark) : m_setMark(setMark) {
   }
-  bool handleNode(ExpressionNode *n);
+  bool handleNode(ExpressionNode *n) override;
 };
 
 bool SetMark::handleNode(ExpressionNode *n) {

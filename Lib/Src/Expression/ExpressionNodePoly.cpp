@@ -160,13 +160,13 @@ bool ExpressionNodePoly::isConstant(Number *v) const {
     return false;
   }
   if(m_coefArray.size() == 1) {
-    if(v != NULL) {
+    if(v != nullptr) {
       *v = evaluateReal();
     }
     return true;
   }
   const bool result = m_arg.isConstant();
-  if(result && (v != NULL)) {
+  if(result && (v != nullptr)) {
     *v = evaluateReal();
   }
   return result;

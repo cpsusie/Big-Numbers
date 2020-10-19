@@ -38,7 +38,7 @@ void ExpressionFunctionR2R1::compile(const String &expr, TrigonometricMode mode,
 
 Real *ExpressionFunctionR2R1::getVariableByName(const String &name) {
   const Expr::ExpressionVariable *var = m_expr.getVariable(name);
-  return (var == NULL) ? &m_dummy : &m_expr.getValueRef(*var);
+  return (var == nullptr) ? &m_dummy : &m_expr.getValueRef(*var);
 }
 
 void ExpressionFunctionR2R1::setVariables() {

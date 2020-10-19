@@ -13,7 +13,7 @@ CodeGeneration::CodeGeneration(MachineCode *code, const CompactRealArray &valueT
   : m_code(*code)
   , m_addressTable(valueTable)
   , m_listFile(listFile, m_addressTable, nameCommentArray, TABLEREF_REG)
-  , m_listEnabled(listFile!=NULL)
+  , m_listEnabled(listFile!=nullptr)
   , m_FPUOptimizeCount(0)
   , m_lastFPUOptimizeCount(0)
 {

@@ -565,7 +565,7 @@ SNode boolExp(ExpressionInputSymbol symbol, SNode left, SNode right) {
 }
 
 SNode boolExp(ExpressionInputSymbol symbol, SNode child) {
-  return child.getTree().boolExpr(symbol, child.node(), NULL);
+  return child.getTree().boolExpr(symbol, child.node(), nullptr);
 }
 
 SNode boolExp(ExpressionInputSymbol symbol, SNodeArray &a) {

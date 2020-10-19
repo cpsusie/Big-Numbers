@@ -9,7 +9,7 @@ bool ExpressionNode::reducesToRational(Rational *r) const {
   if(!isConstant(&v) || !v.isRational()) {
     return false;
   }
-  if(r != NULL) {
+  if(r != nullptr) {
     *r = (Rational)v;
   }
   return true;

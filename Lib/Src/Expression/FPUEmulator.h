@@ -172,9 +172,9 @@ public:
 
 class FPUContainer {
 public:
-  virtual int  getValueIndex(const InstructionOperand &op) const = NULL;
-  virtual void putFPUComment(const String &str) = NULL;
-  virtual bool wantFPUComment() const = NULL;
+  virtual int  getValueIndex(const InstructionOperand &op) const = 0;
+  virtual void putFPUComment(const String &str)                  = 0;
+  virtual bool wantFPUComment()                            const = 0;
 };
 
 class FPUEmulator {
@@ -190,7 +190,7 @@ private:
   FPUOpcodeKey execute(FPUOpcodeKey code, char stackDelta, int memIndex=-1, int reg1=-1, int reg2=-1);
 public:
   inline FPUEmulator() {
-    m_container = NULL;
+    m_container = nullptr;
   }
   void setContainer(FPUContainer *container) {
     m_container = container;

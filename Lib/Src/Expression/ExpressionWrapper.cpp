@@ -57,7 +57,7 @@ Real ExpressionWrapper::operator()(const Point3D &p) {
 
 Real *ExpressionWrapper::getVariableByName(const String &name) {
   const Expr::ExpressionVariable *var = m_expr->getVariable(name);
-  return (var == NULL) ? &s_dummy : &m_expr->getValueRef(*var);
+  return (var == nullptr) ? &s_dummy : &m_expr->getValueRef(*var);
 }
 
 String ExpressionWrapper::getErrorMessage() const {

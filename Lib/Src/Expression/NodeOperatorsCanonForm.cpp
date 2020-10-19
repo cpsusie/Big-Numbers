@@ -37,37 +37,37 @@ private:
     return n->getTree().constExpr(name);
   }
 public:
-  ExpressionNode *minus(     ExpressionNode *n) const;
-  ExpressionNode *reciprocal(ExpressionNode *n) const;
-  ExpressionNode *sqr(       ExpressionNode *n) const;
-  ExpressionNode *sqrt(      ExpressionNode *n) const;
-  ExpressionNode *exp(       ExpressionNode *n) const;
-  ExpressionNode *exp10(     ExpressionNode *n) const;
-  ExpressionNode *exp2(      ExpressionNode *n) const;
-  ExpressionNode *cot(       ExpressionNode *n) const;
-  ExpressionNode *csc(       ExpressionNode *n) const;
-  ExpressionNode *sec(       ExpressionNode *n) const;
+  ExpressionNode *minus(     ExpressionNode *n) const override;
+  ExpressionNode *reciprocal(ExpressionNode *n) const override;
+  ExpressionNode *sqr(       ExpressionNode *n) const override;
+  ExpressionNode *sqrt(      ExpressionNode *n) const override;
+  ExpressionNode *exp(       ExpressionNode *n) const override;
+  ExpressionNode *exp10(     ExpressionNode *n) const override;
+  ExpressionNode *exp2(      ExpressionNode *n) const override;
+  ExpressionNode *cot(       ExpressionNode *n) const override;
+  ExpressionNode *csc(       ExpressionNode *n) const override;
+  ExpressionNode *sec(       ExpressionNode *n) const override;
 
-  ExpressionNode *sum(       ExpressionNode *n1, ExpressionNode *n2) const;
-  ExpressionNode *diff(      ExpressionNode *n1, ExpressionNode *n2) const;
-  ExpressionNode *prod(      ExpressionNode *n1, ExpressionNode *n2) const;
-  ExpressionNode *quot(      ExpressionNode *n1, ExpressionNode *n2) const;
+  ExpressionNode *sum(       ExpressionNode *n1, ExpressionNode *n2) const override;
+  ExpressionNode *diff(      ExpressionNode *n1, ExpressionNode *n2) const override;
+  ExpressionNode *prod(      ExpressionNode *n1, ExpressionNode *n2) const override;
+  ExpressionNode *quot(      ExpressionNode *n1, ExpressionNode *n2) const override;
   // Return a division node without reduction to rational. to be used with exponents ie sqrt(x^2) != x
-  ExpressionNode *quot(      ParserTree *tree, INT64 num, INT64 den) const;
-  ExpressionNode *mod(       ExpressionNode *n1, ExpressionNode *n2) const;
-  ExpressionNode *power(     ExpressionNode *n1, ExpressionNode *n2) const;
-  ExpressionNode *root(      ExpressionNode *n1, ExpressionNode *n2) const;
-  ParserTreeForm  getTreeForm() const {
+  ExpressionNode *quot(      ParserTree *tree, INT64 num, INT64 den) const override;
+  ExpressionNode *mod(       ExpressionNode *n1, ExpressionNode *n2) const override;
+  ExpressionNode *power(     ExpressionNode *n1, ExpressionNode *n2) const override;
+  ExpressionNode *root(      ExpressionNode *n1, ExpressionNode *n2) const override;
+  ParserTreeForm  getTreeForm() const  override {
     return TREEFORM_CANONICAL;
   }
-  void checkTreeFormConsistent(const ParserTree *tree) const {
+  void checkTreeFormConsistent(const ParserTree *tree) const override {
     tree->checkIsCanonicalForm();
   }
 };
 
 class NodeOperatorsCanonNumForm : public NodeOperatorsCanonForm {
 public:
-  ParserTreeForm  getTreeForm() const {
+  ParserTreeForm  getTreeForm() const override {
     return TREEFORM_NUMERIC;
   }
 };
@@ -302,7 +302,7 @@ private:
     CHECKISCONSISTENT(n);
   }
 public:
-  // assume n != NULL
+  // assume n != nullptr
   inline CNode(ExpressionNode *n) : SNode(n) {
     CHECKISCONSISTENT(*n);
   }
@@ -573,7 +573,7 @@ public:
   CanonicalFormChecker() : m_ok(true) {
   }
 
-  bool handleNode(ExpressionNode *n);
+  bool handleNode(ExpressionNode *n) override;
   bool isOk() const {
     return m_ok;
   }

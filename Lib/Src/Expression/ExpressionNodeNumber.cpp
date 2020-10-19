@@ -20,7 +20,7 @@ bool ExpressionNodeNumber::equalMinus(const ExpressionNode *n) const {
 }
 
 bool ExpressionNodeNumber::isConstant(Number *v) const {
-  if(v != NULL) {
+  if(v != nullptr) {
     *v = getNumber();
   }
   return true;

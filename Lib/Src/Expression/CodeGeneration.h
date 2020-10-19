@@ -129,7 +129,7 @@ public:
   BYTE              m_instructionSize;
   bool              m_fixed;
   JumpFixup()
-    :m_op(NULL)
+    :m_op(nullptr)
     ,m_isShortJump(false)
     ,m_instructionPos(-1)
     ,m_jmpTo(-1)
@@ -264,12 +264,12 @@ private:
   UINT getFunctionRefIndex(const FunctionCall &fc);
 #endif // IS64BIT
 
-  int  getValueIndex(const InstructionOperand &op) const;
-  void putFPUComment(const String &str) {
+  int  getValueIndex(const InstructionOperand &op ) const override;
+  void putFPUComment(const String             &str)       override {
     m_listFile.setFPUComment(str, m_FPUOptimizeCount > m_lastFPUOptimizeCount);
     m_lastFPUOptimizeCount = m_FPUOptimizeCount;
   }
-  bool wantFPUComment() const {
+  bool wantFPUComment()                             const override {
     return listEnabled();
   }
   // return index of FPU-register containing value, if it exist. -1 if not exist

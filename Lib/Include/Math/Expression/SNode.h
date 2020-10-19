@@ -160,7 +160,7 @@ protected:
 
   friend class MarkedNodeMultiplier;
 public:
-  inline SNode() : m_node(NULL) {
+  inline SNode() : m_node(nullptr) {
   }
   inline SNode(ExpressionNode *node) : m_node(node) {
   }
@@ -188,7 +188,7 @@ public:
   inline SNode _false() const { return SNV(false);         } // false
   inline SNode _true()  const { return SNV(true);          } // true
   inline bool isEmpty() const {
-    return m_node == NULL;
+    return m_node == nullptr;
   }
   inline ExpressionNode *node() const {
     return m_node;
@@ -221,7 +221,7 @@ public:
   const Number         &getNumber()                            const;
   bool                  getBool()                              const;
   int                   getValueIndex()                        const;
-  bool                  isConstant(Number *v = NULL)           const;
+  bool                  isConstant(Number *v = nullptr)        const;
   bool                  isBooleanOperator()                    const;
   bool                  isCompareOperator()                    const; // is symbol in { EQ,NE,LE,LT,GE,GT }
   Real                 &doAssignment()                         const;
@@ -271,7 +271,7 @@ public:
   // symbol in { EQ,NE,LE,LT,GE,GT } (EQ,NE are symmetric, the rest are changed. left<->right. ie. GE->LE, etc..
   static ExpressionInputSymbol reverseComparator(ExpressionInputSymbol symbol);
 
-  bool                  reducesToRational(        Rational *r) const; // if r==NULL) only true/false is returned
+  bool                  reducesToRational(        Rational *r) const; // if r==nullptr) only true/false is returned
   bool                  needParentheses(SNode parent)          const;
   SNode                 base()                                 const;
   SNode                 exponent()                             const;

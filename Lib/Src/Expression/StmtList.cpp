@@ -10,7 +10,7 @@ private:
 public:
   NameSubstituter(const String &from, const String to) : m_fromName(from), m_toName(to) {
   }
-  bool handleNode(ExpressionNode *n);
+  bool handleNode(ExpressionNode *n) override;
 };
 
 bool NameSubstituter::handleNode(ExpressionNode *n) {

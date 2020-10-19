@@ -23,7 +23,7 @@ private:
     CHECKISCONSISTENT(n);
   }
 public:
-  // assume n != NULL
+  // assume n != nullptr
   inline NNode(ExpressionNode *n) : SNode(n) {
     CHECKISCONSISTENT(*n);
   }
@@ -137,7 +137,7 @@ NNode NNode::toNFormBoolExp() const {
     }
   default    :
     UNKNOWNSYMBOL();
-    return NULL;
+    return nullptr;
   }
 }
 

@@ -56,7 +56,7 @@ private:
   String                m_str;
   const ExpressionNode *m_node;
 public:
-  ReductionStackElement(UINT index, const TCHAR *method, const String &str, const ExpressionNode *node = NULL)
+  ReductionStackElement(UINT index, const TCHAR *method, const String &str, const ExpressionNode *node = nullptr)
     : m_index( index )
     , m_method(method)
     , m_node(  node  )
@@ -76,7 +76,7 @@ public:
     return m_node;
   }
   inline bool hasNode() const {
-    return m_node != NULL;
+    return m_node != nullptr;
   }
 };
 
@@ -88,7 +88,7 @@ typedef enum {
 class ReductionStack : public Stack<ReductionStackElement>, public PropertyContainer {
 public:
   void clear();
-  void push(const TCHAR *method, const String &s, const ExpressionNode *n = NULL);
+  void push(const TCHAR *method, const String &s, const ExpressionNode *n = nullptr);
   void pop( const TCHAR *method);
   const ReductionStackElement *topPointer(UINT index=0) const;
   static const TCHAR *getRawName(const TCHAR *str);
@@ -112,8 +112,8 @@ public:
 
 #define RETURNNULL                                                                    \
 { _POP();                                                                             \
-  _PUSH(_T("Return NULL"));                                                           \
-  _RETURN(NULL);                                                                      \
+  _PUSH(_T("Return nullptr"));                                                        \
+  _RETURN(nullptr);                                                                   \
 }
 
 #define RETURNBOOL(b)                                                                 \
@@ -158,7 +158,7 @@ namespace Expr {
 #define ENTERMETHOD2(v1,v2)
 #define ENTERMETHOD2NUM(v1,v2)
 
-#define RETURNNULL        return NULL
+#define RETURNNULL        return nullptr
 #define RETURNBOOL(b)     return b
 #define RETURNNODE(n)     return n
 #define RETURNTHIS        return *this

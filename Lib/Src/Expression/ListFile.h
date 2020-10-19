@@ -41,7 +41,7 @@ protected:
   static String formatOp(const OpcodeBase &opcode, const InstructionOperand *arg);
   static String formatOp(const OpcodeBase &opcode, const InstructionOperand *arg1, const InstructionOperand *arg2);
   static String formatOp(const StringPrefix &prefix, const StringInstruction &strins);
-  static String formatOpAndComment(const String &opstr, const TCHAR *comment=NULL, bool FPURegOptimized=false);
+  static String formatOpAndComment(const String &opstr, const TCHAR *comment=nullptr, bool FPURegOptimized=false);
   inline const String &getFPUComment() const {
     return m_FPUComment;
   }
@@ -73,7 +73,7 @@ private:
   const Opcode0Arg &m_opcode0;
 public:
   ListLine0Arg(UINT pos, const Opcode0Arg &opcode);
-  String toString() const;
+  String toString() const override;
 };
 
 class ListLine1Arg : public ListLine {
@@ -83,8 +83,8 @@ private:
   const TCHAR              *m_nameComment;
 public:
   ListLine1Arg(UINT pos, const OpcodeBase &opcode, const InstructionOperand &arg, const TCHAR *nameComment);
-  ~ListLine1Arg();
-  String toString() const;
+  ~ListLine1Arg() override;
+  String toString() const override;
 };
 
 class ListLine2Arg : public ListLine {
@@ -94,8 +94,8 @@ private:
   const TCHAR              *m_nameComment;
 public:
   ListLine2Arg(UINT pos, const OpcodeBase &opcode, const InstructionOperand &arg1, const InstructionOperand &arg2, const TCHAR *nameComment);
-  ~ListLine2Arg();
-  String toString() const;
+  ~ListLine2Arg() override;
+  String toString() const override;
 };
 
 class ListLineStringOp : public ListLine {
@@ -104,7 +104,7 @@ private:
   const StringInstruction &m_strins;
 public:
   ListLineStringOp(UINT pos, const StringPrefix &prefix, const StringInstruction &strins);
-  String toString() const;
+  String toString() const override;
 };
 
 class ListLineJump : public ListLine {
@@ -114,10 +114,10 @@ private:
   int                       m_iprel;
 public:
   ListLineJump(UINT pos, const OpcodeBase &opcode, int iprel, CodeLabel label, const FPUState &state);
-  void setIPrelativeOffset(int iprel) {
+  void setIPrelativeOffset(int iprel) override {
     m_iprel = iprel;
   }
-  String toString() const;
+  String toString() const override;
 };
 
 class ListLineCall : public ListLine {
@@ -127,8 +127,8 @@ private:
   const FunctionCall        m_fc;
 public:
   ListLineCall(UINT pos, const OpcodeCall &opcode, const InstructionOperand &arg, const FunctionCall &fc);
-  ~ListLineCall();
-  String toString() const;
+  ~ListLineCall() override;
+  String toString() const override;
 };
 
 class ListLineLabel : public ListLine {
@@ -136,7 +136,7 @@ private:
   const CodeLabel m_label;
 public:
   ListLineLabel(UINT pos, CodeLabel label, const FPUState &state);
-  String toString() const;
+  String toString() const override;
 };
 
 class ListLineFuncAddr : public ListLine {
@@ -145,7 +145,7 @@ private:
   const FunctionCall m_fc;
 public:
   ListLineFuncAddr(UINT pos, UINT rbxOffset, const FunctionCall &fc);
-  String toString() const;
+  String toString() const override;
 };
 
 class ListFile {
@@ -201,7 +201,7 @@ public:
   }
   ListLine *findLineByPos(UINT pos);
   inline bool isOpen() const {
-    return m_f != NULL;
+    return m_f != nullptr;
   }
   inline void setFPUComment(const String &comment, bool FPURegOptimized) {
     m_FPUComment      = comment;

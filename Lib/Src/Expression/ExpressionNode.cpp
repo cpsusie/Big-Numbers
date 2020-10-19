@@ -50,7 +50,7 @@ String ExpressionNode::getReturnTypeName(ExpressionReturnType rt) { // static
 
 String PackedSyntaxNodeInfo::toString() const {
   String result;
-  const TCHAR *del = NULL;
+  const TCHAR *del = nullptr;
 #if defined(ADD_ATTR)
 #undef ADD_ATTR
 #endif
@@ -114,8 +114,8 @@ public:
   NodeCounter(ExpressionNodeSelector *selector) : m_selector(selector) {
     m_count = 0;
   }
-  bool handleNode(ExpressionNode *n) {
-    if((m_selector == NULL) || m_selector->select(n)) m_count++;
+  bool handleNode(ExpressionNode *n) override {
+    if((m_selector == nullptr) || m_selector->select(n)) m_count++;
     return true;
   }
   inline UINT getCount() const {
@@ -143,7 +143,7 @@ private:
 public:
   MaxLevelFinder() : m_maxLevel(0) {
   }
-  bool handleNode(ExpressionNode *n);
+  bool handleNode(ExpressionNode *n) override;
   UINT getMaxLevel() const {
     return m_maxLevel;
   }
@@ -386,7 +386,7 @@ SymbolOrderMap::SymbolOrderMap() {
   }
   const UINT termCount = ParserTree::getTerminalCount();
   for(UINT i = 1; i < termCount; i++) {
-    if(get((ExpressionInputSymbol)i) == NULL) {
+    if(get((ExpressionInputSymbol)i) == nullptr) {
       put((ExpressionInputSymbol)i, order++);
     }
   }
@@ -428,41 +428,41 @@ void ExpressionNode::throwUnExpandableException() const {
 }
 
 void ExpressionNode::checkNodeType(const TCHAR *method, const ExpressionNode *n, ExpressionNodeType expectedNodeType) { // static
-  if((n==NULL) || (n->getNodeType() != expectedNodeType)) {
+  if((n==nullptr) || (n->getNodeType() != expectedNodeType)) {
     throwInvalidArgumentException(method
                                  ,_T("Expected nodetype:%s. Type=%s")
                                  ,getNodeTypeName(expectedNodeType).cstr()
-                                 ,n?n->getNodeTypeName().cstr():_T("NULL")
+                                 ,n?n->getNodeTypeName().cstr():_T("nullptr")
                                  );
   }
 }
 
 void ExpressionNode::checkNodeType(const TCHAR *method, const ExpressionNode *n, const NodeTypeSet &validTypes) { // static
-  if((n==NULL) || !validTypes.contains(n->getNodeType())) {
+  if((n==nullptr) || !validTypes.contains(n->getNodeType())) {
     throwInvalidArgumentException(method
                                  ,_T("Valid nodetypes:%s. Type=%s")
                                  ,validTypes.toString().cstr()
-                                 ,n?n->getNodeTypeName().cstr():_T("NULL")
+                                 ,n?n->getNodeTypeName().cstr():_T("nullptr")
                                  );
   }
 }
 
 void ExpressionNode::checkReturnType(const TCHAR *method, const ExpressionNode *n, ExpressionReturnType expectedReturnType) { // static
-  if((n==NULL) || (n->getReturnType() != expectedReturnType)) {
+  if((n==nullptr) || (n->getReturnType() != expectedReturnType)) {
     throwInvalidArgumentException(method
                                  ,_T("Expected returntype:%s. Type=%s")
                                  ,getReturnTypeName(expectedReturnType).cstr()
-                                 ,n?n->getReturnTypeName().cstr():_T("NULL")
+                                 ,n?n->getReturnTypeName().cstr():_T("nullptr")
                                  );
   }
 }
 
 void ExpressionNode::checkSymbol(const TCHAR *method, const ExpressionNode *n, ExpressionInputSymbol expectedSymbol) { // static
-  if((n==NULL) || (n->getSymbol() != expectedSymbol)) {
+  if((n==nullptr) || (n->getSymbol() != expectedSymbol)) {
     throwInvalidArgumentException(method
                                  ,_T("Expected symbol:%s. Symbol=%s")
                                  ,getSymbolName(expectedSymbol).cstr()
-                                 ,n?n->getSymbolName().cstr():_T("NULL")
+                                 ,n?n->getSymbolName().cstr():_T("nullptr")
                                  );
   }
 }
@@ -504,9 +504,9 @@ private:
   const ExpressionNode *m_failureNode;
   UINT                  m_nodesVisited;
 public:
-  ConsistencyCheck() : m_failureNode(NULL), m_nodesVisited(0) {
+  ConsistencyCheck() : m_failureNode(nullptr), m_nodesVisited(0) {
   }
-  bool handleNode(ExpressionNode *n) {
+  bool handleNode(ExpressionNode *n) override {
     m_nodesVisited++;
     if(!n->isConsistentSymbolAndType()) {
       m_failureNode = n;
@@ -515,7 +515,7 @@ public:
     return true;
   }
   bool isOK() const {
-    return m_failureNode == NULL;
+    return m_failureNode == nullptr;
   }
   const ExpressionNode *getInconsistentNode() const {
     return m_failureNode;

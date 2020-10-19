@@ -59,28 +59,28 @@ protected:
   static ExpressionNode  *binaryExpr( ExpressionInputSymbol symbol, ExpressionNode *n1, ExpressionNode *n2);
   static ExpressionNode  *funcExpr(   ExpressionInputSymbol symbol, ExpressionNode *n);
 public:
-  virtual ExpressionNode *sum(        ExpressionNode *n1, ExpressionNode *n2) const = NULL;
-  virtual ExpressionNode *diff(       ExpressionNode *n1, ExpressionNode *n2) const = NULL;
-  virtual ExpressionNode *prod(       ExpressionNode *n1, ExpressionNode *n2) const = NULL;
-  virtual ExpressionNode *quot(       ExpressionNode *n1, ExpressionNode *n2) const = NULL;
+  virtual ExpressionNode *sum(        ExpressionNode *n1, ExpressionNode *n2) const = 0;
+  virtual ExpressionNode *diff(       ExpressionNode *n1, ExpressionNode *n2) const = 0;
+  virtual ExpressionNode *prod(       ExpressionNode *n1, ExpressionNode *n2) const = 0;
+  virtual ExpressionNode *quot(       ExpressionNode *n1, ExpressionNode *n2) const = 0;
   // Return a division node without reduction to rational. to be used with exponents ie sqrt(x^2) != x
-  virtual ExpressionNode *quot(       ParserTree *tree, INT64 num, INT64 den) const = NULL;
-  virtual ExpressionNode *mod(        ExpressionNode *n1, ExpressionNode *n2) const = NULL;
-  virtual ExpressionNode *power(      ExpressionNode *n1, ExpressionNode *n2) const = NULL;
-  virtual ExpressionNode *root(       ExpressionNode *n1, ExpressionNode *n2) const = NULL;
-  virtual ExpressionNode *minus(      ExpressionNode *n) const = NULL;
-  virtual ExpressionNode *reciprocal( ExpressionNode *n) const = NULL;
-  virtual ExpressionNode *sqr(        ExpressionNode *n) const = NULL;
-  virtual ExpressionNode *sqrt(       ExpressionNode *n) const = NULL;
-  virtual ExpressionNode *exp(        ExpressionNode *n) const = NULL;
-  virtual ExpressionNode *exp10(      ExpressionNode *n) const = NULL;
-  virtual ExpressionNode *exp2(       ExpressionNode *n) const = NULL;
-  virtual ExpressionNode *cot(        ExpressionNode *n) const = NULL;
-  virtual ExpressionNode *csc(        ExpressionNode *n) const = NULL;
-  virtual ExpressionNode *sec(        ExpressionNode *n) const = NULL;
+  virtual ExpressionNode *quot(       ParserTree *tree, INT64 num, INT64 den) const = 0;
+  virtual ExpressionNode *mod(        ExpressionNode *n1, ExpressionNode *n2) const = 0;
+  virtual ExpressionNode *power(      ExpressionNode *n1, ExpressionNode *n2) const = 0;
+  virtual ExpressionNode *root(       ExpressionNode *n1, ExpressionNode *n2) const = 0;
+  virtual ExpressionNode *minus(      ExpressionNode *n) const = 0;
+  virtual ExpressionNode *reciprocal( ExpressionNode *n) const = 0;
+  virtual ExpressionNode *sqr(        ExpressionNode *n) const = 0;
+  virtual ExpressionNode *sqrt(       ExpressionNode *n) const = 0;
+  virtual ExpressionNode *exp(        ExpressionNode *n) const = 0;
+  virtual ExpressionNode *exp10(      ExpressionNode *n) const = 0;
+  virtual ExpressionNode *exp2(       ExpressionNode *n) const = 0;
+  virtual ExpressionNode *cot(        ExpressionNode *n) const = 0;
+  virtual ExpressionNode *csc(        ExpressionNode *n) const = 0;
+  virtual ExpressionNode *sec(        ExpressionNode *n) const = 0;
 
-  virtual ParserTreeForm  getTreeForm() const = NULL;
-  virtual void            checkTreeFormConsistent(const ParserTree *tree) const = NULL;
+  virtual ParserTreeForm  getTreeForm() const = 0;
+  virtual void            checkTreeFormConsistent(const ParserTree *tree) const = 0;
   static const NodeOperators *s_stdForm, *s_canonForm, *s_stdNumForm, *s_canonNumForm;
 };
 
@@ -127,7 +127,7 @@ private:
 #endif // TRACE_REDUCTION_CALLSTACK
 private:
   inline void resetSimpleConstants() {
-    m_false = m_true = NULL;
+    m_false = m_true = nullptr;
   }
   void markSimpleConstants();
   ExpressionNodeNumber *getRationalConstant(const Rational &r);
@@ -162,13 +162,13 @@ protected:
   void  markNonRootNodes();
   void  addNonRootNode(ExpressionNode *n);
   void  deleteUnmarked();
-  void  buildSymbolTable(const ExpressionVariableArray *oldVariables = NULL);
+  void  buildSymbolTable(const ExpressionVariableArray *oldVariables = nullptr);
   SNode traverseSubstituteNodes(SNode n, CompactNodeHashMap<ExpressionNode*> &nodeMap);
 
   ExpressionNode *allocateLoopVarNode(const String &prefix);
 
   ExpressionNodeName     *fetchNameNode(  const String               &name    );
-  // terminate argumentlist with NULL
+  // terminate argumentlist with nullptr
   ExpressionNodeTree     *fetchTreeNode(  ExpressionInputSymbol       symbol, ...                );
 
   inline ExpressionNodeNumber *numberExpr(const Rational &v) {
@@ -189,7 +189,7 @@ protected:
   ExpressionNode              *constExpr(const String &name);
 public:
   ParserTree(Expression *expression, const String &str);
-  // if(root != NULL) this->m_root = root->clone(this)
+  // if(root != nullptr) this->m_root = root->clone(this)
   ParserTree(Expression *expression, const ExpressionNode *root);
   ParserTree &operator=(const ParserTree &src);
   virtual ~ParserTree();
@@ -210,7 +210,7 @@ public:
 
   // Do we have a root
   inline bool isEmpty() const {
-    return m_root == NULL;
+    return m_root == nullptr;
   }
 
   bool equal(     const ParserTree &tree) const;
@@ -223,7 +223,7 @@ public:
 
   void unmarkAll() const;
   inline bool isOk() const {
-    return (m_root != NULL) && (m_errors.size() == 0);
+    return (m_root != nullptr) && (m_errors.size() == 0);
   }
 
   inline ParserTreeForm getTreeForm() const {
@@ -354,9 +354,9 @@ public:
   void listErrors(tostream &out) const;
   void listErrors(const TCHAR *fname) const;
 
-  UINT getNodeCount(ExpressionNodeSelector *selector = NULL) const;
-  // if(validSymbolSet != NULL, only node with symbols contained in set will be counted
-  UINT getNodeCount(bool ignoreMarked, const ExpressionSymbolSet *validSymbolSet = NULL) const;
+  UINT getNodeCount(ExpressionNodeSelector *selector = nullptr) const;
+  // if(validSymbolSet != nullptr, only node with symbols contained in set will be counted
+  UINT getNodeCount(bool ignoreMarked, const ExpressionSymbolSet *validSymbolSet = nullptr) const;
   UINT getTreeDepth() const;
 #if defined(TRACE_REDUCTION_CALLSTACK)
   inline ReductionStack &getReductionStack() {

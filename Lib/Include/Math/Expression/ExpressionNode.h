@@ -76,7 +76,7 @@ protected:
     return m_path;
   }
   inline const ExpressionNode *getParent(UINT i = 1) const {
-    return (i < m_path.getHeight()) ? m_path.top(i) : NULL;
+    return (i < m_path.getHeight()) ? m_path.top(i) : nullptr;
   }
   inline UINT getLevel() const {
     return m_path.getHeight();
@@ -191,7 +191,7 @@ public:
   virtual bool                       equal(     const ExpressionNode *n) const { UNSUPPORTEDOP();                                              }
   virtual bool                       equalMinus(const ExpressionNode *n) const { UNSUPPORTEDOP();                                              }
 
-  virtual bool                       isConstant(Number *v = NULL)   const = 0;
+  virtual bool                       isConstant(Number *v = nullptr) const = 0;
   virtual bool                       traverseNode(ExpressionNodeHandler &handler) = 0;
 
   virtual void                       dumpNode(String &s, int level) const = 0;
@@ -249,7 +249,7 @@ public:
   bool                               dependsOn(const String &name)  const;
   // If selector specified, only nodes where selector.select(n) is true will be counted.
   // If not specified, all nodes are counted
-  UINT                               getNodeCount(ExpressionNodeSelector *selector = NULL) const;
+  UINT                               getNodeCount(ExpressionNodeSelector *selector = nullptr) const;
   UINT                               getNodeCount(const ExpressionSymbolSet &validSymbolSet) const;
   bool                               containsFunctionCall()         const;
   Real                              &getValueRef()                  const;
@@ -312,30 +312,30 @@ public:
     SETDEBUGSTRING();
   }
 
-  int getValueIndex() const {
+  int getValueIndex() const override  {
     return m_valueIndex;
   }
 
-  void setValueIndex(int index) {
+  void setValueIndex(int index) override  {
     m_valueIndex = index;
   }
 
-  const Number &getNumber() const {
+  const Number &getNumber() const override  {
     return m_number;
   }
 
-  ExpressionNode      *clone(ParserTree *tree)             const;
-  ExpressionNodeType   getNodeType()                       const { return NT_NUMBER;                }
-//ExpressionReturnType getReturnType()                     const { as ExpressionNode                }
-  Real                 evaluateReal()                      const { return (Real)m_number;           }
-//bool                 evaluateBool()                      const { as ExpressionNode                }
-  int                  compare(   const ExpressionNode *n) const;
-  bool                 equal(     const ExpressionNode *n) const;
-  bool                 equalMinus(const ExpressionNode *n) const;
-  bool                 isConstant(Number *v = NULL)        const;
-  bool                 traverseNode(ExpressionNodeHandler &handler);
-  void                 dumpNode(String &s, int level)      const;
-  String               toString()                          const { return ::toString(m_number);     }
+  ExpressionNode      *clone(ParserTree *tree)             const override;
+  ExpressionNodeType   getNodeType()                       const override { return NT_NUMBER;                }
+//ExpressionReturnType getReturnType()                     const override { as ExpressionNode                }
+  Real                 evaluateReal()                      const override { return (Real)m_number;           }
+//bool                 evaluateBool()                      const override { as ExpressionNode                }
+  int                  compare(   const ExpressionNode *n) const override;
+  bool                 equal(     const ExpressionNode *n) const override;
+  bool                 equalMinus(const ExpressionNode *n) const override;
+  bool                 isConstant(Number *v = nullptr)     const override;
+  bool                 traverseNode(ExpressionNodeHandler &handler) override;
+  void                 dumpNode(String &s, int level)      const override;
+  String               toString()                          const override { return ::toString(m_number);     }
 };
 
 class ExpressionNodeBoolConst : public ExpressionNode {
@@ -345,21 +345,21 @@ public:
   inline ExpressionNodeBoolConst(ParserTree *tree, bool b) : ExpressionNode(tree, BOOLCONST), m_value(b) {
     SETDEBUGSTRING();
   }
-  bool getBool() const {
+  bool getBool() const override {
     return m_value;
   }
-  ExpressionNode      *clone(ParserTree *tree)             const;
-  ExpressionNodeType   getNodeType()                       const { return NT_BOOLCONST;             }
-  ExpressionReturnType getReturnType()                     const { return EXPR_RETURN_BOOL;         }
-  Real                 evaluateReal()                      const { UNSUPPORTEDOP();                 }
-  bool                 evaluateBool()                      const { return m_value;                  }
-  int                  compare(   const ExpressionNode *n) const;
-  bool                 equal(     const ExpressionNode *n) const;
-//bool                 equalMinus(const ExpressionNode *n) const; not implemented
-  bool                 isConstant(Number *v = NULL)        const { return true;                     }
-  bool                 traverseNode(ExpressionNodeHandler &handler);
-  void                 dumpNode(String &s, int level)      const;
-  String               toString()                          const { return boolToStr(m_value);       }
+  ExpressionNode      *clone(ParserTree *tree)             const override;
+  ExpressionNodeType   getNodeType()                       const override { return NT_BOOLCONST;             }
+  ExpressionReturnType getReturnType()                     const override { return EXPR_RETURN_BOOL;         }
+  Real                 evaluateReal()                      const override { UNSUPPORTEDOP();                 }
+  bool                 evaluateBool()                      const override { return m_value;                  }
+  int                  compare(   const ExpressionNode *n) const override;
+  bool                 equal(     const ExpressionNode *n) const override;
+//bool                 equalMinus(const ExpressionNode *n) const override; not implemented
+  bool                 isConstant(Number *v = nullptr)     const override { return true;                     }
+  bool                 traverseNode(ExpressionNodeHandler &handler) override;
+  void                 dumpNode(String &s, int level)      const override;
+  String               toString()                          const override { return boolToStr(m_value);       }
 };
 
 class ExpressionNodeName : public ExpressionNode {
@@ -376,38 +376,38 @@ public:
     SETDEBUGSTRING();
   }
 
-  const String &getName() const {
+  const String &getName() const override {
     return m_name;
   }
-  void setName(const String &name);
-  void setVariable(ExpressionVariable *var) {
+  void setName(const String &name) override;
+  void setVariable(ExpressionVariable *var) override {
     m_var = var;
   }
 
-  ExpressionVariable &getVariable() const {
+  ExpressionVariable &getVariable() const override {
     return *m_var;
   }
 
-  int getValueIndex() const {
+  int getValueIndex() const override {
     return m_var->getValueIndex();
   }
 
-  void setValueIndex(int index) {
+  void setValueIndex(int index) override {
     m_var->setValueIndex(index);
   }
 
-  ExpressionNode      *clone(ParserTree *tree)             const;
-  ExpressionNodeType   getNodeType()                       const { return NT_VARIABLE;              }
-//ExpressionReturnType getReturnType()                     const { as ExpressionNode                }
-  Real                 evaluateReal()                      const { return getValueRef();            }
-//bool                 evaluateBool()                      const { as ExpressionNode                }
-  int                  compare(   const ExpressionNode *n) const;
-  bool                 equal(     const ExpressionNode *n) const;
-  bool                 equalMinus(const ExpressionNode *n) const;
-  bool                 isConstant(Number *v = NULL)        const;
-  bool                 traverseNode(ExpressionNodeHandler &handler);
-  void                 dumpNode(String &s, int level)      const;
-  String               toString()                          const { return getName();                }
+  ExpressionNode      *clone(ParserTree *tree)             const override;
+  ExpressionNodeType   getNodeType()                       const override { return NT_VARIABLE;              }
+//ExpressionReturnType getReturnType()                     const override { as ExpressionNode                }
+  Real                 evaluateReal()                      const override { return getValueRef();            }
+//bool                 evaluateBool()                      const override { as ExpressionNode                }
+  int                  compare(   const ExpressionNode *n) const override;
+  bool                 equal(     const ExpressionNode *n) const override;
+  bool                 equalMinus(const ExpressionNode *n) const override;
+  bool                 isConstant(Number *v = nullptr)     const override;
+  bool                 traverseNode(ExpressionNodeHandler &handler) override;
+  void                 dumpNode(String &s, int level)      const override;
+  String               toString()                          const override { return getName();                }
 };
 
 class ExpressionNodeTree : public ExpressionNode {
@@ -415,7 +415,7 @@ private:
   SNodeArray m_childArray;
   int initChildArray(va_list argptr); // return number of arguments
 protected:
-  // Terminate arguemnt list with NULL. ... is a variable list of ExpressionNode*
+  // Terminate arguemnt list with nullptr. ... is a variable list of ExpressionNode*
   ExpressionNodeTree(ParserTree *tree, ExpressionInputSymbol symbol, ...);
 
 public:
@@ -423,42 +423,42 @@ public:
   ExpressionNodeTree(ParserTree *tree, ExpressionInputSymbol symbol, const SNodeArray &childArray);
   ExpressionNodeTree(ParserTree *tree, const ExpressionNodeTree *src);
 
-  SNode child(UINT i) const {
+  SNode child(UINT i) const override {
     return m_childArray[i];
   }
-  int getChildCount() const {
+  int getChildCount() const override {
     return (int)m_childArray.size();
   }
-  SNodeArray &getChildArray() {
+  SNodeArray &getChildArray() override {
     return m_childArray;
   }
-  const SNodeArray &getChildArray() const {
+  const SNodeArray &getChildArray() const override {
     return m_childArray;
   }
 
-  ExpressionNode      *clone(ParserTree *tree)             const;
-  ExpressionNodeType   getNodeType()                       const { return NT_TREE;                  }
-//ExpressionReturnType getReturnType()                     const not implemented here
-//Real                 evaluateReal()                      const not implemented here
-//bool                 evaluateBool()                      const not implemented here
-  int                  compare(   const ExpressionNode *n) const;
-  bool                 equal(     const ExpressionNode *n) const;
-  bool                 equalMinus(const ExpressionNode *n) const;
-  bool                 isConstant(Number *v = NULL)        const;
-  bool                 traverseNode(ExpressionNodeHandler &handler);
-  void                 dumpNode(String &s, int level)      const;
-  String               toString()                          const;
+  ExpressionNode      *clone(ParserTree *tree)             const override;
+  ExpressionNodeType   getNodeType()                       const override { return NT_TREE;                  }
+//ExpressionReturnType getReturnType()                     const override not implemented here
+//Real                 evaluateReal()                      const override not implemented here
+//bool                 evaluateBool()                      const override not implemented here
+  int                  compare(   const ExpressionNode *n) const override;
+  bool                 equal(     const ExpressionNode *n) const override;
+  bool                 equalMinus(const ExpressionNode *n) const override;
+  bool                 isConstant(Number *v = nullptr)     const override;
+  bool                 traverseNode(ExpressionNodeHandler &handler) override;
+  void                 dumpNode(String &s, int level)      const override;
+  String               toString()                          const override;
 };
 
 class ExpressionNodeBoolExpr : public ExpressionNodeTree {
 public:
   inline ExpressionNodeBoolExpr(ParserTree *tree, ExpressionInputSymbol symbol, ExpressionNode *bexpr)
-    : ExpressionNodeTree(tree, symbol, bexpr, NULL)
+    : ExpressionNodeTree(tree, symbol, bexpr, nullptr)
   {
     SETDEBUGSTRING();
   }
   inline ExpressionNodeBoolExpr(ParserTree *tree, ExpressionInputSymbol symbol, ExpressionNode *left, ExpressionNode *right)
-    : ExpressionNodeTree(tree, symbol, left, right, NULL)
+    : ExpressionNodeTree(tree, symbol, left, right, nullptr)
   {
     SETDEBUGSTRING();
   }
@@ -473,18 +473,18 @@ public:
     SETDEBUGSTRING();
   }
 
-  ExpressionNode      *clone(ParserTree *tree)             const;
-  ExpressionNodeType   getNodeType()                       const { return NT_BOOLEXPR;              }
-  ExpressionReturnType getReturnType()                     const { return EXPR_RETURN_BOOL;         }
-  Real                 evaluateReal()                      const { UNSUPPORTEDOP();                 }
-  bool                 evaluateBool()                      const;
-//int                  compare(   const ExpressionNode *n) const { as ExpressionNodeTree;           }
-//bool                 equal(     const ExpressionNode *n) const { as ExpressionNodeTree;           }
-//bool                 equalMinus(const ExpressionNode *n) const { as ExpressionNodeTree;           }
-  bool                 isConstant(Number *v = NULL)        const;
-//bool                 traverseNode(ExpressionNodeHandler &handler); as ExpressionNodeTree
-//void                 dumpNode(String &s, int level)      const;    as ExpressionNodeTree
-  String               toString()                          const;
+  ExpressionNode      *clone(ParserTree *tree)             const override;
+  ExpressionNodeType   getNodeType()                       const override { return NT_BOOLEXPR;              }
+  ExpressionReturnType getReturnType()                     const override { return EXPR_RETURN_BOOL;         }
+  Real                 evaluateReal()                      const override { UNSUPPORTEDOP();                 }
+  bool                 evaluateBool()                      const override;
+//int                  compare(   const ExpressionNode *n) const override { as ExpressionNodeTree;           }
+//bool                 equal(     const ExpressionNode *n) const override { as ExpressionNodeTree;           }
+//bool                 equalMinus(const ExpressionNode *n) const override { as ExpressionNodeTree;           }
+  bool                 isConstant(Number *v = nullptr)     const override;
+//bool                 traverseNode(ExpressionNodeHandler &handler) override; as ExpressionNodeTree
+//void                 dumpNode(String &s, int level)      const override;    as ExpressionNodeTree
+  String               toString()                          const override;
 };
 
 class ExpressionNodePower : public ExpressionNodeTree {
@@ -496,39 +496,39 @@ protected:
   }
 public:
   ExpressionNodePower::ExpressionNodePower(SNode base)
-    : ExpressionNodeTree(&base.getTree(), POW, base.node(), base._1().node(), NULL)
+    : ExpressionNodeTree(&base.getTree(), POW, base.node(), base._1().node(), nullptr)
   {
   }
 
   ExpressionNodePower::ExpressionNodePower(SNode base, SNode exponent)
-    : ExpressionNodeTree(&base.getTree(), POW, base.node(), exponent.node(), NULL)
+    : ExpressionNodeTree(&base.getTree(), POW, base.node(), exponent.node(), nullptr)
   {
   }
 
-  SNode base() const {
+  SNode base() const override {
     return child(0);
   }
-  SNode exponent() const {
+  SNode exponent() const override {
     return child(1);
   }
 
-  SNode             expand()       const;
-  bool              isExpandable() const;
+  SNode             expand()       const override;
+  bool              isExpandable() const override;
 
 
 
-  ExpressionNode      *clone(ParserTree *tree)             const;
-  ExpressionNodeType   getNodeType()                       const { return NT_POWER;                 }
-//ExpressionReturnType getReturnType()                     const { as ExpressionNode                }
-  Real                 evaluateReal()                      const;
-//bool                 evaluateBool()                      const { as ExpressionNode                }
-  int                  compare(   const ExpressionNode *n) const;
-  bool                 equal(     const ExpressionNode *n) const;
-  bool                 equalMinus(const ExpressionNode *n) const;
-  bool                 isConstant(Number *v = NULL)        const;
-//bool                 traverseNode(ExpressionNodeHandler &handler); as ExpressionNodeTree
-//void                 dumpNode(String &s, int level)      const;    as ExpressionNodeTree
-//String               toString()                          const { as ExpressionNodeTree;            }
+  ExpressionNode      *clone(ParserTree *tree)             const override;
+  ExpressionNodeType   getNodeType()                       const override { return NT_POWER;                 }
+//ExpressionReturnType getReturnType()                     const override { as ExpressionNode                }
+  Real                 evaluateReal()                      const override;
+//bool                 evaluateBool()                      const override { as ExpressionNode                }
+  int                  compare(   const ExpressionNode *n) const override;
+  bool                 equal(     const ExpressionNode *n) const override;
+  bool                 equalMinus(const ExpressionNode *n) const override;
+  bool                 isConstant(Number *v = nullptr)     const override;
+//bool                 traverseNode(ExpressionNodeHandler &handler) override; as ExpressionNodeTree
+//void                 dumpNode(String &s, int level)      const override;    as ExpressionNodeTree
+//String               toString()                          const override { as ExpressionNodeTree;            }
 };
 
 class ExpressionNodePoly : public ExpressionNode {
@@ -541,51 +541,51 @@ public:
   ExpressionNodePoly(ParserTree *tree, const CoefArray &coefArray, SNode arg);
   ExpressionNodePoly(ParserTree *tree, const ExpressionNodePoly *src);
 
-  int getDegree() const {
+  int getDegree() const override {
     return (int)m_coefArray.size() - 1;
   }
 
-  const CoefArray &getCoefArray() const {
+  const CoefArray &getCoefArray() const override {
     return m_coefArray;
   }
-  CoefArray &getCoefArray() {
+  CoefArray &getCoefArray() override {
     return m_coefArray;
   }
 
-  SNode getArgument() const {
+  SNode getArgument() const override {
     return m_arg;
   }
-  bool isCoefArrayConstant() const;
+  bool isCoefArrayConstant() const override;
   // return true, if all coefficients are constant, and non-zero coef[i] for even i
-  bool isSymmetricFunction()        const;
+  bool isSymmetricFunction()        const override;
   // return true, if all coefficients are constant, and non-zero coef[i] for odd i
-  bool isAsymmetricFunction()       const;
+  bool isAsymmetricFunction()       const override;
 
-  int getFirstCoefIndex() const {
+  int getFirstCoefIndex() const override {
     return m_firstCoefIndex;
   }
 
-  void setFirstCoefIndex(int index) {
+  void setFirstCoefIndex(int index) override {
     m_firstCoefIndex = index;
   }
 
-  SNode             expand()       const;
-  bool              isExpandable() const {
+  SNode             expand()       const override;
+  bool              isExpandable() const override {
     return true;
   }
 
-  ExpressionNode      *clone(ParserTree *tree)             const;
-  ExpressionNodeType   getNodeType()                       const { return NT_POLY;                  }
-//ExpressionReturnType getReturnType()                     const { as ExpressionNode                }
-  Real                 evaluateReal()                      const;
-//bool                 evaluateBool()                      const { as ExpressionNode                }
-  int                  compare(   const ExpressionNode *n) const;
-  bool                 equal(     const ExpressionNode *n) const;
-  bool                 equalMinus(const ExpressionNode *n) const;
-  bool                 isConstant(Number *v = NULL)        const;
-  bool                 traverseNode(ExpressionNodeHandler &handler);
-  void                 dumpNode(String &s, int level)      const;
-  String               toString()                          const;
+  ExpressionNode      *clone(ParserTree *tree)             const override;
+  ExpressionNodeType   getNodeType()                       const override { return NT_POLY;                  }
+//ExpressionReturnType getReturnType()                     const override { as ExpressionNode                }
+  Real                 evaluateReal()                      const override;
+//bool                 evaluateBool()                      const override { as ExpressionNode                }
+  int                  compare(   const ExpressionNode *n) const override;
+  bool                 equal(     const ExpressionNode *n) const override;
+  bool                 equalMinus(const ExpressionNode *n) const override;
+  bool                 isConstant(Number *v = nullptr)     const override;
+  bool                 traverseNode(ExpressionNodeHandler &handler) override;
+  void                 dumpNode(String &s, int level)      const override;
+  String               toString()                          const override;
 };
 
 class ExpressionNodeAssign : public ExpressionNodeTree {
@@ -596,29 +596,29 @@ public:
     SETDEBUGSTRING();
   }
   ExpressionNodeAssign(ExpressionNode *leftSide, ExpressionNode *expr)
-    : ExpressionNodeTree(&(leftSide->getTree()), ASSIGN, leftSide, expr, NULL)
+    : ExpressionNodeTree(&(leftSide->getTree()), ASSIGN, leftSide, expr, nullptr)
   {
     SETDEBUGSTRING();
   }
   ExpressionNodeAssign(ParserTree *tree, const ExpressionNodeAssign *src);
-  Real &doAssignment() const;
+  Real &doAssignment() const override;
 
 
 
 
 
-  ExpressionNode      *clone(ParserTree *tree)             const;
-  ExpressionNodeType   getNodeType()                       const { return NT_ASSIGN;                }
-  ExpressionReturnType getReturnType()                     const { return EXPR_NORETURNTYPE;        }
-  Real                 evaluateReal()                      const { UNSUPPORTEDOP();                 }
-//bool                 evaluateBool()                      const { as ExpressionNode                }
-  int                  compare(   const ExpressionNode *n) const { UNSUPPORTEDOP();                 }
-//bool                 equal(     const ExpressionNode *n) const { as ExpressionNodeTree;           }
-//bool                 equalMinus(const ExpressionNode *n) const { as ExpressionNodeTree;           }
-//bool                 isConstant(Number *v = NULL)        const { as ExpressionNodeTree;           }
-//bool                 traverseNode(ExpressionNodeHandler &handler); as ExpressionNodeTree
-//void                 dumpNode(String &s, int level)      const;    as ExpressionNodeTree
-  String               toString()                          const;
+  ExpressionNode      *clone(ParserTree *tree)             const override;
+  ExpressionNodeType   getNodeType()                       const override { return NT_ASSIGN;                }
+  ExpressionReturnType getReturnType()                     const override { return EXPR_NORETURNTYPE;        }
+  Real                 evaluateReal()                      const override { UNSUPPORTEDOP();                 }
+//bool                 evaluateBool()                      const override { as ExpressionNode                }
+  int                  compare(   const ExpressionNode *n) const override { UNSUPPORTEDOP();                 }
+//bool                 equal(     const ExpressionNode *n) const override { as ExpressionNodeTree;           }
+//bool                 equalMinus(const ExpressionNode *n) const override { as ExpressionNodeTree;           }
+//bool                 isConstant(Number *v = nullptr)     const override { as ExpressionNodeTree;           }
+//bool                 traverseNode(ExpressionNodeHandler &handler) override; as ExpressionNodeTree
+//void                 dumpNode(String &s, int level)      const override;    as ExpressionNodeTree
+  String               toString()                          const override;
 };
 
 class ExpressionNodeStmtList : public ExpressionNodeTree {
@@ -633,18 +633,18 @@ public:
 
 
 
-  ExpressionNode      *clone(ParserTree *tree)             const;
-  ExpressionNodeType   getNodeType()                       const { return NT_STMTLIST;              }
-  ExpressionReturnType getReturnType()                     const { return m_returnType;             }
-  Real                 evaluateReal()                      const;
-  bool                 evaluateBool()                      const;
-  int                  compare(   const ExpressionNode *n) const { UNSUPPORTEDOP();                 }
-//bool                 equal(     const ExpressionNode *n) const { as ExpressionNodeTree;           }
-  bool                 equalMinus(const ExpressionNode *n) const;
-//bool                 isConstant(Number *v = NULL)        const { as ExpressionNodeTree;           }
-//bool                 traverseNode(ExpressionNodeHandler &handler); as ExpressionNodeTree
-//void                 dumpNode(String &s, int level)      const;    as ExpressionNodeTree
-  String               toString()                          const;
+  ExpressionNode      *clone(ParserTree *tree)             const override;
+  ExpressionNodeType   getNodeType()                       const override { return NT_STMTLIST;              }
+  ExpressionReturnType getReturnType()                     const override { return m_returnType;             }
+  Real                 evaluateReal()                      const override;
+  bool                 evaluateBool()                      const override;
+  int                  compare(   const ExpressionNode *n) const override { UNSUPPORTEDOP();                 }
+//bool                 equal(     const ExpressionNode *n) const override { as ExpressionNodeTree;           }
+  bool                 equalMinus(const ExpressionNode *n) const override;
+//bool                 isConstant(Number *v = nullptr)     const override { as ExpressionNodeTree;           }
+//bool                 traverseNode(ExpressionNodeHandler &handler) override; as ExpressionNodeTree
+//void                 dumpNode(String &s, int level)      const override;    as ExpressionNodeTree
+  String               toString()                          const override;
 };
 
 class ExpressionNodeAddent : public ExpressionNodeTree {
@@ -654,22 +654,22 @@ public:
   ExpressionNodeAddent(SNode n, bool positive);
   ExpressionNodeAddent(ParserTree *tree, const ExpressionNodeAddent *src);
 
-  bool isPositive() const {
+  bool isPositive() const override {
     return m_positive;
   }
 
-  ExpressionNode      *clone(ParserTree *tree)             const;
-  ExpressionNodeType   getNodeType()                       const { return NT_ADDENT;                }
-//ExpressionReturnType getReturnType()                     const { as ExpressionNode                }
-  Real                 evaluateReal()                      const;
-//bool                 evaluateBool()                      const { as ExpressionNode                }
-  int                  compare(   const ExpressionNode *n) const;
-  bool                 equal(     const ExpressionNode *n) const;
-  bool                 equalMinus(const ExpressionNode *n) const;
-//bool                 isConstant(Number *v = NULL)        const { as ExpressionNodeTree            }
-//bool                 traverseNode(ExpressionNodeHandler &handler); as ExpressionNodeTree
-  void                 dumpNode(String &s, int level)      const;
-  String               toString()                          const;
+  ExpressionNode      *clone(ParserTree *tree)             const override;
+  ExpressionNodeType   getNodeType()                       const override { return NT_ADDENT;                }
+//ExpressionReturnType getReturnType()                     const override { as ExpressionNode                }
+  Real                 evaluateReal()                      const override;
+//bool                 evaluateBool()                      const override { as ExpressionNode                }
+  int                  compare(   const ExpressionNode *n) const override;
+  bool                 equal(     const ExpressionNode *n) const override;
+  bool                 equalMinus(const ExpressionNode *n) const override;
+//bool                 isConstant(Number *v = nullptr)     const override { as ExpressionNodeTree            }
+//bool                 traverseNode(ExpressionNodeHandler &handler) override; as ExpressionNodeTree
+  void                 dumpNode(String &s, int level)      const override;
+  String               toString()                          const override;
 };
 
 class ExpressionNodeSum : public ExpressionNodeTree {
@@ -679,25 +679,25 @@ public:
   ExpressionNodeSum(ParserTree *tree, const AddentArray &addentArray);
   ExpressionNodeSum(ParserTree *tree, const ExpressionNodeSum *src);
 
-  AddentArray &getAddentArray() {
+  AddentArray &getAddentArray() override {
     return (AddentArray&)getChildArray();
   }
-  const AddentArray &getAddentArray() const {
+  const AddentArray &getAddentArray() const override {
     return (AddentArray&)getChildArray();
   }
 
-  ExpressionNode      *clone(ParserTree *tree)             const;
-  ExpressionNodeType   getNodeType()                       const { return NT_SUM;                   }
-//ExpressionReturnType getReturnType()                     const { as ExpressionNode                }
-  Real                 evaluateReal()                      const;
-//bool                 evaluateBool()                      const { as ExpressionNode                }
-//int                  compare(   const ExpressionNode *n) const { as ExpressionNodeTree;           }
-//bool                 equal(     const ExpressionNode *n) const { as ExpressionNodeTree;           }
-  bool                 equalMinus(const ExpressionNode *n) const;
-//bool                 isConstant(Number *v = NULL)        const;
-//bool                 traverseNode(ExpressionNodeHandler &handler); as ExpressionNodeTree
-//void                 dumpNode(String &s, int level)      const;    as ExpressionNodeTree
-  String               toString()                          const;
+  ExpressionNode      *clone(ParserTree *tree)             const override;
+  ExpressionNodeType   getNodeType()                       const override { return NT_SUM;                   }
+//ExpressionReturnType getReturnType()                     const override { as ExpressionNode                }
+  Real                 evaluateReal()                      const override;
+//bool                 evaluateBool()                      const override { as ExpressionNode                }
+//int                  compare(   const ExpressionNode *n) const override { as ExpressionNodeTree;           }
+//bool                 equal(     const ExpressionNode *n) const override { as ExpressionNodeTree;           }
+  bool                 equalMinus(const ExpressionNode *n) const override;
+//bool                 isConstant(Number *v = nullptr)     const override;
+//bool                 traverseNode(ExpressionNodeHandler &handler) override; as ExpressionNodeTree
+//void                 dumpNode(String &s, int level)      const override;    as ExpressionNodeTree
+  String               toString()                          const override;
 };
 
 class ExpressionNodeProduct : public ExpressionNodeTree {
@@ -707,34 +707,34 @@ public:
   ExpressionNodeProduct(ParserTree *tree, const FactorArray &factors);
   ExpressionNodeProduct(ParserTree *tree, const ExpressionNodeProduct *src);
 
-  FactorArray &getFactorArray() {
+  FactorArray &getFactorArray() override {
     return (FactorArray&)getChildArray();
   }
-  const FactorArray &getFactorArray() const {
+  const FactorArray &getFactorArray() const override {
     return (FactorArray&)getChildArray();
   }
 
-  ExpressionNode      *clone(ParserTree *tree)             const;
-  ExpressionNodeType   getNodeType()                       const { return NT_PRODUCT;               }
-//ExpressionReturnType getReturnType()                     const { as ExpressionNode                }
-  Real                 evaluateReal()                      const;
-//bool                 evaluateBool()                      const { as ExpressionNode                }
-  int                  compare(   const ExpressionNode *n) const;
-  bool                 equal(     const ExpressionNode *n) const;
-  bool                 equalMinus(const ExpressionNode *n) const;
-//bool                 isConstant(Number *v = NULL)        const { as ExpressionNodeTree;           }
-//bool                 traverseNode(ExpressionNodeHandler &handler); as ExpressionNodeTree
-//void                 dumpNode(String &s, int level)      const;    as ExpressionNodeTree
-  String               toString()                          const;
+  ExpressionNode      *clone(ParserTree *tree)             const override;
+  ExpressionNodeType   getNodeType()                       const override { return NT_PRODUCT;               }
+//ExpressionReturnType getReturnType()                     const override { as ExpressionNode                }
+  Real                 evaluateReal()                      const override;
+//bool                 evaluateBool()                      const override { as ExpressionNode                }
+  int                  compare(   const ExpressionNode *n) const override;
+  bool                 equal(     const ExpressionNode *n) const override;
+  bool                 equalMinus(const ExpressionNode *n) const override;
+//bool                 isConstant(Number *v = nullptr)     const override { as ExpressionNodeTree;           }
+//bool                 traverseNode(ExpressionNodeHandler &handler) override; as ExpressionNodeTree
+//void                 dumpNode(String &s, int level)      const override;    as ExpressionNodeTree
+  String               toString()                          const override;
 };
 
 // ----------------------------------- Used by parser to save sourceposition in text -------------------------
 
 #define DEFINESOURCEPOSTRAITS                      \
-  const SourcePosition &getPos() const {           \
+  const SourcePosition &getPos() const override {  \
     return m_pos;                                  \
   }                                                \
-  bool hasPos() const {                            \
+  bool hasPos() const override {                   \
     return true;                                   \
   }
 
@@ -825,7 +825,7 @@ public:
   ExpressionNodeSymbolSelector(const ExpressionSymbolSet *symbolSet, bool ignoreMarked=false) : m_symbolSet(symbolSet), m_ignoreMarked(ignoreMarked) {
   }
   bool select(const ExpressionNode* const &n) {
-    return (!m_ignoreMarked || !n->isMarked()) && ((m_symbolSet == NULL) || m_symbolSet->contains(n->getSymbol()));
+    return (!m_ignoreMarked || !n->isMarked()) && ((m_symbolSet == nullptr) || m_symbolSet->contains(n->getSymbol()));
   }
   AbstractSelector *clone() const {
     return new ExpressionNodeSymbolSelector(m_symbolSet, m_ignoreMarked);

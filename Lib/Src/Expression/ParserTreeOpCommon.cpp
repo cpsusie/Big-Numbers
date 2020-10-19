@@ -66,7 +66,7 @@ ExpressionNode *ParserTree::boolExpr(ExpressionInputSymbol symbol, const SNodeAr
   if(childArray.size() == 2) {
     return boolExpr(symbol,childArray[0].node(), childArray[1].node());
   } else {
-    return boolExpr(symbol,childArray[0].node(), NULL);
+    return boolExpr(symbol,childArray[0].node(), nullptr);
   }
 }
 
@@ -117,7 +117,7 @@ ExpressionNode *ParserTree::indexedExpr(  ExpressionInputSymbol symbol, SNode as
   case INDEXEDSUM    : return indexedSum(    assign,endExpr,expr);
   case INDEXEDPRODUCT: return indexedProduct(assign,endExpr,expr);
   default            : throwInvalidArgumentException(__TFUNCTION__, _T("symbol=%s"), ExpressionNode::getSymbolName(symbol).cstr());
-                       return NULL;
+                       return nullptr;
   }
 }
 
@@ -148,7 +148,7 @@ ExpressionNode *ParserTree::not(ExpressionNode *n) {
   CHECKNODEPRETURNTYPE(n,EXPR_RETURN_BOOL);
   if(n->isTrue()) return getFalse(); else if(n->isFalse()) return getTrue();
   if(n->getSymbol() == NOT) return n->left();
-  return boolExpr(NOT,n,NULL);
+  return boolExpr(NOT,n,nullptr);
 }
 
 ExpressionNode *ParserTree::funcExpr(ExpressionInputSymbol symbol, ExpressionNode *child) {
@@ -160,20 +160,20 @@ ExpressionNode *ParserTree::unaryMinus(ExpressionNode *child) {
 }
 
 ExpressionNode *ParserTree::unaryExpr(ExpressionInputSymbol symbol, ExpressionNode *child) {
-  return fetchTreeNode(symbol, child, NULL);
+  return fetchTreeNode(symbol, child, nullptr);
 }
 
 ExpressionNode *ParserTree::binaryExpr(ExpressionInputSymbol symbol
                                       ,ExpressionNode       *left
                                       ,ExpressionNode       *right) {
-  return fetchTreeNode(symbol, left, right, NULL);
+  return fetchTreeNode(symbol, left, right, nullptr);
 }
 
 ExpressionNode *ParserTree::ternaryExpr( ExpressionInputSymbol  symbol
                                        , ExpressionNode        *child0
                                        , ExpressionNode        *child1
                                        , ExpressionNode        *child2) {
-  return fetchTreeNode(symbol, child0, child1, child2, NULL);
+  return fetchTreeNode(symbol, child0, child1, child2, nullptr);
 }
 
 ExpressionNode *ParserTree::powerExpr(SNode base) {

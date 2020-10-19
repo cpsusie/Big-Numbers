@@ -1,8 +1,8 @@
 %{
 
+#include <Scanner.h>
 #include <Math/Expression/ParserTree.h>
 #include <Math/Expression/ExpressionNode.h>
-#include "ExpressionLex.h"
 
 $PUSHNAMESPACE$
 
@@ -10,7 +10,7 @@ class ExpressionParser : public LRparser {
 private:
   static const ParserTables *ExpressionTables;
 public:
-  ExpressionParser(ParserTree &tree, ExpressionLex *lex = NULL) : m_tree(tree), LRparser(*ExpressionTables,lex) {
+  ExpressionParser(ParserTree &tree, Scanner *scanner = nullptr) : m_tree(tree), LRparser(*ExpressionTables,scanner) {
   }
   void verror(const SourcePosition &pos, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) override;
   static const ParserTables &getTables() {
@@ -61,11 +61,11 @@ $POPNAMESPACE$
 %}
 %%
 
-start               : function                              { m_tree.setRoot(newNode(getPos(1), STMTLIST, $1, NULL));   }
+start               : function                              { m_tree.setRoot(newNode(getPos(1), STMTLIST, $1, nullptr));   }
                     ;
 
 function            : final_expr                        
-                    | assignStmtList final_expr             { $$ = newNode( getPos(1), SEMI   , $1, $2, NULL );         }
+                    | assignStmtList final_expr             { $$ = newNode( getPos(1), SEMI   , $1, $2, nullptr );         }
                     ;
 
 final_expr          : expr
@@ -73,129 +73,129 @@ final_expr          : expr
                     ;
 
 assignStmtList      : assignStmt
-                    | assignStmtList assignStmt             { $$ = newNode( getPos(1), SEMI   , $1, $2, NULL );         }
+                    | assignStmtList assignStmt             { $$ = newNode( getPos(1), SEMI   , $1, $2, nullptr );         }
                     ;
 
 assignStmt          : assign SEMI                           { $$ = $1; }
                     ;
 
-assign              : name ASSIGN expr                      { $$ = newNode( getPos(2), ASSIGN , $1, $3, NULL );         }
+assign              : name ASSIGN expr                      { $$ = newNode( getPos(2), ASSIGN , $1, $3, nullptr );         }
                     ;
 
-expr                : expr PLUS  expr                       { $$ = newNode( getPos(2), PLUS   , $1, $3, NULL);          }
-                    | expr MINUS expr                       { $$ = newNode( getPos(2), MINUS  , $1, $3, NULL);          }
-                    | expr PROD  expr                       { $$ = newNode( getPos(2), PROD   , $1, $3, NULL);          }
-                    | expr QUOT  expr                       { $$ = newNode( getPos(2), QUOT   , $1, $3, NULL);          }
-                    | expr MOD   expr                       { $$ = newNode( getPos(2), MOD    , $1, $3, NULL);          }
-                    | expr POW   expr                       { $$ = newNode( getPos(2), POW    , $1, $3, NULL);          }
+expr                : expr PLUS  expr                       { $$ = newNode( getPos(2), PLUS   , $1, $3, nullptr);          }
+                    | expr MINUS expr                       { $$ = newNode( getPos(2), MINUS  , $1, $3, nullptr);          }
+                    | expr PROD  expr                       { $$ = newNode( getPos(2), PROD   , $1, $3, nullptr);          }
+                    | expr QUOT  expr                       { $$ = newNode( getPos(2), QUOT   , $1, $3, nullptr);          }
+                    | expr MOD   expr                       { $$ = newNode( getPos(2), MOD    , $1, $3, nullptr);          }
+                    | expr POW   expr                       { $$ = newNode( getPos(2), POW    , $1, $3, nullptr);          }
                     | unary
           ;
 
 unary               : number
                     | name
-                    | function1 LPAR expr RPAR              { $$ = newNode( $1->getPos(),$1->getSymbol(), $3, NULL);    }
-                    | function2 LPAR expr COMMA expr RPAR   { $$ = newNode( $1->getPos(),$1->getSymbol(), $3, $5, NULL);}
-                    | LPAR expr RPAR                        { $$ = $2;                                                  }
-                    | MINUS expr                            { $$ = newNode( getPos(1), UNARYMINUS, $2, NULL);           }
-                    | PLUS  expr                            { $$ = $2;                                                  }
+                    | function1 LPAR expr RPAR              { $$ = newNode( $1->getPos(),$1->getSymbol(), $3, nullptr);    }
+                    | function2 LPAR expr COMMA expr RPAR   { $$ = newNode( $1->getPos(),$1->getSymbol(), $3, $5, nullptr);}
+                    | LPAR expr RPAR                        { $$ = $2;                                                     }
+                    | MINUS expr                            { $$ = newNode( getPos(1), UNARYMINUS, $2, nullptr);           }
+                    | PLUS  expr                            { $$ = $2;                                                     }
                     | conditionalExpr
                     | sumExpr
                     | productExpr
                     | polyExpr
                     | LB boolExpr RB                        { $$ = newNode( getPos(1), IIF
                                                                 , $2
-                                                                , newNode(getPos(1), NUMBER  , strtor("1",NULL))
-                                                                , newNode(getPos(1), NUMBER  , strtor("0",NULL))
-                                                                , NULL);                                      }
+                                                                , newNode(getPos(1), NUMBER  , strtor("1",nullptr))
+                                                                , newNode(getPos(1), NUMBER  , strtor("0",nullptr))
+                                                                , nullptr);                                                }
                     ;
 
 conditionalExpr     : IIF LPAR boolExpr COMMA expr COMMA expr RPAR
-                                                            { $$ = newNode( getPos(1), IIF, $3, $5, $7, NULL);          }
+                                                            { $$ = newNode( getPos(1), IIF, $3, $5, $7, nullptr);          }
                     ;
 
 sumExpr             : INDEXEDSUM     LPAR assign TO expr RPAR expr   %prec INDEXEDSUM
-                                                            { $$ = newNode( getPos(1), INDEXEDSUM, $3, $5, $7, NULL);   }
+                                                            { $$ = newNode( getPos(1), INDEXEDSUM, $3, $5, $7, nullptr);   }
                     ;
 
 productExpr         : INDEXEDPRODUCT LPAR assign TO expr RPAR expr   %prec INDEXEDPRODUCT
-                                                            { $$ = newNode( getPos(1), INDEXEDPRODUCT, $3, $5, $7,NULL);}
+                                                            { $$ = newNode( getPos(1), INDEXEDPRODUCT, $3, $5, $7,nullptr);}
                     ;
 
-polyExpr            : POLY LB exprList RB LPAR expr RPAR    { $$ = newNode( getPos(1), POLY, $3, $6, NULL);             }
+polyExpr            : POLY LB exprList RB LPAR expr RPAR    { $$ = newNode( getPos(1), POLY, $3, $6, nullptr);             }
                     ;
 
-exprList            : exprList COMMA expr                   { $$ = newNode( getPos(2), COMMA, $1, $3, NULL);            }
+exprList            : exprList COMMA expr                   { $$ = newNode( getPos(2), COMMA, $1, $3, nullptr);            }
                     | expr
                     ;
                     
-function1           : ABS                                   { $$ = newNode( getPos(1), ABS     , NULL);                 }
-                    | ACOS                                  { $$ = newNode( getPos(1), ACOS    , NULL);                 }
-                    | ACOSH                                 { $$ = newNode( getPos(1), ACOSH   , NULL);                 }
-                    | ACOT                                  { $$ = newNode( getPos(1), ACOT    , NULL);                 }
-                    | ACSC                                  { $$ = newNode( getPos(1), ACSC    , NULL);                 }
-                    | ASEC                                  { $$ = newNode( getPos(1), ASEC    , NULL);                 }
-                    | ASIN                                  { $$ = newNode( getPos(1), ASIN    , NULL);                 }
-                    | ASINH                                 { $$ = newNode( getPos(1), ASINH   , NULL);                 }
-                    | ATAN                                  { $$ = newNode( getPos(1), ATAN    , NULL);                 }
-                    | ATANH                                 { $$ = newNode( getPos(1), ATANH   , NULL);                 }
-                    | CEIL                                  { $$ = newNode( getPos(1), CEIL    , NULL);                 }
-                    | COS                                   { $$ = newNode( getPos(1), COS     , NULL);                 }
-                    | COSH                                  { $$ = newNode( getPos(1), COSH    , NULL);                 }
-                    | COT                                   { $$ = newNode( getPos(1), COT     , NULL);                 }
-                    | CSC                                   { $$ = newNode( getPos(1), CSC     , NULL);                 }
-                    | ERF                                   { $$ = newNode( getPos(1), ERF     , NULL);                 }
-                    | EXP                                   { $$ = newNode( getPos(1), EXP     , NULL);                 }
-                    | EXP10                                 { $$ = newNode( getPos(1), EXP10   , NULL);                 }
-                    | EXP2                                  { $$ = newNode( getPos(1), EXP2    , NULL);                 }
-                    | FAC                                   { $$ = newNode( getPos(1), FAC     , NULL);                 }
-                    | FLOOR                                 { $$ = newNode( getPos(1), FLOOR   , NULL);                 }
-                    | GAMMA                                 { $$ = newNode( getPos(1), GAMMA   , NULL);                 }
-                    | GAUSS                                 { $$ = newNode( getPos(1), GAUSS   , NULL);                 }
-                    | INVERF                                { $$ = newNode( getPos(1), INVERF  , NULL);                 }
-                    | LN                                    { $$ = newNode( getPos(1), LN      , NULL);                 }
-                    | LOG10                                 { $$ = newNode( getPos(1), LOG10   , NULL);                 }
-                    | LOG2                                  { $$ = newNode( getPos(1), LOG2    , NULL);                 }
-                    | NORM                                  { $$ = newNode( getPos(1), NORM    , NULL);                 }
-                    | PROBIT                                { $$ = newNode( getPos(1), PROBIT  , NULL);                 }
-                    | SEC                                   { $$ = newNode( getPos(1), SEC     , NULL);                 }
-                    | SIGN                                  { $$ = newNode( getPos(1), SIGN    , NULL);                 }
-                    | SIN                                   { $$ = newNode( getPos(1), SIN     , NULL);                 }
-                    | SINH                                  { $$ = newNode( getPos(1), SINH    , NULL);                 }
-                    | SQR                                   { $$ = newNode( getPos(1), SQR     , NULL);                 }
-                    | SQRT                                  { $$ = newNode( getPos(1), SQRT    , NULL);                 }
-                    | TAN                                   { $$ = newNode( getPos(1), TAN     , NULL);                 }
-                    | TANH                                  { $$ = newNode( getPos(1), TANH    , NULL);                 }
+function1           : ABS                                   { $$ = newNode( getPos(1), ABS     , nullptr);                 }
+                    | ACOS                                  { $$ = newNode( getPos(1), ACOS    , nullptr);                 }
+                    | ACOSH                                 { $$ = newNode( getPos(1), ACOSH   , nullptr);                 }
+                    | ACOT                                  { $$ = newNode( getPos(1), ACOT    , nullptr);                 }
+                    | ACSC                                  { $$ = newNode( getPos(1), ACSC    , nullptr);                 }
+                    | ASEC                                  { $$ = newNode( getPos(1), ASEC    , nullptr);                 }
+                    | ASIN                                  { $$ = newNode( getPos(1), ASIN    , nullptr);                 }
+                    | ASINH                                 { $$ = newNode( getPos(1), ASINH   , nullptr);                 }
+                    | ATAN                                  { $$ = newNode( getPos(1), ATAN    , nullptr);                 }
+                    | ATANH                                 { $$ = newNode( getPos(1), ATANH   , nullptr);                 }
+                    | CEIL                                  { $$ = newNode( getPos(1), CEIL    , nullptr);                 }
+                    | COS                                   { $$ = newNode( getPos(1), COS     , nullptr);                 }
+                    | COSH                                  { $$ = newNode( getPos(1), COSH    , nullptr);                 }
+                    | COT                                   { $$ = newNode( getPos(1), COT     , nullptr);                 }
+                    | CSC                                   { $$ = newNode( getPos(1), CSC     , nullptr);                 }
+                    | ERF                                   { $$ = newNode( getPos(1), ERF     , nullptr);                 }
+                    | EXP                                   { $$ = newNode( getPos(1), EXP     , nullptr);                 }
+                    | EXP10                                 { $$ = newNode( getPos(1), EXP10   , nullptr);                 }
+                    | EXP2                                  { $$ = newNode( getPos(1), EXP2    , nullptr);                 }
+                    | FAC                                   { $$ = newNode( getPos(1), FAC     , nullptr);                 }
+                    | FLOOR                                 { $$ = newNode( getPos(1), FLOOR   , nullptr);                 }
+                    | GAMMA                                 { $$ = newNode( getPos(1), GAMMA   , nullptr);                 }
+                    | GAUSS                                 { $$ = newNode( getPos(1), GAUSS   , nullptr);                 }
+                    | INVERF                                { $$ = newNode( getPos(1), INVERF  , nullptr);                 }
+                    | LN                                    { $$ = newNode( getPos(1), LN      , nullptr);                 }
+                    | LOG10                                 { $$ = newNode( getPos(1), LOG10   , nullptr);                 }
+                    | LOG2                                  { $$ = newNode( getPos(1), LOG2    , nullptr);                 }
+                    | NORM                                  { $$ = newNode( getPos(1), NORM    , nullptr);                 }
+                    | PROBIT                                { $$ = newNode( getPos(1), PROBIT  , nullptr);                 }
+                    | SEC                                   { $$ = newNode( getPos(1), SEC     , nullptr);                 }
+                    | SIGN                                  { $$ = newNode( getPos(1), SIGN    , nullptr);                 }
+                    | SIN                                   { $$ = newNode( getPos(1), SIN     , nullptr);                 }
+                    | SINH                                  { $$ = newNode( getPos(1), SINH    , nullptr);                 }
+                    | SQR                                   { $$ = newNode( getPos(1), SQR     , nullptr);                 }
+                    | SQRT                                  { $$ = newNode( getPos(1), SQRT    , nullptr);                 }
+                    | TAN                                   { $$ = newNode( getPos(1), TAN     , nullptr);                 }
+                    | TANH                                  { $$ = newNode( getPos(1), TANH    , nullptr);                 }
                     ;
 
-boolExpr            : expr EQ expr                          { $$ = newNode( getPos(2), EQ      , $1, $3, NULL);         }
-                    | expr NE expr                          { $$ = newNode( getPos(2), NE      , $1, $3, NULL);         }
-                    | expr LE expr                          { $$ = newNode( getPos(2), LE      , $1, $3, NULL);         }
-                    | expr LT expr                          { $$ = newNode( getPos(2), LT      , $1, $3, NULL);         }
-                    | expr GE expr                          { $$ = newNode( getPos(2), GE      , $1, $3, NULL);         }
-                    | expr GT expr                          { $$ = newNode( getPos(2), GT      , $1, $3, NULL);         }
-                    | boolExpr AND boolExpr                 { $$ = newNode( getPos(2), AND     , $1, $3, NULL);         }
-                    | boolExpr OR  boolExpr                 { $$ = newNode( getPos(2), OR      , $1, $3, NULL);         }
-                    | NOT boolExpr                          { $$ = newNode( getPos(2), NOT     , $2    , NULL);         }
-                    | LPAR boolExpr RPAR                    { $$ = $2;                                                  }
+boolExpr            : expr EQ expr                          { $$ = newNode( getPos(2), EQ      , $1, $3, nullptr);         }
+                    | expr NE expr                          { $$ = newNode( getPos(2), NE      , $1, $3, nullptr);         }
+                    | expr LE expr                          { $$ = newNode( getPos(2), LE      , $1, $3, nullptr);         }
+                    | expr LT expr                          { $$ = newNode( getPos(2), LT      , $1, $3, nullptr);         }
+                    | expr GE expr                          { $$ = newNode( getPos(2), GE      , $1, $3, nullptr);         }
+                    | expr GT expr                          { $$ = newNode( getPos(2), GT      , $1, $3, nullptr);         }
+                    | boolExpr AND boolExpr                 { $$ = newNode( getPos(2), AND     , $1, $3, nullptr);         }
+                    | boolExpr OR  boolExpr                 { $$ = newNode( getPos(2), OR      , $1, $3, nullptr);         }
+                    | NOT boolExpr                          { $$ = newNode( getPos(2), NOT     , $2    , nullptr);         }
+                    | LPAR boolExpr RPAR                    { $$ = $2;                                                     }
                     ;
 
-function2           : MAX                                   { $$ = newNode( getPos(1), MAX      , NULL);                }
-                    | MIN                                   { $$ = newNode( getPos(1), MIN      , NULL);                }
-                    | NORMRAND                              { $$ = newNode( getPos(1), NORMRAND , NULL);                }
-                    | RAND                                  { $$ = newNode( getPos(1), RAND     , NULL);                }
-                    | ROOT                                  { $$ = newNode( getPos(1), ROOT     , NULL);                }
-                    | BINOMIAL                              { $$ = newNode( getPos(1), BINOMIAL , NULL);                }
-                    | CHI2DENS                              { $$ = newNode( getPos(1), CHI2DENS , NULL);                }
-                    | CHI2DIST                              { $$ = newNode( getPos(1), CHI2DIST , NULL);                }
-                    | LINCGAMMA                             { $$ = newNode( getPos(1), LINCGAMMA, NULL);                }
-                    | ATAN2                                 { $$ = newNode( getPos(1), ATAN2    , NULL);                }
-                    | HYPOT                                 { $$ = newNode( getPos(1), HYPOT    , NULL);                }
+function2           : MAX                                   { $$ = newNode( getPos(1), MAX      , nullptr);                }
+                    | MIN                                   { $$ = newNode( getPos(1), MIN      , nullptr);                }
+                    | NORMRAND                              { $$ = newNode( getPos(1), NORMRAND , nullptr);                }
+                    | RAND                                  { $$ = newNode( getPos(1), RAND     , nullptr);                }
+                    | ROOT                                  { $$ = newNode( getPos(1), ROOT     , nullptr);                }
+                    | BINOMIAL                              { $$ = newNode( getPos(1), BINOMIAL , nullptr);                }
+                    | CHI2DENS                              { $$ = newNode( getPos(1), CHI2DENS , nullptr);                }
+                    | CHI2DIST                              { $$ = newNode( getPos(1), CHI2DIST , nullptr);                }
+                    | LINCGAMMA                             { $$ = newNode( getPos(1), LINCGAMMA, nullptr);                }
+                    | ATAN2                                 { $$ = newNode( getPos(1), ATAN2    , nullptr);                }
+                    | HYPOT                                 { $$ = newNode( getPos(1), HYPOT    , nullptr);                }
                     ;
 
-name                : NAME                                  { $$ = newNode( getPos(1), NAME    , getText());            }
+name                : NAME                                  { $$ = newNode( getPos(1), NAME     , getText());              }
                     ;
 
-number              : NUMBER                                { $$ = newNode( getPos(1), NUMBER  , _tcstor(getText(),NULL)); }
+number              : NUMBER                                { $$ = newNode( getPos(1), NUMBER  , _tcstor(getText(),nullptr)); }
                     ;
 
 %%

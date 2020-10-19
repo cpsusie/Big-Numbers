@@ -8,12 +8,12 @@
 class LexStream {
 public:
   // Opens a new inputstream. return true on success, false on error
-  virtual bool open(const String &s)                  = NULL;
+  virtual bool open(const String &s)                  = 0;
   // Close stream
-  virtual void close()                                = NULL;
-  virtual bool eof()                                  = NULL;
-  virtual bool ok()                                   = NULL;
-  virtual intptr_t getChars(_TUCHAR *dst, size_t n)   = NULL;
+  virtual void close()                                = 0;
+  virtual bool eof()                                  = 0;
+  virtual bool ok()                                   = 0;
+  virtual intptr_t getChars(_TUCHAR *dst, size_t n)   = 0;
 };
 
 #if defined(UNICODE)
@@ -91,12 +91,11 @@ public:
     close();
   }
 
-  bool open(const String &s);
-  void close();
-  intptr_t getChars(_TUCHAR *dst, size_t n);
-  bool eof();
-
-  bool ok() {
+  bool open(const String &s)                override;
+  void close()                              override;
+  intptr_t getChars(_TUCHAR *dst, size_t n) override;
+  bool eof()                                override;
+  bool ok()                                 override {
     return m_f != NULL;
   }
 };
@@ -112,17 +111,15 @@ public:
   LexStringStream(const String &str) {
     open(str);
   }
-  bool open(const String &str);
-  void close() {
+  bool open(const String &str)              override;
+  void close()                              override {
     open(EMPTYSTRING);
   }
-  intptr_t getChars(_TUCHAR *dst, size_t n);
-
-  bool eof() {
+  intptr_t getChars(_TUCHAR *dst, size_t n) override;
+  bool eof()                                override {
     return m_pos >= (intptr_t)m_string.length();
   }
-
-  bool ok() {
+  bool ok()                                 override {
     return true;
   }
 };

@@ -74,7 +74,7 @@ public:
   Expression getDerived(const String &name, bool optimize = true) const;
   static String getDefaultListFileName();
 
-  bool compile(const String &expr, StringArray &errors, bool machineCode, bool optimize = false, FILE *listFile = NULL);
+  bool compile(const String &expr, StringArray &errors, bool machineCode, bool optimize = false, FILE *listFile = nullptr);
 
   // Error should be an element from StringArray returned by compile().
   // Will return sourcePosition specified in error as "(line,col):errorText"

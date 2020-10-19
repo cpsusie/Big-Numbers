@@ -103,7 +103,7 @@ const TCHAR *ListFile::findArgComment(const InstructionOperand &arg) const {
       return m_nameCommentArray[index].cstr();
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 ListLine *ListFile::findLineByPos(UINT pos) {
@@ -114,7 +114,7 @@ ListLine *ListFile::findLineByPos(UINT pos) {
       return line;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 // --------------------------------------------- ListLines ----------------------------

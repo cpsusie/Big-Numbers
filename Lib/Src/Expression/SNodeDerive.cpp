@@ -204,7 +204,7 @@ SNode SNode::D(const String &name) const {
         return _0();
       }
       throwException(_T("Cannot find derived of \"%s\""), toString().cstr());
-      return SNode(NULL);
+      return SNode(nullptr);
     }
   }
 }

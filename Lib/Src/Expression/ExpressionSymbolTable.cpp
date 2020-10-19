@@ -14,7 +14,7 @@ private:
 public:
   AllocateNumbers(ExpressionSymbolTable *table) : m_table(*table) {
   }
-  bool handleNode(ExpressionNode *n);
+  bool handleNode(ExpressionNode *n) override;
 };
 
 bool AllocateNumbers::handleNode(ExpressionNode *n) {
@@ -43,7 +43,7 @@ bool AllocateNumbers::handleNode(ExpressionNode *n) {
 
 class ResetValueIndex : public ExpressionNodeHandler {
 public:
-  bool handleNode(ExpressionNode *n) {
+  bool handleNode(ExpressionNode *n) override {
     if(n->getSymbol() == NUMBER) n->setValueIndex(-1);
     return true;
   }
@@ -73,8 +73,8 @@ void ExpressionSymbolTable::create(const ExpressionVariableArray *oldVariables) 
   for(int i = 0; i < TMPVARCOUNT; i++) {
     insertValue(getRealNaN());
   }
-  allocateConstant(NULL, _T("pi"), M_PI);
-  allocateConstant(NULL, _T("e") , M_E);
+  allocateConstant(nullptr, _T("pi"), M_PI);
+  allocateConstant(nullptr, _T("e") , M_E);
 
   ParserTree *tree = getTree();
   if(tree && !tree->isEmpty()) {
@@ -152,7 +152,7 @@ void ExpressionSymbolTable::buildTableIndexedExpr(ExpressionNode *n) {
 String ExpressionSymbolTable::getNewLoopName(const String &oldName) const {
   for(int i = 1;; i++) {
     const String newName = oldName + String(i);
-    if(m_nameTable.get(newName.cstr()) == NULL) {
+    if(m_nameTable.get(newName.cstr()) == nullptr) {
       return newName;
     }
   }
@@ -163,7 +163,7 @@ private:
   ParserTree &m_tree;
 public:
   DependencyChecker(ParserTree &tree) : m_tree(tree) {}
-  bool handleNode(ExpressionNode *n);
+  bool handleNode(ExpressionNode *n) override;
 };
 
 bool DependencyChecker::handleNode(ExpressionNode *n) {
@@ -196,7 +196,7 @@ void ExpressionSymbolTable::buildTableAssign(ExpressionNode *n, bool loopAssignm
 
 ExpressionVariable *ExpressionSymbolTable::allocateSymbol(ExpressionNode *n, bool constant, bool leftSide, bool loopVar) {
   ExpressionVariable *v = getVariable(n->getName());
-  if(v == NULL) {
+  if(v == nullptr) {
     v = allocateName(n->getName(), 0, constant, leftSide, loopVar);
   } else {
     if(loopVar) {
@@ -217,7 +217,7 @@ ExpressionVariable *ExpressionSymbolTable::allocateSymbol(ExpressionNode *n, boo
 }
 
 ExpressionVariable *ExpressionSymbolTable::allocateName(const String &name, const Real &value, bool constant, bool leftSide, bool loopVar) {
-  if(m_nameTable.get(name.cstr()) != NULL) {
+  if(m_nameTable.get(name.cstr()) != nullptr) {
     throwInvalidArgumentException(__TFUNCTION__, _T("Name \"%s\" already exist"), name.cstr());
   }
   const int varIndex   = (int)m_variableTable.size();
@@ -231,9 +231,9 @@ ExpressionVariable *ExpressionSymbolTable::allocateName(const String &name, cons
 // assume n->getSymbol() == NAME
 ExpressionVariable *ExpressionSymbolTable::allocateConstant(ExpressionNode *n, const String &name, const Real &value) {
   const ExpressionVariable *v = getVariable(name);
-  if(v != NULL) {
+  if(v != nullptr) {
     getTree()->addError(n, _T("Constant %s has already been declared"), name.cstr());
-    return NULL;
+    return nullptr;
   }
   return allocateName(name, value, true, true, false);
 }
@@ -464,7 +464,7 @@ bool ExpressionSymbolTable::isTempVarIndex(UINT valueIndex) { // static
 
 String NameTable::toString() const {
   String result = _T("{");
-  const TCHAR *del = NULL;
+  const TCHAR *del = nullptr;
 
   for(ConstIterator<Entry<CompactStrIKeyType, UINT> > it = getIterator(); it.hasNext();) {
     const Entry<CompactStrIKeyType, UINT> &e    = it.next();

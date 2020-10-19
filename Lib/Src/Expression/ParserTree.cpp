@@ -2,6 +2,7 @@
 #include <Math/Expression/ParserTree.h>
 #include <Math/Expression/ExpressionSymbolTable.h>
 #include "Math/Expression/ExpressionParser.h"
+#include "ExpressionLex.h"
 
 namespace Expr {
 
@@ -31,7 +32,7 @@ ParserTree::ParserTree(Expression *expr, const String &str)
 : m_expression(*expr)
 {
   init(PS_EMPTY,0);
-  m_root              = NULL;
+  m_root              = nullptr;
   m_ops               = NodeOperators::s_stdForm;
   parse(str);
 }
@@ -39,9 +40,9 @@ ParserTree::ParserTree(Expression *expr, const String &str)
 ParserTree::ParserTree(Expression *expression, const ExpressionNode *root)
 : m_expression(*expression)
 {
-  if(root == NULL) {
+  if(root == nullptr) {
     init(PS_EMPTY, 0);
-    m_root   = NULL;
+    m_root   = nullptr;
     m_ops    = NodeOperators::s_stdForm;
   } else {
     ParserTree &src = root->getTree();
@@ -55,7 +56,7 @@ ParserTree::ParserTree(Expression *expression, const ExpressionNode *root)
 
 void ParserTree::init(ParserTreeState      state
                      ,UINT                 reduceIteration) {
-  if(m_expression.m_tree != NULL) {
+  if(m_expression.m_tree != nullptr) {
     throwException(_T("%s:m_expression.m_tree already set to another ParserTree"),__TFUNCTION__);
   }
   m_expression.m_tree = this;
@@ -72,7 +73,7 @@ ParserTree &ParserTree::operator=(const ParserTree &src) {
   releaseAll();
   m_errors = src.m_errors;
   setTreeForm(         src.getTreeForm());
-  setRoot(             src.isEmpty() ? NULL : src.getRoot()->clone(this));
+  setRoot(             src.isEmpty() ? nullptr : src.getRoot()->clone(this));
   setReduceIteration(  src.getReduceIteration());
   setState(            src.getState());
   CHECKTREE_ISCONSISTENT(*this)
@@ -81,7 +82,7 @@ ParserTree &ParserTree::operator=(const ParserTree &src) {
 
 ParserTree::~ParserTree() {
   releaseAll();
-  m_expression.m_tree = NULL;
+  m_expression.m_tree = nullptr;
 }
 
 void ParserTree::parse(const String &expr) {
@@ -200,7 +201,7 @@ void ParserTree::releaseAll() {
     SAFEDELETE(m_nodeTable[i]);
   }
   resetSimpleConstants();
-  setRoot(NULL);
+  setRoot(nullptr);
   m_errors.clear();
   m_nodeTable.clear();
   m_nonRootNodes.clear();
@@ -221,8 +222,8 @@ ExpressionNodeNumber *ParserTree::getRationalConstant(const Rational &r) {
 void ParserTree::addError(ExpressionNode *n, _In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   va_list argptr;
   va_start(argptr, format);
-  if((n == NULL) || !n->hasPos()) {
-    vAddError(NULL, format, argptr);
+  if((n == nullptr) || !n->hasPos()) {
+    vAddError(nullptr, format, argptr);
   } else {
     vAddError(&n->getPos(), format, argptr);
   }
@@ -238,12 +239,12 @@ void ParserTree::addError(const SourcePosition &pos, _In_z_ _Printf_format_strin
 void ParserTree::addError(_In_z_ _Printf_format_string_ TCHAR const * const format,...) {
   va_list argptr;
   va_start(argptr, format);
-  vAddError(NULL, format, argptr);
+  vAddError(nullptr, format, argptr);
   va_end(argptr);
 }
 
 void ParserTree::vAddError(const SourcePosition *pos, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
-  String tmp = (pos != NULL)
+  String tmp = (pos != nullptr)
              ? ::format(_T("%s:%s"), pos->toString().cstr(), vformat(format, argptr).cstr())
              : vformat(format, argptr);
   tmp.replace('\n',' ');
@@ -266,7 +267,7 @@ void ParserTree::listErrors(tostream &out) const {
 
 void ParserTree::listErrors(const TCHAR *fname) const {
   FILE *f = fopen(fname,_T("w"));
-  if(f == NULL) {
+  if(f == nullptr) {
     _ftprintf(stdout,_T("Cannot open %s\n"), fname);
     listErrors(stdout);
   } else {
@@ -276,7 +277,7 @@ void ParserTree::listErrors(const TCHAR *fname) const {
 }
 
 UINT ParserTree::getNodeCount(ExpressionNodeSelector *selector) const {
-  if(getRoot() == NULL) {
+  if(getRoot() == nullptr) {
     return 0;
   } else {
     if(selector) {
@@ -287,9 +288,9 @@ UINT ParserTree::getNodeCount(ExpressionNodeSelector *selector) const {
   }
 }
 
-// if(validSymbolSet != NULL, only node with symbols contained in set will be counted
+// if(validSymbolSet != nullptr, only node with symbols contained in set will be counted
 UINT ParserTree::getNodeCount(bool ignoreMarked, const ExpressionSymbolSet *validSymbolSet) const {
-  if((validSymbolSet == NULL) && !ignoreMarked) {
+  if((validSymbolSet == nullptr) && !ignoreMarked) {
     return getNodeCount();
   } else {
     return getNodeCount(&ExpressionNodeSymbolSelector(validSymbolSet, ignoreMarked));
@@ -298,7 +299,7 @@ UINT ParserTree::getNodeCount(bool ignoreMarked, const ExpressionSymbolSet *vali
 
 class Pow1NodeMarker : public ExpressionNodeHandler {
 public:
-  bool handleNode(ExpressionNode *n);
+  bool handleNode(ExpressionNode *n) override;
 };
 
 bool Pow1NodeMarker::handleNode(ExpressionNode *n) {
@@ -375,7 +376,7 @@ SNode ParserTree::traverseSubstituteNodes(SNode n, CompactNodeHashMap<Expression
 
   default            :
     n.throwUnknownNodeTypeException(__TFUNCTION__);
-    return NULL;
+    return nullptr;
   }
 }
 
@@ -424,7 +425,7 @@ class MarkedNodeExpander : public MarkedNodeTransformer {
 public:
   MarkedNodeExpander(ParserTree *tree) : MarkedNodeTransformer(tree) {
   }
-  bool handleNode(ExpressionNode *n);
+  bool handleNode(ExpressionNode *n) override;
 };
 
 bool MarkedNodeExpander::handleNode(ExpressionNode *n) {
@@ -438,7 +439,7 @@ class MarkedNodeMultiplier : public MarkedNodeTransformer {
 public:
   MarkedNodeMultiplier(ParserTree *tree) : MarkedNodeTransformer(tree) {
   }
-  bool handleNode(ExpressionNode *n);
+  bool handleNode(ExpressionNode *n) override;
 };
 
 bool MarkedNodeMultiplier::handleNode(ExpressionNode *n) {
@@ -532,7 +533,7 @@ ExpressionNodeBoolConst *ParserTree::boolConstExpr(bool b, bool checkIsSimple) {
 
 ExpressionNode *ParserTree::constExpr(const String &name) {
   ExpressionVariable *v = getSymbolTable().getVariable(name);
-  if(v == NULL) {
+  if(v == nullptr) {
     throwInvalidArgumentException(__TFUNCTION__, _T("%s not found in symbol table"), name.cstr());
   } else if(!v->isConstant()) {
     throwInvalidArgumentException(__TFUNCTION__, _T("%s is not a constant"), name.cstr());
@@ -551,7 +552,7 @@ String ParserTree::toString() const {
 
   result += getSymbolTable().toString();
   if(isEmpty()) {
-    result += _T("Root = NULL\n");
+    result += _T("Root = nullptr\n");
   } else {
     getRoot()->dumpNode(result, 0);
   }

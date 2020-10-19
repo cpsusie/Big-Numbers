@@ -896,6 +896,7 @@
     <ClInclude Include="..\..\Include\Math\Expression\ExpressionFunctionR2R1.h" />
     <ClInclude Include="..\..\Include\Math\Expression\ExpressionFunctionR3R1.h" />
     <ClInclude Include="..\..\Include\Math\Expression\ExpressionNode.h" />
+    <ClInclude Include="..\..\Include\Math\Expression\ExpressionParser.h" />
     <ClInclude Include="..\..\Include\Math\Expression\ExpressionSymbol.h" />
     <ClInclude Include="..\..\Include\Math\Expression\ExpressionWrapper.h" />
     <ClInclude Include="..\..\Include\Math\Expression\ExpressionXML.h" />
@@ -908,7 +909,6 @@
     <ClInclude Include="CodeGeneration.h" />
     <ClInclude Include="CodeGenerator.h" />
     <ClInclude Include="ExpressionLex.h" />
-    <ClInclude Include="ExpressionParser.h" />
     <ClInclude Include="ExpressionRandom.h" />
     <ClInclude Include="FPUEmulator.h" />
     <ClInclude Include="FunctionCall.h" />

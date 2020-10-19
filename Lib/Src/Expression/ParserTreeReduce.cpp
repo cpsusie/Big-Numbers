@@ -15,10 +15,10 @@ public:
   MainReducer(ParserTree *tree) : m_tree(*tree) {
     m_state = PS_MAINREDUCTION1;
   }
-  SNode transform(SNode n) {
+  SNode transform(SNode n) override {
     return n.reduce();
   }
-  ParserTreeState getState() const {
+  ParserTreeState getState() const override {
     return m_state;
   }
   void setState(ParserTreeState state) {

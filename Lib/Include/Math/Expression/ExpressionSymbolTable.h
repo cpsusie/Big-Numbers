@@ -49,11 +49,11 @@ public:
   void                             clear();
   inline ExpressionVariable       *getVariable(const String &name) {
     const UINT *index = m_nameTable.get(name.cstr());
-    return index ? &m_variableTable[*index] : NULL;
+    return index ? &m_variableTable[*index] : nullptr;
   }
   inline const ExpressionVariable *getVariable(const String &name) const {
     const UINT *index = m_nameTable.get(name.cstr());
-    return index ? &m_variableTable[*index] : NULL;
+    return index ? &m_variableTable[*index] : nullptr;
   }
   String                              getNewLoopName(const String &oldName) const;
 
@@ -71,7 +71,7 @@ public:
   }
   inline void setValue(const String &name, const Real &value) const {
     const ExpressionVariable *v = getVariable(name);
-    if(v != NULL) setValue(v->getValueIndex(), value);
+    if(v != nullptr) setValue(v->getValueIndex(), value);
   }
 
   inline Real getValue(UINT valueIndex) const {

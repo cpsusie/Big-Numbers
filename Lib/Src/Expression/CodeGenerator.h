@@ -103,7 +103,7 @@ public:
   // delete after usage. No exceptions should be thrown, as syntax-checks has been done, when
   // building the parsertree/symbol-table, but in case of an internal error, m_code will
   // automaticly be deleted.
-  CodeGenerator(ParserTree *tree, FILE *listFile = NULL);
+  CodeGenerator(ParserTree *tree, FILE *listFile = nullptr);
   const MachineCode *getCode() const {
     return m_codeArray;
   }

@@ -34,7 +34,7 @@ void ReductionStack::pop(const TCHAR *method) {
 void ReductionStack::clear() {
   const ReductionStackElement *oldTop    = topPointer();
   const int                    oldHeight = getHeight();
-  const ReductionStackElement *newTop    = NULL;
+  const ReductionStackElement *newTop    = nullptr;
   if(newTop != oldTop) {
     notifyPropertyChanged(REDUCTION_STACKTOP  ,  oldTop   ,  newTop   );
   }
@@ -48,7 +48,7 @@ void ReductionStack::clear() {
 }
 
 const ReductionStackElement *ReductionStack::topPointer(UINT index) const {
-  return (index >= getHeight()) ? NULL : &top(index);
+  return (index >= getHeight()) ? nullptr : &top(index);
 }
 
 const TCHAR *ReductionStack::getRawName(const TCHAR *str) { // static

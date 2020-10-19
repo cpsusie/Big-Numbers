@@ -38,7 +38,7 @@ bool ExpressionNodeName::equalMinus(const ExpressionNode *n) const {
 
 bool ExpressionNodeName::isConstant(Number *v) const {
   const bool result = m_var->isConstant();
-  if(result && (v != NULL)) {
+  if(result && (v != nullptr)) {
     *v = getSymbolTable().getValue(m_var->getValueIndex());
   }
   return result;
@@ -55,8 +55,8 @@ bool ExpressionNodeName::traverseNode(ExpressionNodeHandler &handler) {
 
 void ExpressionNodeName::dumpNode(String &s, int level) const {
   addLeftMargin(s, level) += format(_T("NAME:%s"), getName().cstr());
-  if(m_var == NULL) {
-    s += _T(" var=NULL\n");
+  if(m_var == nullptr) {
+    s += _T(" var=nullptr\n");
   } else if(!m_var->isMarked()) {
     s += format(_T(" %s\n"), m_var->toString().cstr());
     m_var->mark();

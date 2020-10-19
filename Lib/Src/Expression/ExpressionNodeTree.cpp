@@ -182,7 +182,7 @@ public:
     m_nonConstantFound = false;
   }
 
-  bool handleNode(ExpressionNode *n);
+  bool handleNode(ExpressionNode *n) override;
   bool dependsOnNonConstantNames() const {
     return m_nonConstantFound;
   }
@@ -223,7 +223,7 @@ bool ExpressionNodeTree::isConstant(Number *v) const {
     result = m_childArray.isConstant();
     break;
   }
-  if(result && (v != NULL)) {
+  if(result && (v != nullptr)) {
     *v = evaluateReal();
   }
   return result;

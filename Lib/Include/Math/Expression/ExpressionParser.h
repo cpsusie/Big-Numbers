@@ -4,17 +4,19 @@
 #include <LRparser.h>
 
 #line 3 "C:\\Mytools2015\\Lib\\Src\\Expression\\Expression.y"
+#include <Scanner.h>
 #include <Math/Expression/ParserTree.h>
 #include <Math/Expression/ExpressionNode.h>
-#include "ExpressionLex.h"
+
 
 namespace Expr {
+
 
 class ExpressionParser : public LRparser {
 private:
   static const ParserTables *ExpressionTables;
 public:
-  ExpressionParser(ParserTree &tree, ExpressionLex *lex = NULL) : m_tree(tree), LRparser(*ExpressionTables,lex) {
+  ExpressionParser(ParserTree &tree, Scanner *scanner = nullptr) : m_tree(tree), LRparser(*ExpressionTables,scanner) {
   }
   void verror(const SourcePosition &pos, _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) override;
   static const ParserTables &getTables() {
@@ -35,5 +37,4 @@ private:
 
 }; // namespace Expr
 
-#line 22 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
-
+#line 17 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
