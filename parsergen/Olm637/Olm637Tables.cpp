@@ -10,7 +10,7 @@
 
 
 /**********************************************************************************\
-* The 4 arrays actionCode, termListTable, actionstateListTable, compressedLAsets   *
+* The 4 arrays actionCode, termListTable, actionListTable and termSetTable         *
 * holds a compressed action-matrix, used by LRParser to find                       *
 * action = getAction(S,T), where S is current state, T is next terminal on input   *
 *                                                                                  *
@@ -51,8 +51,8 @@
 *            a: Action.                                                            *
 *                                                                                  *
 *         I==1: All actions in the state are reduce by the same production P = -a. *
-*            t: Index into compressedLAsets, pointing at the first element of      *
-*               LASet (see below).                                                 *
+*            t: Index into termSetTable, pointing at the first element of termSet  *
+*               (see below).                                                       *
 *            a: Action.                                                            *
 *                                                                                  *
 * F == 0: Use arrays termListTable and actionListTable to find action.             *
@@ -65,16 +65,16 @@
 *      and set action = actionList[k]. If T is not found, set action = _ParseError.*
 *      Note that both termList and actionList may be shared by several states.     *
 *                                                                                  *
-* F == 1 and I==1: Use array compressedLAsets which is a list of bitsets, each     *
-*                  with terminalCount bits, a lookaheadset LAset with 1-bits       *
-*                  for legal terminals, and 0-bits for illegal terminals.          *
+* F == 1 and I==1: Use array termSetTable which is a list of termSet, bitsets,     *
+*                  each with terminalCount bits, 1-bits for legal terminals, and   *
+*                  0-bits for illegal terminals.                                   *
 *                                                                                  *
-*      b                 : Number of bytes in each LAset = (terminalCount-1)/8+1   *
-*      LAset[0..b-1]     : compressedLAsets[t..t+b-1]                              *
+*      b                 : Number of bytes in each termSet = (terminalCount-1)/8+1 *
+*      termSet[0..b-1]   : termSetTable[t..t+b-1]                                  *
 *                                                                                  *
 *      As for uncompressed states, the same check for existence is done.           *
-*      If terminal T is not present in LAset, set action = _ParseError.            *
-*      Note that each LAset may be shared by several states.                       *
+*      If terminal T is not present in termSet, set action = _ParseError.          *
+*      Note that each termSet may be shared by several states.                     *
 \**********************************************************************************/
 #define _ac0000 0x00000000 /* termList   0, actionList   0            */
 #define _ac0001 0x00010000 /* Reduce by 0 on EOI                      */
@@ -82,7 +82,7 @@
 #define _ac0003 0x000d0005 /* Shift  to 6 on f                        */
 #define _ac0004 0x00130004 /* Shift  to 9 on d                        */
 #define _ac0005 0x00150003 /* Shift  to 10 on c                       */
-#define _ac0006 0xfff78000 /* Reduce by 5 on tokens in LAset[0]       */
+#define _ac0006 0xfff78000 /* Reduce by 5 on tokens in termSet[0]     */
 #define _ac0007 0x00170003 /* Shift  to 11 on c                       */
 #define _ac0008 0x00190004 /* Shift  to 12 on d                       */
 #define _ac0009 0xffff0000 /* Reduce by 1 on EOI                      */
@@ -103,7 +103,7 @@ static const char actionListTable[2] = {
       2,   3                                                                                                 /*   0 Used by state  (0) */
 }; // Size of table:4(x86)/8(x64) bytes.
 
-static const unsigned char compressedLAsets[1] = {
+static const unsigned char termSetTable[1] = {
    0x18 /*   0   2 tokens Used by state  (6) */
 }; // Size of table:4(x86)/8(x64) bytes.
 
@@ -227,7 +227,7 @@ static const ParserTablesTemplate<6,10,7,13
                                  ,unsigned char
                                  ,unsigned char
                                  ,char
-                                 ,unsigned char> Olm637Tables_s(actionCode      , termListTable     , actionListTable, compressedLAsets
+                                 ,unsigned char> Olm637Tables_s(actionCode      , termListTable     , actionListTable, termSetTable
                                                                ,successorCode   , NTindexListTable  , stateListTable
                                                                ,productionLength, leftSideTable
                                                                ,rightSideTable  , symbolNames

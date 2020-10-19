@@ -11,7 +11,7 @@
 
 
 /**********************************************************************************\
-* The 4 arrays actionCode, termListTable, actionstateListTable, compressedLAsets   *
+* The 4 arrays actionCode, termListTable, actionListTable and termSetTable         *
 * holds a compressed action-matrix, used by LRParser to find                       *
 * action = getAction(S,T), where S is current state, T is next terminal on input   *
 *                                                                                  *
@@ -52,8 +52,8 @@
 *            a: Action.                                                            *
 *                                                                                  *
 *         I==1: All actions in the state are reduce by the same production P = -a. *
-*            t: Index into compressedLAsets, pointing at the first element of      *
-*               LASet (see below).                                                 *
+*            t: Index into termSetTable, pointing at the first element of termSet  *
+*               (see below).                                                       *
 *            a: Action.                                                            *
 *                                                                                  *
 * F == 0: Use arrays termListTable and actionListTable to find action.             *
@@ -66,55 +66,55 @@
 *      and set action = actionList[k]. If T is not found, set action = _ParseError.*
 *      Note that both termList and actionList may be shared by several states.     *
 *                                                                                  *
-* F == 1 and I==1: Use array compressedLAsets which is a list of bitsets, each     *
-*                  with terminalCount bits, a lookaheadset LAset with 1-bits       *
-*                  for legal terminals, and 0-bits for illegal terminals.          *
+* F == 1 and I==1: Use array termSetTable which is a list of termSet, bitsets,     *
+*                  each with terminalCount bits, 1-bits for legal terminals, and   *
+*                  0-bits for illegal terminals.                                   *
 *                                                                                  *
-*      b                 : Number of bytes in each LAset = (terminalCount-1)/8+1   *
-*      LAset[0..b-1]     : compressedLAsets[t..t+b-1]                              *
+*      b                 : Number of bytes in each termSet = (terminalCount-1)/8+1 *
+*      termSet[0..b-1]   : termSetTable[t..t+b-1]                                  *
 *                                                                                  *
 *      As for uncompressed states, the same check for existence is done.           *
-*      If terminal T is not present in LAset, set action = _ParseError.            *
-*      Note that each LAset may be shared by several states.                       *
+*      If terminal T is not present in termSet, set action = _ParseError.          *
+*      Note that each termSet may be shared by several states.                     *
 \**********************************************************************************/
-#define _ac0000 0xffff8000 /* Reduce by 1 on tokens in LAset[0]       */
+#define _ac0000 0xffff8000 /* Reduce by 1 on tokens in termSet[0]     */
 #define _ac0001 0x00000000 /* termList   0, actionList   0            */
-#define _ac0002 0xfffd8000 /* Reduce by 2 on tokens in LAset[0]       */
+#define _ac0002 0xfffd8000 /* Reduce by 2 on tokens in termSet[0]     */
 #define _ac0003 0x0014000b /* termList   1, actionList   1            */
 #define _ac0004 0x001c0010 /* termList   2, actionList   2            */
-#define _ac0005 0xfff1800a /* Reduce by 8 on tokens in LAset[1]       */
+#define _ac0005 0xfff1800a /* Reduce by 8 on tokens in termSet[1]     */
 #define _ac0006 0x002e001a /* termList   3, actionList   3            */
-#define _ac0007 0xffed8014 /* Reduce by 10 on tokens in LAset[2]      */
-#define _ac0008 0xffe98014 /* Reduce by 12 on tokens in LAset[2]      */
-#define _ac0009 0xffe5801e /* Reduce by 14 on tokens in LAset[3]      */
-#define _ac0010 0xffe3801e /* Reduce by 15 on tokens in LAset[3]      */
-#define _ac0011 0xffe1801e /* Reduce by 16 on tokens in LAset[3]      */
+#define _ac0007 0xffed8014 /* Reduce by 10 on tokens in termSet[2]    */
+#define _ac0008 0xffe98014 /* Reduce by 12 on tokens in termSet[2]    */
+#define _ac0009 0xffe5801e /* Reduce by 14 on tokens in termSet[3]    */
+#define _ac0010 0xffe3801e /* Reduce by 15 on tokens in termSet[3]    */
+#define _ac0011 0xffe1801e /* Reduce by 16 on tokens in termSet[3]    */
 #define _ac0012 0x003e0023 /* termList   4, actionList   4            */
 #define _ac0013 0x00420023 /* termList   4, actionList   5            */
-#define _ac0014 0xff6d8028 /* Reduce by 74 on tokens in LAset[4]      */
+#define _ac0014 0xff6d8028 /* Reduce by 74 on tokens in termSet[4]    */
 #define _ac0015 0x00460026 /* termList   5, actionList   6            */
-#define _ac0016 0xfff98000 /* Reduce by 4 on tokens in LAset[0]       */
+#define _ac0016 0xfff98000 /* Reduce by 4 on tokens in termSet[0]     */
 #define _ac0017 0x004a0029 /* termList   6, actionList   7            */
-#define _ac0018 0xffdf8032 /* Reduce by 17 on tokens in LAset[5]      */
+#define _ac0018 0xffdf8032 /* Reduce by 17 on tokens in termSet[5]    */
 #define _ac0019 0x0054002f /* termList   7, actionList   8            */
 #define _ac0020 0x005e0035 /* termList   8, actionList   9            */
 #define _ac0021 0x006c003d /* termList   9, actionList  10            */
-#define _ac0022 0x006c003d /* termList   9, actionList   9            */
-#define _ac0023 0xfeb9803c /* Reduce by 164 on tokens in LAset[6]     */
-#define _ac0024 0xfff3800a /* Reduce by 7 on tokens in LAset[1]       */
-#define _ac0025 0xffeb8014 /* Reduce by 11 on tokens in LAset[2]      */
-#define _ac0026 0xffe78014 /* Reduce by 13 on tokens in LAset[2]      */
+#define _ac0022 0x006c003d /* termList   9, actionList  10            */
+#define _ac0023 0xfeb9803c /* Reduce by 164 on tokens in termSet[6]   */
+#define _ac0024 0xfff3800a /* Reduce by 7 on tokens in termSet[1]     */
+#define _ac0025 0xffeb8014 /* Reduce by 11 on tokens in termSet[2]    */
+#define _ac0026 0xffe78014 /* Reduce by 13 on tokens in termSet[2]    */
 #define _ac0027 0x005d0026 /* Shift  to 46 on LC                      */
 #define _ac0028 0x00720041 /* termList  10, actionList  11            */
-#define _ac0029 0xff8d8046 /* Reduce by 58 on tokens in LAset[7]      */
+#define _ac0029 0xff8d8046 /* Reduce by 58 on tokens in termSet[7]    */
 #define _ac0030 0x008c0041 /* termList  10, actionList  12            */
 #define _ac0031 0x002f0048 /* Shift  to 23 on NAME                    */
-#define _ac0032 0xfffb8000 /* Reduce by 3 on tokens in LAset[0]       */
-#define _ac0033 0x006c003d /* termList   9, actionList   9            */
-#define _ac0034 0xfff78000 /* Reduce by 5 on tokens in LAset[0]       */
+#define _ac0032 0xfffb8000 /* Reduce by 3 on tokens in termSet[0]     */
+#define _ac0033 0x006c003d /* termList   9, actionList  10            */
+#define _ac0034 0xfff78000 /* Reduce by 5 on tokens in termSet[0]     */
 #define _ac0035 0x00a6004f /* termList  11, actionList  13            */
 #define _ac0036 0x00990041 /* Shift  to 76 on RPAR                    */
-#define _ac0037 0xff618050 /* Reduce by 80 on tokens in LAset[8]      */
+#define _ac0037 0xff618050 /* Reduce by 80 on tokens in termSet[8]    */
 #define _ac0038 0x00be005c /* termList  12, actionList  14            */
 #define _ac0039 0x00d60069 /* termList  13, actionList  15            */
 #define _ac0040 0x00e2004f /* termList  11, actionList  16            */
@@ -123,99 +123,99 @@
 #define _ac0043 0x01160078 /* termList  15, actionList  19            */
 #define _ac0044 0x0122007f /* termList  16, actionList  20            */
 #define _ac0045 0x0128007f /* termList  16, actionList  21            */
-#define _ac0046 0xff8b805a /* Reduce by 59 on tokens in LAset[9]      */
-#define _ac0047 0xff75801e /* Reduce by 70 on tokens in LAset[3]      */
+#define _ac0046 0xff8b805a /* Reduce by 59 on tokens in termSet[9]    */
+#define _ac0047 0xff75801e /* Reduce by 70 on tokens in termSet[3]    */
 #define _ac0048 0x002f0048 /* Shift  to 23 on NAME                    */
 #define _ac0049 0x012e0083 /* termList  17, actionList  22            */
-#define _ac0050 0xff6b8064 /* Reduce by 75 on tokens in LAset[10]     */
+#define _ac0050 0xff6b8064 /* Reduce by 75 on tokens in termSet[10]   */
 #define _ac0051 0x01320086 /* termList  18, actionList  23            */
-#define _ac0052 0xffdd8032 /* Reduce by 18 on tokens in LAset[5]      */
+#define _ac0052 0xffdd8032 /* Reduce by 18 on tokens in termSet[5]    */
 #define _ac0053 0x0138008a /* termList  19, actionList  24            */
-#define _ac0054 0xffc5806e /* Reduce by 30 on tokens in LAset[11]     */
+#define _ac0054 0xffc5806e /* Reduce by 30 on tokens in termSet[11]   */
 #define _ac0055 0x00cd003f /* Shift  to 102 on RB                     */
 #define _ac0056 0x0140008f /* termList  20, actionList  25            */
-#define _ac0057 0xff218078 /* Reduce by 112 on tokens in LAset[12]    */
-#define _ac0058 0xff1f8078 /* Reduce by 113 on tokens in LAset[12]    */
-#define _ac0059 0xff1d8078 /* Reduce by 114 on tokens in LAset[12]    */
+#define _ac0057 0xff218078 /* Reduce by 112 on tokens in termSet[12]  */
+#define _ac0058 0xff1f8078 /* Reduce by 113 on tokens in termSet[12]  */
+#define _ac0059 0xff1d8078 /* Reduce by 114 on tokens in termSet[12]  */
 #define _ac0060 0x015e009f /* termList  21, actionList  26            */
 #define _ac0061 0x00d70040 /* Shift  to 107 on LPAR                   */
 #define _ac0062 0x019200ba /* termList  22, actionList  27            */
-#define _ac0063 0x019200ba /* termList  22, actionList  22            */
+#define _ac0063 0x019200ba /* termList  22, actionList  27            */
 #define _ac0064 0x01a800c6 /* termList  23, actionList  28            */
-#define _ac0065 0x019200ba /* termList  22, actionList  22            */
-#define _ac0066 0x019200ba /* termList  22, actionList  22            */
-#define _ac0067 0x019200ba /* termList  22, actionList  22            */
-#define _ac0068 0xfec78082 /* Reduce by 157 on tokens in LAset[13]    */
+#define _ac0065 0x019200ba /* termList  22, actionList  27            */
+#define _ac0066 0x019200ba /* termList  22, actionList  27            */
+#define _ac0067 0x019200ba /* termList  22, actionList  27            */
+#define _ac0068 0xfec78082 /* Reduce by 157 on tokens in termSet[13]  */
 #define _ac0069 0x01da00e0 /* termList  24, actionList  29            */
-#define _ac0070 0xfeef808c /* Reduce by 137 on tokens in LAset[14]    */
+#define _ac0070 0xfeef808c /* Reduce by 137 on tokens in termSet[14]  */
 #define _ac0071 0x01ec00ea /* termList  25, actionList  30            */
-#define _ac0072 0xfee98096 /* Reduce by 140 on tokens in LAset[15]    */
+#define _ac0072 0xfee98096 /* Reduce by 140 on tokens in termSet[15]  */
 #define _ac0073 0x020000f5 /* termList  26, actionList  31            */
 #define _ac0074 0x02160101 /* termList  27, actionList  32            */
-#define _ac0075 0xfebd80a0 /* Reduce by 162 on tokens in LAset[16]    */
-#define _ac0076 0xffbf806e /* Reduce by 33 on tokens in LAset[11]     */
+#define _ac0075 0xfebd80a0 /* Reduce by 162 on tokens in termSet[16]  */
+#define _ac0076 0xffbf806e /* Reduce by 33 on tokens in termSet[11]   */
 #define _ac0077 0x02400117 /* termList  28, actionList  33            */
-#define _ac0078 0xffd98032 /* Reduce by 20 on tokens in LAset[5]      */
-#define _ac0079 0xfec580aa /* Reduce by 158 on tokens in LAset[17]    */
-#define _ac0080 0x00be005c /* termList  12, actionList  12            */
-#define _ac0081 0xffd380b4 /* Reduce by 23 on tokens in LAset[18]     */
+#define _ac0078 0xffd98032 /* Reduce by 20 on tokens in termSet[5]    */
+#define _ac0079 0xfec580aa /* Reduce by 158 on tokens in termSet[17]  */
+#define _ac0080 0x00be005c /* termList  12, actionList  14            */
+#define _ac0081 0xffd380b4 /* Reduce by 23 on tokens in termSet[18]   */
 #define _ac0082 0x027e0137 /* termList  29, actionList  34            */
-#define _ac0083 0xffb380be /* Reduce by 39 on tokens in LAset[19]     */
+#define _ac0083 0xffb380be /* Reduce by 39 on tokens in termSet[19]   */
 #define _ac0084 0x0282013a /* termList  30, actionList  35            */
-#define _ac0085 0xffad80be /* Reduce by 42 on tokens in LAset[19]     */
-#define _ac0086 0xffab80be /* Reduce by 43 on tokens in LAset[19]     */
-#define _ac0087 0xffa980c8 /* Reduce by 44 on tokens in LAset[20]     */
+#define _ac0085 0xffad80be /* Reduce by 42 on tokens in termSet[19]   */
+#define _ac0086 0xffab80be /* Reduce by 43 on tokens in termSet[19]   */
+#define _ac0087 0xffa980c8 /* Reduce by 44 on tokens in termSet[20]   */
 #define _ac0088 0x02940144 /* termList  31, actionList  36            */
-#define _ac0089 0xffcf80b4 /* Reduce by 25 on tokens in LAset[18]     */
+#define _ac0089 0xffcf80b4 /* Reduce by 25 on tokens in termSet[18]   */
 #define _ac0090 0x0151003f /* Shift  to 168 on RB                     */
-#define _ac0091 0xffbd806e /* Reduce by 34 on tokens in LAset[11]     */
+#define _ac0091 0xffbd806e /* Reduce by 34 on tokens in termSet[11]   */
 #define _ac0092 0x029e0137 /* termList  29, actionList  37            */
 #define _ac0093 0x02a20137 /* termList  29, actionList  38            */
-#define _ac0094 0xffb780be /* Reduce by 37 on tokens in LAset[19]     */
-#define _ac0095 0xffc980b4 /* Reduce by 28 on tokens in LAset[18]     */
-#define _ac0096 0xffc1806e /* Reduce by 32 on tokens in LAset[11]     */
+#define _ac0094 0xffb780be /* Reduce by 37 on tokens in termSet[19]   */
+#define _ac0095 0xffc980b4 /* Reduce by 28 on tokens in termSet[18]   */
+#define _ac0096 0xffc1806e /* Reduce by 32 on tokens in termSet[11]   */
 #define _ac0097 0x02a6014a /* termList  32, actionList  39            */
 #define _ac0098 0x02b00083 /* termList  17, actionList  40            */
-#define _ac0099 0xff73801e /* Reduce by 71 on tokens in LAset[3]      */
+#define _ac0099 0xff73801e /* Reduce by 71 on tokens in termSet[3]    */
 #define _ac0100 0x002f0048 /* Shift  to 23 on NAME                    */
-#define _ac0101 0x019200ba /* termList  22, actionList  22            */
-#define _ac0102 0xffc3806e /* Reduce by 31 on tokens in LAset[11]     */
+#define _ac0101 0x019200ba /* termList  22, actionList  27            */
+#define _ac0102 0xffc3806e /* Reduce by 31 on tokens in termSet[11]   */
 #define _ac0103 0x02b40137 /* termList  29, actionList  41            */
 #define _ac0104 0x01650041 /* Shift  to 178 on RPAR                   */
 #define _ac0105 0x02b80150 /* termList  33, actionList  42            */
-#define _ac0106 0xfebb80a0 /* Reduce by 163 on tokens in LAset[16]    */
-#define _ac0107 0x0140008f /* termList  20, actionList  20            */
+#define _ac0106 0xfebb80a0 /* Reduce by 163 on tokens in termSet[16]  */
+#define _ac0107 0x0140008f /* termList  20, actionList  25            */
 #define _ac0108 0x02c600c6 /* termList  23, actionList  43            */
 #define _ac0109 0x02f800c6 /* termList  23, actionList  44            */
-#define _ac0110 0xff0d8078 /* Reduce by 122 on tokens in LAset[12]    */
-#define _ac0111 0x019200ba /* termList  22, actionList  22            */
+#define _ac0110 0xff0d8078 /* Reduce by 122 on tokens in termSet[12]  */
+#define _ac0111 0x019200ba /* termList  22, actionList  27            */
 #define _ac0112 0x016f0048 /* Shift  to 183 on NAME                   */
 #define _ac0113 0x032a0158 /* termList  34, actionList  45            */
 #define _ac0114 0x034200c6 /* termList  23, actionList  46            */
 #define _ac0115 0x037400c6 /* termList  23, actionList  47            */
 #define _ac0116 0x03a600c6 /* termList  23, actionList  48            */
-#define _ac0117 0x019200ba /* termList  22, actionList  22            */
-#define _ac0118 0x019200ba /* termList  22, actionList  22            */
-#define _ac0119 0x019200ba /* termList  22, actionList  22            */
-#define _ac0120 0x019200ba /* termList  22, actionList  22            */
-#define _ac0121 0x019200ba /* termList  22, actionList  22            */
-#define _ac0122 0x019200ba /* termList  22, actionList  22            */
-#define _ac0123 0x019200ba /* termList  22, actionList  22            */
-#define _ac0124 0x019200ba /* termList  22, actionList  22            */
-#define _ac0125 0x019200ba /* termList  22, actionList  22            */
-#define _ac0126 0x019200ba /* termList  22, actionList  22            */
-#define _ac0127 0x019200ba /* termList  22, actionList  22            */
-#define _ac0128 0x019200ba /* termList  22, actionList  22            */
-#define _ac0129 0x019200ba /* termList  22, actionList  22            */
-#define _ac0130 0x019200ba /* termList  22, actionList  22            */
-#define _ac0131 0x019200ba /* termList  22, actionList  22            */
-#define _ac0132 0x019200ba /* termList  22, actionList  22            */
-#define _ac0133 0xff6380d2 /* Reduce by 79 on tokens in LAset[21]     */
-#define _ac0134 0xff5f8050 /* Reduce by 81 on tokens in LAset[8]      */
-#define _ac0135 0xff5d8050 /* Reduce by 82 on tokens in LAset[8]      */
+#define _ac0117 0x019200ba /* termList  22, actionList  27            */
+#define _ac0118 0x019200ba /* termList  22, actionList  27            */
+#define _ac0119 0x019200ba /* termList  22, actionList  27            */
+#define _ac0120 0x019200ba /* termList  22, actionList  27            */
+#define _ac0121 0x019200ba /* termList  22, actionList  27            */
+#define _ac0122 0x019200ba /* termList  22, actionList  27            */
+#define _ac0123 0x019200ba /* termList  22, actionList  27            */
+#define _ac0124 0x019200ba /* termList  22, actionList  27            */
+#define _ac0125 0x019200ba /* termList  22, actionList  27            */
+#define _ac0126 0x019200ba /* termList  22, actionList  27            */
+#define _ac0127 0x019200ba /* termList  22, actionList  27            */
+#define _ac0128 0x019200ba /* termList  22, actionList  27            */
+#define _ac0129 0x019200ba /* termList  22, actionList  27            */
+#define _ac0130 0x019200ba /* termList  22, actionList  27            */
+#define _ac0131 0x019200ba /* termList  22, actionList  27            */
+#define _ac0132 0x019200ba /* termList  22, actionList  27            */
+#define _ac0133 0xff6380d2 /* Reduce by 79 on tokens in termSet[21]   */
+#define _ac0134 0xff5f8050 /* Reduce by 81 on tokens in termSet[8]    */
+#define _ac0135 0xff5d8050 /* Reduce by 82 on tokens in termSet[8]    */
 #define _ac0136 0x03d80165 /* termList  35, actionList  49            */
-#define _ac0137 0xff5b80dc /* Reduce by 83 on tokens in LAset[22]     */
-#define _ac0138 0xff5980dc /* Reduce by 84 on tokens in LAset[22]     */
+#define _ac0137 0xff5b80dc /* Reduce by 83 on tokens in termSet[22]   */
+#define _ac0138 0xff5980dc /* Reduce by 84 on tokens in termSet[22]   */
 #define _ac0139 0x03ea0026 /* termList   5, actionList  50            */
 #define _ac0140 0x03ee016f /* termList  36, actionList  51            */
 #define _ac0141 0x01ab0048 /* Shift  to 213 on NAME                   */
@@ -227,53 +227,53 @@
 #define _ac0147 0x01b70028 /* Shift  to 219 on SEMI                   */
 #define _ac0148 0x01b90028 /* Shift  to 220 on SEMI                   */
 #define _ac0149 0x01bb0040 /* Shift  to 221 on LPAR                   */
-#define _ac0150 0x019200ba /* termList  22, actionList  22            */
+#define _ac0150 0x019200ba /* termList  22, actionList  27            */
 #define _ac0151 0x01bf002e /* Shift  to 223 on COLON                  */
-#define _ac0152 0x019200ba /* termList  22, actionList  22            */
+#define _ac0152 0x019200ba /* termList  22, actionList  27            */
 #define _ac0153 0x004b0026 /* Shift  to 37 on LC                      */
 #define _ac0154 0x043a0197 /* termList  38, actionList  53            */
 #define _ac0155 0x04660083 /* termList  17, actionList  54            */
-#define _ac0156 0xfec18064 /* Reduce by 160 on tokens in LAset[10]    */
-#define _ac0157 0xffd180b4 /* Reduce by 24 on tokens in LAset[18]     */
+#define _ac0156 0xfec18064 /* Reduce by 160 on tokens in termSet[10]  */
+#define _ac0157 0xffd180b4 /* Reduce by 24 on tokens in termSet[18]   */
 #define _ac0158 0x046a01ae /* termList  39, actionList  55            */
 #define _ac0159 0x047401b4 /* termList  40, actionList  56            */
-#define _ac0160 0xffa780c8 /* Reduce by 45 on tokens in LAset[20]     */
+#define _ac0160 0xffa780c8 /* Reduce by 45 on tokens in termSet[20]   */
 #define _ac0161 0x047c01b9 /* termList  41, actionList  57            */
-#define _ac0162 0xffd580e6 /* Reduce by 22 on tokens in LAset[23]     */
+#define _ac0162 0xffd580e6 /* Reduce by 22 on tokens in termSet[23]   */
 #define _ac0163 0x048201bd /* termList  42, actionList  58            */
 #define _ac0164 0x048e01c4 /* termList  43, actionList  59            */
 #define _ac0165 0x049801b9 /* termList  41, actionList  60            */
 #define _ac0166 0x049e01ca /* termList  44, actionList  61            */
-#define _ac0167 0x02940144 /* termList  31, actionList  31            */
-#define _ac0168 0xffcd80b4 /* Reduce by 26 on tokens in LAset[18]     */
-#define _ac0169 0xffbb806e /* Reduce by 35 on tokens in LAset[11]     */
+#define _ac0167 0x02940144 /* termList  31, actionList  36            */
+#define _ac0168 0xffcd80b4 /* Reduce by 26 on tokens in termSet[18]   */
+#define _ac0169 0xffbb806e /* Reduce by 35 on tokens in termSet[11]   */
 #define _ac0170 0x002f0048 /* Shift  to 23 on NAME                    */
-#define _ac0171 0xffb9806e /* Reduce by 36 on tokens in LAset[11]     */
-#define _ac0172 0xff95801e /* Reduce by 54 on tokens in LAset[3]      */
-#define _ac0173 0xff89805a /* Reduce by 60 on tokens in LAset[9]      */
-#define _ac0174 0xff6f801e /* Reduce by 73 on tokens in LAset[3]      */
-#define _ac0175 0xff698064 /* Reduce by 76 on tokens in LAset[10]     */
-#define _ac0176 0xff658064 /* Reduce by 78 on tokens in LAset[10]     */
-#define _ac0177 0xff238078 /* Reduce by 111 on tokens in LAset[12]    */
-#define _ac0178 0x019200ba /* termList  22, actionList  22            */
+#define _ac0171 0xffb9806e /* Reduce by 36 on tokens in termSet[11]   */
+#define _ac0172 0xff95801e /* Reduce by 54 on tokens in termSet[3]    */
+#define _ac0173 0xff89805a /* Reduce by 60 on tokens in termSet[9]    */
+#define _ac0174 0xff6f801e /* Reduce by 73 on tokens in termSet[3]    */
+#define _ac0175 0xff698064 /* Reduce by 76 on tokens in termSet[10]   */
+#define _ac0176 0xff658064 /* Reduce by 78 on tokens in termSet[10]   */
+#define _ac0177 0xff238078 /* Reduce by 111 on tokens in termSet[12]  */
+#define _ac0178 0x019200ba /* termList  22, actionList  27            */
 #define _ac0179 0x04a601cf /* termList  45, actionList  62            */
 #define _ac0180 0x04d20137 /* termList  29, actionList  63            */
 #define _ac0181 0x01d90041 /* Shift  to 236 on RPAR                   */
 #define _ac0182 0x04d601e6 /* termList  46, actionList  64            */
-#define _ac0183 0xff038078 /* Reduce by 127 on tokens in LAset[12]    */
+#define _ac0183 0xff038078 /* Reduce by 127 on tokens in termSet[12]  */
 #define _ac0184 0x01dd0041 /* Shift  to 238 on RPAR                   */
-#define _ac0185 0xfeff8078 /* Reduce by 129 on tokens in LAset[12]    */
+#define _ac0185 0xfeff8078 /* Reduce by 129 on tokens in termSet[12]  */
 #define _ac0186 0x04da01e9 /* termList  47, actionList  65            */
 #define _ac0187 0x04e400e0 /* termList  24, actionList  66            */
 #define _ac0188 0x04f601ef /* termList  48, actionList  67            */
 #define _ac0189 0x04fe00e0 /* termList  24, actionList  68            */
 #define _ac0190 0x051000e0 /* termList  24, actionList  69            */
-#define _ac0191 0xfeeb8096 /* Reduce by 139 on tokens in LAset[15]    */
+#define _ac0191 0xfeeb8096 /* Reduce by 139 on tokens in termSet[15]  */
 #define _ac0192 0x05220101 /* termList  27, actionList  70            */
 #define _ac0193 0x054c0101 /* termList  27, actionList  71            */
 #define _ac0194 0x05760101 /* termList  27, actionList  72            */
-#define _ac0195 0xfedd80f0 /* Reduce by 146 on tokens in LAset[24]    */
-#define _ac0196 0xfedb80f0 /* Reduce by 147 on tokens in LAset[24]    */
+#define _ac0195 0xfedd80f0 /* Reduce by 146 on tokens in termSet[24]  */
+#define _ac0196 0xfedb80f0 /* Reduce by 147 on tokens in termSet[24]  */
 #define _ac0197 0x05a00101 /* termList  27, actionList  73            */
 #define _ac0198 0x05ca0101 /* termList  27, actionList  74            */
 #define _ac0199 0x05f40101 /* termList  27, actionList  75            */
@@ -281,51 +281,51 @@
 #define _ac0201 0x06480101 /* termList  27, actionList  77            */
 #define _ac0202 0x06720101 /* termList  27, actionList  78            */
 #define _ac0203 0x069c0026 /* termList   5, actionList  79            */
-#define _ac0204 0xff858050 /* Reduce by 62 on tokens in LAset[8]      */
+#define _ac0204 0xff858050 /* Reduce by 62 on tokens in termSet[8]    */
 #define _ac0205 0x06a001f4 /* termList  49, actionList  80            */
 #define _ac0206 0x06ac008a /* termList  19, actionList  81            */
-#define _ac0207 0xff838032 /* Reduce by 63 on tokens in LAset[5]      */
-#define _ac0208 0x019200ba /* termList  22, actionList  22            */
-#define _ac0209 0xff5780dc /* Reduce by 85 on tokens in LAset[22]     */
-#define _ac0210 0xff5580dc /* Reduce by 86 on tokens in LAset[22]     */
+#define _ac0207 0xff838032 /* Reduce by 63 on tokens in termSet[5]    */
+#define _ac0208 0x019200ba /* termList  22, actionList  27            */
+#define _ac0209 0xff5780dc /* Reduce by 85 on tokens in termSet[22]   */
+#define _ac0210 0xff5580dc /* Reduce by 86 on tokens in termSet[22]   */
 #define _ac0211 0x06b40026 /* termList   5, actionList  82            */
 #define _ac0212 0x01ef0028 /* Shift  to 247 on SEMI                   */
 #define _ac0213 0xff290028 /* Reduce by 108 on SEMI                   */
-#define _ac0214 0x0406017c /* termList  37, actionList  37            */
+#define _ac0214 0x0406017c /* termList  37, actionList  52            */
 #define _ac0215 0x06b80158 /* termList  34, actionList  83            */
-#define _ac0216 0x06b80158 /* termList  34, actionList  34            */
+#define _ac0216 0x06b80158 /* termList  34, actionList  83            */
 #define _ac0217 0x01f90020 /* Shift  to 252 on WHILE                  */
 #define _ac0218 0x06d0016f /* termList  36, actionList  84            */
-#define _ac0219 0xff4380dc /* Reduce by 95 on tokens in LAset[22]     */
-#define _ac0220 0xff4180dc /* Reduce by 96 on tokens in LAset[22]     */
-#define _ac0221 0x019200ba /* termList  22, actionList  22            */
+#define _ac0219 0xff4380dc /* Reduce by 95 on tokens in termSet[22]   */
+#define _ac0220 0xff4180dc /* Reduce by 96 on tokens in termSet[22]   */
+#define _ac0221 0x019200ba /* termList  22, actionList  27            */
 #define _ac0222 0x0201002e /* Shift  to 256 on COLON                  */
-#define _ac0223 0xff3b80dc /* Reduce by 99 on tokens in LAset[22]     */
+#define _ac0223 0xff3b80dc /* Reduce by 99 on tokens in termSet[22]   */
 #define _ac0224 0x06e80026 /* termList   5, actionList  85            */
 #define _ac0225 0x02090024 /* Shift  to 260 on CATCH                  */
-#define _ac0226 0xfec380aa /* Reduce by 159 on tokens in LAset[17]    */
-#define _ac0227 0x00be005c /* termList  12, actionList  12            */
-#define _ac0228 0xffb180be /* Reduce by 40 on tokens in LAset[19]     */
+#define _ac0226 0xfec380aa /* Reduce by 159 on tokens in termSet[17]  */
+#define _ac0227 0x00be005c /* termList  12, actionList  14            */
+#define _ac0228 0xffb180be /* Reduce by 40 on tokens in termSet[19]   */
 #define _ac0229 0x06ec004f /* termList  11, actionList  86            */
 #define _ac0230 0x070401b9 /* termList  41, actionList  87            */
 #define _ac0231 0x070a01fb /* termList  50, actionList  88            */
-#define _ac0232 0xffb580be /* Reduce by 38 on tokens in LAset[19]     */
+#define _ac0232 0xffb580be /* Reduce by 38 on tokens in termSet[19]   */
 #define _ac0233 0x070e00c6 /* termList  23, actionList  89            */
-#define _ac0234 0xff198078 /* Reduce by 116 on tokens in LAset[12]    */
-#define _ac0235 0xff178078 /* Reduce by 117 on tokens in LAset[12]    */
-#define _ac0236 0xff158078 /* Reduce by 118 on tokens in LAset[12]    */
-#define _ac0237 0xff058078 /* Reduce by 126 on tokens in LAset[12]    */
-#define _ac0238 0xff018078 /* Reduce by 128 on tokens in LAset[12]    */
-#define _ac0239 0x019200ba /* termList  22, actionList  22            */
-#define _ac0240 0x019200ba /* termList  22, actionList  22            */
-#define _ac0241 0xff878050 /* Reduce by 61 on tokens in LAset[8]      */
+#define _ac0234 0xff198078 /* Reduce by 116 on tokens in termSet[12]  */
+#define _ac0235 0xff178078 /* Reduce by 117 on tokens in termSet[12]  */
+#define _ac0236 0xff158078 /* Reduce by 118 on tokens in termSet[12]  */
+#define _ac0237 0xff058078 /* Reduce by 126 on tokens in termSet[12]  */
+#define _ac0238 0xff018078 /* Reduce by 128 on tokens in termSet[12]  */
+#define _ac0239 0x019200ba /* termList  22, actionList  27            */
+#define _ac0240 0x019200ba /* termList  22, actionList  27            */
+#define _ac0241 0xff878050 /* Reduce by 61 on tokens in termSet[8]    */
 #define _ac0242 0x074001fe /* termList  51, actionList  90            */
-#define _ac0243 0x00be005c /* termList  12, actionList  12            */
-#define _ac0244 0x019200ba /* termList  22, actionList  22            */
-#define _ac0245 0xff778032 /* Reduce by 69 on tokens in LAset[5]      */
-#define _ac0246 0xff5380dc /* Reduce by 87 on tokens in LAset[22]     */
-#define _ac0247 0xff5180dc /* Reduce by 88 on tokens in LAset[22]     */
-#define _ac0248 0xff4f80dc /* Reduce by 89 on tokens in LAset[22]     */
+#define _ac0243 0x00be005c /* termList  12, actionList  14            */
+#define _ac0244 0x019200ba /* termList  22, actionList  27            */
+#define _ac0245 0xff778032 /* Reduce by 69 on tokens in termSet[5]    */
+#define _ac0246 0xff5380dc /* Reduce by 87 on tokens in termSet[22]   */
+#define _ac0247 0xff5180dc /* Reduce by 88 on tokens in termSet[22]   */
+#define _ac0248 0xff4f80dc /* Reduce by 89 on tokens in termSet[22]   */
 #define _ac0249 0x021d0041 /* Shift  to 270 on RPAR                   */
 #define _ac0250 0x07480203 /* termList  52, actionList  91            */
 #define _ac0251 0x021f0041 /* Shift  to 271 on RPAR                   */
@@ -333,51 +333,51 @@
 #define _ac0253 0x02230028 /* Shift  to 273 on SEMI                   */
 #define _ac0254 0x074e0203 /* termList  52, actionList  92            */
 #define _ac0255 0x07540137 /* termList  29, actionList  93            */
-#define _ac0256 0xff3d80dc /* Reduce by 98 on tokens in LAset[22]     */
-#define _ac0257 0xff3980dc /* Reduce by 100 on tokens in LAset[22]    */
+#define _ac0256 0xff3d80dc /* Reduce by 98 on tokens in termSet[22]   */
+#define _ac0257 0xff3980dc /* Reduce by 100 on tokens in termSet[22]  */
 #define _ac0258 0x07580207 /* termList  53, actionList  94            */
-#define _ac0259 0xff3580fa /* Reduce by 102 on tokens in LAset[25]    */
+#define _ac0259 0xff3580fa /* Reduce by 102 on tokens in termSet[25]  */
 #define _ac0260 0x02290040 /* Shift  to 276 on LPAR                   */
-#define _ac0261 0xfebf8064 /* Reduce by 161 on tokens in LAset[10]    */
-#define _ac0262 0xff9b8104 /* Reduce by 51 on tokens in LAset[26]     */
+#define _ac0261 0xfebf8064 /* Reduce by 161 on tokens in termSet[10]  */
+#define _ac0262 0xff9b8104 /* Reduce by 51 on tokens in termSet[26]   */
 #define _ac0263 0x022b003f /* Shift  to 277 on RB                     */
 #define _ac0264 0x079a01b4 /* termList  40, actionList  95            */
 #define _ac0265 0xfefb0041 /* Reduce by 131 on RPAR                   */
 #define _ac0266 0x07a200e0 /* termList  24, actionList  96            */
-#define _ac0267 0xff818032 /* Reduce by 64 on tokens in LAset[5]      */
-#define _ac0268 0xff7b8032 /* Reduce by 67 on tokens in LAset[5]      */
-#define _ac0269 0xff798032 /* Reduce by 68 on tokens in LAset[5]      */
-#define _ac0270 0x0406017c /* termList  37, actionList  37            */
-#define _ac0271 0x0406017c /* termList  37, actionList  37            */
-#define _ac0272 0x06b80158 /* termList  34, actionList  34            */
+#define _ac0267 0xff818032 /* Reduce by 64 on tokens in termSet[5]    */
+#define _ac0268 0xff7b8032 /* Reduce by 67 on tokens in termSet[5]    */
+#define _ac0269 0xff798032 /* Reduce by 68 on tokens in termSet[5]    */
+#define _ac0270 0x0406017c /* termList  37, actionList  52            */
+#define _ac0271 0x0406017c /* termList  37, actionList  52            */
+#define _ac0272 0x06b80158 /* termList  34, actionList  83            */
 #define _ac0273 0x07b4016f /* termList  36, actionList  97            */
 #define _ac0274 0x004b0026 /* Shift  to 37 on LC                      */
-#define _ac0275 0xff3380fa /* Reduce by 103 on tokens in LAset[25]    */
+#define _ac0275 0xff3380fa /* Reduce by 103 on tokens in termSet[25]  */
 #define _ac0276 0x07cc0229 /* termList  54, actionList  98            */
-#define _ac0277 0xff998104 /* Reduce by 52 on tokens in LAset[26]     */
+#define _ac0277 0xff998104 /* Reduce by 52 on tokens in termSet[26]   */
 #define _ac0278 0x023f0041 /* Shift  to 287 on RPAR                   */
 #define _ac0279 0x07d4022e /* termList  55, actionList  99            */
-#define _ac0280 0xff4980dc /* Reduce by 92 on tokens in LAset[22]     */
+#define _ac0280 0xff4980dc /* Reduce by 92 on tokens in termSet[22]   */
 #define _ac0281 0x02430041 /* Shift  to 289 on RPAR                   */
 #define _ac0282 0x02450028 /* Shift  to 290 on SEMI                   */
-#define _ac0283 0xff3f80dc /* Reduce by 97 on tokens in LAset[22]     */
+#define _ac0283 0xff3f80dc /* Reduce by 97 on tokens in termSet[22]   */
 #define _ac0284 0x02470041 /* Shift  to 291 on RPAR                   */
 #define _ac0285 0x0814024f /* termList  56, actionList 100            */
 #define _ac0286 0xff2f0041 /* Reduce by 105 on RPAR                   */
-#define _ac0287 0xff9f8104 /* Reduce by 49 on tokens in LAset[26]     */
-#define _ac0288 0x0406017c /* termList  37, actionList  37            */
+#define _ac0287 0xff9f8104 /* Reduce by 49 on tokens in termSet[26]   */
+#define _ac0288 0x0406017c /* termList  37, actionList  52            */
 #define _ac0289 0x02510028 /* Shift  to 296 on SEMI                   */
 #define _ac0290 0x08220158 /* termList  34, actionList 101            */
 #define _ac0291 0x004b0026 /* Shift  to 37 on LC                      */
 #define _ac0292 0x083a007f /* termList  16, actionList 102            */
 #define _ac0293 0x0840003d /* termList   9, actionList 103            */
-#define _ac0294 0x0840003d /* termList   9, actionList   9            */
-#define _ac0295 0xff4b80dc /* Reduce by 91 on tokens in LAset[22]     */
-#define _ac0296 0xff4780dc /* Reduce by 93 on tokens in LAset[22]     */
+#define _ac0294 0x0840003d /* termList   9, actionList 103            */
+#define _ac0295 0xff4b80dc /* Reduce by 91 on tokens in termSet[22]   */
+#define _ac0296 0xff4780dc /* Reduce by 93 on tokens in termSet[22]   */
 #define _ac0297 0x02570041 /* Shift  to 299 on RPAR                   */
-#define _ac0298 0xff3180fa /* Reduce by 104 on tokens in LAset[25]    */
-#define _ac0299 0x0406017c /* termList  37, actionList  37            */
-#define _ac0300 0xff4580dc /* Reduce by 94 on tokens in LAset[22]     */
+#define _ac0298 0xff3180fa /* Reduce by 104 on tokens in termSet[25]  */
+#define _ac0299 0x0406017c /* termList  37, actionList  52            */
+#define _ac0300 0xff4580dc /* Reduce by 94 on tokens in termSet[22]   */
 
 static const unsigned int actionCode[301] = {
    _ac0000,_ac0001,_ac0002,_ac0003,_ac0004,_ac0005,_ac0006,_ac0007,_ac0008,_ac0009
@@ -613,7 +613,7 @@ static const short actionListTable[1059] = {
   , 293, 294,  23                                                                                            /* 103 Used by states (293,294) */
 }; // Size of table:2.120(x86)/2.120(x64) bytes.
 
-static const unsigned char compressedLAsets[270] = {
+static const unsigned char termSetTable[270] = {
    0x71,0x00,0x00,0x00,0x00,0x01,0x00,0x02,0xc1,0x01 /*   0  10 tokens Used by states (0,2,16,32,34) */
   ,0x00,0x00,0x00,0x00,0x00,0x01,0x00,0x02,0x01,0x01 /*   1   4 tokens Used by states (5,24) */
   ,0x70,0x00,0x00,0x00,0x00,0x41,0x00,0x02,0x81,0x01 /*   2   9 tokens Used by states (7,8,25,26) */
@@ -1293,7 +1293,7 @@ static const ParserTablesTemplate<74,126,165,301
                                  ,unsigned char
                                  ,unsigned char
                                  ,short
-                                 ,unsigned short> CppTables_s(actionCode      , termListTable     , actionListTable, compressedLAsets
+                                 ,unsigned short> CppTables_s(actionCode      , termListTable     , actionListTable, termSetTable
                                                              ,successorCode   , NTindexListTable  , stateListTable
                                                              ,productionLength, leftSideTable
                                                              ,rightSideTable  , symbolNames

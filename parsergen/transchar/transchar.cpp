@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <String.h>
+#include <ProcessTools.h>
 #include "transcharlex.h"
 
 static char *translateLine(char *line) {
