@@ -175,7 +175,7 @@ public:
   {
   }
   inline DigitPool *getDigitPool() const {
-    return m_x.getDigitPool();
+    return m_p.x.getDigitPool();
   }
   template<typename T> BigRealRectangle2D &operator=(const T &r) {
     DigitPool *dp = getDigitPool();

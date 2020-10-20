@@ -39,6 +39,10 @@ public:
   template<typename S> Size2DTemplate<T> operator+(const Size2DTemplate<S> &s) const {
     return Size2DTemplate<T>(cx+s.cx, cy+s.cy);
   }
+  template<typename S> T operator*(const Size2DTemplate<S> &s) const {
+    return (T)(cx*s.cx + cy*s.cy);
+  }
+
   template<typename S> Size2DTemplate<T> operator*(const S &factor) const {
     return Size2DTemplate<T>(cx*factor, cy*factor);
   }
@@ -175,8 +179,8 @@ public:
   template<typename S> Point2DTemplate<T> operator+(const Point2DTemplate<S> &p) const {
     return Point2DTemplate<T>(x+(T)p.x, y+(T)p.y);
   }
-  template<typename S> Point2DTemplate<T> operator-(const Point2DTemplate<S> &p) const {
-    return Point2DTemplate<T>(x-(T)p.x, y-(T)p.y);
+  template<typename S> Size2DTemplate<T> operator-(const Point2DTemplate<S> &p) const {
+    return Size2DTemplate<T>(x-(T)p.x, y-(T)p.y);
   }
   template<typename S> Point2DTemplate<T> operator+(const Size2DTemplate<S> &s) const {
     return Point2DTemplate<T>(x+(T)s.cx, y+(T)s.cy);
@@ -312,10 +316,10 @@ typedef Line2DTemplate<Double80> D80Line2D;
 typedef Line2DTemplate<Real>     RealLine2D;
 
 template<typename T> Point2DTemplate<T> pointOfIntersection(const Line2DTemplate<T> &line1, const Line2DTemplate<T> &line2, bool &intersect) {
-  const T A11 = line1.m_p1.y       - line1.m_p2.y;
-  const T A12 = line1.m_p2.x       - line1.m_p1.x;
-  const T A21 = line2.m_p1.y       - line2.m_p2.y;
-  const T A22 = line2.m_p2.x       - line2.m_p1.x;
+  const T A11 = line1.m_p1.y - line1.m_p2.y;
+  const T A12 = line1.m_p2.x - line1.m_p1.x;
+  const T A21 = line2.m_p1.y - line2.m_p2.y;
+  const T A22 = line2.m_p2.x - line2.m_p1.x;
 
   const T d  = A11 * A22 - A12 * A21;
   if(d == 0) {
@@ -324,8 +328,8 @@ template<typename T> Point2DTemplate<T> pointOfIntersection(const Line2DTemplate
   }
   intersect = true;
 
-  const T B1  = line1.m_p1.x * A11 + line1.m_p1.y * A12;
-  const T B2  = line2.m_p1.x * A21 + line2.m_p1.y * A22;
+  const T B1 = line1.m_p1.x * A11 + line1.m_p1.y * A12;
+  const T B2 = line2.m_p1.x * A21 + line2.m_p1.y * A22;
 
 //  A11*x + A12*y = B1
 //  A21*x + A22*y = B2
@@ -342,14 +346,13 @@ template<typename T> T distanceFromLine(const Point2DTemplate<T> &lp0, const Poi
   if(lp1 == lp0) {
     return distance(p,lp1);
   }
-  Point2DTemplate<T> u = lp1 - lp0;
-  const Point2DTemplate<T> d = p-lp0;
-  u /= u.length();
+  Size2DTemplate<T>       u = (lp1 - lp0).normalize();
+  const Size2DTemplate<T> d = (p   - lp0);
   return (d - (d * u) * u).length();
 }
 
 template<typename T> T distanceFromLineSegment(const Point2DTemplate<T> &lp0, const Point2DTemplate<T> &lp1, const Point2DTemplate<T> &p) {
-  const Point2DTemplate<T> u = lp1 - lp0;
+  const Size2DTemplate<T> u = lp1 - lp0;
   if((p-lp0) * u < 0) {
     return distance(p, lp0);
   } else if((p-lp1) * u > 0) {
@@ -369,6 +372,10 @@ template<typename T> T distanceFromLineSegment(const Line2DTemplate<T> &line, co
 
 template<typename T> Point2DTemplate<T> unitVector(const Point2DTemplate<T> &p) {
   return Point2DTemplate<T>(p).normalize();
+}
+
+template<typename T> Size2DTemplate<T> unitVector(const Size2DTemplate<T> &p) {
+  return Size2DTemplate<T>(p).normalize();
 }
 
 template<typename T> Point2DTemplate<T> operator*(const T &factor, const Point2DTemplate<T> &p) {

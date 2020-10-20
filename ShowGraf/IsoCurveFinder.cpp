@@ -254,7 +254,7 @@ const HashedRectCorner *IsoCurveFinder::getCorner(int i, int j) {
 }
 
 Point2D IsoCurveFinder::getCornerPoint(int i, int j)  const {
-  return Point2D(m_boundingBox.m_x + (i-0.5) * m_cellSize, m_boundingBox.m_y + (j-0.5) * m_cellSize);
+  return Point2D(m_boundingBox.m_p.x + (i-0.5) * m_cellSize, m_boundingBox.m_p.y + (j-0.5) * m_cellSize);
 }
 
 void StackedRectangle::validate() const {

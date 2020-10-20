@@ -133,7 +133,8 @@ public:
     return LINEAR;
   }
   IntervalTransformationTemplate<T> *clone() const override {
-    return new LinearTransformationTemplate(*this);
+    IntervalTransformationTemplate<T> *t = new LinearTransformationTemplate(*this); TRACE_NEW(t);
+    return t;
   }
 };
 
@@ -165,7 +166,8 @@ public:
     return LOGARITHMIC;
   }
   IntervalTransformationTemplate<T> *clone() const override {
-    return new LogarithmicTransformationTemplate(*this);
+    IntervalTransformationTemplate<T> *t = new LogarithmicTransformationTemplate(*this); TRACE_NEW(t);
+    return t;
   }
 };
 
@@ -207,7 +209,8 @@ public:
     return NORMAL_DISTRIBUTION;
   }
   IntervalTransformationTemplate<T> *clone() const override {
-    return new NormalDistributionTransformationTemplate(*this);
+    IntervalTransformationTemplate<T> *t = new NormalDistributionTransformationTemplate(*this); TRACE_NEW(t);
+    return t;
   }
 };
 

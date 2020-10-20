@@ -3,103 +3,112 @@
 #include <MathUtil.h>
 #include <NumberInterval.h>
 #include "Point2D.h"
+#include "CubeN.h"
 
 template<typename T> class Rectangle2DTemplate {
 public:
-  T m_x, m_y, m_w, m_h;
-  inline Rectangle2DTemplate() : m_x(0), m_y(0), m_w(0), m_h(0) {
+  Point2DTemplate<T> m_p;
+  Size2DTemplate<T>  m_size;
+  inline Rectangle2DTemplate() : m_p(0,0), m_size(0,0) {
   }
   template<typename X, typename Y, typename W, typename H> Rectangle2DTemplate(const X &x, const Y &y, const W &w, const H &h)
-    : m_x((T)x), m_y((T)y), m_w((T)w), m_h((T)h)
+    : m_p(x,y), m_size(w, h)
   {
   }
   template<typename R> Rectangle2DTemplate(const Rectangle2DTemplate<R> &src)
-    : m_x((T)src.m_x), m_y((T)src.m_y)
-    , m_w((T)src.m_w), m_h((T)src.m_h)
+    : m_p(src.m_p), m_size(src.m_size)
   {
   }
   template<typename T1, typename T2> Rectangle2DTemplate(const Point2DTemplate<T1> &topLeft, const Point2DTemplate<T2> &bottomRight)
-    : m_x((T)topLeft.x), m_y((T)topLeft.y)
-    , m_w((T)bottomRight.x-(T)topLeft.x), m_h((T)bottomRight.y-(T)topLeft.y)
+    : m_p(topLeft)
+    , m_size(bottomRight-topLeft)
   {
   }
   template<typename P, typename S> Rectangle2DTemplate(const Point2DTemplate<P> &p, const Size2DTemplate<S> &size)
-    : m_x((T)p.x    ), m_y((T)p.y    )
-    , m_w((T)size.cx), m_h((T)size.cy)
+    : m_p(p), m_size(size)
   {
+  }
+  template<typename C> Rectangle2DTemplate(const CubeN<C> &src) {
+    if(src.dim() != 2) throwInvalidArgumentException(__TFUNCTION__, "src has dimension %u. must be 2", src.dim());
+    const NumberInterval<C> &xi = src.getInterval(0), &yi = src.getInterval(1);
+    m_p    = CPoint2D(xi.getFrom()  , yi.getFrom()  );
+    m_size = Size2D(  xi.getLength(), yi.getLength());
   }
 
 #if defined(__ATLTYPES_H__)
-  inline Rectangle2DTemplate(const CRect &r) : m_x((T)r.left), m_y((T)r.top), m_w((T)(r.right - r.left)), m_h((T)(r.bottom - r.top)) {
+  inline Rectangle2DTemplate(const CRect &r) : m_p(r.TopLeft()), m_size(r.Size()) {
   }
   inline operator CRect() const {
-    return CRect((int)m_x,(int)m_y,(int)(m_x+m_w),(int)(m_y+m_h));
+    return CRect((CPoint)m_p, (CSize)m_size);
   }
 #endif
   inline const T &getX() const {
-    return m_x;
+    return m_p.x;
   }
   inline const T &getY() const {
-    return m_y;
+    return m_p.y;
   }
   inline const T &getWidth() const {
-    return m_w;
+    return m_size.cx;
   }
   inline const T &getHeight() const {
-    return m_h;
+    return m_size.cy;
   }
-  inline Point2DTemplate<T> getTopLeft() const {
-    return Point2DTemplate<T>(m_x,m_y);
+  inline const Point2DTemplate<T> &getTopLeft() const {
+    return m_p;
   }
   inline Point2DTemplate<T> getTopRight() const {
-    return Point2DTemplate<T>(m_x + m_w, m_y);
+    return Point2DTemplate<T>(m_p.x + m_size.cx, m_p.y);
   }
   inline Point2DTemplate<T> getBottomLeft()  const {
-    return Point2DTemplate<T>(m_x, m_y + m_h);
+    return Point2DTemplate<T>(m_p.x, m_p.y + m_size.cy);
   }
   inline Point2DTemplate<T> getBottomRight() const {
-    return Point2DTemplate<T>(m_x + m_w, m_y + m_h);
+    return Point2DTemplate<T>(m_p.x + m_size.cx, m_p.y + m_size.cy);
   }
   inline Point2DTemplate<T> getCenter() const {
-    return Point2DTemplate<T>(m_x + m_w/2, m_y + m_h/2);
+    return Point2DTemplate<T>(m_p.x + m_size.cx/2, m_p.y + m_size.cy/2);
   }
-  inline Size2DTemplate<T> getSize() const {
-    return Size2DTemplate<T>(m_w,m_h);
+  inline const Size2DTemplate<T> &getSize() const {
+    return m_size;
   }
   inline T getArea() const {
-    return m_w * m_h;
+    return m_size.area();
   }
   inline T getMinX() const {
-    return min(m_x, m_x + m_w);
+    return min(m_p.x, m_p.x + m_size.cx);
   }
   inline T getMaxX() const {
-    return max(m_x, m_x + m_w);
+    return max(m_p.x, m_p.x + m_size.cx);
   }
   inline T getMinY() const {
-    return min(m_y, m_y + m_h);
+    return min(m_p.y, m_p.y + m_size.cy);
   }
   inline T getMaxY() const {
-    return max(m_y, m_y + m_h);
+    return max(m_p.y, m_p.y + m_size.cy);
   }
   inline NumberInterval<T> getXInterval() const {
-    return NumberInterval<T>(m_x, m_x+m_w);
+    return NumberInterval<T>(m_p.x, m_p.x+m_size.cx);
   }
   inline NumberInterval<T> getYInterval() const {
-    return NumberInterval<T>(m_y, m_y+m_h);
+    return NumberInterval<T>(m_p.y, m_p.y+m_size.cy);
+  }
+  inline operator CubeN<T>() const {
+    return CubeN<T>(2).setInterval(0, getXInterval()).setInterval(1, getYInterval());
   }
   template<typename P> bool contains(const Point2DTemplate<P> &p) const {
     return (getMinX() <= (T)p.x) && ((T)p.x <= getMaxX()) && (getMinY() <= (T)p.y) && ((T)p.y <= getMaxY());
   }
   template<typename TP> Rectangle2DTemplate &operator+=(const Point2DTemplate<TP> &dp) {
-    m_x += (T)dp.x; m_y += (T)dp.y;
+    m_p.x += (T)dp.x; m_p.y += (T)dp.y;
     return *this;
   }
   template<typename TP> Rectangle2DTemplate &operator-=(const Point2DTemplate<TP> &dp) {
-    m_x -= (T)dp.x; m_y -= (T)dp.y;
+    m_p.x -= (T)dp.x; m_p.y -= (T)dp.y;
     return *this;
   }
   inline bool operator==(const Rectangle2DTemplate &r) const {
-    return (m_x==r.m_x) && (m_y==r.m_y) && (m_w==r.m_w) && (m_h==r.m_h);
+    return (m_p==r.m_p) && (m_size==r.m_size);
   }
   inline bool operator!=(const Rectangle2DTemplate &r) const {
     return !(*this == r);
@@ -109,7 +118,7 @@ public:
     return contains(rect.getTopLeft()) && contains(rect.getBottomRight());
   }
   inline Point2DTemplate<T> getProjection(const Point2DTemplate<T> &p) const {
-    return Point2DTemplate<T>(minMax(p.x, m_x, m_x + m_w), minMax(p.y, m_y, m_y + m_h));
+    return Point2DTemplate<T>(minMax(p.x, m_p.x, m_p.x + m_size.cx), minMax(p.y, m_p.y, m_p.y + m_size.cy));
   }
 
   // Returns a Rectangle2DTemplate with non-negative width and non-positive height

@@ -180,14 +180,14 @@ void CProfileDlg::initViewport() {
   if(profileRect.getWidth() == 0 || profileRect.getHeight() == 0) {
     profileRect = Rectangle2D(0,0,1,1);
   } else {
-    profileRect.m_x -= profileRect.getWidth()/20;
-    profileRect.m_y -= profileRect.getHeight()/20;
-    profileRect.m_w += profileRect.getWidth()/10;
-    profileRect.m_h += profileRect.getHeight()/10;
+    profileRect.m_p.x     -= profileRect.getWidth()/20;
+    profileRect.m_p.y     -= profileRect.getHeight()/20;
+    profileRect.m_size.cx += profileRect.getWidth()/10;
+    profileRect.m_size.cy += profileRect.getHeight()/10;
   }
 
-  profileRect.m_y += profileRect.m_h;
-  profileRect.m_h *= -1;
+  profileRect.m_p.y += profileRect.m_size.cy;
+  profileRect.m_size.cy *= -1;
 
   destroyViewport();
 

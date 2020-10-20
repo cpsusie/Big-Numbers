@@ -2,6 +2,7 @@
 
 #include <NumberInterval.h>
 #include <Math/Point3D.h>
+#include "CubeN.h"
 
 template<typename T> class Cube3DTemplate {
 private:
@@ -134,6 +135,10 @@ public:
   inline NumberInterval<T> getZInterval() const {
     return NumberInterval<T>(getMinZ(), getMaxZ());
   }
+  inline operator CubeN<T>() const {
+    return CubeN<T>(3).setInterval(0, getXInterval()).setInterval(1, getYInterval()).setInterval(2, getZInterval());
+  }
+
   template<typename TP> bool contains(const Point3DTemplate<TP> &p) const {
     return (getMinX() <= (T)p.x) && ((T)p.x <= getMaxX()) && (getMinY() <= (T)p.y) && ((T)p.y <= getMaxY()) && (getMinZ() <= (T)p.z) && ((T)p.z <= getMaxZ());
   }

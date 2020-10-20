@@ -185,13 +185,13 @@ bool BigRealRectangleTransformation::adjustAspectRatio() {
   const UINT         digits    = max(getXTransformation().getDigits(), getYTransformation().getDigits());
   if(fromRatio > toRatio) {
     const BigReal dh = dsign(fr.getHeight())*(fabs(rQuot(fr.getWidth(),toRatio,digits,dp)) - fabs(fr.getHeight()));
-    fr.m_y -= dh * dp->_05();
-    fr.m_h += dh;
+    fr.m_p.y     -= dh * dp->_05();
+    fr.m_size.cy += dh;
     changed = !dh.isZero();
   } else if(fromRatio < toRatio) {
     const BigReal dw = dsign(fr.getWidth())*(fabs(rProd(toRatio,fr.getHeight(),digits,dp)) - fabs(fr.getWidth()));
-    fr.m_x -= dw * dw.getDigitPool()->_05();
-    fr.m_w += dw;
+    fr.m_p.x     -= dw * dw.getDigitPool()->_05();
+    fr.m_size.cx += dw;
     changed = !dw.isZero();
   }
   if(changed) {

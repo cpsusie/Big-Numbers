@@ -83,14 +83,14 @@ void SystemPainter::makeSpaceForText() {
   bool adjustRectangle = false;
   if(xtr.isLinear() && fr.getMinX() == 0) {
     const double dx = -xtr.backwardTransform(getToRectangle().left + leftMargin);
-    fr.m_x += dx;
-    fr.m_w -= dx;
+    fr.m_p.x     += dx;
+    fr.m_size.cx -= dx;
     adjustRectangle = true;
   }
   if(ytr.isLinear() && fr.getMinY() == 0) {
     const double dy = -ytr.backwardTransform(getToRectangle().top - bottomMargin);
-    fr.m_y += dy;
-    fr.m_h -= dy;
+    fr.m_p.y     += dy;
+    fr.m_size.cy -= dy;
     adjustRectangle = true;
   }
 
@@ -99,23 +99,23 @@ void SystemPainter::makeSpaceForText() {
   }
   Rectangle2D innerRectangle = getToRectangle();
 
-  innerRectangle.m_x += leftMargin;
-  innerRectangle.m_w -= leftMargin + rightMargin;
-  innerRectangle.m_y -= bottomMargin;
-  innerRectangle.m_h += bottomMargin + topMargin;
+  innerRectangle.m_p.x     += leftMargin;
+  innerRectangle.m_size.cx -= leftMargin + rightMargin;
+  innerRectangle.m_p.y     -= bottomMargin;
+  innerRectangle.m_size.cy += bottomMargin + topMargin;
 
   Point2D orig = innerRectangle.getProjection(Point2D(xPainter.getAxisPoint(),yPainter.getAxisPoint()));
 
-  const double dx = min(orig.x - innerRectangle.m_x, leftMargin   - getTextExtent(xPainter.getMinValueText()).cx/2 - 1);
-  const double dy = min(innerRectangle.m_y - orig.y, bottomMargin - getTextExtent(yPainter.getMinValueText()).cy/2 - 1);
+  const double dx = min(orig.x - innerRectangle.m_p.x, leftMargin   - getTextExtent(xPainter.getMinValueText()).cx/2 - 1);
+  const double dy = min(innerRectangle.m_p.y - orig.y, bottomMargin - getTextExtent(yPainter.getMinValueText()).cy/2 - 1);
 
   if(dx > 0) {
-    innerRectangle.m_x -= dx;
-    innerRectangle.m_w += dx;
+    innerRectangle.m_p.x     -= dx;
+    innerRectangle.m_size.cx += dx;
   }
   if(dy > 0) {
-    innerRectangle.m_y += dy;
-    innerRectangle.m_h -= dy;
+    innerRectangle.m_p.y     += dy;
+    innerRectangle.m_size.cy -= dy;
   }
   m_origin = innerRectangle.getProjection(orig);
 }

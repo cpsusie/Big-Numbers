@@ -86,7 +86,7 @@ Point2D TurnableRect::getRotateDir() {
   case TR:
   case BL:
   case BR:
-    return (getSelectedMarkPoint() - m_rotationCenter).rotate(M_PI/2);
+    return Point2D(getSelectedMarkPoint() - m_rotationCenter).rotate(M_PI/2);
   default:
     throwException(_T("Rotatedir not defined for mark %d"), getSelectedMark());
   }
@@ -110,7 +110,7 @@ FunctionR2R2 *TurnableRect::getStretchTransformation(const Point2D &dp) {
 FunctionR2R2 *TurnableRect::getRotateTransformation(const Point2D &dp) {
   const Point2D    dir    = unitVector(getRotateDir());
   const Point2D    step   = (dp * dir) * dir;
-  const double     theta  = angle(getSelectedMarkPoint() - m_rotationCenter, getSelectedMarkPoint() + step - m_rotationCenter);
+  const double     theta  = angle(Point2D(getSelectedMarkPoint() - m_rotationCenter), Point2D(getSelectedMarkPoint() + step - m_rotationCenter));
   FunctionR2R2 *result = new RotateTransformation(m_rotationCenter, theta); TRACE_NEW(result);
   return result;
 }
@@ -221,7 +221,7 @@ void TurnableRect::addMarkRect(Viewport2D &vp, MarkId markId, int imageId, int d
 void TurnableRect::repaint(Viewport2D &vp, ProfileEditorState state) {
 
 #define DEGREE(v)     (int)RAD2GRAD(angle(v, Point2D(1,0)))
-#define VDEGREE(id,p) DEGREE(getMarkPoint(id)-p)
+#define VDEGREE(id,p) DEGREE(Point2D(getMarkPoint(id)-p))
 #define VSTRETCH(id)  VDEGREE(id, getCenter())
 #define VROT(id)      VDEGREE(id, m_rotationCenter)
 

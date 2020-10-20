@@ -514,6 +514,9 @@
     <ClInclude Include="..\..\Include\Math\IntervalTransformationArray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Include\Math\CubeN.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="FPU.inc">

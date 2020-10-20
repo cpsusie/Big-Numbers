@@ -1299,6 +1299,7 @@
     <ClInclude Include="..\..\Include\Math\BigReal\MRisprime.h" />
     <ClInclude Include="..\..\Include\Math\Complex.h" />
     <ClInclude Include="..\..\Include\Math\Cube3D.h" />
+    <ClInclude Include="..\..\Include\Math\CubeN.h" />
     <ClInclude Include="..\..\Include\Math\IntervalTransformationArray.h" />
     <ClInclude Include="..\..\Include\Math\CubeTransformation.h" />
     <ClInclude Include="..\..\Include\Math\Double64.h" />

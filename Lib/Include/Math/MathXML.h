@@ -35,17 +35,13 @@ template<typename T,typename... Args> void getValue(XMLDoc &doc, XMLNodePtr n, L
 }
 
 template<typename T,typename... Args> void setValue(XMLDoc &doc, XMLNodePtr n, const Rectangle2DTemplate<T> &r, Args... args) {
-  setValue(doc, n, _T("x"), r.m_x, args...);
-  setValue(doc, n, _T("y"), r.m_y, args...);
-  setValue(doc, n, _T("w"), r.m_w, args...);
-  setValue(doc, n, _T("h"), r.m_h, args...);
+  setValue(doc, n, _T("p"   ), r.m_p   , args...);
+  setValue(doc, n, _T("size"), r.m_size, args...);
 }
 
 template<typename T,typename... Args> void getValue(XMLDoc &doc, XMLNodePtr n, Rectangle2DTemplate<T> &r, Args... args) {
-  getValue(doc, n, _T("x"), r.m_x, args...);
-  getValue(doc, n, _T("y"), r.m_y, args...);
-  getValue(doc, n, _T("w"), r.m_w, args...);
-  getValue(doc, n, _T("h"), r.m_h, args...);
+  getValue(doc, n, _T("p"   ), r.m_p   , args...);
+  getValue(doc, n, _T("size"), r.m_size, args...);
 }
 
 template<typename T,typename... Args> void setValue(XMLDoc &doc, XMLNodePtr n, const Point3DTemplate<T> &p, Args... args) {

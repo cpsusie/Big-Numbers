@@ -279,14 +279,14 @@ void CCoordinateSystem::setDataRange(const DataRange &dataRange, bool makeSpace)
 void CCoordinateSystem::setFromRectangle(const Rectangle2D &rectangle, int makeSpaceFlags) {
   Rectangle2D r = Rectangle2D::makePositiveRectangle(rectangle);
   if(r.getWidth() == 0) {
-    const double dw = r.m_x == 0 ? 20 : r.m_x / 20;
-    r.m_x -= dw / 2;
-    r.m_w += dw;
+    const double dw = r.m_p.x == 0 ? 20 : r.m_p.x / 20;
+    r.m_p.x     -= dw / 2;
+    r.m_size.cx += dw;
   }
   if(r.getHeight() == 0) {
-    const double dh = r.m_y == 0 ? 20 : r.m_y / 20;
-    r.m_y -= dh / 2;
-    r.m_h += dh;
+    const double dh = r.m_p.y == 0 ? 20 : r.m_p.y / 20;
+    r.m_p.y -= dh / 2;
+    r.m_size.cy += dh;
   }
   RectangleTransformation &tr = getTransformation();
   tr.setFromRectangle(r);

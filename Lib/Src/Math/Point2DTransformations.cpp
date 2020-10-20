@@ -90,7 +90,7 @@ RotateTransformation::RotateTransformation(const Point2D &center, double theta) 
 }
 
 Point2D RotateTransformation::operator()(const Point2D &p) {
-  return (p - m_center).rotate(m_theta) + m_center;
+  return Point2D(p - m_center).rotate(m_theta) + m_center;
 }
 
 // ----------------------- MirrorTransformation -----------------------

@@ -4,11 +4,14 @@ template<typename T> class NumberInterval {
 private:
   T m_from, m_to;
 public:
-  inline NumberInterval(const T &from, const T &to) : m_from(from), m_to(to) {
+  template<typename T1, typename T2> inline NumberInterval(const T1 &from, const T2 &to) : m_from((T)from), m_to((T)to) {
   }
 
-  NumberInterval() {
-    m_from = m_to = 0;
+  NumberInterval() : m_from(0), m_to(0) {
+  }
+
+  template<typename S> NumberInterval<T> &operator=(const NumberInterval<S> &src) {
+    return setFrom(src.getFrom()).setTo(src.getTo())
   }
 
   const T &getFrom() const {
@@ -19,34 +22,36 @@ public:
     return m_to;
   }
 
-  NumberInterval<T> &setFrom(const T &v) {
-    m_from = v;
+  // return this
+  template<typename S> NumberInterval<T> &setFrom(const S &v) {
+    m_from = (T)v;
     return *this;
   }
 
-  NumberInterval<T> &setTo(const T &v) {
-    m_to   = v;
+  // return this
+  template<typename S> NumberInterval<T> &setTo(const S &v) {
+    m_to   = (T)v;
     return *this;
   }
 
-  const T getMin() const {
+  const T &getMin() const {
     return m_from < m_to ? m_from : m_to;
   }
 
-  const T getMax() const {
+  const T &getMax() const {
     return m_from > m_to ? m_from : m_to;
   }
 
-  bool contains(const T &x) const {
-    return (getMin() <= x) && (x <= getMax());
+  template<typename S> bool contains(const S &x) const {
+    return (getMin() <= (T)x) && ((T)x <= getMax());
   }
 
-  bool contains(const NumberInterval<T> &i) const {
-    return (getMin() <= i.getMin()) && (i.getMax() <= getMax());
+  template<typename S> bool contains(const NumberInterval<S> &i) const {
+    return (getMin() <= (T)(i.getMin())) && ((T)(i.getMax()) <= getMax());
   }
 
-  bool overlap(const NumberInterval<T> &i) const {
-    return (getMin() <= i.getMax()) && (getMax() >= i.getMin());
+  template<typename S> bool overlap(const NumberInterval<S> &i) const {
+    return (getMin() <= (T)(i.getMax())) && (getMax() >= (T)(i.getMin()));
   }
 
   NumberInterval<T> interSection(const NumberInterval<T> &i) const {
@@ -57,7 +62,8 @@ public:
     }
   }
 
-  NumberInterval<T> &operator+=(const NumberInterval<T> &rhs) { // union operator
+  // union operator
+  NumberInterval<T> &operator+=(const NumberInterval<T> &rhs) {
     const T l = rhs.getMin();
     const T r = rhs.getMax();
     if(m_from < m_to) {
@@ -73,6 +79,14 @@ public:
   T getLength() const {
     return m_to - m_from;
   }
+
+  NumberInterval<T> &makePositive() {
+    if(m_from > m_to) {
+      std::swap(m_from, m_to);
+    }
+    return *this;
+  }
+
   bool operator==(const NumberInterval<T> &rhs) const {
     return (getFrom() == rhs.getFrom()) && (getTo() == rhs.getTo());
   }

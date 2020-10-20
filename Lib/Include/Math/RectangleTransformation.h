@@ -117,13 +117,13 @@ public:
     bool                   changed   = false;
     if(fromRatio > toRatio) {
       const T dh = dsign(fr.getHeight())*(fabs(fr.getWidth()/toRatio) - fabs(fr.getHeight()));
-      fr.m_y -= dh / 2;
-      fr.m_h += dh;
+      fr.m_p.y     -= dh / 2;
+      fr.m_size.cy += dh;
       changed = dh != 0;
     } else if(fromRatio < toRatio) {
       const T dw = dsign(fr.getWidth())*(fabs(toRatio*fr.getHeight()) - fabs(fr.getWidth()));
-      fr.m_x -= dw / 2;
-      fr.m_w += dw;
+      fr.m_p.x     -= dw / 2;
+      fr.m_size.cx += dw;
       changed = dw != 0;
     }
     if(changed) {
@@ -132,11 +132,10 @@ public:
     return changed;
   }
 
-  bool operator==(const RectangleTransformationTemplate<T> &rhs) const {
-    return (getXTransformation() == rhs.getXTransformation())
-        && (getYTransformation() == rhs.getYTransformation());
+  inline bool operator==(const RectangleTransformationTemplate<T> &rhs) const {
+    return m_tr == rhs.m_tr;
   }
-  bool operator!=(const RectangleTransformationTemplate<T> &rhs) const {
+  inline bool operator!=(const RectangleTransformationTemplate<T> &rhs) const {
     return !(*this == rhs);
   }
   static RectangleTransformationTemplate<T> getId() {
