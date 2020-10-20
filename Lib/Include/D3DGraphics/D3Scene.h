@@ -83,16 +83,16 @@ public:
   ~D3Scene();
   void initDevice(HWND hwnd);
   inline D3Device &getDevice() const {
-    if(m_device == NULL) {
+    if(m_device == nullptr) {
       throwException(_T("Device not initialized"));
     }
     return *m_device;
   }
   LPDIRECT3DDEVICE getDirectDevice() const;
   // notify listeners with notification id = SP_CAMERACOUNT
-  // if src != NULL, the new camera will be a clone of this (except hwnd)
+  // if src != nullptr, the new camera will be a clone of this (except hwnd)
   // else default-values will be used
-  D3Camera       &addCamera(HWND wnd, D3Camera *src=NULL);
+  D3Camera       &addCamera(HWND wnd, D3Camera *src=nullptr);
   // notify listeners with notification id = SP_CAMERACOUNT
   void            removeCamera(D3Camera &camera);
   inline const D3CameraArray &getCameraArray() const {
@@ -211,7 +211,7 @@ public:
   void setLightControlMaterial(const D3Material &lcMaterial);
 
   inline bool isMaterialDefined(UINT materialId) const {
-    return m_materialMap.get(materialId) != NULL;
+    return m_materialMap.get(materialId) != nullptr;
   }
   inline UINT getMaterialCount() const {
     return (UINT)m_materialMap.size();
@@ -229,24 +229,24 @@ public:
   void removeAllTextures();
   const D3Texture &getTexture(UINT textureId) const {
     const D3Texture *t = m_textureMap.get(textureId);
-    return (t != NULL) ? *t : m_undefinedTexture;
+    return (t != nullptr) ? *t : m_undefinedTexture;
   }
   inline bool isTextureDefined(UINT textureId) const {
-    return m_textureMap.get(textureId) != NULL;
+    return m_textureMap.get(textureId) != nullptr;
   }
   inline UINT getTextureCount() const {
     return (UINT)m_textureMap.size();
   }
   // p in screen-coordinates
-  // Return the camera which uses device with HWND at the given point, or NULL if none
+  // Return the camera which uses device with HWND at the given point, or nullptr if none
   D3Camera            *getPickedCamera(const CPoint &p) const;
   // p in screen-coordinates
-  // if hitPoint != NULL, it will receive point (in worldspace) of rays intersection with nearest object
-  // if ray      != NULL, it will receive value returned by getPicRay(point)
-  // if dist     != NULL, is will receieve distnce to hitpoint, if any
-  // if info     != NULL, it will receieve info returned by SceneObject::intersectWithRay, for the closest, visible object
-  D3SceneObjectVisual *getPickedVisual(const CPoint &p  , long mask = OBJMASK_ALL, D3DXVECTOR3 *hitPoint = NULL, D3Ray *ray  = NULL, float *dist = NULL, D3PickedInfo *info = NULL) const;
-  D3SceneObjectVisual *getPickedVisual(const D3Camera &camera, const D3Ray  &ray, long mask = OBJMASK_ALL, D3DXVECTOR3 *hitPoint = NULL, float *dist = NULL, D3PickedInfo *info = NULL) const;
+  // if hitPoint != nullptr, it will receive point (in worldspace) of rays intersection with nearest object
+  // if ray      != nullptr, it will receive value returned by getPicRay(point)
+  // if dist     != nullptr, is will receieve distnce to hitpoint, if any
+  // if info     != nullptr, it will receieve info returned by SceneObject::intersectWithRay, for the closest, visible object
+  D3SceneObjectVisual *getPickedVisual(const CPoint &p  , long mask = OBJMASK_ALL, D3DXVECTOR3 *hitPoint = nullptr, D3Ray *ray  = nullptr, float *dist = nullptr, D3PickedInfo *info = nullptr) const;
+  D3SceneObjectVisual *getPickedVisual(const D3Camera &camera, const D3Ray  &ray, long mask = OBJMASK_ALL, D3DXVECTOR3 *hitPoint = nullptr, float *dist = nullptr, D3PickedInfo *info = nullptr) const;
 
   void save(const String &fileName) const;
   void load(const String &fileName);

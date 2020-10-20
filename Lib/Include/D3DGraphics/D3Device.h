@@ -50,11 +50,11 @@ public:
   // Call m_renderLock.wait(), to get exclusive access to device
   // Then call setCurrentCamera(&camera).device.Clear(camera.backgroundColor),
   // setup view- and projMatrix corresponding to camera, device->BeginScene()
-  // if any exception occur, setCurrentCamera(NULL).m_renderLock.notify() is called, to prevent deadlock,
+  // if any exception occur, setCurrentCamera(nullptr).m_renderLock.notify() is called, to prevent deadlock,
   // and exception is rethrown
   void beginRender(const D3Camera &camera);
-  // Call device->EndScene(); Present(NULL,NULL,currentCamera.getHwnd(), and setCurrentCamera(NULL);
-  // If any exception occur, setCurrentCamera(NULL).m_renderLock.notify() is called, and exception is rethrown
+  // Call device->EndScene(); Present(nullptr,nullptr,currentCamera.getHwnd(), and setCurrentCamera(nullptr);
+  // If any exception occur, setCurrentCamera(nullptr).m_renderLock.notify() is called, and exception is rethrown
   void endRender();
   const D3DCAPS &getDeviceCaps() const {
     return m_deviceCaps;
@@ -270,11 +270,11 @@ public:
     return *this;
   }
 
-  template<typename VertexType> LPDIRECT3DVERTEXBUFFER allocateVertexBuffer(UINT count, UINT *bufferSize = NULL) {
+  template<typename VertexType> LPDIRECT3DVERTEXBUFFER allocateVertexBuffer(UINT count, UINT *bufferSize = nullptr) {
     return allocateVertexBuffer(VertexType::FVF_Flags, count, bufferSize);
   }
-  LPDIRECT3DVERTEXBUFFER  allocateVertexBuffer(DWORD fvf  , UINT count, UINT *bufferSize = NULL);
-  LPDIRECT3DINDEXBUFFER   allocateIndexBuffer( bool  int32, UINT count, UINT *bufferSize = NULL);
+  LPDIRECT3DVERTEXBUFFER  allocateVertexBuffer(DWORD fvf  , UINT count, UINT *bufferSize = nullptr);
+  LPDIRECT3DINDEXBUFFER   allocateIndexBuffer( bool  int32, UINT count, UINT *bufferSize = nullptr);
   LPD3DXMESH              allocateMesh(        DWORD fvf  , UINT faceCount, UINT vertexCount, DWORD options) override;
 
 };

@@ -12,10 +12,10 @@ public:
     reset();
   }
   inline void reset() {
-    set(NULL, D3DXORIGIN);
+    set(nullptr, D3DXORIGIN);
   }
   bool isEmpty() const {
-    return m_obj == NULL;
+    return m_obj == nullptr;
   }
   inline const D3DXVECTOR3 &getMeshPoint() const {
     return m_meshPoint;

@@ -34,23 +34,23 @@ protected:
 
   D3SceneObjectWithIndexBuffer(D3Scene &scene, const String &name = _T("ObjectWithIndexBuffer"))
     : D3SceneObjectWithVertexBuffer(scene, name)
-    , m_indexBuffer(NULL)
+    , m_indexBuffer(nullptr)
   {
   }
   D3SceneObjectWithIndexBuffer(D3SceneObjectVisual *parent, const String &name = _T("ObjectWithIndexBuffer"))
     : D3SceneObjectWithVertexBuffer(parent, name)
-    , m_indexBuffer(NULL)
+    , m_indexBuffer(nullptr)
   {
   }
   template<typename VertexType> D3SceneObjectWithIndexBuffer(D3Scene &scene, const CompactArray<VertexType> &varray, const CompactUintArray &iarray, const String &name=_T("ObjectWithIndexBuffer")) 
     : D3SceneObjectWithVertexBuffer(scene, name)
-    , m_indexBuffer(NULL)
+    , m_indexBuffer(nullptr)
   {
     initBuffers(varray, iarray);
   }
   template<typename VertexType> D3SceneObjectWithIndexBuffer(D3SceneObjectVisual *parent, const CompactArray<VertexType> &varray, const CompactUintArray &iarray, const String &name=_T("ObjectWithIndexBuffer")) 
     : D3SceneObjectWithVertexBuffer(parent, name)
-    , m_indexBuffer(NULL)
+    , m_indexBuffer(nullptr)
   {
     initBuffers(varray, iarray);
   }

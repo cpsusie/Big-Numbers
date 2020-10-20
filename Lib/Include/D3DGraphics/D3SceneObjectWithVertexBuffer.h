@@ -21,7 +21,7 @@ protected:
     m_vertexSize = sizeof(VertexType);
     m_fvf = VertexType::FVF_Flags;
     assert(bufferSize == m_vertexSize * count);
-    VertexType *bufferItems = NULL;
+    VertexType *bufferItems = nullptr;
     lockVertexArray((void**)&bufferItems, bufferSize);
     return bufferItems;
   }

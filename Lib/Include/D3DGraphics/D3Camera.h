@@ -177,7 +177,7 @@ public:
   // Return Ray in world-space
   D3Ray getPickedRay(const CPoint &point) const;
   // Point in window-coordinates (m_hwnd)
-  D3SceneObjectVisual *getPickedVisual(const CPoint &p, long mask = -1, D3DXVECTOR3 *hitPoint = NULL, D3Ray *ray = NULL, float *dist = NULL, D3PickedInfo *info = NULL) const;
+  D3SceneObjectVisual *getPickedVisual(const CPoint &p, long mask = -1, D3DXVECTOR3 *hitPoint = nullptr, D3Ray *ray = nullptr, float *dist = nullptr, D3PickedInfo *info = nullptr) const;
   // call m_renderLock.wait(), doRender(), m_renderLock.notify();
   // if any exception occur, m_renderLock.notify() is called, and exception if rethrown
   void render();

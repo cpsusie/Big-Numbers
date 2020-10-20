@@ -5,7 +5,7 @@
 // Sent to listener for id=SP_TEXTUREIMAGE
 class D3Texture {
 private:
-  // If < 0, texture is undefined and m_image == NULL
+  // If < 0, texture is undefined and m_image == nullptr
   int               m_id;
   LPDIRECT3DTEXTURE m_image;
 public:
@@ -20,10 +20,10 @@ public:
     return *this;
   }
   ~D3Texture() {
-    m_image = NULL;
+    m_image = nullptr;
   }
   D3Texture &setUndefined() {
-    m_image = NULL;
+    m_image = nullptr;
     m_id    = -1;
     return *this;
   }

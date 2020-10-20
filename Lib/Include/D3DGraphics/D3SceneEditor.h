@@ -63,13 +63,13 @@ private:
 
     HWND              getCurrentHwnd() const;
     int               findCameraIndex(CPoint p) const;
-    // if index >= 0, set m_currentCamera = scene.getCameraArray()[index], else = NULL, and set m_currentCameraIndex = index
-    // return boolean value of (m_selectedCamera != NULL) after adjustment
+    // if index >= 0, set m_currentCamera = scene.getCameraArray()[index], else = nullptr, and set m_currentCameraIndex = index
+    // return boolean value of (m_selectedCamera != nullptr) after adjustment
     bool              selectCAM(int index);
     bool              selectCAM(CPoint p);
     bool              isSameCAM(CPoint p) const;
     bool              hasCAM() const {
-      return m_selectedCamera != NULL;
+      return m_selectedCamera != nullptr;
     }
     void              rotateCurrentVisualFrwBckw(  float angle1 , float angle2);
     void              rotateCurrentVisualLeftRight(float angle) ;
@@ -83,9 +83,9 @@ private:
     D3DXVECTOR3       getCurrentObjPos();
     // Assume getCurrentObjType() in { SOTYPE_VISUALOBJECT, SOTYPE_LIGHTCONTROL, SOTYPE_ANIMATEDOBJECT }
     void              setCurrentObjPos(   const D3DXVECTOR3 &pos);
-    // Assume getCurrentVisual() != NULL (currentSceneObject.type in { SOTYPE_ANIMATEDOBJECT, SOTYPE_VISUALOBJECT }
+    // Assume getCurrentVisual() != nullptr (currentSceneObject.type in { SOTYPE_ANIMATEDOBJECT, SOTYPE_VISUALOBJECT }
     void              setCurrentVisualWorld(      const D3DXMATRIX &world);
-    // Return pointer to getCurrentObj->getWorld() if getCcurrentVisual() != NULL, else NULL
+    // Return pointer to getCurrentObj->getWorld() if getCcurrentVisual() != nullptr, else nullptr
     const D3DXMATRIX *getCurrentVisualWorld() const;
     void              setCurrentVisualOrientation(const D3DXQUATERNION &q    );
     // Set orientation for current visual to q, rotating around centerOfRotation (in world-space)
@@ -109,7 +109,7 @@ private:
     CMenu &loadMenu(CMenu &menu, int id);
     void showContextMenu(CMenu &menu, CPoint point);
 
-    // set m_currentControl = CONTROL_IDLE, m_currentCamera = NULL, m_currentVisual = NULL
+    // set m_currentControl = CONTROL_IDLE, m_currentCamera = nullptr, m_currentVisual = nullptr
     D3SceneEditor &resetControl();
     bool setControl(D3EditorControl control, D3SceneObjectVisual *visual);
 
@@ -232,15 +232,15 @@ public:
       return m_stateFlagsStack.isEmpty();
     }
     inline bool hasSceneContainer() const {
-      return m_sceneContainer != NULL;
+      return m_sceneContainer != nullptr;
     }
     inline D3SceneContainer *getSceneContainer() const {
       return m_sceneContainer;
     }
 
-    // Return hasSceneContainer() ? &m_sceneContainer->getScene() : NULL;
+    // Return hasSceneContainer() ? &m_sceneContainer->getScene() : nullptr;
     D3Scene  *getScene()  const;
-    // Return scene ? &scene->getDevice() : NULL;
+    // Return scene ? &scene->getDevice() : nullptr;
     D3Device *getDevice() const;
     inline D3EditorControl      getCurrentControl() const {
       return m_currentControl;
@@ -266,18 +266,18 @@ public:
 
     // Return hasObj() ? getCurrentObj()->getType() : SOTYPE_NULL;
     SceneObjectType              getCurrentObjType() const;
-    // Return NULL, if m_currentVisual->type not in {SOTYPE_VISUALOBJECT, SOTYPE_ANIMATEDOBJECT, }
+    // Return nullptr, if m_currentVisual->type not in {SOTYPE_VISUALOBJECT, SOTYPE_ANIMATEDOBJECT, }
     D3SceneObjectVisual         *getCurrentVisual() const;
-    // return NULL, if m_currentVisual->type not SOTYPE_ANIMATEDOBJECT
+    // return nullptr, if m_currentVisual->type not SOTYPE_ANIMATEDOBJECT
     D3SceneObjectAnimatedVisual *getCurrentAnimatedObj() const;
     inline bool                 hasObj() const {
-      return getCurrentObj() != NULL;
+      return getCurrentObj() != nullptr;
     }
     inline bool hasCurrentVisual() const {
-      return getCurrentVisual() != NULL;
+      return getCurrentVisual() != nullptr;
     }
     inline bool hasCurrentAnimatedObj() const {
-      return getCurrentAnimatedObj() != NULL;
+      return getCurrentAnimatedObj() != nullptr;
     }
     inline const D3Ray &getPickedRay() const {
       return m_pickedRay;

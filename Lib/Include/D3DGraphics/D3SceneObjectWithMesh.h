@@ -19,9 +19,9 @@ protected:
     V(getMesh()->DrawSubset(attribId));
   }
 public:
-  // if mesh != NULL, it will be released when Object is deleted
-  D3SceneObjectWithMesh(D3Scene             &scene , LPD3DXMESH mesh = NULL, const String &name = _T("MeshObject"));
-  D3SceneObjectWithMesh(D3SceneObjectVisual *parent, LPD3DXMESH mesh = NULL, const String &name = _T("MeshObject"));
+  // if mesh != nullptr, it will be released when Object is deleted
+  D3SceneObjectWithMesh(D3Scene             &scene , LPD3DXMESH mesh = nullptr, const String &name = _T("MeshObject"));
+  D3SceneObjectWithMesh(D3SceneObjectVisual *parent, LPD3DXMESH mesh = nullptr, const String &name = _T("MeshObject"));
   ~D3SceneObjectWithMesh()                        override;
   void draw()                                     override;
   LPD3DXMESH getMesh()                      const override {

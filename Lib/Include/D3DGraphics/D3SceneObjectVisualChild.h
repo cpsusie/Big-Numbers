@@ -8,7 +8,7 @@ public:
     : BaseClass(parent, name)
   {
   }
-  D3SceneObjectVisualChild(D3SceneObjectVisual *parent, LPD3DXMESH mesh = NULL, const String &name = EMPTYSTRING)
+  D3SceneObjectVisualChild(D3SceneObjectVisual *parent, LPD3DXMESH mesh = nullptr, const String &name = EMPTYSTRING)
     : BaseClass(parent, mesh, name)
   {
   }

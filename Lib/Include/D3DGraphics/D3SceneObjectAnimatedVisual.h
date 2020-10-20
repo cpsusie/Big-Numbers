@@ -14,7 +14,7 @@ private:
 
   // return (m_lastRenderedIndex < childCount())
   //      ?  getChild(m_lastRenderedIndex)
-  //      : (getCurrentIndex()    < childCount()) ? getChild(getCurrentIndex()) : NULL
+  //      : (getCurrentIndex()    < childCount()) ? getChild(getCurrentIndex()) : nullptr
   D3SceneObjectVisual *getCurrentChild() const;
 public:
   D3SceneObjectAnimatedVisual(D3Scene             &scene , const MeshArray &meshArray, const String &name = _T("Animated Visual"));
@@ -31,11 +31,11 @@ public:
   //   getChild(getCurrentIndex())->draw(); m_lastRenderedIndex = index;
   // }
   void                   draw()                                     override;
-  // Return currentChild ? currentChild->getMesh() : NULL
+  // Return currentChild ? currentChild->getMesh() : nullptr
   LPD3DXMESH             getMesh()                            const override;
-  // Return currentChild ? currentChild->getVertexBuffer() : NULL
+  // Return currentChild ? currentChild->getVertexBuffer() : nullptr
   LPDIRECT3DVERTEXBUFFER getVertexBuffer()                    const override;
-  // Return currentChild ? currentChild->getIndexBuffer() : NULL
+  // Return currentChild ? currentChild->getIndexBuffer() : nullptr
   LPDIRECT3DINDEXBUFFER  getIndexBuffer()                     const override;
   // Return currentChild ? currentChild->isNormalsVisible() : false
   bool                   isNormalsVisible()                   const override;

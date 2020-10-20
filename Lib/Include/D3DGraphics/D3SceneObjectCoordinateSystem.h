@@ -13,7 +13,7 @@ private:
   D3SceneObjectCoordinateSystem(           const D3SceneObjectCoordinateSystem &src); // not implemented
   D3SceneObjectCoordinateSystem &operator=(const D3SceneObjectCoordinateSystem &src); // not implemented
 public:
-  D3SceneObjectCoordinateSystem(D3Scene &scene, const D3Cube *cube=NULL);
+  D3SceneObjectCoordinateSystem(D3Scene &scene, const D3Cube *cube=nullptr);
   void setVisible(bool visible) {
     m_visible = visible;
   }

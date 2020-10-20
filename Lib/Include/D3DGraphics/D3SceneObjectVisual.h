@@ -53,22 +53,22 @@ public:
   }
   virtual void                    draw();
   virtual LPD3DXMESH              getMesh()                   const {
-    return NULL;
+    return nullptr;
   }
   virtual LPDIRECT3DVERTEXBUFFER  getVertexBuffer()           const {
-    return NULL;
+    return nullptr;
   }
   virtual LPDIRECT3DINDEXBUFFER   getIndexBuffer()            const {
-    return NULL;
+    return nullptr;
   }
   inline bool                     hasMesh()                   const {
-    return getMesh() != NULL;
+    return getMesh() != nullptr;
   }
   inline bool                     hasVertexBuffer()           const {
-    return getVertexBuffer() != NULL;
+    return getVertexBuffer() != nullptr;
   }
   inline bool                     hasIndexBuffer()            const {
-    return getIndexBuffer() != NULL;
+    return getIndexBuffer() != nullptr;
   }
   D3DVERTEXBUFFER_DESC            getVertexBufferDesc()       const;
   D3DINDEXBUFFER_DESC             getIndexBufferDesc()        const;
@@ -135,7 +135,7 @@ public:
   operator D3World()                                          const {
     return D3World(getWorld());
   }
-  bool intersectsWithRay(const D3Ray &ray, float &dist, D3PickedInfo *info = NULL) const;
+  bool intersectsWithRay(const D3Ray &ray, float &dist, D3PickedInfo *info = nullptr) const;
 
   inline const String            &getName()                   const {
     return m_name;

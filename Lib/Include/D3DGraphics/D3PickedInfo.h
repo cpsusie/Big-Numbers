@@ -25,7 +25,7 @@ public:
   D3PickedInfo(const D3SceneObjectVisual *visualObject, int faceIndex, int vertexIndex[3], D3DXVECTOR3 facePoint[3], float U, float V);
   void clear();
   inline bool isEmpty() const {
-    return m_visualObject == NULL;
+    return m_visualObject == nullptr;
   }
   const D3SceneObjectVisual *getVisual() const {
     return m_visualObject;
