@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Math/Transformation.h>
+#include <Math/RectangleTransformation.h>
 #include "WinTools.h"
 
 class Viewport2D {

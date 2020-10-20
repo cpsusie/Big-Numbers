@@ -1,7 +1,7 @@
 #pragma once
 
 #include "afxcmn.h"
-#include <Math/Transformation.h>
+#include <Math/IntervalTransformation.h>
 
 class CSliderCtrlWithTransformation : public CSliderCtrl {
 private:

@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <MathUtil.h>
 #include <MFCUtil/SliderCtrlWithTransformation.h>
 
 #define ASSERTCREATED() assertCreated(__TFUNCTION__)

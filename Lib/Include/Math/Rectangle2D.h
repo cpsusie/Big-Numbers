@@ -82,10 +82,10 @@ public:
     return max(m_y, m_y + m_h);
   }
   inline NumberInterval<T> getXInterval() const {
-    return NumberInterval<T>(getMinX(), getMaxX());
+    return NumberInterval<T>(m_x, m_x+m_w);
   }
   inline NumberInterval<T> getYInterval() const {
-    return NumberInterval<T>(getMinY(), getMaxY());
+    return NumberInterval<T>(m_y, m_y+m_h);
   }
   template<typename P> bool contains(const Point2DTemplate<P> &p) const {
     return (getMinX() <= (T)p.x) && ((T)p.x <= getMaxX()) && (getMinY() <= (T)p.y) && ((T)p.y <= getMaxY());

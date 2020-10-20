@@ -1299,6 +1299,8 @@
     <ClInclude Include="..\..\Include\Math\BigReal\MRisprime.h" />
     <ClInclude Include="..\..\Include\Math\Complex.h" />
     <ClInclude Include="..\..\Include\Math\Cube3D.h" />
+    <ClInclude Include="..\..\Include\Math\IntervalTransformationArray.h" />
+    <ClInclude Include="..\..\Include\Math\CubeTransformation.h" />
     <ClInclude Include="..\..\Include\Math\Double64.h" />
     <ClInclude Include="..\..\Include\Math\Double80.h" />
     <ClInclude Include="..\..\Include\Math\Double80Asmx64.h">
@@ -1346,6 +1348,7 @@
     <ClInclude Include="..\..\Include\Math\FPU.h" />
     <ClInclude Include="..\..\Include\Math\Int128.h" />
     <ClInclude Include="..\..\Include\Math\Int128Net.h" />
+    <ClInclude Include="..\..\Include\Math\IntervalTransformation.h" />
     <ClInclude Include="..\..\Include\Math\LUMatrixTemplate.h" />
     <ClInclude Include="..\..\Include\Math\MathException.h" />
     <ClInclude Include="..\..\Include\Math\MathLib.h" />
@@ -1363,12 +1366,12 @@
     <ClInclude Include="..\..\Include\Math\Rational.h" />
     <ClInclude Include="..\..\Include\Math\Real.h" />
     <ClInclude Include="..\..\Include\Math\Rectangle2D.h" />
+    <ClInclude Include="..\..\Include\Math\RectangleTransformation.h" />
     <ClInclude Include="..\..\Include\Math\RungekuttaFehlBerg.h" />
     <ClInclude Include="..\..\Include\Math\SigmoidIterator.h" />
     <ClInclude Include="..\..\Include\Math\Simplex.h" />
     <ClInclude Include="..\..\Include\Math\Spherical.h" />
     <ClInclude Include="..\..\Include\Math\Statistic.h" />
-    <ClInclude Include="..\..\Include\Math\Transformation.h" />
     <ClInclude Include="..\..\Include\Math\Triangle\Triangle.h" />
     <ClInclude Include="..\..\Include\Math\TrigonometricMode.h" />
     <ClInclude Include="ComplexIO.h" />

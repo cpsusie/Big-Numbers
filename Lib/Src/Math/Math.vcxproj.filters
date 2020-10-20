@@ -371,9 +371,6 @@
     <ClInclude Include="..\..\Include\Math\Statistic.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\Math\Transformation.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\Math\Point2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -504,6 +501,18 @@
     </ClInclude>
     <ClInclude Include="ComplexStr.h">
       <Filter>Source Files\Number Types\Private Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\IntervalTransformation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\RectangleTransformation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\CubeTransformation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\IntervalTransformationArray.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

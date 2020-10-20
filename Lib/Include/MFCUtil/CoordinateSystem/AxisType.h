@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Math/Transformation.h>
+#include <Math/IntervalTransformation.h>
 
 typedef enum {
   AXIS_LINEAR

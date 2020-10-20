@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "Math/Transformation.h"
+#include <Math/IntervalTransformation.h>
 #include <Math/SigmoidIterator.h>
 
 class _SigmoidIterator : public AbstractIterator {

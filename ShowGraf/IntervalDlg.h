@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Math/Transformation.h>
+#include <Math/RectangleTransformation.h>
 
 class CIntervalDlg : public CDialog {
 private:
