@@ -325,7 +325,7 @@ public:
   inline bool                   hasSegmentRegister() const {
     return m_segReg != NULL;
   }
-  const MemoryRef              &getMemoryReference() const {
+  const MemoryRef              &getMemoryReference() const override {
     return m_mr;
   }
   inline bool containsSize(OperandSize immSize) const {
@@ -333,12 +333,12 @@ public:
   }
 
 #if defined(IS64BIT)
-  bool needREXByte() const {
+  bool needREXByte() const override {
     return m_mr.needREXByte();
   }
 #endif // IS64BIT
-  String toString() const;
-  InstructionOperand *clone() const {
+  String toString() const override;
+  InstructionOperand *clone() const override {
     return new MemoryOperand(*this);
   }
 
@@ -623,7 +623,7 @@ public:
     : OpcodeBase(mnemonic, op, extension, 1, flags)
   {
   }
-  InstructionBase operator()(const InstructionOperand &op) const;
+  InstructionBase operator()(const InstructionOperand &op) const override;
 };
 
 class Opcode1ArgNoMode : public Opcode1Arg {
@@ -633,7 +633,7 @@ public:
     : Opcode1Arg(mnemonic, op, extension, flags)
   {
   }
-  InstructionBase operator()(const InstructionOperand &op) const;
+  InstructionBase operator()(const InstructionOperand &op) const override;
 };
 
 class Opcode1ArgImm8 : public OpcodeBase {
@@ -642,7 +642,7 @@ public:
     : OpcodeBase(mnemonic, op, 0, 1, IMM8_ALLOWED)
   {
   }
-  InstructionBase operator()(const InstructionOperand &op) const;
+  InstructionBase operator()(const InstructionOperand &op) const override;
 };
 
 // encoding MR/RM. op1=reg/mem, op2=reg/mem/imm. at least 1 operand must be reg
@@ -657,7 +657,7 @@ public :
     : OpcodeBase(mnemonic, op, extension, 2, flags)
   {
   }
-  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
+  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const override;
 };
 
 // encoding MR. , op1=r8-64/m8-64. op2=r8-64
@@ -697,7 +697,7 @@ public:
                 ,ALL_GPR0_ALLOWED|HAS_ALL_SIZEBITS|IMMEDIATEVALUE_ALLOWED|OP1_REGONLY|LASTOP_IMMONLY)
   {
   }
-  InstructionBase operator()(const InstructionOperand &dst, const InstructionOperand &imm) const;
+  InstructionBase operator()(const InstructionOperand &dst, const InstructionOperand &imm) const override;
 };
 
 // encoding OI. op1=r8/r16/r32/r64. op2=imm8/imm16/imm32
@@ -708,7 +708,7 @@ public:
                 ,flags|(ALL_GPR_ALLOWED|HAS_NONBYTE_SIZEBITS|IMMEDIATEVALUE_ALLOWED|OP1_REGONLY|LASTOP_IMMONLY))
   {
   }
-  InstructionBase operator()(const InstructionOperand &dst, const InstructionOperand &imm) const;
+  InstructionBase operator()(const InstructionOperand &dst, const InstructionOperand &imm) const override;
 };
 
 // encoding MI. op1=m8-64,r8-64, op2=imm8-32
@@ -738,7 +738,7 @@ public:
     : Opcode2ArgMI(mnemonic, op, extension, IMM8_ALLOWED)
   {
   }
-  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
+  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const override;
 };
 
 // encoding MINB. op1=m16-64/r16-64, op2=imm8
@@ -748,7 +748,7 @@ public:
     : Opcode2ArgMINB(mnemonic, op, extension, IMM8_ALLOWED)
   {
   }
-  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
+  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const override;
 };
 
 // encoding M. op1=AL/AX/EAX/RAX. op2=RM
@@ -759,7 +759,7 @@ public:
                 ,ALL_GPR_ALLOWED|ALL_GPRPTR_ALLOWED|HAS_ALL_SIZEBITS|OP1_GPR0ONLY)
   {
   }
-  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
+  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const override;
 };
 
 class Opcode3Arg : public OpcodeBase {
@@ -768,7 +768,7 @@ public :
             ,UINT flags=NONBYTE_GPR_ALLOWED|NONBYTE_GPRPTR_ALLOWED|OP1_REGONLY|LASTOP_IMMONLY|IMMEDIATEVALUE_ALLOWED|HAS_NONBYTE_SIZEBITS|HAS_IMM_XBIT)
     : OpcodeBase(mnemonic, op, 0, 3, flags) {
   }
-  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3) const;
+  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3) const override;
 };
 
 class OpcodeIMul : public Opcode1Arg {
@@ -785,11 +785,11 @@ public :
   BYTE getMaxOpCount() const {
     return 3;
   }
-  bool isValidOperandType(       const InstructionOperand &op, BYTE index) const;
-  bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2,                                bool throwOnError=false) const;
-  bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3, bool throwOnError=false) const;
-  InstructionBase operator()(    const InstructionOperand &op1, const InstructionOperand &op2) const;
-  InstructionBase operator()(    const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3) const;
+  bool isValidOperandType(       const InstructionOperand &op, BYTE index) const override;
+  bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2,                                bool throwOnError=false) const override;
+  bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3, bool throwOnError=false) const override;
+  InstructionBase operator()(    const InstructionOperand &op1, const InstructionOperand &op2) const override;
+  InstructionBase operator()(    const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3) const override;
 };
 
 class OpcodeXchg : public Opcode2Arg {
@@ -801,7 +801,7 @@ public:
     , m_eaxRegCode(mnemonic, 0x90,0,REGTYPE_GPR_ALLOWED|DWORDGPR_ALLOWED|QWORDGPR_ALLOWED|HAS_REXWBIT)
   {
   }
-  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
+  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const override;
 };
 
 class OpcodeStd2Arg : public Opcode2Arg {
@@ -816,8 +816,8 @@ public :
     , m_codeMI(  mnemonic, opMI,extMI, (flags&ALLIMM_MASK)|IMMEDIATEVALUE_ALLOWED)
   {
   }
-  bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const;
-  InstructionBase operator()(    const InstructionOperand &op1, const InstructionOperand &op2) const;
+  bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const override;
+  InstructionBase operator()(    const InstructionOperand &op1, const InstructionOperand &op2) const override;
 };
 
 class OpcodeMov : public Opcode2Arg {
@@ -835,13 +835,13 @@ public :
     , m_memImmCode(  mnemonic, 0xC6, 0)
   {
   }
-  bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const;
-  InstructionBase operator()(    const InstructionOperand &op1, const InstructionOperand &op2) const;
+  bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const override;
+  InstructionBase operator()(    const InstructionOperand &op1, const InstructionOperand &op2) const override;
 };
 
 class Opcode2ArgDstGtSrc : public Opcode2Arg {
 protected:
-  bool isCompatibleSize(OperandSize dstSize, OperandSize srcSize) const;
+  bool isCompatibleSize(OperandSize dstSize, OperandSize srcSize) const override;
 public:
   Opcode2ArgDstGtSrc(const String &mnemonic, UINT op, UINT flags)
     : Opcode2Arg(mnemonic, op, flags)
@@ -860,8 +860,8 @@ public :
     , m_dwCode(          mnemonic, opdw, opdw?(REGTYPE_GPR_ALLOWED|DWORDGPR_ALLOWED|QWORDGPR_ALLOWED|DWORDPTR_ALLOWED|OP1_REGONLY               |HAS_REXWBIT):0)
   {
   }
-  bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const;
-  InstructionBase operator()(    const InstructionOperand &op1, const InstructionOperand &op2) const;
+  bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const override;
+  InstructionBase operator()(    const InstructionOperand &op1, const InstructionOperand &op2) const override;
 };
 
 class OpcodeLea : public Opcode2Arg {
@@ -871,8 +871,8 @@ public :
                 ,NONBYTE_GPR_ALLOWED|ALLPTR_ALLOWED|HAS_NONBYTE_SIZEBITS)
   {
   }
-  bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const;
-  InstructionBase operator()(    const InstructionOperand &op1, const InstructionOperand &op2) const;
+  bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const override;
+  InstructionBase operator()(    const InstructionOperand &op1, const InstructionOperand &op2) const override;
 };
 
 class OpcodePushPop : public Opcode1ArgNoMode {
@@ -886,8 +886,8 @@ public:
     , m_immCode(       mnemonic, opImm, 0     , opImm?(IMMEDIATEVALUE_ALLOWED|HAS_IMM_XBIT):0)
   {
   }
-  bool isValidOperand(       const InstructionOperand &op, bool throwOnError=false) const;
-  InstructionBase operator()(const InstructionOperand &op) const;
+  bool isValidOperand(       const InstructionOperand &op, bool throwOnError=false) const override;
+  InstructionBase operator()(const InstructionOperand &op) const override;
 };
 
 #if defined(IS32BIT)
@@ -900,7 +900,7 @@ public :
     , m_reg32Code(mnemonic,0x40|(extension<<3),0,REGTYPE_GPR_ALLOWED | DWORDGPR_ALLOWED)
   {
   }
-  InstructionBase operator()(const InstructionOperand &op) const;
+  InstructionBase operator()(const InstructionOperand &op) const override;
 };
 #else  // IS64BIT
 typedef Opcode1Arg OpcodeIncDec;
@@ -911,11 +911,11 @@ private:
   const Opcode1Arg m_clCode;
 public:
   OpcodeShiftRot(const String &mnemonic, BYTE extension);
-  bool isValidOperandType(const InstructionOperand &op, BYTE index) const {
+  bool isValidOperandType(const InstructionOperand &op, BYTE index) const override {
     return (index == 2) ? op.isShiftAmountOperand() : __super::isValidOperandType(op,index);
   }
-  bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const;
-  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
+  bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const override;
+  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const override;
 };
 
 class OpcodeDoubleShift : public Opcode3Arg {
@@ -923,11 +923,11 @@ private:
   const Opcode2Arg m_clCode;
 public:
   OpcodeDoubleShift(const String &mnemonic, UINT opImm);
-  bool isValidOperandType(const InstructionOperand &op, BYTE index) const {
+  bool isValidOperandType(const InstructionOperand &op, BYTE index) const override {
     return (index == 3) ? op.isShiftAmountOperand() : __super::isValidOperandType(op,index);
   }
-  bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3, bool throwOnError=false) const;
-  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3) const;
+  bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3, bool throwOnError=false) const override;
+  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2, const InstructionOperand &op3) const override;
 };
 
 class OpcodeBitTest : public Opcode2ArgMRNB {
@@ -939,14 +939,14 @@ public:
     , m_immCode(mnemonic,0x0FBA,immExt)
   {
   }
-  bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const;
-  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
+  bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const override;
+  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const override;
 };
 
 class OpcodeJmpImm : public Opcode1Arg {
 public:
   OpcodeJmpImm(const String &mnemonic);
-  InstructionBase operator()(const InstructionOperand &op) const;
+  InstructionBase operator()(const InstructionOperand &op) const override;
 };
 
 class OpcodeJmp : public Opcode1Arg {
@@ -954,8 +954,8 @@ private:
   const OpcodeJmpImm m_jmpRelImm;
 public:
   OpcodeJmp(const String &mnemonic);
-  bool isValidOperand(const InstructionOperand &op, bool throwOnError=false) const;
-  InstructionBase operator()(const InstructionOperand &op) const;
+  bool isValidOperand(const InstructionOperand &op, bool throwOnError=false) const override;
+  InstructionBase operator()(const InstructionOperand &op) const override;
 };
 
 class OpcodeJcc : public Opcode1Arg { // rel16/rel32
@@ -963,7 +963,7 @@ private:
   const Opcode1Arg m_shortCode; // rel8
 public:
   OpcodeJcc(const String &mnemonic, UINT op);
-  InstructionBase operator()(const InstructionOperand &op) const;
+  InstructionBase operator()(const InstructionOperand &op) const override;
 };
 
 class OpcodeCallImm : public Opcode1Arg {
@@ -972,7 +972,7 @@ public:
     : Opcode1Arg(mnemonic, 0xE8, 0, IMMEDIATEVALUE_ALLOWED) // near relative displacement (imm16/imm32)
   {
   }
-  InstructionBase operator()(const InstructionOperand &op) const;
+  InstructionBase operator()(const InstructionOperand &op) const override;
 };
 
 class OpcodeCall : public Opcode1Arg {
@@ -986,8 +986,8 @@ public:
     , m_callNearRelImm(mnemonic)
   {
   }
-  bool isValidOperand(const InstructionOperand &op, bool throwOnError=false) const;
-  InstructionBase operator()(const InstructionOperand &op) const;
+  bool isValidOperand(const InstructionOperand &op, bool throwOnError=false) const override;
+  InstructionBase operator()(const InstructionOperand &op) const override;
 };
 
 class StringInstruction : public Opcode0Arg {
@@ -1017,7 +1017,7 @@ public:
   {
     checkFPUStackDelta(stackDelta);
   }
-  char getFPUStackDelta() const {
+  char getFPUStackDelta() const override {
     return m_stackDelta;
   }
 };
@@ -1031,7 +1031,7 @@ public:
   {
     checkFPUStackDelta(stackDelta);
   }
-  char getFPUStackDelta() const {
+  char getFPUStackDelta() const override {
     return m_stackDelta;
   }
 };
@@ -1050,8 +1050,8 @@ public:
     , m_tbyteCode(   mnemonic, optb , exttb, stackDelta, optb?TBYTEPTR_ALLOWED:0)
   {
   }
-  bool isValidOperand(const InstructionOperand &op, bool throwOnError=false) const;
-  InstructionBase operator()(const InstructionOperand &op) const;
+  bool isValidOperand(const InstructionOperand &op, bool throwOnError=false) const override;
+  InstructionBase operator()(const InstructionOperand &op) const override;
 };
 
 class OpcodeFPU2Reg : public Opcode2Arg {
@@ -1066,8 +1066,8 @@ public:
   {
     checkFPUStackDelta(stackDelta);
   }
-  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
-  char getFPUStackDelta() const {
+  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const override;
+  char getFPUStackDelta() const override {
     return m_stackDelta;
   }
 };
@@ -1086,13 +1086,13 @@ public:
     , m_2regCode(   mnemonic, opi0, op0i , stackDelta[2]                 )
   {
   }
-  BYTE getMaxOpCount() const {
+  BYTE getMaxOpCount() const override {
     return 2;
   }
-  bool isValidOperand(           const InstructionOperand &op                                , bool throwOnError=false) const;
-  bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const;
-  InstructionBase operator()(    const InstructionOperand &op                                                         ) const;
-  InstructionBase operator()(    const InstructionOperand &op1, const InstructionOperand &op2                         ) const;
+  bool isValidOperand(           const InstructionOperand &op                                , bool throwOnError=false) const override;
+  bool isValidOperandCombination(const InstructionOperand &op1, const InstructionOperand &op2, bool throwOnError=false) const override;
+  InstructionBase operator()(    const InstructionOperand &op                                                         ) const override;
+  InstructionBase operator()(    const InstructionOperand &op1, const InstructionOperand &op2                         ) const override;
 };
 
 class OpcodeFPUCompare : public OpcodeFPU1Arg {
@@ -1107,8 +1107,8 @@ public:
     , m_qwordCode(   mnemonic, opqw , extqw, stackDelta, QWORDPTR_ALLOWED   )
   {
   }
-  bool isValidOperand(const InstructionOperand &op, bool throwOnError=false) const;
-  InstructionBase operator()(const InstructionOperand &op) const;
+  bool isValidOperand(const InstructionOperand &op, bool throwOnError=false) const override;
+  InstructionBase operator()(const InstructionOperand &op) const override;
 };
 
 class OpcodeFPUIArithm : public OpcodeFPU1Arg {
@@ -1123,8 +1123,8 @@ public:
     , m_qwordCode(   mnemonic, opqw, extqw, stackDelta, opqw?QWORDPTR_ALLOWED:0)
   {
   }
-  bool isValidOperand(const InstructionOperand &op, bool throwOnError=false) const;
-  InstructionBase operator()(const InstructionOperand &op) const;
+  bool isValidOperand(const InstructionOperand &op, bool throwOnError=false) const override;
+  InstructionBase operator()(const InstructionOperand &op) const override;
 };
 
 class Opcode1ArgFNSTSW : public Opcode1Arg {
@@ -1137,8 +1137,8 @@ public:
   {
   }
 
-  bool isValidOperand(const InstructionOperand &op, bool throwOnError=false) const;
-  InstructionBase operator()(const InstructionOperand &op) const;
+  bool isValidOperand(const InstructionOperand &op, bool throwOnError=false) const override;
+  InstructionBase operator()(const InstructionOperand &op) const override;
 };
 
 class Opcode2ArgPfxF2 : public Opcode2Arg {
@@ -1147,12 +1147,12 @@ public:
     : Opcode2Arg(mnemonic, op, flags | REGTYPE_XMM_ALLOWED)
   {
   }
-  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const;
+  InstructionBase operator()(const InstructionOperand &op1, const InstructionOperand &op2) const override;
 };
 
 class Opcode2ArgPfxF2SD : public Opcode2ArgPfxF2 {
 protected:
-  bool validateCompatibleSize(const Register &reg , const InstructionOperand &op, bool throwOnError) const;
+  bool validateCompatibleSize(const Register &reg , const InstructionOperand &op, bool throwOnError) const override;
 public:
   Opcode2ArgPfxF2SD(const String &mnemonic, UINT op, UINT flags = 0)
     : Opcode2ArgPfxF2(mnemonic, op, flags | MMWORDPTR_ALLOWED)

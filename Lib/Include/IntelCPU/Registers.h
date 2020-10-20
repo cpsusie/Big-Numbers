@@ -7,21 +7,21 @@ namespace IntelCPU {
 
   typedef enum {
     REGTYPE_NONE
-    , REGTYPE_GPR
-    , REGTYPE_SEG
-    , REGTYPE_FPU
-    , REGTYPE_XMM
+   ,REGTYPE_GPR
+   ,REGTYPE_SEG
+   ,REGTYPE_FPU
+   ,REGTYPE_XMM
   } RegType;
 
   typedef enum {
-    REGSIZE_BYTE     // 8-bit
-    , REGSIZE_WORD     // 16-bit
-    , REGSIZE_DWORD    // 32-bit
-    , REGSIZE_QWORD    // 64-bit
-    , REGSIZE_TBYTE    // 80-bit
-    , REGSIZE_MMWORD   // 64-bit
-    , REGSIZE_XMMWORD  // 128-bit
-    , REGSIZE_VOID     // for LEA
+     REGSIZE_BYTE     // 8-bit
+    ,REGSIZE_WORD     // 16-bit
+    ,REGSIZE_DWORD    // 32-bit
+    ,REGSIZE_QWORD    // 64-bit
+    ,REGSIZE_TBYTE    // 80-bit
+    ,REGSIZE_MMWORD   // 64-bit
+    ,REGSIZE_XMMWORD  // 128-bit
+    ,REGSIZE_VOID     // for LEA
   } RegSize;
 
   inline int regSizeCmp(RegSize s1, RegSize s2) {
@@ -72,8 +72,8 @@ namespace IntelCPU {
 
   typedef enum {
     REX_DONTCARE
-    , REX_REQUIRED
-    , REX_NOTALLOWED
+   ,REX_REQUIRED
+   ,REX_NOTALLOWED
   } RexByteUsage;
 #endif // IS64BIT
 
@@ -216,12 +216,12 @@ namespace IntelCPU {
       SETDEBUGSTR();
     }
 #if defined(IS64BIT)
-    bool    isREXCompatible(bool rexBytePresent) const;
-    RexByteUsage getRexByteUsage() const {
+    bool    isREXCompatible(bool rexBytePresent) const override;
+    RexByteUsage getRexByteUsage() const override {
       return m_rexByteUsage;
     }
 #endif // IS64BIT
-    String getName() const;
+    String getName() const override;
   };
 
   int registerCmp(const GPRegister &reg1, const GPRegister &reg2);
@@ -246,7 +246,7 @@ namespace IntelCPU {
     explicit inline FPURegister(BYTE index) : Register(REGTYPE_FPU, REGSIZE_TBYTE, index) {
       SETDEBUGSTR();
     }
-    String getName() const;
+    String getName() const override;
   };
 
   class XMMRegister : public Register {
@@ -254,7 +254,7 @@ namespace IntelCPU {
     explicit inline XMMRegister(BYTE index) : Register(REGTYPE_XMM, REGSIZE_XMMWORD, index) {
       SETDEBUGSTR();
     }
-    String getName() const;
+    String getName() const override;
   };
 
   class SegmentRegister : public Register {
@@ -262,7 +262,7 @@ namespace IntelCPU {
     explicit inline SegmentRegister(BYTE index) : Register(REGTYPE_SEG, REGSIZE_WORD, index) {
       SETDEBUGSTR();
     }
-    String getName() const;
+    String getName() const override;
   };
 
   inline int registerCmp(const SegmentRegister &reg1, const SegmentRegister &reg2) {
