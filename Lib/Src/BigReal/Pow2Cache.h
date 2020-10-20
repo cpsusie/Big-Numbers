@@ -5,7 +5,7 @@ class Pow2ArgumentKey {
 public:
   int    m_n;
   size_t m_digits;
-  Pow2ArgumentKey() {
+  Pow2ArgumentKey() : m_n(0), m_digits(0) {
   }
   inline Pow2ArgumentKey(int n, size_t digits) : m_n(n), m_digits(digits) {
   }

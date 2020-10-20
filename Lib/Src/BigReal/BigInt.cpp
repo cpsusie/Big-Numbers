@@ -54,7 +54,7 @@ BigInt quot(const BigInt &x, const BigInt &y, DigitPool *digitPool) {
   _SELECTDIGITPOOL(x);
   BigInt result(pool);
   result.clrInitDone();
-  quotRemainder(x, y, &result, NULL);
+  quotRemainder(x, y, &result, nullptr);
   result.setSignByProductRule(x, y).setInitDone();
   return result;
 }
@@ -63,7 +63,7 @@ BigInt rem(const BigInt &x, const BigInt &y, DigitPool *digitPool) {
   _SELECTDIGITPOOL(x);
   BigInt result(pool);
   result.clrInitDone();
-  quotRemainder(x, y, NULL, &result);
+  quotRemainder(x, y, nullptr, &result);
   result.setInitDone();
   return result;
 }

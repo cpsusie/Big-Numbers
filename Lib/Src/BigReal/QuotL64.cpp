@@ -70,7 +70,7 @@ BigReal &BigReal::approxQuot64Abs(const BigReal &x, const unsigned __int64 &y, B
 UINT64 BigReal::getFirst64(const UINT k, BRExpoType *scale) const {
   assert(k <= MAXDIGITS_INT64);
   const Digit *p = m_first;
-  if(p == NULL) {
+  if(p == nullptr) {
     if(scale) *scale = 0;
     return 0;
   }
@@ -102,7 +102,7 @@ UINT64 BigReal::getFirst64(const UINT k, BRExpoType *scale) const {
         result /= 10;
         tmpScale++;
       }
-    } else { // scale == NULL
+    } else { // scale == nullptr
       for(p = p->next; digits < k; digits += BIGREAL_LOG10BASE) {
         const BRDigitType p10 = pow10(min(BIGREAL_LOG10BASE,k-digits));
         result *= p10;
@@ -189,11 +189,11 @@ void quotRemainder64(const BigReal &x, const BigReal &y, BigInt *quotient, BigRe
       }
     } else {
       q.fractionate(quotient, &t);
-      if(remainder == NULL) { // quotient != NULL
+      if(remainder == nullptr) { // quotient != nullptr
         if(BigReal::compareAbs(z, t * y) > 0) {
           --(*quotient);
         }
-      } else { // remainder != NULL. quotient might be NULL
+      } else { // remainder != nullptr. quotient might be nullptr
         *remainder = z + (t * y).copySign(t);
         if(remainder->isNegative()) {
           if(yNeg) *remainder -= y; else *remainder += y;
@@ -213,6 +213,6 @@ void quotRemainder64(const BigReal &x, const BigReal &y, BigInt *quotient, BigRe
 BigReal modulusOperator64(const BigReal &x, const BigReal &y) {
   DigitPool *pool = x.getDigitPool();
   BigReal remainder(pool);
-  quotRemainder64(x,y, NULL, &remainder);
+  quotRemainder64(x,y, nullptr, &remainder);
   return remainder;
 }

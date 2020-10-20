@@ -91,7 +91,7 @@ BigRealIntervalTransformation *BigRealRectangleTransformation::allocateTransform
   switch(scale) {
   case LINEAR             : return new BigRealLinearTransformation(from, to, AUTOPRECISION, getDigitPool());
   default                 : throwInvalidArgumentException(__TFUNCTION__, _T("scale=%d"), scale);
-                            return NULL;
+                            return nullptr;
   }
 }
 
@@ -101,7 +101,7 @@ void BigRealRectangleTransformation::cleanup() {
 }
 
 void BigRealRectangleTransformation::computeTransformation(const BigRealRectangle2D &from, const BigRealRectangle2D &to, IntervalScale xScale, IntervalScale yScale) {
-  BigRealIntervalTransformation *newXtransform = NULL, *newYtransform = NULL;
+  BigRealIntervalTransformation *newXtransform = nullptr, *newYtransform = nullptr;
   try {
     DigitPool *dp = getDigitPool();
     newXtransform = allocateTransformation(BigRealInterval(from.getBottomLeft().x,from.getBottomRight().x,dp)

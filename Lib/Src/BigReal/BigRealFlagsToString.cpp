@@ -2,7 +2,7 @@
 
 String BigReal::flagsToString(BYTE flags) { // static
   String result;
-  TCHAR *delim = NULL;
+  TCHAR *delim = nullptr;
 #define ADDSTR(s)  { if(delim) result += delim; else delim = _T(" "); result += _T(s); }
 #define ADDFLAG(f) { if(flags & BR_##f) ADDSTR(#f); }
   if(flags & BR_MUTABLE) ADDSTR("MUTABLE") else ADDSTR("CONST");

@@ -5,8 +5,8 @@ void BigReal::insertDigit(BRDigitType n) {
   Digit *p = newDigit();
   p->n = n;
   p->next = m_first;
-  p->prev = NULL;
-  if(m_last == NULL) {
+  p->prev = nullptr;
+  if(m_last == nullptr) {
     m_last = p;
   } else {
     m_first->prev = p;
@@ -14,7 +14,7 @@ void BigReal::insertDigit(BRDigitType n) {
   m_first = p;
 }
 
-// Assume _isnormal() && (count > 0). ie m_first != NULL (and m_last != NULL)
+// Assume _isnormal() && (count > 0). ie m_first != nullptr (and m_last != nullptr)
 void BigReal::insertZeroDigits(size_t count) {
   assert((count > 0) && !_isnormal());
 #if defined(USE_FETCHDIGITLIST)
@@ -22,15 +22,15 @@ void BigReal::insertZeroDigits(size_t count) {
     Digit *p = newDigit();
     p->n     = 0;
     (p->next = m_first)->prev = p;
-    (m_first = p)->prev = NULL;
+    (m_first = p)->prev = nullptr;
   } else {
     Digit *head = m_digitPool.fetchDigitList(count), *last = head->prev;
-    last->next = NULL;
+    last->next = nullptr;
     for(Digit *p = head;;) {
       p->n = 0;
       if(!(p = p->next)) {
         (last->next = m_first)->prev = last;
-        (m_first = head)->prev = NULL;
+        (m_first = head)->prev = nullptr;
         break;
       }
     }
@@ -44,7 +44,7 @@ void BigReal::insertZeroDigits(size_t count) {
     p->prev = q;
     p       = q;
   }
-  (m_first = p)->prev = NULL;
+  (m_first = p)->prev = nullptr;
 #endif // USE_FETCHDIGITLIST
 }
 
@@ -64,7 +64,7 @@ void BigReal::insertAfter(Digit *p, BRDigitType n) {
 
 // Assume (count > 0) && p is a digit in digit-list of this.
 void BigReal::insertZeroDigitsAfter(Digit *p, size_t count) {
-  assert((count > 0) && (p != NULL));
+  assert((count > 0) && (p != nullptr));
 #if defined(USE_FETCHDIGITLIST)
   Digit *head = m_digitPool.fetchDigitList(count, 0), *last = head->prev, *q = p->next;
   if(last->next = q) q->prev = last; else m_last = last;
@@ -81,7 +81,7 @@ void BigReal::insertZeroDigitsAfter(Digit *p, size_t count) {
       q        = r;
     }
     (p->next = q)->prev = p;  // No need to modify m_last. p has a tail, so it is not m_last
-  } else {                    // q == NULL => p == m_last (and maybe m_first too)
+  } else {                    // q == nullptr => p == m_last (and maybe m_first too)
     for(q = p; count--;) {    // Append count digits after each other, making the new chain grow at the END (=q)
       Digit *r = newDigit();
       r->n     = 0;
@@ -89,14 +89,14 @@ void BigReal::insertZeroDigitsAfter(Digit *p, size_t count) {
       q->next  = r;
       q        = r;
     }
-    (m_last = q)->next = NULL;
+    (m_last = q)->next = nullptr;
   }
 #endif // USE_FETCHDIGITLIST
 }
 
 // Assume (count > 0) && p is a digit in digit-list of this.
 void BigReal::insertBorrowDigitsAfter(Digit *p, size_t count) {
-  assert((count > 0) && (p != NULL));
+  assert((count > 0) && (p != nullptr));
 #if defined(USE_FETCHDIGITLIST)
   Digit *head = m_digitPool.fetchDigitList(count, BIGREALBASE - 1), *last = head->prev, *q = p->next;
   if(last->next = q) q->prev = last; else m_last = last;
@@ -112,7 +112,7 @@ void BigReal::insertBorrowDigitsAfter(Digit *p, size_t count) {
       q        = r;
     }
     (p->next = q)->prev = p;  // No need to modify m_last. p has a tail, so it is not m_last
-  } else {                    // q == NULL => p == m_last (and maybe m_first too)
+  } else {                    // q == nullptr => p == m_last (and maybe m_first too)
     for(q = p; count--;) {    // Append count digits after each other, making the new chain grow at the END (=q)
       Digit *r = newDigit();
       r->n     = BIGREALBASE - 1;
@@ -120,7 +120,7 @@ void BigReal::insertBorrowDigitsAfter(Digit *p, size_t count) {
       q->next  = r;
       q        = r;
     }
-    (m_last = q)->next = NULL;
+    (m_last = q)->next = nullptr;
   }
 #endif // USE_FETCHDIGITLIST
 }
@@ -131,18 +131,18 @@ void BigReal::trimHead() {
   Digit *p;
   for(p = m_first->next; p && (p->n == 0); p = p->next) count++;
 
-  if(p == NULL) { // all digits were 0 => *this = zero
+  if(p == nullptr) { // all digits were 0 => *this = zero
     setToZero();
   } else {
     deleteDigits(m_first, p->prev);
-    (m_first = p)->prev = NULL;
+    (m_first = p)->prev = nullptr;
     m_expo -= count;
 
     if(m_last->n == 0) {
       count = 1;
       for(p = m_last->prev; p->n == 0; p = p->prev) count++;
       deleteDigits(p->next, m_last);
-      (m_last = p)->next = NULL;
+      (m_last = p)->next = nullptr;
       m_low += count;
     }
   }
@@ -152,17 +152,17 @@ void BigReal::trimTail() {
   int count = 1;
   Digit *p;
   for(p = m_last->prev; p->n == 0; p = p->prev) count++;
-  deleteDigits(p->next, m_last); // we know that there is at least one digit != 0 => p != NULL
-  (m_last = p)->next = NULL;
+  deleteDigits(p->next, m_last); // we know that there is at least one digit != 0 => p != nullptr
+  (m_last = p)->next = nullptr;
   m_low += count;
 }
 
 BigReal &BigReal::copyDigits(const BigReal &src, size_t length) {
-  assert(src._isnormal() && (m_first == NULL) && (m_last == NULL) && (length <= src.getLength()) && (length > 0));
+  assert(src._isnormal() && (m_first == nullptr) && (m_last == nullptr) && (length <= src.getLength()) && (length > 0));
 #if defined(USE_FETCHDIGITLIST)
   Digit *dd = m_digitPool.fetchDigitList(length);
-  (m_last   = dd->prev)->next = NULL;
-  (m_first  = dd)->prev = NULL;
+  (m_last   = dd->prev)->next = nullptr;
+  (m_first  = dd)->prev = nullptr;
   for(const Digit *sd = src.m_first;;) {
     dd->n = sd->n;
     if(dd = dd->next) {
@@ -174,7 +174,7 @@ BigReal &BigReal::copyDigits(const BigReal &src, size_t length) {
 #else
   if(length--) {
     const Digit *sd = src.m_first;
-    (m_first = newDigit())->prev = NULL;
+    (m_first = newDigit())->prev = nullptr;
     Digit *p = m_first;
     p->n = sd->n;
     Digit *dd;
@@ -183,7 +183,7 @@ BigReal &BigReal::copyDigits(const BigReal &src, size_t length) {
       dd->n   = sd->n;
       p->next = dd;
     }
-    (m_last = p)->next = NULL;
+    (m_last = p)->next = nullptr;
   }
 #endif // USE_FETCHDIGITLIST
   return *this;
@@ -194,8 +194,8 @@ BigReal &BigReal::copyAllDigits(const BigReal &src) {
   assert(!_isnormal() && src._isnormal());
 #if defined(USE_FETCHDIGITLIST)
   Digit *dd = m_digitPool.fetchDigitList(src.getLength());
-  (m_last   = dd->prev)->next = NULL;
-  (m_first  = dd)->prev = NULL;
+  (m_last   = dd->prev)->next = nullptr;
+  (m_first  = dd)->prev = nullptr;
   for(const Digit *sd = src.m_first;;) {
     dd->n = sd->n;
     if(sd = sd->next) {
@@ -207,14 +207,14 @@ BigReal &BigReal::copyAllDigits(const BigReal &src) {
 #else
   const Digit *sd = src.m_first;
   Digit       *dd, *p;
-  (m_first = p = newDigit())->prev = NULL;
+  (m_first = p = newDigit())->prev = nullptr;
   p->n = sd->n;
   for(; sd = sd->next; p = dd) {
     (dd = newDigit())->prev = p;
     dd->n   = sd->n;
     p->next = dd;
   }
-  (m_last = p)->next = NULL;
+  (m_last = p)->next = nullptr;
 #endif // USE_FETCHDIGITLIST
   return *this;
 }
@@ -240,7 +240,7 @@ BigReal &BigReal::multPow10(BRExpoType exp, bool force) {
     const BRDigitType t = BIGREALBASE / s;
     if(exp > 0) { // shift left
       Digit *p = m_first;
-      Digit *q = p->next; // *this != 0 => p != NULL
+      Digit *q = p->next; // *this != 0 => p != nullptr
       if(p->n >= t) {
         insertDigit(p->n / t);
         m_expo++;
@@ -253,7 +253,7 @@ BigReal &BigReal::multPow10(BRExpoType exp, bool force) {
       p->n = (p->n%t) * s;
     } else { // exp < 0. shift right
       Digit *p = m_last;
-      Digit *q = p->prev; // *this != 0 => p != NULL
+      Digit *q = p->prev; // *this != 0 => p != nullptr
       appendDigit((p->n % s) * t);
       m_low--;
       while(q) {
@@ -469,7 +469,7 @@ BigReal::operator unsigned int() const {
   return (UINT)result;
 }
 
-BigReal::operator INT64() const {
+BigReal::operator __int64() const {
   DEFINEMETHODNAME;
   CHECKISNORMAL();
 /*
@@ -491,7 +491,7 @@ BigReal::operator INT64() const {
   return isNegative() ? -result : result;
 }
 
-BigReal::operator UINT64() const {
+BigReal::operator unsigned __int64() const {
   DEFINEMETHODNAME;
   CHECKISNORMAL();
 /*

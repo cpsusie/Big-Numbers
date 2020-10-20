@@ -15,16 +15,16 @@ template<typename T> size_t neededDecimalDigitsTemplate(const NumberInterval<T> 
 
 class BigRealInterval : public NumberInterval<BigReal> {
 public:
-  BigRealInterval(DigitPool *digitPool=NULL)
+  BigRealInterval(DigitPool *digitPool=nullptr)
     : NumberInterval(BigReal(0,digitPool), BigReal(0, digitPool))
   {
   }
-  BigRealInterval(const BigReal &from, const BigReal &to, DigitPool *digitPool=NULL)
+  BigRealInterval(const BigReal &from, const BigReal &to, DigitPool *digitPool=nullptr)
     : NumberInterval(BigReal(from,digitPool?digitPool:from.getDigitPool())
                     ,BigReal(to  ,digitPool?digitPool:from.getDigitPool()))
   {
   }
-  BigRealInterval(const BigRealInterval &src, DigitPool *digitPool=NULL)
+  BigRealInterval(const BigRealInterval &src, DigitPool *digitPool=nullptr)
     : NumberInterval(BigReal(src.getFrom(),digitPool?digitPool:src.getDigitPool())
                     ,BigReal(src.getTo()  ,digitPool?digitPool:src.getDigitPool()))
   {
@@ -33,7 +33,7 @@ public:
     return getFrom().getDigitPool();
   }
 
-  inline BigReal getLength(DigitPool *digitPool = NULL) const {
+  inline BigReal getLength(DigitPool *digitPool = nullptr) const {
     _SELECTDIGITPOOL(getFrom());
     return dif(getTo(),getFrom(),pool->_0(), pool);
   }
@@ -66,7 +66,7 @@ public:
     return getFrom().getDigitPool();
   }
 
-  inline BigReal getLength(DigitPool *digitPool = NULL) const {
+  inline BigReal getLength(DigitPool *digitPool = nullptr) const {
     _SELECTDIGITPOOL(getFrom());
     return dif(getTo(), getFrom(), pool->_0(), pool);
   }

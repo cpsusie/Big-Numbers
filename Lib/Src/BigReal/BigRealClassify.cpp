@@ -64,7 +64,7 @@ int BigReal::getNonNormalQuotientFpClass(const BigReal &x, const BigReal &y) { /
 }
 
 void BigReal::validateQuotRemainderArguments(const TCHAR *method, const BigReal &x, const BigReal &y, const BigReal *quotient, const BigReal *remainder) { // static
-  if(quotient == remainder) { // also takes care of the stupid situation where both are NULL
+  if(quotient == remainder) { // also takes care of the stupid situation where both are nullptr
     throwBigRealInvalidArgumentException(method, _T("Quotient is the same variable as remainder"));
   }
   if((quotient == &x) || (quotient == &y)) {

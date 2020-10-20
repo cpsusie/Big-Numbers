@@ -401,9 +401,9 @@ bool isRational(const BigRational &v, Rational *r) {
   if(!v._isnormal()) {
     if(r) *r = getNonNormalValue(_fpclass(v), Rational::_0);
     return true;
-  } else if(r == NULL) {
+  } else if(r == nullptr) {
     return isInt64(v.getNumerator()) && isInt64(v.getDenominator());
-  } else { // r != NULL
+  } else { // r != nullptr
     INT64 n, d;
     if(isInt64(v.getNumerator(), &n) && isInt64(v.getDenominator(), &d)) {
       *r = Rational(n,d);

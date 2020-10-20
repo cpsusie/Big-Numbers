@@ -2,11 +2,11 @@
 
 void BigReal::assertIsValid(const TCHAR *file, int line, const TCHAR *name) const {
   if(m_expo == BIGREAL_NONNORMAL) {
-    if(m_first != NULL) {
-      throwNotValidException(file,line,name, _T("m_expo == BIGREAL_NONNORMAL, but m_first != NULL"));
+    if(m_first != nullptr) {
+      throwNotValidException(file,line,name, _T("m_expo == BIGREAL_NONNORMAL, but m_first != nullptr"));
     }
-    if(m_last != NULL) {
-      throwNotValidException(file,line,name, _T("m_expo == BIGREAL_NONNORMAL, but m_last != NULL"));
+    if(m_last != nullptr) {
+      throwNotValidException(file,line,name, _T("m_expo == BIGREAL_NONNORMAL, but m_last != nullptr"));
     }
     switch(m_low) {
     case BIGREAL_ZEROLOW:

@@ -54,7 +54,7 @@ public:
     SAFEDELETE(m_piError);
     SAFEDELETE(m_piValue);
     BigRealResourcePool::releaseDigitPool(m_digitPool);
-    m_digitPool = NULL;
+    m_digitPool = nullptr;
   }
 };
 

@@ -46,13 +46,13 @@ BigReal &BigReal::shortProductNoZeroCheck(     const BigReal &x, const BigReal &
       mov         ecx, dword ptr [xk]     // xp = xk
       mov         edx, dword ptr [yk]     // yp = yk
       fldz                                // st(0) = 0
-InnerLoop:                                // do { // we know that the first time both xp and yp are not NULL.
+InnerLoop:                                // do { // we know that the first time both xp and yp are not nullptr.
       fild        dword ptr [ecx]         //   st(1) =  xp->n
       fimul       dword ptr [edx]         //   st(1) *= yp->n
       fadd                                //   st(0) += st(1)
       mov         edx, dword ptr [edx+8]  //   yp = yp->prev
       or          edx, edx                //
-      je          ExitLoop                //   if(yp == NULL) break
+      je          ExitLoop                //   if(yp == nullptr) break
       mov         ecx, dword ptr [ecx+4]  //   xp = xp->next
       or          ecx, ecx                //
       jne         InnerLoop               // } while(xp)

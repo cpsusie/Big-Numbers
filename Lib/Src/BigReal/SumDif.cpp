@@ -2,13 +2,13 @@
 
 // Assume this->_isnormal()
 // Return Digit corresponding to BIGREALBASE^exponent.
-// Return NULL if exponent is outside interval [m_low;m_expo]
+// Return nullptr if exponent is outside interval [m_low;m_expo]
 Digit *BigReal::findDigit(const BRExpoType exponent) const {
   BRExpoType fwd = m_expo - exponent;
   BRExpoType bwd = exponent - m_low;
   Digit *p;
   if((bwd < 0) || (fwd < 0)) {
-    return NULL;
+    return nullptr;
   } else if(bwd < fwd) { // count backward
     for(p = m_last;  bwd--; p = p->prev);
   } else {               // count forward
@@ -19,7 +19,7 @@ Digit *BigReal::findDigit(const BRExpoType exponent) const {
 
 // Assume this->_isnormal()
 // Return last digit with precision f. Used in add
-// Return NULL if abs(this) < precisionen (=f)
+// Return nullptr if abs(this) < precisionen (=f)
 // low is set to the max(fexpo,m_low), where fexpo = f.expo - [f.first == 1]
 // Differs from findDigitSubtract in the special case where f = BIGREALBASE^n for some n
 Digit *BigReal::findDigitAdd(const BigReal &f, BRExpoType &low) const {
@@ -33,7 +33,7 @@ Digit *BigReal::findDigitAdd(const BigReal &f, BRExpoType &low) const {
   }
   if(fexpo > m_expo) {
     low = f.m_expo;
-    return NULL;
+    return nullptr;
   } else if(fexpo <= m_low) {
     low = m_low;
     return m_last;
@@ -54,12 +54,12 @@ Digit *BigReal::findDigitAdd(const BigReal &f, BRExpoType &low) const {
 
 // Assume this->_isnormal()
 // Return last digit with precision f. Used in subtract
-// Return NULL if |this| < precisionen (=f)
+// Return nullptr if |this| < precisionen (=f)
 Digit *BigReal::findDigitSubtract(const BigReal &f) const {
   if(!f.isPositive()) {
     return m_last;
   } else if(f.m_expo > m_expo) {
-    return NULL;
+    return nullptr;
   } else if(f.m_expo <= m_low) {
     return m_last;
   } else {
@@ -84,21 +84,21 @@ BigReal &BigReal::addAbs(const BigReal &x, const BigReal &y, const BigReal &f) {
   const Digit *xp = x.findDigitAdd(f, xLow);
   const Digit *yp = y.findDigitAdd(f, yLow);
 
-  if(xp == NULL && yp == NULL) {
+  if(xp == nullptr && yp == nullptr) {
     return *this;
-  } else if(xp == NULL) {
+  } else if(xp == nullptr) {
     for(;yp; yp = yp->prev) {
       insertDigit(yp->n);
     }
     m_expo = y.m_expo;
     m_low  = yLow;
-  } else if(yp == NULL) {
+  } else if(yp == nullptr) {
     for(;xp; xp = xp->prev) {
       insertDigit(xp->n);
     }
     m_expo = x.m_expo;
     m_low  = xLow;
-  } else { // xp != NULL && yp != NULL
+  } else { // xp != nullptr && yp != nullptr
     BRExpoType d;
     if(xLow < yLow) {
       for(d = yLow - xLow; xp && d--; xp = xp->prev) {
@@ -160,7 +160,7 @@ BigReal &BigReal::addAbs(const BigReal &x) {
     if(d < m_low) insertZeroDigitsAfter(p, m_low-d);
     m_low = x.m_low;
   } else if(x.m_low > m_low) {
-    if((p = findDigit(x. m_low)) == NULL) {
+    if((p = findDigit(x. m_low)) == nullptr) {
       const BRExpoType t = x.m_low - 1 - m_expo;
       if(t > 0) insertZeroDigits(t);
       for(xp = x.m_last; xp; xp = xp->prev) {
@@ -209,7 +209,7 @@ BigReal &BigReal::subAbs(const BigReal &x, const BigReal &f) {
   assert((&x != this) && _isnormal() && x._isnormal() && (compareAbs(x, *this) < 0));
   const Digit *xp = x.findDigitSubtract(f);
 
-  if(xp == NULL) {
+  if(xp == nullptr) {
     return *this; // nothing to subtract
   }
 

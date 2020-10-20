@@ -6,16 +6,16 @@
 #define AUTOPRECISION 0
 
 class BigRealSize2D : public Size2DTemplate<BigReal> {
-  inline BigRealSize2D(DigitPool *digitPool=NULL)
+  inline BigRealSize2D(DigitPool *digitPool=nullptr)
     : Size2DTemplate(BigReal(0,digitPool),BigReal(0,digitPool))
   {
   }
-  inline BigRealSize2D(const BigReal &cx, const BigReal &cy, DigitPool *digitPool=NULL)
+  inline BigRealSize2D(const BigReal &cx, const BigReal &cy, DigitPool *digitPool=nullptr)
     : Size2DTemplate(BigReal(cx,digitPool?digitPool:cx.getDigitPool())
                     ,BigReal(cy,digitPool?digitPool:cx.getDigitPool()))
   {
   }
-  inline BigRealSize2D(const BigRealSize2D &src, DigitPool *digitPool=NULL)
+  inline BigRealSize2D(const BigRealSize2D &src, DigitPool *digitPool=nullptr)
     : Size2DTemplate(BigReal(src.cx,digitPool?digitPool:src.getDigitPool())
                     ,BigReal(src.cy,digitPool?digitPool:src.getDigitPool()))
   {
@@ -36,17 +36,17 @@ class BigRealSize2D : public Size2DTemplate<BigReal> {
 
 class BigRealPoint2D : public Point2DTemplate<BigReal> {
 public:
-  inline BigRealPoint2D(DigitPool *digitPool=NULL)
+  inline BigRealPoint2D(DigitPool *digitPool=nullptr)
     : Point2DTemplate(BigReal(0,digitPool)
                      ,BigReal(0,digitPool))
   {
   }
-  inline BigRealPoint2D(const BigReal &x, const BigReal &y, DigitPool *digitPool=NULL)
+  inline BigRealPoint2D(const BigReal &x, const BigReal &y, DigitPool *digitPool=nullptr)
     : Point2DTemplate(BigReal(x,digitPool?digitPool:x.getDigitPool())
                      ,BigReal(y,digitPool?digitPool:x.getDigitPool()))
   {
   }
-  inline BigRealPoint2D(const BigRealPoint2D &src, DigitPool *digitPool=NULL)
+  inline BigRealPoint2D(const BigRealPoint2D &src, DigitPool *digitPool=nullptr)
     : Point2DTemplate(BigReal(src.x,digitPool?digitPool:src.getDigitPool())
                      ,BigReal(src.y,digitPool?digitPool:src.getDigitPool()))
   {
@@ -76,7 +76,7 @@ protected:
   void computeTransformation();
   void checkFromInterval(const TCHAR *method, const BigRealInterval &interval);
 public:
-  BigRealIntervalTransformation(const BigRealInterval &fromInterval, const BigRealInterval &toInterval, UINT precision=AUTOPRECISION, DigitPool *digitPool = NULL);
+  BigRealIntervalTransformation(const BigRealInterval &fromInterval, const BigRealInterval &toInterval, UINT precision=AUTOPRECISION, DigitPool *digitPool = nullptr);
   // Set number of decimal digits in calculations
   // Specify AUTOPRECISION to get 8 extra decimal digits whatever from- and toInterval are
   UINT setPrecision(UINT precsion);
@@ -89,7 +89,7 @@ public:
   inline DigitPool *getDigitPool() const {
     return m_fromInterval.getDigitPool();
   }
-  static BigRealInterval getDefaultInterval(IntervalScale scale, DigitPool *digitPool=NULL);
+  static BigRealInterval getDefaultInterval(IntervalScale scale, DigitPool *digitPool=nullptr);
 
   inline const BigRealInterval &getFromInterval() const {
     return m_fromInterval;
@@ -119,7 +119,7 @@ public:
   // Returns new fromInterval.
   const BigRealInterval &zoom(const BigReal &x, const BigReal &factor, bool xInToInterval=true);
   virtual IntervalScale getScale() const = 0;
-  virtual BigRealIntervalTransformation *clone(DigitPool *digitPool=NULL) const = 0;
+  virtual BigRealIntervalTransformation *clone(DigitPool *digitPool=nullptr) const = 0;
 };
 
 class BigRealLinearTransformation : public BigRealIntervalTransformation {
@@ -134,14 +134,14 @@ public:
   bool isLinear() const {
     return true;
   }
-  BigRealLinearTransformation(const BigRealInterval &fromInterval, const BigRealInterval &toInterval, UINT precision=AUTOPRECISION, DigitPool *digitPool=NULL)
+  BigRealLinearTransformation(const BigRealInterval &fromInterval, const BigRealInterval &toInterval, UINT precision=AUTOPRECISION, DigitPool *digitPool=nullptr)
     : BigRealIntervalTransformation(fromInterval, toInterval, precision, digitPool) {
     computeTransformation();
   }
   IntervalScale getScale() const {
     return LINEAR;
   }
-  BigRealIntervalTransformation *clone(DigitPool *digitPool=NULL) const {
+  BigRealIntervalTransformation *clone(DigitPool *digitPool=nullptr) const {
     return new BigRealLinearTransformation(getFromInterval(),getToInterval(),getPrecision(),digitPool);
   }
 };
@@ -149,25 +149,25 @@ public:
 
 class BigRealRectangle2D : public Rectangle2DTemplate<BigReal> {
 public:
-  inline BigRealRectangle2D(DigitPool *digitPool = NULL)
+  inline BigRealRectangle2D(DigitPool *digitPool = nullptr)
     : Rectangle2DTemplate(BigReal(0,digitPool), BigReal(0,digitPool), BigReal(0, digitPool), BigReal(0, digitPool))
   {
   }
-  inline BigRealRectangle2D(const BigReal &x, const BigReal &y, const BigReal &w, const BigReal &h, DigitPool *digitPool = NULL)
+  inline BigRealRectangle2D(const BigReal &x, const BigReal &y, const BigReal &w, const BigReal &h, DigitPool *digitPool = nullptr)
     : Rectangle2DTemplate(BigReal(x,digitPool?digitPool:x.getDigitPool())
                          ,BigReal(y,digitPool?digitPool:x.getDigitPool())
                          ,BigReal(w,digitPool?digitPool:x.getDigitPool())
                          ,BigReal(h,digitPool?digitPool:x.getDigitPool()))
   {
   }
-  inline BigRealRectangle2D(const BigRealPoint2D &topLeft, const BigRealPoint2D &bottomRight, DigitPool *digitPool = NULL)
+  inline BigRealRectangle2D(const BigRealPoint2D &topLeft, const BigRealPoint2D &bottomRight, DigitPool *digitPool = nullptr)
     : Rectangle2DTemplate(BigReal(topLeft.x          ,digitPool?digitPool:topLeft.getDigitPool())
                          ,BigReal(topLeft.y          ,digitPool?digitPool:topLeft.getDigitPool())
                          ,dif(bottomRight.x,topLeft.x,digitPool?digitPool:topLeft.getDigitPool())
                          ,dif(bottomRight.y,topLeft.y,digitPool?digitPool:topLeft.getDigitPool()))
   {
   }
-  inline BigRealRectangle2D(const BigRealPoint2D &p, const BigRealSize2D &size, DigitPool *digitPool = NULL)
+  inline BigRealRectangle2D(const BigRealPoint2D &p, const BigRealSize2D &size, DigitPool *digitPool = nullptr)
     : Rectangle2DTemplate(BigReal(p.x    ,digitPool)
                          ,BigReal(p.y    ,digitPool)
                          ,BigReal(size.cx,digitPool)
@@ -206,30 +206,30 @@ private:
   void cleanup();
   void computeTransformation(const BigRealRectangle2D &from, const BigRealRectangle2D &to, IntervalScale xScale, IntervalScale yScale);
 
-  BigRealRectangleTransformation(const BigRealIntervalTransformation &tx, const BigRealIntervalTransformation &ty, DigitPool *digitPool = NULL);
+  BigRealRectangleTransformation(const BigRealIntervalTransformation &tx, const BigRealIntervalTransformation &ty, DigitPool *digitPool = nullptr);
 
-  static BigRealRectangle2D getDefaultFromRectangle(IntervalScale xScale, IntervalScale yScale, DigitPool *digitPool=NULL);
+  static BigRealRectangle2D getDefaultFromRectangle(IntervalScale xScale, IntervalScale yScale, DigitPool *digitPool=nullptr);
 
-  static inline BigRealRectangle2D getDefaultToRectangle(DigitPool *digitPool=NULL) {
+  static inline BigRealRectangle2D getDefaultToRectangle(DigitPool *digitPool=nullptr) {
     BigRealRectangle2D result(digitPool);
     result = RealRectangle2D(0, 100, 100, -100);
     return result;
   }
 
 public:
-  inline BigRealRectangleTransformation(IntervalScale xScale = LINEAR, IntervalScale yScale = LINEAR, DigitPool *digitPool=NULL)
+  inline BigRealRectangleTransformation(IntervalScale xScale = LINEAR, IntervalScale yScale = LINEAR, DigitPool *digitPool=nullptr)
     : m_digitPool(digitPool?digitPool:DEFAULT_DIGITPOOL)
   {
-    m_xtransform = m_ytransform = NULL;
+    m_xtransform = m_ytransform = nullptr;
     computeTransformation(getDefaultFromRectangle(xScale,yScale,getDigitPool()), getDefaultToRectangle(getDigitPool()), xScale, yScale);
   }
-  inline BigRealRectangleTransformation(const BigRealRectangle2D &from, const BigRealRectangle2D &to, IntervalScale xScale = LINEAR, IntervalScale yScale = LINEAR, DigitPool *digitPool=NULL)
+  inline BigRealRectangleTransformation(const BigRealRectangle2D &from, const BigRealRectangle2D &to, IntervalScale xScale = LINEAR, IntervalScale yScale = LINEAR, DigitPool *digitPool=nullptr)
     : m_digitPool(digitPool?digitPool:from.getDigitPool())
   {
-    m_xtransform = m_ytransform = NULL;
+    m_xtransform = m_ytransform = nullptr;
     computeTransformation(from, to, xScale, yScale);
   }
-  inline BigRealRectangleTransformation(const BigRealRectangleTransformation &src, DigitPool *digitPool=NULL)
+  inline BigRealRectangleTransformation(const BigRealRectangleTransformation &src, DigitPool *digitPool=nullptr)
     : m_digitPool(digitPool?digitPool:src.getDigitPool())
   {
     m_xtransform = src.getXTransformation().clone(getDigitPool());
@@ -293,8 +293,8 @@ public:
   // returns true if transformation is changed
   bool adjustAspectRatio();
 
-  static inline BigRealRectangleTransformation getId(DigitPool *digitPool=NULL) {
-    if(digitPool == NULL) digitPool = DEFAULT_DIGITPOOL;
+  static inline BigRealRectangleTransformation getId(DigitPool *digitPool=nullptr) {
+    if(digitPool == nullptr) digitPool = DEFAULT_DIGITPOOL;
     return BigRealRectangleTransformation(BigRealRectangle2D(0,0,1,1,digitPool)
                                          ,BigRealRectangle2D(0,0,1,1,digitPool));
   }

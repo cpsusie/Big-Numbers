@@ -142,13 +142,13 @@ BigReal &BigReal::shortProductNoZeroCheck(const BigReal &x, const BigReal &y, UI
     deleteDigits(sps.m_cd->next, m_last);
   }
   m_low -= digitsAdded - 1;
-  (m_last = sps.m_cd)->next = NULL;
+  (m_last = sps.m_cd)->next = nullptr;
   if(m_first->n == 0) {
     sps.m_cd = m_first;
-    (m_first = m_first->next)->prev = NULL;
+    (m_first = m_first->next)->prev = nullptr;
     deleteDigits(sps.m_cd,sps.m_cd);
   } else {
-    m_first->prev = NULL;
+    m_first->prev = nullptr;
     m_expo++;
   }
   return setSignByProductRule(x, y);

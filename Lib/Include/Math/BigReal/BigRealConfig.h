@@ -28,28 +28,28 @@
 // and written to debugLog when program exit
 //#define TRACEPOW2CACHEHIT
 
-#define BIGREAL_LOG10BASEx86                        8
-#define BIGREAL_POW10TABLESIZEx86                  10
-#define BIGREAL_NONNORMALx86               -900000000
-#define BIGREAL_MAXEXPOx86                   99999999
-#define BIGREAL_MINEXPOx86                  -99999999
+#define           BIGREAL_LOG10BASEx86                          8
+constexpr int     BIGREAL_POW10TABLESIZEx86 =                  10;
+constexpr int     BIGREAL_NONNORMALx86      =          -900000000;
+constexpr int     BIGREAL_MAXEXPOx86        =            99999999;
+constexpr int     BIGREAL_MINEXPOx86        =           -99999999;
 
-typedef ULONG          BRDigitTypex86;
-typedef UINT64         BR2DigitTypex86;
-typedef long           BRExpoTypex86;
-typedef long           BRDigitDiffTypex86;
+typedef ULONG     BRDigitTypex86;
+typedef UINT64    BR2DigitTypex86;
+typedef long      BRExpoTypex86;
+typedef long      BRDigitDiffTypex86;
 
 
-#define BIGREAL_LOG10BASEx64                       18
-#define BIGREAL_POW10TABLESIZEx64                  20
-#define BIGREAL_NONNORMALx64      -900000000000000000
-#define BIGREAL_MAXEXPOx64          99999999999999999
-#define BIGREAL_MINEXPOx64         -99999999999999999
+#define           BIGREAL_LOG10BASEx64                         18 
+constexpr int     BIGREAL_POW10TABLESIZEx64 =                  20;
+constexpr __int64 BIGREAL_NONNORMALx64      = -900000000000000000;
+constexpr __int64 BIGREAL_MAXEXPOx64        =   99999999999999999;
+constexpr __int64 BIGREAL_MINEXPOx64        =  -99999999999999999;
 
-typedef UINT64         BRDigitTypex64;
-typedef _uint128       BR2DigitTypex64;
-typedef INT64          BRExpoTypex64;
-typedef INT64          BRDigitDiffTypex64;
+typedef UINT64    BRDigitTypex64;
+typedef _uint128  BR2DigitTypex64;
+typedef INT64     BRExpoTypex64;
+typedef INT64     BRDigitDiffTypex64;
 
 // Basic definitions depends on registersize. 32/64-bit
 #if defined(IS32BIT)
@@ -81,9 +81,9 @@ typedef INT64          BRDigitDiffTypex64;
 #endif // IS32BIT
 
 // Values for BigReal::m_low, if m_expo == BIGREAL_NONNORMAL (_isnormal() is false)
-#define BIGREAL_ZEROLOW  0 // isZero() is true
-#define BIGREAL_INFLOW   1 // _isinf() is true, +/- infinite depending on BR_NEG bit in m_flags
-#define BIGREAL_QNANLOW  2 // _isnan() is true
+constexpr int BIGREAL_ZEROLOW  = 0; // isZero() is true
+constexpr int BIGREAL_INFLOW   = 1; // _isinf() is true, +/- infinite depending on BR_NEG bit in m_flags
+constexpr int BIGREAL_QNANLOW  = 2; // _isnan() is true
 
 #define SP_OPT_NONE      0
 #define SP_OPT_BY_FPU    1
@@ -172,10 +172,9 @@ typedef INT64          BRDigitDiffTypex64;
 
 #endif // if(SP_OPT_METHOD == ...)
 
-#define APC_DIGITS                6
+constexpr int    APC_DIGITS                =    6;
+constexpr size_t CONVERSION_POW2DIGITCOUNT =   24;
 
-#define CONVERSION_POW2DIGITCOUNT 24
-
-#define BR_NEG       0x01
-#define BR_INITDONE  0x02
-#define BR_MUTABLE   0x04
+constexpr BYTE   BR_NEG                    = 0x01;
+constexpr BYTE   BR_INITDONE               = 0x02;
+constexpr BYTE   BR_MUTABLE                = 0x04;

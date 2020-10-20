@@ -5,7 +5,7 @@ class ArrayEntry : public Pow2ArgumentKey {
 private:
   const BigReal *m_v;
 public:
-  ArrayEntry() : m_v(NULL) {
+  ArrayEntry() : m_v(nullptr) {
   }
   ArrayEntry(const Pow2CacheEntry &e) : Pow2ArgumentKey(e.getKey()), m_v(e.getValue()) {
   }

@@ -13,10 +13,10 @@ private:
   void checkPrecision(UINT digits);
 protected:
 public:
-  explicit BigRealVector(DigitPool *digitPool = NULL);
-  explicit BigRealVector(size_t dim, UINT digits = 16, DigitPool *digitPool = NULL);
-  BigRealVector(const BigRealVector &v, DigitPool *digitPool = NULL);
-  BigRealVector(const VectorTemplate<BigReal> &v, UINT digits, DigitPool *digitPool = NULL);
+  explicit BigRealVector(DigitPool *digitPool = nullptr);
+  explicit BigRealVector(size_t dim, UINT digits = 16, DigitPool *digitPool = nullptr);
+  BigRealVector(const BigRealVector &v, DigitPool *digitPool = nullptr);
+  BigRealVector(const VectorTemplate<BigReal> &v, UINT digits, DigitPool *digitPool = nullptr);
   BigRealVector &setDimAndPrecision(size_t dim, UINT digits) {
     setDimension(dim); setPrecision(digits);
     return *this;
@@ -32,15 +32,15 @@ public:
   BigRealVector &operator/=(const BigReal &d);
   BigRealVector &operator+=(const BigRealVector &rhs);
   BigRealVector &operator-=(const BigRealVector &rhs);
-  BigReal length(DigitPool *digitPool = NULL) const;
+  BigReal length(DigitPool *digitPool = nullptr) const;
   friend class BigRealMatrix;
 };
 
-BigRealVector prod(const BigRealVector &v , const BigReal       &d,  DigitPool *digitPool = NULL);
-BigRealVector quot(const BigRealVector &v , const BigReal       &d,  DigitPool *digitPool = NULL);
-BigRealVector sum( const BigRealVector &v1, const BigRealVector &v2, DigitPool *digitPool = NULL);
-BigRealVector dif( const BigRealVector &v1, const BigRealVector &v2, DigitPool *digitPool = NULL);
-BigReal       dotp(const BigRealVector &v1, const BigRealVector &v2, DigitPool *digitPool = NULL);
+BigRealVector prod(const BigRealVector &v , const BigReal       &d,  DigitPool *digitPool = nullptr);
+BigRealVector quot(const BigRealVector &v , const BigReal       &d,  DigitPool *digitPool = nullptr);
+BigRealVector sum( const BigRealVector &v1, const BigRealVector &v2, DigitPool *digitPool = nullptr);
+BigRealVector dif( const BigRealVector &v1, const BigRealVector &v2, DigitPool *digitPool = nullptr);
+BigReal       dotp(const BigRealVector &v1, const BigRealVector &v2, DigitPool *digitPool = nullptr);
 
 inline BigRealVector  operator*(const BigReal       &d  , const BigRealVector &rhs) {
   return prod(rhs, d, d.getDigitPool());
@@ -68,24 +68,24 @@ protected:
   UINT m_digits;
   void checkPrecision(UINT digits);
 public:
-  BigRealMatrix(DigitPool *digitPool = NULL) : MatrixTemplate<BigReal>(_USEDEFAULTALLOCATORIFNULL()), m_digits(16) {
+  BigRealMatrix(DigitPool *digitPool = nullptr) : MatrixTemplate<BigReal>(_USEDEFAULTALLOCATORIFNULL()), m_digits(16) {
     assert(getDigitPool());
     checkPrecision(m_digits);
   }
-  BigRealMatrix(size_t rows, size_t cols, UINT digits = 16, DigitPool *digitPool = NULL)
+  BigRealMatrix(size_t rows, size_t cols, UINT digits = 16, DigitPool *digitPool = nullptr)
     : MatrixTemplate<BigReal>(rows, cols, _USEDEFAULTALLOCATORIFNULL())
     , m_digits(digits) {
     assert(getDigitPool());
     checkPrecision(m_digits);
   }
-  explicit BigRealMatrix(const MatrixDimension &dim, UINT digits = 16, DigitPool *digitPool = NULL)
+  explicit BigRealMatrix(const MatrixDimension &dim, UINT digits = 16, DigitPool *digitPool = nullptr)
     : MatrixTemplate<BigReal>(dim, _USEDEFAULTALLOCATORIFNULL())
     , m_digits(digits)
   {
     assert(getDigitPool());
     checkPrecision(m_digits);
   }
-  BigRealMatrix(const BigRealMatrix &m, DigitPool *digitPool = NULL)
+  BigRealMatrix(const BigRealMatrix &m, DigitPool *digitPool = nullptr)
     : MatrixTemplate<BigReal>(m, _SELECTPOINTER(digitPool, m.getDigitPool()))
     , m_digits(m.getPrecision())
   {
@@ -99,10 +99,10 @@ public:
   inline DigitPool *getDigitPool() const {
     return (DigitPool*)__super::getVectorAllocator();
   }
-  static BigRealMatrix _0(size_t rows, size_t columns, UINT digits = 16, DigitPool *digitPool = NULL);
-  static BigRealMatrix _1(size_t dim,                  UINT digits = 16, DigitPool *digitPool = NULL);
-  BigRealVector getRow(     size_t row   , DigitPool *digitPool = NULL) const;
-  BigRealVector getColumn(  size_t column, DigitPool *digitPool = NULL) const;
+  static BigRealMatrix _0(size_t rows, size_t columns, UINT digits = 16, DigitPool *digitPool = nullptr);
+  static BigRealMatrix _1(size_t dim,                  UINT digits = 16, DigitPool *digitPool = nullptr);
+  BigRealVector getRow(     size_t row   , DigitPool *digitPool = nullptr) const;
+  BigRealVector getColumn(  size_t column, DigitPool *digitPool = nullptr) const;
 
   BigRealMatrix &operator+=(const BigRealMatrix &rhs);
   BigRealMatrix &operator-=(const BigRealMatrix &rhs);
@@ -111,13 +111,13 @@ public:
 
 };
 
-BigRealMatrix  prod(const BigRealMatrix &lts, const BigReal       &d  , DigitPool *digitPool = NULL);
-BigRealMatrix  quot(const BigRealMatrix &lts, const BigReal       &d  , DigitPool *digitPool = NULL);
-BigRealVector  prod(const BigRealVector &lts, const BigRealMatrix &rhs, DigitPool *digitPool = NULL);
-BigRealVector  prod(const BigRealMatrix &lts, const BigRealVector &rhs, DigitPool *digitPool = NULL);
-BigRealMatrix  sum( const BigRealMatrix &lts, const BigRealMatrix &rhs, DigitPool *digitPool = NULL);
-BigRealMatrix  dif( const BigRealMatrix &lts, const BigRealMatrix &rhs, DigitPool *digitPool = NULL);
-BigRealMatrix  prod(const BigRealMatrix &lts, const BigRealMatrix &rhs, DigitPool *digitPool = NULL);
+BigRealMatrix  prod(const BigRealMatrix &lts, const BigReal       &d  , DigitPool *digitPool = nullptr);
+BigRealMatrix  quot(const BigRealMatrix &lts, const BigReal       &d  , DigitPool *digitPool = nullptr);
+BigRealVector  prod(const BigRealVector &lts, const BigRealMatrix &rhs, DigitPool *digitPool = nullptr);
+BigRealVector  prod(const BigRealMatrix &lts, const BigRealVector &rhs, DigitPool *digitPool = nullptr);
+BigRealMatrix  sum( const BigRealMatrix &lts, const BigRealMatrix &rhs, DigitPool *digitPool = nullptr);
+BigRealMatrix  dif( const BigRealMatrix &lts, const BigRealMatrix &rhs, DigitPool *digitPool = nullptr);
+BigRealMatrix  prod(const BigRealMatrix &lts, const BigRealMatrix &rhs, DigitPool *digitPool = nullptr);
 
 inline BigRealMatrix  operator*(const BigReal       &d, const BigRealMatrix &m) {
   return prod(m, d, d.getDigitPool());
@@ -149,11 +149,11 @@ inline BigRealMatrix &operator*=(BigRealMatrix &lts, const BigRealMatrix &rhs) {
 }
 
 BigRealMatrix  operator-(const BigRealMatrix &m);
-BigReal        det(      const BigRealMatrix &m, DigitPool *digitPool = NULL);
-BigRealMatrix  inverse(  const BigRealMatrix &m, DigitPool *digitPool = NULL);
-BigRealMatrix  transpose(const BigRealMatrix &m, DigitPool *digitPool = NULL);
+BigReal        det(      const BigRealMatrix &m, DigitPool *digitPool = nullptr);
+BigRealMatrix  inverse(  const BigRealMatrix &m, DigitPool *digitPool = nullptr);
+BigRealMatrix  transpose(const BigRealMatrix &m, DigitPool *digitPool = nullptr);
 // Frobenius norm
-BigReal        normf(    const BigRealMatrix &m, DigitPool *digitPool = NULL);
+BigReal        normf(    const BigRealMatrix &m, DigitPool *digitPool = nullptr);
 
 class BigRealLUMatrix : private BigRealMatrix {
 private:
@@ -170,12 +170,12 @@ private:
   BigRealLUMatrix &setDimension(size_t rows);                /* not defined */
 
 public:
-  BigRealLUMatrix(DigitPool *digitPool = NULL);
-  BigRealLUMatrix(const BigRealMatrix &a, DigitPool *digitPool = NULL);
+  BigRealLUMatrix(DigitPool *digitPool = nullptr);
+  BigRealLUMatrix(const BigRealMatrix &a, DigitPool *digitPool = nullptr);
   BigRealLUMatrix &operator=(const BigRealMatrix &a);
-  BigRealMatrix getInverse(DigitPool *digitPool = NULL) const;
-  BigRealVector solve(const BigRealVector &y, DigitPool *digitPool = NULL) const;
-  BigReal getDeterminant(DigitPool *digitPool = NULL) const;
+  BigRealMatrix getInverse(DigitPool *digitPool = nullptr) const;
+  BigRealVector solve(const BigRealVector &y, DigitPool *digitPool = nullptr) const;
+  BigReal getDeterminant(DigitPool *digitPool = nullptr) const;
 
   friend tostream &operator<<(tostream &out, const BigRealLUMatrix &a);
 };

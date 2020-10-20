@@ -45,7 +45,7 @@ BigReal BigReal::apcProd(const char bias, const BigReal &x, const BigReal &y, Di
 BigReal BigReal::apcQuot(const char bias, const BigReal &x, const BigReal &y, DigitPool *digitPool) {
   _SELECTDIGITPOOL(x);
   BigReal result(pool);
-  if(!checkIsNormalQuotient(x, y, &result, NULL)) {
+  if(!checkIsNormalQuotient(x, y, &result, nullptr)) {
     return result;
   }
 

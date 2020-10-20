@@ -45,12 +45,12 @@ BigReal &BigReal::shortProductNoZeroCheck(     const BigReal &x, const BigReal &
       mov         ebx, dword ptr [xk]       // xp = xk
       mov         ecx, dword ptr [yk]       // yp = yk
       fldz                                  // push 0
-MultiplyLoop:                               // do { First iteration both xp and yp are not NULL.
+MultiplyLoop:                               // do { First iteration both xp and yp are not nullptr.
       fild        dword ptr [ebx]           //   push xp->n
       fimul       dword ptr [ecx]           //   st(0) *= yp->n
       fadd                                  //   st(0) += st(1)
       mov         ecx, dword ptr [ecx+8]    //   yp = yp->prev
-      jecxz       AddSubProduct             //   if(yp == NULL) break
+      jecxz       AddSubProduct             //   if(yp == nullptr) break
       mov         ebx, dword ptr [ebx+4]    //   xp = xp->next
       or          ebx, ebx                  //
       jne         MultiplyLoop              // } while(xp)
@@ -135,14 +135,14 @@ NextDigit:
     deleteDigits(cd->next, m_last);
   }
   m_low -= digitsAdded - 1;
-  (m_last = cd)->next = NULL;
+  (m_last = cd)->next = nullptr;
 
   if(m_first->n == 0) {
     cd = m_first;
-    (m_first = m_first->next)->prev = NULL;
+    (m_first = m_first->next)->prev = nullptr;
     deleteDigits(cd,cd);
   } else {
-    m_first->prev = NULL;
+    m_first->prev = nullptr;
     m_expo++;
   }
   return setSignByProductRule(x, y);

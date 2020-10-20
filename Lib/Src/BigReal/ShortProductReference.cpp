@@ -28,18 +28,18 @@ BigReal &BigReal::shortProductNoZeroCheckReference(const BigReal &x, const BigRe
       mov         ecx, DWORD PTR [yk]     // yp = yk
       xor         esi, esi                //
       xor         edi, edi                // esi:edi accumulates sum. Init to 0
-MultiplyLoop:                             // do { // we know that the first time both xp and yp are not NULL.
+MultiplyLoop:                             // do { // we know that the first time both xp and yp are not nullptr.
       mov         eax, DWORD PTR [ebx]    //   eax     =  xp->n
       mul         DWORD PTR [ecx]         //   [edx:eax] *= yp->n
       add         edi, eax                //
       adc         esi, edx                //
       mov         ecx, DWORD PTR [ecx+8]  //   yp = yp->prev
-      jecxz       AddSubProduct           //   if(yp == NULL) exit loop to AddSubProduct
+      jecxz       AddSubProduct           //   if(yp == nullptr) exit loop to AddSubProduct
       mov         ebx, DWORD ptr [ebx+4]  //   xp = xp->next
       cmp         ebx, 0                  //
       jne         MultiplyLoop            // } while(xp);
 
-      xor         ecx, ecx                // carry in ecx. If we jmp directly to AddSubProduct, because yp==NULL, we dont need this!!
+      xor         ecx, ecx                // carry in ecx. If we jmp directly to AddSubProduct, because yp==nullptr, we dont need this!!
 
 AddSubProduct:
       cmp         esi, 0x5f5e0ff          // if(sum >= 0xffffffff * NUMBEBASE) goto SumTooBig (or we will have a division by zero exception)
@@ -59,7 +59,7 @@ AddSubProduct:
 
 AddInt32:                                 // do { // assume sum <= 0xffffffff)
       cmp         esi, 0                  //
-      je          NoDigitAddInt32         //   if(currentDigit == NULL) goto NoDigitAddInt32
+      je          NoDigitAddInt32         //   if(currentDigit == nullptr) goto NoDigitAddInt32
       xor         edx, edx                //
       mov         eax, edi                //   [edx:eax] = sum
       div         ebx                     //   eax = sum / BIGREALBASE, edx = sum % BIGREALBASE
@@ -79,7 +79,7 @@ AddInt32:                                 // do { // assume sum <= 0xffffffff)
 
 //FinalizeCarry:                          // First iteration. Assume currentDigit in esi, Carry in ecx
       cmp         esi, 0                  //
-      je          NoDigitFinalyzeCarryECX // if(currentDigit == NULL) goto NoDigitFinalyzeCarry (No looping there)
+      je          NoDigitFinalyzeCarryECX // if(currentDigit == nullptr) goto NoDigitFinalyzeCarry (No looping there)
       add         ecx, DWORD PTR [esi]    // carry += currentDigit->n
       xor         edx, edx                //
       mov         eax, ecx                //
@@ -88,9 +88,9 @@ AddInt32:                                 // do { // assume sum <= 0xffffffff)
       cmp         eax, 0
       je          NextDigit               // if(new carry == 0) we're done
       mov         ecx, DWORD PTR[esi+8]   // currentDigit = currentDigit->prev. currentDigit now in ecx. Carry in eax
-      jecxz       NoDigitFinalyzeCarryEAX // if(tp == NULL) goto NoDigitFinalyzeCarry (no looping there)
+      jecxz       NoDigitFinalyzeCarryEAX // if(tp == nullptr) goto NoDigitFinalyzeCarry (no looping there)
 
-FinalizeCarryLoop:                        // do { // Assume currentDigit in ecx. Carry in eax and currentDigit != NULL
+FinalizeCarryLoop:                        // do { // Assume currentDigit in ecx. Carry in eax and currentDigit != nullptr
       add         eax, DWORD PTR [ecx]    //   carry += currentDigit->n
       xor         edx, edx                //
       div         ebx                     //   eax = carry / BIGREALBASE , edx = carry % BIGREALBASE
@@ -99,7 +99,7 @@ FinalizeCarryLoop:                        // do { // Assume currentDigit in ecx.
       je          NextDigit               //   if(carry == 0) we're done
       mov         ecx, DWORD PTR[ecx+8]   //   currentDigit = currentDigit->prev
       cmp         ecx, 0
-      jne         FinalizeCarryLoop       // } while(currentDigit != NULL)
+      jne         FinalizeCarryLoop       // } while(currentDigit != nullptr)
 
 NoDigitFinalyzeCarryEAX:                  // Same as NoDigitFinalyzeCarry, but pushes eax instead of ecx
       push        eax                     // push carry, assumed to be in eax
@@ -160,7 +160,7 @@ NextDigit:
   if(m_last->n == 0) { //( only trim the end for zeroes
     for(m_low++, xk = m_last->prev; xk->n == 0; xk = xk->prev, m_low++);
     deleteDigits(xk->next, m_last);
-    (m_last = xk)->next = NULL;
+    (m_last = xk)->next = nullptr;
   }
   return setSignByProductRule(x, y);
 }
@@ -181,14 +181,14 @@ BigReal &BigReal::shortProductNoZeroCheckReference(const BigReal &x, const BigRe
       mov         ebx, dword ptr [yk]     // yp = yk
       xor         edi, edi                // edi = 0, edi:edi is accumulator
       xor         esi, esi                // esi = 0
-MultiplyLoop:                             // do { // we know that the first time both xp and yp are not NULL.
+MultiplyLoop:                             // do { // we know that the first time both xp and yp are not nullptr.
       mov         eax, dword ptr [ecx]    //   eax     =  xp->n
       mul         dword ptr [ebx]         //   edx:eax *= yp->n
       add         edi, eax                //
       adc         esi, edx                //
       mov         ebx, dword ptr [ebx+8]  //   yp = yp->prev
       cmp         ebx, 0                  //
-      je          ExitLoop                //   if(yp == NULL) break
+      je          ExitLoop                //   if(yp == nullptr) break
       mov         ecx, dword ptr [ecx+4]  //   xp = xp->next
       cmp         ecx, 0                  //
       jne         MultiplyLoop            // } while(xp)
@@ -213,7 +213,7 @@ ExitLoop:
   if(m_last->n == 0) { //( only trim the end for zeroes
     for(m_low++, xk = m_last->prev; xk->n == 0; xk = xk->prev, m_low++);
     deleteDigits(xk->next, m_last);
-    (m_last = xk)->next = NULL;
+    (m_last = xk)->next = nullptr;
   }
   return setSignByProductRule(x, y);
 }
@@ -233,7 +233,7 @@ void BigReal::addSubProductReference1(unsigned __int64 &n) {
     je  AddInt32                    // if(highorder DWORD of n == 0 do it in int division
                                     //
 //    cmp esi, 0                    //
-//    je NoDigitAddInt64            // if(tp != NULL) { When called from shortProduct tp always != NULL!
+//    je NoDigitAddInt64            // if(tp != nullptr) { When called from shortProduct tp always != nullptr!
                                     //
     mov eax, DWORD PTR [ecx]        //   edx:eax = n. edx already contains highorder DWORD of n
     div ebx                         //   eax = n / BIGREALBASE, edx = n % BIGREALBASE
@@ -254,7 +254,7 @@ void BigReal::addSubProductReference1(unsigned __int64 &n) {
 
 AddInt32:                           // while(n) { (n <= 0xffffffff)
     cmp esi, 0                      //
-    je NoDigitAddInt32              //   if(tp == NULL) goto NoDigitAddInt32
+    je NoDigitAddInt32              //   if(tp == nullptr) goto NoDigitAddInt32
                                     //
     xor edx, edx                    //
     mov eax, DWORD PTR [ecx]        //   eax = n
@@ -274,7 +274,7 @@ AddInt32:                           // while(n) { (n <= 0xffffffff)
     je  Done                        //
 
 FinalizeCarry:
-    cmp esi, 0                      //   if tp == NULL goto NoDigitHandleCarry (no looping there)
+    cmp esi, 0                      //   if tp == nullptr goto NoDigitHandleCarry (no looping there)
     je NoDigitHandleCarry           //
                                     //
     add edi, DWORD PTR [esi]        //   carry += tp->n

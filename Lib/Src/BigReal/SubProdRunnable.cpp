@@ -3,10 +3,10 @@
 #include "ResourcePoolInternal.h"
 
 void SubProdRunnable::clear() {
-  m_x         = NULL;
-  m_y         = NULL;
-  m_f         = NULL;
-  m_result    = NULL;
+  m_x         = nullptr;
+  m_y         = nullptr;
+  m_f         = nullptr;
+  m_result    = nullptr;
 }
 
 UINT SubProdRunnable::run() {

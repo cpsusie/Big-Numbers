@@ -32,31 +32,31 @@ protected:
     return *this;
   }
 public:
-  BigRational(                                                              DigitPool *digitPool = NULL);
-  BigRational(const BigRational      &r                                   , DigitPool *digitPool = NULL);
-  BigRational(const BigInt           &numerator, const BigInt &denominator, DigitPool *digitPool = NULL);
-  BigRational(const BigInt           &n                                   , DigitPool *digitPool = NULL);
-  BigRational(int                     n                                   , DigitPool *digitPool = NULL);
-  BigRational(UINT                    n                                   , DigitPool *digitPool = NULL);
-  BigRational(long                    n                                   , DigitPool *digitPool = NULL);
-  BigRational(ULONG                   n                                   , DigitPool *digitPool = NULL);
-  BigRational(INT64                   n                                   , DigitPool *digitPool = NULL);
-  BigRational(UINT64                  n                                   , DigitPool *digitPool = NULL);
-  BigRational(const _int128          &n                                   , DigitPool *digitPool = NULL);
-  BigRational(const _uint128         &n                                   , DigitPool *digitPool = NULL);
-  BigRational(const Rational         &r                                   , DigitPool *digitPool = NULL);
-  explicit BigRational(const String  &s                                   , DigitPool *digitPool = NULL);
-  explicit BigRational(const char    *s                                   , DigitPool *digitPool = NULL);
-  explicit BigRational(const wchar_t *s                                   , DigitPool *digitPool = NULL);
+  BigRational(                                                              DigitPool *digitPool = nullptr);
+  BigRational(const BigRational      &r                                   , DigitPool *digitPool = nullptr);
+  BigRational(const BigInt           &numerator, const BigInt &denominator, DigitPool *digitPool = nullptr);
+  BigRational(const BigInt           &n                                   , DigitPool *digitPool = nullptr);
+  BigRational(int                     n                                   , DigitPool *digitPool = nullptr);
+  BigRational(UINT                    n                                   , DigitPool *digitPool = nullptr);
+  BigRational(long                    n                                   , DigitPool *digitPool = nullptr);
+  BigRational(ULONG                   n                                   , DigitPool *digitPool = nullptr);
+  BigRational(INT64                   n                                   , DigitPool *digitPool = nullptr);
+  BigRational(UINT64                  n                                   , DigitPool *digitPool = nullptr);
+  BigRational(const _int128          &n                                   , DigitPool *digitPool = nullptr);
+  BigRational(const _uint128         &n                                   , DigitPool *digitPool = nullptr);
+  BigRational(const Rational         &r                                   , DigitPool *digitPool = nullptr);
+  explicit BigRational(const String  &s                                   , DigitPool *digitPool = nullptr);
+  explicit BigRational(const char    *s                                   , DigitPool *digitPool = nullptr);
+  explicit BigRational(const wchar_t *s                                   , DigitPool *digitPool = nullptr);
 
   BigRational &operator=(const BigInt   &n);
   BigRational &operator=(const Rational &r);
 
-  friend BigRational sum( const BigRational &x, const BigRational &y, DigitPool *digitPool = NULL);
-  friend BigRational dif( const BigRational &x, const BigRational &y, DigitPool *digitPool = NULL);
-  friend BigRational prod(const BigRational &x, const BigRational &y, DigitPool *digitPool = NULL);
-  friend BigRational quot(const BigRational &x, const BigRational &y, DigitPool *digitPool = NULL);
-  friend BigRational rem( const BigRational &x, const BigRational &y, DigitPool *digitPool = NULL);
+  friend BigRational sum( const BigRational &x, const BigRational &y, DigitPool *digitPool = nullptr);
+  friend BigRational dif( const BigRational &x, const BigRational &y, DigitPool *digitPool = nullptr);
+  friend BigRational prod(const BigRational &x, const BigRational &y, DigitPool *digitPool = nullptr);
+  friend BigRational quot(const BigRational &x, const BigRational &y, DigitPool *digitPool = nullptr);
+  friend BigRational rem( const BigRational &x, const BigRational &y, DigitPool *digitPool = nullptr);
 
   inline BigRational operator+(const BigRational &r) const {
     return sum(*this, r, getDigitPool());
@@ -84,7 +84,7 @@ public:
   // Assume r1._isfinite() && r2._isfinite()
   static int compare(const BigRational &r1, const BigRational &r2);
 
-  friend BigRational fabs(const BigRational &r, DigitPool *digitPool = NULL);
+  friend BigRational fabs(const BigRational &r, DigitPool *digitPool = nullptr);
 
   inline const BigInt &getNumerator() const {
     return m_num;
@@ -194,7 +194,7 @@ inline int sign(const BigRational &r) {
 // The numerator will be uniform distributed in range [0; den[
 // If digitPool == null, returned value will use maxDenominator.getDigitPool()
 // Assume maxDenominator >= 2
-BigRational randBigRational(const BigInt &maxDenominator, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator, DigitPool *digitPool = NULL);
+BigRational randBigRational(const BigInt &maxDenominator, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator, DigitPool *digitPool = nullptr);
 
 // Return uniform distributed random BigRational in range [from;to] (both inclusive)
 // First make the the 3 products: n1 = from.num*to.den, n2 = to.num*from.den, d = from.den*to.den
@@ -202,7 +202,7 @@ BigRational randBigRational(const BigInt &maxDenominator, RandomGenerator &rnd =
 // where f is a random BigInt in range [1..maxScaleFactor]
 // If maxScaleFactor <= 1, no scaling is done
 // If digitPool == null, returned value will use from.getDigitPool()
-BigRational randBigRational(const BigRational &from, const BigRational &to, const BigInt &maxScaleFactor, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator, DigitPool *digitPool = NULL);
+BigRational randBigRational(const BigRational &from, const BigRational &to, const BigInt &maxScaleFactor, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator, DigitPool *digitPool = nullptr);
 
 // returns one of
 // FP_INFINITE
@@ -264,13 +264,13 @@ inline bool operator!=(const BigRational &x, const BigRational &y) {
   return !isunordered(x, y) && ((x.getNumerator() != y.getNumerator()) || (x.getDenominator() != y.getDenominator()));
 }
 
-bool isInt(     const BigRational &v, int      *n = NULL);
-bool isUint(    const BigRational &v, UINT     *n = NULL);
-bool isInt64(   const BigRational &v, INT64    *n = NULL);
-bool isUint64(  const BigRational &v, UINT64   *n = NULL);
-bool isInt128(  const BigRational &v, _int128  *n = NULL);
-bool isUint128( const BigRational &v, _uint128 *n = NULL);
-bool isRational(const BigRational &v, Rational *r = NULL);
+bool isInt(     const BigRational &v, int      *n = nullptr);
+bool isUint(    const BigRational &v, UINT     *n = nullptr);
+bool isInt64(   const BigRational &v, INT64    *n = nullptr);
+bool isUint64(  const BigRational &v, UINT64   *n = nullptr);
+bool isInt128(  const BigRational &v, _int128  *n = nullptr);
+bool isUint128( const BigRational &v, _uint128 *n = nullptr);
+bool isRational(const BigRational &v, Rational *r = nullptr);
 
 // save/load BigRational in binary format. Packer can be streamed to ByteOutputStream and read from ByteInputStream
 Packer &operator<<(Packer &p, const BigRational &r);

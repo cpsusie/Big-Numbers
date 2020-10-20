@@ -92,7 +92,7 @@ public:
 
   // InitialDigitcount in BIGREALBASE-digits
   DigitPool(int id, const String &name, size_t initialDigitcount = 0);
-  virtual ~DigitPool();
+  ~DigitPool() override;
 
   inline UINT getId() const {
     return getResourceId();
@@ -207,8 +207,7 @@ public:
   }
   // Allocates a vector (C-array) of BigReals, all using this digitPool
   // To deallocate array a, use delete[] a;
-  // override virtual VectorAllocator::allocVector
-  BigReal *allocVector(size_t count);
+  BigReal *allocVector(size_t count) override;
 };
 
 class DigitPoolWithLock : public DigitPool {

@@ -126,7 +126,7 @@ BigReal &BigReal::operator=(const BigReal &x) {
       if(missing > 0) {
         Digit *head = m_digitPool.fetchDigitList(missing), *last = head->prev;
         (m_last->next = head)->prev = m_last;
-        (m_last = last)->next = NULL;
+        (m_last = last)->next = nullptr;
       }
       for(Digit *sd = x.m_first, *dd = m_first;;) {
         dd->n = sd->n;
@@ -144,7 +144,7 @@ BigReal &BigReal::operator=(const BigReal &x) {
           dd->n   = sd->n;
           p->next = dd;
         }
-        (m_last = p)->next = NULL;
+        (m_last = p)->next = nullptr;
       }
 #endif // USE_FETCHDIGITLIST
     } else {                 // Missing < 0. First copy and then delete excess digits
@@ -153,7 +153,7 @@ BigReal &BigReal::operator=(const BigReal &x) {
         dd->n = sd->n;
       }
       Digit *saveLast = m_last;
-      (m_last = dd->prev)->next = NULL;
+      (m_last = dd->prev)->next = nullptr;
       deleteDigits(dd, saveLast);
     }
   }
@@ -164,9 +164,9 @@ BigReal &BigReal::operator=(const BigReal &x) {
 void BigReal::init(const String &s, bool allowDecimalPoint) {
   String tmpstr(s);
   TCHAR *cp           = tmpstr.cstr();
-  TCHAR *commaPos     = NULL;
-  TCHAR *firstNonZero = NULL;
-  TCHAR *lastNonZero  = NULL;
+  TCHAR *commaPos     = nullptr;
+  TCHAR *firstNonZero = nullptr;
+  TCHAR *lastNonZero  = nullptr;
   bool negative       = false;
 
   initToZero();
@@ -184,13 +184,13 @@ void BigReal::init(const String &s, bool allowDecimalPoint) {
   if(allowDecimalPoint) {
     for(t = cp; _istdigit(*t) || *t == _T('.'); t++) {
       if(*t == _T('.')) {
-        if(commaPos != NULL) { // We already got one
+        if(commaPos != nullptr) { // We already got one
           *t = 0;
           break;
         }
         commaPos = t;
       } else if(*t != _T('0')) {
-        if(firstNonZero == NULL) {
+        if(firstNonZero == nullptr) {
           firstNonZero = t;
         }
         lastNonZero = t;
@@ -199,7 +199,7 @@ void BigReal::init(const String &s, bool allowDecimalPoint) {
   } else {
     for(t = cp; _istdigit(*t); t++) {
       if(*t != _T('0')) {
-        if(firstNonZero == NULL) {
+        if(firstNonZero == nullptr) {
           firstNonZero = t;
         }
         lastNonZero = t;
@@ -207,11 +207,11 @@ void BigReal::init(const String &s, bool allowDecimalPoint) {
     }
   }
 
-  if(firstNonZero != NULL) { // value != 0
+  if(firstNonZero != nullptr) { // value != 0
     BigReal integerPart(   &m_digitPool);
     BigReal fractionalPart(&m_digitPool);
     TCHAR *exponentPos = t;
-    if(commaPos == NULL) { // No decimalpoint. Assumed to be at the end.
+    if(commaPos == nullptr) { // No decimalpoint. Assumed to be at the end.
       commaPos = t;
     }
 

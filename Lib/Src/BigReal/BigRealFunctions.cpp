@@ -92,7 +92,7 @@ BigReal fraction(const BigReal &x, DigitPool *digitPool) { // sign(x) * (|x| - f
   if(!isfinite(x)) return BigReal(x, pool);
   BigReal result(pool);
   result.clrInitDone();
-  x.fractionate(NULL, &result);
+  x.fractionate(nullptr, &result);
   return result.setInitDone();
 }
 
@@ -174,7 +174,7 @@ void BigReal::fractionate(BigInt *integerPart, BigReal *fractionPart) const {
     if(dd) {                             // remove excess digits from integerPart
       Digit *saveLast = intPart.m_last;
       intPart.m_last = dd->prev;
-      intPart.m_last->next = NULL;
+      intPart.m_last->next = nullptr;
       intPart.deleteDigits(dd, saveLast);
     } else {
       for(;expo-- >= 0; sd = sd->next) { // still some digits to append to integerpart
@@ -202,7 +202,7 @@ void BigReal::fractionate(BigInt *integerPart, BigReal *fractionPart) const {
     if(dd) { // remove excess digits from fractionPart
       Digit *saveLast = fractionPart->m_last;
       fractionPart->m_last = dd->prev;
-      fractionPart->m_last->next = NULL;
+      fractionPart->m_last->next = nullptr;
       fractionPart->deleteDigits(dd, saveLast);
     } else {
       for(; sd; sd = sd->next) {
@@ -278,7 +278,7 @@ BigReal &BigReal::copyrTrunc(const BigReal &src, size_t digits) { // decimal dig
       m_first->n = d;
       if(m_first->next) {
         deleteDigits(m_first->next, m_last);
-        m_first->next = NULL;
+        m_first->next = nullptr;
         m_last = m_first;
       }
     } else {
@@ -299,7 +299,7 @@ BigReal &BigReal::copyrTrunc(const BigReal &src, size_t digits) { // decimal dig
       for(sp = sp->next; digits >= BIGREAL_LOG10BASE; sp = sp->next, digits -= BIGREAL_LOG10BASE) {
         appendDigit(sp->n);
       }
-      dp = NULL;
+      dp = nullptr;
     } else {
       dp    = m_first;
       dp->n = sp->n;
@@ -317,14 +317,14 @@ BigReal &BigReal::copyrTrunc(const BigReal &src, size_t digits) { // decimal dig
         dp->n = last;
         if(dp->next) {
           deleteDigits(dp->next, m_last);
-          (m_last = dp)->next = NULL;
+          (m_last = dp)->next = nullptr;
         }
       } else {
         appendDigit(last);
       }
     } else if(dp) {
       Digit *saveLast = m_last;
-      (m_last = dp->prev)->next = NULL;
+      (m_last = dp->prev)->next = nullptr;
       deleteDigits(dp, saveLast);
     }
     m_low = (m_expo = src.m_expo) - newLength + 1;
@@ -346,7 +346,7 @@ BigReal &BigReal::rTrunc(size_t digits) {
       Digit *saveLast = m_last;
       m_last      = first;
       deleteDigits(m_last->next, saveLast);
-      first->next = NULL;
+      first->next = nullptr;
       m_low       = m_expo;
     }
   } else { // digits >= k
@@ -369,7 +369,7 @@ BigReal &BigReal::rTrunc(size_t digits) {
         Digit *saveLast = m_last;
         m_last = p;
         deleteDigits(p->next, saveLast);
-        p->next = NULL;
+        p->next = nullptr;
         m_low = m_expo - newLength + 1;
       }
       if(m_last->n == 0) trimTail();
@@ -394,7 +394,7 @@ BigReal &BigReal::rRound(size_t digits) {
       Digit *saveLast = m_last;
       m_last      = first;
       deleteDigits(m_last->next, saveLast);
-      first->next = NULL;
+      first->next = nullptr;
       m_low       = m_expo;
     }
   } else { // digits >= k
@@ -421,13 +421,13 @@ BigReal &BigReal::rRound(size_t digits) {
         Digit *saveLast = m_last;
         m_last = p;
         deleteDigits(p->next, saveLast);
-        p->next = NULL;
+        p->next = nullptr;
         m_low = m_expo - newLength + ((digits && ((wantedDigits-k)%BIGREAL_LOG10BASE == digits)) ? 2 : 1); // !!
 //        trimZeroes(); Not needed. p->n will always be at least 1
       } else { // carry propagated all the way up in front of m_first. set first to 1 and increment m_expo
         first->n = 1;
         deleteDigits(first->next, m_last);
-        first->next = NULL;
+        first->next = nullptr;
         m_last      = first;
         m_expo++;
         m_low = m_expo;
@@ -436,14 +436,14 @@ BigReal &BigReal::rRound(size_t digits) {
       Digit *saveLast = m_last;
       m_last = p->prev;
       deleteDigits(p, saveLast);
-      m_last->next = NULL;
+      m_last->next = nullptr;
       m_low = m_expo - newLength + ((digits && ((wantedDigits-k)%BIGREAL_LOG10BASE == digits)) ? 2 : 1); // !!
       if(m_last->n == 0) trimTail();
     } else if(p->next) {
       Digit *saveLast = m_last;
       m_last = p;
       deleteDigits(p->next, saveLast);
-      p->next = NULL;
+      p->next = nullptr;
       m_low = m_expo - newLength + 1;
 //      trimZeroes(); Not needed. p->n != 0
     }

@@ -23,13 +23,13 @@ BigRealMultiplyColumn PROC
       mov         rbx, rdx                        ; rbx = xp; need rdx for multiplication
       xor         rsi, rsi                        ;
       xor         rdi, rdi                        ; rsi:rdi accumulates sum. Init to 0
-MultiplyLoop:                                     ; do { ; we know that the first time both xp and yp are not NULL.
+MultiplyLoop:                                     ; do { ; we know that the first time both xp and yp are not nullptr.
       mov         rax, QWORD PTR[rbx]             ;   rax        = xp->n
       mul         QWORD PTR [rcx]                 ;   rdx:rax   *= yp->n
       add         rdi, rax                        ;
       adc         rsi, rdx                        ;   rsi:rdi += rdx:rax        sum += xp->n*yp->n
       mov         rcx, QWORD PTR[rcx+16]          ;   yp = yp->prev
-      jrcxz       AddSubProduct                   ;   if(yp == NULL) exit loop to AddSubProduct
+      jrcxz       AddSubProduct                   ;   if(yp == nullptr) exit loop to AddSubProduct
       mov         rbx, QWORD PTR[rbx+ 8]          ;   xp = xp->next
       or          rbx, rbx                        ;
       jne         MultiplyLoop                    ; } while(xp);

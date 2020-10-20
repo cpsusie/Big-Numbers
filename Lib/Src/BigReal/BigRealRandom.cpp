@@ -8,7 +8,7 @@
 
 // 0 <= random < 1; with at most maxDigits, decimal digits
 BigReal randBigReal(size_t maxDigits, RandomGenerator &rnd, DigitPool *digitPool) {
-  if(digitPool == NULL) digitPool = DEFAULT_DIGITPOOL;
+  if(digitPool == nullptr) digitPool = DEFAULT_DIGITPOOL;
   if(maxDigits == 0) {
     return digitPool->_0();
   }
@@ -32,7 +32,7 @@ BigReal randBigReal(size_t maxDigits, RandomGenerator &rnd, DigitPool *digitPool
 }
 
 // Return uniform distributed random BigReal in [from;to] with at most maxDigits decimal digits.
-// If digitPool == NULL, use from.digitPool
+// If digitPool == nullptr, use from.digitPool
 BigReal randBigReal(const BigReal &from, const BigReal &to, size_t maxDigits, RandomGenerator &rnd, DigitPool *digitPool) {
   if(from > to) {
     throwBigRealInvalidArgumentException(__TFUNCTION__, _T("from > to"));

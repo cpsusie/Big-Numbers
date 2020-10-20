@@ -232,7 +232,7 @@ UINT PrimeSearcher::run() {
 }
 
 Array<BigInt> findRandomPrimes(int count, int digitCount, int threadCount, DigitPool *pool, MillerRabinHandler *handler) {
-  if(pool == NULL) pool = DEFAULT_DIGITPOOL;
+  if(pool == nullptr) pool = DEFAULT_DIGITPOOL;
   PrimeMonitor m(digitCount, threadCount, pool, handler);
   m.startJobs();
   while(m.getPrimesFound() < count) {

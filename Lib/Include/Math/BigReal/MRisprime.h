@@ -22,7 +22,7 @@ public:
 typedef AlgorithmHandler<MillerRabinCheck> MillerRabinHandler;
 
 // Miller-Rabin probabilistic primality test
-bool MRisprime(const BigInt &n, int threadId = -1, MillerRabinHandler *handler = NULL);
+bool MRisprime(const BigInt &n, int threadId = -1, MillerRabinHandler *handler = nullptr);
 // Find count random primes with the specified number of digits
-Array<BigInt> findRandomPrimes(int count, int digitCount, int threadCount = 1, DigitPool *pool = NULL, MillerRabinHandler *handler = NULL);
-BigInt        findRandomPrime(int digitCount, int threadCount = 1, DigitPool *pool = NULL, MillerRabinHandler *handler = NULL);
+Array<BigInt> findRandomPrimes(int count, int digitCount, int threadCount = 1, DigitPool *pool = nullptr, MillerRabinHandler *handler = nullptr);
+BigInt        findRandomPrime(int digitCount, int threadCount = 1, DigitPool *pool = nullptr, MillerRabinHandler *handler = nullptr);

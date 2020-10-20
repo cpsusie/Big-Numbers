@@ -73,15 +73,15 @@ BigReal BigReal::reciprocal(const BigReal &x, DigitPool *digitPool) { // static
   return result.multPow10(k - 1 - MAXDIGITS_INT32 - getExpo10(x),true).copySign(x);
 }
 
-// Assume k <= MAXDIGITS_INT32 (=9). scale can be NULL.
+// Assume k <= MAXDIGITS_INT32 (=9). scale can be nullptr.
 // Return the first k decimal digits of this.
-// if scale != NULL, result = n/10^scale, where scale = max(s|(n/10^s) % 10 != 0) and n = first k decimal digits of this
-// if scale == NULL, result = first k decimal digits of this, which can contain trailing zeroes
+// if scale != nullptr, result = n/10^scale, where scale = max(s|(n/10^s) % 10 != 0) and n = first k decimal digits of this
+// if scale == nullptr, result = first k decimal digits of this, which can contain trailing zeroes
 unsigned long BigReal::getFirst32(const UINT k, BRExpoType *scale) const {
   assert(k <= MAXDIGITS_INT32);
 
   const Digit *p = m_first;
-  if(p == NULL) {
+  if(p == nullptr) {
     if(scale) *scale = 0;
     return 0;
   }
@@ -114,7 +114,7 @@ unsigned long BigReal::getFirst32(const UINT k, BRExpoType *scale) const {
         result /= 10;
         tmpScale++;
       }
-    } else { // scale == NULL
+    } else { // scale == nullptr
       for(p = p->next; (UINT)digits < k; digits += BIGREAL_LOG10BASE) {
         const BRDigitType p10 = pow10(min(BIGREAL_LOG10BASE,k-digits));
         result *= p10;

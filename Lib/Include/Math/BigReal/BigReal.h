@@ -130,10 +130,10 @@ private:
     m_low      = src.m_low;
     copySign(src);
   }
-  // Set both m_first = m_last = NULL WITHOUT call to deleteDigits
+  // Set both m_first = m_last = nullptr WITHOUT call to deleteDigits
   // Does NOT call CHECKISMUTABLE
   inline void initToNonNormal(int low = BIGREAL_ZEROLOW, bool negative=false) {
-    m_first    = m_last = NULL;
+    m_first    = m_last = nullptr;
     m_expo     = BIGREAL_NONNORMAL;
     m_low      = low;
     modifyFlags(negative ? BR_NEG : 0, BR_NEG);
@@ -236,7 +236,7 @@ private:
     Digit *p = newDigit();
     p->n     = n;
     p->prev  = m_last;
-    p->next  = NULL;
+    p->next  = nullptr;
     if(m_last) m_last->next = p; else m_first = p;
     m_last = p;
   }
@@ -248,7 +248,7 @@ private:
   // Dont modify m_expo,m_low,m_flags
   void    insertDigit(                      BRDigitType n);
   // Insert count zero-digits at head of this
-  // Assume *this != zero. ie m_first != NULL (and m_last != NULL)
+  // Assume *this != zero. ie m_first != nullptr (and m_last != nullptr)
   void    insertZeroDigits(                 size_t count);
   // Insert one digit=n after digit p.
   // Assume p is a digit in digit-list of this
@@ -267,7 +267,7 @@ private:
   inline BigReal &clearDigits() {
     if(m_first) {
       m_digitPool.deleteDigits(m_first, m_last);
-      m_first = m_last = NULL;
+      m_first = m_last = nullptr;
     }
     return *this;
   }
@@ -296,7 +296,7 @@ private:
   // Assume m_first && m_first->n == 0
   // Adjust m_expo,m_low accordingly
   void    trimHead();
-  // Assume m_first != NULL (=> m_last != NULL) and m_last->n == 0
+  // Assume m_first != nullptr (=> m_last != nullptr) and m_last->n == 0
   // Adjust m_low accordingly
   void    trimTail();
   Digit  *findDigit(const BRExpoType exponent) const;
@@ -345,7 +345,7 @@ private:
 // so invariant will be broken for af while, and reestablished at the end of shortProductNoZeroCheck,
 // when we clean up the chain head and end
   inline Digit *clearDigits1() {
-    if(m_first == NULL) {
+    if(m_first == nullptr) {
       m_first = newDigit();
     } else if(m_first->next) {
       deleteDigits(m_first->next, m_last);
@@ -353,7 +353,7 @@ private:
     m_first->n = 0;
     return m_first;
   }
-// Assume last != NULL. new digit->n and ..->next are not initialized
+// Assume last != nullptr. new digit->n and ..->next are not initialized
 // Should only be called from shortProductNoZeroCheck. m_last will not be touched
 // so invariant will be broken for af while, and reestablished at the end of shortProductNoZeroCheck,
 // when we clean up the chain head and end
@@ -392,7 +392,7 @@ private:
   static BigReal &productMT(BigReal &result, const BigReal &x, const BigReal &y, const BigReal &f, intptr_t  w, int level);
   // Assume this->_isnormal() && a.isZero() && b.isZero() && f._isfinite(). Dont care about sign(f)
   void    split(BigReal &a, BigReal &b, size_t n, const BigReal &f) const;
-  // Assume src._isnormal() && 0 < length <= src.getLength() && m_first == m_last == NULL
+  // Assume src._isnormal() && 0 < length <= src.getLength() && m_first == m_last == nullptr
   // Modify only m_first and m_last of this
   // Does NOT call CHECKISMUTABLE
   // Return *this
@@ -426,7 +426,7 @@ private:
   // Division helperfunctions.
   // Result.digitPool = x.digitPool or digitPool if specified
   // Return Approximately 1/x.
-  static BigReal  reciprocal(const BigReal &x, DigitPool *digitPool = NULL);
+  static BigReal  reciprocal(const BigReal &x, DigitPool *digitPool = nullptr);
   // *this = approximately x / y
   // Assume y._isnormal().
   // Return *this
@@ -466,9 +466,9 @@ private:
   BigReal  &adjustAPCResult(const char bias);
 #endif // _DEBUG
 
-  friend bool isFloat(   const BigReal &v, float    *flt = NULL);
-  friend bool isDouble(  const BigReal &v, double   *dbl = NULL);
-  friend bool isDouble80(const BigReal &v, Double80 *d80 = NULL);
+  friend bool isFloat(   const BigReal &v, float    *flt = nullptr);
+  friend bool isDouble(  const BigReal &v, double   *dbl = nullptr);
+  friend bool isDouble80(const BigReal &v, Double80 *d80 = nullptr);
 
   inline float getFloatNoLimitCheck() const {
     return (float)getDouble80NoLimitCheck();
@@ -488,7 +488,7 @@ protected:
   inline void releaseDigits() { // should only be called from destructor
     if(m_first) {
       deleteDigits(m_first, m_last);
-      m_first = NULL;
+      m_first = nullptr;
     }
   }
 
@@ -504,79 +504,79 @@ public:
   static DigitPool *s_defaultDigitPool;
   static DigitPool *s_constDigitPool;
 
-  inline BigReal(                             DigitPool *digitPool = NULL) : _INITPOOLTODEFAULTIFNULL() {
+  inline BigReal(                             DigitPool *digitPool = nullptr) : _INITPOOLTODEFAULTIFNULL() {
     startInit();
     initToZero();
     endInit();
   }
-  inline BigReal(int      x                 , DigitPool *digitPool = NULL) : _INITPOOLTODEFAULTIFNULL() {
+  inline BigReal(int      x                 , DigitPool *digitPool = nullptr) : _INITPOOLTODEFAULTIFNULL() {
     startInit();
     init(x);
     endInit();
   }
-  inline BigReal(UINT     x                 , DigitPool *digitPool = NULL) : _INITPOOLTODEFAULTIFNULL() {
+  inline BigReal(UINT     x                 , DigitPool *digitPool = nullptr) : _INITPOOLTODEFAULTIFNULL() {
     startInit();
     init(x);
     endInit();
   }
-  inline BigReal(long     x                 , DigitPool *digitPool = NULL) : _INITPOOLTODEFAULTIFNULL() {
+  inline BigReal(long     x                 , DigitPool *digitPool = nullptr) : _INITPOOLTODEFAULTIFNULL() {
     startInit();
     init((int)x);
     endInit();
   }
-  inline BigReal(ULONG    x                 , DigitPool *digitPool = NULL) : _INITPOOLTODEFAULTIFNULL() {
+  inline BigReal(ULONG    x                 , DigitPool *digitPool = nullptr) : _INITPOOLTODEFAULTIFNULL() {
     startInit();
     init((UINT)x);
     endInit();
   }
-  inline BigReal(INT64    x                 , DigitPool *digitPool = NULL) : _INITPOOLTODEFAULTIFNULL() {
+  inline BigReal(INT64    x                 , DigitPool *digitPool = nullptr) : _INITPOOLTODEFAULTIFNULL() {
     startInit();
     init(x);
     endInit();
   }
-  inline BigReal(UINT64   x                 , DigitPool *digitPool = NULL) : _INITPOOLTODEFAULTIFNULL() {
+  inline BigReal(UINT64   x                 , DigitPool *digitPool = nullptr) : _INITPOOLTODEFAULTIFNULL() {
     startInit();
     init(x);
     endInit();
   }
-  inline BigReal(_int128  x                 , DigitPool *digitPool = NULL) : _INITPOOLTODEFAULTIFNULL() {
+  inline BigReal(_int128  x                 , DigitPool *digitPool = nullptr) : _INITPOOLTODEFAULTIFNULL() {
     startInit();
     init(x);
     endInit();
   }
-  inline BigReal(_uint128 x                 , DigitPool *digitPool = NULL) : _INITPOOLTODEFAULTIFNULL() {
+  inline BigReal(_uint128 x                 , DigitPool *digitPool = nullptr) : _INITPOOLTODEFAULTIFNULL() {
     startInit();
     init(x);
     endInit();
   }
-  BigReal(float           x                 , DigitPool *digitPool = NULL) : _INITPOOLTODEFAULTIFNULL() {
+  BigReal(float           x                 , DigitPool *digitPool = nullptr) : _INITPOOLTODEFAULTIFNULL() {
     startInit();
     init(x);
     endInit();
   }
-  BigReal(double          x                 , DigitPool *digitPool = NULL) : _INITPOOLTODEFAULTIFNULL() {
+  BigReal(double          x                 , DigitPool *digitPool = nullptr) : _INITPOOLTODEFAULTIFNULL() {
     startInit();
     init(x);
     endInit();
   }
-  BigReal(const Double80  &x                , DigitPool *digitPool = NULL) : _INITPOOLTODEFAULTIFNULL() {
+  BigReal(const Double80  &x                , DigitPool *digitPool = nullptr) : _INITPOOLTODEFAULTIFNULL() {
     startInit();
     init(x);
     endInit();
   }
-  BigReal(const BigReal   &x                , DigitPool *digitPool = NULL);
+  BigReal(const BigReal   &x                , DigitPool *digitPool = nullptr);
 
-  explicit inline BigReal(const String    &s, DigitPool *digitPool = NULL) : _INITPOOLTODEFAULTIFNULL() {
+  explicit inline BigReal(const String    &s, DigitPool *digitPool = nullptr) : _INITPOOLTODEFAULTIFNULL() {
     startInit();
     init(s, true);
     endInit();
   }
-  explicit inline BigReal(const char      *s, DigitPool *digitPool = NULL) : _INITPOOLTODEFAULTIFNULL() {
+  explicit inline BigReal(const char      *s, DigitPool *digitPool = nullptr) : _INITPOOLTODEFAULTIFNULL() {
     startInit();
     init(s, true);
     endInit();
   }
-  explicit inline BigReal(const wchar_t   *s, DigitPool *digitPool = NULL) : _INITPOOLTODEFAULTIFNULL() {
+  explicit inline BigReal(const wchar_t   *s, DigitPool *digitPool = nullptr) : _INITPOOLTODEFAULTIFNULL() {
     startInit();
     init(s, true);
     endInit();
@@ -683,36 +683,36 @@ public:
   // If f <= 0, full precision is used
   // If any of the operands is not finite, nan is returned
   // Result.digitPool = x.digitPool, or digitPool if specified
-  friend BigReal  sum(             const BigReal &x, const BigReal &y, const BigReal  &f, DigitPool *digitPool = NULL);
+  friend BigReal  sum(             const BigReal &x, const BigReal &y, const BigReal  &f, DigitPool *digitPool = nullptr);
   // Return x-y with |error| <= f
   // If f <= 0, full precision is used
   // If any of the operands is not finite, nan is returned
   // Result.digitPool = x.digitPool, or digitPool if specified
-  friend BigReal  dif(             const BigReal &x, const BigReal &y, const BigReal  &f, DigitPool *digitPool = NULL);
+  friend BigReal  dif(             const BigReal &x, const BigReal &y, const BigReal  &f, DigitPool *digitPool = nullptr);
   // Return x*y with |error| <= f
   // If f <= 0, full precision is used
   // If any of the operands is not finite, nan is returned
   // Result.digitPool = x.digitPool, or digitPool if specified
-  friend BigReal  prod(            const BigReal &x, const BigReal &y, const BigReal  &f, DigitPool *digitPool = NULL);
+  friend BigReal  prod(            const BigReal &x, const BigReal &y, const BigReal  &f, DigitPool *digitPool = nullptr);
   // x/y with |error| <= f. if f<= 0, an invalid argument exception is thrown
   // If any of the operands is not finite, nan is returned
   // If y==0, nan, +/-inf is returned, depending on value of x
   // Result.digitPool = x.digitPool, or digitPool if specified
-  friend BigReal  quot(            const BigReal &x, const BigReal &y, const BigReal  &f, DigitPool *digitPool = NULL);
+  friend BigReal  quot(            const BigReal &x, const BigReal &y, const BigReal  &f, DigitPool *digitPool = nullptr);
   // Return fmod(x,y)
   // If any of the operands is not finite, nan is returned
   // Result.digitPool = x.digitPool, or digitPool if specified
-  friend BigReal  fmod(            const BigReal &x, const BigReal &y                   , DigitPool *digitPool = NULL);
+  friend BigReal  fmod(            const BigReal &x, const BigReal &y                   , DigitPool *digitPool = nullptr);
   // Return x / y (Integer division)
   // If any of the operands is not finite, nan is returned.
   // If y==0, nan, +/-inf is returned, depending on value of x
   // Result.digitPool = x.digitPool, or digitPool if specified
-  friend BigInt   quot(            const BigInt  &x, const BigInt  &y                   , DigitPool *digitPool = NULL);
+  friend BigInt   quot(            const BigInt  &x, const BigInt  &y                   , DigitPool *digitPool = nullptr);
   // Return x % y (Integer remainder)
   // If any of the operands is not finite, nan is returned
   // If y==0, nan, +/-inf is returned, depending on value of x
   // Result.digitPool = x.digitPool, or digitPool if specified
-  friend BigInt   rem(             const BigInt  &x, const BigInt  &y                   , DigitPool *digitPool = NULL);
+  friend BigInt   rem(             const BigInt  &x, const BigInt  &y                   , DigitPool *digitPool = nullptr);
   // Calculates only quotient and/or remainder if specified
   friend void     quotRemainder(   const BigReal &x, const BigReal &y, BigInt *quotient , BigReal *remainder);
   // Calculates only quotient and/or remainder if specified
@@ -722,22 +722,22 @@ public:
   friend void     quotRemainder128(const BigReal &x, const BigReal &y, BigInt *quotient , BigReal *remainder);
 #endif
   // bias = '<','#' or '>'. Result.digitPool = x.digitPool, or digitPool if specified
-  static BigReal  apcSum(       const char bias,  const BigReal &x, const BigReal  &y   , DigitPool *digitPool = NULL);
+  static BigReal  apcSum(       const char bias,  const BigReal &x, const BigReal  &y   , DigitPool *digitPool = nullptr);
   // bias = '<','#' or '>'. Result.digitPool = x.digitPool, or digitPool if specified
-  static BigReal  apcProd(      const char bias,  const BigReal &x, const BigReal  &y   , DigitPool *digitPool = NULL);
+  static BigReal  apcProd(      const char bias,  const BigReal &x, const BigReal  &y   , DigitPool *digitPool = nullptr);
   // bias = '<','#' or '>'. Result.digitPool = x.digitPool, or digitPool if specified
-  static BigReal  apcQuot(      const char bias,  const BigReal &x, const BigReal  &y   , DigitPool *digitPool = NULL);
+  static BigReal  apcQuot(      const char bias,  const BigReal &x, const BigReal  &y   , DigitPool *digitPool = nullptr);
   // bias = '<','#' or '>'. Result.digitPool = x.digitPool, or digitPool if specified
-  static BigReal  apcPow(       const char bias,  const BigReal &x, const BigInt   &y   , DigitPool *digitPool = NULL);
+  static BigReal  apcPow(       const char bias,  const BigReal &x, const BigInt   &y   , DigitPool *digitPool = nullptr);
   // bias = '<','#' or '>'. Result.digitPool = x.digitPool, or digitPool if specified
-  static BigReal  apcAbs(       const char bias,  const BigReal &x                      , DigitPool *digitPool = NULL);
+  static BigReal  apcAbs(       const char bias,  const BigReal &x                      , DigitPool *digitPool = nullptr);
 
   // If specified, both integerPart and fractionPart, will have same sign as *this (if != 0)
   void           fractionate(BigInt *integerPart, BigReal *fractionPart) const;
   // ln(10) with |error| < f. result.digitPool = f.digitPool or digitPool if specified
-  static BigReal ln10(         const BigReal &f, DigitPool *digitPool = NULL);
+  static BigReal ln10(         const BigReal &f, DigitPool *digitPool = nullptr);
   // Approximatly ln(x). Assume 1 <= x <= 10. result.digitPool = x.digitPool or digitPool if specified
-  static BigReal lnEstimate(   const BigReal &x, DigitPool *digitPool = NULL);
+  static BigReal lnEstimate(   const BigReal &x, DigitPool *digitPool = nullptr);
   // 2^n, with the specified number of digits. if digits = 0, then full precision. Results are cached, so dont modify
   // Returned value is not mutable and belongs to digitpool which is private to pow2Cache
   static const BigReal &pow2(int n, size_t digits = 0);
@@ -862,7 +862,7 @@ public:
   }
 
   // Return x._isnormal() ? getExpo10(x) as BigReal : x
-  static BigReal           getExpo10N( const BigReal  &x, DigitPool *digitPool = NULL) {
+  static BigReal           getExpo10N( const BigReal  &x, DigitPool *digitPool = nullptr) {
     _SELECTDIGITPOOL(x);
     return x._isnormal() ? BigReal(getExpo10(x), pool) : BigReal(x,pool);
   }
@@ -921,24 +921,24 @@ public:
 
   // Return Absolute value of x (=|x|)
   // Result.digitPool = x.digitPool or digitPool, if specified
-  friend BigReal fabs(     const BigReal &x                   , DigitPool *digitPool = NULL);
+  friend BigReal fabs(     const BigReal &x                   , DigitPool *digitPool = nullptr);
   // Return biggest integer <= x
   // Result.digitPool = x.digitPool or digitPool, if specified
-  friend BigInt  floor(    const BigReal &x                   , DigitPool *digitPool = NULL);
+  friend BigInt  floor(    const BigReal &x                   , DigitPool *digitPool = nullptr);
   // Return smallest integer >= x
   // Result.digitPool = x.digitPool or digitPool, if specified
-  friend BigInt  ceil(     const BigReal &x                   , DigitPool *digitPool = NULL);
+  friend BigInt  ceil(     const BigReal &x                   , DigitPool *digitPool = nullptr);
   // Return sign(x) * (|x| - floor(|x|))
   // Result.digitPool = x.digitPool or digitPool, if specified
-  friend BigReal fraction( const BigReal &x                   , DigitPool *digitPool = NULL);
+  friend BigReal fraction( const BigReal &x                   , DigitPool *digitPool = nullptr);
   // Return sign(x) * floor(|x|*10^prec+0.5)/10^prec
-  friend BigReal round(    const BigReal &x, intptr_t prec = 0, DigitPool *digitPool = NULL);
+  friend BigReal round(    const BigReal &x, intptr_t prec = 0, DigitPool *digitPool = nullptr);
   // sign(x) * floor(|x|*10^prec)/10^prec
-  friend BigReal trunc(    const BigReal &x, intptr_t prec = 0, DigitPool *digitPool = NULL);
+  friend BigReal trunc(    const BigReal &x, intptr_t prec = 0, DigitPool *digitPool = nullptr);
   // x truncated to the specified number of significant decimal digits
-  friend BigReal cut(      const BigReal &x, size_t   digits  , DigitPool *digitPool = NULL);
+  friend BigReal cut(      const BigReal &x, size_t   digits  , DigitPool *digitPool = nullptr);
   // x * pow(10,n)
-  friend BigReal e(        const BigReal &x, BRExpoType n     , DigitPool *digitPool = NULL);
+  friend BigReal e(        const BigReal &x, BRExpoType n     , DigitPool *digitPool = nullptr);
 
   // Assume x._isfinite(). Return x < 0 ? -1 : x > 0 ? 1 : 0
   friend inline int sign(  const BigReal &x) {
@@ -993,12 +993,12 @@ public:
   }
 
   // Return first k decimal digits of |*this|. Assume k <= 9.
-  ULONG  getFirst32(const UINT k, BRExpoType *scale = NULL) const;
+  ULONG  getFirst32(const UINT k, BRExpoType *scale = nullptr) const;
   // Return first k decimal digits of |*this|. Assume k <= 19.
-  UINT64 getFirst64(const UINT k, BRExpoType *scale = NULL) const;
+  UINT64 getFirst64(const UINT k, BRExpoType *scale = nullptr) const;
 #if defined(IS64BIT)
   // Return first k decimal digits of |*this|. Assume k <= 38.
-  _uint128 &getFirst128(_uint128 &dst, const UINT k, BRExpoType *scale = NULL) const;
+  _uint128 &getFirst128(_uint128 &dst, const UINT k, BRExpoType *scale = nullptr) const;
 #endif
   inline DigitPool *getDigitPool() const {
     return &m_digitPool;
@@ -1024,21 +1024,21 @@ public:
   // Return uniform distributed random BigReal between 0 (incl) and 1 (excl) with at most maxDigits decimal digits.
   // If maxDigits == 0, 0 will be returned
   // Digits generated with rnd
-  // If digitPool == NULL, use DEFAULT_DIGITPOOL
-  friend BigReal randBigReal(size_t maxDigits, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator, DigitPool *digitPool = NULL);
+  // If digitPool == nullptr, use DEFAULT_DIGITPOOL
+  friend BigReal randBigReal(size_t maxDigits, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator, DigitPool *digitPool = nullptr);
 
   // Return uniform distributed random BigReal in [from;to] with at most maxDigits decimal digits.
   // If from > 0, an invalid argument exception is thrown
   // Digits generated with rnd
-  // If digitPool == NULL, use from.getDigitPool()
-  friend BigReal  randBigReal(const BigReal &from, const BigReal &to, size_t maxDigits, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator, DigitPool *digitPool = NULL);
+  // If digitPool == nullptr, use from.getDigitPool()
+  friend BigReal  randBigReal(const BigReal &from, const BigReal &to, size_t maxDigits, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator, DigitPool *digitPool = nullptr);
 
   // Return uniform distributed random BigInt in [0..e(1,maxDigits)-1]
   // If maxDigits == 0, 0 will be returned
   // Digits generated with rnd.
-  // If digitPool == NULL, use DEFAULT_DIGITPOOL
+  // If digitPool == nullptr, use DEFAULT_DIGITPOOL
   // ex:maxDigits = 3:returned value in interval [0..999]
-  friend BigInt   randBigInt(size_t maxDigits, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator, DigitPool *digitPool = NULL);
+  friend BigInt   randBigInt(size_t maxDigits, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator, DigitPool *digitPool = nullptr);
 
   // ------------------------------------------------------------------------------------------
 
@@ -1195,9 +1195,9 @@ inline bool operator< (const BigReal &x, const BigReal &y) {
 
 class FullFormatBigReal : public BigReal {
 public:
-  FullFormatBigReal(const BigReal &n, DigitPool *digitPool = NULL) : BigReal(n, digitPool) {
+  FullFormatBigReal(const BigReal &n, DigitPool *digitPool = nullptr) : BigReal(n, digitPool) {
   }
-  FullFormatBigReal(DigitPool *digitPool = NULL) : BigReal(digitPool) {
+  FullFormatBigReal(DigitPool *digitPool = nullptr) : BigReal(digitPool) {
   }
   FullFormatBigReal &operator=(const BigReal &x) {
     __super::operator=(x);
@@ -1238,60 +1238,60 @@ inline BigReal  dmin(const BigReal &x, const BigReal &y) {
   return (x<=y) ? x : y;
 }
 
-bool isInt(    const BigReal &v, int      *n = NULL);
-bool isUint(   const BigReal &v, UINT     *n = NULL);
-bool isInt64(  const BigReal &v, INT64    *n = NULL);
-bool isUint64( const BigReal &v, UINT64   *n = NULL);
-bool isInt128( const BigReal &v, _int128  *n = NULL);
-bool isUint128(const BigReal &v, _uint128 *n = NULL);
+bool isInt(    const BigReal &v, int      *n = nullptr);
+bool isUint(   const BigReal &v, UINT     *n = nullptr);
+bool isInt64(  const BigReal &v, INT64    *n = nullptr);
+bool isUint64( const BigReal &v, UINT64   *n = nullptr);
+bool isInt128( const BigReal &v, _int128  *n = nullptr);
+bool isUint128(const BigReal &v, _uint128 *n = nullptr);
 
-BigReal sqrt(      const BigReal &x,                   const BigReal &f, DigitPool *digitPool = NULL);
-BigReal exp(       const BigReal &x,                   const BigReal &f, DigitPool *digitPool = NULL);
-BigReal ln(        const BigReal &x,                   const BigReal &f, DigitPool *digitPool = NULL);
-BigReal ln1(       const BigReal &x,                   const BigReal &f, DigitPool *digitPool = NULL);
+BigReal sqrt(      const BigReal &x,                   const BigReal &f, DigitPool *digitPool = nullptr);
+BigReal exp(       const BigReal &x,                   const BigReal &f, DigitPool *digitPool = nullptr);
+BigReal ln(        const BigReal &x,                   const BigReal &f, DigitPool *digitPool = nullptr);
+BigReal ln1(       const BigReal &x,                   const BigReal &f, DigitPool *digitPool = nullptr);
 // log(x) base 10
-BigReal log10(     const BigReal &x,                   const BigReal &f, DigitPool *digitPool = NULL);
+BigReal log10(     const BigReal &x,                   const BigReal &f, DigitPool *digitPool = nullptr);
 // Logarithm(x) for the specified base. (ln(x)/ln(base))
-BigReal log(    const BigReal &base, const BigReal &x, const BigReal &f, DigitPool *digitPool = NULL);
+BigReal log(    const BigReal &base, const BigReal &x, const BigReal &f, DigitPool *digitPool = nullptr);
 // x^y
-BigReal pow(       const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *digitPool = NULL);
-BigReal sin(       const BigReal &x,                   const BigReal &f, DigitPool *digitPool = NULL);
-BigReal cos(       const BigReal &x,                   const BigReal &f, DigitPool *digitPool = NULL);
-BigReal tan(       const BigReal &x,                   const BigReal &f, DigitPool *digitPool = NULL);
-BigReal cot(       const BigReal &x,                   const BigReal &f, DigitPool *digitPool = NULL);
-BigReal asin(      const BigReal &x,                   const BigReal &f, DigitPool *digitPool = NULL);
-BigReal acos(      const BigReal &x,                   const BigReal &f, DigitPool *digitPool = NULL);
-BigReal atan(      const BigReal &x,                   const BigReal &f, DigitPool *digitPool = NULL);
-BigReal acot(      const BigReal &x,                   const BigReal &f, DigitPool *digitPool = NULL);
+BigReal pow(       const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *digitPool = nullptr);
+BigReal sin(       const BigReal &x,                   const BigReal &f, DigitPool *digitPool = nullptr);
+BigReal cos(       const BigReal &x,                   const BigReal &f, DigitPool *digitPool = nullptr);
+BigReal tan(       const BigReal &x,                   const BigReal &f, DigitPool *digitPool = nullptr);
+BigReal cot(       const BigReal &x,                   const BigReal &f, DigitPool *digitPool = nullptr);
+BigReal asin(      const BigReal &x,                   const BigReal &f, DigitPool *digitPool = nullptr);
+BigReal acos(      const BigReal &x,                   const BigReal &f, DigitPool *digitPool = nullptr);
+BigReal atan(      const BigReal &x,                   const BigReal &f, DigitPool *digitPool = nullptr);
+BigReal acot(      const BigReal &x,                   const BigReal &f, DigitPool *digitPool = nullptr);
 // result.digitPool = f.digitPool or digitpool if specified
-BigReal pi(                                           const BigReal &f, DigitPool *digitPool = NULL);
+BigReal pi(                                           const BigReal &f, DigitPool *digitPool = nullptr);
 
 // Calculates with relative precision ie. with the specified number of decimal digits
-BigReal rRound(    const BigReal &x,                  size_t digits,    DigitPool *digitPool = NULL);
-BigReal rSum(      const BigReal &x,const BigReal &y, size_t digits,    DigitPool *digitPool = NULL);
-BigReal rDif(      const BigReal &x,const BigReal &y, size_t digits,    DigitPool *digitPool = NULL);
-BigReal rProd(     const BigReal &x,const BigReal &y, size_t digits,    DigitPool *digitPool = NULL);
-BigReal rQuot(     const BigReal &x,const BigReal &y, size_t digits,    DigitPool *digitPool = NULL);
-BigReal rSqrt(     const BigReal &x,                  size_t digits,    DigitPool *digitPool = NULL);
-BigReal rExp(      const BigReal &x,                  size_t digits,    DigitPool *digitPool = NULL);
-BigReal rLn(       const BigReal &x,                  size_t digits,    DigitPool *digitPool = NULL);
-BigReal rLog10(    const BigReal &x,                  size_t digits,    DigitPool *digitPool = NULL);
+BigReal rRound(    const BigReal &x,                  size_t digits,    DigitPool *digitPool = nullptr);
+BigReal rSum(      const BigReal &x,const BigReal &y, size_t digits,    DigitPool *digitPool = nullptr);
+BigReal rDif(      const BigReal &x,const BigReal &y, size_t digits,    DigitPool *digitPool = nullptr);
+BigReal rProd(     const BigReal &x,const BigReal &y, size_t digits,    DigitPool *digitPool = nullptr);
+BigReal rQuot(     const BigReal &x,const BigReal &y, size_t digits,    DigitPool *digitPool = nullptr);
+BigReal rSqrt(     const BigReal &x,                  size_t digits,    DigitPool *digitPool = nullptr);
+BigReal rExp(      const BigReal &x,                  size_t digits,    DigitPool *digitPool = nullptr);
+BigReal rLn(       const BigReal &x,                  size_t digits,    DigitPool *digitPool = nullptr);
+BigReal rLog10(    const BigReal &x,                  size_t digits,    DigitPool *digitPool = nullptr);
 // Logarithm(x) for the specified base. (ln(x)/ln(base))
-BigReal rLog(  const BigReal &base, const BigReal &x, size_t digits,    DigitPool *digitPool = NULL);
+BigReal rLog(  const BigReal &base, const BigReal &x, size_t digits,    DigitPool *digitPool = nullptr);
 // x^y
-BigReal rPow(      const BigReal &x,const BigReal &y, size_t digits,    DigitPool *digitPool = NULL);
-BigReal rRoot(     const BigReal &x,const BigReal &y, size_t digits,    DigitPool *digitPool = NULL);
-BigReal rSin(      const BigReal &x,                  size_t digits,    DigitPool *digitPool = NULL);
-BigReal rCos(      const BigReal &x,                  size_t digits,    DigitPool *digitPool = NULL);
-BigReal rTan(      const BigReal &x,                  size_t digits,    DigitPool *digitPool = NULL);
-BigReal rCot(      const BigReal &x,                  size_t digits,    DigitPool *digitPool = NULL);
-BigReal rAsin(     const BigReal &x,                  size_t digits,    DigitPool *digitPool = NULL);
-BigReal rAcos(     const BigReal &x,                  size_t digits,    DigitPool *digitPool = NULL);
-BigReal rAtan(     const BigReal &x,                  size_t digits,    DigitPool *digitPool = NULL);
-BigReal rAcot(     const BigReal &x,                  size_t digits,    DigitPool *digitPool = NULL);
-BigReal rPi(                                          size_t digits,    DigitPool *digitPool = NULL);
-BigReal rGamma(    const BigReal &x,                  size_t digits,    DigitPool *digitPool = NULL);
-BigReal rFactorial(const BigReal &x,                  size_t digits,    DigitPool *digitPool = NULL);
+BigReal rPow(      const BigReal &x,const BigReal &y, size_t digits,    DigitPool *digitPool = nullptr);
+BigReal rRoot(     const BigReal &x,const BigReal &y, size_t digits,    DigitPool *digitPool = nullptr);
+BigReal rSin(      const BigReal &x,                  size_t digits,    DigitPool *digitPool = nullptr);
+BigReal rCos(      const BigReal &x,                  size_t digits,    DigitPool *digitPool = nullptr);
+BigReal rTan(      const BigReal &x,                  size_t digits,    DigitPool *digitPool = nullptr);
+BigReal rCot(      const BigReal &x,                  size_t digits,    DigitPool *digitPool = nullptr);
+BigReal rAsin(     const BigReal &x,                  size_t digits,    DigitPool *digitPool = nullptr);
+BigReal rAcos(     const BigReal &x,                  size_t digits,    DigitPool *digitPool = nullptr);
+BigReal rAtan(     const BigReal &x,                  size_t digits,    DigitPool *digitPool = nullptr);
+BigReal rAcot(     const BigReal &x,                  size_t digits,    DigitPool *digitPool = nullptr);
+BigReal rPi(                                          size_t digits,    DigitPool *digitPool = nullptr);
+BigReal rGamma(    const BigReal &x,                  size_t digits,    DigitPool *digitPool = nullptr);
+BigReal rFactorial(const BigReal &x,                  size_t digits,    DigitPool *digitPool = nullptr);
 
 // Old version sign(x) * (|x| - floor(|x|))
 BigReal oldFraction(const BigReal &x);

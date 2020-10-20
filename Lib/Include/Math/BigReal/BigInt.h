@@ -10,33 +10,33 @@ private:
   BigInt &operator=(const Double80 &x); // not implemented
 
 public:
-  inline BigInt(DigitPool *digitPool = NULL) : BigReal(digitPool) {
+  inline BigInt(DigitPool *digitPool = nullptr) : BigReal(digitPool) {
   }
 
   // Declared explicit to avoid accidently use of operator/ on BigReals
-  explicit BigInt(const BigReal &x, DigitPool *digitPool = NULL);
+  explicit BigInt(const BigReal &x, DigitPool *digitPool = nullptr);
 
-  BigInt(       const BigInt          &x, DigitPool *digitPool = NULL);
-  inline BigInt(int                    x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
+  BigInt(       const BigInt          &x, DigitPool *digitPool = nullptr);
+  inline BigInt(int                    x, DigitPool *digitPool = nullptr) : BigReal(x, digitPool) {
   }
-  inline BigInt(UINT                   x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
+  inline BigInt(UINT                   x, DigitPool *digitPool = nullptr) : BigReal(x, digitPool) {
   }
-  inline BigInt(long                   x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
+  inline BigInt(long                   x, DigitPool *digitPool = nullptr) : BigReal(x, digitPool) {
   }
-  inline BigInt(ULONG                  x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
+  inline BigInt(ULONG                  x, DigitPool *digitPool = nullptr) : BigReal(x, digitPool) {
   }
-  inline BigInt(INT64                  x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
+  inline BigInt(INT64                  x, DigitPool *digitPool = nullptr) : BigReal(x, digitPool) {
   }
-  inline BigInt(UINT64                 x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
+  inline BigInt(UINT64                 x, DigitPool *digitPool = nullptr) : BigReal(x, digitPool) {
   }
-  inline BigInt(const _int128         &x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
+  inline BigInt(const _int128         &x, DigitPool *digitPool = nullptr) : BigReal(x, digitPool) {
   }
-  inline BigInt(const _uint128        &x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
+  inline BigInt(const _uint128        &x, DigitPool *digitPool = nullptr) : BigReal(x, digitPool) {
   }
 
-  explicit BigInt(const String  &s, DigitPool *digitPool = NULL);
-  explicit BigInt(const char    *s, DigitPool *digitPool = NULL);
-  explicit BigInt(const wchar_t *s, DigitPool *digitPool = NULL);
+  explicit BigInt(const String  &s, DigitPool *digitPool = nullptr);
+  explicit BigInt(const char    *s, DigitPool *digitPool = nullptr);
+  explicit BigInt(const wchar_t *s, DigitPool *digitPool = nullptr);
 
   inline BigInt &operator=(const BigInt &x) {
     __super::operator=(x);
@@ -84,13 +84,13 @@ public:
     quotRemainder128((BigReal&)x, (BigReal&)y, quotient, remainder);
 #endif
   }
-  friend inline BigInt sum(const BigInt &x, const BigInt &y, DigitPool *digitPool = NULL) {
+  friend inline BigInt sum(const BigInt &x, const BigInt &y, DigitPool *digitPool = nullptr) {
     return (BigInt&)sum((const BigReal&)x, (const BigReal&)y, (const BigReal&)BigReal::_0, digitPool);
   }
-  friend inline BigInt dif(const BigInt &x, const BigInt &y, DigitPool *digitPool = NULL) {
+  friend inline BigInt dif(const BigInt &x, const BigInt &y, DigitPool *digitPool = nullptr) {
     return (BigInt&)dif((const BigReal&)x, (const BigReal&)y, (const BigReal&)BigReal::_0, digitPool);
   }
-  friend inline BigInt prod(const BigInt &x, const BigInt &y, DigitPool *digitPool = NULL) {
+  friend inline BigInt prod(const BigInt &x, const BigInt &y, DigitPool *digitPool = nullptr) {
     return (BigInt&)prod((const BigReal&)x, (const BigReal&)y, (const BigReal&)BigReal::_0, digitPool);
   }
   inline BigInt operator+(const BigInt &y) const {
@@ -159,7 +159,7 @@ public:
 
   // Checks that this is a consistent BigReal with all the various invariants satisfied.
   // Throws an excpeption if not with a descripion of what is wrong. For debugging
-  virtual void assertIsValid(const TCHAR *file, int line, const TCHAR *name) const;
+  void assertIsValid(const TCHAR *file, int line, const TCHAR *name) const override;
 };
 
 inline int sign(const BigInt &n) {
@@ -167,15 +167,15 @@ inline int sign(const BigInt &n) {
 }
 
 // pow(a,r) mod n
-BigInt  powmod(const BigInt &a, const BigInt &r, const BigInt  &n, bool verbose = false, DigitPool *digitPool = NULL);
+BigInt  powmod(const BigInt &a, const BigInt &r, const BigInt  &n, bool verbose = false, DigitPool *digitPool = nullptr);
 
 // Return uniform distributed random BigInt in [0..n-1], digits generated with rnd.
-// If digitPool == NULL, use n.getDigitPool()
-BigInt randBigInt(const BigInt &n, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator, DigitPool *digitPool = NULL);
+// If digitPool == nullptr, use n.getDigitPool()
+BigInt randBigInt(const BigInt &n, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator, DigitPool *digitPool = nullptr);
 
 // Return uniform distributed random BigInt in [from;to], digits generated with rnd.
-// If digitPool == NULL, use from.getDigitPool()
-BigInt randBigInt(const BigInt &from, const BigInt &to, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator, DigitPool *digitPool = NULL);
+// If digitPool == nullptr, use from.getDigitPool()
+BigInt randBigInt(const BigInt &from, const BigInt &to, RandomGenerator &rnd = *RandomGenerator::s_stdGenerator, DigitPool *digitPool = nullptr);
 
 class ConstBigInt : public BigInt {
 public:

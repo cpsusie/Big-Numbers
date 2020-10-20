@@ -79,9 +79,9 @@ BigRealResourcePool::BigRealResourcePool() : Singleton(__TFUNCTION__) {
   for(UINT i = 0; i < a.size(); i++) m_lockedDigitPoolPool->releaseResource((DigitPoolWithLock*)a[i]);
   a.clear(-1);
 
-  m_defaultDigitPool = NULL;
-  m_constDigitPool   = NULL;
-  m_pow2Cache        = NULL;
+  m_defaultDigitPool = nullptr;
+  m_constDigitPool   = nullptr;
+  m_pow2Cache        = nullptr;
 }
 
 BigRealResourcePool::~BigRealResourcePool() {
@@ -193,7 +193,7 @@ void BigRealResourcePool::releaseDigitPoolArray(DigitPoolArray &a) {  // static
 DigitPool *BigRealResourcePool::getDefaultDigitPool() { // static
   BigRealResourcePool &instance = getInstance().wait();
   try {
-    if(instance.m_defaultDigitPool == NULL) {
+    if(instance.m_defaultDigitPool == nullptr) {
       instance.m_defaultDigitPool = instance.fetchDPool(false, 0); // this will be changed to BR_MUTABLE when all class constants have been defined and initialized
       instance.m_defaultDigitPool->setName(_T("DEFAULT"));
     }
@@ -208,7 +208,7 @@ DigitPool *BigRealResourcePool::getDefaultDigitPool() { // static
 DigitPool *BigRealResourcePool::getConstDigitPool() {  // static
   BigRealResourcePool &instance = getInstance().wait();
   try {
-    if(instance.m_constDigitPool == NULL) {
+    if(instance.m_constDigitPool == nullptr) {
       instance.m_constDigitPool = instance.fetchDPool(true, 0);
       instance.m_constDigitPool->setName(_T("CONST"));
     }
@@ -223,7 +223,7 @@ DigitPool *BigRealResourcePool::getConstDigitPool() {  // static
 Pow2Cache *BigRealResourcePool::getPow2Cache() { // static
   BigRealResourcePool &instance = getInstance().wait();
   try {
-    if(instance.m_pow2Cache == NULL) {
+    if(instance.m_pow2Cache == nullptr) {
       instance.allocatePow2Cache();
     }
     instance.notify();

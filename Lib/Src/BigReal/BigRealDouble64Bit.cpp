@@ -25,7 +25,7 @@ void BigReal::init(double x) {
   }
 }
 
-bool isDouble(const BigReal &v, double *dbl /*=NULL*/) {
+bool isDouble(const BigReal &v, double *dbl /*=nullptr*/) {
   if(!isnormal(v)) {
     if(dbl) {
       *dbl = (double)v;

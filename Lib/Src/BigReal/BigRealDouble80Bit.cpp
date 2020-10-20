@@ -22,7 +22,7 @@ void BigReal::init(const Double80 &x) {
   }
 }
 
-bool isDouble80(const BigReal &v, Double80 *d80 /*=NULL*/) {
+bool isDouble80(const BigReal &v, Double80 *d80 /*=nullptr*/) {
   if(!isnormal(v)) {
     if(d80) {
       *d80 = (Double80)v;
@@ -86,7 +86,7 @@ Double80 BigReal::getDouble80NoLimitCheck() const {
   }
   xi.setInitDone();
   const Digit *p = xi.m_first;
-  if(p == NULL) {
+  if(p == nullptr) {
     return Double80::_0;
   }
   Double80 result     = (INT64)p->n;

@@ -4,9 +4,9 @@ BigReal fmod(const BigReal &x, const BigReal &y, DigitPool *digitPool) {
   _SELECTDIGITPOOL(x);
   BigReal remainder(pool);
 #if defined(IS32BIT)
-  quotRemainder(x, y, NULL, &remainder);
+  quotRemainder(x, y, nullptr, &remainder);
 #else
-  quotRemainder128(x, y, NULL, &remainder);
+  quotRemainder128(x, y, nullptr, &remainder);
 #endif
   return remainder;
 }
@@ -23,7 +23,7 @@ BigReal quot(const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *di
   VALIDATETOLERANCE(f)
   _SELECTDIGITPOOL(x);
   BigReal result(pool);
-  if(!BigReal::checkIsNormalQuotient(x, y, &result, NULL)) {
+  if(!BigReal::checkIsNormalQuotient(x, y, &result, nullptr)) {
     return result;
   }
 

@@ -8,8 +8,8 @@ DigitPool::DigitPool(int id, const String &name, size_t intialDigitCount)
 , m_origName(name)
 , m_name(name)
 , m_allocatedPageCount(0)
-, m_firstPage(NULL)
-, m_freeDigits(NULL)
+, m_firstPage(nullptr)
+, m_freeDigits(nullptr)
 , m_initFlags(BR_MUTABLE)          // so that constants allocated
 , m_refCount(0)
 #if COUNT_DIGITPOOLFETCHDIGIT == 2
@@ -52,7 +52,7 @@ DigitPool::~DigitPool() {
   assert(m_refCount == 0);
 
   int count = 0;
-  for(DigitPage *p = m_firstPage, *q = NULL; p; p = q) {
+  for(DigitPage *p = m_firstPage, *q = nullptr; p; p = q) {
     q = p->m_next;
     SAFEDELETE(p);
     count++;
@@ -84,7 +84,7 @@ DigitPool::~DigitPool() {
 
 Digit *DigitPool::fetchDigit() {
   ENTER
-  if(m_freeDigits == NULL) allocatePage();
+  if(m_freeDigits == nullptr) allocatePage();
   Digit *p     = m_freeDigits;
   m_freeDigits = p->next;
 #if COUNT_DIGITPOOLFETCHDIGIT == 2
@@ -98,11 +98,11 @@ Digit *DigitPool::fetchDigit() {
 Digit *DigitPool::fetchDigitList(size_t count) {
   ENTER
   SAVECOUNT
-  if(m_freeDigits == NULL) allocatePage();
+  if(m_freeDigits == nullptr) allocatePage();
   Digit *head = m_freeDigits, *last = head;
   for(Digit *q = head->next; --count; q = (last=q)->next) {
-    if(q == NULL) {
-      m_freeDigits = NULL;
+    if(q == nullptr) {
+      m_freeDigits = nullptr;
       allocatePage();
       (q = last->next = m_freeDigits)->prev = last;
     }
@@ -120,12 +120,12 @@ Digit *DigitPool::fetchDigitList(size_t count) {
 Digit *DigitPool::fetchDigitList(size_t count, BRDigitType n) {
   ENTER
   SAVECOUNT
-  if(m_freeDigits == NULL) allocatePage();
+  if(m_freeDigits == nullptr) allocatePage();
   Digit *head = m_freeDigits, *last = head;
   head->n = n;
   for(Digit *q = head->next; --count; q = (last = q)->next) {
-    if(q == NULL) {
-      m_freeDigits = NULL;
+    if(q == nullptr) {
+      m_freeDigits = nullptr;
       allocatePage();
       (q = last->next = m_freeDigits)->prev = last;
     }
@@ -180,7 +180,7 @@ size_t DigitPool::getUsedDigitCount() const {
 #if defined(CHECK_DIGITPOOLINVARIANT)
 void DigitPool::checkInvariant(const TCHAR *method, bool enter) const {
   size_t count = 0;
-  for(const Digit *p = m_freeDigits, *last = p?p->prev:NULL; p; last = p, p = p->next, count++) {
+  for(const Digit *p = m_freeDigits, *last = p?p->prev:nullptr; p; last = p, p = p->next, count++) {
     if(p->prev != last) {
       throwException(_T("%s %s:Invariant broken for digitPool %s"), enter?_T("enter"):_T("leave"), method, getName().cstr());
     }
@@ -222,7 +222,7 @@ public:
 };
 
 FastSemaphore BigReal1::s_lock;
-DigitPool    *BigReal1::s_currentDigitPool = NULL;
+DigitPool    *BigReal1::s_currentDigitPool = nullptr;
 
 BigReal *DigitPool::allocVector(size_t count) {
   BigReal1::s_lock.wait();

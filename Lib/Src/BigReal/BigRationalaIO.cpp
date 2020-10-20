@@ -7,11 +7,3 @@ istream  &operator>>(istream  &in, BigRational &x) {
 ostream  &operator<<(ostream  &out, const BigRational &x) {
   return putBigRational(out, x);
 }
-
-wistream &operator>>(wistream &in, BigRational &x) {
-  return getBigRational<wistream, wchar_t>(in, x);
-}
-wostream &operator<<(wostream &out, const BigRational &x) {
-  return putBigRational(out, x);
-}
-

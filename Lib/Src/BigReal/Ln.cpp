@@ -42,7 +42,7 @@ public:
     SAFEDELETE(m_ln10Error);
     SAFEDELETE(m_ln10Value);
     BigRealResourcePool::releaseDigitPool(m_digitPool);
-    m_digitPool = NULL;
+    m_digitPool = nullptr;
   }
 };
 

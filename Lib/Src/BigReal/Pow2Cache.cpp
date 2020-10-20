@@ -140,14 +140,14 @@ const BigReal &Pow2Cache::calculatePow2(int n, size_t digits) {
 
   ADDCACHEREQ();
   const BigReal **result = get(key);
-  if(result != NULL) {
+  if(result != nullptr) {
     ADDCACHEHIT();
     return **result;
   } else {
     if(digits != 0) {
       result = get(Pow2ArgumentKey(n,0));
     }
-    if(result != NULL) {
+    if(result != nullptr) {
       put(key, new BigReal(::cut(**result, digits,m_workPool),m_digitPool));
     } else if(n == 0) {
       put(key, new BigReal(m_digitPool->_1()));              // 2^0 == 1
@@ -182,7 +182,7 @@ const BigReal &BigReal::pow2(int n, size_t digits) { // static
   Pow2Cache &cache = Pow2Cache::getInstance();
 
   const BigReal **result = cache.get(key);
-  if(result != NULL) {
+  if(result != nullptr) {
     ADDCACHEREQ();
     ADDCACHEHIT();
   } else {

@@ -14,6 +14,9 @@
     <Filter Include="Source Files\Asm Files">
       <UniqueIdentifier>{34835de5-9711-4ef8-9a05-3227397f4c6a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Private Header Files">
+      <UniqueIdentifier>{8bffd77a-e7fd-48a2-84fe-4172fff1c40d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BigReal.cpp">
@@ -47,9 +50,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="BigRealFunctions.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="BigRealIO.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="BigRealLUMatrix.cpp">
@@ -185,12 +185,6 @@
     <ClCompile Include="BigRealTransformation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="BigRationalIO.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="BigIntIO.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="FullFormatIO.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -245,19 +239,28 @@
     <ClCompile Include="Pow2CacheDump.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="BigRationalaIO.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BigRationalwIO.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BigIntaIO.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BigIntwIO.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BigRealaIO.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BigRealwIO.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="BigRealInternal.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BigRealStream.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Pow2Cache.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\Math\BigReal\BigInt.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -288,8 +291,17 @@
     <ClInclude Include="..\..\Include\Math\BigReal\BigRealResourcePool.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="BigRealInternal.h">
+      <Filter>Source Files\Private Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BigRealStream.h">
+      <Filter>Source Files\Private Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Pow2Cache.h">
+      <Filter>Source Files\Private Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="ResourcePoolInternal.h">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Private Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

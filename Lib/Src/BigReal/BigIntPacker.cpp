@@ -12,7 +12,7 @@ Packer &operator>>(Packer &p, BigInt &v) {
   if(!tmp._isnormal() || tmp._isinteger()) {
     v = BigInt(tmp);
   } else {
-    throwException(_T("%s:Value is not a BigInt"));
+    throwException(_T("%s:Value is not a BigInt"), __TFUNCTION__);
   }
   return p;
 }

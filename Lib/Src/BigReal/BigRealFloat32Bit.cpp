@@ -23,7 +23,7 @@ void BigReal::init(float x) {
   }
 }
 
-bool isFloat(const BigReal &v, float *flt /*=NULL*/) {
+bool isFloat(const BigReal &v, float *flt /*=nullptr*/) {
   if(!isnormal(v)) {
     if(flt) {
       *flt = (float)v;

@@ -34,13 +34,13 @@ BigReal &BigReal::shortProductNoZeroCheck(const BigReal &x, const BigReal &y, UI
       mov         ecx, DWORD PTR [yk]     // yp = yk
       xor         esi, esi                //
       xor         edi, edi                // esi:edi accumulates sum. Init to 0
-MultiplyLoop:                             // do { // we know that the first time both xp and yp are not NULL.
+MultiplyLoop:                             // do { // we know that the first time both xp and yp are not nullptr.
       mov         eax, DWORD PTR [ebx]    //   eax        = xp->n
       mul         DWORD PTR [ecx]         //   [edx:eax] *= yp->n
       add         edi, eax                //
       adc         esi, edx                //
       mov         ecx, DWORD PTR [ecx+8]  //   yp = yp->prev
-      jecxz       AddSubProduct           //   if(yp == NULL) exit loop to AddSubProduct
+      jecxz       AddSubProduct           //   if(yp == nullptr) exit loop to AddSubProduct
       mov         ebx, DWORD ptr [ebx+4]  //   xp = xp->next
       or          ebx, ebx                //
       jne         MultiplyLoop            // } while(xp);
@@ -137,14 +137,14 @@ NextDigit:
     deleteDigits(cd->next, m_last);
   }
   m_low -= digitsAdded - 1;
-  (m_last = cd)->next = NULL;
+  (m_last = cd)->next = nullptr;
 
   if(m_first->n == 0) {
     cd = m_first;
-    (m_first = m_first->next)->prev = NULL;
+    (m_first = m_first->next)->prev = nullptr;
     deleteDigits(cd,cd);
   } else {
-    m_first->prev = NULL;
+    m_first->prev = nullptr;
     m_expo++;
   }
   return setSignByProductRule(x, y);

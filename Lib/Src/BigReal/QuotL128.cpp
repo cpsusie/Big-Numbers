@@ -86,7 +86,7 @@ BigReal &BigReal::approxQuot128Abs(const BigReal &x, const _uint128 &y, BRExpoTy
 _uint128 &BigReal::getFirst128(_uint128 &dst, const UINT k, BRExpoType *scale) const {
   assert(k <= MAXDIGITS_INT128);
   const Digit *p = m_first;
-  if(p == NULL) {
+  if(p == nullptr) {
     if(scale) *scale = 0;
     dst = 0;
     return dst;
@@ -113,7 +113,7 @@ _uint128 &BigReal::getFirst128(_uint128 &dst, const UINT k, BRExpoType *scale) c
         }
       }
       ADJUSTSCALEMOD10(dst);
-    } else { // scale == NULL
+    } else { // scale == nullptr
       for(p = p->next; (UINT)digits < k; digits += BIGREAL_LOG10BASE) {
         const BRDigitType p10 = pow10(min(BIGREAL_LOG10BASE,k-digits));
         dst *= p10;
@@ -199,11 +199,11 @@ void quotRemainder128(const BigReal &x, const BigReal &y, BigInt *quotient, BigR
       }
     } else {
       q.fractionate(quotient, &t);
-      if(remainder == NULL) { // quotient != NULL
+      if(remainder == nullptr) { // quotient != nullptr
         if(BigReal::compareAbs(z, t * y) > 0) {
           --(*quotient);
         }
-      } else { // remainder != NULL. quotient might be NULL
+      } else { // remainder != nullptr. quotient might be nullptr
         *remainder = z + (t * y).copySign(t);
         if(remainder->isNegative()) {
           if(yNeg) *remainder -= y; else *remainder += y;
@@ -223,7 +223,7 @@ void quotRemainder128(const BigReal &x, const BigReal &y, BigInt *quotient, BigR
 BigReal modulusOperator128(const BigReal &x, const BigReal &y) {
   DigitPool *pool = x.getDigitPool();
   BigReal remainder(pool);
-  quotRemainder128(x,y, NULL, &remainder);
+  quotRemainder128(x,y, nullptr, &remainder);
   return remainder;
 }
 
