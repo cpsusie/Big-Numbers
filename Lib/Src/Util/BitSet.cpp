@@ -414,7 +414,7 @@ static TCHAR *sprintbin(TCHAR *s, BitSet::Atom p) {
 String BitSet::toBitString() const {
   const Atom *p = m_p;
   String result;
-  TCHAR tmp[_BS_BITSINATOM + 1], *delim = NULL;
+  TCHAR tmp[_BS_BITSINATOM + 1], *delim = nullptr;
   for(const Atom *p = m_p, *endp = p + _BS_ATOMCOUNT(m_capacity); p < endp;) {
     if(delim) result += delim; else delim = _T(":");
     result += sprintbin(tmp, *(p++));

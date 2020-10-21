@@ -11,12 +11,12 @@ void PieceTypeWithIndex::init(PieceType pieceType, int index) {
 
 class PieceTypeWithIndexComparator : public Comparator<PieceTypeWithIndex> {
 public:
-  int compare(const PieceTypeWithIndex &t1, const PieceTypeWithIndex &t2) {
+  int compare(const PieceTypeWithIndex &t1, const PieceTypeWithIndex &t2) override {
     const int c = (int)t1.getPieceType() - t2.getPieceType();
     return c ? c : (t1.getIndex() - t2.getIndex());
   }
 
-  AbstractComparator *clone() const {
+  AbstractComparator *clone() const override {
     return new PieceTypeWithIndexComparator();
   }
 };
@@ -1844,14 +1844,14 @@ private:
 public:
   UnusedSequenceComparator(UnusedSequenceCompareField field) : m_compareField(field) {
   }
-  int compare(const UnusedSequence &e1, const UnusedSequence &e2) {
+  int compare(const UnusedSequence &e1, const UnusedSequence &e2) override {
     switch(m_compareField) {
     case COMPARE_BY_LENGTH: return sign((intptr_t)e2.getLength() - (intptr_t)e1.getLength());
     case COMPARE_BY_INDEX : return sign((INT64)e1.m_from - (INT64)e2.m_from);
     default               : return sign((INT64)e1.m_from - (INT64)e2.m_from);
     }
   }
-  AbstractComparator *clone() const {
+  AbstractComparator *clone() const override {
     return new UnusedSequenceComparator(m_compareField);
   }
 };

@@ -10,10 +10,10 @@ private:
 public:
   PointYComparator(bool maximum) : m_maximum(maximum) {
   }
-  AbstractComparator *clone() const {
+  AbstractComparator *clone() const override {
     return new PointYComparator(*this);
   }
-  int compare(const RealPoint2D &p1, const RealPoint2D &p2) {
+  int compare(const RealPoint2D &p1, const RealPoint2D &p2) override {
     return m_maximum ? sign(p2.y - p1.y) : sign(p1.y - p2.y);
   }
 };

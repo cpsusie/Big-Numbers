@@ -21,7 +21,7 @@ END_MESSAGE_MAP()
 void CProgressWithPctCtrl::substituteControl(CWnd *parent, int id) {
   DEFINEMETHODNAME;
   CProgressCtrl *ctrl = (CProgressCtrl*)parent->GetDlgItem(id);
-  if(ctrl == NULL) {
+  if(ctrl == nullptr) {
     showError(_T("%s:Control %d not found"), method, id);
     return;
   }

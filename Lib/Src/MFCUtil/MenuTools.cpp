@@ -37,15 +37,15 @@ static MENUITEMINFO getMenuItemInfo(HMENU menu, UINT pos, int mask) {
   return info;
 }
 
-static HMENU findMenuContainingId(const CWnd *wnd, UINT id, int *index=NULL) {
+static HMENU findMenuContainingId(const CWnd *wnd, UINT id, int *index=nullptr) {
   CMenu *m = wnd->GetMenu();
-  if(m == NULL) return NULL;
+  if(m == nullptr) return nullptr;
   return findMenuContainingId(*m, id, index);
 }
 
-static HMENU findMenuByString(const CWnd *wnd, const String &s, int *index=NULL) {
+static HMENU findMenuByString(const CWnd *wnd, const String &s, int *index=nullptr) {
   CMenu *m = wnd->GetMenu();
-  if(m == NULL) return NULL;
+  if(m == nullptr) return nullptr;
   return findMenuByString(*m, s, index);
 }
 
@@ -54,7 +54,7 @@ static String setItemText(HMENU menu, UINT index, const String &itemText) {
   itemInfo.cbSize = sizeof(MENUITEMINFO);
   itemInfo.fMask = MIIM_TYPE;
   itemInfo.fType = MFT_STRING;
-  itemInfo.dwTypeData = NULL;
+  itemInfo.dwTypeData = nullptr;
   GetMenuItemInfo(menu, index, TRUE, &itemInfo);
   const int bufferSize = itemInfo.cch+1;
   TCHAR *buffer = new TCHAR[bufferSize]; TRACE_NEW(buffer);
@@ -77,13 +77,13 @@ int getMenuItemType(HMENU menu, UINT pos) {
 }
 
 HMENU findMenuByString(HMENU menu, const String &s, int *index) {
-  if(menu == NULL) return NULL;
-  for(Tokenizer tok(s,_T("/")); menu != NULL && tok.hasNext();) {
+  if(menu == nullptr) return nullptr;
+  for(Tokenizer tok(s,_T("/")); menu != nullptr && tok.hasNext();) {
     String str = tok.next();
     int tmpIndex = findMenuItemIndexByString(menu, str);
     if(tmpIndex < 0) {
       if((_stscanf(str.cstr(), _T("%d"), &tmpIndex) != 1) || (tmpIndex < 0)) {
-        return NULL;
+        return nullptr;
       }
     }
 
@@ -96,15 +96,15 @@ HMENU findMenuByString(HMENU menu, const String &s, int *index) {
       return menu;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 HMENU findMenuContainingId(HMENU menu, UINT id, int *index) {
-  if(menu == NULL) return NULL;
+  if(menu == nullptr) return nullptr;
   const int count = GetMenuItemCount(menu);
   for(int i = 0; i < count; i++) {
     MENUITEMINFO itemInfo = getMenuItemInfo(menu, i, MIIM_SUBMENU);
-    if(itemInfo.hSubMenu != NULL) {
+    if(itemInfo.hSubMenu != nullptr) {
       HMENU sm = findMenuContainingId(itemInfo.hSubMenu /*GetSubMenu(menu, i)*/, id, index);
       if(sm) {
         return sm;
@@ -116,7 +116,7 @@ HMENU findMenuContainingId(HMENU menu, UINT id, int *index) {
       return menu;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 void enableMenuItem(HMENU menu, UINT id, bool enabled) {
@@ -128,11 +128,11 @@ void checkMenuItem(HMENU menu, UINT  id, bool checked) {
 }
 
 bool enableSubMenuContainingId(HMENU menu, UINT id, bool enabled) {
-  if(menu == NULL) return false;
+  if(menu == nullptr) return false;
   const int count = GetMenuItemCount(menu);
   for(int i = 0; i < count; i++) {
     const MENUITEMINFO itemInfo = getMenuItemInfo(menu, i, MIIM_SUBMENU);
-    if(itemInfo.hSubMenu != NULL) {
+    if(itemInfo.hSubMenu != nullptr) {
       if(menuContainsId(GetSubMenu(menu, i), id)) {
         EnableMenuItem(menu, i, MF_BYPOSITION | (enabled ? MF_ENABLED : MF_GRAYED));
         return true;
@@ -146,7 +146,7 @@ bool enableSubMenuContainingId(HMENU menu, UINT id, bool enabled) {
 }
 
 bool isMenuItemChecked(HMENU menu, UINT id) {
-  return (menu == NULL) ? false : (GetMenuState(menu, id, MF_BYCOMMAND) & MF_CHECKED) ? true : false;
+  return (menu == nullptr) ? false : (GetMenuState(menu, id, MF_BYCOMMAND) & MF_CHECKED) ? true : false;
 }
 
 void insertMenuItem(HMENU menu, UINT pos, const String &itemText, UINT commandId) {
@@ -198,11 +198,11 @@ void removeMenuItem(HMENU menu, UINT id) {
 }
 
 bool removeSubMenuContainingId(HMENU menu, UINT id) {
-  if(menu == NULL) return false;
+  if(menu == nullptr) return false;
   const int count = GetMenuItemCount(menu);
   for(int i = 0; i < count; i++) {
     const MENUITEMINFO itemInfo = getMenuItemInfo(menu, i, MIIM_SUBMENU);
-    if(itemInfo.hSubMenu != NULL) {
+    if(itemInfo.hSubMenu != nullptr) {
       if(menuContainsId(GetSubMenu(menu, i), id)) {
         RemoveMenu(menu, i, MF_BYPOSITION);
         return true;
@@ -216,7 +216,7 @@ bool removeSubMenuContainingId(HMENU menu, UINT id) {
 }
 
 bool menuItemExists(HMENU menu,  UINT id) {
-  return findMenuContainingId(menu, id) != NULL;
+  return findMenuContainingId(menu, id) != nullptr;
 }
 
 String getMenuItemText(HMENU menu, int pos) {
@@ -229,7 +229,7 @@ String getMenuItemText(HMENU menu, int pos) {
 String setMenuItemText(HMENU menu, UINT id , const String &itemText) {
   int index;
   menu = findMenuContainingId(menu, id, &index);
-  if(menu == NULL) {
+  if(menu == nullptr) {
     return EMPTYSTRING;
   } else {
     return setItemText(menu, index, itemText);
@@ -242,7 +242,7 @@ HMENU getSubMenu(HMENU menu, const String &s) {
   if(menu) {
     return GetSubMenu(menu, index);
   } else {
-    return NULL;
+    return nullptr;
   }
 }
 
@@ -250,7 +250,7 @@ void removeAllMenuItems(HMENU menu) {
   int n = GetMenuItemCount(menu);
   while(n--)  {
     const MENUITEMINFO info = getMenuItemInfo(menu, n, MIIM_SUBMENU);
-    if(info.hSubMenu != NULL) {
+    if(info.hSubMenu != nullptr) {
       HMENU sm = GetSubMenu(menu, n);
       removeAllMenuItems(sm);
       RemoveMenu(menu, n, MF_BYPOSITION);
@@ -265,33 +265,33 @@ void removeAllMenuItems(HMENU menu) {
 
 void enableMenuItem(const CWnd *wnd, UINT id, bool enabled) {
   CMenu *m = wnd->GetMenu();
-  if(m == NULL) return;
+  if(m == nullptr) return;
   enableMenuItem(*m, id, enabled);
 }
 
 void enableMenuItem(const CWnd *wnd, const String &s, bool enabled) {
   int index;
   HMENU menu = findMenuByString(wnd, s, &index);
-  if(menu != NULL) {
+  if(menu != nullptr) {
     bool done = EnableMenuItem(menu, index, MF_BYPOSITION | (enabled ? MF_ENABLED : MF_GRAYED)) != -1;
   }
 }
 
 void checkMenuItem(const CWnd *wnd, UINT id, bool checked) {
   CMenu *m = wnd->GetMenu();
-  if(m == NULL) return;
+  if(m == nullptr) return;
   checkMenuItem(*m, id, checked);
 }
 
 bool enableSubMenuContainingId(const CWnd *wnd, UINT id, bool enabled) {
   CMenu *m = wnd->GetMenu();
-  if(m == NULL) return false;
+  if(m == nullptr) return false;
   return enableSubMenuContainingId(*m, id, enabled);
 }
 
 bool isMenuItemChecked(const CWnd *wnd, UINT id) {
   CMenu *m = wnd->GetMenu();
-  if(m == NULL) return false;
+  if(m == nullptr) return false;
   return isMenuItemChecked(*m, id);
 }
 
@@ -305,7 +305,7 @@ void insertMenuItem(const CWnd *wnd, UINT afterId, int flags, const String &item
 
 void removeMenuItem(const CWnd *wnd, UINT id) {
   HMENU menu = findMenuContainingId(wnd, id);
-  if(menu != NULL) {
+  if(menu != nullptr) {
     removeMenuItem(menu, id);
   }
 }
@@ -314,32 +314,32 @@ void removeMenuItem(const CWnd *wnd, const String &s) {
   int index;
   bool done = false;
   HMENU menu = findMenuByString(wnd, s, &index);
-  if(menu != NULL) {
+  if(menu != nullptr) {
     done = RemoveMenu(menu, index, MF_BYPOSITION) != 0;
   }
 }
 
 bool removeSubMenuContainingId(const CWnd *wnd,  UINT id) {
   CMenu *m = wnd->GetMenu();
-  if(m == NULL) return false;
+  if(m == nullptr) return false;
   return removeSubMenuContainingId(*m, id);
 }
 
 bool menuItemExists(const CWnd *wnd, UINT id) {
-  return findMenuContainingId(wnd, id) != NULL;
+  return findMenuContainingId(wnd, id) != nullptr;
 }
 
 String getMenuItemText(const CWnd *wnd, UINT id) {
   int index;
   HMENU menu = findMenuContainingId(wnd, id, &index);
-  if(menu == NULL) return EMPTYSTRING;
+  if(menu == nullptr) return EMPTYSTRING;
   return getMenuItemText(menu, index);
 }
 
 String setMenuItemText(const CWnd *wnd, UINT id, const String &itemText) {
   int index;
   HMENU menu = findMenuContainingId(wnd, id, &index);
-  if(menu == NULL) return EMPTYSTRING;
+  if(menu == nullptr) return EMPTYSTRING;
   return setItemText(menu, index, itemText);
 }
 

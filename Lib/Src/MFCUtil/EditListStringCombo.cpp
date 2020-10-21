@@ -82,11 +82,11 @@ String CEditListStringCombo::getListString(int index) const {
 
 void CEditListStringCombo::paintComboBoxArrow(HDC hdc, const CRect &cellRect, bool enabled) { // static
   static CBitmap downArrowBitmap[2];
-  if(downArrowBitmap[0].m_hObject == NULL) {
+  if(downArrowBitmap[0].m_hObject == nullptr) {
     downArrowBitmap[0].LoadOEMBitmap(OBM_DNARROW);
     downArrowBitmap[1].LoadOEMBitmap(OBM_DNARROWI);
   }
-  static HDC srcDC = CreateCompatibleDC(NULL);
+  static HDC srcDC = CreateCompatibleDC(nullptr);
   HGDIOBJ oldGDI = SelectObject(srcDC, downArrowBitmap[enabled?0:1]);
   const CRect r = getArrowRect(cellRect);
 //  const CSize sz       = getComboArrowSize();

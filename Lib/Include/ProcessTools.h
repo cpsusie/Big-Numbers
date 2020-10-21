@@ -8,11 +8,11 @@ HANDLE                  getProcessHandle(     DWORD processID = -1);
 PROCESS_MEMORY_COUNTERS getProcessMemoryUsage(DWORD processID = -1); // processID == -1 gives Usage for current process
 
 void enableTokenPrivilege(LPCTSTR privilege, bool enable);
-String getProcessCommandLine(       HANDLE hProcess = NULL);
-CompactArray<HMODULE> getModules(   HANDLE hProcess = NULL);
+String getProcessCommandLine(       HANDLE hProcess = nullptr);
+CompactArray<HMODULE> getModules(   HANDLE hProcess = nullptr);
 CompactArray<DWORD>   getProcessIds();
-// microseconds. if process == NULL, return time for current Process
-double getProcessTime(              HANDLE hProcess = NULL);
+// microseconds. if process == nullptr, return time for current Process
+double getProcessTime(              HANDLE hProcess = nullptr);
 
 class ResourceCounters {
 public:
@@ -71,5 +71,5 @@ typedef enum {
  ,PRCLASS_REALTIME      = REALTIME_PRIORITY_CLASS
 } PriorityClass;
 
-void          setPriorityClass(PriorityClass prClass, HANDLE hProcess = NULL);
-PriorityClass getPriorityClass(                       HANDLE hProcess = NULL);
+void          setPriorityClass(PriorityClass prClass, HANDLE hProcess = nullptr);
+PriorityClass getPriorityClass(                       HANDLE hProcess = nullptr);

@@ -5,7 +5,7 @@ bool TreeCtrlWalker::visitItem(HTREEITEM p) {
   if(!handleItem(p)) {
     return false;
   }
-  for(HTREEITEM child = m_treeCtrl->GetChildItem(p); child != NULL; child = m_treeCtrl->GetNextSiblingItem(child)) {
+  for(HTREEITEM child = m_treeCtrl->GetChildItem(p); child != nullptr; child = m_treeCtrl->GetNextSiblingItem(child)) {
     if(!visitItem(child)) {
       return false;
     }
@@ -14,7 +14,7 @@ bool TreeCtrlWalker::visitItem(HTREEITEM p) {
 }
 
 bool TreeCtrlWalker::visitAllItems(CTreeCtrl *treeCtrl, HTREEITEM startItem) {
-  if(startItem==NULL) {
+  if(startItem==nullptr) {
     return true;
   }
   m_treeCtrl = treeCtrl;
@@ -24,7 +24,7 @@ bool TreeCtrlWalker::visitAllItems(CTreeCtrl *treeCtrl, HTREEITEM startItem) {
 // pt is assumed to be relative to wnd
 HTREEITEM findTreeItemByPoint(const CWnd *wnd, int id, const CPoint &pt) {
   CTreeCtrl *treeCtrl = (CTreeCtrl*)(wnd->GetDlgItem(id));
-  if(treeCtrl == NULL) return NULL;
+  if(treeCtrl == nullptr) return nullptr;
   CPoint p = pt;
   wnd->ClientToScreen(&p);
   treeCtrl->ScreenToClient(&p);
@@ -39,5 +39,5 @@ HTREEITEM findTreeItemByPoint(const CTreeCtrl *ctrl, const CPoint &pt) {
       return item;
     }
   }
-  return NULL;
+  return nullptr;
 }

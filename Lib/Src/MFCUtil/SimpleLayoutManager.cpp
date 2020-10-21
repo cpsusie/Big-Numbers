@@ -11,9 +11,9 @@ SimpleLayoutManager::~SimpleLayoutManager() {
 void SimpleLayoutManager::addControl(int ctrlId, int flags) {
   DEFINEMETHODNAME;
   CWnd *wnd = getWindow();
-  if(wnd == NULL) return;
+  if(wnd == nullptr) return;
   CWnd *ctrl = wnd->GetDlgItem(ctrlId);
-  if(ctrl == NULL) {
+  if(ctrl == nullptr) {
     showError(_T("%s:Control %d not found in window"), method, ctrlId);
     return;
   }
@@ -116,7 +116,7 @@ void SimpleLayoutManager::OnSize(UINT nType, int cx, int cy) {
 void SimpleLayoutManager::updateChildRect(LayoutAttribute &attr, const CSize &currentWinSize) {
   CWnd *ctrl = getChild(attr.getCtrlId());
 
-  if((ctrl == NULL) /*|| !ctrl->IsWindowVisible()*/) {
+  if((ctrl == nullptr) /*|| !ctrl->IsWindowVisible()*/) {
     return;
   }
   const CSize &winStartSize = getWinStartSize();

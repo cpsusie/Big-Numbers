@@ -38,7 +38,7 @@ private:
 protected:
   void saveEditor(UINT column, CWnd *editor);
   bool hasCachedEditor(UINT column) {
-    return getCachedEditor(column) != NULL;
+    return getCachedEditor(column) != nullptr;
   }
   CWnd *getCachedEditor(UINT column);
   String legalIntervalToString() const;
@@ -131,7 +131,7 @@ private:
   BOOL PreTranslateMessage1(MSG *pMsg);
 
   inline bool hasCurrentEditor() const {
-    return m_currentEditor != NULL;
+    return m_currentEditor != nullptr;
   }
   inline bool isEditorVisible() const {
     return hasCurrentEditor() && (m_currentEditor->IsWindowVisible());

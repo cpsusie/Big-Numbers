@@ -14,7 +14,7 @@ D3LightControl::D3LightControl(D3Scene &scene, int lightIndex)
 {
   m_size       =  1;
   m_materialId = -1;
-  m_effect     = NULL;
+  m_effect     = nullptr;
 }
 
 D3LightControl::~D3LightControl() {
@@ -30,13 +30,13 @@ bool D3LightControl::isVisible() const {
 
 static LPD3DXMESH &optimizeMesh(LPD3DXMESH &mesh) {
   DWORD *rgdwAdjacency = new DWORD[mesh->GetNumFaces() * 3]; TRACE_NEW(rgdwAdjacency);
-  if(rgdwAdjacency == NULL ) {
+  if(rgdwAdjacency == nullptr ) {
     throwException(_T("Out of memory"));
   }
 
   try {
     V(mesh->GenerateAdjacency(1e-6f, rgdwAdjacency));
-    V(mesh->OptimizeInplace(D3DXMESHOPT_VERTEXCACHE, rgdwAdjacency, NULL, NULL, NULL));
+    V(mesh->OptimizeInplace(D3DXMESHOPT_VERTEXCACHE, rgdwAdjacency, nullptr, nullptr, nullptr));
     SAFEDELETEARRAY(rgdwAdjacency);
   } catch(...) {
     SAFEDELETEARRAY(rgdwAdjacency);
@@ -89,7 +89,7 @@ static LPD3DXMESH createLCMesh(AbstractMeshFactory &factory, D3DLIGHTTYPE lightT
 static LPD3DXMESH getMesh(AbstractMeshFactory &factory, D3DLIGHTTYPE lightType) {
   static CompactIntHashMap<LPD3DXMESH,5> meshCache(7);
   LPD3DXMESH *mp = meshCache.get(lightType);
-  if(mp != NULL) {
+  if(mp != nullptr) {
     return *mp;
   }
   meshCache.put(lightType, createLCMesh(factory, lightType));
@@ -168,7 +168,7 @@ void D3LightControl::draw() {
 
 void D3LightControl::prepareEffect() {
   D3Device &device = getDevice();
-  if(m_effect == NULL) {
+  if(m_effect == nullptr) {
     createEffect();
   }
 
@@ -241,15 +241,15 @@ void D3LightControl::createEffect() {
 
   StringArray compilerErrors;
   m_effect = compileEffect(getDirectDevice(), effectSourceText, compilerErrors);
-  if(m_effect == NULL) {
+  if(m_effect == nullptr) {
     showWarning(compilerErrors.toString(_T("\n")));
     return;
   }
 
   // Save technique handles for use when rendering
-  m_renderWith1LightNoTextureHandle = m_effect->GetTechniqueByName( "RenderWith1LightNoTexture"    );
-  m_materialDiffuseColorHandle      = m_effect->GetParameterByName( NULL, "g_MaterialDiffuseColor" );
-  m_lightDirHandle                  = m_effect->GetParameterByName( NULL, "g_LightDir"             );
-  m_worldHandle                     = m_effect->GetParameterByName( NULL, "g_mWorld"               );
-  m_worldViewProjectionHandle       = m_effect->GetParameterByName( NULL, "g_mWorldViewProjection" );
+  m_renderWith1LightNoTextureHandle = m_effect->GetTechniqueByName( "RenderWith1LightNoTexture"       );
+  m_materialDiffuseColorHandle      = m_effect->GetParameterByName( nullptr, "g_MaterialDiffuseColor" );
+  m_lightDirHandle                  = m_effect->GetParameterByName( nullptr, "g_LightDir"             );
+  m_worldHandle                     = m_effect->GetParameterByName( nullptr, "g_mWorld"               );
+  m_worldViewProjectionHandle       = m_effect->GetParameterByName( nullptr, "g_mWorldViewProjection" );
 }

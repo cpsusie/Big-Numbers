@@ -2,14 +2,14 @@
 #include "ByteMemoryStream.h"
 
 ByteMemoryOutputStream::ByteMemoryOutputStream(BYTE *dst) {
-  assert(dst != NULL);
+  assert(dst != nullptr);
   m_p        = dst;
   m_pos      = 0;
-  m_dstArray = NULL;
+  m_dstArray = nullptr;
 }
 
 ByteMemoryOutputStream::ByteMemoryOutputStream(ByteArray &dst) {
-  m_p        = NULL;
+  m_p        = nullptr;
   m_pos      = 0;
   m_dstArray = &dst;
 }

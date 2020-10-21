@@ -20,7 +20,7 @@ public:
     initPointers();
   }
 
-  KMPAutomateTemplate(const Ctype *pattern, size_t patternLength, bool forwardSearch = true, const Ctype *translateTable = NULL) {
+  KMPAutomateTemplate(const Ctype *pattern, size_t patternLength, bool forwardSearch = true, const Ctype *translateTable = nullptr) {
     initPointers();
     compilePattern(pattern, patternLength, forwardSearch, translateTable);
   }
@@ -51,7 +51,7 @@ public:
     return *this;
   }
 
-  void compilePattern(const Ctype *pattern, size_t patternLength, bool forwardSearch = true, const Ctype *translateTable = NULL) override {
+  void compilePattern(const Ctype *pattern, size_t patternLength, bool forwardSearch = true, const Ctype *translateTable = nullptr) override {
     if(patternLength != m_patternLength) {
       deallocate();
       allocate(patternLength);
@@ -94,8 +94,8 @@ private:
   }
 
   void initPointers() {
-    m_pattern       = NULL;
-    m_next          = NULL;
+    m_pattern       = nullptr;
+    m_next          = nullptr;
     m_patternLength = -1;
     m_tableSize     =  0;
     m_search        = &KMPAutomateTemplate<Ctype>::notCompiledsearchFunction;
@@ -202,7 +202,7 @@ class KMPAutomateBYTE : public KMPAutomateTemplate<BYTE> {
 public:
   KMPAutomateBYTE() {
   }
-  KMPAutomateBYTE(const BYTE *pattern, size_t patternLength, bool forwardSearch, const BYTE *translateTable = NULL)
+  KMPAutomateBYTE(const BYTE *pattern, size_t patternLength, bool forwardSearch, const BYTE *translateTable = nullptr)
    : KMPAutomateTemplate<BYTE>(pattern, patternLength, forwardSearch, translateTable)
   {
   }
@@ -212,7 +212,7 @@ class KMPAutomatewchar_t : public KMPAutomateTemplate<wchar_t> {
 public:
   KMPAutomatewchar_t() {
   }
-  KMPAutomatewchar_t(const wchar_t *pattern, size_t patternLength, bool forwardSearch, const wchar_t *translateTable = NULL)
+  KMPAutomatewchar_t(const wchar_t *pattern, size_t patternLength, bool forwardSearch, const wchar_t *translateTable = nullptr)
    : KMPAutomateTemplate<wchar_t>(pattern, patternLength, forwardSearch, translateTable)
   {
   }
@@ -222,11 +222,11 @@ class KMPAutomate : public KMPAutomateTemplate<TCHAR> {
 public:
   KMPAutomate() {
   }
-  KMPAutomate(const TCHAR *pattern, size_t patternLength, bool forwardSearch, const TCHAR *translateTable = NULL)
+  KMPAutomate(const TCHAR *pattern, size_t patternLength, bool forwardSearch, const TCHAR *translateTable = nullptr)
    : KMPAutomateTemplate<TCHAR>(pattern, patternLength, forwardSearch, translateTable)
   {
   }
-  KMPAutomate(const String &pattern, bool forwardSearch, const TCHAR *translateTable = NULL)
+  KMPAutomate(const String &pattern, bool forwardSearch, const TCHAR *translateTable = nullptr)
    : KMPAutomateTemplate<TCHAR>(pattern.cstr(), pattern.length(), forwardSearch, translateTable)
   {
   }

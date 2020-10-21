@@ -48,7 +48,7 @@ bool CEditListBooleanEditor::getValue() {
 
 void CEditListBooleanEditor::paintCheckBox(HDC hdc, const CPoint &p, bool checked, bool enabled) { // static
   static CBitmap checkBoxesBitmap;
-  if(checkBoxesBitmap.m_hObject == NULL) {
+  if(checkBoxesBitmap.m_hObject == nullptr) {
     checkBoxesBitmap.LoadOEMBitmap(OBM_CHECKBOXES);
   }
 

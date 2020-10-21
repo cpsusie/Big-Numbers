@@ -7,7 +7,7 @@ D3Cube getBoundingBox(LPDIRECT3DVERTEXBUFFER vertexBuffer) {
     return D3Cube();
   }
   const UINT itemSize    = FVFToSize(desc.FVF);
-  void      *bufferItems = NULL;
+  void      *bufferItems = nullptr;
   V(vertexBuffer->Lock(0, 0, &bufferItems, D3DLOCK_READONLY));
   const char *vp = (char*)bufferItems, *endp = vp + desc.Size;
   D3DXVECTOR3 pmin = *(Vertex*)vp, pmax = pmin;

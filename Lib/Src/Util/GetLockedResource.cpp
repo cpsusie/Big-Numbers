@@ -40,31 +40,31 @@ static String typeNameToString(const TCHAR *typeName) {
 
 ByteArray &ByteArray::loadFromResource(int resId, const TCHAR *typeName) {
   DEFINEMETHODNAME;
-  HRSRC hSource = FindResource(NULL, MAKEINTRESOURCE(resId), typeName);
+  HRSRC hSource = FindResource(nullptr, MAKEINTRESOURCE(resId), typeName);
 
-  if(hSource == NULL) {
+  if(hSource == nullptr) {
     throwException(_T("%s(%d,%s) failed:%s"), method, resId, typeNameToString(typeName).cstr(), getLastErrorText().cstr());
   }
 
-  HGLOBAL hGlobal = LoadResource(NULL, hSource);
-  if(hGlobal == NULL) {
+  HGLOBAL hGlobal = LoadResource(nullptr, hSource);
+  if(hGlobal == nullptr) {
     throwException(_T("%s(%d,%s) failed:%s"), method, resId, typeNameToString(typeName).cstr(), getLastErrorText().cstr());
   }
 
   try {
     void *r = LockResource(hGlobal);
-    if(r == NULL) {
+    if(r == nullptr) {
       throwException(_T("%s(%d,%s):LockResource failed"), method, resId, typeNameToString(typeName).cstr());
     }
 
-    const int size = (UINT)SizeofResource(NULL, hSource);
+    const int size = (UINT)SizeofResource(nullptr, hSource);
 
     clear(size);
     add((BYTE*)r, size);
 
     UnlockResource(hGlobal); // 16Bit Windows Needs This
     FreeResource(hGlobal);   // 16Bit Windows Needs This (32Bit - Automatic Release)
-    hGlobal = NULL;
+    hGlobal = nullptr;
     return *this;
   } catch(...) {
     UnlockResource(hGlobal); // 16Bit Windows Needs This

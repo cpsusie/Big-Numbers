@@ -159,10 +159,10 @@ private:
 public:
   DeterminantComparator(const CPoint &bottomPoint) : m_bottomPoint(bottomPoint) {
   }
-  AbstractComparator *clone() const {
+  AbstractComparator *clone() const override {
     return new DeterminantComparator(m_bottomPoint);
   }
-  int compare(const CPoint &p1, const CPoint &p2);
+  int compare(const CPoint &p1, const CPoint &p2) override;
 };
 
 int DeterminantComparator::compare(const CPoint &p1, const CPoint &p2) {

@@ -1,7 +1,7 @@
 #include "pch.h"
 
 void DebugBitmap::showBitmap(HBITMAP bitmap) { // static
-  HDC screenDC = NULL, tmpDC = NULL;
+  HDC screenDC = nullptr, tmpDC = nullptr;
   try {
     screenDC = getScreenDC();
     BITMAP info;
@@ -9,7 +9,7 @@ void DebugBitmap::showBitmap(HBITMAP bitmap) { // static
       throwLastErrorOnSysCallException(_T("GetObject"));
     }
 
-    BitBlt(screenDC,0,0,info.bmWidth,info.bmHeight,NULL,0,0,WHITENESS);
+    BitBlt(screenDC,0,0,info.bmWidth,info.bmHeight,nullptr,0,0,WHITENESS);
     tmpDC      = CreateCompatibleDC(screenDC);
     HGDIOBJ oldgdi = SelectObject(tmpDC, bitmap);
     if(BitBlt(screenDC, 0, 0, info.bmWidth, info.bmHeight, tmpDC, 0, 0, SRCCOPY) == 0) {
@@ -19,7 +19,7 @@ void DebugBitmap::showBitmap(HBITMAP bitmap) { // static
     DeleteDC(tmpDC);
     DeleteDC(screenDC);
   } catch(Exception e) {
-    if(screenDC != NULL) {
+    if(screenDC != nullptr) {
       TextOut(screenDC,0,0,e.what(), (int)_tcsclen(e.what()));
     } else {
       throw;

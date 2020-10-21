@@ -17,7 +17,7 @@ protected:
 public:
   T lookupName(const String &name) const {
     const T *v = get(name.cstr());
-    if(v == NULL) {
+    if(v == nullptr) {
       throwInvalidArgumentException(__TFUNCTION__, _T("name=%s"), name.cstr());
     }
     return *v;

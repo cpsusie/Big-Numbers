@@ -78,7 +78,7 @@ private:
     m_lastFillChar     = m_firstFillChar + m_fillerString.length() - 1;
   }
   void copyCurrent(const AbstractStreamParametersIterator &it);
-  static inline String getMinimalFillerString(const TCHAR *s) { // will return string with length >= 1. if s==NULL or empty string, return " " (1 space)
+  static inline String getMinimalFillerString(const TCHAR *s) { // will return string with length >= 1. if s==nullptr or empty string, return " " (1 space)
     const String result = s ? s : _T(" ");
     return result.isEmpty() ? _T(" ") : result;
   }

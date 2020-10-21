@@ -30,7 +30,7 @@ void CExprDialog::openListFile() {
 void CExprDialog::closeListFile() {
   if(isListFileOpen()) {
     fclose(m_listFile);
-    m_listFile = NULL;
+    m_listFile = nullptr;
   }
 }
 
@@ -132,11 +132,11 @@ void CExprDialog::createExprHelpButton(int buttonId, int exprEditId) {
   CButton           *but            = (CButton*)GetDlgItem(buttonId  );
 
   CEdit   *edit = (CEdit  *)GetDlgItem(exprEditId);
-  if(but == NULL) {
+  if(but == nullptr) {
     showWarning(_T("Button %d doesn't exist"), buttonId);
     return;
   }
-  if(edit == NULL) {
+  if(edit == nullptr) {
     showWarning(_T("EditBox %d doesn't exist"), exprEditId);
     return;
   }
@@ -191,7 +191,7 @@ void CExprDialog::handleSelectedExprHelpId(int menuId, int ctrlId) {
 void CExprDialog::substituteSelectedText(int ctrlId, const String &s) {
   if(s.length() > 0) {
     CEdit *e = getExprField(ctrlId);
-    if(e == NULL) {
+    if(e == nullptr) {
       showWarning(_T("No ctrlId %d in window"), ctrlId);
       return;
     }
@@ -218,7 +218,7 @@ void CExprDialog::createMenuExprHelp(CMenu &menu) {
   }
 
   CMenu *m = menu.GetSubMenu(0);
-  if(m == NULL) {
+  if(m == nullptr) {
     throwException(_T("No submenu"));
   }
   m->RemoveMenu(_ID_EXPRHELP_MENU_LAST, MF_BYCOMMAND);

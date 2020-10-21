@@ -39,7 +39,7 @@ String toString(D3EditorControl control) {
 #endif
 #define addFlag(f) { if(isSet(SE_##f)) { if(delim) result += delim; else delim=_T(","); result += _T(#f); } }
 String D3SceneEditor::stateFlagsToString() const {
-  const TCHAR *delim = NULL;
+  const TCHAR *delim = nullptr;
   String result = _T("(");
   addFlag(INITDONE     );
   addFlag(ENABLED      );

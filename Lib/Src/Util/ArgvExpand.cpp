@@ -13,7 +13,7 @@ template<typename Ctype> void expandArgv(int &argc, Ctype **&argv) {
   CompactArray<Ctype*> list;
 
   for(Ctype **cpp = argv; *cpp; cpp++) {
-    if(strChr(*cpp,(Ctype)'*')==NULL && strChr(*cpp, (Ctype)'?')==NULL) {
+    if(strChr(*cpp,(Ctype)'*')==nullptr && strChr(*cpp, (Ctype)'?')==nullptr) {
       list.add(strDup(*cpp));
     } else { // expand it
       strCpy(path,*cpp);
@@ -55,7 +55,7 @@ template<typename Ctype> void expandArgv(int &argc, Ctype **&argv) {
   for(i = 0; i < list.size(); i++) {
     argv[i] = list[i];
   }
-  argv[i] = NULL;
+  argv[i] = nullptr;
   list.clear();
 }
 

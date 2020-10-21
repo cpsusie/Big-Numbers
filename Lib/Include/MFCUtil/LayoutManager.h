@@ -186,7 +186,7 @@ public:
   LayoutManager();
   virtual ~LayoutManager();
   bool isInitialized() const {
-    return m_wnd != NULL;
+    return m_wnd != nullptr;
   }
   void OnInitDialog(CWnd *wnd, int flags = 0);                    // flags any combination of
                                                                   // RESIZE_FONT, RESIZE_MENUFONT + (FONT_RELATIVE_SIZE or RETAIN_ASPECTRATIO)

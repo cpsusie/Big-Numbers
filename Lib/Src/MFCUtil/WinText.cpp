@@ -8,7 +8,7 @@ String getWindowText(const CWnd *wnd) {
 
 String getWindowText(const CWnd *wnd, int id) {
   CWnd *ctrl = wnd->GetDlgItem(id);
-  if(ctrl == NULL) {
+  if(ctrl == nullptr) {
     showWarning(_T("No dlgItem %d in window"), id);
     return EMPTYSTRING;
   }
@@ -21,7 +21,7 @@ void setWindowText(CWnd *wnd, const String &str) {
 
 void setWindowText(CWnd *wnd, int id, const String &str) {
   CWnd *ctrl = wnd->GetDlgItem(id);
-  if(ctrl == NULL) {
+  if(ctrl == nullptr) {
     showWarning(_T("No dlgItem %d in window"), id);
     return;
   }

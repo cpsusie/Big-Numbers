@@ -5,18 +5,18 @@ namespace OStreamHelper {
 
   void FloatStringFields::init(TCHAR *str) {
     TCHAR *firstDigit = findFirstDigit(str);
-    assert(firstDigit != NULL);
+    assert(firstDigit != nullptr);
     TCHAR *comma      = _tcschr(str, _T('.'));
     TCHAR *estr       = _tcschr(firstDigit, _T('e'));
 
-    if(estr == NULL) { // chop tmp into it's components <m_ciphers>.<m_decimals>e<m_expo10>
+    if(estr == nullptr) { // chop tmp into it's components <m_ciphers>.<m_decimals>e<m_expo10>
       m_expo10 = 0;
     } else {
       *(estr++) = 0;
       m_expo10 = (intptr_t)std::stoll(estr);
     }
 
-    if(comma == NULL) {
+    if(comma == nullptr) {
       m_ciphers  = firstDigit;
       m_decimals = EMPTYSTRING;
     } else {

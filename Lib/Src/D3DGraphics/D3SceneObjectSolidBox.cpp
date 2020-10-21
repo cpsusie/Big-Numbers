@@ -5,25 +5,25 @@
 #include <D3DGraphics/D3SceneObjectSolidBox.h>
 
 D3SceneObjectSolidBox::D3SceneObjectSolidBox(D3Scene &scene, const D3Cube &cube, const String &name)
-: D3SceneObjectWithMesh(scene, NULL, name)
+: D3SceneObjectWithMesh(scene, nullptr, name)
 {
   init(cube.getMin(), cube.getMax());
 }
 
 D3SceneObjectSolidBox::D3SceneObjectSolidBox(D3Scene &scene, const Vertex &p1, const Vertex &p2, const String &name)
-: D3SceneObjectWithMesh(scene, NULL, name)
+: D3SceneObjectWithMesh(scene, nullptr, name)
 {
   init(p1, p2);
 }
 
 D3SceneObjectSolidBox::D3SceneObjectSolidBox(D3SceneObjectVisual *parent, const D3Cube &cube, const String &name)
-: D3SceneObjectWithMesh(parent, NULL, name)
+: D3SceneObjectWithMesh(parent, nullptr, name)
 {
   init(cube.getMin(), cube.getMax());
 }
 
 D3SceneObjectSolidBox::D3SceneObjectSolidBox(D3SceneObjectVisual *parent, const Vertex    &p1, const Vertex &p2, const String &name)
-: D3SceneObjectWithMesh(parent, NULL, name)
+: D3SceneObjectWithMesh(parent, nullptr, name)
 {
   init(p1, p2);
 }

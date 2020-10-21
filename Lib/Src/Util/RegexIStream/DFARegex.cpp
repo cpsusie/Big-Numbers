@@ -96,12 +96,12 @@ public:
   }
 };
 
-// matchedString might be NULL
+// matchedString might be nullptr
 int DFARegex::match(istream &in, String *matchedString) const {
   return DFARegexT<istream, char>().match(m_tables, getIgnoreCase(), in, matchedString);
 }
 
-// matchedString might be NULL
+// matchedString might be nullptr
 int DFARegex::match(wistream &in, String *matchedString) const {
   return DFARegexT<wistream, wchar_t>().match(m_tables, getIgnoreCase(), in, matchedString);
 }

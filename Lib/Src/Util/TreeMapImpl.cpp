@@ -86,7 +86,7 @@ bool TreeMapImpl::put(const void *key, const void *value) {
 
 void *TreeMapImpl::get(const void *key) const {
   const TreeSetNode *n = TreeSetImpl::findNode(key);
-  return (n != NULL) ? ((TreeMapNode*)n)->value() : NULL;
+  return (n != nullptr) ? ((TreeMapNode*)n)->value() : nullptr;
 }
 
 bool TreeMapImpl::remove(const void *key) {

@@ -2,7 +2,7 @@
 #include <Math/Polynomial.h>
 
 DataFit::DataFit() {
-  m_dataFit = NULL;
+  m_dataFit = nullptr;
 }
 
 DataFit::~DataFit() {
@@ -28,9 +28,9 @@ AbstractDataFit *DataFit::clone() const {
 }
 
 bool DataFit::solve(FittingType type, const CompactArray<DataPoint> &data, const Real &dydx1, const Real &dydx2) {
-  if(m_dataFit != NULL) {
+  if(m_dataFit != nullptr) {
     delete m_dataFit;
-    m_dataFit = NULL;
+    m_dataFit = nullptr;
   }
   switch(type) {
   case LSSD                 :

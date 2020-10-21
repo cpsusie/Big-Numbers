@@ -52,23 +52,23 @@ FileNameSplitter &FileNameSplitter::setFileName(const String &fileName ) {
 FileNameSplitter &FileNameSplitter::tempFileName(const String &prefix) {
   TCHAR *oldtmp = _tgetenv(_T("TMP"));
   // Unset TMP environment variable, then create a temporary filename in C:\tmp.
-  if(oldtmp != NULL) {
+  if(oldtmp != nullptr) {
     int err = _tputenv_s(_T("TMP"), EMPTYSTRING);
   }
   try {
     FileNameSplitter tmp     = *this;
     String           dir     = tmp.setFileName(EMPTYSTRING).setExtension(EMPTYSTRING).getAbsolutePath();
     TCHAR           *newName = _ttempnam(dir.cstr(), prefix.cstr());
-    if(newName == NULL) {
+    if(newName == nullptr) {
       throwInvalidArgumentException(__TFUNCTION__, _T("_ttempnam failed"));
     }
     *this = FileNameSplitter(newName);
     free(newName);
-    if(oldtmp != NULL) {
+    if(oldtmp != nullptr) {
       int err = _tputenv_s(_T("TMP"), oldtmp);
     }
   } catch(...) {
-    if(oldtmp != NULL) {
+    if(oldtmp != nullptr) {
       int err = _tputenv_s(_T("TMP"), oldtmp);
     }
     throw;

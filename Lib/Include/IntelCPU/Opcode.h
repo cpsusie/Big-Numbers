@@ -69,24 +69,24 @@ public:
   }
   inline MemoryRef(const IndexRegister &base)
     : m_base( &base  )
-    , m_inx(   NULL  )
+    , m_inx(   nullptr  )
     , m_shift( 0     )
     , m_offset(0     )
-    SETNEEDREXBYTE(&base,NULL)
+    SETNEEDREXBYTE(&base,nullptr)
   {
     SETDEBUGSTR();
   }
   inline MemoryRef(intptr_t addr)
-    : m_base(  NULL  )
-    , m_inx(   NULL  )
+    : m_base(  nullptr  )
+    , m_inx(   nullptr  )
     , m_shift( 0     )
     , m_offset(addr  )
-    SETNEEDREXBYTE(NULL,NULL)
+    SETNEEDREXBYTE(nullptr,nullptr)
   {
     SETDEBUGSTR();
   }
   inline bool isDisplaceOnly() const {
-    return (m_base == NULL) && (m_inx == NULL);
+    return (m_base == nullptr) && (m_inx == nullptr);
   }
   static inline char findShift(BYTE a) {
     if((a >= ARRAYSIZE(s_shift)) || (s_shift[a] < 0)) throwInvalidIndexScale(__TFUNCTION__,a);
@@ -102,8 +102,8 @@ public:
   inline BYTE                 getShift()  const { return m_shift;        }
   inline int                  getOffset() const { assert(isDword(m_offset)); return (int)m_offset;  }
   inline intptr_t             getAddr()   const { return m_offset;       }
-  inline bool                 hasBase()   const { return m_base != NULL; }
-  inline bool                 hasInx()    const { return m_inx  != NULL; }
+  inline bool                 hasBase()   const { return m_base != nullptr; }
+  inline bool                 hasInx()    const { return m_inx  != nullptr; }
   inline bool                 hasShift()  const { return m_shift >= 1;   }
   inline bool                 hasOffset() const { return m_offset != 0;  }
 
@@ -119,11 +119,11 @@ public:
 };
 
 inline MemoryRef operator+(const IndexRegister &base, int offset) {
-  return MemoryRef(&base,NULL,0,offset);
+  return MemoryRef(&base,nullptr,0,offset);
 }
 
 inline MemoryRef operator-(const IndexRegister &base, int offset) {
-  return MemoryRef(&base,NULL,0,-offset);
+  return MemoryRef(&base,nullptr,0,-offset);
 }
 
 inline MemoryRef operator+(const MemoryRef &mr, int offset) {
@@ -149,12 +149,12 @@ inline MemoryRef operator+(const IndexRegister &base, const IndexRegister &inx) 
 
 inline MemoryRef operator*(BYTE a, const IndexRegister &inx) {
   if(!inx.isValidIndexRegister()) MemoryRef::throwInvalidIndexRegister(__TFUNCTION__,inx);
-  return MemoryRef(NULL,&inx,MemoryRef::findShift(a));
+  return MemoryRef(nullptr,&inx,MemoryRef::findShift(a));
 }
 
 inline MemoryRef operator*(const IndexRegister &inx, BYTE a) {
   if(!inx.isValidIndexRegister()) MemoryRef::throwInvalidIndexRegister(__TFUNCTION__,inx);
-  return MemoryRef(NULL,&inx,MemoryRef::findShift(a));
+  return MemoryRef(nullptr,&inx,MemoryRef::findShift(a));
 }
 
 class InstructionOperand {
@@ -187,7 +187,7 @@ public:
   inline InstructionOperand(OperandType type, OperandSize size)
     : m_type(type)
     , m_size(size)
-    , m_reg( NULL)
+    , m_reg( nullptr)
   {
   }
   inline InstructionOperand(const Register &reg)
@@ -304,7 +304,7 @@ private:
   const SegmentRegister *m_segReg;
   MemoryRef              m_mr;
 public:
-  inline MemoryOperand(OperandSize size, const MemoryRef &mr, const SegmentRegister *segReg=NULL)
+  inline MemoryOperand(OperandSize size, const MemoryRef &mr, const SegmentRegister *segReg=nullptr)
     : InstructionOperand(MEMORYOPERAND, size)
     , m_segReg(segReg)
     , m_mr(mr)
@@ -312,7 +312,7 @@ public:
     m_mr.sortBaseInx();
     SETDEBUGSTR();
   }
-  inline MemoryOperand(OperandSize size, size_t addr, const SegmentRegister *segReg=NULL)
+  inline MemoryOperand(OperandSize size, size_t addr, const SegmentRegister *segReg=nullptr)
     : InstructionOperand(MEMORYOPERAND, size)
     , m_segReg(segReg)
     , m_mr(addr)
@@ -323,7 +323,7 @@ public:
     return m_segReg;
   }
   inline bool                   hasSegmentRegister() const {
-    return m_segReg != NULL;
+    return m_segReg != nullptr;
   }
   const MemoryRef              &getMemoryReference() const override {
     return m_mr;

@@ -110,10 +110,10 @@ MMCapture::MMCapture(BYTE captureWhat, CaptureReceiver &receiver, UINT framesPer
 , m_playAudio(playAudio)
 {
   for(int i = 0; i < 3; i++) {
-    m_captureWindow    = NULL;
-    m_imagePr          = NULL;
-    m_videoPr          = NULL;
-    m_audioThread      = NULL;
+    m_captureWindow    = nullptr;
+    m_imagePr          = nullptr;
+    m_videoPr          = nullptr;
+    m_audioThread      = nullptr;
     m_webCamConnected  = false;
     m_videoFrameCount  = 0;
     m_audioSampleCount = 0;
@@ -155,7 +155,7 @@ void MMCapture::captureInit(UINT framesPerSecond, UINT audioBufferSize) {
   DWORD style = WS_CHILD;
 
   m_captureWindow = capCreateCaptureWindow(_T("my capture window"), style,0,0,640,480,m_receiver.getWindow(),1);
-  if(m_captureWindow == NULL) {
+  if(m_captureWindow == nullptr) {
     throwException(_T("%s:Cannot create CaptureWindow:%s"),__TFUNCTION__,getLastErrorText().cstr());
   }
 
@@ -199,7 +199,7 @@ void MMCapture::captureInit(UINT framesPerSecond, UINT audioBufferSize) {
 }
 
 void MMCapture::captureCleanup() {
-  if(m_audioThread != NULL) {
+  if(m_audioThread != nullptr) {
     m_audioQueue.put(AudioQueueElement());
     while(m_audioThread->stillActive()) {
       Sleep(100);
@@ -210,9 +210,9 @@ void MMCapture::captureCleanup() {
     CHECKRESULT(capDriverDisconnect(m_captureWindow));
     m_webCamConnected = false;
   }
-  if(m_captureWindow != NULL) {
+  if(m_captureWindow != nullptr) {
     CHECKRESULT(DestroyWindow(m_captureWindow));
-    m_captureWindow = NULL;
+    m_captureWindow = nullptr;
   }
 }
 

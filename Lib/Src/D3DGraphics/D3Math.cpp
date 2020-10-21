@@ -84,7 +84,7 @@ D3DXMATRIX transpose(const D3DXMATRIX &m) {
 
 D3DXMATRIX inverse(const D3DXMATRIX &m) {
   D3DXMATRIX  result;
-  return *D3DXMatrixInverse(&result, NULL, &m);
+  return *D3DXMatrixInverse(&result, nullptr, &m);
 }
 
 float det(const D3DXMATRIX &m) {

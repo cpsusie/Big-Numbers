@@ -9,7 +9,7 @@ static const char *numberPatterns[] = {
   "[+/-]?[0-9]*/(/.[0-9]+/)/(e[+/-]?[0-9]+/)?"    // float
  ,"[+/-]?[0-9]+/(/.[0-9]*/)?/(e[+/-]?[0-9]+/)?"   // float
  ,"[+/-]?[0-9]+/(//[0-9]+/)?"                     // rational
- ,NULL
+ ,nullptr
 };
 
 StringArray NumberValueStreamScanner::getRegexLines() { // static

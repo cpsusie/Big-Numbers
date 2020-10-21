@@ -132,7 +132,7 @@ bool PropertyDialogMap::isDialogVisible1() const {
 const void *PropertyDialogMap::getProperty(int id, size_t size) const {
   m_gate.wait();
   try {
-    const void *result = NULL;
+    const void *result = nullptr;
     CPropertyDialogThread * const *thr = m_map.get(id);
     if(thr) {
       result = (*thr)->getCurrentDialogProperty(size);
@@ -154,7 +154,7 @@ void PropertyDialogMap::handlePropertyChanged(const PropertyContainer *source, i
   case PROPDLG_VISIBLE_OFFSET:
     { const bool newVisible = *(bool*)newValue;
       if(!newVisible) {
-        setVisibleDialogThread(NULL);
+        setVisibleDialogThread(nullptr);
       } else {
         setVisibleDialogThread(*m_map.get(dlg->getPropertyId()));
       }

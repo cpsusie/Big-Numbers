@@ -6,13 +6,13 @@
 #endif  // TRACESEMAPHORE
 
 Semaphore::Semaphore(const String &name, UINT initialCount, UINT maxWait) {
-  if((m_sem = CreateSemaphore(NULL, initialCount, maxWait, name.cstr())) == NULL) {
+  if((m_sem = CreateSemaphore(nullptr, initialCount, maxWait, name.cstr())) == nullptr) {
     throwLastErrorOnSysCallException(_T("CreateSemaphore"));
   }
 }
 
 Semaphore::Semaphore(UINT initialCount, UINT maxWait) {
-  if((m_sem = CreateSemaphore(NULL,initialCount,maxWait,NULL)) == NULL) {
+  if((m_sem = CreateSemaphore(nullptr,initialCount,maxWait,nullptr)) == nullptr) {
     throwLastErrorOnSysCallException(_T("CreateSemaphore"));
   }
 }
@@ -37,7 +37,7 @@ bool Semaphore::wait(UINT timeout) {
 }
 
 void Semaphore::notify() {
-  if(!ReleaseSemaphore(m_sem, 1, NULL)) {
+  if(!ReleaseSemaphore(m_sem, 1, nullptr)) {
     throwLastErrorOnSysCallException(_T("ReleaseSemaphore"));
   }
 }

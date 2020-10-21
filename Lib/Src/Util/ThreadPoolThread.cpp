@@ -26,7 +26,7 @@ ThreadPoolThread::ThreadPoolThread(PoolThreadPool *pool, UINT id, const String &
 : Thread(name)
 , IdentifiedResource(id)
 , m_pool(           *pool)
-, m_resultQueue(     NULL)
+, m_resultQueue(     nullptr)
 , m_flags(           0)
 , m_execute(         0)
 {
@@ -75,7 +75,7 @@ UINT ThreadPoolThread::run() {
     } catch(...) {
       if(m_resultQueue) m_resultQueue->putError(format(_T("Unknown exception received in ThreadPoolThread %s"), getDescription().cstr()));
     }
-    m_resultQueue = NULL;
+    m_resultQueue = nullptr;
     clrFlag(THR_BUSY);
 #if defined(_DEBUG)
     setDescription(oldDesc);
@@ -100,7 +100,7 @@ void ThreadPoolResultQueue::waitForResults(size_t expectedResultCount) {
   bool gotException = false;
   for(;expectedResultCount > 0; expectedResultCount--) {
     String *str = get();
-    if(str != NULL) {
+    if(str != nullptr) {
       if(!gotException || (errorMsg.length() == 0)) {
         errorMsg = *str;
       }

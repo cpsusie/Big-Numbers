@@ -18,7 +18,7 @@ END_MESSAGE_MAP()
 void CStaticBottomAligned::substituteControl(CWnd *parent, int id) {
   DEFINEMETHODNAME;
   CStatic *oldCtrl = (CStatic*)parent->GetDlgItem(id);
-  if(oldCtrl == NULL) {
+  if(oldCtrl == nullptr) {
     showError(_T("%s:Control with id=%d does not exist"), method, id);
     return;
   }
@@ -30,7 +30,7 @@ void CStaticBottomAligned::substituteControl(CWnd *parent, int id) {
   const DWORD exStyle = oldCtrl->GetExStyle();
 
   CFont *font = oldCtrl->GetFont();
-  if(font == NULL) {
+  if(font == nullptr) {
     font = parent->GetFont();
   }
   LOGFONT lf;

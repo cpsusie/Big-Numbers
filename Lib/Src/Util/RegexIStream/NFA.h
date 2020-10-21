@@ -16,7 +16,7 @@ private:
   static void unmarkAll(     NFAState *s);
   friend class PatternParser;
 public:
-  NFA(NFAStatePool &statePool, NFAState *start = NULL) : m_statePool(statePool) {
+  NFA(NFAStatePool &statePool, NFAState *start = nullptr) : m_statePool(statePool) {
     if(start) {
       create(start);
     }

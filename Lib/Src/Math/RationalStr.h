@@ -13,19 +13,19 @@ template<typename INTTYPE, typename CharType> Rational parseRational(const CharT
   Rational result;
   EATWHITE();
   INTTYPE numerator = 0, denominator = 1;
-  CharType *next = NULL;
+  CharType *next = nullptr;
   errno = 0;
   numerator = strtointtype(s, &next, radix);
-  if(next == NULL) {
+  if(next == nullptr) {
     return Rational::_0;
   }
   s = next;
   if(end) *end = next;
   if(*s == '/') {
     s++;
-    next = NULL;
+    next = nullptr;
     denominator = strtointtype(s, &next, radix);
-    if(next == NULL) {
+    if(next == nullptr) {
       return (INT64)numerator;
     }
     s = next;

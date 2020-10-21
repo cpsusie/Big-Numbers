@@ -4,7 +4,7 @@
 
 class ClipRect : public SMALL_RECT {
 private:
-  void init(int l, int t, int r, int b, ClipRect *next = NULL);
+  void init(int l, int t, int r, int b, ClipRect *next = nullptr);
   ClipRect  *m_next;
   static ClipRect *clip2(   const SMALL_RECT &front, const SMALL_RECT &back);
   static ClipRect intersect(const SMALL_RECT &r1   , const SMALL_RECT &r2  );
@@ -12,7 +12,7 @@ private:
   friend class TextWin;
 public:
   ClipRect(int l, int t, int r, int b, ClipRect *next) { init(l, t, r, b, next); }
-  ClipRect(const SMALL_RECT &r, ClipRect *next = NULL);
+  ClipRect(const SMALL_RECT &r, ClipRect *next = nullptr);
   ClipRect()  { init(0, 0, 0, 0); }
   int  width()  const { return Right  - Left + 1; }
   int  height() const { return Bottom - Top  + 1; }
@@ -48,7 +48,7 @@ private:
   void addClipRect(ClipRect *cr);
   void getRect(ClipRect &r) const;
 public:
-  TextWin(int l, int t, int w, int h, int flag = TW_FRONT, TextWin *ref = NULL);
+  TextWin(int l, int t, int w, int h, int flag = TW_FRONT, TextWin *ref = nullptr);
   ~TextWin();
   void copy(     int x, int y, TextRect *src, int l, int t, int w, int h, int op);
   void set(      int l, int t, int w, int h, int op, ...);

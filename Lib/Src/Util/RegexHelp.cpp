@@ -63,7 +63,7 @@ static const TCHAR *regexDescription[] = {
  ,_T("This rule applies recursively if parenthesis are nested. If any of the looping constructs (*+{m,n}) is used"           )
  ,_T("together with \\(..\\), each repetition is concatenated to the registercontent. Ex. \\(ab\\)* will be found at"        )
  ,_T("position 2 in the string \"qqabababc\" and register 1 will contain \"ababab\" after the match."                        )
- ,NULL
+ ,nullptr
 };
 
 const TCHAR **Regex::getHelpText() { // static

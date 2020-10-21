@@ -41,7 +41,7 @@ public:
   inline SHA256HashCode(const UINT32 *v) {
     init(v);
   }
-  inline void clear(const UINT32 *v = NULL) {
+  inline void clear(const UINT32 *v = nullptr) {
     if(v) init(v); else reset();
   }
   inline const UINT32 &operator[](UINT index) const {

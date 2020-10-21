@@ -31,10 +31,10 @@ namespace TestList {
 
   class ElementComparator : public Comparator<ListElement> {
   public:
-    int compare(const ListElement &e1, const ListElement &e2) {
+    int compare(const ListElement &e1, const ListElement &e2) override {
       return _tcscmp(e1.toString().cstr(), e2.toString().cstr());
     }
-    AbstractComparator *clone() const {
+    AbstractComparator *clone() const override {
       return new ElementComparator();
     }
   };

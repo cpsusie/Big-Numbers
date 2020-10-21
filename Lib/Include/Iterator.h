@@ -22,14 +22,14 @@ protected:
   AbstractIterator *m_it;
 public:
   inline ConstIterator() {
-    m_it = NULL;
+    m_it = nullptr;
   }
   inline ConstIterator(AbstractIterator *it) {
     m_it = it; TRACE_NEW(it);
   }
 
   inline ConstIterator(const ConstIterator<T> &src) {
-    m_it = src.m_it ? src.m_it->clone() : NULL; TRACE_NEW(m_it);
+    m_it = src.m_it ? src.m_it->clone() : nullptr; TRACE_NEW(m_it);
   }
 
   ConstIterator<T> &operator=(const ConstIterator<T> &src) {
@@ -37,7 +37,7 @@ public:
       return *this;
     }
     SAFEDELETE(m_it);
-    m_it = src.m_it ? src.m_it->clone() : NULL; TRACE_NEW(m_it);
+    m_it = src.m_it ? src.m_it->clone() : nullptr; TRACE_NEW(m_it);
     return *this;
   }
 
@@ -46,12 +46,12 @@ public:
   }
 
   inline bool hasNext() const {
-    assert(m_it != NULL);
+    assert(m_it != nullptr);
     return m_it->hasNext();
   }
 
   inline const T &next() {
-    assert(m_it != NULL);
+    assert(m_it != nullptr);
     return *(const T *)m_it->next();
   }
 
@@ -100,7 +100,7 @@ public:
     }
 
     String           result    = _T("[");
-    const TCHAR     *delim     = NULL;
+    const TCHAR     *delim     = nullptr;
     bool             firstTime = true;
     ConstIterator<T> t         = *this;
     T                first, last;
@@ -129,7 +129,7 @@ public:
 template<typename T> class Iterator: public ConstIterator<T> {
 public:
   inline Iterator() {
-    m_it = NULL;
+    m_it = nullptr;
   }
   inline Iterator(AbstractIterator *it) : ConstIterator<T>(it) {
   }
@@ -143,7 +143,7 @@ public:
     return (T &)__super::next();
   }
   inline void remove() {
-    assert(m_it != NULL);
+    assert(m_it != nullptr);
     m_it->remove();
   }
 };

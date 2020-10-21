@@ -13,7 +13,7 @@ GenericDebugger::GenericDebugger(AbstractDebugable &debugable, AbstractDebugable
 
 GenericDebugger::~GenericDebugger() {
   kill();
-  m_debugable.m_debugger = NULL;
+  m_debugable.m_debugger = nullptr;
 }
 
 void GenericDebugger::singleStep() {

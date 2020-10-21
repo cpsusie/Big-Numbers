@@ -20,7 +20,7 @@ bool moveFilesToTrashCan(HWND hwnd, const StringArray &fileNames, bool confirm) 
   if(!confirm) {
     shf.fFlags |= FOF_NOCONFIRMATION;
   }
-  shf.hNameMappings = NULL;
+  shf.hNameMappings = nullptr;
   return SHFileOperation(&shf) == 0;
 
 }

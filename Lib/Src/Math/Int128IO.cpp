@@ -77,7 +77,7 @@ template<typename IStreamType, typename CharType> IStreamType &getInt128(IStream
     }
     if(gotDigits) {
       errno  = 0;
-      result = _tcstoi128(scanner.getBuffer().cstr(), NULL, 10);
+      result = _tcstoi128(scanner.getBuffer().cstr(), nullptr, 10);
     }
     break;
   case 16:
@@ -100,7 +100,7 @@ template<typename IStreamType, typename CharType> IStreamType &getInt128(IStream
         if(((index = s.find(_T("0x"))) >= 0) || ((index = s.find(_T("0X"))) >= 0)) {
           s.remove(index, 2);
         }
-        result = _tcstoi128(s.cstr(), NULL, 16);
+        result = _tcstoi128(s.cstr(), nullptr, 16);
       }
     }
     break;
@@ -117,7 +117,7 @@ template<typename IStreamType, typename CharType> IStreamType &getInt128(IStream
       }
       if(gotDigits) {
         errno  = 0;
-        result = _tcstoi128(scanner.getBuffer().cstr(), NULL, 8);
+        result = _tcstoi128(scanner.getBuffer().cstr(), nullptr, 8);
       }
     }
     break;
@@ -149,7 +149,7 @@ template <typename IStreamType, typename CharType> IStreamType &getUint128(IStre
     }
     if(gotDigits) {
       errno  = 0;
-      result = _tcstoui128(scanner.getBuffer().cstr(), NULL, 10);
+      result = _tcstoui128(scanner.getBuffer().cstr(), nullptr, 10);
     }
     break;
   case 16:
@@ -172,7 +172,7 @@ template <typename IStreamType, typename CharType> IStreamType &getUint128(IStre
         if(((index = s.find(_T("0x"))) >= 0) || ((index = s.find(_T("0X"))) >= 0)) {
           s.remove(index, 2);
         }
-        result = _tcstoui128(s.cstr(), NULL, 16);
+        result = _tcstoui128(s.cstr(), nullptr, 16);
       }
     }
     break;
@@ -189,7 +189,7 @@ template <typename IStreamType, typename CharType> IStreamType &getUint128(IStre
       }
       if(gotDigits) {
         errno  = 0;
-        result = _tcstoui128(scanner.getBuffer().cstr(), NULL, 8);
+        result = _tcstoui128(scanner.getBuffer().cstr(), nullptr, 8);
       }
     }
     break;

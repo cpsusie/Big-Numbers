@@ -90,11 +90,11 @@ PixRect *PixRect::clone(bool cloneImage, PixRectType type, D3DPOOL pool) const {
   PixRect *copy = new PixRect(m_device, type, getSize(), pool, getPixelFormat()); TRACE_NEW(copy);
   if(cloneImage) {
     if((getPool() == D3DPOOL_SYSTEMMEM) && (pool == D3DPOOL_DEFAULT)) {
-      LPDIRECT3DSURFACE srcSurface = NULL, dstSurface = NULL;
+      LPDIRECT3DSURFACE srcSurface = nullptr, dstSurface = nullptr;
       try {
         srcSurface = getSurface();
         dstSurface = copy->getSurface();
-        V(m_device.getD3Device()->UpdateSurface(srcSurface, NULL, dstSurface, NULL));
+        V(m_device.getD3Device()->UpdateSurface(srcSurface, nullptr, dstSurface, nullptr));
         SAFERELEASE(srcSurface);
         SAFERELEASE(dstSurface);
       } catch(...) {
@@ -123,11 +123,11 @@ void PixRect::moveToPool(D3DPOOL pool) {
   switch(getType()) {
   case PIXRECT_TEXTURE:
     m_texture = tmp->m_texture;
-    tmp->m_texture = NULL;
+    tmp->m_texture = nullptr;
     break;
   case PIXRECT_PLAINSURFACE:
     m_surface = tmp->m_surface;
-    tmp->m_surface = NULL;
+    tmp->m_surface = nullptr;
     break;
   default:
     unknownTypeError(method);
@@ -138,7 +138,7 @@ void PixRect::moveToPool(D3DPOOL pool) {
 LPDIRECT3DSURFACE PixRect::cloneSurface(D3DPOOL pool) const {
   LPDIRECT3DSURFACE dstSurface = m_device.createOffscreenPlainSurface(getSize(), getPixelFormat(), pool);
   LPDIRECT3DSURFACE srcSurface = getSurface();
-  V(m_device.getD3Device()->UpdateSurface(srcSurface, NULL, dstSurface, NULL));
+  V(m_device.getD3Device()->UpdateSurface(srcSurface, nullptr, dstSurface, nullptr));
   m_device.releaseSurface(srcSurface, m_type);
   return dstSurface;
 }
@@ -148,7 +148,7 @@ void PixRect::showPixRect(const PixRect *pr) { // static
   if(pr->hasAlphaChannel()) {
     alphaBlend(screenDC,0,0,pr->getWidth(),pr->getHeight(), *pr, 0, 0, pr->getWidth(),pr->getHeight(), 255);
   } else {
-    BitBlt(screenDC,0,0,pr->getWidth(),pr->getHeight(),NULL,0,0,WHITENESS);
+    BitBlt(screenDC,0,0,pr->getWidth(),pr->getHeight(),nullptr,0,0,WHITENESS);
     PixRect::bitBlt(screenDC, 0,0,pr->getWidth(),pr->getHeight(), SRCCOPY, pr, 0,0);
   }
   DeleteDC(screenDC);
@@ -253,7 +253,7 @@ void PixRect::setSize(const CSize &size) {
 }
 
 CSize PixRect::getSizeInMillimeters(HDC hdc) const {
-  if(hdc != NULL) {
+  if(hdc != nullptr) {
     return pixelsToMillimeters(hdc,getSize());
   } else {
     HDC screenDC = getScreenDC();
@@ -322,7 +322,7 @@ void PixRect::createPlainSurface(const CSize &sz, D3DFORMAT pixelFormat, D3DPOOL
 }
 
 void PixRect::destroy() {
-  if(m_surface == NULL) return;
+  if(m_surface == nullptr) return;
   destroyPixelAccessor();
   switch(getType()) {
   case PIXRECT_TEXTURE     :
@@ -338,15 +338,15 @@ void PixRect::destroy() {
 }
 
 void PixRect::destroyTexture() {
-  assert((getType() == PIXRECT_TEXTURE) && (m_texture != NULL));
+  assert((getType() == PIXRECT_TEXTURE) && (m_texture != nullptr));
   m_device.releaseTexture(m_texture);
-  m_texture = NULL;
+  m_texture = nullptr;
 }
 
 void PixRect::destroySurface() {
-  assert(((getType() == PIXRECT_RENDERTARGET) || (getType() == PIXRECT_PLAINSURFACE)) && (m_surface != NULL));
+  assert(((getType() == PIXRECT_RENDERTARGET) || (getType() == PIXRECT_PLAINSURFACE)) && (m_surface != nullptr));
   m_device.releaseSurface(m_surface, m_type);
-  m_surface = NULL;
+  m_surface = nullptr;
 }
 
 PixRect &PixRect::operator=(HBITMAP src) {
@@ -394,7 +394,7 @@ D3DFORMAT PixRect::getPixelFormat(HBITMAP bm) { // static
 
 PixRect::operator HBITMAP() const {
   String errMsg;
-  HBITMAP result = CreateBitmap( getWidth(), getHeight(), 1, 32, NULL);
+  HBITMAP result = CreateBitmap( getWidth(), getHeight(), 1, 32, nullptr);
 
   HDC     prDC = getDC();
   HDC     bmDC = CreateCompatibleDC(prDC);
@@ -441,15 +441,15 @@ void PixRect::fromBitmap(CBitmap &src) {
 
 void PixRect::toBitmap(CBitmap &dst) const {
   String errMsg;
-  if(dst.m_hObject == NULL) {
-    dst.CreateBitmap(getWidth(),getHeight(),1,32,NULL);
+  if(dst.m_hObject == nullptr) {
+    dst.CreateBitmap(getWidth(),getHeight(),1,32,nullptr);
   } else {
     const CSize bmSize = getBitmapSize(dst);
     const CSize prSize = getSize();
 
     if(bmSize != prSize) {
       dst.DeleteObject();
-      dst.CreateBitmap(prSize.cx, prSize.cy, 1, 32, NULL);
+      dst.CreateBitmap(prSize.cx, prSize.cy, 1, 32, nullptr);
     }
   }
   HDC     prDC = getDC();
@@ -473,7 +473,7 @@ void PixRect::render() {
 }
 
 HDC PixRect::getDC() const {
-  assert(m_DCSurface == NULL);
+  assert(m_DCSurface == nullptr);
   HDC dc;
   m_DCSurface = getSurface();
   V(m_DCSurface->GetDC(&dc));
@@ -481,14 +481,14 @@ HDC PixRect::getDC() const {
 }
 
 void PixRect::releaseDC(HDC dc) const {
-  assert(m_DCSurface != NULL);
+  assert(m_DCSurface != nullptr);
   m_DCSurface->ReleaseDC(dc);
   m_device.releaseSurface(m_DCSurface, m_type);
-  m_DCSurface = NULL;
+  m_DCSurface = nullptr;
 }
 
 LPDIRECT3DSURFACE PixRect::getSurface() const {
-  LPDIRECT3DSURFACE surface = NULL;
+  LPDIRECT3DSURFACE surface = nullptr;
   switch(getType()) {
   case PIXRECT_TEXTURE:
     V(m_texture->GetSurfaceLevel(0, &surface));
@@ -517,7 +517,7 @@ PixelAccessor *PixRect::createPixelAccessor(DWORD flags) const {
     }
   default:
     throwException(_T("%s:Unknown pixel format:%d. Must be 8, 16 or 32"),method, getPixelFormat());
-    return NULL;
+    return nullptr;
   }
 }
 
@@ -645,14 +645,14 @@ void PixRect::rop( const CPoint &dp, const CSize &size, ULONG op, const PixRect 
 void PixRect::rop(int x, int y, int w, int h, ULONG op, const PixRect *src, int sx, int sy) {
   String errorMsg;
 
-  HDC srcDC = src ? src->getDC() : NULL;
+  HDC srcDC = src ? src->getDC() : nullptr;
   HDC dstDC = getDC();
 
   BOOL ok = BitBlt(dstDC,x,y,w,h,srcDC,sx,sy,op);
   if(!ok) {
     errorMsg = getLastErrorText();
   }
-  if(src != NULL) {
+  if(src != nullptr) {
     src->releaseDC(srcDC);
   }
   releaseDC(dstDC);
@@ -703,12 +703,12 @@ void PixRect::bitBlt(PixRect *dst, const CRect &dr, ULONG op, HDC src, const CPo
 void PixRect::bitBlt(HDC dst, int x, int y, int w, int h, ULONG op, const PixRect *src, int sx, int sy) { // static
   String errorMsg;
 
-  HDC srcDC = src ? src->getDC() : NULL;
+  HDC srcDC = src ? src->getDC() : nullptr;
   BOOL ok = BitBlt(dst,x,y,w,h,srcDC,sx,sy,op);
   if(!ok) {
     errorMsg = getLastErrorText();
   }
-  if(src != NULL) {
+  if(src != nullptr) {
     src->releaseDC(srcDC);
   }
   if(!ok) {
@@ -727,7 +727,7 @@ void PixRect::bitBlt(HDC dst, const CRect &dr, ULONG op, const PixRect *src, con
 void PixRect::stretchBlt(HDC dst, int x, int y, int w, int h, ULONG op, const PixRect *src, int sx, int sy, int sw, int sh) { // static
   String errorMsg;
 
-  HDC  srcDC = src ? src->getDC() : NULL;
+  HDC  srcDC = src ? src->getDC() : nullptr;
   const int oldStretchMode = GetStretchBltMode(dst);
   SetStretchBltMode(dst, HALFTONE);
   BOOL ok    = StretchBlt(dst,x,y,w,h,srcDC,sx,sy,sw,sh,op);
@@ -786,11 +786,11 @@ void PixRect::mask(const CPoint &dp, const CSize &size, ULONG op, const PixRect 
 void PixRect::mask(int x, int y, int w, int h, ULONG op, const PixRect *src, int sx, int sy, const PixRect *prMask) {
   String errorMsg;
 
-  HDC srcDC  = src ? src->getDC() : NULL;
+  HDC srcDC  = src ? src->getDC() : nullptr;
   HDC dstDC  = getDC();
   HDC maskDC = prMask->getDC();
 
-  HBITMAP maskBitmap = CreateBitmap(prMask->getWidth(),prMask->getHeight(),1,1,NULL);
+  HBITMAP maskBitmap = CreateBitmap(prMask->getWidth(),prMask->getHeight(),1,1,nullptr);
   HDC bmDC = CreateCompatibleDC(maskDC);
   SelectObject(bmDC,maskBitmap);
 
@@ -802,7 +802,7 @@ void PixRect::mask(int x, int y, int w, int h, ULONG op, const PixRect *src, int
 //  BitBlt(dstDC,x,y,w,h,maskDC,0,0,SRCCOPY);
 
   if(ok) {
-    BitBlt(dstDC,x,y,w,h,NULL,0,0,DSTINVERT); // this is only necessary, because windows has no DSTCOPY-rasteroperation to use for the
+    BitBlt(dstDC,x,y,w,h,nullptr,0,0,DSTINVERT); // this is only necessary, because windows has no DSTCOPY-rasteroperation to use for the
                                               // background-operation (used for 0-bits in maskBitmap), so we have to invert dst twice. #!&$?
     ok = MaskBlt(dstDC,x,y,w,h,srcDC,sx,sy,maskBitmap,0,0,MAKEROP4(op,DSTINVERT));
     if(!ok) {
@@ -810,7 +810,7 @@ void PixRect::mask(int x, int y, int w, int h, ULONG op, const PixRect *src, int
     }
   }
 
-  if(src != NULL) {
+  if(src != nullptr) {
     src->releaseDC(srcDC);
   }
   releaseDC(dstDC);
@@ -825,7 +825,7 @@ void PixRect::mask(int x, int y, int w, int h, ULONG op, const PixRect *src, int
 
 /*
 PixRectClipper::PixRectClipper(HWND hwnd) {
-  V(PixRect::directDraw->CreateClipper(0, &m_clipper, NULL));
+  V(PixRect::directDraw->CreateClipper(0, &m_clipper, nullptr));
   V(m_clipper->SetHWnd(0, hwnd));
 }
 
@@ -834,23 +834,23 @@ PixRectClipper::~PixRectClipper() {
 }
 
 void PixRect::setClipper(PixRectClipper *clipper) {
-  if(clipper != NULL) {
+  if(clipper != nullptr) {
     V(m_surface->SetClipper(clipper->m_clipper));
   } else {
-    V(m_surface->SetClipper(NULL));
+    V(m_surface->SetClipper(nullptr));
   }
 }
 */
 
 void PixRect::copy(const VideoHeader &videoHeader) {
   D3DLOCKED_RECT lr;
-  V(m_surface->LockRect(&lr, NULL, D3DLOCK_NOSYSLOCK));
+  V(m_surface->LockRect(&lr, nullptr, D3DLOCK_NOSYSLOCK));
   memcpy(lr.pBits, videoHeader.lpData, videoHeader.dwBytesUsed);
   V(m_surface->UnlockRect());
 }
 
 void PixRect::formatConversion(const PixRect &pr) {
-  CHECKRESULT(m_device.getD3Device()->StretchRect(pr.m_surface, NULL, m_surface, NULL, D3DTEXF_NONE));
+  CHECKRESULT(m_device.getD3Device()->StretchRect(pr.m_surface, nullptr, m_surface, nullptr, D3DTEXF_NONE));
 }
 
 PixRect *PixRect::mirror(const PixRect *src, bool vertical) { // static

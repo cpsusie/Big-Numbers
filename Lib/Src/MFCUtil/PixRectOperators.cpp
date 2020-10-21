@@ -7,14 +7,14 @@ PixRectOperator::PixRectOperator(PixRect *pr) {
 }
 
 void PixRectOperator::init() {
-  m_pixRect       = NULL;
-  m_pixelAccessor = NULL;
+  m_pixRect       = nullptr;
+  m_pixelAccessor = nullptr;
 }
 
 void PixRectOperator::setPixRect(PixRect *pixRect) {
   releasePixelAccessor();
   m_pixRect = pixRect;
-  if(m_pixRect != NULL) {
+  if(m_pixRect != nullptr) {
     m_pixelAccessor = m_pixRect->getPixelAccessor();
   }
 }
@@ -22,21 +22,21 @@ void PixRectOperator::setPixRect(PixRect *pixRect) {
 void PixRectOperator::releasePixelAccessor() {
   if(m_pixelAccessor) {
     m_pixRect->releasePixelAccessor();
-    m_pixelAccessor = NULL;
+    m_pixelAccessor = nullptr;
   }
 }
 
 PixRectOperator::~PixRectOperator() {
-  setPixRect(NULL);
+  setPixRect(nullptr);
 }
 
 void PixRectFilter::init() {
-  m_result              = NULL;
-  m_resultPixelAccessor = NULL;
+  m_result              = nullptr;
+  m_resultPixelAccessor = nullptr;
 }
 
 void PixRectFilter::setPixRect(PixRect *pr) {
-  if(pr == NULL) {
+  if(pr == nullptr) {
     releasePixelAccessor();
     if(m_result && (m_result != m_pixRect)) {
       m_pixRect->rop(m_pixRect->getRect(),SRCCOPY,m_result,ORIGIN);
@@ -51,13 +51,13 @@ void PixRectFilter::setPixRect(PixRect *pr) {
 void PixRectFilter::releasePixelAccessor() {
   if(m_resultPixelAccessor && (m_resultPixelAccessor != m_pixelAccessor)) {
     m_result->releasePixelAccessor();
-    m_resultPixelAccessor = NULL;
+    m_resultPixelAccessor = nullptr;
   }
   __super::releasePixelAccessor();
 }
 
 CRect PixRectFilter::getRect() const {
-  return (m_pixRect == NULL) ? CRect(0,0,0,0) : CRect(0,0,m_pixRect->getWidth(),m_pixRect->getHeight());
+  return (m_pixRect == nullptr) ? CRect(0,0,0,0) : CRect(0,0,m_pixRect->getWidth(),m_pixRect->getHeight());
 }
 
 void SetColor::apply(const CPoint &p) {

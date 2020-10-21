@@ -29,8 +29,8 @@ private:
 public:
   MoveWithResultComparator(Player playerInTurn) : m_playerInTurn(playerInTurn) {
   }
-  int compare(const MoveWithResult &m1, const MoveWithResult &m2);
-  AbstractComparator *clone() const {
+  int compare(const MoveWithResult &m1, const MoveWithResult &m2) override;
+  AbstractComparator *clone() const override {
     return new MoveWithResultComparator(m_playerInTurn);
   }
 };
@@ -203,8 +203,8 @@ private:
 public:
   MoveWithResult2Comparator(Player playerInTurn) : m_playerInTurn(playerInTurn) {
   }
-  int compare(const MoveWithResult2 &m1, const MoveWithResult2 &m2);
-  AbstractComparator *clone() const {
+  int compare(const MoveWithResult2 &m1, const MoveWithResult2 &m2) override;
+  AbstractComparator *clone() const override {
     return new MoveWithResult2Comparator(m_playerInTurn);
   }
 };

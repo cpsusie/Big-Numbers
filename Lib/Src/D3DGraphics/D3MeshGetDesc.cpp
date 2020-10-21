@@ -2,7 +2,7 @@
 #include <D3DGraphics/D3ToString.h>
 
 D3DVERTEXBUFFER_DESC getvDesc(LPD3DXMESH mesh) {
-  LPDIRECT3DVERTEXBUFFER vertexBuffer = NULL;
+  LPDIRECT3DVERTEXBUFFER vertexBuffer = nullptr;
   D3DVERTEXBUFFER_DESC   result;
   try {
     V(mesh->GetVertexBuffer(&vertexBuffer)); TRACE_REFCOUNT(vertexBuffer);
@@ -16,7 +16,7 @@ D3DVERTEXBUFFER_DESC getvDesc(LPD3DXMESH mesh) {
 }
 
 D3DINDEXBUFFER_DESC getiDesc(LPD3DXMESH mesh) {
-  LPDIRECT3DINDEXBUFFER indexBuffer = NULL;
+  LPDIRECT3DINDEXBUFFER indexBuffer = nullptr;
   D3DINDEXBUFFER_DESC   result;
   try {
     V(mesh->GetIndexBuffer(&indexBuffer)); TRACE_REFCOUNT(indexBuffer);

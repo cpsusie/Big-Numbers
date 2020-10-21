@@ -59,7 +59,7 @@ void MeshBuilder::parseWavefrontObjFile(FILE *f) {
     }
     Tokenizer tok(line, _T(" "));
     const ObjTag *tag = keywords.get(tok.next().cstr());
-    if(tag == NULL) {
+    if(tag == nullptr) {
       throwException(_T("Illegal input in line %d:%s"), lineCount, line);
     }
     switch(*tag) {
@@ -131,7 +131,7 @@ void MeshBuilder::parseWavefrontObjFile(FILE *f) {
 }
 
 LPD3DXMESH createMeshFromObjFile(AbstractMeshFactory &amf, const String &fileName, bool doubleSided) {
-  FILE *f = NULL;
+  FILE *f = nullptr;
   try {
     f = FOPEN(fileName, _T("r"));
     MeshBuilder mb;

@@ -271,8 +271,8 @@ void MemoryRef::sortBaseInx() {
         const IndexRegister *tmp = m_inx; m_inx = m_base; m_base = tmp;
         SETDEBUGSTR();
       }
-    } else { // set base = inx; inx = NULL
-      m_base = m_inx; m_inx = NULL;
+    } else { // set base = inx; inx = nullptr
+      m_base = m_inx; m_inx = nullptr;
       SETDEBUGSTR();
     }
   }

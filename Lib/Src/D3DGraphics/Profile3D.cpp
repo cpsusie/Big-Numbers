@@ -30,10 +30,10 @@ Point2DTo3DConverter::Point2DTo3DConverter(char rotateAxis, char rotateAxisAlign
 }
 
 void Point2DTo3DConverter::checkIsValid() const { // throws Exception if not valid
-  if (strchr("xyz", m_rotateAxis) == NULL) {
+  if (strchr("xyz", m_rotateAxis) == nullptr) {
     throwException(_T("RotateAxis must be 'x','y' or 'z'"));
   }
-  if (strchr("xy", m_rotateAxisAlignsTo) == NULL) {
+  if (strchr("xy", m_rotateAxisAlignsTo) == nullptr) {
     throwException(_T("RotateAxisAlignsTo must be 'x' or 'y'"));
   }
 }

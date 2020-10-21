@@ -16,7 +16,7 @@ public:
     m_socket  = INVALID_SOCKET;
     m_doClose = false;
   }
-  void open(int portNr, const TCHAR *hostName = NULL);
+  void open(int portNr, const TCHAR *hostName = nullptr);
   void close();
 
   ~SocketStream() {
@@ -42,7 +42,7 @@ private:
   SocketStream m_stream;
 public:
   BufferedSocket(SOCKET socket);
-  BufferedSocket(int portNr, const TCHAR *hostName = NULL);
+  BufferedSocket(int portNr, const TCHAR *hostName = nullptr);
 
   void send() {
     __super::write(m_stream);

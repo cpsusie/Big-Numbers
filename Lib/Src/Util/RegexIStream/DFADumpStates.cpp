@@ -67,7 +67,7 @@ void printChar(MarginFile &f, int c) {
 }
 
 #define FLUSHRANGE() { if(first <= last) _FLUSHRANGE();   }
-#define NEWTRANS()   { first = 1; last = 0; delim = NULL; }
+#define NEWTRANS()   { first = 1; last = 0; delim = nullptr; }
 
 String DFAState::toString() const {
   tostrstream stream;

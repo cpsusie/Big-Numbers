@@ -3,7 +3,7 @@
 
 static const char *decRationalPattern[] = {
   "[+/-]?[0-9]+/(//[0-9]+/)?"
- ,NULL
+ ,nullptr
 };
 
 StringArray DecRationalValueStreamScanner::getRegexLines() { // static

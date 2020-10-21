@@ -3,7 +3,7 @@
 
 String toString(LPDIRECT3DINDEXBUFFER indexBuffer, BYTE flags) {
   const bool multiLines = (flags & (FORMAT_BUFFERDATA | FORMAT_BUFFERDESCNL)) != 0;
-  if(indexBuffer == NULL) {
+  if(indexBuffer == nullptr) {
     return multiLines ? _T("Null\n") : _T("Null");
   }
   const D3DINDEXBUFFER_DESC desc      = getDesc(indexBuffer);
@@ -28,7 +28,7 @@ String toString(LPDIRECT3DINDEXBUFFER indexBuffer, BYTE flags) {
     }
   }
   if(flags & FORMAT_BUFFERDATA) {
-    void *bufferItems = NULL;
+    void *bufferItems = nullptr;
     V(indexBuffer->Lock(0, 0, &bufferItems, D3DLOCK_READONLY));
 
     int index = 0;

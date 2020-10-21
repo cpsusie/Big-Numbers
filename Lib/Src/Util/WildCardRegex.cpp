@@ -43,7 +43,7 @@ void WildCardRegex::compile(const TCHAR *str, bool ignoreCase, bool wholeWordOnl
   if(wholeWordOnly) {
     reg = String(_T("\\<")) + reg + _T("\\>");
   }
-  Regex::compilePattern(reg, ignoreCase ? String::upperCaseTranslate : NULL);
+  Regex::compilePattern(reg, ignoreCase ? String::upperCaseTranslate : nullptr);
 }
 
 void WildCardRegex::compile(const String &str, bool ignoreCase, bool wholeWordOnly) {

@@ -92,7 +92,7 @@ Timer::Timer(int id, const String &name)
 : m_id(id)
 , m_name(name.length() ? name : format(_T("Timer(%d)"), id))
 , m_flags(0)
-, m_job(NULL)
+, m_job(nullptr)
 {
   ThreadPool::addListener(this);
 }
@@ -128,7 +128,7 @@ void Timer::startTimer(UINT msec, TimeoutHandler &handler, bool repeatTimeout) {
   if(isDestroyingJob()) return;
   m_lock.wait();
   if(!isSet(TM_BLOCKSTART)) {
-    if((m_job == NULL) || isSet(TM_KILLPENDING)) {
+    if((m_job == nullptr) || isSet(TM_KILLPENDING)) {
       destroyJob();
       m_timeoutMsec = msec;
       setFlag(TM_TIMEOUTREPEAT, repeatTimeout);
@@ -150,7 +150,7 @@ void Timer::stopTimer() {
 bool Timer::isRunning() const {
   if(isDestroyingJob()) return false;
   m_lock.wait();
-  const bool result = (m_job != NULL);
+  const bool result = (m_job != nullptr);
   m_lock.notify();
   return result;
 }
@@ -166,7 +166,7 @@ UINT Timer::getTimeout() const {
 void Timer::setTimeout(UINT msec, bool repeatTimeout) {
   if(isDestroyingJob()) return;
   m_lock.wait();
-  if((m_job != NULL) && (msec != m_timeoutMsec)) {
+  if((m_job != nullptr) && (msec != m_timeoutMsec)) {
     m_timeoutMsec = msec;
     setFlag(TM_TIMEOUTREPEAT, repeatTimeout);
     m_job->timeoutChanged();

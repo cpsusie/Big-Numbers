@@ -22,7 +22,7 @@ void D3Scene::setAllTextures(const TextureMap &textureMap) {
 
 UINT D3Scene::getFirstFreeTextureId() const {
   for(UINT id = 0;; id++) {
-    if(m_textureMap.get(id) == NULL) {
+    if(m_textureMap.get(id) == nullptr) {
       return id;
     }
   }

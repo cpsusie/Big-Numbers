@@ -3,7 +3,7 @@
 
 
 ByteMemoryInputStream::ByteMemoryInputStream(const BYTE *src) {
-  assert(src != NULL);
+  assert(src != nullptr);
   m_p        = src;
   m_size     = 0xffffffff;
   m_pos      = 0;

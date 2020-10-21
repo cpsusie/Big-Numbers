@@ -4,7 +4,7 @@
 HANDLE getProcessHandle(DWORD processID) {
   if(processID == -1) processID = GetCurrentProcessId();
   HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, processID);
-  if(hProcess == NULL) {
+  if(hProcess == nullptr) {
     throwLastErrorOnSysCallException(_T("OpenProcess"));
   }
   return hProcess;

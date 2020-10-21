@@ -5,10 +5,10 @@
 
 class DistComparator : public Comparator<D3DXINTERSECTINFO> {
 public:
-  int compare(const D3DXINTERSECTINFO &i1, const D3DXINTERSECTINFO &i2) {
+  int compare(const D3DXINTERSECTINFO &i1, const D3DXINTERSECTINFO &i2) override {
     return sign(i1.Dist - i2.Dist);
   }
-  AbstractComparator *clone() const {
+  AbstractComparator *clone() const override {
     return new DistComparator;
   }
 };
@@ -41,7 +41,7 @@ bool D3SceneObjectVisual::intersectsWithRay(const D3Ray &ray, float &dist, D3Pic
       quickSort(infoArray, hitCount, sizeof(D3DXINTERSECTINFO), DistComparator());
       LPDIRECT3DINDEXBUFFER  indexBuffer;
       LPDIRECT3DVERTEXBUFFER vertexBuffer;
-      void *indexItems = NULL, *vertexItems = NULL;
+      void *indexItems = nullptr, *vertexItems = nullptr;
       try {
         V(mesh->GetVertexBuffer(&vertexBuffer)); TRACE_REFCOUNT(vertexBuffer);
         V(mesh->GetIndexBuffer( &indexBuffer )); TRACE_REFCOUNT(indexBuffer);
@@ -79,13 +79,13 @@ bool D3SceneObjectVisual::intersectsWithRay(const D3Ray &ray, float &dist, D3Pic
             break;
           }
         }
-        V(indexBuffer->Unlock());  indexItems = NULL;
-        V(vertexBuffer->Unlock()); vertexItems = NULL;
+        V(indexBuffer->Unlock());  indexItems = nullptr;
+        V(vertexBuffer->Unlock()); vertexItems = nullptr;
         SAFERELEASE(vertexBuffer);
         SAFERELEASE(indexBuffer);
       } catch(...) {
-        if(indexItems  != NULL) indexBuffer->Unlock();
-        if(vertexItems != NULL) vertexBuffer->Unlock();
+        if(indexItems  != nullptr) indexBuffer->Unlock();
+        if(vertexItems != nullptr) vertexBuffer->Unlock();
         SAFERELEASE(vertexBuffer);
         SAFERELEASE(indexBuffer);
         throw;

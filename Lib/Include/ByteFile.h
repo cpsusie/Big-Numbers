@@ -35,7 +35,7 @@ public:
   void seek(__int64 pos);
 
   inline bool isOpen() const {
-    return m_file != NULL;
+    return m_file != nullptr;
   }
 };
 
@@ -70,7 +70,7 @@ public:
   void seek(__int64 pos);
 
   inline bool isOpen() const {
-    return m_file != NULL;
+    return m_file != nullptr;
   }
 };
 
@@ -112,7 +112,7 @@ public:
   void seek(__int64 pos);
 
   inline bool isOpen() const {
-    return m_file != NULL;
+    return m_file != nullptr;
   }
 
   inline FileMode getMode() const {

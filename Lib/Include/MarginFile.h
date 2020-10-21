@@ -30,7 +30,7 @@ public:
   void open(const String &name);
   void close();
   inline bool isOpen() const {
-    return m_output != NULL;
+    return m_output != nullptr;
   }
 
   void putch(   TCHAR c);

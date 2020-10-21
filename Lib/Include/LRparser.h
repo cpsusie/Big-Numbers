@@ -448,7 +448,7 @@ protected:
   // $$ = $1
   virtual void defaultReduce(       UINT prod  ) = 0;
 public:
-  LRparser(const ParserTables &tables, Scanner *lex = NULL, UINT stackSize = 256);
+  LRparser(const ParserTables &tables, Scanner *lex = nullptr, UINT stackSize = 256);
   virtual ~LRparser();
 
   inline int input() const {

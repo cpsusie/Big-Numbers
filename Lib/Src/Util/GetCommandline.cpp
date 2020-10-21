@@ -35,11 +35,11 @@ public:
 
 NtDllLoader::NtDllLoader() {
   m_module = LoadLibrary(_T("ntdll.dll"));
-  if(m_module == NULL) {
+  if(m_module == nullptr) {
     throwLastErrorOnSysCallException(__TFUNCTION__);
   }
   m_func = (pNtQueryInformationProcess)GetProcAddress(m_module, "NtQueryInformationProcess");
-  if(m_func == NULL) {
+  if(m_func == nullptr) {
     throwLastErrorOnSysCallException(__TFUNCTION__);
   }
 }
@@ -57,8 +57,8 @@ static void checkBoolResult(const TCHAR *func, BOOL ok) {
 
 String getProcessCommandLine(HANDLE hProcess) {
   static NtDllLoader ntdll;
-  if(hProcess == NULL) hProcess = GetCurrentProcess();
-  WCHAR *str = NULL;
+  if(hProcess == nullptr) hProcess = GetCurrentProcess();
+  WCHAR *str = nullptr;
   try {
     PROCESS_BASIC_INFORMATION pinfo;
     ULONG                     returnLength;
@@ -97,7 +97,7 @@ String getProcessCommandLine(HANDLE hProcess) {
     FREE(str);
     return s;
   } catch(...) {
-    if(str != NULL) {
+    if(str != nullptr) {
       FREE(str);
     }
     throw;
@@ -130,14 +130,14 @@ void enableTokenPrivilege(LPCTSTR privilege, bool enable) {
   // open the process token
   V(OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &token));
 
-  PTOKEN_PRIVILEGES previousState = NULL;
+  PTOKEN_PRIVILEGES previousState = nullptr;
   try {
     // look up the privilege LUID and enable it
     TOKEN_PRIVILEGES tp;            // token provileges
     // initialize privilege structure
     ZeroMemory (&tp, sizeof (tp));
     tp.PrivilegeCount = 1;
-    V(LookupPrivilegeValue(NULL, privilege, &tp.Privileges[0].Luid));
+    V(LookupPrivilegeValue(nullptr, privilege, &tp.Privileges[0].Luid));
 
     tp.Privileges[0].Attributes = enable ? SE_PRIVILEGE_ENABLED : 0;
 
@@ -173,7 +173,7 @@ int xxx ( int argc, wchar_t *argv[] )
     WCHAR   cmdline[MAX_PATH];
     WCHAR   *stop;
     DWORD   pid; // pid to get command line for
-    HANDLE  hProcess = NULL;
+    HANDLE  hProcess = nullptr;
 
 
     if( argc != 2 )
@@ -198,7 +198,7 @@ int xxx ( int argc, wchar_t *argv[] )
     hProcess = OpenProcess ( PROCESS_VM_OPERATION | PROCESS_VM_READ | PROCESS_QUERY_INFORMATION,
                             FALSE, pid );
 
-    if( hProcess == NULL )
+    if( hProcess == nullptr )
     {
         printf ( "Failed to open process. pid: %lu, error %lu\n", pid, GetLastError () );
         return 0;

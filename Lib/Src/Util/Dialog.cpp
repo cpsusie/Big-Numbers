@@ -83,7 +83,7 @@ Dialog::Dialog(const String &title, int left, int top, int width, int height) {
   m_width         =  width;
   m_height        =  height;
   m_currentField  = -1;
-  m_menu          = NULL;
+  m_menu          = nullptr;
   m_borderType    = SINGLE_FRAME;
   m_borderColor   = BACKGROUND_BLUE | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY;
   m_color         = BACKGROUND_BLUE | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY;
@@ -483,7 +483,7 @@ bool Dialog::gotoField(int index) {
   if(index < 0 || index >= (int)m_controls.size() || !m_controls[index]->isEnabled()) {
     return false;
   }
-  DialogControl *ff = NULL;
+  DialogControl *ff = nullptr;
   if(m_currentField >= 0) {
     ff = m_controls[m_currentField];
     ff->killFocus();

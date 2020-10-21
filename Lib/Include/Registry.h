@@ -166,11 +166,11 @@ public:
       REGISTRYLOG("delete", this);
       TRACE_DELETE(this); delete this;
     }
-    return NULL;
+    return nullptr;
   }
 
   static B *copy(B *p) {
-    return p ? p->addRef() : NULL;
+    return p ? p->addRef() : nullptr;
   }
 };
 
@@ -230,21 +230,21 @@ public:
                                ,const String         &keyClass           = EMPTYSTRING
                                ,ULONG                 options            = REG_OPTION_NON_VOLATILE
                                ,REGSAM                samDesired         = KEY_ALL_ACCESS
-                               ,SECURITY_ATTRIBUTES  *securityAttributes = NULL) const;
+                               ,SECURITY_ATTRIBUTES  *securityAttributes = nullptr) const;
 
   RegistryKey createOrOpenKey(  const String         &subKey
-                               ,ULONG                *disposition        = NULL
+                               ,ULONG                *disposition        = nullptr
                                ,const String         &keyClass           = EMPTYSTRING
                                ,ULONG                 options            = REG_OPTION_NON_VOLATILE
                                ,REGSAM                samDesired         = KEY_ALL_ACCESS
-                               ,SECURITY_ATTRIBUTES  *securityAttributes = NULL) const;
+                               ,SECURITY_ATTRIBUTES  *securityAttributes = nullptr) const;
 
   RegistryKey createOrOpenPath( const String         &path
-                               ,ULONG                *disposition        = NULL
+                               ,ULONG                *disposition        = nullptr
                                ,const String         &keyClass           = EMPTYSTRING
                                ,ULONG                 options            = REG_OPTION_NON_VOLATILE
                                ,REGSAM                samDesired         = KEY_ALL_ACCESS
-                               ,SECURITY_ATTRIBUTES  *securityAttributes = NULL) const;
+                               ,SECURITY_ATTRIBUTES  *securityAttributes = nullptr) const;
 
   void deleteKey(          const String &keyName) const;
   void deleteKeyAndSubkeys(const String &keyName) const;

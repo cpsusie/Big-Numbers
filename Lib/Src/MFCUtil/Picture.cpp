@@ -100,7 +100,7 @@ CPicture &CPicture::operator=(const CPicture &src) {
 }
 
 void CPicture::initPictureData() {
-  m_IPicture = NULL;
+  m_IPicture = nullptr;
   m_size     = CSize(0,0);
   m_weight   = 0;
   m_hasAlpha = false;
@@ -117,7 +117,7 @@ void CPicture::copyPictureData(const CPicture &src) {
 }
 
 void CPicture::freePictureData() {
-  if(m_IPicture != NULL) {
+  if(m_IPicture != nullptr) {
     SAFERELEASE(m_IPicture);
     initPictureData();
   }
@@ -328,7 +328,7 @@ void CPicture::loadPicture(const ByteArray &bytes) {
 }
 
 void CPicture::loadAsIcon(const String &fileName) {
-  HICON icon = NULL;
+  HICON icon = nullptr;
   try {
     icon = loadIcon(fileName);
     createPictureFromIcon(icon);
@@ -343,7 +343,7 @@ void CPicture::loadAsIcon(const String &fileName) {
 }
 
 void CPicture::loadAsCursor(const String &fileName) {
-  HICON icon = NULL;
+  HICON icon = nullptr;
   try {
     icon = loadCursor(fileName);
     createPictureFromIcon(icon);
@@ -359,7 +359,7 @@ void CPicture::loadAsCursor(const String &fileName) {
 
 HICON CPicture::loadIcon(const String &fileName) { // static
   HICON icon = (HICON)LoadImage(0, fileName.cstr(), IMAGE_ICON, 0, 0, LR_LOADFROMFILE);
-  if(icon == NULL) {
+  if(icon == nullptr) {
     throwLastErrorOnSysCallException(_T("LoadImage"));
   }
   return icon;
@@ -367,7 +367,7 @@ HICON CPicture::loadIcon(const String &fileName) { // static
 
 HICON CPicture::loadCursor(const String &fileName) { // static
   HICON icon = (HICON)LoadImage(0, fileName.cstr(), IMAGE_CURSOR, 0, 0, LR_LOADFROMFILE);
-  if(icon == NULL) {
+  if(icon == nullptr) {
     throwLastErrorOnSysCallException(_T("LoadImage"));
   }
   return icon;
@@ -380,11 +380,11 @@ void CPicture::createPictureFromBitmap(HBITMAP bitmap) {
   desc.cbSizeofstruct = sizeof(PICTDESC);
   desc.picType        = PICTYPE_BITMAP;
   desc.bmp.hbitmap    = bitmap;
-  desc.bmp.hpal       = NULL;
+  desc.bmp.hpal       = nullptr;
   HRESULT hr;
   if((hr = OleCreatePictureIndirect(&desc, IID_IPicture, true, (LPVOID*)&m_IPicture)) != S_OK) {
     throwLastErrorOnSysCallException(_T("OleCreatePictureIndirect"));
-  } else if(m_IPicture != NULL) {
+  } else if(m_IPicture != nullptr) {
     TRACE_CREATE(m_IPicture);
     setSize();
   }
@@ -401,19 +401,19 @@ void CPicture::setSize() {
 
 CPicture::operator HBITMAP() const {
   if(!isLoaded()) {
-    return NULL;
+    return nullptr;
   }
-  HDC     screenDC = NULL;
-  HBITMAP bm       = NULL;
-  HDC     dc       = NULL;
+  HDC     screenDC = nullptr;
+  HBITMAP bm       = nullptr;
+  HDC     dc       = nullptr;
   try {
     screenDC = getScreenDC();
     bm = CreateCompatibleBitmap(screenDC, m_size.cx, m_size.cy);
-    if(bm == NULL) {
+    if(bm == nullptr) {
       throwLastErrorOnSysCallException(_T("CreateCompatibleBitmap"));
     }
     dc = CreateCompatibleDC(screenDC);
-    if(dc == NULL) {
+    if(dc == nullptr) {
       throwLastErrorOnSysCallException(_T("CreateCompatibleDC"));
     }
     HGDIOBJ oldGDI = SelectObject(dc, bm);
@@ -439,7 +439,7 @@ void CPicture::createPictureFromIcon(HICON icon) {
   HRESULT hr;
   if((hr = OleCreatePictureIndirect(&desc, IID_IPicture, true, (LPVOID*)&m_IPicture)) != S_OK) {
     throwLastErrorOnSysCallException(_T("OleCreatePictureIndirect"));
-  } else if(m_IPicture != NULL) {
+  } else if(m_IPicture != nullptr) {
     TRACE_CREATE(m_IPicture);
     setSize();
   }
@@ -463,12 +463,12 @@ void CPicture::unload() {
 void CPicture::loadPictureData(const BYTE *pBuffer, int size) {
   HGLOBAL hGlobal = GlobalAlloc(GMEM_MOVEABLE, size);
 
-  if(hGlobal == NULL) {
+  if(hGlobal == nullptr) {
     throwException(_T("GlobalAlloc failed"));
   }
   __assume(hGlobal);
   void *pData = GlobalLock(hGlobal);
-  if(pData == NULL) {
+  if(pData == nullptr) {
     FreeResource(hGlobal);
     throwLastErrorOnSysCallException(_T("GlobalLock"));
   }
@@ -476,7 +476,7 @@ void CPicture::loadPictureData(const BYTE *pBuffer, int size) {
   memcpy(pData, pBuffer, size);
   GlobalUnlock(hGlobal);
 
-  IStream *pStream = NULL;
+  IStream *pStream = nullptr;
 
   String errormsg;
   HRESULT hr;
@@ -495,7 +495,7 @@ void CPicture::loadPictureData(const BYTE *pBuffer, int size) {
       default           : errormsg = getErrorText(hr);                  break;
       }
       ok = false;
-    } else if(m_IPicture != NULL) {
+    } else if(m_IPicture != nullptr) {
       m_weight = size;
       TRACE_CREATE(m_IPicture);
       setSize();
@@ -548,10 +548,10 @@ void CPicture::show(HDC dc, const CRect &dstRect, const CRect &srcRect) const {
     case SB_NONE       :
       { const CSize &srcsz = srcRect.Size();
         const CSize  dstsz = dstRect.Size();
-        HBITMAP picBM   = CreateBitmap(srcsz.cx, srcsz.cy,1,32,NULL);
-        HBITMAP tmpBM   = CreateBitmap(dstsz.cx, dstsz.cy,1,32,NULL);
-        HDC     picDC   = CreateCompatibleDC(NULL);
-        HDC     tmpDC   = CreateCompatibleDC(NULL);
+        HBITMAP picBM   = CreateBitmap(srcsz.cx, srcsz.cy,1,32,nullptr);
+        HBITMAP tmpBM   = CreateBitmap(dstsz.cx, dstsz.cy,1,32,nullptr);
+        HDC     picDC   = CreateCompatibleDC(nullptr);
+        HDC     tmpDC   = CreateCompatibleDC(nullptr);
         HGDIOBJ picOld  = SelectObject(picDC,picBM);
         HGDIOBJ tmpOld  = SelectObject(tmpDC,tmpBM); // to hold original dst-rect
         try {
@@ -600,8 +600,8 @@ void CPicture::render(HDC dst, const CRect &dstRect, const CRect &srcRect) const
 }
 
 void CPicture::showBitmapResource(HDC hdc, int resId, const CPoint &p) { // static
-  if(hdc == NULL) {
-    throwInvalidArgumentException(__TFUNCTION__, _T("hdc = NULL"));
+  if(hdc == nullptr) {
+    throwInvalidArgumentException(__TFUNCTION__, _T("hdc = nullptr"));
   }
 
   CBitmap bm;
@@ -609,10 +609,10 @@ void CPicture::showBitmapResource(HDC hdc, int resId, const CPoint &p) { // stat
 	  throwException(_T("Cannot find bitmap resource:%d"), resId);
   }
   const BITMAP bmInfo = getBitmapInfo(bm);
-  HDC srcDC = NULL;
+  HDC srcDC = nullptr;
   try {
     srcDC = CreateCompatibleDC(hdc);
-    if(srcDC == NULL) {
+    if(srcDC == nullptr) {
       throwLastErrorOnSysCallException(_T("CreateCompatibleDC"));
     }
     HGDIOBJ oldGDI = SelectObject(srcDC, bm);
@@ -621,7 +621,7 @@ void CPicture::showBitmapResource(HDC hdc, int resId, const CPoint &p) { // stat
     }
     SelectObject(srcDC, oldGDI);
     DeleteDC(srcDC);
-    srcDC = NULL;
+    srcDC = nullptr;
   } catch(...) {
     if(srcDC) {
       DeleteDC(srcDC);
@@ -631,8 +631,8 @@ void CPicture::showBitmapResource(HDC hdc, int resId, const CPoint &p) { // stat
 }
 
 void CPicture::updateSizeOnDC(CDC *pDC) {
-  if(pDC == NULL) {
-    throwInvalidArgumentException(__TFUNCTION__, _T("pDC == NULL"));
+  if(pDC == nullptr) {
+    throwInvalidArgumentException(__TFUNCTION__, _T("pDC == nullptr"));
   }
 
   if(isLoaded()) {

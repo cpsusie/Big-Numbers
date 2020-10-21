@@ -12,8 +12,8 @@ LPDIRECT3DTEXTURE AbstractTextureFactory::loadTextureFromFile(LPDIRECT3DDEVICE d
                                 ,D3DX_FILTER_NONE
                                 ,D3DX_FILTER_NONE
                                 ,0xffffffff
-                                ,NULL
-                                ,NULL
+                                ,nullptr
+                                ,nullptr
                                 ,&result));
   TRACE_CREATE(result);
   return result;
@@ -30,8 +30,8 @@ LPDIRECT3DTEXTURE AbstractTextureFactory::loadTextureFromByteArray(LPDIRECT3DDEV
                                        ,D3DX_FILTER_NONE
                                        ,D3DX_FILTER_NONE
                                        ,0xffffffff
-                                       ,NULL
-                                       ,NULL
+                                       ,nullptr
+                                       ,nullptr
                                        ,&result));
   TRACE_CREATE(result);
   return result;
@@ -56,7 +56,7 @@ LPDIRECT3DTEXTURE AbstractTextureFactory::loadTextureFromBitmapResource(LPDIRECT
 
 bool AbstractTextureFactory::validateTextureFile(const String &textureFileName) const {
   LPDIRECT3DTEXTURE tt = loadTextureFromFile(textureFileName);
-  if(tt == NULL) {
+  if(tt == nullptr) {
     return false;
   }
   SAFERELEASE(tt);

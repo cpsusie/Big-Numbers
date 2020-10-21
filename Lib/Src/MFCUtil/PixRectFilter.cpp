@@ -24,7 +24,7 @@ SobelFilter::SobelFilter() {
 
 void SobelFilter::setPixRect(PixRect *src) {
   __super::setPixRect(src);
-  if(src != NULL) {
+  if(src != nullptr) {
     m_result         = src->clone();
     const CSize size = src->getSize();
     m_result->rectangle(0,0,size.cx-1,size.cy-1,D3D_WHITE);
@@ -33,7 +33,7 @@ void SobelFilter::setPixRect(PixRect *src) {
 }
 
 CRect SobelFilter::getRect() const {
-  return (m_pixRect == NULL) ? CRect(0,0,0,0) : CRect(1,1,m_pixRect->getWidth()-2,m_pixRect->getHeight()-2);
+  return (m_pixRect == nullptr) ? CRect(0,0,0,0) : CRect(1,1,m_pixRect->getWidth()-2,m_pixRect->getHeight()-2);
 }
 
 void SobelFilter::apply(const CPoint &p) {
@@ -75,7 +75,7 @@ LaplaceFilter::LaplaceFilter() {
 
 void LaplaceFilter::setPixRect(PixRect *src) {
   __super::setPixRect(src);
-  if(src != NULL) {
+  if(src != nullptr) {
     m_result         = src->clone();
     const CSize size = src->getSize();
     m_result->rectangle(0,0,size.cx-1,size.cy-1,D3D_WHITE);
@@ -85,7 +85,7 @@ void LaplaceFilter::setPixRect(PixRect *src) {
 }
 
 CRect LaplaceFilter::getRect() const {
-  return (m_pixRect == NULL) ? CRect(0,0,0,0) : CRect(2,2,m_pixRect->getWidth()-4,m_pixRect->getHeight()-4);
+  return (m_pixRect == nullptr) ? CRect(0,0,0,0) : CRect(2,2,m_pixRect->getWidth()-4,m_pixRect->getHeight()-4);
 }
 
 void LaplaceFilter::apply(const CPoint &p) {
@@ -117,7 +117,7 @@ GaussFilter::GaussFilter() {
 
 void GaussFilter::setPixRect(PixRect *src) {
   __super::setPixRect(src);
-  if(src != NULL) {
+  if(src != nullptr) {
     m_result         = src->clone();
     const CSize size = src->getSize();
     m_result->rectangle(0,0,size.cx-1,size.cy-1,D3D_WHITE);
@@ -127,7 +127,7 @@ void GaussFilter::setPixRect(PixRect *src) {
 }
 
 CRect GaussFilter::getRect() const {
-  return (m_pixRect == NULL) ? CRect(0,0,0,0) : CRect(2,2,m_pixRect->getWidth()-4,m_pixRect->getHeight()-4);
+  return (m_pixRect == nullptr) ? CRect(0,0,0,0) : CRect(2,2,m_pixRect->getWidth()-4,m_pixRect->getHeight()-4);
 }
 
 void GaussFilter::apply(const CPoint &p) {
@@ -152,8 +152,8 @@ void GaussFilter::apply(const CPoint &p) {
 
 
 void EdgeDirectionFilter::setPixRect(PixRect *src) {
-  if(src == NULL) {
-    __super::setPixRect(NULL);
+  if(src == nullptr) {
+    __super::setPixRect(nullptr);
   } else {
     PixRectFilter::setPixRect(src); // NB Not __super::
     m_result         = src->clone();
@@ -165,7 +165,7 @@ void EdgeDirectionFilter::setPixRect(PixRect *src) {
 }
 
 CRect EdgeDirectionFilter::getRect() const {
-  return (m_pixRect == NULL) ? CRect(0,0,0,0) : CRect(2,2,m_pixRect->getWidth()-4,m_pixRect->getHeight()-4);
+  return (m_pixRect == nullptr) ? CRect(0,0,0,0) : CRect(2,2,m_pixRect->getWidth()-4,m_pixRect->getHeight()-4);
 }
 
 void EdgeDirectionFilter::apply(const CPoint &p) {
@@ -227,8 +227,8 @@ void EdgeDirectionFilter::apply(const CPoint &p) {
 // --------------------------------- CannyEdgeFilter ---------------------------------
 
 void CannyEdgeFilter::setPixRect(PixRect *src) {
-  if(src == NULL) {
-    __super::setPixRect(NULL);
+  if(src == nullptr) {
+    __super::setPixRect(nullptr);
   } else {
     src->apply(GaussFilter()).apply(EdgeDirectionFilter());
     __super::setPixRect(src);
@@ -238,7 +238,7 @@ void CannyEdgeFilter::setPixRect(PixRect *src) {
 }
 
 CRect CannyEdgeFilter::getRect() const {
-  return (m_pixRect == NULL) ? CRect(0,0,0,0) : CRect(2,2,m_pixRect->getWidth()-4,m_pixRect->getHeight()-4);
+  return (m_pixRect == nullptr) ? CRect(0,0,0,0) : CRect(2,2,m_pixRect->getWidth()-4,m_pixRect->getHeight()-4);
 }
 
 #define threshold 25

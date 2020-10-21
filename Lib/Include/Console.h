@@ -197,11 +197,11 @@ private:
 public:
   ConsoleWindow();
   ~ConsoleWindow();
-  void create(bool shadowed, int left, int top, int right, int bottom, ConsoleWindow *parent = NULL);
+  void create(bool shadowed, int left, int top, int right, int bottom, ConsoleWindow *parent = nullptr);
   void destroy();
 
   bool isVisible() const {
-    return m_tw != NULL;
+    return m_tw != nullptr;
   }
 
   void setShadow(bool on);
@@ -563,7 +563,7 @@ private:
   TextWin      *m_tw;
 
   bool isDropDownVisible() const {
-    return m_tw != NULL;
+    return m_tw != nullptr;
   }
 
   void beginDropDown();
@@ -781,7 +781,7 @@ public:
   bool gotoField( int index);
 
   DialogControl *getCurrentControl() {
-    return (m_currentField < 0) ? NULL : m_controls[m_currentField];
+    return (m_currentField < 0) ? nullptr : m_controls[m_currentField];
   }
   DialogControl *getDlgItem(int id);
   void draw();

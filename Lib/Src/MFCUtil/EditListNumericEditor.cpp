@@ -27,7 +27,7 @@ BOOL CEditListNumericEditor::Create(CWnd *parent, int id, UINT flags, DoubleInte
     SetFont(parent->GetFont());
   }
   m_flags        = flags;
-  if(LF_NUM_HASINTERVAL(m_flags) && (legalInterval == NULL)) {
+  if(LF_NUM_HASINTERVAL(m_flags) && (legalInterval == nullptr)) {
     throwInvalidArgumentException(method, _T("Has Lower- or Upper-limit specified, but no legal interval"));
   }
   const ListFieldType type = LF_GETTYPE(flags);

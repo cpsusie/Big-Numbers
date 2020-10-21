@@ -216,7 +216,7 @@ private:
   void trace(int flag, _In_z_ _Printf_format_string_ TCHAR const * const format, ...) const;
   void vtrace(         _In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) const;
 public:
-  Tableau(size_t xCount, size_t constraintCount, SimplexTracer *tracer = NULL, int traceFlags = TRACE_MAINSTEP);
+  Tableau(size_t xCount, size_t constraintCount, SimplexTracer *tracer = nullptr, int traceFlags = TRACE_MAINSTEP);
   Tableau(const Tableau &src);
 
   SimplexResult primalSimplex(int phase); // Parameter phase only for tracing
@@ -234,7 +234,7 @@ public:
   void trace(_In_z_ _Printf_format_string_ TCHAR const * const format, ...) const;
 
   bool isTracing(int flag) const {
-    return m_tracer != NULL && ((m_traceFlags & flag) != 0);
+    return m_tracer != nullptr && ((m_traceFlags & flag) != 0);
   }
 
   int getXCount() const {

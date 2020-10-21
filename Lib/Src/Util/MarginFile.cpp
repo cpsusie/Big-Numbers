@@ -46,13 +46,13 @@ void MarginFile::setOutput(tostream &output, const String &name, const String &a
 void  MarginFile::init() {
   m_name             = EMPTYSTRING;
   m_absolutName      = EMPTYSTRING;
-  m_output           = NULL;
+  m_output           = nullptr;
   m_openedByMe       = false;
   m_trimRight        = false;
   m_lineNumber       = 1;
   m_currentLine      = EMPTYSTRING;
   m_leftFiller       = EMPTYSTRING;
-  m_formatBuffer     = NULL;
+  m_formatBuffer     = nullptr;
   m_formatBufferSize = 0;
 }
 
@@ -71,7 +71,7 @@ void MarginFile::close() {
   if(m_openedByMe) {
     SAFEDELETE(m_output);
   } else {
-    m_output = NULL;
+    m_output = nullptr;
   }
   SAFEDELETEARRAY(m_formatBuffer);
   init();

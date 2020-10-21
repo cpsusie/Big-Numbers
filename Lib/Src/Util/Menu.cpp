@@ -39,7 +39,7 @@ MenuItem::MenuItem(MenuItemType type, const String &text, int command) {
   *dst = 0;
   m_text = tmp.cstr();
 
-  m_subMenu = NULL;
+  m_subMenu = nullptr;
   m_checked = false;
   m_enabled = true;
   m_command = command;
@@ -293,7 +293,7 @@ bool Menu::wantEvent(int event) {
 }
 
 bool Menu::handleEvent(int event) {
-  if(m_hostWindow == NULL) {
+  if(m_hostWindow == nullptr) {
     throwException(_T("no hostwindow in menu"));
   }
   if(EVENTSTATE(event) & ALT_PRESSED) {
@@ -336,7 +336,7 @@ void Menu::findSize() {
       m_width += m_items[i]->getItemWidth();
     }
     m_height = 1;
-    if(m_hostWindow != NULL) {
+    if(m_hostWindow != nullptr) {
       Dialog *dlg = (Dialog*)m_hostWindow;
       SMALL_RECT r;
       dlg->getRect(r);
@@ -479,14 +479,14 @@ MenuItem *Menu::findMenuItem(int id) {
     MenuItem *item = m_items[i];
     if(item->m_type == MENUITEMPOPUP) {
       MenuItem *si = item->m_subMenu->findMenuItem(id);
-      if(si != NULL) {
+      if(si != nullptr) {
         return si;
       }
     } else if(item->m_type == MENUITEMTEXT && item->m_command == id) {
       return item;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 void Menu::checkMenuItem(int id, bool checked) {
@@ -533,7 +533,7 @@ Menu::Menu(StaticMenuItem *items) {
   m_textColor     = NORMALVIDEO                        | BACKGROUND_BLUE | BACKGROUND_GREEN;
   m_selTextColor  = NORMALVIDEO;
   m_highLiteColor = FOREGROUND_YELLOW;
-  m_hostWindow    = NULL;
+  m_hostWindow    = nullptr;
   m_shadowed      = false;
 
   for(int i = 0; items[i].m_type != MENUITEMEND; ) {
@@ -562,7 +562,7 @@ Menu::Menu(StaticMenuItem *items) {
     MenuItem *item = m_items[i];
     TCHAR *tab = _tcschr(item->m_text.cstr(),_T('\t'));
     int p;
-    if(tab != NULL) {
+    if(tab != nullptr) {
       p = (int)(tab - item->m_text.cstr());
     } else {
       p = (int)item->m_text.length();
@@ -577,7 +577,7 @@ Menu::Menu(StaticMenuItem *items) {
     for(size_t i = 0; i < m_items.size(); i++) {
       MenuItem *item = m_items[i];
       TCHAR *tab = _tcschr(item->m_text.cstr(),_T('\t'));
-      if(tab != NULL) {
+      if(tab != nullptr) {
         int p = (int)(tab - item->m_text.cstr());
         item->m_text = left(item->m_text,p) + spaceString(tabulatorPosition - p) + substr(item->m_text, p + 1, item->m_text.length());
       }
@@ -588,7 +588,7 @@ Menu::Menu(StaticMenuItem *items) {
 Menu::~Menu() {
   for(size_t i = 0; i < m_items.size(); i++) {
     MenuItem *item = m_items[i];
-    if(item->m_subMenu != NULL) {
+    if(item->m_subMenu != nullptr) {
       delete item->m_subMenu;
     }
     delete item;
@@ -628,7 +628,7 @@ void Menu::traverse(WORD c1, WORD c2, WORD c3, WORD c4, bool sh) {
 
   for(int i = 0; i < (int)m_items.size(); i++) {
     MenuItem *item = m_items[i];
-    if(item->m_subMenu != NULL) {
+    if(item->m_subMenu != nullptr) {
       item->m_subMenu->traverse(c1,c2,c3,c4,sh);
     }
   }

@@ -15,7 +15,7 @@ CSliderCtrlWithTransformation::~CSliderCtrlWithTransformation() {
 void CSliderCtrlWithTransformation::substituteControl(CWnd *parent, int id, DoubleInterval &interval, UINT steps, IntervalScale type) {
   DEFINEMETHODNAME;
   CSliderCtrl *ctrl = (CSliderCtrl*)parent->GetDlgItem(id);
-  if(ctrl == NULL) {
+  if(ctrl == nullptr) {
     showError(_T("%s:Control %d not found"), method, id);
     return;
   }
@@ -32,7 +32,7 @@ void CSliderCtrlWithTransformation::substituteControl(CWnd *parent, int id, Doub
 }
 
 void CSliderCtrlWithTransformation::init() {
-  m_tr = NULL;
+  m_tr = nullptr;
 }
 
 void CSliderCtrlWithTransformation::cleanup() {
@@ -41,7 +41,7 @@ void CSliderCtrlWithTransformation::cleanup() {
 }
 
 void CSliderCtrlWithTransformation::assertCreated(const TCHAR *method) const {
-  if(m_tr == NULL) {
+  if(m_tr == nullptr) {
     throwException(_T("%s:Not initialized"), method);
   }
 }

@@ -14,10 +14,10 @@ namespace TestDate {
   class DateComparator : public Comparator<Date> {
   public:
     bool m_reverse;
-    int compare(const Date &d1, const Date &d2) const;
+    int compare(const Date &d1, const Date &d2) override;
   };
 
-  int DateComparator::compare(const Date &d1, const Date &d2) const {
+  int DateComparator::compare(const Date &d1, const Date &d2) {
     return m_reverse ? dateCmp(d2, d1) : dateCmp(d1, d2);
   }
 

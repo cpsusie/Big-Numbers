@@ -191,7 +191,7 @@ static inline bool isRadixDigit(wchar_t ch, UINT radix, UINT &value) {
 }
 
 template<typename Int128Type, class Ctype, bool withSign> Int128Type strtoint128(const Ctype *s, Ctype **end, UINT radix, _locale_t locale) {
-  if((s == NULL) || ((radix != 0) && ((radix < 2) || (radix > 36)))) {
+  if((s == nullptr) || ((radix != 0) && ((radix < 2) || (radix > 36)))) {
     errno = EINVAL;
     return 0;
   }

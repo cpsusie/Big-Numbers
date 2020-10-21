@@ -27,7 +27,7 @@ public:
   }
   void waitForResults(size_t expectedResultCount);
   void putAllDone() {
-    __super::put(NULL);
+    __super::put(nullptr);
   }
   void putError(const String &s) {
     __super::put(new String(s));

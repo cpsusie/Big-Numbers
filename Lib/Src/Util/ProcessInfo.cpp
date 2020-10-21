@@ -4,7 +4,7 @@
 ProcessInfo::ProcessInfo(DWORD processId) {
   m_processId = processId;
   HANDLE hProcess = OpenProcess(PROCESS_VM_OPERATION | PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, processId);
-  if(NULL == hProcess) {
+  if(nullptr == hProcess) {
     return;
   }
   try {

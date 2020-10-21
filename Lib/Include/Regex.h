@@ -27,7 +27,7 @@ public:
   inline _RegexStateRegister() {
     m_regStart = (TCHAR*)-1; // Initialize \( and \) text positions to -1 to indicate, that no \( or \) has been seen
 #if defined(_DEBUG)
-    m_regStartSegEnd = m_regEnd = NULL;
+    m_regStartSegEnd = m_regEnd = nullptr;
 #endif
   }
   inline bool isSet() const {
@@ -36,7 +36,7 @@ public:
   inline void clear() {
     m_regStart = (TCHAR*)-1;
 #if defined(_DEBUG)
-    m_regStartSegEnd = m_regEnd = NULL;
+    m_regStartSegEnd = m_regEnd = nullptr;
 #endif
   }
 
@@ -148,7 +148,7 @@ private:
   }
 
   inline void pushZeroes() {
-    push(NULL,NULL);
+    push(nullptr,nullptr);
   }
 
   inline void resetCounter(BYTE counterIndex) {
@@ -221,7 +221,7 @@ public:
     const int                    jumpCount    = getJumpAddress(m_ip);
     const _RegexCounterRegister &counter      = m_counterTable[counterIndex];
     m_stack.push(_RegexMatchStackElement(m_ip + jumpCount, m_sp, counterIndex, counter.m_value
-                                        /*,counter.hasStateRegister()?m_register[counter.m_regno].m_regEnd : NULL*/));
+                                        /*,counter.hasStateRegister()?m_register[counter.m_regno].m_regEnd : nullptr*/));
   }
 
   inline void doPopAndJump() {
@@ -374,7 +374,7 @@ private:
   // Number of counters in use.
   UINT                       m_counterTableSize;
   // Translate table to apply to all characters before comparing.
-  // Or NULL for no translation.
+  // Or nullptr for no translation.
   // The translation is applied to a pattern when it is compiled
   // and to data when it is matched.
   const TCHAR               *m_translateTable;
@@ -447,18 +447,18 @@ private:
   void assertHasSpace(UINT addr, UINT count);
 public:
   Regex();
-  Regex(const String &pattern, const TCHAR *translateTable = NULL);
-  Regex(const TCHAR  *pattern, const TCHAR *translateTable = NULL);
-  void compilePattern(const String &pattern, const TCHAR *translateTable = NULL);
-  void compilePattern(const TCHAR  *pattern, const TCHAR *translateTable = NULL);
+  Regex(const String &pattern, const TCHAR *translateTable = nullptr);
+  Regex(const TCHAR  *pattern, const TCHAR *translateTable = nullptr);
+  void compilePattern(const String &pattern, const TCHAR *translateTable = nullptr);
+  void compilePattern(const TCHAR  *pattern, const TCHAR *translateTable = nullptr);
   // Search for the compiled expression in text
-  intptr_t search(    const String &text, bool forward = true, intptr_t startPos = -1, RegexRegisters *registers = NULL) const;
+  intptr_t search(    const String &text, bool forward = true, intptr_t startPos = -1, RegexRegisters *registers = nullptr) const;
   // Search for the compiled expression in text
-  intptr_t search(    const TCHAR  *text, bool forward = true, intptr_t startPos = -1, RegexRegisters *registers = NULL) const;
+  intptr_t search(    const TCHAR  *text, bool forward = true, intptr_t startPos = -1, RegexRegisters *registers = nullptr) const;
   // Check for exact match
-  bool     match(     const String &text, RegexRegisters *registers = NULL) const;
+  bool     match(     const String &text, RegexRegisters *registers = nullptr) const;
   // Check for exact match
-  bool     match(     const TCHAR  *text, RegexRegisters *registers = NULL) const;
+  bool     match(     const TCHAR  *text, RegexRegisters *registers = nullptr) const;
 
   inline intptr_t getResultLength() const {
     return m_resultLength;
@@ -486,9 +486,9 @@ public:
 
   // Return set of characters that can possibly begin a string matching
   // the commands in range [pcStart;pcEnd[. pcStart inclusive, pcEnd exclusive
-  BitSet first(intptr_t pcStart, intptr_t pcEnd, bool *matchEmpty = NULL) const;
+  BitSet first(intptr_t pcStart, intptr_t pcEnd, bool *matchEmpty = nullptr) const;
 
-  // Return help text,syntax-description terminated with NULL-pointer
+  // Return help text,syntax-description terminated with nullptr-pointer
   static const TCHAR **getHelpText();
 #if defined(_DEBUG)
   RegexStepHandler *setHandler(RegexStepHandler *handler);

@@ -72,7 +72,7 @@ LPD3DXMESH createMeshMarchingCube(DIRECT3DDEVICE device, const IsoSurfaceParamet
 
   meshCreator.setVoxelSize(cellSize, cellSize, cellSize);
   Mesh        *mesh = meshCreator.createMesh();
-  if(mesh == NULL) {
+  if(mesh == nullptr) {
     throwException(_T("No polygons generated. Cannot create object"));
   }
 //  mesh->computeVertexNormals();

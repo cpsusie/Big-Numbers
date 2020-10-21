@@ -1,7 +1,7 @@
 #include "pch.h"
 #include <new.h>
 
-static _PNH old_handler = NULL;
+static _PNH old_handler = nullptr;
 
 static int SafeNewHandler(size_t size) {
   throwException(_T("out of memory"));

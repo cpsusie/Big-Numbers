@@ -112,10 +112,10 @@ namespace TestCollection {
   };
 
   class PointerComparator : public Comparator<void*> {
-    int compare(void * const &e1, void * const  &e2) {
+    int compare(void * const &e1, void * const  &e2) override {
       return sign((BYTE*)e1 - (BYTE*)e2);
     }
-    AbstractComparator *clone() const {
+    AbstractComparator *clone() const override {
       return new PointerComparator();
     }
   };

@@ -15,10 +15,10 @@ PatternScanner::PatternScanner(const StringArray &sourceLines, bool ignoreCase)
 }
 
 void PatternScanner::initPointers() {
-  m_source          = NULL;
-  m_end             = NULL;
-  m_current         = NULL;
-  m_lastStart       = NULL;
+  m_source          = nullptr;
+  m_end             = nullptr;
+  m_current         = nullptr;
+  m_lastStart       = nullptr;
   m_insideCharClass = false;
 }
 

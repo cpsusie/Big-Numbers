@@ -80,7 +80,7 @@ void VisibleChangedNotification::handlePropertyChanged(const PropertyContainer *
 void CPropertyDialogThread::setDialogVisible(bool visible) {
   m_lock.wait();
   try {
-    if(m_dlg == NULL) noDialogException(__TFUNCTION__);
+    if(m_dlg == nullptr) noDialogException(__TFUNCTION__);
     if(!m_setVisibleBusy) {
       m_setVisibleBusy = true;
       VisibleChangedNotification changed(m_dlg);
@@ -120,7 +120,7 @@ bool CPropertyDialogThread::setCurrentDialogProperty(const void *v, size_t size)
   m_lock.wait();
   bool changed = false;
   try {
-    if(m_dlg == NULL) noDialogException(__TFUNCTION__);
+    if(m_dlg == nullptr) noDialogException(__TFUNCTION__);
     __assume(m_dlg);
     changed = m_dlg->setStartProperty(v, size);
     if(m_dlg->isVisible()) {
@@ -135,7 +135,7 @@ bool CPropertyDialogThread::setCurrentDialogProperty(const void *v, size_t size)
 }
 
 const void *CPropertyDialogThread::getCurrentDialogProperty(size_t size) const {
-  if(m_dlg == NULL) noDialogException(__TFUNCTION__);
+  if(m_dlg == nullptr) noDialogException(__TFUNCTION__);
   __assume(m_dlg);
   return m_dlg->getCurrentProperty(size);
 }

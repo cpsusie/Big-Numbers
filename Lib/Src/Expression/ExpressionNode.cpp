@@ -98,10 +98,10 @@ private:
 public:
   NameSelector(const String &name) : m_name(name) {
   }
-  bool select(const ExpressionNode * const &n) {
+  bool select(const ExpressionNode * const &n) override {
     return n->isName() && (n->getName().equalsIgnoreCase(m_name));
   }
-  AbstractSelector *clone() const {
+  AbstractSelector *clone() const override {
     return new NameSelector(m_name);
   }
 };

@@ -61,7 +61,7 @@ public:
   void vstart(bool silent, const String &program, va_list argptr);
   // No wait. Can communicate with process' stdin/stdout by send/receive
   // Cannot use String &, because va_start will fail
-  // Terminate argumentlist with NULL
+  // Terminate argumentlist with nullptr
   void start( bool silent, const String program, ...);
 
   // Wait for termination. Return exit-code
@@ -70,12 +70,12 @@ public:
   static int vrun(bool silent, const String &program, va_list argptr);
   // Wait for termination. Return exit-code
   // Cannot use String &, because va_start will fail
-  // Terminate argumentlist with NULL
+  // Terminate argumentlist with nullptr
   static int  run(bool silent, const String program, ...);
   // Start process, no wait for termination. no communication possible. the started program is on its own
   // throw exception if program could not be started
   // Cannot use String &, because va_start will fail
-  // Terminate argumentlist with NULL
+  // Terminate argumentlist with nullptr
   static void runNoWait(const String program, ...);
 
   // Works only together with vstart, start.
@@ -85,7 +85,7 @@ public:
   // Works only together with vstart, start. Can receive text written to stdout by child-process
   String receive();
   inline bool isStarted() const {
-    return m_input != NULL;
+    return m_input != nullptr;
   }
   inline void setVerbose(bool verbose) {
     m_verbose = verbose;

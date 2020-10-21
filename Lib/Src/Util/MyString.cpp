@@ -3,7 +3,7 @@
 TCHAR *String::newCharBuffer(const TCHAR *s, size_t &length, size_t &capacity) { // static
   length = _tcsclen(s);
   TCHAR *result = new TCHAR[capacity = length + 1];
-  if(result == NULL) {
+  if(result == nullptr) {
     throwInvalidArgumentException(__TFUNCTION__, _T("Out of memory. Requested size=%s"), format1000(capacity).cstr());
   }
   return _tcscpy(result,s);

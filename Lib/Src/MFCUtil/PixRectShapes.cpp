@@ -36,7 +36,7 @@ void PixRect::drawDragRect(CRect *newRect, const CSize &newSize, CRect *lastRect
   if(lastRect) {
     tmp = makePositiveRect(*lastRect);
   }
-  dc->DrawDragRect(&makePositiveRect(newRect), newSize,(lastRect!=NULL) ? tmp : NULL, lastSize);
+  dc->DrawDragRect(&makePositiveRect(newRect), newSize,(lastRect!=nullptr) ? tmp : nullptr, lastSize);
   releaseDC(hdc);
 }
 
@@ -68,7 +68,7 @@ void PixRect::fillRect(const CRect &rect, D3DCOLOR color, bool invert) {
   HDC hdc = getDC();
   try {
     if(invert) {
-      BitBlt( hdc, dstRect.left, dstRect.top, dstRect.Width(), dstRect.Height(), NULL, 0, 0, DSTINVERT);
+      BitBlt( hdc, dstRect.left, dstRect.top, dstRect.Width(), dstRect.Height(), nullptr, 0, 0, DSTINVERT);
     }
     else {
       HBRUSH brush = CreateSolidBrush(D3DCOLOR2COLORREF(color));
@@ -118,14 +118,14 @@ void PixRect::replicate(int x, int y, int w, int h, const PixRect *src) {
 PixRect &PixRect::apply(PixRectOperator &op) {
   op.setPixRect(this);
   applyToFullRectangle(CRect(CPoint(0,0), getSize()), op);
-  op.setPixRect(NULL);
+  op.setPixRect(nullptr);
   return *this;
 }
 
 PixRect &PixRect::apply(PixRectFilter &filter) {
   filter.setPixRect(this);
   applyToFullRectangle(filter.getRect(),filter);
-  filter.setPixRect(NULL);
+  filter.setPixRect(nullptr);
   return *this;
 }
 
@@ -142,7 +142,7 @@ void PixRect::fillEllipse(const CRect &rect, D3DCOLOR color, bool invert) {
   pmask->ellipse(r,D3D_WHITE);                          // draw white ellipse on mask
   pmask->fill(r.CenterPoint(),D3D_WHITE);
 
-//  rop(rect.left,rect.top,rect.Width(),rect.Height(),DSTINVERT,NULL,0,0);
+//  rop(rect.left,rect.top,rect.Width(),rect.Height(),DSTINVERT,nullptr,0,0);
 //  mask(rect.left,rect.top,rect.Width(),rect.Height(), MAKEROP4(SRCCOPY,DSTINVERT), psrc, 0,0, pmask);
   mask(rect.left,rect.top,rect.Width(),rect.Height(), SRCCOPY, psrc, 0,0, pmask);
 

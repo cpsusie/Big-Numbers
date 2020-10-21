@@ -30,17 +30,17 @@ XMLNodePtr XMLDoc::createNode(const TCHAR *nodeName, bool force) {
 
 XMLNodePtr XMLDoc::createNode(const XMLNodePtr &parent, const TCHAR *nodeName, bool force) {
   DEFINEMETHODNAME;
-  if(parent == NULL) {
-    throwInvalidArgumentException(method, _T("parent=NULL"));
+  if(parent == nullptr) {
+    throwInvalidArgumentException(method, _T("parent=nullptr"));
   }
-  if((nodeName == NULL) || (_tcsclen(nodeName) == 0)) {
+  if((nodeName == nullptr) || (_tcsclen(nodeName) == 0)) {
     throwInvalidArgumentException(method, _T("nodeName=%s"), nodeName?nodeName:_T("null"));
   }
 
   XMLNodePtr result;
-  if(_tcschr(nodeName, '.') == NULL) {
+  if(_tcschr(nodeName, '.') == nullptr) {
     result = findChild(parent,nodeName);
-    if((result != NULL) && !force) {
+    if((result != nullptr) && !force) {
       throwException(_T("Node %s alredy exist. set force to true, if duplicates are allowed"), nodeName);
     } else {
       result = m_doc->createElement(nodeName);
@@ -54,14 +54,14 @@ XMLNodePtr XMLDoc::createNode(const XMLNodePtr &parent, const TCHAR *nodeName, b
     size_t i;
     for(i = 0; i < tokens.size() - 1; i++) {
       XMLNodePtr tmp = findChild(node,tokens[i].cstr());
-      if(tmp == NULL) {
+      if(tmp == nullptr) {
         tmp  = m_doc->createElement(tokens[i].cstr());
         node = node->appendChild(tmp);
       }
     }
 
     XMLNodePtr result = findChild(node,tokens[i].cstr());
-    if((result != NULL) && !force) {
+    if((result != nullptr) && !force) {
       throwException(_T("Node %s alredy exist. set force to true, if duplicates are allowed"), nodeName);
     } else {
       result = m_doc->createElement(tokens[i].cstr());
@@ -80,21 +80,21 @@ XMLNodePtr XMLDoc::getRoot() const {
 }
 
 XMLNodePtr XMLDoc::findChild(const XMLNodePtr &node, const TCHAR *nodeName, int instans) const {
-  if(node == NULL) {
-    return NULL;
+  if(node == nullptr) {
+    return nullptr;
   }
   int i = 0;
-  for(XMLNodePtr result=node->firstChild; result!=NULL; result=result->nextSibling) {
+  for(XMLNodePtr result=node->firstChild; result!=nullptr; result=result->nextSibling) {
     if((_tcsicmp(result->nodeName, nodeName)==0) && (i++==instans)) {
       return result;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 XMLNodePtr XMLDoc::getChild(const XMLNodePtr &node, const TCHAR *nodeName, int instans) const {
   XMLNodePtr child = findChild(node, nodeName, instans);
-  if(child == NULL) {
+  if(child == nullptr) {
     throwException(_T("ChildNode with name=\"%s\" not found in node %s"), nodeName, (TCHAR*)node->nodeName);
   }
   return child;
@@ -105,15 +105,15 @@ XMLNodePtr XMLDoc::findNode(const TCHAR *nodeName) const {
 }
 
 XMLNodePtr XMLDoc::findNode(const XMLNodePtr &node, const TCHAR *nodeName) const {
-  if(node == NULL) {
-    return NULL;
+  if(node == nullptr) {
+    return nullptr;
   }
-  if(_tcschr(nodeName, '.') == NULL) {
+  if(_tcschr(nodeName, '.') == nullptr) {
     return findChild(node, nodeName);
   } else {
     StringArray tokens(Tokenizer(nodeName,_T(".")));
     XMLNodePtr result = node;
-    for(size_t i = 0; (i < tokens.size()) && (result != NULL); result = result->nextSibling) {
+    for(size_t i = 0; (i < tokens.size()) && (result != nullptr); result = result->nextSibling) {
 //    String sss = BSTRToString(node->GetbaseName());
 //    printf("tagName:%s\n",sss.cstr());
       if(_tcsicmp(result->nodeName,tokens[i].cstr())==0) {
@@ -154,20 +154,20 @@ String &XMLDoc::getNodeText(const XMLNodePtr &node, String &value) const {
 }
 
 XMLNodePtr XMLDoc::findTextNode(const XMLNodePtr &node) const {
-  for(XMLNodePtr p = node->firstChild; p != NULL; p = p->nextSibling) {
+  for(XMLNodePtr p = node->firstChild; p != nullptr; p = p->nextSibling) {
     if(p->nodeType == NODE_TEXT) {
       return p;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 void XMLDoc::setNodeText(const XMLNodePtr &node, const TCHAR *value) {
-  if(node == NULL) {
+  if(node == nullptr) {
     return;
   }
   XMLNodePtr textNode = findTextNode(node);
-  if(textNode == NULL) {
+  if(textNode == nullptr) {
     node->appendChild(m_doc->createTextNode(value));
   } else {
     textNode->nodeValue = value;
@@ -176,7 +176,7 @@ void XMLDoc::setNodeText(const XMLNodePtr &node, const TCHAR *value) {
 
 VARIANT XMLDoc::getVariant(const XMLNodePtr &node) const {
   VARIANT result;
-  result.vt = NULL;
+  result.vt = 0;
   XMLNodeType type;
   node->get_nodeType(&type);
   switch(type) {

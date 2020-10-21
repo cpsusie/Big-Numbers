@@ -4,7 +4,7 @@
 ComboBox::ComboBox(Dialog *dlg, int id, int left, int top, int width, int height, const String &label) :
 DialogField(dlg,id,left,top,width,height,label)
 {
-  m_tw = NULL;
+  m_tw = nullptr;
   m_dropDownHeight = 7;
 }
 
@@ -284,6 +284,6 @@ void ComboBox::drawDropDown() {
 void ComboBox::hideDropDown() {
   if(m_tw) {
     delete m_tw;
-    m_tw = NULL;
+    m_tw = nullptr;
   }
 }

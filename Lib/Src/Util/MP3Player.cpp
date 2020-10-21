@@ -22,7 +22,7 @@ String MP3Player::sendString(_In_z_ _Printf_format_string_ TCHAR const * const f
   va_start(argptr,format);
   const String tmp = vformat(format, argptr);
   va_end(argptr);
-  checkResult(mciSendString(tmp.cstr(), result, ARRAYSIZE(result),NULL));
+  checkResult(mciSendString(tmp.cstr(), result, ARRAYSIZE(result),nullptr));
   return result;
 }
 
@@ -165,6 +165,6 @@ void MP3Player::setMute(int channel, bool on) {
 }
 /*
 void MP3Player::setVolume(int level) {
-  HWND w = MCIWndCreate(NULL,AfxGetApp()->m_hInstance,MCIWNDF_SHOWALL,tmp);
+  HWND w = MCIWndCreate(nullptr,AfxGetApp()->m_hInstance,MCIWNDF_SHOWALL,tmp);
 }
 */

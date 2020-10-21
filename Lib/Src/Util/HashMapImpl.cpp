@@ -9,7 +9,7 @@ HashMapImpl::HashMapImpl(const AbstractObjectManager &keyManager, const Abstract
 
 AbstractCollection *HashMapImpl::clone(bool cloneData) const {
   throwUnsupportedOperationException(__TFUNCTION__);
-  return NULL;
+  return nullptr;
 }
 
 AbstractMap *HashMapImpl::cloneMap(bool cloneData) const {

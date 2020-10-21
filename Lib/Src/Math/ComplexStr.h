@@ -12,7 +12,7 @@ template<typename CharType> Complex parseComplex(const CharType *s, CharType **e
   if(*s == '(') {
     s++;
     EATWHITE();
-    CharType *s1 = NULL;
+    CharType *s1 = nullptr;
     re = toReal(s, &s1);
     s = s1;
     if(s) {
@@ -20,7 +20,7 @@ template<typename CharType> Complex parseComplex(const CharType *s, CharType **e
       if(*s == ',') {
         s++;
         EATWHITE();
-        s1 = NULL;
+        s1 = nullptr;
         im = toReal(s, &s1);
         s = s1;
         if(s) {
@@ -36,9 +36,9 @@ template<typename CharType> Complex parseComplex(const CharType *s, CharType **e
       }
     }
   } else {
-    CharType *s1 = NULL;
+    CharType *s1 = nullptr;
     re = toReal(s, &s1);
-    if(s1 == NULL) {
+    if(s1 == nullptr) {
       ok = false;
     } else {
       s = s1;
@@ -58,7 +58,7 @@ template<typename CharType> CharType *complextostr(CharType *dst, const Complex 
     return realToStr(dst, c.re);
   } else {
     CharType *tmp = dst;
-    *(tmp++) = '('; 
+    *(tmp++) = '(';
     CharType buf[50];
     strCpy(tmp, realToStr(buf, c.re));
     tmp += strLen(buf);

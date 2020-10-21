@@ -17,7 +17,7 @@ public:
 };
 
 static String convertVertexFile(const String &fileName) {
-  FILE *f = NULL;
+  FILE *f = nullptr;
   try {
     f = FOPEN(fileName, _T("r"));
     String line;
@@ -31,7 +31,7 @@ static String convertVertexFile(const String &fileName) {
       }
       pointArray.add(p);
     }
-    fclose(f); f = NULL;
+    fclose(f); f = nullptr;
     String nodeFileName = _T("C:\\temp\\cXXXXXX");
     _tmktemp(nodeFileName.cstr());
     nodeFileName += _T(".node");
@@ -42,7 +42,7 @@ static String convertVertexFile(const String &fileName) {
       const Point3D &p = pointArray[i];
       _ftprintf(f, _T("%4d %lf %lf %lf\n"), i, p.x, p.y, p.z);
     }
-    fclose(f); f = NULL;
+    fclose(f); f = nullptr;
     return nodeFileName;
   } catch(...) {
     if(f) fclose(f);
@@ -54,11 +54,11 @@ static void runTriangle(const String &nodeFileName) {
   const String triangleExeName = _T("C:\\mytools2015\\Math\\Triangle\\x64\\Release\\triangle.exe");
   const TCHAR *options         = _T("-QN");
   const TCHAR *fileName        = nodeFileName.cstr();
-  ExternProcess::run(true, triangleExeName, options, fileName, NULL);
+  ExternProcess::run(true, triangleExeName, options, fileName, nullptr);
 }
 
 static MeshBuilder &createMeshBuilderFromNodefile(const String &nodeFileName, MeshBuilder &mb) {
-  FILE *f = NULL;
+  FILE *f = nullptr;
 
   runTriangle(nodeFileName);
   FileNameSplitter info(nodeFileName);
@@ -79,7 +79,7 @@ static MeshBuilder &createMeshBuilderFromNodefile(const String &nodeFileName, Me
       }
       vertexArray.add(v);
     }
-    fclose(f); f = NULL;
+    fclose(f); f = nullptr;
 
     f = FOPEN(eleFileName, _T("r"));
     readLine(f, line);
@@ -105,7 +105,7 @@ static MeshBuilder &createMeshBuilderFromNodefile(const String &nodeFileName, Me
       face.m_area   = length(c)/2;
       faceArray.add(face);
     }
-    fclose(f); f = NULL;
+    fclose(f); f = nullptr;
     for(int i = 0; i < vertexCount; i++) {
       VertexWithFaceArray   &v  = vertexArray[i];
       const CompactIntArray &fa = v.m_faceArray;
@@ -137,7 +137,7 @@ static MeshBuilder &createMeshBuilderFromNodefile(const String &nodeFileName, Me
     return mb;
   } catch(Exception e) {
     if(f) {
-      fclose(f); f = NULL;
+      fclose(f); f = nullptr;
     }
     throw;
   }

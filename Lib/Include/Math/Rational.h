@@ -129,12 +129,12 @@ public:
     return m_den;
   }
   // Return true if x is a rational with denominator<=400.
-  // if(r != NULL), *r will contain converted Rational
+  // if(r != nullptr), *r will contain converted Rational
   static bool isRational(float           x, Rational *r);
   static bool isRational(double          x, Rational *r);
   static bool isRational(const Double80 &x, Rational *r);
   // Return true if base^e is rational
-  // if(r != NULL), *r will contain the calculated value
+  // if(r != nullptr), *r will contain the calculated value
   static bool isRationalPow(const Rational &base, const Rational &e, Rational *r);
 
   // return NaN if(!isfinite(base) || !isfinite(e))

@@ -34,8 +34,8 @@ static void handleSingleFile(const String &fileName, FileNameHandler &nameHandle
 }
 
 static void handleDir(const String &dir, FileNameHandler &nameHandler, TCHAR **argv, bool recurse) {
-  if(argv == NULL) {
-    traverseDir(dir, nameHandler, NULL, recurse);
+  if(argv == nullptr) {
+    traverseDir(dir, nameHandler, nullptr, recurse);
   } else {
     WildCardRegex filter((const TCHAR**)argv);
 #if defined(_DEBUG)
@@ -88,7 +88,7 @@ IndexedStringArray::operator TCHAR**() const {
       const TCHAR * const s = (*this)[i].cstr();
       m_argv.add((TCHAR * const)s);
     }
-    m_argv.add(NULL);
+    m_argv.add(nullptr);
   }
   return (TCHAR**)m_argv.getBuffer();
 }
@@ -120,7 +120,7 @@ void FileTreeWalker::traverseArgv(const StringArray &a, FileNameHandler &nameHan
       String wildCard = toLowerCase(info.getFileName() + info.getExtension());
 
       IndexedStringArray *wcArray = dirMap.get(path);
-      if(wcArray == NULL) {
+      if(wcArray == nullptr) {
         IndexedStringArray ia(path, arrayIndex++, true);
         ia.add(wildCard);
         dirMap.put(path,ia);

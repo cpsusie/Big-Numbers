@@ -558,7 +558,7 @@ if(!isfinite(f)) {                          \
   return true;                              \
 }
 
-#define RETURNTRUE(v) { if(r!=NULL) *r = (v); return true; }
+#define RETURNTRUE(v) { if(r!=nullptr) *r = (v); return true; }
 bool Rational::isRational(float x, Rational *r) { // static
   CHECKISFINITE1(x);
   if(x == floor(x)) {
@@ -649,7 +649,7 @@ bool Rational::isRationalPow(const Rational &base, const Rational &e, Rational *
         return false;
       }
 
-      if(r != NULL) {
+      if(r != nullptr) {
         for(size_t i = 0; i < bnFactors.size(); i++) {
           bnFactors[i].m_multiplicity /= ed32;
         }

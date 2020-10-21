@@ -120,7 +120,7 @@ public:
     for(ConstIterator<K> it = m1.keySet().getIterator(); it.hasNext();) {
       const K &key   = it.next();
       const V *value = m2.get(key);
-      if(value != NULL) {
+      if(value != nullptr) {
         result.put(key, *value);
       }
     }

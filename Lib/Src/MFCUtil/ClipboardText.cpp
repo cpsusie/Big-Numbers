@@ -11,10 +11,10 @@
 #if defined(UNICODE)
 
 static String getClipboardUnicodeText() {
-  OpenClipboard(NULL);
+  OpenClipboard(nullptr);
   HANDLE t = GetClipboardData(CF_UNICODETEXT);
   String result;
-  if(t != NULL) {
+  if(t != nullptr) {
     result = (TCHAR*)t;
   }
   CloseClipboard();
@@ -24,10 +24,10 @@ static String getClipboardUnicodeText() {
 #endif
 
 static String getClipboardAsciiText() {
-  OpenClipboard(NULL);
+  OpenClipboard(nullptr);
   HANDLE t = GetClipboardData(CF_TEXT);
   String result;
-  if(t != NULL) {
+  if(t != nullptr) {
     result = (char*)t;
   }
   CloseClipboard();
@@ -57,12 +57,12 @@ void putClipboard(HWND hwnd, const String &s) {
     const int characterCount = (int)tmp.length() + 1;
     const int nbytes = sizeof(TCHAR) * characterCount;
     HLOCAL buf = LocalAlloc(0,nbytes);
-    if(buf == NULL) {
+    if(buf == nullptr) {
       throwLastErrorOnSysCallException(_T("LocalAlloc"));
     }
     memcpy(buf, tmp.cstr(), nbytes);
 
-    if(SetClipboardData(CF_TEXTFORMAT, buf) == NULL) {
+    if(SetClipboardData(CF_TEXTFORMAT, buf) == nullptr) {
       throwLastErrorOnSysCallException(_T("SetClipboardData"));
     }
     CloseClipboard();

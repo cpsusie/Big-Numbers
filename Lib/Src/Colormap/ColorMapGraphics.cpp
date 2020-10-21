@@ -4,8 +4,8 @@
 
 ColorMapGraphics::ColorMapGraphics() {
   m_rect.left = m_rect.top = -1;
-  m_map                = NULL;
-  m_colorScale         = NULL;
+  m_map                = nullptr;
+  m_colorScale         = nullptr;
   m_sunken             = false;
   m_hasBorder          = false;
   m_clientEdge         = false;
@@ -172,21 +172,21 @@ void ColorMapGraphics::setCaption(const CString &caption) {
 }
 
 void ColorMapGraphics::cleanup() {
-  if(m_map != NULL) {
+  if(m_map != nullptr) {
     int height = m_mapRect.Height();
     for(int r = 0; r < height; r++) {
       delete[] m_map[r];
     }
     delete[] m_map;
-    m_map = NULL;
+    m_map = nullptr;
     delete[] m_colorScale;
-    m_colorScale = NULL;
+    m_colorScale = nullptr;
   }
   releaseBitmaps();
 }
 
 bool ColorMapGraphics::bitmapsInitialized() {
-  return m_colorBitmap.m_hObject != NULL;
+  return m_colorBitmap.m_hObject != nullptr;
 }
 
 void ColorMapGraphics::releaseBitmaps() {
@@ -208,7 +208,7 @@ void ColorMapGraphics::initBitmaps(CDC &dc) {
   int width  = m_mapRect.Width();
   int height = m_mapRect.Height();
 
-  m_colorBitmap.CreateBitmap(width,height,dc.GetDeviceCaps(PLANES),dc.GetDeviceCaps(BITSPIXEL),NULL);
+  m_colorBitmap.CreateBitmap(width,height,dc.GetDeviceCaps(PLANES),dc.GetDeviceCaps(BITSPIXEL),nullptr);
   m_dc.SelectObject(m_colorBitmap);
 
   CPoint p;
@@ -224,7 +224,7 @@ void ColorMapGraphics::initBitmaps(CDC &dc) {
 #define MAPCROSSWIDTH  3
 #define MAPCURSORHALFSIZE (MAPCURSORSIZE/2)
 
-  m_posBitmap.CreateBitmap(MAPCURSORSIZE,MAPCURSORSIZE,dc.GetDeviceCaps(PLANES),dc.GetDeviceCaps(BITSPIXEL),NULL);
+  m_posBitmap.CreateBitmap(MAPCURSORSIZE,MAPCURSORSIZE,dc.GetDeviceCaps(PLANES),dc.GetDeviceCaps(BITSPIXEL),nullptr);
   m_dc.SelectObject(m_posBitmap);
   CBrush blackBrush;
   blackBrush.CreateSolidBrush(BLACK);
@@ -235,7 +235,7 @@ void ColorMapGraphics::initBitmaps(CDC &dc) {
   m_dc.FillSolidRect(MAPCURSORSIZE-MAPCROSSSIZE,MAPCURSORHALFSIZE-1       ,MAPCROSSSIZE  ,MAPCROSSWIDTH ,BLACK);
   m_dc.FillSolidRect(MAPCURSORHALFSIZE-1       ,0                         ,MAPCROSSWIDTH ,MAPCROSSSIZE  ,BLACK);
 
-  m_arrowBitmap.CreateBitmap(ARROWWIDTH,ARROWHEIGHT,dc.GetDeviceCaps(PLANES),dc.GetDeviceCaps(BITSPIXEL),NULL);
+  m_arrowBitmap.CreateBitmap(ARROWWIDTH,ARROWHEIGHT,dc.GetDeviceCaps(PLANES),dc.GetDeviceCaps(BITSPIXEL),nullptr);
   CRgn rgn;
   CPoint tp[] = { CPoint(0,ARROWWIDTH), CPoint(ARROWWIDTH,0), CPoint(ARROWWIDTH,ARROWHEIGHT) };
   rgn.CreatePolygonRgn(tp,3,ALTERNATE);

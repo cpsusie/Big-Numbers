@@ -47,7 +47,7 @@ private:
   // no lock
   void ReleaseFileName();
   // no lock
-  void Redirect(bool append = false, const TCHAR *fileName = NULL);
+  void Redirect(bool append = false, const TCHAR *fileName = nullptr);
   // no lock
   void Unredirect();
   // no lock
@@ -56,13 +56,13 @@ private:
   DebugLogger()
     : Singleton(  __TFUNCTION__)
     , m_traceFile(stdout       )
-    , m_fileName( NULL         )
+    , m_fileName( nullptr         )
     , m_flags(    0            )
   {
   }
   ~DebugLogger() override;
 public:
-  void redirect(bool append = false, const TCHAR *fileName = NULL);
+  void redirect(bool append = false, const TCHAR *fileName = nullptr);
   void unredirect();
   bool isRedirected() const;
   void setTimePrefix(bool prefixWithDate, bool prefixWithTime);
@@ -100,9 +100,9 @@ void DebugLogger::SetFileName(const String &fileName) {
 }
 
 void DebugLogger::ReleaseFileName() {
-  if(m_fileName != NULL) {
+  if(m_fileName != nullptr) {
     FREE(m_fileName);
-    m_fileName = NULL;
+    m_fileName = nullptr;
   }
 }
 
@@ -119,7 +119,7 @@ bool DebugLogger::StdoutAtty() {
 bool DebugLogger::IsEnvironRedirection() {
   if(!isSet(FLAG_ENVIRONCHECKED)) {
     TCHAR *v = _tgetenv(_T("DEBUGLOG")); // could parse v, if it contains info about append, timeformat,etc.
-    if(v != NULL) setFlag(FLAG_ENVIRONSET);
+    if(v != nullptr) setFlag(FLAG_ENVIRONSET);
     setFlag(FLAG_ENVIRONCHECKED);
   }
   return isSet(FLAG_ENVIRONSET);
@@ -141,7 +141,7 @@ void DebugLogger::Unredirect() {
 }
 
 void DebugLogger::Vlog(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) {
-  if(m_traceFile == NULL) {
+  if(m_traceFile == nullptr) {
     m_traceFile = stdout;
   }
   if(!isSet(FLAG_REDIDRECT) && (m_traceFile == stdout) && MustRedirect()) {
@@ -149,7 +149,7 @@ void DebugLogger::Vlog(_In_z_ _Printf_format_string_ TCHAR const * const format,
   }
   if(isSet(FLAG_REDIDRECT) && (m_traceFile == stdout)) {
     m_traceFile = MKFOPEN(m_fileName, isSet(FLAG_APPEND) ? _T("a") : _T("w"));
-//    setvbuf(traceFile, NULL, _IONBF, 100);
+//    setvbuf(traceFile, nullptr, _IONBF, 100);
     clrFlag(FLAG_REDIDRECT);
   }
   BYTE  prefixIndex;

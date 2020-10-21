@@ -2,8 +2,8 @@
 #include <Console.h>
 
 ConsoleWindow::ConsoleWindow() {
-  m_parent  = NULL;
-  m_tw      = NULL;
+  m_parent  = nullptr;
+  m_tw      = nullptr;
 }
 
 ConsoleWindow::~ConsoleWindow() {
@@ -71,7 +71,7 @@ void ConsoleWindow::setShadow(bool on) {
 }
 
 void ConsoleWindow::create(bool shadowed, int left, int top, int right, int bottom, ConsoleWindow *parent) {
-  if(m_tw != NULL)
+  if(m_tw != nullptr)
     throwException(_T("window already created"));
   m_parent  = parent;
   if(m_parent)
@@ -81,7 +81,7 @@ void ConsoleWindow::create(bool shadowed, int left, int top, int right, int bott
     right++;
     bottom++;
   }
-  if(m_tw == NULL) {
+  if(m_tw == nullptr) {
     m_tw = new TextWin(left, top, right - left + 1, bottom - top + 1);
   } else {
     SMALL_RECT r;
@@ -101,11 +101,11 @@ void ConsoleWindow::destroy() {
         break;
       }
     }
-    m_parent = NULL;
+    m_parent = nullptr;
   }
   if(m_tw) {
     delete m_tw;
-    m_tw     = NULL;
+    m_tw     = nullptr;
   }
 }
 

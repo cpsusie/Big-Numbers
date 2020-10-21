@@ -7,7 +7,7 @@ Packer &operator<<(Packer &p, const Rational &x) {
   } else if(isInt64(x)) {
     p << (__int64)x;
   } else {
-    p.addElement(Packer::E_RATIONAL, NULL, 0) << x.getNumerator() << x.getDenominator();
+    p.addElement(Packer::E_RATIONAL, nullptr, 0) << x.getNumerator() << x.getDenominator();
   }
   return p;
 }
@@ -32,7 +32,7 @@ Packer &operator>>(Packer &p, Rational &x) {
     break;
   case Packer::E_RATIONAL:
     { INT64 n, d;
-      p.getElement(Packer::E_RATIONAL, NULL, 0) >> n >> d;
+      p.getElement(Packer::E_RATIONAL, nullptr, 0) >> n >> d;
       x = Rational(n,d);
     }
     break;

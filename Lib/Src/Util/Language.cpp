@@ -64,7 +64,7 @@ const Array<Language> &Language::getSupportedLanguages() { // static
   gate.wait();
   try {
     if(result.size() == 0) {
-      const String fileName = getModuleFileName(NULL);
+      const String fileName = getModuleFileName(nullptr);
       FileVersion version(fileName);
       for(int i = 0; i < (int)version.m_fileInfo.size(); i++) {
         const VarFileInfoTranslation &vfit = version.m_fileInfo[i].getFileInfoTranslation();

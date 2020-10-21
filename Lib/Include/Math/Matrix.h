@@ -124,8 +124,8 @@ private:
   void setDimension(size_t rows, size_t columns); // Not defined
   void setDimension(size_t dim);                  // Not defined
 public:
-  QRMatrix(QRTracer *tracer = NULL);
-  QRMatrix(const Matrix &a, QRTracer *tracer = NULL);
+  QRMatrix(QRTracer *tracer = nullptr);
+  QRMatrix(const Matrix &a, QRTracer *tracer = nullptr);
   QRMatrix &operator=(const Matrix &a);
 
   const Matrix &getUMatrix() const {
@@ -157,7 +157,7 @@ public:
   }
 };
 
-ComplexVector findEigenValues(const Matrix &a, QRTracer *tracer=NULL);
+ComplexVector findEigenValues(const Matrix &a, QRTracer *tracer=nullptr);
 
 class SVDDecomposition {                           // Singular Value Decomposition
 private:

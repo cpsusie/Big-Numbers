@@ -824,10 +824,10 @@ private:
 public:
   ExpressionNodeSymbolSelector(const ExpressionSymbolSet *symbolSet, bool ignoreMarked=false) : m_symbolSet(symbolSet), m_ignoreMarked(ignoreMarked) {
   }
-  bool select(const ExpressionNode* const &n) {
+  bool select(const ExpressionNode* const &n) override {
     return (!m_ignoreMarked || !n->isMarked()) && ((m_symbolSet == nullptr) || m_symbolSet->contains(n->getSymbol()));
   }
-  AbstractSelector *clone() const {
+  AbstractSelector *clone() const override {
     return new ExpressionNodeSymbolSelector(m_symbolSet, m_ignoreMarked);
   }
 };

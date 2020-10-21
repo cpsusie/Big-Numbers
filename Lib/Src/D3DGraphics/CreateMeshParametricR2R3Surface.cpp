@@ -40,7 +40,7 @@ LPD3DXMESH createMeshFromParametricSurface(AbstractMeshFactory &amf, FunctionR2R
   const bool    calculateNormals = fvf & D3DFVF_NORMAL;
   const bool    calculateTexture = fvf & D3DFVF_TEX1;
   const D3TexturePointArray uPoints(nt), vPoints(ns);
-  const float *uValues = calculateTexture ? uPoints.getBuffer() : NULL, *vValues = calculateTexture ? vPoints.getBuffer() : NULL;
+  const float *uValues = calculateTexture ? uPoints.getBuffer() : nullptr, *vValues = calculateTexture ? vPoints.getBuffer() : nullptr;
   // (u ~ t, v ~ s)
   Point2D p;
   p.x = tInterval.getFrom();

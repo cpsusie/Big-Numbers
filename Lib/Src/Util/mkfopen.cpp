@@ -30,7 +30,7 @@ FILE *mkfopen(const String &name, const String &mode) {
 
 FILE *MKFOPEN(const TCHAR *name, const TCHAR *mode) {
   FILE *f = mkfopen(name, mode);
-  if(f == NULL) {
+  if(f == nullptr) {
     throwErrNoOnNameException(name);
   }
   return f;

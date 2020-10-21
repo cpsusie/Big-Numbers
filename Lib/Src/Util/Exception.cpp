@@ -68,7 +68,7 @@ InitExceptionClass::InitExceptionClass() {
 }
 
 InitExceptionClass::~InitExceptionClass() {
-  if(m_prevtranslator != NULL) {
+  if(m_prevtranslator != nullptr) {
     _set_se_translator(m_prevtranslator);
   }
 }

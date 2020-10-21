@@ -432,7 +432,7 @@ int Tableau::getInequalityCount() const {
 }
 
 void Tableau::setRelation(size_t row, SimplexRelation relation) { // private
-  if(strchr( "=<>", relation ) == NULL) {
+  if(strchr( "=<>", relation ) == nullptr) {
     throwException(_T("Tableau::setRelation::Invalid relational operator (=%c). Must be <, > or ="),relation);
   }
 
@@ -662,7 +662,7 @@ void Tableau::trace(_In_z_ _Printf_format_string_ TCHAR const * const format,...
 }
 
 void Tableau::vtrace(_In_z_ _Printf_format_string_ TCHAR const * const format, va_list argptr) const {
-  if(m_tracer != NULL) {
+  if(m_tracer != nullptr) {
     m_tracer->handleData(SimplexTraceElement(*this,vformat(format, argptr)));
   }
 }
@@ -845,7 +845,7 @@ TableauConstraint::TableauConstraint(const String &str) {
       if(gotRelation) {
         throwException(_T("TableauConstraint:Illegal symbol <%s> in argument <%s>"),s.cstr(),str.cstr());
       } else {
-        if(_tcschr(_T("=<>"), s[0]) == NULL) {
+        if(_tcschr(_T("=<>"), s[0]) == nullptr) {
           throwException(_T("TableauConstraint:Relation for constraint <%s> must be '<','>' or '=' (read value:'%c')"),str.cstr(), s[0]);
         }
         m_relation = (SimplexRelation)s[0];

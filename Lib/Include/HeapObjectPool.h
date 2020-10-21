@@ -17,7 +17,7 @@ private:
     }
 
     T *makeChain() {
-      for(T *p = &LASTVALUE(m_object), *next = NULL; p >= m_object; next = p, p--) {
+      for(T *p = &LASTVALUE(m_object), *next = nullptr; p >= m_object; next = p, p--) {
         p->m_next = next;
       }
       return m_object;
@@ -32,7 +32,7 @@ private:
   T              *m_freeList;
 
 public:
-  HeapObjectPool() : m_firstPage(NULL), m_freeList(NULL) {
+  HeapObjectPool() : m_firstPage(nullptr), m_freeList(nullptr) {
   }
 
   virtual ~HeapObjectPool() {
@@ -40,7 +40,7 @@ public:
   }
 
   inline T *fetch() {
-    if(m_freeList == NULL) {
+    if(m_freeList == nullptr) {
       m_firstPage = new HeapObjectPage(m_firstPage); TRACE_NEW(m_firstPage);
       m_freeList = m_firstPage->makeChain();
     }
@@ -60,8 +60,8 @@ public:
       q = p->nextPage();
       SAFEDELETE(p);
     }
-    m_firstPage = NULL;
-    m_freeList  = NULL;
+    m_firstPage = nullptr;
+    m_freeList  = nullptr;
   }
 
   int getPageCount() const {

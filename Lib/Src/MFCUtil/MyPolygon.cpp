@@ -66,7 +66,7 @@ void PixRect::fillPolygon(const MyPolygon &polygon, D3DCOLOR color, bool invert)
   polygonFiller->restoreBlackOutSideRegion();
   SAFEDELETE(polygonFiller);
 
-//  rop(rect.left,rect.top,rect.Width(),rect.Height(),DSTINVERT,NULL,0,0);
+//  rop(rect.left,rect.top,rect.Width(),rect.Height(),DSTINVERT,nullptr,0,0);
 //  mask(rect.left,rect.top,rect.Width(),rect.Height(), MAKEROP4(SRCCOPY,DSTINVERT), psrc, 0,0, pmask);
   mask(rect.left,rect.top,rect.Width(),rect.Height(), SRCCOPY, psrc, 0,0, pmask);
   SAFEDELETE(pmask);

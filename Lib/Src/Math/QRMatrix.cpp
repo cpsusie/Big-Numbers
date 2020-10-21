@@ -759,7 +759,7 @@ if(traceQR) {
 }
 
 void QRMatrix::trace() {
-  if(m_tracer != NULL) {
+  if(m_tracer != nullptr) {
     m_tracer->handleData(QRTraceElement(*this));
   }
 }

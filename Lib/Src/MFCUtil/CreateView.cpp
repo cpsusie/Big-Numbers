@@ -5,24 +5,24 @@ CView *_createView(CFrameWnd *frameWnd, CWnd *parent, CRuntimeClass *viewClass, 
 
   // Create new view and redraw.
   context.m_pNewViewClass   = viewClass;
-  context.m_pCurrentDoc     = NULL;
-  context.m_pNewDocTemplate = NULL;
-  context.m_pLastView       = NULL;
+  context.m_pCurrentDoc     = nullptr;
+  context.m_pNewDocTemplate = nullptr;
+  context.m_pLastView       = nullptr;
   context.m_pCurrentFrame   = frameWnd;
 
   CView *newView = (CView*)viewClass->CreateObject();
 
-  if(newView == NULL) {
+  if(newView == nullptr) {
     TRACE1("Warning: Dynamic create of view type %Fs failed\n",
       viewClass->m_lpszClassName);
-    return NULL;
+    return nullptr;
   }
 
-  if(!newView->Create(NULL, NULL, AFX_WS_DEFAULT_VIEW,
+  if(!newView->Create(nullptr, nullptr, AFX_WS_DEFAULT_VIEW,
     rect, parent, AFX_IDW_PANE_FIRST, &context))
   {
     TRACE0("Warning: couldn't create view for frame\n");
-    return NULL; // Programmer can assume FALSE return value
+    return nullptr; // Programmer can assume FALSE return value
                  // from this function means that there
                  // isn't a view.
   }

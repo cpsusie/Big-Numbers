@@ -9,8 +9,8 @@ private:
   NFAState     *m_end;
 public:
   SubNFA(NFAStatePool &statePool, bool init = false) : m_statePool(statePool) {
-    m_start = init ? m_statePool.fetch() : NULL;
-    m_end   = init ? m_statePool.fetch() : NULL;
+    m_start = init ? m_statePool.fetch() : nullptr;
+    m_end   = init ? m_statePool.fetch() : nullptr;
   }
   SubNFA &operator=(const SubNFA &src) {
     m_start = src.m_start;
@@ -27,7 +27,7 @@ public:
   SubNFA plusClosure()  const;
   SubNFA starClosure()  const;
   inline bool isEmpty() const {
-    return m_start == NULL;
+    return m_start == nullptr;
   }
   inline void setAcceptIndex(UINT index) {
     m_end->setAcceptIndex(index);

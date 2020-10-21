@@ -305,7 +305,7 @@ public:
     return Iterator<UINT>(new TinyBitSetReverseIterator(this, start, end));
   }
 
-  String toString(AbstractStringifier<UINT> *sf = NULL, const TCHAR *delim = _T(",")) const {
+  String toString(AbstractStringifier<UINT> *sf = nullptr, const TCHAR *delim = _T(",")) const {
     return sf ? getIterator().toString(*sf, delim) : getIterator().toString(UIntStringifier(),delim);
   }
 

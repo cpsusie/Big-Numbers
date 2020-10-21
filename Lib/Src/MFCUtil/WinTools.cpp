@@ -2,7 +2,7 @@
 
 CRect getRelativeClientRect(const CWnd *wnd, int id) {
   CWnd *subWin = wnd->GetDlgItem(id);
-  if(subWin == NULL) return CRect(0,0,0,0);
+  if(subWin == nullptr) return CRect(0,0,0,0);
   CRect wr,cr;
   subWin->GetWindowRect(&wr);
   wnd->ScreenToClient(wr); // wr is now subwin.rect relative to wnd
@@ -15,14 +15,14 @@ CRect getRelativeClientRect(const CWnd *wnd, int id) {
 
 CRect getClientRect(const CWnd *wnd, int id) {
   CWnd *child = wnd->GetDlgItem(id);
-  if(child == NULL) return CRect(0,0,0,0);
+  if(child == nullptr) return CRect(0,0,0,0);
   CRect r;
   child->GetClientRect(&r);
   return r;
 }
 
 CRect getClientRect(const CWnd *wnd) {
-  if(wnd == NULL) return CRect(0,0,0,0);
+  if(wnd == nullptr) return CRect(0,0,0,0);
   CRect r;
   wnd->GetClientRect(&r);
   return r;
@@ -37,7 +37,7 @@ bool setRelativeWindowRect(CWnd *wnd, int id, const CRect &rect) {
 }
 
 CRect getWindowRect(const CWnd *wnd) {
-  if(wnd == NULL) return CRect(0,0,0,0);
+  if(wnd == nullptr) return CRect(0,0,0,0);
   WINDOWPLACEMENT wp;
   wnd->GetWindowPlacement(&wp);
   return wp.rcNormalPosition;
@@ -48,12 +48,12 @@ CRect getWindowRect(const CWnd *wnd, int id) {
 }
 
 bool setWindowRect(CWnd *wnd, const CRect &rect) {
-  if(wnd == NULL) return false;
+  if(wnd == nullptr) return false;
   WINDOWPLACEMENT wp;
   wnd->GetWindowPlacement(&wp);
   wp.rcNormalPosition = rect;
   return wnd->SetWindowPlacement(&wp) ? true : false;
-//  return wnd->SetWindowPos(NULL,rect.left,rect.top,rect.Width(), rect.Height(), SWP_NOZORDER |SWP_DRAWFRAME|SWP_NOCOPYBITS) ? true : false;
+//  return wnd->SetWindowPos(nullptr,rect.left,rect.top,rect.Width(), rect.Height(), SWP_NOZORDER |SWP_DRAWFRAME|SWP_NOCOPYBITS) ? true : false;
 }
 
 bool setWindowRect(CWnd *wnd, int id, const CRect &rect) {
@@ -61,7 +61,7 @@ bool setWindowRect(CWnd *wnd, int id, const CRect &rect) {
 }
 
 bool setClientRectSize(CWnd *wnd, const CSize &size) {
-  if(wnd == NULL) return false;
+  if(wnd == nullptr) return false;
   const CSize csz = getClientRect(wnd).Size();
   const CSize wsz = getWindowSize(wnd);
 
@@ -87,7 +87,7 @@ bool setWindowSize(CWnd *wnd, int id, const CSize &size) {
 }
 
 bool setWindowSize(CWnd *wnd, const CSize &size) {
-  if(wnd == NULL) return false;
+  if(wnd == nullptr) return false;
   WINDOWPLACEMENT wpl;
   if(!wnd->GetWindowPlacement(&wpl)) return false;
   wpl.rcNormalPosition.right  = wpl.rcNormalPosition.left + size.cx;
@@ -104,8 +104,8 @@ CSize getWindowSize(const CWnd *wnd) {
 }
 
 CRect getTaskBarRect() {
-  HWND taskBar = FindWindow(_T("Shell_traywnd"),NULL);
-  if(taskBar == NULL) {
+  HWND taskBar = FindWindow(_T("Shell_traywnd"),nullptr);
+  if(taskBar == nullptr) {
     return CRect(0,0,0,0);
   } else {
     CRect taskBarRect;
@@ -141,7 +141,7 @@ bool centerWindow(CWnd *wnd) {
   const CSize windowSize = getWindowSize(wnd);
 
   CPoint p0;
-  if(parent == NULL) {
+  if(parent == nullptr) {
     const CSize screenSize = getScreenRect().Size();
     p0 = CPoint((screenSize.cx-windowSize.cx)/2,(screenSize.cy-windowSize.cy)/2);
   } else {
@@ -214,8 +214,8 @@ CSize getScreenSize(bool includeTaskBar) {
 }
 
 HDC getScreenDC() {
-  HDC screenDC = CreateDC(_T("DISPLAY"), NULL, NULL, NULL);
-  if(screenDC == NULL) {
+  HDC screenDC = CreateDC(_T("DISPLAY"), nullptr, nullptr, nullptr);
+  if(screenDC == nullptr) {
     throwLastErrorOnSysCallException(_T("CreateDC"));
   }
   return screenDC;
@@ -280,7 +280,7 @@ void enableWindowList(HWND hwnd, bool enable, ...) {
   va_start(argptr, enable);
   for(int id = va_arg(argptr, int); id > 0; id = va_arg(argptr, int)) {
     HWND child = GetDlgItem(hwnd, id);
-    if(child == NULL) return;
+    if(child == nullptr) return;
     EnableWindow(child, enable);
   }
 }

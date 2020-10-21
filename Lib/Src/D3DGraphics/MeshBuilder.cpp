@@ -190,7 +190,7 @@ private:
     const UINT                faceCount         = faceCount1Side * factor;
     BitSet                    vertexDone(vertexCount1Side);
 
-    LPD3DXMESH mesh = NULL;
+    LPD3DXMESH mesh = nullptr;
     try {
       mesh = amf.allocateMesh(VertexType::FVF_Flags, faceCount, vertexCount, getMeshFlags());
       VertexType *vertices;
@@ -274,7 +274,7 @@ private:
     const UINT                faceCount1Side     = m_mb.getTriangleCount();
     const UINT                faceCount          = faceCount1Side * factor;
 
-    LPD3DXMESH mesh = NULL;
+    LPD3DXMESH mesh = nullptr;
     try {
       mesh = amf.allocateMesh(VertexType::FVF_Flags, (DWORD)faceCount, (DWORD)vertexCount, getMeshFlags());
       VertexType *vertices;

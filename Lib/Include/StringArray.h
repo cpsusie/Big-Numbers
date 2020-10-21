@@ -8,8 +8,8 @@ public:
   StringArray() {}
   explicit StringArray(size_t capacity) : Array(capacity) {
   }
-  StringArray(const char    **strArray); // terminate with NULL-pointer
-  StringArray(const wchar_t **strArray); // terminate with NULL-pointer
+  StringArray(const char    **strArray); // terminate with nullptr
+  StringArray(const wchar_t **strArray); // terminate with nullptr
   StringArray(Tokenizer &tok);
   size_t maxLength() const;
   size_t minLength() const;

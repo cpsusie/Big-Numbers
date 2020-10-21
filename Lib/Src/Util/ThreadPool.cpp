@@ -34,7 +34,7 @@ void ThreadPool::handlePropertyChanged(const PropertyContainer *source, int id, 
 ThreadPool &ThreadPool::ExecuteNoWait(Runnable &job) {
   if(!m_blockExecute) {
     PoolThreadPool &pool = GetTPool();
-    pool.fetchResource()->executeJob(job, NULL);
+    pool.fetchResource()->executeJob(job, nullptr);
   }
   return *this;
 }
@@ -44,7 +44,7 @@ ThreadPool &ThreadPool::ExecuteInParallelNoWait(RunnableArray &jobs) {
   if(!m_blockExecute) {
     PoolThreadPool &pool = GetTPool();
     for(size_t i = 0; i < jobs.size(); i++) {
-      pool.fetchResource()->executeJob(*jobs[i], NULL);
+      pool.fetchResource()->executeJob(*jobs[i], nullptr);
     }
   }
   return *this;
@@ -113,7 +113,7 @@ UINT PoolLogger::safeRun() {
   return 0;
 }
 
-PropertyContainer *ThreadPool::s_propertySource = NULL;
+PropertyContainer *ThreadPool::s_propertySource = nullptr;
 
 ThreadPool::ThreadPool() : Singleton(__TFUNCTION__), m_processorCount(getProcessorCount()) {
   THREADPOOL_ENTER;
@@ -136,7 +136,7 @@ ThreadPool::~ThreadPool() {
   SAFEDELETE(m_threadPool);
   SAFEDELETE(m_queuePool );
   SAFEDELETE(m_logger    );
-  s_propertySource = NULL;
+  s_propertySource = nullptr;
   notify();
   THREADPOOL_LEAVE;
 }
@@ -235,7 +235,7 @@ String ThreadPool::toString() const {
 void ThreadPool::startLogging() {
   wait();
 
-  if(m_logger == NULL) {
+  if(m_logger == nullptr) {
     m_logger = new PoolLogger(); TRACE_NEW(m_logger);
     ExecuteNoWait(*m_logger);
   } else {
@@ -246,7 +246,7 @@ void ThreadPool::startLogging() {
 
 void ThreadPool::stopLogging() {
   wait();
-  if(m_logger != NULL) {
+  if(m_logger != nullptr) {
     m_logger->setSuspended();
   }
   notify();

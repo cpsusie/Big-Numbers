@@ -1,13 +1,13 @@
 #include "pch.h"
 #include <StringArray.h>
 
-StringArray::StringArray(const char **strArray) { // terminate with NULL-pointer
+StringArray::StringArray(const char **strArray) { // terminate with nullptr-pointer
   while(*strArray) {
     add(*(strArray++));
   }
 }
 
-StringArray::StringArray(const wchar_t **strArray) { // terminate with NULL-pointer
+StringArray::StringArray(const wchar_t **strArray) { // terminate with nullptr-pointer
   while(*strArray) {
     add(*(strArray++));
   }

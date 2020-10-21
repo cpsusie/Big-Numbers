@@ -9,7 +9,7 @@ class MeshResult {
 public:
   double     m_t;
   LPD3DXMESH m_mesh;
-  MeshResult() : m_t(0), m_mesh(NULL) {
+  MeshResult() : m_t(0), m_mesh(nullptr) {
   }
   MeshResult(double t, LPD3DXMESH mesh) : m_t(t), m_mesh(mesh) {
   }

@@ -270,7 +270,7 @@ class Octagon {
 private:
   const StackedCube *m_cube;
 public:
-  inline Octagon() : m_cube(NULL) {
+  inline Octagon() : m_cube(nullptr) {
   }
   inline Octagon(const StackedCube &cube) : m_cube(&cube) {
   }
@@ -287,7 +287,7 @@ public:
     return *getCube().m_corners[index];
   }
   inline bool isEmpty() const {
-    return m_cube == NULL;
+    return m_cube == nullptr;
   }
   String toString() const {
     return isEmpty() ? _T("Octa:---")
@@ -405,7 +405,7 @@ private:
     }
   }
   inline bool isTableCreated() const {
-    return m_table[0] != NULL;
+    return m_table[0] != nullptr;
   }
 public:
   inline PolygonizerCubeArrayTable() {

@@ -17,7 +17,7 @@ LexFileStream::LexFileStream() {
 }
 
 LexFileStream::LexFileStream(const String &name) {
-  m_f       = NULL;
+  m_f       = nullptr;
   open(name);
 }
 
@@ -51,7 +51,7 @@ LexFileStream::LexFileStream() {
 }
 
 LexFileStream::LexFileStream(const String &name) {
-  m_f       = NULL;
+  m_f       = nullptr;
   open(name);
 }
 
@@ -93,7 +93,7 @@ static inline BYTE *memrchr(const BYTE *s, BYTE ch, size_t n) {
       return (BYTE*)s;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 bool LexFileStream::eof() {
@@ -105,16 +105,16 @@ bool LexFileStream::eof() {
 DEFINECLASSNAME(ByteQueue);
 
 bool ByteQueue::hasFullLine() const {
-  return findLastNewLine() != NULL;
+  return findLastNewLine() != nullptr;
 }
 
 const BYTE *ByteQueue::findLastNewLine() const {
-  return isEmpty() ? NULL : memrchr(getData(), '\n', size());
+  return isEmpty() ? nullptr : memrchr(getData(), '\n', size());
 }
 
 size_t ByteQueue::readUntilHasNewLine(FILE *f) {
   const BYTE *nl = findLastNewLine();
-  while(((nl == NULL) || (size() < 1000)) && !feof(f)) {
+  while(((nl == nullptr) || (size() < 1000)) && !feof(f)) {
     BYTE tmp[4096];
     const intptr_t n = fread(tmp, 1, sizeof(tmp), f);
     if(n > 0) {
@@ -191,7 +191,7 @@ String ByteQueue::getConvertedString(size_t count) {
   case TF_UTF16_BE:
   case TF_UTF16_LE:
     try {
-      const int requiredSize = MultiByteToWideChar(CP_UTF8, 0, (char*)getData(), (int)count, NULL, 0);
+      const int requiredSize = MultiByteToWideChar(CP_UTF8, 0, (char*)getData(), (int)count, nullptr, 0);
       if(requiredSize == 0) {
         throwMethodLastErrorOnSysCallException(s_className, _T("MultiByteToWideChar"));
       }
@@ -243,5 +243,5 @@ void LexFileStream::close() {
     fclose(m_f);
   }
   initQueues();
-  m_f = NULL;
+  m_f = nullptr;
 }

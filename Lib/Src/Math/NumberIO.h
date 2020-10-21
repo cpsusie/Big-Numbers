@@ -28,7 +28,7 @@ template <typename IStreamType, typename CharType> IStreamType &getNumber(IStrea
     return in;
   }
   try {
-    n = _tcstonum(buf.cstr(), NULL);
+    n = _tcstonum(buf.cstr(), nullptr);
   } catch(...) {
     scanner.endScan(false);
     throw;

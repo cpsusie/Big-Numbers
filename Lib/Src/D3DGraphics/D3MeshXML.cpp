@@ -3,7 +3,7 @@
 #include <D3DGraphics/D3XML.h>
 
 void setValue(XMLDoc &doc, XMLNodePtr n, const LPD3DXMESH &m) {
-  LPDIRECT3DVERTEXBUFFER vb = NULL;
+  LPDIRECT3DVERTEXBUFFER vb = nullptr;
   try {
     V(m->GetVertexBuffer(&vb)); TRACE_REFCOUNT(vb);
     setValue(doc, n, _T("vertexbuffer"), vb);
@@ -12,7 +12,7 @@ void setValue(XMLDoc &doc, XMLNodePtr n, const LPD3DXMESH &m) {
     SAFERELEASE(vb);
     throw;
   }
-  LPDIRECT3DINDEXBUFFER ib = NULL;
+  LPDIRECT3DINDEXBUFFER ib = nullptr;
   try {
     V(m->GetIndexBuffer(&ib)); TRACE_REFCOUNT(ib);
     setValue(doc, n, _T("indexbuffer"), ib);

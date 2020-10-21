@@ -10,18 +10,18 @@ String tcpReadString(SOCKET s) {
     return EMPTYSTRING;
   }
   TCHAR tmpBuf[DEFAULTBUFSIZE+1];
-  TCHAR *buf = NULL;
+  TCHAR *buf = nullptr;
   try {
     buf = (len <= DEFAULTBUFSIZE) ? tmpBuf : new TCHAR[len+1];
     tcpRead(s, buf, len*sizeof(TCHAR));
     buf[len] = 0;
     const String result = buf;
     if(buf != tmpBuf) delete[] buf;
-    buf = NULL;
+    buf = nullptr;
     return result;
   } catch(...) {
     if(buf != tmpBuf) delete[] buf;
-    buf = NULL;
+    buf = nullptr;
     throw;
   }
 }

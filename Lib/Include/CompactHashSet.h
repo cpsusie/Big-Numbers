@@ -23,7 +23,7 @@ private:
   UINT64                                             m_updateCount;
 
   LinkObject<SetEntry<K> > **allocateBuffer(size_t capacity) const {
-    LinkObject<SetEntry<K> > **result = capacity ? new LinkObject<SetEntry<K> >*[capacity] : NULL; TRACE_NEW(result);
+    LinkObject<SetEntry<K> > **result = capacity ? new LinkObject<SetEntry<K> >*[capacity] : nullptr; TRACE_NEW(result);
     if(capacity) {
       memset(result, 0, sizeof(result[0])*capacity);
     }
@@ -112,7 +112,7 @@ public:
   bool remove(const K &key) {
     if(m_capacity) {
       const ULONG index = key.hashCode() % m_capacity;
-      for(LinkObject<SetEntry<K> > *p = m_buffer[index], *last = NULL; p; last = p, p = p->m_next) {
+      for(LinkObject<SetEntry<K> > *p = m_buffer[index], *last = nullptr; p; last = p, p = p->m_next) {
         if(key == p->m_e.m_key) {
           if(last) {
             last->m_next = p->m_next;
@@ -257,7 +257,7 @@ public:
     UINT64                    m_updateCount;
 
     void first() {
-      m_current = NULL;
+      m_current = nullptr;
       if(m_set.m_buffer) {
         m_endBuf = m_set.m_buffer + m_set.getCapacity();
         for(LinkObject<SetEntry<K> > **p = m_set.m_buffer; p < m_endBuf; p++) {
@@ -268,8 +268,8 @@ public:
           }
         }
       }
-      m_endBuf = m_bufp = NULL;
-      m_next   = NULL;
+      m_endBuf = m_bufp = nullptr;
+      m_next   = nullptr;
     }
 
     inline void checkUpdateCount() const {
@@ -286,16 +286,16 @@ public:
       return new CompactSetIterator(*this);
     }
     bool              hasNext()    const override {
-      return m_next != NULL;
+      return m_next != nullptr;
     }
     void             *next()             override {
-      if(m_next == NULL) {
+      if(m_next == nullptr) {
         noNextElementError(_T("CompactSetIterator"));
       }
       __assume(m_next);
       checkUpdateCount();
       m_current = m_next;
-      if((m_next = m_next->m_next) == NULL) {
+      if((m_next = m_next->m_next) == nullptr) {
         for(LinkObject<SetEntry<K> > **p = m_bufp; ++p < m_endBuf;) {
           if(*p) {
             m_bufp = p;
@@ -307,13 +307,13 @@ public:
       return &(m_current->m_e.m_key);
     }
     void remove()                        override {
-      if(m_current == NULL) {
+      if(m_current == nullptr) {
         noCurrentElementError(_T("CompactSetIterator"));
       }
       __assume(m_current);
       checkUpdateCount();
       m_set.remove(m_current->m_e.m_key);
-      m_current     = NULL;
+      m_current     = nullptr;
       m_updateCount = m_set.m_updateCount;
     }
   };

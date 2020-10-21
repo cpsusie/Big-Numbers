@@ -2,7 +2,7 @@
 #include <MyUtil.h>
 #include <MFCUtil/DirectXDeviceFactory.h>
 
-DirectXDeviceFactory::DirectXDeviceFactory() : Singleton(__TFUNCTION__), m_direct3D(NULL) {
+DirectXDeviceFactory::DirectXDeviceFactory() : Singleton(__TFUNCTION__), m_direct3D(nullptr) {
   initDirect3D();
 }
 
@@ -16,7 +16,7 @@ void DirectXDeviceFactory::initDirect3D() {
   m_lock.wait();
   try {
     Direct3DCreate9Ex(D3D_SDK_VERSION, &m_direct3D);
-    if(m_direct3D == NULL) {
+    if(m_direct3D == nullptr) {
       const TCHAR *msg = _T("Cannot initialize Direct3D");
       showError(msg);
       throwException(_T("%s"), msg);
@@ -30,12 +30,12 @@ void DirectXDeviceFactory::initDirect3D() {
 }
 
 LPDIRECT3DDEVICE DirectXDeviceFactory::createDevice(HWND hwnd, D3DPRESENT_PARAMETERS *param, UINT adapter) {
-  if(m_direct3D == NULL) {
+  if(m_direct3D == nullptr) {
     initDirect3D();
   }
 
   D3DPRESENT_PARAMETERS tmpParam;
-  if(param == NULL) {
+  if(param == nullptr) {
     tmpParam = getDefaultPresentParameters(hwnd, adapter);
     param = &tmpParam;
   }
@@ -47,7 +47,7 @@ LPDIRECT3DDEVICE DirectXDeviceFactory::createDevice(HWND hwnd, D3DPRESENT_PARAME
                                           ,hwnd
                                           ,D3DCREATE_SOFTWARE_VERTEXPROCESSING
                                           ,param
-                                          ,NULL
+                                          ,nullptr
                                           ,&device));
     TRACE_CREATE(device);
     m_lock.notify();

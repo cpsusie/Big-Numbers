@@ -59,7 +59,7 @@ void D3SceneContainer::doRender(BYTE renderFlags, CameraSet cameraSet) {
 }
 
 static String flagsToStr(BYTE flags) {
-  const TCHAR *delim = NULL;
+  const TCHAR *delim = nullptr;
   String result;
 #define ADDFLAG(f) if(flags & (SC_##f)) { if(delim) result += delim; else delim = _T(" "); result += _T(#f); }
   ADDFLAG(RENDER3D      )

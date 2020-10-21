@@ -11,7 +11,7 @@ LayoutAttribute::LayoutAttribute(SimpleLayoutManager *manager, int ctrlId, int f
 }
 
 LayoutAttribute::~LayoutAttribute() {
-  setFont(NULL);
+  setFont(nullptr);
 }
 
 CWnd *LayoutAttribute::getControl() {
@@ -42,7 +42,7 @@ void LayoutAttribute::setControlRect(const CRect &r) {
   if(ctrlWin->IsWindowVisible()) {
     ::setWindowRect(ctrlWin, r);
   } else {
-    ctrlWin->SetWindowPos(NULL, r.left, r.top, r.Width(), r.Height(), SWP_HIDEWINDOW);
+    ctrlWin->SetWindowPos(nullptr, r.left, r.top, r.Width(), r.Height(), SWP_HIDEWINDOW);
   }
   m_lastRect = r;
 }

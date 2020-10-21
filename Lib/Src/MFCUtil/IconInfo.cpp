@@ -19,6 +19,6 @@ CSize getIconSize(HICON icon) {
 void closeIconInfo(ICONINFO &info) {
   DeleteObject(info.hbmColor);
   DeleteObject(info.hbmMask);
-  info.hbmColor = NULL;
-  info.hbmMask  = NULL;
+  info.hbmColor = nullptr;
+  info.hbmMask  = nullptr;
 }

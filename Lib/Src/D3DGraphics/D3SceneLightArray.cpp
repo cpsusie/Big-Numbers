@@ -9,10 +9,10 @@
 D3LightControl *D3Scene::addLightControl(UINT lightIndex) {
   if(!isLightDefined(lightIndex)) {
     showWarning(_T("%s:Light %d is undefined"), __TFUNCTION__, lightIndex);
-    return NULL;
+    return nullptr;
   }
   D3LightControl *result = findLightControlByLightIndex(lightIndex);
-  if(result != NULL) return result;
+  if(result != nullptr) return result;
   const D3Light &param = getLight(lightIndex);
   switch(param.Type) {
   case D3DLIGHT_DIRECTIONAL    : result = new D3LightControlDirectional(*this, lightIndex); TRACE_NEW(result); break;
@@ -26,7 +26,7 @@ D3LightControl *D3Scene::addLightControl(UINT lightIndex) {
 
 void D3Scene::destroyLightControl(UINT lightIndex) {
   D3LightControl *lc = findLightControlByLightIndex(lightIndex);
-  if(lc == NULL) return;
+  if(lc == nullptr) return;
   removeVisual(lc);
   SAFEDELETE(lc);
 }
@@ -118,7 +118,7 @@ D3LightControl *D3Scene::findLightControlByLightIndex(int lightIndex) {
       return lc;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 D3Light D3Scene::getLight(UINT lightIndex) const {

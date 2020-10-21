@@ -2,7 +2,7 @@
 
 void getTabOrder(HWND dlg, CompactUintArray &tabOrder) {
   tabOrder.clear(100);
-  for(HWND child = GetNextDlgTabItem(dlg, HWND_TOP, FALSE); child != NULL; child = GetNextDlgTabItem(dlg, child, FALSE)) {
+  for(HWND child = GetNextDlgTabItem(dlg, HWND_TOP, FALSE); child != nullptr; child = GetNextDlgTabItem(dlg, child, FALSE)) {
     const int id = GetDlgCtrlID(child);
     if(!tabOrder.isEmpty() && (id == tabOrder[0])) {
       break;

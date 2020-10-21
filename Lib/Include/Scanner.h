@@ -96,7 +96,7 @@ public:
   intptr_t getChars(_TUCHAR *dst, size_t n) override;
   bool eof()                                override;
   bool ok()                                 override {
-    return m_f != NULL;
+    return m_f != nullptr;
   }
 };
 

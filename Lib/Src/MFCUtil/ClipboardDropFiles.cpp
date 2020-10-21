@@ -28,12 +28,12 @@ void clipboardDropFiles(HWND hwnd, StringArray &fnames) {
     const int    nbytes    = sizeof(df) + strLength*sizeof(TCHAR);
 
     HLOCAL buf = LocalAlloc(0, nbytes);
-    if(buf == NULL) {
+    if(buf == nullptr) {
       throwLastErrorOnSysCallException(_T("LocalAlloc"));
     }
     memcpy(buf, &df, sizeof(df));
     memcpy(((char*)buf)+sizeof(df), str.cstr(), strLength*sizeof(TCHAR));
-    if(SetClipboardData(CF_HDROP, buf) == NULL) {
+    if(SetClipboardData(CF_HDROP, buf) == nullptr) {
       throwLastErrorOnSysCallException(_T("SetClipboardData"));
     }
     CloseClipboard();

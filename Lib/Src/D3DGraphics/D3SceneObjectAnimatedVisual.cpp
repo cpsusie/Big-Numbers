@@ -48,7 +48,7 @@ D3SceneObjectVisual *D3SceneObjectAnimatedVisual::getCurrentChild() const {
     return getChild(m_lastRenderedIndex);
   }
   const UINT index = getCurrentIndex();
-  return (index < cc) ? getChild(index) : NULL;
+  return (index < cc) ? getChild(index) : nullptr;
 }
 
 void D3SceneObjectAnimatedVisual::handleTimeout(Timer &timer) {
@@ -71,15 +71,15 @@ void D3SceneObjectAnimatedVisual::draw() {
 
 LPD3DXMESH D3SceneObjectAnimatedVisual::getMesh() const {
   const D3SceneObjectVisual *child = getCurrentChild();
-  return child ? child->getMesh() : NULL;
+  return child ? child->getMesh() : nullptr;
 }
 LPDIRECT3DVERTEXBUFFER D3SceneObjectAnimatedVisual::getVertexBuffer() const {
   const D3SceneObjectVisual *child = getCurrentChild();
-  return child ? child->getVertexBuffer() : NULL;
+  return child ? child->getVertexBuffer() : nullptr;
 }
 LPDIRECT3DINDEXBUFFER D3SceneObjectAnimatedVisual::getIndexBuffer() const {
   const D3SceneObjectVisual *child = getCurrentChild();
-  return child ? child->getIndexBuffer() : NULL;
+  return child ? child->getIndexBuffer() : nullptr;
 }
 bool D3SceneObjectAnimatedVisual::isNormalsVisible() const {
   const D3SceneObjectVisual *child = getCurrentChild();

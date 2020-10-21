@@ -68,7 +68,7 @@ const TCHAR *FPUTagWord::getContentStr(FPURegisterContent content) { // static
 
 String FPUTagWord::toString() const {
   String tmp;
-  const TCHAR *delim = NULL;
+  const TCHAR *delim = nullptr;
   for(int i = 0; i < 8; i++) {
     if(delim) tmp += delim; else delim = _T(",");
     tmp += getContentStr(getContent(i));

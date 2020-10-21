@@ -129,10 +129,10 @@ private:
 public:
   CubeCenterDistanceComparator(const StackedCube &c0) : m_key0(c0.m_key) {
   }
-  AbstractComparator *clone() const {
+  AbstractComparator *clone() const override {
     return new CubeCenterDistanceComparator(*this);
   }
-  int compare(const StackedCube &c1, const StackedCube &c2) {
+  int compare(const StackedCube &c1, const StackedCube &c2) override {
     return sign(Point3DKey::distance(c1.m_key, m_key0) - Point3DKey::distance(c2.m_key, m_key0));
   }
 };
@@ -273,7 +273,7 @@ void IsoSurfacePolygonizer::testFace(int i, int j, int k, const StackedCube &old
   newCube.m_corners[FLIP(c3, bit)] = oldCube.m_corners[c3];
   newCube.m_corners[FLIP(c4, bit)] = oldCube.m_corners[c4];
   for(int n = 0; n < ARRAYSIZE(newCube.m_corners); n++) {
-    if(newCube.m_corners[n] == NULL) {
+    if(newCube.m_corners[n] == nullptr) {
       newCube.m_corners[n] = getCorner(i+BIT(n,0), j+BIT(n,1), k+BIT(n,2));
     }
   }
@@ -464,7 +464,7 @@ void IsoSurfacePolygonizer::pushCube(const StackedCube &cube) {
 const HashedCubeCorner *IsoSurfacePolygonizer::getCorner(int i, int j, int k) {
   const Point3DKey key(i, j, k);
   const HashedCubeCorner *result = m_cornerMap.get(key);
-  if(result != NULL) {
+  if(result != nullptr) {
     m_statistics.m_cornerHits++;
     return result;
   } else {
@@ -548,7 +548,7 @@ UINT IsoSurfacePolygonizer::getCubeEdgeVertexId(StackedCube &cube, CubeEdge ce) 
 UINT IsoSurfacePolygonizer::getVertexId(const HashedCubeCorner &c0, const HashedCubeCorner &c1, BYTE coordIndex) {
   const CubeEdgeHashKey edgeKey(c0.m_key, c1.m_key);
   const UINT *p = m_edgeMap.get(edgeKey);
-  if(p != NULL) {
+  if(p != nullptr) {
     m_statistics.m_edgeHits++;
     return *p; // previously computed
   }
@@ -565,7 +565,7 @@ UINT IsoSurfacePolygonizer::getVertexId(const HashedCubeCorner &c0, const Hashed
   } else if((dist = fabs(zp.coord - c1.coord)) <= m_maxSnapDistance) {  \
     snapCorner = &c1;                                                   \
   } else {                                                              \
-    snapCorner = NULL;                                                  \
+    snapCorner = nullptr;                                                  \
   }
 
   const Point3D           zp = converge(c0, c1); // position;
@@ -575,10 +575,10 @@ UINT IsoSurfacePolygonizer::getVertexId(const HashedCubeCorner &c0, const Hashed
   case 0 : CHECKSNAPDIM(x); break;
   case 1 : CHECKSNAPDIM(y); break;
   case 2 : CHECKSNAPDIM(z); break;
-  default: snapCorner = NULL; break;
+  default: snapCorner = nullptr; break;
   }
   UINT result;
-  if(snapCorner == NULL) {
+  if(snapCorner == nullptr) {
     result = (UINT)m_vertexArray.size();
     m_vertexArray.add(IsoSurfaceVertex().setPosition(zp, getNormal(zp)));
   } else if(snapCorner->hasSnapVertex()) {
@@ -873,7 +873,7 @@ String Simplex::toString() const {
 
 String SimplexArray::toString() const {
   const UINT   n         = size();
-  const TCHAR *delimiter = NULL;
+  const TCHAR *delimiter = nullptr;
   String       result;
   for(UINT i = 0; i < n; i++) {
     if(delimiter) result += delimiter; else delimiter = _T(",");
@@ -928,14 +928,14 @@ void StackedCube::validate() const {
   const HashedCubeCorner *ltf = m_corners[LTF];
   const HashedCubeCorner *rtf = m_corners[RTF];
 
-  verify(lbn != NULL);
-  verify(rbn != NULL);
-  verify(lbf != NULL);
-  verify(rbf != NULL);
-  verify(ltn != NULL);
-  verify(rtn != NULL);
-  verify(ltf != NULL);
-  verify(rtf != NULL);
+  verify(lbn != nullptr);
+  verify(rbn != nullptr);
+  verify(lbf != nullptr);
+  verify(rbf != nullptr);
+  verify(ltn != nullptr);
+  verify(rtn != nullptr);
+  verify(ltf != nullptr);
+  verify(rtf != nullptr);
   verify(fabs(lbn->x - ltn->x) <= TOLERANCE); // left   same x
   verify(fabs(lbn->x - lbf->x) <= TOLERANCE);
   verify(fabs(lbn->x - ltf->x) <= TOLERANCE);
@@ -1021,7 +1021,7 @@ String StackedCube::toString(int precision) const {
     const HashedCubeCorner *c = m_corners[i];
     result += format(_T("  %d:(%s):%s\n")
                     ,i, cubeCornerToString((CubeCorner)i).cstr()
-                    ,c ? c->toString(precision).cstr():_T("NULL")
+                    ,c ? c->toString(precision).cstr():_T("nullptr")
                     );
   }
   return result;

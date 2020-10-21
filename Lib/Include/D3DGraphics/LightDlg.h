@@ -15,7 +15,7 @@ private:
   void  showSliderValues(const D3Light &v);
   void  setCurrentValue( const D3Light &v);
 public:
-  CLightDlg(PropertyChangeListener *listener = NULL, CWnd *pParent = NULL);
+  CLightDlg(PropertyChangeListener *listener = nullptr, CWnd *pParent = nullptr);
   enum { IDD = IDD_LIGHT_DIALOG };
   static D3Light &copyModifiableValues(D3Light &dst, const D3Light &src);
   String getTypeName() const override {

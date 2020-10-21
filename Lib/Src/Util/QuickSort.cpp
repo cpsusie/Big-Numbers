@@ -262,10 +262,10 @@ class QuickSortComparator : public AbstractComparator {
 private:
   int (__cdecl *m_compare)(const void*, const void*);
 public:
-  int cmp(const void *e1, const void *e2) {
+  int cmp(const void *e1, const void *e2) override {
     return m_compare(e1,e2);
   }
-  AbstractComparator *clone() const {
+  AbstractComparator *clone() const override {
 	return new QuickSortComparator(m_compare);
   }
   QuickSortComparator(int (__cdecl *compare)(const void*, const void*)) {

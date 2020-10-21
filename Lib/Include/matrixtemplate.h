@@ -49,7 +49,7 @@ private:
 
   T *allocate(size_t rows, size_t columns, bool initialize) const {
     const size_t n = rows * columns;
-    if(n == 0) return NULL;
+    if(n == 0) return nullptr;
     T *a = m_va ? m_va->allocVector(n) : new T[n]; TRACE_NEW(a);
     if(initialize) {
       T *p = a, *last = p + n;
@@ -86,30 +86,30 @@ protected:
   }
 
 public:
-  inline MatrixTemplate(AbstractVectorAllocator<T> *va = NULL) : m_va(va), m_a(NULL), m_dim(0,0) {
+  inline MatrixTemplate(AbstractVectorAllocator<T> *va = nullptr) : m_va(va), m_a(nullptr), m_dim(0,0) {
   }
 
-  explicit MatrixTemplate(const T &coef, AbstractVectorAllocator<T> *va = NULL) : m_va(va) {
+  explicit MatrixTemplate(const T &coef, AbstractVectorAllocator<T> *va = nullptr) : m_va(va) {
     init(1, 1, false);
     m_a[0] = coef;
   }
 
-  inline MatrixTemplate(size_t rows, size_t columns, AbstractVectorAllocator<T> *va = NULL) : m_va(va) {
+  inline MatrixTemplate(size_t rows, size_t columns, AbstractVectorAllocator<T> *va = nullptr) : m_va(va) {
     init(rows, columns, true);
   }
 
-  explicit MatrixTemplate(const MatrixDimension &dim, AbstractVectorAllocator<T> *va = NULL) : m_va(va) {
+  explicit MatrixTemplate(const MatrixDimension &dim, AbstractVectorAllocator<T> *va = nullptr) : m_va(va) {
     init(dim.rowCount, dim.columnCount, true);
   }
 
-  MatrixTemplate(const MatrixTemplate<T> &src, AbstractVectorAllocator<T> *va = NULL) : m_va(va) {
+  MatrixTemplate(const MatrixTemplate<T> &src, AbstractVectorAllocator<T> *va = nullptr) : m_va(va) {
     init(src.getRowCount(), src.getColumnCount(), false);
     T       *dp = m_a;
     const T *sp = src.m_a, *last = sp + m_dim.getElementCount();
     while(sp < last) *(dp++) = *(sp++);
   }
 
-  explicit MatrixTemplate(const VectorTemplate<T> &diagonal, AbstractVectorAllocator<T> *va = NULL) : m_va(va) {
+  explicit MatrixTemplate(const VectorTemplate<T> &diagonal, AbstractVectorAllocator<T> *va = nullptr) : m_va(va) {
     const size_t d = diagonal.getDimension();
     init(d, d, true);
     for(size_t i = 0; i < d; i++) {

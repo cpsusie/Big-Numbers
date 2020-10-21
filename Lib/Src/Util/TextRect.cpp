@@ -118,7 +118,7 @@ void ConsoleBufferOp::putRect(const CHAR_INFO *src, int op, int l, int t, int w,
 
   switch(op) {
   case TR_ATEXT:
-    { char *buffer = NULL;
+    { char *buffer = nullptr;
       try {
         buffer = new char[w];
         for(int r = 0; r < h; r++) {
@@ -133,7 +133,7 @@ void ConsoleBufferOp::putRect(const CHAR_INFO *src, int op, int l, int t, int w,
           DWORD nw;
           CHECK(WriteConsoleOutputCharacterA(m_console, buffer, w, pos, &nw));
         }
-        delete[] buffer; buffer = NULL;
+        delete[] buffer; buffer = nullptr;
       } catch(...) {
         if(buffer) delete[] buffer;
         throw;
@@ -142,7 +142,7 @@ void ConsoleBufferOp::putRect(const CHAR_INFO *src, int op, int l, int t, int w,
     break;
 
   case TR_WTEXT:
-    { wchar_t *buffer = NULL;
+    { wchar_t *buffer = nullptr;
       try {
         buffer = new wchar_t[w];
         for(int r = 0; r < h; r++) {
@@ -157,7 +157,7 @@ void ConsoleBufferOp::putRect(const CHAR_INFO *src, int op, int l, int t, int w,
           DWORD nw;
           CHECK(WriteConsoleOutputCharacterW(m_console, buffer, w, pos, &nw));
         }
-        delete[] buffer; buffer = NULL;
+        delete[] buffer; buffer = nullptr;
       } catch(...) {
         if(buffer) delete[] buffer;
         throw;
@@ -166,7 +166,7 @@ void ConsoleBufferOp::putRect(const CHAR_INFO *src, int op, int l, int t, int w,
     break;
 
   case TR_ATTR:
-    { WORD *buffer = NULL;
+    { WORD *buffer = nullptr;
       try {
         buffer = new WORD[w];
         for(int r = 0; r < h; r++) {
@@ -181,7 +181,7 @@ void ConsoleBufferOp::putRect(const CHAR_INFO *src, int op, int l, int t, int w,
           DWORD nw;
           CHECK(WriteConsoleOutputAttribute(m_console, buffer, w, pos, &nw));
         }
-        delete[] buffer; buffer = NULL;
+        delete[] buffer; buffer = nullptr;
       } catch(...) {
         if(buffer) delete[] buffer;
         throw;
@@ -254,13 +254,13 @@ TextRect::TextRect(int w, int h) {
     throwInvalidArgumentException(__TFUNCTION__, _T("(w,h)=(%d,%d)"), w, h);
   }
   m_bufferOp   = new MemoryBufferOp(w,h);
-  m_tempBuffer = NULL;
+  m_tempBuffer = nullptr;
   m_bufferSize = 0;
 }
 
 TextRect::TextRect() {
   m_bufferOp   = new ConsoleBufferOp();
-  m_tempBuffer = NULL;
+  m_tempBuffer = nullptr;
   m_bufferSize = 0;
 }
 

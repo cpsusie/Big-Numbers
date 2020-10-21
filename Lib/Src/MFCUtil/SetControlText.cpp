@@ -21,7 +21,7 @@ void setControlText(int id, CWnd *wnd) {
 /*
 void substituteControl(int id, CWnd *wnd, CWnd &newCtrl) {
   CWnd      *oldCtrl = wnd->GetDlgItem(id);
-  if(oldCtrl == NULL) {
+  if(oldCtrl == nullptr) {
     showError(_T("Control with id=%d not found in window <%s>"), id, getWindowText(wnd).cstr());
     return;
   }

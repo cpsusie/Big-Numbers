@@ -24,8 +24,8 @@ protected:
   InterruptableRunnable        *m_interruptable;
 public:
   InterruptableIsoSurfaceEvaluator(const IsoSurfaceParameters &param);
-  InterruptableIsoSurfaceEvaluator &createData(FunctionR3R1 &f, InterruptableRunnable *ir = NULL);
-  InterruptableIsoSurfaceEvaluator &createData(FunctionWithTimeTemplate<FunctionR3R1> &f, const Real &time, InterruptableRunnable *ir = NULL);
+  InterruptableIsoSurfaceEvaluator &createData(FunctionR3R1 &f, InterruptableRunnable *ir = nullptr);
+  InterruptableIsoSurfaceEvaluator &createData(FunctionWithTimeTemplate<FunctionR3R1> &f, const Real &time, InterruptableRunnable *ir = nullptr);
   double evaluate(const Point3D &p)     override;
   void   receiveFace(const Face3 &face) override;
   String getInfoMessage() const {
@@ -41,9 +41,9 @@ public:
 
 InterruptableIsoSurfaceEvaluator::InterruptableIsoSurfaceEvaluator(const IsoSurfaceParameters &param)
 : m_param(        param)
-, m_f(            NULL )
-, m_interruptable(NULL )
-, m_vertexArray(  NULL )
+, m_f(            nullptr )
+, m_interruptable(nullptr )
+, m_vertexArray(  nullptr )
 {
 }
 
@@ -74,12 +74,12 @@ InterruptableIsoSurfaceEvaluator &InterruptableIsoSurfaceEvaluator::createData(F
     m_statistics = polygonizer.getStatistics();
     m_mb.validate();
     m_mb.optimize();
-    m_vertexArray = NULL;
+    m_vertexArray = nullptr;
   //  m_mb.dump();
   //  m_mb.optimize();
   } catch(...) {
-    m_vertexArray   = NULL;
-    m_interruptable = NULL;
+    m_vertexArray   = nullptr;
+    m_interruptable = nullptr;
     throw;
   }
   return *this;
@@ -113,7 +113,7 @@ void InterruptableIsoSurfaceEvaluator::receiveFace(const Face3 &face) {
 
 LPD3DXMESH createMesh(AbstractMeshFactory &amf, const IsoSurfaceParameters &param, FunctionR3R1 &f) {
   checkIsAnimation(__TFUNCTION__, param, false);
-  return InterruptableIsoSurfaceEvaluator(param).createData(f, NULL).getMeshbuilder().createMesh(amf, param.m_doubleSided);
+  return InterruptableIsoSurfaceEvaluator(param).createData(f, nullptr).getMeshbuilder().createMesh(amf, param.m_doubleSided);
 }
 
 class VariableIsoSurfaceMeshCreator : public AbstractVariableMeshCreator {

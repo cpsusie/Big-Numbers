@@ -10,7 +10,7 @@
 #endif
 
 CEditListCtrl::CEditListCtrl() {
-  m_currentEditor   = NULL;
+  m_currentEditor   = nullptr;
   m_currentCell     = CPoint(-1,-1);
   m_sortColumn      = -1;
   m_ascending       = true;
@@ -73,7 +73,7 @@ void CEditListCtrl::substituteControl(CWnd *wnd, int id, CTableModel &model) {
   DEFINEMETHODNAME;
   m_model = &model;
   CWnd *ctrl = wnd->GetDlgItem(id);
-  if(ctrl == NULL) {
+  if(ctrl == nullptr) {
     showError(_T("%s:Control %d not found"), method, id);
     return;
   }
@@ -317,7 +317,7 @@ void CEditListCtrl::hideEditCtrl() {
 //    trace("hideEditCtrl");
 
     CWnd *editCtrl = m_currentEditor;
-    m_currentEditor = NULL; // to prevent recursive call from OnEditKillFocus
+    m_currentEditor = nullptr; // to prevent recursive call from OnEditKillFocus
     editCtrl->ShowWindow(SW_HIDE); // and now we can hide it
     SETCONTROLFLAG(HANDLE_KILLSET_FOCUS);
   }
@@ -551,7 +551,7 @@ void CEditListCtrl::comboEditorValueToModel(const ListCell &cell) {
 }
 
 void CEditListCtrl::clearItemRect(HDC hdc, const CRect &r) {
-  BitBlt(hdc, r.left,r.top, r.Width(), r.Height(), NULL, 0,0, WHITENESS);
+  BitBlt(hdc, r.left,r.top, r.Width(), r.Height(), nullptr, 0,0, WHITENESS);
 }
 
 int CEditListCtrl::findRowFromPoint(const CPoint &p) const {
@@ -636,7 +636,7 @@ void CEditListCtrl::paintHeaderSortMark() {
     headerCtrl->GetItemRect(m_sortColumn, &headerRect);
     CClientDC dc(headerCtrl);
     CDC srcDC;
-    srcDC.CreateCompatibleDC(NULL);
+    srcDC.CreateCompatibleDC(nullptr);
     CBitmap      *bitmap     = m_ascending ? &m_ascBitmap : &m_descBitmap;
     const CSize   bmSize     = getBitmapSize(*bitmap);
     CBitmap      *oldBitmap  = srcDC.SelectObject(bitmap);

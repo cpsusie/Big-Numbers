@@ -20,7 +20,7 @@ private:
   float getSliderOpacity() const;
   void  showOpacity(     double v);
 public:
-  CMaterialDlg(PropertyChangeListener *listener = NULL, CWnd *pParent = NULL);
+  CMaterialDlg(PropertyChangeListener *listener = nullptr, CWnd *pParent = nullptr);
   enum { IDD = IDD_MATERIAL_DIALOG };
   String getTypeName() const override {
     return _T("D3Material");

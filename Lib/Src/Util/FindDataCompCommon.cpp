@@ -18,26 +18,26 @@ CompoundFindDataComparator _sortdirlastsize(    FILEATTRIB   , false, FILESIZE  
 
 class SelectAllButDot : public FindDataSelector {
 public:
-  bool select(const DirListEntry &e) {
+  bool select(const DirListEntry &e) override {
     return _tcscmp(e.name, _T(".")) && _tcscmp(e.name,_T(".."));
   }
-  AbstractSelector *clone() const { return new SelectAllButDot; }
+  AbstractSelector *clone() const override { return new SelectAllButDot; }
 };
 
 class SelectSubDir : public FindDataSelector {
 public:
-  bool select(const DirListEntry &e) {
+  bool select(const DirListEntry &e) override {
     return (e.attrib & _A_SUBDIR) && SELECTALLBUTDOT->select(e);
   }
-  AbstractSelector *clone() const { return new SelectSubDir; }
+  AbstractSelector *clone() const override { return new SelectSubDir; }
 };
 
 class SelectFile : public FindDataSelector {
 public:
-  bool select(const DirListEntry &e) {
+  bool select(const DirListEntry &e) override {
     return !(e.attrib & _A_SUBDIR);
   }
-  AbstractSelector *clone() const { return new SelectFile; }
+  AbstractSelector *clone() const override { return new SelectFile; }
 };
 
 static SelectAllButDot selectAllButDot;

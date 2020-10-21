@@ -3,20 +3,20 @@
 #include <MFCUtil/Clipboard.h>
 
 HBITMAP getClipboardBitmap() {
-  if(!OpenClipboard(NULL)) {
-    return NULL;
+  if(!OpenClipboard(nullptr)) {
+    return nullptr;
   }
 
   HANDLE h = GetClipboardData(CF_BITMAP);
-  if(h == NULL) {
+  if(h == nullptr) {
     CloseClipboard();
-    return NULL;
+    return nullptr;
   }
   HBITMAP bitmap1 = (HBITMAP)h;
 
   HDC screenDC = getScreenDC();
-  HDC dc1 = CreateCompatibleDC(NULL);
-  HDC dc2 = CreateCompatibleDC(NULL);
+  HDC dc1 = CreateCompatibleDC(nullptr);
+  HDC dc2 = CreateCompatibleDC(nullptr);
   BITMAP info;
   ::GetObject(bitmap1,sizeof(info),&info);
 
@@ -44,7 +44,7 @@ void putClipboard(HWND hwnd, HBITMAP bitmap) {
     if(!EmptyClipboard()) {
       throwLastErrorOnSysCallException(_T("EmptyClipboard"));
     }
-    if(::SetClipboardData(CF_BITMAP, bitmap) == NULL) {
+    if(::SetClipboardData(CF_BITMAP, bitmap) == nullptr) {
       throwLastErrorOnSysCallException(_T("SetClipboardData"));
     }
     CloseClipboard();

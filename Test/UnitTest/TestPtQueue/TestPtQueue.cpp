@@ -60,8 +60,10 @@ namespace TestPtQueue {
   }
 
   class MyComparator : public Comparator<TestElement> {
-    int compare(const TestElement &e1, const TestElement &e2);
-    AbstractComparator *clone() const { return new MyComparator(); }
+    int compare(const TestElement &e1, const TestElement &e2) override;
+    AbstractComparator *clone() const override {
+      return new MyComparator();
+    }
   };
 
   int MyComparator::compare(const TestElement &e1, const TestElement &e2) {

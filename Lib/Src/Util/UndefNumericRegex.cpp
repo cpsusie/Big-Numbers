@@ -6,7 +6,7 @@ static const char *undefNumericPatterns[] = {
  ,"-inf"                         // _UNDEFREG_NINF
  ,"-?/(nan/((snan)/)?/|snan/)"   // _UNDEFREG_SNAN
  ,"-?/(nan/((ind)/)?/|qnan/)"    // _UNDEFREG_QNAN
- ,NULL
+ ,nullptr
 };
 
 StringArray UndefNumericStreamScanner::getRegexLines() { // static

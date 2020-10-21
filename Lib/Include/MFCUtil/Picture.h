@@ -51,7 +51,7 @@ public:
 	CPicture &loadFromResource(int resId, const String &typeName);
   void unload();
   bool isLoaded() const {
-    return m_IPicture != NULL;
+    return m_IPicture != nullptr;
   }
   bool hasAlpha() const {
     return m_hasAlpha;

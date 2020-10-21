@@ -163,9 +163,9 @@ private:
   }
 
   void initPointers() {
-    m_pattern    = NULL;
-    m_delta1     = NULL;
-    m_delta2     = NULL;
+    m_pattern    = nullptr;
+    m_delta1     = nullptr;
+    m_delta2     = nullptr;
     m_delta1Size = 0;
     m_plm1       = (m_patternLength = -1) - 1;
     m_search     = &BMAutomateTemplate<Ctype>::notCompiledsearchFunction;
@@ -276,7 +276,7 @@ class BMAutomateBYTE : public BMAutomateTemplate<BYTE> {
 public:
   BMAutomateBYTE() {
   }
-  BMAutomateBYTE(const BYTE *pattern, size_t patternLength, bool forwardSearch, const BYTE *translateTable = NULL)
+  BMAutomateBYTE(const BYTE *pattern, size_t patternLength, bool forwardSearch, const BYTE *translateTable = nullptr)
    : BMAutomateTemplate<BYTE>(pattern, patternLength, forwardSearch, translateTable)
   {
   }
@@ -286,7 +286,7 @@ class BMAutomatewchar_t : public BMAutomateTemplate<wchar_t> {
 public:
   BMAutomatewchar_t() {
   }
-  BMAutomatewchar_t(const wchar_t *pattern, size_t patternLength, bool forwardSearch, const wchar_t *translateTable = NULL)
+  BMAutomatewchar_t(const wchar_t *pattern, size_t patternLength, bool forwardSearch, const wchar_t *translateTable = nullptr)
    : BMAutomateTemplate<wchar_t>(pattern, patternLength, forwardSearch, translateTable)
   {
   }
@@ -296,11 +296,11 @@ class BMAutomate : public BMAutomateTemplate<TCHAR> {
 public:
   BMAutomate() {
   }
-  BMAutomate(const TCHAR *pattern, size_t patternLength, bool forwardSearch, const TCHAR *translateTable = NULL)
+  BMAutomate(const TCHAR *pattern, size_t patternLength, bool forwardSearch, const TCHAR *translateTable = nullptr)
    : BMAutomateTemplate<TCHAR>(pattern, patternLength, forwardSearch, translateTable)
   {
   }
-  BMAutomate(const String &pattern, bool forwardSearch, const TCHAR *translateTable = NULL)
+  BMAutomate(const String &pattern, bool forwardSearch, const TCHAR *translateTable = nullptr)
    : BMAutomateTemplate<TCHAR>(pattern.cstr(), pattern.length(), forwardSearch, translateTable)
   {
   }

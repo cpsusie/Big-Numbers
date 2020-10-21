@@ -43,7 +43,7 @@ private:
   CompactArray<TCHAR>  m_textData;
 
   StringPoolNode *fetchNode();
-  static StringPoolNode **allocateIndex( size_t capacity); // if capacity == 0, NULL is returned, else a zero-filled array of pointers
+  static StringPoolNode **allocateIndex( size_t capacity); // if capacity == 0, nullptr is returned, else a zero-filled array of pointers
   void init(size_t indexCapacity, size_t textCapacity);
   void copy(const StringPool &src);
   void buildPageList();

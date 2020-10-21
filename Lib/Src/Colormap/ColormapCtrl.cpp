@@ -156,7 +156,7 @@ void CColormapCtrl::OnDraw(CDC* pdc, const CRect& rcBounds, const CRect& /* rcIn
   const BOOL enabled = GetEnabled();
   m_colorMap.draw(*pdc, rcBounds, enabled);
 
-  if(m_hWnd != NULL) {
+  if(m_hWnd != nullptr) {
     setFieldPositions(enabled);
   } else {
     drawEditFields(pdc, enabled);
@@ -199,7 +199,7 @@ void CColormapCtrl::OnDraw(CDC* pdc, const CRect& rcBounds, const CRect& /* rcIn
   }
 
   void CColormapCtrl::drawMap() {
-    if(m_hWnd == NULL) {
+    if(m_hWnd == nullptr) {
       return;
     }
     CClientDC dc(this);
@@ -346,7 +346,7 @@ CRect CColormapCtrl::getScalePosRect() {
 }
 
 void CColormapCtrl::createEditField(CEdit &f, const CRect &r, int id) {
-  f.CreateEx(WS_EX_CLIENTEDGE|WS_EX_WINDOWEDGE,_T("EDIT"),NULL,WS_CHILD | WS_VISIBLE | WS_GROUP | WS_BORDER | WS_TABSTOP,r-m_colorMap.getRect().TopLeft(),this,id);
+  f.CreateEx(WS_EX_CLIENTEDGE|WS_EX_WINDOWEDGE,_T("EDIT"),nullptr,WS_CHILD | WS_VISIBLE | WS_GROUP | WS_BORDER | WS_TABSTOP,r-m_colorMap.getRect().TopLeft(),this,id);
 }
 
 int CColormapCtrl::OnCreate(LPCREATESTRUCT lpCreateStruct) {
@@ -465,7 +465,7 @@ void CColormapCtrl::OnLButtonUp(UINT nFlags, CPoint point) {
   if(!GetEnabled()) {
     return;
   }
-  ClipCursor(NULL);
+  ClipCursor(nullptr);
 }
 
 BOOL CColormapCtrl::PreTranslateMessage(MSG *pMsg) {

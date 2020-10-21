@@ -27,7 +27,7 @@ StringArray selectMultipleFileNames(const String      &title
                                    ,DWORD              flags
                                    )
 {
-  TCHAR *nameBuffer = NULL;
+  TCHAR *nameBuffer = nullptr;
   try {
     CFileDialog dlg(TRUE);
     dlg.m_ofn.lpstrTitle   = title.cstr();
@@ -46,7 +46,7 @@ StringArray selectMultipleFileNames(const String      &title
     StringArray result;
     if((dlg.DoModal() == IDOK) && (_tcsclen(nameBuffer) != 0)) {
       result = getFileNames(nameBuffer);
-      if(selectedExtensionIndex != NULL) {
+      if(selectedExtensionIndex != nullptr) {
         *selectedExtensionIndex = dlg.m_ofn.nFilterIndex;
       }
     }

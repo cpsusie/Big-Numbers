@@ -19,10 +19,10 @@ CTableModel::~CTableModel() {
 void CTableModel::saveEditor(UINT column, CWnd *editor) {
   if(column >= m_editorArray.size()) {
     for(size_t i = m_editorArray.size(); i <= column; i++) {
-      m_editorArray.add(NULL);
+      m_editorArray.add(nullptr);
     }
   }
-  if(m_editorArray[column] != NULL) {
+  if(m_editorArray[column] != nullptr) {
     CWnd *e = m_editorArray[column];
     e->DestroyWindow();
     SAFEDELETE(e);
@@ -31,7 +31,7 @@ void CTableModel::saveEditor(UINT column, CWnd *editor) {
 }
 
 CWnd *CTableModel::getCachedEditor(UINT column) {
-  return (column < m_editorArray.size()) ? m_editorArray[column] : NULL;
+  return (column < m_editorArray.size()) ? m_editorArray[column] : nullptr;
 }
 
 CWnd *CTableModel::getEditor(CWnd *listCtrl, UINT column) {
@@ -52,7 +52,7 @@ CWnd *CTableModel::createEditor(CWnd *listCtrl, UINT column) {
   case LFT_FLOAT   :
   case LFT_DOUBLE  :
     { CEditListNumericEditor *e = new CEditListNumericEditor;
-      DoubleInterval interval, *intervalp = NULL;
+      DoubleInterval interval, *intervalp = nullptr;
       if(LF_NUM_HASINTERVAL(flags)) {
         interval = getLegalInterval(column);
         intervalp = &interval;
@@ -89,7 +89,7 @@ CWnd *CTableModel::createEditor(CWnd *listCtrl, UINT column) {
     break;
   default          :
     throwException(_T("Unknown editorType for column %d (=%d)"), column, LF_GETTYPE(flags));
-    return NULL;
+    return nullptr;
   }
   TRACE_NEW(result);
   return result;

@@ -2,13 +2,13 @@
 
 #pragma warning(disable : 4244)
 
-LayoutManager::LayoutManager() : m_wnd(NULL) {
+LayoutManager::LayoutManager() : m_wnd(nullptr) {
   m_currentFontScale = 1;
-  m_font             = NULL;
+  m_font             = nullptr;
 }
 
 LayoutManager::~LayoutManager() {
-  setFont(NULL);
+  setFont(nullptr);
 }
 
 void LayoutManager::setFont(CFont *font) {
@@ -23,8 +23,8 @@ void LayoutManager::setFont(CFont *font) {
 
 void LayoutManager::OnInitDialog(CWnd *wnd, int flags) {
   DEFINEMETHODNAME;
-  if(wnd == NULL) {
-    showError(_T("%s:wnd==NULL"), method);
+  if(wnd == nullptr) {
+    showError(_T("%s:wnd==nullptr"), method);
   }
 
   if(BOTHSET(flags, FONT_RELATIVE_SIZE, RETAIN_ASPECTRATIO)) {

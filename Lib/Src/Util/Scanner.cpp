@@ -24,7 +24,7 @@ Scanner::~Scanner() {
 
 void Scanner::init(LexStream *stream, const SourcePosition &pos) {
   m_endBuf         = end();
-  m_previousMark   = NULL;
+  m_previousMark   = nullptr;
   m_previousLength = 0;
 
   m_inputStream    = stream;
@@ -83,7 +83,7 @@ _TUCHAR *Scanner::markEnd() {
 
 _TUCHAR *Scanner::moveStart() {
   if(m_startMark >= m_endMark) {
-    return NULL;
+    return nullptr;
   } else {
     return ++m_startMark;
   }

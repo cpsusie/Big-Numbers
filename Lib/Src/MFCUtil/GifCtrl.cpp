@@ -24,7 +24,7 @@ END_MESSAGE_MAP()
 void CGifCtrl::substituteControl(CWnd *wnd, int id) {
   DEFINEMETHODNAME;
   CWnd *ctrl = wnd->GetDlgItem(id);
-  if(ctrl == NULL) {
+  if(ctrl == nullptr) {
     showWarning(_T("%s:Control %d not found"), method, id);
     return;
   }
@@ -56,7 +56,7 @@ void CGifCtrl::OnPaint() {
 
 void CGifCtrl::OnShowWindow(BOOL bShow, UINT nStatus) {
   __super::OnShowWindow(bShow, nStatus);
-	
+
   if(bShow) {
     if(isSuspended()) {
       resume();

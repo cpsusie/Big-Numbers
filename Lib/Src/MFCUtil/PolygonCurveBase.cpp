@@ -20,7 +20,7 @@ const TCHAR *_PolygonCurveTypeName::typeToStr(short type)  { // static
     }
   }
   throwInvalidArgumentException(__TFUNCTION__, _T("type=%d"), type);
-  return NULL;
+  return nullptr;
 }
 
 short _PolygonCurveTypeName::strToType(const TCHAR *str) { // static

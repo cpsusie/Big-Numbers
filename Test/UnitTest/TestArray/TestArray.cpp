@@ -43,10 +43,10 @@ namespace TestArray {
 
   class ElemComparator : public Comparator<ArrayElement> {
   public:
-    int compare(const ArrayElement &e1, const ArrayElement &e2) {
+    int compare(const ArrayElement &e1, const ArrayElement &e2) override {
       return e1.n - e2.n;
     }
-    AbstractComparator *clone() const {
+    AbstractComparator *clone() const override {
       return new ElemComparator();
     }
   };

@@ -52,10 +52,10 @@ namespace TestCompactArray {
 
   class CompactArrayElemComparator : public Comparator<CompactArrayElement> {
   public:
-    int compare(const CompactArrayElement &e1, const CompactArrayElement &e2) {
+    int compare(const CompactArrayElement &e1, const CompactArrayElement &e2) override {
       return e1.n - e2.n;
     }
-    AbstractComparator *clone() const {
+    AbstractComparator *clone() const override {
       return new CompactArrayElemComparator;
     }
   };

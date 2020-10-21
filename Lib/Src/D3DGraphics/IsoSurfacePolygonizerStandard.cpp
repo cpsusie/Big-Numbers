@@ -178,7 +178,7 @@ void IsoSurfacePolygonizer::testFace(int i, int j, int k, const StackedCube &old
   newCube.m_corners[FLIP(c3, bit)] = oldCube.m_corners[c3];
   newCube.m_corners[FLIP(c4, bit)] = oldCube.m_corners[c4];
   for(int n = 0; n < ARRAYSIZE(newCube.m_corners); n++) {
-    if(newCube.m_corners[n] == NULL) {
+    if(newCube.m_corners[n] == nullptr) {
       newCube.m_corners[n] = getCorner(i+BIT(n,2), j+BIT(n,1), k+BIT(n,0));
     }
   }
@@ -333,7 +333,7 @@ void IsoSurfacePolygonizer::pushCube(const StackedCube &cube) {
 const HashedCubeCorner *IsoSurfacePolygonizer::getCorner(int i, int j, int k) {
   const Point3DKey key(i, j, k);
   const HashedCubeCorner *result = m_cornerMap.get(key);
-  if(result != NULL) {
+  if(result != nullptr) {
     m_statistics.m_cornerHits++;
     return result;
   } else {
@@ -467,7 +467,7 @@ UINT IsoSurfacePolygonizer::getVertexId(const HashedCubeCorner &c1, const Hashed
 #endif
   const CubeEdgeHashKey edgeKey(c1.m_key, c2.m_key);
   const UINT *p = m_edgeMap.get(edgeKey);
-  if(p != NULL) {
+  if(p != nullptr) {
     m_statistics.m_edgeHits++;
 #if defined(ISODEBUGGER)
     m_eval.markCurrentVertex(m_vertexArray[*p]);

@@ -256,8 +256,8 @@ private:
 public:
   TransitionComparator(const OpeningLibrary *library) : m_library(library) {
   }
-  int compare(const LibraryTransition &t1, const LibraryTransition &t2);
-  AbstractComparator *clone() const {
+  int compare(const LibraryTransition &t1, const LibraryTransition &t2) override;
+  AbstractComparator *clone() const override {
     return new TransitionComparator(*this);
   }
 };

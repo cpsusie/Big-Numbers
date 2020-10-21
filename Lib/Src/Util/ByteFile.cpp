@@ -4,17 +4,17 @@
 #include "ByteFile.h"
 
 ByteFile::ByteFile() {
-  m_file  = NULL;
+  m_file  = nullptr;
 }
 
 ByteFile::ByteFile(const String &name, FileMode mode) {
-  m_file  = NULL;
+  m_file  = nullptr;
   open(name, mode);
 }
 
 ByteFile::ByteFile(FILE *f, FileMode mode) {
-  if(f == NULL) {
-    throwInvalidArgumentException(__TFUNCTION__, _T("f=NULL"));
+  if(f == nullptr) {
+    throwInvalidArgumentException(__TFUNCTION__, _T("f=nullptr"));
   }
   m_file    = f;
   m_oldMode = setFileMode(f, _O_BINARY);
@@ -51,7 +51,7 @@ void ByteFile::close() {
     fflush(m_file);
     setFileMode(m_file, m_oldMode);
   }
-  m_file = NULL;
+  m_file = nullptr;
 }
 
 void ByteFile::putByte(BYTE c) {

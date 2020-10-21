@@ -5,14 +5,14 @@
 
 D3SceneObjectWithVertexBuffer::D3SceneObjectWithVertexBuffer(D3Scene &scene, const String &name)
 : D3SceneObjectVisual(scene, name)
-, m_vertexBuffer(NULL)
+, m_vertexBuffer(nullptr)
 , m_primitiveCount(0)
 {
 }
 
 D3SceneObjectWithVertexBuffer::D3SceneObjectWithVertexBuffer(D3SceneObjectVisual *parent, const String &name)
 : D3SceneObjectVisual(parent, name)
-, m_vertexBuffer(NULL)
+, m_vertexBuffer(nullptr)
 , m_primitiveCount(0)
 {
 }

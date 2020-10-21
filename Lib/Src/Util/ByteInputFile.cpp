@@ -4,17 +4,17 @@
 #include "ByteFile.h"
 
 ByteInputFile::ByteInputFile() {
-  m_file  = NULL;
+  m_file  = nullptr;
 }
 
 ByteInputFile::ByteInputFile(const String &name) {
-  m_file  = NULL;
+  m_file  = nullptr;
   open(name);
 }
 
 ByteInputFile::ByteInputFile(FILE *f) {
-  if(f == NULL) {
-    throwInvalidArgumentException(__TFUNCTION__, _T("f=NULL"));
+  if(f == nullptr) {
+    throwInvalidArgumentException(__TFUNCTION__, _T("f=nullptr"));
   }
   m_file    = f;
   m_oldMode = setFileMode(f, _O_BINARY);
@@ -46,7 +46,7 @@ void ByteInputFile::close() {
   } else {
     setFileMode(m_file, m_oldMode);
   }
-  m_file = NULL;
+  m_file = nullptr;
 }
 
 int ByteInputFile::getByte() {

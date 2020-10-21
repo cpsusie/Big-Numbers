@@ -489,7 +489,7 @@ void int128mul(void *dst, const void *x) {
 }
 
 // Set rem = x % y; for y <= _UI32_MAX
-// If quot != NULL, then *quot = x / y;
+// If quot != nullptr, then *quot = x / y;
 static void unsignedQuotRemainderU32(const _uint128 &x, UINT y, _uint128 *quot, _uint128 &rem) {
   UINT r32;
   switch(getDwordIndex(x)) {
@@ -556,7 +556,7 @@ End:;
 }
 
 // Set rem = x % y;
-// If quot != NULL, then *quot = x / y;
+// If quot != nullptr, then *quot = x / y;
 static void unsignedQuotRemainder(const _uint128 &x, const _uint128 &y, _uint128 *quot, _uint128 &rem) {
   UINT      y32;
   const int yScale = getFirst32(y, y32);
@@ -633,7 +633,7 @@ SaveQ32:                                               ;   }
       }
       rem -= p128;                                     // Assume: p128 <= rem
 UpdateQuot:
-      if(quot) {                                       // Do we want the quot. If its NULL there's no need to do this
+      if(quot) {                                       // Do we want the quot. If its nullptr there's no need to do this
         if(count++ == 0) {
           *quot = q32;
         } else {
@@ -681,7 +681,7 @@ void int128div(void *dst, void *x) {
 // void int128rem(_int128 &dst, _int128 &x); do assignop dst %= x;
 void int128rem(void *dst, void *x) {
   const _int128  a(*(_int128*)dst);
-  signedQuotRemainder(a, *(const _int128*)x, NULL, *(_int128*)dst);
+  signedQuotRemainder(a, *(const _int128*)x, nullptr, *(_int128*)dst);
 }
 
 // void uint128div(_uint128 &dst, const _uint128 &x); do assignop dst /= x;
@@ -695,7 +695,7 @@ void uint128div(void *dst, const void *x) {
 // void uint128rem(_uint128 &dst, const _uint128 &x); do assignop dst %= x;
 void uint128rem(void *dst, const void *x) {
   const _uint128  a(*(_uint128*)dst);
-  unsignedQuotRemainder(a, *(const _uint128*)x, NULL, *(_uint128*)dst);
+  unsignedQuotRemainder(a, *(const _uint128*)x, nullptr, *(_uint128*)dst);
 }
 
 /*

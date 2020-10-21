@@ -35,8 +35,8 @@ void PixRect::writeAsTIFF(ByteOutputStream &out) const { writePixRect(this, out,
 // ---------------------------------- load ------------------------------------
 
 PixRect *PixRect::load(PixRectDevice &device, ByteInputStream &in) { // static
-  PixRect *result = NULL;
-  HDC      hdc    = NULL;
+  PixRect *result = nullptr;
+  HDC      hdc    = nullptr;
   try {
     CPicture picture; // handles BMP,JPEG,TIFF,PNG,GIF,ICO,,,...
     picture.load(in);
@@ -44,12 +44,12 @@ PixRect *PixRect::load(PixRectDevice &device, ByteInputStream &in) { // static
     HDC hdc = result->getDC();
     picture.show(hdc);
     result->releaseDC(hdc);
-    hdc = NULL;
+    hdc = nullptr;
     return result;
   } catch(...) {
     if(hdc) {
       result->releaseDC(hdc);
-      hdc = NULL;
+      hdc = nullptr;
     }
     SAFEDELETE(result);
     throw;

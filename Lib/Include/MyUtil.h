@@ -99,7 +99,7 @@ const TCHAR   **argv2targv( const wchar_t **argv);
 const char    **targv2argv( const TCHAR   **argv);
 const wchar_t **targv2wargv(const TCHAR   **argv);
 
-// if module == NULL, path of executable
+// if module == nullptr, path of executable
 String getModuleFileName(HMODULE module = nullptr);
 String getUserName();
 String getHostName();

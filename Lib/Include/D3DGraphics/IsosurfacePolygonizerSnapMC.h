@@ -543,7 +543,7 @@ private:
   const PolygonizerBase *m_polygonizer;
   UINT                   m_cubeIndex;
 public:
-  inline Octagon() : m_polygonizer(NULL), m_cubeIndex(0) {
+  inline Octagon() : m_polygonizer(nullptr), m_cubeIndex(0) {
   }
   inline Octagon(const PolygonizerBase *polygonizer, UINT cubeIndex)
     : m_polygonizer(polygonizer)
@@ -554,10 +554,10 @@ public:
     return isEmpty() ? -1 : m_cubeIndex;
   }
   const StackedCube *getCube() const {
-    return isEmpty() ? NULL : &(m_polygonizer->getCubeArray()[m_cubeIndex]);
+    return isEmpty() ? nullptr : &(m_polygonizer->getCubeArray()[m_cubeIndex]);
   }
   const HashedCubeCorner *getHashedCorner(UINT index) const {
-    return isEmpty() ? NULL : getCube()->m_corners[index];
+    return isEmpty() ? nullptr : getCube()->m_corners[index];
   }
   const D3DXVECTOR3 getCenter() const {
     return isEmpty() ? D3DXORIGIN : getCube()->getCenter();
@@ -566,7 +566,7 @@ public:
     return 8;
   }
   inline bool isEmpty() const {
-    return m_polygonizer == NULL;
+    return m_polygonizer == nullptr;
   }
   String toString(int precision = 6) const;
 };

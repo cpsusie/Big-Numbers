@@ -44,7 +44,7 @@ PLBYTE *FileSource::GetBufferPtr(int MinBytesInBuffer) {
 
 PLBYTE *FileSource::ReadEverything() {
   throwException(_T("%s:Not implemented"), __TFUNCTION__);
-  return NULL;
+  return nullptr;
 }
 
 void FileSource::Seek(int n) {

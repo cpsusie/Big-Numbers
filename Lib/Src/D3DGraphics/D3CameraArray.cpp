@@ -29,7 +29,7 @@ int D3CameraArray::findCameraIndex(HWND hwnd) const {
 
 D3Camera *D3CameraArray::findCamera(HWND hwnd) const {
   const int index = findCameraIndex(hwnd);
-  return (index < 0) ? NULL : (*this)[index];
+  return (index < 0) ? nullptr : (*this)[index];
 }
 
 CameraSet D3CameraArray::getActiveCameraSet() const {

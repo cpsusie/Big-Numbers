@@ -69,7 +69,7 @@ void DFA::makeTransitions() {
 
       int nextDFAState = FAILURE;         // go to nextDFAState on char c
       BitSet *newSet = transition(transitionSet, current.m_NFAset, c);
-      if(newSet != NULL) {
+      if(newSet != nullptr) {
         int acceptIndex = -1;                // if current DFA state is an acceptstate, this is the AcceptAction
         epsClosure(*newSet, acceptIndex);
 
@@ -145,16 +145,16 @@ void DFA::epsClosure(BitSet &NFAset, int &acceptIndex) const {
 }
 
 // Return a set that contains all NFA states that can be reached by making
-// transitions on "c" from any NFA state in NFAset. Returns NULL if no
+// transitions on "c" from any NFA state in NFAset. Returns nullptr if no
 // such transition exist.
 BitSet *DFA::transition(BitSet &dst, BitSet &NFAset, int c) const {
-  BitSet *result = NULL;
+  BitSet *result = nullptr;
 
   for(Iterator<size_t> it = NFAset.getIterator(); it.hasNext();) {
     int i = (int)it.next();
     const NFAState *p = m_NFA[i]->getSuccessor(c);
     if(p) {
-      if(result == NULL) {
+      if(result == nullptr) {
         dst.clear();
         result = &dst;
       }

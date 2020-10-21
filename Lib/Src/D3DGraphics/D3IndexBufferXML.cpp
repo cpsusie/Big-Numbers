@@ -8,7 +8,7 @@ void setValue(XMLDoc &doc, XMLNodePtr n, const LPDIRECT3DINDEXBUFFER &ib) {
   const UINT itemSize  = formatToSize(desc.Format);
   const int  itemCount = desc.Size/itemSize;
 
-  void *bufferItems = NULL;
+  void *bufferItems = nullptr;
   V(ib->Lock(0, 0, &bufferItems, D3DLOCK_READONLY));
   try {
     StringArray dataLines;

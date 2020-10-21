@@ -6,16 +6,16 @@
 
 D3SceneObjectVisual::D3SceneObjectVisual(D3Scene &scene, const String &name)
   : D3SceneObject(scene)
-  , m_parent(NULL)
+  , m_parent(nullptr)
   , m_name(name)
-  , m_userData(NULL) {
+  , m_userData(nullptr) {
   m_world = D3World();
 }
 D3SceneObjectVisual::D3SceneObjectVisual(D3SceneObjectVisual *parent, const String &name)
   : D3SceneObject(parent->getScene())
   , m_parent(parent)
   , m_name(name.length() ? name : parent->getName())
-  , m_userData(NULL) {
+  , m_userData(nullptr) {
   m_world = D3World();
 }
 

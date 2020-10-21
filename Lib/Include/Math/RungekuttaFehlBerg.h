@@ -11,7 +11,7 @@ private:
   Vector                     m_y;
   void setValue(const Vector &v);
 public:
-  RungeKuttaFehlberg(VectorFunction &diff, RungeKuttaFehlbergHandler *handler=NULL);
+  RungeKuttaFehlberg(VectorFunction &diff, RungeKuttaFehlbergHandler *handler=nullptr);
   const Vector &calculate(const Vector &start, Real v0end, Real maxError);
   const Vector &getvalue() const {
     return m_y;

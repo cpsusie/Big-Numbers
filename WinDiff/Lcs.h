@@ -155,10 +155,10 @@ public:
   inline void setRunnable(InterruptableRunnable *runnable) {
     m_runnable = runnable;
   }
-  AbstractComparator *clone() const {
+  AbstractComparator *clone() const override {
     return new IndexComparator(m_c);
   }
-  int compare(const LcsElement &e1, const LcsElement &e2);
+  int compare(const LcsElement &e1, const LcsElement &e2) override;
   inline size_t getCompareCount() const {
     return m_compareCount;
   }
@@ -168,10 +168,10 @@ class IndexComparatorR : public IndexComparator {
 public:
   inline IndexComparatorR(LcsComparator &c) : IndexComparator(c) {
   }
-  AbstractComparator *clone() const {
+  AbstractComparator *clone() const override {
     return new IndexComparatorR(m_c);
   }
-  int compare(const LcsElement &e1, const LcsElement &e2);
+  int compare(const LcsElement &e1, const LcsElement &e2) override;
 };
 
 class Lcs {

@@ -54,7 +54,7 @@ void D3Camera::OnSize() {
   LPDIRECT3DDEVICE      device  = getDirectDevice();
   D3DPRESENT_PARAMETERS present = DirectXDeviceFactory::getInstance().getDefaultPresentParameters(getHwnd());
   if(present.BackBufferWidth && present.BackBufferHeight) {
-    V(device->ResetEx(&present, NULL));
+    V(device->ResetEx(&present, nullptr));
     setProjMatrix();
   }
 }
@@ -109,10 +109,10 @@ D3LightControl *D3Camera::setLightControlVisible(UINT lightIndex, bool visible) 
   D3Scene &scene = getScene();
   if(!scene.isLightDefined(lightIndex)) {
     showWarning(_T("%s:Light %u is undefined"), __TFUNCTION__, lightIndex);
-    return NULL;
+    return nullptr;
   }
   D3LightControl *lc = scene.findLightControlByLightIndex(lightIndex);
-  if(lc == NULL) {
+  if(lc == nullptr) {
     lc = scene.addLightControl(lightIndex);
   }
   if(visible != isLightControlVisible(lightIndex)) {

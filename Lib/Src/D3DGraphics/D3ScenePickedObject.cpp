@@ -7,21 +7,21 @@
 
 D3Camera *D3Scene::getPickedCamera(const CPoint &p) const {
   const int index = m_cameraArray.findCameraIndex(p);
-  return (index < 0) ? NULL : m_cameraArray[index];
+  return (index < 0) ? nullptr : m_cameraArray[index];
 }
 
 D3SceneObjectVisual *D3Scene::getPickedVisual(const CPoint &p, long mask, D3DXVECTOR3 *hitPoint, D3Ray *ray, float *dist, D3PickedInfo *info) const {
   const D3Camera *camera = getPickedCamera(p);
-  if(camera == NULL) {
-    return NULL;
+  if(camera == nullptr) {
+    return nullptr;
   }
   return camera->getPickedVisual(camera->screenToWin(p), mask, hitPoint, ray, dist, info);
 }
 
 D3SceneObjectVisual *D3Scene::getPickedVisual(const D3Camera &camera, const D3Ray &ray, long mask, D3DXVECTOR3 *hitPoint, float *dist, D3PickedInfo *info) const {
   float                minDistance   = -1;
-  D3SceneObjectVisual *closestObject = NULL;
-  D3PickedInfo         closestInfo, tmpInfo, *pinfo = info ? &tmpInfo : NULL;
+  D3SceneObjectVisual *closestObject = nullptr;
+  D3PickedInfo         closestInfo, tmpInfo, *pinfo = info ? &tmpInfo : nullptr;
 
   getDevice().setCurrentCamera(&camera);
   for(Iterator<D3SceneObjectVisual*> it = getVisualIterator(mask); it.hasNext();) {
@@ -31,7 +31,7 @@ D3SceneObjectVisual *D3Scene::getPickedVisual(const D3Camera &camera, const D3Ra
     }
     float distance;
     if(obj->intersectsWithRay(ray, distance, pinfo)) {
-      if((closestObject == NULL) || (distance < minDistance)) {
+      if((closestObject == nullptr) || (distance < minDistance)) {
         closestObject = obj;
         minDistance   = distance;
         if(pinfo) {
@@ -51,6 +51,6 @@ D3SceneObjectVisual *D3Scene::getPickedVisual(const D3Camera &camera, const D3Ra
       *info = closestInfo;
     }
   }
-  getDevice().setCurrentCamera(NULL);
+  getDevice().setCurrentCamera(nullptr);
   return closestObject;
 }

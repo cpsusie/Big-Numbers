@@ -32,7 +32,7 @@ static LPD3DXMESH createMeshFromParametricCurve(AbstractMeshFactory &amf, Functi
   const bool    calculateNormals = fvf & D3DFVF_NORMAL;
   const bool    calculateTexture = fvf & D3DFVF_TEX1;
   const D3TexturePointArray uPoints(nt), vPoints(ns);
-  const float *uValues = calculateTexture ? uPoints.getBuffer() : NULL, *vValues = calculateTexture ? vPoints.getBuffer() : NULL;
+  const float *uValues = calculateTexture ? uPoints.getBuffer() : nullptr, *vValues = calculateTexture ? vPoints.getBuffer() : nullptr;
   // (u ~ t, v ~ s)
   Point2D p;
   p.x = tInterval.getFrom();
@@ -141,7 +141,7 @@ MeshArray createMeshArray(CWnd *wnd, AbstractMeshFactory &amf, const ParametricR
 
 LPD3DXMESH createMesh(AbstractMeshFactory &amf, const ParametricR1R3SurfaceParameters &param, FunctionR1R3 &f) {
   throwUnsupportedOperationException(__TFUNCTION__);
-  return NULL;
+  return nullptr;
 }
 
 MeshArray createMeshArray(CWnd *wnd, AbstractMeshFactory &amf, const ParametricR1R3SurfaceParameters &param, FunctionWithTimeTemplate<FunctionR1R3> &f) {

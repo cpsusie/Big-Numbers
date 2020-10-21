@@ -120,8 +120,8 @@ public:
   CompareSequence m_cs;
   bool            m_reverse;
   FieldOrderComparator(CompareSequence cs, bool reverse);
-  int compare(const FieldPos &f1, const FieldPos &f2);
-  AbstractComparator *clone() const {
+  int compare(const FieldPos &f1, const FieldPos &f2) override;
+  AbstractComparator *clone() const override {
     return new FieldOrderComparator(m_cs,m_reverse);
   }
 };

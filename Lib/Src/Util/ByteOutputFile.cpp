@@ -8,17 +8,17 @@ void ByteOutputFile::init(const String &name) {
 }
 
 ByteOutputFile::ByteOutputFile() {
-  m_file  = NULL;
+  m_file  = nullptr;
 }
 
 ByteOutputFile::ByteOutputFile(const String &name) {
-  m_file  = NULL;
+  m_file  = nullptr;
   open(name);
 }
 
 ByteOutputFile::ByteOutputFile(FILE *f) {
-  if(f == NULL) {
-    throwInvalidArgumentException(__TFUNCTION__, _T("Illegal argument(NULL)"));
+  if(f == nullptr) {
+    throwInvalidArgumentException(__TFUNCTION__, _T("Illegal argument(nullptr)"));
   }
   m_file    = f;
   m_oldMode = setFileMode(f, _O_BINARY);
@@ -47,7 +47,7 @@ void ByteOutputFile::close() {
     fflush(m_file);
     setFileMode(m_file, m_oldMode);
   }
-  m_file = NULL;
+  m_file = nullptr;
 }
 
 void ByteOutputFile::putByte(BYTE c) {

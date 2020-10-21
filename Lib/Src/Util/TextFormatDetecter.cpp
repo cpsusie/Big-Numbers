@@ -116,7 +116,7 @@ int TextFormatDetecter::findLegalCodePage(const BYTE *buf, int size) { // static
   };
   for(int i = 0; i < ARRAYSIZE(codePages); i++) {
     const int cp = codePages[i];
-    const int ret = MultiByteToWideChar(cp, MB_ERR_INVALID_CHARS, (char*)buf, size, NULL, 0);
+    const int ret = MultiByteToWideChar(cp, MB_ERR_INVALID_CHARS, (char*)buf, size, nullptr, 0);
     if(ret) return cp;
   }
   return -1;

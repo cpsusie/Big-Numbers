@@ -3,12 +3,12 @@
 
 String toString(LPD3DXMESH mesh, BYTE flags) {
   const bool multiLines = (flags & (FORMAT_BUFFERDATA | FORMAT_BUFFERDESCNL)) != 0;
-  if(mesh == NULL) {
+  if(mesh == nullptr) {
     return multiLines ? _T("Null\n") : _T("Null");
   }
   String result;
   if(flags & FORMAT_VERTEXBUFFER) {
-    LPDIRECT3DVERTEXBUFFER vertexBuffer = NULL;
+    LPDIRECT3DVERTEXBUFFER vertexBuffer = nullptr;
     try {
       V(mesh->GetVertexBuffer(&vertexBuffer)); TRACE_REFCOUNT(vertexBuffer);
       if(multiLines) result += _T("VertexBuffer:\n");
@@ -21,7 +21,7 @@ String toString(LPD3DXMESH mesh, BYTE flags) {
     }
   }
   if(flags & FORMAT_INDEXBUFFER) {
-    LPDIRECT3DINDEXBUFFER indexBuffer = NULL;
+    LPDIRECT3DINDEXBUFFER indexBuffer = nullptr;
     try {
       V(mesh->GetIndexBuffer(&indexBuffer)); TRACE_REFCOUNT(indexBuffer);
       if((result.length() > 0) && !multiLines) result += " ";

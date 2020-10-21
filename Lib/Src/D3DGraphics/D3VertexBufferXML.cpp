@@ -5,7 +5,7 @@
 void setValue(XMLDoc &doc, XMLNodePtr n, const LPDIRECT3DVERTEXBUFFER &vb) {
   const D3DVERTEXBUFFER_DESC desc = getDesc(vb);
   setValue(doc, n, _T("description"), desc);
-  void *bufferItems = NULL;
+  void *bufferItems = nullptr;
   V(vb->Lock(0, 0, &bufferItems, D3DLOCK_READONLY));
   try {
     int        index    = 0;

@@ -17,7 +17,7 @@ void CComboBoxWithHistory::substituteControl(CWnd *parent, int id, const String 
   DEFINEMETHODNAME;
 
   CComboBox *oldCtrl = (CComboBox*)parent->GetDlgItem(id);
-  if(oldCtrl == NULL) {
+  if(oldCtrl == nullptr) {
     showError(_T("%s:Control with id=%d does not exist"), method, id);
     return;
   }
@@ -27,7 +27,7 @@ void CComboBoxWithHistory::substituteControl(CWnd *parent, int id, const String 
   const DWORD style   = oldCtrl->GetStyle();
   const DWORD exStyle = oldCtrl->GetExStyle();
   CFont *font = oldCtrl->GetFont();
-  if(font == NULL) {
+  if(font == nullptr) {
     font = parent->GetFont();
   }
   const TabOrder tabOrder(parent);

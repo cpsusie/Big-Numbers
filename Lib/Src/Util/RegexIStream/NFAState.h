@@ -54,14 +54,14 @@ private:
     return m_marked;
   }
 public:
-  NFAState     *m_next;            // Next state (or NULL if none), or tonext free if UNUSED
-  NFAState     *m_next2;           // Alternative next state if m_edge = EDGE_EPSILON. NULL if no alternative.
+  NFAState     *m_next;            // Next state (or nullptr if none), or tonext free if UNUSED
+  NFAState     *m_next2;           // Alternative next state if m_edge = EDGE_EPSILON. nullptr if no alternative.
 
   NFAState();
   ~NFAState();
   NFAState &operator=(const NFAState &src);
 
-  NFAState *getSuccessor(int c) const; // Returns successor-state on transition c (character). NULL if none
+  NFAState *getSuccessor(int c) const; // Returns successor-state on transition c (character). nullptr if none
 
   CharacterSet &getCharacterSet() const;
   void setEdge(int edge);

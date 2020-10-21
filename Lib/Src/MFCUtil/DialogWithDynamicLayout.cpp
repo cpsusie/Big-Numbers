@@ -47,23 +47,23 @@ void DynLayoutData::updateWindowPointers() {
 }
 
 ItemLayout *DynLayoutData::findItem(int ctrlId) {
-  if(isEmpty()) return NULL;
+  if(isEmpty()) return nullptr;
   for(ItemLayout *pil = &first(), *endp = &last(); pil<=endp; pil++) {
     if(pil->m_ctrlId == ctrlId) {
       return pil;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 const ItemLayout *DynLayoutData::findItem(int ctrlId) const {
-  if(isEmpty()) return NULL;
+  if(isEmpty()) return nullptr;
   for(const ItemLayout *pil = &first(), *endp = &last(); pil<=endp; pil++) {
     if(pil->m_ctrlId == ctrlId) {
       return pil;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 BOOL CDialogWithDynamicLayout::OnInitDialog() {
@@ -126,7 +126,7 @@ CDialogWithDynamicLayout &CDialogWithDynamicLayout::setCtrlRect(int ctrlId, CRec
   setWindowRect(this, ctrlId, newRect);
   if(newMSettings || newSSettings) {
     ItemLayout *li = m_layoutData.findItem(ctrlId);
-    if(li != NULL) {
+    if(li != nullptr) {
       if(newMSettings) {
         li->m_moveSettings = *newMSettings;
       }

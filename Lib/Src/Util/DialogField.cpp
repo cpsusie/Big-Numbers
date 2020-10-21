@@ -134,11 +134,11 @@ void DialogField::copyToClipboard() {
   if(isSelected()) {
     String s = getSelText();
 
-    if(!OpenClipboard(NULL)) return;
+    if(!OpenClipboard(nullptr)) return;
     try {
       if(EmptyClipboard()) {
         HLOCAL buf = LocalAlloc(0,s.length() + 1);
-        if(buf == NULL) {
+        if(buf == nullptr) {
           throwLastErrorOnSysCallException(_T("LocalAlloc"));
         }
         __assume(buf);
@@ -154,7 +154,7 @@ void DialogField::copyToClipboard() {
 }
 
 void DialogField::copyFromClipboard() {
-  OpenClipboard(NULL);
+  OpenClipboard(nullptr);
   HANDLE t = GetClipboardData(CF_TEXT);
   CloseClipboard();
   String cb((TCHAR*)t);

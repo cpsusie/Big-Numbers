@@ -25,7 +25,7 @@ void CColoredStatic::OnPaint() {
 
 void CColoredStatic::repaint(CDC &dc) {
   CFont *font = GetFont();
-  if(font == NULL) {
+  if(font == nullptr) {
     font = GetParent()->GetFont();
   }
   CFont *oldFont = dc.SelectObject(font);

@@ -134,11 +134,11 @@ private:
 public:
   InfoComparator(SortField sf, bool reverseSort) : m_sf(sf), m_reverseFactor(reverseSort?-1:1) {
   }
-  AbstractComparator *clone() const {
+  AbstractComparator *clone() const override {
     return new InfoComparator(*this);
   }
 
-  int compare(const EndGameInfo &i1, const EndGameInfo &i2) {
+  int compare(const EndGameInfo &i1, const EndGameInfo &i2) override {
     return compare1(i1,i2) * m_reverseFactor;
   }
 };

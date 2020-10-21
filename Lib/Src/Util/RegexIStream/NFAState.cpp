@@ -3,7 +3,7 @@
 
 NFAState *NFAStatePool::fetch(int edge) {
   NFAState *s = __super::fetch();
-  s->m_next = NULL;
+  s->m_next = nullptr;
   assert(s->m_edge == EDGE_UNUSED);
   assert(!s->isMarked());
   s->setEdge(edge);
@@ -23,8 +23,8 @@ NFAState::NFAState() { // private
   m_startState  = false;
   m_marked      = false;
   m_edge        = EDGE_UNUSED;
-  m_charClass   = NULL;
-  m_next        = m_next2 = NULL;
+  m_charClass   = nullptr;
+  m_next        = m_next2 = nullptr;
   m_acceptIndex = -1;
 }
 
@@ -53,7 +53,7 @@ void NFAState::copy(const NFAState &src) {
     m_charClass = new CharacterSet(*src.m_charClass); TRACE_NEW(m_charClass);
   } else {
     assert(src.m_edge != EDGE_CHCLASS);
-    m_charClass = NULL;
+    m_charClass = nullptr;
   }
 }
 
@@ -69,7 +69,7 @@ void NFAState::cleanup() {
   m_id          = -1;
   m_startState  = false;
   m_edge        = EDGE_EPSILON;
-  m_next        = m_next2 = NULL;
+  m_next        = m_next2 = nullptr;
   m_acceptIndex = -1;
 }
 
@@ -86,7 +86,7 @@ void NFAState::setEdge(int edge) {
 }
 
 NFAState *NFAState::getSuccessor(int c) const {
-  return ((m_edge == c) || ((m_edge == EDGE_CHCLASS) && m_charClass->contains(c))) ? m_next : NULL;
+  return ((m_edge == c) || ((m_edge == EDGE_CHCLASS) && m_charClass->contains(c))) ? m_next : nullptr;
 }
 
 CharacterSet &NFAState::getCharacterSet() const {

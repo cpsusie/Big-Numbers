@@ -9,7 +9,7 @@
 
 CProgressDlg::CProgressDlg(CWnd *pParent, InteractiveRunnable &jobToDo, UINT updateRate)
 : CDialog(            IDD, pParent)
-, m_accelTable(       NULL        )
+, m_accelTable(       nullptr        )
 , m_jobToDo(          jobToDo     )
 , m_updateRate(       updateRate  )
 , m_supportedFeatures(jobToDo.getSupportedFeatures())
@@ -237,7 +237,7 @@ CStatic *CProgressDlg::getStaticTimeEstimate() {
 
 void CProgressDlg::startTimer() {
   if(!m_timerRunning) {
-    if(SetTimer(1, m_updateRate, NULL) == 1) {
+    if(SetTimer(1, m_updateRate, nullptr) == 1) {
       m_timerRunning = true;
     }
   }

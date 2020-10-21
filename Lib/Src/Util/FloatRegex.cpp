@@ -4,7 +4,7 @@
 static const char *decFloatPatterns[] = {
   "[+/-]?[0-9]*/(/.[0-9]+/)/(e[+/-]?[0-9]+/)?"
  ,"[+/-]?[0-9]+/(/.[0-9]*/)?/(e[+/-]?[0-9]+/)?"
- ,NULL
+ ,nullptr
 };
 
 StringArray DecFloatValueStreamScanner::getRegexLines() { // static

@@ -2,7 +2,7 @@
 #include <FileContent.h>
 
 void setWindowCursor(HWND wnd, const TCHAR *name) {
-  setWindowCursor(wnd, ::LoadCursor(NULL,name));
+  setWindowCursor(wnd, ::LoadCursor(nullptr,name));
 }
 
 void setWindowCursor(HWND wnd, int resId) {
@@ -14,7 +14,7 @@ void setWindowCursor(HWND wnd, HCURSOR cursor) {
 }
 
 void setSystemCursor(int id, const TCHAR *name) {
-  setSystemCursor(id, ::LoadCursor(NULL,name));
+  setSystemCursor(id, ::LoadCursor(nullptr,name));
 }
 
 void setSystemCursor(int id, int resId) {
@@ -27,7 +27,7 @@ void setSystemCursor(int id, HCURSOR cursor) {
 
 HCURSOR createCursor(const ByteArray &bytes) {
   HCURSOR cursor = (HCURSOR)CreateIconFromResource((BYTE*)bytes.getData(), (DWORD)bytes.size(), FALSE, 0x00030000);
-  if(cursor == NULL) {
+  if(cursor == nullptr) {
     throwLastErrorOnSysCallException(_T("CreateIconFromResource"));
   }
   return cursor;

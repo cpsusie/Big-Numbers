@@ -38,7 +38,7 @@ void DefaultExceptionHandler::uncaughtException(Thread &thread, Exception &e) {
   if(isatty(stderr)) {
     _ftprintf(stderr, _T("\n%s\n"), errorText.cstr());
   } else {
-    MessageBox(NULL, errorText.replace(_T('\n'), _T("\r\n")).cstr(), _T("Error"), MB_OK | MB_ICONERROR);
+    MessageBox(nullptr, errorText.replace(_T('\n'), _T("\r\n")).cstr(), _T("Error"), MB_OK | MB_ICONERROR);
   }
   abort();
 }
@@ -154,7 +154,7 @@ Thread *ThreadMap::findThread(DWORD threadId) {
   m_lock.wait();
   Thread **t = get(threadId);
   m_lock.notify();
-  return t ? *t : NULL;
+  return t ? *t : nullptr;
 }
 
 bool ThreadMap::isEmpty() const {
@@ -214,8 +214,8 @@ static UINT threadStartup(Thread *thread) {
   return result;
 }
 
-PropertyContainer        *Thread::s_propertySource                  = NULL;
-UncaughtExceptionHandler *Thread::s_defaultUncaughtExceptionHandler = NULL;
+PropertyContainer        *Thread::s_propertySource                  = nullptr;
+UncaughtExceptionHandler *Thread::s_defaultUncaughtExceptionHandler = nullptr;
 UINT                      Thread::s_activeCount                     = 0;
 
 ThreadMap &Thread::getMap() { // static
@@ -231,16 +231,16 @@ Thread::Thread(const String &description, Runnable &target, size_t stackSize)
 Thread::Thread(const String &description, size_t stackSize)
 : m_map(getMap())
 {
-  init(description, NULL, stackSize);
+  init(description, nullptr, stackSize);
 }
 
 void Thread::init(const String &description, Runnable *target, size_t stackSize) {
   THREAD_ENTER;
   m_target                   = target;
   m_isDemon                  = false;
-  m_uncaughtExceptionHandler = NULL;
-  m_threadHandle             = CreateThread(NULL, stackSize,(LPTHREAD_START_ROUTINE)threadStartup, this, CREATE_SUSPENDED, &m_threadId);
-  if(m_threadHandle == NULL) {
+  m_uncaughtExceptionHandler = nullptr;
+  m_threadHandle             = CreateThread(nullptr, stackSize,(LPTHREAD_START_ROUTINE)threadStartup, this, CREATE_SUSPENDED, &m_threadId);
+  if(m_threadHandle == nullptr) {
     throwMethodLastErrorOnSysCallException(s_className, _T("CreateThread"));
   }
   setDescription(description);
@@ -261,7 +261,7 @@ Thread::~Thread() {
 }
 
 void Thread::handleUncaughtException(Exception &e) {
-  if(m_uncaughtExceptionHandler != NULL) {
+  if(m_uncaughtExceptionHandler != nullptr) {
     m_uncaughtExceptionHandler->uncaughtException(*this, e);
   } else {
     s_defaultUncaughtExceptionHandler->uncaughtException(*this, e);

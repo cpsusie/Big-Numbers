@@ -98,12 +98,12 @@ using namespace std;
     return formatFilledField(dst, prefixStr, numStr, param);
   }
 
-  // Return pointer to first character in str in [0-9]. if not found, NULL is returned
+  // Return pointer to first character in str in [0-9]. if not found, nullptr is returned
   template<typename CharType> CharType *findFirstDigit(CharType *str) {
     for(; *str; str++) {
       if(iswdigit(*str)) return str;
     }
-    return NULL;
+    return nullptr;
   }
 
   // Assume str consists of characters [0-9]

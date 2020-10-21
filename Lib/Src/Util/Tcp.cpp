@@ -69,7 +69,7 @@ SOCKET tcpOpen(unsigned short portnr, const char *hostName) {
 
     RemoteIpAddress.s_addr = htonl(INADDR_LOOPBACK);
 
-    if(hostName != NULL) {
+    if(hostName != nullptr) {
       PHOSTENT host = gethostbyname(hostName);
       if(host) {
         memcpy(&RemoteIpAddress.s_addr,host->h_addr,host->h_length);
@@ -135,7 +135,7 @@ SOCKET tcpCreate(unsigned short portnr) {
 }
 
 SOCKET tcpAccept(SOCKET listener) {
-  SOCKET fd = accept(listener, NULL, NULL);
+  SOCKET fd = accept(listener, nullptr, nullptr);
   if(fd == INVALID_SOCKET) {
     throwLastWSAErrorText();
   }
@@ -176,7 +176,7 @@ bool tcpPoll(SOCKET s) {
   FD_ZERO(&socketSet);
   memset(&timeout,0,sizeof(timeout));
   FD_SET(s,&socketSet);
-  if(select(1,&socketSet,NULL,NULL,&timeout) == SOCKET_ERROR) {
+  if(select(1,&socketSet,nullptr,nullptr,&timeout) == SOCKET_ERROR) {
     throwLastWSAErrorText();
   }
   if(FD_ISSET(s, &socketSet)) {

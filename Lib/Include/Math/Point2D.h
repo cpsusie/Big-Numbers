@@ -140,9 +140,9 @@ public:
       cp++;
       gotParentes = true;
     }
-    _TUCHAR *next = NULL;
+    _TUCHAR *next = nullptr;
     const T _x = _tcstor(cp, &next);
-    if(next == NULL) {
+    if(next == nullptr) {
       throwInvalidArgumentException(method, _T("s=%s"), s.cstr());
     }
     cp = next;
@@ -153,9 +153,9 @@ public:
       cp++;
       break;
     }
-    next = NULL;
+    next = nullptr;
     const T _y = _tcstor(cp, &next);
-    if(next == NULL) {
+    if(next == nullptr) {
       throwInvalidArgumentException(method, _T("s=%s"), s.cstr());
     }
     if(gotParentes) {

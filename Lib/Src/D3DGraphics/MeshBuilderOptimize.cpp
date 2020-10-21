@@ -138,8 +138,8 @@ MeshBuilder &MeshBuilder::optimize() {
       tmp.m_faceIndex = f;
       tmp.m_index     = i;
       tmp.m_v         = &m_vertices[vnti.m_vIndex];
-      tmp.m_n         = (vnti.m_nIndex<0) ? NULL : &m_normals[           vnti.m_nIndex];
-      tmp.m_t         = (vnti.m_tIndex<0) ? NULL : &m_textureVertexArray[vnti.m_tIndex];
+      tmp.m_n         = (vnti.m_nIndex<0) ? nullptr : &m_normals[           vnti.m_nIndex];
+      tmp.m_t         = (vnti.m_tIndex<0) ? nullptr : &m_textureVertexArray[vnti.m_tIndex];
     }
   }
   const size_t n = tmpArray.size();

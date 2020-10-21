@@ -37,8 +37,8 @@ size_t ExecutableByteArray::getCapacityCeil(size_t capacity) const {
 }
 
 BYTE *ExecutableByteArray::allocateBytes(size_t size) {
-  void *result = VirtualAlloc(NULL, size, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
-  if(result == NULL) {
+  void *result = VirtualAlloc(nullptr, size, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+  if(result == nullptr) {
     throwLastErrorOnSysCallException(__TFUNCTION__);
   }
   return (BYTE*)result;

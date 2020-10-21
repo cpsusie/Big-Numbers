@@ -27,7 +27,7 @@ private:
 #define CHECKVECTORTEMPLATEINDEX(index) if((index) >= m_dim) throwIndexError(__TFUNCTION__, index)
 
   T *allocate(size_t dim, bool initialize) const {
-    if(dim == 0) return NULL;
+    if(dim == 0) return nullptr;
     T *v = m_va ? m_va->allocVector(dim) : new T[dim]; TRACE_NEW(v);
     if(initialize) {
       for(size_t i = 0; i < dim; i++) {
@@ -56,20 +56,20 @@ protected:
   }
 
 public:
-  explicit VectorTemplate(AbstractVectorAllocator<T> *va = NULL) : m_va(va), m_dim(0), m_e(NULL) {
+  explicit VectorTemplate(AbstractVectorAllocator<T> *va = nullptr) : m_va(va), m_dim(0), m_e(nullptr) {
   }
-  explicit VectorTemplate(size_t dim, AbstractVectorAllocator<T> *va = NULL) : m_va(va) {
+  explicit VectorTemplate(size_t dim, AbstractVectorAllocator<T> *va = nullptr) : m_va(va) {
     init(dim, true);
   }
 
-  VectorTemplate(const VectorTemplate<T> &src, AbstractVectorAllocator<T> *va = NULL) : m_va(va) {
+  VectorTemplate(const VectorTemplate<T> &src, AbstractVectorAllocator<T> *va = nullptr) : m_va(va) {
     init(src.m_dim, false);
     for(size_t i = 0; i < m_dim; i++) {
       m_e[i] = src.m_e[i];
     }
   }
 
-  VectorTemplate(const Array<T> &src, AbstractVectorAllocator<T> *va = NULL) : m_va(va) {
+  VectorTemplate(const Array<T> &src, AbstractVectorAllocator<T> *va = nullptr) : m_va(va) {
     init(src.size(), false);
     for(size_t i = 0; i < m_dim; i++) {
       m_e[i] = src[i];

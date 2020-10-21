@@ -10,7 +10,7 @@
 #if defined(DEBUG_REGISTRY)
 
 static const TCHAR *thisFile = __TFILE__;
-static FILE *logFile = NULL;
+static FILE *logFile = nullptr;
 
 class InitLogFile {
 public:
@@ -24,16 +24,16 @@ InitLogFile::InitLogFile() {
 }
 
 InitLogFile::~InitLogFile() {
-  if(logFile != NULL) {
+  if(logFile != nullptr) {
     fclose(logFile);
-    logFile = NULL;
+    logFile = nullptr;
   }
 }
 
 static InitLogFile dummy;
 
 void registryLog(_In_z_ _Printf_format_string_ TCHAR const * const format,...) {
-  if(logFile != NULL) {
+  if(logFile != nullptr) {
     va_list argptr;
     va_start(argptr,format);
     _vftprintf(logFile,format,argptr);
@@ -74,7 +74,7 @@ RegistryKey::RegistryKey(HKEY key) : m_key(newCountedKey(key, true)) {
   m_name = getRootName(key);
 }
 
-RegistryKey::RegistryKey(const String &remoteMachine, HKEY key) : m_key(NULL) {
+RegistryKey::RegistryKey(const String &remoteMachine, HKEY key) : m_key(nullptr) {
   HKEY theKey = key;
   long result = RegConnectRegistry(remoteMachine.cstr(), key, &theKey);
   checkResult(result, __TFUNCTION__, _T("RegConnectRegistry"), remoteMachine);
@@ -83,7 +83,7 @@ RegistryKey::RegistryKey(const String &remoteMachine, HKEY key) : m_key(NULL) {
   m_name = getRootName(key);
 }
 
-RegistryKey::RegistryKey(HKEY key, const String &subKey, REGSAM samDesired, const String &remoteMachine) : m_key(NULL) {
+RegistryKey::RegistryKey(HKEY key, const String &subKey, REGSAM samDesired, const String &remoteMachine) : m_key(nullptr) {
   DEFINEMETHODNAME;
    HKEY theKey = key;
 
@@ -124,15 +124,15 @@ RegistryKey &RegistryKey::operator=(const RegistryKey &src) {
 }
 
 ReferenceCountedRegKey *RegistryKey::newCountedKey(HKEY key, bool closeKeyOnFailure) {
-  ReferenceCountedRegKey *result = NULL;
+  ReferenceCountedRegKey *result = nullptr;
 
   try {
     result = new ReferenceCountedRegKey(key); TRACE_NEW(result);
   } catch(...) {
-    result = NULL;
+    result = nullptr;
   }
 
-  if(result == NULL) {
+  if(result == nullptr) {
     if(closeKeyOnFailure) {
       REGISTRYLOG("close",key);
       RegCloseKey(key);
@@ -212,7 +212,7 @@ RegistryKey RegistryKey::createOrOpenKey(const String  &subKey
     return newKey;
   }
 
-  if(disposition == NULL) {
+  if(disposition == nullptr) {
     disposition = &disp;
   }
   String tmpClass = keyClass;
@@ -302,7 +302,7 @@ const String &RegistryKey::name() const {
 RegistryValueInfo RegistryKey::getValueInfo(const TCHAR *method, const String &valueName) const {
   ULONG      type;
   ULONG      bufSize = 0;
-  const long result  = RegQueryValueEx(m_key->getObject(), valueName.cstr(), 0, &type, NULL, &bufSize);
+  const long result  = RegQueryValueEx(m_key->getObject(), valueName.cstr(), 0, &type, nullptr, &bufSize);
   checkResult(result, method, _T("RegQueryValueEx"), valueName);
   return RegistryValueInfo(valueName, type, bufSize);
 }
@@ -325,17 +325,17 @@ String RegistryKey::getClass() {
   return _T("unknown class");
 /*
   long result = RegQueryInfoKey(key.m_key->getObject()
-                               ,NULL    // Not interested in this key's class
-                               ,NULL    // ditto
-                               ,NULL    // Reserved
+                               ,nullptr    // Not interested in this key's class
+                               ,nullptr    // ditto
+                               ,nullptr    // Reserved
                                ,&subKeyCount
                                ,&maxNameLength
                                ,&maxClassLength
-                               ,NULL    // Not interested in number of values
-                               ,NULL    // Not interested in max length of value name
-                               ,NULL    // Not interested in max length of value buffer
-                               ,NULL    // Not interested in length of security descriptor
-                               ,NULL);  // Not interested in last write time
+                               ,nullptr    // Not interested in number of values
+                               ,nullptr    // Not interested in max length of value name
+                               ,nullptr    // Not interested in max length of value buffer
+                               ,nullptr    // Not interested in length of security descriptor
+                               ,nullptr);  // Not interested in last write time
   checkResult(result,"name", "RegQueryInfoKey");
 */
 }
@@ -476,7 +476,7 @@ ULONG &RegistryKey::getValue(const String &valueName, ULONG &value, ULONG wanted
 
 RegistryValue &RegistryKey::getValue(const String &valueName, RegistryValue &value) const {
   DEFINEMETHODNAME;
-  BYTE *buffer = NULL;
+  BYTE *buffer = nullptr;
   try {
     RegistryValueInfo info = getValueInfo(method, valueName);
     buffer = new BYTE[info.size()]; TRACE_NEW(buffer);
@@ -824,17 +824,17 @@ void SubKeyIterator::queryKeyInfo() {
   ULONG subKeyCount   = 0;
   ULONG maxNameLength = 0;
   long result = RegQueryInfoKey(m_key.m_key->getObject()
-                               ,NULL    // Not interested in this key's class
-                               ,NULL    // ditto
-                               ,NULL    // Reserved
+                               ,nullptr    // Not interested in this key's class
+                               ,nullptr    // ditto
+                               ,nullptr    // Reserved
                                ,&subKeyCount
                                ,&maxNameLength
-                               ,NULL
-                               ,NULL    // Not interested in number of values
-                               ,NULL    // Not interested in max length of value name
-                               ,NULL    // Not interested in max length of value buffer
-                               ,NULL    // Not interested in length of security descriptor
-                               ,NULL);  // Not interested in last write time
+                               ,nullptr
+                               ,nullptr    // Not interested in number of values
+                               ,nullptr    // Not interested in max length of value name
+                               ,nullptr    // Not interested in max length of value buffer
+                               ,nullptr    // Not interested in length of security descriptor
+                               ,nullptr);  // Not interested in last write time
   RegistryKey::checkResult(result, __TFUNCTION__, _T("RegQueryInfoKey"), m_key.name());
   init(subKeyCount, maxNameLength);
 }
@@ -867,7 +867,7 @@ void *SubKeyIterator::next() {
 
     ULONG nameBufferSize = getNameBufferSize();
     FILETIME m_lastWriteTime;
-    long result = RegEnumKeyEx(m_key.m_key->getObject(),m_index,m_nameBuffer,&nameBufferSize,NULL,NULL,NULL,&m_lastWriteTime);
+    long result = RegEnumKeyEx(m_key.m_key->getObject(),m_index,m_nameBuffer,&nameBufferSize,nullptr,nullptr,nullptr,&m_lastWriteTime);
 
     switch(result) {
     case ERROR_SUCCESS:
@@ -966,17 +966,17 @@ void RegValueIterator::queryKeyInfo() {
   ULONG maxNameLength  = 0;
   ULONG maxValueLength = 0;
   long result = RegQueryInfoKey(m_key.m_key->getObject()
-                               ,NULL     // Not interested in this key's class
-                               ,NULL     // ditto
-                               ,NULL     // Reserved
-                               ,NULL     // Not interested in number of sub keys
-                               ,NULL     // Not interested in max sub key name length
-                               ,NULL     // Not interested in max sub key class length
+                               ,nullptr     // Not interested in this key's class
+                               ,nullptr     // ditto
+                               ,nullptr     // Reserved
+                               ,nullptr     // Not interested in number of sub keys
+                               ,nullptr     // Not interested in max sub key name length
+                               ,nullptr     // Not interested in max sub key class length
                                ,&valueCount
                                ,&maxNameLength
                                ,&maxValueLength
-                               ,NULL     // Not interested in length of security descriptor
-                               ,NULL);   // Not interested in last write time
+                               ,nullptr     // Not interested in length of security descriptor
+                               ,nullptr);   // Not interested in last write time
   RegistryKey::checkResult(result, __TFUNCTION__, _T("RegQueryInfoKey"), m_key.name());
   init(valueCount,maxNameLength,maxValueLength);
 }
@@ -1018,7 +1018,7 @@ void *RegValueIterator::next() {
     long result = RegEnumValue(m_key.m_key->getObject()
                               ,m_index
                               ,m_nameBuffer, &nameBufferSize
-                              ,NULL
+                              ,nullptr
                               ,&type
                               ,m_valueBuffer,&valueBufferSize);
 

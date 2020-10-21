@@ -15,7 +15,7 @@ protected:
   {
   }
 public:
-  virtual LPD3DXMESH createMesh(double time, InterruptableRunnable *ir = NULL) const = 0;
+  virtual LPD3DXMESH createMesh(double time, InterruptableRunnable *ir = nullptr) const = 0;
   virtual ~AbstractVariableMeshCreator() {
   }
 };

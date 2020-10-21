@@ -26,7 +26,7 @@
 
 ExternProcess::ExternProcess(bool verbose) : m_verbose(verbose) {
   m_processHandle     = INVALID_HANDLE_VALUE;
-  m_input = m_output  = NULL;
+  m_input = m_output  = nullptr;
   m_level = 0;
 }
 
@@ -39,14 +39,14 @@ ArgArray::ArgArray(const String &program, const StringArray &args) {
   for(size_t a = 0; a < args.size(); a++) {
     add(args[a].cstr());
   }
-  add(NULL);
+  add(nullptr);
 }
 
 ArgArray::ArgArray(const String &program, va_list argptr) {
   add(program.cstr());
   for(TCHAR *arg = va_arg(argptr, TCHAR*);; arg = va_arg(argptr, TCHAR*)) {
     add(arg);
-    if(arg == NULL) break;
+    if(arg == nullptr) break;
   }
   va_end(argptr);
 }
@@ -161,7 +161,7 @@ void ExternProcess::startCreateProcess(const String &program, const String &comm
 
   PROCESS_INFORMATION processInfo;
 
-  BOOL ok = CreateProcess(program.cstr(), ((String&)commandLine).cstr(), NULL, NULL, TRUE, NORMAL_PRIORITY_CLASS | CREATE_NO_WINDOW, NULL, NULL, &startupInfo, &processInfo);
+  BOOL ok = CreateProcess(program.cstr(), ((String&)commandLine).cstr(), nullptr, nullptr, TRUE, NORMAL_PRIORITY_CLASS | CREATE_NO_WINDOW, nullptr, nullptr, &startupInfo, &processInfo);
   if(ok) {
     setProcessHandle(processInfo.hProcess);
     CloseHandle(processInfo.hThread); // hProcess will be closed in destructor
@@ -189,12 +189,12 @@ void ExternProcess::cleanup() {
   ENTERFUNC
   if(m_output) {
     fclose(m_output);
-    m_output = NULL;
+    m_output = nullptr;
     VERBOSE(_T("m_output closed"));
   }
   if(m_input) {
     fclose(m_input);
-    m_input = NULL;
+    m_input = nullptr;
     VERBOSE(_T("m_input closed"));
   }
   if(m_processHandle != INVALID_HANDLE_VALUE) {
@@ -259,7 +259,7 @@ int ExternProcess::runCreateProcess(const String &program, const String &command
   startupInfo.wShowWindow = SW_SHOWMINNOACTIVE;
 
   PROCESS_INFORMATION processInfo;
-  BOOL ok = CreateProcess(program.cstr(), ((String&)commandLine).cstr(), NULL, NULL, TRUE, NORMAL_PRIORITY_CLASS | CREATE_NO_WINDOW, NULL, NULL, &startupInfo, &processInfo);
+  BOOL ok = CreateProcess(program.cstr(), ((String&)commandLine).cstr(), nullptr, nullptr, TRUE, NORMAL_PRIORITY_CLASS | CREATE_NO_WINDOW, nullptr, nullptr, &startupInfo, &processInfo);
   DWORD exitCode;
   if(ok) {
     WaitForSingleObject(processInfo.hProcess, INFINITE);

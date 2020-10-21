@@ -185,7 +185,7 @@ static BOOL CALLBACK winEnumProc(HWND hwnd, LPARAM param) {
 
     WindowInfo wi(hwnd, winId, thread, windowText, className, style, exStyle);
     ProcessWindowInfo *pwi = pwiMap.get(pid);
-    if(pwi != NULL) {
+    if(pwi != nullptr) {
       pwi->add(wi);
     } else {
       pwiMap.put(pid,ProcessWindowInfo(pInfo.getExePath(), pInfo.getCommandLine(),wi));

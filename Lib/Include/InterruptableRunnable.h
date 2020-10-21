@@ -25,8 +25,8 @@ private:
   }
 protected:
   // Should only be called by this (operate on currentthread)
-  // Throw Exception. If msg == NULL, exception-text is "Interrupted"
-  void die(const TCHAR *msg = NULL);
+  // Throw Exception. If msg == nullptr, exception-text is "Interrupted"
+  void die(const TCHAR *msg = nullptr);
   // Should only be called by this (operate on currentthread)
   // Save currentThreadHandle in m_thr, and call SuspendThread(m_thr)
   // When resume is called, clearHandle() and clrSuspended() are called

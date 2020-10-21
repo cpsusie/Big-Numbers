@@ -42,7 +42,7 @@ LPD3DXMESH createMeshFrom2DFunction(AbstractMeshFactory &amf, FunctionR2R1 &f, c
   const bool    calculateNormals = fvf & D3DFVF_NORMAL;
   const bool    calculateTexture = fvf & D3DFVF_TEX1;
   const D3TexturePointArray uPoints(nx), vPoints(ny);
-  const float *uValues = calculateTexture ? uPoints.getBuffer() : NULL, *vValues = calculateTexture ? vPoints.getBuffer() : NULL;
+  const float *uValues = calculateTexture ? uPoints.getBuffer() : nullptr, *vValues = calculateTexture ? vPoints.getBuffer() : nullptr;
   // (u ~ x, v ~ y)
   Point2D p(xInterval.getFrom(), yInterval.getFrom());
   for(UINT i = 0; i < ny; i++, p.y += stepy) {

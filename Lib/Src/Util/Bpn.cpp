@@ -389,7 +389,7 @@ CompactIntArray Bpn::getLayerUnits() const {
 }
 
 void Bpn::copyLayers(const Bpn &src) {
-  if(src.m_inunits == NULL) {
+  if(src.m_inunits == nullptr) {
     return; // nothing to copy
   }
   *m_inunits = *src.m_inunits;
@@ -400,9 +400,9 @@ void Bpn::copyLayers(const Bpn &src) {
 }
 
 void Bpn::initLayers() {
-  m_inunits      = NULL;
-  m_hiddenlayers = NULL;
-  m_outunits     = NULL;
+  m_inunits      = nullptr;
+  m_hiddenlayers = nullptr;
+  m_outunits     = nullptr;
 }
 
 void Bpn::deallocateLayers() {
@@ -475,7 +475,7 @@ void Bpn::load(FILE *f) {
       nunits.add(units);
     }
   }
-  if(m_inunits != NULL) {
+  if(m_inunits != nullptr) {
     deallocateLayers();
   }
   allocateLayers(nunits,m_bias);

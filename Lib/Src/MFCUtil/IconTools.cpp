@@ -6,11 +6,11 @@ static HICON createImageHandle(HINSTANCE hInstance, bool isIcon, int colorResId,
   HICON   icon = 0;
   try {
     colorBitmap = LoadBitmap(hInstance, MAKEINTRESOURCE(colorResId));
-    if(colorBitmap == NULL) {
+    if(colorBitmap == nullptr) {
       throwLastErrorOnSysCallException(_T("LoadBitmap"));
     }
     HBITMAP maskBitmap = LoadBitmap(hInstance, MAKEINTRESOURCE(maskResId));
-    if(maskBitmap == NULL) {
+    if(maskBitmap == nullptr) {
       throwLastErrorOnSysCallException(_T("LoadBitmap"));
     }
 
@@ -22,7 +22,7 @@ static HICON createImageHandle(HINSTANCE hInstance, bool isIcon, int colorResId,
     iconInfo.hbmMask  = maskBitmap;
     HICON icon = CreateIconIndirect(&iconInfo);
 
-    if(icon == NULL) {
+    if(icon == nullptr) {
       throwLastErrorOnSysCallException(_T("CreateIconIndirect"));
     }
     DeleteObject(colorBitmap);
@@ -52,7 +52,7 @@ HICON createIcon(HINSTANCE hInstance, int colorResId, int maskResId) {
 
 HICON createIcon(const ByteArray &bytes) {
   HICON icon = CreateIconFromResource((BYTE*)bytes.getData(), (DWORD)bytes.size(), TRUE, 0x00030000);
-  if(icon == NULL) {
+  if(icon == nullptr) {
     throwLastErrorOnSysCallException(_T("CreateIconFromResource"));
   }
   return icon;
@@ -70,7 +70,7 @@ HICON loadIcon(const String &fileName) {
 Use DrawIconEx instead
 void paintIcon(HICON icon, HDC dc, CPoint &p, COLORREF bgColor) {
   ICONINFO    iconInfo  = getIconInfo(icon);;
-  HDC         srcDC     = CreateCompatibleDC(NULL);
+  HDC         srcDC     = CreateCompatibleDC(nullptr);
   HGDIOBJ     oldSrcGDI = SelectObject(srcDC, iconInfo.hbmColor);
   HBRUSH      brush     = CreateSolidBrush(bgColor);
   HGDIOBJ     oldDstGDI = SelectObject(dc, brush);

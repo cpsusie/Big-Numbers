@@ -1,15 +1,15 @@
 #include "pch.h"
 #include <TextWin.h>
 
-TextWin  *TextWin::s_windowList = NULL;
-TextWin  *TextWin::s_background = NULL;
-TextRect *TextWin::s_console    = NULL;
-TextRect *TextWin::s_oldImage   = NULL;
+TextWin  *TextWin::s_windowList = nullptr;
+TextWin  *TextWin::s_background = nullptr;
+TextRect *TextWin::s_console    = nullptr;
+TextRect *TextWin::s_oldImage   = nullptr;
 
 #define FOREGROUND_WHITE FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED
 
 void TextWin::initConsole() {
-  if(s_background != NULL) {
+  if(s_background != nullptr) {
     return;
   }
   s_console    = new TextRect();
@@ -22,16 +22,16 @@ void TextWin::initConsole() {
 }
 
 void TextWin::unInitConsole() {
-  if(s_background == NULL) {
+  if(s_background == nullptr) {
     return;
   }
   s_console->copy(0,0,s_oldImage,0,0,s_oldImage->getWidth(),s_oldImage->getHeight(),TR_ALL);
   delete s_background;
-  s_background        = NULL;
+  s_background        = nullptr;
   delete s_oldImage;
-  s_oldImage          = NULL;
+  s_oldImage          = nullptr;
   delete s_console;
-  s_console           = NULL;
+  s_console           = nullptr;
 }
 
 class InitConsoleClass {
@@ -64,7 +64,7 @@ void TextWin::insertBefore(TextWin *tw) {
     m_prev = m_next->m_prev;
     m_next->m_prev = this;
   } else {
-    m_prev = NULL;
+    m_prev = nullptr;
   }
   if(m_prev) {
     m_prev->m_next = this;
@@ -76,8 +76,8 @@ void TextWin::insertBefore(TextWin *tw) {
 }
 
 void TextWin::insertAfter(TextWin *tw) {
-  if(tw == NULL) {
-    throwInvalidArgumentException(__TFUNCTION__, _T("tw = NULL"));
+  if(tw == nullptr) {
+    throwInvalidArgumentException(__TFUNCTION__, _T("tw = nullptr"));
   }
   m_next = tw->m_next;
   m_prev = tw;
@@ -104,7 +104,7 @@ TextWin::TextWin(int l, int t, int w, int h, int flag, TextWin *ref) {
   m_l       = l;
   m_t       = t;
   m_trect   = new TextRect(w,h);
-  m_visible = NULL;
+  m_visible = nullptr;
   switch(flag) {
   case TW_BEFORE:
     insertBefore(ref);
@@ -125,7 +125,7 @@ void TextWin::releaseClipRect() {
     next = v->m_next;
     delete v;
   }
-  m_visible = NULL;
+  m_visible = nullptr;
 }
 
 void TextWin::addClipRect(ClipRect *cr) { // cr may be a list.
@@ -145,7 +145,7 @@ void TextWin::repaint(const ClipRect &r) {
 }
 
 void TextWin::repaint(int l, int t, int w, int h) {
-  ClipRect r1(m_l+l, m_t+t, m_l+l+w-1, m_t+t+h-1, NULL);
+  ClipRect r1(m_l+l, m_t+t, m_l+l+w-1, m_t+t+h-1, nullptr);
   for(ClipRect *r = m_visible; r; r = r->m_next) {
     if(r1.overlap(*r)) {
       repaint(ClipRect::intersect(r1, *r));
@@ -288,12 +288,12 @@ void TextWin::winClip() {
     ClipRect twrect;
     tw->getRect(twrect);
     if(twrect.overlap(thisRect)) {
-      ClipRect *newlist = NULL,*next;
+      ClipRect *newlist = nullptr,*next;
       for(ClipRect *t = m_visible; t; t = next) {
         next = t->m_next;
         if(!t->overlap(twrect)) {
           newlist = ClipRect::concat(newlist,t);
-          t->m_next = NULL;
+          t->m_next = nullptr;
         } else {
           newlist = ClipRect::concat(newlist,ClipRect::clip2(twrect,*t));
           delete t;
@@ -326,10 +326,10 @@ void ClipRect::init(int l, int t, int r, int b, ClipRect *next) {
 }
 
 ClipRect *ClipRect::concat(ClipRect *list1, ClipRect *list2) {
-  if(list2 == NULL) {
+  if(list2 == nullptr) {
     return list1;
   }
-  if(list1 == NULL) {
+  if(list1 == nullptr) {
     return list2;
   }
   ClipRect *t;
@@ -352,56 +352,56 @@ ClipRect *ClipRect::clip2(const SMALL_RECT &front, const SMALL_RECT &back) {
   switch(clipcode(front,back)) {
   case 0:
     return new ClipRect(front.Right+1 ,back.Top        ,back.Right   ,front.Bottom,
-           new ClipRect(back.Left     ,front.Bottom+1  ,back.Right   ,back.Bottom    ,NULL));
+           new ClipRect(back.Left     ,front.Bottom+1  ,back.Right   ,back.Bottom    ,nullptr));
   case 1:
     return new ClipRect(back.Left     ,back.Top        ,front.Left-1 ,front.Bottom+1 ,
            new ClipRect(front.Right+1 ,back.Top        ,back.Right   ,front.Bottom+1 ,
-           new ClipRect(back.Left     ,front.Bottom+1  ,back.Right   ,back.Bottom    ,NULL)));
+           new ClipRect(back.Left     ,front.Bottom+1  ,back.Right   ,back.Bottom    ,nullptr)));
   case 2:
-    return new ClipRect(back.Left     ,front.Bottom+1  ,back.Right   ,back.Bottom    ,NULL);
+    return new ClipRect(back.Left     ,front.Bottom+1  ,back.Right   ,back.Bottom    ,nullptr);
   case 3:
     return new ClipRect(back.Left     ,back.Top        ,front.Left-1 ,front.Bottom+1 ,
-           new ClipRect(back.Left     ,front.Bottom+1  ,back.Right   ,back.Bottom    ,NULL));
+           new ClipRect(back.Left     ,front.Bottom+1  ,back.Right   ,back.Bottom    ,nullptr));
   case 4:
     return new ClipRect(back.Left     ,back.Top        ,back.Right   ,front.Top-1    ,
            new ClipRect(front.Right+1 ,front.Top-1     ,back.Right   ,front.Bottom+1 ,
-           new ClipRect(back.Left     ,front.Bottom+1  ,back.Right   ,back.Bottom    ,NULL)));
+           new ClipRect(back.Left     ,front.Bottom+1  ,back.Right   ,back.Bottom    ,nullptr)));
   case 5:
     return new ClipRect(back.Left     ,back.Top        ,back.Right   ,front.Top-1    ,
            new ClipRect(back.Left     ,front.Top-1     ,front.Left-1 ,front.Bottom+1 ,
            new ClipRect(front.Right+1 ,front.Top-1     ,back.Right   ,front.Bottom+1 ,
-           new ClipRect(back.Left     ,front.Bottom+1  ,back.Right   ,back.Bottom    ,NULL))));
+           new ClipRect(back.Left     ,front.Bottom+1  ,back.Right   ,back.Bottom    ,nullptr))));
   case 6:
     return new ClipRect(back.Left     ,back.Top        ,back.Right   ,front.Top-1    ,
-           new ClipRect(back.Left     ,front.Bottom+1  ,back.Right   ,back.Bottom    ,NULL));
+           new ClipRect(back.Left     ,front.Bottom+1  ,back.Right   ,back.Bottom    ,nullptr));
   case 7:
     return new ClipRect(back.Left     ,back.Top        ,back.Right   ,front.Top-1    ,
            new ClipRect(back.Left     ,front.Top-1     ,front.Left-1 ,front.Bottom+1 ,
-           new ClipRect(back.Left     ,front.Bottom+1  ,back.Right   ,back.Bottom    ,NULL)));
+           new ClipRect(back.Left     ,front.Bottom+1  ,back.Right   ,back.Bottom    ,nullptr)));
   case 8:
-    return new ClipRect(front.Right+1 ,back.Top        ,back.Right   ,back.Bottom    ,NULL);
+    return new ClipRect(front.Right+1 ,back.Top        ,back.Right   ,back.Bottom    ,nullptr);
   case 9:
     return new ClipRect(back.Left     ,back.Top        ,front.Left-1 ,back.Bottom    ,
-           new ClipRect(front.Right+1 ,back.Top        ,back.Right   ,back.Bottom    ,NULL));
+           new ClipRect(front.Right+1 ,back.Top        ,back.Right   ,back.Bottom    ,nullptr));
   case 10:
-    return NULL;
+    return nullptr;
   case 11:
-    return new ClipRect(back.Left     ,back.Top        ,front.Left-1 ,back.Bottom    ,NULL);
+    return new ClipRect(back.Left     ,back.Top        ,front.Left-1 ,back.Bottom    ,nullptr);
   case 12:
     return new ClipRect(back.Left     ,back.Top        ,back.Right   ,front.Top-1    ,
-           new ClipRect(front.Right+1 ,front.Top-1     ,back.Right   ,back.Bottom    ,NULL));
+           new ClipRect(front.Right+1 ,front.Top-1     ,back.Right   ,back.Bottom    ,nullptr));
   case 13:
     return new ClipRect(back.Left     ,back.Top        ,back.Right   ,front.Top-1    ,
            new ClipRect(back.Left     ,front.Top-1     ,front.Left-1 ,back.Bottom    ,
-           new ClipRect(front.Right+1 ,front.Top-1     ,back.Right   ,back.Bottom    ,NULL)));
+           new ClipRect(front.Right+1 ,front.Top-1     ,back.Right   ,back.Bottom    ,nullptr)));
   case 14:
-    return new ClipRect(back.Left     ,back.Top        ,back.Right   ,front.Top-1    ,NULL);
+    return new ClipRect(back.Left     ,back.Top        ,back.Right   ,front.Top-1    ,nullptr);
   case 15:
     return new ClipRect(back.Left     ,back.Top        ,back.Right   ,front.Top-1    ,
-           new ClipRect(back.Left     ,front.Top-1     ,front.Left-1 ,back.Bottom    ,NULL));
+           new ClipRect(back.Left     ,front.Top-1     ,front.Left-1 ,back.Bottom    ,nullptr));
   default:
     throwException(_T("clip2:Invalid code:%d"), clipcode(front,back));
-    return NULL;
+    return nullptr;
   }
 }
 
@@ -410,7 +410,7 @@ ClipRect ClipRect::intersect(const SMALL_RECT &r1, const SMALL_RECT &r2) {
                   max(r1.Top   ,r2.Top   ),
                   min(r1.Right ,r2.Right ),
                   min(r1.Bottom,r2.Bottom),
-                  NULL
+                  nullptr
                  );
 }
 

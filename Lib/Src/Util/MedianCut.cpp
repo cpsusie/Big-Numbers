@@ -117,10 +117,10 @@ String Block::toString() const {
 
 class BlockComparator : public Comparator<Block> {
 public:
-  int compare(const Block &b1, const Block &b2) {
+  int compare(const Block &b1, const Block &b2) override {
     return sign(b2.getLongestSideLength() - b1.getLongestSideLength());
   }
-  AbstractComparator *clone() const {
+  AbstractComparator *clone() const override {
     return new BlockComparator();
   }
 };

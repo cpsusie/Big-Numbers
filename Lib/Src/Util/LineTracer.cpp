@@ -6,14 +6,14 @@ LineTracer::LineTracer(char *fileName, bool enabled) : m_enabled(enabled) {
   if(!m_enabled) return;
   m_fileName = fileName;
   FILE *f = fopen(fileName,"r");
-  if(f == NULL) {
+  if(f == nullptr) {
     return;
   }
   char line[4000];
   int lineno = 0;
   while(fgets(line,sizeof(line),f)) {
     lineno++;
-    if(strstr(line,"TRACELINE") != NULL && strstr(line,"#define") == NULL) {
+    if(strstr(line,"TRACELINE") != nullptr && strstr(line,"#define") == nullptr) {
       m_lineDeclared.add(lineno);
     }
   }

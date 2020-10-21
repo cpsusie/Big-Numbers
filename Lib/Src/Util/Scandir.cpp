@@ -10,11 +10,11 @@ DirList scandir(const TCHAR *pattern, FindDataSelector *selector, FindDataCompar
   try {
     for(done = 0, nameIterator = _tfindfirst64((TCHAR*)pattern, &entry);
         nameIterator >= 0 && done == 0; done = _tfindnext64(nameIterator, &entry)) {
-      if(selector == NULL || selector->select(entry)) {
+      if(selector == nullptr || selector->select(entry)) {
         list.add(entry);
       }
     }
-    if(comparator != NULL) {
+    if(comparator != nullptr) {
       list.sort(*comparator);
     }
     if(nameIterator >= 0)  {

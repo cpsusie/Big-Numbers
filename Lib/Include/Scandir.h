@@ -11,8 +11,8 @@ typedef Comparator<DirListEntry> FindDataComparator;
 typedef Selector<  DirListEntry> FindDataSelector;
 typedef Array<DirListEntry> DirList;
 
-DirList scandir(const TCHAR  *pattern, FindDataSelector *selector = NULL, FindDataComparator *comparator = NULL);
-DirList scandir(const String &pattern, FindDataSelector *selector = NULL, FindDataComparator *comparator = NULL);
+DirList scandir(const TCHAR  *pattern, FindDataSelector *selector = nullptr, FindDataComparator *comparator = nullptr);
+DirList scandir(const String &pattern, FindDataSelector *selector = nullptr, FindDataComparator *comparator = nullptr);
 
 enum FindDataField {
   FILEATTRIB
@@ -37,9 +37,9 @@ class CompoundFindDataComparator : public FindDataComparator {
 private:
   CompactArray<FindDataFieldSortDefinition> m_sortDefinition;
 public:
-  int compare(const DirListEntry &e1, const DirListEntry &e2);
+  int compare(const DirListEntry &e1, const DirListEntry &e2) override;
   CompoundFindDataComparator(FindDataField field, ...);
-  AbstractComparator *clone() const {
+  AbstractComparator *clone() const override {
     return new CompoundFindDataComparator(*this);
   }
 };

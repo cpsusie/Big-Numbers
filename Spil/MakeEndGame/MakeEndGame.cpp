@@ -219,8 +219,8 @@ private:
 public:
   BuildSequenceComparator(const EndGameTablebaseList &tablebaseList) : m_tablebaseList(tablebaseList) {
   }
-  int compare(const SpecifiedSequence &s1, const SpecifiedSequence &s2);
-  AbstractComparator *clone() const {
+  int compare(const SpecifiedSequence &s1, const SpecifiedSequence &s2) override;
+  AbstractComparator *clone() const override {
     return new BuildSequenceComparator(m_tablebaseList);
   }
 };

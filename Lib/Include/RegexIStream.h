@@ -11,11 +11,11 @@ private:
   RegexIStream &operator=(const RegexIStream &); // Not defined. Class not cloneable
   void cleanup();
 public:
-  RegexIStream() : m_regex(NULL) {
+  RegexIStream() : m_regex(nullptr) {
   }
 #if defined(_DEBUG)
   // See comment below for a description of pattern
-  RegexIStream(const StringArray &pattern, bool ignoreCase = false, bool dumpStates = true) : m_regex(NULL) {
+  RegexIStream(const StringArray &pattern, bool ignoreCase = false, bool dumpStates = true) : m_regex(nullptr) {
     compilePattern(pattern, ignoreCase,dumpStates);
   }
   // See comment below for a description of pattern
@@ -23,7 +23,7 @@ public:
 #else
   // See comment below for a description of pattern
   void compilePattern(const StringArray &pattern, bool ignoreCase = false);
-  RegexIStream(const StringArray &pattern, bool ignoreCase = false) : m_regex(NULL) {
+  RegexIStream(const StringArray &pattern, bool ignoreCase = false) : m_regex(nullptr) {
     compilePattern(pattern, ignoreCase);
   }
 #endif // _DEBUG
@@ -31,14 +31,14 @@ public:
     cleanup();
   }
   inline bool isEmpty() const {
-    return m_regex == NULL;
+    return m_regex == nullptr;
   }
   // Return index into StringArray &pattern, specified to compilePattern, which has the best (longest) match, if any,
   // and the next input character in stream is the character following this
   // If no match, -1 is returned and the stream is left unchanged.
-  // If matchedString != NULL, and there is a match, it will contain the String read from the stream.
-  int match(std::istream  &in, String *matchedString = NULL) const;
-  int match(std::wistream &in, String *matchedString = NULL) const;
+  // If matchedString != nullptr, and there is a match, it will contain the String read from the stream.
+  int match(std::istream  &in, String *matchedString = nullptr) const;
+  int match(std::wistream &in, String *matchedString = nullptr) const;
 #if defined(_DEBUG)
   String toString() const;
 #endif // _DEBUG

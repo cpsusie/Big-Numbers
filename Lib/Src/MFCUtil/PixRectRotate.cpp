@@ -16,17 +16,17 @@ static inline D3DXMATRIX createTransformedWorld(double scale, const Point2D *rot
   D3DXVECTOR2 d3C,d3T;
   if(rotationCenter) d3C = p2DToD3V3(*rotationCenter);
   if(translate     ) d3T = p2DToD3V3(*translate);
-  return *D3DXMatrixAffineTransformation2D(&m, (float)scale, rotationCenter?&d3C:NULL, (float)rad, translate?&d3T:NULL);
+  return *D3DXMatrixAffineTransformation2D(&m, (float)scale, rotationCenter?&d3C:nullptr, (float)rad, translate?&d3T:nullptr);
 }
 
 static inline D3DXMATRIX createIdWorld() {
-  return createTransformedWorld(1, NULL, 0, NULL);
+  return createTransformedWorld(1, nullptr, 0, nullptr);
 }
 static inline D3DXMATRIX createScaleWorld(double scale) {
-  return createTransformedWorld(scale, NULL, 0, NULL);
+  return createTransformedWorld(scale, nullptr, 0, nullptr);
 }
 static inline D3DXMATRIX createTranslateWorld(const Point2D &translate) {
-  return createTransformedWorld(1, NULL, 0, &translate);
+  return createTransformedWorld(1, nullptr, 0, &translate);
 }
 
 D3DXVECTOR2 operator*(const D3DXMATRIX &m, const D3DXVECTOR2 &v) {
@@ -83,13 +83,13 @@ void PixRect::drawRotated(const PixRect *src, const CPoint &dst, double degree, 
   const PixRect *texture = (src->getType() == PIXRECT_TEXTURE) ? src  : src->clone(true, PIXRECT_TEXTURE, D3DPOOL_DEFAULT);
 //showPixRect(texture);
 
-//  V(device->Clear(0, NULL, D3DCLEAR_TARGET, background, 1.0f, 0));
+//  V(device->Clear(0, nullptr, D3DCLEAR_TARGET, background, 1.0f, 0));
   m_device.alphaBlend(texture, src->getRect());
   V(tmpRender->EndScene(D3DX_DEFAULT));
   TRACE_REFCOUNT(m_surface);
   SAFERELEASE(tmpRender);
 
-  V(device->SetTexture(0, NULL));
+  V(device->SetTexture(0, nullptr));
 
   if(texture != src) {
     SAFEDELETE(texture);
@@ -107,7 +107,7 @@ PixRect *PixRect::rotateImage(const PixRect *src, double degree, D3DCOLOR backgr
 
 CSize PixRect::getRotatedSize(const CSize &size, double degree) { // static
   const Point2D center = ORIGIN;
-  const CSize   result = Size2D(getTransformedRectangle(createTransformedWorld(1, &center, GRAD2RAD(degree), NULL)
+  const CSize   result = Size2D(getTransformedRectangle(createTransformedWorld(1, &center, GRAD2RAD(degree), nullptr)
                                                        ,CRect(ORIGIN,size)).getSize());
   return result;
 }

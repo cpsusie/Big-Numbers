@@ -457,7 +457,7 @@ const RegisterInfo *RegisterInfoTable::findLastRegisterInCountingLoop(BYTE level
       return &ri;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 class ByteInsertHandler : public _RegexByteInsertHandler {
@@ -665,11 +665,11 @@ Regex::Regex(const TCHAR *pattern, const TCHAR *translateTable) : m_fastMap(MAXC
 void Regex::init() {
   m_counterTableSize = 0;
   m_codeSize         = 0;
-  m_translateTable   = NULL;
+  m_translateTable   = nullptr;
   m_hasCompiled      = false;
   m_matchEmpty       = false;
   m_resultLength     = 0;
-  DBG_setHandler(NULL);
+  DBG_setHandler(nullptr);
   DBG_setCodeDirty(false);
 }
 
@@ -960,7 +960,7 @@ void Regex::compilePattern1(const TCHAR *pattern) {
           DBG_insertCountingJump(LASTSTART, DBG_getIndex(startRepeat));
 
           const RegisterInfo *ri = registerTable.findLastRegisterInCountingLoop(stack.getHeight(), LASTSTART);
-          if(ri != NULL) {
+          if(ri != nullptr) {
             m_counterTable[m_counterTableSize].m_regno = ri->m_regno;
           }
           m_counterTableSize++;
@@ -1009,7 +1009,7 @@ void Regex::compilePattern1(const TCHAR *pattern) {
         legalCharSet.stopAdding();
 
         CompactIntArray *fixupArray = usedCharSetMap.get(legalCharSet);
-        if(fixupArray == NULL) {
+        if(fixupArray == nullptr) {
           usedCharSetMap.put(legalCharSet, CompactIntArray());
           fixupArray = usedCharSetMap.get(legalCharSet);
         }
@@ -1573,7 +1573,7 @@ intptr_t Regex::match2(const TCHAR    *string1
   if(size2 == 0) {
     string2 = string1;
     size2   = size1;
-    string1 = NULL;
+    string1 = nullptr;
     size1   = 0;
   }
   state.m_end1 = string1 + size1;
@@ -1866,7 +1866,7 @@ while(state.m_sp == state.m_spEnd) {       \
         } else {
           state.popAndRestore();
         }
-        if(state.m_ip == NULL) {                                                // If innermost failure point is dormant,
+        if(state.m_ip == nullptr) {                                                // If innermost failure point is dormant,
           goto Fail;
         }
                                                                                 // flush it and keep looking
@@ -2048,7 +2048,7 @@ RegexStepHandler *Regex::setHandler(RegexStepHandler *handler) {
 #define ADDNEWLINE     ADD(_T("\n"))
 
 #define SETLINENUMBERS       { for(;lastp < p; lastp++) m_PCToLineArray[lastp - start] |= (lineCount<<16); lineCount++; }
-#define CLEARLINENUMBERS()   { for(int n = (int)m_PCToLineArray.size(), *lp = n?(&m_PCToLineArray.first()):NULL; n--;) *(lp++) &= 0x0000ffff; }
+#define CLEARLINENUMBERS()   { for(int n = (int)m_PCToLineArray.size(), *lp = n?(&m_PCToLineArray.first()):nullptr; n--;) *(lp++) &= 0x0000ffff; }
 #define GETDBGLINENO(   dbg) ((dbg)>>16   )
 #define GETDBGCHARINDEX(dbg) ((dbg)&0xffff)
 
@@ -2364,7 +2364,7 @@ String _RegexMatchStackElement::toString(const BYTE *codeStart) const {
 
 String _RegexStateRegister::toString(const _RegexMatchState *state) const {
   int len;
-  if(!isSet() || (m_regStart == NULL)) {
+  if(!isSet() || (m_regStart == nullptr)) {
     return _T("\"\"");
   }
   if(m_regStartSegEnd == state->m_spEnd) {

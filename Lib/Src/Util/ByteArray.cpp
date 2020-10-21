@@ -85,7 +85,7 @@ ByteArray &ByteArray::add(size_t index, const BYTE *data, size_t size) {
       }
       memcpy(dst, data, size);
     }
-    if(m_data != NULL) { // Now we can safely delete m_data.
+    if(m_data != nullptr) { // Now we can safely delete m_data.
       deallocateBytes(m_data);
     }
     m_data     = newData;
@@ -110,7 +110,7 @@ ByteArray &ByteArray::add(size_t index, BYTE b, size_t count) {
     if(index < m_size) {
       memcpy(newData+index+count, m_data+index, m_size-index);
     }
-    if(m_data != NULL) {
+    if(m_data != nullptr) {
       deallocateBytes(m_data);
     }
     m_data     = newData;
@@ -175,7 +175,7 @@ void ByteArray::indexError(const TCHAR *method, size_t index, size_t count) cons
 }
 
 void ByteArray::init() {
-  m_data     = NULL;
+  m_data     = nullptr;
   m_capacity = 0;
   m_size     = 0;
 }
@@ -189,7 +189,7 @@ void  ByteArray::deallocateBytes(BYTE *buffer) {
 }
 
 void ByteArray::cleanup() {
-  if(m_data != NULL) {
+  if(m_data != nullptr) {
     deallocateBytes(m_data);
   }
   init();

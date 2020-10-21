@@ -46,7 +46,7 @@ public:
   inline MD5HashCode(const BYTE *v) {
     init(v);
   }
-  inline void clear(const BYTE *v = NULL) {
+  inline void clear(const BYTE *v = nullptr) {
     if(v) init(v); else reset();
   }
   inline const BYTE &operator[](UINT index) const {

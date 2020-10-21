@@ -7,12 +7,12 @@
 void *D3SceneObjectWithIndexBuffer::allocateIndexArray(bool int32, UINT count) {
   releaseIndexBuffer();
   m_indexBuffer = getDevice().allocateIndexBuffer(int32, count);
-  void *bufferItems = NULL;
+  void *bufferItems = nullptr;
   lockIndexArray(&bufferItems);
   return bufferItems;
 }
 
-bool D3SceneObjectWithIndexBuffer::use32BitIndices(size_t vertexCount) { // static 
+bool D3SceneObjectWithIndexBuffer::use32BitIndices(size_t vertexCount) { // static
    return vertexCount > MAX16BITVERTEXCOUNT;
 }
 

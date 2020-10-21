@@ -26,7 +26,7 @@ UINT D3Scene::addMaterialWithColor(D3DCOLOR color, bool specularHighlights) {
 
 UINT D3Scene::getFirstFreeMaterialId() const {
   for(UINT id = 0;; id++) {
-    if(m_materialMap.get(id) == NULL) {
+    if(m_materialMap.get(id) == nullptr) {
       return id;
     }
   }

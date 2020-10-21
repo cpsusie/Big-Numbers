@@ -21,9 +21,9 @@ Rectangle2D GlyphPolygon::getBoundingBox() const {
 // ------------------------------------ GlyphData ------------------------------
 
 GlyphData::GlyphData(PixRectDevice &device, HDC hdc, _TUCHAR ch, const MAT2 &m) : m_glyphCurveData(hdc, ch, m) {
-  m_pixRect = NULL;
+  m_pixRect = nullptr;
   m_ch      = ch;
-  DWORD buffersize = GetGlyphOutline(hdc,ch, GGO_BITMAP,&m_metrics,0,NULL,&m);
+  DWORD buffersize = GetGlyphOutline(hdc,ch, GGO_BITMAP,&m_metrics,0,nullptr,&m);
   if(buffersize == GDI_ERROR) {
     return;
   }
@@ -59,7 +59,7 @@ GlyphData::~GlyphData() {
 
 GlyphCurveData::GlyphCurveData(HDC hdc, _TUCHAR ch, const MAT2 &m) {
   GLYPHMETRICS m_metrics;
-  DWORD buffersize = GetGlyphOutline(hdc,ch, GGO_BEZIER,&m_metrics,0,NULL,&m);
+  DWORD buffersize = GetGlyphOutline(hdc,ch, GGO_BEZIER,&m_metrics,0,nullptr,&m);
   if(buffersize == GDI_ERROR) {
     return;
   }
@@ -144,7 +144,7 @@ void PixRect::text(const CPoint &p, const String &text, const PixRectFont &font,
   for(int i = 0; text[i] != '\0'; i++) {
     _TUCHAR ch = text[i];
     const GlyphData *gd = font.getGlyphData(ch);
-    if(gd->m_pixRect != NULL) {
+    if(gd->m_pixRect != nullptr) {
       mask(x+gd->m_metrics.gmptGlyphOrigin.x,y-gd->m_metrics.gmptGlyphOrigin.y,gd->m_pixRect->getWidth(),gd->m_pixRect->getHeight()
           ,SRCCOPY,csrc,0,0,gd->m_pixRect);
       x += gd->m_metrics.gmCellIncX;
@@ -206,7 +206,7 @@ void applyToText(const String &text, const PixRectFont &font, TextOperator &op) 
     const _TUCHAR    ch = text[i];
     const GlyphData *gd = font.getGlyphData(ch);
     op.beginGlyph(chPos);
-    if(gd->m_pixRect != NULL) {
+    if(gd->m_pixRect != nullptr) {
       applyToGlyph(gd->m_glyphCurveData,op);
       chPos.x += gd->m_metrics.gmCellIncX;
       chPos.y += gd->m_metrics.gmCellIncY;

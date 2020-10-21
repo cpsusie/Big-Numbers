@@ -66,6 +66,6 @@ public:
   // assume *cp == '"', beginning of C-string, scan c-string, returning pointer to TCHAR following terminating "
   // throws exception if invalid escape sequence,newline or not terminated string
   // escape sequences are defined in https://en.wikipedia.org/wiki/Escape_sequences_in_C
-  // if result != NULL, it will contain the string without leading/ending " and escape sequnces translated
-  static TCHAR *parseCstring(const TCHAR *cp, String *result=NULL);
+  // if result != nullptr, it will contain the string without leading/ending " and escape sequnces translated
+  static TCHAR *parseCstring(const TCHAR *cp, String *result=nullptr);
 };

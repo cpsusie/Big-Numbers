@@ -7,12 +7,12 @@
 #define MAX_BUFFERSIZE 8192
 
 DecompressFilter::DecompressFilter(ByteInputStream &src) : m_src(src) {
-  m_zStreamp  = NULL;
-  m_buffer    = NULL;
+  m_zStreamp  = nullptr;
+  m_buffer    = nullptr;
 
   z_stream *zStream = new z_stream; TRACE_NEW(zStream);
-  zStream->zalloc   = NULL;
-  zStream->zfree    = NULL;
+  zStream->zalloc   = nullptr;
+  zStream->zfree    = nullptr;
   zStream->opaque   = (voidpf)0;
   zStream->avail_in = 0;
   const int err = inflateInit(zStream);

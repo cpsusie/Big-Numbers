@@ -67,12 +67,12 @@ private:
                            // and m_pageMap[...].m_loaded = 1
 
     MemoryPage() {
-      m_page     = NULL;
+      m_page     = nullptr;
       m_mapIndex = -1;
     }
 
     void allocate() {
-      if(m_page == NULL) {
+      if(m_page == nullptr) {
         m_page = new ArrayPage; TRACE_NEW(m_page)
       }
     }
@@ -100,7 +100,7 @@ private:
     }
 
     String pageToString() const {
-      return (m_page==NULL) ? _T("null") : m_page->toString();
+      return (m_page==nullptr) ? _T("null") : m_page->toString();
     }
 #endif
 
@@ -157,7 +157,7 @@ private:
   void closePageFile() const {
     if(m_pageFile) {
       fclose(m_pageFile);
-      m_pageFile = NULL;
+      m_pageFile = nullptr;
       UNLINK(m_pageFileName);
       m_pageFileName = EMPTYSTRING;
       resetPageFileSize();
@@ -165,7 +165,7 @@ private:
   }
 
   void addFilePage() const {
-    if(m_pageFile == NULL) {
+    if(m_pageFile == nullptr) {
       openPageFile();
     }
     const UINT newPageIndex = m_pageFileSize++;
@@ -183,10 +183,10 @@ private:
   }
 
   void readPage(size_t index, ArrayPage *a) const {
-    assert(a != NULL);
+    assert(a != nullptr);
     assert( index < m_pageFileSize);
     assert((index < m_freeFilePages.getCapacity()) && (!m_freeFilePages.contains(index)));
-    assert(m_pageFile != NULL);
+    assert(m_pageFile != nullptr);
 
     FSEEK(m_pageFile, (UINT64)index * sizeof(ArrayPage));
     FREAD(a, sizeof(ArrayPage), 1, m_pageFile);
@@ -194,13 +194,13 @@ private:
   }
 
   void writePage(size_t index, const ArrayPage *a) const {
-    assert(a != NULL);
+    assert(a != nullptr);
     if(index == m_pageFileSize) {
       addFilePage();
     }
     assert(index < m_pageFileSize);
     assert(m_freeFilePages.contains(index));
-    assert(m_pageFile != NULL);
+    assert(m_pageFile != nullptr);
     FSEEK(m_pageFile, (unsigned __int64)index * sizeof(ArrayPage));
     FWRITE(a, sizeof(ArrayPage), 1, m_pageFile);
 
@@ -230,27 +230,27 @@ private:
     }
   }
 
-// unusedPageIndex only set when return NULL. else unchanged
-// If NULL is returned, unusedPageIndex is the index into m_memoryPage
+// unusedPageIndex only set when return nullptr. else unchanged
+// If nullptr is returned, unusedPageIndex is the index into m_memoryPage
 // of an unused page, which can be used without saving it first
   PageMapElement *findPageToSwap(int &unusedPageIndex) const {
     const size_t    lastPageIndex = m_size ? getPageIndex(m_size-1) : 0; // m_size always > 0
-    PageMapElement *result        = NULL;
+    PageMapElement *result        = nullptr;
 
     for(int i = 0; i < ARRAYSIZE(m_memoryPage); i++) {
       const int t = m_memoryPage[i].m_mapIndex;
       if(t < 0) {
         m_memoryPage[i].allocate();
         unusedPageIndex = i;
-        return NULL;
+        return nullptr;
       } else if(t != lastPageIndex) {
         PageMapElement &e = m_pageMap[t];
-        if((e.m_loaded) && ((result == NULL) || (e.m_lastReference < result->m_lastReference))) {
+        if((e.m_loaded) && ((result == nullptr) || (e.m_lastReference < result->m_lastReference))) {
           result = &e;
         }
       }
     }
-    assert(result != NULL);
+    assert(result != nullptr);
     return result;
   }
 
@@ -334,7 +334,7 @@ private:
   void init() {
     m_size             = 0;
     m_referenceCounter = 0;
-    m_pageFile         = NULL;
+    m_pageFile         = nullptr;
     m_pageFileSize     = 0;
   }
 

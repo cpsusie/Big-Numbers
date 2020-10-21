@@ -3,8 +3,8 @@
 #include <MFCUtil/PixRectDevice.h>
 
 PixRectDevice::PixRectDevice() {
-  m_device       = NULL;
-  m_renderTarget = NULL;
+  m_device       = nullptr;
+  m_renderTarget = nullptr;
   resetException();
 }
 
@@ -19,7 +19,7 @@ void PixRectDevice::attach(HWND hwnd, bool windowed, const CSize *size) {
   CSize sz;
   if(!windowed) {
     sz = getScreenSize(false);
-  } else if(size == NULL) {
+  } else if(size == nullptr) {
     sz = getClientRect(hwnd).Size();
   } else {
     sz = *size;
@@ -70,7 +70,7 @@ void PixRectDevice::releaseRenderTarget() {
 }
 
 void PixRectDevice::setRenderTargetSize(const CSize &size) {
-  if((m_renderTarget == NULL) || (size != m_renderTargetSize)) {
+  if((m_renderTarget == nullptr) || (size != m_renderTargetSize)) {
     releaseRenderTarget();
     m_renderTarget = createRenderTarget(size);
     m_renderTargetSize = size;
@@ -89,7 +89,7 @@ LPDIRECT3DTEXTURE PixRectDevice::createTexture(const CSize &size, D3DFORMAT form
   }
   DWORD usage = D3DUSAGE_DYNAMIC; // (pool == D3DPOOL_MANAGED) ? 0 : D3DUSAGE_DYNAMIC;
 
-  V(m_device->CreateTexture(size.cx, size.cy, 1, usage, format, pool, &texture, NULL));
+  V(m_device->CreateTexture(size.cx, size.cy, 1, usage, format, pool, &texture, nullptr));
   TRACE_CREATE(texture);
   return texture;
 }
@@ -106,7 +106,7 @@ LPDIRECT3DSURFACE PixRectDevice::createRenderTarget(const CSize &size, D3DFORMAT
   if(format == D3DFMT_FORCE_DWORD) {
     format = desc.Format;
   }
-  V(m_device->CreateRenderTarget(size.cx, size.cy, format, desc.MultiSampleType, desc.MultiSampleQuality, lockable, &surface, NULL));
+  V(m_device->CreateRenderTarget(size.cx, size.cy, format, desc.MultiSampleType, desc.MultiSampleQuality, lockable, &surface, nullptr));
   TRACE_CREATE(surface);
   return surface;
 }
@@ -119,7 +119,7 @@ LPDIRECT3DSURFACE PixRectDevice::createOffscreenPlainSurface(const CSize &size, 
     pool = D3DPOOL_SYSTEMMEM;
   }
   LPDIRECT3DSURFACE surface;
-  V(m_device->CreateOffscreenPlainSurface(size.cx, size.cy, format, pool, &surface, NULL));
+  V(m_device->CreateOffscreenPlainSurface(size.cx, size.cy, format, pool, &surface, nullptr));
   TRACE_CREATE(surface);
   return surface;
 }
@@ -150,7 +150,7 @@ D3DCAPS PixRectDevice::getDeviceCaps() const {
 DDCAPS PixRect::getEmulatorCaps() { // static
   DDCAPS result;
   result.dwSize = sizeof(DDCAPS);
-  V(directDraw->GetCaps(NULL, &result));
+  V(directDraw->GetCaps(nullptr, &result));
   return result;
 }
 */
@@ -160,7 +160,7 @@ void PixRectDevice::render(const PixRect *pr) {
     return;  // Haven't been initialized yet!
   }
 
-  LPDIRECT3DSURFACE oldRenderTarget = NULL;
+  LPDIRECT3DSURFACE oldRenderTarget = nullptr;
   try {
     beginScene();
     V(m_device->SetRenderState(D3DRS_LIGHTING, FALSE));
@@ -169,14 +169,14 @@ void PixRectDevice::render(const PixRect *pr) {
     oldRenderTarget = getRenderTarget();
     if(pr->m_desc.Pool != D3DPOOL_DEFAULT) {
       setRenderTargetSize(pr->getSize());
-      V(m_device->UpdateSurface(pr->m_surface, NULL, m_renderTarget, NULL));
-      V(m_device->StretchRect(m_renderTarget, NULL, oldRenderTarget, NULL, D3DTEXF_NONE));
+      V(m_device->UpdateSurface(pr->m_surface, nullptr, m_renderTarget, nullptr));
+      V(m_device->StretchRect(m_renderTarget, nullptr, oldRenderTarget, nullptr, D3DTEXF_NONE));
     } else {
-      V(m_device->StretchRect(pr->m_surface, NULL, oldRenderTarget, NULL, D3DTEXF_NONE));
+      V(m_device->StretchRect(pr->m_surface, nullptr, oldRenderTarget, nullptr, D3DTEXF_NONE));
     }
 
     SAFERELEASE(oldRenderTarget);
-    V(m_device->Present(NULL, NULL, NULL, NULL));
+    V(m_device->Present(nullptr, nullptr, nullptr, nullptr));
   } catch(...) {
     endScene();
     SAFERELEASE(oldRenderTarget);
@@ -204,7 +204,7 @@ void PixRectDevice::set2DTransform(const CSize &size) {
   const CSize sz = getSize(m_someTexture);
   const D3DXVECTOR2 rotationCenter(37,37);
   D3DXMATRIX matWorld;
-  CHECKD3DRESULT(m_device->SetTransform( D3DTS_WORLD, D3DXMatrixAffineTransformation2D(&matWorld, 1, &rotationCenter, (float)GRAD2RAD(m_rotation), NULL)));
+  CHECKD3DRESULT(m_device->SetTransform( D3DTS_WORLD, D3DXMatrixAffineTransformation2D(&matWorld, 1, &rotationCenter, (float)GRAD2RAD(m_rotation), nullptr)));
 */
 }
 

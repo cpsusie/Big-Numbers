@@ -17,7 +17,7 @@ private:
     return *this;
   }
   static inline D3DXMATRIX composeMatrix(const D3DXVECTOR3 &scale, const D3DXQUATERNION &q, const D3DXVECTOR3 &pos, D3DXMATRIX &mat) {
-    return *D3DXMatrixTransformation(&mat, NULL, NULL, &scale, NULL, &q, &pos);
+    return *D3DXMatrixTransformation(&mat, nullptr, nullptr, &scale, nullptr, &q, &pos);
   }
 
 public:

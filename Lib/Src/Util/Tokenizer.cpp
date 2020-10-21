@@ -29,7 +29,7 @@ Tokenizer::Tokenizer(const Tokenizer &src)
   m_textQualifier    = src.m_textQualifier;
   m_singleDelimiter  = src.m_singleDelimiter;
   m_next             = src.m_next;
-  m_stringBuffer     = NULL;
+  m_stringBuffer     = nullptr;
   m_stringBufferSize = 0;
 }
 
@@ -58,7 +58,7 @@ void Tokenizer::cleanup() {
 void Tokenizer::init(const TCHAR *str, const TCHAR *delimiters, TCHAR textQualifier) {
   m_str              = str;
   m_textQualifier    = (m_flags & TOK_CSTRING) ? '"' : textQualifier;
-  m_stringBuffer     = NULL;
+  m_stringBuffer     = nullptr;
   m_stringBufferSize = 0;
   for(const TCHAR *cp = (const TCHAR*)delimiters; *cp; cp++) {
     m_delimiterSet += (ULONG)(*cp);                    // m_delimiterSet never contains '\0'

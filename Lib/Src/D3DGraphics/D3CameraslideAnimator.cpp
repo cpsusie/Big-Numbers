@@ -17,7 +17,7 @@ D3CameraSlideAnimator::D3CameraSlideAnimator(D3Camera &cam, const D3World &newWo
 , m_oldVewAngle(cam.getViewAngle())         , m_newViewAngle(newViewAngle)
 , m_oldNearViewPlane(cam.getNearViewPlane()), m_newNearViewPlane(newNearViewPlane)
 , m_oldBackground(cam.getBackgroundColor())
-, m_iterator(NULL)
+, m_iterator(nullptr)
 {
   if(m_newWorld.getPos()         != m_oldWorld.getPos()  )       setFlag(FL_UPDATEPOS        );
   if(m_newWorld.getScale()       != m_oldWorld.getScale())       setFlag(FL_UPDATESCALE      );

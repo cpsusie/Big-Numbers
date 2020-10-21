@@ -31,13 +31,13 @@ private:
     m_size        = size;
     m_updateCount = 0;
     m_capacity    = capacity;
-    m_array       = m_capacity ? new T[m_capacity] : NULL; TRACE_NEW(m_array);
+    m_array       = m_capacity ? new T[m_capacity] : nullptr; TRACE_NEW(m_array);
   }
 
   void setCapacityNoCopy(size_t capacity) {
     if(capacity == m_capacity) return;
     SAFEDELETEARRAY(m_array);
-    m_array    = capacity ? new T[capacity] : NULL; TRACE_NEW(m_array);
+    m_array    = capacity ? new T[capacity] : nullptr; TRACE_NEW(m_array);
     m_capacity = capacity;
   }
 
@@ -101,10 +101,10 @@ public:
     if(capacity == m_capacity) {
       return *this;
     }
-    T *newArray = capacity ? new T[capacity] : NULL; TRACE_NEW(newArray);
+    T *newArray = capacity ? new T[capacity] : nullptr; TRACE_NEW(newArray);
     if(m_size) {
       __assume(m_size  );
-      if(newArray == NULL) {
+      if(newArray == nullptr) {
         throwException(_T("new failed"));
       }
       __assume(newArray);
@@ -469,7 +469,7 @@ public:
     return sum;
   }
 
-  inline const T *getBuffer() const { // can return NULL
+  inline const T *getBuffer() const { // can return nullptr
     return m_array;
   }
 
@@ -561,16 +561,16 @@ public:
     return true;
   }
   inline T *begin() {
-    return isEmpty() ? NULL : &first();
+    return isEmpty() ? nullptr : &first();
   }
   inline T *end() {
-    return isEmpty() ? NULL : (&first() + size());
+    return isEmpty() ? nullptr : (&first() + size());
   }
   inline const T *begin() const {
-    return isEmpty() ? NULL : &first();
+    return isEmpty() ? nullptr : &first();
   }
   inline const T *end() const {
-    return isEmpty() ? NULL : (&first() + size());
+    return isEmpty() ? nullptr : (&first() + size());
   }
 };
 

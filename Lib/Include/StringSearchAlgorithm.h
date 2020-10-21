@@ -23,7 +23,7 @@ protected:
     return s;
   }
 public:
-  virtual void     compilePattern(const Ctype *pattern, size_t patternLength, bool forwardSearch = true, const Ctype *translateTable = NULL) = 0;
+  virtual void     compilePattern(const Ctype *pattern, size_t patternLength, bool forwardSearch = true, const Ctype *translateTable = nullptr) = 0;
   virtual intptr_t search(        const Ctype *text   , size_t textLength) const = 0;
   virtual StringSearchAlgorithm<Ctype> *clone() const = 0;
   virtual ~StringSearchAlgorithm() {

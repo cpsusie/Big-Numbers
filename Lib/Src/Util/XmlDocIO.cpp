@@ -129,7 +129,7 @@ String XMLDoc::getXML(bool includePi) {
   String XML = BSTRToString(b);
 
   ::SysFreeString(b);
-  b = NULL;
+  b = nullptr;
 
   if(includePi) {
     XML = _T("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>") + XML;

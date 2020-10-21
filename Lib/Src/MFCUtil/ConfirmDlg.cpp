@@ -6,15 +6,15 @@
 #define new DEBUG_NEW
 #endif
 
-CConfirmDlg::CConfirmDlg(const TCHAR *message, const TCHAR *caption, UINT nType, CWnd *pParent /*=NULL*/)
+CConfirmDlg::CConfirmDlg(const TCHAR *message, const TCHAR *caption, UINT nType, CWnd *pParent /*=nullptr*/)
 : m_message(message)
 , m_caption(caption)
 , m_nType(nType)
 , CDialog(IDD, pParent)
 {
-  m_icon            = NULL;
+  m_icon            = nullptr;
   m_hasCancelButton = false;
-  m_accelTable      = NULL;
+  m_accelTable      = nullptr;
   m_dontShowAgain = FALSE;
 }
 
@@ -112,10 +112,10 @@ BOOL CConfirmDlg::OnInitDialog() {
   }
 
   switch(m_nType & MB_ICONMASK) {
-  case MB_ICONINFORMATION  : m_icon = LoadIcon(NULL, IDI_INFORMATION); break;
-  case MB_ICONQUESTION     : m_icon = LoadIcon(NULL, IDI_QUESTION   ); break;
-  case MB_ICONWARNING      : m_icon = LoadIcon(NULL, IDI_WARNING    ); break;
-  case MB_ICONERROR        : m_icon = LoadIcon(NULL, IDI_ERROR      ); break;
+  case MB_ICONINFORMATION  : m_icon = LoadIcon(nullptr, IDI_INFORMATION); break;
+  case MB_ICONQUESTION     : m_icon = LoadIcon(nullptr, IDI_QUESTION   ); break;
+  case MB_ICONWARNING      : m_icon = LoadIcon(nullptr, IDI_WARNING    ); break;
+  case MB_ICONERROR        : m_icon = LoadIcon(nullptr, IDI_ERROR      ); break;
   }
 
   CSize iconSize(0, 0);
@@ -214,7 +214,7 @@ void CConfirmDlg::OnPaint() {
 
   if(!m_icon) return;
 
-  DrawIconEx(CPaintDC(&m_iconCtrl), 0, 0, m_icon, 0, 0, 0, NULL, DI_NORMAL);
+  DrawIconEx(CPaintDC(&m_iconCtrl), 0, 0, m_icon, 0, 0, 0, nullptr, DI_NORMAL);
 
 //  paintIcon(m_icon, CPaintDC(&m_iconCtrl), CPoint(0,0), bgColor);
 }

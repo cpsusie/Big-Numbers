@@ -8,8 +8,8 @@ TCHAR *searchenv(TCHAR *dst, const TCHAR *fileName, const TCHAR *envName) {
     return _tcscpy(dst, fileName); // use working directory
   } else {
     TCHAR *env = _tgetenv(envName);
-    if(env == NULL) {
-      return NULL; // not found
+    if(env == nullptr) {
+      return nullptr; // not found
     }
     for(Tokenizer tok(env, _T(";")); tok.hasNext();) {
       String s = FileNameSplitter::getChildName(tok.next(),fileName);

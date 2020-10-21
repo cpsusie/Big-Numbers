@@ -4,8 +4,8 @@
 
 class D3IndexVertexComparator : public Comparator<D3Index> {
 public:
-  int compare(const D3Index &v1, const D3Index &v2);
-  AbstractComparator *clone() const {
+  int compare(const D3Index &v1, const D3Index &v2) override;
+  AbstractComparator *clone() const override {
     return new D3IndexVertexComparator;
   }
 };
