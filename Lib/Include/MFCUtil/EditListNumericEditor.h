@@ -15,7 +15,7 @@ private:
   void   outOfRangeException(double v) const;
 public:
   CEditListNumericEditor();
-  BOOL Create(CWnd *parent, int id, UINT flags = 0, DoubleInterval *legalInterval = NULL);
+  BOOL Create(CWnd *parent, int id, UINT flags = 0, DoubleInterval *legalInterval = nullptr);
 
   void         setValue(double v);
   short        getShortValue();

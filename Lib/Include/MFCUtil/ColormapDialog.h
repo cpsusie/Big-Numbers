@@ -30,7 +30,7 @@ protected:
   }
 
   void initSlider(int ctrlId, double from, double to, UINT stepCount = 100, IntervalScale type=LINEAR) {
-    CSliderCtrlWithTransformation *ctrl = NULL;
+    CSliderCtrlWithTransformation *ctrl = nullptr;
     try {
       ctrl = new CSliderCtrlWithTransformation(); TRACE_NEW(ctrl);
       if(!m_sliderMap.put(ctrlId,ctrl)) {

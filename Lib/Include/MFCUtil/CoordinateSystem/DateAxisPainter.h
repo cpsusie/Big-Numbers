@@ -17,11 +17,10 @@ private:
 
   void   setMinMaxStep(double min, double max, double step, TimeComponent timeComponent);
 protected:
-  void init();
-  double next(double x) const;
+  void init() override;
+  double next(double x) const override;
 
 public:
-  DateAxisPainter(SystemPainter &systemPainter, AxisIndex axis);
-  AxisType getType() const { return AXIS_DATE; }
-  String getValueText(double v) const;
+  DateAxisPainter(SystemPainter &systemPainter, AxisIndex axisIndex);
+  String getValueText(double v) const override;
 };

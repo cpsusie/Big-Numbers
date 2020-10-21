@@ -4,12 +4,11 @@
 
 class LinearAxisPainter : public AbstractAxisPainter {
 protected:
-  void paintXData();
-  void paintYData();
+  void paintXData() override;
+  void paintYData() override;
 
 public:
-  LinearAxisPainter(SystemPainter &systemPainter, AxisIndex axis, bool initialize = true);
-  AxisType getType() const { return AXIS_LINEAR; }
-  double getAxisPoint() const;
+  LinearAxisPainter(SystemPainter &systemPainter, AxisIndex axisIndex, AxisType type = AXIS_LINEAR, bool initialize = true);
+  double getAxisPoint() const override;
 };
 

@@ -34,8 +34,8 @@ public:
 
 // Return HTREEITEM in CtreeCtrl with the specified id, which itemrect contains pt.
 // pt is assumed to be relative to wnd
-// Return NULL if none found
+// Return nullptr if none found
 HTREEITEM findTreeItemByPoint(const CWnd *wnd, int id, const CPoint &pt);
 // Return HTREEITEM which itemrect contains pt. pt is assumed to be relative to ctrl.
-// Return NULL if none found
+// Return nullptr if none found
 HTREEITEM findTreeItemByPoint(const CTreeCtrl *ctrl, const CPoint &pt);

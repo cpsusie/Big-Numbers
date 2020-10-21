@@ -42,8 +42,8 @@
 
 // ex. if s == "0/2", this will enable/disable the third menuitem in first pulldown-menu of the windows menu
 int    getMenuItemType(                HMENU menu,  UINT          pos);
-HMENU  findMenuByString(               HMENU menu,  const String &s , int *index = NULL);  // see comment at enableMenuItem
-HMENU  findMenuContainingId(           HMENU menu,  UINT          id, int *index = NULL);
+HMENU  findMenuByString(               HMENU menu,  const String &s , int *index = nullptr);  // see comment at enableMenuItem
+HMENU  findMenuContainingId(           HMENU menu,  UINT          id, int *index = nullptr);
 void   enableMenuItem(                 HMENU menu,  UINT          id, bool enabled);
 void   checkMenuItem(                  HMENU menu,  UINT          id, bool checked);
 bool   enableSubMenuContainingId(      HMENU menu,  UINT          id, bool enabled); // do
@@ -172,7 +172,7 @@ private:
   HWND m_parent;
   bool m_recursive;
 public:
-  ChildWindowArray() : m_parent(NULL), m_recursive(false) {
+  ChildWindowArray() : m_parent(nullptr), m_recursive(false) {
   }
   // Create a list of ctrlId's of the child-windows (recursive or non recursive) of the specified parent-window
   ChildWindowArray(        HWND  parent, bool recursive=false) {

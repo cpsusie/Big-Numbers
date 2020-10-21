@@ -145,7 +145,7 @@ UINT Animator::safeRun() {
 
 String gifErrorCodeToString(int errorCode) {
   const char *errorMsg = GifErrorString(errorCode);
-  if(errorMsg == NULL) {
+  if(errorMsg == nullptr) {
     return _T("No error");
   } else {
     return errorMsg;
@@ -161,10 +161,10 @@ void throwGifErrorCode(int errorCode, const TCHAR *fileName, int line) {
 
 AnimatedImage::AnimatedImage() {
   m_size              = CSize(0,0);
-  m_parent            = NULL;
-  m_workPr            = NULL;
-  m_background        = NULL;
-  m_lastPaintedFrame  = NULL;
+  m_parent            = nullptr;
+  m_workPr            = nullptr;
+  m_background        = nullptr;
+  m_lastPaintedFrame  = nullptr;
   m_animator          = new Animator(this); TRACE_NEW(m_animator);
   ThreadPool::addListener(this);
 }
@@ -208,7 +208,7 @@ static int readGifStreamFunction(GifFileType *gifFile, GifByteType *buffer, int 
 void AnimatedImage::load(CWnd *parent, ByteInputStream &in) {
   int error;
   GifFileType *gifFile = DGifOpen(&in, readGifStreamFunction, &error);
-  if(gifFile == NULL) {
+  if(gifFile == nullptr) {
     THROWGIFERROR(error);
   }
   try {
@@ -224,8 +224,8 @@ void AnimatedImage::load(CWnd *parent, ByteInputStream &in) {
 }
 
 void AnimatedImage::extractGifData(const GifFileType *gifFile) {
-  PixelAccessor *pa    = NULL;
-  GifFrame      *frame = NULL;
+  PixelAccessor *pa    = nullptr;
+  GifFrame      *frame = nullptr;
   try {
     m_size.cx = gifFile->SWidth;
     m_size.cy = gifFile->SHeight;
@@ -310,7 +310,7 @@ void AnimatedImage::extractGifData(const GifFileType *gifFile) {
         }
       }
       frame->m_pr->releasePixelAccessor();
-      pa = NULL;
+      pa = nullptr;
 //      frame.m_pr->moveToPool(D3DPOOL_DEFAULT);
     }
   } catch(...) {
@@ -335,7 +335,7 @@ void AnimatedImage::parseApplicationBlock(const unsigned char *bytes, int n) {
 }
 
 bool AnimatedImage::hasSavedBackground() const {
-  return (m_background != NULL) && (m_parent != NULL);
+  return (m_background != nullptr) && (m_parent != nullptr);
 }
 
 void AnimatedImage::saveBackground(const CPoint &p, const CSize *size) {
@@ -404,7 +404,7 @@ void AnimatedImage::addToDisposeTable(PixRect *pr) {
         }
         if(!used) {
           SAFEDELETE(pr);
-          m_disposeTable[i] = NULL;
+          m_disposeTable[i] = nullptr;
         }
       }
     }
@@ -413,11 +413,11 @@ void AnimatedImage::addToDisposeTable(PixRect *pr) {
 
 const PixRect *AnimatedImage::findLastNonDisposed() const {
   for(int i = (int)m_disposeTable.size()-1; i >= 0; i--) {
-    if(m_disposeTable[i] != NULL) {
+    if(m_disposeTable[i] != nullptr) {
       return m_disposeTable[i];
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 void AnimatedImage::clearDisposeTable() {
@@ -441,7 +441,7 @@ void AnimatedImage::paintFrames(const CPoint &p, UINT last) {
   if(!hasSavedBackground()) {
     saveBackground(p);
   }
-  if(m_lastPaintedFrame != NULL) {
+  if(m_lastPaintedFrame != nullptr) {
     m_lastPaintedFrame->dispose();
   }
   for(UINT i = 0; i <= last; i++) {
@@ -454,7 +454,7 @@ void AnimatedImage::paintFrames(const CPoint &p, UINT last) {
 }
 
 void AnimatedImage::paintWork(CDC &dc, const CPoint &p) {
-  if(!isLoaded() || isPlaying() || (m_workPr == NULL)) {
+  if(!isLoaded() || isPlaying() || (m_workPr == nullptr)) {
     return;
   }
   flushPr(dc, p, m_workPr, 1.0);
@@ -551,7 +551,7 @@ bool AnimatedImage::isPlaying() const {
 void AnimatedImage::hide() {
   stopAnimation();
   restoreBackground();
-  m_lastPaintedFrame = NULL;
+  m_lastPaintedFrame = nullptr;
 }
 
 void GifFrame::paint() const {
@@ -564,7 +564,7 @@ void GifFrame::paint() const {
 }
 
 void GifFrame::dispose() const {
-  m_owner->m_lastPaintedFrame = NULL;
+  m_owner->m_lastPaintedFrame = nullptr;
 
   switch(m_disposalMode) {
   case DISPOSAL_UNSPECIFIED:       // No disposal specified
@@ -575,7 +575,7 @@ void GifFrame::dispose() const {
     return;
   case DISPOSE_BACKGROUND  :       // Set area to background color
     { if(!m_owner->isDisposeTableFull()) {
-        m_owner->addToDisposeTable(NULL);
+        m_owner->addToDisposeTable(nullptr);
       }
       if(m_owner->hasSavedBackground()) {
         m_owner->m_workPr->rop(ORIGIN,m_owner->m_size,SRCCOPY, m_owner->m_background, ORIGIN);
@@ -585,9 +585,9 @@ void GifFrame::dispose() const {
 
   case DISPOSE_PREVIOUS    :       // Restore to previous non-disposd content content
     { if(!m_owner->isDisposeTableFull()) {
-        m_owner->addToDisposeTable(NULL);
+        m_owner->addToDisposeTable(nullptr);
       }
-      if(m_disposeTo == NULL) {
+      if(m_disposeTo == nullptr) {
         m_disposeTo = m_owner->findLastNonDisposed();
       }
       if(m_disposeTo) {
@@ -600,18 +600,18 @@ void GifFrame::dispose() const {
 }
 
 GifFrame::GifFrame() {
-  m_disposeTo        = NULL;
-  m_owner            = NULL;
+  m_disposeTo        = nullptr;
+  m_owner            = nullptr;
   m_disposalMode     = DISPOSAL_UNSPECIFIED;
   m_delayTime        = 0;
   m_useTransparency  = false;
   m_srcRect = m_rect = CRect(0,0,0,0);
-  m_pr               = NULL;
+  m_pr               = nullptr;
 }
 
 void GifFrame::cleanup() {
-  m_disposeTo        = NULL;
-  m_owner            = NULL;
+  m_disposeTo        = nullptr;
+  m_owner            = nullptr;
   m_disposalMode     = DISPOSAL_UNSPECIFIED;
   m_delayTime        = 0;
   m_useTransparency  = false;

@@ -5,7 +5,7 @@
 Viewport2D::Viewport2D(bool retainAspectRatio) {
   m_tr                = new RectangleTransformation(); TRACE_NEW(m_tr);
   m_ownTransformation = true;
-  m_dc                = NULL;
+  m_dc                = nullptr;
   m_retainAspectRatio = retainAspectRatio;
   m_currentPenWidth   = 0;
   setCurrentPen(PS_SOLID, 1, BLACK);
@@ -40,9 +40,9 @@ Viewport2D::~Viewport2D() {
 
 void Viewport2D::destroyClipRgn() const {
   if(hasDC()) {
-    m_dc->SelectClipRgn(NULL);
+    m_dc->SelectClipRgn(nullptr);
   }
-  if(m_clipRgn.m_hObject != NULL) {
+  if(m_clipRgn.m_hObject != nullptr) {
     m_clipRgn.DeleteObject();
   }
 }
@@ -51,14 +51,14 @@ void Viewport2D::destroyTransformation() {
   if(m_ownTransformation && m_tr) {
     SAFEDELETE(m_tr);
   }
-  m_tr = NULL;
+  m_tr = nullptr;
 }
 
 void Viewport2D::destroyPen() const {
   if(hasDC()) {
-    m_dc->SelectObject((CPen*)NULL);
+    m_dc->SelectObject((CPen*)nullptr);
   }
-  if(m_currentPen.m_hObject != NULL) {
+  if(m_currentPen.m_hObject != nullptr) {
     m_currentPen.DeleteObject();
   }
 }
@@ -101,7 +101,7 @@ void Viewport2D::setRetainAspectRatio(bool retainAspectRatio) {
 
 #if defined(_DEBUG)
 void Viewport2D::noDCError(const TCHAR *method) const {
-  throwException(_T("%s:m_dc is NULL"), method);
+  throwException(_T("%s:m_dc is nullptr"), method);
 }
 #endif
 
@@ -182,12 +182,12 @@ void Viewport2D::FillSolidRect(const Rectangle2D &r, COLORREF color) const {
   m_dc->FillSolidRect(rect,color);
 }
 
-void Viewport2D::TextOut(const Point2D &point, const String &text, COLORREF color, BackgroundSaver *bckSave /* = NULL*/) const {
+void Viewport2D::TextOut(const Point2D &point, const String &text, COLORREF color, BackgroundSaver *bckSave /* = nullptr*/) const {
   CHECKHASDC();
   const int      oldMode  = m_dc->SetBkMode(TRANSPARENT);
   const COLORREF oldColor = m_dc->SetTextColor(color);
   const CPoint   p        = forwardTransform(point);
-  if(bckSave != NULL) {
+  if(bckSave != nullptr) {
     bckSave->saveBackground(*m_dc, CRect(p, getTextExtent(*m_dc, text)));
   }
   textOut(*m_dc, p, text);

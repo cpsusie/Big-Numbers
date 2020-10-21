@@ -3,28 +3,23 @@
 #include "IntervalTransformation.h"
 #include "CubeN.h"
 
-template<typename T, UINT dim> class IntervalTransformationArray {
+template<typename T, UINT dimension> class IntervalTransformationArray {
 private:
-  IntervalTransformationTemplate<T> *m_e[dim];
+  IntervalTransformationTemplate<T> *m_e[dimension];
 
   inline void init() {
-    for(UINT i = 0; i < dim; i++) {
+    for(UINT i = 0; i < dimension; i++) {
       m_e[i] = nullptr;
     }
   }
   inline void cleanup() {
-    for(UINT i = 0; i < dim; i++) {
+    for(UINT i = 0; i < dimension; i++) {
       SAFEDELETE(m_e[i]);
     }
   }
   void checkIndex(const TCHAR *method, UINT index) const {
-    if(index >= dim) {
-      throwIndexOutOfRangeException(method, index, dim);
-    }
-  }
-  void checkDimension(const TCHAR *method, UINT d) const {
-    if(d != dim) {
-      throwInvalidArgumentException(method, _T("dimension mismatch. array.dim=%u, d=%u"), dim, d);
+    if(index >= dimension) {
+      throwIndexOutOfRangeException(method, index, dimension);
     }
   }
 public:
@@ -33,20 +28,20 @@ public:
     const IntervalScale     defaultScale = LINEAR;
     const NumberInterval<T> defaultFromInterval = IntervalTransformationTemplate<T>::getDefaultFromInterval(defaultScale);
     const NumberInterval<T> defaultToInterval(0, 1);
-    for(UINT i = 0; i < dim; i++) {
+    for(UINT i = 0; i < dimension; i++) {
       m_e[i] = allocateIntervalTransformation(defaultFromInterval, defaultToInterval, defaultScale);
     }
   }
-  IntervalTransformationArray(const IntervalTransformationArray<T,dim> &src) {
+  IntervalTransformationArray(const IntervalTransformationArray<T,dimension> &src) {
     init();
-    for(UINT i = 0; i < dim; i++) {
+    for(UINT i = 0; i < dimension; i++) {
       m_e[i] = src[i].clone();
     }
   }
-  IntervalTransformationArray<T,dim> &operator=(const IntervalTransformationArray<T,dim> &src) {
+  IntervalTransformationArray<T,dimension> &operator=(const IntervalTransformationArray<T,dimension> &src) {
     cleanup();
-    for(UINT i = 0; i < dim; i++) {
-      m_e[i] = src[i].clone(); TRACE_NEW(m_e[i]);
+    for(UINT i = 0; i < dimension; i++) {
+      m_e[i] = src[i].clone();
     }
     return *this;
   }
@@ -54,15 +49,15 @@ public:
   virtual ~IntervalTransformationArray() {
     cleanup();
   }
-  bool operator==(const IntervalTransformationArray<T, dim> &rhs) const {
-    for(UINT i = 0; i < dim; i++) {
+  bool operator==(const IntervalTransformationArray<T, dimension> &rhs) const {
+    for(UINT i = 0; i < dimension; i++) {
       if((*this)[i] != rhs[i]) {
         return false;
       }
     }
     return true;
   }
-  bool operator!=(const IntervalTransformationArray<T, dim> &rhs) const {
+  bool operator!=(const IntervalTransformationArray<T, dimension> &rhs) const {
     return !(*this == rhs);
   }
 
@@ -72,7 +67,7 @@ public:
   }
 
   // Return *this
-  IntervalTransformationArray<T,dim> &setTransformation(UINT index, const IntervalTransformationTemplate<T> &t) {
+  IntervalTransformationArray<T,dimension> &setTransformation(UINT index, const IntervalTransformationTemplate<T> &t) {
     checkIndex(__TFUNCTION__,index);
     IntervalTransformationTemplate<T> *newT = t.clone();
     SAFEDELETE(m_e[index]);
@@ -80,7 +75,7 @@ public:
     return *this;
   }
   // Return *this
-  IntervalTransformationArray<T,dim> &setTransformation(UINT index, const NumberInterval<T> &from, const NumberInterval<T> &to, IntervalScale scale) {
+  IntervalTransformationArray<T,dimension> &setTransformation(UINT index, const NumberInterval<T> &from, const NumberInterval<T> &to, IntervalScale scale) {
     checkIndex(__TFUNCTION__,index);
     IntervalTransformationTemplate<T> *newT = allocateIntervalTransformation(from, to, scale);
     SAFEDELETE(m_e[index]);
@@ -92,7 +87,7 @@ public:
     checkIndex(__TFUNCTION__, index);
     return m_e[index]->getSccale();
   }
-  IntervalTransformationArray<T, dim> &setScale(UINT index, IntervalScale scale) {
+  IntervalTransformationArray<T, dimension> &setScale(UINT index, IntervalScale scale) {
     checkIndex(__TFUNCTION__, index);
     const IntervalTransformationTemplate<T> *t = m_e[index];
     IntervalTransformationTemplate<T> *newT = allocateIntervalTransformation(t->getFromInterval(), t->getToInterval(), scale);
@@ -100,35 +95,33 @@ public:
     m_e[index] = newT;
     return *this;
   }
-  CubeN<T> getFromCube() const {
-    CubeN<T> result(dim);
-    for(UINT d = 0; d < dim; d++) {
+  CubeNTemplate<T,dimension> getFromCube() const {
+    CubeNTemplate<T,dimension> result;
+    for(UINT d = 0; d < dimension; d++) {
       result.setInterval(d,m_e[d]->getFromInterval());
     }
     return result;
   }
 
   // Return this
-  template<typename S> IntervalTransformationArray<T,dim> &setFromCube(const CubeN<S> &cube) {
-    checkDimension(__TFUNCTION__, cube.dim());
-    for(UINT d = 0; d < dim; d++) {
+  template<typename S> IntervalTransformationArray<T,dimension> &setFromCube(const CubeNTemplate<S,dimension> &cube) {
+    for(UINT d = 0; d < dimension; d++) {
       m_e[d]->setFromInterval(cube.getInterval(d));
     }
     return *this;
   }
 
-  CubeN<T> getToCube() const {
-    CubeN<T> result(dim);
-    for(UINT d = 0; d < dim; d++) {
+  CubeNTemplate<T,dimension> getToCube() const {
+    CubeNTemplate<T, dimension> result;
+    for(UINT d = 0; d < dimension; d++) {
       result.setInterval(d,m_e[d]->getToInterval());
     }
     return result;
   }
 
   // Return this
-  template<typename S> IntervalTransformationArray<T,dim> &setToCube(const CubeN<S> &cube) {
-    checkDimension(__TFUNCTION__, cube.dim());
-    for(UINT d = 0; d < dim; d++) {
+  template<typename S> IntervalTransformationArray<T,dimension> &setToCube(const CubeNTemplate<S,dimension> &cube) {
+    for(UINT d = 0; d < dimension; d++) {
       m_e[d]->setToInterval(cube.getInterval(d));
     }
     return *this;

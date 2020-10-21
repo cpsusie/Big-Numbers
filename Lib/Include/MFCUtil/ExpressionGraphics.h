@@ -36,9 +36,9 @@ private:
   }
   bool traverseTree(ExpressionRectangleHandler &handler, const ExpressionRectangle *parent) const;
 public:
-  ExpressionRectangle() : CRect(0,0,0,0), m_node(NULL), m_parent(NULL) {
+  ExpressionRectangle() : CRect(0,0,0,0), m_node(nullptr), m_parent(nullptr) {
   }
-  ExpressionRectangle(const CPoint &topLeft) : CRect(topLeft.x,topLeft.y,0,0), m_node(NULL), m_parent(NULL) {
+  ExpressionRectangle(const CPoint &topLeft) : CRect(topLeft.x,topLeft.y,0,0), m_node(nullptr), m_parent(nullptr) {
   }
   inline CPoint BottomLeft() const {
     return CPoint(left,bottom);
@@ -47,7 +47,7 @@ public:
     return CPoint(right, top);
   }
   inline bool hasNode() const {
-    return getNode() != NULL;
+    return getNode() != nullptr;
   }
   inline ExpressionNode *getNode() const {
     return m_node;
@@ -60,10 +60,10 @@ public:
     return m_children[index];
   }
   inline bool hasParent() const {
-    return m_parent != NULL;
+    return m_parent != nullptr;
   }
   inline bool hasAncestorWithNode() const {
-    return getFirstAncestorWithNode() != NULL;
+    return getFirstAncestorWithNode() != nullptr;
   }
   const ExpressionRectangle *getFirstAncestorWithNode() const;
 
@@ -84,7 +84,7 @@ private:
   ExpressionRectangle m_rectangle;
   void setParents();
 public:
-  ExpressionImage() : m_pr(NULL) {
+  ExpressionImage() : m_pr(nullptr) {
   }
   ExpressionImage(const ExpressionImage &src);
   ExpressionImage(const PixRect *pr, const ExpressionRectangle &rectangle);
@@ -101,7 +101,7 @@ public:
     return isEmpty() ? CSize(0,0) : m_pr->getSize();
   }
   inline bool isEmpty() const {
-    return m_pr == NULL;
+    return m_pr == nullptr;
   }
   inline const ExpressionRectangle &getRectangleTree() const {
     return m_rectangle;

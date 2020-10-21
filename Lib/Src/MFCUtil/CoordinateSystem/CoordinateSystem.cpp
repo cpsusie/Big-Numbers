@@ -19,7 +19,7 @@ CCoordinateSystem::CCoordinateSystem() {
   m_backgroundColor   = WHITE;
   m_retainAspectRatio = m_vp.isRetainingAspectRatio();
   m_autoScale         = m_autoSpace = true;
-  m_systemPainter     = NULL;
+  m_systemPainter     = nullptr;
 }
 
 CCoordinateSystem::~CCoordinateSystem() {
@@ -42,7 +42,7 @@ END_MESSAGE_MAP()
 void CCoordinateSystem::substituteControl(CWnd *parent, int id) {
   DEFINEMETHODNAME;
   CWnd *ctrl = parent->GetDlgItem(id);
-  if(ctrl == NULL) {
+  if(ctrl == nullptr) {
     showError(_T("%s:Control %d not found"), method, id);
     return;
   }
@@ -51,7 +51,7 @@ void CCoordinateSystem::substituteControl(CWnd *parent, int id) {
   const CRect  rect    = getWindowRect(ctrl);
 //  const String str     = getWindowText(ctrl);
   CFont *font = ctrl->GetFont();
-  if(font == NULL) {
+  if(font == nullptr) {
     font = parent->GetFont();
   }
   const TabOrder tabOrder(parent);
@@ -303,9 +303,9 @@ void CCoordinateSystem::setRetainAspectRatio(bool retainAspectRatio) {
 }
 
 String CCoordinateSystem::getPointText(const Point2D &p) const {
-  return (m_systemPainter == NULL) ? EMPTYSTRING : m_systemPainter->getPointText(p);
+  return (m_systemPainter == nullptr) ? EMPTYSTRING : m_systemPainter->getPointText(p);
 }
 
 String CCoordinateSystem::getValueText(AxisIndex axis, double value) const {
-  return (m_systemPainter == NULL) ? EMPTYSTRING : m_systemPainter->getValueText(axis, value);
+  return (m_systemPainter == nullptr) ? EMPTYSTRING : m_systemPainter->getValueText(axis, value);
 }

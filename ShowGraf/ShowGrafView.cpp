@@ -108,24 +108,26 @@ void CShowGrafView::addFunctionGraph(FunctionGraphParameters &param) {
 }
 
 void CShowGrafView::pushMouseTool(MouseToolType toolType) {
+  MouseTool *tool = nullptr;
   switch(toolType) {
-  case IDLETOOL            : m_toolStack.push(new IdleTool(      this)); break;
-  case DRAGTOOL            : m_toolStack.push(new DragTool(     *m_toolStack.top())); break;
-  case MOVEPOINTTOOL       : m_toolStack.push(new MovePointTool(*m_toolStack.top())); break;
-  case FINDZEROTOOL        : m_toolStack.push(new FindZeroTool(  this)); break;
-  case FINDMAXTOOL         : m_toolStack.push(new FindMaxTool(   this)); break;
-  case FINDMINTOOL         : m_toolStack.push(new FindMinTool(   this)); break;
+  case IDLETOOL            : tool = new IdleTool(      this             ); TRACE_NEW(tool); break;
+  case DRAGTOOL            : tool = new DragTool(     *m_toolStack.top()); TRACE_NEW(tool); break;
+  case MOVEPOINTTOOL       : tool = new MovePointTool(*m_toolStack.top()); TRACE_NEW(tool); break;
+  case FINDZEROTOOL        : tool = new FindZeroTool(  this             ); TRACE_NEW(tool); break;
+  case FINDMAXTOOL         : tool = new FindMaxTool(   this             ); TRACE_NEW(tool); break;
+  case FINDMINTOOL         : tool = new FindMinTool(   this             ); TRACE_NEW(tool); break;
   case FINDINTERSECTIONTOOL:
   default                  :
     errorMessage(_T("Invalid MouseTool:%d"), toolType);
-    break;
+    return;
   }
+  m_toolStack.push(tool);
   DUMPTOOLSTACK();
 }
 
 void CShowGrafView::popMouseTool() {
   MouseTool *mt = m_toolStack.pop();
-  delete mt;
+  SAFEDELETE(mt);
   DUMPTOOLSTACK();
 }
 
@@ -140,7 +142,7 @@ void CShowGrafView::dumpToolStack() const {
 #endif
 
 void CShowGrafView::clearToolStack() {
-  while(!hasMouseTool()) {
+  while(hasMouseTool()) {
     popMouseTool();
   }
 }

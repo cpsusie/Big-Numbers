@@ -27,7 +27,7 @@ private:
   void openListFile();
   void closeListFile();
   inline bool isListFileOpen() const {
-    return m_listFile != NULL;
+    return m_listFile != nullptr;
   }
   void substituteSelectedText(int ctrlId, const String &s);
 
@@ -36,7 +36,7 @@ protected:
   CExprDialog(int resId, CWnd *pParent) : CDialog(resId, pParent) {
     m_helpButtonCount = 0;
     m_commonExprId    = -1;
-    m_listFile        = NULL;
+    m_listFile        = nullptr;
   }
   virtual ~CExprDialog() {
     closeListFile();

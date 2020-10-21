@@ -11,13 +11,13 @@ BITMAP getBitmapInfo(HBITMAP bm) {
 
 BITMAPINFOHEADER getBitmapInfoHeader(HBITMAP bm) {
   const BITMAP info = getBitmapInfo(bm);
-  HDC hdc = NULL;
+  HDC hdc = nullptr;
   try {
-    hdc = CreateCompatibleDC(NULL);
+    hdc = CreateCompatibleDC(nullptr);
     BITMAPINFOHEADER infoHeader;
     ZeroMemory(&infoHeader, sizeof(infoHeader));
     infoHeader.biSize = sizeof(infoHeader);
-    if(!GetDIBits(hdc, bm, 0, info.bmHeight, NULL, (LPBITMAPINFO)&infoHeader, DIB_RGB_COLORS)) {
+    if(!GetDIBits(hdc, bm, 0, info.bmHeight, nullptr, (LPBITMAPINFO)&infoHeader, DIB_RGB_COLORS)) {
       throwLastErrorOnSysCallException(_T("GetDIBits"));
     }
     DeleteDC(hdc);
@@ -36,11 +36,11 @@ CSize getBitmapSize(HBITMAP bm) {
 CBitmap *createFromHandle(HBITMAP bm) {
   const BITMAP info = getBitmapInfo(bm);
 
-  HDC srcDC = CreateCompatibleDC(NULL);
-  HDC dstDC = CreateCompatibleDC(NULL);
+  HDC srcDC = CreateCompatibleDC(nullptr);
+  HDC dstDC = CreateCompatibleDC(nullptr);
 
   CBitmap *result = new CBitmap; TRACE_NEW(result);
-  result->CreateBitmap(info.bmWidth, info.bmHeight, info.bmPlanes, info.bmBitsPixel, NULL);
+  result->CreateBitmap(info.bmWidth, info.bmHeight, info.bmPlanes, info.bmBitsPixel, nullptr);
   HBITMAP bm1 = *result;
 
   SelectObject(srcDC, bm);
@@ -57,10 +57,10 @@ CBitmap *createFromHandle(HBITMAP bm) {
 HBITMAP cloneBitmap(HBITMAP bm) {
   BITMAP info = getBitmapInfo(bm);
 
-  HDC srcDC = CreateCompatibleDC(NULL);
-  HDC dstDC = CreateCompatibleDC(NULL);
+  HDC srcDC = CreateCompatibleDC(nullptr);
+  HDC dstDC = CreateCompatibleDC(nullptr);
 
-  HBITMAP result = CreateBitmap(info.bmWidth, info.bmHeight, info.bmPlanes, info.bmBitsPixel, NULL);
+  HBITMAP result = CreateBitmap(info.bmWidth, info.bmHeight, info.bmPlanes, info.bmBitsPixel, nullptr);
 
   SelectObject(srcDC, bm);
   SelectObject(dstDC, result);

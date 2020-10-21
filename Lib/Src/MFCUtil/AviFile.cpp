@@ -17,14 +17,14 @@ CAviFile::CAviFile(const String &fileName
   m_codec                = codec;
   m_frameRate            = frameRate;
 
-  m_dc                   = NULL;
-  m_bitmap               = NULL;
-  m_heap                 = NULL;
-  m_lpBits               = NULL;
+  m_dc                   = nullptr;
+  m_bitmap               = nullptr;
+  m_heap                 = nullptr;
+  m_lpBits               = nullptr;
   m_frameIndex           = 0;
-  m_aviFile              = NULL;
-  m_aviStream            = NULL;
-  m_compressedAviStream  = NULL;
+  m_aviFile              = nullptr;
+  m_aviStream            = nullptr;
+  m_compressedAviStream  = nullptr;
   m_frameSize            = CSize(0,0);
   m_bitsPerPixel         = 0;
 
@@ -46,16 +46,16 @@ void CAviFile::releaseMemory() {
 
   if(m_compressedAviStream) {
     AVIStreamRelease(m_compressedAviStream);
-    m_compressedAviStream = NULL;
+    m_compressedAviStream = nullptr;
   }
   if(m_aviStream) {
     AVIStreamRelease(m_aviStream);
-    m_aviStream           = NULL;
+    m_aviStream           = nullptr;
   }
 
   if(m_aviFile) {
     AVIFileRelease(m_aviFile);
-    m_aviFile             = NULL;
+    m_aviFile             = nullptr;
   }
   releaseHeapAndBuffer();
   releaseBitmap();
@@ -66,12 +66,12 @@ void CAviFile::releaseMemory() {
 
 void CAviFile::allocateHeapAndBuffer(size_t size) {
   m_heap = HeapCreate(HEAP_NO_SERIALIZE, size, 0);
-  if(m_heap==NULL) {
+  if(m_heap==nullptr) {
     throwLastErrorOnSysCallException(_T("HeapCreate"));
   }
 
   m_lpBits = HeapAlloc(m_heap, HEAP_ZERO_MEMORY | HEAP_NO_SERIALIZE, size);
-  if(m_lpBits==NULL) {
+  if(m_lpBits==nullptr) {
     throwException(_T("Unable to allocate memory on heap"));
   }
 }
@@ -79,17 +79,17 @@ void CAviFile::allocateHeapAndBuffer(size_t size) {
 void CAviFile::releaseHeapAndBuffer() {
   if(m_lpBits) {
     HeapFree(m_heap, HEAP_NO_SERIALIZE, m_lpBits);
-    m_lpBits = NULL;
+    m_lpBits = nullptr;
   }
   if(m_heap) {
     HeapDestroy(m_heap);
-    m_heap = NULL;
+    m_heap = nullptr;
   }
 }
 
 void CAviFile::allocateDC() {
-  m_dc = CreateCompatibleDC(NULL);
-  if(m_dc == NULL) {
+  m_dc = CreateCompatibleDC(nullptr);
+  if(m_dc == nullptr) {
     throwLastErrorOnSysCallException(_T("CreateCompatibleDC"));
   }
 }
@@ -97,14 +97,14 @@ void CAviFile::allocateDC() {
 void CAviFile::releaseDC() {
   if(m_dc) {
     DeleteDC(m_dc);
-    m_dc = NULL;
+    m_dc = nullptr;
   }
 }
 
 void CAviFile::allocateBitmap() {
   HDC screenDC = getScreenDC();
   m_bitmap = CreateCompatibleBitmap(screenDC, m_frameSize.cx, m_frameSize.cy);
-  if(m_bitmap == NULL) {
+  if(m_bitmap == nullptr) {
     const HRESULT error = GetLastError();
     DeleteDC(screenDC);
     throwException(_T("CreateCompatibleBitmap failed. %s"), getErrorText(error).cstr());
@@ -115,7 +115,7 @@ void CAviFile::allocateBitmap() {
 void CAviFile::releaseBitmap() {
   if(m_bitmap) {
     DeleteObject(m_bitmap);
-    m_bitmap = NULL;
+    m_bitmap = nullptr;
   }
 }
 #define BI_COMPRESSION BI_RGB
@@ -134,7 +134,7 @@ void CAviFile::initMovieCreation(int nFrameWidth, int nFrameHeight, int bitsPerP
 
   allocateHeapAndBuffer(nMaxWidth*nMaxHeight*8);
 
-  AVICALL(AVIFileOpen(&m_aviFile, m_fileName.cstr(), OF_CREATE | OF_WRITE, NULL));
+  AVICALL(AVIFileOpen(&m_aviFile, m_fileName.cstr(), OF_CREATE | OF_WRITE, nullptr));
 
   ZeroMemory(&m_aviStreamInfo, sizeof(AVISTREAMINFO));
   m_aviStreamInfo.fccType               = streamtypeVIDEO;
@@ -156,7 +156,7 @@ void CAviFile::initMovieCreation(int nFrameWidth, int nFrameHeight, int bitsPerP
   //m_aviCompressOptions.dwBytesPerSecond=1000/8;
   //m_aviCompressOptions.dwQuality=100;
 
-  AVICALL(AVIMakeCompressedStream(&m_compressedAviStream, m_aviStream, &m_aviCompressOptions, NULL));
+  AVICALL(AVIMakeCompressedStream(&m_compressedAviStream, m_aviStream, &m_aviCompressOptions, nullptr));
     // One reason this error might occur is if you are using a Codec that is not
     // available on your system. Check the mmioFOURCC() code you are using and make
     // sure you have that codec installed properly on your machine.
@@ -186,7 +186,7 @@ void CAviFile::initMovieRead() {
                                , m_codec
                                , 0
                                , OF_READ
-                               , NULL
+                               , nullptr
                                ));
 
   AVICALL(AVIStreamInfo(m_aviStream, &m_aviStreamInfo, sizeof(m_aviStreamInfo)));
@@ -194,7 +194,7 @@ void CAviFile::initMovieRead() {
   m_frameSize = CSize(r.Width(), r.Height());
 
   LONG formatInfoSize;
-  AVICALL(AVIStreamReadFormat(m_aviStream, 0, NULL, &formatInfoSize));
+  AVICALL(AVIStreamReadFormat(m_aviStream, 0, nullptr, &formatInfoSize));
   if(formatInfoSize != sizeof(m_bitmapInfoHeader)) {
     throwException(_T("Wrong format."));
   }
@@ -207,7 +207,7 @@ void CAviFile::initMovieRead() {
 HBITMAP CAviFile::readFrame() {
   checkIsReadMode();
   if((DWORD)m_frameIndex >= m_aviStreamInfo.dwLength) {
-    return NULL;
+    return nullptr;
   }
   LONG samplesRead, bytesRead;
   AVICALL(AVIStreamRead(m_aviStream, m_frameIndex++,1, m_lpBits, m_aviStreamInfo.dwSuggestedBufferSize, &bytesRead, &samplesRead));
@@ -239,7 +239,7 @@ void CAviFile::appendFrameUsual(HBITMAP bm) {
   bmpInfo.bmiHeader.biBitCount = 0;
   bmpInfo.bmiHeader.biSize     = sizeof(BITMAPINFOHEADER);
 
-  if(GetDIBits(m_dc, bm, 0,0,NULL, &bmpInfo, DIB_RGB_COLORS) == 0) {
+  if(GetDIBits(m_dc, bm, 0,0,nullptr, &bmpInfo, DIB_RGB_COLORS) == 0) {
     throwLastErrorOnSysCallException(_T("GetDIBits"));
   }
   bmpInfo.bmiHeader.biCompression = BI_COMPRESSION;
@@ -266,7 +266,7 @@ void CAviFile::appendFrameFirstTime(int width, int height, LPVOID pBits, int bit
 
 void CAviFile::appendFrameUsual(int width, int height, LPVOID pBits, int bitsPerPixel) {
   const DWORD dwSize = width*height*bitsPerPixel/8;
-  AVICALL(AVIStreamWrite(m_compressedAviStream, m_frameIndex++, 1, pBits, dwSize, 0, NULL, NULL));
+  AVICALL(AVIStreamWrite(m_compressedAviStream, m_frameIndex++, 1, pBits, dwSize, 0, nullptr, nullptr));
 }
 
 void CAviFile::appendDummy(int width, int height, LPVOID pBits,int bitsPerPixel) {

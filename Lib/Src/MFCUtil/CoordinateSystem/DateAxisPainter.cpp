@@ -3,7 +3,9 @@
 
 // #define _TEST
 
-DateAxisPainter::DateAxisPainter(SystemPainter &systemPainter, AxisIndex axis) : LinearAxisPainter(systemPainter,axis, false) {
+DateAxisPainter::DateAxisPainter(SystemPainter &systemPainter, AxisIndex axisIndex)
+: LinearAxisPainter(systemPainter,axisIndex, AXIS_DATE, false)
+{
   doInvisiblePaint();
 }
 

@@ -17,7 +17,7 @@ private:
   void disableCloseButton();
 
 public:
-    CConfirmDlg(const TCHAR *message, const TCHAR *caption, UINT nType, CWnd *pParent = NULL);
+    CConfirmDlg(const TCHAR *message, const TCHAR *caption, UINT nType, CWnd *pParent = nullptr);
 
     bool getShowAgain() const {
       return !m_dontShowAgain;

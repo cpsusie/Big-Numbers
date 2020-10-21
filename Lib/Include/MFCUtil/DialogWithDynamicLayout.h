@@ -12,7 +12,7 @@ public:
   CWnd        *m_ctrl;
   MoveSettings m_moveSettings;
   SizeSettings m_sizeSettings;
-  inline ItemLayout() : m_ctrlId(0), m_ctrl(NULL) {
+  inline ItemLayout() : m_ctrlId(0), m_ctrl(nullptr) {
   }
   inline const MoveSettings &getMoveSettings() const {
     return m_moveSettings;
@@ -70,9 +70,9 @@ protected:
   }
   // Delete and recreate MFCLayoutManager and add all items in m_layoutData
   CDialogWithDynamicLayout &putLayoutDataToMFCLayoutManager();
-  CDialogWithDynamicLayout &setCtrlPos(  int ctrlId, CPoint &newPos , const MoveSettings *newSettings  = NULL);
-  CDialogWithDynamicLayout &setCtrlSize( int ctrlId, CSize  &newSize, const SizeSettings *newSettings  = NULL);
-  CDialogWithDynamicLayout &setCtrlRect( int ctrlId, CRect  &newRect, const MoveSettings *newMSettings = NULL, const SizeSettings *newSSettings = NULL);
+  CDialogWithDynamicLayout &setCtrlPos(  int ctrlId, CPoint &newPos , const MoveSettings *newSettings  = nullptr);
+  CDialogWithDynamicLayout &setCtrlSize( int ctrlId, CSize  &newSize, const SizeSettings *newSettings  = nullptr);
+  CDialogWithDynamicLayout &setCtrlRect( int ctrlId, CRect  &newRect, const MoveSettings *newMSettings = nullptr, const SizeSettings *newSSettings = nullptr);
 
   CRect                     getCtrlRect( int ctrlId) const;
   inline CPoint             getCtrlPoint(int ctrlId) const {

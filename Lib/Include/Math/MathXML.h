@@ -1,8 +1,58 @@
 #pragma once
 
 #include <XMLUtil.h>
-#include <Math/Rectangle2D.h>
-#include <Math/Cube3D.h>
+#include "Rectangle2D.h"
+#include "Cube3D.h"
+#include "CubeN.h"
+
+template<typename T, UINT dimension, typename... Args> void setValue(XMLDoc &doc, XMLNodePtr n, const SizeNTemplate<T, dimension> &s, Args... args) {
+  setValue(doc, n, _T("dim"), dimension, args...);
+  for(UINT i = 0; i < dimension; i++) {
+    setValue(doc, n, format(_T("s%u"), i).cstr(), s[i], args...);
+  }
+}
+
+template<typename T, UINT dimension, typename... Args> void getValue(XMLDoc &doc, XMLNodePtr n, SizeNTemplate<T, dimension> &s, Args... args) {
+  UINT dim;
+  getValue(doc, n, _T("dim"), dim, args...);
+  if(dim != dimension) {
+    throwInvalidArgumentException(__TFUNCTION__, _T("Dimension mismatch. s.dimension=%u, read dimension=%u"), dimension, dim);
+  }
+  for(UINT i = 0; i < dimension; i++) {
+    getValue(doc, n, format(_T("s%u"), i).cstr(), s[i], args...);
+  }
+}
+
+template<typename T, UINT dimension, typename... Args> void setValue(XMLDoc &doc, XMLNodePtr n, const PointNTemplate<T, dimension> &p, Args... args) {
+  setValue(doc, n, _T("dim"), dimension, args...);
+  for(UINT i = 0; i < dimension; i++) {
+    setValue(doc, n, format(_T("x%u"), i).cstr(), p[i], args...);
+  }
+}
+
+template<typename T, UINT dimension, typename... Args> void getValue(XMLDoc &doc, XMLNodePtr n, PointNTemplate<T, dimension> &p, Args... args) {
+  UINT dim;
+  getValue(doc, n, _T("dim"), dim, args...);
+  if(dim != dimension) {
+    throwInvalidArgumentException(__TFUNCTION__, _T("Dimension mismatch. p.dimension=%u, read dimension=%u"), dimension, dim);
+  }
+  for(UINT i = 0; i < dimension; i++) {
+    getValue(doc, n, format(_T("x%u"), i).cstr(), p[i], args...);
+  }
+}
+
+template<typename T, UINT dimension, typename... Args> void setValue(XMLDoc &doc, XMLNodePtr n, const CubeNTemplate<T, dimension> &c, Args... args) {
+  setValue(doc, n, _T("p0"  ), c.p0()  , args...);
+  setValue(doc, n, _T("size"), c.size(), args...);
+}
+
+template<typename T, UINT dimension, typename... Args> void getValue(XMLDoc &doc, XMLNodePtr n, CubeNTemplate<T, dimension> &c, Args... args) {
+  getValue(doc, n, _T("p0"  ), c.p0()  , args...);
+  getValue(doc, n, _T("size"), c.size(), args...);
+}
+
+
+
 
 template<typename T,typename... Args> void setValue(XMLDoc &doc, XMLNodePtr n, const Point2DTemplate<T> &p, Args... args) {
   setValue(doc, n, _T("x"), p.x, args...);
@@ -13,6 +63,7 @@ template<typename T, typename... Args> void getValue(XMLDoc &doc, XMLNodePtr n, 
   getValue(doc, n, _T("x"), p.x, args...);
   getValue(doc, n, _T("y"), p.y, args...);
 }
+
 
 template<typename T,typename... Args> void setValue(XMLDoc &doc, XMLNodePtr n, const Size2DTemplate<T> &s, Args... args) {
   setValue(doc, n, _T("cx"), s.cx, args...);

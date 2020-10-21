@@ -4,7 +4,7 @@
 
 class LogarithmicAxisPainter : public AbstractAxisPainter {
 private:
-  String m_doubleFormat;
+  mutable String m_doubleFormat;
   static const String s_startDecadeFormat;
 
   String getStartDecadeText(double d);
@@ -14,13 +14,12 @@ private:
   int  getDecadeCount() const;
   double getDecadeSize() const;
 protected:
-  void init();
-  void paintXData();
-  void paintYData();
+  void init() override;
+  void paintXData() override;
+  void paintYData() override;
 
 public:
-  LogarithmicAxisPainter(SystemPainter &systemPainter, AxisIndex axis);
-  AxisType getType() const { return AXIS_LOGARITHMIC; }
-  double getAxisPoint() const;
-  const TCHAR *getDoubleFormat();
+  LogarithmicAxisPainter(SystemPainter &systemPainter, AxisIndex axisIndex);
+  double getAxisPoint() const override;
+  const TCHAR *getDoubleFormat() const override;
 };

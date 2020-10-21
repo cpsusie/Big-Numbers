@@ -81,7 +81,7 @@ public:
   static DataRange      getDefaultDataRange(AxisType xType, AxisType yType);
 
   void   addPointObject(   const Point2DArray &a, COLORREF color = RGB(0,0,0));
-  void   addFunctionObject(Function &f, const DoubleInterval *range = NULL, COLORREF color = RGB(0,0,0));
+  void   addFunctionObject(Function &f, const DoubleInterval *range = nullptr, COLORREF color = RGB(0,0,0));
 
   void   addObject(   CoordinateSystemObject *object);
   void   removeObject(CoordinateSystemObject *object);

@@ -135,8 +135,8 @@ public:
   inline NumberInterval<T> getZInterval() const {
     return NumberInterval<T>(getMinZ(), getMaxZ());
   }
-  inline operator CubeN<T>() const {
-    return CubeN<T>(3).setInterval(0, getXInterval()).setInterval(1, getYInterval()).setInterval(2, getZInterval());
+  inline operator CubeNTemplate<T,3>() const {
+    return CubeNTemplate<T,3>().setInterval(0, getXInterval()).setInterval(1, getYInterval()).setInterval(2, getZInterval());
   }
 
   template<typename TP> bool contains(const Point3DTemplate<TP> &p) const {

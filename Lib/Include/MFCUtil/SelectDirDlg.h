@@ -11,7 +11,7 @@ private:
   CString    getSelectedPath() const;
   CTreeCtrl *getTreeCtrl() const;
 public:
-  CSelectDirDlg(const String &startDir, CWnd *pParent = NULL);
+  CSelectDirDlg(const String &startDir, CWnd *pParent = nullptr);
   String getSelectedDir() const {
     return (LPCTSTR)m_dir;
   }
@@ -33,7 +33,7 @@ public:
 StringArray selectMultipleFileNames(const String      &title
                                    ,const TCHAR       *extensions
                                    ,UINT               defaultExtensionIndex  = 0
-                                   ,UINT              *selectedExtensionIndex = NULL
+                                   ,UINT              *selectedExtensionIndex = nullptr
                                    ,const String      &initialDir             = EMPTYSTRING
                                    ,DWORD              flags                  = OFN_ALLOWMULTISELECT | OFN_FILEMUSTEXIST | OFN_EXPLORER | OFN_ENABLESIZING
                                    );

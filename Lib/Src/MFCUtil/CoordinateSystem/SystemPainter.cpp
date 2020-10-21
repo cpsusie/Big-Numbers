@@ -11,12 +11,12 @@
 
 SystemPainter::SystemPainter(CCoordinateSystem *system)
 : m_system(       *system)
-, m_font(          NULL  )
-, m_oldFont(       NULL  )
+, m_font(          nullptr  )
+, m_oldFont(       nullptr  )
 , m_origin(0,0)
 , m_mouseMode(false)
 {
-  m_axisPainter[0] = m_axisPainter[1] = NULL;
+  m_axisPainter[0] = m_axisPainter[1] = nullptr;
   getViewport().setScale(getScale(getAxisAttr(XAXIS_INDEX).getType()), X_AXIS);
   getViewport().setScale(getScale(getAxisAttr(YAXIS_INDEX).getType()), Y_AXIS);
   if(m_font) {
@@ -127,14 +127,13 @@ CRect SystemPainter::getToRectangle() const {
 AbstractAxisPainter *SystemPainter::createAxisPainter(AxisIndex axis, AxisType type) {
   AbstractAxisPainter *result;
   switch(type) {
-  case AXIS_LINEAR             : result = new LinearAxisPainter(            *this, axis); break;
-  case AXIS_LOGARITHMIC        : result = new LogarithmicAxisPainter(       *this, axis); break;
-  case AXIS_NORMAL_DISTRIBUTION: result = new NormalDistributionAxisPainter(*this, axis); break;
-  case AXIS_DATE               : result = new DateAxisPainter(              *this, axis); break;
+  case AXIS_LINEAR             : result = new LinearAxisPainter(            *this, axis); TRACE_NEW(result); break;
+  case AXIS_LOGARITHMIC        : result = new LogarithmicAxisPainter(       *this, axis); TRACE_NEW(result); break;
+  case AXIS_NORMAL_DISTRIBUTION: result = new NormalDistributionAxisPainter(*this, axis); TRACE_NEW(result); break;
+  case AXIS_DATE               : result = new DateAxisPainter(              *this, axis); TRACE_NEW(result); break;
   default                      : throwInvalidArgumentException(__TFUNCTION__, _T("type (=%d)"),type);
-                                 return NULL;
+                                 return nullptr;
   }
-  TRACE_NEW(result);
   return result;
 }
 

@@ -20,14 +20,13 @@ private:
   bool useSuperAxisScale() const;
 
 protected:
-  void init();
-  void paintXData();
-  void paintYData();
+  void init() override;
+  void paintXData() override;
+  void paintYData() override;
 
 public:
-  NormalDistributionAxisPainter(SystemPainter &systemPainter, AxisIndex axis);
-  AxisType getType() const { return AXIS_NORMAL_DISTRIBUTION; }
-  double getAxisPoint() const;
-  String getValueText(double v) const;
-  const TCHAR *getDoubleFormat() const;
+  NormalDistributionAxisPainter(SystemPainter &systemPainter, AxisIndex axisIndex);
+  double getAxisPoint() const override;
+  String getValueText(double v) const override;
+  const TCHAR *getDoubleFormat() const override;
 };

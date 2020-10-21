@@ -44,10 +44,10 @@ public:
   }
 
   void   setFromRectangle(const Rectangle2DTemplate<T> &rect) {
-    m_tr.setFromCube((CubeN<T>)rect);
+    m_tr.setFromCube((CubeNTemplate<T,2>)rect);
   }
   void   setToRectangle(const Rectangle2DTemplate<T> &rect) {
-    m_tr.setToCube((CubeN<T>)rect);
+    m_tr.setToCube((CubeNTemplate<T,2>)rect);
   }
   Rectangle2DTemplate<T>    getFromRectangle() const {
     return Rectangle2DTemplate<T>(m_tr.getFromCube());

@@ -52,7 +52,7 @@ public:
 
   void fill(const CPoint &p, D3DCOLOR color, ColorComparator &cmp);
   void fill(const CPoint &p, D3DCOLOR color);
-  virtual void fillRect(D3DCOLOR color, const CRect *r = NULL) = 0; // if r == NULL, entire surface will be filled
+  virtual void fillRect(D3DCOLOR color, const CRect *r = nullptr) = 0; // if r == nullptr, entire surface will be filled
 };
 
 class DWordPixelAccessor : public PixelAccessor {
@@ -69,7 +69,7 @@ public:
   }
   void     setPixel(UINT x, UINT y, D3DCOLOR color);
   D3DCOLOR getPixel(UINT x, UINT y) const;
-  // if r == NULL, entire surface will be filled
+  // if r == nullptr, entire surface will be filled
   void fillRect(D3DCOLOR color, const CRect *r);
 };
 
@@ -81,7 +81,7 @@ protected:
   PixelAccessor *m_pixelAccessor;
   void releasePixelAccessor();
 public:
-  PixRectOperator(PixRect *pr = NULL);
+  PixRectOperator(PixRect *pr = nullptr);
   virtual ~PixRectOperator();
   virtual void setPixRect(PixRect *pixRect);
 };
@@ -95,7 +95,7 @@ protected:
   void releasePixelAccessor();
 public:
   PixRectFilter() { init(); }
-  // if(pr == NULL && m_result!=m_pixrect) => releasePixelAcc(); rop(m_pixRect,m_result); delete m_result;
+  // if(pr == nullptr && m_result!=m_pixrect) => releasePixelAcc(); rop(m_pixRect,m_result); delete m_result;
   // After that call __super::setPixRect(pr); m_result = m_pixRect, m_resultPA = m_pa;
   void setPixRect(PixRect *pr);
   // returns default CRect(0, 0, m_pixRrect->getWidth(), m_pixRect->getHeight())
@@ -106,7 +106,7 @@ class SetColor : public PixRectOperator {
 private:
   const D3DCOLOR m_color;
 public:
-  SetColor(D3DCOLOR color, PixRect *pr = NULL) : m_color(color), PixRectOperator(pr) {
+  SetColor(D3DCOLOR color, PixRect *pr = nullptr) : m_color(color), PixRectOperator(pr) {
   }
   void apply(const CPoint &p);
 };
@@ -115,14 +115,14 @@ class SetAlpha : public PixRectOperator {
 private:
   const D3DCOLOR m_alphaMask;
 public:
-  SetAlpha(BYTE alpha, PixRect *pr = NULL) : m_alphaMask(D3DCOLOR_ARGB(alpha,0,0,0)), PixRectOperator(pr) {
+  SetAlpha(BYTE alpha, PixRect *pr = nullptr) : m_alphaMask(D3DCOLOR_ARGB(alpha,0,0,0)), PixRectOperator(pr) {
   }
   void apply(const CPoint &p);
 };
 
 class InvertColor : public PixRectOperator {
 public:
-  InvertColor(PixRect *pr = NULL) : PixRectOperator(pr) {
+  InvertColor(PixRect *pr = nullptr) : PixRectOperator(pr) {
   }
   void apply(const CPoint &p);
 };
@@ -131,7 +131,7 @@ class SubstituteColor : public PixRectOperator {
 private:
   const D3DCOLOR m_from, m_to;
 public:
-  SubstituteColor(D3DCOLOR from, D3DCOLOR to, PixRect *pr = NULL) : m_from(from), m_to(to), PixRectOperator(pr) {
+  SubstituteColor(D3DCOLOR from, D3DCOLOR to, PixRect *pr = nullptr) : m_from(from), m_to(to), PixRectOperator(pr) {
   }
   void apply(const CPoint &p);
 };
@@ -251,8 +251,8 @@ private:
   PixRect &operator=(const PixRect &src); // Not defined. Class not cloneable
 
   inline void initSurfaces() {
-    m_surface = m_DCSurface = NULL;
-    m_pixelAccessor = NULL;
+    m_surface = m_DCSurface = nullptr;
+    m_pixelAccessor = nullptr;
     m_paRefCount = 0;
   }
   void create(PixRectType type, const CSize &sz, D3DFORMAT pixelFormat, D3DPOOL pool);
@@ -272,7 +272,7 @@ private:
   bool canUseColorFill() const;
   LPDIRECT3DSURFACE getSurface() const;
   LPDIRECT3DSURFACE cloneSurface(D3DPOOL pool) const;
-  D3DLOCKED_RECT    lockRect(  DWORD Flags, const CRect *rect = NULL);
+  D3DLOCKED_RECT    lockRect(  DWORD Flags, const CRect *rect = nullptr);
   void              unlockRect();
   void              checkType(       const TCHAR *method, PixRectType expectedType) const;
   static void       unknownTypeError(const TCHAR *method, PixRectType type);
@@ -346,7 +346,7 @@ public:
   static D3DFORMAT getPixelFormat(HBITMAP bm);
   static const TCHAR *getFormatName(D3DFORMAT format);
 
-  CSize getSizeInMillimeters(HDC hdc = NULL) const;
+  CSize getSizeInMillimeters(HDC hdc = nullptr) const;
 
   inline CRect getRect() const {
     return CRect(ORIGIN, getSize());
@@ -369,7 +369,7 @@ public:
   void polygon(const MyPolygon &polygon, D3DCOLOR color, bool invert=false, bool closingEdge=true);
   void ellipse(const CRect &rect, D3DCOLOR color, bool invert=false);
   void bezier(const Point2D &start, const Point2D &cp1, const Point2D &cp2, const Point2D &end, D3DCOLOR color, bool invert=false);
-  void fillColor(D3DCOLOR color, const CRect *r = NULL); // if r == NULL, whole area will be colored
+  void fillColor(D3DCOLOR color, const CRect *r = nullptr); // if r == nullptr, whole area will be colored
   void fillRect(const CRect &rect, D3DCOLOR color, bool invert=false);
   void fillRect(const CPoint &p0, const CSize &size, D3DCOLOR color, bool invert=false);
   void fillRect(int x1, int y1, int x2, int y2, D3DCOLOR color, bool invert=false);

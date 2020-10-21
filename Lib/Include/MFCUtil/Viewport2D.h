@@ -16,6 +16,9 @@ private:
   mutable int              m_currentPenWidth;
   mutable COLORREF         m_currentPenColor;
 
+  Viewport2D(const Viewport2D &src);            // not implemented
+  Viewport2D &operator=(const Viewport2D &src); // not implemented
+
   CPen &setCurrentPen(int penStyle, int width, COLORREF color) const;
   inline void paintLine(int x1, int y1, int x2, int y2) const {
     m_dc->MoveTo(x1, y1); m_dc->LineTo(x2, y2);
@@ -37,7 +40,7 @@ public:
   Viewport2D(bool retainAspectRatio = false);
   Viewport2D(CDC &dc, const Rectangle2D &from, const Rectangle2D &to, bool retainAspectRatio = false);
   Viewport2D(CDC &dc, RectangleTransformation &tr,  bool retainAspectRatio = false);
-  ~Viewport2D();
+  virtual ~Viewport2D();
 
   inline CDC *getDC() {
     return m_dc;
@@ -122,7 +125,7 @@ public:
   // transparent background
   // If bckSave is specified, the bounding recangle of the written text is returned (can be used for selection)
   // and the original pixels in the bounding rectangle containing the text, will be saved, for later restore
-  void        TextOut( const Point2D &p, const String &text, COLORREF color, BackgroundSaver *bckSave = NULL) const;
+  void        TextOut( const Point2D &p, const String &text, COLORREF color, BackgroundSaver *bckSave = nullptr) const;
   void        clear(COLORREF color) const;
   CGdiObject *SelectObject(CGdiObject *object) const;
   CBitmap    *SelectObject(CBitmap    *bitmap) const;
@@ -130,5 +133,5 @@ public:
   CFont      *SelectObject(CFont      *font  ) const;
 
   CGdiObject *SelectStockObject(   int index ) const;
-  void paintDragRect(const Rectangle2D &rect, SIZE size, const Rectangle2D &lastRect, SIZE lastSize, CBrush *brush = NULL, CBrush *lastBrush = NULL) const;
+  void paintDragRect(const Rectangle2D &rect, SIZE size, const Rectangle2D &lastRect, SIZE lastSize, CBrush *brush = nullptr, CBrush *lastBrush = nullptr) const;
 };

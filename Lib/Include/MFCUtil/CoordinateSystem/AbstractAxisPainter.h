@@ -9,6 +9,7 @@ class AbstractAxisPainter {
 private:
   SystemPainter                &m_systemPainter;
   const AxisIndex               m_axisIndex;     // is this X- or Y-axis
+  const AxisType                m_type;
   bool                          m_isPainting;    // if false, all paint operations are invisible. Used to find maxTextOffset in constructor
   DoubleInterval                m_dataRange;     // X- or Y-interval in fromRectangle
   Viewport2D                   *m_vp;            // Not allocated locally
@@ -22,6 +23,9 @@ private:
   int                           m_maxTextOffset;
   int                           m_lastTextPos;
 
+  AbstractAxisPainter(           const AbstractAxisPainter &src); // not implemented
+  AbstractAxisPainter &operator=(const AbstractAxisPainter &src); // not implemented
+
   void verticalGridLine(  double x);
   void horizontalGridLine(double y);
   void line(double x1, double y1, double x2, double y2, bool setOccupied);
@@ -29,17 +33,19 @@ private:
   void textOut(int x, int y, const String &txt, const CSize &textExtent);
   void paintXAxis();
   void paintYAxis();
-protected:
 
-  virtual void init();
+protected:
+  virtual void         init();
   virtual const TCHAR *getDoubleFormat() const;
-  virtual double next(double x) const;
-  virtual AxisType  getType() const = 0;
-  inline  AxisIndex getAxisIndex() const {
+  virtual double       next(double x)    const;
+  inline AxisType      getType()         const {
+    return m_type;
+  }
+  inline  AxisIndex    getAxisIndex() const {
     return m_axisIndex;
   }
-  const AxisAttribute &getAxisAttr() const;
-  inline AxisFlags getAxisFlags() const {
+  const  AxisAttribute &getAxisAttr() const;
+  inline AxisFlags      getAxisFlags() const {
     return getAxisAttr().getFlags();
   }
   inline bool hasGridLines() const {
@@ -89,7 +95,7 @@ public:
   static const int PIN_LENGTH;
   static const int ARROW_SIZE;
 
-  AbstractAxisPainter(SystemPainter &systemPainter, AxisIndex Axis);
+  AbstractAxisPainter(SystemPainter &systemPainter, AxisIndex axisIndex, AxisType type);
   virtual ~AbstractAxisPainter();
   void paintAxisData();
   void paintAxis();

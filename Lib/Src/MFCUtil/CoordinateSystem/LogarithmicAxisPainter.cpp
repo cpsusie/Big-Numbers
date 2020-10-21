@@ -4,7 +4,9 @@
 
 const String LogarithmicAxisPainter::s_startDecadeFormat = _T("%.0lg");
 
-LogarithmicAxisPainter::LogarithmicAxisPainter(SystemPainter &systemPainter, AxisIndex axis) : AbstractAxisPainter(systemPainter,axis) {
+LogarithmicAxisPainter::LogarithmicAxisPainter(SystemPainter &systemPainter, AxisIndex axisIndex)
+: AbstractAxisPainter(systemPainter,axisIndex, AXIS_LOGARITHMIC)
+{
   doInvisiblePaint();
 }
 
@@ -21,7 +23,7 @@ double LogarithmicAxisPainter::getAxisPoint() const {
   return getTransformation().getToInterval().getFrom();
 }
 
-const TCHAR *LogarithmicAxisPainter::getDoubleFormat() {
+const TCHAR *LogarithmicAxisPainter::getDoubleFormat() const {
   if(m_doubleFormat.length() == 0) {
     if(isSingleDecade()) {
       m_doubleFormat = __super::getDoubleFormat();

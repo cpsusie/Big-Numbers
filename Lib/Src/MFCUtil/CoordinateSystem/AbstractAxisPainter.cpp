@@ -5,13 +5,17 @@
 const int AbstractAxisPainter::PIN_LENGTH = 3;
 const int AbstractAxisPainter::ARROW_SIZE = 7;
 
-AbstractAxisPainter::AbstractAxisPainter(SystemPainter &systemPainter, AxisIndex axis) : m_systemPainter(systemPainter), m_axisIndex(axis) {
+AbstractAxisPainter::AbstractAxisPainter(SystemPainter &systemPainter, AxisIndex axisIndex, AxisType type)
+  : m_systemPainter(systemPainter)
+  , m_axisIndex(    axisIndex    )
+  , m_type(         type         )
+{
   m_vp              = &systemPainter.getViewport();
   m_dataRange       = getTransformation().getFromInterval();
   if(m_dataRange.getLength() <= 0) {
     throwException(_T("%s:DataRange:[%le;%le] on %s-axis has negative length.")
                   ,__TFUNCTION__
-                  ,m_dataRange.getFrom(),m_dataRange.getTo(), (axis==XAXIS_INDEX)?_T("X"):_T("Y"));
+                  ,m_dataRange.getFrom(),m_dataRange.getTo(), (axisIndex==XAXIS_INDEX)?_T("X"):_T("Y"));
   }
   const COLORREF color = getAxisAttr().getColor();
   m_solidPen.CreatePen(PS_SOLID,1,color);

@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Header Files\CoordinateSystem">
-      <UniqueIdentifier>{5ec638d0-67f5-4473-a8d4-3d19bf50bbe3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\CoordinateSystem">
       <UniqueIdentifier>{e6b67019-3e20-40e3-aa37-5b82862ad560}</UniqueIdentifier>
     </Filter>
@@ -27,6 +24,9 @@
     </Filter>
     <Filter Include="Source Files\ColorSpace">
       <UniqueIdentifier>{afdfcdaf-2a88-472a-9abd-a45e3acd64c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\CoordinateSystem\Header Files">
+      <UniqueIdentifier>{8cd7b5a5-e2e0-4fbd-b729-7a911ebbdf5c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -465,33 +465,6 @@
     <ClInclude Include="..\..\Include\MFCUtil\PixRect.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\MFCUtil\CoordinateSystem\AbstractAxisPainter.h">
-      <Filter>Header Files\CoordinateSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\MFCUtil\CoordinateSystem\AxisType.h">
-      <Filter>Header Files\CoordinateSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\MFCUtil\CoordinateSystem\CoordinateSystem.h">
-      <Filter>Header Files\CoordinateSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\MFCUtil\CoordinateSystem\DataRange.h">
-      <Filter>Header Files\CoordinateSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\MFCUtil\CoordinateSystem\DateAxisPainter.h">
-      <Filter>Header Files\CoordinateSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\MFCUtil\CoordinateSystem\LinearAxisPainter.h">
-      <Filter>Header Files\CoordinateSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\MFCUtil\CoordinateSystem\LogarithmicAxisPainter.h">
-      <Filter>Header Files\CoordinateSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\MFCUtil\CoordinateSystem\NormalDistributionAxisPainter.h">
-      <Filter>Header Files\CoordinateSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\MFCUtil\CoordinateSystem\SystemPainter.h">
-      <Filter>Header Files\CoordinateSystem</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\MFCUtil\ExpressionGraphics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -610,6 +583,33 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\MFCUtil\PolygonCurveBase.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\MFCUtil\CoordinateSystem\AbstractAxisPainter.h">
+      <Filter>Source Files\CoordinateSystem\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\MFCUtil\CoordinateSystem\AxisType.h">
+      <Filter>Source Files\CoordinateSystem\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\MFCUtil\CoordinateSystem\CoordinateSystem.h">
+      <Filter>Source Files\CoordinateSystem\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\MFCUtil\CoordinateSystem\DataRange.h">
+      <Filter>Source Files\CoordinateSystem\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\MFCUtil\CoordinateSystem\DateAxisPainter.h">
+      <Filter>Source Files\CoordinateSystem\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\MFCUtil\CoordinateSystem\LinearAxisPainter.h">
+      <Filter>Source Files\CoordinateSystem\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\MFCUtil\CoordinateSystem\LogarithmicAxisPainter.h">
+      <Filter>Source Files\CoordinateSystem\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\MFCUtil\CoordinateSystem\NormalDistributionAxisPainter.h">
+      <Filter>Source Files\CoordinateSystem\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\MFCUtil\CoordinateSystem\SystemPainter.h">
+      <Filter>Source Files\CoordinateSystem\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

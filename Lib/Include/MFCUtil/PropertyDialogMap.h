@@ -39,7 +39,7 @@ private:
   void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
 public:
   inline PropertyDialogMap()
-    : m_visibleDialogThread(NULL)
+    : m_visibleDialogThread(nullptr)
     , m_visiblePropertyId(  -1  )
   {
   }

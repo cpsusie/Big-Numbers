@@ -47,8 +47,8 @@ static void showNormalBitmap(HDC dst, const CPoint &p, HBITMAP bm) {
 #endif TEST_DECODEBITMAP
 
 HBITMAP decodeToBitmap(const ByteArray &bytes, PLPicDecoder &decoder, bool &hasAlpha) {
-  HDC     dc     = NULL;
-  HBITMAP bitmap = NULL;
+  HDC     dc     = nullptr;
+  HBITMAP bitmap = nullptr;
   try {
     try {
       PLWinBmp winBmp;
@@ -106,7 +106,7 @@ HBITMAP decodeToBitmap(const ByteArray &bytes, PLPicDecoder &decoder, bool &hasA
       bmInfo.bmiHeader.biSizeImage   = totalBytes;
 
       bitmap = CreateDIBitmap(dc,  (BITMAPINFOHEADER*)&bmHeader, CBM_INIT, winBmp.GetBits(), &bmInfo, DIB_RGB_COLORS);
-      if(bitmap == NULL) {
+      if(bitmap == nullptr) {
         throwLastErrorOnSysCallException(_T("CreateDIBitmap"));
       }
       DeleteDC(dc);
@@ -125,7 +125,7 @@ HBITMAP decodeToBitmap(const ByteArray &bytes, PLPicDecoder &decoder, bool &hasA
     } catch(PLTextException e) {
       const String errMsg = e;
       throwException(errMsg);
-      return NULL;
+      return nullptr;
     }
   } catch(...) {
     if(bitmap) DeleteObject(bitmap);

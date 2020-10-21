@@ -26,7 +26,7 @@ protected:
   double getAvgSubProgressPercent();
 
 public:
-  InteractiveRunnable() : m_timeEstimator(NULL) {
+  InteractiveRunnable() : m_timeEstimator(nullptr) {
   }
  ~InteractiveRunnable() override {
     cleanup();

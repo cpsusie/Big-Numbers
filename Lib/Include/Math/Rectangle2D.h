@@ -28,9 +28,8 @@ public:
     : m_p(p), m_size(size)
   {
   }
-  template<typename C> Rectangle2DTemplate(const CubeN<C> &src) {
-    if(src.dim() != 2) throwInvalidArgumentException(__TFUNCTION__, _T("src has dimension %u. must be 2"), src.dim());
-    const NumberInterval<C> &xi = src.getInterval(0), &yi = src.getInterval(1);
+  template<typename C> Rectangle2DTemplate(const CubeNTemplate<C,2> &src) {
+    NumberInterval<C> xi = src.getInterval(0), yi = src.getInterval(1);
     m_p    = Point2DTemplate<T>(xi.getFrom()  , yi.getFrom()  );
     m_size = Size2DTemplate<T>( xi.getLength(), yi.getLength());
   }
@@ -93,8 +92,8 @@ public:
   inline NumberInterval<T> getYInterval() const {
     return NumberInterval<T>(m_p.y, m_p.y+m_size.cy);
   }
-  inline operator CubeN<T>() const {
-    return CubeN<T>(2).setInterval(0, getXInterval()).setInterval(1, getYInterval());
+  inline operator CubeNTemplate<T,2>() const {
+    return CubeNTemplate<T,2>().setInterval(0, getXInterval()).setInterval(1, getYInterval());
   }
   template<typename P> bool contains(const Point2DTemplate<P> &p) const {
     return (getMinX() <= (T)p.x) && ((T)p.x <= getMaxX()) && (getMinY() <= (T)p.y) && ((T)p.y <= getMaxY());

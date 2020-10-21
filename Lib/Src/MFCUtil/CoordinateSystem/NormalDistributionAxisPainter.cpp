@@ -4,7 +4,9 @@
 
 const String NormalDistributionAxisPainter::s_startDecadeFormat = _T("%0.8lg");
 
-NormalDistributionAxisPainter::NormalDistributionAxisPainter(SystemPainter &systemPainter, AxisIndex axis) : AbstractAxisPainter(systemPainter, axis) {
+NormalDistributionAxisPainter::NormalDistributionAxisPainter(SystemPainter &systemPainter, AxisIndex axisIndex)
+: AbstractAxisPainter(systemPainter,axisIndex, AXIS_NORMAL_DISTRIBUTION)
+{
   doInvisiblePaint();
 }
 

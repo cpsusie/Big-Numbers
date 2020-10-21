@@ -11,7 +11,7 @@ private:
   CColormap    m_color;
   void OnColorchangedColormapColor();
 public:
-  CColorDlg(const String &caption, int propertyId, D3DCOLOR color, CWnd *pParent = NULL);
+  CColorDlg(const String &caption, int propertyId, D3DCOLOR color, CWnd *pParent = nullptr);
   String getTypeName() const override {
     return _T("D3DCOLOR");
   }

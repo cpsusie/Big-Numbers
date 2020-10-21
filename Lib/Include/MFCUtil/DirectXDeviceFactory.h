@@ -25,10 +25,10 @@ private:
   DirectXDeviceFactory();
   ~DirectXDeviceFactory() override;
 public:
-  LPDIRECT3DDEVICE             createDevice(HWND hwnd, D3DPRESENT_PARAMETERS *param = NULL, UINT adapter = D3DADAPTER_DEFAULT);
-  D3DDISPLAYMODE               getDisplayMode(                                              UINT adapter = D3DADAPTER_DEFAULT);
-  CompactArray<D3DDISPLAYMODE> getDisplayModes(                                             UINT adapter = D3DADAPTER_DEFAULT);
-  D3DPRESENT_PARAMETERS        getDefaultPresentParameters(HWND hwnd                      , UINT adapter = D3DADAPTER_DEFAULT);
+  LPDIRECT3DDEVICE             createDevice(HWND hwnd, D3DPRESENT_PARAMETERS *param = nullptr, UINT adapter = D3DADAPTER_DEFAULT);
+  D3DDISPLAYMODE               getDisplayMode(                                                 UINT adapter = D3DADAPTER_DEFAULT);
+  CompactArray<D3DDISPLAYMODE> getDisplayModes(                                                UINT adapter = D3DADAPTER_DEFAULT);
+  D3DPRESENT_PARAMETERS        getDefaultPresentParameters(HWND hwnd                         , UINT adapter = D3DADAPTER_DEFAULT);
   bool                         supportFormatConversion(D3DDEVTYPE deviceType, D3DFORMAT srcFormat, D3DFORMAT dstFormat, UINT adapter = D3DADAPTER_DEFAULT);
   DEFINESINGLETON(DirectXDeviceFactory)
 };

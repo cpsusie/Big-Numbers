@@ -22,7 +22,7 @@ private:
 public:
   PixRectDevice();
   ~PixRectDevice();
-  void attach(HWND hwnd, bool windowed = true, const CSize *size = NULL);
+  void attach(HWND hwnd, bool windowed = true, const CSize *size = nullptr);
   void detach();
   void beginScene();
   void endScene();

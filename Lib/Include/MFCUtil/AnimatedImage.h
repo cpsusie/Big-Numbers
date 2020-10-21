@@ -44,7 +44,7 @@ private:
   void parseApplicationBlock(const unsigned char *bytes, int n);
   void extractGifData(const GifFileType *gifFile);                // gifFile actually GifFileType
   void releaseBackground();
-  void saveBackground(const CPoint &p, const CSize *size = NULL); // if size=NULL, then m_size
+  void saveBackground(const CPoint &p, const CSize *size = nullptr); // if size=nullptr, then m_size
   void restoreBackground();
   bool hasSavedBackground() const;
   inline void flushWork(const CPoint &p) const {

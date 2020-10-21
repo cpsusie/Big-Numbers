@@ -33,14 +33,14 @@ static HBITMAP swapRB(HBITMAP bm) {
 
 void writeAsPNG(HBITMAP bm, ByteOutputStream &out) {
   const BITMAP info = getBitmapInfo(bm);
-  HBITMAP bm1 = NULL;
+  HBITMAP bm1 = nullptr;
   PLPNGEncoder encoder;
   encoder.SetCompressionLevel(9);
   try {
     if(info.bmBitsPixel == 32) {
       bm1 = swapRB(cloneBitmap(bm));
       encodeBitmap(bm1, out, encoder);
-      DeleteObject(bm1); bm1 = NULL;
+      DeleteObject(bm1); bm1 = nullptr;
     } else {
       encodeBitmap(bm, out, encoder);
     }
