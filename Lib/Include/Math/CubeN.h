@@ -8,7 +8,7 @@ private:
 public:
   CubeN(UINT dim) {
     for(UINT i = 0; i < dim; i++) {
-      m_a.add(NumberInterval());
+      m_a.add(NumberInterval<T>());
     }
   }
   // return this
@@ -17,7 +17,7 @@ public:
     return *this;
   }
   const NumberInterval<T> &getInterval(UINT index) const {
-    return m_a[i];
+    return m_a[index];
   }
   inline UINT dim() const {
     return (UINT)m_a.size();

@@ -2,22 +2,6 @@
 
 #include "MBCalculator.h"
 
-inline CPoint toCPoint(const RealPoint2D &p) {
-  return CPoint((int)p.x, (int)p.y);
-}
-
-inline RealPoint2D toRealPoint(const CPoint &p) {
-  return RealPoint2D(p.x, p.y);
-}
-
-inline CRect toCRect(const RealRectangle2D &r) {
-  return CRect((int)r.m_x,(int)r.m_y,(int)(r.m_x+r.m_w),(int)(r.m_y+r.m_h));
-}
-
-inline RealRectangle2D toRealRect(const CRect &r) {
-  return RealRectangle2D(r.left,r.top,r.Width(),r.Height());
-}
-
 class MBRealCalculator : public MBCalculator {
 private:
   static const RealIntervalTransformation *s_xtr   , *s_ytr;

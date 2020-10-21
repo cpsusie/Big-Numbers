@@ -37,7 +37,7 @@ void CJuliaDlg::adjustToRectangle() {
 //  const int t = cl.bottom;
 //  cl.bottom = cl.top;
 //  cl.top = t;
-  m_transform.setToRectangle(toRealRect(cl));
+  m_transform.setToRectangle(RealRectangle2D(cl));
 }
 
 JuliaCalculatorJob::JuliaCalculatorJob(CJuliaDlg &dlg) : m_dlg(dlg) {
@@ -62,7 +62,7 @@ UINT JuliaCalculatorJob::safeRun() {
   CPoint pointBuffer[POINTBUFFERSIZE];
   int index = 0;
   while(!m_killed) {
-    pointBuffer[index++] = toCPoint(tr.forwardTransform(z));
+    pointBuffer[index++] = tr.forwardTransform(z);
     if(index == POINTBUFFERSIZE) {
       CClientDC dc(&m_dlg);
       for(const CPoint *p = pointBuffer; index--; p++) {

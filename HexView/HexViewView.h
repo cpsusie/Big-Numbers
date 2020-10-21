@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Math/Transformation.h>
+#include <Math/IntervalTransformation.h>
 
 class CMainFrame;
 

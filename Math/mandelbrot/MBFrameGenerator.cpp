@@ -69,8 +69,8 @@ BigRealRectangle2D MBFrameGenerator::getInterpolatedRectangle() const {
   const BigReal fw = m_expTransform->transform(m_frameIndex);       // 1 -> finalWidth/startWidth
   const BigReal t1 = m_linearTransform->forwardTransform(fw);       // 1 -> 0
   const BigReal t2 = (dp->_1() - t1);                             // 0 -> 1
-  const BigReal x  = t1 * m_startRect.m_x + t2 * m_finalRect.m_x;
-  const BigReal y  = t1 * m_startRect.m_y + t2 * m_finalRect.m_y;
+  const BigReal x  = t1 * m_startRect.m_p.x + t2 * m_finalRect.m_p.x;
+  const BigReal y  = t1 * m_startRect.m_p.y + t2 * m_finalRect.m_p.y;
   const BigReal w  = fw * m_startRect.getWidth();
   const BigReal h  = fw * m_startRect.getHeight();
   return BigRealRectangle2D(x,y,w,h);

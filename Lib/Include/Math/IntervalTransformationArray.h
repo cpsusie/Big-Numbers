@@ -23,7 +23,7 @@ private:
     }
   }
   void checkDimension(const TCHAR *method, UINT d) const {
-    if(d 1 = dim) {
+    if(d != dim) {
       throwInvalidArgumentException(method, _T("dimension mismatch. array.dim=%u, d=%u"), dim, d);
     }
   }
@@ -103,7 +103,7 @@ public:
   CubeN<T> getFromCube() const {
     CubeN<T> result(dim);
     for(UINT d = 0; d < dim; d++) {
-      result.setInterval(m_e[d]->getFromInterval());
+      result.setInterval(d,m_e[d]->getFromInterval());
     }
     return result;
   }
@@ -120,7 +120,7 @@ public:
   CubeN<T> getToCube() const {
     CubeN<T> result(dim);
     for(UINT d = 0; d < dim; d++) {
-      result.setInterval(m_e[d]->getToInterval());
+      result.setInterval(d,m_e[d]->getToInterval());
     }
     return result;
   }

@@ -44,22 +44,16 @@ public:
   }
 
   void   setFromRectangle(const Rectangle2DTemplate<T> &rect) {
-    m_tr[0].setFromInterval(rect.getXInterval());
-    m_tr[1].setFromInterval(rect.getYInterval());
+    m_tr.setFromCube((CubeN<T>)rect);
   }
   void   setToRectangle(const Rectangle2DTemplate<T> &rect) {
-    m_tr[0].setToInterval(rect.getXInterval());
-    m_tr[1].setToInterval(rect.getYInterval());
+    m_tr.setToCube((CubeN<T>)rect);
   }
   Rectangle2DTemplate<T>    getFromRectangle() const {
-    const NumberInterval<T> ix = m_tr[0].getFromInterval();
-    const NumberInterval<T> iy = m_tr[1].getFromInterval();
-    return Rectangle2DTemplate<T>(ix.getFrom(),iy.getFrom(), ix.getLength(), iy.getLength());
+    return Rectangle2DTemplate<T>(m_tr.getFromCube());
   }
   Rectangle2DTemplate<T>    getToRectangle()   const {
-    const NumberInterval<T> ix = m_tr[0].getToInterval();
-    const NumberInterval<T> iy = m_tr[1].getToInterval();
-    return Rectangle2DTemplate<T>(ix.getFrom(),iy.getFrom(), ix.getLength(), iy.getLength());
+    return Rectangle2DTemplate<T>(m_tr.getToCube());
   }
   inline Point2DTemplate<T> forwardTransform(const Point2DTemplate<T> &p)   const {
     return forwardTransform(p.x, p.y);

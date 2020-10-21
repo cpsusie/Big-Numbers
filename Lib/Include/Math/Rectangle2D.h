@@ -29,10 +29,10 @@ public:
   {
   }
   template<typename C> Rectangle2DTemplate(const CubeN<C> &src) {
-    if(src.dim() != 2) throwInvalidArgumentException(__TFUNCTION__, "src has dimension %u. must be 2", src.dim());
+    if(src.dim() != 2) throwInvalidArgumentException(__TFUNCTION__, _T("src has dimension %u. must be 2"), src.dim());
     const NumberInterval<C> &xi = src.getInterval(0), &yi = src.getInterval(1);
-    m_p    = CPoint2D(xi.getFrom()  , yi.getFrom()  );
-    m_size = Size2D(  xi.getLength(), yi.getLength());
+    m_p    = Point2DTemplate<T>(xi.getFrom()  , yi.getFrom()  );
+    m_size = Size2DTemplate<T>( xi.getLength(), yi.getLength());
   }
 
 #if defined(__ATLTYPES_H__)

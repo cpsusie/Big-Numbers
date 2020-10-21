@@ -25,7 +25,7 @@ protected:
   }
   void checkFromInterval(const NumberInterval<T> &interval) {
     if(interval.getLength() == 0) {
-      throwException(_T("IntervalTransformation::Invalid from-interval:%s"),interval.toString().cstr());
+      throwInvalidArgumentException(__TFUNCTION__, _T("From interval=%s"),interval.toString().cstr());
     }
   }
 public:

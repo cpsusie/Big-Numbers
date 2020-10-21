@@ -252,8 +252,8 @@ void CShwGraphDlg::readData(FILE *f) {
 void CShwGraphDlg::adjustTransform() {
   if(m_points.size()) {
     Rectangle2D r = m_points.getBoundingBox();
-    if(r.getWidth()  == 0) { r.m_w = 10; }
-    if(r.getHeight() == 0) { r.m_h = 10; }
+    if(r.getWidth()  == 0) { r.m_size.cx = 10; }
+    if(r.getHeight() == 0) { r.m_size.cy = 10; }
     m_cs.setDataRange(r, true);
   }
 }

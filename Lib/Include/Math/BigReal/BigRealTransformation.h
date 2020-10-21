@@ -37,8 +37,7 @@ class BigRealSize2D : public Size2DTemplate<BigReal> {
 class BigRealPoint2D : public Point2DTemplate<BigReal> {
 public:
   inline BigRealPoint2D(DigitPool *digitPool=nullptr)
-    : Point2DTemplate(BigReal(0,digitPool)
-                     ,BigReal(0,digitPool))
+    : Point2DTemplate(BigReal(0,digitPool), BigReal(0,digitPool))
   {
   }
   inline BigRealPoint2D(const BigReal &x, const BigReal &y, DigitPool *digitPool=nullptr)
@@ -124,24 +123,24 @@ public:
 
 class BigRealLinearTransformation : public BigRealIntervalTransformation {
 protected:
-  BigReal translate(const BigReal &x) const {
+  BigReal translate(const BigReal &x) const override {
     return BigReal(x, getDigitPool());
   }
-  BigReal inverseTranslate(const BigReal &x) const {
+  BigReal inverseTranslate(const BigReal &x) const override {
     return BigReal(x, getDigitPool());
   }
 public:
-  bool isLinear() const {
+  bool isLinear() const override {
     return true;
   }
   BigRealLinearTransformation(const BigRealInterval &fromInterval, const BigRealInterval &toInterval, UINT precision=AUTOPRECISION, DigitPool *digitPool=nullptr)
     : BigRealIntervalTransformation(fromInterval, toInterval, precision, digitPool) {
     computeTransformation();
   }
-  IntervalScale getScale() const {
+  IntervalScale getScale() const override {
     return LINEAR;
   }
-  BigRealIntervalTransformation *clone(DigitPool *digitPool=nullptr) const {
+  BigRealIntervalTransformation *clone(DigitPool *digitPool=nullptr) const override {
     return new BigRealLinearTransformation(getFromInterval(),getToInterval(),getPrecision(),digitPool);
   }
 };

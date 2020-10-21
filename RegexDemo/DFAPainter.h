@@ -5,7 +5,6 @@
 #include <TinyBitSet.h>
 #include <BitMatrix.h>
 #include <Math/Point2D.h>
-#include <Math/Transformation.h>
 #include "AutomatePainter.h"
 #include "DFA.h"
 

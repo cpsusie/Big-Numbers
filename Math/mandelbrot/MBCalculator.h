@@ -4,7 +4,6 @@
 #include <TinyBitSet.h>
 #include <PropertyContainer.h>
 #include <Math/FPU.h>
-#include <Math/Transformation.h>
 #include <Math/BigReal/BigRealTransformation.h>
 #include "CellCountMatrix.h"
 #include "EdgeMatrix.h"
