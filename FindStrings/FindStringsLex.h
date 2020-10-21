@@ -21,8 +21,7 @@ class FindStringsLex : public Scanner {
 public:
   FindStringsLex(LexStream *inputStream = NULL) : Scanner(inputStream) {
   }
-  int  getNextLexeme();
+  int getNextLexeme() override;
 };
 
 #line 5 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
-
