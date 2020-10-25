@@ -36,7 +36,7 @@ void CCoordinateSystem::destroySystemPainter() {
 }
 
 BEGIN_MESSAGE_MAP(CCoordinateSystem, CStatic)
-	ON_WM_PAINT()
+  ON_WM_PAINT()
 END_MESSAGE_MAP()
 
 void CCoordinateSystem::substituteControl(CWnd *parent, int id) {
@@ -65,8 +65,8 @@ void CCoordinateSystem::substituteControl(CWnd *parent, int id) {
   ModifyStyleEx(0, exStyle);
   SetFont(font, FALSE);
   RectangleTransformation &tr = m_vp.getTransformation();
-  tr.setFromRectangle(getDefaultDataRange(AXIS_LINEAR,AXIS_LINEAR));
-  tr.setToRectangle(rect);
+  tr.setFromRectangle((Rectangle2D)getDefaultDataRange(AXIS_LINEAR,AXIS_LINEAR));
+  tr.setToRectangle((Rectangle2D)rect);
 }
 
 void CCoordinateSystem::addObject(CoordinateSystemObject *object) {
@@ -90,13 +90,8 @@ void CCoordinateSystem::deleteAllObjects() { // remove AND delete all objects
   m_objectArray.clear();
 }
 
-int CCoordinateSystem::findObject(const CoordinateSystemObject *object) const {
-  for(size_t i = 0; i < m_objectArray.size(); i++) {
-    if(m_objectArray[i] == object) {
-      return (int)i;
-    }
-  }
-  return -1;
+int CCoordinateSystem::findObject(CoordinateSystemObject * const object) const {
+  return (int)m_objectArray.getFirstIndex(object);
 }
 
 void CCoordinateSystem::OnPaint() {
@@ -118,8 +113,8 @@ void CCoordinateSystem::paint(CDC &dc) {
     m_vp.setClipping(true);
     createSystemPainter();
     m_systemPainter->paint();
-    for(size_t i = 0; i < m_objectArray.size(); i++) {
-      m_objectArray[i]->paint(dc);
+    for(auto it = m_objectArray.getIterator(); it.hasNext();) {
+      it.next()->paint(dc);
     }
     m_vp.setClipping(false);
     m_vp.setDC(oldDC);
@@ -151,19 +146,25 @@ DataRange CCoordinateSystem::getDefaultDataRange(AxisType xType, AxisType yType)
 
 // should only be called when m_objectArray.size() > 0
 DataRange CCoordinateSystem::findSmallestDataRange() const {
-  DataRange result = m_objectArray[0]->getDataRange();
-  for(size_t i = 1; i < m_objectArray.size(); i++) {
-    result += m_objectArray[i]->getDataRange();
+  DataRange result;
+  bool firstTime = true;
+  for(auto it = m_objectArray.getIterator(); it.hasNext();) {
+    if(firstTime) {
+      result = it.next()->getDataRange();
+      firstTime = false;
+    } else {
+      result += it.next()->getDataRange();
+    }
   }
   return result;
 }
 
 void CCoordinateSystem::setOccupiedPoint(const Point2D &p) {
-  m_occupationMap.setOccupiedPoint(m_vp.forwardTransform(p));
+  m_occupationMap.setOccupiedPoint((CPoint)m_vp.forwardTransform(p));
 }
 
 void CCoordinateSystem::setOccupiedLine(const Point2D &p1, const Point2D &p2) {
-  m_occupationMap.setOccupiedLine(m_vp.forwardTransform(p1), m_vp.forwardTransform(p2));
+  m_occupationMap.setOccupiedLine((CPoint)m_vp.forwardTransform(p1), (CPoint)m_vp.forwardTransform(p2));
 }
 
 void CCoordinateSystem::setOccupiedPoints(const Point2DArray &pa) {
@@ -180,8 +181,8 @@ void CCoordinateSystem::setOccupiedConnectedPoints(const Point2DArray &pa) {
 PointArray &CCoordinateSystem::transformPoint2DArray(PointArray &dst, const Point2DArray &src) const {
   dst.clear(src.size());
   if(src.size() == 0) return dst;
-  for(const Point2D *p = &src[0], *end = &src.last(); p <= end;) {
-    dst.add(m_vp.forwardTransform(*(p++)));
+  for(auto p : src) {
+    dst.add((CPoint)m_vp.forwardTransform(p));
   }
   return dst;
 }
@@ -218,13 +219,17 @@ void PointArrayObject::paint(CDC &dc) {
   if(m_points.size() <= 1) return;
   CPen pen;
   pen.CreatePen(PS_SOLID, 1, m_color);
-  const Viewport2D &vp     = getViewport();
-  CDC              *oldDC  = vp.setDC(&dc);
-  CPen             *oldPen = vp.SelectObject(&pen);
-  const Point2D *p = &m_points[0], *end = &m_points.last();
-  vp.MoveTo(*p);
-  while(p++ < end) {
-    vp.LineTo(*p);
+  const Viewport2D &vp        = getViewport();
+  CDC              *oldDC     = vp.setDC(&dc);
+  CPen             *oldPen    = vp.SelectObject(&pen);
+  bool              firstTime = true;
+  for(const Point2D p : m_points) {
+    if(firstTime) {
+      vp.MoveTo(p);
+      firstTime = false;
+    } else {
+      vp.LineTo(p);
+    }
   }
   getSystem().setOccupiedConnectedPoints(m_points);
   vp.SelectObject(oldPen);
@@ -279,14 +284,14 @@ void CCoordinateSystem::setDataRange(const DataRange &dataRange, bool makeSpace)
 void CCoordinateSystem::setFromRectangle(const Rectangle2D &rectangle, int makeSpaceFlags) {
   Rectangle2D r = Rectangle2D::makePositiveRectangle(rectangle);
   if(r.getWidth() == 0) {
-    const double dw = r.m_p.x == 0 ? 20 : r.m_p.x / 20;
-    r.m_p.x     -= dw / 2;
-    r.m_size.cx += dw;
+    const double dw = (r.p0()[0] == 0) ? 20 : r.p0()[0] / 20;
+    r.p0()[0]   -= dw / 2;
+    r.size()[0] += dw;
   }
   if(r.getHeight() == 0) {
-    const double dh = r.m_p.y == 0 ? 20 : r.m_p.y / 20;
-    r.m_p.y -= dh / 2;
-    r.m_size.cy += dh;
+    const double dh = (r.p0()[1] == 0) ? 20 : r.p0()[1] / 20;
+    r.p0()[1]   -= dh / 2;
+    r.size()[1] += dh;
   }
   RectangleTransformation &tr = getTransformation();
   tr.setFromRectangle(r);

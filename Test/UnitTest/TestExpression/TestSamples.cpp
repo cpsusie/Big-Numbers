@@ -624,7 +624,7 @@ public:
     return _T("gauss(x*2)");
   }
   Real fr(const Real &x) const {
-    return gauss(x * 2);
+    return gaussDensity(x * 2);
   }
 };
 
@@ -664,7 +664,7 @@ public:
     return _T("norm(x/2.4)");
   }
   Real fr(const Real &x) const {
-    return norm(x / 2.4);
+    return gaussDistribution(x / 2.4);
   }
 };
 

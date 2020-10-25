@@ -17,9 +17,11 @@ private:
   void indexError(const TCHAR *method, size_t index) const {
     throwIndexOutOfRangeException(method, index, m_size);
   }
-
-  void selectError(const TCHAR *method) const {
-    throwSelectFromEmptyCollectionException(method);
+  void indexError(const TCHAR *method, size_t index, size_t count) const {
+    throwIndexOutOfRangeException(method, index, count, m_size);
+  }
+  static void emptyArrayError(const TCHAR *method) {
+    throwEmptyArrayException(method);
   }
 
   size_t getSortCount(size_t from, size_t count) const {
@@ -35,7 +37,9 @@ private:
   }
 
   void setCapacityNoCopy(size_t capacity) {
-    if(capacity == m_capacity) return;
+    if(capacity == m_capacity) {
+      return;
+    }
     SAFEDELETEARRAY(m_array);
     m_array    = capacity ? new T[capacity] : nullptr; TRACE_NEW(m_array);
     m_capacity = capacity;
@@ -131,12 +135,12 @@ public:
   }
 
   inline const T &select(RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) const {
-    if(m_size == 0) selectError(__TFUNCTION__);
+    if(isEmpty()) emptyArrayError(__TFUNCTION__);
     return m_array[randSizet(m_size,rnd)];
   }
 
   inline T &select(RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) {
-    if(m_size == 0) selectError(__TFUNCTION__);
+    if(isEmpty()) emptyArrayError(__TFUNCTION__);
     return m_array[randSizet(m_size,rnd)];
   }
 
@@ -162,34 +166,35 @@ public:
   }
 
   inline T &first() {
-    if(m_size == 0) indexError(__TFUNCTION__, 0);
+    if(isEmpty()) emptyArrayError(__TFUNCTION__);
     return m_array[0];
   }
 
   inline const T &first() const {
-    if(m_size == 0) indexError(__TFUNCTION__, 0);
+    if(isEmpty()) emptyArrayError(__TFUNCTION__);
     return m_array[0];
   }
 
   inline T &last() {
-    if(m_size == 0) indexError(__TFUNCTION__, m_size);
+    if(isEmpty()) emptyArrayError(__TFUNCTION__);
     return m_array[m_size-1];
   }
 
   inline const T &last() const {
-    if(m_size == 0) indexError(__TFUNCTION__, m_size);
+    if(isEmpty()) emptyArrayError(__TFUNCTION__);
     return m_array[m_size-1];
   }
 
-  bool contains(const T &e) const {
+  inline bool contains(const T &e) const {
     return getFirstIndex(e) >= 0;
   }
 
+  // Return min(k) so (*this)[k] == e, if such k exist, or else return -1
   intptr_t getFirstIndex(const T &e) const {
-    if(m_size == 0) {
+    if(isEmpty()) {
       return -1;
     }
-    for(const T *p = m_array, *last = p + m_size; p < last;) {
+    for(const T *p = begin(), *endp = end(); p < endp;) {
       if(*(p++) == e) {
         return p - m_array - 1;
       }
@@ -263,7 +268,9 @@ public:
       return;
     }
     const size_t j = index+count;
-    if(j > m_size) indexError(format(_T("%s(%s,%s)"), __TFUNCTION__,format1000(index).cstr(), format1000(count).cstr()).cstr(),j);
+    if(j > m_size) {
+      indexError(__TFUNCTION__, index, count);
+    }
     if(j < m_size) {
       memmove(m_array+index, m_array+j, (m_size-j) * sizeof(T));
     }
@@ -275,7 +282,7 @@ public:
   }
 
   void removeLast() {
-    if(m_size == 0) indexError(__TFUNCTION__, m_size);
+    if(isEmpty()) emptyArrayError(__TFUNCTION__);
     remove(m_size-1);
   }
 

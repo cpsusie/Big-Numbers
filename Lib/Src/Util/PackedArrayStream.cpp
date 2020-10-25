@@ -34,6 +34,14 @@ PackedFileArray::PackedFileArray(const String &fileName, UINT64 startOffset)
   checkInvariant(__TFUNCTION__);
 }
 
+void PackedFileArray::indexError(const TCHAR *method, UINT64 index) const {
+  throwIndexOutOfRangeException(method, index, size());
+}
+
+void PackedFileArray::emptyArrayError(const TCHAR *method) { // static
+  throwEmptyArrayException(method);
+}
+
 // this is the same algorithm as in PackedArray::get
 UINT PackedFileArray::get(UINT64 index) const {
   if(index >= size()) indexError(__TFUNCTION__, index);

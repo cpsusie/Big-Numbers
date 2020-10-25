@@ -122,7 +122,7 @@ public:
   }
 
   bool remove(const T &e) {                    // NB not virtual in Collection, because of ==
-    for(Iterator<T> it = getIterator(); it.hasNext();) {
+    for(auto it = getIterator(); it.hasNext();) {
       if(it.next() == e) {
         it.remove();
         return true;
@@ -146,7 +146,7 @@ public:
   }
 
   bool contains(const T &e) const {            // NB not virtual in Collection, because of ==
-    for(ConstIterator<T> it = getIterator(); it.hasNext();) {
+    for(auto it = getIterator(); it.hasNext();) {
       if(it.next() == e) {
         return true;
       }

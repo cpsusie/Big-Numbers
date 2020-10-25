@@ -40,10 +40,10 @@ public:
     return m_location;
   }
   inline CPoint getTrLocation() const {
-    return getSystem().getTransformation().forwardTransform(getLocation());
+    return (CPoint)(Point2D)getSystem().getTransformation().forwardTransform(getLocation());
   }
   inline void setTrLocation(const CPoint &p) {
-    setLocation(getSystem().getTransformation().backwardTransform(p));
+    setLocation(getSystem().getTransformation().backwardTransform(Point2D(p)));
   }
   inline const CRect &getTextRect() const {
     return m_bckSave.getSavedRect();

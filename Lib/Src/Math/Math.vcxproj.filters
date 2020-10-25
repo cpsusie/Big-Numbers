@@ -50,6 +50,9 @@
     <Filter Include="Source Files\Number Types\Private Header Files">
       <UniqueIdentifier>{7c756e12-e3b4-4bbd-bc80-63394bc840b8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Geometri\Header Files">
+      <UniqueIdentifier>{fe227b06-181e-447c-8037-6cde815b5664}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ComplexMatrix.cpp">
@@ -296,9 +299,6 @@
     <ClCompile Include="NumberwIO.cpp">
       <Filter>Source Files\Number Types</Filter>
     </ClCompile>
-    <ClCompile Include="Point2DTransformations.cpp">
-      <Filter>Source Files\Geometri</Filter>
-    </ClCompile>
     <ClCompile Include="ComplexaStr.cpp">
       <Filter>Source Files\Number Types</Filter>
     </ClCompile>
@@ -319,6 +319,9 @@
     </ClCompile>
     <ClCompile Include="NumberPacker.cpp">
       <Filter>Source Files\Number Types</Filter>
+    </ClCompile>
+    <ClCompile Include="Point2DToPoint2DFunctions.cpp">
+      <Filter>Source Files\Geometri</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -371,21 +374,6 @@
     <ClInclude Include="..\..\Include\Math\Statistic.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\Math\Point2D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Math\Point3D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Math\Rectangle2D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Math\Point2DTransformations.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Include\Math\Polygon2D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\Math\Spherical.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -409,9 +397,6 @@
     </ClInclude>
     <ClInclude Include="pch.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="..\..\Include\Math\Cube3D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\Math\BigReal\BigInt.h">
       <Filter>Header Files\BigReal</Filter>
     </ClInclude>
@@ -502,20 +487,44 @@
     <ClInclude Include="ComplexStr.h">
       <Filter>Source Files\Number Types\Private Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\Math\IntervalTransformation.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\Include\Math\Polygon2D.h">
+      <Filter>Source Files\Geometri\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Point3D.h">
+      <Filter>Source Files\Geometri\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Rectangle2D.h">
+      <Filter>Source Files\Geometri\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\PointTemplate.h">
+      <Filter>Source Files\Geometri\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Point2D.h">
+      <Filter>Source Files\Geometri\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\Math\RectangleTransformation.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files\Geometri\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\Math\CubeTransformation.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\Include\Math\CubeTemplate.h">
+      <Filter>Source Files\Geometri\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\Math\IntervalTransformationArray.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\Include\Math\Cube3D.h">
+      <Filter>Source Files\Geometri\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\Math\CubeN.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\Include\Math\CubeTransformationTemplate.h">
+      <Filter>Source Files\Geometri\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\IntervalTransformation.h">
+      <Filter>Source Files\Geometri\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Point2DToPoint2DFunctions.h">
+      <Filter>Source Files\Geometri\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Cube3DTransformation.h">
+      <Filter>Source Files\Geometri\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\FixedSizeVector.h">
+      <Filter>Source Files\Geometri\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -60,8 +60,8 @@ BOOL CCustomFitThreadDlg::OnInitDialog() {
 
   for(size_t i = 0; i < m_pointArray.size(); i++) {
     const Point2D &p = m_pointArray[i];
-    addData(m_dataList, (int)i, 0, format(_T("%lg"), p.x),true);
-    addData(m_dataList, (int)i, 1, format(_T("%lg"), p.y));
+    addData(m_dataList, (int)i, 0, format(_T("%lg"), p.x()),true);
+    addData(m_dataList, (int)i, 1, format(_T("%lg"), p.y()));
   }
 
   return TRUE;
@@ -104,9 +104,10 @@ void CCustomFitThreadDlg::updateButtons() {
 
 Point2DArray selectPointsInInterval(const DoubleInterval &interval, const Point2DArray &data) {
   Point2DArray result;
-  for(size_t i = 0; i < data.size(); i++) {
-    if(interval.contains(data[i].x)) {
-      result.add(data[i]);
+  for(ConstIterator<PointTemplate<double, 2> > it = data.getIterator(); it.hasNext();) {
+    const Point2D &p = it.next();
+    if(interval.contains(p.x())) {
+      result.add(p);
     }
   }
   return result;

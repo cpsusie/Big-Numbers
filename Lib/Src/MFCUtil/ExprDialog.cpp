@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <MyUtil.h>
 #include <Scanner.h>
 #include <Math/Expression/Expression.h>
 #include <Math/Expression/ExpressionWrapper.h>
@@ -38,7 +39,7 @@ bool CExprDialog::validateAllExpr() {
   const bool genListFile = generateListFile();
   if(genListFile) openListFile();
   bool ok = true;
-  for(Iterator<int> it = m_helpButtonMap.values().getIterator(); ok && it.hasNext();) {
+  for(auto it = m_helpButtonMap.values().getIterator(); ok && it.hasNext();) {
     ok = validateExpr(it.next());
   }
   closeListFile();

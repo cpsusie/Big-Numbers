@@ -12,16 +12,18 @@ public:
   }
   template<typename V> Vertex2DTemplate(const Vertex2DTemplate<V> &v) : m_pos(v.pos), m_normal(v.normal) {
   }
-  template<typename P, typename N> Vertex2DTemplate(const Point2DTemplate<P> &pos, const Point2DTemplate<N> &normal) : m_pos(pos), m_normal(normal) {
+  template<typename P, typename N> Vertex2DTemplate(const FixedSizeVectorTemplate<P,2> &pos, const FixedSizeVectorTemplate<N,2> &normal)
+    : m_pos(pos), m_normal(normal)
+  {
   }
   template<typename V> Vertex2DTemplate<T> &operator=(const Vertex2DTemplate<V> &v) {
     return setPos(v.pos).setNormal(v.m_normal);
   }
-  template<typename P> Vertex2DTemplate<T> &setPos(Point2DTemplate<P> &pos) {
+  template<typename P> Vertex2DTemplate<T> &setPos(const FixedSizeVectorTemplate<P,2> &pos) {
     m_pos = pos;
     return *this;
   }
-  template<typename N> Vertex2DTemplate<T> &setNormal(Point2DTemplate<N> &normal) {
+  template<typename N> Vertex2DTemplate<T> &setNormal(const FixedSizeVectorTemplate<N,2> &normal) {
     m_normal = normal;
     return *this;
   }
@@ -101,10 +103,10 @@ public:
     return addPoint(Point2D(x,y));
   }
   inline Point2D &getLastPoint() {
-    return m_points.last();
+    return (Point2D&)m_points.last();
   }
   inline const Point2D &getLastPoint() const {
-    return m_points.last();
+    return (Point2D&)m_points.last();
   }
   inline bool isEmpty() const {
     return m_points.isEmpty();
@@ -117,10 +119,14 @@ public:
   }
   Rectangle2D            getBoundingBox() const;
   const Point2DArray    &getAllPoints() const;
-  CompactArray<Point2D*> getAllPointsRef();
+  Point2DRefArray        getAllPointsRef();
   void move(const Point2D &dp);
   String toString() const;
 };
+
+inline std::wostream &operator<<(std::wostream &out, const ProfileCurve2D &c) {
+  return out << c.toString();
+}
 
 inline bool operator==(const ProfileCurve2D &p1, const ProfileCurve2D &p2) {
   return (p1.m_type == p2.m_type) && (p1.m_points == p2.m_points);
@@ -148,7 +154,7 @@ public:
 
   Rectangle2D            getBoundingBox() const;
   Point2DArray           getAllPoints() const;
-  CompactArray<Point2D*> getAllPointsRef();
+  Point2DRefArray        getAllPointsRef();
   Point2DArray           getCurvePoints() const;
   inline ProfileCurve2D &getLastCurve() {
     return m_curveArray.last();
@@ -219,7 +225,7 @@ public:
   bool                   isEmpty() const;
   Rectangle2D            getBoundingBox() const;
   Point2DArray           getAllPoints() const;
-  CompactArray<Point2D*> getAllPointsRef();
+  Point2DRefArray        getAllPointsRef();
   Point2DArray           getCurvePoints() const;
 
   bool canConnect(const Point2D *p1, const Point2D *p2) const;

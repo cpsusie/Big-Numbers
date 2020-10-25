@@ -167,14 +167,14 @@ bool ThreadMap::isEmpty() const {
 void ThreadMap::killDemonThreads() {
   m_lock.wait();
   CompactArray<Thread*> demonArray;
-  for(Iterator<ThreadMapEntry> it = getIterator(); it.hasNext();) {
+  for(auto it = getIterator(); it.hasNext();) {
     Thread *t = it.next().getValue();
     if(t->isDemon()) {
       demonArray.add(t);
     }
   }
   int terminateCount = 0;
-  for(Thread *thr : demonArray) {
+  for(auto thr : demonArray) {
     THREAD_TRACE("Terminating demonthread(%d)", thr->getThreadId());
     if(TerminateThread(thr->m_threadHandle, 0)) {
       decrActiveCount();

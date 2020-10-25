@@ -6,7 +6,7 @@
 
 static Point2D findNormal(const Point2D &from, const Point2D &to) {
   Point2D tmp = unitVector(to - from);
-  return Point2D(-tmp.y,tmp.x);
+  return Point2D(-tmp.y(),tmp.x());
 }
 
 class FlatVertexGenerator : public CurveOperator {
@@ -49,12 +49,8 @@ const Point2DArray &ProfileCurve2D::getAllPoints() const {
   return m_points;
 }
 
-CompactArray<Point2D*> ProfileCurve2D::getAllPointsRef() {
-  CompactArray<Point2D*> result(m_points.size());
-  for(size_t i = 0; i < m_points.size(); i++) {
-    result.add(&m_points[i]);
-  }
-  return result;
+Point2DRefArray    ProfileCurve2D::getAllPointsRef() {
+  return Point2DRefArray(m_points);
 }
 
 Rectangle2D ProfileCurve2D::getBoundingBox() const {
@@ -74,17 +70,17 @@ ProfilePolygon2D::ProfilePolygon2D() {
 Point2DArray ProfilePolygon2D::getAllPoints() const {
   Point2DArray result;
   result.add(m_start);
-  for(size_t i = 0; i < m_curveArray.size(); i++) {
-    result.addAll(m_curveArray[i].getAllPoints());
+  for(ConstIterator<ProfileCurve2D> it = m_curveArray.getIterator(); it.hasNext();) {
+    result.addAll(it.next().getAllPoints());
   }
   return result;
 }
 
-CompactArray<Point2D*> ProfilePolygon2D::getAllPointsRef() {
-  CompactArray<Point2D*> result;
+Point2DRefArray ProfilePolygon2D::getAllPointsRef() {
+  Point2DRefArray result;
   result.add(&m_start);
-  for(size_t i = 0; i < m_curveArray.size(); i++) {
-    result.addAll(m_curveArray[i].getAllPointsRef());
+  for(Iterator<ProfileCurve2D> it = m_curveArray.getIterator(); it.hasNext();) {
+    result.addAll(it.next().getAllPointsRef());
   }
   return result;
 }
@@ -170,34 +166,31 @@ void ProfilePolygon2D::reverseOrder() {
 
 String ProfilePolygon2D::toString() const {
   String result = format(_T("start:%s\n"), m_start.toString().cstr());
-  for(size_t p = 0; p < m_curveArray.size(); p++) {
-    result += m_curveArray[p].toString() + _T("\n");
-  }
-  return result;
+  return result + m_curveArray.getIterator().toString(_T("\n"));
 }
 
 // ------------------------------------ Profile2D ------------------------------
 
 Point2DArray Profile2D::getAllPoints() const {
   Point2DArray result;
-  for(size_t i = 0; i < m_polygonArray.size(); i++) {
-    result.addAll(m_polygonArray[i].getAllPoints());
+  for(ConstIterator<ProfilePolygon2D> it = m_polygonArray.getIterator(); it.hasNext();) {
+    result.addAll(it.next().getAllPoints());
   }
   return result;
 }
 
-CompactArray<Point2D*> Profile2D::getAllPointsRef() {
-  CompactArray<Point2D*> result;
-  for(size_t i = 0; i < m_polygonArray.size(); i++) {
-    result.addAll(m_polygonArray[i].getAllPointsRef());
+Point2DRefArray Profile2D::getAllPointsRef() {
+  Point2DRefArray result;
+  for(Iterator<ProfilePolygon2D> it = m_polygonArray.getIterator(); it.hasNext();) {
+    result.addAll(it.next().getAllPointsRef());
   }
   return result;
 }
 
 Point2DArray Profile2D::getCurvePoints() const {
   Point2DArray result;
-  for(size_t i = 0; i < m_polygonArray.size(); i++) {
-    result.addAll(m_polygonArray[i].getCurvePoints());
+  for(ConstIterator<ProfilePolygon2D> it = m_polygonArray.getIterator(); it.hasNext();) {
+    result.addAll(it.next().getCurvePoints());
   }
   return result;
 }

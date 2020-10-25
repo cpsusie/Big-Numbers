@@ -37,7 +37,7 @@ private:
 
   int getChainLength(size_t index) const {
     int count = 0;
-    for(LinkObject<MapEntry<K,V> > *p = m_buffer[index]; p; p = p->m_next) {
+    for(auto p = m_buffer[index]; p; p = p->m_next) {
       count++;
     }
     return count;
@@ -88,7 +88,7 @@ public:
     ULONG index;
     if(m_capacity) {
       index = key.hashCode() % m_capacity;
-      for(LinkObject<MapEntry<K,V> > *p = m_buffer[index]; p; p = p->m_next) {
+      for(auto p = m_buffer[index]; p; p = p->m_next) {
         if(key == p->m_e.m_key) {
           return false;
         }
@@ -112,7 +112,7 @@ private:
   inline const V *getValue(const K &key) const {
     if(m_capacity) {
       const ULONG index = key.hashCode() % m_capacity;
-      for(LinkObject<MapEntry<K,V> > *p = m_buffer[index]; p; p = p->m_next) {
+      for(auto p = m_buffer[index]; p; p = p->m_next) {
         if(key == p->m_e.m_key) {
           return &(p->m_e.m_value);
         }
@@ -132,7 +132,8 @@ public:
   bool remove(const K &key) override {
     if(m_capacity) {
       const ULONG index = key.hashCode() % m_capacity;
-      for(LinkObject<MapEntry<K,V> > *p = m_buffer[index], *last = nullptr; p; last = p, p = p->m_next) {
+      LinkObject<MapEntry<K, V> > *last = nullptr;
+      for(auto p = m_buffer[index]; p; last = p, p = p->m_next) {
         if(key == p->m_e.m_key) {
           if(last) {
             last->m_next = p->m_next;
@@ -164,7 +165,7 @@ public:
 
     if(!isEmpty()) {
       for(size_t i = 0; i < oldCapacity; i++) {
-        for(LinkObject<MapEntry<K,V> > *n = oldBuffer[i]; n;) {
+        for(auto n = oldBuffer[i]; n;) {
           const ULONG index = n->m_e.m_key.hashCode() % m_capacity;
           LinkObject<MapEntry<K,V> > *&bp  = m_buffer[index];
           LinkObject<MapEntry<K,V> > *next = n->m_next;
@@ -247,7 +248,7 @@ public:
       m_current = nullptr;
       if(m_map.m_buffer) {
         m_endBuf = m_map.m_buffer + m_map.getCapacity();
-        for(LinkObject<MapEntry<K,V> > **p = m_map.m_buffer; p < m_endBuf; p++) {
+        for(auto p = m_map.m_buffer; p < m_endBuf; p++) {
           if(*p) {
             m_bufp = p;
             m_next = *p;
@@ -285,7 +286,7 @@ public:
       checkUpdateCount();
       m_current = m_next;
       if((m_next = m_next->m_next) == nullptr) {
-        for(LinkObject<MapEntry<K,V> > **p = m_bufp; ++p < m_endBuf;) {
+        for(auto p = m_bufp; ++p < m_endBuf;) {
           if(*p) {
             m_bufp = p;
             m_next = *p;

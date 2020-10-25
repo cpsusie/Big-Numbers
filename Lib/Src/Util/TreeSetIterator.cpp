@@ -36,7 +36,7 @@ TreeSetNode *TreeSetIterator::findFirst() {
 
 void TreeSetIterator::findPath(const void *key) {
   m_stack.clear();
-  for(TreeSetNode *p = m_set.m_root; p;) {
+  for(auto p = m_set.m_root; p;) {
     int c = m_set.m_comparator->cmp(p->key(), key);
     if(c > 0) {                    // p->key > key
       push(p,LEFT_DONE);
@@ -53,7 +53,7 @@ void TreeSetIterator::findPath(const void *key) {
 }
 
 TreeSetNode *TreeSetIterator::findNext() {
-  for(TreeSetIteratorStackElement *sp = top(); sp; sp = top()) {
+  for(auto sp = top(); sp; sp = top()) {
     TreeSetNode *n = sp->m_node;
     switch(sp->m_state) {
     case LEFT_DONE :

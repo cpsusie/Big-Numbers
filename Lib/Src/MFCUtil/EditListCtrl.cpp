@@ -378,7 +378,7 @@ void CEditListCtrl::editorValueToModel(const ListCell &cell) {
     break;
   case LFT_STRING:
     { CEditListStringEditor  *editCtrl = (CEditListStringEditor*)getEditor(cell);
-      *(String*)m_model->getValueAt(cell.y, cell.x) = editCtrl->getValue();;
+      *(String*)m_model->getValueAt(cell.y, cell.x) = editCtrl->getValue();
     }
     break;
   case LFT_STRCOMBO:

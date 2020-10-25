@@ -66,8 +66,8 @@ Real ExpressionFunctionR2R1::operator()(const Real &x, const Real &y) {
 }
 
 Real ExpressionFunctionR2R1::operator()(const Point2D &p) {
-  *m_var[0] = p.x;
-  *m_var[1] = p.y;
+  *m_var[0] = p.x();
+  *m_var[1] = p.y();
   return m_expr.evaluate();
 }
 

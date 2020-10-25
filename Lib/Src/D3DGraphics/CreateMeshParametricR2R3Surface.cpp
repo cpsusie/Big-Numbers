@@ -21,10 +21,10 @@ ParametricSurfacePoint::ParametricSurfacePoint(FunctionR2R3 &f, const Point2D &p
 #define EPS 1e-5
     Point2D  pt = p, ps = p;
 
-    pt.x = (fabs(p.x) < 2) ? (p.x+EPS) : p.x * (1+EPS);
-    ps.y = (fabs(p.y) < 2) ? (p.y+EPS) : p.y * (1+EPS);
-    const Point3D vt = (f(pt) - v) / (pt.x - p.x);
-    const Point3D vs = (f(ps) - v) / (ps.y - p.y);
+    pt[0] = (fabs(p[0]) < 2) ? (p[0]+EPS) : p[0] * (1+EPS);
+    ps[1] = (fabs(p[1]) < 2) ? (p[1]+EPS) : p[1] * (1+EPS);
+    const Point3D vt = (f(pt) - v) / (pt[0] - p[0]);
+    const Point3D vs = (f(ps) - v) / (ps[1] - p[1]);
     m_n = unitVector(cross(vt, vs));
   }
 }
@@ -43,10 +43,10 @@ LPD3DXMESH createMeshFromParametricSurface(AbstractMeshFactory &amf, FunctionR2R
   const float *uValues = calculateTexture ? uPoints.getBuffer() : nullptr, *vValues = calculateTexture ? vPoints.getBuffer() : nullptr;
   // (u ~ t, v ~ s)
   Point2D p;
-  p.x = tInterval.getFrom();
-  for(UINT i = 0; i < nt; i++, p.x += stept) {
-    p.y = sInterval.getFrom();
-    for(UINT j = 0; j < ns; j++, p.y += steps) {
+  p[0] = tInterval.getFrom();
+  for(UINT i = 0; i < nt; i++, p[0] += stept) {
+    p[1] = sInterval.getFrom();
+    for(UINT j = 0; j < ns; j++, p[1] += steps) {
       ParametricSurfacePoint sp(f,p, calculateNormals);
       mb.addVertex(sp.m_p);
       if(calculateNormals) {

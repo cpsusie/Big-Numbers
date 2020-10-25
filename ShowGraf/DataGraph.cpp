@@ -89,24 +89,24 @@ void DataGraph::readData(FILE *f) {
 Point2D DataGraph::strToPoint(const TCHAR *sx, const TCHAR *sy, const DataGraphParameters &param) {
   const BYTE flags = param.getFlags();
   Point2D result;
-  result.x = param.convertX(sx);
-  result.y = param.convertY(sy);
+  result.x() = param.convertX(sx);
+  result.y() = param.convertY(sy);
   if(flags & (DGP_RELATIVETOFIRSTX | DGP_RELATIVETOFIRSTY)) {
     if(m_hasFirstDataPoint) {
       if(flags & DGP_RELATIVETOFIRSTX) {
-        result.x -= m_firstPoint.x;
+        result.x() -= m_firstPoint.x();
       }
       if(flags & DGP_RELATIVETOFIRSTY) {
-        result.x -= m_firstPoint.y;
+        result.x() -= m_firstPoint.y();
       }
     } else {
       m_firstPoint        = result;
       m_hasFirstDataPoint = true;
       if(flags & DGP_RELATIVETOFIRSTX) {
-        result.x = 0;
+        result.x() = 0;
       }
       if(flags & DGP_RELATIVETOFIRSTY) {
-        result.y = 0;
+        result.y() = 0;
       }
     }
   }

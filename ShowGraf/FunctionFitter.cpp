@@ -17,11 +17,11 @@ void FunctionFitter::randomVarList() {
 
 double FunctionFitter::computeSSD() {
   double sum = 0;
-  for(size_t i = 0; i < m_data.size(); i++) {
+  for(const Point2D p : m_data) {
     if(m_x) {
-      *m_x = m_data[i].x;
+      *m_x = p.x();
     }
-    const double d = evaluate() - m_data[i].y;
+    const double d = evaluate() - p.y();
     sum += d * d;
   }
   return ::sqrt(sum);

@@ -137,7 +137,7 @@ BitSet PatternScanner::translate(const BitSet &set) const {
     return set;
   } else {
     BitSet result(set.getCapacity());
-    for(ConstIterator<size_t> it = set.getIterator(); it.hasNext();) {
+    for(auto it = set.getIterator(); it.hasNext();) {
       const _TUCHAR ch = (_TUCHAR)it.next();
       result.add(TRANSLATE(ch,true));
     }

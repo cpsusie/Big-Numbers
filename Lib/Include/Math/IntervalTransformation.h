@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Double80.h"
+#include <NumberInterval.h>
 #include "Real.h"
 
 typedef enum {
@@ -11,8 +11,9 @@ typedef enum {
 
 template<typename T> class IntervalTransformationTemplate {
 private:
-  NumberInterval<T> m_fromInterval, m_toInterval;
-  T m_a, m_b;
+  const IntervalScale m_scaleType;
+  NumberInterval<T>   m_fromInterval, m_toInterval;
+  T                   m_a, m_b;
 
 protected:
   virtual T translate(       const T &x) const = 0;
@@ -29,7 +30,9 @@ protected:
     }
   }
 public:
-  IntervalTransformationTemplate(const NumberInterval<T> &fromInterval, const NumberInterval<T> &toInterval) {
+  IntervalTransformationTemplate(const NumberInterval<T> &fromInterval, const NumberInterval<T> &toInterval, IntervalScale scaleType)
+    : m_scaleType(scaleType)
+  {
     checkFromInterval(fromInterval);
     m_fromInterval = fromInterval;
     m_toInterval   = toInterval;
@@ -44,6 +47,9 @@ public:
     }
   }
 
+  IntervalScale getScaleType() const {
+    return m_scaleType;
+  }
   const NumberInterval<T> &getFromInterval() const {
     return m_fromInterval;
   }
@@ -62,55 +68,55 @@ public:
     return m_toInterval;
   }
 
-  T forwardTransform(const T &x) const {
-    return m_a * translate(x) + m_b;
+  template<typename S> T forwardTransform(const S &x) const {
+    const T xT = (T)x;
+    return m_a * translate(xT) + m_b;
   }
-  T backwardTransform(const T &x) const {
-    return (m_a == 0) ? getFromInterval().getFrom() : inverseTranslate((x - m_b) / m_a);
+  template<typename S> T backwardTransform(const S &x) const {
+    const T xT = (T)x;
+    return (m_a == 0) ? getFromInterval().getFrom() : inverseTranslate((xT - m_b) / m_a);
   }
-  NumberInterval<T> forwardTransform(const NumberInterval<T> &interval) const {
+  template<typename S> NumberInterval<T> forwardTransform(const NumberInterval<S> &interval) const {
     return NumberInterval<T>(forwardTransform(interval.getFrom()),forwardTransform(interval.getTo()));
   }
-  NumberInterval<T> backwardTransform(const NumberInterval<T> &interval) const {
+  template<typename S> NumberInterval<T> backwardTransform(const NumberInterval<S> &interval) const {
     return NumberInterval<T>(backwardTransform(interval.getFrom()),backwardTransform(interval.getTo()));
   }
 
-  virtual bool isLinear() const = 0;
   // Returns new fromInterval.
-  const NumberInterval<T> &zoom(const T &x, const T &factor, bool xInToInterval=true) {
+  template<typename T1, typename T2> const NumberInterval<T> &zoom(const T1 &x, const T2 &factor, bool xInToInterval=true) {
+    const T xT = (T)x;
     if(xInToInterval) {
-      if(!getToInterval().contains(x)) {
+      if(!getToInterval().contains(xT)) {
         return m_fromInterval;
       }
-    } else {
-      if(!getFromInterval().contains(x)) {
-        return m_fromInterval;
-      }
+    } else if(!getFromInterval().contains(xT)) {
+      return m_fromInterval;
     }
-    T x1     = xInToInterval ? translate(backwardTransform(x)) : x;
-    T tFrom  = translate(getFromInterval().getFrom());
-    T tTo    = translate(getFromInterval().getTo());
-    tFrom += (x1 - tFrom) * factor;
-    tTo   += (x1 - tTo  ) * factor;
+    T x1      = xInToInterval ? translate(backwardTransform(xT)) : xT;
+    T tFrom   = translate(getFromInterval().getFrom());
+    T tTo     = translate(getFromInterval().getTo());
+    T factorT = (T)factor;
+    tFrom += (x1 - tFrom) * factorT;
+    tTo   += (x1 - tTo  ) * factorT;
     return setFromInterval(NumberInterval<T>(inverseTranslate(tFrom), inverseTranslate(tTo)));
   }
   bool operator==(const IntervalTransformationTemplate &rhs) const {
-    return (getScale()        == rhs.getScale()       )
+    return (getScaleType()    == rhs.getScaleType()   )
         && (getFromInterval() == rhs.getFromInterval())
         && (getToInterval()   == rhs.getToInterval()  );
   }
   bool operator!=(const IntervalTransformationTemplate &rhs) const {
     return !(*this == rhs);
   }
-  virtual IntervalScale getScale() const = 0;
-  virtual IntervalTransformationTemplate *clone() const = 0;
+  virtual IntervalTransformationTemplate *clone()    const = 0;
+  virtual bool                            isLinear() const = 0;
   virtual ~IntervalTransformationTemplate() {
   }
 };
 
 typedef IntervalTransformationTemplate<float   > FloatIntervalTransformation;
 typedef IntervalTransformationTemplate<double  > IntervalTransformation;
-typedef IntervalTransformationTemplate<Double80> D80IntervalTransformation;
 typedef IntervalTransformationTemplate<Real    > RealIntervalTransformation;
 
 template<typename T> class LinearTransformationTemplate : public IntervalTransformationTemplate<T> {
@@ -122,25 +128,21 @@ protected:
     return x;
   }
 public:
-  bool isLinear() const override {
-    return true;
-  }
   LinearTransformationTemplate(const NumberInterval<T> &fromInterval, const NumberInterval<T> &toInterval)
-    : IntervalTransformationTemplate<T>(fromInterval, toInterval) {
+    : IntervalTransformationTemplate<T>(fromInterval, toInterval, LINEAR) {
     computeTransformation();
-  }
-  IntervalScale getScale() const override {
-    return LINEAR;
   }
   IntervalTransformationTemplate<T> *clone() const override {
     IntervalTransformationTemplate<T> *t = new LinearTransformationTemplate(*this); TRACE_NEW(t);
     return t;
   }
+  bool isLinear() const override {
+    return true;
+  }
 };
 
 typedef LinearTransformationTemplate<float   > FloatLinearTransformation;
 typedef LinearTransformationTemplate<double  > LinearTransformation;
-typedef LinearTransformationTemplate<Double80> D80LinearTransformation;
 typedef LinearTransformationTemplate<Real    > RealLinearTransformation;
 
 template<typename T> class LogarithmicTransformationTemplate : public IntervalTransformationTemplate<T> {
@@ -155,25 +157,20 @@ protected:
     return exp(x);
   }
 public:
-  bool isLinear() const override {
-    return false;
-  }
   LogarithmicTransformationTemplate(const NumberInterval<T> &fromInterval, const NumberInterval<T> &toInterval)
-    : IntervalTransformationTemplate<T>(fromInterval, toInterval) {
+    : IntervalTransformationTemplate<T>(fromInterval, toInterval, LOGARITHMIC) {
     computeTransformation();
-  }
-  IntervalScale getScale() const override {
-    return LOGARITHMIC;
   }
   IntervalTransformationTemplate<T> *clone() const override {
     IntervalTransformationTemplate<T> *t = new LogarithmicTransformationTemplate(*this); TRACE_NEW(t);
     return t;
   }
+  bool isLinear() const override {
+    return false;
+  }
 };
-
 typedef LogarithmicTransformationTemplate<float   > FloatLogarithmicTransformation;
 typedef LogarithmicTransformationTemplate<double  > LogarithmicTransformation;
-typedef LogarithmicTransformationTemplate<Double80> D80LogarithmicTransformation;
 typedef LogarithmicTransformationTemplate<Real    > RealLogarithmicTransformation;
 
 template<typename T> class NormalDistributionTransformationTemplate : public IntervalTransformationTemplate<T> {
@@ -186,7 +183,7 @@ protected:
   }
 
   T inverseTranslate(const T &x) const override {
-    return norm(x);
+    return gaussDistribution(x);
   }
 
   const NumberInterval<T> &setFromInterval(const NumberInterval<T> &i) override {
@@ -198,25 +195,21 @@ protected:
   }
 public:
   NormalDistributionTransformationTemplate(const NumberInterval<T> &fromInterval, const NumberInterval<T> &toInterval)
-    : IntervalTransformationTemplate<T>(fromInterval, toInterval)
+    : IntervalTransformationTemplate<T>(fromInterval, toInterval, NORMAL_DISTRIBUTION)
   {
     computeTransformation();
-  }
-  bool isLinear() const override {
-    return false;
-  }
-  IntervalScale getScale() const override {
-    return NORMAL_DISTRIBUTION;
   }
   IntervalTransformationTemplate<T> *clone() const override {
     IntervalTransformationTemplate<T> *t = new NormalDistributionTransformationTemplate(*this); TRACE_NEW(t);
     return t;
   }
+  bool isLinear() const override {
+    return false;
+  }
 };
 
 typedef NormalDistributionTransformationTemplate<float   > FloatNormalDistributionTransformation;
 typedef NormalDistributionTransformationTemplate<double  > NormalDistributionTransformation;
-typedef NormalDistributionTransformationTemplate<Double80> D80NormalDistributionTransformation;
 typedef NormalDistributionTransformationTemplate<Real    > RealNormalDistributionTransformation;
 
 #define X_AXIS 1

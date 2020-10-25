@@ -6,6 +6,7 @@
 #include <CompactHashMap.h>
 #include <Random.h>
 #include <Math/Cube3D.h>
+#include "D3Math.h"
 
 namespace ISOSURFACE_POLYGONIZER_STANDARD {
 
@@ -72,7 +73,7 @@ public:
   }
   inline String toString(int precision=6) const {
     return format(_T("P:(%+.*le,%+.*le,%+.*le), V:%+.*le")
-                 ,precision,x,precision,y,precision,z,precision,m_value);
+                 ,precision,x(),precision,y(),precision,z(),precision,m_value);
   }
 };
 
@@ -117,8 +118,8 @@ public:
   }
   String toString(int precision=6) const {
     return format(_T("P:(%+.*le,%+.*le,%+.*le), N:(%+.*le,%+.*le,%+.*le)")
-                 ,precision,m_position.x,precision,m_position.y,precision,m_position.z
-                 ,precision,m_normal.x  ,precision,m_normal.y  ,precision,m_normal.z);
+                 ,precision,m_position.x(),precision,m_position.y(),precision,m_position.z()
+                 ,precision,m_normal.x()  ,precision,m_normal.y()  ,precision,m_normal.z());
   }
 };
 

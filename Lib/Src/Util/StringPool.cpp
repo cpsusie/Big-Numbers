@@ -50,7 +50,7 @@ void StringPool::copy(const StringPool &src) {
   m_textData = src.m_textData;
   m_size     = src.m_size;
   StringPoolNodePage **last = &m_firstPage;
-  for(StringPoolNodePage *page = src.m_firstPage; page; page = page->m_next, last = &(*last)->m_next) {
+  for(auto page = src.m_firstPage; page; page = page->m_next, last = &(*last)->m_next) {
     StringPoolNodePage *newPage = new StringPoolNodePage(*page); TRACE_NEW(newPage);
     *last = newPage;
   }
@@ -79,7 +79,7 @@ size_t StringPool::addTStr(const TCHAR *s) {
   for(;;) {
     if(m_indexCapacity) {
       hashCode = strHash(s) % m_indexCapacity;
-      for(const StringPoolNode *p = m_index[hashCode]; p; p = p->m_next) {
+      for(auto p = m_index[hashCode]; p; p = p->m_next) {
         if(_tcscmp(s, getNodeString(p)) == 0) {
           return p->m_offset;
         }
@@ -183,7 +183,7 @@ void StringPool::setIndexCapacity(size_t capacity) {
   m_indexCapacity = capacity;
   m_index         = allocateIndex(capacity);
 
-  for(StringPoolNodePage *page = m_firstPage; page; page = page->m_next) {
+  for(auto page = m_firstPage; page; page = page->m_next) {
     for(UINT i = 0; i < page->m_count; i++) {
       StringPoolNode *n = page->m_nodes+i;
       const ULONG hashCode = strHash(getNodeString(n)) % m_indexCapacity;
@@ -232,7 +232,7 @@ void StringPool::load(ByteInputStream &s) {
 
 void StringPool::dump() const {
   debugLog(_T("Stringpool\n"));
-  for(Iterator<const TCHAR*> it = getIterator(); it.hasNext();) {
+  for(auto it = getIterator(); it.hasNext();) {
     debugLog(_T("<%s>\n"),it.next());
   }
 }

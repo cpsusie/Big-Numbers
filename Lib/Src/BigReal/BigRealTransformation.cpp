@@ -104,12 +104,12 @@ void BigRealRectangleTransformation::computeTransformation(const BigRealRectangl
   BigRealIntervalTransformation *newXtransform = nullptr, *newYtransform = nullptr;
   try {
     DigitPool *dp = getDigitPool();
-    newXtransform = allocateTransformation(BigRealInterval(from.getBottomLeft().x,from.getBottomRight().x,dp)
-                                          ,BigRealInterval(to.getBottomLeft().x  ,to.getBottomRight().x  ,dp)
+    newXtransform = allocateTransformation(BigRealInterval(from.LT()[0], from.RB()[0], dp)
+                                          ,BigRealInterval(to.LT()[  0], to.RB()[  0], dp)
                                           ,xScale);
 
-    newYtransform = allocateTransformation(BigRealInterval(from.getTopLeft().y, from.getBottomLeft().y  ,dp)
-                                          ,BigRealInterval(to.getTopLeft().y  , to.getBottomLeft().y    ,dp)
+    newYtransform = allocateTransformation(BigRealInterval(from.LT()[1], from.RB()[1], dp)
+                                          ,BigRealInterval(to.LT()[  1], to.RB()[  1], dp)
                                           ,yScale);
     cleanup();
     m_xtransform = newXtransform;
@@ -137,15 +137,13 @@ BigRealRectangle2D BigRealRectangleTransformation::getDefaultFromRectangle(Inter
 }
 
 BigRealRectangle2D  BigRealRectangleTransformation::getFromRectangle() const {
-  BigRealPoint2D p1 = BigRealPoint2D(getXTransformation().getFromInterval().getFrom(), getYTransformation().getFromInterval().getFrom());
-  BigRealPoint2D p2 = BigRealPoint2D(getXTransformation().getFromInterval().getTo()  , getYTransformation().getFromInterval().getTo());
-  return BigRealRectangle2D(p1.x, p1.y, p2.x-p1.x, p2.y-p1.y,getDigitPool());
+  const BigRealInterval &xi = getXTransformation().getFromInterval(), &yi = getYTransformation().getFromInterval();
+  return BigRealRectangle2D(xi.getFrom(),yi.getFrom(), xi.getLength(), yi.getLength());
 }
 
 BigRealRectangle2D  BigRealRectangleTransformation::getToRectangle()   const {
-  BigRealPoint2D p1 = BigRealPoint2D(getXTransformation().getToInterval().getFrom()  , getYTransformation().getToInterval().getFrom());
-  BigRealPoint2D p2 = BigRealPoint2D(getXTransformation().getToInterval().getTo()    , getYTransformation().getToInterval().getTo());
-  return BigRealRectangle2D(p1.x, p1.y, p2.x-p1.x, p2.y-p1.y, getDigitPool());
+  const BigRealInterval &xi = getXTransformation().getToInterval(), &yi = getYTransformation().getToInterval();
+  return BigRealRectangle2D(xi.getFrom(),yi.getFrom(), xi.getLength(), yi.getLength());
 }
 
 void BigRealRectangleTransformation::setScale(IntervalScale newScale, int flags) {
@@ -162,10 +160,10 @@ void BigRealRectangleTransformation::setScale(IntervalScale newScale, int flags)
 // Returns new fromRectangle.
 BigRealRectangle2D BigRealRectangleTransformation::zoom(const BigRealPoint2D &p, const BigReal &factor, int flags, bool pInToRectangle) {
   if(flags & X_AXIS) {
-    m_xtransform->zoom(p.x, factor, pInToRectangle);
+    m_xtransform->zoom(p.x(), factor, pInToRectangle);
   }
   if(flags & Y_AXIS) {
-    m_ytransform->zoom(p.y, factor, pInToRectangle);
+    m_ytransform->zoom(p.y(), factor, pInToRectangle);
   }
   return getFromRectangle();
 }
@@ -184,14 +182,14 @@ bool BigRealRectangleTransformation::adjustAspectRatio() {
   bool               changed   = false;
   const UINT         digits    = max(getXTransformation().getDigits(), getYTransformation().getDigits());
   if(fromRatio > toRatio) {
-    const BigReal dh = dsign(fr.getHeight())*(fabs(rQuot(fr.getWidth(),toRatio,digits,dp)) - fabs(fr.getHeight()));
-    fr.m_p.y     -= dh * dp->_05();
-    fr.m_size.cy += dh;
+    BigReal dh = dsign(fr.getHeight())*(fabs(rQuot(fr.getWidth(),toRatio,digits,dp)) - fabs(fr.getHeight()));
+    fr.size()[1] += dh;
+    fr.p0()[  1] -= dh.divide2();
     changed = !dh.isZero();
   } else if(fromRatio < toRatio) {
-    const BigReal dw = dsign(fr.getWidth())*(fabs(rProd(toRatio,fr.getHeight(),digits,dp)) - fabs(fr.getWidth()));
-    fr.m_p.x     -= dw * dw.getDigitPool()->_05();
-    fr.m_size.cx += dw;
+    BigReal dw = dsign(fr.getWidth())*(fabs(rProd(toRatio,fr.getHeight(),digits,dp)) - fabs(fr.getWidth()));
+    fr.size()[0] += dw;
+    fr.p0()[0]   -= dw.divide2();
     changed = !dw.isZero();
   }
   if(changed) {

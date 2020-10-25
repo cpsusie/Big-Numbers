@@ -83,8 +83,8 @@ Real asec(                const Real &x, TrigonometricMode mode);
 
 Real gammaStirling(       const Real &x);
 Real lnGammaStirling(     const Real &x);
-Real gauss(               const Real &x);
-Real norm(                const Real &x);
+Real gaussDensity(        const Real &x); // normal density
+Real gaussDistribution(   const Real &x); // normal distribution
 Real probitFunction(      const Real &x);
 Real errorFunction(       const Real &x);
 Real inverseErrorFunction(const Real &x);

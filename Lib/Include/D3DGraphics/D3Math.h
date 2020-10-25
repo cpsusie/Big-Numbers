@@ -50,62 +50,84 @@ inline float dist(const D3DXVECTOR3 &p1, const D3DXVECTOR3 &p2) {
 #define     degrees(x) D3DXToDegree(x)
 
 #define A_POSITION_TRAITS(className)                                                                                                \
+private:                                                                                                                            \
+  template<typename TX, typename TY, typename TZ> inline void initPOS(const TX &_x, const TY &_y,const TZ &_z) {                    \
+    x = (float)_x; y = (float)_y; z = (float)_z;                                                                                    \
+  }                                                                                                                                 \
+public:                                                                                                                             \
   template<typename TX,typename TY,typename TZ> className &setPos(const TX &_x, const TY &_y, const TZ &_z) {                       \
-    x = (float)_x; y = (float)_y; z = (float)_z; return *this;                                                                      \
+    initPOS(_x,_y,_z); return *this;                                                                                                \
   }                                                                                                                                 \
   template<typename TV>                         className &setPos(const TV &v) {                                                    \
-    x = (float)v.x; y = (float)v.y; z = (float)v.z; return *this;                                                                   \
+    initPOS(v.x,v.y,v.z); return *this;                                                                                             \
   }                                                                                                                                 \
-  template<typename T>                          className &setPos(const Point3DTemplate<T> &p) {                                    \
-    x = (float)p.x; y = (float)p.y; z = (float)p.z; return *this;                                                                   \
+  template<typename T>                          className &setPos(const FixedSizeVectorTemplate<T,3> &v) {                          \
+    initPOS(v[0],v[1],v[2]); return *this;                                                                                          \
   }                                                                                                                                 \
   inline Vertex operator-() const                        { return Vertex(     -x,-y,-z); }                                          \
   inline operator D3DXVECTOR3() const                    { return D3DXVECTOR3( x, y, z); }                                          \
   inline operator Point3D()     const                    { return Point3D(     x, y, z); }                                          \
-  inline const D3DXVECTOR3 &getPos() const { return *(D3DXVECTOR3*)(void*)&x; }
+  inline const    D3DXVECTOR3 &getPos() const { return *(D3DXVECTOR3*)(void*)&x; }
 
 #define A_NORMAL_TRAITS(className)                                                                                                  \
+private:                                                                                                                            \
+  template<typename TX, typename TY, typename TZ> inline void initNORMAL(const TX &_x, const TY &_y,const TZ &_z) {                 \
+    nx = (float)_x; ny = (float)_y; nz = (float)_z;                                                                                 \
+  }                                                                                                                                 \
+public:                                                                                                                             \
   template<typename TX,typename TY,typename TZ> className &setNormal(const TX &_x, const TX &_y, const TX &_z) {                    \
-    nx = (float)_x ; ny = (float)_y ; nz = (float)_z; return *this;                                                                 \
+    initNORMAL(_x,_y,_z); return *this;                                                                                             \
   }                                                                                                                                 \
   template<typename TV> className &setNormal(const TV &n) {                                                                         \
-    nx = (float)n.x; ny = (float)n.y; nz = (float)n.z; return *this;                                                                \
+    initNORMAL(n.x,n.y,n.z); return *this;                                                                                          \
   }                                                                                                                                 \
   inline className &reverseNormal() { nx = -nx; ny = -ny; nz = -nz; return *this; }                                                 \
   inline const D3DXVECTOR3 &getNormal() const { return *(D3DXVECTOR3*)(void*)&nx; }
+
 
 #define E_NORMAL_TRAITS(className)                                                                                                  \
   template<typename TX,typename TY,typename TZ> className &setNormal(const TX &_x, const TX &_y, const TX &_z) { return *this; }    \
   template<typename TV>                         className &setNormal(const TV &n)                              { return *this; }    \
   inline                                        className &reverseNormal()                                     { return *this; }
 
+
 #define A_DIFFUSE_TRAITS(className)                                                                                                 \
   inline                                        className &setDiffuse(D3DCOLOR _diffuse) {                                          \
     diffuse = _diffuse; return *this;                                                                                               \
   }
 
+
 #define E_DIFFUSE_TRAITS(className)                                                                                                 \
   inline                                        className &setDiffuse(D3DCOLOR _diffuse)                       { return *this; }
 
+
 #define A_TEXTURE_TRAITS(className)                                                                                                 \
+private:                                                                                                                            \
+  template<typename TU, typename TV> inline void initTEXTURE(const TU &_tu, const TV &_tv) {                                        \
+    tu = (float)_tu; tv = (float)_tv;                                                                                               \
+  }                                                                                                                                 \
+public:                                                                                                                             \
   template<typename TU, typename TV>            className &setTexture(const TU &_tu, const TV &_tv) {                               \
-    tu = (float)_tu; tv = (float)_tv; return *this;                                                                                 \
+    initTEXTURE(_tu,_tv); return *this;                                                                                             \
   }                                                                                                                                 \
   inline                                        className &setTexture(const TextureVertex &p) {                                     \
-    tu = p.u; tv = p.v; return *this;                                                                                               \
+    initTEXTURE(p.u, p.v); return *this;                                                                                            \
   }                                                                                                                                 \
   template<typename T>                          className &setTexture(const T &p) {                                                 \
-    tu = (float)p.x ; tv = (float)p.y; return *this;                                                                                \
+    initTEXTURE(p.x,p.y); return *this;                                                                                             \
   }
+
 
 #define E_TEXTURE_TRAITS(className)                                                                                                 \
   template<typename TU, typename TV>            className &setTexture(const TU &_tu, const TV &_tv)            { return *this; }    \
   template<typename T>                          className &setTexture(const T &p)                              { return *this; }
 
-#define SETFVFDATA_TRAITS                                                                                       \
-  inline void setFVFData(const Vertex &v, const Vertex &n, D3DCOLOR diffuse, const TextureVertex &tv) {         \
-    setPos(v); setNormal(n); setDiffuse(diffuse); setTexture(tv);                                               \
+
+#define SETFVFDATA_TRAITS                                                                                                           \
+  inline void setFVFData(const Vertex &v, const Vertex &n, D3DCOLOR diffuse, const TextureVertex &tv) {                             \
+    setPos(v); setNormal(n); setDiffuse(diffuse); setTexture(tv);                                                                   \
   }
+
 
 #define FVF_TRAITS(className, p,n,d,t) \
   p##_POSITION_TRAITS(className)       \
@@ -116,12 +138,13 @@ inline float dist(const D3DXVECTOR3 &p1, const D3DXVECTOR3 &p2) {
 class TextureVertex {
 public:
   float u, v;
-  inline TextureVertex() {}
+  inline TextureVertex() {
+  }
   template<typename TU, typename TV> TextureVertex(TU _u, TV _v) : u((float)_u), v((float)_v) {
   }
   inline TextureVertex(const D3DXVECTOR2 &vec) : u(vec.x), v(vec.y) {
   }
-  template<typename T> TextureVertex(const Point2DTemplate<T> &p) : u((float)p.x), v((float)p.y) {
+  template<typename T> TextureVertex(const FixedSizeVectorTemplate<T,2> &p) : u((float)p[0]), v((float)p[1]) {
   }
 };
 
@@ -148,13 +171,14 @@ public:
   };
   inline Vertex() {
   }
-  template<typename TX, typename TY, typename TZ> Vertex(TX _x, TY _y, TZ _z) : x((float)_x), y((float)_y), z((float)_z) {
+  template<typename TX, typename TY, typename TZ> Vertex(TX _x, TY _y, TZ _z) {
+    initPOS(_x, _y, _z);
   }
-  template<typename T> Vertex(const Point3DTemplate<T> &p) : x((float)p.x), y((float)p.y), z((float)p.z) {
+  template<typename T> Vertex(const FixedSizeVectorTemplate<T,3> &pos) {
+    initPOS(pos[0], pos[1], pos[2]);
   }
   inline Vertex(const D3DXVECTOR3 &v) : x(v.x), y(v.y), z(v.z) {
   }
-
   FVF_TRAITS(Vertex,A,E,E,E)
 };
 
@@ -168,15 +192,13 @@ public:
 
   inline VertexNormal() {
   }
-  template<typename P, typename N> VertexNormal(const Point3DTemplate<P> &pos, const Point3DTemplate<N> &normal)
-    :  x((float)pos.x   ),  y((float)pos.y   ),  z((float)pos.z   )
-    , nx((float)normal.x), ny((float)normal.y), nz((float)normal.z)
-  {
+  template<typename P, typename N> VertexNormal(const FixedSizeVectorTemplate<P,3> &pos, const FixedSizeVectorTemplate<N,3> &normal) {
+    initPOS(   pos[   0], pos[   1], pos[   2]);
+    initNORMAL(normal[0], normal[1], normal[2]);
   }
-  inline VertexNormal(const D3DXVECTOR3 &pos, const D3DXVECTOR3 &normal)
-    :  x(pos.x   ),  y(pos.y   ),  z(pos.z   )
-    , nx(normal.x), ny(normal.y), nz(normal.z)
-  {
+  inline VertexNormal(const D3DXVECTOR3 &pos, const D3DXVECTOR3 &normal) {
+    initPOS(   pos.x   , pos.y   , pos.z   );
+    initNORMAL(normal.x, normal.y, normal.z);
   }
   FVF_TRAITS(VertexNormal,A,A,E,E)
 };

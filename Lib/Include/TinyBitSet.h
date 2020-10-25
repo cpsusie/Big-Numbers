@@ -87,7 +87,7 @@ public:
     return getSize(m_bits);
   }
   UINT select(RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) const {                     // Returns a random element from non empty set. throws Exception if set is empty
-    if(isEmpty()) throwSelectFromEmptyCollectionException(__TFUNCTION__);
+    if(isEmpty()) throwEmptySetException(__TFUNCTION__);
     CompactArray<BYTE> members(64);
     T bits = m_bits;
     for(BYTE i = 0; bits; i++, bits >>= 1) {

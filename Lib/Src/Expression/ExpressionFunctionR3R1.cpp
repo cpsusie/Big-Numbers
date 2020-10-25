@@ -67,9 +67,9 @@ Real ExpressionFunctionR3R1::operator()(const Real &x, const Real &y, const Real
 }
 
 Real ExpressionFunctionR3R1::operator()(const Point3D &p) {
-  *m_var[0] = p.x;
-  *m_var[1] = p.y;
-  *m_var[2] = p.z;
+  *m_var[0] = p[0];
+  *m_var[1] = p[1];
+  *m_var[2] = p[2];
   return m_expr.evaluate();
 }
 

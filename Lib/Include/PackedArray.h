@@ -14,19 +14,11 @@ private:
     if(m_data.size() * 32 < m_firstFreeBit + m_bitsPerItem) m_data.add(0);
   }
 
-  static void validateBitsPerItem(const TCHAR *method, UINT bitsPerItem);
-  void indexError(const TCHAR *method, UINT64 index) const {
-    throwIndexOutOfRangeException(method, index, size());
-  }
-  void valueError(const TCHAR *method, UINT v) const {
-    throwInvalidArgumentException(method, _T("v=%lu, maxValue=%lu"), v, m_maxValue);
-  }
-  void indexError(const TCHAR *method, UINT64 index, UINT64 count) const {
-    throwIndexOutOfRangeException(method, index, count, size());
-  }
-  void selectError(const TCHAR *method) const {
-    throwSelectFromEmptyCollectionException(method);
-  }
+  static void validateBitsPerItem(const TCHAR *method, UINT   bitsPerItem        );
+  void        indexError(         const TCHAR *method, UINT64 index              ) const;
+  void        indexError(         const TCHAR *method, UINT64 index, UINT64 count) const;
+  void        valueError(         const TCHAR *method, UINT   v                  ) const;
+  static void emptyArrayError(    const TCHAR *method);
 
 public:
   explicit PackedArray(BYTE bitsPerItem);
@@ -65,8 +57,8 @@ public:
 
   void setCapacity(UINT64 capacity);
 
-  Iterator<UINT> getIterator() const;
-  Iterator<UINT> getReverseIterator() const;
+  ConstIterator<UINT> getIterator() const;
+  ConstIterator<UINT> getReverseIterator() const;
 
   String toString(const TCHAR *delimiter = _T(",")) const {
     return getIterator().toString(UIntStringifier(), delimiter);
@@ -100,18 +92,14 @@ private:
   CompactFileArray<UINT> m_data;
   UINT64                 m_firstFreeBit;
   UINT64                 m_size;
-  void indexError(const TCHAR *method, UINT64 index) const {
-    throwIndexOutOfRangeException(method, index, size());
-  }
-  void selectError(const TCHAR *method) const {
-    throwSelectFromEmptyCollectionException(method);
-  }
-  void checkInvariant(const TCHAR *method) const;
+  void        indexError(     const TCHAR *method, UINT64 index) const;
+  static void emptyArrayError(const TCHAR *method);
+  void        checkInvariant( const TCHAR *method) const;
 public:
   PackedFileArray(const String &fileName, UINT64 startOffset);
   UINT get(UINT64 index) const;
   inline UINT select(RandomGenerator &rnd = *RandomGenerator::s_stdGenerator) const {
-    if(isEmpty()) selectError(__TFUNCTION__);
+    if(isEmpty()) emptyArrayError(__TFUNCTION__);
     return get(rnd.nextInt64(size()));
   }
   inline bool isEmpty() const {

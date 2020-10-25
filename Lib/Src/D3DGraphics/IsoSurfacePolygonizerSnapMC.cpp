@@ -107,9 +107,9 @@ PolygonizerBase &PolygonizerBase::cleanup() {
 
 Point3D PolygonizerBase::getCornerPoint(int i, int j, int k) const {
   Point3D result;
-  result.x = m_start.x + ((double)i)*m_cellSize;
-  result.y = m_start.y + ((double)j)*m_cellSize;
-  result.z = m_start.z + ((double)k)*m_cellSize;
+  result[0] = m_start[0] + ((double)i)*m_cellSize;
+  result[1] = m_start[1] + ((double)j)*m_cellSize;
+  result[2] = m_start[2] + ((double)k)*m_cellSize;
   return result;
 }
 
@@ -495,9 +495,9 @@ IsoSurfaceTest IsoSurfacePolygonizer::findStartPoint(bool positive, const Point3
   const GridLabel label = positive ? V_POSITIVE : V_NEGATIVE;
   double       range = m_cellSize;
   for(int i = 0; i < STEPCOUNT; i++) {
-    result.x = p.x + randDouble(-range, range, m_rnd);
-    result.y = p.y + randDouble(-range, range, m_rnd);
-    result.z = p.z + randDouble(-range, range, m_rnd);
+    result[0] = p[0] + randDouble(-range, range, m_rnd);
+    result[1] = p[1] + randDouble(-range, range, m_rnd);
+    result[2] = p[2] + randDouble(-range, range, m_rnd);
     result.setValue(evaluate(result));
     if(result.m_label == label) {
       return result;
@@ -565,16 +565,16 @@ UINT IsoSurfacePolygonizer::getVertexId(const HashedCubeCorner &c0, const Hashed
   } else if((dist = fabs(zp.coord - c1.coord)) <= m_maxSnapDistance) {  \
     snapCorner = &c1;                                                   \
   } else {                                                              \
-    snapCorner = nullptr;                                                  \
+    snapCorner = nullptr;                                               \
   }
 
   const Point3D           zp = converge(c0, c1); // position;
   double                  dist;
   const HashedCubeCorner *snapCorner;
   switch(coordIndex) {
-  case 0 : CHECKSNAPDIM(x); break;
-  case 1 : CHECKSNAPDIM(y); break;
-  case 2 : CHECKSNAPDIM(z); break;
+  case 0 : CHECKSNAPDIM(x()); break;
+  case 1 : CHECKSNAPDIM(y()); break;
+  case 2 : CHECKSNAPDIM(z()); break;
   default: snapCorner = nullptr; break;
   }
   UINT result;
@@ -600,9 +600,9 @@ UINT IsoSurfacePolygonizer::getVertexId(const HashedCubeCorner &c0, const Hashed
 Point3D IsoSurfacePolygonizer::getNormal(const Point3D &point) {
   const double f0 = evaluate(point);
   Point3D p=point, result;
-                 p.x += m_delta; result.x = evaluate(p) - f0;
-  p.x = point.x; p.y += m_delta; result.y = evaluate(p) - f0;
-  p.y = point.y; p.z += m_delta; result.z = evaluate(p) - f0;
+                 p[0] += m_delta; result[0] = evaluate(p) - f0;
+  p[0] = point[0]; p[1] += m_delta; result[1] = evaluate(p) - f0;
+  p[1] = point[1]; p[2] += m_delta; result[2] = evaluate(p) - f0;
   return result.normalize();
 }
 
@@ -779,9 +779,9 @@ String ivToString(IsoVertex iv) {
 // ------------------------------------- Point3DWithValue --------------------------------------
 String Point3DWithValue::toString(int precision) const {
   return format(_T("P:(%+.*le,%+.*le,%+.*le), V:%+.*le (%c)")
-               ,precision, x
-               ,precision, y
-               ,precision, z
+               ,precision, x()
+               ,precision, y()
+               ,precision, z()
                ,precision, m_value
                ,getLabelChar(m_label)
                );
@@ -793,8 +793,8 @@ String Face3::toString() const {
 
 String IsoSurfaceVertex::toString(int precision) const {
   return format(_T("P:(%+.*le,%+.*le,%+.*le), N:(%+.*le,%+.*le,%+.*le)")
-               ,precision,m_position.x,precision,m_position.y,precision,m_position.z
-               ,precision,m_normal.x  ,precision,m_normal.y  ,precision,m_normal.z
+               ,precision,m_position[0],precision,m_position[1],precision,m_position[2]
+               ,precision,m_normal[0]  ,precision,m_normal[1]  ,precision,m_normal[2]
                );
 }
 

@@ -12,7 +12,7 @@ public:
   CColormapDialog(int resId, int propertyId, CWnd *pParent) : CPropertyDialog<T>(resId, propertyId, pParent) {
   }
   ~CColormapDialog() override {
-    for(Iterator<Entry<CompactIntKeyType, CSliderCtrlWithTransformation*> > it = m_sliderMap.getIterator(); it.hasNext();) {
+    for(auto it = m_sliderMap.getIterator(); it.hasNext();) {
       CSliderCtrlWithTransformation *ctrl = it.next().getValue();
       SAFEDELETE(ctrl);
     }

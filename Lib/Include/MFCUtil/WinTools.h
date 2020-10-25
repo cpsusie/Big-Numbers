@@ -399,14 +399,6 @@ void   notifyIconSetToolTip(      HWND hwnd, UINT uID, const String &toolTip);
 String toString(const CPoint &p);
 String toString(const CSize  &s);
 
-  inline CSize operator*(const CSize &s1, const CSize &s2) {
-  return CSize(s1.cx*s2.cx,s1.cy*s2.cy);
-}
-
-inline CSize operator/(const CSize &s1, const CSize &s2) {
-  return CSize(s1.cx/s2.cx,s1.cy/s2.cy);
-}
-
 #pragma warning(push)
 
 #pragma warning(disable : 4244)
@@ -415,12 +407,25 @@ inline CSize operator/(const CSize &s1, const CSize &s2) {
 
 typedef CompactArray<CPoint> PointArray;
 
-inline CSize operator*(const CSize &sz, double factor) {
-  return CSize(sz.cx*factor, sz.cy*factor);
+inline CSize operator*(const CSize &s1, const CSize &s2) {
+  return CSize(s1.cx*s2.cx,s1.cy*s2.cy);
 }
-
+inline CSize operator/(const CSize &s1, const CSize &s2) {
+  return CSize(s1.cx/s2.cx,s1.cy/s2.cy);
+}
+inline CSize operator*(const CSize &sz, double factor) {
+  return CSize((int)(sz.cx*factor), (int)(sz.cy*factor));
+}
 inline CSize operator/(const CSize &sz, double factor) {
-  return CSize(sz.cx/factor, sz.cy/factor);
+  return CSize((int)(sz.cx/factor), (int)(sz.cy/factor));
+}
+inline CSize &operator*=(CSize &sz, double factor) {
+  sz.cx *= factor; sz.cy *= factor;
+  return sz;
+}
+inline CSize &operator/=(CSize &sz, double factor) {
+  sz.cx /= factor; sz.cy /= factor;
+  return sz;
 }
 
 #pragma warning(pop)

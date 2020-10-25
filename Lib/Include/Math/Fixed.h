@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MyUtil.h"         // MFC core and standard components
+#include <BasicIncludes.h>
 
 inline float fixedToFloat(const FIXED &x) {
   return (float)x.value + (float)x.fract / 0x10000u;

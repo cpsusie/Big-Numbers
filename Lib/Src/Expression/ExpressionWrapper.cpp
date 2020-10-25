@@ -43,15 +43,15 @@ bool ExpressionWrapper::compile(const String &text, bool machineCode, FILE *list
 }
 
 Real ExpressionWrapper::operator()(const Point2D &p) {
-  *m_xp = p.x;
-  *m_yp = p.y;
+  *m_xp = p[0];
+  *m_yp = p[1];
   return m_expr->evaluate();
 }
 
 Real ExpressionWrapper::operator()(const Point3D &p) {
-  *m_xp = p.x;
-  *m_yp = p.y;
-  *m_zp = p.z;
+  *m_xp = p[0];
+  *m_yp = p[1];
+  *m_zp = p[2];
   return m_expr->evaluate();
 }
 

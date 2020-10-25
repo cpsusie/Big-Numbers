@@ -11,8 +11,8 @@ public:
     , m_pp(NULL)
   {
   }
-  bool OnLButtonDown(  UINT nFlags, CPoint point);
-  bool OnLButtonDblClk(UINT nFlags, CPoint point);
-  bool OnMouseMove(    UINT nFlags, CPoint point);
-  bool OnLButtonUp(    UINT nFlags, CPoint point);
+  bool OnLButtonDown(  UINT nFlags, CPoint point) override;
+  bool OnLButtonDblClk(UINT nFlags, CPoint point) override;
+  bool OnMouseMove(    UINT nFlags, CPoint point) override;
+  bool OnLButtonUp(    UINT nFlags, CPoint point) override;
 };

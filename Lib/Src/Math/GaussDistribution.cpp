@@ -3,11 +3,11 @@
 
 #define _norm_factor  0.3989422804014327 /* 1/sqrt(2*PI) */
 
-Real gauss(const Real &x) {
+Real gaussDensity(const Real &x) {
   return(_norm_factor*exp(-x*x/2));
 }
 
-Real norm(const Real &x) {
+Real gaussDistribution(const Real &x) {
   static const Real a[] = {
     0
   , 0.31938153
@@ -30,13 +30,13 @@ Real norm(const Real &x) {
     X = x;
   }
   Real t = 1/(1+0.2316419*X);
-  t = gauss(X) * poly(t, 5, a);
+  t = gaussDensity(X) * poly(t, 5, a);
 
   return neg ? t : (1-t);
 }
 
 
-// inverse of norm(x). That is: probitFunction(norm(x)) = norm(probitFunction(x)) = x
+// inverse of gaussDistribution(x). That is: probitFunction(gaussDistribution(x)) = gaussDistribution(probitFunction(x)) = x
 Real probitFunction(const Real &x) {
   static const Real a[]   = {-3.969683028665376e+01
                             , 2.209460984245205e+02
@@ -91,7 +91,7 @@ Real probitFunction(const Real &x) {
 }
 
 Real errorFunction(const Real &x) {
-  return 2 * norm(x * sqrt(2)) - 1;
+  return 2 * gaussDistribution(x * sqrt(2)) - 1;
 }
 
 

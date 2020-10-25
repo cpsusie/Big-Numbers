@@ -134,8 +134,8 @@ void ArrayImpl::indexError(const TCHAR *method, size_t index, size_t count) cons
   throwIndexOutOfRangeException(method, index, count, size());
 }
 
-void ArrayImpl::selectError(const TCHAR *method) const {
-  throwSelectFromEmptyCollectionException(method);
+void ArrayImpl::emptyArrayError(const TCHAR *method) { // static
+  throwEmptyArrayException(method);
 }
 
 void ArrayImpl::unsupportedOperationError(const TCHAR *method) const {

@@ -112,7 +112,7 @@ public:
 
   bool removeAll(const ConstIterator<T> &it) {
     const size_t oldSize = size();
-    for(ConstIterator<T> it1 = it; it1.hasNext();) {
+    for(auto it1 = it; it1.hasNext();) {
       remove(it1.next());
     }
     return size() != oldSize;
@@ -132,7 +132,7 @@ public:
   bool retainAll(const Collection<T> &c) {
     if(this == &c) return false; // Don't change anything. every element in this is in c too => nothing needs to be removed
     bool changed = false;
-    for(Iterator<T> it = getIterator(); it.hasNext();) {
+    for(auto it = getIterator(); it.hasNext();) {
       if(!c.contains(it.next())) {
         it.remove();
         changed = true;
@@ -142,7 +142,7 @@ public:
   }
 
   bool containsAll(const ConstIterator<T> &it) const {
-    for(ConstIterator<T> it1 = it; it1.hasNext();) {
+    for(auto it1 = it; it1.hasNext();) {
       if(!contains(it1.next())) {
         return false;
       }

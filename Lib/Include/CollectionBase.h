@@ -27,7 +27,7 @@ public:
   }
   bool addAll(const ConstIterator<T> &it) {
     const size_t oldSize = size();
-    for(ConstIterator<T> it1 = it; it1.hasNext();) {
+    for(auto it1 = it; it1.hasNext();) {
       add(it1.next());
     }
     return size() != oldSize;
@@ -44,7 +44,7 @@ public:
     header << esize << n;
     header.write(s);
     Packer dp;
-    for(ConstIterator<T> it = getIterator(); it.hasNext();) {
+    for(auto it = getIterator(); it.hasNext();) {
       dp << it.next();
     }
     dp.write(s);
@@ -89,7 +89,7 @@ template<typename OSTREAMTYPE, typename T, class D=StreamDelimiter> OSTREAMTYPE 
   const D      delimiter;
   const UINT64 size = c.size();
   out << size << delimiter;
-  for(ConstIterator<T> it = c.getIterator(); it.hasNext();) {
+  for(auto it = c.getIterator(); it.hasNext();) {
     out << it.next() << delimiter;
   }
   return out;

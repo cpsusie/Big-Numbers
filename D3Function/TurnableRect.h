@@ -46,10 +46,10 @@ private:
   void applyFunction(FunctionR2R2 *f, Point2DRefArray &pointArray);
 public:
   Point2D m_rotationCenter;
-  Point2D &getTopLeft()     { return (*this)[0]; }
-  Point2D &getTopRight()    { return (*this)[1]; }
-  Point2D &getBottomRight() { return (*this)[2]; }
-  Point2D &getBottomLeft()  { return (*this)[3]; }
+  Point2D &getTopLeft()     { return (Point2D&)((*this)[0]); }
+  Point2D &getTopRight()    { return (Point2D&)((*this)[1]); }
+  Point2D &getBottomRight() { return (Point2D&)((*this)[2]); }
+  Point2D &getBottomLeft()  { return (Point2D&)((*this)[3]); }
   Point2D getCenter();
   Point2D getTopCenter();
   Point2D getBottomCenter();

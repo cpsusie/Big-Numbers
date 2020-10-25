@@ -4,12 +4,12 @@
 
 size_t BitSet::select(RandomGenerator &rnd) const {
   const size_t i = randSizet(m_capacity, rnd);
-  for(ConstIterator<size_t> it = getIterator(i); it.hasNext();) {
+  for(auto it = getIterator(i); it.hasNext();) {
     return it.next();
   }
-  for(ConstIterator<size_t> it = getReverseIterator(i); it.hasNext();) {
+  for(auto it = getReverseIterator(i); it.hasNext();) {
     return it.next();
   }
-  throwSelectFromEmptyCollectionException(__TFUNCTION__);
+  throwEmptySetException(__TFUNCTION__);
   return -1;
 }

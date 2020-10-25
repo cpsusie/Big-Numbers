@@ -13,17 +13,17 @@ private:
   size_t                 m_capacity;
   size_t                 m_updateCount;
 
-  void      resize();
-  void      init(const AbstractObjectManager &objectManager, size_t size, size_t capacity);
-  intptr_t  getSortCount(intptr_t from, intptr_t count) const;
-  void      sort(size_t from, size_t count, AbstractComparator &comparator);
-  intptr_t  linearSearch(const void *key, size_t from, size_t count, AbstractComparator &comparator) const;
-  intptr_t  binarySearch(const void *key, intptr_t from, size_t count, AbstractComparator &comparator) const;
-  intptr_t  binaryInsert(const void *e, AbstractComparator &comparator);
-  void      indexError( const TCHAR *method, size_t index) const;
-  void      indexError( const TCHAR *method, size_t index, size_t count) const;
-  void      selectError(const TCHAR *method) const;
-  void      unsupportedOperationError(const TCHAR *method) const;
+  void        resize();
+  void        init(const AbstractObjectManager &objectManager, size_t size, size_t capacity);
+  intptr_t    getSortCount(intptr_t from, intptr_t count) const;
+  void        sort(                         size_t   from, size_t count, AbstractComparator &comparator);
+  intptr_t    linearSearch(const void *key, size_t   from, size_t count, AbstractComparator &comparator) const;
+  intptr_t    binarySearch(const void *key, intptr_t from, size_t count, AbstractComparator &comparator) const;
+  intptr_t    binaryInsert(const void *e, AbstractComparator &comparator);
+  void        indexError(               const TCHAR *method, size_t index) const;
+  void        indexError(               const TCHAR *method, size_t index, size_t count) const;
+  static void emptyArrayError(          const TCHAR *method);
+  void        unsupportedOperationError(const TCHAR *method) const;
 public:
   ArrayImpl(AbstractObjectManager &objectManager, size_t capacity);
   AbstractCollection *clone(bool cloneData)                                   const override;
@@ -170,7 +170,7 @@ public:
     ((ArrayImpl*)m_collection)->removeIndex(size()-1, 1);
   }
 
-  bool contains(const T &e) const {            // NB not virtual in Collection, because of ==
+  inline bool contains(const T &e) const {            // NB not virtual in Collection, because of ==
     return getFirstIndex(e) >= 0;
   }
 

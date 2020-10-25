@@ -369,18 +369,18 @@ bool TreeSetImpl::contains(const void *key) const {
 
 TreeSetNode *TreeSetImpl::getMinNode() const {
   TreeSetNode *result = nullptr;
-  for(TreeSetNode *p = m_root; p; result = p, p = p->m_left);
+  for(auto p = m_root; p; result = p, p = p->m_left);
   if(result == nullptr) {
-    throwSelectFromEmptyCollectionException(__TFUNCTION__);
+    throwEmptySetException(__TFUNCTION__);
   }
   return result;
 }
 
 TreeSetNode *TreeSetImpl::getMaxNode() const {
   TreeSetNode *result = nullptr;
-  for(TreeSetNode *p = m_root; p; result = p, p = p->m_right);
+  for(auto p = m_root; p; result = p, p = p->m_right);
   if(result == nullptr) {
-    throwSelectFromEmptyCollectionException(__TFUNCTION__);
+    throwEmptySetException(__TFUNCTION__);
   }
   return result;
 }

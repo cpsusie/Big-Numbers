@@ -8,8 +8,8 @@
 Point2DArray GlyphPolygon::getAllPoints() const {
   Point2DArray result;
   result.add(m_start);
-  for(size_t i = 0; i < m_polygonCurveArray.size(); i++) {
-    result.addAll(m_polygonCurveArray[i].getAllPoints());
+  for(auto it = m_polygonCurveArray.getIterator(); it.hasNext();) {
+    result.addAll(it.next().getAllPoints());
   }
   return result;
 }
@@ -88,8 +88,8 @@ GlyphCurveData::GlyphCurveData(HDC hdc, _TUCHAR ch, const MAT2 &m) {
 
 Point2DArray GlyphCurveData::getAllPoints() const {
   Point2DArray result;
-  for(size_t i = 0; i < m_glyphPolygonArray.size(); i++) {
-    result.addAll(m_glyphPolygonArray[i].getAllPoints());
+  for(auto it = m_glyphPolygonArray.getIterator(); it.hasNext();) {
+    result.addAll(it.next().getAllPoints());
   }
   return result;
 }
@@ -158,15 +158,11 @@ void applyToGlyphPolygon(const GlyphPolygon &polygon, CurveOperator &op) {
   const Point2D *pp = &polygon.getStart();
   op.beginCurve();
   op.apply(*pp);
-  const Array<PolygonCurve2D> &a = polygon.getCurveArray();
-  const size_t curveCount = a.size();
-  for(size_t i = 0; i < curveCount; i++) {
-    const PolygonCurve2D &curve = a[i];
+  for(auto it = polygon.getCurveArray().getIterator(); it.hasNext();) {
+    const PolygonCurve2D &curve = it.next();
     switch(curve.getType()) {
     case TT_PRIM_LINE   :
-      { const Point2DArray &pa = curve.getAllPoints();
-        for(size_t j = 0; j < pa.size(); j++) {
-          const Point2D &np = pa[j];
+      { for(const Point2D np : curve.getAllPoints()) {
           op.apply(np);
           pp = &np;
         }
@@ -194,8 +190,8 @@ void applyToGlyphPolygon(const GlyphPolygon &polygon, CurveOperator &op) {
 
 void applyToGlyph(const GlyphCurveData &glyphCurve, CurveOperator &op) {
   const Array<GlyphPolygon> &pa = glyphCurve.getPolygonArray();
-  for(size_t i = 0; i < pa.size(); i++) {
-    applyToGlyphPolygon(pa[i], op);
+  for(auto it = pa.getIterator(); it.hasNext();) {
+    applyToGlyphPolygon(it.next(), op);
   }
 }
 
@@ -208,8 +204,8 @@ void applyToText(const String &text, const PixRectFont &font, TextOperator &op) 
     op.beginGlyph(chPos);
     if(gd->m_pixRect != nullptr) {
       applyToGlyph(gd->m_glyphCurveData,op);
-      chPos.x += gd->m_metrics.gmCellIncX;
-      chPos.y += gd->m_metrics.gmCellIncY;
+      chPos[0] += gd->m_metrics.gmCellIncX;
+      chPos[1] += gd->m_metrics.gmCellIncY;
     }
     op.endGlyph();
   }

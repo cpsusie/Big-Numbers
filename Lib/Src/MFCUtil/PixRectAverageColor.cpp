@@ -30,16 +30,16 @@ Scale::~Scale() {
 }
 
 D3DCOLOR Scale::getAverageColor(const Rectangle2D &rect) const {
-  Point2D bottomRight = rect.getBottomRight();
-  const int x1 = (int)ceil( rect.m_p.x);
-  const int y1 = (int)ceil( rect.m_p.y);
-  const int x2 = (int)floor(bottomRight.x);
-  const int y2 = (int)floor(bottomRight.y);
+  Point2D bottomRight = rect.RB();
+  const int x1 = (int)ceil( rect.p0()[0]);
+  const int y1 = (int)ceil( rect.p0()[1]);
+  const int x2 = (int)floor(bottomRight[0]);
+  const int y2 = (int)floor(bottomRight[1]);
 
-  const double wxL = x1 - rect.m_p.x;
-  const double wxR = bottomRight.x - x2;
-  const double wyT = y1 - rect.m_p.y;
-  const double wyB = bottomRight.y - y2;
+  const double wxL = x1 - rect.p0()[0];
+  const double wxR = bottomRight[0] - x2;
+  const double wyT = y1 - rect.p0()[1];
+  const double wyB = bottomRight[1] - y2;
 
   double redTotal = 0, greenTotal = 0, blueTotal = 0;
 
@@ -166,14 +166,14 @@ D3DCOLOR Scale::getAverageColor(const Rectangle2D &rect) const {
 }
 
 D3DCOLOR PixRect::getAverageColor(const Rectangle2D &rect) const {
-  if(rect.m_size.cx <= 0 || rect.m_size.cy < 0) {
+  if(rect.size()[0] <= 0 || rect.size()[1] < 0) {
     return BLACK;
   }
   Rectangle2D r(rect);
-  if(r.m_p.x     < 0)           r.m_p.x     = 0;
-  if(r.m_p.y     < 0)           r.m_p.y     = 0;
-  if(r.m_size.cx > getWidth())  r.m_size.cx = getWidth();
-  if(r.m_size.cy > getHeight()) r.m_size.cy = getHeight();
+  if(r.p0()[0]     < 0)           r.p0()[0]     = 0;
+  if(r.p0()[1]     < 0)           r.p0()[1]     = 0;
+  if(r.size()[0] > getWidth())  r.size()[0] = getWidth();
+  if(r.size()[1] > getHeight()) r.size()[1] = getHeight();
   return Scale(this, ScaleParameters()).getAverageColor(r);
 }
 

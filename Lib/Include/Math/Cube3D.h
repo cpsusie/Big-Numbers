@@ -1,227 +1,87 @@
 #pragma once
 
 #include <NumberInterval.h>
-#include <Math/Point3D.h>
-#include "CubeN.h"
+#include "CubeTemplate.h"
+#include "Point3D.h"
 
-template<typename T> class Cube3DTemplate {
-private:
-  // lbn = left,bottom,near, rtf = lbn+size
-  Point3DTemplate<T> m_lbn;
-  Size3DTemplate<T>  m_size;
+template<typename T> class Cube3DTemplate : public CubeTemplate<T,3> {
 public:
-  Cube3DTemplate() : m_lbn(0,0,0), m_size(0,0,0) {
+  inline Cube3DTemplate() {
   }
 
   template<typename X, typename Y, typename Z, typename W, typename D, typename H> Cube3DTemplate(const X &x, const Y &y, const Z &z, const W &w, const D &d, const H &h)
-    : m_lbn(x, y, z)
-    , m_size(w, d, h)
+    : CubeTemplate<T,2>(Point3DTemplate<T>(x,y,z), Size3DTemplate<T>(w,d,h))
   {
   }
-  template<typename C> Cube3DTemplate(const Cube3DTemplate<C> &src)
-    : m_lbn(src.LBN())
-    , m_size(src.size())
+  template<typename S> Cube3DTemplate(const CubeTemplate<S,3> &src)
+    : CubeTemplate<T, 3>(src)
   {
   }
-  template<typename T1, typename T2> Cube3DTemplate(const Point3DTemplate<T1> &lbn, const Point3DTemplate<T2> &rtf)
-    : m_lbn(lbn)
-    , m_size(rtf-lbn)
+  template<typename T1, typename T2> Cube3DTemplate(const PointTemplate<T1,3> &lbn, const PointTemplate<T2,3> &rtf)
+    : CubeTemplate<T,3>(lbn, rtf-lbn)
   {
   }
-  template<typename P, typename S> Cube3DTemplate(const Point3DTemplate<P> &lbn, const Size3DTemplate<S> &size)
-    : m_lbn(lbn)
-    , m_size(size)
+  template<typename P, typename S> Cube3DTemplate(const PointTemplate<P,3> &p0, const SizeTemplate<S,3> &size)
+    : CubeTemplate<T,3>(p0, size)
   {
-  }
-  Cube3DTemplate(const NumberInterval<T> &xInterval, const NumberInterval<T> &yInterval, const NumberInterval<T> &zInterval)
-    : m_lbn(xInterval.getMin(), yInterval.getMin(), zInterval.getMin())
-    , m_size(xInterval.getLength(), yInterval.getLength(), zInterval.getLength())
-  {
-  }
-  // x-axis
-  inline const T &Left() const {
-    return m_lbn.x;
-  }
-  // x-axis
-  inline const T &Width() const {
-    return m_size.cx;
-  }
-  // x-axis
-  inline T Right() const {
-    return Left() + Width();
-  }
-  // y-axis
-  inline const T &Near() const {
-    return m_lbn.y;
-  }
-  // y-axis
-  inline const T &Depth() const {
-    return m_size.cy;
-  }
-  // y-axis
-  inline T Far() const {
-    return Near() + Depth();
-  }
-  // z-axis
-  inline const T &Bottom() const {
-    return m_lbn.z;
-  }
-  // z-axis
-  inline const T &Height() const {
-    return m_size.cz;
-  }
-  // z-axis
-  inline T Top() const {
-    return Bottom() + Height();
-  }
-  inline const Size3DTemplate<T> &size() const {
-    return m_size;
-  }
-  inline T volume() const {
-    return m_size.volume();
-  }
-  inline const Point3DTemplate<T> &LBN() const {
-    return m_lbn;
-  }
-  inline Point3DTemplate<T> RBN() const {
-    return Point3DTemplate<T>(Right(), Near(), Bottom());
-  }
-  inline Point3DTemplate<T> LTN() const {
-    return Point3DTemplate<T>(Left(), Near(), Top());
-  }
-  inline Point3DTemplate<T> RTN() const {
-    return Point3DTemplate<T>(Right(), Near(), Top());
-  }
-  inline Point3DTemplate<T> LBF() const {
-    return Point3DTemplate<T>(Left(), Far(), Bottom());
-  }
-  inline Point3DTemplate<T> RBF() const {
-    return Point3DTemplate<T>(Right(), Far(), Bottom());
-  }
-  inline Point3DTemplate<T> LTF() const {
-    return Point3DTemplate<T>(Left(), Far(), Top());
-  }
-  inline Point3DTemplate<T> RTF() const {
-    return Point3DTemplate<T>(m_lbn + m_size);
-  }
-  inline Point3DTemplate<T> center() const {
-    return Point3DTemplate<T>(m_lbn + m_size/2);
-  }
-  inline T getMinX() const {
-    return min(Left(),Right());
-  }
-  inline T getMaxX() const {
-    return max(Left(), Right());
-  }
-  inline T getMinY() const {
-    return min(Near(), Far());
-  }
-  inline T getMaxY() const {
-    return max(Near(), Far());
-  }
-  inline T getMinZ() const {
-    return min(Bottom(), Top());
-  }
-  inline T getMaxZ() const {
-    return max(Bottom(), Top());
   }
 
-  inline NumberInterval<T> getXInterval() const {
-    return NumberInterval<T>(getMinX(), getMaxX());
-  }
-  inline NumberInterval<T> getYInterval() const {
-    return NumberInterval<T>(getMinY(), getMaxY());
-  }
-  inline NumberInterval<T> getZInterval() const {
-    return NumberInterval<T>(getMinZ(), getMaxZ());
-  }
-  inline operator CubeNTemplate<T,3>() const {
-    return CubeNTemplate<T,3>().setInterval(0, getXInterval()).setInterval(1, getYInterval()).setInterval(2, getZInterval());
-  }
+  inline const T &getX()      const { return p0()[0];                   }
+  inline const T &getY()      const { return p0()[1];                   }
+  inline const T &getZ()      const { return p0()[2];                   }
+  inline const T &getWidth()  const { return size()[0];                 }
+  inline const T &getDepth()  const { return size()[1];                 }
+  inline const T &getHeight() const { return size()[2];                 }
+  inline const T &getLeft()   const { return getX();                    }
+  inline       T getRight()   const { return getLeft()   + getWidth();  }
+  inline const T &getNear()   const { return getY();                    }
+  inline       T getFar()     const { return getNear()   + getDepth();  }
+  inline const T &getBottom() const { return getZ();                    }
+  inline       T getTop()     const { return getBottom() + getHeight(); }
 
-  template<typename TP> bool contains(const Point3DTemplate<TP> &p) const {
-    return (getMinX() <= (T)p.x) && ((T)p.x <= getMaxX()) && (getMinY() <= (T)p.y) && ((T)p.y <= getMaxY()) && (getMinZ() <= (T)p.z) && ((T)p.z <= getMaxZ());
-  }
+  inline       Point3DTemplate<T>  LBN() const { return p0();                                                   }
+  inline       Point3DTemplate<T>  RBN() const { return Point3DTemplate<T>(getRight(), getNear(), getBottom()); }
+  inline       Point3DTemplate<T>  LBF() const { return Point3DTemplate<T>(getLeft() , getFar() , getBottom()); }
+  inline       Point3DTemplate<T>  RBF() const { return Point3DTemplate<T>(getRight(), getFar() , getBottom()); }
+  inline       Point3DTemplate<T>  LTN() const { return Point3DTemplate<T>(getLeft() , getNear(), getTop()   ); }
+  inline       Point3DTemplate<T>  RTN() const { return Point3DTemplate<T>(getRight(), getNear(), getTop()   ); }
+  inline       Point3DTemplate<T>  LTF() const { return Point3DTemplate<T>(getLeft() , getFar() , getTop()   ); }
+  inline       Point3DTemplate<T>  RTF() const { return LBN() + size();                                         }
 
-  template<typename TP> Cube3DTemplate<T> &operator+=(const Point3DTemplate<TP> &dp) {
-    m_lbn += dp;
-    return *this;
-  }
-  template<typename TP> Cube3DTemplate<T> &operator-=(const Point3DTemplate<TP> &dp) {
-    m_lbn -= dp;
-    return *this;
-  }
-  template<typename TP> Cube3DTemplate<T> operator+(const Point3DTemplate<TP> &dp) {
-    return Cube3DTemplate(LBN() + dp, size());
-  }
-  template<typename TP> Cube3DTemplate<T> operator-(const Point3DTemplate<TP> &dp) {
-    return Cube3DTemplate(LBN() - dp, size());
-  }
-  inline bool operator==(const Cube3DTemplate &c) const {
-    return (LBN() == c.LBN()) && (size() == c.size());
-  }
-  inline bool operator!=(const Cube3DTemplate &c) const {
-    return !(*this == c);
-  }
-  inline bool contains(const Cube3DTemplate &c) const {
-    return contains(c.LBN()) && contains(c.RTF());
-  }
-  inline String toString(int dec = 3) const {
-    return format(_T("Cube:(%s,%s)"), LBN().toString(dec).cstr(), RTF().toString(dec).cstr());
-  }
+  inline T getMinX() const { return __super::getMin(0); }
+  inline T getMaxX() const { return __super::getMax(0); }
+  inline T getMinY() const { return __super::getMin(1); }
+  inline T getMaxY() const { return __super::getMax(1); }
+  inline T getMinZ() const { return __super::getMin(2); }
+  inline T getMaxZ() const { return __super::getMax(2); }
+
+  inline NumberInterval<T> getXInterval() const { return NumberInterval<T>(getLeft()  , getRight()); }
+  inline NumberInterval<T> getYInterval() const { return NumberInterval<T>(getNear()  , getFar()  ); }
+  inline NumberInterval<T> getZInterval() const { return NumberInterval<T>(getBottom(), getTop()  ); }
 };
 
 typedef Cube3DTemplate<float>  FloatCube3D;
 typedef Cube3DTemplate<double> Cube3D;
+typedef Cube3DTemplate<Real>   RealCube3D;
 
-template<typename T1, typename T2> Cube3DTemplate<T1> getUnion(const Cube3DTemplate<T1> &c1, const Cube3DTemplate<T2> &c2) {
-  const T1 minX = min(c1.getMinX(), c2.getMinX()), maxX = max(c1.getMaxX(), c2.getMaxX());
-  const T1 minY = min(c1.getMinY(), c2.getMinY()), maxY = max(c1.getMaxY(), c2.getMaxY());
-  const T1 minZ = min(c1.getMinZ(), c2.getMinZ()), maxZ = max(c1.getMaxZ(), c2.getMaxZ());
-  return Cube3DTemplate<T1>(minX, minY, minZ, maxX - minX, maxY - minY, maxZ - minZ);
-}
-
-
-template<typename T> class Point3DTemplateArray : public CompactArray<Point3DTemplate<T> > {
+template<typename T> class Point3DArrayTemplate : public PointArrayTemplate<T, 3> {
 public:
-  Point3DTemplateArray() {
+  Point3DArrayTemplate() {
   }
-  explicit Point3DTemplateArray(size_t capacity) : CompactArray(capacity) {
+  explicit Point3DArrayTemplate(size_t capacity)
+    : PointArrayTemplate<T, 3>(capacity)
+  {
   }
-  template<typename S> Point3DTemplateArray(const Point3DTemplateArray<S> &src) : CompactArray(src.size) {
-    const size_t n = src.size();
-    for(const Point3DTemplate<S> p : src) {
-      add(Point3DTemplate<T>(p));
-    }
+  template<template<typename,UINT> class VType, typename S> Point3DArrayTemplate(const CollectionBase<VType<S, 3> > &src)
+    : PointArrayTemplate<T, 3>(src)
+  {
   }
-  template<typename S> Point3DTemplateArray<T> &operator=(const Point3DTemplateArray<S> &src) {
-    if((void*)&src == (void*)this) {
-      return *this;
-    }
-    clear(src.size());
-    for(const Point3DTemplate<S> p : src) {
-      add(Point3DTemplate<T>(p));
-    }
-    return *this;
-  }
-  Cube3DTemplate<T> getBoundingBox() const {
-    if(size() == 0) {
-      return Cube3DTemplate<T>();
-    }
 
-    const Point3DTemplate<T> *p   = &first();
-    const Point3DTemplate<T> *end = &last();
-    T minX = p->x, maxX = minX, minY = p->y, maxY = minY, minZ = p->z, maxZ = minZ;
-    while(p++ < end) {
-      if(p->x < minX) minX = p->x; else if(p->x > maxX) maxX = p->x;
-      if(p->y < minY) minY = p->y; else if(p->y > maxY) maxY = p->y;
-      if(p->z < minZ) minZ = p->z; else if(p->z > maxZ) maxZ = p->z;
-    }
-    return Cube3DTemplate<T>(minX,minY,minZ, maxX-minX, maxY-minY,maxZ-minZ);
+  Cube3DTemplate<T> getBoundingBox() const {
+    return getBoundingCube();
   }
 };
 
-typedef Point3DTemplateArray<float   > FloatPoint3DArray;
-typedef Point3DTemplateArray<double  > Point3DArray;
-typedef Point3DTemplateArray<Double80> D80Point3DArray;
-typedef Point3DTemplateArray<Real>     RealPoint3DArray;
+typedef Point3DArrayTemplate<float   > FloatPoint3DArray;
+typedef Point3DArrayTemplate<double  > Point3DArray;
+typedef Point3DArrayTemplate<Real    > RealPoint3DArray;

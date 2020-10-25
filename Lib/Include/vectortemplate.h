@@ -114,8 +114,8 @@ public:
     return *this;
   }
 
-  inline size_t getDimension() const {
-    return m_dim;
+  inline UINT getDimension() const {
+    return (UINT)m_dim;
   }
 
   friend VectorTemplate<T> operator*(const T &d, const VectorTemplate<T> &rhs) {
@@ -282,29 +282,31 @@ public:
     return result;
   }
 
-  template<typename OSTREAMTYPE> friend OSTREAMTYPE &operator<<(OSTREAMTYPE &out, const VectorTemplate<T> &v) {
-    const StreamSize w = out.width();
-    for(size_t i = 0; i < v.m_dim; i++) {
-      if(i > 0) {
-        out << " ";
-      }
-      out.width(w);
-      out << v.m_e[i];
-    }
-    return out;
-  }
-
-  template<typename ISTREAMTYPE> friend ISTREAMTYPE &operator>>(ISTREAMTYPE &in, VectorTemplate<T> &v) {
-    const FormatFlags flg = in.flags();
-    in.flags(flg | std::ios::skipws);
-    for(size_t i = 0; i < v.m_dim; i++) {
-      in >> v[i];
-    }
-    in.flags(flg);
-    return in;
-  }
-
   inline String getDimensionString() const {
-    return format(_T("Dimension=%s"), formatSize(m_dim).cstr());
+    return format(_T("Dimension=%u"), getDimension());
   }
 };
+
+template<typename OSTREAMTYPE, typename T> OSTREAMTYPE &operator<<(OSTREAMTYPE &out, const VectorTemplate<T> &v) {
+  const StreamSize w = out.width();
+  const UINT dim = v.getDimension();
+  for(UINT i = 0; i < dim; i++) {
+    if(i > 0) {
+      out << " ";
+    }
+    out.width(w);
+    out << v[i];
+  }
+  return out;
+}
+
+template<typename ISTREAMTYPE, typename T> ISTREAMTYPE &operator>>(ISTREAMTYPE &in, VectorTemplate<T> &v) {
+  const FormatFlags flg = in.flags();
+  in.flags(flg | std::ios::skipws);
+  const UINT dim = v.getDimension();
+  for(UINT i = 0; i < dim; i++) {
+    in >> v[i];
+  }
+  in.flags(flg);
+  return in;
+}

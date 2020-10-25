@@ -119,11 +119,11 @@ void applyToBezier(const Point2D &start, const Point2D &cp1, const Point2D &cp2,
   if(applyStart) {
     op.apply(start);
   }
-  for(float t = 0.1f; t < 1.01; t += 0.1f) {
-    float tt = t*t;
-    float s  = 1.0f - t;
-    float ss = s*s;
-    Point2D np = start*(ss*s) + cp1*(3*ss*t) + cp2*(3*s*tt) + end*(t*tt);
+  double ttt = 2;
+  Point2D kkk = ttt * start;
+  for(double t = 0.1; t < 1.01; t += 0.1) {
+    const double t2 = t*t, s  = 1.0f - t, s2 = s*s;
+    Point2D np = (s2*s)*start + (3*s2*t)*cp1 + (3*s*t2)*cp2 + (t*t2)*end;
     op.apply(np);
     p = np;
   }

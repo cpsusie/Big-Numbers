@@ -2,21 +2,7 @@
 #include <Math/MathLib.h>
 #include <Math/Rectangle2D.h>
 
-class PointYComparator : public Comparator<RealPoint2D> {
-private:
-  const bool m_maximum;
-  PointYComparator(const PointYComparator &src) : m_maximum(src.m_maximum) {
-  }
-public:
-  PointYComparator(bool maximum) : m_maximum(maximum) {
-  }
-  AbstractComparator *clone() const override {
-    return new PointYComparator(*this);
-  }
-  int compare(const RealPoint2D &p1, const RealPoint2D &p2) override {
-    return m_maximum ? sign(p2.y - p1.y) : sign(p1.y - p2.y);
-  }
-};
+typedef PointComparator<Real, 2, 1> PointYComparator;
 
 class ExtremumFinder {
 private:
@@ -37,8 +23,8 @@ public:
 };
 
 static Real inverseInterpol(const RealPoint2D &p1, const RealPoint2D &p2, const RealPoint2D &p3) {
-  const Real t = (p1.y-p2.y)*(p2.x*p2.x-p3.x*p3.x) - (p2.y-p3.y)*(p1.x*p1.x-p2.x*p2.x);
-  const Real d = (p1.y-p2.y)*(p2.x-p3.x)           - (p2.y-p3.y)*(p1.x-p2.x);
+  const Real t = (p1.y()-p2.y())*(p2.x()*p2.x()-p3.x()*p3.x()) - (p2.y()-p3.y())*(p1.x()*p1.x()-p2.x()*p2.x());
+  const Real d = (p1.y()-p2.y())*(p2.x()-p3.x())               - (p2.y()-p3.y())*(p1.x()-p2.x());
   return t / d / 2.0;
 }
 
@@ -85,7 +71,7 @@ RealPoint2D ExtremumFinder::findExtremum(const Real &l, const Real &r, int depth
   if(depth >= 9) {
     return p;
   } else {
-    return findExtremum(p.x - step/10,p.x + step/10, depth+1);
+    return findExtremum(p.x() - step/10,p.x() + step/10, depth+1);
   }
 }
 

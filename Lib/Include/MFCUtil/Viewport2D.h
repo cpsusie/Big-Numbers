@@ -82,11 +82,11 @@ public:
   }
 
   inline const IntervalTransformation &getXTransformation() const {
-    return m_tr->getXTransformation();
+    return (*m_tr)[0];
   }
 
   inline const IntervalTransformation &getYTransformation() const {
-    return m_tr->getYTransformation();
+    return (*m_tr)[1];
   }
 
   inline Point2D forwardTransform(const Point2D &p) const {
@@ -94,7 +94,7 @@ public:
   }
 
   inline Point2D forwardTransform(double x, double y) const {
-    return m_tr->forwardTransform(x,y);
+    return forwardTransform(Point2D(x, y));
   }
 
   inline Point2D backwardTransform(const Point2D &p) const {

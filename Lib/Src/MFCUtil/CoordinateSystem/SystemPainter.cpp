@@ -41,7 +41,7 @@ SystemPainter::~SystemPainter() {
 
 void SystemPainter::paint() {
   CDC *dc = getViewport().getDC();
-  const CRect r = Rectangle2D::makePositiveRectangle(getToRectangle());
+  const CRect r = (CRect)Rectangle2D::makePositiveRectangle(getToRectangle());
   dc->FillSolidRect(r, m_system.m_backgroundColor);
 //  dc->Rectangle(&r);
 
@@ -83,14 +83,14 @@ void SystemPainter::makeSpaceForText() {
   bool adjustRectangle = false;
   if(xtr.isLinear() && fr.getMinX() == 0) {
     const double dx = -xtr.backwardTransform(getToRectangle().left + leftMargin);
-    fr.m_p.x     += dx;
-    fr.m_size.cx -= dx;
+    fr.p0()[0]   += dx;
+    fr.size()[0] -= dx;
     adjustRectangle = true;
   }
   if(ytr.isLinear() && fr.getMinY() == 0) {
     const double dy = -ytr.backwardTransform(getToRectangle().top - bottomMargin);
-    fr.m_p.y     += dy;
-    fr.m_size.cy -= dy;
+    fr.p0()[1]   += dy;
+    fr.size()[1] -= dy;
     adjustRectangle = true;
   }
 
@@ -99,29 +99,29 @@ void SystemPainter::makeSpaceForText() {
   }
   Rectangle2D innerRectangle = getToRectangle();
 
-  innerRectangle.m_p.x     += leftMargin;
-  innerRectangle.m_size.cx -= leftMargin + rightMargin;
-  innerRectangle.m_p.y     -= bottomMargin;
-  innerRectangle.m_size.cy += bottomMargin + topMargin;
+  innerRectangle.p0()[0]   += leftMargin;
+  innerRectangle.size()[0] -= leftMargin + rightMargin;
+  innerRectangle.p0()[1]   -= bottomMargin;
+  innerRectangle.size()[1] += bottomMargin + topMargin;
 
   Point2D orig = innerRectangle.getProjection(Point2D(xPainter.getAxisPoint(),yPainter.getAxisPoint()));
 
-  const double dx = min(orig.x - innerRectangle.m_p.x, leftMargin   - getTextExtent(xPainter.getMinValueText()).cx/2 - 1);
-  const double dy = min(innerRectangle.m_p.y - orig.y, bottomMargin - getTextExtent(yPainter.getMinValueText()).cy/2 - 1);
+  const double dx = min(orig.x() - innerRectangle.p0()[0], leftMargin   - getTextExtent(xPainter.getMinValueText()).cx/2 - 1);
+  const double dy = min(innerRectangle.p0()[1] - orig.y(), bottomMargin - getTextExtent(yPainter.getMinValueText()).cy/2 - 1);
 
   if(dx > 0) {
-    innerRectangle.m_p.x     -= dx;
-    innerRectangle.m_size.cx += dx;
+    innerRectangle.p0()[0]   -= dx;
+    innerRectangle.size()[0] += dx;
   }
   if(dy > 0) {
-    innerRectangle.m_p.y     += dy;
-    innerRectangle.m_size.cy -= dy;
+    innerRectangle.p0()[1]   += dy;
+    innerRectangle.size()[1] -= dy;
   }
-  m_origin = innerRectangle.getProjection(orig);
+  m_origin = (CPoint)(Point2D)innerRectangle.getProjection(orig);
 }
 
 CRect SystemPainter::getToRectangle() const {
-  return getViewport().getToRectangle();
+  return (CRect)getViewport().getToRectangle();
 }
 
 AbstractAxisPainter *SystemPainter::createAxisPainter(AxisIndex axis, AxisType type) {

@@ -7,31 +7,31 @@ class D3Cube : public FloatCube3D {
 public:
   inline D3Cube() {
   }
-  template<typename C> D3Cube(const Cube3DTemplate<C> &src)
+  template<typename C> D3Cube(const CubeTemplate<C,3> &src)
     : FloatCube3D(src)
   {
   }
   inline D3Cube(const D3DXVECTOR3 &pmin, const D3DXVECTOR3 &pmax)
-    : FloatCube3D(pmin.x,pmin.y,pmin.z,pmax.x-pmin.x,pmax.y-pmin.y,pmax.z-pmin.z)
+    : FloatCube3D(FloatPoint3D(pmin),FloatPoint3D(pmax))
   {
   }
   inline D3Cube(float minX, float minY, float minZ, float maxX, float maxY, float maxZ)
-    : FloatCube3D(minX, minY, minZ, maxX - minX, maxY - minY, maxZ - minZ)
+    : FloatCube3D(FloatPoint3D(minX, minY, minZ), FloatPoint3D(maxX, maxY, maxZ))
   {
   }
-  template<typename P, typename S> D3Cube(const Point3DTemplate<P> &lbn, const Size3DTemplate<S> &size)
+  template<typename P, typename S> D3Cube(const PointTemplate<P,3> &lbn, const SizeTemplate<S,3> &size)
     : FloatCube3D(lbn, size)
   {
   }
-  template<typename S> D3Cube(const D3DXVECTOR3 &lbn, const Size3DTemplate<S> &size)
-    : FloatCube3D(FloatPoint3D(lbn.x,lbn.y,lbn.z), size)
+  template<typename S> D3Cube(const D3DXVECTOR3 &lbn, const SizeTemplate<S,3> &size)
+    : FloatCube3D(FloatPoint3D(lbn), size)
   {
   }
   inline D3DXVECTOR3 getMin() const {
-    return D3DXVECTOR3(Left(), Near(), Bottom());
+    return D3DXVECTOR3(getLeft(), getNear(), getBottom());
   }
   inline D3DXVECTOR3 getMax() const {
-    return D3DXVECTOR3(Right(),Far(),Top());
+    return D3DXVECTOR3(getRight(),getFar(),getTop());
   }
   D3Cube operator+(const D3DXVECTOR3 &p) const {
     return D3Cube(getMin() + p, size());

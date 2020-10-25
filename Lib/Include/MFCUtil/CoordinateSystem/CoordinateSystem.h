@@ -65,7 +65,7 @@ private:
 
   CompactArray<CoordinateSystemObject*> m_objectArray;
   DataRange   findSmallestDataRange() const;
-  int         findObject(const CoordinateSystemObject *object) const;
+  int         findObject(CoordinateSystemObject * const object) const;
   PointArray &transformPoint2DArray(PointArray &dst, const Point2DArray &src) const;
   void        createSystemPainter();
   void        destroySystemPainter();
@@ -102,10 +102,10 @@ public:
   }
 
   inline const RectangleTransformation &getTransformation() const {
-    return m_vp.getTransformation();;
+    return m_vp.getTransformation();
   }
   inline RectangleTransformation &getTransformation() {
-    return m_vp.getTransformation();;
+    return m_vp.getTransformation();
   }
   void setOccupiedPoint(          const Point2D      &p );
   void setOccupiedLine(           const Point2D      &p1, const Point2D &p2);
@@ -140,7 +140,7 @@ public:
 
   // flags any combination of X_AXIS and Y_AXIS
   void zoom(const CPoint &p, bool in, int flags) {
-    getTransformation().zoom(p, in, flags);
+    getTransformation().zoom((Point2D)p, in, flags);
   }
 
   void setAutoScale(bool autoScale, bool makeSpace) {
@@ -209,7 +209,7 @@ public:
     return getAxisFlags(axis, AXIS_SHOW_GRIDLINES);
   }
   Point2D getMouseToSystem(const CPoint &p) {
-    return getTransformation().backwardTransform(p.x, p.y);
+    return getTransformation().backwardTransform(Point2D(p));
   }
 
   String getPointText(const Point2D &p) const;

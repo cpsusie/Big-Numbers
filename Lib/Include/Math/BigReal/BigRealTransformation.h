@@ -16,22 +16,36 @@ class BigRealSize2D : public Size2DTemplate<BigReal> {
   {
   }
   inline BigRealSize2D(const BigRealSize2D &src, DigitPool *digitPool=nullptr)
-    : Size2DTemplate(BigReal(src.cx,digitPool?digitPool:src.getDigitPool())
-                    ,BigReal(src.cy,digitPool?digitPool:src.getDigitPool()))
+    : Size2DTemplate(BigReal(src.cx(),digitPool?digitPool:src.getDigitPool())
+                    ,BigReal(src.cy(),digitPool?digitPool:src.getDigitPool()))
   {
   }
   inline DigitPool *getDigitPool() const {
-    return cx.getDigitPool();
+    return cx().getDigitPool();
   }
-  template<typename T> BigRealSize2D &operator=(const T &src) {
+  template<typename T> BigRealSize2D &operator=(const FixedSizeVectorTemplate<T,2> &src) {
     DigitPool *dp = getDigitPool();
-    x = BigReal(src.cx,dp);
-    y = BigReal(src.cy,dp);
+    cx() = BigReal(src.cx(),dp);
+    cy() = BigReal(src.cy(),dp);
     return *this;
   }
-  inline operator RealSize2D() const {
-    return RealSize2D((Real)cx, (Real)cy);
+  template<typename T> inline explicit operator Size2DTemplate<T>() const {
+    return Size2DTemplate<T>((T)cx(), (T)cy());
   }
+#if defined(__ATLTYPES_H__)
+  inline BigRealSize2D(const CSize &s, DigitPool *digitPool=nullptr)
+    : Size2DTemplate(BigReal(s.cx,digitPool),BigReal(s.cy,digitPool))
+  {
+  }
+  inline BigRealSize2D &operator=(const CSize &s) {
+    cx() = s.cx; cy() = s.cy;
+    return *this;
+  }
+  inline explicit operator CSize() const {
+    return CSize((int)round(cx()), (int)round(cy()));
+  }
+#endif // __ATLTYPES_H__
+
 };
 
 class BigRealPoint2D : public Point2DTemplate<BigReal> {
@@ -46,22 +60,35 @@ public:
   {
   }
   inline BigRealPoint2D(const BigRealPoint2D &src, DigitPool *digitPool=nullptr)
-    : Point2DTemplate(BigReal(src.x,digitPool?digitPool:src.getDigitPool())
-                     ,BigReal(src.y,digitPool?digitPool:src.getDigitPool()))
+    : Point2DTemplate(BigReal(src.x(),digitPool?digitPool:src.getDigitPool())
+                     ,BigReal(src.y(),digitPool?digitPool:src.getDigitPool()))
   {
   }
   inline DigitPool *getDigitPool() const {
-    return x.getDigitPool();
+    return x().getDigitPool();
   }
-  template<typename T> BigRealPoint2D &operator=(const T &src) {
+  template<typename T> BigRealSize2D &operator=(const FixedSizeVectorTemplate<T,2> &src) {
     DigitPool *dp = getDigitPool();
-    x = BigReal(src.x,dp);
-    y = BigReal(src.y,dp);
+    cx() = BigReal(src.cx(),dp);
+    cy() = BigReal(src.cy(),dp);
     return *this;
   }
-  inline operator RealPoint2D() const {
-    return RealPoint2D((Real)x, (Real)y);
+  template<typename T> inline explicit operator Point2DTemplate<T>() const {
+    return Point2DTemplate<T>((T)cx(), (T)cy());
   }
+#if defined(__ATLTYPES_H__)
+  inline BigRealPoint2D(const CPoint &p, DigitPool *digitPool=nullptr)
+    : Point2DTemplate(BigReal(p.x,digitPool),BigReal(p.y,digitPool))
+  {
+  }
+  inline BigRealPoint2D &operator=(const CPoint &p) {
+    x() = p.x; y() = p.y;
+    return *this;
+  }
+  inline explicit operator CPoint() const {
+    return CPoint((int)round(x()), (int)round(y()));
+  }
+#endif // __ATLTYPES_H__
 };
 
 class BigRealIntervalTransformation {
@@ -160,21 +187,21 @@ public:
   {
   }
   inline BigRealRectangle2D(const BigRealPoint2D &topLeft, const BigRealPoint2D &bottomRight, DigitPool *digitPool = nullptr)
-    : Rectangle2DTemplate(BigReal(topLeft.x          ,digitPool?digitPool:topLeft.getDigitPool())
-                         ,BigReal(topLeft.y          ,digitPool?digitPool:topLeft.getDigitPool())
-                         ,dif(bottomRight.x,topLeft.x,digitPool?digitPool:topLeft.getDigitPool())
-                         ,dif(bottomRight.y,topLeft.y,digitPool?digitPool:topLeft.getDigitPool()))
+    : Rectangle2DTemplate(BigReal(topLeft.x()            ,digitPool?digitPool:topLeft.getDigitPool())
+                         ,BigReal(topLeft.y()            ,digitPool?digitPool:topLeft.getDigitPool())
+                         ,dif(bottomRight.x(),topLeft.x(),digitPool?digitPool:topLeft.getDigitPool())
+                         ,dif(bottomRight.y(),topLeft.y(),digitPool?digitPool:topLeft.getDigitPool()))
   {
   }
   inline BigRealRectangle2D(const BigRealPoint2D &p, const BigRealSize2D &size, DigitPool *digitPool = nullptr)
-    : Rectangle2DTemplate(BigReal(p.x    ,digitPool)
-                         ,BigReal(p.y    ,digitPool)
-                         ,BigReal(size.cx,digitPool)
-                         ,BigReal(size.cy,digitPool))
+    : Rectangle2DTemplate(BigReal(p.x()    ,digitPool?digitPool:p.getDigitPool())
+                         ,BigReal(p.y()    ,digitPool?digitPool:p.getDigitPool())
+                         ,BigReal(size.cx(),digitPool?digitPool:p.getDigitPool())
+                         ,BigReal(size.cy(),digitPool?digitPool:p.getDigitPool()))
   {
   }
   inline DigitPool *getDigitPool() const {
-    return m_p.x.getDigitPool();
+    return ((BigRealPoint2D&)p0()).getDigitPool();
   }
   template<typename T> BigRealRectangle2D &operator=(const T &r) {
     DigitPool *dp = getDigitPool();
@@ -262,11 +289,11 @@ public:
   BigRealRectangle2D  getFromRectangle() const;
   BigRealRectangle2D  getToRectangle()   const;
 
-  inline BigRealPoint2D      forwardTransform(const Point2DTemplate<BigReal> &p)   const {
-    return BigRealPoint2D(getXTransformation().forwardTransform(p.x),getYTransformation().forwardTransform(p.y));
+  inline BigRealPoint2D      forwardTransform(const Point2DTemplate<BigReal> &p)  const {
+    return forwardTransform(p[0], p[1]);
   }
-  inline BigRealPoint2D      backwardTransform(const Point2DTemplate<BigReal> &p)   const {
-    return BigRealPoint2D(getXTransformation().backwardTransform(p.x),getYTransformation().backwardTransform(p.y));
+  inline BigRealPoint2D      backwardTransform(const Point2DTemplate<BigReal> &p) const {
+    return backwardTransform(p[0], p[1]);
   }
   inline BigRealPoint2D      forwardTransform(const BigReal &x, const BigReal &y) const {
     return BigRealPoint2D(getXTransformation().forwardTransform(x),getYTransformation().forwardTransform(y));
@@ -275,14 +302,10 @@ public:
     return BigRealPoint2D(getXTransformation().backwardTransform(x),getYTransformation().backwardTransform(y));
   }
   inline BigRealRectangle2D  forwardTransform(const BigRealRectangle2D &rect)  const {
-    const BigRealPoint2D p1 = forwardTransform(rect.getTopLeft());
-    const BigRealPoint2D p2 = forwardTransform(rect.getBottomRight());
-    return BigRealRectangle2D(p1.x,p1.y,p2.x-p1.x,p2.y-p1.y);
+    return BigRealRectangle2D(forwardTransform(rect.LT()), forwardTransform(rect.RB()));
   }
   inline BigRealRectangle2D  backwardTransform( const BigRealRectangle2D &rect)  const {
-    const BigRealPoint2D p1 = backwardTransform(rect.getTopLeft());
-    const BigRealPoint2D p2 = backwardTransform(rect.getBottomRight());
-    return BigRealRectangle2D(p1.x,p1.y,p2.x-p1.x,p2.y-p1.y);
+    return BigRealRectangle2D(backwardTransform(rect.LT()), backwardTransform(rect.RB()));
   }
 
   void setScale(IntervalScale newScale, int flags);

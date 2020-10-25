@@ -396,7 +396,7 @@ public:
     return (x < m_desc.Width) && (y < m_desc.Height);
   }
   inline bool contains(const Point2D &p) const {
-    return p.x >= 0 && p.x < m_desc.Width && p.y >= 0 && p.y < m_desc.Height;
+    return (p.x() >= 0) && (p.x() < m_desc.Width) && (p.y() >= 0) && (p.y() < m_desc.Height);
   }
 
   void rop( const CRect  &dr                 , ULONG op, const PixRect *src, const CPoint &sp);

@@ -58,20 +58,20 @@ CompactRealArray findZeroes(Function &f, const RealInterval &interval) {
     // ignore
   }
   const size_t       n     = pointArray.size();
-  const RealPoint2D *lastp = &pointArray[0];
+  const RealPoint2D *lastp = &(RealPoint2D&)pointArray[0];
   for(size_t t = 1; t < n; t++) {
     const RealPoint2D &p = pointArray[t];
-    if(sign(lastp->y) * sign(p.y) != 1) {
-      if(lastp->y == 0) {
-        result.add(lastp->x);
-      } else if(p.y != 0) { // lastp->y != 0 && p.y != 0 => opposite sign
-        result.add(converge(f,lastp->x, p.x));
+    if(sign(lastp->y()) * sign(p.y()) != 1) {
+      if(lastp->y() == 0) {
+        result.add(lastp->x());
+      } else if(p.y() != 0) { // lastp->y != 0 && p.y != 0 => opposite sign
+        result.add(converge(f,lastp->x(), p.x()));
       }
     }
     lastp = &p;
   }
-  if(lastp->y == 0) {
-    result.add(lastp->x);
+  if(lastp->y() == 0) {
+    result.add(lastp->x());
   }
   return result;
 }

@@ -117,7 +117,7 @@ public:
 
   friend Map<K, V> operator*(const Map<K, V> &m1, const Map<K, V> &m2) { // intersection
     Map<K, V> result(m1.m_map->cloneMap(false));
-    for(ConstIterator<K> it = m1.keySet().getIterator(); it.hasNext();) {
+    for(auto it = m1.keySet().getIterator(); it.hasNext();) {
       const K &key   = it.next();
       const V *value = m2.get(key);
       if(value != nullptr) {

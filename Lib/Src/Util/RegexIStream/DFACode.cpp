@@ -140,12 +140,12 @@ void DFA::getTransitionMatrix(TmpDFATables &ttabs, const BitSet &rowSave, const 
 
   ttabs.allocateMatrix(rowCount, colCount);
   CompactIntArray columnsIndex(colCount);
-  for(ConstIterator<size_t> it = columnSave.getIterator(); it.hasNext();) {
+  for(auto it = columnSave.getIterator(); it.hasNext();) {
     columnsIndex.add((int)it.next());
   }
 
   int r = 0;
-  for(ConstIterator<size_t> it = rowSave.getIterator(); it.hasNext(); r++) {
+  for(auto it = rowSave.getIterator(); it.hasNext(); r++) {
     const int *DFAtransitions = m_states[it.next()].m_transition;
     int       *row            = &ttabs.transition(r, 0);
     for(UINT c = 0; c < colCount; c++) {

@@ -534,7 +534,7 @@
       <PreprocessorDefinitions>_WINDOWS;NDEBUG;_AFXEXT;_CRT_SECURE_NO_WARNINGS=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>C:\mytools2015\Lib\Src\paintlib\otherlib\libtiff;C:\mytools2015\Lib\Src\paintlib\otherlib\libpng;C:\mytools2015\Lib\Src\paintlib\otherlib\libjpeg;C:\mytools2015\Lib\Src\paintlib\common</AdditionalIncludeDirectories>
-      <DebugInformationFormat>None</DebugInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
       <BrowseInformation>true</BrowseInformation>
       <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
@@ -542,6 +542,7 @@
       <StringPooling>true</StringPooling>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <OmitFramePointers>false</OmitFramePointers>
+      <AssemblerOutput>NoListing</AssemblerOutput>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

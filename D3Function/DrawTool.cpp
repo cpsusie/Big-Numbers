@@ -55,7 +55,7 @@ bool DrawTool::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) {
 
 DrawTool &DrawTool::paintBox(const Point2D &point, bool selected) {
   Viewport2D  &vp = m_editor.getViewport();
-  const CPoint  p = vp.forwardTransform(point);
+  const CPoint  p = (CPoint)vp.forwardTransform(point);
   CRect rect(p.x-BOXSIZE, p.y-BOXSIZE, p.x+BOXSIZE, p.y+BOXSIZE);
   vp.getDC()->FillRect(&rect,(selected || isSelected(&point)) ? &m_redBrush : &m_blackBrush);
   return *this;
@@ -167,11 +167,10 @@ DrawTool &DrawTool::selectPolygonsInRect(const Rectangle2D &r) {
 }
 
 DrawTool &DrawTool::selectPointsInRect(const Rectangle2D &r) {
-  CompactArray<Point2D*> points = m_editor.getProfile().getAllPointsRef();
-  for(size_t i = 0; i < points.size(); i++) {
-    Point2D *p = points[i];
+  Point2DRefArray points = m_editor.getProfile().getAllPointsRef();
+  for(auto p : points) {
     if(r.contains(*p)) {
-      select(p);
+      select((Point2D*)p);
     }
   }
   return *this;
@@ -282,14 +281,14 @@ bool DrawTool::canConnect() const {
   if(m_selectedPoints.size() != 2) {
     return false;
   }
-  return m_editor.getProfile().canConnect(m_selectedPoints[0],m_selectedPoints[1]);
+  return m_editor.getProfile().canConnect((Point2D*)m_selectedPoints[0], (Point2D*)m_selectedPoints[1]);
 }
 
 DrawTool &DrawTool::connect() {
   if(!canConnect()) {
     return *this;
   }
-  m_editor.getProfile().connect(m_selectedPoints[0],m_selectedPoints[1]);
+  m_editor.getProfile().connect((Point2D*)m_selectedPoints[0], (Point2D*)m_selectedPoints[1]);
   return unselectAll().repaintAll();
 }
 

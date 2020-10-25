@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include <Math/Point2DTransformations.h>
+#include <Math/Point2DToPoint2DFunctions.h>
 #include "TurnableRect.h"
 #include "BitmapRotate.h"
 
@@ -21,10 +21,10 @@ TurnableRect::TurnableRect() {
 }
 
 TurnableRect::TurnableRect(const Rectangle2D &r) {
-  add(r.getTopLeft());
-  add(r.getTopRight());
-  add(r.getBottomRight());
-  add(r.getBottomLeft());
+  add(r.LT());
+  add(r.RT());
+  add(r.RB());
+  add(r.LB());
   m_selectedMarkIndex = -1;
   m_rotationCenter = getCenter();
 }
@@ -75,7 +75,7 @@ Point2D TurnableRect::getSkewDir() {
   case LC:
   case RC: return getU2();
   default:
-    throwException(_T("Skewdir not defined for mark %d"),getSelectedMark());
+    throwException(_T("Skewdir not defined for mark %d"), getSelectedMark());
   }
   return getU1();
 }
@@ -86,7 +86,7 @@ Point2D TurnableRect::getRotateDir() {
   case TR:
   case BL:
   case BR:
-    return Point2D(getSelectedMarkPoint() - m_rotationCenter).rotate(M_PI/2);
+    return ::rotate(Point2D(getSelectedMarkPoint() - m_rotationCenter),M_PI/2);
   default:
     throwException(_T("Rotatedir not defined for mark %d"), getSelectedMark());
   }
@@ -96,34 +96,34 @@ Point2D TurnableRect::getRotateDir() {
 // ----------------------------------- PointTransformations ----------------------------------
 
 FunctionR2R2 *TurnableRect::getMoveTransformation(const Point2D &dp) {
-  FunctionR2R2 *result = new MoveTransformation(dp); TRACE_NEW(result);
+  FunctionR2R2  *result = new MoveTransformation(dp); TRACE_NEW(result);
   return result;
 }
 
 FunctionR2R2 *TurnableRect::getStretchTransformation(const Point2D &dp) {
-  const Point2D    dir    = unitVector(getStretchDir());
-  const Point2D    step   = (dp * dir) * dir;
-  FunctionR2R2 *result = new StretchTransformation(getStretchOrigin(),getU1(),getU2(),getSelectedMarkPoint(),step); TRACE_NEW(result);
+  const Point2D  dir    = unitVector(getStretchDir());
+  const Point2D  step   = (dp * dir) * dir;
+  FunctionR2R2  *result = new StretchTransformation(getStretchOrigin(),getU1(),getU2(),getSelectedMarkPoint(),step); TRACE_NEW(result);
   return result;
 }
 
 FunctionR2R2 *TurnableRect::getRotateTransformation(const Point2D &dp) {
-  const Point2D    dir    = unitVector(getRotateDir());
-  const Point2D    step   = (dp * dir) * dir;
-  const double     theta  = angle(Point2D(getSelectedMarkPoint() - m_rotationCenter), Point2D(getSelectedMarkPoint() + step - m_rotationCenter));
-  FunctionR2R2 *result = new RotateTransformation(m_rotationCenter, theta); TRACE_NEW(result);
+  const Point2D  dir    = unitVector(getRotateDir());
+  const Point2D  step   = (dp * dir) * dir;
+  const double   theta  = angle2D(Point2D(getSelectedMarkPoint() - m_rotationCenter), Point2D(getSelectedMarkPoint() + step - m_rotationCenter));
+  FunctionR2R2  *result = new RotateTransformation(m_rotationCenter, theta); TRACE_NEW(result);
   return result;
 }
 
 FunctionR2R2 *TurnableRect::getSkewTransformation(const Point2D &dp) {
-  const Point2D    dir    = unitVector(getSkewDir());
-  const Point2D    step   = (dp * dir) * dir;
-  FunctionR2R2 *result = new SkewTransformation(getStretchOrigin(),getU1(),getU2(),getSelectedMarkPoint(),step); TRACE_NEW(result);
+  const Point2D  dir    = unitVector(getSkewDir());
+  const Point2D  step   = (dp * dir) * dir;
+  FunctionR2R2  *result = new SkewTransformation(getStretchOrigin(),getU1(),getU2(),getSelectedMarkPoint(),step); TRACE_NEW(result);
   return result;
 }
 
 FunctionR2R2 *TurnableRect::getMirrorTransformation(bool horizontal) {
-  FunctionR2R2 *result;
+  FunctionR2R2  *result;
   if(horizontal) {
     result = new MirrorTransformation(getLeftCenter(),getRightCenter()); TRACE_NEW(result);
   } else {
@@ -215,12 +215,12 @@ Point2D TurnableRect::getRightCenter() {
 }
 
 void TurnableRect::addMarkRect(Viewport2D &vp, MarkId markId, int imageId, int degree) {
-  m_marks.add(RectMark(markId, vp.forwardTransform(getMarkPoint(markId)),imageId,degree));
+  m_marks.add(RectMark(markId, (CPoint)vp.forwardTransform(getMarkPoint(markId)),imageId,degree));
 }
 
 void TurnableRect::repaint(Viewport2D &vp, ProfileEditorState state) {
 
-#define DEGREE(v)     (int)RAD2GRAD(angle(v, Point2D(1,0)))
+#define DEGREE(v)     (int)RAD2GRAD(angle2D(v, Point2D(1,0)))
 #define VDEGREE(id,p) DEGREE(Point2D(getMarkPoint(id)-p))
 #define VSTRETCH(id)  VDEGREE(id, getCenter())
 #define VROT(id)      VDEGREE(id, m_rotationCenter)

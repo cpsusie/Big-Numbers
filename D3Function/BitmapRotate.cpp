@@ -160,10 +160,10 @@ HBITMAP bitmapRotate(LPDIRECT3DDEVICE device, HBITMAP b0, double degree) {
   const D3DXVECTOR2 rotCenter       = D3DXVECTOR2((float)b0Size.cx/2, (float)b0Size.cy/2);
   const D3DXMATRIX  rotationMatrix  = create2DRotationWorld(rotCenter, GRAD2RAD(degree));
         Rectangle2D fRect           = getTransformedRectangle(rotationMatrix, b0Size);
-  const Point2D     offset          = -Point2D(ceil(fRect.getX()),ceil(fRect.getY())) + Point2D(fraction(fRect.getBottomRight().x),fraction(fRect.getBottomRight().y));
-  const D3DXMATRIX  translateMatrix = createTranslateMatrix(D3DXVECTOR3((float)offset.x, (float)offset.y, 0));
-                    fRect           = Rectangle2D(0,0, fRect.getBottomRight().x + offset.x, fRect.getBottomRight().y + offset.y);
-  const CRect       resultRect      = CRect(CPoint(0,0),CPoint((int)ceil(fRect.getBottomRight().x),(int)ceil(fRect.getBottomRight().y)));
+  const Point2D     offset          = -Point2D(ceil(fRect.getX()),ceil(fRect.getY())) + Point2D(fraction(fRect.RB()[0]),fraction(fRect.RB()[1]));
+  const D3DXMATRIX  translateMatrix = createTranslateMatrix(D3DXVECTOR3((float)offset[0], (float)offset[1], 0));
+                    fRect           = Rectangle2D(0,0, fRect.RB()[0] + offset[0], fRect.RB()[1] + offset[1]);
+  const CRect       resultRect      = CRect(CPoint(0,0),CPoint((int)ceil(fRect.RB()[0]),(int)ceil(fRect.RB()[1])));
   D3DXMATRIX        worldMatrix;
   CSize             trSize;
 

@@ -7,9 +7,9 @@ namespace Expr {
 Expr3::Expr3(const String &expr1, const String &expr2, const String &expr3, const String &commonText)
 : m_commonText(commonText)
 {
-  add(expr1);
-  add(expr2);
-  add(expr3);
+  m_expr.add(expr1);
+  m_expr.add(expr2);
+  m_expr.add(expr3);
 }
 
 };

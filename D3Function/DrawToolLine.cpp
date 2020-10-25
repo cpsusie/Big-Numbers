@@ -7,7 +7,7 @@ bool DrawToolLine::OnLButtonDown(UINT nFlags, CPoint point) {
   profile.addLine(p,p);
   ProfilePolygon2D &gp = profile.m_polygonArray.last();
   m_p0 = &gp.m_start;
-  m_p1 = &gp.m_curveArray.last().m_points.last();
+  m_p1 = &(Point2D&)gp.m_curveArray.last().m_points.last();
   unselectAll();
   select(&gp).repaintAll();
   return true;

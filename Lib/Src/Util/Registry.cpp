@@ -168,7 +168,7 @@ void RegistryKey::deleteKey(const String &keyName) const {
 }
 
 void RegistryKey::deleteSubKeys() const {
-  for(Iterator<String> it = getSubKeyIterator(); it.hasNext();) {
+  for(auto it = getSubKeyIterator(); it.hasNext();) {
     openKey(it.next()).deleteSubKeys();;
     it.remove();
   }
@@ -289,7 +289,7 @@ void RegistryKey::deleteValue(const String &valueName) const {
 }
 
 void RegistryKey::deleteValues() const {
-  for(Iterator<RegistryValue> it = getValueIterator(); it.hasNext();) {
+  for(auto it = getValueIterator(); it.hasNext();) {
     it.next();
     it.remove();
   }

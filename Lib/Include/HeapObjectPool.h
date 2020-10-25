@@ -66,7 +66,7 @@ public:
 
   int getPageCount() const {
     int count = 0;
-    for(const HeapObjectPage *p = m_firstPage; p; p = p->m_next) {
+    for(auto p = m_firstPage; p; p = p->m_next) {
       count++;
     }
     return count;

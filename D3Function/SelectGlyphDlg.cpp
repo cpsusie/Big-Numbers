@@ -56,8 +56,8 @@ GlyphPainter::GlyphPainter(CDC &dc, const Point2D &pos) : m_dc(dc) {
 }
 
 void GlyphPainter::line(const Point2D &from, const Point2D &to) {
-  m_dc.MoveTo(m_pos%from);
-  m_dc.LineTo(m_pos%to);
+  m_dc.MoveTo((CPoint)(m_pos%from));
+  m_dc.LineTo((CPoint)(m_pos%to));
 }
 
 CRect CSelectGlyphDlg::getClientRect(int id) {

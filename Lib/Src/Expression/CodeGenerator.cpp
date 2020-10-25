@@ -457,9 +457,9 @@ void CodeGenerator::genExpression(SNode n DCL_DSTPARAM) {
   case CHI2DIST      :    GENCALL(     n, ::chiSquaredDistribution);
   case BINOMIAL      :    GENCALL(     n, ::binomial              );
   case GAMMA         :    GENCALL(     n, ::gamma                 );
-  case GAUSS         :    GENCALL(     n, ::gauss                 );
+  case GAUSS         :    GENCALL(     n, ::gaussDensity          );
   case FAC           :    GENCALL(     n, ::factorial             );
-  case NORM          :    GENCALL(     n, ::norm                  );
+  case NORM          :    GENCALL(     n, ::gaussDistribution     );
   case PROBIT        :    GENCALL(     n, ::probitFunction        );
   case ERF           :    GENCALL(     n, ::errorFunction         );
   case INVERF        :    GENCALL(     n, ::inverseErrorFunction  );

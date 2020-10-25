@@ -51,7 +51,7 @@ void TimeEstimator::removeFirst() { // assume queue not empty
   } else { // avoid truncation errors if mseconds becomes to large
     m_time0.add(TMILLISECOND, (int)first.m_msec);
     initAllSums();
-    for(Iterator<_TimePctLogPoint> it = m_logQueue.getIterator(); it.hasNext();) {
+    for(auto it = m_logQueue.getIterator(); it.hasNext();) {
       _TimePctLogPoint &p = it.next();
       p.m_msec -= first.m_msec;
       addTimePct(p);

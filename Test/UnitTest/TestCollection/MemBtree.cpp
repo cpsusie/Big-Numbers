@@ -400,7 +400,7 @@ bool BTreeSetImpl::contains(const void *key) const {
 }
 
 void *BTreeSetImpl::select(RandomGenerator &rnd) const {
-  if(size() == 0) throwSelectFromEmptyCollectionException(__TFUNCTION__);
+  if(size() == 0) throwEmptySetException(__TFUNCTION__);
   return (void*)(m_root->getItem(1).key());
 }
 
@@ -826,7 +826,7 @@ bool BTreeMapImpl::remove(const void *key) {
 
 AbstractEntry *BTreeMapImpl::selectEntry(RandomGenerator &rnd) const {
   if(size() == 0) {
-    throwSelectFromEmptyCollectionException(__TFUNCTION__);
+    throwEmptyMapException(__TFUNCTION__);
   }
   return (AbstractEntry*)(BTreeMapPageItem*)findNode(select(rnd));
 }

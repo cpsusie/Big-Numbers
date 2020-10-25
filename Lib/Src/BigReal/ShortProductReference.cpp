@@ -104,7 +104,7 @@ FinalizeCarryLoop:                        // do { // Assume currentDigit in ecx.
 NoDigitFinalyzeCarryEAX:                  // Same as NoDigitFinalyzeCarry, but pushes eax instead of ecx
       push        eax                     // push carry, assumed to be in eax
       push        this                    // puch this
-      call        insertDigitAndIncrExpo  // insertDigitAndIncrExpo((this, carry);
+      call        insertDigitAndIncrExpo  // insertDigitAndIncrExpo(this, carry);
       add         esp, 8
       jmp         NextDigit
 
@@ -113,14 +113,14 @@ NoDigitAddInt32:                          // (Assume sum <= 0xffffffff) and no m
                                           // So after the division by BIGREALBASE sum will be 0 => this is not a loop
       push        edi                     // push sum. Carry is 0 at this point
       push        this                    // push this
-      call        insertDigitAndIncrExpo  // insertDigitAndIncrExpo((this, sum);
+      call        insertDigitAndIncrExpo  // insertDigitAndIncrExpo(this, sum);
       add         esp, 8                  //
       jmp         NextDigit
 
 NoDigitFinalyzeCarryECX:                  // No loop required, as only one digit will be added. and after that, carry == 0
       push        ecx                     // push carry, assumed to be in ecx
       push        this                    // puch this
-      call        insertDigitAndIncrExpo  // insertDigitAndIncrExpo((this, carry);
+      call        insertDigitAndIncrExpo  // insertDigitAndIncrExpo(this, carry);
       add         esp, 8
       jmp         NextDigit
 
@@ -299,7 +299,7 @@ NoDigitAddInt32Loop:                // while(n) { edi = carry, esi = n (> 0 && <
     add edi, edx                    //   carry += n % BIGREALBASE
     push edi                        //   push carry
     push this                       //   push this
-    call insertDigitAndIncrExpo     //   insertDigitAnd((this, carry); No more need for n (=0)
+    call insertDigitAndIncrExpo     //   insertDigitAnd(this, carry); No more need for n (=0)
     add esp, 4                      //
     pop edi                         //   restore edi
     xor edx, edx                    //
@@ -314,7 +314,7 @@ NoDigitAddInt32Loop:                // while(n) { edi = carry, esi = n (> 0 && <
 NoDigitHandleCarry:                 // No loop required, as only one digit will be added. and after that, carry == 0
     push edi                        // push carry
     push this                       // puch this
-    call insertDigitAndIncrExpo     // insertDigitAnd((this, carry);
+    call insertDigitAndIncrExpo     // insertDigitAnd(this, carry);
     add esp, 8
     jmp Done
   }

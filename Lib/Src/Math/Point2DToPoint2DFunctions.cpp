@@ -1,9 +1,8 @@
 #include "pch.h"
 #include <Math.h>
-#include <Math/Point2DTransformations.h>
+#include <Math/Point2DToPoint2DFunctions.h>
 
 // ----------------------- MoveTransformation -----------------------
-
 MoveTransformation::MoveTransformation(const Point2D &dp) {
   m_dp = dp;
 }
@@ -13,7 +12,6 @@ Point2D MoveTransformation::operator()(const Point2D &p) {
 }
 
 // ----------------------- RectAreaTransformation ----------------------
-
 RectAreaTransformation::RectAreaTransformation(const Point2D &origin, const Point2D &u1, const Point2D &u2) {
   m_origin  = origin;
   m_u1      = unitVector(u1);
@@ -28,11 +26,10 @@ Point2D RectAreaTransformation::toBaseU(const Point2D &p) {
 }
 
 Point2D RectAreaTransformation::toView(const Point2D &k) {
-  return k.x*m_u1 + k.y*m_u2;
+  return k.x()*m_u1 + k.y()*m_u2;
 }
 
 // ----------------------- StretchTransformation -----------------------
-
 StretchTransformation::StretchTransformation(const Point2D &origin, const Point2D &u1, const Point2D &u2, const Point2D &p0, const Point2D &step)
 : RectAreaTransformation(origin,u1,u2) {
   m_k0      = toBaseU(p0-getOrigin());
@@ -42,11 +39,11 @@ StretchTransformation::StretchTransformation(const Point2D &origin, const Point2
 #define EPS 1e-8
 
 Point2D StretchTransformation::operator()(const Point2D &p) {
-  Point2D k = toBaseU(p-getOrigin());
+  Point2D k     = toBaseU(p-getOrigin());
   Point2D rstep = m_step;
 
-  rstep.x *= (fabs(m_k0.x)<EPS)?0:(k.x / m_k0.x);
-  rstep.y *= (fabs(m_k0.y)<EPS)?0:(k.y / m_k0.y);
+  rstep.x() *= (fabs(m_k0.x())<EPS)?0:(k.x() / m_k0.x());
+  rstep.y() *= (fabs(m_k0.y())<EPS)?0:(k.y() / m_k0.y());
 
   return p + toView(rstep);
 }
@@ -71,40 +68,37 @@ Point2D SkewTransformation::operator()(const Point2D &p) {
   Point2D k = toBaseU(p-getOrigin());
   Point2D rstep;
 
-  if(fabs(m_k0.y) > fabs(m_k0.x)) {
-    rstep.x = m_step.x * k.y / m_k0.y;
-    rstep.y = 0;
+  if(fabs(m_k0.y()) > fabs(m_k0.x())) {
+    rstep.x() = m_step.x() * k.y() / m_k0.y();
+    rstep.y() = 0;
   } else {
-    rstep.x = 0;
-    rstep.y = m_step.y * k.x / m_k0.x;
+    rstep.x() = 0;
+    rstep.y() = m_step.y() * k.x() / m_k0.x();
   }
   return p + toView(rstep);
 }
 
 
 // ----------------------- RotateTransformation -----------------------
-
 RotateTransformation::RotateTransformation(const Point2D &center, double theta) {
   m_center = center;
   m_theta  = theta;
 }
 
 Point2D RotateTransformation::operator()(const Point2D &p) {
-  return Point2D(p - m_center).rotate(m_theta) + m_center;
+  return rotate(Point2D(p - m_center),m_theta) + m_center;
 }
 
 // ----------------------- MirrorTransformation -----------------------
-
 MirrorTransformation::MirrorTransformation(const Point2D &p1, const Point2D &p2) {
   m_p1 = p1;
   m_p2 = p2;
 }
 
 Point2D MirrorTransformation::operator()(const Point2D &p) {
-  Point2D u = unitVector(m_p2 - m_p1);
-  Point2D v = p - m_p1;
-  Point2D prj = (u * v) * u;
-  Point2D normal = v - prj;
-  return m_p1 + prj - normal;
+  const Point2D u      = unitVector(m_p2 - m_p1);
+  const Point2D v      = p - m_p1;
+  const Point2D prj    = (u * v) * u;
+  const Point2D normal = v - prj;
+  return m_p1 + (prj - normal);
 }
-

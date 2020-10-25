@@ -32,8 +32,8 @@ IsoCurveGraphEvaluator::IsoCurveGraphEvaluator(IsoCurveGraph *graph)
 }
 
 double IsoCurveGraphEvaluator::evaluate(const Point2D &p) {
-  *m_x = p.x;
-  *m_y = p.y;
+  *m_x = p.x();
+  *m_y = p.y();
   return m_expr.evaluate();
 }
 
@@ -75,7 +75,7 @@ void IsoCurveGraph::findDataRange() {
   } else {
     const LineSegment *lsp = &m_lineArray[0];
     const LineSegment *end = &m_lineArray.last();
-    m_range =  m_pointArray[lsp->m_i1];
+    m_range =  (Point2D)m_pointArray[lsp->m_i1];
     m_range += m_pointArray[lsp->m_i2];
     while(lsp++ < end) {
       m_range += m_pointArray[lsp->m_i1];
@@ -186,7 +186,7 @@ double IsoCurveGraph::distance(const CPoint &p) const {
         try {
           const Point2D &p1 = m_pointArray[ls->m_i1];
           const Point2D &p2 = m_pointArray[ls->m_i2];
-          const double dist = distanceFromLineSegment(tr.forwardTransform(p1), tr.forwardTransform(p2), Point2D(p));
+          const double dist = distanceFromLineSegment((Point2D)tr.forwardTransform(p1), (Point2D)tr.forwardTransform(p2), Point2D(p));
           if(dist < minDist) {
             minDist = dist;
           }
@@ -231,11 +231,11 @@ double IsoCurveGraph::getSmallestPositiveX() const {
   if(isEmpty()) return 0;
   const size_t       n      = m_lineArray.size();
   const LineSegment *ls     = &m_lineArray[0];
-  double             result = max(0, m_pointArray[ls->m_i1].x);
-  result = getMinPositive(m_pointArray[ls->m_i2].x, result);
+  double             result = max(0, ((Point2D)m_pointArray[ls->m_i1]).x());
+  result = getMinPositive(((Point2D)m_pointArray[ls->m_i2]).x(), result);
   for(size_t i = 0; i < n; i++, ls++) {
-    result = getMinPositive(m_pointArray[ls->m_i1].x, result);
-    result = getMinPositive(m_pointArray[ls->m_i2].x, result);
+    result = getMinPositive(((Point2D)m_pointArray[ls->m_i1]).x(), result);
+    result = getMinPositive(((Point2D)m_pointArray[ls->m_i2]).x(), result);
   }
   return result;
 }
@@ -244,11 +244,11 @@ double IsoCurveGraph::getSmallestPositiveY() const {
   if(isEmpty()) return 0;
   const size_t       n      = m_lineArray.size();
   const LineSegment *ls     = &m_lineArray[0];
-  double             result = max(0, m_pointArray[ls->m_i1].y);
-  result = getMinPositive(m_pointArray[ls->m_i2].y, result);
+  double             result = max(0, ((Point2D)m_pointArray[ls->m_i1]).y());
+  result = getMinPositive(((Point2D)m_pointArray[ls->m_i2]).y(), result);
   for(size_t i = 0; i < n; i++, ls++) {
-    result = getMinPositive(m_pointArray[ls->m_i1].y, result);
-    result = getMinPositive(m_pointArray[ls->m_i2].y, result);
+    result = getMinPositive(((Point2D)m_pointArray[ls->m_i1]).y(), result);
+    result = getMinPositive(((Point2D)m_pointArray[ls->m_i2]).y(), result);
   }
   return result;
 }

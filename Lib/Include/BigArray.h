@@ -438,7 +438,7 @@ public:
   }
 
   const T &select() const {
-    if(isEmpty()) throwSelectFromEmptyCollectionException(__TFUNCTION__);
+    if(isEmpty()) throwEmptyArrayException(__TFUNCTION__);
     return (*this)[randSizet(m_size)];
   }
 

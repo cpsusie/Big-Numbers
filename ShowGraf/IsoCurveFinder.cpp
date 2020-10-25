@@ -42,8 +42,8 @@ void IsoCurveFinder::findCurve(double             cellSize
   Point2D    centerPoint;
   Point2DKey startKey;
   int initialRectanglesCounter = 0;
-  for(centerPoint.x = boundingBox.getMinX(), startKey.i = 0; centerPoint.x <= boundingBox.getMaxX(); centerPoint.x += cellSize, startKey.i++) {
-    for(centerPoint.y = boundingBox.getMinY(), startKey.j = 0; centerPoint.y <= boundingBox.getMaxY(); centerPoint.y += cellSize, startKey.j++) {
+  for(centerPoint.x() = boundingBox.getMinX(), startKey.i = 0; centerPoint.x() <= boundingBox.getMaxX(); centerPoint.x() += cellSize, startKey.i++) {
+    for(centerPoint.y() = boundingBox.getMinY(), startKey.j = 0; centerPoint.y() <= boundingBox.getMaxY(); centerPoint.y() += cellSize, startKey.j++) {
       if(m_centerSet.contains(startKey)) {
         continue;
       }
@@ -254,7 +254,8 @@ const HashedRectCorner *IsoCurveFinder::getCorner(int i, int j) {
 }
 
 Point2D IsoCurveFinder::getCornerPoint(int i, int j)  const {
-  return Point2D(m_boundingBox.m_p.x + (i-0.5) * m_cellSize, m_boundingBox.m_p.y + (j-0.5) * m_cellSize);
+  const Point2D &p0 = m_boundingBox.p0();
+  return Point2D(p0.x() + (i-0.5) * m_cellSize, p0.y() + (j-0.5) * m_cellSize);
 }
 
 void StackedRectangle::validate() const {
@@ -262,14 +263,14 @@ void StackedRectangle::validate() const {
   const HashedRectCorner &sw = *m_corners[RC_SW];
   const HashedRectCorner &ne = *m_corners[RC_NE];
   const HashedRectCorner &se = *m_corners[RC_SE];
-  assert(nw.m_point.x == sw.m_point.x);
-  assert(ne.m_point.x == se.m_point.x);
-  assert(nw.m_point.y == ne.m_point.y);
-  assert(sw.m_point.y == se.m_point.y);
-  assert(nw.m_point.y >  sw.m_point.y);
-  assert(ne.m_point.y >  se.m_point.y);
-  assert(se.m_point.x >  sw.m_point.x);
-  assert(ne.m_point.x >  nw.m_point.x);
+  assert(nw.m_point.x() == sw.m_point.x());
+  assert(ne.m_point.x() == se.m_point.x());
+  assert(nw.m_point.y() == ne.m_point.y());
+  assert(sw.m_point.y() == se.m_point.y());
+  assert(nw.m_point.y() >  sw.m_point.y());
+  assert(ne.m_point.y() >  se.m_point.y());
+  assert(se.m_point.x() >  sw.m_point.x());
+  assert(ne.m_point.x() >  nw.m_point.x());
   assert(nw.m_key.i == sw.m_key.i);
   assert(ne.m_key.i == se.m_key.i);
   assert(nw.m_key.j == ne.m_key.j);

@@ -39,8 +39,8 @@ void PolygonFiller::checkAndFill(const CPoint &p) {
 }
 
 void PolygonFiller::restoreBlackOutSideRegion() {
-  for(size_t i = 0; i < m_pointsOutside.size(); i++) {
-    m_pixelAccessor->fill(m_pointsOutside[i],D3D_BLACK);
+  for(auto it = m_pointsOutside.getIterator(); it.hasNext();) {
+    m_pixelAccessor->fill(it.next(),D3D_BLACK);
   }
 }
 

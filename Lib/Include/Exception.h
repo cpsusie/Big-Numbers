@@ -26,9 +26,13 @@ void throwException(const String &s);
 void throwInvalidArgumentException(const TCHAR *method, _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
 void throwUnsupportedOperationException(const TCHAR *method);
 void throwTimeoutException(_In_z_ _Printf_format_string_  const TCHAR * const format, ...);
-void throwIndexOutOfRangeException(const TCHAR *method, UINT64 index, UINT64 size);
-void throwIndexOutOfRangeException(const TCHAR *method, UINT64 index, UINT64 count, UINT64 size);
-void throwSelectFromEmptyCollectionException(const TCHAR *method);
+void throwIndexOutOfRangeException(          const TCHAR *method, UINT64 index, UINT64 size);
+void throwIndexOutOfRangeException(          const TCHAR *method, UINT64 index, UINT64 count, UINT64 size);
+void throwEmptyCollectionException(          const TCHAR *method);
+void throwEmptyArrayException(               const TCHAR *method);
+void throwEmptySetException(                 const TCHAR *method);
+void throwEmptyMapException(                 const TCHAR *method);
+void throwEmptyContainerException(           const TCHAR *method, const TCHAR *containerName);
 void throwMethodException(const TCHAR *className, TCHAR const * const method, _In_z_ _Printf_format_string_ const TCHAR * const format, ...);
 
 void throwErrNoOnNameException(const String &name);

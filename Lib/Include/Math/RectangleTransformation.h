@@ -1,107 +1,78 @@
 #pragma once
 
-#include "IntervalTransformationArray.h"
+#include "CubeTransformationTemplate.h"
 #include "Rectangle2D.h"
 
-template<typename T> class RectangleTransformationTemplate {
+template<typename T> class RectangleTransformationTemplate : public CubeTransformationTemplate<T, 2> {
 private:
-  IntervalTransformationArray<T, 2> m_tr;
-  void computeTransformation(const Rectangle2DTemplate<T> &from, const Rectangle2DTemplate<T> &to, IntervalScale xScale, IntervalScale yScale) {
-    IntervalTransformationArray<T, 2> newTr;
-    newTr.setTransformation(0, from.getXInterval(), to.getXInterval(), xScale);
-    newTr.setTransformation(1, from.getYInterval(), to.getYInterval(), yScale);
-    m_tr = newTr;
-  }
-
   RectangleTransformationTemplate(const IntervalTransformationTemplate<T> &tx, const IntervalTransformationTemplate<T> &ty) {
-    m_tr.setTransformation(0,tx);
-    m_tr.setTransformation(1,ty);
+    setTransformation(0,tx);
+    setTransformation(1,ty);
   }
 
   static Rectangle2DTemplate<T> getDefaultFromRectangle(IntervalScale xScale, IntervalScale yScale) {
     const NumberInterval<T> xInterval = IntervalTransformationTemplate<T>::getDefaultFromInterval(xScale);
     const NumberInterval<T> yInterval = IntervalTransformationTemplate<T>::getDefaultFromInterval(yScale);
-    return Rectangle2DTemplate<T>(xInterval.getFrom(), yInterval.getFrom(), xInterval.getLength(), yInterval.getLength());
+    return Rectangle2DTemplate<T>(Point2DTemplate<T>(xInterval.getFrom()  , yInterval.getFrom())
+                                 ,Size2DTemplate<T>( xInterval.getLength(), yInterval.getLength())
+                                 );
   }
   static Rectangle2DTemplate<T> getDefaultToRectangle() {
     return Rectangle2DTemplate<T>(0, 100, 100, -100);
   }
 
 public:
-  inline RectangleTransformationTemplate(IntervalScale xScale = LINEAR, IntervalScale yScale = LINEAR) {
-    computeTransformation(getDefaultFromRectangle(xScale,yScale), getDefaultToRectangle(), xScale, yScale);
+  RectangleTransformationTemplate(IntervalScale xScale = LINEAR, IntervalScale yScale = LINEAR) {
+    setFromCube(getDefaultFromRectangle(xScale, yScale));
+    setToCube(getDefaultToRectangle());
+    setScaleType(0, xScale);
+    setScaleType(1, yScale);
   }
-  inline RectangleTransformationTemplate(const RectangleTransformationTemplate &src) : m_tr(src.m_tr) {
+  template<typename S> inline RectangleTransformationTemplate(const CubeTransformationTemplate<S, 2> &src) 
+    : CubeTransformationTemplate<T,2>(src)
+  {
   }
-  RectangleTransformationTemplate(const Rectangle2DTemplate<T> &from, const Rectangle2DTemplate<T> &to, IntervalScale xScale = LINEAR, IntervalScale yScale = LINEAR) {
-    computeTransformation(from, to, xScale, yScale);
-  }
-  const IntervalTransformationTemplate<T> &getXTransformation() const {
-    return m_tr[0];
-  }
-  const IntervalTransformationTemplate<T> &getYTransformation() const {
-    return m_tr[1];
+  template<typename T1, typename T2> RectangleTransformationTemplate(const CubeTemplate<T1, 2> &from, const CubeTemplate<T2, 2> &to, IntervalScale xScale = LINEAR, IntervalScale yScale = LINEAR) {
+    setFromCube(from).setToCube(to).setScaleType(0, xScale).setScaleType(1, yScale);
   }
 
-  void   setFromRectangle(const Rectangle2DTemplate<T> &rect) {
-    m_tr.setFromCube((CubeNTemplate<T,2>)rect);
+  template<typename S> RectangleTransformationTemplate &setFromRectangle(const CubeTemplate<S, 2> &rect) {
+    setFromCube(rect);
+    return *this;
   }
-  void   setToRectangle(const Rectangle2DTemplate<T> &rect) {
-    m_tr.setToCube((CubeNTemplate<T,2>)rect);
+  template<typename S> RectangleTransformationTemplate &setToRectangle(const CubeTemplate<S, 2> &rect) {
+    setToCube(rect);
+    return *this;
   }
   Rectangle2DTemplate<T>    getFromRectangle() const {
-    return Rectangle2DTemplate<T>(m_tr.getFromCube());
+    return getFromCube();
   }
   Rectangle2DTemplate<T>    getToRectangle()   const {
-    return Rectangle2DTemplate<T>(m_tr.getToCube());
-  }
-  inline Point2DTemplate<T> forwardTransform(const Point2DTemplate<T> &p)   const {
-    return forwardTransform(p.x, p.y);
-  }
-  inline Point2DTemplate<T> backwardTransform(const Point2DTemplate<T> &p)   const {
-    return backwardTransform(p.x, p.y);
-  }
-  inline Point2DTemplate<T> forwardTransform(const T &x, const T &y) const {
-    return Point2DTemplate<T>(m_tr[0].forwardTransform(x),m_tr[1].forwardTransform(y));
-  }
-  inline Point2DTemplate<T>  backwardTransform(const T &x, const T &y) const {
-    return Point2DTemplate<T>(m_tr[0].backwardTransform(x),m_tr[1].backwardTransform(y));
-  }
-  inline Rectangle2DTemplate<T>  forwardTransform(const Rectangle2DTemplate<T> &rect)  const {
-    const Point2DTemplate<T> tl = forwardTransform(rect.getTopLeft()    );
-    const Point2DTemplate<T> br = forwardTransform(rect.getBottomRight());
-    return Rectangle2DTemplate<T>(tl,br);
-  }
-  Rectangle2DTemplate<T>  backwardTransform( const Rectangle2DTemplate<T> &rect)  const {
-    const Point2DTemplate<T> tl = backwardTransform(rect.getTopLeft());
-    const Point2DTemplate<T> br = backwardTransform(rect.getBottomRight());
-    return Rectangle2DTemplate<T>(tl,br);
+    return getToCube();
   }
 
   void setScale(IntervalScale newScale, int flags) {
-    IntervalScale xScale = getXTransformation().getScale();
-    IntervalScale yScale = getYTransformation().getScale();
     if((flags & X_AXIS) != 0) {
-      xScale = newScale;
+      setScaleType(0, newScale);
     }
     if((flags & Y_AXIS) != 0) {
-      yScale = newScale;
+      setScaleType(1, newScale);
     }
-    computeTransformation(getFromRectangle(),getToRectangle(),xScale,yScale);
   }
   // Returns new fromRectangle.
-  Rectangle2DTemplate<T> zoom(const Point2DTemplate<T> &p, const T &factor, int flags = X_AXIS | Y_AXIS, bool pInToRectangle=true) {
+  template<typename T1, typename T2> Rectangle2DTemplate<T> zoom(const FixedSizeVectorTemplate<T1, 2> &v, const T2 &factor, int flags = X_AXIS | Y_AXIS, bool pInToRectangle=true) {
     if(flags & X_AXIS) {
-      m_tr[0].zoom(p.x, factor, pInToRectangle);
+      (*this)[0].zoom(v[0], factor, pInToRectangle);
     }
     if(flags & Y_AXIS) {
-      m_tr[1].zoom(p.y, factor, pInToRectangle);
+      (*this)[1].zoom(v[1], factor, pInToRectangle);
     }
     return getFromRectangle();
   }
-  // returns true if transformation is changed
+
+  // Returns true if transformation is changed
   bool adjustAspectRatio() {
-    if(!getXTransformation().isLinear() || !getYTransformation().isLinear()) {
+    if(!(*this)[0].isLinear() || !(*this)[1].isLinear()) {
       return false;
     }
     Rectangle2DTemplate<T> fr        = getFromRectangle();
@@ -110,15 +81,15 @@ public:
     const T                toRatio   = fabs(tr.getWidth() / tr.getHeight());
     bool                   changed   = false;
     if(fromRatio > toRatio) {
-      const T dh = dsign(fr.getHeight())*(fabs(fr.getWidth()/toRatio) - fabs(fr.getHeight()));
-      fr.m_p.y     -= dh / 2;
-      fr.m_size.cy += dh;
-      changed = dh != 0;
+      const T dh    = dsign(fr.getHeight())*(fabs(fr.getWidth()/toRatio) - fabs(fr.getHeight()));
+      fr.p0()[1]   -= dh / 2;
+      fr.size()[1] += dh;
+      changed       =  (dh != 0);
     } else if(fromRatio < toRatio) {
-      const T dw = dsign(fr.getWidth())*(fabs(toRatio*fr.getHeight()) - fabs(fr.getWidth()));
-      fr.m_p.x     -= dw / 2;
-      fr.m_size.cx += dw;
-      changed = dw != 0;
+      const T dw    = dsign(fr.getWidth())*(fabs(toRatio*fr.getHeight()) - fabs(fr.getWidth()));
+      fr.p0()[0]   -= dw / 2;
+      fr.size()[0] += dw;
+      changed       = (dw != 0);
     }
     if(changed) {
       setFromRectangle(fr);
@@ -126,19 +97,9 @@ public:
     return changed;
   }
 
-  inline bool operator==(const RectangleTransformationTemplate<T> &rhs) const {
-    return m_tr == rhs.m_tr;
-  }
-  inline bool operator!=(const RectangleTransformationTemplate<T> &rhs) const {
-    return !(*this == rhs);
-  }
   static RectangleTransformationTemplate<T> getId() {
-    return RectangleTransformationTemplate(Rectangle2DTemplate<T>(0,0,1,1)
-                                          ,Rectangle2DTemplate<T>(0,0,1,1));
+    return RectangleTransformationTemplate(Rectangle2DTemplate<T>::getUnit(), Rectangle2DTemplate<T>::getUnit());
   }
 };
 
-typedef RectangleTransformationTemplate<float   > FloatRectangleTransformation;
 typedef RectangleTransformationTemplate<double  > RectangleTransformation;
-typedef RectangleTransformationTemplate<Double80> D80RectangleTransformation;
-typedef RectangleTransformationTemplate<Real    > RealRectangleTransformation;

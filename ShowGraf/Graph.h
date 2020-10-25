@@ -18,7 +18,7 @@ protected:
     m_param = param; TRACE_NEW(m_param);
   }
   static bool pointDefined(const Point2D &p) {
-    return _finite(p.x) && !_isnan(p.x) && _finite(p.y) && !_isnan(p.y);
+    return _finite(p.x()) && !_isnan(p.x()) && _finite(p.y()) && !_isnan(p.y());
   }
   GraphZeroesResultArray makeZeroesResult(const CompactDoubleArray &zeroes) {
     GraphZeroesResultArray result(*this);
@@ -71,7 +71,7 @@ public:
   // Find zero of line going through p1,p2
   // Assume y1 != y2
   static inline double inverseLinearInterpolate0(const Point2D &p1, const Point2D &p2) {
-    return (p1.y*p2.x - p1.x*p2.y) / (p1.y-p2.y);
+    return (p1.y()*p2.x() - p1.x()*p2.y()) / (p1.y()-p2.y());
   }
   virtual GraphExtremaResultArray findExtrema(const DoubleInterval &interval, ExtremaType extremaType) = 0;
 };

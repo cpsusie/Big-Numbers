@@ -10,6 +10,7 @@
 #include <limits>
 #include <float.h>
 #include <XMLUtil.h>
+#include <Math/Rectangle2D.h>
 #include <Math/MathXML.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;

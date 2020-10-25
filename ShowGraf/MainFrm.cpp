@@ -662,7 +662,7 @@ DoubleInterval CMainFrame::wlParamToInterval(WPARAM wp, LPARAM lp) const {
   int xFrom = (int)wp;
   int xTo   = (int)lp;
   if(xFrom > xTo) std::swap(xFrom,xTo);
-  return getView()->getCoordinateSystem().getTransformation().getXTransformation().backwardTransform(DoubleInterval(xFrom,xTo));
+  return getView()->getCoordinateSystem().getTransformation()[0].backwardTransform(DoubleInterval(xFrom,xTo));
 }
 
 LRESULT CMainFrame::OnMsgPushDragTool(WPARAM wp, LPARAM lp) {
@@ -888,8 +888,8 @@ void CMainFrame::makeExpoFit() {
   const int s = sign(yRange.getFrom());
   for(size_t i = 0; i < points.size(); i++) {
     const Point2D &p = points[i];
-    const double logy = log(p.y * s);
-    logPoints.add(DataPoint(p.x, logy));
+    const double logy = log(p.y() * s);
+    logPoints.add(DataPoint(p.x(), logy));
   }
   DataFit fit;
   fit.solve(LSSD, logPoints);
@@ -934,10 +934,9 @@ void CMainFrame::makePotensFit() {
   const Point2DArray &points = ((PointGraph&)item->getGraph()).getDataPoints();
   CompactArray<DataPoint> logPoints;
   const int s = sign(yRange.getFrom());
-  for(size_t i = 0; i < points.size(); i++) {
-    const Point2D &p = points[i];
-    const double logx = (p.x > 0) ? log(p.x) : log(xMinPlus);
-    const double logy = log(p.y * s);
+  for(const Point2D p : points) {
+    const double logx = (p.x() > 0) ? log(p.x()) : log(xMinPlus);
+    const double logy = log(p.y() * s);
     logPoints.add(DataPoint(logx, logy));
   }
   DataFit fit;

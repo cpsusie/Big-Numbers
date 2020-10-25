@@ -33,11 +33,11 @@ void paintProfile(const Profile2D &profile, Viewport2D &vp, COLORREF color) {
 void paintArrow(CDC &dc, const Point2D &p, const Point2D &dir, double length) {
   const Point2D udir = unitVector(dir);
   const Point2D end  = p + udir * length;
-  dc.MoveTo(p);
-  dc.LineTo(end);
-  dc.LineTo(end + udir.rotate(GRAD2RAD( 160)) * length/4);
-  dc.MoveTo(end);
-  dc.LineTo(end + udir.rotate(GRAD2RAD(-160)) * length/4);
+  dc.MoveTo((CPoint)p);
+  dc.LineTo((CPoint)end);
+  dc.LineTo((CPoint)(end + rotate(udir,GRAD2RAD( 160)) * length/4));
+  dc.MoveTo((CPoint)end);
+  dc.LineTo((CPoint)(end + rotate(udir,GRAD2RAD(-160)) * length/4));
 }
 
 void paintProfileNormals(const Profile2D &profile, Viewport2D &vp, COLORREF color, bool smooth) {

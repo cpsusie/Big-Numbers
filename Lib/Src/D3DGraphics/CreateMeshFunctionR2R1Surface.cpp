@@ -15,17 +15,17 @@ public:
 
 Function2DPoint::Function2DPoint(FunctionR2R1 &f, const Point2D &p, bool calculateNormal) {
   const double z = f(p);
-  m_p = Vertex(p.x, p.y, z);
+  m_p = Vertex(p[0], p[1], z);
   if(!calculateNormal) return;
 #define EPS 1e-5
   Point2D px,py;
 
-  px.x = (fabs(p.x) < 2) ? (p.x+EPS) : p.x * (1+EPS);
-  px.y = p.y;
-  py.x = p.x;
-  py.y = (fabs(p.y) < 2) ? (p.y+EPS) : p.y * (1+EPS);
-  const double dfx = (f(px) - z)/(px.x-p.x);
-  const double dfy = (f(py) - z)/(py.y-p.y);
+  px[0] = (fabs(p[0]) < 2) ? (p[0]+EPS) : p[0] * (1+EPS);
+  px[1] = p[1];
+  py[0] = p[0];
+  py[1] = (fabs(p[1]) < 2) ? (p[1]+EPS) : p[1] * (1+EPS);
+  const double dfx = (f(px) - z)/(px[0]-p[0]);
+  const double dfy = (f(py) - z)/(py[1]-p[1]);
   m_n = Vertex(unitVector(D3DXVECTOR3((float)-dfx, (float)-dfy, 1.0f)));
 }
 
@@ -45,9 +45,9 @@ LPD3DXMESH createMeshFrom2DFunction(AbstractMeshFactory &amf, FunctionR2R1 &f, c
   const float *uValues = calculateTexture ? uPoints.getBuffer() : nullptr, *vValues = calculateTexture ? vPoints.getBuffer() : nullptr;
   // (u ~ x, v ~ y)
   Point2D p(xInterval.getFrom(), yInterval.getFrom());
-  for(UINT i = 0; i < ny; i++, p.y += stepy) {
-    p.x = xInterval.getFrom();
-    for(UINT j = 0; j < nx; j++, p.x += stepx) {
+  for(UINT i = 0; i < ny; i++, p[1] += stepy) {
+    p[0] = xInterval.getFrom();
+    for(UINT j = 0; j < nx; j++, p[0] += stepx) {
       Function2DPoint fp(f, p, calculateNormals);
       mb.addVertex(fp.m_p);
       if(calculateNormals) {

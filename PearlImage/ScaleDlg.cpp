@@ -8,8 +8,8 @@
 
 CScaleDlg::CScaleDlg(const ScaleParameters &scale, CWnd *pParent) : CDialog(IDD, pParent), m_scale(scale) {
   m_toSize      = m_scale.m_toSize;
-  m_scaleWidth  = m_scale.m_scale.x;
-  m_scaleHeight = m_scale.m_scale.y;
+  m_scaleWidth  = m_scale.m_scale.x();
+  m_scaleHeight = m_scale.m_scale.y();
 }
 
 
@@ -76,11 +76,11 @@ void CScaleDlg::OnOK() {
   }
 
   m_scale.m_toSize  = m_toSize ? true : false;
-  m_scale.m_scale.x = m_scaleWidth;
-  m_scale.m_scale.y = m_scaleHeight;
+  m_scale.m_scale.x() = m_scaleWidth;
+  m_scale.m_scale.y() = m_scaleHeight;
   if(!m_toSize) {
-    m_scale.m_scale.x /= 100;
-    m_scale.m_scale.y /= 100;
+    m_scale.m_scale.x() /= 100;
+    m_scale.m_scale.y() /= 100;
   }
   __super::OnOK();
 }

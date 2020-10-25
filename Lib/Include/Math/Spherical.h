@@ -30,7 +30,7 @@ public:
   SphericalTemplate() : r(0), fi(0), theta(0) {
   }
   template<typename TP> SphericalTemplate(const Point3DTemplate<TP> &p) {
-    init((T)p.x, (T)p.y, (T)p.z);
+    init((T)p[0], (T)p[1], (T)p[2]);
   }
   template<typename X, typename Y, typename Z> SphericalTemplate(const X &x, const Y &y, const Z &z) {
     init((T)x, (T)y, (T)z);
@@ -38,15 +38,15 @@ public:
   operator Point3DTemplate<T>() const {
     Point3DTemplate<T> p;
     T                  tmp;
-    p.x = theta;
-    p.z = fi;
-    sincos(p.x,p.y);
-    sincos(p.z,tmp);
+    p[0] = theta;
+    p[2] = fi;
+    sincos(p[0],p[1]);
+    sincos(p[2],tmp);
     tmp *= r;   // r * sin(fi);
 
-    p.x *= tmp; // r * sin(fi) * cos(theta);
-    p.y *= tmp; // r * sin(fi) * sin(theta);
-    p.z *= r;   // r * cos(fi);
+    p[0] *= tmp; // r * sin(fi) * cos(theta);
+    p[1] *= tmp; // r * sin(fi) * sin(theta);
+    p[2] *= r;   // r * cos(fi);
     return p;
   }
   String toString(int precision = 1, bool rad = false) const {
@@ -68,5 +68,4 @@ public:
 
 typedef SphericalTemplate<float   > FloatSpherical;
 typedef SphericalTemplate<double  > Spherical;
-typedef SphericalTemplate<Double80> D80Spherical;
 typedef SphericalTemplate<Real    > RealSpherical;

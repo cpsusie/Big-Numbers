@@ -69,7 +69,7 @@ HICON loadIcon(const String &fileName) {
 /*
 Use DrawIconEx instead
 void paintIcon(HICON icon, HDC dc, CPoint &p, COLORREF bgColor) {
-  ICONINFO    iconInfo  = getIconInfo(icon);;
+  ICONINFO    iconInfo  = getIconInfo(icon);
   HDC         srcDC     = CreateCompatibleDC(nullptr);
   HGDIOBJ     oldSrcGDI = SelectObject(srcDC, iconInfo.hbmColor);
   HBRUSH      brush     = CreateSolidBrush(bgColor);

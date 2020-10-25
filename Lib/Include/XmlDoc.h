@@ -239,7 +239,7 @@ template<typename T, typename D> void getOptValue(XMLDoc &doc, XMLNodePtr parent
 
 template<typename T, typename... Args> void setValue(XMLDoc &doc, XMLNodePtr n, const ConstIterator<T> &it, Args... args) {
   UINT index = 0;
-  for(ConstIterator<T> it1 = it; it1.hasNext(); index++) {
+  for(auto it1 = it; it1.hasNext(); index++) {
     setValue(doc, n, format(_T("id%u"),index).cstr(), it1.next(), args...);
   }
 }

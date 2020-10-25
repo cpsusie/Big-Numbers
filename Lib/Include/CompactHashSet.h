@@ -39,7 +39,7 @@ private:
 
   int getChainLength(size_t index) const {
     int count = 0;
-    for(LinkObject<SetEntry<K> > *p = m_buffer[index]; p; p = p->m_next) {
+    for(auto p = m_buffer[index]; p; p = p->m_next) {
       count++;
     }
     return count;
@@ -90,7 +90,7 @@ public:
     ULONG index;
     if(m_capacity) {
       index = key.hashCode() % m_capacity;
-      for(LinkObject<SetEntry<K> > *p = m_buffer[index]; p; p = p->m_next) {
+      for(auto p = m_buffer[index]; p; p = p->m_next) {
         if(key == p->m_e.m_key) {
           return false;
         }
@@ -112,7 +112,8 @@ public:
   bool remove(const K &key) {
     if(m_capacity) {
       const ULONG index = key.hashCode() % m_capacity;
-      for(LinkObject<SetEntry<K> > *p = m_buffer[index], *last = nullptr; p; last = p, p = p->m_next) {
+      LinkObject<SetEntry<K> > *last = nullptr;
+      for(auto p = m_buffer[index]; p; last = p, p = p->m_next) {
         if(key == p->m_e.m_key) {
           if(last) {
             last->m_next = p->m_next;
@@ -132,7 +133,7 @@ public:
   bool contains(const K &key) const {
     if(m_capacity) {
       const ULONG index = key.hashCode() % m_capacity;
-      for(const LinkObject<SetEntry<K> > *p = m_buffer[index]; p; p = p->m_next) {
+      for(auto p = m_buffer[index]; p; p = p->m_next) {
         if(key == p->m_e.m_key) {
           return true;
         }
@@ -156,7 +157,7 @@ public:
 
     if(!isEmpty()) {
       for(size_t i = 0; i < oldCapacity; i++) {
-        for(LinkObject<SetEntry<K> > *n = oldBuffer[i]; n;) {
+        for(auto n = oldBuffer[i]; n;) {
           const ULONG index = n->m_e.m_key.hashCode() % m_capacity;
           LinkObject<SetEntry<K> > *&bp = m_buffer[index];
           LinkObject<SetEntry<K> > *next = n->m_next;
@@ -219,7 +220,7 @@ public:
   }
   bool removeAll(const ConstIterator<K> &it) {
     const size_t oldSize = size();
-    for(ConstIterator<K> it1 = it; it1.hasNext(); ) {
+    for(auto it1 = it; it1.hasNext(); ) {
       remove(it1.next());
     }
     return size() != oldSize;
@@ -240,7 +241,7 @@ public:
       return false; // Don't change anything. every element in this is in set too => nothing needs to be removed
     }
     const size_t n = size();
-    for(Iterator<K> it = getIterator(); it.hasNext();) {
+    for(auto it = getIterator(); it.hasNext();) {
       if(!set.contains(it.next())) {
         it.remove();
       }
@@ -260,7 +261,7 @@ public:
       m_current = nullptr;
       if(m_set.m_buffer) {
         m_endBuf = m_set.m_buffer + m_set.getCapacity();
-        for(LinkObject<SetEntry<K> > **p = m_set.m_buffer; p < m_endBuf; p++) {
+        for(auto p = m_set.m_buffer; p < m_endBuf; p++) {
           if(*p) {
             m_bufp = p;
             m_next = *p;
@@ -296,7 +297,7 @@ public:
       checkUpdateCount();
       m_current = m_next;
       if((m_next = m_next->m_next) == nullptr) {
-        for(LinkObject<SetEntry<K> > **p = m_bufp; ++p < m_endBuf;) {
+        for(auto p = m_bufp; ++p < m_endBuf;) {
           if(*p) {
             m_bufp = p;
             m_next = *p;
@@ -333,14 +334,14 @@ public:
   CompactHashSet operator*(const CompactHashSet &set) const {
     CompactHashSet result;
     if(size() < set.size()) {
-      for(ConstIterator<K> it = getIterator(); it.hasNext();) {
+      for(auto it = getIterator(); it.hasNext();) {
         const K &e = it.next();
         if(set.contains(e)) {
           result.add(e);
         }
       }
     } else {
-      for(ConstIterator<K> it = set.getIterator(); it.hasNext();) {
+      for(auto it = set.getIterator(); it.hasNext();) {
         const K &e = it.next();
         if(contains(e)) {
           result.add(e);
@@ -367,13 +368,13 @@ public:
   // s1^s2 = (s1-s2) + (s2-s1) (symmetric difference) = set of elements that are in only one of the sets
   CompactHashSet operator^(const CompactHashSet &set) const {
     CompactHashSet result;
-    for(ConstIterator<K> it = getIterator(); it.hasNext();) {
+    for(auto it = getIterator(); it.hasNext();) {
       const K &e = it.next();
       if(!set.contains(e)) {
         result.add(e);
       }
     }
-    for(ConstIterator<K> it = set.getIterator(); it.hasNext();) {
+    for(auto it = set.getIterator(); it.hasNext();) {
       const K &e = it.next();
       if(!contains(e)) {
         result.add(e);
@@ -387,7 +388,7 @@ public:
     if(set.size() != size()) {
       return false;
     }
-    for(ConstIterator<K> it = getIterator(); it.hasNext();) {
+    for(auto it = getIterator(); it.hasNext();) {
       if(!set.contains(it.next())) {
         return false;
       }
@@ -402,7 +403,7 @@ public:
   // Subset. Return true if all elements in *this are in set
   bool operator<=(const CompactHashSet &set) const {
     if(size() > set.size()) return false;
-    for(ConstIterator<K> it = getIterator(); it.hasNext();) {
+    for(auto it = getIterator(); it.hasNext();) {
       if(!set.contains(it.next())) {
         return false;
       }

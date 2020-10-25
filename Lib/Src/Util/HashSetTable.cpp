@@ -64,7 +64,7 @@ void HashSetTable::clear() {
     return;
   }
   HashSetNode *next;
-  for(HashSetNode *p = m_firstLink; p; p = next) {
+  for(auto p = m_firstLink; p; p = next) {
     next = p->m_nextLink;
     m_owner.deleteNode(p);
   }
@@ -76,7 +76,7 @@ void HashSetTable::clear() {
 
 int HashSetTable::chainLength(size_t index) const {
   int count = 0;
-  for(HashSetNode *p = m_table[index]; p; p = p->m_next) {
+  for(auto p = m_table[index]; p; p = p->m_next) {
     count++;
   }
   return count;

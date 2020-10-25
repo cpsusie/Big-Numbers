@@ -119,8 +119,13 @@ void throwIndexOutOfRangeException(const TCHAR *method, UINT64 index, UINT64 cou
                 ,format1000(size).cstr());
 }
 
-void throwSelectFromEmptyCollectionException(const TCHAR *method) {
-  throwException(_T("%s:Cannot select from empty collection"), method);
+void throwEmptyCollectionException(const TCHAR *method) { throwEmptyContainerException(method, _T("Collection")); }
+void throwEmptyArrayException(     const TCHAR *method) { throwEmptyContainerException(method, _T("Array"     )); }
+void throwEmptySetException(       const TCHAR *method) { throwEmptyContainerException(method, _T("Set"       )); }
+void throwEmptyMapException(       const TCHAR *method) { throwEmptyContainerException(method, _T("Map"       )); }
+
+void throwEmptyContainerException(const TCHAR *method, const TCHAR *containerName) {
+  throwException(_T("%s:%s is empty"), method, containerName);
 }
 
 void throwMethodException(const TCHAR *className, const TCHAR *method, _In_z_ _Printf_format_string_ TCHAR const * const format, ...) {

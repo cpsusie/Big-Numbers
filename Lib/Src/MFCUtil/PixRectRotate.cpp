@@ -4,18 +4,12 @@
 #include <MFCUtil/Viewport2D.h>
 #include <MFCUtil/PixRect.h>
 
-D3DXVECTOR2 p2DToD3V3(const Point2D &p) {
-  D3DXVECTOR2 result;
-  result.x = (float)p.x;
-  result.y = (float)p.y;
-  return result;
-}
 
 static inline D3DXMATRIX createTransformedWorld(double scale, const Point2D *rotationCenter, double rad, const Point2D *translate) { // static
   D3DXMATRIX m;
   D3DXVECTOR2 d3C,d3T;
-  if(rotationCenter) d3C = p2DToD3V3(*rotationCenter);
-  if(translate     ) d3T = p2DToD3V3(*translate);
+  if(rotationCenter) d3C = *rotationCenter;
+  if(translate     ) d3T = *translate;
   return *D3DXMatrixAffineTransformation2D(&m, (float)scale, rotationCenter?&d3C:nullptr, (float)rad, translate?&d3T:nullptr);
 }
 
@@ -37,10 +31,10 @@ D3DXVECTOR2 operator*(const D3DXMATRIX &m, const D3DXVECTOR2 &v) {
 
 Rectangle2D getTransformedRectangle(const D3DXMATRIX &m, const Rectangle2D &r) {
   D3DXVECTOR2 corner[4];
-  corner[0] = p2DToD3V3(r.getTopLeft());
-  corner[1] = p2DToD3V3(r.getTopRight());
-  corner[2] = p2DToD3V3(r.getBottomRight());
-  corner[3] = p2DToD3V3(r.getBottomLeft());
+  corner[0] = r.LT();
+  corner[1] = r.RT();
+  corner[2] = r.RB();
+  corner[3] = r.LB();
 
   Point2DArray trCorners;
   for(int i = 0; i < 4; i++) {
@@ -107,7 +101,7 @@ PixRect *PixRect::rotateImage(const PixRect *src, double degree, D3DCOLOR backgr
 
 CSize PixRect::getRotatedSize(const CSize &size, double degree) { // static
   const Point2D center = ORIGIN;
-  const CSize   result = Size2D(getTransformedRectangle(createTransformedWorld(1, &center, GRAD2RAD(degree), nullptr)
-                                                       ,CRect(ORIGIN,size)).getSize());
+  const CSize   result = (CSize)(Size2D)getTransformedRectangle(createTransformedWorld(1, &center, GRAD2RAD(degree), nullptr)
+                                                       ,CRect(ORIGIN,size)).size();
   return result;
 }

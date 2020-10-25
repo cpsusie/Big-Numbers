@@ -2,9 +2,8 @@
 #include <MFCUtil/PixRect.h>
 
 ScaleParameters::ScaleParameters() {
-  m_toSize  = false;
-  m_scale.x = 1;
-  m_scale.y = 1;
+  m_toSize = false;
+  m_scale  = Point2D(1, 1);
 }
 
 ScaleParameters::ScaleParameters(bool toSize, const Point2D &scale) {
@@ -14,8 +13,7 @@ ScaleParameters::ScaleParameters(bool toSize, const Point2D &scale) {
 
 ScaleParameters::ScaleParameters(bool toSize, double x, double y) {
   m_toSize = toSize;
-  m_scale.x = x;
-  m_scale.y = y;
+  m_scale  = Point2D(x,y);
 }
 
 PixRect *PixRect::scaleImage(const PixRect *src, const ScaleParameters &param) { // static}
@@ -23,11 +21,11 @@ PixRect *PixRect::scaleImage(const PixRect *src, const ScaleParameters &param) {
   CRect resultRect;
   resultRect.left = resultRect.top = 0;
   if(param.m_toSize) {
-    resultRect.right  = (int)param.m_scale.x;
-    resultRect.bottom = (int)param.m_scale.y;
+    resultRect.right  = (int)param.m_scale[0];
+    resultRect.bottom = (int)param.m_scale[1];
   } else {
-    resultRect.right  = (int)ceil(srcRect.right  * param.m_scale.x);
-    resultRect.bottom = (int)ceil(srcRect.bottom * param.m_scale.y);
+    resultRect.right  = (int)ceil(srcRect.right  * param.m_scale[0]);
+    resultRect.bottom = (int)ceil(srcRect.bottom * param.m_scale[1]);
   }
 
   if(resultRect == srcRect) {

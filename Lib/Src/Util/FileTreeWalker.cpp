@@ -136,7 +136,7 @@ void FileTreeWalker::traverseArgv(const StringArray &a, FileNameHandler &nameHan
     }
   }
   CompactArray<IndexedStringArray*> a1;
-  for(Iterator<IndexedStringArray> it = dirMap.values().getIterator(); it.hasNext();) {
+  for(auto it = dirMap.values().getIterator(); it.hasNext();) {
     a1.add(&it.next());
   }
 

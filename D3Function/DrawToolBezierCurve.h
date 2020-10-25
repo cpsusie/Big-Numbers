@@ -8,7 +8,7 @@ public:
     : DrawTool(editor)
   {
   }
-  bool OnLButtonDown(  UINT nFlags, CPoint point);
-  bool OnMouseMove(    UINT nFlags, CPoint point);
-  bool OnLButtonUp(    UINT nFlags, CPoint point);
+  bool OnLButtonDown(  UINT nFlags, CPoint point) override;
+  bool OnMouseMove(    UINT nFlags, CPoint point) override;
+  bool OnLButtonUp(    UINT nFlags, CPoint point) override;
 };

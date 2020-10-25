@@ -16,14 +16,14 @@ public:
   template<typename T> Point3DTemplate<T> convertPoint(const Point2DTemplate<T> &p) const {
     Point3DTemplate<T> result(0, 0, 0);
     switch (m_xTo3Dcoord) {
-    case 'x': result.x = p.x; break;
-    case 'y': result.y = p.x; break;
-    case 'z': result.z = p.x; break;
+    case 'x': result.x() = p.x(); break;
+    case 'y': result.y() = p.x(); break;
+    case 'z': result.z() = p.x(); break;
     }
     switch (m_yTo3Dcoord) {
-    case 'x': result.x = p.y; break;
-    case 'y': result.y = p.y; break;
-    case 'z': result.z = p.y; break;
+    case 'x': result.x() = p.y(); break;
+    case 'y': result.y() = p.y(); break;
+    case 'z': result.z() = p.y(); break;
     }
     return result;
   }

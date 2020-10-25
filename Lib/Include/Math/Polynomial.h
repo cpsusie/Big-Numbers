@@ -21,9 +21,9 @@ public:
     y = (Real)_y;
     w = (Real)_w;
   }
-  template<typename T> DataPoint(const Point2DTemplate<T> &p) {
-    x = (Real)p.x;
-    y = (Real)p.y;
+  template<typename T> DataPoint(const FixedSizeVectorTemplate<T,2> &p) {
+    x = (Real)p[0];
+    y = (Real)p[1];
     w = 1;
   }
   String toString(StreamSize precision = -1) const;

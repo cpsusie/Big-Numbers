@@ -53,7 +53,7 @@ PropertyDialogMap &PropertyDialogMap::removeAllDialogs() {
   UINT oldSize = mapSize();
   UINT newSize;
   try {
-    for(Iterator<CPropertyDialogThread*> it = m_map.values().getIterator(); it.hasNext(); ) {
+    for(auto it = m_map.values().getIterator(); it.hasNext(); ) {
       it.next()->kill();
     }
     m_map.clear();

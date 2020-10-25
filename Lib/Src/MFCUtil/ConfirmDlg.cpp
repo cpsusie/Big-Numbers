@@ -57,13 +57,13 @@ BOOL CConfirmDlg::OnInitDialog() {
   StringArray lineArray(Tokenizer(tmp, _T("\n")));
 
   CSize textSize(0,0);
-  for(size_t i = 0; i < lineArray.size(); i++) {
-    const String &line = lineArray[i];
-    const CSize lineSize = dc.GetTextExtent(line.cstr(), (int)line.length());
-    if(lineSize.cx > textSize.cx) {
-      textSize.cx = lineSize.cx;
+  for(auto it = lineArray.getIterator(); it.hasNext();) {
+    const String &line = it.next();
+    const CSize   sz   = getTextExtent(dc, line);
+    if(sz.cx > textSize.cx) {
+      textSize.cx = sz.cx;
     }
-    textSize.cy += lineSize.cy;
+    textSize.cy += sz.cy;
   }
 
   m_msgCtrl.SetWindowText(tmp.cstr());

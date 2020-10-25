@@ -149,8 +149,8 @@ int CProgressDlg::moveControlsBelowUp(CWnd *win, int dh) {
   const CRect r = getWindowRect(win);
   if(dh == 0) {
     CompactIntArray dyarray(ARRAYSIZE(ctrlId));
-    for(int i = 0; i < ARRAYSIZE(ctrlId); i++) {
-      const int y = getWindowPosition(this, ctrlId[i]).y;
+    for(int id : ctrlId) {
+      const int y = getWindowPosition(this, id).y;
       if(y > r.bottom) dyarray.add(y-r.top);
     }
     if(dyarray.size() == 0) {
@@ -161,8 +161,8 @@ int CProgressDlg::moveControlsBelowUp(CWnd *win, int dh) {
   }
   if(dh == 0) return 0;
 
-  for(int i = 0; i < ARRAYSIZE(ctrlId); i++) {
-    CWnd  *ctrl = GetDlgItem(ctrlId[i]);
+  for(int id : ctrlId) {
+    CWnd  *ctrl = GetDlgItem(id);
     CPoint p    = getWindowPosition(ctrl);
     if(p.y > r.bottom) {
       p.y -= dh;

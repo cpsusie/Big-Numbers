@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <MyUtil.h>
 #include <FileNameSplitter.h>
 #include <ExternProcess.h>
 #include <D3DGraphics/MeshBuilder.h>
@@ -26,7 +27,7 @@ static String convertVertexFile(const String &fileName) {
     while(readLine(f, line)) {
       lineno++;
       Point3D p;
-      if(_stscanf(line.cstr(), _T("%le %le %le"), &p.x, &p.y, &p.z) != 3) {
+      if(_stscanf(line.cstr(), _T("%le %le %le"), &p.x(), &p.y(), &p.z()) != 3) {
         throwException(_T("Invalid input in file %s line %d"), fileName.cstr(), lineno);
       }
       pointArray.add(p);
@@ -40,7 +41,7 @@ static String convertVertexFile(const String &fileName) {
     _ftprintf(f, _T("%d 2 1 0\n"), n);
     for(UINT i = 0; i < n; i++) {
       const Point3D &p = pointArray[i];
-      _ftprintf(f, _T("%4d %lf %lf %lf\n"), i, p.x, p.y, p.z);
+      _ftprintf(f, _T("%4d %lf %lf %lf\n"), i, p.x(), p.y(), p.z());
     }
     fclose(f); f = nullptr;
     return nodeFileName;
@@ -74,7 +75,7 @@ static MeshBuilder &createMeshBuilderFromNodefile(const String &nodeFileName, Me
       readLine(f, line);
       VertexWithFaceArray v;
       int index;
-      if(_stscanf(line.cstr(), _T("%d %le %le %le"), &index, &v.x, &v.y, &v.z) != 4) {
+      if(_stscanf(line.cstr(), _T("%d %le %le %le"), &index, &v.x(), &v.y(), &v.z()) != 4) {
         throwException(_T("Invalid input in file %s line %d"), nodeFileName.cstr(), i+1);
       }
       vertexArray.add(v);

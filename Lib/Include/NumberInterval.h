@@ -4,10 +4,13 @@ template<typename T> class NumberInterval {
 private:
   T m_from, m_to;
 public:
-  template<typename T1, typename T2> inline NumberInterval(const T1 &from, const T2 &to) : m_from((T)from), m_to((T)to) {
+  NumberInterval() : m_from(0), m_to(0) {
   }
 
-  NumberInterval() : m_from(0), m_to(0) {
+  template<typename S> NumberInterval(const NumberInterval<S> &src) : m_from((T)src.getFrom()), m_to((T)src.getTo()) {
+  }
+
+  template<typename T1, typename T2> inline NumberInterval(const T1 &from, const T2 &to) : m_from((T)from), m_to((T)to) {
   }
 
   template<typename S> NumberInterval<T> &operator=(const NumberInterval<S> &src) {

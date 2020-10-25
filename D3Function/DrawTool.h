@@ -11,7 +11,7 @@ private:
 protected:
   ProfileEditor         &m_editor;
   PolygonSet             m_polygonSet;
-  CompactArray<Point2D*> m_selectedPoints;
+  Point2DRefArray        m_selectedPoints;
   ProfileEditorState     m_state;
 
   DrawTool &drawState();
@@ -30,20 +30,20 @@ public:
   DrawTool(ProfileEditor *editor);
   virtual ~DrawTool();
   bool OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
-  bool canConnect() const;
+  bool      canConnect() const;
   DrawTool &connect();
-  bool canInvertNormals() const;
+  bool      canInvertNormals() const;
   DrawTool &invertNormals();
-  bool canMirror() const;
+  bool      canMirror() const;
   DrawTool &mirror(bool horizontal);
-  bool canDelete();
+  bool      canDelete();
   DrawTool &deleteSelected();
-  bool canCopy();
+  bool      canCopy();
   DrawTool &copySelected();
-  bool canCut();
+  bool      canCut();
   DrawTool &cutSelected();
   DrawTool &paste();
-  void initState() { m_state = IDLE; }
+  void      initState() { m_state = IDLE; }
   DrawTool &unselectAll();
   DrawTool &repaintProfile();
   DrawTool &repaintScreen();

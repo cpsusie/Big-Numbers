@@ -6,7 +6,7 @@
 template<typename T> class PolygonCurve2DTemplate : public _PolygonCurveTypeName {
 public:
   short                   m_type; // TT_PRIM_LINE, TT_PRIM_QSPLINE or TT_PRIM_CSPLINE
-  Point2DTemplateArray<T> m_points;
+  Point2DArrayTemplate<T> m_points;
   template<typename P> void addPoint(const Point2DTemplate<P> &p) {
     m_points.add(p);
   }
@@ -23,7 +23,7 @@ public:
   Rectangle2DTemplate<T> getBoundingBox() const {
     return m_points.getBoundingBox();
   }
-  inline const Point2DTemplateArray<T> &getAllPoints() const {
+  inline const Point2DArrayTemplate<T> &getAllPoints() const {
     return m_points;
   }
   template<typename P> void move(const Point2DTemplate<P> &dp) {

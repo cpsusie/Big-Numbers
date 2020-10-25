@@ -19,10 +19,10 @@ public:
     : DrawTool(editor)
   {
   }
-  bool OnLButtonDown(  UINT nFlags, CPoint point);
-  bool OnLButtonDblClk(UINT nFlags, CPoint point);
-  bool OnLButtonUp(    UINT nFlags, CPoint point);
-  bool OnRButtonDown(  UINT nFlags, CPoint point);
-  bool OnRButtonUp(    UINT nFlags, CPoint point);
-  bool OnMouseMove(    UINT nFlags, CPoint point);
+  bool OnLButtonDown(  UINT nFlags, CPoint point) override;
+  bool OnLButtonDblClk(UINT nFlags, CPoint point) override;
+  bool OnLButtonUp(    UINT nFlags, CPoint point) override;
+  bool OnRButtonDown(  UINT nFlags, CPoint point) override;
+  bool OnRButtonUp(    UINT nFlags, CPoint point) override;
+  bool OnMouseMove(    UINT nFlags, CPoint point) override;
 };

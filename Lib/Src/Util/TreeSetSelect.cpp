@@ -5,7 +5,7 @@
 
 void *TreeSetImpl::getRandom(RandomGenerator &rnd) const {
   if(size() == 0) {
-    throwSelectFromEmptyCollectionException(__TFUNCTION__);
+    throwEmptySetException(__TFUNCTION__);
   }
 
   const TreeSetNode *p = m_root;

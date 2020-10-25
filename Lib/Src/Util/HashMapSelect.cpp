@@ -3,6 +3,6 @@
 #include "HashMapNode.h"
 
 AbstractEntry *HashMapImpl::selectEntry(RandomGenerator &rnd) const {
-  if(size() == 0) throwSelectFromEmptyCollectionException(__TFUNCTION__);
+  if(size() == 0) throwEmptyMapException(__TFUNCTION__);
   return (HashMapNode*)findNode(select(rnd));
 }

@@ -52,13 +52,9 @@ void CSliderCtrlWithTransformation::setTransformation(DoubleInterval &interval, 
   cleanup();
   switch(type) {
   case LINEAR             :
-    m_tr = new LinearTransformation(interval, toInterval); TRACE_NEW(m_tr);
-    break;
   case LOGARITHMIC        :
-    m_tr = new LogarithmicTransformation(interval, toInterval); TRACE_NEW(m_tr);
-    break;
   case NORMAL_DISTRIBUTION:
-    m_tr = new NormalDistributionTransformation(interval, toInterval); TRACE_NEW(m_tr);
+    m_tr = allocateIntervalTransformation(interval, toInterval, type);
     break;
   default:
     throwInvalidArgumentException(method, _T("type=%d"), type);
@@ -67,7 +63,7 @@ void CSliderCtrlWithTransformation::setTransformation(DoubleInterval &interval, 
 
 IntervalScale CSliderCtrlWithTransformation::getTransformationType() const {
   ASSERTCREATED();
-  return m_tr->getScale();
+  return m_tr->getScaleType();
 }
 
 const DoubleInterval &CSliderCtrlWithTransformation::getInterval() const {

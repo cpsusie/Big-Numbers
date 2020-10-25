@@ -84,7 +84,7 @@ XMLNodePtr XMLDoc::findChild(const XMLNodePtr &node, const TCHAR *nodeName, int 
     return nullptr;
   }
   int i = 0;
-  for(XMLNodePtr result=node->firstChild; result!=nullptr; result=result->nextSibling) {
+  for(auto result=node->firstChild; result!=nullptr; result=result->nextSibling) {
     if((_tcsicmp(result->nodeName, nodeName)==0) && (i++==instans)) {
       return result;
     }
@@ -154,7 +154,7 @@ String &XMLDoc::getNodeText(const XMLNodePtr &node, String &value) const {
 }
 
 XMLNodePtr XMLDoc::findTextNode(const XMLNodePtr &node) const {
-  for(XMLNodePtr p = node->firstChild; p != nullptr; p = p->nextSibling) {
+  for(auto p = node->firstChild; p != nullptr; p = p->nextSibling) {
     if(p->nodeType == NODE_TEXT) {
       return p;
     }

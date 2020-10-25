@@ -171,7 +171,7 @@ bool ValueCollection::contains(const void *e) const {
 
 void *ValueCollection::select(RandomGenerator &rnd) const {
   if(size() == 0) {
-    throwSelectFromEmptyCollectionException(__TFUNCTION__);
+    throwEmptyCollectionException(__TFUNCTION__);
   }
   return m_map->selectEntry(rnd)->value();
 }

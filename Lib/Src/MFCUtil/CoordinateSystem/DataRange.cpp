@@ -18,40 +18,40 @@ DataRange::DataRange(double minX, double maxX, double minY, double maxY) {
 }
 
 DataRange::DataRange(const Point2D &p) {
-  init(p.x, p.x, p.y, p.y);
+  init(p[0], p[0], p[1], p[1]);
 }
 
 DataRange::DataRange(const Point2DArray &pa) {
   if(pa.size() > 0) {
-    const Point2D *p = &pa.first(), *end = &pa.last();
-    init(p->x, p->x, p->y, p->y);
-    while(p++ < end) {
-      *this += *p;
+    const Point2D *p = (Point2D*)pa.begin(), *end = (Point2D*)pa.end();
+    init(p->x(), p->x(), p->y(), p->y());
+    p++;
+    while(p < end) {
+      *this += *(p++);
     }
   }
 }
 
 DataRange &DataRange::operator+=(const Point2DArray &pa) {
   if(pa.size() > 0) {
-    const Point2D *end = &pa.last();
-    for(const Point2D *p = &pa.first(); p <= end;) {
-      *this += *(p++);
+    for(const Point2D p : pa) {
+      *this += p;
     }
   }
   return *this;
 }
 
 DataRange &DataRange::operator+=(const Point2D &p) {
-  if(p.x < m_xInterval.getFrom()) {
-    m_xInterval.setFrom(p.x);
-  } else if(p.x > m_xInterval.getTo()) {
-    m_xInterval.setTo(p.x);
+  if(p.x() < m_xInterval.getFrom()) {
+    m_xInterval.setFrom(p.x());
+  } else if(p.x() > m_xInterval.getTo()) {
+    m_xInterval.setTo(p.x());
   }
 
-  if(p.y < m_yInterval.getFrom()) {
-    m_yInterval.setFrom(p.y);
-  } else if(p.y > m_yInterval.getTo()) {
-    m_yInterval.setTo(p.y);
+  if(p.y() < m_yInterval.getFrom()) {
+    m_yInterval.setFrom(p.y());
+  } else if(p.y() > m_yInterval.getTo()) {
+    m_yInterval.setTo(p.y());
   }
   return *this;
 }

@@ -9,7 +9,7 @@ public:
   SphereIsoFunction(const Real radius) : m_r2(radius*radius) {
   }
   Real operator()(const Point3D &p) {
-    return p.x*p.x + p.y*p.y + p.z*p.z - m_r2;
+    return p.length2() - m_r2;
   }
 };
 

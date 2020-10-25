@@ -43,7 +43,7 @@ void DFA::makeTransitions() {
 
 #if defined(UNICODE)
     CharacterSet outgoingCharacters;
-    for(Iterator<size_t> it = current.m_NFAset.getIterator(); it.hasNext();) {
+    for(auto it = current.m_NFAset.getIterator(); it.hasNext();) {
       NFAState *nfaState = m_NFA[it.next()];
       switch(nfaState->getEdge()) {
       case EDGE_EPSILON:
@@ -59,7 +59,7 @@ void DFA::makeTransitions() {
       }
     }
 
-    for(Iterator<size_t> it = outgoingCharacters.getIterator(); it.hasNext();) {
+    for(auto it = outgoingCharacters.getIterator(); it.hasNext();) {
       int c = (int)it.next();
 #else
 
@@ -114,7 +114,7 @@ void DFA::epsClosure(BitSet &NFAset, int &acceptIndex) const {
 
   CompactStack<int> stateStack; // stack of NFA-states remaining to be tested
 
-  for(Iterator<size_t> it = NFAset.getIterator(); it.hasNext(); ) {                       // 1
+  for(auto it = NFAset.getIterator(); it.hasNext(); ) {                       // 1
     stateStack.push((int)it.next());
   }
 
@@ -150,7 +150,7 @@ void DFA::epsClosure(BitSet &NFAset, int &acceptIndex) const {
 BitSet *DFA::transition(BitSet &dst, BitSet &NFAset, int c) const {
   BitSet *result = nullptr;
 
-  for(Iterator<size_t> it = NFAset.getIterator(); it.hasNext();) {
+  for(auto it = NFAset.getIterator(); it.hasNext();) {
     int i = (int)it.next();
     const NFAState *p = m_NFA[i]->getSuccessor(c);
     if(p) {

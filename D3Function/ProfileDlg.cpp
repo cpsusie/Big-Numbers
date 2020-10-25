@@ -177,17 +177,17 @@ D3Device &CProfileDlg::getDevice() {
 
 void CProfileDlg::initViewport() {
   Rectangle2D profileRect = m_profile.getBoundingBox();
-  if(profileRect.getWidth() == 0 || profileRect.getHeight() == 0) {
-    profileRect = Rectangle2D(0,0,1,1);
+  if(profileRect.getArea() == 0) {
+    profileRect = Rectangle2D::getUnit();
   } else {
-    profileRect.m_p.x     -= profileRect.getWidth()/20;
-    profileRect.m_p.y     -= profileRect.getHeight()/20;
-    profileRect.m_size.cx += profileRect.getWidth()/10;
-    profileRect.m_size.cy += profileRect.getHeight()/10;
+    profileRect.p0()[0]   -= profileRect.getWidth()  / 20;
+    profileRect.p0()[1]   -= profileRect.getHeight() / 20;
+    profileRect.size()[0] += profileRect.getWidth()  / 10;
+    profileRect.size()[1] += profileRect.getHeight() / 10;
   }
 
-  profileRect.m_p.y += profileRect.m_size.cy;
-  profileRect.m_size.cy *= -1;
+  profileRect.p0()[1]   += profileRect.size()[1];
+  profileRect.size()[1] *= -1;
 
   destroyViewport();
 
@@ -485,7 +485,7 @@ void CProfileDlg::setUintEmptyZero(int id, UINT value) {
 void CProfileDlg::showMousePosition(const CPoint &p) {
   if(!m_exceptionRaised) {
     const Point2D fp = m_viewport->backwardTransform(p);
-    setWindowText(this, IDC_STATIC_INFO, format(_T("%.2lf,%.2lf"), fp.x, fp.y));
+    setWindowText(this, IDC_STATIC_INFO, format(_T("%.2lf,%.2lf"), fp[0], fp[1]));
   }
 }
 
@@ -696,7 +696,7 @@ bool CProfileDlg::getShowPoints() {
 }
 
 void CProfileDlg::setMousePosition(const Point2D &p) {
-  CPoint sp = getViewport().forwardTransform(p);
+  CPoint sp = (CPoint)getViewport().forwardTransform(p);
   GetDlgItem(IDC_STATIC_PROFILEIMAGE2D)->ClientToScreen(&sp);
   ::SetCursorPos(sp.x,sp.y);
 }

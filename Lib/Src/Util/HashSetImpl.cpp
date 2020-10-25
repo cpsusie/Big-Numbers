@@ -83,7 +83,7 @@ void HashSetImpl::resize(size_t newCapacity) {
   HashSetTable *newTable = new HashSetTable(*this, newCapacity); TRACE_NEW(newTable);
   try {
     size_t capacity = newTable->getCapacity();
-    for(HashSetNode *p = m_table->m_firstLink; p; p = p->m_nextLink) {
+    for(auto p = m_table->m_firstLink; p; p = p->m_nextLink) {
       ULONG hashIndex = m_hash(p->m_key) % capacity;
       newTable->insert(hashIndex, cloneNode(p));
     }
@@ -97,7 +97,7 @@ void HashSetImpl::resize(size_t newCapacity) {
 
 bool HashSetImpl::insertNode(HashSetNode *n) {
   ULONG hashIndex = m_hash(n->m_key) % getCapacity();
-  for(HashSetNode *q = m_table->m_table[hashIndex]; q; q = q->m_next) {
+  for(auto q = m_table->m_table[hashIndex]; q; q = q->m_next) {
     if(m_comparator->cmp(n->m_key, q->m_key) == 0) {
       return false; // duplicate key
     }
@@ -131,7 +131,7 @@ bool HashSetImpl::add(const void *key) {
 
 bool HashSetImpl::remove(const void *key) {
   const ULONG hashIndex = m_hash(key) % getCapacity();
-  for(HashSetNode *p = m_table->m_table[hashIndex]; p; p = p->m_next) {
+  for(auto p = m_table->m_table[hashIndex]; p; p = p->m_next) {
     if(m_comparator->cmp(key, p->m_key) == 0) {
       m_table->remove(p);
       deleteNode(p);
@@ -157,7 +157,7 @@ void *HashSetImpl::getMax() const {
 
 HashSetNode *HashSetImpl::findNode(const void *key) const {
   const ULONG hashIndex = m_hash(key) % getCapacity();
-  for(HashSetNode *p = m_table->m_table[hashIndex]; p; p = p->m_next) {
+  for(auto p = m_table->m_table[hashIndex]; p; p = p->m_next) {
     if(m_comparator->cmp(key, p->m_key) == 0) {
       return p;
     }
@@ -174,7 +174,7 @@ void HashSetImpl::checktable(const TCHAR *label) const {
   size_t count = 0;
   for(size_t i = 0; i < n; i++) {
     const HashSetNode * const *last = &m_table->m_table[i];
-    for(const HashSetNode *p = m_table->m_table[i]; p; p = p->m_next) {
+    for(auto p = m_table->m_table[i]; p; p = p->m_next) {
       if(p->m_prev != last) {
         pause();
       }
@@ -188,7 +188,7 @@ void HashSetImpl::checktable(const TCHAR *label) const {
   }
   count = 0;
   const HashSetNode *last = nullptr;
-  for(const HashSetNode *p  = m_table->m_firstLink; p; p = p->m_nextLink) {
+  for(auto p  = m_table->m_firstLink; p; p = p->m_nextLink) {
     if(p->m_prevLink != last) {
       pause();
     }

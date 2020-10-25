@@ -25,8 +25,8 @@ public:
     return LFT_DOUBLE | LF_NUM_DECIMALS(8) | LF_NUM_SHOW_ZERO;
   }
   void *getValueAt(UINT row, UINT column) {
-    Point2D &p = m_data[row];
-    return column ? &p.y : &p.x;
+    Point2D &p = (Point2D&)m_data[row];
+    return column ? &p.y() : &p.x();
   }
   bool isEditableCell(UINT row, UINT column) {
     return true;

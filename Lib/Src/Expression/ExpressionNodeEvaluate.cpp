@@ -65,12 +65,12 @@ Real ExpressionNode::evaluateReal() const {
   case FAC      : return factorial(              left()->evaluateReal());
   case FLOOR    : return floor(                  left()->evaluateReal());
   case GAMMA    : return gamma(                  left()->evaluateReal());
-  case GAUSS    : return ::gauss(                left()->evaluateReal());
+  case GAUSS    : return gaussDensity(           left()->evaluateReal());
   case INVERF   : return inverseErrorFunction(   left()->evaluateReal());
   case LN       : return log(                    left()->evaluateReal());
   case LOG10    : return ::log10(                left()->evaluateReal());
   case LOG2     : return ::log2(                 left()->evaluateReal());
-  case NORM     : return norm(                   left()->evaluateReal());
+  case NORM     : return gaussDistribution(      left()->evaluateReal());
   case PROBIT   : return probitFunction(         left()->evaluateReal());
   case SEC      : return sec(                    left()->evaluateReal(),  getTrigonometricMode());
   case SIGN     : return sign(                   left()->evaluateReal());

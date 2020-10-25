@@ -57,7 +57,7 @@ public:
 
   bool addAll(const ConstIterator<Entry<K,V> > &it) {
     const size_t oldSize = size();
-    for(ConstIterator<Entry<K,V> > it1 = it; it1.hasNext();) {
+    for(auto it1 = it; it1.hasNext();) {
       const Entry<K,V> &e = it1.next();
       put(e.getKey(), e.getValue());
     }
@@ -65,7 +65,7 @@ public:
   }
   bool removeAll(const ConstIterator<K> &it) {
     const size_t oldSize = size();
-    for(ConstIterator<K> it1 = it; it1.hasNext();) {
+    for(auto it1 = it; it1.hasNext();) {
       remove(it1.next());
     }
     return size() != oldSize;
@@ -88,7 +88,7 @@ public:
     header << keySize << valueSize << n;
     header.write(s);
     Packer dp;
-    for(ConstIterator<Entry<K, V> > it = getIterator(); it.hasNext();) {
+    for(auto it = getIterator(); it.hasNext();) {
       const Entry<K, V> &e = it.next();
       dp << e.getKey() << e.getValue();
     }
@@ -139,7 +139,7 @@ template<typename OSTREAMTYPE, typename K, typename V, typename D=StreamDelimite
   const D      delimiter;
   const UINT64 size = m.size();
   out << size << delimiter;
-  for(ConstIterator<Entry<K, V> > it = m.getIterator(); it.hasNext();) {
+  for(auto it = m.getIterator(); it.hasNext();) {
     const Entry<K, V> &e = it.next();
     out << e.getKey() << delimiter << e.getValue() << delimiter;
   }

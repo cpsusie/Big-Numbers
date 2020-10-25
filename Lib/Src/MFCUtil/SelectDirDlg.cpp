@@ -98,10 +98,9 @@ void CSelectDirDlg::fillTree(const TCHAR *path) {
     p = ctrl->InsertItem(tok.next().cstr(), 1, 0, p);
   }
   HTREEITEM selecteditem = p;
-  for(size_t i = 0; i < list.size(); i++) {
-    ctrl->InsertItem(list[i].name, 0, 0, p);
+  for(auto it = list.getIterator(); it.hasNext();) {
+    ctrl->InsertItem(it.next().name, 0, 0, p);
   }
-
   TreeItemExpander(true).visitAllItems(ctrl);
 
   m_dir = path;

@@ -38,7 +38,7 @@ public:
     return m_mouseMode;
   }
   inline String        getPointText(const Point2D &p) const {
-    return format(_T("(%s, %s)"), getValueText(XAXIS_INDEX, p.x).cstr(), getValueText(YAXIS_INDEX,p.y).cstr());
+    return format(_T("(%s, %s)"), getValueText(XAXIS_INDEX, p[0]).cstr(), getValueText(YAXIS_INDEX,p[1]).cstr());
   }
   void                 setOccupiedRect(const CRect &r);
   void                 setOccupiedLine(const CPoint &from, const CPoint &to);

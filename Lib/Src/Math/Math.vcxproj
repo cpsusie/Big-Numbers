@@ -982,13 +982,14 @@
       <BrowseInformation>true</BrowseInformation>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
-      <DebugInformationFormat>None</DebugInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <StringPooling>true</StringPooling>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <ExceptionHandling>Async</ExceptionHandling>
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <OmitFramePointers>false</OmitFramePointers>
+      <AssemblerOutput>NoListing</AssemblerOutput>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -1221,7 +1222,7 @@
     <ClCompile Include="NumberToString.cpp" />
     <ClCompile Include="NumberwIO.cpp" />
     <ClCompile Include="NumberwStr.cpp" />
-    <ClCompile Include="Point2DTransformations.cpp" />
+    <ClCompile Include="Point2DToPoint2DFunctions.cpp" />
     <ClCompile Include="RationalaStr.cpp" />
     <ClCompile Include="RationalPacker.cpp" />
     <ClCompile Include="Matrix.cpp" />
@@ -1299,9 +1300,10 @@
     <ClInclude Include="..\..\Include\Math\BigReal\MRisprime.h" />
     <ClInclude Include="..\..\Include\Math\Complex.h" />
     <ClInclude Include="..\..\Include\Math\Cube3D.h" />
-    <ClInclude Include="..\..\Include\Math\CubeN.h" />
-    <ClInclude Include="..\..\Include\Math\IntervalTransformationArray.h" />
-    <ClInclude Include="..\..\Include\Math\CubeTransformation.h" />
+    <ClInclude Include="..\..\Include\Math\CubeTemplate.h" />
+    <ClInclude Include="..\..\Include\Math\Cube3DTransformation.h" />
+    <ClInclude Include="..\..\Include\Math\FixedSizeVector.h" />
+    <ClInclude Include="..\..\Include\Math\CubeTransformationTemplate.h" />
     <ClInclude Include="..\..\Include\Math\Double64.h" />
     <ClInclude Include="..\..\Include\Math\Double80.h" />
     <ClInclude Include="..\..\Include\Math\Double80Asmx64.h">
@@ -1358,8 +1360,9 @@
     <ClInclude Include="..\..\Include\Math\Number.h" />
     <ClInclude Include="..\..\Include\Math\Point2D.h" />
     <ClInclude Include="..\..\Include\Math\Point2D3D.h" />
-    <ClInclude Include="..\..\Include\Math\Point2DTransformations.h" />
+    <ClInclude Include="..\..\Include\Math\Point2DToPoint2DFunctions.h" />
     <ClInclude Include="..\..\Include\Math\Point3D.h" />
+    <ClInclude Include="..\..\Include\Math\PointTemplate.h" />
     <ClInclude Include="..\..\Include\Math\Polygon2D.h" />
     <ClInclude Include="..\..\Include\Math\Polynomial.h" />
     <ClInclude Include="..\..\Include\Math\PragmaLib.h" />

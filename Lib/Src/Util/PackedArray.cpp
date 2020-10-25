@@ -23,6 +23,22 @@ void PackedArray::validateBitsPerItem(const TCHAR *method, UINT bitsPerItem) { /
   }
 }
 
+void PackedArray::indexError(const TCHAR *method, UINT64 index) const {
+  throwIndexOutOfRangeException(method, index, size());
+}
+
+void PackedArray::indexError(const TCHAR *method, UINT64 index, UINT64 count) const {
+  throwIndexOutOfRangeException(method, index, count, size());
+}
+
+void PackedArray::valueError(const TCHAR *method, UINT v) const {
+  throwInvalidArgumentException(method, _T("v=%lu, maxValue=%lu"), v, m_maxValue);
+}
+
+void PackedArray::emptyArrayError(const TCHAR *method) { // static
+  throwEmptyArrayException(method);
+}
+
 #if defined(_DEBUG_PACKEDARRAY)
 #define DUMP() if(s_trace) { dump(true); }
 #else // _DEBUG_PACKEDARRAY
@@ -52,7 +68,7 @@ UINT PackedArray::get(UINT64 index) const {
 }
 
 UINT PackedArray::select(RandomGenerator &rnd) const {
-  if(isEmpty()) selectError(__TFUNCTION__);
+  if(isEmpty()) emptyArrayError(__TFUNCTION__);
   return get(rnd.nextInt64(size()));
 }
 

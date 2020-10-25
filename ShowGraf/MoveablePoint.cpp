@@ -20,10 +20,10 @@ void MoveablePoint::paint(CDC &dc) {
     String text;
     switch(m_showFlags) {
     case SHOWXCOORDINATE    :
-      text = getSystem().getValueText(XAXIS_INDEX, p.x);
+      text = getSystem().getValueText(XAXIS_INDEX, p.x());
       break;
     case SHOWYCOORDINATE    :
-      text = getSystem().getValueText(YAXIS_INDEX, p.y);
+      text = getSystem().getValueText(YAXIS_INDEX, p.y());
       break;
     case SHOWBOTHCOORDINATES:
     default                 :

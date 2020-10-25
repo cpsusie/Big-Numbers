@@ -45,8 +45,8 @@ DistanceFinder::DistanceFinder(Viewport2D &vp, const CPoint &p) : m_vp(vp) {
 }
 
 void DistanceFinder::line(const Point2D &from, const Point2D &to) {
-  double dist = distanceFromLineSegment(m_vp.forwardTransform(from),m_vp.forwardTransform(to),Point2D(m_point));
-  if(m_minDist < 0 || dist < m_minDist) {
+  const double dist = distanceFromLineSegment(m_vp.forwardTransform(from),m_vp.forwardTransform(to),Point2D(m_point));
+  if((m_minDist < 0) || (dist < m_minDist)) {
     m_minDist = dist;
   }
 }
@@ -56,7 +56,7 @@ void DistanceFinder::line(const Point2D &from, const Point2D &to) {
 ProfilePolygon2D *DrawToolSelect::findNearestPolygon(const CPoint &p) {
   Profile2D        &profile        = m_editor.getProfile();
   double            minDist        = -1;
-  ProfilePolygon2D *nearestPolygon = NULL;
+  ProfilePolygon2D *nearestPolygon = nullptr;
 
   for(size_t i = 0; i < profile.m_polygonArray.size(); i++) {
     ProfilePolygon2D &polygon = profile.m_polygonArray[i];
@@ -68,23 +68,22 @@ ProfilePolygon2D *DrawToolSelect::findNearestPolygon(const CPoint &p) {
       nearestPolygon = &polygon;
     }
   }
-  return minDist < MAXDIST ? nearestPolygon : NULL;
+  return minDist < MAXDIST ? nearestPolygon : nullptr;
 }
 
 Point2D *DrawToolSelect::findNearestPoint(const CPoint &p) {
-  CompactArray<Point2D*> points = m_editor.getProfile().getAllPointsRef();
-  double minDist        = -1;
-  Point2D *nearestPoint = NULL;
+  Point2DRefArray points = m_editor.getProfile().getAllPointsRef();
+  double minDist         = -1;
+  Point2D *nearestPoint  = nullptr;
 
-  for(size_t i = 0; i < points.size(); i++) {
-    Point2D     *point = points[i];
+  for(auto point : points) {
     const double dist  = distance(Point2D(p),m_editor.getViewport().forwardTransform(*point));
     if((minDist < 0) || (dist < minDist)) {
       minDist      = dist;
-      nearestPoint = point;
+      nearestPoint = (Point2D*)point;
     }
   }
-  return minDist < MAXDIST ? nearestPoint : NULL;
+  return minDist < MAXDIST ? nearestPoint : nullptr;
 }
 
 void DrawToolSelect::moveSelectedPoints(const Point2D &dp) {
@@ -99,7 +98,7 @@ bool DrawToolSelect::OnLButtonDown(UINT nFlags, CPoint point) {
   switch(m_state) {
   case IDLE       :
   case MOVING    :
-    if(np != NULL) { // click on polygon
+    if(np != nullptr) { // click on polygon
       if(nFlags & MK_SHIFT) { // shift pressed
         if(isSelected(np)) {
           unselect(np);
@@ -209,7 +208,7 @@ bool DrawToolSelect::OnRButtonDown(UINT nFlags, CPoint point) {
   case MOVING     :
   case STRETCHING :
   case ROTATING   :
-    if(np != NULL) { // click on point
+    if(np != nullptr) { // click on point
       if(nFlags & MK_SHIFT) { // shift pressed
         if(isSelected(np)) {
           unselect(np);

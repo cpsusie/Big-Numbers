@@ -72,8 +72,8 @@ void CComboBoxWithHistory::updateList() {
 
 void CComboBoxWithHistory::fillDropdownList() {
   ResetContent();
-  for(size_t i = 0; i < m_history.size(); i++) {
-    AddString(m_history[i].cstr());
+  for(auto it = m_history.getIterator(); it.hasNext();) {
+    AddString(it.next().cstr());
   }
 }
 
@@ -98,7 +98,7 @@ BOOL CComboBoxWithHistory::PreTranslateMessage(MSG *pMsg) {
       }
     }
   }
-  return CComboBox::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 static RegistryKey getRootKey() { // static
