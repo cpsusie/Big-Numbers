@@ -53,26 +53,24 @@ public:
   inline const RectangleTransformation &getTransformation() const {
     return *m_tr;
   }
-  inline RectangleTransformation &getTransformation() {
+  inline       RectangleTransformation &getTransformation() {
     return *m_tr;
   }
 
-  inline Rectangle2D getFromRectangle() const {
-    return m_tr->getFromRectangle();
-  }
-
-  inline Rectangle2D getToRectangle() const {
-    return m_tr->getToRectangle();
-  }
-
   inline void setFromRectangle(const Rectangle2D &rect) {
-    m_tr->setFromRectangle(rect);
+    getTransformation().setFromRectangle(rect);
+  }
+  inline Rectangle2D getFromRectangle() const {
+    return getTransformation().getFromRectangle();
   }
 
   void setToRectangle(const Rectangle2D &rect);
+  inline Rectangle2D getToRectangle() const {
+    return getTransformation().getToRectangle();
+  }
 
   inline void setScale(IntervalScale newScale, int flags) {
-    m_tr->setScale(newScale, flags);
+    getTransformation().setScale(newScale, flags);
   }
 
   void setRetainAspectRatio(bool retainAspectRatio);
@@ -82,56 +80,62 @@ public:
   }
 
   inline const IntervalTransformation &getXTransformation() const {
-    return (*m_tr)[0];
+    return getTransformation()[0];
   }
-
   inline const IntervalTransformation &getYTransformation() const {
-    return (*m_tr)[1];
+    return getTransformation()[1];
   }
 
   inline Point2D forwardTransform(const Point2D &p) const {
-    return m_tr->forwardTransform(p);
+    return getTransformation().forwardTransform(p);
   }
-
   inline Point2D forwardTransform(double x, double y) const {
     return forwardTransform(Point2D(x, y));
   }
-
   inline Point2D backwardTransform(const Point2D &p) const {
-    return m_tr->backwardTransform(p);
+    return getTransformation().backwardTransform(p);
   }
 
   inline Rectangle2D forwardTransform(const Rectangle2D &r) const {
-    return m_tr->forwardTransform(r);
+    return getTransformation().forwardTransform(r);
   }
-
   inline Rectangle2D backwardTransform(const Rectangle2D &r) const {
-    return m_tr->backwardTransform(r);
+    return getTransformation().backwardTransform(r);
   }
 
-  void        setClipping(bool         clip) const;
-  void        MoveTo(    const Point2D  &p) const;
-  void        MoveTo(    double x, double y) const;
-  void        LineTo(    const Point2D  &p) const;
-  void        LineTo(    double x, double y) const;
-  void        SetPixel(  const Point2D  &p, COLORREF color) const;
-  void        SetPixel(  double x, double y, COLORREF color) const;
-  void        paintCross(const Point2D  &p, COLORREF color, int size=4) const;
-  COLORREF    GetPixel(  const Point2D  &p) const;
-  COLORREF    GetPixel(  double x, double y) const;
-  bool        Rectangle( const Rectangle2D &r) const;
-  bool        Rectangle( double x1, double y1, double x2, double y2) const;
-  void        FillSolidRect(const Rectangle2D &r, COLORREF color) const;
+  void            setClipping(bool         clip) const;
+         void     MoveTo(    const Point2D  &p) const;
+         void     LineTo(    const Point2D  &p) const;
+         void     SetPixel(  const Point2D  &p, COLORREF color) const;
+  inline void     MoveTo(    double x, double y) const {
+    MoveTo(Point2D(x, y));
+  }
+  inline void     LineTo(    double x, double y) const {
+    LineTo(Point2D(x, y));
+  }
+  inline void     SetPixel(  double x, double y, COLORREF color) const {
+    SetPixel(Point2D(x, y),color);
+  }
+  void            paintCross(const Point2D  &p, COLORREF color, int size=4) const;
+         COLORREF GetPixel(  const Point2D  &p) const;
+  inline COLORREF GetPixel(  double x, double y) const {
+    return GetPixel(Point2D(x, y));
+  }
+         bool     Rectangle( const Rectangle2D &r) const;
+  inline bool     Rectangle( double x1, double y1, double x2, double y2) const {
+    return Rectangle(Rectangle2D(Point2D(x1, y1), Point2D(x2, y2)));
+  }
+  void            FillSolidRect(const Rectangle2D &r, COLORREF color) const;
   // transparent background
   // If bckSave is specified, the bounding recangle of the written text is returned (can be used for selection)
   // and the original pixels in the bounding rectangle containing the text, will be saved, for later restore
-  void        TextOut( const Point2D &p, const String &text, COLORREF color, BackgroundSaver *bckSave = nullptr) const;
-  void        clear(COLORREF color) const;
-  CGdiObject *SelectObject(CGdiObject *object) const;
-  CBitmap    *SelectObject(CBitmap    *bitmap) const;
-  CPen       *SelectObject(CPen       *pen   ) const;
-  CFont      *SelectObject(CFont      *font  ) const;
+  void            TextOut( const Point2D &p, const String &text, COLORREF color, BackgroundSaver *bckSave = nullptr) const;
+  void            clear(COLORREF color) const;
+  CGdiObject     *SelectObject(CGdiObject *object) const;
+  CBitmap        *SelectObject(CBitmap    *bitmap) const;
+  CPen           *SelectObject(CPen       *pen   ) const;
+  CFont          *SelectObject(CFont      *font  ) const;
 
-  CGdiObject *SelectStockObject(   int index ) const;
+  CGdiObject     *SelectStockObject(   int index ) const;
   void paintDragRect(const Rectangle2D &rect, SIZE size, const Rectangle2D &lastRect, SIZE lastSize, CBrush *brush = nullptr, CBrush *lastBrush = nullptr) const;
 };

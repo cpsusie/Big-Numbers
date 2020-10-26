@@ -22,21 +22,20 @@ DataRange::DataRange(const Point2D &p) {
 }
 
 DataRange::DataRange(const Point2DArray &pa) {
-  if(pa.size() > 0) {
-    const Point2D *p = (Point2D*)pa.begin(), *end = (Point2D*)pa.end();
-    init(p->x(), p->x(), p->y(), p->y());
-    p++;
-    while(p < end) {
-      *this += *(p++);
+  bool firstTime = true;
+  for(Point2D p : pa) {
+    if(firstTime) {
+      init(p.x(), p.x(), p.y(), p.y());
+      firstTime = false;
+    } else {
+      *this += p;
     }
   }
 }
 
 DataRange &DataRange::operator+=(const Point2DArray &pa) {
-  if(pa.size() > 0) {
-    for(const Point2D p : pa) {
-      *this += p;
-    }
+  for(const Point2D p : pa) {
+    *this += p;
   }
   return *this;
 }
@@ -70,7 +69,6 @@ void DataRange::init(double minX, double maxX, double minY, double maxY) {
 }
 
 DataRange::operator Rectangle2D() const {
-  double minX = getMinX();
-  double minY = getMinY();
+  const double minX = getMinX(), minY = getMinY();
   return Rectangle2D(minX, minY, getMaxX() - minX, getMaxY() - minY);
 }

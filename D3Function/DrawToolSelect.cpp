@@ -76,20 +76,18 @@ Point2D *DrawToolSelect::findNearestPoint(const CPoint &p) {
   double minDist         = -1;
   Point2D *nearestPoint  = nullptr;
 
-  for(auto point : points) {
+  for(Point2D *point : points) {
     const double dist  = distance(Point2D(p),m_editor.getViewport().forwardTransform(*point));
     if((minDist < 0) || (dist < minDist)) {
       minDist      = dist;
-      nearestPoint = (Point2D*)point;
+      nearestPoint = point;
     }
   }
   return minDist < MAXDIST ? nearestPoint : nullptr;
 }
 
 void DrawToolSelect::moveSelectedPoints(const Point2D &dp) {
-  for(size_t i = 0; i < m_selectedPoints.size(); i++) {
-    *m_selectedPoints[i] += dp;
-  }
+  m_selectedPoints += dp;
 }
 
 bool DrawToolSelect::OnLButtonDown(UINT nFlags, CPoint point) {
@@ -97,7 +95,7 @@ bool DrawToolSelect::OnLButtonDown(UINT nFlags, CPoint point) {
   ProfilePolygon2D *np = findNearestPolygon(point);
   switch(m_state) {
   case IDLE       :
-  case MOVING    :
+  case MOVING     :
     if(np != nullptr) { // click on polygon
       if(nFlags & MK_SHIFT) { // shift pressed
         if(isSelected(np)) {

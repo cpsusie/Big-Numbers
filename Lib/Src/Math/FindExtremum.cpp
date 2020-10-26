@@ -2,7 +2,7 @@
 #include <Math/MathLib.h>
 #include <Math/Rectangle2D.h>
 
-typedef PointComparator<Real, 2, 1> PointYComparator;
+typedef PointComparator<RealPoint2D, 1> PointYComparator;
 
 class ExtremumFinder {
 private:

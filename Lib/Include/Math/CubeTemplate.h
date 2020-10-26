@@ -143,65 +143,9 @@ template<typename T1, typename T2, UINT dimension> CubeTemplate<T1, dimension> g
   return result;
 }
 
-template<typename T, UINT dimension> class PointArrayTemplate : public CompactArray<PointTemplate<T, dimension> > {
-public:
-  PointArrayTemplate() {
-  }
-  explicit PointArrayTemplate(size_t capacity) : CompactArray<PointTemplate<T, dimension> >(capacity) {
-  }
-  template<template<typename,UINT> class VType, typename S> PointArrayTemplate(const CollectionBase<VType<S, dimension> > &src)
-    : CompactArray<PointTemplate<T, dimension> >(src.size()) {
-    addAll(src.getIterator());
-  }
-  template<template<typename,UINT> class VType, typename S> PointArrayTemplate &operator=(const CollectionBase<VType<S, dimension> > &src) {
-    if((void*)&src == (void*)this) {
-      return *this;
-    }
-    clear(src.size());
-    addAll(src.getIterator());
-    return *this;
-  }
-
-  template<typename S> bool add(const FixedSizeVectorTemplate<S, dimension> &v) {
-    return __super::add(v);
-  }
-
-  template<typename S> bool addAll(const PointArrayTemplate<S, dimension> &a) {
-    return addAll(a.getIterator());
-  }
-
-  template<template<typename,UINT> class VType, typename S> bool addAll(const ConstIterator<VType<S, dimension> > &it) {
-    const size_t oldSize = size();
-    for(ConstIterator<VType<S, dimension> > it1 = it; it1.hasNext();) {
-      add(it1.next());
-    }
-    return size() != oldSize;
-  }
-
-  // Return minimal cube containg all points in the array
-  CubeTemplate<T, dimension> getBoundingCube() const {
-    if(isEmpty()) {
-      return CubeTemplate<T, dimension>().clear();
-    }
-
-    const PointTemplate<T, dimension> *p = begin(), *endp = end();
-    PointTemplate<T, dimension> minP = *p, maxP = minP;
-    for(p++; p < endp; p++) {
-      minP = Min(*p,minP);
-      maxP = Max(*p, maxP);
-    }
-    return CubeTemplate<T, dimension>(minP, maxP-minP);
-  }
-};
-
-template<typename T, UINT dimension> class PointRefArrayTemplate : public CompactArray<PointTemplate<T, dimension>*> {
-public:
-  PointRefArrayTemplate() {
-  }
-  PointRefArrayTemplate(PointArrayTemplate<T, dimension> &src) : CompactArray<PointTemplate<T, dimension>*>(src.size()) {
-    const PointTemplate<T, dimension> *endp = src.end();
-    for(PointTemplate<T, dimension> *v = src.begin(); v < endp;) {
-      add(v++);
-    }
-  }
-};
+template<typename PointType, typename T, UINT dimension> CubeTemplate<T, dimension> &getBoundingCube(CubeTemplate<T, dimension> &cube, const ConstIterator<PointType> &it) {
+  PointType minP, maxP;
+  getMinMaxPoints(minP, maxP, it);
+  cube = CubeTemplate<T, dimension>(minP, maxP - minP);
+  return cube;
+}

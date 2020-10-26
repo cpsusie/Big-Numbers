@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.1062
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30611.23
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "D3Function", "..\D3Function\D3Function.vcxproj", "{DFC912FA-6B3A-4D9D-BCC0-B775907C41F4}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -190,6 +190,7 @@ Global
 		{DA57B57F-CFF3-4620-87AE-69D3598B492D}.Profiling|x86.ActiveCfg = Profiling|Win32
 		{DA57B57F-CFF3-4620-87AE-69D3598B492D}.Profiling|x86.Build.0 = Profiling|Win32
 		{DA57B57F-CFF3-4620-87AE-69D3598B492D}.Release|x64.ActiveCfg = Release|x64
+		{DA57B57F-CFF3-4620-87AE-69D3598B492D}.Release|x64.Build.0 = Release|x64
 		{DA57B57F-CFF3-4620-87AE-69D3598B492D}.Release|x86.ActiveCfg = Release|Win32
 		{DA57B57F-CFF3-4620-87AE-69D3598B492D}.Release|x86.Build.0 = Release|Win32
 		{DA57B57F-CFF3-4620-87AE-69D3598B492D}.TraceMemDebug|x64.ActiveCfg = TraceMemDebug|x64
@@ -233,6 +234,7 @@ Global
 		{0D1324F1-16AC-4245-9A51-8BF3B09A6C5F}.Profiling|x86.ActiveCfg = Profiling|Win32
 		{0D1324F1-16AC-4245-9A51-8BF3B09A6C5F}.Profiling|x86.Build.0 = Profiling|Win32
 		{0D1324F1-16AC-4245-9A51-8BF3B09A6C5F}.Release|x64.ActiveCfg = Release|x64
+		{0D1324F1-16AC-4245-9A51-8BF3B09A6C5F}.Release|x64.Build.0 = Release|x64
 		{0D1324F1-16AC-4245-9A51-8BF3B09A6C5F}.Release|x86.ActiveCfg = Release|Win32
 		{0D1324F1-16AC-4245-9A51-8BF3B09A6C5F}.Release|x86.Build.0 = Release|Win32
 		{0D1324F1-16AC-4245-9A51-8BF3B09A6C5F}.TraceMemDebug|x64.ActiveCfg = TraceMemDebug|x64
@@ -276,6 +278,7 @@ Global
 		{20C38850-59EE-46E3-AD91-7327685B83D2}.Profiling|x86.ActiveCfg = TraceMemLDDebug|Win32
 		{20C38850-59EE-46E3-AD91-7327685B83D2}.Profiling|x86.Build.0 = TraceMemLDDebug|Win32
 		{20C38850-59EE-46E3-AD91-7327685B83D2}.Release|x64.ActiveCfg = Release|x64
+		{20C38850-59EE-46E3-AD91-7327685B83D2}.Release|x64.Build.0 = Release|x64
 		{20C38850-59EE-46E3-AD91-7327685B83D2}.Release|x86.ActiveCfg = Release|Win32
 		{20C38850-59EE-46E3-AD91-7327685B83D2}.Release|x86.Build.0 = Release|Win32
 		{20C38850-59EE-46E3-AD91-7327685B83D2}.TraceMemDebug|x64.ActiveCfg = TraceMemDebug|x64
@@ -319,6 +322,7 @@ Global
 		{EC9661C7-AA70-418D-BC1C-4F9A87837BFD}.Profiling|x86.ActiveCfg = Profiling|Win32
 		{EC9661C7-AA70-418D-BC1C-4F9A87837BFD}.Profiling|x86.Build.0 = Profiling|Win32
 		{EC9661C7-AA70-418D-BC1C-4F9A87837BFD}.Release|x64.ActiveCfg = Release|x64
+		{EC9661C7-AA70-418D-BC1C-4F9A87837BFD}.Release|x64.Build.0 = Release|x64
 		{EC9661C7-AA70-418D-BC1C-4F9A87837BFD}.Release|x86.ActiveCfg = Release|Win32
 		{EC9661C7-AA70-418D-BC1C-4F9A87837BFD}.Release|x86.Build.0 = Release|Win32
 		{EC9661C7-AA70-418D-BC1C-4F9A87837BFD}.TraceMemDebug|x64.ActiveCfg = TraceMemDebug|x64
@@ -362,6 +366,7 @@ Global
 		{A90057E9-13D7-4E6F-8C02-0B355A71C134}.Profiling|x86.ActiveCfg = Profiling|Win32
 		{A90057E9-13D7-4E6F-8C02-0B355A71C134}.Profiling|x86.Build.0 = Profiling|Win32
 		{A90057E9-13D7-4E6F-8C02-0B355A71C134}.Release|x64.ActiveCfg = Release|x64
+		{A90057E9-13D7-4E6F-8C02-0B355A71C134}.Release|x64.Build.0 = Release|x64
 		{A90057E9-13D7-4E6F-8C02-0B355A71C134}.Release|x86.ActiveCfg = Release|Win32
 		{A90057E9-13D7-4E6F-8C02-0B355A71C134}.Release|x86.Build.0 = Release|Win32
 		{A90057E9-13D7-4E6F-8C02-0B355A71C134}.TraceMemDebug|x64.ActiveCfg = TraceMemDebug|x64

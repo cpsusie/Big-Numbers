@@ -104,8 +104,7 @@ void CCustomFitThreadDlg::updateButtons() {
 
 Point2DArray selectPointsInInterval(const DoubleInterval &interval, const Point2DArray &data) {
   Point2DArray result;
-  for(ConstIterator<PointTemplate<double, 2> > it = data.getIterator(); it.hasNext();) {
-    const Point2D &p = it.next();
+  for(auto p : data) {
     if(interval.contains(p.x())) {
       result.add(p);
     }

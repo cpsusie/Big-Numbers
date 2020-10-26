@@ -94,7 +94,7 @@ template<typename T1, typename T2, UINT dimension> double distance(const PointTe
   return (p1 - p2).length();
 }
 
-template<typename T, UINT dimension, UINT coordIndex> class PointComparator : public Comparator<PointTemplate<T,dimension> > {
+template<typename PointType, UINT coordIndex> class PointComparator : public Comparator<PointType> {
 private:
   const bool m_maximum;
   PointComparator(const PointComparator &src)
@@ -109,7 +109,57 @@ public:
   AbstractComparator *clone() const override {
     return new PointComparator(*this);
   }
-  int compare(const PointTemplate<T,dimension> &p1, const PointTemplate<T,dimension> &p2) override {
+  int compare(const PointType &p1, const PointType &p2) override {
     return m_maximum ? sign(p2[coordIndex] - p1[coordIndex]) : sign(p1[coordIndex] - p2[coordIndex]);
   }
+};
+
+// Return minimal cube containg all points in the array
+template<typename PointType> void getMinMaxPoints(PointType &minP, PointType &maxP, const ConstIterator<PointType> &it) {
+  minP.clear();
+  maxP = minP;
+  bool firstTime = true;
+  for(auto it1 = it; it1.hasNext();) {
+    const PointType &p = it1.next();
+    if(firstTime) {
+      minP = maxP = p;
+      firstTime = false;
+    } else {
+      minP = Min(p, minP);
+      maxP = Max(p, maxP);
+    }
+  }
+}
+
+template<typename PointType, UINT dimension> class PointRefArrayTemplate : public CompactArray<PointType*> {
+public:
+  inline PointRefArrayTemplate() {
+  }
+  inline PointRefArrayTemplate(size_t capacity) : CompactArray<PointType*>(capacity) {
+  }
+  inline PointRefArrayTemplate(CompactArray<PointType> &src)
+    : CompactArray<PointType*>(src.size())
+  {
+    addAll(src);
+  }
+  bool addAll(CompactArray<PointType> &a) {
+    if(a.isEmpty()) {
+      return false;
+    }
+    for(PointType *p = a.begin(), *endp = a.end(); p < endp;) {
+      add(p++);
+    }
+    return true;
+  }
+  inline bool addAll(PointRefArrayTemplate &a) {
+    return __super::addAll(a);
+  }
+
+  template<typename S> PointRefArrayTemplate &operator+=(const FixedSizeVectorTemplate<S,dimension> &v) {
+    for(PointType **p = begin(), **endp = end(); p < endp;) {
+      **(p++) += v;
+    }
+    return *this;
+  }
+
 };

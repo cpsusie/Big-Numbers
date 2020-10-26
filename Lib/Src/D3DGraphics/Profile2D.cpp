@@ -54,7 +54,8 @@ Point2DRefArray    ProfileCurve2D::getAllPointsRef() {
 }
 
 Rectangle2D ProfileCurve2D::getBoundingBox() const {
-  return m_points.getBoundingBox();
+  Rectangle2D b;
+  return m_points.getBoundingBox(b);
 }
 
 String ProfileCurve2D::toString() const {
@@ -125,7 +126,8 @@ VertexCurve2D ProfilePolygon2D::getSmoothVertexCurve() const { // return noOfPoi
 }
 
 Rectangle2D ProfilePolygon2D::getBoundingBox() const {
-  return getAllPoints().getBoundingBox();
+  Rectangle2D b;
+  return getAllPoints().getBoundingBox(b);
 }
 
 bool ProfilePolygon2D::isEmpty() const {
@@ -205,7 +207,8 @@ bool Profile2D::isEmpty() const {
 }
 
 Rectangle2D Profile2D::getBoundingBox() const {
-  return getAllPoints().getBoundingBox();
+  Rectangle2D b;
+  return getAllPoints().getBoundingBox(b);
 }
 
 void Profile2D::addLine(const Point2D &p1, const Point2D &p2) {

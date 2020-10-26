@@ -21,7 +21,7 @@ private:
   int                     m_currentSelection;
   GlyphCurveData          m_selectedGlyphCurveData;
   CompactArray<GlyphRect> m_rectArray;
-  int   findSelection(CPoint &p);
+  int   findSelection(const CPoint &p) const;
   void  markSelection(      int index);
   void  unmarkSelection(    int index);
   void  setCurrentSelection(int index);

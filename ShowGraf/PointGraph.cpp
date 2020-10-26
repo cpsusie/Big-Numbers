@@ -121,8 +121,7 @@ void PointGraph::setRollingAvg(const RollingAvg &rollingAvg) {
 void PointGraph::paint(CDC &dc) {
   const Point2DArray &data  = getProcessedData();
   if(data.isEmpty()) return;
-  const Point2D      *pp     = (Point2D*)data.begin();
-  const Point2D      *endp   = (Point2D*)data.end();
+  const Point2D      *pp     = data.begin(), *endp = data.end();
   CCoordinateSystem  &system = getSystem();
   Viewport2D         &vp     = system.getViewport();
   CDC                *oldDC  = vp.setDC(&dc);
@@ -130,7 +129,7 @@ void PointGraph::paint(CDC &dc) {
   Point2DArray        tmp;
 
   try {
-    switch (getParam().getGraphStyle()) {
+    switch(getParam().getGraphStyle()) {
     case GSCURVE:
       if(data.size() > 1) {
         CPen pen;
@@ -214,17 +213,13 @@ double PointGraph::getSmallestPositiveY() const {
   return result;
 }
 
-static int point2DcmpX(const PointTemplate<double,2> &p1, const PointTemplate<double,2> &p2) {
-  return sign(p1[0]-p2[0]);
-}
-
 GraphZeroesResultArray PointGraph::findZeroes(const DoubleInterval &interval) {
   Point2DArray       data = getProcessedData();
   CompactDoubleArray result;
   if(data.isEmpty()) {
     return makeZeroesResult(result);
   }
-  data.sort(point2DcmpX);
+  data.sort(PointComparator<Point2D,0>(false));
   const size_t n = data.size();
   if(n == 1) {
     const Point2D &p = data.first();
@@ -246,19 +241,18 @@ GraphZeroesResultArray PointGraph::findZeroes(const DoubleInterval &interval) {
     return makeZeroesResult(result);
   }
 
-  const Point2D *lastp      = (Point2D*)data.begin();
+  const Point2D *lastp      = data.begin();
   bool           lastInside = interval.contains(lastp->x());
-  for(size_t t = 1; t < n; t++) {
-    const Point2D &p       = data[t];
-    const bool     pinside = interval.contains(p.x());
-    if(sign(lastp->y()) * sign(p.y()) != 1) {
+  for(const Point2D *p = lastp + 1, *endp = data.end(); p < endp; p++) {
+    const bool pinside = interval.contains(p->x());
+    if(sign(lastp->y()) * sign(p->y()) != 1) {
       if(lastp->y() == 0) {
         if(lastInside) {
           result.add(lastp->x());
         }
       } else if(lastInside || pinside) { // && lastp->y != 0
-        if(p.y() != 0) { // lastp->y != 0 && p.y != 0 => opposite sign
-          const double x = inverseLinearInterpolate0(p, *lastp);
+        if(p->y() != 0) {                // lastp->y != 0 && p.y != 0 => opposite sign
+          const double x = inverseLinearInterpolate0(*p, *lastp);
           if(interval.contains(x)) {
             result.add(x);
           }
@@ -269,7 +263,7 @@ GraphZeroesResultArray PointGraph::findZeroes(const DoubleInterval &interval) {
       lastInside = false;
       break;
     }
-    lastp      = &p;
+    lastp      = p;
     lastInside = pinside;
   }
   if(lastInside && (lastp->y() == 0)) {
@@ -284,14 +278,13 @@ static inline bool isMoreExtreme(double y0, double y1, ExtremaType extremaType) 
 
 GraphExtremaResultArray PointGraph::findExtrema(const DoubleInterval &interval, ExtremaType extremaType) {
   Point2DArray data = getProcessedData();
-  Point2DArray result;
-  const size_t n = data.size();
-  if(n != 0) {
-    data.sort(point2DcmpX);
+  if(!data.isEmpty()) {
+    data.sort(PointComparator<Point2D,0>(false));
   }
 
-  Point2D bestPoint;
-  bool    found = false;
+  Point2DArray result;
+  Point2D      bestPoint;
+  bool         found = false;
   for(const Point2D p : data) {
     if(interval.contains(p.x())) {
       if(!found || isMoreExtreme(bestPoint.y(), p.y(), extremaType)) {

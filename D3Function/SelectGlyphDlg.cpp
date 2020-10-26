@@ -121,11 +121,13 @@ void CSelectGlyphDlg::OnOK() {
   __super::OnOK();
 }
 
-int CSelectGlyphDlg::findSelection(CPoint &p) {
-  for(int i = 0; i < m_rectArray.size(); i++) {
-    const CRect &r = m_rectArray[i];
-    if(r.PtInRect(p))
+int CSelectGlyphDlg::findSelection(const CPoint &p) const {
+  int i = 0;
+  for(auto r : m_rectArray) {
+    if(r.PtInRect(p)) {
       return i;
+    }
+    i++;
   }
   return -1;
 }

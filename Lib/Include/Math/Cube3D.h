@@ -64,24 +64,40 @@ typedef Cube3DTemplate<float>  FloatCube3D;
 typedef Cube3DTemplate<double> Cube3D;
 typedef Cube3DTemplate<Real>   RealCube3D;
 
-template<typename T> class Point3DArrayTemplate : public PointArrayTemplate<T, 3> {
+template<typename PointType> class Point3DArrayTemplate : public CompactArray<PointType> {
 public:
   Point3DArrayTemplate() {
   }
-  explicit Point3DArrayTemplate(size_t capacity)
-    : PointArrayTemplate<T, 3>(capacity)
+  explicit Point3DArrayTemplate(size_t capacity) : CompactArray<PointType>(capacity)
   {
   }
-  template<template<typename,UINT> class VType, typename S> Point3DArrayTemplate(const CollectionBase<VType<S, 3> > &src)
-    : PointArrayTemplate<T, 3>(src)
-  {
+  template<typename T> Point3DArrayTemplate(const CollectionBase<FixedSizeVectorTemplate<T, 3> > &src) {
+    setCapacity(src.size());
+    addAll(src.getIterator());
+  }
+  template<typename T> Point3DArrayTemplate &operator=(const CollectionBase<FixedSizeVectorTemplate<T, 3> > &src) {
+    if((void*)&src == (void*)this) {
+      return *this;
+    }
+    clear(src.size());
+    addAll(src.getIterator());
+    return *this;
   }
 
-  Cube3DTemplate<T> getBoundingBox() const {
-    return getBoundingCube();
+  template<typename T> bool add(const FixedSizeVectorTemplate<T, 3> &v) {
+    return __super::add(v);
+  }
+
+  template<typename T> Cube3DTemplate<T> &getBoundingBox(Cube3DTemplate<T> &box) const {
+    getBoundingCube(box, getIterator());
+    return box;
   }
 };
 
-typedef Point3DArrayTemplate<float   > FloatPoint3DArray;
-typedef Point3DArrayTemplate<double  > Point3DArray;
-typedef Point3DArrayTemplate<Real    > RealPoint3DArray;
+typedef Point3DArrayTemplate<FloatPoint3D    > FloatPoint3DArray;
+typedef Point3DArrayTemplate<Point3D         > Point3DArray;
+typedef Point3DArrayTemplate<RealPoint3D     > RealPoint3DArray;
+
+typedef PointRefArrayTemplate<FloatPoint3D, 3> FloatPoint3DRefArray;
+typedef PointRefArrayTemplate<Point3D     , 3> Point3DRefArray;
+typedef PointRefArrayTemplate<RealPoint3D , 3> RealPoint3DRefArray;

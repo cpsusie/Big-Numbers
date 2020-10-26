@@ -240,7 +240,7 @@ template<typename T, typename D> void getOptValue(XMLDoc &doc, XMLNodePtr parent
 template<typename T, typename... Args> void setValue(XMLDoc &doc, XMLNodePtr n, const ConstIterator<T> &it, Args... args) {
   UINT index = 0;
   for(auto it1 = it; it1.hasNext(); index++) {
-    setValue(doc, n, format(_T("id%u"),index).cstr(), it1.next(), args...);
+    setValue(doc, n, format(_T("e%u"),index).cstr(), it1.next(), args...);
   }
 }
 
@@ -271,7 +271,7 @@ public:
   }
   void *next() override {
     XMLNodePtr n = nextChild();
-    const String expectedName = format(_T("id%u"), m_index++);
+    const String expectedName = format(_T("e%u"), m_index++);
     const String childName    = (wchar_t *)n->nodeName;
     if(childName != expectedName) {
       throwException(_T("Invalid nodename:%s, expected:%s"), childName.cstr(), expectedName.cstr());

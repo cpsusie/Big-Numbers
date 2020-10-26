@@ -65,8 +65,8 @@ DrawTool &DrawTool::paintPoints(const ProfilePolygon2D &p, bool selected) {
   const Point2D *currentPoint = &p.m_start;
   Viewport2D &vp = m_editor.getViewport();
   paintBox(*currentPoint, selected);
-  for(size_t c = 0; c < p.m_curveArray.size(); c++) {
-    const ProfileCurve2D &curve = p.m_curveArray[c];
+  for(auto it = p.m_curveArray.getIterator(); it.hasNext();) {
+    auto &curve = it.next();
     switch(curve.m_type) {
     case TT_PRIM_LINE   :
       { for(size_t j = 0; j < curve.m_points.size(); j++) {
@@ -157,8 +157,8 @@ DrawTool &DrawTool::drawState() {
 
 DrawTool &DrawTool::selectPolygonsInRect(const Rectangle2D &r) {
   Profile2D &profile = m_editor.getProfile();
-  for(size_t i = 0; i < profile.m_polygonArray.size(); i++) {
-    ProfilePolygon2D &p = profile.m_polygonArray[i];
+  for(auto it = profile.m_polygonArray.getIterator(); it.hasNext();) {
+    ProfilePolygon2D &p = it.next();
     if(r.contains(p.getBoundingBox())) {
       select(&p);
     }
@@ -168,9 +168,9 @@ DrawTool &DrawTool::selectPolygonsInRect(const Rectangle2D &r) {
 
 DrawTool &DrawTool::selectPointsInRect(const Rectangle2D &r) {
   Point2DRefArray points = m_editor.getProfile().getAllPointsRef();
-  for(auto p : points) {
+  for(Point2D *p : points) {
     if(r.contains(*p)) {
-      select((Point2D*)p);
+      select(p);
     }
   }
   return *this;
@@ -213,12 +213,7 @@ bool DrawTool::isSelected(ProfilePolygon2D *p) const {
 }
 
 bool DrawTool::isSelected(const Point2D *p) const {
-  for(size_t i = 0; i < m_selectedPoints.size(); i++) {
-    if(m_selectedPoints[i] == p) {
-      return true;
-    }
-  }
-  return false;
+  return m_selectedPoints.contains((Point2D*)p);
 }
 
 bool DrawTool::canDelete() {
@@ -281,14 +276,14 @@ bool DrawTool::canConnect() const {
   if(m_selectedPoints.size() != 2) {
     return false;
   }
-  return m_editor.getProfile().canConnect((Point2D*)m_selectedPoints[0], (Point2D*)m_selectedPoints[1]);
+  return m_editor.getProfile().canConnect(m_selectedPoints[0], m_selectedPoints[1]);
 }
 
 DrawTool &DrawTool::connect() {
   if(!canConnect()) {
     return *this;
   }
-  m_editor.getProfile().connect((Point2D*)m_selectedPoints[0], (Point2D*)m_selectedPoints[1]);
+  m_editor.getProfile().connect(m_selectedPoints[0], m_selectedPoints[1]);
   return unselectAll().repaintAll();
 }
 

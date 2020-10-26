@@ -110,17 +110,9 @@ void Viewport2D::MoveTo(const Point2D &p) const {
   m_dc->MoveTo((CPoint)forwardTransform(p));
 }
 
-void Viewport2D::MoveTo(double x, double y) const {
-  MoveTo(Point2D(x, y));
-}
-
 void Viewport2D::LineTo(const Point2D &p) const {
   CHECKHASDC();
   m_dc->LineTo((CPoint)forwardTransform(p));
-}
-
-void Viewport2D::LineTo(double x, double y) const{
-  LineTo(Point2D(x, y));
 }
 
 void Viewport2D::SetPixel(const Point2D &p, COLORREF color) const {
@@ -128,17 +120,9 @@ void Viewport2D::SetPixel(const Point2D &p, COLORREF color) const {
   m_dc->SetPixel((CPoint)forwardTransform(p),color);
 }
 
-void Viewport2D::SetPixel(double x, double y, COLORREF color) const {
-  SetPixel(Point2D(x, y),color);
-}
-
 COLORREF Viewport2D::GetPixel(const Point2D &p) const {
   CHECKHASDC();
   return m_dc->GetPixel((CPoint)forwardTransform(p));
-}
-
-COLORREF Viewport2D::GetPixel(double x, double y) const {
-  return GetPixel(Point2D(x, y));
 }
 
 void Viewport2D::paintCross(const Point2D &point, COLORREF color, int size) const {
@@ -161,10 +145,6 @@ bool Viewport2D::Rectangle(const Rectangle2D &r) const {
   CHECKHASDC();
   const CRect tmp = (CRect)forwardTransform(r);
   return m_dc->Rectangle(&tmp) ? true : false;
-}
-
-bool Viewport2D::Rectangle(double x1, double y1, double x2, double y2) const {
-  return Rectangle(Rectangle2D(Point2D(x1, y1), Point2D(x2, y2)));
 }
 
 void Viewport2D::FillSolidRect(const Rectangle2D &r, COLORREF color) const {

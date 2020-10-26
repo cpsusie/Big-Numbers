@@ -30,18 +30,18 @@ D3DXVECTOR2 operator*(const D3DXMATRIX &m, const D3DXVECTOR2 &v) {
 }
 
 Rectangle2D getTransformedRectangle(const D3DXMATRIX &m, const Rectangle2D &r) {
-  D3DXVECTOR2 corner[4];
-  corner[0] = r.LT();
-  corner[1] = r.RT();
-  corner[2] = r.RB();
-  corner[3] = r.LB();
+  D3DXVECTOR2 corners[4];
+  corners[0] = r.LT();
+  corners[1] = r.RT();
+  corners[2] = r.RB();
+  corners[3] = r.LB();
 
   Point2DArray trCorners;
-  for(int i = 0; i < 4; i++) {
-    const D3DXVECTOR2 tp = m * corner[i];
-    trCorners.add(Point2D(tp.x,tp.y));
+  for(auto c : corners) {
+    trCorners.add(Point2D(m*c));
   }
-  return trCorners.getBoundingBox();
+  Rectangle2D tr;
+  return trCorners.getBoundingBox(tr);
 }
 
 void PixRect::drawRotated(const PixRect *src, const CPoint &dst, double degree, const Point2D &rotationCenter) {

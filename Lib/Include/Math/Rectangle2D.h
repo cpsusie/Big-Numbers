@@ -77,38 +77,40 @@ typedef Rectangle2DTemplate<float   > FloatRectangle2D;
 typedef Rectangle2DTemplate<double  > Rectangle2D;
 typedef Rectangle2DTemplate<Real    > RealRectangle2D;
 
-template<typename T> class Point2DArrayTemplate : public PointArrayTemplate<T, 2> {
+template<typename PointType> class Point2DArrayTemplate : public CompactArray<PointType> {
 public:
   Point2DArrayTemplate() {
   }
-  explicit Point2DArrayTemplate(size_t capacity)
-    : PointArrayTemplate<T, 2>(capacity)
+  explicit Point2DArrayTemplate(size_t capacity) : CompactArray<PointType>(capacity)
   {
   }
-  template<template<typename,UINT> class VType, typename S> Point2DArrayTemplate(const CollectionBase<VType<S, 2> > &src)
-    : PointArrayTemplate<T, 2>(src)
-  {
+  template<typename T> Point2DArrayTemplate(const CollectionBase<FixedSizeVectorTemplate<T, 2> > &src) {
+    setCapacity(src.size());
+    addAll(src.getIterator());
+  }
+  template<typename T> Point2DArrayTemplate &operator=(const CollectionBase<FixedSizeVectorTemplate<T, 2> > &src) {
+    if((void*)&src == (void*)this) {
+      return *this;
+    }
+    clear(src.size());
+    addAll(src.getIterator());
+    return *this;
   }
 
-  Rectangle2DTemplate<T> getBoundingBox() const {
-    return getBoundingCube();
+  template<typename T> bool add(const FixedSizeVectorTemplate<T, 2> &v) {
+    return __super::add(v);
+  }
+
+  template<typename T> Rectangle2DTemplate<T> &getBoundingBox(Rectangle2DTemplate<T> &box) const {
+    getBoundingCube(box, getIterator());
+    return box;
   }
 };
 
-typedef Point2DArrayTemplate<float    > FloatPoint2DArray;
-typedef Point2DArrayTemplate<double   > Point2DArray;
-typedef Point2DArrayTemplate<Real     > RealPoint2DArray;
+typedef Point2DArrayTemplate<FloatPoint2D    > FloatPoint2DArray;
+typedef Point2DArrayTemplate<Point2D         > Point2DArray;
+typedef Point2DArrayTemplate<RealPoint2D     > RealPoint2DArray;
 
-template<typename T> class Point2DRefArrayTemplate : public PointRefArrayTemplate<T, 2> {
-public:
-  Point2DRefArrayTemplate() {
-  }
-  Point2DRefArrayTemplate(Point2DArrayTemplate<T> &src)
-    : PointRefArrayTemplate<T, 2>(src)
-  {
-  }
-};
-
-typedef Point2DRefArrayTemplate<float > FloatPoint2DRefArray;
-typedef Point2DRefArrayTemplate<double> Point2DRefArray;
-typedef Point2DRefArrayTemplate<Real  > RealPoint2DRefArray;
+typedef PointRefArrayTemplate<FloatPoint2D, 2> FloatPoint2DRefArray;
+typedef PointRefArrayTemplate<Point2D     , 2> Point2DRefArray;
+typedef PointRefArrayTemplate<RealPoint2D , 2> RealPoint2DRefArray;

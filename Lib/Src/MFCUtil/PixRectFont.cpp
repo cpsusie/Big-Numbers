@@ -15,7 +15,8 @@ Point2DArray GlyphPolygon::getAllPoints() const {
 }
 
 Rectangle2D GlyphPolygon::getBoundingBox() const {
-  return getAllPoints().getBoundingBox();
+  Rectangle2D box;
+  return getAllPoints().getBoundingBox(box);
 }
 
 // ------------------------------------ GlyphData ------------------------------
@@ -95,7 +96,8 @@ Point2DArray GlyphCurveData::getAllPoints() const {
 }
 
 Rectangle2D GlyphCurveData::getBoundingBox() const {
-  return getAllPoints().getBoundingBox();
+  Rectangle2D box;
+  return getAllPoints().getBoundingBox(box);
 }
 
 // ------------------------------------ PixRectFont ------------------------------

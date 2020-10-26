@@ -151,7 +151,8 @@ static Rectangle2D getTransformedRectangle(const D3DXMATRIX &m, const CSize bmSi
     const D3DXVECTOR2 tp = m * corner[i];
     trCorners.add(Point2D(tp.x,tp.y));
   }
-  return trCorners.getBoundingBox();
+  Rectangle2D box;
+  return trCorners.getBoundingBox(box);
 }
 
 HBITMAP bitmapRotate(LPDIRECT3DDEVICE device, HBITMAP b0, double degree) {
