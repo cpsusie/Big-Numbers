@@ -5,7 +5,7 @@
 
 template<typename T> class CollectionBase {
 public:
-  CollectionBase<T> &operator=(const CollectionBase<T> &src) {
+  CollectionBase &operator=(const CollectionBase &src) {
     if(this == &src) {
       return *this;
     }
@@ -33,7 +33,7 @@ public:
     return size() != oldSize;
   }
   // Add every element in c to this. Return true if any elements were added.
-  virtual bool addAll(const CollectionBase<T> &c) {
+  virtual bool addAll(const CollectionBase &c) {
     return addAll(c.getIterator());
   }
 
