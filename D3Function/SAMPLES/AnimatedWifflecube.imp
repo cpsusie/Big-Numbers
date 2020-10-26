@@ -6,16 +6,16 @@ t - ( a^2 *(x^2 + y^2 + z^2) )^-6 - ( b^8 * (x^8 + y^8 + z^8) )^6</expr>
 	<cellsize>0.1</cellsize>
 	<lambda>0.25</lambda>
 	<boundingbox>
-		<lbn>
+		<p0>
 			<x>-5</x>
 			<y>-5</y>
 			<z>-5</z>
-		</lbn>
-		<rtf>
-			<x>5</x>
-			<y>5</y>
-			<z>5</z>
-		</rtf>
+		</p0>
+		<size>
+			<cx>5</cx>
+			<cy>5</cy>
+			<cz>5</cz>
+		</size>
 	</boundingbox>
 	<tetrahedral>false</tetrahedral>
 	<tetraoptimize4>false</tetraoptimize4>

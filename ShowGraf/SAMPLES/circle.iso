@@ -2,10 +2,14 @@
 <IsoCurve>
 	<expr>x^2+y^2-4</expr>
 	<boundingbox>
-		<x>-10</x>
-		<y>-10</y>
-		<w>20</w>
-		<h>20</h>
+ 	    <p0>
+		  <x>-10</x>
+		  <y>-10</y>
+		</p0>
+		<size>
+		  <cx>20</cx>
+		  <cy>20</cy>
+		</size>
 	</boundingbox>
 	<cellsize>0.1</cellsize>
 	<trigo>radians</trigo>

@@ -27,16 +27,16 @@ sqrz=sqr(z);
 	<cellsize>0.1</cellsize>
 	<lambda>0.25</lambda>
 	<boundingbox>
-		<lbn>
+		<p0>
 			<x>-5</x>
 			<y>-5</y>
 			<z>-5</z>
-		</lbn>
-		<rtf>
-			<x>5</x>
-			<y>5</y>
-			<z>5</z>
-		</rtf>
+		</p0>
+		<size>
+			<cx>10</cx>
+			<cy>10</cy>
+			<cz>10</cz>
+		</size>
 	</boundingbox>
 	<tetrahedral>false</tetrahedral>
 	<tetraoptimize4>false</tetraoptimize4>

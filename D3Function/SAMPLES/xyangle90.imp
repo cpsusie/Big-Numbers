@@ -6,16 +6,16 @@
 	<cellsize>0.2</cellsize>
 	<lambda>0.25</lambda>
 	<boundingbox>
-		<lbn>
+		<p0>
 			<x>-2</x>
 			<y>-2</y>
 			<z>-1</z>
-		</lbn>
-		<rtf>
-			<x>2</x>
-			<y>2</y>
-			<z>1</z>
-		</rtf>
+		</p0>
+		<size>
+			<cx>4</cx>
+			<cy>4</cy>
+			<cz>2</cz>
+		</size>
 	</boundingbox>
 	<tetrahedral>false</tetrahedral>
 	<tetraoptimize4>false</tetraoptimize4>

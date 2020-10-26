@@ -16,16 +16,16 @@ sqrx=sqr(x1); sqry=sqr(y1); sqrz=sqr(z1);
 	<cellsize>0.03</cellsize>
 	<lambda>0.25</lambda>
 	<boundingbox>
-		<lbn>
+		<p0>
 			<x>-3</x>
 			<y>-3</y>
 			<z>-3</z>
-		</lbn>
-		<rtf>
-			<x>3</x>
-			<y>3</y>
-			<z>3</z>
-		</rtf>
+		</p0>
+		<size>
+			<cx>6</cx>
+			<cy>6</cy>
+			<cz>6</cz>
+		</size>
 	</boundingbox>
 	<tetrahedral>false</tetrahedral>
 	<tetraoptimize4>false</tetraoptimize4>

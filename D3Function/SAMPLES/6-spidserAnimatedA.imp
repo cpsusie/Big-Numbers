@@ -9,16 +9,16 @@ z1 = cos(t) * x + sin(t) * y;
 	<cellsize>0.15</cellsize>
 	<lambda>0.25</lambda>
 	<boundingbox>
-		<lbn>
+		<p0>
 			<x>-10</x>
 			<y>-10</y>
 			<z>-10</z>
-		</lbn>
-		<rtf>
-			<x>10</x>
-			<y>10</y>
-			<z>10</z>
-		</rtf>
+		</p0>
+		<size>
+			<cx>20</cx>
+			<cy>20</cy>
+			<cz>20</cz>
+		</size>
 	</boundingbox>
 	<tetrahedral>false</tetrahedral>
 	<tetraoptimize4>false</tetraoptimize4>
