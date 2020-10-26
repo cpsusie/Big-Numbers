@@ -276,7 +276,7 @@ public:
   String toString(std::streamsize precision = 3) const;
 };
 
-template<typename OSTREAMTYPE, template<typename,UINT> class VectorType, typename T, UINT dimension> OSTREAMTYPE &operator<<(OSTREAMTYPE &out, const VectorType<T, dimension> &v) {
+template<typename OSTREAMTYPE, typename T, UINT dimension> OSTREAMTYPE &operator<<(OSTREAMTYPE &out, const FixedSizeVectorTemplate<T, dimension> &v) {
   const StreamSize w = out.width();
   out << "[";
   for(UINT i = 0; i < dimension; i++) {
@@ -290,7 +290,7 @@ template<typename OSTREAMTYPE, template<typename,UINT> class VectorType, typenam
   return out;
 }
 
-template<typename ISTREAMTYPE, template<typename,UINT> class VectorType, typename T, UINT dimension> ISTREAMTYPE &operator>>(ISTREAMTYPE &in, VectorType<T, dimension> &v) {
+template<typename ISTREAMTYPE, typename T, UINT dimension> ISTREAMTYPE &operator>>(ISTREAMTYPE &in, FixedSizeVectorTemplate<T, dimension> &v) {
   const FormatFlags flgs = in.flags();
   in.flags(flgs | std::ios::skipws);
   if(in.peek() == '[') {

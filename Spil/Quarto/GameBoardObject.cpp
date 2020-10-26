@@ -58,7 +58,7 @@ BoardFieldObject::BoardFieldObject(D3SceneObjectVisual *parent, int row, int col
 , m_field(row,col)
 {
   m_selected    = false;
-  m_center      = getBoundingBox().center();
+  m_center      = (Point3D)getBoundingBox().getCenter();
 
 #if !defined(_DEBUG)
   incrFieldcount();

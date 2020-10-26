@@ -55,48 +55,18 @@ public:
   inline T getMinZ() const { return __super::getMin(2); }
   inline T getMaxZ() const { return __super::getMax(2); }
 
-  inline NumberInterval<T> getXInterval() const { return NumberInterval<T>(getLeft()  , getRight()); }
-  inline NumberInterval<T> getYInterval() const { return NumberInterval<T>(getNear()  , getFar()  ); }
-  inline NumberInterval<T> getZInterval() const { return NumberInterval<T>(getBottom(), getTop()  ); }
+  inline NumberInterval<T> getXInterval() const { return getInterval(0); }
+  inline NumberInterval<T> getYInterval() const { return getInterval(1); }
+  inline NumberInterval<T> getZInterval() const { return getInterval(2); }
 };
 
-typedef Cube3DTemplate<float>  FloatCube3D;
-typedef Cube3DTemplate<double> Cube3D;
-typedef Cube3DTemplate<Real>   RealCube3D;
+typedef Cube3DTemplate<float                 > FloatCube3D;
+typedef Cube3DTemplate<double                > Cube3D;
+typedef Cube3DTemplate<Real                  > RealCube3D;
 
-template<typename PointType> class Point3DArrayTemplate : public CompactArray<PointType> {
-public:
-  Point3DArrayTemplate() {
-  }
-  explicit Point3DArrayTemplate(size_t capacity) : CompactArray<PointType>(capacity)
-  {
-  }
-  template<typename T> Point3DArrayTemplate(const CollectionBase<FixedSizeVectorTemplate<T, 3> > &src) {
-    setCapacity(src.size());
-    addAll(src.getIterator());
-  }
-  template<typename T> Point3DArrayTemplate &operator=(const CollectionBase<FixedSizeVectorTemplate<T, 3> > &src) {
-    if((void*)&src == (void*)this) {
-      return *this;
-    }
-    clear(src.size());
-    addAll(src.getIterator());
-    return *this;
-  }
-
-  template<typename T> bool add(const FixedSizeVectorTemplate<T, 3> &v) {
-    return __super::add(v);
-  }
-
-  template<typename T> Cube3DTemplate<T> &getBoundingBox(Cube3DTemplate<T> &box) const {
-    getBoundingCube(box, getIterator());
-    return box;
-  }
-};
-
-typedef Point3DArrayTemplate<FloatPoint3D    > FloatPoint3DArray;
-typedef Point3DArrayTemplate<Point3D         > Point3DArray;
-typedef Point3DArrayTemplate<RealPoint3D     > RealPoint3DArray;
+typedef PointArrayTemplate<FloatPoint3D   , 3> FloatPoint3DArray;
+typedef PointArrayTemplate<Point3D        , 3> Point3DArray;
+typedef PointArrayTemplate<RealPoint3D    , 3> RealPoint3DArray;
 
 typedef PointRefArrayTemplate<FloatPoint3D, 3> FloatPoint3DRefArray;
 typedef PointRefArrayTemplate<Point3D     , 3> Point3DRefArray;

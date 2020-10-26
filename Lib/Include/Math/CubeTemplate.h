@@ -131,7 +131,55 @@ public:
                                      ,(SizeTemplate< T, dimension>&)SizeTemplate< T, dimension>().setAll(1)
                                      );
   }
+
+  String toString(std::streamsize precision = 3) const;
 };
+
+template<typename OSTREAMTYPE, typename T, UINT dimension> OSTREAMTYPE &operator<<(OSTREAMTYPE &out, const CubeTemplate<T, dimension> &c) {
+  out << "(" << c.p0() << "," << c.size() << ")";
+  return out;
+}
+
+template<typename ISTREAMTYPE, typename T, UINT dimension> ISTREAMTYPE &operator>>(ISTREAMTYPE &in, CubeTemplate<T, dimension> &c) {
+  const FormatFlags flgs = in.flags();
+  in.flags(flgs | std::ios::skipws);
+  if(in.peek() == '(') {
+    in.get();
+  } else {
+    in.flags(flgs);
+    in.setstate(std::ios::failbit);
+    return in;
+  }
+  FixedSizeVectorTemplate<T,dimension> p0, size;
+  in >> p0;
+  if(in.peek() == ',') {
+    in.get();
+  } else {
+    in.flags(flgs);
+    in.setstate(std::ios::failbit);
+    return in;
+  }
+  in >> size;
+  if(in.peek() == ')') {
+    in.get();
+  } else {
+    in.setstate(std::ios::failbit);
+  }
+  if(in) {
+    c.p0()   = p0;
+    c.size() = size;
+  }
+  in.flags(flgs);
+
+  return in;
+}
+
+template<typename T, UINT dimension> String CubeTemplate<T, dimension>::toString(std::streamsize prec) const {
+  std::wostringstream out;
+  out.precision(prec);
+  out << *this;
+  return out.str().c_str();
+}
 
 template<typename T1, typename T2, UINT dimension> CubeTemplate<T1, dimension> getUnion(const CubeTemplate<T1, dimension> &c1, const CubeTemplate<T2, dimension> &c2) {
   const PointTemplate<T1, dimension> minP1 = c1.getAllMin(), maxP1 = c1.getAllMax();
@@ -149,3 +197,40 @@ template<typename PointType, typename T, UINT dimension> CubeTemplate<T, dimensi
   cube = CubeTemplate<T, dimension>(minP, maxP - minP);
   return cube;
 }
+
+template<typename PointType, UINT dimension> class PointArrayTemplate : public CompactArray<PointType> {
+public:
+  PointArrayTemplate() {
+  }
+  explicit PointArrayTemplate(size_t capacity) : CompactArray<PointType>(capacity)
+  {
+  }
+  template<typename T> PointArrayTemplate(const CollectionBase<FixedSizeVectorTemplate<T, dimension> > &src) {
+    setCapacity(src.size());
+    addAll(src.getIterator());
+  }
+  template<typename T> PointArrayTemplate &operator=(const CollectionBase<FixedSizeVectorTemplate<T, dimension> > &src) {
+    if((void*)&src == (void*)this) {
+      return *this;
+    }
+    clear(src.size());
+    addAll(src.getIterator());
+    return *this;
+  }
+
+  template<typename T> bool add(const FixedSizeVectorTemplate<T, dimension> &v) {
+    return __super::add(v);
+  }
+
+  template<typename T> PointArrayTemplate &operator+=(const FixedSizeVectorTemplate<T, dimension> &v) {
+    for(PointType *p = begin(), *endp = end(); p < endp;) {
+      *(p++) += v;
+    }
+    return *this;
+  }
+
+  template<typename T> CubeTemplate<T, dimension> &getBoundingBox(CubeTemplate<T, dimension> &box) const {
+    getBoundingCube(box, getIterator());
+    return box;
+  }
+};

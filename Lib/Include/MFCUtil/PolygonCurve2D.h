@@ -6,7 +6,7 @@
 template<typename PointType> class PolygonCurve2DTemplate : public _PolygonCurveTypeName {
 public:
   short                           m_type; // TT_PRIM_LINE, TT_PRIM_QSPLINE or TT_PRIM_CSPLINE
-  Point2DArrayTemplate<PointType> m_points;
+  PointArrayTemplate<PointType,2> m_points;
   PolygonCurve2DTemplate(short type=0) {
     m_type = type;
   }
@@ -14,7 +14,7 @@ public:
     m_points.add(v);
   }
 
-  inline const Point2DArrayTemplate<PointType> &getAllPoints() const {
+  inline const PointArrayTemplate<PointType,2> &getAllPoints() const {
     return m_points;
   }
   template<typename T> void move(const FixedSizeVectorTemplate<T, 2> &v) {
